@@ -1,7 +1,15 @@
+from dataclasses import dataclass
 from html import unescape
 import re
 
 import httpx
+
+
+@dataclass(frozen=True)
+class DartDocumentText:
+    text: str
+    dcm_no: str | None
+    source: str
 
 
 def _strip_html(value: str) -> str:
@@ -23,6 +31,7 @@ def _clean_cell(value: str) -> str:
 def _extract_dcm_no(html: str, receipt_no: str) -> str | None:
     patterns = [
         rf"viewDoc\(['\"]{re.escape(receipt_no)}['\"]\s*,\s*['\"](\d+)['\"]",
+        r"viewDoc\([^)]*?['\"](\d{6,})['\"]",
         r"dcmNo['\"]?\s*[:=]\s*['\"]?(\d+)",
         r"dcmNo=(\d+)",
     ]
@@ -72,7 +81,21 @@ def extract_supply_contract_facts_from_text(text: str) -> list[str]:
     return facts
 
 
-async def fetch_dart_document_text(client: httpx.AsyncClient, receipt_no: str) -> str | None:
+def build_text_diagnostics(document: DartDocumentText | None) -> list[str]:
+    if document is None:
+        return ["DART text fallback: no document text fetched"]
+    compact = document.text.replace(" ", "")
+    markers = ["계약상대방", "계약금액", "매출액대비", "계약기간", "판매ㆍ공급계약", "단일판매"]
+    found = [marker for marker in markers if marker.replace(" ", "") in compact]
+    snippet = _clean_cell(document.text[:500])
+    return [
+        f"DART text fallback: source={document.source}, dcm_no={document.dcm_no or 'none'}, length={len(document.text)}",
+        f"DART text fallback: found_markers={','.join(found) if found else 'none'}",
+        f"DART text fallback snippet: {snippet}",
+    ]
+
+
+async def fetch_dart_document_text(client: httpx.AsyncClient, receipt_no: str) -> DartDocumentText | None:
     main_response = await client.get(
         "https://dart.fss.or.kr/dsaf001/main.do",
         params={"rcpNo": receipt_no},
@@ -82,7 +105,7 @@ async def fetch_dart_document_text(client: httpx.AsyncClient, receipt_no: str) -
     dcm_no = _extract_dcm_no(main_html, receipt_no)
     if not dcm_no:
         text = _strip_html(main_html)
-        return text if text.strip() else None
+        return DartDocumentText(text=text, dcm_no=None, source="main") if text.strip() else None
 
     viewer_response = await client.get(
         "https://dart.fss.or.kr/report/viewer.do",
@@ -97,4 +120,7 @@ async def fetch_dart_document_text(client: httpx.AsyncClient, receipt_no: str) -
     )
     viewer_response.raise_for_status()
     text = _strip_html(viewer_response.text)
-    return text if text.strip() else _strip_html(main_html)
+    if text.strip():
+        return DartDocumentText(text=text, dcm_no=dcm_no, source="viewer")
+    fallback_text = _strip_html(main_html)
+    return DartDocumentText(text=fallback_text, dcm_no=dcm_no, source="main") if fallback_text.strip() else None
