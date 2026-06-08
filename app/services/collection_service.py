@@ -91,14 +91,26 @@ def _raw_event_to_model(raw_event: RawEvent) -> Event:
     )
 
 
-def _backfill_duplicate_provider(duplicate: Event, event: Event) -> None:
-    if duplicate.provider in {"unknown", "legacy", ""} and event.provider:
-        duplicate.provider = event.provider
-    if not duplicate.relevance_reason and event.relevance_reason:
-        duplicate.relevance_reason = event.relevance_reason
-    if duplicate.relevance_score == 0 and event.relevance_score:
-        duplicate.relevance_score = event.relevance_score
-        duplicate.requires_review = event.requires_review
+def _refresh_duplicate_event(duplicate: Event, event: Event) -> None:
+    duplicate.company_name = event.company_name or duplicate.company_name
+    duplicate.source = event.source or duplicate.source
+    duplicate.provider = event.provider or duplicate.provider
+    duplicate.raw_summary = event.raw_summary or duplicate.raw_summary
+    duplicate.event_type = event.event_type
+    duplicate.keywords = event.keywords
+    duplicate.confirmed_facts = event.confirmed_facts
+    duplicate.inferred_implications = event.inferred_implications
+    duplicate.unknowns = event.unknowns
+    duplicate.revenue_guidance_changed = event.revenue_guidance_changed
+    duplicate.margin_guidance_changed = event.margin_guidance_changed
+    duplicate.fcf_impact_known = event.fcf_impact_known
+    duplicate.dilution_risk = event.dilution_risk
+    duplicate.capex_impact_known = event.capex_impact_known
+    duplicate.inventory_risk = event.inventory_risk
+    duplicate.receivables_risk = event.receivables_risk
+    duplicate.requires_review = event.requires_review
+    duplicate.relevance_score = event.relevance_score
+    duplicate.relevance_reason = event.relevance_reason
 
 
 class CollectionService:
@@ -130,7 +142,7 @@ class CollectionService:
                 event = _raw_event_to_model(raw_event)
                 duplicate = session.exec(
                     select(Event).where(
-                        Event.ticker == ticker,
+                        Event.ticker == event.ticker,
                         (Event.url == event.url) | (Event.title == event.title),
                     )
                 ).first()
@@ -138,7 +150,7 @@ class CollectionService:
                     session.add(event)
                     collected.append(event)
                 else:
-                    _backfill_duplicate_provider(duplicate, event)
+                    _refresh_duplicate_event(duplicate, event)
         session.commit()
         return collected
 
