@@ -60,6 +60,26 @@ TREASURY_STOCK_START_KEYS = ("dppln_pd_bgd", "dp_pd_bgd", "tr_pd_bgd", "acqsdl_p
 TREASURY_STOCK_END_KEYS = ("dppln_pd_edd", "dp_pd_edd", "tr_pd_edd", "acqsdl_pd_edd")
 TREASURY_STOCK_METHOD_KEYS = ("dppln_mth", "dp_mth", "tr_mth", "acqsdl_mth", "mth")
 
+SUPPLY_CONTRACT_COUNTERPARTY_KEYS = ("cntrpt", "cntprt", "contractor", "spplytrdprt", "trdprt")
+SUPPLY_CONTRACT_AMOUNT_KEYS = (
+    "cntrct_amt",
+    "cntrct_amount",
+    "contract_amount",
+    "supply_value",
+    "amount",
+)
+SUPPLY_CONTRACT_SALES_RATIO_KEYS = (
+    "sales_ratio",
+    "cntrct_amt_vs_recent_sales",
+    "ctrtamt_recent_sales_ratio",
+    "recent_sales_ratio",
+    "sl_vs",
+)
+SUPPLY_CONTRACT_START_KEYS = ("cntrct_begin", "cntrct_bgn", "contract_start", "bgn_de")
+SUPPLY_CONTRACT_END_KEYS = ("cntrct_end", "cntrct_edd", "contract_end", "end_de")
+SUPPLY_CONTRACT_NAME_KEYS = ("cntrct_nm", "contract_name", "supply_contract_name", "goods")
+SUPPLY_CONTRACT_REGION_KEYS = ("rgn", "region", "supply_region", "supply_area")
+
 
 def _yyyymmdd(value: date) -> str:
     return value.strftime("%Y%m%d")
@@ -183,11 +203,11 @@ def _filter_items_by_receipt(items: list[dict[str, str]], receipt_no: str) -> li
     return matched or items
 
 
-def _available_keys_debug(items: list[dict[str, str]]) -> str:
+def _available_keys_debug(items: list[dict[str, str]], label: str) -> str:
     if not items:
-        return "OpenDART treasury stock API returned empty list"
+        return f"OpenDART {label} API returned empty list"
     keys = sorted({key for item in items[:3] for key in item.keys()})
-    return f"OpenDART treasury stock API returned unmapped keys: {', '.join(keys[:40])}"
+    return f"OpenDART {label} API returned unmapped keys: {', '.join(keys[:50])}"
 
 
 def _extract_treasury_stock_facts(items: list[dict[str, str]]) -> list[str]:
@@ -217,11 +237,41 @@ def _extract_treasury_stock_facts(items: list[dict[str, str]]) -> list[str]:
     return facts
 
 
+def _extract_supply_contract_facts(items: list[dict[str, str]]) -> list[str]:
+    facts: list[str] = []
+    if not items:
+        return facts
+    item = items[0]
+    contract_name = _first_non_empty(item, SUPPLY_CONTRACT_NAME_KEYS)
+    counterparty = _first_non_empty(item, SUPPLY_CONTRACT_COUNTERPARTY_KEYS)
+    amount = _first_non_empty(item, SUPPLY_CONTRACT_AMOUNT_KEYS)
+    sales_ratio = _first_non_empty(item, SUPPLY_CONTRACT_SALES_RATIO_KEYS)
+    start_date = _first_non_empty(item, SUPPLY_CONTRACT_START_KEYS)
+    end_date = _first_non_empty(item, SUPPLY_CONTRACT_END_KEYS)
+    region = _first_non_empty(item, SUPPLY_CONTRACT_REGION_KEYS)
+
+    formatted_amount = _format_krw(amount)
+    if contract_name:
+        facts.append(f"OpenDART supply contract fact: contract_name = {contract_name}")
+    if counterparty:
+        facts.append(f"OpenDART supply contract fact: counterparty = {counterparty}")
+    if formatted_amount:
+        facts.append(f"OpenDART supply contract fact: amount = {formatted_amount}")
+    if sales_ratio:
+        facts.append(f"OpenDART supply contract fact: recent_sales_ratio = {sales_ratio}")
+    if start_date or end_date:
+        facts.append(f"OpenDART supply contract fact: period = {start_date or 'unknown'} to {end_date or 'unknown'}")
+    if region:
+        facts.append(f"OpenDART supply contract fact: region = {region}")
+    return facts
+
+
 class OpenDARTProvider(FilingProvider):
     name = "opendart"
     endpoint = "https://opendart.fss.or.kr/api/list.json"
     financial_endpoint = "https://opendart.fss.or.kr/api/fnlttSinglAcnt.json"
     treasury_stock_endpoint = "https://opendart.fss.or.kr/api/tsstkDpDecsn.json"
+    supply_contract_endpoint = "https://opendart.fss.or.kr/api/singleSaleSupplyContract.json"
 
     async def _fetch_financial_facts(
         self,
@@ -247,7 +297,7 @@ class OpenDARTProvider(FilingProvider):
         except (httpx.HTTPError, ValueError):
             return [], ["OpenDART financial statement API request failed"]
         if payload.get("status") != "000":
-            return [], [f"OpenDART financial statement API status: {payload.get('status')}" ]
+            return [], [f"OpenDART financial statement API status: {payload.get('status')}"]
         facts = _extract_financial_facts(payload.get("list", []))
         if not facts:
             return [], ["OpenDART financial statement API returned no mapped financial facts"]
@@ -283,7 +333,40 @@ class OpenDARTProvider(FilingProvider):
         items = _filter_items_by_receipt(payload.get("list", []), receipt_no)
         facts = _extract_treasury_stock_facts(items)
         if not facts:
-            return [], [_available_keys_debug(items)]
+            return [], [_available_keys_debug(items, "treasury stock")]
+        return facts, []
+
+    async def _fetch_supply_contract_facts(
+        self,
+        client: httpx.AsyncClient,
+        api_key: str,
+        corp_code: str,
+        title: str,
+        published: date,
+        receipt_no: str,
+    ) -> tuple[list[str], list[str]]:
+        if not any(term in title for term in ("공급계약", "단일판매", "판매ㆍ공급계약", "판매·공급계약")):
+            return [], []
+        start = published - timedelta(days=30)
+        end = published + timedelta(days=30)
+        params = {
+            "crtfc_key": api_key,
+            "corp_code": corp_code,
+            "bgn_de": _yyyymmdd(start),
+            "end_de": _yyyymmdd(end),
+        }
+        try:
+            response = await client.get(self.supply_contract_endpoint, params=params)
+            response.raise_for_status()
+            payload = response.json()
+        except (httpx.HTTPError, ValueError):
+            return [], ["OpenDART supply contract API request failed"]
+        if payload.get("status") != "000":
+            return [], [f"OpenDART supply contract API status: {payload.get('status')}"]
+        items = _filter_items_by_receipt(payload.get("list", []), receipt_no)
+        facts = _extract_supply_contract_facts(items)
+        if not facts:
+            return [], [_available_keys_debug(items, "supply contract")]
         return facts, []
 
     async def fetch_events(self, ticker: str, lookback_days: int) -> list[RawEvent]:
@@ -344,6 +427,16 @@ class OpenDARTProvider(FilingProvider):
                     )
                     extra_facts.extend(treasury_facts)
                     extra_unknowns.extend(treasury_unknowns)
+                    contract_facts, contract_unknowns = await self._fetch_supply_contract_facts(
+                        client=client,
+                        api_key=settings.opendart_api_key,
+                        corp_code=corp_code,
+                        title=title,
+                        published=published,
+                        receipt_no=receipt_no,
+                    )
+                    extra_facts.extend(contract_facts)
+                    extra_unknowns.extend(contract_unknowns)
 
                     confirmed_facts = [
                         f"OpenDART filing title: {title}",
