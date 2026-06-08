@@ -34,6 +34,12 @@ def _append_unique(items: list[str], value: str) -> None:
         items.append(value)
 
 
+def _format_krw(amount: int | None) -> str:
+    if amount is None:
+        return "unknown"
+    return f"{amount:,} KRW"
+
+
 def _interpret_supply_contract(raw_event: RawEvent, implications: list[str], unknowns: list[str]) -> None:
     facts = raw_event.confirmed_facts
     contract_name = _fact_value(facts, "supply contract fact: contract_name")
@@ -44,7 +50,7 @@ def _interpret_supply_contract(raw_event: RawEvent, implications: list[str], unk
     period = _fact_value(facts, "supply contract fact: period")
 
     if amount is not None:
-        _append_unique(implications, f"Confirmed order/contract amount is about {amount:,} KRW.")
+        _append_unique(implications, f"Confirmed order/contract amount is about {_format_krw(amount)}.")
     if ratio is not None:
         if ratio >= 10:
             _append_unique(implications, "Contract size is very material relative to recent revenue; valuation and revenue model should be reviewed.")
@@ -88,14 +94,34 @@ def _interpret_earnings(raw_event: RawEvent, implications: list[str], unknowns: 
     facts = raw_event.confirmed_facts
     revenue = _to_int(_fact_value(facts, "financial fact: 매출액"))
     operating_income = _to_int(_fact_value(facts, "financial fact: 영업이익"))
+    assets = _to_int(_fact_value(facts, "financial fact: 자산총계"))
+    liabilities = _to_int(_fact_value(facts, "financial fact: 부채총계"))
+    equity = _to_int(_fact_value(facts, "financial fact: 자본총계"))
+
     if revenue is not None:
-        _append_unique(implications, f"Reported revenue fact parsed at about {revenue:,} KRW; compare against guidance and consensus.")
+        _append_unique(implications, f"Reported revenue fact parsed at about {_format_krw(revenue)}; compare against guidance and consensus.")
     if operating_income is not None:
-        _append_unique(implications, f"Reported operating profit fact parsed at about {operating_income:,} KRW; margin trend should be reviewed.")
-    if revenue and operating_income:
+        _append_unique(implications, f"Reported operating profit fact parsed at about {_format_krw(operating_income)}; margin trend should be reviewed.")
+    if revenue and operating_income is not None:
         margin = operating_income / revenue * 100
-        _append_unique(implications, f"Implied operating margin from parsed facts is about {margin:.1f}%; verify against reported consolidated basis.")
+        _append_unique(implications, f"Implied operating margin from parsed facts is about {margin:.1f}%; verify consolidated/parent basis before thesis judgment.")
+        if margin >= 20:
+            _append_unique(implications, "Operating margin is high on parsed figures; check whether this reflects structural pricing power, cycle peak, or one-off mix effect.")
+        elif margin < 5:
+            _append_unique(implications, "Operating margin is thin on parsed figures; thesis quality depends heavily on margin recovery or volume leverage.")
+    if assets and liabilities is not None:
+        debt_to_assets = liabilities / assets * 100
+        _append_unique(implications, f"Parsed liabilities/assets ratio is about {debt_to_assets:.1f}%; monitor balance-sheet risk if capex or working capital expands.")
+    if equity and liabilities is not None:
+        debt_to_equity = liabilities / equity * 100 if equity else None
+        if debt_to_equity is not None:
+            _append_unique(implications, f"Parsed liabilities/equity ratio is about {debt_to_equity:.1f}%; compare with sector capital intensity and cycle position.")
+    if revenue is None:
+        _append_unique(unknowns, "Revenue could not be parsed from this filing event.")
+    if operating_income is None:
+        _append_unique(unknowns, "Operating profit could not be parsed from this filing event.")
     _append_unique(unknowns, "YoY/QoQ growth, consensus comparison, and segment mix are not calculated from single-period facts yet.")
+    _append_unique(unknowns, "Cash flow, capex, inventory, and receivables require separate statement parsing before earnings-quality judgment.")
 
 
 def enrich_raw_event(raw_event: RawEvent) -> RawEvent:
