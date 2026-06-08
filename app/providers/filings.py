@@ -5,12 +5,18 @@ import httpx
 
 from app.config import get_settings
 from app.providers.base import FilingProvider, RawEvent
+from app.providers.opendart_corp_codes import OpenDARTCompany, resolve_opendart_company
 
 
 OPENDART_CORP_CODES = {
-    # TODO: Replace this seed map with cached corp_code.xml lookup from OpenDART.
+    # Seed fallback while corpCode.xml resolver is unavailable.
     "000660": "00164779",
     "000660.KS": "00164779",
+    "SK하이닉스": "00164779",
+}
+
+OPENDART_SEED_COMPANY_NAMES = {
+    "00164779": "SK하이닉스",
 }
 
 SEC_TICKER_CIK = {
@@ -266,6 +272,20 @@ def _extract_supply_contract_facts(items: list[dict[str, str]]) -> list[str]:
     return facts
 
 
+async def _resolve_opendart_company(api_key: str, query: str) -> OpenDARTCompany | None:
+    seed_corp_code = OPENDART_CORP_CODES.get(query.upper()) or OPENDART_CORP_CODES.get(query)
+    if seed_corp_code:
+        return OpenDARTCompany(
+            corp_code=seed_corp_code,
+            corp_name=OPENDART_SEED_COMPANY_NAMES.get(seed_corp_code, query),
+            stock_code=query.replace(".KS", "").replace(".KQ", "") if query[:6].isdigit() else "",
+        )
+    try:
+        return await resolve_opendart_company(api_key, query)
+    except (httpx.HTTPError, ValueError):
+        return None
+
+
 class OpenDARTProvider(FilingProvider):
     name = "opendart"
     endpoint = "https://opendart.fss.or.kr/api/list.json"
@@ -374,11 +394,11 @@ class OpenDARTProvider(FilingProvider):
         if not settings.opendart_api_key:
             return []
 
-        corp_code = OPENDART_CORP_CODES.get(ticker.upper()) or OPENDART_CORP_CODES.get(
-            ticker.replace(".KS", "")
-        )
-        if not corp_code:
+        company = await _resolve_opendart_company(settings.opendart_api_key, ticker)
+        if company is None:
             return []
+        corp_code = company.corp_code
+        output_ticker = company.stock_code or ticker.upper()
 
         params = {
             "crtfc_key": settings.opendart_api_key,
@@ -445,8 +465,8 @@ class OpenDARTProvider(FilingProvider):
                     confirmed_facts.extend(extra_facts)
                     events.append(
                         RawEvent(
-                            ticker=ticker.upper(),
-                            company_name=item.get("corp_name"),
+                            ticker=output_ticker.upper(),
+                            company_name=item.get("corp_name") or company.corp_name,
                             date=published,
                             source="OpenDART",
                             provider=self.name,
