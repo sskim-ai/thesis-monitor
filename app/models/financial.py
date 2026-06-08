@@ -8,6 +8,14 @@ class FinancialSnapshot(SQLModel, table=True):
     ticker: str = Field(index=True)
     period: str
     reported_date: date | None = None
+    source: str | None = None
+    provider: str | None = None
+    fs_div: str | None = None
+    sj_div: str | None = None
+    revenue_basis: str | None = None
+    operating_income_basis: str | None = None
+    balance_sheet_basis: str | None = None
+    quality_warnings: str | None = None
     revenue: float | None = None
     operating_income: float | None = None
     net_income: float | None = None
