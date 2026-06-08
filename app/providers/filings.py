@@ -36,6 +36,30 @@ FINANCIAL_ACCOUNT_ALIASES = {
     "equity": ("자본총계",),
 }
 
+TREASURY_STOCK_COUNT_KEYS = (
+    "dppln_stk_ostk",
+    "dppln_stk_estk",
+    "dpstk_ostk",
+    "dpstk_estk",
+    "trstk_qy",
+    "acqsdl_stk_qy",
+    "dppln_stk_qy",
+    "stk_qy",
+)
+TREASURY_STOCK_AMOUNT_KEYS = (
+    "dppln_prc_ostk",
+    "dppln_prc_estk",
+    "dppln_prc",
+    "dpstk_prc",
+    "tr_prc",
+    "acqsdl_prc",
+    "amount",
+)
+TREASURY_STOCK_PURPOSE_KEYS = ("dppln_pp", "dp_pp", "tr_pp", "acqsdl_pp", "prps")
+TREASURY_STOCK_START_KEYS = ("dppln_pd_bgd", "dp_pd_bgd", "tr_pd_bgd", "acqsdl_pd_bgd")
+TREASURY_STOCK_END_KEYS = ("dppln_pd_edd", "dp_pd_edd", "tr_pd_edd", "acqsdl_pd_edd")
+TREASURY_STOCK_METHOD_KEYS = ("dppln_mth", "dp_mth", "tr_mth", "acqsdl_mth", "mth")
+
 
 def _yyyymmdd(value: date) -> str:
     return value.strftime("%Y%m%d")
@@ -159,17 +183,24 @@ def _filter_items_by_receipt(items: list[dict[str, str]], receipt_no: str) -> li
     return matched or items
 
 
+def _available_keys_debug(items: list[dict[str, str]]) -> str:
+    if not items:
+        return "OpenDART treasury stock API returned empty list"
+    keys = sorted({key for item in items[:3] for key in item.keys()})
+    return f"OpenDART treasury stock API returned unmapped keys: {', '.join(keys[:40])}"
+
+
 def _extract_treasury_stock_facts(items: list[dict[str, str]]) -> list[str]:
     facts: list[str] = []
     if not items:
         return facts
     item = items[0]
-    stock_count = _first_non_empty(item, ("trstk_qy", "acqsdl_stk_qy", "dppln_stk_qy", "stk_qy"))
-    amount = _first_non_empty(item, ("tr_prc", "acqsdl_prc", "dppln_prc", "amount"))
-    purpose = _first_non_empty(item, ("tr_pp", "acqsdl_pp", "dppln_pp", "prps"))
-    start_date = _first_non_empty(item, ("tr_pd_bgd", "acqsdl_pd_bgd", "dppln_pd_bgd"))
-    end_date = _first_non_empty(item, ("tr_pd_edd", "acqsdl_pd_edd", "dppln_pd_edd"))
-    method = _first_non_empty(item, ("tr_mth", "acqsdl_mth", "dppln_mth", "mth"))
+    stock_count = _first_non_empty(item, TREASURY_STOCK_COUNT_KEYS)
+    amount = _first_non_empty(item, TREASURY_STOCK_AMOUNT_KEYS)
+    purpose = _first_non_empty(item, TREASURY_STOCK_PURPOSE_KEYS)
+    start_date = _first_non_empty(item, TREASURY_STOCK_START_KEYS)
+    end_date = _first_non_empty(item, TREASURY_STOCK_END_KEYS)
+    method = _first_non_empty(item, TREASURY_STOCK_METHOD_KEYS)
 
     formatted_count = _format_shares(stock_count)
     formatted_amount = _format_krw(amount)
@@ -216,7 +247,7 @@ class OpenDARTProvider(FilingProvider):
         except (httpx.HTTPError, ValueError):
             return [], ["OpenDART financial statement API request failed"]
         if payload.get("status") != "000":
-            return [], [f"OpenDART financial statement API status: {payload.get('status')}"]
+            return [], [f"OpenDART financial statement API status: {payload.get('status')}" ]
         facts = _extract_financial_facts(payload.get("list", []))
         if not facts:
             return [], ["OpenDART financial statement API returned no mapped financial facts"]
@@ -252,7 +283,7 @@ class OpenDARTProvider(FilingProvider):
         items = _filter_items_by_receipt(payload.get("list", []), receipt_no)
         facts = _extract_treasury_stock_facts(items)
         if not facts:
-            return [], ["OpenDART treasury stock API returned no mapped facts"]
+            return [], [_available_keys_debug(items)]
         return facts, []
 
     async def fetch_events(self, ticker: str, lookback_days: int) -> list[RawEvent]:
