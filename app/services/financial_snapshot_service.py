@@ -69,6 +69,17 @@ def _operating_margin(revenue: float | None, operating_income: float | None) -> 
     return operating_income / revenue * 100
 
 
+def _pct_change(current: float | None, previous: float | None) -> float | None:
+    if current is None or previous in {None, 0}:
+        return None
+    return (current / previous - 1) * 100
+
+
+def _append_unique(items: list[str], value: str) -> None:
+    if value not in items:
+        items.append(value)
+
+
 def upsert_financial_snapshot_from_event(session: Session, event: Event) -> FinancialSnapshot | None:
     if event.provider != "opendart" or event.event_type != "guidance_change":
         return None
@@ -126,3 +137,67 @@ def upsert_financial_snapshot_from_event(session: Session, event: Event) -> Fina
     elif equity is not None and liabilities is not None:
         snapshot.dilution_notes = f"liabilities/equity={liabilities / equity * 100:.1f}%"
     return snapshot
+
+
+def previous_financial_snapshot(session: Session, snapshot: FinancialSnapshot) -> FinancialSnapshot | None:
+    if snapshot.reported_date is None:
+        return None
+    return session.exec(
+        select(FinancialSnapshot)
+        .where(
+            FinancialSnapshot.ticker == snapshot.ticker,
+            FinancialSnapshot.provider == snapshot.provider,
+            FinancialSnapshot.reported_date < snapshot.reported_date,
+        )
+        .order_by(FinancialSnapshot.reported_date.desc())
+    ).first()
+
+
+def comparison_implications(
+    current: FinancialSnapshot | None,
+    previous: FinancialSnapshot | None,
+) -> tuple[list[str], list[str]]:
+    implications: list[str] = []
+    unknowns: list[str] = []
+    if current is None:
+        return implications, ["Historical financial comparison unavailable because no current snapshot was stored."]
+    if previous is None:
+        return implications, ["Historical financial comparison unavailable because no prior snapshot exists for this ticker/provider yet."]
+
+    revenue_change = _pct_change(current.revenue, previous.revenue)
+    operating_income_change = _pct_change(current.operating_income, previous.operating_income)
+    if revenue_change is not None:
+        _append_unique(implications, f"Revenue changed {revenue_change:+.1f}% versus prior stored snapshot period {previous.period}.")
+    else:
+        _append_unique(unknowns, "Revenue comparison unavailable because current or prior revenue is missing/zero.")
+    if operating_income_change is not None:
+        _append_unique(implications, f"Operating income changed {operating_income_change:+.1f}% versus prior stored snapshot period {previous.period}.")
+    else:
+        _append_unique(unknowns, "Operating income comparison unavailable because current or prior operating income is missing/zero.")
+    if current.operating_margin is not None and previous.operating_margin is not None:
+        margin_delta = current.operating_margin - previous.operating_margin
+        _append_unique(implications, f"Operating margin changed {margin_delta:+.1f} percentage points versus prior stored snapshot.")
+    else:
+        _append_unique(unknowns, "Operating margin comparison unavailable because current or prior margin is missing.")
+    if current.quality_warnings or previous.quality_warnings:
+        _append_unique(unknowns, "Financial comparison has quality warnings; verify basis consistency before treating growth rates as thesis evidence.")
+    return implications, unknowns
+
+
+def add_financial_comparison_to_event(
+    session: Session,
+    event: Event,
+    snapshot: FinancialSnapshot | None,
+) -> None:
+    if event.provider != "opendart" or event.event_type != "guidance_change":
+        return
+    current_implications = json.loads(event.inferred_implications)
+    current_unknowns = json.loads(event.unknowns)
+    previous = previous_financial_snapshot(session, snapshot) if snapshot else None
+    implications, unknowns = comparison_implications(snapshot, previous)
+    for item in implications:
+        _append_unique(current_implications, item)
+    for item in unknowns:
+        _append_unique(current_unknowns, item)
+    event.inferred_implications = json.dumps(current_implications)
+    event.unknowns = json.dumps(current_unknowns)
