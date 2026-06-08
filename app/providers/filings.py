@@ -6,6 +6,7 @@ import httpx
 from app.config import get_settings
 from app.providers.base import FilingProvider, RawEvent
 from app.providers.dart_text_fallback import (
+    build_text_diagnostics,
     extract_supply_contract_facts_from_text,
     fetch_dart_document_text,
 )
@@ -392,18 +393,19 @@ class OpenDARTProvider(FilingProvider):
                 return facts, []
 
         try:
-            text = await fetch_dart_document_text(client, receipt_no)
+            document = await fetch_dart_document_text(client, receipt_no)
         except (httpx.HTTPError, ValueError):
-            text = None
-        if text:
-            facts = extract_supply_contract_facts_from_text(text)
+            document = None
+        if document:
+            facts = extract_supply_contract_facts_from_text(document.text)
             if facts:
                 return facts, []
 
         status = payload.get("status")
+        diagnostics = build_text_diagnostics(document)
         if status == "000":
-            return [], [_available_keys_debug(payload.get("list", []), "supply contract")]
-        return [], [f"OpenDART supply contract API status: {status}"]
+            return [], [_available_keys_debug(payload.get("list", []), "supply contract"), *diagnostics]
+        return [], [f"OpenDART supply contract API status: {status}", *diagnostics]
 
     async def fetch_events(self, ticker: str, lookback_days: int) -> list[RawEvent]:
         settings = get_settings()
