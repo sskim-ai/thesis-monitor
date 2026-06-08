@@ -4,7 +4,19 @@ from app.schemas.event import EventType
 
 KEYWORD_EVENT_TYPES: list[tuple[EventType, tuple[str, ...]]] = [
     (EventType.production_order, ("production order", "production schedule")),
-    (EventType.large_order, ("large order", "major order", "large purchase", "supply contract", "공급계약", "단일판매")),
+    (
+        EventType.large_order,
+        (
+            "large order",
+            "major order",
+            "large purchase",
+            "supply contract",
+            "공급계약",
+            "단일판매",
+            "판매ㆍ공급계약",
+            "공사수주",
+        ),
+    ),
     (EventType.new_customer, ("new customer", "customer name was disclosed", "named customer")),
     (EventType.mass_production_change, ("mass production change", "production schedule change")),
     (EventType.revenue_guidance_up, ("guidance raised", "raises revenue guidance", "guidance up", "guidance increase")),
@@ -20,17 +32,21 @@ KEYWORD_EVENT_TYPES: list[tuple[EventType, tuple[str, ...]]] = [
     (EventType.warrant, ("warrant", "신주인수권", "bw")),
     (EventType.stock_compensation_increase, ("stock compensation increase", "stock-based compensation increase")),
     (EventType.partnership_to_revenue, ("partnership revenue", "commercialized partnership")),
-    (EventType.partnership, ("partnership", "collaboration")),
-    (EventType.customer_loss, ("customer loss", "lost customer")),
+    (EventType.partnership, ("partnership", "collaboration", "업무협약", "mou")),
+    (EventType.customer_loss, ("customer loss", "lost customer", "거래중단")),
+    (EventType.customer_concentration_risk, ("특수관계인과의내부거래", "내부거래")),
     (EventType.competitor_price_cut, ("competitor price cut", "price cut")),
     (EventType.competitor_new_product, ("competitor new product", "new product launch")),
-    (EventType.antitrust, ("antitrust",)),
-    (EventType.export_control, ("export control",)),
-    (EventType.regulatory_risk, ("regulatory risk", "regulator")),
-    (EventType.accounting_issue, ("accounting issue", "restatement")),
-    (EventType.debt_liquidity_risk, ("liquidity risk", "debt covenant")),
+    (EventType.management_governance, ("기업지배구조보고서", "임원ㆍ주요주주", "임원･주요주주", "최대주주", "대표이사")),
+    (EventType.capital_allocation, ("자기주식", "자사주", "배당", "현금ㆍ현물배당")),
+    (EventType.guidance_change, ("분기보고서", "반기보고서", "사업보고서", "영업(잠정)실적", "잠정실적")),
     (EventType.earnings_surprise, ("earnings surprise", "beat expectations")),
     (EventType.earnings_miss, ("earnings miss", "missed expectations", "missed guidance")),
+    (EventType.antitrust, ("antitrust",)),
+    (EventType.export_control, ("export control", "수출통제")),
+    (EventType.regulatory_risk, ("regulatory risk", "regulator", "제재", "과징금")),
+    (EventType.accounting_issue, ("accounting issue", "restatement", "감사보고서", "의견거절")),
+    (EventType.debt_liquidity_risk, ("liquidity risk", "debt covenant", "채무", "유동성")),
 ]
 
 NOISE_TERMS = (
@@ -41,6 +57,9 @@ NOISE_TERMS = (
     "ai tailwind",
     "social media rumor",
     "rumor",
+    "목표주가",
+    "컨퍼런스",
+    "루머",
 )
 
 
@@ -56,7 +75,16 @@ def classify_event(raw_event: RawEvent) -> EventType:
     ).lower()
 
     if any(term in text for term in NOISE_TERMS) and not any(
-        term in text for term in ("production order", "guidance", "customer disclosed")
+        term in text
+        for term in (
+            "production order",
+            "guidance",
+            "customer disclosed",
+            "공급계약",
+            "실적",
+            "분기보고서",
+            "사업보고서",
+        )
     ):
         return EventType.non_thesis_noise
 
