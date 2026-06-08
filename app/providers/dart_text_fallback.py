@@ -6,10 +6,21 @@ import httpx
 
 
 @dataclass(frozen=True)
+class DartViewerParams:
+    receipt_no: str
+    dcm_no: str
+    ele_id: str
+    offset: str
+    length: str
+    dtd: str
+
+
+@dataclass(frozen=True)
 class DartDocumentText:
     text: str
     dcm_no: str | None
     source: str
+    viewer_params: DartViewerParams | None = None
 
 
 def _strip_html(value: str) -> str:
@@ -28,10 +39,34 @@ def _clean_cell(value: str) -> str:
     return re.sub(r"\s+", " ", value).strip(" |\n\t")
 
 
+def _parse_js_args(args: str) -> list[str]:
+    return [part.strip().strip("'\"") for part in re.split(r"\s*,\s*", args) if part.strip()]
+
+
+def _extract_viewer_params(html: str, receipt_no: str) -> DartViewerParams | None:
+    for match in re.finditer(r"viewDoc\(([^)]*)\)", html):
+        args = _parse_js_args(match.group(1))
+        if len(args) < 6:
+            continue
+        if args[0] != receipt_no:
+            continue
+        return DartViewerParams(
+            receipt_no=args[0],
+            dcm_no=args[1],
+            ele_id=args[2],
+            offset=args[3],
+            length=args[4],
+            dtd=args[5],
+        )
+    return None
+
+
 def _extract_dcm_no(html: str, receipt_no: str) -> str | None:
+    viewer_params = _extract_viewer_params(html, receipt_no)
+    if viewer_params:
+        return viewer_params.dcm_no
     patterns = [
         rf"viewDoc\(['\"]{re.escape(receipt_no)}['\"]\s*,\s*['\"](\d+)['\"]",
-        r"viewDoc\([^)]*?['\"](\d{6,})['\"]",
         r"dcmNo['\"]?\s*[:=]\s*['\"]?(\d+)",
         r"dcmNo=(\d+)",
     ]
@@ -88,8 +123,17 @@ def build_text_diagnostics(document: DartDocumentText | None) -> list[str]:
     markers = ["계약상대방", "계약금액", "매출액대비", "계약기간", "판매ㆍ공급계약", "단일판매"]
     found = [marker for marker in markers if marker.replace(" ", "") in compact]
     snippet = _clean_cell(document.text[:500])
+    if document.viewer_params:
+        params = document.viewer_params
+        param_text = (
+            f"ele_id={params.ele_id}, offset={params.offset}, "
+            f"length={params.length}, dtd={params.dtd}"
+        )
+    else:
+        param_text = "none"
     return [
         f"DART text fallback: source={document.source}, dcm_no={document.dcm_no or 'none'}, length={len(document.text)}",
+        f"DART text fallback params: {param_text}",
         f"DART text fallback: found_markers={','.join(found) if found else 'none'}",
         f"DART text fallback snippet: {snippet}",
     ]
@@ -102,25 +146,26 @@ async def fetch_dart_document_text(client: httpx.AsyncClient, receipt_no: str) -
     )
     main_response.raise_for_status()
     main_html = main_response.text
-    dcm_no = _extract_dcm_no(main_html, receipt_no)
+    viewer_params = _extract_viewer_params(main_html, receipt_no)
+    dcm_no = viewer_params.dcm_no if viewer_params else _extract_dcm_no(main_html, receipt_no)
     if not dcm_no:
         text = _strip_html(main_html)
         return DartDocumentText(text=text, dcm_no=None, source="main") if text.strip() else None
 
-    viewer_response = await client.get(
-        "https://dart.fss.or.kr/report/viewer.do",
-        params={
-            "rcpNo": receipt_no,
-            "dcmNo": dcm_no,
-            "eleId": "0",
-            "offset": "0",
-            "length": "0",
-            "dtd": "dart3.xsd",
-        },
-    )
+    params = {
+        "rcpNo": receipt_no,
+        "dcmNo": dcm_no,
+        "eleId": viewer_params.ele_id if viewer_params else "0",
+        "offset": viewer_params.offset if viewer_params else "0",
+        "length": viewer_params.length if viewer_params else "0",
+        "dtd": viewer_params.dtd if viewer_params else "dart3.xsd",
+    }
+    viewer_response = await client.get("https://dart.fss.or.kr/report/viewer.do", params=params)
     viewer_response.raise_for_status()
     text = _strip_html(viewer_response.text)
     if text.strip():
-        return DartDocumentText(text=text, dcm_no=dcm_no, source="viewer")
+        return DartDocumentText(text=text, dcm_no=dcm_no, source="viewer", viewer_params=viewer_params)
     fallback_text = _strip_html(main_html)
-    return DartDocumentText(text=fallback_text, dcm_no=dcm_no, source="main") if fallback_text.strip() else None
+    if fallback_text.strip():
+        return DartDocumentText(text=fallback_text, dcm_no=dcm_no, source="main", viewer_params=viewer_params)
+    return None
