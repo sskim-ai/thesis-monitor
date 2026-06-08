@@ -5,14 +5,24 @@ os.environ["INCLUDE_MOCK_PROVIDER"] = "true"
 
 from fastapi.testclient import TestClient
 
+from app.api import routes_events
 from app.config import get_settings
+from app.providers.mock import MockProvider
 
 get_settings.cache_clear()
+routes_events.collection_service.providers = [MockProvider()]
+routes_events.collection_service.profile_fallback_provider = MockProvider()
 
 from app.main import app  # noqa: E402
 
 
+def _force_mock_events() -> None:
+    routes_events.collection_service.providers = [MockProvider()]
+    routes_events.collection_service.profile_fallback_provider = MockProvider()
+
+
 def test_mock_provider_returns_events() -> None:
+    _force_mock_events()
     with TestClient(app) as client:
         response = client.get("/thesis-events?ticker=NVDA&lookback_days=30")
 
@@ -30,6 +40,7 @@ def test_mock_provider_returns_events() -> None:
 
 
 def test_requires_review_only_filter() -> None:
+    _force_mock_events()
     with TestClient(app) as client:
         response = client.get(
             "/thesis-events?ticker=NVDA&lookback_days=30&requires_review_only=true"
@@ -42,6 +53,7 @@ def test_requires_review_only_filter() -> None:
 
 
 def test_provider_filter() -> None:
+    _force_mock_events()
     with TestClient(app) as client:
         response = client.get("/thesis-events?ticker=NVDA&lookback_days=30&provider=mock")
 
@@ -52,6 +64,7 @@ def test_provider_filter() -> None:
 
 
 def test_earnings_checkpoints_response_shape() -> None:
+    _force_mock_events()
     with TestClient(app) as client:
         response = client.get("/earnings-checkpoints?ticker=NVDA")
 
@@ -62,6 +75,7 @@ def test_earnings_checkpoints_response_shape() -> None:
 
 
 def test_company_profile_from_mock_provider() -> None:
+    _force_mock_events()
     with TestClient(app) as client:
         response = client.get("/company-profile?ticker=AMD")
 
