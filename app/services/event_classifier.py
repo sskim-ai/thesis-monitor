@@ -1,3 +1,5 @@
+import re
+
 from app.providers.base import RawEvent
 from app.schemas.event import EventType
 
@@ -31,14 +33,14 @@ KEYWORD_EVENT_TYPES: list[tuple[EventType, tuple[str, ...]]] = [
     (EventType.convertible_bond, ("convertible bond", "convertible note", "전환사채", "cb")),
     (EventType.warrant, ("warrant", "신주인수권", "bw")),
     (EventType.stock_compensation_increase, ("stock compensation increase", "stock-based compensation increase")),
+    (EventType.capital_allocation, ("자기주식", "자사주", "배당", "현금ㆍ현물배당")),
     (EventType.partnership_to_revenue, ("partnership revenue", "commercialized partnership")),
-    (EventType.partnership, ("partnership", "collaboration", "업무협약", "mou")),
+    (EventType.partnership, ("partnership", "collaboration", "업무협약")),
     (EventType.customer_loss, ("customer loss", "lost customer", "거래중단")),
     (EventType.customer_concentration_risk, ("특수관계인과의내부거래", "내부거래")),
     (EventType.competitor_price_cut, ("competitor price cut", "price cut")),
     (EventType.competitor_new_product, ("competitor new product", "new product launch")),
     (EventType.management_governance, ("기업지배구조보고서", "임원ㆍ주요주주", "임원･주요주주", "최대주주", "대표이사")),
-    (EventType.capital_allocation, ("자기주식", "자사주", "배당", "현금ㆍ현물배당")),
     (EventType.guidance_change, ("분기보고서", "반기보고서", "사업보고서", "영업(잠정)실적", "잠정실적")),
     (EventType.earnings_surprise, ("earnings surprise", "beat expectations")),
     (EventType.earnings_miss, ("earnings miss", "missed expectations", "missed guidance")),
@@ -61,6 +63,10 @@ NOISE_TERMS = (
     "컨퍼런스",
     "루머",
 )
+
+
+def _has_standalone_mou(text: str) -> bool:
+    return re.search(r"\bmou\b", text) is not None
 
 
 def classify_event(raw_event: RawEvent) -> EventType:
@@ -91,5 +97,8 @@ def classify_event(raw_event: RawEvent) -> EventType:
     for event_type, keywords in KEYWORD_EVENT_TYPES:
         if any(keyword in text for keyword in keywords):
             return event_type
+
+    if _has_standalone_mou(text):
+        return EventType.partnership
 
     return EventType.non_thesis_noise
