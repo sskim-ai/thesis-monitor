@@ -6,17 +6,8 @@ from sqlmodel import Session, SQLModel, create_engine
 from app.config import get_settings
 
 
-def _engine_kwargs(database_url: str) -> dict:
-    if database_url.startswith("sqlite"):
-        kwargs: dict = {"connect_args": {"check_same_thread": False}}
-        if database_url == "sqlite://":
-            kwargs["poolclass"] = StaticPool
-        return kwargs
-    return {}
-
-
 settings = get_settings()
-engine = create_engine(settings.database_url, **_engine_kwargs(settings.database_url))
+engine = create_engine(settings.database_url, **({"connect_args": {"check_same_thread": False}, "poolclass": StaticPool} if settings.database_url == "sqlite://" else {"connect_args": {"check_same_thread": False}} if settings.database_url.startswith("sqlite") else {}))
 
 
 def _ensure_sqlite_columns() -> None:
@@ -36,6 +27,14 @@ def _ensure_sqlite_columns() -> None:
             "fcf": "FLOAT",
             "accounts_receivable": "FLOAT",
             "stock_based_compensation": "FLOAT",
+            "source": "VARCHAR",
+            "provider": "VARCHAR",
+            "fs_div": "VARCHAR",
+            "sj_div": "VARCHAR",
+            "revenue_basis": "VARCHAR",
+            "operating_income_basis": "VARCHAR",
+            "balance_sheet_basis": "VARCHAR",
+            "quality_warnings": "VARCHAR",
         },
     }
     with engine.begin() as connection:
