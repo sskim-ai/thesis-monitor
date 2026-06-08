@@ -13,7 +13,7 @@ from app.providers.base import RawEvent
 from app.providers.mock import MockProvider
 from app.providers.registry import provider_priority
 from app.schemas.company import CompanyProfile
-from app.schemas.event import FinancialImpact, ThesisEvent, ThesisEventResponse
+from app.schemas.event import BackfillStatus, FinancialImpact, ThesisEvent, ThesisEventResponse
 from app.schemas.financial import EarningsCheckpointResponse
 from app.services.event_classifier import classify_event
 from app.services.event_interpreter import enrich_raw_event
@@ -178,20 +178,40 @@ class CollectionService:
         provider: str | None,
         auto_backfill: bool,
         backfill_years: int,
-    ) -> None:
-        if not auto_backfill:
-            return
+    ) -> BackfillStatus:
         backfill_provider = provider or "opendart"
+        before_count = self._snapshot_count(session, ticker, backfill_provider)
+        status = BackfillStatus(
+            requested=auto_backfill,
+            provider=backfill_provider,
+            years=backfill_years,
+            snapshot_count_before=before_count,
+            snapshot_count_after=before_count,
+        )
+        if not auto_backfill:
+            return status
         if backfill_provider != "opendart":
-            return
-        if self._snapshot_count(session, ticker, backfill_provider) >= MIN_COMPARABLE_SNAPSHOTS:
-            return
-        await backfill_financial_snapshots(
+            status.skipped = True
+            status.reason = "unsupported_provider"
+            return status
+        if before_count >= MIN_COMPARABLE_SNAPSHOTS:
+            status.skipped = True
+            status.reason = "sufficient_snapshots"
+            return status
+        result = await backfill_financial_snapshots(
             session=session,
             ticker=ticker,
             years=backfill_years,
             provider=backfill_provider,
         )
+        after_count = self._snapshot_count(session, ticker, backfill_provider)
+        status.executed = True
+        status.reason = "executed"
+        status.snapshot_count_after = after_count
+        status.backfilled_count = result.backfilled_count
+        status.report_count = result.report_count
+        status.warnings = result.warnings
+        return status
 
     async def collect_events(self, session: Session, ticker: str, lookback_days: int) -> list[Event]:
         ticker = ticker.upper()
@@ -241,7 +261,7 @@ class CollectionService:
         backfill_years: int = 5,
     ) -> ThesisEventResponse:
         ticker = ticker.upper()
-        await self._maybe_backfill_financial_snapshots(
+        backfill_status = await self._maybe_backfill_financial_snapshots(
             session=session,
             ticker=ticker,
             provider=provider,
@@ -258,10 +278,12 @@ class CollectionService:
         events = list(session.exec(query.order_by(Event.date.desc(), Event.relevance_score.desc())).all())
         company = session.exec(select(Company).where(Company.ticker == ticker)).first()
         company_name = company.company_name if company else (events[0].company_name if events else None)
+        backfill_status.snapshot_count_after = self._snapshot_count(session, ticker, backfill_status.provider)
         return ThesisEventResponse(
             ticker=ticker,
             company_name=company_name,
             lookback_days=lookback_days,
+            backfill_status=backfill_status,
             events=[_event_to_schema(event) for event in events],
         )
 
