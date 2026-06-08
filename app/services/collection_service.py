@@ -90,6 +90,16 @@ def _raw_event_to_model(raw_event: RawEvent) -> Event:
     )
 
 
+def _backfill_duplicate_provider(duplicate: Event, event: Event) -> None:
+    if duplicate.provider in {"unknown", "legacy", ""} and event.provider:
+        duplicate.provider = event.provider
+    if not duplicate.relevance_reason and event.relevance_reason:
+        duplicate.relevance_reason = event.relevance_reason
+    if duplicate.relevance_score == 0 and event.relevance_score:
+        duplicate.relevance_score = event.relevance_score
+        duplicate.requires_review = event.requires_review
+
+
 class CollectionService:
     def __init__(self) -> None:
         settings = get_settings()
@@ -125,6 +135,8 @@ class CollectionService:
                 if duplicate is None:
                     session.add(event)
                     collected.append(event)
+                else:
+                    _backfill_duplicate_provider(duplicate, event)
         session.commit()
         return collected
 
