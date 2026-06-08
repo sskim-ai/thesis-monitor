@@ -1,0 +1,155 @@
+import json
+from datetime import date, timedelta
+
+from sqlmodel import Session, select
+
+from app.models.company import Company
+from app.models.event import Event
+from app.models.financial import FinancialSnapshot
+from app.providers.base import RawEvent
+from app.providers.mock import MockEarningsProvider, MockFilingProvider, MockIRProvider, MockNewsProvider
+from app.schemas.company import CompanyProfile
+from app.schemas.event import FinancialImpact, ThesisEvent, ThesisEventResponse
+from app.schemas.financial import EarningsCheckpoint
+from app.services.event_classifier import classify_event
+from app.services.thesis_scoring import score_event
+
+
+def _list_from_text(value: str | None) -> list[str]:
+    if not value:
+        return []
+    return [part.strip() for part in value.split(",") if part.strip()]
+
+
+def _event_to_schema(event: Event) -> ThesisEvent:
+    return ThesisEvent(
+        date=event.date,
+        source=event.source,
+        title=event.title,
+        url=event.url,
+        event_type=event.event_type,
+        confirmed_facts=json.loads(event.confirmed_facts),
+        inferred_implications=json.loads(event.inferred_implications),
+        unknowns=json.loads(event.unknowns),
+        financial_impact=FinancialImpact(
+            revenue_guidance_changed=event.revenue_guidance_changed,
+            margin_guidance_changed=event.margin_guidance_changed,
+            fcf_impact_known=event.fcf_impact_known,
+            dilution_risk=event.dilution_risk,
+        ),
+        thesis_relevance={
+            "requires_review": event.requires_review,
+            "relevance_score": event.relevance_score,
+            "reason": event.relevance_reason,
+        },
+    )
+
+
+def _raw_event_to_model(raw_event: RawEvent) -> Event:
+    event_type = classify_event(raw_event)
+    relevance = score_event(raw_event, event_type)
+    lower_text = f"{raw_event.title} {raw_event.summary}".lower()
+    return Event(
+        ticker=raw_event.ticker.upper(),
+        company_name=raw_event.company_name,
+        date=raw_event.date,
+        source=raw_event.source,
+        title=raw_event.title,
+        url=raw_event.url,
+        summary=raw_event.summary,
+        event_type=event_type.value,
+        keywords=json.dumps(raw_event.keywords),
+        confirmed_facts=json.dumps(raw_event.confirmed_facts),
+        inferred_implications=json.dumps(raw_event.inferred_implications),
+        unknowns=json.dumps(raw_event.unknowns),
+        revenue_guidance_changed="guidance" in lower_text,
+        margin_guidance_changed="margin" in lower_text,
+        fcf_impact_known="fcf" in lower_text or "free cash flow" in lower_text,
+        dilution_risk=event_type.value in {"capital_raise", "convertible_bond", "warrant"},
+        requires_review=relevance.requires_review,
+        relevance_score=relevance.relevance_score,
+        relevance_reason=relevance.reason,
+    )
+
+
+class CollectionService:
+    def __init__(self) -> None:
+        self.providers = [
+            MockNewsProvider(),
+            MockFilingProvider(),
+            MockEarningsProvider(),
+            MockIRProvider(),
+        ]
+
+    async def collect_events(self, session: Session, ticker: str, lookback_days: int) -> list[Event]:
+        ticker = ticker.upper()
+        collected: list[Event] = []
+        for provider in self.providers:
+            for raw_event in await provider.fetch_events(ticker, lookback_days):
+                event = _raw_event_to_model(raw_event)
+                duplicate = session.exec(
+                    select(Event).where(Event.ticker == ticker, Event.url == event.url)
+                ).first()
+                if duplicate is None:
+                    session.add(event)
+                    collected.append(event)
+        session.commit()
+        return collected
+
+    async def get_thesis_events(
+        self, session: Session, ticker: str, lookback_days: int
+    ) -> ThesisEventResponse:
+        ticker = ticker.upper()
+        await self.collect_events(session, ticker, lookback_days)
+        cutoff = date.today() - timedelta(days=lookback_days)
+        events = list(
+            session.exec(
+                select(Event)
+                .where(Event.ticker == ticker, Event.date >= cutoff)
+                .order_by(Event.date.desc(), Event.relevance_score.desc())
+            ).all()
+        )
+        company = session.exec(select(Company).where(Company.ticker == ticker)).first()
+        company_name = company.company_name if company else (events[0].company_name if events else None)
+        return ThesisEventResponse(
+            ticker=ticker,
+            company_name=company_name,
+            lookback_days=lookback_days,
+            events=[_event_to_schema(event) for event in events],
+        )
+
+    def get_company_profile(self, session: Session, ticker: str) -> CompanyProfile:
+        ticker = ticker.upper()
+        company = session.exec(select(Company).where(Company.ticker == ticker)).first()
+        if company is None:
+            return CompanyProfile(
+                ticker=ticker,
+                company_name=ticker,
+                exchange=None,
+                ir_url=None,
+                filings_url=None,
+            )
+        return CompanyProfile(
+            ticker=company.ticker,
+            company_name=company.company_name,
+            exchange=company.exchange,
+            industry=company.industry,
+            sector=company.sector,
+            business_units=_list_from_text(company.business_units),
+            major_revenue_sources=_list_from_text(company.revenue_sources),
+            major_customers=_list_from_text(company.major_customers),
+            ir_url=company.ir_url,
+            filings_url=company.filings_url,
+        )
+
+    def get_earnings_checkpoints(
+        self, session: Session, ticker: str
+    ) -> list[EarningsCheckpoint]:
+        ticker = ticker.upper()
+        snapshots = session.exec(
+            select(FinancialSnapshot)
+            .where(FinancialSnapshot.ticker == ticker)
+            .order_by(FinancialSnapshot.reported_date.desc())
+        ).all()
+        return [EarningsCheckpoint.model_validate(snapshot, from_attributes=True) for snapshot in snapshots]
+
