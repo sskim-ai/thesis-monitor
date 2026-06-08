@@ -93,7 +93,10 @@ def _raw_event_to_model(raw_event: RawEvent) -> Event:
 class CollectionService:
     def __init__(self) -> None:
         settings = get_settings()
-        self.providers = provider_priority(include_live_news=settings.enable_live_providers)
+        self.providers = provider_priority(
+            include_live_news=settings.enable_live_providers,
+            include_mock_provider=settings.include_mock_provider,
+        )
 
     async def collect_events(self, session: Session, ticker: str, lookback_days: int) -> list[Event]:
         ticker = ticker.upper()
@@ -126,18 +129,22 @@ class CollectionService:
         return collected
 
     async def get_thesis_events(
-        self, session: Session, ticker: str, lookback_days: int
+        self,
+        session: Session,
+        ticker: str,
+        lookback_days: int,
+        requires_review_only: bool = False,
+        provider: str | None = None,
     ) -> ThesisEventResponse:
         ticker = ticker.upper()
         await self.collect_events(session, ticker, lookback_days)
         cutoff = date.today() - timedelta(days=lookback_days)
-        events = list(
-            session.exec(
-                select(Event)
-                .where(Event.ticker == ticker, Event.date >= cutoff)
-                .order_by(Event.date.desc(), Event.relevance_score.desc())
-            ).all()
-        )
+        query = select(Event).where(Event.ticker == ticker, Event.date >= cutoff)
+        if requires_review_only:
+            query = query.where(Event.requires_review.is_(True))
+        if provider:
+            query = query.where(Event.provider == provider)
+        events = list(session.exec(query.order_by(Event.date.desc(), Event.relevance_score.desc())).all())
         company = session.exec(select(Company).where(Company.ticker == ticker)).first()
         company_name = company.company_name if company else (events[0].company_name if events else None)
         return ThesisEventResponse(
