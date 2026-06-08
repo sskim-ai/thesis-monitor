@@ -39,6 +39,10 @@ def _clean_cell(value: str) -> str:
     return re.sub(r"\s+", " ", value).strip(" |\n\t")
 
 
+def _compact(value: str) -> str:
+    return re.sub(r"\s+", "", _clean_cell(value))
+
+
 def _parse_js_args(args: str) -> list[str]:
     return [part.strip().strip("'\"") for part in re.split(r"\s*,\s*", args) if part.strip()]
 
@@ -77,7 +81,7 @@ def _extract_dcm_no(html: str, receipt_no: str) -> str | None:
 
 def _is_placeholder_value(value: str) -> bool:
     cleaned = _clean_cell(value)
-    compact = re.sub(r"\s+", "", cleaned)
+    compact = _compact(cleaned)
     if not cleaned:
         return True
     placeholders = {
@@ -97,8 +101,7 @@ def _is_placeholder_value(value: str) -> bool:
         "최근매출액대비",
         "최근매출액대비(%)",
     }
-    placeholder_compacts = {item.replace(" ", "") for item in placeholders}
-    if compact in placeholder_compacts:
+    if compact in {item.replace(" ", "") for item in placeholders}:
         return True
     non_fact_fragments = (
         "진행과정에서변경될수있습니다",
@@ -110,7 +113,51 @@ def _is_placeholder_value(value: str) -> bool:
     return any(fragment in compact for fragment in non_fact_fragments)
 
 
-def _row_value(text: str, labels: tuple[str, ...]) -> str | None:
+def _looks_like_amount(value: str) -> bool:
+    if _is_placeholder_value(value):
+        return False
+    compact = _compact(value)
+    has_currency_marker = any(marker in compact for marker in ("원", "krw", "USD", "달러", "$"))
+    has_large_number = re.search(r"\d{1,3}(,\d{3})+|\d{7,}", compact) is not None
+    return has_currency_marker and has_large_number
+
+
+def _looks_like_ratio(value: str) -> bool:
+    if _is_placeholder_value(value):
+        return False
+    compact = _compact(value)
+    return "%" in compact and re.search(r"\d", compact) is not None
+
+
+def _looks_like_date_or_period(value: str) -> bool:
+    if _is_placeholder_value(value):
+        return False
+    compact = _compact(value)
+    has_date = re.search(r"20\d{2}[.\-/년]\d{1,2}", compact) is not None
+    has_range = any(marker in compact for marker in ("부터", "까지", "~", "-"))
+    return has_date and has_range
+
+
+def _looks_like_text_fact(value: str) -> bool:
+    if _is_placeholder_value(value):
+        return False
+    compact = _compact(value)
+    if len(compact) < 2:
+        return False
+    return not any(fragment in compact for fragment in ("계약금액", "매출액대비", "계약기간"))
+
+
+def _candidate_is_valid(field_key: str, value: str) -> bool:
+    if field_key == "amount":
+        return _looks_like_amount(value)
+    if field_key == "recent_sales_ratio":
+        return _looks_like_ratio(value)
+    if field_key in {"period", "start_date", "end_date"}:
+        return _looks_like_date_or_period(value) if field_key == "period" else re.search(r"20\d{2}[.\-/년]\d{1,2}", _compact(value)) is not None
+    return _looks_like_text_fact(value)
+
+
+def _row_value(text: str, labels: tuple[str, ...], field_key: str) -> str | None:
     lines = [_clean_cell(line) for line in text.splitlines() if _clean_cell(line)]
     for line in lines:
         compact = line.replace(" ", "")
@@ -127,7 +174,7 @@ def _row_value(text: str, labels: tuple[str, ...]) -> str | None:
                     if _clean_cell(tail):
                         candidates.append(_clean_cell(tail))
             for candidate in candidates:
-                if not _is_placeholder_value(candidate):
+                if _candidate_is_valid(field_key, candidate):
                     return candidate
     return None
 
@@ -145,7 +192,7 @@ def extract_supply_contract_facts_from_text(text: str) -> list[str]:
     ]
     facts: list[str] = []
     for key, labels in fields:
-        value = _row_value(text, labels)
+        value = _row_value(text, labels, key)
         if value:
             facts.append(f"DART text supply contract fact: {key} = {value}")
     return facts
