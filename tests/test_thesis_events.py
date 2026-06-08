@@ -20,6 +20,28 @@ def test_mock_provider_returns_events() -> None:
         assert "receivables_risk" in data["events"][0]["financial_impact"]
 
 
+def test_requires_review_only_filter() -> None:
+    with TestClient(app) as client:
+        response = client.get(
+            "/thesis-events?ticker=NVDA&lookback_days=30&requires_review_only=true"
+        )
+
+        assert response.status_code == 200
+        data = response.json()
+        assert data["events"]
+        assert all(event["thesis_relevance"]["requires_review"] for event in data["events"])
+
+
+def test_provider_filter() -> None:
+    with TestClient(app) as client:
+        response = client.get("/thesis-events?ticker=NVDA&lookback_days=30&provider=mock")
+
+        assert response.status_code == 200
+        data = response.json()
+        assert data["events"]
+        assert all(event["provider"] == "mock" for event in data["events"])
+
+
 def test_earnings_checkpoints_response_shape() -> None:
     with TestClient(app) as client:
         response = client.get("/earnings-checkpoints?ticker=NVDA")
