@@ -10,6 +10,7 @@ from app.models.company import Company
 from app.models.event import Event
 from app.models.financial import FinancialSnapshot
 from app.providers.base import RawEvent
+from app.providers.mock import MockProvider
 from app.providers.registry import provider_priority
 from app.schemas.company import CompanyProfile
 from app.schemas.event import FinancialImpact, ThesisEvent, ThesisEventResponse
@@ -107,6 +108,7 @@ class CollectionService:
             include_live_news=settings.enable_live_providers,
             include_mock_provider=settings.include_mock_provider,
         )
+        self.profile_fallback_provider = MockProvider()
 
     async def collect_events(self, session: Session, ticker: str, lookback_days: int) -> list[Event]:
         ticker = ticker.upper()
@@ -193,6 +195,9 @@ class CollectionService:
                 continue
             if profile is not None:
                 return profile
+        fallback_profile = await self.profile_fallback_provider.fetch_company_profile(ticker)
+        if fallback_profile is not None:
+            return fallback_profile
         return CompanyProfile(ticker=ticker, company_name=ticker)
 
     async def get_earnings_checkpoints(
@@ -207,6 +212,9 @@ class CollectionService:
                 continue
             if response is not None:
                 return response
+        fallback_response = await self.profile_fallback_provider.fetch_earnings(ticker)
+        if fallback_response is not None:
+            return fallback_response
         snapshots = session.exec(
             select(FinancialSnapshot)
             .where(FinancialSnapshot.ticker == ticker)
