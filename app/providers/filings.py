@@ -425,7 +425,7 @@ class SecEdgarProvider(FilingProvider):
             if published < cutoff:
                 continue
             accession_path = accession.replace("-", "")
-            url = f"https://www.sec.gov" + f"/Archives/edgar/data/{int(cik)}/{accession_path}/{primary_doc}"
+            url = "https://www.sec.gov" + f"/Archives/edgar/data/{int(cik)}/{accession_path}/{primary_doc}"
             events.append(
                 RawEvent(
                     ticker=ticker.upper(),
