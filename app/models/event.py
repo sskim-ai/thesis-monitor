@@ -9,6 +9,7 @@ class Event(SQLModel, table=True):
     company_name: str | None = None
     date: date
     source: str
+    provider: str = "unknown"
     title: str
     url: str
     raw_summary: str | None = None

@@ -6,6 +6,7 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 class Settings(BaseSettings):
     app_env: str = "local"
     database_url: str = "sqlite:///./thesis_monitor.sqlite3"
+    enable_live_providers: bool = False
     opendart_api_key: str | None = None
     newsapi_api_key: str | None = None
     finnhub_api_key: str | None = None

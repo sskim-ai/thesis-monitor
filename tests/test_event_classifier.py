@@ -11,6 +11,7 @@ def test_production_order_classification_and_review_score() -> None:
         company_name="NVIDIA",
         date=date(2026, 6, 8),
         source="Company IR",
+        provider="test",
         title="Production order with named customer",
         url="https://example.com",
         summary="Customer name was disclosed and production order starts in Q3.",
@@ -31,6 +32,7 @@ def test_noise_classification_low_score() -> None:
         company_name="NVIDIA",
         date=date(2026, 6, 8),
         source="Financial Media",
+        provider="test",
         title="Analyst raises price target after conference",
         url="https://example.com",
         summary="No new operating data was reported.",
@@ -43,4 +45,3 @@ def test_noise_classification_low_score() -> None:
     assert event_type == "non_thesis_noise"
     assert relevance.relevance_score == 0
     assert relevance.requires_review is False
-

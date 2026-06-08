@@ -2,6 +2,7 @@ from app.providers.base import BaseProvider
 from app.providers.filings import OpenDARTProvider, SecEdgarProvider
 from app.providers.ir import CompanyIRProvider
 from app.providers.mock import MockProvider
+from app.providers.naver_news import NaverNewsProvider
 from app.providers.news import GoogleNewsRSSProvider, NewsAPIProvider
 from app.providers.prices import AlphaVantageProvider
 
@@ -13,6 +14,7 @@ def provider_priority(include_live_news: bool = False) -> list[BaseProvider]:
         providers.extend(
             [
                 GoogleNewsRSSProvider(),
+                NaverNewsProvider(),
                 NewsAPIProvider(),
                 OpenDARTProvider(),
                 SecEdgarProvider(),

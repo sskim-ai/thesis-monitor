@@ -4,20 +4,20 @@ from app.schemas.event import EventType
 
 KEYWORD_EVENT_TYPES: list[tuple[EventType, tuple[str, ...]]] = [
     (EventType.production_order, ("production order", "production schedule")),
-    (EventType.large_order, ("large order", "major order", "large purchase")),
+    (EventType.large_order, ("large order", "major order", "large purchase", "supply contract", "공급계약", "단일판매")),
     (EventType.new_customer, ("new customer", "customer name was disclosed", "named customer")),
     (EventType.mass_production_change, ("mass production change", "production schedule change")),
-    (EventType.revenue_guidance_up, ("guidance raised", "raises revenue guidance", "guidance up")),
-    (EventType.revenue_guidance_down, ("guidance lowered", "cuts revenue guidance", "guidance down")),
+    (EventType.revenue_guidance_up, ("guidance raised", "raises revenue guidance", "guidance up", "guidance increase")),
+    (EventType.revenue_guidance_down, ("guidance lowered", "cuts revenue guidance", "guidance down", "guidance decrease")),
     (EventType.margin_improvement, ("margin improvement", "margin expansion")),
     (EventType.margin_deterioration, ("margin deterioration", "margin compression")),
     (EventType.fcf_deterioration, ("free cash flow deterioration", "fcf deterioration")),
     (EventType.inventory_increase, ("inventory increase", "inventory build")),
     (EventType.inventory_normalization, ("inventory normalization", "inventory normalisation")),
     (EventType.receivables_increase, ("receivables increase", "days sales outstanding")),
-    (EventType.capital_raise, ("capital raise", "equity offering", "secondary offering")),
-    (EventType.convertible_bond, ("convertible bond", "convertible note")),
-    (EventType.warrant, ("warrant",)),
+    (EventType.capital_raise, ("capital raise", "equity offering", "secondary offering", "유상증자")),
+    (EventType.convertible_bond, ("convertible bond", "convertible note", "전환사채", "cb")),
+    (EventType.warrant, ("warrant", "신주인수권", "bw")),
     (EventType.stock_compensation_increase, ("stock compensation increase", "stock-based compensation increase")),
     (EventType.partnership_to_revenue, ("partnership revenue", "commercialized partnership")),
     (EventType.partnership, ("partnership", "collaboration")),
@@ -30,13 +30,15 @@ KEYWORD_EVENT_TYPES: list[tuple[EventType, tuple[str, ...]]] = [
     (EventType.accounting_issue, ("accounting issue", "restatement")),
     (EventType.debt_liquidity_risk, ("liquidity risk", "debt covenant")),
     (EventType.earnings_surprise, ("earnings surprise", "beat expectations")),
-    (EventType.earnings_miss, ("earnings miss", "missed expectations")),
+    (EventType.earnings_miss, ("earnings miss", "missed expectations", "missed guidance")),
 ]
 
 NOISE_TERMS = (
     "conference",
     "price target",
     "target price",
+    "ai beneficiary",
+    "ai tailwind",
     "social media rumor",
     "rumor",
 )

@@ -21,6 +21,7 @@ EVENT_TYPE_SCORES: dict[EventType, int] = {
     EventType.partnership: 5,
     EventType.customer_loss: 30,
     EventType.competitor_price_cut: 20,
+    EventType.earnings_miss: 25,
     EventType.regulatory_risk: 25,
     EventType.export_control: 25,
     EventType.antitrust: 25,
@@ -48,9 +49,9 @@ def score_event(raw_event: RawEvent, event_type: EventType) -> ThesisRelevance:
     if "new customer" in text and event_type != EventType.new_customer:
         score += 20
         reasons.append("new customer was disclosed")
-    if "large order" in text or "major order" in text:
+    if "large order" in text or "major order" in text or "supply contract" in text or "공급계약" in text:
         score += 25
-        reasons.append("large order language appears in source")
+        reasons.append("large order or supply contract language appears in source")
     if "production order" in text:
         if event_type != EventType.production_order:
             score += 25
@@ -59,7 +60,13 @@ def score_event(raw_event: RawEvent, event_type: EventType) -> ThesisRelevance:
         if event_type != EventType.mass_production_change:
             score += 25
         reasons.append("mass production timing changed")
-    if "guidance" in text and ("raised" in text or "lowered" in text or "cut" in text):
+    if "guidance" in text and (
+        "raised" in text
+        or "lowered" in text
+        or "cut" in text
+        or "increase" in text
+        or "decrease" in text
+    ):
         if event_type not in {EventType.revenue_guidance_up, EventType.revenue_guidance_down}:
             score += 30
         reasons.append("guidance change may require model update")
@@ -77,6 +84,8 @@ def score_event(raw_event: RawEvent, event_type: EventType) -> ThesisRelevance:
         reasons.append("stock-based compensation expansion may affect dilution")
     if event_type == EventType.customer_loss:
         reasons.append("customer loss may impair demand or concentration thesis")
+    if event_type == EventType.earnings_miss:
+        reasons.append("earnings miss may require thesis review")
     if event_type == EventType.competitor_price_cut:
         reasons.append("competitor price cut may pressure share or margin")
     if event_type in {EventType.regulatory_risk, EventType.export_control, EventType.accounting_issue}:

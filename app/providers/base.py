@@ -19,6 +19,7 @@ class RawEvent:
     title: str
     url: str
     summary: str
+    provider: str
     keywords: list[str] = field(default_factory=list)
     confirmed_facts: list[str] = field(default_factory=list)
     inferred_implications: list[str] = field(default_factory=list)

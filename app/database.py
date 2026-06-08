@@ -27,6 +27,7 @@ def _ensure_sqlite_columns() -> None:
         "watchlistitem": {"active": "BOOLEAN DEFAULT 1"},
         "event": {
             "raw_summary": "VARCHAR",
+            "provider": "VARCHAR DEFAULT 'unknown'",
             "capex_impact_known": "BOOLEAN DEFAULT 0",
             "inventory_risk": "BOOLEAN DEFAULT 0",
             "receivables_risk": "BOOLEAN DEFAULT 0",

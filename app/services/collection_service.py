@@ -1,8 +1,11 @@
 import json
+import logging
+import re
 from datetime import date, timedelta
 
 from sqlmodel import Session, select
 
+from app.config import get_settings
 from app.models.company import Company
 from app.models.event import Event
 from app.models.financial import FinancialSnapshot
@@ -14,6 +17,8 @@ from app.schemas.financial import EarningsCheckpointResponse
 from app.services.event_classifier import classify_event
 from app.services.thesis_scoring import score_event
 
+logger = logging.getLogger(__name__)
+
 
 def _list_from_text(value: str | None) -> list[str]:
     if not value:
@@ -21,10 +26,16 @@ def _list_from_text(value: str | None) -> list[str]:
     return [part.strip() for part in value.split(",") if part.strip()]
 
 
+def _normalize_title(value: str) -> str:
+    normalized = re.sub(r"[^a-z0-9가-힣]+", " ", value.lower())
+    return re.sub(r"\s+", " ", normalized).strip()
+
+
 def _event_to_schema(event: Event) -> ThesisEvent:
     return ThesisEvent(
         date=event.date,
         source=event.source,
+        provider=event.provider if event.provider != "unknown" else "legacy",
         title=event.title,
         url=event.url,
         event_type=event.event_type,
@@ -57,6 +68,7 @@ def _raw_event_to_model(raw_event: RawEvent) -> Event:
         company_name=raw_event.company_name,
         date=raw_event.date,
         source=raw_event.source,
+        provider=raw_event.provider,
         title=raw_event.title,
         url=raw_event.url,
         raw_summary=raw_event.summary,
@@ -80,16 +92,32 @@ def _raw_event_to_model(raw_event: RawEvent) -> Event:
 
 class CollectionService:
     def __init__(self) -> None:
-        self.providers = provider_priority(include_live_news=False)
+        settings = get_settings()
+        self.providers = provider_priority(include_live_news=settings.enable_live_providers)
 
     async def collect_events(self, session: Session, ticker: str, lookback_days: int) -> list[Event]:
         ticker = ticker.upper()
         collected: list[Event] = []
+        seen_urls: set[str] = set()
+        seen_titles: set[str] = set()
         for provider in self.providers:
-            for raw_event in await provider.fetch_events(ticker, lookback_days):
+            try:
+                raw_events = await provider.fetch_events(ticker, lookback_days)
+            except Exception as exc:  # noqa: BLE001
+                logger.warning("Provider %s failed for %s: %s", provider.name, ticker, exc)
+                continue
+            for raw_event in raw_events:
+                title_key = _normalize_title(raw_event.title)
+                if raw_event.url in seen_urls or title_key in seen_titles:
+                    continue
+                seen_urls.add(raw_event.url)
+                seen_titles.add(title_key)
                 event = _raw_event_to_model(raw_event)
                 duplicate = session.exec(
-                    select(Event).where(Event.ticker == ticker, Event.url == event.url)
+                    select(Event).where(
+                        Event.ticker == ticker,
+                        (Event.url == event.url) | (Event.title == event.title),
+                    )
                 ).first()
                 if duplicate is None:
                     session.add(event)
@@ -139,7 +167,11 @@ class CollectionService:
         if company is not None:
             return self._company_model_to_profile(company)
         for provider in self.providers:
-            profile = await provider.fetch_company_profile(ticker)
+            try:
+                profile = await provider.fetch_company_profile(ticker)
+            except Exception as exc:  # noqa: BLE001
+                logger.warning("Provider %s profile lookup failed for %s: %s", provider.name, ticker, exc)
+                continue
             if profile is not None:
                 return profile
         return CompanyProfile(ticker=ticker, company_name=ticker)
@@ -149,7 +181,11 @@ class CollectionService:
     ) -> EarningsCheckpointResponse:
         ticker = ticker.upper()
         for provider in self.providers:
-            response = await provider.fetch_earnings(ticker)
+            try:
+                response = await provider.fetch_earnings(ticker)
+            except Exception as exc:  # noqa: BLE001
+                logger.warning("Provider %s earnings lookup failed for %s: %s", provider.name, ticker, exc)
+                continue
             if response is not None:
                 return response
         snapshots = session.exec(

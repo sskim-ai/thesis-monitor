@@ -6,19 +6,23 @@ The default API flow uses mock providers so local tests and Custom GPT Action in
 
 - `MockProvider`: mock profile, event, and earnings checkpoint data for `NVDA`, `AMD`, and `000660.KS`.
 - `GoogleNewsRSSProvider`: live, keyless RSS search provider. It maps headlines to conservative `RawEvent` objects.
+- `NaverNewsProvider`: live Naver Search News API provider using `NAVER_CLIENT_ID` and `NAVER_CLIENT_SECRET`.
 - `NewsAPIProvider`: skeleton, returns empty results unless `NEWSAPI_API_KEY` is configured; API mapping is TODO.
-- `OpenDARTProvider`: skeleton, returns empty results unless `OPENDART_API_KEY` is configured; Korean ticker to DART `corp_code` mapping is TODO.
-- `SecEdgarProvider`: skeleton, returns empty results unless `SEC_USER_AGENT` is configured; ticker to CIK mapping is TODO.
+- `OpenDARTProvider`: partial live provider. It calls OpenDART `list.json` for seed `corp_code` mappings; full Korean ticker to DART `corp_code` mapping is TODO.
+- `SecEdgarProvider`: partial live provider. It calls SEC submissions JSON for seed ticker-to-CIK mappings; full ticker to CIK lookup is TODO.
 - `AlphaVantageProvider`: skeleton, returns empty results unless `ALPHA_VANTAGE_API_KEY` is configured.
 - `CompanyIRProvider`: skeleton for future company IR crawling.
 
 ## Priority Order
 
-1. Google News RSS or NewsAPI for broad event discovery.
-2. OpenDART for Korean filings.
-3. SEC EDGAR for US filings.
-4. yfinance or Alpha Vantage for price and financial statement signals.
-5. Company IR crawler for official earnings releases, presentations, and guidance.
+1. MockProvider for stable baseline data.
+2. Google News RSS for broad keyless event discovery.
+3. Naver News for Korean-language news discovery.
+4. NewsAPI for broader paid/free-tier news search.
+5. OpenDART for Korean filings.
+6. SEC EDGAR for US filings.
+7. yfinance or Alpha Vantage for price and financial statement signals.
+8. Company IR crawler for official earnings releases, presentations, and guidance.
 
 ## Future Provider Candidates
 
@@ -41,3 +45,5 @@ Provider implementations should normalize source records into `RawEvent` objects
 API keys should be defined in `.env.example` and read from `.env` at runtime. Real keys must not be committed.
 
 Do not place unverified customer names, order sizes, revenue impact, or margin impact in `confirmed_facts`. If a source only hints at those items, put them in `unknowns` or `inferred_implications`.
+
+Provider failures should be isolated. Timeout, quota, authentication, or parsing failures should log warnings and return no events from that provider while the remaining providers continue.

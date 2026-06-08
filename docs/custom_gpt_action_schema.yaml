@@ -192,6 +192,8 @@ components:
           format: date
         source:
           type: string
+        provider:
+          type: string
         title:
           type: string
         url:
@@ -256,6 +258,7 @@ components:
       required:
         - date
         - source
+        - provider
         - title
         - url
         - event_type

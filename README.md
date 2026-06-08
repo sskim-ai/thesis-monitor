@@ -36,6 +36,7 @@ The default database is SQLite:
 
 ```text
 DATABASE_URL=sqlite:///./thesis_monitor.sqlite3
+ENABLE_LIVE_PROVIDERS=false
 ```
 
 Future providers can use API keys from `.env`, but real keys must never be committed.
@@ -43,6 +44,7 @@ Future providers can use API keys from `.env`, but real keys must never be commi
 Example provider configuration:
 
 ```text
+ENABLE_LIVE_PROVIDERS=true
 OPENDART_API_KEY=
 NEWSAPI_API_KEY=
 FINNHUB_API_KEY=
@@ -53,6 +55,8 @@ OPENAI_API_KEY=
 SEC_USER_AGENT=
 ACTION_API_KEY=
 ```
+
+Set `ENABLE_LIVE_PROVIDERS=false` to use only `MockProvider`. Set it to `true` to run `MockProvider` plus live providers in priority order. Provider failures are logged as warnings and do not fail the whole `/thesis-events` request.
 
 ## Run Locally
 
@@ -127,6 +131,7 @@ Response shape:
     {
       "date": "2026-06-08",
       "source": "Company IR",
+      "provider": "mock",
       "title": "Example production order with named hyperscale customer",
       "url": "https://example.com/production-order",
       "event_type": "production_order",
@@ -235,20 +240,28 @@ Current provider status:
 | Provider | Status | Notes |
 | --- | --- | --- |
 | `MockProvider` | mock | Default provider used by API routes for stable local behavior. |
-| `GoogleNewsRSSProvider` | live, optional | API-key-free RSS provider. It returns conservative `RawEvent` objects and empty results on network failure. |
+| `GoogleNewsRSSProvider` | live | API-key-free RSS provider. It cleans RSS text, deduplicates provider results, and returns empty results on network failure. |
+| `NaverNewsProvider` | live | Uses Naver Search News API with `NAVER_CLIENT_ID` and `NAVER_CLIENT_SECRET`. |
 | `NewsAPIProvider` | skeleton | Requires `NEWSAPI_API_KEY`; mapping is TODO. |
-| `OpenDARTProvider` | skeleton | Requires `OPENDART_API_KEY`; Korean ticker to DART `corp_code` mapping is TODO. |
-| `SecEdgarProvider` | skeleton | Requires `SEC_USER_AGENT`; ticker to CIK mapping is TODO. |
+| `OpenDARTProvider` | partial live | Calls OpenDART `list.json` when `OPENDART_API_KEY` and a seed `corp_code` mapping are available. Full ticker mapping is TODO. |
+| `SecEdgarProvider` | partial live | Calls SEC submissions JSON for seed ticker-to-CIK mappings. Full ticker mapping is TODO. |
 | `AlphaVantageProvider` | skeleton | Requires `ALPHA_VANTAGE_API_KEY`; financial/price mapping is TODO. |
 | `CompanyIRProvider` | skeleton | Per-company IR crawler discovery is TODO. |
 
-Planned provider priority:
+Provider priority when `ENABLE_LIVE_PROVIDERS=true`:
 
-1. Google News RSS or NewsAPI
-2. OpenDART
-3. SEC EDGAR
-4. yfinance or Alpha Vantage
-5. Company IR crawler
+1. MockProvider
+2. GoogleNewsRSSProvider
+3. NaverNewsProvider
+4. NewsAPIProvider
+5. OpenDARTProvider
+6. SecEdgarProvider
+7. AlphaVantageProvider
+8. CompanyIRProvider
+
+Naver API keys can be issued from Naver Developers after creating an application with Search API access. OpenDART keys can be issued from the OpenDART API site. SEC EDGAR does not require an API key, but `SEC_USER_AGENT` must identify the app/user, for example `your-name your@email.com`.
+
+Live provider normalization is intentionally conservative. Headlines and filing titles become `confirmed_facts`; unverified customer names, order size, revenue impact, margin impact, and FCF impact remain in `unknowns` or `inferred_implications`.
 
 ## Security Notes
 

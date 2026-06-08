@@ -72,6 +72,7 @@ class SourceDocument(BaseModel):
 class ThesisEvent(BaseModel):
     date: date
     source: str
+    provider: str
     title: str
     url: str
     event_type: EventType

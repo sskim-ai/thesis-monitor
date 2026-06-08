@@ -11,6 +11,7 @@ def test_mock_provider_returns_events() -> None:
         data = response.json()
         assert data["ticker"] == "NVDA"
         assert data["events"]
+        assert data["events"][0]["provider"]
         assert data["events"][0]["confirmed_facts"]
         assert "inferred_implications" in data["events"][0]
         assert "unknowns" in data["events"][0]
