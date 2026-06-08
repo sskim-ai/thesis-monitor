@@ -6,6 +6,10 @@ from app.schemas.company import CompanyProfile
 from app.schemas.financial import EarningsCheckpointResponse
 
 
+class ProviderNotConfigured(RuntimeError):
+    """Raised when an external provider is called without required configuration."""
+
+
 @dataclass
 class RawEvent:
     ticker: str

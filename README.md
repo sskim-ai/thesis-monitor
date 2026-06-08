@@ -40,6 +40,20 @@ DATABASE_URL=sqlite:///./thesis_monitor.sqlite3
 
 Future providers can use API keys from `.env`, but real keys must never be committed.
 
+Example provider configuration:
+
+```text
+OPENDART_API_KEY=
+NEWSAPI_API_KEY=
+FINNHUB_API_KEY=
+ALPHA_VANTAGE_API_KEY=
+NAVER_CLIENT_ID=
+NAVER_CLIENT_SECRET=
+OPENAI_API_KEY=
+SEC_USER_AGENT=
+ACTION_API_KEY=
+```
+
 ## Run Locally
 
 ```bash
@@ -186,6 +200,10 @@ Use `docs/custom_gpt_action_schema.yaml` as the schema to paste into a Custom GP
 
 The live FastAPI app also exposes `/openapi.json`, which Custom GPT Actions can consume when the service is deployed.
 
+Local Custom GPT Action testing requires an HTTPS URL. Use a tunnel such as ngrok or Cloudflare Tunnel in front of `uvicorn`, then update the schema server URL.
+
+For production deployment, add a simple request authentication layer such as `ACTION_API_KEY` before exposing the API publicly.
+
 ## Provider Extension
 
 Provider interfaces live in `app/providers/base.py`.
@@ -198,23 +216,45 @@ Initial implementation includes `MockProvider`, which returns sample profile, th
 
 Future provider modules should implement:
 
-- SEC EDGAR filings
-- DART and OpenDART filings
-- Company IR pages
-- Yahoo Finance or yfinance
-- Alpha Vantage
-- Finnhub
-- NewsAPI
 - Google News RSS
+- NewsAPI
+- OpenDART
+- SEC EDGAR filings
+- Alpha Vantage
+- Yahoo Finance or yfinance
+- Company IR pages
+- Finnhub
 - Naver News
 - Korea Exchange and KIND
 - Competitor event feeds
 
 Provider output should return raw facts only. Classification and thesis relevance scoring happen in `app/services/event_classifier.py` and `app/services/thesis_scoring.py`.
 
+Current provider status:
+
+| Provider | Status | Notes |
+| --- | --- | --- |
+| `MockProvider` | mock | Default provider used by API routes for stable local behavior. |
+| `GoogleNewsRSSProvider` | live, optional | API-key-free RSS provider. It returns conservative `RawEvent` objects and empty results on network failure. |
+| `NewsAPIProvider` | skeleton | Requires `NEWSAPI_API_KEY`; mapping is TODO. |
+| `OpenDARTProvider` | skeleton | Requires `OPENDART_API_KEY`; Korean ticker to DART `corp_code` mapping is TODO. |
+| `SecEdgarProvider` | skeleton | Requires `SEC_USER_AGENT`; ticker to CIK mapping is TODO. |
+| `AlphaVantageProvider` | skeleton | Requires `ALPHA_VANTAGE_API_KEY`; financial/price mapping is TODO. |
+| `CompanyIRProvider` | skeleton | Per-company IR crawler discovery is TODO. |
+
+Planned provider priority:
+
+1. Google News RSS or NewsAPI
+2. OpenDART
+3. SEC EDGAR
+4. yfinance or Alpha Vantage
+5. Company IR crawler
+
 ## Security Notes
 
 - Keep API keys in `.env` only.
 - Commit `.env.example`, never `.env`.
 - Do not store brokerage account data, trading API keys, account numbers, or personally sensitive financial data.
+- Do not store securities account credentials or order execution keys.
+- Do not add order execution features to this service.
 - This project is for research monitoring and does not execute trades.

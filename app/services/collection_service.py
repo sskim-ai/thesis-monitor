@@ -7,7 +7,7 @@ from app.models.company import Company
 from app.models.event import Event
 from app.models.financial import FinancialSnapshot
 from app.providers.base import RawEvent
-from app.providers.mock import MockProvider
+from app.providers.registry import provider_priority
 from app.schemas.company import CompanyProfile
 from app.schemas.event import FinancialImpact, ThesisEvent, ThesisEventResponse
 from app.schemas.financial import EarningsCheckpointResponse
@@ -80,7 +80,7 @@ def _raw_event_to_model(raw_event: RawEvent) -> Event:
 
 class CollectionService:
     def __init__(self) -> None:
-        self.providers = [MockProvider()]
+        self.providers = provider_priority(include_live_news=False)
 
     async def collect_events(self, session: Session, ticker: str, lookback_days: int) -> list[Event]:
         ticker = ticker.upper()

@@ -1,13 +1,24 @@
 # Data Sources
 
-The current implementation uses mock providers. These are placeholders that allow API and Custom GPT Action integration to be tested before external services are connected.
+The default API flow uses mock providers so local tests and Custom GPT Action integration remain deterministic. External providers are added as optional classes and should be enabled deliberately after credentials, rate limits, and source terms are reviewed.
 
 ## Current Providers
 
-- `MockNewsProvider`: returns a sample production order event and a low-relevance analyst price target event.
-- `MockFilingProvider`: scaffold only.
-- `MockEarningsProvider`: scaffold only.
-- `MockIRProvider`: scaffold only.
+- `MockProvider`: mock profile, event, and earnings checkpoint data for `NVDA`, `AMD`, and `000660.KS`.
+- `GoogleNewsRSSProvider`: live, keyless RSS search provider. It maps headlines to conservative `RawEvent` objects.
+- `NewsAPIProvider`: skeleton, returns empty results unless `NEWSAPI_API_KEY` is configured; API mapping is TODO.
+- `OpenDARTProvider`: skeleton, returns empty results unless `OPENDART_API_KEY` is configured; Korean ticker to DART `corp_code` mapping is TODO.
+- `SecEdgarProvider`: skeleton, returns empty results unless `SEC_USER_AGENT` is configured; ticker to CIK mapping is TODO.
+- `AlphaVantageProvider`: skeleton, returns empty results unless `ALPHA_VANTAGE_API_KEY` is configured.
+- `CompanyIRProvider`: skeleton for future company IR crawling.
+
+## Priority Order
+
+1. Google News RSS or NewsAPI for broad event discovery.
+2. OpenDART for Korean filings.
+3. SEC EDGAR for US filings.
+4. yfinance or Alpha Vantage for price and financial statement signals.
+5. Company IR crawler for official earnings releases, presentations, and guidance.
 
 ## Future Provider Candidates
 
@@ -29,3 +40,4 @@ Provider implementations should normalize source records into `RawEvent` objects
 
 API keys should be defined in `.env.example` and read from `.env` at runtime. Real keys must not be committed.
 
+Do not place unverified customer names, order sizes, revenue impact, or margin impact in `confirmed_facts`. If a source only hints at those items, put them in `unknowns` or `inferred_implications`.
