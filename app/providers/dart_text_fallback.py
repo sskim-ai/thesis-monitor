@@ -46,9 +46,7 @@ def _parse_js_args(args: str) -> list[str]:
 def _extract_viewer_params(html: str, receipt_no: str) -> DartViewerParams | None:
     for match in re.finditer(r"viewDoc\(([^)]*)\)", html):
         args = _parse_js_args(match.group(1))
-        if len(args) < 6:
-            continue
-        if args[0] != receipt_no:
+        if len(args) < 6 or args[0] != receipt_no:
             continue
         return DartViewerParams(
             receipt_no=args[0],
@@ -77,6 +75,27 @@ def _extract_dcm_no(html: str, receipt_no: str) -> str | None:
     return None
 
 
+def _is_placeholder_value(value: str) -> bool:
+    cleaned = _clean_cell(value)
+    compact = cleaned.replace(" ", "")
+    if not cleaned:
+        return True
+    placeholders = {
+        "(원)",
+        "(%)",
+        "시작일",
+        "종료일",
+        "5.계약기간",
+        "3.계약상대",
+        "4.판매ㆍ공급지역",
+        "4.판매·공급지역",
+        "-체결계약명",
+        "계약금액",
+        "매출액대비",
+    }
+    return compact in {item.replace(" ", "") for item in placeholders}
+
+
 def _row_value(text: str, labels: tuple[str, ...]) -> str | None:
     lines = [_clean_cell(line) for line in text.splitlines() if _clean_cell(line)]
     for line in lines:
@@ -86,14 +105,16 @@ def _row_value(text: str, labels: tuple[str, ...]) -> str | None:
             if label_compact not in compact:
                 continue
             parts = [_clean_cell(part) for part in line.split("|") if _clean_cell(part)]
+            candidates: list[str] = []
             for index, part in enumerate(parts):
                 if label_compact in part.replace(" ", ""):
-                    if index + 1 < len(parts):
-                        return parts[index + 1]
+                    candidates.extend(parts[index + 1 :])
                     tail = part.split(label, 1)[-1]
                     if _clean_cell(tail):
-                        return _clean_cell(tail)
-            return line
+                        candidates.append(_clean_cell(tail))
+            for candidate in candidates:
+                if not _is_placeholder_value(candidate):
+                    return candidate
     return None
 
 
@@ -116,6 +137,13 @@ def extract_supply_contract_facts_from_text(text: str) -> list[str]:
     return facts
 
 
+def _marker_lines(text: str) -> list[str]:
+    markers = ("계약상대", "계약금액", "매출액대비", "계약기간", "판매ㆍ공급지역", "체결계약명")
+    lines = [_clean_cell(line) for line in text.splitlines() if _clean_cell(line)]
+    matched = [line for line in lines if any(marker in line for marker in markers)]
+    return matched[:8]
+
+
 def build_text_diagnostics(document: DartDocumentText | None) -> list[str]:
     if document is None:
         return ["DART text fallback: no document text fetched"]
@@ -131,12 +159,14 @@ def build_text_diagnostics(document: DartDocumentText | None) -> list[str]:
         )
     else:
         param_text = "none"
-    return [
+    diagnostics = [
         f"DART text fallback: source={document.source}, dcm_no={document.dcm_no or 'none'}, length={len(document.text)}",
         f"DART text fallback params: {param_text}",
         f"DART text fallback: found_markers={','.join(found) if found else 'none'}",
         f"DART text fallback snippet: {snippet}",
     ]
+    diagnostics.extend(f"DART text fallback marker line: {line}" for line in _marker_lines(document.text))
+    return diagnostics
 
 
 async def fetch_dart_document_text(client: httpx.AsyncClient, receipt_no: str) -> DartDocumentText | None:
