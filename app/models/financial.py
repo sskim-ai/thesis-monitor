@@ -7,6 +7,7 @@ class FinancialSnapshot(SQLModel, table=True):
     id: int | None = Field(default=None, primary_key=True)
     ticker: str = Field(index=True)
     period: str
+    period_type: str | None = Field(default=None, index=True)
     reported_date: date | None = None
     source: str | None = None
     provider: str | None = None
