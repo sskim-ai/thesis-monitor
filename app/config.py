@@ -7,6 +7,10 @@ class Settings(BaseSettings):
     app_env: str = "local"
     database_url: str = "sqlite:///./thesis_monitor.sqlite3"
     enable_live_providers: bool = False
+    include_mock_provider: bool = True
+    live_provider_timeout_seconds: float = 5.0
+    naver_news_display: int = 10
+    google_news_display: int = 10
     opendart_api_key: str | None = None
     newsapi_api_key: str | None = None
     finnhub_api_key: str | None = None
