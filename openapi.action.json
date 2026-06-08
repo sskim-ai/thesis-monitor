@@ -1,0 +1,452 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Thesis Monitor Public Action API",
+    "version": "0.1.0",
+    "description": "Public read-only API surface for Custom GPT Actions. It exposes thesis-relevant event monitoring, company profile lookup, earnings checkpoints, and provider status. Admin endpoints are intentionally excluded."
+  },
+  "servers": [
+    {
+      "url": "https://YOUR_PUBLIC_API_HOST",
+      "description": "Replace with the deployed thesis-monitor API base URL."
+    }
+  ],
+  "paths": {
+    "/thesis-events": {
+      "get": {
+        "operationId": "getThesisEvents",
+        "summary": "Get thesis-relevant events for a ticker",
+        "description": "Collect and return thesis-monitoring events for a ticker, stock code, or supported symbol. For Korean stocks, use the numeric stock code when possible. Set auto_backfill=true to collect recent historical OpenDART financial snapshots when the local snapshot store is insufficient.",
+        "parameters": [
+          {
+            "name": "ticker",
+            "in": "query",
+            "required": true,
+            "description": "Ticker, Korean stock code, or supported symbol. Examples: NVDA, AMD, 000660, 012450.",
+            "schema": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          {
+            "name": "lookback_days",
+            "in": "query",
+            "required": false,
+            "description": "Number of days of recent events to return.",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 365,
+              "default": 30
+            }
+          },
+          {
+            "name": "requires_review_only",
+            "in": "query",
+            "required": false,
+            "description": "When true, return only events that require thesis review.",
+            "schema": {
+              "type": "boolean",
+              "default": false
+            }
+          },
+          {
+            "name": "provider",
+            "in": "query",
+            "required": false,
+            "description": "Optional provider filter. Common values: opendart, sec_edgar, google_news_rss, naver_news, mock.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "auto_backfill",
+            "in": "query",
+            "required": false,
+            "description": "When true and provider is opendart, backfill recent financial snapshots if fewer than the minimum comparable snapshot count exist.",
+            "schema": {
+              "type": "boolean",
+              "default": false
+            }
+          },
+          {
+            "name": "backfill_years",
+            "in": "query",
+            "required": false,
+            "description": "Number of years to use for OpenDART financial snapshot backfill when auto_backfill is true.",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 10,
+              "default": 5
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Thesis event response.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ThesisEventResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/company-profile": {
+      "get": {
+        "operationId": "getCompanyProfile",
+        "summary": "Get company profile",
+        "description": "Return a compact company profile used to build or interpret an investment thesis.",
+        "parameters": [
+          {
+            "name": "ticker",
+            "in": "query",
+            "required": true,
+            "description": "Ticker, Korean stock code, or supported symbol.",
+            "schema": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Company profile.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CompanyProfile"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/earnings-checkpoints": {
+      "get": {
+        "operationId": "getEarningsCheckpoints",
+        "summary": "Get earnings checkpoints for a ticker",
+        "description": "Return key earnings-quality checkpoints for monitoring a thesis. If stored snapshots exist, returns general checkpoint categories even when full provider earnings data is unavailable.",
+        "parameters": [
+          {
+            "name": "ticker",
+            "in": "query",
+            "required": true,
+            "description": "Ticker, Korean stock code, or supported symbol.",
+            "schema": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Earnings checkpoints.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EarningsCheckpointResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/provider-status": {
+      "get": {
+        "operationId": "getProviderStatus",
+        "summary": "Get provider status",
+        "description": "Return configured provider status for debugging public data availability.",
+        "responses": {
+          "200": {
+            "description": "Provider status list.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ProviderStatus"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "ApiKeyAuth": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "X-Action-API-Key",
+        "description": "Optional production API key header. Add server-side enforcement before exposing the API publicly."
+      }
+    },
+    "schemas": {
+      "ThesisEventResponse": {
+        "type": "object",
+        "required": ["ticker", "lookback_days", "events"],
+        "properties": {
+          "ticker": {
+            "type": "string"
+          },
+          "company_name": {
+            "type": ["string", "null"]
+          },
+          "lookback_days": {
+            "type": "integer"
+          },
+          "backfill_status": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/BackfillStatus"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "events": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ThesisEvent"
+            }
+          }
+        }
+      },
+      "BackfillStatus": {
+        "type": "object",
+        "properties": {
+          "requested": {
+            "type": "boolean"
+          },
+          "executed": {
+            "type": "boolean"
+          },
+          "skipped": {
+            "type": "boolean"
+          },
+          "reason": {
+            "type": "string",
+            "description": "not_requested, executed, sufficient_snapshots, unsupported_provider, or provider-specific failure reason."
+          },
+          "provider": {
+            "type": ["string", "null"]
+          },
+          "years": {
+            "type": ["integer", "null"]
+          },
+          "snapshot_count_before": {
+            "type": "integer"
+          },
+          "snapshot_count_after": {
+            "type": "integer"
+          },
+          "backfilled_count": {
+            "type": "integer"
+          },
+          "report_count": {
+            "type": "integer"
+          },
+          "warnings": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "ThesisEvent": {
+        "type": "object",
+        "required": ["date", "source", "provider", "title", "url", "event_type", "confirmed_facts", "inferred_implications", "unknowns", "financial_impact", "thesis_relevance"],
+        "properties": {
+          "date": {
+            "type": "string",
+            "format": "date"
+          },
+          "source": {
+            "type": "string"
+          },
+          "provider": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "url": {
+            "type": "string"
+          },
+          "event_type": {
+            "type": "string",
+            "description": "Event classifier output, such as large_order, guidance_change, capital_allocation, management_governance, or non_thesis_noise."
+          },
+          "confirmed_facts": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "inferred_implications": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "unknowns": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "financial_impact": {
+            "$ref": "#/components/schemas/FinancialImpact"
+          },
+          "thesis_relevance": {
+            "$ref": "#/components/schemas/ThesisRelevance"
+          }
+        }
+      },
+      "FinancialImpact": {
+        "type": "object",
+        "properties": {
+          "revenue_guidance_changed": {
+            "type": "boolean"
+          },
+          "margin_guidance_changed": {
+            "type": "boolean"
+          },
+          "margin_quality_review": {
+            "type": "boolean"
+          },
+          "financial_statement_basis_warning": {
+            "type": "boolean"
+          },
+          "fcf_impact_known": {
+            "type": "boolean"
+          },
+          "dilution_risk": {
+            "type": "boolean"
+          },
+          "capex_impact_known": {
+            "type": "boolean"
+          },
+          "inventory_risk": {
+            "type": "boolean"
+          },
+          "receivables_risk": {
+            "type": "boolean"
+          }
+        }
+      },
+      "ThesisRelevance": {
+        "type": "object",
+        "required": ["requires_review", "relevance_score", "reason"],
+        "properties": {
+          "requires_review": {
+            "type": "boolean"
+          },
+          "relevance_score": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 100
+          },
+          "reason": {
+            "type": "string"
+          }
+        }
+      },
+      "CompanyProfile": {
+        "type": "object",
+        "required": ["ticker", "company_name"],
+        "properties": {
+          "ticker": {
+            "type": "string"
+          },
+          "company_name": {
+            "type": "string"
+          },
+          "exchange": {
+            "type": ["string", "null"]
+          },
+          "industry": {
+            "type": ["string", "null"]
+          },
+          "sector": {
+            "type": ["string", "null"]
+          },
+          "business_units": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "major_revenue_sources": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "major_customers": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "ir_url": {
+            "type": ["string", "null"]
+          },
+          "filings_url": {
+            "type": ["string", "null"]
+          }
+        }
+      },
+      "EarningsCheckpointResponse": {
+        "type": "object",
+        "required": ["ticker", "checkpoints"],
+        "properties": {
+          "ticker": {
+            "type": "string"
+          },
+          "checkpoints": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "ProviderStatus": {
+        "type": "object",
+        "required": ["name", "enabled", "configured", "required_settings", "mode"],
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "enabled": {
+            "type": "boolean"
+          },
+          "configured": {
+            "type": "boolean"
+          },
+          "required_settings": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "mode": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}
