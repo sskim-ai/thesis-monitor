@@ -1,4 +1,5 @@
 from datetime import date, timedelta
+import re
 
 import httpx
 
@@ -18,19 +19,56 @@ SEC_TICKER_CIK = {
     "AMD": "0000002488",
 }
 
+REPORT_CODE_BY_TITLE = {
+    "1분기보고서": "11013",
+    "분기보고서": "11013",
+    "반기보고서": "11012",
+    "3분기보고서": "11014",
+    "사업보고서": "11011",
+}
+
+FINANCIAL_ACCOUNT_ALIASES = {
+    "revenue": ("매출액", "수익(매출액)", "영업수익"),
+    "operating_income": ("영업이익",),
+    "net_income": ("당기순이익", "분기순이익", "반기순이익"),
+    "assets": ("자산총계",),
+    "liabilities": ("부채총계",),
+    "equity": ("자본총계",),
+}
+
 
 def _yyyymmdd(value: date) -> str:
     return value.strftime("%Y%m%d")
 
 
-def _filing_unknowns() -> list[str]:
-    return [
+def _clean_number(value: str | None) -> str | None:
+    if not value or value in {"-", ""}:
+        return None
+    return value.replace(",", "").strip()
+
+
+def _format_krw(value: str | None) -> str | None:
+    cleaned = _clean_number(value)
+    if cleaned is None:
+        return None
+    try:
+        amount = int(cleaned)
+    except ValueError:
+        return cleaned
+    return f"{amount:,} KRW"
+
+
+def _filing_unknowns(extra: list[str] | None = None) -> list[str]:
+    unknowns = [
         "Customer names are unknown unless explicitly disclosed in the filing title or body",
         "Order size is unknown unless disclosed in the filing",
-        "Revenue impact is unknown",
-        "Margin impact is unknown",
+        "Revenue impact is unknown unless parsed from financial statement API",
+        "Margin impact is unknown unless parsed from financial statement API",
         "FCF impact is unknown",
     ]
+    if extra:
+        unknowns.extend(extra)
+    return unknowns
 
 
 def _dart_keywords(title: str) -> list[str]:
@@ -44,8 +82,12 @@ def _dart_keywords(title: str) -> list[str]:
         "bw": "warrant",
         "실적": "earnings",
         "영업(잠정)실적": "earnings",
+        "분기보고서": "earnings",
+        "반기보고서": "earnings",
+        "사업보고서": "earnings",
         "공급계약": "supply_contract",
         "단일판매": "supply_contract",
+        "자기주식": "buyback",
         "자사주": "buyback",
         "투자판단": "material_management_matter",
         "주요경영사항": "material_management_matter",
@@ -56,9 +98,75 @@ def _dart_keywords(title: str) -> list[str]:
     return keywords
 
 
+def _report_code_from_title(title: str) -> str | None:
+    for needle, code in REPORT_CODE_BY_TITLE.items():
+        if needle in title:
+            if needle == "분기보고서" and "3분기" in title:
+                return "11014"
+            return code
+    return None
+
+
+def _business_year_from_title_or_date(title: str, published: date) -> str:
+    match = re.search(r"(20\d{2})", title)
+    if match:
+        return match.group(1)
+    return str(published.year)
+
+
+def _extract_financial_facts(items: list[dict[str, str]]) -> list[str]:
+    facts: list[str] = []
+    captured: set[str] = set()
+    for item in items:
+        account_name = item.get("account_nm", "")
+        statement_name = item.get("sj_nm", "")
+        amount = _format_krw(item.get("thstrm_amount"))
+        if amount is None:
+            continue
+        for key, aliases in FINANCIAL_ACCOUNT_ALIASES.items():
+            if key in captured:
+                continue
+            if account_name in aliases:
+                facts.append(f"OpenDART financial fact: {account_name} = {amount} ({statement_name})")
+                captured.add(key)
+                break
+    return facts
+
+
 class OpenDARTProvider(FilingProvider):
     name = "opendart"
     endpoint = "https://opendart.fss.or.kr/api/list.json"
+    financial_endpoint = "https://opendart.fss.or.kr/api/fnlttSinglAcnt.json"
+
+    async def _fetch_financial_facts(
+        self,
+        client: httpx.AsyncClient,
+        api_key: str,
+        corp_code: str,
+        title: str,
+        published: date,
+    ) -> tuple[list[str], list[str]]:
+        report_code = _report_code_from_title(title)
+        if report_code is None:
+            return [], []
+        params = {
+            "crtfc_key": api_key,
+            "corp_code": corp_code,
+            "bsns_year": _business_year_from_title_or_date(title, published),
+            "reprt_code": report_code,
+        }
+        try:
+            response = await client.get(self.financial_endpoint, params=params)
+            response.raise_for_status()
+            payload = response.json()
+        except (httpx.HTTPError, ValueError):
+            return [], ["OpenDART financial statement API request failed"]
+        if payload.get("status") != "000":
+            return [], [f"OpenDART financial statement API status: {payload.get('status')}"]
+        facts = _extract_financial_facts(payload.get("list", []))
+        if not facts:
+            return [], ["OpenDART financial statement API returned no mapped financial facts"]
+        return facts, []
 
     async def fetch_events(self, ticker: str, lookback_days: int) -> list[RawEvent]:
         settings = get_settings()
@@ -82,43 +190,52 @@ class OpenDARTProvider(FilingProvider):
                 response = await client.get(self.endpoint, params=params)
                 response.raise_for_status()
                 payload = response.json()
-        except (httpx.HTTPError, ValueError):
-            return []
+                if payload.get("status") not in {None, "000"}:
+                    return []
 
-        if payload.get("status") not in {None, "000"}:
-            return []
+                events: list[RawEvent] = []
+                for item in payload.get("list", []):
+                    title = item.get("report_nm") or "OpenDART filing"
+                    receipt_no = item.get("rcept_no") or ""
+                    filing_date = item.get("rcept_dt") or ""
+                    try:
+                        published = date.fromisoformat(
+                            f"{filing_date[:4]}-{filing_date[4:6]}-{filing_date[6:8]}"
+                        )
+                    except ValueError:
+                        published = date.today()
 
-        events: list[RawEvent] = []
-        for item in payload.get("list", []):
-            title = item.get("report_nm") or "OpenDART filing"
-            receipt_no = item.get("rcept_no") or ""
-            filing_date = item.get("rcept_dt") or ""
-            try:
-                published = date.fromisoformat(
-                    f"{filing_date[:4]}-{filing_date[4:6]}-{filing_date[6:8]}"
-                )
-            except ValueError:
-                published = date.today()
-            events.append(
-                RawEvent(
-                    ticker=ticker.upper(),
-                    company_name=item.get("corp_name"),
-                    date=published,
-                    source="OpenDART",
-                    provider=self.name,
-                    title=title,
-                    url=f"https://dart.fss.or.kr/dsaf001/main.do?rcpNo={receipt_no}",
-                    summary=title,
-                    keywords=_dart_keywords(title),
-                    confirmed_facts=[
+                    financial_facts, financial_unknowns = await self._fetch_financial_facts(
+                        client=client,
+                        api_key=settings.opendart_api_key,
+                        corp_code=corp_code,
+                        title=title,
+                        published=published,
+                    )
+                    confirmed_facts = [
                         f"OpenDART filing title: {title}",
                         f"OpenDART receipt number: {receipt_no}",
-                    ],
-                    inferred_implications=[],
-                    unknowns=_filing_unknowns(),
-                )
-            )
-        return events
+                    ]
+                    confirmed_facts.extend(financial_facts)
+                    events.append(
+                        RawEvent(
+                            ticker=ticker.upper(),
+                            company_name=item.get("corp_name"),
+                            date=published,
+                            source="OpenDART",
+                            provider=self.name,
+                            title=title,
+                            url=f"https://dart.fss.or.kr/dsaf001/main.do?rcpNo={receipt_no}",
+                            summary="; ".join(confirmed_facts),
+                            keywords=_dart_keywords(title),
+                            confirmed_facts=confirmed_facts,
+                            inferred_implications=[],
+                            unknowns=_filing_unknowns(financial_unknowns),
+                        )
+                    )
+                return events
+        except (httpx.HTTPError, ValueError):
+            return []
 
 
 class SecEdgarProvider(FilingProvider):
