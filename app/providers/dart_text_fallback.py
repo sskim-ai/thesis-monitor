@@ -77,7 +77,7 @@ def _extract_dcm_no(html: str, receipt_no: str) -> str | None:
 
 def _is_placeholder_value(value: str) -> bool:
     cleaned = _clean_cell(value)
-    compact = cleaned.replace(" ", "")
+    compact = re.sub(r"\s+", "", cleaned)
     if not cleaned:
         return True
     placeholders = {
@@ -91,9 +91,23 @@ def _is_placeholder_value(value: str) -> bool:
         "4.판매·공급지역",
         "-체결계약명",
         "계약금액",
+        "계약금액(원)",
         "매출액대비",
+        "매출액대비(%)",
+        "최근매출액대비",
+        "최근매출액대비(%)",
     }
-    return compact in {item.replace(" ", "") for item in placeholders}
+    placeholder_compacts = {item.replace(" ", "") for item in placeholders}
+    if compact in placeholder_compacts:
+        return True
+    non_fact_fragments = (
+        "진행과정에서변경될수있습니다",
+        "향후계약내용",
+        "상기계약금액",
+        "상기내용은",
+        "본공시사항은",
+    )
+    return any(fragment in compact for fragment in non_fact_fragments)
 
 
 def _row_value(text: str, labels: tuple[str, ...]) -> str | None:
