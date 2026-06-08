@@ -25,7 +25,10 @@ def normalize_equity_input(value: str) -> str:
 
 
 def _compact(value: str) -> str:
-    return re.sub(r"\s+", "", value).lower()
+    value = re.sub(r"\s+", "", value).lower()
+    for suffix in ("주식회사", "(주)", "㈜"):
+        value = value.replace(suffix, "")
+    return value
 
 
 def _parse_corp_code_zip(content: bytes) -> list[OpenDARTCompany]:
@@ -41,16 +44,8 @@ def _parse_corp_code_zip(content: bytes) -> list[OpenDARTCompany]:
         corp_name = (node.findtext("corp_name") or "").strip()
         stock_code = (node.findtext("stock_code") or "").strip()
         modify_date = (node.findtext("modify_date") or "").strip() or None
-        if not corp_code or not corp_name:
-            continue
-        companies.append(
-            OpenDARTCompany(
-                corp_code=corp_code,
-                corp_name=corp_name,
-                stock_code=stock_code,
-                modify_date=modify_date,
-            )
-        )
+        if corp_code and corp_name:
+            companies.append(OpenDARTCompany(corp_code, corp_name, stock_code, modify_date))
     return companies
 
 
@@ -59,41 +54,52 @@ async def load_opendart_companies(api_key: str, force_refresh: bool = False) -> 
     if _cached_companies is not None and not force_refresh:
         return _cached_companies
 
-    url = "https://opendart.fss.or.kr/api/corpCode.xml"
     async with httpx.AsyncClient(timeout=15.0) as client:
-        response = await client.get(url, params={"crtfc_key": api_key})
+        response = await client.get(
+            "https://opendart.fss.or.kr/api/corpCode.xml",
+            params={"crtfc_key": api_key},
+        )
         response.raise_for_status()
     _cached_companies = _parse_corp_code_zip(response.content)
     return _cached_companies
 
 
+def _name_score(company: OpenDARTCompany, query_compact: str) -> int:
+    name = _compact(company.corp_name)
+    listed_bonus = 10 if company.stock_code else 0
+    if name == query_compact:
+        return 100 + listed_bonus
+    if name.startswith(query_compact):
+        return 80 + listed_bonus
+    if query_compact in name:
+        return 60 + listed_bonus
+    return 0
+
+
 async def resolve_opendart_company(api_key: str, query: str) -> OpenDARTCompany | None:
     normalized = normalize_equity_input(query)
     normalized_upper = normalized.upper()
-    normalized_compact = _compact(normalized)
+    query_compact = _compact(normalized)
     companies = await load_opendart_companies(api_key)
 
-    # 1) Exact listed stock code match, e.g. 000660 or 000660.KS.
     if re.fullmatch(r"\d{6}", normalized):
         for company in companies:
             if company.stock_code == normalized:
                 return company
 
-    # 2) Exact company name match, e.g. SK하이닉스.
-    for company in companies:
-        if _compact(company.corp_name) == normalized_compact:
-            return company
-
-    # 3) Exact corp code match for advanced/manual calls.
     for company in companies:
         if company.corp_code == normalized_upper:
             return company
 
-    # 4) Unique partial name match. Avoid ambiguous broad queries.
-    partial_matches = [company for company in companies if normalized_compact in _compact(company.corp_name)]
-    listed_matches = [company for company in partial_matches if company.stock_code]
-    if len(listed_matches) == 1:
-        return listed_matches[0]
-    if len(partial_matches) == 1:
-        return partial_matches[0]
+    scored = [(score, company) for company in companies if (score := _name_score(company, query_compact)) > 0]
+    if not scored:
+        return None
+    scored.sort(key=lambda pair: (pair[0], pair[1].modify_date or ""), reverse=True)
+    best_score = scored[0][0]
+    best_matches = [company for score, company in scored if score == best_score]
+    if len(best_matches) == 1:
+        return best_matches[0]
+    listed = [company for company in best_matches if company.stock_code]
+    if len(listed) == 1:
+        return listed[0]
     return None
