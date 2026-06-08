@@ -19,6 +19,8 @@ def _ensure_sqlite_columns() -> None:
         "event": {
             "raw_summary": "VARCHAR",
             "provider": "VARCHAR DEFAULT 'unknown'",
+            "margin_quality_review": "BOOLEAN DEFAULT 0",
+            "financial_statement_basis_warning": "BOOLEAN DEFAULT 0",
             "capex_impact_known": "BOOLEAN DEFAULT 0",
             "inventory_risk": "BOOLEAN DEFAULT 0",
             "receivables_risk": "BOOLEAN DEFAULT 0",
