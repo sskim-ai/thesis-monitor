@@ -58,6 +58,17 @@ def _format_krw(value: str | None) -> str | None:
     return f"{amount:,} KRW"
 
 
+def _format_shares(value: str | None) -> str | None:
+    cleaned = _clean_number(value)
+    if cleaned is None:
+        return None
+    try:
+        amount = int(cleaned)
+    except ValueError:
+        return cleaned
+    return f"{amount:,} shares"
+
+
 def _filing_unknowns(extra: list[str] | None = None) -> list[str]:
     unknowns = [
         "Customer names are unknown unless explicitly disclosed in the filing title or body",
@@ -87,8 +98,8 @@ def _dart_keywords(title: str) -> list[str]:
         "사업보고서": "earnings",
         "공급계약": "supply_contract",
         "단일판매": "supply_contract",
-        "자기주식": "buyback",
-        "자사주": "buyback",
+        "자기주식": "treasury_stock",
+        "자사주": "treasury_stock",
         "투자판단": "material_management_matter",
         "주요경영사항": "material_management_matter",
     }
@@ -133,10 +144,46 @@ def _extract_financial_facts(items: list[dict[str, str]]) -> list[str]:
     return facts
 
 
+def _first_non_empty(item: dict[str, str], keys: tuple[str, ...]) -> str | None:
+    for key in keys:
+        value = item.get(key)
+        if value not in {None, "", "-"}:
+            return value
+    return None
+
+
+def _extract_treasury_stock_facts(items: list[dict[str, str]]) -> list[str]:
+    facts: list[str] = []
+    if not items:
+        return facts
+    item = items[0]
+    stock_count = _first_non_empty(item, ("trstk_qy", "acqsdl_stk_qy", "dppln_stk_qy", "stk_qy"))
+    amount = _first_non_empty(item, ("tr_prc", "acqsdl_prc", "dppln_prc", "amount"))
+    purpose = _first_non_empty(item, ("tr_pp", "acqsdl_pp", "dppln_pp", "prps"))
+    start_date = _first_non_empty(item, ("tr_pd_bgd", "acqsdl_pd_bgd", "dppln_pd_bgd"))
+    end_date = _first_non_empty(item, ("tr_pd_edd", "acqsdl_pd_edd", "dppln_pd_edd"))
+    method = _first_non_empty(item, ("tr_mth", "acqsdl_mth", "dppln_mth", "mth"))
+
+    formatted_count = _format_shares(stock_count)
+    formatted_amount = _format_krw(amount)
+    if formatted_count:
+        facts.append(f"OpenDART treasury stock fact: shares = {formatted_count}")
+    if formatted_amount:
+        facts.append(f"OpenDART treasury stock fact: amount = {formatted_amount}")
+    if purpose:
+        facts.append(f"OpenDART treasury stock fact: purpose = {purpose}")
+    if start_date or end_date:
+        facts.append(f"OpenDART treasury stock fact: period = {start_date or 'unknown'} to {end_date or 'unknown'}")
+    if method:
+        facts.append(f"OpenDART treasury stock fact: method = {method}")
+    return facts
+
+
 class OpenDARTProvider(FilingProvider):
     name = "opendart"
     endpoint = "https://opendart.fss.or.kr/api/list.json"
     financial_endpoint = "https://opendart.fss.or.kr/api/fnlttSinglAcnt.json"
+    treasury_stock_endpoint = "https://opendart.fss.or.kr/api/tsstkDpDecsn.json"
 
     async def _fetch_financial_facts(
         self,
@@ -166,6 +213,29 @@ class OpenDARTProvider(FilingProvider):
         facts = _extract_financial_facts(payload.get("list", []))
         if not facts:
             return [], ["OpenDART financial statement API returned no mapped financial facts"]
+        return facts, []
+
+    async def _fetch_treasury_stock_facts(
+        self,
+        client: httpx.AsyncClient,
+        api_key: str,
+        corp_code: str,
+        title: str,
+    ) -> tuple[list[str], list[str]]:
+        if "자기주식" not in title:
+            return [], []
+        params = {"crtfc_key": api_key, "corp_code": corp_code}
+        try:
+            response = await client.get(self.treasury_stock_endpoint, params=params)
+            response.raise_for_status()
+            payload = response.json()
+        except (httpx.HTTPError, ValueError):
+            return [], ["OpenDART treasury stock API request failed"]
+        if payload.get("status") != "000":
+            return [], [f"OpenDART treasury stock API status: {payload.get('status')}"]
+        facts = _extract_treasury_stock_facts(payload.get("list", []))
+        if not facts:
+            return [], ["OpenDART treasury stock API returned no mapped facts"]
         return facts, []
 
     async def fetch_events(self, ticker: str, lookback_days: int) -> list[RawEvent]:
@@ -205,6 +275,8 @@ class OpenDARTProvider(FilingProvider):
                     except ValueError:
                         published = date.today()
 
+                    extra_facts: list[str] = []
+                    extra_unknowns: list[str] = []
                     financial_facts, financial_unknowns = await self._fetch_financial_facts(
                         client=client,
                         api_key=settings.opendart_api_key,
@@ -212,11 +284,22 @@ class OpenDARTProvider(FilingProvider):
                         title=title,
                         published=published,
                     )
+                    extra_facts.extend(financial_facts)
+                    extra_unknowns.extend(financial_unknowns)
+                    treasury_facts, treasury_unknowns = await self._fetch_treasury_stock_facts(
+                        client=client,
+                        api_key=settings.opendart_api_key,
+                        corp_code=corp_code,
+                        title=title,
+                    )
+                    extra_facts.extend(treasury_facts)
+                    extra_unknowns.extend(treasury_unknowns)
+
                     confirmed_facts = [
                         f"OpenDART filing title: {title}",
                         f"OpenDART receipt number: {receipt_no}",
                     ]
-                    confirmed_facts.extend(financial_facts)
+                    confirmed_facts.extend(extra_facts)
                     events.append(
                         RawEvent(
                             ticker=ticker.upper(),
@@ -230,7 +313,7 @@ class OpenDARTProvider(FilingProvider):
                             keywords=_dart_keywords(title),
                             confirmed_facts=confirmed_facts,
                             inferred_implications=[],
-                            unknowns=_filing_unknowns(financial_unknowns),
+                            unknowns=_filing_unknowns(extra_unknowns),
                         )
                     )
                 return events
