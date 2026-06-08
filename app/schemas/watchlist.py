@@ -8,6 +8,7 @@ class WatchlistItemCreate(BaseModel):
     company_name: str
     exchange: str | None = None
     notes: str | None = None
+    active: bool = True
 
 
 class WatchlistItemRead(BaseModel):
@@ -16,7 +17,7 @@ class WatchlistItemRead(BaseModel):
     company_name: str
     exchange: str | None = None
     notes: str | None = None
+    active: bool
     created_at: datetime
 
     model_config = ConfigDict(from_attributes=True)
-

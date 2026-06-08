@@ -19,8 +19,10 @@ def add_watchlist_item(session: Session, payload: WatchlistItemCreate) -> Watchl
             company_name=payload.company_name,
             exchange=payload.exchange,
             notes=payload.notes,
+            active=payload.active,
         )
         session.add(item)
+    item.active = payload.active
 
     company = session.exec(select(Company).where(Company.ticker == ticker)).first()
     if company is None:
@@ -41,4 +43,3 @@ def add_watchlist_item(session: Session, payload: WatchlistItemCreate) -> Watchl
 
 def list_watchlist_items(session: Session) -> list[WatchlistItem]:
     return list(session.exec(select(WatchlistItem).order_by(WatchlistItem.ticker)).all())
-

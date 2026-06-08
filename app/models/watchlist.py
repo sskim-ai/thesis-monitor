@@ -9,5 +9,5 @@ class WatchlistItem(SQLModel, table=True):
     company_name: str
     exchange: str | None = None
     notes: str | None = None
+    active: bool = True
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
-

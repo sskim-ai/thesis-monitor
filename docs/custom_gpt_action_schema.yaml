@@ -94,9 +94,7 @@ paths:
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: "#/components/schemas/EarningsCheckpoint"
+                $ref: "#/components/schemas/EarningsCheckpointResponse"
   /company-profile:
     get:
       operationId: getCompanyProfile
@@ -127,6 +125,9 @@ components:
           type: string
         notes:
           type: string
+        active:
+          type: boolean
+          default: true
       required: [ticker, company_name]
     WatchlistItem:
       allOf:
@@ -274,11 +275,20 @@ components:
           type: boolean
         dilution_risk:
           type: boolean
+        capex_impact_known:
+          type: boolean
+        inventory_risk:
+          type: boolean
+        receivables_risk:
+          type: boolean
       required:
         - revenue_guidance_changed
         - margin_guidance_changed
         - fcf_impact_known
         - dilution_risk
+        - capex_impact_known
+        - inventory_risk
+        - receivables_risk
     ThesisRelevance:
       type: object
       properties:
@@ -291,49 +301,13 @@ components:
         reason:
           type: string
       required: [requires_review, relevance_score, reason]
-    EarningsCheckpoint:
+    EarningsCheckpointResponse:
       type: object
       properties:
         ticker:
           type: string
-        period:
-          type: string
-        reported_date:
-          type: string
-          format: date
-        revenue:
-          type: number
-        operating_income:
-          type: number
-        net_income:
-          type: number
-        eps:
-          type: number
-        operating_cash_flow:
-          type: number
-        free_cash_flow:
-          type: number
-        capex:
-          type: number
-        gross_margin:
-          type: number
-        operating_margin:
-          type: number
-        guidance:
-          type: string
-        backlog:
-          type: number
-        inventory:
-          type: number
-        receivables:
-          type: number
-        debt:
-          type: number
-        cash:
-          type: number
-        stock_compensation:
-          type: number
-        dilution_notes:
-          type: string
-      required: [ticker, period]
-
+        checkpoints:
+          type: array
+          items:
+            type: string
+      required: [ticker, checkpoints]

@@ -4,6 +4,17 @@ Thesis Monitor is a FastAPI service for investment research monitoring. Given a 
 
 This project is a data collection and structuring system. It does not make buy, sell, or hold recommendations, and it does not include order execution.
 
+## System Structure
+
+- `app/api`: FastAPI route modules.
+- `app/models`: SQLModel persistence models.
+- `app/schemas`: explicit API response schemas.
+- `app/providers`: provider interface, mock provider, and future provider skeletons.
+- `app/services`: event classification, scoring, watchlist, and collection logic.
+- `app/jobs`: scheduled collection entry points.
+- `docs`: architecture notes, data source roadmap, and Custom GPT Action schema.
+- `tests`: pytest coverage for endpoints, classifier, scoring, and fact separation.
+
 ## Install
 
 ```bash
@@ -45,6 +56,7 @@ http://127.0.0.1:8000/openapi.json
 
 ```bash
 pytest
+ruff check .
 ```
 
 ## API Endpoints
@@ -113,7 +125,10 @@ Response shape:
         "revenue_guidance_changed": false,
         "margin_guidance_changed": false,
         "fcf_impact_known": false,
-        "dilution_risk": false
+        "dilution_risk": false,
+        "capex_impact_known": false,
+        "inventory_risk": false,
+        "receivables_risk": false
       },
       "thesis_relevance": {
         "requires_review": true,
@@ -131,10 +146,38 @@ Response shape:
 GET /earnings-checkpoints?ticker=NVDA
 ```
 
+Response shape:
+
+```json
+{
+  "ticker": "NVDA",
+  "checkpoints": [
+    "Revenue growth vs guidance",
+    "Gross margin and operating margin",
+    "FCF after capex",
+    "Inventory and receivables trend",
+    "Customer concentration and demand signals"
+  ]
+}
+```
+
 ### Get Company Profile
 
 ```http
 GET /company-profile?ticker=NVDA
+```
+
+## Curl Examples
+
+```bash
+curl http://127.0.0.1:8000/health
+curl "http://127.0.0.1:8000/company-profile?ticker=NVDA"
+curl "http://127.0.0.1:8000/thesis-events?ticker=AMD&lookback_days=30"
+curl "http://127.0.0.1:8000/earnings-checkpoints?ticker=000660.KS"
+curl http://127.0.0.1:8000/watchlist
+curl -X POST http://127.0.0.1:8000/watchlist \
+  -H "Content-Type: application/json" \
+  -d '{"ticker":"NVDA","company_name":"NVIDIA","exchange":"NASDAQ","notes":"AI infrastructure thesis"}'
 ```
 
 ## Custom GPT Action
@@ -147,7 +190,13 @@ The live FastAPI app also exposes `/openapi.json`, which Custom GPT Actions can 
 
 Provider interfaces live in `app/providers/base.py`.
 
-Initial implementation includes mock providers so the API works without external keys. Future provider modules should implement:
+Initial implementation includes `MockProvider`, which returns sample profile, thesis event, and earnings checkpoint data for:
+
+- `NVDA`
+- `AMD`
+- `000660.KS`
+
+Future provider modules should implement:
 
 - SEC EDGAR filings
 - DART and OpenDART filings
@@ -169,4 +218,3 @@ Provider output should return raw facts only. Classification and thesis relevanc
 - Commit `.env.example`, never `.env`.
 - Do not store brokerage account data, trading API keys, account numbers, or personally sensitive financial data.
 - This project is for research monitoring and does not execute trades.
-

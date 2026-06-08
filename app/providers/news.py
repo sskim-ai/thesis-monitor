@@ -1,5 +1,4 @@
 from app.providers.base import NewsProvider
-from app.providers.mock import MockNewsProvider
+from app.providers.mock import MockProvider
 
-__all__ = ["MockNewsProvider", "NewsProvider"]
-
+__all__ = ["MockProvider", "NewsProvider"]

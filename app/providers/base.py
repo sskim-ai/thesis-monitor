@@ -2,6 +2,9 @@ from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
 from datetime import date
 
+from app.schemas.company import CompanyProfile
+from app.schemas.financial import EarningsCheckpointResponse
+
 
 @dataclass
 class RawEvent:
@@ -22,30 +25,58 @@ class BaseProvider(ABC):
     name: str
 
     @abstractmethod
+    async def fetch_company_profile(self, ticker: str) -> CompanyProfile | None:
+        raise NotImplementedError
+
+    @abstractmethod
     async def fetch_events(self, ticker: str, lookback_days: int) -> list[RawEvent]:
+        raise NotImplementedError
+
+    @abstractmethod
+    async def fetch_earnings(self, ticker: str) -> EarningsCheckpointResponse | None:
         raise NotImplementedError
 
 
 class NewsProvider(BaseProvider):
-    pass
+    async def fetch_company_profile(self, ticker: str) -> CompanyProfile | None:
+        raise NotImplementedError
+
+    async def fetch_earnings(self, ticker: str) -> EarningsCheckpointResponse | None:
+        raise NotImplementedError
 
 
 class FilingProvider(BaseProvider):
-    pass
+    async def fetch_company_profile(self, ticker: str) -> CompanyProfile | None:
+        raise NotImplementedError
+
+    async def fetch_earnings(self, ticker: str) -> EarningsCheckpointResponse | None:
+        raise NotImplementedError
 
 
 class EarningsProvider(BaseProvider):
-    pass
+    async def fetch_company_profile(self, ticker: str) -> CompanyProfile | None:
+        raise NotImplementedError
 
 
 class IRProvider(BaseProvider):
-    pass
+    async def fetch_earnings(self, ticker: str) -> EarningsCheckpointResponse | None:
+        raise NotImplementedError
 
 
 class PriceProvider(BaseProvider):
-    pass
+    async def fetch_company_profile(self, ticker: str) -> CompanyProfile | None:
+        raise NotImplementedError
+
+    async def fetch_events(self, ticker: str, lookback_days: int) -> list[RawEvent]:
+        raise NotImplementedError
+
+    async def fetch_earnings(self, ticker: str) -> EarningsCheckpointResponse | None:
+        raise NotImplementedError
 
 
 class CompetitorProvider(BaseProvider):
-    pass
+    async def fetch_company_profile(self, ticker: str) -> CompanyProfile | None:
+        raise NotImplementedError
 
+    async def fetch_earnings(self, ticker: str) -> EarningsCheckpointResponse | None:
+        raise NotImplementedError

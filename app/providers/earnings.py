@@ -1,5 +1,4 @@
 from app.providers.base import EarningsProvider
-from app.providers.mock import MockEarningsProvider
+from app.providers.mock import MockProvider
 
-__all__ = ["EarningsProvider", "MockEarningsProvider"]
-
+__all__ = ["EarningsProvider", "MockProvider"]

@@ -50,6 +50,9 @@ class FinancialImpact(BaseModel):
     margin_guidance_changed: bool = False
     fcf_impact_known: bool = False
     dilution_risk: bool = False
+    capex_impact_known: bool = False
+    inventory_risk: bool = False
+    receivables_risk: bool = False
 
 
 class ThesisRelevance(BaseModel):
@@ -84,4 +87,3 @@ class ThesisEventResponse(BaseModel):
     company_name: str | None = None
     lookback_days: int
     events: list[ThesisEvent]
-

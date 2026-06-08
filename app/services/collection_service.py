@@ -7,10 +7,10 @@ from app.models.company import Company
 from app.models.event import Event
 from app.models.financial import FinancialSnapshot
 from app.providers.base import RawEvent
-from app.providers.mock import MockEarningsProvider, MockFilingProvider, MockIRProvider, MockNewsProvider
+from app.providers.mock import MockProvider
 from app.schemas.company import CompanyProfile
 from app.schemas.event import FinancialImpact, ThesisEvent, ThesisEventResponse
-from app.schemas.financial import EarningsCheckpoint
+from app.schemas.financial import EarningsCheckpointResponse
 from app.services.event_classifier import classify_event
 from app.services.thesis_scoring import score_event
 
@@ -36,6 +36,9 @@ def _event_to_schema(event: Event) -> ThesisEvent:
             margin_guidance_changed=event.margin_guidance_changed,
             fcf_impact_known=event.fcf_impact_known,
             dilution_risk=event.dilution_risk,
+            capex_impact_known=event.capex_impact_known,
+            inventory_risk=event.inventory_risk,
+            receivables_risk=event.receivables_risk,
         ),
         thesis_relevance={
             "requires_review": event.requires_review,
@@ -56,7 +59,7 @@ def _raw_event_to_model(raw_event: RawEvent) -> Event:
         source=raw_event.source,
         title=raw_event.title,
         url=raw_event.url,
-        summary=raw_event.summary,
+        raw_summary=raw_event.summary,
         event_type=event_type.value,
         keywords=json.dumps(raw_event.keywords),
         confirmed_facts=json.dumps(raw_event.confirmed_facts),
@@ -66,6 +69,9 @@ def _raw_event_to_model(raw_event: RawEvent) -> Event:
         margin_guidance_changed="margin" in lower_text,
         fcf_impact_known="fcf" in lower_text or "free cash flow" in lower_text,
         dilution_risk=event_type.value in {"capital_raise", "convertible_bond", "warrant"},
+        capex_impact_known="capex" in lower_text or "capital expenditure" in lower_text,
+        inventory_risk="inventory" in lower_text,
+        receivables_risk="receivables" in lower_text or "accounts receivable" in lower_text,
         requires_review=relevance.requires_review,
         relevance_score=relevance.relevance_score,
         relevance_reason=relevance.reason,
@@ -74,12 +80,7 @@ def _raw_event_to_model(raw_event: RawEvent) -> Event:
 
 class CollectionService:
     def __init__(self) -> None:
-        self.providers = [
-            MockNewsProvider(),
-            MockFilingProvider(),
-            MockEarningsProvider(),
-            MockIRProvider(),
-        ]
+        self.providers = [MockProvider()]
 
     async def collect_events(self, session: Session, ticker: str, lookback_days: int) -> list[Event]:
         ticker = ticker.upper()
@@ -118,17 +119,7 @@ class CollectionService:
             events=[_event_to_schema(event) for event in events],
         )
 
-    def get_company_profile(self, session: Session, ticker: str) -> CompanyProfile:
-        ticker = ticker.upper()
-        company = session.exec(select(Company).where(Company.ticker == ticker)).first()
-        if company is None:
-            return CompanyProfile(
-                ticker=ticker,
-                company_name=ticker,
-                exchange=None,
-                ir_url=None,
-                filings_url=None,
-            )
+    def _company_model_to_profile(self, company: Company) -> CompanyProfile:
         return CompanyProfile(
             ticker=company.ticker,
             company_name=company.company_name,
@@ -142,14 +133,39 @@ class CollectionService:
             filings_url=company.filings_url,
         )
 
-    def get_earnings_checkpoints(
-        self, session: Session, ticker: str
-    ) -> list[EarningsCheckpoint]:
+    async def get_company_profile(self, session: Session, ticker: str) -> CompanyProfile:
         ticker = ticker.upper()
+        company = session.exec(select(Company).where(Company.ticker == ticker)).first()
+        if company is not None:
+            return self._company_model_to_profile(company)
+        for provider in self.providers:
+            profile = await provider.fetch_company_profile(ticker)
+            if profile is not None:
+                return profile
+        return CompanyProfile(ticker=ticker, company_name=ticker)
+
+    async def get_earnings_checkpoints(
+        self, session: Session, ticker: str
+    ) -> EarningsCheckpointResponse:
+        ticker = ticker.upper()
+        for provider in self.providers:
+            response = await provider.fetch_earnings(ticker)
+            if response is not None:
+                return response
         snapshots = session.exec(
             select(FinancialSnapshot)
             .where(FinancialSnapshot.ticker == ticker)
             .order_by(FinancialSnapshot.reported_date.desc())
         ).all()
-        return [EarningsCheckpoint.model_validate(snapshot, from_attributes=True) for snapshot in snapshots]
-
+        if snapshots:
+            return EarningsCheckpointResponse(
+                ticker=ticker,
+                checkpoints=[
+                    "Revenue growth vs guidance",
+                    "Gross margin and operating margin",
+                    "FCF after capex",
+                    "Inventory and receivables trend",
+                    "Customer concentration and demand signals",
+                ],
+            )
+        return EarningsCheckpointResponse(ticker=ticker, checkpoints=[])
