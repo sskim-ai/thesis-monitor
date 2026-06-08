@@ -180,22 +180,74 @@ def _business_year_from_title_or_date(title: str, published: date) -> str:
     return str(published.year)
 
 
+def _financial_item_score(item: dict[str, str]) -> tuple[int, int, int, int, int]:
+    fs_div = item.get("fs_div", "")
+    sj_div = item.get("sj_div", "")
+    sj_nm = item.get("sj_nm", "")
+    account_id = item.get("account_id", "")
+    thstrm_nm = item.get("thstrm_nm", "")
+    consolidated_score = 2 if fs_div == "CFS" else 1 if fs_div == "OFS" else 0
+    statement_score = 2 if sj_div == "IS" or "손익" in sj_nm else 1 if sj_div == "BS" or "재무상태" in sj_nm else 0
+    account_score = 1 if account_id else 0
+    period_score = 1 if "당기" in thstrm_nm or "분기" in thstrm_nm or "반기" in thstrm_nm else 0
+    amount_score = 1 if _clean_number(item.get("thstrm_amount")) else 0
+    return consolidated_score, statement_score, account_score, period_score, amount_score
+
+
+def _financial_basis(item: dict[str, str]) -> str:
+    metadata = {
+        "fs_div": item.get("fs_div") or "unknown",
+        "sj_div": item.get("sj_div") or "unknown",
+        "account_id": item.get("account_id") or "unknown",
+        "thstrm_nm": item.get("thstrm_nm") or "unknown",
+        "frmtrm_nm": item.get("frmtrm_nm") or "unknown",
+    }
+    return "; ".join(f"{key}={value}" for key, value in metadata.items())
+
+
+def _financial_basis_warnings(selected: dict[str, dict[str, str]]) -> list[str]:
+    warnings: list[str] = []
+    revenue = selected.get("revenue")
+    operating_income = selected.get("operating_income")
+    if revenue and operating_income:
+        if revenue.get("fs_div") != operating_income.get("fs_div"):
+            warnings.append("OpenDART financial quality warning: revenue and operating profit use different fs_div basis")
+        if revenue.get("sj_div") != operating_income.get("sj_div"):
+            warnings.append("OpenDART financial quality warning: revenue and operating profit use different sj_div basis")
+        if revenue.get("thstrm_nm") != operating_income.get("thstrm_nm"):
+            warnings.append("OpenDART financial quality warning: revenue and operating profit use different thstrm_nm period labels")
+    return warnings
+
+
 def _extract_financial_facts(items: list[dict[str, str]]) -> list[str]:
-    facts: list[str] = []
-    captured: set[str] = set()
+    selected: dict[str, dict[str, str]] = {}
     for item in items:
+        account_name = item.get("account_nm", "")
+        if _format_krw(item.get("thstrm_amount")) is None:
+            continue
+        for key, aliases in FINANCIAL_ACCOUNT_ALIASES.items():
+            if account_name not in aliases:
+                continue
+            current = selected.get(key)
+            if current is None or _financial_item_score(item) > _financial_item_score(current):
+                selected[key] = item
+            break
+
+    facts: list[str] = []
+    for key in ("assets", "liabilities", "equity", "revenue", "operating_income", "net_income"):
+        item = selected.get(key)
+        if item is None:
+            continue
         account_name = item.get("account_nm", "")
         statement_name = item.get("sj_nm", "")
         amount = _format_krw(item.get("thstrm_amount"))
         if amount is None:
             continue
-        for key, aliases in FINANCIAL_ACCOUNT_ALIASES.items():
-            if key in captured:
-                continue
-            if account_name in aliases:
-                facts.append(f"OpenDART financial fact: {account_name} = {amount} ({statement_name})")
-                captured.add(key)
-                break
+        facts.append(
+            f"OpenDART financial fact: {account_name} = {amount} "
+            f"({statement_name}; {_financial_basis(item)})"
+        )
+    facts.extend(_financial_basis_warnings(selected))
     return facts
 
 
@@ -340,229 +392,3 @@ class OpenDARTProvider(FilingProvider):
         if "자기주식" not in title:
             return [], []
         start = published - timedelta(days=7)
-        end = published + timedelta(days=7)
-        params = {
-            "crtfc_key": api_key,
-            "corp_code": corp_code,
-            "bgn_de": _yyyymmdd(start),
-            "end_de": _yyyymmdd(end),
-        }
-        try:
-            response = await client.get(self.treasury_stock_endpoint, params=params)
-            response.raise_for_status()
-            payload = response.json()
-        except (httpx.HTTPError, ValueError):
-            return [], ["OpenDART treasury stock API request failed"]
-        if payload.get("status") != "000":
-            return [], [f"OpenDART treasury stock API status: {payload.get('status')}"]
-        items = _filter_items_by_receipt(payload.get("list", []), receipt_no)
-        facts = _extract_treasury_stock_facts(items)
-        if not facts:
-            return [], [_available_keys_debug(items, "treasury stock")]
-        return facts, []
-
-    async def _fetch_supply_contract_facts(
-        self,
-        client: httpx.AsyncClient,
-        api_key: str,
-        corp_code: str,
-        title: str,
-        published: date,
-        receipt_no: str,
-    ) -> tuple[list[str], list[str]]:
-        if not any(term in title for term in ("공급계약", "단일판매", "판매ㆍ공급계약", "판매·공급계약")):
-            return [], []
-        start = published - timedelta(days=30)
-        end = published + timedelta(days=30)
-        params = {
-            "crtfc_key": api_key,
-            "corp_code": corp_code,
-            "bgn_de": _yyyymmdd(start),
-            "end_de": _yyyymmdd(end),
-        }
-        try:
-            response = await client.get(self.supply_contract_endpoint, params=params)
-            response.raise_for_status()
-            payload = response.json()
-        except (httpx.HTTPError, ValueError):
-            payload = {"status": "fallback"}
-        if payload.get("status") == "000":
-            items = _filter_items_by_receipt(payload.get("list", []), receipt_no)
-            facts = _extract_supply_contract_facts(items)
-            if facts:
-                return facts, []
-
-        try:
-            document = await fetch_dart_document_text(client, receipt_no)
-        except (httpx.HTTPError, ValueError):
-            document = None
-        if document:
-            facts = extract_supply_contract_facts_from_text(document.text)
-            if facts:
-                return facts, []
-
-        status = payload.get("status")
-        diagnostics = build_text_diagnostics(document)
-        if status == "000":
-            return [], [_available_keys_debug(payload.get("list", []), "supply contract"), *diagnostics]
-        return [], [f"OpenDART supply contract API status: {status}", *diagnostics]
-
-    async def fetch_events(self, ticker: str, lookback_days: int) -> list[RawEvent]:
-        settings = get_settings()
-        if not settings.opendart_api_key:
-            return []
-
-        company = await _resolve_opendart_company(settings.opendart_api_key, ticker)
-        if company is None:
-            return []
-        corp_code = company.corp_code
-        output_ticker = company.stock_code or ticker.upper()
-
-        params = {
-            "crtfc_key": settings.opendart_api_key,
-            "corp_code": corp_code,
-            "bgn_de": _yyyymmdd(date.today() - timedelta(days=lookback_days)),
-            "page_count": 20,
-        }
-        try:
-            async with httpx.AsyncClient(timeout=8.0) as client:
-                response = await client.get(self.endpoint, params=params)
-                response.raise_for_status()
-                payload = response.json()
-                if payload.get("status") not in {None, "000"}:
-                    return []
-
-                events: list[RawEvent] = []
-                for item in payload.get("list", []):
-                    title = item.get("report_nm") or "OpenDART filing"
-                    receipt_no = item.get("rcept_no") or ""
-                    filing_date = item.get("rcept_dt") or ""
-                    try:
-                        published = date.fromisoformat(
-                            f"{filing_date[:4]}-{filing_date[4:6]}-{filing_date[6:8]}"
-                        )
-                    except ValueError:
-                        published = date.today()
-
-                    extra_facts: list[str] = []
-                    extra_unknowns: list[str] = []
-                    financial_facts, financial_unknowns = await self._fetch_financial_facts(
-                        client=client,
-                        api_key=settings.opendart_api_key,
-                        corp_code=corp_code,
-                        title=title,
-                        published=published,
-                    )
-                    extra_facts.extend(financial_facts)
-                    extra_unknowns.extend(financial_unknowns)
-                    treasury_facts, treasury_unknowns = await self._fetch_treasury_stock_facts(
-                        client=client,
-                        api_key=settings.opendart_api_key,
-                        corp_code=corp_code,
-                        title=title,
-                        published=published,
-                        receipt_no=receipt_no,
-                    )
-                    extra_facts.extend(treasury_facts)
-                    extra_unknowns.extend(treasury_unknowns)
-                    contract_facts, contract_unknowns = await self._fetch_supply_contract_facts(
-                        client=client,
-                        api_key=settings.opendart_api_key,
-                        corp_code=corp_code,
-                        title=title,
-                        published=published,
-                        receipt_no=receipt_no,
-                    )
-                    extra_facts.extend(contract_facts)
-                    extra_unknowns.extend(contract_unknowns)
-
-                    confirmed_facts = [
-                        f"OpenDART filing title: {title}",
-                        f"OpenDART receipt number: {receipt_no}",
-                    ]
-                    confirmed_facts.extend(extra_facts)
-                    events.append(
-                        RawEvent(
-                            ticker=output_ticker.upper(),
-                            company_name=item.get("corp_name") or company.corp_name,
-                            date=published,
-                            source="OpenDART",
-                            provider=self.name,
-                            title=title,
-                            url=f"https://dart.fss.or.kr/dsaf001/main.do?rcpNo={receipt_no}",
-                            summary="; ".join(confirmed_facts),
-                            keywords=_dart_keywords(title),
-                            confirmed_facts=confirmed_facts,
-                            inferred_implications=[],
-                            unknowns=_filing_unknowns(extra_unknowns),
-                        )
-                    )
-                return events
-        except (httpx.HTTPError, ValueError):
-            return []
-
-
-class SecEdgarProvider(FilingProvider):
-    name = "sec_edgar"
-    endpoint_template = "https://data.sec.gov/submissions/CIK{cik}.json"
-
-    async def fetch_events(self, ticker: str, lookback_days: int) -> list[RawEvent]:
-        settings = get_settings()
-        if not settings.sec_user_agent:
-            return []
-        cik = SEC_TICKER_CIK.get(ticker.upper())
-        if not cik:
-            return []
-
-        headers = {"User-Agent": settings.sec_user_agent, "Accept": "application/json"}
-        try:
-            async with httpx.AsyncClient(timeout=8.0, headers=headers) as client:
-                response = await client.get(self.endpoint_template.format(cik=cik))
-                response.raise_for_status()
-                payload = response.json()
-        except (httpx.HTTPError, ValueError):
-            return []
-
-        recent = payload.get("filings", {}).get("recent", {})
-        forms = recent.get("form", [])
-        filing_dates = recent.get("filingDate", [])
-        accession_numbers = recent.get("accessionNumber", [])
-        primary_documents = recent.get("primaryDocument", [])
-        company_name = payload.get("name")
-        cutoff = date.today() - timedelta(days=lookback_days)
-
-        events: list[RawEvent] = []
-        for form, filing_date, accession, primary_doc in zip(
-            forms, filing_dates, accession_numbers, primary_documents, strict=False
-        ):
-            if form not in {"8-K", "10-Q", "10-K"}:
-                continue
-            try:
-                published = date.fromisoformat(filing_date)
-            except ValueError:
-                published = date.today()
-            if published < cutoff:
-                continue
-            accession_path = accession.replace("-", "")
-            url = f"https://www.sec.gov/Archives/edgar/data/{int(cik)}/{accession_path}/{primary_doc}"
-            title = f"{company_name or ticker.upper()} filed {form}"
-            events.append(
-                RawEvent(
-                    ticker=ticker.upper(),
-                    company_name=company_name,
-                    date=published,
-                    source="SEC EDGAR",
-                    provider=self.name,
-                    title=title,
-                    url=url,
-                    summary=title,
-                    keywords=["sec_edgar", form.lower(), "filing"],
-                    confirmed_facts=[
-                        f"SEC EDGAR recent filing form: {form}",
-                        f"SEC accession number: {accession}",
-                    ],
-                    inferred_implications=[],
-                    unknowns=_filing_unknowns(),
-                )
-            )
-        return events
