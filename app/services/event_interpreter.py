@@ -12,6 +12,10 @@ def _fact_value(facts: list[str], prefix: str) -> str | None:
     return None
 
 
+def _facts_containing(facts: list[str], text: str) -> list[str]:
+    return [fact for fact in facts if text in fact]
+
+
 def _to_float(value: str | None) -> float | None:
     if value is None:
         return None
@@ -38,6 +42,20 @@ def _format_krw(amount: int | None) -> str:
     if amount is None:
         return "unknown"
     return f"{amount:,} KRW"
+
+
+def _basis_fragment(fact: str | None) -> str | None:
+    if fact is None:
+        return None
+    match = re.search(r"\(([^)]*fs_div=[^)]+)\)", fact)
+    return match.group(1) if match else None
+
+
+def _basis_value(fragment: str | None, key: str) -> str | None:
+    if fragment is None:
+        return None
+    match = re.search(rf"{re.escape(key)}=([^;)]*)", fragment)
+    return match.group(1).strip() if match else None
 
 
 def _interpret_supply_contract(raw_event: RawEvent, implications: list[str], unknowns: list[str]) -> None:
@@ -92,11 +110,27 @@ def _interpret_capital_allocation(raw_event: RawEvent, implications: list[str], 
 
 def _interpret_earnings(raw_event: RawEvent, implications: list[str], unknowns: list[str]) -> None:
     facts = raw_event.confirmed_facts
+    revenue_fact = next(iter(_facts_containing(facts, "financial fact: 매출액")), None)
+    operating_income_fact = next(iter(_facts_containing(facts, "financial fact: 영업이익")), None)
     revenue = _to_int(_fact_value(facts, "financial fact: 매출액"))
     operating_income = _to_int(_fact_value(facts, "financial fact: 영업이익"))
     assets = _to_int(_fact_value(facts, "financial fact: 자산총계"))
     liabilities = _to_int(_fact_value(facts, "financial fact: 부채총계"))
     equity = _to_int(_fact_value(facts, "financial fact: 자본총계"))
+
+    revenue_basis = _basis_fragment(revenue_fact)
+    operating_basis = _basis_fragment(operating_income_fact)
+    if revenue_basis:
+        _append_unique(implications, f"Revenue basis metadata: {revenue_basis}.")
+    if operating_basis:
+        _append_unique(implications, f"Operating profit basis metadata: {operating_basis}.")
+    if revenue_basis and operating_basis and revenue_basis != operating_basis:
+        _append_unique(unknowns, "Financial quality warning: revenue and operating profit basis metadata differ; margin comparison needs manual verification.")
+
+    if any("financial quality warning" in fact.lower() for fact in facts):
+        for warning in facts:
+            if "financial quality warning" in warning.lower():
+                _append_unique(unknowns, warning)
 
     if revenue is not None:
         _append_unique(implications, f"Reported revenue fact parsed at about {_format_krw(revenue)}; compare against guidance and consensus.")
@@ -104,8 +138,10 @@ def _interpret_earnings(raw_event: RawEvent, implications: list[str], unknowns: 
         _append_unique(implications, f"Reported operating profit fact parsed at about {_format_krw(operating_income)}; margin trend should be reviewed.")
     if revenue and operating_income is not None:
         margin = operating_income / revenue * 100
-        _append_unique(implications, f"Implied operating margin from parsed facts is about {margin:.1f}%; verify consolidated/parent basis before thesis judgment.")
-        if margin >= 20:
+        _append_unique(implications, f"Implied operating margin from parsed facts is about {margin:.1f}%; verify financial-statement basis before thesis judgment.")
+        if margin >= 60 or margin < -20:
+            _append_unique(unknowns, "Financial quality warning: implied operating margin is outside a normal operating range; verify whether OpenDART returned cumulative, separate, or mismatched statement items.")
+        elif margin >= 20:
             _append_unique(implications, "Operating margin is high on parsed figures; check whether this reflects structural pricing power, cycle peak, or one-off mix effect.")
         elif margin < 5:
             _append_unique(implications, "Operating margin is thin on parsed figures; thesis quality depends heavily on margin recovery or volume leverage.")
