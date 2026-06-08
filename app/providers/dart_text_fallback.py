@@ -117,25 +117,27 @@ def _looks_like_amount(value: str) -> bool:
     if _is_placeholder_value(value):
         return False
     compact = _compact(value)
-    has_currency_marker = any(marker in compact for marker in ("원", "krw", "USD", "달러", "$"))
+    has_currency_marker = any(marker in compact for marker in ("원", "KRW", "krw", "USD", "달러", "$"))
     has_large_number = re.search(r"\d{1,3}(,\d{3})+|\d{7,}", compact) is not None
-    return has_currency_marker and has_large_number
+    return has_currency_marker or has_large_number
 
 
 def _looks_like_ratio(value: str) -> bool:
     if _is_placeholder_value(value):
         return False
     compact = _compact(value)
-    return "%" in compact and re.search(r"\d", compact) is not None
+    return re.fullmatch(r"\d+(\.\d+)?%?", compact) is not None or ("%" in compact and re.search(r"\d", compact) is not None)
+
+
+def _looks_like_date(value: str) -> bool:
+    return re.search(r"20\d{2}[.\-/년]\d{1,2}", _compact(value)) is not None
 
 
 def _looks_like_date_or_period(value: str) -> bool:
     if _is_placeholder_value(value):
         return False
     compact = _compact(value)
-    has_date = re.search(r"20\d{2}[.\-/년]\d{1,2}", compact) is not None
-    has_range = any(marker in compact for marker in ("부터", "까지", "~", "-"))
-    return has_date and has_range
+    return _looks_like_date(value) and any(marker in compact for marker in ("부터", "까지", "~", "-"))
 
 
 def _looks_like_text_fact(value: str) -> bool:
@@ -152,12 +154,35 @@ def _candidate_is_valid(field_key: str, value: str) -> bool:
         return _looks_like_amount(value)
     if field_key == "recent_sales_ratio":
         return _looks_like_ratio(value)
-    if field_key in {"period", "start_date", "end_date"}:
-        return _looks_like_date_or_period(value) if field_key == "period" else re.search(r"20\d{2}[.\-/년]\d{1,2}", _compact(value)) is not None
+    if field_key == "period":
+        return _looks_like_date_or_period(value)
+    if field_key in {"start_date", "end_date"}:
+        return _looks_like_date(value)
     return _looks_like_text_fact(value)
 
 
+def _tokens(text: str) -> list[str]:
+    return [_clean_cell(part) for part in text.replace("\n", " | ").split("|") if _clean_cell(part)]
+
+
+def _token_value(text: str, labels: tuple[str, ...], field_key: str) -> str | None:
+    tokens = _tokens(text)
+    for index, token in enumerate(tokens):
+        token_compact = _compact(token)
+        for label in labels:
+            label_compact = _compact(label)
+            if label_compact not in token_compact:
+                continue
+            for candidate in tokens[index + 1 : index + 4]:
+                if _candidate_is_valid(field_key, candidate):
+                    return candidate
+    return None
+
+
 def _row_value(text: str, labels: tuple[str, ...], field_key: str) -> str | None:
+    token_match = _token_value(text, labels, field_key)
+    if token_match:
+        return token_match
     lines = [_clean_cell(line) for line in text.splitlines() if _clean_cell(line)]
     for line in lines:
         compact = line.replace(" ", "")
@@ -179,15 +204,20 @@ def _row_value(text: str, labels: tuple[str, ...], field_key: str) -> str | None
     return None
 
 
+def _period_from_start_end(text: str) -> str | None:
+    start = _token_value(text, ("시작일", "계약시작일"), "start_date")
+    end = _token_value(text, ("종료일", "계약종료일"), "end_date")
+    if start and end:
+        return f"{start} to {end}"
+    return None
+
+
 def extract_supply_contract_facts_from_text(text: str) -> list[str]:
     fields = [
-        ("contract_name", ("계약명", "판매ㆍ공급계약 내용", "판매·공급계약 내용", "계약내용")),
+        ("contract_name", ("체결계약명", "계약명", "판매ㆍ공급계약 내용", "판매·공급계약 내용", "계약내용")),
         ("counterparty", ("계약상대방", "계약상대", "상대방")),
-        ("amount", ("계약금액", "계약 금액")),
-        ("recent_sales_ratio", ("매출액대비", "최근매출액 대비", "최근 매출액 대비")),
-        ("period", ("계약기간", "계약 기간")),
-        ("start_date", ("시작일", "계약시작일")),
-        ("end_date", ("종료일", "계약종료일")),
+        ("amount", ("계약금액(원)", "계약금액", "계약 금액")),
+        ("recent_sales_ratio", ("매출액대비(%)", "매출액대비", "최근매출액 대비", "최근 매출액 대비")),
         ("region", ("판매ㆍ공급지역", "판매·공급지역", "공급지역")),
     ]
     facts: list[str] = []
@@ -195,6 +225,9 @@ def extract_supply_contract_facts_from_text(text: str) -> list[str]:
         value = _row_value(text, labels, key)
         if value:
             facts.append(f"DART text supply contract fact: {key} = {value}")
+    period = _period_from_start_end(text)
+    if period:
+        facts.append(f"DART text supply contract fact: period = {period}")
     return facts
 
 
