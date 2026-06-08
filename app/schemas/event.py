@@ -71,6 +71,20 @@ class SourceDocument(BaseModel):
     published_date: date | None = None
 
 
+class BackfillStatus(BaseModel):
+    requested: bool = False
+    executed: bool = False
+    skipped: bool = False
+    reason: str = "not_requested"
+    provider: str | None = None
+    years: int | None = None
+    snapshot_count_before: int = 0
+    snapshot_count_after: int = 0
+    backfilled_count: int = 0
+    report_count: int = 0
+    warnings: list[str] = []
+
+
 class ThesisEvent(BaseModel):
     date: date
     source: str
@@ -89,4 +103,5 @@ class ThesisEventResponse(BaseModel):
     ticker: str
     company_name: str | None = None
     lookback_days: int
+    backfill_status: BackfillStatus | None = None
     events: list[ThesisEvent]
