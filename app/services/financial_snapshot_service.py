@@ -46,6 +46,21 @@ def _basis_value(basis: str | None, key: str) -> str | None:
     return match.group(1).strip() if match else None
 
 
+def _period_type(title: str, period: str) -> str:
+    text = f"{title} {period}"
+    if "사업보고서" in title or re.search(r"제\s*\d+\s*기$", period):
+        return "FY"
+    if "반기보고서" in title or "반기" in period:
+        return "H1"
+    if "3분기" in title or "3분기" in period:
+        return "Q3"
+    if "1분기" in title or "1분기" in period:
+        return "Q1"
+    if "분기보고서" in title:
+        return "Q"
+    return "UNKNOWN"
+
+
 def _margin(revenue: float | None, profit: float | None) -> float | None:
     if revenue in {None, 0} or profit is None:
         return None
@@ -66,39 +81,48 @@ def _append(items: list[str], value: str) -> None:
 def _previous(session: Session, snapshot: FinancialSnapshot) -> FinancialSnapshot | None:
     if snapshot.reported_date is None:
         return None
-    return session.exec(
-        select(FinancialSnapshot)
-        .where(
-            FinancialSnapshot.ticker == snapshot.ticker,
-            FinancialSnapshot.provider == snapshot.provider,
-            FinancialSnapshot.reported_date < snapshot.reported_date,
-        )
-        .order_by(FinancialSnapshot.reported_date.desc())
-    ).first()
+    query = select(FinancialSnapshot).where(
+        FinancialSnapshot.ticker == snapshot.ticker,
+        FinancialSnapshot.provider == snapshot.provider,
+        FinancialSnapshot.reported_date < snapshot.reported_date,
+    )
+    if snapshot.period_type:
+        query = query.where(FinancialSnapshot.period_type == snapshot.period_type)
+    return session.exec(query.order_by(FinancialSnapshot.reported_date.desc())).first()
 
 
 def _add_comparison(session: Session, event: Event, snapshot: FinancialSnapshot) -> None:
     implications = _json_list(event.inferred_implications)
     unknowns = _json_list(event.unknowns)
     previous = _previous(session, snapshot)
+    comparable_label = snapshot.period_type or "same-period"
     if previous is None:
-        _append(unknowns, "Historical comparison unavailable: no prior stored snapshot for this ticker/provider.")
+        _append(
+            unknowns,
+            f"Historical comparison unavailable: no prior comparable {comparable_label} snapshot for this ticker/provider.",
+        )
     else:
         revenue_change = _pct(snapshot.revenue, previous.revenue)
         profit_change = _pct(snapshot.operating_income, previous.operating_income)
         if revenue_change is None:
             _append(unknowns, "Revenue comparison unavailable: missing current/prior revenue.")
         else:
-            _append(implications, f"Revenue changed {revenue_change:+.1f}% vs prior stored period {previous.period}.")
+            _append(
+                implications,
+                f"Revenue changed {revenue_change:+.1f}% vs prior comparable {previous.period_type or 'period'} snapshot {previous.period}.",
+            )
         if profit_change is None:
             _append(unknowns, "Operating income comparison unavailable: missing current/prior operating income.")
         else:
-            _append(implications, f"Operating income changed {profit_change:+.1f}% vs prior stored period {previous.period}.")
+            _append(
+                implications,
+                f"Operating income changed {profit_change:+.1f}% vs prior comparable {previous.period_type or 'period'} snapshot {previous.period}.",
+            )
         if snapshot.operating_margin is None or previous.operating_margin is None:
             _append(unknowns, "Operating margin comparison unavailable: missing current/prior margin.")
         else:
             margin_delta = snapshot.operating_margin - previous.operating_margin
-            _append(implications, f"Operating margin changed {margin_delta:+.1f}p vs prior stored period.")
+            _append(implications, f"Operating margin changed {margin_delta:+.1f}p vs prior comparable snapshot.")
         if snapshot.quality_warnings or previous.quality_warnings:
             _append(unknowns, "Financial comparison has quality warnings; verify basis consistency before using growth rates.")
     event.inferred_implications = json.dumps(implications)
@@ -123,6 +147,7 @@ def upsert_financial_snapshot_from_event(session: Session, event: Event) -> Fina
     profit_basis = _basis(profit_fact)
     balance_basis = _basis(assets_fact) or _basis(liabilities_fact) or _basis(equity_fact)
     period = _basis_value(revenue_basis, "thstrm_nm") or event.title
+    period_type = _period_type(event.title, period)
 
     snapshot = session.exec(
         select(FinancialSnapshot).where(
@@ -140,6 +165,7 @@ def upsert_financial_snapshot_from_event(session: Session, event: Event) -> Fina
     liabilities = _amount(liabilities_fact)
     assets = _amount(assets_fact)
     equity = _amount(equity_fact)
+    snapshot.period_type = period_type
     snapshot.reported_date = event.date
     snapshot.source = event.source
     snapshot.provider = event.provider
