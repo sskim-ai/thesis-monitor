@@ -1,6 +1,15 @@
+import os
+
+os.environ["ENABLE_LIVE_PROVIDERS"] = "false"
+os.environ["INCLUDE_MOCK_PROVIDER"] = "true"
+
 from fastapi.testclient import TestClient
 
-from app.main import app
+from app.config import get_settings
+
+get_settings.cache_clear()
+
+from app.main import app  # noqa: E402
 
 
 def test_mock_provider_returns_events() -> None:
