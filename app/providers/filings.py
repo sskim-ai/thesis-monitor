@@ -152,6 +152,13 @@ def _first_non_empty(item: dict[str, str], keys: tuple[str, ...]) -> str | None:
     return None
 
 
+def _filter_items_by_receipt(items: list[dict[str, str]], receipt_no: str) -> list[dict[str, str]]:
+    if not receipt_no:
+        return items
+    matched = [item for item in items if item.get("rcept_no") == receipt_no]
+    return matched or items
+
+
 def _extract_treasury_stock_facts(items: list[dict[str, str]]) -> list[str]:
     facts: list[str] = []
     if not items:
@@ -221,10 +228,19 @@ class OpenDARTProvider(FilingProvider):
         api_key: str,
         corp_code: str,
         title: str,
+        published: date,
+        receipt_no: str,
     ) -> tuple[list[str], list[str]]:
         if "자기주식" not in title:
             return [], []
-        params = {"crtfc_key": api_key, "corp_code": corp_code}
+        start = published - timedelta(days=7)
+        end = published + timedelta(days=7)
+        params = {
+            "crtfc_key": api_key,
+            "corp_code": corp_code,
+            "bgn_de": _yyyymmdd(start),
+            "end_de": _yyyymmdd(end),
+        }
         try:
             response = await client.get(self.treasury_stock_endpoint, params=params)
             response.raise_for_status()
@@ -233,7 +249,8 @@ class OpenDARTProvider(FilingProvider):
             return [], ["OpenDART treasury stock API request failed"]
         if payload.get("status") != "000":
             return [], [f"OpenDART treasury stock API status: {payload.get('status')}"]
-        facts = _extract_treasury_stock_facts(payload.get("list", []))
+        items = _filter_items_by_receipt(payload.get("list", []), receipt_no)
+        facts = _extract_treasury_stock_facts(items)
         if not facts:
             return [], ["OpenDART treasury stock API returned no mapped facts"]
         return facts, []
@@ -291,6 +308,8 @@ class OpenDARTProvider(FilingProvider):
                         api_key=settings.opendart_api_key,
                         corp_code=corp_code,
                         title=title,
+                        published=published,
+                        receipt_no=receipt_no,
                     )
                     extra_facts.extend(treasury_facts)
                     extra_unknowns.extend(treasury_unknowns)
