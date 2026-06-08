@@ -1,0 +1,129 @@
+openapi: 3.1.0
+info:
+  title: Thesis Monitor API
+  version: 0.2.0
+servers:
+  - url: https://example-deployment-url.com
+paths:
+  /health:
+    get:
+      operationId: getHealth
+      responses:
+        '200':
+          description: OK
+  /provider-status:
+    get:
+      operationId: getProviderStatus
+      responses:
+        '200':
+          description: Provider status
+  /thesis-events:
+    get:
+      operationId: getThesisEvents
+      parameters:
+        - name: ticker
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: lookback_days
+          in: query
+          required: false
+          schema:
+            type: integer
+            default: 30
+            minimum: 1
+            maximum: 365
+        - name: requires_review_only
+          in: query
+          required: false
+          schema:
+            type: boolean
+            default: false
+        - name: provider
+          in: query
+          required: false
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Thesis events
+  /company-profile:
+    get:
+      operationId: getCompanyProfile
+      parameters:
+        - name: ticker
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Company profile
+  /earnings-checkpoints:
+    get:
+      operationId: getEarningsCheckpoints
+      parameters:
+        - name: ticker
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Earnings checkpoints
+  /watchlist:
+    get:
+      operationId: getWatchlist
+      responses:
+        '200':
+          description: Watchlist
+    post:
+      operationId: addWatchlistItem
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                ticker:
+                  type: string
+                company_name:
+                  type: string
+                exchange:
+                  type: string
+                notes:
+                  type: string
+                active:
+                  type: boolean
+                  default: true
+              required:
+                - ticker
+                - company_name
+      responses:
+        '200':
+          description: Watchlist item
+  /admin/reclassify-events:
+    post:
+      operationId: reclassifyEvents
+      parameters:
+        - name: ticker
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: provider
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: dry_run
+          in: query
+          required: false
+          schema:
+            type: boolean
+            default: true
+      responses:
+        '200':
+          description: Reclassification result
