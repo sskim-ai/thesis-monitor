@@ -5,7 +5,7 @@ import httpx
 
 
 def _strip_html(value: str) -> str:
-    value = re.sub(r"</(tr|p|div|li|br)>”, "\n", value, flags=re.IGNORECASE)
+    value = re.sub(r"</(tr|p|div|li|br)>", "\n", value, flags=re.IGNORECASE)
     value = re.sub(r"</(td|th)>", " | ", value, flags=re.IGNORECASE)
     value = re.sub(r"<script.*?</script>", " ", value, flags=re.IGNORECASE | re.DOTALL)
     value = re.sub(r"<style.*?</style>", " ", value, flags=re.IGNORECASE | re.DOTALL)
@@ -38,11 +38,12 @@ def _row_value(text: str, labels: tuple[str, ...]) -> str | None:
     for line in lines:
         compact = line.replace(" ", "")
         for label in labels:
-            if label.replace(" ", "") not in compact:
+            label_compact = label.replace(" ", "")
+            if label_compact not in compact:
                 continue
             parts = [_clean_cell(part) for part in line.split("|") if _clean_cell(part)]
             for index, part in enumerate(parts):
-                if label.replace(" ", "") in part.replace(" ", ""):
+                if label_compact in part.replace(" ", ""):
                     if index + 1 < len(parts):
                         return parts[index + 1]
                     tail = part.split(label, 1)[-1]
@@ -72,8 +73,10 @@ def extract_supply_contract_facts_from_text(text: str) -> list[str]:
 
 
 async def fetch_dart_document_text(client: httpx.AsyncClient, receipt_no: str) -> str | None:
-    main_url = "https://dart.fss.or.kr/dsaf001/main.do"
-    main_response = await client.get(main_url, params={"rcpNo": receipt_no})
+    main_response = await client.get(
+        "https://dart.fss.or.kr/dsaf001/main.do",
+        params={"rcpNo": receipt_no},
+    )
     main_response.raise_for_status()
     main_html = main_response.text
     dcm_no = _extract_dcm_no(main_html, receipt_no)
