@@ -29,6 +29,7 @@ def _ensure_sqlite_columns() -> None:
             "stock_based_compensation": "FLOAT",
             "source": "VARCHAR",
             "provider": "VARCHAR",
+            "period_type": "VARCHAR",
             "fs_div": "VARCHAR",
             "sj_div": "VARCHAR",
             "revenue_basis": "VARCHAR",
