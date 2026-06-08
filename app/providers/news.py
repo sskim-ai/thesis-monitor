@@ -41,8 +41,9 @@ def _parse_rss_date(value: str | None) -> date:
 class GoogleNewsRSSProvider(NewsProvider):
     name = "google_news_rss"
 
-    def __init__(self, timeout_seconds: float = 5.0) -> None:
+    def __init__(self, timeout_seconds: float = 5.0, max_items: int = 10) -> None:
         self.timeout_seconds = timeout_seconds
+        self.max_items = max_items
 
     async def fetch_events(self, ticker: str, lookback_days: int) -> list[RawEvent]:
         query = quote_plus(f"{ticker} stock company news")
@@ -65,6 +66,8 @@ class GoogleNewsRSSProvider(NewsProvider):
 
         events: list[RawEvent] = []
         for item in root.findall(".//item"):
+            if len(events) >= self.max_items:
+                break
             title = clean_text(item.findtext("title")) or "Untitled news item"
             link = item.findtext("link") or url
             dedupe_key = (link, normalize_title(title))
@@ -119,7 +122,7 @@ class NaverNewsProvider(NewsProvider):
 
     def __init__(self, timeout_seconds: float = 5.0, display: int = 10) -> None:
         self.timeout_seconds = timeout_seconds
-        self.display = display
+        self.display = min(max(display, 1), 100)
 
     async def fetch_events(self, ticker: str, lookback_days: int) -> list[RawEvent]:
         settings = get_settings()
