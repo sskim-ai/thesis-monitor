@@ -17,6 +17,7 @@ from app.schemas.event import FinancialImpact, ThesisEvent, ThesisEventResponse
 from app.schemas.financial import EarningsCheckpointResponse
 from app.services.event_classifier import classify_event
 from app.services.event_interpreter import enrich_raw_event
+from app.services.financial_snapshot_service import upsert_financial_snapshot_from_event
 from app.services.thesis_scoring import score_event
 
 logger = logging.getLogger(__name__)
@@ -150,9 +151,12 @@ class CollectionService:
                 ).first()
                 if duplicate is None:
                     session.add(event)
+                    session.flush()
+                    upsert_financial_snapshot_from_event(session, event)
                     collected.append(event)
                 else:
                     _refresh_duplicate_event(duplicate, event)
+                    upsert_financial_snapshot_from_event(session, duplicate)
         session.commit()
         return collected
 
