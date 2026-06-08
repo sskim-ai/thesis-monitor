@@ -47,7 +47,6 @@ def _basis_value(basis: str | None, key: str) -> str | None:
 
 
 def _period_type(title: str, period: str) -> str:
-    text = f"{title} {period}"
     if "사업보고서" in title or re.search(r"제\s*\d+\s*기$", period):
         return "FY"
     if "반기보고서" in title or "반기" in period:
