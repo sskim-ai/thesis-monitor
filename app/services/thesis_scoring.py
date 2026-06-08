@@ -1,3 +1,5 @@
+import re
+
 from app.providers.base import RawEvent
 from app.schemas.event import EventType, ThesisRelevance
 
@@ -35,6 +37,25 @@ EVENT_TYPE_SCORES: dict[EventType, int] = {
 }
 
 
+def _fact_value(facts: list[str], prefix: str) -> str | None:
+    for fact in facts:
+        if prefix in fact:
+            return fact.split("=", 1)[-1].strip()
+    return None
+
+
+def _to_float(value: str | None) -> float | None:
+    if value is None:
+        return None
+    match = re.search(r"-?\d+(?:\.\d+)?", value.replace(",", ""))
+    if not match:
+        return None
+    try:
+        return float(match.group(0))
+    except ValueError:
+        return None
+
+
 def score_event(raw_event: RawEvent, event_type: EventType) -> ThesisRelevance:
     text = " ".join(
         [
@@ -43,6 +64,7 @@ def score_event(raw_event: RawEvent, event_type: EventType) -> ThesisRelevance:
             raw_event.source,
             " ".join(raw_event.keywords),
             " ".join(raw_event.confirmed_facts),
+            " ".join(raw_event.inferred_implications),
         ]
     ).lower()
     score = EVENT_TYPE_SCORES.get(event_type, 10)
@@ -63,6 +85,28 @@ def score_event(raw_event: RawEvent, event_type: EventType) -> ThesisRelevance:
     ):
         score += 25
         reasons.append("large order or supply contract language appears in source")
+
+    contract_amount = _to_float(_fact_value(raw_event.confirmed_facts, "supply contract fact: amount"))
+    contract_ratio = _to_float(_fact_value(raw_event.confirmed_facts, "supply contract fact: recent_sales_ratio"))
+    if contract_amount is not None:
+        reasons.append("parsed contract amount is available")
+        if contract_amount >= 1_000_000_000_000:
+            score += 25
+            reasons.append("contract amount exceeds 1 trillion KRW")
+        elif contract_amount >= 100_000_000_000:
+            score += 15
+            reasons.append("contract amount exceeds 100 billion KRW")
+    if contract_ratio is not None:
+        if contract_ratio >= 10:
+            score += 30
+            reasons.append("contract exceeds 10% of recent revenue")
+        elif contract_ratio >= 5:
+            score += 20
+            reasons.append("contract exceeds 5% of recent revenue")
+        elif contract_ratio >= 1:
+            score += 10
+            reasons.append("contract exceeds 1% of recent revenue")
+
     if "production order" in text:
         if event_type != EventType.production_order:
             score += 25
