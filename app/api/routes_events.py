@@ -15,6 +15,8 @@ async def get_thesis_events(
     lookback_days: int = Query(30, ge=1, le=365),
     requires_review_only: bool = Query(False),
     provider: str | None = Query(None, min_length=1),
+    auto_backfill: bool = Query(False),
+    backfill_years: int = Query(5, ge=1, le=10),
     session: Session = Depends(get_session),
 ) -> ThesisEventResponse:
     return await collection_service.get_thesis_events(
@@ -23,4 +25,6 @@ async def get_thesis_events(
         lookback_days=lookback_days,
         requires_review_only=requires_review_only,
         provider=provider,
+        auto_backfill=auto_backfill,
+        backfill_years=backfill_years,
     )
