@@ -5,6 +5,10 @@ import httpx
 
 from app.config import get_settings
 from app.providers.base import FilingProvider, RawEvent
+from app.providers.dart_text_fallback import (
+    extract_supply_contract_facts_from_text,
+    fetch_dart_document_text,
+)
 from app.providers.opendart_corp_codes import OpenDARTCompany, resolve_opendart_company
 
 
@@ -380,14 +384,26 @@ class OpenDARTProvider(FilingProvider):
             response.raise_for_status()
             payload = response.json()
         except (httpx.HTTPError, ValueError):
-            return [], ["OpenDART supply contract API request failed"]
-        if payload.get("status") != "000":
-            return [], [f"OpenDART supply contract API status: {payload.get('status')}"]
-        items = _filter_items_by_receipt(payload.get("list", []), receipt_no)
-        facts = _extract_supply_contract_facts(items)
-        if not facts:
-            return [], [_available_keys_debug(items, "supply contract")]
-        return facts, []
+            payload = {"status": "fallback"}
+        if payload.get("status") == "000":
+            items = _filter_items_by_receipt(payload.get("list", []), receipt_no)
+            facts = _extract_supply_contract_facts(items)
+            if facts:
+                return facts, []
+
+        try:
+            text = await fetch_dart_document_text(client, receipt_no)
+        except (httpx.HTTPError, ValueError):
+            text = None
+        if text:
+            facts = extract_supply_contract_facts_from_text(text)
+            if facts:
+                return facts, []
+
+        status = payload.get("status")
+        if status == "000":
+            return [], [_available_keys_debug(payload.get("list", []), "supply contract")]
+        return [], [f"OpenDART supply contract API status: {status}"]
 
     async def fetch_events(self, ticker: str, lookback_days: int) -> list[RawEvent]:
         settings = get_settings()
