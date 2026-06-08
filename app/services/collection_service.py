@@ -16,6 +16,7 @@ from app.schemas.company import CompanyProfile
 from app.schemas.event import FinancialImpact, ThesisEvent, ThesisEventResponse
 from app.schemas.financial import EarningsCheckpointResponse
 from app.services.event_classifier import classify_event
+from app.services.event_interpreter import enrich_raw_event
 from app.services.thesis_scoring import score_event
 
 logger = logging.getLogger(__name__)
@@ -61,9 +62,10 @@ def _event_to_schema(event: Event) -> ThesisEvent:
 
 
 def _raw_event_to_model(raw_event: RawEvent) -> Event:
+    raw_event = enrich_raw_event(raw_event)
     event_type = classify_event(raw_event)
     relevance = score_event(raw_event, event_type)
-    lower_text = f"{raw_event.title} {raw_event.summary}".lower()
+    lower_text = f"{raw_event.title} {raw_event.summary} {' '.join(raw_event.confirmed_facts)}".lower()
     return Event(
         ticker=raw_event.ticker.upper(),
         company_name=raw_event.company_name,
@@ -78,13 +80,13 @@ def _raw_event_to_model(raw_event: RawEvent) -> Event:
         confirmed_facts=json.dumps(raw_event.confirmed_facts),
         inferred_implications=json.dumps(raw_event.inferred_implications),
         unknowns=json.dumps(raw_event.unknowns),
-        revenue_guidance_changed="guidance" in lower_text,
-        margin_guidance_changed="margin" in lower_text,
+        revenue_guidance_changed="guidance" in lower_text or "가이던스" in lower_text,
+        margin_guidance_changed="margin" in lower_text or "마진" in lower_text,
         fcf_impact_known="fcf" in lower_text or "free cash flow" in lower_text,
         dilution_risk=event_type.value in {"capital_raise", "convertible_bond", "warrant"},
         capex_impact_known="capex" in lower_text or "capital expenditure" in lower_text,
-        inventory_risk="inventory" in lower_text,
-        receivables_risk="receivables" in lower_text or "accounts receivable" in lower_text,
+        inventory_risk="inventory" in lower_text or "재고" in lower_text,
+        receivables_risk="receivables" in lower_text or "accounts receivable" in lower_text or "매출채권" in lower_text,
         requires_review=relevance.requires_review,
         relevance_score=relevance.relevance_score,
         relevance_reason=relevance.reason,
