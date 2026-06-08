@@ -17,10 +17,12 @@ from app.schemas.event import FinancialImpact, ThesisEvent, ThesisEventResponse
 from app.schemas.financial import EarningsCheckpointResponse
 from app.services.event_classifier import classify_event
 from app.services.event_interpreter import enrich_raw_event
+from app.services.financial_backfill_service import backfill_financial_snapshots
 from app.services.financial_snapshot_service import upsert_financial_snapshot_from_event
 from app.services.thesis_scoring import score_event
 
 logger = logging.getLogger(__name__)
+MIN_COMPARABLE_SNAPSHOTS = 2
 
 
 def _list_from_text(value: str | None) -> list[str]:
@@ -163,6 +165,34 @@ class CollectionService:
         )
         self.profile_fallback_provider = MockProvider()
 
+    def _snapshot_count(self, session: Session, ticker: str, provider: str | None) -> int:
+        query = select(FinancialSnapshot).where(FinancialSnapshot.ticker == ticker)
+        if provider:
+            query = query.where(FinancialSnapshot.provider == provider)
+        return len(session.exec(query).all())
+
+    async def _maybe_backfill_financial_snapshots(
+        self,
+        session: Session,
+        ticker: str,
+        provider: str | None,
+        auto_backfill: bool,
+        backfill_years: int,
+    ) -> None:
+        if not auto_backfill:
+            return
+        backfill_provider = provider or "opendart"
+        if backfill_provider != "opendart":
+            return
+        if self._snapshot_count(session, ticker, backfill_provider) >= MIN_COMPARABLE_SNAPSHOTS:
+            return
+        await backfill_financial_snapshots(
+            session=session,
+            ticker=ticker,
+            years=backfill_years,
+            provider=backfill_provider,
+        )
+
     async def collect_events(self, session: Session, ticker: str, lookback_days: int) -> list[Event]:
         ticker = ticker.upper()
         collected: list[Event] = []
@@ -207,8 +237,17 @@ class CollectionService:
         lookback_days: int,
         requires_review_only: bool = False,
         provider: str | None = None,
+        auto_backfill: bool = False,
+        backfill_years: int = 5,
     ) -> ThesisEventResponse:
         ticker = ticker.upper()
+        await self._maybe_backfill_financial_snapshots(
+            session=session,
+            ticker=ticker,
+            provider=provider,
+            auto_backfill=auto_backfill,
+            backfill_years=backfill_years,
+        )
         await self.collect_events(session, ticker, lookback_days)
         cutoff = date.today() - timedelta(days=lookback_days)
         query = select(Event).where(Event.ticker == ticker, Event.date >= cutoff)
