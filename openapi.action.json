@@ -7,8 +7,7 @@
   },
   "servers": [
     {
-      "url": "https://fool-number-kernel-appointment.trycloudflare.com",
-      "description": "Replace with the deployed thesis-monitor API base URL."
+      "url": "https://sskim-macmini.tailb44bb1.ts.net/thesis"
     }
   ],
   "paths": {
@@ -193,13 +192,20 @@
     "schemas": {
       "ThesisEventResponse": {
         "type": "object",
-        "required": ["ticker", "lookback_days", "events"],
+        "required": [
+          "ticker",
+          "lookback_days",
+          "events"
+        ],
         "properties": {
           "ticker": {
             "type": "string"
           },
           "company_name": {
-            "type": ["string", "null"]
+            "type": [
+              "string",
+              "null"
+            ]
           },
           "lookback_days": {
             "type": "integer"
@@ -239,10 +245,16 @@
             "description": "not_requested, executed, sufficient_snapshots, unsupported_provider, or provider-specific failure reason."
           },
           "provider": {
-            "type": ["string", "null"]
+            "type": [
+              "string",
+              "null"
+            ]
           },
           "years": {
-            "type": ["integer", "null"]
+            "type": [
+              "integer",
+              "null"
+            ]
           },
           "snapshot_count_before": {
             "type": "integer"
@@ -266,7 +278,19 @@
       },
       "ThesisEvent": {
         "type": "object",
-        "required": ["date", "source", "provider", "title", "url", "event_type", "confirmed_facts", "inferred_implications", "unknowns", "financial_impact", "thesis_relevance"],
+        "required": [
+          "date",
+          "source",
+          "provider",
+          "title",
+          "url",
+          "event_type",
+          "confirmed_facts",
+          "inferred_implications",
+          "unknowns",
+          "financial_impact",
+          "thesis_relevance"
+        ],
         "properties": {
           "date": {
             "type": "string",
@@ -348,7 +372,11 @@
       },
       "ThesisRelevance": {
         "type": "object",
-        "required": ["requires_review", "relevance_score", "reason"],
+        "required": [
+          "requires_review",
+          "relevance_score",
+          "reason"
+        ],
         "properties": {
           "requires_review": {
             "type": "boolean"
@@ -365,7 +393,10 @@
       },
       "CompanyProfile": {
         "type": "object",
-        "required": ["ticker", "company_name"],
+        "required": [
+          "ticker",
+          "company_name"
+        ],
         "properties": {
           "ticker": {
             "type": "string"
@@ -374,13 +405,22 @@
             "type": "string"
           },
           "exchange": {
-            "type": ["string", "null"]
+            "type": [
+              "string",
+              "null"
+            ]
           },
           "industry": {
-            "type": ["string", "null"]
+            "type": [
+              "string",
+              "null"
+            ]
           },
           "sector": {
-            "type": ["string", "null"]
+            "type": [
+              "string",
+              "null"
+            ]
           },
           "business_units": {
             "type": "array",
@@ -401,16 +441,25 @@
             }
           },
           "ir_url": {
-            "type": ["string", "null"]
+            "type": [
+              "string",
+              "null"
+            ]
           },
           "filings_url": {
-            "type": ["string", "null"]
+            "type": [
+              "string",
+              "null"
+            ]
           }
         }
       },
       "EarningsCheckpointResponse": {
         "type": "object",
-        "required": ["ticker", "checkpoints"],
+        "required": [
+          "ticker",
+          "checkpoints"
+        ],
         "properties": {
           "ticker": {
             "type": "string"
@@ -425,7 +474,13 @@
       },
       "ProviderStatus": {
         "type": "object",
-        "required": ["name", "enabled", "configured", "required_settings", "mode"],
+        "required": [
+          "name",
+          "enabled",
+          "configured",
+          "required_settings",
+          "mode"
+        ],
         "properties": {
           "name": {
             "type": "string"

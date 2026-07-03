@@ -4,7 +4,7 @@ info:
   version: 0.1.0
   description: API for collecting and normalizing thesis-relevant company events. This API does not make buy or sell recommendations.
 servers:
-  - url: https://example-deployment-url.com
+  - url: https://sskim-macmini.tailb44bb1.ts.net/thesis
     description: Replace with the deployed Thesis Monitor server URL.
 paths:
   /health:

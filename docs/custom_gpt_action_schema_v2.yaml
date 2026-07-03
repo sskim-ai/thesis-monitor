@@ -3,7 +3,7 @@ info:
   title: Thesis Monitor API
   version: 0.2.0
 servers:
-  - url: https://example-deployment-url.com
+  - url: https://sskim-macmini.tailb44bb1.ts.net/thesis
 paths:
   /health:
     get:
