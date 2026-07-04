@@ -1,4 +1,5 @@
 import os
+from datetime import date
 
 os.environ["ENABLE_LIVE_PROVIDERS"] = "false"
 os.environ["INCLUDE_MOCK_PROVIDER"] = "true"
@@ -7,6 +8,7 @@ from fastapi.testclient import TestClient
 
 from app.api import routes_events
 from app.config import get_settings
+from app.providers.base import RawEvent
 from app.providers.mock import MockProvider
 
 get_settings.cache_clear()
@@ -61,6 +63,42 @@ def test_provider_filter() -> None:
         data = response.json()
         assert data["events"]
         assert all(event["provider"] == "mock" for event in data["events"])
+
+
+class KoreanTickerProvider(MockProvider):
+    async def fetch_events(self, ticker: str, lookback_days: int) -> list[RawEvent]:
+        if ticker != "000660":
+            return []
+        return [
+            RawEvent(
+                ticker=ticker,
+                company_name="SK하이닉스",
+                date=date(2026, 6, 6),
+                source="Mock Filing",
+                provider=self.name,
+                title="SK hynix notes inventory normalization in memory business",
+                url="https://example.com/skhynix-inventory-normalization",
+                summary="Management described inventory normalization in the memory segment.",
+                keywords=["inventory normalization", "memory"],
+                confirmed_facts=["Management described inventory normalization"],
+                inferred_implications=["Inventory normalization may reduce pricing pressure"],
+                unknowns=["Customer-level HBM demand", "Quarterly margin impact"],
+            )
+        ]
+
+
+def test_korean_company_name_maps_to_canonical_ticker() -> None:
+    routes_events.collection_service.providers = [KoreanTickerProvider()]
+    routes_events.collection_service.profile_fallback_provider = MockProvider()
+    with TestClient(app) as client:
+        response = client.get("/thesis-events?ticker=SK하이닉스&lookback_days=30&provider=mock")
+
+        assert response.status_code == 200
+        data = response.json()
+        assert data["ticker"] == "000660"
+        assert data["company_name"] == "SK하이닉스"
+        assert data["events"]
+        assert data["events"][0]["provider"] == "mock"
 
 
 def test_earnings_checkpoints_response_shape() -> None:

@@ -1,5 +1,7 @@
 from collections.abc import Generator
+from contextlib import suppress
 
+from sqlalchemy import event
 from sqlalchemy.pool import StaticPool
 from sqlmodel import Session, SQLModel, create_engine
 
@@ -7,7 +9,28 @@ from app.config import get_settings
 
 
 settings = get_settings()
-engine = create_engine(settings.database_url, **({"connect_args": {"check_same_thread": False}, "poolclass": StaticPool} if settings.database_url == "sqlite://" else {"connect_args": {"check_same_thread": False}} if settings.database_url.startswith("sqlite") else {}))
+
+
+def _sqlite_engine_kwargs() -> dict[str, object]:
+    if settings.database_url == "sqlite://":
+        return {"connect_args": {"check_same_thread": False, "timeout": 30}, "poolclass": StaticPool}
+    if settings.database_url.startswith("sqlite"):
+        return {"connect_args": {"check_same_thread": False, "timeout": 30}}
+    return {}
+
+
+engine = create_engine(settings.database_url, **_sqlite_engine_kwargs())
+
+
+@event.listens_for(engine, "connect")
+def _configure_sqlite_connection(dbapi_connection, _connection_record) -> None:
+    if not settings.database_url.startswith("sqlite"):
+        return
+    cursor = dbapi_connection.cursor()
+    cursor.execute("PRAGMA busy_timeout=30000")
+    with suppress(Exception):
+        cursor.execute("PRAGMA journal_mode=WAL")
+    cursor.close()
 
 
 def _ensure_sqlite_columns() -> None:

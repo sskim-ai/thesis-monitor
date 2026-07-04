@@ -23,6 +23,23 @@ from app.services.thesis_scoring import score_event
 
 logger = logging.getLogger(__name__)
 MIN_COMPARABLE_SNAPSHOTS = 2
+TICKER_ALIASES = {
+    "sk하이닉스": "000660",
+    "sk hynix": "000660",
+    "sk hynix inc": "000660",
+    "에스케이하이닉스": "000660",
+}
+COMPANY_NAME_ALIASES = {"000660": "SK하이닉스"}
+
+
+def _compact_alias_key(value: str) -> str:
+    return re.sub(r"\s+", " ", value.strip().lower())
+
+
+def _normalize_ticker(value: str) -> str:
+    normalized = value.strip()
+    normalized = re.sub(r"\.(ks|kq|kospi|kosdaq)$", "", normalized, flags=re.IGNORECASE)
+    return TICKER_ALIASES.get(_compact_alias_key(normalized), normalized).upper()
 
 
 def _list_from_text(value: str | None) -> list[str]:
@@ -214,7 +231,7 @@ class CollectionService:
         return status
 
     async def collect_events(self, session: Session, ticker: str, lookback_days: int) -> list[Event]:
-        ticker = ticker.upper()
+        ticker = _normalize_ticker(ticker)
         collected: list[Event] = []
         seen_urls: set[str] = set()
         seen_titles: set[str] = set()
@@ -260,7 +277,7 @@ class CollectionService:
         auto_backfill: bool = False,
         backfill_years: int = 5,
     ) -> ThesisEventResponse:
-        ticker = ticker.upper()
+        ticker = _normalize_ticker(ticker)
         backfill_status = await self._maybe_backfill_financial_snapshots(
             session=session,
             ticker=ticker,
@@ -277,7 +294,11 @@ class CollectionService:
             query = query.where(Event.provider == provider)
         events = list(session.exec(query.order_by(Event.date.desc(), Event.relevance_score.desc())).all())
         company = session.exec(select(Company).where(Company.ticker == ticker)).first()
-        company_name = company.company_name if company else (events[0].company_name if events else None)
+        company_name = (
+            (company.company_name if company else None)
+            or (events[0].company_name if events else None)
+            or COMPANY_NAME_ALIASES.get(ticker)
+        )
         backfill_status.snapshot_count_after = self._snapshot_count(session, ticker, backfill_status.provider)
         return ThesisEventResponse(
             ticker=ticker,
@@ -302,7 +323,7 @@ class CollectionService:
         )
 
     async def get_company_profile(self, session: Session, ticker: str) -> CompanyProfile:
-        ticker = ticker.upper()
+        ticker = _normalize_ticker(ticker)
         company = session.exec(select(Company).where(Company.ticker == ticker)).first()
         if company is not None:
             return self._company_model_to_profile(company)
@@ -317,12 +338,12 @@ class CollectionService:
         fallback_profile = await self.profile_fallback_provider.fetch_company_profile(ticker)
         if fallback_profile is not None:
             return fallback_profile
-        return CompanyProfile(ticker=ticker, company_name=ticker)
+        return CompanyProfile(ticker=ticker, company_name=COMPANY_NAME_ALIASES.get(ticker, ticker))
 
     async def get_earnings_checkpoints(
         self, session: Session, ticker: str
     ) -> EarningsCheckpointResponse:
-        ticker = ticker.upper()
+        ticker = _normalize_ticker(ticker)
         for provider in self.providers:
             try:
                 response = await provider.fetch_earnings(ticker)
