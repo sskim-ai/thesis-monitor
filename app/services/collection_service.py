@@ -24,12 +24,16 @@ from app.services.thesis_scoring import score_event
 logger = logging.getLogger(__name__)
 MIN_COMPARABLE_SNAPSHOTS = 2
 TICKER_ALIASES = {
+    "삼성전자": "005930",
+    "samsung electronics": "005930",
+    "samsung electronics co": "005930",
+    "samsung electronics co ltd": "005930",
     "sk하이닉스": "000660",
     "sk hynix": "000660",
     "sk hynix inc": "000660",
     "에스케이하이닉스": "000660",
 }
-COMPANY_NAME_ALIASES = {"000660": "SK하이닉스"}
+COMPANY_NAME_ALIASES = {"005930": "삼성전자", "000660": "SK하이닉스"}
 
 
 def _compact_alias_key(value: str) -> str:

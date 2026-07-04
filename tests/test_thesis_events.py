@@ -121,3 +121,15 @@ def test_company_profile_from_mock_provider() -> None:
         data = response.json()
         assert data["ticker"] == "AMD"
         assert data["company_name"] == "Advanced Micro Devices"
+
+
+
+def test_korean_samsung_ticker_alias() -> None:
+    _force_mock_events()
+    with TestClient(app) as client:
+        response = client.get("/company-profile?ticker=삼성전자")
+
+        assert response.status_code == 200
+        data = response.json()
+        assert data["ticker"] == "005930"
+        assert data["company_name"] == "삼성전자"

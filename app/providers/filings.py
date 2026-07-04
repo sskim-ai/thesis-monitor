@@ -12,8 +12,15 @@ from app.providers.dart_text_fallback import (
 )
 from app.providers.opendart_corp_codes import OpenDARTCompany, resolve_opendart_company
 
-OPENDART_CORP_CODES = {"000660": "00164779", "000660.KS": "00164779", "SK하이닉스": "00164779"}
-OPENDART_SEED_COMPANY_NAMES = {"00164779": "SK하이닉스"}
+OPENDART_CORP_CODES = {
+    "005930": "00126380",
+    "005930.KS": "00126380",
+    "삼성전자": "00126380",
+    "000660": "00164779",
+    "000660.KS": "00164779",
+    "SK하이닉스": "00164779",
+}
+OPENDART_SEED_COMPANY_NAMES = {"00126380": "삼성전자", "00164779": "SK하이닉스"}
 SEC_TICKER_CIK = {"NVDA": "0001045810", "AMD": "0000002488"}
 REPORT_CODE_BY_TITLE = {"1분기보고서": "11013", "분기보고서": "11013", "반기보고서": "11012", "3분기보고서": "11014", "사업보고서": "11011"}
 FINANCIAL_ACCOUNT_ALIASES = {
