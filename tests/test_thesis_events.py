@@ -73,7 +73,7 @@ class KoreanTickerProvider(MockProvider):
             RawEvent(
                 ticker=ticker,
                 company_name="SK하이닉스",
-                date=date(2026, 6, 6),
+                date=date.today(),
                 source="Mock Filing",
                 provider=self.name,
                 title="SK hynix notes inventory normalization in memory business",

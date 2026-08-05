@@ -154,10 +154,14 @@ def test_naver_provider_success(monkeypatch: pytest.MonkeyPatch) -> None:
 class FailingProvider(BaseProvider):
     name = "failing"
 
+    def __init__(self) -> None:
+        self.attempt_count = 0
+
     async def fetch_company_profile(self, ticker: str):
         return None
 
     async def fetch_events(self, ticker: str, lookback_days: int) -> list[RawEvent]:
+        self.attempt_count += 1
         raise RuntimeError("boom")
 
     async def fetch_earnings(self, ticker: str):
@@ -194,12 +198,14 @@ class DuplicateProvider(BaseProvider):
 def test_provider_failure_fallback_and_duplicate_removal() -> None:
     init_db()
     service = CollectionService()
-    service.providers = [FailingProvider(), DuplicateProvider()]
+    failing_provider = FailingProvider()
+    service.providers = [failing_provider, DuplicateProvider()]
 
     with Session(engine) as session:
         events = asyncio.run(service.collect_events(session, "UNITTEST", 30))
         providers = [event.provider for event in events]
 
     assert len(events) <= 1
+    assert failing_provider.attempt_count == 3
     if providers:
         assert providers[0] == "duplicate"

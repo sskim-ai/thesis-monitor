@@ -1,3 +1,4 @@
+import asyncio
 import json
 import logging
 import re
@@ -20,32 +21,10 @@ from app.services.event_interpreter import enrich_raw_event
 from app.services.financial_backfill_service import backfill_financial_snapshots
 from app.services.financial_snapshot_service import upsert_financial_snapshot_from_event
 from app.services.thesis_scoring import score_event
+from app.utils.tickers import COMPANY_NAME_ALIASES, normalize_ticker
 
 logger = logging.getLogger(__name__)
 MIN_COMPARABLE_SNAPSHOTS = 2
-TICKER_ALIASES = {
-    "삼성전자": "005930",
-    "samsung electronics": "005930",
-    "samsung electronics co": "005930",
-    "samsung electronics co ltd": "005930",
-    "sk하이닉스": "000660",
-    "sk hynix": "000660",
-    "sk hynix inc": "000660",
-    "에스케이하이닉스": "000660",
-}
-COMPANY_NAME_ALIASES = {"005930": "삼성전자", "000660": "SK하이닉스"}
-
-
-def _compact_alias_key(value: str) -> str:
-    return re.sub(r"\s+", " ", value.strip().lower())
-
-
-def _normalize_ticker(value: str) -> str:
-    normalized = value.strip()
-    normalized = re.sub(r"\.(ks|kq|kospi|kosdaq)$", "", normalized, flags=re.IGNORECASE)
-    return TICKER_ALIASES.get(_compact_alias_key(normalized), normalized).upper()
-
-
 def _list_from_text(value: str | None) -> list[str]:
     if not value:
         return []
@@ -186,6 +165,27 @@ class CollectionService:
         )
         self.profile_fallback_provider = MockProvider()
 
+    async def _fetch_provider_events(
+        self,
+        provider,
+        ticker: str,
+        lookback_days: int,
+    ) -> list[RawEvent]:
+        settings = get_settings()
+        attempts = max(1, settings.monitor_retry_attempts)
+        last_error: Exception | None = None
+        for attempt in range(attempts):
+            try:
+                return await provider.fetch_events(ticker, lookback_days)
+            except Exception as exc:  # noqa: BLE001
+                last_error = exc
+                if attempt + 1 < attempts:
+                    delay = settings.monitor_retry_base_seconds * (2**attempt)
+                    if delay > 0:
+                        await asyncio.sleep(delay)
+        assert last_error is not None
+        raise last_error
+
     def _snapshot_count(self, session: Session, ticker: str, provider: str | None) -> int:
         query = select(FinancialSnapshot).where(FinancialSnapshot.ticker == ticker)
         if provider:
@@ -235,13 +235,13 @@ class CollectionService:
         return status
 
     async def collect_events(self, session: Session, ticker: str, lookback_days: int) -> list[Event]:
-        ticker = _normalize_ticker(ticker)
+        ticker = normalize_ticker(ticker)
         collected: list[Event] = []
         seen_urls: set[str] = set()
         seen_titles: set[str] = set()
         for provider in self.providers:
             try:
-                raw_events = await provider.fetch_events(ticker, lookback_days)
+                raw_events = await self._fetch_provider_events(provider, ticker, lookback_days)
             except Exception as exc:  # noqa: BLE001
                 logger.warning("Provider %s failed for %s: %s", provider.name, ticker, exc)
                 continue
@@ -281,7 +281,7 @@ class CollectionService:
         auto_backfill: bool = False,
         backfill_years: int = 5,
     ) -> ThesisEventResponse:
-        ticker = _normalize_ticker(ticker)
+        ticker = normalize_ticker(ticker)
         backfill_status = await self._maybe_backfill_financial_snapshots(
             session=session,
             ticker=ticker,
@@ -327,7 +327,7 @@ class CollectionService:
         )
 
     async def get_company_profile(self, session: Session, ticker: str) -> CompanyProfile:
-        ticker = _normalize_ticker(ticker)
+        ticker = normalize_ticker(ticker)
         company = session.exec(select(Company).where(Company.ticker == ticker)).first()
         if company is not None:
             return self._company_model_to_profile(company)
@@ -347,7 +347,7 @@ class CollectionService:
     async def get_earnings_checkpoints(
         self, session: Session, ticker: str
     ) -> EarningsCheckpointResponse:
-        ticker = _normalize_ticker(ticker)
+        ticker = normalize_ticker(ticker)
         for provider in self.providers:
             try:
                 response = await provider.fetch_earnings(ticker)

@@ -32,10 +32,11 @@ Copy `.env.example` to `.env` for local configuration.
 cp .env.example .env
 ```
 
-The default database is SQLite:
+The default database is SQLite under the local runtime data directory:
 
 ```text
-DATABASE_URL=sqlite:///./thesis_monitor.sqlite3
+DATA_DIR=./data
+DATABASE_URL=sqlite:///./data/thesis_monitor.sqlite3
 ENABLE_LIVE_PROVIDERS=false
 ```
 
@@ -54,6 +55,12 @@ NAVER_CLIENT_SECRET=
 OPENAI_API_KEY=
 SEC_USER_AGENT=
 ACTION_API_KEY=
+OHLCV_BASE_URL=http://127.0.0.1:8765
+OHLCV_API_KEY=
+NOTIFICATION_DRY_RUN=true
+KAKAO_REST_API_KEY=
+KAKAO_CLIENT_SECRET=
+KAKAO_REFRESH_TOKEN=
 ```
 
 Set `ENABLE_LIVE_PROVIDERS=false` to use only `MockProvider`. Set it to `true` to run `MockProvider` plus live providers in priority order. Provider failures are logged as warnings and do not fail the whole `/thesis-events` request.
@@ -113,6 +120,49 @@ Request:
 ```http
 GET /watchlist
 ```
+
+### Register or Update a Monitored Thesis
+
+```http
+POST /monitoring-items
+X-Action-API-Key: configured server key
+```
+
+```json
+{
+  "ticker": "000660",
+  "company_name": "SK하이닉스",
+  "exchange": "KRX",
+  "core_thesis": "HBM demand and execution sustain earnings growth",
+  "time_horizon": "2-3 years",
+  "strengthen_signals": ["HBM customer expansion"],
+  "weaken_signals": ["HBM market share decline"],
+  "invalidation_signals": ["major HBM customer loss"]
+}
+```
+
+Submitting changed thesis fields creates a new version. Submitting the same fields is idempotent.
+
+```http
+GET /monitoring-items
+GET /monitoring-items/000660
+GET /monitoring-items/000660/assessments
+POST /monitoring-items/000660/deactivate
+```
+
+### Run Daily Monitoring
+
+```bash
+python -m app.jobs.monitor_daily
+```
+
+The Mac mini LaunchAgent template is `ops/com.seungsoo.thesis-monitor.daily.plist`. It runs at
+08:00 KST and retries at 08:15 and 08:45. Successful duplicate runs return without collecting or
+notifying again.
+
+Price context is requested from the separate local OHLCV Analyst service using targets of 500 daily,
+300 weekly, and 100 monthly bars. Shorter provider histories are accepted and their actual counts are
+stored with each assessment.
 
 ### Get Thesis Events
 
@@ -201,7 +251,12 @@ curl -X POST http://127.0.0.1:8000/watchlist \
 
 ## Custom GPT Action
 
-Use `docs/custom_gpt_action_schema.yaml` as the schema to paste into a Custom GPT Action. For local testing, expose your local FastAPI server with a secure tunnel and update the schema `servers` URL.
+Use `openapi.action.json` as the canonical schema for a Custom GPT Action. Configure API-key
+authentication with header name `X-Action-API-Key`. Rebuild the schema after route or schema changes:
+
+```bash
+python scripts/generate_action_schema.py
+```
 
 The live FastAPI app also exposes `/openapi.json`, which Custom GPT Actions can consume when the service is deployed.
 
@@ -240,7 +295,7 @@ Current provider status:
 | Provider | Status | Notes |
 | --- | --- | --- |
 | `MockProvider` | mock | Default provider used by API routes for stable local behavior. |
-| `GoogleNewsRSSProvider` | live | API-key-free RSS provider. It cleans RSS text, deduplicates provider results, and returns empty results on network failure. |
+| `GoogleNewsRSSProvider` | live | API-key-free RSS provider. It cleans RSS text and deduplicates provider results. Collection retries transient failures and then continues with other providers. |
 | `NaverNewsProvider` | live | Uses Naver Search News API with `NAVER_CLIENT_ID` and `NAVER_CLIENT_SECRET`. |
 | `NewsAPIProvider` | skeleton | Requires `NEWSAPI_API_KEY`; mapping is TODO. |
 | `OpenDARTProvider` | partial live | Calls OpenDART `list.json` when `OPENDART_API_KEY` and a seed `corp_code` mapping are available. Full ticker mapping is TODO. |

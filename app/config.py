@@ -5,7 +5,8 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 class Settings(BaseSettings):
     app_env: str = "local"
-    database_url: str = "sqlite:///./thesis_monitor.sqlite3"
+    data_dir: str = "./data"
+    database_url: str = "sqlite:///./data/thesis_monitor.sqlite3"
     enable_live_providers: bool = False
     include_mock_provider: bool = True
     live_provider_timeout_seconds: float = 5.0
@@ -20,6 +21,17 @@ class Settings(BaseSettings):
     openai_api_key: str | None = None
     sec_user_agent: str | None = None
     action_api_key: str | None = None
+    ohlcv_base_url: str = "http://127.0.0.1:8765"
+    ohlcv_api_key: str | None = None
+    ohlcv_timeout_seconds: float = 30.0
+    monitor_lookback_days: int = 3
+    monitor_retry_attempts: int = 3
+    monitor_retry_base_seconds: float = 2.0
+    notification_dry_run: bool = True
+    kakao_rest_api_key: str | None = None
+    kakao_client_secret: str | None = None
+    kakao_refresh_token: str | None = None
+    kakao_web_url: str = "https://sskim-macmini.tailb44bb1.ts.net/thesis/health"
 
     model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8")
 

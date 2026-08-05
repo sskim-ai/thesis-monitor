@@ -1,4 +1,4 @@
-from datetime import date
+from datetime import date, timedelta
 
 from app.providers.base import BaseProvider, RawEvent
 from app.schemas.company import CompanyProfile
@@ -52,13 +52,14 @@ class MockProvider(BaseProvider):
 
     async def fetch_events(self, ticker: str, lookback_days: int) -> list[RawEvent]:
         ticker = ticker.upper()
+        today = date.today()
         company_name = self._profiles.get(ticker).company_name if ticker in self._profiles else ticker
         events = {
             "NVDA": [
                 RawEvent(
                     ticker=ticker,
                     company_name=company_name,
-                    date=date(2026, 6, 8),
+                    date=today,
                     source="Company IR",
                     provider=self.name,
                     title="Example production order with named hyperscale customer",
@@ -77,7 +78,7 @@ class MockProvider(BaseProvider):
                 RawEvent(
                     ticker=ticker,
                     company_name=company_name,
-                    date=date(2026, 6, 5),
+                    date=today - timedelta(days=3),
                     source="Financial Media",
                     provider=self.name,
                     title="Analyst raises price target after conference presentation",
@@ -92,7 +93,7 @@ class MockProvider(BaseProvider):
                 RawEvent(
                     ticker=ticker,
                     company_name=company_name,
-                    date=date(2026, 6, 7),
+                    date=today - timedelta(days=1),
                     source="Mock News",
                     provider=self.name,
                     title="AMD announces new customer for AI accelerator program",
@@ -108,7 +109,7 @@ class MockProvider(BaseProvider):
                 RawEvent(
                     ticker=ticker,
                     company_name=company_name,
-                    date=date(2026, 6, 6),
+                    date=today - timedelta(days=2),
                     source="Mock Filing",
                     provider=self.name,
                     title="SK hynix notes inventory normalization in memory business",

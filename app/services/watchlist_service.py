@@ -3,10 +3,11 @@ from sqlmodel import Session, select
 from app.models.company import Company
 from app.models.watchlist import WatchlistItem
 from app.schemas.watchlist import WatchlistItemCreate
+from app.utils.tickers import normalize_ticker
 
 
 def add_watchlist_item(session: Session, payload: WatchlistItemCreate) -> WatchlistItem:
-    ticker = payload.ticker.upper()
+    ticker = normalize_ticker(payload.ticker)
     existing = session.exec(select(WatchlistItem).where(WatchlistItem.ticker == ticker)).first()
     if existing:
         existing.company_name = payload.company_name

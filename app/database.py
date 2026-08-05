@@ -1,5 +1,6 @@
 from collections.abc import Generator
 from contextlib import suppress
+from pathlib import Path
 
 from sqlalchemy import event
 from sqlalchemy.pool import StaticPool
@@ -11,6 +12,11 @@ from app.config import get_settings
 settings = get_settings()
 
 
+def _ensure_data_directory() -> None:
+    if settings.database_url.startswith("sqlite:///./data/"):
+        Path(settings.data_dir).mkdir(parents=True, exist_ok=True)
+
+
 def _sqlite_engine_kwargs() -> dict[str, object]:
     if settings.database_url == "sqlite://":
         return {"connect_args": {"check_same_thread": False, "timeout": 30}, "poolclass": StaticPool}
@@ -19,6 +25,7 @@ def _sqlite_engine_kwargs() -> dict[str, object]:
     return {}
 
 
+_ensure_data_directory()
 engine = create_engine(settings.database_url, **_sqlite_engine_kwargs())
 
 
@@ -62,6 +69,9 @@ def _ensure_sqlite_columns() -> None:
             "balance_sheet_basis": "VARCHAR",
             "quality_warnings": "VARCHAR",
         },
+        "thesisassessment": {
+            "thesis_snapshot": "VARCHAR DEFAULT '{}'",
+        },
     }
     with engine.begin() as connection:
         for table_name, columns in table_columns.items():
@@ -79,6 +89,8 @@ def _ensure_sqlite_columns() -> None:
 
 
 def init_db() -> None:
+    import app.models  # noqa: F401
+
     SQLModel.metadata.create_all(engine)
     _ensure_sqlite_columns()
 

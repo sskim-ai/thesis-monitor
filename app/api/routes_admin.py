@@ -1,12 +1,27 @@
 from fastapi import APIRouter, Depends, Query
 from sqlmodel import Session
 
+from app.api.security import require_action_api_key
 from app.database import get_session
 from app.schemas.admin import ReclassifyEventsResponse
+from app.schemas.thesis import DailyMonitorResponse
+from app.services.daily_monitor_service import run_daily_monitor
 from app.services.financial_backfill_service import backfill_financial_snapshots
 from app.services.reclassification_service import reclassify_events
 
-router = APIRouter(prefix="/admin", tags=["admin"])
+router = APIRouter(
+    prefix="/admin",
+    tags=["admin"],
+    dependencies=[Depends(require_action_api_key)],
+)
+
+
+@router.post("/run-daily-monitor", response_model=DailyMonitorResponse)
+async def run_daily_monitor_now(
+    force: bool = Query(False),
+    session: Session = Depends(get_session),
+) -> DailyMonitorResponse:
+    return await run_daily_monitor(session=session, force=force)
 
 
 @router.post(

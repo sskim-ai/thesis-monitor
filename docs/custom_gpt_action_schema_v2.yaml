@@ -1,129 +1,1691 @@
-openapi: 3.1.0
-info:
-  title: Thesis Monitor API
-  version: 0.2.0
-servers:
-  - url: https://sskim-macmini.tailb44bb1.ts.net/thesis
-paths:
-  /health:
-    get:
-      operationId: getHealth
-      responses:
-        '200':
-          description: OK
-  /provider-status:
-    get:
-      operationId: getProviderStatus
-      responses:
-        '200':
-          description: Provider status
-  /thesis-events:
-    get:
-      operationId: getThesisEvents
-      parameters:
-        - name: ticker
-          in: query
-          required: true
-          schema:
-            type: string
-        - name: lookback_days
-          in: query
-          required: false
-          schema:
-            type: integer
-            default: 30
-            minimum: 1
-            maximum: 365
-        - name: requires_review_only
-          in: query
-          required: false
-          schema:
-            type: boolean
-            default: false
-        - name: provider
-          in: query
-          required: false
-          schema:
-            type: string
-      responses:
-        '200':
-          description: Thesis events
-  /company-profile:
-    get:
-      operationId: getCompanyProfile
-      parameters:
-        - name: ticker
-          in: query
-          required: true
-          schema:
-            type: string
-      responses:
-        '200':
-          description: Company profile
-  /earnings-checkpoints:
-    get:
-      operationId: getEarningsCheckpoints
-      parameters:
-        - name: ticker
-          in: query
-          required: true
-          schema:
-            type: string
-      responses:
-        '200':
-          description: Earnings checkpoints
-  /watchlist:
-    get:
-      operationId: getWatchlist
-      responses:
-        '200':
-          description: Watchlist
-    post:
-      operationId: addWatchlistItem
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                ticker:
-                  type: string
-                company_name:
-                  type: string
-                exchange:
-                  type: string
-                notes:
-                  type: string
-                active:
-                  type: boolean
-                  default: true
-              required:
-                - ticker
-                - company_name
-      responses:
-        '200':
-          description: Watchlist item
-  /admin/reclassify-events:
-    post:
-      operationId: reclassifyEvents
-      parameters:
-        - name: ticker
-          in: query
-          required: false
-          schema:
-            type: string
-        - name: provider
-          in: query
-          required: false
-          schema:
-            type: string
-        - name: dry_run
-          in: query
-          required: false
-          schema:
-            type: boolean
-            default: true
-      responses:
-        '200':
-          description: Reclassification result
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Thesis Monitor Public Action API",
+    "version": "0.2.0",
+    "description": "Collect thesis evidence, register versioned investment theses, manage the monitored stock list, and read daily thesis assessments. Administrative jobs are excluded."
+  },
+  "paths": {
+    "/health": {
+      "get": {
+        "summary": "Get Health",
+        "operationId": "getHealth",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": {
+                    "type": "string"
+                  },
+                  "type": "object",
+                  "title": "Response Gethealth"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/provider-status": {
+      "get": {
+        "summary": "Get Provider Status",
+        "operationId": "getProviderStatus",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/ProviderStatusResponse"
+                  },
+                  "type": "array",
+                  "title": "Response Getproviderstatus"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/monitoring-items": {
+      "post": {
+        "tags": [
+          "monitoring"
+        ],
+        "summary": "Start or update thesis monitoring for a stock",
+        "description": "Use when the user says a stock should be monitored going forward. First collect current company evidence and construct a concrete thesis. Changed thesis fields create a new version; an identical request is idempotent.",
+        "operationId": "monitorStock",
+        "security": [
+          {
+            "APIKeyHeader": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MonitoringItemCreate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MonitoringItemRead"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "monitoring"
+        ],
+        "summary": "List monitored stocks and their current theses",
+        "operationId": "listMonitoredStocks",
+        "security": [
+          {
+            "APIKeyHeader": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "active_only",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean",
+              "default": true,
+              "title": "Active Only"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/MonitoringItemRead"
+                  },
+                  "title": "Response Listmonitoredstocks"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/monitoring-items/{ticker}": {
+      "get": {
+        "tags": [
+          "monitoring"
+        ],
+        "summary": "Monitored Stock",
+        "operationId": "getMonitoredStock",
+        "security": [
+          {
+            "APIKeyHeader": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "ticker",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Ticker"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MonitoringItemRead"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/monitoring-items/{ticker}/deactivate": {
+      "post": {
+        "tags": [
+          "monitoring"
+        ],
+        "summary": "Stop monitoring a stock without deleting its history",
+        "operationId": "stopMonitoringStock",
+        "security": [
+          {
+            "APIKeyHeader": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "ticker",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Ticker"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MonitoringItemRead"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/monitoring-items/{ticker}/assessments": {
+      "get": {
+        "tags": [
+          "monitoring"
+        ],
+        "summary": "Assessment History",
+        "operationId": "getThesisAssessmentHistory",
+        "security": [
+          {
+            "APIKeyHeader": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "ticker",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Ticker"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 365,
+              "minimum": 1,
+              "default": 30,
+              "title": "Limit"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ThesisAssessmentRead"
+                  },
+                  "title": "Response Getthesisassessmenthistory"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/thesis-events": {
+      "get": {
+        "summary": "Get Thesis Events",
+        "operationId": "getThesisEvents",
+        "parameters": [
+          {
+            "name": "ticker",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "title": "Ticker"
+            }
+          },
+          {
+            "name": "lookback_days",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 365,
+              "minimum": 1,
+              "default": 30,
+              "title": "Lookback Days"
+            }
+          },
+          {
+            "name": "requires_review_only",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean",
+              "default": false,
+              "title": "Requires Review Only"
+            }
+          },
+          {
+            "name": "provider",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "minLength": 1
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Provider"
+            }
+          },
+          {
+            "name": "auto_backfill",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean",
+              "default": false,
+              "title": "Auto Backfill"
+            }
+          },
+          {
+            "name": "backfill_years",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 10,
+              "minimum": 1,
+              "default": 5,
+              "title": "Backfill Years"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ThesisEventResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/company-profile": {
+      "get": {
+        "summary": "Get Company Profile",
+        "operationId": "getCompanyProfile",
+        "parameters": [
+          {
+            "name": "ticker",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "title": "Ticker"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CompanyProfile"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/earnings-checkpoints": {
+      "get": {
+        "summary": "Get Earnings Checkpoints",
+        "operationId": "getEarningsCheckpoints",
+        "parameters": [
+          {
+            "name": "ticker",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "title": "Ticker"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EarningsCheckpointResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "AssessmentStatus": {
+        "type": "string",
+        "enum": [
+          "strengthened",
+          "weakened",
+          "mixed",
+          "no_material_change",
+          "invalidation_candidate",
+          "invalidated",
+          "needs_review"
+        ],
+        "title": "AssessmentStatus"
+      },
+      "BackfillStatus": {
+        "properties": {
+          "requested": {
+            "type": "boolean",
+            "title": "Requested",
+            "default": false
+          },
+          "executed": {
+            "type": "boolean",
+            "title": "Executed",
+            "default": false
+          },
+          "skipped": {
+            "type": "boolean",
+            "title": "Skipped",
+            "default": false
+          },
+          "reason": {
+            "type": "string",
+            "title": "Reason",
+            "default": "not_requested"
+          },
+          "provider": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Provider"
+          },
+          "years": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Years"
+          },
+          "snapshot_count_before": {
+            "type": "integer",
+            "title": "Snapshot Count Before",
+            "default": 0
+          },
+          "snapshot_count_after": {
+            "type": "integer",
+            "title": "Snapshot Count After",
+            "default": 0
+          },
+          "backfilled_count": {
+            "type": "integer",
+            "title": "Backfilled Count",
+            "default": 0
+          },
+          "report_count": {
+            "type": "integer",
+            "title": "Report Count",
+            "default": 0
+          },
+          "warnings": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Warnings",
+            "default": []
+          }
+        },
+        "type": "object",
+        "title": "BackfillStatus"
+      },
+      "CompanyProfile": {
+        "properties": {
+          "ticker": {
+            "type": "string",
+            "title": "Ticker"
+          },
+          "company_name": {
+            "type": "string",
+            "title": "Company Name"
+          },
+          "exchange": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Exchange"
+          },
+          "industry": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Industry"
+          },
+          "sector": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Sector"
+          },
+          "business_units": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Business Units",
+            "default": []
+          },
+          "major_revenue_sources": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Major Revenue Sources",
+            "default": []
+          },
+          "major_customers": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Major Customers",
+            "default": []
+          },
+          "ir_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ir Url"
+          },
+          "filings_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Filings Url"
+          }
+        },
+        "type": "object",
+        "required": [
+          "ticker",
+          "company_name"
+        ],
+        "title": "CompanyProfile"
+      },
+      "DailyMonitorResponse": {
+        "properties": {
+          "run_date": {
+            "type": "string",
+            "format": "date",
+            "title": "Run Date"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "ticker_count": {
+            "type": "integer",
+            "title": "Ticker Count"
+          },
+          "success_count": {
+            "type": "integer",
+            "title": "Success Count"
+          },
+          "failure_count": {
+            "type": "integer",
+            "title": "Failure Count"
+          },
+          "assessments": {
+            "items": {
+              "$ref": "#/components/schemas/ThesisAssessmentRead"
+            },
+            "type": "array",
+            "title": "Assessments"
+          }
+        },
+        "type": "object",
+        "required": [
+          "run_date",
+          "status",
+          "ticker_count",
+          "success_count",
+          "failure_count"
+        ],
+        "title": "DailyMonitorResponse"
+      },
+      "EarningsCheckpointResponse": {
+        "properties": {
+          "ticker": {
+            "type": "string",
+            "title": "Ticker"
+          },
+          "checkpoints": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Checkpoints"
+          }
+        },
+        "type": "object",
+        "required": [
+          "ticker",
+          "checkpoints"
+        ],
+        "title": "EarningsCheckpointResponse"
+      },
+      "EventType": {
+        "type": "string",
+        "enum": [
+          "new_customer",
+          "large_order",
+          "production_order",
+          "mass_production_change",
+          "revenue_guidance_up",
+          "revenue_guidance_down",
+          "margin_improvement",
+          "margin_deterioration",
+          "fcf_deterioration",
+          "inventory_increase",
+          "inventory_normalization",
+          "receivables_increase",
+          "dilution_risk",
+          "capital_raise",
+          "convertible_bond",
+          "warrant",
+          "stock_compensation_increase",
+          "partnership",
+          "partnership_to_revenue",
+          "customer_loss",
+          "customer_concentration_risk",
+          "market_share_change",
+          "competitor_price_cut",
+          "competitor_new_product",
+          "technology_competition",
+          "regulatory_risk",
+          "export_control",
+          "antitrust",
+          "accounting_issue",
+          "debt_liquidity_risk",
+          "credit_rating_change",
+          "management_governance",
+          "capital_allocation",
+          "earnings_surprise",
+          "earnings_miss",
+          "guidance_change",
+          "valuation_recalculation_needed",
+          "non_thesis_noise"
+        ],
+        "title": "EventType"
+      },
+      "FinancialImpact": {
+        "properties": {
+          "revenue_guidance_changed": {
+            "type": "boolean",
+            "title": "Revenue Guidance Changed",
+            "default": false
+          },
+          "margin_guidance_changed": {
+            "type": "boolean",
+            "title": "Margin Guidance Changed",
+            "default": false
+          },
+          "margin_quality_review": {
+            "type": "boolean",
+            "title": "Margin Quality Review",
+            "default": false
+          },
+          "financial_statement_basis_warning": {
+            "type": "boolean",
+            "title": "Financial Statement Basis Warning",
+            "default": false
+          },
+          "fcf_impact_known": {
+            "type": "boolean",
+            "title": "Fcf Impact Known",
+            "default": false
+          },
+          "dilution_risk": {
+            "type": "boolean",
+            "title": "Dilution Risk",
+            "default": false
+          },
+          "capex_impact_known": {
+            "type": "boolean",
+            "title": "Capex Impact Known",
+            "default": false
+          },
+          "inventory_risk": {
+            "type": "boolean",
+            "title": "Inventory Risk",
+            "default": false
+          },
+          "receivables_risk": {
+            "type": "boolean",
+            "title": "Receivables Risk",
+            "default": false
+          }
+        },
+        "type": "object",
+        "title": "FinancialImpact"
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "type": "array",
+            "title": "Detail"
+          }
+        },
+        "type": "object",
+        "title": "HTTPValidationError"
+      },
+      "InvestmentThesisRead": {
+        "properties": {
+          "ticker": {
+            "type": "string",
+            "title": "Ticker"
+          },
+          "version": {
+            "type": "integer",
+            "title": "Version"
+          },
+          "core_thesis": {
+            "type": "string",
+            "title": "Core Thesis"
+          },
+          "time_horizon": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Time Horizon"
+          },
+          "strengthen_signals": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Strengthen Signals"
+          },
+          "weaken_signals": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Weaken Signals"
+          },
+          "invalidation_signals": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Invalidation Signals"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "source": {
+            "type": "string",
+            "title": "Source"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "ticker",
+          "version",
+          "core_thesis",
+          "time_horizon",
+          "strengthen_signals",
+          "weaken_signals",
+          "invalidation_signals",
+          "status",
+          "source",
+          "created_at"
+        ],
+        "title": "InvestmentThesisRead"
+      },
+      "MonitoringItemCreate": {
+        "properties": {
+          "ticker": {
+            "type": "string",
+            "minLength": 1,
+            "title": "Ticker",
+            "description": "Ticker, stock code, or supported Korean company name."
+          },
+          "company_name": {
+            "type": "string",
+            "minLength": 1,
+            "title": "Company Name",
+            "description": "Canonical company display name."
+          },
+          "exchange": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Exchange",
+            "description": "Exchange such as KRX or NASDAQ."
+          },
+          "core_thesis": {
+            "type": "string",
+            "minLength": 1,
+            "title": "Core Thesis",
+            "description": "Current one-paragraph investment thesis."
+          },
+          "time_horizon": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Time Horizon",
+            "description": "Expected investment horizon."
+          },
+          "strengthen_signals": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Strengthen Signals",
+            "description": "Concrete future facts that would strengthen the thesis."
+          },
+          "weaken_signals": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Weaken Signals",
+            "description": "Concrete future facts that would weaken the thesis."
+          },
+          "invalidation_signals": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Invalidation Signals",
+            "description": "Explicit facts that would invalidate the thesis."
+          }
+        },
+        "type": "object",
+        "required": [
+          "ticker",
+          "company_name",
+          "core_thesis"
+        ],
+        "title": "MonitoringItemCreate"
+      },
+      "MonitoringItemRead": {
+        "properties": {
+          "ticker": {
+            "type": "string",
+            "title": "Ticker"
+          },
+          "company_name": {
+            "type": "string",
+            "title": "Company Name"
+          },
+          "exchange": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Exchange"
+          },
+          "active": {
+            "type": "boolean",
+            "title": "Active"
+          },
+          "thesis": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/InvestmentThesisRead"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "latest_status": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/AssessmentStatus"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "latest_assessment_date": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Latest Assessment Date"
+          },
+          "current_thesis_summary": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Current Thesis Summary"
+          }
+        },
+        "type": "object",
+        "required": [
+          "ticker",
+          "company_name",
+          "exchange",
+          "active",
+          "thesis"
+        ],
+        "title": "MonitoringItemRead"
+      },
+      "PriceContext": {
+        "properties": {
+          "available": {
+            "type": "boolean",
+            "title": "Available",
+            "default": false
+          },
+          "periods": {
+            "additionalProperties": {
+              "$ref": "#/components/schemas/PricePeriodSummary"
+            },
+            "type": "object",
+            "title": "Periods"
+          },
+          "warnings": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Warnings"
+          }
+        },
+        "type": "object",
+        "title": "PriceContext"
+      },
+      "PricePeriodSummary": {
+        "properties": {
+          "requested_count": {
+            "type": "integer",
+            "title": "Requested Count"
+          },
+          "actual_count": {
+            "type": "integer",
+            "title": "Actual Count"
+          },
+          "latest_date": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Latest Date"
+          },
+          "latest_close": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Latest Close"
+          },
+          "period_return_pct": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Period Return Pct"
+          },
+          "range_position_pct": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Range Position Pct"
+          }
+        },
+        "type": "object",
+        "required": [
+          "requested_count",
+          "actual_count"
+        ],
+        "title": "PricePeriodSummary"
+      },
+      "ProviderStatusResponse": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "enabled": {
+            "type": "boolean",
+            "title": "Enabled"
+          },
+          "configured": {
+            "type": "boolean",
+            "title": "Configured"
+          },
+          "required_settings": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Required Settings"
+          },
+          "mode": {
+            "type": "string",
+            "title": "Mode"
+          }
+        },
+        "type": "object",
+        "required": [
+          "name",
+          "enabled",
+          "configured",
+          "required_settings",
+          "mode"
+        ],
+        "title": "ProviderStatusResponse"
+      },
+      "ReclassifyEventsResponse": {
+        "properties": {
+          "ticker": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ticker"
+          },
+          "provider": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Provider"
+          },
+          "dry_run": {
+            "type": "boolean",
+            "title": "Dry Run"
+          },
+          "scanned_count": {
+            "type": "integer",
+            "title": "Scanned Count"
+          },
+          "changed_count": {
+            "type": "integer",
+            "title": "Changed Count"
+          },
+          "updated_count": {
+            "type": "integer",
+            "title": "Updated Count"
+          }
+        },
+        "type": "object",
+        "required": [
+          "dry_run",
+          "scanned_count",
+          "changed_count",
+          "updated_count"
+        ],
+        "title": "ReclassifyEventsResponse"
+      },
+      "ThesisAssessmentRead": {
+        "properties": {
+          "ticker": {
+            "type": "string",
+            "title": "Ticker"
+          },
+          "thesis_version": {
+            "type": "integer",
+            "title": "Thesis Version"
+          },
+          "assessment_date": {
+            "type": "string",
+            "format": "date",
+            "title": "Assessment Date"
+          },
+          "status": {
+            "$ref": "#/components/schemas/AssessmentStatus"
+          },
+          "score": {
+            "type": "integer",
+            "title": "Score"
+          },
+          "confidence": {
+            "type": "number",
+            "title": "Confidence"
+          },
+          "summary": {
+            "type": "string",
+            "title": "Summary"
+          },
+          "new_buyer_view": {
+            "type": "string",
+            "title": "New Buyer View"
+          },
+          "holder_view": {
+            "type": "string",
+            "title": "Holder View"
+          },
+          "price_view": {
+            "type": "string",
+            "title": "Price View"
+          },
+          "risk_level": {
+            "type": "string",
+            "title": "Risk Level"
+          },
+          "evidence": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "type": "array",
+            "title": "Evidence"
+          },
+          "price_context": {
+            "$ref": "#/components/schemas/PriceContext"
+          },
+          "thesis_snapshot": {
+            "$ref": "#/components/schemas/ThesisSnapshot"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "ticker",
+          "thesis_version",
+          "assessment_date",
+          "status",
+          "score",
+          "confidence",
+          "summary",
+          "new_buyer_view",
+          "holder_view",
+          "price_view",
+          "risk_level",
+          "evidence",
+          "price_context",
+          "thesis_snapshot",
+          "created_at"
+        ],
+        "title": "ThesisAssessmentRead"
+      },
+      "ThesisEvent": {
+        "properties": {
+          "date": {
+            "type": "string",
+            "format": "date",
+            "title": "Date"
+          },
+          "source": {
+            "type": "string",
+            "title": "Source"
+          },
+          "provider": {
+            "type": "string",
+            "title": "Provider"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "url": {
+            "type": "string",
+            "title": "Url"
+          },
+          "event_type": {
+            "$ref": "#/components/schemas/EventType"
+          },
+          "confirmed_facts": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Confirmed Facts"
+          },
+          "inferred_implications": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Inferred Implications"
+          },
+          "unknowns": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Unknowns"
+          },
+          "financial_impact": {
+            "$ref": "#/components/schemas/FinancialImpact"
+          },
+          "thesis_relevance": {
+            "$ref": "#/components/schemas/ThesisRelevance"
+          }
+        },
+        "type": "object",
+        "required": [
+          "date",
+          "source",
+          "provider",
+          "title",
+          "url",
+          "event_type",
+          "confirmed_facts",
+          "inferred_implications",
+          "unknowns",
+          "financial_impact",
+          "thesis_relevance"
+        ],
+        "title": "ThesisEvent"
+      },
+      "ThesisEventResponse": {
+        "properties": {
+          "ticker": {
+            "type": "string",
+            "title": "Ticker"
+          },
+          "company_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Company Name"
+          },
+          "lookback_days": {
+            "type": "integer",
+            "title": "Lookback Days"
+          },
+          "backfill_status": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/BackfillStatus"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "events": {
+            "items": {
+              "$ref": "#/components/schemas/ThesisEvent"
+            },
+            "type": "array",
+            "title": "Events"
+          }
+        },
+        "type": "object",
+        "required": [
+          "ticker",
+          "lookback_days",
+          "events"
+        ],
+        "title": "ThesisEventResponse"
+      },
+      "ThesisRelevance": {
+        "properties": {
+          "requires_review": {
+            "type": "boolean",
+            "title": "Requires Review"
+          },
+          "relevance_score": {
+            "type": "integer",
+            "maximum": 100.0,
+            "minimum": 0.0,
+            "title": "Relevance Score"
+          },
+          "reason": {
+            "type": "string",
+            "title": "Reason"
+          }
+        },
+        "type": "object",
+        "required": [
+          "requires_review",
+          "relevance_score",
+          "reason"
+        ],
+        "title": "ThesisRelevance"
+      },
+      "ThesisSnapshot": {
+        "properties": {
+          "base_thesis": {
+            "type": "string",
+            "title": "Base Thesis"
+          },
+          "thesis_version": {
+            "type": "integer",
+            "title": "Thesis Version"
+          },
+          "effective_date": {
+            "type": "string",
+            "format": "date",
+            "title": "Effective Date"
+          },
+          "status": {
+            "$ref": "#/components/schemas/AssessmentStatus"
+          },
+          "current_thesis": {
+            "type": "string",
+            "title": "Current Thesis"
+          },
+          "supporting_evidence": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "type": "array",
+            "title": "Supporting Evidence"
+          },
+          "weakening_evidence": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "type": "array",
+            "title": "Weakening Evidence"
+          },
+          "invalidation_evidence": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "type": "array",
+            "title": "Invalidation Evidence"
+          }
+        },
+        "type": "object",
+        "required": [
+          "base_thesis",
+          "thesis_version",
+          "effective_date",
+          "status",
+          "current_thesis"
+        ],
+        "title": "ThesisSnapshot"
+      },
+      "ValidationError": {
+        "properties": {
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "type": "array",
+            "title": "Location"
+          },
+          "msg": {
+            "type": "string",
+            "title": "Message"
+          },
+          "type": {
+            "type": "string",
+            "title": "Error Type"
+          },
+          "input": {
+            "title": "Input"
+          },
+          "ctx": {
+            "type": "object",
+            "title": "Context"
+          }
+        },
+        "type": "object",
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError"
+      },
+      "WatchlistItemCreate": {
+        "properties": {
+          "ticker": {
+            "type": "string",
+            "title": "Ticker"
+          },
+          "company_name": {
+            "type": "string",
+            "title": "Company Name"
+          },
+          "exchange": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Exchange"
+          },
+          "notes": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Notes"
+          },
+          "active": {
+            "type": "boolean",
+            "title": "Active",
+            "default": true
+          }
+        },
+        "type": "object",
+        "required": [
+          "ticker",
+          "company_name"
+        ],
+        "title": "WatchlistItemCreate"
+      },
+      "WatchlistItemRead": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "ticker": {
+            "type": "string",
+            "title": "Ticker"
+          },
+          "company_name": {
+            "type": "string",
+            "title": "Company Name"
+          },
+          "exchange": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Exchange"
+          },
+          "notes": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Notes"
+          },
+          "active": {
+            "type": "boolean",
+            "title": "Active"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "ticker",
+          "company_name",
+          "active",
+          "created_at"
+        ],
+        "title": "WatchlistItemRead"
+      }
+    },
+    "securitySchemes": {
+      "APIKeyHeader": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "X-Action-API-Key"
+      }
+    }
+  },
+  "servers": [
+    {
+      "url": "https://sskim-macmini.tailb44bb1.ts.net/thesis"
+    }
+  ]
+}

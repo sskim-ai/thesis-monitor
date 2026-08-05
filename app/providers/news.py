@@ -52,12 +52,9 @@ class GoogleNewsRSSProvider(NewsProvider):
             f"?q={query}+when:{lookback_days}d&hl=en-US&gl=US&ceid=US:en"
         )
         seen: set[tuple[str, str]] = set()
-        try:
-            async with httpx.AsyncClient(timeout=self.timeout_seconds, follow_redirects=True) as client:
-                response = await client.get(url)
-                response.raise_for_status()
-        except httpx.HTTPError:
-            return []
+        async with httpx.AsyncClient(timeout=self.timeout_seconds, follow_redirects=True) as client:
+            response = await client.get(url)
+            response.raise_for_status()
 
         try:
             root = ElementTree.fromstring(response.text)
@@ -135,13 +132,10 @@ class NaverNewsProvider(NewsProvider):
             "X-Naver-Client-Id": settings.naver_client_id,
             "X-Naver-Client-Secret": settings.naver_client_secret,
         }
-        try:
-            async with httpx.AsyncClient(timeout=self.timeout_seconds) as client:
-                response = await client.get(self.endpoint, params=params, headers=headers)
-                response.raise_for_status()
-                payload = response.json()
-        except (httpx.HTTPError, ValueError):
-            return []
+        async with httpx.AsyncClient(timeout=self.timeout_seconds) as client:
+            response = await client.get(self.endpoint, params=params, headers=headers)
+            response.raise_for_status()
+            payload = response.json()
 
         events: list[RawEvent] = []
         seen: set[tuple[str, str]] = set()

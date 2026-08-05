@@ -11,11 +11,12 @@ def test_watchlist_registration_and_listing() -> None:
             "exchange": "NASDAQ",
             "notes": "AI infrastructure thesis",
         }
-        response = client.post("/watchlist", json=payload)
+        headers = {"X-Action-API-Key": "test-action-key"}
+        response = client.post("/watchlist", json=payload, headers=headers)
         assert response.status_code == 200
         assert response.json()["ticker"] == "NVDA"
 
-        response = client.get("/watchlist")
+        response = client.get("/watchlist", headers=headers)
         assert response.status_code == 200
         items = response.json()
         assert any(item["ticker"] == "NVDA" for item in items)
