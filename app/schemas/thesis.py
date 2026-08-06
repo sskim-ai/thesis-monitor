@@ -14,6 +14,16 @@ class AssessmentStatus(StrEnum):
     needs_review = "needs_review"
 
 
+class MacroExposureInput(BaseModel):
+    factor: str = Field(min_length=1)
+    direction: str = Field(pattern="^(positive|negative|mixed)$")
+    weight: int = Field(default=1, ge=1, le=5)
+    channel: str = Field(min_length=1)
+    horizon: str | None = None
+    condition: str | None = None
+    review_required: bool = False
+
+
 class MonitoringItemCreate(BaseModel):
     ticker: str = Field(description="Ticker, stock code, or supported Korean company name.", min_length=1)
     company_name: str = Field(description="Canonical company display name.", min_length=1)
@@ -32,6 +42,10 @@ class MonitoringItemCreate(BaseModel):
         default_factory=list,
         description="Explicit facts that would invalidate the thesis.",
     )
+    macro_exposures: list[MacroExposureInput] = Field(
+        default_factory=list,
+        description="Conditional macro factors and transmission channels for this thesis.",
+    )
 
 
 class InvestmentThesisRead(BaseModel):
@@ -42,6 +56,7 @@ class InvestmentThesisRead(BaseModel):
     strengthen_signals: list[str]
     weaken_signals: list[str]
     invalidation_signals: list[str]
+    macro_exposures: list[MacroExposureInput]
     status: str
     source: str
     created_at: datetime

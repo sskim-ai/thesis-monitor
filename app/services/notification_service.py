@@ -8,6 +8,7 @@ import httpx
 from sqlmodel import Session, select
 
 from app.config import get_settings
+from app.models.macro import MacroBriefing
 from app.models.thesis import NotificationDelivery, ThesisAssessment
 
 
@@ -63,6 +64,37 @@ def queue_notification(session: Session, assessment: ThesisAssessment) -> None:
             NotificationDelivery(
                 ticker=assessment.ticker,
                 assessment_date=assessment.assessment_date,
+                channel="kakao_self",
+                status="pending",
+                payload=payload,
+            )
+        )
+    elif delivery.status != "sent":
+        delivery.payload = payload
+        delivery.status = "pending"
+
+
+def queue_macro_notification(session: Session, briefing: MacroBriefing) -> None:
+    payload = json.dumps(
+        {
+            "text": briefing.kakao_text,
+            "briefing_date": str(briefing.briefing_date),
+            "type": "macro_morning",
+        },
+        ensure_ascii=False,
+    )
+    delivery = session.exec(
+        select(NotificationDelivery).where(
+            NotificationDelivery.ticker == "__MACRO__",
+            NotificationDelivery.assessment_date == briefing.briefing_date,
+            NotificationDelivery.channel == "kakao_self",
+        )
+    ).first()
+    if delivery is None:
+        session.add(
+            NotificationDelivery(
+                ticker="__MACRO__",
+                assessment_date=briefing.briefing_date,
                 channel="kakao_self",
                 status="pending",
                 payload=payload,

@@ -72,6 +72,9 @@ def _ensure_sqlite_columns() -> None:
         "thesisassessment": {
             "thesis_snapshot": "VARCHAR DEFAULT '{}'",
         },
+        "investmentthesis": {
+            "macro_exposures": "VARCHAR DEFAULT '[]'",
+        },
     }
     with engine.begin() as connection:
         for table_name, columns in table_columns.items():

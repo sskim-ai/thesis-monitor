@@ -8,12 +8,22 @@ from app.schemas.thesis import DailyMonitorResponse
 from app.services.daily_monitor_service import run_daily_monitor
 from app.services.financial_backfill_service import backfill_financial_snapshots
 from app.services.reclassification_service import reclassify_events
+from app.macro.service import run_macro_monitor
+from app.schemas.macro import MacroMonitorResponse
 
 router = APIRouter(
     prefix="/admin",
     tags=["admin"],
     dependencies=[Depends(require_action_api_key)],
 )
+
+
+@router.post("/run-macro-monitor", response_model=MacroMonitorResponse)
+async def run_macro_monitor_now(
+    force: bool = Query(False),
+    session: Session = Depends(get_session),
+) -> MacroMonitorResponse:
+    return await run_macro_monitor(session=session, force=force)
 
 
 @router.post("/run-daily-monitor", response_model=DailyMonitorResponse)

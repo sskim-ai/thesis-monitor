@@ -8,6 +8,7 @@ from app.api.routes_company import router as company_router
 from app.api.routes_earnings import router as earnings_router
 from app.api.routes_events import router as events_router
 from app.api.routes_health import router as health_router
+from app.api.routes_macro import router as macro_router
 from app.api.routes_monitoring import router as monitoring_router
 from app.api.routes_provider import router as provider_router
 from app.api.routes_watchlist import router as watchlist_router
@@ -31,6 +32,7 @@ app.include_router(health_router)
 app.include_router(provider_router)
 app.include_router(watchlist_router)
 app.include_router(monitoring_router)
+app.include_router(macro_router)
 app.include_router(events_router)
 app.include_router(company_router)
 app.include_router(earnings_router)

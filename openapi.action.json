@@ -3,7 +3,7 @@
   "info": {
     "title": "Thesis Monitor Public Action API",
     "version": "0.2.0",
-    "description": "Collect thesis evidence, register versioned investment theses, manage the monitored stock list, and read daily thesis assessments. Administrative jobs are excluded."
+    "description": "Collect thesis evidence, register versioned investment theses, manage the monitored stock list, read daily thesis assessments, and retrieve macro briefings, regimes, events, and ticker-level macro impacts. Administrative jobs are excluded."
   },
   "paths": {
     "/health": {
@@ -287,6 +287,283 @@
                     "$ref": "#/components/schemas/ThesisAssessmentRead"
                   },
                   "title": "Response Getthesisassessmenthistory"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/macro/briefings/latest": {
+      "get": {
+        "tags": [
+          "macro"
+        ],
+        "summary": "Latest Macro Briefing",
+        "operationId": "getMacroBriefing",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MacroBriefingRead"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "APIKeyHeader": []
+          }
+        ]
+      }
+    },
+    "/macro/briefings/{briefing_date}": {
+      "get": {
+        "tags": [
+          "macro"
+        ],
+        "summary": "Macro Briefing By Date",
+        "operationId": "macro_briefing_by_date_macro_briefings__briefing_date__get",
+        "security": [
+          {
+            "APIKeyHeader": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "briefing_date",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "date",
+              "title": "Briefing Date"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MacroBriefingRead"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/macro/regime/latest": {
+      "get": {
+        "tags": [
+          "macro"
+        ],
+        "summary": "Latest Macro Regime",
+        "operationId": "getMacroRegime",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MacroRegimeRead"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "APIKeyHeader": []
+          }
+        ]
+      }
+    },
+    "/macro/theses": {
+      "get": {
+        "tags": [
+          "macro"
+        ],
+        "summary": "Macro Theses",
+        "operationId": "getMacroTheses",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/MacroThesisRead"
+                  },
+                  "type": "array",
+                  "title": "Response Getmacrotheses"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "APIKeyHeader": []
+          }
+        ]
+      }
+    },
+    "/macro/events": {
+      "get": {
+        "tags": [
+          "macro"
+        ],
+        "summary": "Macro Events",
+        "operationId": "getMacroEvents",
+        "security": [
+          {
+            "APIKeyHeader": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 200,
+              "minimum": 1,
+              "default": 50,
+              "title": "Limit"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/MacroEventRead"
+                  },
+                  "title": "Response Getmacroevents"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/macro/provider-status": {
+      "get": {
+        "tags": [
+          "macro"
+        ],
+        "summary": "Macro Provider Status",
+        "operationId": "getMacroProviderStatus",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/MacroProviderStatusRead"
+                  },
+                  "type": "array",
+                  "title": "Response Getmacroproviderstatus"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "APIKeyHeader": []
+          }
+        ]
+      }
+    },
+    "/macro/ticker/{ticker}/impacts": {
+      "get": {
+        "tags": [
+          "macro"
+        ],
+        "summary": "Ticker Macro Impacts",
+        "operationId": "getTickerMacroImpacts",
+        "security": [
+          {
+            "APIKeyHeader": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "ticker",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Ticker"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 365,
+              "minimum": 1,
+              "default": 30,
+              "title": "Limit"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ThesisMacroImpactRead"
+                  },
+                  "title": "Response Gettickermacroimpacts"
                 }
               }
             }
@@ -890,6 +1167,13 @@
             "type": "array",
             "title": "Invalidation Signals"
           },
+          "macro_exposures": {
+            "items": {
+              "$ref": "#/components/schemas/MacroExposureInput"
+            },
+            "type": "array",
+            "title": "Macro Exposures"
+          },
           "status": {
             "type": "string",
             "title": "Status"
@@ -913,11 +1197,780 @@
           "strengthen_signals",
           "weaken_signals",
           "invalidation_signals",
+          "macro_exposures",
           "status",
           "source",
           "created_at"
         ],
         "title": "InvestmentThesisRead"
+      },
+      "MacroBriefingRead": {
+        "properties": {
+          "briefing_date": {
+            "type": "string",
+            "format": "date",
+            "title": "Briefing Date"
+          },
+          "briefing_type": {
+            "type": "string",
+            "title": "Briefing Type"
+          },
+          "as_of": {
+            "type": "string",
+            "format": "date-time",
+            "title": "As Of"
+          },
+          "headline": {
+            "type": "string",
+            "title": "Headline"
+          },
+          "market_summary": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Market Summary"
+          },
+          "regime_summary": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Regime Summary"
+          },
+          "today_calendar": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "type": "array",
+            "title": "Today Calendar"
+          },
+          "macro_theses": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "type": "array",
+            "title": "Macro Theses"
+          },
+          "ticker_impacts": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "type": "array",
+            "title": "Ticker Impacts"
+          },
+          "data_quality": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "type": "array",
+            "title": "Data Quality"
+          },
+          "kakao_text": {
+            "type": "string",
+            "title": "Kakao Text"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          }
+        },
+        "type": "object",
+        "required": [
+          "briefing_date",
+          "briefing_type",
+          "as_of",
+          "headline",
+          "market_summary",
+          "regime_summary",
+          "today_calendar",
+          "macro_theses",
+          "ticker_impacts",
+          "data_quality",
+          "kakao_text",
+          "status"
+        ],
+        "title": "MacroBriefingRead"
+      },
+      "MacroEventRead": {
+        "properties": {
+          "event_key": {
+            "type": "string",
+            "title": "Event Key"
+          },
+          "event_type": {
+            "type": "string",
+            "title": "Event Type"
+          },
+          "category": {
+            "type": "string",
+            "title": "Category"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "country": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Country"
+          },
+          "scheduled_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Scheduled At"
+          },
+          "released_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Released At"
+          },
+          "event_status": {
+            "type": "string",
+            "title": "Event Status"
+          },
+          "actual": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Actual"
+          },
+          "consensus": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Consensus"
+          },
+          "previous": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Previous"
+          },
+          "revised_previous": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Revised Previous"
+          },
+          "unit": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Unit"
+          },
+          "surprise_value": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Surprise Value"
+          },
+          "surprise_score": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Surprise Score"
+          },
+          "impact_level": {
+            "type": "integer",
+            "title": "Impact Level"
+          },
+          "confirmed_facts": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Confirmed Facts"
+          },
+          "inferred_implications": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Inferred Implications"
+          },
+          "unknowns": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Unknowns"
+          },
+          "provider": {
+            "type": "string",
+            "title": "Provider"
+          },
+          "source_url": {
+            "type": "string",
+            "title": "Source Url"
+          },
+          "source_reliability": {
+            "type": "number",
+            "title": "Source Reliability"
+          }
+        },
+        "type": "object",
+        "required": [
+          "event_key",
+          "event_type",
+          "category",
+          "title",
+          "country",
+          "scheduled_at",
+          "released_at",
+          "event_status",
+          "actual",
+          "consensus",
+          "previous",
+          "revised_previous",
+          "unit",
+          "surprise_value",
+          "surprise_score",
+          "impact_level",
+          "confirmed_facts",
+          "inferred_implications",
+          "unknowns",
+          "provider",
+          "source_url",
+          "source_reliability"
+        ],
+        "title": "MacroEventRead"
+      },
+      "MacroExposureInput": {
+        "properties": {
+          "factor": {
+            "type": "string",
+            "minLength": 1,
+            "title": "Factor"
+          },
+          "direction": {
+            "type": "string",
+            "pattern": "^(positive|negative|mixed)$",
+            "title": "Direction"
+          },
+          "weight": {
+            "type": "integer",
+            "maximum": 5.0,
+            "minimum": 1.0,
+            "title": "Weight",
+            "default": 1
+          },
+          "channel": {
+            "type": "string",
+            "minLength": 1,
+            "title": "Channel"
+          },
+          "horizon": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Horizon"
+          },
+          "condition": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Condition"
+          },
+          "review_required": {
+            "type": "boolean",
+            "title": "Review Required",
+            "default": false
+          }
+        },
+        "type": "object",
+        "required": [
+          "factor",
+          "direction",
+          "channel"
+        ],
+        "title": "MacroExposureInput"
+      },
+      "MacroMonitorResponse": {
+        "properties": {
+          "run_date": {
+            "type": "string",
+            "format": "date",
+            "title": "Run Date"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "observation_count": {
+            "type": "integer",
+            "title": "Observation Count"
+          },
+          "event_count": {
+            "type": "integer",
+            "title": "Event Count"
+          },
+          "impact_count": {
+            "type": "integer",
+            "title": "Impact Count"
+          },
+          "provider_warnings": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Provider Warnings"
+          },
+          "briefing": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/MacroBriefingRead"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "type": "object",
+        "required": [
+          "run_date",
+          "status",
+          "observation_count",
+          "event_count",
+          "impact_count"
+        ],
+        "title": "MacroMonitorResponse"
+      },
+      "MacroObservationRead": {
+        "properties": {
+          "series_code": {
+            "type": "string",
+            "title": "Series Code"
+          },
+          "category": {
+            "type": "string",
+            "title": "Category"
+          },
+          "provider": {
+            "type": "string",
+            "title": "Provider"
+          },
+          "observed_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Observed At"
+          },
+          "market_session": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Market Session"
+          },
+          "value": {
+            "type": "number",
+            "title": "Value"
+          },
+          "unit": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Unit"
+          },
+          "frequency": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Frequency"
+          },
+          "previous_value": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Previous Value"
+          },
+          "change_value": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Change Value"
+          },
+          "change_pct": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Change Pct"
+          },
+          "quality_status": {
+            "type": "string",
+            "title": "Quality Status"
+          },
+          "source_url": {
+            "type": "string",
+            "title": "Source Url"
+          },
+          "retrieved_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Retrieved At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "series_code",
+          "category",
+          "provider",
+          "observed_at",
+          "market_session",
+          "value",
+          "unit",
+          "frequency",
+          "previous_value",
+          "change_value",
+          "change_pct",
+          "quality_status",
+          "source_url",
+          "retrieved_at"
+        ],
+        "title": "MacroObservationRead"
+      },
+      "MacroProviderStatusRead": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "enabled": {
+            "type": "boolean",
+            "title": "Enabled"
+          },
+          "configured": {
+            "type": "boolean",
+            "title": "Configured"
+          },
+          "required_settings": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Required Settings"
+          },
+          "capabilities": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Capabilities"
+          }
+        },
+        "type": "object",
+        "required": [
+          "name",
+          "enabled",
+          "configured"
+        ],
+        "title": "MacroProviderStatusRead"
+      },
+      "MacroRegimeRead": {
+        "properties": {
+          "assessment_date": {
+            "type": "string",
+            "format": "date",
+            "title": "Assessment Date"
+          },
+          "growth_momentum": {
+            "type": "integer",
+            "title": "Growth Momentum"
+          },
+          "inflation_pressure": {
+            "type": "integer",
+            "title": "Inflation Pressure"
+          },
+          "liquidity_condition": {
+            "type": "integer",
+            "title": "Liquidity Condition"
+          },
+          "financial_conditions": {
+            "type": "integer",
+            "title": "Financial Conditions"
+          },
+          "risk_appetite": {
+            "type": "integer",
+            "title": "Risk Appetite"
+          },
+          "earnings_momentum": {
+            "type": "integer",
+            "title": "Earnings Momentum"
+          },
+          "regime_label": {
+            "type": "string",
+            "title": "Regime Label"
+          },
+          "confidence": {
+            "type": "number",
+            "title": "Confidence"
+          },
+          "persistence_days": {
+            "type": "integer",
+            "title": "Persistence Days"
+          },
+          "provisional": {
+            "type": "boolean",
+            "title": "Provisional"
+          },
+          "summary": {
+            "type": "string",
+            "title": "Summary"
+          },
+          "evidence": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "type": "array",
+            "title": "Evidence"
+          }
+        },
+        "type": "object",
+        "required": [
+          "assessment_date",
+          "growth_momentum",
+          "inflation_pressure",
+          "liquidity_condition",
+          "financial_conditions",
+          "risk_appetite",
+          "earnings_momentum",
+          "regime_label",
+          "confidence",
+          "persistence_days",
+          "provisional",
+          "summary",
+          "evidence"
+        ],
+        "title": "MacroRegimeRead"
+      },
+      "MacroThesisRead": {
+        "properties": {
+          "thesis_key": {
+            "type": "string",
+            "title": "Thesis Key"
+          },
+          "version": {
+            "type": "integer",
+            "title": "Version"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "description": {
+            "type": "string",
+            "title": "Description"
+          },
+          "region": {
+            "type": "string",
+            "title": "Region"
+          },
+          "horizon": {
+            "type": "string",
+            "title": "Horizon"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "confidence": {
+            "type": "number",
+            "title": "Confidence"
+          },
+          "base_case_probability": {
+            "type": "number",
+            "title": "Base Case Probability"
+          },
+          "bull_case": {
+            "type": "string",
+            "title": "Bull Case"
+          },
+          "base_case": {
+            "type": "string",
+            "title": "Base Case"
+          },
+          "bear_case": {
+            "type": "string",
+            "title": "Bear Case"
+          },
+          "expected_evidence": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Expected Evidence"
+          },
+          "weakening_evidence": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Weakening Evidence"
+          },
+          "kill_conditions": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Kill Conditions"
+          },
+          "valuation_channels": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Valuation Channels"
+          },
+          "affected_assets": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Affected Assets"
+          },
+          "last_reviewed_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last Reviewed At"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Updated At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "thesis_key",
+          "version",
+          "title",
+          "description",
+          "region",
+          "horizon",
+          "status",
+          "confidence",
+          "base_case_probability",
+          "bull_case",
+          "base_case",
+          "bear_case",
+          "expected_evidence",
+          "weakening_evidence",
+          "kill_conditions",
+          "valuation_channels",
+          "affected_assets",
+          "last_reviewed_at",
+          "created_at",
+          "updated_at"
+        ],
+        "title": "MacroThesisRead"
       },
       "MonitoringItemCreate": {
         "properties": {
@@ -986,6 +2039,14 @@
             "type": "array",
             "title": "Invalidation Signals",
             "description": "Explicit facts that would invalidate the thesis."
+          },
+          "macro_exposures": {
+            "items": {
+              "$ref": "#/components/schemas/MacroExposureInput"
+            },
+            "type": "array",
+            "title": "Macro Exposures",
+            "description": "Conditional macro factors and transmission channels for this thesis."
           }
         },
         "type": "object",
@@ -1450,6 +2511,90 @@
           "events"
         ],
         "title": "ThesisEventResponse"
+      },
+      "ThesisMacroImpactRead": {
+        "properties": {
+          "ticker": {
+            "type": "string",
+            "title": "Ticker"
+          },
+          "thesis_version": {
+            "type": "integer",
+            "title": "Thesis Version"
+          },
+          "assessment_date": {
+            "type": "string",
+            "format": "date",
+            "title": "Assessment Date"
+          },
+          "direction": {
+            "type": "string",
+            "title": "Direction"
+          },
+          "magnitude": {
+            "type": "integer",
+            "title": "Magnitude"
+          },
+          "persistence": {
+            "type": "string",
+            "title": "Persistence"
+          },
+          "confidence": {
+            "type": "number",
+            "title": "Confidence"
+          },
+          "channels": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Channels"
+          },
+          "affected_thesis_pillars": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Affected Thesis Pillars"
+          },
+          "earnings_effect": {
+            "type": "string",
+            "title": "Earnings Effect"
+          },
+          "valuation_effect": {
+            "type": "string",
+            "title": "Valuation Effect"
+          },
+          "rationale": {
+            "type": "string",
+            "title": "Rationale"
+          },
+          "evidence": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "type": "array",
+            "title": "Evidence"
+          }
+        },
+        "type": "object",
+        "required": [
+          "ticker",
+          "thesis_version",
+          "assessment_date",
+          "direction",
+          "magnitude",
+          "persistence",
+          "confidence",
+          "channels",
+          "affected_thesis_pillars",
+          "earnings_effect",
+          "valuation_effect",
+          "rationale",
+          "evidence"
+        ],
+        "title": "ThesisMacroImpactRead"
       },
       "ThesisRelevance": {
         "properties": {

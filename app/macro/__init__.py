@@ -1,0 +1,1 @@
+"""Macro thesis monitoring domain."""

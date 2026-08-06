@@ -10,6 +10,11 @@ When the user says a phrase such as "종목 앞으로 모니터링해줘":
 4. Call `monitorStock` with the ticker, company, and structured thesis.
 5. Confirm the stored thesis version to the user.
 
+When drafting or revising the thesis, include conditional `macro_exposures`
+such as real yields, USD/KRW, oil, credit spreads, or hyperscaler CAPEX. An
+automatically inferred exposure remains marked `review_required=true` until a
+user-approved thesis version replaces it.
+
 When the user asks to stop monitoring, call `stopMonitoringStock`. Deactivation preserves all thesis
 versions and assessment history.
 
@@ -34,7 +39,25 @@ thesis changes only when the user or Custom GPT submits a revised version.
 
 - Primary schedule: every day at 08:00 Asia/Seoul.
 - Retry schedule: 08:15 and 08:45.
+- The macro briefing runs first; its failure is isolated so stock monitoring still runs.
+- Each macro provider fails independently and missing sources are shown as data-quality warnings.
+- A macro morning message is queued once per date, including no-material-change days.
 - Provider calls retry with exponential backoff.
 - OHLCV and event-provider partial results are retained.
 - Notification delivery uses a persistent outbox and remains `dry_run` until Kakao is configured.
 - Successful date-level runs are idempotent.
+
+## Macro decision flow
+
+1. Collect observations and dated events with source URLs and freshness status.
+2. Classify material moves as rate, inflation, liquidity, credit, risk, energy,
+   or technology CAPEX shocks.
+3. Score growth, inflation, liquidity, financial conditions, risk appetite, and
+   earnings momentum. Low-confidence regime changes retain the prior regime.
+4. Update competing macro theses without invalidating them from a single daily move.
+5. Apply each stock thesis's signed exposure, weight, and transmission channel.
+6. Store the full briefing and send the compact Kakao version through the outbox.
+
+The three optional source keys are `FRED_API_KEY`, `EIA_API_KEY`, and
+`ECOS_API_KEY`. Without them the run remains operational but the briefing is
+marked `partial` and explicitly lists the unavailable sources.

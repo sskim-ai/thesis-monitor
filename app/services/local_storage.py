@@ -6,6 +6,7 @@ from tempfile import NamedTemporaryFile
 from sqlmodel import Session, select
 
 from app.config import get_settings
+from app.models.macro import MacroBriefing
 from app.models.thesis import InvestmentThesis, MonitorRun, ThesisAssessment
 
 
@@ -17,7 +18,7 @@ def _data_root() -> Path:
 
 def ensure_data_layout() -> None:
     root = _data_root()
-    for child in ("theses", "history", "runs"):
+    for child in ("theses", "history", "runs", "macro"):
         (root / child).mkdir(parents=True, exist_ok=True)
 
 
@@ -40,6 +41,7 @@ def export_thesis(thesis: InvestmentThesis) -> None:
         "strengthen_signals": json.loads(thesis.strengthen_signals),
         "weaken_signals": json.loads(thesis.weaken_signals),
         "invalidation_signals": json.loads(thesis.invalidation_signals),
+        "macro_exposures": json.loads(thesis.macro_exposures),
         "status": thesis.status,
         "source": thesis.source,
         "created_at": thesis.created_at,
@@ -94,3 +96,25 @@ def export_monitor_run(run: MonitorRun) -> None:
         "details": json.loads(run.details),
     }
     _atomic_json_write(_data_root() / "runs" / f"{run.run_date}.json", payload)
+
+
+def export_macro_briefing(briefing: MacroBriefing) -> None:
+    payload = {
+        "briefing_date": briefing.briefing_date,
+        "briefing_type": briefing.briefing_type,
+        "as_of": briefing.as_of,
+        "headline": briefing.headline,
+        "market_summary": json.loads(briefing.market_summary),
+        "regime_summary": json.loads(briefing.regime_summary),
+        "today_calendar": json.loads(briefing.today_calendar),
+        "macro_theses": json.loads(briefing.macro_theses),
+        "ticker_impacts": json.loads(briefing.ticker_impacts),
+        "data_quality": json.loads(briefing.data_quality),
+        "kakao_text": briefing.kakao_text,
+        "status": briefing.status,
+        "created_at": briefing.created_at,
+    }
+    _atomic_json_write(
+        _data_root() / "macro" / "briefings" / f"{briefing.briefing_date}.json",
+        payload,
+    )

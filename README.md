@@ -50,6 +50,9 @@ OPENDART_API_KEY=
 NEWSAPI_API_KEY=
 FINNHUB_API_KEY=
 ALPHA_VANTAGE_API_KEY=
+FRED_API_KEY=
+EIA_API_KEY=
+ECOS_API_KEY=
 NAVER_CLIENT_ID=
 NAVER_CLIENT_SECRET=
 OPENAI_API_KEY=
@@ -61,6 +64,7 @@ NOTIFICATION_DRY_RUN=true
 KAKAO_REST_API_KEY=
 KAKAO_CLIENT_SECRET=
 KAKAO_REFRESH_TOKEN=
+MACRO_MONITOR_ENABLED=true
 ```
 
 Set `ENABLE_LIVE_PROVIDERS=false` to use only `MockProvider`. Set it to `true` to run `MockProvider` plus live providers in priority order. Provider failures are logged as warnings and do not fail the whole `/thesis-events` request.
@@ -77,6 +81,36 @@ python -m scripts.setup_kakao_oauth
 The helper requests the `talk_message` scope and stores the refresh token in
 `data/kakao_tokens.json` with owner-only permissions. Keep
 `NOTIFICATION_DRY_RUN=true` until a connection test is ready.
+
+## Macro Monitoring
+
+The 08:00 daily job also builds a macro morning briefing before evaluating the
+stock watchlist. It collects U.S. rates, real yields, breakeven inflation,
+credit spreads, volatility, oil, dollar liquidity, U.S. equity and sector
+proxies, Federal Reserve releases, big-tech earnings dates, and selected Korean
+macro indicators. A provider failure produces a partial briefing and does not
+stop the stock thesis monitor.
+
+Three additional free API keys enable the full source set:
+
+- `FRED_API_KEY`: U.S. rates, inflation expectations, credit, volatility, oil,
+  dollar, and liquidity series.
+- `EIA_API_KEY`: weekly U.S. crude inventories, production, and refinery
+  utilization.
+- `ECOS_API_KEY`: Bank of Korea rates, USD/KRW, CPI, and M2 key statistics.
+
+Macro outputs are stored in SQLite and daily briefing JSON files under
+`data/macro/briefings/`. The persistent Kakao outbox guarantees at most one
+morning macro message per date. Read-only Action endpoints include:
+
+```text
+GET /macro/briefings/latest
+GET /macro/regime/latest
+GET /macro/theses
+GET /macro/events
+GET /macro/provider-status
+GET /macro/ticker/{ticker}/impacts
+```
 
 ## Run Locally
 

@@ -21,6 +21,11 @@ def _json_list(value: str) -> list[str]:
     return parsed if isinstance(parsed, list) else []
 
 
+def _json_dict_list(value: str) -> list[dict[str, object]]:
+    parsed = json.loads(value)
+    return [item for item in parsed if isinstance(item, dict)] if isinstance(parsed, list) else []
+
+
 def _assessment_snapshot(assessment: ThesisAssessment) -> dict[str, object]:
     try:
         parsed = json.loads(assessment.thesis_snapshot)
@@ -52,6 +57,7 @@ def thesis_to_read(thesis: InvestmentThesis | None) -> InvestmentThesisRead | No
         strengthen_signals=_json_list(thesis.strengthen_signals),
         weaken_signals=_json_list(thesis.weaken_signals),
         invalidation_signals=_json_list(thesis.invalidation_signals),
+        macro_exposures=_json_dict_list(thesis.macro_exposures),
         status=thesis.status,
         source=thesis.source,
         created_at=thesis.created_at,
@@ -156,6 +162,7 @@ def register_monitoring_item(
         payload.strengthen_signals,
         payload.weaken_signals,
         payload.invalidation_signals,
+        [item.model_dump(mode="json") for item in payload.macro_exposures],
     )
     existing_values = None
     if active_thesis is not None:
@@ -165,6 +172,7 @@ def register_monitoring_item(
             _json_list(active_thesis.strengthen_signals),
             _json_list(active_thesis.weaken_signals),
             _json_list(active_thesis.invalidation_signals),
+            _json_dict_list(active_thesis.macro_exposures),
         )
 
     if existing_values == requested_values:
@@ -181,6 +189,10 @@ def register_monitoring_item(
             strengthen_signals=json.dumps(payload.strengthen_signals, ensure_ascii=False),
             weaken_signals=json.dumps(payload.weaken_signals, ensure_ascii=False),
             invalidation_signals=json.dumps(payload.invalidation_signals, ensure_ascii=False),
+            macro_exposures=json.dumps(
+                [item.model_dump(mode="json") for item in payload.macro_exposures],
+                ensure_ascii=False,
+            ),
             status="active",
         )
         session.add(thesis)

@@ -14,6 +14,13 @@ ACTION_PATHS = {
     "/monitoring-items/{ticker}",
     "/monitoring-items/{ticker}/deactivate",
     "/monitoring-items/{ticker}/assessments",
+    "/macro/briefings/latest",
+    "/macro/briefings/{briefing_date}",
+    "/macro/regime/latest",
+    "/macro/theses",
+    "/macro/events",
+    "/macro/provider-status",
+    "/macro/ticker/{ticker}/impacts",
 }
 
 
@@ -24,7 +31,8 @@ def main() -> None:
         "version": "0.2.0",
         "description": (
             "Collect thesis evidence, register versioned investment theses, manage the monitored "
-            "stock list, and read daily thesis assessments. Administrative jobs are excluded."
+            "stock list, read daily thesis assessments, and retrieve macro briefings, regimes, "
+            "events, and ticker-level macro impacts. Administrative jobs are excluded."
         ),
     }
     schema["servers"] = [{"url": "https://sskim-macmini.tailb44bb1.ts.net/thesis"}]

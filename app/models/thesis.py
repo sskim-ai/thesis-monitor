@@ -15,6 +15,7 @@ class InvestmentThesis(SQLModel, table=True):
     strengthen_signals: str = Field(default="[]", sa_column=Column(Text))
     weaken_signals: str = Field(default="[]", sa_column=Column(Text))
     invalidation_signals: str = Field(default="[]", sa_column=Column(Text))
+    macro_exposures: str = Field(default="[]", sa_column=Column(Text))
     status: str = Field(default="active", index=True)
     source: str = "custom_gpt"
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
