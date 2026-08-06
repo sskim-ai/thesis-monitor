@@ -1,3 +1,4 @@
+import json
 from datetime import date, datetime, timezone
 
 import pytest
@@ -122,12 +123,20 @@ async def test_macro_monitor_builds_briefing_impacts_and_dedupes() -> None:
             )
         ).one()
         assert shock.magnitude >= 3
-        assert session.exec(
+        delivery = session.exec(
             select(NotificationDelivery).where(
                 NotificationDelivery.ticker == "__MACRO__",
                 NotificationDelivery.assessment_date == run_date,
             )
-        ).one().status == "pending"
+        ).one()
+        assert delivery.status == "pending"
+        delivery_payload = json.loads(delivery.payload)
+        assert len(delivery_payload["messages"]) == 3
+        assert delivery_payload["messages"][0]["title"] == "[시장환경 점검] 주요 시장"
+        assert delivery_payload["messages"][1]["title"].startswith(
+            "[시장환경 점검] 레짐"
+        )
+        assert delivery_payload["messages"][2]["title"] == "[시장환경 점검] 투자 해석"
 
         rerun = await run_macro_monitor(
             session,
