@@ -65,6 +65,19 @@ KAKAO_REFRESH_TOKEN=
 
 Set `ENABLE_LIVE_PROVIDERS=false` to use only `MockProvider`. Set it to `true` to run `MockProvider` plus live providers in priority order. Provider failures are logged as warnings and do not fail the whole `/thesis-events` request.
 
+## Kakao OAuth Setup
+
+Register `http://localhost:4000/redirect` as a Kakao Login redirect URI for the
+same REST API key configured in `.env`, then run:
+
+```bash
+python -m scripts.setup_kakao_oauth
+```
+
+The helper requests the `talk_message` scope and stores the refresh token in
+`data/kakao_tokens.json` with owner-only permissions. Keep
+`NOTIFICATION_DRY_RUN=true` until a connection test is ready.
+
 ## Run Locally
 
 ```bash
