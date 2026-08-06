@@ -103,6 +103,8 @@ async def test_macro_monitor_builds_briefing_impacts_and_dedupes() -> None:
         )
 
         assert result.status == "ready"
+        assert result.briefing is not None
+        assert result.briefing.kakao_text.startswith("[시장환경 점검]")
         assert result.observation_count == 12
         assert result.impact_count >= 1
         impact = session.exec(

@@ -1,9 +1,24 @@
 import json
+from types import SimpleNamespace
 
 import httpx
 import pytest
 
-from app.services.notification_service import KakaoSelfNotifier
+from app.services.notification_service import KakaoSelfNotifier, _message_for_assessment
+
+
+def test_assessment_notification_uses_investment_rationale_label() -> None:
+    assessment = SimpleNamespace(
+        ticker="000660",
+        status="strengthened",
+        summary="새 근거가 현재 투자 논리를 강화했습니다.",
+        risk_level="watch",
+    )
+
+    message = _message_for_assessment(assessment)
+
+    assert message.startswith("[000660] 투자 논리 강화")
+    assert "Thesis" not in message
 
 
 @pytest.mark.anyio

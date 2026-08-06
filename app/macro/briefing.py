@@ -25,6 +25,28 @@ MARKET_DISPLAY = {
     "VIXCLS": "VIX",
 }
 
+REGIME_DISPLAY = {
+    "goldilocks": "골디락스",
+    "stagflation_risk": "스태그플레이션 위험",
+    "recession_risk": "경기침체 위험",
+    "liquidity_risk_on": "유동성 주도 위험선호",
+    "mixed": "혼합",
+}
+
+MACRO_STATUS_DISPLAY = {
+    "strengthening": "강화",
+    "intact": "유지",
+    "weakening": "약화",
+    "structural_break": "구조적 재검토",
+}
+
+IMPACT_DISPLAY = {
+    "strengthen": "강화",
+    "weaken": "약화",
+    "mixed": "혼재",
+    "neutral": "중립",
+}
+
 
 def _json(value: str, fallback: object) -> object:
     try:
@@ -117,14 +139,17 @@ def build_macro_briefing(
     market_text = ", ".join(market_items[:6]) or "시장 데이터 없음"
     changed_theses = [item for item in thesis_items if item["status"] != "intact"]
     thesis_text = ", ".join(
-        f"{item['title']} {item['status']}" for item in changed_theses[:2]
-    ) or "Macro Thesis 큰 변화 없음"
+        f"{item['title']} {MACRO_STATUS_DISPLAY.get(str(item['status']), item['status'])}"
+        for item in changed_theses[:2]
+    ) or "주요 시장 가정 큰 변화 없음"
     impact_text = ", ".join(
-        f"{item['ticker']} {item['direction']} {item['magnitude']}/5"
+        f"{item['ticker']} {IMPACT_DISPLAY.get(str(item['direction']), item['direction'])} "
+        f"{item['magnitude']}/5"
         for item in impact_items[:3]
     ) or "종목별 유의미한 변화 없음"
+    regime_display = REGIME_DISPLAY.get(regime.regime_label, regime.regime_label)
     kakao_text = (
-        f"[거시 브리핑] {regime.regime_label}\n"
+        f"[시장환경 점검] {regime_display}\n"
         f"{market_text}\n"
         f"{thesis_text}\n"
         f"{impact_text}"

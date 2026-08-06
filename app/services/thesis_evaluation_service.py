@@ -195,18 +195,18 @@ def evaluate_thesis(
     price_view = _price_view(price_context)
 
     if status == AssessmentStatus.strengthened:
-        summary = "새 근거가 현재 투자 Thesis를 강화했습니다."
+        summary = "새 근거가 현재 투자 논리를 강화했습니다."
         new_buyer_view = "신규 진입 관점에서는 가격 위치와 밸류에이션을 확인한 뒤 분할 접근을 검토할 수 있습니다."
         holder_view = "보유자 관점에서는 핵심 근거의 지속 여부를 확인하며 보유 논리를 유지할 수 있습니다."
         risk_level = "watch"
     elif status == AssessmentStatus.weakened:
-        summary = "새 근거가 현재 투자 Thesis를 약화했습니다."
+        summary = "새 근거가 현재 투자 논리를 약화했습니다."
         new_buyer_view = "신규 진입은 약화 원인이 해소되거나 가격 안전마진이 확인될 때까지 주의가 필요합니다."
         holder_view = "보유자는 약화가 일시적인지 구조적인지 확인하고 비중과 손실 허용 범위를 재점검해야 합니다."
         risk_level = "caution"
     elif status == AssessmentStatus.invalidated:
         summary = "명시된 무효화 조건이 신뢰도 높은 근거로 확인되어 투자 판단 폐기 수준입니다."
-        new_buyer_view = "신규 진입 근거가 소멸했으므로 기존 Thesis로는 접근하지 않는 편이 합리적입니다."
+        new_buyer_view = "신규 진입 근거가 소멸했으므로 기존 투자 논리로는 접근하지 않는 편이 합리적입니다."
         holder_view = "보유자는 기존 투자 논리를 폐기하고 독립적으로 포지션 정리를 검토해야 합니다."
         risk_level = "critical"
     elif status == AssessmentStatus.invalidation_candidate:
@@ -215,18 +215,18 @@ def evaluate_thesis(
         holder_view = "보유자는 원문 근거를 우선 확인하고 위험 노출을 재점검해야 합니다."
         risk_level = "high"
     elif status == AssessmentStatus.mixed:
-        summary = "Thesis를 강화하는 근거와 약화하는 근거가 함께 확인됐습니다."
+        summary = "투자 논리를 강화하는 근거와 약화하는 근거가 함께 확인됐습니다."
         new_buyer_view = "신규 진입은 상반된 근거의 중요도와 가격 안전마진을 함께 비교해야 합니다."
         holder_view = "보유자는 핵심 전제별로 긍정·부정 근거를 나눠 비중 유지 여부를 검토해야 합니다."
         risk_level = "caution"
     elif status == AssessmentStatus.needs_review:
-        summary = "중요 이벤트가 있으나 Thesis 방향을 자동 판정하기에는 근거가 부족합니다."
+        summary = "중요 이벤트가 있으나 투자 논리의 방향을 자동 판정하기에는 근거가 부족합니다."
         new_buyer_view = "신규 진입 전 원문 확인이 필요합니다."
         holder_view = "보유자는 판단을 바꾸기 전에 추가 근거를 확인해야 합니다."
         risk_level = "review"
     else:
-        summary = "현재 Thesis를 바꿀 만한 새로운 근거가 확인되지 않았습니다."
-        new_buyer_view = "신규 진입 판단은 기존 Thesis와 가격 기준을 유지합니다."
+        summary = "현재 투자 논리를 바꿀 만한 새로운 근거가 확인되지 않았습니다."
+        new_buyer_view = "신규 진입 판단은 기존 투자 논리와 가격 기준을 유지합니다."
         holder_view = "보유자는 기존 모니터링 조건을 유지합니다."
         risk_level = "normal"
 

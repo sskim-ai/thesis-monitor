@@ -33,7 +33,7 @@ def _message_for_assessment(assessment: ThesisAssessment) -> str:
     }
     label = labels.get(assessment.status, assessment.status)
     message = (
-        f"[{assessment.ticker}] Thesis {label}\n"
+        f"[{assessment.ticker}] 투자 논리 {label}\n"
         f"{assessment.summary}\n"
         f"위험 수준: {assessment.risk_level}"
     )
