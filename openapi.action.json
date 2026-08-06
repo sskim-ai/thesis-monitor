@@ -336,7 +336,7 @@
           "macro"
         ],
         "summary": "Macro Briefing By Date",
-        "operationId": "macro_briefing_by_date_macro_briefings__briefing_date__get",
+        "operationId": "getMacroBriefingByDate",
         "security": [
           {
             "APIKeyHeader": []

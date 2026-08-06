@@ -54,7 +54,11 @@ def latest_macro_briefing(session: Session = Depends(get_session)) -> MacroBrief
     return macro_briefing_to_read(row)
 
 
-@router.get("/briefings/{briefing_date}", response_model=MacroBriefingRead)
+@router.get(
+    "/briefings/{briefing_date}",
+    response_model=MacroBriefingRead,
+    operation_id="getMacroBriefingByDate",
+)
 def macro_briefing_by_date(
     briefing_date: date,
     session: Session = Depends(get_session),

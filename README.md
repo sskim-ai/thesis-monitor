@@ -305,6 +305,10 @@ authentication with header name `X-Action-API-Key`. Rebuild the schema after rou
 python scripts/generate_action_schema.py
 ```
 
+Paste `docs/custom_gpt_instructions_ko.md` into the GPT Instructions field and upload
+`docs/custom_gpt_knowledge_ko.md` as the stable Knowledge reference. Keep secrets only in the
+Action authentication settings; do not upload `.env` or runtime files under `data/`.
+
 The live FastAPI app also exposes `/openapi.json`, which Custom GPT Actions can consume when the service is deployed.
 
 Local Custom GPT Action testing requires an HTTPS URL. Use a tunnel such as ngrok or Cloudflare Tunnel in front of `uvicorn`, then update the schema server URL.
