@@ -166,10 +166,7 @@ class KakaoSelfNotifier:
             template = {
                 "object_type": "text",
                 "text": str(payload["text"]),
-                "link": {
-                    "web_url": self.settings.kakao_web_url,
-                    "mobile_web_url": self.settings.kakao_web_url,
-                },
+                "link": {},
             }
             response = await client.post(
                 "https://kapi.kakao.com/v2/api/talk/memo/default/send",

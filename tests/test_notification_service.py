@@ -1,5 +1,6 @@
 import json
 from types import SimpleNamespace
+from urllib.parse import parse_qs
 
 import httpx
 import pytest
@@ -33,6 +34,11 @@ async def test_kakao_notifier_refreshes_token_and_sends(tmp_path) -> None:
                 json={"access_token": "access", "refresh_token": "renewed-refresh"},
             )
         assert request.headers["Authorization"] == "Bearer access"
+        form = parse_qs(request.content.decode())
+        template = json.loads(form["template_object"][0])
+        assert template["link"] == {}
+        assert "button_title" not in template
+        assert "buttons" not in template
         return httpx.Response(200, json={"result_code": 0})
 
     notifier = KakaoSelfNotifier(transport=httpx.MockTransport(handler))
