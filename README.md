@@ -56,6 +56,8 @@ ECOS_API_KEY=
 NAVER_CLIENT_ID=
 NAVER_CLIENT_SECRET=
 OPENAI_API_KEY=
+OPENAI_NARRATIVE_MODEL=gpt-5.6-sol
+OPENAI_TIMEOUT_SECONDS=60
 SEC_USER_AGENT=
 ACTION_API_KEY=
 OHLCV_BASE_URL=http://127.0.0.1:8765
@@ -82,9 +84,18 @@ The helper requests the `talk_message` scope and stores the refresh token in
 `data/kakao_tokens.json` with owner-only permissions. Keep
 `NOTIFICATION_DRY_RUN=true` until a connection test is ready.
 
-Kakao's default text template always renders a link button. To send analysis
-text without that button, create a button-free custom template with `${TITLE}`
-and `${BODY}` arguments, then set its ID as `KAKAO_TEMPLATE_ID` in `.env`.
+Morning briefings and material stock assessments are sent as readable Korean
+analysis reports. Kakao's default text template has a 200-character limit, so
+reports are split at section and bullet boundaries into consecutive messages.
+The default template always renders a link button. `KAKAO_TEMPLATE_ID` remains
+available for short custom-template messages, but long reports use the default
+text template so their content is not truncated.
+
+When `OPENAI_API_KEY` has available API credit, structured thesis, evidence,
+price summary, and macro data are converted into a narrative report with
+`OPENAI_NARRATIVE_MODEL`. Credentials are never included in that request. An
+API or network failure falls back to a deterministic local report so the daily
+notification still arrives.
 
 ## Macro Monitoring
 

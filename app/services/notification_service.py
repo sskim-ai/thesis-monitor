@@ -9,7 +9,12 @@ from sqlmodel import Session, select
 
 from app.config import get_settings
 from app.models.macro import MacroBriefing
-from app.models.thesis import NotificationDelivery, ThesisAssessment
+from app.models.thesis import InvestmentThesis, NotificationDelivery, ThesisAssessment
+from app.models.watchlist import WatchlistItem
+from app.services.analysis_report_service import (
+    InvestmentNarrativeGenerator,
+    split_kakao_text,
+)
 
 
 MATERIAL_STATUSES = {
@@ -60,7 +65,23 @@ IMPACT_LABELS = {
 }
 
 
-def _message_for_assessment(assessment: ThesisAssessment) -> str:
+def _json_value(value: str, fallback: object) -> object:
+    try:
+        return json.loads(value)
+    except json.JSONDecodeError:
+        return fallback
+
+
+def _json_list_value(value: str) -> list[object]:
+    parsed = _json_value(value, [])
+    return parsed if isinstance(parsed, list) else []
+
+
+def _assessment_report(
+    assessment: ThesisAssessment,
+    company_name: str,
+    thesis: InvestmentThesis | None,
+) -> tuple[str, dict[str, object]]:
     labels = {
         "strengthened": "강화",
         "weakened": "약화",
@@ -70,23 +91,100 @@ def _message_for_assessment(assessment: ThesisAssessment) -> str:
         "needs_review": "검토 필요",
     }
     label = labels.get(assessment.status, assessment.status)
-    message = (
-        f"[{assessment.ticker}] 투자 논리 {label}\n"
-        f"{assessment.summary}\n"
-        f"위험 수준: {assessment.risk_level}"
+    evidence = _json_list_value(assessment.evidence)
+    price_context = _json_value(assessment.price_context, {})
+    thesis_snapshot = _json_value(assessment.thesis_snapshot, {})
+    strengthen_signals = _json_list_value(thesis.strengthen_signals) if thesis else []
+    weaken_signals = _json_list_value(thesis.weaken_signals) if thesis else []
+    invalidation_signals = _json_list_value(thesis.invalidation_signals) if thesis else []
+    macro_exposures = _json_list_value(thesis.macro_exposures) if thesis else []
+    evidence_items = evidence
+    evidence_lines = [
+        f"• {item.get('title', '제목 없음')} ({item.get('direction', '확인')})"
+        for item in evidence_items[:3]
+        if isinstance(item, dict)
+    ]
+    change_text = "\n".join(evidence_lines) or "• 투자 판단을 바꿀 새 근거가 확인되지 않았습니다."
+    core_thesis = thesis.core_thesis if thesis else str(
+        thesis_snapshot.get("base_thesis", "저장된 핵심 투자 논리가 없습니다.")
     )
-    return message[:200]
+    conditions = [
+        *(str(item) for item in strengthen_signals[:1]),
+        *(str(item) for item in weaken_signals[:1]),
+        *(str(item) for item in invalidation_signals[:1]),
+    ]
+    condition_text = " / ".join(conditions) or "추가 확인 조건이 등록되지 않았습니다."
+    fallback = (
+        f"🏢 {company_name}({assessment.ticker})\n"
+        f"⚠️ 투자 논리 {label} · 신뢰도 {assessment.confidence:.0%}\n\n"
+        f"🎯 결론\n"
+        f"• 논리: {core_thesis}\n"
+        f"• 행동: 신규 관찰자는 {assessment.new_buyer_view} "
+        f"보유자는 {assessment.holder_view}\n"
+        f"• 논리 조건: {condition_text}\n\n"
+        f"🧭 현재 국면\n"
+        f"• {assessment.summary} 위험 수준은 {assessment.risk_level}입니다.\n\n"
+        f"🔄 이번 변화\n{change_text}\n\n"
+        f"💰 가격 판단\n• {assessment.price_view}\n\n"
+        f"📌 확인할 것\n• 강화·약화·무효화 조건과 다음 공시·실적 근거를 계속 확인합니다."
+    )
+    context: dict[str, object] = {
+        "analysis_type": "stock",
+        "assessment_date": str(assessment.assessment_date),
+        "company_name": company_name,
+        "ticker": assessment.ticker,
+        "thesis": {
+            "version": assessment.thesis_version,
+            "core_thesis": core_thesis,
+            "time_horizon": thesis.time_horizon if thesis else None,
+            "strengthen_signals": strengthen_signals,
+            "weaken_signals": weaken_signals,
+            "invalidation_signals": invalidation_signals,
+            "macro_exposures": macro_exposures,
+            "snapshot": thesis_snapshot,
+        },
+        "assessment": {
+            "status": assessment.status,
+            "score": assessment.score,
+            "confidence": assessment.confidence,
+            "summary": assessment.summary,
+            "new_buyer_view": assessment.new_buyer_view,
+            "holder_view": assessment.holder_view,
+            "price_view": assessment.price_view,
+            "risk_level": assessment.risk_level,
+            "evidence": evidence_items,
+            "price_context": price_context,
+        },
+    }
+    return fallback, context
+
+
+def _message_for_assessment(assessment: ThesisAssessment) -> str:
+    return _assessment_report(assessment, assessment.ticker, None)[0]
 
 
 def queue_notification(session: Session, assessment: ThesisAssessment) -> None:
     if assessment.status not in MATERIAL_STATUSES:
         return
+    watchlist_item = session.exec(
+        select(WatchlistItem).where(WatchlistItem.ticker == assessment.ticker)
+    ).first()
+    thesis = session.exec(
+        select(InvestmentThesis).where(
+            InvestmentThesis.ticker == assessment.ticker,
+            InvestmentThesis.version == assessment.thesis_version,
+        )
+    ).first()
+    company_name = watchlist_item.company_name if watchlist_item else assessment.ticker
+    text, analysis_context = _assessment_report(assessment, company_name, thesis)
     payload = json.dumps(
         {
-            "text": _message_for_assessment(assessment),
+            "text": text,
             "ticker": assessment.ticker,
             "assessment_date": str(assessment.assessment_date),
             "status": assessment.status,
+            "presentation": "long_text",
+            "analysis_context": analysis_context,
         },
         ensure_ascii=False,
     )
@@ -113,13 +211,14 @@ def queue_notification(session: Session, assessment: ThesisAssessment) -> None:
 
 
 def queue_macro_notification(session: Session, briefing: MacroBriefing) -> None:
-    messages = _macro_notification_messages(briefing)
+    text, analysis_context = _macro_report(briefing)
     payload = json.dumps(
         {
-            "text": briefing.kakao_text,
-            "messages": messages,
+            "text": text,
             "briefing_date": str(briefing.briefing_date),
             "type": "macro_morning",
+            "presentation": "long_text",
+            "analysis_context": analysis_context,
         },
         ensure_ascii=False,
     )
@@ -145,14 +244,7 @@ def queue_macro_notification(session: Session, briefing: MacroBriefing) -> None:
         delivery.status = "pending"
 
 
-def _json_value(value: str, fallback: object) -> object:
-    try:
-        return json.loads(value)
-    except json.JSONDecodeError:
-        return fallback
-
-
-def _macro_notification_messages(briefing: MacroBriefing) -> list[dict[str, str]]:
+def _macro_report(briefing: MacroBriefing) -> tuple[str, dict[str, object]]:
     market = _json_value(briefing.market_summary, {})
     regime = _json_value(briefing.regime_summary, {})
     theses = _json_value(briefing.macro_theses, [])
@@ -161,31 +253,17 @@ def _macro_notification_messages(briefing: MacroBriefing) -> list[dict[str, str]
     quality = _json_value(briefing.data_quality, [])
 
     market_items = market.get("items", []) if isinstance(market, dict) else []
-    market_values = [str(item) for item in market_items[:4]]
-    market_lines = [
-        " · ".join(market_values[:2]) or "시장 데이터 없음",
-        " · ".join(market_values[2:4]) or "추가 시장 데이터 없음",
-    ]
+    market_values = [str(item) for item in market_items[:8]]
     regime_label = str(regime.get("label", "mixed")) if isinstance(regime, dict) else "mixed"
     confidence = float(regime.get("confidence", 0)) if isinstance(regime, dict) else 0.0
     regime_summary = str(regime.get("summary", "판단 근거 부족")) if isinstance(regime, dict) else "판단 근거 부족"
-    compact_regime = (
-        regime_summary.replace(", ", "·")
-        .replace("금융여건", "금융")
-        .replace("위험선호", "위험")
-        .replace(" +", "+")
-        .replace(" -", "-")
-    )
     regime_display = REGIME_LABELS.get(regime_label, regime_label)
     interpretation = REGIME_INTERPRETATIONS.get(regime_label, "추가 확인이 필요합니다.")
 
     thesis_items = theses if isinstance(theses, list) else []
-    ordered_theses = sorted(
-        (item for item in thesis_items if isinstance(item, dict)),
-        key=lambda item: item.get("status") == "intact",
-    )
+    ordered_theses = [item for item in thesis_items if isinstance(item, dict)]
     thesis_parts = []
-    for item in ordered_theses[:3]:
+    for item in ordered_theses[:5]:
         key = str(item.get("thesis_key", ""))
         status = str(item.get("status", "intact"))
         item_confidence = float(item.get("confidence", 0))
@@ -199,35 +277,61 @@ def _macro_notification_messages(briefing: MacroBriefing) -> list[dict[str, str]
     impact_parts = [
         f"{item.get('ticker')} {IMPACT_LABELS.get(str(item.get('direction')), item.get('direction'))}"
         f" {item.get('magnitude', 0)}/5"
-        for item in impact_items[:2]
+        for item in impact_items[:3]
     ]
     impact_text = ", ".join(impact_parts) or "변화 없음"
-    calendar_count = len(calendar) if isinstance(calendar, list) else 0
-    quality_count = len(quality) if isinstance(quality, list) else 0
-
-    return [
-        {
-            "title": "[시장환경 점검] 주요 시장",
-            "body": f"{market_lines[0]}\n{market_lines[1]}",
-        },
-        {
-            "title": f"[시장환경 점검] 레짐 {regime_display} {confidence:.0%}",
-            "body": f"{compact_regime}\n{interpretation}",
-        },
-        {
-            "title": "[시장환경 점검] 투자 해석",
-            "body": (
-                f"시장 가정: {thesis_line}\n"
-                f"종목: {impact_text} | 일정 {calendar_count}건 | 데이터 주의 {quality_count}건"
-            ),
-        },
-    ]
+    calendar_items = calendar if isinstance(calendar, list) else []
+    quality_items = quality if isinstance(quality, list) else []
+    calendar_text = ", ".join(
+        str(item.get("title", "일정")) for item in calendar_items[:3] if isinstance(item, dict)
+    ) or "등록된 주요 일정 없음"
+    quality_text = ", ".join(
+        str(item.get("warning") or item.get("series_code") or "데이터 점검")
+        for item in quality_items[:3]
+        if isinstance(item, dict)
+    ) or "특이사항 없음"
+    fallback = (
+        f"🌍 시장환경 점검 · {briefing.briefing_date}\n"
+        f"⚠️ {regime_display} 국면 · 신뢰도 {confidence:.0%}\n\n"
+        f"🎯 결론\n"
+        f"• 시장: {interpretation}\n"
+        f"• 행동: 방향을 단정하기보다 변화가 확인된 지표와 종목별 근거를 우선 점검합니다.\n\n"
+        f"🧭 현재 국면\n"
+        f"• {regime_summary}\n"
+        f"• 주요 지표: {' · '.join(market_values) or '시장 데이터 없음'}\n\n"
+        f"🔄 이번 변화\n"
+        f"• 시장 가정: {thesis_line}\n\n"
+        f"🏢 종목 영향\n"
+        f"• {impact_text}\n\n"
+        f"📌 오늘 확인\n"
+        f"• {calendar_text}\n\n"
+        f"⚠️ 데이터 주의\n"
+        f"• {quality_text}"
+    )
+    context: dict[str, object] = {
+        "analysis_type": "macro",
+        "briefing_date": str(briefing.briefing_date),
+        "as_of": str(briefing.as_of),
+        "headline": briefing.headline,
+        "market": market,
+        "regime": regime,
+        "macro_theses": thesis_items,
+        "ticker_impacts": impact_items,
+        "today_calendar": calendar_items,
+        "data_quality": quality_items,
+    }
+    return fallback, context
 
 
 class KakaoSelfNotifier:
-    def __init__(self, transport: httpx.AsyncBaseTransport | None = None) -> None:
+    def __init__(
+        self,
+        transport: httpx.AsyncBaseTransport | None = None,
+        narrative_generator: InvestmentNarrativeGenerator | None = None,
+    ) -> None:
         self.settings = get_settings()
         self.transport = transport
+        self.narrative_generator = narrative_generator or InvestmentNarrativeGenerator()
 
     def _token_path(self) -> Path:
         path = Path(self.settings.data_dir) / "kakao_tokens.json"
@@ -283,8 +387,29 @@ class KakaoSelfNotifier:
         async with httpx.AsyncClient(timeout=20, transport=self.transport) as client:
             access_token = await self._access_token(client)
             text = str(payload["text"])
+            if payload.get("presentation") == "long_text":
+                context = payload.get("analysis_context")
+                if isinstance(context, dict):
+                    text = await self.narrative_generator.generate(context, text)
             headers = {"Authorization": f"Bearer {access_token}"}
-            if self.settings.kakao_template_id:
+            if payload.get("presentation") == "long_text":
+                for chunk in split_kakao_text(text):
+                    template = {
+                        "object_type": "text",
+                        "text": chunk,
+                        "link": {
+                            "web_url": self.settings.kakao_web_url,
+                            "mobile_web_url": self.settings.kakao_web_url,
+                        },
+                        "button_title": "상태 확인",
+                    }
+                    response = await client.post(
+                        "https://kapi.kakao.com/v2/api/talk/memo/default/send",
+                        headers=headers,
+                        data={"template_object": json.dumps(template, ensure_ascii=False)},
+                    )
+                    response.raise_for_status()
+            elif self.settings.kakao_template_id:
                 raw_messages = payload.get("messages")
                 messages = (
                     [item for item in raw_messages if isinstance(item, dict)]
@@ -319,7 +444,10 @@ class KakaoSelfNotifier:
                 template = {
                     "object_type": "text",
                     "text": text,
-                    "link": {},
+                    "link": {
+                        "web_url": self.settings.kakao_web_url,
+                        "mobile_web_url": self.settings.kakao_web_url,
+                    },
                 }
                 response = await client.post(
                     "https://kapi.kakao.com/v2/api/talk/memo/default/send",

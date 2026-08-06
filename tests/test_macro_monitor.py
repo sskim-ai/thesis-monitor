@@ -131,12 +131,10 @@ async def test_macro_monitor_builds_briefing_impacts_and_dedupes() -> None:
         ).one()
         assert delivery.status == "pending"
         delivery_payload = json.loads(delivery.payload)
-        assert len(delivery_payload["messages"]) == 3
-        assert delivery_payload["messages"][0]["title"] == "[시장환경 점검] 주요 시장"
-        assert delivery_payload["messages"][1]["title"].startswith(
-            "[시장환경 점검] 레짐"
-        )
-        assert delivery_payload["messages"][2]["title"] == "[시장환경 점검] 투자 해석"
+        assert delivery_payload["presentation"] == "long_text"
+        assert delivery_payload["analysis_context"]["analysis_type"] == "macro"
+        assert "🎯 결론" in delivery_payload["text"]
+        assert "🏢 종목 영향" in delivery_payload["text"]
 
         rerun = await run_macro_monitor(
             session,

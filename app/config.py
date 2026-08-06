@@ -22,6 +22,8 @@ class Settings(BaseSettings):
     naver_client_id: str | None = None
     naver_client_secret: str | None = None
     openai_api_key: str | None = None
+    openai_narrative_model: str = "gpt-5.6-sol"
+    openai_timeout_seconds: float = 60.0
     sec_user_agent: str | None = None
     action_api_key: str | None = None
     ohlcv_base_url: str = "http://127.0.0.1:8765"
