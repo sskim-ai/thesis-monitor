@@ -38,6 +38,7 @@ class Settings(BaseSettings):
     kakao_rest_api_key: str | None = None
     kakao_client_secret: str | None = None
     kakao_refresh_token: str | None = None
+    kakao_template_id: str | None = None
     kakao_web_url: str = "https://sskim-macmini.tailb44bb1.ts.net/thesis/health"
 
     model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8")

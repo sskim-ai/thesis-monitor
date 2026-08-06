@@ -34,11 +34,14 @@ async def test_kakao_notifier_refreshes_token_and_sends(tmp_path) -> None:
                 json={"access_token": "access", "refresh_token": "renewed-refresh"},
             )
         assert request.headers["Authorization"] == "Bearer access"
+        assert request.url.path == "/v2/api/talk/memo/send"
         form = parse_qs(request.content.decode())
-        template = json.loads(form["template_object"][0])
-        assert template["link"] == {}
-        assert "button_title" not in template
-        assert "buttons" not in template
+        assert form["template_id"] == ["12345"]
+        template_args = json.loads(form["template_args"][0])
+        assert template_args == {
+            "TITLE": "[000660] 투자 논리 강화",
+            "BODY": "새 근거가 확인됐습니다.",
+        }
         return httpx.Response(200, json={"result_code": 0})
 
     notifier = KakaoSelfNotifier(transport=httpx.MockTransport(handler))
@@ -49,10 +52,11 @@ async def test_kakao_notifier_refreshes_token_and_sends(tmp_path) -> None:
             "kakao_rest_api_key": "rest-key",
             "kakao_client_secret": "client-secret",
             "kakao_refresh_token": "refresh",
+            "kakao_template_id": "12345",
         }
     )
 
-    result = await notifier.send({"text": "Thesis strengthened"})
+    result = await notifier.send({"text": "[000660] 투자 논리 강화\n새 근거가 확인됐습니다."})
 
     assert result == "sent"
     assert len(requests) == 2

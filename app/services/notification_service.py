@@ -163,16 +163,34 @@ class KakaoSelfNotifier:
             return "dry_run"
         async with httpx.AsyncClient(timeout=20, transport=self.transport) as client:
             access_token = await self._access_token(client)
-            template = {
-                "object_type": "text",
-                "text": str(payload["text"]),
-                "link": {},
-            }
-            response = await client.post(
-                "https://kapi.kakao.com/v2/api/talk/memo/default/send",
-                headers={"Authorization": f"Bearer {access_token}"},
-                data={"template_object": json.dumps(template, ensure_ascii=False)},
-            )
+            text = str(payload["text"])
+            headers = {"Authorization": f"Bearer {access_token}"}
+            if self.settings.kakao_template_id:
+                lines = text.splitlines()
+                title = lines[0] if lines else "투자 분석"
+                body = "\n".join(lines[1:]) or "유의미한 변화가 없습니다."
+                response = await client.post(
+                    "https://kapi.kakao.com/v2/api/talk/memo/send",
+                    headers=headers,
+                    data={
+                        "template_id": self.settings.kakao_template_id,
+                        "template_args": json.dumps(
+                            {"TITLE": title, "BODY": body},
+                            ensure_ascii=False,
+                        ),
+                    },
+                )
+            else:
+                template = {
+                    "object_type": "text",
+                    "text": text,
+                    "link": {},
+                }
+                response = await client.post(
+                    "https://kapi.kakao.com/v2/api/talk/memo/default/send",
+                    headers=headers,
+                    data={"template_object": json.dumps(template, ensure_ascii=False)},
+                )
             response.raise_for_status()
         return "sent"
 

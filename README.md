@@ -82,6 +82,10 @@ The helper requests the `talk_message` scope and stores the refresh token in
 `data/kakao_tokens.json` with owner-only permissions. Keep
 `NOTIFICATION_DRY_RUN=true` until a connection test is ready.
 
+Kakao's default text template always renders a link button. To send analysis
+text without that button, create a button-free custom template with `${TITLE}`
+and `${BODY}` arguments, then set its ID as `KAKAO_TEMPLATE_ID` in `.env`.
+
 ## Macro Monitoring
 
 The 08:00 daily job also builds a macro morning briefing before evaluating the
