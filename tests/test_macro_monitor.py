@@ -96,6 +96,7 @@ async def test_macro_monitor_builds_briefing_impacts_and_dedupes() -> None:
                         direction="negative",
                         weight=4,
                         channel="cost",
+                        condition="Jet fuel cost is a material share of operating expenses",
                     )
                 ],
             ),
@@ -292,7 +293,14 @@ def test_macro_impacts_separate_overall_and_valuation_channels() -> None:
         by_ticker = {item.ticker: item for item in impacts}
 
         assert by_ticker["CHANNEL2048"].direction == "strengthen"
-        assert by_ticker["CHANNEL2048"].valuation_effect == "weaken"
+        assert by_ticker["CHANNEL2048"].valuation_effect == "strengthen"
+        assert by_ticker["CHANNEL2048"].earnings_effect == "neutral"
+        channel_evidence = json.loads(by_ticker["CHANNEL2048"].evidence)
+        assert any(
+            item["exposure"]["channel"] == "risk_appetite"
+            for item in channel_evidence
+            if item.get("factor") == "market_volatility"
+        )
         assert by_ticker["LOWWEIGHT2048"].direction == "neutral"
         assert by_ticker["LOWWEIGHT2048"].valuation_effect == "neutral"
         assert "저가중치" in by_ticker["LOWWEIGHT2048"].rationale

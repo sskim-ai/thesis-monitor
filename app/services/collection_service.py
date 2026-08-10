@@ -23,8 +23,10 @@ from app.schemas.event import (
 )
 from app.schemas.financial import EarningsCheckpoint, EarningsCheckpointResponse
 from app.services.event_classifier import classify_event
+from app.services.event_identity import event_fingerprint
 from app.services.event_interpreter import enrich_raw_event
 from app.services.financial_backfill_service import backfill_financial_snapshots
+from app.services.financial_validation import validate_event_financials
 from app.services.financial_snapshot_service import upsert_financial_snapshot_from_event
 from app.services.thesis_scoring import score_event
 from app.utils.tickers import COMPANY_NAME_ALIASES, normalize_ticker
@@ -123,7 +125,7 @@ def _raw_event_to_model(raw_event: RawEvent) -> Event:
     unknowns = list(raw_event.unknowns)
     implications = list(raw_event.inferred_implications)
     margin_quality_review, basis_warning = _quality_flags_from_lists(unknowns, implications)
-    return Event(
+    event = Event(
         ticker=raw_event.ticker.upper(),
         company_name=raw_event.company_name,
         date=raw_event.date,
@@ -166,6 +168,11 @@ def _raw_event_to_model(raw_event: RawEvent) -> Event:
         relevance_score=relevance.relevance_score,
         relevance_reason=relevance.reason,
     )
+    validate_event_financials(
+        event,
+        operating_margin_upper_bound=get_settings().financial_operating_margin_upper_bound,
+    )
+    return event
 
 
 def _refresh_duplicate_event(duplicate: Event, event: Event) -> None:
@@ -287,6 +294,7 @@ class CollectionService:
         collected: list[Event] = []
         seen_urls: set[str] = set()
         seen_titles: set[str] = set()
+        seen_fingerprints: set[str] = set()
         for provider in self.providers:
             try:
                 raw_events = await self._fetch_provider_events(provider, ticker, lookback_days)
@@ -300,12 +308,29 @@ class CollectionService:
                 seen_urls.add(raw_event.url)
                 seen_titles.add(title_key)
                 event = _raw_event_to_model(raw_event)
-                duplicate = session.exec(
+                fingerprint = event_fingerprint(event)
+                if fingerprint in seen_fingerprints:
+                    continue
+                seen_fingerprints.add(fingerprint)
+                candidates = session.exec(
                     select(Event).where(
                         Event.ticker == event.ticker,
-                        (Event.url == event.url) | (Event.title == event.title),
+                        Event.date == event.date,
+                        Event.event_type == event.event_type,
+                        Event.provider == event.provider,
                     )
-                ).first()
+                ).all()
+                duplicate = next(
+                    (item for item in candidates if event_fingerprint(item) == fingerprint),
+                    None,
+                )
+                if duplicate is None:
+                    duplicate = session.exec(
+                        select(Event).where(
+                            Event.ticker == event.ticker,
+                            (Event.url == event.url) | (Event.title == event.title),
+                        )
+                    ).first()
                 if duplicate is None:
                     session.add(event)
                     session.flush()

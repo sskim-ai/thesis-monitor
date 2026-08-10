@@ -94,7 +94,8 @@ class TickerDailySummary:
     earnings_impact: str
     summary: str
     confirmed_facts: list[str]
-    current_warning: str
+    confirmed_warnings: list[str]
+    watch_items: list[str]
     macro_paths: list[str]
     check_metrics: list[str]
     new_observer_view: str
@@ -418,7 +419,13 @@ def _macro_interpretation(briefing: MacroBriefing) -> MacroInterpretation:
                 else "성장 둔화 또는 물가 재가속 경고가 확인됨"
             )
         elif key == "china_korea_export_cycle":
-            reason = "한국 수출과 중국 실물지표를 바꿀 신규 확정 근거 없음"
+            reason = (
+                "성장민감 가격 신호 약화가 반복됨, 한국 수출·중국 실물지표 확인 필요"
+                if signal < 0
+                else "성장민감 가격 신호는 우호적이나 한국 수출·중국 실물 확인 필요"
+                if signal > 0
+                else "한국 수출과 중국 실물지표를 바꿀 신규 확정 근거 없음"
+            )
         elif key == "oil_supply_shock":
             oil = _number(observations.get("DCOILWTICO"), "change_pct")
             reason = (
@@ -524,8 +531,21 @@ def _macro_paths(impact: ThesisMacroImpact | None) -> list[str]:
         }.get(factor, factor))
         channel = str(exposure.get("channel", "영향 경로"))
         contribution = float(item.get("contribution", 0) or 0)
+        if item.get("condition_required"):
+            lines.append(f"{label} → 기업별 노출 조건 미등록 · 방향 판단 보류")
+            continue
+        if abs(contribution) < 0.001:
+            lines.append(f"{label} → {channel} 경로 → 기업별 순효과 혼재·방향 판단 보류")
+            continue
         effect = "긍정" if contribution > 0 else "부정"
-        target = "Valuation" if channel == "discount_rate" else "사업·이익"
+        if channel == "discount_rate":
+            target = "Valuation"
+        elif channel == "risk_appetite":
+            target = "Valuation·센티먼트"
+        elif item.get("earnings_link_validated"):
+            target = "사업·이익"
+        else:
+            target = "사업이익 영향 미확인"
         lines.append(f"{label} → {channel} 경로 → {target} {effect}")
     return lines
 
@@ -560,7 +580,10 @@ def _ticker_summary(
     expectation_level = str(expectation.get("level", "unknown"))
     facts = _text_list(assessment.confirmed_facts)
     weaken_signals = _text_list(thesis.weaken_signals)
-    warning = weaken_signals[0] if weaken_signals else assessment.summary
+    confirmed_warnings = _text_list(assessment.confirmed_warnings)
+    watch_items = _text_list(assessment.watch_items)
+    if not watch_items:
+        watch_items = [f"{item} 여부 확인 필요" for item in weaken_signals[:3]]
     check_metrics = _check_metrics(thesis, assessment)
     new_observer_view = assessment.new_buyer_view
     holder_view = assessment.holder_view
@@ -589,7 +612,8 @@ def _ticker_summary(
         earnings_impact=assessment.earnings_estimate_impact or "unknown",
         summary=assessment.summary,
         confirmed_facts=facts[:2],
-        current_warning=warning,
+        confirmed_warnings=confirmed_warnings,
+        watch_items=watch_items,
         macro_paths=_macro_paths(impact),
         check_metrics=check_metrics,
         new_observer_view=new_observer_view,

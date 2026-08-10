@@ -273,8 +273,12 @@ class ThesisAssessmentRead(BaseModel):
     earnings_estimate_impact: EarningsEstimateImpact
     market_expectation_assessment: MarketExpectationAssessment
     confirmed_facts: list[str]
+    background_confirmed_facts: list[str] = Field(default_factory=list)
     inferred_implications: list[str]
     unknowns: list[str]
+    confirmed_warnings: list[str] = Field(default_factory=list)
+    watch_items: list[str] = Field(default_factory=list)
+    used_event_fingerprints: list[str] = Field(default_factory=list)
     score: int
     confidence: float
     summary: str

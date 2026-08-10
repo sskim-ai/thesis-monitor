@@ -106,7 +106,7 @@ def test_macro_can_compress_valuation_without_weakening_business_thesis() -> Non
 
     assert result.status == AssessmentStatus.no_material_change
     assert result.valuation_context.impact == "compression"
-    assert result.earnings_estimate_impact == "unknown"
+    assert result.earnings_estimate_impact == "unchanged"
 
 
 def test_good_earnings_with_very_high_expectations_stays_mixed() -> None:
@@ -115,6 +115,7 @@ def test_good_earnings_with_very_high_expectations_stays_mixed() -> None:
         {"level": "very_high", "summary": "A strong earnings outcome is already expected"}
     )
     thesis.valuation_framework = json.dumps({"primary_method": "forward P/E"})
+    thesis.strengthen_signals = json.dumps(["quarterly earnings beat"])
     event = Event(
         ticker="TEST",
         date=date.today(),

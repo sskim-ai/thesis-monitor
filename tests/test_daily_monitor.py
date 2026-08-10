@@ -171,7 +171,7 @@ async def test_daily_monitor_uses_structured_price_rules() -> None:
         )
 
         assessment = next(item for item in result.assessments if item.ticker == "PRC1")
-        assert assessment.status == "strengthened"
+        assert assessment.status == "no_material_change"
         assert assessment.price_context.rule_evaluation.status == "confirmation_triggered"
         assert "상향 돌파" in assessment.price_view
         assert any(item["provider"] == "ohlcv-analyst" for item in assessment.evidence)

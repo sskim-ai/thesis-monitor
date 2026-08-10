@@ -1,5 +1,5 @@
 import json
-from datetime import datetime, timezone
+from datetime import datetime, time, timezone
 
 from sqlmodel import Session, select
 
@@ -102,8 +102,13 @@ def update_macro_theses(
 ) -> list[MacroThesis]:
     theses = ensure_default_macro_theses(session)
     now = datetime.now(timezone.utc)
+    reviewed_at = datetime.combine(regime.assessment_date, time.min, tzinfo=timezone.utc)
     for thesis in theses:
         old_confidence = thesis.confidence
+        already_reviewed_today = (
+            thesis.last_reviewed_at is not None
+            and thesis.last_reviewed_at.date() == regime.assessment_date
+        )
         if thesis.thesis_key == "us_soft_landing_disinflation":
             if (
                 regime.growth_momentum >= 1
@@ -127,16 +132,20 @@ def update_macro_theses(
             delta = regime.growth_momentum
         else:
             delta = -1 if regime.inflation_pressure >= 2 else 0
-        thesis.confidence = round(max(0.05, min(0.95, old_confidence + delta * 0.05)), 2)
-        if thesis.confidence >= 0.7:
-            thesis.status = "strengthening"
-        elif thesis.confidence >= 0.4:
-            thesis.status = "intact"
-        elif thesis.confidence >= 0.2:
-            thesis.status = "weakening"
-        else:
+        confidence_delta = 0 if already_reviewed_today else delta * 0.03
+        thesis.confidence = round(
+            max(0.05, min(0.95, old_confidence + confidence_delta)), 2
+        )
+        persistent_signal = regime.persistence_days >= 3 and not regime.provisional
+        if thesis.confidence < 0.2 and delta < 0 and persistent_signal:
             thesis.status = "structural_break"
-        thesis.last_reviewed_at = now
+        elif delta < 0:
+            thesis.status = "weakening"
+        elif delta > 0 and persistent_signal:
+            thesis.status = "strengthening"
+        else:
+            thesis.status = "intact"
+        thesis.last_reviewed_at = reviewed_at
         thesis.updated_at = now
         session.add(thesis)
     session.commit()

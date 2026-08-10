@@ -41,8 +41,12 @@ class ThesisAssessment(SQLModel, table=True):
     earnings_estimate_impact: str | None = Field(default=None, index=True)
     market_expectation_assessment: str = Field(default="{}", sa_column=Column(Text))
     confirmed_facts: str = Field(default="[]", sa_column=Column(Text))
+    background_confirmed_facts: str = Field(default="[]", sa_column=Column(Text))
     inferred_implications: str = Field(default="[]", sa_column=Column(Text))
     unknowns: str = Field(default="[]", sa_column=Column(Text))
+    confirmed_warnings: str = Field(default="[]", sa_column=Column(Text))
+    watch_items: str = Field(default="[]", sa_column=Column(Text))
+    used_event_fingerprints: str = Field(default="[]", sa_column=Column(Text))
     score: int = 0
     confidence: float = 0.0
     summary: str = Field(sa_column=Column(Text))

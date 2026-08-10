@@ -32,6 +32,8 @@ class Settings(BaseSettings):
     monitor_lookback_days: int = 3
     monitor_retry_attempts: int = 3
     monitor_retry_base_seconds: float = 2.0
+    assessment_distribution_warning_threshold: float = 0.7
+    financial_operating_margin_upper_bound: float = 60.0
     macro_monitor_enabled: bool = True
     macro_provider_timeout_seconds: float = 20.0
     macro_briefing_send_no_change: bool = True

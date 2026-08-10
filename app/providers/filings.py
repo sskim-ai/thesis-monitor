@@ -156,10 +156,25 @@ def _financial_item_score(item: dict[str, str]) -> tuple[int, int, int, int, int
     )
 
 
-def _financial_basis(item: dict[str, str]) -> str:
+def _period_scope(report_code: str) -> str:
+    return {
+        "11013": "single-quarter",
+        "11012": "half-year",
+        "11014": "ytd",
+        "11011": "annual",
+    }.get(report_code, "cumulative")
+
+
+def _financial_basis(item: dict[str, str], report_code: str) -> str:
     return "; ".join(
-        f"{key}={item.get(key) or 'unknown'}"
-        for key in ("fs_div", "sj_div", "account_id", "thstrm_nm", "frmtrm_nm")
+        [
+            *(
+                f"{key}={item.get(key) or 'unknown'}"
+                for key in ("fs_div", "sj_div", "account_id", "thstrm_nm", "frmtrm_nm")
+            ),
+            "unit=KRW",
+            f"period_scope={_period_scope(report_code)}",
+        ]
     )
 
 
@@ -178,7 +193,7 @@ def _financial_basis_warnings(selected: dict[str, dict[str, str]]) -> list[str]:
     return warnings
 
 
-def _extract_financial_facts(items: list[dict[str, str]]) -> list[str]:
+def _extract_financial_facts(items: list[dict[str, str]], report_code: str = "") -> list[str]:
     selected: dict[str, dict[str, str]] = {}
     for item in items:
         account_name = item.get("account_nm", "")
@@ -198,7 +213,7 @@ def _extract_financial_facts(items: list[dict[str, str]]) -> list[str]:
         if amount:
             facts.append(
                 f"OpenDART financial fact: {item.get('account_nm', '')} = {amount} "
-                f"({item.get('sj_nm', '')}; {_financial_basis(item)})"
+                f"({item.get('sj_nm', '')}; {_financial_basis(item, report_code)})"
             )
     facts.extend(_financial_basis_warnings(selected))
     return facts
@@ -216,7 +231,11 @@ def _filter_items_by_receipt(items: list[dict[str, str]], receipt_no: str) -> li
     if not receipt_no:
         return items
     matched = [item for item in items if item.get("rcept_no") == receipt_no]
-    return matched or items
+    if matched:
+        return matched
+    if any(item.get("rcept_no") for item in items):
+        return []
+    return items
 
 
 def _available_keys_debug(items: list[dict[str, str]], label: str) -> str:
@@ -402,7 +421,7 @@ class OpenDARTProvider(FilingProvider):
             return [], ["OpenDART financial statement API request failed"]
         if payload.get("status") != "000":
             return [], [f"OpenDART financial statement API status: {payload.get('status')}"]
-        facts = _extract_financial_facts(payload.get("list", []))
+        facts = _extract_financial_facts(payload.get("list", []), report_code)
         return (facts, []) if facts else ([], ["OpenDART financial statement API returned no mapped financial facts"])
 
     async def _fetch_treasury_stock_facts(self, client: httpx.AsyncClient, api_key: str, corp_code: str, title: str, published: date, receipt_no: str) -> tuple[list[str], list[str]]:

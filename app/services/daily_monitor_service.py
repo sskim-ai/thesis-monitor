@@ -1,4 +1,5 @@
 import json
+import logging
 from datetime import date, datetime, timezone
 
 from sqlmodel import Session, select
@@ -18,6 +19,9 @@ from app.services.notification_service import (
 )
 from app.services.ohlcv_client import OhlcvClient
 from app.services.thesis_evaluation_service import evaluate_thesis, recent_events_for_assessment
+
+
+logger = logging.getLogger(__name__)
 
 
 def _latest_thesis(session: Session, ticker: str) -> InvestmentThesis | None:
@@ -59,6 +63,21 @@ def _previous_snapshot(session: Session, ticker: str, run_date: date) -> dict[st
     return parsed if isinstance(parsed, dict) else {}
 
 
+def _previous_assessment(
+    session: Session,
+    ticker: str,
+    run_date: date,
+) -> ThesisAssessment | None:
+    return session.exec(
+        select(ThesisAssessment)
+        .where(
+            ThesisAssessment.ticker == ticker,
+            ThesisAssessment.assessment_date < run_date,
+        )
+        .order_by(ThesisAssessment.assessment_date.desc())
+    ).first()
+
+
 def _json_value(value: str, fallback: object) -> object:
     try:
         return json.loads(value)
@@ -91,6 +110,8 @@ def _build_thesis_snapshot(
     summary: str,
     evidence: list[dict[str, object]],
     valuation_context: dict[str, object],
+    new_confirmed_facts: list[str],
+    background_confirmed_facts: list[str],
 ) -> dict[str, object]:
     previous = _previous_snapshot(session, thesis.ticker, run_date)
     return {
@@ -109,6 +130,8 @@ def _build_thesis_snapshot(
             thesis.multiple_compression_signals, []
         ),
         "valuation_context": valuation_context,
+        "new_confirmed_facts": new_confirmed_facts,
+        "background_confirmed_facts": background_confirmed_facts,
         "supporting_evidence": _merge_evidence(
             previous.get("supporting_evidence"), evidence, {"strengthen"}
         ),
@@ -184,6 +207,7 @@ async def run_daily_monitor(
             except Exception as exc:  # noqa: BLE001
                 price_context = PriceContext(warnings=[f"price_context: {type(exc).__name__}"])
             events = recent_events_for_assessment(session, item.ticker, run_date)
+            previous_assessment = _previous_assessment(session, item.ticker, run_date)
             macro_impact = session.exec(
                 select(ThesisMacroImpact).where(
                     ThesisMacroImpact.ticker == item.ticker,
@@ -191,7 +215,13 @@ async def run_daily_monitor(
                     ThesisMacroImpact.assessment_date == run_date,
                 )
             ).first()
-            result = evaluate_thesis(thesis, events, price_context, macro_impact=macro_impact)
+            result = evaluate_thesis(
+                thesis,
+                events,
+                price_context,
+                macro_impact=macro_impact,
+                previous_assessment=previous_assessment,
+            )
             valuation_context = result.valuation_context.model_dump(mode="json")
             thesis_snapshot = _build_thesis_snapshot(
                 session,
@@ -201,6 +231,8 @@ async def run_daily_monitor(
                 result.summary,
                 result.evidence,
                 valuation_context,
+                result.confirmed_facts,
+                result.background_confirmed_facts,
             )
             assessment = _assessment_for_date(session, item.ticker, run_date)
             if assessment is None:
@@ -214,10 +246,18 @@ async def run_daily_monitor(
                     earnings_estimate_impact=result.earnings_estimate_impact.value,
                     market_expectation_assessment=result.market_expectation_assessment.model_dump_json(),
                     confirmed_facts=json.dumps(result.confirmed_facts, ensure_ascii=False),
+                    background_confirmed_facts=json.dumps(
+                        result.background_confirmed_facts, ensure_ascii=False
+                    ),
                     inferred_implications=json.dumps(
                         result.inferred_implications, ensure_ascii=False
                     ),
                     unknowns=json.dumps(result.unknowns, ensure_ascii=False),
+                    confirmed_warnings=json.dumps(result.confirmed_warnings, ensure_ascii=False),
+                    watch_items=json.dumps(result.watch_items, ensure_ascii=False),
+                    used_event_fingerprints=json.dumps(
+                        result.used_event_fingerprints, ensure_ascii=False
+                    ),
                     score=result.score,
                     confidence=result.confidence,
                     summary=result.summary,
@@ -243,10 +283,20 @@ async def run_daily_monitor(
                 assessment.confirmed_facts = json.dumps(
                     result.confirmed_facts, ensure_ascii=False
                 )
+                assessment.background_confirmed_facts = json.dumps(
+                    result.background_confirmed_facts, ensure_ascii=False
+                )
                 assessment.inferred_implications = json.dumps(
                     result.inferred_implications, ensure_ascii=False
                 )
                 assessment.unknowns = json.dumps(result.unknowns, ensure_ascii=False)
+                assessment.confirmed_warnings = json.dumps(
+                    result.confirmed_warnings, ensure_ascii=False
+                )
+                assessment.watch_items = json.dumps(result.watch_items, ensure_ascii=False)
+                assessment.used_event_fingerprints = json.dumps(
+                    result.used_event_fingerprints, ensure_ascii=False
+                )
                 assessment.score = result.score
                 assessment.confidence = result.confidence
                 assessment.summary = result.summary
@@ -277,6 +327,12 @@ async def run_daily_monitor(
             details["tickers"][item.ticker] = {
                 "status": result.status,
                 "event_count": len(events),
+                "previous_status": (
+                    previous_assessment.business_thesis_change or previous_assessment.status
+                    if previous_assessment is not None
+                    else None
+                ),
+                "used_event_fingerprints": result.used_event_fingerprints,
                 "price_period_counts": {
                     period: summary.actual_count
                     for period, summary in price_context.periods.items()
@@ -296,6 +352,28 @@ async def run_daily_monitor(
         run.status = "failed"
     else:
         run.status = "success"
+    status_counts: dict[str, int] = {}
+    for assessment in completed_assessments:
+        status = assessment.business_thesis_change or assessment.status
+        status_counts[status] = status_counts.get(status, 0) + 1
+    material_changes = sum(
+        status_counts.get(status, 0)
+        for status in {"strengthened", "weakened", "invalidation_candidate", "invalidated"}
+    )
+    change_ratio = material_changes / len(completed_assessments) if completed_assessments else 0.0
+    details["assessment_distribution"] = {
+        "material_change_count": material_changes,
+        "assessment_count": len(completed_assessments),
+        "material_change_ratio": round(change_ratio, 3),
+        "status_counts": status_counts,
+    }
+    if change_ratio > settings.assessment_distribution_warning_threshold:
+        warning = (
+            "assessment_distribution_warning: unusually high daily thesis-change rate "
+            f"({material_changes}/{len(completed_assessments)})"
+        )
+        details["assessment_distribution_warning"] = warning
+        logger.warning(warning)
     run.completed_at = datetime.now(timezone.utc)
     run.details = json.dumps(details, ensure_ascii=False)
     session.add(run)

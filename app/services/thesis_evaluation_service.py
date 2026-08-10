@@ -8,6 +8,7 @@ from sqlmodel import Session, select
 from app.models.event import Event
 from app.models.macro import ThesisMacroImpact
 from app.models.thesis import InvestmentThesis, ThesisAssessment
+from app.services.event_identity import event_fingerprint
 from app.schemas.thesis import (
     AssessmentStatus,
     ExpectationLevel,
@@ -118,6 +119,22 @@ def _event_text(event: Event) -> str:
             " ".join(_json_list(event.inferred_implications)),
         ]
     )
+
+
+def _substantive_facts(event: Event) -> list[str]:
+    return [
+        fact
+        for fact in _json_list(event.confirmed_facts)
+        if not any(
+            marker in fact.lower()
+            for marker in (
+                "filing title:",
+                "receipt number:",
+                "recent filing form:",
+                "accession number:",
+            )
+        )
+    ]
 
 
 def _price_position(context: PriceContext) -> float | None:
@@ -305,8 +322,12 @@ class EvaluationResult:
     earnings_estimate_impact: EarningsEstimateImpact
     market_expectation_assessment: MarketExpectationAssessment
     confirmed_facts: list[str]
+    background_confirmed_facts: list[str]
     inferred_implications: list[str]
     unknowns: list[str]
+    confirmed_warnings: list[str]
+    watch_items: list[str]
+    used_event_fingerprints: list[str]
     should_deactivate: bool = False
 
 
@@ -339,7 +360,7 @@ def _assessment_evidence_layers(
     inferred: list[str] = []
     unknowns: list[str] = []
     for event in events:
-        event_facts = _json_list(event.confirmed_facts)
+        event_facts = _substantive_facts(event)
         event_inferences = _json_list(event.inferred_implications)
         if event.provider in TRUSTED_FACT_PROVIDERS:
             confirmed.extend(event_facts)
@@ -350,17 +371,22 @@ def _assessment_evidence_layers(
     return _unique(confirmed), _unique(inferred), _unique(unknowns)
 
 
+def _warning_facts(event: Event) -> list[str]:
+    facts = _substantive_facts(event)
+    return facts or [event.title]
+
+
 def _earnings_estimate_impact(events: list[Event]) -> EarningsEstimateImpact:
     up = any(
         event.provider in TRUSTED_FACT_PROVIDERS
         and event.event_type in EARNINGS_UP_EVENT_TYPES
-        and bool(_json_list(event.confirmed_facts))
+        and bool(_substantive_facts(event))
         for event in events
     )
     down = any(
         event.provider in TRUSTED_FACT_PROVIDERS
         and event.event_type in EARNINGS_DOWN_EVENT_TYPES
-        and bool(_json_list(event.confirmed_facts))
+        and bool(_substantive_facts(event))
         for event in events
     )
     if up and down:
@@ -369,7 +395,58 @@ def _earnings_estimate_impact(events: list[Event]) -> EarningsEstimateImpact:
         return EarningsEstimateImpact.up
     if down:
         return EarningsEstimateImpact.down
-    return EarningsEstimateImpact.unknown
+    return EarningsEstimateImpact.unchanged
+
+
+def _previous_facts(previous: ThesisAssessment | None) -> list[str]:
+    if previous is None:
+        return []
+    return _unique(
+        [
+            *_json_list(previous.background_confirmed_facts),
+            *_json_list(previous.confirmed_facts),
+        ]
+    )
+
+
+def _watch_text(value: str) -> str:
+    text = value.strip().rstrip(".")
+    if not text:
+        return ""
+    if "확인 필요" in text:
+        return text
+    if text.endswith("여부"):
+        return f"{text} 확인 필요"
+    english = text.lower()
+    if any(term in english for term in ("unknown", "unavailable", "require", "verify", "warning")):
+        return f"{text} · 확인 필요"
+    if re.search(r"[가-힣]", text):
+        return f"{text}하는지 확인 필요"
+    return f"{text} 여부 확인 필요"
+
+
+def _transition_guard(
+    previous: ThesisAssessment | None,
+    status: AssessmentStatus,
+    material_positive: bool,
+    material_invalidation: bool,
+) -> AssessmentStatus:
+    if previous is None:
+        return status
+    previous_status = previous.business_thesis_change or previous.status
+    if (
+        previous_status in {"weakened", "invalidation_candidate"}
+        and status == AssessmentStatus.strengthened
+        and not material_positive
+    ):
+        return AssessmentStatus.no_material_change
+    if (
+        previous_status == "strengthened"
+        and status == AssessmentStatus.invalidated
+        and not material_invalidation
+    ):
+        return AssessmentStatus.mixed
+    return status
 
 
 def _expectation_assessment(
@@ -408,6 +485,7 @@ def evaluate_thesis(
     events: list[Event],
     price_context: PriceContext,
     macro_impact: ThesisMacroImpact | None = None,
+    previous_assessment: ThesisAssessment | None = None,
 ) -> EvaluationResult:
     strengthen_signals = _json_list(thesis.strengthen_signals)
     weaken_signals = _json_list(thesis.weaken_signals)
@@ -423,6 +501,7 @@ def evaluate_thesis(
     invalidation_matches: list[tuple[Event, list[str]]] = []
     evidence: list[dict[str, object]] = []
     core_review_evidence = False
+    material_positive = False
 
     for event in events:
         text = _event_text(event)
@@ -433,16 +512,36 @@ def evaluate_thesis(
         compression_matches = _matching_signals(text, compression_signals)
         direction = "neutral"
         valuation_direction = "neutral"
-        if invalid_matches:
+        trusted_confirmed = (
+            event.provider in TRUSTED_FACT_PROVIDERS
+            and bool(_substantive_facts(event))
+            and not event.financial_statement_basis_warning
+        )
+        if invalid_matches and (
+            trusted_confirmed
+            or (event.event_type != "non_thesis_noise" and event.relevance_score >= 40)
+        ):
             direction = "invalidation"
             negative_points += event.relevance_score
             invalidation_matches.append((event, invalid_matches))
-        elif weaken_matches or event.event_type in NEGATIVE_EVENT_TYPES:
+        elif trusted_confirmed and (weaken_matches or event.event_type in NEGATIVE_EVENT_TYPES):
             direction = "weaken"
             negative_points += event.relevance_score
-        elif strengthen_matches or event.event_type in POSITIVE_EVENT_TYPES:
+        elif (
+            trusted_confirmed
+            and strengthen_matches
+            and event.event_type in POSITIVE_EVENT_TYPES
+        ):
             direction = "strengthen"
             positive_points += event.relevance_score
+            material_positive = material_positive or event.relevance_score >= 20
+        elif (
+            (weaken_matches or event.event_type in NEGATIVE_EVENT_TYPES)
+            and not trusted_confirmed
+            and event.event_type != "non_thesis_noise"
+            and event.relevance_score >= 40
+        ):
+            core_review_evidence = True
 
         if expansion_matches and compression_matches:
             valuation_direction = "mixed"
@@ -479,15 +578,16 @@ def evaluate_thesis(
                         *expansion_matches,
                         *compression_matches,
                     ],
+                    "fingerprint": event_fingerprint(event),
                 }
             )
 
     price_result = _evaluate_price_rules(thesis, price_context)
-    positive_points += price_result.positive_points
-    negative_points += price_result.negative_points
+    if price_result.invalidated:
+        negative_points += price_result.negative_points
     if price_result.evidence is not None:
         evidence.append(price_result.evidence)
-        core_review_evidence = True
+        core_review_evidence = core_review_evidence or price_result.invalidated
 
     macro_valuation_effect = macro_impact.valuation_effect if macro_impact else "neutral"
     if macro_valuation_effect == "strengthen":
@@ -518,7 +618,7 @@ def evaluate_thesis(
     trusted_invalidation = any(
         event.provider in TRUSTED_INVALIDATION_PROVIDERS
         and event.relevance_score >= 80
-        and bool(_json_list(event.confirmed_facts))
+        and bool(_substantive_facts(event))
         for event, _matches in invalidation_matches
     )
     if price_result.invalidated or trusted_invalidation:
@@ -535,6 +635,12 @@ def evaluate_thesis(
         status = AssessmentStatus.needs_review
     else:
         status = AssessmentStatus.no_material_change
+    status = _transition_guard(
+        previous_assessment,
+        status,
+        material_positive=material_positive,
+        material_invalidation=price_result.invalidated or trusted_invalidation,
+    )
 
     expectations = _json_dict(thesis.market_expectations)
     framework = _json_dict(thesis.valuation_framework)
@@ -586,6 +692,20 @@ def evaluate_thesis(
         expectations, valuation_context
     )
     confirmed_facts, inferred_implications, unknowns = _assessment_evidence_layers(events)
+    confirmed_warnings = _unique(
+        fact
+        for event in events
+        if event.provider in TRUSTED_FACT_PROVIDERS
+        and (
+            event.event_type in NEGATIVE_EVENT_TYPES
+            or bool(_matching_signals(_event_text(event), weaken_signals))
+            or bool(_matching_signals(_event_text(event), invalidation_signals))
+        )
+        for fact in _warning_facts(event)
+    )
+    watch_items = _unique(_watch_text(item) for item in unknowns)
+    background_confirmed_facts = _previous_facts(previous_assessment)
+    used_event_fingerprints = [event_fingerprint(event) for event in events]
 
     net_score = max(-100, min(100, positive_points - negative_points))
     confidence = 0.0
@@ -652,8 +772,12 @@ def evaluate_thesis(
         earnings_estimate_impact=earnings_estimate_impact,
         market_expectation_assessment=market_expectation_assessment,
         confirmed_facts=confirmed_facts,
+        background_confirmed_facts=background_confirmed_facts,
         inferred_implications=inferred_implications,
         unknowns=unknowns,
+        confirmed_warnings=confirmed_warnings,
+        watch_items=watch_items,
+        used_event_fingerprints=used_event_fingerprints,
         should_deactivate=status == AssessmentStatus.invalidated,
     )
 
@@ -663,17 +787,54 @@ def recent_events_for_assessment(
     ticker: str,
     assessment_date: date,
 ) -> list[Event]:
-    previous = session.exec(
+    previous_assessments = session.exec(
         select(ThesisAssessment)
         .where(
             ThesisAssessment.ticker == ticker,
-            ThesisAssessment.assessment_date < assessment_date,
+            ThesisAssessment.assessment_date <= assessment_date,
         )
-        .order_by(ThesisAssessment.assessment_date.desc())
-    ).first()
-    query = select(Event).where(Event.ticker == ticker)
-    if previous is not None:
-        query = query.where(Event.created_at > previous.created_at)
-    return list(
-        session.exec(query.order_by(Event.date.desc(), Event.relevance_score.desc())).all()
-    )
+        .order_by(ThesisAssessment.assessment_date)
+    ).all()
+    used_fingerprints: set[str] = set()
+    used_urls: set[str] = set()
+    legacy_created_cutoff = None
+    for previous in previous_assessments:
+        previous_fingerprints = _json_list(previous.used_event_fingerprints)
+        used_fingerprints.update(previous_fingerprints)
+        if not previous_fingerprints and (
+            legacy_created_cutoff is None or previous.created_at > legacy_created_cutoff
+        ):
+            legacy_created_cutoff = previous.created_at
+        for item in _json_value_list(previous.evidence):
+            url = str(item.get("url", ""))
+            if url:
+                used_urls.add(url)
+    latest_assessment = previous_assessments[-1] if previous_assessments else None
+    events = session.exec(
+        select(Event)
+        .where(Event.ticker == ticker, Event.date <= assessment_date)
+        .order_by(Event.date.desc(), Event.relevance_score.desc())
+    ).all()
+    return [
+        event
+        for event in events
+        if event_fingerprint(event) not in used_fingerprints
+        and event.url not in used_urls
+        and (legacy_created_cutoff is None or event.created_at > legacy_created_cutoff)
+        and (
+            latest_assessment is None
+            or event.date > latest_assessment.assessment_date
+            or (
+                event.date == latest_assessment.assessment_date
+                and event.created_at > latest_assessment.created_at
+            )
+        )
+    ]
+
+
+def _json_value_list(value: str) -> list[dict[str, object]]:
+    try:
+        parsed = json.loads(value)
+    except json.JSONDecodeError:
+        return []
+    return [item for item in parsed if isinstance(item, dict)] if isinstance(parsed, list) else []

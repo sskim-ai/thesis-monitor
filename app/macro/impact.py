@@ -20,6 +20,12 @@ FACTOR_SERIES = {
     "market_volatility": "VIXCLS",
 }
 USABLE_QUALITY = {"fresh", "revised"}
+CANONICAL_CHANNELS = {
+    "market_volatility": "risk_appetite",
+    "us_10y_real_yield": "discount_rate",
+    "us_10y_yield": "discount_rate",
+    "hyperscaler_capex": "demand",
+}
 
 
 def _latest_observation(session: Session, series_code: str) -> MacroObservation | None:
@@ -57,7 +63,7 @@ def _inferred_exposures(thesis: InvestmentThesis) -> list[dict[str, object]]:
         )
 
     if any(term in text for term in ("ai", "hbm", "반도체", "데이터센터", "semiconductor")):
-        add("hyperscaler_capex", "positive", 5, "capex")
+        add("hyperscaler_capex", "positive", 5, "demand")
         add("us_10y_real_yield", "negative", 2, "discount_rate")
     if any(term in text for term in ("항공", "운송", "airline")):
         add("wti", "negative", 4, "cost")
@@ -101,6 +107,35 @@ def _weight(exposure: dict[str, object]) -> int:
     except (TypeError, ValueError):
         value = 1
     return max(1, min(5, value))
+
+
+def _channel(exposure: dict[str, object]) -> str:
+    factor = str(exposure.get("factor", ""))
+    return CANONICAL_CHANNELS.get(factor, str(exposure.get("channel", "unknown")))
+
+
+def _has_defined_condition(exposure: dict[str, object]) -> bool:
+    condition = str(exposure.get("condition") or "").strip().lower()
+    return bool(condition and condition != "auto_draft") and not bool(
+        exposure.get("review_required", False)
+    )
+
+
+def _earnings_channel_is_eligible(
+    factor: str,
+    channel: str,
+    exposure: dict[str, object],
+) -> bool:
+    if channel in {"discount_rate", "risk_appetite", "liquidity"}:
+        return False
+    if factor in {"usdkrw", "dollar", "wti", "brent", "oil"}:
+        return _has_defined_condition(exposure)
+    if factor == "credit_spread":
+        condition = str(exposure.get("condition") or "").lower()
+        return _has_defined_condition(exposure) and any(
+            term in condition for term in ("debt", "leverage", "refinanc", "차입", "부채")
+        )
+    return channel in {"demand", "pricing", "cost", "fx", "funding"}
 
 
 def _impact_direction(net: float) -> str:
@@ -191,6 +226,7 @@ def assess_thesis_macro_impacts(
         reviewed_count = 0
         reviewed_weights: list[int] = []
         channel_contributions: dict[str, float] = {}
+        earnings_contributions: dict[str, float] = {}
         for exposure in exposures:
             factor = str(exposure.get("factor", ""))
             result = _factor_signal(session, factor, assessment_date)
@@ -202,26 +238,47 @@ def assess_thesis_macro_impacts(
             exposure_direction = str(exposure.get("direction", "mixed"))
             direction_multiplier = 1 if exposure_direction == "positive" else -1 if exposure_direction == "negative" else 0
             weight = _weight(exposure)
-            contribution = factor_signal * direction_multiplier * weight * magnitude
+            condition_required = factor in {
+                "usdkrw",
+                "dollar",
+                "wti",
+                "brent",
+                "oil",
+                "credit_spread",
+            } and not _has_defined_condition(exposure)
+            contribution = (
+                0
+                if condition_required
+                else factor_signal * direction_multiplier * weight * magnitude
+            )
             net += contribution
             max_magnitude = max(max_magnitude, magnitude)
-            channel = str(exposure.get("channel", "unknown"))
+            channel = _channel(exposure)
             channels.add(channel)
             channel_contributions[channel] = channel_contributions.get(channel, 0) + contribution
+            if _earnings_channel_is_eligible(factor, channel, exposure):
+                earnings_contributions[channel] = (
+                    earnings_contributions.get(channel, 0) + contribution
+                )
             reviewed_count += 1
             reviewed_weights.append(weight)
             item_evidence["contribution"] = contribution
-            item_evidence["exposure"] = exposure
+            item_evidence["exposure"] = {**exposure, "channel": channel}
+            item_evidence["earnings_link_validated"] = _earnings_channel_is_eligible(
+                factor, channel, exposure
+            )
+            item_evidence["condition_required"] = condition_required
             evidence.append(item_evidence)
 
         direction = _impact_direction(net)
         low_weight_only = reviewed_count == 1 and reviewed_weights[0] <= 2
         if low_weight_only:
             direction = "neutral"
-        earnings_net = sum(
-            channel_contributions.get(channel, 0) for channel in {"demand", "capex"}
+        earnings_net = sum(earnings_contributions.values())
+        valuation_net = sum(
+            channel_contributions.get(channel, 0)
+            for channel in {"discount_rate", "risk_appetite"}
         )
-        valuation_net = channel_contributions.get("discount_rate", 0)
         earnings_effect = "neutral" if low_weight_only else _impact_direction(earnings_net)
         valuation_effect = "neutral" if low_weight_only else _impact_direction(valuation_net)
         confidence = round(min(0.9, 0.35 + reviewed_count * 0.1), 2) if evidence else 0.0

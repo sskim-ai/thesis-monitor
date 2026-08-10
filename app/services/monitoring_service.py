@@ -123,8 +123,12 @@ def assessment_to_read(assessment: ThesisAssessment) -> ThesisAssessmentRead:
             market_assessment
         ),
         confirmed_facts=_json_list(assessment.confirmed_facts),
+        background_confirmed_facts=_json_list(assessment.background_confirmed_facts),
         inferred_implications=_json_list(assessment.inferred_implications),
         unknowns=_json_list(assessment.unknowns),
+        confirmed_warnings=_json_list(assessment.confirmed_warnings),
+        watch_items=_json_list(assessment.watch_items),
+        used_event_fingerprints=_json_list(assessment.used_event_fingerprints),
         score=assessment.score,
         confidence=assessment.confidence,
         summary=assessment.summary,

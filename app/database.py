@@ -95,8 +95,12 @@ def _ensure_sqlite_columns() -> None:
             "earnings_estimate_impact": "VARCHAR",
             "market_expectation_assessment": "TEXT DEFAULT '{}'",
             "confirmed_facts": "TEXT DEFAULT '[]'",
+            "background_confirmed_facts": "TEXT DEFAULT '[]'",
             "inferred_implications": "TEXT DEFAULT '[]'",
             "unknowns": "TEXT DEFAULT '[]'",
+            "confirmed_warnings": "TEXT DEFAULT '[]'",
+            "watch_items": "TEXT DEFAULT '[]'",
+            "used_event_fingerprints": "TEXT DEFAULT '[]'",
         },
         "investmentthesis": {
             "macro_exposures": "VARCHAR DEFAULT '[]'",
