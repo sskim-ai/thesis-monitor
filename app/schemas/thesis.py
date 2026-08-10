@@ -40,6 +40,19 @@ class EarningsEstimateImpact(StrEnum):
     unknown = "unknown"
 
 
+class StructuralRiskLevel(StrEnum):
+    low = "low"
+    normal = "normal"
+    elevated = "elevated"
+    high = "high"
+    critical = "critical"
+
+
+class AssessmentState(StrEnum):
+    provisional = "provisional"
+    final = "final"
+
+
 class MacroExposureInput(BaseModel):
     factor: str = Field(min_length=1)
     direction: str = Field(pattern="^(positive|negative|mixed)$")
@@ -225,10 +238,58 @@ class PriceRuleEvaluation(BaseModel):
     active_rules: list[str] = Field(default_factory=list)
 
 
+class PriceLevelCheck(BaseModel):
+    rule: str
+    label: str
+    meaning: str
+    source: str = "registered_price_rule"
+    price: float | None = None
+    price_low: float | None = None
+    price_high: float | None = None
+
+
+class PriceDecisionContext(BaseModel):
+    current_price: float | None = None
+    currency: str | None = None
+    price_as_of: str | None = None
+    price_basis: str = "unavailable"
+    market_session: str = "unknown"
+    assessment_state: AssessmentState = AssessmentState.final
+    current_position: str = "가격 위치 자료 없음"
+    new_observer_checks: list[PriceLevelCheck] = Field(default_factory=list)
+    holder_checks: list[PriceLevelCheck] = Field(default_factory=list)
+    registered_rules_available: bool = False
+
+
 class PriceContext(BaseModel):
     available: bool = False
     periods: dict[str, PricePeriodSummary] = Field(default_factory=dict)
     rule_evaluation: PriceRuleEvaluation | None = None
+    decision: PriceDecisionContext = Field(default_factory=PriceDecisionContext)
+    warnings: list[str] = Field(default_factory=list)
+
+
+class ValuationSnapshot(BaseModel):
+    current_price: float | None = None
+    currency: str | None = None
+    price_as_of: str | None = None
+    price_basis: str = "unavailable"
+    trailing_pe: float | None = None
+    trailing_pe_status: str = "unavailable"
+    forward_pe: float | None = None
+    forward_pe_status: str = "unavailable"
+    price_to_book: float | None = None
+    price_to_book_status: str = "unavailable"
+    forward_price_to_book: float | None = None
+    forward_price_to_book_status: str = "unavailable"
+    trailing_basis: str = "LTM EPS"
+    forward_basis: str | None = None
+    book_basis: str = "latest reported book value"
+    forward_book_basis: str | None = None
+    provider: str = "unavailable"
+    valuation_data_as_of: str | None = None
+    denominator_as_of: str | None = None
+    quality: str = "unavailable"
     warnings: list[str] = Field(default_factory=list)
 
 
@@ -238,9 +299,16 @@ class ValuationContext(BaseModel):
     market_expectation_level: ExpectationLevel = ExpectationLevel.unknown
     market_expectation_summary: str = ""
     primary_method: str = ""
+    configured_expansion_signals: list[str] = Field(default_factory=list)
+    configured_compression_signals: list[str] = Field(default_factory=list)
+    matched_expansion_signals: list[str] = Field(default_factory=list)
+    matched_compression_signals: list[str] = Field(default_factory=list)
     matched_expansion_conditions: list[str] = Field(default_factory=list)
     matched_compression_conditions: list[str] = Field(default_factory=list)
     macro_valuation_effect: str = "neutral"
+    macro_valuation_effects: list[str] = Field(default_factory=list)
+    valuation_evidence: list[str] = Field(default_factory=list)
+    previous_impact: ValuationImpact | None = None
     evidence_count: int = 0
 
 
@@ -277,6 +345,9 @@ class ThesisAssessmentRead(BaseModel):
     inferred_implications: list[str]
     unknowns: list[str]
     confirmed_warnings: list[str] = Field(default_factory=list)
+    new_warnings: list[str] = Field(default_factory=list)
+    open_warnings: list[str] = Field(default_factory=list)
+    warning_states: list[dict[str, object]] = Field(default_factory=list)
     watch_items: list[str] = Field(default_factory=list)
     used_event_fingerprints: list[str] = Field(default_factory=list)
     score: int
@@ -286,8 +357,15 @@ class ThesisAssessmentRead(BaseModel):
     holder_view: str
     price_view: str
     risk_level: str
+    daily_change_severity: str = "none"
+    structural_risk_level: StructuralRiskLevel = StructuralRiskLevel.normal
+    assessment_state: AssessmentState = AssessmentState.final
+    market_session: str = "unknown"
     evidence: list[dict[str, object]]
     price_context: PriceContext
+    new_buyer_price_view: str = ""
+    holder_price_view: str = ""
+    valuation_snapshot: ValuationSnapshot = Field(default_factory=ValuationSnapshot)
     valuation_context: ValuationContext = Field(default_factory=ValuationContext)
     thesis_snapshot: ThesisSnapshot
     created_at: datetime

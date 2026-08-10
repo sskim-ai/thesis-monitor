@@ -19,6 +19,9 @@ class MacroThesis(SQLModel, table=True):
     region: str = "global"
     horizon: str = "medium"
     status: str = Field(default="intact", index=True)
+    today_signal: str = "neutral"
+    today_signal_rationale: str = Field(default="", sa_column=Column(Text))
+    today_signal_date: date | None = None
     confidence: float = 0.5
     base_case_probability: float = 0.5
     bull_case: str = Field(default="", sa_column=Column(Text))
@@ -170,6 +173,8 @@ class MacroRegimeAssessment(SQLModel, table=True):
     confidence: float = 0.0
     persistence_days: int = 1
     provisional: bool = False
+    market_session: str = "unknown"
+    assessment_state: str = "final"
     summary: str = Field(sa_column=Column(Text))
     evidence: str = Field(default="[]", sa_column=Column(Text))
     schema_version: int = 1
@@ -213,6 +218,8 @@ class MacroBriefing(SQLModel, table=True):
     data_quality: str = Field(default="[]", sa_column=Column(Text))
     kakao_text: str = Field(sa_column=Column(Text))
     status: str = Field(default="ready", index=True)
+    market_session: str = "unknown"
+    assessment_state: str = "final"
     dedupe_key: str = Field(unique=True, index=True)
     schema_version: int = 1
     created_at: datetime = Field(default_factory=_utcnow)

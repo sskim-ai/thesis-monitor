@@ -21,6 +21,16 @@ def render_daily_digest(
     lines = [
         f"🌍 시장환경 점검 · {digest.digest_date}",
         f"⚠️ {macro.regime_label} 국면 · 판단 신뢰도 {macro.confidence:.0%}",
+    ]
+    if macro.assessment_state == "provisional":
+        lines.extend(
+            [
+                "⚠️ 미국장이 진행 중이므로 현재 시장환경 평가는 잠정치입니다.",
+                "지수·VIX·금리·종목 가격은 장 종료 후 달라질 수 있습니다.",
+            ]
+        )
+    lines.extend(
+        [
         "",
         "🎯 오늘 한 줄",
         macro.one_line,
@@ -29,7 +39,8 @@ def render_daily_digest(
         *_bullet_lines(macro.key_changes, "임계치를 넘은 핵심 시장 변화가 없습니다."),
         "",
         "🧭 현재 시장 상황",
-    ]
+        ]
+    )
     for label, explanation in macro.axis_explanations:
         lines.extend([f"• {label}: {explanation}"])
     lines.extend(["", "💡 종합 해석", *macro.integrated_view, "", "🔄 시장 가정"])

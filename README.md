@@ -71,30 +71,18 @@ MACRO_MONITOR_ENABLED=true
 
 Set `ENABLE_LIVE_PROVIDERS=false` to use only `MockProvider`. Set it to `true` to run `MockProvider` plus live providers in priority order. Provider failures are logged as warnings and do not fail the whole `/thesis-events` request.
 
-## Kakao OAuth Setup
+## Telegram Notifications
 
-Register `http://localhost:4000/redirect` as a Kakao Login redirect URI for the
-same REST API key configured in `.env`, then run:
-
-```bash
-python -m scripts.setup_kakao_oauth
-```
-
-The helper requests the `talk_message` scope and stores the refresh token in
-`data/kakao_tokens.json` with owner-only permissions. Keep
-`NOTIFICATION_DRY_RUN=true` until a connection test is ready.
-
-Morning briefings and material stock assessments are sent as readable Korean
-analysis reports. Kakao's default text template has a 200-character limit, so
-reports are split at section and bullet boundaries into consecutive messages.
-The default morning notification channel is Telegram. The report is generated from structured
+Morning briefings and stock assessments are sent as readable Korean analysis reports through
+Telegram. Keep `NOTIFICATION_DRY_RUN=true` until `TELEGRAM_BOT_TOKEN` and `TELEGRAM_CHAT_ID` have
+been tested. The report is generated from structured
 macro, company, event, expectation, and valuation data by deterministic rules and templates; it does
 not consume OpenAI or other LLM credits. Long reports are split at Telegram-safe boundaries without
 dropping analysis sections.
 
 ## Macro Monitoring
 
-The 08:00 daily job also builds a macro morning briefing before evaluating the
+The 07:50 daily job also builds a macro morning briefing before evaluating the
 stock watchlist. It collects U.S. rates, real yields, breakeven inflation,
 credit spreads, volatility, oil, dollar liquidity, U.S. equity and sector
 proxies, Federal Reserve releases, big-tech earnings dates, and selected Korean
@@ -227,6 +215,19 @@ only pending delivery work.
 Price context is requested from the separate local OHLCV Analyst service using targets of 500 daily,
 300 weekly, and 100 monthly bars. Shorter provider histories are accepted and their actual counts are
 stored with each assessment.
+
+Daily business and valuation decisions are delta-based. Configured expansion or compression
+conditions do not change today's valuation unless new evidence matches them. Structural risk and
+unresolved warnings persist separately from the daily business-thesis change. U.S. assessments made
+during the regular session are marked provisional; the scheduled morning run prioritizes completed
+close data.
+
+The valuation snapshot reuses OHLCV Analyst for current prices and Finnhub metrics for supported U.S.
+listings. Missing multiples are shown as unavailable, negative-earnings P/E as `N/M`, and unsupported
+KRX multiples are never estimated. Provider-defined forward consensus has no guaranteed NTM/FY1
+label or denominator timestamp, so those snapshots remain partial unless the provider supplies enough
+freshness metadata. `price_rules` are the only source of observer and holder price checks; the service
+does not invent support or invalidation levels.
 
 ### Get Thesis Events
 

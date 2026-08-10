@@ -61,7 +61,7 @@ async def run_macro_monitor(
             if item.enabled and not item.configured
         )
     assess_macro_shocks(session, run_date)
-    regime = assess_macro_regime(session, run_date)
+    regime = assess_macro_regime(session, run_date, as_of=as_of)
     theses = update_macro_theses(session, regime)
     impacts = assess_thesis_macro_impacts(session, run_date)
     briefing = build_macro_briefing(

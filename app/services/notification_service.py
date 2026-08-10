@@ -115,6 +115,48 @@ def _notification_channel() -> str:
     return channel
 
 
+def _report_price(value: object, currency: object) -> str:
+    if not isinstance(value, (int, float)):
+        return "자료 없음"
+    rendered = f"{float(value):,.0f}" if float(value).is_integer() else f"{float(value):,.2f}"
+    if currency == "KRW":
+        return f"{rendered}원"
+    if currency == "USD":
+        return f"${rendered}"
+    return rendered
+
+
+def _multiple_text(snapshot: dict[str, object], field: str) -> str:
+    status = str(snapshot.get(f"{field}_status", "unavailable"))
+    value = snapshot.get(field)
+    if status == "not_meaningful":
+        return "N/M"
+    if status == "value" and isinstance(value, (int, float)):
+        return f"{float(value):.1f}배"
+    return "자료 없음"
+
+
+def _bullet_text(items: list[object], empty: str, limit: int = 4) -> str:
+    lines = [f"• {item}" for item in items[:limit] if str(item).strip()]
+    return "\n".join(lines) or f"• {empty}"
+
+
+def _audience_price_text(value: str, empty: str) -> str:
+    lines = [line.strip() for line in value.splitlines() if line.strip()]
+    return "\n".join(f"• {line}" for line in lines) or f"• {empty}"
+
+
+def _multiple_roles(primary_method: str) -> dict[str, str]:
+    method = primary_method.lower()
+    if "p/b" in method or "pbr" in method or "roe" in method:
+        return {"PER": "보조", "fPER": "보조", "PBR": "주요", "fPBR": "주요"}
+    if "forward p/e" in method or "forward pe" in method:
+        return {"PER": "참고", "fPER": "주요", "PBR": "참고", "fPBR": "참고"}
+    if any(term in method for term in ("sotp", "sum-of-the-parts", "npv", "scenario")):
+        return {name: "참고" for name in ("PER", "fPER", "PBR", "fPBR")}
+    return {name: "참고" for name in ("PER", "fPER", "PBR", "fPBR")}
+
+
 def _assessment_report(
     assessment: ThesisAssessment,
     company_name: str,
@@ -167,6 +209,17 @@ def _assessment_report(
     compression_signals = _json_list_value(thesis.multiple_compression_signals) if thesis else []
     macro_exposures = _json_list_value(thesis.macro_exposures) if thesis else []
     valuation_context = _json_value(assessment.valuation_context, {})
+    valuation_snapshot = _json_value(
+        getattr(assessment, "valuation_snapshot", "{}"), {}
+    )
+    new_warnings = _json_list_value(getattr(assessment, "new_warnings", "[]"))
+    open_warnings = _json_list_value(getattr(assessment, "open_warnings", "[]"))
+    prior_open_warnings = [item for item in open_warnings if item not in new_warnings]
+    structural_risk = str(
+        getattr(assessment, "structural_risk_level", "normal") or "normal"
+    )
+    assessment_state = str(getattr(assessment, "assessment_state", "final") or "final")
+    market_session = str(getattr(assessment, "market_session", "unknown") or "unknown")
     evidence_items = evidence
     evidence_lines = [
         f"• {item.get('title', '제목 없음')} ({item.get('direction', '확인')})"
@@ -183,13 +236,11 @@ def _assessment_report(
     core_thesis = thesis.core_thesis if thesis else str(
         thesis_snapshot.get("base_thesis", "저장된 핵심 투자 논리가 없습니다.")
     )
-    conditions = [
-        *(str(item) for item in strengthen_signals[:1]),
-        *(str(item) for item in weaken_signals[:1]),
-        *(str(item) for item in invalidation_signals[:1]),
-    ]
-    condition_text = " / ".join(conditions) or "추가 확인 조건이 등록되지 않았습니다."
-    validation_text = " / ".join(str(item) for item in validation_metrics[:3])
+    strengthen_text = str(strengthen_signals[0]) if strengthen_signals else "등록된 조건 없음"
+    weaken_text = str(weaken_signals[0]) if weaken_signals else "등록된 조건 없음"
+    invalidation_text = (
+        str(invalidation_signals[0]) if invalidation_signals else "등록된 조건 없음"
+    )
     expectation_level = str(market_expectations.get("level", "unknown"))
     expectation_summary = str(
         market_expectations.get("summary", "현재 시장 기대 정보가 등록되지 않았습니다.")
@@ -197,41 +248,133 @@ def _assessment_report(
     valuation_method = str(
         valuation_framework.get("primary_method", "평가 방식이 등록되지 않았습니다.")
     )
+    multiple_roles = _multiple_roles(valuation_method)
+    valuation_caveats = valuation_framework.get("valuation_caveats", [])
+    if not isinstance(valuation_caveats, list):
+        valuation_caveats = []
     valuation_impact = str(
         valuation_context.get("summary", "Valuation 영향 판단 자료가 없습니다.")
     )
-    confirmed_warning_text = "\n".join(
-        f"• {item}" for item in confirmed_warnings[:3]
-    ) or "• 현재 확인된 핵심 경고는 없습니다."
-    watch_item_text = "\n".join(
-        f"• {item}" for item in watch_items[:4]
-    ) or "• 등록된 약화 조건과 검증 지표를 계속 확인합니다."
+    impact_label = {
+        "neutral": "중립",
+        "expansion": "확장",
+        "compression": "압축",
+        "mixed": "혼재",
+        "unknown": "판단 자료 부족",
+    }.get(str(valuation_context.get("impact", "unknown")), "판단 자료 부족")
+    risk_label = {
+        "low": "낮음",
+        "normal": "보통",
+        "elevated": "높아진 상태",
+        "high": "높음",
+        "critical": "매우 높음",
+    }.get(structural_risk, structural_risk)
+    expectation_label = {
+        "depressed": "매우 낮음",
+        "low": "낮음",
+        "balanced": "균형",
+        "elevated": "높음",
+        "very_high": "매우 높음",
+        "speculative": "투기적 기대",
+        "unknown": "자료 부족",
+    }.get(expectation_level, expectation_level)
+    decision = price_context.get("decision", {}) if isinstance(price_context, dict) else {}
+    if not isinstance(decision, dict):
+        decision = {}
+    current_price = valuation_snapshot.get("current_price", decision.get("current_price"))
+    currency = valuation_snapshot.get("currency", decision.get("currency"))
+    price_as_of = valuation_snapshot.get("price_as_of", decision.get("price_as_of"))
+    price_basis = str(valuation_snapshot.get("price_basis", decision.get("price_basis", "")))
+    price_basis_label = (
+        f"{price_as_of} 장중 · 잠정"
+        if price_basis == "intraday"
+        else f"{price_as_of} 종가" if price_as_of else "기준일 확인 불가"
+    )
+    new_buyer_price_view = str(getattr(assessment, "new_buyer_price_view", "") or "")
+    holder_price_view = str(getattr(assessment, "holder_price_view", "") or "")
+    valuation_evidence = valuation_context.get("valuation_evidence", [])
+    if not isinstance(valuation_evidence, list):
+        valuation_evidence = []
+    quality = str(valuation_snapshot.get("quality", "unavailable"))
+    quality_label = {
+        "fresh": "최신",
+        "stale": "오래됨",
+        "partial": "부분 확인",
+        "unavailable": "자료 없음",
+    }.get(quality, quality)
+    snapshot_warnings = valuation_snapshot.get("warnings", [])
+    if not isinstance(snapshot_warnings, list):
+        snapshot_warnings = []
+    framework_basis = valuation_framework.get("peer_or_historical_basis", [])
+    if not isinstance(framework_basis, list):
+        framework_basis = []
+    relative_basis_text = (
+        f"• 비교 기준: {framework_basis[0]}"
+        if framework_basis
+        else "• 현재 배수의 역사적·peer 상대 위치는 자료 부족으로 단정하지 않습니다."
+    )
+    forward_basis = str(valuation_snapshot.get("forward_basis") or "").strip()
+    forward_basis_label = (
+        " · provider forward consensus 기준"
+        if forward_basis == "provider-defined forward consensus"
+        else f" · {forward_basis} 기준" if forward_basis else ""
+    )
+    caveat_text = (
+        f"• 해석 주의: {valuation_caveats[0]}"
+        if valuation_caveats
+        else "• 해석 주의: 등록된 종목별 Valuation 주의사항 없음"
+    )
+    provisional_text = (
+        "\n⚠️ 미국장이 진행 중이거나 당일 봉이 미확정이어서 가격·시장 평가는 잠정치입니다.\n"
+        if assessment_state == "provisional"
+        else ""
+    )
     fallback = (
         f"🏢 {company_name}({assessment.ticker})\n"
-        f"⚠️ 투자 논리 {label} · 신뢰도 {assessment.confidence:.0%}\n\n"
-        f"🎯 결론\n"
-        f"• 논리: {core_thesis}\n"
-        f"• 행동: 신규 관찰자는 {assessment.new_buyer_view} "
-        f"보유자는 {assessment.holder_view}\n"
-        f"• 논리 조건: {condition_text}\n\n"
-        f"🧭 현재 국면\n"
-        f"• {assessment.summary} 위험 수준은 {assessment.risk_level}입니다.\n\n"
+        f"⚠️ 오늘 투자 논리 {label}\n"
+        f"구조적 위험: {risk_label} · 판단 신뢰도 {assessment.confidence:.0%}\n"
+        f"평가 상태: {'잠정' if assessment_state == 'provisional' else '확정'} · "
+        f"시장 세션 {market_session}{provisional_text}\n"
+        f"🎯 핵심 투자 논리\n{core_thesis}\n\n"
         f"🔄 오늘 새로 확인된 변화\n{change_text}\n\n"
-        f"🚨 현재 확인된 경고\n{confirmed_warning_text}\n\n"
-        f"👀 계속 감시\n{watch_item_text}\n\n"
-        f"💰 가격 판단\n• {assessment.price_view}\n\n"
+        f"🚨 오늘 새 경고\n{_bullet_text(new_warnings, '없음')}\n\n"
+        f"⚠️ 아직 해결되지 않은 기존 경고\n"
+        f"{_bullet_text(prior_open_warnings, '없음')}\n\n"
+        f"📍 투자 논리 조건\n"
+        f"↑ 강화: {strengthen_text}\n"
+        f"↓ 약화: {weaken_text}\n"
+        f"✕ 무효화: {invalidation_text}\n\n"
+        f"💰 가격 판단\n"
+        f"현재가: {_report_price(current_price, currency)} · {price_basis_label}\n"
+        f"가격 위치: {decision.get('current_position', assessment.price_view)}\n"
+        f"가격 위치는 타이밍 보조 정보이며 적정가치와는 별도로 봅니다.\n\n"
+        f"👀 신규 관찰자 가격 체크\n"
+        f"{_audience_price_text(new_buyer_price_view, '등록된 구조적 확인 가격 없음')}\n\n"
+        f"🛡 보유자 가격 체크\n"
+        f"{_audience_price_text(holder_price_view, '투자 논리 조건과 실적 데이터를 우선 확인')}\n\n"
         f"📐 시장 기대와 Valuation\n"
-        f"• 기대 수준: {expectation_level} · {expectation_summary}\n"
-        f"• 평가 방식: {valuation_method}\n"
-        f"• 멀티플 영향: {valuation_impact}\n"
-        f"• 이익 추정치 영향: {earnings_impact}\n\n"
-        f"📌 확인할 것\n• 강화·약화·무효화 조건과 다음 공시·실적 근거를 계속 확인합니다."
+        f"시장 기대: {expectation_label} · {expectation_summary}\n"
+        f"현재가: {_report_price(current_price, currency)}\n"
+        f"• PER: {_multiple_text(valuation_snapshot, 'trailing_pe')} "
+        f"({multiple_roles['PER']})\n"
+        f"• fPER: {_multiple_text(valuation_snapshot, 'forward_pe')} "
+        f"({multiple_roles['fPER']}){forward_basis_label}\n"
+        f"• PBR: {_multiple_text(valuation_snapshot, 'price_to_book')} "
+        f"({multiple_roles['PBR']})\n"
+        f"• fPBR: {_multiple_text(valuation_snapshot, 'forward_price_to_book')} "
+        f"({multiple_roles['fPBR']})\n"
+        f"주 평가 방식: {valuation_method}\n"
+        f"{relative_basis_text}\n"
+        f"{caveat_text}\n"
+        f"데이터 품질: {quality_label} · {valuation_snapshot.get('provider', '자료 없음')}\n"
+        f"오늘 Valuation 영향: {impact_label} · {valuation_impact}\n"
+        f"{_bullet_text(valuation_evidence, '오늘 배수를 바꿀 신규 근거 없음')}\n"
+        f"이익 추정치 영향: {earnings_impact}\n\n"
+        f"📌 오늘 확인\n"
+        f"{_bullet_text(validation_metrics, '등록된 핵심 검증 지표를 계속 확인합니다.')}"
     )
-    if validation_text:
-        fallback = fallback.replace(
-            "📌 확인할 것\n• ",
-            f"📌 확인할 것\n• 검증 지표: {validation_text}\n• ",
-        )
+    if snapshot_warnings:
+        fallback += f"\n• Valuation 주의: {snapshot_warnings[0]}"
     if unknowns:
         fallback += f"\n• 미확인: {unknowns[0]}"
     context: dict[str, object] = {
@@ -266,6 +409,8 @@ def _assessment_report(
             "inferred_implications": inferred_implications,
             "unknowns": unknowns,
             "confirmed_warnings": confirmed_warnings,
+            "new_warnings": new_warnings,
+            "open_warnings": open_warnings,
             "watch_items": watch_items,
             "score": assessment.score,
             "confidence": assessment.confidence,
@@ -274,8 +419,14 @@ def _assessment_report(
             "holder_view": assessment.holder_view,
             "price_view": assessment.price_view,
             "risk_level": assessment.risk_level,
+            "structural_risk_level": structural_risk,
+            "assessment_state": assessment_state,
+            "market_session": market_session,
             "evidence": evidence_items,
             "price_context": price_context,
+            "new_buyer_price_view": new_buyer_price_view,
+            "holder_price_view": holder_price_view,
+            "valuation_snapshot": valuation_snapshot,
             "valuation_context": valuation_context,
         },
     }

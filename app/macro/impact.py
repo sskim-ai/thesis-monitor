@@ -28,6 +28,36 @@ CANONICAL_CHANNELS = {
 }
 
 
+def migrate_macro_exposure_channels(session: Session) -> dict[str, int]:
+    theses = session.exec(select(InvestmentThesis)).all()
+    updated_theses = 0
+    updated_exposures = 0
+    for thesis in theses:
+        try:
+            exposures = json.loads(thesis.macro_exposures)
+        except json.JSONDecodeError:
+            continue
+        if not isinstance(exposures, list):
+            continue
+        changed = False
+        for exposure in exposures:
+            if not isinstance(exposure, dict):
+                continue
+            factor = str(exposure.get("factor", ""))
+            canonical = CANONICAL_CHANNELS.get(factor)
+            if canonical and exposure.get("channel") != canonical:
+                exposure["channel"] = canonical
+                changed = True
+                updated_exposures += 1
+        if changed:
+            thesis.macro_exposures = json.dumps(exposures, ensure_ascii=False)
+            session.add(thesis)
+            updated_theses += 1
+    if updated_theses:
+        session.commit()
+    return {"theses": updated_theses, "exposures": updated_exposures}
+
+
 def _latest_observation(session: Session, series_code: str) -> MacroObservation | None:
     return session.exec(
         select(MacroObservation)
@@ -143,8 +173,18 @@ def _impact_direction(net: float) -> str:
         return "strengthen"
     if net <= -5:
         return "weaken"
-    if net != 0:
+    return "neutral"
+
+
+def _material_channel_effect(contributions: list[float]) -> str:
+    positive = sum(value for value in contributions if value > 0)
+    negative = abs(sum(value for value in contributions if value < 0))
+    if positive >= 5 and negative >= 5:
         return "mixed"
+    if positive - negative >= 5:
+        return "strengthen"
+    if negative - positive >= 5:
+        return "weaken"
     return "neutral"
 
 
@@ -210,6 +250,7 @@ def assess_thesis_macro_impacts(
     session: Session,
     assessment_date: date,
 ) -> list[ThesisMacroImpact]:
+    migrate_macro_exposure_channels(session)
     watchlist = session.exec(
         select(WatchlistItem).where(WatchlistItem.active.is_(True)).order_by(WatchlistItem.ticker)
     ).all()
@@ -226,6 +267,7 @@ def assess_thesis_macro_impacts(
         reviewed_count = 0
         reviewed_weights: list[int] = []
         channel_contributions: dict[str, float] = {}
+        channel_evidence_contributions: dict[str, list[float]] = {}
         earnings_contributions: dict[str, float] = {}
         for exposure in exposures:
             factor = str(exposure.get("factor", ""))
@@ -256,6 +298,7 @@ def assess_thesis_macro_impacts(
             channel = _channel(exposure)
             channels.add(channel)
             channel_contributions[channel] = channel_contributions.get(channel, 0) + contribution
+            channel_evidence_contributions.setdefault(channel, []).append(contribution)
             if _earnings_channel_is_eligible(factor, channel, exposure):
                 earnings_contributions[channel] = (
                     earnings_contributions.get(channel, 0) + contribution
@@ -274,13 +317,18 @@ def assess_thesis_macro_impacts(
         low_weight_only = reviewed_count == 1 and reviewed_weights[0] <= 2
         if low_weight_only:
             direction = "neutral"
-        earnings_net = sum(earnings_contributions.values())
-        valuation_net = sum(
-            channel_contributions.get(channel, 0)
+        earnings_values = list(earnings_contributions.values())
+        valuation_values = [
+            value
             for channel in {"discount_rate", "risk_appetite"}
+            for value in channel_evidence_contributions.get(channel, [])
+        ]
+        earnings_effect = (
+            "neutral" if low_weight_only else _material_channel_effect(earnings_values)
         )
-        earnings_effect = "neutral" if low_weight_only else _impact_direction(earnings_net)
-        valuation_effect = "neutral" if low_weight_only else _impact_direction(valuation_net)
+        valuation_effect = (
+            "neutral" if low_weight_only else _material_channel_effect(valuation_values)
+        )
         confidence = round(min(0.9, 0.35 + reviewed_count * 0.1), 2) if evidence else 0.0
         rationale = (
             "검토 가능한 거시 exposure 근거가 없습니다."

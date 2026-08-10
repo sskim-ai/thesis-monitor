@@ -269,8 +269,8 @@ def test_daily_stock_analysis_is_queued_without_material_change() -> None:
         assert payload["ticker"] == neutral.ticker
         assert "중요 변화 없음" in payload["text"]
         assert "오늘 투자 논리를 바꿀 신규 확정 사실은 확인되지 않았습니다." in payload["text"]
-        assert "🚨 현재 확인된 경고" in payload["text"]
-        assert "👀 계속 감시" in payload["text"]
+        assert "🚨 오늘 새 경고" in payload["text"]
+        assert "⚠️ 아직 해결되지 않은 기존 경고" in payload["text"]
 
 
 def test_queued_daily_digest_omits_duplicate_stock_detail_section() -> None:

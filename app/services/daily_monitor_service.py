@@ -19,6 +19,7 @@ from app.services.notification_service import (
 )
 from app.services.ohlcv_client import OhlcvClient
 from app.services.thesis_evaluation_service import evaluate_thesis, recent_events_for_assessment
+from app.services.valuation_snapshot_service import ValuationSnapshotService
 
 
 logger = logging.getLogger(__name__)
@@ -150,6 +151,7 @@ async def run_daily_monitor(
     force: bool = False,
     collection_service: CollectionService | None = None,
     price_client: OhlcvClient | None = None,
+    valuation_service: ValuationSnapshotService | None = None,
     queue_notifications: bool = True,
     dispatch_notifications: bool = True,
 ) -> DailyMonitorResponse:
@@ -188,6 +190,7 @@ async def run_daily_monitor(
 
     collection_service = collection_service or CollectionService()
     price_client = price_client or OhlcvClient()
+    valuation_service = valuation_service or ValuationSnapshotService()
     settings = get_settings()
     watchlist = session.exec(
         select(WatchlistItem)
@@ -213,6 +216,11 @@ async def run_daily_monitor(
                 price_context = await price_client.fetch_price_context(item.ticker)
             except Exception as exc:  # noqa: BLE001
                 price_context = PriceContext(warnings=[f"price_context: {type(exc).__name__}"])
+            valuation_snapshot = await valuation_service.fetch(
+                item.ticker,
+                item.exchange,
+                price_context,
+            )
             events = recent_events_for_assessment(session, item.ticker, run_date)
             previous_assessment = _previous_assessment(session, item.ticker, run_date)
             macro_impact = session.exec(
@@ -228,6 +236,7 @@ async def run_daily_monitor(
                 price_context,
                 macro_impact=macro_impact,
                 previous_assessment=previous_assessment,
+                valuation_snapshot=valuation_snapshot,
             )
             valuation_context = result.valuation_context.model_dump(mode="json")
             thesis_snapshot = _build_thesis_snapshot(
@@ -261,6 +270,9 @@ async def run_daily_monitor(
                     ),
                     unknowns=json.dumps(result.unknowns, ensure_ascii=False),
                     confirmed_warnings=json.dumps(result.confirmed_warnings, ensure_ascii=False),
+                    new_warnings=json.dumps(result.new_warnings, ensure_ascii=False),
+                    open_warnings=json.dumps(result.open_warnings, ensure_ascii=False),
+                    warning_states=json.dumps(result.warning_states, ensure_ascii=False),
                     watch_items=json.dumps(result.watch_items, ensure_ascii=False),
                     used_event_fingerprints=json.dumps(
                         result.used_event_fingerprints, ensure_ascii=False
@@ -272,8 +284,15 @@ async def run_daily_monitor(
                     holder_view=result.holder_view,
                     price_view=result.price_view,
                     risk_level=result.risk_level,
+                    daily_change_severity=result.daily_change_severity,
+                    structural_risk_level=result.structural_risk_level.value,
+                    assessment_state=result.assessment_state.value,
+                    market_session=result.market_session,
+                    new_buyer_price_view=result.new_buyer_price_view,
+                    holder_price_view=result.holder_price_view,
                     evidence=json.dumps(result.evidence, ensure_ascii=False),
                     price_context=price_context.model_dump_json(),
+                    valuation_snapshot=result.valuation_snapshot.model_dump_json(),
                     valuation_context=json.dumps(valuation_context, ensure_ascii=False),
                     thesis_snapshot=json.dumps(thesis_snapshot, ensure_ascii=False),
                 )
@@ -300,6 +319,11 @@ async def run_daily_monitor(
                 assessment.confirmed_warnings = json.dumps(
                     result.confirmed_warnings, ensure_ascii=False
                 )
+                assessment.new_warnings = json.dumps(result.new_warnings, ensure_ascii=False)
+                assessment.open_warnings = json.dumps(result.open_warnings, ensure_ascii=False)
+                assessment.warning_states = json.dumps(
+                    result.warning_states, ensure_ascii=False
+                )
                 assessment.watch_items = json.dumps(result.watch_items, ensure_ascii=False)
                 assessment.used_event_fingerprints = json.dumps(
                     result.used_event_fingerprints, ensure_ascii=False
@@ -311,8 +335,15 @@ async def run_daily_monitor(
                 assessment.holder_view = result.holder_view
                 assessment.price_view = result.price_view
                 assessment.risk_level = result.risk_level
+                assessment.daily_change_severity = result.daily_change_severity
+                assessment.structural_risk_level = result.structural_risk_level.value
+                assessment.assessment_state = result.assessment_state.value
+                assessment.market_session = result.market_session
+                assessment.new_buyer_price_view = result.new_buyer_price_view
+                assessment.holder_price_view = result.holder_price_view
                 assessment.evidence = json.dumps(result.evidence, ensure_ascii=False)
                 assessment.price_context = price_context.model_dump_json()
+                assessment.valuation_snapshot = result.valuation_snapshot.model_dump_json()
                 assessment.valuation_context = json.dumps(
                     valuation_context, ensure_ascii=False
                 )
@@ -380,6 +411,45 @@ async def run_daily_monitor(
             f"({material_changes}/{len(completed_assessments)})"
         )
         details["assessment_distribution_warning"] = warning
+        logger.warning(warning)
+    non_neutral_valuations = sum(
+        1
+        for assessment in completed_assessments
+        if (assessment.valuation_change or "neutral") != "neutral"
+    )
+    valuation_ratio = (
+        non_neutral_valuations / len(completed_assessments)
+        if completed_assessments
+        else 0.0
+    )
+    details["valuation_distribution"] = {
+        "non_neutral_count": non_neutral_valuations,
+        "assessment_count": len(completed_assessments),
+        "non_neutral_ratio": round(valuation_ratio, 3),
+    }
+    material_macro_valuations = sum(
+        1
+        for assessment in completed_assessments
+        if str(_json_value(assessment.valuation_context, {}).get(
+            "macro_valuation_effect", "neutral"
+        ))
+        != "neutral"
+    )
+    details["valuation_distribution"]["material_macro_driver_count"] = (
+        material_macro_valuations
+    )
+    unexplained_non_neutral = max(
+        0, non_neutral_valuations - material_macro_valuations
+    )
+    if (
+        valuation_ratio > settings.valuation_distribution_warning_threshold
+        and unexplained_non_neutral > len(completed_assessments) * 0.3
+    ):
+        warning = (
+            "valuation_distribution_warning: unusually high daily non-neutral rate "
+            f"({non_neutral_valuations}/{len(completed_assessments)})"
+        )
+        details["valuation_distribution_warning"] = warning
         logger.warning(warning)
     run.completed_at = datetime.now(timezone.utc)
     run.details = json.dumps(details, ensure_ascii=False)

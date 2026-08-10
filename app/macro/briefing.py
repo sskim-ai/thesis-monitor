@@ -172,6 +172,8 @@ def build_macro_briefing(
             "thesis_key": item.thesis_key,
             "title": item.title,
             "status": item.status,
+            "today_signal": item.today_signal,
+            "today_signal_rationale": item.today_signal_rationale,
             "confidence": item.confidence,
             "description": item.description,
             "expected_evidence": _json(item.expected_evidence, []),
@@ -261,6 +263,8 @@ def build_macro_briefing(
                 "summary": regime.summary,
                 "confidence": regime.confidence,
                 "provisional": regime.provisional,
+                "market_session": regime.market_session,
+                "assessment_state": regime.assessment_state,
                 "growth_momentum": regime.growth_momentum,
                 "inflation_pressure": regime.inflation_pressure,
                 "liquidity_condition": regime.liquidity_condition,
@@ -276,6 +280,8 @@ def build_macro_briefing(
         "data_quality": json.dumps(quality_items, ensure_ascii=False, default=str),
         "kakao_text": kakao_text,
         "status": "ready",
+        "market_session": regime.market_session,
+        "assessment_state": regime.assessment_state,
     }
     if row is None:
         row = MacroBriefing(
@@ -307,4 +313,6 @@ def briefing_to_dict(row: MacroBriefing) -> dict[str, object]:
         "data_quality": _json(row.data_quality, []),
         "kakao_text": row.kakao_text,
         "status": row.status,
+        "market_session": row.market_session,
+        "assessment_state": row.assessment_state,
     }

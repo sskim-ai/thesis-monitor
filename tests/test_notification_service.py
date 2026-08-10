@@ -41,8 +41,9 @@ def test_assessment_notification_uses_investment_rationale_label() -> None:
     message = _message_for_assessment(assessment)
 
     assert message.startswith("🏢 000660(000660)")
-    assert "🎯 결론" in message
+    assert "🎯 핵심 투자 논리" in message
     assert "💰 가격 판단" in message
+    assert "👀 신규 관찰자 가격 체크" in message
     assert "📐 시장 기대와 Valuation" in message
     assert "Thesis" not in message
 

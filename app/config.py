@@ -33,13 +33,16 @@ class Settings(BaseSettings):
     monitor_retry_attempts: int = 3
     monitor_retry_base_seconds: float = 2.0
     assessment_distribution_warning_threshold: float = 0.7
+    valuation_distribution_warning_threshold: float = 0.7
+    valuation_snapshot_max_age_days: int = 7
+    valuation_provider_timeout_seconds: float = 15.0
     financial_operating_margin_upper_bound: float = 60.0
     macro_monitor_enabled: bool = True
     macro_provider_timeout_seconds: float = 20.0
     macro_briefing_send_no_change: bool = True
     macro_alert_min_magnitude: int = 3
     notification_dry_run: bool = True
-    notification_channel: str = "kakao_self"
+    notification_channel: str = "telegram"
     kakao_rest_api_key: str | None = None
     kakao_client_secret: str | None = None
     kakao_refresh_token: str | None = None

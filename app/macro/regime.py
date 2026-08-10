@@ -1,9 +1,10 @@
 import json
-from datetime import date, timedelta
+from datetime import date, datetime, timedelta
 
 from sqlmodel import Session, select
 
 from app.models.macro import MacroObservation, MacroRegimeAssessment
+from app.services.market_session import us_market_session
 
 
 QUALITY_WEIGHTS = {
@@ -45,7 +46,11 @@ def _clamp(value: int) -> int:
     return max(-2, min(2, value))
 
 
-def assess_macro_regime(session: Session, assessment_date: date) -> MacroRegimeAssessment:
+def assess_macro_regime(
+    session: Session,
+    assessment_date: date,
+    as_of: datetime | None = None,
+) -> MacroRegimeAssessment:
     spy = _latest(session, "SPY")
     qqq = _latest(session, "QQQ")
     iwm = _latest(session, "IWM")
@@ -136,6 +141,8 @@ def assess_macro_regime(session: Session, assessment_date: date) -> MacroRegimeA
         persistence_days = previous.persistence_days
         summary = f"판정 유보({raw_label}): {summary}"
 
+    session_state = us_market_session(as_of)
+    provisional = confidence < 0.5 or session_state.assessment_state == "provisional"
     row = session.get(MacroRegimeAssessment, assessment_date)
     if row is None:
         row = MacroRegimeAssessment(
@@ -149,7 +156,9 @@ def assess_macro_regime(session: Session, assessment_date: date) -> MacroRegimeA
             regime_label=label,
             confidence=confidence,
             persistence_days=persistence_days,
-            provisional=confidence < 0.5,
+            provisional=provisional,
+            market_session=session_state.session,
+            assessment_state=session_state.assessment_state,
             summary=summary,
             evidence=json.dumps(evidence, ensure_ascii=False),
         )
@@ -163,7 +172,9 @@ def assess_macro_regime(session: Session, assessment_date: date) -> MacroRegimeA
         row.regime_label = label
         row.confidence = confidence
         row.persistence_days = persistence_days
-        row.provisional = confidence < 0.5
+        row.provisional = provisional
+        row.market_session = session_state.session
+        row.assessment_state = session_state.assessment_state
         row.summary = summary
         row.evidence = json.dumps(evidence, ensure_ascii=False)
     session.add(row)

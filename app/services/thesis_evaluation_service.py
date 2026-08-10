@@ -11,13 +11,18 @@ from app.models.thesis import InvestmentThesis, ThesisAssessment
 from app.services.event_identity import event_fingerprint
 from app.schemas.thesis import (
     AssessmentStatus,
+    AssessmentState,
     ExpectationLevel,
+    PriceDecisionContext,
     PriceContext,
+    PriceLevelCheck,
     PriceRuleEvaluation,
     EarningsEstimateImpact,
     MarketExpectationAssessment,
+    StructuralRiskLevel,
     ValuationContext,
     ValuationImpact,
+    ValuationSnapshot,
 )
 
 
@@ -179,6 +184,133 @@ def _display_price(value: float, currency: object) -> str:
     return f"{rendered} {currency}" if currency else rendered
 
 
+def _price_position_text(context: PriceContext) -> str:
+    position = _price_position(context)
+    if position is None:
+        return "확보된 가격 이력이 짧아 장기 범위상 위치를 판단하지 않습니다."
+    if position <= 35:
+        zone = "확보된 일봉 범위의 하단부"
+    elif position >= 75:
+        zone = "확보된 일봉 범위의 상단부"
+    else:
+        zone = "확보된 일봉 범위의 중간 구간"
+    return f"{zone}({position:.1f}%)"
+
+
+def _build_price_decision(
+    thesis: InvestmentThesis,
+    context: PriceContext,
+) -> PriceDecisionContext:
+    rules = _json_dict(thesis.price_rules)
+    daily = context.periods.get("daily")
+    decision = context.decision
+    if decision.current_price is None and daily is not None:
+        decision.current_price = daily.latest_close
+    if decision.price_as_of is None and daily is not None:
+        decision.price_as_of = daily.latest_date
+    if not decision.currency:
+        decision.currency = str(rules.get("currency") or "") or None
+    if decision.price_basis == "unavailable" and daily and daily.latest_date:
+        decision.price_basis = "close"
+    decision.current_position = _price_position_text(context)
+    decision.registered_rules_available = bool(rules)
+    if not rules:
+        context.decision = decision
+        return decision
+
+    confirmation = _number(rules.get("confirmation_price"))
+    support_low = _number(rules.get("support_zone_low"))
+    support_high = _number(rules.get("support_zone_high"))
+    warning = _number(rules.get("warning_price"))
+    invalidation = _number(rules.get("invalidation_price"))
+    if support_low is not None and support_high is not None:
+        support = PriceLevelCheck(
+            rule="support_zone",
+            label="지지 확인 구간",
+            meaning="가격이 버티는지와 사업 투자 논리의 핵심 근거가 함께 유지되는지 확인합니다.",
+            price_low=support_low,
+            price_high=support_high,
+        )
+        decision.new_observer_checks.append(support)
+        decision.holder_checks.append(support.model_copy(deep=True))
+    if confirmation is not None:
+        decision.new_observer_checks.append(
+            PriceLevelCheck(
+                rule="confirmation_price",
+                label="상향 확인 가격",
+                meaning="가격 돌파만이 아니라 실적·주문·현금흐름 근거의 동반 강화를 확인합니다.",
+                price=confirmation,
+            )
+        )
+    if warning is not None:
+        warning_check = PriceLevelCheck(
+            rule="warning_price",
+            label="재점검 시작 가격",
+            meaning="종가 이탈 시 단순 조정인지 투자 논리 약화인지 다시 구분합니다.",
+            price=warning,
+        )
+        decision.new_observer_checks.append(warning_check)
+        decision.holder_checks.append(warning_check.model_copy(deep=True))
+    if invalidation is not None:
+        decision.holder_checks.append(
+            PriceLevelCheck(
+                rule="invalidation_price",
+                label="투자 판단 폐기 검토 가격",
+                meaning="종가 이탈만으로 자동 무효화하지 않고 등록된 사업 무효화 조건과 함께 확인합니다.",
+                price=invalidation,
+            )
+        )
+    context.decision = decision
+    return decision
+
+
+def _price_basis_text(decision: PriceDecisionContext) -> str:
+    if decision.price_as_of is None:
+        return "기준일 확인 불가"
+    if decision.price_basis == "intraday":
+        return f"{decision.price_as_of} 장중 · 잠정"
+    return f"{decision.price_as_of} 종가"
+
+
+def _price_level_text(check: PriceLevelCheck, currency: str | None) -> str:
+    if check.price_low is not None and check.price_high is not None:
+        return (
+            f"{_display_price(check.price_low, currency)}~"
+            f"{_display_price(check.price_high, currency)}"
+        )
+    if check.price is not None:
+        return _display_price(check.price, currency)
+    return "등록값 없음"
+
+
+def _price_audience_views(
+    decision: PriceDecisionContext,
+    expectation_level: ExpectationLevel,
+) -> tuple[str, str]:
+    if not decision.registered_rules_available:
+        return (
+            "등록된 구조적 확인 가격이 없습니다. 투자 논리 조건과 실적 데이터를 우선 확인합니다.",
+            "등록된 가격 관리 기준이 없습니다. 사업 투자 논리의 약화·무효화 조건을 우선 확인합니다.",
+        )
+    observer_lines = [
+        f"{_price_level_text(item, decision.currency)}: {item.label}. {item.meaning}"
+        for item in decision.new_observer_checks
+    ]
+    holder_lines = [
+        f"{_price_level_text(item, decision.currency)}: {item.label}. {item.meaning}"
+        for item in decision.holder_checks
+    ]
+    if expectation_level in {ExpectationLevel.very_high, ExpectationLevel.speculative}:
+        observer_lines.append(
+            "시장 기대가 높아 지지구간 진입만으로 Valuation 매력이 높아졌다고 판단하지 않습니다."
+        )
+    elif expectation_level in {ExpectationLevel.balanced, ExpectationLevel.low}:
+        observer_lines.append(
+            "사업 투자 논리 훼손 없이 가격만 조정됐는지와 Valuation 완충 가능성을 함께 확인합니다."
+        )
+    return "\n".join(observer_lines), "\n".join(holder_lines)
+
+
 @dataclass
 class PriceRuleResult:
     positive_points: int = 0
@@ -317,6 +449,10 @@ class EvaluationResult:
     holder_view: str
     price_view: str
     risk_level: str
+    daily_change_severity: str
+    structural_risk_level: StructuralRiskLevel
+    assessment_state: AssessmentState
+    market_session: str
     evidence: list[dict[str, object]]
     valuation_context: ValuationContext
     earnings_estimate_impact: EarningsEstimateImpact
@@ -326,7 +462,13 @@ class EvaluationResult:
     inferred_implications: list[str]
     unknowns: list[str]
     confirmed_warnings: list[str]
+    new_warnings: list[str]
+    open_warnings: list[str]
+    warning_states: list[dict[str, object]]
     watch_items: list[str]
+    new_buyer_price_view: str
+    holder_price_view: str
+    valuation_snapshot: ValuationSnapshot
     used_event_fingerprints: list[str]
     should_deactivate: bool = False
 
@@ -364,10 +506,23 @@ def _assessment_evidence_layers(
         event_inferences = _json_list(event.inferred_implications)
         if event.provider in TRUSTED_FACT_PROVIDERS:
             confirmed.extend(event_facts)
-        else:
-            inferred.extend(f"Unverified provider report: {fact}" for fact in event_facts)
-        inferred.extend(event_inferences)
-        unknowns.extend(_json_list(event.unknowns))
+            inferred.extend(event_inferences)
+        elif event_facts or event_inferences:
+            unknowns.append(
+                "미확인 보도가 있으나 원문 근거와 투자 영향이 확인되지 않아 투자 논리에는 반영하지 않았습니다."
+            )
+        unknowns.extend(
+            item
+            for item in _json_list(event.unknowns)
+            if not any(
+                marker in item.lower()
+                for marker in (
+                    "unverified provider report",
+                    "naver news search returned",
+                    "linked source item",
+                )
+            )
+        )
     return _unique(confirmed), _unique(inferred), _unique(unknowns)
 
 
@@ -423,6 +578,152 @@ def _watch_text(value: str) -> str:
     if re.search(r"[가-힣]", text):
         return f"{text}하는지 확인 필요"
     return f"{text} 여부 확인 필요"
+
+
+def _previous_json_list(previous: ThesisAssessment | None, field: str) -> list[str]:
+    if previous is None:
+        return []
+    return _json_list(str(getattr(previous, field, "[]") or "[]"))
+
+
+def _warning_lifecycle(
+    previous: ThesisAssessment | None,
+    new_warnings: list[str],
+    events: list[Event],
+    baseline_warnings: list[str] | None = None,
+) -> tuple[list[str], list[dict[str, object]]]:
+    previous_states_raw: list[object] = []
+    if previous is not None:
+        try:
+            parsed = json.loads(str(getattr(previous, "warning_states", "[]") or "[]"))
+            if isinstance(parsed, list):
+                previous_states_raw = parsed
+        except json.JSONDecodeError:
+            previous_states_raw = []
+    states: dict[str, dict[str, object]] = {
+        str(item.get("warning")): dict(item)
+        for item in previous_states_raw
+        if isinstance(item, dict) and item.get("warning")
+    }
+    legacy_open = _previous_json_list(previous, "open_warnings")
+    if not legacy_open:
+        legacy_open = _previous_json_list(previous, "confirmed_warnings")
+    for warning in legacy_open:
+        states.setdefault(warning, {"warning": warning, "status": "open"})
+    if previous is None:
+        for warning in baseline_warnings or []:
+            states.setdefault(
+                warning,
+                {"warning": warning, "status": "open", "source": "approved_thesis"},
+            )
+
+    for warning in new_warnings:
+        previous_state = states.get(warning)
+        states[warning] = {
+            "warning": warning,
+            "status": "escalated" if previous_state else "open",
+        }
+
+    resolution_markers = {
+        "회복",
+        "개선",
+        "정상화",
+        "흑자 전환",
+        "resolved",
+        "recovered",
+        "improved",
+        "normalized",
+    }
+    positive_texts = [
+        _event_text(event)
+        for event in events
+        if event.provider in TRUSTED_FACT_PROVIDERS
+        and event.event_type in POSITIVE_EVENT_TYPES
+        and any(marker in _event_text(event).lower() for marker in resolution_markers)
+    ]
+    for warning, state in states.items():
+        if any(_matching_signals(text, [warning]) for text in positive_texts):
+            state["status"] = "resolved"
+
+    rendered_states = list(states.values())
+    open_warnings = [
+        str(item["warning"])
+        for item in rendered_states
+        if item.get("status") in {"open", "escalated"}
+    ]
+    return _unique(open_warnings), rendered_states
+
+
+def _baseline_open_warnings(thesis: InvestmentThesis) -> list[str]:
+    risk_markers = (
+        "초기 균열",
+        "적자",
+        "미확인",
+        "미증명",
+        "부진",
+        "저하",
+        "의존",
+        "위험",
+        "부담",
+        "고가격대",
+        "cash burn",
+        "unproven",
+    )
+    candidates = re.split(r"(?<=[.!?])\s+|\n+", thesis.core_thesis)
+    return _unique(
+        sentence.strip()
+        for sentence in candidates
+        if any(marker in sentence.lower() for marker in risk_markers)
+    )[:4]
+
+
+def _daily_change_severity(status: AssessmentStatus) -> str:
+    return {
+        AssessmentStatus.no_material_change: "none",
+        AssessmentStatus.strengthened: "moderate",
+        AssessmentStatus.weakened: "moderate",
+        AssessmentStatus.mixed: "moderate",
+        AssessmentStatus.needs_review: "moderate",
+        AssessmentStatus.invalidation_candidate: "high",
+        AssessmentStatus.invalidated: "critical",
+    }[status]
+
+
+def _structural_risk_level(
+    status: AssessmentStatus,
+    expectation_level: ExpectationLevel,
+    open_warnings: list[str],
+    previous: ThesisAssessment | None,
+) -> StructuralRiskLevel:
+    rank = {
+        StructuralRiskLevel.low: 0,
+        StructuralRiskLevel.normal: 1,
+        StructuralRiskLevel.elevated: 2,
+        StructuralRiskLevel.high: 3,
+        StructuralRiskLevel.critical: 4,
+    }
+    risk = (
+        StructuralRiskLevel.elevated
+        if expectation_level == ExpectationLevel.speculative
+        else StructuralRiskLevel.normal
+    )
+    if len(open_warnings) >= 3:
+        risk = StructuralRiskLevel.elevated
+    if status in {AssessmentStatus.weakened, AssessmentStatus.mixed}:
+        risk = max(risk, StructuralRiskLevel.elevated, key=rank.get)
+    elif status in {AssessmentStatus.needs_review, AssessmentStatus.invalidation_candidate}:
+        risk = max(risk, StructuralRiskLevel.high, key=rank.get)
+    elif status == AssessmentStatus.invalidated:
+        risk = StructuralRiskLevel.critical
+    if previous is not None and status == AssessmentStatus.no_material_change:
+        try:
+            previous_risk = StructuralRiskLevel(
+                str(getattr(previous, "structural_risk_level", "normal") or "normal")
+            )
+        except ValueError:
+            previous_risk = StructuralRiskLevel.normal
+        risk = max(risk, previous_risk, key=rank.get)
+    return risk
 
 
 def _transition_guard(
@@ -486,6 +787,7 @@ def evaluate_thesis(
     price_context: PriceContext,
     macro_impact: ThesisMacroImpact | None = None,
     previous_assessment: ThesisAssessment | None = None,
+    valuation_snapshot: ValuationSnapshot | None = None,
 ) -> EvaluationResult:
     strengthen_signals = _json_list(thesis.strengthen_signals)
     weaken_signals = _json_list(thesis.weaken_signals)
@@ -508,8 +810,8 @@ def evaluate_thesis(
         strengthen_matches = _matching_signals(text, strengthen_signals)
         weaken_matches = _matching_signals(text, weaken_signals)
         invalid_matches = _matching_signals(text, invalidation_signals)
-        expansion_matches = _matching_signals(text, expansion_signals)
-        compression_matches = _matching_signals(text, compression_signals)
+        raw_expansion_matches = _matching_signals(text, expansion_signals)
+        raw_compression_matches = _matching_signals(text, compression_signals)
         direction = "neutral"
         valuation_direction = "neutral"
         trusted_confirmed = (
@@ -517,6 +819,8 @@ def evaluate_thesis(
             and bool(_substantive_facts(event))
             and not event.financial_statement_basis_warning
         )
+        expansion_matches = raw_expansion_matches if trusted_confirmed else []
+        compression_matches = raw_compression_matches if trusted_confirmed else []
         if invalid_matches and (
             trusted_confirmed
             or (event.event_type != "non_thesis_noise" and event.relevance_score >= 40)
@@ -583,6 +887,7 @@ def evaluate_thesis(
             )
 
     price_result = _evaluate_price_rules(thesis, price_context)
+    price_decision = _build_price_decision(thesis, price_context)
     if price_result.invalidated:
         negative_points += price_result.negative_points
     if price_result.evidence is not None:
@@ -621,9 +926,9 @@ def evaluate_thesis(
         and bool(_substantive_facts(event))
         for event, _matches in invalidation_matches
     )
-    if price_result.invalidated or trusted_invalidation:
+    if trusted_invalidation:
         status = AssessmentStatus.invalidated
-    elif invalidation_matches:
+    elif price_result.invalidated or invalidation_matches:
         status = AssessmentStatus.invalidation_candidate
     elif positive_points >= 20 and negative_points >= 20:
         status = AssessmentStatus.mixed
@@ -639,7 +944,7 @@ def evaluate_thesis(
         previous_assessment,
         status,
         material_positive=material_positive,
-        material_invalidation=price_result.invalidated or trusted_invalidation,
+        material_invalidation=trusted_invalidation,
     )
 
     expectations = _json_dict(thesis.market_expectations)
@@ -652,47 +957,108 @@ def evaluate_thesis(
     elif earnings_estimate_impact == EarningsEstimateImpact.mixed:
         expansion_points += 20
         compression_points += 20
-    if status == AssessmentStatus.strengthened:
-        expansion_points += 10
-    elif status in {AssessmentStatus.weakened, AssessmentStatus.invalidation_candidate}:
-        compression_points += 10
-    elif status == AssessmentStatus.invalidated:
-        compression_points += 30
+    has_expansion = bool(matched_expansion) or earnings_estimate_impact in {
+        EarningsEstimateImpact.up,
+        EarningsEstimateImpact.mixed,
+    }
+    has_compression = bool(matched_compression) or earnings_estimate_impact in {
+        EarningsEstimateImpact.down,
+        EarningsEstimateImpact.mixed,
+    }
+    if macro_valuation_effect in {"strengthen", "mixed"}:
+        has_expansion = True
+    if macro_valuation_effect in {"weaken", "mixed"}:
+        has_compression = True
 
-    if not framework and not expansion_signals and not compression_signals:
-        valuation_impact = ValuationImpact.unknown
-    elif expansion_points >= 20 and compression_points >= 20:
+    if has_expansion and has_compression:
         valuation_impact = ValuationImpact.mixed
-    elif expansion_points - compression_points >= 20:
+    elif has_expansion:
         valuation_impact = ValuationImpact.expansion
-    elif compression_points - expansion_points >= 20:
+    elif has_compression:
         valuation_impact = ValuationImpact.compression
     else:
         valuation_impact = ValuationImpact.neutral
-    if valuation_impact == ValuationImpact.expansion and expectation_level in {
-        ExpectationLevel.very_high,
-        ExpectationLevel.speculative,
-    }:
-        valuation_impact = ValuationImpact.mixed
 
+    macro_valuation_effects: list[str] = []
+    if macro_impact is not None and macro_valuation_effect != "neutral":
+        try:
+            macro_evidence = json.loads(macro_impact.evidence)
+        except json.JSONDecodeError:
+            macro_evidence = []
+        macro_valuation_effects = _unique(
+            str(item.get("factor"))
+            for item in macro_evidence
+            if isinstance(item, dict)
+            and item.get("factor")
+            and isinstance(item.get("exposure"), dict)
+            and str(item["exposure"].get("channel"))
+            in {"discount_rate", "risk_appetite"}
+            and abs(float(item.get("contribution", 0) or 0)) > 0
+        )
+        if not macro_valuation_effects and macro_impact.rationale:
+            macro_valuation_effects = [macro_impact.rationale]
+
+    valuation_evidence = [
+        *(f"확장 조건 확인: {item}" for item in _unique(matched_expansion)),
+        *(f"압축 조건 확인: {item}" for item in _unique(matched_compression)),
+    ]
+    if earnings_estimate_impact != EarningsEstimateImpact.unchanged:
+        valuation_evidence.append(
+            f"이익 추정치 영향: {earnings_estimate_impact.value}"
+        )
+    valuation_evidence.extend(
+        f"거시 Valuation 경로: {item}" for item in macro_valuation_effects
+    )
+    previous_impact: ValuationImpact | None = None
+    if previous_assessment is not None:
+        try:
+            previous_impact = ValuationImpact(
+                str(previous_assessment.valuation_change or "neutral")
+            )
+        except ValueError:
+            previous_impact = None
+
+    valuation_summary = _valuation_summary(valuation_impact)
+    if (
+        not matched_expansion
+        and not matched_compression
+        and earnings_estimate_impact == EarningsEstimateImpact.unchanged
+        and macro_valuation_effect != "neutral"
+    ):
+        impact_text = {
+            ValuationImpact.expansion: "확장",
+            ValuationImpact.compression: "압축",
+            ValuationImpact.mixed: "혼재",
+            ValuationImpact.neutral: "중립",
+            ValuationImpact.unknown: "판단 보류",
+        }[valuation_impact]
+        valuation_summary = (
+            "사업 투자 논리를 바꿀 신규 근거는 없고, 오늘 할인율·위험선호의 "
+            f"거시 전달 경로가 Valuation에 {impact_text} 영향을 줬습니다."
+        )
     valuation_context = ValuationContext(
         impact=valuation_impact,
-        summary=_valuation_summary(valuation_impact),
+        summary=valuation_summary,
         market_expectation_level=expectation_level,
         market_expectation_summary=str(expectations.get("summary", "")),
         primary_method=str(framework.get("primary_method", "")),
-        matched_expansion_conditions=list(dict.fromkeys(matched_expansion)),
-        matched_compression_conditions=list(dict.fromkeys(matched_compression)),
+        configured_expansion_signals=expansion_signals,
+        configured_compression_signals=compression_signals,
+        matched_expansion_signals=_unique(matched_expansion),
+        matched_compression_signals=_unique(matched_compression),
+        matched_expansion_conditions=_unique(matched_expansion),
+        matched_compression_conditions=_unique(matched_compression),
         macro_valuation_effect=macro_valuation_effect,
-        evidence_count=sum(
-            1 for item in evidence if item.get("valuation_direction", "neutral") != "neutral"
-        ),
+        macro_valuation_effects=macro_valuation_effects,
+        valuation_evidence=valuation_evidence,
+        previous_impact=previous_impact,
+        evidence_count=len(valuation_evidence),
     )
     market_expectation_assessment = _expectation_assessment(
         expectations, valuation_context
     )
     confirmed_facts, inferred_implications, unknowns = _assessment_evidence_layers(events)
-    confirmed_warnings = _unique(
+    new_warnings = _unique(
         fact
         for event in events
         if event.provider in TRUSTED_FACT_PROVIDERS
@@ -703,23 +1069,27 @@ def evaluate_thesis(
         )
         for fact in _warning_facts(event)
     )
+    open_warnings, warning_states = _warning_lifecycle(
+        previous_assessment,
+        new_warnings,
+        events,
+        baseline_warnings=_baseline_open_warnings(thesis),
+    )
+    confirmed_warnings = new_warnings
     watch_items = _unique(_watch_text(item) for item in unknowns)
     background_confirmed_facts = _previous_facts(previous_assessment)
     used_event_fingerprints = [event_fingerprint(event) for event in events]
 
     net_score = max(-100, min(100, positive_points - negative_points))
-    confidence = 0.0
+    confidence = previous_assessment.confidence if previous_assessment is not None else 0.5
     if evidence:
         confidence = round(
             min(0.95, 0.45 + max(item["relevance_score"] for item in evidence) / 200), 2
         )
     price_view = _price_view(price_context)
-    expectation_summary = valuation_context.market_expectation_summary or "기준 정보 없음"
-    valuation_method = valuation_context.primary_method or "평가 방식 미등록"
-    price_view = (
-        f"{price_view} 시장 기대는 {valuation_context.market_expectation_level.value} 수준으로 "
-        f"기록되어 있으며({expectation_summary}), 주 평가 방식은 {valuation_method}입니다. "
-        f"{valuation_context.summary}"
+    new_buyer_price_view, holder_price_view = _price_audience_views(
+        price_decision,
+        expectation_level,
     )
 
     if status == AssessmentStatus.strengthened:
@@ -758,6 +1128,23 @@ def evaluate_thesis(
         holder_view = "보유자는 기존 모니터링 조건을 유지합니다."
         risk_level = "normal"
 
+    structural_risk = _structural_risk_level(
+        status,
+        expectation_level,
+        open_warnings,
+        previous_assessment,
+    )
+    daily_change_severity = _daily_change_severity(status)
+    assessment_state = AssessmentState(price_decision.assessment_state)
+    snapshot = valuation_snapshot or ValuationSnapshot(
+        current_price=price_decision.current_price,
+        currency=price_decision.currency,
+        price_as_of=price_decision.price_as_of,
+        price_basis=price_decision.price_basis,
+        quality="unavailable",
+        warnings=["Valuation 배수 provider 결과가 없어 배수는 자료 없음입니다."],
+    )
+
     return EvaluationResult(
         status=status,
         score=net_score,
@@ -767,6 +1154,10 @@ def evaluate_thesis(
         holder_view=holder_view,
         price_view=price_view,
         risk_level=risk_level,
+        daily_change_severity=daily_change_severity,
+        structural_risk_level=structural_risk,
+        assessment_state=assessment_state,
+        market_session=price_decision.market_session,
         evidence=evidence,
         valuation_context=valuation_context,
         earnings_estimate_impact=earnings_estimate_impact,
@@ -776,9 +1167,15 @@ def evaluate_thesis(
         inferred_implications=inferred_implications,
         unknowns=unknowns,
         confirmed_warnings=confirmed_warnings,
+        new_warnings=new_warnings,
+        open_warnings=open_warnings,
+        warning_states=warning_states,
         watch_items=watch_items,
+        new_buyer_price_view=new_buyer_price_view,
+        holder_price_view=holder_price_view,
+        valuation_snapshot=snapshot,
         used_event_fingerprints=used_event_fingerprints,
-        should_deactivate=status == AssessmentStatus.invalidated,
+        should_deactivate=trusted_invalidation,
     )
 
 

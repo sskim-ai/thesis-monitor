@@ -213,7 +213,7 @@ async def test_daily_monitor_uses_structured_price_rules() -> None:
 
 
 @pytest.mark.anyio
-async def test_price_invalidation_deactivates_monitoring_item() -> None:
+async def test_price_invalidation_requires_review_without_automatic_deactivation() -> None:
     init_db()
     with Session(engine) as session:
         register_monitoring_item(
@@ -237,6 +237,6 @@ async def test_price_invalidation_deactivates_monitoring_item() -> None:
         )
 
         assessment = next(item for item in result.assessments if item.ticker == "PRC2")
-        assert assessment.status == "invalidated"
+        assert assessment.status == "invalidation_candidate"
         item = session.exec(select(WatchlistItem).where(WatchlistItem.ticker == "PRC2")).one()
-        assert item.active is False
+        assert item.active is True

@@ -45,6 +45,9 @@ class ThesisAssessment(SQLModel, table=True):
     inferred_implications: str = Field(default="[]", sa_column=Column(Text))
     unknowns: str = Field(default="[]", sa_column=Column(Text))
     confirmed_warnings: str = Field(default="[]", sa_column=Column(Text))
+    new_warnings: str = Field(default="[]", sa_column=Column(Text))
+    open_warnings: str = Field(default="[]", sa_column=Column(Text))
+    warning_states: str = Field(default="[]", sa_column=Column(Text))
     watch_items: str = Field(default="[]", sa_column=Column(Text))
     used_event_fingerprints: str = Field(default="[]", sa_column=Column(Text))
     score: int = 0
@@ -54,8 +57,15 @@ class ThesisAssessment(SQLModel, table=True):
     holder_view: str = Field(sa_column=Column(Text))
     price_view: str = Field(sa_column=Column(Text))
     risk_level: str
+    daily_change_severity: str = "none"
+    structural_risk_level: str = "normal"
+    assessment_state: str = "final"
+    market_session: str = "unknown"
+    new_buyer_price_view: str = Field(default="", sa_column=Column(Text))
+    holder_price_view: str = Field(default="", sa_column=Column(Text))
     evidence: str = Field(default="[]", sa_column=Column(Text))
     price_context: str = Field(default="{}", sa_column=Column(Text))
+    valuation_snapshot: str = Field(default="{}", sa_column=Column(Text))
     valuation_context: str = Field(default="{}", sa_column=Column(Text))
     thesis_snapshot: str = Field(default="{}", sa_column=Column(Text))
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))

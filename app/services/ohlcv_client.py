@@ -1,10 +1,12 @@
 import asyncio
 from collections.abc import Sequence
+from datetime import datetime
 
 import httpx
 
 from app.config import get_settings
-from app.schemas.thesis import PriceContext, PricePeriodSummary
+from app.schemas.thesis import PriceContext, PriceDecisionContext, PricePeriodSummary
+from app.services.market_session import market_session_for_ticker
 
 
 PERIOD_COUNTS = {
@@ -97,7 +99,11 @@ class OhlcvClient:
         assert last_error is not None
         raise last_error
 
-    async def fetch_price_context(self, ticker: str) -> PriceContext:
+    async def fetch_price_context(
+        self,
+        ticker: str,
+        as_of: datetime | None = None,
+    ) -> PriceContext:
         api_key = self.settings.ohlcv_api_key or self.settings.action_api_key
         headers = {"X-API-Key": api_key} if api_key else {}
         context = PriceContext()
@@ -115,4 +121,19 @@ class OhlcvClient:
                 except (httpx.HTTPError, ValueError) as exc:
                     context.warnings.append(f"{period}: {type(exc).__name__}")
         context.available = any(item.actual_count > 0 for item in context.periods.values())
+        daily = context.periods.get("daily")
+        session = market_session_for_ticker(ticker, as_of)
+        latest_date = daily.latest_date if daily else None
+        is_live_bar = (
+            session.session == "open"
+            and latest_date == session.market_date.isoformat()
+        )
+        context.decision = PriceDecisionContext(
+            current_price=daily.latest_close if daily else None,
+            currency="KRW" if ticker.isdigit() else "USD",
+            price_as_of=latest_date,
+            price_basis="intraday" if is_live_bar else "close" if latest_date else "unavailable",
+            market_session=session.session,
+            assessment_state="provisional" if is_live_bar else "final",
+        )
         return context

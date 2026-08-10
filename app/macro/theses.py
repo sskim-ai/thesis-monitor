@@ -3,7 +3,7 @@ from datetime import datetime, time, timezone
 
 from sqlmodel import Session, select
 
-from app.models.macro import MacroRegimeAssessment, MacroThesis
+from app.models.macro import MacroRegimeAssessment, MacroThesis, MacroThesisEvidence
 
 
 DEFAULT_MACRO_THESES = [
@@ -132,19 +132,61 @@ def update_macro_theses(
             delta = regime.growth_momentum
         else:
             delta = -1 if regime.inflation_pressure >= 2 else 0
-        confidence_delta = 0 if already_reviewed_today else delta * 0.03
+        today_signal = "positive" if delta > 0 else "negative" if delta < 0 else "neutral"
+        rationale = {
+            "us_soft_landing_disinflation": (
+                f"성장 {regime.growth_momentum:+d}, 물가 {regime.inflation_pressure:+d}. "
+                "당일 신호이며 공식 성장·물가 데이터의 지속 확인 전에는 상태를 바꾸지 않습니다."
+            ),
+            "fed_policy_path": (
+                f"금융여건 {regime.financial_conditions:+d}. 당일 금리·스프레드 움직임은 "
+                "정책경로의 영구 변화가 아니라 오늘 신호로 분리합니다."
+            ),
+            "ai_capex_cycle": (
+                f"반도체 가격 기반 단기 신호 {regime.earnings_momentum:+d}. 실제 CAPEX, 주문, "
+                "HBM 출하 또는 이익 추정치 변화가 확인되지 않으면 시장 가정은 유지합니다."
+            ),
+            "china_korea_export_cycle": (
+                f"가격 기반 성장 신호 {regime.growth_momentum:+d}. 공식 수출·생산 데이터의 "
+                "반복 확인 전에는 시장 가정 상태를 바꾸지 않습니다."
+            ),
+            "oil_supply_shock": (
+                f"물가·유가 기반 당일 신호 {regime.inflation_pressure:+d}. 재고·생산 자료로 "
+                "공급 충격의 지속성이 확인돼야 상태를 변경합니다."
+            ),
+        }[thesis.thesis_key]
+        independent_evidence = session.exec(
+            select(MacroThesisEvidence).where(
+                MacroThesisEvidence.macro_thesis_id == thesis.id,
+                MacroThesisEvidence.persistence != "temporary",
+                MacroThesisEvidence.confidence >= 0.6,
+            )
+        ).all()
+        independent_keys = {
+            (item.observation_id, item.event_id)
+            for item in independent_evidence
+            if item.observation_id is not None or item.event_id is not None
+        }
+        persistent_signal = len(independent_keys) >= 2 and not regime.provisional
+        confidence_delta = (
+            0
+            if already_reviewed_today or not persistent_signal
+            else delta * 0.03
+        )
         thesis.confidence = round(
             max(0.05, min(0.95, old_confidence + confidence_delta)), 2
         )
-        persistent_signal = regime.persistence_days >= 3 and not regime.provisional
         if thesis.confidence < 0.2 and delta < 0 and persistent_signal:
             thesis.status = "structural_break"
-        elif delta < 0:
+        elif delta < 0 and persistent_signal:
             thesis.status = "weakening"
         elif delta > 0 and persistent_signal:
             thesis.status = "strengthening"
-        else:
+        elif not persistent_signal:
             thesis.status = "intact"
+        thesis.today_signal = today_signal
+        thesis.today_signal_rationale = rationale
+        thesis.today_signal_date = regime.assessment_date
         thesis.last_reviewed_at = reviewed_at
         thesis.updated_at = now
         session.add(thesis)

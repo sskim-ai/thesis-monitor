@@ -293,7 +293,7 @@ def test_macro_impacts_separate_overall_and_valuation_channels() -> None:
         by_ticker = {item.ticker: item for item in impacts}
 
         assert by_ticker["CHANNEL2048"].direction == "strengthen"
-        assert by_ticker["CHANNEL2048"].valuation_effect == "strengthen"
+        assert by_ticker["CHANNEL2048"].valuation_effect == "mixed"
         assert by_ticker["CHANNEL2048"].earnings_effect == "neutral"
         channel_evidence = json.loads(by_ticker["CHANNEL2048"].evidence)
         assert any(

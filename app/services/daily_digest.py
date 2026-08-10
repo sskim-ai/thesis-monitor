@@ -81,6 +81,8 @@ class MacroInterpretation:
     axis_explanations: list[tuple[str, str]]
     integrated_view: list[str]
     market_assumptions: list[str]
+    market_session: str = "unknown"
+    assessment_state: str = "final"
 
 
 @dataclass(frozen=True)
@@ -451,6 +453,8 @@ def _macro_interpretation(briefing: MacroBriefing) -> MacroInterpretation:
         axis_explanations=_axis_explanations(regime, observations),
         integrated_view=integrated,
         market_assumptions=assumptions,
+        market_session=getattr(briefing, "market_session", "unknown"),
+        assessment_state=getattr(briefing, "assessment_state", "final"),
     )
 
 
@@ -472,6 +476,8 @@ def _unavailable_macro() -> MacroInterpretation:
             "거시 데이터가 복구되기 전에는 시장 방향을 종목 투자 논리 변화로 연결하지 않습니다."
         ],
         market_assumptions=[],
+        market_session="unknown",
+        assessment_state="final",
     )
 
 
@@ -580,13 +586,17 @@ def _ticker_summary(
     expectation_level = str(expectation.get("level", "unknown"))
     facts = _text_list(assessment.confirmed_facts)
     weaken_signals = _text_list(thesis.weaken_signals)
-    confirmed_warnings = _text_list(assessment.confirmed_warnings)
+    confirmed_warnings = _text_list(
+        getattr(assessment, "open_warnings", "[]")
+    ) or _text_list(assessment.confirmed_warnings)
     watch_items = _text_list(assessment.watch_items)
     if not watch_items:
         watch_items = [f"{item} 여부 확인 필요" for item in weaken_signals[:3]]
     check_metrics = _check_metrics(thesis, assessment)
-    new_observer_view = assessment.new_buyer_view
-    holder_view = assessment.holder_view
+    new_observer_view = (
+        getattr(assessment, "new_buyer_price_view", "") or assessment.new_buyer_view
+    )
+    holder_view = getattr(assessment, "holder_price_view", "") or assessment.holder_view
     if (assessment.business_thesis_change or assessment.status) == "no_material_change":
         if expectation_level in {"very_high", "speculative"}:
             new_observer_view = (

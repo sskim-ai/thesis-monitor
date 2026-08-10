@@ -59,6 +59,8 @@ class MacroRegimeRead(BaseModel):
     confidence: float
     persistence_days: int
     provisional: bool
+    market_session: str = "unknown"
+    assessment_state: str = "final"
     summary: str
     evidence: list[dict[str, object]]
 
@@ -71,6 +73,9 @@ class MacroThesisRead(BaseModel):
     region: str
     horizon: str
     status: str
+    today_signal: str = "neutral"
+    today_signal_rationale: str = ""
+    today_signal_date: date | None = None
     confidence: float
     base_case_probability: float
     bull_case: str
@@ -115,6 +120,8 @@ class MacroBriefingRead(BaseModel):
     data_quality: list[dict[str, object]]
     kakao_text: str
     status: str
+    market_session: str = "unknown"
+    assessment_state: str = "final"
 
 
 class MacroProviderStatusRead(BaseModel):

@@ -109,7 +109,7 @@ def test_macro_can_compress_valuation_without_weakening_business_thesis() -> Non
     assert result.earnings_estimate_impact == "unchanged"
 
 
-def test_good_earnings_with_very_high_expectations_stays_mixed() -> None:
+def test_good_earnings_with_very_high_expectations_is_new_expansion_evidence() -> None:
     thesis = _thesis()
     thesis.market_expectations = json.dumps(
         {"level": "very_high", "summary": "A strong earnings outcome is already expected"}
@@ -135,4 +135,4 @@ def test_good_earnings_with_very_high_expectations_stays_mixed() -> None:
 
     assert result.status == AssessmentStatus.strengthened
     assert result.earnings_estimate_impact == "up"
-    assert result.valuation_context.impact == "mixed"
+    assert result.valuation_context.impact == "expansion"

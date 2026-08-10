@@ -64,6 +64,8 @@ def macro_regime_to_read(row: MacroRegimeAssessment) -> MacroRegimeRead:
         confidence=row.confidence,
         persistence_days=row.persistence_days,
         provisional=row.provisional,
+        market_session=row.market_session,
+        assessment_state=row.assessment_state,
         summary=row.summary,
         evidence=_list(row.evidence),
     )
@@ -78,6 +80,9 @@ def macro_thesis_to_read(row: MacroThesis) -> MacroThesisRead:
         region=row.region,
         horizon=row.horizon,
         status=row.status,
+        today_signal=row.today_signal,
+        today_signal_rationale=row.today_signal_rationale,
+        today_signal_date=row.today_signal_date,
         confidence=row.confidence,
         base_case_probability=row.base_case_probability,
         bull_case=row.bull_case,

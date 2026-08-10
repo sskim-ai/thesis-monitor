@@ -1184,6 +1184,14 @@
   },
   "components": {
     "schemas": {
+      "AssessmentState": {
+        "type": "string",
+        "enum": [
+          "provisional",
+          "final"
+        ],
+        "title": "AssessmentState"
+      },
       "AssessmentStatus": {
         "type": "string",
         "enum": [
@@ -2212,6 +2220,16 @@
           "status": {
             "type": "string",
             "title": "Status"
+          },
+          "market_session": {
+            "type": "string",
+            "title": "Market Session",
+            "default": "unknown"
+          },
+          "assessment_state": {
+            "type": "string",
+            "title": "Assessment State",
+            "default": "final"
           }
         },
         "type": "object",
@@ -2747,6 +2765,16 @@
             "type": "boolean",
             "title": "Provisional"
           },
+          "market_session": {
+            "type": "string",
+            "title": "Market Session",
+            "default": "unknown"
+          },
+          "assessment_state": {
+            "type": "string",
+            "title": "Assessment State",
+            "default": "final"
+          },
           "summary": {
             "type": "string",
             "title": "Summary"
@@ -2807,6 +2835,28 @@
           "status": {
             "type": "string",
             "title": "Status"
+          },
+          "today_signal": {
+            "type": "string",
+            "title": "Today Signal",
+            "default": "neutral"
+          },
+          "today_signal_rationale": {
+            "type": "string",
+            "title": "Today Signal Rationale",
+            "default": ""
+          },
+          "today_signal_date": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Today Signal Date"
           },
           "confidence": {
             "type": "number",
@@ -3379,6 +3429,9 @@
               }
             ]
           },
+          "decision": {
+            "$ref": "#/components/schemas/PriceDecisionContext"
+          },
           "warnings": {
             "items": {
               "type": "string"
@@ -3389,6 +3442,144 @@
         },
         "type": "object",
         "title": "PriceContext"
+      },
+      "PriceDecisionContext": {
+        "properties": {
+          "current_price": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Current Price"
+          },
+          "currency": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Currency"
+          },
+          "price_as_of": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Price As Of"
+          },
+          "price_basis": {
+            "type": "string",
+            "title": "Price Basis",
+            "default": "unavailable"
+          },
+          "market_session": {
+            "type": "string",
+            "title": "Market Session",
+            "default": "unknown"
+          },
+          "assessment_state": {
+            "$ref": "#/components/schemas/AssessmentState",
+            "default": "final"
+          },
+          "current_position": {
+            "type": "string",
+            "title": "Current Position",
+            "default": "가격 위치 자료 없음"
+          },
+          "new_observer_checks": {
+            "items": {
+              "$ref": "#/components/schemas/PriceLevelCheck"
+            },
+            "type": "array",
+            "title": "New Observer Checks"
+          },
+          "holder_checks": {
+            "items": {
+              "$ref": "#/components/schemas/PriceLevelCheck"
+            },
+            "type": "array",
+            "title": "Holder Checks"
+          },
+          "registered_rules_available": {
+            "type": "boolean",
+            "title": "Registered Rules Available",
+            "default": false
+          }
+        },
+        "type": "object",
+        "title": "PriceDecisionContext"
+      },
+      "PriceLevelCheck": {
+        "properties": {
+          "rule": {
+            "type": "string",
+            "title": "Rule"
+          },
+          "label": {
+            "type": "string",
+            "title": "Label"
+          },
+          "meaning": {
+            "type": "string",
+            "title": "Meaning"
+          },
+          "source": {
+            "type": "string",
+            "title": "Source",
+            "default": "registered_price_rule"
+          },
+          "price": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Price"
+          },
+          "price_low": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Price Low"
+          },
+          "price_high": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Price High"
+          }
+        },
+        "type": "object",
+        "required": [
+          "rule",
+          "label",
+          "meaning"
+        ],
+        "title": "PriceLevelCheck"
       },
       "PricePeriodSummary": {
         "properties": {
@@ -3701,6 +3892,17 @@
         ],
         "title": "ReclassifyEventsResponse"
       },
+      "StructuralRiskLevel": {
+        "type": "string",
+        "enum": [
+          "low",
+          "normal",
+          "elevated",
+          "high",
+          "critical"
+        ],
+        "title": "StructuralRiskLevel"
+      },
       "ThesisAssessmentCreate": {
         "properties": {
           "assessment_date": {
@@ -3827,6 +4029,13 @@
             "type": "array",
             "title": "Confirmed Facts"
           },
+          "background_confirmed_facts": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Background Confirmed Facts"
+          },
           "inferred_implications": {
             "items": {
               "type": "string"
@@ -3840,6 +4049,49 @@
             },
             "type": "array",
             "title": "Unknowns"
+          },
+          "confirmed_warnings": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Confirmed Warnings"
+          },
+          "new_warnings": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "New Warnings"
+          },
+          "open_warnings": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Open Warnings"
+          },
+          "warning_states": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "type": "array",
+            "title": "Warning States"
+          },
+          "watch_items": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Watch Items"
+          },
+          "used_event_fingerprints": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Used Event Fingerprints"
           },
           "score": {
             "type": "integer",
@@ -3869,6 +4121,24 @@
             "type": "string",
             "title": "Risk Level"
           },
+          "daily_change_severity": {
+            "type": "string",
+            "title": "Daily Change Severity",
+            "default": "none"
+          },
+          "structural_risk_level": {
+            "$ref": "#/components/schemas/StructuralRiskLevel",
+            "default": "normal"
+          },
+          "assessment_state": {
+            "$ref": "#/components/schemas/AssessmentState",
+            "default": "final"
+          },
+          "market_session": {
+            "type": "string",
+            "title": "Market Session",
+            "default": "unknown"
+          },
           "evidence": {
             "items": {
               "additionalProperties": true,
@@ -3879,6 +4149,19 @@
           },
           "price_context": {
             "$ref": "#/components/schemas/PriceContext"
+          },
+          "new_buyer_price_view": {
+            "type": "string",
+            "title": "New Buyer Price View",
+            "default": ""
+          },
+          "holder_price_view": {
+            "type": "string",
+            "title": "Holder Price View",
+            "default": ""
+          },
+          "valuation_snapshot": {
+            "$ref": "#/components/schemas/ValuationSnapshot"
           },
           "valuation_context": {
             "$ref": "#/components/schemas/ValuationContext"
@@ -4331,6 +4614,34 @@
             "title": "Primary Method",
             "default": ""
           },
+          "configured_expansion_signals": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Configured Expansion Signals"
+          },
+          "configured_compression_signals": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Configured Compression Signals"
+          },
+          "matched_expansion_signals": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Matched Expansion Signals"
+          },
+          "matched_compression_signals": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Matched Compression Signals"
+          },
           "matched_expansion_conditions": {
             "items": {
               "type": "string"
@@ -4349,6 +4660,30 @@
             "type": "string",
             "title": "Macro Valuation Effect",
             "default": "neutral"
+          },
+          "macro_valuation_effects": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Macro Valuation Effects"
+          },
+          "valuation_evidence": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Valuation Evidence"
+          },
+          "previous_impact": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ValuationImpact"
+              },
+              {
+                "type": "null"
+              }
+            ]
           },
           "evidence_count": {
             "type": "integer",
@@ -4413,6 +4748,185 @@
           "unknown"
         ],
         "title": "ValuationImpact"
+      },
+      "ValuationSnapshot": {
+        "properties": {
+          "current_price": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Current Price"
+          },
+          "currency": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Currency"
+          },
+          "price_as_of": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Price As Of"
+          },
+          "price_basis": {
+            "type": "string",
+            "title": "Price Basis",
+            "default": "unavailable"
+          },
+          "trailing_pe": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Trailing Pe"
+          },
+          "trailing_pe_status": {
+            "type": "string",
+            "title": "Trailing Pe Status",
+            "default": "unavailable"
+          },
+          "forward_pe": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Forward Pe"
+          },
+          "forward_pe_status": {
+            "type": "string",
+            "title": "Forward Pe Status",
+            "default": "unavailable"
+          },
+          "price_to_book": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Price To Book"
+          },
+          "price_to_book_status": {
+            "type": "string",
+            "title": "Price To Book Status",
+            "default": "unavailable"
+          },
+          "forward_price_to_book": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Forward Price To Book"
+          },
+          "forward_price_to_book_status": {
+            "type": "string",
+            "title": "Forward Price To Book Status",
+            "default": "unavailable"
+          },
+          "trailing_basis": {
+            "type": "string",
+            "title": "Trailing Basis",
+            "default": "LTM EPS"
+          },
+          "forward_basis": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Forward Basis"
+          },
+          "book_basis": {
+            "type": "string",
+            "title": "Book Basis",
+            "default": "latest reported book value"
+          },
+          "forward_book_basis": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Forward Book Basis"
+          },
+          "provider": {
+            "type": "string",
+            "title": "Provider",
+            "default": "unavailable"
+          },
+          "valuation_data_as_of": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Valuation Data As Of"
+          },
+          "denominator_as_of": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Denominator As Of"
+          },
+          "quality": {
+            "type": "string",
+            "title": "Quality",
+            "default": "unavailable"
+          },
+          "warnings": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Warnings"
+          }
+        },
+        "type": "object",
+        "title": "ValuationSnapshot"
       },
       "WatchlistItemCreate": {
         "properties": {

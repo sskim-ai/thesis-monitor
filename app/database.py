@@ -99,8 +99,18 @@ def _ensure_sqlite_columns() -> None:
             "inferred_implications": "TEXT DEFAULT '[]'",
             "unknowns": "TEXT DEFAULT '[]'",
             "confirmed_warnings": "TEXT DEFAULT '[]'",
+            "new_warnings": "TEXT DEFAULT '[]'",
+            "open_warnings": "TEXT DEFAULT '[]'",
+            "warning_states": "TEXT DEFAULT '[]'",
             "watch_items": "TEXT DEFAULT '[]'",
             "used_event_fingerprints": "TEXT DEFAULT '[]'",
+            "daily_change_severity": "VARCHAR DEFAULT 'none'",
+            "structural_risk_level": "VARCHAR DEFAULT 'normal'",
+            "assessment_state": "VARCHAR DEFAULT 'final'",
+            "market_session": "VARCHAR DEFAULT 'unknown'",
+            "new_buyer_price_view": "TEXT DEFAULT ''",
+            "holder_price_view": "TEXT DEFAULT ''",
+            "valuation_snapshot": "TEXT DEFAULT '{}'",
         },
         "investmentthesis": {
             "macro_exposures": "VARCHAR DEFAULT '[]'",
@@ -111,6 +121,19 @@ def _ensure_sqlite_columns() -> None:
             "valuation_framework": "TEXT DEFAULT '{}'",
             "multiple_expansion_signals": "TEXT DEFAULT '[]'",
             "multiple_compression_signals": "TEXT DEFAULT '[]'",
+        },
+        "macrothesis": {
+            "today_signal": "VARCHAR DEFAULT 'neutral'",
+            "today_signal_rationale": "TEXT DEFAULT ''",
+            "today_signal_date": "DATE",
+        },
+        "macroregimeassessment": {
+            "market_session": "VARCHAR DEFAULT 'unknown'",
+            "assessment_state": "VARCHAR DEFAULT 'final'",
+        },
+        "macrobriefing": {
+            "market_session": "VARCHAR DEFAULT 'unknown'",
+            "assessment_state": "VARCHAR DEFAULT 'final'",
         },
     }
     with engine.begin() as connection:

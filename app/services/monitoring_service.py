@@ -127,6 +127,9 @@ def assessment_to_read(assessment: ThesisAssessment) -> ThesisAssessmentRead:
         inferred_implications=_json_list(assessment.inferred_implications),
         unknowns=_json_list(assessment.unknowns),
         confirmed_warnings=_json_list(assessment.confirmed_warnings),
+        new_warnings=_json_list(getattr(assessment, "new_warnings", "[]")),
+        open_warnings=_json_list(getattr(assessment, "open_warnings", "[]")),
+        warning_states=_json_dict_list(getattr(assessment, "warning_states", "[]")),
         watch_items=_json_list(assessment.watch_items),
         used_event_fingerprints=_json_list(assessment.used_event_fingerprints),
         score=assessment.score,
@@ -136,8 +139,19 @@ def assessment_to_read(assessment: ThesisAssessment) -> ThesisAssessmentRead:
         holder_view=assessment.holder_view,
         price_view=assessment.price_view,
         risk_level=assessment.risk_level,
+        daily_change_severity=getattr(assessment, "daily_change_severity", "none"),
+        structural_risk_level=getattr(
+            assessment, "structural_risk_level", "normal"
+        ),
+        assessment_state=getattr(assessment, "assessment_state", "final"),
+        market_session=getattr(assessment, "market_session", "unknown"),
         evidence=json.loads(assessment.evidence),
         price_context=json.loads(assessment.price_context),
+        new_buyer_price_view=getattr(assessment, "new_buyer_price_view", ""),
+        holder_price_view=getattr(assessment, "holder_price_view", ""),
+        valuation_snapshot=_json_dict(
+            getattr(assessment, "valuation_snapshot", "{}")
+        ),
         valuation_context=valuation_context,
         thesis_snapshot=_assessment_snapshot(assessment),
         created_at=assessment.created_at,
