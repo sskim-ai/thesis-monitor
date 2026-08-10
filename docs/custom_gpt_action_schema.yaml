@@ -4837,22 +4837,6 @@
             "title": "Price To Book Status",
             "default": "unavailable"
           },
-          "forward_price_to_book": {
-            "anyOf": [
-              {
-                "type": "number"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Forward Price To Book"
-          },
-          "forward_price_to_book_status": {
-            "type": "string",
-            "title": "Forward Price To Book Status",
-            "default": "unavailable"
-          },
           "trailing_basis": {
             "type": "string",
             "title": "Trailing Basis",
@@ -4873,17 +4857,6 @@
             "type": "string",
             "title": "Book Basis",
             "default": "latest reported book value"
-          },
-          "forward_book_basis": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Forward Book Basis"
           },
           "provider": {
             "type": "string",

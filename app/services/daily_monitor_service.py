@@ -154,6 +154,7 @@ async def run_daily_monitor(
     valuation_service: ValuationSnapshotService | None = None,
     queue_notifications: bool = True,
     dispatch_notifications: bool = True,
+    requeue_sent_before: datetime | None = None,
 ) -> DailyMonitorResponse:
     run_date = run_date or date.today()
     existing_run = session.exec(
@@ -164,9 +165,17 @@ async def run_daily_monitor(
             select(ThesisAssessment).where(ThesisAssessment.assessment_date == run_date)
         ).all()
         if queue_notifications:
-            queue_daily_digest_notification(session, run_date)
+            queue_daily_digest_notification(
+                session,
+                run_date,
+                requeue_sent_before=requeue_sent_before,
+            )
             for assessment in assessments:
-                queue_daily_stock_notification(session, assessment)
+                queue_daily_stock_notification(
+                    session,
+                    assessment,
+                    requeue_sent_before=requeue_sent_before,
+                )
             session.commit()
         if queue_notifications and dispatch_notifications:
             await dispatch_pending_notifications(session)
@@ -458,9 +467,17 @@ async def run_daily_monitor(
     session.refresh(run)
     export_monitor_run(run)
     if queue_notifications:
-        queue_daily_digest_notification(session, run_date)
+        queue_daily_digest_notification(
+            session,
+            run_date,
+            requeue_sent_before=requeue_sent_before,
+        )
         for assessment in completed_assessments:
-            queue_daily_stock_notification(session, assessment)
+            queue_daily_stock_notification(
+                session,
+                assessment,
+                requeue_sent_before=requeue_sent_before,
+            )
         session.commit()
     if queue_notifications and dispatch_notifications:
         await dispatch_pending_notifications(session)

@@ -1,15 +1,18 @@
 import json
+from datetime import date, datetime, timezone
 from types import SimpleNamespace
 from urllib.parse import parse_qs
 
 import httpx
 import pytest
 
+from app.models.thesis import NotificationDelivery
 from app.services.notification_service import (
     KakaoSelfNotifier,
     TelegramNotifier,
     _macro_report,
     _message_for_assessment,
+    _should_requeue_sent_delivery,
 )
 
 
@@ -46,6 +49,22 @@ def test_assessment_notification_uses_investment_rationale_label() -> None:
     assert "👀 신규 관찰자 가격 체크" in message
     assert "📐 시장 기대와 Valuation" in message
     assert "Thesis" not in message
+
+
+def test_morning_delivery_requeues_only_messages_sent_before_cutoff() -> None:
+    cutoff = datetime(2026, 8, 10, 22, 45, tzinfo=timezone.utc)
+    delivery = NotificationDelivery(
+        ticker="__DAILY_DIGEST__",
+        assessment_date=date(2026, 8, 11),
+        channel="telegram",
+        status="sent",
+        sent_at=datetime(2026, 8, 10, 17, 0),
+    )
+
+    assert _should_requeue_sent_delivery(delivery, cutoff) is True
+
+    delivery.sent_at = datetime(2026, 8, 10, 22, 50)
+    assert _should_requeue_sent_delivery(delivery, cutoff) is False
 
 
 def test_macro_report_explains_axes_confidence_and_friendly_series_names() -> None:

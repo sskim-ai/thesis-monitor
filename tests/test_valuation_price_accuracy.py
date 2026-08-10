@@ -212,7 +212,6 @@ async def test_missing_and_negative_earnings_multiples_are_not_invented() -> Non
     assert snapshot.trailing_pe_status == "not_meaningful"
     assert snapshot.forward_pe is None
     assert snapshot.forward_pe_status == "unavailable"
-    assert snapshot.forward_price_to_book is None
     assert snapshot.quality == "partial"
     assert any("기준일" in warning for warning in snapshot.warnings)
 

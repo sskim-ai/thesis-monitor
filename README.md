@@ -210,7 +210,9 @@ python -m app.jobs.monitor_daily
 The Mac mini LaunchAgent template is `ops/com.seungsoo.thesis-monitor.daily.plist`. It runs at
 07:50 KST and retries at 08:05 and 08:35. The flow is macro collection and assessment, all-stock
 assessment storage, daily digest generation, then Telegram delivery. Successful duplicate runs retry
-only pending delivery work.
+only pending delivery work. Same-date test messages sent before 07:45 do not suppress the scheduled
+morning run: the 07:50 job refreshes the assessment and requeues those earlier deliveries. Once the
+morning digest is sent after the cutoff, later retry slots do not resend completed messages.
 
 Price context is requested from the separate local OHLCV Analyst service using targets of 500 daily,
 300 weekly, and 100 monthly bars. Shorter provider histories are accepted and their actual counts are

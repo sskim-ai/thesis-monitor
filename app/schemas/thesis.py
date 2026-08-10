@@ -280,12 +280,9 @@ class ValuationSnapshot(BaseModel):
     forward_pe_status: str = "unavailable"
     price_to_book: float | None = None
     price_to_book_status: str = "unavailable"
-    forward_price_to_book: float | None = None
-    forward_price_to_book_status: str = "unavailable"
     trailing_basis: str = "LTM EPS"
     forward_basis: str | None = None
     book_basis: str = "latest reported book value"
-    forward_book_basis: str | None = None
     provider: str = "unavailable"
     valuation_data_as_of: str | None = None
     denominator_as_of: str | None = None

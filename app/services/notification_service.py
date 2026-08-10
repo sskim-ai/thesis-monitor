@@ -115,6 +115,34 @@ def _notification_channel() -> str:
     return channel
 
 
+def _should_requeue_sent_delivery(
+    delivery: NotificationDelivery,
+    requeue_sent_before: datetime | None,
+) -> bool:
+    if delivery.status != "sent" or requeue_sent_before is None:
+        return False
+    if delivery.sent_at is None:
+        return True
+    sent_at = delivery.sent_at
+    if sent_at.tzinfo is None:
+        sent_at = sent_at.replace(tzinfo=timezone.utc)
+    cutoff = requeue_sent_before
+    if cutoff.tzinfo is None:
+        cutoff = cutoff.replace(tzinfo=timezone.utc)
+    return sent_at < cutoff
+
+
+def _prepare_delivery_for_retry(
+    delivery: NotificationDelivery,
+    payload: str,
+) -> None:
+    delivery.payload = payload
+    delivery.status = "pending"
+    delivery.attempt_count = 0
+    delivery.last_error = None
+    delivery.sent_at = None
+
+
 def _report_price(value: object, currency: object) -> str:
     if not isinstance(value, (int, float)):
         return "자료 없음"
@@ -149,12 +177,12 @@ def _audience_price_text(value: str, empty: str) -> str:
 def _multiple_roles(primary_method: str) -> dict[str, str]:
     method = primary_method.lower()
     if "p/b" in method or "pbr" in method or "roe" in method:
-        return {"PER": "보조", "fPER": "보조", "PBR": "주요", "fPBR": "주요"}
+        return {"PER": "보조", "fPER": "보조", "PBR": "주요"}
     if "forward p/e" in method or "forward pe" in method:
-        return {"PER": "참고", "fPER": "주요", "PBR": "참고", "fPBR": "참고"}
+        return {"PER": "참고", "fPER": "주요", "PBR": "참고"}
     if any(term in method for term in ("sotp", "sum-of-the-parts", "npv", "scenario")):
-        return {name: "참고" for name in ("PER", "fPER", "PBR", "fPBR")}
-    return {name: "참고" for name in ("PER", "fPER", "PBR", "fPBR")}
+        return {name: "참고" for name in ("PER", "fPER", "PBR")}
+    return {name: "참고" for name in ("PER", "fPER", "PBR")}
 
 
 def _assessment_report(
@@ -361,8 +389,6 @@ def _assessment_report(
         f"({multiple_roles['fPER']}){forward_basis_label}\n"
         f"• PBR: {_multiple_text(valuation_snapshot, 'price_to_book')} "
         f"({multiple_roles['PBR']})\n"
-        f"• fPBR: {_multiple_text(valuation_snapshot, 'forward_price_to_book')} "
-        f"({multiple_roles['fPBR']})\n"
         f"주 평가 방식: {valuation_method}\n"
         f"{relative_basis_text}\n"
         f"{caveat_text}\n"
@@ -495,6 +521,7 @@ def queue_notification(session: Session, assessment: ThesisAssessment) -> None:
 def queue_daily_stock_notification(
     session: Session,
     assessment: ThesisAssessment,
+    requeue_sent_before: datetime | None = None,
 ) -> NotificationDelivery:
     """Queue the full morning analysis even when today's thesis delta is neutral."""
     watchlist_item = session.exec(
@@ -538,9 +565,10 @@ def queue_daily_stock_notification(
             payload=payload,
         )
         session.add(delivery)
-    elif delivery.status != "sent":
-        delivery.payload = payload
-        delivery.status = "pending"
+    elif delivery.status != "sent" or _should_requeue_sent_delivery(
+        delivery, requeue_sent_before
+    ):
+        _prepare_delivery_for_retry(delivery, payload)
     return delivery
 
 
@@ -583,6 +611,7 @@ def queue_macro_notification(session: Session, briefing: MacroBriefing) -> None:
 def queue_daily_digest_notification(
     session: Session,
     run_date: date,
+    requeue_sent_before: datetime | None = None,
 ) -> NotificationDelivery | None:
     digest = build_daily_digest(session, run_date)
     payload = json.dumps(
@@ -612,9 +641,10 @@ def queue_daily_digest_notification(
             payload=payload,
         )
         session.add(delivery)
-    elif delivery.status != "sent":
-        delivery.payload = payload
-        delivery.status = "pending"
+    elif delivery.status != "sent" or _should_requeue_sent_delivery(
+        delivery, requeue_sent_before
+    ):
+        _prepare_delivery_for_retry(delivery, payload)
     session.commit()
     session.refresh(delivery)
     return delivery
