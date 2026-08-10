@@ -38,3 +38,12 @@ def test_public_action_schema() -> None:
     )
     assert provider["schema"]["type"] == "string"
     assert "anyOf" not in provider["schema"]
+    monitor_schema = schema["paths"]["/monitoring-items"]["post"]["requestBody"][
+        "content"
+    ]["application/json"]["schema"]
+    assert monitor_schema["type"] == "object"
+    assert monitor_schema["required"] == ["ticker", "company_name", "core_thesis"]
+    assert monitor_schema["properties"]["exchange"]["type"] == "string"
+    assert "anyOf" not in monitor_schema["properties"]["exchange"]
+    exposure = monitor_schema["properties"]["macro_exposures"]["items"]
+    assert exposure["properties"]["condition"]["type"] == "string"
