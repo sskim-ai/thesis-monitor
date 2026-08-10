@@ -26,6 +26,11 @@ def test_public_action_schema() -> None:
         {"url": "https://sskim-macmini.tailb44bb1.ts.net/thesis"}
     ]
     assert "/thesis-events" in schema["paths"]
+    assert "/monitoring-items/summaries" in schema["paths"]
+    assert (
+        schema["paths"]["/monitoring-items/summaries"]["get"]["operationId"]
+        == "listMonitoredStockSummaries"
+    )
     assert "/admin/daily-monitor" not in schema["paths"]
     assert "facility_investment" in schema["components"]["schemas"]["EventType"]["enum"]
     assert "/action-openapi.json" not in schema["paths"]

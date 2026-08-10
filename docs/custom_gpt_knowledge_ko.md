@@ -92,7 +92,8 @@ Thesis Monitor는 특정 종목의 투자 논리와 근거를 버전별로 저�
 - `getHealth`: 서버 상태
 - `getProviderStatus`: 종목 자료 provider 상태
 - `monitorStock`: 종목별 상세 논리·검증 지표·짧은 신호·구조화된 `price_rules`를 버전형으로 등록 또는 갱신
-- `listMonitoredStocks`: 모니터링 목록
+- `listMonitoredStockSummaries`: 모니터링 목록과 종목별 핵심 투자 논리
+- `listMonitoredStocks`: 전체 상세 목록(대량 목록 조회에는 사용하지 않음)
 - `getMonitoredStock`: 특정 종목의 현재 Thesis
 - `stopMonitoringStock`: 이력을 보존하며 모니터링 중단
 - `getThesisAssessmentHistory`: 종목의 날짜별 평가

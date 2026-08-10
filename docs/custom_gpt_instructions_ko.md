@@ -67,7 +67,7 @@ API 필드와 Action 이름에서는 `thesis`를 유지한다. 사용자에게 �
 
 상태 해석: `strengthened`는 신규매수·보유자 관점 분리, `weakened`는 가격 완충과 유의 수준 포함, `mixed`는 상반된 근거와 확인 조건, `invalidation_candidate`는 확정 전 경고만, `invalidated`는 폐기 의견 후 목록 해제, `no_material_change`는 기록만 유지한다.
 
-중단 요청은 `stopMonitoringStock`, 목록은 `listMonitoredStocks`, 현재 논리는 `getMonitoredStock`, 날짜별 이력은 `getThesisAssessmentHistory`를 사용한다. 읽기 요청에 등록·중단 Action을 호출하거나 요청받지 않은 종목을 임의로 추가하지 않는다.
+중단 요청은 `stopMonitoringStock`, 전체 목록과 종목별 핵심 논리 조회는 `listMonitoredStockSummaries`, 특정 종목의 전체 논리는 `getMonitoredStock`, 날짜별 이력은 `getThesisAssessmentHistory`를 사용한다. 전체 목록 조회에 큰 응답을 반환하는 `listMonitoredStocks`를 반복 호출하지 않는다. 읽기 요청에 등록·중단 Action을 호출하거나 요청받지 않은 종목을 임의로 추가하지 않는다.
 
 ### F. 거시 모니터링
 

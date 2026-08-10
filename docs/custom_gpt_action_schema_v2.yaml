@@ -270,6 +270,58 @@
         }
       }
     },
+    "/monitoring-items/summaries": {
+      "get": {
+        "tags": [
+          "monitoring"
+        ],
+        "summary": "List monitored stocks with compact current investment logic",
+        "operationId": "listMonitoredStockSummaries",
+        "security": [
+          {
+            "APIKeyHeader": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "active_only",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean",
+              "default": true,
+              "title": "Active Only"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/MonitoringItemSummaryRead"
+                  },
+                  "title": "Response Listmonitoredstocksummaries"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/monitoring-items/{ticker}": {
       "get": {
         "tags": [
@@ -2321,6 +2373,78 @@
           "thesis"
         ],
         "title": "MonitoringItemRead"
+      },
+      "MonitoringItemSummaryRead": {
+        "properties": {
+          "ticker": {
+            "type": "string",
+            "title": "Ticker"
+          },
+          "company_name": {
+            "type": "string",
+            "title": "Company Name"
+          },
+          "exchange": {
+            "type": "string",
+            "title": "Exchange"
+          },
+          "active": {
+            "type": "boolean",
+            "title": "Active"
+          },
+          "thesis_version": {
+            "type": "integer",
+            "title": "Thesis Version"
+          },
+          "core_thesis": {
+            "type": "string",
+            "title": "Core Thesis"
+          },
+          "thesis_drivers": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Thesis Drivers"
+          },
+          "validation_metrics": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Validation Metrics"
+          },
+          "price_rules_summary": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Price Rules Summary"
+          },
+          "latest_status": {
+            "type": "string",
+            "title": "Latest Status"
+          },
+          "latest_assessment_date": {
+            "type": "string",
+            "title": "Latest Assessment Date"
+          }
+        },
+        "type": "object",
+        "required": [
+          "ticker",
+          "company_name",
+          "exchange",
+          "active",
+          "thesis_version",
+          "core_thesis",
+          "thesis_drivers",
+          "validation_metrics",
+          "price_rules_summary",
+          "latest_status",
+          "latest_assessment_date"
+        ],
+        "title": "MonitoringItemSummaryRead"
       },
       "PriceContext": {
         "properties": {

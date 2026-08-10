@@ -10,6 +10,7 @@ ACTION_PATHS = {
     "/earnings-checkpoints",
     "/thesis-events",
     "/monitoring-items",
+    "/monitoring-items/summaries",
     "/monitoring-items/{ticker}",
     "/monitoring-items/{ticker}/deactivate",
     "/monitoring-items/{ticker}/assessments",

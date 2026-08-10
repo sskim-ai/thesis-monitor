@@ -110,6 +110,20 @@ class MonitoringItemRead(BaseModel):
     current_thesis_summary: str | None = None
 
 
+class MonitoringItemSummaryRead(BaseModel):
+    ticker: str
+    company_name: str
+    exchange: str
+    active: bool
+    thesis_version: int
+    core_thesis: str
+    thesis_drivers: list[str]
+    validation_metrics: list[str]
+    price_rules_summary: list[str]
+    latest_status: str
+    latest_assessment_date: str
+
+
 class PricePeriodSummary(BaseModel):
     requested_count: int
     actual_count: int

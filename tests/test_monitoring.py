@@ -68,3 +68,22 @@ def test_monitoring_routes_require_api_key() -> None:
         response = client.get("/monitoring-items")
 
     assert response.status_code == 401
+
+
+def test_monitoring_summaries_are_compact_and_action_friendly() -> None:
+    with TestClient(app) as client:
+        client.post("/monitoring-items", json=_payload(), headers=AUTH_HEADERS)
+        response = client.get("/monitoring-items/summaries", headers=AUTH_HEADERS)
+
+    assert response.status_code == 200
+    summary = response.json()[0]
+    assert summary["ticker"] == "000660"
+    assert summary["core_thesis"] == "AI infrastructure demand supports earnings growth"
+    assert summary["thesis_drivers"] == ["HBM leadership", "AI server demand"]
+    assert summary["validation_metrics"] == ["HBM revenue growth", "Free cash flow"]
+    assert summary["price_rules_summary"] == [
+        "confirmation close >= 1550000 KRW",
+        "warning close < 1400000 KRW",
+        "invalidation close < 1320000 KRW",
+    ]
+    assert "thesis" not in summary

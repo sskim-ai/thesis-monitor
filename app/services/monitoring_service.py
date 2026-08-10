@@ -10,6 +10,7 @@ from app.schemas.thesis import (
     InvestmentThesisRead,
     MonitoringItemCreate,
     MonitoringItemRead,
+    MonitoringItemSummaryRead,
     PriceRulesInput,
     ThesisAssessmentRead,
 )
@@ -135,6 +136,51 @@ def _monitoring_item_read(
     )
 
 
+def _price_rules_summary(rules: PriceRulesInput | None) -> list[str]:
+    if rules is None:
+        return []
+    def display(value: float) -> str:
+        return f"{value:.15g}"
+
+    currency = f" {rules.currency}" if rules.currency else ""
+    summaries: list[str] = []
+    if rules.confirmation_price is not None:
+        summaries.append(
+            f"confirmation close >= {display(rules.confirmation_price)}{currency}"
+        )
+    if rules.support_zone_low is not None and rules.support_zone_high is not None:
+        summaries.append(
+            "support close "
+            f"{display(rules.support_zone_low)}-{display(rules.support_zone_high)}{currency}"
+        )
+    if rules.warning_price is not None:
+        summaries.append(f"warning close < {display(rules.warning_price)}{currency}")
+    if rules.invalidation_price is not None:
+        summaries.append(
+            f"invalidation close < {display(rules.invalidation_price)}{currency}"
+        )
+    return summaries
+
+
+def _monitoring_item_summary(item: MonitoringItemRead) -> MonitoringItemSummaryRead:
+    thesis = item.thesis
+    return MonitoringItemSummaryRead(
+        ticker=item.ticker,
+        company_name=item.company_name,
+        exchange=item.exchange or "",
+        active=item.active,
+        thesis_version=thesis.version if thesis else 0,
+        core_thesis=thesis.core_thesis if thesis else "",
+        thesis_drivers=thesis.thesis_drivers if thesis else [],
+        validation_metrics=thesis.validation_metrics if thesis else [],
+        price_rules_summary=_price_rules_summary(thesis.price_rules if thesis else None),
+        latest_status=item.latest_status.value if item.latest_status else "",
+        latest_assessment_date=(
+            item.latest_assessment_date.isoformat() if item.latest_assessment_date else ""
+        ),
+    )
+
+
 def register_monitoring_item(
     session: Session,
     payload: MonitoringItemCreate,
@@ -242,6 +288,16 @@ def list_monitoring_items(session: Session, active_only: bool = True) -> list[Mo
     return [
         _monitoring_item_read(session, item, _latest_thesis(session, item.ticker))
         for item in items
+    ]
+
+
+def list_monitoring_summaries(
+    session: Session,
+    active_only: bool = True,
+) -> list[MonitoringItemSummaryRead]:
+    return [
+        _monitoring_item_summary(item)
+        for item in list_monitoring_items(session, active_only=active_only)
     ]
 
 

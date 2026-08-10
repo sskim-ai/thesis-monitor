@@ -3,12 +3,18 @@ from sqlmodel import Session
 
 from app.api.security import require_action_api_key
 from app.database import get_session
-from app.schemas.thesis import MonitoringItemCreate, MonitoringItemRead, ThesisAssessmentRead
+from app.schemas.thesis import (
+    MonitoringItemCreate,
+    MonitoringItemRead,
+    MonitoringItemSummaryRead,
+    ThesisAssessmentRead,
+)
 from app.services.monitoring_service import (
     deactivate_monitoring_item,
     get_monitoring_item,
     list_assessments,
     list_monitoring_items,
+    list_monitoring_summaries,
     register_monitoring_item,
 )
 
@@ -48,6 +54,19 @@ def monitored_stocks(
     session: Session = Depends(get_session),
 ) -> list[MonitoringItemRead]:
     return list_monitoring_items(session, active_only=active_only)
+
+
+@router.get(
+    "/summaries",
+    response_model=list[MonitoringItemSummaryRead],
+    operation_id="listMonitoredStockSummaries",
+    summary="List monitored stocks with compact current investment logic",
+)
+def monitored_stock_summaries(
+    active_only: bool = Query(True),
+    session: Session = Depends(get_session),
+) -> list[MonitoringItemSummaryRead]:
+    return list_monitoring_summaries(session, active_only=active_only)
 
 
 @router.get("/{ticker}", response_model=MonitoringItemRead, operation_id="getMonitoredStock")
