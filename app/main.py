@@ -3,6 +3,7 @@ from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 
+from app.api.routes_action_schema import router as action_schema_router
 from app.api.routes_admin import router as admin_router
 from app.api.routes_company import router as company_router
 from app.api.routes_earnings import router as earnings_router
@@ -29,6 +30,7 @@ app = FastAPI(
 )
 
 app.include_router(health_router)
+app.include_router(action_schema_router)
 app.include_router(provider_router)
 app.include_router(watchlist_router)
 app.include_router(monitoring_router)

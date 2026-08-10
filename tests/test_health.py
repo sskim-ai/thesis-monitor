@@ -15,3 +15,17 @@ def test_root_health() -> None:
         response = client.get("/")
     assert response.status_code == 200
     assert response.json() == {"status": "ok"}
+
+
+def test_public_action_schema() -> None:
+    with TestClient(app) as client:
+        response = client.get("/action-openapi.json")
+    assert response.status_code == 200
+    schema = response.json()
+    assert schema["servers"] == [
+        {"url": "https://sskim-macmini.tailb44bb1.ts.net/thesis"}
+    ]
+    assert "/thesis-events" in schema["paths"]
+    assert "/admin/daily-monitor" not in schema["paths"]
+    assert "facility_investment" in schema["components"]["schemas"]["EventType"]["enum"]
+    assert "/action-openapi.json" not in schema["paths"]

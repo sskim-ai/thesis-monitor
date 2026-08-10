@@ -139,6 +139,12 @@ OpenAPI is exposed at:
 http://127.0.0.1:8000/openapi.json
 ```
 
+The filtered Custom GPT Action schema is exposed at:
+
+```text
+https://sskim-macmini.tailb44bb1.ts.net/thesis/action-openapi.json
+```
+
 ## Test
 
 ```bash
