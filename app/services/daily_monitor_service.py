@@ -204,6 +204,15 @@ async def run_daily_monitor(
                     thesis_version=thesis.version,
                     assessment_date=run_date,
                     status=result.status,
+                    business_thesis_change=result.status.value,
+                    valuation_change=result.valuation_context.impact.value,
+                    earnings_estimate_impact=result.earnings_estimate_impact.value,
+                    market_expectation_assessment=result.market_expectation_assessment.model_dump_json(),
+                    confirmed_facts=json.dumps(result.confirmed_facts, ensure_ascii=False),
+                    inferred_implications=json.dumps(
+                        result.inferred_implications, ensure_ascii=False
+                    ),
+                    unknowns=json.dumps(result.unknowns, ensure_ascii=False),
                     score=result.score,
                     confidence=result.confidence,
                     summary=result.summary,
@@ -220,6 +229,19 @@ async def run_daily_monitor(
             else:
                 assessment.thesis_version = thesis.version
                 assessment.status = result.status
+                assessment.business_thesis_change = result.status.value
+                assessment.valuation_change = result.valuation_context.impact.value
+                assessment.earnings_estimate_impact = result.earnings_estimate_impact.value
+                assessment.market_expectation_assessment = (
+                    result.market_expectation_assessment.model_dump_json()
+                )
+                assessment.confirmed_facts = json.dumps(
+                    result.confirmed_facts, ensure_ascii=False
+                )
+                assessment.inferred_implications = json.dumps(
+                    result.inferred_implications, ensure_ascii=False
+                )
+                assessment.unknowns = json.dumps(result.unknowns, ensure_ascii=False)
                 assessment.score = result.score
                 assessment.confidence = result.confidence
                 assessment.summary = result.summary
@@ -233,6 +255,10 @@ async def run_daily_monitor(
                     valuation_context, ensure_ascii=False
                 )
                 assessment.thesis_snapshot = json.dumps(thesis_snapshot, ensure_ascii=False)
+            item.latest_status = result.status.value
+            item.latest_assessment_date = run_date
+            item.latest_valuation_context = result.valuation_context.impact.value
+            item.latest_earnings_estimate_impact = result.earnings_estimate_impact.value
             if result.should_deactivate:
                 item.active = False
                 thesis.status = "invalidated"

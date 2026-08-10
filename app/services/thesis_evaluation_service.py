@@ -13,6 +13,8 @@ from app.schemas.thesis import (
     ExpectationLevel,
     PriceContext,
     PriceRuleEvaluation,
+    EarningsEstimateImpact,
+    MarketExpectationAssessment,
     ValuationContext,
     ValuationImpact,
 )
@@ -27,6 +29,8 @@ POSITIVE_EVENT_TYPES = {
     "inventory_normalization",
     "partnership_to_revenue",
     "earnings_surprise",
+    "earnings_beat",
+    "major_customer_win",
 }
 
 NEGATIVE_EVENT_TYPES = {
@@ -48,9 +52,26 @@ NEGATIVE_EVENT_TYPES = {
     "accounting_issue",
     "debt_liquidity_risk",
     "earnings_miss",
+    "production_delay",
+    "dilution",
+    "debt_liquidity",
+    "regulatory_material",
 }
 
 TRUSTED_INVALIDATION_PROVIDERS = {"opendart", "sec_edgar", "company_ir"}
+TRUSTED_FACT_PROVIDERS = TRUSTED_INVALIDATION_PROVIDERS | {"fred", "ecos", "eia"}
+EARNINGS_UP_EVENT_TYPES = {
+    "earnings_surprise",
+    "earnings_beat",
+    "revenue_guidance_up",
+    "margin_improvement",
+}
+EARNINGS_DOWN_EVENT_TYPES = {
+    "earnings_miss",
+    "revenue_guidance_down",
+    "margin_deterioration",
+    "fcf_deterioration",
+}
 
 
 def _json_list(value: str) -> list[str]:
@@ -281,6 +302,11 @@ class EvaluationResult:
     risk_level: str
     evidence: list[dict[str, object]]
     valuation_context: ValuationContext
+    earnings_estimate_impact: EarningsEstimateImpact
+    market_expectation_assessment: MarketExpectationAssessment
+    confirmed_facts: list[str]
+    inferred_implications: list[str]
+    unknowns: list[str]
     should_deactivate: bool = False
 
 
@@ -300,6 +326,81 @@ def _valuation_summary(impact: ValuationImpact) -> str:
         ValuationImpact.unknown: "평가 프레임이 없어 멀티플 영향을 판단할 수 없습니다.",
     }
     return summaries[impact]
+
+
+def _unique(items: list[str]) -> list[str]:
+    return list(dict.fromkeys(item.strip() for item in items if item.strip()))
+
+
+def _assessment_evidence_layers(
+    events: list[Event],
+) -> tuple[list[str], list[str], list[str]]:
+    confirmed: list[str] = []
+    inferred: list[str] = []
+    unknowns: list[str] = []
+    for event in events:
+        event_facts = _json_list(event.confirmed_facts)
+        event_inferences = _json_list(event.inferred_implications)
+        if event.provider in TRUSTED_FACT_PROVIDERS:
+            confirmed.extend(event_facts)
+        else:
+            inferred.extend(f"Unverified provider report: {fact}" for fact in event_facts)
+        inferred.extend(event_inferences)
+        unknowns.extend(_json_list(event.unknowns))
+    return _unique(confirmed), _unique(inferred), _unique(unknowns)
+
+
+def _earnings_estimate_impact(events: list[Event]) -> EarningsEstimateImpact:
+    up = any(
+        event.provider in TRUSTED_FACT_PROVIDERS
+        and event.event_type in EARNINGS_UP_EVENT_TYPES
+        and bool(_json_list(event.confirmed_facts))
+        for event in events
+    )
+    down = any(
+        event.provider in TRUSTED_FACT_PROVIDERS
+        and event.event_type in EARNINGS_DOWN_EVENT_TYPES
+        and bool(_json_list(event.confirmed_facts))
+        for event in events
+    )
+    if up and down:
+        return EarningsEstimateImpact.mixed
+    if up:
+        return EarningsEstimateImpact.up
+    if down:
+        return EarningsEstimateImpact.down
+    return EarningsEstimateImpact.unknown
+
+
+def _expectation_assessment(
+    expectations: dict[str, object],
+    valuation_context: ValuationContext,
+) -> MarketExpectationAssessment:
+    level = _expectation_level(expectations.get("level", "unknown"))
+    if valuation_context.impact == ValuationImpact.expansion:
+        assessment = "upside_evidence"
+    elif valuation_context.impact == ValuationImpact.compression:
+        assessment = "downside_or_discount_rate_pressure"
+    elif valuation_context.impact == ValuationImpact.mixed:
+        assessment = "mixed"
+    elif valuation_context.impact == ValuationImpact.neutral:
+        assessment = "no_material_change"
+    else:
+        assessment = "unknown"
+    evidence_basis = [
+        *valuation_context.matched_expansion_conditions,
+        *valuation_context.matched_compression_conditions,
+    ]
+    if valuation_context.macro_valuation_effect != "neutral":
+        evidence_basis.append(
+            f"macro valuation effect: {valuation_context.macro_valuation_effect}"
+        )
+    return MarketExpectationAssessment(
+        level=level,
+        assessment=assessment,
+        summary=str(expectations.get("summary", "")),
+        evidence_basis=_unique(evidence_basis),
+    )
 
 
 def evaluate_thesis(
@@ -438,6 +539,11 @@ def evaluate_thesis(
             1 for item in evidence if item.get("valuation_direction", "neutral") != "neutral"
         ),
     )
+    earnings_estimate_impact = _earnings_estimate_impact(events)
+    market_expectation_assessment = _expectation_assessment(
+        expectations, valuation_context
+    )
+    confirmed_facts, inferred_implications, unknowns = _assessment_evidence_layers(events)
 
     trusted_invalidation = any(
         event.provider in TRUSTED_INVALIDATION_PROVIDERS
@@ -522,6 +628,11 @@ def evaluate_thesis(
         risk_level=risk_level,
         evidence=evidence,
         valuation_context=valuation_context,
+        earnings_estimate_impact=earnings_estimate_impact,
+        market_expectation_assessment=market_expectation_assessment,
+        confirmed_facts=confirmed_facts,
+        inferred_implications=inferred_implications,
+        unknowns=unknowns,
         should_deactivate=status == AssessmentStatus.invalidated,
     )
 

@@ -14,8 +14,14 @@ from app.providers.base import RawEvent
 from app.providers.mock import MockProvider
 from app.providers.registry import provider_priority
 from app.schemas.company import CompanyProfile
-from app.schemas.event import BackfillStatus, FinancialImpact, ThesisEvent, ThesisEventResponse
-from app.schemas.financial import EarningsCheckpointResponse
+from app.schemas.event import (
+    BackfillStatus,
+    EventFinancialMetrics,
+    FinancialImpact,
+    ThesisEvent,
+    ThesisEventResponse,
+)
+from app.schemas.financial import EarningsCheckpoint, EarningsCheckpointResponse
 from app.services.event_classifier import classify_event
 from app.services.event_interpreter import enrich_raw_event
 from app.services.financial_backfill_service import backfill_financial_snapshots
@@ -76,9 +82,23 @@ def _event_to_schema(event: Event) -> ThesisEvent:
         confirmed_facts=json.loads(event.confirmed_facts),
         inferred_implications=json.loads(event.inferred_implications),
         unknowns=json.loads(event.unknowns),
+        financial_metrics=EventFinancialMetrics(
+            revenue=event.revenue,
+            operating_income=event.operating_income,
+            net_income=event.net_income,
+            operating_margin=event.operating_margin,
+            yoy_growth=event.yoy_growth,
+            qoq_growth=event.qoq_growth,
+            capex_amount=event.capex_amount,
+            financing_amount=event.financing_amount,
+            dilution_amount=event.dilution_amount,
+        ),
         financial_impact=FinancialImpact(
             revenue_guidance_changed=event.revenue_guidance_changed,
             margin_guidance_changed=event.margin_guidance_changed,
+            guidance_changed=event.guidance_changed,
+            material_customer_change=event.material_customer_change,
+            operating_cash_flow_impact_known=event.operating_cash_flow_impact_known,
             margin_quality_review=event.margin_quality_review,
             financial_statement_basis_warning=event.financial_statement_basis_warning,
             fcf_impact_known=event.fcf_impact_known,
@@ -117,12 +137,28 @@ def _raw_event_to_model(raw_event: RawEvent) -> Event:
         confirmed_facts=json.dumps(raw_event.confirmed_facts),
         inferred_implications=json.dumps(implications),
         unknowns=json.dumps(unknowns),
+        revenue=raw_event.revenue,
+        operating_income=raw_event.operating_income,
+        net_income=raw_event.net_income,
+        operating_margin=raw_event.operating_margin,
+        yoy_growth=raw_event.yoy_growth,
+        qoq_growth=raw_event.qoq_growth,
+        capex_amount=raw_event.capex_amount,
+        financing_amount=raw_event.financing_amount,
+        dilution_amount=raw_event.dilution_amount,
         revenue_guidance_changed="guidance" in lower_text or "가이던스" in lower_text,
-        margin_guidance_changed="margin" in lower_text or "마진" in lower_text,
+        margin_guidance_changed=raw_event.margin_guidance_changed or "margin" in lower_text or "마진" in lower_text,
+        guidance_changed=raw_event.guidance_changed or "guidance" in lower_text or "가이던스" in lower_text,
+        material_customer_change=raw_event.material_customer_change,
+        operating_cash_flow_impact_known=(
+            raw_event.operating_cash_flow_impact_known
+            or "operating cash flow" in lower_text
+            or "cash from operations" in lower_text
+        ),
         margin_quality_review=margin_quality_review,
         financial_statement_basis_warning=basis_warning,
-        fcf_impact_known="fcf" in lower_text or "free cash flow" in lower_text,
-        dilution_risk=event_type.value in {"capital_raise", "convertible_bond", "warrant"},
+        fcf_impact_known=raw_event.fcf_impact_known or "fcf" in lower_text or "free cash flow" in lower_text,
+        dilution_risk=raw_event.dilution_risk or event_type.value in {"capital_raise", "convertible_bond", "warrant", "dilution"},
         capex_impact_known="capex" in lower_text or "capital expenditure" in lower_text,
         inventory_risk="inventory" in lower_text or "재고" in lower_text,
         receivables_risk="receivables" in lower_text or "accounts receivable" in lower_text or "매출채권" in lower_text,
@@ -142,8 +178,20 @@ def _refresh_duplicate_event(duplicate: Event, event: Event) -> None:
     duplicate.confirmed_facts = event.confirmed_facts
     duplicate.inferred_implications = event.inferred_implications
     duplicate.unknowns = event.unknowns
+    duplicate.revenue = event.revenue
+    duplicate.operating_income = event.operating_income
+    duplicate.net_income = event.net_income
+    duplicate.operating_margin = event.operating_margin
+    duplicate.yoy_growth = event.yoy_growth
+    duplicate.qoq_growth = event.qoq_growth
+    duplicate.capex_amount = event.capex_amount
+    duplicate.financing_amount = event.financing_amount
+    duplicate.dilution_amount = event.dilution_amount
     duplicate.revenue_guidance_changed = event.revenue_guidance_changed
     duplicate.margin_guidance_changed = event.margin_guidance_changed
+    duplicate.guidance_changed = event.guidance_changed
+    duplicate.material_customer_change = event.material_customer_change
+    duplicate.operating_cash_flow_impact_known = event.operating_cash_flow_impact_known
     duplicate.margin_quality_review = event.margin_quality_review
     duplicate.financial_statement_basis_warning = event.financial_statement_basis_warning
     duplicate.fcf_impact_known = event.fcf_impact_known
@@ -365,6 +413,15 @@ class CollectionService:
             .order_by(FinancialSnapshot.reported_date.desc())
         ).all()
         if snapshots:
+            latest = snapshots[0]
+            previous = snapshots[1] if len(snapshots) > 1 else None
+            revenue_growth = None
+            if (
+                previous is not None
+                and latest.revenue is not None
+                and previous.revenue not in {None, 0}
+            ):
+                revenue_growth = (latest.revenue / previous.revenue - 1) * 100
             return EarningsCheckpointResponse(
                 ticker=ticker,
                 checkpoints=[
@@ -374,5 +431,35 @@ class CollectionService:
                     "Inventory and receivables trend",
                     "Customer concentration and demand signals",
                 ],
+                latest=EarningsCheckpoint(
+                    ticker=ticker,
+                    period=latest.period,
+                    reported_date=latest.reported_date,
+                    revenue=latest.revenue,
+                    operating_income=latest.operating_income,
+                    net_income=latest.net_income,
+                    eps=latest.eps,
+                    operating_cash_flow=latest.operating_cash_flow,
+                    fcf=latest.fcf,
+                    free_cash_flow=latest.fcf,
+                    capex=latest.capex,
+                    gross_margin=latest.gross_margin,
+                    operating_margin=latest.operating_margin,
+                    guidance=latest.guidance,
+                    backlog=latest.backlog,
+                    inventory=latest.inventory,
+                    accounts_receivable=latest.accounts_receivable,
+                    debt=latest.debt,
+                    cash=latest.cash,
+                    stock_based_compensation=latest.stock_based_compensation,
+                    dilution_notes=latest.dilution_notes,
+                    revenue_growth=revenue_growth,
+                ),
+                provider_status="available",
             )
-        return EarningsCheckpointResponse(ticker=ticker, checkpoints=[])
+        return EarningsCheckpointResponse(
+            ticker=ticker,
+            checkpoints=[],
+            provider_status="unavailable",
+            unavailable_reason="No provider earnings response or stored financial snapshot is available.",
+        )

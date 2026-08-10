@@ -1,11 +1,14 @@
 from datetime import date
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 
 class EarningsCheckpointResponse(BaseModel):
     ticker: str
     checkpoints: list[str]
+    latest: "EarningsCheckpoint | None" = None
+    provider_status: str = "unknown"
+    unavailable_reason: str | None = None
 
 
 class EarningsCheckpoint(BaseModel):
@@ -29,3 +32,7 @@ class EarningsCheckpoint(BaseModel):
     cash: float | None = None
     stock_based_compensation: float | None = None
     dilution_notes: str | None = None
+    revenue_growth: float | None = None
+    free_cash_flow: float | None = None
+    guidance_change: str | None = None
+    important_segment_metrics: list[str] = Field(default_factory=list)

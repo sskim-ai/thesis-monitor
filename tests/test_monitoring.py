@@ -117,3 +117,70 @@ def test_monitoring_summaries_are_compact_and_action_friendly() -> None:
         "invalidation close < 1320000 KRW",
     ]
     assert "thesis" not in summary
+
+
+def test_assessment_write_preserves_history_and_updates_latest_fields() -> None:
+    payload = _payload()
+    payload["ticker"] = "ASMT"
+    payload["company_name"] = "Assessment Test"
+    first = {
+        "assessment_date": "2030-01-01",
+        "business_thesis_change": "no_material_change",
+        "valuation_context": "neutral",
+        "earnings_estimate_impact": "unknown",
+        "confirmed_facts": ["Official filing was reviewed"],
+        "inferred_implications": ["No material model change"],
+        "unknowns": ["Consensus estimate is unavailable"],
+    }
+    second = {
+        "assessment_date": "2030-01-02",
+        "business_thesis_change": "strengthened",
+        "valuation_context": "mixed",
+        "earnings_estimate_impact": "up",
+        "market_expectation_assessment": {
+            "level": "very_high",
+            "assessment": "mixed",
+            "summary": "Strong growth is already expected",
+            "evidence_basis": ["earnings beat", "real yield pressure"],
+        },
+        "confirmed_facts": ["Official guidance increased"],
+        "inferred_implications": ["Earnings estimates may rise"],
+        "unknowns": ["Duration of multiple pressure"],
+    }
+    with TestClient(app) as client:
+        registered = client.post("/monitoring-items", json=payload, headers=AUTH_HEADERS)
+        assert registered.status_code == 200
+        version = registered.json()["thesis"]["version"]
+        assert client.post(
+            "/monitoring-items/ASMT/assessments", json=first, headers=AUTH_HEADERS
+        ).status_code == 200
+        saved = client.post(
+            "/monitoring-items/ASMT/assessments", json=second, headers=AUTH_HEADERS
+        )
+        item = client.get("/monitoring-items/ASMT", headers=AUTH_HEADERS)
+        history = client.get(
+            "/monitoring-items/ASMT/assessments?limit=30", headers=AUTH_HEADERS
+        )
+
+    assert saved.status_code == 200
+    assert saved.json()["business_thesis_change"] == "strengthened"
+    assert saved.json()["valuation_change"] == "mixed"
+    assert saved.json()["valuation_context"]["impact"] == "mixed"
+    assert saved.json()["confirmed_facts"] == ["Official guidance increased"]
+    assert item.json()["latest_status"] == "strengthened"
+    assert item.json()["latest_assessment_date"] == "2030-01-02"
+    assert item.json()["latest_valuation_context"] == "mixed"
+    assert item.json()["latest_earnings_estimate_impact"] == "up"
+    assert item.json()["thesis"]["version"] == version
+    assert item.json()["thesis"]["market_expectations"] == payload["market_expectations"]
+    assert item.json()["thesis"]["valuation_framework"] == payload["valuation_framework"]
+    assert item.json()["thesis"]["multiple_expansion_signals"] == [
+        "FCF exceeds consensus"
+    ]
+    assert item.json()["thesis"]["multiple_compression_signals"] == [
+        "real yields rise"
+    ]
+    assert [entry["assessment_date"] for entry in history.json()] == [
+        "2030-01-02",
+        "2030-01-01",
+    ]

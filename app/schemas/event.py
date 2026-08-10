@@ -42,8 +42,20 @@ class EventType(StrEnum):
     disclosure_inquiry = "disclosure_inquiry"
     disclosure_clarification = "disclosure_clarification"
     earnings_surprise = "earnings_surprise"
+    earnings_beat = "earnings_beat"
     earnings_miss = "earnings_miss"
     guidance_change = "guidance_change"
+    revenue_guidance_change = "revenue_guidance_change"
+    margin_guidance_change = "margin_guidance_change"
+    fcf_change = "fcf_change"
+    operating_cash_flow_change = "operating_cash_flow_change"
+    capex_change = "capex_change"
+    major_customer_win = "major_customer_win"
+    order_change = "order_change"
+    production_delay = "production_delay"
+    dilution = "dilution"
+    debt_liquidity = "debt_liquidity"
+    regulatory_material = "regulatory_material"
     valuation_recalculation_needed = "valuation_recalculation_needed"
     non_thesis_noise = "non_thesis_noise"
 
@@ -51,6 +63,9 @@ class EventType(StrEnum):
 class FinancialImpact(BaseModel):
     revenue_guidance_changed: bool = False
     margin_guidance_changed: bool = False
+    guidance_changed: bool = False
+    material_customer_change: bool = False
+    operating_cash_flow_impact_known: bool = False
     margin_quality_review: bool = False
     financial_statement_basis_warning: bool = False
     fcf_impact_known: bool = False
@@ -58,6 +73,18 @@ class FinancialImpact(BaseModel):
     capex_impact_known: bool = False
     inventory_risk: bool = False
     receivables_risk: bool = False
+
+
+class EventFinancialMetrics(BaseModel):
+    revenue: float | None = None
+    operating_income: float | None = None
+    net_income: float | None = None
+    operating_margin: float | None = None
+    yoy_growth: float | None = None
+    qoq_growth: float | None = None
+    capex_amount: float | None = None
+    financing_amount: float | None = None
+    dilution_amount: float | None = None
 
 
 class ThesisRelevance(BaseModel):
@@ -98,6 +125,7 @@ class ThesisEvent(BaseModel):
     confirmed_facts: list[str]
     inferred_implications: list[str]
     unknowns: list[str]
+    financial_metrics: EventFinancialMetrics = Field(default_factory=EventFinancialMetrics)
     financial_impact: FinancialImpact
     thesis_relevance: ThesisRelevance
 

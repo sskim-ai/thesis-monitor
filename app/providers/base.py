@@ -24,6 +24,21 @@ class RawEvent:
     confirmed_facts: list[str] = field(default_factory=list)
     inferred_implications: list[str] = field(default_factory=list)
     unknowns: list[str] = field(default_factory=list)
+    revenue: float | None = None
+    operating_income: float | None = None
+    net_income: float | None = None
+    operating_margin: float | None = None
+    yoy_growth: float | None = None
+    qoq_growth: float | None = None
+    capex_amount: float | None = None
+    financing_amount: float | None = None
+    dilution_amount: float | None = None
+    margin_guidance_changed: bool = False
+    fcf_impact_known: bool = False
+    guidance_changed: bool = False
+    material_customer_change: bool = False
+    dilution_risk: bool = False
+    operating_cash_flow_impact_known: bool = False
 
 
 class BaseProvider(ABC):

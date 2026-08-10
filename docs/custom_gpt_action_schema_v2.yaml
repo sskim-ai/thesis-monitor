@@ -2,7 +2,7 @@
   "openapi": "3.1.0",
   "info": {
     "title": "Thesis Monitor Public Action API",
-    "version": "0.2.0",
+    "version": "0.3.0",
     "description": "Collect thesis evidence, register versioned investment theses, manage the monitored stock list, read daily thesis assessments, and retrieve macro briefings, regimes, events, and ticker-level macro impacts. Administrative jobs are excluded."
   },
   "paths": {
@@ -557,6 +557,162 @@
                     "$ref": "#/components/schemas/ThesisAssessmentRead"
                   },
                   "title": "Response Getthesisassessmenthistory"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "monitoring"
+        ],
+        "summary": "Record an independent daily thesis and valuation assessment",
+        "operationId": "recordThesisAssessment",
+        "security": [
+          {
+            "APIKeyHeader": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "ticker",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Ticker"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "assessment_date": {
+                    "type": "string",
+                    "format": "date"
+                  },
+                  "business_thesis_change": {
+                    "type": "string",
+                    "enum": [
+                      "strengthened",
+                      "weakened",
+                      "mixed",
+                      "no_material_change",
+                      "invalidation_candidate",
+                      "invalidated",
+                      "needs_review"
+                    ]
+                  },
+                  "valuation_context": {
+                    "type": "string",
+                    "enum": [
+                      "expansion",
+                      "compression",
+                      "mixed",
+                      "neutral",
+                      "unknown"
+                    ]
+                  },
+                  "earnings_estimate_impact": {
+                    "type": "string",
+                    "enum": [
+                      "up",
+                      "down",
+                      "unchanged",
+                      "mixed",
+                      "unknown"
+                    ]
+                  },
+                  "market_expectation_assessment": {
+                    "type": "object",
+                    "properties": {
+                      "level": {
+                        "type": "string"
+                      },
+                      "assessment": {
+                        "type": "string"
+                      },
+                      "summary": {
+                        "type": "string"
+                      },
+                      "evidence_basis": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  },
+                  "confirmed_facts": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "inferred_implications": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "unknowns": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "summary": {
+                    "type": "string"
+                  },
+                  "new_buyer_view": {
+                    "type": "string"
+                  },
+                  "holder_view": {
+                    "type": "string"
+                  },
+                  "price_view": {
+                    "type": "string"
+                  },
+                  "risk_level": {
+                    "type": "string"
+                  },
+                  "confidence": {
+                    "type": "number",
+                    "minimum": 0,
+                    "maximum": 1
+                  }
+                },
+                "required": [
+                  "assessment_date",
+                  "business_thesis_change",
+                  "valuation_context"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ThesisAssessmentRead"
                 }
               }
             }
@@ -1255,6 +1411,263 @@
         ],
         "title": "DailyMonitorResponse"
       },
+      "EarningsCheckpoint": {
+        "properties": {
+          "ticker": {
+            "type": "string",
+            "title": "Ticker"
+          },
+          "period": {
+            "type": "string",
+            "title": "Period"
+          },
+          "reported_date": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reported Date"
+          },
+          "revenue": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Revenue"
+          },
+          "operating_income": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Operating Income"
+          },
+          "net_income": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Net Income"
+          },
+          "eps": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Eps"
+          },
+          "operating_cash_flow": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Operating Cash Flow"
+          },
+          "fcf": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Fcf"
+          },
+          "capex": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Capex"
+          },
+          "gross_margin": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Gross Margin"
+          },
+          "operating_margin": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Operating Margin"
+          },
+          "guidance": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Guidance"
+          },
+          "backlog": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Backlog"
+          },
+          "inventory": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Inventory"
+          },
+          "accounts_receivable": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Accounts Receivable"
+          },
+          "debt": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Debt"
+          },
+          "cash": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Cash"
+          },
+          "stock_based_compensation": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Stock Based Compensation"
+          },
+          "dilution_notes": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Dilution Notes"
+          },
+          "revenue_growth": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Revenue Growth"
+          },
+          "free_cash_flow": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Free Cash Flow"
+          },
+          "guidance_change": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Guidance Change"
+          },
+          "important_segment_metrics": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Important Segment Metrics"
+          }
+        },
+        "type": "object",
+        "required": [
+          "ticker",
+          "period"
+        ],
+        "title": "EarningsCheckpoint"
+      },
       "EarningsCheckpointResponse": {
         "properties": {
           "ticker": {
@@ -1267,6 +1680,32 @@
             },
             "type": "array",
             "title": "Checkpoints"
+          },
+          "latest": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/EarningsCheckpoint"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "provider_status": {
+            "type": "string",
+            "title": "Provider Status",
+            "default": "unknown"
+          },
+          "unavailable_reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Unavailable Reason"
           }
         },
         "type": "object",
@@ -1275,6 +1714,122 @@
           "checkpoints"
         ],
         "title": "EarningsCheckpointResponse"
+      },
+      "EarningsEstimateImpact": {
+        "type": "string",
+        "enum": [
+          "up",
+          "down",
+          "unchanged",
+          "mixed",
+          "unknown"
+        ],
+        "title": "EarningsEstimateImpact"
+      },
+      "EventFinancialMetrics": {
+        "properties": {
+          "revenue": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Revenue"
+          },
+          "operating_income": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Operating Income"
+          },
+          "net_income": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Net Income"
+          },
+          "operating_margin": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Operating Margin"
+          },
+          "yoy_growth": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Yoy Growth"
+          },
+          "qoq_growth": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Qoq Growth"
+          },
+          "capex_amount": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Capex Amount"
+          },
+          "financing_amount": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Financing Amount"
+          },
+          "dilution_amount": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Dilution Amount"
+          }
+        },
+        "type": "object",
+        "title": "EventFinancialMetrics"
       },
       "EventType": {
         "type": "string",
@@ -1316,8 +1871,20 @@
           "disclosure_inquiry",
           "disclosure_clarification",
           "earnings_surprise",
+          "earnings_beat",
           "earnings_miss",
           "guidance_change",
+          "revenue_guidance_change",
+          "margin_guidance_change",
+          "fcf_change",
+          "operating_cash_flow_change",
+          "capex_change",
+          "major_customer_win",
+          "order_change",
+          "production_delay",
+          "dilution",
+          "debt_liquidity",
+          "regulatory_material",
           "valuation_recalculation_needed",
           "non_thesis_noise"
         ],
@@ -1346,6 +1913,21 @@
           "margin_guidance_changed": {
             "type": "boolean",
             "title": "Margin Guidance Changed",
+            "default": false
+          },
+          "guidance_changed": {
+            "type": "boolean",
+            "title": "Guidance Changed",
+            "default": false
+          },
+          "material_customer_change": {
+            "type": "boolean",
+            "title": "Material Customer Change",
+            "default": false
+          },
+          "operating_cash_flow_impact_known": {
+            "type": "boolean",
+            "title": "Operating Cash Flow Impact Known",
             "default": false
           },
           "margin_quality_review": {
@@ -2329,6 +2911,33 @@
         ],
         "title": "MacroThesisRead"
       },
+      "MarketExpectationAssessment": {
+        "properties": {
+          "level": {
+            "$ref": "#/components/schemas/ExpectationLevel",
+            "default": "unknown"
+          },
+          "assessment": {
+            "type": "string",
+            "title": "Assessment",
+            "default": "unknown"
+          },
+          "summary": {
+            "type": "string",
+            "title": "Summary",
+            "default": ""
+          },
+          "evidence_basis": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Evidence Basis"
+          }
+        },
+        "type": "object",
+        "title": "MarketExpectationAssessment"
+      },
       "MarketExpectationsInput": {
         "properties": {
           "as_of_date": {
@@ -2591,6 +3200,26 @@
             ],
             "title": "Latest Assessment Date"
           },
+          "latest_valuation_context": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ValuationImpact"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "latest_earnings_estimate_impact": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/EarningsEstimateImpact"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
           "current_thesis_summary": {
             "anyOf": [
               {
@@ -2693,6 +3322,14 @@
           "latest_assessment_date": {
             "type": "string",
             "title": "Latest Assessment Date"
+          },
+          "latest_valuation_context": {
+            "type": "string",
+            "title": "Latest Valuation Context"
+          },
+          "latest_earnings_estimate_impact": {
+            "type": "string",
+            "title": "Latest Earnings Estimate Impact"
           }
         },
         "type": "object",
@@ -2712,7 +3349,9 @@
           "multiple_expansion_signals",
           "multiple_compression_signals",
           "latest_status",
-          "latest_assessment_date"
+          "latest_assessment_date",
+          "latest_valuation_context",
+          "latest_earnings_estimate_impact"
         ],
         "title": "MonitoringItemSummaryRead"
       },
@@ -3062,6 +3701,95 @@
         ],
         "title": "ReclassifyEventsResponse"
       },
+      "ThesisAssessmentCreate": {
+        "properties": {
+          "assessment_date": {
+            "type": "string",
+            "format": "date",
+            "title": "Assessment Date"
+          },
+          "business_thesis_change": {
+            "$ref": "#/components/schemas/AssessmentStatus"
+          },
+          "valuation_context": {
+            "$ref": "#/components/schemas/ValuationImpact"
+          },
+          "earnings_estimate_impact": {
+            "$ref": "#/components/schemas/EarningsEstimateImpact",
+            "default": "unknown"
+          },
+          "market_expectation_assessment": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/MarketExpectationAssessment"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "confirmed_facts": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Confirmed Facts"
+          },
+          "inferred_implications": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Inferred Implications"
+          },
+          "unknowns": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Unknowns"
+          },
+          "summary": {
+            "type": "string",
+            "title": "Summary",
+            "default": ""
+          },
+          "new_buyer_view": {
+            "type": "string",
+            "title": "New Buyer View",
+            "default": ""
+          },
+          "holder_view": {
+            "type": "string",
+            "title": "Holder View",
+            "default": ""
+          },
+          "price_view": {
+            "type": "string",
+            "title": "Price View",
+            "default": ""
+          },
+          "risk_level": {
+            "type": "string",
+            "title": "Risk Level",
+            "default": "review"
+          },
+          "confidence": {
+            "type": "number",
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "title": "Confidence",
+            "default": 0.0
+          }
+        },
+        "type": "object",
+        "required": [
+          "assessment_date",
+          "business_thesis_change",
+          "valuation_context"
+        ],
+        "title": "ThesisAssessmentCreate"
+      },
       "ThesisAssessmentRead": {
         "properties": {
           "ticker": {
@@ -3079,6 +3807,39 @@
           },
           "status": {
             "$ref": "#/components/schemas/AssessmentStatus"
+          },
+          "business_thesis_change": {
+            "$ref": "#/components/schemas/AssessmentStatus"
+          },
+          "valuation_change": {
+            "$ref": "#/components/schemas/ValuationImpact"
+          },
+          "earnings_estimate_impact": {
+            "$ref": "#/components/schemas/EarningsEstimateImpact"
+          },
+          "market_expectation_assessment": {
+            "$ref": "#/components/schemas/MarketExpectationAssessment"
+          },
+          "confirmed_facts": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Confirmed Facts"
+          },
+          "inferred_implications": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Inferred Implications"
+          },
+          "unknowns": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Unknowns"
           },
           "score": {
             "type": "integer",
@@ -3137,6 +3898,13 @@
           "thesis_version",
           "assessment_date",
           "status",
+          "business_thesis_change",
+          "valuation_change",
+          "earnings_estimate_impact",
+          "market_expectation_assessment",
+          "confirmed_facts",
+          "inferred_implications",
+          "unknowns",
           "score",
           "confidence",
           "summary",
@@ -3197,6 +3965,9 @@
             },
             "type": "array",
             "title": "Unknowns"
+          },
+          "financial_metrics": {
+            "$ref": "#/components/schemas/EventFinancialMetrics"
           },
           "financial_impact": {
             "$ref": "#/components/schemas/FinancialImpact"

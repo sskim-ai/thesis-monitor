@@ -45,7 +45,13 @@ def _ensure_sqlite_columns() -> None:
         return
 
     table_columns = {
-        "watchlistitem": {"active": "BOOLEAN DEFAULT 1"},
+        "watchlistitem": {
+            "active": "BOOLEAN DEFAULT 1",
+            "latest_status": "VARCHAR",
+            "latest_assessment_date": "DATE",
+            "latest_valuation_context": "VARCHAR",
+            "latest_earnings_estimate_impact": "VARCHAR",
+        },
         "event": {
             "raw_summary": "VARCHAR",
             "provider": "VARCHAR DEFAULT 'unknown'",
@@ -54,6 +60,18 @@ def _ensure_sqlite_columns() -> None:
             "capex_impact_known": "BOOLEAN DEFAULT 0",
             "inventory_risk": "BOOLEAN DEFAULT 0",
             "receivables_risk": "BOOLEAN DEFAULT 0",
+            "revenue": "FLOAT",
+            "operating_income": "FLOAT",
+            "net_income": "FLOAT",
+            "operating_margin": "FLOAT",
+            "yoy_growth": "FLOAT",
+            "qoq_growth": "FLOAT",
+            "capex_amount": "FLOAT",
+            "financing_amount": "FLOAT",
+            "dilution_amount": "FLOAT",
+            "guidance_changed": "BOOLEAN DEFAULT 0",
+            "material_customer_change": "BOOLEAN DEFAULT 0",
+            "operating_cash_flow_impact_known": "BOOLEAN DEFAULT 0",
         },
         "financialsnapshot": {
             "fcf": "FLOAT",
@@ -72,6 +90,13 @@ def _ensure_sqlite_columns() -> None:
         "thesisassessment": {
             "thesis_snapshot": "VARCHAR DEFAULT '{}'",
             "valuation_context": "TEXT DEFAULT '{}'",
+            "business_thesis_change": "VARCHAR",
+            "valuation_change": "VARCHAR",
+            "earnings_estimate_impact": "VARCHAR",
+            "market_expectation_assessment": "TEXT DEFAULT '{}'",
+            "confirmed_facts": "TEXT DEFAULT '[]'",
+            "inferred_implications": "TEXT DEFAULT '[]'",
+            "unknowns": "TEXT DEFAULT '[]'",
         },
         "investmentthesis": {
             "macro_exposures": "VARCHAR DEFAULT '[]'",

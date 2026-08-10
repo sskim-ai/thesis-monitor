@@ -36,6 +36,13 @@ class ThesisAssessment(SQLModel, table=True):
     thesis_version: int
     assessment_date: date = Field(index=True)
     status: str = Field(index=True)
+    business_thesis_change: str | None = Field(default=None, index=True)
+    valuation_change: str | None = Field(default=None, index=True)
+    earnings_estimate_impact: str | None = Field(default=None, index=True)
+    market_expectation_assessment: str = Field(default="{}", sa_column=Column(Text))
+    confirmed_facts: str = Field(default="[]", sa_column=Column(Text))
+    inferred_implications: str = Field(default="[]", sa_column=Column(Text))
+    unknowns: str = Field(default="[]", sa_column=Column(Text))
     score: int = 0
     confidence: float = 0.0
     summary: str = Field(sa_column=Column(Text))

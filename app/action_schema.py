@@ -153,11 +153,80 @@ def _simplify_monitor_stock_action(schema: dict[str, object]) -> None:
     }
 
 
+def _simplify_assessment_write_action(schema: dict[str, object]) -> None:
+    paths = schema.get("paths")
+    if not isinstance(paths, dict):
+        return
+    path_item = paths.get("/monitoring-items/{ticker}/assessments")
+    if not isinstance(path_item, dict):
+        return
+    operation = path_item.get("post")
+    if not isinstance(operation, dict):
+        return
+    request_body = operation.get("requestBody")
+    if not isinstance(request_body, dict):
+        return
+    content = request_body.get("content")
+    if not isinstance(content, dict):
+        return
+    media_type = content.get("application/json")
+    if not isinstance(media_type, dict):
+        return
+    status_values = [
+        "strengthened",
+        "weakened",
+        "mixed",
+        "no_material_change",
+        "invalidation_candidate",
+        "invalidated",
+        "needs_review",
+    ]
+    string_array = {"type": "array", "items": {"type": "string"}}
+    media_type["schema"] = {
+        "type": "object",
+        "properties": {
+            "assessment_date": {"type": "string", "format": "date"},
+            "business_thesis_change": {"type": "string", "enum": status_values},
+            "valuation_context": {
+                "type": "string",
+                "enum": ["expansion", "compression", "mixed", "neutral", "unknown"],
+            },
+            "earnings_estimate_impact": {
+                "type": "string",
+                "enum": ["up", "down", "unchanged", "mixed", "unknown"],
+            },
+            "market_expectation_assessment": {
+                "type": "object",
+                "properties": {
+                    "level": {"type": "string"},
+                    "assessment": {"type": "string"},
+                    "summary": {"type": "string"},
+                    "evidence_basis": string_array,
+                },
+            },
+            "confirmed_facts": string_array,
+            "inferred_implications": string_array,
+            "unknowns": string_array,
+            "summary": {"type": "string"},
+            "new_buyer_view": {"type": "string"},
+            "holder_view": {"type": "string"},
+            "price_view": {"type": "string"},
+            "risk_level": {"type": "string"},
+            "confidence": {"type": "number", "minimum": 0, "maximum": 1},
+        },
+        "required": [
+            "assessment_date",
+            "business_thesis_change",
+            "valuation_context",
+        ],
+    }
+
+
 def build_action_schema(app: FastAPI) -> dict[str, object]:
     schema = deepcopy(app.openapi())
     schema["info"] = {
         "title": "Thesis Monitor Public Action API",
-        "version": "0.2.0",
+        "version": "0.3.0",
         "description": (
             "Collect thesis evidence, register versioned investment theses, manage the monitored "
             "stock list, read daily thesis assessments, and retrieve macro briefings, regimes, "
@@ -172,4 +241,5 @@ def build_action_schema(app: FastAPI) -> dict[str, object]:
         }
     _simplify_thesis_event_action(schema)
     _simplify_monitor_stock_action(schema)
+    _simplify_assessment_write_action(schema)
     return schema

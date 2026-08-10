@@ -7,17 +7,21 @@ from app.models.thesis import InvestmentThesis, ThesisAssessment
 from app.models.watchlist import WatchlistItem
 from app.schemas.thesis import (
     AssessmentStatus,
+    EarningsEstimateImpact,
     InvestmentThesisRead,
     MarketExpectationsInput,
+    MarketExpectationAssessment,
     MonitoringItemCreate,
     MonitoringItemRead,
     MonitoringItemSummaryRead,
     PriceRulesInput,
     ThesisAssessmentRead,
+    ThesisAssessmentCreate,
+    ValuationImpact,
     ValuationContext,
     ValuationFrameworkInput,
 )
-from app.services.local_storage import export_thesis
+from app.services.local_storage import export_assessment_history, export_thesis
 from app.utils.tickers import normalize_ticker
 
 
@@ -94,11 +98,33 @@ def thesis_to_read(thesis: InvestmentThesis | None) -> InvestmentThesisRead | No
 
 
 def assessment_to_read(assessment: ThesisAssessment) -> ThesisAssessmentRead:
+    valuation_context = ValuationContext.model_validate(_json_dict(assessment.valuation_context))
+    business_change = assessment.business_thesis_change or assessment.status
+    valuation_change = assessment.valuation_change or valuation_context.impact.value
+    market_assessment = _json_dict(assessment.market_expectation_assessment)
+    if not market_assessment:
+        market_assessment = {
+            "level": valuation_context.market_expectation_level.value,
+            "assessment": "unknown",
+            "summary": valuation_context.market_expectation_summary,
+            "evidence_basis": [],
+        }
     return ThesisAssessmentRead(
         ticker=assessment.ticker,
         thesis_version=assessment.thesis_version,
         assessment_date=assessment.assessment_date,
         status=assessment.status,
+        business_thesis_change=business_change,
+        valuation_change=valuation_change,
+        earnings_estimate_impact=(
+            assessment.earnings_estimate_impact or EarningsEstimateImpact.unknown
+        ),
+        market_expectation_assessment=MarketExpectationAssessment.model_validate(
+            market_assessment
+        ),
+        confirmed_facts=_json_list(assessment.confirmed_facts),
+        inferred_implications=_json_list(assessment.inferred_implications),
+        unknowns=_json_list(assessment.unknowns),
         score=assessment.score,
         confidence=assessment.confidence,
         summary=assessment.summary,
@@ -108,9 +134,7 @@ def assessment_to_read(assessment: ThesisAssessment) -> ThesisAssessmentRead:
         risk_level=assessment.risk_level,
         evidence=json.loads(assessment.evidence),
         price_context=json.loads(assessment.price_context),
-        valuation_context=ValuationContext.model_validate(
-            _json_dict(assessment.valuation_context)
-        ),
+        valuation_context=valuation_context,
         thesis_snapshot=_assessment_snapshot(assessment),
         created_at=assessment.created_at,
     )
@@ -137,9 +161,20 @@ def _monitoring_item_read(
     current_summary = thesis.core_thesis if thesis else None
     latest_status = None
     latest_assessment_date = None
+    latest_valuation_context = None
+    latest_earnings_estimate_impact = None
     if latest_assessment is not None:
         latest_status = AssessmentStatus(latest_assessment.status)
         latest_assessment_date = latest_assessment.assessment_date
+        valuation = ValuationContext.model_validate(
+            _json_dict(latest_assessment.valuation_context)
+        )
+        latest_valuation_context = ValuationImpact(
+            latest_assessment.valuation_change or valuation.impact.value
+        )
+        latest_earnings_estimate_impact = EarningsEstimateImpact(
+            latest_assessment.earnings_estimate_impact or "unknown"
+        )
         snapshot = _assessment_snapshot(latest_assessment)
         current_summary = snapshot.get("current_thesis") or latest_assessment.summary
     return MonitoringItemRead(
@@ -150,6 +185,8 @@ def _monitoring_item_read(
         thesis=thesis_to_read(thesis),
         latest_status=latest_status,
         latest_assessment_date=latest_assessment_date,
+        latest_valuation_context=latest_valuation_context,
+        latest_earnings_estimate_impact=latest_earnings_estimate_impact,
         current_thesis_summary=current_summary,
     )
 
@@ -204,7 +241,136 @@ def _monitoring_item_summary(item: MonitoringItemRead) -> MonitoringItemSummaryR
         latest_assessment_date=(
             item.latest_assessment_date.isoformat() if item.latest_assessment_date else ""
         ),
+        latest_valuation_context=(
+            item.latest_valuation_context.value if item.latest_valuation_context else ""
+        ),
+        latest_earnings_estimate_impact=(
+            item.latest_earnings_estimate_impact.value
+            if item.latest_earnings_estimate_impact
+            else ""
+        ),
     )
+
+
+def record_assessment(
+    session: Session,
+    ticker: str,
+    payload: ThesisAssessmentCreate,
+) -> ThesisAssessmentRead | None:
+    ticker = normalize_ticker(ticker)
+    item = session.exec(select(WatchlistItem).where(WatchlistItem.ticker == ticker)).first()
+    thesis = _latest_thesis(session, ticker)
+    if item is None or thesis is None:
+        return None
+
+    thesis_read = thesis_to_read(thesis)
+    assert thesis_read is not None
+    market_assessment = payload.market_expectation_assessment
+    if market_assessment is None:
+        baseline = thesis_read.market_expectations
+        market_assessment = MarketExpectationAssessment(
+            level=baseline.level if baseline else "unknown",
+            assessment="unknown",
+            summary=baseline.summary if baseline else "",
+            evidence_basis=[],
+        )
+    valuation_context = ValuationContext(
+        impact=payload.valuation_context,
+        summary={
+            "expansion": "멀티플 확장 조건이 우세합니다.",
+            "compression": "멀티플 압축 조건이 우세합니다.",
+            "mixed": "멀티플 확장과 압축 근거가 함께 존재합니다.",
+            "neutral": "Valuation을 바꿀 중요한 신규 근거가 없습니다.",
+            "unknown": "Valuation 영향을 판단할 근거가 부족합니다.",
+        }[payload.valuation_context.value],
+        market_expectation_level=market_assessment.level,
+        market_expectation_summary=market_assessment.summary,
+        primary_method=(
+            thesis_read.valuation_framework.primary_method
+            if thesis_read.valuation_framework
+            else ""
+        ),
+    )
+    summary = payload.summary or "저장된 근거를 기준으로 일일 투자 논리 평가를 기록했습니다."
+    snapshot = {
+        "base_thesis": thesis.core_thesis,
+        "thesis_version": thesis.version,
+        "effective_date": payload.assessment_date.isoformat(),
+        "status": payload.business_thesis_change.value,
+        "current_thesis": f"{thesis.core_thesis} 현재 평가: {summary}",
+        "thesis_drivers": thesis_read.thesis_drivers,
+        "validation_metrics": thesis_read.validation_metrics,
+        "price_rules": (
+            thesis_read.price_rules.model_dump(mode="json", exclude_none=True)
+            if thesis_read.price_rules
+            else None
+        ),
+        "market_expectations": (
+            thesis_read.market_expectations.model_dump(mode="json", exclude_none=True)
+            if thesis_read.market_expectations
+            else None
+        ),
+        "valuation_framework": (
+            thesis_read.valuation_framework.model_dump(mode="json", exclude_none=True)
+            if thesis_read.valuation_framework
+            else None
+        ),
+        "multiple_expansion_signals": thesis_read.multiple_expansion_signals,
+        "multiple_compression_signals": thesis_read.multiple_compression_signals,
+        "valuation_context": valuation_context.model_dump(mode="json"),
+        "supporting_evidence": [],
+        "weakening_evidence": [],
+        "invalidation_evidence": [],
+    }
+    assessment = session.exec(
+        select(ThesisAssessment).where(
+            ThesisAssessment.ticker == ticker,
+            ThesisAssessment.assessment_date == payload.assessment_date,
+        )
+    ).first()
+    if assessment is None:
+        assessment = ThesisAssessment(
+            ticker=ticker,
+            thesis_version=thesis.version,
+            assessment_date=payload.assessment_date,
+            status=payload.business_thesis_change.value,
+            summary=summary,
+            new_buyer_view=payload.new_buyer_view,
+            holder_view=payload.holder_view,
+            price_view=payload.price_view,
+            risk_level=payload.risk_level,
+        )
+        session.add(assessment)
+    assessment.thesis_version = thesis.version
+    assessment.status = payload.business_thesis_change.value
+    assessment.business_thesis_change = payload.business_thesis_change.value
+    assessment.valuation_change = payload.valuation_context.value
+    assessment.earnings_estimate_impact = payload.earnings_estimate_impact.value
+    assessment.market_expectation_assessment = market_assessment.model_dump_json()
+    assessment.confirmed_facts = json.dumps(payload.confirmed_facts, ensure_ascii=False)
+    assessment.inferred_implications = json.dumps(
+        payload.inferred_implications, ensure_ascii=False
+    )
+    assessment.unknowns = json.dumps(payload.unknowns, ensure_ascii=False)
+    assessment.score = 0
+    assessment.confidence = payload.confidence
+    assessment.summary = summary
+    assessment.new_buyer_view = payload.new_buyer_view
+    assessment.holder_view = payload.holder_view
+    assessment.price_view = payload.price_view
+    assessment.risk_level = payload.risk_level
+    assessment.evidence = "[]"
+    assessment.price_context = "{}"
+    assessment.valuation_context = valuation_context.model_dump_json()
+    assessment.thesis_snapshot = json.dumps(snapshot, ensure_ascii=False)
+    item.latest_status = payload.business_thesis_change.value
+    item.latest_assessment_date = payload.assessment_date
+    item.latest_valuation_context = payload.valuation_context.value
+    item.latest_earnings_estimate_impact = payload.earnings_estimate_impact.value
+    session.commit()
+    session.refresh(assessment)
+    export_assessment_history(session, ticker)
+    return assessment_to_read(assessment)
 
 
 def register_monitoring_item(

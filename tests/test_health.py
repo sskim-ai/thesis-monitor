@@ -62,3 +62,10 @@ def test_public_action_schema() -> None:
     assert price_rules["properties"]["invalidation_price"]["type"] == "number"
     exposure = monitor_schema["properties"]["macro_exposures"]["items"]
     assert exposure["properties"]["condition"]["type"] == "string"
+    assessment_path = schema["paths"]["/monitoring-items/{ticker}/assessments"]
+    assert assessment_path["post"]["operationId"] == "recordThesisAssessment"
+    assessment_schema = assessment_path["post"]["requestBody"]["content"][
+        "application/json"
+    ]["schema"]
+    assert assessment_schema["type"] == "object"
+    assert assessment_schema["properties"]["valuation_context"]["type"] == "string"

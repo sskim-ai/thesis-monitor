@@ -2,6 +2,7 @@ import json
 from datetime import date
 
 from app.models.event import Event
+from app.models.macro import ThesisMacroImpact
 from app.models.thesis import InvestmentThesis
 from app.schemas.thesis import AssessmentStatus, PriceContext
 from app.services.thesis_evaluation_service import evaluate_thesis
@@ -83,3 +84,26 @@ def test_valuation_signal_is_separate_from_operating_thesis_status() -> None:
     assert result.valuation_context.matched_expansion_conditions == [
         "new customer production order"
     ]
+
+
+def test_macro_can_compress_valuation_without_weakening_business_thesis() -> None:
+    thesis = _thesis()
+    thesis.market_expectations = json.dumps(
+        {"level": "very_high", "summary": "Growth is already highly expected"}
+    )
+    thesis.valuation_framework = json.dumps({"primary_method": "forward P/E"})
+    macro = ThesisMacroImpact(
+        ticker="TEST",
+        thesis_version=1,
+        assessment_date=date.today(),
+        direction="neutral",
+        magnitude=3,
+        valuation_effect="weaken",
+        rationale="Higher real yields raise the discount rate",
+    )
+
+    result = evaluate_thesis(thesis, [], PriceContext(), macro_impact=macro)
+
+    assert result.status == AssessmentStatus.no_material_change
+    assert result.valuation_context.impact == "compression"
+    assert result.earnings_estimate_impact == "unknown"

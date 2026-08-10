@@ -44,6 +44,14 @@ SUPPLY_CONTRACT_START_KEYS = ("cntrct_begin", "cntrct_bgn", "contract_start", "b
 SUPPLY_CONTRACT_END_KEYS = ("cntrct_end", "cntrct_edd", "contract_end", "end_de")
 SUPPLY_CONTRACT_NAME_KEYS = ("cntrct_nm", "contract_name", "supply_contract_name", "goods")
 SUPPLY_CONTRACT_REGION_KEYS = ("rgn", "region", "supply_region", "supply_area")
+FINANCING_PURPOSE_KEYS = (
+    "fdpp_fclt",
+    "fdpp_bsninh",
+    "fdpp_op",
+    "fdpp_dtrp",
+    "fdpp_ocsa",
+    "fdpp_etc",
+)
 
 
 def _yyyymmdd(value: date) -> str:
@@ -100,6 +108,9 @@ def _dart_keywords(title: str) -> list[str]:
         "bw": "warrant",
         "실적": "earnings",
         "영업(잠정)실적": "earnings",
+        "잠정영업실적": "earnings",
+        "매출액 또는 손익구조 변동": "earnings",
+        "매출액또는손익구조변동": "earnings",
         "분기보고서": "earnings",
         "반기보고서": "earnings",
         "사업보고서": "earnings",
@@ -260,6 +271,64 @@ def _extract_supply_contract_facts(items: list[dict[str, str]]) -> list[str]:
     return facts
 
 
+def _sum_numeric_fields(item: dict[str, str], keys: tuple[str, ...]) -> int | None:
+    values: list[int] = []
+    for key in keys:
+        cleaned = _clean_number(item.get(key))
+        if cleaned is None:
+            continue
+        try:
+            values.append(int(float(cleaned)))
+        except ValueError:
+            continue
+    return sum(values) if values else None
+
+
+def _extract_capital_raise_facts(items: list[dict[str, str]]) -> list[str]:
+    if not items:
+        return []
+    item = items[0]
+    facts: list[str] = []
+    financing = _sum_numeric_fields(item, FINANCING_PURPOSE_KEYS)
+    new_shares = _sum_numeric_fields(item, ("nstk_ostk_cnt", "nstk_estk_cnt"))
+    capex = _sum_numeric_fields(item, ("fdpp_fclt",))
+    if financing is not None:
+        facts.append(f"OpenDART capital raise fact: amount = {_format_krw(str(financing))}")
+    if new_shares is not None:
+        facts.append(f"OpenDART capital raise fact: new_shares = {new_shares:,} shares")
+    if capex is not None:
+        facts.append(f"OpenDART facility investment fact: amount = {_format_krw(str(capex))}")
+    return facts
+
+
+def _extract_convertible_bond_facts(items: list[dict[str, str]]) -> list[str]:
+    if not items:
+        return []
+    item = items[0]
+    facts: list[str] = []
+    amount = _first_non_empty(item, ("bd_fta", "ovis_fta"))
+    convertible_shares = _first_non_empty(item, ("cvisstk_cnt",))
+    conversion_price = _first_non_empty(item, ("cv_prc",))
+    capex = _sum_numeric_fields(item, ("fdpp_fclt",))
+    if amount:
+        facts.append(
+            f"OpenDART convertible bond fact: amount = {_format_krw(amount)}"
+        )
+    if convertible_shares:
+        facts.append(
+            "OpenDART convertible bond fact: convertible_shares = "
+            f"{_format_shares(convertible_shares)}"
+        )
+    if conversion_price:
+        facts.append(
+            "OpenDART convertible bond fact: conversion_price = "
+            f"{_format_krw(conversion_price)} per share"
+        )
+    if capex is not None:
+        facts.append(f"OpenDART facility investment fact: amount = {_format_krw(str(capex))}")
+    return facts
+
+
 async def _resolve_opendart_company(api_key: str, query: str) -> OpenDARTCompany | None:
     seed_corp_code = OPENDART_CORP_CODES.get(query.upper()) or OPENDART_CORP_CODES.get(query)
     if seed_corp_code:
@@ -280,6 +349,45 @@ class OpenDARTProvider(FilingProvider):
     financial_endpoint = "https://opendart.fss.or.kr/api/fnlttSinglAcnt.json"
     treasury_stock_endpoint = "https://opendart.fss.or.kr/api/tsstkDpDecsn.json"
     supply_contract_endpoint = "https://opendart.fss.or.kr/api/singleSaleSupplyContract.json"
+    capital_raise_endpoint = "https://opendart.fss.or.kr/api/piicDecsn.json"
+    convertible_bond_endpoint = "https://opendart.fss.or.kr/api/cvbdIsDecsn.json"
+
+    async def _fetch_decision_facts(
+        self,
+        client: httpx.AsyncClient,
+        api_key: str,
+        corp_code: str,
+        title: str,
+        published: date,
+        receipt_no: str,
+    ) -> tuple[list[str], list[str]]:
+        if "유상증자" in title:
+            endpoint = self.capital_raise_endpoint
+            label = "capital raise"
+            extractor = _extract_capital_raise_facts
+        elif any(term in title for term in ("전환사채", "전환가액")):
+            endpoint = self.convertible_bond_endpoint
+            label = "convertible bond"
+            extractor = _extract_convertible_bond_facts
+        else:
+            return [], []
+        params = {
+            "crtfc_key": api_key,
+            "corp_code": corp_code,
+            "bgn_de": _yyyymmdd(published - timedelta(days=30)),
+            "end_de": _yyyymmdd(published + timedelta(days=30)),
+        }
+        try:
+            response = await client.get(endpoint, params=params)
+            response.raise_for_status()
+            payload = response.json()
+        except (httpx.HTTPError, ValueError):
+            return [], [f"OpenDART {label} API request failed"]
+        if payload.get("status") != "000":
+            return [], [f"OpenDART {label} API status: {payload.get('status')}"]
+        items = _filter_items_by_receipt(payload.get("list", []), receipt_no)
+        facts = extractor(items)
+        return (facts, []) if facts else ([], [_available_keys_debug(items, label)])
 
     async def _fetch_financial_facts(self, client: httpx.AsyncClient, api_key: str, corp_code: str, title: str, published: date) -> tuple[list[str], list[str]]:
         report_code = _report_code_from_title(title)
@@ -373,6 +481,7 @@ class OpenDARTProvider(FilingProvider):
                         await self._fetch_financial_facts(client, settings.opendart_api_key, company.corp_code, title, published),
                         await self._fetch_treasury_stock_facts(client, settings.opendart_api_key, company.corp_code, title, published, receipt_no),
                         await self._fetch_supply_contract_facts(client, settings.opendart_api_key, company.corp_code, title, published, receipt_no),
+                        await self._fetch_decision_facts(client, settings.opendart_api_key, company.corp_code, title, published, receipt_no),
                     ):
                         extra_facts.extend(facts)
                         extra_unknowns.extend(unknowns)

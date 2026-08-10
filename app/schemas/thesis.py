@@ -32,6 +32,14 @@ class ValuationImpact(StrEnum):
     unknown = "unknown"
 
 
+class EarningsEstimateImpact(StrEnum):
+    up = "up"
+    down = "down"
+    unchanged = "unchanged"
+    mixed = "mixed"
+    unknown = "unknown"
+
+
 class MacroExposureInput(BaseModel):
     factor: str = Field(min_length=1)
     direction: str = Field(pattern="^(positive|negative|mixed)$")
@@ -81,6 +89,13 @@ class ValuationFrameworkInput(BaseModel):
     key_inputs: list[str] = Field(default_factory=list)
     peer_or_historical_basis: list[str] = Field(default_factory=list)
     valuation_caveats: list[str] = Field(default_factory=list)
+
+
+class MarketExpectationAssessment(BaseModel):
+    level: ExpectationLevel = ExpectationLevel.unknown
+    assessment: str = "unknown"
+    summary: str = ""
+    evidence_basis: list[str] = Field(default_factory=list)
 
 
 class MonitoringItemCreate(BaseModel):
@@ -164,6 +179,8 @@ class MonitoringItemRead(BaseModel):
     thesis: InvestmentThesisRead | None
     latest_status: AssessmentStatus | None = None
     latest_assessment_date: date | None = None
+    latest_valuation_context: ValuationImpact | None = None
+    latest_earnings_estimate_impact: EarningsEstimateImpact | None = None
     current_thesis_summary: str | None = None
 
 
@@ -184,6 +201,8 @@ class MonitoringItemSummaryRead(BaseModel):
     multiple_compression_signals: list[str]
     latest_status: str
     latest_assessment_date: str
+    latest_valuation_context: str
+    latest_earnings_estimate_impact: str
 
 
 class PricePeriodSummary(BaseModel):
@@ -249,6 +268,13 @@ class ThesisAssessmentRead(BaseModel):
     thesis_version: int
     assessment_date: date
     status: AssessmentStatus
+    business_thesis_change: AssessmentStatus
+    valuation_change: ValuationImpact
+    earnings_estimate_impact: EarningsEstimateImpact
+    market_expectation_assessment: MarketExpectationAssessment
+    confirmed_facts: list[str]
+    inferred_implications: list[str]
+    unknowns: list[str]
     score: int
     confidence: float
     summary: str
@@ -263,6 +289,23 @@ class ThesisAssessmentRead(BaseModel):
     created_at: datetime
 
     model_config = ConfigDict(from_attributes=True)
+
+
+class ThesisAssessmentCreate(BaseModel):
+    assessment_date: date
+    business_thesis_change: AssessmentStatus
+    valuation_context: ValuationImpact
+    earnings_estimate_impact: EarningsEstimateImpact = EarningsEstimateImpact.unknown
+    market_expectation_assessment: MarketExpectationAssessment | None = None
+    confirmed_facts: list[str] = Field(default_factory=list)
+    inferred_implications: list[str] = Field(default_factory=list)
+    unknowns: list[str] = Field(default_factory=list)
+    summary: str = ""
+    new_buyer_view: str = ""
+    holder_view: str = ""
+    price_view: str = ""
+    risk_level: str = "review"
+    confidence: float = Field(default=0.0, ge=0, le=1)
 
 
 class DailyMonitorResponse(BaseModel):

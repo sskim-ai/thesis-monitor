@@ -7,6 +7,7 @@ from app.schemas.thesis import (
     MonitoringItemCreate,
     MonitoringItemRead,
     MonitoringItemSummaryRead,
+    ThesisAssessmentCreate,
     ThesisAssessmentRead,
 )
 from app.services.monitoring_service import (
@@ -15,6 +16,7 @@ from app.services.monitoring_service import (
     list_assessments,
     list_monitoring_items,
     list_monitoring_summaries,
+    record_assessment,
     register_monitoring_item,
 )
 
@@ -104,3 +106,23 @@ def assessment_history(
     session: Session = Depends(get_session),
 ) -> list[ThesisAssessmentRead]:
     return list_assessments(session, ticker, limit=limit)
+
+
+@router.post(
+    "/{ticker}/assessments",
+    response_model=ThesisAssessmentRead,
+    operation_id="recordThesisAssessment",
+    summary="Record an independent daily thesis and valuation assessment",
+)
+def save_assessment(
+    ticker: str,
+    payload: ThesisAssessmentCreate,
+    session: Session = Depends(get_session),
+) -> ThesisAssessmentRead:
+    result = record_assessment(session, ticker, payload)
+    if result is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Ticker has no active monitored thesis.",
+        )
+    return result

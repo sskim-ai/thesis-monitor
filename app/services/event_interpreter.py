@@ -58,6 +58,67 @@ def _basis_value(fragment: str | None, key: str) -> str | None:
     return match.group(1).strip() if match else None
 
 
+def _metric_value(facts: list[str], labels: tuple[str, ...]) -> float | None:
+    for label in labels:
+        value = _fact_value(facts, label)
+        if value is not None:
+            return _to_float(value)
+    return None
+
+
+def _populate_structured_metrics(raw_event: RawEvent) -> None:
+    facts = raw_event.confirmed_facts
+    raw_event.revenue = _metric_value(
+        facts, ("financial fact: 매출액", "financial fact: 수익(매출액)", "revenue")
+    )
+    raw_event.operating_income = _metric_value(
+        facts, ("financial fact: 영업이익", "operating_income", "operating income")
+    )
+    raw_event.net_income = _metric_value(
+        facts, ("financial fact: 당기순이익", "financial fact: 분기순이익", "net_income")
+    )
+    revenue_fact = next(iter(_facts_containing(facts, "financial fact: 매출액")), None)
+    profit_fact = next(iter(_facts_containing(facts, "financial fact: 영업이익")), None)
+    revenue_basis = _basis_fragment(revenue_fact)
+    profit_basis = _basis_fragment(profit_fact)
+    if (
+        raw_event.revenue not in {None, 0}
+        and raw_event.operating_income is not None
+        and (not revenue_basis or not profit_basis or revenue_basis == profit_basis)
+    ):
+        raw_event.operating_margin = raw_event.operating_income / raw_event.revenue * 100
+    raw_event.yoy_growth = _metric_value(
+        facts, ("yoy_growth", "yoy growth", "전년동기대비")
+    )
+    raw_event.qoq_growth = _metric_value(
+        facts, ("qoq_growth", "qoq growth", "전분기대비")
+    )
+    raw_event.capex_amount = _metric_value(
+        facts,
+        (
+            "facility investment fact: amount",
+            "capital expenditure fact: amount",
+            "capex_amount",
+        ),
+    )
+    raw_event.financing_amount = _metric_value(
+        facts,
+        (
+            "capital raise fact: amount",
+            "convertible bond fact: amount",
+            "financing_amount",
+        ),
+    )
+    raw_event.dilution_amount = _metric_value(
+        facts,
+        (
+            "capital raise fact: new_shares",
+            "convertible bond fact: convertible_shares",
+            "dilution_amount",
+        ),
+    )
+
+
 def _interpret_supply_contract(raw_event: RawEvent, implications: list[str], unknowns: list[str]) -> None:
     facts = raw_event.confirmed_facts
     contract_name = _fact_value(facts, "supply contract fact: contract_name")
@@ -113,11 +174,21 @@ def _interpret_facility_investment(
     implications: list[str],
     unknowns: list[str],
 ) -> None:
+    amount = _metric_value(
+        raw_event.confirmed_facts,
+        ("facility investment fact: amount", "capital expenditure fact: amount"),
+    )
+    if amount is not None:
+        _append_unique(
+            implications,
+            f"Confirmed facility investment amount is about {_format_krw(int(amount))}.",
+        )
     _append_unique(
         implications,
         "A facility investment disclosure may change capacity, capex, cash-flow, and future earnings assumptions.",
     )
-    _append_unique(unknowns, "Investment amount and funding source are not confirmed from the filing title alone.")
+    if amount is None:
+        _append_unique(unknowns, "Investment amount and funding source are not confirmed from the filing title alone.")
     _append_unique(unknowns, "Investment purpose, schedule, and incremental capacity require the filing body.")
     _append_unique(unknowns, "Demand visibility, utilization, and expected return on investment are not confirmed.")
 
@@ -209,6 +280,7 @@ def _interpret_earnings(raw_event: RawEvent, implications: list[str], unknowns: 
 
 
 def enrich_raw_event(raw_event: RawEvent) -> RawEvent:
+    _populate_structured_metrics(raw_event)
     event_type = classify_event(raw_event)
     implications = list(raw_event.inferred_implications)
     unknowns = list(raw_event.unknowns)
@@ -223,7 +295,14 @@ def enrich_raw_event(raw_event: RawEvent) -> RawEvent:
         _interpret_disclosure_inquiry(raw_event, implications, unknowns)
     elif event_type == EventType.disclosure_clarification:
         _interpret_disclosure_clarification(raw_event, implications, unknowns)
-    elif event_type == EventType.guidance_change:
+    elif event_type in {
+        EventType.guidance_change,
+        EventType.earnings_surprise,
+        EventType.earnings_beat,
+        EventType.earnings_miss,
+        EventType.revenue_guidance_change,
+        EventType.margin_guidance_change,
+    }:
         _interpret_earnings(raw_event, implications, unknowns)
 
     raw_event.inferred_implications = implications

@@ -127,7 +127,22 @@ def _assessment_report(
         "needs_review": "검토 필요",
     }
     label = labels.get(assessment.status, assessment.status)
+    business_change = (
+        getattr(assessment, "business_thesis_change", None) or assessment.status
+    )
+    label = labels.get(business_change, business_change)
+    earnings_impact = (
+        getattr(assessment, "earnings_estimate_impact", None) or "unknown"
+    )
     evidence = _json_list_value(assessment.evidence)
+    confirmed_facts = _json_list_value(getattr(assessment, "confirmed_facts", "[]"))
+    inferred_implications = _json_list_value(
+        getattr(assessment, "inferred_implications", "[]")
+    )
+    unknowns = _json_list_value(getattr(assessment, "unknowns", "[]"))
+    market_expectation_assessment = _json_value(
+        getattr(assessment, "market_expectation_assessment", "{}"), {}
+    )
     price_context = _json_value(assessment.price_context, {})
     thesis_snapshot = _json_value(assessment.thesis_snapshot, {})
     thesis_drivers = _json_list_value(thesis.thesis_drivers) if thesis else []
@@ -149,6 +164,10 @@ def _assessment_report(
         if isinstance(item, dict)
     ]
     change_text = "\n".join(evidence_lines) or "• 투자 판단을 바꿀 새 근거가 확인되지 않았습니다."
+    fact_lines = [f"• 확인된 사실: {item}" for item in confirmed_facts[:2]]
+    inference_lines = [f"• 투자적 해석: {item}" for item in inferred_implications[:2]]
+    if fact_lines or inference_lines:
+        change_text = "\n".join([*fact_lines, *inference_lines])
     core_thesis = thesis.core_thesis if thesis else str(
         thesis_snapshot.get("base_thesis", "저장된 핵심 투자 논리가 없습니다.")
     )
@@ -184,7 +203,8 @@ def _assessment_report(
         f"📐 시장 기대와 Valuation\n"
         f"• 기대 수준: {expectation_level} · {expectation_summary}\n"
         f"• 평가 방식: {valuation_method}\n"
-        f"• 멀티플 영향: {valuation_impact}\n\n"
+        f"• 멀티플 영향: {valuation_impact}\n"
+        f"• 이익 추정치 영향: {earnings_impact}\n\n"
         f"📌 확인할 것\n• 강화·약화·무효화 조건과 다음 공시·실적 근거를 계속 확인합니다."
     )
     if validation_text:
@@ -192,6 +212,8 @@ def _assessment_report(
             "📌 확인할 것\n• ",
             f"📌 확인할 것\n• 검증 지표: {validation_text}\n• ",
         )
+    if unknowns:
+        fallback += f"\n• 미확인: {unknowns[0]}"
     context: dict[str, object] = {
         "analysis_type": "stock",
         "assessment_date": str(assessment.assessment_date),
@@ -216,6 +238,12 @@ def _assessment_report(
         },
         "assessment": {
             "status": assessment.status,
+            "business_thesis_change": business_change,
+            "earnings_estimate_impact": earnings_impact,
+            "market_expectation_assessment": market_expectation_assessment,
+            "confirmed_facts": confirmed_facts,
+            "inferred_implications": inferred_implications,
+            "unknowns": unknowns,
             "score": assessment.score,
             "confidence": assessment.confidence,
             "summary": assessment.summary,

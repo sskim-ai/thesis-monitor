@@ -5,6 +5,20 @@ from app.schemas.event import EventType
 
 
 KEYWORD_EVENT_TYPES: list[tuple[EventType, tuple[str, ...]]] = [
+    (EventType.earnings_beat, ("earnings beat", "beat estimates", "beat consensus")),
+    (EventType.earnings_miss, ("earnings miss", "missed estimates", "missed consensus")),
+    (EventType.production_delay, ("production delay", "ramp delay", "shipment delay")),
+    (EventType.major_customer_win, ("major customer win", "strategic customer win")),
+    (EventType.customer_loss, ("major customer loss", "lost customer", "customer loss")),
+    (EventType.revenue_guidance_change, ("revenue guidance changed", "revenue outlook changed")),
+    (EventType.margin_guidance_change, ("margin guidance changed", "margin outlook changed")),
+    (EventType.operating_cash_flow_change, ("operating cash flow changed", "cash from operations changed")),
+    (EventType.fcf_change, ("free cash flow changed", "fcf changed")),
+    (EventType.capex_change, ("capex changed", "capital expenditure changed")),
+    (EventType.order_change, ("order change", "orders changed", "backlog changed")),
+    (EventType.dilution, ("share dilution", "dilutive financing")),
+    (EventType.debt_liquidity, ("material liquidity", "liquidity shortfall", "debt maturity risk")),
+    (EventType.regulatory_material, ("material regulatory", "regulatory order", "regulatory action")),
     (EventType.production_order, ("production order", "production schedule")),
     (
         EventType.large_order,
@@ -30,7 +44,10 @@ KEYWORD_EVENT_TYPES: list[tuple[EventType, tuple[str, ...]]] = [
     (EventType.inventory_normalization, ("inventory normalization", "inventory normalisation")),
     (EventType.receivables_increase, ("receivables increase", "days sales outstanding")),
     (EventType.capital_raise, ("capital raise", "equity offering", "secondary offering", "유상증자")),
-    (EventType.convertible_bond, ("convertible bond", "convertible note", "전환사채", "cb")),
+    (
+        EventType.convertible_bond,
+        ("convertible bond", "convertible note", "전환사채", "전환가액 조정", "cb"),
+    ),
     (EventType.warrant, ("warrant", "신주인수권", "bw")),
     (EventType.stock_compensation_increase, ("stock compensation increase", "stock-based compensation increase")),
     (EventType.capital_allocation, ("자기주식", "자사주", "배당", "현금ㆍ현물배당")),
@@ -52,7 +69,19 @@ KEYWORD_EVENT_TYPES: list[tuple[EventType, tuple[str, ...]]] = [
     (EventType.competitor_price_cut, ("competitor price cut", "price cut")),
     (EventType.competitor_new_product, ("competitor new product", "new product launch")),
     (EventType.management_governance, ("기업지배구조보고서", "임원ㆍ주요주주", "임원･주요주주", "최대주주", "대표이사")),
-    (EventType.guidance_change, ("분기보고서", "반기보고서", "사업보고서", "영업(잠정)실적", "잠정실적")),
+    (
+        EventType.guidance_change,
+        (
+            "분기보고서",
+            "반기보고서",
+            "사업보고서",
+            "영업(잠정)실적",
+            "잠정영업실적",
+            "잠정실적",
+            "매출액 또는 손익구조 변동",
+            "매출액또는손익구조변동",
+        ),
+    ),
     (EventType.earnings_surprise, ("earnings surprise", "beat expectations")),
     (EventType.earnings_miss, ("earnings miss", "missed expectations", "missed guidance")),
     (EventType.antitrust, ("antitrust",)),
@@ -75,6 +104,62 @@ NOISE_TERMS = (
     "루머",
 )
 
+MATERIAL_PROVIDERS = {"opendart", "sec_edgar", "company_ir"}
+
+
+def _mentions_company(raw_event: RawEvent, text: str) -> bool:
+    source = raw_event.source.lower()
+    if (
+        raw_event.provider in MATERIAL_PROVIDERS | {"mock"}
+        or "company ir" in source
+        or "company filing" in source
+    ):
+        return True
+    ticker = raw_event.ticker.lower().strip()
+    if ticker and re.search(rf"(?<![a-z0-9]){re.escape(ticker)}(?![a-z0-9])", text):
+        return True
+    company = (raw_event.company_name or "").lower().strip()
+    if company and company in text:
+        return True
+    generic_tokens = {
+        "company",
+        "corporation",
+        "corp",
+        "inc",
+        "limited",
+        "holdings",
+        "technology",
+        "technologies",
+        "class",
+    }
+    company_tokens = {
+        token
+        for token in re.findall(r"[a-z0-9가-힣]+", company)
+        if len(token) >= 4 and token not in generic_tokens
+    }
+    return any(
+        re.search(rf"(?<![a-z0-9]){re.escape(token)}(?![a-z0-9])", text)
+        for token in company_tokens
+    )
+
+
+def _flag_event_type(raw_event: RawEvent, text: str) -> EventType | None:
+    if raw_event.dilution_risk:
+        return EventType.dilution
+    if raw_event.material_customer_change:
+        if any(term in text for term in ("loss", "lost", "terminated", "해지", "중단")):
+            return EventType.customer_loss
+        return EventType.major_customer_win
+    if raw_event.margin_guidance_changed:
+        return EventType.margin_guidance_change
+    if raw_event.fcf_impact_known:
+        return EventType.fcf_change
+    if raw_event.operating_cash_flow_impact_known:
+        return EventType.operating_cash_flow_change
+    if raw_event.guidance_changed:
+        return EventType.guidance_change
+    return None
+
 
 def _has_standalone_mou(text: str) -> bool:
     return re.search(r"\bmou\b", text) is not None
@@ -90,6 +175,13 @@ def classify_event(raw_event: RawEvent) -> EventType:
             " ".join(raw_event.confirmed_facts),
         ]
     ).lower()
+
+    if not _mentions_company(raw_event, text):
+        return EventType.non_thesis_noise
+
+    flagged_type = _flag_event_type(raw_event, text)
+    if flagged_type is not None:
+        return flagged_type
 
     if any(term in text for term in NOISE_TERMS) and not any(
         term in text
