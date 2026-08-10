@@ -14,7 +14,11 @@ async def main() -> None:
     with Session(engine) as session:
         try:
             macro_result: dict[str, object] = (
-                await run_macro_monitor(session)
+                await run_macro_monitor(
+                    session,
+                    queue_notifications=False,
+                    dispatch_notifications=False,
+                )
             ).model_dump(mode="json")
         except Exception as exc:  # noqa: BLE001
             macro_result = {

@@ -6,6 +6,16 @@ from sqlmodel import Session, select
 from app.models.macro import MacroObservation, MacroRegimeAssessment
 
 
+QUALITY_WEIGHTS = {
+    "fresh": 1.0,
+    "revised": 0.9,
+    "partial": 0.5,
+    "provisional": 0.5,
+    "stale": 0.0,
+}
+DIRECTIONAL_QUALITY = {"fresh", "revised"}
+
+
 def _latest(session: Session, series_code: str) -> MacroObservation | None:
     return session.exec(
         select(MacroObservation)
@@ -22,6 +32,13 @@ def _direction(value: float | None, threshold: float) -> int:
     if value <= -threshold:
         return -1
     return 0
+
+
+def _value(observation: MacroObservation | None, field: str) -> float | None:
+    if observation is None or observation.quality_status not in DIRECTIONAL_QUALITY:
+        return None
+    value = getattr(observation, field)
+    return float(value) if isinstance(value, (int, float)) else None
 
 
 def _clamp(value: int) -> int:
@@ -41,31 +58,34 @@ def assess_macro_regime(session: Session, assessment_date: date) -> MacroRegimeA
     oil = _latest(session, "DCOILWTICO")
 
     growth = _clamp(
-        _direction(iwm.change_pct if iwm else None, 0.5)
-        + _direction(soxx.change_pct if soxx else None, 0.8)
+        _direction(_value(iwm, "change_pct"), 0.5)
+        + _direction(_value(soxx, "change_pct"), 0.8)
     )
     inflation = _clamp(
-        _direction(breakeven.change_value if breakeven else None, 0.05)
-        + _direction(oil.change_pct if oil else None, 2.0)
+        _direction(_value(breakeven, "change_value"), 0.05)
+        + _direction(_value(oil, "change_pct"), 2.0)
     )
-    liquidity = _clamp(-_direction(dollar.change_pct if dollar else None, 0.3))
+    liquidity = _clamp(-_direction(_value(dollar, "change_pct"), 0.3))
     financial = _clamp(
-        -_direction(real_yield.change_value if real_yield else None, 0.05)
-        - _direction(credit.change_value if credit else None, 0.1)
+        -_direction(_value(real_yield, "change_value"), 0.05)
+        - _direction(_value(credit, "change_value"), 0.1)
     )
     risk = _clamp(
-        _direction(spy.change_pct if spy else None, 0.5)
-        + _direction(qqq.change_pct if qqq else None, 0.7)
-        - _direction(vix.change_pct if vix else None, 5.0)
+        _direction(_value(spy, "change_pct"), 0.5)
+        + _direction(_value(qqq, "change_pct"), 0.7)
+        - _direction(_value(vix, "change_pct"), 5.0)
     )
-    earnings = _clamp(_direction(soxx.change_pct if soxx else None, 1.0))
+    earnings = _clamp(_direction(_value(soxx, "change_pct"), 1.0))
 
     available = [
         item
         for item in (spy, qqq, iwm, soxx, vix, real_yield, dollar, credit, breakeven, oil)
         if item is not None
     ]
-    confidence = round(min(0.9, len(available) / 10 * 0.9), 2)
+    completeness = sum(
+        QUALITY_WEIGHTS.get(item.quality_status, 0.0) for item in available
+    ) / 10
+    confidence = round(min(0.9, completeness * 0.9), 2)
     if growth >= 1 and inflation <= 0 and risk >= 1:
         label = "goldilocks"
     elif growth <= -1 and inflation >= 1:

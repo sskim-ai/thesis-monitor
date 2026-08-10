@@ -87,15 +87,10 @@ The helper requests the `talk_message` scope and stores the refresh token in
 Morning briefings and material stock assessments are sent as readable Korean
 analysis reports. Kakao's default text template has a 200-character limit, so
 reports are split at section and bullet boundaries into consecutive messages.
-The default template always renders a link button. `KAKAO_TEMPLATE_ID` remains
-available for short custom-template messages, but long reports use the default
-text template so their content is not truncated.
-
-When `OPENAI_API_KEY` has available API credit, structured thesis, evidence,
-price summary, and macro data are converted into a narrative report with
-`OPENAI_NARRATIVE_MODEL`. Credentials are never included in that request. An
-API or network failure falls back to a deterministic local report so the daily
-notification still arrives.
+The default morning notification channel is Telegram. The report is generated from structured
+macro, company, event, expectation, and valuation data by deterministic rules and templates; it does
+not consume OpenAI or other LLM credits. Long reports are split at Telegram-safe boundaries without
+dropping analysis sections.
 
 ## Macro Monitoring
 
@@ -115,8 +110,8 @@ Three additional free API keys enable the full source set:
 - `ECOS_API_KEY`: Bank of Korea rates, USD/KRW, CPI, and M2 key statistics.
 
 Macro outputs are stored in SQLite and daily briefing JSON files under
-`data/macro/briefings/`. The persistent Kakao outbox guarantees at most one
-morning macro message per date. Read-only Action endpoints include:
+`data/macro/briefings/`. The persistent notification outbox guarantees at most one daily digest per
+date and deduplicates same-day material alerts. Read-only Action endpoints include:
 
 ```text
 GET /macro/briefings/latest
@@ -225,8 +220,9 @@ python -m app.jobs.monitor_daily
 ```
 
 The Mac mini LaunchAgent template is `ops/com.seungsoo.thesis-monitor.daily.plist`. It runs at
-08:00 KST and retries at 08:15 and 08:45. Successful duplicate runs return without collecting or
-notifying again.
+08:00 KST and retries at 08:15 and 08:45. The flow is macro collection and assessment, all-stock
+assessment storage, daily digest generation, then Telegram delivery. Successful duplicate runs retry
+only pending delivery work.
 
 Price context is requested from the separate local OHLCV Analyst service using targets of 500 daily,
 300 weekly, and 100 monthly bars. Shorter provider histories are accepted and their actual counts are

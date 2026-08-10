@@ -10,9 +10,15 @@ from app.macro.providers.base import (
     CollectedObservation,
     MacroProviderResult,
 )
+from app.macro.impact import assess_thesis_macro_impacts
 from app.macro.service import run_macro_monitor
 from app.main import app
-from app.models.macro import MacroBriefing, MacroShockAssessment, ThesisMacroImpact
+from app.models.macro import (
+    MacroBriefing,
+    MacroObservation,
+    MacroShockAssessment,
+    ThesisMacroImpact,
+)
 from app.models.thesis import NotificationDelivery
 from app.schemas.thesis import MacroExposureInput, MonitoringItemCreate
 from app.services.monitoring_service import register_monitoring_item
@@ -142,10 +148,11 @@ async def test_macro_monitor_builds_briefing_impacts_and_dedupes() -> None:
         delivery_payload = json.loads(delivery.payload)
         assert delivery_payload["presentation"] == "long_text"
         assert delivery_payload["analysis_context"]["analysis_type"] == "macro"
-        assert "🎯 결론" in delivery_payload["text"]
-        assert "📈 간밤 시장" in delivery_payload["text"]
-        assert "💵 금리·환율·원자재" in delivery_payload["text"]
-        assert "🏢 종목 영향" in delivery_payload["text"]
+        assert "🎯 오늘 한 줄" in delivery_payload["text"]
+        assert "📈 오늘 가장 중요한 변화" in delivery_payload["text"]
+        assert "🧭 현재 시장 상황" in delivery_payload["text"]
+        assert "🏢 주요 종목 전달 경로" in delivery_payload["text"]
+        assert "6축 점수" not in delivery_payload["text"]
 
         rerun = await run_macro_monitor(
             session,
@@ -206,3 +213,86 @@ def test_macro_action_routes_require_auth_and_return_latest_briefing() -> None:
         )
         assert briefing.status_code == 200
         assert briefing.json()["briefing_type"] == "morning"
+
+
+def test_macro_impacts_separate_overall_and_valuation_channels() -> None:
+    init_db()
+    run_date = date(2048, 1, 5)
+    with Session(engine) as session:
+        for ticker, exposures in [
+            (
+                "CHANNEL2048",
+                [
+                    MacroExposureInput(
+                        factor="market_volatility",
+                        direction="negative",
+                        weight=4,
+                        channel="liquidity",
+                    ),
+                    MacroExposureInput(
+                        factor="us_10y_real_yield",
+                        direction="negative",
+                        weight=4,
+                        channel="discount_rate",
+                    ),
+                ],
+            ),
+            (
+                "LOWWEIGHT2048",
+                [
+                    MacroExposureInput(
+                        factor="us_10y_real_yield",
+                        direction="negative",
+                        weight=2,
+                        channel="discount_rate",
+                    )
+                ],
+            ),
+        ]:
+            register_monitoring_item(
+                session,
+                MonitoringItemCreate(
+                    ticker=ticker,
+                    company_name=ticker,
+                    core_thesis="Structured macro channel test",
+                    macro_exposures=exposures,
+                ),
+            )
+        session.add_all(
+            [
+                MacroObservation(
+                    dedupe_key="vix-channel-2048",
+                    series_code="VIXCLS",
+                    category="volatility",
+                    provider="test",
+                    observed_at=datetime(2048, 1, 5, tzinfo=timezone.utc),
+                    value=14,
+                    previous_value=16,
+                    change_value=-2,
+                    change_pct=-12.5,
+                    source_url="https://example.com/vix",
+                ),
+                MacroObservation(
+                    dedupe_key="real-yield-channel-2048",
+                    series_code="DFII10",
+                    category="real_rates",
+                    provider="test",
+                    observed_at=datetime(2048, 1, 5, tzinfo=timezone.utc),
+                    value=2.5,
+                    previous_value=2.44,
+                    change_value=0.06,
+                    change_pct=2.46,
+                    source_url="https://example.com/real-yield",
+                ),
+            ]
+        )
+        session.commit()
+
+        impacts = assess_thesis_macro_impacts(session, run_date)
+        by_ticker = {item.ticker: item for item in impacts}
+
+        assert by_ticker["CHANNEL2048"].direction == "strengthen"
+        assert by_ticker["CHANNEL2048"].valuation_effect == "weaken"
+        assert by_ticker["LOWWEIGHT2048"].direction == "neutral"
+        assert by_ticker["LOWWEIGHT2048"].valuation_effect == "neutral"
+        assert "저가중치" in by_ticker["LOWWEIGHT2048"].rationale

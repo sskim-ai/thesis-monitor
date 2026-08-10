@@ -19,6 +19,7 @@ FACTOR_SERIES = {
     "credit_spread": "BAMLH0A0HYM2",
     "market_volatility": "VIXCLS",
 }
+USABLE_QUALITY = {"fresh", "revised"}
 
 
 def _latest_observation(session: Session, series_code: str) -> MacroObservation | None:
@@ -102,6 +103,16 @@ def _weight(exposure: dict[str, object]) -> int:
     return max(1, min(5, value))
 
 
+def _impact_direction(net: float) -> str:
+    if net >= 5:
+        return "strengthen"
+    if net <= -5:
+        return "weaken"
+    if net != 0:
+        return "mixed"
+    return "neutral"
+
+
 def _factor_signal(
     session: Session,
     factor: str,
@@ -139,7 +150,7 @@ def _factor_signal(
     if series_code is None:
         return None
     observation = _latest_observation(session, series_code)
-    if observation is None:
+    if observation is None or observation.quality_status not in USABLE_QUALITY:
         return None
     change = observation.change_value
     if observation.category not in {"rates", "real_rates", "credit", "inflation_expectations"}:
@@ -178,6 +189,8 @@ def assess_thesis_macro_impacts(
         evidence: list[dict[str, object]] = []
         max_magnitude = 0
         reviewed_count = 0
+        reviewed_weights: list[int] = []
+        channel_contributions: dict[str, float] = {}
         for exposure in exposures:
             factor = str(exposure.get("factor", ""))
             result = _factor_signal(session, factor, assessment_date)
@@ -192,25 +205,33 @@ def assess_thesis_macro_impacts(
             contribution = factor_signal * direction_multiplier * weight * magnitude
             net += contribution
             max_magnitude = max(max_magnitude, magnitude)
-            channels.add(str(exposure.get("channel", "unknown")))
+            channel = str(exposure.get("channel", "unknown"))
+            channels.add(channel)
+            channel_contributions[channel] = channel_contributions.get(channel, 0) + contribution
             reviewed_count += 1
+            reviewed_weights.append(weight)
             item_evidence["contribution"] = contribution
             item_evidence["exposure"] = exposure
             evidence.append(item_evidence)
 
-        direction = "neutral"
-        if net >= 5:
-            direction = "strengthen"
-        elif net <= -5:
-            direction = "weaken"
-        elif net != 0:
-            direction = "mixed"
+        direction = _impact_direction(net)
+        low_weight_only = reviewed_count == 1 and reviewed_weights[0] <= 2
+        if low_weight_only:
+            direction = "neutral"
+        earnings_net = sum(
+            channel_contributions.get(channel, 0) for channel in {"demand", "capex"}
+        )
+        valuation_net = channel_contributions.get("discount_rate", 0)
+        earnings_effect = "neutral" if low_weight_only else _impact_direction(earnings_net)
+        valuation_effect = "neutral" if low_weight_only else _impact_direction(valuation_net)
         confidence = round(min(0.9, 0.35 + reviewed_count * 0.1), 2) if evidence else 0.0
         rationale = (
             "검토 가능한 거시 exposure 근거가 없습니다."
             if not evidence
             else f"{len(evidence)}개 거시 전달 경로의 합산 점수는 {net:+.1f}입니다."
         )
+        if evidence and low_weight_only:
+            rationale += " 단일 저가중치 경로이므로 일일 방향 판정은 유지했습니다."
         existing = session.exec(
             select(ThesisMacroImpact).where(
                 ThesisMacroImpact.ticker == thesis.ticker,
@@ -225,8 +246,8 @@ def assess_thesis_macro_impacts(
             "confidence": confidence,
             "channels": json.dumps(sorted(channels), ensure_ascii=False),
             "affected_thesis_pillars": json.dumps([], ensure_ascii=False),
-            "earnings_effect": direction if "demand" in channels or "capex" in channels else "neutral",
-            "valuation_effect": direction if "discount_rate" in channels else "neutral",
+            "earnings_effect": earnings_effect,
+            "valuation_effect": valuation_effect,
             "rationale": rationale,
             "evidence": json.dumps(evidence, ensure_ascii=False),
         }

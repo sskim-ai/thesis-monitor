@@ -2,7 +2,7 @@ import asyncio
 import json
 import os
 import re
-from datetime import datetime, timezone
+from datetime import date, datetime, timezone
 from pathlib import Path
 from tempfile import NamedTemporaryFile
 
@@ -18,6 +18,8 @@ from app.services.analysis_report_service import (
     split_kakao_text,
     split_telegram_text,
 )
+from app.services.daily_digest import build_daily_digest, interpret_macro_briefing
+from app.services.daily_digest_renderer import render_daily_digest
 
 
 MATERIAL_STATUSES = {
@@ -276,15 +278,22 @@ def queue_notification(session: Session, assessment: ThesisAssessment) -> None:
         )
     ).first()
     company_name = watchlist_item.company_name if watchlist_item else assessment.ticker
-    text, analysis_context = _assessment_report(assessment, company_name, thesis)
+    text, _analysis_context = _assessment_report(assessment, company_name, thesis)
+    evidence = [item for item in _json_list_value(assessment.evidence) if isinstance(item, dict)]
+    dedupe_keys = [
+        str(item.get("url") or f"{item.get('date')}:{item.get('title')}")
+        for item in evidence
+    ]
     payload = json.dumps(
         {
             "text": text,
             "ticker": assessment.ticker,
             "assessment_date": str(assessment.assessment_date),
             "status": assessment.status,
+            "type": "material_event_alert",
             "presentation": "long_text",
-            "analysis_context": analysis_context,
+            "use_llm": False,
+            "event_dedupe_keys": dedupe_keys,
         },
         ensure_ascii=False,
     )
@@ -319,6 +328,7 @@ def queue_macro_notification(session: Session, briefing: MacroBriefing) -> None:
             "briefing_date": str(briefing.briefing_date),
             "type": "macro_morning",
             "presentation": "long_text",
+            "use_llm": False,
             "analysis_context": analysis_context,
         },
         ensure_ascii=False,
@@ -344,6 +354,46 @@ def queue_macro_notification(session: Session, briefing: MacroBriefing) -> None:
     elif delivery.status != "sent":
         delivery.payload = payload
         delivery.status = "pending"
+
+
+def queue_daily_digest_notification(
+    session: Session,
+    run_date: date,
+) -> NotificationDelivery | None:
+    digest = build_daily_digest(session, run_date)
+    payload = json.dumps(
+        {
+            "text": render_daily_digest(digest),
+            "briefing_date": str(run_date),
+            "type": "daily_monitoring_digest",
+            "presentation": "long_text",
+            "use_llm": False,
+        },
+        ensure_ascii=False,
+    )
+    channel = _notification_channel()
+    delivery = session.exec(
+        select(NotificationDelivery).where(
+            NotificationDelivery.ticker == "__DAILY_DIGEST__",
+            NotificationDelivery.assessment_date == run_date,
+            NotificationDelivery.channel == channel,
+        )
+    ).first()
+    if delivery is None:
+        delivery = NotificationDelivery(
+            ticker="__DAILY_DIGEST__",
+            assessment_date=run_date,
+            channel=channel,
+            status="pending",
+            payload=payload,
+        )
+        session.add(delivery)
+    elif delivery.status != "sent":
+        delivery.payload = payload
+        delivery.status = "pending"
+    session.commit()
+    session.refresh(delivery)
+    return delivery
 
 
 def _observation_map(market: object) -> dict[str, dict[str, object]]:
@@ -570,67 +620,22 @@ def _macro_report(briefing: MacroBriefing) -> tuple[str, dict[str, object]]:
     impacts = _json_value(briefing.ticker_impacts, [])
     calendar = _json_value(briefing.today_calendar, [])
     quality = _json_value(briefing.data_quality, [])
-
-    market_items = market.get("items", []) if isinstance(market, dict) else []
-    market_values = [
-        str(item).replace("달러 ", "미 달러지수(광의) ", 1)
-        for item in market_items[:12]
-    ]
-    observations = _observation_map(market)
-    equity_interpretation = _equity_interpretation(observations)
-    rates_interpretation = _rates_fx_commodity_interpretation(observations)
-    regime_label = str(regime.get("label", "mixed")) if isinstance(regime, dict) else "mixed"
-    confidence = float(regime.get("confidence", 0)) if isinstance(regime, dict) else 0.0
-    regime_summary = str(regime.get("summary", "판단 근거 부족")) if isinstance(regime, dict) else "판단 근거 부족"
-    regime_display = REGIME_LABELS.get(regime_label, regime_label)
-    interpretation = REGIME_INTERPRETATIONS.get(regime_label, "추가 확인이 필요합니다.")
-    axes = _regime_axis_values(regime)
-    regime_axes = [
-        f"{label} {axes[key]:+d}" for key, label in REGIME_AXIS_KEYS.items()
-    ]
-    axis_detail_text = "\n".join(_axis_explanations(axes, observations))
-
-    thesis_items = theses if isinstance(theses, list) else []
-    ordered_theses = [item for item in thesis_items if isinstance(item, dict)]
-    thesis_parts = []
-    for item in ordered_theses[:5]:
-        key = str(item.get("thesis_key", ""))
-        status = str(item.get("status", "intact"))
-        item_confidence = float(item.get("confidence", 0))
-        thesis_parts.append(
-            f"{MACRO_THESIS_LABELS.get(key, key)} {MACRO_STATUS_LABELS.get(status, status)}"
-            f"({item_confidence:.0%})"
-        )
-    thesis_line = " · ".join(thesis_parts) or "주요 시장 가정 판단 보류"
-    thesis_detail_lines = [
-        "• 판단 신뢰도는 내부 근거 충족도이며 해당 시나리오의 발생 확률이 아닙니다."
-    ]
-    for item in ordered_theses[:5]:
-        key = str(item.get("thesis_key", ""))
-        fallback_signal, fallback_rationale = _fallback_thesis_signal(key, axes)
-        raw_signal = item.get("daily_signal")
-        daily_signal = int(raw_signal) if isinstance(raw_signal, (int, float)) else fallback_signal
-        rationale = str(item.get("signal_rationale") or fallback_rationale)
-        status = str(item.get("status", "intact"))
-        title = str(item.get("title") or item.get("thesis_key") or "시장 가정")
-        thesis_detail_lines.append(
-            f"• {title}: 현재 상태 {MACRO_STATUS_LABELS.get(status, status)} · "
-            f"오늘 신호 {_daily_signal_label(daily_signal)}({daily_signal:+d}) · "
-            f"판단 신뢰도 {float(item.get('confidence', 0)):.0%}\n"
-            f"  - 근거: {rationale}"
-        )
-    thesis_detail_text = "\n".join(thesis_detail_lines) or f"• {thesis_line}"
-
+    macro = interpret_macro_briefing(briefing)
+    axis_text = "\n".join(
+        f"• {label}: {explanation}" for label, explanation in macro.axis_explanations
+    )
+    change_text = "\n".join(f"• {item}" for item in macro.key_changes)
+    assumption_text = "\n".join(f"• {item}" for item in macro.market_assumptions)
     impact_items = [item for item in impacts if isinstance(item, dict)] if isinstance(impacts, list) else []
     impact_detail_lines = [
         f"• {item.get('ticker')}: "
-        f"{IMPACT_LABELS.get(str(item.get('direction')), item.get('direction'))} "
-        f"{item.get('magnitude', 0)}/5 · 이익 {item.get('earnings_effect', 'neutral')} · "
+        f"{IMPACT_LABELS.get(str(item.get('direction')), item.get('direction'))} · "
+        f"이익 {item.get('earnings_effect', 'neutral')} · "
         f"Valuation {item.get('valuation_effect', 'neutral')}"
         + (f" · {item.get('rationale')}" if item.get("rationale") else "")
         for item in impact_items[:5]
     ]
-    impact_detail_text = "\n".join(impact_detail_lines) or "• 종목별 유의미한 변화 없음"
+    impact_detail_text = "\n".join(impact_detail_lines) or "• 강한 종목별 거시 전달 경로가 없습니다."
     calendar_items = calendar if isinstance(calendar, list) else []
     quality_items = quality if isinstance(quality, list) else []
     calendar_text = ", ".join(
@@ -659,25 +664,17 @@ def _macro_report(briefing: MacroBriefing) -> tuple[str, dict[str, object]]:
     quality_text = "\n".join(quality_lines) or "• 특이사항 없음"
     fallback = (
         f"🌍 시장환경 점검 · {briefing.briefing_date}\n"
-        f"⚠️ {regime_display} 국면 · 신뢰도 {confidence:.0%}\n\n"
-        f"🎯 결론\n"
-        f"• 시장: {interpretation}\n"
-        f"• 행동: 방향을 단정하기보다 변화가 확인된 지표와 종목별 근거를 우선 점검합니다.\n\n"
-        f"📈 간밤 시장\n"
-        f"• {' · '.join(market_values) or '시장 데이터 없음'}\n\n"
-        f"• 해석: {equity_interpretation}\n\n"
-        f"💵 금리·환율·원자재\n"
-        f"• {rates_interpretation}\n\n"
-        f"🧭 현재 국면\n"
-        f"• {regime_summary}\n"
-        f"• 6축 점수: {' · '.join(regime_axes)}\n"
-        f"• 점수는 -2~+2 방향 신호이며 +0은 강한 방향 신호가 없다는 뜻입니다.\n"
-        f"{axis_detail_text}\n\n"
-        f"🔄 시장 가정 상태와 오늘 신호\n"
-        f"{thesis_detail_text}\n\n"
-        f"🏢 종목 영향\n"
+        f"⚠️ {macro.regime_label} 국면 · 판단 신뢰도 {macro.confidence:.0%}\n\n"
+        f"🎯 오늘 한 줄\n{macro.one_line}\n\n"
+        f"📈 오늘 가장 중요한 변화\n"
+        f"{change_text or '• 임계치를 넘은 핵심 시장 변화가 없습니다.'}\n\n"
+        f"🧭 현재 시장 상황\n{axis_text}\n\n"
+        f"💡 종합 해석\n{' '.join(macro.integrated_view)}\n\n"
+        f"🔄 시장 가정\n"
+        f"{assumption_text or '• 방향을 바꿀 신규 확정 근거가 없습니다.'}\n\n"
+        f"🏢 주요 종목 전달 경로\n"
         f"{impact_detail_text}\n\n"
-        f"📅 오늘 일정과 시나리오\n"
+        f"📅 오늘/근접 일정\n"
         f"• {calendar_text}\n\n"
         f"⚠️ 데이터 주의\n"
         f"{quality_text}"
@@ -689,7 +686,7 @@ def _macro_report(briefing: MacroBriefing) -> tuple[str, dict[str, object]]:
         "headline": briefing.headline,
         "market": market,
         "regime": regime,
-        "macro_theses": thesis_items,
+        "macro_theses": theses if isinstance(theses, list) else [],
         "ticker_impacts": impact_items,
         "today_calendar": calendar_items,
         "data_quality": quality_items,
@@ -705,7 +702,7 @@ class KakaoSelfNotifier:
     ) -> None:
         self.settings = get_settings()
         self.transport = transport
-        self.narrative_generator = narrative_generator or InvestmentNarrativeGenerator()
+        self.narrative_generator = narrative_generator
 
     def _token_path(self) -> Path:
         path = Path(self.settings.data_dir) / "kakao_tokens.json"
@@ -761,10 +758,11 @@ class KakaoSelfNotifier:
         async with httpx.AsyncClient(timeout=20, transport=self.transport) as client:
             access_token = await self._access_token(client)
             text = str(payload["text"])
-            if payload.get("presentation") == "long_text":
+            if payload.get("use_llm") is True:
                 context = payload.get("analysis_context")
                 if isinstance(context, dict):
-                    text = await self.narrative_generator.generate(context, text)
+                    generator = self.narrative_generator or InvestmentNarrativeGenerator()
+                    text = await generator.generate(context, text)
             headers = {"Authorization": f"Bearer {access_token}"}
             if payload.get("presentation") == "long_text":
                 for chunk in split_kakao_text(text):
@@ -844,7 +842,7 @@ class TelegramNotifier:
     ) -> None:
         self.settings = get_settings()
         self.transport = transport
-        self.narrative_generator = narrative_generator or InvestmentNarrativeGenerator()
+        self.narrative_generator = narrative_generator
 
     async def _send_chunk(self, client: httpx.AsyncClient, text: str) -> None:
         token = self.settings.telegram_bot_token
@@ -898,10 +896,11 @@ class TelegramNotifier:
         if self.settings.notification_dry_run:
             return "dry_run"
         text = str(payload["text"])
-        if payload.get("presentation") == "long_text":
+        if payload.get("use_llm") is True:
             context = payload.get("analysis_context")
             if isinstance(context, dict):
-                text = await self.narrative_generator.generate(context, text)
+                generator = self.narrative_generator or InvestmentNarrativeGenerator()
+                text = await generator.generate(context, text)
         chunks = split_telegram_text(text, self.settings.telegram_message_max_chars)
         timeout = httpx.Timeout(30.0, connect=10.0)
         async with httpx.AsyncClient(timeout=timeout, transport=self.transport) as client:

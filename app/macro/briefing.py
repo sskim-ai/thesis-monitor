@@ -1,5 +1,5 @@
 import json
-from datetime import date, datetime
+from datetime import date, datetime, timedelta
 
 from sqlmodel import Session, select
 
@@ -161,7 +161,8 @@ def build_macro_briefing(
             "impact_level": item.impact_level,
         }
         for item in calendar
-        if item.scheduled_at is not None and item.scheduled_at.date() == briefing_date
+        if item.scheduled_at is not None
+        and briefing_date <= item.scheduled_at.date() <= briefing_date + timedelta(days=7)
     ]
     thesis_items = []
     for item in theses:

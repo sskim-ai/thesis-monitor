@@ -26,7 +26,8 @@ versions and assessment history.
 - `invalidation_candidate`: alert but keep monitoring until the evidence is strong enough.
 - `invalidated`: only confirmed when an explicit invalidation signal matches a high-relevance filing
   from OpenDART, SEC EDGAR, or company IR. The watchlist item is then deactivated, not deleted.
-- `no_material_change`: store history without sending a notification.
+- `no_material_change`: store history and include the stock in the daily digest without a separate
+  material-event alert.
 
 All assessments preserve confirmed evidence URLs and keep technical price position separate from
 fundamental fair-value conclusions.
@@ -39,9 +40,11 @@ thesis changes only when the user or Custom GPT submits a revised version.
 
 - Primary schedule: every day at 08:00 Asia/Seoul.
 - Retry schedule: 08:15 and 08:45.
-- The macro briefing runs first; its failure is isolated so stock monitoring still runs.
+- Macro collection and assessment run first; provider failure is isolated so stock monitoring still runs.
 - Each macro provider fails independently and missing sources are shown as data-quality warnings.
-- A macro morning message is queued once per date, including no-material-change days.
+- Every active stock receives a dated assessment, including no-material-change days.
+- After all assessments are saved, one deterministic daily digest is queued for Telegram.
+- Strengthening, weakening, review, and invalidation events remain separate material-event alerts.
 - Provider calls retry with exponential backoff.
 - OHLCV and event-provider partial results are retained.
 - Notification delivery uses a channel-specific persistent outbox and remains `dry_run` until Telegram is configured.
@@ -53,10 +56,15 @@ thesis changes only when the user or Custom GPT submits a revised version.
 2. Classify material moves as rate, inflation, liquidity, credit, risk, energy,
    or technology CAPEX shocks.
 3. Score growth, inflation, liquidity, financial conditions, risk appetite, and
-   earnings momentum. Low-confidence regime changes retain the prior regime.
+   earnings momentum internally. The user message explains these axes in natural language.
 4. Update competing macro theses without invalidating them from a single daily move.
 5. Apply each stock thesis's signed exposure, weight, and transmission channel.
-6. Store the full briefing and send the detailed Telegram narrative through the outbox.
+6. Save all stock assessments, build the complete daily digest, then send the digest and material alerts.
+
+The default morning path does not call OpenAI or another LLM. Significance thresholds, macro
+interpretation, stock selection, and Korean message rendering are deterministic. Stale, partial, and
+provisional observations do not create a directional market signal; they lower confidence and appear
+in the final data-quality section.
 
 The three optional source keys are `FRED_API_KEY`, `EIA_API_KEY`, and
 `ECOS_API_KEY`. Without them the run remains operational but the briefing is

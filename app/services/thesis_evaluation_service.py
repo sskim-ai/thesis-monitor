@@ -514,37 +514,7 @@ def evaluate_thesis(
             }
         )
 
-    expectations = _json_dict(thesis.market_expectations)
-    framework = _json_dict(thesis.valuation_framework)
-    if not framework and not expansion_signals and not compression_signals:
-        valuation_impact = ValuationImpact.unknown
-    elif expansion_points >= 20 and compression_points >= 20:
-        valuation_impact = ValuationImpact.mixed
-    elif expansion_points - compression_points >= 20:
-        valuation_impact = ValuationImpact.expansion
-    elif compression_points - expansion_points >= 20:
-        valuation_impact = ValuationImpact.compression
-    else:
-        valuation_impact = ValuationImpact.neutral
-    valuation_context = ValuationContext(
-        impact=valuation_impact,
-        summary=_valuation_summary(valuation_impact),
-        market_expectation_level=_expectation_level(expectations.get("level", "unknown")),
-        market_expectation_summary=str(expectations.get("summary", "")),
-        primary_method=str(framework.get("primary_method", "")),
-        matched_expansion_conditions=list(dict.fromkeys(matched_expansion)),
-        matched_compression_conditions=list(dict.fromkeys(matched_compression)),
-        macro_valuation_effect=macro_valuation_effect,
-        evidence_count=sum(
-            1 for item in evidence if item.get("valuation_direction", "neutral") != "neutral"
-        ),
-    )
     earnings_estimate_impact = _earnings_estimate_impact(events)
-    market_expectation_assessment = _expectation_assessment(
-        expectations, valuation_context
-    )
-    confirmed_facts, inferred_implications, unknowns = _assessment_evidence_layers(events)
-
     trusted_invalidation = any(
         event.provider in TRUSTED_INVALIDATION_PROVIDERS
         and event.relevance_score >= 80
@@ -565,6 +535,57 @@ def evaluate_thesis(
         status = AssessmentStatus.needs_review
     else:
         status = AssessmentStatus.no_material_change
+
+    expectations = _json_dict(thesis.market_expectations)
+    framework = _json_dict(thesis.valuation_framework)
+    expectation_level = _expectation_level(expectations.get("level", "unknown"))
+    if earnings_estimate_impact == EarningsEstimateImpact.up:
+        expansion_points += 20
+    elif earnings_estimate_impact == EarningsEstimateImpact.down:
+        compression_points += 20
+    elif earnings_estimate_impact == EarningsEstimateImpact.mixed:
+        expansion_points += 20
+        compression_points += 20
+    if status == AssessmentStatus.strengthened:
+        expansion_points += 10
+    elif status in {AssessmentStatus.weakened, AssessmentStatus.invalidation_candidate}:
+        compression_points += 10
+    elif status == AssessmentStatus.invalidated:
+        compression_points += 30
+
+    if not framework and not expansion_signals and not compression_signals:
+        valuation_impact = ValuationImpact.unknown
+    elif expansion_points >= 20 and compression_points >= 20:
+        valuation_impact = ValuationImpact.mixed
+    elif expansion_points - compression_points >= 20:
+        valuation_impact = ValuationImpact.expansion
+    elif compression_points - expansion_points >= 20:
+        valuation_impact = ValuationImpact.compression
+    else:
+        valuation_impact = ValuationImpact.neutral
+    if valuation_impact == ValuationImpact.expansion and expectation_level in {
+        ExpectationLevel.very_high,
+        ExpectationLevel.speculative,
+    }:
+        valuation_impact = ValuationImpact.mixed
+
+    valuation_context = ValuationContext(
+        impact=valuation_impact,
+        summary=_valuation_summary(valuation_impact),
+        market_expectation_level=expectation_level,
+        market_expectation_summary=str(expectations.get("summary", "")),
+        primary_method=str(framework.get("primary_method", "")),
+        matched_expansion_conditions=list(dict.fromkeys(matched_expansion)),
+        matched_compression_conditions=list(dict.fromkeys(matched_compression)),
+        macro_valuation_effect=macro_valuation_effect,
+        evidence_count=sum(
+            1 for item in evidence if item.get("valuation_direction", "neutral") != "neutral"
+        ),
+    )
+    market_expectation_assessment = _expectation_assessment(
+        expectations, valuation_context
+    )
+    confirmed_facts, inferred_implications, unknowns = _assessment_evidence_layers(events)
 
     net_score = max(-100, min(100, positive_points - negative_points))
     confidence = 0.0

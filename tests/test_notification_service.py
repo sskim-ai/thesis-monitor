@@ -100,10 +100,11 @@ def test_macro_report_explains_axes_confidence_and_friendly_series_names() -> No
 
     report, _context = _macro_report(briefing)
 
-    assert "위험선호 +1" in report
-    assert "위험선호 +0" not in report
-    assert "발생 확률이 아닙니다" in report
-    assert "오늘 신호 중립(+0)" in report
+    assert "6축 점수" not in report
+    assert "위험선호 +1" not in report
+    assert "🧭 현재 시장 상황" in report
+    assert "• 위험선호:" in report
+    assert "성장 급락과 물가 재가속" in report
     assert "미 달러지수(광의)(DTWEXBGS)" in report
     assert "당일 방향 판단에는 사용하지 않습니다" in report
 
@@ -189,6 +190,7 @@ async def test_kakao_notifier_sends_long_report_as_text_chunks(tmp_path) -> None
         {
             "text": "기본 분석",
             "presentation": "long_text",
+            "use_llm": True,
             "analysis_context": {"analysis_type": "macro"},
         }
     )
@@ -235,6 +237,7 @@ async def test_telegram_notifier_sends_generated_report_as_section_chunks() -> N
         {
             "text": "기본 분석",
             "presentation": "long_text",
+            "use_llm": True,
             "analysis_context": {"analysis_type": "macro"},
         }
     )

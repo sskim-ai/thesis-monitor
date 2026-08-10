@@ -11,7 +11,11 @@ from app.schemas.thesis import DailyMonitorResponse, PriceContext
 from app.services.collection_service import CollectionService
 from app.services.local_storage import export_assessment_history, export_monitor_run, export_thesis
 from app.services.monitoring_service import assessment_to_read
-from app.services.notification_service import dispatch_pending_notifications, queue_notification
+from app.services.notification_service import (
+    dispatch_pending_notifications,
+    queue_daily_digest_notification,
+    queue_notification,
+)
 from app.services.ohlcv_client import OhlcvClient
 from app.services.thesis_evaluation_service import evaluate_thesis, recent_events_for_assessment
 
@@ -129,6 +133,7 @@ async def run_daily_monitor(
         select(MonitorRun).where(MonitorRun.run_date == run_date, MonitorRun.run_type == "daily")
     ).first()
     if existing_run is not None and existing_run.status == "success" and not force:
+        queue_daily_digest_notification(session, run_date)
         await dispatch_pending_notifications(session)
         assessments = session.exec(
             select(ThesisAssessment).where(ThesisAssessment.assessment_date == run_date)
@@ -266,8 +271,6 @@ async def run_daily_monitor(
             session.refresh(assessment)
             if result.should_deactivate:
                 export_thesis(thesis)
-            queue_notification(session, assessment)
-            session.commit()
             export_assessment_history(session, item.ticker)
             completed_assessments.append(assessment)
             run.success_count += 1
@@ -299,6 +302,10 @@ async def run_daily_monitor(
     session.commit()
     session.refresh(run)
     export_monitor_run(run)
+    queue_daily_digest_notification(session, run_date)
+    for assessment in completed_assessments:
+        queue_notification(session, assessment)
+    session.commit()
     await dispatch_pending_notifications(session)
     return DailyMonitorResponse(
         run_date=run_date,
