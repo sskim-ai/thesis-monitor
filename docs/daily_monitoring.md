@@ -26,8 +26,8 @@ versions and assessment history.
 - `invalidation_candidate`: alert but keep monitoring until the evidence is strong enough.
 - `invalidated`: only confirmed when an explicit invalidation signal matches a high-relevance filing
   from OpenDART, SEC EDGAR, or company IR. The watchlist item is then deactivated, not deleted.
-- `no_material_change`: store history and include the stock in the daily digest without a separate
-  material-event alert.
+- `no_material_change`: store history and include the stock in the daily per-stock analysis without
+  creating a separate material-event alert.
 
 All assessments preserve confirmed evidence URLs and keep technical price position separate from
 fundamental fair-value conclusions.
@@ -38,12 +38,12 @@ thesis changes only when the user or Custom GPT submits a revised version.
 
 ## Runtime and recovery
 
-- Primary schedule: every day at 08:00 Asia/Seoul.
-- Retry schedule: 08:15 and 08:45.
+- Primary schedule: every day at 07:50 Asia/Seoul.
+- Retry schedule: 08:05 and 08:35.
 - Macro collection and assessment run first; provider failure is isolated so stock monitoring still runs.
 - Each macro provider fails independently and missing sources are shown as data-quality warnings.
 - Every active stock receives a dated assessment, including no-material-change days.
-- After all assessments are saved, one deterministic daily digest is queued for Telegram.
+- After all assessments are saved, one market digest and one analysis per active stock are queued for Telegram.
 - Strengthening, weakening, review, and invalidation events remain separate material-event alerts.
 - Provider calls retry with exponential backoff.
 - OHLCV and event-provider partial results are retained.

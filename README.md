@@ -220,7 +220,7 @@ python -m app.jobs.monitor_daily
 ```
 
 The Mac mini LaunchAgent template is `ops/com.seungsoo.thesis-monitor.daily.plist`. It runs at
-08:00 KST and retries at 08:15 and 08:45. The flow is macro collection and assessment, all-stock
+07:50 KST and retries at 08:05 and 08:35. The flow is macro collection and assessment, all-stock
 assessment storage, daily digest generation, then Telegram delivery. Successful duplicate runs retry
 only pending delivery work.
 
