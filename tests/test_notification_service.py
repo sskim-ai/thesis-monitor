@@ -8,6 +8,7 @@ import pytest
 from app.services.notification_service import (
     KakaoSelfNotifier,
     TelegramNotifier,
+    _macro_report,
     _message_for_assessment,
 )
 
@@ -44,6 +45,67 @@ def test_assessment_notification_uses_investment_rationale_label() -> None:
     assert "💰 가격 판단" in message
     assert "📐 시장 기대와 Valuation" in message
     assert "Thesis" not in message
+
+
+def test_macro_report_explains_axes_confidence_and_friendly_series_names() -> None:
+    briefing = SimpleNamespace(
+        briefing_date="2030-01-02",
+        as_of="2030-01-02T08:00:00+09:00",
+        headline="mixed",
+        market_summary=json.dumps(
+            {
+                "items": ["S&P +0.4%", "Nasdaq +0.8%", "VIX -4.2%"],
+                "observations": [
+                    {"series_code": "SPY", "change_pct": 0.4},
+                    {"series_code": "QQQ", "change_pct": 0.8},
+                    {"series_code": "SOXX", "change_pct": 0.7},
+                    {"series_code": "VIXCLS", "change_pct": -4.2},
+                    {"series_code": "DFII10", "change_value": 0.02},
+                ],
+            },
+            ensure_ascii=False,
+        ),
+        regime_summary=json.dumps(
+            {
+                "label": "mixed",
+                "summary": "성장 +0, 물가 +0, 유동성 +0, 금융여건 +0, 위험선호 +1, 이익 +0",
+                "confidence": 0.9,
+            },
+            ensure_ascii=False,
+        ),
+        macro_theses=json.dumps(
+            [
+                {
+                    "thesis_key": "us_soft_landing_disinflation",
+                    "title": "미국 연착륙과 점진적 디스인플레이션",
+                    "status": "strengthening",
+                    "confidence": 0.85,
+                }
+            ],
+            ensure_ascii=False,
+        ),
+        ticker_impacts="[]",
+        today_calendar="[]",
+        data_quality=json.dumps(
+            [
+                {
+                    "series_code": "DTWEXBGS",
+                    "quality_status": "stale",
+                    "observed_at": "2029-12-20",
+                }
+            ],
+            ensure_ascii=False,
+        ),
+    )
+
+    report, _context = _macro_report(briefing)
+
+    assert "위험선호 +1" in report
+    assert "위험선호 +0" not in report
+    assert "발생 확률이 아닙니다" in report
+    assert "오늘 신호 중립(+0)" in report
+    assert "미 달러지수(광의)(DTWEXBGS)" in report
+    assert "당일 방향 판단에는 사용하지 않습니다" in report
 
 
 @pytest.mark.anyio

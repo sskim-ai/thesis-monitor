@@ -16,10 +16,13 @@ from app.models.macro import (
 MARKET_DISPLAY = {
     "SPY": "S&P",
     "QQQ": "Nasdaq",
+    "IWM": "Russell 2000",
     "SOXX": "SOXX",
     "DGS10": "미10Y",
     "DFII10": "실질10Y",
-    "DTWEXBGS": "달러",
+    "T10YIE": "미10Y 기대인플레이션",
+    "BAMLH0A0HYM2": "미 하이일드 스프레드",
+    "DTWEXBGS": "미 달러지수(광의)",
     "USDKRW": "USD/KRW",
     "DCOILWTICO": "WTI",
     "VIXCLS": "VIX",
@@ -34,7 +37,7 @@ REGIME_DISPLAY = {
 }
 
 MACRO_STATUS_DISPLAY = {
-    "strengthening": "강화",
+    "strengthening": "근거 우세",
     "intact": "유지",
     "weakening": "약화",
     "structural_break": "구조적 재검토",
@@ -46,6 +49,56 @@ IMPACT_DISPLAY = {
     "mixed": "혼재",
     "neutral": "중립",
 }
+
+
+def _thesis_daily_signal(
+    thesis_key: str,
+    regime: MacroRegimeAssessment,
+) -> tuple[int, str]:
+    if thesis_key == "us_soft_landing_disinflation":
+        if (
+            regime.growth_momentum >= 1
+            and regime.inflation_pressure <= 0
+        ) or (
+            regime.growth_momentum >= 0
+            and regime.inflation_pressure <= -1
+        ):
+            signal = 1
+        elif regime.growth_momentum <= -1 or regime.inflation_pressure >= 1:
+            signal = -1
+        else:
+            signal = 0
+        rationale = (
+            f"성장 {regime.growth_momentum:+d}, 물가 {regime.inflation_pressure:+d}: "
+            "성장 급락과 물가 재가속이 함께 나타나는지 점검했습니다."
+        )
+    elif thesis_key == "fed_policy_path":
+        signal = int(regime.financial_conditions >= 1) - int(
+            regime.financial_conditions <= -1
+        )
+        rationale = (
+            f"금융여건 {regime.financial_conditions:+d}: 실질금리와 신용스프레드가 "
+            "구조적 재긴축을 가리키는지 점검했습니다."
+        )
+    elif thesis_key == "ai_capex_cycle":
+        signal = regime.earnings_momentum
+        rationale = (
+            f"이익 모멘텀 {regime.earnings_momentum:+d}: 반도체 가격 반응을 "
+            "AI CAPEX·이익 기대의 단기 대용치로 사용했습니다."
+        )
+    elif thesis_key == "china_korea_export_cycle":
+        signal = regime.growth_momentum
+        rationale = (
+            f"성장 모멘텀 {regime.growth_momentum:+d}: 소형주·반도체 위험선호를 "
+            "수출 경기의 단기 대용치로 사용했습니다."
+        )
+    else:
+        signal = -1 if regime.inflation_pressure >= 2 else 0
+        rationale = (
+            f"물가 압력 {regime.inflation_pressure:+d}: 유가·기대인플레이션이 "
+            "지속적 공급 충격 수준인지 점검했습니다."
+        )
+    return signal, rationale
 
 
 def _json(value: str, fallback: object) -> object:
@@ -110,8 +163,11 @@ def build_macro_briefing(
         for item in calendar
         if item.scheduled_at is not None and item.scheduled_at.date() == briefing_date
     ]
-    thesis_items = [
-        {
+    thesis_items = []
+    for item in theses:
+        daily_signal, signal_rationale = _thesis_daily_signal(item.thesis_key, regime)
+        thesis_items.append(
+            {
             "thesis_key": item.thesis_key,
             "title": item.title,
             "status": item.status,
@@ -120,9 +176,11 @@ def build_macro_briefing(
             "expected_evidence": _json(item.expected_evidence, []),
             "weakening_evidence": _json(item.weakening_evidence, []),
             "valuation_channels": _json(item.valuation_channels, []),
-        }
-        for item in theses
-    ]
+            "daily_signal": daily_signal,
+            "signal_rationale": signal_rationale,
+            "confidence_meaning": "내부 근거 충족도이며 발생 확률이 아님",
+            }
+        )
     impact_items = [
         {
             "ticker": item.ticker,

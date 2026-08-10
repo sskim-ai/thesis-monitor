@@ -108,6 +108,13 @@ async def test_macro_monitor_builds_briefing_impacts_and_dedupes() -> None:
         assert result.briefing.kakao_text.startswith("[시장환경 점검]")
         assert result.briefing.regime_summary["growth_momentum"] is not None
         assert result.briefing.regime_summary["earnings_momentum"] is not None
+        soft_landing = next(
+            item
+            for item in result.briefing.macro_theses
+            if item["thesis_key"] == "us_soft_landing_disinflation"
+        )
+        assert "daily_signal" in soft_landing
+        assert "발생 확률이 아님" in soft_landing["confidence_meaning"]
         assert result.observation_count == 12
         assert result.impact_count >= 1
         impact = session.exec(

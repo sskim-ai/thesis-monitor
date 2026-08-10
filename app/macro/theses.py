@@ -105,9 +105,22 @@ def update_macro_theses(
     for thesis in theses:
         old_confidence = thesis.confidence
         if thesis.thesis_key == "us_soft_landing_disinflation":
-            delta = int(regime.growth_momentum >= -1) + int(regime.inflation_pressure <= 0) - 1
+            if (
+                regime.growth_momentum >= 1
+                and regime.inflation_pressure <= 0
+            ) or (
+                regime.growth_momentum >= 0
+                and regime.inflation_pressure <= -1
+            ):
+                delta = 1
+            elif regime.growth_momentum <= -1 or regime.inflation_pressure >= 1:
+                delta = -1
+            else:
+                delta = 0
         elif thesis.thesis_key == "fed_policy_path":
-            delta = int(regime.financial_conditions >= 0) - int(regime.financial_conditions <= -1)
+            delta = int(regime.financial_conditions >= 1) - int(
+                regime.financial_conditions <= -1
+            )
         elif thesis.thesis_key == "ai_capex_cycle":
             delta = regime.earnings_momentum
         elif thesis.thesis_key == "china_korea_export_cycle":

@@ -1,6 +1,7 @@
 import asyncio
 import json
 import os
+import re
 from datetime import datetime, timezone
 from pathlib import Path
 from tempfile import NamedTemporaryFile
@@ -53,7 +54,7 @@ MACRO_THESIS_LABELS = {
 }
 
 MACRO_STATUS_LABELS = {
-    "strengthening": "강화",
+    "strengthening": "근거 우세",
     "intact": "유지",
     "weakening": "약화",
     "structural_break": "재검토",
@@ -64,6 +65,30 @@ IMPACT_LABELS = {
     "weaken": "약화",
     "mixed": "혼재",
     "neutral": "중립",
+}
+
+SERIES_LABELS = {
+    "SPY": "S&P",
+    "QQQ": "Nasdaq",
+    "IWM": "Russell 2000",
+    "SOXX": "SOXX",
+    "DGS10": "미10년 명목금리",
+    "DFII10": "미10년 실질금리",
+    "T10YIE": "미10년 기대인플레이션",
+    "BAMLH0A0HYM2": "미 하이일드 스프레드",
+    "DTWEXBGS": "미 달러지수(광의)",
+    "USDKRW": "원/달러",
+    "DCOILWTICO": "WTI",
+    "VIXCLS": "VIX",
+}
+
+REGIME_AXIS_KEYS = {
+    "growth_momentum": "성장",
+    "inflation_pressure": "물가",
+    "liquidity_condition": "유동성",
+    "financial_conditions": "금융여건",
+    "risk_appetite": "위험선호",
+    "earnings_momentum": "이익",
 }
 
 SUPPORTED_NOTIFICATION_CHANNELS = {"kakao_self", "telegram"}
@@ -389,6 +414,127 @@ def _rates_fx_commodity_interpretation(
     return " ".join(parts) or "금리·환율·원자재 변화 자료가 부족합니다."
 
 
+def _regime_axis_values(regime: object) -> dict[str, int]:
+    if not isinstance(regime, dict):
+        return {key: 0 for key in REGIME_AXIS_KEYS}
+    explicit = {
+        key: int(regime[key])
+        for key in REGIME_AXIS_KEYS
+        if isinstance(regime.get(key), (int, float))
+    }
+    if len(explicit) == len(REGIME_AXIS_KEYS):
+        return explicit
+    summary = str(regime.get("summary", ""))
+    values = dict(explicit)
+    for key, label in REGIME_AXIS_KEYS.items():
+        if key in values:
+            continue
+        match = re.search(rf"{label}\s*([+-]?\d+)", summary)
+        values[key] = int(match.group(1)) if match else 0
+    return values
+
+
+def _move_text(
+    observations: dict[str, dict[str, object]],
+    series_code: str,
+    *,
+    basis_points: bool = False,
+) -> str:
+    observation = observations.get(series_code)
+    if observation is None:
+        return "자료 없음"
+    change = _change_value(observation) if basis_points else _change_pct(observation)
+    if change is None:
+        return "변화율 없음"
+    return f"{change * 100:+.0f}bp" if basis_points else f"{change:+.1f}%"
+
+
+def _axis_explanations(
+    axes: dict[str, int],
+    observations: dict[str, dict[str, object]],
+) -> list[str]:
+    return [
+        (
+            f"• 성장 {axes['growth_momentum']:+d}: Russell 2000 "
+            f"{_move_text(observations, 'IWM')}, SOXX {_move_text(observations, 'SOXX')}. "
+            "소형주와 반도체가 함께 강하거나 약한 임계치를 넘는지 봅니다."
+        ),
+        (
+            f"• 물가 {axes['inflation_pressure']:+d}: 기대인플레이션 "
+            f"{_move_text(observations, 'T10YIE', basis_points=True)}, WTI "
+            f"{_move_text(observations, 'DCOILWTICO')}. 유가와 기대물가가 함께 움직이는지 봅니다."
+        ),
+        (
+            f"• 유동성 {axes['liquidity_condition']:+d}: 미 달러지수(광의) "
+            f"{_move_text(observations, 'DTWEXBGS')}. 달러 강세는 글로벌 유동성에 부담으로 봅니다."
+        ),
+        (
+            f"• 금융여건 {axes['financial_conditions']:+d}: 실질금리 "
+            f"{_move_text(observations, 'DFII10', basis_points=True)}, 하이일드 스프레드 "
+            f"{_move_text(observations, 'BAMLH0A0HYM2', basis_points=True)}. "
+            "둘의 상승은 할인율·신용비용 부담입니다."
+        ),
+        (
+            f"• 위험선호 {axes['risk_appetite']:+d}: S&P {_move_text(observations, 'SPY')}, "
+            f"Nasdaq {_move_text(observations, 'QQQ')}, VIX "
+            f"{_move_text(observations, 'VIXCLS')}. 주가 상승과 변동성 하락의 조합을 봅니다."
+        ),
+        (
+            f"• 이익 {axes['earnings_momentum']:+d}: SOXX {_move_text(observations, 'SOXX')}. "
+            "현재는 반도체 가격 반응을 단기 이익 기대의 대용치로 사용하므로 실제 실적 추정치와는 구분합니다."
+        ),
+    ]
+
+
+def _daily_signal_label(value: int) -> str:
+    if value >= 1:
+        return "지지"
+    if value <= -1:
+        return "약화"
+    return "중립"
+
+
+def _fallback_thesis_signal(
+    thesis_key: str,
+    axes: dict[str, int],
+) -> tuple[int, str]:
+    if thesis_key == "us_soft_landing_disinflation":
+        if (
+            axes["growth_momentum"] >= 1
+            and axes["inflation_pressure"] <= 0
+        ) or (
+            axes["growth_momentum"] >= 0
+            and axes["inflation_pressure"] <= -1
+        ):
+            signal = 1
+        elif axes["growth_momentum"] <= -1 or axes["inflation_pressure"] >= 1:
+            signal = -1
+        else:
+            signal = 0
+        rationale = (
+            f"성장 {axes['growth_momentum']:+d}, 물가 {axes['inflation_pressure']:+d}: "
+            "성장 급락과 물가 재가속의 동시 발생 여부를 점검했습니다."
+        )
+    elif thesis_key == "fed_policy_path":
+        signal = int(axes["financial_conditions"] >= 1) - int(
+            axes["financial_conditions"] <= -1
+        )
+        rationale = (
+            f"금융여건 {axes['financial_conditions']:+d}: 실질금리와 신용스프레드의 "
+            "구조적 재긴축 여부를 점검했습니다."
+        )
+    elif thesis_key == "ai_capex_cycle":
+        signal = axes["earnings_momentum"]
+        rationale = f"이익 모멘텀 {axes['earnings_momentum']:+d}: 반도체 가격 반응을 단기 대용치로 사용했습니다."
+    elif thesis_key == "china_korea_export_cycle":
+        signal = axes["growth_momentum"]
+        rationale = f"성장 모멘텀 {axes['growth_momentum']:+d}: 소형주와 반도체 반응을 단기 대용치로 사용했습니다."
+    else:
+        signal = -1 if axes["inflation_pressure"] >= 2 else 0
+        rationale = f"물가 압력 {axes['inflation_pressure']:+d}: 공급 충격 수준인지 점검했습니다."
+    return signal, rationale
+
+
 def _macro_report(briefing: MacroBriefing) -> tuple[str, dict[str, object]]:
     market = _json_value(briefing.market_summary, {})
     regime = _json_value(briefing.regime_summary, {})
@@ -398,7 +544,10 @@ def _macro_report(briefing: MacroBriefing) -> tuple[str, dict[str, object]]:
     quality = _json_value(briefing.data_quality, [])
 
     market_items = market.get("items", []) if isinstance(market, dict) else []
-    market_values = [str(item) for item in market_items[:8]]
+    market_values = [
+        str(item).replace("달러 ", "미 달러지수(광의) ", 1)
+        for item in market_items[:12]
+    ]
     observations = _observation_map(market)
     equity_interpretation = _equity_interpretation(observations)
     rates_interpretation = _rates_fx_commodity_interpretation(observations)
@@ -407,20 +556,11 @@ def _macro_report(briefing: MacroBriefing) -> tuple[str, dict[str, object]]:
     regime_summary = str(regime.get("summary", "판단 근거 부족")) if isinstance(regime, dict) else "판단 근거 부족"
     regime_display = REGIME_LABELS.get(regime_label, regime_label)
     interpretation = REGIME_INTERPRETATIONS.get(regime_label, "추가 확인이 필요합니다.")
-    regime_axes = []
-    if isinstance(regime, dict):
-        axis_labels = {
-            "growth_momentum": "성장",
-            "inflation_pressure": "물가",
-            "liquidity_condition": "유동성",
-            "financial_conditions": "금융여건",
-            "risk_appetite": "위험선호",
-            "earnings_momentum": "이익",
-        }
-        regime_axes = [
-            f"{label} {int(regime.get(key, 0)):+d}"
-            for key, label in axis_labels.items()
-        ]
+    axes = _regime_axis_values(regime)
+    regime_axes = [
+        f"{label} {axes[key]:+d}" for key, label in REGIME_AXIS_KEYS.items()
+    ]
+    axis_detail_text = "\n".join(_axis_explanations(axes, observations))
 
     thesis_items = theses if isinstance(theses, list) else []
     ordered_theses = [item for item in thesis_items if isinstance(item, dict)]
@@ -435,12 +575,22 @@ def _macro_report(briefing: MacroBriefing) -> tuple[str, dict[str, object]]:
         )
     thesis_line = " · ".join(thesis_parts) or "주요 시장 가정 판단 보류"
     thesis_detail_lines = [
-        f"• {item.get('title', item.get('thesis_key', '시장 가정'))}: "
-        f"{MACRO_STATUS_LABELS.get(str(item.get('status', 'intact')), item.get('status'))} "
-        f"({float(item.get('confidence', 0)):.0%})"
-        + (f" · {item.get('description')}" if item.get("description") else "")
-        for item in ordered_theses[:5]
+        "• 판단 신뢰도는 내부 근거 충족도이며 해당 시나리오의 발생 확률이 아닙니다."
     ]
+    for item in ordered_theses[:5]:
+        key = str(item.get("thesis_key", ""))
+        fallback_signal, fallback_rationale = _fallback_thesis_signal(key, axes)
+        raw_signal = item.get("daily_signal")
+        daily_signal = int(raw_signal) if isinstance(raw_signal, (int, float)) else fallback_signal
+        rationale = str(item.get("signal_rationale") or fallback_rationale)
+        status = str(item.get("status", "intact"))
+        title = str(item.get("title") or item.get("thesis_key") or "시장 가정")
+        thesis_detail_lines.append(
+            f"• {title}: 현재 상태 {MACRO_STATUS_LABELS.get(status, status)} · "
+            f"오늘 신호 {_daily_signal_label(daily_signal)}({daily_signal:+d}) · "
+            f"판단 신뢰도 {float(item.get('confidence', 0)):.0%}\n"
+            f"  - 근거: {rationale}"
+        )
     thesis_detail_text = "\n".join(thesis_detail_lines) or f"• {thesis_line}"
 
     impact_items = [item for item in impacts if isinstance(item, dict)] if isinstance(impacts, list) else []
@@ -458,11 +608,27 @@ def _macro_report(briefing: MacroBriefing) -> tuple[str, dict[str, object]]:
     calendar_text = ", ".join(
         str(item.get("title", "일정")) for item in calendar_items[:5] if isinstance(item, dict)
     ) or "등록된 주요 일정 없음"
-    quality_text = ", ".join(
-        str(item.get("warning") or item.get("series_code") or "데이터 점검")
-        for item in quality_items[:3]
-        if isinstance(item, dict)
-    ) or "특이사항 없음"
+    quality_lines: list[str] = []
+    for item in quality_items[:5]:
+        if not isinstance(item, dict):
+            continue
+        if item.get("warning"):
+            quality_lines.append(f"• {item['warning']}")
+            continue
+        series_code = str(item.get("series_code", "데이터"))
+        label = SERIES_LABELS.get(series_code, series_code)
+        status = str(item.get("quality_status", "점검 필요"))
+        observed_at = item.get("observed_at")
+        explanation = (
+            "미국의 주요 교역 상대국 통화 대비 달러 강도를 나타내는 지수입니다. "
+            if series_code == "DTWEXBGS"
+            else ""
+        )
+        quality_lines.append(
+            f"• {label}({series_code}): {status} · 최신 관측 {observed_at or '확인 불가'}. "
+            f"{explanation}최신 관측일이 오래되어 당일 방향 판단에는 사용하지 않습니다."
+        )
+    quality_text = "\n".join(quality_lines) or "• 특이사항 없음"
     fallback = (
         f"🌍 시장환경 점검 · {briefing.briefing_date}\n"
         f"⚠️ {regime_display} 국면 · 신뢰도 {confidence:.0%}\n\n"
@@ -476,15 +642,17 @@ def _macro_report(briefing: MacroBriefing) -> tuple[str, dict[str, object]]:
         f"• {rates_interpretation}\n\n"
         f"🧭 현재 국면\n"
         f"• {regime_summary}\n"
-        f"• 6축 점수: {' · '.join(regime_axes) or '축별 점수 없음'}\n\n"
-        f"🔄 시장 가정 변화\n"
+        f"• 6축 점수: {' · '.join(regime_axes)}\n"
+        f"• 점수는 -2~+2 방향 신호이며 +0은 강한 방향 신호가 없다는 뜻입니다.\n"
+        f"{axis_detail_text}\n\n"
+        f"🔄 시장 가정 상태와 오늘 신호\n"
         f"{thesis_detail_text}\n\n"
         f"🏢 종목 영향\n"
         f"{impact_detail_text}\n\n"
         f"📅 오늘 일정과 시나리오\n"
         f"• {calendar_text}\n\n"
         f"⚠️ 데이터 주의\n"
-        f"• {quality_text}"
+        f"{quality_text}"
     )
     context: dict[str, object] = {
         "analysis_type": "macro",
