@@ -158,6 +158,7 @@ async def test_daily_monitor_assesses_and_queues_dry_run_notification() -> None:
             select(NotificationDelivery).where(NotificationDelivery.ticker == "TST1")
         ).one()
         assert delivery.status == "dry_run"
+        assert json.loads(delivery.payload)["type"] == "daily_stock_analysis"
 
         delivery.status = "pending"
         session.commit()
@@ -204,6 +205,11 @@ async def test_daily_monitor_uses_structured_price_rules() -> None:
         assert assessment.price_context.rule_evaluation.status == "confirmation_triggered"
         assert "상향 돌파" in assessment.price_view
         assert any(item["provider"] == "ohlcv-analyst" for item in assessment.evidence)
+        delivery = session.exec(
+            select(NotificationDelivery).where(NotificationDelivery.ticker == "PRC1")
+        ).one()
+        assert delivery.status == "dry_run"
+        assert json.loads(delivery.payload)["type"] == "daily_stock_analysis"
 
 
 @pytest.mark.anyio

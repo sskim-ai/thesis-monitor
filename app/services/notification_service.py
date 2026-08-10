@@ -124,6 +124,7 @@ def _assessment_report(
         "strengthened": "강화",
         "weakened": "약화",
         "mixed": "혼재",
+        "no_material_change": "중요 변화 없음",
         "invalidation_candidate": "무효화 후보",
         "invalidated": "무효화",
         "needs_review": "검토 필요",
@@ -138,10 +139,17 @@ def _assessment_report(
     )
     evidence = _json_list_value(assessment.evidence)
     confirmed_facts = _json_list_value(getattr(assessment, "confirmed_facts", "[]"))
+    background_confirmed_facts = _json_list_value(
+        getattr(assessment, "background_confirmed_facts", "[]")
+    )
     inferred_implications = _json_list_value(
         getattr(assessment, "inferred_implications", "[]")
     )
     unknowns = _json_list_value(getattr(assessment, "unknowns", "[]"))
+    confirmed_warnings = _json_list_value(
+        getattr(assessment, "confirmed_warnings", "[]")
+    )
+    watch_items = _json_list_value(getattr(assessment, "watch_items", "[]"))
     market_expectation_assessment = _json_value(
         getattr(assessment, "market_expectation_assessment", "{}"), {}
     )
@@ -166,10 +174,12 @@ def _assessment_report(
         if isinstance(item, dict)
     ]
     change_text = "\n".join(evidence_lines) or "• 투자 판단을 바꿀 새 근거가 확인되지 않았습니다."
-    fact_lines = [f"• 확인된 사실: {item}" for item in confirmed_facts[:2]]
+    fact_lines = [f"• {item}" for item in confirmed_facts[:3]]
     inference_lines = [f"• 투자적 해석: {item}" for item in inferred_implications[:2]]
     if fact_lines or inference_lines:
         change_text = "\n".join([*fact_lines, *inference_lines])
+    elif business_change == "no_material_change":
+        change_text = "• 오늘 투자 논리를 바꿀 신규 확정 사실은 확인되지 않았습니다."
     core_thesis = thesis.core_thesis if thesis else str(
         thesis_snapshot.get("base_thesis", "저장된 핵심 투자 논리가 없습니다.")
     )
@@ -190,6 +200,12 @@ def _assessment_report(
     valuation_impact = str(
         valuation_context.get("summary", "Valuation 영향 판단 자료가 없습니다.")
     )
+    confirmed_warning_text = "\n".join(
+        f"• {item}" for item in confirmed_warnings[:3]
+    ) or "• 현재 확인된 핵심 경고는 없습니다."
+    watch_item_text = "\n".join(
+        f"• {item}" for item in watch_items[:4]
+    ) or "• 등록된 약화 조건과 검증 지표를 계속 확인합니다."
     fallback = (
         f"🏢 {company_name}({assessment.ticker})\n"
         f"⚠️ 투자 논리 {label} · 신뢰도 {assessment.confidence:.0%}\n\n"
@@ -200,7 +216,9 @@ def _assessment_report(
         f"• 논리 조건: {condition_text}\n\n"
         f"🧭 현재 국면\n"
         f"• {assessment.summary} 위험 수준은 {assessment.risk_level}입니다.\n\n"
-        f"🔄 이번 변화\n{change_text}\n\n"
+        f"🔄 오늘 새로 확인된 변화\n{change_text}\n\n"
+        f"🚨 현재 확인된 경고\n{confirmed_warning_text}\n\n"
+        f"👀 계속 감시\n{watch_item_text}\n\n"
         f"💰 가격 판단\n• {assessment.price_view}\n\n"
         f"📐 시장 기대와 Valuation\n"
         f"• 기대 수준: {expectation_level} · {expectation_summary}\n"
@@ -244,8 +262,11 @@ def _assessment_report(
             "earnings_estimate_impact": earnings_impact,
             "market_expectation_assessment": market_expectation_assessment,
             "confirmed_facts": confirmed_facts,
+            "background_confirmed_facts": background_confirmed_facts,
             "inferred_implications": inferred_implications,
             "unknowns": unknowns,
+            "confirmed_warnings": confirmed_warnings,
+            "watch_items": watch_items,
             "score": assessment.score,
             "confidence": assessment.confidence,
             "summary": assessment.summary,
@@ -320,6 +341,58 @@ def queue_notification(session: Session, assessment: ThesisAssessment) -> None:
         delivery.status = "pending"
 
 
+def queue_daily_stock_notification(
+    session: Session,
+    assessment: ThesisAssessment,
+) -> NotificationDelivery:
+    """Queue the full morning analysis even when today's thesis delta is neutral."""
+    watchlist_item = session.exec(
+        select(WatchlistItem).where(WatchlistItem.ticker == assessment.ticker)
+    ).first()
+    thesis = session.exec(
+        select(InvestmentThesis).where(
+            InvestmentThesis.ticker == assessment.ticker,
+            InvestmentThesis.version == assessment.thesis_version,
+        )
+    ).first()
+    company_name = watchlist_item.company_name if watchlist_item else assessment.ticker
+    text, analysis_context = _assessment_report(assessment, company_name, thesis)
+    payload = json.dumps(
+        {
+            "text": text,
+            "ticker": assessment.ticker,
+            "assessment_date": str(assessment.assessment_date),
+            "status": assessment.status,
+            "type": "daily_stock_analysis",
+            "presentation": "long_text",
+            "use_llm": False,
+            "analysis_context": analysis_context,
+        },
+        ensure_ascii=False,
+    )
+    channel = _notification_channel()
+    delivery = session.exec(
+        select(NotificationDelivery).where(
+            NotificationDelivery.ticker == assessment.ticker,
+            NotificationDelivery.assessment_date == assessment.assessment_date,
+            NotificationDelivery.channel == channel,
+        )
+    ).first()
+    if delivery is None:
+        delivery = NotificationDelivery(
+            ticker=assessment.ticker,
+            assessment_date=assessment.assessment_date,
+            channel=channel,
+            status="pending",
+            payload=payload,
+        )
+        session.add(delivery)
+    elif delivery.status != "sent":
+        delivery.payload = payload
+        delivery.status = "pending"
+    return delivery
+
+
 def queue_macro_notification(session: Session, briefing: MacroBriefing) -> None:
     text, analysis_context = _macro_report(briefing)
     payload = json.dumps(
@@ -363,7 +436,7 @@ def queue_daily_digest_notification(
     digest = build_daily_digest(session, run_date)
     payload = json.dumps(
         {
-            "text": render_daily_digest(digest),
+            "text": render_daily_digest(digest, include_stock_details=False),
             "briefing_date": str(run_date),
             "type": "daily_monitoring_digest",
             "presentation": "long_text",

@@ -15,7 +15,7 @@ from app.services.monitoring_service import assessment_to_read
 from app.services.notification_service import (
     dispatch_pending_notifications,
     queue_daily_digest_notification,
-    queue_notification,
+    queue_daily_stock_notification,
 )
 from app.services.ohlcv_client import OhlcvClient
 from app.services.thesis_evaluation_service import evaluate_thesis, recent_events_for_assessment
@@ -158,13 +158,16 @@ async def run_daily_monitor(
         select(MonitorRun).where(MonitorRun.run_date == run_date, MonitorRun.run_type == "daily")
     ).first()
     if existing_run is not None and existing_run.status == "success" and not force:
-        if queue_notifications:
-            queue_daily_digest_notification(session, run_date)
-        if queue_notifications and dispatch_notifications:
-            await dispatch_pending_notifications(session)
         assessments = session.exec(
             select(ThesisAssessment).where(ThesisAssessment.assessment_date == run_date)
         ).all()
+        if queue_notifications:
+            queue_daily_digest_notification(session, run_date)
+            for assessment in assessments:
+                queue_daily_stock_notification(session, assessment)
+            session.commit()
+        if queue_notifications and dispatch_notifications:
+            await dispatch_pending_notifications(session)
         return DailyMonitorResponse(
             run_date=run_date,
             status="already_completed",
@@ -387,7 +390,7 @@ async def run_daily_monitor(
     if queue_notifications:
         queue_daily_digest_notification(session, run_date)
         for assessment in completed_assessments:
-            queue_notification(session, assessment)
+            queue_daily_stock_notification(session, assessment)
         session.commit()
     if queue_notifications and dispatch_notifications:
         await dispatch_pending_notifications(session)

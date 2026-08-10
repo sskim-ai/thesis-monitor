@@ -15,6 +15,7 @@ from app.services.daily_digest_renderer import render_daily_digest
 from app.services.notification_service import (
     TelegramNotifier,
     queue_daily_digest_notification,
+    queue_daily_stock_notification,
     queue_notification,
 )
 
@@ -249,6 +250,41 @@ def test_daily_digest_and_material_alert_are_queued_separately() -> None:
         digest_payload = json.loads(digest_delivery.payload)
         assert digest_payload["use_llm"] is False
         assert digest_payload["type"] == "daily_monitoring_digest"
+
+
+def test_daily_stock_analysis_is_queued_without_material_change() -> None:
+    init_db()
+    run_date = date(2038, 8, 12)
+    with Session(engine) as session:
+        assessments = _seed_digest(session, run_date, suffix="M")
+        neutral = next(
+            item for item in assessments if item.business_thesis_change == "no_material_change"
+        )
+
+        delivery = queue_daily_stock_notification(session, neutral)
+        session.commit()
+
+        payload = json.loads(delivery.payload)
+        assert payload["type"] == "daily_stock_analysis"
+        assert payload["ticker"] == neutral.ticker
+        assert "중요 변화 없음" in payload["text"]
+        assert "오늘 투자 논리를 바꿀 신규 확정 사실은 확인되지 않았습니다." in payload["text"]
+        assert "🚨 현재 확인된 경고" in payload["text"]
+        assert "👀 계속 감시" in payload["text"]
+
+
+def test_queued_daily_digest_omits_duplicate_stock_detail_section() -> None:
+    init_db()
+    run_date = date(2038, 8, 13)
+    with Session(engine) as session:
+        _seed_digest(session, run_date, suffix="S")
+
+        delivery = queue_daily_digest_notification(session, run_date)
+
+        assert delivery is not None
+        payload = json.loads(delivery.payload)
+        assert "🏢 오늘 종목 점검" in payload["text"]
+        assert "🔎 오늘 상세 점검" not in payload["text"]
 
 
 @pytest.mark.anyio

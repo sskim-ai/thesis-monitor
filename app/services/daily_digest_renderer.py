@@ -9,7 +9,11 @@ def _bullet_lines(items: list[str], empty: str) -> list[str]:
     return [f"• {item}" for item in items] or [f"• {empty}"]
 
 
-def render_daily_digest(digest: DailyDigest) -> str:
+def render_daily_digest(
+    digest: DailyDigest,
+    *,
+    include_stock_details: bool = True,
+) -> str:
     macro = digest.macro
     portfolio = digest.portfolio
     thesis = portfolio.thesis_counts
@@ -57,7 +61,7 @@ def render_daily_digest(digest: DailyDigest) -> str:
     else:
         lines.append("• 오늘 저장이 완료된 종목 평가가 없습니다.")
 
-    if portfolio.focus_tickers:
+    if include_stock_details and portfolio.focus_tickers:
         lines.extend(["", "🔎 오늘 상세 점검"])
         for index, item in enumerate(portfolio.focus_tickers, start=1):
             lines.extend(
