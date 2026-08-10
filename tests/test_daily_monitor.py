@@ -89,6 +89,35 @@ class RulePriceClient:
 
 
 @pytest.mark.anyio
+async def test_daily_monitor_can_run_without_queuing_notifications() -> None:
+    init_db()
+    with Session(engine) as session:
+        register_monitoring_item(
+            session,
+            MonitoringItemCreate(
+                ticker="NOSEND1",
+                company_name="No Send Company",
+                core_thesis="A test thesis",
+            ),
+        )
+        result = await run_daily_monitor(
+            session,
+            run_date=date(2029, 12, 31),
+            collection_service=EmptyCollectionService(),
+            price_client=FakePriceClient(),
+            queue_notifications=False,
+            dispatch_notifications=False,
+        )
+        deliveries = session.exec(
+            select(NotificationDelivery).where(
+                NotificationDelivery.assessment_date == date(2029, 12, 31)
+            )
+        ).all()
+        assert result.status == "success"
+        assert deliveries == []
+
+
+@pytest.mark.anyio
 async def test_daily_monitor_assesses_and_queues_dry_run_notification() -> None:
     init_db()
     with Session(engine) as session:

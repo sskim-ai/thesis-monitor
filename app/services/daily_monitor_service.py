@@ -150,14 +150,18 @@ async def run_daily_monitor(
     force: bool = False,
     collection_service: CollectionService | None = None,
     price_client: OhlcvClient | None = None,
+    queue_notifications: bool = True,
+    dispatch_notifications: bool = True,
 ) -> DailyMonitorResponse:
     run_date = run_date or date.today()
     existing_run = session.exec(
         select(MonitorRun).where(MonitorRun.run_date == run_date, MonitorRun.run_type == "daily")
     ).first()
     if existing_run is not None and existing_run.status == "success" and not force:
-        queue_daily_digest_notification(session, run_date)
-        await dispatch_pending_notifications(session)
+        if queue_notifications:
+            queue_daily_digest_notification(session, run_date)
+        if queue_notifications and dispatch_notifications:
+            await dispatch_pending_notifications(session)
         assessments = session.exec(
             select(ThesisAssessment).where(ThesisAssessment.assessment_date == run_date)
         ).all()
@@ -380,11 +384,13 @@ async def run_daily_monitor(
     session.commit()
     session.refresh(run)
     export_monitor_run(run)
-    queue_daily_digest_notification(session, run_date)
-    for assessment in completed_assessments:
-        queue_notification(session, assessment)
-    session.commit()
-    await dispatch_pending_notifications(session)
+    if queue_notifications:
+        queue_daily_digest_notification(session, run_date)
+        for assessment in completed_assessments:
+            queue_notification(session, assessment)
+        session.commit()
+    if queue_notifications and dispatch_notifications:
+        await dispatch_pending_notifications(session)
     return DailyMonitorResponse(
         run_date=run_date,
         status=run.status,
