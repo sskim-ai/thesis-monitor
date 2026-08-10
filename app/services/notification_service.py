@@ -1,3 +1,4 @@
+import asyncio
 import json
 import os
 from datetime import datetime, timezone
@@ -14,6 +15,7 @@ from app.models.watchlist import WatchlistItem
 from app.services.analysis_report_service import (
     InvestmentNarrativeGenerator,
     split_kakao_text,
+    split_telegram_text,
 )
 
 
@@ -64,6 +66,8 @@ IMPACT_LABELS = {
     "neutral": "중립",
 }
 
+SUPPORTED_NOTIFICATION_CHANNELS = {"kakao_self", "telegram"}
+
 
 def _json_value(value: str, fallback: object) -> object:
     try:
@@ -75,6 +79,13 @@ def _json_value(value: str, fallback: object) -> object:
 def _json_list_value(value: str) -> list[object]:
     parsed = _json_value(value, [])
     return parsed if isinstance(parsed, list) else []
+
+
+def _notification_channel() -> str:
+    channel = get_settings().notification_channel.strip().lower()
+    if channel not in SUPPORTED_NOTIFICATION_CHANNELS:
+        raise RuntimeError(f"Unsupported notification channel: {channel}")
+    return channel
 
 
 def _assessment_report(
@@ -224,11 +235,12 @@ def queue_notification(session: Session, assessment: ThesisAssessment) -> None:
         },
         ensure_ascii=False,
     )
+    channel = _notification_channel()
     delivery = session.exec(
         select(NotificationDelivery).where(
             NotificationDelivery.ticker == assessment.ticker,
             NotificationDelivery.assessment_date == assessment.assessment_date,
-            NotificationDelivery.channel == "kakao_self",
+            NotificationDelivery.channel == channel,
         )
     ).first()
     if delivery is None:
@@ -236,7 +248,7 @@ def queue_notification(session: Session, assessment: ThesisAssessment) -> None:
             NotificationDelivery(
                 ticker=assessment.ticker,
                 assessment_date=assessment.assessment_date,
-                channel="kakao_self",
+                channel=channel,
                 status="pending",
                 payload=payload,
             )
@@ -258,11 +270,12 @@ def queue_macro_notification(session: Session, briefing: MacroBriefing) -> None:
         },
         ensure_ascii=False,
     )
+    channel = _notification_channel()
     delivery = session.exec(
         select(NotificationDelivery).where(
             NotificationDelivery.ticker == "__MACRO__",
             NotificationDelivery.assessment_date == briefing.briefing_date,
-            NotificationDelivery.channel == "kakao_self",
+            NotificationDelivery.channel == channel,
         )
     ).first()
     if delivery is None:
@@ -270,7 +283,7 @@ def queue_macro_notification(session: Session, briefing: MacroBriefing) -> None:
             NotificationDelivery(
                 ticker="__MACRO__",
                 assessment_date=briefing.briefing_date,
-                channel="kakao_self",
+                channel=channel,
                 status="pending",
                 payload=payload,
             )
@@ -278,6 +291,102 @@ def queue_macro_notification(session: Session, briefing: MacroBriefing) -> None:
     elif delivery.status != "sent":
         delivery.payload = payload
         delivery.status = "pending"
+
+
+def _observation_map(market: object) -> dict[str, dict[str, object]]:
+    if not isinstance(market, dict):
+        return {}
+    observations = market.get("observations", [])
+    if not isinstance(observations, list):
+        return {}
+    return {
+        str(item.get("series_code")): item
+        for item in observations
+        if isinstance(item, dict) and item.get("series_code")
+    }
+
+
+def _change_pct(observation: dict[str, object] | None) -> float | None:
+    if observation is None:
+        return None
+    value = observation.get("change_pct")
+    return float(value) if isinstance(value, (int, float)) else None
+
+
+def _change_value(observation: dict[str, object] | None) -> float | None:
+    if observation is None:
+        return None
+    value = observation.get("change_value")
+    return float(value) if isinstance(value, (int, float)) else None
+
+
+def _equity_interpretation(observations: dict[str, dict[str, object]]) -> str:
+    spy = _change_pct(observations.get("SPY"))
+    qqq = _change_pct(observations.get("QQQ"))
+    soxx = _change_pct(observations.get("SOXX"))
+    vix = _change_pct(observations.get("VIXCLS"))
+    parts: list[str] = []
+    if spy is not None and qqq is not None:
+        if qqq - spy >= 0.3:
+            parts.append("Nasdaq이 S&P를 웃돌아 성장주 상대강도가 확인됐습니다.")
+        elif spy - qqq >= 0.3:
+            parts.append("S&P가 Nasdaq을 웃돌아 대형 성장주 주도력은 제한적이었습니다.")
+        else:
+            parts.append("S&P와 Nasdaq이 비슷하게 움직여 지수 간 주도력 차이는 작았습니다.")
+    if soxx is not None:
+        if soxx >= 1.0:
+            parts.append("반도체 강세는 AI·이익 모멘텀 기대에 우호적입니다.")
+        elif soxx <= -1.0:
+            parts.append("반도체 약세는 AI CAPEX·이익 기대의 추가 확인을 요구합니다.")
+    if vix is not None:
+        if vix <= -3.0:
+            parts.append("VIX 하락은 단기 위험선호를 지지합니다.")
+        elif vix >= 5.0:
+            parts.append("VIX 상승은 위험 프리미엄 확대 신호입니다.")
+    return " ".join(parts) or "지수 상대강도를 해석할 충분한 변화 데이터가 없습니다."
+
+
+def _rates_fx_commodity_interpretation(
+    observations: dict[str, dict[str, object]],
+) -> str:
+    nominal = observations.get("DGS10")
+    real = observations.get("DFII10")
+    nominal_change = _change_value(nominal)
+    real_change = _change_value(real)
+    parts: list[str] = []
+    if nominal_change is not None and real_change is not None:
+        nominal_bp = nominal_change * 100
+        real_bp = real_change * 100
+        if nominal_bp >= 5 or real_bp >= 5:
+            parts.append(
+                f"미10년 금리 {nominal_bp:+.0f}bp, 실질10년 {real_bp:+.0f}bp 상승은 "
+                "장기 성장주의 할인율 부담을 높입니다."
+            )
+        elif nominal_bp <= -5 or real_bp <= -5:
+            parts.append(
+                f"미10년 금리 {nominal_bp:+.0f}bp, 실질10년 {real_bp:+.0f}bp 하락은 "
+                "장기 성장주의 멀티플에 우호적입니다."
+            )
+        else:
+            parts.append("명목·실질금리 변화는 멀티플을 바꿀 정도로 크지 않았습니다.")
+    usdkrw = observations.get("USDKRW")
+    usdkrw_change = _change_pct(usdkrw)
+    if usdkrw_change is not None:
+        if usdkrw_change >= 0.5:
+            parts.append("원화 약세는 수입비용에는 부담이고 달러 매출 기업에는 완충 요인입니다.")
+        elif usdkrw_change <= -0.5:
+            parts.append("원화 강세는 수입비용에는 우호적이나 달러 매출 환산에는 부담입니다.")
+        else:
+            parts.append("원화 변동은 종목 이익 추정치를 바꿀 정도로 크지 않았습니다.")
+    oil = observations.get("DCOILWTICO")
+    oil_change = _change_pct(oil)
+    if oil_change is None:
+        parts.append("유가는 최신 수준만 확인돼 공급 충격과 수요 회복 중 원인을 단정하지 않습니다.")
+    elif oil_change >= 2.0:
+        parts.append("유가 상승은 비용·물가 압력 경로를 강화하므로 원인을 추가 확인해야 합니다.")
+    elif oil_change <= -2.0:
+        parts.append("유가 하락은 비용 부담을 낮추지만 수요 둔화 신호인지 구분해야 합니다.")
+    return " ".join(parts) or "금리·환율·원자재 변화 자료가 부족합니다."
 
 
 def _macro_report(briefing: MacroBriefing) -> tuple[str, dict[str, object]]:
@@ -290,11 +399,28 @@ def _macro_report(briefing: MacroBriefing) -> tuple[str, dict[str, object]]:
 
     market_items = market.get("items", []) if isinstance(market, dict) else []
     market_values = [str(item) for item in market_items[:8]]
+    observations = _observation_map(market)
+    equity_interpretation = _equity_interpretation(observations)
+    rates_interpretation = _rates_fx_commodity_interpretation(observations)
     regime_label = str(regime.get("label", "mixed")) if isinstance(regime, dict) else "mixed"
     confidence = float(regime.get("confidence", 0)) if isinstance(regime, dict) else 0.0
     regime_summary = str(regime.get("summary", "판단 근거 부족")) if isinstance(regime, dict) else "판단 근거 부족"
     regime_display = REGIME_LABELS.get(regime_label, regime_label)
     interpretation = REGIME_INTERPRETATIONS.get(regime_label, "추가 확인이 필요합니다.")
+    regime_axes = []
+    if isinstance(regime, dict):
+        axis_labels = {
+            "growth_momentum": "성장",
+            "inflation_pressure": "물가",
+            "liquidity_condition": "유동성",
+            "financial_conditions": "금융여건",
+            "risk_appetite": "위험선호",
+            "earnings_momentum": "이익",
+        }
+        regime_axes = [
+            f"{label} {int(regime.get(key, 0)):+d}"
+            for key, label in axis_labels.items()
+        ]
 
     thesis_items = theses if isinstance(theses, list) else []
     ordered_theses = [item for item in thesis_items if isinstance(item, dict)]
@@ -308,18 +434,29 @@ def _macro_report(briefing: MacroBriefing) -> tuple[str, dict[str, object]]:
             f"({item_confidence:.0%})"
         )
     thesis_line = " · ".join(thesis_parts) or "주요 시장 가정 판단 보류"
+    thesis_detail_lines = [
+        f"• {item.get('title', item.get('thesis_key', '시장 가정'))}: "
+        f"{MACRO_STATUS_LABELS.get(str(item.get('status', 'intact')), item.get('status'))} "
+        f"({float(item.get('confidence', 0)):.0%})"
+        + (f" · {item.get('description')}" if item.get("description") else "")
+        for item in ordered_theses[:5]
+    ]
+    thesis_detail_text = "\n".join(thesis_detail_lines) or f"• {thesis_line}"
 
     impact_items = [item for item in impacts if isinstance(item, dict)] if isinstance(impacts, list) else []
-    impact_parts = [
-        f"{item.get('ticker')} {IMPACT_LABELS.get(str(item.get('direction')), item.get('direction'))}"
-        f" {item.get('magnitude', 0)}/5"
-        for item in impact_items[:3]
+    impact_detail_lines = [
+        f"• {item.get('ticker')}: "
+        f"{IMPACT_LABELS.get(str(item.get('direction')), item.get('direction'))} "
+        f"{item.get('magnitude', 0)}/5 · 이익 {item.get('earnings_effect', 'neutral')} · "
+        f"Valuation {item.get('valuation_effect', 'neutral')}"
+        + (f" · {item.get('rationale')}" if item.get("rationale") else "")
+        for item in impact_items[:5]
     ]
-    impact_text = ", ".join(impact_parts) or "변화 없음"
+    impact_detail_text = "\n".join(impact_detail_lines) or "• 종목별 유의미한 변화 없음"
     calendar_items = calendar if isinstance(calendar, list) else []
     quality_items = quality if isinstance(quality, list) else []
     calendar_text = ", ".join(
-        str(item.get("title", "일정")) for item in calendar_items[:3] if isinstance(item, dict)
+        str(item.get("title", "일정")) for item in calendar_items[:5] if isinstance(item, dict)
     ) or "등록된 주요 일정 없음"
     quality_text = ", ".join(
         str(item.get("warning") or item.get("series_code") or "데이터 점검")
@@ -332,14 +469,19 @@ def _macro_report(briefing: MacroBriefing) -> tuple[str, dict[str, object]]:
         f"🎯 결론\n"
         f"• 시장: {interpretation}\n"
         f"• 행동: 방향을 단정하기보다 변화가 확인된 지표와 종목별 근거를 우선 점검합니다.\n\n"
+        f"📈 간밤 시장\n"
+        f"• {' · '.join(market_values) or '시장 데이터 없음'}\n\n"
+        f"• 해석: {equity_interpretation}\n\n"
+        f"💵 금리·환율·원자재\n"
+        f"• {rates_interpretation}\n\n"
         f"🧭 현재 국면\n"
         f"• {regime_summary}\n"
-        f"• 주요 지표: {' · '.join(market_values) or '시장 데이터 없음'}\n\n"
-        f"🔄 이번 변화\n"
-        f"• 시장 가정: {thesis_line}\n\n"
+        f"• 6축 점수: {' · '.join(regime_axes) or '축별 점수 없음'}\n\n"
+        f"🔄 시장 가정 변화\n"
+        f"{thesis_detail_text}\n\n"
         f"🏢 종목 영향\n"
-        f"• {impact_text}\n\n"
-        f"📌 오늘 확인\n"
+        f"{impact_detail_text}\n\n"
+        f"📅 오늘 일정과 시나리오\n"
         f"• {calendar_text}\n\n"
         f"⚠️ 데이터 주의\n"
         f"• {quality_text}"
@@ -494,16 +636,107 @@ class KakaoSelfNotifier:
         return "sent"
 
 
+class TelegramDeliveryError(RuntimeError):
+    pass
+
+
+class TelegramNotifier:
+    def __init__(
+        self,
+        transport: httpx.AsyncBaseTransport | None = None,
+        narrative_generator: InvestmentNarrativeGenerator | None = None,
+    ) -> None:
+        self.settings = get_settings()
+        self.transport = transport
+        self.narrative_generator = narrative_generator or InvestmentNarrativeGenerator()
+
+    async def _send_chunk(self, client: httpx.AsyncClient, text: str) -> None:
+        token = self.settings.telegram_bot_token
+        chat_id = self.settings.telegram_chat_id
+        if not token or not chat_id:
+            raise TelegramDeliveryError("Telegram credentials are not configured")
+        endpoint = f"https://api.telegram.org/bot{token}/sendMessage"
+        attempts = max(1, self.settings.telegram_retry_attempts)
+        for attempt in range(attempts):
+            retry_after = self.settings.telegram_retry_base_seconds * (2**attempt)
+            try:
+                response = await client.post(
+                    endpoint,
+                    json={
+                        "chat_id": chat_id,
+                        "text": text,
+                        "disable_web_page_preview": True,
+                    },
+                )
+                payload = response.json()
+            except (httpx.HTTPError, ValueError, TypeError) as exc:
+                if attempt + 1 >= attempts:
+                    raise TelegramDeliveryError(
+                        f"Telegram network failure: {type(exc).__name__}"
+                    ) from None
+                await asyncio.sleep(retry_after)
+                continue
+
+            if response.status_code == 429 or response.status_code >= 500:
+                parameters = payload.get("parameters", {}) if isinstance(payload, dict) else {}
+                if isinstance(parameters, dict) and parameters.get("retry_after") is not None:
+                    retry_after = min(60.0, float(parameters["retry_after"]))
+                if attempt + 1 < attempts:
+                    await asyncio.sleep(retry_after)
+                    continue
+
+            if response.status_code >= 400 or not isinstance(payload, dict) or not payload.get("ok"):
+                description = (
+                    str(payload.get("description", "request rejected"))
+                    if isinstance(payload, dict)
+                    else "invalid response"
+                )
+                raise TelegramDeliveryError(
+                    f"Telegram sendMessage failed with HTTP {response.status_code}: "
+                    f"{description[:200]}"
+                )
+            return
+        raise TelegramDeliveryError("Telegram sendMessage retry limit exceeded")
+
+    async def send(self, payload: dict[str, object]) -> str:
+        if self.settings.notification_dry_run:
+            return "dry_run"
+        text = str(payload["text"])
+        if payload.get("presentation") == "long_text":
+            context = payload.get("analysis_context")
+            if isinstance(context, dict):
+                text = await self.narrative_generator.generate(context, text)
+        chunks = split_telegram_text(text, self.settings.telegram_message_max_chars)
+        timeout = httpx.Timeout(30.0, connect=10.0)
+        async with httpx.AsyncClient(timeout=timeout, transport=self.transport) as client:
+            for index, chunk in enumerate(chunks, start=1):
+                rendered = f"[{index}/{len(chunks)}]\n{chunk}" if len(chunks) > 1 else chunk
+                await self._send_chunk(client, rendered)
+        return "sent"
+
+
+def _notifier_for_channel(
+    channel: str,
+) -> KakaoSelfNotifier | TelegramNotifier:
+    if channel == "telegram":
+        return TelegramNotifier()
+    if channel == "kakao_self":
+        return KakaoSelfNotifier()
+    raise RuntimeError(f"Unsupported notification channel: {channel}")
+
+
 async def dispatch_pending_notifications(
     session: Session,
-    notifier: KakaoSelfNotifier | None = None,
+    notifier: KakaoSelfNotifier | TelegramNotifier | None = None,
 ) -> None:
-    notifier = notifier or KakaoSelfNotifier()
-    deliveries = session.exec(
-        select(NotificationDelivery)
-        .where(NotificationDelivery.status == "pending")
-        .order_by(NotificationDelivery.created_at)
-    ).all()
+    channel = _notification_channel()
+    query = select(NotificationDelivery).where(
+        NotificationDelivery.status == "pending",
+        NotificationDelivery.channel == channel,
+    )
+    if notifier is None:
+        notifier = _notifier_for_channel(channel)
+    deliveries = session.exec(query.order_by(NotificationDelivery.created_at)).all()
     for delivery in deliveries:
         delivery.attempt_count += 1
         try:

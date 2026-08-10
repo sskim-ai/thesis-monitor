@@ -106,6 +106,8 @@ async def test_macro_monitor_builds_briefing_impacts_and_dedupes() -> None:
         assert result.status == "ready"
         assert result.briefing is not None
         assert result.briefing.kakao_text.startswith("[시장환경 점검]")
+        assert result.briefing.regime_summary["growth_momentum"] is not None
+        assert result.briefing.regime_summary["earnings_momentum"] is not None
         assert result.observation_count == 12
         assert result.impact_count >= 1
         impact = session.exec(
@@ -134,6 +136,8 @@ async def test_macro_monitor_builds_briefing_impacts_and_dedupes() -> None:
         assert delivery_payload["presentation"] == "long_text"
         assert delivery_payload["analysis_context"]["analysis_type"] == "macro"
         assert "🎯 결론" in delivery_payload["text"]
+        assert "📈 간밤 시장" in delivery_payload["text"]
+        assert "💵 금리·환율·원자재" in delivery_payload["text"]
         assert "🏢 종목 영향" in delivery_payload["text"]
 
         rerun = await run_macro_monitor(

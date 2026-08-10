@@ -5,7 +5,11 @@ from urllib.parse import parse_qs
 import httpx
 import pytest
 
-from app.services.notification_service import KakaoSelfNotifier, _message_for_assessment
+from app.services.notification_service import (
+    KakaoSelfNotifier,
+    TelegramNotifier,
+    _message_for_assessment,
+)
 
 
 def test_assessment_notification_uses_investment_rationale_label() -> None:
@@ -130,3 +134,76 @@ async def test_kakao_notifier_sends_long_report_as_text_chunks(tmp_path) -> None
     assert result == "sent"
     assert len(sent_chunks) >= 2
     assert all(len(chunk) <= 200 for chunk in sent_chunks)
+
+
+@pytest.mark.anyio
+async def test_telegram_notifier_sends_generated_report_as_section_chunks() -> None:
+    sent_chunks: list[str] = []
+
+    class StubNarrativeGenerator:
+        async def generate(self, context: dict[str, object], fallback: str) -> str:
+            assert context == {"analysis_type": "macro"}
+            assert fallback == "기본 분석"
+            return "🌍 시장환경 점검\n\n" + "• 시장 변화와 투자 의미를 연결합니다. " * 25
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        assert request.url.host == "api.telegram.org"
+        assert request.url.path.endswith("/sendMessage")
+        payload = json.loads(request.content)
+        assert payload["chat_id"] == "135988"
+        assert payload["disable_web_page_preview"] is True
+        sent_chunks.append(payload["text"])
+        return httpx.Response(200, json={"ok": True, "result": {"message_id": 1}})
+
+    notifier = TelegramNotifier(
+        transport=httpx.MockTransport(handler),
+        narrative_generator=StubNarrativeGenerator(),
+    )
+    notifier.settings = notifier.settings.model_copy(
+        update={
+            "notification_dry_run": False,
+            "telegram_bot_token": "bot-token",
+            "telegram_chat_id": "135988",
+            "telegram_message_max_chars": 300,
+            "telegram_retry_base_seconds": 0,
+        }
+    )
+
+    result = await notifier.send(
+        {
+            "text": "기본 분석",
+            "presentation": "long_text",
+            "analysis_context": {"analysis_type": "macro"},
+        }
+    )
+
+    assert result == "sent"
+    assert len(sent_chunks) >= 2
+    assert all(len(chunk) <= 310 for chunk in sent_chunks)
+    assert sent_chunks[0].startswith("[1/")
+
+
+@pytest.mark.anyio
+async def test_telegram_notifier_retries_temporary_server_error() -> None:
+    calls = 0
+
+    def handler(_request: httpx.Request) -> httpx.Response:
+        nonlocal calls
+        calls += 1
+        if calls == 1:
+            return httpx.Response(503, json={"ok": False, "description": "temporary"})
+        return httpx.Response(200, json={"ok": True, "result": {"message_id": 2}})
+
+    notifier = TelegramNotifier(transport=httpx.MockTransport(handler))
+    notifier.settings = notifier.settings.model_copy(
+        update={
+            "notification_dry_run": False,
+            "telegram_bot_token": "bot-token",
+            "telegram_chat_id": "135988",
+            "telegram_retry_attempts": 2,
+            "telegram_retry_base_seconds": 0,
+        }
+    )
+
+    assert await notifier.send({"text": "전송 테스트"}) == "sent"
+    assert calls == 2

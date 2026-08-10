@@ -101,6 +101,11 @@ def build_macro_briefing(
             "title": item.title,
             "scheduled_at": item.scheduled_at,
             "status": item.event_status,
+            "actual": item.actual,
+            "consensus": item.consensus,
+            "previous": item.previous,
+            "unit": item.unit,
+            "impact_level": item.impact_level,
         }
         for item in calendar
         if item.scheduled_at is not None and item.scheduled_at.date() == briefing_date
@@ -111,6 +116,10 @@ def build_macro_briefing(
             "title": item.title,
             "status": item.status,
             "confidence": item.confidence,
+            "description": item.description,
+            "expected_evidence": _json(item.expected_evidence, []),
+            "weakening_evidence": _json(item.weakening_evidence, []),
+            "valuation_channels": _json(item.valuation_channels, []),
         }
         for item in theses
     ]
@@ -121,6 +130,9 @@ def build_macro_briefing(
             "magnitude": item.magnitude,
             "confidence": item.confidence,
             "rationale": item.rationale,
+            "earnings_effect": item.earnings_effect,
+            "valuation_effect": item.valuation_effect,
+            "channels": _json(item.channels, []),
         }
         for item in impacts
         if item.direction != "neutral"
@@ -170,7 +182,9 @@ def build_macro_briefing(
                 "observations": [
                     {
                         "series_code": item.series_code,
+                        "category": item.category,
                         "value": item.value,
+                        "unit": item.unit,
                         "change_value": item.change_value,
                         "change_pct": item.change_pct,
                         "quality_status": item.quality_status,
@@ -188,6 +202,12 @@ def build_macro_briefing(
                 "summary": regime.summary,
                 "confidence": regime.confidence,
                 "provisional": regime.provisional,
+                "growth_momentum": regime.growth_momentum,
+                "inflation_pressure": regime.inflation_pressure,
+                "liquidity_condition": regime.liquidity_condition,
+                "financial_conditions": regime.financial_conditions,
+                "risk_appetite": regime.risk_appetite,
+                "earnings_momentum": regime.earnings_momentum,
             },
             ensure_ascii=False,
         ),

@@ -8,12 +8,13 @@ from app.config import get_settings
 
 
 KAKAO_TEXT_MAX_CHARS = 190
+TELEGRAM_TEXT_MAX_CHARS = 3500
 
 logger = logging.getLogger(__name__)
 
 
 REPORT_INSTRUCTIONS = """당신은 한국어 투자 모니터링 분석가다.
-입력 JSON에 포함된 사실만 사용해 카카오톡에서 바로 읽을 수 있는 분석문을 작성한다.
+입력 JSON에 포함된 사실만 사용해 Telegram에서 바로 읽을 수 있는 분석문을 작성한다.
 
 성공 기준:
 - 첫 문장에서 현재 판단과 불확실성을 분명히 밝힌다.
@@ -32,17 +33,23 @@ REPORT_INSTRUCTIONS = """당신은 한국어 투자 모니터링 분석가다.
 • 시장: ...
 • 행동: ...
 
-🧭 현재 국면
-• ...
+📈 간밤 시장
+• 주가지수·반도체·위험선호의 방향과 의미: ...
 
-🔄 이번 변화
-• ...
+💵 금리·환율·원자재
+• 명목금리·실질금리·달러·원화·유가·변동성의 변화와 전달 경로: ...
+
+🧭 현재 국면
+• 성장·물가·유동성·금융여건·위험선호·이익 모멘텀: ...
+
+🔄 시장 가정 변화
+• 연착륙·연준 경로·AI CAPEX·한중 수출·유가 공급충격: ...
 
 🏢 종목 영향
-• ...
+• 영향이 있는 모니터링 종목과 이익·valuation 전달 경로: ...
 
-📌 오늘 확인
-• ...
+📅 오늘 일정과 시나리오
+• 주요 일정, 예상과 다른 결과가 나올 때 확인할 시장 반응: ...
 
 ⚠️ 데이터 주의
 • ...
@@ -77,7 +84,9 @@ REPORT_INSTRUCTIONS = """당신은 한국어 투자 모니터링 분석가다.
 이익 추정치 영향과 valuation multiple 영향 순서로 연결한다. 기업의 질과 현재
 가격의 매력도를 분리하고, 컨센서스나 추정 입력값이 없으면 적정가를 만들지 않는다.
 
-전체 길이는 핵심 근거가 있는 경우 600~1,000자, 근거가 부족하면 350~600자로 작성한다.
+거시 분석은 근거가 충분하면 1,500~2,500자, 부족하면 800~1,400자로 작성한다.
+종목 분석은 근거가 충분하면 900~1,600자, 부족하면 500~900자로 작성한다.
+단순 수치 나열 뒤에는 반드시 기대 대비 의미, 투자 논리 영향, valuation 영향을 설명한다.
 """
 
 
@@ -117,7 +126,7 @@ class InvestmentNarrativeGenerator:
             "reasoning": {"effort": "low"},
             "instructions": REPORT_INSTRUCTIONS,
             "input": json.dumps(context, ensure_ascii=False, default=str),
-            "max_output_tokens": 1600,
+            "max_output_tokens": 3000,
             "text": {"verbosity": "medium"},
         }
         try:
@@ -184,6 +193,27 @@ def _report_blocks(text: str, max_chars: int) -> Iterable[str]:
 def split_kakao_text(text: str, max_chars: int = KAKAO_TEXT_MAX_CHARS) -> list[str]:
     if max_chars < 20:
         raise ValueError("max_chars must be at least 20")
+    chunks: list[str] = []
+    current = ""
+    for block in _report_blocks(text, max_chars):
+        candidate = f"{current}\n\n{block}" if current else block
+        if len(candidate) <= max_chars:
+            current = candidate
+            continue
+        if current:
+            chunks.append(current)
+        current = block
+    if current:
+        chunks.append(current)
+    return chunks or ["분석할 수 있는 데이터가 없습니다."]
+
+
+def split_telegram_text(
+    text: str,
+    max_chars: int = TELEGRAM_TEXT_MAX_CHARS,
+) -> list[str]:
+    if max_chars < 100:
+        raise ValueError("max_chars must be at least 100")
     chunks: list[str] = []
     current = ""
     for block in _report_blocks(text, max_chars):

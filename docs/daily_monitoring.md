@@ -44,7 +44,7 @@ thesis changes only when the user or Custom GPT submits a revised version.
 - A macro morning message is queued once per date, including no-material-change days.
 - Provider calls retry with exponential backoff.
 - OHLCV and event-provider partial results are retained.
-- Notification delivery uses a persistent outbox and remains `dry_run` until Kakao is configured.
+- Notification delivery uses a channel-specific persistent outbox and remains `dry_run` until Telegram is configured.
 - Successful date-level runs are idempotent.
 
 ## Macro decision flow
@@ -56,7 +56,7 @@ thesis changes only when the user or Custom GPT submits a revised version.
    earnings momentum. Low-confidence regime changes retain the prior regime.
 4. Update competing macro theses without invalidating them from a single daily move.
 5. Apply each stock thesis's signed exposure, weight, and transmission channel.
-6. Store the full briefing and send the compact Kakao version through the outbox.
+6. Store the full briefing and send the detailed Telegram narrative through the outbox.
 
 The three optional source keys are `FRED_API_KEY`, `EIA_API_KEY`, and
 `ECOS_API_KEY`. Without them the run remains operational but the briefing is
