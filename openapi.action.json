@@ -579,7 +579,8 @@
     },
     "/thesis-events": {
       "get": {
-        "summary": "Get Thesis Events",
+        "summary": "Collect and return investment evidence for one stock",
+        "description": "Use this operation for the current user's stock analysis. It accepts a six-digit Korean stock code, a supported Korean company name, or a US ticker. For Korean disclosures, set provider=opendart. If a name-based request fails, resolve the stock code and retry once. Do not describe this operation as unavailable unless a call in the current turn actually returns an error.",
         "operationId": "getThesisEvents",
         "parameters": [
           {

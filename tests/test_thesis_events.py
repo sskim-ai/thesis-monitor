@@ -10,6 +10,7 @@ from app.api import routes_events
 from app.config import get_settings
 from app.providers.base import RawEvent
 from app.providers.mock import MockProvider
+from app.utils.tickers import normalize_ticker
 
 get_settings.cache_clear()
 routes_events.collection_service.providers = [MockProvider()]
@@ -99,6 +100,22 @@ def test_korean_company_name_maps_to_canonical_ticker() -> None:
         assert data["company_name"] == "SK하이닉스"
         assert data["events"]
         assert data["events"][0]["provider"] == "mock"
+
+
+def test_supported_korean_watchlist_names_map_to_canonical_tickers() -> None:
+    expected = {
+        "코리안리": "003690",
+        "HMM": "011200",
+        "현대글로비스": "086280",
+        "NAVER": "035420",
+        "HD현대": "267250",
+        "빅솔론": "093190",
+        "팬오션": "028670",
+        "지엔씨에너지": "119850",
+        "제주반도체": "080220",
+    }
+    for company_name, ticker in expected.items():
+        assert normalize_ticker(company_name) == ticker
 
 
 def test_earnings_checkpoints_response_shape() -> None:
