@@ -108,6 +108,54 @@ def _interpret_capital_allocation(raw_event: RawEvent, implications: list[str], 
     _append_unique(unknowns, "Per-share dilution or accretion cannot be concluded without share-count and treasury-stock treatment details.")
 
 
+def _interpret_facility_investment(
+    raw_event: RawEvent,
+    implications: list[str],
+    unknowns: list[str],
+) -> None:
+    _append_unique(
+        implications,
+        "A facility investment disclosure may change capacity, capex, cash-flow, and future earnings assumptions.",
+    )
+    _append_unique(unknowns, "Investment amount and funding source are not confirmed from the filing title alone.")
+    _append_unique(unknowns, "Investment purpose, schedule, and incremental capacity require the filing body.")
+    _append_unique(unknowns, "Demand visibility, utilization, and expected return on investment are not confirmed.")
+
+
+def _interpret_disclosure_inquiry(
+    raw_event: RawEvent,
+    implications: list[str],
+    unknowns: list[str],
+) -> None:
+    _append_unique(
+        implications,
+        "An exchange disclosure inquiry confirms that clarification was requested, not that the underlying rumor is true.",
+    )
+    _append_unique(unknowns, "The subject and factual basis of the rumor require the original inquiry and company response.")
+    _append_unique(unknowns, "No investment-thesis change should be made before the company response is reviewed.")
+
+
+def _interpret_disclosure_clarification(
+    raw_event: RawEvent,
+    implications: list[str],
+    unknowns: list[str],
+) -> None:
+    title = raw_event.title.lower()
+    if "미확정" in title:
+        _append_unique(
+            implications,
+            "The company response remains unconfirmed; treat the rumored matter as unresolved rather than established fact.",
+        )
+        _append_unique(unknowns, "Final decision, terms, timing, and probability remain unconfirmed.")
+        _append_unique(unknowns, "A follow-up disclosure is required before changing the investment thesis.")
+        return
+    _append_unique(
+        implications,
+        "The company issued a clarification, but the filing body must be reviewed before drawing an investment conclusion.",
+    )
+    _append_unique(unknowns, "The filing title alone does not establish the clarified facts or their financial impact.")
+
+
 def _interpret_earnings(raw_event: RawEvent, implications: list[str], unknowns: list[str]) -> None:
     facts = raw_event.confirmed_facts
     revenue_fact = next(iter(_facts_containing(facts, "financial fact: 매출액")), None)
@@ -169,6 +217,12 @@ def enrich_raw_event(raw_event: RawEvent) -> RawEvent:
         _interpret_supply_contract(raw_event, implications, unknowns)
     elif event_type == EventType.capital_allocation:
         _interpret_capital_allocation(raw_event, implications, unknowns)
+    elif event_type == EventType.facility_investment:
+        _interpret_facility_investment(raw_event, implications, unknowns)
+    elif event_type == EventType.disclosure_inquiry:
+        _interpret_disclosure_inquiry(raw_event, implications, unknowns)
+    elif event_type == EventType.disclosure_clarification:
+        _interpret_disclosure_clarification(raw_event, implications, unknowns)
     elif event_type == EventType.guidance_change:
         _interpret_earnings(raw_event, implications, unknowns)
 

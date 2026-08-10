@@ -107,6 +107,10 @@ def _dart_keywords(title: str) -> list[str]:
         "단일판매": "supply_contract",
         "자기주식": "treasury_stock",
         "자사주": "treasury_stock",
+        "신규시설투자": "facility_investment",
+        "조회공시요구(풍문또는보도)에대한답변": "disclosure_clarification",
+        "풍문또는보도에대한해명": "disclosure_clarification",
+        "조회공시요구": "disclosure_inquiry",
         "투자판단": "material_management_matter",
         "주요경영사항": "material_management_matter",
     }.items():

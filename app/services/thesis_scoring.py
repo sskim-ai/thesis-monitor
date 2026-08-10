@@ -28,6 +28,9 @@ EVENT_TYPE_SCORES: dict[EventType, int] = {
     EventType.guidance_change: 40,
     EventType.management_governance: 10,
     EventType.capital_allocation: 40,
+    EventType.facility_investment: 45,
+    EventType.disclosure_inquiry: 40,
+    EventType.disclosure_clarification: 45,
     EventType.regulatory_risk: 25,
     EventType.export_control: 25,
     EventType.antitrust: 25,
@@ -149,6 +152,12 @@ def score_event(raw_event: RawEvent, event_type: EventType) -> ThesisRelevance:
         reasons.append("governance or ownership disclosure should be reviewed if thesis depends on control quality")
     if event_type == EventType.capital_allocation:
         reasons.append("capital allocation disclosure may affect shareholder return assumptions")
+    if event_type == EventType.facility_investment:
+        reasons.append("facility investment may affect capacity, capex, cash flow, and future earnings")
+    if event_type == EventType.disclosure_inquiry:
+        reasons.append("exchange disclosure inquiry requires follow-up but does not confirm the underlying rumor")
+    if event_type == EventType.disclosure_clarification:
+        reasons.append("company clarification requires source review before changing the investment thesis")
     if event_type == EventType.competitor_price_cut:
         reasons.append("competitor price cut may pressure share or margin")
     if event_type in {EventType.regulatory_risk, EventType.export_control, EventType.accounting_issue}:

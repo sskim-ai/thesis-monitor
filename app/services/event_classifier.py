@@ -34,6 +34,17 @@ KEYWORD_EVENT_TYPES: list[tuple[EventType, tuple[str, ...]]] = [
     (EventType.warrant, ("warrant", "신주인수권", "bw")),
     (EventType.stock_compensation_increase, ("stock compensation increase", "stock-based compensation increase")),
     (EventType.capital_allocation, ("자기주식", "자사주", "배당", "현금ㆍ현물배당")),
+    (EventType.facility_investment, ("신규시설투자", "시설투자결정", "facility investment")),
+    (
+        EventType.disclosure_clarification,
+        (
+            "조회공시요구(풍문또는보도)에대한답변",
+            "조회공시요구에대한답변",
+            "풍문또는보도에대한해명",
+            "clarification of rumor",
+        ),
+    ),
+    (EventType.disclosure_inquiry, ("조회공시요구", "disclosure inquiry")),
     (EventType.partnership_to_revenue, ("partnership revenue", "commercialized partnership")),
     (EventType.partnership, ("partnership", "collaboration", "업무협약")),
     (EventType.customer_loss, ("customer loss", "lost customer", "거래중단")),
