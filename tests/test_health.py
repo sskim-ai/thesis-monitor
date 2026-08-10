@@ -29,3 +29,12 @@ def test_public_action_schema() -> None:
     assert "/admin/daily-monitor" not in schema["paths"]
     assert "facility_investment" in schema["components"]["schemas"]["EventType"]["enum"]
     assert "/action-openapi.json" not in schema["paths"]
+    operation = schema["paths"]["/thesis-events"]["get"]
+    assert "description" not in operation
+    provider = next(
+        parameter
+        for parameter in operation["parameters"]
+        if parameter["name"] == "provider"
+    )
+    assert provider["schema"]["type"] == "string"
+    assert "anyOf" not in provider["schema"]

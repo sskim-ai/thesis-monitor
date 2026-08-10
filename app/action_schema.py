@@ -23,6 +23,28 @@ ACTION_PATHS = {
 }
 
 
+def _simplify_thesis_event_action(schema: dict[str, object]) -> None:
+    paths = schema.get("paths")
+    if not isinstance(paths, dict):
+        return
+    path_item = paths.get("/thesis-events")
+    if not isinstance(path_item, dict):
+        return
+    operation = path_item.get("get")
+    if not isinstance(operation, dict):
+        return
+
+    operation["summary"] = "Get Thesis Events"
+    operation.pop("description", None)
+    for parameter in operation.get("parameters", []):
+        if isinstance(parameter, dict) and parameter.get("name") == "provider":
+            parameter["schema"] = {
+                "type": "string",
+                "minLength": 1,
+                "title": "Provider",
+            }
+
+
 def build_action_schema(app: FastAPI) -> dict[str, object]:
     schema = deepcopy(app.openapi())
     schema["info"] = {
@@ -40,4 +62,5 @@ def build_action_schema(app: FastAPI) -> dict[str, object]:
         schema["paths"] = {
             path: value for path, value in paths.items() if path in ACTION_PATHS
         }
+    _simplify_thesis_event_action(schema)
     return schema

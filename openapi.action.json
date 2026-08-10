@@ -579,8 +579,7 @@
     },
     "/thesis-events": {
       "get": {
-        "summary": "Collect and return investment evidence for one stock",
-        "description": "Collect current investment evidence for one stock. Accepts a six-digit Korean code, supported Korean company name, or US ticker. Use provider=opendart for Korean disclosures. On a name failure, retry once with the code. Report unavailable only when the current call returns an error.",
+        "summary": "Get Thesis Events",
         "operationId": "getThesisEvents",
         "parameters": [
           {
@@ -620,15 +619,8 @@
             "in": "query",
             "required": false,
             "schema": {
-              "anyOf": [
-                {
-                  "type": "string",
-                  "minLength": 1
-                },
-                {
-                  "type": "null"
-                }
-              ],
+              "type": "string",
+              "minLength": 1,
               "title": "Provider"
             }
           },
