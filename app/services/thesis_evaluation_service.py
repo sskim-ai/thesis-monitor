@@ -7,7 +7,7 @@ from sqlmodel import Session, select
 
 from app.models.event import Event
 from app.models.thesis import InvestmentThesis, ThesisAssessment
-from app.schemas.thesis import AssessmentStatus, PriceContext
+from app.schemas.thesis import AssessmentStatus, PriceContext, PriceRuleEvaluation
 
 
 POSITIVE_EVENT_TYPES = {
@@ -48,6 +48,14 @@ TRUSTED_INVALIDATION_PROVIDERS = {"opendart", "sec_edgar", "company_ir"}
 def _json_list(value: str) -> list[str]:
     parsed = json.loads(value)
     return parsed if isinstance(parsed, list) else []
+
+
+def _json_dict(value: str) -> dict[str, object]:
+    try:
+        parsed = json.loads(value)
+    except json.JSONDecodeError:
+        return {}
+    return parsed if isinstance(parsed, dict) else {}
 
 
 def _terms(value: str) -> set[str]:
@@ -93,14 +101,164 @@ def _price_view(context: PriceContext) -> str:
         return "가격 데이터가 없어 합리적인 가격대 여부를 판단 보류합니다."
     position = _price_position(context)
     if position is None:
-        return "확보된 가격 데이터가 짧아 현재 가격의 장기 범위상 위치를 판단 보류합니다."
-    if position <= 35:
-        zone = "확보된 일봉 범위의 하단부"
-    elif position >= 75:
-        zone = "확보된 일봉 범위의 상단부"
+        base = "확보된 가격 데이터가 짧아 현재 가격의 장기 범위상 위치를 판단 보류합니다."
     else:
-        zone = "확보된 일봉 범위의 중간 구간"
-    return f"현재 가격은 {zone}({position:.1f}%)입니다. 이는 기술적 위치이며 적정가치 판단은 별도 밸류에이션 근거가 필요합니다."
+        if position <= 35:
+            zone = "확보된 일봉 범위의 하단부"
+        elif position >= 75:
+            zone = "확보된 일봉 범위의 상단부"
+        else:
+            zone = "확보된 일봉 범위의 중간 구간"
+        base = f"현재 가격은 {zone}({position:.1f}%)입니다."
+    evaluation = context.rule_evaluation
+    if evaluation is not None:
+        rule_lines = [*evaluation.triggered_rules, *evaluation.active_rules]
+        if rule_lines:
+            base = f"{base} {' '.join(dict.fromkeys(rule_lines))}"
+    return f"{base} 이는 기술적 위치이며 적정가치 판단은 별도 밸류에이션 근거가 필요합니다."
+
+
+def _number(value: object) -> float | None:
+    if isinstance(value, (int, float)):
+        return float(value)
+    return None
+
+
+def _display_price(value: float, currency: object) -> str:
+    rendered = f"{value:,.0f}" if value.is_integer() else f"{value:,.2f}"
+    if currency == "KRW":
+        return f"{rendered}원"
+    if currency == "USD":
+        return f"${rendered}"
+    return f"{rendered} {currency}" if currency else rendered
+
+
+@dataclass
+class PriceRuleResult:
+    positive_points: int = 0
+    negative_points: int = 0
+    invalidated: bool = False
+    evidence: dict[str, object] | None = None
+
+
+def _evaluate_price_rules(thesis: InvestmentThesis, context: PriceContext) -> PriceRuleResult:
+    rules = _json_dict(thesis.price_rules)
+    if not rules:
+        return PriceRuleResult()
+
+    daily = context.periods.get("daily")
+    latest = daily.latest_close if daily else None
+    previous = daily.previous_close if daily else None
+    latest_low = daily.latest_low if daily else None
+    evaluation = PriceRuleEvaluation(
+        status="unavailable" if latest is None else "within_rules",
+        latest_close=latest,
+        previous_close=previous,
+    )
+    context.rule_evaluation = evaluation
+    if latest is None:
+        return PriceRuleResult()
+
+    currency = rules.get("currency")
+    confirmation = _number(rules.get("confirmation_price"))
+    support_low = _number(rules.get("support_zone_low"))
+    support_high = _number(rules.get("support_zone_high"))
+    warning = _number(rules.get("warning_price"))
+    invalidation = _number(rules.get("invalidation_price"))
+    direction = "neutral"
+    relevance_score = 0
+    result = PriceRuleResult()
+
+    if invalidation is not None and latest < invalidation:
+        evaluation.status = "invalidation_triggered"
+        evaluation.triggered_rules.append(
+            f"종가 {_display_price(latest, currency)}가 무효화 기준 "
+            f"{_display_price(invalidation, currency)}을 이탈했습니다."
+        )
+        result.negative_points += 100
+        result.invalidated = True
+        direction = "invalidation"
+        relevance_score = 100
+    else:
+        if warning is not None and latest <= warning:
+            evaluation.active_rules.append(
+                f"경고 기준 {_display_price(warning, currency)} 이하가 유지 중입니다."
+            )
+            if previous is not None and previous > warning:
+                evaluation.status = "warning_triggered"
+                evaluation.triggered_rules.append(
+                    f"종가가 경고 기준 {_display_price(warning, currency)}을 하향 이탈했습니다."
+                )
+                result.negative_points += 50
+                direction = "weaken"
+                relevance_score = max(relevance_score, 70)
+
+        if support_low is not None and support_high is not None:
+            in_support = support_low <= latest <= support_high
+            support_held = (
+                latest_low is not None
+                and support_low <= latest_low <= support_high
+                and latest > support_high
+            )
+            if in_support:
+                evaluation.active_rules.append(
+                    f"종가가 지지구간 {_display_price(support_low, currency)}~"
+                    f"{_display_price(support_high, currency)} 안에 있습니다."
+                )
+                if previous is not None and not support_low <= previous <= support_high:
+                    if evaluation.status == "within_rules":
+                        evaluation.status = "support_zone_entered"
+                    evaluation.triggered_rules.append("종가가 등록된 지지구간에 진입했습니다.")
+                    relevance_score = max(relevance_score, 45)
+            elif support_held:
+                evaluation.active_rules.append(
+                    f"장중 지지구간 {_display_price(support_low, currency)}~"
+                    f"{_display_price(support_high, currency)}을 확인하고 종가는 구간 위에서 마감했습니다."
+                )
+                if previous is not None and previous > support_high:
+                    if evaluation.status == "within_rules":
+                        evaluation.status = "support_zone_held"
+                    evaluation.triggered_rules.append("등록된 지지구간의 종가 방어를 확인했습니다.")
+                    result.positive_points += 20
+                    if direction == "neutral":
+                        direction = "strengthen"
+                    relevance_score = max(relevance_score, 55)
+            elif previous is not None and previous >= support_low and latest < support_low:
+                if evaluation.status == "within_rules":
+                    evaluation.status = "support_zone_broken"
+                evaluation.triggered_rules.append(
+                    f"종가가 지지구간 하단 {_display_price(support_low, currency)}을 이탈했습니다."
+                )
+                result.negative_points += 30
+                direction = "weaken"
+                relevance_score = max(relevance_score, 60)
+
+        if confirmation is not None and latest >= confirmation:
+            evaluation.active_rules.append(
+                f"확인 기준 {_display_price(confirmation, currency)} 이상입니다."
+            )
+            if previous is not None and previous < confirmation:
+                evaluation.status = "confirmation_triggered"
+                evaluation.triggered_rules.append(
+                    f"종가가 확인 기준 {_display_price(confirmation, currency)}을 상향 돌파했습니다."
+                )
+                result.positive_points += 50
+                if direction == "neutral":
+                    direction = "strengthen"
+                relevance_score = max(relevance_score, 70)
+
+    if evaluation.triggered_rules:
+        result.evidence = {
+            "date": daily.latest_date if daily else None,
+            "title": "구조화된 가격 규칙 점검",
+            "url": "",
+            "provider": "ohlcv-analyst",
+            "event_type": "price_rule",
+            "direction": direction,
+            "relevance_score": relevance_score,
+            "matched_signals": evaluation.triggered_rules,
+        }
+    return result
 
 
 @dataclass
@@ -165,13 +323,19 @@ def evaluate_thesis(
                 }
             )
 
+    price_result = _evaluate_price_rules(thesis, price_context)
+    positive_points += price_result.positive_points
+    negative_points += price_result.negative_points
+    if price_result.evidence is not None:
+        evidence.append(price_result.evidence)
+
     trusted_invalidation = any(
         event.provider in TRUSTED_INVALIDATION_PROVIDERS
         and event.relevance_score >= 80
         and bool(_json_list(event.confirmed_facts))
         for event, _matches in invalidation_matches
     )
-    if trusted_invalidation:
+    if price_result.invalidated or trusted_invalidation:
         status = AssessmentStatus.invalidated
     elif invalidation_matches:
         status = AssessmentStatus.invalidation_candidate

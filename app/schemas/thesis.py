@@ -1,7 +1,7 @@
 from datetime import date, datetime
 from enum import StrEnum
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 
 class AssessmentStatus(StrEnum):
@@ -24,12 +24,42 @@ class MacroExposureInput(BaseModel):
     review_required: bool = False
 
 
+class PriceRulesInput(BaseModel):
+    currency: str | None = None
+    basis: str = Field(default="close", pattern="^close$")
+    confirmation_price: float | None = Field(default=None, gt=0)
+    support_zone_low: float | None = Field(default=None, gt=0)
+    support_zone_high: float | None = Field(default=None, gt=0)
+    warning_price: float | None = Field(default=None, gt=0)
+    invalidation_price: float | None = Field(default=None, gt=0)
+
+    @model_validator(mode="after")
+    def validate_support_zone(self) -> "PriceRulesInput":
+        if (self.support_zone_low is None) != (self.support_zone_high is None):
+            raise ValueError("support_zone_low and support_zone_high must be provided together")
+        if (
+            self.support_zone_low is not None
+            and self.support_zone_high is not None
+            and self.support_zone_low > self.support_zone_high
+        ):
+            raise ValueError("support_zone_low must not exceed support_zone_high")
+        return self
+
+
 class MonitoringItemCreate(BaseModel):
     ticker: str = Field(description="Ticker, stock code, or supported Korean company name.", min_length=1)
     company_name: str = Field(description="Canonical company display name.", min_length=1)
     exchange: str | None = Field(default=None, description="Exchange such as KRX or NASDAQ.")
     core_thesis: str = Field(description="Current one-paragraph investment thesis.", min_length=1)
     time_horizon: str | None = Field(default=None, description="Expected investment horizon.")
+    thesis_drivers: list[str] = Field(
+        default_factory=list,
+        description="Detailed and independently stated reasons supporting the thesis.",
+    )
+    validation_metrics: list[str] = Field(
+        default_factory=list,
+        description="Measurable company or industry facts that validate the thesis.",
+    )
     strengthen_signals: list[str] = Field(
         default_factory=list,
         description="Concrete future facts that would strengthen the thesis.",
@@ -42,6 +72,10 @@ class MonitoringItemCreate(BaseModel):
         default_factory=list,
         description="Explicit facts that would invalidate the thesis.",
     )
+    price_rules: PriceRulesInput | None = Field(
+        default=None,
+        description="Structured close-price confirmation, support, warning, and invalidation rules.",
+    )
     macro_exposures: list[MacroExposureInput] = Field(
         default_factory=list,
         description="Conditional macro factors and transmission channels for this thesis.",
@@ -53,9 +87,12 @@ class InvestmentThesisRead(BaseModel):
     version: int
     core_thesis: str
     time_horizon: str | None
+    thesis_drivers: list[str]
+    validation_metrics: list[str]
     strengthen_signals: list[str]
     weaken_signals: list[str]
     invalidation_signals: list[str]
+    price_rules: PriceRulesInput | None
     macro_exposures: list[MacroExposureInput]
     status: str
     source: str
@@ -77,14 +114,26 @@ class PricePeriodSummary(BaseModel):
     requested_count: int
     actual_count: int
     latest_date: str | None = None
+    previous_close: float | None = None
     latest_close: float | None = None
+    latest_high: float | None = None
+    latest_low: float | None = None
     period_return_pct: float | None = None
     range_position_pct: float | None = None
+
+
+class PriceRuleEvaluation(BaseModel):
+    status: str = "not_configured"
+    latest_close: float | None = None
+    previous_close: float | None = None
+    triggered_rules: list[str] = Field(default_factory=list)
+    active_rules: list[str] = Field(default_factory=list)
 
 
 class PriceContext(BaseModel):
     available: bool = False
     periods: dict[str, PricePeriodSummary] = Field(default_factory=dict)
+    rule_evaluation: PriceRuleEvaluation | None = None
     warnings: list[str] = Field(default_factory=list)
 
 
@@ -94,6 +143,9 @@ class ThesisSnapshot(BaseModel):
     effective_date: date
     status: AssessmentStatus
     current_thesis: str
+    thesis_drivers: list[str] = Field(default_factory=list)
+    validation_metrics: list[str] = Field(default_factory=list)
+    price_rules: PriceRulesInput | None = None
     supporting_evidence: list[dict[str, object]] = Field(default_factory=list)
     weakening_evidence: list[dict[str, object]] = Field(default_factory=list)
     invalidation_evidence: list[dict[str, object]] = Field(default_factory=list)

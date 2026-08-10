@@ -12,9 +12,12 @@ class InvestmentThesis(SQLModel, table=True):
     version: int = Field(index=True)
     core_thesis: str = Field(sa_column=Column(Text))
     time_horizon: str | None = None
+    thesis_drivers: str = Field(default="[]", sa_column=Column(Text))
+    validation_metrics: str = Field(default="[]", sa_column=Column(Text))
     strengthen_signals: str = Field(default="[]", sa_column=Column(Text))
     weaken_signals: str = Field(default="[]", sa_column=Column(Text))
     invalidation_signals: str = Field(default="[]", sa_column=Column(Text))
+    price_rules: str = Field(default="{}", sa_column=Column(Text))
     macro_exposures: str = Field(default="[]", sa_column=Column(Text))
     status: str = Field(default="active", index=True)
     source: str = "custom_gpt"

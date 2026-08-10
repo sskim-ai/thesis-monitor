@@ -84,6 +84,18 @@
                   "time_horizon": {
                     "type": "string"
                   },
+                  "thesis_drivers": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "validation_metrics": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
                   "strengthen_signals": {
                     "type": "array",
                     "items": {
@@ -100,6 +112,35 @@
                     "type": "array",
                     "items": {
                       "type": "string"
+                    }
+                  },
+                  "price_rules": {
+                    "type": "object",
+                    "properties": {
+                      "currency": {
+                        "type": "string"
+                      },
+                      "basis": {
+                        "type": "string",
+                        "enum": [
+                          "close"
+                        ]
+                      },
+                      "confirmation_price": {
+                        "type": "number"
+                      },
+                      "support_zone_low": {
+                        "type": "number"
+                      },
+                      "support_zone_high": {
+                        "type": "number"
+                      },
+                      "warning_price": {
+                        "type": "number"
+                      },
+                      "invalidation_price": {
+                        "type": "number"
+                      }
                     }
                   },
                   "macro_exposures": {
@@ -1237,6 +1278,20 @@
             ],
             "title": "Time Horizon"
           },
+          "thesis_drivers": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Thesis Drivers"
+          },
+          "validation_metrics": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Validation Metrics"
+          },
           "strengthen_signals": {
             "items": {
               "type": "string"
@@ -1257,6 +1312,16 @@
             },
             "type": "array",
             "title": "Invalidation Signals"
+          },
+          "price_rules": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/PriceRulesInput"
+              },
+              {
+                "type": "null"
+              }
+            ]
           },
           "macro_exposures": {
             "items": {
@@ -1285,9 +1350,12 @@
           "version",
           "core_thesis",
           "time_horizon",
+          "thesis_drivers",
+          "validation_metrics",
           "strengthen_signals",
           "weaken_signals",
           "invalidation_signals",
+          "price_rules",
           "macro_exposures",
           "status",
           "source",
@@ -2107,6 +2175,22 @@
             "title": "Time Horizon",
             "description": "Expected investment horizon."
           },
+          "thesis_drivers": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Thesis Drivers",
+            "description": "Detailed and independently stated reasons supporting the thesis."
+          },
+          "validation_metrics": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Validation Metrics",
+            "description": "Measurable company or industry facts that validate the thesis."
+          },
           "strengthen_signals": {
             "items": {
               "type": "string"
@@ -2130,6 +2214,17 @@
             "type": "array",
             "title": "Invalidation Signals",
             "description": "Explicit facts that would invalidate the thesis."
+          },
+          "price_rules": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/PriceRulesInput"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Structured close-price confirmation, support, warning, and invalidation rules."
           },
           "macro_exposures": {
             "items": {
@@ -2241,6 +2336,16 @@
             "type": "object",
             "title": "Periods"
           },
+          "rule_evaluation": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/PriceRuleEvaluation"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
           "warnings": {
             "items": {
               "type": "string"
@@ -2273,6 +2378,17 @@
             ],
             "title": "Latest Date"
           },
+          "previous_close": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Previous Close"
+          },
           "latest_close": {
             "anyOf": [
               {
@@ -2283,6 +2399,28 @@
               }
             ],
             "title": "Latest Close"
+          },
+          "latest_high": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Latest High"
+          },
+          "latest_low": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Latest Low"
           },
           "period_return_pct": {
             "anyOf": [
@@ -2313,6 +2451,136 @@
           "actual_count"
         ],
         "title": "PricePeriodSummary"
+      },
+      "PriceRuleEvaluation": {
+        "properties": {
+          "status": {
+            "type": "string",
+            "title": "Status",
+            "default": "not_configured"
+          },
+          "latest_close": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Latest Close"
+          },
+          "previous_close": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Previous Close"
+          },
+          "triggered_rules": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Triggered Rules"
+          },
+          "active_rules": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Active Rules"
+          }
+        },
+        "type": "object",
+        "title": "PriceRuleEvaluation"
+      },
+      "PriceRulesInput": {
+        "properties": {
+          "currency": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Currency"
+          },
+          "basis": {
+            "type": "string",
+            "pattern": "^close$",
+            "title": "Basis",
+            "default": "close"
+          },
+          "confirmation_price": {
+            "anyOf": [
+              {
+                "type": "number",
+                "exclusiveMinimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Confirmation Price"
+          },
+          "support_zone_low": {
+            "anyOf": [
+              {
+                "type": "number",
+                "exclusiveMinimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Support Zone Low"
+          },
+          "support_zone_high": {
+            "anyOf": [
+              {
+                "type": "number",
+                "exclusiveMinimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Support Zone High"
+          },
+          "warning_price": {
+            "anyOf": [
+              {
+                "type": "number",
+                "exclusiveMinimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Warning Price"
+          },
+          "invalidation_price": {
+            "anyOf": [
+              {
+                "type": "number",
+                "exclusiveMinimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Invalidation Price"
+          }
+        },
+        "type": "object",
+        "title": "PriceRulesInput"
       },
       "ProviderStatusResponse": {
         "properties": {
@@ -2733,6 +3001,30 @@
           "current_thesis": {
             "type": "string",
             "title": "Current Thesis"
+          },
+          "thesis_drivers": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Thesis Drivers"
+          },
+          "validation_metrics": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Validation Metrics"
+          },
+          "price_rules": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/PriceRulesInput"
+              },
+              {
+                "type": "null"
+              }
+            ]
           },
           "supporting_evidence": {
             "items": {

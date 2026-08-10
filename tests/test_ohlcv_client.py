@@ -38,5 +38,9 @@ async def test_ohlcv_client_requests_each_period_and_accepts_shorter_history() -
     assert requested == {"daily": 500, "weekly": 300, "monthly": 100}
     assert context.available is True
     assert context.periods["daily"].actual_count == 420
+    assert context.periods["daily"].previous_close == 519
+    assert context.periods["daily"].latest_close == 520
+    assert context.periods["daily"].latest_high == 521
+    assert context.periods["daily"].latest_low == 517
     assert context.periods["weekly"].actual_count == 240
     assert context.periods["monthly"].actual_count == 84

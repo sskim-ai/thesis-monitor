@@ -94,9 +94,12 @@ def _assessment_report(
     evidence = _json_list_value(assessment.evidence)
     price_context = _json_value(assessment.price_context, {})
     thesis_snapshot = _json_value(assessment.thesis_snapshot, {})
+    thesis_drivers = _json_list_value(thesis.thesis_drivers) if thesis else []
+    validation_metrics = _json_list_value(thesis.validation_metrics) if thesis else []
     strengthen_signals = _json_list_value(thesis.strengthen_signals) if thesis else []
     weaken_signals = _json_list_value(thesis.weaken_signals) if thesis else []
     invalidation_signals = _json_list_value(thesis.invalidation_signals) if thesis else []
+    price_rules = _json_value(thesis.price_rules, {}) if thesis else {}
     macro_exposures = _json_list_value(thesis.macro_exposures) if thesis else []
     evidence_items = evidence
     evidence_lines = [
@@ -114,6 +117,7 @@ def _assessment_report(
         *(str(item) for item in invalidation_signals[:1]),
     ]
     condition_text = " / ".join(conditions) or "추가 확인 조건이 등록되지 않았습니다."
+    validation_text = " / ".join(str(item) for item in validation_metrics[:3])
     fallback = (
         f"🏢 {company_name}({assessment.ticker})\n"
         f"⚠️ 투자 논리 {label} · 신뢰도 {assessment.confidence:.0%}\n\n"
@@ -128,6 +132,11 @@ def _assessment_report(
         f"💰 가격 판단\n• {assessment.price_view}\n\n"
         f"📌 확인할 것\n• 강화·약화·무효화 조건과 다음 공시·실적 근거를 계속 확인합니다."
     )
+    if validation_text:
+        fallback = fallback.replace(
+            "📌 확인할 것\n• ",
+            f"📌 확인할 것\n• 검증 지표: {validation_text}\n• ",
+        )
     context: dict[str, object] = {
         "analysis_type": "stock",
         "assessment_date": str(assessment.assessment_date),
@@ -137,9 +146,12 @@ def _assessment_report(
             "version": assessment.thesis_version,
             "core_thesis": core_thesis,
             "time_horizon": thesis.time_horizon if thesis else None,
+            "thesis_drivers": thesis_drivers,
+            "validation_metrics": validation_metrics,
             "strengthen_signals": strengthen_signals,
             "weaken_signals": weaken_signals,
             "invalidation_signals": invalidation_signals,
+            "price_rules": price_rules,
             "macro_exposures": macro_exposures,
             "snapshot": thesis_snapshot,
         },

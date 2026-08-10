@@ -75,9 +75,23 @@ def _simplify_monitor_stock_action(schema: dict[str, object]) -> None:
             "exchange": {"type": "string"},
             "core_thesis": {"type": "string", "minLength": 1},
             "time_horizon": {"type": "string"},
+            "thesis_drivers": signal_array,
+            "validation_metrics": signal_array,
             "strengthen_signals": signal_array,
             "weaken_signals": signal_array,
             "invalidation_signals": signal_array,
+            "price_rules": {
+                "type": "object",
+                "properties": {
+                    "currency": {"type": "string"},
+                    "basis": {"type": "string", "enum": ["close"]},
+                    "confirmation_price": {"type": "number"},
+                    "support_zone_low": {"type": "number"},
+                    "support_zone_high": {"type": "number"},
+                    "warning_price": {"type": "number"},
+                    "invalidation_price": {"type": "number"},
+                },
+            },
             "macro_exposures": {
                 "type": "array",
                 "items": {

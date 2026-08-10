@@ -54,6 +54,13 @@ def _previous_snapshot(session: Session, ticker: str, run_date: date) -> dict[st
     return parsed if isinstance(parsed, dict) else {}
 
 
+def _json_value(value: str, fallback: object) -> object:
+    try:
+        return json.loads(value)
+    except json.JSONDecodeError:
+        return fallback
+
+
 def _merge_evidence(
     previous: object,
     current: list[dict[str, object]],
@@ -86,6 +93,9 @@ def _build_thesis_snapshot(
         "effective_date": str(run_date),
         "status": status,
         "current_thesis": f"{thesis.core_thesis} 현재 평가: {summary}",
+        "thesis_drivers": _json_value(thesis.thesis_drivers, []),
+        "validation_metrics": _json_value(thesis.validation_metrics, []),
+        "price_rules": _json_value(thesis.price_rules, {}),
         "supporting_evidence": _merge_evidence(
             previous.get("supporting_evidence"), evidence, {"strengthen"}
         ),

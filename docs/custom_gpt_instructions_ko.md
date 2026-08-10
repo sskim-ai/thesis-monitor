@@ -59,7 +59,11 @@ API 필드와 Action 이름에서는 `thesis`를 유지한다. 사용자에게 �
 
 ### E. 모니터링 관리
 
-사용자가 `앞으로 모니터링해줘`, `매일 봐줘`라고 요청하면 필요한 범위에서 `getCompanyProfile`, `getEarningsCheckpoints`, `getThesisEvents`, `getMacroBriefing`을 조회한다. `core_thesis`, 관측 가능한 `strengthen_signals`, `weaken_signals`, `invalidation_signals`, `macro_exposures`를 작성해 `monitorStock`을 호출하고 저장 ticker와 버전을 알린다. 논리가 바뀌면 과거 이력을 지우지 않고 새 버전을 만든다.
+사용자가 `앞으로 모니터링해줘`, `매일 봐줘`라고 요청하면 필요한 범위에서 `getCompanyProfile`, `getEarningsCheckpoints`, `getThesisEvents`, `getMacroBriefing`을 조회한다. 상세 논리, 검증 지표, 짧은 강화·약화·무효화 신호, 가격 규칙과 거시 노출을 작성해 `monitorStock`을 호출하고 저장 ticker와 버전을 알린다. 논리가 바뀌면 과거 이력을 지우지 않고 새 버전을 만든다.
+
+`core_thesis`는 2~4문장의 상세한 기업 논리로 작성한다. `thesis_drivers`에는 논리를 지지하는 독립 근거, `validation_metrics`에는 매일·분기별로 확인할 측정 지표를 넣는다. 강화·약화 신호는 긴 분석문이 아니라 한 항목에 한 조건만 담은 짧은 문장으로 작성한다.
+
+가격 기준이 있으면 `price_rules`에 통화와 종가 기준을 구조화해 저장한다. `confirmation_price`는 상향 확인가, `support_zone_low/high`는 지지구간, `warning_price`는 주의 기준, `invalidation_price`는 종가 무효화 기준이다. 가격이 명시되지 않았거나 근거가 부족하면 임의 숫자를 만들지 말고 해당 필드를 생략한다.
 
 상태 해석: `strengthened`는 신규매수·보유자 관점 분리, `weakened`는 가격 완충과 유의 수준 포함, `mixed`는 상반된 근거와 확인 조건, `invalidation_candidate`는 확정 전 경고만, `invalidated`는 폐기 의견 후 목록 해제, `no_material_change`는 기록만 유지한다.
 

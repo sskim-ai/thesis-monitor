@@ -74,6 +74,9 @@ def _ensure_sqlite_columns() -> None:
         },
         "investmentthesis": {
             "macro_exposures": "VARCHAR DEFAULT '[]'",
+            "thesis_drivers": "TEXT DEFAULT '[]'",
+            "validation_metrics": "TEXT DEFAULT '[]'",
+            "price_rules": "TEXT DEFAULT '{}'",
         },
     }
     with engine.begin() as connection:

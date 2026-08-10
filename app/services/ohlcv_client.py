@@ -29,6 +29,7 @@ def _summarize_bars(requested_count: int, bars: Sequence[dict[str, object]]) -> 
     lows = [value for value in lows if value is not None]
     latest = bars[-1] if bars else {}
     latest_close = closes[-1] if closes else None
+    previous_close = closes[-2] if len(closes) >= 2 else None
 
     period_return = None
     if len(closes) >= 2 and closes[0] != 0:
@@ -45,7 +46,10 @@ def _summarize_bars(requested_count: int, bars: Sequence[dict[str, object]]) -> 
         requested_count=requested_count,
         actual_count=len(bars),
         latest_date=str(latest.get("date")) if latest.get("date") else None,
+        previous_close=previous_close,
         latest_close=latest_close,
+        latest_high=_number(latest.get("high")),
+        latest_low=_number(latest.get("low")),
         period_return_pct=period_return,
         range_position_pct=range_position,
     )

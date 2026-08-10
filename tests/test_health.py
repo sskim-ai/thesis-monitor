@@ -45,5 +45,10 @@ def test_public_action_schema() -> None:
     assert monitor_schema["required"] == ["ticker", "company_name", "core_thesis"]
     assert monitor_schema["properties"]["exchange"]["type"] == "string"
     assert "anyOf" not in monitor_schema["properties"]["exchange"]
+    assert monitor_schema["properties"]["thesis_drivers"]["type"] == "array"
+    assert monitor_schema["properties"]["validation_metrics"]["type"] == "array"
+    price_rules = monitor_schema["properties"]["price_rules"]
+    assert price_rules["properties"]["confirmation_price"]["type"] == "number"
+    assert price_rules["properties"]["invalidation_price"]["type"] == "number"
     exposure = monitor_schema["properties"]["macro_exposures"]["items"]
     assert exposure["properties"]["condition"]["type"] == "string"

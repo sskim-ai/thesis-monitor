@@ -10,6 +10,7 @@ from app.schemas.thesis import (
     InvestmentThesisRead,
     MonitoringItemCreate,
     MonitoringItemRead,
+    PriceRulesInput,
     ThesisAssessmentRead,
 )
 from app.services.local_storage import export_thesis
@@ -24,6 +25,11 @@ def _json_list(value: str) -> list[str]:
 def _json_dict_list(value: str) -> list[dict[str, object]]:
     parsed = json.loads(value)
     return [item for item in parsed if isinstance(item, dict)] if isinstance(parsed, list) else []
+
+
+def _json_dict(value: str) -> dict[str, object]:
+    parsed = json.loads(value)
+    return parsed if isinstance(parsed, dict) else {}
 
 
 def _assessment_snapshot(assessment: ThesisAssessment) -> dict[str, object]:
@@ -54,9 +60,16 @@ def thesis_to_read(thesis: InvestmentThesis | None) -> InvestmentThesisRead | No
         version=thesis.version,
         core_thesis=thesis.core_thesis,
         time_horizon=thesis.time_horizon,
+        thesis_drivers=_json_list(thesis.thesis_drivers),
+        validation_metrics=_json_list(thesis.validation_metrics),
         strengthen_signals=_json_list(thesis.strengthen_signals),
         weaken_signals=_json_list(thesis.weaken_signals),
         invalidation_signals=_json_list(thesis.invalidation_signals),
+        price_rules=(
+            PriceRulesInput.model_validate(_json_dict(thesis.price_rules))
+            if _json_dict(thesis.price_rules)
+            else None
+        ),
         macro_exposures=_json_dict_list(thesis.macro_exposures),
         status=thesis.status,
         source=thesis.source,
@@ -159,9 +172,14 @@ def register_monitoring_item(
     requested_values = (
         payload.core_thesis,
         payload.time_horizon,
+        payload.thesis_drivers,
+        payload.validation_metrics,
         payload.strengthen_signals,
         payload.weaken_signals,
         payload.invalidation_signals,
+        payload.price_rules.model_dump(mode="json", exclude_none=True)
+        if payload.price_rules
+        else {},
         [item.model_dump(mode="json") for item in payload.macro_exposures],
     )
     existing_values = None
@@ -169,9 +187,12 @@ def register_monitoring_item(
         existing_values = (
             active_thesis.core_thesis,
             active_thesis.time_horizon,
+            _json_list(active_thesis.thesis_drivers),
+            _json_list(active_thesis.validation_metrics),
             _json_list(active_thesis.strengthen_signals),
             _json_list(active_thesis.weaken_signals),
             _json_list(active_thesis.invalidation_signals),
+            _json_dict(active_thesis.price_rules),
             _json_dict_list(active_thesis.macro_exposures),
         )
 
@@ -186,9 +207,17 @@ def register_monitoring_item(
             version=version,
             core_thesis=payload.core_thesis,
             time_horizon=payload.time_horizon,
+            thesis_drivers=json.dumps(payload.thesis_drivers, ensure_ascii=False),
+            validation_metrics=json.dumps(payload.validation_metrics, ensure_ascii=False),
             strengthen_signals=json.dumps(payload.strengthen_signals, ensure_ascii=False),
             weaken_signals=json.dumps(payload.weaken_signals, ensure_ascii=False),
             invalidation_signals=json.dumps(payload.invalidation_signals, ensure_ascii=False),
+            price_rules=json.dumps(
+                payload.price_rules.model_dump(mode="json", exclude_none=True)
+                if payload.price_rules
+                else {},
+                ensure_ascii=False,
+            ),
             macro_exposures=json.dumps(
                 [item.model_dump(mode="json") for item in payload.macro_exposures],
                 ensure_ascii=False,
