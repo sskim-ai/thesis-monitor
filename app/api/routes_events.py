@@ -15,11 +15,10 @@ collection_service = CollectionService()
     operation_id="getThesisEvents",
     summary="Collect and return investment evidence for one stock",
     description=(
-        "Use this operation for the current user's stock analysis. It accepts a six-digit Korean "
-        "stock code, a supported Korean company name, or a US ticker. For Korean disclosures, "
-        "set provider=opendart. If a name-based request fails, resolve the stock code and retry "
-        "once. Do not describe this operation as unavailable unless a call in the current turn "
-        "actually returns an error."
+        "Collect current investment evidence for one stock. Accepts a six-digit Korean code, "
+        "supported Korean company name, or US ticker. Use provider=opendart for Korean "
+        "disclosures. On a name failure, retry once with the code. Report unavailable only when "
+        "the current call returns an error."
     ),
 )
 async def get_thesis_events(
