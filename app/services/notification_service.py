@@ -100,7 +100,12 @@ def _assessment_report(
     weaken_signals = _json_list_value(thesis.weaken_signals) if thesis else []
     invalidation_signals = _json_list_value(thesis.invalidation_signals) if thesis else []
     price_rules = _json_value(thesis.price_rules, {}) if thesis else {}
+    market_expectations = _json_value(thesis.market_expectations, {}) if thesis else {}
+    valuation_framework = _json_value(thesis.valuation_framework, {}) if thesis else {}
+    expansion_signals = _json_list_value(thesis.multiple_expansion_signals) if thesis else []
+    compression_signals = _json_list_value(thesis.multiple_compression_signals) if thesis else []
     macro_exposures = _json_list_value(thesis.macro_exposures) if thesis else []
+    valuation_context = _json_value(assessment.valuation_context, {})
     evidence_items = evidence
     evidence_lines = [
         f"• {item.get('title', '제목 없음')} ({item.get('direction', '확인')})"
@@ -118,6 +123,16 @@ def _assessment_report(
     ]
     condition_text = " / ".join(conditions) or "추가 확인 조건이 등록되지 않았습니다."
     validation_text = " / ".join(str(item) for item in validation_metrics[:3])
+    expectation_level = str(market_expectations.get("level", "unknown"))
+    expectation_summary = str(
+        market_expectations.get("summary", "현재 시장 기대 정보가 등록되지 않았습니다.")
+    )
+    valuation_method = str(
+        valuation_framework.get("primary_method", "평가 방식이 등록되지 않았습니다.")
+    )
+    valuation_impact = str(
+        valuation_context.get("summary", "Valuation 영향 판단 자료가 없습니다.")
+    )
     fallback = (
         f"🏢 {company_name}({assessment.ticker})\n"
         f"⚠️ 투자 논리 {label} · 신뢰도 {assessment.confidence:.0%}\n\n"
@@ -130,6 +145,10 @@ def _assessment_report(
         f"• {assessment.summary} 위험 수준은 {assessment.risk_level}입니다.\n\n"
         f"🔄 이번 변화\n{change_text}\n\n"
         f"💰 가격 판단\n• {assessment.price_view}\n\n"
+        f"📐 시장 기대와 Valuation\n"
+        f"• 기대 수준: {expectation_level} · {expectation_summary}\n"
+        f"• 평가 방식: {valuation_method}\n"
+        f"• 멀티플 영향: {valuation_impact}\n\n"
         f"📌 확인할 것\n• 강화·약화·무효화 조건과 다음 공시·실적 근거를 계속 확인합니다."
     )
     if validation_text:
@@ -152,6 +171,10 @@ def _assessment_report(
             "weaken_signals": weaken_signals,
             "invalidation_signals": invalidation_signals,
             "price_rules": price_rules,
+            "market_expectations": market_expectations,
+            "valuation_framework": valuation_framework,
+            "multiple_expansion_signals": expansion_signals,
+            "multiple_compression_signals": compression_signals,
             "macro_exposures": macro_exposures,
             "snapshot": thesis_snapshot,
         },
@@ -166,6 +189,7 @@ def _assessment_report(
             "risk_level": assessment.risk_level,
             "evidence": evidence_items,
             "price_context": price_context,
+            "valuation_context": valuation_context,
         },
     }
     return fallback, context

@@ -98,6 +98,12 @@ async def test_daily_monitor_assesses_and_queues_dry_run_notification() -> None:
                 ticker="TST1",
                 company_name="Test Company",
                 core_thesis="New production customers support growth",
+                market_expectations={
+                    "level": "elevated",
+                    "summary": "A new customer ramp is partly reflected",
+                },
+                valuation_framework={"primary_method": "forward P/E"},
+                multiple_expansion_signals=["new customer production order"],
                 strengthen_signals=["new customer production order"],
                 weaken_signals=["customer loss"],
                 invalidation_signals=["largest customer terminates all orders"],
@@ -112,10 +118,13 @@ async def test_daily_monitor_assesses_and_queues_dry_run_notification() -> None:
 
         monitor_run = session.exec(select(MonitorRun).where(MonitorRun.run_date == date(2030, 1, 2))).one()
         assert result.status == "success", monitor_run.details
-        assert result.assessments[0].status == "strengthened"
-        assert result.assessments[0].price_context.periods["daily"].actual_count == 420
-        assert result.assessments[0].thesis_snapshot.supporting_evidence
-        assert "현재 평가" in result.assessments[0].thesis_snapshot.current_thesis
+        assessment = next(item for item in result.assessments if item.ticker == "TST1")
+        assert assessment.status == "strengthened"
+        assert assessment.price_context.periods["daily"].actual_count == 420
+        assert assessment.thesis_snapshot.supporting_evidence
+        assert assessment.valuation_context.impact == "expansion"
+        assert assessment.thesis_snapshot.valuation_context.impact == "expansion"
+        assert "현재 평가" in assessment.thesis_snapshot.current_thesis
         delivery = session.exec(
             select(NotificationDelivery).where(NotificationDelivery.ticker == "TST1")
         ).one()

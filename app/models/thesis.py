@@ -14,6 +14,10 @@ class InvestmentThesis(SQLModel, table=True):
     time_horizon: str | None = None
     thesis_drivers: str = Field(default="[]", sa_column=Column(Text))
     validation_metrics: str = Field(default="[]", sa_column=Column(Text))
+    market_expectations: str = Field(default="{}", sa_column=Column(Text))
+    valuation_framework: str = Field(default="{}", sa_column=Column(Text))
+    multiple_expansion_signals: str = Field(default="[]", sa_column=Column(Text))
+    multiple_compression_signals: str = Field(default="[]", sa_column=Column(Text))
     strengthen_signals: str = Field(default="[]", sa_column=Column(Text))
     weaken_signals: str = Field(default="[]", sa_column=Column(Text))
     invalidation_signals: str = Field(default="[]", sa_column=Column(Text))
@@ -41,6 +45,7 @@ class ThesisAssessment(SQLModel, table=True):
     risk_level: str
     evidence: str = Field(default="[]", sa_column=Column(Text))
     price_context: str = Field(default="{}", sa_column=Column(Text))
+    valuation_context: str = Field(default="{}", sa_column=Column(Text))
     thesis_snapshot: str = Field(default="{}", sa_column=Column(Text))
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 

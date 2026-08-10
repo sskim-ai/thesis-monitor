@@ -14,6 +14,24 @@ class AssessmentStatus(StrEnum):
     needs_review = "needs_review"
 
 
+class ExpectationLevel(StrEnum):
+    depressed = "depressed"
+    low = "low"
+    balanced = "balanced"
+    elevated = "elevated"
+    very_high = "very_high"
+    speculative = "speculative"
+    unknown = "unknown"
+
+
+class ValuationImpact(StrEnum):
+    expansion = "expansion"
+    compression = "compression"
+    mixed = "mixed"
+    neutral = "neutral"
+    unknown = "unknown"
+
+
 class MacroExposureInput(BaseModel):
     factor: str = Field(min_length=1)
     direction: str = Field(pattern="^(positive|negative|mixed)$")
@@ -46,6 +64,25 @@ class PriceRulesInput(BaseModel):
         return self
 
 
+class MarketExpectationsInput(BaseModel):
+    as_of_date: date | None = None
+    level: ExpectationLevel = ExpectationLevel.unknown
+    summary: str = ""
+    priced_in: list[str] = Field(default_factory=list)
+    upside_surprises: list[str] = Field(default_factory=list)
+    downside_surprises: list[str] = Field(default_factory=list)
+    evidence_basis: list[str] = Field(default_factory=list)
+
+
+class ValuationFrameworkInput(BaseModel):
+    primary_method: str = ""
+    secondary_methods: list[str] = Field(default_factory=list)
+    rationale: str = ""
+    key_inputs: list[str] = Field(default_factory=list)
+    peer_or_historical_basis: list[str] = Field(default_factory=list)
+    valuation_caveats: list[str] = Field(default_factory=list)
+
+
 class MonitoringItemCreate(BaseModel):
     ticker: str = Field(description="Ticker, stock code, or supported Korean company name.", min_length=1)
     company_name: str = Field(description="Canonical company display name.", min_length=1)
@@ -76,6 +113,22 @@ class MonitoringItemCreate(BaseModel):
         default=None,
         description="Structured close-price confirmation, support, warning, and invalidation rules.",
     )
+    market_expectations: MarketExpectationsInput | None = Field(
+        default=None,
+        description="Dated baseline of what the market already appears to expect.",
+    )
+    valuation_framework: ValuationFrameworkInput | None = Field(
+        default=None,
+        description="Company-specific methods and inputs for judging fair valuation.",
+    )
+    multiple_expansion_signals: list[str] = Field(
+        default_factory=list,
+        description="Independent facts that could justify a higher valuation multiple.",
+    )
+    multiple_compression_signals: list[str] = Field(
+        default_factory=list,
+        description="Independent facts that could justify a lower valuation multiple.",
+    )
     macro_exposures: list[MacroExposureInput] = Field(
         default_factory=list,
         description="Conditional macro factors and transmission channels for this thesis.",
@@ -93,6 +146,10 @@ class InvestmentThesisRead(BaseModel):
     weaken_signals: list[str]
     invalidation_signals: list[str]
     price_rules: PriceRulesInput | None
+    market_expectations: MarketExpectationsInput | None
+    valuation_framework: ValuationFrameworkInput | None
+    multiple_expansion_signals: list[str]
+    multiple_compression_signals: list[str]
     macro_exposures: list[MacroExposureInput]
     status: str
     source: str
@@ -120,6 +177,11 @@ class MonitoringItemSummaryRead(BaseModel):
     thesis_drivers: list[str]
     validation_metrics: list[str]
     price_rules_summary: list[str]
+    market_expectation_level: str
+    market_expectation_summary: str
+    valuation_primary_method: str
+    multiple_expansion_signals: list[str]
+    multiple_compression_signals: list[str]
     latest_status: str
     latest_assessment_date: str
 
@@ -151,6 +213,18 @@ class PriceContext(BaseModel):
     warnings: list[str] = Field(default_factory=list)
 
 
+class ValuationContext(BaseModel):
+    impact: ValuationImpact = ValuationImpact.unknown
+    summary: str = ""
+    market_expectation_level: ExpectationLevel = ExpectationLevel.unknown
+    market_expectation_summary: str = ""
+    primary_method: str = ""
+    matched_expansion_conditions: list[str] = Field(default_factory=list)
+    matched_compression_conditions: list[str] = Field(default_factory=list)
+    macro_valuation_effect: str = "neutral"
+    evidence_count: int = 0
+
+
 class ThesisSnapshot(BaseModel):
     base_thesis: str
     thesis_version: int
@@ -160,6 +234,11 @@ class ThesisSnapshot(BaseModel):
     thesis_drivers: list[str] = Field(default_factory=list)
     validation_metrics: list[str] = Field(default_factory=list)
     price_rules: PriceRulesInput | None = None
+    market_expectations: MarketExpectationsInput | None = None
+    valuation_framework: ValuationFrameworkInput | None = None
+    multiple_expansion_signals: list[str] = Field(default_factory=list)
+    multiple_compression_signals: list[str] = Field(default_factory=list)
+    valuation_context: ValuationContext = Field(default_factory=ValuationContext)
     supporting_evidence: list[dict[str, object]] = Field(default_factory=list)
     weakening_evidence: list[dict[str, object]] = Field(default_factory=list)
     invalidation_evidence: list[dict[str, object]] = Field(default_factory=list)
@@ -179,6 +258,7 @@ class ThesisAssessmentRead(BaseModel):
     risk_level: str
     evidence: list[dict[str, object]]
     price_context: PriceContext
+    valuation_context: ValuationContext = Field(default_factory=ValuationContext)
     thesis_snapshot: ThesisSnapshot
     created_at: datetime
 

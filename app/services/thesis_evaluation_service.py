@@ -6,8 +6,16 @@ from datetime import date
 from sqlmodel import Session, select
 
 from app.models.event import Event
+from app.models.macro import ThesisMacroImpact
 from app.models.thesis import InvestmentThesis, ThesisAssessment
-from app.schemas.thesis import AssessmentStatus, PriceContext, PriceRuleEvaluation
+from app.schemas.thesis import (
+    AssessmentStatus,
+    ExpectationLevel,
+    PriceContext,
+    PriceRuleEvaluation,
+    ValuationContext,
+    ValuationImpact,
+)
 
 
 POSITIVE_EVENT_TYPES = {
@@ -272,28 +280,58 @@ class EvaluationResult:
     price_view: str
     risk_level: str
     evidence: list[dict[str, object]]
+    valuation_context: ValuationContext
     should_deactivate: bool = False
+
+
+def _expectation_level(value: object) -> ExpectationLevel:
+    try:
+        return ExpectationLevel(str(value))
+    except ValueError:
+        return ExpectationLevel.unknown
+
+
+def _valuation_summary(impact: ValuationImpact) -> str:
+    summaries = {
+        ValuationImpact.expansion: "새 근거가 멀티플 확장 조건과 연결됩니다.",
+        ValuationImpact.compression: "새 근거가 멀티플 압축 조건과 연결됩니다.",
+        ValuationImpact.mixed: "멀티플 확장과 압축 근거가 함께 확인됐습니다.",
+        ValuationImpact.neutral: "멀티플을 바꿀 새로운 근거가 확인되지 않았습니다.",
+        ValuationImpact.unknown: "평가 프레임이 없어 멀티플 영향을 판단할 수 없습니다.",
+    }
+    return summaries[impact]
 
 
 def evaluate_thesis(
     thesis: InvestmentThesis,
     events: list[Event],
     price_context: PriceContext,
+    macro_impact: ThesisMacroImpact | None = None,
 ) -> EvaluationResult:
     strengthen_signals = _json_list(thesis.strengthen_signals)
     weaken_signals = _json_list(thesis.weaken_signals)
     invalidation_signals = _json_list(thesis.invalidation_signals)
+    expansion_signals = _json_list(thesis.multiple_expansion_signals)
+    compression_signals = _json_list(thesis.multiple_compression_signals)
     positive_points = 0
     negative_points = 0
+    expansion_points = 0
+    compression_points = 0
+    matched_expansion: list[str] = []
+    matched_compression: list[str] = []
     invalidation_matches: list[tuple[Event, list[str]]] = []
     evidence: list[dict[str, object]] = []
+    core_review_evidence = False
 
     for event in events:
         text = _event_text(event)
         strengthen_matches = _matching_signals(text, strengthen_signals)
         weaken_matches = _matching_signals(text, weaken_signals)
         invalid_matches = _matching_signals(text, invalidation_signals)
+        expansion_matches = _matching_signals(text, expansion_signals)
+        compression_matches = _matching_signals(text, compression_signals)
         direction = "neutral"
+        valuation_direction = "neutral"
         if invalid_matches:
             direction = "invalidation"
             negative_points += event.relevance_score
@@ -305,7 +343,22 @@ def evaluate_thesis(
             direction = "strengthen"
             positive_points += event.relevance_score
 
+        if expansion_matches and compression_matches:
+            valuation_direction = "mixed"
+            expansion_points += event.relevance_score
+            compression_points += event.relevance_score
+        elif expansion_matches:
+            valuation_direction = "expansion"
+            expansion_points += event.relevance_score
+        elif compression_matches:
+            valuation_direction = "compression"
+            compression_points += event.relevance_score
+        matched_expansion.extend(expansion_matches)
+        matched_compression.extend(compression_matches)
+
         if direction != "neutral" or event.requires_review:
+            core_review_evidence = True
+        if direction != "neutral" or valuation_direction != "neutral" or event.requires_review:
             evidence.append(
                 {
                     "date": str(event.date),
@@ -314,11 +367,16 @@ def evaluate_thesis(
                     "provider": event.provider,
                     "event_type": event.event_type,
                     "direction": direction,
+                    "valuation_direction": valuation_direction,
                     "relevance_score": event.relevance_score,
                     "matched_signals": [
                         *strengthen_matches,
                         *weaken_matches,
                         *invalid_matches,
+                    ],
+                    "matched_valuation_signals": [
+                        *expansion_matches,
+                        *compression_matches,
                     ],
                 }
             )
@@ -328,6 +386,58 @@ def evaluate_thesis(
     negative_points += price_result.negative_points
     if price_result.evidence is not None:
         evidence.append(price_result.evidence)
+        core_review_evidence = True
+
+    macro_valuation_effect = macro_impact.valuation_effect if macro_impact else "neutral"
+    if macro_valuation_effect == "strengthen":
+        expansion_points += max(20, (macro_impact.magnitude if macro_impact else 0) * 10)
+    elif macro_valuation_effect == "weaken":
+        compression_points += max(20, (macro_impact.magnitude if macro_impact else 0) * 10)
+    elif macro_valuation_effect == "mixed":
+        expansion_points += 20
+        compression_points += 20
+    if macro_impact is not None and macro_valuation_effect != "neutral":
+        evidence.append(
+            {
+                "date": str(macro_impact.assessment_date),
+                "title": "거시환경의 Valuation 전달 경로",
+                "url": "",
+                "provider": "macro-monitor",
+                "event_type": "macro_valuation",
+                "direction": "neutral",
+                "valuation_direction": macro_valuation_effect,
+                "relevance_score": macro_impact.magnitude * 20,
+                "matched_signals": [],
+                "matched_valuation_signals": [],
+                "rationale": macro_impact.rationale,
+            }
+        )
+
+    expectations = _json_dict(thesis.market_expectations)
+    framework = _json_dict(thesis.valuation_framework)
+    if not framework and not expansion_signals and not compression_signals:
+        valuation_impact = ValuationImpact.unknown
+    elif expansion_points >= 20 and compression_points >= 20:
+        valuation_impact = ValuationImpact.mixed
+    elif expansion_points - compression_points >= 20:
+        valuation_impact = ValuationImpact.expansion
+    elif compression_points - expansion_points >= 20:
+        valuation_impact = ValuationImpact.compression
+    else:
+        valuation_impact = ValuationImpact.neutral
+    valuation_context = ValuationContext(
+        impact=valuation_impact,
+        summary=_valuation_summary(valuation_impact),
+        market_expectation_level=_expectation_level(expectations.get("level", "unknown")),
+        market_expectation_summary=str(expectations.get("summary", "")),
+        primary_method=str(framework.get("primary_method", "")),
+        matched_expansion_conditions=list(dict.fromkeys(matched_expansion)),
+        matched_compression_conditions=list(dict.fromkeys(matched_compression)),
+        macro_valuation_effect=macro_valuation_effect,
+        evidence_count=sum(
+            1 for item in evidence if item.get("valuation_direction", "neutral") != "neutral"
+        ),
+    )
 
     trusted_invalidation = any(
         event.provider in TRUSTED_INVALIDATION_PROVIDERS
@@ -345,7 +455,7 @@ def evaluate_thesis(
         status = AssessmentStatus.strengthened
     elif negative_points - positive_points >= 20:
         status = AssessmentStatus.weakened
-    elif evidence:
+    elif core_review_evidence:
         status = AssessmentStatus.needs_review
     else:
         status = AssessmentStatus.no_material_change
@@ -357,6 +467,13 @@ def evaluate_thesis(
             min(0.95, 0.45 + max(item["relevance_score"] for item in evidence) / 200), 2
         )
     price_view = _price_view(price_context)
+    expectation_summary = valuation_context.market_expectation_summary or "기준 정보 없음"
+    valuation_method = valuation_context.primary_method or "평가 방식 미등록"
+    price_view = (
+        f"{price_view} 시장 기대는 {valuation_context.market_expectation_level.value} 수준으로 "
+        f"기록되어 있으며({expectation_summary}), 주 평가 방식은 {valuation_method}입니다. "
+        f"{valuation_context.summary}"
+    )
 
     if status == AssessmentStatus.strengthened:
         summary = "새 근거가 현재 투자 논리를 강화했습니다."
@@ -404,6 +521,7 @@ def evaluate_thesis(
         price_view=price_view,
         risk_level=risk_level,
         evidence=evidence,
+        valuation_context=valuation_context,
         should_deactivate=status == AssessmentStatus.invalidated,
     )
 

@@ -48,3 +48,38 @@ def test_untrusted_invalidation_requires_review() -> None:
 
     assert result.status == AssessmentStatus.invalidation_candidate
     assert result.should_deactivate is False
+
+
+def test_valuation_signal_is_separate_from_operating_thesis_status() -> None:
+    thesis = _thesis()
+    thesis.market_expectations = json.dumps(
+        {"level": "elevated", "summary": "Strong growth is already expected"}
+    )
+    thesis.valuation_framework = json.dumps(
+        {"primary_method": "forward P/E", "key_inputs": ["normalized EPS"]}
+    )
+    thesis.multiple_expansion_signals = json.dumps(["new customer production order"])
+    event = Event(
+        ticker="TEST",
+        date=date.today(),
+        source="Company filing",
+        provider="sec_edgar",
+        title="New customer production order confirmed",
+        url="https://example.com/new-order",
+        event_type="other",
+        confirmed_facts=json.dumps(["New customer production order confirmed"]),
+        inferred_implications="[]",
+        unknowns="[]",
+        relevance_score=70,
+        relevance_reason="new order",
+        requires_review=False,
+    )
+
+    result = evaluate_thesis(thesis, [event], PriceContext())
+
+    assert result.status == AssessmentStatus.no_material_change
+    assert result.valuation_context.impact == "expansion"
+    assert result.valuation_context.market_expectation_level == "elevated"
+    assert result.valuation_context.matched_expansion_conditions == [
+        "new customer production order"
+    ]

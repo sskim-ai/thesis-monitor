@@ -8,11 +8,14 @@ from app.models.watchlist import WatchlistItem
 from app.schemas.thesis import (
     AssessmentStatus,
     InvestmentThesisRead,
+    MarketExpectationsInput,
     MonitoringItemCreate,
     MonitoringItemRead,
     MonitoringItemSummaryRead,
     PriceRulesInput,
     ThesisAssessmentRead,
+    ValuationContext,
+    ValuationFrameworkInput,
 )
 from app.services.local_storage import export_thesis
 from app.utils.tickers import normalize_ticker
@@ -63,6 +66,18 @@ def thesis_to_read(thesis: InvestmentThesis | None) -> InvestmentThesisRead | No
         time_horizon=thesis.time_horizon,
         thesis_drivers=_json_list(thesis.thesis_drivers),
         validation_metrics=_json_list(thesis.validation_metrics),
+        market_expectations=(
+            MarketExpectationsInput.model_validate(_json_dict(thesis.market_expectations))
+            if _json_dict(thesis.market_expectations)
+            else None
+        ),
+        valuation_framework=(
+            ValuationFrameworkInput.model_validate(_json_dict(thesis.valuation_framework))
+            if _json_dict(thesis.valuation_framework)
+            else None
+        ),
+        multiple_expansion_signals=_json_list(thesis.multiple_expansion_signals),
+        multiple_compression_signals=_json_list(thesis.multiple_compression_signals),
         strengthen_signals=_json_list(thesis.strengthen_signals),
         weaken_signals=_json_list(thesis.weaken_signals),
         invalidation_signals=_json_list(thesis.invalidation_signals),
@@ -93,6 +108,9 @@ def assessment_to_read(assessment: ThesisAssessment) -> ThesisAssessmentRead:
         risk_level=assessment.risk_level,
         evidence=json.loads(assessment.evidence),
         price_context=json.loads(assessment.price_context),
+        valuation_context=ValuationContext.model_validate(
+            _json_dict(assessment.valuation_context)
+        ),
         thesis_snapshot=_assessment_snapshot(assessment),
         created_at=assessment.created_at,
     )
@@ -139,6 +157,7 @@ def _monitoring_item_read(
 def _price_rules_summary(rules: PriceRulesInput | None) -> list[str]:
     if rules is None:
         return []
+
     def display(value: float) -> str:
         return f"{value:.15g}"
 
@@ -164,6 +183,8 @@ def _price_rules_summary(rules: PriceRulesInput | None) -> list[str]:
 
 def _monitoring_item_summary(item: MonitoringItemRead) -> MonitoringItemSummaryRead:
     thesis = item.thesis
+    expectations = thesis.market_expectations if thesis else None
+    framework = thesis.valuation_framework if thesis else None
     return MonitoringItemSummaryRead(
         ticker=item.ticker,
         company_name=item.company_name,
@@ -174,6 +195,11 @@ def _monitoring_item_summary(item: MonitoringItemRead) -> MonitoringItemSummaryR
         thesis_drivers=thesis.thesis_drivers if thesis else [],
         validation_metrics=thesis.validation_metrics if thesis else [],
         price_rules_summary=_price_rules_summary(thesis.price_rules if thesis else None),
+        market_expectation_level=expectations.level.value if expectations else "unknown",
+        market_expectation_summary=expectations.summary if expectations else "",
+        valuation_primary_method=framework.primary_method if framework else "",
+        multiple_expansion_signals=thesis.multiple_expansion_signals if thesis else [],
+        multiple_compression_signals=thesis.multiple_compression_signals if thesis else [],
         latest_status=item.latest_status.value if item.latest_status else "",
         latest_assessment_date=(
             item.latest_assessment_date.isoformat() if item.latest_assessment_date else ""
@@ -220,6 +246,14 @@ def register_monitoring_item(
         payload.time_horizon,
         payload.thesis_drivers,
         payload.validation_metrics,
+        payload.market_expectations.model_dump(mode="json", exclude_none=True)
+        if payload.market_expectations
+        else {},
+        payload.valuation_framework.model_dump(mode="json", exclude_none=True)
+        if payload.valuation_framework
+        else {},
+        payload.multiple_expansion_signals,
+        payload.multiple_compression_signals,
         payload.strengthen_signals,
         payload.weaken_signals,
         payload.invalidation_signals,
@@ -235,6 +269,10 @@ def register_monitoring_item(
             active_thesis.time_horizon,
             _json_list(active_thesis.thesis_drivers),
             _json_list(active_thesis.validation_metrics),
+            _json_dict(active_thesis.market_expectations),
+            _json_dict(active_thesis.valuation_framework),
+            _json_list(active_thesis.multiple_expansion_signals),
+            _json_list(active_thesis.multiple_compression_signals),
             _json_list(active_thesis.strengthen_signals),
             _json_list(active_thesis.weaken_signals),
             _json_list(active_thesis.invalidation_signals),
@@ -255,6 +293,24 @@ def register_monitoring_item(
             time_horizon=payload.time_horizon,
             thesis_drivers=json.dumps(payload.thesis_drivers, ensure_ascii=False),
             validation_metrics=json.dumps(payload.validation_metrics, ensure_ascii=False),
+            market_expectations=json.dumps(
+                payload.market_expectations.model_dump(mode="json", exclude_none=True)
+                if payload.market_expectations
+                else {},
+                ensure_ascii=False,
+            ),
+            valuation_framework=json.dumps(
+                payload.valuation_framework.model_dump(mode="json", exclude_none=True)
+                if payload.valuation_framework
+                else {},
+                ensure_ascii=False,
+            ),
+            multiple_expansion_signals=json.dumps(
+                payload.multiple_expansion_signals, ensure_ascii=False
+            ),
+            multiple_compression_signals=json.dumps(
+                payload.multiple_compression_signals, ensure_ascii=False
+            ),
             strengthen_signals=json.dumps(payload.strengthen_signals, ensure_ascii=False),
             weaken_signals=json.dumps(payload.weaken_signals, ensure_ascii=False),
             invalidation_signals=json.dumps(payload.invalidation_signals, ensure_ascii=False),

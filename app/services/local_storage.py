@@ -40,6 +40,10 @@ def export_thesis(thesis: InvestmentThesis) -> None:
         "time_horizon": thesis.time_horizon,
         "thesis_drivers": json.loads(thesis.thesis_drivers),
         "validation_metrics": json.loads(thesis.validation_metrics),
+        "market_expectations": json.loads(thesis.market_expectations),
+        "valuation_framework": json.loads(thesis.valuation_framework),
+        "multiple_expansion_signals": json.loads(thesis.multiple_expansion_signals),
+        "multiple_compression_signals": json.loads(thesis.multiple_compression_signals),
         "strengthen_signals": json.loads(thesis.strengthen_signals),
         "weaken_signals": json.loads(thesis.weaken_signals),
         "invalidation_signals": json.loads(thesis.invalidation_signals),
@@ -77,6 +81,7 @@ def export_assessment_history(session: Session, ticker: str) -> None:
                 "risk_level": assessment.risk_level,
                 "evidence": json.loads(assessment.evidence),
                 "price_context": json.loads(assessment.price_context),
+                "valuation_context": json.loads(assessment.valuation_context),
                 "thesis_snapshot": json.loads(assessment.thesis_snapshot),
                 "created_at": assessment.created_at,
             }

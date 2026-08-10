@@ -143,6 +143,101 @@
                       }
                     }
                   },
+                  "market_expectations": {
+                    "type": "object",
+                    "properties": {
+                      "as_of_date": {
+                        "type": "string",
+                        "format": "date"
+                      },
+                      "level": {
+                        "type": "string",
+                        "enum": [
+                          "depressed",
+                          "low",
+                          "balanced",
+                          "elevated",
+                          "very_high",
+                          "speculative",
+                          "unknown"
+                        ]
+                      },
+                      "summary": {
+                        "type": "string"
+                      },
+                      "priced_in": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        }
+                      },
+                      "upside_surprises": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        }
+                      },
+                      "downside_surprises": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        }
+                      },
+                      "evidence_basis": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  },
+                  "valuation_framework": {
+                    "type": "object",
+                    "properties": {
+                      "primary_method": {
+                        "type": "string"
+                      },
+                      "secondary_methods": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        }
+                      },
+                      "rationale": {
+                        "type": "string"
+                      },
+                      "key_inputs": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        }
+                      },
+                      "peer_or_historical_basis": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        }
+                      },
+                      "valuation_caveats": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  },
+                  "multiple_expansion_signals": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "multiple_compression_signals": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
                   "macro_exposures": {
                     "type": "array",
                     "items": {
@@ -1228,6 +1323,19 @@
         ],
         "title": "EventType"
       },
+      "ExpectationLevel": {
+        "type": "string",
+        "enum": [
+          "depressed",
+          "low",
+          "balanced",
+          "elevated",
+          "very_high",
+          "speculative",
+          "unknown"
+        ],
+        "title": "ExpectationLevel"
+      },
       "FinancialImpact": {
         "properties": {
           "revenue_guidance_changed": {
@@ -1375,6 +1483,40 @@
               }
             ]
           },
+          "market_expectations": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/MarketExpectationsInput"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "valuation_framework": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ValuationFrameworkInput"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "multiple_expansion_signals": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Multiple Expansion Signals"
+          },
+          "multiple_compression_signals": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Multiple Compression Signals"
+          },
           "macro_exposures": {
             "items": {
               "$ref": "#/components/schemas/MacroExposureInput"
@@ -1408,6 +1550,10 @@
           "weaken_signals",
           "invalidation_signals",
           "price_rules",
+          "market_expectations",
+          "valuation_framework",
+          "multiple_expansion_signals",
+          "multiple_compression_signals",
           "macro_exposures",
           "status",
           "source",
@@ -2183,6 +2329,61 @@
         ],
         "title": "MacroThesisRead"
       },
+      "MarketExpectationsInput": {
+        "properties": {
+          "as_of_date": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "As Of Date"
+          },
+          "level": {
+            "$ref": "#/components/schemas/ExpectationLevel",
+            "default": "unknown"
+          },
+          "summary": {
+            "type": "string",
+            "title": "Summary",
+            "default": ""
+          },
+          "priced_in": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Priced In"
+          },
+          "upside_surprises": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Upside Surprises"
+          },
+          "downside_surprises": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Downside Surprises"
+          },
+          "evidence_basis": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Evidence Basis"
+          }
+        },
+        "type": "object",
+        "title": "MarketExpectationsInput"
+      },
       "MonitoringItemCreate": {
         "properties": {
           "ticker": {
@@ -2277,6 +2478,44 @@
               }
             ],
             "description": "Structured close-price confirmation, support, warning, and invalidation rules."
+          },
+          "market_expectations": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/MarketExpectationsInput"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Dated baseline of what the market already appears to expect."
+          },
+          "valuation_framework": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ValuationFrameworkInput"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Company-specific methods and inputs for judging fair valuation."
+          },
+          "multiple_expansion_signals": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Multiple Expansion Signals",
+            "description": "Independent facts that could justify a higher valuation multiple."
+          },
+          "multiple_compression_signals": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Multiple Compression Signals",
+            "description": "Independent facts that could justify a lower valuation multiple."
           },
           "macro_exposures": {
             "items": {
@@ -2421,6 +2660,32 @@
             "type": "array",
             "title": "Price Rules Summary"
           },
+          "market_expectation_level": {
+            "type": "string",
+            "title": "Market Expectation Level"
+          },
+          "market_expectation_summary": {
+            "type": "string",
+            "title": "Market Expectation Summary"
+          },
+          "valuation_primary_method": {
+            "type": "string",
+            "title": "Valuation Primary Method"
+          },
+          "multiple_expansion_signals": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Multiple Expansion Signals"
+          },
+          "multiple_compression_signals": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Multiple Compression Signals"
+          },
           "latest_status": {
             "type": "string",
             "title": "Latest Status"
@@ -2441,6 +2706,11 @@
           "thesis_drivers",
           "validation_metrics",
           "price_rules_summary",
+          "market_expectation_level",
+          "market_expectation_summary",
+          "valuation_primary_method",
+          "multiple_expansion_signals",
+          "multiple_compression_signals",
           "latest_status",
           "latest_assessment_date"
         ],
@@ -2849,6 +3119,9 @@
           "price_context": {
             "$ref": "#/components/schemas/PriceContext"
           },
+          "valuation_context": {
+            "$ref": "#/components/schemas/ValuationContext"
+          },
           "thesis_snapshot": {
             "$ref": "#/components/schemas/ThesisSnapshot"
           },
@@ -3150,6 +3423,43 @@
               }
             ]
           },
+          "market_expectations": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/MarketExpectationsInput"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "valuation_framework": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ValuationFrameworkInput"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "multiple_expansion_signals": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Multiple Expansion Signals"
+          },
+          "multiple_compression_signals": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Multiple Compression Signals"
+          },
+          "valuation_context": {
+            "$ref": "#/components/schemas/ValuationContext"
+          },
           "supporting_evidence": {
             "items": {
               "additionalProperties": true,
@@ -3224,6 +3534,114 @@
           "type"
         ],
         "title": "ValidationError"
+      },
+      "ValuationContext": {
+        "properties": {
+          "impact": {
+            "$ref": "#/components/schemas/ValuationImpact",
+            "default": "unknown"
+          },
+          "summary": {
+            "type": "string",
+            "title": "Summary",
+            "default": ""
+          },
+          "market_expectation_level": {
+            "$ref": "#/components/schemas/ExpectationLevel",
+            "default": "unknown"
+          },
+          "market_expectation_summary": {
+            "type": "string",
+            "title": "Market Expectation Summary",
+            "default": ""
+          },
+          "primary_method": {
+            "type": "string",
+            "title": "Primary Method",
+            "default": ""
+          },
+          "matched_expansion_conditions": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Matched Expansion Conditions"
+          },
+          "matched_compression_conditions": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Matched Compression Conditions"
+          },
+          "macro_valuation_effect": {
+            "type": "string",
+            "title": "Macro Valuation Effect",
+            "default": "neutral"
+          },
+          "evidence_count": {
+            "type": "integer",
+            "title": "Evidence Count",
+            "default": 0
+          }
+        },
+        "type": "object",
+        "title": "ValuationContext"
+      },
+      "ValuationFrameworkInput": {
+        "properties": {
+          "primary_method": {
+            "type": "string",
+            "title": "Primary Method",
+            "default": ""
+          },
+          "secondary_methods": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Secondary Methods"
+          },
+          "rationale": {
+            "type": "string",
+            "title": "Rationale",
+            "default": ""
+          },
+          "key_inputs": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Key Inputs"
+          },
+          "peer_or_historical_basis": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Peer Or Historical Basis"
+          },
+          "valuation_caveats": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Valuation Caveats"
+          }
+        },
+        "type": "object",
+        "title": "ValuationFrameworkInput"
+      },
+      "ValuationImpact": {
+        "type": "string",
+        "enum": [
+          "expansion",
+          "compression",
+          "mixed",
+          "neutral",
+          "unknown"
+        ],
+        "title": "ValuationImpact"
       },
       "WatchlistItemCreate": {
         "properties": {

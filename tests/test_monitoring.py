@@ -14,6 +14,25 @@ def _payload(core_thesis: str = "AI infrastructure demand supports earnings grow
         "time_horizon": "2-3 years",
         "thesis_drivers": ["HBM leadership", "AI server demand"],
         "validation_metrics": ["HBM revenue growth", "Free cash flow"],
+        "market_expectations": {
+            "as_of_date": "2030-01-01",
+            "level": "very_high",
+            "summary": "Strong HBM growth is already expected",
+            "priced_in": ["HBM leadership"],
+            "upside_surprises": ["FCF exceeds consensus"],
+            "downside_surprises": ["HBM margin misses consensus"],
+            "evidence_basis": ["stored operating thesis"],
+        },
+        "valuation_framework": {
+            "primary_method": "cycle-adjusted forward P/E",
+            "secondary_methods": ["EV/EBITDA"],
+            "rationale": "Memory earnings require cycle normalization",
+            "key_inputs": ["normalized EPS", "HBM mix"],
+            "peer_or_historical_basis": ["memory-cycle history"],
+            "valuation_caveats": ["peak earnings can understate P/E"],
+        },
+        "multiple_expansion_signals": ["FCF exceeds consensus"],
+        "multiple_compression_signals": ["real yields rise"],
         "strengthen_signals": ["HBM customer expansion"],
         "weaken_signals": ["HBM market share decline"],
         "invalidation_signals": ["major HBM customer loss"],
@@ -39,6 +58,14 @@ def test_monitoring_item_registration_versions_and_deactivation() -> None:
         assert response.json()["thesis"]["validation_metrics"] == [
             "HBM revenue growth",
             "Free cash flow",
+        ]
+        assert response.json()["thesis"]["market_expectations"]["level"] == "very_high"
+        assert (
+            response.json()["thesis"]["valuation_framework"]["primary_method"]
+            == "cycle-adjusted forward P/E"
+        )
+        assert response.json()["thesis"]["multiple_expansion_signals"] == [
+            "FCF exceeds consensus"
         ]
         assert response.json()["thesis"]["price_rules"]["invalidation_price"] == 1320000
 
@@ -81,6 +108,9 @@ def test_monitoring_summaries_are_compact_and_action_friendly() -> None:
     assert summary["core_thesis"] == "AI infrastructure demand supports earnings growth"
     assert summary["thesis_drivers"] == ["HBM leadership", "AI server demand"]
     assert summary["validation_metrics"] == ["HBM revenue growth", "Free cash flow"]
+    assert summary["market_expectation_level"] == "very_high"
+    assert summary["valuation_primary_method"] == "cycle-adjusted forward P/E"
+    assert summary["multiple_compression_signals"] == ["real yields rise"]
     assert summary["price_rules_summary"] == [
         "confirmation close >= 1550000 KRW",
         "warning close < 1400000 KRW",

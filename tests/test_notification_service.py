@@ -23,6 +23,13 @@ def test_assessment_notification_uses_investment_rationale_label() -> None:
         risk_level="watch",
         evidence="[]",
         price_context="{}",
+        valuation_context=json.dumps(
+            {
+                "impact": "compression",
+                "summary": "새 근거가 멀티플 압축 조건과 연결됩니다.",
+            },
+            ensure_ascii=False,
+        ),
         thesis_snapshot='{"base_thesis":"HBM 수요가 이익을 지지합니다."}',
     )
 
@@ -31,6 +38,7 @@ def test_assessment_notification_uses_investment_rationale_label() -> None:
     assert message.startswith("🏢 000660(000660)")
     assert "🎯 결론" in message
     assert "💰 가격 판단" in message
+    assert "📐 시장 기대와 Valuation" in message
     assert "Thesis" not in message
 
 

@@ -71,12 +71,17 @@ def _ensure_sqlite_columns() -> None:
         },
         "thesisassessment": {
             "thesis_snapshot": "VARCHAR DEFAULT '{}'",
+            "valuation_context": "TEXT DEFAULT '{}'",
         },
         "investmentthesis": {
             "macro_exposures": "VARCHAR DEFAULT '[]'",
             "thesis_drivers": "TEXT DEFAULT '[]'",
             "validation_metrics": "TEXT DEFAULT '[]'",
             "price_rules": "TEXT DEFAULT '{}'",
+            "market_expectations": "TEXT DEFAULT '{}'",
+            "valuation_framework": "TEXT DEFAULT '{}'",
+            "multiple_expansion_signals": "TEXT DEFAULT '[]'",
+            "multiple_compression_signals": "TEXT DEFAULT '[]'",
         },
     }
     with engine.begin() as connection:

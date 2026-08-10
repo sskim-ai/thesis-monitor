@@ -4,6 +4,7 @@ from datetime import date, datetime, timezone
 from sqlmodel import Session, select
 
 from app.config import get_settings
+from app.models.macro import ThesisMacroImpact
 from app.models.thesis import InvestmentThesis, MonitorRun, ThesisAssessment
 from app.models.watchlist import WatchlistItem
 from app.schemas.thesis import DailyMonitorResponse, PriceContext
@@ -85,6 +86,7 @@ def _build_thesis_snapshot(
     status: str,
     summary: str,
     evidence: list[dict[str, object]],
+    valuation_context: dict[str, object],
 ) -> dict[str, object]:
     previous = _previous_snapshot(session, thesis.ticker, run_date)
     return {
@@ -96,6 +98,13 @@ def _build_thesis_snapshot(
         "thesis_drivers": _json_value(thesis.thesis_drivers, []),
         "validation_metrics": _json_value(thesis.validation_metrics, []),
         "price_rules": _json_value(thesis.price_rules, {}),
+        "market_expectations": _json_value(thesis.market_expectations, {}),
+        "valuation_framework": _json_value(thesis.valuation_framework, {}),
+        "multiple_expansion_signals": _json_value(thesis.multiple_expansion_signals, []),
+        "multiple_compression_signals": _json_value(
+            thesis.multiple_compression_signals, []
+        ),
+        "valuation_context": valuation_context,
         "supporting_evidence": _merge_evidence(
             previous.get("supporting_evidence"), evidence, {"strengthen"}
         ),
@@ -170,7 +179,15 @@ async def run_daily_monitor(
             except Exception as exc:  # noqa: BLE001
                 price_context = PriceContext(warnings=[f"price_context: {type(exc).__name__}"])
             events = recent_events_for_assessment(session, item.ticker, run_date)
-            result = evaluate_thesis(thesis, events, price_context)
+            macro_impact = session.exec(
+                select(ThesisMacroImpact).where(
+                    ThesisMacroImpact.ticker == item.ticker,
+                    ThesisMacroImpact.thesis_version == thesis.version,
+                    ThesisMacroImpact.assessment_date == run_date,
+                )
+            ).first()
+            result = evaluate_thesis(thesis, events, price_context, macro_impact=macro_impact)
+            valuation_context = result.valuation_context.model_dump(mode="json")
             thesis_snapshot = _build_thesis_snapshot(
                 session,
                 thesis,
@@ -178,6 +195,7 @@ async def run_daily_monitor(
                 result.status,
                 result.summary,
                 result.evidence,
+                valuation_context,
             )
             assessment = _assessment_for_date(session, item.ticker, run_date)
             if assessment is None:
@@ -195,6 +213,7 @@ async def run_daily_monitor(
                     risk_level=result.risk_level,
                     evidence=json.dumps(result.evidence, ensure_ascii=False),
                     price_context=price_context.model_dump_json(),
+                    valuation_context=json.dumps(valuation_context, ensure_ascii=False),
                     thesis_snapshot=json.dumps(thesis_snapshot, ensure_ascii=False),
                 )
                 session.add(assessment)
@@ -210,6 +229,9 @@ async def run_daily_monitor(
                 assessment.risk_level = result.risk_level
                 assessment.evidence = json.dumps(result.evidence, ensure_ascii=False)
                 assessment.price_context = price_context.model_dump_json()
+                assessment.valuation_context = json.dumps(
+                    valuation_context, ensure_ascii=False
+                )
                 assessment.thesis_snapshot = json.dumps(thesis_snapshot, ensure_ascii=False)
             if result.should_deactivate:
                 item.active = False

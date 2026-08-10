@@ -93,6 +93,42 @@ def _simplify_monitor_stock_action(schema: dict[str, object]) -> None:
                     "invalidation_price": {"type": "number"},
                 },
             },
+            "market_expectations": {
+                "type": "object",
+                "properties": {
+                    "as_of_date": {"type": "string", "format": "date"},
+                    "level": {
+                        "type": "string",
+                        "enum": [
+                            "depressed",
+                            "low",
+                            "balanced",
+                            "elevated",
+                            "very_high",
+                            "speculative",
+                            "unknown",
+                        ],
+                    },
+                    "summary": {"type": "string"},
+                    "priced_in": signal_array,
+                    "upside_surprises": signal_array,
+                    "downside_surprises": signal_array,
+                    "evidence_basis": signal_array,
+                },
+            },
+            "valuation_framework": {
+                "type": "object",
+                "properties": {
+                    "primary_method": {"type": "string"},
+                    "secondary_methods": signal_array,
+                    "rationale": {"type": "string"},
+                    "key_inputs": signal_array,
+                    "peer_or_historical_basis": signal_array,
+                    "valuation_caveats": signal_array,
+                },
+            },
+            "multiple_expansion_signals": signal_array,
+            "multiple_compression_signals": signal_array,
             "macro_exposures": {
                 "type": "array",
                 "items": {
