@@ -18,9 +18,21 @@ class CompanyProfile(BaseModel):
 
 class AnalysisPricePeriod(BaseModel):
     latest_close: float | None = None
-    period_return_pct: float | None = None
-    range_position_pct: float | None = None
-    actual_count: int = 0
+    window_return_pct: float | None = Field(
+        default=None,
+        description=(
+            "Return from the first available close to the latest close within the "
+            "returned OHLCV window for this bar interval."
+        ),
+    )
+    range_position_pct: float | None = Field(
+        default=None,
+        description="Latest close position within the returned window's high-low range.",
+    )
+    actual_count: int = Field(
+        default=0,
+        description="Number of bars in the returned window for this interval.",
+    )
 
 
 class AnalysisPriceSnapshot(BaseModel):
@@ -36,6 +48,10 @@ class AnalysisPriceSnapshot(BaseModel):
 class AnalysisEarningsSnapshot(BaseModel):
     latest_period: str | None = None
     is_preliminary: bool = False
+    financial_currency: str | None = Field(
+        default=None,
+        description="Currency reported by the selected financial earnings snapshot.",
+    )
     revenue: float | None = None
     operating_income: float | None = None
     operating_margin: float | None = None

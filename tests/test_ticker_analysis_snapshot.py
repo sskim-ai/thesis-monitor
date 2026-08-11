@@ -69,6 +69,7 @@ def _valuation_snapshot() -> ValuationSnapshot:
     return ValuationSnapshot(
         current_price=120.0,
         currency="USD",
+        financial_currency="USD",
         price_as_of="2026-08-11",
         valuation_data_as_of="2026-08-11",
         latest_earnings_period="2026-06-30",
@@ -221,8 +222,10 @@ def test_unmonitored_ticker_returns_compact_formula_inputs_without_side_effects(
     assert result.exchange == "NASDAQ"
     assert result.price.current_price == 120.0
     assert result.price.periods["daily"].actual_count == 250
+    assert result.price.periods["daily"].window_return_pct == 20.0
     assert result.earnings.latest_period == "2026-06-30"
     assert result.earnings.is_preliminary is True
+    assert result.earnings.financial_currency == "USD"
     assert result.valuation.trailing_pe == pytest.approx(
         result.valuation.current_price / result.valuation.ttm_eps
     )
@@ -288,6 +291,41 @@ def test_provider_only_forward_multiple_does_not_invent_denominator() -> None:
     assert result.valuation.forward_eps is None
 
 
+@pytest.mark.parametrize(
+    ("ticker", "price_currency", "financial_currency"),
+    [
+        ("005930", "KRW", "KRW"),
+        ("GOOGL", "USD", "USD"),
+        ("TSM", "USD", "TWD"),
+        ("UNKNOWN", "USD", None),
+    ],
+)
+def test_financial_currency_comes_from_earnings_snapshot_not_price(
+    ticker: str,
+    price_currency: str,
+    financial_currency: str | None,
+) -> None:
+    price_context = _price_context().model_copy(
+        update={
+            "decision": _price_context().decision.model_copy(
+                update={"currency": price_currency}
+            )
+        }
+    )
+    snapshot = _valuation_snapshot().model_copy(
+        update={"financial_currency": financial_currency}
+    )
+    service, _ = _service(
+        price=_PriceClient(price_context),
+        valuation=_ValuationService(snapshot),
+    )
+
+    result = asyncio.run(service.fetch(_session(), ticker))
+
+    assert result.price.currency == price_currency
+    assert result.earnings.financial_currency == financial_currency
+
+
 def test_eps_less_preliminary_keeps_earnings_context_without_inventing_per() -> None:
     snapshot = _valuation_snapshot().model_copy(
         update={
@@ -350,6 +388,9 @@ def test_ticker_analysis_snapshot_endpoint_returns_compact_response(
     assert response.status_code == 200
     payload = response.json()
     assert payload["ticker"] == "GOOGL"
+    assert payload["earnings"]["financial_currency"] == "USD"
+    assert payload["price"]["periods"]["daily"]["window_return_pct"] == 20.0
+    assert "period_return_pct" not in payload["price"]["periods"]["daily"]
     assert payload["valuation"]["ttm_eps"] == 10.0
     assert "provider" not in payload["valuation"]
     assert "warnings" not in payload["valuation"]

@@ -338,6 +338,8 @@ Volume Ratio = Current Volume / 20-day Average Volume
 
 `getTickerAnalysisSnapshot`은 등록 없이 현재가와 일·주·월 수익률·범위 내 위치를 compact context로 제공할 수 있다. 실제 응답에 없는 raw OHLCV, RSI, MACD, 지지·저항과 목표·손절 가격은 생성하지 않는다. backend monitoring이 내부적으로 더 많은 가격 자료를 쓰는 것과 Custom GPT의 공개 응답 범위는 별개다.
 
+`daily`, `weekly`, `monthly`는 수익률 기간이 아니라 bar interval이다. 각 `window_return_pct`는 반환된 `actual_count`개 bar의 첫 종가에서 최신 종가까지 수익률이다. `range_position_pct`도 같은 반환 window의 고가·저가 범위 안에서 최신 종가가 차지하는 위치다. 별도 1일·1주·1개월 수익률이 없으면 이를 대신 만들지 않는다.
+
 ## 9. 신규 관찰자 / 보유자 / 손익비
 
 ### 신규 관찰자
@@ -473,6 +475,8 @@ Soft outlier만으로 공식 수치를 버리지 않지만 기간·단위·산�
 - basic / diluted
 - ordinary / preferred / ADR / share class
 - currency, price date, denominator period와 as-of
+
+가격 통화와 재무제표 통화는 별개다. ADR, foreign issuer, dual-listed security에서는 `price.currency`, `earnings.financial_currency`, ordinary share/ADR basis를 분리한다. Action이 제공한 basis 없이 통화를 임의 변환하거나 주당 값을 재구성하지 않으며, 재무 통화가 `null`이면 price currency를 복사하지 않는다.
 
 내부 상태는 `comparable`, `not_comparable`, `insufficient_metadata`, `structural_conflict`를 사용한다.
 

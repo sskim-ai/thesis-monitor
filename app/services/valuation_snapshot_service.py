@@ -549,6 +549,7 @@ class ValuationSnapshotService:
         snapshot.latest_earnings_period = (
             latest_period.isoformat() if latest_period else None
         )
+        snapshot.financial_currency = latest.currency
         snapshot.earnings_context_source = latest.snapshot_type
         snapshot.earnings_context_is_preliminary = (
             latest.snapshot_type == "preliminary_earnings"

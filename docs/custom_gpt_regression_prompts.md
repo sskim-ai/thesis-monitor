@@ -9,6 +9,7 @@
 - 명시적 등록 요청이 없으면 `monitorStock`을 호출하지 않는다.
 - Initial Analysis와 daily delta를 혼동하지 않는다.
 - `getTickerAnalysisSnapshot`에 없는 가격·OHLCV·고객·재무 숫자를 만들지 않는다.
+- `price.currency`와 `earnings.financial_currency`를 구분하고, `window_return_pct`를 1일·1주·1개월 수익률로 오해하지 않는다.
 - Fact, Interpretation과 Unknown을 구분한다.
 - 업종에 맞는 재무·Valuation framework를 사용한다.
 - 사용자 답변에는 provider·parser·comparability 같은 내부 flag를 기본 노출하지 않는다.
@@ -28,6 +29,7 @@
 - 한국 종목이면 필요 시 `provider=opendart`, `auto_backfill=true`, `backfill_years=5`, `lookback_days=365`
 - 사업 구조, 산업, 재무·이익의 질, 시장 기대, Valuation, 리스크와 다음 숫자 분석
 - snapshot의 현재 가격, 최신 earnings context, 가능한 PER/PBR/fPER/fPBR과 역사적 위치 반영
+- `daily.actual_count=500`, `daily.window_return_pct=35.0`이면 `500개 일봉 window 기준 약 +35%`로 해석하며 `일간 +35%`라고 쓰지 않음
 - `monitorStock` 호출 금지
 
 **Failure**
@@ -266,6 +268,35 @@ SK하이닉스, 삼성전자, Micron을 같이 들고 있는데 공통 위험을
 
 - 개별 기업 위험과 공통 memory cycle·Hyperscaler CAPEX·고객 집중·환율 노출 구분
 - 종목별 분석을 단순 합산하지 않음
+
+## Snapshot Currency / Window Semantics
+
+**Prompt**
+
+```text
+TSM 분석해줘
+```
+
+**Fixture**
+
+- `price.currency=USD`
+- `earnings.financial_currency=TWD`
+- `daily.actual_count=500`
+- `daily.window_return_pct=42.0`
+- `daily.range_position_pct=90.0`
+
+**Expected**
+
+- 거래 가격은 USD, earnings 금액은 TWD 기준으로 해석
+- 두 통화를 자동 동일시하거나 임의 환산하지 않음
+- 수익률은 `500개 일봉 window 기준 +42%`로 해석
+- 범위 위치는 같은 500개 일봉 window의 고가·저가 범위 기준으로 해석
+
+**Failure**
+
+- earnings 금액에 USD를 붙임
+- `오늘 +42%`, `1일 수익률 +42%`로 표현
+- `range_position_pct`를 오늘 하루 범위로 표현
 
 ## Action Contract Check
 

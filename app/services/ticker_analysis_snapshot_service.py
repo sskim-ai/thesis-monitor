@@ -103,7 +103,7 @@ class TickerAnalysisSnapshotService:
         periods = {
             name: AnalysisPricePeriod(
                 latest_close=summary.latest_close,
-                period_return_pct=summary.period_return_pct,
+                window_return_pct=summary.period_return_pct,
                 range_position_pct=summary.range_position_pct,
                 actual_count=summary.actual_count,
             )
@@ -129,6 +129,7 @@ class TickerAnalysisSnapshotService:
         earnings = AnalysisEarningsSnapshot(
             latest_period=valuation_snapshot.latest_earnings_period,
             is_preliminary=valuation_snapshot.earnings_context_is_preliminary,
+            financial_currency=valuation_snapshot.financial_currency,
             revenue=valuation_snapshot.latest_revenue,
             operating_income=valuation_snapshot.latest_operating_income,
             operating_margin=valuation_snapshot.latest_operating_margin,

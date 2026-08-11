@@ -81,7 +81,7 @@ def test_public_action_schema_includes_read_only_ticker_analysis_snapshot() -> N
     schema = response.json()
     operation = schema["paths"]["/ticker-analysis-snapshot"]["get"]
     assert operation["operationId"] == "getTickerAnalysisSnapshot"
-    assert schema["info"]["version"] == "0.4.0"
+    assert schema["info"]["version"] == "0.4.1"
 
     operation_ids = [
         operation["operationId"]
@@ -91,6 +91,16 @@ def test_public_action_schema_includes_read_only_ticker_analysis_snapshot() -> N
     ]
     assert len(operation_ids) == 20
     assert len(operation_ids) == len(set(operation_ids))
+
+    price_period = schema["components"]["schemas"]["AnalysisPricePeriod"][
+        "properties"
+    ]
+    assert "window_return_pct" in price_period
+    assert "period_return_pct" not in price_period
+    earnings = schema["components"]["schemas"]["AnalysisEarningsSnapshot"][
+        "properties"
+    ]
+    assert "financial_currency" in earnings
 
 
 def test_custom_gpt_docs_reference_analysis_snapshot_action() -> None:

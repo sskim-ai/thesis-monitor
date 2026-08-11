@@ -212,6 +212,7 @@ def test_eps_less_preliminary_updates_earnings_context_without_recalculating_per
     assert derived_pe is None
     assert snapshot.trailing_pe == 20
     assert snapshot.latest_earnings_period == "2026-06-30"
+    assert snapshot.financial_currency == "KRW"
     assert snapshot.earnings_context_is_preliminary is True
     assert snapshot.earnings_context_usable is True
     assert snapshot.eps_per_usable is False
@@ -219,6 +220,25 @@ def test_eps_less_preliminary_updates_earnings_context_without_recalculating_per
     assert snapshot.latest_operating_income == 600
     assert snapshot.latest_operating_margin == pytest.approx(75)
     assert snapshot.ttm_contains_preliminary is False
+
+
+@pytest.mark.parametrize("financial_currency", ["TWD", None])
+def test_earnings_context_uses_selected_financial_snapshot_currency(
+    financial_currency: str | None,
+) -> None:
+    latest = _preliminary(owners_income=None, total_income=450)
+    latest.currency = financial_currency
+    rows = _base_rows()
+    for row in rows:
+        row.currency = financial_currency
+    snapshot = ValuationSnapshot(current_price=100, currency="USD")
+
+    ValuationSnapshotService()._apply_derived_trailing(
+        snapshot, [*rows, latest]
+    )
+
+    assert snapshot.currency == "USD"
+    assert snapshot.financial_currency == financial_currency
 
 
 def test_preliminary_reported_diluted_eps_takes_priority() -> None:

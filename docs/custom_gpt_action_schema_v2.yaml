@@ -2,7 +2,7 @@
   "openapi": "3.1.0",
   "info": {
     "title": "Thesis Monitor Public Action API",
-    "version": "0.4.0",
+    "version": "0.4.1",
     "description": "Collect thesis evidence, read ticker analysis snapshots, register versioned investment theses, manage the monitored stock list, read daily thesis assessments, and retrieve macro briefings, regimes, events, and ticker-level macro impacts. Administrative jobs are excluded."
   },
   "paths": {
@@ -1268,6 +1268,18 @@
             "title": "Is Preliminary",
             "default": false
           },
+          "financial_currency": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Financial Currency",
+            "description": "Currency reported by the selected financial earnings snapshot."
+          },
           "revenue": {
             "anyOf": [
               {
@@ -1422,7 +1434,7 @@
             ],
             "title": "Latest Close"
           },
-          "period_return_pct": {
+          "window_return_pct": {
             "anyOf": [
               {
                 "type": "number"
@@ -1431,7 +1443,8 @@
                 "type": "null"
               }
             ],
-            "title": "Period Return Pct"
+            "title": "Window Return Pct",
+            "description": "Return from the first available close to the latest close within the returned OHLCV window for this bar interval."
           },
           "range_position_pct": {
             "anyOf": [
@@ -1442,11 +1455,13 @@
                 "type": "null"
               }
             ],
-            "title": "Range Position Pct"
+            "title": "Range Position Pct",
+            "description": "Latest close position within the returned window's high-low range."
           },
           "actual_count": {
             "type": "integer",
             "title": "Actual Count",
+            "description": "Number of bars in the returned window for this interval.",
             "default": 0
           }
         },
@@ -6485,6 +6500,17 @@
               }
             ],
             "title": "Latest Earnings Period"
+          },
+          "financial_currency": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Financial Currency"
           },
           "earnings_context_source": {
             "anyOf": [

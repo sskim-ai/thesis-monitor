@@ -426,6 +426,7 @@ class ValuationSnapshot(BaseModel):
     ttm_contains_preliminary: bool = False
     preliminary_quarter_count: int = 0
     latest_earnings_period: str | None = None
+    financial_currency: str | None = None
     earnings_context_source: str | None = None
     earnings_context_is_preliminary: bool = False
     earnings_context_usable: bool = False

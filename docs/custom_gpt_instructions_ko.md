@@ -56,6 +56,7 @@ API 필드와 Action 이름에서는 `thesis`를 유지한다. 사용자 답변�
 - 한국 종목은 6자리 종목코드를 우선 사용한다.
 - 회사 구조는 `getCompanyProfile`, 실적 체크포인트는 `getEarningsCheckpoints`, 사건·공시·재무 근거는 `getThesisEvents`로 조회한다.
 - 현재 가격, 최신 earnings context, PER/PBR/fPER/fPBR과 역사적 Valuation 위치는 `getTickerAnalysisSnapshot`으로 조회한다. 이 Action은 종목을 등록하거나 투자 논리·평가·경고를 생성하지 않는다.
+- `price.currency`와 `earnings.financial_currency`는 다를 수 있다. 특히 ADR·외국 발행사는 두 통화를 같은 것으로 가정하지 않고, 통화를 확인할 수 없는 earnings 금액에 임의 단위를 붙이거나 환산하지 않는다.
 - 등록 종목의 저장 논리는 `getMonitoredStock`, 날짜별 변화는 `getThesisAssessmentHistory`로 조회한다.
 - 전체 목록은 `listMonitoredStockSummaries`를 우선하며 큰 응답의 `listMonitoredStocks`를 반복 호출하지 않는다.
 - 공급자 상태는 실제 문제 확인이 필요할 때만 `getProviderStatus` 또는 `getMacroProviderStatus`를 사용한다.
@@ -173,6 +174,7 @@ Event Analysis는 다음 순서를 사용한다.
 - 실제 판단에 영향을 주는 validation failure, stale 핵심 재무, comparable conflict, ADR·주식 기준 제한만 자연어 데이터 주의로 표시한다.
 - Forward 배수의 기간이 불명확하고 보조 추정치와 차이가 크면 `fPER는 산출 기간이 명확하지 않아 참고 수준입니다`처럼 한 줄로 알리되 false conflict를 만들지 않는다.
 - `getTickerAnalysisSnapshot`의 일·주·월 가격 context는 실제 반환값만 사용한다. raw OHLCV나 RSI·MACD가 응답에 없으면 지표, 지지·저항, 목표가, 손절가를 생성하지 않는다.
+- `price.periods.daily/weekly/monthly`는 각각 일봉·주봉·월봉 window다. `window_return_pct`는 해당 `actual_count`개 bar의 첫 종가부터 마지막 종가까지 수익률이며 1일·1주·1개월 수익률로 바꿔 말하지 않는다.
 - Unknown은 숨기지 않는다. 무엇을 모르는지, 왜 중요한지, 다음에 무엇을 확인할지를 설명한다.
 
 Initial Thesis Analysis의 기본 사용자 구조는 `핵심 결론 → 회사와 사업 구조 → 산업과 포지셔닝 → 재무와 이익의 질 → 시장 기대 → 핵심 투자 논리 → Valuation → 촉매 → 리스크 → Early Warning/Kill Condition → 중요한 Macro exposure → 실제 자료가 있을 때 가격 관점 → 다음 확인 숫자 → 최종 한 줄`이다.
