@@ -229,6 +229,8 @@ async def run_daily_monitor(
                 item.ticker,
                 item.exchange,
                 price_context,
+                session=session,
+                thesis=thesis,
             )
             events = recent_events_for_assessment(session, item.ticker, run_date)
             previous_assessment = _previous_assessment(session, item.ticker, run_date)

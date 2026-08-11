@@ -34,6 +34,34 @@ class FinancialValidationResult:
     warnings: list[str] = field(default_factory=list)
 
 
+@dataclass(frozen=True)
+class StandaloneQuarter:
+    value: float | None
+    method: str
+    valid: bool
+
+
+def normalize_standalone_quarter(
+    cumulative_value: float | None,
+    prior_cumulative_value: float | None,
+    period_scope: str,
+) -> StandaloneQuarter:
+    """Convert a DART cumulative amount to a standalone quarter without guessing."""
+    if cumulative_value is None:
+        return StandaloneQuarter(None, "missing", False)
+    if period_scope in {"single-quarter", "quarter"}:
+        return StandaloneQuarter(cumulative_value, "reported_single_quarter", True)
+    if period_scope not in {"half-year", "ytd", "annual", "cumulative"}:
+        return StandaloneQuarter(None, "unsupported_period_scope", False)
+    if prior_cumulative_value is None:
+        return StandaloneQuarter(None, "missing_prior_cumulative", False)
+    return StandaloneQuarter(
+        cumulative_value - prior_cumulative_value,
+        "cumulative_less_prior_cumulative",
+        True,
+    )
+
+
 def normalize_financial_number(value: float, unit: str) -> NormalizedFinancialNumber | None:
     normalized_unit = re.sub(r"\s+", " ", unit.strip().lower())
     definition = UNIT_MULTIPLIERS.get(normalized_unit)

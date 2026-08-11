@@ -35,7 +35,12 @@ class Settings(BaseSettings):
     assessment_distribution_warning_threshold: float = 0.7
     valuation_distribution_warning_threshold: float = 0.7
     valuation_snapshot_max_age_days: int = 7
+    valuation_financial_max_age_days: int = 150
     valuation_provider_timeout_seconds: float = 15.0
+    valuation_discrepancy_threshold_pct: float = 25.0
+    valuation_model_min_quarters: int = 8
+    valuation_model_growth_floor: float = -0.30
+    valuation_model_growth_cap: float = 0.50
     macro_vix_material_pct: float = 5.0
     macro_real_yield_material_bp: float = 5.0
     macro_nominal_yield_material_bp: float = 7.0

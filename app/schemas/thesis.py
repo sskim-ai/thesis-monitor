@@ -32,6 +32,15 @@ class ValuationImpact(StrEnum):
     unknown = "unknown"
 
 
+class ValuationRelativePosition(StrEnum):
+    discounted = "discounted"
+    somewhat_discounted = "somewhat_discounted"
+    neutral = "neutral"
+    somewhat_premium = "somewhat_premium"
+    premium = "premium"
+    unknown = "unknown"
+
+
 class EarningsEstimateImpact(StrEnum):
     up = "up"
     down = "down"
@@ -256,6 +265,8 @@ class PriceDecisionContext(BaseModel):
     market_session: str = "unknown"
     assessment_state: AssessmentState = AssessmentState.final
     current_position: str = "가격 위치 자료 없음"
+    price_state: str = "no_price_rule"
+    price_state_confirmation: str = "unavailable"
     new_observer_checks: list[PriceLevelCheck] = Field(default_factory=list)
     holder_checks: list[PriceLevelCheck] = Field(default_factory=list)
     registered_rules_available: bool = False
@@ -276,12 +287,20 @@ class ValuationSnapshot(BaseModel):
     price_basis: str = "unavailable"
     trailing_pe: float | None = None
     trailing_pe_status: str = "unavailable"
+    trailing_pe_source: str = "unavailable"
+    trailing_pe_method: str | None = None
     forward_pe: float | None = None
     forward_pe_status: str = "unavailable"
+    forward_pe_source: str = "unavailable"
+    forward_pe_method: str | None = None
     price_to_book: float | None = None
     price_to_book_status: str = "unavailable"
+    price_to_book_source: str = "unavailable"
+    price_to_book_method: str | None = None
     forward_price_to_book: float | None = None
     forward_price_to_book_status: str = "unavailable"
+    forward_price_to_book_source: str = "unavailable"
+    forward_price_to_book_method: str | None = None
     trailing_basis: str = "LTM EPS"
     forward_basis: str | None = None
     book_basis: str = "latest reported book value"
@@ -289,7 +308,15 @@ class ValuationSnapshot(BaseModel):
     provider: str = "unavailable"
     valuation_data_as_of: str | None = None
     denominator_as_of: str | None = None
+    financials_as_of: str | None = None
     quality: str = "unavailable"
+    trailing_valuation_confidence: float = 0.0
+    forward_valuation_confidence: float = 0.0
+    forecast_method: str | None = None
+    valuation_relative_position: ValuationRelativePosition = ValuationRelativePosition.unknown
+    valuation_relative_basis: str | None = None
+    valuation_discrepancy_warning: bool = False
+    valuation_calculation_warning: bool = False
     warnings: list[str] = Field(default_factory=list)
 
 
@@ -309,6 +336,8 @@ class ValuationContext(BaseModel):
     macro_valuation_effects: list[str] = Field(default_factory=list)
     valuation_evidence: list[str] = Field(default_factory=list)
     previous_impact: ValuationImpact | None = None
+    valuation_relative_position: ValuationRelativePosition = ValuationRelativePosition.unknown
+    valuation_relative_basis: str | None = None
     evidence_count: int = 0
 
 

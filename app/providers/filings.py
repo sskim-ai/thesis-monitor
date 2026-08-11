@@ -25,11 +25,61 @@ SEC_TICKER_CIK = {"NVDA": "0001045810", "AMD": "0000002488"}
 REPORT_CODE_BY_TITLE = {"1분기보고서": "11013", "분기보고서": "11013", "반기보고서": "11012", "3분기보고서": "11014", "사업보고서": "11011"}
 FINANCIAL_ACCOUNT_ALIASES = {
     "revenue": ("매출액", "수익(매출액)", "영업수익"),
-    "operating_income": ("영업이익",),
-    "net_income": ("당기순이익", "분기순이익", "반기순이익"),
+    "operating_income": ("영업이익", "영업이익(손실)"),
+    "net_income": (
+        "당기순이익", "당기순이익(손실)", "분기순이익", "반기순이익", "연결당기순이익"
+    ),
+    "owners_parent_net_income": (
+        "지배기업 소유주지분 순이익",
+        "지배기업의 소유주에게 귀속되는 당기순이익",
+        "지배기업 소유주에게 귀속되는 당기순이익",
+        "지배기업 소유주 귀속 분기순이익",
+        "지배기업 소유주 귀속 반기순이익",
+        "지배기업 소유주 귀속 당기순이익",
+    ),
+    "basic_eps": (
+        "기본주당이익", "기본주당순이익", "기본주당순이익(손실)",
+        "지배기업 소유주 기본주당이익",
+    ),
+    "diluted_eps": (
+        "희석주당이익", "희석주당순이익", "희석주당순이익(손실)",
+        "지배기업 소유주 희석주당이익",
+    ),
     "assets": ("자산총계",),
     "liabilities": ("부채총계",),
     "equity": ("자본총계",),
+    "owners_parent_equity": (
+        "지배기업 소유주지분",
+        "지배기업의 소유주에게 귀속되는 자본",
+        "지배기업소유주지분",
+        "지배기업의 소유주지분",
+    ),
+}
+FINANCIAL_CANONICAL_LABELS = {
+    "revenue": "매출액",
+    "operating_income": "영업이익",
+    "net_income": "당기순이익",
+    "owners_parent_net_income": "지배주주순이익",
+    "basic_eps": "기본주당이익",
+    "diluted_eps": "희석주당이익",
+    "assets": "자산총계",
+    "liabilities": "부채총계",
+    "equity": "자본총계",
+    "owners_parent_equity": "지배주주지분",
+}
+FINANCIAL_ACCOUNT_IDS = {
+    "owners_parent_net_income": {
+        "ifrs-full_profitlossattributabletoownersofparent",
+    },
+    "owners_parent_equity": {
+        "ifrs-full_equityattributabletoownersofparent",
+    },
+    "basic_eps": {
+        "ifrs-full_basicearningslosspershare",
+    },
+    "diluted_eps": {
+        "ifrs-full_dilutedearningslosspershare",
+    },
 }
 TREASURY_STOCK_COUNT_KEYS = ("dppln_stk_ostk", "dppln_stk_estk", "dpstk_ostk", "dpstk_estk", "trstk_qy", "acqsdl_stk_qy", "dppln_stk_qy", "stk_qy")
 TREASURY_STOCK_AMOUNT_KEYS = ("dppln_prc_ostk", "dppln_prc_estk", "dppln_prc", "dpstk_prc", "tr_prc", "acqsdl_prc", "amount")
@@ -131,6 +181,10 @@ def _dart_keywords(title: str) -> list[str]:
 
 
 def _report_code_from_title(title: str) -> str | None:
+    if "분기보고서" in title:
+        period_match = re.search(r"20\d{2}[.\-/](\d{1,2})", title)
+        if period_match and int(period_match.group(1)) >= 9:
+            return "11014"
     for needle, code in REPORT_CODE_BY_TITLE.items():
         if needle in title:
             return "11014" if needle == "분기보고서" and "3분기" in title else code
@@ -165,7 +219,7 @@ def _period_scope(report_code: str) -> str:
     }.get(report_code, "cumulative")
 
 
-def _financial_basis(item: dict[str, str], report_code: str) -> str:
+def _financial_basis(item: dict[str, str], report_code: str, amount_scope: str) -> str:
     return "; ".join(
         [
             *(
@@ -174,6 +228,8 @@ def _financial_basis(item: dict[str, str], report_code: str) -> str:
             ),
             "unit=KRW",
             f"period_scope={_period_scope(report_code)}",
+            f"amount_scope={amount_scope}",
+            f"report_code={report_code or 'unknown'}",
         ]
     )
 
@@ -195,25 +251,56 @@ def _financial_basis_warnings(selected: dict[str, dict[str, str]]) -> list[str]:
 
 def _extract_financial_facts(items: list[dict[str, str]], report_code: str = "") -> list[str]:
     selected: dict[str, dict[str, str]] = {}
+    id_selected: set[str] = set()
     for item in items:
         account_name = item.get("account_nm", "")
+        account_id = item.get("account_id", "").lower()
         if _format_krw(item.get("thstrm_amount")) is None:
+            continue
+        id_key = next(
+            (
+                key
+                for key, account_ids in FINANCIAL_ACCOUNT_IDS.items()
+                if account_id in account_ids
+            ),
+            None,
+        )
+        if id_key is not None:
+            if id_key not in selected or _financial_item_score(item) > _financial_item_score(selected[id_key]):
+                selected[id_key] = item
+                id_selected.add(id_key)
             continue
         for key, aliases in FINANCIAL_ACCOUNT_ALIASES.items():
             if account_name in aliases:
-                if key not in selected or _financial_item_score(item) > _financial_item_score(selected[key]):
+                if key not in id_selected and (
+                    key not in selected
+                    or _financial_item_score(item) > _financial_item_score(selected[key])
+                ):
                     selected[key] = item
                 break
     facts: list[str] = []
-    for key in ("assets", "liabilities", "equity", "revenue", "operating_income", "net_income"):
+    for key in (
+        "assets", "liabilities", "equity", "owners_parent_equity", "revenue",
+        "operating_income", "net_income", "owners_parent_net_income", "basic_eps",
+        "diluted_eps",
+    ):
         item = selected.get(key)
         if not item:
             continue
         amount = _format_krw(item.get("thstrm_amount"))
         if amount:
             facts.append(
-                f"OpenDART financial fact: {item.get('account_nm', '')} = {amount} "
-                f"({item.get('sj_nm', '')}; {_financial_basis(item, report_code)})"
+                f"OpenDART financial fact: {FINANCIAL_CANONICAL_LABELS[key]} = {amount} "
+                f"({item.get('sj_nm', '')}; {_financial_basis(item, report_code, 'standalone_or_balance')})"
+            )
+        cumulative = _format_krw(item.get("thstrm_add_amount"))
+        if cumulative and key in {
+            "revenue", "operating_income", "net_income", "owners_parent_net_income",
+            "basic_eps", "diluted_eps",
+        }:
+            facts.append(
+                f"OpenDART financial cumulative fact: {FINANCIAL_CANONICAL_LABELS[key]} = {cumulative} "
+                f"({item.get('sj_nm', '')}; {_financial_basis(item, report_code, 'cumulative')})"
             )
     facts.extend(_financial_basis_warnings(selected))
     return facts
@@ -366,6 +453,8 @@ class OpenDARTProvider(FilingProvider):
     name = "opendart"
     endpoint = "https://opendart.fss.or.kr/api/list.json"
     financial_endpoint = "https://opendart.fss.or.kr/api/fnlttSinglAcnt.json"
+    financial_all_endpoint = "https://opendart.fss.or.kr/api/fnlttSinglAcntAll.json"
+    share_status_endpoint = "https://opendart.fss.or.kr/api/stockTotqySttus.json"
     treasury_stock_endpoint = "https://opendart.fss.or.kr/api/tsstkDpDecsn.json"
     supply_contract_endpoint = "https://opendart.fss.or.kr/api/singleSaleSupplyContract.json"
     capital_raise_endpoint = "https://opendart.fss.or.kr/api/piicDecsn.json"
@@ -422,7 +511,93 @@ class OpenDARTProvider(FilingProvider):
         if payload.get("status") != "000":
             return [], [f"OpenDART financial statement API status: {payload.get('status')}"]
         facts = _extract_financial_facts(payload.get("list", []), report_code)
+        has_income_statement = any(
+            marker in fact
+            for fact in facts
+            for marker in ("영업이익 =", "당기순이익 =", "지배주주순이익 =")
+        )
+        has_ownership_basis = any(
+            marker in fact
+            for fact in facts
+            for marker in ("지배주주순이익 =", "지배주주지분 =", "희석주당이익 =")
+        )
+        if not has_income_statement or not has_ownership_basis:
+            for fs_div in ("CFS", "OFS"):
+                try:
+                    detailed_response = await client.get(
+                        self.financial_all_endpoint,
+                        params={**params, "fs_div": fs_div},
+                    )
+                    detailed_response.raise_for_status()
+                    detailed_payload = detailed_response.json()
+                except (httpx.HTTPError, ValueError):
+                    continue
+                if detailed_payload.get("status") != "000":
+                    continue
+                detailed_facts = _extract_financial_facts(
+                    detailed_payload.get("list", []), report_code
+                )
+                if detailed_facts:
+                    facts = detailed_facts
+                    break
         return (facts, []) if facts else ([], ["OpenDART financial statement API returned no mapped financial facts"])
+
+    async def _fetch_share_status_facts(
+        self,
+        client: httpx.AsyncClient,
+        api_key: str,
+        corp_code: str,
+        title: str,
+        published: date,
+    ) -> tuple[list[str], list[str]]:
+        report_code = _report_code_from_title(title)
+        if report_code is None:
+            return [], []
+        params = {
+            "crtfc_key": api_key,
+            "corp_code": corp_code,
+            "bsns_year": _business_year_from_title_or_date(title, published),
+            "reprt_code": report_code,
+        }
+        try:
+            response = await client.get(self.share_status_endpoint, params=params)
+            response.raise_for_status()
+            payload = response.json()
+        except (httpx.HTTPError, ValueError):
+            return [], ["OpenDART share status API request failed"]
+        if payload.get("status") != "000":
+            return [], [f"OpenDART share status API status: {payload.get('status')}"]
+        rows = payload.get("list", [])
+        common = next(
+            (
+                row for row in rows
+                if "보통주" in str(row.get("se", ""))
+                or "common" in str(row.get("se", "")).lower()
+            ),
+            None,
+        )
+        if not isinstance(common, dict):
+            return [], ["OpenDART share status API returned no mapped common-share row"]
+        issued = _format_shares(common.get("istc_totqy"))
+        treasury = _format_shares(common.get("tesstk_co"))
+        outstanding = _format_shares(common.get("distb_stock_co"))
+        if outstanding is None:
+            issued_raw = _clean_number(common.get("istc_totqy"))
+            treasury_raw = _clean_number(common.get("tesstk_co"))
+            try:
+                outstanding = f"{int(issued_raw or '0') - int(treasury_raw or '0'):,} shares"
+            except ValueError:
+                outstanding = None
+        basis = f"report_code={report_code}; share_class=common"
+        facts = []
+        for label, value in (
+            ("보통주발행주식수", issued),
+            ("자기주식수", treasury),
+            ("보통주유통주식수", outstanding),
+        ):
+            if value:
+                facts.append(f"OpenDART share fact: {label} = {value} ({basis})")
+        return (facts, []) if facts else ([], ["OpenDART share status values were unavailable"])
 
     async def _fetch_treasury_stock_facts(self, client: httpx.AsyncClient, api_key: str, corp_code: str, title: str, published: date, receipt_no: str) -> tuple[list[str], list[str]]:
         if "자기주식" not in title:
@@ -498,6 +673,7 @@ class OpenDARTProvider(FilingProvider):
                     extra_unknowns: list[str] = []
                     for facts, unknowns in (
                         await self._fetch_financial_facts(client, settings.opendart_api_key, company.corp_code, title, published),
+                        await self._fetch_share_status_facts(client, settings.opendart_api_key, company.corp_code, title, published),
                         await self._fetch_treasury_stock_facts(client, settings.opendart_api_key, company.corp_code, title, published, receipt_no),
                         await self._fetch_supply_contract_facts(client, settings.opendart_api_key, company.corp_code, title, published, receipt_no),
                         await self._fetch_decision_facts(client, settings.opendart_api_key, company.corp_code, title, published, receipt_no),

@@ -105,6 +105,7 @@ async def backfill_financial_snapshots(
         "page_no": 1,
     }
 
+    report_rows: list[dict[str, str]] = []
     async with httpx.AsyncClient(timeout=10.0) as client:
         while True:
             response = await client.get(provider_instance.endpoint, params=params)
@@ -124,41 +125,54 @@ async def backfill_financial_snapshots(
                 if not _is_financial_report(title):
                     continue
                 result.report_count += 1
-                receipt_no = item.get("rcept_no") or ""
-                published = _published_date(item.get("rcept_dt") or "")
-                facts, unknowns = await provider_instance._fetch_financial_facts(
-                    client=client,
-                    api_key=settings.opendart_api_key,
-                    corp_code=company.corp_code,
-                    title=title,
-                    published=published,
-                )
-                if not facts:
-                    result.skipped_count += 1
-                    result.warnings.extend(unknowns)
-                    continue
-
-                event = _event_from_facts(
-                    ticker=output_ticker,
-                    company_name=item.get("corp_name") or company.corp_name,
-                    title=title,
-                    receipt_no=receipt_no,
-                    published=published,
-                    facts=facts,
-                    unknowns=unknowns,
-                )
-                snapshot = upsert_financial_snapshot_from_event(session, event)
-                if snapshot is None:
-                    result.skipped_count += 1
-                    continue
-                result.backfilled_count += 1
-                if snapshot.period not in result.periods:
-                    result.periods.append(snapshot.period)
+                report_rows.append(item)
 
             total_page = int(payload.get("total_page") or params["page_no"])
             if params["page_no"] >= total_page:
                 break
             params["page_no"] += 1
+
+        for item in sorted(report_rows, key=lambda row: row.get("rcept_dt") or ""):
+            title = item.get("report_nm") or "OpenDART filing"
+            receipt_no = item.get("rcept_no") or ""
+            published = _published_date(item.get("rcept_dt") or "")
+            facts, unknowns = await provider_instance._fetch_financial_facts(
+                client=client,
+                api_key=settings.opendart_api_key,
+                corp_code=company.corp_code,
+                title=title,
+                published=published,
+            )
+            share_facts, share_unknowns = await provider_instance._fetch_share_status_facts(
+                client=client,
+                api_key=settings.opendart_api_key,
+                corp_code=company.corp_code,
+                title=title,
+                published=published,
+            )
+            facts.extend(share_facts)
+            unknowns.extend(share_unknowns)
+            if not facts:
+                result.skipped_count += 1
+                result.warnings.extend(unknowns)
+                continue
+
+            event = _event_from_facts(
+                ticker=output_ticker,
+                company_name=item.get("corp_name") or company.corp_name,
+                title=title,
+                receipt_no=receipt_no,
+                published=published,
+                facts=facts,
+                unknowns=unknowns,
+            )
+            snapshot = upsert_financial_snapshot_from_event(session, event)
+            if snapshot is None:
+                result.skipped_count += 1
+                continue
+            result.backfilled_count += 1
+            if snapshot.period not in result.periods:
+                result.periods.append(snapshot.period)
 
     session.commit()
     return result

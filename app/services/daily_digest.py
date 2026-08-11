@@ -342,6 +342,8 @@ def _axis_explanations(
     )
     if not _usable(observations.get("DTWEXBGS")):
         liquidity_text = "달러 데이터가 오래됐거나 없어 오늘 글로벌 유동성 방향은 판단을 유보합니다."
+    if not _usable(observations.get("DGS10")) and not _usable(observations.get("DFII10")):
+        financial_text = "최신 금리 데이터가 없어 오늘 금융여건 방향은 판단을 유보합니다."
     return [
         ("경기", growth_text),
         ("물가", inflation_text),

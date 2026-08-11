@@ -168,6 +168,19 @@ def _multiple_text(snapshot: dict[str, object], field: str) -> str:
     return "자료 없음"
 
 
+def _multiple_source_text(snapshot: dict[str, object], field: str) -> str:
+    source = str(snapshot.get(f"{field}_source", "unavailable"))
+    method = str(snapshot.get(f"{field}_method") or "").strip()
+    source_label = {
+        "provider": "provider 값",
+        "derived_trailing": "직접 계산",
+        "consensus_forward": "시장 consensus",
+        "modeled_forward": "내부 FY1 모델",
+        "unavailable": "산출 불가",
+    }.get(source, source)
+    return f"{source_label} · {method}" if method else source_label
+
+
 def _bullet_text(items: list[object], empty: str, limit: int = 4) -> str:
     lines = [f"• {item}" for item in items[:limit] if str(item).strip()]
     return "\n".join(lines) or f"• {empty}"
@@ -345,13 +358,22 @@ def _assessment_report(
     snapshot_warnings = valuation_snapshot.get("warnings", [])
     if not isinstance(snapshot_warnings, list):
         snapshot_warnings = []
-    framework_basis = valuation_framework.get("peer_or_historical_basis", [])
-    if not isinstance(framework_basis, list):
-        framework_basis = []
+    relative_position = str(
+        valuation_snapshot.get("valuation_relative_position", "unknown")
+    )
+    relative_label = {
+        "discounted": "할인 구간",
+        "somewhat_discounted": "다소 할인",
+        "neutral": "중립 범위",
+        "somewhat_premium": "다소 부담",
+        "premium": "부담 구간",
+        "unknown": "판단 자료 부족",
+    }.get(relative_position, "판단 자료 부족")
+    relative_basis = valuation_snapshot.get("valuation_relative_basis")
     relative_basis_text = (
-        f"• 비교 기준: {framework_basis[0]}"
-        if framework_basis
-        else "• 현재 배수의 역사적·peer 상대 위치는 자료 부족으로 단정하지 않습니다."
+        f"현재 Valuation 위치: {relative_label} · {relative_basis}"
+        if relative_basis
+        else f"현재 Valuation 위치: {relative_label}"
     )
     forward_basis = str(valuation_snapshot.get("forward_basis") or "").strip()
     forward_basis_label = (
@@ -362,8 +384,19 @@ def _assessment_report(
     forward_freshness_label = (
         " · 기준일 일부 미확인"
         if valuation_snapshot.get("forward_pe_status") == "value"
+        and valuation_snapshot.get("forward_pe_source") == "consensus_forward"
         and not valuation_snapshot.get("denominator_as_of")
         else ""
+    )
+    forward_pe_label = (
+        "내부 추정 fPER"
+        if valuation_snapshot.get("forward_pe_source") == "modeled_forward"
+        else "fPER"
+    )
+    forward_pb_label = (
+        "내부 추정 fPBR"
+        if valuation_snapshot.get("forward_price_to_book_source") == "modeled_forward"
+        else "fPBR"
     )
     caveat_text = (
         f"• 해석 주의: {valuation_caveats[0]}"
@@ -421,14 +454,16 @@ def _assessment_report(
         f"📐 시장 기대와 Valuation\n"
         f"시장 기대: {expectation_label} · {expectation_summary}\n"
         f"현재가: {_report_price(current_price, currency)}\n"
+        f"실적 기준: {valuation_snapshot.get('financials_as_of') or '확인 불가'}\n"
         f"• PER: {_multiple_text(valuation_snapshot, 'trailing_pe')} "
-        f"({multiple_roles['PER']})\n"
-        f"• fPER: {_multiple_text(valuation_snapshot, 'forward_pe')} "
-        f"({multiple_roles['fPER']}){forward_basis_label}{forward_freshness_label}\n"
+        f"({multiple_roles['PER']}) · {_multiple_source_text(valuation_snapshot, 'trailing_pe')}\n"
+        f"• {forward_pe_label}: {_multiple_text(valuation_snapshot, 'forward_pe')} "
+        f"({multiple_roles['fPER']}) · {_multiple_source_text(valuation_snapshot, 'forward_pe')}"
+        f"{forward_basis_label}{forward_freshness_label}\n"
         f"• PBR: {_multiple_text(valuation_snapshot, 'price_to_book')} "
-        f"({multiple_roles['PBR']})\n"
-        f"• fPBR: {_multiple_text(valuation_snapshot, 'forward_price_to_book')} "
-        f"({multiple_roles['fPBR']})\n"
+        f"({multiple_roles['PBR']}) · {_multiple_source_text(valuation_snapshot, 'price_to_book')}\n"
+        f"• {forward_pb_label}: {_multiple_text(valuation_snapshot, 'forward_price_to_book')} "
+        f"({multiple_roles['fPBR']}) · {_multiple_source_text(valuation_snapshot, 'forward_price_to_book')}\n"
         f"주 평가 방식: {valuation_method}\n"
         f"{relative_basis_text}\n"
         f"{caveat_text}\n"

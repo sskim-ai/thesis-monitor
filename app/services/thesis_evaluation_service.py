@@ -1,4 +1,5 @@
 import json
+import hashlib
 import re
 from dataclasses import dataclass
 from datetime import date
@@ -215,6 +216,12 @@ def _build_price_decision(
     decision.current_position = _price_position_text(context)
     decision.registered_rules_available = bool(rules)
     if not rules:
+        decision.price_state = "no_price_rule"
+        decision.price_state_confirmation = (
+            "provisional"
+            if decision.assessment_state == AssessmentState.provisional
+            else "confirmed" if decision.current_price is not None else "unavailable"
+        )
         context.decision = decision
         return decision
 
@@ -223,6 +230,36 @@ def _build_price_decision(
     support_high = _number(rules.get("support_zone_high"))
     warning = _number(rules.get("warning_price"))
     invalidation = _number(rules.get("invalidation_price"))
+    current = decision.current_price
+    if current is None:
+        decision.price_state = "unavailable"
+        decision.price_state_confirmation = "unavailable"
+    else:
+        if invalidation is not None and current < invalidation:
+            decision.price_state = "below_invalidation"
+        elif warning is not None and current < warning:
+            decision.price_state = "below_warning"
+        elif support_low is not None and current < support_low:
+            decision.price_state = "below_support"
+        elif support_low is not None and support_high is not None and current <= support_high:
+            decision.price_state = "inside_support"
+        elif confirmation is not None and current > confirmation:
+            decision.price_state = "above_confirmation"
+        else:
+            decision.price_state = "between_confirmation_and_support"
+        decision.price_state_confirmation = (
+            "provisional"
+            if decision.assessment_state == AssessmentState.provisional
+            else "confirmed"
+        )
+        decision.current_position = {
+            "below_invalidation": "현재 재점검 가격을 하회하고 있습니다.",
+            "below_warning": "현재 경고 가격을 하회해 투자 논리 재점검이 필요합니다.",
+            "below_support": "현재 등록된 지지구간을 하회하고 있습니다.",
+            "inside_support": "현재 등록된 지지구간 안에서 거래되고 있습니다.",
+            "above_confirmation": "현재 상향 확인 가격을 넘어선 상태입니다.",
+            "between_confirmation_and_support": "현재 지지구간 위, 상향 확인 가격 아래에 있습니다.",
+        }[decision.price_state]
     if support_low is not None and support_high is not None:
         support = PriceLevelCheck(
             rule="support_zone",
@@ -292,11 +329,20 @@ def _price_audience_views(
             "등록된 구조적 확인 가격이 없습니다. 투자 논리 조건과 실적 데이터를 우선 확인합니다.",
             "등록된 가격 관리 기준이 없습니다. 사업 투자 논리의 약화·무효화 조건을 우선 확인합니다.",
         )
-    observer_lines = [
+    state_text = {
+        "inside_support": "현재 지지구간 안에 있습니다.",
+        "below_support": "현재 지지구간을 하회하고 있습니다. 종가 기준 회복 여부를 확인합니다.",
+        "below_warning": "현재 재점검 시작 가격을 하회했습니다. 가격 약화와 사업 투자 논리를 분리해 확인합니다.",
+        "below_invalidation": "현재 가격 기반 투자 논리 재점검 기준을 하회했습니다. 가격만으로 자동 무효화하지 않고 핵심 사업 근거를 재평가합니다.",
+        "above_confirmation": "현재 상향 확인 가격을 넘어섰습니다. 가격 강세가 실적·주문·현금흐름 개선과 동반되는지 확인합니다.",
+        "between_confirmation_and_support": "현재 지지구간 위, 상향 확인 가격 아래에 있습니다.",
+        "unavailable": "현재가를 확인하지 못해 가격 상태 판단을 유보합니다.",
+    }.get(decision.price_state, "")
+    observer_lines = ([state_text] if state_text else []) + [
         f"{_price_level_text(item, decision.currency)}: {item.label}. {item.meaning}"
         for item in decision.new_observer_checks
     ]
-    holder_lines = [
+    holder_lines = ([state_text] if state_text else []) + [
         f"{_price_level_text(item, decision.currency)}: {item.label}. {item.meaning}"
         for item in decision.holder_checks
     ]
@@ -593,6 +639,9 @@ def _warning_lifecycle(
     new_warnings: list[str],
     events: list[Event],
     baseline_warnings: list[str] | None = None,
+    *,
+    ticker: str,
+    assessment_date: date,
 ) -> tuple[list[str], list[dict[str, object]]]:
     previous_states_raw: list[object] = []
     if previous is not None:
@@ -621,9 +670,24 @@ def _warning_lifecycle(
 
     for warning in new_warnings:
         previous_state = states.get(warning)
+        source_event_ids = [
+            event_fingerprint(event)
+            for event in events
+            if warning in _warning_facts(event)
+        ]
         states[warning] = {
+            **(previous_state or {}),
+            "warning_id": hashlib.sha256(f"{ticker}|{warning}".encode()).hexdigest()[:16],
+            "ticker": ticker,
             "warning": warning,
+            "warning_type": "confirmed_fundamental",
+            "opened_date": (previous_state or {}).get("opened_date", assessment_date.isoformat()),
+            "last_confirmed_date": assessment_date.isoformat(),
             "status": "escalated" if previous_state else "open",
+            "resolution_condition": (previous_state or {}).get(
+                "resolution_condition", "반대 방향의 신뢰 가능한 확정 근거 확인"
+            ),
+            "source_event_ids": source_event_ids,
         }
 
     resolution_markers = {
@@ -644,6 +708,13 @@ def _warning_lifecycle(
         and any(marker in _event_text(event).lower() for marker in resolution_markers)
     ]
     for warning, state in states.items():
+        state.setdefault("warning_id", hashlib.sha256(f"{ticker}|{warning}".encode()).hexdigest()[:16])
+        state.setdefault("ticker", ticker)
+        state.setdefault("warning_type", "confirmed_fundamental")
+        state.setdefault("opened_date", assessment_date.isoformat())
+        state.setdefault("last_confirmed_date", state.get("opened_date"))
+        state.setdefault("resolution_condition", "반대 방향의 신뢰 가능한 확정 근거 확인")
+        state.setdefault("source_event_ids", [])
         if any(_matching_signals(text, [warning]) for text in positive_texts):
             state["status"] = "resolved"
 
@@ -654,6 +725,37 @@ def _warning_lifecycle(
         if item.get("status") in {"open", "escalated"}
     ]
     return _unique(open_warnings), rendered_states
+
+
+def _assessment_confidence(
+    events: list[Event],
+    price_context: PriceContext,
+    valuation_snapshot: ValuationSnapshot | None,
+    unknowns: list[str],
+) -> float:
+    confidence = 0.88
+    if not price_context.available:
+        confidence -= 0.10
+    if price_context.warnings:
+        confidence -= min(0.10, len(price_context.warnings) * 0.03)
+    if valuation_snapshot is None or valuation_snapshot.quality == "unavailable":
+        confidence -= 0.08
+    elif valuation_snapshot.quality == "stale":
+        confidence -= 0.10
+    elif valuation_snapshot.quality == "partial":
+        confidence -= 0.04
+    confidence -= min(0.12, len(unknowns) * 0.015)
+    confidence -= min(
+        0.12,
+        sum(1 for event in events if event.provider not in TRUSTED_FACT_PROVIDERS) * 0.03,
+    )
+    if events and all(
+        event.provider in TRUSTED_FACT_PROVIDERS
+        and not event.financial_statement_basis_warning
+        for event in events
+    ):
+        confidence += 0.03
+    return round(max(0.35, min(0.95, confidence)), 2)
 
 
 def _persistent_watch_risks(thesis: InvestmentThesis) -> list[str]:
@@ -1053,6 +1155,16 @@ def evaluate_thesis(
         macro_valuation_effects=macro_valuation_effects,
         valuation_evidence=valuation_evidence,
         previous_impact=previous_impact,
+        valuation_relative_position=(
+            valuation_snapshot.valuation_relative_position
+            if valuation_snapshot is not None
+            else "unknown"
+        ),
+        valuation_relative_basis=(
+            valuation_snapshot.valuation_relative_basis
+            if valuation_snapshot is not None
+            else None
+        ),
         evidence_count=len(valuation_evidence),
     )
     market_expectation_assessment = _expectation_assessment(
@@ -1074,6 +1186,12 @@ def evaluate_thesis(
         previous_assessment,
         new_warnings,
         events,
+        ticker=thesis.ticker,
+        assessment_date=(
+            macro_impact.assessment_date
+            if macro_impact is not None
+            else date.today()
+        ),
     )
     legacy_thesis_sentences = {
         thesis.core_thesis.strip(),
@@ -1089,11 +1207,12 @@ def evaluate_thesis(
     used_event_fingerprints = [event_fingerprint(event) for event in events]
 
     net_score = max(-100, min(100, positive_points - negative_points))
-    confidence = previous_assessment.confidence if previous_assessment is not None else 0.5
-    if evidence:
-        confidence = round(
-            min(0.95, 0.45 + max(item["relevance_score"] for item in evidence) / 200), 2
-        )
+    confidence = _assessment_confidence(
+        events,
+        price_context,
+        valuation_snapshot,
+        unknowns,
+    )
     price_view = _price_view(price_context)
     new_buyer_price_view, holder_price_view = _price_audience_views(
         price_decision,

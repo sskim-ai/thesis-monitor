@@ -3517,6 +3517,16 @@
             "title": "Current Position",
             "default": "가격 위치 자료 없음"
           },
+          "price_state": {
+            "type": "string",
+            "title": "Price State",
+            "default": "no_price_rule"
+          },
+          "price_state_confirmation": {
+            "type": "string",
+            "title": "Price State Confirmation",
+            "default": "unavailable"
+          },
           "new_observer_checks": {
             "items": {
               "$ref": "#/components/schemas/PriceLevelCheck"
@@ -4726,6 +4736,21 @@
               }
             ]
           },
+          "valuation_relative_position": {
+            "$ref": "#/components/schemas/ValuationRelativePosition",
+            "default": "unknown"
+          },
+          "valuation_relative_basis": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Valuation Relative Basis"
+          },
           "evidence_count": {
             "type": "integer",
             "title": "Evidence Count",
@@ -4790,6 +4815,18 @@
         ],
         "title": "ValuationImpact"
       },
+      "ValuationRelativePosition": {
+        "type": "string",
+        "enum": [
+          "discounted",
+          "somewhat_discounted",
+          "neutral",
+          "somewhat_premium",
+          "premium",
+          "unknown"
+        ],
+        "title": "ValuationRelativePosition"
+      },
       "ValuationSnapshot": {
         "properties": {
           "current_price": {
@@ -4846,6 +4883,22 @@
             "title": "Trailing Pe Status",
             "default": "unavailable"
           },
+          "trailing_pe_source": {
+            "type": "string",
+            "title": "Trailing Pe Source",
+            "default": "unavailable"
+          },
+          "trailing_pe_method": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Trailing Pe Method"
+          },
           "forward_pe": {
             "anyOf": [
               {
@@ -4861,6 +4914,22 @@
             "type": "string",
             "title": "Forward Pe Status",
             "default": "unavailable"
+          },
+          "forward_pe_source": {
+            "type": "string",
+            "title": "Forward Pe Source",
+            "default": "unavailable"
+          },
+          "forward_pe_method": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Forward Pe Method"
           },
           "price_to_book": {
             "anyOf": [
@@ -4878,6 +4947,22 @@
             "title": "Price To Book Status",
             "default": "unavailable"
           },
+          "price_to_book_source": {
+            "type": "string",
+            "title": "Price To Book Source",
+            "default": "unavailable"
+          },
+          "price_to_book_method": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Price To Book Method"
+          },
           "forward_price_to_book": {
             "anyOf": [
               {
@@ -4893,6 +4978,22 @@
             "type": "string",
             "title": "Forward Price To Book Status",
             "default": "unavailable"
+          },
+          "forward_price_to_book_source": {
+            "type": "string",
+            "title": "Forward Price To Book Source",
+            "default": "unavailable"
+          },
+          "forward_price_to_book_method": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Forward Price To Book Method"
           },
           "trailing_basis": {
             "type": "string",
@@ -4953,10 +5054,67 @@
             ],
             "title": "Denominator As Of"
           },
+          "financials_as_of": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Financials As Of"
+          },
           "quality": {
             "type": "string",
             "title": "Quality",
             "default": "unavailable"
+          },
+          "trailing_valuation_confidence": {
+            "type": "number",
+            "title": "Trailing Valuation Confidence",
+            "default": 0.0
+          },
+          "forward_valuation_confidence": {
+            "type": "number",
+            "title": "Forward Valuation Confidence",
+            "default": 0.0
+          },
+          "forecast_method": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Forecast Method"
+          },
+          "valuation_relative_position": {
+            "$ref": "#/components/schemas/ValuationRelativePosition",
+            "default": "unknown"
+          },
+          "valuation_relative_basis": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Valuation Relative Basis"
+          },
+          "valuation_discrepancy_warning": {
+            "type": "boolean",
+            "title": "Valuation Discrepancy Warning",
+            "default": false
+          },
+          "valuation_calculation_warning": {
+            "type": "boolean",
+            "title": "Valuation Calculation Warning",
+            "default": false
           },
           "warnings": {
             "items": {
