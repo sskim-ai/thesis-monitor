@@ -12,6 +12,15 @@ from app.services.daily_digest_renderer import render_daily_digest
 from app.services.notification_service import _assessment_report
 
 
+DEFAULT_EXPORT_DIR = (
+    Path.home()
+    / "Library"
+    / "Mobile Documents"
+    / "com~apple~CloudDocs"
+    / "Thesis Monitor"
+)
+
+
 def _fenced(text: str) -> str:
     return f"```text\n{text.strip()}\n```"
 
@@ -72,7 +81,10 @@ def main() -> None:
     parser.add_argument("--output")
     args = parser.parse_args()
     run_date = date.fromisoformat(args.date)
-    output = Path(args.output or f"data/reports/{run_date}-monitoring-messages.md")
+    output = Path(
+        args.output
+        or DEFAULT_EXPORT_DIR / f"{run_date}-monitoring-messages.md"
+    )
     count = export_messages(run_date, output)
     print(f"exported={count} output={output.resolve()}")
 
