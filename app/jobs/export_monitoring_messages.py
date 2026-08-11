@@ -428,7 +428,9 @@ def export_messages(
                 f"{snapshot.get('provider_price_to_book') or '없음'}/{snapshot.get('derived_price_to_book') or '없음'}/{snapshot.get('bvps') or '없음'} | "
                 f"{snapshot.get('price_to_book_comparability') or '없음'}:{snapshot.get('price_to_book_comparability_reason') or '없음'} | "
                 f"{snapshot.get('provider_forward_pe') or '없음'}/{snapshot.get('derived_forward_pe') or '없음'}/{snapshot.get('forward_eps') or '없음'} | "
-                f"{snapshot.get('forward_pe_comparability') or '없음'}:{snapshot.get('forward_pe_comparability_reason') or '없음'} | "
+                f"{snapshot.get('forward_pe_comparability') or '없음'}:{snapshot.get('forward_pe_comparability_reason') or '없음'}; "
+                f"reference={snapshot.get('forward_pe_reference_caution', False)}/"
+                f"{snapshot.get('forward_pe_reference_difference_pct') or '없음'}% | "
                 f"{snapshot.get('provider_forward_price_to_book') or '없음'}/{snapshot.get('derived_forward_price_to_book') or '없음'}/{snapshot.get('forward_bvps') or '없음'} | "
                 f"{snapshot.get('forward_price_to_book_comparability') or '없음'}:{snapshot.get('forward_price_to_book_comparability_reason') or '없음'} | "
                 f"{','.join(snapshot.get('multiple_basis_conflicts') or []) or '없음'} | "
@@ -440,8 +442,8 @@ def export_messages(
                 "",
                 "## 부록. Earnings quarter / TTM lineage",
                 "",
-                "| 종목 | Latest earnings | Preliminary included | TTM EPS | Earnings basis | Share basis | Latest margin | QoQ/YoY revenue | Quarter series |",
-                "|---|---|---|---|---|---|---|---|---|",
+                "| 종목 | Latest earnings | Context source/usable | EPS usable | Preliminary included | Latest revenue/op income/margin | TTM EPS | Earnings basis | Share basis | QoQ/YoY revenue | Quarter series |",
+                "|---|---|---|---|---|---|---|---|---|---|---|",
             ]
         )
         for assessment in assessments:
@@ -456,10 +458,16 @@ def export_messages(
             )
             sections.append(
                 f"| {assessment.ticker} | {snapshot.get('latest_earnings_period') or '없음'} | "
+                f"{snapshot.get('earnings_context_source') or '없음'}/"
+                f"{snapshot.get('earnings_context_usable', False)} | "
+                f"{snapshot.get('eps_per_usable', False)} | "
                 f"{snapshot.get('ttm_contains_preliminary', False)} "
                 f"({snapshot.get('preliminary_quarter_count', 0)}) | "
+                f"{snapshot.get('latest_revenue') or '없음'}/"
+                f"{snapshot.get('latest_operating_income') or '없음'}/"
+                f"{snapshot.get('latest_operating_margin') or '없음'} | "
                 f"{snapshot.get('ttm_eps') or '없음'} | {snapshot.get('earnings_basis') or '없음'} | "
-                f"{snapshot.get('share_basis') or '없음'} | {snapshot.get('latest_operating_margin') or '없음'} | "
+                f"{snapshot.get('share_basis') or '없음'} | "
                 f"{snapshot.get('latest_revenue_qoq') or '없음'}/{snapshot.get('latest_revenue_yoy') or '없음'} | "
                 f"{series.replace('|', '/') or '없음'} |"
             )
@@ -495,6 +503,7 @@ def export_messages(
                         f"{field.get('raw_period') or '없음'} / "
                         f"{str(field.get('raw_column_header') or '없음').replace('|', '/')} / "
                         f"{field.get('raw_unit') or '없음'} / {field.get('raw_value') or '없음'}; "
+                        f"current_header={str(field.get('current_result_header') or '없음').replace('|', '/')}; "
                         f"current={field.get('current_period_date_candidates') or []}; "
                         f"ignored={field.get('ignored_comparison_period_dates') or []} |"
                 )

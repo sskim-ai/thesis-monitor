@@ -37,7 +37,10 @@ from app.services.financial_validation import validate_event_financials
 from app.services.historical_valuation_service import HistoricalValuationService
 from app.services.issue_identity_audit_service import IssueIdentityAuditService
 from app.services.news_query_service import NewsQueryService
-from app.services.collection_service import CollectionService
+from app.services.collection_service import (
+    CollectionService,
+    _opendart_reparse_lookback_days,
+)
 from app.services.sec_financial_snapshot_service import (
     _linked_documents,
     _parse_foreign_financial_release,
@@ -618,6 +621,34 @@ def test_valid_preliminary_period_is_current_context() -> None:
     assert row is not None
     assert row.period_mapping_validation_failed is False
     assert freshness.latest_preliminary_period == date(2026, 6, 30)
+
+
+def test_period_mapping_failure_expands_opendart_reparse_window() -> None:
+    engine = _engine()
+    with Session(engine) as session:
+        session.add(
+            FinancialSnapshot(
+                ticker="PERIODFIX",
+                period="legacy-invalid",
+                snapshot_type="preliminary_earnings",
+                provider="opendart",
+                filing_date=date(2026, 4, 30),
+                financial_period_end=date(2026, 6, 30),
+                period_mapping_validation_failed=True,
+                financial_statement_basis_warning=True,
+                financial_hard_errors='["financial_period_after_filing_date"]',
+            )
+        )
+        session.commit()
+
+        lookback = _opendart_reparse_lookback_days(
+            session,
+            "PERIODFIX",
+            30,
+            as_of=date(2026, 8, 12),
+        )
+
+    assert lookback == 105
 
 
 def test_preliminary_html_table_uses_semantic_rows_and_columns() -> None:

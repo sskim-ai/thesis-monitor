@@ -549,9 +549,24 @@ class ValuationSnapshotService:
         snapshot.latest_earnings_period = (
             latest_period.isoformat() if latest_period else None
         )
-        snapshot.ttm_contains_preliminary = result.contains_preliminary
-        snapshot.preliminary_quarter_count = sum(
-            row.snapshot_type == "preliminary_earnings" for row in quarters
+        snapshot.earnings_context_source = latest.snapshot_type
+        snapshot.earnings_context_is_preliminary = (
+            latest.snapshot_type == "preliminary_earnings"
+        )
+        snapshot.latest_revenue = latest.revenue
+        snapshot.latest_operating_income = latest.operating_income
+        snapshot.earnings_context_usable = any(
+            value is not None
+            for value in (latest.revenue, latest.operating_income, latest.net_income)
+        )
+        snapshot.eps_per_usable = result.eps is not None
+        snapshot.ttm_contains_preliminary = (
+            result.contains_preliminary and snapshot.eps_per_usable
+        )
+        snapshot.preliminary_quarter_count = (
+            sum(row.snapshot_type == "preliminary_earnings" for row in quarters)
+            if snapshot.eps_per_usable
+            else 0
         )
         snapshot.earnings_basis = result.method
         snapshot.share_basis = ";".join(
@@ -572,6 +587,17 @@ class ValuationSnapshotService:
                 "share_basis": result.share_basis[index]
                 if index < len(result.share_basis)
                 else None,
+                "revenue": row.revenue,
+                "operating_income": row.operating_income,
+                "context_usable": any(
+                    value is not None
+                    for value in (row.revenue, row.operating_income, row.net_income)
+                ),
+                "eps_usable": (
+                    result.quarter_eps[index] is not None
+                    if index < len(result.quarter_eps)
+                    else False
+                ),
             }
             for index, row in enumerate(quarters)
         ]
@@ -1116,6 +1142,25 @@ class ValuationSnapshotService:
                 )
             )
         )
+        pe_difference = (
+            abs(provider_pe / derived_pe - 1)
+            if provider_pe is not None
+            and provider_pe > 0
+            and derived_pe is not None
+            and derived_pe > 0
+            else None
+        )
+        if pe_difference is not None:
+            snapshot.forward_pe_reference_difference_pct = round(
+                pe_difference * 100, 4
+            )
+        if (
+            pe_difference is not None
+            and pe_difference > threshold
+            and pe_comparison.status in {"insufficient_metadata", "not_comparable"}
+        ):
+            snapshot.forward_pe_reference_caution = True
+            snapshot.forward_pe_reference_caution_reason = pe_comparison.reason
         if pe_conflict:
             if snapshot.forward_eps is not None and snapshot.forward_eps <= 0:
                 snapshot.forward_pe_comparability = "structural_conflict"

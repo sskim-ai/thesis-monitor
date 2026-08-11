@@ -5961,6 +5961,54 @@
             ],
             "title": "Latest Earnings Period"
           },
+          "earnings_context_source": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Earnings Context Source"
+          },
+          "earnings_context_is_preliminary": {
+            "type": "boolean",
+            "title": "Earnings Context Is Preliminary",
+            "default": false
+          },
+          "earnings_context_usable": {
+            "type": "boolean",
+            "title": "Earnings Context Usable",
+            "default": false
+          },
+          "eps_per_usable": {
+            "type": "boolean",
+            "title": "Eps Per Usable",
+            "default": false
+          },
+          "latest_revenue": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Latest Revenue"
+          },
+          "latest_operating_income": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Latest Operating Income"
+          },
           "earnings_basis": {
             "anyOf": [
               {
@@ -6613,6 +6661,33 @@
               }
             ],
             "title": "Forward Pe Comparability Reason"
+          },
+          "forward_pe_reference_caution": {
+            "type": "boolean",
+            "title": "Forward Pe Reference Caution",
+            "default": false
+          },
+          "forward_pe_reference_caution_reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Forward Pe Reference Caution Reason"
+          },
+          "forward_pe_reference_difference_pct": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Forward Pe Reference Difference Pct"
           },
           "forward_price_to_book_comparability": {
             "type": "string",

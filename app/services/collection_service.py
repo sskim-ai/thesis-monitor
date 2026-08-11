@@ -75,18 +75,27 @@ def _opendart_reparse_lookback_days(
     session: Session,
     ticker: str,
     default_lookback_days: int,
+    *,
+    as_of: date | None = None,
 ) -> int:
     snapshots = session.exec(
         select(FinancialSnapshot).where(
             FinancialSnapshot.ticker == ticker,
             FinancialSnapshot.provider == "opendart",
             FinancialSnapshot.snapshot_type == "preliminary_earnings",
-            FinancialSnapshot.financial_statement_basis_warning.is_(True),
-            FinancialSnapshot.period_mapping_validation_failed.is_(False),
         )
     ).all()
     oldest_reparse_date: date | None = None
     for snapshot in snapshots:
+        if snapshot.period_mapping_validation_failed:
+            candidate_date = snapshot.filing_date or snapshot.reported_date
+            if candidate_date and (
+                oldest_reparse_date is None or candidate_date < oldest_reparse_date
+            ):
+                oldest_reparse_date = candidate_date
+            continue
+        if not snapshot.financial_statement_basis_warning:
+            continue
         # Legacy validation failures predate hard/soft classification. Re-fetch
         # them once; newly classified hard errors remain quarantined without a
         # daily reparse loop.
@@ -108,7 +117,7 @@ def _opendart_reparse_lookback_days(
             oldest_reparse_date = source_event.date
     if oldest_reparse_date is None:
         return default_lookback_days
-    required_days = max(1, (date.today() - oldest_reparse_date).days + 1)
+    required_days = max(1, ((as_of or date.today()) - oldest_reparse_date).days + 1)
     return min(365, max(default_lookback_days, required_days))
 
 

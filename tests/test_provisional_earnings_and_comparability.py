@@ -7,7 +7,7 @@ from app.models.financial import FinancialSnapshot
 from app.providers.dart_text_fallback import extract_preliminary_earnings_facts_from_text
 from app.schemas.thesis import ValuationSnapshot
 from app.services.historical_valuation_service import point_in_time_denominators
-from app.services.notification_service import _valuation_formula_lines
+from app.services.notification_service import _data_cautions, _valuation_formula_lines
 from app.services.valuation_snapshot_service import (
     MultipleBasis,
     ValuationSnapshotService,
@@ -196,6 +196,31 @@ def test_total_net_income_without_owner_attribution_does_not_create_eps() -> Non
     assert result.quarters[-1].operating_income == 600
 
 
+def test_eps_less_preliminary_updates_earnings_context_without_recalculating_per() -> None:
+    rows = [*_base_rows(), _preliminary(owners_income=None, total_income=450)]
+    snapshot = ValuationSnapshot(
+        current_price=100,
+        currency="KRW",
+        trailing_pe=20,
+        trailing_pe_status="value",
+    )
+
+    derived_pe, _derived_pb = ValuationSnapshotService()._apply_derived_trailing(
+        snapshot, rows
+    )
+
+    assert derived_pe is None
+    assert snapshot.trailing_pe == 20
+    assert snapshot.latest_earnings_period == "2026-06-30"
+    assert snapshot.earnings_context_is_preliminary is True
+    assert snapshot.earnings_context_usable is True
+    assert snapshot.eps_per_usable is False
+    assert snapshot.latest_revenue == 800
+    assert snapshot.latest_operating_income == 600
+    assert snapshot.latest_operating_margin == pytest.approx(75)
+    assert snapshot.ttm_contains_preliminary is False
+
+
 def test_preliminary_reported_diluted_eps_takes_priority() -> None:
     result = _ttm_earnings(
         [*_base_rows(), _preliminary(owners_income=400, diluted_eps=7)]
@@ -279,6 +304,27 @@ def test_period_parser_uses_current_range_and_ignores_comparison_ranges() -> Non
         "2026-03-31",
     ]
     assert "2025-12-31" in parsed.diagnostics["ignored_comparison_period_dates"]
+
+
+def test_posco_short_year_current_quarter_header_is_parsed_without_comparison_pollution() -> None:
+    parsed = extract_preliminary_earnings_facts_from_text(
+        """
+        <table id="posco-q1-short-year">
+          <tr><td colspan="7">단위 : 조원, %</td></tr>
+          <tr><th>구분</th><th>구분</th><th>당기실적</th><th>전기실적</th><th>전기대비</th><th>전년동기실적</th><th>전년동기대비</th></tr>
+          <tr><th>구분</th><th>구분</th><th>('26.1Q)</th><th>('25.4Q)</th><th>증감율(%)</th><th>('25.1Q)</th><th>증감율(%)</th></tr>
+          <tr><td>매출액</td><td>당해실적</td><td>17.88</td><td>17.20</td><td>4.0</td><td>17.44</td><td>2.5</td></tr>
+          <tr><td>영업이익</td><td>당해실적</td><td>0.71</td><td>0.50</td><td>42.0</td><td>0.58</td><td>22.4</td></tr>
+        </table>
+        """
+    )
+
+    assert parsed.period_end == date(2026, 3, 31)
+    assert parsed.reporting_period_source == "current_header_quarter"
+    assert parsed.reporting_period_confidence == "high"
+    assert parsed.diagnostics["current_result_header"] == "당기실적 ('26.1Q)"
+    assert "2025-12-31" in parsed.diagnostics["ignored_comparison_period_dates"]
+    assert "2026-03-31" not in parsed.diagnostics["ignored_comparison_period_dates"]
 
 
 def test_posco_style_separate_period_table_and_trillion_unit_are_normalized() -> None:
@@ -425,6 +471,51 @@ def test_forward_different_horizon_does_not_create_consensus_conflict() -> None:
     assert snapshot.forward_pe == 25
     assert snapshot.forward_pe_basis_conflict is False
     assert snapshot.forward_pe_comparability == "insufficient_metadata"
+    assert snapshot.forward_pe_reference_caution is True
+    assert snapshot.consensus_disagreement is False
+    cautions = _data_cautions(snapshot.model_dump(), {})
+    assert "fPER는 산출 기간이 명확하지 않아 참고 수준입니다." in cautions
+
+
+def test_single_forward_source_does_not_create_reference_caution() -> None:
+    snapshot = ValuationSnapshot(
+        current_price=100,
+        currency="KRW",
+        forward_pe=25,
+        forward_pe_status="value",
+    )
+
+    ValuationSnapshotService()._cross_check_forward(
+        snapshot,
+        provider_pe=25,
+        provider_pe_basis=_basis(horizon="provider_defined"),
+    )
+
+    assert snapshot.forward_pe_reference_caution is False
+    assert not any("fPER" in caution for caution in _data_cautions(snapshot.model_dump(), {}))
+
+
+def test_comparable_forward_estimates_keep_existing_conflict_policy() -> None:
+    snapshot = ValuationSnapshot(
+        current_price=100,
+        currency="KRW",
+        forward_pe=25,
+        forward_pe_status="value",
+        forward_eps=10,
+        forward_valuation_confidence=0.7,
+    )
+
+    ValuationSnapshotService()._cross_check_forward(
+        snapshot,
+        provider_pe=25,
+        derived_pe=10,
+        provider_pe_basis=_basis(horizon="FY1"),
+        derived_pe_basis=_basis(horizon="FY1"),
+    )
+
+    assert snapshot.forward_pe_basis_conflict is True
+    assert snapshot.forward_pe_status == "conflict"
+    assert snapshot.forward_pe_reference_caution is False
 
 
 def test_adr_and_ordinary_share_multiples_are_not_comparable() -> None:

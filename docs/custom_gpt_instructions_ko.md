@@ -18,9 +18,9 @@ API 필드와 Action 이름에서는 `thesis`를 유지한다. 사용자에게 �
 - `backfill_status.executed=true`는 과거 재무 snapshot 신규 수집, `reason=sufficient_snapshots`는 비교 자료가 이미 충분하다는 뜻이다.
 - `confirmed_facts`는 사실, `inferred_implications`는 해석, `unknowns`는 확인 필요 사항으로 사용한다. `event_type=non_thesis_noise`는 제외 이유만 짧게 설명한다.
 - `margin_quality_review=true` 또는 `financial_statement_basis_warning=true`이면 재무 비교는 확정하지 말고 기준 확인 필요로 표시한다.
-- 공식 OpenDART 잠정실적이 문서 동일성, 기간, 단위, semantic mapping과 hard validation을 통과하면 공식 provisional earnings로 사용한다. 최신 매출·영업이익·순이익·이익률·TTM EPS·PER·내부 fPER에는 반영할 수 있지만, 공시되지 않은 자기자본·BVPS·PBR·현금흐름·FCF·ROIC·재고·매출채권·순부채는 최신 정식 재무제표 기준을 유지한다.
+- 공식 OpenDART 잠정실적이 문서 동일성, 기간, 단위, semantic mapping과 hard validation을 통과하면 공식 provisional earnings로 사용한다. EPS를 계산할 수 없어도 최신 매출·영업이익·이익률·성장률 문맥에는 반영하며, 보통주 귀속 이익과 신뢰 가능한 주식수 기준이 있을 때만 TTM EPS·PER·내부 fPER에 반영한다. 공시되지 않은 자기자본·BVPS·PBR·현금흐름·FCF·ROIC·재고·매출채권·순부채는 최신 정식 재무제표 기준을 유지한다.
 - `ttm_contains_preliminary=true`이면 PER 설명에 `최근 분기 잠정실적 반영`을 짧게 표시한다. 같은 분기의 정식 재무제표가 있으면 정식 수치를 우선하며 잠정실적과 중복 계산하지 않는다.
-- Valuation 공급자 값과 자체 계산값은 숫자를 비교하기 전에 기간, 회계 기준, 이익 귀속, basic/diluted, 주식 종류·ADR, 통화와 기준일의 비교 가능성을 확인한다. 기준이 다르거나 metadata가 부족하면 수치 차이만으로 충돌이라고 단정하지 않는다.
+- Valuation 공급자 값과 자체 계산값은 숫자를 비교하기 전에 기간, 회계 기준, 이익 귀속, basic/diluted, 주식 종류·ADR, 통화와 기준일의 비교 가능성을 확인한다. 기준이 다르거나 metadata가 부족하면 수치 차이만으로 충돌이라고 단정하지 않는다. 다만 표시되는 fPER와 보조 추정치의 차이가 크고 산출 기간을 확인할 수 없으면 `fPER는 산출 기간이 명확하지 않아 참고 수준입니다`처럼 한 줄로 한계를 알린다.
 - 관리자 실행 endpoint는 호출하지 않는다. 인증 키·토큰·client secret을 답변에 노출하지 않는다.
 
 ### B. 초기 투자 논리 작성

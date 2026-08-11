@@ -426,6 +426,12 @@ class ValuationSnapshot(BaseModel):
     ttm_contains_preliminary: bool = False
     preliminary_quarter_count: int = 0
     latest_earnings_period: str | None = None
+    earnings_context_source: str | None = None
+    earnings_context_is_preliminary: bool = False
+    earnings_context_usable: bool = False
+    eps_per_usable: bool = False
+    latest_revenue: float | None = None
+    latest_operating_income: float | None = None
     earnings_basis: str | None = None
     share_basis: str | None = None
     earnings_quarter_series: list[dict[str, object]] = Field(default_factory=list)
@@ -502,6 +508,9 @@ class ValuationSnapshot(BaseModel):
     price_to_book_comparability_reason: str | None = None
     forward_pe_comparability: str = "insufficient_metadata"
     forward_pe_comparability_reason: str | None = None
+    forward_pe_reference_caution: bool = False
+    forward_pe_reference_caution_reason: str | None = None
+    forward_pe_reference_difference_pct: float | None = None
     forward_price_to_book_comparability: str = "insufficient_metadata"
     forward_price_to_book_comparability_reason: str | None = None
     multiple_basis_conflicts: list[str] = Field(default_factory=list)

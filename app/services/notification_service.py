@@ -320,6 +320,25 @@ def _data_cautions(
         cautions.append("최신 정식 재무 반영이 지연돼 현재 Valuation 신뢰도를 낮춰 봅니다.")
     if snapshot.get("consensus_disagreement") or snapshot.get("consensus_status") == "conflicting":
         cautions.append("예상 이익 전망이 데이터 공급 경로마다 크게 달라 fPER는 참고 수준입니다.")
+    elif (
+        snapshot.get("forward_pe_reference_caution")
+        and snapshot.get("forward_pe_status") == "value"
+    ):
+        reason = str(snapshot.get("forward_pe_reference_caution_reason") or "")
+        cautions.append(
+            "fPER는 산출 기간이 명확하지 않아 참고 수준입니다."
+            if reason == "horizon_unknown"
+            else "예상 이익 기준이 서로 달라 fPER는 참고 수준입니다."
+        )
+    if (
+        snapshot.get("earnings_context_is_preliminary")
+        and snapshot.get("earnings_context_usable")
+        and not snapshot.get("eps_per_usable")
+        and snapshot.get("trailing_pe_status") == "value"
+    ):
+        cautions.append(
+            "최근 잠정실적은 매출·영업이익에 반영했지만 EPS 기준이 없어 PER는 이전 기준입니다."
+        )
     if snapshot.get("trailing_pe_basis_conflict"):
         cautions.append(
             "PER 계산의 이익 기준이 서로 충돌해 해당 배수는 판단에서 제외했습니다."
@@ -608,6 +627,13 @@ def _assessment_report(
             and valuation_snapshot.get("ttm_contains_preliminary")
         ):
             valuation_lines.append("※ 최근 분기 잠정실적 반영")
+    if (
+        valuation_snapshot.get("earnings_context_is_preliminary")
+        and valuation_snapshot.get("earnings_context_usable")
+        and not valuation_snapshot.get("eps_per_usable")
+        and valuation_snapshot.get("trailing_pe_status") != "value"
+    ):
+        valuation_lines.append("※ 최근 분기 잠정실적의 매출·영업이익을 반영했습니다.")
     history_summary = _history_summary(valuation_snapshot)
     if history_summary:
         valuation_lines.extend(["과거 대비:", history_summary])

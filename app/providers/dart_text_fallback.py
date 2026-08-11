@@ -588,6 +588,14 @@ def _quarter_from_text(value: str) -> date | None:
         year, quarter = (int(part) for part in quarter_match.groups())
         month_day = {1: (3, 31), 2: (6, 30), 3: (9, 30), 4: (12, 31)}[quarter]
         return date(year, *month_day)
+    short_quarter_match = re.search(
+        r"(?:['`’]\s*)?(\d{2})\s*[.\-/]?\s*([1-4])\s*[Qq]\b",
+        value,
+    )
+    if short_quarter_match:
+        year, quarter = (int(part) for part in short_quarter_match.groups())
+        month_day = {1: (3, 31), 2: (6, 30), 3: (9, 30), 4: (12, 31)}[quarter]
+        return date(2000 + year, *month_day)
     half_match = re.search(r"(20\d{2})\s*년?\s*(상반기|하반기)", value)
     if half_match:
         year = int(half_match.group(1))
@@ -609,7 +617,7 @@ def _period_from_current_text(
         return dates[1], "current_header_date_range", "high", dates
     quarter = _quarter_from_text(value)
     if quarter is not None:
-        return quarter, "current_header_quarter", "high", dates
+        return quarter, "current_header_quarter", "high", [*dates, quarter]
     if len(dates) == 1:
         return dates[0], "current_row_period", "medium", dates
     return None, None, "unavailable", dates
@@ -656,13 +664,35 @@ def _preliminary_period_end_from_semantic_header(
         return None, None, "unavailable", [], []
     header = str(headers[current_column])
     period, source, confidence, current_dates = _period_from_current_text(header)
-    ignored_dates = [
-        candidate
-        for index, candidate_header in enumerate(headers)
-        if index != current_column
-        for candidate in _dates_in_text(str(candidate_header))
-    ]
+    ignored_dates: list[date] = []
+    for index, candidate_header in enumerate(headers):
+        if index == current_column:
+            continue
+        candidate_text = str(candidate_header)
+        ignored_dates.extend(_dates_in_text(candidate_text))
+        candidate_quarter = _quarter_from_text(candidate_text)
+        if candidate_quarter is not None:
+            ignored_dates.append(candidate_quarter)
     return period, source, confidence, current_dates, ignored_dates
+
+
+def _comparison_period_dates(tokens: list[str]) -> list[date]:
+    ignored: list[date] = []
+    comparison_markers = ("전기실적", "전년동기실적")
+    for index, token in enumerate(tokens):
+        if not any(marker in _compact(token) for marker in comparison_markers):
+            continue
+        values: list[str] = []
+        for candidate in tokens[index : index + 8]:
+            if candidate != token and _compact(candidate) in _CURRENT_RESULT_ALIASES:
+                break
+            values.append(candidate)
+        text = " ".join(values)
+        ignored.extend(_dates_in_text(text))
+        quarter = _quarter_from_text(text)
+        if quarter is not None:
+            ignored.append(quarter)
+    return list(dict.fromkeys(ignored))
 
 
 def _preliminary_metric(
@@ -839,6 +869,26 @@ def extract_preliminary_earnings_facts_from_text(
         period_end = semantic_period_end
         reporting_period_source = semantic_period_source
         reporting_period_confidence = semantic_period_confidence
+    elif document_period_candidates:
+        current_period_candidates = document_period_candidates
+    ignored_comparison_dates = list(
+        dict.fromkeys(
+            [*ignored_comparison_dates, *_comparison_period_dates(tokens)]
+        )
+    )
+    current_candidate_set = set(current_period_candidates)
+    ignored_comparison_dates = [
+        value for value in ignored_comparison_dates if value not in current_candidate_set
+    ]
+    headers = diagnostics.get("column_headers")
+    current_column = diagnostics.get("current_column")
+    diagnostics["current_result_header"] = (
+        str(headers[current_column])
+        if isinstance(headers, list)
+        and isinstance(current_column, int)
+        and current_column < len(headers)
+        else None
+    )
     diagnostics["reporting_period_source"] = reporting_period_source
     diagnostics["reporting_period_confidence"] = reporting_period_confidence
     diagnostics["reporting_period_end"] = (
@@ -920,6 +970,8 @@ def extract_preliminary_earnings_facts_from_text(
         field["ignored_comparison_period_dates"] = diagnostics[
             "ignored_comparison_period_dates"
         ]
+        field["current_result_header"] = diagnostics.get("current_result_header")
+        field["selected_header_rows"] = diagnostics.get("header_rows") or []
     quarter = ((period_end.month - 1) // 3 + 1) if period_end else None
     period_label = f"{period_end.year}년 {quarter}분기" if period_end and quarter else "잠정실적"
     basis = (
