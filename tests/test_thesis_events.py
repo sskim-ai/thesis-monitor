@@ -5,9 +5,12 @@ os.environ["ENABLE_LIVE_PROVIDERS"] = "false"
 os.environ["INCLUDE_MOCK_PROVIDER"] = "true"
 
 from fastapi.testclient import TestClient
+from sqlmodel import Session
 
 from app.api import routes_events
 from app.config import get_settings
+from app.database import engine
+from app.models.event import Event
 from app.providers.base import RawEvent
 from app.providers.mock import MockProvider
 from app.utils.tickers import normalize_ticker
@@ -64,6 +67,52 @@ def test_provider_filter() -> None:
         data = response.json()
         assert data["events"]
         assert all(event["provider"] == "mock" for event in data["events"])
+
+
+def test_quarantined_document_identity_is_not_returned_by_action_api() -> None:
+    previous_providers = routes_events.collection_service.providers
+    routes_events.collection_service.providers = []
+    try:
+        with TestClient(app) as client:
+            with Session(engine) as session:
+                session.add(
+                    Event(
+                        ticker="QEVT",
+                        company_name="Quarantine Test",
+                        date=date.today(),
+                        source="OpenDART",
+                        provider="opendart",
+                        title="Valid filing",
+                        url="https://dart.example/valid",
+                        event_type="financial_report",
+                        document_identity_status="validated",
+                        requires_review=True,
+                    )
+                )
+                session.add(
+                    Event(
+                        ticker="QEVT",
+                        company_name="Quarantine Test",
+                        date=date.today(),
+                        source="OpenDART",
+                        provider="opendart",
+                        title="Quarantined filing",
+                        url="https://dart.example/invalid",
+                        event_type="financial_report",
+                        document_identity_status="invalid_mismatch",
+                        requires_review=True,
+                    )
+                )
+                session.commit()
+
+            response = client.get(
+                "/thesis-events?ticker=QEVT&lookback_days=30&requires_review_only=true"
+            )
+    finally:
+        routes_events.collection_service.providers = previous_providers
+
+    assert response.status_code == 200
+    assert [event["title"] for event in response.json()["events"]] == ["Valid filing"]
 
 
 class KoreanTickerProvider(MockProvider):

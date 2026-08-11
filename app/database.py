@@ -156,6 +156,7 @@ def _ensure_sqlite_columns() -> None:
             "yoy_growth": "FLOAT",
             "qoq_growth": "FLOAT",
             "raw_financial_fields": "VARCHAR DEFAULT '[]'",
+            "period_mapping_validation_failed": "BOOLEAN DEFAULT 0",
         },
         "securitymaster": {
             "search_aliases": "VARCHAR DEFAULT '[]'",

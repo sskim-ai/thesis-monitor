@@ -1583,6 +1583,21 @@
             "title": "Financial Quality",
             "default": "unavailable"
           },
+          "full_financial_availability": {
+            "type": "string",
+            "title": "Full Financial Availability",
+            "default": "unavailable"
+          },
+          "full_financial_freshness": {
+            "type": "string",
+            "title": "Full Financial Freshness",
+            "default": "unavailable"
+          },
+          "preliminary_financial_freshness": {
+            "type": "string",
+            "title": "Preliminary Financial Freshness",
+            "default": "unavailable"
+          },
           "full_financial_quality": {
             "type": "string",
             "title": "Full Financial Quality",
@@ -1637,6 +1652,38 @@
             "type": "string",
             "title": "Foreign Latest Filing Result",
             "default": "not_applicable"
+          },
+          "any_foreign_statement_parsed": {
+            "type": "boolean",
+            "title": "Any Foreign Statement Parsed",
+            "default": false
+          },
+          "latest_foreign_filing_parse_result": {
+            "type": "string",
+            "title": "Latest Foreign Filing Parse Result",
+            "default": "not_applicable"
+          },
+          "latest_foreign_financial_period": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Latest Foreign Financial Period"
+          },
+          "latest_foreign_financial_filing_date": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Latest Foreign Financial Filing Date"
           },
           "overall_data_quality": {
             "type": "string",

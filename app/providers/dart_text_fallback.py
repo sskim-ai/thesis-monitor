@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from datetime import date
 from html import unescape
+from html.parser import HTMLParser
 import re
 
 import httpx
@@ -22,6 +23,7 @@ class DartDocumentText:
     dcm_no: str | None
     source: str
     viewer_params: DartViewerParams | None = None
+    html: str | None = None
 
 
 @dataclass(frozen=True)
@@ -277,6 +279,212 @@ def _preliminary_unit_label(tokens: list[str]) -> str | None:
     return _clean_cell(match.group(1)) if match else _clean_cell(unit_text)
 
 
+class _DartTableParser(HTMLParser):
+    def __init__(self) -> None:
+        super().__init__()
+        self.tables: list[dict[str, object]] = []
+        self._table: dict[str, object] | None = None
+        self._row: list[dict[str, object]] | None = None
+        self._cell: dict[str, object] | None = None
+
+    def handle_starttag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
+        attributes = dict(attrs)
+        if tag == "table":
+            self._table = {"id": attributes.get("id") or f"table-{len(self.tables)}", "rows": []}
+        elif tag == "tr" and self._table is not None:
+            self._row = []
+        elif tag in {"td", "th"} and self._row is not None:
+            self._cell = {
+                "text": [],
+                "rowspan": int(attributes.get("rowspan") or 1),
+                "colspan": int(attributes.get("colspan") or 1),
+            }
+        elif tag == "br" and self._cell is not None:
+            self._cell["text"].append(" ")
+
+    def handle_data(self, data: str) -> None:
+        if self._cell is not None:
+            self._cell["text"].append(data)
+
+    def handle_endtag(self, tag: str) -> None:
+        if tag in {"td", "th"} and self._cell is not None and self._row is not None:
+            self._cell["text"] = _clean_cell("".join(self._cell["text"]))
+            self._row.append(self._cell)
+            self._cell = None
+        elif tag == "tr" and self._row is not None and self._table is not None:
+            if self._row:
+                self._table["rows"].append(self._row)
+            self._row = None
+        elif tag == "table" and self._table is not None:
+            self.tables.append(self._table)
+            self._table = None
+
+
+def _expanded_table_rows(rows: list[list[dict[str, object]]]) -> list[list[str]]:
+    active: dict[int, tuple[str, int]] = {}
+    expanded: list[list[str]] = []
+    for source_row in rows:
+        cells: dict[int, str] = {}
+        next_active: dict[int, tuple[str, int]] = {}
+        for column, (text, remaining) in active.items():
+            cells[column] = text
+            if remaining > 1:
+                next_active[column] = (text, remaining - 1)
+        column = 0
+        for source_cell in source_row:
+            while column in cells:
+                column += 1
+            text = str(source_cell.get("text") or "")
+            colspan = int(source_cell.get("colspan") or 1)
+            rowspan = int(source_cell.get("rowspan") or 1)
+            for offset in range(colspan):
+                target = column + offset
+                cells[target] = text
+                if rowspan > 1:
+                    next_active[target] = (text, rowspan - 1)
+            column += colspan
+        active = next_active
+        maximum = max(cells, default=-1)
+        expanded.append([cells.get(index, "") for index in range(maximum + 1)])
+    return expanded
+
+
+_PRELIMINARY_METRIC_ALIASES = {
+    "매출액": ("매출액", "영업수익", "수익(매출액)"),
+    "영업이익": ("영업이익", "영업이익(손실)"),
+    "당기순이익": ("당기순이익", "분기순이익", "반기순이익"),
+    "지배주주순이익": (
+        "지배기업 소유주지분 순이익",
+        "지배기업 소유주 귀속 당기순이익",
+        "지배주주순이익",
+    ),
+}
+
+
+def _canonical_metric_label(value: str) -> str | None:
+    compact = _compact(value)
+    for label, aliases in _PRELIMINARY_METRIC_ALIASES.items():
+        if compact in {_compact(alias) for alias in aliases}:
+            return label
+    return None
+
+
+def _semantic_preliminary_table(
+    html: str,
+    source_receipt_no: str | None,
+) -> tuple[dict[str, dict[str, float | None]], list[dict[str, object]], str | None]:
+    parser = _DartTableParser()
+    parser.feed(html)
+    for table_index, table in enumerate(parser.tables):
+        rows = _expanded_table_rows(table.get("rows", []))
+        header_index = next(
+            (
+                index
+                for index, row in enumerate(rows)
+                if any(_compact(cell) == "당기실적" for cell in row)
+                and any("전기실적" in _compact(cell) for cell in row)
+            ),
+            None,
+        )
+        if header_index is None:
+            continue
+        header = rows[header_index]
+        secondary = rows[header_index + 1] if header_index + 1 < len(rows) else []
+        column_count = max(len(header), len(secondary))
+        column_headers: list[str] = []
+        for column in range(column_count):
+            primary = header[column] if column < len(header) else ""
+            detail = secondary[column] if column < len(secondary) else ""
+            column_headers.append(
+                _clean_cell(" ".join(dict.fromkeys(item for item in (primary, detail) if item)))
+            )
+        current_column = next(
+            (index for index, value in enumerate(column_headers) if "당기실적" in _compact(value)),
+            None,
+        )
+        if current_column is None:
+            continue
+        qoq_column = next(
+            (
+                index
+                for index, value in enumerate(column_headers)
+                if "전기대비" in _compact(value) and "증감" in _compact(value)
+            ),
+            None,
+        )
+        yoy_column = next(
+            (
+                index
+                for index, value in enumerate(column_headers)
+                if "전년동기대비" in _compact(value) and "증감" in _compact(value)
+            ),
+            None,
+        )
+        unit_text = next(
+            (cell for row in rows for cell in row if "단위" in cell),
+            None,
+        )
+        unit_label = _preliminary_unit_label([unit_text] if unit_text else [])
+        metrics: dict[str, dict[str, float | None]] = {}
+        raw_fields: list[dict[str, object]] = []
+        for row_index, row in enumerate(rows[header_index + 1 :], header_index + 1):
+            metric = next((_canonical_metric_label(cell) for cell in row if _canonical_metric_label(cell)), None)
+            period_marker = next(
+                (
+                    _compact(cell)
+                    for cell in row
+                    if _compact(cell) in {"당해실적", "당기실적", "누계실적", "당기누계실적"}
+                ),
+                None,
+            )
+            if metric is None or period_marker is None or current_column >= len(row):
+                continue
+            values = metrics.setdefault(
+                metric,
+                {"current": None, "cumulative": None, "qoq": None, "yoy": None},
+            )
+            current_value = _numeric_cell(row[current_column])
+            if period_marker in {"당해실적", "당기실적"}:
+                values["current"] = current_value
+                if qoq_column is not None and qoq_column < len(row):
+                    values["qoq"] = _numeric_cell(row[qoq_column])
+                if yoy_column is not None and yoy_column < len(row):
+                    values["yoy"] = _numeric_cell(row[yoy_column])
+            else:
+                values["cumulative"] = current_value
+            for column_index, cell in enumerate(row):
+                if _numeric_cell(cell) is None:
+                    continue
+                header_name = (
+                    column_headers[column_index]
+                    if column_index < len(column_headers)
+                    else f"column_{column_index}"
+                )
+                if period_marker in {"누계실적", "당기누계실적"} and column_index == current_column:
+                    header_name = "당기누계실적"
+                raw_fields.append(
+                    {
+                        "raw_label": metric,
+                        "raw_value": cell,
+                        "raw_unit": unit_label,
+                        "raw_period": (
+                            "year_to_date"
+                            if period_marker in {"누계실적", "당기누계실적"}
+                            else "single_quarter"
+                        ),
+                        "raw_column_header": header_name,
+                        "source_receipt_no": source_receipt_no,
+                        "row_index": row_index,
+                        "column_index": column_index,
+                        "table_id": table.get("id") or f"table-{table_index}",
+                        "parse_method": "html_semantic_table",
+                    }
+                )
+        if metrics:
+            return metrics, raw_fields, unit_label
+    return {}, [], None
+
+
 def _preliminary_period_end(tokens: list[str]) -> date | None:
     first_result = next(
         (index for index, token in enumerate(tokens[:30]) if _compact(token) == "당기실적"),
@@ -322,10 +530,12 @@ def _preliminary_metric(
         None,
     )
     current_cells = tail[current_index + 1 : cumulative_index]
-    current_values = [number for token in current_cells if (number := _numeric_cell(token)) is not None]
-    current = current_values[0] if current_values else None
-    qoq = current_values[2] if len(current_values) >= 3 else None
-    yoy = current_values[4] if len(current_values) >= 5 else None
+    current = next(
+        (number for token in current_cells if (number := _numeric_cell(token)) is not None),
+        None,
+    )
+    qoq = None
+    yoy = None
     cumulative = None
     if cumulative_index is not None:
         for token in tail[cumulative_index + 1 :]:
@@ -341,6 +551,7 @@ def _preliminary_raw_fields(
     *,
     label: str,
     unit: str | None,
+    source_receipt_no: str | None = None,
 ) -> list[dict[str, object]]:
     labels = {_compact(alias) for alias in aliases}
     index = next(
@@ -382,6 +593,8 @@ def _preliminary_raw_fields(
                 "raw_unit": unit,
                 "raw_period": "single_quarter",
                 "raw_column_header": header,
+                "source_receipt_no": source_receipt_no,
+                "parse_method": "flat_token_fallback",
             }
         )
     if cumulative_index is not None:
@@ -401,51 +614,71 @@ def _preliminary_raw_fields(
                     "raw_unit": unit,
                     "raw_period": "year_to_date",
                     "raw_column_header": "당기누계실적",
+                    "source_receipt_no": source_receipt_no,
+                    "parse_method": "flat_token_fallback",
                 }
             )
     return raw
 
 
-def extract_preliminary_earnings_facts_from_text(text: str) -> PreliminaryEarningsFacts:
-    tokens = _tokens(text)
+def extract_preliminary_earnings_facts_from_text(
+    text: str,
+    *,
+    source_receipt_no: str | None = None,
+) -> PreliminaryEarningsFacts:
+    plain_text = _strip_html(text) if "<table" in text.lower() else text
+    tokens = _tokens(plain_text)
     scale = _preliminary_unit_scale(tokens)
     unit_label = _preliminary_unit_label(tokens)
     period_end = _preliminary_period_end(tokens)
-    revenue, cumulative_revenue, revenue_yoy, revenue_qoq = _preliminary_metric(
-        tokens, ("매출액", "영업수익", "수익(매출액)")
+    semantic, semantic_raw_fields, table_unit = (
+        _semantic_preliminary_table(text, source_receipt_no)
+        if "<table" in text.lower()
+        else ({}, [], None)
     )
-    operating_income, cumulative_operating_income, _, _ = _preliminary_metric(
-        tokens, ("영업이익", "영업이익(손실)")
+    if table_unit:
+        unit_label = table_unit
+        scale = _preliminary_unit_scale([f"단위: {table_unit}"])
+
+    def metric_values(label: str, aliases: tuple[str, ...]) -> tuple[float | None, float | None, float | None, float | None]:
+        value = semantic.get(label)
+        if value:
+            return value["current"], value["cumulative"], value["yoy"], value["qoq"]
+        return _preliminary_metric(tokens, aliases)
+
+    revenue, cumulative_revenue, revenue_yoy, revenue_qoq = metric_values(
+        "매출액", _PRELIMINARY_METRIC_ALIASES["매출액"]
     )
-    net_income, cumulative_net_income, _, _ = _preliminary_metric(
-        tokens, ("당기순이익", "분기순이익", "반기순이익")
+    operating_income, cumulative_operating_income, _, _ = metric_values(
+        "영업이익", _PRELIMINARY_METRIC_ALIASES["영업이익"]
     )
-    owners_income, cumulative_owners_income, _, _ = _preliminary_metric(
-        tokens,
-        (
-            "지배기업 소유주지분 순이익",
-            "지배기업 소유주 귀속 당기순이익",
-            "지배주주순이익",
-        ),
+    net_income, cumulative_net_income, _, _ = metric_values(
+        "당기순이익", _PRELIMINARY_METRIC_ALIASES["당기순이익"]
     )
-    raw_fields = [
+    owners_income, cumulative_owners_income, _, _ = metric_values(
+        "지배주주순이익", _PRELIMINARY_METRIC_ALIASES["지배주주순이익"]
+    )
+    raw_fields = semantic_raw_fields or [
         *_preliminary_raw_fields(
             tokens,
             ("매출액", "영업수익", "수익(매출액)"),
             label="매출액",
             unit=unit_label,
+            source_receipt_no=source_receipt_no,
         ),
         *_preliminary_raw_fields(
             tokens,
             ("영업이익", "영업이익(손실)"),
             label="영업이익",
             unit=unit_label,
+            source_receipt_no=source_receipt_no,
         ),
         *_preliminary_raw_fields(
             tokens,
             ("당기순이익", "분기순이익", "반기순이익"),
             label="당기순이익",
             unit=unit_label,
+            source_receipt_no=source_receipt_no,
         ),
         *_preliminary_raw_fields(
             tokens,
@@ -456,6 +689,7 @@ def extract_preliminary_earnings_facts_from_text(text: str) -> PreliminaryEarnin
             ),
             label="지배주주순이익",
             unit=unit_label,
+            source_receipt_no=source_receipt_no,
         ),
     ]
     quarter = ((period_end.month - 1) // 3 + 1) if period_end else None
@@ -544,7 +778,11 @@ async def fetch_dart_document_text(client: httpx.AsyncClient, receipt_no: str) -
     dcm_no = viewer_params.dcm_no if viewer_params else _extract_dcm_no(main_html, receipt_no)
     if not dcm_no:
         text = _strip_html(main_html)
-        return DartDocumentText(text=text, dcm_no=None, source="main") if text.strip() else None
+        return (
+            DartDocumentText(text=text, dcm_no=None, source="main", html=main_html)
+            if text.strip()
+            else None
+        )
 
     params = {
         "rcpNo": receipt_no,
@@ -558,8 +796,20 @@ async def fetch_dart_document_text(client: httpx.AsyncClient, receipt_no: str) -
     viewer_response.raise_for_status()
     text = _strip_html(viewer_response.text)
     if text.strip():
-        return DartDocumentText(text=text, dcm_no=dcm_no, source="viewer", viewer_params=viewer_params)
+        return DartDocumentText(
+            text=text,
+            dcm_no=dcm_no,
+            source="viewer",
+            viewer_params=viewer_params,
+            html=viewer_response.text,
+        )
     fallback_text = _strip_html(main_html)
     if fallback_text.strip():
-        return DartDocumentText(text=fallback_text, dcm_no=dcm_no, source="main", viewer_params=viewer_params)
+        return DartDocumentText(
+            text=fallback_text,
+            dcm_no=dcm_no,
+            source="main",
+            viewer_params=viewer_params,
+            html=main_html,
+        )
     return None

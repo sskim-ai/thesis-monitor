@@ -5,6 +5,50 @@ from sqlmodel import Session, select
 from app.models.security import ProviderCallTelemetry
 
 
+def _comparable_time(value: datetime) -> datetime:
+    return value.replace(tzinfo=None) if value.tzinfo is not None else value
+
+
+def summarize_provider_run(
+    rows: list[ProviderCallTelemetry],
+    run_started_at: datetime,
+) -> dict[str, int | str]:
+    started = _comparable_time(run_started_at)
+    current = [
+        row
+        for row in rows
+        if row.attempted_at and _comparable_time(row.attempted_at) >= started
+    ]
+    success_statuses = {"success", "cache_hit", "cached", "partial"}
+    skip_statuses = {
+        "skipped_not_configured",
+        "skipped_not_applicable",
+        "unsupported_symbol",
+    }
+    failures = [row for row in current if row.status not in success_statuses | skip_statuses]
+    skips = [row for row in current if row.status in skip_statuses]
+    successes = [row for row in current if row.status in success_statuses]
+    current_status = (
+        failures[-1].status
+        if failures
+        else successes[-1].status
+        if successes
+        else skips[-1].status
+        if skips
+        else "not_attempted"
+    )
+    return {
+        "current_run_attempts": len(current),
+        "current_run_successes": len(successes),
+        "current_run_failures": len(failures),
+        "current_run_skips": len(skips),
+        "current_run_status": current_status,
+        "lifetime_successes": sum(row.success_count for row in rows),
+        "lifetime_failures": sum(row.failure_count for row in rows),
+        "lifetime_skips": sum(row.skip_count for row in rows),
+    }
+
+
 class ProviderTelemetryService:
     def record(
         self,

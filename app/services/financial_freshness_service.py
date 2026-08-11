@@ -6,6 +6,10 @@ from sqlmodel import Session, select
 from app.models.event import Event
 from app.models.financial import FinancialSnapshot
 from app.config import get_settings
+from app.services.financial_validation import (
+    financial_snapshot_is_usable,
+    validate_snapshot_period_chronology,
+)
 
 
 _FINANCIAL_TYPES = {
@@ -37,6 +41,9 @@ class FinancialFreshness:
     latest_preliminary_filing_date: date | None = None
     refresh_reason: str | None = None
     refresh_trigger_event_id: int | None = None
+    full_financial_availability: str = "unavailable"
+    full_financial_freshness: str = "unavailable"
+    preliminary_financial_freshness: str = "unavailable"
 
 
 def _material(event: Event) -> bool:
@@ -79,7 +86,7 @@ class FinancialFreshnessService:
             key=lambda event: (event.reporting_period_end or date.min, event.date),
             default=None,
         )
-        rows = list(
+        all_rows = list(
             session.exec(
                 select(FinancialSnapshot)
                 .where(FinancialSnapshot.ticker == ticker)
@@ -89,6 +96,10 @@ class FinancialFreshnessService:
                 )
             ).all()
         )
+        for candidate in all_rows:
+            validate_snapshot_period_chronology(candidate)
+            session.add(candidate)
+        rows = [row for row in all_rows if financial_snapshot_is_usable(row)]
         full_row = next(
             (row for row in rows if row.snapshot_type == "full_statement"), None
         )
@@ -109,6 +120,33 @@ class FinancialFreshnessService:
         )
         full_period = _period(full_row)
         preliminary_period = _period(preliminary_row)
+        cadence_days = get_settings().financial_reporting_cadence_days
+        full_financial_freshness = (
+            "unavailable"
+            if full_period is None
+            else "stale"
+            if (today - full_period).days > cadence_days
+            else "current"
+        )
+        invalid_preliminary_rows = [
+            row
+            for row in all_rows
+            if row.snapshot_type == "preliminary_earnings"
+            and (
+                row.period_mapping_validation_failed
+                or row.financial_statement_basis_warning
+            )
+        ]
+        preliminary_financial_freshness = (
+            "current"
+            if preliminary_period
+            and (today - preliminary_period).days <= cadence_days
+            else "stale"
+            if preliminary_period
+            else "validation_failed"
+            if invalid_preliminary_rows
+            else "unavailable"
+        )
         available_period = max(
             (period for period in (full_period, preliminary_period) if period),
             default=None,
@@ -119,6 +157,9 @@ class FinancialFreshnessService:
             "latest_guidance_date": latest_guidance.date if latest_guidance else None,
             "latest_full_filing_date": _filing_date(full_row),
             "latest_preliminary_filing_date": _filing_date(preliminary_row),
+            "full_financial_availability": "full" if full_row else "unavailable",
+            "full_financial_freshness": full_financial_freshness,
+            "preliminary_financial_freshness": preliminary_financial_freshness,
         }
 
         for event in material_events:
@@ -181,6 +222,9 @@ class FinancialFreshnessService:
             preliminary_period
             and (full_period is None or preliminary_period > full_period)
         )
+        current_preliminary_is_newer = bool(
+            preliminary_is_newer and preliminary_financial_freshness == "current"
+        )
         unresolved_foreign_filing = bool(
             latest_event
             and latest_event.provider == "sec_edgar"
@@ -188,7 +232,7 @@ class FinancialFreshnessService:
             and latest_event.reporting_period_end is None
             and any(form in latest_event.title.lower() for form in ("filed 6-k", "filed 20-f"))
         )
-        if unresolved_foreign_filing and not preliminary_is_newer:
+        if unresolved_foreign_filing and not current_preliminary_is_newer:
             return FinancialFreshness(
                 "foreign_filing_partial",
                 latest_event.date if latest_event else None,
@@ -201,7 +245,6 @@ class FinancialFreshnessService:
                 refresh_reason="foreign_filing_period_or_statement_not_normalized",
                 refresh_trigger_event_id=latest_event.id if latest_event else None,
             )
-        cadence_days = get_settings().financial_reporting_cadence_days
         full_period_age = (today - full_period).days if full_period else None
         full_filing = _filing_date(full_row)
         cadence_due = bool(
@@ -212,7 +255,7 @@ class FinancialFreshnessService:
                 and (full_filing is None or latest_event.date > full_filing)
             )
         )
-        if cadence_due and not preliminary_is_newer:
+        if cadence_due and not current_preliminary_is_newer:
             trigger = latest_event
             return FinancialFreshness(
                 "refresh_due",
@@ -230,17 +273,21 @@ class FinancialFreshnessService:
                 refresh_trigger_event_id=trigger.id if trigger else None,
             )
         return FinancialFreshness(
-            "preliminary_only" if preliminary_is_newer else "current",
+            "preliminary_only" if current_preliminary_is_newer else "current",
             latest_event.date if latest_event else None,
             _period(row),
             _filing_date(row),
             False,
-            "preliminary_ahead_of_full_statement" if preliminary_is_newer else None,
+            "preliminary_ahead_of_full_statement" if current_preliminary_is_newer else None,
             **metadata,
-            refresh_result="preliminary_only" if preliminary_is_newer else "refresh_completed",
+            refresh_result=(
+                "preliminary_only"
+                if current_preliminary_is_newer
+                else "refresh_completed"
+            ),
             refresh_reason=(
                 "preliminary_income_statement_is_newer_than_full_statement"
-                if preliminary_is_newer
+                if current_preliminary_is_newer
                 else "same_or_older_reporting_period_already_available"
             ),
         )

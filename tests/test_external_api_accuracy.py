@@ -1,4 +1,5 @@
 import asyncio
+import hashlib
 import json
 from datetime import date, datetime, timedelta, timezone
 
@@ -10,6 +11,7 @@ from app.models.financial import DividendHistory, FinancialSnapshot, HistoricalV
 from app.models.security import (
     ConsensusEstimate,
     ProviderCallTelemetry,
+    ProviderResponseCache,
     SecurityMaster,
     ShareCountObservation,
 )
@@ -20,6 +22,7 @@ from app.providers.base import RawEvent
 from app.providers.ir import CompanyIRProvider
 from app.schemas.thesis import ValuationSnapshot
 from app.services.alpha_vantage_service import AlphaVantageService
+from app.services.capital_action_service import CapitalActionService
 from app.services.data_coverage_service import DataCoverageService
 from app.services.event_classifier import classify_event
 from app.services.event_identity import (
@@ -39,6 +42,7 @@ from app.services.sec_financial_snapshot_service import (
     _parse_foreign_financial_release,
 )
 from app.services.security_master_service import SecurityMasterService
+from app.services.provider_telemetry_service import summarize_provider_run
 
 
 def _engine():
@@ -397,6 +401,148 @@ def test_full_and_preliminary_financial_periods_are_separate() -> None:
     assert state.refresh_result == "preliminary_only"
 
 
+def test_old_full_with_current_preliminary_has_separate_freshness() -> None:
+    engine = _engine()
+    with Session(engine) as session:
+        session.add(
+            FinancialSnapshot(
+                ticker="FOREIGNFRESH",
+                period="2024-FY",
+                snapshot_type="full_statement",
+                financial_period_end=date(2024, 12, 31),
+                filing_date=date(2025, 4, 17),
+            )
+        )
+        session.add(
+            FinancialSnapshot(
+                ticker="FOREIGNFRESH",
+                period="2026-Q2",
+                snapshot_type="preliminary_earnings",
+                financial_period_end=date(2026, 6, 30),
+                filing_date=date(2026, 7, 16),
+            )
+        )
+        session.commit()
+        state = FinancialFreshnessService().assess(
+            session, "FOREIGNFRESH", as_of=date(2026, 8, 11)
+        )
+
+    assert state.full_financial_availability == "full"
+    assert state.full_financial_freshness == "stale"
+    assert state.preliminary_financial_freshness == "current"
+    assert state.status == "preliminary_only"
+
+
+def test_foreign_latest_result_is_separate_from_prior_parsing_capability() -> None:
+    engine = _engine()
+    with Session(engine) as session:
+        session.add(
+            WatchlistItem(
+                ticker="FPI",
+                company_name="Foreign Issuer",
+                exchange="NASDAQ",
+                issuer_type="foreign_private_issuer",
+                active=True,
+            )
+        )
+        session.add(
+            FinancialSnapshot(
+                ticker="FPI",
+                period="2024-FY",
+                snapshot_type="full_statement",
+                financial_period_end=date(2024, 12, 31),
+                filing_date=date(2025, 4, 17),
+            )
+        )
+        session.add(
+            ProviderResponseCache(
+                provider="sec_edgar",
+                ticker="FPI",
+                data_type="foreign_6k_exhibits",
+                status="success",
+                payload=json.dumps(
+                    {
+                        "filing_discovery_coverage": "full",
+                        "document_fetch_coverage": "full",
+                        "exhibit_discovery_coverage": "partial",
+                        "statement_parsing_coverage": "full",
+                        "any_statement_parsed": True,
+                        "parsing_result": "parsed",
+                        "latest_filing_parse_result": "not_financial_exhibit",
+                        "latest_financial_statement_period": "2024-12-31",
+                        "latest_financial_statement_filing_date": "2025-04-17",
+                        "filings": [
+                            {
+                                "filing_date": "2026-08-06",
+                                "parsing_result": "not_financial_exhibit",
+                            },
+                            {
+                                "filing_date": "2025-04-17",
+                                "parsing_result": "parsed",
+                            },
+                        ],
+                    }
+                ),
+            )
+        )
+        session.commit()
+        coverage = DataCoverageService().build(
+            session,
+            "FPI",
+            ValuationSnapshot(
+                trailing_valuation_confidence=0.8,
+                forward_valuation_confidence=0.7,
+            ),
+        )
+
+    assert coverage.any_foreign_statement_parsed is True
+    assert coverage.latest_foreign_filing_parse_result == "not_financial_exhibit"
+    assert coverage.latest_foreign_financial_period == "2024-12-31"
+    assert coverage.full_financial_freshness == "stale"
+    assert coverage.valuation_confidence < 0.8
+
+
+def test_stale_preliminary_does_not_hide_unresolved_foreign_filing() -> None:
+    engine = _engine()
+    with Session(engine) as session:
+        session.add_all(
+            [
+                FinancialSnapshot(
+                    ticker="FPISTALE",
+                    period="2024-FY",
+                    snapshot_type="full_statement",
+                    financial_period_end=date(2024, 12, 31),
+                    filing_date=date(2025, 4, 17),
+                ),
+                FinancialSnapshot(
+                    ticker="FPISTALE",
+                    period="2025-Q2",
+                    snapshot_type="preliminary_earnings",
+                    financial_period_end=date(2025, 6, 30),
+                    filing_date=date(2025, 8, 6),
+                ),
+                Event(
+                    ticker="FPISTALE",
+                    date=date(2026, 8, 6),
+                    source="SEC EDGAR",
+                    provider="sec_edgar",
+                    title="Foreign Issuer filed 6-K",
+                    url="https://example.com/fpi-6k",
+                    event_type="financial_report",
+                    financial_report_filed=True,
+                    confirmed_facts="[]",
+                ),
+            ]
+        )
+        session.commit()
+        state = FinancialFreshnessService().assess(
+            session, "FPISTALE", as_of=date(2026, 8, 11)
+        )
+
+    assert state.preliminary_financial_freshness == "stale"
+    assert state.status == "foreign_filing_partial"
+
+
 def test_opendart_preliminary_earnings_are_normalized() -> None:
     parsed = extract_preliminary_earnings_facts_from_text(
         """
@@ -412,6 +558,96 @@ def test_opendart_preliminary_earnings_are_normalized() -> None:
     assert parsed.operating_income == 20_000_000
     assert parsed.net_income == 15_000_000
     assert parsed.operating_margin == 20
+
+
+def test_preliminary_period_after_filing_is_quarantined() -> None:
+    engine = _engine()
+    event = Event(
+        ticker="CHRONO",
+        date=date(2026, 4, 30),
+        source="OpenDART",
+        provider="opendart",
+        title="연결재무제표기준영업(잠정)실적",
+        url="https://example.com/chrono-invalid",
+        event_type="financial_report",
+        document_type="preliminary_earnings",
+        reporting_period_end=date(2026, 6, 30),
+        confirmed_facts='["OpenDART financial fact: 매출액 = 100000000 KRW '
+        '(period_scope=single-quarter)"]',
+    )
+    with Session(engine) as session:
+        session.add(event)
+        session.flush()
+        row = upsert_financial_snapshot_from_event(session, event)
+        session.commit()
+        freshness = FinancialFreshnessService().assess(session, "CHRONO")
+        FinancialFreshnessService().assess(session, "CHRONO")
+
+    assert row is not None
+    assert row.period_mapping_validation_failed is True
+    assert (row.quality_warnings or "").count("financial period end is after filing date") == 1
+    assert freshness.latest_preliminary_period is None
+
+
+def test_valid_preliminary_period_is_current_context() -> None:
+    engine = _engine()
+    event = Event(
+        ticker="CHRONOOK",
+        date=date(2026, 7, 29),
+        source="OpenDART",
+        provider="opendart",
+        title="연결재무제표기준영업(잠정)실적",
+        url="https://example.com/chrono-valid",
+        event_type="financial_report",
+        document_type="preliminary_earnings",
+        reporting_period_end=date(2026, 6, 30),
+        confirmed_facts='["OpenDART financial fact: 매출액 = 100000000 KRW '
+        '(period_scope=single-quarter)"]',
+    )
+    with Session(engine) as session:
+        session.add(event)
+        session.flush()
+        row = upsert_financial_snapshot_from_event(session, event)
+        session.commit()
+        freshness = FinancialFreshnessService().assess(session, "CHRONOOK")
+
+    assert row is not None
+    assert row.period_mapping_validation_failed is False
+    assert freshness.latest_preliminary_period == date(2026, 6, 30)
+
+
+def test_preliminary_html_table_uses_semantic_rows_and_columns() -> None:
+    parsed = extract_preliminary_earnings_facts_from_text(
+        """
+        <table id="results">
+          <tr><td colspan="4">단위 : 백만원, %</td></tr>
+          <tr><th colspan="2">구분</th><th>당기실적</th><th>전기실적</th><th colspan="2">전기대비</th><th>전년동기실적</th><th colspan="2">전년동기대비</th></tr>
+          <tr><th colspan="2">구분</th><th>(2026년 2분기)</th><th>(2026년 1분기)</th><th>증감율(%)</th><th>전환여부</th><th>(2025년 2분기)</th><th>증감율(%)</th><th>전환여부</th></tr>
+          <tr><td rowspan="2">매출액</td><td>당해실적</td><td>79,318</td><td>52,576</td><td>50.9</td><td>-</td><td>22,231</td><td>256.8</td><td>-</td></tr>
+          <tr><td>누계실적</td><td>131,895</td><td>-</td><td>-</td><td>-</td><td>39,871</td><td>230.8</td><td>-</td></tr>
+          <tr><td rowspan="2">영업이익</td><td>당해실적</td><td>20,542</td><td>17,610</td><td>16.6</td><td>-</td><td>9,212</td><td>123.0</td><td>-</td></tr>
+          <tr><td>누계실적</td><td>38,152</td><td>-</td><td>-</td><td>-</td><td>16,653</td><td>129.1</td><td>-</td></tr>
+          <tr><td rowspan="2">당기순이익</td><td>당해실적</td><td>15,922</td><td>10,345</td><td>53.9</td><td>-</td><td>6,996</td><td>127.6</td><td>-</td></tr>
+          <tr><td>누계실적</td><td>26,268</td><td>-</td><td>-</td><td>-</td><td>15,104</td><td>73.9</td><td>-</td></tr>
+        </table>
+        """,
+        source_receipt_no="20260729800013",
+    )
+
+    assert parsed.revenue == 79_318_000_000
+    assert parsed.operating_income == 20_542_000_000
+    assert parsed.net_income == 15_922_000_000
+    assert parsed.qoq_growth == 50.9
+    assert parsed.yoy_growth == 256.8
+    current_revenue = next(
+        field
+        for field in parsed.raw_fields
+        if field["raw_label"] == "매출액"
+        and field["raw_column_header"].startswith("당기실적")
+    )
+    assert current_revenue["parse_method"] == "html_semantic_table"
+    assert current_revenue["source_receipt_no"] == "20260729800013"
+    assert current_revenue["table_id"] == "results"
 
 
 def test_cumulative_preliminary_event_creates_standalone_q2_snapshot() -> None:
@@ -683,6 +919,52 @@ def test_buy_back_phrase_is_normalized_as_candidate() -> None:
     assert raw.confirmed_buyback is False
 
 
+def test_invalidated_canonical_issue_is_reused_without_duplicate_insert() -> None:
+    engine = _engine()
+    event = Event(
+        ticker="REUSE",
+        date=date(2026, 8, 10),
+        source="News",
+        provider="google_news_rss",
+        title="Reuse Corp buyback plan",
+        url="https://example.com/reuse-buyback",
+        event_type="buyback",
+        identity_validated=True,
+        identity_status="accepted_exact_company",
+        buyback_candidate=True,
+    )
+    with Session(engine) as session:
+        session.add(
+            CanonicalIssue(
+                ticker="REUSE",
+                issue_key=hashlib.sha256(
+                    b"REUSE|buyback|2026-08"
+                ).hexdigest()[:20],
+                issue_type="buyback",
+                status="invalidated_source",
+                execution_status="cancelled",
+                economic_status="resolved",
+                provenance_status="invalid_provenance",
+                opened_date=date(2026, 8, 10),
+                updated_date=date(2026, 8, 10),
+                latest_event_date=date(2026, 8, 10),
+                title="buyback 경제적 영향",
+            )
+        )
+        session.add(event)
+        session.flush()
+        issue = CapitalActionService().canonicalize(session, event)
+        session.commit()
+        issues = list(
+            session.exec(
+                select(CanonicalIssue).where(CanonicalIssue.ticker == "REUSE")
+            ).all()
+        )
+
+    assert issue is not None
+    assert len(issues) == 1
+
+
 def test_foreign_release_link_and_financial_values_are_detected() -> None:
     primary = '<a href="earnings.htm">Press release with second quarter results</a>'
     release = """
@@ -790,3 +1072,47 @@ def test_unconfigured_provider_is_counted_as_skip_not_success() -> None:
     assert row.status == "skipped_not_configured"
     assert row.success_count == 0
     assert row.skip_count == 1
+
+
+def test_provider_current_run_summary_does_not_reuse_lifetime_success() -> None:
+    run_started_at = datetime(2026, 8, 11, 9, 0, tzinfo=timezone.utc)
+    row = ProviderCallTelemetry(
+        provider="company_ir",
+        endpoint="fetch_events",
+        ticker="GOOGL",
+        attempted_at=run_started_at + timedelta(minutes=1),
+        finished_at=run_started_at + timedelta(minutes=1, seconds=1),
+        status="skipped_not_configured",
+        success_count=74,
+        failure_count=2,
+        skip_count=8,
+    )
+
+    summary = summarize_provider_run([row], run_started_at)
+
+    assert summary["current_run_attempts"] == 1
+    assert summary["current_run_successes"] == 0
+    assert summary["current_run_failures"] == 0
+    assert summary["current_run_skips"] == 1
+    assert summary["lifetime_successes"] == 74
+
+
+def test_validation_failed_component_never_renders_as_no_coverage_warning() -> None:
+    engine = _engine()
+    with Session(engine) as session:
+        session.add(
+            FinancialSnapshot(
+                ticker="QUALITY",
+                period="2026-Q2",
+                snapshot_type="preliminary_earnings",
+                financial_period_end=date(2026, 6, 30),
+                filing_date=date(2026, 7, 29),
+                financial_statement_basis_warning=True,
+            )
+        )
+        session.commit()
+        coverage = DataCoverageService().build(session, "QUALITY", ValuationSnapshot())
+
+    assert coverage.preliminary_financial_quality == "validation_failed"
+    assert "검증에 실패" in (coverage.overall_quality_reason or "")
+    assert "경고 없음" not in (coverage.overall_quality_reason or "")

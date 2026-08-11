@@ -347,6 +347,9 @@ class DataCoverage(BaseModel):
     valuation_coverage: str = "unavailable"
     price_quality: str = "unavailable"
     financial_quality: str = "unavailable"
+    full_financial_availability: str = "unavailable"
+    full_financial_freshness: str = "unavailable"
+    preliminary_financial_freshness: str = "unavailable"
     full_financial_quality: str = "unavailable"
     preliminary_financial_quality: str = "unavailable"
     event_quality: str = "unavailable"
@@ -358,6 +361,10 @@ class DataCoverage(BaseModel):
     foreign_filing_quality: str = "not_applicable"
     foreign_parsing_result: str = "not_applicable"
     foreign_latest_filing_result: str = "not_applicable"
+    any_foreign_statement_parsed: bool = False
+    latest_foreign_filing_parse_result: str = "not_applicable"
+    latest_foreign_financial_period: str | None = None
+    latest_foreign_financial_filing_date: str | None = None
     overall_data_quality: str = "unavailable"
     overall_quality_reason: str | None = None
 

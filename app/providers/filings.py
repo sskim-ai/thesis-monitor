@@ -539,9 +539,10 @@ class OpenDARTProvider(FilingProvider):
             return None, ["OpenDART preliminary earnings document request failed"]
         if document is None:
             return None, ["OpenDART preliminary earnings document was unavailable"]
-        parsed = extract_preliminary_earnings_facts_from_text(document.text)
-        for raw_field in parsed.raw_fields:
-            raw_field["source_receipt_no"] = receipt_no
+        parsed = extract_preliminary_earnings_facts_from_text(
+            document.html or document.text,
+            source_receipt_no=receipt_no,
+        )
         if not parsed.facts or parsed.period_end is None:
             return None, [
                 "OpenDART preliminary earnings table parsing was incomplete",

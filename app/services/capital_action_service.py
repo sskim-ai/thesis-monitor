@@ -155,15 +155,22 @@ class CapitalActionService:
         if issue is None:
             seed = f"{event.ticker}|{action_type}|{event.date:%Y-%m}"
             issue_key = hashlib.sha256(seed.encode()).hexdigest()[:20]
-            issue = CanonicalIssue(
-                ticker=event.ticker,
-                issue_key=issue_key,
-                issue_type=action_type,
-                opened_date=event.date,
-                updated_date=event.date,
-                latest_event_date=event.date,
-                title=f"{action_type} 경제적 영향",
-            )
+            issue = session.exec(
+                select(CanonicalIssue).where(
+                    CanonicalIssue.ticker == event.ticker,
+                    CanonicalIssue.issue_key == issue_key,
+                )
+            ).first()
+            if issue is None:
+                issue = CanonicalIssue(
+                    ticker=event.ticker,
+                    issue_key=issue_key,
+                    issue_type=action_type,
+                    opened_date=event.date,
+                    updated_date=event.date,
+                    latest_event_date=event.date,
+                    title=f"{action_type} 경제적 영향",
+                )
         facts = _json_list(event.confirmed_facts)
         new_shares = _fact_number(
             facts,

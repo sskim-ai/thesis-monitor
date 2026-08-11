@@ -510,12 +510,24 @@ def _assessment_report(
     data_status_parts = [
         f"가격 {data_coverage.get('price_quality', data_coverage.get('price', 'unavailable'))}",
         f"이벤트 {data_coverage.get('event_quality', 'unavailable')}",
-        f"정식 재무 {data_coverage.get('full_financial_quality', 'unavailable')}",
-        f"잠정실적 {data_coverage.get('preliminary_financial_quality', 'unavailable')}",
+        "정식 재무 "
+        f"{data_coverage.get('full_financial_availability', 'unavailable')}/"
+        f"{data_coverage.get('full_financial_freshness', data_coverage.get('full_financial_quality', 'unavailable'))}",
+        "잠정실적 "
+        f"{data_coverage.get('preliminary_financial_freshness', data_coverage.get('preliminary_financial_quality', 'unavailable'))}",
         f"Consensus {data_coverage.get('consensus_quality', 'unavailable')}",
         f"역사 Valuation {data_coverage.get('historical_valuation_quality', 'unavailable')}",
         f"Forward {data_coverage.get('forward_valuation_quality', 'unavailable')}",
     ]
+    if data_coverage.get("filing_discovery_coverage") not in {None, "not_applicable"}:
+        data_status_parts.append(
+            "Foreign 최신 filing "
+            + str(
+                data_coverage.get("latest_foreign_filing_parse_result")
+                or data_coverage.get("foreign_latest_filing_result")
+                or "unavailable"
+            )
+        )
     detailed_data_status = any(
         str(data_coverage.get(key, "")) in {"stale", "partial", "unavailable", "validation_failed", "refresh_due", "refresh_pending"}
         for key in (
@@ -524,6 +536,9 @@ def _assessment_report(
             "consensus_quality",
             "historical_valuation_quality",
             "forward_valuation_quality",
+            "full_financial_freshness",
+            "preliminary_financial_freshness",
+            "latest_foreign_filing_parse_result",
         )
     )
     data_status_text = (

@@ -19,6 +19,7 @@ from app.models.security import (
 from app.models.watchlist import WatchlistItem
 from app.schemas.thesis import DataCoverage, ValuationSnapshot
 from app.services.financial_freshness_service import FinancialFreshnessService
+from app.services.financial_validation import financial_snapshot_is_usable
 
 
 def _issuer_type(item: WatchlistItem | None, events: list[Event]) -> str:
@@ -43,7 +44,8 @@ class DataCoverageService:
         snapshot: ValuationSnapshot | None = None,
     ) -> DataCoverage:
         item = session.exec(select(WatchlistItem).where(WatchlistItem.ticker == ticker)).first()
-        rows = list(session.exec(select(FinancialSnapshot).where(FinancialSnapshot.ticker == ticker)).all())
+        all_rows = list(session.exec(select(FinancialSnapshot).where(FinancialSnapshot.ticker == ticker)).all())
+        rows = [row for row in all_rows if financial_snapshot_is_usable(row)]
         events = list(session.exec(select(Event).where(Event.ticker == ticker)).all())
         dividends = list(session.exec(select(DividendHistory).where(DividendHistory.ticker == ticker)).all())
         issues = list(session.exec(select(CanonicalIssue).where(CanonicalIssue.ticker == ticker)).all())
@@ -118,6 +120,10 @@ class DataCoverageService:
         preliminary_rows = [
             row for row in rows if row.snapshot_type == "preliminary_earnings"
         ]
+        all_full_rows = [row for row in all_rows if row.snapshot_type == "full_statement"]
+        all_preliminary_rows = [
+            row for row in all_rows if row.snapshot_type == "preliminary_earnings"
+        ]
         rejected_material = any(
             event.identity_status.startswith("rejected")
             and event.event_type != "non_thesis_noise"
@@ -151,11 +157,25 @@ class DataCoverageService:
         )
         foreign_filings = foreign_payload.get("filings", [])
         foreign_latest_filing_result = (
-            str(foreign_filings[0].get("parsing_result") or "unavailable")
+            str(
+                foreign_payload.get("latest_filing_parse_result")
+                or foreign_filings[0].get("parsing_result")
+                or "unavailable"
+            )
             if isinstance(foreign_filings, list)
             and foreign_filings
             and isinstance(foreign_filings[0], dict)
             else "unavailable"
+        )
+        any_foreign_statement_parsed = bool(
+            foreign_payload.get("any_statement_parsed")
+            or foreign_payload.get("parsed_statement")
+        )
+        latest_foreign_financial_period = foreign_payload.get(
+            "latest_financial_statement_period"
+        )
+        latest_foreign_financial_filing_date = foreign_payload.get(
+            "latest_financial_statement_filing_date"
         )
         if issuer_type in {"adr", "foreign_private_issuer"}:
             if foreign_parsing_result == "validation_failed":
@@ -204,16 +224,18 @@ class DataCoverageService:
         )
         full_quality = (
             "validation_failed"
-            if full_rows and any(row.financial_statement_basis_warning for row in full_rows)
-            else "current"
+            if all_full_rows and not full_rows
+            else freshness.full_financial_freshness
             if full_rows
             else "unavailable"
         )
         preliminary_quality = (
             "validation_failed"
-            if preliminary_rows
-            and any(row.financial_statement_basis_warning for row in preliminary_rows)
-            else "current"
+            if all_preliminary_rows and (
+                not preliminary_rows
+                or any(row.financial_statement_basis_warning for row in all_preliminary_rows)
+            )
+            else freshness.preliminary_financial_freshness
             if preliminary_rows
             else "not_applicable"
         )
@@ -260,6 +282,10 @@ class DataCoverageService:
             reason_messages.append(
                 "정식 재무 보고 주기가 경과해 최신 filing 반영 여부를 확인 중입니다."
             )
+        if freshness.full_financial_freshness == "stale":
+            reason_messages.append(
+                "정식 재무제표가 존재하지만 현재 reporting cadence 기준으로 오래됐습니다."
+            )
         if consensus_quality in {"unavailable", "conflicting"}:
             reason_messages.append(f"Consensus 상태는 {consensus_quality}입니다.")
         if foreign_latest_filing_result == "not_financial_exhibit":
@@ -277,6 +303,22 @@ class DataCoverageService:
             if concerning
             else "핵심 입력 데이터가 현재 기준으로 연결되어 있습니다."
         )
+        adjusted_valuation_confidence = valuation_confidence
+        if freshness.full_financial_freshness == "stale":
+            adjusted_valuation_confidence *= 0.7
+        if issuer_type in {"adr", "foreign_private_issuer"} and (
+            foreign_latest_filing_result
+            in {
+                "validation_failed",
+                "document_fetch_failed",
+                "exhibit_not_found",
+                "financial_table_not_found",
+                "unsupported_format",
+                "unavailable",
+            }
+            or freshness.status == "foreign_filing_partial"
+        ):
+            adjusted_valuation_confidence *= 0.7
         return DataCoverage(
             issuer_type=issuer_type,
             financial_coverage_status=financial_status,
@@ -289,7 +331,7 @@ class DataCoverageService:
             foreign_filing=foreign_status,
             financial_freshness=freshness.status,
             business_thesis_confidence=0.85 if events or freshness.status == "current" else 0.6,
-            valuation_confidence=valuation_confidence,
+            valuation_confidence=adjusted_valuation_confidence,
             price_confidence=0.9 if price_status == "fresh" else 0.3,
             macro_impact_confidence=0.75,
             reason_codes=list(dict.fromkeys(reasons)),
@@ -320,6 +362,9 @@ class DataCoverageService:
             valuation_coverage=valuation_status,
             price_quality=price_status,
             financial_quality=financial_quality,
+            full_financial_availability=freshness.full_financial_availability,
+            full_financial_freshness=freshness.full_financial_freshness,
+            preliminary_financial_freshness=freshness.preliminary_financial_freshness,
             full_financial_quality=full_quality,
             preliminary_financial_quality=preliminary_quality,
             event_quality=event_quality,
@@ -347,6 +392,28 @@ class DataCoverageService:
                 foreign_latest_filing_result
                 if issuer_type in {"adr", "foreign_private_issuer"}
                 else "not_applicable"
+            ),
+            any_foreign_statement_parsed=(
+                any_foreign_statement_parsed
+                if issuer_type in {"adr", "foreign_private_issuer"}
+                else False
+            ),
+            latest_foreign_filing_parse_result=(
+                foreign_latest_filing_result
+                if issuer_type in {"adr", "foreign_private_issuer"}
+                else "not_applicable"
+            ),
+            latest_foreign_financial_period=(
+                str(latest_foreign_financial_period)
+                if latest_foreign_financial_period
+                and issuer_type in {"adr", "foreign_private_issuer"}
+                else None
+            ),
+            latest_foreign_financial_filing_date=(
+                str(latest_foreign_financial_filing_date)
+                if latest_foreign_financial_filing_date
+                and issuer_type in {"adr", "foreign_private_issuer"}
+                else None
             ),
             overall_data_quality=overall_quality,
             overall_quality_reason=overall_reason,

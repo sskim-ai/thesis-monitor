@@ -8,7 +8,12 @@ from sqlmodel import Session, select
 
 from app.config import get_settings
 from app.models.financial import CapitalReturnHistory, DividendHistory, FinancialSnapshot
-from app.models.security import ConsensusEstimate, SecurityMaster, ShareCountObservation
+from app.models.security import (
+    ConsensusEstimate,
+    ProviderResponseCache,
+    SecurityMaster,
+    ShareCountObservation,
+)
 from app.models.watchlist import WatchlistItem
 from app.models.thesis import InvestmentThesis
 from app.schemas.thesis import (
@@ -25,6 +30,7 @@ from app.services.alpha_vantage_service import AlphaVantageService
 from app.services.data_coverage_service import DataCoverageService
 from app.services.dividend_history_service import DividendHistoryService
 from app.services.financial_freshness_service import FinancialFreshnessService
+from app.services.financial_validation import financial_snapshot_is_usable
 from app.services.provider_telemetry_service import ProviderTelemetryService
 from app.services.sec_financial_snapshot_service import SecFinancialSnapshotService
 
@@ -170,13 +176,14 @@ class ValuationSnapshotService:
     ) -> list[FinancialSnapshot]:
         if session is None:
             return []
-        return list(
+        rows = list(
             session.exec(
                 select(FinancialSnapshot)
                 .where(FinancialSnapshot.ticker == ticker)
                 .order_by(FinancialSnapshot.reported_date)
             ).all()
         )
+        return [row for row in rows if financial_snapshot_is_usable(row)]
 
     def _apply_financial_metadata(
         self, snapshot: ValuationSnapshot, rows: list[FinancialSnapshot]
@@ -558,6 +565,33 @@ class ValuationSnapshotService:
             valuation_data_as_of=now.date().isoformat(),
             valuation_calculated_at=now.isoformat(),
         )
+        watchlist_item: WatchlistItem | None = None
+        security_master: SecurityMaster | None = None
+        foreign_cache_metadata_missing = False
+        if session is not None:
+            watchlist_item = session.exec(
+                select(WatchlistItem).where(WatchlistItem.ticker == ticker)
+            ).first()
+            security_master = session.exec(
+                select(SecurityMaster).where(SecurityMaster.ticker == ticker)
+            ).first()
+            issuer_type = (
+                (watchlist_item.issuer_type if watchlist_item else None)
+                or (security_master.issuer_type if security_master else None)
+                or "unknown"
+            )
+            if issuer_type in {"adr", "foreign_private_issuer"}:
+                foreign_cache = session.exec(
+                    select(ProviderResponseCache).where(
+                        ProviderResponseCache.provider == "sec_edgar",
+                        ProviderResponseCache.ticker == ticker,
+                        ProviderResponseCache.data_type == "foreign_6k_exhibits",
+                    )
+                ).first()
+                foreign_payload = _json_dict(foreign_cache.payload) if foreign_cache else {}
+                foreign_cache_metadata_missing = (
+                    "latest_filing_parse_result" not in foreign_payload
+                )
         rows = self._financial_rows(session, ticker)
         if (
             session is not None
@@ -567,6 +601,7 @@ class ValuationSnapshotService:
                 len(rows) < self.settings.valuation_model_min_quarters
                 or max((filing_date(row) or date.min for row in rows), default=date.min)
                 < now.date() - timedelta(days=75)
+                or foreign_cache_metadata_missing
             )
         ):
             try:
@@ -578,8 +613,6 @@ class ValuationSnapshotService:
                 pass
         dividend_history: list[DividendHistory] = []
         capital_returns: list[CapitalReturnHistory] = []
-        watchlist_item: WatchlistItem | None = None
-        security_master: SecurityMaster | None = None
         if session is not None:
             dividend_history = self.dividend_service.sync_financial_snapshots(
                 session, ticker, rows
@@ -587,31 +620,9 @@ class ValuationSnapshotService:
             capital_returns = self.dividend_service.sync_capital_returns(
                 session, ticker, rows
             )
-            watchlist_item = session.exec(
-                select(WatchlistItem).where(WatchlistItem.ticker == ticker)
-            ).first()
-            security_master = session.exec(
-                select(SecurityMaster).where(SecurityMaster.ticker == ticker)
-            ).first()
         provider_pe: float | None = None
         provider_pb: float | None = None
         alpha_metrics: dict[str, float | None] = {}
-
-        if (
-            session is not None
-            and _supports_finnhub(exchange, ticker)
-            and self.settings.alpha_vantage_api_key
-        ):
-            alpha_bundle = await self.alpha_vantage_service.collect(
-                session,
-                ticker,
-                functions=("EARNINGS_ESTIMATES", "SHARES_OUTSTANDING", "OVERVIEW"),
-            )
-            alpha_metrics = self.alpha_vantage_service.overview_metrics(alpha_bundle)
-            if alpha_bundle.warnings:
-                snapshot.warnings.append(
-                    "Alpha Vantage 일부 보조 데이터가 제공되지 않아 사용 가능한 항목만 교차검증했습니다."
-                )
 
         if _supports_finnhub(exchange, ticker) and self.settings.finnhub_api_key:
             finnhub_started = datetime.now(timezone.utc)
@@ -738,6 +749,51 @@ class ValuationSnapshotService:
                     )
         elif _supports_finnhub(exchange, ticker):
             snapshot.warnings.append("Finnhub API key가 없어 Valuation 배수를 수집하지 못했습니다.")
+
+        if (
+            session is not None
+            and _supports_finnhub(exchange, ticker)
+            and self.settings.alpha_vantage_api_key
+        ):
+            existing_alpha_estimate = session.exec(
+                select(ConsensusEstimate).where(
+                    ConsensusEstimate.ticker == ticker,
+                    ConsensusEstimate.provider == "alpha_vantage",
+                )
+            ).first()
+            existing_alpha_shares = session.exec(
+                select(ShareCountObservation).where(
+                    ShareCountObservation.ticker == ticker,
+                    ShareCountObservation.provider == "alpha_vantage",
+                )
+            ).first()
+            official_shares_available = any(
+                row.diluted_shares or row.common_shares_outstanding for row in rows
+            )
+            derived_pe_available = len(_valid_quarters(rows)) >= 4
+            derived_pb_available = _latest_balance(rows) is not None
+            alpha_functions: list[str] = []
+            if snapshot.forward_pe_status != "value" and existing_alpha_estimate is None:
+                alpha_functions.append("EARNINGS_ESTIMATES")
+            if not official_shares_available and existing_alpha_shares is None:
+                alpha_functions.append("SHARES_OUTSTANDING")
+            if (provider_pe is None and not derived_pe_available) or (
+                provider_pb is None and not derived_pb_available
+            ):
+                alpha_functions.append("OVERVIEW")
+            if not dividend_history:
+                alpha_functions.append("DIVIDENDS")
+            if alpha_functions:
+                alpha_bundle = await self.alpha_vantage_service.collect(
+                    session,
+                    ticker,
+                    functions=tuple(dict.fromkeys(alpha_functions)),
+                )
+                alpha_metrics = self.alpha_vantage_service.overview_metrics(alpha_bundle)
+                if alpha_bundle.warnings:
+                    snapshot.warnings.append(
+                        "Alpha Vantage 일부 보조 데이터가 제공되지 않아 사용 가능한 항목만 교차검증했습니다."
+                    )
 
         alpha_estimate: ConsensusEstimate | None = None
         alpha_shares: ShareCountObservation | None = None
@@ -978,6 +1034,22 @@ class ValuationSnapshotService:
                     snapshot.warnings.append(
                         "매출·영업이익은 최신 잠정실적까지 확인했지만 현금흐름·재무상태표 배수는 직전 정식 재무제표 기준입니다."
                     )
+            if freshness.full_financial_freshness == "stale":
+                if snapshot.quality == "fresh":
+                    snapshot.quality = "partial"
+                snapshot.trailing_valuation_confidence *= 0.7
+                snapshot.forward_valuation_confidence *= 0.8
+                snapshot.warnings.append(
+                    "정식 재무제표는 존재하지만 reporting cadence 기준으로 오래되어 현재 배수 신뢰도를 낮췄습니다."
+                )
+            if freshness.status == "foreign_filing_partial":
+                if snapshot.quality == "fresh":
+                    snapshot.quality = "partial"
+                snapshot.trailing_valuation_confidence *= 0.6
+                snapshot.forward_valuation_confidence *= 0.6
+                snapshot.warnings.append(
+                    "더 최신 foreign filing의 재무표 자동 구조화가 완료되지 않아 Valuation 신뢰도를 낮췄습니다."
+                )
             snapshot.current_multiple_confidence = snapshot.trailing_valuation_confidence
             snapshot.forward_multiple_confidence = snapshot.forward_valuation_confidence
             if (
@@ -988,6 +1060,11 @@ class ValuationSnapshotService:
                 if snapshot.valuation_relative_position_confidence == "high":
                     snapshot.valuation_relative_position_confidence = "medium"
                 if snapshot.consensus_disagreement or snapshot.share_count_discrepancy_warning:
+                    snapshot.valuation_relative_position_confidence = "low"
+            if freshness.full_financial_freshness == "stale" or freshness.status == "foreign_filing_partial":
+                if snapshot.valuation_relative_position_confidence == "high":
+                    snapshot.valuation_relative_position_confidence = "medium"
+                elif snapshot.valuation_relative_position_confidence == "medium":
                     snapshot.valuation_relative_position_confidence = "low"
             if (
                 freshness.refresh_required

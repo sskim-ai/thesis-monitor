@@ -1,12 +1,12 @@
 import argparse
 import json
-from datetime import date, datetime
+from datetime import date, datetime, timezone
 from pathlib import Path
 
 from sqlmodel import Session, select
 
 from app.database import engine, init_db
-from app.models.thesis import InvestmentThesis, ThesisAssessment
+from app.models.thesis import InvestmentThesis, MonitorRun, ThesisAssessment
 from app.models.watchlist import WatchlistItem
 from app.models.security import ProviderCallTelemetry, SecurityMaster
 from app.models.event import CanonicalIssue, Event
@@ -16,6 +16,7 @@ from app.services.daily_digest_renderer import render_daily_digest
 from app.services.notification_service import _assessment_report
 from app.services.financial_freshness_service import FinancialFreshnessService
 from app.services.event_identity import source_document_id_from_url
+from app.services.provider_telemetry_service import summarize_provider_run
 
 
 DEFAULT_EXPORT_DIR = Path(__file__).resolve().parents[2] / "docs" / "reports"
@@ -38,6 +39,17 @@ def export_messages(run_date: date, output: Path) -> int:
                 .where(ThesisAssessment.assessment_date == run_date)
                 .order_by(ThesisAssessment.ticker)
             ).all()
+        )
+        monitor_run = session.exec(
+            select(MonitorRun).where(
+                MonitorRun.run_date == run_date,
+                MonitorRun.run_type == "daily",
+            )
+        ).first()
+        run_started_at = (
+            monitor_run.started_at
+            if monitor_run
+            else datetime.combine(run_date, datetime.min.time(), tzinfo=timezone.utc)
         )
         active_tickers = {item.ticker for item in session.exec(select(WatchlistItem).where(WatchlistItem.active.is_(True))).all()}
         events = list(session.exec(select(Event).where(Event.ticker.in_(active_tickers))).all())
@@ -117,8 +129,8 @@ def export_messages(run_date: date, output: Path) -> int:
                 "",
                 "## 부록. 14종목 데이터 커버리지",
                 "",
-                "| 종목 | 정식 재무 | 잠정실적 | 갱신 상태 | Consensus | Provider | 가격 | 이벤트 | 재무 | 역사 Valuation | Forward Valuation | 충돌 | Identity | Foreign | 남은 gap |",
-                "|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|",
+                "| 종목 | 정식 재무 | Full availability/freshness | 잠정실적 | 잠정 freshness | 갱신 상태 | Consensus | Provider | 가격 | 이벤트 | 재무 | 역사 Valuation | Forward Valuation | 충돌 | Identity | Foreign | 남은 gap |",
+                "|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|",
             ]
         )
         for assessment in assessments:
@@ -136,7 +148,10 @@ def export_messages(run_date: date, output: Path) -> int:
             gap = ", ".join(str(item) for item in reasons) if isinstance(reasons, list) and reasons else "없음"
             sections.append(
                 f"| {assessment.ticker} | {snapshot.get('latest_full_financial_period') or '없음'} | "
+                f"{coverage.get('full_financial_availability', 'unavailable')}/"
+                f"{coverage.get('full_financial_freshness', 'unavailable')} | "
                 f"{snapshot.get('latest_preliminary_financial_period') or '없음'} | "
+                f"{coverage.get('preliminary_financial_freshness', 'unavailable')} | "
                 f"{coverage.get('financial_freshness', 'unavailable')} | "
                 f"{snapshot.get('consensus_status', coverage.get('consensus', 'unavailable'))} | "
                 f"{snapshot.get('estimate_provider') or '없음'} | "
@@ -257,8 +272,8 @@ def export_messages(run_date: date, output: Path) -> int:
                 "",
                 "## 부록. Foreign filing parsing 감사",
                 "",
-                "| 종목 | Discovery | Exhibit | Parsing coverage | Latest filing result | Overall parsing result |",
-                "|---|---|---|---|---|---|",
+                "| 종목 | Discovery | Document | Exhibit | Any statement parsed | Latest filing result | Latest normalized period | Parsing capability/result |",
+                "|---|---|---|---|---|---|---|---|",
             ]
         )
         for assessment in assessments:
@@ -271,9 +286,12 @@ def export_messages(run_date: date, output: Path) -> int:
                 continue
             sections.append(
                 f"| {assessment.ticker} | {coverage.get('filing_discovery_coverage', 'unavailable')} | "
+                f"{coverage.get('document_fetch_coverage', 'unavailable')} | "
                 f"{coverage.get('exhibit_discovery_coverage', 'unavailable')} | "
-                f"{coverage.get('statement_parsing_coverage', 'unavailable')} | "
-                f"{coverage.get('foreign_latest_filing_result', 'unavailable')} | "
+                f"{coverage.get('any_foreign_statement_parsed', False)} | "
+                f"{coverage.get('latest_foreign_filing_parse_result', coverage.get('foreign_latest_filing_result', 'unavailable'))} | "
+                f"{coverage.get('latest_foreign_financial_period') or '없음'} | "
+                f"{coverage.get('statement_parsing_coverage', 'unavailable')}/"
                 f"{coverage.get('foreign_parsing_result', 'unavailable')} |"
             )
         sections.extend(
@@ -281,8 +299,8 @@ def export_messages(run_date: date, output: Path) -> int:
                 "",
                 "## 부록. Provider 커버리지",
                 "",
-                "| Provider | Endpoint | Enabled | Configured | 최근 상태 | 최근 시도 | 최근 성공 | 성공 | 실패 | Skip | 최근 오류/Skip 사유 | 테스트 ticker |",
-                "|---|---|---|---|---|---|---|---:|---:|---:|---|---:|",
+                "| Provider | Endpoint | Enabled | Configured | 현재 실행 상태 | 현재 시도 | 현재 성공 | 현재 실패 | 현재 Skip | Lifetime 성공/실패/Skip | 최근 시도 | 최근 오류/Skip 사유 | 테스트 ticker |",
+                "|---|---|---|---|---|---:|---:|---:|---:|---|---|---|---:|",
             ]
         )
         status_by_name = {status.name: status for status in provider_statuses()}
@@ -304,20 +322,20 @@ def export_messages(run_date: date, output: Path) -> int:
             rows = grouped.get((provider, endpoint), [])
             status = status_by_name.get(provider)
             attempts = [row.attempted_at for row in rows if row.attempted_at]
-            successes = [row.last_success_at for row in rows if row.last_success_at]
             errors = [
                 row.error_reason or row.error_type
                 for row in rows
                 if row.error_reason or row.error_type
             ]
+            summary = summarize_provider_run(rows, run_started_at)
             sections.append(
                 f"| {provider} | {endpoint} | {status.enabled if status else True} | "
                 f"{status.configured if status else True} | "
-                f"{rows[-1].status if rows else '미기록'} | "
+                f"{summary['current_run_status']} | "
+                f"{summary['current_run_attempts']} | {summary['current_run_successes']} | "
+                f"{summary['current_run_failures']} | {summary['current_run_skips']} | "
+                f"{summary['lifetime_successes']}/{summary['lifetime_failures']}/{summary['lifetime_skips']} | "
                 f"{max(attempts).isoformat() if attempts else '미기록'} | "
-                f"{max(successes).isoformat() if successes else '미기록'} | "
-                f"{sum(row.success_count for row in rows)} | {sum(row.failure_count for row in rows)} | "
-                f"{sum(row.skip_count for row in rows)} | "
                 f"{errors[-1] if errors else next((row.skip_reason for row in reversed(rows) if row.skip_reason), '없음')} | "
                 f"{len({row.ticker for row in rows})} |"
             )

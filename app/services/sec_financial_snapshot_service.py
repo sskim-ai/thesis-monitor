@@ -353,7 +353,7 @@ class SecFinancialSnapshotService:
                 known_urls.add(linked_url)
             parsed_here: dict[str, object] | None = None
             financial_candidate = _looks_like_financial_release(primary_text)
-            if form == "6-K":
+            if form in {"6-K", "20-F"}:
                 parsed_here = _parse_foreign_financial_release(primary_text)
                 for exhibit in exhibits:
                     try:
@@ -382,6 +382,10 @@ class SecFinancialSnapshotService:
                             }
                         )
                         break
+            if parsed_here:
+                parsed_here.setdefault("filing_date", str(filing_date))
+                parsed_here.setdefault("source_filing_id", str(accession))
+                parsed_here.setdefault("source_url", primary_url)
             candidates.append(
                 {
                     "form": form,
@@ -416,6 +420,11 @@ class SecFinancialSnapshotService:
             if candidates
             else "filing_not_found"
         )
+        latest_filing = candidates[0] if candidates else None
+        latest_parsed_filing = next(
+            (item for item in candidates if item.get("statement_parsed")),
+            None,
+        )
         return {
             "filing_discovery_coverage": "full" if candidates else "unavailable",
             "document_fetch_coverage": "full" if fetched_documents else "unavailable",
@@ -424,6 +433,22 @@ class SecFinancialSnapshotService:
             "filing_discovered": bool(candidates),
             "statement_parsing_attempted": bool(candidates),
             "parsing_result": overall_parsing_result,
+            "any_statement_parsed": bool(parsed_statement),
+            "latest_filing_parse_result": (
+                str(latest_filing.get("parsing_result") or "unavailable")
+                if latest_filing
+                else "unavailable"
+            ),
+            "latest_financial_statement_period": (
+                str(parsed_statement.get("period_end"))
+                if parsed_statement and parsed_statement.get("period_end")
+                else None
+            ),
+            "latest_financial_statement_filing_date": (
+                str(latest_parsed_filing.get("filing_date"))
+                if latest_parsed_filing
+                else None
+            ),
             "parsed_statement": parsed_statement,
             "adr_ratio": adr_ratio,
             "adr_ratio_source": adr_ratio_source,
@@ -544,6 +569,10 @@ class SecFinancialSnapshotService:
                     "document_fetch_coverage": "partial",
                     "exhibit_discovery_coverage": "partial",
                     "statement_parsing_coverage": "partial",
+                    "any_statement_parsed": False,
+                    "latest_filing_parse_result": "document_fetch_failed",
+                    "latest_financial_statement_period": None,
+                    "latest_financial_statement_filing_date": None,
                     "reason": "foreign_filing_partial",
                 }
                 telemetry.record(

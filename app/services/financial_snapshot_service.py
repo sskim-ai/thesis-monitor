@@ -7,7 +7,10 @@ from sqlmodel import Session, select
 
 from app.models.event import Event
 from app.models.financial import FinancialSnapshot
-from app.services.financial_validation import normalize_standalone_quarter
+from app.services.financial_validation import (
+    normalize_standalone_quarter,
+    validate_snapshot_period_chronology,
+)
 
 
 def _json_list(value: str) -> list[str]:
@@ -164,6 +167,26 @@ def _append(items: list[str], value: str) -> None:
         items.append(value)
 
 
+def _clear_usable_financial_metrics(snapshot: FinancialSnapshot) -> None:
+    for field in (
+        "revenue",
+        "operating_income",
+        "net_income",
+        "owners_parent_net_income",
+        "common_net_income",
+        "operating_margin",
+        "basic_eps",
+        "diluted_eps",
+        "eps",
+        "cumulative_revenue",
+        "cumulative_operating_income",
+        "cumulative_net_income",
+        "cumulative_basic_eps",
+        "cumulative_diluted_eps",
+    ):
+        setattr(snapshot, field, None)
+
+
 def _previous(session: Session, snapshot: FinancialSnapshot) -> FinancialSnapshot | None:
     if snapshot.reported_date is None:
         return None
@@ -286,6 +309,7 @@ def upsert_financial_snapshot_from_event(session: Session, event: Event) -> Fina
             "cross-metric sanity validation failed"
         )
         snapshot.raw_financial_fields = event.raw_financial_fields or "[]"
+        validate_snapshot_period_chronology(snapshot)
         session.add(snapshot)
         return snapshot
     revenue_fact = _fact_line(facts, "매출액")
@@ -457,6 +481,18 @@ def upsert_financial_snapshot_from_event(session: Session, event: Event) -> Fina
     snapshot.operating_income_basis = profit_basis
     snapshot.balance_sheet_basis = balance_basis
     snapshot.quality_warnings = "; ".join(item for item in _json_list(event.unknowns) if "quality warning" in item.lower()) or None
+    if not validate_snapshot_period_chronology(snapshot):
+        _clear_usable_financial_metrics(snapshot)
+        unknowns = _json_list(event.unknowns)
+        _append(
+            unknowns,
+            "Financial period mapping validation failed: period end is after filing date.",
+        )
+        event.unknowns = json.dumps(unknowns, ensure_ascii=False)
+        event.financial_statement_basis_warning = True
+        event.margin_quality_review = True
+        session.add(snapshot)
+        return snapshot
     snapshot.revenue = revenue
     snapshot.operating_income = profit
     snapshot.net_income = reported_net_income or owners_net_income

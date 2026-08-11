@@ -3,6 +3,7 @@ import re
 from dataclasses import dataclass, field
 
 from app.models.event import Event
+from app.models.financial import FinancialSnapshot
 
 
 UNIT_MULTIPLIERS = {
@@ -42,6 +43,36 @@ class StandaloneQuarter:
     value: float | None
     method: str
     valid: bool
+
+
+def validate_snapshot_period_chronology(snapshot: FinancialSnapshot) -> bool:
+    period_end = snapshot.financial_period_end or snapshot.financials_as_of
+    filing_date = snapshot.filing_date or snapshot.reported_date
+    if period_end is None or filing_date is None or period_end <= filing_date:
+        snapshot.period_mapping_validation_failed = False
+        return True
+    snapshot.period_mapping_validation_failed = True
+    snapshot.financial_statement_basis_warning = True
+    warning = (
+        "financial period end is after filing date; snapshot is quarantined from "
+        "current context and valuation inputs"
+    )
+    existing_warnings = snapshot.quality_warnings or ""
+    while f"; {warning}" in existing_warnings:
+        existing_warnings = existing_warnings.replace(f"; {warning}", "", 1)
+    if warning not in existing_warnings:
+        existing_warnings = "; ".join(
+            item for item in (existing_warnings, warning) if item
+        )
+    snapshot.quality_warnings = existing_warnings
+    return False
+
+
+def financial_snapshot_is_usable(snapshot: FinancialSnapshot) -> bool:
+    return (
+        not snapshot.period_mapping_validation_failed
+        and validate_snapshot_period_chronology(snapshot)
+    )
 
 
 def normalize_standalone_quarter(

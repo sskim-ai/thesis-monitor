@@ -603,7 +603,11 @@ class CollectionService:
         )
         await self.collect_events(session, ticker, lookback_days)
         cutoff = date.today() - timedelta(days=lookback_days)
-        query = select(Event).where(Event.ticker == ticker, Event.date >= cutoff)
+        query = select(Event).where(
+            Event.ticker == ticker,
+            Event.date >= cutoff,
+            Event.document_identity_status.notin_({"invalid", "invalid_mismatch"}),
+        )
         if requires_review_only:
             query = query.where(Event.requires_review.is_(True))
         if provider:

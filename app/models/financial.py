@@ -31,6 +31,7 @@ class FinancialSnapshot(SQLModel, table=True):
     balance_sheet_basis: str | None = None
     quality_warnings: str | None = None
     raw_financial_fields: str = "[]"
+    period_mapping_validation_failed: bool = False
     revenue: float | None = None
     operating_income: float | None = None
     net_income: float | None = None
