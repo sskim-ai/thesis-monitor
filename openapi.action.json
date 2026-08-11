@@ -2,8 +2,8 @@
   "openapi": "3.1.0",
   "info": {
     "title": "Thesis Monitor Public Action API",
-    "version": "0.3.0",
-    "description": "Collect thesis evidence, register versioned investment theses, manage the monitored stock list, read daily thesis assessments, and retrieve macro briefings, regimes, events, and ticker-level macro impacts. Administrative jobs are excluded."
+    "version": "0.4.0",
+    "description": "Collect thesis evidence, read ticker analysis snapshots, register versioned investment theses, manage the monitored stock list, read daily thesis assessments, and retrieve macro briefings, regimes, events, and ticker-level macro impacts. Administrative jobs are excluded."
   },
   "paths": {
     "/health": {
@@ -1141,6 +1141,46 @@
         }
       }
     },
+    "/ticker-analysis-snapshot": {
+      "get": {
+        "summary": "Get Ticker Analysis Snapshot",
+        "operationId": "getTickerAnalysisSnapshot",
+        "parameters": [
+          {
+            "name": "ticker",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "title": "Ticker"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TickerAnalysisSnapshot"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/earnings-checkpoints": {
       "get": {
         "summary": "Get Earnings Checkpoints",
@@ -1184,6 +1224,438 @@
   },
   "components": {
     "schemas": {
+      "AnalysisDataStatus": {
+        "properties": {
+          "price": {
+            "type": "string",
+            "title": "Price",
+            "default": "unavailable"
+          },
+          "earnings": {
+            "type": "string",
+            "title": "Earnings",
+            "default": "unavailable"
+          },
+          "valuation": {
+            "type": "string",
+            "title": "Valuation",
+            "default": "unavailable"
+          },
+          "financial_freshness": {
+            "type": "string",
+            "title": "Financial Freshness",
+            "default": "unavailable"
+          }
+        },
+        "type": "object",
+        "title": "AnalysisDataStatus"
+      },
+      "AnalysisEarningsSnapshot": {
+        "properties": {
+          "latest_period": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Latest Period"
+          },
+          "is_preliminary": {
+            "type": "boolean",
+            "title": "Is Preliminary",
+            "default": false
+          },
+          "revenue": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Revenue"
+          },
+          "operating_income": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Operating Income"
+          },
+          "operating_margin": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Operating Margin"
+          },
+          "qoq_revenue_growth": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Qoq Revenue Growth"
+          },
+          "qoq_operating_income_growth": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Qoq Operating Income Growth"
+          },
+          "yoy_revenue_growth": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Yoy Revenue Growth"
+          },
+          "yoy_operating_income_growth": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Yoy Operating Income Growth"
+          },
+          "ttm_eps": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ttm Eps"
+          },
+          "ttm_contains_preliminary": {
+            "type": "boolean",
+            "title": "Ttm Contains Preliminary",
+            "default": false
+          }
+        },
+        "type": "object",
+        "title": "AnalysisEarningsSnapshot"
+      },
+      "AnalysisHistoricalValuation": {
+        "properties": {
+          "current_value": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Current Value"
+          },
+          "median": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Median"
+          },
+          "current_percentile": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Current Percentile"
+          },
+          "lookback_years": {
+            "type": "number",
+            "title": "Lookback Years",
+            "default": 0.0
+          }
+        },
+        "type": "object",
+        "title": "AnalysisHistoricalValuation"
+      },
+      "AnalysisPricePeriod": {
+        "properties": {
+          "latest_close": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Latest Close"
+          },
+          "period_return_pct": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Period Return Pct"
+          },
+          "range_position_pct": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Range Position Pct"
+          },
+          "actual_count": {
+            "type": "integer",
+            "title": "Actual Count",
+            "default": 0
+          }
+        },
+        "type": "object",
+        "title": "AnalysisPricePeriod"
+      },
+      "AnalysisPriceSnapshot": {
+        "properties": {
+          "available": {
+            "type": "boolean",
+            "title": "Available",
+            "default": false
+          },
+          "current_price": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Current Price"
+          },
+          "currency": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Currency"
+          },
+          "price_as_of": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Price As Of"
+          },
+          "market_session": {
+            "type": "string",
+            "title": "Market Session",
+            "default": "unknown"
+          },
+          "current_position": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Current Position"
+          },
+          "periods": {
+            "additionalProperties": {
+              "$ref": "#/components/schemas/AnalysisPricePeriod"
+            },
+            "type": "object",
+            "title": "Periods",
+            "properties": {}
+          }
+        },
+        "type": "object",
+        "title": "AnalysisPriceSnapshot"
+      },
+      "AnalysisValuationSnapshot": {
+        "properties": {
+          "current_price": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Current Price"
+          },
+          "ttm_eps": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ttm Eps"
+          },
+          "bvps": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Bvps"
+          },
+          "forward_eps": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Forward Eps"
+          },
+          "forward_bvps": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Forward Bvps"
+          },
+          "trailing_pe": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Trailing Pe"
+          },
+          "price_to_book": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Price To Book"
+          },
+          "forward_pe": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Forward Pe"
+          },
+          "forward_price_to_book": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Forward Price To Book"
+          },
+          "valuation_relative_position": {
+            "type": "string",
+            "title": "Valuation Relative Position",
+            "default": "unknown"
+          },
+          "valuation_relative_position_confidence": {
+            "type": "string",
+            "title": "Valuation Relative Position Confidence",
+            "default": "low"
+          },
+          "historical_pe": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/AnalysisHistoricalValuation"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "historical_pb": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/AnalysisHistoricalValuation"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "type": "object",
+        "title": "AnalysisValuationSnapshot"
+      },
       "AssessmentState": {
         "type": "string",
         "enum": [
@@ -5246,6 +5718,59 @@
           "current_thesis"
         ],
         "title": "ThesisSnapshot"
+      },
+      "TickerAnalysisSnapshot": {
+        "properties": {
+          "ticker": {
+            "type": "string",
+            "title": "Ticker"
+          },
+          "company_name": {
+            "type": "string",
+            "title": "Company Name"
+          },
+          "exchange": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Exchange"
+          },
+          "as_of": {
+            "type": "string",
+            "title": "As Of"
+          },
+          "price": {
+            "$ref": "#/components/schemas/AnalysisPriceSnapshot"
+          },
+          "earnings": {
+            "$ref": "#/components/schemas/AnalysisEarningsSnapshot"
+          },
+          "valuation": {
+            "$ref": "#/components/schemas/AnalysisValuationSnapshot"
+          },
+          "data_status": {
+            "$ref": "#/components/schemas/AnalysisDataStatus"
+          },
+          "cautions": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Cautions"
+          }
+        },
+        "type": "object",
+        "required": [
+          "ticker",
+          "company_name",
+          "as_of"
+        ],
+        "title": "TickerAnalysisSnapshot"
       },
       "ValidationError": {
         "properties": {

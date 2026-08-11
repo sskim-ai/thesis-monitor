@@ -336,7 +336,7 @@ RSI > 70 → 과열 가능성, 즉시 매도 신호 아님
 Volume Ratio = Current Volume / 20-day Average Volume
 ```
 
-현재 public Action이나 응답에서 가격·OHLCV를 받지 못하면 RSI, MACD, 지지·저항과 목표·손절 가격을 생성하지 않는다. backend monitoring이 내부적으로 가격 공급자를 쓰는 것과 Custom GPT가 직접 조회할 수 있는지는 별개다.
+`getTickerAnalysisSnapshot`은 등록 없이 현재가와 일·주·월 수익률·범위 내 위치를 compact context로 제공할 수 있다. 실제 응답에 없는 raw OHLCV, RSI, MACD, 지지·저항과 목표·손절 가격은 생성하지 않는다. backend monitoring이 내부적으로 더 많은 가격 자료를 쓰는 것과 Custom GPT의 공개 응답 범위는 별개다.
 
 ## 9. 신규 관찰자 / 보유자 / 손익비
 
@@ -548,6 +548,7 @@ Catalyst / Risk
 - `getCompanyProfile`: 회사 기본 구조
 - `getEarningsCheckpoints`: 실적 체크포인트
 - `getThesisEvents`: 사건·공시·재무 근거와 선택적 backfill
+- `getTickerAnalysisSnapshot`: 미등록 종목도 등록 없이 현재 가격·최신 earnings context·PER/PBR/fPER/fPBR·역사적 Valuation 위치를 조회하는 read-only snapshot
 - `getMonitoredStock`: 저장된 현재 투자 논리
 - `getThesisAssessmentHistory`: 날짜별 평가
 - `listMonitoredStockSummaries`: 모니터링 목록과 핵심 논리
@@ -573,7 +574,7 @@ Catalyst / Risk
 - `getHealth`
 - `getProviderStatus`
 
-직접 OHLCV를 조회하는 public operationId는 현재 schema에 없다. 다른 환경에서 실제 가격 자료가 응답으로 제공될 때만 Price/OHLCV framework를 적용한다.
+`getTickerAnalysisSnapshot`은 raw OHLCV 조회 Action이 아니다. 응답에 포함된 compact 가격 context만 사용하며 RSI, MACD와 개별 bar를 임의로 보완하지 않는다.
 
 ## 18. Initial Analysis 사용자 답변 Template
 

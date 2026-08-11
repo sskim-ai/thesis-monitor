@@ -8,7 +8,7 @@
 - bare ticker가 기존 등록 종목으로 확인되면 저장 논리와 최근 delta를 결합한 Current Thesis Review를 사용한다.
 - 명시적 등록 요청이 없으면 `monitorStock`을 호출하지 않는다.
 - Initial Analysis와 daily delta를 혼동하지 않는다.
-- 실제 Action 응답에 없는 가격·OHLCV·고객·재무 숫자를 만들지 않는다.
+- `getTickerAnalysisSnapshot`에 없는 가격·OHLCV·고객·재무 숫자를 만들지 않는다.
 - Fact, Interpretation과 Unknown을 구분한다.
 - 업종에 맞는 재무·Valuation framework를 사용한다.
 - 사용자 답변에는 provider·parser·comparability 같은 내부 flag를 기본 노출하지 않는다.
@@ -24,9 +24,10 @@
 **Expected**
 
 - Mode A: Initial Thesis Analysis
-- `getCompanyProfile`, `getEarningsCheckpoints`, 장기 `getThesisEvents` 활용
+- `getCompanyProfile`, `getEarningsCheckpoints`, 장기 `getThesisEvents`, `getTickerAnalysisSnapshot` 활용
 - 한국 종목이면 필요 시 `provider=opendart`, `auto_backfill=true`, `backfill_years=5`, `lookback_days=365`
 - 사업 구조, 산업, 재무·이익의 질, 시장 기대, Valuation, 리스크와 다음 숫자 분석
+- snapshot의 현재 가격, 최신 earnings context, 가능한 PER/PBR/fPER/fPBR과 역사적 위치 반영
 - `monitorStock` 호출 금지
 
 **Failure**
@@ -45,7 +46,9 @@ GOOGL
 **Expected**
 
 - Mode A: Initial Thesis Analysis
+- `getTickerAnalysisSnapshot` 사용
 - 광고와 Cloud 등 segment economics, AI Capex와 FCF·ROIC, 시장 기대와 Valuation 분석
+- 가능한 현재 가격, PER/PBR/fPER과 역사적 Valuation 위치 반영
 - 최근 뉴스 3개 요약으로 끝나지 않음
 
 ## 3. Explicit Initial Analysis
@@ -103,6 +106,7 @@ IBM 분석하고 앞으로 모니터링해줘
 **Expected**
 
 - Mode A 분석을 먼저 수행
+- `getTickerAnalysisSnapshot`으로 등록 전 객관적 가격·실적·Valuation 확인
 - 핵심 논리, 검증 지표, 기대, Valuation framework, 강화·약화·무효화 조건과 중요한 거시 노출 구성
 - 이후 `monitorStock` 호출
 - 저장 ticker와 version 안내
@@ -122,7 +126,9 @@ IBM 분석해줘
 **Expected**
 
 - Mode A 분석
+- `getTickerAnalysisSnapshot` 사용 가능
 - `monitorStock` 호출 금지
+- `InvestmentThesis`, `ThesisAssessment`, notification 생성 금지
 
 ## 8. Specific Event
 
@@ -164,11 +170,12 @@ GOOGL 차트까지 봐줘
 
 **Fixture**
 
-public Action 응답에 가격·OHLCV 자료가 없다.
+`getTickerAnalysisSnapshot`의 가격 공급자가 실패해 `price.available=false`이고 raw OHLCV 자료가 없다.
 
 **Expected**
 
 - 가격 자료가 이번 조회에서 확보되지 않았다고 밝힘
+- 가격 실패와 무관하게 가능한 earnings·Valuation 결과는 계속 사용
 - RSI, MACD, 지지·저항, 목표가와 손절가를 생성하지 않음
 - 기업 분석은 확보된 자료 범위에서 계속 수행 가능
 
@@ -269,6 +276,7 @@ Instructions와 Knowledge에서 호출 대상으로 쓰는 이름은 Action sche
 - `getThesisEvents`
 - `getCompanyProfile`
 - `getEarningsCheckpoints`
+- `getTickerAnalysisSnapshot`
 - `getMonitoredStock`
 - `monitorStock`
 - `getThesisAssessmentHistory`
@@ -282,4 +290,4 @@ Instructions와 Knowledge에서 호출 대상으로 쓰는 이름은 Action sche
 - `getTickerMacroImpacts`
 - `getMacroProviderStatus`
 
-직접 OHLCV 조회 Action은 현재 contract에 없으므로 존재한다고 가정하면 실패다.
+`getTickerAnalysisSnapshot`은 compact 가격·실적·Valuation 조회이며 raw OHLCV Action이 아니다. 응답에 없는 RSI·MACD와 개별 bar가 있다고 가정하면 실패다.

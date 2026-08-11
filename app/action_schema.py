@@ -7,6 +7,7 @@ ACTION_PATHS = {
     "/health",
     "/provider-status",
     "/company-profile",
+    "/ticker-analysis-snapshot",
     "/earnings-checkpoints",
     "/thesis-events",
     "/monitoring-items",
@@ -237,11 +238,12 @@ def build_action_schema(app: FastAPI) -> dict[str, object]:
     schema = deepcopy(app.openapi())
     schema["info"] = {
         "title": "Thesis Monitor Public Action API",
-        "version": "0.3.0",
+        "version": "0.4.0",
         "description": (
-            "Collect thesis evidence, register versioned investment theses, manage the monitored "
-            "stock list, read daily thesis assessments, and retrieve macro briefings, regimes, "
-            "events, and ticker-level macro impacts. Administrative jobs are excluded."
+            "Collect thesis evidence, read ticker analysis snapshots, register versioned investment "
+            "theses, manage the monitored stock list, read daily thesis assessments, and retrieve "
+            "macro briefings, regimes, events, and ticker-level macro impacts. Administrative jobs "
+            "are excluded."
         ),
     }
     schema["servers"] = [{"url": "https://sskim-macmini.tailb44bb1.ts.net/thesis"}]

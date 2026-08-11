@@ -1,3 +1,5 @@
+from pathlib import Path
+
 from fastapi.testclient import TestClient
 
 from app.main import app
@@ -69,3 +71,33 @@ def test_public_action_schema() -> None:
     ]["schema"]
     assert assessment_schema["type"] == "object"
     assert assessment_schema["properties"]["valuation_context"]["type"] == "string"
+
+
+def test_public_action_schema_includes_read_only_ticker_analysis_snapshot() -> None:
+    with TestClient(app) as client:
+        response = client.get("/action-openapi.json")
+
+    assert response.status_code == 200
+    schema = response.json()
+    operation = schema["paths"]["/ticker-analysis-snapshot"]["get"]
+    assert operation["operationId"] == "getTickerAnalysisSnapshot"
+    assert schema["info"]["version"] == "0.4.0"
+
+    operation_ids = [
+        operation["operationId"]
+        for path_item in schema["paths"].values()
+        for operation in path_item.values()
+        if isinstance(operation, dict) and "operationId" in operation
+    ]
+    assert len(operation_ids) == 20
+    assert len(operation_ids) == len(set(operation_ids))
+
+
+def test_custom_gpt_docs_reference_analysis_snapshot_action() -> None:
+    operation_id = "getTickerAnalysisSnapshot"
+    for relative_path in (
+        "docs/custom_gpt_instructions_ko.md",
+        "docs/custom_gpt_knowledge_ko.md",
+        "docs/custom_gpt_regression_prompts.md",
+    ):
+        assert operation_id in Path(relative_path).read_text(encoding="utf-8")
