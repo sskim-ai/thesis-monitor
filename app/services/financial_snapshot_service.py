@@ -249,6 +249,11 @@ def upsert_financial_snapshot_from_event(session: Session, event: Event) -> Fina
     )
     period_type = _period_type(event.title, period, report_code)
     fiscal_year = _fiscal_year(event, period)
+    snapshot_type = (
+        "preliminary_earnings"
+        if any(term in event.title for term in ("잠정실적", "잠정영업실적", "영업(잠정)실적"))
+        else "full_statement"
+    )
 
     snapshot = session.exec(
         select(FinancialSnapshot).where(
@@ -323,6 +328,8 @@ def upsert_financial_snapshot_from_event(session: Session, event: Event) -> Fina
     assets = _amount(assets_fact)
     equity = _amount(equity_fact)
     snapshot.period_type = period_type
+    snapshot.snapshot_type = snapshot_type
+    snapshot.source_event_date = event.date
     snapshot.fiscal_year = fiscal_year
     snapshot.period_scope = period_scope
     snapshot.is_cumulative = period_scope != "single-quarter"
@@ -355,16 +362,17 @@ def upsert_financial_snapshot_from_event(session: Session, event: Event) -> Fina
     snapshot.cumulative_basic_eps = cumulative_basic_eps
     snapshot.cumulative_diluted_eps = cumulative_diluted_eps
     snapshot.operating_margin = _margin(revenue, profit)
-    snapshot.debt = liabilities
-    snapshot.total_equity = equity
-    snapshot.owners_parent_equity = _amount(owners_equity_fact)
-    snapshot.common_equity = snapshot.owners_parent_equity
-    snapshot.issued_common_shares = _amount(issued_shares_fact)
-    snapshot.treasury_shares = _amount(treasury_shares_fact)
-    snapshot.common_shares_outstanding = _amount(outstanding_shares_fact)
-    snapshot.diluted_shares = snapshot.common_shares_outstanding
-    snapshot.common_dividends = _named_amount(facts, "total_dividend")
-    snapshot.dividends = snapshot.common_dividends
+    if snapshot_type == "full_statement":
+        snapshot.debt = liabilities
+        snapshot.total_equity = equity
+        snapshot.owners_parent_equity = _amount(owners_equity_fact)
+        snapshot.common_equity = snapshot.owners_parent_equity
+        snapshot.issued_common_shares = _amount(issued_shares_fact)
+        snapshot.treasury_shares = _amount(treasury_shares_fact)
+        snapshot.common_shares_outstanding = _amount(outstanding_shares_fact)
+        snapshot.diluted_shares = snapshot.common_shares_outstanding
+        snapshot.common_dividends = _named_amount(facts, "total_dividend")
+        snapshot.dividends = snapshot.common_dividends
     snapshot.financial_statement_basis_warning = event.financial_statement_basis_warning
     snapshot.margin_quality_review = event.margin_quality_review
     snapshot.cash = None

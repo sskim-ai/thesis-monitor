@@ -57,6 +57,13 @@ class Event(SQLModel, table=True):
     corporate_action_id: str | None = Field(default=None, index=True)
     classification_override_reason: str | None = None
     financial_refresh_required: bool = False
+    identity_validated: bool = False
+    identity_status: str = "unvalidated"
+    subject_company_id: str | None = None
+    relevance_evidence: str = "[]"
+    rejected_reason: str | None = None
+    buyback_candidate: bool = False
+    confirmed_buyback: bool = False
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
 

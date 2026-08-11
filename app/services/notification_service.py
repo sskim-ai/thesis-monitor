@@ -406,7 +406,8 @@ def _assessment_report(
         median_value = raw.get("historical_median")
         percentile = raw.get("current_percentile")
         years = raw.get("lookback_years")
-        count = raw.get("observation_count")
+        count = raw.get("deduplicated_observation_count", raw.get("observation_count"))
+        history_quality = str(raw.get("history_quality", "insufficient"))
         median_text = f"중앙값 {float(median_value):.1f}배" if isinstance(median_value, (int, float)) else "중앙값 확인 불가"
         percentile_text = f"현재 {float(percentile):.0f} percentile" if isinstance(percentile, (int, float)) else "현재 위치 확인 불가"
         coverage = raw.get("history_coverage_ratio")
@@ -414,7 +415,10 @@ def _assessment_report(
             f" · 목표기간 충족률 {float(coverage):.0%}"
             if isinstance(coverage, (int, float)) else ""
         )
-        return f"• {label}: 최근 {years}년 {median_text} · {percentile_text} · 주간 {count}개{coverage_text}"
+        return (
+            f"• {label}: 최근 {years}년 {median_text} · {percentile_text} · "
+            f"주간 말일 {count}개 · 품질 {history_quality}{coverage_text}"
+        )
 
     historical_text = (
         f"{_history_line('trailing PER', 'historical_pe_statistics')}\n"
@@ -447,6 +451,30 @@ def _assessment_report(
         f"• 해석 주의: {valuation_caveats[0]}"
         if valuation_caveats
         else "• 해석 주의: 등록된 종목별 Valuation 주의사항 없음"
+    )
+    data_status_parts = [
+        f"가격 {data_coverage.get('price_quality', data_coverage.get('price', 'unavailable'))}",
+        f"이벤트 {data_coverage.get('event_quality', 'unavailable')}",
+        f"정식 재무 {data_coverage.get('financial_full', 'unavailable')}",
+        f"잠정실적 {data_coverage.get('financial_preliminary', 'unavailable')}",
+        f"Consensus {data_coverage.get('consensus_quality', 'unavailable')}",
+        f"역사 Valuation {data_coverage.get('historical_valuation_quality', 'unavailable')}",
+        f"Forward {data_coverage.get('forward_valuation_quality', 'unavailable')}",
+    ]
+    detailed_data_status = any(
+        str(data_coverage.get(key, "")) in {"stale", "partial", "unavailable", "validation_failed"}
+        for key in (
+            "financial_quality",
+            "event_quality",
+            "consensus_quality",
+            "historical_valuation_quality",
+            "forward_valuation_quality",
+        )
+    )
+    data_status_text = (
+        "📊 데이터 상태\n" + " · ".join(data_status_parts) + "\n"
+        if detailed_data_status
+        else ""
     )
     is_krx = assessment.ticker.isdigit()
     if assessment_state == "provisional" and is_krx:
@@ -499,7 +527,8 @@ def _assessment_report(
         f"📐 시장 기대와 Valuation\n"
         f"시장 기대: {expectation_label} · {expectation_summary}\n"
         f"현재가: {_report_price(current_price, currency)}\n"
-        f"재무 기준: {valuation_snapshot.get('financial_period_end') or '확인 불가'}\n"
+        f"정식 재무 기준: {valuation_snapshot.get('latest_full_financial_period') or valuation_snapshot.get('financial_period_end') or '확인 불가'}\n"
+        f"최근 잠정실적: {valuation_snapshot.get('latest_preliminary_financial_period') or '없음'}\n"
         f"공시일: {valuation_snapshot.get('filing_date') or '확인 불가'}\n"
         f"가격 기준: {price_basis_label}\n"
         f"TTM 기준: {valuation_snapshot.get('ttm_period_start') or '확인 불가'}~"
@@ -519,7 +548,11 @@ def _assessment_report(
         f"현재 Valuation 위치 신뢰도: {relative_confidence}\n"
         f"해석: {relative_reason or '역사적·peer 비교 근거가 부족해 현재 위치를 확정하지 않습니다.'}\n"
         f"배수 신호: {valuation_snapshot.get('valuation_signal_summary') or '중요한 배수 충돌 없음'}\n"
+        f"Consensus: {valuation_snapshot.get('estimate_provider') or '자료 없음'}"
+        f" · {valuation_snapshot.get('estimate_period') or '기간 확인 불가'}"
+        f" · 분석가 {valuation_snapshot.get('estimate_analyst_count') or '확인 불가'}명\n"
         f"{caveat_text}\n"
+        f"{data_status_text}"
         f"데이터 품질: {quality_label} · {valuation_snapshot.get('provider', '자료 없음')}\n"
         f"재무 커버리지: {data_coverage.get('financials', 'unavailable')} · "
         f"최신성 {data_coverage.get('financial_freshness', 'unavailable')}\n"

@@ -96,6 +96,18 @@ Three additional free API keys enable the full source set:
 - `EIA_API_KEY`: weekly U.S. crude inventories, production, and refinery
   utilization.
 - `ECOS_API_KEY`: Bank of Korea rates, USD/KRW, CPI, and M2 key statistics.
+- `ALPHA_VANTAGE_API_KEY`: secondary U.S. consensus, share-count, dividend,
+  split, and current-multiple cross-checks. Responses are cached and never used
+  as point-in-time historical truth.
+- `ENABLE_NEWSAPI_PROVIDER`: defaults to `false`. A configured NewsAPI key does
+  not add NewsAPI to the daily collection path unless this switch is enabled.
+- `OPENFIGI_API_KEY`: optional identity-mapping rate-limit upgrade. Keyless
+  mapping remains available; official filing identity and ADR documents remain
+  authoritative.
+- `FMP_API_KEY`: optional secondary/fallback fundamentals adapter. Disabled
+  when unset.
+- `SHARADAR_API_KEY`: optional U.S. point-in-time validation adapter. Disabled
+  when unset.
 
 Macro outputs are stored in SQLite and daily briefing JSON files under
 `data/macro/briefings/`. The persistent notification outbox guarantees at most one daily digest per
@@ -368,10 +380,13 @@ Current provider status:
 | `MockProvider` | mock | Default provider used by API routes for stable local behavior. |
 | `GoogleNewsRSSProvider` | live | API-key-free RSS provider. It cleans RSS text and deduplicates provider results. Collection retries transient failures and then continues with other providers. |
 | `NaverNewsProvider` | live | Uses Naver Search News API with `NAVER_CLIENT_ID` and `NAVER_CLIENT_SECRET`. |
-| `NewsAPIProvider` | skeleton | Requires `NEWSAPI_API_KEY`; mapping is TODO. |
+| `NewsAPIProvider` | opt-in skeleton | Disabled by default even when a key is configured. |
 | `OpenDARTProvider` | partial live | Calls OpenDART `list.json` when `OPENDART_API_KEY` and a seed `corp_code` mapping are available. Full ticker mapping is TODO. |
 | `SecEdgarProvider` | partial live | Calls SEC submissions JSON for seed ticker-to-CIK mappings. Full ticker mapping is TODO. |
-| `AlphaVantageProvider` | skeleton | Requires `ALPHA_VANTAGE_API_KEY`; financial/price mapping is TODO. |
+| `AlphaVantageService` | secondary live | Cached consensus, share-count, dividend, split, and current-multiple cross-checks. |
+| `OpenFIGIProvider` | optional identity | Keyless identity lookup with optional key for a higher request allowance. |
+| `FMPProvider` | optional adapter | Disabled unless `FMP_API_KEY` is configured. |
+| `SharadarProvider` | optional adapter | Disabled unless `SHARADAR_API_KEY` is configured. |
 | `CompanyIRProvider` | skeleton | Per-company IR crawler discovery is TODO. |
 
 Provider priority when `ENABLE_LIVE_PROVIDERS=true`:
@@ -379,7 +394,7 @@ Provider priority when `ENABLE_LIVE_PROVIDERS=true`:
 1. MockProvider
 2. GoogleNewsRSSProvider
 3. NaverNewsProvider
-4. NewsAPIProvider
+4. NewsAPIProvider (only when `ENABLE_NEWSAPI_PROVIDER=true`)
 5. OpenDARTProvider
 6. SecEdgarProvider
 7. AlphaVantageProvider

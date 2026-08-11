@@ -14,8 +14,16 @@ class Settings(BaseSettings):
     google_news_display: int = 10
     opendart_api_key: str | None = None
     newsapi_api_key: str | None = None
+    enable_newsapi_provider: bool = False
     finnhub_api_key: str | None = None
     alpha_vantage_api_key: str | None = None
+    alpha_vantage_cache_hours: int = 24
+    alpha_vantage_request_budget: int = 30
+    alpha_vantage_consensus_discrepancy_pct: float = 20.0
+    alpha_vantage_share_discrepancy_pct: float = 10.0
+    openfigi_api_key: str | None = None
+    fmp_api_key: str | None = None
+    sharadar_api_key: str | None = None
     fred_api_key: str | None = None
     eia_api_key: str | None = None
     ecos_api_key: str | None = None
@@ -45,6 +53,7 @@ class Settings(BaseSettings):
     valuation_history_target_years: int = 5
     valuation_history_minimum_years: int = 3
     valuation_history_min_observations: int = 26
+    valuation_history_min_days: int = 180
     valuation_history_max_pe: float = 200.0
     valuation_history_max_pb: float = 50.0
     valuation_history_discounted_percentile: float = 20.0

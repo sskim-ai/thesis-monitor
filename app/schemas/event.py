@@ -22,6 +22,12 @@ class EventType(StrEnum):
     convertible_bond = "convertible_bond"
     warrant = "warrant"
     stock_compensation_increase = "stock_compensation_increase"
+    buyback = "buyback"
+    share_retirement = "share_retirement"
+    dividend = "dividend"
+    stock_split = "stock_split"
+    reverse_split = "reverse_split"
+    capital_reduction = "capital_reduction"
     partnership = "partnership"
     partnership_to_revenue = "partnership_to_revenue"
     customer_loss = "customer_loss"
@@ -82,6 +88,8 @@ class FinancialImpact(BaseModel):
     capex_impact_known: bool = False
     inventory_risk: bool = False
     receivables_risk: bool = False
+    buyback_candidate: bool = False
+    confirmed_buyback: bool = False
 
 
 class EventFinancialMetrics(BaseModel):

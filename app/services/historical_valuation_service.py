@@ -107,6 +107,16 @@ def _weekly_prices(prices: list[HistoricalPricePoint]) -> list[HistoricalPricePo
     return sorted(by_week.values(), key=lambda item: item.date)
 
 
+def _weekly_observations(
+    observations: list[HistoricalValuationObservation],
+) -> list[HistoricalValuationObservation]:
+    by_week: dict[tuple[int, int], HistoricalValuationObservation] = {}
+    for observation in sorted(observations, key=lambda item: item.observation_date):
+        iso = observation.observation_date.isocalendar()
+        by_week[(iso.year, iso.week)] = observation
+    return sorted(by_week.values(), key=lambda item: item.observation_date)
+
+
 def _percentile(values: list[float], percentile: float) -> float | None:
     if not values:
         return None
@@ -125,6 +135,10 @@ def _statistics(
     metric: str,
     current: float | None,
     observations: list[HistoricalValuationObservation],
+    *,
+    raw_observation_count: int,
+    minimum_observations: int,
+    minimum_days: int,
 ) -> HistoricalValuationStatistics | None:
     values = [
         float(getattr(item, metric))
@@ -138,16 +152,31 @@ def _statistics(
     if current is not None:
         current_percentile = round(sum(value <= current for value in values) / len(values) * 100, 1)
     lookback_years = ((max(dates) - min(dates)).days / 365.25) if len(dates) > 1 else 0.0
+    history_days = (max(dates) - min(dates)).days if len(dates) > 1 else 0
+    sufficient = len(values) >= minimum_observations and (
+        history_days >= minimum_days or minimum_observations <= 1
+    )
+    history_quality = (
+        "high"
+        if len(values) >= 156 and lookback_years >= 3
+        else "medium"
+        if len(values) >= 52 and lookback_years >= 1
+        else "low"
+        if sufficient
+        else "insufficient"
+    )
+    if not sufficient:
+        current_percentile = None
     return HistoricalValuationStatistics(
         metric=metric,
         current_value=current,
         historical_median=round(median(values), 4),
         historical_mean=round(mean(values), 4),
-        percentile_10=round(_percentile(values, 10) or 0, 4),
-        percentile_25=round(_percentile(values, 25) or 0, 4),
-        percentile_50=round(_percentile(values, 50) or 0, 4),
-        percentile_75=round(_percentile(values, 75) or 0, 4),
-        percentile_90=round(_percentile(values, 90) or 0, 4),
+        percentile_10=round(_percentile(values, 10), 4) if sufficient else None,
+        percentile_25=round(_percentile(values, 25), 4) if sufficient else None,
+        percentile_50=round(_percentile(values, 50), 4) if sufficient else None,
+        percentile_75=round(_percentile(values, 75), 4) if sufficient else None,
+        percentile_90=round(_percentile(values, 90), 4) if sufficient else None,
         current_percentile=current_percentile,
         observation_count=len(values),
         lookback_years=round(lookback_years, 1),
@@ -155,6 +184,10 @@ def _statistics(
         history_end_date=max(dates).isoformat(),
         target_lookback_years=5.0,
         history_coverage_ratio=round(min(1.0, lookback_years / 5.0), 3),
+        raw_observation_count=raw_observation_count,
+        deduplicated_observation_count=len(values),
+        sampling_frequency="weekly_last_valid_close",
+        history_quality=history_quality,
     )
 
 
@@ -241,6 +274,10 @@ class HistoricalValuationService:
             observation.trailing_pe = pe
             observation.price_to_book = pb
             observation.quality = "fresh" if pe is not None or pb is not None else "unavailable"
+            iso = point.date.isocalendar()
+            observation.sampling_frequency = "weekly_last_valid_close"
+            observation.iso_year = iso.year
+            observation.iso_week = iso.week
             observation.updated_at = now
             session.add(observation)
         session.flush()
@@ -259,11 +296,31 @@ class HistoricalValuationService:
         framework: dict[str, object],
         ticker: str,
     ) -> None:
+        raw_count = len(observations)
+        observations = _weekly_observations(observations)
         snapshot.historical_pe_statistics = _statistics(
-            "trailing_pe", snapshot.trailing_pe, observations
+            "trailing_pe",
+            snapshot.trailing_pe,
+            observations,
+            raw_observation_count=raw_count,
+            minimum_observations=self.settings.valuation_history_min_observations,
+            minimum_days=self.settings.valuation_history_min_days,
         )
         snapshot.historical_pb_statistics = _statistics(
-            "price_to_book", snapshot.price_to_book, observations
+            "price_to_book",
+            snapshot.price_to_book,
+            observations,
+            raw_observation_count=raw_count,
+            minimum_observations=self.settings.valuation_history_min_observations,
+            minimum_days=self.settings.valuation_history_min_days,
+        )
+        qualities = [
+            stats.history_quality
+            for stats in (snapshot.historical_pe_statistics, snapshot.historical_pb_statistics)
+            if stats is not None
+        ]
+        snapshot.historical_distribution_confidence = (
+            0.9 if "high" in qualities else 0.7 if "medium" in qualities else 0.4 if "low" in qualities else 0.1
         )
         method = str(framework.get("primary_method", "")).lower()
         framework_text = json.dumps(framework, ensure_ascii=False).lower()

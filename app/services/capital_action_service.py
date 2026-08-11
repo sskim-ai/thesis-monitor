@@ -10,7 +10,18 @@ from app.models.financial import FinancialSnapshot
 from app.services.event_identity import event_fingerprint
 
 
-_ACTION_TYPES = {"capital_raise", "convertible_bond", "warrant", "dilution"}
+_ACTION_TYPES = {
+    "capital_raise",
+    "convertible_bond",
+    "warrant",
+    "dilution",
+    "buyback",
+    "share_retirement",
+    "dividend",
+    "stock_split",
+    "reverse_split",
+    "capital_reduction",
+}
 
 
 def _json_list(value: str | None) -> list[str]:
@@ -54,10 +65,59 @@ def _issue_type(event: Event) -> str | None:
         return "convertible_bond"
     if "신주인수권" in text or "warrant" in text:
         return "warrant"
+    if event.confirmed_buyback or any(
+        term in text
+        for term in ("share repurchase", "stock repurchase", "buyback", "자사주 매입", "자기주식 취득")
+    ):
+        return "buyback"
+    if "소각" in text or "share retirement" in text:
+        return "share_retirement"
+    if "배당" in text or "dividend" in text:
+        return "dividend"
+    if "reverse split" in text or "주식병합" in text:
+        return "reverse_split"
+    if "stock split" in text or "주식분할" in text:
+        return "stock_split"
+    if "감자" in text or "capital reduction" in text:
+        return "capital_reduction"
     return None
 
 
 class CapitalActionService:
+    def reconcile_identity(
+        self, session: Session, event: Event
+    ) -> CanonicalIssue | None:
+        if not event.issue_id or not event.identity_status.startswith("rejected"):
+            return None
+        issue = session.exec(
+            select(CanonicalIssue).where(CanonicalIssue.issue_key == event.issue_id)
+        ).first()
+        if issue is None:
+            return None
+        valid_linked_event = session.exec(
+            select(Event).where(
+                Event.issue_id == issue.issue_key,
+                Event.id != event.id,
+                Event.identity_validated.is_(True),
+                Event.event_type != "non_thesis_noise",
+            )
+        ).first()
+        if valid_linked_event is not None:
+            return issue
+        issue.status = "resolved"
+        issue.execution_status = "cancelled"
+        issue.economic_status = "resolved"
+        issue.warnings = json.dumps(
+            ["Security identity mismatch로 잘못 연결된 문서여서 경제적 경고에서 제외했습니다."],
+            ensure_ascii=False,
+        )
+        issue.updated_at = datetime.now(timezone.utc)
+        session.add(issue)
+        event.issue_id = None
+        event.corporate_action_id = None
+        session.add(event)
+        return issue
+
     def canonicalize(self, session: Session, event: Event) -> CanonicalIssue | None:
         action_type = _issue_type(event)
         if action_type is None:
@@ -101,6 +161,15 @@ class CapitalActionService:
             facts,
             ("capital raise fact: amount", "convertible bond fact: amount"),
         ) or event.financing_amount
+        if action_type == "buyback":
+            new_shares = _fact_number(
+                facts,
+                ("treasury stock fact: shares", "buyback fact: shares"),
+            )
+            proceeds = _fact_number(
+                facts,
+                ("treasury stock fact: amount", "buyback fact: amount"),
+            )
         previous = session.exec(
             select(FinancialSnapshot)
             .where(FinancialSnapshot.ticker == event.ticker)
@@ -113,16 +182,19 @@ class CapitalActionService:
         )
         issue.pre_action_share_count = pre_shares
         issue.new_shares = new_shares or issue.new_shares
-        issue.post_action_share_count = (
-            pre_shares + issue.new_shares
-            if pre_shares is not None and issue.new_shares is not None
-            else None
-        )
+        if pre_shares is not None and issue.new_shares is not None:
+            issue.post_action_share_count = (
+                pre_shares - issue.new_shares
+                if action_type in {"buyback", "share_retirement"}
+                else pre_shares + issue.new_shares
+            )
         issue.dilution_pct = (
             issue.new_shares / pre_shares * 100
             if pre_shares and issue.new_shares is not None
             else None
         )
+        if action_type in {"buyback", "share_retirement"} and pre_shares and issue.new_shares:
+            issue.dilution_pct = -(issue.new_shares / pre_shares * 100)
         issue.proceeds = proceeds or issue.proceeds
         issue.execution_status = _execution_status(event.title)
         issue.status = "updated" if issue.id else "opened"
@@ -132,7 +204,11 @@ class CapitalActionService:
             issue.status = "resolved"
             issue.economic_status = "resolved"
         else:
-            issue.economic_status = "open"
+            issue.economic_status = (
+                "monitoring"
+                if action_type in {"buyback", "share_retirement", "dividend", "stock_split"}
+                else "open"
+            )
         issue.updated_date = event.date
         issue.latest_event_date = max(issue.latest_event_date, event.date)
         ids = _json_list(issue.event_ids)
@@ -141,7 +217,12 @@ class CapitalActionService:
             ids.append(fingerprint)
         issue.event_ids = json.dumps(ids)
         warnings = []
-        if issue.dilution_pct is None:
+        if issue.dilution_pct is None and action_type in {
+            "capital_raise",
+            "convertible_bond",
+            "warrant",
+            "dilution",
+        }:
             warnings.append("신주 수와 기존 주식수의 일관된 기준이 부족해 희석률 정량화를 보류합니다.")
         issue.warnings = json.dumps(warnings, ensure_ascii=False)
         issue.updated_at = datetime.now(timezone.utc)

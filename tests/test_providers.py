@@ -93,12 +93,15 @@ def test_enable_live_provider_priority(monkeypatch: pytest.MonkeyPatch) -> None:
         "mock",
         "google_news_rss",
         "naver_news",
-        "newsapi",
         "opendart",
         "sec_edgar",
         "alpha_vantage",
         "company_ir",
     ]
+
+    monkeypatch.setenv("ENABLE_NEWSAPI_PROVIDER", "true")
+    get_settings.cache_clear()
+    assert "newsapi" in [provider.name for provider in provider_priority(True)]
 
 
 def test_naver_provider_success(monkeypatch: pytest.MonkeyPatch) -> None:

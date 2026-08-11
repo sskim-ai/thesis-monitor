@@ -10,7 +10,16 @@ KEYWORD_EVENT_TYPES: list[tuple[EventType, tuple[str, ...]]] = [
     (EventType.production_delay, ("production delay", "ramp delay", "shipment delay")),
     (EventType.major_customer_win, ("major customer win", "strategic customer win")),
     (EventType.customer_loss, ("major customer loss", "lost customer", "customer loss")),
-    (EventType.revenue_guidance_change, ("revenue guidance changed", "revenue outlook changed")),
+    (
+        EventType.revenue_guidance_change,
+        (
+            "revenue guidance changed",
+            "revenue outlook changed",
+            "revenue forecast",
+            "sales forecast",
+            "revenue outlook",
+        ),
+    ),
     (EventType.margin_guidance_change, ("margin guidance changed", "margin outlook changed")),
     (EventType.operating_cash_flow_change, ("operating cash flow changed", "cash from operations changed")),
     (EventType.fcf_change, ("free cash flow changed", "fcf changed")),
@@ -50,7 +59,24 @@ KEYWORD_EVENT_TYPES: list[tuple[EventType, tuple[str, ...]]] = [
     ),
     (EventType.warrant, ("warrant", "신주인수권", "bw")),
     (EventType.stock_compensation_increase, ("stock compensation increase", "stock-based compensation increase")),
-    (EventType.capital_allocation, ("자기주식", "자사주", "배당", "현금ㆍ현물배당")),
+    (
+        EventType.buyback,
+        (
+            "share repurchase",
+            "stock repurchase",
+            "buyback",
+            "repurchase authorization",
+            "accelerated share repurchase",
+            "자사주 매입",
+            "자기주식 취득",
+        ),
+    ),
+    (EventType.share_retirement, ("share retirement", "주식 소각", "자기주식 소각")),
+    (EventType.dividend, ("배당", "현금ㆍ현물배당", "cash dividend")),
+    (EventType.stock_split, ("stock split", "주식분할")),
+    (EventType.reverse_split, ("reverse split", "주식병합")),
+    (EventType.capital_reduction, ("capital reduction", "감자")),
+    (EventType.capital_allocation, ("자기주식", "자사주")),
     (EventType.facility_investment, ("신규시설투자", "시설투자결정", "facility investment")),
     (
         EventType.disclosure_clarification,
@@ -118,6 +144,10 @@ KNOWN_ENTITY_ALIASES = {
 
 
 def _mentions_company(raw_event: RawEvent, text: str) -> bool:
+    if raw_event.identity_status.startswith("rejected"):
+        return False
+    if raw_event.identity_validated:
+        return True
     source = raw_event.source.lower()
     if (
         raw_event.provider in MATERIAL_PROVIDERS | {"mock"}
@@ -156,6 +186,10 @@ def _mentions_company(raw_event: RawEvent, text: str) -> bool:
 
 
 def _flag_event_type(raw_event: RawEvent, text: str) -> EventType | None:
+    if raw_event.confirmed_buyback:
+        return EventType.buyback
+    if raw_event.buyback_candidate:
+        return EventType.capital_allocation
     if raw_event.financial_report_filed:
         return EventType.financial_report
     if raw_event.accounting_issue:

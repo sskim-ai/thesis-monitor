@@ -73,7 +73,12 @@ def provider_priority(
                     timeout_seconds=settings.live_provider_timeout_seconds,
                     display=settings.naver_news_display,
                 ),
-                NewsAPIProvider(),
+            ]
+        )
+        if settings.enable_newsapi_provider:
+            providers.append(NewsAPIProvider())
+        providers.extend(
+            [
                 OpenDARTProvider(),
                 SecEdgarProvider(),
                 AlphaVantageProvider(),
@@ -113,7 +118,7 @@ def provider_statuses() -> list[ProviderStatus]:
         ),
         _status(
             name="newsapi",
-            enabled=live_enabled,
+            enabled=live_enabled and settings.enable_newsapi_provider,
             configured=bool(settings.newsapi_api_key),
             required_settings=["NEWSAPI_API_KEY"],
             mode="live_skeleton",
@@ -140,8 +145,50 @@ def provider_statuses() -> list[ProviderStatus]:
             enabled=live_enabled,
             configured=bool(settings.alpha_vantage_api_key),
             required_settings=["ALPHA_VANTAGE_API_KEY"],
-            mode="skeleton",
-            markets=["US"], supported_data=["price", "multiples"], freshness="daily", forward=True,
+            mode="live_secondary",
+            markets=["US"],
+            supported_data=[
+                "overview_multiples",
+                "earnings_estimates",
+                "shares_outstanding",
+                "dividends",
+                "splits",
+                "financial_statements",
+            ],
+            freshness="daily",
+            forward=True,
+        ),
+        _status(
+            name="openfigi",
+            enabled=True,
+            configured=True,
+            required_settings=[],
+            mode="optional_identity",
+            markets=["KR", "US", "foreign_issuer"],
+            supported_data=["security_identity", "ticker_mapping", "share_class"],
+            freshness="on_demand",
+        ),
+        _status(
+            name="fmp",
+            enabled=bool(settings.fmp_api_key),
+            configured=bool(settings.fmp_api_key),
+            required_settings=["FMP_API_KEY"],
+            mode="optional_secondary",
+            markets=["US", "foreign_issuer"],
+            supported_data=["financial_statements", "consensus", "shares", "dividends"],
+            freshness="daily",
+            forward=True,
+        ),
+        _status(
+            name="sharadar",
+            enabled=bool(settings.sharadar_api_key),
+            configured=bool(settings.sharadar_api_key),
+            required_settings=["SHARADAR_API_KEY"],
+            mode="optional_validation",
+            markets=["US"],
+            supported_data=["point_in_time_financials", "historical_validation"],
+            freshness="daily",
+            depth=20,
         ),
         _status(
             name="company_ir",

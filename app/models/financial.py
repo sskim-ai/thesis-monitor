@@ -8,6 +8,8 @@ class FinancialSnapshot(SQLModel, table=True):
     id: int | None = Field(default=None, primary_key=True)
     ticker: str = Field(index=True)
     period: str
+    snapshot_type: str = Field(default="full_statement", index=True)
+    source_event_date: date | None = Field(default=None, index=True)
     period_type: str | None = Field(default=None, index=True)
     fiscal_year: int | None = Field(default=None, index=True)
     period_scope: str | None = None
@@ -86,6 +88,9 @@ class HistoricalValuationObservation(SQLModel, table=True):
     trailing_pe: float | None = None
     price_to_book: float | None = None
     quality: str = "unavailable"
+    sampling_frequency: str = "weekly"
+    iso_year: int | None = Field(default=None, index=True)
+    iso_week: int | None = Field(default=None, index=True)
     warnings: str = "[]"
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     updated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))

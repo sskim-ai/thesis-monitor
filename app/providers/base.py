@@ -48,6 +48,14 @@ class RawEvent:
     regulatory_material: bool = False
     financial_report_filed: bool = False
     operating_cash_flow_impact_known: bool = False
+    buyback_candidate: bool = False
+    confirmed_buyback: bool = False
+    subject_company_name: str | None = None
+    subject_ticker: str | None = None
+    identity_validated: bool = False
+    identity_status: str = "unvalidated"
+    relevance_evidence: list[str] = field(default_factory=list)
+    rejected_reason: str | None = None
 
 
 class BaseProvider(ABC):

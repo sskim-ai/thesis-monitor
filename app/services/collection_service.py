@@ -26,11 +26,16 @@ from app.schemas.financial import EarningsCheckpoint, EarningsCheckpointResponse
 from app.services.event_classifier import classify_event
 from app.services.event_identity import event_fingerprint
 from app.services.event_interpreter import enrich_raw_event
+from app.services.event_relevance_service import (
+    EventRelevanceService,
+    extract_structured_flags,
+)
 from app.services.financial_backfill_service import backfill_financial_snapshots
 from app.services.financial_validation import validate_event_financials
 from app.services.financial_snapshot_service import upsert_financial_snapshot_from_event
 from app.services.capital_action_service import CapitalActionService
 from app.services.dividend_history_service import DividendHistoryService
+from app.services.security_master_service import SecurityMasterService
 from app.services.thesis_scoring import score_event
 from app.utils.tickers import COMPANY_NAME_ALIASES, normalize_ticker
 
@@ -119,6 +124,8 @@ def _event_to_schema(event: Event) -> ThesisEvent:
             capex_impact_known=event.capex_impact_known,
             inventory_risk=event.inventory_risk,
             receivables_risk=event.receivables_risk,
+            buyback_candidate=event.buyback_candidate,
+            confirmed_buyback=event.confirmed_buyback,
         ),
         thesis_relevance={
             "requires_review": event.requires_review,
@@ -186,6 +193,13 @@ def _raw_event_to_model(raw_event: RawEvent) -> Event:
         requires_review=relevance.requires_review,
         relevance_score=relevance.relevance_score,
         relevance_reason=relevance.reason,
+        identity_validated=raw_event.identity_validated,
+        identity_status=raw_event.identity_status,
+        subject_company_id=raw_event.subject_ticker or raw_event.subject_company_name,
+        relevance_evidence=json.dumps(raw_event.relevance_evidence, ensure_ascii=False),
+        rejected_reason=raw_event.rejected_reason,
+        buyback_candidate=raw_event.buyback_candidate,
+        confirmed_buyback=raw_event.confirmed_buyback,
     )
     structured_material = any(
         (
@@ -203,6 +217,8 @@ def _raw_event_to_model(raw_event: RawEvent) -> Event:
             raw_event.accounting_issue,
             raw_event.regulatory_material,
             raw_event.financial_report_filed,
+            raw_event.buyback_candidate,
+            raw_event.confirmed_buyback,
         )
     )
     if structured_material and event_type.value != "non_thesis_noise":
@@ -267,6 +283,13 @@ def _refresh_duplicate_event(duplicate: Event, event: Event) -> None:
     duplicate.relevance_reason = event.relevance_reason
     duplicate.classification_override_reason = event.classification_override_reason
     duplicate.financial_refresh_required = event.financial_refresh_required
+    duplicate.identity_validated = event.identity_validated
+    duplicate.identity_status = event.identity_status
+    duplicate.subject_company_id = event.subject_company_id
+    duplicate.relevance_evidence = event.relevance_evidence
+    duplicate.rejected_reason = event.rejected_reason
+    duplicate.buyback_candidate = event.buyback_candidate
+    duplicate.confirmed_buyback = event.confirmed_buyback
 
 
 class CollectionService:
@@ -279,9 +302,12 @@ class CollectionService:
         self.profile_fallback_provider = MockProvider()
         self.dividend_service = DividendHistoryService()
         self.capital_action_service = CapitalActionService()
+        self.security_service = SecurityMasterService()
+        self.relevance_service = EventRelevanceService()
 
     def _connect_event_data(self, session: Session, event: Event) -> None:
         self.dividend_service.ingest_event(session, event)
+        self.capital_action_service.reconcile_identity(session, event)
         self.capital_action_service.canonicalize(session, event)
 
     async def _fetch_provider_events(
@@ -364,6 +390,7 @@ class CollectionService:
             or (watchlist_item.company_name if watchlist_item else None)
             or COMPANY_NAME_ALIASES.get(ticker)
         )
+        target_security = self.security_service.ensure(session, ticker)
         collected: list[Event] = []
         seen_urls: set[str] = set()
         seen_titles: set[str] = set()
@@ -375,6 +402,18 @@ class CollectionService:
                 logger.warning("Provider %s failed for %s: %s", provider.name, ticker, exc)
                 continue
             for raw_event in raw_events:
+                verdict = self.relevance_service.validate(
+                    session, raw_event, target_security
+                )
+                raw_event.identity_validated = verdict.accepted
+                raw_event.identity_status = verdict.status
+                raw_event.subject_company_name = verdict.subject_company_id
+                raw_event.relevance_evidence = verdict.evidence
+                raw_event.rejected_reason = verdict.reason
+                if verdict.accepted:
+                    extract_structured_flags(raw_event)
+                else:
+                    self.relevance_service.clear_material_flags(raw_event)
                 if not raw_event.company_name:
                     raw_event.company_name = company_name
                 title_key = _normalize_title(raw_event.title)

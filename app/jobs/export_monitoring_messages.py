@@ -10,6 +10,8 @@ from app.models.thesis import InvestmentThesis, ThesisAssessment
 from app.models.event import CanonicalIssue
 from app.models.financial import DataBackfillState, DividendHistory
 from app.models.watchlist import WatchlistItem
+from app.models.security import ProviderResponseCache, SecurityMaster
+from app.providers.registry import provider_statuses
 from app.services.daily_digest import build_daily_digest
 from app.services.daily_digest_renderer import render_daily_digest
 from app.services.notification_service import _assessment_report
@@ -78,8 +80,8 @@ def export_messages(run_date: date, output: Path) -> int:
                 "",
                 "## 부록. 14종목 데이터 커버리지",
                 "",
-                "| 종목 | 재무 이력 | 최신성 | 배당 | 자본행위 | 역사적 Valuation | Forward | Foreign filing | 남은 gap |",
-                "|---|---:|---|---|---|---|---|---|---|",
+                "| 종목 | Identity | Event | 정식/잠정 재무 | 최신성 | Consensus/주식수 | 배당/자사주/자본행위 | 역사/Forward | Foreign/ADR | 남은 gap |",
+                "|---|---|---|---|---|---|---|---|---|---|",
             ]
         )
         for assessment in assessments:
@@ -97,6 +99,9 @@ def export_messages(run_date: date, output: Path) -> int:
             issues = session.exec(
                 select(CanonicalIssue).where(CanonicalIssue.ticker == assessment.ticker)
             ).all()
+            security = session.exec(
+                select(SecurityMaster).where(SecurityMaster.ticker == assessment.ticker)
+            ).first()
             pe_stats = snapshot.get("historical_pe_statistics") or {}
             pb_stats = snapshot.get("historical_pb_statistics") or {}
             history_years = max(
@@ -109,16 +114,43 @@ def export_messages(run_date: date, output: Path) -> int:
             )
             reasons = coverage.get("reason_codes", [])
             gap = ", ".join(str(item) for item in reasons) if isinstance(reasons, list) and reasons else "없음"
-            financial_history = (
-                f"{state.backfill_years_available:.1f}년" if state else "확인 불가"
-            )
+            financial_history = f"{state.backfill_years_available:.1f}년" if state else "확인 불가"
             sections.append(
-                f"| {assessment.ticker} | {financial_history} | "
-            )
-            sections[-1] += (
+                f"| {assessment.ticker} | {coverage.get('identity_mapping', security.identity_quality if security else 'unavailable')} | "
+                f"{coverage.get('event_relevance', 'unavailable')} | "
+                f"{coverage.get('financial_full', 'unavailable')}/{coverage.get('financial_preliminary', 'unavailable')} ({financial_history}) | "
                 f"{coverage.get('financial_freshness', 'unavailable')} | "
-                f"{len(dividends)}건 | {len(issues)}건 | {history_years:.1f}년 | "
-                f"{forward} | {coverage.get('foreign_filing', 'not_applicable')} | {gap} |"
+                f"{coverage.get('consensus', 'unavailable')}/{coverage.get('shares', 'unavailable')} | "
+                f"배당 {len(dividends)}·자사주 {coverage.get('buyback', 'unavailable')}·이슈 {len(issues)} | "
+                f"{history_years:.1f}년 {coverage.get('historical_valuation_quality', 'unavailable')} / {forward} | "
+                f"{coverage.get('filing_discovery_coverage', 'not_applicable')}/"
+                f"{coverage.get('statement_parsing_coverage', 'not_applicable')}/"
+                f"{coverage.get('per_share_mapping_coverage', 'not_applicable')} | {gap} |"
+            )
+        sections.extend(
+            [
+                "",
+                "## 부록. Provider 커버리지",
+                "",
+                "| Provider | Enabled | Configured | 인증 설정 | 역할 | 테스트된 ticker | 최근 성공 | 최근 오류 |",
+                "|---|---|---|---|---|---:|---|---|",
+            ]
+        )
+        for status in provider_statuses():
+            cache_rows = session.exec(
+                select(ProviderResponseCache).where(
+                    ProviderResponseCache.provider == status.name
+                )
+            ).all()
+            tested_tickers = len({row.ticker for row in cache_rows})
+            successes = [row.last_success_at for row in cache_rows if row.last_success_at]
+            errors = [row.last_error for row in cache_rows if row.last_error]
+            auth = ", ".join(status.required_settings) if status.required_settings else "없음/선택"
+            sections.append(
+                f"| {status.name} | {status.enabled} | {status.configured} | {auth} | "
+                f"{', '.join(status.supported_data)} | {tested_tickers} | "
+                f"{max(successes).isoformat() if successes else '미기록'} | "
+                f"{errors[-1] if errors else '없음'} |"
             )
     output.parent.mkdir(parents=True, exist_ok=True)
     output.write_text("\n".join(sections) + "\n", encoding="utf-8")

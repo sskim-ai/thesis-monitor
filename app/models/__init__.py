@@ -21,6 +21,12 @@ from app.models.macro import (
 )
 from app.models.thesis import InvestmentThesis, MonitorRun, NotificationDelivery, ThesisAssessment
 from app.models.watchlist import WatchlistItem
+from app.models.security import (
+    ConsensusEstimate,
+    ProviderResponseCache,
+    SecurityMaster,
+    ShareCountObservation,
+)
 
 __all__ = [
     "Company",
@@ -47,4 +53,8 @@ __all__ = [
     "ThesisAssessment",
     "ThesisMacroImpact",
     "WatchlistItem",
+    "SecurityMaster",
+    "ProviderResponseCache",
+    "ConsensusEstimate",
+    "ShareCountObservation",
 ]

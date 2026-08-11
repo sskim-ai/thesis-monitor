@@ -1497,6 +1497,101 @@
             },
             "type": "array",
             "title": "Reason Codes"
+          },
+          "identity_mapping": {
+            "type": "string",
+            "title": "Identity Mapping",
+            "default": "unavailable"
+          },
+          "event_relevance": {
+            "type": "string",
+            "title": "Event Relevance",
+            "default": "unavailable"
+          },
+          "financial_full": {
+            "type": "string",
+            "title": "Financial Full",
+            "default": "unavailable"
+          },
+          "financial_preliminary": {
+            "type": "string",
+            "title": "Financial Preliminary",
+            "default": "unavailable"
+          },
+          "consensus": {
+            "type": "string",
+            "title": "Consensus",
+            "default": "unavailable"
+          },
+          "shares": {
+            "type": "string",
+            "title": "Shares",
+            "default": "unavailable"
+          },
+          "buyback": {
+            "type": "string",
+            "title": "Buyback",
+            "default": "unavailable"
+          },
+          "historical_valuation": {
+            "type": "string",
+            "title": "Historical Valuation",
+            "default": "unavailable"
+          },
+          "forward_valuation": {
+            "type": "string",
+            "title": "Forward Valuation",
+            "default": "unavailable"
+          },
+          "filing_discovery_coverage": {
+            "type": "string",
+            "title": "Filing Discovery Coverage",
+            "default": "not_applicable"
+          },
+          "statement_parsing_coverage": {
+            "type": "string",
+            "title": "Statement Parsing Coverage",
+            "default": "not_applicable"
+          },
+          "per_share_mapping_coverage": {
+            "type": "string",
+            "title": "Per Share Mapping Coverage",
+            "default": "not_applicable"
+          },
+          "valuation_coverage": {
+            "type": "string",
+            "title": "Valuation Coverage",
+            "default": "unavailable"
+          },
+          "price_quality": {
+            "type": "string",
+            "title": "Price Quality",
+            "default": "unavailable"
+          },
+          "financial_quality": {
+            "type": "string",
+            "title": "Financial Quality",
+            "default": "unavailable"
+          },
+          "event_quality": {
+            "type": "string",
+            "title": "Event Quality",
+            "default": "unavailable"
+          },
+          "consensus_quality": {
+            "type": "string",
+            "title": "Consensus Quality",
+            "default": "unavailable"
+          },
+          "historical_valuation_quality": {
+            "type": "string",
+            "title": "Historical Valuation Quality",
+            "default": "unavailable"
+          },
+          "forward_valuation_quality": {
+            "type": "string",
+            "title": "Forward Valuation Quality",
+            "default": "unavailable"
           }
         },
         "type": "object",
@@ -1942,6 +2037,12 @@
           "convertible_bond",
           "warrant",
           "stock_compensation_increase",
+          "buyback",
+          "share_retirement",
+          "dividend",
+          "stock_split",
+          "reverse_split",
+          "capital_reduction",
           "partnership",
           "partnership_to_revenue",
           "customer_loss",
@@ -2095,6 +2196,16 @@
           "receivables_risk": {
             "type": "boolean",
             "title": "Receivables Risk",
+            "default": false
+          },
+          "buyback_candidate": {
+            "type": "boolean",
+            "title": "Buyback Candidate",
+            "default": false
+          },
+          "confirmed_buyback": {
+            "type": "boolean",
+            "title": "Confirmed Buyback",
             "default": false
           }
         },
@@ -2293,6 +2404,26 @@
             "type": "number",
             "title": "History Coverage Ratio",
             "default": 0.0
+          },
+          "raw_observation_count": {
+            "type": "integer",
+            "title": "Raw Observation Count",
+            "default": 0
+          },
+          "deduplicated_observation_count": {
+            "type": "integer",
+            "title": "Deduplicated Observation Count",
+            "default": 0
+          },
+          "sampling_frequency": {
+            "type": "string",
+            "title": "Sampling Frequency",
+            "default": "weekly"
+          },
+          "history_quality": {
+            "type": "string",
+            "title": "History Quality",
+            "default": "insufficient"
           }
         },
         "type": "object",
@@ -5667,6 +5798,151 @@
             "type": "string",
             "title": "Financial Freshness",
             "default": "unavailable"
+          },
+          "latest_full_financial_period": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Latest Full Financial Period"
+          },
+          "latest_preliminary_financial_period": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Latest Preliminary Financial Period"
+          },
+          "latest_guidance_date": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Latest Guidance Date"
+          },
+          "financial_refresh_result": {
+            "type": "string",
+            "title": "Financial Refresh Result",
+            "default": "unavailable"
+          },
+          "estimate_provider": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Estimate Provider"
+          },
+          "estimate_as_of": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Estimate As Of"
+          },
+          "estimate_period": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Estimate Period"
+          },
+          "estimate_mean": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Estimate Mean"
+          },
+          "estimate_high": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Estimate High"
+          },
+          "estimate_low": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Estimate Low"
+          },
+          "estimate_analyst_count": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Estimate Analyst Count"
+          },
+          "estimate_revision_direction": {
+            "type": "string",
+            "title": "Estimate Revision Direction",
+            "default": "unknown"
+          },
+          "consensus_disagreement": {
+            "type": "boolean",
+            "title": "Consensus Disagreement",
+            "default": false
+          },
+          "share_count_discrepancy_warning": {
+            "type": "boolean",
+            "title": "Share Count Discrepancy Warning",
+            "default": false
+          },
+          "historical_distribution_confidence": {
+            "type": "number",
+            "title": "Historical Distribution Confidence",
+            "default": 0.0
+          },
+          "current_multiple_confidence": {
+            "type": "number",
+            "title": "Current Multiple Confidence",
+            "default": 0.0
+          },
+          "forward_multiple_confidence": {
+            "type": "number",
+            "title": "Forward Multiple Confidence",
+            "default": 0.0
           },
           "data_coverage": {
             "$ref": "#/components/schemas/DataCoverage"

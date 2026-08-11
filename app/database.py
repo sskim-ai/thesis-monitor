@@ -89,8 +89,17 @@ def _ensure_sqlite_columns() -> None:
             "corporate_action_id": "VARCHAR",
             "classification_override_reason": "VARCHAR",
             "financial_refresh_required": "BOOLEAN DEFAULT 0",
+            "identity_validated": "BOOLEAN DEFAULT 0",
+            "identity_status": "VARCHAR DEFAULT 'unvalidated'",
+            "subject_company_id": "VARCHAR",
+            "relevance_evidence": "VARCHAR DEFAULT '[]'",
+            "rejected_reason": "VARCHAR",
+            "buyback_candidate": "BOOLEAN DEFAULT 0",
+            "confirmed_buyback": "BOOLEAN DEFAULT 0",
         },
         "financialsnapshot": {
+            "snapshot_type": "VARCHAR DEFAULT 'full_statement'",
+            "source_event_date": "DATE",
             "fcf": "FLOAT",
             "accounts_receivable": "FLOAT",
             "stock_based_compensation": "FLOAT",
@@ -188,6 +197,9 @@ def _ensure_sqlite_columns() -> None:
         },
         "historicalvaluationobservation": {
             "warnings": "VARCHAR DEFAULT '[]'",
+            "sampling_frequency": "VARCHAR DEFAULT 'weekly'",
+            "iso_year": "INTEGER",
+            "iso_week": "INTEGER",
         },
     }
     with engine.begin() as connection:

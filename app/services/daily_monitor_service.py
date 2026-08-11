@@ -18,6 +18,7 @@ from app.services.notification_service import (
     queue_daily_stock_notification,
 )
 from app.services.ohlcv_client import OhlcvClient
+from app.services.issue_identity_audit_service import IssueIdentityAuditService
 from app.services.thesis_evaluation_service import evaluate_thesis, recent_events_for_assessment
 from app.services.valuation_snapshot_service import ValuationSnapshotService
 from app.services.warning_backfill_service import backfill_confirmed_warning_states
@@ -235,6 +236,7 @@ async def run_daily_monitor(
             )
             events = recent_events_for_assessment(session, item.ticker, run_date)
             previous_assessment = _previous_assessment(session, item.ticker, run_date)
+            IssueIdentityAuditService().audit(session, item.ticker)
             baseline_warning_states = backfill_confirmed_warning_states(
                 session, thesis, run_date
             )

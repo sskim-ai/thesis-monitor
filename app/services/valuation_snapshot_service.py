@@ -8,6 +8,7 @@ from sqlmodel import Session, select
 
 from app.config import get_settings
 from app.models.financial import CapitalReturnHistory, DividendHistory, FinancialSnapshot
+from app.models.security import ConsensusEstimate, ShareCountObservation
 from app.models.watchlist import WatchlistItem
 from app.models.thesis import InvestmentThesis
 from app.schemas.thesis import (
@@ -20,6 +21,7 @@ from app.services.historical_valuation_service import (
     filing_date,
     financial_period_end,
 )
+from app.services.alpha_vantage_service import AlphaVantageService
 from app.services.data_coverage_service import DataCoverageService
 from app.services.dividend_history_service import DividendHistoryService
 from app.services.financial_freshness_service import FinancialFreshnessService
@@ -157,6 +159,7 @@ class ValuationSnapshotService:
         self.dividend_service = DividendHistoryService()
         self.coverage_service = DataCoverageService()
         self.freshness_service = FinancialFreshnessService()
+        self.alpha_vantage_service = AlphaVantageService(transport=transport)
 
     def _financial_rows(
         self,
@@ -548,6 +551,23 @@ class ValuationSnapshotService:
             ).first()
         provider_pe: float | None = None
         provider_pb: float | None = None
+        alpha_metrics: dict[str, float | None] = {}
+
+        if (
+            session is not None
+            and _supports_finnhub(exchange, ticker)
+            and self.settings.alpha_vantage_api_key
+        ):
+            alpha_bundle = await self.alpha_vantage_service.collect(
+                session,
+                ticker,
+                functions=("EARNINGS_ESTIMATES", "SHARES_OUTSTANDING", "OVERVIEW"),
+            )
+            alpha_metrics = self.alpha_vantage_service.overview_metrics(alpha_bundle)
+            if alpha_bundle.warnings:
+                snapshot.warnings.append(
+                    "Alpha Vantage 일부 보조 데이터가 제공되지 않아 사용 가능한 항목만 교차검증했습니다."
+                )
 
         if _supports_finnhub(exchange, ticker) and self.settings.finnhub_api_key:
             try:
@@ -610,6 +630,54 @@ class ValuationSnapshotService:
         elif _supports_finnhub(exchange, ticker):
             snapshot.warnings.append("Finnhub API key가 없어 Valuation 배수를 수집하지 못했습니다.")
 
+        alpha_estimate: ConsensusEstimate | None = None
+        alpha_shares: ShareCountObservation | None = None
+        if session is not None:
+            alpha_estimate = session.exec(
+                select(ConsensusEstimate)
+                .where(
+                    ConsensusEstimate.ticker == ticker,
+                    ConsensusEstimate.provider == "alpha_vantage",
+                )
+                .order_by(ConsensusEstimate.estimate_period)
+            ).first()
+            alpha_shares = session.exec(
+                select(ShareCountObservation)
+                .where(
+                    ShareCountObservation.ticker == ticker,
+                    ShareCountObservation.provider == "alpha_vantage",
+                )
+                .order_by(ShareCountObservation.observed_at.desc())
+            ).first()
+        if alpha_estimate and alpha_estimate.estimate_mean is not None:
+            alpha_eps = alpha_estimate.estimate_mean
+            snapshot.estimate_provider = "alpha_vantage"
+            snapshot.estimate_as_of = alpha_estimate.estimate_as_of.isoformat()
+            snapshot.estimate_period = alpha_estimate.estimate_period
+            snapshot.estimate_mean = alpha_eps
+            snapshot.estimate_high = alpha_estimate.estimate_high
+            snapshot.estimate_low = alpha_estimate.estimate_low
+            snapshot.estimate_analyst_count = alpha_estimate.analyst_count
+            snapshot.estimate_revision_direction = alpha_estimate.revision_direction
+            if snapshot.current_price and alpha_eps > 0:
+                alpha_forward_pe = snapshot.current_price / alpha_eps
+                if snapshot.forward_pe_status != "value":
+                    snapshot.forward_pe = round(alpha_forward_pe, 4)
+                    snapshot.forward_pe_status = "value"
+                    snapshot.forward_pe_source = "consensus_forward"
+                    snapshot.forward_pe_method = "Alpha Vantage analyst EPS estimate"
+                    snapshot.forward_basis = alpha_estimate.estimate_period
+                    snapshot.forward_valuation_confidence = 0.65
+                elif snapshot.forward_pe:
+                    finnhub_implied_eps = snapshot.current_price / snapshot.forward_pe
+                    discrepancy = abs(finnhub_implied_eps / alpha_eps - 1)
+                    if discrepancy > self.settings.alpha_vantage_consensus_discrepancy_pct / 100:
+                        snapshot.consensus_disagreement = True
+                        snapshot.forward_valuation_confidence *= 0.7
+                        snapshot.warnings.append(
+                            "Finnhub와 Alpha Vantage의 forward EPS 추정치 차이가 커 신뢰도를 낮췄습니다."
+                        )
+
         issuer_type = watchlist_item.issuer_type if watchlist_item else None
         missing_adr_mapping = issuer_type in {"adr", "foreign_private_issuer"} and (
             watchlist_item is None or watchlist_item.adr_ratio is None
@@ -623,6 +691,24 @@ class ValuationSnapshotService:
             )
         else:
             derived_pe, derived_pb = self._apply_derived_trailing(snapshot, rows)
+        if alpha_shares and rows:
+            official_shares = next(
+                (
+                    row.diluted_shares or row.common_shares_outstanding
+                    for row in reversed(rows)
+                    if row.diluted_shares or row.common_shares_outstanding
+                ),
+                None,
+            )
+            cross_check_shares = alpha_shares.diluted_shares or alpha_shares.basic_shares
+            if official_shares and cross_check_shares:
+                share_difference = abs(cross_check_shares / official_shares - 1)
+                if share_difference > self.settings.alpha_vantage_share_discrepancy_pct / 100:
+                    snapshot.share_count_discrepancy_warning = True
+                    snapshot.trailing_valuation_confidence *= 0.7
+                    snapshot.warnings.append(
+                        "공식 재무제표와 Alpha Vantage 주식 수 차이가 커 주당 배수 신뢰도를 낮췄습니다."
+                    )
         framework = _json_dict(thesis.valuation_framework if thesis else None)
         if not missing_adr_mapping:
             self._apply_forward_model(
@@ -634,6 +720,13 @@ class ValuationSnapshotService:
                 capital_returns,
             )
         self._cross_check(snapshot, provider_pe, provider_pb, derived_pe, derived_pb)
+        self._cross_check(
+            snapshot,
+            alpha_metrics.get("trailing_pe"),
+            alpha_metrics.get("price_to_book"),
+            derived_pe,
+            derived_pb,
+        )
         if session is not None and not missing_adr_mapping:
             observations = self.history_service.update_cache(
                 session,
@@ -694,12 +787,51 @@ class ValuationSnapshotService:
                 if freshness.latest_material_event_date else None
             )
             snapshot.financial_freshness = freshness.status
+            snapshot.latest_full_financial_period = (
+                freshness.latest_full_period.isoformat()
+                if freshness.latest_full_period
+                else None
+            )
+            snapshot.latest_preliminary_financial_period = (
+                freshness.latest_preliminary_period.isoformat()
+                if freshness.latest_preliminary_period
+                else None
+            )
+            snapshot.latest_guidance_date = (
+                freshness.latest_guidance_date.isoformat()
+                if freshness.latest_guidance_date
+                else None
+            )
+            snapshot.financial_refresh_result = freshness.refresh_result
             if freshness.refresh_required:
                 snapshot.quality = "stale"
                 snapshot.forward_valuation_confidence *= 0.5
                 snapshot.trailing_valuation_confidence *= 0.7
                 snapshot.warnings.append(
                     "최근 실적 발표는 확인됐지만 Valuation 재무 snapshot이 최신 분기로 갱신되지 않았습니다."
+                )
+            snapshot.current_multiple_confidence = snapshot.trailing_valuation_confidence
+            snapshot.forward_multiple_confidence = snapshot.forward_valuation_confidence
+            if (
+                freshness.refresh_required
+                or snapshot.consensus_disagreement
+                or snapshot.share_count_discrepancy_warning
+            ):
+                if snapshot.valuation_relative_position_confidence == "high":
+                    snapshot.valuation_relative_position_confidence = "medium"
+                if snapshot.consensus_disagreement or snapshot.share_count_discrepancy_warning:
+                    snapshot.valuation_relative_position_confidence = "low"
+            if (
+                freshness.refresh_required
+                and snapshot.current_multiple_confidence < 0.4
+                and snapshot.forward_multiple_confidence < 0.4
+            ):
+                snapshot.valuation_relative_position = ValuationRelativePosition.unknown
+                snapshot.valuation_relative_position_reason = (
+                    "최근 material 실적 이후 정식 재무 분모가 갱신되지 않아 현재 Valuation 위치 판단을 보류합니다."
+                )
+                snapshot.valuation_relative_position_reason_codes.append(
+                    "stale_financial_after_material_event"
                 )
             snapshot.data_coverage = self.coverage_service.build(session, ticker, snapshot)
         return snapshot

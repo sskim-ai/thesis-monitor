@@ -304,6 +304,10 @@ class HistoricalValuationStatistics(BaseModel):
     history_end_date: str | None = None
     target_lookback_years: float = 5.0
     history_coverage_ratio: float = 0.0
+    raw_observation_count: int = 0
+    deduplicated_observation_count: int = 0
+    sampling_frequency: str = "weekly"
+    history_quality: str = "insufficient"
 
 
 class DataCoverage(BaseModel):
@@ -322,6 +326,25 @@ class DataCoverage(BaseModel):
     price_confidence: float = 0.0
     macro_impact_confidence: float = 0.0
     reason_codes: list[str] = Field(default_factory=list)
+    identity_mapping: str = "unavailable"
+    event_relevance: str = "unavailable"
+    financial_full: str = "unavailable"
+    financial_preliminary: str = "unavailable"
+    consensus: str = "unavailable"
+    shares: str = "unavailable"
+    buyback: str = "unavailable"
+    historical_valuation: str = "unavailable"
+    forward_valuation: str = "unavailable"
+    filing_discovery_coverage: str = "not_applicable"
+    statement_parsing_coverage: str = "not_applicable"
+    per_share_mapping_coverage: str = "not_applicable"
+    valuation_coverage: str = "unavailable"
+    price_quality: str = "unavailable"
+    financial_quality: str = "unavailable"
+    event_quality: str = "unavailable"
+    consensus_quality: str = "unavailable"
+    historical_valuation_quality: str = "unavailable"
+    forward_valuation_quality: str = "unavailable"
 
 
 class ValuationSnapshot(BaseModel):
@@ -384,6 +407,23 @@ class ValuationSnapshot(BaseModel):
     financial_refresh_required: bool = False
     latest_material_financial_event_date: str | None = None
     financial_freshness: str = "unavailable"
+    latest_full_financial_period: str | None = None
+    latest_preliminary_financial_period: str | None = None
+    latest_guidance_date: str | None = None
+    financial_refresh_result: str = "unavailable"
+    estimate_provider: str | None = None
+    estimate_as_of: str | None = None
+    estimate_period: str | None = None
+    estimate_mean: float | None = None
+    estimate_high: float | None = None
+    estimate_low: float | None = None
+    estimate_analyst_count: int | None = None
+    estimate_revision_direction: str = "unknown"
+    consensus_disagreement: bool = False
+    share_count_discrepancy_warning: bool = False
+    historical_distribution_confidence: float = 0.0
+    current_multiple_confidence: float = 0.0
+    forward_multiple_confidence: float = 0.0
     data_coverage: DataCoverage = Field(default_factory=DataCoverage)
     valuation_discrepancy_warning: bool = False
     valuation_calculation_warning: bool = False

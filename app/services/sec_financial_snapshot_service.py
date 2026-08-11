@@ -1,9 +1,12 @@
-from datetime import date
+import json
+import re
+from datetime import date, datetime, timezone
 
 import httpx
 from sqlmodel import Session, select
 
 from app.models.financial import FinancialSnapshot
+from app.models.security import ProviderResponseCache
 
 
 _CONCEPTS = {
@@ -148,6 +151,54 @@ class SecFinancialSnapshotService:
             } if isinstance(payload, dict) else {}
         return self._ticker_ciks.get(ticker.upper())
 
+    async def _scan_6k_exhibits(
+        self, client: httpx.AsyncClient, cik: str
+    ) -> dict[str, object]:
+        response = await client.get(f"https://data.sec.gov/submissions/CIK{cik}.json")
+        response.raise_for_status()
+        payload = response.json()
+        recent = payload.get("filings", {}).get("recent", {}) if isinstance(payload, dict) else {}
+        forms = recent.get("form", []) if isinstance(recent, dict) else []
+        accessions = recent.get("accessionNumber", []) if isinstance(recent, dict) else []
+        primary_documents = recent.get("primaryDocument", []) if isinstance(recent, dict) else []
+        candidates: list[dict[str, object]] = []
+        for form, accession, primary in zip(forms, accessions, primary_documents, strict=False):
+            if form != "6-K":
+                continue
+            accession_path = str(accession).replace("-", "")
+            index_url = (
+                f"https://www.sec.gov/Archives/edgar/data/{int(cik)}/{accession_path}/index.json"
+            )
+            index_response = await client.get(index_url)
+            index_response.raise_for_status()
+            items = index_response.json().get("directory", {}).get("item", [])
+            exhibits = []
+            for item in items if isinstance(items, list) else []:
+                name = str(item.get("name", ""))
+                lowered = name.lower()
+                if not re.search(r"(?:ex-?99|earn|result|release|financial)", lowered):
+                    continue
+                exhibits.append(
+                    {
+                        "name": name,
+                        "url": f"https://www.sec.gov/Archives/edgar/data/{int(cik)}/{accession_path}/{name}",
+                    }
+                )
+            candidates.append(
+                {
+                    "accession": accession,
+                    "primary_document": primary,
+                    "linked_exhibits": exhibits,
+                    "parsing_attempted": True,
+                }
+            )
+            break
+        return {
+            "filing_discovered": bool(candidates),
+            "statement_parsing_attempted": bool(candidates),
+            "filings": candidates,
+        }
+
     async def refresh(
         self,
         session: Session,
@@ -162,6 +213,31 @@ class SecFinancialSnapshotService:
             response = await client.get(f"https://data.sec.gov/api/xbrl/companyfacts/CIK{cik}.json")
             response.raise_for_status()
             payload = response.json()
+            try:
+                exhibit_coverage = await self._scan_6k_exhibits(client, cik)
+            except (httpx.HTTPError, TypeError, ValueError):
+                exhibit_coverage = {
+                    "filing_discovered": False,
+                    "statement_parsing_attempted": True,
+                    "reason": "foreign_filing_partial",
+                }
+        cache = session.exec(
+            select(ProviderResponseCache).where(
+                ProviderResponseCache.provider == "sec_edgar",
+                ProviderResponseCache.ticker == ticker.upper(),
+                ProviderResponseCache.data_type == "foreign_6k_exhibits",
+            )
+        ).first() or ProviderResponseCache(
+            provider="sec_edgar",
+            ticker=ticker.upper(),
+            data_type="foreign_6k_exhibits",
+        )
+        cache.status = "success" if exhibit_coverage.get("filing_discovered") else "partial"
+        cache.payload = json.dumps(exhibit_coverage)
+        cache.fetched_at = datetime.now(timezone.utc)
+        cache.last_success_at = cache.fetched_at if cache.status == "success" else cache.last_success_at
+        cache.last_error = None if cache.status == "success" else "foreign_filing_partial"
+        session.add(cache)
         if not isinstance(payload, dict) or not isinstance(payload.get("facts"), dict):
             return 0
         facts = {field: _facts(payload, field) for field in _CONCEPTS}
