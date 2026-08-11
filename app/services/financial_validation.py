@@ -170,7 +170,7 @@ def _raw_field_mapping_errors(event: Event) -> list[str]:
     errors: list[str] = []
     if len(methods) > 1:
         errors.append("mixed_parser_basis")
-    supported_units = {"원", "천원", "백만원", "억원"}
+    supported_units = {"원", "천원", "백만원", "억원", "조원"}
     if any(
         isinstance(item, dict)
         and item.get("raw_unit") not in supported_units

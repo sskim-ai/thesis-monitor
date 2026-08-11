@@ -5940,6 +5940,124 @@
             "type": "array",
             "title": "Ttm Source Filings"
           },
+          "ttm_contains_preliminary": {
+            "type": "boolean",
+            "title": "Ttm Contains Preliminary",
+            "default": false
+          },
+          "preliminary_quarter_count": {
+            "type": "integer",
+            "title": "Preliminary Quarter Count",
+            "default": 0
+          },
+          "latest_earnings_period": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Latest Earnings Period"
+          },
+          "earnings_basis": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Earnings Basis"
+          },
+          "share_basis": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Share Basis"
+          },
+          "earnings_quarter_series": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object",
+              "properties": {}
+            },
+            "type": "array",
+            "title": "Earnings Quarter Series"
+          },
+          "latest_operating_margin": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Latest Operating Margin"
+          },
+          "latest_revenue_qoq": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Latest Revenue Qoq"
+          },
+          "latest_revenue_yoy": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Latest Revenue Yoy"
+          },
+          "latest_operating_income_qoq": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Latest Operating Income Qoq"
+          },
+          "latest_operating_income_yoy": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Latest Operating Income Yoy"
+          },
+          "latest_operating_margin_delta_qoq": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Latest Operating Margin Delta Qoq"
+          },
           "quality": {
             "type": "string",
             "title": "Quality",
@@ -6447,6 +6565,70 @@
               }
             ],
             "title": "Derived Forward Price To Book"
+          },
+          "trailing_pe_comparability": {
+            "type": "string",
+            "title": "Trailing Pe Comparability",
+            "default": "insufficient_metadata"
+          },
+          "trailing_pe_comparability_reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Trailing Pe Comparability Reason"
+          },
+          "price_to_book_comparability": {
+            "type": "string",
+            "title": "Price To Book Comparability",
+            "default": "insufficient_metadata"
+          },
+          "price_to_book_comparability_reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Price To Book Comparability Reason"
+          },
+          "forward_pe_comparability": {
+            "type": "string",
+            "title": "Forward Pe Comparability",
+            "default": "insufficient_metadata"
+          },
+          "forward_pe_comparability_reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Forward Pe Comparability Reason"
+          },
+          "forward_price_to_book_comparability": {
+            "type": "string",
+            "title": "Forward Price To Book Comparability",
+            "default": "insufficient_metadata"
+          },
+          "forward_price_to_book_comparability_reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Forward Price To Book Comparability Reason"
           },
           "multiple_basis_conflicts": {
             "items": {

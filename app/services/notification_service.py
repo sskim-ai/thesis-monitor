@@ -589,15 +589,25 @@ def _assessment_report(
         ("fPER", "forward_pe", "forward_eps", "예상 EPS"),
         ("fPBR", "forward_price_to_book", "forward_bvps", "예상 BVPS"),
     ):
-        valuation_lines.extend(
-            _valuation_formula_lines(
-                valuation_snapshot,
-                label=arguments[0],
-                multiple_field=arguments[1],
-                denominator_field=arguments[2],
-                denominator_label=arguments[3],
-            )
+        denominator_label = arguments[3]
+        if arguments[0] == "PER" and valuation_snapshot.get(
+            "ttm_contains_preliminary"
+        ):
+            denominator_label = "최근 4개 분기 EPS"
+        rendered_formula = _valuation_formula_lines(
+            valuation_snapshot,
+            label=arguments[0],
+            multiple_field=arguments[1],
+            denominator_field=arguments[2],
+            denominator_label=denominator_label,
         )
+        valuation_lines.extend(rendered_formula)
+        if (
+            arguments[0] == "PER"
+            and rendered_formula
+            and valuation_snapshot.get("ttm_contains_preliminary")
+        ):
+            valuation_lines.append("※ 최근 분기 잠정실적 반영")
     history_summary = _history_summary(valuation_snapshot)
     if history_summary:
         valuation_lines.extend(["과거 대비:", history_summary])

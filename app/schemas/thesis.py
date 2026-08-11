@@ -423,6 +423,18 @@ class ValuationSnapshot(BaseModel):
     ttm_period_start: str | None = None
     ttm_period_end: str | None = None
     ttm_source_filings: list[str] = Field(default_factory=list)
+    ttm_contains_preliminary: bool = False
+    preliminary_quarter_count: int = 0
+    latest_earnings_period: str | None = None
+    earnings_basis: str | None = None
+    share_basis: str | None = None
+    earnings_quarter_series: list[dict[str, object]] = Field(default_factory=list)
+    latest_operating_margin: float | None = None
+    latest_revenue_qoq: float | None = None
+    latest_revenue_yoy: float | None = None
+    latest_operating_income_qoq: float | None = None
+    latest_operating_income_yoy: float | None = None
+    latest_operating_margin_delta_qoq: float | None = None
     quality: str = "unavailable"
     trailing_valuation_confidence: float = 0.0
     forward_valuation_confidence: float = 0.0
@@ -484,6 +496,14 @@ class ValuationSnapshot(BaseModel):
     derived_forward_pe: float | None = None
     provider_forward_price_to_book: float | None = None
     derived_forward_price_to_book: float | None = None
+    trailing_pe_comparability: str = "insufficient_metadata"
+    trailing_pe_comparability_reason: str | None = None
+    price_to_book_comparability: str = "insufficient_metadata"
+    price_to_book_comparability_reason: str | None = None
+    forward_pe_comparability: str = "insufficient_metadata"
+    forward_pe_comparability_reason: str | None = None
+    forward_price_to_book_comparability: str = "insufficient_metadata"
+    forward_price_to_book_comparability_reason: str | None = None
     multiple_basis_conflicts: list[str] = Field(default_factory=list)
     valuation_calculation_warning: bool = False
     warnings: list[str] = Field(default_factory=list)

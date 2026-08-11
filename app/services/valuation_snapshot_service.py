@@ -1,12 +1,13 @@
 import json
 import math
+from dataclasses import dataclass
 from datetime import date, datetime, timedelta, timezone
 from statistics import median
 
 import httpx
 from sqlmodel import Session, select
 
-from app.config import get_settings
+from app.config import Settings, get_settings
 from app.models.financial import CapitalReturnHistory, DividendHistory, FinancialSnapshot
 from app.models.security import (
     ConsensusEstimate,
@@ -89,28 +90,240 @@ def _valid_quarters(rows: list[FinancialSnapshot]) -> list[FinancialSnapshot]:
     )
 
 
+def _stored_list(value: str | None) -> list[str]:
+    try:
+        parsed = json.loads(value or "[]")
+    except json.JSONDecodeError:
+        return []
+    return [str(item) for item in parsed] if isinstance(parsed, list) else []
+
+
+def _quarter_key(row: FinancialSnapshot) -> date | None:
+    return financial_period_end(row)
+
+
+def _preliminary_is_earnings_usable(row: FinancialSnapshot) -> bool:
+    if row.snapshot_type != "preliminary_earnings":
+        return True
+    raw_fields = _json_dict_list(row.raw_financial_fields)
+    parse_methods = {
+        str(field.get("parse_method"))
+        for field in raw_fields
+        if field.get("parse_method")
+    }
+    return (
+        (row.provider or "").lower() == "opendart"
+        and bool(row.source_filing_id)
+        and row.financial_period_end is not None
+        and row.currency == "KRW"
+        and bool(row.unit_scale and row.unit_scale > 0)
+        and not _stored_list(row.financial_hard_errors)
+        and not row.financial_statement_basis_warning
+        and not row.margin_quality_review
+        and bool({"html_semantic_table", "structured_filing"} & parse_methods)
+        and row.revenue is not None
+        and row.operating_income is not None
+    )
+
+
+def _json_dict_list(value: str | None) -> list[dict[str, object]]:
+    try:
+        parsed = json.loads(value or "[]")
+    except json.JSONDecodeError:
+        return []
+    if not isinstance(parsed, list):
+        return []
+    return [item for item in parsed if isinstance(item, dict)]
+
+
+def _earnings_quarters(rows: list[FinancialSnapshot]) -> list[FinancialSnapshot]:
+    """Select one validated earnings record per actual fiscal quarter."""
+    selected: dict[date, FinancialSnapshot] = {}
+    for row in sorted(
+        rows,
+        key=lambda item: (financial_period_end(item) or date.min, filing_date(item) or date.min),
+    ):
+        key = _quarter_key(row)
+        if key is None or row.snapshot_type not in {"full_statement", "preliminary_earnings"}:
+            continue
+        if _stored_list(row.financial_hard_errors):
+            continue
+        if row.financial_statement_basis_warning or row.margin_quality_review:
+            continue
+        if row.snapshot_type == "preliminary_earnings" and not _preliminary_is_earnings_usable(row):
+            continue
+        if all(
+            value is None
+            for value in (
+                row.revenue,
+                row.operating_income,
+                row.common_net_income,
+                row.owners_parent_net_income,
+                row.basic_eps,
+                row.diluted_eps,
+            )
+        ):
+            continue
+        current = selected.get(key)
+        if current is None:
+            selected[key] = row
+            continue
+        current_priority = 2 if current.snapshot_type == "full_statement" else 1
+        row_priority = 2 if row.snapshot_type == "full_statement" else 1
+        if row_priority > current_priority or (
+            row_priority == current_priority
+            and (filing_date(row) or date.min) >= (filing_date(current) or date.min)
+        ):
+            selected[key] = row
+    return [selected[key] for key in sorted(selected)]
+
+
+def _latest_official_shares(
+    rows: list[FinancialSnapshot], as_of: date | None
+) -> tuple[float | None, str | None]:
+    candidates = [
+        row
+        for row in rows
+        if row.snapshot_type == "full_statement"
+        and (as_of is None or (filing_date(row) is not None and filing_date(row) <= as_of))
+        and (row.diluted_shares or row.common_shares_outstanding)
+    ]
+    if not candidates:
+        return None, None
+    latest = max(candidates, key=lambda row: filing_date(row) or date.min)
+    if latest.diluted_shares and latest.diluted_shares > 0:
+        return float(latest.diluted_shares), "latest_official_diluted_shares"
+    if latest.common_shares_outstanding and latest.common_shares_outstanding > 0:
+        return float(latest.common_shares_outstanding), "latest_official_common_shares"
+    return None, None
+
+
+def _basic_eps_is_reliable(row: FinancialSnapshot) -> bool:
+    if row.basic_eps is None:
+        return False
+    if row.diluted_shares and row.common_shares_outstanding:
+        return abs(row.diluted_shares / row.common_shares_outstanding - 1) <= 0.01
+    return not row.dilution_notes and not row.stock_based_compensation
+
+
+@dataclass(frozen=True)
+class EarningsTtmResult:
+    eps: float | None
+    common_income: float | None
+    method: str | None
+    quarters: tuple[FinancialSnapshot, ...]
+    quarter_eps: tuple[float | None, ...]
+    share_basis: tuple[str | None, ...]
+
+    @property
+    def contains_preliminary(self) -> bool:
+        return any(row.snapshot_type == "preliminary_earnings" for row in self.quarters)
+
+
+def _quarter_eps(
+    row: FinancialSnapshot,
+    rows: list[FinancialSnapshot],
+) -> tuple[float | None, str | None]:
+    if row.diluted_eps is not None:
+        return float(row.diluted_eps), "reported_diluted_eps"
+    if _basic_eps_is_reliable(row):
+        return float(row.basic_eps), "reported_basic_eps"
+    common_income = row.common_net_income or row.owners_parent_net_income
+    if common_income is None:
+        return None, None
+    shares = row.diluted_shares or row.common_shares_outstanding
+    basis = "snapshot_diluted_shares" if row.diluted_shares else "snapshot_common_shares"
+    if not shares or shares <= 0:
+        shares, basis = _latest_official_shares(rows, filing_date(row))
+    if not shares or shares <= 0:
+        return None, None
+    return float(common_income) / float(shares), basis
+
+
+def _ttm_earnings(rows: list[FinancialSnapshot]) -> EarningsTtmResult:
+    quarters = _earnings_quarters(rows)[-4:]
+    if len(quarters) < 4:
+        return EarningsTtmResult(None, None, None, tuple(quarters), tuple(), tuple())
+    keys = [_quarter_key(row) for row in quarters]
+    if any(key is None for key in keys) or any(
+        not 60 <= (keys[index] - keys[index - 1]).days <= 120
+        for index in range(1, len(keys))
+        if keys[index] is not None and keys[index - 1] is not None
+    ):
+        return EarningsTtmResult(None, None, None, tuple(quarters), tuple(), tuple())
+    resolved = [_quarter_eps(row, rows) for row in quarters]
+    eps_values = [item[0] for item in resolved]
+    share_basis = [item[1] for item in resolved]
+    common_incomes = [row.common_net_income or row.owners_parent_net_income for row in quarters]
+    common_income = (
+        sum(float(value) for value in common_incomes if value is not None)
+        if all(value is not None for value in common_incomes)
+        else None
+    )
+    if not all(value is not None for value in eps_values):
+        return EarningsTtmResult(
+            None, common_income, None, tuple(quarters), tuple(eps_values), tuple(share_basis)
+        )
+    method = (
+        "TTM EPS including official preliminary earnings"
+        if any(row.snapshot_type == "preliminary_earnings" for row in quarters)
+        else "TTM diluted EPS"
+        if all(basis == "reported_diluted_eps" for basis in share_basis)
+        else "TTM official EPS"
+    )
+    return EarningsTtmResult(
+        sum(float(value) for value in eps_values if value is not None),
+        common_income,
+        method,
+        tuple(quarters),
+        tuple(eps_values),
+        tuple(share_basis),
+    )
+
+
 def _ttm_denominators(
     rows: list[FinancialSnapshot],
 ) -> tuple[float | None, float | None, str | None]:
-    quarters = _valid_quarters(rows)[-4:]
-    if len(quarters) < 4:
-        return None, None, None
-    eps_values = [row.diluted_eps for row in quarters]
-    if all(value is not None for value in eps_values):
-        return sum(float(value) for value in eps_values if value is not None), None, "TTM diluted EPS"
-    income_values = [row.common_net_income or row.owners_parent_net_income for row in quarters]
-    shares = next(
-        (
-            row.diluted_shares or row.common_shares_outstanding
-            for row in reversed(quarters)
-            if row.diluted_shares or row.common_shares_outstanding
-        ),
-        None,
+    result = _ttm_earnings(rows)
+    return result.eps, result.common_income, result.method
+
+
+def _modeled_fy1_income(
+    quarters: list[FinancialSnapshot],
+    *,
+    minimum: int,
+    settings: Settings,
+    ticker: str,
+) -> tuple[float | None, str | None]:
+    if len(quarters) < minimum:
+        return None, None
+    recent = quarters[-minimum:]
+    if any(row.revenue is None or row.common_net_income is None for row in recent):
+        return None, None
+    current_revenue = sum(float(row.revenue) for row in recent[-4:] if row.revenue is not None)
+    prior_revenue = sum(float(row.revenue) for row in recent[-8:-4] if row.revenue is not None)
+    if current_revenue <= 0 or prior_revenue <= 0:
+        return None, None
+    growth = max(
+        settings.valuation_model_growth_floor,
+        min(settings.valuation_model_growth_cap, current_revenue / prior_revenue - 1),
     )
-    if all(value is not None for value in income_values) and shares and shares > 0:
-        common_income = sum(float(value) for value in income_values if value is not None)
-        return common_income / shares, common_income, "TTM owners-parent net income"
-    return None, None, None
+    margins = [
+        float(row.common_net_income) / float(row.revenue)
+        for row in recent
+        if row.common_net_income is not None and row.revenue not in {None, 0}
+    ]
+    if len(margins) < minimum:
+        return None, None
+    latest_ttm_margin = sum(float(row.common_net_income) for row in recent[-4:]) / current_revenue
+    normalized_margin = median(margins)
+    method = "normalized_net_margin"
+    if ticker in {"000660", "MU"}:
+        modeled_margin = normalized_margin
+        method = "cycle_adjusted"
+    else:
+        modeled_margin = latest_ttm_margin * 0.6 + normalized_margin * 0.4
+    return current_revenue * (1 + growth) * float(modeled_margin), method
 
 
 def _latest_balance(rows: list[FinancialSnapshot]) -> FinancialSnapshot | None:
@@ -118,11 +331,122 @@ def _latest_balance(rows: list[FinancialSnapshot]) -> FinancialSnapshot | None:
         (
             row
             for row in sorted(rows, key=lambda item: item.reported_date or date.min, reverse=True)
-            if (row.common_equity or row.owners_parent_equity)
+            if row.snapshot_type == "full_statement"
+            and (row.common_equity or row.owners_parent_equity)
             and row.common_shares_outstanding
             and not row.financial_statement_basis_warning
         ),
         None,
+    )
+
+
+@dataclass(frozen=True)
+class MultipleBasis:
+    metric: str
+    horizon: str
+    accounting_basis: str = "unknown"
+    earnings_attribution: str = "unknown"
+    share_basis: str = "unknown"
+    security_basis: str = "unknown"
+    currency: str = "unknown"
+    denominator_period: str | None = None
+    denominator_as_of: str | None = None
+    source: str = "unknown"
+
+
+@dataclass(frozen=True)
+class BasisComparison:
+    status: str
+    reason: str
+
+
+_UNKNOWN_BASIS_VALUES = {"", "unknown", "provider_defined", "provider-defined", "unavailable"}
+
+
+def _basis_value_known(value: str | None) -> bool:
+    return (value or "").strip().lower() not in _UNKNOWN_BASIS_VALUES
+
+
+def determine_basis_comparability(
+    provider: MultipleBasis | None,
+    derived: MultipleBasis | None,
+) -> BasisComparison:
+    if provider is None or derived is None:
+        return BasisComparison("insufficient_metadata", "basis_metadata_missing")
+    if provider.metric != derived.metric:
+        return BasisComparison("not_comparable", "metric_mismatch")
+    dimensions = (
+        ("horizon", provider.horizon, derived.horizon),
+        ("accounting_basis", provider.accounting_basis, derived.accounting_basis),
+        (
+            "earnings_attribution",
+            provider.earnings_attribution,
+            derived.earnings_attribution,
+        ),
+        ("share_basis", provider.share_basis, derived.share_basis),
+        ("security_basis", provider.security_basis, derived.security_basis),
+        ("currency", provider.currency, derived.currency),
+    )
+    unknown_dimensions = [
+        name
+        for name, provider_value, derived_value in dimensions
+        if not _basis_value_known(provider_value) or not _basis_value_known(derived_value)
+    ]
+    mismatches = [
+        name
+        for name, provider_value, derived_value in dimensions
+        if _basis_value_known(provider_value)
+        and _basis_value_known(derived_value)
+        and provider_value.strip().lower() != derived_value.strip().lower()
+    ]
+    if mismatches:
+        return BasisComparison("not_comparable", f"{mismatches[0]}_mismatch")
+    if unknown_dimensions:
+        return BasisComparison(
+            "insufficient_metadata", f"{unknown_dimensions[0]}_unknown"
+        )
+    return BasisComparison("comparable", "same_normalized_basis")
+
+
+def _official_pe_basis(snapshot: ValuationSnapshot) -> MultipleBasis:
+    return MultipleBasis(
+        metric="pe",
+        horizon="TTM",
+        accounting_basis="GAAP",
+        earnings_attribution="owners_parent_common",
+        share_basis="diluted",
+        security_basis="current_security",
+        currency=snapshot.currency,
+        denominator_period=snapshot.trailing_pe_denominator_period_end,
+        source="official_financials",
+    )
+
+
+def _official_pb_basis(snapshot: ValuationSnapshot) -> MultipleBasis:
+    return MultipleBasis(
+        metric="pb",
+        horizon="latest_reported",
+        accounting_basis="GAAP",
+        earnings_attribution="owners_parent_common_equity",
+        share_basis="common_outstanding",
+        security_basis="current_security",
+        currency=snapshot.currency,
+        denominator_period=snapshot.pbr_denominator_period_end,
+        source="official_financials",
+    )
+
+
+def _provider_multiple_basis(
+    metric: str,
+    horizon: str,
+    currency: str,
+    source: str,
+) -> MultipleBasis:
+    return MultipleBasis(
+        metric=metric,
+        horizon=horizon,
+        currency=currency,
+        source=source,
     )
 
 
@@ -199,7 +523,7 @@ class ValuationSnapshotService:
         snapshot.financial_period_end = period_end.isoformat() if period_end else None
         snapshot.filing_date = filed.isoformat() if filed else None
         snapshot.financials_as_of = snapshot.financial_period_end
-        quarters = _valid_quarters(rows)[-4:]
+        quarters = _earnings_quarters(rows)[-4:]
         if len(quarters) == 4:
             start = financial_period_end(quarters[0])
             end = financial_period_end(quarters[-1])
@@ -211,6 +535,100 @@ class ValuationSnapshotService:
                 if (filed := filing_date(row)) is not None
             ]
 
+    def _apply_earnings_context(
+        self,
+        snapshot: ValuationSnapshot,
+        rows: list[FinancialSnapshot],
+        result: EarningsTtmResult,
+    ) -> None:
+        quarters = list(result.quarters)
+        if not quarters:
+            return
+        latest = quarters[-1]
+        latest_period = financial_period_end(latest)
+        snapshot.latest_earnings_period = (
+            latest_period.isoformat() if latest_period else None
+        )
+        snapshot.ttm_contains_preliminary = result.contains_preliminary
+        snapshot.preliminary_quarter_count = sum(
+            row.snapshot_type == "preliminary_earnings" for row in quarters
+        )
+        snapshot.earnings_basis = result.method
+        snapshot.share_basis = ";".join(
+            dict.fromkeys(item for item in result.share_basis if item)
+        ) or None
+        snapshot.earnings_quarter_series = [
+            {
+                "period": (
+                    financial_period_end(row).isoformat()
+                    if financial_period_end(row)
+                    else None
+                ),
+                "source": row.snapshot_type,
+                "filing": filing_date(row).isoformat() if filing_date(row) else None,
+                "eps": result.quarter_eps[index]
+                if index < len(result.quarter_eps)
+                else None,
+                "share_basis": result.share_basis[index]
+                if index < len(result.share_basis)
+                else None,
+            }
+            for index, row in enumerate(quarters)
+        ]
+        if latest.revenue not in {None, 0} and latest.operating_income is not None:
+            snapshot.latest_operating_margin = round(
+                float(latest.operating_income) / float(latest.revenue) * 100, 4
+            )
+
+        latest_key = _quarter_key(latest)
+        by_key = {_quarter_key(row): row for row in _earnings_quarters(rows)}
+        prior = None
+        prior_year = None
+        if latest_key is not None:
+            previous = [
+                (key, row)
+                for key, row in by_key.items()
+                if key is not None and key < latest_key
+            ]
+            if previous:
+                prior_key, prior = max(previous, key=lambda item: item[0])
+                if not 60 <= (latest_key - prior_key).days <= 120:
+                    prior = None
+            prior_year = next(
+                (
+                    row
+                    for key, row in by_key.items()
+                    if key is not None
+                    and 330 <= (latest_key - key).days <= 400
+                ),
+                None,
+            )
+
+        def growth(current: float | None, comparison: float | None) -> float | None:
+            if current is None or comparison in {None, 0}:
+                return None
+            return round((float(current) / float(comparison) - 1) * 100, 4)
+
+        if prior is not None:
+            snapshot.latest_revenue_qoq = growth(latest.revenue, prior.revenue)
+            snapshot.latest_operating_income_qoq = growth(
+                latest.operating_income, prior.operating_income
+            )
+            if (
+                snapshot.latest_operating_margin is not None
+                and prior.revenue not in {None, 0}
+                and prior.operating_income is not None
+            ):
+                prior_margin = float(prior.operating_income) / float(prior.revenue) * 100
+                snapshot.latest_operating_margin_delta_qoq = round(
+                    snapshot.latest_operating_margin - prior_margin, 4
+                )
+        if prior_year is not None:
+            snapshot.latest_revenue_yoy = growth(latest.revenue, prior_year.revenue)
+            snapshot.latest_operating_income_yoy = growth(
+                latest.operating_income, prior_year.operating_income
+            )
+
     def _apply_derived_trailing(
         self,
         snapshot: ValuationSnapshot,
@@ -218,8 +636,9 @@ class ValuationSnapshotService:
     ) -> tuple[float | None, float | None]:
         if snapshot.current_price is None:
             return None, None
-        ttm_eps, _ttm_income, pe_method = _ttm_denominators(rows)
-        ttm_rows = _valid_quarters(rows)[-4:]
+        ttm_result = _ttm_earnings(rows)
+        ttm_eps, pe_method = ttm_result.eps, ttm_result.method
+        ttm_rows = list(ttm_result.quarters)
         if len(ttm_rows) == 4:
             ttm_end = financial_period_end(ttm_rows[-1])
             ttm_filed = max(
@@ -235,18 +654,20 @@ class ValuationSnapshotService:
         derived_pe: float | None = None
         snapshot.ttm_eps = ttm_eps
         if ttm_eps is not None and ttm_eps <= 0:
-            if snapshot.trailing_pe_status != "value":
-                snapshot.trailing_pe_status = "not_meaningful"
-                snapshot.trailing_pe_source = "derived_trailing"
-                snapshot.trailing_pe_method = pe_method
+            snapshot.trailing_pe = None
+            snapshot.trailing_pe_status = "not_meaningful"
+            snapshot.trailing_pe_source = "derived_trailing"
+            snapshot.trailing_pe_method = pe_method
+            snapshot.trailing_valuation_confidence = max(
+                snapshot.trailing_valuation_confidence, 0.85
+            )
         elif ttm_eps:
             derived_pe = round(snapshot.current_price / ttm_eps, 4)
-            if snapshot.trailing_pe_status != "value":
-                snapshot.trailing_pe = derived_pe
-                snapshot.trailing_pe_status = "value"
-                snapshot.trailing_pe_source = "derived_trailing"
-                snapshot.trailing_pe_method = pe_method
-                snapshot.trailing_valuation_confidence = 0.85
+            snapshot.trailing_pe = derived_pe
+            snapshot.trailing_pe_status = "value"
+            snapshot.trailing_pe_source = "derived_trailing"
+            snapshot.trailing_pe_method = pe_method
+            snapshot.trailing_valuation_confidence = 0.85
 
         balance = _latest_balance(rows)
         derived_pb: float | None = None
@@ -277,6 +698,7 @@ class ValuationSnapshotService:
                             snapshot.trailing_valuation_confidence, 0.85
                         )
         self._apply_financial_metadata(snapshot, rows)
+        self._apply_earnings_context(snapshot, rows, ttm_result)
         return derived_pe, derived_pb
 
     def _forecast_dividends(
@@ -370,12 +792,13 @@ class ValuationSnapshotService:
         ):
             if ticker in {"RXRX", "WRD"} and any(
                 (row.common_net_income or row.owners_parent_net_income or 0) < 0
-                for row in _valid_quarters(rows)[-4:]
+                for row in _earnings_quarters(rows)[-4:]
             ):
                 snapshot.forward_pe_status = "not_meaningful"
                 snapshot.forward_pe_source = "modeled_forward"
             return
-        quarters = _valid_quarters(rows)
+        full_quarters = _valid_quarters(rows)
+        quarters = _earnings_quarters(rows)
         minimum = self.settings.valuation_model_min_quarters
         if len(quarters) < minimum:
             return
@@ -397,8 +820,10 @@ class ValuationSnapshotService:
             and snapshot.forward_pe > 0
             else None
         )
+        book_fy1_income: float | None = None
         if consensus_fy1_income is not None:
             fy1_income = consensus_fy1_income
+            book_fy1_income = fy1_income
             forecast_method = "consensus_forward_eps"
         elif is_insurance:
             balance = _latest_balance(rows)
@@ -419,34 +844,27 @@ class ValuationSnapshotService:
             if not roe_values:
                 return
             fy1_income = equity * median(roe_values)
+            book_fy1_income = fy1_income
             forecast_method = "normalized_roe"
         else:
-            if any(row.revenue is None or row.common_net_income is None for row in recent):
-                return
-            current_revenue = sum(float(row.revenue) for row in recent[-4:] if row.revenue is not None)
-            prior_revenue = sum(float(row.revenue) for row in recent[-8:-4] if row.revenue is not None)
-            if current_revenue <= 0 or prior_revenue <= 0:
-                return
-            growth = max(
-                self.settings.valuation_model_growth_floor,
-                min(self.settings.valuation_model_growth_cap, current_revenue / prior_revenue - 1),
+            modeled = _modeled_fy1_income(
+                quarters,
+                minimum=minimum,
+                settings=self.settings,
+                ticker=ticker,
             )
-            margins = [
-                float(row.common_net_income) / float(row.revenue)
-                for row in recent
-                if row.common_net_income is not None and row.revenue not in {None, 0}
-            ]
-            if len(margins) < minimum:
+            fy1_income, forecast_method = modeled
+            if fy1_income is None or forecast_method is None:
                 return
-            latest_ttm_margin = sum(float(row.common_net_income) for row in recent[-4:]) / current_revenue
-            normalized_margin = median(margins)
-            forecast_method = "normalized_net_margin"
-            if ticker in {"000660", "MU"}:
-                modeled_margin = normalized_margin
-                forecast_method = "cycle_adjusted"
+            if any(row.snapshot_type == "preliminary_earnings" for row in recent):
+                book_fy1_income, _book_method = _modeled_fy1_income(
+                    full_quarters,
+                    minimum=minimum,
+                    settings=self.settings,
+                    ticker=ticker,
+                )
             else:
-                modeled_margin = latest_ttm_margin * 0.6 + normalized_margin * 0.4
-            fy1_income = current_revenue * (1 + growth) * float(modeled_margin)
+                book_fy1_income = fy1_income
         if fy1_income <= 0:
             if snapshot.forward_pe_status != "value":
                 snapshot.forward_pe_status = "not_meaningful"
@@ -469,12 +887,14 @@ class ValuationSnapshotService:
             snapshot.forward_valuation_confidence = 0.55
 
         balance = _latest_balance(rows)
-        if balance is not None:
+        if balance is not None and book_fy1_income is not None:
             equity = balance.common_equity or balance.owners_parent_equity
             common_shares = balance.common_shares_outstanding
             if equity and common_shares and equity > 0 and common_shares > 0:
                 expected_dividends, dividend_method, dividend_quality, dividend_assumption = (
-                    self._forecast_dividends(rows, fy1_income, framework, dividend_history)
+                    self._forecast_dividends(
+                        rows, book_fy1_income, framework, dividend_history
+                    )
                 )
                 expected_buybacks, buyback_method, buyback_quality, buyback_assumption = (
                     self._forecast_buybacks(rows, framework, ticker, capital_returns)
@@ -501,7 +921,14 @@ class ValuationSnapshotService:
                 oci = median(
                     [float(row.other_comprehensive_income) for row in recent if row.other_comprehensive_income is not None]
                 ) if any(row.other_comprehensive_income is not None for row in recent) else 0.0
-                fy1_equity = equity + fy1_income - expected_dividends - expected_buybacks + issuance + oci
+                fy1_equity = (
+                    equity
+                    + book_fy1_income
+                    - expected_dividends
+                    - expected_buybacks
+                    + issuance
+                    + oci
+                )
                 if fy1_equity > 0:
                     snapshot.forward_bvps = fy1_equity / common_shares
                     snapshot.forward_price_to_book = round(
@@ -525,6 +952,11 @@ class ValuationSnapshotService:
         provider_pb: float | None,
         derived_pe: float | None,
         derived_pb: float | None,
+        *,
+        provider_pe_basis: MultipleBasis | None = None,
+        provider_pb_basis: MultipleBasis | None = None,
+        derived_pe_basis: MultipleBasis | None = None,
+        derived_pb_basis: MultipleBasis | None = None,
     ) -> None:
         threshold = self.settings.valuation_discrepancy_threshold_pct / 100
         if provider_pe is not None:
@@ -536,20 +968,34 @@ class ValuationSnapshotService:
         if derived_pb is not None:
             snapshot.derived_price_to_book = derived_pb
 
+        pe_comparison = determine_basis_comparability(
+            provider_pe_basis,
+            derived_pe_basis or (_official_pe_basis(snapshot) if snapshot.ttm_eps is not None else None),
+        )
+        if provider_pe is not None:
+            snapshot.trailing_pe_comparability = pe_comparison.status
+            snapshot.trailing_pe_comparability_reason = pe_comparison.reason
         pe_structural_conflict = (
-            provider_pe is not None
+            pe_comparison.status == "comparable"
+            and provider_pe is not None
             and provider_pe > 0
             and snapshot.ttm_eps is not None
             and snapshot.ttm_eps <= 0
         )
         pe_discrepancy = (
-            provider_pe is not None
+            pe_comparison.status == "comparable"
+            and provider_pe is not None
             and provider_pe > 0
             and derived_pe is not None
             and derived_pe > 0
             and abs(provider_pe / derived_pe - 1) > threshold
         )
         if pe_structural_conflict or pe_discrepancy:
+            if pe_structural_conflict:
+                snapshot.trailing_pe_comparability = "structural_conflict"
+                snapshot.trailing_pe_comparability_reason = (
+                    "same_basis_positive_multiple_with_nonpositive_denominator"
+                )
             snapshot.trailing_pe_basis_conflict = True
             if "trailing_pe" not in snapshot.multiple_basis_conflicts:
                 snapshot.multiple_basis_conflicts.append("trailing_pe")
@@ -569,21 +1015,43 @@ class ValuationSnapshotService:
             )
             if warning not in snapshot.warnings:
                 snapshot.warnings.append(warning)
+        elif derived_pe is not None and derived_pe > 0:
+            snapshot.trailing_pe = derived_pe
+            snapshot.trailing_pe_status = "value"
+            snapshot.trailing_pe_source = "derived_trailing"
+        elif snapshot.ttm_eps is not None and snapshot.ttm_eps <= 0:
+            snapshot.trailing_pe = None
+            snapshot.trailing_pe_status = "not_meaningful"
+            snapshot.trailing_pe_source = "derived_trailing"
 
+        pb_comparison = determine_basis_comparability(
+            provider_pb_basis,
+            derived_pb_basis or (_official_pb_basis(snapshot) if snapshot.bvps is not None else None),
+        )
+        if provider_pb is not None:
+            snapshot.price_to_book_comparability = pb_comparison.status
+            snapshot.price_to_book_comparability_reason = pb_comparison.reason
         pb_structural_conflict = (
-            provider_pb is not None
+            pb_comparison.status == "comparable"
+            and provider_pb is not None
             and provider_pb > 0
             and snapshot.bvps is not None
             and snapshot.bvps <= 0
         )
         pb_discrepancy = (
-            provider_pb is not None
+            pb_comparison.status == "comparable"
+            and provider_pb is not None
             and provider_pb > 0
             and derived_pb is not None
             and derived_pb > 0
             and abs(provider_pb / derived_pb - 1) > threshold
         )
         if pb_structural_conflict or pb_discrepancy:
+            if pb_structural_conflict:
+                snapshot.price_to_book_comparability = "structural_conflict"
+                snapshot.price_to_book_comparability_reason = (
+                    "same_basis_positive_multiple_with_nonpositive_denominator"
+                )
             snapshot.price_to_book_basis_conflict = True
             if "price_to_book" not in snapshot.multiple_basis_conflicts:
                 snapshot.multiple_basis_conflicts.append("price_to_book")
@@ -601,6 +1069,10 @@ class ValuationSnapshotService:
             )
             if warning not in snapshot.warnings:
                 snapshot.warnings.append(warning)
+        elif derived_pb is not None and derived_pb > 0:
+            snapshot.price_to_book = derived_pb
+            snapshot.price_to_book_status = "value"
+            snapshot.price_to_book_source = "derived_trailing"
 
     def _cross_check_forward(
         self,
@@ -610,6 +1082,10 @@ class ValuationSnapshotService:
         derived_pe: float | None = None,
         provider_pb: float | None = None,
         derived_pb: float | None = None,
+        provider_pe_basis: MultipleBasis | None = None,
+        derived_pe_basis: MultipleBasis | None = None,
+        provider_pb_basis: MultipleBasis | None = None,
+        derived_pb_basis: MultipleBasis | None = None,
     ) -> None:
         threshold = self.settings.valuation_discrepancy_threshold_pct / 100
         if provider_pe is not None:
@@ -621,15 +1097,31 @@ class ValuationSnapshotService:
         if derived_pb is not None:
             snapshot.derived_forward_price_to_book = derived_pb
 
-        pe_conflict = provider_pe is not None and provider_pe > 0 and (
-            (snapshot.forward_eps is not None and snapshot.forward_eps <= 0)
-            or (
-                derived_pe is not None
-                and derived_pe > 0
-                and abs(provider_pe / derived_pe - 1) > threshold
+        pe_comparison = determine_basis_comparability(
+            provider_pe_basis, derived_pe_basis
+        )
+        if provider_pe is not None:
+            snapshot.forward_pe_comparability = pe_comparison.status
+            snapshot.forward_pe_comparability_reason = pe_comparison.reason
+        pe_conflict = (
+            pe_comparison.status == "comparable"
+            and provider_pe is not None
+            and provider_pe > 0
+            and (
+                (snapshot.forward_eps is not None and snapshot.forward_eps <= 0)
+                or (
+                    derived_pe is not None
+                    and derived_pe > 0
+                    and abs(provider_pe / derived_pe - 1) > threshold
+                )
             )
         )
         if pe_conflict:
+            if snapshot.forward_eps is not None and snapshot.forward_eps <= 0:
+                snapshot.forward_pe_comparability = "structural_conflict"
+                snapshot.forward_pe_comparability_reason = (
+                    "same_basis_positive_multiple_with_nonpositive_denominator"
+                )
             snapshot.forward_pe_basis_conflict = True
             snapshot.valuation_discrepancy_warning = True
             if "forward_pe" not in snapshot.multiple_basis_conflicts:
@@ -643,15 +1135,31 @@ class ValuationSnapshotService:
             if warning not in snapshot.warnings:
                 snapshot.warnings.append(warning)
 
-        pb_conflict = provider_pb is not None and provider_pb > 0 and (
-            (snapshot.forward_bvps is not None and snapshot.forward_bvps <= 0)
-            or (
-                derived_pb is not None
-                and derived_pb > 0
-                and abs(provider_pb / derived_pb - 1) > threshold
+        pb_comparison = determine_basis_comparability(
+            provider_pb_basis, derived_pb_basis
+        )
+        if provider_pb is not None:
+            snapshot.forward_price_to_book_comparability = pb_comparison.status
+            snapshot.forward_price_to_book_comparability_reason = pb_comparison.reason
+        pb_conflict = (
+            pb_comparison.status == "comparable"
+            and provider_pb is not None
+            and provider_pb > 0
+            and (
+                (snapshot.forward_bvps is not None and snapshot.forward_bvps <= 0)
+                or (
+                    derived_pb is not None
+                    and derived_pb > 0
+                    and abs(provider_pb / derived_pb - 1) > threshold
+                )
             )
         )
         if pb_conflict:
+            if snapshot.forward_bvps is not None and snapshot.forward_bvps <= 0:
+                snapshot.forward_price_to_book_comparability = "structural_conflict"
+                snapshot.forward_price_to_book_comparability_reason = (
+                    "same_basis_positive_multiple_with_nonpositive_denominator"
+                )
             snapshot.forward_price_to_book_basis_conflict = True
             snapshot.valuation_discrepancy_warning = True
             if "forward_price_to_book" not in snapshot.multiple_basis_conflicts:
@@ -979,6 +1487,23 @@ class ValuationSnapshotService:
                         snapshot,
                         provider_pe=provider_forward_pe,
                         derived_pe=alpha_forward_pe,
+                        provider_pe_basis=_provider_multiple_basis(
+                            "pe",
+                            "provider_defined",
+                            snapshot.currency,
+                            "finnhub",
+                        ),
+                        derived_pe_basis=MultipleBasis(
+                            metric="pe",
+                            horizon="FY1",
+                            accounting_basis="unknown",
+                            earnings_attribution="common_eps",
+                            share_basis="unknown",
+                            security_basis="current_security",
+                            currency=snapshot.currency,
+                            denominator_period=alpha_estimate.estimate_period,
+                            source="alpha_vantage",
+                        ),
                     )
                 elif alpha_forward_pe is not None and snapshot.forward_pe_status != "value":
                     snapshot.forward_eps = alpha_eps
@@ -990,7 +1515,11 @@ class ValuationSnapshotService:
                     snapshot.forward_pe_input_period = alpha_estimate.estimate_period
                     snapshot.forward_valuation_confidence = 0.65
                     snapshot.consensus_status = alpha_estimate.coverage_status
-                if provider_forward_pe is not None and alpha_forward_pe is not None:
+                if (
+                    provider_forward_pe is not None
+                    and alpha_forward_pe is not None
+                    and snapshot.forward_pe_comparability == "comparable"
+                ):
                     discrepancy = abs(provider_forward_pe / alpha_forward_pe - 1)
                     if discrepancy > self.settings.alpha_vantage_consensus_discrepancy_pct / 100:
                         snapshot.consensus_disagreement = True
@@ -1042,13 +1571,47 @@ class ValuationSnapshotService:
                 dividend_history,
                 capital_returns,
             )
-        self._cross_check(snapshot, provider_pe, provider_pb, derived_pe, derived_pb)
+        self._cross_check(
+            snapshot,
+            provider_pe,
+            provider_pb,
+            derived_pe,
+            derived_pb,
+            provider_pe_basis=(
+                _provider_multiple_basis(
+                    "pe", "TTM", snapshot.currency, "finnhub"
+                )
+                if provider_pe is not None
+                else None
+            ),
+            provider_pb_basis=(
+                _provider_multiple_basis(
+                    "pb", "latest_reported", snapshot.currency, "finnhub"
+                )
+                if provider_pb is not None
+                else None
+            ),
+        )
         self._cross_check(
             snapshot,
             alpha_metrics.get("trailing_pe"),
             alpha_metrics.get("price_to_book"),
             derived_pe,
             derived_pb,
+            provider_pe_basis=(
+                _provider_multiple_basis(
+                    "pe", "TTM", snapshot.currency, "alpha_vantage"
+                )
+                if alpha_metrics.get("trailing_pe") is not None
+                else None
+            ),
+            provider_pb_basis=(
+                _provider_multiple_basis(
+                    "pb", "latest_reported", snapshot.currency, "alpha_vantage"
+                )
+                if alpha_metrics.get("price_to_book") is not None
+                else None
+            ),
         )
         if session is not None and not missing_adr_mapping:
             observations = self.history_service.update_cache(

@@ -9,7 +9,31 @@ from app.services.financial_validation import (
     validate_event_financials,
     validate_snapshot_period_chronology,
 )
-from app.services.valuation_snapshot_service import ValuationSnapshotService
+from app.services.valuation_snapshot_service import MultipleBasis, ValuationSnapshotService
+
+
+def _same_pe_basis() -> MultipleBasis:
+    return MultipleBasis(
+        metric="pe",
+        horizon="TTM",
+        accounting_basis="GAAP",
+        earnings_attribution="owners_parent_common",
+        share_basis="diluted",
+        security_basis="current_security",
+        currency="USD",
+    )
+
+
+def _same_pb_basis() -> MultipleBasis:
+    return MultipleBasis(
+        metric="pb",
+        horizon="latest_reported",
+        accounting_basis="GAAP",
+        earnings_attribution="owners_parent_common_equity",
+        share_basis="common_outstanding",
+        security_basis="current_security",
+        currency="USD",
+    )
 
 
 def _fact(label: str, value: float, *, unit: str = "KRW") -> str:
@@ -106,7 +130,15 @@ def test_positive_provider_pe_with_negative_internal_eps_is_basis_conflict() -> 
         trailing_valuation_confidence=0.75,
     )
 
-    ValuationSnapshotService()._cross_check(snapshot, 20, None, None, None)
+    ValuationSnapshotService()._cross_check(
+        snapshot,
+        20,
+        None,
+        None,
+        None,
+        provider_pe_basis=_same_pe_basis(),
+        derived_pe_basis=_same_pe_basis(),
+    )
 
     assert snapshot.trailing_pe_basis_conflict is True
     assert snapshot.trailing_pe is None
@@ -123,7 +155,15 @@ def test_large_provider_derived_pe_difference_is_excluded() -> None:
         trailing_valuation_confidence=0.75,
     )
 
-    ValuationSnapshotService()._cross_check(snapshot, 50, None, 20, None)
+    ValuationSnapshotService()._cross_check(
+        snapshot,
+        50,
+        None,
+        20,
+        None,
+        provider_pe_basis=_same_pe_basis(),
+        derived_pe_basis=_same_pe_basis(),
+    )
 
     assert snapshot.trailing_pe_basis_conflict is True
     assert snapshot.valuation_discrepancy_warning is True
@@ -140,11 +180,20 @@ def test_small_provider_derived_pe_difference_is_accepted() -> None:
         trailing_valuation_confidence=0.75,
     )
 
-    ValuationSnapshotService()._cross_check(snapshot, 21, None, 20, None)
+    ValuationSnapshotService()._cross_check(
+        snapshot,
+        21,
+        None,
+        20,
+        None,
+        provider_pe_basis=_same_pe_basis(),
+        derived_pe_basis=_same_pe_basis(),
+    )
 
     assert snapshot.trailing_pe_basis_conflict is False
     assert snapshot.valuation_discrepancy_warning is False
-    assert snapshot.trailing_pe == 21
+    assert snapshot.trailing_pe == 20
+    assert snapshot.trailing_pe_source == "derived_trailing"
 
 
 def test_provider_pbr_and_forward_multiple_conflicts_are_detected() -> None:
@@ -161,8 +210,31 @@ def test_provider_pbr_and_forward_multiple_conflicts_are_detected() -> None:
         forward_valuation_confidence=0.7,
     )
 
-    service._cross_check(snapshot, None, 4, None, 1)
-    service._cross_check_forward(snapshot, provider_pe=25, derived_pe=10)
+    service._cross_check(
+        snapshot,
+        None,
+        4,
+        None,
+        1,
+        provider_pb_basis=_same_pb_basis(),
+        derived_pb_basis=_same_pb_basis(),
+    )
+    forward_basis = MultipleBasis(
+        metric="pe",
+        horizon="FY1",
+        accounting_basis="GAAP",
+        earnings_attribution="common_eps",
+        share_basis="diluted",
+        security_basis="current_security",
+        currency="USD",
+    )
+    service._cross_check_forward(
+        snapshot,
+        provider_pe=25,
+        derived_pe=10,
+        provider_pe_basis=forward_basis,
+        derived_pe_basis=forward_basis,
+    )
 
     assert snapshot.price_to_book_basis_conflict is True
     assert snapshot.price_to_book is None
@@ -212,5 +284,5 @@ def test_preliminary_period_uses_current_table_header_not_comparison_date() -> N
     )
 
     assert parsed.period_end == date(2026, 3, 31)
-    assert parsed.reporting_period_source == "table_header"
+    assert parsed.reporting_period_source == "current_header_quarter"
     assert parsed.reporting_period_confidence == "high"

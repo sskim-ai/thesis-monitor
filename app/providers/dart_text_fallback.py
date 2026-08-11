@@ -269,6 +269,8 @@ def _preliminary_unit_scale(tokens: list[str]) -> float:
         return 1_000_000.0
     if "억원" in compact:
         return 100_000_000.0
+    if "조원" in compact:
+        return 1_000_000_000_000.0
     if "천원" in compact:
         return 1_000.0
     return 1.0
@@ -567,55 +569,100 @@ def _semantic_preliminary_table(
     return {}, [], None, diagnostics
 
 
-def _preliminary_period_end(tokens: list[str]) -> date | None:
-    first_result = next(
-        (
-            index
-            for index, token in enumerate(tokens[:30])
-            if _compact(token) in _CURRENT_RESULT_ALIASES
-        ),
-        None,
-    )
-    if first_result is None:
-        return None
+_DATE_PATTERN = r"(20\d{2})\s*[-./]\s*(\d{1,2})\s*[-./]\s*(\d{1,2})"
+
+
+def _dates_in_text(value: str) -> list[date]:
     dates: list[date] = []
-    for token in tokens[first_result + 1 : first_result + 8]:
-        match = re.search(r"(20\d{2})[-./](\d{1,2})[-./](\d{1,2})", token)
-        if not match:
-            continue
+    for match in re.finditer(_DATE_PATTERN, value):
         try:
             dates.append(date(*(int(part) for part in match.groups())))
         except ValueError:
             continue
-    return max(dates) if dates else None
+    return dates
 
 
-def _preliminary_period_end_from_semantic_header(
-    diagnostics: dict[str, object],
-) -> date | None:
-    headers = diagnostics.get("column_headers")
-    current_column = diagnostics.get("current_column")
-    if not isinstance(headers, list) or not isinstance(current_column, int):
-        return None
-    if current_column >= len(headers):
-        return None
-    header = str(headers[current_column])
-    quarter_match = re.search(r"(20\d{2})\s*년?\s*([1-4])\s*분기", header)
+def _quarter_from_text(value: str) -> date | None:
+    quarter_match = re.search(r"(20\d{2})\s*년?\s*([1-4])\s*분기", value)
     if quarter_match:
         year, quarter = (int(part) for part in quarter_match.groups())
         month_day = {1: (3, 31), 2: (6, 30), 3: (9, 30), 4: (12, 31)}[quarter]
         return date(year, *month_day)
-    half_match = re.search(r"(20\d{2})\s*년?\s*(상반기|하반기)", header)
+    half_match = re.search(r"(20\d{2})\s*년?\s*(상반기|하반기)", value)
     if half_match:
         year = int(half_match.group(1))
         return date(year, 6, 30) if half_match.group(2) == "상반기" else date(year, 12, 31)
-    dates: list[date] = []
-    for match in re.finditer(r"(20\d{2})[-./](\d{1,2})[-./](\d{1,2})", header):
-        try:
-            dates.append(date(*(int(part) for part in match.groups())))
-        except ValueError:
+    return None
+
+
+def _period_from_current_text(
+    value: str,
+) -> tuple[date | None, str | None, str, list[date]]:
+    dates = _dates_in_text(value)
+    range_marker = bool(
+        re.search(
+            rf"{_DATE_PATTERN}\s*(?:~|〜|–|—|-|부터)\s*{_DATE_PATTERN}",
+            value,
+        )
+    )
+    if (range_marker or len(dates) == 2) and len(dates) >= 2:
+        return dates[1], "current_header_date_range", "high", dates
+    quarter = _quarter_from_text(value)
+    if quarter is not None:
+        return quarter, "current_header_quarter", "high", dates
+    if len(dates) == 1:
+        return dates[0], "current_row_period", "medium", dates
+    return None, None, "unavailable", dates
+
+
+def _preliminary_period_end(
+    tokens: list[str],
+) -> tuple[date | None, str | None, str, list[date]]:
+    result_indexes = [
+        index
+        for index, token in enumerate(tokens)
+        if _compact(token) in _CURRENT_RESULT_ALIASES
+    ]
+    for result_index in result_indexes:
+        current_tokens: list[str] = []
+        for token in tokens[result_index : result_index + 8]:
+            compact = _compact(token)
+            if token != tokens[result_index] and (
+                "전기실적" in compact or "전년동기실적" in compact
+            ):
+                break
+            current_tokens.append(token)
+        period, source, confidence, dates = _period_from_current_text(
+            " ".join(current_tokens)
+        )
+        if period is None:
             continue
-    return max(dates) if dates else None
+        if source == "current_header_date_range":
+            source = "document_explicit_date_range"
+        elif source == "current_header_quarter":
+            source = "document_explicit_quarter"
+        return period, source, confidence, dates
+    return None, None, "unavailable", []
+
+
+def _preliminary_period_end_from_semantic_header(
+    diagnostics: dict[str, object],
+) -> tuple[date | None, str | None, str, list[date], list[date]]:
+    headers = diagnostics.get("column_headers")
+    current_column = diagnostics.get("current_column")
+    if not isinstance(headers, list) or not isinstance(current_column, int):
+        return None, None, "unavailable", [], []
+    if current_column >= len(headers):
+        return None, None, "unavailable", [], []
+    header = str(headers[current_column])
+    period, source, confidence, current_dates = _period_from_current_text(header)
+    ignored_dates = [
+        candidate
+        for index, candidate_header in enumerate(headers)
+        if index != current_column
+        for candidate in _dates_in_text(str(candidate_header))
+    ]
+    return period, source, confidence, current_dates, ignored_dates
 
 
 def _preliminary_metric(
@@ -752,9 +799,12 @@ def extract_preliminary_earnings_facts_from_text(
     tokens = _tokens(plain_text)
     scale = _preliminary_unit_scale(tokens)
     unit_label = _preliminary_unit_label(tokens)
-    period_end = _preliminary_period_end(tokens)
-    reporting_period_source = "document_text" if period_end is not None else None
-    reporting_period_confidence = "medium" if period_end is not None else "unavailable"
+    (
+        period_end,
+        reporting_period_source,
+        reporting_period_confidence,
+        document_period_candidates,
+    ) = _preliminary_period_end(tokens)
     semantic, semantic_raw_fields, table_unit, diagnostics = (
         _semantic_preliminary_table(text, source_receipt_no)
         if "<table" in text.lower()
@@ -778,16 +828,31 @@ def extract_preliminary_earnings_facts_from_text(
     if table_unit:
         unit_label = table_unit
         scale = _preliminary_unit_scale([f"단위: {table_unit}"])
-    semantic_period_end = _preliminary_period_end_from_semantic_header(diagnostics)
+    (
+        semantic_period_end,
+        semantic_period_source,
+        semantic_period_confidence,
+        current_period_candidates,
+        ignored_comparison_dates,
+    ) = _preliminary_period_end_from_semantic_header(diagnostics)
     if semantic_period_end is not None:
         period_end = semantic_period_end
-        reporting_period_source = "table_header"
-        reporting_period_confidence = "high"
+        reporting_period_source = semantic_period_source
+        reporting_period_confidence = semantic_period_confidence
     diagnostics["reporting_period_source"] = reporting_period_source
     diagnostics["reporting_period_confidence"] = reporting_period_confidence
     diagnostics["reporting_period_end"] = (
         period_end.isoformat() if period_end is not None else None
     )
+    diagnostics["current_period_date_candidates"] = [
+        value.isoformat() for value in current_period_candidates
+    ]
+    diagnostics["document_period_date_candidates"] = [
+        value.isoformat() for value in document_period_candidates
+    ]
+    diagnostics["ignored_comparison_period_dates"] = [
+        value.isoformat() for value in ignored_comparison_dates
+    ]
 
     def metric_values(label: str, aliases: tuple[str, ...]) -> tuple[float | None, float | None, float | None, float | None]:
         value = semantic.get(label)
@@ -843,6 +908,18 @@ def extract_preliminary_earnings_facts_from_text(
             source_receipt_no=source_receipt_no,
         ),
     ]
+    for field in raw_fields:
+        field["reporting_period_source"] = reporting_period_source
+        field["reporting_period_confidence"] = reporting_period_confidence
+        field["selected_reporting_period_end"] = (
+            period_end.isoformat() if period_end else None
+        )
+        field["current_period_date_candidates"] = diagnostics[
+            "current_period_date_candidates"
+        ]
+        field["ignored_comparison_period_dates"] = diagnostics[
+            "ignored_comparison_period_dates"
+        ]
     quarter = ((period_end.month - 1) // 3 + 1) if period_end else None
     period_label = f"{period_end.year}년 {quarter}분기" if period_end and quarter else "잠정실적"
     basis = (

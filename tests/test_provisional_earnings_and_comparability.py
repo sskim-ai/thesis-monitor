@@ -1,0 +1,458 @@
+import json
+from datetime import date
+
+import pytest
+
+from app.models.financial import FinancialSnapshot
+from app.providers.dart_text_fallback import extract_preliminary_earnings_facts_from_text
+from app.schemas.thesis import ValuationSnapshot
+from app.services.historical_valuation_service import point_in_time_denominators
+from app.services.notification_service import _valuation_formula_lines
+from app.services.valuation_snapshot_service import (
+    MultipleBasis,
+    ValuationSnapshotService,
+    _earnings_quarters,
+    _ttm_earnings,
+    determine_basis_comparability,
+)
+
+
+def _full(
+    period_end: date,
+    eps: float,
+    *,
+    revenue: float = 100,
+    income: float | None = 10,
+    shares: float = 100,
+) -> FinancialSnapshot:
+    quarter = (period_end.month - 1) // 3 + 1
+    return FinancialSnapshot(
+        ticker="FIXTURE",
+        period=f"{period_end.year}-Q{quarter}",
+        snapshot_type="full_statement",
+        period_type={2: "H1", 4: "FY"}.get(quarter, f"Q{quarter}"),
+        fiscal_year=period_end.year,
+        financial_period_end=period_end,
+        filing_date=date(period_end.year, period_end.month, min(28, period_end.day)),
+        reported_date=date(period_end.year, period_end.month, min(28, period_end.day)),
+        revenue=revenue,
+        operating_income=income,
+        common_net_income=income,
+        owners_parent_net_income=income,
+        diluted_eps=eps,
+        common_shares_outstanding=shares,
+        diluted_shares=shares,
+        common_equity=1000,
+        owners_parent_equity=1000,
+        currency="KRW",
+        provider="opendart",
+    )
+
+
+def _preliminary(
+    *,
+    owners_income: float | None = 400,
+    total_income: float | None = 450,
+    diluted_eps: float | None = None,
+    hard_errors: list[str] | None = None,
+) -> FinancialSnapshot:
+    return FinancialSnapshot(
+        ticker="FIXTURE",
+        period="2026-Q2",
+        snapshot_type="preliminary_earnings",
+        source_filing_id="20260729000001",
+        period_type="Q2",
+        fiscal_year=2026,
+        period_scope="single-quarter",
+        financial_period_end=date(2026, 6, 30),
+        filing_date=date(2026, 7, 29),
+        reported_date=date(2026, 7, 29),
+        reporting_period_source="current_header_date_range",
+        reporting_period_confidence="high",
+        revenue=800,
+        operating_income=600,
+        net_income=total_income,
+        common_net_income=owners_income,
+        owners_parent_net_income=owners_income,
+        diluted_eps=diluted_eps,
+        operating_margin=75,
+        currency="KRW",
+        unit_scale=1,
+        provider="opendart",
+        raw_financial_fields=json.dumps(
+            [
+                {
+                    "raw_label": "매출액",
+                    "raw_value": "800",
+                    "raw_unit": "백만원",
+                    "raw_period": "single_quarter",
+                    "raw_column_header": "당해실적 2026.04.01~2026.06.30",
+                    "parse_method": "html_semantic_table",
+                },
+                {
+                    "raw_label": "영업이익",
+                    "raw_value": "600",
+                    "raw_unit": "백만원",
+                    "raw_period": "single_quarter",
+                    "raw_column_header": "당해실적 2026.04.01~2026.06.30",
+                    "parse_method": "html_semantic_table",
+                },
+            ],
+            ensure_ascii=False,
+        ),
+        financial_hard_errors=json.dumps(hard_errors or []),
+        financial_soft_outliers=json.dumps(
+            ["unusually_high_or_low_operating_margin"]
+        ),
+    )
+
+
+def _base_rows() -> list[FinancialSnapshot]:
+    return [
+        _full(date(2025, 9, 30), 1),
+        _full(date(2025, 12, 31), 2),
+        _full(date(2026, 3, 31), 3),
+    ]
+
+
+def _basis(
+    *,
+    metric: str = "pe",
+    horizon: str = "TTM",
+    accounting: str = "GAAP",
+    security: str = "current_security",
+) -> MultipleBasis:
+    return MultipleBasis(
+        metric=metric,
+        horizon=horizon,
+        accounting_basis=accounting,
+        earnings_attribution=(
+            "owners_parent_common" if metric == "pe" else "owners_parent_common_equity"
+        ),
+        share_basis="diluted" if metric == "pe" else "common_outstanding",
+        security_basis=security,
+        currency="KRW",
+    )
+
+
+def test_preliminary_quarter_is_included_in_ttm_with_point_in_time_shares() -> None:
+    result = _ttm_earnings([*_base_rows(), _preliminary()])
+
+    assert result.eps == pytest.approx(10)
+    assert result.contains_preliminary is True
+    assert result.quarters[-1].snapshot_type == "preliminary_earnings"
+    assert result.share_basis[-1] == "latest_official_diluted_shares"
+
+
+def test_full_statement_supersedes_same_quarter_preliminary_without_double_count() -> None:
+    q2_full = _full(date(2026, 6, 30), 5, revenue=900, income=500)
+    rows = [*_base_rows(), _preliminary(), q2_full]
+
+    selected = _earnings_quarters(rows)
+    result = _ttm_earnings(rows)
+
+    assert len(selected[-4:]) == 4
+    assert selected[-1] is q2_full
+    assert result.eps == pytest.approx(11)
+    assert result.contains_preliminary is False
+
+
+def test_non_calendar_fiscal_quarters_use_actual_period_end_identity() -> None:
+    rows = [
+        _full(date(2025, 4, 4), 1),
+        _full(date(2025, 7, 4), 2),
+        _full(date(2025, 10, 3), 3),
+        _full(date(2026, 1, 2), 4),
+    ]
+
+    result = _ttm_earnings(rows)
+
+    assert result.eps == pytest.approx(10)
+    assert [row.financial_period_end for row in result.quarters] == [
+        date(2025, 4, 4),
+        date(2025, 7, 4),
+        date(2025, 10, 3),
+        date(2026, 1, 2),
+    ]
+
+
+def test_hard_invalid_preliminary_is_excluded_but_soft_outlier_is_usable() -> None:
+    invalid = _ttm_earnings(
+        [*_base_rows(), _preliminary(hard_errors=["raw_metric_mapping_mismatch"])]
+    )
+    soft_only = _ttm_earnings([*_base_rows(), _preliminary()])
+
+    assert invalid.eps is None
+    assert soft_only.eps == pytest.approx(10)
+
+
+def test_total_net_income_without_owner_attribution_does_not_create_eps() -> None:
+    result = _ttm_earnings(
+        [*_base_rows(), _preliminary(owners_income=None, total_income=450)]
+    )
+
+    assert result.eps is None
+    assert result.quarters[-1].revenue == 800
+    assert result.quarters[-1].operating_income == 600
+
+
+def test_preliminary_reported_diluted_eps_takes_priority() -> None:
+    result = _ttm_earnings(
+        [*_base_rows(), _preliminary(owners_income=400, diluted_eps=7)]
+    )
+
+    assert result.eps == pytest.approx(13)
+    assert result.share_basis[-1] == "reported_diluted_eps"
+
+
+def test_preliminary_updates_per_and_margin_but_not_full_balance_pbr() -> None:
+    rows = [*_base_rows(), _preliminary()]
+    snapshot = ValuationSnapshot(current_price=100, currency="KRW")
+
+    derived_pe, derived_pb = ValuationSnapshotService()._apply_derived_trailing(
+        snapshot, rows
+    )
+
+    assert derived_pe == pytest.approx(10)
+    assert snapshot.ttm_contains_preliminary is True
+    assert snapshot.latest_operating_margin == pytest.approx(75)
+    assert snapshot.bvps == pytest.approx(10)
+    assert derived_pb == pytest.approx(10)
+    assert snapshot.pbr_denominator_period_end == "2026-03-31"
+
+
+def test_historical_point_in_time_series_remains_full_statement_only() -> None:
+    rows = [*_base_rows(), _preliminary()]
+
+    eps, _bvps, quarters, _balance = point_in_time_denominators(
+        rows, date(2026, 8, 1)
+    )
+
+    assert eps is None
+    assert all(row.snapshot_type == "full_statement" for row in quarters)
+
+
+def test_internal_forward_model_uses_latest_valid_preliminary_earnings() -> None:
+    period_ends = [
+        date(2024, 9, 30),
+        date(2024, 12, 31),
+        date(2025, 3, 31),
+        date(2025, 6, 30),
+        date(2025, 9, 30),
+        date(2025, 12, 31),
+        date(2026, 3, 31),
+    ]
+    rows = [
+        _full(period_end, index + 1, revenue=100 + index * 10, income=10 + index)
+        for index, period_end in enumerate(period_ends)
+    ]
+    rows.append(_preliminary(owners_income=60, total_income=65))
+    snapshot = ValuationSnapshot(current_price=100, currency="KRW")
+
+    ValuationSnapshotService()._apply_forward_model(
+        snapshot, rows, "FIXTURE", {}
+    )
+
+    assert snapshot.forward_pe_status == "value"
+    assert snapshot.forward_eps is not None
+    assert snapshot.forecast_method == "normalized_net_margin"
+
+
+def test_period_parser_uses_current_range_and_ignores_comparison_ranges() -> None:
+    parsed = extract_preliminary_earnings_facts_from_text(
+        """
+        <table id="posco-q1">
+          <tr><td colspan="5">단위 : 백만원, %</td></tr>
+          <tr><th>구분</th><th>당해실적</th><th>전기실적</th><th>전년동기실적</th></tr>
+          <tr><th>구분</th><th>2026.01.01 ~ 2026.03.31</th><th>2025.10.01 ~ 2025.12.31</th><th>2025.01.01 ~ 2025.03.31</th></tr>
+          <tr><td>매출액</td><td>당해실적</td><td>100</td><td>95</td><td>90</td></tr>
+          <tr><td>영업이익</td><td>당해실적</td><td>10</td><td>9</td><td>8</td></tr>
+        </table>
+        """
+    )
+
+    assert parsed.period_end == date(2026, 3, 31)
+    assert parsed.reporting_period_source == "current_header_date_range"
+    assert parsed.reporting_period_confidence == "high"
+    assert parsed.diagnostics["current_period_date_candidates"] == [
+        "2026-01-01",
+        "2026-03-31",
+    ]
+    assert "2025-12-31" in parsed.diagnostics["ignored_comparison_period_dates"]
+
+
+def test_posco_style_separate_period_table_and_trillion_unit_are_normalized() -> None:
+    parsed = extract_preliminary_earnings_facts_from_text(
+        """
+        <table>
+          <tr><td>당기실적</td><td>2026-01-01</td><td>~</td><td>2026-03-31</td></tr>
+          <tr><td>전기실적</td><td>2025-10-01</td><td>~</td><td>2025-12-31</td></tr>
+          <tr><td>전년동기실적</td><td>2025-01-01</td><td>~</td><td>2025-03-31</td></tr>
+        </table>
+        <table id="posco-results">
+          <tr><td colspan="5">단위 : 조원, %</td></tr>
+          <tr><th>구분</th><th>구분</th><th>당기실적</th><th>전기실적</th><th>전기대비 증감율(%)</th></tr>
+          <tr><th>구분</th><th>구분</th><th>( )</th><th>( )</th><th>증감율(%)</th></tr>
+          <tr><td>매출액</td><td>당해실적</td><td>17.88</td><td>16.84</td><td>6.1</td></tr>
+          <tr><td>영업이익</td><td>당해실적</td><td>0.71</td><td>0.01</td><td>7,000</td></tr>
+          <tr><td>지배주주순이익</td><td>당해실적</td><td>0.47</td><td>-0.23</td><td>-</td></tr>
+        </table>
+        """
+    )
+
+    assert parsed.period_end == date(2026, 3, 31)
+    assert parsed.reporting_period_source == "document_explicit_date_range"
+    assert parsed.revenue == pytest.approx(17.88e12)
+    assert parsed.operating_income == pytest.approx(0.71e12)
+    assert parsed.owners_parent_net_income == pytest.approx(0.47e12)
+    assert parsed.raw_fields[0]["raw_unit"] == "조원"
+
+
+def test_ambiguous_semantic_period_remains_null() -> None:
+    parsed = extract_preliminary_earnings_facts_from_text(
+        """
+        <table>
+          <tr><td>단위 : 백만원</td></tr>
+          <tr><th>구분</th><th>당해실적</th><th>전기실적</th></tr>
+          <tr><td>매출액</td><td>당해실적</td><td>100</td></tr>
+          <tr><td>영업이익</td><td>당해실적</td><td>10</td></tr>
+        </table>
+        """
+    )
+
+    assert parsed.period_end is None
+    assert parsed.reporting_period_confidence == "unavailable"
+
+
+def test_adjusted_and_gaap_multiples_are_not_comparable() -> None:
+    result = determine_basis_comparability(
+        _basis(accounting="adjusted"), _basis(accounting="GAAP")
+    )
+
+    assert result.status == "not_comparable"
+    assert result.reason == "accounting_basis_mismatch"
+
+
+def test_unknown_provider_basis_preserves_official_derived_per() -> None:
+    snapshot = ValuationSnapshot(
+        current_price=100,
+        currency="KRW",
+        trailing_pe=20,
+        trailing_pe_status="value",
+        ttm_eps=5,
+        trailing_valuation_confidence=0.85,
+    )
+
+    ValuationSnapshotService()._cross_check(
+        snapshot,
+        50,
+        None,
+        20,
+        None,
+        provider_pe_basis=MultipleBasis(
+            metric="pe", horizon="TTM", currency="KRW", source="provider"
+        ),
+        derived_pe_basis=_basis(),
+    )
+
+    assert snapshot.trailing_pe == 20
+    assert snapshot.trailing_pe_source == "derived_trailing"
+    assert snapshot.trailing_pe_basis_conflict is False
+    assert snapshot.trailing_pe_comparability == "insufficient_metadata"
+
+
+def test_same_basis_discrepancy_and_structural_conflict_are_strong() -> None:
+    service = ValuationSnapshotService()
+    discrepancy = ValuationSnapshot(
+        current_price=100,
+        currency="KRW",
+        trailing_pe=50,
+        trailing_pe_status="value",
+        ttm_eps=5,
+        trailing_valuation_confidence=0.85,
+    )
+    service._cross_check(
+        discrepancy,
+        50,
+        None,
+        20,
+        None,
+        provider_pe_basis=_basis(),
+        derived_pe_basis=_basis(),
+    )
+    structural = ValuationSnapshot(
+        current_price=100,
+        currency="KRW",
+        trailing_pe=20,
+        trailing_pe_status="value",
+        ttm_eps=-2,
+        trailing_valuation_confidence=0.85,
+    )
+    service._cross_check(
+        structural,
+        20,
+        None,
+        None,
+        None,
+        provider_pe_basis=_basis(),
+        derived_pe_basis=_basis(),
+    )
+
+    assert discrepancy.trailing_pe_basis_conflict is True
+    assert discrepancy.trailing_pe_status == "conflict"
+    assert structural.trailing_pe_comparability == "structural_conflict"
+    assert structural.trailing_pe_status == "not_meaningful"
+
+
+def test_forward_different_horizon_does_not_create_consensus_conflict() -> None:
+    snapshot = ValuationSnapshot(
+        current_price=100,
+        currency="KRW",
+        forward_pe=25,
+        forward_pe_status="value",
+        forward_eps=10,
+        forward_valuation_confidence=0.7,
+    )
+
+    ValuationSnapshotService()._cross_check_forward(
+        snapshot,
+        provider_pe=25,
+        derived_pe=10,
+        provider_pe_basis=_basis(horizon="provider_defined"),
+        derived_pe_basis=_basis(horizon="FY1"),
+    )
+
+    assert snapshot.forward_pe == 25
+    assert snapshot.forward_pe_basis_conflict is False
+    assert snapshot.forward_pe_comparability == "insufficient_metadata"
+
+
+def test_adr_and_ordinary_share_multiples_are_not_comparable() -> None:
+    result = determine_basis_comparability(
+        _basis(security="ADR"), _basis(security="ordinary")
+    )
+
+    assert result.status == "not_comparable"
+    assert result.reason == "security_basis_mismatch"
+
+
+def test_preliminary_per_formula_uses_recent_four_quarter_label() -> None:
+    snapshot = {
+        "current_price": 100,
+        "currency": "KRW",
+        "trailing_pe": 10,
+        "trailing_pe_status": "value",
+        "ttm_eps": 10,
+        "ttm_contains_preliminary": True,
+    }
+
+    lines = _valuation_formula_lines(
+        snapshot,
+        label="PER",
+        multiple_field="trailing_pe",
+        denominator_field="ttm_eps",
+        denominator_label="최근 4개 분기 EPS",
+    )
+
+    assert "최근 4개 분기 EPS" in lines[0]
+    assert "provisional" not in lines[0]

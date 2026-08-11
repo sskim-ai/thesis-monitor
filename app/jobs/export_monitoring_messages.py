@@ -402,8 +402,8 @@ def export_messages(
                 "",
                 "## 부록. Valuation 계산 lineage",
                 "",
-                "| 종목 | 가격 | PER provider/derived/EPS | PBR provider/derived/BVPS | fPER provider/derived/EPS | fPBR provider/derived/BVPS | Basis conflict | Source/method |",
-                "|---|---|---|---|---|---|---|---|",
+                "| 종목 | 가격 | PER provider/derived/EPS | PER comparability | PBR provider/derived/BVPS | PBR comparability | fPER provider/derived/EPS | fPER comparability | fPBR provider/derived/BVPS | fPBR comparability | Basis conflict | Source/method |",
+                "|---|---|---|---|---|---|---|---|---|---|---|---|",
             ]
         )
         for assessment in assessments:
@@ -424,11 +424,44 @@ def export_messages(
             sections.append(
                 f"| {assessment.ticker} | {snapshot.get('current_price') or '없음'} | "
                 f"{snapshot.get('provider_trailing_pe') or '없음'}/{snapshot.get('derived_trailing_pe') or '없음'}/{snapshot.get('ttm_eps') or '없음'} | "
+                f"{snapshot.get('trailing_pe_comparability') or '없음'}:{snapshot.get('trailing_pe_comparability_reason') or '없음'} | "
                 f"{snapshot.get('provider_price_to_book') or '없음'}/{snapshot.get('derived_price_to_book') or '없음'}/{snapshot.get('bvps') or '없음'} | "
+                f"{snapshot.get('price_to_book_comparability') or '없음'}:{snapshot.get('price_to_book_comparability_reason') or '없음'} | "
                 f"{snapshot.get('provider_forward_pe') or '없음'}/{snapshot.get('derived_forward_pe') or '없음'}/{snapshot.get('forward_eps') or '없음'} | "
+                f"{snapshot.get('forward_pe_comparability') or '없음'}:{snapshot.get('forward_pe_comparability_reason') or '없음'} | "
                 f"{snapshot.get('provider_forward_price_to_book') or '없음'}/{snapshot.get('derived_forward_price_to_book') or '없음'}/{snapshot.get('forward_bvps') or '없음'} | "
+                f"{snapshot.get('forward_price_to_book_comparability') or '없음'}:{snapshot.get('forward_price_to_book_comparability_reason') or '없음'} | "
                 f"{','.join(snapshot.get('multiple_basis_conflicts') or []) or '없음'} | "
                 f"{str(snapshot.get('provider') or '없음').replace('|', '/')} · {methods.replace('|', '/')} |"
+            )
+
+        sections.extend(
+            [
+                "",
+                "## 부록. Earnings quarter / TTM lineage",
+                "",
+                "| 종목 | Latest earnings | Preliminary included | TTM EPS | Earnings basis | Share basis | Latest margin | QoQ/YoY revenue | Quarter series |",
+                "|---|---|---|---|---|---|---|---|---|",
+            ]
+        )
+        for assessment in assessments:
+            try:
+                snapshot = json.loads(assessment.valuation_snapshot or "{}")
+            except json.JSONDecodeError:
+                snapshot = {}
+            series = "; ".join(
+                f"{item.get('period')}:{item.get('source')}:{item.get('eps')}:{item.get('share_basis')}"
+                for item in snapshot.get("earnings_quarter_series", [])
+                if isinstance(item, dict)
+            )
+            sections.append(
+                f"| {assessment.ticker} | {snapshot.get('latest_earnings_period') or '없음'} | "
+                f"{snapshot.get('ttm_contains_preliminary', False)} "
+                f"({snapshot.get('preliminary_quarter_count', 0)}) | "
+                f"{snapshot.get('ttm_eps') or '없음'} | {snapshot.get('earnings_basis') or '없음'} | "
+                f"{snapshot.get('share_basis') or '없음'} | {snapshot.get('latest_operating_margin') or '없음'} | "
+                f"{snapshot.get('latest_revenue_qoq') or '없음'}/{snapshot.get('latest_revenue_yoy') or '없음'} | "
+                f"{series.replace('|', '/') or '없음'} |"
             )
 
         sections.extend(
@@ -459,9 +492,11 @@ def export_messages(
                     f"{str(event.financial_soft_outliers or '[]').replace('|', '/')} | "
                     f"{field.get('parse_method') or '없음'} | {field.get('table_id') or '없음'} | "
                     f"{field.get('raw_label') or '없음'} | "
-                    f"{field.get('raw_period') or '없음'} / "
-                    f"{str(field.get('raw_column_header') or '없음').replace('|', '/')} / "
-                    f"{field.get('raw_unit') or '없음'} / {field.get('raw_value') or '없음'} |"
+                        f"{field.get('raw_period') or '없음'} / "
+                        f"{str(field.get('raw_column_header') or '없음').replace('|', '/')} / "
+                        f"{field.get('raw_unit') or '없음'} / {field.get('raw_value') or '없음'}; "
+                        f"current={field.get('current_period_date_candidates') or []}; "
+                        f"ignored={field.get('ignored_comparison_period_dates') or []} |"
                 )
         if parser_rows == 0:
             sections.append(

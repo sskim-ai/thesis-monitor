@@ -39,6 +39,8 @@ def filing_date(row: FinancialSnapshot) -> date | None:
 def _eligible_rows(rows: list[FinancialSnapshot], observation_date: date) -> list[FinancialSnapshot]:
     latest_by_period: dict[tuple[int | None, str | None], FinancialSnapshot] = {}
     for row in rows:
+        if row.snapshot_type != "full_statement":
+            continue
         available = filing_date(row)
         if available is None or available > observation_date:
             continue
