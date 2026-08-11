@@ -160,6 +160,64 @@ def test_data_caution_only_renders_for_material_quality_problem() -> None:
     assert "⚠️ 데이터 주의" in _message_for_assessment(normal)
 
 
+def test_neutral_valuation_delta_is_hidden_but_relative_position_remains() -> None:
+    message = _message_for_assessment(_compact_assessment())
+
+    assert "현재 Valuation:\n부담 구간" in message
+    assert "Valuation: 중립" not in message
+    assert "오늘 Valuation 변화" not in message
+
+
+def test_non_neutral_valuation_delta_uses_change_label() -> None:
+    assessment = _compact_assessment(
+        valuation_context=json.dumps(
+            {"impact": "compression", "summary": "할인율 부담이 높아졌습니다."},
+            ensure_ascii=False,
+        )
+    )
+
+    message = _message_for_assessment(assessment)
+
+    assert "현재 Valuation:\n부담 구간" in message
+    assert "오늘 Valuation 변화: 압축" in message
+    assert "오늘 Valuation 영향" not in message
+
+
+def test_basis_conflict_renders_judgment_hold_and_natural_caution() -> None:
+    assessment = _compact_assessment()
+    snapshot = json.loads(assessment.valuation_snapshot)
+    snapshot.update(
+        {
+            "trailing_pe": None,
+            "trailing_pe_status": "conflict",
+            "trailing_pe_basis_conflict": True,
+        }
+    )
+    assessment.valuation_snapshot = json.dumps(snapshot, ensure_ascii=False)
+
+    message = _message_for_assessment(assessment)
+
+    assert "PER: 판단 보류" in message
+    assert "PER 계산의 이익 기준이 서로 충돌" in message
+    assert "basis_conflict" not in message
+
+
+def test_preliminary_period_mapping_failure_has_specific_caution() -> None:
+    assessment = _compact_assessment()
+    snapshot = json.loads(assessment.valuation_snapshot)
+    snapshot["data_coverage"]["preliminary_financial_quality"] = "validation_failed"
+    snapshot["data_coverage"]["reason_codes"] = [
+        "preliminary_validation_failed",
+        "preliminary_period_mapping_failed",
+    ]
+    assessment.valuation_snapshot = json.dumps(snapshot, ensure_ascii=False)
+
+    message = _message_for_assessment(assessment)
+
+    assert "최근 잠정실적의 기간 매핑을 검증하지 못해" in message
+    assert "잠정실적 숫자 검증이 완료되지 않아" not in message
+
+
 def test_assessment_notification_uses_investment_rationale_label() -> None:
     assessment = SimpleNamespace(
         ticker="000660",

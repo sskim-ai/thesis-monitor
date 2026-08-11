@@ -6340,6 +6340,121 @@
             "title": "Valuation Discrepancy Warning",
             "default": false
           },
+          "trailing_pe_basis_conflict": {
+            "type": "boolean",
+            "title": "Trailing Pe Basis Conflict",
+            "default": false
+          },
+          "price_to_book_basis_conflict": {
+            "type": "boolean",
+            "title": "Price To Book Basis Conflict",
+            "default": false
+          },
+          "forward_pe_basis_conflict": {
+            "type": "boolean",
+            "title": "Forward Pe Basis Conflict",
+            "default": false
+          },
+          "forward_price_to_book_basis_conflict": {
+            "type": "boolean",
+            "title": "Forward Price To Book Basis Conflict",
+            "default": false
+          },
+          "provider_trailing_pe": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Provider Trailing Pe"
+          },
+          "derived_trailing_pe": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Derived Trailing Pe"
+          },
+          "provider_price_to_book": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Provider Price To Book"
+          },
+          "derived_price_to_book": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Derived Price To Book"
+          },
+          "provider_forward_pe": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Provider Forward Pe"
+          },
+          "derived_forward_pe": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Derived Forward Pe"
+          },
+          "provider_forward_price_to_book": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Provider Forward Price To Book"
+          },
+          "derived_forward_price_to_book": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Derived Forward Price To Book"
+          },
+          "multiple_basis_conflicts": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Multiple Basis Conflicts"
+          },
           "valuation_calculation_warning": {
             "type": "boolean",
             "title": "Valuation Calculation Warning",

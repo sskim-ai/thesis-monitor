@@ -87,7 +87,10 @@ def _opendart_reparse_lookback_days(
     ).all()
     oldest_reparse_date: date | None = None
     for snapshot in snapshots:
-        if _json_list(snapshot.raw_financial_fields):
+        # Legacy validation failures predate hard/soft classification. Re-fetch
+        # them once; newly classified hard errors remain quarantined without a
+        # daily reparse loop.
+        if _json_list(snapshot.financial_hard_errors):
             continue
         if not snapshot.source_filing_id:
             continue
@@ -202,6 +205,8 @@ def _raw_event_to_model(raw_event: RawEvent) -> Event:
         url=raw_event.url,
         raw_summary=raw_event.summary,
         reporting_period_end=raw_event.reporting_period_end,
+        reporting_period_source=raw_event.reporting_period_source,
+        reporting_period_confidence=raw_event.reporting_period_confidence,
         document_type=raw_event.document_type,
         financial_scope=raw_event.financial_scope,
         event_type=event_type.value,
@@ -306,6 +311,10 @@ def _refresh_duplicate_event(duplicate: Event, event: Event) -> None:
     duplicate.reporting_period_end = (
         event.reporting_period_end or duplicate.reporting_period_end
     )
+    duplicate.reporting_period_source = (
+        event.reporting_period_source or duplicate.reporting_period_source
+    )
+    duplicate.reporting_period_confidence = event.reporting_period_confidence
     duplicate.document_type = event.document_type or duplicate.document_type
     duplicate.financial_scope = event.financial_scope or duplicate.financial_scope
     duplicate.event_type = event.event_type
@@ -318,6 +327,8 @@ def _refresh_duplicate_event(duplicate: Event, event: Event) -> None:
     duplicate.claim_actor = event.claim_actor
     duplicate.claim_actor_type = event.claim_actor_type
     duplicate.raw_financial_fields = event.raw_financial_fields
+    duplicate.financial_hard_errors = event.financial_hard_errors
+    duplicate.financial_soft_outliers = event.financial_soft_outliers
     duplicate.revenue = event.revenue
     duplicate.operating_income = event.operating_income
     duplicate.net_income = event.net_income

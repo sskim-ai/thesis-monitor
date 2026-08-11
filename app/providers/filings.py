@@ -543,7 +543,7 @@ class OpenDARTProvider(FilingProvider):
             document.html or document.text,
             source_receipt_no=receipt_no,
         )
-        if not parsed.facts or parsed.period_end is None:
+        if not parsed.facts:
             return None, [
                 "OpenDART preliminary earnings table parsing was incomplete",
                 *build_text_diagnostics(document)[:2],
@@ -841,6 +841,20 @@ class OpenDARTProvider(FilingProvider):
                                 preliminary.raw_fields if preliminary else []
                             ),
                             reporting_period_end=reporting_period_end,
+                            reporting_period_source=(
+                                preliminary.reporting_period_source
+                                if preliminary
+                                else "structured_metadata"
+                                if reporting_period_end
+                                else None
+                            ),
+                            reporting_period_confidence=(
+                                preliminary.reporting_period_confidence
+                                if preliminary
+                                else "medium"
+                                if reporting_period_end
+                                else "unavailable"
+                            ),
                             document_type=document_type,
                             financial_scope=(
                                 "income_statement_partial"

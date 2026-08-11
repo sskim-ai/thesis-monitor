@@ -214,6 +214,8 @@ def _valuation_formula_lines(
     multiple = snapshot.get(multiple_field)
     if status == "not_meaningful":
         return [f"{label}: N/M"]
+    if status == "conflict":
+        return [f"{label}: 판단 보류"]
     if status != "value" or not isinstance(multiple, (int, float)):
         return []
     price = snapshot.get("current_price")
@@ -299,7 +301,11 @@ def _data_cautions(
         or coverage.get("preliminary_financial_freshness")
         or ""
     )
-    if preliminary_quality == "validation_failed" or "preliminary_validation_failed" in reasons:
+    if "preliminary_period_mapping_failed" in reasons:
+        cautions.append(
+            "최근 잠정실적의 기간 매핑을 검증하지 못해 정식 재무 기준으로 판단합니다."
+        )
+    elif preliminary_quality == "validation_failed" or "preliminary_validation_failed" in reasons:
         cautions.append(
             "최근 잠정실적 숫자 검증이 완료되지 않아 현재 배수는 검증된 정식 재무를 기준으로 봅니다."
         )
@@ -314,6 +320,26 @@ def _data_cautions(
         cautions.append("최신 정식 재무 반영이 지연돼 현재 Valuation 신뢰도를 낮춰 봅니다.")
     if snapshot.get("consensus_disagreement") or snapshot.get("consensus_status") == "conflicting":
         cautions.append("예상 이익 전망이 데이터 공급 경로마다 크게 달라 fPER는 참고 수준입니다.")
+    if snapshot.get("trailing_pe_basis_conflict"):
+        cautions.append(
+            "PER 계산의 이익 기준이 서로 충돌해 해당 배수는 판단에서 제외했습니다."
+        )
+    if snapshot.get("price_to_book_basis_conflict"):
+        cautions.append(
+            "PBR 계산의 장부가치 기준이 서로 충돌해 해당 배수는 판단에서 제외했습니다."
+        )
+    if snapshot.get("forward_pe_basis_conflict"):
+        cautions.append(
+            "fPER 계산의 예상 이익 기준이 서로 충돌해 해당 배수는 판단에서 제외했습니다."
+        )
+    if snapshot.get("forward_price_to_book_basis_conflict"):
+        cautions.append(
+            "fPBR 계산의 예상 장부가치 기준이 서로 충돌해 해당 배수는 판단에서 제외했습니다."
+        )
+    if "preliminary_profitability_outlier" in reasons:
+        cautions.append(
+            "이번 분기 이익률이 과거보다 매우 높아 일회성 손익과 지속 가능성을 추가 확인합니다."
+        )
     if "missing_adr_ratio" in reasons:
         cautions.append("주식 변환 비율이 확인되지 않아 일부 주당 Valuation 계산을 보류했습니다.")
     if "foreign_financial_parsing_failed" in reasons:
@@ -578,10 +604,8 @@ def _assessment_report(
     valuation_lines.extend(["현재 Valuation:", relative_label])
     if relative_reason:
         valuation_lines.extend(["해석:", relative_reason])
-    if impact_label == "중립":
-        valuation_lines.append("Valuation: 중립")
-    else:
-        valuation_lines.append(f"오늘 Valuation 영향: {impact_label}")
+    if impact_label != "중립":
+        valuation_lines.append(f"오늘 Valuation 변화: {impact_label}")
         if valuation_impact:
             valuation_lines.append(valuation_impact)
     if earnings_impact not in {"unchanged", "unknown", "none", "neutral"}:

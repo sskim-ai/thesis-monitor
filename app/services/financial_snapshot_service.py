@@ -287,6 +287,8 @@ def upsert_financial_snapshot_from_event(session: Session, event: Event) -> Fina
         )
         snapshot.period_scope = "single-quarter"
         snapshot.financial_period_end = event.reporting_period_end
+        snapshot.reporting_period_source = event.reporting_period_source
+        snapshot.reporting_period_confidence = event.reporting_period_confidence
         snapshot.financials_as_of = event.reporting_period_end
         snapshot.filing_date = event.date
         snapshot.reported_date = event.date
@@ -307,7 +309,7 @@ def upsert_financial_snapshot_from_event(session: Session, event: Event) -> Fina
         validation_reasons = [
             item
             for item in _json_list(event.unknowns)
-            if item.startswith("Financial validation warning:")
+            if item.startswith("Financial validation hard error:")
         ]
         snapshot.quality_warnings = (
             "preliminary earnings filing confirmed; semantic fields were preserved but "
@@ -315,6 +317,8 @@ def upsert_financial_snapshot_from_event(session: Session, event: Event) -> Fina
             + (f"; {' '.join(validation_reasons)}" if validation_reasons else "")
         )
         snapshot.raw_financial_fields = event.raw_financial_fields or "[]"
+        snapshot.financial_hard_errors = event.financial_hard_errors
+        snapshot.financial_soft_outliers = event.financial_soft_outliers
         validate_snapshot_period_chronology(snapshot)
         session.add(snapshot)
         return snapshot
@@ -465,15 +469,21 @@ def upsert_financial_snapshot_from_event(session: Session, event: Event) -> Fina
     snapshot.source_event_date = event.date
     snapshot.source_filing_id = source_filing_id
     snapshot.raw_financial_fields = event.raw_financial_fields or "[]"
+    snapshot.financial_hard_errors = event.financial_hard_errors
+    snapshot.financial_soft_outliers = event.financial_soft_outliers
     snapshot.fiscal_year = fiscal_year
     snapshot.period_scope = period_scope
     snapshot.is_cumulative = period_scope != "single-quarter"
     snapshot.normalization_method = ";".join(
         dict.fromkeys((revenue_method, profit_method, net_income_method, diluted_eps_method))
     )
-    snapshot.financial_period_end = event.reporting_period_end or _financial_period_end(
-        fiscal_year, period_type
+    snapshot.financial_period_end = (
+        event.reporting_period_end
+        if is_preliminary
+        else event.reporting_period_end or _financial_period_end(fiscal_year, period_type)
     )
+    snapshot.reporting_period_source = event.reporting_period_source
+    snapshot.reporting_period_confidence = event.reporting_period_confidence
     snapshot.filing_date = event.date
     snapshot.financials_as_of = snapshot.financial_period_end
     snapshot.reported_date = event.date

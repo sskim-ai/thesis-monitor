@@ -556,6 +556,8 @@ def test_opendart_preliminary_earnings_are_normalized() -> None:
     )
 
     assert parsed.period_end == date(2026, 6, 30)
+    assert parsed.reporting_period_source == "document_text"
+    assert parsed.reporting_period_confidence == "medium"
     assert parsed.revenue == 100_000_000
     assert parsed.operating_income == 20_000_000
     assert parsed.net_income == 15_000_000
@@ -642,6 +644,8 @@ def test_preliminary_html_table_uses_semantic_rows_and_columns() -> None:
     assert parsed.qoq_growth == 50.9
     assert parsed.yoy_growth == 256.8
     assert parsed.period_end == date(2026, 6, 30)
+    assert parsed.reporting_period_source == "table_header"
+    assert parsed.reporting_period_confidence == "high"
     current_revenue = next(
         field
         for field in parsed.raw_fields

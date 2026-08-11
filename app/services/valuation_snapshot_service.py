@@ -261,18 +261,21 @@ class ValuationSnapshotService:
             )
             equity = balance.common_equity or balance.owners_parent_equity
             shares = balance.common_shares_outstanding
-            if equity and shares and equity > 0 and shares > 0:
+            if equity is not None and shares and shares > 0:
                 bvps = equity / shares
                 snapshot.bvps = bvps
-                derived_pb = round(snapshot.current_price / bvps, 4)
-                if snapshot.price_to_book_status != "value":
-                    snapshot.price_to_book = derived_pb
-                    snapshot.price_to_book_status = "value"
-                    snapshot.price_to_book_source = "derived_trailing"
-                    snapshot.price_to_book_method = "latest owners-parent common equity / current common shares"
-                    snapshot.trailing_valuation_confidence = max(
-                        snapshot.trailing_valuation_confidence, 0.85
-                    )
+                if bvps > 0:
+                    derived_pb = round(snapshot.current_price / bvps, 4)
+                    if snapshot.price_to_book_status != "value":
+                        snapshot.price_to_book = derived_pb
+                        snapshot.price_to_book_status = "value"
+                        snapshot.price_to_book_source = "derived_trailing"
+                        snapshot.price_to_book_method = (
+                            "latest owners-parent common equity / current common shares"
+                        )
+                        snapshot.trailing_valuation_confidence = max(
+                            snapshot.trailing_valuation_confidence, 0.85
+                        )
         self._apply_financial_metadata(snapshot, rows)
         return derived_pe, derived_pb
 
@@ -451,7 +454,10 @@ class ValuationSnapshotService:
                 snapshot.forecast_method = forecast_method
             return
         fy1_eps = fy1_income / shares
-        if snapshot.forward_pe_status != "value":
+        if (
+            snapshot.forward_pe_status != "value"
+            and not snapshot.forward_pe_basis_conflict
+        ):
             snapshot.forward_eps = fy1_eps
             snapshot.forward_pe = round(snapshot.current_price / fy1_eps, 4)
             snapshot.forward_pe_status = "value"
@@ -521,17 +527,143 @@ class ValuationSnapshotService:
         derived_pb: float | None,
     ) -> None:
         threshold = self.settings.valuation_discrepancy_threshold_pct / 100
-        for label, provider_value, derived_value in (
-            ("PER", provider_pe, derived_pe),
-            ("PBR", provider_pb, derived_pb),
-        ):
-            if provider_value and derived_value:
-                difference = abs(provider_value / derived_value - 1)
-                if difference > threshold:
-                    snapshot.valuation_discrepancy_warning = True
-                    snapshot.warnings.append(
-                        f"provider {label}와 자체 계산값 차이가 커 분모·주식수·기준일 확인이 필요합니다."
-                    )
+        if provider_pe is not None:
+            snapshot.provider_trailing_pe = provider_pe
+        if derived_pe is not None:
+            snapshot.derived_trailing_pe = derived_pe
+        if provider_pb is not None:
+            snapshot.provider_price_to_book = provider_pb
+        if derived_pb is not None:
+            snapshot.derived_price_to_book = derived_pb
+
+        pe_structural_conflict = (
+            provider_pe is not None
+            and provider_pe > 0
+            and snapshot.ttm_eps is not None
+            and snapshot.ttm_eps <= 0
+        )
+        pe_discrepancy = (
+            provider_pe is not None
+            and provider_pe > 0
+            and derived_pe is not None
+            and derived_pe > 0
+            and abs(provider_pe / derived_pe - 1) > threshold
+        )
+        if pe_structural_conflict or pe_discrepancy:
+            snapshot.trailing_pe_basis_conflict = True
+            if "trailing_pe" not in snapshot.multiple_basis_conflicts:
+                snapshot.multiple_basis_conflicts.append("trailing_pe")
+            snapshot.trailing_pe = None
+            snapshot.trailing_pe_status = (
+                "not_meaningful" if pe_structural_conflict else "conflict"
+            )
+            snapshot.trailing_valuation_confidence = min(
+                snapshot.trailing_valuation_confidence, 0.35
+            )
+            if pe_discrepancy:
+                snapshot.valuation_discrepancy_warning = True
+            warning = (
+                "외부 PER와 자체 TTM 이익 기준이 구조적으로 충돌합니다."
+                if pe_structural_conflict
+                else "외부 PER와 자체 계산 PER 차이가 커 분모·주식수·기준일 확인이 필요합니다."
+            )
+            if warning not in snapshot.warnings:
+                snapshot.warnings.append(warning)
+
+        pb_structural_conflict = (
+            provider_pb is not None
+            and provider_pb > 0
+            and snapshot.bvps is not None
+            and snapshot.bvps <= 0
+        )
+        pb_discrepancy = (
+            provider_pb is not None
+            and provider_pb > 0
+            and derived_pb is not None
+            and derived_pb > 0
+            and abs(provider_pb / derived_pb - 1) > threshold
+        )
+        if pb_structural_conflict or pb_discrepancy:
+            snapshot.price_to_book_basis_conflict = True
+            if "price_to_book" not in snapshot.multiple_basis_conflicts:
+                snapshot.multiple_basis_conflicts.append("price_to_book")
+            snapshot.price_to_book = None
+            snapshot.price_to_book_status = "conflict"
+            snapshot.trailing_valuation_confidence = min(
+                snapshot.trailing_valuation_confidence, 0.35
+            )
+            if pb_discrepancy:
+                snapshot.valuation_discrepancy_warning = True
+            warning = (
+                "외부 PBR과 자체 장부가치 기준이 구조적으로 충돌합니다."
+                if pb_structural_conflict
+                else "외부 PBR과 자체 계산 PBR 차이가 커 자본·주식수 기준 확인이 필요합니다."
+            )
+            if warning not in snapshot.warnings:
+                snapshot.warnings.append(warning)
+
+    def _cross_check_forward(
+        self,
+        snapshot: ValuationSnapshot,
+        *,
+        provider_pe: float | None = None,
+        derived_pe: float | None = None,
+        provider_pb: float | None = None,
+        derived_pb: float | None = None,
+    ) -> None:
+        threshold = self.settings.valuation_discrepancy_threshold_pct / 100
+        if provider_pe is not None:
+            snapshot.provider_forward_pe = provider_pe
+        if derived_pe is not None:
+            snapshot.derived_forward_pe = derived_pe
+        if provider_pb is not None:
+            snapshot.provider_forward_price_to_book = provider_pb
+        if derived_pb is not None:
+            snapshot.derived_forward_price_to_book = derived_pb
+
+        pe_conflict = provider_pe is not None and provider_pe > 0 and (
+            (snapshot.forward_eps is not None and snapshot.forward_eps <= 0)
+            or (
+                derived_pe is not None
+                and derived_pe > 0
+                and abs(provider_pe / derived_pe - 1) > threshold
+            )
+        )
+        if pe_conflict:
+            snapshot.forward_pe_basis_conflict = True
+            snapshot.valuation_discrepancy_warning = True
+            if "forward_pe" not in snapshot.multiple_basis_conflicts:
+                snapshot.multiple_basis_conflicts.append("forward_pe")
+            snapshot.forward_pe = None
+            snapshot.forward_pe_status = "conflict"
+            snapshot.forward_valuation_confidence = min(
+                snapshot.forward_valuation_confidence, 0.35
+            )
+            warning = "외부 fPER와 확인 가능한 예상 EPS 기준이 충돌합니다."
+            if warning not in snapshot.warnings:
+                snapshot.warnings.append(warning)
+
+        pb_conflict = provider_pb is not None and provider_pb > 0 and (
+            (snapshot.forward_bvps is not None and snapshot.forward_bvps <= 0)
+            or (
+                derived_pb is not None
+                and derived_pb > 0
+                and abs(provider_pb / derived_pb - 1) > threshold
+            )
+        )
+        if pb_conflict:
+            snapshot.forward_price_to_book_basis_conflict = True
+            snapshot.valuation_discrepancy_warning = True
+            if "forward_price_to_book" not in snapshot.multiple_basis_conflicts:
+                snapshot.multiple_basis_conflicts.append("forward_price_to_book")
+            snapshot.forward_price_to_book = None
+            snapshot.forward_price_to_book_status = "conflict"
+            snapshot.forward_valuation_confidence = min(
+                snapshot.forward_valuation_confidence, 0.35
+            )
+            warning = "외부 fPBR과 확인 가능한 예상 BVPS 기준이 충돌합니다."
+            if warning not in snapshot.warnings:
+                snapshot.warnings.append(warning)
 
     async def fetch(
         self,
@@ -830,9 +962,25 @@ class ValuationSnapshotService:
                 snapshot.estimate_analyst_count = alpha_estimate.analyst_count
                 snapshot.estimate_revision_direction = alpha_estimate.revision_direction
                 snapshot.consensus_status = alpha_estimate.coverage_status
-            if snapshot.current_price and alpha_eps > 0:
-                alpha_forward_pe = snapshot.current_price / alpha_eps
-                if snapshot.forward_pe_status != "value":
+            if snapshot.current_price:
+                alpha_forward_pe = (
+                    snapshot.current_price / alpha_eps if alpha_eps > 0 else None
+                )
+                provider_forward_pe = (
+                    snapshot.forward_pe
+                    if snapshot.forward_pe_status == "value"
+                    and snapshot.forward_pe_source == "consensus_forward"
+                    and snapshot.forward_pe_method == "Finnhub forwardPE"
+                    else None
+                )
+                if provider_forward_pe is not None:
+                    snapshot.forward_eps = alpha_eps
+                    self._cross_check_forward(
+                        snapshot,
+                        provider_pe=provider_forward_pe,
+                        derived_pe=alpha_forward_pe,
+                    )
+                elif alpha_forward_pe is not None and snapshot.forward_pe_status != "value":
                     snapshot.forward_eps = alpha_eps
                     snapshot.forward_pe = round(alpha_forward_pe, 4)
                     snapshot.forward_pe_status = "value"
@@ -842,9 +990,8 @@ class ValuationSnapshotService:
                     snapshot.forward_pe_input_period = alpha_estimate.estimate_period
                     snapshot.forward_valuation_confidence = 0.65
                     snapshot.consensus_status = alpha_estimate.coverage_status
-                elif snapshot.forward_pe:
-                    finnhub_implied_eps = snapshot.current_price / snapshot.forward_pe
-                    discrepancy = abs(finnhub_implied_eps / alpha_eps - 1)
+                if provider_forward_pe is not None and alpha_forward_pe is not None:
+                    discrepancy = abs(provider_forward_pe / alpha_forward_pe - 1)
                     if discrepancy > self.settings.alpha_vantage_consensus_discrepancy_pct / 100:
                         snapshot.consensus_disagreement = True
                         snapshot.forward_valuation_confidence *= 0.7
@@ -930,6 +1077,14 @@ class ValuationSnapshotService:
                 snapshot.valuation_relative_basis = basis
                 snapshot.valuation_relative_position_confidence = "low"
                 snapshot.valuation_relative_position_reason = "저장된 peer 또는 역사적 범위를 참고했습니다."
+
+        if snapshot.multiple_basis_conflicts:
+            snapshot.valuation_signal_conflict = True
+            snapshot.valuation_relative_position_confidence = "low"
+            if "multiple_basis_conflict" not in snapshot.valuation_relative_position_reason_codes:
+                snapshot.valuation_relative_position_reason_codes.append(
+                    "multiple_basis_conflict"
+                )
 
         if rows and snapshot.provider == "ohlcv-analyst":
             snapshot.provider = "ohlcv-analyst + financial-statements"
@@ -1061,10 +1216,13 @@ class ValuationSnapshotService:
                 freshness.refresh_required
                 or snapshot.consensus_disagreement
                 or snapshot.share_count_discrepancy_warning
+                or bool(snapshot.multiple_basis_conflicts)
             ):
                 if snapshot.valuation_relative_position_confidence == "high":
                     snapshot.valuation_relative_position_confidence = "medium"
                 if snapshot.consensus_disagreement or snapshot.share_count_discrepancy_warning:
+                    snapshot.valuation_relative_position_confidence = "low"
+                if snapshot.multiple_basis_conflicts:
                     snapshot.valuation_relative_position_confidence = "low"
             if freshness.full_financial_freshness == "stale" or freshness.status == "foreign_filing_partial":
                 if snapshot.valuation_relative_position_confidence == "high":

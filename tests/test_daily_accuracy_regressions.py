@@ -157,7 +157,7 @@ def test_case_d_invalid_financial_numbers_are_removed_from_confirmed_facts() -> 
         ),
         revenue=100,
         operating_income=200,
-        operating_margin=200,
+        operating_margin=20,
     )
     validation = validate_event_financials(event)
     assert validation.valid is False

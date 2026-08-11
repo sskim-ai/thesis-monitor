@@ -30,6 +30,8 @@ class RawEvent:
     claim_actor_type: str = "unknown"
     raw_financial_fields: list[dict[str, object]] = field(default_factory=list)
     reporting_period_end: date | None = None
+    reporting_period_source: str | None = None
+    reporting_period_confidence: str = "unavailable"
     document_type: str | None = None
     financial_scope: str | None = None
     revenue: float | None = None

@@ -472,6 +472,19 @@ class ValuationSnapshot(BaseModel):
     forward_multiple_confidence: float = 0.0
     data_coverage: DataCoverage = Field(default_factory=DataCoverage)
     valuation_discrepancy_warning: bool = False
+    trailing_pe_basis_conflict: bool = False
+    price_to_book_basis_conflict: bool = False
+    forward_pe_basis_conflict: bool = False
+    forward_price_to_book_basis_conflict: bool = False
+    provider_trailing_pe: float | None = None
+    derived_trailing_pe: float | None = None
+    provider_price_to_book: float | None = None
+    derived_price_to_book: float | None = None
+    provider_forward_pe: float | None = None
+    derived_forward_pe: float | None = None
+    provider_forward_price_to_book: float | None = None
+    derived_forward_price_to_book: float | None = None
+    multiple_basis_conflicts: list[str] = Field(default_factory=list)
     valuation_calculation_warning: bool = False
     warnings: list[str] = Field(default_factory=list)
 

@@ -15,6 +15,8 @@ class Event(SQLModel, table=True):
     url: str
     raw_summary: str | None = None
     reporting_period_end: date | None = Field(default=None, index=True)
+    reporting_period_source: str | None = None
+    reporting_period_confidence: str = "unavailable"
     document_type: str | None = Field(default=None, index=True)
     financial_scope: str | None = None
     event_type: str = Field(index=True)
@@ -29,6 +31,8 @@ class Event(SQLModel, table=True):
     claim_actor: str | None = None
     claim_actor_type: str = "unknown"
     raw_financial_fields: str = "[]"
+    financial_hard_errors: str = "[]"
+    financial_soft_outliers: str = "[]"
     revenue: float | None = None
     operating_income: float | None = None
     net_income: float | None = None

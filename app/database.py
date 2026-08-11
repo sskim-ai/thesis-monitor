@@ -97,6 +97,8 @@ def _ensure_sqlite_columns() -> None:
             "buyback_candidate": "BOOLEAN DEFAULT 0",
             "confirmed_buyback": "BOOLEAN DEFAULT 0",
             "reporting_period_end": "DATE",
+            "reporting_period_source": "VARCHAR",
+            "reporting_period_confidence": "VARCHAR DEFAULT 'unavailable'",
             "document_type": "VARCHAR",
             "financial_scope": "VARCHAR",
             "source_document_id": "VARCHAR",
@@ -104,6 +106,8 @@ def _ensure_sqlite_columns() -> None:
             "claim_actor": "VARCHAR",
             "claim_actor_type": "VARCHAR DEFAULT 'unknown'",
             "raw_financial_fields": "VARCHAR DEFAULT '[]'",
+            "financial_hard_errors": "VARCHAR DEFAULT '[]'",
+            "financial_soft_outliers": "VARCHAR DEFAULT '[]'",
         },
         "financialsnapshot": {
             "snapshot_type": "VARCHAR DEFAULT 'full_statement'",
@@ -157,6 +161,10 @@ def _ensure_sqlite_columns() -> None:
             "qoq_growth": "FLOAT",
             "raw_financial_fields": "VARCHAR DEFAULT '[]'",
             "period_mapping_validation_failed": "BOOLEAN DEFAULT 0",
+            "reporting_period_source": "VARCHAR",
+            "reporting_period_confidence": "VARCHAR DEFAULT 'unavailable'",
+            "financial_hard_errors": "VARCHAR DEFAULT '[]'",
+            "financial_soft_outliers": "VARCHAR DEFAULT '[]'",
         },
         "securitymaster": {
             "search_aliases": "VARCHAR DEFAULT '[]'",

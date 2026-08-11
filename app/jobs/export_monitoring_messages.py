@@ -402,8 +402,8 @@ def export_messages(
                 "",
                 "## 부록. Valuation 계산 lineage",
                 "",
-                "| 종목 | 가격 | PER/EPS | PBR/BVPS | fPER/예상 EPS | fPBR/예상 BVPS | Source/method |",
-                "|---|---|---|---|---|---|---|",
+                "| 종목 | 가격 | PER provider/derived/EPS | PBR provider/derived/BVPS | fPER provider/derived/EPS | fPBR provider/derived/BVPS | Basis conflict | Source/method |",
+                "|---|---|---|---|---|---|---|---|",
             ]
         )
         for assessment in assessments:
@@ -423,10 +423,11 @@ def export_messages(
             )
             sections.append(
                 f"| {assessment.ticker} | {snapshot.get('current_price') or '없음'} | "
-                f"{snapshot.get('trailing_pe') or '없음'}/{snapshot.get('ttm_eps') or '없음'} | "
-                f"{snapshot.get('price_to_book') or '없음'}/{snapshot.get('bvps') or '없음'} | "
-                f"{snapshot.get('forward_pe') or '없음'}/{snapshot.get('forward_eps') or '없음'} | "
-                f"{snapshot.get('forward_price_to_book') or '없음'}/{snapshot.get('forward_bvps') or '없음'} | "
+                f"{snapshot.get('provider_trailing_pe') or '없음'}/{snapshot.get('derived_trailing_pe') or '없음'}/{snapshot.get('ttm_eps') or '없음'} | "
+                f"{snapshot.get('provider_price_to_book') or '없음'}/{snapshot.get('derived_price_to_book') or '없음'}/{snapshot.get('bvps') or '없음'} | "
+                f"{snapshot.get('provider_forward_pe') or '없음'}/{snapshot.get('derived_forward_pe') or '없음'}/{snapshot.get('forward_eps') or '없음'} | "
+                f"{snapshot.get('provider_forward_price_to_book') or '없음'}/{snapshot.get('derived_forward_price_to_book') or '없음'}/{snapshot.get('forward_bvps') or '없음'} | "
+                f"{','.join(snapshot.get('multiple_basis_conflicts') or []) or '없음'} | "
                 f"{str(snapshot.get('provider') or '없음').replace('|', '/')} · {methods.replace('|', '/')} |"
             )
 
@@ -435,8 +436,8 @@ def export_messages(
                 "",
                 "## 부록. Preliminary parser diagnostics",
                 "",
-                "| 종목 | Filing | Parse method | Table | Metric | Raw period/header/unit/value |",
-                "|---|---|---|---|---|---|",
+                "| 종목 | Filing | Period source/confidence/end | Hard errors | Soft outliers | Parse method | Table | Metric | Raw period/header/unit/value |",
+                "|---|---|---|---|---|---|---|---|---|",
             ]
         )
         parser_rows = 0
@@ -451,6 +452,11 @@ def export_messages(
                 parser_rows += 1
                 sections.append(
                     f"| {event.ticker} | {event.source_document_id or '없음'} | "
+                    f"{event.reporting_period_source or '없음'}/"
+                    f"{event.reporting_period_confidence or '없음'}/"
+                    f"{event.reporting_period_end or '없음'} | "
+                    f"{str(event.financial_hard_errors or '[]').replace('|', '/')} | "
+                    f"{str(event.financial_soft_outliers or '[]').replace('|', '/')} | "
                     f"{field.get('parse_method') or '없음'} | {field.get('table_id') or '없음'} | "
                     f"{field.get('raw_label') or '없음'} | "
                     f"{field.get('raw_period') or '없음'} / "
@@ -458,7 +464,9 @@ def export_messages(
                     f"{field.get('raw_unit') or '없음'} / {field.get('raw_value') or '없음'} |"
                 )
         if parser_rows == 0:
-            sections.append("| - | - | 저장된 parser diagnostic 없음 | - | - | - |")
+            sections.append(
+                "| - | - | - | - | - | 저장된 parser diagnostic 없음 | - | - | - |"
+            )
     audit_output = audit_output or _audit_output_for(output)
     output.parent.mkdir(parents=True, exist_ok=True)
     audit_output.parent.mkdir(parents=True, exist_ok=True)

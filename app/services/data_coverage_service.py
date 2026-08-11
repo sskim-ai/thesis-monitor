@@ -41,6 +41,14 @@ def _coverage(value: bool, partial: bool = False) -> str:
     return "partial" if partial else "full" if value else "unavailable"
 
 
+def _json_list(value: str | None) -> list[str]:
+    try:
+        parsed = json.loads(value or "[]")
+    except json.JSONDecodeError:
+        return []
+    return [str(item) for item in parsed] if isinstance(parsed, list) else []
+
+
 class DataCoverageService:
     def build(
         self,
@@ -273,6 +281,24 @@ class DataCoverageService:
         )
         if preliminary_quality == "validation_failed":
             reasons.append("preliminary_validation_failed")
+            if any(
+                row.period_mapping_validation_failed for row in all_preliminary_rows
+            ):
+                reasons.append("preliminary_period_mapping_failed")
+        preliminary_soft_outliers = {
+            outlier
+            for row in preliminary_rows
+            for outlier in _json_list(row.financial_soft_outliers)
+        }
+        if preliminary_soft_outliers.intersection(
+            {
+                "operating_income_exceeds_revenue",
+                "net_income_exceeds_revenue",
+                "unusually_high_or_low_operating_margin",
+                "unusually_high_or_low_net_margin",
+            }
+        ):
+            reasons.append("preliminary_profitability_outlier")
         financial_quality = (
             "refresh_pending"
             if freshness.refresh_required

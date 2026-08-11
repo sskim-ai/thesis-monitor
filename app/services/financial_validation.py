@@ -35,7 +35,13 @@ class NormalizedFinancialNumber:
 @dataclass
 class FinancialValidationResult:
     valid: bool = True
-    warnings: list[str] = field(default_factory=list)
+    hard_errors: list[str] = field(default_factory=list)
+    soft_outliers: list[str] = field(default_factory=list)
+
+    @property
+    def warnings(self) -> list[str]:
+        """Compatibility view for callers that still display all findings."""
+        return [*self.hard_errors, *self.soft_outliers]
 
 
 @dataclass(frozen=True)
@@ -53,6 +59,9 @@ def validate_snapshot_period_chronology(snapshot: FinancialSnapshot) -> bool:
         return True
     snapshot.period_mapping_validation_failed = True
     snapshot.financial_statement_basis_warning = True
+    hard_errors = _list(snapshot.financial_hard_errors or "[]")
+    _append(hard_errors, "financial_period_after_filing_date")
+    snapshot.financial_hard_errors = json.dumps(hard_errors)
     warning = (
         "financial period end is after filing date; snapshot is quarantined from "
         "current context and valuation inputs"
@@ -138,6 +147,49 @@ def _fact_amount(facts: list[str], labels: tuple[str, ...]) -> float | None:
     return None
 
 
+def _official_financial_source(event: Event) -> bool:
+    return event.provider in {"opendart", "sec_edgar", "company_ir"} or (
+        event.claim_actor_type in {"company_official_filing", "company_management"}
+    )
+
+
+def _raw_field_mapping_errors(event: Event) -> list[str]:
+    if event.document_type != "preliminary_earnings":
+        return []
+    try:
+        fields = json.loads(event.raw_financial_fields or "[]")
+    except json.JSONDecodeError:
+        return ["raw_financial_fields_invalid"]
+    if not isinstance(fields, list) or not fields:
+        return ["preliminary_semantic_mapping_unavailable"]
+    methods = {
+        str(item.get("parse_method"))
+        for item in fields
+        if isinstance(item, dict) and item.get("parse_method")
+    }
+    errors: list[str] = []
+    if len(methods) > 1:
+        errors.append("mixed_parser_basis")
+    supported_units = {"원", "천원", "백만원", "억원"}
+    if any(
+        isinstance(item, dict)
+        and item.get("raw_unit") not in supported_units
+        for item in fields
+    ):
+        errors.append("unsupported_preliminary_unit")
+    selected = [
+        item
+        for item in fields
+        if isinstance(item, dict)
+        and item.get("raw_period") == "single_quarter"
+        and item.get("raw_label")
+        in {"매출액", "영업이익", "당기순이익", "지배주주순이익"}
+    ]
+    if any("증감률" in str(item.get("raw_column_header") or "") for item in selected):
+        errors.append("percentage_cell_selected_as_amount")
+    return errors
+
+
 def validate_event_financials(
     event: Event,
     operating_margin_upper_bound: float = 60.0,
@@ -150,6 +202,8 @@ def validate_event_financials(
         return FinancialValidationResult()
 
     result = FinancialValidationResult()
+    if event.document_type == "preliminary_earnings" and event.reporting_period_end is None:
+        result.hard_errors.append("reporting_period_unavailable")
     bases = {
         (
             _basis_value(fact, "fs_div"),
@@ -162,52 +216,75 @@ def validate_event_financials(
     }
     scopes = {basis[3] for basis in bases if basis[3]}
     if any(scope not in VALID_PERIOD_SCOPES for scope in scopes):
-        result.warnings.append("Financial period scope is missing or unsupported.")
+        result.hard_errors.append("unsupported_financial_period_scope")
     if len({basis[:3] for basis in bases}) > 1 or len(scopes) > 1:
-        result.warnings.append("Revenue and operating income use inconsistent statement or period bases.")
+        result.hard_errors.append("inconsistent_statement_or_period_basis")
 
     for fact in financial_facts:
         if not re.search(r"=\s*[-\d,.]+\s+KRW\b", fact, re.IGNORECASE):
-            result.warnings.append("Financial amount unit is not explicitly supported.")
+            result.hard_errors.append("unsupported_financial_amount_unit")
             break
 
-    revenue = event.revenue or _fact_amount(
-        financial_facts, ("매출액", "수익(매출액)", "영업수익")
+    for error in _raw_field_mapping_errors(event):
+        _append(result.hard_errors, error)
+
+    revenue = (
+        event.revenue
+        if event.revenue is not None
+        else _fact_amount(financial_facts, ("매출액", "수익(매출액)", "영업수익"))
     )
-    operating_income = event.operating_income or _fact_amount(
-        financial_facts, ("영업이익",)
+    operating_income = (
+        event.operating_income
+        if event.operating_income is not None
+        else _fact_amount(financial_facts, ("영업이익",))
     )
-    net_income = event.net_income or _fact_amount(
-        financial_facts, ("지배주주순이익", "당기순이익")
+    net_income = (
+        event.net_income
+        if event.net_income is not None
+        else _fact_amount(financial_facts, ("지배주주순이익", "당기순이익"))
     )
     margin = event.operating_margin
     if margin is None and revenue not in {None, 0} and operating_income is not None:
         margin = operating_income / revenue * 100
     if revenue is not None and revenue <= 0:
-        result.warnings.append("Revenue is non-positive, so ratio validation is unavailable.")
+        result.hard_errors.append("non_positive_revenue")
     if (
         revenue not in {None, 0}
         and operating_income is not None
         and abs(operating_income) > abs(revenue)
         and not _is_financial_company(event)
     ):
-        result.warnings.append("Absolute operating income exceeds revenue.")
+        result.soft_outliers.append("operating_income_exceeds_revenue")
     if (
         revenue not in {None, 0}
         and net_income is not None
         and abs(net_income) > abs(revenue)
         and not _is_financial_company(event)
     ):
-        result.warnings.append("Absolute net income exceeds revenue.")
+        result.soft_outliers.append("net_income_exceeds_revenue")
     if margin is not None and not _is_financial_company(event):
         if margin > operating_margin_upper_bound or margin < -100:
-            result.warnings.append("Operating margin is outside the configured sanity range.")
+            result.soft_outliers.append("unusually_high_or_low_operating_margin")
         if revenue not in {None, 0} and operating_income is not None:
             derived = operating_income / revenue * 100
-            if abs(derived - margin) > 1.0:
-                result.warnings.append("Reported and derived operating margins do not reconcile.")
+            if event.operating_margin is not None and abs(derived - margin) > 1.0:
+                result.hard_errors.append("reported_and_derived_margin_mismatch")
 
-    if not result.warnings:
+    if (
+        revenue not in {None, 0}
+        and net_income is not None
+        and abs(net_income / revenue) > 1
+        and "net_income_exceeds_revenue" not in result.soft_outliers
+    ):
+        result.soft_outliers.append("unusually_high_or_low_net_margin")
+
+    if result.soft_outliers and not _official_financial_source(event):
+        result.hard_errors.append("outlier_not_verified_by_official_source")
+
+    event.financial_hard_errors = json.dumps(result.hard_errors)
+    event.financial_soft_outliers = json.dumps(result.soft_outliers)
+
+    if not result.hard_errors:
         return result
 
     result.valid = False
@@ -241,8 +318,8 @@ def validate_event_financials(
         )
     ]
     unknowns = _list(event.unknowns)
-    for warning in result.warnings:
-        _append(unknowns, f"Financial validation warning: {warning}")
+    for error in result.hard_errors:
+        _append(unknowns, f"Financial validation hard error: {error}")
     _append(
         unknowns,
         "실적 발표는 확인됐으나 현재 파싱된 숫자의 단위 또는 기간 검증이 필요합니다.",

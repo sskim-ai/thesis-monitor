@@ -30,6 +30,8 @@ class DartDocumentText:
 class PreliminaryEarningsFacts:
     facts: list[str]
     period_end: date | None
+    reporting_period_source: str | None
+    reporting_period_confidence: str
     revenue: float | None
     operating_income: float | None
     net_income: float | None
@@ -751,6 +753,8 @@ def extract_preliminary_earnings_facts_from_text(
     scale = _preliminary_unit_scale(tokens)
     unit_label = _preliminary_unit_label(tokens)
     period_end = _preliminary_period_end(tokens)
+    reporting_period_source = "document_text" if period_end is not None else None
+    reporting_period_confidence = "medium" if period_end is not None else "unavailable"
     semantic, semantic_raw_fields, table_unit, diagnostics = (
         _semantic_preliminary_table(text, source_receipt_no)
         if "<table" in text.lower()
@@ -777,6 +781,13 @@ def extract_preliminary_earnings_facts_from_text(
     semantic_period_end = _preliminary_period_end_from_semantic_header(diagnostics)
     if semantic_period_end is not None:
         period_end = semantic_period_end
+        reporting_period_source = "table_header"
+        reporting_period_confidence = "high"
+    diagnostics["reporting_period_source"] = reporting_period_source
+    diagnostics["reporting_period_confidence"] = reporting_period_confidence
+    diagnostics["reporting_period_end"] = (
+        period_end.isoformat() if period_end is not None else None
+    )
 
     def metric_values(label: str, aliases: tuple[str, ...]) -> tuple[float | None, float | None, float | None, float | None]:
         value = semantic.get(label)
@@ -863,6 +874,8 @@ def extract_preliminary_earnings_facts_from_text(
     return PreliminaryEarningsFacts(
         facts=facts,
         period_end=period_end,
+        reporting_period_source=reporting_period_source,
+        reporting_period_confidence=reporting_period_confidence,
         revenue=revenue * scale if revenue is not None else None,
         operating_income=operating_income * scale if operating_income is not None else None,
         net_income=net_income * scale if net_income is not None else None,
