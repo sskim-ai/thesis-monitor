@@ -44,6 +44,24 @@ def _first_list(payload: dict[str, object], *keys: str) -> list[dict[str, object
     return []
 
 
+def _provider_error_reason(payload: dict[str, object]) -> str | None:
+    message = str(
+        payload.get("Error Message")
+        or payload.get("Note")
+        or payload.get("Information")
+        or ""
+    ).lower()
+    if not message:
+        return "empty_payload" if not payload else None
+    if "frequency" in message or "rate limit" in message or "call volume" in message:
+        return "rate_limit"
+    if "api key" in message or "apikey" in message:
+        return "authentication_failed"
+    if "symbol" in message or "invalid" in message:
+        return "unsupported_symbol"
+    return "provider_error_message"
+
+
 @dataclass
 class AlphaVantageBundle:
     ticker: str
@@ -96,7 +114,7 @@ class AlphaVantageService:
                 endpoint=function,
                 ticker=ticker,
                 started_at=started_at,
-                status="cached",
+                status="cache_hit",
             )
             return (payload if isinstance(payload, dict) else {}), "cached"
         if not self.settings.alpha_vantage_api_key:
@@ -106,11 +124,10 @@ class AlphaVantageService:
                 endpoint=function,
                 ticker=ticker,
                 started_at=started_at,
-                status="not_configured",
-                error_type="ProviderNotConfigured",
-                error_reason="api_key_not_configured",
+                status="skipped_not_configured",
+                skip_reason="api_key_not_configured",
             )
-            return {}, "not_configured"
+            return {}, "skipped_not_configured"
         today = datetime.now(timezone.utc).date()
         if self.__class__._request_date != today:
             self.__class__._request_date = today
@@ -122,7 +139,7 @@ class AlphaVantageService:
                 endpoint=function,
                 ticker=ticker,
                 started_at=started_at,
-                status="request_budget_exhausted",
+                status="rate_limited",
                 error_type="RequestBudgetExceeded",
                 error_reason="configured_daily_request_budget_exhausted",
             )
@@ -139,6 +156,7 @@ class AlphaVantageService:
             provider="alpha_vantage", ticker=ticker, data_type=function
         )
         caught_exc: Exception | None = None
+        failure_reason: str | None = None
         try:
             async with httpx.AsyncClient(
                 timeout=self.settings.valuation_provider_timeout_seconds,
@@ -155,10 +173,11 @@ class AlphaVantageService:
                 response.raise_for_status()
                 payload = response.json()
             if not isinstance(payload, dict):
-                raise ValueError("invalid provider payload")
-            provider_error = payload.get("Error Message") or payload.get("Note") or payload.get("Information")
-            if provider_error:
-                raise ValueError("provider returned unavailable response")
+                failure_reason = "invalid_response_schema"
+                raise ValueError(failure_reason)
+            failure_reason = _provider_error_reason(payload)
+            if failure_reason:
+                raise ValueError(failure_reason)
             row.status = "success"
             row.payload = json.dumps(payload)
             row.last_success_at = now
@@ -166,11 +185,19 @@ class AlphaVantageService:
             status = "fresh"
         except (httpx.HTTPError, ValueError, TypeError) as exc:
             caught_exc = exc
+            if failure_reason is None:
+                failure_reason = (
+                    "http_status_error"
+                    if isinstance(exc, httpx.HTTPStatusError)
+                    else "network_error"
+                    if isinstance(exc, httpx.HTTPError)
+                    else "parse_error"
+                )
             payload = {}
             row.status = "failed"
             row.payload = "{}"
             row.last_error = type(exc).__name__
-            status = "provider_failed"
+            status = "rate_limited" if failure_reason == "rate_limit" else "provider_failed"
         row.fetched_at = now
         row.expires_at = now + timedelta(hours=self.settings.alpha_vantage_cache_hours)
         session.add(row)
@@ -189,7 +216,7 @@ class AlphaVantageService:
             status="success" if status == "fresh" else status,
             error_type=row.last_error,
             error_code=status_code,
-            error_reason=("provider_response_unavailable" if status != "fresh" else None),
+            error_reason=(failure_reason if status != "fresh" else None),
         )
         return payload, status
 

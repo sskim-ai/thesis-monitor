@@ -239,9 +239,9 @@ async def run_daily_monitor(
                 session=session,
                 thesis=thesis,
             )
+            IssueIdentityAuditService().audit(session, item.ticker)
             events = recent_events_for_assessment(session, item.ticker, run_date)
             previous_assessment = _previous_assessment(session, item.ticker, run_date)
-            IssueIdentityAuditService().audit(session, item.ticker)
             baseline_warning_states = backfill_confirmed_warning_states(
                 session, thesis, run_date
             )

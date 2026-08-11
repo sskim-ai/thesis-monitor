@@ -266,6 +266,10 @@ class PriceDecisionContext(BaseModel):
     current_price: float | None = None
     currency: str | None = None
     price_as_of: str | None = None
+    exchange_trade_date: str | None = None
+    latest_completed_regular_session_date: str | None = None
+    price_observed_at: str | None = None
+    price_observed_timezone: str | None = None
     price_basis: str = "unavailable"
     market_session: str = "unknown"
     assessment_state: AssessmentState = AssessmentState.final
@@ -352,6 +356,8 @@ class DataCoverage(BaseModel):
     share_count_quality: str = "unavailable"
     dividend_quality: str = "unavailable"
     foreign_filing_quality: str = "not_applicable"
+    foreign_parsing_result: str = "not_applicable"
+    foreign_latest_filing_result: str = "not_applicable"
     overall_data_quality: str = "unavailable"
     overall_quality_reason: str | None = None
 
@@ -360,6 +366,10 @@ class ValuationSnapshot(BaseModel):
     current_price: float | None = None
     currency: str | None = None
     price_as_of: str | None = None
+    exchange_trade_date: str | None = None
+    latest_completed_regular_session_date: str | None = None
+    price_observed_at: str | None = None
+    price_observed_timezone: str | None = None
     price_basis: str = "unavailable"
     trailing_pe: float | None = None
     trailing_pe_status: str = "unavailable"
@@ -384,6 +394,13 @@ class ValuationSnapshot(BaseModel):
     provider: str = "unavailable"
     valuation_data_as_of: str | None = None
     denominator_as_of: str | None = None
+    trailing_pe_denominator_period_end: str | None = None
+    trailing_pe_denominator_filing_date: str | None = None
+    pbr_denominator_period_end: str | None = None
+    pbr_denominator_filing_date: str | None = None
+    forward_pe_input_period: str | None = None
+    forward_pb_input_period: str | None = None
+    latest_preliminary_context_period: str | None = None
     financials_as_of: str | None = None
     financial_period_end: str | None = None
     filing_date: str | None = None

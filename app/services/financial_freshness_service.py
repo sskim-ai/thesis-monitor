@@ -5,6 +5,7 @@ from sqlmodel import Session, select
 
 from app.models.event import Event
 from app.models.financial import FinancialSnapshot
+from app.config import get_settings
 
 
 _FINANCIAL_TYPES = {
@@ -61,7 +62,10 @@ def _filing_date(row: FinancialSnapshot | None) -> date | None:
 
 
 class FinancialFreshnessService:
-    def assess(self, session: Session, ticker: str) -> FinancialFreshness:
+    def assess(
+        self, session: Session, ticker: str, *, as_of: date | None = None
+    ) -> FinancialFreshness:
+        today = as_of or date.today()
         events = list(
             session.exec(
                 select(Event).where(Event.ticker == ticker).order_by(Event.date.desc())
@@ -196,6 +200,34 @@ class FinancialFreshnessService:
                 refresh_result="foreign_filing_partial",
                 refresh_reason="foreign_filing_period_or_statement_not_normalized",
                 refresh_trigger_event_id=latest_event.id if latest_event else None,
+            )
+        cadence_days = get_settings().financial_reporting_cadence_days
+        full_period_age = (today - full_period).days if full_period else None
+        full_filing = _filing_date(full_row)
+        cadence_due = bool(
+            full_period_age is not None
+            and full_period_age > cadence_days
+            and (
+                latest_event is not None
+                and (full_filing is None or latest_event.date > full_filing)
+            )
+        )
+        if cadence_due and not preliminary_is_newer:
+            trigger = latest_event
+            return FinancialFreshness(
+                "refresh_due",
+                latest_event.date if latest_event else None,
+                _period(row),
+                _filing_date(row),
+                False,
+                "reporting_cadence_exceeded",
+                **metadata,
+                refresh_result="refresh_due",
+                refresh_reason=(
+                    f"latest full reporting period is older than {cadence_days} days "
+                    "and a later material earnings event exists"
+                ),
+                refresh_trigger_event_id=trigger.id if trigger else None,
             )
         return FinancialFreshness(
             "preliminary_only" if preliminary_is_newer else "current",

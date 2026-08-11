@@ -77,6 +77,13 @@ def _state(
     source: str,
     source_ids: list[str],
     warning_id: str | None = None,
+    *,
+    source_provider: str | None = None,
+    source_title: str | None = None,
+    source_date: date | None = None,
+    source_event_type: str | None = None,
+    provenance_status: str = "valid",
+    backfilled_warning: bool = False,
 ) -> dict[str, object]:
     return {
         "warning_id": warning_id or hashlib.sha256(f"{ticker}|{warning}".encode()).hexdigest()[:16],
@@ -89,6 +96,12 @@ def _state(
         "resolution_condition": _resolution(warning),
         "source": source,
         "source_event_ids": source_ids,
+        "source_provider": source_provider,
+        "source_title": source_title,
+        "source_date": source_date.isoformat() if source_date else None,
+        "source_event_type": source_event_type,
+        "provenance_status": provenance_status,
+        "backfilled_warning": backfilled_warning,
     }
 
 
@@ -138,6 +151,7 @@ def backfill_confirmed_warning_states(
         .where(Event.ticker == thesis.ticker, Event.date < as_of)
         .order_by(Event.date)
     ).all()
+    events_by_fingerprint = {event_fingerprint(event): event for event in events}
     for event in events:
         if event.provider not in _TRUSTED or event.event_type not in _NEGATIVE_TYPES:
             continue
@@ -152,12 +166,17 @@ def backfill_confirmed_warning_states(
                     event.date,
                     "thesis_event",
                     [event_fingerprint(event)],
+                    source_provider=event.provider,
+                    source_title=event.title,
+                    source_date=event.date,
+                    source_event_type=event.event_type,
                 ),
             )
     issues = session.exec(
         select(CanonicalIssue).where(
             CanonicalIssue.ticker == thesis.ticker,
             CanonicalIssue.economic_status == "open",
+            CanonicalIssue.provenance_status == "valid",
         )
     ).all()
     issue_labels = {
@@ -168,6 +187,15 @@ def backfill_confirmed_warning_states(
     }
     for issue in issues:
         warning = issue_labels.get(issue.issue_type, issue.title)
+        source_ids = [str(item) for item in _json_list(issue.event_ids)]
+        source_event = next(
+            (
+                events_by_fingerprint[source_id]
+                for source_id in source_ids
+                if source_id in events_by_fingerprint
+            ),
+            None,
+        )
         states.setdefault(
             warning,
             _state(
@@ -175,13 +203,30 @@ def backfill_confirmed_warning_states(
                 warning,
                 issue.opened_date,
                 "canonical_issue",
-                _json_list(issue.event_ids),
+                source_ids,
                 warning_id=issue.issue_key,
+                source_provider=source_event.provider if source_event else None,
+                source_title=source_event.title if source_event else issue.title,
+                source_date=source_event.date if source_event else issue.opened_date,
+                source_event_type=source_event.event_type if source_event else issue.issue_type,
+                provenance_status=issue.provenance_status,
             ),
         )
     for warning in _thesis_confirmed_warnings(thesis):
         states.setdefault(
             warning,
-            _state(thesis.ticker, warning, thesis.created_at.date(), "saved_thesis", []),
+            _state(
+                thesis.ticker,
+                warning,
+                thesis.created_at.date(),
+                "saved_thesis",
+                [f"thesis:{thesis.ticker}:v{thesis.version}"],
+                source_provider="saved_thesis",
+                source_title="저장된 투자 논리의 확인된 과거 사실",
+                source_date=thesis.created_at.date(),
+                source_event_type="saved_thesis_fact",
+                provenance_status="backfilled_saved_thesis",
+                backfilled_warning=True,
+            ),
         )
     return list(states.values())

@@ -220,7 +220,7 @@ def upsert_financial_snapshot_from_event(session: Session, event: Event) -> Fina
         return None
 
     facts = _json_list(event.confirmed_facts)
-    source_filing_id = _filing_id(facts)
+    source_filing_id = event.source_document_id or _filing_id(facts)
     is_preliminary = event.document_type == "preliminary_earnings" or any(
         term in event.title.replace(" ", "")
         for term in (
@@ -282,8 +282,10 @@ def upsert_financial_snapshot_from_event(session: Session, event: Event) -> Fina
         snapshot.financial_statement_basis_warning = True
         snapshot.margin_quality_review = True
         snapshot.quality_warnings = (
-            "preliminary earnings filing confirmed; parsed unit or period validation failed"
+            "preliminary earnings filing confirmed; semantic fields were preserved but "
+            "cross-metric sanity validation failed"
         )
+        snapshot.raw_financial_fields = event.raw_financial_fields or "[]"
         session.add(snapshot)
         return snapshot
     revenue_fact = _fact_line(facts, "매출액")
@@ -432,6 +434,7 @@ def upsert_financial_snapshot_from_event(session: Session, event: Event) -> Fina
     snapshot.snapshot_type = snapshot_type
     snapshot.source_event_date = event.date
     snapshot.source_filing_id = source_filing_id
+    snapshot.raw_financial_fields = event.raw_financial_fields or "[]"
     snapshot.fiscal_year = fiscal_year
     snapshot.period_scope = period_scope
     snapshot.is_cumulative = period_scope != "single-quarter"

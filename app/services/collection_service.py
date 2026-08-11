@@ -14,7 +14,7 @@ from app.models.financial import FinancialSnapshot
 from app.models.watchlist import WatchlistItem
 from app.providers.base import NewsProvider, RawEvent
 from app.providers.mock import MockProvider
-from app.providers.registry import provider_priority
+from app.providers.registry import provider_priority, provider_statuses
 from app.schemas.company import CompanyProfile
 from app.schemas.event import (
     BackfillStatus,
@@ -25,7 +25,11 @@ from app.schemas.event import (
 )
 from app.schemas.financial import EarningsCheckpoint, EarningsCheckpointResponse
 from app.services.event_classifier import classify_event
-from app.services.event_identity import event_fingerprint
+from app.services.event_identity import (
+    attribute_claim_actor,
+    event_fingerprint,
+    validate_source_document_identity,
+)
 from app.services.event_interpreter import enrich_raw_event
 from app.services.event_relevance_service import (
     EventRelevanceService,
@@ -165,6 +169,13 @@ def _raw_event_to_model(raw_event: RawEvent) -> Event:
         confirmed_facts=json.dumps(raw_event.confirmed_facts),
         inferred_implications=json.dumps(implications),
         unknowns=json.dumps(unknowns),
+        source_document_id=raw_event.source_document_id,
+        document_identity_status=raw_event.document_identity_status,
+        claim_actor=raw_event.claim_actor,
+        claim_actor_type=raw_event.claim_actor_type,
+        raw_financial_fields=json.dumps(
+            raw_event.raw_financial_fields, ensure_ascii=False
+        ),
         revenue=raw_event.revenue,
         operating_income=raw_event.operating_income,
         net_income=raw_event.net_income,
@@ -175,8 +186,8 @@ def _raw_event_to_model(raw_event: RawEvent) -> Event:
         financing_amount=raw_event.financing_amount,
         dilution_amount=raw_event.dilution_amount,
         revenue_guidance_changed=raw_event.revenue_guidance_changed,
-        margin_guidance_changed=raw_event.margin_guidance_changed or "margin" in lower_text or "마진" in lower_text,
-        guidance_changed=raw_event.guidance_changed or "guidance" in lower_text or "가이던스" in lower_text,
+        margin_guidance_changed=raw_event.margin_guidance_changed,
+        guidance_changed=raw_event.guidance_changed,
         earnings_guidance_changed=raw_event.earnings_guidance_changed,
         cash_flow_guidance_changed=raw_event.cash_flow_guidance_changed,
         major_order_change=raw_event.major_order_change,
@@ -262,6 +273,11 @@ def _refresh_duplicate_event(duplicate: Event, event: Event) -> None:
     duplicate.confirmed_facts = event.confirmed_facts
     duplicate.inferred_implications = event.inferred_implications
     duplicate.unknowns = event.unknowns
+    duplicate.source_document_id = event.source_document_id
+    duplicate.document_identity_status = event.document_identity_status
+    duplicate.claim_actor = event.claim_actor
+    duplicate.claim_actor_type = event.claim_actor_type
+    duplicate.raw_financial_fields = event.raw_financial_fields
     duplicate.revenue = event.revenue
     duplicate.operating_income = event.operating_income
     duplicate.net_income = event.net_income
@@ -319,6 +335,7 @@ class CollectionService:
         self.relevance_service = EventRelevanceService()
         self.news_query_service = NewsQueryService()
         self.telemetry = ProviderTelemetryService()
+        self.provider_status = {item.name: item for item in provider_statuses()}
 
     def _connect_event_data(self, session: Session, event: Event) -> None:
         self.dividend_service.ingest_event(session, event)
@@ -332,8 +349,35 @@ class CollectionService:
         ticker: str,
         lookback_days: int,
         search_aliases: list[str],
+        issuer_type: str,
     ) -> list[RawEvent]:
         settings = get_settings()
+        status = self.provider_status.get(provider.name)
+        if status is not None and not status.configured:
+            self.telemetry.record(
+                session,
+                provider=provider.name,
+                endpoint="fetch_events",
+                ticker=ticker,
+                started_at=datetime.now(timezone.utc),
+                status="skipped_not_configured",
+                issuer_type=issuer_type,
+                skip_reason="provider_not_configured",
+            )
+            return []
+        market = "KR" if issuer_type == "krx" else "foreign_issuer" if issuer_type in {"adr", "foreign_private_issuer", "other_foreign"} else "US"
+        if status is not None and market not in status.markets:
+            self.telemetry.record(
+                session,
+                provider=provider.name,
+                endpoint="fetch_events",
+                ticker=ticker,
+                started_at=datetime.now(timezone.utc),
+                status="skipped_not_applicable",
+                issuer_type=issuer_type,
+                skip_reason=f"market_not_supported:{market}",
+            )
+            return []
         attempts = max(1, settings.monitor_retry_attempts)
         last_error: Exception | None = None
         for attempt in range(attempts):
@@ -354,6 +398,7 @@ class CollectionService:
                     ticker=ticker,
                     started_at=started_at,
                     status="success",
+                    issuer_type=issuer_type,
                 )
                 return result
             except Exception as exc:  # noqa: BLE001
@@ -373,6 +418,7 @@ class CollectionService:
                     error_type=type(exc).__name__,
                     error_code=status_code,
                     error_reason="provider_fetch_failed",
+                    issuer_type=issuer_type,
                 )
                 if attempt + 1 < attempts:
                     delay = settings.monitor_retry_base_seconds * (2**attempt)
@@ -441,6 +487,9 @@ class CollectionService:
             or COMPANY_NAME_ALIASES.get(ticker)
         )
         target_security = self.security_service.ensure(session, ticker)
+        issuer_type = target_security.issuer_type or (
+            "krx" if ticker.isdigit() else "domestic_us"
+        )
         search_aliases = self.news_query_service.aliases(target_security)
         collected: list[Event] = []
         seen_urls: set[str] = set()
@@ -454,30 +503,39 @@ class CollectionService:
                     ticker,
                     lookback_days,
                     search_aliases,
+                    issuer_type,
                 )
             except Exception as exc:  # noqa: BLE001
                 logger.warning("Provider %s failed for %s: %s", provider.name, ticker, exc)
                 continue
             for raw_event in raw_events:
+                if not raw_event.company_name:
+                    raw_event.company_name = company_name
+                document_identity_valid = validate_source_document_identity(raw_event)
+                raw_event.claim_actor, raw_event.claim_actor_type = attribute_claim_actor(
+                    raw_event
+                )
                 verdict = self.relevance_service.validate(
                     session, raw_event, target_security
                 )
-                raw_event.identity_validated = verdict.accepted
+                raw_event.identity_validated = verdict.accepted and document_identity_valid
                 raw_event.identity_status = verdict.status
                 raw_event.subject_company_name = verdict.subject_company_id
                 raw_event.relevance_evidence = verdict.evidence
                 raw_event.rejected_reason = verdict.reason
-                if verdict.accepted:
+                if verdict.accepted and document_identity_valid:
                     extract_structured_flags(raw_event)
                 else:
                     self.relevance_service.clear_material_flags(raw_event)
-                if not raw_event.company_name:
-                    raw_event.company_name = company_name
                 title_key = _normalize_title(raw_event.title)
-                if raw_event.url in seen_urls or title_key in seen_titles:
+                official_document = raw_event.provider in {"opendart", "sec_edgar"}
+                if raw_event.url in seen_urls or (
+                    not official_document and title_key in seen_titles
+                ):
                     continue
                 seen_urls.add(raw_event.url)
-                seen_titles.add(title_key)
+                if not official_document:
+                    seen_titles.add(title_key)
                 event = _raw_event_to_model(raw_event)
                 fingerprint = event_fingerprint(event)
                 if fingerprint in seen_fingerprints:
@@ -495,11 +553,19 @@ class CollectionService:
                     (item for item in candidates if event_fingerprint(item) == fingerprint),
                     None,
                 )
-                if duplicate is None:
+                if duplicate is None and event.provider not in {"opendart", "sec_edgar"}:
                     duplicate = session.exec(
                         select(Event).where(
                             Event.ticker == event.ticker,
                             (Event.url == event.url) | (Event.title == event.title),
+                        )
+                    ).first()
+                elif duplicate is None and event.source_document_id:
+                    duplicate = session.exec(
+                        select(Event).where(
+                            Event.ticker == event.ticker,
+                            Event.provider == event.provider,
+                            Event.source_document_id == event.source_document_id,
                         )
                     ).first()
                 if duplicate is None:

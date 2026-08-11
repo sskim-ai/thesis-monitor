@@ -247,6 +247,38 @@ class HistoricalValuationService:
             ttm_eps, bvps, quarters, balance = point_in_time_denominators(rows, point.date)
             pe = point.close / ttm_eps if ttm_eps and ttm_eps > 0 else None
             pb = point.close / bvps if bvps and bvps > 0 else None
+            warnings: list[str] = []
+            if len(quarters) == 4 and ttm_eps:
+                incomes = [
+                    row.common_net_income or row.owners_parent_net_income
+                    for row in quarters
+                ]
+                shares = next(
+                    (
+                        row.diluted_shares or row.common_shares_outstanding
+                        for row in reversed(quarters)
+                        if row.diluted_shares or row.common_shares_outstanding
+                    ),
+                    None,
+                )
+                if all(value is not None for value in incomes) and shares and shares > 0:
+                    income_eps = sum(float(value) for value in incomes if value is not None) / float(shares)
+                    discrepancy = abs(ttm_eps - income_eps) / max(abs(ttm_eps), abs(income_eps)) * 100
+                    if discrepancy > self.settings.valuation_history_cross_check_threshold_pct:
+                        pe = None
+                        warnings.append("historical_pe_cross_check_failed")
+            if (
+                balance
+                and balance.common_equity
+                and balance.owners_parent_equity
+                and balance.common_shares_outstanding
+            ):
+                common_bvps = float(balance.common_equity) / float(balance.common_shares_outstanding)
+                owners_bvps = float(balance.owners_parent_equity) / float(balance.common_shares_outstanding)
+                discrepancy = abs(common_bvps - owners_bvps) / max(abs(common_bvps), abs(owners_bvps)) * 100
+                if discrepancy > self.settings.valuation_history_cross_check_threshold_pct:
+                    pb = None
+                    warnings.append("historical_pb_cross_check_failed")
             if pe is not None and (pe <= 0 or pe > self.settings.valuation_history_max_pe):
                 pe = None
             if pb is not None and (pb <= 0 or pb > self.settings.valuation_history_max_pb):
@@ -274,6 +306,7 @@ class HistoricalValuationService:
             observation.trailing_pe = pe
             observation.price_to_book = pb
             observation.quality = "fresh" if pe is not None or pb is not None else "unavailable"
+            observation.warnings = json.dumps(warnings)
             iso = point.date.isocalendar()
             observation.sampling_frequency = "weekly_last_valid_close"
             observation.iso_year = iso.year

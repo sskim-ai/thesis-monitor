@@ -36,6 +36,7 @@ class PreliminaryEarningsFacts:
     yoy_growth: float | None
     qoq_growth: float | None
     unit_scale: float
+    raw_fields: list[dict[str, object]]
 
 
 def _strip_html(value: str) -> str:
@@ -268,6 +269,14 @@ def _preliminary_unit_scale(tokens: list[str]) -> float:
     return 1.0
 
 
+def _preliminary_unit_label(tokens: list[str]) -> str | None:
+    unit_text = next((token for token in tokens if "단위" in token), None)
+    if unit_text is None:
+        return None
+    match = re.search(r"단위\s*[:：]?\s*([^,|]+)", unit_text)
+    return _clean_cell(match.group(1)) if match else _clean_cell(unit_text)
+
+
 def _preliminary_period_end(tokens: list[str]) -> date | None:
     first_result = next(
         (index for index, token in enumerate(tokens[:30]) if _compact(token) == "당기실적"),
@@ -326,9 +335,81 @@ def _preliminary_metric(
     return current, cumulative, yoy, qoq
 
 
+def _preliminary_raw_fields(
+    tokens: list[str],
+    aliases: tuple[str, ...],
+    *,
+    label: str,
+    unit: str | None,
+) -> list[dict[str, object]]:
+    labels = {_compact(alias) for alias in aliases}
+    index = next(
+        (position for position, token in enumerate(tokens) if _compact(token) in labels),
+        None,
+    )
+    if index is None:
+        return []
+    tail = tokens[index + 1 : index + 35]
+    current_index = next(
+        (position for position, token in enumerate(tail) if _compact(token) == "당해실적"),
+        None,
+    )
+    if current_index is None:
+        return []
+    cumulative_index = next(
+        (
+            position
+            for position, token in enumerate(tail[current_index + 1 :], current_index + 1)
+            if _compact(token) == "누계실적"
+        ),
+        None,
+    )
+    current_cells = tail[current_index + 1 : cumulative_index]
+    raw: list[dict[str, object]] = []
+    headers = (
+        "당기실적",
+        "전기실적",
+        "전기대비 증감률",
+        "전년동기실적",
+        "전년동기대비 증감률",
+    )
+    numeric_cells = [cell for cell in current_cells if _numeric_cell(cell) is not None]
+    for header, cell in zip(headers, numeric_cells, strict=False):
+        raw.append(
+            {
+                "raw_label": label,
+                "raw_value": cell,
+                "raw_unit": unit,
+                "raw_period": "single_quarter",
+                "raw_column_header": header,
+            }
+        )
+    if cumulative_index is not None:
+        cumulative_cell = next(
+            (
+                cell
+                for cell in tail[cumulative_index + 1 :]
+                if _numeric_cell(cell) is not None
+            ),
+            None,
+        )
+        if cumulative_cell is not None:
+            raw.append(
+                {
+                    "raw_label": label,
+                    "raw_value": cumulative_cell,
+                    "raw_unit": unit,
+                    "raw_period": "year_to_date",
+                    "raw_column_header": "당기누계실적",
+                }
+            )
+    return raw
+
+
 def extract_preliminary_earnings_facts_from_text(text: str) -> PreliminaryEarningsFacts:
     tokens = _tokens(text)
     scale = _preliminary_unit_scale(tokens)
+    unit_label = _preliminary_unit_label(tokens)
     period_end = _preliminary_period_end(tokens)
     revenue, cumulative_revenue, revenue_yoy, revenue_qoq = _preliminary_metric(
         tokens, ("매출액", "영업수익", "수익(매출액)")
@@ -347,6 +428,36 @@ def extract_preliminary_earnings_facts_from_text(text: str) -> PreliminaryEarnin
             "지배주주순이익",
         ),
     )
+    raw_fields = [
+        *_preliminary_raw_fields(
+            tokens,
+            ("매출액", "영업수익", "수익(매출액)"),
+            label="매출액",
+            unit=unit_label,
+        ),
+        *_preliminary_raw_fields(
+            tokens,
+            ("영업이익", "영업이익(손실)"),
+            label="영업이익",
+            unit=unit_label,
+        ),
+        *_preliminary_raw_fields(
+            tokens,
+            ("당기순이익", "분기순이익", "반기순이익"),
+            label="당기순이익",
+            unit=unit_label,
+        ),
+        *_preliminary_raw_fields(
+            tokens,
+            (
+                "지배기업 소유주지분 순이익",
+                "지배기업 소유주 귀속 당기순이익",
+                "지배주주순이익",
+            ),
+            label="지배주주순이익",
+            unit=unit_label,
+        ),
+    ]
     quarter = ((period_end.month - 1) // 3 + 1) if period_end else None
     period_label = f"{period_end.year}년 {quarter}분기" if period_end and quarter else "잠정실적"
     basis = (
@@ -386,6 +497,7 @@ def extract_preliminary_earnings_facts_from_text(text: str) -> PreliminaryEarnin
         yoy_growth=revenue_yoy,
         qoq_growth=revenue_qoq,
         unit_scale=scale,
+        raw_fields=raw_fields,
     )
 
 

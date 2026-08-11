@@ -26,6 +26,8 @@ _ACTION_TYPES = {
     "reverse_split",
     "capital_reduction",
 }
+_OFFICIAL_ACTION_PROVIDERS = {"opendart", "sec_edgar", "company_ir"}
+_DILUTIVE_ACTION_TYPES = {"capital_raise", "convertible_bond", "warrant", "dilution"}
 
 
 def _json_list(value: str | None) -> list[str]:
@@ -127,6 +129,11 @@ class CapitalActionService:
         action_type = _issue_type(event)
         if action_type is None:
             return None
+        if (
+            action_type in _DILUTIVE_ACTION_TYPES
+            and event.provider not in _OFFICIAL_ACTION_PROVIDERS
+        ):
+            return None
         existing = list(
             session.exec(
                 select(CanonicalIssue)
@@ -171,6 +178,9 @@ class CapitalActionService:
                 facts,
                 ("treasury stock fact: shares", "buyback fact: shares"),
             )
+        elif event.provider in _OFFICIAL_ACTION_PROVIDERS:
+            issue.official_verification_status = "verified"
+            issue.provenance_status = "valid"
             proceeds = _fact_number(
                 facts,
                 ("treasury stock fact: amount", "buyback fact: amount"),

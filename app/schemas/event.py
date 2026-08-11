@@ -63,6 +63,8 @@ class EventType(StrEnum):
     debt_liquidity = "debt_liquidity"
     regulatory_material = "regulatory_material"
     financial_report = "financial_report"
+    analyst_opinion = "analyst_opinion"
+    industry_demand_signal = "industry_demand_signal"
     valuation_recalculation_needed = "valuation_recalculation_needed"
     non_thesis_noise = "non_thesis_noise"
 

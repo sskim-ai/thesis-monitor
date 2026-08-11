@@ -1,4 +1,5 @@
 import asyncio
+import json
 from datetime import date, datetime, timedelta, timezone
 
 import httpx
@@ -16,10 +17,15 @@ from app.providers.dart_text_fallback import extract_preliminary_earnings_facts_
 from app.providers.identity import OpenFigiProvider
 from app.models.watchlist import WatchlistItem
 from app.providers.base import RawEvent
+from app.providers.ir import CompanyIRProvider
 from app.schemas.thesis import ValuationSnapshot
 from app.services.alpha_vantage_service import AlphaVantageService
 from app.services.data_coverage_service import DataCoverageService
 from app.services.event_classifier import classify_event
+from app.services.event_identity import (
+    attribute_claim_actor,
+    validate_source_document_identity,
+)
 from app.services.event_relevance_service import EventRelevanceService, extract_structured_flags
 from app.services.financial_freshness_service import FinancialFreshnessService
 from app.services.financial_snapshot_service import upsert_financial_snapshot_from_event
@@ -27,6 +33,7 @@ from app.services.financial_validation import validate_event_financials
 from app.services.historical_valuation_service import HistoricalValuationService
 from app.services.issue_identity_audit_service import IssueIdentityAuditService
 from app.services.news_query_service import NewsQueryService
+from app.services.collection_service import CollectionService
 from app.services.sec_financial_snapshot_service import (
     _linked_documents,
     _parse_foreign_financial_release,
@@ -103,6 +110,146 @@ def test_sndk_relevant_revenue_guidance_cannot_be_noise() -> None:
     assert classify_event(raw).value == "revenue_guidance_change"
 
 
+def test_brokerage_target_cut_is_not_company_guidance() -> None:
+    raw = RawEvent(
+        ticker="000660",
+        company_name="SK하이닉스",
+        date=date(2026, 8, 11),
+        source="Naver News",
+        provider="naver_news",
+        title="키움증권, SK하이닉스 목표가 하향",
+        url="https://example.com/brokerage",
+        summary="반도체 실적은 올해가 정점이라는 증권사 전망이다.",
+        identity_validated=True,
+    )
+    raw.claim_actor, raw.claim_actor_type = attribute_claim_actor(raw)
+    extract_structured_flags(raw)
+
+    assert raw.claim_actor_type == "brokerage"
+    assert raw.guidance_changed is False
+    assert classify_event(raw).value == "analyst_opinion"
+
+
+def test_analyst_industry_shortage_is_not_large_order() -> None:
+    raw = RawEvent(
+        ticker="000660",
+        company_name="SK하이닉스",
+        date=date(2026, 8, 11),
+        source="Financial News",
+        provider="google_news_rss",
+        title="JP모건, 메모리 공급 부족 2년 더 지속 전망",
+        url="https://example.com/shortage",
+        summary="SK하이닉스를 언급한 산업 수급 전망이며 신규 계약 발표는 아니다.",
+        identity_validated=True,
+    )
+    raw.claim_actor, raw.claim_actor_type = attribute_claim_actor(raw)
+
+    assert classify_event(raw).value == "analyst_opinion"
+    assert classify_event(raw).value != "large_order"
+
+
+def test_dart_document_identity_mismatch_is_rejected() -> None:
+    raw = RawEvent(
+        ticker="005930",
+        company_name="삼성전자",
+        date=date(2026, 8, 11),
+        source="OpenDART",
+        provider="opendart",
+        title="기업설명회 개최",
+        url="https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260701000525",
+        summary="공시",
+        source_document_id="20260701000525",
+        confirmed_facts=["OpenDART receipt number: 20260811000285"],
+    )
+
+    assert validate_source_document_identity(raw) is False
+    assert raw.document_identity_status == "invalid_mismatch"
+
+
+def test_legacy_dart_identity_is_backfilled_or_quarantined() -> None:
+    engine = _engine()
+    with Session(engine) as session:
+        valid = Event(
+            ticker="005930",
+            date=date(2026, 8, 10),
+            source="OpenDART",
+            provider="opendart",
+            title="기업설명회",
+            url="https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260810000001",
+            event_type="management_governance",
+            confirmed_facts='["OpenDART receipt number: 20260810000001"]',
+        )
+        invalid = Event(
+            ticker="005930",
+            date=date(2026, 8, 11),
+            source="OpenDART",
+            provider="opendart",
+            title="임원 지분 보고",
+            url="https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260811000001",
+            event_type="management_governance",
+            confirmed_facts='["OpenDART receipt number: 20260811000002"]',
+            requires_review=True,
+            relevance_score=80,
+        )
+        session.add(valid)
+        session.add(invalid)
+        session.commit()
+        count = IssueIdentityAuditService().audit_document_identity(session, "005930")
+
+    assert count == 1
+    assert valid.source_document_id == "20260810000001"
+    assert valid.document_identity_status == "validated"
+    assert invalid.document_identity_status == "invalid_mismatch"
+    assert invalid.requires_review is False
+
+
+class _TwoDartFilings:
+    name = "opendart"
+
+    async def fetch_events(self, ticker: str, lookback_days: int) -> list[RawEvent]:
+        return [
+            RawEvent(
+                ticker=ticker,
+                company_name="삼성전자",
+                date=date(2026, 8, 11),
+                source="OpenDART",
+                provider="opendart",
+                title="기업설명회 개최",
+                url=f"https://dart.fss.or.kr/dsaf001/main.do?rcpNo={receipt}",
+                summary="공시",
+                source_document_id=receipt,
+                confirmed_facts=[f"OpenDART receipt number: {receipt}"],
+            )
+            for receipt in ("20260811000001", "20260811000002")
+        ]
+
+
+def test_same_title_dart_filings_keep_immutable_receipt_identity() -> None:
+    engine = _engine()
+    service = CollectionService()
+    service.providers = [_TwoDartFilings()]
+    service.provider_status.pop("opendart", None)
+    with Session(engine) as session:
+        session.add(
+            WatchlistItem(
+                ticker="005930",
+                company_name="삼성전자",
+                exchange="KRX",
+                active=True,
+                issuer_type="krx",
+            )
+        )
+        session.commit()
+        asyncio.run(service.collect_events(session, "005930", 7))
+        events = list(session.exec(select(Event).where(Event.ticker == "005930")).all())
+
+    assert {event.source_document_id for event in events} == {
+        "20260811000001",
+        "20260811000002",
+    }
+    assert all(event.source_document_id in event.url for event in events)
+
+
 def test_news_buyback_is_candidate_until_officially_verified() -> None:
     engine = _engine()
     raw = RawEvent(
@@ -168,6 +315,44 @@ def test_open_issue_identity_audit_resolves_wrong_company_warning() -> None:
     assert issue_status == "resolved"
     assert event_type == "non_thesis_noise"
     assert dilution_risk is False
+
+
+def test_convertible_warning_rejects_non_convertible_official_source() -> None:
+    engine = _engine()
+    with Session(engine) as session:
+        event = Event(
+            ticker="000660",
+            date=date(2026, 8, 11),
+            source="OpenDART",
+            provider="opendart",
+            title="유상증자결정",
+            url="https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260811000003",
+            event_type="capital_raise",
+            confirmed_facts='["OpenDART receipt number: 20260811000003"]',
+            source_document_id="20260811000003",
+            document_identity_status="validated",
+        )
+        session.add(event)
+        session.flush()
+        from app.services.event_identity import event_fingerprint
+
+        issue = CanonicalIssue(
+            ticker="000660",
+            issue_key="wrong-convertible",
+            issue_type="convertible_bond",
+            opened_date=date(2026, 8, 11),
+            updated_date=date(2026, 8, 11),
+            latest_event_date=date(2026, 8, 11),
+            title="전환사채 희석",
+            economic_status="open",
+            event_ids=json.dumps([event_fingerprint(event)]),
+        )
+        session.add(issue)
+        session.commit()
+        audit = IssueIdentityAuditService().audit_provenance(session, "000660")
+
+    assert audit[0].valid is False
+    assert issue.provenance_status == "invalid_provenance"
 
 
 def test_full_and_preliminary_financial_periods_are_separate() -> None:
@@ -304,6 +489,29 @@ def test_invalid_preliminary_numbers_keep_period_but_not_financial_values() -> N
     assert row.revenue is None
     assert row.operating_income is None
     assert row.financial_statement_basis_warning is True
+
+
+def test_preliminary_parser_preserves_semantic_raw_fields() -> None:
+    parsed = extract_preliminary_earnings_facts_from_text(
+        """
+        단위 : 백만원 | 당기실적 | 2026-04-01 | 2026-06-30 |
+        매출액 | 당해실적 | 79,318,746 | 40,000,000 | 98.3 | 30,000,000 | 164.4 |
+        영업이익 | 당해실적 | 60,542,608 | 20,000,000 | 202.7 | 10,000,000 | 505.4 |
+        당기순이익 | 당해실적 | 93,922,593 | 15,000,000 | 526.2 | 8,000,000 | 1074.0 |
+        """
+    )
+
+    assert parsed.raw_fields
+    assert {item["raw_label"] for item in parsed.raw_fields} >= {
+        "매출액",
+        "영업이익",
+        "당기순이익",
+    }
+    assert all(item["raw_unit"] == "백만원" for item in parsed.raw_fields)
+    current_fields = [
+        item for item in parsed.raw_fields if item["raw_column_header"] == "당기실적"
+    ]
+    assert len(current_fields) == 3
 
 
 def test_same_period_follow_up_does_not_require_financial_refresh() -> None:
@@ -559,3 +767,26 @@ def test_forward_value_with_incomplete_metadata_is_partial_consensus() -> None:
     assert coverage.consensus_quality == "partial"
     assert coverage.overall_data_quality == "partial"
     assert "Consensus" in (coverage.overall_quality_reason or "")
+
+
+def test_unconfigured_provider_is_counted_as_skip_not_success() -> None:
+    engine = _engine()
+    service = CollectionService()
+    provider = CompanyIRProvider()
+    with Session(engine) as session:
+        result = asyncio.run(
+            service._fetch_provider_events(
+                session,
+                provider,
+                "GOOGL",
+                7,
+                ["Alphabet"],
+                "domestic_us",
+            )
+        )
+        row = session.exec(select(ProviderCallTelemetry)).one()
+
+    assert result == []
+    assert row.status == "skipped_not_configured"
+    assert row.success_count == 0
+    assert row.skip_count == 1

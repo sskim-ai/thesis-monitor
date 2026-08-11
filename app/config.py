@@ -56,6 +56,7 @@ class Settings(BaseSettings):
     valuation_history_min_days: int = 180
     valuation_history_max_pe: float = 200.0
     valuation_history_max_pb: float = 50.0
+    valuation_history_cross_check_threshold_pct: float = 25.0
     valuation_history_discounted_percentile: float = 20.0
     valuation_history_somewhat_discounted_percentile: float = 40.0
     valuation_history_somewhat_premium_percentile: float = 60.0
@@ -66,6 +67,7 @@ class Settings(BaseSettings):
     macro_credit_spread_material_bp: float = 10.0
     macro_other_material_pct: float = 1.0
     financial_operating_margin_upper_bound: float = 60.0
+    financial_reporting_cadence_days: int = 160
     macro_monitor_enabled: bool = True
     macro_provider_timeout_seconds: float = 20.0
     macro_briefing_send_no_change: bool = True

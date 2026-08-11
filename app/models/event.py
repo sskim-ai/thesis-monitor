@@ -24,6 +24,11 @@ class Event(SQLModel, table=True):
     confirmed_facts: str = "[]"
     inferred_implications: str = "[]"
     unknowns: str = "[]"
+    source_document_id: str | None = Field(default=None, index=True)
+    document_identity_status: str = "unvalidated"
+    claim_actor: str | None = None
+    claim_actor_type: str = "unknown"
+    raw_financial_fields: str = "[]"
     revenue: float | None = None
     operating_income: float | None = None
     net_income: float | None = None
@@ -81,6 +86,7 @@ class CanonicalIssue(SQLModel, table=True):
     execution_status: str = "announced"
     economic_status: str = "open"
     official_verification_status: str = "unverified"
+    provenance_status: str = "unverified"
     opened_date: date
     updated_date: date
     latest_event_date: date

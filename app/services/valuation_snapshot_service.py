@@ -212,6 +212,19 @@ class ValuationSnapshotService:
         if snapshot.current_price is None:
             return None, None
         ttm_eps, _ttm_income, pe_method = _ttm_denominators(rows)
+        ttm_rows = _valid_quarters(rows)[-4:]
+        if len(ttm_rows) == 4:
+            ttm_end = financial_period_end(ttm_rows[-1])
+            ttm_filed = max(
+                (filing_date(row) for row in ttm_rows if filing_date(row)),
+                default=None,
+            )
+            snapshot.trailing_pe_denominator_period_end = (
+                ttm_end.isoformat() if ttm_end else None
+            )
+            snapshot.trailing_pe_denominator_filing_date = (
+                ttm_filed.isoformat() if ttm_filed else None
+            )
         derived_pe: float | None = None
         if ttm_eps is not None and ttm_eps <= 0:
             if snapshot.trailing_pe_status != "value":
@@ -230,6 +243,14 @@ class ValuationSnapshotService:
         balance = _latest_balance(rows)
         derived_pb: float | None = None
         if balance is not None and snapshot.current_price is not None:
+            balance_period = financial_period_end(balance)
+            balance_filed = filing_date(balance)
+            snapshot.pbr_denominator_period_end = (
+                balance_period.isoformat() if balance_period else None
+            )
+            snapshot.pbr_denominator_filing_date = (
+                balance_filed.isoformat() if balance_filed else None
+            )
             equity = balance.common_equity or balance.owners_parent_equity
             shares = balance.common_shares_outstanding
             if equity and shares and equity > 0 and shares > 0:
@@ -427,6 +448,7 @@ class ValuationSnapshotService:
             snapshot.forward_pe_source = "modeled_forward"
             snapshot.forward_pe_method = forecast_method
             snapshot.forward_basis = "FY1"
+            snapshot.forward_pe_input_period = "FY1"
             snapshot.forecast_method = forecast_method
             snapshot.forward_valuation_confidence = 0.55
 
@@ -477,6 +499,7 @@ class ValuationSnapshotService:
                         f"; buyback={buyback_method}"
                     )
                     snapshot.forward_book_basis = "FY1"
+                    snapshot.forward_pb_input_period = "FY1"
 
     def _cross_check(
         self,
@@ -510,12 +533,27 @@ class ValuationSnapshotService:
         thesis: InvestmentThesis | None = None,
     ) -> ValuationSnapshot:
         now = as_of or datetime.now(timezone.utc)
-        daily = price_context.periods.get("daily")
+        price_decision = price_context.decision
+        daily_price = price_context.periods.get("daily")
+        current_price = price_decision.current_price or (
+            daily_price.latest_close if daily_price else None
+        )
+        exchange_trade_date = (
+            price_decision.exchange_trade_date
+            or price_decision.price_as_of
+            or (daily_price.latest_date if daily_price else None)
+        )
         snapshot = ValuationSnapshot(
-            current_price=daily.latest_close if daily else None,
+            current_price=current_price,
             currency=_currency(exchange, ticker),
-            price_as_of=daily.latest_date if daily else None,
-            price_basis=price_context.decision.price_basis,
+            price_as_of=exchange_trade_date,
+            exchange_trade_date=exchange_trade_date,
+            latest_completed_regular_session_date=(
+                price_decision.latest_completed_regular_session_date
+            ),
+            price_observed_at=price_decision.price_observed_at,
+            price_observed_timezone=price_decision.price_observed_timezone,
+            price_basis=price_decision.price_basis or ("close" if exchange_trade_date else "unavailable"),
             provider="ohlcv-analyst",
             valuation_data_as_of=now.date().isoformat(),
             valuation_calculated_at=now.isoformat(),
@@ -608,6 +646,9 @@ class ValuationSnapshotService:
                         snapshot.forward_pe_source = "consensus_forward"
                         snapshot.forward_pe_method = "Finnhub forwardPE"
                         snapshot.forward_basis = "provider-defined forward consensus"
+                        snapshot.forward_pe_input_period = (
+                            "provider-defined forward consensus"
+                        )
                         snapshot.forward_valuation_confidence = 0.7
                         snapshot.estimate_provider = "finnhub"
                         snapshot.estimate_period = "provider-defined forward consensus"
@@ -737,6 +778,7 @@ class ValuationSnapshotService:
                     snapshot.forward_pe_source = "consensus_forward"
                     snapshot.forward_pe_method = "Alpha Vantage analyst EPS estimate"
                     snapshot.forward_basis = alpha_estimate.estimate_period
+                    snapshot.forward_pe_input_period = alpha_estimate.estimate_period
                     snapshot.forward_valuation_confidence = 0.65
                     snapshot.consensus_status = alpha_estimate.coverage_status
                 elif snapshot.forward_pe:
@@ -878,6 +920,9 @@ class ValuationSnapshotService:
                 if freshness.latest_preliminary_period
                 else None
             )
+            snapshot.latest_preliminary_context_period = (
+                snapshot.latest_preliminary_financial_period
+            )
             snapshot.latest_full_filing_date = (
                 freshness.latest_full_filing_date.isoformat()
                 if freshness.latest_full_filing_date
@@ -904,6 +949,14 @@ class ValuationSnapshotService:
                 snapshot.trailing_valuation_confidence *= 0.7
                 snapshot.warnings.append(
                     "최근 실적 발표는 확인됐지만 Valuation 재무 snapshot이 최신 분기로 갱신되지 않았습니다."
+                )
+            elif freshness.status == "refresh_due":
+                if snapshot.quality == "fresh":
+                    snapshot.quality = "partial"
+                snapshot.forward_valuation_confidence *= 0.7
+                snapshot.trailing_valuation_confidence *= 0.8
+                snapshot.warnings.append(
+                    "정식 재무 보고 주기가 경과했고 이후 material 실적 이벤트가 있어 재무 갱신 여부를 확인 중입니다."
                 )
             elif freshness.status == "preliminary_only":
                 if snapshot.quality == "fresh":

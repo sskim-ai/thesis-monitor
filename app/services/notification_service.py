@@ -262,6 +262,35 @@ def _assessment_report(
     open_confirmed_warnings = _json_list_value(
         getattr(assessment, "open_confirmed_warnings", "[]")
     ) or open_warnings
+    warning_states_raw = _json_value(
+        getattr(assessment, "warning_states", "[]"), []
+    )
+    warning_states = (
+        [item for item in warning_states_raw if isinstance(item, dict)]
+        if isinstance(warning_states_raw, list)
+        else []
+    )
+    warning_state_by_text = {
+        str(item.get("warning")): item
+        for item in warning_states
+        if item.get("warning")
+    }
+
+    def _warnings_with_provenance(items: list[str], empty: str) -> str:
+        if not items:
+            return empty
+        lines: list[str] = []
+        for warning in items:
+            state = warning_state_by_text.get(warning, {})
+            source_date = state.get("source_date") or state.get("opened_date")
+            source_provider = state.get("source_provider") or state.get("source")
+            suffix = (
+                f"\n  근거: {source_date} {source_provider}"
+                if source_date and source_provider
+                else ""
+            )
+            lines.append(f"• {warning}{suffix}")
+        return "\n".join(lines)
     prior_open_warnings = [
         item for item in open_confirmed_warnings if item not in new_warnings
     ]
@@ -336,12 +365,34 @@ def _assessment_report(
         decision = {}
     current_price = valuation_snapshot.get("current_price", decision.get("current_price"))
     currency = valuation_snapshot.get("currency", decision.get("currency"))
-    price_as_of = valuation_snapshot.get("price_as_of", decision.get("price_as_of"))
+    price_as_of = valuation_snapshot.get(
+        "exchange_trade_date",
+        valuation_snapshot.get("price_as_of", decision.get("exchange_trade_date", decision.get("price_as_of"))),
+    )
     price_basis = str(valuation_snapshot.get("price_basis", decision.get("price_basis", "")))
+    is_krx = assessment.ticker.isdigit()
     price_basis_label = (
         f"{price_as_of} 장중 · 잠정"
         if price_basis == "intraday"
-        else f"{price_as_of} 종가" if price_as_of else "기준일 확인 불가"
+        else f"{price_as_of} 미국장 종가"
+        if price_as_of and not is_krx
+        else f"{price_as_of} 종가"
+        if price_as_of
+        else "기준일 확인 불가"
+    )
+    observed_date = str(
+        valuation_snapshot.get("price_observed_at")
+        or decision.get("price_observed_at")
+        or ""
+    )[:10]
+    session_status_text = (
+        f"{observed_date} 미국장 개장 전"
+        if market_session == "pre_market" and not is_krx and observed_date
+        else "미국장 진행 중"
+        if market_session == "open" and not is_krx
+        else "한국장 진행 중"
+        if market_session == "open" and is_krx
+        else market_session
     )
     new_buyer_price_view = str(getattr(assessment, "new_buyer_price_view", "") or "")
     holder_price_view = str(getattr(assessment, "holder_price_view", "") or "")
@@ -368,6 +419,10 @@ def _assessment_report(
         "insufficient_history": "현재 시스템에 확보된 point-in-time 재무 이력이 장기 비교에 충분하지 않습니다.",
         "missing_adr_ratio": "foreign issuer/ADR의 주식 변환 비율이 확인되지 않았습니다.",
         "stale_data": "핵심 재무 데이터의 최신성이 낮습니다.",
+        "reporting_cadence_exceeded": "예상 재무 보고 주기가 지나 최신 정식 재무 반영 여부를 확인 중입니다.",
+        "preliminary_validation_failed": "최근 잠정실적의 숫자·기간·단위 검증에 실패해 확정 재무 및 Valuation에 사용하지 않았습니다.",
+        "foreign_financial_parsing_failed": "foreign filing의 재무표 후보를 확인했지만 자동 구조화·검증이 완료되지 않았습니다.",
+        "foreign_latest_filing_not_financial": "최근 foreign filing은 재무 실적표가 아닌 문서로 확인됐습니다.",
     }
     coverage_reasons = [
         coverage_reason_labels.get(str(code), str(code))
@@ -462,7 +517,7 @@ def _assessment_report(
         f"Forward {data_coverage.get('forward_valuation_quality', 'unavailable')}",
     ]
     detailed_data_status = any(
-        str(data_coverage.get(key, "")) in {"stale", "partial", "unavailable", "validation_failed"}
+        str(data_coverage.get(key, "")) in {"stale", "partial", "unavailable", "validation_failed", "refresh_due", "refresh_pending"}
         for key in (
             "financial_quality",
             "event_quality",
@@ -501,7 +556,6 @@ def _assessment_report(
         if isinstance(analyst_count, int) and analyst_count > 0
         else "분석가 수 확인 불가"
     )
-    is_krx = assessment.ticker.isdigit()
     if assessment_state == "provisional" and is_krx:
         session_label = "잠정 · 한국장 진행 중"
         provisional_text = (
@@ -530,9 +584,9 @@ def _assessment_report(
         f"평가 상태: {session_label}{provisional_text}\n"
         f"🎯 핵심 투자 논리\n{core_thesis}\n\n"
         f"🔄 오늘 새로 확인된 변화\n{change_text}\n\n"
-        f"🚨 오늘 새 경고\n{_bullet_text(new_warnings, '없음')}\n\n"
+        f"🚨 오늘 새 경고\n{_warnings_with_provenance(new_warnings, '없음')}\n\n"
         f"⚠️ 아직 해결되지 않은 기존 경고\n"
-        f"{_bullet_text(prior_open_warnings, '없음')}\n\n"
+        f"{_warnings_with_provenance(prior_open_warnings, '없음')}\n\n"
         f"👁 계속 감시하는 구조적 리스크\n"
         f"{_bullet_text(persistent_watch_risks, '등록된 상시 감시 리스크 없음')}\n\n"
         f"📍 투자 논리 조건\n"
@@ -543,6 +597,7 @@ def _assessment_report(
         f"{', '.join(matched_today) if matched_today else '없음'}\n\n"
         f"💰 가격 판단\n"
         f"현재가: {_report_price(current_price, currency)} · {price_basis_label}\n"
+        f"현재 상태: {session_status_text}\n"
         f"가격 위치: {decision.get('current_position', assessment.price_view)}\n"
         f"가격 위치는 타이밍 보조 정보이며 적정가치와는 별도로 봅니다.\n\n"
         f"👀 신규 관찰자 가격 체크\n"
@@ -559,6 +614,10 @@ def _assessment_report(
         f"가격 기준: {price_basis_label}\n"
         f"TTM 기준: {valuation_snapshot.get('ttm_period_start') or '확인 불가'}~"
         f"{valuation_snapshot.get('ttm_period_end') or '확인 불가'}\n"
+        f"PER 분모: {valuation_snapshot.get('trailing_pe_denominator_period_end') or '확인 불가'} 재무 · "
+        f"공시 {valuation_snapshot.get('trailing_pe_denominator_filing_date') or '확인 불가'}\n"
+        f"PBR 분모: {valuation_snapshot.get('pbr_denominator_period_end') or '확인 불가'} 재무 · "
+        f"공시 {valuation_snapshot.get('pbr_denominator_filing_date') or '확인 불가'}\n"
         f"• PER: {_multiple_text(valuation_snapshot, 'trailing_pe')} "
         f"({multiple_roles['PER']}) · {_multiple_source_text(valuation_snapshot, 'trailing_pe')}\n"
         f"• {forward_pe_label}: {_multiple_text(valuation_snapshot, 'forward_pe')} "
@@ -583,7 +642,7 @@ def _assessment_report(
         f"Valuation 데이터 품질: {quality_label} · {valuation_snapshot.get('provider', '자료 없음')}\n"
         f"재무 커버리지: {data_coverage.get('financials', 'unavailable')} · "
         f"최신성 {data_coverage.get('financial_freshness', 'unavailable')}\n"
-        f"커버리지 설명: {coverage_reasons[0] if coverage_reasons else '핵심 데이터의 별도 커버리지 경고 없음'}\n"
+        f"커버리지 설명: {data_coverage.get('overall_quality_reason') or (coverage_reasons[0] if coverage_reasons else '핵심 데이터의 별도 커버리지 경고 없음')}\n"
         f"오늘 Valuation 영향: {impact_label} · {valuation_impact}\n"
         f"{_bullet_text(valuation_evidence, '오늘 배수를 바꿀 신규 근거 없음')}\n"
         f"이익 추정치 영향: {earnings_impact}\n\n"

@@ -106,7 +106,7 @@ def provider_statuses() -> list[ProviderStatus]:
             configured=True,
             required_settings=[],
             mode="live",
-            markets=["KR", "US"], supported_data=["news"], freshness="intraday",
+            markets=["KR", "US", "foreign_issuer"], supported_data=["news"], freshness="intraday",
         ),
         _status(
             name="naver_news",
@@ -146,7 +146,7 @@ def provider_statuses() -> list[ProviderStatus]:
             configured=bool(settings.alpha_vantage_api_key),
             required_settings=["ALPHA_VANTAGE_API_KEY"],
             mode="live_secondary",
-            markets=["US"],
+            markets=["US", "foreign_issuer"],
             supported_data=[
                 "overview_multiples",
                 "earnings_estimates",

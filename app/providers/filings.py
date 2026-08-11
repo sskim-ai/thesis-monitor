@@ -540,6 +540,8 @@ class OpenDARTProvider(FilingProvider):
         if document is None:
             return None, ["OpenDART preliminary earnings document was unavailable"]
         parsed = extract_preliminary_earnings_facts_from_text(document.text)
+        for raw_field in parsed.raw_fields:
+            raw_field["source_receipt_no"] = receipt_no
         if not parsed.facts or parsed.period_end is None:
             return None, [
                 "OpenDART preliminary earnings table parsing was incomplete",
@@ -830,6 +832,13 @@ class OpenDARTProvider(FilingProvider):
                             confirmed_facts=confirmed_facts,
                             inferred_implications=[],
                             unknowns=_filing_unknowns(extra_unknowns),
+                            source_document_id=receipt_no,
+                            document_identity_status="validated",
+                            claim_actor=item.get("corp_name") or company.corp_name,
+                            claim_actor_type="company_official_filing",
+                            raw_financial_fields=(
+                                preliminary.raw_fields if preliminary else []
+                            ),
                             reporting_period_end=reporting_period_end,
                             document_type=document_type,
                             financial_scope=(
@@ -925,7 +934,18 @@ class SecEdgarProvider(FilingProvider):
                     confirmed_facts=[f"SEC EDGAR recent filing form: {form}", f"SEC accession number: {accession}"],
                     inferred_implications=[],
                     unknowns=_filing_unknowns(),
-                    financial_report_filed=form in {"10-Q", "10-K", "20-F", "6-K"},
+                    source_document_id=accession,
+                    document_identity_status="validated",
+                    claim_actor=company_name,
+                    claim_actor_type="company_official_filing",
+                    # A generic 6-K may be a monthly return or another non-financial filing.
+                    # The foreign-filing parser promotes it only after finding financial tables.
+                    financial_report_filed=form in {"10-Q", "10-K", "20-F"},
+                    document_type=(
+                        "full_statement"
+                        if form in {"10-Q", "10-K", "20-F"}
+                        else "foreign_filing"
+                    ),
                 )
             )
         return events

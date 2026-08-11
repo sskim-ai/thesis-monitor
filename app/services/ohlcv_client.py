@@ -1,6 +1,7 @@
 import asyncio
 from collections.abc import Sequence
-from datetime import date, datetime, timezone
+from datetime import date, datetime, timedelta, timezone
+from zoneinfo import ZoneInfo
 
 import httpx
 from sqlmodel import Session
@@ -167,18 +168,59 @@ class OhlcvClient:
                         )
         context.available = any(item.actual_count > 0 for item in context.periods.values())
         daily = context.periods.get("daily")
-        session = market_session_for_ticker(ticker, as_of)
-        latest_date = daily.latest_date if daily else None
+        session_state = market_session_for_ticker(ticker, as_of)
+        observed_at = as_of or datetime.now(timezone.utc)
+        if observed_at.tzinfo is None:
+            observed_at = observed_at.replace(tzinfo=timezone.utc)
+        observed_local = observed_at.astimezone(ZoneInfo(session_state.timezone_name))
+        raw_latest_date = daily.latest_date if daily else None
+        latest_date = raw_latest_date
+        date_shift_days = 0
+        if raw_latest_date and session_state.session != "open":
+            try:
+                parsed_latest = date.fromisoformat(raw_latest_date[:10])
+            except ValueError:
+                parsed_latest = None
+            if (
+                parsed_latest is not None
+                and parsed_latest > session_state.latest_completed_regular_session_date
+            ):
+                date_shift_days = (
+                    parsed_latest - session_state.latest_completed_regular_session_date
+                ).days
+                latest_date = session_state.latest_completed_regular_session_date.isoformat()
+                daily.latest_date = latest_date
+        if date_shift_days:
+            context.daily_history = [
+                HistoricalPricePoint(
+                    date=point.date - timedelta(days=date_shift_days),
+                    close=point.close,
+                )
+                for point in context.daily_history
+            ]
+            context.valuation_history = [
+                HistoricalPricePoint(
+                    date=point.date - timedelta(days=date_shift_days),
+                    close=point.close,
+                )
+                for point in context.valuation_history
+            ]
         is_live_bar = (
-            session.session == "open"
-            and latest_date == session.market_date.isoformat()
+            session_state.session == "open"
+            and latest_date == session_state.market_date.isoformat()
         )
         context.decision = PriceDecisionContext(
             current_price=daily.latest_close if daily else None,
             currency="KRW" if ticker.isdigit() else "USD",
             price_as_of=latest_date,
+            exchange_trade_date=latest_date,
+            latest_completed_regular_session_date=(
+                session_state.latest_completed_regular_session_date.isoformat()
+            ),
+            price_observed_at=observed_local.isoformat(),
+            price_observed_timezone=session_state.timezone_name,
             price_basis="intraday" if is_live_bar else "close" if latest_date else "unavailable",
-            market_session=session.session,
+            market_session=session_state.session,
             assessment_state="provisional" if is_live_bar else "final",
         )
         return context

@@ -91,6 +91,8 @@ class DataCoverageService:
             reasons.append("provider_not_supported")
         if freshness.refresh_required:
             reasons.append(freshness.reason_code or "stale_data")
+        elif freshness.status == "refresh_due":
+            reasons.append("reporting_cadence_exceeded")
         history_years = (
             (max(row.observation_date for row in history) - min(row.observation_date for row in history)).days / 365.25
             if len(history) > 1 else 0.0
@@ -121,7 +123,15 @@ class DataCoverageService:
             and event.event_type != "non_thesis_noise"
             for event in events
         )
-        event_quality = "validation_failed" if rejected_material else "fresh"
+        invalid_document_identity = any(
+            event.document_identity_status in {"invalid", "invalid_mismatch"}
+            for event in events
+        )
+        event_quality = (
+            "validation_failed"
+            if rejected_material or invalid_document_identity
+            else "fresh"
+        )
         foreign_status = (
             financial_status if issuer_type in {"adr", "foreign_private_issuer"} else "not_applicable"
         )
@@ -136,6 +146,22 @@ class DataCoverageService:
             foreign_payload = json.loads(foreign_cache.payload) if foreign_cache else {}
         except json.JSONDecodeError:
             foreign_payload = {}
+        foreign_parsing_result = str(
+            foreign_payload.get("parsing_result") or "unavailable"
+        )
+        foreign_filings = foreign_payload.get("filings", [])
+        foreign_latest_filing_result = (
+            str(foreign_filings[0].get("parsing_result") or "unavailable")
+            if isinstance(foreign_filings, list)
+            and foreign_filings
+            and isinstance(foreign_filings[0], dict)
+            else "unavailable"
+        )
+        if issuer_type in {"adr", "foreign_private_issuer"}:
+            if foreign_parsing_result == "validation_failed":
+                reasons.append("foreign_financial_parsing_failed")
+            if foreign_latest_filing_result == "not_financial_exhibit":
+                reasons.append("foreign_latest_filing_not_financial")
         filing_discovery = (
             str(foreign_payload.get("filing_discovery_coverage") or foreign_cache.status)
             if foreign_cache and issuer_type in {"adr", "foreign_private_issuer"}
@@ -191,9 +217,13 @@ class DataCoverageService:
             if preliminary_rows
             else "not_applicable"
         )
+        if preliminary_quality == "validation_failed":
+            reasons.append("preliminary_validation_failed")
         financial_quality = (
             "refresh_pending"
             if freshness.refresh_required
+            else "refresh_due"
+            if freshness.status == "refresh_due"
             else "validation_failed"
             if freshness.status == "preliminary_only"
             and preliminary_quality == "validation_failed"
@@ -216,12 +246,34 @@ class DataCoverageService:
                 "unavailable",
                 "conflicting",
                 "refresh_pending",
+                "refresh_due",
                 "validation_failed",
             }
         ]
         overall_quality = "partial" if concerning else "current"
+        reason_messages: list[str] = []
+        if preliminary_quality == "validation_failed":
+            reason_messages.append(
+                "최신 잠정실적의 숫자 검증에 실패해 매출·이익과 Valuation 분모에 사용하지 않았습니다."
+            )
+        if freshness.status == "refresh_due":
+            reason_messages.append(
+                "정식 재무 보고 주기가 경과해 최신 filing 반영 여부를 확인 중입니다."
+            )
+        if consensus_quality in {"unavailable", "conflicting"}:
+            reason_messages.append(f"Consensus 상태는 {consensus_quality}입니다.")
+        if foreign_latest_filing_result == "not_financial_exhibit":
+            reason_messages.append(
+                "최근 foreign filing은 확인됐지만 재무 실적표가 아닌 문서로 판정했습니다."
+            )
+        if foreign_parsing_result == "validation_failed":
+            reason_messages.append(
+                "확인된 foreign filing 중 재무표 후보의 자동 구조화·검증이 완료되지 않았습니다."
+            )
         overall_reason = (
-            ", ".join(concerning)
+            " ".join(reason_messages)
+            if reason_messages
+            else ", ".join(concerning)
             if concerning
             else "핵심 입력 데이터가 현재 기준으로 연결되어 있습니다."
         )
@@ -283,6 +335,16 @@ class DataCoverageService:
             ),
             foreign_filing_quality=(
                 statement_parsing
+                if issuer_type in {"adr", "foreign_private_issuer"}
+                else "not_applicable"
+            ),
+            foreign_parsing_result=(
+                foreign_parsing_result
+                if issuer_type in {"adr", "foreign_private_issuer"}
+                else "not_applicable"
+            ),
+            foreign_latest_filing_result=(
+                foreign_latest_filing_result
                 if issuer_type in {"adr", "foreign_private_issuer"}
                 else "not_applicable"
             ),

@@ -149,14 +149,26 @@ class EventRelevanceService:
 def extract_structured_flags(raw_event: RawEvent) -> None:
     if not raw_event.identity_validated:
         return
+    if raw_event.claim_actor_type in {"unknown", "media"}:
+        from app.services.event_identity import attribute_claim_actor
+
+        raw_event.claim_actor, raw_event.claim_actor_type = attribute_claim_actor(
+            raw_event
+        )
     text = f"{raw_event.title} {raw_event.summary}".lower()
     guidance_terms = ("guidance", "forecast", "outlook", "가이던스", "전망")
     revenue_terms = ("revenue", "sales", "매출")
-    if any(term in text for term in guidance_terms):
+    company_guidance_actor = raw_event.claim_actor_type in {
+        "company_management",
+        "company_official_filing",
+    }
+    if company_guidance_actor and any(term in text for term in guidance_terms):
         raw_event.guidance_changed = True
         if any(term in text for term in revenue_terms):
             raw_event.revenue_guidance_changed = True
-    if any(term in text for term in ("margin guidance", "margin outlook", "마진 전망")):
+    if company_guidance_actor and any(
+        term in text for term in ("margin guidance", "margin outlook", "마진 전망")
+    ):
         raw_event.margin_guidance_changed = True
     if is_buyback_text(text):
         raw_event.buyback_candidate = True

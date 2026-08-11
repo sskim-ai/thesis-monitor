@@ -130,6 +130,20 @@ def _parse_foreign_financial_release(text: str) -> dict[str, object] | None:
     }
 
 
+def _looks_like_financial_release(text: str) -> bool:
+    plain = re.sub(r"\s+", " ", _strip_html(text)).lower()
+    markers = (
+        "financial results",
+        "quarter ended",
+        "revenue",
+        "net income",
+        "earnings per share",
+        "balance sheet",
+        "cash flow",
+    )
+    return sum(marker in plain for marker in markers) >= 2
+
+
 def _linked_documents(html: str) -> list[tuple[str, str]]:
     links: list[tuple[str, str]] = []
     for href, label in re.findall(
@@ -338,6 +352,7 @@ class SecFinancialSnapshotService:
                 exhibits.append({"name": label, "url": linked_url})
                 known_urls.add(linked_url)
             parsed_here: dict[str, object] | None = None
+            financial_candidate = _looks_like_financial_release(primary_text)
             if form == "6-K":
                 parsed_here = _parse_foreign_financial_release(primary_text)
                 for exhibit in exhibits:
@@ -352,6 +367,9 @@ class SecFinancialSnapshotService:
                         adr_ratio = _adr_ratio_from_text(exhibit_response.text)
                         if adr_ratio is not None:
                             adr_ratio_source = str(exhibit["url"])
+                    financial_candidate = financial_candidate or _looks_like_financial_release(
+                        exhibit_response.text
+                    )
                     parsed_here = parsed_here or _parse_foreign_financial_release(
                         exhibit_response.text
                     )
@@ -374,12 +392,30 @@ class SecFinancialSnapshotService:
                     "linked_exhibits": exhibits,
                     "parsing_attempted": True,
                     "statement_parsed": bool(parsed_here),
+                    "financial_table_found": bool(parsed_here),
+                    "parsing_result": (
+                        "parsed"
+                        if parsed_here
+                        else "validation_failed"
+                        if financial_candidate
+                        else "not_financial_exhibit"
+                    ),
                 }
             )
             if parsed_here and parsed_statement is None:
                 parsed_statement = parsed_here
             if six_k_count >= 5 and any(item.get("form") == "20-F" for item in candidates):
                 break
+        parsing_results = {str(item.get("parsing_result")) for item in candidates}
+        overall_parsing_result = (
+            "parsed"
+            if parsed_statement
+            else "validation_failed"
+            if "validation_failed" in parsing_results
+            else "not_financial_exhibit"
+            if candidates
+            else "filing_not_found"
+        )
         return {
             "filing_discovery_coverage": "full" if candidates else "unavailable",
             "document_fetch_coverage": "full" if fetched_documents else "unavailable",
@@ -387,6 +423,7 @@ class SecFinancialSnapshotService:
             "statement_parsing_coverage": "full" if parsed_statement else "partial",
             "filing_discovered": bool(candidates),
             "statement_parsing_attempted": bool(candidates),
+            "parsing_result": overall_parsing_result,
             "parsed_statement": parsed_statement,
             "adr_ratio": adr_ratio,
             "adr_ratio_source": adr_ratio_source,

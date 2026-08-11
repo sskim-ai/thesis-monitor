@@ -143,6 +143,58 @@ KNOWN_ENTITY_ALIASES = {
     "CRCL": ("circle internet", "usdc"),
 }
 
+_GUIDANCE_EVENT_TYPES = {
+    EventType.guidance_change,
+    EventType.revenue_guidance_change,
+    EventType.margin_guidance_change,
+    EventType.revenue_guidance_up,
+    EventType.revenue_guidance_down,
+}
+_ORDER_EVENT_TYPES = {
+    EventType.large_order,
+    EventType.order_change,
+    EventType.production_order,
+}
+_ACTUAL_ORDER_TERMS = (
+    "production order",
+    "signed",
+    "awarded",
+    "ordered",
+    "purchase agreement",
+    "supply agreement",
+    "supply contract signed",
+    "계약 체결",
+    "계약을 체결",
+    "공급계약 체결",
+    "수주",
+    "발주",
+)
+_INDUSTRY_OUTLOOK_TERMS = (
+    "supply shortage",
+    "shortage will continue",
+    "demand exceeds supply",
+    "supply tightness",
+    "industry outlook",
+    "공급 부족",
+    "부족 지속",
+    "업황 전망",
+)
+
+
+def _is_company_guidance(raw_event: RawEvent) -> bool:
+    return raw_event.claim_actor_type in {
+        "company_management",
+        "company_official_filing",
+    }
+
+
+def _is_actual_order(raw_event: RawEvent, text: str) -> bool:
+    if raw_event.provider == "opendart" and any(
+        term in text for term in ("공급계약", "단일판매", "공사수주")
+    ):
+        return True
+    return any(term in text for term in _ACTUAL_ORDER_TERMS)
+
 
 def _mentions_company(raw_event: RawEvent, text: str) -> bool:
     if raw_event.identity_status.startswith("rejected"):
@@ -243,6 +295,17 @@ def classify_event(raw_event: RawEvent) -> EventType:
     if not _mentions_company(raw_event, relevance_text):
         return EventType.non_thesis_noise
 
+    if raw_event.claim_actor_type in {"analyst", "brokerage"}:
+        return EventType.analyst_opinion
+
+    if any(term in text for term in _INDUSTRY_OUTLOOK_TERMS) and not _is_actual_order(
+        raw_event, text
+    ):
+        return EventType.industry_demand_signal
+
+    if "production order" in text and _is_actual_order(raw_event, text):
+        return EventType.production_order
+
     flagged_type = _flag_event_type(raw_event, text)
     if flagged_type is not None:
         return flagged_type
@@ -262,8 +325,13 @@ def classify_event(raw_event: RawEvent) -> EventType:
         return EventType.non_thesis_noise
 
     for event_type, keywords in KEYWORD_EVENT_TYPES:
-        if any(keyword in text for keyword in keywords):
-            return event_type
+        if not any(keyword in text for keyword in keywords):
+            continue
+        if event_type in _GUIDANCE_EVENT_TYPES and not _is_company_guidance(raw_event):
+            continue
+        if event_type in _ORDER_EVENT_TYPES and not _is_actual_order(raw_event, text):
+            continue
+        return event_type
 
     if _has_standalone_mou(text):
         return EventType.partnership

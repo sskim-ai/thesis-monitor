@@ -97,6 +97,7 @@ class ProviderCallTelemetry(SQLModel, table=True):
     provider: str = Field(index=True)
     endpoint: str = Field(index=True)
     ticker: str = Field(index=True)
+    issuer_type: str = "unknown"
     attempted_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     finished_at: datetime | None = None
     status: str = "unknown"
@@ -108,3 +109,5 @@ class ProviderCallTelemetry(SQLModel, table=True):
     latency_ms: float | None = None
     success_count: int = 0
     failure_count: int = 0
+    skip_count: int = 0
+    skip_reason: str | None = None

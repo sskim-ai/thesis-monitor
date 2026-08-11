@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from datetime import date, datetime, time, timezone
+from datetime import date, datetime, time, timedelta, timezone
 from zoneinfo import ZoneInfo
 
 
@@ -12,6 +12,15 @@ class MarketSessionState:
     session: str
     assessment_state: str
     market_date: date
+    latest_completed_regular_session_date: date
+    timezone_name: str
+
+
+def _previous_weekday(value: date) -> date:
+    candidate = value - timedelta(days=1)
+    while candidate.weekday() >= 5:
+        candidate -= timedelta(days=1)
+    return candidate
 
 
 def us_market_session(as_of: datetime | None = None) -> MarketSessionState:
@@ -20,7 +29,13 @@ def us_market_session(as_of: datetime | None = None) -> MarketSessionState:
         current = current.replace(tzinfo=timezone.utc)
     eastern = current.astimezone(NEW_YORK)
     if eastern.weekday() >= 5:
-        return MarketSessionState("closed", "final", eastern.date())
+        return MarketSessionState(
+            "closed",
+            "final",
+            eastern.date(),
+            _previous_weekday(eastern.date()),
+            NEW_YORK.key,
+        )
 
     clock = eastern.time().replace(tzinfo=None)
     if clock < time(4, 0):
@@ -37,6 +52,12 @@ def us_market_session(as_of: datetime | None = None) -> MarketSessionState:
         session=session,
         assessment_state="provisional" if session == "open" else "final",
         market_date=eastern.date(),
+        latest_completed_regular_session_date=(
+            eastern.date()
+            if session in {"after_hours", "closed"} and clock >= time(16, 0)
+            else _previous_weekday(eastern.date())
+        ),
+        timezone_name=NEW_YORK.key,
     )
 
 
@@ -46,7 +67,13 @@ def korea_market_session(as_of: datetime | None = None) -> MarketSessionState:
         current = current.replace(tzinfo=timezone.utc)
     seoul = current.astimezone(SEOUL)
     if seoul.weekday() >= 5:
-        return MarketSessionState("closed", "final", seoul.date())
+        return MarketSessionState(
+            "closed",
+            "final",
+            seoul.date(),
+            _previous_weekday(seoul.date()),
+            SEOUL.key,
+        )
     clock = seoul.time().replace(tzinfo=None)
     if clock < time(8, 0):
         session = "pre_market"
@@ -60,6 +87,12 @@ def korea_market_session(as_of: datetime | None = None) -> MarketSessionState:
         session=session,
         assessment_state="provisional" if session == "open" else "final",
         market_date=seoul.date(),
+        latest_completed_regular_session_date=(
+            seoul.date()
+            if session in {"after_hours", "closed"} and clock >= time(15, 30)
+            else _previous_weekday(seoul.date())
+        ),
+        timezone_name=SEOUL.key,
     )
 
 

@@ -30,6 +30,7 @@ class FinancialSnapshot(SQLModel, table=True):
     operating_income_basis: str | None = None
     balance_sheet_basis: str | None = None
     quality_warnings: str | None = None
+    raw_financial_fields: str = "[]"
     revenue: float | None = None
     operating_income: float | None = None
     net_income: float | None = None

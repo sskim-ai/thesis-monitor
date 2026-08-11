@@ -686,28 +686,50 @@ def _warning_lifecycle(
                 previous_states_raw = parsed
         except json.JSONDecodeError:
             previous_states_raw = []
+    baseline_by_warning = {
+        str(item.get("warning")): dict(item)
+        for item in baseline_warnings or []
+        if isinstance(item, dict) and item.get("warning")
+    }
     states: dict[str, dict[str, object]] = {
         str(item.get("warning")): dict(item)
         for item in previous_states_raw
         if isinstance(item, dict) and item.get("warning")
+        and item.get("provenance_status") not in {"invalid", "invalid_provenance"}
+        and not (
+            item.get("source") == "canonical_issue"
+            and str(item.get("warning")) not in baseline_by_warning
+        )
     }
+    for state in states.values():
+        if "provenance_status" not in state:
+            state["provenance_status"] = "legacy_previous_assessment"
+            state["backfilled_warning"] = True
+        if "opened_date" not in state and previous is not None:
+            state["opened_date"] = previous.assessment_date.isoformat()
     legacy_open = _previous_json_list(previous, "open_warnings")
     if not legacy_open:
         legacy_open = _previous_json_list(previous, "confirmed_warnings")
     for warning in legacy_open:
-        states.setdefault(warning, {"warning": warning, "status": "open"})
-    for baseline in baseline_warnings or []:
-        warning = str(baseline.get("warning", "")).strip()
-        if warning:
-            states.setdefault(warning, dict(baseline))
+        states.setdefault(
+            warning,
+            {
+                "warning": warning,
+                "status": "open",
+                "backfilled_warning": True,
+                "provenance_status": "legacy_previous_assessment",
+            },
+        )
+    for warning, baseline in baseline_by_warning.items():
+        states[warning] = dict(baseline)
 
     for warning in new_warnings:
         previous_state = states.get(warning)
-        source_event_ids = [
-            event_fingerprint(event)
-            for event in events
-            if warning in _warning_facts(event)
-        ]
+        source_events = [event for event in events if warning in _warning_facts(event)]
+        source_event_ids = [event_fingerprint(event) for event in source_events]
+        if not source_event_ids:
+            continue
+        source_event = source_events[0]
         states[warning] = {
             **(previous_state or {}),
             "warning_id": hashlib.sha256(f"{ticker}|{warning}".encode()).hexdigest()[:16],
@@ -721,6 +743,13 @@ def _warning_lifecycle(
                 "resolution_condition", "반대 방향의 신뢰 가능한 확정 근거 확인"
             ),
             "source_event_ids": source_event_ids,
+            "source": "thesis_event",
+            "source_provider": source_event.provider,
+            "source_title": source_event.title,
+            "source_date": source_event.date.isoformat(),
+            "source_event_type": source_event.event_type,
+            "provenance_status": "valid",
+            "backfilled_warning": False,
         }
 
     resolution_markers = {
@@ -748,14 +777,25 @@ def _warning_lifecycle(
         state.setdefault("last_confirmed_date", state.get("opened_date"))
         state.setdefault("resolution_condition", "반대 방향의 신뢰 가능한 확정 근거 확인")
         state.setdefault("source_event_ids", [])
+        state.setdefault("provenance_status", "unverified")
+        state.setdefault("backfilled_warning", False)
         if any(_matching_signals(text, [warning]) for text in positive_texts):
             state["status"] = "resolved"
+        if (
+            state.get("opened_date") == assessment_date.isoformat()
+            and warning not in new_warnings
+            and not state.get("backfilled_warning")
+        ):
+            state["status"] = "invalid_provenance"
+            state["provenance_status"] = "warning_lifecycle_consistency_error"
 
     rendered_states = list(states.values())
     open_warnings = [
         str(item["warning"])
         for item in rendered_states
         if item.get("status") in {"open", "escalated"}
+        and item.get("provenance_status")
+        not in {"invalid", "invalid_provenance", "warning_lifecycle_consistency_error"}
     ]
     return _unique(open_warnings), rendered_states
 
@@ -1218,6 +1258,7 @@ def evaluate_thesis(
         fact
         for event in events
         if event.provider in TRUSTED_FACT_PROVIDERS
+        and event.document_identity_status not in {"invalid", "invalid_mismatch"}
         and (
             event.event_type in NEGATIVE_EVENT_TYPES
             or bool(_matching_signals(_event_text(event), weaken_signals))
@@ -1389,6 +1430,7 @@ def recent_events_for_assessment(
         event
         for event in events
         if event_fingerprint(event) not in used_fingerprints
+        and event.document_identity_status not in {"invalid", "invalid_mismatch"}
         and event.url not in used_urls
         and (legacy_created_cutoff is None or event.created_at > legacy_created_cutoff)
         and (

@@ -24,6 +24,11 @@ class RawEvent:
     confirmed_facts: list[str] = field(default_factory=list)
     inferred_implications: list[str] = field(default_factory=list)
     unknowns: list[str] = field(default_factory=list)
+    source_document_id: str | None = None
+    document_identity_status: str = "unvalidated"
+    claim_actor: str | None = None
+    claim_actor_type: str = "unknown"
+    raw_financial_fields: list[dict[str, object]] = field(default_factory=list)
     reporting_period_end: date | None = None
     document_type: str | None = None
     financial_scope: str | None = None

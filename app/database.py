@@ -99,6 +99,11 @@ def _ensure_sqlite_columns() -> None:
             "reporting_period_end": "DATE",
             "document_type": "VARCHAR",
             "financial_scope": "VARCHAR",
+            "source_document_id": "VARCHAR",
+            "document_identity_status": "VARCHAR DEFAULT 'unvalidated'",
+            "claim_actor": "VARCHAR",
+            "claim_actor_type": "VARCHAR DEFAULT 'unknown'",
+            "raw_financial_fields": "VARCHAR DEFAULT '[]'",
         },
         "financialsnapshot": {
             "snapshot_type": "VARCHAR DEFAULT 'full_statement'",
@@ -150,6 +155,7 @@ def _ensure_sqlite_columns() -> None:
             "margin_quality_review": "BOOLEAN DEFAULT 0",
             "yoy_growth": "FLOAT",
             "qoq_growth": "FLOAT",
+            "raw_financial_fields": "VARCHAR DEFAULT '[]'",
         },
         "securitymaster": {
             "search_aliases": "VARCHAR DEFAULT '[]'",
@@ -165,6 +171,12 @@ def _ensure_sqlite_columns() -> None:
         },
         "canonicalissue": {
             "official_verification_status": "VARCHAR DEFAULT 'unverified'",
+            "provenance_status": "VARCHAR DEFAULT 'unverified'",
+        },
+        "providercalltelemetry": {
+            "issuer_type": "VARCHAR DEFAULT 'unknown'",
+            "skip_count": "INTEGER DEFAULT 0",
+            "skip_reason": "VARCHAR",
         },
         "thesisassessment": {
             "thesis_snapshot": "VARCHAR DEFAULT '{}'",
