@@ -2174,17 +2174,20 @@
           "market_summary": {
             "additionalProperties": true,
             "type": "object",
-            "title": "Market Summary"
+            "title": "Market Summary",
+            "properties": {}
           },
           "regime_summary": {
             "additionalProperties": true,
             "type": "object",
-            "title": "Regime Summary"
+            "title": "Regime Summary",
+            "properties": {}
           },
           "today_calendar": {
             "items": {
               "additionalProperties": true,
-              "type": "object"
+              "type": "object",
+              "properties": {}
             },
             "type": "array",
             "title": "Today Calendar"
@@ -2192,7 +2195,8 @@
           "macro_theses": {
             "items": {
               "additionalProperties": true,
-              "type": "object"
+              "type": "object",
+              "properties": {}
             },
             "type": "array",
             "title": "Macro Theses"
@@ -2200,7 +2204,8 @@
           "ticker_impacts": {
             "items": {
               "additionalProperties": true,
-              "type": "object"
+              "type": "object",
+              "properties": {}
             },
             "type": "array",
             "title": "Ticker Impacts"
@@ -2208,7 +2213,8 @@
           "data_quality": {
             "items": {
               "additionalProperties": true,
-              "type": "object"
+              "type": "object",
+              "properties": {}
             },
             "type": "array",
             "title": "Data Quality"
@@ -2782,7 +2788,8 @@
           "evidence": {
             "items": {
               "additionalProperties": true,
-              "type": "object"
+              "type": "object",
+              "properties": {}
             },
             "type": "array",
             "title": "Evidence"
@@ -2840,6 +2847,18 @@
             "type": "string",
             "title": "Today Signal",
             "default": "neutral"
+          },
+          "today_signal_strength": {
+            "type": "string",
+            "title": "Today Signal Strength",
+            "default": "none"
+          },
+          "today_signal_evidence": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Today Signal Evidence"
           },
           "today_signal_rationale": {
             "type": "string",
@@ -3417,7 +3436,8 @@
               "$ref": "#/components/schemas/PricePeriodSummary"
             },
             "type": "object",
-            "title": "Periods"
+            "title": "Periods",
+            "properties": {}
           },
           "rule_evaluation": {
             "anyOf": [
@@ -4071,10 +4091,25 @@
             "type": "array",
             "title": "Open Warnings"
           },
+          "open_confirmed_warnings": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Open Confirmed Warnings"
+          },
+          "persistent_watch_risks": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Persistent Watch Risks"
+          },
           "warning_states": {
             "items": {
               "additionalProperties": true,
-              "type": "object"
+              "type": "object",
+              "properties": {}
             },
             "type": "array",
             "title": "Warning States"
@@ -4142,7 +4177,8 @@
           "evidence": {
             "items": {
               "additionalProperties": true,
-              "type": "object"
+              "type": "object",
+              "properties": {}
             },
             "type": "array",
             "title": "Evidence"
@@ -4382,7 +4418,8 @@
           "evidence": {
             "items": {
               "additionalProperties": true,
-              "type": "object"
+              "type": "object",
+              "properties": {}
             },
             "type": "array",
             "title": "Evidence"
@@ -4517,7 +4554,8 @@
           "supporting_evidence": {
             "items": {
               "additionalProperties": true,
-              "type": "object"
+              "type": "object",
+              "properties": {}
             },
             "type": "array",
             "title": "Supporting Evidence"
@@ -4525,7 +4563,8 @@
           "weakening_evidence": {
             "items": {
               "additionalProperties": true,
-              "type": "object"
+              "type": "object",
+              "properties": {}
             },
             "type": "array",
             "title": "Weakening Evidence"
@@ -4533,7 +4572,8 @@
           "invalidation_evidence": {
             "items": {
               "additionalProperties": true,
-              "type": "object"
+              "type": "object",
+              "properties": {}
             },
             "type": "array",
             "title": "Invalidation Evidence"
@@ -4578,7 +4618,8 @@
           },
           "ctx": {
             "type": "object",
-            "title": "Context"
+            "title": "Context",
+            "properties": {}
           }
         },
         "type": "object",
@@ -4837,6 +4878,22 @@
             "title": "Price To Book Status",
             "default": "unavailable"
           },
+          "forward_price_to_book": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Forward Price To Book"
+          },
+          "forward_price_to_book_status": {
+            "type": "string",
+            "title": "Forward Price To Book Status",
+            "default": "unavailable"
+          },
           "trailing_basis": {
             "type": "string",
             "title": "Trailing Basis",
@@ -4857,6 +4914,17 @@
             "type": "string",
             "title": "Book Basis",
             "default": "latest reported book value"
+          },
+          "forward_book_basis": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Forward Book Basis"
           },
           "provider": {
             "type": "string",

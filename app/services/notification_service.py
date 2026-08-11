@@ -108,6 +108,10 @@ def _json_list_value(value: str) -> list[object]:
     return parsed if isinstance(parsed, list) else []
 
 
+def _unique_text(items) -> list[str]:
+    return list(dict.fromkeys(str(item).strip() for item in items if str(item).strip()))
+
+
 def _notification_channel() -> str:
     channel = get_settings().notification_channel.strip().lower()
     if channel not in SUPPORTED_NOTIFICATION_CHANNELS:
@@ -177,12 +181,12 @@ def _audience_price_text(value: str, empty: str) -> str:
 def _multiple_roles(primary_method: str) -> dict[str, str]:
     method = primary_method.lower()
     if "p/b" in method or "pbr" in method or "roe" in method:
-        return {"PER": "보조", "fPER": "보조", "PBR": "주요"}
+        return {"PER": "보조", "fPER": "보조", "PBR": "주요", "fPBR": "주요"}
     if "forward p/e" in method or "forward pe" in method:
-        return {"PER": "참고", "fPER": "주요", "PBR": "참고"}
+        return {"PER": "참고", "fPER": "주요", "PBR": "참고", "fPBR": "참고"}
     if any(term in method for term in ("sotp", "sum-of-the-parts", "npv", "scenario")):
-        return {name: "참고" for name in ("PER", "fPER", "PBR")}
-    return {name: "참고" for name in ("PER", "fPER", "PBR")}
+        return {name: "참고" for name in ("PER", "fPER", "PBR", "fPBR")}
+    return {name: "참고" for name in ("PER", "fPER", "PBR", "fPBR")}
 
 
 def _assessment_report(
@@ -242,7 +246,15 @@ def _assessment_report(
     )
     new_warnings = _json_list_value(getattr(assessment, "new_warnings", "[]"))
     open_warnings = _json_list_value(getattr(assessment, "open_warnings", "[]"))
-    prior_open_warnings = [item for item in open_warnings if item not in new_warnings]
+    open_confirmed_warnings = _json_list_value(
+        getattr(assessment, "open_confirmed_warnings", "[]")
+    ) or open_warnings
+    prior_open_warnings = [
+        item for item in open_confirmed_warnings if item not in new_warnings
+    ]
+    persistent_watch_risks = _json_list_value(
+        getattr(assessment, "persistent_watch_risks", "[]")
+    )
     structural_risk = str(
         getattr(assessment, "structural_risk_level", "normal") or "normal"
     )
@@ -347,31 +359,57 @@ def _assessment_report(
         if forward_basis == "provider-defined forward consensus"
         else f" · {forward_basis} 기준" if forward_basis else ""
     )
+    forward_freshness_label = (
+        " · 기준일 일부 미확인"
+        if valuation_snapshot.get("forward_pe_status") == "value"
+        and not valuation_snapshot.get("denominator_as_of")
+        else ""
+    )
     caveat_text = (
         f"• 해석 주의: {valuation_caveats[0]}"
         if valuation_caveats
         else "• 해석 주의: 등록된 종목별 Valuation 주의사항 없음"
     )
-    provisional_text = (
-        "\n⚠️ 미국장이 진행 중이거나 당일 봉이 미확정이어서 가격·시장 평가는 잠정치입니다.\n"
-        if assessment_state == "provisional"
-        else ""
+    is_krx = assessment.ticker.isdigit()
+    if assessment_state == "provisional" and is_krx:
+        session_label = "잠정 · 한국장 진행 중"
+        provisional_text = (
+            "\n⚠️ 한국장이 진행 중이므로 현재가와 기술적 가격 판단은 잠정입니다. "
+            "간밤 미국 시장 데이터는 확정 기준입니다.\n"
+        )
+    elif assessment_state == "provisional":
+        session_label = "잠정 · 미국장 진행 중"
+        provisional_text = (
+            "\n⚠️ 미국장이 진행 중이므로 현재가와 시장 가격 신호는 잠정입니다.\n"
+        )
+    else:
+        session_label = f"확정 · 시장 세션 {market_session}"
+        provisional_text = ""
+    matched_today = _unique_text(
+        str(signal)
+        for item in evidence_items
+        if isinstance(item, dict) and item.get("event_type") != "price_rule"
+        for signal in item.get("matched_signals", [])
+        if str(signal).strip()
     )
     fallback = (
         f"🏢 {company_name}({assessment.ticker})\n"
         f"⚠️ 오늘 투자 논리 {label}\n"
         f"구조적 위험: {risk_label} · 판단 신뢰도 {assessment.confidence:.0%}\n"
-        f"평가 상태: {'잠정' if assessment_state == 'provisional' else '확정'} · "
-        f"시장 세션 {market_session}{provisional_text}\n"
+        f"평가 상태: {session_label}{provisional_text}\n"
         f"🎯 핵심 투자 논리\n{core_thesis}\n\n"
         f"🔄 오늘 새로 확인된 변화\n{change_text}\n\n"
         f"🚨 오늘 새 경고\n{_bullet_text(new_warnings, '없음')}\n\n"
         f"⚠️ 아직 해결되지 않은 기존 경고\n"
         f"{_bullet_text(prior_open_warnings, '없음')}\n\n"
+        f"👁 계속 감시하는 구조적 리스크\n"
+        f"{_bullet_text(persistent_watch_risks, '등록된 상시 감시 리스크 없음')}\n\n"
         f"📍 투자 논리 조건\n"
         f"↑ 강화: {strengthen_text}\n"
         f"↓ 약화: {weaken_text}\n"
         f"✕ 무효화: {invalidation_text}\n\n"
+        f"오늘 충족된 조건: "
+        f"{', '.join(matched_today) if matched_today else '없음'}\n\n"
         f"💰 가격 판단\n"
         f"현재가: {_report_price(current_price, currency)} · {price_basis_label}\n"
         f"가격 위치: {decision.get('current_position', assessment.price_view)}\n"
@@ -386,9 +424,11 @@ def _assessment_report(
         f"• PER: {_multiple_text(valuation_snapshot, 'trailing_pe')} "
         f"({multiple_roles['PER']})\n"
         f"• fPER: {_multiple_text(valuation_snapshot, 'forward_pe')} "
-        f"({multiple_roles['fPER']}){forward_basis_label}\n"
+        f"({multiple_roles['fPER']}){forward_basis_label}{forward_freshness_label}\n"
         f"• PBR: {_multiple_text(valuation_snapshot, 'price_to_book')} "
         f"({multiple_roles['PBR']})\n"
+        f"• fPBR: {_multiple_text(valuation_snapshot, 'forward_price_to_book')} "
+        f"({multiple_roles['fPBR']})\n"
         f"주 평가 방식: {valuation_method}\n"
         f"{relative_basis_text}\n"
         f"{caveat_text}\n"
@@ -437,6 +477,8 @@ def _assessment_report(
             "confirmed_warnings": confirmed_warnings,
             "new_warnings": new_warnings,
             "open_warnings": open_warnings,
+            "open_confirmed_warnings": open_confirmed_warnings,
+            "persistent_watch_risks": persistent_watch_risks,
             "watch_items": watch_items,
             "score": assessment.score,
             "confidence": assessment.confidence,

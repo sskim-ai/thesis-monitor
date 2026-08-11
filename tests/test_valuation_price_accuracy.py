@@ -63,6 +63,9 @@ def test_speculative_expectation_preserves_elevated_structural_risk_without_new_
     thesis = _base_thesis("TSLA")
     thesis.core_thesis = "현재 자동차 마진 저하와 FCF 적자가 이어지고 Robotaxi 경제성은 미증명 상태다."
     thesis.market_expectations = json.dumps({"level": "speculative"})
+    thesis.valuation_framework = json.dumps(
+        {"primary_method": "scenario", "valuation_caveats": ["Robotaxi 단위경제성 미증명"]}
+    )
 
     result = evaluate_thesis(thesis, [], PriceContext())
 
@@ -70,7 +73,8 @@ def test_speculative_expectation_preserves_elevated_structural_risk_without_new_
     assert result.structural_risk_level == "elevated"
     assert result.daily_change_severity == "none"
     assert result.new_warnings == []
-    assert result.open_warnings == [thesis.core_thesis]
+    assert result.open_warnings == []
+    assert any("미증명" in item for item in result.persistent_watch_risks)
 
 
 def test_open_warning_remains_without_explicit_resolution() -> None:

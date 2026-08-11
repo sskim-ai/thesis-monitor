@@ -255,8 +255,8 @@ def _build_price_decision(
         decision.holder_checks.append(
             PriceLevelCheck(
                 rule="invalidation_price",
-                label="투자 판단 폐기 검토 가격",
-                meaning="종가 이탈만으로 자동 무효화하지 않고 등록된 사업 무효화 조건과 함께 확인합니다.",
+                label="재점검 가격",
+                meaning="종가 이탈 시 가격 약화와 사업 투자 논리를 함께 다시 확인합니다.",
                 price=invalidation,
             )
         )
@@ -464,6 +464,8 @@ class EvaluationResult:
     confirmed_warnings: list[str]
     new_warnings: list[str]
     open_warnings: list[str]
+    open_confirmed_warnings: list[str]
+    persistent_watch_risks: list[str]
     warning_states: list[dict[str, object]]
     watch_items: list[str]
     new_buyer_price_view: str
@@ -654,27 +656,28 @@ def _warning_lifecycle(
     return _unique(open_warnings), rendered_states
 
 
-def _baseline_open_warnings(thesis: InvestmentThesis) -> list[str]:
+def _persistent_watch_risks(thesis: InvestmentThesis) -> list[str]:
+    expectations = _json_dict(thesis.market_expectations)
+    framework = _json_dict(thesis.valuation_framework)
+    candidates: list[str] = []
+    for source in (
+        expectations.get("downside_surprises", []),
+        framework.get("valuation_caveats", []),
+        _json_list(thesis.validation_metrics),
+    ):
+        if isinstance(source, list):
+            candidates.extend(str(item).strip() for item in source if str(item).strip())
     risk_markers = (
-        "초기 균열",
-        "적자",
-        "미확인",
-        "미증명",
-        "부진",
-        "저하",
-        "의존",
-        "위험",
-        "부담",
-        "고가격대",
-        "cash burn",
-        "unproven",
+        "적자", "미확인", "미증명", "저하", "둔화", "의존", "부담",
+        "위험", "cash burn", "unproven",
     )
-    candidates = re.split(r"(?<=[.!?])\s+|\n+", thesis.core_thesis)
-    return _unique(
-        sentence.strip()
-        for sentence in candidates
-        if any(marker in sentence.lower() for marker in risk_markers)
-    )[:4]
+    for clause in re.split(r"[,.]\s*|\s+및\s+|\s+and\s+|와\s+|과\s+", thesis.core_thesis):
+        cleaned = clause.strip().rstrip("다")
+        if 4 <= len(cleaned) <= 90 and any(
+            marker in cleaned.lower() for marker in risk_markers
+        ):
+            candidates.append(cleaned)
+    return _unique(candidates)[:5]
 
 
 def _daily_change_severity(status: AssessmentStatus) -> str:
@@ -711,7 +714,7 @@ def _structural_risk_level(
         risk = StructuralRiskLevel.elevated
     if status in {AssessmentStatus.weakened, AssessmentStatus.mixed}:
         risk = max(risk, StructuralRiskLevel.elevated, key=rank.get)
-    elif status in {AssessmentStatus.needs_review, AssessmentStatus.invalidation_candidate}:
+    elif status == AssessmentStatus.invalidation_candidate:
         risk = max(risk, StructuralRiskLevel.high, key=rank.get)
     elif status == AssessmentStatus.invalidated:
         risk = StructuralRiskLevel.critical
@@ -806,6 +809,8 @@ def evaluate_thesis(
     material_positive = False
 
     for event in events:
+        if event.event_type == "non_thesis_noise":
+            continue
         text = _event_text(event)
         strengthen_matches = _matching_signals(text, strengthen_signals)
         weaken_matches = _matching_signals(text, weaken_signals)
@@ -821,10 +826,7 @@ def evaluate_thesis(
         )
         expansion_matches = raw_expansion_matches if trusted_confirmed else []
         compression_matches = raw_compression_matches if trusted_confirmed else []
-        if invalid_matches and (
-            trusted_confirmed
-            or (event.event_type != "non_thesis_noise" and event.relevance_score >= 40)
-        ):
+        if invalid_matches and trusted_confirmed:
             direction = "invalidation"
             negative_points += event.relevance_score
             invalidation_matches.append((event, invalid_matches))
@@ -843,7 +845,7 @@ def evaluate_thesis(
             (weaken_matches or event.event_type in NEGATIVE_EVENT_TYPES)
             and not trusted_confirmed
             and event.event_type != "non_thesis_noise"
-            and event.relevance_score >= 40
+            and event.relevance_score >= 70
         ):
             core_review_evidence = True
 
@@ -860,9 +862,13 @@ def evaluate_thesis(
         matched_expansion.extend(expansion_matches)
         matched_compression.extend(compression_matches)
 
-        if direction != "neutral" or event.requires_review:
+        if direction != "neutral" or (event.requires_review and event.relevance_score >= 70):
             core_review_evidence = True
-        if direction != "neutral" or valuation_direction != "neutral" or event.requires_review:
+        if (
+            direction != "neutral"
+            or valuation_direction != "neutral"
+            or (event.requires_review and event.relevance_score >= 70)
+        ):
             evidence.append(
                 {
                     "date": str(event.date),
@@ -888,11 +894,6 @@ def evaluate_thesis(
 
     price_result = _evaluate_price_rules(thesis, price_context)
     price_decision = _build_price_decision(thesis, price_context)
-    if price_result.invalidated:
-        negative_points += price_result.negative_points
-    if price_result.evidence is not None:
-        evidence.append(price_result.evidence)
-        core_review_evidence = core_review_evidence or price_result.invalidated
 
     macro_valuation_effect = macro_impact.valuation_effect if macro_impact else "neutral"
     if macro_valuation_effect == "strengthen":
@@ -928,7 +929,7 @@ def evaluate_thesis(
     )
     if trusted_invalidation:
         status = AssessmentStatus.invalidated
-    elif price_result.invalidated or invalidation_matches:
+    elif invalidation_matches:
         status = AssessmentStatus.invalidation_candidate
     elif positive_points >= 20 and negative_points >= 20:
         status = AssessmentStatus.mixed
@@ -1073,8 +1074,15 @@ def evaluate_thesis(
         previous_assessment,
         new_warnings,
         events,
-        baseline_warnings=_baseline_open_warnings(thesis),
     )
+    legacy_thesis_sentences = {
+        thesis.core_thesis.strip(),
+        *(item.strip() for item in re.split(r"(?<=[.!?])\s+|\n+", thesis.core_thesis)),
+    }
+    open_warnings = [
+        item for item in open_warnings if item.strip() not in legacy_thesis_sentences
+    ]
+    persistent_watch_risks = _persistent_watch_risks(thesis)
     confirmed_warnings = new_warnings
     watch_items = _unique(_watch_text(item) for item in unknowns)
     background_confirmed_facts = _previous_facts(previous_assessment)
@@ -1169,6 +1177,8 @@ def evaluate_thesis(
         confirmed_warnings=confirmed_warnings,
         new_warnings=new_warnings,
         open_warnings=open_warnings,
+        open_confirmed_warnings=open_warnings,
+        persistent_watch_risks=persistent_watch_risks,
         warning_states=warning_states,
         watch_items=watch_items,
         new_buyer_price_view=new_buyer_price_view,

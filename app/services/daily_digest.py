@@ -277,13 +277,11 @@ def _important_changes(
 
     candidates.sort(key=lambda item: (-item[0], item[2]))
     selected = [text for _score, significant, text in candidates if significant][:4]
-    if len(selected) < 2:
-        selected.extend(
-            text
-            for _score, _significant, text in candidates
-            if text not in selected
+    if len(selected) == 1:
+        selected.append(
+            "그 외 주가지수·변동성에서는 투자 판단을 바꿀 정도의 큰 변화가 없었습니다."
         )
-    return selected[:4]
+    return selected
 
 
 def _axis_explanations(
@@ -395,7 +393,9 @@ def _macro_interpretation(briefing: MacroBriefing) -> MacroInterpretation:
             "weakening": "약화",
             "structural_break": "구조적 재검토",
         }.get(status, status)
-        signal = int(item.get("daily_signal", 0) or 0)
+        signal_value = str(item.get("today_signal", "neutral"))
+        signal = 1 if signal_value == "positive" else -1 if signal_value == "negative" else 0
+        signal_strength = str(item.get("today_signal_strength", "none"))
         key = str(item.get("thesis_key", ""))
         if key == "fed_policy_path":
             real_bp = _bp(observations.get("DFII10"))
@@ -418,11 +418,11 @@ def _macro_interpretation(briefing: MacroBriefing) -> MacroInterpretation:
             reason = (
                 "성장 급락과 물가 재가속의 동시 신호가 없음"
                 if signal >= 0
-                else "성장 둔화 또는 물가 재가속 경고가 확인됨"
+                else "경기민감 가격 신호는 약했지만 실제 성장·물가 데이터의 구조적 변화는 확인되지 않음"
             )
         elif key == "china_korea_export_cycle":
             reason = (
-                "성장민감 가격 신호 약화가 반복됨, 한국 수출·중국 실물지표 확인 필요"
+                "오늘 성장민감 가격 신호는 약했지만 한국 수출·중국 실물지표의 구조적 변화는 미확인"
                 if signal < 0
                 else "성장민감 가격 신호는 우호적이나 한국 수출·중국 실물 확인 필요"
                 if signal > 0
@@ -437,7 +437,20 @@ def _macro_interpretation(briefing: MacroBriefing) -> MacroInterpretation:
             )
         else:
             reason = "오늘 확인 신호가 우호적" if signal > 0 else "오늘 경고 신호가 확인됨" if signal < 0 else "방향을 바꿀 신규 확정 근거 없음"
-        assumptions.append(f"{item.get('title', '시장 가정')} → {status_label} · {reason}")
+        signal_label = {
+            ("positive", "weak"): "약한 긍정",
+            ("negative", "weak"): "약한 부정",
+            ("positive", "medium"): "긍정",
+            ("negative", "medium"): "부정",
+            ("positive", "high"): "강한 긍정",
+            ("negative", "high"): "강한 부정",
+        }.get((signal_value, signal_strength), "중립")
+        assumptions.append(
+            f"{item.get('title', '시장 가정')}\n"
+            f"→ 상태: {status_label}\n"
+            f"→ 오늘 신호: {signal_label}\n"
+            f"→ 이유: {reason}"
+        )
 
     return MacroInterpretation(
         regime_label={
@@ -587,9 +600,11 @@ def _ticker_summary(
     facts = _text_list(assessment.confirmed_facts)
     weaken_signals = _text_list(thesis.weaken_signals)
     confirmed_warnings = _text_list(
-        getattr(assessment, "open_warnings", "[]")
-    ) or _text_list(assessment.confirmed_warnings)
-    watch_items = _text_list(assessment.watch_items)
+        getattr(assessment, "open_confirmed_warnings", "[]")
+    ) or _text_list(getattr(assessment, "open_warnings", "[]"))
+    watch_items = _text_list(
+        getattr(assessment, "persistent_watch_risks", "[]")
+    ) or _text_list(assessment.watch_items)
     if not watch_items:
         watch_items = [f"{item} 여부 확인 필요" for item in weaken_signals[:3]]
     check_metrics = _check_metrics(thesis, assessment)

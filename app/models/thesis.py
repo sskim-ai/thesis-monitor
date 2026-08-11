@@ -47,6 +47,8 @@ class ThesisAssessment(SQLModel, table=True):
     confirmed_warnings: str = Field(default="[]", sa_column=Column(Text))
     new_warnings: str = Field(default="[]", sa_column=Column(Text))
     open_warnings: str = Field(default="[]", sa_column=Column(Text))
+    open_confirmed_warnings: str = Field(default="[]", sa_column=Column(Text))
+    persistent_watch_risks: str = Field(default="[]", sa_column=Column(Text))
     warning_states: str = Field(default="[]", sa_column=Column(Text))
     watch_items: str = Field(default="[]", sa_column=Column(Text))
     used_event_fingerprints: str = Field(default="[]", sa_column=Column(Text))

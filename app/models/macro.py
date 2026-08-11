@@ -20,6 +20,8 @@ class MacroThesis(SQLModel, table=True):
     horizon: str = "medium"
     status: str = Field(default="intact", index=True)
     today_signal: str = "neutral"
+    today_signal_strength: str = "none"
+    today_signal_evidence: str = Field(default="[]", sa_column=Column(Text))
     today_signal_rationale: str = Field(default="", sa_column=Column(Text))
     today_signal_date: date | None = None
     confidence: float = 0.5

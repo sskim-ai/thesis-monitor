@@ -249,6 +249,17 @@ def test_macro_impacts_separate_overall_and_valuation_channels() -> None:
                     )
                 ],
             ),
+            (
+                "VIXONLY2048",
+                [
+                    MacroExposureInput(
+                        factor="market_volatility",
+                        direction="negative",
+                        weight=4,
+                        channel="risk_appetite",
+                    )
+                ],
+            ),
         ]:
             register_monitoring_item(
                 session,
@@ -293,7 +304,7 @@ def test_macro_impacts_separate_overall_and_valuation_channels() -> None:
         by_ticker = {item.ticker: item for item in impacts}
 
         assert by_ticker["CHANNEL2048"].direction == "strengthen"
-        assert by_ticker["CHANNEL2048"].valuation_effect == "mixed"
+        assert by_ticker["CHANNEL2048"].valuation_effect == "weaken"
         assert by_ticker["CHANNEL2048"].earnings_effect == "neutral"
         channel_evidence = json.loads(by_ticker["CHANNEL2048"].evidence)
         assert any(
@@ -301,6 +312,15 @@ def test_macro_impacts_separate_overall_and_valuation_channels() -> None:
             for item in channel_evidence
             if item.get("factor") == "market_volatility"
         )
+        vix_evidence = next(
+            item for item in channel_evidence if item.get("factor") == "market_volatility"
+        )
+        assert vix_evidence["eligible_for_valuation_context"] is False
         assert by_ticker["LOWWEIGHT2048"].direction == "neutral"
         assert by_ticker["LOWWEIGHT2048"].valuation_effect == "neutral"
         assert "저가중치" in by_ticker["LOWWEIGHT2048"].rationale
+        assert by_ticker["VIXONLY2048"].valuation_effect == "neutral"
+        vix_only = json.loads(by_ticker["VIXONLY2048"].evidence)[0]
+        assert vix_only["raw_move"] == -12.5
+        assert vix_only["materiality"] == "high"
+        assert vix_only["eligible_for_valuation_context"] is False

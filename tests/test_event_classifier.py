@@ -133,6 +133,22 @@ def test_unrelated_news_is_not_promoted_by_material_keyword() -> None:
     assert classify_event(raw_event) == "non_thesis_noise"
 
 
+def test_berkshire_article_is_rejected_for_googl_even_with_query_keyword() -> None:
+    raw_event = RawEvent(
+        ticker="GOOGL",
+        company_name="Alphabet A",
+        date=date(2026, 8, 11),
+        source="Financial Media",
+        provider="google_news_rss",
+        title="Berkshire reaches a new high after leadership transition",
+        url="https://example.com/berkshire",
+        summary="The article discusses Berkshire Hathaway and Abel.",
+        keywords=["GOOGL", "news"],
+    )
+
+    assert classify_event(raw_event) == "non_thesis_noise"
+
+
 def test_financial_metrics_are_structured_without_inventing_growth() -> None:
     raw_event = _opendart_event("영업(잠정)실적")
     raw_event.confirmed_facts.extend(

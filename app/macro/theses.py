@@ -185,6 +185,8 @@ def update_macro_theses(
         elif not persistent_signal:
             thesis.status = "intact"
         thesis.today_signal = today_signal
+        thesis.today_signal_strength = "none" if delta == 0 else "weak"
+        thesis.today_signal_evidence = json.dumps([rationale], ensure_ascii=False)
         thesis.today_signal_rationale = rationale
         thesis.today_signal_date = regime.assessment_date
         thesis.last_reviewed_at = reviewed_at

@@ -48,7 +48,39 @@ def test_assessment_notification_uses_investment_rationale_label() -> None:
     assert "💰 가격 판단" in message
     assert "👀 신규 관찰자 가격 체크" in message
     assert "📐 시장 기대와 Valuation" in message
+    assert "fPBR: 자료 없음" in message
     assert "Thesis" not in message
+
+
+def test_krx_provisional_message_names_korean_market() -> None:
+    assessment = SimpleNamespace(
+        ticker="005930",
+        assessment_date="2026-08-11",
+        thesis_version=1,
+        status="no_material_change",
+        business_thesis_change="no_material_change",
+        confidence=0.8,
+        score=0,
+        summary="변화 없음",
+        new_buyer_view="확인",
+        holder_view="확인",
+        price_view="장중",
+        risk_level="normal",
+        structural_risk_level="normal",
+        assessment_state="provisional",
+        market_session="open",
+        evidence="[]",
+        price_context="{}",
+        valuation_context='{"impact":"neutral"}',
+        valuation_snapshot="{}",
+        thesis_snapshot='{"base_thesis":"반도체 이익을 점검합니다."}',
+    )
+
+    message = _message_for_assessment(assessment)
+
+    assert "평가 상태: 잠정 · 한국장 진행 중" in message
+    assert "한국장이 진행 중" in message
+    assert "미국장이 진행 중" not in message
 
 
 def test_morning_delivery_requeues_only_messages_sent_before_cutoff() -> None:

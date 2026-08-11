@@ -173,6 +173,8 @@ def build_macro_briefing(
             "title": item.title,
             "status": item.status,
             "today_signal": item.today_signal,
+            "today_signal_strength": item.today_signal_strength,
+            "today_signal_evidence": json.loads(item.today_signal_evidence),
             "today_signal_rationale": item.today_signal_rationale,
             "confidence": item.confidence,
             "description": item.description,

@@ -97,6 +97,26 @@ def test_case_b_real_yield_changes_valuation_not_business_thesis() -> None:
     assert result.earnings_estimate_impact == "unchanged"
 
 
+def test_unverified_market_article_cannot_trigger_business_invalidation() -> None:
+    thesis = _thesis()
+    event = _event(
+        provider="naver_news",
+        event_type="large_order",
+        title="Analyst expects memory shortage to continue",
+        confirmed_facts=json.dumps(["Search result headline was returned"]),
+        relevance_score=50,
+        relevance_reason="unverified market commentary",
+        requires_review=True,
+    )
+    thesis.invalidation_signals = json.dumps(["memory demand slowdown"])
+    event.raw_summary = "Memory demand slowdown remains a scenario, not a confirmed fact."
+
+    result = evaluate_thesis(thesis, [event], PriceContext())
+
+    assert result.status == AssessmentStatus.no_material_change
+    assert result.confirmed_facts == []
+
+
 def test_case_c_vix_does_not_raise_earnings_estimate() -> None:
     macro = ThesisMacroImpact(
         ticker="DELTA",

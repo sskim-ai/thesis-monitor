@@ -3,6 +3,7 @@ from datetime import date
 
 from sqlmodel import Session, select
 
+from app.config import get_settings
 from app.models.macro import MacroEvent, MacroObservation, ThesisMacroImpact
 from app.models.thesis import InvestmentThesis
 from app.models.watchlist import WatchlistItem
@@ -218,7 +219,12 @@ def _factor_signal(
         return (
             1 if net > 0 else -1 if net < 0 else 0,
             min(5, max(event.impact_level for event in scored)),
-            {"factor": factor, "events": [event.event_key for event in scored]},
+            {
+                "factor": factor,
+                "events": [event.event_key for event in scored],
+                "raw_move": net,
+                "raw_move_unit": "event_score",
+            },
         )
 
     series_code = FACTOR_SERIES.get(factor)
@@ -240,10 +246,38 @@ def _factor_signal(
             "value": observation.value,
             "change_value": observation.change_value,
             "change_pct": observation.change_pct,
+            "raw_move": (
+                (observation.change_value or 0) * 100
+                if observation.category
+                in {"rates", "real_rates", "credit", "inflation_expectations"}
+                else observation.change_pct
+            ),
+            "raw_move_unit": (
+                "bp"
+                if observation.category
+                in {"rates", "real_rates", "credit", "inflation_expectations"}
+                else "pct"
+            ),
             "source_url": observation.source_url,
             "quality_status": observation.quality_status,
         },
     )
+
+
+def _materiality(factor: str, evidence: dict[str, object]) -> str:
+    settings = get_settings()
+    move = abs(float(evidence.get("raw_move") or 0))
+    threshold = {
+        "market_volatility": settings.macro_vix_material_pct,
+        "us_10y_real_yield": settings.macro_real_yield_material_bp,
+        "us_10y_yield": settings.macro_nominal_yield_material_bp,
+        "credit_spread": settings.macro_credit_spread_material_bp,
+    }.get(factor, settings.macro_other_material_pct)
+    if move < threshold:
+        return "low"
+    if move < threshold * 2:
+        return "medium"
+    return "high"
 
 
 def assess_thesis_macro_impacts(
@@ -267,7 +301,6 @@ def assess_thesis_macro_impacts(
         reviewed_count = 0
         reviewed_weights: list[int] = []
         channel_contributions: dict[str, float] = {}
-        channel_evidence_contributions: dict[str, list[float]] = {}
         earnings_contributions: dict[str, float] = {}
         for exposure in exposures:
             factor = str(exposure.get("factor", ""))
@@ -298,7 +331,6 @@ def assess_thesis_macro_impacts(
             channel = _channel(exposure)
             channels.add(channel)
             channel_contributions[channel] = channel_contributions.get(channel, 0) + contribution
-            channel_evidence_contributions.setdefault(channel, []).append(contribution)
             if _earnings_channel_is_eligible(factor, channel, exposure):
                 earnings_contributions[channel] = (
                     earnings_contributions.get(channel, 0) + contribution
@@ -307,6 +339,16 @@ def assess_thesis_macro_impacts(
             reviewed_weights.append(weight)
             item_evidence["contribution"] = contribution
             item_evidence["exposure"] = {**exposure, "channel": channel}
+            item_evidence["materiality"] = _materiality(factor, item_evidence)
+            item_evidence["direction"] = (
+                "positive" if contribution > 0 else "negative" if contribution < 0 else "neutral"
+            )
+            item_evidence["weight"] = weight
+            item_evidence["channel"] = channel
+            item_evidence["eligible_for_valuation_context"] = (
+                channel == "discount_rate"
+                and item_evidence["materiality"] in {"medium", "high"}
+            )
             item_evidence["earnings_link_validated"] = _earnings_channel_is_eligible(
                 factor, channel, exposure
             )
@@ -319,9 +361,9 @@ def assess_thesis_macro_impacts(
             direction = "neutral"
         earnings_values = list(earnings_contributions.values())
         valuation_values = [
-            value
-            for channel in {"discount_rate", "risk_appetite"}
-            for value in channel_evidence_contributions.get(channel, [])
+            float(item.get("contribution", 0) or 0)
+            for item in evidence
+            if item.get("eligible_for_valuation_context") is True
         ]
         earnings_effect = (
             "neutral" if low_weight_only else _material_channel_effect(earnings_values)
@@ -337,6 +379,10 @@ def assess_thesis_macro_impacts(
         )
         if evidence and low_weight_only:
             rationale += " 단일 저가중치 경로이므로 일일 방향 판정은 유지했습니다."
+        if evidence and not valuation_values and any(
+            item.get("channel") == "risk_appetite" for item in evidence
+        ):
+            rationale += " 변동성은 보조 센티먼트로만 사용해 Valuation 상태에는 반영하지 않았습니다."
         existing = session.exec(
             select(ThesisMacroImpact).where(
                 ThesisMacroImpact.ticker == thesis.ticker,

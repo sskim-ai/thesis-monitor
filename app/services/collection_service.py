@@ -10,6 +10,7 @@ from app.config import get_settings
 from app.models.company import Company
 from app.models.event import Event
 from app.models.financial import FinancialSnapshot
+from app.models.watchlist import WatchlistItem
 from app.providers.base import RawEvent
 from app.providers.mock import MockProvider
 from app.providers.registry import provider_priority
@@ -291,6 +292,15 @@ class CollectionService:
 
     async def collect_events(self, session: Session, ticker: str, lookback_days: int) -> list[Event]:
         ticker = normalize_ticker(ticker)
+        company = session.exec(select(Company).where(Company.ticker == ticker)).first()
+        watchlist_item = session.exec(
+            select(WatchlistItem).where(WatchlistItem.ticker == ticker)
+        ).first()
+        company_name = (
+            (company.company_name if company else None)
+            or (watchlist_item.company_name if watchlist_item else None)
+            or COMPANY_NAME_ALIASES.get(ticker)
+        )
         collected: list[Event] = []
         seen_urls: set[str] = set()
         seen_titles: set[str] = set()
@@ -302,6 +312,8 @@ class CollectionService:
                 logger.warning("Provider %s failed for %s: %s", provider.name, ticker, exc)
                 continue
             for raw_event in raw_events:
+                if not raw_event.company_name:
+                    raw_event.company_name = company_name
                 title_key = _normalize_title(raw_event.title)
                 if raw_event.url in seen_urls or title_key in seen_titles:
                     continue

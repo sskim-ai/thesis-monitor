@@ -204,7 +204,7 @@ async def test_daily_monitor_uses_structured_price_rules() -> None:
         assert assessment.status == "no_material_change"
         assert assessment.price_context.rule_evaluation.status == "confirmation_triggered"
         assert "상향 돌파" in assessment.price_view
-        assert any(item["provider"] == "ohlcv-analyst" for item in assessment.evidence)
+        assert not any(item["event_type"] == "price_rule" for item in assessment.evidence)
         delivery = session.exec(
             select(NotificationDelivery).where(NotificationDelivery.ticker == "PRC1")
         ).one()
@@ -237,6 +237,7 @@ async def test_price_invalidation_requires_review_without_automatic_deactivation
         )
 
         assessment = next(item for item in result.assessments if item.ticker == "PRC2")
-        assert assessment.status == "invalidation_candidate"
+        assert assessment.status == "no_material_change"
+        assert assessment.price_context.rule_evaluation.status == "invalidation_triggered"
         item = session.exec(select(WatchlistItem).where(WatchlistItem.ticker == "PRC2")).one()
         assert item.active is True

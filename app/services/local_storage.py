@@ -85,6 +85,12 @@ def export_assessment_history(session: Session, ticker: str) -> None:
                 "confirmed_warnings": json.loads(assessment.confirmed_warnings),
                 "new_warnings": json.loads(assessment.new_warnings),
                 "open_warnings": json.loads(assessment.open_warnings),
+                "open_confirmed_warnings": json.loads(
+                    assessment.open_confirmed_warnings
+                ),
+                "persistent_watch_risks": json.loads(
+                    assessment.persistent_watch_risks
+                ),
                 "warning_states": json.loads(assessment.warning_states),
                 "watch_items": json.loads(assessment.watch_items),
                 "used_event_fingerprints": json.loads(assessment.used_event_fingerprints),

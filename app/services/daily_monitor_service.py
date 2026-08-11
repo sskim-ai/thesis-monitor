@@ -281,6 +281,12 @@ async def run_daily_monitor(
                     confirmed_warnings=json.dumps(result.confirmed_warnings, ensure_ascii=False),
                     new_warnings=json.dumps(result.new_warnings, ensure_ascii=False),
                     open_warnings=json.dumps(result.open_warnings, ensure_ascii=False),
+                    open_confirmed_warnings=json.dumps(
+                        result.open_confirmed_warnings, ensure_ascii=False
+                    ),
+                    persistent_watch_risks=json.dumps(
+                        result.persistent_watch_risks, ensure_ascii=False
+                    ),
                     warning_states=json.dumps(result.warning_states, ensure_ascii=False),
                     watch_items=json.dumps(result.watch_items, ensure_ascii=False),
                     used_event_fingerprints=json.dumps(
@@ -330,6 +336,12 @@ async def run_daily_monitor(
                 )
                 assessment.new_warnings = json.dumps(result.new_warnings, ensure_ascii=False)
                 assessment.open_warnings = json.dumps(result.open_warnings, ensure_ascii=False)
+                assessment.open_confirmed_warnings = json.dumps(
+                    result.open_confirmed_warnings, ensure_ascii=False
+                )
+                assessment.persistent_watch_risks = json.dumps(
+                    result.persistent_watch_risks, ensure_ascii=False
+                )
                 assessment.warning_states = json.dumps(
                     result.warning_states, ensure_ascii=False
                 )

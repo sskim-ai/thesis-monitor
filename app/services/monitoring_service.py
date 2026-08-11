@@ -129,6 +129,12 @@ def assessment_to_read(assessment: ThesisAssessment) -> ThesisAssessmentRead:
         confirmed_warnings=_json_list(assessment.confirmed_warnings),
         new_warnings=_json_list(getattr(assessment, "new_warnings", "[]")),
         open_warnings=_json_list(getattr(assessment, "open_warnings", "[]")),
+        open_confirmed_warnings=_json_list(
+            getattr(assessment, "open_confirmed_warnings", "[]")
+        ),
+        persistent_watch_risks=_json_list(
+            getattr(assessment, "persistent_watch_risks", "[]")
+        ),
         warning_states=_json_dict_list(getattr(assessment, "warning_states", "[]")),
         watch_items=_json_list(assessment.watch_items),
         used_event_fingerprints=_json_list(assessment.used_event_fingerprints),

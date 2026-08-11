@@ -36,6 +36,11 @@ class Settings(BaseSettings):
     valuation_distribution_warning_threshold: float = 0.7
     valuation_snapshot_max_age_days: int = 7
     valuation_provider_timeout_seconds: float = 15.0
+    macro_vix_material_pct: float = 5.0
+    macro_real_yield_material_bp: float = 5.0
+    macro_nominal_yield_material_bp: float = 7.0
+    macro_credit_spread_material_bp: float = 10.0
+    macro_other_material_pct: float = 1.0
     financial_operating_margin_upper_bound: float = 60.0
     macro_monitor_enabled: bool = True
     macro_provider_timeout_seconds: float = 20.0

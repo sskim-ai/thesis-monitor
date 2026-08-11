@@ -74,6 +74,8 @@ class MacroThesisRead(BaseModel):
     horizon: str
     status: str
     today_signal: str = "neutral"
+    today_signal_strength: str = "none"
+    today_signal_evidence: list[str] = Field(default_factory=list)
     today_signal_rationale: str = ""
     today_signal_date: date | None = None
     confidence: float

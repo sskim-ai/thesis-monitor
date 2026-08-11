@@ -101,6 +101,8 @@ def _ensure_sqlite_columns() -> None:
             "confirmed_warnings": "TEXT DEFAULT '[]'",
             "new_warnings": "TEXT DEFAULT '[]'",
             "open_warnings": "TEXT DEFAULT '[]'",
+            "open_confirmed_warnings": "TEXT DEFAULT '[]'",
+            "persistent_watch_risks": "TEXT DEFAULT '[]'",
             "warning_states": "TEXT DEFAULT '[]'",
             "watch_items": "TEXT DEFAULT '[]'",
             "used_event_fingerprints": "TEXT DEFAULT '[]'",
@@ -124,6 +126,8 @@ def _ensure_sqlite_columns() -> None:
         },
         "macrothesis": {
             "today_signal": "VARCHAR DEFAULT 'neutral'",
+            "today_signal_strength": "VARCHAR DEFAULT 'none'",
+            "today_signal_evidence": "TEXT DEFAULT '[]'",
             "today_signal_rationale": "TEXT DEFAULT ''",
             "today_signal_date": "DATE",
         },

@@ -105,6 +105,16 @@ NOISE_TERMS = (
 )
 
 MATERIAL_PROVIDERS = {"opendart", "sec_edgar", "company_ir"}
+KNOWN_ENTITY_ALIASES = {
+    "GOOGL": ("alphabet", "google", "youtube", "waymo", "deepmind", "android", "gemini"),
+    "TSLA": ("tesla", "robotaxi", "cybercab", "full self-driving", "fsd"),
+    "TSM": ("tsmc", "taiwan semiconductor"),
+    "MU": ("micron",),
+    "SNDK": ("sandisk", "san disk"),
+    "RXRX": ("recursion pharmaceuticals", "recursion"),
+    "WRD": ("weride",),
+    "CRCL": ("circle internet", "usdc"),
+}
 
 
 def _mentions_company(raw_event: RawEvent, text: str) -> bool:
@@ -120,6 +130,8 @@ def _mentions_company(raw_event: RawEvent, text: str) -> bool:
         return True
     company = (raw_event.company_name or "").lower().strip()
     if company and company in text:
+        return True
+    if any(alias in text for alias in KNOWN_ENTITY_ALIASES.get(raw_event.ticker.upper(), ())):
         return True
     generic_tokens = {
         "company",
@@ -166,6 +178,9 @@ def _has_standalone_mou(text: str) -> bool:
 
 
 def classify_event(raw_event: RawEvent) -> EventType:
+    relevance_text = " ".join(
+        [raw_event.title, raw_event.summary, raw_event.source]
+    ).lower()
     text = " ".join(
         [
             raw_event.title,
@@ -176,7 +191,7 @@ def classify_event(raw_event: RawEvent) -> EventType:
         ]
     ).lower()
 
-    if not _mentions_company(raw_event, text):
+    if not _mentions_company(raw_event, relevance_text):
         return EventType.non_thesis_noise
 
     flagged_type = _flag_event_type(raw_event, text)

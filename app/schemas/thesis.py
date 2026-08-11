@@ -280,9 +280,12 @@ class ValuationSnapshot(BaseModel):
     forward_pe_status: str = "unavailable"
     price_to_book: float | None = None
     price_to_book_status: str = "unavailable"
+    forward_price_to_book: float | None = None
+    forward_price_to_book_status: str = "unavailable"
     trailing_basis: str = "LTM EPS"
     forward_basis: str | None = None
     book_basis: str = "latest reported book value"
+    forward_book_basis: str | None = None
     provider: str = "unavailable"
     valuation_data_as_of: str | None = None
     denominator_as_of: str | None = None
@@ -344,6 +347,8 @@ class ThesisAssessmentRead(BaseModel):
     confirmed_warnings: list[str] = Field(default_factory=list)
     new_warnings: list[str] = Field(default_factory=list)
     open_warnings: list[str] = Field(default_factory=list)
+    open_confirmed_warnings: list[str] = Field(default_factory=list)
+    persistent_watch_risks: list[str] = Field(default_factory=list)
     warning_states: list[dict[str, object]] = Field(default_factory=list)
     watch_items: list[str] = Field(default_factory=list)
     used_event_fingerprints: list[str] = Field(default_factory=list)

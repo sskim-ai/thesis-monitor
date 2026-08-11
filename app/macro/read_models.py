@@ -81,6 +81,8 @@ def macro_thesis_to_read(row: MacroThesis) -> MacroThesisRead:
         horizon=row.horizon,
         status=row.status,
         today_signal=row.today_signal,
+        today_signal_strength=row.today_signal_strength,
+        today_signal_evidence=_list(row.today_signal_evidence),
         today_signal_rationale=row.today_signal_rationale,
         today_signal_date=row.today_signal_date,
         confidence=row.confidence,

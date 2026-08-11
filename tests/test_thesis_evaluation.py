@@ -44,10 +44,10 @@ def test_trusted_explicit_invalidation_deactivates() -> None:
     assert result.should_deactivate is True
 
 
-def test_untrusted_invalidation_requires_review() -> None:
+def test_untrusted_invalidation_signal_requires_review_without_invalidation() -> None:
     result = evaluate_thesis(_thesis(), [_event("google_news_rss")], PriceContext())
 
-    assert result.status == AssessmentStatus.invalidation_candidate
+    assert result.status == AssessmentStatus.needs_review
     assert result.should_deactivate is False
 
 

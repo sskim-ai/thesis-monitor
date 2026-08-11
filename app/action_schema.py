@@ -222,6 +222,17 @@ def _simplify_assessment_write_action(schema: dict[str, object]) -> None:
     }
 
 
+def _ensure_object_properties(value: object) -> None:
+    if isinstance(value, dict):
+        if value.get("type") == "object" and "properties" not in value:
+            value["properties"] = {}
+        for child in value.values():
+            _ensure_object_properties(child)
+    elif isinstance(value, list):
+        for child in value:
+            _ensure_object_properties(child)
+
+
 def build_action_schema(app: FastAPI) -> dict[str, object]:
     schema = deepcopy(app.openapi())
     schema["info"] = {
@@ -242,4 +253,5 @@ def build_action_schema(app: FastAPI) -> dict[str, object]:
     _simplify_thesis_event_action(schema)
     _simplify_monitor_stock_action(schema)
     _simplify_assessment_write_action(schema)
+    _ensure_object_properties(schema)
     return schema
