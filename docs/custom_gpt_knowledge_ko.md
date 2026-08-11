@@ -1,150 +1,634 @@
-# Thesis Monitor Knowledge Guide
+# Investment Thesis Analysis & Monitoring Knowledge Guide
 
-## 시스템 목적
+## 1. 시스템 목적
 
-Thesis Monitor는 특정 종목의 투자 논리와 근거를 버전별로 저장하고 매일 점검한다. 동시에
-금리, 물가, 유동성, 신용, 유가, 환율, 미국 주식시장, 빅테크 실적과 중앙은행 이벤트를
-수집해 Macro Thesis와 종목별 영향을 평가한다.
+Thesis Monitor는 다음 lifecycle을 지원한다.
 
-이 시스템은 리서치와 의사결정 보조 도구이며 주문을 실행하지 않는다. 결과는 투자 권유나
-수익 보장이 아니다.
+`Initial Research → Thesis Formation → Optional Monitoring Registration → Ongoing Monitoring`
 
-## 데이터 계층
+1. 처음 보는 기업의 사업, 산업, 재무, 이익의 질, 시장 기대, Valuation, 촉매와 리스크를 분석해 초기 투자 논리를 수립한다.
+2. 사용자가 원하면 투자 논리, 검증 지표, 기대 수준, 가격 규칙과 거시 노출을 버전형으로 저장한다.
+3. 이후 공시, 실적, 사건, 가격과 거시환경 변화로 투자 논리가 강화·유지·약화·무효화되는지 점검한다.
 
-### 종목 계층
+이 시스템은 리서치와 의사결정 보조 도구이며 주문을 실행하지 않는다. 결과는 투자 권유나 수익 보장이 아니다.
 
-- 모니터링 종목과 활성 여부
-- 버전이 있는 투자 Thesis
-- 강화·약화·무효화 조건
-- 날짜별 평가와 누적 근거
-- 신규 매수자, 기존 보유자, 가격 위치 관점
-- Thesis 버전별 거시 exposure
+핵심 철학은 다음 세 질문을 구분한 뒤 결합하는 것이다.
 
-### 거시 계층
+- **무엇을 살 것인가**: 기업가치와 투자 논리
+- **언제 가격이 유리한가**: 실제 확보된 가격·OHLCV와 Valuation
+- **언제 기존 판단을 바꿀 것인가**: 투자 논리 모니터링
 
-- FRED: 미국 금리, 실질금리, 기대인플레이션, 신용스프레드, VIX, 유가, 달러, 유동성
-- EIA: 미국 원유 재고, 생산, 정제 가동률
-- ECOS: 한국은행 기준금리, 원/달러 환율, CPI, M2 핵심 통계
-- Federal Reserve: 통화정책 발표와 공식 문서
-- Finnhub: 주요 빅테크 실적 일정
-- ohlcv-analyst: 미국 지수·섹터 ETF와 빅테크 가격 변화
+좋은 회사와 좋은 주식은 다르며, 좋은 주식과 좋은 매수가격도 다르다.
 
-## 거시 레짐의 여섯 축
+## 2. Fact / Interpretation / Unknown
 
-1. `growth_momentum`: 경기와 수요의 개선 또는 둔화
-2. `inflation_pressure`: 물가 압력 상승 또는 하락
-3. `liquidity_condition`: 중앙은행·달러 유동성 환경
-4. `financial_conditions`: 실질금리와 신용 여건
-5. `risk_appetite`: 주식, 변동성, 시장 폭의 위험선호
-6. `earnings_momentum`: 기업 실적과 가이던스 방향
+### Confirmed Facts
 
-각 축은 -2에서 +2로 평가한다. 레짐은 하루 변동으로 쉽게 바꾸지 않으며, 근거가 부족한
-전환은 `provisional` 또는 판단 유보로 표시한다.
+공식 공시, 회사 IR, 거래소, 중앙은행, 공식 통계와 검증된 구조화 자료로 확인한 사실이다. 출처, 기준일과 보고 기간이 없는 정량 판단은 확정 사실로 취급하지 않는다.
 
-## Macro Thesis
+### Inferred Implications
 
-기본적으로 다음 경쟁 가설을 동시에 유지한다.
+Fact에서 파생한 투자적 해석이다. 사실처럼 단정하지 않고 어떤 근거에서 추론했는지 밝힌다.
 
-- 미국 연착륙과 점진적 디스인플레이션
-- 연준 정책경로와 장기 실질금리
-- AI CAPEX와 반도체 수요
-- 중국 경기와 한국 수출 사이클
-- 유가와 공급충격
+### Unknowns
 
-상태는 `strengthening`, `intact`, `weakening`, `structural_break`로 표현한다. 단일 지표가
-아니라 반복성, 지속성, 독립적인 교차 근거, 시장 반응을 함께 평가한다.
+고객 비중, 수주 마진, 수율, 고객 재고, 투자수익률, M&A 시너지처럼 확인되지 않은 값은 임의로 채우지 않는다. 대신 무엇을 모르는지, 왜 중요한지, 어떤 자료가 확인되면 판단할 수 있는지를 제시한다.
 
-## 종목별 거시 영향
+### Source Hierarchy
 
-거시 변화는 종목마다 다른 전달 경로를 가진다.
+1. OpenDART, SEC, 거래소, 회사 공식 공시
+2. 회사 IR, earnings release, conference call과 경영진의 직접 발언
+3. 중앙은행, 정부와 공식 통계
+4. 구조화된 시장 추정치와 신뢰도 높은 리서치
+5. 주요 언론과 통신사
+6. 루머, 커뮤니티와 출처 불명 자료는 원칙적으로 제외
 
-- 실질금리 상승: 장기 성장주의 valuation에는 대체로 부정적
-- 원/달러 상승: 수출 비중에는 긍정적일 수 있으나 수입 비용과 해외생산 조건을 확인
-- 유가 상승: 항공·운송에는 비용 부담, 에너지 생산자에는 가격 효과 가능
-- 신용스프레드 확대: 자금조달 민감 기업과 경기민감주에 부정적
-- Hyperscaler CAPEX 확대: HBM·AI 반도체 수요 Thesis에 긍정적
+회사 동일성 검증이 사건 분류보다 먼저다. 증권사 의견은 회사 가이던스가 아니며, 산업 공급 부족 전망은 실제 고객 주문이 아니다.
 
-방향만 단정하지 않고 exposure의 `weight`, `channel`, `condition`, `horizon`을 적용한다.
-영향 결과는 `strengthen`, `weaken`, `mixed`, `neutral`과 magnitude 0에서 5로 저장된다.
+## 3. Initial Investment Thesis Framework
 
-## 데이터 품질
+초기 분석은 다음 순서로 진행한다.
 
-- `fresh`: 기대 빈도 안에 있는 최신 데이터
-- `stale`: 기대 갱신 주기를 지난 데이터
-- `partial`: 일부 provider가 누락된 브리핑
-- `provisional`: 신뢰도나 지속성이 부족한 임시 레짐
-- `revised`: 과거 발표치가 수정된 데이터
+`Fact → 사업 구조 → 산업·경쟁 위치 → 재무와 이익의 질 → 시장 기대 → 핵심 투자 논리 → 검증 지표 → Valuation → 촉매 → 리스크 → Macro exposure → 가격 위치 → 신규 관찰자 관점 → Kill Condition → 다음 확인 숫자`
 
-출처 누락이나 품질 경고가 있으면 결론의 강도를 낮춘다. 출처 URL과 기준 날짜가 없는
-정량 판단은 확정 사실로 취급하지 않는다.
+### 회사와 사업 구조
 
-## 공식 잠정실적
+- 실제 돈을 버는 사업과 사업부별 매출·이익
+- 고객, 지역, 산업과 규제 노출
+- 경쟁력, 경제적 해자, 기술·원가·유통 우위
+- 반복매출, 사이클, 프로젝트, 금융수익 등 수익 모델
+- 경영진, 자본배분, 배당·자사주·희석
 
-OpenDART의 공식 잠정실적 공시가 문서 동일성, 보고 기간, 단위, 표의 행·열 의미와 산술
-검증을 통과하면 `official provisional earnings`로 취급한다. 이는 뉴스나 미확인 추정치가
-아니며 최신 매출, 영업이익, 순이익, 영업이익률, 성장률과 최근 4개 분기 EPS/PER의 입력으로
-사용할 수 있다. 같은 분기의 정식 재무제표가 들어오면 정식 수치가 잠정 수치를 대체하며
-중복 계산하지 않는다.
+### 산업과 포지셔닝
 
-잠정실적에 직접 공시되지 않은 자기자본, BVPS, PBR, 현금, 부채, 현금흐름, FCF, CAPEX,
-ROIC, 재고, 매출채권과 순부채는 최신 정식 재무제표 기준을 유지한다. 연결 당기순이익만
-있고 보통주 귀속 이익이나 신뢰 가능한 주식수 기준이 없으면 EPS를 임의 계산하지 않는다.
-이 경우에도 hard validation을 통과한 매출, 영업이익, 영업이익률과 QoQ·YoY 성장률은 최신
-실적 문맥으로 사용한다. 즉 `earnings context 사용 가능`과 `EPS/PER 산출 가능`은 별도다.
-사용자 답변에는 필요한 경우 `최근 분기 잠정실적의 매출·영업이익을 반영했습니다`라고 짧게
-알리고 내부 snapshot 이름은 노출하지 않는다.
+- 구조 성장인지 경기·재고 사이클인지
+- 정책·규제·유동성 수혜인지 실제 수요 성장인지
+- 공급 부족, 경쟁 심화, 기술 전환, 고객 협상력
+- 시장 점유율과 경쟁사 대비 가격·품질·원가 위치
+- 테마 과열과 실적 전환 사이의 간격
 
-## Valuation 기준 비교
+### 핵심 투자 논리
 
-PER, PBR, fPER, fPBR의 공급자 값과 자체 계산값은 숫자 차이보다 기준의 비교 가능성을 먼저
-확인한다. 주요 기준은 trailing/forward 기간, TTM/NTM/FY1, GAAP/조정 이익, 지배주주·보통주
-귀속 여부, basic/diluted, 보통주·우선주·ADR·주식 종류, 통화와 denominator 기준일이다.
+핵심 논리는 1~3개로 제한한다. 각 논리에는 다음이 있어야 한다.
 
-- `comparable`: 같은 기준이 충분히 확인되어 수치 차이를 비교할 수 있음
-- `not_comparable`: 조정 이익과 GAAP, NTM과 FY1, 보통주와 ADR처럼 기준이 다름
-- `insufficient_metadata`: 공급자 배수의 정확한 기준을 확인할 수 없음
-- `structural_conflict`: 같은 기준임이 확인됐는데 양수 PER와 음수 EPS처럼 구조적으로 모순됨
+- 왜 기업가치에 중요한가
+- 어떤 정량·정성 데이터가 증명하는가
+- 어떤 조건에서 약해지는가
+- 시장이 이미 얼마나 반영했는가
 
-공식 재무로 계산한 신뢰 가능한 배수가 있으면 사용자 답변의 canonical 값으로 우선한다.
-기준이 불명확한 공급자 값은 audit용 교차검증 자료이며 공식-derived 값을 덮어쓰지 않는다.
-실제 denominator가 없으면 배수에서 EPS/BVPS를 역산하지 않는다. 역사적 percentile도 과거
-분포와 같은 회계·주식 기준의 현재 배수만 사용한다. 사용자에게는 비교 가능한 진짜 충돌이
-판단을 제한할 때만 자연어 경고를 보여준다.
+Initial Analysis는 전일 대비 delta가 아니다. 초기 논리, 기대 수준, 검증 지표, Early Warning과 Kill Condition을 설정한다.
 
-Forward 배수의 산출 기간이나 회계 기준이 불명확하면 보조 추정치와 숫자가 크게 달라도 이를
-확정적인 데이터 충돌로 만들지 않는다. 다만 사용자에게 실제 표시하는 fPER와 보조 추정치의
-차이가 크면 `산출 기간이 명확하지 않아 참고 수준`이라는 한 줄 안내를 덧붙인다. 보조 추정치가
-없거나 차이가 작거나 fPER를 표시하지 않는 경우에는 이 안내도 생략한다.
+## 4. 재무 계산 Framework
 
-## 오전 모니터링
+수치는 통화, 단위, 기간, 연결·별도, 단일분기·누계, 지배주주 귀속과 주식 기준이 맞을 때만 비교한다.
 
-- 기본 실행: 매일 07:50 Asia/Seoul
-- 재수집: 08:05, 08:35
-- 공급자 하나의 실패는 전체 종목 모니터링을 중단시키지 않는다.
-- 오전에는 시장환경 종합과 활성 종목별 투자 논리 분석을 텔레그램으로 발송한다.
-- 개별 종목의 `no_material_change`도 저장하고 오전 종목별 분석에 포함한다.
-- SQLite와 `data/` 아래 JSON 기록에 날짜별 이력을 누적한다.
+### 성장률
 
-## Action 이름
+```text
+YoY Growth = (Current Period - Prior-year Period) / Prior-year Period
+QoQ Growth = (Current Quarter - Previous Quarter) / Previous Quarter
+CAGR = (Ending Value / Beginning Value)^(1 / Years) - 1
+```
 
-- `getHealth`: 서버 상태
-- `getProviderStatus`: 종목 자료 provider 상태
-- `monitorStock`: 종목별 상세 논리·검증 지표·짧은 신호·구조화된 `price_rules`를 버전형으로 등록 또는 갱신
-- `market_expectations`: 기준일의 시장 기대 수준과 이미 반영된 내용
-- `valuation_framework`: 종목별 적정 평가법과 핵심 입력값
-- `multiple_expansion_signals` / `multiple_compression_signals`: 멀티플 변화 조건
-- `listMonitoredStockSummaries`: 모니터링 목록과 종목별 핵심 투자 논리
-- `listMonitoredStocks`: 전체 상세 목록(대량 목록 조회에는 사용하지 않음)
-- `getMonitoredStock`: 특정 종목의 현재 Thesis
-- `stopMonitoringStock`: 이력을 보존하며 모니터링 중단
-- `getThesisAssessmentHistory`: 종목의 날짜별 평가
-- `getCompanyProfile`: 회사 기본 정보
-- `getEarningsCheckpoints`: 실적 점검 항목
-- `getThesisEvents`: Thesis 관련 최근 사건
-- `getMacroBriefing`: 최신 오전 거시 브리핑
-- `getMacroBriefingByDate`: 특정 날짜 거시 브리핑
-- `getMacroRegime`: 최신 거시 레짐
-- `getMacroTheses`: 경쟁 Macro Thesis 목록
-- `getMacroEvents`: 거시·정책·실적 이벤트
-- `getMacroProviderStatus`: 거시 provider 설정과 기능 상태
-- `getTickerMacroImpacts`: 특정 종목의 거시 영향 이력
+누계 실적과 단일분기 실적을 섞지 않는다. 기저효과와 인수합병·환율 영향을 분리한다.
+
+### 수익성
+
+```text
+Gross Margin = Gross Profit / Revenue
+Operating Margin = Operating Income / Revenue
+Net Margin = Net Income / Revenue
+EBITDA Margin = EBITDA / Revenue
+```
+
+마진 변화는 가격, 원가, 믹스, 가동률, 일회성 비용과 회계 분류로 나눠 본다.
+
+### 현금흐름
+
+```text
+FCF = Operating Cash Flow - Capex
+FCF Margin = FCF / Revenue
+FCF Yield = TTM FCF / Market Cap
+Capex Intensity = Capex / Revenue
+```
+
+성장 Capex와 유지 Capex를 구분할 수 없으면 그 한계를 밝힌다. 순이익 증가가 FCF로 이어지는지 확인한다.
+
+### 운전자본
+
+```text
+DSO = Average Accounts Receivable / Revenue × Days
+Inventory Days = Average Inventory / COGS × Days
+DPO = Average Accounts Payable / COGS × Days
+CCC = DSO + Inventory Days - DPO
+```
+
+매출보다 매출채권이나 재고가 빠르게 늘면 수요의 질과 현금 회수를 재검토한다.
+
+### ROE / ROIC
+
+```text
+ROE = Common-shareholder Net Income / Average Common Equity
+NOPAT = EBIT × (1 - Effective Tax Rate)
+Invested Capital = Equity + Interest-bearing Debt - Excess Cash
+ROIC = NOPAT / Average Invested Capital
+ROIC Spread = ROIC - WACC
+```
+
+ROE 상승이 레버리지 확대 때문인지 영업 수익성 개선 때문인지 구분한다. ROIC가 자본비용을 지속해서 넘는지가 장기 가치 창출의 핵심이다.
+
+### 부채·유동성
+
+```text
+Net Debt = Interest-bearing Debt - Cash
+Net Debt / EBITDA = Net Debt / TTM EBITDA
+Interest Coverage = EBIT / Interest Expense
+Current Ratio = Current Assets / Current Liabilities
+```
+
+은행·보험·금융부문 부채는 일반 제조기업의 순차입금과 같은 방식으로 해석하지 않는다. 만기 구조, 이자율, 담보, covenant와 유동성 원천을 함께 본다.
+
+### EPS / BVPS
+
+```text
+EPS = Net Income attributable to common shareholders / Weighted Average Diluted Shares
+BVPS = Common Equity attributable to parent / Common Shares Outstanding
+```
+
+연결 총순이익만 있고 비지배지분과 보통주 귀속을 확인할 수 없으면 EPS를 임의 계산하지 않는다. 주식분할, 증자, 소각, 전환증권, ADR ratio와 share class를 확인한다.
+
+### Valuation
+
+```text
+PER = Price / TTM EPS
+PBR = Price / BVPS
+Forward PER = Price / Expected EPS
+Enterprise Value = Market Cap + Debt + Preferred Stock + Minority Interest - Cash
+EV/EBITDA = Enterprise Value / TTM EBITDA
+EV/Sales = Enterprise Value / Revenue
+```
+
+EPS가 0 이하이면 PER는 `N/M`이다. 실제 denominator가 없으면 배수에서 EPS·BVPS를 역산하지 않는다.
+
+## 5. Earnings Quality
+
+단순 EPS 성장보다 이익이 반복 가능하고 현금으로 전환되는지를 본다.
+
+- 매출 성장의 가격·물량·믹스 구성
+- Gross/Operating Margin과 정상화 가능성
+- 영업현금흐름과 FCF 동반 여부
+- 재고, 매출채권, 계약자산과 운전자본
+- Capex와 이후 매출·ROIC
+- 주식보상, 증자, 전환증권과 완전희석 주당가치
+- 기타손익, 자산매각, 세금효과와 일회성 이익
+- 회계정책 변경과 segment 재분류
+
+```text
+매출 증가 + 매출채권 급증 + FCF 악화
+→ 성장의 질과 회수 가능성 의심
+
+순이익 증가 + 기타·일회성 이익 급증 + 영업이익 정체
+→ 정상화 이익을 별도로 검토
+
+Capex 급증 + 매출·가동률 정체 + ROIC 하락
+→ 성장투자의 경제성 경고
+```
+
+## 6. Market Expectations & Surprise
+
+기업의 질과 시장 기대를 분리한다. 항상 가능한 범위에서 다음을 비교한다.
+
+`Actual vs Consensus vs Guidance vs Price Reaction`
+
+```text
+Surprise = Actual - Consensus
+```
+
+Historical surprise 분산이 실제 있을 때만 정규화 점수를 계산한다. 자료가 없으면 임의의 Surprise Score를 만들지 않는다.
+
+시장 기대 수준은 다음 enum을 사용한다.
+
+- `depressed`
+- `low`
+- `balanced`
+- `elevated`
+- `very_high`
+- `speculative`
+- `unknown`
+
+Initial Analysis에는 이미 반영된 기대, 상방 surprise, 하방 surprise를 포함한다. 좋은 절대 실적도 높은 기대에 못 미치면 주가에 부정적일 수 있고, EPS miss도 FCF beat와 가이던스 상향이 동반되면 해석이 달라질 수 있다.
+
+## 7. 업종별 Valuation Framework
+
+업종에 맞지 않는 PER/PBR을 억지로 primary metric으로 사용하지 않는다.
+
+### 반도체
+
+- Cycle-adjusted forward PER, EV/EBITDA, PBR, FCF, Capex, ROIC
+- ASP, 재고, 수율, 고객 CAPEX, 제품 믹스와 가동률
+- 장비·파운드리는 수주, backlog, 고객 CAPEX와 기술 전환을 함께 본다.
+
+### 메모리
+
+- 피크 이익의 낮은 PER를 저평가로 단정하지 않는다.
+- Mid-cycle earnings, PBR, FCF, 재고, DRAM/NAND/HBM ASP와 공급 discipline을 우선한다.
+- 현재 고마진이 반복 가능한지와 Capex가 다음 공급과잉을 만드는지 확인한다.
+
+### 자동차
+
+- PER, FCF Yield, ROE, 자동차부문 영업이익률
+- 판매량, 믹스, 인센티브, 재고, 환율과 전동화 Capex
+- 금융부문 부채와 제조부문 순현금을 분리한다.
+
+### 은행
+
+- PBR, ROE, NIM, 대손비용, CET1, 자본환원
+
+```text
+Justified PBR = (ROE - g) / (Cost of Equity - g)
+```
+
+### 보험·재보험
+
+- P/B-ROE, Combined Ratio, 투자수익, 자본적정성, 배당
+- 생명보험은 적용 가능한 경우 CSM·K-ICS, 손해보험·재보험은 손해율·사업비율·요율 cycle과 대형재해 손실
+
+```text
+Combined Ratio = Loss Ratio + Expense Ratio
+```
+
+### 해운·운송
+
+- Mid-cycle earnings, PBR, 선대·자산 가치, 운임, 순현금, FCF
+- Spot/계약 운임, 선복 공급, 가동률, 연료비와 Capex를 본다.
+- 피크 운임 기반 저PER 착시를 경계한다.
+
+### 지주회사
+
+```text
+NAV = Listed Stakes + Unlisted Value + Real Estate + Net Cash - Holding-company Debt
+Holding Discount = 1 - Market Cap / NAV
+```
+
+중복상장, 세금, 지배구조, 현금의 실제 환원 가능성과 자회사 가치 basis를 확인한다.
+
+### 소비재
+
+- PER, PEG, ROIC, 마진, 지역별 성장과 가격전가력
+- 판매량과 가격, 브랜드 투자, 채널 재고와 프로모션을 구분한다.
+
+```text
+PEG = Forward PER / Expected EPS Growth Rate(%)
+```
+
+### EPC·건설
+
+- 수주잔고, 신규수주, Book-to-Bill, 프로젝트 마진, 계약자산·미청구공사, FCF
+- 수주액보다 원가 escalation, 공정률, 손실충당금과 현금 회수를 중시한다.
+
+```text
+Book-to-Bill = New Orders / Revenue
+```
+
+### SaaS·반복매출
+
+- ARR growth, NRR, gross margin, Rule of 40, FCF와 SBC
+- ARR·NRR·churn이 실제 제공될 때만 계산한다.
+
+```text
+ARR Growth = (Current ARR - Previous ARR) / Previous ARR
+NRR = (Beginning Revenue + Expansion - Contraction - Churn) / Beginning Revenue
+Rule of 40 = Revenue Growth(%) + FCF Margin(%)
+```
+
+### Cloud·플랫폼
+
+- 성장률, segment margin, 영업레버리지, Capex, FCF와 ROIC
+- 광고, Cloud, 구독, marketplace 등 segment economics와 AI 투자 회수 경로를 분리한다.
+
+### 바이오
+
+- Risk-adjusted NPV, 임상 stage, 성공확률, 시장 규모, 현금 runway와 희석
+- 파트너십 upfront·milestone·royalty의 조건과 임상·규제 milestone을 본다.
+- 상업화 전 기업을 PER 중심으로 평가하지 않는다.
+
+### Robotaxi·Pre-profit
+
+- Scenario valuation, EV/Revenue, fleet utilization, 차량당 매출, contribution margin, cash burn
+- 규제 허가, 안전성, 지역 확장과 자금조달 runway를 시나리오별로 본다.
+- 단위경제성이 확인되지 않으면 먼 미래 매출을 단일 배수로 확정하지 않는다.
+
+## 8. Price / OHLCV Framework — Conditional
+
+가격 자료는 진입·관리 timing 도구이지 기업가치의 대체물이 아니다. RSI는 Valuation이 아니고 MACD는 기업가치가 아니다.
+
+실제 자료가 확보된 경우 기본 시간축은 일봉 500, 주봉 300, 월봉 100을 사용하고 다음을 본다.
+
+- 지지·저항은 한 점이 아니라 구간
+- 거래량과 거래대금 변화
+- RSI 과열·과매도 가능성
+- MACD level, histogram 방향, 0선 회복과 시간축 정렬
+- 현재 가격이 지지·확인·경고 구간 중 어디에 있는지
+
+```text
+RSI < 30 → 과매도 가능성, 가치 확정 아님
+RSI > 70 → 과열 가능성, 즉시 매도 신호 아님
+Volume Ratio = Current Volume / 20-day Average Volume
+```
+
+현재 public Action이나 응답에서 가격·OHLCV를 받지 못하면 RSI, MACD, 지지·저항과 목표·손절 가격을 생성하지 않는다. backend monitoring이 내부적으로 가격 공급자를 쓰는 것과 Custom GPT가 직접 조회할 수 있는지는 별개다.
+
+## 9. 신규 관찰자 / 보유자 / 손익비
+
+### 신규 관찰자
+
+- 현재 시장 기대와 Valuation
+- 진입 가격의 위험과 event risk
+- 다음 확인 데이터
+- 실제 가격 자료가 있을 때 지지·확인 구간과 손익비
+
+### 보유자
+
+- 핵심 투자 논리 유지 여부
+- 열린 warning과 비중 관리 관점
+- 추가매수 중단 조건
+- Early Warning과 Kill Condition
+
+사용자가 보유 사실을 말하지 않은 신규 분석에서는 보유자 관점을 짧게 처리할 수 있다.
+
+신뢰 가능한 Entry, Target, Stop이 있을 때만 손익비를 계산한다.
+
+```text
+Reward = Target - Entry
+Risk = Entry - Stop
+Reward/Risk = Reward / Risk
+```
+
+임의 Target·Stop·승률을 만들지 않는다. Expected Value는 실제 승률과 평균 손익 통계가 있을 때만 계산한다.
+
+### 가격 하락 해석
+
+```text
+투자 논리 유지 + 가격 하락 → Valuation 기회 가능
+투자 논리 약화 + 가격 하락 → Value Trap 가능
+```
+
+하락 원인을 시장, 업종 multiple, 기업 실적, 고객·주문, 경쟁, 희석, 회계, 부채와 규제로 분해한다.
+
+## 10. Risk / Early Warning / Kill Condition
+
+초기 분석에서 강화 조건, Early Warning과 Kill Condition을 설계한다.
+
+### 강화 조건
+
+- 핵심 매출·물량 성장
+- 마진과 FCF 개선
+- ROIC 상승
+- 고객 다변화와 실제 수주·양산
+- 재무구조 개선과 주당가치 증가
+
+### Early Warning
+
+- 재고·매출채권 증가
+- ASP·신규수주·가이던스 둔화
+- Capex 증가 대비 매출·가동률 부진
+- 고객 집중, 경쟁 심화, 희석 가능성
+
+### Kill Condition
+
+가격 stop과 기업가치 무효화 조건을 구분한다. Kill Condition은 고객, 수요, 마진, FCF, ROIC, 재무, 희석, 경쟁과 규제처럼 기업 fundamental 조건으로 정의한다. 근거 없는 숫자를 만들지 않는다.
+
+## 11. Multiple Expansion / Compression
+
+### Expansion
+
+- ROIC·마진·FCF 상승
+- 고객 다변화와 반복매출 증가
+- 재무구조 개선
+- 실적 가시성 상승과 위험 프리미엄 축소
+- 규제 불확실성 완화
+
+### Compression
+
+- 성장·마진·FCF 둔화
+- Capex 과잉과 ROIC 하락
+- 고객 집중과 경쟁 심화
+- 실질금리·자본비용 상승
+- 희석, 회계, 규제와 유동성 위험
+
+설정된 조건과 오늘 실제 충족된 조건은 다르다. 단일 뉴스로 configured signal이 자동 충족됐다고 판단하지 않는다.
+
+## 12. Macro Transmission
+
+거시환경은 기업 투자 논리에 실제 전달 경로가 있을 때 사용한다.
+
+주요 factor:
+
+- 미국 명목·실질금리
+- USD/KRW와 달러
+- WTI와 에너지 비용
+- Credit spread와 시장 변동성
+- 중국 경기와 한국 수출
+- Hyperscaler CAPEX
+- Memory price와 freight rate
+
+주요 channel은 demand, capex, cost, pricing, fx, discount_rate, funding과 liquidity다. 방향, weight, horizon과 발동 condition을 함께 본다.
+
+거시 레짐은 다음 여섯 축이다.
+
+1. `growth_momentum`
+2. `inflation_pressure`
+3. `liquidity_condition`
+4. `financial_conditions`
+5. `risk_appetite`
+6. `earnings_momentum`
+
+각 축은 -2에서 +2이며 0은 안정이 아니라 강한 방향 신호가 없다는 뜻이다. 누적 상태와 오늘 신호를 분리한다.
+
+- 실질금리 상승: 장기 성장주의 할인율에는 부정적, 은행 NIM에는 긍정 가능하나 신용비용 확인
+- 원화 약세: 수출 환산에는 긍정 가능하나 수입원가, 해외생산과 외국인 자금 흐름 확인
+- 유가 상승: 수요 회복형과 공급 충격형을 구분
+- 빅테크 CAPEX: GPU·ASIC → HBM → Foundry → 장비로 이어지는 실제 주문·매출 경로 확인
+
+## 13. 공식 잠정실적
+
+OpenDART 잠정실적이 문서 동일성, 보고기간, 단위, semantic mapping과 hard validation을 통과하면 `official provisional earnings`로 사용한다. 루머나 미확인 실적이 아니다.
+
+EPS 산출 가능 여부와 earnings context 사용 가능 여부를 분리한다.
+
+- hard-valid 매출·영업이익·순이익·영업이익률·QoQ·YoY는 최신 실적 문맥에 반영
+- 보통주 귀속 이익과 신뢰 가능한 주식수 또는 공식 EPS가 있을 때만 TTM EPS·PER에 반영
+- 같은 분기의 정식 재무제표가 오면 정식 수치가 잠정 수치를 대체하며 이중 계산 금지
+- 잠정실적에 없는 BVPS·PBR·현금·부채·FCF·ROIC·재고·매출채권·순부채는 정식 재무제표 기준 유지
+
+Soft outlier만으로 공식 수치를 버리지 않지만 기간·단위·산술·basis 오류는 hard failure로 차단한다.
+
+## 14. Valuation Basis Comparability
+
+두 배수의 숫자 차이를 보기 전에 같은 기준인지 확인한다.
+
+- trailing / forward와 TTM / NTM / FY1 / FY2
+- GAAP / adjusted / non-GAAP
+- owners-parent common / consolidated total
+- basic / diluted
+- ordinary / preferred / ADR / share class
+- currency, price date, denominator period와 as-of
+
+내부 상태는 `comparable`, `not_comparable`, `insufficient_metadata`, `structural_conflict`를 사용한다.
+
+- comparable일 때만 material discrepancy threshold를 적용한다.
+- basis가 다르면 숫자 차이만으로 conflict를 만들지 않는다.
+- metadata가 부족한 공급자 배수는 공식-derived 값을 덮어쓰지 않는다.
+- 같은 basis에서 양수 PER와 음수 EPS처럼 모순되면 structural conflict다.
+- Historical percentile은 과거 분포와 같은 회계·주식 기준의 current multiple을 사용한다.
+- Forward period가 다르거나 불명확하면 provider disagreement로 단정하지 않는다.
+
+표시되는 fPER와 보조 추정치의 차이가 크지만 산출 기간이 불명확하면 사용자에게 참고 수준이라고 한 줄만 알린다. 실제 denominator가 없으면 역산하지 않는다.
+
+ADR 환산은 검증된 ratio와 FX가 있을 때만 수행한다.
+
+```text
+Local Share Equivalent = ADR Price × ADR Ratio × FX
+ADR Premium = ADR-implied Local Value / Local Share Price - 1
+```
+
+## 15. Portfolio와 Optional Scoring
+
+여러 종목을 함께 볼 때 개별 기업 위험과 공통 거시 노출을 구분한다.
+
+- 반도체 집중: Hyperscaler CAPEX와 memory cycle
+- 한국 수출주 집중: USD/KRW와 중국 수요
+- 운송·항공 집중: 유가와 freight cycle
+
+종합 점수는 사용자가 요청하고 충분한 자료가 있을 때만 optional checklist로 사용할 수 있다.
+
+```text
+Business Quality
+Earnings Momentum
+Earnings Quality
+Balance Sheet
+Valuation
+Market Expectations
+Price/OHLCV
+Catalyst / Risk
+```
+
+점수는 기본 출력이 아니며 매수 신호가 아니다. 데이터가 부족하면 만들지 않는다.
+
+## 16. Monitoring 운영과 데이터 품질
+
+모니터링 상태는 `strengthened`, `no_material_change`, `mixed`, `weakened`, `invalidation_candidate`, `invalidated`, `needs_review`다. Initial Analysis에는 적용하지 않고 등록 후 변화 평가에 사용한다.
+
+- 회사 identity와 사건 relevance 검증이 material flag보다 먼저다.
+- 격리·기각된 과거 사건은 current event quality를 낮추지 않는다.
+- confirmed warning은 유효한 source event provenance가 있어야 한다.
+- 일일 평가는 사업 투자 논리, 구조적 위험, 시장 기대, 이익 추정치와 Valuation delta를 분리한다.
+- `valuation_context=neutral`은 사용자 상세 리포트에서 생략한다.
+- 공급자 하나의 실패는 전체 모니터링을 중단시키지 않는다.
+
+데이터 품질 상태:
+
+- `fresh` / `current`: 기대 빈도 안의 최신 자료
+- `partial`: 일부 component만 확인
+- `stale` / `refresh_due`: 갱신 주기를 지남
+- `validation_failed`: 현재 relevant data가 hard validation을 통과하지 못함
+- `unavailable`: 자료 없음
+- `conflicting`: 비교 가능한 같은 기준의 자료가 실질적으로 충돌
+
+정상 상태와 내부 flag는 사용자에게 반복하지 않는다. 실제 결론에 영향을 주는 component 문제만 자연어로 설명하고 상세 metadata는 audit에 보존한다.
+
+오전 모니터링은 기본 07:50 Asia/Seoul, 재수집은 08:05와 08:35다. `no_material_change`도 기록하며 이력은 SQLite와 `data/` 기록에 누적한다.
+
+## 17. Action Reference
+
+현재 public Action schema의 operationId만 사용한다.
+
+### Initial Research와 종목 조회
+
+- `getCompanyProfile`: 회사 기본 구조
+- `getEarningsCheckpoints`: 실적 체크포인트
+- `getThesisEvents`: 사건·공시·재무 근거와 선택적 backfill
+- `getMonitoredStock`: 저장된 현재 투자 논리
+- `getThesisAssessmentHistory`: 날짜별 평가
+- `listMonitoredStockSummaries`: 모니터링 목록과 핵심 논리
+- `listMonitoredStocks`: 전체 상세 목록, 반복 호출 지양
+
+### Monitoring 관리
+
+- `monitorStock`: 상세 투자 논리와 검증 지표를 버전형으로 등록·갱신
+- `stopMonitoringStock`: 이력 보존 후 중단
+
+### Macro
+
+- `getMacroBriefing`
+- `getMacroBriefingByDate`
+- `getMacroRegime`
+- `getMacroTheses`
+- `getMacroEvents`
+- `getTickerMacroImpacts`
+- `getMacroProviderStatus`
+
+### 운영 상태
+
+- `getHealth`
+- `getProviderStatus`
+
+직접 OHLCV를 조회하는 public operationId는 현재 schema에 없다. 다른 환경에서 실제 가격 자료가 응답으로 제공될 때만 Price/OHLCV framework를 적용한다.
+
+## 18. Initial Analysis 사용자 답변 Template
+
+### 핵심 결론
+
+회사를 사는 논리, 현재 기대 수준과 가장 중요한 리스크를 한두 문단으로 정리한다.
+
+### 1. 회사와 사업 구조
+
+실제 돈을 버는 사업, 사업부, 고객, 지역, 산업 exposure와 경쟁력.
+
+### 2. 산업과 포지셔닝
+
+구조 성장, 사이클, 정책, 공급 부족, 경쟁과 테마 과열 중 해당 항목.
+
+### 3. 재무와 이익의 질
+
+매출, 마진, 현금흐름, FCF, ROIC·ROE, 운전자본, Capex, 부채와 희석 중 중요한 것.
+
+### 4. 시장 기대
+
+기대 수준, 이미 반영된 내용, 상방·하방 surprise.
+
+### 5. 핵심 투자 논리 1~3개
+
+각 논리의 중요성, 증명할 데이터와 약화 조건.
+
+### 6. Valuation
+
+업종에 맞는 primary metric, 가능한 현재 multiple, 현재 위치와 확장·압축 조건. 실제 denominator가 있으면 PER/PBR/fPER/fPBR 계산식을 표시한다.
+
+### 7. 촉매
+
+단기, 중기, 장기 중 실제 중요한 촉매.
+
+### 8. 리스크
+
+구조, 재무, 경쟁, 고객, 규제와 희석.
+
+### 9. Early Warning / Kill Condition
+
+초기 경고와 기업가치 무효화 조건. 가격 stop과 구분한다.
+
+### 10. Macro Exposure
+
+실제 전달 경로가 중요한 factor만.
+
+### 11. 가격 관점
+
+실제 가격·OHLCV가 있을 때만 신규 관찰자와 보유자 관점을 제시한다.
+
+### 12. 다음 확인 숫자
+
+가장 중요한 1~3개.
+
+### 최종 한 줄
+
+어떤 숫자가 맞으면 논리가 강화되고 어떤 숫자가 깨지면 논리를 버려야 하는지 드러나게 한다.
