@@ -7,10 +7,8 @@ from sqlmodel import Session, select
 
 from app.database import engine, init_db
 from app.models.thesis import InvestmentThesis, ThesisAssessment
-from app.models.event import CanonicalIssue
-from app.models.financial import DataBackfillState, DividendHistory
 from app.models.watchlist import WatchlistItem
-from app.models.security import ProviderResponseCache, SecurityMaster
+from app.models.security import ProviderCallTelemetry, SecurityMaster
 from app.providers.registry import provider_statuses
 from app.services.daily_digest import build_daily_digest
 from app.services.daily_digest_renderer import render_daily_digest
@@ -80,8 +78,8 @@ def export_messages(run_date: date, output: Path) -> int:
                 "",
                 "## 부록. 14종목 데이터 커버리지",
                 "",
-                "| 종목 | Identity | Event | 정식/잠정 재무 | 최신성 | Consensus/주식수 | 배당/자사주/자본행위 | 역사/Forward | Foreign/ADR | 남은 gap |",
-                "|---|---|---|---|---|---|---|---|---|---|",
+                "| 종목 | 정식 재무 | 잠정실적 | 갱신 상태 | Consensus | Provider | 가격 | 이벤트 | 재무 | 역사 Valuation | Forward Valuation | 충돌 | Identity | Foreign | 남은 gap |",
+                "|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|",
             ]
         )
         for assessment in assessments:
@@ -92,37 +90,24 @@ def export_messages(run_date: date, output: Path) -> int:
             coverage = snapshot.get("data_coverage", {}) if isinstance(snapshot, dict) else {}
             if not isinstance(coverage, dict):
                 coverage = {}
-            state = session.get(DataBackfillState, assessment.ticker)
-            dividends = session.exec(
-                select(DividendHistory).where(DividendHistory.ticker == assessment.ticker)
-            ).all()
-            issues = session.exec(
-                select(CanonicalIssue).where(CanonicalIssue.ticker == assessment.ticker)
-            ).all()
             security = session.exec(
                 select(SecurityMaster).where(SecurityMaster.ticker == assessment.ticker)
             ).first()
-            pe_stats = snapshot.get("historical_pe_statistics") or {}
-            pb_stats = snapshot.get("historical_pb_statistics") or {}
-            history_years = max(
-                float(pe_stats.get("lookback_years") or 0) if isinstance(pe_stats, dict) else 0,
-                float(pb_stats.get("lookback_years") or 0) if isinstance(pb_stats, dict) else 0,
-            )
-            forward = (
-                f"fPER {snapshot.get('forward_pe_status', 'unavailable')} / "
-                f"fPBR {snapshot.get('forward_price_to_book_status', 'unavailable')}"
-            )
             reasons = coverage.get("reason_codes", [])
             gap = ", ".join(str(item) for item in reasons) if isinstance(reasons, list) and reasons else "없음"
-            financial_history = f"{state.backfill_years_available:.1f}년" if state else "확인 불가"
             sections.append(
-                f"| {assessment.ticker} | {coverage.get('identity_mapping', security.identity_quality if security else 'unavailable')} | "
-                f"{coverage.get('event_relevance', 'unavailable')} | "
-                f"{coverage.get('financial_full', 'unavailable')}/{coverage.get('financial_preliminary', 'unavailable')} ({financial_history}) | "
+                f"| {assessment.ticker} | {snapshot.get('latest_full_financial_period') or '없음'} | "
+                f"{snapshot.get('latest_preliminary_financial_period') or '없음'} | "
                 f"{coverage.get('financial_freshness', 'unavailable')} | "
-                f"{coverage.get('consensus', 'unavailable')}/{coverage.get('shares', 'unavailable')} | "
-                f"배당 {len(dividends)}·자사주 {coverage.get('buyback', 'unavailable')}·이슈 {len(issues)} | "
-                f"{history_years:.1f}년 {coverage.get('historical_valuation_quality', 'unavailable')} / {forward} | "
+                f"{snapshot.get('consensus_status', coverage.get('consensus', 'unavailable'))} | "
+                f"{snapshot.get('estimate_provider') or '없음'} | "
+                f"{coverage.get('price_quality', 'unavailable')} | "
+                f"{coverage.get('event_quality', 'unavailable')} | "
+                f"{coverage.get('financial_quality', 'unavailable')} | "
+                f"{coverage.get('historical_valuation_quality', 'unavailable')} | "
+                f"{coverage.get('forward_valuation_quality', 'unavailable')} | "
+                f"{snapshot.get('consensus_disagreement', False)} | "
+                f"{coverage.get('identity_mapping', security.identity_quality if security else 'unavailable')} | "
                 f"{coverage.get('filing_discovery_coverage', 'not_applicable')}/"
                 f"{coverage.get('statement_parsing_coverage', 'not_applicable')}/"
                 f"{coverage.get('per_share_mapping_coverage', 'not_applicable')} | {gap} |"
@@ -132,25 +117,38 @@ def export_messages(run_date: date, output: Path) -> int:
                 "",
                 "## 부록. Provider 커버리지",
                 "",
-                "| Provider | Enabled | Configured | 인증 설정 | 역할 | 테스트된 ticker | 최근 성공 | 최근 오류 |",
-                "|---|---|---|---|---|---:|---|---|",
+                "| Provider | Endpoint | Enabled | Configured | 최근 시도 | 최근 성공 | 성공 | 실패 | 최근 오류 유형 | 테스트 ticker |",
+                "|---|---|---|---|---|---|---:|---:|---|---:|",
             ]
         )
-        for status in provider_statuses():
-            cache_rows = session.exec(
-                select(ProviderResponseCache).where(
-                    ProviderResponseCache.provider == status.name
+        status_by_name = {status.name: status for status in provider_statuses()}
+        telemetry_rows = list(
+            session.exec(
+                select(ProviderCallTelemetry).order_by(
+                    ProviderCallTelemetry.provider,
+                    ProviderCallTelemetry.endpoint,
+                    ProviderCallTelemetry.ticker,
                 )
             ).all()
-            tested_tickers = len({row.ticker for row in cache_rows})
-            successes = [row.last_success_at for row in cache_rows if row.last_success_at]
-            errors = [row.last_error for row in cache_rows if row.last_error]
-            auth = ", ".join(status.required_settings) if status.required_settings else "없음/선택"
+        )
+        grouped: dict[tuple[str, str], list[ProviderCallTelemetry]] = {}
+        for row in telemetry_rows:
+            grouped.setdefault((row.provider, row.endpoint), []).append(row)
+        all_keys = set(grouped)
+        all_keys.update((name, "미기록") for name in status_by_name if not any(key[0] == name for key in grouped))
+        for provider, endpoint in sorted(all_keys):
+            rows = grouped.get((provider, endpoint), [])
+            status = status_by_name.get(provider)
+            attempts = [row.attempted_at for row in rows if row.attempted_at]
+            successes = [row.last_success_at for row in rows if row.last_success_at]
+            errors = [row.error_type for row in rows if row.error_type]
             sections.append(
-                f"| {status.name} | {status.enabled} | {status.configured} | {auth} | "
-                f"{', '.join(status.supported_data)} | {tested_tickers} | "
+                f"| {provider} | {endpoint} | {status.enabled if status else True} | "
+                f"{status.configured if status else True} | "
+                f"{max(attempts).isoformat() if attempts else '미기록'} | "
                 f"{max(successes).isoformat() if successes else '미기록'} | "
-                f"{errors[-1] if errors else '없음'} |"
+                f"{sum(row.success_count for row in rows)} | {sum(row.failure_count for row in rows)} | "
+                f"{errors[-1] if errors else '없음'} | {len({row.ticker for row in rows})} |"
             )
     output.parent.mkdir(parents=True, exist_ok=True)
     output.write_text("\n".join(sections) + "\n", encoding="utf-8")

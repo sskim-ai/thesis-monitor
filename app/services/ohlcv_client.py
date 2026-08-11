@@ -1,8 +1,9 @@
 import asyncio
 from collections.abc import Sequence
-from datetime import date, datetime
+from datetime import date, datetime, timezone
 
 import httpx
+from sqlmodel import Session
 
 from app.config import get_settings
 from app.schemas.thesis import (
@@ -12,6 +13,7 @@ from app.schemas.thesis import (
     PricePeriodSummary,
 )
 from app.services.market_session import market_session_for_ticker
+from app.services.provider_telemetry_service import ProviderTelemetryService
 
 
 PERIOD_COUNTS = {
@@ -108,6 +110,7 @@ class OhlcvClient:
         self,
         ticker: str,
         as_of: datetime | None = None,
+        session: Session | None = None,
     ) -> PriceContext:
         api_key = self.settings.ohlcv_api_key or self.settings.action_api_key
         headers = {"X-API-Key": api_key} if api_key else {}
@@ -119,6 +122,7 @@ class OhlcvClient:
             transport=self.transport,
         ) as client:
             for period, count in PERIOD_COUNTS.items():
+                started_at = datetime.now(timezone.utc)
                 try:
                     summary, bars = await self._request_period(
                         client, ticker, period, count
@@ -139,8 +143,28 @@ class OhlcvClient:
                                 context.daily_history.append(point)
                             else:
                                 context.valuation_history.append(point)
+                    if session is not None:
+                        ProviderTelemetryService().record(
+                            session,
+                            provider="ohlcv_analyst",
+                            endpoint=f"ohlcv_{period}",
+                            ticker=ticker,
+                            started_at=started_at,
+                            status="success",
+                        )
                 except (httpx.HTTPError, ValueError) as exc:
                     context.warnings.append(f"{period}: {type(exc).__name__}")
+                    if session is not None:
+                        ProviderTelemetryService().record(
+                            session,
+                            provider="ohlcv_analyst",
+                            endpoint=f"ohlcv_{period}",
+                            ticker=ticker,
+                            started_at=started_at,
+                            status="failed",
+                            error_type=type(exc).__name__,
+                            error_reason="ohlcv_request_failed",
+                        )
         context.available = any(item.actual_count > 0 for item in context.periods.values())
         daily = context.periods.get("daily")
         session = market_session_for_ticker(ticker, as_of)

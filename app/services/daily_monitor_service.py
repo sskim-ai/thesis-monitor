@@ -224,7 +224,12 @@ async def run_daily_monitor(
                 settings.monitor_lookback_days,
             )
             try:
-                price_context = await price_client.fetch_price_context(item.ticker)
+                if isinstance(price_client, OhlcvClient):
+                    price_context = await price_client.fetch_price_context(
+                        item.ticker, session=session
+                    )
+                else:
+                    price_context = await price_client.fetch_price_context(item.ticker)
             except Exception as exc:  # noqa: BLE001
                 price_context = PriceContext(warnings=[f"price_context: {type(exc).__name__}"])
             valuation_snapshot = await valuation_service.fetch(

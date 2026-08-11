@@ -45,8 +45,16 @@ class GoogleNewsRSSProvider(NewsProvider):
         self.timeout_seconds = timeout_seconds
         self.max_items = max_items
 
-    async def fetch_events(self, ticker: str, lookback_days: int) -> list[RawEvent]:
-        query = quote_plus(f"{ticker} stock company news")
+    async def fetch_events(
+        self,
+        ticker: str,
+        lookback_days: int,
+        *,
+        search_aliases: list[str] | None = None,
+    ) -> list[RawEvent]:
+        terms = search_aliases or [ticker]
+        query_text = " OR ".join(f'"{term}"' for term in terms[:4])
+        query = quote_plus(f"({query_text}) company stock")
         url = (
             "https://news.google.com/rss/search"
             f"?q={query}+when:{lookback_days}d&hl=en-US&gl=US&ceid=US:en"
@@ -105,7 +113,13 @@ class GoogleNewsRSSProvider(NewsProvider):
 class NewsAPIProvider(NewsProvider):
     name = "newsapi"
 
-    async def fetch_events(self, ticker: str, lookback_days: int) -> list[RawEvent]:
+    async def fetch_events(
+        self,
+        ticker: str,
+        lookback_days: int,
+        *,
+        search_aliases: list[str] | None = None,
+    ) -> list[RawEvent]:
         settings = get_settings()
         if not settings.newsapi_api_key:
             return []
@@ -121,12 +135,19 @@ class NaverNewsProvider(NewsProvider):
         self.timeout_seconds = timeout_seconds
         self.display = min(max(display, 1), 100)
 
-    async def fetch_events(self, ticker: str, lookback_days: int) -> list[RawEvent]:
+    async def fetch_events(
+        self,
+        ticker: str,
+        lookback_days: int,
+        *,
+        search_aliases: list[str] | None = None,
+    ) -> list[RawEvent]:
         settings = get_settings()
         if not settings.naver_client_id or not settings.naver_client_secret:
             return []
 
-        query = ticker.upper()
+        terms = search_aliases or [ticker]
+        query = " OR ".join(f'"{term}"' for term in terms[:4])
         params = {"query": query, "display": self.display, "start": 1, "sort": "date"}
         headers = {
             "X-Naver-Client-Id": settings.naver_client_id,

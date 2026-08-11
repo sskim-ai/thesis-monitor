@@ -6,6 +6,7 @@ from sqlmodel import Session, select
 from app.models.security import SecurityMaster
 from app.providers.base import RawEvent
 from app.services.security_master_service import SecurityMasterService
+from app.services.corporate_action_terms import is_buyback_text
 
 
 OFFICIAL_PROVIDERS = {"opendart", "sec_edgar", "company_ir", "mock"}
@@ -157,15 +158,6 @@ def extract_structured_flags(raw_event: RawEvent) -> None:
             raw_event.revenue_guidance_changed = True
     if any(term in text for term in ("margin guidance", "margin outlook", "마진 전망")):
         raw_event.margin_guidance_changed = True
-    buyback_terms = (
-        "share repurchase",
-        "stock repurchase",
-        "buyback",
-        "repurchase authorization",
-        "accelerated share repurchase",
-        "자사주 매입",
-        "자기주식 취득",
-    )
-    if any(term in text for term in buyback_terms) or re.search(r"\basr\b", text):
+    if is_buyback_text(text):
         raw_event.buyback_candidate = True
         raw_event.confirmed_buyback = raw_event.provider in OFFICIAL_PROVIDERS

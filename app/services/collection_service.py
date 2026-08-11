@@ -2,8 +2,9 @@ import asyncio
 import json
 import logging
 import re
-from datetime import date, timedelta
+from datetime import date, datetime, timedelta, timezone
 
+import httpx
 from sqlmodel import Session, select
 
 from app.config import get_settings
@@ -11,7 +12,7 @@ from app.models.company import Company
 from app.models.event import Event
 from app.models.financial import FinancialSnapshot
 from app.models.watchlist import WatchlistItem
-from app.providers.base import RawEvent
+from app.providers.base import NewsProvider, RawEvent
 from app.providers.mock import MockProvider
 from app.providers.registry import provider_priority
 from app.schemas.company import CompanyProfile
@@ -36,6 +37,8 @@ from app.services.financial_snapshot_service import upsert_financial_snapshot_fr
 from app.services.capital_action_service import CapitalActionService
 from app.services.dividend_history_service import DividendHistoryService
 from app.services.security_master_service import SecurityMasterService
+from app.services.news_query_service import NewsQueryService
+from app.services.provider_telemetry_service import ProviderTelemetryService
 from app.services.thesis_scoring import score_event
 from app.utils.tickers import COMPANY_NAME_ALIASES, normalize_ticker
 
@@ -67,7 +70,7 @@ def _quality_flags_from_lists(unknowns: list[str], implications: list[str]) -> t
     margin_quality_review = "margin" in text and "quality warning" in text
     financial_statement_basis_warning = (
         "basis" in text and "warning" in text
-    ) or "verify basis consistency" in text
+    ) or "verify basis consistency" in text or "financial validation warning" in text
     return margin_quality_review, financial_statement_basis_warning
 
 
@@ -76,8 +79,10 @@ def _sync_financial_quality_flags(event: Event) -> None:
         _json_list(event.unknowns),
         _json_list(event.inferred_implications),
     )
-    event.margin_quality_review = margin_quality_review
-    event.financial_statement_basis_warning = basis_warning
+    event.margin_quality_review = event.margin_quality_review or margin_quality_review
+    event.financial_statement_basis_warning = (
+        event.financial_statement_basis_warning or basis_warning
+    )
 
 
 def _event_to_schema(event: Event) -> ThesisEvent:
@@ -152,6 +157,9 @@ def _raw_event_to_model(raw_event: RawEvent) -> Event:
         title=raw_event.title,
         url=raw_event.url,
         raw_summary=raw_event.summary,
+        reporting_period_end=raw_event.reporting_period_end,
+        document_type=raw_event.document_type,
+        financial_scope=raw_event.financial_scope,
         event_type=event_type.value,
         keywords=json.dumps(raw_event.keywords),
         confirmed_facts=json.dumps(raw_event.confirmed_facts),
@@ -244,6 +252,11 @@ def _refresh_duplicate_event(duplicate: Event, event: Event) -> None:
     duplicate.source = event.source or duplicate.source
     duplicate.provider = event.provider or duplicate.provider
     duplicate.raw_summary = event.raw_summary or duplicate.raw_summary
+    duplicate.reporting_period_end = (
+        event.reporting_period_end or duplicate.reporting_period_end
+    )
+    duplicate.document_type = event.document_type or duplicate.document_type
+    duplicate.financial_scope = event.financial_scope or duplicate.financial_scope
     duplicate.event_type = event.event_type
     duplicate.keywords = event.keywords
     duplicate.confirmed_facts = event.confirmed_facts
@@ -304,6 +317,8 @@ class CollectionService:
         self.capital_action_service = CapitalActionService()
         self.security_service = SecurityMasterService()
         self.relevance_service = EventRelevanceService()
+        self.news_query_service = NewsQueryService()
+        self.telemetry = ProviderTelemetryService()
 
     def _connect_event_data(self, session: Session, event: Event) -> None:
         self.dividend_service.ingest_event(session, event)
@@ -312,18 +327,53 @@ class CollectionService:
 
     async def _fetch_provider_events(
         self,
+        session: Session,
         provider,
         ticker: str,
         lookback_days: int,
+        search_aliases: list[str],
     ) -> list[RawEvent]:
         settings = get_settings()
         attempts = max(1, settings.monitor_retry_attempts)
         last_error: Exception | None = None
         for attempt in range(attempts):
+            started_at = datetime.now(timezone.utc)
             try:
-                return await provider.fetch_events(ticker, lookback_days)
+                if isinstance(provider, NewsProvider):
+                    result = await provider.fetch_events(
+                        ticker,
+                        lookback_days,
+                        search_aliases=search_aliases,
+                    )
+                else:
+                    result = await provider.fetch_events(ticker, lookback_days)
+                self.telemetry.record(
+                    session,
+                    provider=provider.name,
+                    endpoint="fetch_events",
+                    ticker=ticker,
+                    started_at=started_at,
+                    status="success",
+                )
+                return result
             except Exception as exc:  # noqa: BLE001
                 last_error = exc
+                status_code = (
+                    str(exc.response.status_code)
+                    if isinstance(exc, httpx.HTTPStatusError)
+                    else None
+                )
+                self.telemetry.record(
+                    session,
+                    provider=provider.name,
+                    endpoint="fetch_events",
+                    ticker=ticker,
+                    started_at=started_at,
+                    status="failed",
+                    error_type=type(exc).__name__,
+                    error_code=status_code,
+                    error_reason="provider_fetch_failed",
+                )
                 if attempt + 1 < attempts:
                     delay = settings.monitor_retry_base_seconds * (2**attempt)
                     if delay > 0:
@@ -391,13 +441,20 @@ class CollectionService:
             or COMPANY_NAME_ALIASES.get(ticker)
         )
         target_security = self.security_service.ensure(session, ticker)
+        search_aliases = self.news_query_service.aliases(target_security)
         collected: list[Event] = []
         seen_urls: set[str] = set()
         seen_titles: set[str] = set()
         seen_fingerprints: set[str] = set()
         for provider in self.providers:
             try:
-                raw_events = await self._fetch_provider_events(provider, ticker, lookback_days)
+                raw_events = await self._fetch_provider_events(
+                    session,
+                    provider,
+                    ticker,
+                    lookback_days,
+                    search_aliases,
+                )
             except Exception as exc:  # noqa: BLE001
                 logger.warning("Provider %s failed for %s: %s", provider.name, ticker, exc)
                 continue

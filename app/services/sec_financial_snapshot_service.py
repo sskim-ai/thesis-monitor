@@ -1,12 +1,14 @@
 import json
 import re
+from html import unescape
 from datetime import date, datetime, timezone
 
 import httpx
 from sqlmodel import Session, select
 
 from app.models.financial import FinancialSnapshot
-from app.models.security import ProviderResponseCache
+from app.models.security import ProviderResponseCache, SecurityMaster
+from app.services.provider_telemetry_service import ProviderTelemetryService
 
 
 _CONCEPTS = {
@@ -38,6 +40,126 @@ _UNITS = {
     "common_shares_outstanding": ("shares",),
     "diluted_shares": ("shares",),
 }
+_NUMBER_WORDS = {
+    "one": 1.0,
+    "two": 2.0,
+    "three": 3.0,
+    "four": 4.0,
+    "five": 5.0,
+    "ten": 10.0,
+}
+
+
+def _strip_html(value: str) -> str:
+    value = re.sub(
+        r"<script.*?</script>|<style.*?</style>",
+        " ",
+        value,
+        flags=re.IGNORECASE | re.DOTALL,
+    )
+    value = re.sub(r"</(?:tr|p|div|li|br)>", "\n", value, flags=re.IGNORECASE)
+    value = re.sub(r"</(?:td|th)>", " | ", value, flags=re.IGNORECASE)
+    value = unescape(re.sub(r"<[^>]+>", " ", value))
+    return re.sub(r"[ \t\r\f\v]+", " ", value)
+
+
+def _foreign_period_end(text: str) -> date | None:
+    patterns = (
+        r"(?:quarter|period)\s+ended\s+([A-Z][a-z]+\s+\d{1,2},\s+20\d{2})",
+        r"for\s+the\s+(?:first|second|third|fourth)\s+quarter\s+ended\s+([A-Z][a-z]+\s+\d{1,2},\s+20\d{2})",
+    )
+    for pattern in patterns:
+        match = re.search(pattern, text, flags=re.IGNORECASE)
+        if not match:
+            continue
+        try:
+            return datetime.strptime(match.group(1), "%B %d, %Y").date()
+        except ValueError:
+            continue
+    return None
+
+
+def _scaled_financial(text: str, label: str) -> tuple[float | None, str | None]:
+    match = re.search(
+        rf"{label}\s+(?:was|were|of|totaled|reached)?\s*"
+        r"(?P<currency>NT\$|US\$|RMB|CNY|TWD|\$)?\s*"
+        r"(?P<value>[\d,.]+)\s*(?P<scale>billion|million)",
+        text,
+        flags=re.IGNORECASE,
+    )
+    if not match:
+        return None, None
+    value = float(match.group("value").replace(",", ""))
+    value *= 1_000_000_000 if match.group("scale").lower() == "billion" else 1_000_000
+    currency = (match.group("currency") or "").upper()
+    currency = "TWD" if currency == "NT$" else "USD" if currency in {"US$", "$"} else currency
+    return value, currency or None
+
+
+def _parse_foreign_financial_release(text: str) -> dict[str, object] | None:
+    plain = re.sub(r"\s+", " ", _strip_html(text)).strip()
+    period_end = _foreign_period_end(plain)
+    revenue, currency = _scaled_financial(plain, r"(?:consolidated\s+)?(?:net\s+)?revenue")
+    net_income, income_currency = _scaled_financial(plain, r"(?:consolidated\s+)?net\s+income")
+    eps_match = re.search(
+        r"diluted\s+(?:earnings\s+per\s+share|EPS)(?:\s+of|\s+was)?\s*"
+        r"(?:NT\$|US\$|RMB|CNY|TWD|\$)?\s*([\d,.]+)",
+        plain,
+        flags=re.IGNORECASE,
+    )
+    margin_match = re.search(
+        r"operating\s+margin(?:\s+for\s+the\s+quarter)?\s+(?:was|of)?\s*([\d.]+)%",
+        plain,
+        flags=re.IGNORECASE,
+    )
+    if period_end is None or (revenue is None and net_income is None):
+        return None
+    if revenue is not None and net_income is not None and abs(net_income) > revenue:
+        return None
+    return {
+        "period_end": period_end.isoformat(),
+        "revenue": revenue,
+        "net_income": net_income,
+        "diluted_eps": (
+            float(eps_match.group(1).replace(",", "").rstrip("."))
+            if eps_match
+            else None
+        ),
+        "operating_margin": float(margin_match.group(1)) if margin_match else None,
+        "currency": currency or income_currency,
+    }
+
+
+def _linked_documents(html: str) -> list[tuple[str, str]]:
+    links: list[tuple[str, str]] = []
+    for href, label in re.findall(
+        r"<a[^>]+href=[\"']([^\"']+)[\"'][^>]*>(.*?)</a>",
+        html,
+        flags=re.IGNORECASE | re.DOTALL,
+    ):
+        clean_label = re.sub(r"\s+", " ", _strip_html(label)).strip()
+        if re.search(
+            r"press\s+release|earnings|financial|results|quarterly",
+            clean_label,
+            flags=re.IGNORECASE,
+        ):
+            links.append((href, clean_label))
+    return links
+
+
+def _adr_ratio_from_text(text: str) -> float | None:
+    plain = re.sub(r"\s+", " ", _strip_html(text))
+    match = re.search(
+        r"(?:each|one)\s+(?:ADS|American\s+Depositary\s+Share).*?represents?\s+"
+        r"(one|two|three|four|five|ten|\d+(?:\.\d+)?)\s+"
+        r"(?:Class\s+[A-Z]\s+)?(?:ordinary|common)\s+shares?",
+        plain,
+        flags=re.IGNORECASE,
+    )
+    if not match:
+        return None
+    token = match.group(1).lower()
+    return _NUMBER_WORDS.get(token) or float(token)
 
 
 def _parse_date(value: object) -> date | None:
@@ -151,7 +273,7 @@ class SecFinancialSnapshotService:
             } if isinstance(payload, dict) else {}
         return self._ticker_ciks.get(ticker.upper())
 
-    async def _scan_6k_exhibits(
+    async def _scan_foreign_filings(
         self, client: httpx.AsyncClient, cik: str
     ) -> dict[str, object]:
         response = await client.get(f"https://data.sec.gov/submissions/CIK{cik}.json")
@@ -161,11 +283,25 @@ class SecFinancialSnapshotService:
         forms = recent.get("form", []) if isinstance(recent, dict) else []
         accessions = recent.get("accessionNumber", []) if isinstance(recent, dict) else []
         primary_documents = recent.get("primaryDocument", []) if isinstance(recent, dict) else []
+        filing_dates = recent.get("filingDate", []) if isinstance(recent, dict) else []
         candidates: list[dict[str, object]] = []
-        for form, accession, primary in zip(forms, accessions, primary_documents, strict=False):
-            if form != "6-K":
+        parsed_statement: dict[str, object] | None = None
+        adr_ratio: float | None = None
+        adr_ratio_source: str | None = None
+        fetched_documents = 0
+        exhibit_documents = 0
+        six_k_count = 0
+        for form, accession, primary, filing_date in zip(
+            forms, accessions, primary_documents, filing_dates, strict=False
+        ):
+            if form not in {"6-K", "20-F"}:
                 continue
+            if form == "6-K":
+                if six_k_count >= 5:
+                    continue
+                six_k_count += 1
             accession_path = str(accession).replace("-", "")
+            base_url = f"https://www.sec.gov/Archives/edgar/data/{int(cik)}/{accession_path}"
             index_url = (
                 f"https://www.sec.gov/Archives/edgar/data/{int(cik)}/{accession_path}/index.json"
             )
@@ -181,23 +317,141 @@ class SecFinancialSnapshotService:
                 exhibits.append(
                     {
                         "name": name,
-                        "url": f"https://www.sec.gov/Archives/edgar/data/{int(cik)}/{accession_path}/{name}",
+                        "url": f"{base_url}/{name}",
                     }
                 )
+            primary_url = f"{base_url}/{primary}"
+            primary_response = await client.get(primary_url)
+            primary_response.raise_for_status()
+            fetched_documents += 1
+            primary_text = primary_response.text
+            if form == "20-F" and adr_ratio is None:
+                adr_ratio = _adr_ratio_from_text(primary_text)
+                if adr_ratio is not None:
+                    adr_ratio_source = primary_url
+            linked = _linked_documents(primary_text)
+            known_urls = {str(item["url"]) for item in exhibits}
+            for href, label in linked:
+                linked_url = str(httpx.URL(primary_url).join(href))
+                if linked_url in known_urls:
+                    continue
+                exhibits.append({"name": label, "url": linked_url})
+                known_urls.add(linked_url)
+            parsed_here: dict[str, object] | None = None
+            if form == "6-K":
+                parsed_here = _parse_foreign_financial_release(primary_text)
+                for exhibit in exhibits:
+                    try:
+                        exhibit_response = await client.get(str(exhibit["url"]))
+                        exhibit_response.raise_for_status()
+                    except httpx.HTTPError:
+                        continue
+                    fetched_documents += 1
+                    exhibit_documents += 1
+                    if adr_ratio is None:
+                        adr_ratio = _adr_ratio_from_text(exhibit_response.text)
+                        if adr_ratio is not None:
+                            adr_ratio_source = str(exhibit["url"])
+                    parsed_here = parsed_here or _parse_foreign_financial_release(
+                        exhibit_response.text
+                    )
+                    if parsed_here:
+                        parsed_here.update(
+                            {
+                                "filing_date": str(filing_date),
+                                "source_filing_id": str(accession),
+                                "source_url": str(exhibit["url"]),
+                            }
+                        )
+                        break
             candidates.append(
                 {
+                    "form": form,
                     "accession": accession,
+                    "filing_date": filing_date,
                     "primary_document": primary,
+                    "primary_document_fetched": True,
                     "linked_exhibits": exhibits,
                     "parsing_attempted": True,
+                    "statement_parsed": bool(parsed_here),
                 }
             )
-            break
+            if parsed_here and parsed_statement is None:
+                parsed_statement = parsed_here
+            if six_k_count >= 5 and any(item.get("form") == "20-F" for item in candidates):
+                break
         return {
+            "filing_discovery_coverage": "full" if candidates else "unavailable",
+            "document_fetch_coverage": "full" if fetched_documents else "unavailable",
+            "exhibit_discovery_coverage": "full" if exhibit_documents else "partial",
+            "statement_parsing_coverage": "full" if parsed_statement else "partial",
             "filing_discovered": bool(candidates),
             "statement_parsing_attempted": bool(candidates),
+            "parsed_statement": parsed_statement,
+            "adr_ratio": adr_ratio,
+            "adr_ratio_source": adr_ratio_source,
             "filings": candidates,
         }
+
+    @staticmethod
+    def _upsert_foreign_preliminary_snapshot(
+        session: Session,
+        ticker: str,
+        parsed: dict[str, object],
+    ) -> int:
+        period_end = _parse_date(parsed.get("period_end"))
+        filing_date = _parse_date(parsed.get("filing_date"))
+        source_filing_id = str(parsed.get("source_filing_id") or "") or None
+        if period_end is None or filing_date is None:
+            return 0
+        existing = session.exec(
+            select(FinancialSnapshot).where(
+                FinancialSnapshot.ticker == ticker.upper(),
+                FinancialSnapshot.snapshot_type == "preliminary_earnings",
+                FinancialSnapshot.source_filing_id == source_filing_id,
+            )
+        ).first()
+        row = existing or FinancialSnapshot(
+            ticker=ticker.upper(),
+            period=f"{period_end.year}-Q{((period_end.month - 1) // 3) + 1}",
+            snapshot_type="preliminary_earnings",
+            source_filing_id=source_filing_id,
+        )
+        row.source_event_date = filing_date
+        row.period_type = f"Q{((period_end.month - 1) // 3) + 1}"
+        row.fiscal_year = period_end.year
+        row.period_scope = "single-quarter"
+        row.financials_as_of = period_end
+        row.financial_period_end = period_end
+        row.filing_date = filing_date
+        row.reported_date = filing_date
+        row.source = str(parsed.get("source_url") or "SEC 6-K exhibit")
+        row.provider = "sec_foreign_filing"
+        row.currency = str(parsed.get("currency") or "") or None
+        row.revenue = parsed.get("revenue") if isinstance(parsed.get("revenue"), float) else None
+        row.net_income = (
+            parsed.get("net_income") if isinstance(parsed.get("net_income"), float) else None
+        )
+        row.common_net_income = row.net_income
+        row.owners_parent_net_income = row.net_income
+        row.diluted_eps = (
+            parsed.get("diluted_eps") if isinstance(parsed.get("diluted_eps"), float) else None
+        )
+        row.eps = row.diluted_eps
+        row.operating_margin = (
+            parsed.get("operating_margin")
+            if isinstance(parsed.get("operating_margin"), float)
+            else None
+        )
+        row.revenue_basis = "foreign issuer earnings release"
+        row.operating_income_basis = "not disclosed in parsed release"
+        row.balance_sheet_basis = "not available in preliminary release"
+        row.quality_warnings = (
+            "preliminary foreign filing; balance sheet and cash flow are not inferred"
+        )
+        session.add(row)
+        session.flush()
+        return 1
 
     async def refresh(
         self,
@@ -205,22 +459,66 @@ class SecFinancialSnapshotService:
         ticker: str,
         user_agent: str,
     ) -> int:
+        telemetry = ProviderTelemetryService()
         headers = {"User-Agent": user_agent, "Accept": "application/json"}
+        companyfacts_started = datetime.now(timezone.utc)
         async with httpx.AsyncClient(timeout=20.0, headers=headers, transport=self.transport) as client:
             cik = await self._resolve_cik(client, ticker)
             if not cik:
+                telemetry.record(
+                    session,
+                    provider="sec_edgar",
+                    endpoint="companyfacts",
+                    ticker=ticker,
+                    started_at=companyfacts_started,
+                    status="unavailable",
+                    error_reason="cik_not_found",
+                )
                 return 0
             response = await client.get(f"https://data.sec.gov/api/xbrl/companyfacts/CIK{cik}.json")
             response.raise_for_status()
             payload = response.json()
+            telemetry.record(
+                session,
+                provider="sec_edgar",
+                endpoint="companyfacts",
+                ticker=ticker,
+                started_at=companyfacts_started,
+                status="success",
+            )
+            foreign_started = datetime.now(timezone.utc)
             try:
-                exhibit_coverage = await self._scan_6k_exhibits(client, cik)
-            except (httpx.HTTPError, TypeError, ValueError):
+                exhibit_coverage = await self._scan_foreign_filings(client, cik)
+                is_full = exhibit_coverage.get("statement_parsing_coverage") == "full"
+                telemetry.record(
+                    session,
+                    provider="sec_edgar",
+                    endpoint="foreign_filings",
+                    ticker=ticker,
+                    started_at=foreign_started,
+                    status="success" if is_full else "partial",
+                    error_reason=None if is_full else "foreign_filing_partial",
+                )
+            except (httpx.HTTPError, TypeError, ValueError) as exc:
                 exhibit_coverage = {
                     "filing_discovered": False,
                     "statement_parsing_attempted": True,
+                    "filing_discovery_coverage": "partial",
+                    "document_fetch_coverage": "partial",
+                    "exhibit_discovery_coverage": "partial",
+                    "statement_parsing_coverage": "partial",
                     "reason": "foreign_filing_partial",
                 }
+                telemetry.record(
+                    session,
+                    provider="sec_edgar",
+                    endpoint="foreign_filings",
+                    ticker=ticker,
+                    started_at=foreign_started,
+                    status="partial",
+                    error_type=type(exc).__name__,
+                    error_reason="foreign_filing_partial",
+                )
         cache = session.exec(
             select(ProviderResponseCache).where(
                 ProviderResponseCache.provider == "sec_edgar",
@@ -238,8 +536,23 @@ class SecFinancialSnapshotService:
         cache.last_success_at = cache.fetched_at if cache.status == "success" else cache.last_success_at
         cache.last_error = None if cache.status == "success" else "foreign_filing_partial"
         session.add(cache)
+        security = session.exec(
+            select(SecurityMaster).where(SecurityMaster.ticker == ticker.upper())
+        ).first()
+        ratio = exhibit_coverage.get("adr_ratio")
+        if security is not None and isinstance(ratio, (int, float)) and ratio > 0:
+            security.adr_ratio = float(ratio)
+            security.adr_ratio_source = str(exhibit_coverage.get("adr_ratio_source") or "SEC filing")
+            security.adr_ratio_as_of = datetime.now(timezone.utc).date()
+            session.add(security)
+        preliminary_count = 0
+        parsed_statement = exhibit_coverage.get("parsed_statement")
+        if isinstance(parsed_statement, dict):
+            preliminary_count = self._upsert_foreign_preliminary_snapshot(
+                session, ticker, parsed_statement
+            )
         if not isinstance(payload, dict) or not isinstance(payload.get("facts"), dict):
-            return 0
+            return preliminary_count
         facts = {field: _facts(payload, field) for field in _CONCEPTS}
         built: list[FinancialSnapshot] = []
         for period in _period_entries(payload):
@@ -338,4 +651,4 @@ class SecFinancialSnapshotService:
                 session.add(existing)
             updated += 1
         session.flush()
-        return updated
+        return updated + preliminary_count

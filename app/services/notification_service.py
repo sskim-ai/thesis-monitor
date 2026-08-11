@@ -455,8 +455,8 @@ def _assessment_report(
     data_status_parts = [
         f"가격 {data_coverage.get('price_quality', data_coverage.get('price', 'unavailable'))}",
         f"이벤트 {data_coverage.get('event_quality', 'unavailable')}",
-        f"정식 재무 {data_coverage.get('financial_full', 'unavailable')}",
-        f"잠정실적 {data_coverage.get('financial_preliminary', 'unavailable')}",
+        f"정식 재무 {data_coverage.get('full_financial_quality', 'unavailable')}",
+        f"잠정실적 {data_coverage.get('preliminary_financial_quality', 'unavailable')}",
         f"Consensus {data_coverage.get('consensus_quality', 'unavailable')}",
         f"역사 Valuation {data_coverage.get('historical_valuation_quality', 'unavailable')}",
         f"Forward {data_coverage.get('forward_valuation_quality', 'unavailable')}",
@@ -472,9 +472,34 @@ def _assessment_report(
         )
     )
     data_status_text = (
-        "📊 데이터 상태\n" + " · ".join(data_status_parts) + "\n"
+        "📊 데이터 상태\n"
+        + " · ".join(data_status_parts)
+        + "\n전체 판단 데이터: "
+        + str(data_coverage.get("overall_data_quality", "unavailable"))
+        + "\n주의: "
+        + str(data_coverage.get("overall_quality_reason") or "별도 데이터 경고 없음")
+        + "\n"
         if detailed_data_status
         else ""
+    )
+    consensus_status = str(valuation_snapshot.get("consensus_status") or "unavailable")
+    consensus_status_label = {
+        "full": "충분",
+        "partial": "부분 확인",
+        "unavailable": "자료 없음",
+        "stale": "오래됨",
+        "conflicting": "provider 간 충돌",
+    }.get(consensus_status, consensus_status)
+    consensus_detail = ""
+    if consensus_status == "partial" and valuation_snapshot.get("forward_pe_status") == "value":
+        consensus_detail = "\nForward PE 값은 확인됐지만 기준일 또는 분석가 수 metadata가 일부 부족합니다."
+    elif consensus_status == "conflicting":
+        consensus_detail = "\nForward 추정치가 provider 간 엇갈려 단일 배수를 강하게 해석하지 않습니다."
+    analyst_count = valuation_snapshot.get("estimate_analyst_count")
+    analyst_text = (
+        f"분석가 {analyst_count}명"
+        if isinstance(analyst_count, int) and analyst_count > 0
+        else "분석가 수 확인 불가"
     )
     is_krx = assessment.ticker.isdigit()
     if assessment_state == "provisional" and is_krx:
@@ -528,8 +553,9 @@ def _assessment_report(
         f"시장 기대: {expectation_label} · {expectation_summary}\n"
         f"현재가: {_report_price(current_price, currency)}\n"
         f"정식 재무 기준: {valuation_snapshot.get('latest_full_financial_period') or valuation_snapshot.get('financial_period_end') or '확인 불가'}\n"
+        f"정식 재무 공시일: {valuation_snapshot.get('latest_full_filing_date') or valuation_snapshot.get('filing_date') or '확인 불가'}\n"
         f"최근 잠정실적: {valuation_snapshot.get('latest_preliminary_financial_period') or '없음'}\n"
-        f"공시일: {valuation_snapshot.get('filing_date') or '확인 불가'}\n"
+        f"잠정실적 공시일: {valuation_snapshot.get('latest_preliminary_filing_date') or '없음'}\n"
         f"가격 기준: {price_basis_label}\n"
         f"TTM 기준: {valuation_snapshot.get('ttm_period_start') or '확인 불가'}~"
         f"{valuation_snapshot.get('ttm_period_end') or '확인 불가'}\n"
@@ -548,12 +574,13 @@ def _assessment_report(
         f"현재 Valuation 위치 신뢰도: {relative_confidence}\n"
         f"해석: {relative_reason or '역사적·peer 비교 근거가 부족해 현재 위치를 확정하지 않습니다.'}\n"
         f"배수 신호: {valuation_snapshot.get('valuation_signal_summary') or '중요한 배수 충돌 없음'}\n"
-        f"Consensus: {valuation_snapshot.get('estimate_provider') or '자료 없음'}"
+        f"Consensus: {consensus_status_label} · {valuation_snapshot.get('estimate_provider') or 'provider 없음'}"
         f" · {valuation_snapshot.get('estimate_period') or '기간 확인 불가'}"
-        f" · 분석가 {valuation_snapshot.get('estimate_analyst_count') or '확인 불가'}명\n"
+        f" · {analyst_text}"
+        f"{consensus_detail}\n"
         f"{caveat_text}\n"
         f"{data_status_text}"
-        f"데이터 품질: {quality_label} · {valuation_snapshot.get('provider', '자료 없음')}\n"
+        f"Valuation 데이터 품질: {quality_label} · {valuation_snapshot.get('provider', '자료 없음')}\n"
         f"재무 커버리지: {data_coverage.get('financials', 'unavailable')} · "
         f"최신성 {data_coverage.get('financial_freshness', 'unavailable')}\n"
         f"커버리지 설명: {coverage_reasons[0] if coverage_reasons else '핵심 데이터의 별도 커버리지 경고 없음'}\n"

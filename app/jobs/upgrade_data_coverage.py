@@ -30,7 +30,8 @@ async def upgrade(years: int = 5) -> list[dict[str, object]]:
             ).all()
         )
         for item in items:
-            state = session.get(DataBackfillState, item.ticker) or DataBackfillState(ticker=item.ticker)
+            ticker = item.ticker
+            state = session.get(DataBackfillState, ticker) or DataBackfillState(ticker=ticker)
             state.backfill_status = "running"
             state.backfill_started_at = datetime.now(timezone.utc)
             state.backfill_years_requested = years
@@ -38,14 +39,14 @@ async def upgrade(years: int = 5) -> list[dict[str, object]]:
             session.commit()
             warnings: list[str] = []
             try:
-                await collection.collect_events(session, item.ticker, 400)
-                if (item.exchange or "").upper() == "KRX" or item.ticker.isdigit():
+                await collection.collect_events(session, ticker, 400)
+                if (item.exchange or "").upper() == "KRX" or ticker.isdigit():
                     item.issuer_type = "krx"
-                    result = await backfill_financial_snapshots(session, item.ticker, years=years)
+                    result = await backfill_financial_snapshots(session, ticker, years=years)
                     warnings.extend(result.warnings)
                 else:
                     forms = [
-                        event for event in session.exec(select(Event).where(Event.ticker == item.ticker)).all()
+                        event for event in session.exec(select(Event).where(Event.ticker == ticker)).all()
                         if "filed 20-f" in event.title.lower() or "filed 6-k" in event.title.lower()
                     ]
                     item.issuer_type = "foreign_private_issuer" if forms else "domestic_us"
@@ -54,10 +55,10 @@ async def upgrade(years: int = 5) -> list[dict[str, object]]:
                     settings = get_settings()
                     if settings.sec_user_agent:
                         try:
-                            await sec.refresh(session, item.ticker, settings.sec_user_agent)
+                            await sec.refresh(session, ticker, settings.sec_user_agent)
                         except Exception as exc:  # noqa: BLE001
                             warnings.append(f"sec_financial_refresh:{type(exc).__name__}")
-                events = list(session.exec(select(Event).where(Event.ticker == item.ticker)).all())
+                events = list(session.exec(select(Event).where(Event.ticker == ticker)).all())
                 for event in events:
                     dividend.ingest_event(session, event)
                     capital_actions.canonicalize(session, event)
@@ -68,8 +69,8 @@ async def upgrade(years: int = 5) -> list[dict[str, object]]:
                         .order_by(FinancialSnapshot.filing_date)
                     ).all()
                 )
-                dividend.sync_financial_snapshots(session, item.ticker, rows)
-                dividend.sync_capital_returns(session, item.ticker, rows)
+                dividend.sync_financial_snapshots(session, ticker, rows)
+                dividend.sync_capital_returns(session, ticker, rows)
                 dates = [
                     row.financial_period_end or row.financials_as_of
                     for row in rows
@@ -85,7 +86,7 @@ async def upgrade(years: int = 5) -> list[dict[str, object]]:
                 )
                 results.append(
                     {
-                        "ticker": item.ticker,
+                        "ticker": ticker,
                         "issuer_type": item.issuer_type,
                         "financial_rows": len(rows),
                         "financial_history_years": round(years_available, 2),
@@ -93,15 +94,21 @@ async def upgrade(years: int = 5) -> list[dict[str, object]]:
                     }
                 )
             except Exception as exc:  # noqa: BLE001
+                session.rollback()
+                state = session.get(DataBackfillState, ticker) or DataBackfillState(ticker=ticker)
                 state.backfill_status = "partial"
                 state.backfill_gap_reason = type(exc).__name__
                 warnings.append(type(exc).__name__)
                 results.append(
-                    {"ticker": item.ticker, "status": "partial", "warnings": warnings}
+                    {"ticker": ticker, "status": "partial", "warnings": warnings}
                 )
             state.backfill_completed_at = datetime.now(timezone.utc)
             state.updated_at = datetime.now(timezone.utc)
-            session.add(item)
+            current_item = session.exec(
+                select(WatchlistItem).where(WatchlistItem.ticker == ticker)
+            ).first()
+            if current_item is not None:
+                session.add(current_item)
             session.add(state)
             session.commit()
     return results

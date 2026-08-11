@@ -33,7 +33,7 @@ async def run(*, use_openfigi: bool, use_alpha: bool) -> dict[str, object]:
             result["security_master"][item.ticker] = security.identity_quality
         if use_openfigi:
             provider = OpenFigiProvider()
-            for ticker in ("GOOGL", "TSM", "WRD", "005930"):
+            for ticker in ("GOOGL", "IBM", "TSM", "WRD"):
                 security = securities.get(ticker)
                 if security is None:
                     continue

@@ -77,6 +77,13 @@ class SecurityMasterService:
         exchange = (company.exchange if company else None) or (item.exchange if item else None)
         country = _country(exchange, ticker)
         aliases = list(dict.fromkeys((company_name.lower(), *SECURITY_ALIASES.get(ticker, ()))))
+        search_aliases = [
+            alias
+            for alias in aliases
+            if len(alias) > 3 or not alias.isascii() or " " in alias
+        ]
+        if company_name.lower() not in search_aliases:
+            search_aliases.insert(0, company_name.lower())
         company_key = re.sub(r"[^a-z0-9가-힣]+", "-", company_name.lower()).strip("-")
         company_id = hashlib.sha256(f"{country}:{company_key}".encode()).hexdigest()[:20]
         security_id = hashlib.sha256(
@@ -99,6 +106,7 @@ class SecurityMasterService:
         row.adr_ratio = item.adr_ratio if item else row.adr_ratio
         row.adr_identifier = ticker if row.issuer_type in {"adr", "foreign_private_issuer"} else None
         row.aliases = json.dumps(aliases, ensure_ascii=False)
+        row.search_aliases = json.dumps(search_aliases, ensure_ascii=False)
         row.known_products = json.dumps(
             list(SECURITY_PRODUCTS.get(ticker, ())), ensure_ascii=False
         )
@@ -107,6 +115,12 @@ class SecurityMasterService:
         session.add(row)
         session.flush()
         return row
+
+    def search_aliases(self, security: SecurityMaster) -> list[str]:
+        aliases = _json_list(security.search_aliases)
+        if not aliases:
+            aliases = [security.company_name, security.legal_name or ""]
+        return list(dict.fromkeys(alias.strip() for alias in aliases if alias.strip()))
 
     def aliases(self, security: SecurityMaster) -> list[str]:
         return list(

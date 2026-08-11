@@ -1,4 +1,5 @@
 from datetime import date
+import json
 
 from sqlmodel import Session, select
 
@@ -97,7 +98,9 @@ class DataCoverageService:
         if item and item.created_at.date() < date.today().replace(year=max(1, date.today().year - 5)) and history_years < 3:
             reasons.append("insufficient_history")
         if issuer_type in {"adr", "foreign_private_issuer"}:
-            if item is None or item.adr_ratio is None:
+            if (item is None or item.adr_ratio is None) and (
+                security is None or security.adr_ratio is None
+            ):
                 reasons.append("missing_adr_ratio")
         valuation_status = "unavailable"
         valuation_confidence = 0.0
@@ -126,15 +129,20 @@ class DataCoverageService:
             "unavailable"
             if issuer_type in {"adr", "foreign_private_issuer"}
             and (item is None or item.adr_ratio is None)
+            and (security is None or security.adr_ratio is None)
             else "full"
         )
+        try:
+            foreign_payload = json.loads(foreign_cache.payload) if foreign_cache else {}
+        except json.JSONDecodeError:
+            foreign_payload = {}
         filing_discovery = (
-            foreign_cache.status
+            str(foreign_payload.get("filing_discovery_coverage") or foreign_cache.status)
             if foreign_cache and issuer_type in {"adr", "foreign_private_issuer"}
             else foreign_status
         )
         statement_parsing = (
-            "partial"
+            str(foreign_payload.get("statement_parsing_coverage") or "partial")
             if foreign_cache and foreign_cache.status in {"success", "partial"}
             else financial_status
             if issuer_type in {"adr", "foreign_private_issuer"}
@@ -145,6 +153,78 @@ class DataCoverageService:
             stats = snapshot.historical_pe_statistics or snapshot.historical_pb_statistics
             if stats is not None:
                 historical_quality = stats.history_quality
+        consensus_quality = "unavailable"
+        if snapshot and snapshot.consensus_disagreement:
+            consensus_quality = "conflicting"
+        elif (
+            snapshot
+            and snapshot.forward_pe_status == "value"
+            and snapshot.forward_pe_source == "consensus_forward"
+        ):
+            consensus_quality = snapshot.consensus_status or "partial"
+            if consensus_quality == "unavailable":
+                consensus_quality = "partial"
+        elif estimates:
+            statuses = {row.coverage_status for row in estimates}
+            consensus_quality = (
+                "full" if "full" in statuses else "partial" if statuses else "unavailable"
+            )
+        forward_quality = (
+            "fresh"
+            if snapshot and snapshot.forward_valuation_confidence >= 0.7
+            else "partial"
+            if snapshot and snapshot.forward_valuation_confidence > 0
+            else "unavailable"
+        )
+        full_quality = (
+            "validation_failed"
+            if full_rows and any(row.financial_statement_basis_warning for row in full_rows)
+            else "current"
+            if full_rows
+            else "unavailable"
+        )
+        preliminary_quality = (
+            "validation_failed"
+            if preliminary_rows
+            and any(row.financial_statement_basis_warning for row in preliminary_rows)
+            else "current"
+            if preliminary_rows
+            else "not_applicable"
+        )
+        financial_quality = (
+            "refresh_pending"
+            if freshness.refresh_required
+            else "validation_failed"
+            if freshness.status == "preliminary_only"
+            and preliminary_quality == "validation_failed"
+            else "partial"
+            if freshness.status == "preliminary_only"
+            else financial_status
+        )
+        component_issues = [
+            ("재무 구성", financial_quality),
+            ("Consensus", consensus_quality),
+            ("Forward Valuation", forward_quality),
+        ]
+        concerning = [
+            f"{label} {quality}"
+            for label, quality in component_issues
+            if quality
+            in {
+                "partial",
+                "stale",
+                "unavailable",
+                "conflicting",
+                "refresh_pending",
+                "validation_failed",
+            }
+        ]
+        overall_quality = "partial" if concerning else "current"
+        overall_reason = (
+            ", ".join(concerning)
+            if concerning
+            else "핵심 입력 데이터가 현재 기준으로 연결되어 있습니다."
+        )
         return DataCoverage(
             issuer_type=issuer_type,
             financial_coverage_status=financial_status,
@@ -164,32 +244,48 @@ class DataCoverageService:
             identity_mapping=(security.identity_quality if security else "unavailable"),
             event_relevance=event_quality,
             financial_full=_coverage(bool(full_rows), len(full_rows) < 8),
-            financial_preliminary=_coverage(bool(preliminary_rows)),
-            consensus=_coverage(bool(estimates), any(row.quality != "fresh" for row in estimates)),
+            financial_preliminary=_coverage(
+                bool(preliminary_rows), preliminary_quality == "validation_failed"
+            ),
+            consensus=consensus_quality,
             shares=_coverage(bool(share_observations) or any(row.common_shares_outstanding for row in rows)),
             buyback=_coverage(bool(capital_returns)),
             historical_valuation=historical_quality,
-            forward_valuation=(
-                "fresh"
-                if snapshot and snapshot.forward_valuation_confidence >= 0.7
-                else "partial"
-                if snapshot and snapshot.forward_valuation_confidence > 0
-                else "unavailable"
-            ),
+            forward_valuation=forward_quality,
             filing_discovery_coverage=filing_discovery,
+            document_fetch_coverage=(
+                str(foreign_payload.get("document_fetch_coverage") or filing_discovery)
+                if issuer_type in {"adr", "foreign_private_issuer"}
+                else "not_applicable"
+            ),
+            exhibit_discovery_coverage=(
+                str(foreign_payload.get("exhibit_discovery_coverage") or filing_discovery)
+                if issuer_type in {"adr", "foreign_private_issuer"}
+                else "not_applicable"
+            ),
             statement_parsing_coverage=statement_parsing,
             per_share_mapping_coverage=(per_share_coverage if issuer_type in {"adr", "foreign_private_issuer"} else "not_applicable"),
             valuation_coverage=valuation_status,
             price_quality=price_status,
-            financial_quality=("stale" if freshness.refresh_required else financial_status),
+            financial_quality=financial_quality,
+            full_financial_quality=full_quality,
+            preliminary_financial_quality=preliminary_quality,
             event_quality=event_quality,
-            consensus_quality=_coverage(bool(estimates), any(row.quality != "fresh" for row in estimates)),
+            consensus_quality=consensus_quality,
             historical_valuation_quality=historical_quality,
-            forward_valuation_quality=(
-                "fresh"
-                if snapshot and snapshot.forward_valuation_confidence >= 0.7
-                else "partial"
-                if snapshot and snapshot.forward_valuation_confidence > 0
-                else "unavailable"
+            forward_valuation_quality=forward_quality,
+            share_count_quality=_coverage(
+                bool(share_observations)
+                or any(row.common_shares_outstanding for row in rows)
             ),
+            dividend_quality=_coverage(
+                bool(dividends), any(row.quality != "fresh" for row in dividends)
+            ),
+            foreign_filing_quality=(
+                statement_parsing
+                if issuer_type in {"adr", "foreign_private_issuer"}
+                else "not_applicable"
+            ),
+            overall_data_quality=overall_quality,
+            overall_quality_reason=overall_reason,
         )

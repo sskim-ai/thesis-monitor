@@ -8,7 +8,7 @@ from sqlmodel import Session, select
 
 from app.config import get_settings
 from app.models.financial import CapitalReturnHistory, DividendHistory, FinancialSnapshot
-from app.models.security import ConsensusEstimate, ShareCountObservation
+from app.models.security import ConsensusEstimate, SecurityMaster, ShareCountObservation
 from app.models.watchlist import WatchlistItem
 from app.models.thesis import InvestmentThesis
 from app.schemas.thesis import (
@@ -25,6 +25,7 @@ from app.services.alpha_vantage_service import AlphaVantageService
 from app.services.data_coverage_service import DataCoverageService
 from app.services.dividend_history_service import DividendHistoryService
 from app.services.financial_freshness_service import FinancialFreshnessService
+from app.services.provider_telemetry_service import ProviderTelemetryService
 from app.services.sec_financial_snapshot_service import SecFinancialSnapshotService
 
 
@@ -160,6 +161,7 @@ class ValuationSnapshotService:
         self.coverage_service = DataCoverageService()
         self.freshness_service = FinancialFreshnessService()
         self.alpha_vantage_service = AlphaVantageService(transport=transport)
+        self.telemetry = ProviderTelemetryService()
 
     def _financial_rows(
         self,
@@ -539,6 +541,7 @@ class ValuationSnapshotService:
         dividend_history: list[DividendHistory] = []
         capital_returns: list[CapitalReturnHistory] = []
         watchlist_item: WatchlistItem | None = None
+        security_master: SecurityMaster | None = None
         if session is not None:
             dividend_history = self.dividend_service.sync_financial_snapshots(
                 session, ticker, rows
@@ -548,6 +551,9 @@ class ValuationSnapshotService:
             )
             watchlist_item = session.exec(
                 select(WatchlistItem).where(WatchlistItem.ticker == ticker)
+            ).first()
+            security_master = session.exec(
+                select(SecurityMaster).where(SecurityMaster.ticker == ticker)
             ).first()
         provider_pe: float | None = None
         provider_pb: float | None = None
@@ -570,6 +576,7 @@ class ValuationSnapshotService:
                 )
 
         if _supports_finnhub(exchange, ticker) and self.settings.finnhub_api_key:
+            finnhub_started = datetime.now(timezone.utc)
             try:
                 async with httpx.AsyncClient(
                     base_url="https://finnhub.io/api/v1",
@@ -602,6 +609,31 @@ class ValuationSnapshotService:
                         snapshot.forward_pe_method = "Finnhub forwardPE"
                         snapshot.forward_basis = "provider-defined forward consensus"
                         snapshot.forward_valuation_confidence = 0.7
+                        snapshot.estimate_provider = "finnhub"
+                        snapshot.estimate_period = "provider-defined forward consensus"
+                        snapshot.consensus_status = "partial"
+                        if session is not None:
+                            estimate = session.exec(
+                                select(ConsensusEstimate).where(
+                                    ConsensusEstimate.ticker == ticker,
+                                    ConsensusEstimate.provider == "finnhub",
+                                    ConsensusEstimate.estimate_period
+                                    == "provider-defined forward consensus",
+                                )
+                            ).first() or ConsensusEstimate(
+                                ticker=ticker,
+                                provider="finnhub",
+                                estimate_as_of=now,
+                                estimate_period="provider-defined forward consensus",
+                            )
+                            estimate.estimate_as_of = now
+                            estimate.metric = "forward_pe"
+                            estimate.basis = "provider-defined"
+                            estimate.value = snapshot.forward_pe
+                            estimate.quality = "partial"
+                            estimate.coverage_status = "partial"
+                            estimate.raw_reference = "Finnhub stock metric forwardPE"
+                            session.add(estimate)
                     provider_pb = _positive_number(metrics.get("pbQuarterly") or metrics.get("pbAnnual"))
                     if provider_pb is not None:
                         snapshot.price_to_book = provider_pb
@@ -623,10 +655,46 @@ class ValuationSnapshotService:
                         )
                     else:
                         snapshot.quality = "fresh"
+                    if session is not None:
+                        self.telemetry.record(
+                            session,
+                            provider="finnhub",
+                            endpoint="stock_metric",
+                            ticker=ticker,
+                            started_at=finnhub_started,
+                            status="success",
+                        )
                 else:
                     snapshot.warnings.append("Finnhub에서 사용 가능한 Valuation 배수를 반환하지 않았습니다.")
+                    if session is not None:
+                        self.telemetry.record(
+                            session,
+                            provider="finnhub",
+                            endpoint="stock_metric",
+                            ticker=ticker,
+                            started_at=finnhub_started,
+                            status="partial",
+                            error_type="EmptyProviderPayload",
+                            error_reason="valuation_metrics_unavailable",
+                        )
             except (httpx.HTTPError, TypeError, ValueError) as exc:
                 snapshot.warnings.append(f"Finnhub 배수 조회 실패: {type(exc).__name__}")
+                if session is not None:
+                    self.telemetry.record(
+                        session,
+                        provider="finnhub",
+                        endpoint="stock_metric",
+                        ticker=ticker,
+                        started_at=finnhub_started,
+                        status="failed",
+                        error_type=type(exc).__name__,
+                        error_code=(
+                            str(exc.response.status_code)
+                            if isinstance(exc, httpx.HTTPStatusError)
+                            else None
+                        ),
+                        error_reason="valuation_metric_fetch_failed",
+                    )
         elif _supports_finnhub(exchange, ticker):
             snapshot.warnings.append("Finnhub API key가 없어 Valuation 배수를 수집하지 못했습니다.")
 
@@ -651,14 +719,16 @@ class ValuationSnapshotService:
             ).first()
         if alpha_estimate and alpha_estimate.estimate_mean is not None:
             alpha_eps = alpha_estimate.estimate_mean
-            snapshot.estimate_provider = "alpha_vantage"
-            snapshot.estimate_as_of = alpha_estimate.estimate_as_of.isoformat()
-            snapshot.estimate_period = alpha_estimate.estimate_period
-            snapshot.estimate_mean = alpha_eps
-            snapshot.estimate_high = alpha_estimate.estimate_high
-            snapshot.estimate_low = alpha_estimate.estimate_low
-            snapshot.estimate_analyst_count = alpha_estimate.analyst_count
-            snapshot.estimate_revision_direction = alpha_estimate.revision_direction
+            if snapshot.estimate_provider is None:
+                snapshot.estimate_provider = "alpha_vantage"
+                snapshot.estimate_as_of = alpha_estimate.estimate_as_of.isoformat()
+                snapshot.estimate_period = alpha_estimate.estimate_period
+                snapshot.estimate_mean = alpha_eps
+                snapshot.estimate_high = alpha_estimate.estimate_high
+                snapshot.estimate_low = alpha_estimate.estimate_low
+                snapshot.estimate_analyst_count = alpha_estimate.analyst_count
+                snapshot.estimate_revision_direction = alpha_estimate.revision_direction
+                snapshot.consensus_status = alpha_estimate.coverage_status
             if snapshot.current_price and alpha_eps > 0:
                 alpha_forward_pe = snapshot.current_price / alpha_eps
                 if snapshot.forward_pe_status != "value":
@@ -668,6 +738,7 @@ class ValuationSnapshotService:
                     snapshot.forward_pe_method = "Alpha Vantage analyst EPS estimate"
                     snapshot.forward_basis = alpha_estimate.estimate_period
                     snapshot.forward_valuation_confidence = 0.65
+                    snapshot.consensus_status = alpha_estimate.coverage_status
                 elif snapshot.forward_pe:
                     finnhub_implied_eps = snapshot.current_price / snapshot.forward_pe
                     discrepancy = abs(finnhub_implied_eps / alpha_eps - 1)
@@ -677,10 +748,12 @@ class ValuationSnapshotService:
                         snapshot.warnings.append(
                             "Finnhub와 Alpha Vantage의 forward EPS 추정치 차이가 커 신뢰도를 낮췄습니다."
                         )
+                        snapshot.consensus_status = "conflicting"
 
         issuer_type = watchlist_item.issuer_type if watchlist_item else None
         missing_adr_mapping = issuer_type in {"adr", "foreign_private_issuer"} and (
-            watchlist_item is None or watchlist_item.adr_ratio is None
+            (watchlist_item is None or watchlist_item.adr_ratio is None)
+            and (security_master is None or security_master.adr_ratio is None)
         )
         if missing_adr_mapping:
             derived_pe, derived_pb = None, None
@@ -779,6 +852,14 @@ class ValuationSnapshotService:
             if financial_date and (now.date() - financial_date).days > self.settings.valuation_financial_max_age_days:
                 snapshot.quality = "stale"
                 snapshot.warnings.append("재무 분모 기준일이 오래되어 Valuation 판단 강도를 낮춥니다.")
+        if (
+            snapshot.forward_pe_status == "value"
+            and snapshot.forward_pe_source == "consensus_forward"
+            and snapshot.consensus_status == "unavailable"
+        ):
+            snapshot.consensus_status = "partial"
+            if snapshot.estimate_provider is None:
+                snapshot.estimate_provider = "provider_metadata_partial"
         if session is not None:
             freshness = self.freshness_service.assess(session, ticker)
             snapshot.financial_refresh_required = freshness.refresh_required
@@ -797,12 +878,26 @@ class ValuationSnapshotService:
                 if freshness.latest_preliminary_period
                 else None
             )
+            snapshot.latest_full_filing_date = (
+                freshness.latest_full_filing_date.isoformat()
+                if freshness.latest_full_filing_date
+                else None
+            )
+            snapshot.latest_preliminary_filing_date = (
+                freshness.latest_preliminary_filing_date.isoformat()
+                if freshness.latest_preliminary_filing_date
+                else None
+            )
             snapshot.latest_guidance_date = (
                 freshness.latest_guidance_date.isoformat()
                 if freshness.latest_guidance_date
                 else None
             )
             snapshot.financial_refresh_result = freshness.refresh_result
+            snapshot.financial_refresh_reason = freshness.refresh_reason
+            snapshot.financial_refresh_trigger_event_id = (
+                freshness.refresh_trigger_event_id
+            )
             if freshness.refresh_required:
                 snapshot.quality = "stale"
                 snapshot.forward_valuation_confidence *= 0.5
@@ -810,6 +905,26 @@ class ValuationSnapshotService:
                 snapshot.warnings.append(
                     "최근 실적 발표는 확인됐지만 Valuation 재무 snapshot이 최신 분기로 갱신되지 않았습니다."
                 )
+            elif freshness.status == "preliminary_only":
+                if snapshot.quality == "fresh":
+                    snapshot.quality = "partial"
+                latest_preliminary = next(
+                    (
+                        row
+                        for row in rows
+                        if row.snapshot_type == "preliminary_earnings"
+                        and row.financial_period_end == freshness.latest_preliminary_period
+                    ),
+                    None,
+                )
+                if latest_preliminary and latest_preliminary.financial_statement_basis_warning:
+                    snapshot.warnings.append(
+                        "최신 잠정실적 공시는 확인했지만 파싱된 숫자의 단위·기간 검증에 실패해 매출·이익 및 Valuation 계산에는 반영하지 않았습니다."
+                    )
+                else:
+                    snapshot.warnings.append(
+                        "매출·영업이익은 최신 잠정실적까지 확인했지만 현금흐름·재무상태표 배수는 직전 정식 재무제표 기준입니다."
+                    )
             snapshot.current_multiple_confidence = snapshot.trailing_valuation_confidence
             snapshot.forward_multiple_confidence = snapshot.forward_valuation_confidence
             if (

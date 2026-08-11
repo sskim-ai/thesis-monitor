@@ -23,6 +23,7 @@ from app.models.thesis import InvestmentThesis, MonitorRun, NotificationDelivery
 from app.models.watchlist import WatchlistItem
 from app.models.security import (
     ConsensusEstimate,
+    ProviderCallTelemetry,
     ProviderResponseCache,
     SecurityMaster,
     ShareCountObservation,
@@ -56,5 +57,6 @@ __all__ = [
     "SecurityMaster",
     "ProviderResponseCache",
     "ConsensusEstimate",
+    "ProviderCallTelemetry",
     "ShareCountObservation",
 ]

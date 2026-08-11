@@ -1,4 +1,4 @@
-from datetime import datetime, timezone
+from datetime import date, datetime, timezone
 
 from sqlalchemy import UniqueConstraint
 from sqlmodel import Field, SQLModel
@@ -28,8 +28,12 @@ class SecurityMaster(SQLModel, table=True):
     known_products: str = "[]"
     known_brands: str = "[]"
     aliases: str = "[]"
+    search_aliases: str = "[]"
     identity_quality: str = "partial"
     identity_provider: str = "local"
+    identity_warnings: str = "[]"
+    adr_ratio_source: str | None = None
+    adr_ratio_as_of: date | None = None
     updated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
 
@@ -58,6 +62,9 @@ class ConsensusEstimate(SQLModel, table=True):
     provider: str = Field(index=True)
     estimate_as_of: datetime = Field(index=True)
     estimate_period: str = Field(index=True)
+    metric: str = "eps"
+    basis: str = "FY1"
+    value: float | None = None
     estimate_mean: float | None = None
     estimate_high: float | None = None
     estimate_low: float | None = None
@@ -66,6 +73,7 @@ class ConsensusEstimate(SQLModel, table=True):
     revision_direction: str = "unknown"
     revision_count: int | None = None
     quality: str = "partial"
+    coverage_status: str = "partial"
     raw_reference: str | None = None
 
 
@@ -80,3 +88,23 @@ class ShareCountObservation(SQLModel, table=True):
     diluted_shares: float | None = None
     quality: str = "partial"
     observed_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
+
+class ProviderCallTelemetry(SQLModel, table=True):
+    __table_args__ = (UniqueConstraint("provider", "endpoint", "ticker"),)
+
+    id: int | None = Field(default=None, primary_key=True)
+    provider: str = Field(index=True)
+    endpoint: str = Field(index=True)
+    ticker: str = Field(index=True)
+    attempted_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    finished_at: datetime | None = None
+    status: str = "unknown"
+    last_success_at: datetime | None = None
+    last_failure_at: datetime | None = None
+    error_type: str | None = None
+    error_code: str | None = None
+    error_reason: str | None = None
+    latency_ms: float | None = None
+    success_count: int = 0
+    failure_count: int = 0

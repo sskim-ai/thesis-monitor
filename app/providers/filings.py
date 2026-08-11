@@ -6,7 +6,9 @@ import httpx
 from app.config import get_settings
 from app.providers.base import FilingProvider, RawEvent
 from app.providers.dart_text_fallback import (
+    PreliminaryEarningsFacts,
     build_text_diagnostics,
+    extract_preliminary_earnings_facts_from_text,
     extract_supply_contract_facts_from_text,
     fetch_dart_document_text,
 )
@@ -101,6 +103,14 @@ FINANCING_PURPOSE_KEYS = (
     "fdpp_dtrp",
     "fdpp_ocsa",
     "fdpp_etc",
+)
+
+PRELIMINARY_EARNINGS_TITLES = (
+    "연결재무제표기준영업(잠정)실적",
+    "영업(잠정)실적",
+    "잠정영업실적",
+    "매출액 또는 손익구조 변동",
+    "매출액또는손익구조변동",
 )
 
 
@@ -224,6 +234,25 @@ def _report_code_from_title(title: str) -> str | None:
         if needle in title:
             return "11014" if needle == "분기보고서" and "3분기" in title else code
     return None
+
+
+def _is_preliminary_earnings_title(title: str) -> bool:
+    compact = re.sub(r"\s+", "", title)
+    return any(re.sub(r"\s+", "", term) in compact for term in PRELIMINARY_EARNINGS_TITLES)
+
+
+def _reporting_period_end(title: str, published: date) -> date | None:
+    report_code = _report_code_from_title(title)
+    if report_code is None:
+        return None
+    year = int(_business_year_from_title_or_date(title, published))
+    month_day = {
+        "11013": (3, 31),
+        "11012": (6, 30),
+        "11014": (9, 30),
+        "11011": (12, 31),
+    }.get(report_code)
+    return date(year, *month_day) if month_day else None
 
 
 def _business_year_from_title_or_date(title: str, published: date) -> str:
@@ -496,6 +525,28 @@ class OpenDARTProvider(FilingProvider):
     convertible_bond_endpoint = "https://opendart.fss.or.kr/api/cvbdIsDecsn.json"
     dividend_endpoint = "https://opendart.fss.or.kr/api/alotMatter.json"
 
+    async def _fetch_preliminary_earnings(
+        self,
+        client: httpx.AsyncClient,
+        title: str,
+        receipt_no: str,
+    ) -> tuple[PreliminaryEarningsFacts | None, list[str]]:
+        if not _is_preliminary_earnings_title(title):
+            return None, []
+        try:
+            document = await fetch_dart_document_text(client, receipt_no)
+        except (httpx.HTTPError, ValueError):
+            return None, ["OpenDART preliminary earnings document request failed"]
+        if document is None:
+            return None, ["OpenDART preliminary earnings document was unavailable"]
+        parsed = extract_preliminary_earnings_facts_from_text(document.text)
+        if not parsed.facts or parsed.period_end is None:
+            return None, [
+                "OpenDART preliminary earnings table parsing was incomplete",
+                *build_text_diagnostics(document)[:2],
+            ]
+        return parsed, []
+
     async def _fetch_dividend_facts(
         self,
         client: httpx.AsyncClient,
@@ -735,6 +786,12 @@ class OpenDARTProvider(FilingProvider):
                         published = date.today()
                     extra_facts: list[str] = []
                     extra_unknowns: list[str] = []
+                    preliminary, preliminary_unknowns = await self._fetch_preliminary_earnings(
+                        client, title, receipt_no
+                    )
+                    if preliminary:
+                        extra_facts.extend(preliminary.facts)
+                    extra_unknowns.extend(preliminary_unknowns)
                     for facts, unknowns in (
                         await self._fetch_financial_facts(client, settings.opendart_api_key, company.corp_code, title, published),
                         await self._fetch_dividend_facts(client, settings.opendart_api_key, company.corp_code, title, published),
@@ -747,6 +804,18 @@ class OpenDARTProvider(FilingProvider):
                         extra_unknowns.extend(unknowns)
                     confirmed_facts = [f"OpenDART filing title: {title}", f"OpenDART receipt number: {receipt_no}", *extra_facts]
                     output_ticker = company.stock_code or ticker.upper()
+                    reporting_period_end = (
+                        preliminary.period_end
+                        if preliminary
+                        else _reporting_period_end(title, published)
+                    )
+                    document_type = (
+                        "preliminary_earnings"
+                        if preliminary
+                        else "full_statement"
+                        if _report_code_from_title(title) is not None
+                        else "regulatory_filing"
+                    )
                     events.append(
                         RawEvent(
                             ticker=output_ticker.upper(),
@@ -761,7 +830,29 @@ class OpenDARTProvider(FilingProvider):
                             confirmed_facts=confirmed_facts,
                             inferred_implications=[],
                             unknowns=_filing_unknowns(extra_unknowns),
-                            financial_report_filed=_report_code_from_title(title) is not None,
+                            reporting_period_end=reporting_period_end,
+                            document_type=document_type,
+                            financial_scope=(
+                                "income_statement_partial"
+                                if preliminary
+                                else "full_statement"
+                                if _report_code_from_title(title) is not None
+                                else None
+                            ),
+                            revenue=preliminary.revenue if preliminary else None,
+                            operating_income=(
+                                preliminary.operating_income if preliminary else None
+                            ),
+                            net_income=preliminary.net_income if preliminary else None,
+                            operating_margin=(
+                                preliminary.operating_margin if preliminary else None
+                            ),
+                            yoy_growth=preliminary.yoy_growth if preliminary else None,
+                            qoq_growth=preliminary.qoq_growth if preliminary else None,
+                            financial_report_filed=(
+                                _report_code_from_title(title) is not None
+                                or preliminary is not None
+                            ),
                         )
                     )
                 return events

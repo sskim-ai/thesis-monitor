@@ -2,6 +2,7 @@ import re
 
 from app.providers.base import RawEvent
 from app.schemas.event import EventType
+from app.services.corporate_action_terms import is_buyback_text
 
 
 KEYWORD_EVENT_TYPES: list[tuple[EventType, tuple[str, ...]]] = [
@@ -188,7 +189,7 @@ def _mentions_company(raw_event: RawEvent, text: str) -> bool:
 def _flag_event_type(raw_event: RawEvent, text: str) -> EventType | None:
     if raw_event.confirmed_buyback:
         return EventType.buyback
-    if raw_event.buyback_candidate:
+    if raw_event.buyback_candidate or is_buyback_text(text):
         return EventType.capital_allocation
     if raw_event.financial_report_filed:
         return EventType.financial_report

@@ -13,6 +13,7 @@ from app.models.security import (
     ProviderResponseCache,
     ShareCountObservation,
 )
+from app.services.provider_telemetry_service import ProviderTelemetryService
 
 
 def _number(value: object) -> float | None:
@@ -59,6 +60,7 @@ class AlphaVantageService:
     def __init__(self, transport: httpx.AsyncBaseTransport | None = None) -> None:
         self.settings = get_settings()
         self.transport = transport
+        self.telemetry = ProviderTelemetryService()
 
     def _cached(
         self, session: Session, ticker: str, data_type: str
@@ -81,20 +83,49 @@ class AlphaVantageService:
     async def _fetch(
         self, session: Session, ticker: str, function: str
     ) -> tuple[dict[str, object], str]:
+        started_at = datetime.now(timezone.utc)
         cached = self._cached(session, ticker, function)
         if cached:
             try:
                 payload = json.loads(cached.payload)
             except json.JSONDecodeError:
                 payload = {}
+            self.telemetry.record(
+                session,
+                provider="alpha_vantage",
+                endpoint=function,
+                ticker=ticker,
+                started_at=started_at,
+                status="cached",
+            )
             return (payload if isinstance(payload, dict) else {}), "cached"
         if not self.settings.alpha_vantage_api_key:
+            self.telemetry.record(
+                session,
+                provider="alpha_vantage",
+                endpoint=function,
+                ticker=ticker,
+                started_at=started_at,
+                status="not_configured",
+                error_type="ProviderNotConfigured",
+                error_reason="api_key_not_configured",
+            )
             return {}, "not_configured"
         today = datetime.now(timezone.utc).date()
         if self.__class__._request_date != today:
             self.__class__._request_date = today
             self.__class__._request_count = 0
         if self.__class__._request_count >= self.settings.alpha_vantage_request_budget:
+            self.telemetry.record(
+                session,
+                provider="alpha_vantage",
+                endpoint=function,
+                ticker=ticker,
+                started_at=started_at,
+                status="request_budget_exhausted",
+                error_type="RequestBudgetExceeded",
+                error_reason="configured_daily_request_budget_exhausted",
+            )
             return {}, "request_budget_exhausted"
         self.__class__._request_count += 1
         now = datetime.now(timezone.utc)
@@ -107,6 +138,7 @@ class AlphaVantageService:
         ).first() or ProviderResponseCache(
             provider="alpha_vantage", ticker=ticker, data_type=function
         )
+        caught_exc: Exception | None = None
         try:
             async with httpx.AsyncClient(
                 timeout=self.settings.valuation_provider_timeout_seconds,
@@ -133,6 +165,7 @@ class AlphaVantageService:
             row.last_error = None
             status = "fresh"
         except (httpx.HTTPError, ValueError, TypeError) as exc:
+            caught_exc = exc
             payload = {}
             row.status = "failed"
             row.payload = "{}"
@@ -142,6 +175,22 @@ class AlphaVantageService:
         row.expires_at = now + timedelta(hours=self.settings.alpha_vantage_cache_hours)
         session.add(row)
         session.flush()
+        status_code = (
+            str(caught_exc.response.status_code)
+            if isinstance(caught_exc, httpx.HTTPStatusError)
+            else None
+        )
+        self.telemetry.record(
+            session,
+            provider="alpha_vantage",
+            endpoint=function,
+            ticker=ticker,
+            started_at=started_at,
+            status="success" if status == "fresh" else status,
+            error_type=row.last_error,
+            error_code=status_code,
+            error_reason=("provider_response_unavailable" if status != "fresh" else None),
+        )
         return payload, status
 
     async def collect(
@@ -206,12 +255,15 @@ class AlphaVantageService:
                 estimate_period=period,
             )
             row.estimate_as_of = as_of
+            row.metric = "eps"
+            row.basis = "FY1"
             row.estimate_mean = _number(
                 item.get("estimatedEPS")
                 or item.get("estimated_eps")
                 or item.get("estimateMean")
                 or item.get("eps_estimate_average")
             )
+            row.value = row.estimate_mean
             row.estimate_high = _number(
                 item.get("estimatedEPSHigh")
                 or item.get("estimateHigh")
@@ -243,6 +295,15 @@ class AlphaVantageService:
                 "up" if revisions_up > revisions_down else "down" if revisions_down > revisions_up else "unchanged"
             )
             row.quality = "fresh" if row.estimate_mean is not None else "partial"
+            row.coverage_status = (
+                "full"
+                if row.estimate_mean is not None
+                and row.analyst_count is not None
+                and period != "FY1"
+                else "partial"
+                if row.estimate_mean is not None
+                else "unavailable"
+            )
             row.raw_reference = str(item.get("horizon") or "fiscal year")
             session.add(row)
 

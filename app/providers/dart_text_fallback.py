@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from datetime import date
 from html import unescape
 import re
 
@@ -21,6 +22,20 @@ class DartDocumentText:
     dcm_no: str | None
     source: str
     viewer_params: DartViewerParams | None = None
+
+
+@dataclass(frozen=True)
+class PreliminaryEarningsFacts:
+    facts: list[str]
+    period_end: date | None
+    revenue: float | None
+    operating_income: float | None
+    net_income: float | None
+    owners_parent_net_income: float | None
+    operating_margin: float | None
+    yoy_growth: float | None
+    qoq_growth: float | None
+    unit_scale: float
 
 
 def _strip_html(value: str) -> str:
@@ -229,6 +244,149 @@ def extract_supply_contract_facts_from_text(text: str) -> list[str]:
     if period:
         facts.append(f"DART text supply contract fact: period = {period}")
     return facts
+
+
+def _numeric_cell(value: str) -> float | None:
+    cleaned = _clean_cell(value).replace(",", "").replace("△", "-")
+    cleaned = cleaned.replace("▲", "-").replace("%", "")
+    match = re.fullmatch(r"\(?\s*(-?\d+(?:\.\d+)?)\s*\)?", cleaned)
+    if not match:
+        return None
+    number = float(match.group(1))
+    return -number if cleaned.startswith("(") and number > 0 else number
+
+
+def _preliminary_unit_scale(tokens: list[str]) -> float:
+    unit_text = next((token for token in tokens if "단위" in token), "")
+    compact = _compact(unit_text)
+    if "백만원" in compact:
+        return 1_000_000.0
+    if "억원" in compact:
+        return 100_000_000.0
+    if "천원" in compact:
+        return 1_000.0
+    return 1.0
+
+
+def _preliminary_period_end(tokens: list[str]) -> date | None:
+    first_result = next(
+        (index for index, token in enumerate(tokens[:30]) if _compact(token) == "당기실적"),
+        None,
+    )
+    if first_result is None:
+        return None
+    dates: list[date] = []
+    for token in tokens[first_result + 1 : first_result + 8]:
+        match = re.search(r"(20\d{2})[-./](\d{1,2})[-./](\d{1,2})", token)
+        if not match:
+            continue
+        try:
+            dates.append(date(*(int(part) for part in match.groups())))
+        except ValueError:
+            continue
+    return max(dates) if dates else None
+
+
+def _preliminary_metric(
+    tokens: list[str], aliases: tuple[str, ...]
+) -> tuple[float | None, float | None, float | None, float | None]:
+    labels = {_compact(alias) for alias in aliases}
+    index = next(
+        (i for i, token in enumerate(tokens) if _compact(token) in labels),
+        None,
+    )
+    if index is None:
+        return None, None, None, None
+    tail = tokens[index + 1 : index + 35]
+    current_index = next(
+        (i for i, token in enumerate(tail) if _compact(token) == "당해실적"),
+        None,
+    )
+    if current_index is None:
+        return None, None, None, None
+    cumulative_index = next(
+        (
+            i
+            for i, token in enumerate(tail[current_index + 1 :], current_index + 1)
+            if _compact(token) == "누계실적"
+        ),
+        None,
+    )
+    current_cells = tail[current_index + 1 : cumulative_index]
+    current_values = [number for token in current_cells if (number := _numeric_cell(token)) is not None]
+    current = current_values[0] if current_values else None
+    qoq = current_values[2] if len(current_values) >= 3 else None
+    yoy = current_values[4] if len(current_values) >= 5 else None
+    cumulative = None
+    if cumulative_index is not None:
+        for token in tail[cumulative_index + 1 :]:
+            cumulative = _numeric_cell(token)
+            if cumulative is not None:
+                break
+    return current, cumulative, yoy, qoq
+
+
+def extract_preliminary_earnings_facts_from_text(text: str) -> PreliminaryEarningsFacts:
+    tokens = _tokens(text)
+    scale = _preliminary_unit_scale(tokens)
+    period_end = _preliminary_period_end(tokens)
+    revenue, cumulative_revenue, revenue_yoy, revenue_qoq = _preliminary_metric(
+        tokens, ("매출액", "영업수익", "수익(매출액)")
+    )
+    operating_income, cumulative_operating_income, _, _ = _preliminary_metric(
+        tokens, ("영업이익", "영업이익(손실)")
+    )
+    net_income, cumulative_net_income, _, _ = _preliminary_metric(
+        tokens, ("당기순이익", "분기순이익", "반기순이익")
+    )
+    owners_income, cumulative_owners_income, _, _ = _preliminary_metric(
+        tokens,
+        (
+            "지배기업 소유주지분 순이익",
+            "지배기업 소유주 귀속 당기순이익",
+            "지배주주순이익",
+        ),
+    )
+    quarter = ((period_end.month - 1) // 3 + 1) if period_end else None
+    period_label = f"{period_end.year}년 {quarter}분기" if period_end and quarter else "잠정실적"
+    basis = (
+        "잠정실적; fs_div=CFS; sj_div=IS; "
+        f"thstrm_nm={period_label}; unit=KRW; period_scope=single-quarter; "
+        "amount_scope=standalone_or_balance; report_code=preliminary"
+    )
+    facts: list[str] = []
+    for label, current, cumulative in (
+        ("매출액", revenue, cumulative_revenue),
+        ("영업이익", operating_income, cumulative_operating_income),
+        ("당기순이익", net_income, cumulative_net_income),
+        ("지배주주순이익", owners_income, cumulative_owners_income),
+    ):
+        if current is not None:
+            facts.append(
+                f"OpenDART financial fact: {label} = {current * scale:.0f} KRW ({basis})"
+            )
+        if cumulative is not None:
+            facts.append(
+                f"OpenDART financial cumulative fact: {label} = {cumulative * scale:.0f} KRW "
+                f"({basis.replace('amount_scope=standalone_or_balance', 'amount_scope=cumulative')})"
+            )
+    operating_margin = (
+        operating_income / revenue * 100
+        if revenue not in {None, 0} and operating_income is not None
+        else None
+    )
+    return PreliminaryEarningsFacts(
+        facts=facts,
+        period_end=period_end,
+        revenue=revenue * scale if revenue is not None else None,
+        operating_income=operating_income * scale if operating_income is not None else None,
+        net_income=net_income * scale if net_income is not None else None,
+        owners_parent_net_income=owners_income * scale if owners_income is not None else None,
+        operating_margin=operating_margin,
+        yoy_growth=revenue_yoy,
+        qoq_growth=revenue_qoq,
+        unit_scale=scale,
+    )
 
 
 def _marker_lines(text: str) -> list[str]:

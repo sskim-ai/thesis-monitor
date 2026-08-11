@@ -18,7 +18,10 @@ UNIT_MULTIPLIERS = {
     "billion usd": ("USD", 1_000_000_000.0),
 }
 VALID_PERIOD_SCOPES = {"quarter", "half-year", "ytd", "annual", "single-quarter", "cumulative"}
-FINANCIAL_FACT_PREFIX = "opendart financial fact:"
+FINANCIAL_FACT_PREFIXES = (
+    "opendart financial fact:",
+    "opendart financial cumulative fact:",
+)
 
 
 @dataclass(frozen=True)
@@ -94,12 +97,24 @@ def _is_financial_company(event: Event) -> bool:
     return any(term in text for term in ("은행", "보험", "증권", "금융", "bank", "insurance"))
 
 
+def _fact_amount(facts: list[str], labels: tuple[str, ...]) -> float | None:
+    for fact in facts:
+        if not any(label in fact for label in labels):
+            continue
+        match = re.search(r"=\s*([-\d,.]+)\s+KRW\b", fact, re.IGNORECASE)
+        if match:
+            return float(match.group(1).replace(",", ""))
+    return None
+
+
 def validate_event_financials(
     event: Event,
     operating_margin_upper_bound: float = 60.0,
 ) -> FinancialValidationResult:
     facts = _list(event.confirmed_facts)
-    financial_facts = [fact for fact in facts if fact.lower().startswith(FINANCIAL_FACT_PREFIX)]
+    financial_facts = [
+        fact for fact in facts if fact.lower().startswith(FINANCIAL_FACT_PREFIXES)
+    ]
     if not financial_facts:
         return FinancialValidationResult()
 
@@ -125,9 +140,18 @@ def validate_event_financials(
             result.warnings.append("Financial amount unit is not explicitly supported.")
             break
 
-    revenue = event.revenue
-    operating_income = event.operating_income
+    revenue = event.revenue or _fact_amount(
+        financial_facts, ("매출액", "수익(매출액)", "영업수익")
+    )
+    operating_income = event.operating_income or _fact_amount(
+        financial_facts, ("영업이익",)
+    )
+    net_income = event.net_income or _fact_amount(
+        financial_facts, ("지배주주순이익", "당기순이익")
+    )
     margin = event.operating_margin
+    if margin is None and revenue not in {None, 0} and operating_income is not None:
+        margin = operating_income / revenue * 100
     if revenue is not None and revenue <= 0:
         result.warnings.append("Revenue is non-positive, so ratio validation is unavailable.")
     if (
@@ -137,6 +161,13 @@ def validate_event_financials(
         and not _is_financial_company(event)
     ):
         result.warnings.append("Absolute operating income exceeds revenue.")
+    if (
+        revenue not in {None, 0}
+        and net_income is not None
+        and abs(net_income) > abs(revenue)
+        and not _is_financial_company(event)
+    ):
+        result.warnings.append("Absolute net income exceeds revenue.")
     if margin is not None and not _is_financial_company(event):
         if margin > operating_margin_upper_bound or margin < -100:
             result.warnings.append("Operating margin is outside the configured sanity range.")
@@ -158,7 +189,7 @@ def validate_event_financials(
     event.yoy_growth = None
     event.qoq_growth = None
     event.confirmed_facts = json.dumps(
-        [fact for fact in facts if not fact.lower().startswith(FINANCIAL_FACT_PREFIX)],
+        [fact for fact in facts if not fact.lower().startswith(FINANCIAL_FACT_PREFIXES)],
         ensure_ascii=False,
     )
     implications = [

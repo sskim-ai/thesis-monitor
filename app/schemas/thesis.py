@@ -336,15 +336,24 @@ class DataCoverage(BaseModel):
     historical_valuation: str = "unavailable"
     forward_valuation: str = "unavailable"
     filing_discovery_coverage: str = "not_applicable"
+    document_fetch_coverage: str = "not_applicable"
+    exhibit_discovery_coverage: str = "not_applicable"
     statement_parsing_coverage: str = "not_applicable"
     per_share_mapping_coverage: str = "not_applicable"
     valuation_coverage: str = "unavailable"
     price_quality: str = "unavailable"
     financial_quality: str = "unavailable"
+    full_financial_quality: str = "unavailable"
+    preliminary_financial_quality: str = "unavailable"
     event_quality: str = "unavailable"
     consensus_quality: str = "unavailable"
     historical_valuation_quality: str = "unavailable"
     forward_valuation_quality: str = "unavailable"
+    share_count_quality: str = "unavailable"
+    dividend_quality: str = "unavailable"
+    foreign_filing_quality: str = "not_applicable"
+    overall_data_quality: str = "unavailable"
+    overall_quality_reason: str | None = None
 
 
 class ValuationSnapshot(BaseModel):
@@ -409,8 +418,12 @@ class ValuationSnapshot(BaseModel):
     financial_freshness: str = "unavailable"
     latest_full_financial_period: str | None = None
     latest_preliminary_financial_period: str | None = None
+    latest_full_filing_date: str | None = None
+    latest_preliminary_filing_date: str | None = None
     latest_guidance_date: str | None = None
     financial_refresh_result: str = "unavailable"
+    financial_refresh_reason: str | None = None
+    financial_refresh_trigger_event_id: int | None = None
     estimate_provider: str | None = None
     estimate_as_of: str | None = None
     estimate_period: str | None = None
@@ -419,6 +432,7 @@ class ValuationSnapshot(BaseModel):
     estimate_low: float | None = None
     estimate_analyst_count: int | None = None
     estimate_revision_direction: str = "unknown"
+    consensus_status: str = "unavailable"
     consensus_disagreement: bool = False
     share_count_discrepancy_warning: bool = False
     historical_distribution_confidence: float = 0.0

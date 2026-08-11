@@ -14,6 +14,9 @@ class Event(SQLModel, table=True):
     title: str
     url: str
     raw_summary: str | None = None
+    reporting_period_end: date | None = Field(default=None, index=True)
+    document_type: str | None = Field(default=None, index=True)
+    financial_scope: str | None = None
     event_type: str = Field(index=True)
     keywords: str | None = None
     importance_candidate: str | None = None
@@ -77,6 +80,7 @@ class CanonicalIssue(SQLModel, table=True):
     status: str = "opened"
     execution_status: str = "announced"
     economic_status: str = "open"
+    official_verification_status: str = "unverified"
     opened_date: date
     updated_date: date
     latest_event_date: date

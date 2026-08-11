@@ -10,6 +10,7 @@ class FinancialSnapshot(SQLModel, table=True):
     period: str
     snapshot_type: str = Field(default="full_statement", index=True)
     source_event_date: date | None = Field(default=None, index=True)
+    source_filing_id: str | None = Field(default=None, index=True)
     period_type: str | None = Field(default=None, index=True)
     fiscal_year: int | None = Field(default=None, index=True)
     period_scope: str | None = None
@@ -21,6 +22,8 @@ class FinancialSnapshot(SQLModel, table=True):
     filing_date: date | None = None
     source: str | None = None
     provider: str | None = None
+    currency: str | None = None
+    unit_scale: float | None = None
     fs_div: str | None = None
     sj_div: str | None = None
     revenue_basis: str | None = None
@@ -45,6 +48,8 @@ class FinancialSnapshot(SQLModel, table=True):
     capex: float | None = None
     gross_margin: float | None = None
     operating_margin: float | None = None
+    yoy_growth: float | None = None
+    qoq_growth: float | None = None
     guidance: str | None = None
     backlog: float | None = None
     inventory: float | None = None

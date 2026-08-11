@@ -122,12 +122,14 @@ def test_new_financial_event_marks_snapshot_refresh_pending() -> None:
         )
         event = _event("FRESH", "Quarterly report", "financial_report", date(2025, 8, 1))
         event.financial_report_filed = True
+        event.reporting_period_end = date(2025, 6, 30)
+        event.document_type = "full_statement"
         session.add(event)
         session.commit()
         result = FinancialFreshnessService().assess(session, "FRESH")
 
     assert result.refresh_required is True
-    assert result.status == "refresh_pending"
+    assert result.status == "refresh_required"
     assert event.financial_refresh_required is True
 
 

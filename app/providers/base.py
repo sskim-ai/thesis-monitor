@@ -24,6 +24,9 @@ class RawEvent:
     confirmed_facts: list[str] = field(default_factory=list)
     inferred_implications: list[str] = field(default_factory=list)
     unknowns: list[str] = field(default_factory=list)
+    reporting_period_end: date | None = None
+    document_type: str | None = None
+    financial_scope: str | None = None
     revenue: float | None = None
     operating_income: float | None = None
     net_income: float | None = None
@@ -75,6 +78,16 @@ class BaseProvider(ABC):
 
 
 class NewsProvider(BaseProvider):
+    @abstractmethod
+    async def fetch_events(
+        self,
+        ticker: str,
+        lookback_days: int,
+        *,
+        search_aliases: list[str] | None = None,
+    ) -> list[RawEvent]:
+        raise NotImplementedError
+
     async def fetch_company_profile(self, ticker: str) -> CompanyProfile | None:
         raise NotImplementedError
 

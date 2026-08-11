@@ -80,6 +80,8 @@ def _period_type(title: str, period: str, report_code: str | None = None) -> str
         return "H1"
     if "3분기" in title or "3분기" in period:
         return "Q3"
+    if "2분기" in title or "2분기" in period:
+        return "Q2"
     if "1분기" in title or "1분기" in period:
         return "Q1"
     if "분기보고서" in title:
@@ -94,6 +96,14 @@ def _fiscal_year(event: Event, period: str) -> int | None:
     return event.date.year if event.date else None
 
 
+def _filing_id(facts: list[str]) -> str | None:
+    fact = next(
+        (item for item in facts if "receipt number:" in item.lower()),
+        None,
+    )
+    return fact.split(":", 1)[-1].strip() if fact else None
+
+
 def _prior_cumulative(
     session: Session,
     ticker: str,
@@ -101,7 +111,9 @@ def _prior_cumulative(
     fiscal_year: int | None,
     period_type: str,
 ) -> FinancialSnapshot | None:
-    previous_type = {"H1": "Q1", "Q3": "H1", "FY": "Q3"}.get(period_type)
+    previous_type = {"Q2": "Q1", "H1": "Q1", "Q3": "H1", "FY": "Q3"}.get(
+        period_type
+    )
     if previous_type is None:
         return None
     query = select(FinancialSnapshot).where(
@@ -208,10 +220,74 @@ def upsert_financial_snapshot_from_event(session: Session, event: Event) -> Fina
         return None
 
     facts = _json_list(event.confirmed_facts)
+    source_filing_id = _filing_id(facts)
+    is_preliminary = event.document_type == "preliminary_earnings" or any(
+        term in event.title.replace(" ", "")
+        for term in (
+            "잠정실적",
+            "잠정영업실적",
+            "영업(잠정)실적",
+            "매출액또는손익구조변동",
+        )
+    )
+    if event.financial_statement_basis_warning and is_preliminary:
+        query = select(FinancialSnapshot).where(
+            FinancialSnapshot.ticker == event.ticker,
+            FinancialSnapshot.provider == event.provider,
+        )
+        if source_filing_id:
+            query = query.where(FinancialSnapshot.source_filing_id == source_filing_id)
+        else:
+            query = query.where(
+                FinancialSnapshot.reported_date == event.date,
+                FinancialSnapshot.snapshot_type == "preliminary_earnings",
+            )
+        snapshot = session.exec(query).first() or FinancialSnapshot(
+            ticker=event.ticker,
+            period=(
+                f"{event.reporting_period_end.year}-Q"
+                f"{((event.reporting_period_end.month - 1) // 3) + 1}"
+                if event.reporting_period_end
+                else event.title
+            ),
+        )
+        snapshot.snapshot_type = "preliminary_earnings"
+        snapshot.source_event_date = event.date
+        snapshot.source_filing_id = source_filing_id
+        snapshot.period_type = (
+            f"Q{((event.reporting_period_end.month - 1) // 3) + 1}"
+            if event.reporting_period_end
+            else None
+        )
+        snapshot.fiscal_year = (
+            event.reporting_period_end.year if event.reporting_period_end else event.date.year
+        )
+        snapshot.period_scope = "single-quarter"
+        snapshot.financial_period_end = event.reporting_period_end
+        snapshot.financials_as_of = event.reporting_period_end
+        snapshot.filing_date = event.date
+        snapshot.reported_date = event.date
+        snapshot.source = event.source
+        snapshot.provider = event.provider
+        snapshot.currency = "KRW"
+        snapshot.revenue = None
+        snapshot.operating_income = None
+        snapshot.net_income = None
+        snapshot.owners_parent_net_income = None
+        snapshot.common_net_income = None
+        snapshot.operating_margin = None
+        snapshot.cumulative_revenue = None
+        snapshot.cumulative_operating_income = None
+        snapshot.cumulative_net_income = None
+        snapshot.financial_statement_basis_warning = True
+        snapshot.margin_quality_review = True
+        snapshot.quality_warnings = (
+            "preliminary earnings filing confirmed; parsed unit or period validation failed"
+        )
+        session.add(snapshot)
+        return snapshot
     revenue_fact = _fact_line(facts, "매출액")
     profit_fact = _fact_line(facts, "영업이익")
-    if revenue_fact is None and profit_fact is None:
-        return None
 
     assets_fact = _fact_line(facts, "자산총계")
     liabilities_fact = _fact_line(facts, "부채총계")
@@ -230,11 +306,18 @@ def upsert_financial_snapshot_from_event(session: Session, event: Event) -> Fina
     )
     cumulative_basic_eps_fact = _fact_line(facts, "기본주당이익", cumulative=True)
     cumulative_diluted_eps_fact = _fact_line(facts, "희석주당이익", cumulative=True)
+    if (
+        revenue_fact is None
+        and profit_fact is None
+        and cumulative_revenue_fact is None
+        and cumulative_profit_fact is None
+    ):
+        return None
     issued_shares_fact = _fact_line(facts, "보통주발행주식수", share=True)
     treasury_shares_fact = _fact_line(facts, "자기주식수", share=True)
     outstanding_shares_fact = _fact_line(facts, "보통주유통주식수", share=True)
-    revenue_basis = _basis(revenue_fact)
-    profit_basis = _basis(profit_fact)
+    revenue_basis = _basis(revenue_fact or cumulative_revenue_fact)
+    profit_basis = _basis(profit_fact or cumulative_profit_fact)
     balance_basis = _basis(assets_fact) or _basis(liabilities_fact) or _basis(equity_fact)
     period = (
         _basis_value(revenue_basis, "thstrm_nm")
@@ -248,20 +331,38 @@ def upsert_financial_snapshot_from_event(session: Session, event: Event) -> Fina
         or "cumulative"
     )
     period_type = _period_type(event.title, period, report_code)
-    fiscal_year = _fiscal_year(event, period)
-    snapshot_type = (
-        "preliminary_earnings"
-        if any(term in event.title for term in ("잠정실적", "잠정영업실적", "영업(잠정)실적"))
-        else "full_statement"
+    if event.reporting_period_end:
+        period_type = {
+            3: "Q1",
+            6: "Q2",
+            9: "Q3",
+            12: "FY",
+        }.get(event.reporting_period_end.month, period_type)
+    amount_scope = _basis_value(revenue_basis, "amount_scope") or _basis_value(
+        profit_basis, "amount_scope"
     )
+    if amount_scope == "cumulative" and revenue_fact is None and profit_fact is None:
+        period_scope = {
+            "Q2": "half-year",
+            "H1": "half-year",
+            "Q3": "ytd",
+            "FY": "annual",
+        }.get(period_type, period_scope)
+    fiscal_year = _fiscal_year(event, period)
+    snapshot_type = "preliminary_earnings" if is_preliminary else "full_statement"
 
-    snapshot = session.exec(
-        select(FinancialSnapshot).where(
-            FinancialSnapshot.ticker == event.ticker,
+    query = select(FinancialSnapshot).where(
+        FinancialSnapshot.ticker == event.ticker,
+        FinancialSnapshot.provider == event.provider,
+    )
+    if source_filing_id:
+        query = query.where(FinancialSnapshot.source_filing_id == source_filing_id)
+    else:
+        query = query.where(
             FinancialSnapshot.reported_date == event.date,
-            FinancialSnapshot.provider == event.provider,
+            FinancialSnapshot.snapshot_type == snapshot_type,
         )
-    ).first()
+    snapshot = session.exec(query).first()
     if snapshot is None:
         snapshot = FinancialSnapshot(ticker=event.ticker, period=period)
         session.add(snapshot)
@@ -330,18 +431,23 @@ def upsert_financial_snapshot_from_event(session: Session, event: Event) -> Fina
     snapshot.period_type = period_type
     snapshot.snapshot_type = snapshot_type
     snapshot.source_event_date = event.date
+    snapshot.source_filing_id = source_filing_id
     snapshot.fiscal_year = fiscal_year
     snapshot.period_scope = period_scope
     snapshot.is_cumulative = period_scope != "single-quarter"
     snapshot.normalization_method = ";".join(
         dict.fromkeys((revenue_method, profit_method, net_income_method, diluted_eps_method))
     )
-    snapshot.financial_period_end = _financial_period_end(fiscal_year, period_type)
+    snapshot.financial_period_end = event.reporting_period_end or _financial_period_end(
+        fiscal_year, period_type
+    )
     snapshot.filing_date = event.date
     snapshot.financials_as_of = snapshot.financial_period_end
     snapshot.reported_date = event.date
     snapshot.source = event.source
     snapshot.provider = event.provider
+    snapshot.currency = "KRW"
+    snapshot.unit_scale = 1.0
     snapshot.fs_div = _basis_value(revenue_basis, "fs_div") or _basis_value(profit_basis, "fs_div")
     snapshot.sj_div = _basis_value(revenue_basis, "sj_div") or _basis_value(profit_basis, "sj_div")
     snapshot.revenue_basis = revenue_basis
@@ -350,7 +456,7 @@ def upsert_financial_snapshot_from_event(session: Session, event: Event) -> Fina
     snapshot.quality_warnings = "; ".join(item for item in _json_list(event.unknowns) if "quality warning" in item.lower()) or None
     snapshot.revenue = revenue
     snapshot.operating_income = profit
-    snapshot.net_income = reported_net_income
+    snapshot.net_income = reported_net_income or owners_net_income
     snapshot.owners_parent_net_income = owners_net_income
     snapshot.common_net_income = owners_net_income
     snapshot.basic_eps = basic_eps
@@ -362,6 +468,8 @@ def upsert_financial_snapshot_from_event(session: Session, event: Event) -> Fina
     snapshot.cumulative_basic_eps = cumulative_basic_eps
     snapshot.cumulative_diluted_eps = cumulative_diluted_eps
     snapshot.operating_margin = _margin(revenue, profit)
+    snapshot.yoy_growth = event.yoy_growth
+    snapshot.qoq_growth = event.qoq_growth
     if snapshot_type == "full_statement":
         snapshot.debt = liabilities
         snapshot.total_equity = equity
@@ -395,7 +503,9 @@ def upsert_financial_snapshot_from_event(session: Session, event: Event) -> Fina
 def _financial_period_end(fiscal_year: int | None, period_type: str | None) -> date | None:
     if fiscal_year is None:
         return None
-    month = {"Q1": 3, "H1": 6, "Q3": 9, "FY": 12}.get(period_type or "")
+    month = {"Q1": 3, "Q2": 6, "H1": 6, "Q3": 9, "FY": 12}.get(
+        period_type or ""
+    )
     if month is None:
         return None
     return date(fiscal_year, month, monthrange(fiscal_year, month)[1])

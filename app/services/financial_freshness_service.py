@@ -16,6 +16,7 @@ _FINANCIAL_TYPES = {
     "margin_guidance_change",
     "financial_report",
 }
+_OFFICIAL_FINANCIAL_PROVIDERS = {"opendart", "sec_edgar", "company_ir"}
 
 
 @dataclass(frozen=True)
@@ -31,6 +32,10 @@ class FinancialFreshness:
     latest_guidance_date: date | None = None
     latest_consensus_date: date | None = None
     refresh_result: str = "unavailable"
+    latest_full_filing_date: date | None = None
+    latest_preliminary_filing_date: date | None = None
+    refresh_reason: str | None = None
+    refresh_trigger_event_id: int | None = None
 
 
 def _material(event: Event) -> bool:
@@ -47,6 +52,14 @@ def _material(event: Event) -> bool:
     )
 
 
+def _period(row: FinancialSnapshot | None) -> date | None:
+    return (row.financial_period_end or row.financials_as_of) if row else None
+
+
+def _filing_date(row: FinancialSnapshot | None) -> date | None:
+    return (row.filing_date or row.reported_date) if row else None
+
+
 class FinancialFreshnessService:
     def assess(self, session: Session, ticker: str) -> FinancialFreshness:
         events = list(
@@ -54,69 +67,148 @@ class FinancialFreshnessService:
                 select(Event).where(Event.ticker == ticker).order_by(Event.date.desc())
             ).all()
         )
-        latest_event = next((event for event in events if _material(event)), None)
-        rows = list(session.exec(
-            select(FinancialSnapshot)
-            .where(FinancialSnapshot.ticker == ticker)
-            .order_by(FinancialSnapshot.filing_date.desc(), FinancialSnapshot.reported_date.desc())
-        ).all())
+        material_events = [event for event in events if _material(event)]
+        latest_event = material_events[0] if material_events else None
+        period_events = [event for event in material_events if event.reporting_period_end]
+        latest_period_event = max(
+            period_events,
+            key=lambda event: (event.reporting_period_end or date.min, event.date),
+            default=None,
+        )
+        rows = list(
+            session.exec(
+                select(FinancialSnapshot)
+                .where(FinancialSnapshot.ticker == ticker)
+                .order_by(
+                    FinancialSnapshot.financial_period_end.desc(),
+                    FinancialSnapshot.filing_date.desc(),
+                )
+            ).all()
+        )
         full_row = next(
-            (row for row in rows if row.snapshot_type == "full_statement"),
-            None,
+            (row for row in rows if row.snapshot_type == "full_statement"), None
         )
         preliminary_row = next(
             (row for row in rows if row.snapshot_type == "preliminary_earnings"),
             None,
         )
-        row = full_row or (rows[0] if rows else None)
-        snapshot_date = row.financial_period_end or row.financials_as_of if row else None
-        filing_date = row.filing_date or row.reported_date if row else None
+        row = full_row or preliminary_row or (rows[0] if rows else None)
         latest_guidance = next(
             (
-                event.date
-                for event in events
+                event
+                for event in material_events
                 if event.guidance_changed
                 or event.revenue_guidance_changed
                 or event.margin_guidance_changed
             ),
             None,
         )
+        full_period = _period(full_row)
+        preliminary_period = _period(preliminary_row)
+        available_period = max(
+            (period for period in (full_period, preliminary_period) if period),
+            default=None,
+        )
         metadata = {
-            "latest_full_period": (
-                full_row.financial_period_end or full_row.financials_as_of
-                if full_row
-                else None
-            ),
-            "latest_preliminary_period": (
-                preliminary_row.financial_period_end or preliminary_row.financials_as_of
-                if preliminary_row
-                else None
-            ),
-            "latest_guidance_date": latest_guidance,
+            "latest_full_period": full_period,
+            "latest_preliminary_period": preliminary_period,
+            "latest_guidance_date": latest_guidance.date if latest_guidance else None,
+            "latest_full_filing_date": _filing_date(full_row),
+            "latest_preliminary_filing_date": _filing_date(preliminary_row),
         }
+
+        for event in material_events:
+            event.financial_refresh_required = False
+            session.add(event)
+
         if latest_event is None and row is None:
             return FinancialFreshness(
-                "unavailable", None, None, None, False,
-                "provider_not_supported", **metadata,
+                "unavailable",
+                None,
+                None,
+                None,
+                False,
+                "provider_not_supported",
+                **metadata,
             )
-        if row is None:
-            return FinancialFreshness(
-                "refresh_pending", latest_event.date if latest_event else None, None, None, True,
-                "latest_financial_event_without_snapshot", **metadata,
-                refresh_result="filing_not_available",
+
+        refresh_event: Event | None = None
+        refresh_reason: str | None = None
+        if latest_period_event and (
+            available_period is None
+            or (latest_period_event.reporting_period_end or date.min) > available_period
+        ):
+            refresh_event = latest_period_event
+            refresh_reason = "newer_reporting_period_detected"
+        elif row is None and latest_event is not None:
+            refresh_event = latest_event
+            refresh_reason = "latest_financial_event_without_snapshot"
+        elif (
+            latest_event
+            and latest_event.provider in _OFFICIAL_FINANCIAL_PROVIDERS
+            and latest_event.reporting_period_end is None
+            and latest_event.document_type in {"full_statement", "preliminary_earnings"}
+        ):
+            refresh_event = latest_event
+            refresh_reason = "official_financial_period_unresolved"
+
+        if refresh_event:
+            refresh_event.financial_refresh_required = True
+            session.add(refresh_event)
+            result = (
+                "parsing_failed"
+                if refresh_event.document_type in {"full_statement", "preliminary_earnings"}
+                else "filing_not_available"
             )
-        refresh_required = bool(latest_event and (filing_date is None or latest_event.date > filing_date))
-        if refresh_required:
-            for event in events:
-                if _material(event) and event.date > (filing_date or date.min):
-                    event.financial_refresh_required = True
-                    session.add(event)
             return FinancialFreshness(
-                "refresh_pending", latest_event.date, snapshot_date, filing_date, True,
-                "financial_event_newer_than_snapshot", **metadata,
-                refresh_result=("preliminary_only" if preliminary_row else "filing_not_available"),
+                "refresh_required",
+                latest_event.date if latest_event else None,
+                _period(row),
+                _filing_date(row),
+                True,
+                refresh_reason,
+                **metadata,
+                refresh_result=result,
+                refresh_reason=refresh_reason,
+                refresh_trigger_event_id=refresh_event.id,
+            )
+
+        preliminary_is_newer = bool(
+            preliminary_period
+            and (full_period is None or preliminary_period > full_period)
+        )
+        unresolved_foreign_filing = bool(
+            latest_event
+            and latest_event.provider == "sec_edgar"
+            and latest_event.financial_report_filed
+            and latest_event.reporting_period_end is None
+            and any(form in latest_event.title.lower() for form in ("filed 6-k", "filed 20-f"))
+        )
+        if unresolved_foreign_filing and not preliminary_is_newer:
+            return FinancialFreshness(
+                "foreign_filing_partial",
+                latest_event.date if latest_event else None,
+                _period(row),
+                _filing_date(row),
+                False,
+                "foreign_filing_partial",
+                **metadata,
+                refresh_result="foreign_filing_partial",
+                refresh_reason="foreign_filing_period_or_statement_not_normalized",
+                refresh_trigger_event_id=latest_event.id if latest_event else None,
             )
         return FinancialFreshness(
-            "current", latest_event.date if latest_event else None, snapshot_date, filing_date,
-            False, **metadata, refresh_result="refresh_completed"
+            "preliminary_only" if preliminary_is_newer else "current",
+            latest_event.date if latest_event else None,
+            _period(row),
+            _filing_date(row),
+            False,
+            "preliminary_ahead_of_full_statement" if preliminary_is_newer else None,
+            **metadata,
+            refresh_result="preliminary_only" if preliminary_is_newer else "refresh_completed",
+            refresh_reason=(
+                "preliminary_income_statement_is_newer_than_full_statement"
+                if preliminary_is_newer
+                else "same_or_older_reporting_period_already_available"
+            ),
         )

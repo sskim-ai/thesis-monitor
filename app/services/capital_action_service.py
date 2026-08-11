@@ -7,6 +7,10 @@ from sqlmodel import Session, select
 
 from app.models.event import CanonicalIssue, Event
 from app.models.financial import FinancialSnapshot
+from app.services.corporate_action_terms import (
+    buyback_authorization_amount,
+    is_buyback_text,
+)
 from app.services.event_identity import event_fingerprint
 
 
@@ -65,10 +69,7 @@ def _issue_type(event: Event) -> str | None:
         return "convertible_bond"
     if "신주인수권" in text or "warrant" in text:
         return "warrant"
-    if event.confirmed_buyback or any(
-        term in text
-        for term in ("share repurchase", "stock repurchase", "buyback", "자사주 매입", "자기주식 취득")
-    ):
+    if event.buyback_candidate or event.confirmed_buyback or is_buyback_text(text):
         return "buyback"
     if "소각" in text or "share retirement" in text:
         return "share_retirement"
@@ -119,6 +120,10 @@ class CapitalActionService:
         return issue
 
     def canonicalize(self, session: Session, event: Event) -> CanonicalIssue | None:
+        if event.event_type == "non_thesis_noise":
+            return None
+        if event.provider in {"google_news_rss", "naver_news", "newsapi"} and not event.identity_validated:
+            return None
         action_type = _issue_type(event)
         if action_type is None:
             return None
@@ -169,6 +174,8 @@ class CapitalActionService:
             proceeds = _fact_number(
                 facts,
                 ("treasury stock fact: amount", "buyback fact: amount"),
+            ) or buyback_authorization_amount(
+                f"{event.title} {event.raw_summary or ''}"
             )
         previous = session.exec(
             select(FinancialSnapshot)
@@ -197,7 +204,21 @@ class CapitalActionService:
             issue.dilution_pct = -(issue.new_shares / pre_shares * 100)
         issue.proceeds = proceeds or issue.proceeds
         issue.execution_status = _execution_status(event.title)
-        issue.status = "updated" if issue.id else "opened"
+        issue.status = (
+            "updated"
+            if issue.id
+            else "candidate"
+            if action_type == "buyback" and not event.confirmed_buyback
+            else "opened"
+        )
+        if action_type == "buyback":
+            issue.official_verification_status = (
+                "verified"
+                if event.confirmed_buyback
+                else issue.official_verification_status
+                if issue.official_verification_status == "verified"
+                else "candidate"
+            )
         if issue.execution_status == "completed":
             issue.status = "confirmed"
         elif issue.execution_status == "cancelled":
