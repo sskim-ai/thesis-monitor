@@ -63,9 +63,7 @@ class TickerAnalysisSnapshotService:
 
     async def fetch(self, session: Session, ticker: str) -> TickerAnalysisSnapshot:
         normalized_ticker = normalize_ticker(ticker)
-        profile = await self.collection_service.get_company_profile(
-            session, normalized_ticker
-        )
+        profile = await self.collection_service.get_company_profile(session, normalized_ticker)
 
         price_failed = False
         try:
@@ -94,9 +92,7 @@ class TickerAnalysisSnapshotService:
             )
 
         try:
-            coverage = self.coverage_service.build(
-                session, normalized_ticker, valuation_snapshot
-            )
+            coverage = self.coverage_service.build(session, normalized_ticker, valuation_snapshot)
         except Exception:  # noqa: BLE001
             coverage = valuation_snapshot.data_coverage or DataCoverage()
 
@@ -134,13 +130,9 @@ class TickerAnalysisSnapshotService:
             operating_income=valuation_snapshot.latest_operating_income,
             operating_margin=valuation_snapshot.latest_operating_margin,
             qoq_revenue_growth=valuation_snapshot.latest_revenue_qoq,
-            qoq_operating_income_growth=(
-                valuation_snapshot.latest_operating_income_qoq
-            ),
+            qoq_operating_income_growth=(valuation_snapshot.latest_operating_income_qoq),
             yoy_revenue_growth=valuation_snapshot.latest_revenue_yoy,
-            yoy_operating_income_growth=(
-                valuation_snapshot.latest_operating_income_yoy
-            ),
+            yoy_operating_income_growth=(valuation_snapshot.latest_operating_income_yoy),
             ttm_eps=valuation_snapshot.ttm_eps,
             ttm_contains_preliminary=valuation_snapshot.ttm_contains_preliminary,
         )
@@ -158,12 +150,8 @@ class TickerAnalysisSnapshotService:
             valuation_relative_position_confidence=(
                 valuation_snapshot.valuation_relative_position_confidence
             ),
-            historical_pe=_historical_summary(
-                valuation_snapshot.historical_pe_statistics
-            ),
-            historical_pb=_historical_summary(
-                valuation_snapshot.historical_pb_statistics
-            ),
+            historical_pe=_historical_summary(valuation_snapshot.historical_pe_statistics),
+            historical_pb=_historical_summary(valuation_snapshot.historical_pb_statistics),
         )
 
         cautions: list[str] = []
@@ -193,25 +181,33 @@ class TickerAnalysisSnapshotService:
             valuation_snapshot.forward_pe_reference_caution
             and valuation_snapshot.forward_pe is not None
         ):
-            cautions.append(
-                "fPER는 산출 기간이나 이익 기준이 명확하지 않아 참고 수준입니다."
-            )
+            cautions.append("fPER는 산출 기간이나 이익 기준이 명확하지 않아 참고 수준입니다.")
         if coverage.full_financial_freshness == "stale":
-            cautions.append(
-                "정식 재무제표가 오래되어 PBR 판단 강도를 낮춥니다."
-            )
-        if "missing_adr_ratio" in coverage.reason_codes:
-            cautions.append(
-                "ADR 비율을 확인하지 못해 주당 Valuation 일부를 계산하지 못했습니다."
-            )
+            cautions.append("정식 재무제표가 오래되어 PBR 판단 강도를 낮춥니다.")
+        if (
+            "missing_adr_ratio" in coverage.reason_codes
+            and "per_share_basis_insufficient" not in coverage.reason_codes
+        ):
+            cautions.append("ADR 비율을 확인하지 못해 주당 Valuation 일부를 계산하지 못했습니다.")
+        if "per_share_basis_insufficient" in coverage.reason_codes:
+            basis_statuses = {
+                valuation_snapshot.trailing_pe_basis_status,
+                valuation_snapshot.price_to_book_basis_status,
+                valuation_snapshot.forward_pe_basis_status,
+                valuation_snapshot.forward_price_to_book_basis_status,
+            }
+            if "currency_mismatch" in basis_statuses:
+                cautions.append(
+                    "가격 통화와 주당 실적 기준 통화가 달라 자체 PER/PBR 계산을 보류했습니다."
+                )
+            else:
+                cautions.append(
+                    "ADR/외국 상장주식의 주당 기준을 확인하지 못해 자체 PER/PBR 계산을 보류했습니다."
+                )
         if valuation_snapshot.multiple_basis_conflicts:
-            cautions.append(
-                "같은 기준으로 계산한 Valuation 값이 크게 달라 판단 강도를 낮췄습니다."
-            )
+            cautions.append("같은 기준으로 계산한 Valuation 값이 크게 달라 판단 강도를 낮췄습니다.")
         if "preliminary_validation_failed" in coverage.reason_codes:
-            cautions.append(
-                "최근 잠정실적 숫자를 검증하지 못해 현재 이익 계산에서 제외했습니다."
-            )
+            cautions.append("최근 잠정실적 숫자를 검증하지 못해 현재 이익 계산에서 제외했습니다.")
 
         as_of = (
             valuation_snapshot.valuation_data_as_of

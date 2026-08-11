@@ -52,9 +52,15 @@ def _country(exchange: str | None, ticker: str) -> str:
     return "US"
 
 
-def _issuer_type(item: WatchlistItem | None, ticker: str) -> str:
+def _issuer_type(
+    item: WatchlistItem | None,
+    ticker: str,
+    existing: SecurityMaster | None = None,
+) -> str:
     if item and item.issuer_type:
         return item.issuer_type
+    if existing and existing.issuer_type != "unknown":
+        return existing.issuer_type
     return "krx" if ticker.isdigit() else "domestic_us"
 
 
@@ -99,12 +105,21 @@ class SecurityMasterService:
         row.legal_name = row.legal_name or company_name
         row.exchange = exchange
         row.country = country
-        row.issuer_type = _issuer_type(item, ticker)
+        row.issuer_type = _issuer_type(item, ticker, existing)
         row.ordinary_share_identifier = (
             item.ordinary_share_identifier if item else row.ordinary_share_identifier
         )
         row.adr_ratio = item.adr_ratio if item else row.adr_ratio
-        row.adr_identifier = ticker if row.issuer_type in {"adr", "foreign_private_issuer"} else None
+        depositary_evidence = (
+            row.issuer_type == "adr"
+            or (
+                row.security_type.lower().replace("-", "_").replace(" ", "_")
+                in {"adr", "ads", "depositary_receipt", "depositary_security"}
+                and row.issuer_type not in {"domestic_us", "krx"}
+            )
+            or bool(row.adr_ratio and row.ordinary_share_identifier)
+        )
+        row.adr_identifier = ticker if depositary_evidence else None
         row.aliases = json.dumps(aliases, ensure_ascii=False)
         row.search_aliases = json.dumps(search_aliases, ensure_ascii=False)
         row.known_products = json.dumps(

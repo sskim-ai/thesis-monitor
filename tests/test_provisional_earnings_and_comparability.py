@@ -4,14 +4,18 @@ from datetime import date
 import pytest
 
 from app.models.financial import FinancialSnapshot
+from app.models.security import SecurityMaster
 from app.providers.dart_text_fallback import extract_preliminary_earnings_facts_from_text
 from app.schemas.thesis import ValuationSnapshot
 from app.services.historical_valuation_service import point_in_time_denominators
 from app.services.notification_service import _data_cautions, _valuation_formula_lines
 from app.services.valuation_snapshot_service import (
     MultipleBasis,
+    PerShareBasisContext,
     ValuationSnapshotService,
     _earnings_quarters,
+    _normalize_per_share_value,
+    _resolve_per_share_basis_context,
     _ttm_earnings,
     determine_basis_comparability,
 )
@@ -101,9 +105,7 @@ def _preliminary(
             ensure_ascii=False,
         ),
         financial_hard_errors=json.dumps(hard_errors or []),
-        financial_soft_outliers=json.dumps(
-            ["unusually_high_or_low_operating_margin"]
-        ),
+        financial_soft_outliers=json.dumps(["unusually_high_or_low_operating_margin"]),
     )
 
 
@@ -187,9 +189,7 @@ def test_hard_invalid_preliminary_is_excluded_but_soft_outlier_is_usable() -> No
 
 
 def test_total_net_income_without_owner_attribution_does_not_create_eps() -> None:
-    result = _ttm_earnings(
-        [*_base_rows(), _preliminary(owners_income=None, total_income=450)]
-    )
+    result = _ttm_earnings([*_base_rows(), _preliminary(owners_income=None, total_income=450)])
 
     assert result.eps is None
     assert result.quarters[-1].revenue == 800
@@ -205,9 +205,7 @@ def test_eps_less_preliminary_updates_earnings_context_without_recalculating_per
         trailing_pe_status="value",
     )
 
-    derived_pe, _derived_pb = ValuationSnapshotService()._apply_derived_trailing(
-        snapshot, rows
-    )
+    derived_pe, _derived_pb = ValuationSnapshotService()._apply_derived_trailing(snapshot, rows)
 
     assert derived_pe is None
     assert snapshot.trailing_pe == 20
@@ -233,18 +231,14 @@ def test_earnings_context_uses_selected_financial_snapshot_currency(
         row.currency = financial_currency
     snapshot = ValuationSnapshot(current_price=100, currency="USD")
 
-    ValuationSnapshotService()._apply_derived_trailing(
-        snapshot, [*rows, latest]
-    )
+    ValuationSnapshotService()._apply_derived_trailing(snapshot, [*rows, latest])
 
     assert snapshot.currency == "USD"
     assert snapshot.financial_currency == financial_currency
 
 
 def test_preliminary_reported_diluted_eps_takes_priority() -> None:
-    result = _ttm_earnings(
-        [*_base_rows(), _preliminary(owners_income=400, diluted_eps=7)]
-    )
+    result = _ttm_earnings([*_base_rows(), _preliminary(owners_income=400, diluted_eps=7)])
 
     assert result.eps == pytest.approx(13)
     assert result.share_basis[-1] == "reported_diluted_eps"
@@ -254,9 +248,7 @@ def test_preliminary_updates_per_and_margin_but_not_full_balance_pbr() -> None:
     rows = [*_base_rows(), _preliminary()]
     snapshot = ValuationSnapshot(current_price=100, currency="KRW")
 
-    derived_pe, derived_pb = ValuationSnapshotService()._apply_derived_trailing(
-        snapshot, rows
-    )
+    derived_pe, derived_pb = ValuationSnapshotService()._apply_derived_trailing(snapshot, rows)
 
     assert derived_pe == pytest.approx(10)
     assert snapshot.ttm_contains_preliminary is True
@@ -266,12 +258,346 @@ def test_preliminary_updates_per_and_margin_but_not_full_balance_pbr() -> None:
     assert snapshot.pbr_denominator_period_end == "2026-03-31"
 
 
+def test_adr_ordinary_eps_is_normalized_only_with_same_currency_and_ratio() -> None:
+    context = PerShareBasisContext(
+        issuer_type="adr",
+        security_type="Depositary Receipt",
+        is_depositary_security=True,
+        price_currency="USD",
+        financial_currency="USD",
+        adr_ratio=5,
+        adr_ratio_source="SEC filing",
+    )
+
+    result = _normalize_per_share_value(
+        4,
+        value_currency="USD",
+        security_basis="ordinary_share",
+        context=context,
+    )
+
+    assert result.value == pytest.approx(20)
+    assert result.status == "normalized_to_current_security"
+    assert result.ratio_used == 5
+
+
+def test_adr_per_share_value_rejects_currency_mismatch_or_unknown_basis() -> None:
+    context = PerShareBasisContext(
+        issuer_type="adr",
+        security_type="adr",
+        is_depositary_security=True,
+        price_currency="USD",
+        financial_currency="TWD",
+        adr_ratio=5,
+        adr_ratio_source="SEC filing",
+    )
+
+    currency_mismatch = _normalize_per_share_value(
+        20,
+        value_currency="TWD",
+        security_basis="ordinary_share",
+        context=context,
+    )
+    unknown_basis = _normalize_per_share_value(
+        10,
+        value_currency="USD",
+        security_basis="unknown",
+        context=context,
+    )
+
+    assert currency_mismatch.value is None
+    assert currency_mismatch.status == "currency_mismatch"
+    assert unknown_basis.value is None
+    assert unknown_basis.status == "security_basis_mismatch"
+
+
+def test_adr_direct_eps_does_not_apply_ratio_twice() -> None:
+    context = PerShareBasisContext(
+        issuer_type="adr",
+        security_type="ads",
+        is_depositary_security=True,
+        price_currency="USD",
+        financial_currency="TWD",
+        adr_ratio=5,
+        adr_ratio_source="SEC filing",
+    )
+
+    result = _normalize_per_share_value(
+        10,
+        value_currency="USD",
+        security_basis="depositary_security",
+        context=context,
+    )
+
+    assert result.value == 10
+    assert result.status == "directly_comparable"
+    assert result.ratio_used is None
+
+
+def test_unmonitored_security_master_adr_activates_basis_gate() -> None:
+    security = SecurityMaster(
+        canonical_company_id="company:fixture",
+        canonical_security_id="security:fixture:adr",
+        ticker="FIXADR",
+        company_name="Fixture ADR",
+        issuer_type="adr",
+        security_type="adr",
+        adr_ratio=5,
+    )
+
+    context = _resolve_per_share_basis_context(
+        None,
+        security,
+        price_currency="USD",
+        financial_currency="TWD",
+    )
+
+    assert context.is_depositary_security is True
+    assert context.issuer_type == "adr"
+    assert context.adr_ratio == 5
+    assert context.adr_ratio_direction == "ordinary_shares_per_adr"
+
+
+def test_domestic_common_issuer_is_not_reclassified_by_depositary_type_alone() -> None:
+    security = SecurityMaster(
+        canonical_company_id="company:domestic-common",
+        canonical_security_id="security:domestic-common",
+        ticker="COMMON",
+        company_name="Domestic Common",
+        issuer_type="domestic_us",
+        security_type="Depositary Receipt",
+    )
+
+    context = _resolve_per_share_basis_context(
+        None,
+        security,
+        price_currency="USD",
+        financial_currency="USD",
+    )
+
+    assert context.is_depositary_security is False
+
+
+def _with_per_share_metadata(
+    row: FinancialSnapshot,
+    *,
+    currency: str,
+    eps_security_basis: str,
+    share_security_basis: str = "ordinary_share",
+) -> FinancialSnapshot:
+    row.currency = currency
+    row.raw_financial_fields = json.dumps(
+        [
+            {
+                "field": "diluted_eps",
+                "currency": currency,
+                "security_basis": eps_security_basis,
+            },
+            {
+                "field": "common_shares_outstanding",
+                "security_basis": share_security_basis,
+            },
+        ]
+    )
+    return row
+
+
+def test_adr_derived_pe_and_pb_use_ordinary_shares_per_adr_direction() -> None:
+    rows = [
+        _with_per_share_metadata(
+            row,
+            currency="USD",
+            eps_security_basis="ordinary_share",
+        )
+        for row in [*_base_rows(), _full(date(2026, 6, 30), 4)]
+    ]
+    context = PerShareBasisContext(
+        issuer_type="adr",
+        security_type="adr",
+        is_depositary_security=True,
+        price_currency="USD",
+        financial_currency="USD",
+        adr_ratio=5,
+    )
+    snapshot = ValuationSnapshot(current_price=100, currency="USD")
+
+    derived_pe, derived_pb = ValuationSnapshotService()._apply_derived_trailing(
+        snapshot, rows, context
+    )
+
+    assert snapshot.raw_ttm_eps == pytest.approx(10)
+    assert snapshot.ttm_eps == pytest.approx(50)
+    assert derived_pe == pytest.approx(2)
+    assert snapshot.raw_bvps == pytest.approx(10)
+    assert snapshot.bvps == pytest.approx(50)
+    assert derived_pb == pytest.approx(2)
+    assert snapshot.trailing_pe_basis_status == "normalized_to_current_security"
+    assert snapshot.price_to_book_basis_status == "normalized_to_current_security"
+
+
+@pytest.mark.parametrize(
+    ("currency", "security_basis", "expected_status"),
+    [
+        ("TWD", "ordinary_share", "currency_mismatch"),
+        ("USD", "unknown", "security_basis_mismatch"),
+    ],
+)
+def test_adr_unsafe_eps_is_not_exposed_as_current_security_ttm_eps(
+    currency: str,
+    security_basis: str,
+    expected_status: str,
+) -> None:
+    rows = [
+        _with_per_share_metadata(
+            row,
+            currency=currency,
+            eps_security_basis=security_basis,
+        )
+        for row in [*_base_rows(), _full(date(2026, 6, 30), 4)]
+    ]
+    context = PerShareBasisContext(
+        issuer_type="adr",
+        security_type="adr",
+        is_depositary_security=True,
+        price_currency="USD",
+        financial_currency=currency,
+        adr_ratio=5,
+    )
+    snapshot = ValuationSnapshot(
+        current_price=100,
+        currency="USD",
+        trailing_pe=18,
+        trailing_pe_status="value",
+        trailing_pe_source="provider",
+    )
+
+    derived_pe, _derived_pb = ValuationSnapshotService()._apply_derived_trailing(
+        snapshot, rows, context
+    )
+
+    assert derived_pe is None
+    assert snapshot.raw_ttm_eps == pytest.approx(10)
+    assert snapshot.ttm_eps is None
+    assert snapshot.trailing_pe == 18
+    assert snapshot.trailing_pe_basis_status == expected_status
+
+
+def test_foreign_private_issuer_common_stock_does_not_require_adr_ratio() -> None:
+    context = PerShareBasisContext(
+        issuer_type="foreign_private_issuer",
+        security_type="common_stock",
+        is_depositary_security=False,
+        price_currency="USD",
+        financial_currency="USD",
+    )
+
+    result = _normalize_per_share_value(
+        8,
+        value_currency="USD",
+        security_basis="unknown",
+        context=context,
+    )
+
+    assert result.value == 8
+    assert result.status == "directly_comparable"
+
+
+def test_user_caution_hides_internal_adr_basis_status() -> None:
+    snapshot = ValuationSnapshot(
+        trailing_pe_basis_status="currency_mismatch",
+        price_to_book_basis_status="security_basis_mismatch",
+        valuation_calculation_warning=True,
+    )
+
+    cautions = _data_cautions(
+        snapshot.model_dump(),
+        {"reason_codes": ["per_share_basis_insufficient"]},
+    )
+
+    assert cautions == [
+        "가격 통화와 주당 실적 기준 통화가 달라 자체 PER/PBR 계산을 보류했습니다."
+    ]
+    assert "currency_mismatch" not in cautions[0]
+
+
+def test_adr_unknown_share_count_basis_blocks_pbr_independently_of_pe() -> None:
+    rows = [
+        _with_per_share_metadata(
+            row,
+            currency="USD",
+            eps_security_basis="depositary_security",
+            share_security_basis="unknown",
+        )
+        for row in [*_base_rows(), _full(date(2026, 6, 30), 4)]
+    ]
+    context = PerShareBasisContext(
+        issuer_type="adr",
+        security_type="adr",
+        is_depositary_security=True,
+        price_currency="USD",
+        financial_currency="USD",
+        adr_ratio=5,
+    )
+    snapshot = ValuationSnapshot(current_price=100, currency="USD")
+
+    derived_pe, derived_pb = ValuationSnapshotService()._apply_derived_trailing(
+        snapshot, rows, context
+    )
+
+    assert derived_pe == pytest.approx(10)
+    assert snapshot.ttm_eps == pytest.approx(10)
+    assert derived_pb is None
+    assert snapshot.bvps is None
+    assert snapshot.price_to_book_basis_status == "security_basis_mismatch"
+
+
+def test_internal_forward_eps_uses_same_verified_adr_normalization() -> None:
+    period_ends = [
+        date(2024, 9, 30),
+        date(2024, 12, 31),
+        date(2025, 3, 31),
+        date(2025, 6, 30),
+        date(2025, 9, 30),
+        date(2025, 12, 31),
+        date(2026, 3, 31),
+        date(2026, 6, 30),
+    ]
+    rows = [
+        _with_per_share_metadata(
+            _full(
+                period_end,
+                index + 1,
+                revenue=100 + index * 10,
+                income=10 + index,
+            ),
+            currency="USD",
+            eps_security_basis="ordinary_share",
+        )
+        for index, period_end in enumerate(period_ends)
+    ]
+    context = PerShareBasisContext(
+        issuer_type="adr",
+        security_type="adr",
+        is_depositary_security=True,
+        price_currency="USD",
+        financial_currency="USD",
+        adr_ratio=5,
+    )
+    snapshot = ValuationSnapshot(current_price=100, currency="USD")
+
+    ValuationSnapshotService()._apply_forward_model(
+        snapshot, rows, "FIXTURE", {}, basis_context=context
+    )
+
+    assert snapshot.forward_eps is not None
+    assert snapshot.forward_pe == pytest.approx(100 / snapshot.forward_eps)
+    assert snapshot.forward_pe_basis_status == "normalized_to_current_security"
+
+
 def test_historical_point_in_time_series_remains_full_statement_only() -> None:
     rows = [*_base_rows(), _preliminary()]
 
-    eps, _bvps, quarters, _balance = point_in_time_denominators(
-        rows, date(2026, 8, 1)
-    )
+    eps, _bvps, quarters, _balance = point_in_time_denominators(rows, date(2026, 8, 1))
 
     assert eps is None
     assert all(row.snapshot_type == "full_statement" for row in quarters)
@@ -294,9 +620,7 @@ def test_internal_forward_model_uses_latest_valid_preliminary_earnings() -> None
     rows.append(_preliminary(owners_income=60, total_income=65))
     snapshot = ValuationSnapshot(current_price=100, currency="KRW")
 
-    ValuationSnapshotService()._apply_forward_model(
-        snapshot, rows, "FIXTURE", {}
-    )
+    ValuationSnapshotService()._apply_forward_model(snapshot, rows, "FIXTURE", {})
 
     assert snapshot.forward_pe_status == "value"
     assert snapshot.forward_eps is not None
@@ -391,9 +715,7 @@ def test_ambiguous_semantic_period_remains_null() -> None:
 
 
 def test_adjusted_and_gaap_multiples_are_not_comparable() -> None:
-    result = determine_basis_comparability(
-        _basis(accounting="adjusted"), _basis(accounting="GAAP")
-    )
+    result = determine_basis_comparability(_basis(accounting="adjusted"), _basis(accounting="GAAP"))
 
     assert result.status == "not_comparable"
     assert result.reason == "accounting_basis_mismatch"
@@ -539,9 +861,7 @@ def test_comparable_forward_estimates_keep_existing_conflict_policy() -> None:
 
 
 def test_adr_and_ordinary_share_multiples_are_not_comparable() -> None:
-    result = determine_basis_comparability(
-        _basis(security="ADR"), _basis(security="ordinary")
-    )
+    result = determine_basis_comparability(_basis(security="ADR"), _basis(security="ordinary"))
 
     assert result.status == "not_comparable"
     assert result.reason == "security_basis_mismatch"

@@ -402,8 +402,8 @@ def export_messages(
                 "",
                 "## 부록. Valuation 계산 lineage",
                 "",
-                "| 종목 | 가격 | PER provider/derived/EPS | PER comparability | PBR provider/derived/BVPS | PBR comparability | fPER provider/derived/EPS | fPER comparability | fPBR provider/derived/BVPS | fPBR comparability | Basis conflict | Source/method |",
-                "|---|---|---|---|---|---|---|---|---|---|---|---|",
+                "| 종목 | 가격 | Security identity | ADR ratio/direction | Currency/basis | PER provider/derived/EPS | PER basis/comparability | PBR provider/derived/BVPS | PBR basis/comparability | fPER provider/derived/EPS | fPER basis/comparability | fPBR provider/derived/BVPS | fPBR basis/comparability | Historical basis | Basis conflict | Source/method |",
+                "|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|",
             ]
         )
         for assessment in assessments:
@@ -423,16 +423,32 @@ def export_messages(
             )
             sections.append(
                 f"| {assessment.ticker} | {snapshot.get('current_price') or '없음'} | "
+                f"{snapshot.get('resolved_issuer_type') or '없음'}/"
+                f"{snapshot.get('resolved_security_type') or '없음'}/"
+                f"depositary={snapshot.get('is_depositary_security', False)} | "
+                f"{snapshot.get('resolved_adr_ratio') or '없음'}/"
+                f"{snapshot.get('adr_ratio_direction') or '없음'} | "
+                f"price={snapshot.get('currency') or '없음'}; "
+                f"financial={snapshot.get('financial_currency') or '없음'}; "
+                f"eps={snapshot.get('eps_currency') or '없음'}/"
+                f"{snapshot.get('eps_security_basis') or '없음'}; "
+                f"book={snapshot.get('book_currency') or '없음'}/"
+                f"{snapshot.get('share_count_security_basis') or '없음'} | "
                 f"{snapshot.get('provider_trailing_pe') or '없음'}/{snapshot.get('derived_trailing_pe') or '없음'}/{snapshot.get('ttm_eps') or '없음'} | "
+                f"{snapshot.get('trailing_pe_basis_status') or '없음'}; "
                 f"{snapshot.get('trailing_pe_comparability') or '없음'}:{snapshot.get('trailing_pe_comparability_reason') or '없음'} | "
                 f"{snapshot.get('provider_price_to_book') or '없음'}/{snapshot.get('derived_price_to_book') or '없음'}/{snapshot.get('bvps') or '없음'} | "
+                f"{snapshot.get('price_to_book_basis_status') or '없음'}; "
                 f"{snapshot.get('price_to_book_comparability') or '없음'}:{snapshot.get('price_to_book_comparability_reason') or '없음'} | "
                 f"{snapshot.get('provider_forward_pe') or '없음'}/{snapshot.get('derived_forward_pe') or '없음'}/{snapshot.get('forward_eps') or '없음'} | "
+                f"{snapshot.get('forward_pe_basis_status') or '없음'}; "
                 f"{snapshot.get('forward_pe_comparability') or '없음'}:{snapshot.get('forward_pe_comparability_reason') or '없음'}; "
                 f"reference={snapshot.get('forward_pe_reference_caution', False)}/"
                 f"{snapshot.get('forward_pe_reference_difference_pct') or '없음'}% | "
                 f"{snapshot.get('provider_forward_price_to_book') or '없음'}/{snapshot.get('derived_forward_price_to_book') or '없음'}/{snapshot.get('forward_bvps') or '없음'} | "
+                f"{snapshot.get('forward_price_to_book_basis_status') or '없음'}; "
                 f"{snapshot.get('forward_price_to_book_comparability') or '없음'}:{snapshot.get('forward_price_to_book_comparability_reason') or '없음'} | "
+                f"{snapshot.get('historical_per_share_basis_status') or '없음'} | "
                 f"{','.join(snapshot.get('multiple_basis_conflicts') or []) or '없음'} | "
                 f"{str(snapshot.get('provider') or '없음').replace('|', '/')} · {methods.replace('|', '/')} |"
             )
@@ -452,7 +468,9 @@ def export_messages(
             except json.JSONDecodeError:
                 snapshot = {}
             series = "; ".join(
-                f"{item.get('period')}:{item.get('source')}:{item.get('eps')}:{item.get('share_basis')}"
+                f"{item.get('period')}:{item.get('source')}:{item.get('eps')}:"
+                f"{item.get('share_basis')}:{item.get('eps_currency')}:"
+                f"{item.get('eps_security_basis')}"
                 for item in snapshot.get("earnings_quarter_series", [])
                 if isinstance(item, dict)
             )

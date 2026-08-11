@@ -27,14 +27,50 @@ from app.services.financial_validation import financial_snapshot_is_usable
 from app.config import get_settings
 
 
-def _issuer_type(item: WatchlistItem | None, events: list[Event]) -> str:
+def _issuer_type(
+    item: WatchlistItem | None,
+    security: SecurityMaster | None,
+    events: list[Event],
+) -> str:
     if item and item.issuer_type:
         return item.issuer_type
+    if security and security.issuer_type != "unknown":
+        return security.issuer_type
     if item and (item.exchange or "").upper() == "KRX":
         return "krx"
-    if any("filed 20-f" in event.title.lower() or "filed 6-k" in event.title.lower() for event in events):
+    if any(
+        "filed 20-f" in event.title.lower() or "filed 6-k" in event.title.lower()
+        for event in events
+    ):
         return "foreign_private_issuer"
     return "domestic_us"
+
+
+def _is_depositary_security(
+    issuer_type: str,
+    security: SecurityMaster | None,
+    item: WatchlistItem | None,
+) -> bool:
+    security_type = (
+        (security.security_type if security else "")
+        .lower()
+        .replace("-", "_")
+        .replace(" ", "_")
+    )
+    depositary_security_type = security_type in {
+            "adr",
+            "ads",
+            "depositary_receipt",
+            "depositary_security",
+            "american_depositary_receipt",
+            "american_depositary_share",
+        }
+    return (
+        issuer_type == "adr"
+        or bool(security and security.adr_identifier)
+        or bool(item and item.adr_ratio and item.ordinary_share_identifier)
+        or depositary_security_type and issuer_type not in {"domestic_us", "krx"}
+    )
 
 
 def _coverage(value: bool, partial: bool = False) -> str:
@@ -57,37 +93,33 @@ class DataCoverageService:
         snapshot: ValuationSnapshot | None = None,
     ) -> DataCoverage:
         item = session.exec(select(WatchlistItem).where(WatchlistItem.ticker == ticker)).first()
-        all_rows = list(session.exec(select(FinancialSnapshot).where(FinancialSnapshot.ticker == ticker)).all())
+        all_rows = list(
+            session.exec(select(FinancialSnapshot).where(FinancialSnapshot.ticker == ticker)).all()
+        )
         rows = [row for row in all_rows if financial_snapshot_is_usable(row)]
         all_events = list(session.exec(select(Event).where(Event.ticker == ticker)).all())
         quarantined_events = [
-            event
-            for event in all_events
-            if not event_has_valid_document_identity(event)
+            event for event in all_events if not event_has_valid_document_identity(event)
         ]
         rejected_events = [
             event for event in all_events if event.identity_status.startswith("rejected")
         ]
-        events = [
-            event
-            for event in all_events
-            if event_is_eligible_for_current_analysis(event)
-        ]
-        dividends = list(session.exec(select(DividendHistory).where(DividendHistory.ticker == ticker)).all())
-        issues = list(session.exec(select(CanonicalIssue).where(CanonicalIssue.ticker == ticker)).all())
+        events = [event for event in all_events if event_is_eligible_for_current_analysis(event)]
+        dividends = list(
+            session.exec(select(DividendHistory).where(DividendHistory.ticker == ticker)).all()
+        )
+        issues = list(
+            session.exec(select(CanonicalIssue).where(CanonicalIssue.ticker == ticker)).all()
+        )
         security = session.exec(
             select(SecurityMaster).where(SecurityMaster.ticker == ticker)
         ).first()
         estimates = list(
-            session.exec(
-                select(ConsensusEstimate).where(ConsensusEstimate.ticker == ticker)
-            ).all()
+            session.exec(select(ConsensusEstimate).where(ConsensusEstimate.ticker == ticker)).all()
         )
         share_observations = list(
             session.exec(
-                select(ShareCountObservation).where(
-                    ShareCountObservation.ticker == ticker
-                )
+                select(ShareCountObservation).where(ShareCountObservation.ticker == ticker)
             ).all()
         )
         capital_returns = list(
@@ -112,7 +144,8 @@ class DataCoverageService:
                 )
             ).all()
         )
-        issuer_type = _issuer_type(item, events)
+        issuer_type = _issuer_type(item, security, events)
+        is_depositary_security = _is_depositary_security(issuer_type, security, item)
         freshness = FinancialFreshnessService().assess(session, ticker)
         reasons: list[str] = []
         if not rows:
@@ -122,16 +155,27 @@ class DataCoverageService:
         elif freshness.status == "refresh_due":
             reasons.append("reporting_cadence_exceeded")
         history_years = (
-            (max(row.observation_date for row in history) - min(row.observation_date for row in history)).days / 365.25
-            if len(history) > 1 else 0.0
+            (
+                max(row.observation_date for row in history)
+                - min(row.observation_date for row in history)
+            ).days
+            / 365.25
+            if len(history) > 1
+            else 0.0
         )
-        if item and item.created_at.date() < date.today().replace(year=max(1, date.today().year - 5)) and history_years < 3:
+        if (
+            item
+            and item.created_at.date() < date.today().replace(year=max(1, date.today().year - 5))
+            and history_years < 3
+        ):
             reasons.append("insufficient_history")
-        if issuer_type in {"adr", "foreign_private_issuer"}:
+        if is_depositary_security:
             if (item is None or item.adr_ratio is None) and (
                 security is None or security.adr_ratio is None
             ):
                 reasons.append("missing_adr_ratio")
+            if snapshot and snapshot.valuation_calculation_warning:
+                reasons.append("per_share_basis_insufficient")
         valuation_status = "unavailable"
         valuation_confidence = 0.0
         if snapshot is not None:
@@ -143,9 +187,7 @@ class DataCoverageService:
         price_status = "fresh" if snapshot and snapshot.current_price is not None else "unavailable"
         financial_status = "full" if len(rows) >= 8 else "partial" if rows else "unavailable"
         full_rows = [row for row in rows if row.snapshot_type == "full_statement"]
-        preliminary_rows = [
-            row for row in rows if row.snapshot_type == "preliminary_earnings"
-        ]
+        preliminary_rows = [row for row in rows if row.snapshot_type == "preliminary_earnings"]
         all_full_rows = [row for row in all_rows if row.snapshot_type == "full_statement"]
         all_preliminary_rows = [
             row for row in all_rows if row.snapshot_type == "preliminary_earnings"
@@ -154,10 +196,7 @@ class DataCoverageService:
         current_events = [event for event in events if event.date >= event_cutoff]
         current_eligible_validation_failed = any(
             event.event_type != "non_thesis_noise"
-            and (
-                event.financial_statement_basis_warning
-                or event.margin_quality_review
-            )
+            and (event.financial_statement_basis_warning or event.margin_quality_review)
             for event in current_events
         )
         current_official_identity_failure = any(
@@ -179,22 +218,26 @@ class DataCoverageService:
             else "clean"
         )
         foreign_status = (
-            financial_status if issuer_type in {"adr", "foreign_private_issuer"} else "not_applicable"
+            financial_status
+            if issuer_type in {"adr", "foreign_private_issuer"}
+            else "not_applicable"
         )
         per_share_coverage = (
             "unavailable"
-            if issuer_type in {"adr", "foreign_private_issuer"}
-            and (item is None or item.adr_ratio is None)
-            and (security is None or security.adr_ratio is None)
+            if is_depositary_security
+            and (
+                (item is None or item.adr_ratio is None)
+                and (security is None or security.adr_ratio is None)
+                or snapshot is not None
+                and snapshot.valuation_calculation_warning
+            )
             else "full"
         )
         try:
             foreign_payload = json.loads(foreign_cache.payload) if foreign_cache else {}
         except json.JSONDecodeError:
             foreign_payload = {}
-        foreign_parsing_result = str(
-            foreign_payload.get("parsing_result") or "unavailable"
-        )
+        foreign_parsing_result = str(foreign_payload.get("parsing_result") or "unavailable")
         foreign_filings = foreign_payload.get("filings", [])
         foreign_latest_filing_result = (
             str(
@@ -208,12 +251,9 @@ class DataCoverageService:
             else "unavailable"
         )
         any_foreign_statement_parsed = bool(
-            foreign_payload.get("any_statement_parsed")
-            or foreign_payload.get("parsed_statement")
+            foreign_payload.get("any_statement_parsed") or foreign_payload.get("parsed_statement")
         )
-        latest_foreign_financial_period = foreign_payload.get(
-            "latest_financial_statement_period"
-        )
+        latest_foreign_financial_period = foreign_payload.get("latest_financial_statement_period")
         latest_foreign_financial_filing_date = foreign_payload.get(
             "latest_financial_statement_filing_date"
         )
@@ -271,7 +311,8 @@ class DataCoverageService:
         )
         preliminary_quality = (
             "validation_failed"
-            if all_preliminary_rows and (
+            if all_preliminary_rows
+            and (
                 not preliminary_rows
                 or any(row.financial_statement_basis_warning for row in all_preliminary_rows)
             )
@@ -281,9 +322,7 @@ class DataCoverageService:
         )
         if preliminary_quality == "validation_failed":
             reasons.append("preliminary_validation_failed")
-            if any(
-                row.period_mapping_validation_failed for row in all_preliminary_rows
-            ):
+            if any(row.period_mapping_validation_failed for row in all_preliminary_rows):
                 reasons.append("preliminary_period_mapping_failed")
         preliminary_soft_outliers = {
             outlier
@@ -305,8 +344,7 @@ class DataCoverageService:
             else "refresh_due"
             if freshness.status == "refresh_due"
             else "validation_failed"
-            if freshness.status == "preliminary_only"
-            and preliminary_quality == "validation_failed"
+            if freshness.status == "preliminary_only" and preliminary_quality == "validation_failed"
             else "partial"
             if freshness.status == "preliminary_only"
             else financial_status
@@ -383,6 +421,8 @@ class DataCoverageService:
         adjusted_valuation_confidence = valuation_confidence
         if freshness.full_financial_freshness == "stale":
             adjusted_valuation_confidence *= 0.7
+        if snapshot and snapshot.valuation_calculation_warning:
+            adjusted_valuation_confidence *= 0.7
         if issuer_type in {"adr", "foreign_private_issuer"} and (
             foreign_latest_filing_result
             in {
@@ -400,7 +440,12 @@ class DataCoverageService:
             issuer_type=issuer_type,
             financial_coverage_status=financial_status,
             financials=financial_status,
-            earnings="fresh" if any(event.event_type in {"guidance_change", "earnings_beat", "earnings_miss"} for event in events) else "partial",
+            earnings="fresh"
+            if any(
+                event.event_type in {"guidance_change", "earnings_beat", "earnings_miss"}
+                for event in events
+            )
+            else "partial",
             price=price_status,
             valuation=valuation_status,
             dividend=_coverage(bool(dividends), any(row.quality != "fresh" for row in dividends)),
@@ -419,7 +464,9 @@ class DataCoverageService:
                 bool(preliminary_rows), preliminary_quality == "validation_failed"
             ),
             consensus=consensus_quality,
-            shares=_coverage(bool(share_observations) or any(row.common_shares_outstanding for row in rows)),
+            shares=_coverage(
+                bool(share_observations) or any(row.common_shares_outstanding for row in rows)
+            ),
             buyback=_coverage(bool(capital_returns)),
             historical_valuation=historical_quality,
             forward_valuation=forward_quality,
@@ -435,7 +482,11 @@ class DataCoverageService:
                 else "not_applicable"
             ),
             statement_parsing_coverage=statement_parsing,
-            per_share_mapping_coverage=(per_share_coverage if issuer_type in {"adr", "foreign_private_issuer"} else "not_applicable"),
+            per_share_mapping_coverage=(
+                per_share_coverage
+                if issuer_type in {"adr", "foreign_private_issuer"}
+                else "not_applicable"
+            ),
             valuation_coverage=valuation_status,
             price_quality=price_status,
             financial_quality=financial_quality,
@@ -453,8 +504,7 @@ class DataCoverageService:
             historical_valuation_quality=historical_quality,
             forward_valuation_quality=forward_quality,
             share_count_quality=_coverage(
-                bool(share_observations)
-                or any(row.common_shares_outstanding for row in rows)
+                bool(share_observations) or any(row.common_shares_outstanding for row in rows)
             ),
             dividend_quality=_coverage(
                 bool(dividends), any(row.quality != "fresh" for row in dividends)

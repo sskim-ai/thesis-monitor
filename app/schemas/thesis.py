@@ -121,7 +121,9 @@ class MarketExpectationAssessment(BaseModel):
 
 
 class MonitoringItemCreate(BaseModel):
-    ticker: str = Field(description="Ticker, stock code, or supported Korean company name.", min_length=1)
+    ticker: str = Field(
+        description="Ticker, stock code, or supported Korean company name.", min_length=1
+    )
     company_name: str = Field(description="Canonical company display name.", min_length=1)
     exchange: str | None = Field(default=None, description="Exchange such as KRX or NASDAQ.")
     core_thesis: str = Field(description="Current one-paragraph investment thesis.", min_length=1)
@@ -383,7 +385,9 @@ class ValuationSnapshot(BaseModel):
     price_observed_timezone: str | None = None
     price_basis: str = "unavailable"
     ttm_eps: float | None = None
+    raw_ttm_eps: float | None = None
     bvps: float | None = None
+    raw_bvps: float | None = None
     forward_eps: float | None = None
     forward_bvps: float | None = None
     trailing_pe: float | None = None
@@ -427,6 +431,22 @@ class ValuationSnapshot(BaseModel):
     preliminary_quarter_count: int = 0
     latest_earnings_period: str | None = None
     financial_currency: str | None = None
+    resolved_issuer_type: str = "unknown"
+    resolved_security_type: str = "unknown"
+    is_depositary_security: bool = False
+    resolved_adr_ratio: float | None = None
+    adr_ratio_used: float | None = None
+    adr_ratio_source: str | None = None
+    adr_ratio_direction: str | None = None
+    eps_currency: str | None = None
+    eps_security_basis: str = "unknown"
+    book_currency: str | None = None
+    share_count_security_basis: str = "unknown"
+    trailing_pe_basis_status: str = "not_applicable"
+    price_to_book_basis_status: str = "not_applicable"
+    forward_pe_basis_status: str = "not_applicable"
+    forward_price_to_book_basis_status: str = "not_applicable"
+    historical_per_share_basis_status: str = "not_applicable"
     earnings_context_source: str | None = None
     earnings_context_is_preliminary: bool = False
     earnings_context_usable: bool = False

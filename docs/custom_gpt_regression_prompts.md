@@ -298,6 +298,37 @@ TSM 분석해줘
 - `오늘 +42%`, `1일 수익률 +42%`로 표현
 - `range_position_pct`를 오늘 하루 범위로 표현
 
+## ADR Per-Share Basis Safety
+
+**Prompt**
+
+```text
+TSM 분석해줘
+```
+
+**Fixture**
+
+- `price.currency=USD`
+- `earnings.financial_currency=TWD`
+- raw EPS는 TWD ordinary-share 기준이거나 security basis가 불명확
+- `valuation.ttm_eps=null`, derived PER denominator 없음
+- 공급자 PER가 있으면 reference multiple로만 존재 가능
+
+**Expected**
+
+- 매출·영업이익 earnings context는 사용 가능
+- unsafe raw EPS로 USD/ADR 가격의 PER를 직접 계산하지 않음
+- denominator가 `null`이면 GPT가 raw earnings로 재계산하지 않음
+- 공급자 배수는 denominator를 역산하지 않고 참고값으로만 표시 가능
+- 주당 기준을 확인하지 못했다는 주의는 한 줄로 표시
+- `monitorStock` 자동 호출 금지
+
+**Failure**
+
+- ADR ratio 존재만으로 EPS/BVPS에 일괄 적용
+- TWD ordinary-share EPS를 USD ADR 가격과 직접 나눔
+- provider PER와 price로 EPS를 역산
+
 ## Action Contract Check
 
 Instructions와 Knowledge에서 호출 대상으로 쓰는 이름은 Action schema의 operationId와 일치해야 한다.

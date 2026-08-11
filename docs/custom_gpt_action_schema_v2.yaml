@@ -2,7 +2,7 @@
   "openapi": "3.1.0",
   "info": {
     "title": "Thesis Monitor Public Action API",
-    "version": "0.4.1",
+    "version": "0.4.2",
     "description": "Collect thesis evidence, read ticker analysis snapshots, register versioned investment theses, manage the monitored stock list, read daily thesis assessments, and retrieve macro briefings, regimes, events, and ticker-level macro impacts. Administrative jobs are excluded."
   },
   "paths": {
@@ -6110,6 +6110,17 @@
             ],
             "title": "Ttm Eps"
           },
+          "raw_ttm_eps": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Raw Ttm Eps"
+          },
           "bvps": {
             "anyOf": [
               {
@@ -6120,6 +6131,17 @@
               }
             ],
             "title": "Bvps"
+          },
+          "raw_bvps": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Raw Bvps"
           },
           "forward_eps": {
             "anyOf": [
@@ -6511,6 +6533,122 @@
               }
             ],
             "title": "Financial Currency"
+          },
+          "resolved_issuer_type": {
+            "type": "string",
+            "title": "Resolved Issuer Type",
+            "default": "unknown"
+          },
+          "resolved_security_type": {
+            "type": "string",
+            "title": "Resolved Security Type",
+            "default": "unknown"
+          },
+          "is_depositary_security": {
+            "type": "boolean",
+            "title": "Is Depositary Security",
+            "default": false
+          },
+          "resolved_adr_ratio": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Resolved Adr Ratio"
+          },
+          "adr_ratio_used": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Adr Ratio Used"
+          },
+          "adr_ratio_source": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Adr Ratio Source"
+          },
+          "adr_ratio_direction": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Adr Ratio Direction"
+          },
+          "eps_currency": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Eps Currency"
+          },
+          "eps_security_basis": {
+            "type": "string",
+            "title": "Eps Security Basis",
+            "default": "unknown"
+          },
+          "book_currency": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Book Currency"
+          },
+          "share_count_security_basis": {
+            "type": "string",
+            "title": "Share Count Security Basis",
+            "default": "unknown"
+          },
+          "trailing_pe_basis_status": {
+            "type": "string",
+            "title": "Trailing Pe Basis Status",
+            "default": "not_applicable"
+          },
+          "price_to_book_basis_status": {
+            "type": "string",
+            "title": "Price To Book Basis Status",
+            "default": "not_applicable"
+          },
+          "forward_pe_basis_status": {
+            "type": "string",
+            "title": "Forward Pe Basis Status",
+            "default": "not_applicable"
+          },
+          "forward_price_to_book_basis_status": {
+            "type": "string",
+            "title": "Forward Price To Book Basis Status",
+            "default": "not_applicable"
+          },
+          "historical_per_share_basis_status": {
+            "type": "string",
+            "title": "Historical Per Share Basis Status",
+            "default": "not_applicable"
           },
           "earnings_context_source": {
             "anyOf": [

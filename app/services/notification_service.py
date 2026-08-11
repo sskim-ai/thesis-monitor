@@ -359,7 +359,17 @@ def _data_cautions(
         cautions.append(
             "이번 분기 이익률이 과거보다 매우 높아 일회성 손익과 지속 가능성을 추가 확인합니다."
         )
-    if "missing_adr_ratio" in reasons:
+    if "per_share_basis_insufficient" in reasons:
+        basis_statuses = {
+            str(snapshot.get("trailing_pe_basis_status") or ""),
+            str(snapshot.get("price_to_book_basis_status") or ""),
+        }
+        cautions.append(
+            "가격 통화와 주당 실적 기준 통화가 달라 자체 PER/PBR 계산을 보류했습니다."
+            if "currency_mismatch" in basis_statuses
+            else "ADR/외국 상장주식의 주당 기준을 확인하지 못해 자체 PER/PBR 계산을 보류했습니다."
+        )
+    elif "missing_adr_ratio" in reasons:
         cautions.append("주식 변환 비율이 확인되지 않아 일부 주당 Valuation 계산을 보류했습니다.")
     if "foreign_financial_parsing_failed" in reasons:
         cautions.append("최근 해외 공시 재무표의 자동 검증이 끝나지 않아 Valuation을 보수적으로 봅니다.")

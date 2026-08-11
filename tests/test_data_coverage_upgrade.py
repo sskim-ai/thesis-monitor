@@ -5,7 +5,7 @@ from sqlmodel import Session, SQLModel, create_engine, select
 
 from app.models.event import CanonicalIssue, Event
 from app.models.financial import DividendHistory, FinancialSnapshot, HistoricalValuationObservation
-from app.models.watchlist import WatchlistItem
+from app.models.security import SecurityMaster
 from app.providers.base import RawEvent
 from app.schemas.thesis import ValuationSnapshot
 from app.services.capital_action_service import CapitalActionService
@@ -133,22 +133,46 @@ def test_new_financial_event_marks_snapshot_refresh_pending() -> None:
     assert event.financial_refresh_required is True
 
 
-def test_foreign_issuer_without_adr_mapping_returns_reason_code() -> None:
+def test_unmonitored_security_master_adr_without_mapping_returns_reason_code() -> None:
     engine = _engine()
     with Session(engine) as session:
         session.add(
-            WatchlistItem(
+            SecurityMaster(
+                canonical_company_id="company:fpi",
+                canonical_security_id="security:fpi:adr",
                 ticker="FPI",
                 company_name="Foreign Issuer",
                 exchange="NYSE",
-                issuer_type="foreign_private_issuer",
+                issuer_type="adr",
+                security_type="adr",
             )
         )
         session.commit()
         coverage = DataCoverageService().build(session, "FPI", ValuationSnapshot())
 
-    assert coverage.issuer_type == "foreign_private_issuer"
+    assert coverage.issuer_type == "adr"
     assert "missing_adr_ratio" in coverage.reason_codes
+
+
+def test_foreign_private_issuer_common_stock_does_not_require_adr_ratio() -> None:
+    engine = _engine()
+    with Session(engine) as session:
+        session.add(
+            SecurityMaster(
+                canonical_company_id="company:common-fpi",
+                canonical_security_id="security:common-fpi:common",
+                ticker="COMMONFPI",
+                company_name="Foreign Common Issuer",
+                exchange="NYSE",
+                issuer_type="foreign_private_issuer",
+                security_type="common_stock",
+            )
+        )
+        session.commit()
+        coverage = DataCoverageService().build(session, "COMMONFPI", ValuationSnapshot())
+
+    assert coverage.issuer_type == "foreign_private_issuer"
+    assert "missing_adr_ratio" not in coverage.reason_codes
 
 
 def test_conflicting_pe_pb_signals_are_not_high_confidence_directional() -> None:

@@ -107,9 +107,7 @@ def _preliminary_is_earnings_usable(row: FinancialSnapshot) -> bool:
         return True
     raw_fields = _json_dict_list(row.raw_financial_fields)
     parse_methods = {
-        str(field.get("parse_method"))
-        for field in raw_fields
-        if field.get("parse_method")
+        str(field.get("parse_method")) for field in raw_fields if field.get("parse_method")
     }
     return (
         (row.provider or "").lower() == "opendart"
@@ -214,30 +212,55 @@ class EarningsTtmResult:
     quarters: tuple[FinancialSnapshot, ...]
     quarter_eps: tuple[float | None, ...]
     share_basis: tuple[str | None, ...]
+    eps_currency: tuple[str | None, ...] = ()
+    eps_security_basis: tuple[str | None, ...] = ()
 
     @property
     def contains_preliminary(self) -> bool:
         return any(row.snapshot_type == "preliminary_earnings" for row in self.quarters)
 
 
+def _field_metadata(
+    row: FinancialSnapshot,
+    *field_names: str,
+) -> tuple[str | None, str]:
+    for item in _json_dict_list(row.raw_financial_fields):
+        if str(item.get("field") or "") not in field_names:
+            continue
+        currency = str(item.get("currency") or "").upper() or None
+        security_basis = str(item.get("security_basis") or "unknown")
+        return currency, security_basis
+    return None, "unknown"
+
+
 def _quarter_eps(
     row: FinancialSnapshot,
     rows: list[FinancialSnapshot],
-) -> tuple[float | None, str | None]:
+) -> tuple[float | None, str | None, str | None, str]:
     if row.diluted_eps is not None:
-        return float(row.diluted_eps), "reported_diluted_eps"
+        currency, security_basis = _field_metadata(row, "diluted_eps", "eps")
+        return (
+            float(row.diluted_eps),
+            "reported_diluted_eps",
+            currency,
+            security_basis,
+        )
     if _basic_eps_is_reliable(row):
-        return float(row.basic_eps), "reported_basic_eps"
+        currency, security_basis = _field_metadata(row, "basic_eps", "eps")
+        return float(row.basic_eps), "reported_basic_eps", currency, security_basis
     common_income = row.common_net_income or row.owners_parent_net_income
     if common_income is None:
-        return None, None
+        return None, None, None, "unknown"
     shares = row.diluted_shares or row.common_shares_outstanding
     basis = "snapshot_diluted_shares" if row.diluted_shares else "snapshot_common_shares"
+    share_field = "diluted_shares" if row.diluted_shares else "common_shares_outstanding"
+    _share_currency, security_basis = _field_metadata(row, share_field)
     if not shares or shares <= 0:
         shares, basis = _latest_official_shares(rows, filing_date(row))
+        security_basis = "unknown"
     if not shares or shares <= 0:
-        return None, None
-    return float(common_income) / float(shares), basis
+        return None, None, None, "unknown"
+    return float(common_income) / float(shares), basis, row.currency, security_basis
 
 
 def _ttm_earnings(rows: list[FinancialSnapshot]) -> EarningsTtmResult:
@@ -254,6 +277,8 @@ def _ttm_earnings(rows: list[FinancialSnapshot]) -> EarningsTtmResult:
     resolved = [_quarter_eps(row, rows) for row in quarters]
     eps_values = [item[0] for item in resolved]
     share_basis = [item[1] for item in resolved]
+    eps_currency = [item[2] for item in resolved]
+    eps_security_basis = [item[3] for item in resolved]
     common_incomes = [row.common_net_income or row.owners_parent_net_income for row in quarters]
     common_income = (
         sum(float(value) for value in common_incomes if value is not None)
@@ -262,7 +287,14 @@ def _ttm_earnings(rows: list[FinancialSnapshot]) -> EarningsTtmResult:
     )
     if not all(value is not None for value in eps_values):
         return EarningsTtmResult(
-            None, common_income, None, tuple(quarters), tuple(eps_values), tuple(share_basis)
+            None,
+            common_income,
+            None,
+            tuple(quarters),
+            tuple(eps_values),
+            tuple(share_basis),
+            tuple(eps_currency),
+            tuple(eps_security_basis),
         )
     method = (
         "TTM EPS including official preliminary earnings"
@@ -278,6 +310,8 @@ def _ttm_earnings(rows: list[FinancialSnapshot]) -> EarningsTtmResult:
         tuple(quarters),
         tuple(eps_values),
         tuple(share_basis),
+        tuple(eps_currency),
+        tuple(eps_security_basis),
     )
 
 
@@ -355,6 +389,241 @@ class MultipleBasis:
 
 
 @dataclass(frozen=True)
+class PerShareBasisContext:
+    issuer_type: str = "unknown"
+    security_type: str = "common_stock"
+    is_depositary_security: bool = False
+    price_currency: str | None = None
+    financial_currency: str | None = None
+    adr_ratio: float | None = None
+    adr_ratio_source: str | None = None
+    adr_ratio_direction: str = "ordinary_shares_per_adr"
+    identity_warning: str | None = None
+
+
+@dataclass(frozen=True)
+class PerShareValueResult:
+    value: float | None
+    status: str
+    reason: str
+    currency: str | None = None
+    security_basis: str = "unknown"
+    ratio_used: float | None = None
+
+
+def _is_depositary_security(
+    issuer_type: str,
+    security_type: str,
+    adr_identifier: str | None,
+) -> bool:
+    normalized_security = (
+        security_type.strip().lower().replace("-", "_").replace(" ", "_")
+    )
+    normalized_issuer = issuer_type.strip().lower()
+    depositary_security_type = normalized_security in {
+            "adr",
+            "ads",
+            "depositary_receipt",
+            "depositary_security",
+            "american_depositary_receipt",
+            "american_depositary_share",
+        }
+    return (
+        normalized_issuer == "adr"
+        or bool(adr_identifier)
+        or depositary_security_type
+        and normalized_issuer not in {"domestic_us", "krx"}
+    )
+
+
+def _resolve_per_share_basis_context(
+    watchlist_item: WatchlistItem | None,
+    security_master: SecurityMaster | None,
+    *,
+    price_currency: str | None,
+    financial_currency: str | None,
+) -> PerShareBasisContext:
+    watchlist_issuer = watchlist_item.issuer_type if watchlist_item else None
+    security_issuer = security_master.issuer_type if security_master else None
+    issuer_type = watchlist_issuer or security_issuer or "unknown"
+    security_type = security_master.security_type if security_master else "common_stock"
+    ratios = [
+        value
+        for value in (
+            watchlist_item.adr_ratio if watchlist_item else None,
+            security_master.adr_ratio if security_master else None,
+        )
+        if value is not None and value > 0
+    ]
+    identity_warning = None
+    if watchlist_issuer and security_issuer and watchlist_issuer != security_issuer:
+        identity_warning = "issuer_type_conflict"
+    if len(ratios) == 2 and not math.isclose(ratios[0], ratios[1], rel_tol=1e-6):
+        identity_warning = "adr_ratio_conflict"
+    ratio = ratios[0] if ratios and identity_warning != "adr_ratio_conflict" else None
+    ratio_source = (
+        "watchlist"
+        if watchlist_item and watchlist_item.adr_ratio == ratio
+        else security_master.adr_ratio_source
+        if security_master and security_master.adr_ratio == ratio
+        else None
+    )
+    return PerShareBasisContext(
+        issuer_type=issuer_type,
+        security_type=security_type,
+        is_depositary_security=(
+            _is_depositary_security(
+                issuer_type,
+                security_type,
+                security_master.adr_identifier if security_master else None,
+            )
+            or bool(
+                watchlist_item
+                and watchlist_item.adr_ratio
+                and watchlist_item.ordinary_share_identifier
+            )
+        ),
+        price_currency=price_currency,
+        financial_currency=financial_currency,
+        adr_ratio=ratio,
+        adr_ratio_source=ratio_source,
+        identity_warning=identity_warning,
+    )
+
+
+def _normalize_per_share_value(
+    value: float | None,
+    *,
+    value_currency: str | None,
+    security_basis: str,
+    context: PerShareBasisContext,
+) -> PerShareValueResult:
+    if value is None:
+        return PerShareValueResult(None, "insufficient_metadata", "denominator_missing")
+    if context.identity_warning:
+        return PerShareValueResult(
+            None,
+            "insufficient_metadata",
+            context.identity_warning,
+            security_basis=security_basis,
+        )
+    price_currency = (context.price_currency or "").upper()
+    denominator_currency = (value_currency or "").upper()
+    if context.is_depositary_security:
+        if not denominator_currency:
+            return PerShareValueResult(
+                None,
+                "insufficient_metadata",
+                "denominator_currency_unknown",
+                security_basis=security_basis,
+            )
+        if not price_currency or denominator_currency != price_currency:
+            return PerShareValueResult(
+                None,
+                "currency_mismatch",
+                "price_and_denominator_currency_mismatch",
+                currency=denominator_currency,
+                security_basis=security_basis,
+            )
+        if security_basis in {"depositary_security", "current_security"}:
+            return PerShareValueResult(
+                value,
+                "directly_comparable",
+                "same_currency_current_security",
+                denominator_currency,
+                "current_security",
+            )
+        if security_basis == "ordinary_share":
+            if context.adr_ratio is None:
+                return PerShareValueResult(
+                    None,
+                    "missing_adr_ratio",
+                    "ordinary_shares_per_adr_unknown",
+                    denominator_currency,
+                    security_basis,
+                )
+            return PerShareValueResult(
+                value * context.adr_ratio,
+                "normalized_to_current_security",
+                "ordinary_share_scaled_by_ordinary_shares_per_adr",
+                denominator_currency,
+                "current_security",
+                context.adr_ratio,
+            )
+        return PerShareValueResult(
+            None,
+            "security_basis_mismatch",
+            "denominator_security_basis_unknown",
+            denominator_currency,
+            security_basis,
+        )
+    if (
+        context.issuer_type == "foreign_private_issuer"
+        and denominator_currency
+        and price_currency
+        and denominator_currency != price_currency
+    ):
+        return PerShareValueResult(
+            None,
+            "currency_mismatch",
+            "price_and_denominator_currency_mismatch",
+            denominator_currency,
+            security_basis,
+        )
+    return PerShareValueResult(
+        value,
+        "directly_comparable",
+        "non_depositary_current_security",
+        denominator_currency or context.price_currency,
+        "current_security",
+    )
+
+
+def _normalize_ttm_eps(
+    result: EarningsTtmResult,
+    context: PerShareBasisContext,
+) -> PerShareValueResult:
+    if result.eps is None or len(result.quarter_eps) != 4:
+        return PerShareValueResult(None, "insufficient_metadata", "ttm_eps_unavailable")
+    normalized: list[float] = []
+    statuses: list[str] = []
+    ratio_used: float | None = None
+    currency: str | None = None
+    for index, value in enumerate(result.quarter_eps):
+        item = _normalize_per_share_value(
+            value,
+            value_currency=(
+                result.eps_currency[index] if index < len(result.eps_currency) else None
+            ),
+            security_basis=(
+                result.eps_security_basis[index]
+                if index < len(result.eps_security_basis)
+                else "unknown"
+            ),
+            context=context,
+        )
+        if item.value is None:
+            return item
+        normalized.append(item.value)
+        statuses.append(item.status)
+        ratio_used = item.ratio_used or ratio_used
+        currency = item.currency or currency
+    status = (
+        "normalized_to_current_security"
+        if "normalized_to_current_security" in statuses
+        else "directly_comparable"
+    )
+    return PerShareValueResult(
+        sum(normalized),
+        status,
+        "ttm_quarters_share_same_normalized_basis",
+        currency,
+        "current_security",
+        ratio_used,
+    )
+
+
+@dataclass(frozen=True)
 class BasisComparison:
     status: str
     reason: str
@@ -402,9 +671,7 @@ def determine_basis_comparability(
     if mismatches:
         return BasisComparison("not_comparable", f"{mismatches[0]}_mismatch")
     if unknown_dimensions:
-        return BasisComparison(
-            "insufficient_metadata", f"{unknown_dimensions[0]}_unknown"
-        )
+        return BasisComparison("insufficient_metadata", f"{unknown_dimensions[0]}_unknown")
     return BasisComparison("comparable", "same_normalized_basis")
 
 
@@ -415,8 +682,13 @@ def _official_pe_basis(snapshot: ValuationSnapshot) -> MultipleBasis:
         accounting_basis="GAAP",
         earnings_attribution="owners_parent_common",
         share_basis="diluted",
-        security_basis="current_security",
-        currency=snapshot.currency,
+        security_basis=(
+            "current_security"
+            if snapshot.trailing_pe_basis_status
+            in {"directly_comparable", "normalized_to_current_security"}
+            else "unknown"
+        ),
+        currency=snapshot.eps_currency or "unknown",
         denominator_period=snapshot.trailing_pe_denominator_period_end,
         source="official_financials",
     )
@@ -429,8 +701,13 @@ def _official_pb_basis(snapshot: ValuationSnapshot) -> MultipleBasis:
         accounting_basis="GAAP",
         earnings_attribution="owners_parent_common_equity",
         share_basis="common_outstanding",
-        security_basis="current_security",
-        currency=snapshot.currency,
+        security_basis=(
+            "current_security"
+            if snapshot.price_to_book_basis_status
+            in {"directly_comparable", "normalized_to_current_security"}
+            else "unknown"
+        ),
+        currency=snapshot.book_currency or "unknown",
         denominator_period=snapshot.pbr_denominator_period_end,
         source="official_financials",
     )
@@ -455,7 +732,9 @@ def _relative_position(
     framework: dict[str, object],
 ) -> tuple[ValuationRelativePosition, str | None]:
     method = str(framework.get("primary_method", "")).lower()
-    metric = "price_to_book" if any(term in method for term in ("p/b", "pbr", "roe")) else "forward_pe"
+    metric = (
+        "price_to_book" if any(term in method for term in ("p/b", "pbr", "roe")) else "forward_pe"
+    )
     value = getattr(snapshot, metric)
     if value is None and metric == "forward_pe":
         metric = "trailing_pe"
@@ -530,9 +809,7 @@ class ValuationSnapshotService:
             snapshot.ttm_period_start = start.isoformat() if start else None
             snapshot.ttm_period_end = end.isoformat() if end else None
             snapshot.ttm_source_filings = [
-                filed.isoformat()
-                for row in quarters
-                if (filed := filing_date(row)) is not None
+                filed.isoformat() for row in quarters if (filed := filing_date(row)) is not None
             ]
 
     def _apply_earnings_context(
@@ -546,14 +823,10 @@ class ValuationSnapshotService:
             return
         latest = quarters[-1]
         latest_period = financial_period_end(latest)
-        snapshot.latest_earnings_period = (
-            latest_period.isoformat() if latest_period else None
-        )
+        snapshot.latest_earnings_period = latest_period.isoformat() if latest_period else None
         snapshot.financial_currency = latest.currency
         snapshot.earnings_context_source = latest.snapshot_type
-        snapshot.earnings_context_is_preliminary = (
-            latest.snapshot_type == "preliminary_earnings"
-        )
+        snapshot.earnings_context_is_preliminary = latest.snapshot_type == "preliminary_earnings"
         snapshot.latest_revenue = latest.revenue
         snapshot.latest_operating_income = latest.operating_income
         snapshot.earnings_context_usable = any(
@@ -561,33 +834,33 @@ class ValuationSnapshotService:
             for value in (latest.revenue, latest.operating_income, latest.net_income)
         )
         snapshot.eps_per_usable = result.eps is not None
-        snapshot.ttm_contains_preliminary = (
-            result.contains_preliminary and snapshot.eps_per_usable
-        )
+        snapshot.ttm_contains_preliminary = result.contains_preliminary and snapshot.eps_per_usable
         snapshot.preliminary_quarter_count = (
             sum(row.snapshot_type == "preliminary_earnings" for row in quarters)
             if snapshot.eps_per_usable
             else 0
         )
         snapshot.earnings_basis = result.method
-        snapshot.share_basis = ";".join(
-            dict.fromkeys(item for item in result.share_basis if item)
-        ) or None
+        snapshot.share_basis = (
+            ";".join(dict.fromkeys(item for item in result.share_basis if item)) or None
+        )
         snapshot.earnings_quarter_series = [
             {
                 "period": (
-                    financial_period_end(row).isoformat()
-                    if financial_period_end(row)
-                    else None
+                    financial_period_end(row).isoformat() if financial_period_end(row) else None
                 ),
                 "source": row.snapshot_type,
                 "filing": filing_date(row).isoformat() if filing_date(row) else None,
-                "eps": result.quarter_eps[index]
-                if index < len(result.quarter_eps)
-                else None,
+                "eps": result.quarter_eps[index] if index < len(result.quarter_eps) else None,
                 "share_basis": result.share_basis[index]
                 if index < len(result.share_basis)
                 else None,
+                "eps_currency": result.eps_currency[index]
+                if index < len(result.eps_currency)
+                else None,
+                "eps_security_basis": result.eps_security_basis[index]
+                if index < len(result.eps_security_basis)
+                else "unknown",
                 "revenue": row.revenue,
                 "operating_income": row.operating_income,
                 "context_usable": any(
@@ -613,9 +886,7 @@ class ValuationSnapshotService:
         prior_year = None
         if latest_key is not None:
             previous = [
-                (key, row)
-                for key, row in by_key.items()
-                if key is not None and key < latest_key
+                (key, row) for key, row in by_key.items() if key is not None and key < latest_key
             ]
             if previous:
                 prior_key, prior = max(previous, key=lambda item: item[0])
@@ -625,8 +896,7 @@ class ValuationSnapshotService:
                 (
                     row
                     for key, row in by_key.items()
-                    if key is not None
-                    and 330 <= (latest_key - key).days <= 400
+                    if key is not None and 330 <= (latest_key - key).days <= 400
                 ),
                 None,
             )
@@ -660,11 +930,22 @@ class ValuationSnapshotService:
         self,
         snapshot: ValuationSnapshot,
         rows: list[FinancialSnapshot],
+        basis_context: PerShareBasisContext | None = None,
     ) -> tuple[float | None, float | None]:
         if snapshot.current_price is None:
             return None, None
+        basis_context = basis_context or PerShareBasisContext(
+            price_currency=snapshot.currency,
+            financial_currency=next((row.currency for row in reversed(rows) if row.currency), None),
+        )
         ttm_result = _ttm_earnings(rows)
-        ttm_eps, pe_method = ttm_result.eps, ttm_result.method
+        normalized_ttm = _normalize_ttm_eps(ttm_result, basis_context)
+        ttm_eps, pe_method = normalized_ttm.value, ttm_result.method
+        snapshot.raw_ttm_eps = ttm_result.eps
+        snapshot.trailing_pe_basis_status = normalized_ttm.status
+        snapshot.eps_currency = normalized_ttm.currency
+        snapshot.eps_security_basis = normalized_ttm.security_basis
+        snapshot.adr_ratio_used = normalized_ttm.ratio_used
         ttm_rows = list(ttm_result.quarters)
         if len(ttm_rows) == 4:
             ttm_end = financial_period_end(ttm_rows[-1])
@@ -672,9 +953,7 @@ class ValuationSnapshotService:
                 (filing_date(row) for row in ttm_rows if filing_date(row)),
                 default=None,
             )
-            snapshot.trailing_pe_denominator_period_end = (
-                ttm_end.isoformat() if ttm_end else None
-            )
+            snapshot.trailing_pe_denominator_period_end = ttm_end.isoformat() if ttm_end else None
             snapshot.trailing_pe_denominator_filing_date = (
                 ttm_filed.isoformat() if ttm_filed else None
             )
@@ -710,9 +989,24 @@ class ValuationSnapshotService:
             equity = balance.common_equity or balance.owners_parent_equity
             shares = balance.common_shares_outstanding
             if equity is not None and shares and shares > 0:
-                bvps = equity / shares
+                raw_bvps = equity / shares
+                snapshot.raw_bvps = raw_bvps
+                _share_currency, share_security_basis = _field_metadata(
+                    balance, "common_shares_outstanding", "diluted_shares"
+                )
+                normalized_bvps = _normalize_per_share_value(
+                    raw_bvps,
+                    value_currency=balance.currency,
+                    security_basis=share_security_basis,
+                    context=basis_context,
+                )
+                bvps = normalized_bvps.value
                 snapshot.bvps = bvps
-                if bvps > 0:
+                snapshot.book_currency = normalized_bvps.currency
+                snapshot.share_count_security_basis = normalized_bvps.security_basis
+                snapshot.price_to_book_basis_status = normalized_bvps.status
+                snapshot.adr_ratio_used = normalized_bvps.ratio_used or snapshot.adr_ratio_used
+                if bvps is not None and bvps > 0:
                     derived_pb = round(snapshot.current_price / bvps, 4)
                     if snapshot.price_to_book_status != "value":
                         snapshot.price_to_book = derived_pb
@@ -726,6 +1020,12 @@ class ValuationSnapshotService:
                         )
         self._apply_financial_metadata(snapshot, rows)
         self._apply_earnings_context(snapshot, rows, ttm_result)
+        snapshot.eps_per_usable = ttm_eps is not None
+        snapshot.ttm_contains_preliminary = (
+            ttm_result.contains_preliminary and snapshot.eps_per_usable
+        )
+        if ttm_eps is None:
+            snapshot.preliminary_quarter_count = 0
         return derived_pe, derived_pb
 
     def _forecast_dividends(
@@ -742,14 +1042,31 @@ class ValuationSnapshotService:
         if isinstance(announced, (int, float)) and float(announced) >= 0:
             return float(announced), "announced_dividend", "high", "발표된 보통주 배당"
         usable_history = [row for row in (history or []) if row.total_dividend is not None]
-        payout_history = [row.payout_ratio for row in usable_history[-3:] if row.payout_ratio is not None]
+        payout_history = [
+            row.payout_ratio for row in usable_history[-3:] if row.payout_ratio is not None
+        ]
         if len(payout_history) >= 3:
             payout = max(0.0, min(1.0, median(float(value) for value in payout_history)))
-            return fy1_income * payout, "median_3y_payout_ratio", "medium", f"최근 3년 중앙 지급률 {payout:.1%}"
+            return (
+                fy1_income * payout,
+                "median_3y_payout_ratio",
+                "medium",
+                f"최근 3년 중앙 지급률 {payout:.1%}",
+            )
         if len(usable_history) >= 3:
-            return median(float(row.total_dividend) for row in usable_history[-3:]), "median_3y_dividend", "medium", "최근 3년 총배당 중앙값"
+            return (
+                median(float(row.total_dividend) for row in usable_history[-3:]),
+                "median_3y_dividend",
+                "medium",
+                "최근 3년 총배당 중앙값",
+            )
         if usable_history:
-            return float(usable_history[-1].total_dividend), "latest_dividend", "low", "최근 총배당 유지"
+            return (
+                float(usable_history[-1].total_dividend),
+                "latest_dividend",
+                "low",
+                "최근 총배당 유지",
+            )
         annual = [
             row
             for row in _valid_quarters(rows)
@@ -792,11 +1109,25 @@ class ValuationSnapshotService:
             return float(announced), "announced_authorization", "high", "발표된 자사주 매입"
         actual = [row.actual_amount for row in (history or []) if row.actual_amount is not None]
         if actual:
-            return median(max(0.0, float(value)) for value in actual[-3:]), "historical_normalized_buyback", "medium", "최근 연간 자사주 매입 중앙값"
-        annual = [row for row in _valid_quarters(rows) if row.period_type == "FY" and row.buybacks is not None]
+            return (
+                median(max(0.0, float(value)) for value in actual[-3:]),
+                "historical_normalized_buyback",
+                "medium",
+                "최근 연간 자사주 매입 중앙값",
+            )
+        annual = [
+            row
+            for row in _valid_quarters(rows)
+            if row.period_type == "FY" and row.buybacks is not None
+        ]
         if annual:
             values = [max(0.0, float(row.buybacks or 0)) for row in annual[-3:]]
-            return median(values), "historical_normalized_buyback", "medium", "최근 연간 자사주 매입 중앙값"
+            return (
+                median(values),
+                "historical_normalized_buyback",
+                "medium",
+                "최근 연간 자사주 매입 중앙값",
+            )
         if ticker in {"GOOGL", "IBM", "TSLA"}:
             return None, None, "unavailable", "정기 자사주 매입 영향 자료 부족"
         return 0.0, "no_material_buyback_data", "low", "확인된 중요 자사주 매입 없음"
@@ -809,6 +1140,7 @@ class ValuationSnapshotService:
         framework: dict[str, object],
         dividend_history: list[DividendHistory] | None = None,
         capital_returns: list[CapitalReturnHistory] | None = None,
+        basis_context: PerShareBasisContext | None = None,
     ) -> None:
         if snapshot.current_price is None:
             return
@@ -830,21 +1162,29 @@ class ValuationSnapshotService:
         if len(quarters) < minimum:
             return
         recent = quarters[-minimum:]
-        shares = next(
-            (row.diluted_shares or row.common_shares_outstanding for row in reversed(recent) if row.diluted_shares or row.common_shares_outstanding),
+        basis_context = basis_context or PerShareBasisContext(
+            price_currency=snapshot.currency,
+            financial_currency=next((row.currency for row in reversed(rows) if row.currency), None),
+        )
+        share_row = next(
+            (
+                row
+                for row in reversed(recent)
+                if row.diluted_shares or row.common_shares_outstanding
+            ),
             None,
+        )
+        shares = (
+            share_row.diluted_shares or share_row.common_shares_outstanding if share_row else None
         )
         if not shares or shares <= 0:
             return
-        is_insurance = ticker == "003690" or any(
-            term in method for term in ("p/b", "pbr", "roe")
-        )
+        is_insurance = ticker == "003690" or any(term in method for term in ("p/b", "pbr", "roe"))
         consensus_fy1_income = (
-            snapshot.current_price / snapshot.forward_pe * shares
-            if snapshot.forward_pe_status == "value"
-            and snapshot.forward_pe_source == "consensus_forward"
-            and snapshot.forward_pe
-            and snapshot.forward_pe > 0
+            snapshot.forward_eps * shares
+            if snapshot.forward_eps is not None
+            and snapshot.forward_eps > 0
+            and not basis_context.is_depositary_security
             else None
         )
         book_fy1_income: float | None = None
@@ -898,9 +1238,33 @@ class ValuationSnapshotService:
                 snapshot.forward_pe_source = "modeled_forward"
                 snapshot.forecast_method = forecast_method
             return
-        fy1_eps = fy1_income / shares
+        raw_fy1_eps = fy1_income / shares
+        share_field = (
+            "diluted_shares"
+            if share_row and share_row.diluted_shares
+            else "common_shares_outstanding"
+        )
+        _share_currency, share_security_basis = (
+            _field_metadata(
+                share_row,
+                share_field,
+                "common_shares_outstanding",
+                "diluted_shares",
+            )
+            if share_row
+            else (None, "unknown")
+        )
+        normalized_fy1_eps = _normalize_per_share_value(
+            raw_fy1_eps,
+            value_currency=share_row.currency if share_row else None,
+            security_basis=share_security_basis,
+            context=basis_context,
+        )
+        fy1_eps = normalized_fy1_eps.value
+        snapshot.forward_pe_basis_status = normalized_fy1_eps.status
         if (
-            snapshot.forward_pe_status != "value"
+            fy1_eps is not None
+            and snapshot.forward_pe_status != "value"
             and not snapshot.forward_pe_basis_conflict
         ):
             snapshot.forward_eps = fy1_eps
@@ -919,9 +1283,7 @@ class ValuationSnapshotService:
             common_shares = balance.common_shares_outstanding
             if equity and common_shares and equity > 0 and common_shares > 0:
                 expected_dividends, dividend_method, dividend_quality, dividend_assumption = (
-                    self._forecast_dividends(
-                        rows, book_fy1_income, framework, dividend_history
-                    )
+                    self._forecast_dividends(rows, book_fy1_income, framework, dividend_history)
                 )
                 expected_buybacks, buyback_method, buyback_quality, buyback_assumption = (
                     self._forecast_buybacks(rows, framework, ticker, capital_returns)
@@ -942,12 +1304,28 @@ class ValuationSnapshotService:
                         "중요 자사주 매입 가정을 신뢰성 있게 만들 수 없어 내부 추정 fPBR을 계산하지 않았습니다."
                     )
                     return
-                issuance = median(
-                    [float(row.equity_issuance) for row in recent if row.equity_issuance is not None]
-                ) if any(row.equity_issuance is not None for row in recent) else 0.0
-                oci = median(
-                    [float(row.other_comprehensive_income) for row in recent if row.other_comprehensive_income is not None]
-                ) if any(row.other_comprehensive_income is not None for row in recent) else 0.0
+                issuance = (
+                    median(
+                        [
+                            float(row.equity_issuance)
+                            for row in recent
+                            if row.equity_issuance is not None
+                        ]
+                    )
+                    if any(row.equity_issuance is not None for row in recent)
+                    else 0.0
+                )
+                oci = (
+                    median(
+                        [
+                            float(row.other_comprehensive_income)
+                            for row in recent
+                            if row.other_comprehensive_income is not None
+                        ]
+                    )
+                    if any(row.other_comprehensive_income is not None for row in recent)
+                    else 0.0
+                )
                 fy1_equity = (
                     equity
                     + book_fy1_income
@@ -957,7 +1335,20 @@ class ValuationSnapshotService:
                     + oci
                 )
                 if fy1_equity > 0:
-                    snapshot.forward_bvps = fy1_equity / common_shares
+                    raw_forward_bvps = fy1_equity / common_shares
+                    _share_currency, balance_share_basis = _field_metadata(
+                        balance, "common_shares_outstanding"
+                    )
+                    normalized_forward_bvps = _normalize_per_share_value(
+                        raw_forward_bvps,
+                        value_currency=balance.currency,
+                        security_basis=balance_share_basis,
+                        context=basis_context,
+                    )
+                    snapshot.forward_price_to_book_basis_status = normalized_forward_bvps.status
+                    snapshot.forward_bvps = normalized_forward_bvps.value
+                    if snapshot.forward_bvps is None:
+                        return
                     snapshot.forward_price_to_book = round(
                         snapshot.current_price / snapshot.forward_bvps, 4
                     )
@@ -997,7 +1388,8 @@ class ValuationSnapshotService:
 
         pe_comparison = determine_basis_comparability(
             provider_pe_basis,
-            derived_pe_basis or (_official_pe_basis(snapshot) if snapshot.ttm_eps is not None else None),
+            derived_pe_basis
+            or (_official_pe_basis(snapshot) if snapshot.ttm_eps is not None else None),
         )
         if provider_pe is not None:
             snapshot.trailing_pe_comparability = pe_comparison.status
@@ -1027,9 +1419,7 @@ class ValuationSnapshotService:
             if "trailing_pe" not in snapshot.multiple_basis_conflicts:
                 snapshot.multiple_basis_conflicts.append("trailing_pe")
             snapshot.trailing_pe = None
-            snapshot.trailing_pe_status = (
-                "not_meaningful" if pe_structural_conflict else "conflict"
-            )
+            snapshot.trailing_pe_status = "not_meaningful" if pe_structural_conflict else "conflict"
             snapshot.trailing_valuation_confidence = min(
                 snapshot.trailing_valuation_confidence, 0.35
             )
@@ -1053,7 +1443,8 @@ class ValuationSnapshotService:
 
         pb_comparison = determine_basis_comparability(
             provider_pb_basis,
-            derived_pb_basis or (_official_pb_basis(snapshot) if snapshot.bvps is not None else None),
+            derived_pb_basis
+            or (_official_pb_basis(snapshot) if snapshot.bvps is not None else None),
         )
         if provider_pb is not None:
             snapshot.price_to_book_comparability = pb_comparison.status
@@ -1124,9 +1515,7 @@ class ValuationSnapshotService:
         if derived_pb is not None:
             snapshot.derived_forward_price_to_book = derived_pb
 
-        pe_comparison = determine_basis_comparability(
-            provider_pe_basis, derived_pe_basis
-        )
+        pe_comparison = determine_basis_comparability(provider_pe_basis, derived_pe_basis)
         if provider_pe is not None:
             snapshot.forward_pe_comparability = pe_comparison.status
             snapshot.forward_pe_comparability_reason = pe_comparison.reason
@@ -1152,9 +1541,7 @@ class ValuationSnapshotService:
             else None
         )
         if pe_difference is not None:
-            snapshot.forward_pe_reference_difference_pct = round(
-                pe_difference * 100, 4
-            )
+            snapshot.forward_pe_reference_difference_pct = round(pe_difference * 100, 4)
         if (
             pe_difference is not None
             and pe_difference > threshold
@@ -1174,16 +1561,12 @@ class ValuationSnapshotService:
                 snapshot.multiple_basis_conflicts.append("forward_pe")
             snapshot.forward_pe = None
             snapshot.forward_pe_status = "conflict"
-            snapshot.forward_valuation_confidence = min(
-                snapshot.forward_valuation_confidence, 0.35
-            )
+            snapshot.forward_valuation_confidence = min(snapshot.forward_valuation_confidence, 0.35)
             warning = "외부 fPER와 확인 가능한 예상 EPS 기준이 충돌합니다."
             if warning not in snapshot.warnings:
                 snapshot.warnings.append(warning)
 
-        pb_comparison = determine_basis_comparability(
-            provider_pb_basis, derived_pb_basis
-        )
+        pb_comparison = determine_basis_comparability(provider_pb_basis, derived_pb_basis)
         if provider_pb is not None:
             snapshot.forward_price_to_book_comparability = pb_comparison.status
             snapshot.forward_price_to_book_comparability_reason = pb_comparison.reason
@@ -1212,9 +1595,7 @@ class ValuationSnapshotService:
                 snapshot.multiple_basis_conflicts.append("forward_price_to_book")
             snapshot.forward_price_to_book = None
             snapshot.forward_price_to_book_status = "conflict"
-            snapshot.forward_valuation_confidence = min(
-                snapshot.forward_valuation_confidence, 0.35
-            )
+            snapshot.forward_valuation_confidence = min(snapshot.forward_valuation_confidence, 0.35)
             warning = "외부 fPBR과 확인 가능한 예상 BVPS 기준이 충돌합니다."
             if warning not in snapshot.warnings:
                 snapshot.warnings.append(warning)
@@ -1250,7 +1631,8 @@ class ValuationSnapshotService:
             ),
             price_observed_at=price_decision.price_observed_at,
             price_observed_timezone=price_decision.price_observed_timezone,
-            price_basis=price_decision.price_basis or ("close" if exchange_trade_date else "unavailable"),
+            price_basis=price_decision.price_basis
+            or ("close" if exchange_trade_date else "unavailable"),
             provider="ohlcv-analyst",
             valuation_data_as_of=now.date().isoformat(),
             valuation_calculated_at=now.isoformat(),
@@ -1265,12 +1647,16 @@ class ValuationSnapshotService:
             security_master = session.exec(
                 select(SecurityMaster).where(SecurityMaster.ticker == ticker)
             ).first()
-            issuer_type = (
-                (watchlist_item.issuer_type if watchlist_item else None)
-                or (security_master.issuer_type if security_master else None)
-                or "unknown"
+            identity_context = _resolve_per_share_basis_context(
+                watchlist_item,
+                security_master,
+                price_currency=snapshot.currency,
+                financial_currency=None,
             )
-            if issuer_type in {"adr", "foreign_private_issuer"}:
+            if (
+                identity_context.issuer_type in {"adr", "foreign_private_issuer"}
+                or identity_context.is_depositary_security
+            ):
                 foreign_cache = session.exec(
                     select(ProviderResponseCache).where(
                         ProviderResponseCache.provider == "sec_edgar",
@@ -1279,9 +1665,7 @@ class ValuationSnapshotService:
                     )
                 ).first()
                 foreign_payload = _json_dict(foreign_cache.payload) if foreign_cache else {}
-                foreign_cache_metadata_missing = (
-                    "latest_filing_parse_result" not in foreign_payload
-                )
+                foreign_cache_metadata_missing = "latest_filing_parse_result" not in foreign_payload
         rows = self._financial_rows(session, ticker)
         if (
             session is not None
@@ -1301,15 +1685,29 @@ class ValuationSnapshotService:
                 rows = self._financial_rows(session, ticker)
             except (httpx.HTTPError, TypeError, ValueError):
                 pass
+        latest_financial_currency = next(
+            (row.currency for row in reversed(_earnings_quarters(rows)) if row.currency),
+            None,
+        )
+        basis_context = _resolve_per_share_basis_context(
+            watchlist_item,
+            security_master,
+            price_currency=snapshot.currency,
+            financial_currency=latest_financial_currency,
+        )
+        snapshot.resolved_issuer_type = basis_context.issuer_type
+        snapshot.resolved_security_type = basis_context.security_type
+        snapshot.is_depositary_security = basis_context.is_depositary_security
+        snapshot.resolved_adr_ratio = basis_context.adr_ratio
+        snapshot.adr_ratio_source = basis_context.adr_ratio_source
+        snapshot.adr_ratio_direction = (
+            basis_context.adr_ratio_direction if basis_context.is_depositary_security else None
+        )
         dividend_history: list[DividendHistory] = []
         capital_returns: list[CapitalReturnHistory] = []
         if session is not None:
-            dividend_history = self.dividend_service.sync_financial_snapshots(
-                session, ticker, rows
-            )
-            capital_returns = self.dividend_service.sync_capital_returns(
-                session, ticker, rows
-            )
+            dividend_history = self.dividend_service.sync_financial_snapshots(session, ticker, rows)
+            capital_returns = self.dividend_service.sync_capital_returns(session, ticker, rows)
         provider_pe: float | None = None
         provider_pb: float | None = None
         alpha_metrics: dict[str, float | None] = {}
@@ -1324,7 +1722,11 @@ class ValuationSnapshotService:
                 ) as client:
                     response = await client.get(
                         "/stock/metric",
-                        params={"symbol": ticker, "metric": "all", "token": self.settings.finnhub_api_key},
+                        params={
+                            "symbol": ticker,
+                            "metric": "all",
+                            "token": self.settings.finnhub_api_key,
+                        },
                     )
                     response.raise_for_status()
                     payload = response.json()
@@ -1347,9 +1749,7 @@ class ValuationSnapshotService:
                         snapshot.forward_pe_source = "consensus_forward"
                         snapshot.forward_pe_method = "Finnhub forwardPE"
                         snapshot.forward_basis = "provider-defined forward consensus"
-                        snapshot.forward_pe_input_period = (
-                            "provider-defined forward consensus"
-                        )
+                        snapshot.forward_pe_input_period = "provider-defined forward consensus"
                         snapshot.forward_valuation_confidence = 0.7
                         snapshot.estimate_provider = "finnhub"
                         snapshot.estimate_period = "provider-defined forward consensus"
@@ -1376,21 +1776,29 @@ class ValuationSnapshotService:
                             estimate.coverage_status = "partial"
                             estimate.raw_reference = "Finnhub stock metric forwardPE"
                             session.add(estimate)
-                    provider_pb = _positive_number(metrics.get("pbQuarterly") or metrics.get("pbAnnual"))
+                    provider_pb = _positive_number(
+                        metrics.get("pbQuarterly") or metrics.get("pbAnnual")
+                    )
                     if provider_pb is not None:
                         snapshot.price_to_book = provider_pb
                         snapshot.price_to_book_status = "value"
                         snapshot.price_to_book_source = "provider"
                         snapshot.price_to_book_method = "Finnhub reported P/B"
                     snapshot.provider = "ohlcv-analyst + finnhub"
-                    denominator_date = _date_value(payload.get("metricAsOf") or payload.get("asOfDate"))
-                    snapshot.denominator_as_of = denominator_date.isoformat() if denominator_date else None
+                    denominator_date = _date_value(
+                        payload.get("metricAsOf") or payload.get("asOfDate")
+                    )
+                    snapshot.denominator_as_of = (
+                        denominator_date.isoformat() if denominator_date else None
+                    )
                     if denominator_date is None:
                         snapshot.quality = "partial"
                         snapshot.warnings.append(
                             "Finnhub 배수 분모의 정확한 추정 기준일이 제공되지 않아 freshness를 부분 확인으로 표시합니다."
                         )
-                    elif (now.date() - denominator_date).days > self.settings.valuation_snapshot_max_age_days:
+                    elif (
+                        now.date() - denominator_date
+                    ).days > self.settings.valuation_snapshot_max_age_days:
                         snapshot.quality = "stale"
                         snapshot.warnings.append(
                             "Valuation 배수 분모 기준일이 오래되어 최신 주가·실적을 완전히 반영하지 않을 수 있습니다."
@@ -1407,7 +1815,9 @@ class ValuationSnapshotService:
                             status="success",
                         )
                 else:
-                    snapshot.warnings.append("Finnhub에서 사용 가능한 Valuation 배수를 반환하지 않았습니다.")
+                    snapshot.warnings.append(
+                        "Finnhub에서 사용 가능한 Valuation 배수를 반환하지 않았습니다."
+                    )
                     if session is not None:
                         self.telemetry.record(
                             session,
@@ -1516,10 +1926,8 @@ class ValuationSnapshotService:
                 snapshot.estimate_analyst_count = alpha_estimate.analyst_count
                 snapshot.estimate_revision_direction = alpha_estimate.revision_direction
                 snapshot.consensus_status = alpha_estimate.coverage_status
-            if snapshot.current_price:
-                alpha_forward_pe = (
-                    snapshot.current_price / alpha_eps if alpha_eps > 0 else None
-                )
+            if snapshot.current_price and not basis_context.is_depositary_security:
+                alpha_forward_pe = snapshot.current_price / alpha_eps if alpha_eps > 0 else None
                 provider_forward_pe = (
                     snapshot.forward_pe
                     if snapshot.forward_pe_status == "value"
@@ -1575,20 +1983,29 @@ class ValuationSnapshotService:
                         )
                         snapshot.consensus_status = "conflicting"
 
-        issuer_type = watchlist_item.issuer_type if watchlist_item else None
-        missing_adr_mapping = issuer_type in {"adr", "foreign_private_issuer"} and (
-            (watchlist_item is None or watchlist_item.adr_ratio is None)
-            and (security_master is None or security_master.adr_ratio is None)
-        )
-        if missing_adr_mapping:
-            derived_pe, derived_pb = None, None
-            self._apply_financial_metadata(snapshot, rows)
+        derived_pe, derived_pb = self._apply_derived_trailing(snapshot, rows, basis_context)
+        unsafe_basis_statuses = {
+            "insufficient_metadata",
+            "currency_mismatch",
+            "security_basis_mismatch",
+            "missing_adr_ratio",
+        }
+        if basis_context.is_depositary_security and {
+            snapshot.trailing_pe_basis_status,
+            snapshot.price_to_book_basis_status,
+        }.intersection(unsafe_basis_statuses):
             snapshot.valuation_calculation_warning = True
-            snapshot.warnings.append(
-                "foreign issuer/ADR의 주식 변환 비율이 확인되지 않아 per-share 자체 Valuation 계산을 보류합니다."
-            )
-        else:
-            derived_pe, derived_pb = self._apply_derived_trailing(snapshot, rows)
+            if "currency_mismatch" in {
+                snapshot.trailing_pe_basis_status,
+                snapshot.price_to_book_basis_status,
+            }:
+                snapshot.warnings.append(
+                    "가격 통화와 주당 재무 기준 통화가 달라 자체 PER/PBR 계산을 보류합니다."
+                )
+            else:
+                snapshot.warnings.append(
+                    "ADR/외국 상장주식의 주당 기준을 확인하지 못해 자체 PER/PBR 계산을 보류합니다."
+                )
         if alpha_shares and rows:
             official_shares = next(
                 (
@@ -1608,15 +2025,22 @@ class ValuationSnapshotService:
                         "공식 재무제표와 Alpha Vantage 주식 수 차이가 커 주당 배수 신뢰도를 낮췄습니다."
                     )
         framework = _json_dict(thesis.valuation_framework if thesis else None)
-        if not missing_adr_mapping:
-            self._apply_forward_model(
-                snapshot,
-                rows,
-                ticker,
-                framework,
-                dividend_history,
-                capital_returns,
-            )
+        self._apply_forward_model(
+            snapshot,
+            rows,
+            ticker,
+            framework,
+            dividend_history,
+            capital_returns,
+            basis_context,
+        )
+        if (
+            basis_context.is_depositary_security
+            and snapshot.forward_pe_status == "value"
+            and snapshot.forward_pe_source == "consensus_forward"
+            and snapshot.forward_eps is None
+        ):
+            snapshot.forward_pe_basis_status = "insufficient_metadata"
         self._cross_check(
             snapshot,
             provider_pe,
@@ -1624,16 +2048,12 @@ class ValuationSnapshotService:
             derived_pe,
             derived_pb,
             provider_pe_basis=(
-                _provider_multiple_basis(
-                    "pe", "TTM", snapshot.currency, "finnhub"
-                )
+                _provider_multiple_basis("pe", "TTM", snapshot.currency, "finnhub")
                 if provider_pe is not None
                 else None
             ),
             provider_pb_basis=(
-                _provider_multiple_basis(
-                    "pb", "latest_reported", snapshot.currency, "finnhub"
-                )
+                _provider_multiple_basis("pb", "latest_reported", snapshot.currency, "finnhub")
                 if provider_pb is not None
                 else None
             ),
@@ -1645,9 +2065,7 @@ class ValuationSnapshotService:
             derived_pe,
             derived_pb,
             provider_pe_basis=(
-                _provider_multiple_basis(
-                    "pe", "TTM", snapshot.currency, "alpha_vantage"
-                )
+                _provider_multiple_basis("pe", "TTM", snapshot.currency, "alpha_vantage")
                 if alpha_metrics.get("trailing_pe") is not None
                 else None
             ),
@@ -1659,7 +2077,11 @@ class ValuationSnapshotService:
                 else None
             ),
         )
-        if session is not None and not missing_adr_mapping:
+        historical_allowed = not basis_context.is_depositary_security
+        snapshot.historical_per_share_basis_status = (
+            "directly_comparable" if historical_allowed else "historical_per_share_basis_unverified"
+        )
+        if session is not None and historical_allowed:
             observations = self.history_service.update_cache(
                 session,
                 ticker,
@@ -1667,33 +2089,33 @@ class ValuationSnapshotService:
                 rows,
             )
             self.history_service.apply(snapshot, observations, framework, ticker)
-        elif missing_adr_mapping:
+        elif not historical_allowed:
             snapshot.historical_pe_statistics = None
             snapshot.historical_pb_statistics = None
             snapshot.valuation_relative_position = ValuationRelativePosition.unknown
             snapshot.valuation_relative_position_confidence = "low"
-            snapshot.valuation_relative_position_reason = (
-                "foreign issuer/ADR의 주식 변환 비율과 통화 기준이 확인되지 않아 역사적 per-share 배수 비교를 보류합니다."
-            )
-            snapshot.valuation_relative_position_reason_codes = ["missing_adr_ratio"]
+            snapshot.valuation_relative_position_reason = "ADR의 시점별 주식 변환 비율과 통화 기준이 확인되지 않아 역사적 per-share 배수 비교를 보류합니다."
+            snapshot.valuation_relative_position_reason_codes = [
+                "historical_per_share_basis_unverified"
+            ]
         if (
             snapshot.valuation_relative_position == ValuationRelativePosition.unknown
-            and not missing_adr_mapping
+            and historical_allowed
         ):
             relative, basis = _relative_position(snapshot, framework)
             if relative != ValuationRelativePosition.unknown:
                 snapshot.valuation_relative_position = relative
                 snapshot.valuation_relative_basis = basis
                 snapshot.valuation_relative_position_confidence = "low"
-                snapshot.valuation_relative_position_reason = "저장된 peer 또는 역사적 범위를 참고했습니다."
+                snapshot.valuation_relative_position_reason = (
+                    "저장된 peer 또는 역사적 범위를 참고했습니다."
+                )
 
         if snapshot.multiple_basis_conflicts:
             snapshot.valuation_signal_conflict = True
             snapshot.valuation_relative_position_confidence = "low"
             if "multiple_basis_conflict" not in snapshot.valuation_relative_position_reason_codes:
-                snapshot.valuation_relative_position_reason_codes.append(
-                    "multiple_basis_conflict"
-                )
+                snapshot.valuation_relative_position_reason_codes.append("multiple_basis_conflict")
 
         if rows and snapshot.provider == "ohlcv-analyst":
             snapshot.provider = "ohlcv-analyst + financial-statements"
@@ -1716,9 +2138,15 @@ class ValuationSnapshotService:
             )
         if snapshot.filing_date:
             financial_date = _date_value(snapshot.filing_date)
-            if financial_date and (now.date() - financial_date).days > self.settings.valuation_financial_max_age_days:
+            if (
+                financial_date
+                and (now.date() - financial_date).days
+                > self.settings.valuation_financial_max_age_days
+            ):
                 snapshot.quality = "stale"
-                snapshot.warnings.append("재무 분모 기준일이 오래되어 Valuation 판단 강도를 낮춥니다.")
+                snapshot.warnings.append(
+                    "재무 분모 기준일이 오래되어 Valuation 판단 강도를 낮춥니다."
+                )
         if (
             snapshot.forward_pe_status == "value"
             and snapshot.forward_pe_source == "consensus_forward"
@@ -1732,13 +2160,12 @@ class ValuationSnapshotService:
             snapshot.financial_refresh_required = freshness.refresh_required
             snapshot.latest_material_financial_event_date = (
                 freshness.latest_material_event_date.isoformat()
-                if freshness.latest_material_event_date else None
+                if freshness.latest_material_event_date
+                else None
             )
             snapshot.financial_freshness = freshness.status
             snapshot.latest_full_financial_period = (
-                freshness.latest_full_period.isoformat()
-                if freshness.latest_full_period
-                else None
+                freshness.latest_full_period.isoformat() if freshness.latest_full_period else None
             )
             snapshot.latest_preliminary_financial_period = (
                 freshness.latest_preliminary_period.isoformat()
@@ -1765,9 +2192,7 @@ class ValuationSnapshotService:
             )
             snapshot.financial_refresh_result = freshness.refresh_result
             snapshot.financial_refresh_reason = freshness.refresh_reason
-            snapshot.financial_refresh_trigger_event_id = (
-                freshness.refresh_trigger_event_id
-            )
+            snapshot.financial_refresh_trigger_event_id = freshness.refresh_trigger_event_id
             if freshness.refresh_required:
                 snapshot.quality = "stale"
                 snapshot.forward_valuation_confidence *= 0.5
@@ -1833,7 +2258,10 @@ class ValuationSnapshotService:
                     snapshot.valuation_relative_position_confidence = "low"
                 if snapshot.multiple_basis_conflicts:
                     snapshot.valuation_relative_position_confidence = "low"
-            if freshness.full_financial_freshness == "stale" or freshness.status == "foreign_filing_partial":
+            if (
+                freshness.full_financial_freshness == "stale"
+                or freshness.status == "foreign_filing_partial"
+            ):
                 if snapshot.valuation_relative_position_confidence == "high":
                     snapshot.valuation_relative_position_confidence = "medium"
                 elif snapshot.valuation_relative_position_confidence == "medium":
@@ -1844,9 +2272,7 @@ class ValuationSnapshotService:
                 and snapshot.forward_multiple_confidence < 0.4
             ):
                 snapshot.valuation_relative_position = ValuationRelativePosition.unknown
-                snapshot.valuation_relative_position_reason = (
-                    "최근 material 실적 이후 정식 재무 분모가 갱신되지 않아 현재 Valuation 위치 판단을 보류합니다."
-                )
+                snapshot.valuation_relative_position_reason = "최근 material 실적 이후 정식 재무 분모가 갱신되지 않아 현재 Valuation 위치 판단을 보류합니다."
                 snapshot.valuation_relative_position_reason_codes.append(
                     "stale_financial_after_material_event"
                 )

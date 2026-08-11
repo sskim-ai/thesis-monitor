@@ -4,6 +4,7 @@ import json
 from datetime import date, datetime, timedelta, timezone
 
 import httpx
+import pytest
 from sqlmodel import Session, SQLModel, create_engine, select
 
 from app.models.event import CanonicalIssue, Event
@@ -42,8 +43,10 @@ from app.services.collection_service import (
     _opendart_reparse_lookback_days,
 )
 from app.services.sec_financial_snapshot_service import (
+    _facts,
     _linked_documents,
     _parse_foreign_financial_release,
+    _unit_currency,
 )
 from app.services.security_master_service import SecurityMasterService
 from app.services.provider_telemetry_service import summarize_provider_run
@@ -428,9 +431,7 @@ def test_old_full_with_current_preliminary_has_separate_freshness() -> None:
             )
         )
         session.commit()
-        state = FinancialFreshnessService().assess(
-            session, "FOREIGNFRESH", as_of=date(2026, 8, 11)
-        )
+        state = FinancialFreshnessService().assess(session, "FOREIGNFRESH", as_of=date(2026, 8, 11))
 
     assert state.full_financial_availability == "full"
     assert state.full_financial_freshness == "stale"
@@ -540,9 +541,7 @@ def test_stale_preliminary_does_not_hide_unresolved_foreign_filing() -> None:
             ]
         )
         session.commit()
-        state = FinancialFreshnessService().assess(
-            session, "FPISTALE", as_of=date(2026, 8, 11)
-        )
+        state = FinancialFreshnessService().assess(session, "FPISTALE", as_of=date(2026, 8, 11))
 
     assert state.preliminary_financial_freshness == "stale"
     assert state.status == "foreign_filing_partial"
@@ -680,8 +679,7 @@ def test_preliminary_html_table_uses_semantic_rows_and_columns() -> None:
     current_revenue = next(
         field
         for field in parsed.raw_fields
-        if field["raw_label"] == "매출액"
-        and field["raw_column_header"].startswith("당기실적")
+        if field["raw_label"] == "매출액" and field["raw_column_header"].startswith("당기실적")
     )
     assert current_revenue["parse_method"] == "html_semantic_table"
     assert current_revenue["source_receipt_no"] == "20260729800013"
@@ -731,10 +729,10 @@ def test_cumulative_preliminary_event_creates_standalone_q2_snapshot() -> None:
         reporting_period_end=date(2026, 6, 30),
         confirmed_facts='["OpenDART receipt number: 202607290001", '
         '"OpenDART financial cumulative fact: 매출액 = 180000000 KRW '
-        '(잠정실적; thstrm_nm=2026년 2분기; unit=KRW; period_scope=single-quarter; '
+        "(잠정실적; thstrm_nm=2026년 2분기; unit=KRW; period_scope=single-quarter; "
         'amount_scope=cumulative; report_code=preliminary)", '
         '"OpenDART financial cumulative fact: 영업이익 = 30000000 KRW '
-        '(잠정실적; thstrm_nm=2026년 2분기; unit=KRW; period_scope=single-quarter; '
+        "(잠정실적; thstrm_nm=2026년 2분기; unit=KRW; period_scope=single-quarter; "
         'amount_scope=cumulative; report_code=preliminary)"]',
     )
     with Session(engine) as session:
@@ -811,9 +809,7 @@ def test_preliminary_parser_preserves_semantic_raw_fields() -> None:
         "당기순이익",
     }
     assert all(item["raw_unit"] == "백만원" for item in parsed.raw_fields)
-    current_fields = [
-        item for item in parsed.raw_fields if item["raw_column_header"] == "당기실적"
-    ]
+    current_fields = [item for item in parsed.raw_fields if item["raw_column_header"] == "당기실적"]
     assert len(current_fields) == 3
 
 
@@ -1064,9 +1060,7 @@ def test_invalidated_canonical_issue_is_reused_without_duplicate_insert() -> Non
         session.add(
             CanonicalIssue(
                 ticker="REUSE",
-                issue_key=hashlib.sha256(
-                    b"REUSE|buyback|2026-08"
-                ).hexdigest()[:20],
+                issue_key=hashlib.sha256(b"REUSE|buyback|2026-08").hexdigest()[:20],
                 issue_type="buyback",
                 status="invalidated_source",
                 execution_status="cancelled",
@@ -1083,9 +1077,7 @@ def test_invalidated_canonical_issue_is_reused_without_duplicate_insert() -> Non
         issue = CapitalActionService().canonicalize(session, event)
         session.commit()
         issues = list(
-            session.exec(
-                select(CanonicalIssue).where(CanonicalIssue.ticker == "REUSE")
-            ).all()
+            session.exec(select(CanonicalIssue).where(CanonicalIssue.ticker == "REUSE")).all()
         )
 
     assert issue is not None
@@ -1110,19 +1102,76 @@ def test_foreign_release_link_and_financial_values_are_detected() -> None:
     assert parsed["revenue"] == 1_270_380_000_000
     assert parsed["net_income"] == 706_560_000_000
     assert parsed["currency"] == "TWD"
+    assert parsed["eps_currency"] == "TWD"
+    assert parsed["eps_security_basis"] == "unknown"
+
+
+@pytest.mark.parametrize(
+    ("eps_text", "expected_currency", "expected_basis"),
+    [
+        ("Diluted EPS was NT$12.30", "TWD", "unknown"),
+        ("Diluted EPS was US$2.50", "USD", "unknown"),
+        ("Diluted EPS was 2.50", None, "unknown"),
+        ("Diluted EPS per ADS was US$2.50", "USD", "depositary_security"),
+        (
+            "Diluted EPS per ordinary share was NT$12.30",
+            "TWD",
+            "ordinary_share",
+        ),
+    ],
+)
+def test_foreign_release_preserves_eps_currency_and_security_basis(
+    eps_text: str,
+    expected_currency: str | None,
+    expected_basis: str,
+) -> None:
+    parsed = _parse_foreign_financial_release(
+        "Results for the quarter ended June 30, 2026. "
+        "Consolidated revenue was NT$100 billion. "
+        f"Net income was NT$10 billion. {eps_text}."
+    )
+
+    assert parsed is not None
+    assert parsed["diluted_eps"] in {2.5, 12.3}
+    assert parsed["eps_currency"] == expected_currency
+    assert parsed["eps_security_basis"] == expected_basis
+
+
+def test_companyfacts_preserves_eps_unit_metadata() -> None:
+    payload = {
+        "facts": {
+            "ifrs-full": {
+                "DilutedEarningsLossPerShare": {
+                    "units": {
+                        "TWD/shares": [
+                            {
+                                "fy": 2026,
+                                "fp": "Q1",
+                                "form": "6-K",
+                                "filed": "2026-04-30",
+                                "start": "2026-01-01",
+                                "end": "2026-03-31",
+                                "val": 12.3,
+                            }
+                        ]
+                    }
+                }
+            }
+        }
+    }
+
+    entries = _facts(payload, "diluted_eps")
+
+    assert entries[0]["_unit"] == "TWD/shares"
+    assert entries[0]["_concept"] == "DilutedEarningsLossPerShare"
+    assert _unit_currency(entries[0]["_unit"]) == "TWD"
 
 
 def test_openfigi_identity_mismatch_does_not_overwrite_security_master() -> None:
     def handler(_request: httpx.Request) -> httpx.Response:
         return httpx.Response(
             200,
-            json=[
-                {
-                    "data": [
-                        {"figi": "BBG000TEST", "ticker": "IBM", "name": "Intel Corp"}
-                    ]
-                }
-            ],
+            json=[{"data": [{"figi": "BBG000TEST", "ticker": "IBM", "name": "Intel Corp"}]}],
         )
 
     engine = _engine()
@@ -1139,6 +1188,40 @@ def test_openfigi_identity_mismatch_does_not_overwrite_security_master() -> None
     assert mapped is False
     assert reason == "identity_mismatch"
     assert refreshed is not None and refreshed.figi is None
+
+
+def test_security_master_preserves_unmonitored_identity_without_assuming_fpi_is_adr() -> None:
+    engine = _engine()
+    with Session(engine) as session:
+        common = SecurityMaster(
+            canonical_company_id="company:foreign-common",
+            canonical_security_id="security:foreign-common",
+            ticker="FCOMMON",
+            company_name="Foreign Common",
+            exchange="NYSE",
+            issuer_type="foreign_private_issuer",
+            security_type="common_stock",
+        )
+        adr = SecurityMaster(
+            canonical_company_id="company:foreign-adr",
+            canonical_security_id="security:foreign-adr",
+            ticker="FADR",
+            company_name="Foreign ADR",
+            exchange="NYSE",
+            issuer_type="adr",
+            security_type="adr",
+        )
+        session.add(common)
+        session.add(adr)
+        session.commit()
+
+        refreshed_common = SecurityMasterService().ensure(session, "FCOMMON")
+        refreshed_adr = SecurityMasterService().ensure(session, "FADR")
+
+    assert refreshed_common.issuer_type == "foreign_private_issuer"
+    assert refreshed_common.adr_identifier is None
+    assert refreshed_adr.issuer_type == "adr"
+    assert refreshed_adr.adr_identifier == "FADR"
 
 
 def test_ambiguous_ticker_query_uses_company_aliases() -> None:
@@ -1277,9 +1360,7 @@ def test_quarantined_history_does_not_lower_current_event_quality() -> None:
             ]
         )
         session.commit()
-        coverage = DataCoverageService().build(
-            session, "QUALITYEVENT", ValuationSnapshot()
-        )
+        coverage = DataCoverageService().build(session, "QUALITYEVENT", ValuationSnapshot())
 
     assert coverage.event_quality == "fresh"
     assert coverage.current_event_quality == "fresh"
@@ -1306,9 +1387,7 @@ def test_rejected_unrelated_article_does_not_lower_current_event_quality() -> No
             )
         )
         session.commit()
-        coverage = DataCoverageService().build(
-            session, "REJECTED", ValuationSnapshot()
-        )
+        coverage = DataCoverageService().build(session, "REJECTED", ValuationSnapshot())
 
     assert coverage.event_quality == "fresh"
     assert coverage.rejected_candidate_count == 1
@@ -1333,9 +1412,7 @@ def test_current_relevant_financial_validation_failure_lowers_event_quality() ->
             )
         )
         session.commit()
-        coverage = DataCoverageService().build(
-            session, "CURRENTFAIL", ValuationSnapshot()
-        )
+        coverage = DataCoverageService().build(session, "CURRENTFAIL", ValuationSnapshot())
 
     assert coverage.event_quality == "validation_failed"
 
@@ -1358,9 +1435,7 @@ def test_current_official_document_identity_failure_lowers_event_quality() -> No
             )
         )
         session.commit()
-        coverage = DataCoverageService().build(
-            session, "CURRENTIDENTITYFAIL", ValuationSnapshot()
-        )
+        coverage = DataCoverageService().build(session, "CURRENTIDENTITYFAIL", ValuationSnapshot())
 
     assert coverage.event_quality == "validation_failed"
     assert coverage.quarantined_event_count == 1
@@ -1384,9 +1459,7 @@ def test_partial_semantic_table_does_not_mix_flat_fallback_metrics() -> None:
     assert parsed.revenue == 100
     assert parsed.operating_income == 20
     assert parsed.net_income is None
-    assert {field["parse_method"] for field in parsed.raw_fields} == {
-        "html_semantic_table"
-    }
+    assert {field["parse_method"] for field in parsed.raw_fields} == {"html_semantic_table"}
     assert parsed.diagnostics["semantic_table_found"] is True
     assert parsed.diagnostics["metric_labels_found"] == ["매출액", "영업이익"]
 
@@ -1409,9 +1482,7 @@ def test_flat_fallback_is_used_only_when_semantic_table_is_invalid() -> None:
     assert parsed.operating_income == 20_000_000
     assert parsed.net_income == 12_000_000
     assert parsed.diagnostics["semantic_table_found"] is False
-    assert {field["parse_method"] for field in parsed.raw_fields} == {
-        "flat_token_fallback"
-    }
+    assert {field["parse_method"] for field in parsed.raw_fields} == {"flat_token_fallback"}
 
 
 def test_alpha_local_budget_exhaustion_is_a_skip() -> None:
@@ -1423,9 +1494,7 @@ def test_alpha_local_budget_exhaustion_is_a_skip() -> None:
     service.__class__._request_date = datetime.now(timezone.utc).date()
     started = datetime.now(timezone.utc) - timedelta(seconds=1)
     with Session(engine) as session:
-        _payload, status = asyncio.run(
-            service._fetch(session, "IBM", "DIVIDENDS")
-        )
+        _payload, status = asyncio.run(service._fetch(session, "IBM", "DIVIDENDS"))
         row = session.exec(select(ProviderCallTelemetry)).one()
         summary = summarize_provider_run([row], started)
 
@@ -1448,9 +1517,7 @@ def test_alpha_provider_rate_limit_remains_a_failure() -> None:
     service.__class__._request_count = 0
     service.__class__._request_date = datetime.now(timezone.utc).date()
     with Session(engine) as session:
-        _payload, status = asyncio.run(
-            service._fetch(session, "IBM", "OVERVIEW")
-        )
+        _payload, status = asyncio.run(service._fetch(session, "IBM", "OVERVIEW"))
         row = session.exec(select(ProviderCallTelemetry)).one()
 
     assert status == "rate_limited"

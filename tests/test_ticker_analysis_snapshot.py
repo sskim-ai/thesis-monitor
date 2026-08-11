@@ -8,6 +8,8 @@ from sqlmodel import Session, SQLModel, create_engine, select
 
 from app.api import routes_company
 from app.main import app
+from app.models.financial import FinancialSnapshot
+from app.models.security import SecurityMaster
 from app.models.thesis import InvestmentThesis, NotificationDelivery, ThesisAssessment
 from app.models.watchlist import WatchlistItem
 from app.schemas.company import CompanyProfile
@@ -23,6 +25,7 @@ from app.schemas.thesis import (
 from app.services.ticker_analysis_snapshot_service import (
     TickerAnalysisSnapshotService,
 )
+from app.services.valuation_snapshot_service import ValuationSnapshotService
 
 
 def _session() -> Session:
@@ -120,9 +123,7 @@ def _valuation_snapshot() -> ValuationSnapshot:
 
 
 class _Collection:
-    async def get_company_profile(
-        self, session: Session, ticker: str
-    ) -> CompanyProfile:
+    async def get_company_profile(self, session: Session, ticker: str) -> CompanyProfile:
         del session
         return CompanyProfile(
             ticker=ticker,
@@ -136,9 +137,7 @@ class _PriceClient:
         self.context = context or _price_context()
         self.fail = fail
 
-    async def fetch_price_context(
-        self, ticker: str, *, session: Session
-    ) -> PriceContext:
+    async def fetch_price_context(self, ticker: str, *, session: Session) -> PriceContext:
         del ticker, session
         if self.fail:
             raise RuntimeError("provider unavailable")
@@ -146,9 +145,7 @@ class _PriceClient:
 
 
 class _ValuationService:
-    def __init__(
-        self, snapshot: ValuationSnapshot | None = None, *, fail: bool = False
-    ) -> None:
+    def __init__(self, snapshot: ValuationSnapshot | None = None, *, fail: bool = False) -> None:
         self.snapshot = snapshot or _valuation_snapshot()
         self.fail = fail
         self.received_thesis = object()
@@ -182,9 +179,7 @@ class _CoverageService:
             full_financial_freshness="current",
         )
 
-    def build(
-        self, session: Session, ticker: str, snapshot: ValuationSnapshot
-    ) -> DataCoverage:
+    def build(self, session: Session, ticker: str, snapshot: ValuationSnapshot) -> DataCoverage:
         del session, ticker, snapshot
         return self.coverage
 
@@ -252,6 +247,137 @@ def test_unmonitored_ticker_returns_compact_formula_inputs_without_side_effects(
     assert all(field not in rendered_payload for field in forbidden)
 
 
+def test_unsafe_adr_denominators_stay_null_with_compact_caution() -> None:
+    snapshot = _valuation_snapshot().model_copy(
+        update={
+            "ttm_eps": None,
+            "bvps": None,
+            "forward_eps": None,
+            "forward_bvps": None,
+            "trailing_pe": 18.0,
+            "trailing_pe_source": "provider",
+            "price_to_book": None,
+            "forward_pe": 15.0,
+            "forward_pe_source": "consensus_forward",
+            "trailing_pe_basis_status": "currency_mismatch",
+            "price_to_book_basis_status": "currency_mismatch",
+            "forward_pe_basis_status": "insufficient_metadata",
+            "valuation_calculation_warning": True,
+        }
+    )
+    coverage = _CoverageService(
+        DataCoverage(
+            price="fresh",
+            price_quality="fresh",
+            earnings="fresh",
+            valuation="partial",
+            financial_freshness="current",
+            reason_codes=["per_share_basis_insufficient"],
+        )
+    )
+    service, _ = _service(
+        valuation=_ValuationService(snapshot),
+        coverage=coverage,
+    )
+
+    result = asyncio.run(service.fetch(_session(), "TSM"))
+
+    assert result.valuation.ttm_eps is None
+    assert result.valuation.bvps is None
+    assert result.valuation.forward_eps is None
+    assert result.valuation.trailing_pe == 18.0
+    assert result.valuation.forward_pe == 15.0
+    assert any("가격 통화" in caution for caution in result.cautions)
+    payload = str(result.model_dump())
+    assert "currency_mismatch" not in payload
+    assert "per_share_basis_insufficient" not in payload
+
+
+def test_unmonitored_adr_uses_security_master_and_skips_unsafe_history() -> None:
+    session = _session()
+    session.add(
+        SecurityMaster(
+            canonical_company_id="company:test-adr",
+            canonical_security_id="security:test-adr:adr",
+            ticker="TESTADR",
+            company_name="Test ADR",
+            exchange="NASDAQ",
+            issuer_type="adr",
+            security_type="Depositary Receipt",
+        )
+    )
+    for index, period_end in enumerate(
+        (
+            date(2025, 9, 30),
+            date(2025, 12, 31),
+            date(2026, 3, 31),
+            date(2026, 6, 30),
+        ),
+        start=1,
+    ):
+        session.add(
+            FinancialSnapshot(
+                ticker="TESTADR",
+                period=f"2025-Q{index}",
+                snapshot_type="full_statement",
+                period_type=("Q3", "FY", "Q1", "H1")[index - 1],
+                fiscal_year=period_end.year,
+                financial_period_end=period_end,
+                filing_date=date(2026, min(period_end.month + 1, 12), 20),
+                reported_date=date(2026, min(period_end.month + 1, 12), 20),
+                revenue=100,
+                common_net_income=10,
+                owners_parent_net_income=10,
+                diluted_eps=float(index),
+                common_equity=1_000,
+                common_shares_outstanding=100,
+                currency="TWD",
+                provider="sec_companyfacts",
+                raw_financial_fields='[{"field":"diluted_eps","currency":"TWD",'
+                '"security_basis":"unknown"}]',
+            )
+        )
+    session.commit()
+
+    class _HistoryMustNotRun:
+        def update_cache(self, *args: object, **kwargs: object) -> list[object]:
+            raise AssertionError("unsafe ADR history must not be updated")
+
+        def apply(self, *args: object, **kwargs: object) -> None:
+            raise AssertionError("unsafe ADR history must not be applied")
+
+    service = ValuationSnapshotService()
+    service.settings = service.settings.model_copy(
+        update={
+            "finnhub_api_key": None,
+            "alpha_vantage_api_key": None,
+            "sec_user_agent": None,
+        }
+    )
+    service.history_service = _HistoryMustNotRun()  # type: ignore[assignment]
+
+    result = asyncio.run(
+        service.fetch(
+            "TESTADR",
+            "NASDAQ",
+            _price_context(),
+            session=session,
+            thesis=None,
+        )
+    )
+
+    assert result.resolved_issuer_type == "adr"
+    assert result.is_depositary_security is True
+    assert result.raw_ttm_eps == 10
+    assert result.ttm_eps is None
+    assert result.trailing_pe is None
+    assert result.bvps is None
+    assert result.historical_pe_statistics is None
+    assert result.historical_per_share_basis_status == (
+        "historical_per_share_basis_unverified"
+    )
+
+
 def test_registered_ticker_state_is_not_changed() -> None:
     session = _session()
     item = WatchlistItem(
@@ -280,9 +406,7 @@ def test_registered_ticker_state_is_not_changed() -> None:
 
 
 def test_provider_only_forward_multiple_does_not_invent_denominator() -> None:
-    snapshot = _valuation_snapshot().model_copy(
-        update={"forward_pe": 19.3, "forward_eps": None}
-    )
+    snapshot = _valuation_snapshot().model_copy(update={"forward_pe": 19.3, "forward_eps": None})
     service, _ = _service(valuation=_ValuationService(snapshot))
 
     result = asyncio.run(service.fetch(_session(), "IBM"))
@@ -307,14 +431,10 @@ def test_financial_currency_comes_from_earnings_snapshot_not_price(
 ) -> None:
     price_context = _price_context().model_copy(
         update={
-            "decision": _price_context().decision.model_copy(
-                update={"currency": price_currency}
-            )
+            "decision": _price_context().decision.model_copy(update={"currency": price_currency})
         }
     )
-    snapshot = _valuation_snapshot().model_copy(
-        update={"financial_currency": financial_currency}
-    )
+    snapshot = _valuation_snapshot().model_copy(update={"financial_currency": financial_currency})
     service, _ = _service(
         price=_PriceClient(price_context),
         valuation=_ValuationService(snapshot),

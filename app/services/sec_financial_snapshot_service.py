@@ -102,8 +102,11 @@ def _parse_foreign_financial_release(text: str) -> dict[str, object] | None:
     revenue, currency = _scaled_financial(plain, r"(?:consolidated\s+)?(?:net\s+)?revenue")
     net_income, income_currency = _scaled_financial(plain, r"(?:consolidated\s+)?net\s+income")
     eps_match = re.search(
-        r"diluted\s+(?:earnings\s+per\s+share|EPS)(?:\s+of|\s+was)?\s*"
-        r"(?:NT\$|US\$|RMB|CNY|TWD|\$)?\s*([\d,.]+)",
+        r"diluted\s+(?:earnings\s+per\s+share|EPS)"
+        r"(?P<basis>\s+per\s+(?:ADS|ADR|American\s+Depositary\s+Share|ordinary\s+share|common\s+share))?"
+        r"(?:\s+of|\s+was)?\s*"
+        r"(?P<currency>NT\$|US\$|RMB|CNY|TWD|\$)?\s*"
+        r"(?P<value>[\d,.]+)",
         plain,
         flags=re.IGNORECASE,
     )
@@ -116,15 +119,31 @@ def _parse_foreign_financial_release(text: str) -> dict[str, object] | None:
         return None
     if revenue is not None and net_income is not None and abs(net_income) > revenue:
         return None
+    eps_currency = (eps_match.group("currency") or "").upper() if eps_match else ""
+    eps_currency = (
+        "TWD"
+        if eps_currency == "NT$"
+        else "USD"
+        if eps_currency in {"US$", "$"}
+        else eps_currency or None
+    )
+    eps_basis_text = (eps_match.group("basis") or "").lower() if eps_match else ""
+    eps_security_basis = (
+        "depositary_security"
+        if re.search(r"\b(?:ads|adr|american\s+depositary\s+share)\b", eps_basis_text)
+        else "ordinary_share"
+        if re.search(r"\b(?:ordinary|common)\s+share\b", eps_basis_text)
+        else "unknown"
+    )
     return {
         "period_end": period_end.isoformat(),
         "revenue": revenue,
         "net_income": net_income,
         "diluted_eps": (
-            float(eps_match.group(1).replace(",", "").rstrip("."))
-            if eps_match
-            else None
+            float(eps_match.group("value").replace(",", "").rstrip(".")) if eps_match else None
         ),
+        "eps_currency": eps_currency,
+        "eps_security_basis": eps_security_basis,
         "operating_margin": float(margin_match.group(1)) if margin_match else None,
         "currency": currency or income_currency,
     }
@@ -162,6 +181,7 @@ def _linked_documents(html: str) -> list[tuple[str, str]]:
 
 
 def _adr_ratio_from_text(text: str) -> float | None:
+    """Return ordinary shares represented by one ADR/ADS."""
     plain = re.sub(r"\s+", " ", _strip_html(text))
     match = re.search(
         r"(?:each|one)\s+(?:ADS|American\s+Depositary\s+Share).*?represents?\s+"
@@ -203,10 +223,18 @@ def _facts(payload: dict[str, object], field: str) -> list[dict[str, object]]:
             for unit in preferred:
                 entries = units.get(unit)
                 if isinstance(entries, list) and entries:
-                    return [item for item in entries if isinstance(item, dict)]
-            for entries in units.values():
+                    return [
+                        {**item, "_unit": unit, "_concept": concept, "_taxonomy": taxonomy_name}
+                        for item in entries
+                        if isinstance(item, dict)
+                    ]
+            for unit, entries in units.items():
                 if isinstance(entries, list) and entries:
-                    return [item for item in entries if isinstance(item, dict)]
+                    return [
+                        {**item, "_unit": unit, "_concept": concept, "_taxonomy": taxonomy_name}
+                        for item in entries
+                        if isinstance(item, dict)
+                    ]
     return []
 
 
@@ -217,7 +245,11 @@ def _duration_days(item: dict[str, object]) -> int:
 
 
 def _period_entries(payload: dict[str, object]) -> list[dict[str, object]]:
-    candidates = [*_facts(payload, "diluted_eps"), *_facts(payload, "common_net_income"), *_facts(payload, "revenue")]
+    candidates = [
+        *_facts(payload, "diluted_eps"),
+        *_facts(payload, "common_net_income"),
+        *_facts(payload, "revenue"),
+    ]
     periods: dict[tuple[int, str, date, date], dict[str, object]] = {}
     for item in candidates:
         fy = item.get("fy")
@@ -232,15 +264,16 @@ def _period_entries(payload: dict[str, object]) -> list[dict[str, object]]:
     return list(periods.values())
 
 
-def _select_value(
+def _select_fact(
     entries: list[dict[str, object]],
     fy: int,
     fp: str,
     filed: date,
     end: date,
-) -> float | None:
+) -> dict[str, object] | None:
     candidates = [
-        item for item in entries
+        item
+        for item in entries
         if item.get("fy") == fy
         and str(item.get("fp", "")) == fp
         and _parse_date(item.get("filed")) == filed
@@ -249,17 +282,31 @@ def _select_value(
     ]
     if not candidates:
         return None
-    selected = max(candidates, key=_duration_days) if fp == "FY" else min(candidates, key=_duration_days)
+    selected = (
+        max(candidates, key=_duration_days) if fp == "FY" else min(candidates, key=_duration_days)
+    )
     if fp != "FY" and _duration_days(selected) > 130:
         return None
-    return float(selected["val"])
+    return selected
 
 
-def _select_instant_value(
-    entries: list[dict[str, object]], filed: date, end: date
+def _select_value(
+    entries: list[dict[str, object]],
+    fy: int,
+    fp: str,
+    filed: date,
+    end: date,
 ) -> float | None:
+    selected = _select_fact(entries, fy, fp, filed, end)
+    return float(selected["val"]) if selected else None
+
+
+def _select_instant_fact(
+    entries: list[dict[str, object]], filed: date, end: date
+) -> dict[str, object] | None:
     candidates = [
-        item for item in entries
+        item
+        for item in entries
         if _parse_date(item.get("end")) == end
         and (_parse_date(item.get("filed")) or date.max) <= filed
         and isinstance(item.get("val"), (int, float))
@@ -267,7 +314,20 @@ def _select_instant_value(
     if not candidates:
         return None
     selected = max(candidates, key=lambda item: _parse_date(item.get("filed")) or date.min)
-    return float(selected["val"])
+    return selected
+
+
+def _select_instant_value(entries: list[dict[str, object]], filed: date, end: date) -> float | None:
+    selected = _select_instant_fact(entries, filed, end)
+    return float(selected["val"]) if selected else None
+
+
+def _unit_currency(unit: object) -> str | None:
+    token = str(unit or "").strip().upper().replace(" ", "")
+    match = re.match(r"^(USD|TWD|CNY|RMB|KRW)(?:/|$)", token)
+    if not match:
+        return None
+    return "CNY" if match.group(1) == "RMB" else match.group(1)
 
 
 class SecFinancialSnapshotService:
@@ -280,16 +340,18 @@ class SecFinancialSnapshotService:
             response = await client.get("https://www.sec.gov/files/company_tickers.json")
             response.raise_for_status()
             payload = response.json()
-            self._ticker_ciks = {
-                str(item.get("ticker", "")).upper(): str(item.get("cik_str", "")).zfill(10)
-                for item in payload.values()
-                if isinstance(item, dict) and item.get("ticker") and item.get("cik_str")
-            } if isinstance(payload, dict) else {}
+            self._ticker_ciks = (
+                {
+                    str(item.get("ticker", "")).upper(): str(item.get("cik_str", "")).zfill(10)
+                    for item in payload.values()
+                    if isinstance(item, dict) and item.get("ticker") and item.get("cik_str")
+                }
+                if isinstance(payload, dict)
+                else {}
+            )
         return self._ticker_ciks.get(ticker.upper())
 
-    async def _scan_foreign_filings(
-        self, client: httpx.AsyncClient, cik: str
-    ) -> dict[str, object]:
+    async def _scan_foreign_filings(self, client: httpx.AsyncClient, cik: str) -> dict[str, object]:
         response = await client.get(f"https://data.sec.gov/submissions/CIK{cik}.json")
         response.raise_for_status()
         payload = response.json()
@@ -445,9 +507,7 @@ class SecFinancialSnapshotService:
                 else None
             ),
             "latest_financial_statement_filing_date": (
-                str(latest_parsed_filing.get("filing_date"))
-                if latest_parsed_filing
-                else None
+                str(latest_parsed_filing.get("filing_date")) if latest_parsed_filing else None
             ),
             "parsed_statement": parsed_statement,
             "adr_ratio": adr_ratio,
@@ -500,6 +560,19 @@ class SecFinancialSnapshotService:
             parsed.get("diluted_eps") if isinstance(parsed.get("diluted_eps"), float) else None
         )
         row.eps = row.diluted_eps
+        row.raw_financial_fields = json.dumps(
+            [
+                {
+                    "field": "diluted_eps",
+                    "value": row.diluted_eps,
+                    "currency": parsed.get("eps_currency"),
+                    "security_basis": parsed.get("eps_security_basis") or "unknown",
+                    "source": "sec_foreign_filing",
+                }
+            ]
+            if row.diluted_eps is not None
+            else []
+        )
         row.operating_margin = (
             parsed.get("operating_margin")
             if isinstance(parsed.get("operating_margin"), float)
@@ -524,7 +597,9 @@ class SecFinancialSnapshotService:
         telemetry = ProviderTelemetryService()
         headers = {"User-Agent": user_agent, "Accept": "application/json"}
         companyfacts_started = datetime.now(timezone.utc)
-        async with httpx.AsyncClient(timeout=20.0, headers=headers, transport=self.transport) as client:
+        async with httpx.AsyncClient(
+            timeout=20.0, headers=headers, transport=self.transport
+        ) as client:
             cik = await self._resolve_cik(client, ticker)
             if not cik:
                 telemetry.record(
@@ -599,7 +674,9 @@ class SecFinancialSnapshotService:
         cache.status = "success" if exhibit_coverage.get("filing_discovered") else "partial"
         cache.payload = json.dumps(exhibit_coverage)
         cache.fetched_at = datetime.now(timezone.utc)
-        cache.last_success_at = cache.fetched_at if cache.status == "success" else cache.last_success_at
+        cache.last_success_at = (
+            cache.fetched_at if cache.status == "success" else cache.last_success_at
+        )
         cache.last_error = None if cache.status == "success" else "foreign_filing_partial"
         session.add(cache)
         security = session.exec(
@@ -608,7 +685,9 @@ class SecFinancialSnapshotService:
         ratio = exhibit_coverage.get("adr_ratio")
         if security is not None and isinstance(ratio, (int, float)) and ratio > 0:
             security.adr_ratio = float(ratio)
-            security.adr_ratio_source = str(exhibit_coverage.get("adr_ratio_source") or "SEC filing")
+            security.adr_ratio_source = str(
+                exhibit_coverage.get("adr_ratio_source") or "SEC filing"
+            )
             security.adr_ratio_as_of = datetime.now(timezone.utc).date()
             session.add(security)
         preliminary_count = 0
@@ -648,19 +727,65 @@ class SecFinancialSnapshotService:
                     else None
                 ),
             )
+            selected_facts: dict[str, dict[str, object] | None] = {}
             for field in ("revenue", "common_net_income", "diluted_eps"):
-                setattr(row, field, _select_value(facts[field], fy, fp, filed, end))
+                selected_facts[field] = _select_fact(facts[field], fy, fp, filed, end)
+                selected = selected_facts[field]
+                setattr(row, field, float(selected["val"]) if selected else None)
             row.owners_parent_net_income = row.common_net_income
             row.net_income = row.common_net_income
             row.eps = row.diluted_eps
-            row.common_equity = _select_instant_value(facts["common_equity"], filed, end)
+            selected_facts["common_equity"] = _select_instant_fact(
+                facts["common_equity"], filed, end
+            )
+            row.common_equity = (
+                float(selected_facts["common_equity"]["val"])
+                if selected_facts["common_equity"]
+                else None
+            )
             row.owners_parent_equity = row.common_equity
-            row.common_shares_outstanding = _select_instant_value(
+            selected_facts["common_shares_outstanding"] = _select_instant_fact(
                 facts["common_shares_outstanding"], filed, end
             )
-            row.diluted_shares = _select_value(facts["diluted_shares"], fy, fp, filed, end)
+            row.common_shares_outstanding = (
+                float(selected_facts["common_shares_outstanding"]["val"])
+                if selected_facts["common_shares_outstanding"]
+                else None
+            )
+            selected_facts["diluted_shares"] = _select_fact(
+                facts["diluted_shares"], fy, fp, filed, end
+            )
+            row.diluted_shares = (
+                float(selected_facts["diluted_shares"]["val"])
+                if selected_facts["diluted_shares"]
+                else None
+            )
             if row.common_shares_outstanding is None:
                 row.common_shares_outstanding = row.diluted_shares
+            financial_fact = next(
+                (
+                    selected_facts.get(field)
+                    for field in ("revenue", "common_net_income", "common_equity")
+                    if selected_facts.get(field)
+                ),
+                None,
+            )
+            row.currency = _unit_currency(financial_fact.get("_unit")) if financial_fact else None
+            row.raw_financial_fields = json.dumps(
+                [
+                    {
+                        "field": field,
+                        "unit": selected.get("_unit"),
+                        "currency": _unit_currency(selected.get("_unit")),
+                        "security_basis": "unknown",
+                        "source": "sec_companyfacts",
+                        "concept": selected.get("_concept"),
+                        "taxonomy": selected.get("_taxonomy"),
+                    }
+                    for field, selected in selected_facts.items()
+                    if selected is not None
+                ]
+            )
             if fp == "FY":
                 row.cumulative_revenue = row.revenue
                 row.cumulative_net_income = row.common_net_income
@@ -688,8 +813,14 @@ class SecFinancialSnapshotService:
                 ):
                     annual_value = getattr(annual, cumulative_field)
                     quarter_values = [getattr(row, field) for row in quarters]
-                    if annual_value is not None and all(value is not None for value in quarter_values):
-                        setattr(annual, field, float(annual_value) - sum(float(value) for value in quarter_values))
+                    if annual_value is not None and all(
+                        value is not None for value in quarter_values
+                    ):
+                        setattr(
+                            annual,
+                            field,
+                            float(annual_value) - sum(float(value) for value in quarter_values),
+                        )
                 annual.owners_parent_net_income = annual.common_net_income
                 annual.net_income = annual.common_net_income
                 annual.eps = annual.diluted_eps
