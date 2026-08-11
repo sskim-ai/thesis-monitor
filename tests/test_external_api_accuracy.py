@@ -43,6 +43,7 @@ from app.services.sec_financial_snapshot_service import (
 )
 from app.services.security_master_service import SecurityMasterService
 from app.services.provider_telemetry_service import summarize_provider_run
+from app.jobs.export_monitoring_messages import _foreign_filing_audit_row
 
 
 def _engine():
@@ -1116,3 +1117,188 @@ def test_validation_failed_component_never_renders_as_no_coverage_warning() -> N
     assert coverage.preliminary_financial_quality == "validation_failed"
     assert "검증에 실패" in (coverage.overall_quality_reason or "")
     assert "경고 없음" not in (coverage.overall_quality_reason or "")
+
+
+def test_quarantined_history_does_not_lower_current_event_quality() -> None:
+    engine = _engine()
+    with Session(engine) as session:
+        session.add_all(
+            [
+                Event(
+                    ticker="QUALITYEVENT",
+                    date=date.today(),
+                    source="Company IR",
+                    provider="company_ir",
+                    title="Current valid company update",
+                    url="https://example.com/current-valid",
+                    event_type="financial_report",
+                    document_identity_status="validated",
+                    identity_status="official_identity",
+                    confirmed_facts="[]",
+                ),
+                Event(
+                    ticker="QUALITYEVENT",
+                    date=date.today() - timedelta(days=30),
+                    source="OpenDART",
+                    provider="opendart",
+                    title="Historical quarantined filing",
+                    url="https://example.com/quarantined",
+                    event_type="financial_report",
+                    document_identity_status="invalid_mismatch",
+                    identity_status="rejected_document_identity",
+                    confirmed_facts="[]",
+                ),
+            ]
+        )
+        session.commit()
+        coverage = DataCoverageService().build(
+            session, "QUALITYEVENT", ValuationSnapshot()
+        )
+
+    assert coverage.event_quality == "fresh"
+    assert coverage.current_event_quality == "fresh"
+    assert coverage.quarantined_event_count == 1
+    assert coverage.identity_audit_status == "quarantined_history_present"
+
+
+def test_rejected_unrelated_article_does_not_lower_current_event_quality() -> None:
+    engine = _engine()
+    with Session(engine) as session:
+        session.add(
+            Event(
+                ticker="REJECTED",
+                date=date.today(),
+                source="News",
+                provider="google_news_rss",
+                title="Another company announces a capital raise",
+                url="https://example.com/rejected-company",
+                event_type="capital_raise",
+                document_identity_status="unvalidated",
+                identity_status="rejected_company_mismatch",
+                rejected_reason="article_subject_is_different_security",
+                confirmed_facts="[]",
+            )
+        )
+        session.commit()
+        coverage = DataCoverageService().build(
+            session, "REJECTED", ValuationSnapshot()
+        )
+
+    assert coverage.event_quality == "fresh"
+    assert coverage.rejected_candidate_count == 1
+
+
+def test_current_relevant_financial_validation_failure_lowers_event_quality() -> None:
+    engine = _engine()
+    with Session(engine) as session:
+        session.add(
+            Event(
+                ticker="CURRENTFAIL",
+                date=date.today(),
+                source="Company IR",
+                provider="company_ir",
+                title="Current preliminary earnings",
+                url="https://example.com/current-fail",
+                event_type="financial_report",
+                document_identity_status="validated",
+                identity_status="official_identity",
+                financial_statement_basis_warning=True,
+                confirmed_facts="[]",
+            )
+        )
+        session.commit()
+        coverage = DataCoverageService().build(
+            session, "CURRENTFAIL", ValuationSnapshot()
+        )
+
+    assert coverage.event_quality == "validation_failed"
+
+
+def test_partial_semantic_table_does_not_mix_flat_fallback_metrics() -> None:
+    parsed = extract_preliminary_earnings_facts_from_text(
+        """
+        <table id="partial-results">
+          <tr><th colspan="2">구분</th><th>당해실적</th><th>전기실적</th></tr>
+          <tr><th colspan="2">구분</th><th>(2026년 2분기)</th><th>(2026년 1분기)</th></tr>
+          <tr><td rowspan="2">매출액</td><td>당해실적</td><td>100</td><td>90</td></tr>
+          <tr><td>누계실적</td><td>180</td><td>-</td></tr>
+          <tr><td rowspan="2">영업이익</td><td>당해실적</td><td>20</td><td>15</td></tr>
+          <tr><td>누계실적</td><td>30</td><td>-</td></tr>
+        </table>
+        당기순이익 | 당해실적 | 999 | 10
+        """
+    )
+
+    assert parsed.revenue == 100
+    assert parsed.operating_income == 20
+    assert parsed.net_income is None
+    assert {field["parse_method"] for field in parsed.raw_fields} == {
+        "html_semantic_table"
+    }
+    assert parsed.diagnostics["semantic_table_found"] is True
+    assert parsed.diagnostics["metric_labels_found"] == ["매출액", "영업이익"]
+
+
+def test_alpha_local_budget_exhaustion_is_a_skip() -> None:
+    engine = _engine()
+    service = AlphaVantageService()
+    service.settings.alpha_vantage_api_key = "test"
+    service.settings.alpha_vantage_request_budget = 0
+    service.__class__._request_count = 0
+    service.__class__._request_date = datetime.now(timezone.utc).date()
+    started = datetime.now(timezone.utc) - timedelta(seconds=1)
+    with Session(engine) as session:
+        _payload, status = asyncio.run(
+            service._fetch(session, "IBM", "DIVIDENDS")
+        )
+        row = session.exec(select(ProviderCallTelemetry)).one()
+        summary = summarize_provider_run([row], started)
+
+    assert status == "skipped_budget_exhausted"
+    assert row.status == "skipped_budget_exhausted"
+    assert row.failure_count == 0
+    assert row.skip_count == 1
+    assert summary["current_run_failures"] == 0
+    assert summary["current_run_skips"] == 1
+
+
+def test_alpha_provider_rate_limit_remains_a_failure() -> None:
+    def handler(_request: httpx.Request) -> httpx.Response:
+        return httpx.Response(200, json={"Note": "API call frequency rate limit reached"})
+
+    engine = _engine()
+    service = AlphaVantageService(transport=httpx.MockTransport(handler))
+    service.settings.alpha_vantage_api_key = "test"
+    service.settings.alpha_vantage_request_budget = 30
+    service.__class__._request_count = 0
+    service.__class__._request_date = datetime.now(timezone.utc).date()
+    with Session(engine) as session:
+        _payload, status = asyncio.run(
+            service._fetch(session, "IBM", "OVERVIEW")
+        )
+        row = session.exec(select(ProviderCallTelemetry)).one()
+
+    assert status == "rate_limited"
+    assert row.status == "rate_limited"
+    assert row.failure_count == 1
+    assert row.skip_count == 0
+
+
+def test_foreign_audit_row_separates_prior_parse_from_latest_result() -> None:
+    row = _foreign_filing_audit_row(
+        "TSM",
+        {
+            "filing_discovery_coverage": "full",
+            "document_fetch_coverage": "full",
+            "exhibit_discovery_coverage": "full",
+            "any_foreign_statement_parsed": True,
+            "latest_foreign_filing_parse_result": "not_financial_exhibit",
+            "latest_foreign_financial_period": "2026-06-30",
+            "per_share_mapping_coverage": "unavailable",
+            "valuation_coverage": "partial",
+        },
+    )
+
+    assert "과거 parsing 성공" in row
+    assert "최신 filing 재무 실적표 아님" in row
+    assert "ADR/per-share mapping 미확보" in row

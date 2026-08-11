@@ -23,6 +23,7 @@ def summarize_provider_run(
     skip_statuses = {
         "skipped_not_configured",
         "skipped_not_applicable",
+        "skipped_budget_exhausted",
         "unsupported_symbol",
     }
     failures = [row for row in current if row.status not in success_statuses | skip_statuses]
@@ -91,7 +92,12 @@ class ProviderTelemetryService:
             row.error_code = error_code if status == "partial" else None
             row.error_reason = error_reason if status == "partial" else None
             row.skip_reason = None
-        elif status in {"skipped_not_configured", "skipped_not_applicable", "unsupported_symbol"}:
+        elif status in {
+            "skipped_not_configured",
+            "skipped_not_applicable",
+            "skipped_budget_exhausted",
+            "unsupported_symbol",
+        }:
             row.skip_count += 1
             row.skip_reason = skip_reason or error_reason or status
             row.error_type = None

@@ -1,4 +1,4 @@
-from datetime import date
+from datetime import date, timedelta
 import json
 
 from sqlmodel import Session, select
@@ -20,6 +20,7 @@ from app.models.watchlist import WatchlistItem
 from app.schemas.thesis import DataCoverage, ValuationSnapshot
 from app.services.financial_freshness_service import FinancialFreshnessService
 from app.services.financial_validation import financial_snapshot_is_usable
+from app.config import get_settings
 
 
 def _issuer_type(item: WatchlistItem | None, events: list[Event]) -> str:
@@ -46,7 +47,21 @@ class DataCoverageService:
         item = session.exec(select(WatchlistItem).where(WatchlistItem.ticker == ticker)).first()
         all_rows = list(session.exec(select(FinancialSnapshot).where(FinancialSnapshot.ticker == ticker)).all())
         rows = [row for row in all_rows if financial_snapshot_is_usable(row)]
-        events = list(session.exec(select(Event).where(Event.ticker == ticker)).all())
+        all_events = list(session.exec(select(Event).where(Event.ticker == ticker)).all())
+        quarantined_events = [
+            event
+            for event in all_events
+            if event.document_identity_status in {"invalid", "invalid_mismatch"}
+        ]
+        rejected_events = [
+            event for event in all_events if event.identity_status.startswith("rejected")
+        ]
+        events = [
+            event
+            for event in all_events
+            if event.document_identity_status not in {"invalid", "invalid_mismatch"}
+            and not event.identity_status.startswith("rejected")
+        ]
         dividends = list(session.exec(select(DividendHistory).where(DividendHistory.ticker == ticker)).all())
         issues = list(session.exec(select(CanonicalIssue).where(CanonicalIssue.ticker == ticker)).all())
         security = session.exec(
@@ -124,19 +139,25 @@ class DataCoverageService:
         all_preliminary_rows = [
             row for row in all_rows if row.snapshot_type == "preliminary_earnings"
         ]
-        rejected_material = any(
-            event.identity_status.startswith("rejected")
-            and event.event_type != "non_thesis_noise"
-            for event in events
-        )
-        invalid_document_identity = any(
-            event.document_identity_status in {"invalid", "invalid_mismatch"}
-            for event in events
+        event_cutoff = date.today() - timedelta(days=get_settings().monitor_lookback_days)
+        current_events = [event for event in events if event.date >= event_cutoff]
+        current_validation_failed = any(
+            event.event_type != "non_thesis_noise"
+            and (
+                event.financial_statement_basis_warning
+                or event.margin_quality_review
+            )
+            for event in current_events
         )
         event_quality = (
-            "validation_failed"
-            if rejected_material or invalid_document_identity
-            else "fresh"
+            "validation_failed" if current_validation_failed else "fresh"
+        )
+        identity_audit_status = (
+            "quarantined_history_present"
+            if quarantined_events
+            else "rejected_candidates_present"
+            if rejected_events
+            else "clean"
         )
         foreign_status = (
             financial_status if issuer_type in {"adr", "foreign_private_issuer"} else "not_applicable"
@@ -275,9 +296,28 @@ class DataCoverageService:
         overall_quality = "partial" if concerning else "current"
         reason_messages: list[str] = []
         if preliminary_quality == "validation_failed":
-            reason_messages.append(
-                "최신 잠정실적의 숫자 검증에 실패해 매출·이익과 Valuation 분모에 사용하지 않았습니다."
+            preliminary_warning_text = " ".join(
+                row.quality_warnings or "" for row in all_preliminary_rows
             )
+            if any(row.period_mapping_validation_failed for row in all_preliminary_rows):
+                reason_messages.append(
+                    "격리된 잠정실적의 재무기간 종료일이 공시일보다 뒤로 매핑되어 "
+                    "현재 재무 context와 Valuation 분모에 사용하지 않았습니다."
+                )
+            elif (
+                "Absolute net income exceeds revenue" in preliminary_warning_text
+                or "Operating margin is outside" in preliminary_warning_text
+            ):
+                reason_messages.append(
+                    "잠정실적 원문을 semantic table 기준으로 읽었지만 순이익이 매출을 "
+                    "초과하거나 영업이익률이 sanity 범위를 벗어나 숫자 검증에 실패했습니다. "
+                    "해당 값은 Valuation 분모에 사용하지 않았습니다."
+                )
+            else:
+                reason_messages.append(
+                    "최신 잠정실적의 숫자 검증에 실패해 매출·이익과 Valuation 분모에 "
+                    "사용하지 않았습니다."
+                )
         if freshness.status == "refresh_due":
             reason_messages.append(
                 "정식 재무 보고 주기가 경과해 최신 filing 반영 여부를 확인 중입니다."
@@ -368,6 +408,10 @@ class DataCoverageService:
             full_financial_quality=full_quality,
             preliminary_financial_quality=preliminary_quality,
             event_quality=event_quality,
+            current_event_quality=event_quality,
+            quarantined_event_count=len(quarantined_events),
+            rejected_candidate_count=len(rejected_events),
+            identity_audit_status=identity_audit_status,
             consensus_quality=consensus_quality,
             historical_valuation_quality=historical_quality,
             forward_valuation_quality=forward_quality,

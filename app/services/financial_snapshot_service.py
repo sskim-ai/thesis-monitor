@@ -304,9 +304,15 @@ def upsert_financial_snapshot_from_event(session: Session, event: Event) -> Fina
         snapshot.cumulative_net_income = None
         snapshot.financial_statement_basis_warning = True
         snapshot.margin_quality_review = True
+        validation_reasons = [
+            item
+            for item in _json_list(event.unknowns)
+            if item.startswith("Financial validation warning:")
+        ]
         snapshot.quality_warnings = (
             "preliminary earnings filing confirmed; semantic fields were preserved but "
             "cross-metric sanity validation failed"
+            + (f"; {' '.join(validation_reasons)}" if validation_reasons else "")
         )
         snapshot.raw_financial_fields = event.raw_financial_fields or "[]"
         validate_snapshot_period_chronology(snapshot)

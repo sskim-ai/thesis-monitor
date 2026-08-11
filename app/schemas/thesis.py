@@ -353,6 +353,10 @@ class DataCoverage(BaseModel):
     full_financial_quality: str = "unavailable"
     preliminary_financial_quality: str = "unavailable"
     event_quality: str = "unavailable"
+    current_event_quality: str = "unavailable"
+    quarantined_event_count: int = 0
+    rejected_candidate_count: int = 0
+    identity_audit_status: str = "clean"
     consensus_quality: str = "unavailable"
     historical_valuation_quality: str = "unavailable"
     forward_valuation_quality: str = "unavailable"

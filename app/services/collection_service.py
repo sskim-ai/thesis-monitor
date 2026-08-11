@@ -69,6 +69,44 @@ def _json_list(value: str | None) -> list[str]:
     return parsed if isinstance(parsed, list) else []
 
 
+def _opendart_reparse_lookback_days(
+    session: Session,
+    ticker: str,
+    default_lookback_days: int,
+) -> int:
+    snapshots = session.exec(
+        select(FinancialSnapshot).where(
+            FinancialSnapshot.ticker == ticker,
+            FinancialSnapshot.provider == "opendart",
+            FinancialSnapshot.snapshot_type == "preliminary_earnings",
+            FinancialSnapshot.financial_statement_basis_warning.is_(True),
+            FinancialSnapshot.period_mapping_validation_failed.is_(False),
+        )
+    ).all()
+    oldest_reparse_date: date | None = None
+    for snapshot in snapshots:
+        if _json_list(snapshot.raw_financial_fields):
+            continue
+        if not snapshot.source_filing_id:
+            continue
+        source_event = session.exec(
+            select(Event).where(
+                Event.ticker == ticker,
+                Event.provider == "opendart",
+                Event.source_document_id == snapshot.source_filing_id,
+                Event.document_identity_status.notin_({"invalid", "invalid_mismatch"}),
+            )
+        ).first()
+        if source_event is None:
+            continue
+        if oldest_reparse_date is None or source_event.date < oldest_reparse_date:
+            oldest_reparse_date = source_event.date
+    if oldest_reparse_date is None:
+        return default_lookback_days
+    required_days = max(1, (date.today() - oldest_reparse_date).days + 1)
+    return min(365, max(default_lookback_days, required_days))
+
+
 def _quality_flags_from_lists(unknowns: list[str], implications: list[str]) -> tuple[bool, bool]:
     text = " ".join([*unknowns, *implications]).lower()
     margin_quality_review = "margin" in text and "quality warning" in text
@@ -496,12 +534,17 @@ class CollectionService:
         seen_titles: set[str] = set()
         seen_fingerprints: set[str] = set()
         for provider in self.providers:
+            provider_lookback_days = (
+                _opendart_reparse_lookback_days(session, ticker, lookback_days)
+                if provider.name == "opendart"
+                else lookback_days
+            )
             try:
                 raw_events = await self._fetch_provider_events(
                     session,
                     provider,
                     ticker,
-                    lookback_days,
+                    provider_lookback_days,
                     search_aliases,
                     issuer_type,
                 )

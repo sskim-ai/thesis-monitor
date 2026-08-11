@@ -26,6 +26,56 @@ def _fenced(text: str) -> str:
     return f"```text\n{text.strip()}\n```"
 
 
+def _foreign_filing_audit_row(ticker: str, coverage: dict[str, object]) -> str:
+    availability_labels = {
+        "full": "충분",
+        "partial": "부분",
+        "unavailable": "미확보",
+    }
+    latest_result_labels = {
+        "parsed": "재무표 parsing 성공",
+        "validation_failed": "재무표 검증 실패",
+        "not_financial_exhibit": "재무 실적표 아님",
+        "document_fetch_failed": "문서 fetch 실패",
+        "exhibit_not_found": "Exhibit 미발견",
+        "financial_table_not_found": "재무표 미발견",
+        "unsupported_format": "지원하지 않는 형식",
+        "unavailable": "확인 불가",
+    }
+    discovery = availability_labels.get(
+        str(coverage.get("filing_discovery_coverage")), "확인 불가"
+    )
+    document = availability_labels.get(
+        str(coverage.get("document_fetch_coverage")), "확인 불가"
+    )
+    exhibit = availability_labels.get(
+        str(coverage.get("exhibit_discovery_coverage")), "확인 불가"
+    )
+    prior_parse = (
+        "과거 parsing 성공"
+        if coverage.get("any_foreign_statement_parsed")
+        else "과거 parsing 성공 없음"
+    )
+    latest_raw = str(
+        coverage.get("latest_foreign_filing_parse_result")
+        or coverage.get("foreign_latest_filing_result")
+        or "unavailable"
+    )
+    latest = f"최신 filing {latest_result_labels.get(latest_raw, latest_raw)}"
+    period = str(coverage.get("latest_foreign_financial_period") or "없음")
+    mapping = (
+        "ADR/per-share mapping 확보"
+        if coverage.get("per_share_mapping_coverage") == "full"
+        else "ADR/per-share mapping 미확보"
+    )
+    valuation = str(coverage.get("valuation_coverage") or "unavailable")
+    return (
+        f"| {ticker} | Filing 발견 {discovery} | 문서 fetch {document} | "
+        f"Exhibit 발견 {exhibit} | {prior_parse} | {latest} | {period} | "
+        f"{mapping} | Valuation {valuation} |"
+    )
+
+
 def export_messages(run_date: date, output: Path) -> int:
     init_db()
     with Session(engine) as session:
@@ -129,8 +179,8 @@ def export_messages(run_date: date, output: Path) -> int:
                 "",
                 "## 부록. 14종목 데이터 커버리지",
                 "",
-                "| 종목 | 정식 재무 | Full availability/freshness | 잠정실적 | 잠정 freshness | 갱신 상태 | Consensus | Provider | 가격 | 이벤트 | 재무 | 역사 Valuation | Forward Valuation | 충돌 | Identity | Foreign | 남은 gap |",
-                "|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|",
+                "| 종목 | 정식 재무 | Full availability/freshness | 잠정실적 | 잠정 freshness | 갱신 상태 | Consensus | Provider | 가격 | 이벤트 | 격리/거절 감사 | 재무 | 역사 Valuation | Forward Valuation | 충돌 | Identity | Foreign | 남은 gap |",
+                "|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|",
             ]
         )
         for assessment in assessments:
@@ -157,6 +207,8 @@ def export_messages(run_date: date, output: Path) -> int:
                 f"{snapshot.get('estimate_provider') or '없음'} | "
                 f"{coverage.get('price_quality', 'unavailable')} | "
                 f"{coverage.get('event_quality', 'unavailable')} | "
+                f"{coverage.get('quarantined_event_count', 0)}/"
+                f"{coverage.get('rejected_candidate_count', 0)} | "
                 f"{coverage.get('financial_quality', 'unavailable')} | "
                 f"{coverage.get('historical_valuation_quality', 'unavailable')} | "
                 f"{coverage.get('forward_valuation_quality', 'unavailable')} | "
@@ -272,8 +324,8 @@ def export_messages(run_date: date, output: Path) -> int:
                 "",
                 "## 부록. Foreign filing parsing 감사",
                 "",
-                "| 종목 | Discovery | Document | Exhibit | Any statement parsed | Latest filing result | Latest normalized period | Parsing capability/result |",
-                "|---|---|---|---|---|---|---|---|",
+                "| 종목 | Filing discovery | Document fetch | Exhibit discovery | 과거 statement parse | 최신 filing 결과 | 최신 정규화 재무 | ADR/per-share | Valuation coverage |",
+                "|---|---|---|---|---|---|---|---|---|",
             ]
         )
         for assessment in assessments:
@@ -284,16 +336,7 @@ def export_messages(run_date: date, output: Path) -> int:
             coverage = snapshot.get("data_coverage", {}) if isinstance(snapshot, dict) else {}
             if not isinstance(coverage, dict) or coverage.get("filing_discovery_coverage") == "not_applicable":
                 continue
-            sections.append(
-                f"| {assessment.ticker} | {coverage.get('filing_discovery_coverage', 'unavailable')} | "
-                f"{coverage.get('document_fetch_coverage', 'unavailable')} | "
-                f"{coverage.get('exhibit_discovery_coverage', 'unavailable')} | "
-                f"{coverage.get('any_foreign_statement_parsed', False)} | "
-                f"{coverage.get('latest_foreign_filing_parse_result', coverage.get('foreign_latest_filing_result', 'unavailable'))} | "
-                f"{coverage.get('latest_foreign_financial_period') or '없음'} | "
-                f"{coverage.get('statement_parsing_coverage', 'unavailable')}/"
-                f"{coverage.get('foreign_parsing_result', 'unavailable')} |"
-            )
+            sections.append(_foreign_filing_audit_row(assessment.ticker, coverage))
         sections.extend(
             [
                 "",

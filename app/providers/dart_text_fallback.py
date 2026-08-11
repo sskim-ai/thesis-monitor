@@ -39,6 +39,7 @@ class PreliminaryEarningsFacts:
     qoq_growth: float | None
     unit_scale: float
     raw_fields: list[dict[str, object]]
+    diagnostics: dict[str, object]
 
 
 def _strip_html(value: str) -> str:
@@ -359,6 +360,8 @@ _PRELIMINARY_METRIC_ALIASES = {
         "지배주주순이익",
     ),
 }
+_CURRENT_RESULT_ALIASES = {"당기실적", "당해실적"}
+_CUMULATIVE_RESULT_ALIASES = {"누계실적", "당기누계실적"}
 
 
 def _canonical_metric_label(value: str) -> str | None:
@@ -372,34 +375,60 @@ def _canonical_metric_label(value: str) -> str | None:
 def _semantic_preliminary_table(
     html: str,
     source_receipt_no: str | None,
-) -> tuple[dict[str, dict[str, float | None]], list[dict[str, object]], str | None]:
+) -> tuple[
+    dict[str, dict[str, float | None]],
+    list[dict[str, object]],
+    str | None,
+    dict[str, object],
+]:
     parser = _DartTableParser()
     parser.feed(html)
+    diagnostics: dict[str, object] = {
+        "parse_method": "flat_token_fallback",
+        "semantic_table_found": False,
+        "tables_scanned": len(parser.tables),
+        "header_index": None,
+        "current_column": None,
+        "qoq_column": None,
+        "yoy_column": None,
+        "unit": None,
+        "metric_labels_found": [],
+    }
     for table_index, table in enumerate(parser.tables):
         rows = _expanded_table_rows(table.get("rows", []))
         header_index = next(
             (
                 index
                 for index, row in enumerate(rows)
-                if any(_compact(cell) == "당기실적" for cell in row)
+                if any(_compact(cell) in _CURRENT_RESULT_ALIASES for cell in row)
                 and any("전기실적" in _compact(cell) for cell in row)
             ),
             None,
         )
         if header_index is None:
             continue
-        header = rows[header_index]
-        secondary = rows[header_index + 1] if header_index + 1 < len(rows) else []
-        column_count = max(len(header), len(secondary))
+        header_rows = [rows[header_index]]
+        for candidate in rows[header_index + 1 : header_index + 4]:
+            if any(_canonical_metric_label(cell) for cell in candidate):
+                break
+            header_rows.append(candidate)
+        column_count = max(len(row) for row in header_rows)
         column_headers: list[str] = []
         for column in range(column_count):
-            primary = header[column] if column < len(header) else ""
-            detail = secondary[column] if column < len(secondary) else ""
+            header_parts = [
+                row[column]
+                for row in header_rows
+                if column < len(row) and row[column]
+            ]
             column_headers.append(
-                _clean_cell(" ".join(dict.fromkeys(item for item in (primary, detail) if item)))
+                _clean_cell(" ".join(dict.fromkeys(header_parts)))
             )
         current_column = next(
-            (index for index, value in enumerate(column_headers) if "당기실적" in _compact(value)),
+            (
+                index
+                for index, value in enumerate(column_headers)
+                if any(alias in _compact(value) for alias in _CURRENT_RESULT_ALIASES)
+            ),
             None,
         )
         if current_column is None:
@@ -427,13 +456,15 @@ def _semantic_preliminary_table(
         unit_label = _preliminary_unit_label([unit_text] if unit_text else [])
         metrics: dict[str, dict[str, float | None]] = {}
         raw_fields: list[dict[str, object]] = []
-        for row_index, row in enumerate(rows[header_index + 1 :], header_index + 1):
+        data_start = header_index + len(header_rows)
+        for row_index, row in enumerate(rows[data_start:], data_start):
             metric = next((_canonical_metric_label(cell) for cell in row if _canonical_metric_label(cell)), None)
             period_marker = next(
                 (
                     _compact(cell)
                     for cell in row
-                    if _compact(cell) in {"당해실적", "당기실적", "누계실적", "당기누계실적"}
+                    if _compact(cell)
+                    in _CURRENT_RESULT_ALIASES | _CUMULATIVE_RESULT_ALIASES
                 ),
                 None,
             )
@@ -444,7 +475,7 @@ def _semantic_preliminary_table(
                 {"current": None, "cumulative": None, "qoq": None, "yoy": None},
             )
             current_value = _numeric_cell(row[current_column])
-            if period_marker in {"당해실적", "당기실적"}:
+            if period_marker in _CURRENT_RESULT_ALIASES:
                 values["current"] = current_value
                 if qoq_column is not None and qoq_column < len(row):
                     values["qoq"] = _numeric_cell(row[qoq_column])
@@ -460,7 +491,7 @@ def _semantic_preliminary_table(
                     if column_index < len(column_headers)
                     else f"column_{column_index}"
                 )
-                if period_marker in {"누계실적", "당기누계실적"} and column_index == current_column:
+                if period_marker in _CUMULATIVE_RESULT_ALIASES and column_index == current_column:
                     header_name = "당기누계실적"
                 raw_fields.append(
                     {
@@ -469,7 +500,7 @@ def _semantic_preliminary_table(
                         "raw_unit": unit_label,
                         "raw_period": (
                             "year_to_date"
-                            if period_marker in {"누계실적", "당기누계실적"}
+                            if period_marker in _CUMULATIVE_RESULT_ALIASES
                             else "single_quarter"
                         ),
                         "raw_column_header": header_name,
@@ -481,13 +512,30 @@ def _semantic_preliminary_table(
                     }
                 )
         if metrics:
-            return metrics, raw_fields, unit_label
-    return {}, [], None
+            diagnostics.update(
+                {
+                    "parse_method": "html_semantic_table",
+                    "semantic_table_found": True,
+                    "table_id": table.get("id") or f"table-{table_index}",
+                    "header_index": header_index,
+                    "current_column": current_column,
+                    "qoq_column": qoq_column,
+                    "yoy_column": yoy_column,
+                    "unit": unit_label,
+                    "metric_labels_found": list(metrics),
+                }
+            )
+            return metrics, raw_fields, unit_label, diagnostics
+    return {}, [], None, diagnostics
 
 
 def _preliminary_period_end(tokens: list[str]) -> date | None:
     first_result = next(
-        (index for index, token in enumerate(tokens[:30]) if _compact(token) == "당기실적"),
+        (
+            index
+            for index, token in enumerate(tokens[:30])
+            if _compact(token) in _CURRENT_RESULT_ALIASES
+        ),
         None,
     )
     if first_result is None:
@@ -516,7 +564,11 @@ def _preliminary_metric(
         return None, None, None, None
     tail = tokens[index + 1 : index + 35]
     current_index = next(
-        (i for i, token in enumerate(tail) if _compact(token) == "당해실적"),
+        (
+            i
+            for i, token in enumerate(tail)
+            if _compact(token) in _CURRENT_RESULT_ALIASES
+        ),
         None,
     )
     if current_index is None:
@@ -525,7 +577,7 @@ def _preliminary_metric(
         (
             i
             for i, token in enumerate(tail[current_index + 1 :], current_index + 1)
-            if _compact(token) == "누계실적"
+            if _compact(token) in _CUMULATIVE_RESULT_ALIASES
         ),
         None,
     )
@@ -562,7 +614,11 @@ def _preliminary_raw_fields(
         return []
     tail = tokens[index + 1 : index + 35]
     current_index = next(
-        (position for position, token in enumerate(tail) if _compact(token) == "당해실적"),
+        (
+            position
+            for position, token in enumerate(tail)
+            if _compact(token) in _CURRENT_RESULT_ALIASES
+        ),
         None,
     )
     if current_index is None:
@@ -571,7 +627,7 @@ def _preliminary_raw_fields(
         (
             position
             for position, token in enumerate(tail[current_index + 1 :], current_index + 1)
-            if _compact(token) == "누계실적"
+            if _compact(token) in _CUMULATIVE_RESULT_ALIASES
         ),
         None,
     )
@@ -631,10 +687,25 @@ def extract_preliminary_earnings_facts_from_text(
     scale = _preliminary_unit_scale(tokens)
     unit_label = _preliminary_unit_label(tokens)
     period_end = _preliminary_period_end(tokens)
-    semantic, semantic_raw_fields, table_unit = (
+    semantic, semantic_raw_fields, table_unit, diagnostics = (
         _semantic_preliminary_table(text, source_receipt_no)
         if "<table" in text.lower()
-        else ({}, [], None)
+        else (
+            {},
+            [],
+            None,
+            {
+                "parse_method": "flat_token_fallback",
+                "semantic_table_found": False,
+                "tables_scanned": 0,
+                "header_index": None,
+                "current_column": None,
+                "qoq_column": None,
+                "yoy_column": None,
+                "unit": unit_label,
+                "metric_labels_found": [],
+            },
+        )
     )
     if table_unit:
         unit_label = table_unit
@@ -644,6 +715,8 @@ def extract_preliminary_earnings_facts_from_text(
         value = semantic.get(label)
         if value:
             return value["current"], value["cumulative"], value["yoy"], value["qoq"]
+        if semantic:
+            return None, None, None, None
         return _preliminary_metric(tokens, aliases)
 
     revenue, cumulative_revenue, revenue_yoy, revenue_qoq = metric_values(
@@ -732,6 +805,7 @@ def extract_preliminary_earnings_facts_from_text(
         qoq_growth=revenue_qoq,
         unit_scale=scale,
         raw_fields=raw_fields,
+        diagnostics=diagnostics,
     )
 
 

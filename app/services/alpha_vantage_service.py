@@ -139,11 +139,10 @@ class AlphaVantageService:
                 endpoint=function,
                 ticker=ticker,
                 started_at=started_at,
-                status="rate_limited",
-                error_type="RequestBudgetExceeded",
-                error_reason="configured_daily_request_budget_exhausted",
+                status="skipped_budget_exhausted",
+                skip_reason="configured_daily_request_budget_exhausted",
             )
-            return {}, "request_budget_exhausted"
+            return {}, "skipped_budget_exhausted"
         self.__class__._request_count += 1
         now = datetime.now(timezone.utc)
         row = session.exec(
@@ -237,7 +236,7 @@ class AlphaVantageService:
             payload, status = await self._fetch(session, ticker, function)
             result.payloads[function] = payload
             result.statuses[function] = status
-            if status in {"provider_failed", "request_budget_exhausted"}:
+            if status in {"provider_failed", "rate_limited"}:
                 result.warnings.append(f"{function}:{status}")
         self._store_estimates(session, ticker, result.payloads.get("EARNINGS_ESTIMATES", {}))
         self._store_shares(session, ticker, result.payloads.get("SHARES_OUTSTANDING", {}))

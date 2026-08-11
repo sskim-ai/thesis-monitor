@@ -1613,6 +1613,26 @@
             "title": "Event Quality",
             "default": "unavailable"
           },
+          "current_event_quality": {
+            "type": "string",
+            "title": "Current Event Quality",
+            "default": "unavailable"
+          },
+          "quarantined_event_count": {
+            "type": "integer",
+            "title": "Quarantined Event Count",
+            "default": 0
+          },
+          "rejected_candidate_count": {
+            "type": "integer",
+            "title": "Rejected Candidate Count",
+            "default": 0
+          },
+          "identity_audit_status": {
+            "type": "string",
+            "title": "Identity Audit Status",
+            "default": "clean"
+          },
           "consensus_quality": {
             "type": "string",
             "title": "Consensus Quality",
