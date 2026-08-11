@@ -382,6 +382,10 @@ class ValuationSnapshot(BaseModel):
     price_observed_at: str | None = None
     price_observed_timezone: str | None = None
     price_basis: str = "unavailable"
+    ttm_eps: float | None = None
+    bvps: float | None = None
+    forward_eps: float | None = None
+    forward_bvps: float | None = None
     trailing_pe: float | None = None
     trailing_pe_status: str = "unavailable"
     trailing_pe_source: str = "unavailable"

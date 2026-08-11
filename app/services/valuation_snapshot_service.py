@@ -233,6 +233,7 @@ class ValuationSnapshotService:
                 ttm_filed.isoformat() if ttm_filed else None
             )
         derived_pe: float | None = None
+        snapshot.ttm_eps = ttm_eps
         if ttm_eps is not None and ttm_eps <= 0:
             if snapshot.trailing_pe_status != "value":
                 snapshot.trailing_pe_status = "not_meaningful"
@@ -262,6 +263,7 @@ class ValuationSnapshotService:
             shares = balance.common_shares_outstanding
             if equity and shares and equity > 0 and shares > 0:
                 bvps = equity / shares
+                snapshot.bvps = bvps
                 derived_pb = round(snapshot.current_price / bvps, 4)
                 if snapshot.price_to_book_status != "value":
                     snapshot.price_to_book = derived_pb
@@ -450,6 +452,7 @@ class ValuationSnapshotService:
             return
         fy1_eps = fy1_income / shares
         if snapshot.forward_pe_status != "value":
+            snapshot.forward_eps = fy1_eps
             snapshot.forward_pe = round(snapshot.current_price / fy1_eps, 4)
             snapshot.forward_pe_status = "value"
             snapshot.forward_pe_source = "modeled_forward"
@@ -494,8 +497,9 @@ class ValuationSnapshotService:
                 ) if any(row.other_comprehensive_income is not None for row in recent) else 0.0
                 fy1_equity = equity + fy1_income - expected_dividends - expected_buybacks + issuance + oci
                 if fy1_equity > 0:
+                    snapshot.forward_bvps = fy1_equity / common_shares
                     snapshot.forward_price_to_book = round(
-                        snapshot.current_price / (fy1_equity / common_shares), 4
+                        snapshot.current_price / snapshot.forward_bvps, 4
                     )
                     snapshot.forward_price_to_book_status = "value"
                     snapshot.forward_price_to_book_source = "modeled_forward"
@@ -829,6 +833,7 @@ class ValuationSnapshotService:
             if snapshot.current_price and alpha_eps > 0:
                 alpha_forward_pe = snapshot.current_price / alpha_eps
                 if snapshot.forward_pe_status != "value":
+                    snapshot.forward_eps = alpha_eps
                     snapshot.forward_pe = round(alpha_forward_pe, 4)
                     snapshot.forward_pe_status = "value"
                     snapshot.forward_pe_source = "consensus_forward"

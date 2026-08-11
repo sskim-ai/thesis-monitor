@@ -218,7 +218,7 @@ def test_fourteen_stock_digest_is_deterministic_and_hides_axis_scores() -> None:
         second = render_daily_digest(build_daily_digest(session, run_date))
 
         assert first == second
-        assert all(company_name in first for _ticker, company_name in TICKERS)
+        assert "전체 14개 종목 평가 완료" in first
         assert "6축 점수" not in first
         assert "성장 +0" not in first
         assert "유지 · 신규 데이터 없음" in first
@@ -267,10 +267,10 @@ def test_daily_stock_analysis_is_queued_without_material_change() -> None:
         payload = json.loads(delivery.payload)
         assert payload["type"] == "daily_stock_analysis"
         assert payload["ticker"] == neutral.ticker
-        assert "중요 변화 없음" in payload["text"]
-        assert "오늘 투자 논리를 바꿀 신규 확정 사실은 확인되지 않았습니다." in payload["text"]
-        assert "🚨 오늘 새 경고" in payload["text"]
-        assert "⚠️ 아직 해결되지 않은 기존 경고" in payload["text"]
+        assert "오늘 중요한 신규 변화 없음" in payload["text"]
+        assert "오늘 투자 논리를 바꿀 신규 확정 사실은 확인되지 않았습니다." not in payload["text"]
+        assert "🚨 오늘 새 경고" not in payload["text"]
+        assert "⚠️ 기존 경고" not in payload["text"]
 
 
 def test_queued_daily_digest_omits_duplicate_stock_detail_section() -> None:
@@ -283,7 +283,7 @@ def test_queued_daily_digest_omits_duplicate_stock_detail_section() -> None:
 
         assert delivery is not None
         payload = json.loads(delivery.payload)
-        assert "🏢 오늘 종목 점검" in payload["text"]
+        assert "📊 14종목 상태" in payload["text"]
         assert "🔎 오늘 상세 점검" not in payload["text"]
 
 

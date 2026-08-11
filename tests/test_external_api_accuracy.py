@@ -641,6 +641,7 @@ def test_preliminary_html_table_uses_semantic_rows_and_columns() -> None:
     assert parsed.net_income == 15_922_000_000
     assert parsed.qoq_growth == 50.9
     assert parsed.yoy_growth == 256.8
+    assert parsed.period_end == date(2026, 6, 30)
     current_revenue = next(
         field
         for field in parsed.raw_fields
@@ -650,6 +651,35 @@ def test_preliminary_html_table_uses_semantic_rows_and_columns() -> None:
     assert current_revenue["parse_method"] == "html_semantic_table"
     assert current_revenue["source_receipt_no"] == "20260729800013"
     assert current_revenue["table_id"] == "results"
+
+
+def test_preliminary_parser_selects_complete_consistent_table_candidate() -> None:
+    parsed = extract_preliminary_earnings_facts_from_text(
+        """
+        <table id="summary-noise">
+          <tr><td colspan="4">단위 : 백만원, %</td></tr>
+          <tr><th colspan="2">구분</th><th>당해실적</th><th>전기실적</th></tr>
+          <tr><th colspan="2">구분</th><th>(2026년 2분기)</th><th>(2026년 1분기)</th></tr>
+          <tr><td>매출액</td><td>당해실적</td><td>100</td><td>90</td></tr>
+          <tr><td>영업이익</td><td>당해실적</td><td>500</td><td>15</td></tr>
+        </table>
+        <table id="financial-results">
+          <tr><td colspan="4">단위 : 백만원, %</td></tr>
+          <tr><th colspan="2">구분</th><th>당기실적</th><th>전기실적</th><th>전년동기실적</th></tr>
+          <tr><th colspan="2">구분</th><th>(2026년 2분기)</th><th>(2026년 1분기)</th><th>(2025년 2분기)</th></tr>
+          <tr><td>매출액</td><td>당기실적</td><td>100</td><td>90</td><td>80</td></tr>
+          <tr><td>영업이익</td><td>당기실적</td><td>20</td><td>15</td><td>12</td></tr>
+          <tr><td>당기순이익</td><td>당기실적</td><td>12</td><td>10</td><td>8</td></tr>
+        </table>
+        """
+    )
+
+    assert parsed.revenue == 100_000_000
+    assert parsed.operating_income == 20_000_000
+    assert parsed.net_income == 12_000_000
+    assert parsed.period_end == date(2026, 6, 30)
+    assert parsed.diagnostics["table_id"] == "financial-results"
+    assert parsed.diagnostics["candidate_count"] == 2
 
 
 def test_cumulative_preliminary_event_creates_standalone_q2_snapshot() -> None:

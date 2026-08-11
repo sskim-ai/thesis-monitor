@@ -5559,6 +5559,50 @@
             "title": "Price Basis",
             "default": "unavailable"
           },
+          "ttm_eps": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ttm Eps"
+          },
+          "bvps": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Bvps"
+          },
+          "forward_eps": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Forward Eps"
+          },
+          "forward_bvps": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Forward Bvps"
+          },
           "trailing_pe": {
             "anyOf": [
               {

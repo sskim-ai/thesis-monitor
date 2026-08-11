@@ -20,7 +20,7 @@ def render_daily_digest(
     valuation = portfolio.valuation_counts
     lines = [
         f"🌍 시장환경 점검 · {digest.digest_date}",
-        f"⚠️ {macro.regime_label} 국면 · 판단 신뢰도 {macro.confidence:.0%}",
+        f"현재 환경: {macro.regime_label}",
     ]
     if macro.assessment_state == "provisional":
         lines.extend(
@@ -35,20 +35,24 @@ def render_daily_digest(
         "🎯 오늘 한 줄",
         macro.one_line,
         "",
-        "📈 오늘 가장 중요한 변화",
-        *_bullet_lines(macro.key_changes, "임계치를 넘은 핵심 시장 변화가 없습니다."),
+        "📈 중요한 변화",
+        *_bullet_lines(macro.key_changes[:3], "임계치를 넘은 핵심 시장 변화가 없습니다."),
         "",
         "🧭 현재 시장 상황",
         ]
     )
-    for label, explanation in macro.axis_explanations:
+    for label, explanation in macro.axis_explanations[:3]:
         lines.extend([f"• {label}: {explanation}"])
-    lines.extend(["", "💡 종합 해석", *macro.integrated_view, "", "🔄 시장 가정"])
-    lines.extend(_bullet_lines(macro.market_assumptions, "방향을 바꿀 신규 확정 근거가 없습니다."))
+    lines.extend(["", "💡 투자적 의미", *macro.integrated_view])
+    changed_assumptions = [
+        item for item in macro.market_assumptions if "오늘 신호: 중립" not in item
+    ]
+    lines.extend(["", "🔄 시장 가정"])
+    lines.extend(changed_assumptions or ["• 나머지 시장 가정의 구조적 변화 없음"])
     lines.extend(
         [
             "",
-            "📊 모니터링 현황",
+            "📊 14종목 상태",
             (
                 f"투자 논리 · 강화 {thesis['strengthened']} · 유지 {thesis['maintained']} · "
                 f"약화/검토 {thesis['weakened']} · 무효화 {thesis['invalidated']}"
@@ -58,19 +62,9 @@ def render_daily_digest(
                 f"혼재 {valuation['mixed']} · 압축 {valuation['compression']} · "
                 f"판단 자료 부족 {valuation['unknown']}"
             ),
-            "",
-            "🏢 오늘 종목 점검",
         ]
     )
-    if portfolio.tickers:
-        for item in portfolio.tickers:
-            lines.append(
-                f"• {item.company_name}({item.ticker}) · {item.display_reason} · "
-                f"기대 {EXPECTATION_LABELS.get(item.expectation_level, item.expectation_level)} · "
-                f"Valuation {VALUATION_LABELS.get(item.valuation, item.valuation)}"
-            )
-    else:
-        lines.append("• 오늘 저장이 완료된 종목 평가가 없습니다.")
+    lines.append(f"전체 {len(portfolio.tickers)}개 종목 평가 완료")
 
     if include_stock_details and portfolio.focus_tickers:
         lines.extend(["", "🔎 오늘 상세 점검"])
@@ -106,11 +100,13 @@ def render_daily_digest(
                 ]
             )
 
-    lines.extend(["", "📅 오늘/근접 일정", "오늘:"])
-    lines.extend(_bullet_lines(digest.schedule.today, "등록된 주요 일정 없음"))
-    if digest.schedule.next_seven_days:
-        lines.extend(["향후 7일:", *_bullet_lines(digest.schedule.next_seven_days, "")])
-    lines.extend(["", "⚠️ 데이터 주의"])
-    lines.extend(_bullet_lines(digest.data_quality.items, "특이사항 없음"))
-    lines.append(digest.data_quality.conclusion)
+    if digest.schedule.today or digest.schedule.next_seven_days:
+        lines.extend(["", "📅 오늘/근접 일정"])
+        if digest.schedule.today:
+            lines.extend(["오늘:", *_bullet_lines(digest.schedule.today, "")])
+        if digest.schedule.next_seven_days:
+            lines.extend(["향후 7일:", *_bullet_lines(digest.schedule.next_seven_days, "")])
+    if digest.data_quality.items:
+        lines.extend(["", "⚠️ 데이터 주의", *_bullet_lines(digest.data_quality.items, "")])
+        lines.append(digest.data_quality.conclusion)
     return "\n".join(lines).strip()

@@ -16,6 +16,150 @@ from app.services.notification_service import (
 )
 
 
+def _compact_assessment(**overrides):
+    values = {
+        "ticker": "000660",
+        "assessment_date": "2026-08-11",
+        "thesis_version": 1,
+        "status": "no_material_change",
+        "business_thesis_change": "no_material_change",
+        "score": 0,
+        "confidence": 0.8,
+        "summary": "변화 없음",
+        "new_buyer_view": "확인",
+        "holder_view": "확인",
+        "price_view": "지지구간 위 · 확인가 아래",
+        "risk_level": "normal",
+        "structural_risk_level": "elevated",
+        "assessment_state": "final",
+        "market_session": "closed",
+        "evidence": "[]",
+        "confirmed_facts": "[]",
+        "background_confirmed_facts": "[]",
+        "inferred_implications": "[]",
+        "unknowns": "[]",
+        "confirmed_warnings": "[]",
+        "new_warnings": "[]",
+        "open_warnings": '["유상증자 이후 희석 효과 확인 필요"]',
+        "open_confirmed_warnings": '["유상증자 이후 희석 효과 확인 필요"]',
+        "persistent_watch_risks": '["HBM4 수율", "CAPEX 대비 FCF", "HBM ASP", "후순위 위험"]',
+        "warning_states": "[]",
+        "watch_items": "[]",
+        "earnings_estimate_impact": "unchanged",
+        "market_expectation_assessment": "{}",
+        "price_context": json.dumps(
+            {
+                "decision": {
+                    "current_price": 1_425_000,
+                    "currency": "KRW",
+                    "price_basis": "close",
+                    "current_position": "지지구간 위 · 확인가 아래",
+                    "new_observer_checks": [
+                        {"label": "지지", "price_low": 1_397_000, "price_high": 1_420_000},
+                        {"label": "상향 확인", "price": 1_550_000},
+                    ],
+                    "holder_checks": [{"label": "재점검", "price": 1_320_000}],
+                }
+            },
+            ensure_ascii=False,
+        ),
+        "new_buyer_price_view": "중복 설명",
+        "holder_price_view": "중복 설명",
+        "valuation_context": '{"impact":"neutral","summary":"신규 근거 없음"}',
+        "valuation_snapshot": json.dumps(
+            {
+                "current_price": 1_425_000,
+                "currency": "KRW",
+                "trailing_pe": 13.5,
+                "trailing_pe_status": "value",
+                "ttm_eps": 105_555.56,
+                "price_to_book": 6.1,
+                "price_to_book_status": "value",
+                "bvps": 233_606.56,
+                "forward_pe": 11.8,
+                "forward_pe_status": "value",
+                "forward_eps": 120_762.71,
+                "forward_price_to_book_status": "unavailable",
+                "valuation_relative_position": "premium",
+                "valuation_relative_position_reason": "PBR이 과거 범위 상단입니다.",
+                "historical_pe_statistics": {"historical_median": 10.8, "current_percentile": 62, "observation_count": 100},
+                "historical_pb_statistics": {"historical_median": 1.7, "current_percentile": 92, "observation_count": 100},
+                "consensus_status": "unavailable",
+                "data_coverage": {
+                    "price_quality": "fresh",
+                    "event_quality": "fresh",
+                    "financial_quality": "full",
+                    "full_financial_freshness": "current",
+                    "preliminary_financial_freshness": "current",
+                    "consensus_quality": "unavailable",
+                    "historical_valuation_quality": "high",
+                    "forward_valuation_quality": "partial",
+                    "reason_codes": [],
+                },
+            },
+            ensure_ascii=False,
+        ),
+        "thesis_snapshot": '{"base_thesis":"HBM4 수익성과 FCF 전환이 핵심입니다."}',
+    }
+    values.update(overrides)
+    return SimpleNamespace(**values)
+
+
+def test_compact_user_report_hides_internal_metadata_and_empty_sections() -> None:
+    message = _message_for_assessment(_compact_assessment())
+
+    for hidden in (
+        "정식 재무 기준:",
+        "정식 재무 공시일:",
+        "잠정실적 공시일:",
+        "TTM 기준:",
+        "PER 분모:",
+        "PBR 분모:",
+        "cycle_adjusted",
+        "FY1 common equity roll-forward",
+        "provider 없음",
+        "Consensus: 자료 없음",
+        "가격 fresh",
+        "정식 재무 full/current",
+        "현재 상태: closed",
+        "이익 추정치 영향: unchanged",
+        "오늘 충족된 조건: 없음",
+        "🚨 오늘 새 경고",
+    ):
+        assert hidden not in message
+    assert "투자 논리: 유지 · 오늘 중요한 신규 변화 없음" in message
+    assert "⚠️ 기존 경고" in message
+    assert "📐 Valuation" in message
+    assert "PER = 현재가 ÷ TTM EPS = 1,425,000원 ÷ 105,555.56원 = 13.5배" in message
+    assert "fPBR" not in message
+    assert "⚠️ 데이터 주의" not in message
+
+
+def test_provider_only_forward_multiple_is_not_reverse_engineered() -> None:
+    assessment = _compact_assessment()
+    snapshot = json.loads(assessment.valuation_snapshot)
+    snapshot["forward_eps"] = None
+    snapshot["forward_pe"] = 19.3
+    snapshot["forward_pe_status"] = "value"
+    assessment.valuation_snapshot = json.dumps(snapshot)
+
+    message = _message_for_assessment(assessment)
+
+    assert "fPER: 19.3배" in message
+    assert "현재가 ÷ 예상 EPS" not in message
+
+
+def test_data_caution_only_renders_for_material_quality_problem() -> None:
+    normal = _compact_assessment()
+    assert "⚠️ 데이터 주의" not in _message_for_assessment(normal)
+
+    snapshot = json.loads(normal.valuation_snapshot)
+    snapshot["consensus_status"] = "conflicting"
+    snapshot["consensus_disagreement"] = True
+    normal.valuation_snapshot = json.dumps(snapshot)
+    assert "⚠️ 데이터 주의" in _message_for_assessment(normal)
+
+
 def test_assessment_notification_uses_investment_rationale_label() -> None:
     assessment = SimpleNamespace(
         ticker="000660",
@@ -44,11 +188,10 @@ def test_assessment_notification_uses_investment_rationale_label() -> None:
     message = _message_for_assessment(assessment)
 
     assert message.startswith("🏢 000660(000660)")
-    assert "🎯 핵심 투자 논리" in message
-    assert "💰 가격 판단" in message
-    assert "👀 신규 관찰자 가격 체크" in message
-    assert "📐 시장 기대와 Valuation" in message
-    assert "fPBR: 자료 없음" in message
+    assert "🎯 핵심" in message
+    assert "💰 가격" in message
+    assert "📐 Valuation" in message
+    assert "fPBR" not in message
     assert "Thesis" not in message
 
 
@@ -78,9 +221,8 @@ def test_krx_provisional_message_names_korean_market() -> None:
 
     message = _message_for_assessment(assessment)
 
-    assert "평가 상태: 잠정 · 한국장 진행 중" in message
-    assert "한국장이 진행 중" in message
-    assert "미국장이 진행 중" not in message
+    assert "현재 장중 데이터로 가격 판단은 잠정입니다." in message
+    assert "현재 상태: open" not in message
 
 
 def test_morning_delivery_requeues_only_messages_sent_before_cutoff() -> None:

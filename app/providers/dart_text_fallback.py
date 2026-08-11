@@ -356,7 +356,9 @@ _PRELIMINARY_METRIC_ALIASES = {
     "당기순이익": ("당기순이익", "분기순이익", "반기순이익"),
     "지배주주순이익": (
         "지배기업 소유주지분 순이익",
+        "지배기업 소유주지분",
         "지배기업 소유주 귀속 당기순이익",
+        "지배기업 소유주 귀속 순이익",
         "지배주주순이익",
     ),
 }
@@ -394,6 +396,15 @@ def _semantic_preliminary_table(
         "unit": None,
         "metric_labels_found": [],
     }
+    candidates: list[
+        tuple[
+            int,
+            dict[str, dict[str, float | None]],
+            list[dict[str, object]],
+            str | None,
+            dict[str, object],
+        ]
+    ] = []
     for table_index, table in enumerate(parser.tables):
         rows = _expanded_table_rows(table.get("rows", []))
         header_index = next(
@@ -432,6 +443,9 @@ def _semantic_preliminary_table(
             None,
         )
         if current_column is None:
+            continue
+        current_header = _compact(column_headers[current_column])
+        if "증감" in current_header or "증감률" in current_header:
             continue
         qoq_column = next(
             (
@@ -512,20 +526,42 @@ def _semantic_preliminary_table(
                     }
                 )
         if metrics:
-            diagnostics.update(
-                {
-                    "parse_method": "html_semantic_table",
-                    "semantic_table_found": True,
-                    "table_id": table.get("id") or f"table-{table_index}",
-                    "header_index": header_index,
-                    "current_column": current_column,
-                    "qoq_column": qoq_column,
-                    "yoy_column": yoy_column,
-                    "unit": unit_label,
-                    "metric_labels_found": list(metrics),
-                }
+            score = len(metrics) * 10
+            score += 6 if "매출액" in metrics else 0
+            score += 6 if "영업이익" in metrics else 0
+            score += 3 if "당기순이익" in metrics else 0
+            score += 2 if unit_label else 0
+            score += 2 if any("전년동기실적" in _compact(value) for value in column_headers) else 0
+            revenue = metrics.get("매출액", {}).get("current")
+            operating_income = metrics.get("영업이익", {}).get("current")
+            net_income = metrics.get("당기순이익", {}).get("current")
+            if isinstance(revenue, (int, float)) and revenue > 0:
+                if isinstance(operating_income, (int, float)) and abs(operating_income) > revenue:
+                    score -= 20
+                if isinstance(net_income, (int, float)) and abs(net_income) > revenue:
+                    score -= 20
+            candidate_diagnostics = {
+                "parse_method": "html_semantic_table",
+                "semantic_table_found": True,
+                "table_id": table.get("id") or f"table-{table_index}",
+                "header_index": header_index,
+                "header_rows": header_rows,
+                "column_headers": column_headers,
+                "current_column": current_column,
+                "qoq_column": qoq_column,
+                "yoy_column": yoy_column,
+                "unit": unit_label,
+                "metric_labels_found": list(metrics),
+                "candidate_score": score,
+            }
+            candidates.append(
+                (score, metrics, raw_fields, unit_label, candidate_diagnostics)
             )
-            return metrics, raw_fields, unit_label, diagnostics
+    if candidates:
+        candidates.sort(key=lambda candidate: candidate[0], reverse=True)
+        _score, metrics, raw_fields, unit_label, selected = candidates[0]
+        selected["candidate_count"] = len(candidates)
+        return metrics, raw_fields, unit_label, selected
     return {}, [], None, diagnostics
 
 
@@ -545,6 +581,34 @@ def _preliminary_period_end(tokens: list[str]) -> date | None:
         match = re.search(r"(20\d{2})[-./](\d{1,2})[-./](\d{1,2})", token)
         if not match:
             continue
+        try:
+            dates.append(date(*(int(part) for part in match.groups())))
+        except ValueError:
+            continue
+    return max(dates) if dates else None
+
+
+def _preliminary_period_end_from_semantic_header(
+    diagnostics: dict[str, object],
+) -> date | None:
+    headers = diagnostics.get("column_headers")
+    current_column = diagnostics.get("current_column")
+    if not isinstance(headers, list) or not isinstance(current_column, int):
+        return None
+    if current_column >= len(headers):
+        return None
+    header = str(headers[current_column])
+    quarter_match = re.search(r"(20\d{2})\s*년?\s*([1-4])\s*분기", header)
+    if quarter_match:
+        year, quarter = (int(part) for part in quarter_match.groups())
+        month_day = {1: (3, 31), 2: (6, 30), 3: (9, 30), 4: (12, 31)}[quarter]
+        return date(year, *month_day)
+    half_match = re.search(r"(20\d{2})\s*년?\s*(상반기|하반기)", header)
+    if half_match:
+        year = int(half_match.group(1))
+        return date(year, 6, 30) if half_match.group(2) == "상반기" else date(year, 12, 31)
+    dates: list[date] = []
+    for match in re.finditer(r"(20\d{2})[-./](\d{1,2})[-./](\d{1,2})", header):
         try:
             dates.append(date(*(int(part) for part in match.groups())))
         except ValueError:
@@ -710,6 +774,9 @@ def extract_preliminary_earnings_facts_from_text(
     if table_unit:
         unit_label = table_unit
         scale = _preliminary_unit_scale([f"단위: {table_unit}"])
+    semantic_period_end = _preliminary_period_end_from_semantic_header(diagnostics)
+    if semantic_period_end is not None:
+        period_end = semantic_period_end
 
     def metric_values(label: str, aliases: tuple[str, ...]) -> tuple[float | None, float | None, float | None, float | None]:
         value = semantic.get(label)

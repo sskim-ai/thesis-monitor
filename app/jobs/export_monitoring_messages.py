@@ -76,7 +76,18 @@ def _foreign_filing_audit_row(ticker: str, coverage: dict[str, object]) -> str:
     )
 
 
-def export_messages(run_date: date, output: Path) -> int:
+def _audit_output_for(output: Path) -> Path:
+    suffix = "-monitoring-messages.md"
+    if output.name.endswith(suffix):
+        return output.with_name(output.name[: -len(suffix)] + "-monitoring-audit.md")
+    return output.with_name(output.stem + "-audit.md")
+
+
+def export_messages(
+    run_date: date,
+    output: Path,
+    audit_output: Path | None = None,
+) -> int:
     init_db()
     with Session(engine) as session:
         digest = render_daily_digest(
@@ -135,10 +146,17 @@ def export_messages(run_date: date, output: Path) -> int:
                 snapshot = {}
             if snapshot.get("exchange_trade_date") != snapshot.get("latest_completed_regular_session_date"):
                 us_premarket_date_mismatches += 1
-        sections = [
+        user_sections = [
             f"# {run_date.isoformat()} Thesis Monitor 전체 메시지",
             "",
-            "실제 deterministic renderer 기준 검토본입니다. Telegram 분할 번호는 제외했습니다.",
+            "Telegram과 동일한 사용자용 monitoring renderer 기준입니다.",
+            "",
+            "## 1. 시장환경 및 포트폴리오 종합",
+            "",
+            _fenced(digest),
+        ]
+        audit_sections = [
+            f"# {run_date.isoformat()} Thesis Monitor 내부 감사",
             "",
             "## 검증 요약",
             "",
@@ -147,10 +165,6 @@ def export_messages(run_date: date, output: Path) -> int:
             f"- OpenDART URL/receipt 불일치: {len(dart_identity_mismatches)}건",
             f"- 과거 이력에서 식별자 불일치로 격리된 OpenDART 문서: {len(invalid_dart_documents)}건",
             f"- 출처 검증 실패로 비활성화된 canonical issue: {len(invalidated_issues)}건",
-            "",
-            "## 1. 시장환경 및 포트폴리오 종합",
-            "",
-            _fenced(digest),
         ]
         for index, assessment in enumerate(assessments, start=2):
             watchlist_item = session.exec(
@@ -166,7 +180,7 @@ def export_messages(run_date: date, output: Path) -> int:
                 watchlist_item.company_name if watchlist_item else assessment.ticker
             )
             message, _context = _assessment_report(assessment, company_name, thesis)
-            sections.extend(
+            user_sections.extend(
                 [
                     "",
                     f"## {index}. {company_name}({assessment.ticker})",
@@ -174,6 +188,7 @@ def export_messages(run_date: date, output: Path) -> int:
                     _fenced(message),
                 ]
             )
+        sections = audit_sections
         sections.extend(
             [
                 "",
@@ -382,8 +397,73 @@ def export_messages(run_date: date, output: Path) -> int:
                 f"{errors[-1] if errors else next((row.skip_reason for row in reversed(rows) if row.skip_reason), '없음')} | "
                 f"{len({row.ticker for row in rows})} |"
             )
+        sections.extend(
+            [
+                "",
+                "## 부록. Valuation 계산 lineage",
+                "",
+                "| 종목 | 가격 | PER/EPS | PBR/BVPS | fPER/예상 EPS | fPBR/예상 BVPS | Source/method |",
+                "|---|---|---|---|---|---|---|",
+            ]
+        )
+        for assessment in assessments:
+            try:
+                snapshot = json.loads(assessment.valuation_snapshot or "{}")
+            except json.JSONDecodeError:
+                snapshot = {}
+            methods = "; ".join(
+                str(snapshot.get(key))
+                for key in (
+                    "trailing_pe_method",
+                    "price_to_book_method",
+                    "forward_pe_method",
+                    "forward_price_to_book_method",
+                )
+                if snapshot.get(key)
+            )
+            sections.append(
+                f"| {assessment.ticker} | {snapshot.get('current_price') or '없음'} | "
+                f"{snapshot.get('trailing_pe') or '없음'}/{snapshot.get('ttm_eps') or '없음'} | "
+                f"{snapshot.get('price_to_book') or '없음'}/{snapshot.get('bvps') or '없음'} | "
+                f"{snapshot.get('forward_pe') or '없음'}/{snapshot.get('forward_eps') or '없음'} | "
+                f"{snapshot.get('forward_price_to_book') or '없음'}/{snapshot.get('forward_bvps') or '없음'} | "
+                f"{str(snapshot.get('provider') or '없음').replace('|', '/')} · {methods.replace('|', '/')} |"
+            )
+
+        sections.extend(
+            [
+                "",
+                "## 부록. Preliminary parser diagnostics",
+                "",
+                "| 종목 | Filing | Parse method | Table | Metric | Raw period/header/unit/value |",
+                "|---|---|---|---|---|---|",
+            ]
+        )
+        parser_rows = 0
+        for event in events:
+            try:
+                raw_fields = json.loads(event.raw_financial_fields or "[]")
+            except json.JSONDecodeError:
+                raw_fields = []
+            for field in raw_fields if isinstance(raw_fields, list) else []:
+                if not isinstance(field, dict):
+                    continue
+                parser_rows += 1
+                sections.append(
+                    f"| {event.ticker} | {event.source_document_id or '없음'} | "
+                    f"{field.get('parse_method') or '없음'} | {field.get('table_id') or '없음'} | "
+                    f"{field.get('raw_label') or '없음'} | "
+                    f"{field.get('raw_period') or '없음'} / "
+                    f"{str(field.get('raw_column_header') or '없음').replace('|', '/')} / "
+                    f"{field.get('raw_unit') or '없음'} / {field.get('raw_value') or '없음'} |"
+                )
+        if parser_rows == 0:
+            sections.append("| - | - | 저장된 parser diagnostic 없음 | - | - | - |")
+    audit_output = audit_output or _audit_output_for(output)
     output.parent.mkdir(parents=True, exist_ok=True)
-    output.write_text("\n".join(sections) + "\n", encoding="utf-8")
+    audit_output.parent.mkdir(parents=True, exist_ok=True)
+    output.write_text("\n".join(user_sections) + "\n", encoding="utf-8")
+    audit_output.write_text("\n".join(audit_sections) + "\n", encoding="utf-8")
     return len(assessments)
 
 
@@ -391,6 +471,7 @@ def main() -> None:
     parser = argparse.ArgumentParser(description="Export rendered daily monitoring messages.")
     parser.add_argument("--date", default=date.today().isoformat())
     parser.add_argument("--output")
+    parser.add_argument("--audit-output")
     args = parser.parse_args()
     run_date = date.fromisoformat(args.date)
     output = Path(
@@ -398,8 +479,12 @@ def main() -> None:
         or DEFAULT_EXPORT_DIR
         / f"{datetime.now():%Y%m%d-%H%M%S}-{run_date}-monitoring-messages.md"
     )
-    count = export_messages(run_date, output)
-    print(f"exported={count} output={output.resolve()}")
+    audit_output = Path(args.audit_output) if args.audit_output else _audit_output_for(output)
+    count = export_messages(run_date, output, audit_output)
+    print(
+        f"exported={count} output={output.resolve()} "
+        f"audit_output={audit_output.resolve()}"
+    )
 
 
 if __name__ == "__main__":

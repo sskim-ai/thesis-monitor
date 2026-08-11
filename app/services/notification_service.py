@@ -202,6 +202,125 @@ def _multiple_roles(primary_method: str) -> dict[str, str]:
     return {name: "참고" for name in ("PER", "fPER", "PBR", "fPBR")}
 
 
+def _valuation_formula_lines(
+    snapshot: dict[str, object],
+    *,
+    label: str,
+    multiple_field: str,
+    denominator_field: str,
+    denominator_label: str,
+) -> list[str]:
+    status = str(snapshot.get(f"{multiple_field}_status", "unavailable"))
+    multiple = snapshot.get(multiple_field)
+    if status == "not_meaningful":
+        return [f"{label}: N/M"]
+    if status != "value" or not isinstance(multiple, (int, float)):
+        return []
+    price = snapshot.get("current_price")
+    denominator = snapshot.get(denominator_field)
+    currency = snapshot.get("currency")
+    if (
+        isinstance(price, (int, float))
+        and isinstance(denominator, (int, float))
+        and denominator > 0
+        and abs(float(price) / float(denominator) / float(multiple) - 1) <= 0.02
+    ):
+        return [
+            f"{label} = 현재가 ÷ {denominator_label} = "
+            f"{_report_price(price, currency)} ÷ {_report_price(denominator, currency)} "
+            f"= {float(multiple):.1f}배",
+        ]
+    return [f"{label}: {float(multiple):.1f}배"]
+
+
+def _history_summary(snapshot: dict[str, object]) -> str | None:
+    parts: list[str] = []
+    for label, key in (
+        ("PER", "historical_pe_statistics"),
+        ("PBR", "historical_pb_statistics"),
+    ):
+        statistics = snapshot.get(key)
+        if not isinstance(statistics, dict) or not statistics.get("observation_count"):
+            continue
+        median_value = statistics.get("historical_median")
+        percentile = statistics.get("current_percentile")
+        details: list[str] = []
+        if isinstance(median_value, (int, float)):
+            details.append(f"중앙값 {float(median_value):.1f}배")
+        if isinstance(percentile, (int, float)):
+            details.append(f"{float(percentile):.0f}백분위")
+        if details:
+            parts.append(f"{label} " + " · ".join(details))
+    return " · ".join(parts) if parts else None
+
+
+def _price_check_lines(
+    checks: object,
+    currency: object,
+) -> list[str]:
+    if not isinstance(checks, list):
+        return []
+    lines: list[str] = []
+    for item in checks:
+        if not isinstance(item, dict):
+            continue
+        label = str(item.get("label") or "확인")
+        low = item.get("price_low")
+        high = item.get("price_high")
+        price = item.get("price")
+        if isinstance(low, (int, float)) and isinstance(high, (int, float)):
+            rendered = f"{_report_price(low, currency)}~{_report_price(high, currency)}"
+        elif isinstance(price, (int, float)):
+            rendered = _report_price(price, currency)
+        else:
+            continue
+        lines.append(f"• {label}: {rendered}")
+    return lines
+
+
+def _concise_text(value: str, *, sentence_limit: int = 2, character_limit: int = 320) -> str:
+    sentences = re.split(r"(?<=[.!?])\s+", value.strip())
+    concise = " ".join(sentence for sentence in sentences[:sentence_limit] if sentence)
+    if len(concise) <= character_limit:
+        return concise
+    shortened = concise[:character_limit].rsplit(" ", 1)[0].rstrip("., ")
+    return shortened + "."
+
+
+def _data_cautions(
+    snapshot: dict[str, object],
+    coverage: dict[str, object],
+) -> list[str]:
+    cautions: list[str] = []
+    reason_codes = coverage.get("reason_codes", [])
+    reasons = {str(item) for item in reason_codes} if isinstance(reason_codes, list) else set()
+    preliminary_quality = str(
+        coverage.get("preliminary_financial_quality")
+        or coverage.get("preliminary_financial_freshness")
+        or ""
+    )
+    if preliminary_quality == "validation_failed" or "preliminary_validation_failed" in reasons:
+        cautions.append(
+            "최근 잠정실적 숫자 검증이 완료되지 않아 현재 배수는 검증된 정식 재무를 기준으로 봅니다."
+        )
+    full_freshness = str(coverage.get("full_financial_freshness") or "")
+    refresh_status = str(coverage.get("financial_freshness") or "")
+    if full_freshness == "stale" or refresh_status in {
+        "refresh_due",
+        "refresh_pending",
+        "refresh_required",
+        "stale",
+    }:
+        cautions.append("최신 정식 재무 반영이 지연돼 현재 Valuation 신뢰도를 낮춰 봅니다.")
+    if snapshot.get("consensus_disagreement") or snapshot.get("consensus_status") == "conflicting":
+        cautions.append("예상 이익 전망이 데이터 공급 경로마다 크게 달라 fPER는 참고 수준입니다.")
+    if "missing_adr_ratio" in reasons:
+        cautions.append("주식 변환 비율이 확인되지 않아 일부 주당 Valuation 계산을 보류했습니다.")
+    if "foreign_financial_parsing_failed" in reasons:
+        cautions.append("최근 해외 공시 재무표의 자동 검증이 끝나지 않아 Valuation을 보수적으로 봅니다.")
+    return list(dict.fromkeys(cautions))
+
+
 def _assessment_report(
     assessment: ThesisAssessment,
     company_name: str,
@@ -318,22 +437,7 @@ def _assessment_report(
     core_thesis = thesis.core_thesis if thesis else str(
         thesis_snapshot.get("base_thesis", "저장된 핵심 투자 논리가 없습니다.")
     )
-    strengthen_text = str(strengthen_signals[0]) if strengthen_signals else "등록된 조건 없음"
-    weaken_text = str(weaken_signals[0]) if weaken_signals else "등록된 조건 없음"
-    invalidation_text = (
-        str(invalidation_signals[0]) if invalidation_signals else "등록된 조건 없음"
-    )
     expectation_level = str(market_expectations.get("level", "unknown"))
-    expectation_summary = str(
-        market_expectations.get("summary", "현재 시장 기대 정보가 등록되지 않았습니다.")
-    )
-    valuation_method = str(
-        valuation_framework.get("primary_method", "평가 방식이 등록되지 않았습니다.")
-    )
-    multiple_roles = _multiple_roles(valuation_method)
-    valuation_caveats = valuation_framework.get("valuation_caveats", [])
-    if not isinstance(valuation_caveats, list):
-        valuation_caveats = []
     valuation_impact = str(
         valuation_context.get("summary", "Valuation 영향 판단 자료가 없습니다.")
     )
@@ -380,54 +484,11 @@ def _assessment_report(
         if price_as_of
         else "기준일 확인 불가"
     )
-    observed_date = str(
-        valuation_snapshot.get("price_observed_at")
-        or decision.get("price_observed_at")
-        or ""
-    )[:10]
-    session_status_text = (
-        f"{observed_date} 미국장 개장 전"
-        if market_session == "pre_market" and not is_krx and observed_date
-        else "미국장 진행 중"
-        if market_session == "open" and not is_krx
-        else "한국장 진행 중"
-        if market_session == "open" and is_krx
-        else market_session
-    )
     new_buyer_price_view = str(getattr(assessment, "new_buyer_price_view", "") or "")
     holder_price_view = str(getattr(assessment, "holder_price_view", "") or "")
-    valuation_evidence = valuation_context.get("valuation_evidence", [])
-    if not isinstance(valuation_evidence, list):
-        valuation_evidence = []
-    quality = str(valuation_snapshot.get("quality", "unavailable"))
-    quality_label = {
-        "fresh": "최신",
-        "stale": "오래됨",
-        "partial": "부분 확인",
-        "unavailable": "자료 없음",
-    }.get(quality, quality)
-    snapshot_warnings = valuation_snapshot.get("warnings", [])
-    if not isinstance(snapshot_warnings, list):
-        snapshot_warnings = []
     data_coverage = valuation_snapshot.get("data_coverage", {})
     if not isinstance(data_coverage, dict):
         data_coverage = {}
-    coverage_reason_labels = {
-        "provider_not_supported": "현재 provider가 이 종목의 표준 재무 데이터를 충분히 지원하지 않습니다.",
-        "latest_financial_event_without_snapshot": "최근 실적 이벤트는 확인됐지만 재무 snapshot이 아직 생성되지 않았습니다.",
-        "financial_event_newer_than_snapshot": "최근 실적 발표가 Valuation 계산 재무자료보다 새롭습니다.",
-        "insufficient_history": "현재 시스템에 확보된 point-in-time 재무 이력이 장기 비교에 충분하지 않습니다.",
-        "missing_adr_ratio": "foreign issuer/ADR의 주식 변환 비율이 확인되지 않았습니다.",
-        "stale_data": "핵심 재무 데이터의 최신성이 낮습니다.",
-        "reporting_cadence_exceeded": "예상 재무 보고 주기가 지나 최신 정식 재무 반영 여부를 확인 중입니다.",
-        "preliminary_validation_failed": "최근 잠정실적의 숫자·기간·단위 검증에 실패해 확정 재무 및 Valuation에 사용하지 않았습니다.",
-        "foreign_financial_parsing_failed": "foreign filing의 재무표 후보를 확인했지만 자동 구조화·검증이 완료되지 않았습니다.",
-        "foreign_latest_filing_not_financial": "최근 foreign filing은 재무 실적표가 아닌 문서로 확인됐습니다.",
-    }
-    coverage_reasons = [
-        coverage_reason_labels.get(str(code), str(code))
-        for code in data_coverage.get("reason_codes", [])
-    ] if isinstance(data_coverage.get("reason_codes", []), list) else []
     relative_position = str(
         valuation_snapshot.get("valuation_relative_position", "unknown")
     )
@@ -439,152 +500,9 @@ def _assessment_report(
         "premium": "부담 구간",
         "unknown": "판단 자료 부족",
     }.get(relative_position, "판단 자료 부족")
-    relative_basis = valuation_snapshot.get("valuation_relative_basis")
-    relative_basis_text = (
-        f"현재 Valuation 위치: {relative_label} · {relative_basis}"
-        if relative_basis
-        else f"현재 Valuation 위치: {relative_label}"
-    )
-    relative_confidence = {
-        "high": "높음",
-        "medium": "보통",
-        "low": "낮음",
-    }.get(str(valuation_snapshot.get("valuation_relative_position_confidence", "low")), "낮음")
     relative_reason = str(
         valuation_snapshot.get("valuation_relative_position_reason") or ""
     ).strip()
-
-    def _history_line(label: str, key: str) -> str:
-        raw = valuation_snapshot.get(key)
-        if not isinstance(raw, dict) or not raw.get("observation_count"):
-            return f"• {label}: 역사적 관측치 부족"
-        median_value = raw.get("historical_median")
-        percentile = raw.get("current_percentile")
-        years = raw.get("lookback_years")
-        count = raw.get("deduplicated_observation_count", raw.get("observation_count"))
-        history_quality = str(raw.get("history_quality", "insufficient"))
-        median_text = f"중앙값 {float(median_value):.1f}배" if isinstance(median_value, (int, float)) else "중앙값 확인 불가"
-        percentile_text = f"현재 {float(percentile):.0f} percentile" if isinstance(percentile, (int, float)) else "현재 위치 확인 불가"
-        coverage = raw.get("history_coverage_ratio")
-        coverage_text = (
-            f" · 목표기간 충족률 {float(coverage):.0%}"
-            if isinstance(coverage, (int, float)) else ""
-        )
-        return (
-            f"• {label}: 최근 {years}년 {median_text} · {percentile_text} · "
-            f"주간 말일 {count}개 · 품질 {history_quality}{coverage_text}"
-        )
-
-    historical_text = (
-        f"{_history_line('trailing PER', 'historical_pe_statistics')}\n"
-        f"{_history_line('PBR', 'historical_pb_statistics')}"
-    )
-    forward_basis = str(valuation_snapshot.get("forward_basis") or "").strip()
-    forward_basis_label = (
-        " · provider forward consensus 기준"
-        if forward_basis == "provider-defined forward consensus"
-        else f" · {forward_basis} 기준" if forward_basis else ""
-    )
-    forward_freshness_label = (
-        " · 기준일 일부 미확인"
-        if valuation_snapshot.get("forward_pe_status") == "value"
-        and valuation_snapshot.get("forward_pe_source") == "consensus_forward"
-        and not valuation_snapshot.get("denominator_as_of")
-        else ""
-    )
-    forward_pe_label = (
-        "내부 추정 fPER"
-        if valuation_snapshot.get("forward_pe_source") == "modeled_forward"
-        else "fPER"
-    )
-    forward_pb_label = (
-        "내부 추정 fPBR"
-        if valuation_snapshot.get("forward_price_to_book_source") == "modeled_forward"
-        else "fPBR"
-    )
-    caveat_text = (
-        f"• 해석 주의: {valuation_caveats[0]}"
-        if valuation_caveats
-        else "• 해석 주의: 등록된 종목별 Valuation 주의사항 없음"
-    )
-    data_status_parts = [
-        f"가격 {data_coverage.get('price_quality', data_coverage.get('price', 'unavailable'))}",
-        f"이벤트 {data_coverage.get('event_quality', 'unavailable')}",
-        "정식 재무 "
-        f"{data_coverage.get('full_financial_availability', 'unavailable')}/"
-        f"{data_coverage.get('full_financial_freshness', data_coverage.get('full_financial_quality', 'unavailable'))}",
-        "잠정실적 "
-        f"{data_coverage.get('preliminary_financial_freshness', data_coverage.get('preliminary_financial_quality', 'unavailable'))}",
-        f"Consensus {data_coverage.get('consensus_quality', 'unavailable')}",
-        f"역사 Valuation {data_coverage.get('historical_valuation_quality', 'unavailable')}",
-        f"Forward {data_coverage.get('forward_valuation_quality', 'unavailable')}",
-    ]
-    if data_coverage.get("filing_discovery_coverage") not in {None, "not_applicable"}:
-        data_status_parts.append(
-            "Foreign 최신 filing "
-            + str(
-                data_coverage.get("latest_foreign_filing_parse_result")
-                or data_coverage.get("foreign_latest_filing_result")
-                or "unavailable"
-            )
-        )
-    detailed_data_status = any(
-        str(data_coverage.get(key, "")) in {"stale", "partial", "unavailable", "validation_failed", "refresh_due", "refresh_pending"}
-        for key in (
-            "financial_quality",
-            "event_quality",
-            "consensus_quality",
-            "historical_valuation_quality",
-            "forward_valuation_quality",
-            "full_financial_freshness",
-            "preliminary_financial_freshness",
-            "latest_foreign_filing_parse_result",
-        )
-    )
-    data_status_text = (
-        "📊 데이터 상태\n"
-        + " · ".join(data_status_parts)
-        + "\n전체 판단 데이터: "
-        + str(data_coverage.get("overall_data_quality", "unavailable"))
-        + "\n주의: "
-        + str(data_coverage.get("overall_quality_reason") or "별도 데이터 경고 없음")
-        + "\n"
-        if detailed_data_status
-        else ""
-    )
-    consensus_status = str(valuation_snapshot.get("consensus_status") or "unavailable")
-    consensus_status_label = {
-        "full": "충분",
-        "partial": "부분 확인",
-        "unavailable": "자료 없음",
-        "stale": "오래됨",
-        "conflicting": "provider 간 충돌",
-    }.get(consensus_status, consensus_status)
-    consensus_detail = ""
-    if consensus_status == "partial" and valuation_snapshot.get("forward_pe_status") == "value":
-        consensus_detail = "\nForward PE 값은 확인됐지만 기준일 또는 분석가 수 metadata가 일부 부족합니다."
-    elif consensus_status == "conflicting":
-        consensus_detail = "\nForward 추정치가 provider 간 엇갈려 단일 배수를 강하게 해석하지 않습니다."
-    analyst_count = valuation_snapshot.get("estimate_analyst_count")
-    analyst_text = (
-        f"분석가 {analyst_count}명"
-        if isinstance(analyst_count, int) and analyst_count > 0
-        else "분석가 수 확인 불가"
-    )
-    if assessment_state == "provisional" and is_krx:
-        session_label = "잠정 · 한국장 진행 중"
-        provisional_text = (
-            "\n⚠️ 한국장이 진행 중이므로 현재가와 기술적 가격 판단은 잠정입니다. "
-            "간밤 미국 시장 데이터는 확정 기준입니다.\n"
-        )
-    elif assessment_state == "provisional":
-        session_label = "잠정 · 미국장 진행 중"
-        provisional_text = (
-            "\n⚠️ 미국장이 진행 중이므로 현재가와 시장 가격 신호는 잠정입니다.\n"
-        )
-    else:
-        session_label = f"확정 · 시장 세션 {market_session}"
-        provisional_text = ""
     matched_today = _unique_text(
         str(signal)
         for item in evidence_items
@@ -592,82 +510,95 @@ def _assessment_report(
         for signal in item.get("matched_signals", [])
         if str(signal).strip()
     )
-    fallback = (
-        f"🏢 {company_name}({assessment.ticker})\n"
-        f"⚠️ 오늘 투자 논리 {label}\n"
-        f"구조적 위험: {risk_label} · 판단 신뢰도 {assessment.confidence:.0%}\n"
-        f"평가 상태: {session_label}{provisional_text}\n"
-        f"🎯 핵심 투자 논리\n{core_thesis}\n\n"
-        f"🔄 오늘 새로 확인된 변화\n{change_text}\n\n"
-        f"🚨 오늘 새 경고\n{_warnings_with_provenance(new_warnings, '없음')}\n\n"
-        f"⚠️ 아직 해결되지 않은 기존 경고\n"
-        f"{_warnings_with_provenance(prior_open_warnings, '없음')}\n\n"
-        f"👁 계속 감시하는 구조적 리스크\n"
-        f"{_bullet_text(persistent_watch_risks, '등록된 상시 감시 리스크 없음')}\n\n"
-        f"📍 투자 논리 조건\n"
-        f"↑ 강화: {strengthen_text}\n"
-        f"↓ 약화: {weaken_text}\n"
-        f"✕ 무효화: {invalidation_text}\n\n"
-        f"오늘 충족된 조건: "
-        f"{', '.join(matched_today) if matched_today else '없음'}\n\n"
-        f"💰 가격 판단\n"
-        f"현재가: {_report_price(current_price, currency)} · {price_basis_label}\n"
-        f"현재 상태: {session_status_text}\n"
-        f"가격 위치: {decision.get('current_position', assessment.price_view)}\n"
-        f"가격 위치는 타이밍 보조 정보이며 적정가치와는 별도로 봅니다.\n\n"
-        f"👀 신규 관찰자 가격 체크\n"
-        f"{_audience_price_text(new_buyer_price_view, '등록된 구조적 확인 가격 없음')}\n\n"
-        f"🛡 보유자 가격 체크\n"
-        f"{_audience_price_text(holder_price_view, '투자 논리 조건과 실적 데이터를 우선 확인')}\n\n"
-        f"📐 시장 기대와 Valuation\n"
-        f"시장 기대: {expectation_label} · {expectation_summary}\n"
-        f"현재가: {_report_price(current_price, currency)}\n"
-        f"정식 재무 기준: {valuation_snapshot.get('latest_full_financial_period') or valuation_snapshot.get('financial_period_end') or '확인 불가'}\n"
-        f"정식 재무 공시일: {valuation_snapshot.get('latest_full_filing_date') or valuation_snapshot.get('filing_date') or '확인 불가'}\n"
-        f"최근 잠정실적: {valuation_snapshot.get('latest_preliminary_financial_period') or '없음'}\n"
-        f"잠정실적 공시일: {valuation_snapshot.get('latest_preliminary_filing_date') or '없음'}\n"
-        f"가격 기준: {price_basis_label}\n"
-        f"TTM 기준: {valuation_snapshot.get('ttm_period_start') or '확인 불가'}~"
-        f"{valuation_snapshot.get('ttm_period_end') or '확인 불가'}\n"
-        f"PER 분모: {valuation_snapshot.get('trailing_pe_denominator_period_end') or '확인 불가'} 재무 · "
-        f"공시 {valuation_snapshot.get('trailing_pe_denominator_filing_date') or '확인 불가'}\n"
-        f"PBR 분모: {valuation_snapshot.get('pbr_denominator_period_end') or '확인 불가'} 재무 · "
-        f"공시 {valuation_snapshot.get('pbr_denominator_filing_date') or '확인 불가'}\n"
-        f"• PER: {_multiple_text(valuation_snapshot, 'trailing_pe')} "
-        f"({multiple_roles['PER']}) · {_multiple_source_text(valuation_snapshot, 'trailing_pe')}\n"
-        f"• {forward_pe_label}: {_multiple_text(valuation_snapshot, 'forward_pe')} "
-        f"({multiple_roles['fPER']}) · {_multiple_source_text(valuation_snapshot, 'forward_pe')}"
-        f"{forward_basis_label}{forward_freshness_label}\n"
-        f"• PBR: {_multiple_text(valuation_snapshot, 'price_to_book')} "
-        f"({multiple_roles['PBR']}) · {_multiple_source_text(valuation_snapshot, 'price_to_book')}\n"
-        f"• {forward_pb_label}: {_multiple_text(valuation_snapshot, 'forward_price_to_book')} "
-        f"({multiple_roles['fPBR']}) · {_multiple_source_text(valuation_snapshot, 'forward_price_to_book')}\n"
-        f"주 평가 방식: {valuation_method}\n"
-        f"역사적 위치:\n{historical_text}\n"
-        f"{relative_basis_text}\n"
-        f"현재 Valuation 위치 신뢰도: {relative_confidence}\n"
-        f"해석: {relative_reason or '역사적·peer 비교 근거가 부족해 현재 위치를 확정하지 않습니다.'}\n"
-        f"배수 신호: {valuation_snapshot.get('valuation_signal_summary') or '중요한 배수 충돌 없음'}\n"
-        f"Consensus: {consensus_status_label} · {valuation_snapshot.get('estimate_provider') or 'provider 없음'}"
-        f" · {valuation_snapshot.get('estimate_period') or '기간 확인 불가'}"
-        f" · {analyst_text}"
-        f"{consensus_detail}\n"
-        f"{caveat_text}\n"
-        f"{data_status_text}"
-        f"Valuation 데이터 품질: {quality_label} · {valuation_snapshot.get('provider', '자료 없음')}\n"
-        f"재무 커버리지: {data_coverage.get('financials', 'unavailable')} · "
-        f"최신성 {data_coverage.get('financial_freshness', 'unavailable')}\n"
-        f"커버리지 설명: {data_coverage.get('overall_quality_reason') or (coverage_reasons[0] if coverage_reasons else '핵심 데이터의 별도 커버리지 경고 없음')}\n"
-        f"오늘 Valuation 영향: {impact_label} · {valuation_impact}\n"
-        f"{_bullet_text(valuation_evidence, '오늘 배수를 바꿀 신규 근거 없음')}\n"
-        f"이익 추정치 영향: {earnings_impact}\n\n"
-        f"📌 오늘 확인\n"
-        f"{_bullet_text(validation_metrics, '등록된 핵심 검증 지표를 계속 확인합니다.')}"
+    sections: list[str] = [f"🏢 {company_name}({assessment.ticker})"]
+    if business_change == "no_material_change":
+        sections.append("투자 논리: 유지 · 오늘 중요한 신규 변화 없음")
+    else:
+        sections.append(f"투자 논리: {label}")
+    sections.extend(
+        [
+            f"구조적 위험: {risk_label}",
+            f"시장 기대: {expectation_label}",
+            f"🎯 핵심\n{_concise_text(core_thesis)}",
+        ]
     )
-    if snapshot_warnings:
-        fallback += f"\n• Valuation 주의: {snapshot_warnings[0]}"
-    if unknowns:
-        fallback += f"\n• 미확인: {unknowns[0]}"
+    if business_change != "no_material_change" and change_text:
+        sections.append(f"🔄 중요한 변화\n{change_text}")
+    if new_warnings:
+        sections.append("🚨 오늘 새 경고\n" + _bullet_text(new_warnings, ""))
+    if prior_open_warnings:
+        sections.append("⚠️ 기존 경고\n" + _bullet_text(prior_open_warnings, ""))
+    if persistent_watch_risks:
+        sections.append("👁 핵심 감시\n" + _bullet_text(persistent_watch_risks, "", limit=3))
+    if matched_today:
+        sections.append("📍 오늘 접근한 조건\n" + _bullet_text(matched_today, ""))
+
+    price_lines = [
+        "💰 가격",
+        f"현재가: {_report_price(current_price, currency)} · {price_basis_label}",
+        f"현재 위치: {decision.get('current_position', assessment.price_view)}",
+    ]
+    observer_checks = _price_check_lines(decision.get("new_observer_checks"), currency)
+    holder_checks = _price_check_lines(decision.get("holder_checks"), currency)
+    if observer_checks:
+        price_lines.extend(["신규 관찰자:", *observer_checks])
+    elif new_buyer_price_view:
+        price_lines.extend(["신규 관찰자:", *_audience_price_text(new_buyer_price_view, "").splitlines()])
+    if holder_checks:
+        holder_checks = [line for line in holder_checks if line not in observer_checks]
+    if holder_checks:
+        price_lines.extend(["보유자:", *holder_checks])
+    elif holder_price_view:
+        price_lines.extend(["보유자:", *_audience_price_text(holder_price_view, "").splitlines()])
+    if assessment_state == "provisional":
+        price_lines.append(
+            "⚠️ 현재 장중 데이터로 가격 판단은 잠정입니다."
+        )
+    sections.append("\n".join(price_lines))
+
+    valuation_lines = ["📐 Valuation"]
+    for arguments in (
+        ("PER", "trailing_pe", "ttm_eps", "TTM EPS"),
+        ("PBR", "price_to_book", "bvps", "BVPS"),
+        ("fPER", "forward_pe", "forward_eps", "예상 EPS"),
+        ("fPBR", "forward_price_to_book", "forward_bvps", "예상 BVPS"),
+    ):
+        valuation_lines.extend(
+            _valuation_formula_lines(
+                valuation_snapshot,
+                label=arguments[0],
+                multiple_field=arguments[1],
+                denominator_field=arguments[2],
+                denominator_label=arguments[3],
+            )
+        )
+    history_summary = _history_summary(valuation_snapshot)
+    if history_summary:
+        valuation_lines.extend(["과거 대비:", history_summary])
+    valuation_lines.extend(["현재 Valuation:", relative_label])
+    if relative_reason:
+        valuation_lines.extend(["해석:", relative_reason])
+    if impact_label == "중립":
+        valuation_lines.append("Valuation: 중립")
+    else:
+        valuation_lines.append(f"오늘 Valuation 영향: {impact_label}")
+        if valuation_impact:
+            valuation_lines.append(valuation_impact)
+    if earnings_impact not in {"unchanged", "unknown", "none", "neutral"}:
+        earnings_label = {"up": "상향", "down": "하향", "mixed": "혼재"}.get(
+            earnings_impact, earnings_impact
+        )
+        valuation_lines.append(f"이익 추정: {earnings_label}")
+    if len(valuation_lines) > 3:
+        sections.append("\n".join(valuation_lines))
+
+    cautions = _data_cautions(valuation_snapshot, data_coverage)
+    if cautions:
+        sections.append("⚠️ 데이터 주의\n" + _bullet_text(cautions, ""))
+    next_checks = validation_metrics[:3] or persistent_watch_risks[:3]
+    if next_checks:
+        sections.append("📌 다음 확인\n" + _bullet_text(next_checks, ""))
+    fallback = "\n\n".join(section for section in sections if section.strip())
     context: dict[str, object] = {
         "analysis_type": "stock",
         "assessment_date": str(assessment.assessment_date),
