@@ -27,6 +27,7 @@ from app.services.data_coverage_service import DataCoverageService
 from app.services.event_classifier import classify_event
 from app.services.event_identity import (
     attribute_claim_actor,
+    event_is_eligible_for_current_analysis,
     validate_source_document_identity,
 )
 from app.services.event_relevance_service import EventRelevanceService, extract_structured_flags
@@ -819,6 +820,66 @@ def test_newer_reporting_period_requires_financial_refresh() -> None:
     assert state.refresh_reason == "newer_reporting_period_detected"
 
 
+def test_quarantined_financial_event_does_not_trigger_refresh() -> None:
+    engine = _engine()
+    with Session(engine) as session:
+        session.add(
+            FinancialSnapshot(
+                ticker="FRESHQUARANTINE",
+                period="2026-Q2",
+                snapshot_type="full_statement",
+                financial_period_end=date(2026, 6, 30),
+                filing_date=date(2026, 7, 24),
+            )
+        )
+        session.add(
+            Event(
+                ticker="FRESHQUARANTINE",
+                date=date(2026, 10, 10),
+                source="OpenDART",
+                provider="opendart",
+                title="Quarantined Q3 guidance filing",
+                url="https://example.com/quarantined-q3",
+                event_type="guidance_change",
+                confirmed_facts="[]",
+                guidance_changed=True,
+                reporting_period_end=date(2026, 9, 30),
+                document_type="preliminary_earnings",
+                document_identity_status="invalid_mismatch",
+                identity_status="rejected_document_identity",
+                financial_refresh_required=True,
+            )
+        )
+        session.commit()
+        state = FinancialFreshnessService().assess(
+            session, "FRESHQUARANTINE", as_of=date(2026, 10, 15)
+        )
+        quarantined = session.exec(select(Event)).one()
+
+    assert state.refresh_required is False
+    assert state.status == "current"
+    assert state.latest_material_event_date is None
+    assert quarantined.financial_refresh_required is False
+
+
+def test_rejected_financial_candidate_is_not_eligible_for_current_analysis() -> None:
+    event = Event(
+        ticker="REJECTEDFRESHNESS",
+        date=date(2026, 8, 11),
+        source="News",
+        provider="google_news_rss",
+        title="Other company changes guidance",
+        url="https://example.com/rejected-guidance",
+        event_type="guidance_change",
+        guidance_changed=True,
+        document_identity_status="unvalidated",
+        identity_status="rejected_company_mismatch",
+        rejected_reason="article_subject_is_different_security",
+    )
+
+    assert event_is_eligible_for_current_analysis(event) is False
+
+
 def test_historical_distribution_deduplicates_iso_weeks() -> None:
     observations = []
     start = date(2025, 1, 6)
@@ -1214,6 +1275,32 @@ def test_current_relevant_financial_validation_failure_lowers_event_quality() ->
     assert coverage.event_quality == "validation_failed"
 
 
+def test_current_official_document_identity_failure_lowers_event_quality() -> None:
+    engine = _engine()
+    with Session(engine) as session:
+        session.add(
+            Event(
+                ticker="CURRENTIDENTITYFAIL",
+                date=date.today(),
+                source="OpenDART",
+                provider="opendart",
+                title="Current filing with mismatched receipt identity",
+                url="https://example.com/current-identity-fail",
+                event_type="financial_report",
+                document_identity_status="invalid_mismatch",
+                identity_status="official_identity",
+                confirmed_facts="[]",
+            )
+        )
+        session.commit()
+        coverage = DataCoverageService().build(
+            session, "CURRENTIDENTITYFAIL", ValuationSnapshot()
+        )
+
+    assert coverage.event_quality == "validation_failed"
+    assert coverage.quarantined_event_count == 1
+
+
 def test_partial_semantic_table_does_not_mix_flat_fallback_metrics() -> None:
     parsed = extract_preliminary_earnings_facts_from_text(
         """
@@ -1237,6 +1324,29 @@ def test_partial_semantic_table_does_not_mix_flat_fallback_metrics() -> None:
     }
     assert parsed.diagnostics["semantic_table_found"] is True
     assert parsed.diagnostics["metric_labels_found"] == ["매출액", "영업이익"]
+
+
+def test_flat_fallback_is_used_only_when_semantic_table_is_invalid() -> None:
+    parsed = extract_preliminary_earnings_facts_from_text(
+        """
+        <table id="not-a-semantic-results-table">
+          <tr><th>구분</th><th>실적</th></tr>
+          <tr><td>참고</td><td>공시 본문</td></tr>
+        </table>
+        단위: 백만원 | 당해실적 | 2026-06-30 |
+        매출액 | 당해실적 | 100 | 90 | 누계실적 | 180 |
+        영업이익 | 당해실적 | 20 | 15 | 누계실적 | 30 |
+        당기순이익 | 당해실적 | 12 | 10 | 누계실적 | 20
+        """
+    )
+
+    assert parsed.revenue == 100_000_000
+    assert parsed.operating_income == 20_000_000
+    assert parsed.net_income == 12_000_000
+    assert parsed.diagnostics["semantic_table_found"] is False
+    assert {field["parse_method"] for field in parsed.raw_fields} == {
+        "flat_token_fallback"
+    }
 
 
 def test_alpha_local_budget_exhaustion_is_a_skip() -> None:
@@ -1282,6 +1392,29 @@ def test_alpha_provider_rate_limit_remains_a_failure() -> None:
     assert row.status == "rate_limited"
     assert row.failure_count == 1
     assert row.skip_count == 0
+
+
+def test_alpha_same_run_failure_is_not_requested_twice() -> None:
+    request_count = 0
+
+    def handler(_request: httpx.Request) -> httpx.Response:
+        nonlocal request_count
+        request_count += 1
+        return httpx.Response(200, json={"Note": "API call frequency rate limit reached"})
+
+    engine = _engine()
+    service = AlphaVantageService(transport=httpx.MockTransport(handler))
+    service.settings.alpha_vantage_api_key = "test"
+    service.settings.alpha_vantage_request_budget = 30
+    service.__class__._request_count = 0
+    service.__class__._request_date = datetime.now(timezone.utc).date()
+    with Session(engine) as session:
+        first = asyncio.run(service._fetch(session, "IBM", "OVERVIEW"))
+        second = asyncio.run(service._fetch(session, "IBM", "OVERVIEW"))
+
+    assert first == second
+    assert first[1] == "rate_limited"
+    assert request_count == 1
 
 
 def test_foreign_audit_row_separates_prior_parse_from_latest_result() -> None:

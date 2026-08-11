@@ -51,6 +51,19 @@ def test_untrusted_invalidation_signal_requires_review_without_invalidation() ->
     assert result.should_deactivate is False
 
 
+def test_rejected_trusted_event_is_excluded_from_assessment() -> None:
+    event = _event("sec_edgar")
+    event.document_identity_status = "validated"
+    event.identity_status = "rejected_company_mismatch"
+    event.rejected_reason = "article_subject_is_different_security"
+
+    result = evaluate_thesis(_thesis(), [event], PriceContext())
+
+    assert result.status == AssessmentStatus.no_material_change
+    assert result.should_deactivate is False
+    assert result.evidence == []
+
+
 def test_valuation_signal_is_separate_from_operating_thesis_status() -> None:
     thesis = _thesis()
     thesis.market_expectations = json.dumps(

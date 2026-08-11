@@ -79,6 +79,9 @@ class AlphaVantageService:
         self.settings = get_settings()
         self.transport = transport
         self.telemetry = ProviderTelemetryService()
+        self._run_cache: dict[
+            tuple[int, str, str], tuple[dict[str, object], str]
+        ] = {}
 
     def _cached(
         self, session: Session, ticker: str, data_type: str
@@ -101,6 +104,10 @@ class AlphaVantageService:
     async def _fetch(
         self, session: Session, ticker: str, function: str
     ) -> tuple[dict[str, object], str]:
+        run_key = (id(session), ticker, function)
+        run_cached = self._run_cache.get(run_key)
+        if run_cached is not None:
+            return run_cached
         started_at = datetime.now(timezone.utc)
         cached = self._cached(session, ticker, function)
         if cached:
@@ -116,7 +123,9 @@ class AlphaVantageService:
                 started_at=started_at,
                 status="cache_hit",
             )
-            return (payload if isinstance(payload, dict) else {}), "cached"
+            result = (payload if isinstance(payload, dict) else {}), "cached"
+            self._run_cache[run_key] = result
+            return result
         if not self.settings.alpha_vantage_api_key:
             self.telemetry.record(
                 session,
@@ -127,7 +136,9 @@ class AlphaVantageService:
                 status="skipped_not_configured",
                 skip_reason="api_key_not_configured",
             )
-            return {}, "skipped_not_configured"
+            result = ({}, "skipped_not_configured")
+            self._run_cache[run_key] = result
+            return result
         today = datetime.now(timezone.utc).date()
         if self.__class__._request_date != today:
             self.__class__._request_date = today
@@ -142,7 +153,9 @@ class AlphaVantageService:
                 status="skipped_budget_exhausted",
                 skip_reason="configured_daily_request_budget_exhausted",
             )
-            return {}, "skipped_budget_exhausted"
+            result = ({}, "skipped_budget_exhausted")
+            self._run_cache[run_key] = result
+            return result
         self.__class__._request_count += 1
         now = datetime.now(timezone.utc)
         row = session.exec(
@@ -217,7 +230,9 @@ class AlphaVantageService:
             error_code=status_code,
             error_reason=(failure_reason if status != "fresh" else None),
         )
-        return payload, status
+        result = (payload, status)
+        self._run_cache[run_key] = result
+        return result
 
     async def collect(
         self,

@@ -26,8 +26,10 @@ from app.schemas.event import (
 from app.schemas.financial import EarningsCheckpoint, EarningsCheckpointResponse
 from app.services.event_classifier import classify_event
 from app.services.event_identity import (
+    INVALID_DOCUMENT_IDENTITY_STATUSES,
     attribute_claim_actor,
     event_fingerprint,
+    event_is_eligible_for_current_analysis,
     validate_source_document_identity,
 )
 from app.services.event_interpreter import enrich_raw_event
@@ -94,10 +96,10 @@ def _opendart_reparse_lookback_days(
                 Event.ticker == ticker,
                 Event.provider == "opendart",
                 Event.source_document_id == snapshot.source_filing_id,
-                Event.document_identity_status.notin_({"invalid", "invalid_mismatch"}),
+                Event.document_identity_status.notin_(INVALID_DOCUMENT_IDENTITY_STATUSES),
             )
         ).first()
-        if source_event is None:
+        if source_event is None or not event_is_eligible_for_current_analysis(source_event):
             continue
         if oldest_reparse_date is None or source_event.date < oldest_reparse_date:
             oldest_reparse_date = source_event.date
@@ -649,13 +651,19 @@ class CollectionService:
         query = select(Event).where(
             Event.ticker == ticker,
             Event.date >= cutoff,
-            Event.document_identity_status.notin_({"invalid", "invalid_mismatch"}),
+            Event.document_identity_status.notin_(INVALID_DOCUMENT_IDENTITY_STATUSES),
         )
         if requires_review_only:
             query = query.where(Event.requires_review.is_(True))
         if provider:
             query = query.where(Event.provider == provider)
-        events = list(session.exec(query.order_by(Event.date.desc(), Event.relevance_score.desc())).all())
+        events = [
+            event
+            for event in session.exec(
+                query.order_by(Event.date.desc(), Event.relevance_score.desc())
+            ).all()
+            if event_is_eligible_for_current_analysis(event)
+        ]
         company = session.exec(select(Company).where(Company.ticker == ticker)).first()
         company_name = (
             (company.company_name if company else None)

@@ -22,6 +22,7 @@ _BROKERAGE_TERMS = (
     "goldman sachs",
     "ubs",
 )
+INVALID_DOCUMENT_IDENTITY_STATUSES = frozenset({"invalid", "invalid_mismatch"})
 
 
 def source_document_id_from_url(url: str) -> str | None:
@@ -98,7 +99,14 @@ def attribute_claim_actor(raw_event: RawEvent) -> tuple[str | None, str]:
 
 
 def event_has_valid_document_identity(event: Event) -> bool:
-    return event.document_identity_status not in {"invalid_mismatch", "invalid"}
+    return event.document_identity_status not in INVALID_DOCUMENT_IDENTITY_STATUSES
+
+
+def event_is_eligible_for_current_analysis(event: Event) -> bool:
+    """Exclude successfully quarantined or rejected candidates from live analysis."""
+    return event_has_valid_document_identity(event) and not event.identity_status.startswith(
+        "rejected"
+    )
 
 
 def _normalized(value: str) -> str:

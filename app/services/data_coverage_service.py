@@ -18,6 +18,10 @@ from app.models.security import (
 )
 from app.models.watchlist import WatchlistItem
 from app.schemas.thesis import DataCoverage, ValuationSnapshot
+from app.services.event_identity import (
+    event_has_valid_document_identity,
+    event_is_eligible_for_current_analysis,
+)
 from app.services.financial_freshness_service import FinancialFreshnessService
 from app.services.financial_validation import financial_snapshot_is_usable
 from app.config import get_settings
@@ -51,7 +55,7 @@ class DataCoverageService:
         quarantined_events = [
             event
             for event in all_events
-            if event.document_identity_status in {"invalid", "invalid_mismatch"}
+            if not event_has_valid_document_identity(event)
         ]
         rejected_events = [
             event for event in all_events if event.identity_status.startswith("rejected")
@@ -59,8 +63,7 @@ class DataCoverageService:
         events = [
             event
             for event in all_events
-            if event.document_identity_status not in {"invalid", "invalid_mismatch"}
-            and not event.identity_status.startswith("rejected")
+            if event_is_eligible_for_current_analysis(event)
         ]
         dividends = list(session.exec(select(DividendHistory).where(DividendHistory.ticker == ticker)).all())
         issues = list(session.exec(select(CanonicalIssue).where(CanonicalIssue.ticker == ticker)).all())
@@ -141,7 +144,7 @@ class DataCoverageService:
         ]
         event_cutoff = date.today() - timedelta(days=get_settings().monitor_lookback_days)
         current_events = [event for event in events if event.date >= event_cutoff]
-        current_validation_failed = any(
+        current_eligible_validation_failed = any(
             event.event_type != "non_thesis_noise"
             and (
                 event.financial_statement_basis_warning
@@ -149,8 +152,16 @@ class DataCoverageService:
             )
             for event in current_events
         )
+        current_official_identity_failure = any(
+            event.date >= event_cutoff
+            and event.provider in {"opendart", "sec_edgar", "company_ir"}
+            and event.event_type != "non_thesis_noise"
+            for event in quarantined_events
+        )
         event_quality = (
-            "validation_failed" if current_validation_failed else "fresh"
+            "validation_failed"
+            if current_eligible_validation_failed or current_official_identity_failure
+            else "fresh"
         )
         identity_audit_status = (
             "quarantined_history_present"

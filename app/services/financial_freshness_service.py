@@ -6,6 +6,7 @@ from sqlmodel import Session, select
 from app.models.event import Event
 from app.models.financial import FinancialSnapshot
 from app.config import get_settings
+from app.services.event_identity import event_is_eligible_for_current_analysis
 from app.services.financial_validation import (
     financial_snapshot_is_usable,
     validate_snapshot_period_chronology,
@@ -73,11 +74,23 @@ class FinancialFreshnessService:
         self, session: Session, ticker: str, *, as_of: date | None = None
     ) -> FinancialFreshness:
         today = as_of or date.today()
-        events = list(
+        all_events = list(
             session.exec(
                 select(Event).where(Event.ticker == ticker).order_by(Event.date.desc())
             ).all()
         )
+        events = [
+            event
+            for event in all_events
+            if event_is_eligible_for_current_analysis(event)
+        ]
+        for event in all_events:
+            if (
+                not event_is_eligible_for_current_analysis(event)
+                and event.financial_refresh_required
+            ):
+                event.financial_refresh_required = False
+                session.add(event)
         material_events = [event for event in events if _material(event)]
         latest_event = material_events[0] if material_events else None
         period_events = [event for event in material_events if event.reporting_period_end]

@@ -9,7 +9,10 @@ from sqlmodel import Session, select
 from app.models.event import Event
 from app.models.macro import ThesisMacroImpact
 from app.models.thesis import InvestmentThesis, ThesisAssessment
-from app.services.event_identity import event_fingerprint
+from app.services.event_identity import (
+    event_fingerprint,
+    event_is_eligible_for_current_analysis,
+)
 from app.schemas.thesis import (
     AssessmentStatus,
     AssessmentState,
@@ -977,6 +980,7 @@ def evaluate_thesis(
     valuation_snapshot: ValuationSnapshot | None = None,
     baseline_warning_states: list[dict[str, object]] | None = None,
 ) -> EvaluationResult:
+    events = [event for event in events if event_is_eligible_for_current_analysis(event)]
     strengthen_signals = _json_list(thesis.strengthen_signals)
     weaken_signals = _json_list(thesis.weaken_signals)
     invalidation_signals = _json_list(thesis.invalidation_signals)
@@ -1258,7 +1262,7 @@ def evaluate_thesis(
         fact
         for event in events
         if event.provider in TRUSTED_FACT_PROVIDERS
-        and event.document_identity_status not in {"invalid", "invalid_mismatch"}
+        and event_is_eligible_for_current_analysis(event)
         and (
             event.event_type in NEGATIVE_EVENT_TYPES
             or bool(_matching_signals(_event_text(event), weaken_signals))
@@ -1430,7 +1434,7 @@ def recent_events_for_assessment(
         event
         for event in events
         if event_fingerprint(event) not in used_fingerprints
-        and event.document_identity_status not in {"invalid", "invalid_mismatch"}
+        and event_is_eligible_for_current_analysis(event)
         and event.url not in used_urls
         and (legacy_created_cutoff is None or event.created_at > legacy_created_cutoff)
         and (
