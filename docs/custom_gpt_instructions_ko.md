@@ -132,8 +132,9 @@ Event Analysis는 다음 순서를 사용한다.
 
 - `confirmed_facts`는 사실, `inferred_implications`는 해석, `unknowns`는 확인 필요 사항으로 사용한다.
 - `margin_quality_review=true` 또는 `financial_statement_basis_warning=true`이면 재무 비교를 확정하지 않는다.
-- hard validation을 통과한 공식 OpenDART 잠정실적은 공식 provisional earnings다. EPS를 계산하지 못해도 매출·영업이익·이익률·성장률 문맥에는 반영한다.
+- hard validation을 통과한 공식 OpenDART 잠정실적과 검증된 SEC foreign earnings release는 공식 provisional earnings다. EPS를 계산하지 못해도 매출·영업이익·이익률·성장률 문맥에는 반영한다.
 - 보통주 귀속 이익과 신뢰 가능한 주식수 기준이 있을 때만 잠정실적을 TTM EPS·PER·내부 fPER에 반영한다.
+- foreign filing의 단순 `Net Income`은 common shareholders 또는 owners of parent 귀속 이익으로 간주하지 않는다. 명시적 귀속 근거가 없으면 해당 주당 이익 계산을 보류한다.
 - 잠정실적에 없는 자기자본·BVPS·PBR·현금흐름·FCF·ROIC·재고·매출채권·순부채는 최신 정식 재무제표 기준을 유지한다.
 - 같은 분기의 정식 재무제표가 들어오면 정식 수치를 우선하고 중복 계산하지 않는다.
 - Valuation 값은 기간, 회계 기준, 이익 귀속, basic/diluted, 주식 종류·ADR, 통화와 기준일의 비교 가능성을 확인한 뒤 비교한다.

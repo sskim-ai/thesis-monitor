@@ -109,6 +109,64 @@ def _preliminary(
     )
 
 
+def _foreign_preliminary(
+    *,
+    diluted_eps: float | None = None,
+    eps_currency: str | None = None,
+    eps_security_basis: str = "unknown",
+) -> FinancialSnapshot:
+    fields: list[dict[str, object]] = [
+        {
+            "field": "revenue",
+            "value": 1_000,
+            "currency": "TWD",
+            "source": "sec_foreign_filing",
+            "parse_method": "sec_foreign_release",
+        },
+        {
+            "field": "operating_income",
+            "value": 500,
+            "currency": "TWD",
+            "source": "sec_foreign_filing",
+            "parse_method": "sec_foreign_release",
+        },
+    ]
+    if diluted_eps is not None:
+        fields.append(
+            {
+                "field": "diluted_eps",
+                "value": diluted_eps,
+                "currency": eps_currency,
+                "security_basis": eps_security_basis,
+                "source": "sec_foreign_filing",
+                "parse_method": "sec_foreign_release",
+            }
+        )
+    return FinancialSnapshot(
+        ticker="FOREIGN",
+        period="2026-Q2",
+        snapshot_type="preliminary_earnings",
+        source_filing_id="0000000000-26-000001",
+        period_type="Q2",
+        fiscal_year=2026,
+        period_scope="single-quarter",
+        financial_period_end=date(2026, 6, 30),
+        filing_date=date(2026, 7, 10),
+        reported_date=date(2026, 7, 10),
+        reporting_period_source="foreign_release_explicit_period",
+        reporting_period_confidence="high",
+        revenue=1_000,
+        operating_income=500,
+        operating_margin=50,
+        net_income=400,
+        diluted_eps=diluted_eps,
+        currency="TWD",
+        unit_scale=1,
+        provider="sec_foreign_filing",
+        raw_financial_fields=json.dumps(fields),
+    )
+
+
 def _base_rows() -> list[FinancialSnapshot]:
     return [
         _full(date(2025, 9, 30), 1),
@@ -194,6 +252,97 @@ def test_total_net_income_without_owner_attribution_does_not_create_eps() -> Non
     assert result.eps is None
     assert result.quarters[-1].revenue == 800
     assert result.quarters[-1].operating_income == 600
+
+
+def test_foreign_preliminary_updates_context_without_unsafe_eps() -> None:
+    rows = [*_base_rows(), _foreign_preliminary()]
+    snapshot = ValuationSnapshot(current_price=100, currency="USD")
+    basis = PerShareBasisContext(
+        issuer_type="foreign_private_issuer",
+        security_type="ADR",
+        is_depositary_security=True,
+        price_currency="USD",
+        financial_currency="TWD",
+        adr_ratio=5,
+    )
+
+    derived_pe, _derived_pb = ValuationSnapshotService()._apply_derived_trailing(
+        snapshot, rows, basis
+    )
+
+    assert derived_pe is None
+    assert snapshot.latest_earnings_period == "2026-06-30"
+    assert snapshot.earnings_context_source == "preliminary_earnings"
+    assert snapshot.earnings_context_usable is True
+    assert snapshot.eps_per_usable is False
+    assert snapshot.latest_revenue == 1_000
+    assert snapshot.latest_operating_income == 500
+    assert snapshot.latest_operating_margin == 50
+    assert snapshot.ttm_eps is None
+
+
+def test_foreign_preliminary_direct_adr_eps_remains_separately_eligible() -> None:
+    rows = []
+    for period_end, eps in (
+        (date(2025, 9, 30), 1.0),
+        (date(2025, 12, 31), 2.0),
+        (date(2026, 3, 31), 3.0),
+    ):
+        row = _full(period_end, eps)
+        row.currency = "USD"
+        row.raw_financial_fields = json.dumps(
+            [
+                {
+                    "field": "diluted_eps",
+                    "currency": "USD",
+                    "security_basis": "depositary_security",
+                }
+            ]
+        )
+        rows.append(row)
+    rows.append(
+        _foreign_preliminary(
+            diluted_eps=4.0,
+            eps_currency="USD",
+            eps_security_basis="depositary_security",
+        )
+    )
+    snapshot = ValuationSnapshot(current_price=100, currency="USD")
+    basis = PerShareBasisContext(
+        issuer_type="foreign_private_issuer",
+        security_type="ADR",
+        is_depositary_security=True,
+        price_currency="USD",
+        financial_currency="TWD",
+        adr_ratio=5,
+    )
+
+    derived_pe, _derived_pb = ValuationSnapshotService()._apply_derived_trailing(
+        snapshot, rows, basis
+    )
+
+    assert snapshot.earnings_context_usable is True
+    assert snapshot.eps_per_usable is True
+    assert snapshot.ttm_contains_preliminary is True
+    assert snapshot.ttm_eps == pytest.approx(10)
+    assert derived_pe == pytest.approx(10)
+
+
+def test_foreign_preliminary_and_adr_basis_caution_is_compact() -> None:
+    cautions = _data_cautions(
+        {
+            "earnings_context_is_preliminary": True,
+            "earnings_context_usable": True,
+            "eps_per_usable": False,
+            "trailing_pe_status": "value",
+            "trailing_pe_basis_status": "currency_mismatch",
+        },
+        {"reason_codes": ["per_share_basis_insufficient"]},
+    )
+
+    assert cautions == [
+        "최근 공식 잠정실적의 매출·영업이익은 반영했지만 주당 기준을 확인하지 못해 자체 PER 계산은 보류했습니다."
+    ]
 
 
 def test_eps_less_preliminary_updates_earnings_context_without_recalculating_per() -> None:
@@ -514,9 +663,7 @@ def test_user_caution_hides_internal_adr_basis_status() -> None:
         {"reason_codes": ["per_share_basis_insufficient"]},
     )
 
-    assert cautions == [
-        "가격 통화와 주당 실적 기준 통화가 달라 자체 PER/PBR 계산을 보류했습니다."
-    ]
+    assert cautions == ["가격 통화와 주당 실적 기준 통화가 달라 자체 PER/PBR 계산을 보류했습니다."]
     assert "currency_mismatch" not in cautions[0]
 
 

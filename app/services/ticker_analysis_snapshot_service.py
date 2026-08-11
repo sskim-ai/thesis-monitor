@@ -174,9 +174,14 @@ class TickerAnalysisSnapshotService:
             and valuation_snapshot.earnings_context_usable
             and not valuation_snapshot.eps_per_usable
         ):
-            cautions.append(
-                "최신 잠정실적은 매출·영업이익에 반영했지만 EPS 기준이 없어 PER는 이전 기준입니다."
-            )
+            if "per_share_basis_insufficient" in coverage.reason_codes:
+                cautions.append(
+                    "최근 공식 잠정실적의 매출·영업이익은 반영했지만 주당 기준을 확인하지 못해 자체 PER 계산은 보류했습니다."
+                )
+            else:
+                cautions.append(
+                    "최신 잠정실적은 매출·영업이익에 반영했지만 EPS 기준이 없어 PER는 이전 기준입니다."
+                )
         if (
             valuation_snapshot.forward_pe_reference_caution
             and valuation_snapshot.forward_pe is not None
@@ -189,7 +194,11 @@ class TickerAnalysisSnapshotService:
             and "per_share_basis_insufficient" not in coverage.reason_codes
         ):
             cautions.append("ADR 비율을 확인하지 못해 주당 Valuation 일부를 계산하지 못했습니다.")
-        if "per_share_basis_insufficient" in coverage.reason_codes:
+        if "per_share_basis_insufficient" in coverage.reason_codes and not (
+            valuation_snapshot.earnings_context_is_preliminary
+            and valuation_snapshot.earnings_context_usable
+            and not valuation_snapshot.eps_per_usable
+        ):
             basis_statuses = {
                 valuation_snapshot.trailing_pe_basis_status,
                 valuation_snapshot.price_to_book_basis_status,

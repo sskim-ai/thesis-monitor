@@ -42,15 +42,9 @@ def _foreign_filing_audit_row(ticker: str, coverage: dict[str, object]) -> str:
         "unsupported_format": "지원하지 않는 형식",
         "unavailable": "확인 불가",
     }
-    discovery = availability_labels.get(
-        str(coverage.get("filing_discovery_coverage")), "확인 불가"
-    )
-    document = availability_labels.get(
-        str(coverage.get("document_fetch_coverage")), "확인 불가"
-    )
-    exhibit = availability_labels.get(
-        str(coverage.get("exhibit_discovery_coverage")), "확인 불가"
-    )
+    discovery = availability_labels.get(str(coverage.get("filing_discovery_coverage")), "확인 불가")
+    document = availability_labels.get(str(coverage.get("document_fetch_coverage")), "확인 불가")
+    exhibit = availability_labels.get(str(coverage.get("exhibit_discovery_coverage")), "확인 불가")
     prior_parse = (
         "과거 parsing 성공"
         if coverage.get("any_foreign_statement_parsed")
@@ -112,7 +106,12 @@ def export_messages(
             if monitor_run
             else datetime.combine(run_date, datetime.min.time(), tzinfo=timezone.utc)
         )
-        active_tickers = {item.ticker for item in session.exec(select(WatchlistItem).where(WatchlistItem.active.is_(True))).all()}
+        active_tickers = {
+            item.ticker
+            for item in session.exec(
+                select(WatchlistItem).where(WatchlistItem.active.is_(True))
+            ).all()
+        }
         events = list(session.exec(select(Event).where(Event.ticker.in_(active_tickers))).all())
         dart_identity_mismatches = [
             event
@@ -144,7 +143,9 @@ def export_messages(
                 snapshot = json.loads(assessment.valuation_snapshot or "{}")
             except json.JSONDecodeError:
                 snapshot = {}
-            if snapshot.get("exchange_trade_date") != snapshot.get("latest_completed_regular_session_date"):
+            if snapshot.get("exchange_trade_date") != snapshot.get(
+                "latest_completed_regular_session_date"
+            ):
                 us_premarket_date_mismatches += 1
         user_sections = [
             f"# {run_date.isoformat()} Thesis Monitor 전체 메시지",
@@ -176,9 +177,7 @@ def export_messages(
                     InvestmentThesis.version == assessment.thesis_version,
                 )
             ).first()
-            company_name = (
-                watchlist_item.company_name if watchlist_item else assessment.ticker
-            )
+            company_name = watchlist_item.company_name if watchlist_item else assessment.ticker
             message, _context = _assessment_report(assessment, company_name, thesis)
             user_sections.extend(
                 [
@@ -210,7 +209,11 @@ def export_messages(
                 select(SecurityMaster).where(SecurityMaster.ticker == assessment.ticker)
             ).first()
             reasons = coverage.get("reason_codes", [])
-            gap = ", ".join(str(item) for item in reasons) if isinstance(reasons, list) and reasons else "없음"
+            gap = (
+                ", ".join(str(item) for item in reasons)
+                if isinstance(reasons, list) and reasons
+                else "없음"
+            )
             sections.append(
                 f"| {assessment.ticker} | {snapshot.get('latest_full_financial_period') or '없음'} | "
                 f"{coverage.get('full_financial_availability', 'unavailable')}/"
@@ -260,9 +263,7 @@ def export_messages(
                     f"{bool(state.get('backfilled_warning'))} |"
                 )
         if not any(
-            json.loads(item.warning_states or "[]")
-            for item in assessments
-            if item.warning_states
+            json.loads(item.warning_states or "[]") for item in assessments if item.warning_states
         ):
             sections.append("| - | 현재 open warning 없음 | - | - | - | - | - | - |")
 
@@ -349,7 +350,10 @@ def export_messages(
             except json.JSONDecodeError:
                 snapshot = {}
             coverage = snapshot.get("data_coverage", {}) if isinstance(snapshot, dict) else {}
-            if not isinstance(coverage, dict) or coverage.get("filing_discovery_coverage") == "not_applicable":
+            if (
+                not isinstance(coverage, dict)
+                or coverage.get("filing_discovery_coverage") == "not_applicable"
+            ):
                 continue
             sections.append(_foreign_filing_audit_row(assessment.ticker, coverage))
         sections.extend(
@@ -375,7 +379,11 @@ def export_messages(
         for row in telemetry_rows:
             grouped.setdefault((row.provider, row.endpoint), []).append(row)
         all_keys = set(grouped)
-        all_keys.update((name, "미기록") for name in status_by_name if not any(key[0] == name for key in grouped))
+        all_keys.update(
+            (name, "미기록")
+            for name in status_by_name
+            if not any(key[0] == name for key in grouped)
+        )
         for provider, endpoint in sorted(all_keys):
             rows = grouped.get((provider, endpoint), [])
             status = status_by_name.get(provider)
@@ -443,6 +451,8 @@ def export_messages(
                 f"{snapshot.get('provider_forward_pe') or '없음'}/{snapshot.get('derived_forward_pe') or '없음'}/{snapshot.get('forward_eps') or '없음'} | "
                 f"{snapshot.get('forward_pe_basis_status') or '없음'}; "
                 f"{snapshot.get('forward_pe_comparability') or '없음'}:{snapshot.get('forward_pe_comparability_reason') or '없음'}; "
+                f"provider_horizon={snapshot.get('forward_basis') or '없음'}; "
+                f"derived_horizon={snapshot.get('forward_pe_input_period') if snapshot.get('derived_forward_pe') is not None else '없음'}; "
                 f"reference={snapshot.get('forward_pe_reference_caution', False)}/"
                 f"{snapshot.get('forward_pe_reference_difference_pct') or '없음'}% | "
                 f"{snapshot.get('provider_forward_price_to_book') or '없음'}/{snapshot.get('derived_forward_price_to_book') or '없음'}/{snapshot.get('forward_bvps') or '없음'} | "
@@ -470,7 +480,9 @@ def export_messages(
             series = "; ".join(
                 f"{item.get('period')}:{item.get('source')}:{item.get('eps')}:"
                 f"{item.get('share_basis')}:{item.get('eps_currency')}:"
-                f"{item.get('eps_security_basis')}"
+                f"{item.get('eps_security_basis')}:"
+                f"net={item.get('net_income')}:common={item.get('common_net_income')}:"
+                f"parent={item.get('owners_parent_net_income')}"
                 for item in snapshot.get("earnings_quarter_series", [])
                 if isinstance(item, dict)
             )
@@ -518,17 +530,15 @@ def export_messages(
                     f"{str(event.financial_soft_outliers or '[]').replace('|', '/')} | "
                     f"{field.get('parse_method') or '없음'} | {field.get('table_id') or '없음'} | "
                     f"{field.get('raw_label') or '없음'} | "
-                        f"{field.get('raw_period') or '없음'} / "
-                        f"{str(field.get('raw_column_header') or '없음').replace('|', '/')} / "
-                        f"{field.get('raw_unit') or '없음'} / {field.get('raw_value') or '없음'}; "
-                        f"current_header={str(field.get('current_result_header') or '없음').replace('|', '/')}; "
-                        f"current={field.get('current_period_date_candidates') or []}; "
-                        f"ignored={field.get('ignored_comparison_period_dates') or []} |"
+                    f"{field.get('raw_period') or '없음'} / "
+                    f"{str(field.get('raw_column_header') or '없음').replace('|', '/')} / "
+                    f"{field.get('raw_unit') or '없음'} / {field.get('raw_value') or '없음'}; "
+                    f"current_header={str(field.get('current_result_header') or '없음').replace('|', '/')}; "
+                    f"current={field.get('current_period_date_candidates') or []}; "
+                    f"ignored={field.get('ignored_comparison_period_dates') or []} |"
                 )
         if parser_rows == 0:
-            sections.append(
-                "| - | - | - | - | - | 저장된 parser diagnostic 없음 | - | - | - |"
-            )
+            sections.append("| - | - | - | - | - | 저장된 parser diagnostic 없음 | - | - | - |")
     audit_output = audit_output or _audit_output_for(output)
     output.parent.mkdir(parents=True, exist_ok=True)
     audit_output.parent.mkdir(parents=True, exist_ok=True)
@@ -546,15 +556,11 @@ def main() -> None:
     run_date = date.fromisoformat(args.date)
     output = Path(
         args.output
-        or DEFAULT_EXPORT_DIR
-        / f"{datetime.now():%Y%m%d-%H%M%S}-{run_date}-monitoring-messages.md"
+        or DEFAULT_EXPORT_DIR / f"{datetime.now():%Y%m%d-%H%M%S}-{run_date}-monitoring-messages.md"
     )
     audit_output = Path(args.audit_output) if args.audit_output else _audit_output_for(output)
     count = export_messages(run_date, output, audit_output)
-    print(
-        f"exported={count} output={output.resolve()} "
-        f"audit_output={audit_output.resolve()}"
-    )
+    print(f"exported={count} output={output.resolve()} audit_output={audit_output.resolve()}")
 
 
 if __name__ == "__main__":

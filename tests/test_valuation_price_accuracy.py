@@ -61,7 +61,9 @@ def test_configured_valuation_signals_do_not_trigger_without_new_match() -> None
 
 def test_speculative_expectation_preserves_elevated_structural_risk_without_new_event() -> None:
     thesis = _base_thesis("TSLA")
-    thesis.core_thesis = "현재 자동차 마진 저하와 FCF 적자가 이어지고 Robotaxi 경제성은 미증명 상태다."
+    thesis.core_thesis = (
+        "현재 자동차 마진 저하와 FCF 적자가 이어지고 Robotaxi 경제성은 미증명 상태다."
+    )
     thesis.market_expectations = json.dumps({"level": "speculative"})
     thesis.valuation_framework = json.dumps(
         {"primary_method": "scenario", "valuation_caveats": ["Robotaxi 단위경제성 미증명"]}
@@ -80,9 +82,7 @@ def test_speculative_expectation_preserves_elevated_structural_risk_without_new_
 def test_open_warning_remains_without_explicit_resolution() -> None:
     previous = _previous(
         open_warnings=json.dumps(["FCF 흑자 전환 미확인"]),
-        warning_states=json.dumps(
-            [{"warning": "FCF 흑자 전환 미확인", "status": "open"}]
-        ),
+        warning_states=json.dumps([{"warning": "FCF 흑자 전환 미확인", "status": "open"}]),
     )
 
     result = evaluate_thesis(
@@ -159,11 +159,7 @@ async def test_intraday_daily_bar_is_marked_provisional() -> None:
         return httpx.Response(
             200,
             json={
-                "periods": {
-                    "daily": [
-                        {"date": "2026-08-10", "close": 100, "high": 102, "low": 98}
-                    ]
-                }
+                "periods": {"daily": [{"date": "2026-08-10", "close": 100, "high": 102, "low": 98}]}
             },
         )
 
@@ -244,6 +240,12 @@ async def test_stale_forward_multiple_is_flagged() -> None:
     )
 
     assert snapshot.forward_pe == 18.0
+    assert snapshot.provider_forward_pe == 18.0
+    assert snapshot.derived_forward_pe is None
+    assert (
+        snapshot.forward_pe_comparability_reason
+        == "derived_forward_denominator_unavailable"
+    )
     assert snapshot.quality == "stale"
     assert any("오래" in warning for warning in snapshot.warnings)
 
@@ -288,9 +290,7 @@ def test_macro_exposure_channel_migration_keeps_thesis_version() -> None:
                 InvestmentThesis.ticker == "MIGRATION",
                 InvestmentThesis.version == 7,
             )
-        ).first() or InvestmentThesis(
-            ticker="MIGRATION", version=7, core_thesis="migration test"
-        )
+        ).first() or InvestmentThesis(ticker="MIGRATION", version=7, core_thesis="migration test")
         thesis.macro_exposures = json.dumps(
             [
                 {

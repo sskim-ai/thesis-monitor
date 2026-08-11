@@ -454,12 +454,14 @@ Reward/Risk = Reward / Risk
 
 ## 13. 공식 잠정실적
 
-OpenDART 잠정실적이 문서 동일성, 보고기간, 단위, semantic mapping과 hard validation을 통과하면 `official provisional earnings`로 사용한다. 루머나 미확인 실적이 아니다.
+OpenDART 잠정실적과 공식 SEC foreign earnings release가 문서 동일성, 보고기간, 단위, semantic mapping과 hard validation을 통과하면 `official provisional earnings`로 사용한다. 루머나 미확인 실적이 아니다.
 
 EPS 산출 가능 여부와 earnings context 사용 가능 여부를 분리한다.
 
 - hard-valid 매출·영업이익·순이익·영업이익률·QoQ·YoY는 최신 실적 문맥에 반영
 - 보통주 귀속 이익과 신뢰 가능한 주식수 또는 공식 EPS가 있을 때만 TTM EPS·PER에 반영
+- foreign preliminary의 `Net Income`, common-shareholder 귀속 이익, owners-of-parent 귀속 이익은 서로 다른 항목이다. 단순 total net income을 귀속 순이익으로 복사하거나 주식수로 나눠 EPS를 만들지 않는다.
+- 직접 공시된 EPS는 net income 귀속과 별도로 사용할 수 있지만, EPS 통화와 ordinary/ADR security basis가 현재 거래주식과 호환될 때만 per-share Valuation에 사용한다.
 - 같은 분기의 정식 재무제표가 오면 정식 수치가 잠정 수치를 대체하며 이중 계산 금지
 - 잠정실적에 없는 BVPS·PBR·현금·부채·FCF·ROIC·재고·매출채권·순부채는 정식 재무제표 기준 유지
 
@@ -490,6 +492,8 @@ ordinary share와 ADR·ADS는 같은 주식 단위가 아니다. ADR ratio가 �
 - Forward period가 다르거나 불명확하면 provider disagreement로 단정하지 않는다.
 
 표시되는 fPER와 보조 추정치의 차이가 크지만 산출 기간이 불명확하면 사용자에게 참고 수준이라고 한 줄만 알린다. 실제 denominator가 없으면 역산하지 않는다.
+
+Provider fPER provenance와 derived fPER 비교는 별도다. Provider 배수만 있고 비교 가능한 expected EPS가 없어도 provider 값·source·horizon은 audit에 보존하며, cross-check가 실행되지 않았다는 이유로 lineage를 잃지 않는다.
 
 ADR 환산은 검증된 ratio 방향과 필요한 FX가 모두 있을 때만 수행한다. 현재 backend가 FX 또는 시점별 ADR ratio를 제공하지 않으면 해당 derived multiple과 historical percentile을 보류한다.
 

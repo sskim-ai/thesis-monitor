@@ -310,16 +310,19 @@ TSM 분석해줘
 
 - `price.currency=USD`
 - `earnings.financial_currency=TWD`
+- 최신 공식 SEC foreign preliminary에 매출·영업이익·영업이익률이 존재
 - raw EPS는 TWD ordinary-share 기준이거나 security basis가 불명확
 - `valuation.ttm_eps=null`, derived PER denominator 없음
-- 공급자 PER가 있으면 reference multiple로만 존재 가능
+- 공급자 PER/fPER가 있으면 reference multiple로만 존재 가능
 
 **Expected**
 
 - 매출·영업이익 earnings context는 사용 가능
+- 최신 earnings period와 영업이익률은 official foreign preliminary를 반영
 - unsafe raw EPS로 USD/ADR 가격의 PER를 직접 계산하지 않음
 - denominator가 `null`이면 GPT가 raw earnings로 재계산하지 않음
-- 공급자 배수는 denominator를 역산하지 않고 참고값으로만 표시 가능
+- 공급자 fPER는 derived fPER가 없어도 provenance를 유지하고, denominator를 역산하지 않은 참고값으로 표시 가능
+- 단순 `Net Income`을 common/parent 귀속 이익으로 간주하지 않음
 - 주당 기준을 확인하지 못했다는 주의는 한 줄로 표시
 - `monitorStock` 자동 호출 금지
 

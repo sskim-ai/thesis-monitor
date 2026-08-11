@@ -43,6 +43,7 @@ from app.services.collection_service import (
     _opendart_reparse_lookback_days,
 )
 from app.services.sec_financial_snapshot_service import (
+    SecFinancialSnapshotService,
     _facts,
     _linked_documents,
     _parse_foreign_financial_release,
@@ -1101,6 +1102,9 @@ def test_foreign_release_link_and_financial_values_are_detected() -> None:
     assert parsed["period_end"] == "2026-06-30"
     assert parsed["revenue"] == 1_270_380_000_000
     assert parsed["net_income"] == 706_560_000_000
+    assert parsed["common_net_income"] is None
+    assert parsed["owners_parent_net_income"] is None
+    assert parsed["operating_income"] == pytest.approx(1_270_380_000_000 * 0.603)
     assert parsed["currency"] == "TWD"
     assert parsed["eps_currency"] == "TWD"
     assert parsed["eps_security_basis"] == "unknown"
@@ -1135,6 +1139,72 @@ def test_foreign_release_preserves_eps_currency_and_security_basis(
     assert parsed["diluted_eps"] in {2.5, 12.3}
     assert parsed["eps_currency"] == expected_currency
     assert parsed["eps_security_basis"] == expected_basis
+
+
+@pytest.mark.parametrize(
+    ("income_text", "expected_total", "expected_common", "expected_parent"),
+    [
+        ("Net income was NT$10 billion", 10_000_000_000, None, None),
+        (
+            "Net income attributable to common shareholders was NT$9 billion",
+            None,
+            9_000_000_000,
+            None,
+        ),
+        (
+            "Profit attributable to owners of the parent was NT$9 billion",
+            None,
+            None,
+            9_000_000_000,
+        ),
+    ],
+)
+def test_foreign_release_preserves_net_income_attribution(
+    income_text: str,
+    expected_total: float | None,
+    expected_common: float | None,
+    expected_parent: float | None,
+) -> None:
+    parsed = _parse_foreign_financial_release(
+        "Results for the quarter ended June 30, 2026. "
+        "Consolidated revenue was NT$100 billion. "
+        f"{income_text}."
+    )
+
+    assert parsed is not None
+    assert parsed["net_income"] == expected_total
+    assert parsed["common_net_income"] == expected_common
+    assert parsed["owners_parent_net_income"] == expected_parent
+
+
+def test_foreign_preliminary_upsert_does_not_copy_ambiguous_net_income() -> None:
+    engine = _engine()
+    parsed = {
+        "period_end": "2026-06-30",
+        "filing_date": "2026-07-10",
+        "source_filing_id": "0000000000-26-000001",
+        "source_url": "https://www.sec.gov/example",
+        "currency": "TWD",
+        "revenue": 100_000_000_000.0,
+        "operating_income": 50_000_000_000.0,
+        "operating_margin": 50.0,
+        "net_income": 40_000_000_000.0,
+        "common_net_income": None,
+        "owners_parent_net_income": None,
+        "diluted_eps": 2.5,
+        "eps_currency": "USD",
+        "eps_security_basis": "depositary_security",
+    }
+
+    with Session(engine) as session:
+        SecFinancialSnapshotService._upsert_foreign_preliminary_snapshot(session, "ADR", parsed)
+        session.commit()
+        row = session.exec(select(FinancialSnapshot).where(FinancialSnapshot.ticker == "ADR")).one()
+
+    assert row.net_income == 40_000_000_000
+    assert row.common_net_income is None
+    assert row.owners_parent_net_income is None
+    assert row.diluted_eps == 2.5
 
 
 def test_companyfacts_preserves_eps_unit_metadata() -> None:

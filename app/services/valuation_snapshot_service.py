@@ -102,26 +102,48 @@ def _quarter_key(row: FinancialSnapshot) -> date | None:
     return financial_period_end(row)
 
 
-def _preliminary_is_earnings_usable(row: FinancialSnapshot) -> bool:
+def _preliminary_is_earnings_context_usable(row: FinancialSnapshot) -> bool:
     if row.snapshot_type != "preliminary_earnings":
         return True
     raw_fields = _json_dict_list(row.raw_financial_fields)
     parse_methods = {
         str(field.get("parse_method")) for field in raw_fields if field.get("parse_method")
     }
-    return (
-        (row.provider or "").lower() == "opendart"
-        and bool(row.source_filing_id)
+    filed = filing_date(row)
+    common_requirements = (
+        bool(row.source_filing_id)
         and row.financial_period_end is not None
-        and row.currency == "KRW"
-        and bool(row.unit_scale and row.unit_scale > 0)
+        and filed is not None
+        and row.financial_period_end <= filed
         and not _stored_list(row.financial_hard_errors)
         and not row.financial_statement_basis_warning
         and not row.margin_quality_review
-        and bool({"html_semantic_table", "structured_filing"} & parse_methods)
-        and row.revenue is not None
-        and row.operating_income is not None
     )
+    provider = (row.provider or "").lower()
+    if provider == "opendart":
+        return (
+            common_requirements
+            and row.currency == "KRW"
+            and bool(row.unit_scale and row.unit_scale > 0)
+            and bool({"html_semantic_table", "structured_filing"} & parse_methods)
+            and row.revenue is not None
+            and row.operating_income is not None
+        )
+    if provider == "sec_foreign_filing":
+        return (
+            common_requirements
+            and bool(row.currency)
+            and bool(row.unit_scale and row.unit_scale > 0)
+            and row.reporting_period_confidence in {"high", "medium"}
+            and "sec_foreign_release" in parse_methods
+            and any(value is not None for value in (row.revenue, row.operating_income))
+        )
+    return False
+
+
+def _preliminary_is_earnings_usable(row: FinancialSnapshot) -> bool:
+    """Compatibility alias for callers using the former predicate name."""
+    return _preliminary_is_earnings_context_usable(row)
 
 
 def _json_dict_list(value: str | None) -> list[dict[str, object]]:
@@ -148,7 +170,10 @@ def _earnings_quarters(rows: list[FinancialSnapshot]) -> list[FinancialSnapshot]
             continue
         if row.financial_statement_basis_warning or row.margin_quality_review:
             continue
-        if row.snapshot_type == "preliminary_earnings" and not _preliminary_is_earnings_usable(row):
+        if (
+            row.snapshot_type == "preliminary_earnings"
+            and not _preliminary_is_earnings_context_usable(row)
+        ):
             continue
         if all(
             value is None
@@ -416,18 +441,16 @@ def _is_depositary_security(
     security_type: str,
     adr_identifier: str | None,
 ) -> bool:
-    normalized_security = (
-        security_type.strip().lower().replace("-", "_").replace(" ", "_")
-    )
+    normalized_security = security_type.strip().lower().replace("-", "_").replace(" ", "_")
     normalized_issuer = issuer_type.strip().lower()
     depositary_security_type = normalized_security in {
-            "adr",
-            "ads",
-            "depositary_receipt",
-            "depositary_security",
-            "american_depositary_receipt",
-            "american_depositary_share",
-        }
+        "adr",
+        "ads",
+        "depositary_receipt",
+        "depositary_security",
+        "american_depositary_receipt",
+        "american_depositary_share",
+    }
     return (
         normalized_issuer == "adr"
         or bool(adr_identifier)
@@ -863,6 +886,9 @@ class ValuationSnapshotService:
                 else "unknown",
                 "revenue": row.revenue,
                 "operating_income": row.operating_income,
+                "net_income": row.net_income,
+                "common_net_income": row.common_net_income,
+                "owners_parent_net_income": row.owners_parent_net_income,
                 "context_usable": any(
                     value is not None
                     for value in (row.revenue, row.operating_income, row.net_income)
@@ -1506,8 +1532,6 @@ class ValuationSnapshotService:
         derived_pb_basis: MultipleBasis | None = None,
     ) -> None:
         threshold = self.settings.valuation_discrepancy_threshold_pct / 100
-        if provider_pe is not None:
-            snapshot.provider_forward_pe = provider_pe
         if derived_pe is not None:
             snapshot.derived_forward_pe = derived_pe
         if provider_pb is not None:
@@ -1667,6 +1691,12 @@ class ValuationSnapshotService:
                 foreign_payload = _json_dict(foreign_cache.payload) if foreign_cache else {}
                 foreign_cache_metadata_missing = "latest_filing_parse_result" not in foreign_payload
         rows = self._financial_rows(session, ticker)
+        foreign_preliminary_reparse_required = any(
+            row.snapshot_type == "preliminary_earnings"
+            and (row.provider or "").lower() == "sec_foreign_filing"
+            and not _preliminary_is_earnings_context_usable(row)
+            for row in rows
+        )
         if (
             session is not None
             and _supports_finnhub(exchange, ticker)
@@ -1676,6 +1706,7 @@ class ValuationSnapshotService:
                 or max((filing_date(row) or date.min for row in rows), default=date.min)
                 < now.date() - timedelta(days=75)
                 or foreign_cache_metadata_missing
+                or foreign_preliminary_reparse_required
             )
         ):
             try:
@@ -1745,6 +1776,11 @@ class ValuationSnapshotService:
                         snapshot.trailing_pe_source = "provider"
                     snapshot.forward_pe = _positive_number(metrics.get("forwardPE"))
                     if snapshot.forward_pe is not None:
+                        snapshot.provider_forward_pe = snapshot.forward_pe
+                        snapshot.forward_pe_comparability = "insufficient_metadata"
+                        snapshot.forward_pe_comparability_reason = (
+                            "derived_forward_denominator_unavailable"
+                        )
                         snapshot.forward_pe_status = "value"
                         snapshot.forward_pe_source = "consensus_forward"
                         snapshot.forward_pe_method = "Finnhub forwardPE"
@@ -1937,6 +1973,7 @@ class ValuationSnapshotService:
                 )
                 if provider_forward_pe is not None:
                     snapshot.forward_eps = alpha_eps
+                    snapshot.forward_pe_input_period = alpha_estimate.estimate_period
                     self._cross_check_forward(
                         snapshot,
                         provider_pe=provider_forward_pe,

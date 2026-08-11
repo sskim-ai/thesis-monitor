@@ -79,28 +79,50 @@ def _foreign_period_end(text: str) -> date | None:
     return None
 
 
-def _scaled_financial(text: str, label: str) -> tuple[float | None, str | None]:
+def _scaled_financial_field(text: str, label: str) -> tuple[float | None, str | None, str | None]:
     match = re.search(
-        rf"{label}\s+(?:was|were|of|totaled|reached)?\s*"
+        rf"(?P<label>{label})\s+(?:was|were|of|totaled|reached)?\s*"
         r"(?P<currency>NT\$|US\$|RMB|CNY|TWD|\$)?\s*"
         r"(?P<value>[\d,.]+)\s*(?P<scale>billion|million)",
         text,
         flags=re.IGNORECASE,
     )
     if not match:
-        return None, None
+        return None, None, None
     value = float(match.group("value").replace(",", ""))
     value *= 1_000_000_000 if match.group("scale").lower() == "billion" else 1_000_000
     currency = (match.group("currency") or "").upper()
     currency = "TWD" if currency == "NT$" else "USD" if currency in {"US$", "$"} else currency
-    return value, currency or None
+    return value, currency or None, re.sub(r"\s+", " ", match.group("label")).strip()
+
+
+def _scaled_financial(text: str, label: str) -> tuple[float | None, str | None]:
+    value, currency, _source_label = _scaled_financial_field(text, label)
+    return value, currency
 
 
 def _parse_foreign_financial_release(text: str) -> dict[str, object] | None:
     plain = re.sub(r"\s+", " ", _strip_html(text)).strip()
     period_end = _foreign_period_end(plain)
-    revenue, currency = _scaled_financial(plain, r"(?:consolidated\s+)?(?:net\s+)?revenue")
-    net_income, income_currency = _scaled_financial(plain, r"(?:consolidated\s+)?net\s+income")
+    revenue, currency, revenue_label = _scaled_financial_field(
+        plain, r"(?:consolidated\s+)?(?:net\s+)?revenue"
+    )
+    operating_income, operating_currency, operating_income_label = _scaled_financial_field(
+        plain, r"(?:consolidated\s+)?(?:operating\s+income|income\s+from\s+operations)"
+    )
+    net_income, income_currency, net_income_label = _scaled_financial_field(
+        plain, r"(?:consolidated\s+)?net\s+income"
+    )
+    common_net_income, common_income_currency, common_income_label = _scaled_financial_field(
+        plain,
+        r"(?:net\s+income|profit)\s+(?:attributable|available)\s+to\s+"
+        r"(?:the\s+)?common\s+(?:shareholders|stockholders)",
+    )
+    owners_parent_net_income, parent_income_currency, parent_income_label = _scaled_financial_field(
+        plain,
+        r"(?:net\s+income|profit)\s+attributable\s+to\s+"
+        r"(?:owners|shareholders|equity\s+holders)\s+of\s+(?:the\s+)?parent",
+    )
     eps_match = re.search(
         r"diluted\s+(?:earnings\s+per\s+share|EPS)"
         r"(?P<basis>\s+per\s+(?:ADS|ADR|American\s+Depositary\s+Share|ordinary\s+share|common\s+share))?"
@@ -115,7 +137,16 @@ def _parse_foreign_financial_release(text: str) -> dict[str, object] | None:
         plain,
         flags=re.IGNORECASE,
     )
-    if period_end is None or (revenue is None and net_income is None):
+    if period_end is None or all(
+        value is None
+        for value in (
+            revenue,
+            operating_income,
+            net_income,
+            common_net_income,
+            owners_parent_net_income,
+        )
+    ):
         return None
     if revenue is not None and net_income is not None and abs(net_income) > revenue:
         return None
@@ -135,17 +166,38 @@ def _parse_foreign_financial_release(text: str) -> dict[str, object] | None:
         if re.search(r"\b(?:ordinary|common)\s+share\b", eps_basis_text)
         else "unknown"
     )
+    operating_margin = float(margin_match.group(1)) if margin_match else None
+    operating_income_source = "reported"
+    if operating_income is None and revenue is not None and operating_margin is not None:
+        operating_income = revenue * operating_margin / 100
+        operating_currency = currency
+        operating_income_source = "derived_from_reported_revenue_and_operating_margin"
     return {
         "period_end": period_end.isoformat(),
         "revenue": revenue,
+        "revenue_source_label": revenue_label,
+        "operating_income": operating_income,
+        "operating_income_source_label": operating_income_label,
+        "operating_income_source": operating_income_source,
         "net_income": net_income,
+        "net_income_source_label": net_income_label,
+        "common_net_income": common_net_income,
+        "common_net_income_source_label": common_income_label,
+        "owners_parent_net_income": owners_parent_net_income,
+        "owners_parent_net_income_source_label": parent_income_label,
         "diluted_eps": (
             float(eps_match.group("value").replace(",", "").rstrip(".")) if eps_match else None
         ),
         "eps_currency": eps_currency,
         "eps_security_basis": eps_security_basis,
-        "operating_margin": float(margin_match.group(1)) if margin_match else None,
-        "currency": currency or income_currency,
+        "operating_margin": operating_margin,
+        "currency": (
+            currency
+            or operating_currency
+            or income_currency
+            or common_income_currency
+            or parent_income_currency
+        ),
     }
 
 
@@ -550,36 +602,83 @@ class SecFinancialSnapshotService:
         row.source = str(parsed.get("source_url") or "SEC 6-K exhibit")
         row.provider = "sec_foreign_filing"
         row.currency = str(parsed.get("currency") or "") or None
+        row.unit_scale = 1.0
+        row.reporting_period_source = "foreign_release_explicit_period"
+        row.reporting_period_confidence = "high"
         row.revenue = parsed.get("revenue") if isinstance(parsed.get("revenue"), float) else None
+        row.operating_income = (
+            parsed.get("operating_income")
+            if isinstance(parsed.get("operating_income"), float)
+            else None
+        )
         row.net_income = (
             parsed.get("net_income") if isinstance(parsed.get("net_income"), float) else None
         )
-        row.common_net_income = row.net_income
-        row.owners_parent_net_income = row.net_income
+        row.common_net_income = (
+            parsed.get("common_net_income")
+            if isinstance(parsed.get("common_net_income"), float)
+            else None
+        )
+        row.owners_parent_net_income = (
+            parsed.get("owners_parent_net_income")
+            if isinstance(parsed.get("owners_parent_net_income"), float)
+            else None
+        )
         row.diluted_eps = (
             parsed.get("diluted_eps") if isinstance(parsed.get("diluted_eps"), float) else None
         )
         row.eps = row.diluted_eps
-        row.raw_financial_fields = json.dumps(
-            [
+        raw_fields: list[dict[str, object]] = []
+        for field in (
+            "revenue",
+            "operating_income",
+            "net_income",
+            "common_net_income",
+            "owners_parent_net_income",
+        ):
+            value = getattr(row, field)
+            if value is None:
+                continue
+            raw_fields.append(
+                {
+                    "field": field,
+                    "value": value,
+                    "currency": row.currency,
+                    "source_label": parsed.get(f"{field}_source_label"),
+                    "attribution": (
+                        "common_shareholders"
+                        if field == "common_net_income"
+                        else "owners_parent"
+                        if field == "owners_parent_net_income"
+                        else "total"
+                        if field == "net_income"
+                        else None
+                    ),
+                    "source": "sec_foreign_filing",
+                    "parse_method": "sec_foreign_release",
+                }
+            )
+        if row.diluted_eps is not None:
+            raw_fields.append(
                 {
                     "field": "diluted_eps",
                     "value": row.diluted_eps,
                     "currency": parsed.get("eps_currency"),
                     "security_basis": parsed.get("eps_security_basis") or "unknown",
                     "source": "sec_foreign_filing",
+                    "parse_method": "sec_foreign_release",
                 }
-            ]
-            if row.diluted_eps is not None
-            else []
-        )
+            )
+        row.raw_financial_fields = json.dumps(raw_fields)
         row.operating_margin = (
             parsed.get("operating_margin")
             if isinstance(parsed.get("operating_margin"), float)
             else None
         )
         row.revenue_basis = "foreign issuer earnings release"
-        row.operating_income_basis = "not disclosed in parsed release"
+        row.operating_income_basis = str(
+            parsed.get("operating_income_source") or "not disclosed in parsed release"
+        )
         row.balance_sheet_basis = "not available in preliminary release"
         row.quality_warnings = (
             "preliminary foreign filing; balance sheet and cash flow are not inferred"

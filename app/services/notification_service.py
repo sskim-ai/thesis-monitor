@@ -302,9 +302,7 @@ def _data_cautions(
         or ""
     )
     if "preliminary_period_mapping_failed" in reasons:
-        cautions.append(
-            "최근 잠정실적의 기간 매핑을 검증하지 못해 정식 재무 기준으로 판단합니다."
-        )
+        cautions.append("최근 잠정실적의 기간 매핑을 검증하지 못해 정식 재무 기준으로 판단합니다.")
     elif preliminary_quality == "validation_failed" or "preliminary_validation_failed" in reasons:
         cautions.append(
             "최근 잠정실적 숫자 검증이 완료되지 않아 현재 배수는 검증된 정식 재무를 기준으로 봅니다."
@@ -330,23 +328,24 @@ def _data_cautions(
             if reason == "horizon_unknown"
             else "예상 이익 기준이 서로 달라 fPER는 참고 수준입니다."
         )
-    if (
+    preliminary_without_eps = (
         snapshot.get("earnings_context_is_preliminary")
         and snapshot.get("earnings_context_usable")
         and not snapshot.get("eps_per_usable")
-        and snapshot.get("trailing_pe_status") == "value"
-    ):
+    )
+    per_share_basis_insufficient = "per_share_basis_insufficient" in reasons
+    if preliminary_without_eps and per_share_basis_insufficient:
+        cautions.append(
+            "최근 공식 잠정실적의 매출·영업이익은 반영했지만 주당 기준을 확인하지 못해 자체 PER 계산은 보류했습니다."
+        )
+    elif preliminary_without_eps and snapshot.get("trailing_pe_status") == "value":
         cautions.append(
             "최근 잠정실적은 매출·영업이익에 반영했지만 EPS 기준이 없어 PER는 이전 기준입니다."
         )
     if snapshot.get("trailing_pe_basis_conflict"):
-        cautions.append(
-            "PER 계산의 이익 기준이 서로 충돌해 해당 배수는 판단에서 제외했습니다."
-        )
+        cautions.append("PER 계산의 이익 기준이 서로 충돌해 해당 배수는 판단에서 제외했습니다.")
     if snapshot.get("price_to_book_basis_conflict"):
-        cautions.append(
-            "PBR 계산의 장부가치 기준이 서로 충돌해 해당 배수는 판단에서 제외했습니다."
-        )
+        cautions.append("PBR 계산의 장부가치 기준이 서로 충돌해 해당 배수는 판단에서 제외했습니다.")
     if snapshot.get("forward_pe_basis_conflict"):
         cautions.append(
             "fPER 계산의 예상 이익 기준이 서로 충돌해 해당 배수는 판단에서 제외했습니다."
@@ -359,7 +358,7 @@ def _data_cautions(
         cautions.append(
             "이번 분기 이익률이 과거보다 매우 높아 일회성 손익과 지속 가능성을 추가 확인합니다."
         )
-    if "per_share_basis_insufficient" in reasons:
+    if per_share_basis_insufficient and not preliminary_without_eps:
         basis_statuses = {
             str(snapshot.get("trailing_pe_basis_status") or ""),
             str(snapshot.get("price_to_book_basis_status") or ""),
@@ -369,10 +368,12 @@ def _data_cautions(
             if "currency_mismatch" in basis_statuses
             else "ADR/외국 상장주식의 주당 기준을 확인하지 못해 자체 PER/PBR 계산을 보류했습니다."
         )
-    elif "missing_adr_ratio" in reasons:
+    elif "missing_adr_ratio" in reasons and not preliminary_without_eps:
         cautions.append("주식 변환 비율이 확인되지 않아 일부 주당 Valuation 계산을 보류했습니다.")
     if "foreign_financial_parsing_failed" in reasons:
-        cautions.append("최근 해외 공시 재무표의 자동 검증이 끝나지 않아 Valuation을 보수적으로 봅니다.")
+        cautions.append(
+            "최근 해외 공시 재무표의 자동 검증이 끝나지 않아 Valuation을 보수적으로 봅니다."
+        )
     return list(dict.fromkeys(cautions))
 
 
@@ -391,25 +392,17 @@ def _assessment_report(
         "needs_review": "검토 필요",
     }
     label = labels.get(assessment.status, assessment.status)
-    business_change = (
-        getattr(assessment, "business_thesis_change", None) or assessment.status
-    )
+    business_change = getattr(assessment, "business_thesis_change", None) or assessment.status
     label = labels.get(business_change, business_change)
-    earnings_impact = (
-        getattr(assessment, "earnings_estimate_impact", None) or "unknown"
-    )
+    earnings_impact = getattr(assessment, "earnings_estimate_impact", None) or "unknown"
     evidence = _json_list_value(assessment.evidence)
     confirmed_facts = _json_list_value(getattr(assessment, "confirmed_facts", "[]"))
     background_confirmed_facts = _json_list_value(
         getattr(assessment, "background_confirmed_facts", "[]")
     )
-    inferred_implications = _json_list_value(
-        getattr(assessment, "inferred_implications", "[]")
-    )
+    inferred_implications = _json_list_value(getattr(assessment, "inferred_implications", "[]"))
     unknowns = _json_list_value(getattr(assessment, "unknowns", "[]"))
-    confirmed_warnings = _json_list_value(
-        getattr(assessment, "confirmed_warnings", "[]")
-    )
+    confirmed_warnings = _json_list_value(getattr(assessment, "confirmed_warnings", "[]"))
     watch_items = _json_list_value(getattr(assessment, "watch_items", "[]"))
     market_expectation_assessment = _json_value(
         getattr(assessment, "market_expectation_assessment", "{}"), {}
@@ -428,26 +421,20 @@ def _assessment_report(
     compression_signals = _json_list_value(thesis.multiple_compression_signals) if thesis else []
     macro_exposures = _json_list_value(thesis.macro_exposures) if thesis else []
     valuation_context = _json_value(assessment.valuation_context, {})
-    valuation_snapshot = _json_value(
-        getattr(assessment, "valuation_snapshot", "{}"), {}
-    )
+    valuation_snapshot = _json_value(getattr(assessment, "valuation_snapshot", "{}"), {})
     new_warnings = _json_list_value(getattr(assessment, "new_warnings", "[]"))
     open_warnings = _json_list_value(getattr(assessment, "open_warnings", "[]"))
-    open_confirmed_warnings = _json_list_value(
-        getattr(assessment, "open_confirmed_warnings", "[]")
-    ) or open_warnings
-    warning_states_raw = _json_value(
-        getattr(assessment, "warning_states", "[]"), []
+    open_confirmed_warnings = (
+        _json_list_value(getattr(assessment, "open_confirmed_warnings", "[]")) or open_warnings
     )
+    warning_states_raw = _json_value(getattr(assessment, "warning_states", "[]"), [])
     warning_states = (
         [item for item in warning_states_raw if isinstance(item, dict)]
         if isinstance(warning_states_raw, list)
         else []
     )
     warning_state_by_text = {
-        str(item.get("warning")): item
-        for item in warning_states
-        if item.get("warning")
+        str(item.get("warning")): item for item in warning_states if item.get("warning")
     }
 
     def _warnings_with_provenance(items: list[str], empty: str) -> str:
@@ -465,15 +452,10 @@ def _assessment_report(
             )
             lines.append(f"• {warning}{suffix}")
         return "\n".join(lines)
-    prior_open_warnings = [
-        item for item in open_confirmed_warnings if item not in new_warnings
-    ]
-    persistent_watch_risks = _json_list_value(
-        getattr(assessment, "persistent_watch_risks", "[]")
-    )
-    structural_risk = str(
-        getattr(assessment, "structural_risk_level", "normal") or "normal"
-    )
+
+    prior_open_warnings = [item for item in open_confirmed_warnings if item not in new_warnings]
+    persistent_watch_risks = _json_list_value(getattr(assessment, "persistent_watch_risks", "[]"))
+    structural_risk = str(getattr(assessment, "structural_risk_level", "normal") or "normal")
     assessment_state = str(getattr(assessment, "assessment_state", "final") or "final")
     market_session = str(getattr(assessment, "market_session", "unknown") or "unknown")
     evidence_items = evidence
@@ -489,13 +471,13 @@ def _assessment_report(
         change_text = "\n".join([*fact_lines, *inference_lines])
     elif business_change == "no_material_change":
         change_text = "• 오늘 투자 논리를 바꿀 신규 확정 사실은 확인되지 않았습니다."
-    core_thesis = thesis.core_thesis if thesis else str(
-        thesis_snapshot.get("base_thesis", "저장된 핵심 투자 논리가 없습니다.")
+    core_thesis = (
+        thesis.core_thesis
+        if thesis
+        else str(thesis_snapshot.get("base_thesis", "저장된 핵심 투자 논리가 없습니다."))
     )
     expectation_level = str(market_expectations.get("level", "unknown"))
-    valuation_impact = str(
-        valuation_context.get("summary", "Valuation 영향 판단 자료가 없습니다.")
-    )
+    valuation_impact = str(valuation_context.get("summary", "Valuation 영향 판단 자료가 없습니다."))
     impact_label = {
         "neutral": "중립",
         "expansion": "확장",
@@ -526,7 +508,9 @@ def _assessment_report(
     currency = valuation_snapshot.get("currency", decision.get("currency"))
     price_as_of = valuation_snapshot.get(
         "exchange_trade_date",
-        valuation_snapshot.get("price_as_of", decision.get("exchange_trade_date", decision.get("price_as_of"))),
+        valuation_snapshot.get(
+            "price_as_of", decision.get("exchange_trade_date", decision.get("price_as_of"))
+        ),
     )
     price_basis = str(valuation_snapshot.get("price_basis", decision.get("price_basis", "")))
     is_krx = assessment.ticker.isdigit()
@@ -544,9 +528,7 @@ def _assessment_report(
     data_coverage = valuation_snapshot.get("data_coverage", {})
     if not isinstance(data_coverage, dict):
         data_coverage = {}
-    relative_position = str(
-        valuation_snapshot.get("valuation_relative_position", "unknown")
-    )
+    relative_position = str(valuation_snapshot.get("valuation_relative_position", "unknown"))
     relative_label = {
         "discounted": "할인 구간",
         "somewhat_discounted": "다소 할인",
@@ -598,7 +580,9 @@ def _assessment_report(
     if observer_checks:
         price_lines.extend(["신규 관찰자:", *observer_checks])
     elif new_buyer_price_view:
-        price_lines.extend(["신규 관찰자:", *_audience_price_text(new_buyer_price_view, "").splitlines()])
+        price_lines.extend(
+            ["신규 관찰자:", *_audience_price_text(new_buyer_price_view, "").splitlines()]
+        )
     if holder_checks:
         holder_checks = [line for line in holder_checks if line not in observer_checks]
     if holder_checks:
@@ -606,9 +590,7 @@ def _assessment_report(
     elif holder_price_view:
         price_lines.extend(["보유자:", *_audience_price_text(holder_price_view, "").splitlines()])
     if assessment_state == "provisional":
-        price_lines.append(
-            "⚠️ 현재 장중 데이터로 가격 판단은 잠정입니다."
-        )
+        price_lines.append("⚠️ 현재 장중 데이터로 가격 판단은 잠정입니다.")
     sections.append("\n".join(price_lines))
 
     valuation_lines = ["📐 Valuation"]
@@ -619,9 +601,7 @@ def _assessment_report(
         ("fPBR", "forward_price_to_book", "forward_bvps", "예상 BVPS"),
     ):
         denominator_label = arguments[3]
-        if arguments[0] == "PER" and valuation_snapshot.get(
-            "ttm_contains_preliminary"
-        ):
+        if arguments[0] == "PER" and valuation_snapshot.get("ttm_contains_preliminary"):
             denominator_label = "최근 4개 분기 EPS"
         rendered_formula = _valuation_formula_lines(
             valuation_snapshot,
@@ -747,8 +727,7 @@ def queue_notification(session: Session, assessment: ThesisAssessment) -> None:
     text, _analysis_context = _assessment_report(assessment, company_name, thesis)
     evidence = [item for item in _json_list_value(assessment.evidence) if isinstance(item, dict)]
     dedupe_keys = [
-        str(item.get("url") or f"{item.get('date')}:{item.get('title')}")
-        for item in evidence
+        str(item.get("url") or f"{item.get('date')}:{item.get('title')}") for item in evidence
     ]
     payload = json.dumps(
         {
@@ -833,9 +812,7 @@ def queue_daily_stock_notification(
             payload=payload,
         )
         session.add(delivery)
-    elif delivery.status != "sent" or _should_requeue_sent_delivery(
-        delivery, requeue_sent_before
-    ):
+    elif delivery.status != "sent" or _should_requeue_sent_delivery(delivery, requeue_sent_before):
         _prepare_delivery_for_retry(delivery, payload)
     return delivery
 
@@ -909,9 +886,7 @@ def queue_daily_digest_notification(
             payload=payload,
         )
         session.add(delivery)
-    elif delivery.status != "sent" or _should_requeue_sent_delivery(
-        delivery, requeue_sent_before
-    ):
+    elif delivery.status != "sent" or _should_requeue_sent_delivery(delivery, requeue_sent_before):
         _prepare_delivery_for_retry(delivery, payload)
     session.commit()
     session.refresh(delivery)
@@ -1099,12 +1074,8 @@ def _fallback_thesis_signal(
     axes: dict[str, int],
 ) -> tuple[int, str]:
     if thesis_key == "us_soft_landing_disinflation":
-        if (
-            axes["growth_momentum"] >= 1
-            and axes["inflation_pressure"] <= 0
-        ) or (
-            axes["growth_momentum"] >= 0
-            and axes["inflation_pressure"] <= -1
+        if (axes["growth_momentum"] >= 1 and axes["inflation_pressure"] <= 0) or (
+            axes["growth_momentum"] >= 0 and axes["inflation_pressure"] <= -1
         ):
             signal = 1
         elif axes["growth_momentum"] <= -1 or axes["inflation_pressure"] >= 1:
@@ -1116,9 +1087,7 @@ def _fallback_thesis_signal(
             "성장 급락과 물가 재가속의 동시 발생 여부를 점검했습니다."
         )
     elif thesis_key == "fed_policy_path":
-        signal = int(axes["financial_conditions"] >= 1) - int(
-            axes["financial_conditions"] <= -1
-        )
+        signal = int(axes["financial_conditions"] >= 1) - int(axes["financial_conditions"] <= -1)
         rationale = (
             f"금융여건 {axes['financial_conditions']:+d}: 실질금리와 신용스프레드의 "
             "구조적 재긴축 여부를 점검했습니다."
@@ -1148,7 +1117,9 @@ def _macro_report(briefing: MacroBriefing) -> tuple[str, dict[str, object]]:
     )
     change_text = "\n".join(f"• {item}" for item in macro.key_changes)
     assumption_text = "\n".join(f"• {item}" for item in macro.market_assumptions)
-    impact_items = [item for item in impacts if isinstance(item, dict)] if isinstance(impacts, list) else []
+    impact_items = (
+        [item for item in impacts if isinstance(item, dict)] if isinstance(impacts, list) else []
+    )
     impact_detail_lines = [
         f"• {item.get('ticker')}: "
         f"{IMPACT_LABELS.get(str(item.get('direction')), item.get('direction'))} · "
@@ -1157,12 +1128,17 @@ def _macro_report(briefing: MacroBriefing) -> tuple[str, dict[str, object]]:
         + (f" · {item.get('rationale')}" if item.get("rationale") else "")
         for item in impact_items[:5]
     ]
-    impact_detail_text = "\n".join(impact_detail_lines) or "• 강한 종목별 거시 전달 경로가 없습니다."
+    impact_detail_text = (
+        "\n".join(impact_detail_lines) or "• 강한 종목별 거시 전달 경로가 없습니다."
+    )
     calendar_items = calendar if isinstance(calendar, list) else []
     quality_items = quality if isinstance(quality, list) else []
-    calendar_text = ", ".join(
-        str(item.get("title", "일정")) for item in calendar_items[:5] if isinstance(item, dict)
-    ) or "등록된 주요 일정 없음"
+    calendar_text = (
+        ", ".join(
+            str(item.get("title", "일정")) for item in calendar_items[:5] if isinstance(item, dict)
+        )
+        or "등록된 주요 일정 없음"
+    )
     quality_lines: list[str] = []
     for item in quality_items[:5]:
         if not isinstance(item, dict):
@@ -1401,7 +1377,11 @@ class TelegramNotifier:
                     await asyncio.sleep(retry_after)
                     continue
 
-            if response.status_code >= 400 or not isinstance(payload, dict) or not payload.get("ok"):
+            if (
+                response.status_code >= 400
+                or not isinstance(payload, dict)
+                or not payload.get("ok")
+            ):
                 description = (
                     str(payload.get("description", "request rejected"))
                     if isinstance(payload, dict)
