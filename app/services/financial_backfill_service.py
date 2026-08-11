@@ -152,6 +152,15 @@ async def backfill_financial_snapshots(
             )
             facts.extend(share_facts)
             unknowns.extend(share_unknowns)
+            dividend_facts, dividend_unknowns = await provider_instance._fetch_dividend_facts(
+                client=client,
+                api_key=settings.opendart_api_key,
+                corp_code=company.corp_code,
+                title=title,
+                published=published,
+            )
+            facts.extend(dividend_facts)
+            unknowns.extend(dividend_unknowns)
             if not facts:
                 result.skipped_count += 1
                 result.warnings.extend(unknowns)

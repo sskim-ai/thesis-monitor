@@ -38,6 +38,7 @@ EVENT_TYPE_SCORES: dict[EventType, int] = {
     EventType.dilution: 45,
     EventType.debt_liquidity: 45,
     EventType.regulatory_material: 45,
+    EventType.financial_report: 40,
     EventType.management_governance: 10,
     EventType.capital_allocation: 40,
     EventType.facility_investment: 45,

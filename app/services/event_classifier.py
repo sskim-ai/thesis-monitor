@@ -156,6 +156,18 @@ def _mentions_company(raw_event: RawEvent, text: str) -> bool:
 
 
 def _flag_event_type(raw_event: RawEvent, text: str) -> EventType | None:
+    if raw_event.financial_report_filed:
+        return EventType.financial_report
+    if raw_event.accounting_issue:
+        return EventType.accounting_issue
+    if raw_event.debt_liquidity_risk:
+        return EventType.debt_liquidity
+    if raw_event.regulatory_material:
+        return EventType.regulatory_material
+    if raw_event.production_delay:
+        return EventType.production_delay
+    if raw_event.major_order_change:
+        return EventType.order_change
     if raw_event.dilution_risk:
         return EventType.dilution
     if raw_event.material_customer_change:
@@ -168,7 +180,9 @@ def _flag_event_type(raw_event: RawEvent, text: str) -> EventType | None:
         return EventType.fcf_change
     if raw_event.operating_cash_flow_impact_known:
         return EventType.operating_cash_flow_change
-    if raw_event.guidance_changed:
+    if raw_event.revenue_guidance_changed:
+        return EventType.revenue_guidance_change
+    if raw_event.guidance_changed or raw_event.earnings_guidance_changed:
         return EventType.guidance_change
     return None
 

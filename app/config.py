@@ -42,6 +42,8 @@ class Settings(BaseSettings):
     valuation_model_growth_floor: float = -0.30
     valuation_model_growth_cap: float = 0.50
     valuation_history_sampling: str = "weekly"
+    valuation_history_target_years: int = 5
+    valuation_history_minimum_years: int = 3
     valuation_history_min_observations: int = 26
     valuation_history_max_pe: float = 200.0
     valuation_history_max_pb: float = 50.0

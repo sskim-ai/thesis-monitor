@@ -42,6 +42,15 @@ def _amount(fact: str | None) -> float | None:
         return None
 
 
+def _named_amount(facts: list[str], name: str) -> float | None:
+    prefix = f"OpenDART dividend fact: {name} ="
+    fact = next((item for item in facts if item.startswith(prefix)), None)
+    if fact is None:
+        return None
+    match = re.search(r"=\s*([-\d,]+(?:\.\d+)?)", fact)
+    return float(match.group(1).replace(",", "")) if match else None
+
+
 def _basis(fact: str | None) -> str | None:
     if fact is None:
         return None
@@ -195,7 +204,7 @@ def _add_comparison(session: Session, event: Event, snapshot: FinancialSnapshot)
 
 
 def upsert_financial_snapshot_from_event(session: Session, event: Event) -> FinancialSnapshot | None:
-    if event.provider != "opendart" or event.event_type != "guidance_change":
+    if event.provider != "opendart" or event.event_type not in {"guidance_change", "financial_report"}:
         return None
 
     facts = _json_list(event.confirmed_facts)
@@ -354,6 +363,8 @@ def upsert_financial_snapshot_from_event(session: Session, event: Event) -> Fina
     snapshot.treasury_shares = _amount(treasury_shares_fact)
     snapshot.common_shares_outstanding = _amount(outstanding_shares_fact)
     snapshot.diluted_shares = snapshot.common_shares_outstanding
+    snapshot.common_dividends = _named_amount(facts, "total_dividend")
+    snapshot.dividends = snapshot.common_dividends
     snapshot.financial_statement_basis_warning = event.financial_statement_basis_warning
     snapshot.margin_quality_review = event.margin_quality_review
     snapshot.cash = None

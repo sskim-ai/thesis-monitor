@@ -151,6 +151,10 @@ def _statistics(
         current_percentile=current_percentile,
         observation_count=len(values),
         lookback_years=round(lookback_years, 1),
+        history_start_date=min(dates).isoformat(),
+        history_end_date=max(dates).isoformat(),
+        target_lookback_years=5.0,
+        history_coverage_ratio=round(min(1.0, lookback_years / 5.0), 3),
     )
 
 
@@ -267,7 +271,7 @@ class HistoricalValuationService:
             snapshot.historical_pe_statistics.lookback_years if snapshot.historical_pe_statistics else 0,
             snapshot.historical_pb_statistics.lookback_years if snapshot.historical_pb_statistics else 0,
         )
-        if max_lookback and max_lookback < 1.5:
+        if max_lookback and max_lookback < self.settings.valuation_history_minimum_years:
             snapshot.historical_comparability = "low"
         if any(
             marker in framework_text
@@ -289,6 +293,15 @@ class HistoricalValuationService:
         min_count = self.settings.valuation_history_min_observations
         pe_pct = pe.current_percentile if pe and pe.observation_count >= min_count else None
         pb_pct = pb.current_percentile if pb and pb.observation_count >= min_count else None
+        if pe_pct is not None and pb_pct is not None:
+            snapshot.valuation_primary_signal = f"PER 역사적 백분위 {pe_pct:.0f}"
+            snapshot.valuation_secondary_signals = [f"PBR 역사적 백분위 {pb_pct:.0f}"]
+            if abs(pe_pct - pb_pct) >= 40:
+                snapshot.valuation_signal_conflict = True
+                snapshot.valuation_relative_position_reason_codes.append("conflicting_multiples")
+                snapshot.valuation_signal_summary = (
+                    f"PER는 역사적 {pe_pct:.0f} 백분위, PBR은 {pb_pct:.0f} 백분위로 신호가 엇갈립니다."
+                )
         is_cycle = ticker in {"000660", "MU"} or "cycle" in method
         is_insurance = ticker == "003690" or any(term in method for term in ("p/b", "pbr", "roe"))
         is_sotp = any(term in method for term in ("sotp", "sum-of-the-parts"))
@@ -314,8 +327,11 @@ class HistoricalValuationService:
                 "point-in-time 역사적 배수 관측치가 충분하지 않습니다."
             )
             snapshot.valuation_relative_position_confidence = "low"
+            snapshot.valuation_relative_position_reason_codes.append("insufficient_history")
             return
         combined = median(selected)
+        if snapshot.valuation_signal_conflict and not (is_cycle or is_insurance or is_sotp):
+            combined = 50.0
         snapshot.valuation_relative_position = _position_from_percentile(combined, self.settings)
         snapshot.valuation_relative_basis = " · ".join(basis)
         snapshot.valuation_relative_position_confidence = (
@@ -324,8 +340,13 @@ class HistoricalValuationService:
         if snapshot.historical_comparability == "low":
             snapshot.valuation_relative_position_confidence = "low"
             snapshot.valuation_relative_position_reason = (
-                "상장 이력이 짧거나 회계기준·사업구조 변화로 과거 비교 가능성이 낮아 역사적 위치는 참고 수준입니다."
+                "현재 시스템에 확보된 point-in-time 재무 이력이 충분하지 않거나 사업구조 변화가 있어 장기 역사적 비교 신뢰도가 낮습니다."
             )
+            if is_cycle:
+                snapshot.valuation_relative_position_reason += (
+                    " 사이클 기업의 낮은 trailing PER는 저평가 신호로 자동 해석하지 않습니다."
+                )
+            snapshot.valuation_relative_position_reason_codes.append("low_comparability")
             return
         if is_cycle:
             snapshot.valuation_relative_position_reason = (
@@ -337,6 +358,6 @@ class HistoricalValuationService:
             )
             snapshot.valuation_relative_position_confidence = "low"
         else:
-            snapshot.valuation_relative_position_reason = (
+            snapshot.valuation_relative_position_reason = snapshot.valuation_signal_summary or (
                 "현재 배수를 그 시점에 공개된 재무정보로 재구성한 역사적 분포와 비교했습니다."
             )

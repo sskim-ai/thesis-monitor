@@ -34,10 +34,19 @@ class RawEvent:
     financing_amount: float | None = None
     dilution_amount: float | None = None
     margin_guidance_changed: bool = False
+    revenue_guidance_changed: bool = False
+    earnings_guidance_changed: bool = False
+    cash_flow_guidance_changed: bool = False
+    major_order_change: bool = False
+    production_delay: bool = False
     fcf_impact_known: bool = False
     guidance_changed: bool = False
     material_customer_change: bool = False
     dilution_risk: bool = False
+    debt_liquidity_risk: bool = False
+    accounting_issue: bool = False
+    regulatory_material: bool = False
+    financial_report_filed: bool = False
     operating_cash_flow_impact_known: bool = False
 
 

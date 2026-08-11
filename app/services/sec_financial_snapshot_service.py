@@ -18,6 +18,18 @@ _CONCEPTS = {
     "equity_issuance": ("ProceedsFromStockOptionsExercised", "ProceedsFromIssuanceOfCommonStock"),
     "other_comprehensive_income": ("OtherComprehensiveIncomeLossNetOfTax",),
 }
+_IFRS_CONCEPTS = {
+    "revenue": ("Revenue",),
+    "common_net_income": ("ProfitLossAttributableToOwnersOfParent", "ProfitLoss"),
+    "diluted_eps": ("DilutedEarningsLossPerShare",),
+    "common_equity": ("EquityAttributableToOwnersOfParent", "Equity"),
+    "common_shares_outstanding": ("NumberOfSharesOutstanding",),
+    "diluted_shares": ("WeightedAverageNumberOfSharesOutstandingDiluted",),
+    "common_dividends": ("DividendsPaid",),
+    "buybacks": ("PaymentsToAcquireOrRedeemEntitysShares",),
+    "equity_issuance": ("ProceedsFromIssuingShares",),
+    "other_comprehensive_income": ("OtherComprehensiveIncome",),
+}
 _UNITS = {
     "diluted_eps": ("USD/shares", "USD / shares"),
     "common_shares_outstanding": ("shares",),
@@ -36,21 +48,26 @@ def _facts(payload: dict[str, object], field: str) -> list[dict[str, object]]:
     taxonomy = payload.get("facts", {})
     if not isinstance(taxonomy, dict):
         return []
-    us_gaap = taxonomy.get("us-gaap", {})
-    if not isinstance(us_gaap, dict):
-        return []
-    for concept in _CONCEPTS[field]:
-        raw = us_gaap.get(concept)
-        if not isinstance(raw, dict):
+    taxonomies = (("us-gaap", _CONCEPTS[field]), ("ifrs-full", _IFRS_CONCEPTS[field]))
+    for taxonomy_name, concepts in taxonomies:
+        taxonomy_facts = taxonomy.get(taxonomy_name, {})
+        if not isinstance(taxonomy_facts, dict):
             continue
-        units = raw.get("units", {})
-        if not isinstance(units, dict):
-            continue
-        preferred = _UNITS.get(field, ("USD",))
-        for unit in preferred:
-            entries = units.get(unit)
-            if isinstance(entries, list) and entries:
-                return [item for item in entries if isinstance(item, dict)]
+        for concept in concepts:
+            raw = taxonomy_facts.get(concept)
+            if not isinstance(raw, dict):
+                continue
+            units = raw.get("units", {})
+            if not isinstance(units, dict):
+                continue
+            preferred = _UNITS.get(field, ("USD", "TWD", "CNY"))
+            for unit in preferred:
+                entries = units.get(unit)
+                if isinstance(entries, list) and entries:
+                    return [item for item in entries if isinstance(item, dict)]
+            for entries in units.values():
+                if isinstance(entries, list) and entries:
+                    return [item for item in entries if isinstance(item, dict)]
     return []
 
 
@@ -70,7 +87,7 @@ def _period_entries(payload: dict[str, object]) -> list[dict[str, object]]:
         end = _parse_date(item.get("end"))
         if not isinstance(fy, int) or fp not in {"Q1", "Q2", "Q3", "FY"} or not filed or not end:
             continue
-        if str(item.get("form", "")) not in {"10-Q", "10-K"}:
+        if str(item.get("form", "")) not in {"10-Q", "10-K", "20-F", "6-K"}:
             continue
         periods[(fy, fp, filed, end)] = item
     return list(periods.values())
@@ -170,6 +187,11 @@ class SecFinancialSnapshotService:
                 reported_date=filed,
                 source="SEC Company Facts",
                 provider="sec_companyfacts",
+                quality_warnings=(
+                    "foreign issuer filing coverage is partial; ADR ratio and currency mapping required"
+                    if str(period.get("form", "")) in {"20-F", "6-K"}
+                    else None
+                ),
             )
             for field in ("revenue", "common_net_income", "diluted_eps"):
                 setattr(row, field, _select_value(facts[field], fy, fp, filed, end))

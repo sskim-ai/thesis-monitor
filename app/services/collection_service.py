@@ -29,6 +29,8 @@ from app.services.event_interpreter import enrich_raw_event
 from app.services.financial_backfill_service import backfill_financial_snapshots
 from app.services.financial_validation import validate_event_financials
 from app.services.financial_snapshot_service import upsert_financial_snapshot_from_event
+from app.services.capital_action_service import CapitalActionService
+from app.services.dividend_history_service import DividendHistoryService
 from app.services.thesis_scoring import score_event
 from app.utils.tickers import COMPANY_NAME_ALIASES, normalize_ticker
 
@@ -100,12 +102,20 @@ def _event_to_schema(event: Event) -> ThesisEvent:
             revenue_guidance_changed=event.revenue_guidance_changed,
             margin_guidance_changed=event.margin_guidance_changed,
             guidance_changed=event.guidance_changed,
+            earnings_guidance_changed=event.earnings_guidance_changed,
+            cash_flow_guidance_changed=event.cash_flow_guidance_changed,
+            major_order_change=event.major_order_change,
+            production_delay=event.production_delay,
             material_customer_change=event.material_customer_change,
             operating_cash_flow_impact_known=event.operating_cash_flow_impact_known,
             margin_quality_review=event.margin_quality_review,
             financial_statement_basis_warning=event.financial_statement_basis_warning,
             fcf_impact_known=event.fcf_impact_known,
             dilution_risk=event.dilution_risk,
+            debt_liquidity_risk=event.debt_liquidity_risk,
+            accounting_issue=event.accounting_issue,
+            regulatory_material=event.regulatory_material,
+            financial_report_filed=event.financial_report_filed,
             capex_impact_known=event.capex_impact_known,
             inventory_risk=event.inventory_risk,
             receivables_risk=event.receivables_risk,
@@ -149,9 +159,13 @@ def _raw_event_to_model(raw_event: RawEvent) -> Event:
         capex_amount=raw_event.capex_amount,
         financing_amount=raw_event.financing_amount,
         dilution_amount=raw_event.dilution_amount,
-        revenue_guidance_changed="guidance" in lower_text or "가이던스" in lower_text,
+        revenue_guidance_changed=raw_event.revenue_guidance_changed,
         margin_guidance_changed=raw_event.margin_guidance_changed or "margin" in lower_text or "마진" in lower_text,
         guidance_changed=raw_event.guidance_changed or "guidance" in lower_text or "가이던스" in lower_text,
+        earnings_guidance_changed=raw_event.earnings_guidance_changed,
+        cash_flow_guidance_changed=raw_event.cash_flow_guidance_changed,
+        major_order_change=raw_event.major_order_change,
+        production_delay=raw_event.production_delay or event_type.value == "production_delay",
         material_customer_change=raw_event.material_customer_change,
         operating_cash_flow_impact_known=(
             raw_event.operating_cash_flow_impact_known
@@ -162,6 +176,10 @@ def _raw_event_to_model(raw_event: RawEvent) -> Event:
         financial_statement_basis_warning=basis_warning,
         fcf_impact_known=raw_event.fcf_impact_known or "fcf" in lower_text or "free cash flow" in lower_text,
         dilution_risk=raw_event.dilution_risk or event_type.value in {"capital_raise", "convertible_bond", "warrant", "dilution"},
+        debt_liquidity_risk=raw_event.debt_liquidity_risk or event_type.value in {"debt_liquidity", "debt_liquidity_risk"},
+        accounting_issue=raw_event.accounting_issue or event_type.value == "accounting_issue",
+        regulatory_material=raw_event.regulatory_material or event_type.value == "regulatory_material",
+        financial_report_filed=raw_event.financial_report_filed,
         capex_impact_known="capex" in lower_text or "capital expenditure" in lower_text,
         inventory_risk="inventory" in lower_text or "재고" in lower_text,
         receivables_risk="receivables" in lower_text or "accounts receivable" in lower_text or "매출채권" in lower_text,
@@ -169,6 +187,35 @@ def _raw_event_to_model(raw_event: RawEvent) -> Event:
         relevance_score=relevance.relevance_score,
         relevance_reason=relevance.reason,
     )
+    structured_material = any(
+        (
+            raw_event.guidance_changed,
+            raw_event.revenue_guidance_changed,
+            raw_event.margin_guidance_changed,
+            raw_event.earnings_guidance_changed,
+            raw_event.cash_flow_guidance_changed,
+            raw_event.fcf_impact_known,
+            raw_event.material_customer_change,
+            raw_event.major_order_change,
+            raw_event.production_delay,
+            raw_event.dilution_risk,
+            raw_event.debt_liquidity_risk,
+            raw_event.accounting_issue,
+            raw_event.regulatory_material,
+            raw_event.financial_report_filed,
+        )
+    )
+    if structured_material and event_type.value != "non_thesis_noise":
+        event.classification_override_reason = "structured_material_flag"
+    event.financial_refresh_required = event_type.value in {
+        "earnings_beat",
+        "earnings_miss",
+        "earnings_surprise",
+        "guidance_change",
+        "revenue_guidance_change",
+        "margin_guidance_change",
+        "financial_report",
+    }
     validate_event_financials(
         event,
         operating_margin_upper_bound=get_settings().financial_operating_margin_upper_bound,
@@ -198,18 +245,28 @@ def _refresh_duplicate_event(duplicate: Event, event: Event) -> None:
     duplicate.revenue_guidance_changed = event.revenue_guidance_changed
     duplicate.margin_guidance_changed = event.margin_guidance_changed
     duplicate.guidance_changed = event.guidance_changed
+    duplicate.earnings_guidance_changed = event.earnings_guidance_changed
+    duplicate.cash_flow_guidance_changed = event.cash_flow_guidance_changed
+    duplicate.major_order_change = event.major_order_change
+    duplicate.production_delay = event.production_delay
     duplicate.material_customer_change = event.material_customer_change
     duplicate.operating_cash_flow_impact_known = event.operating_cash_flow_impact_known
     duplicate.margin_quality_review = event.margin_quality_review
     duplicate.financial_statement_basis_warning = event.financial_statement_basis_warning
     duplicate.fcf_impact_known = event.fcf_impact_known
     duplicate.dilution_risk = event.dilution_risk
+    duplicate.debt_liquidity_risk = event.debt_liquidity_risk
+    duplicate.accounting_issue = event.accounting_issue
+    duplicate.regulatory_material = event.regulatory_material
+    duplicate.financial_report_filed = event.financial_report_filed
     duplicate.capex_impact_known = event.capex_impact_known
     duplicate.inventory_risk = event.inventory_risk
     duplicate.receivables_risk = event.receivables_risk
     duplicate.requires_review = event.requires_review
     duplicate.relevance_score = event.relevance_score
     duplicate.relevance_reason = event.relevance_reason
+    duplicate.classification_override_reason = event.classification_override_reason
+    duplicate.financial_refresh_required = event.financial_refresh_required
 
 
 class CollectionService:
@@ -220,6 +277,12 @@ class CollectionService:
             include_mock_provider=settings.include_mock_provider,
         )
         self.profile_fallback_provider = MockProvider()
+        self.dividend_service = DividendHistoryService()
+        self.capital_action_service = CapitalActionService()
+
+    def _connect_event_data(self, session: Session, event: Event) -> None:
+        self.dividend_service.ingest_event(session, event)
+        self.capital_action_service.canonicalize(session, event)
 
     async def _fetch_provider_events(
         self,
@@ -347,11 +410,13 @@ class CollectionService:
                     session.add(event)
                     session.flush()
                     upsert_financial_snapshot_from_event(session, event)
+                    self._connect_event_data(session, event)
                     _sync_financial_quality_flags(event)
                     collected.append(event)
                 else:
                     _refresh_duplicate_event(duplicate, event)
                     upsert_financial_snapshot_from_event(session, duplicate)
+                    self._connect_event_data(session, duplicate)
                     _sync_financial_quality_flags(duplicate)
         session.commit()
         return collected

@@ -5,7 +5,7 @@ from datetime import date
 
 from sqlmodel import Session, select
 
-from app.models.event import Event
+from app.models.event import CanonicalIssue, Event
 from app.models.thesis import InvestmentThesis, ThesisAssessment
 from app.services.event_identity import event_fingerprint
 
@@ -70,9 +70,16 @@ def _event_warning_facts(event: Event) -> list[str]:
     return list(dict.fromkeys(warnings))
 
 
-def _state(ticker: str, warning: str, opened: date, source: str, source_ids: list[str]) -> dict[str, object]:
+def _state(
+    ticker: str,
+    warning: str,
+    opened: date,
+    source: str,
+    source_ids: list[str],
+    warning_id: str | None = None,
+) -> dict[str, object]:
     return {
-        "warning_id": hashlib.sha256(f"{ticker}|{warning}".encode()).hexdigest()[:16],
+        "warning_id": warning_id or hashlib.sha256(f"{ticker}|{warning}".encode()).hexdigest()[:16],
         "ticker": ticker,
         "warning": warning,
         "warning_type": "confirmed_fundamental",
@@ -134,6 +141,8 @@ def backfill_confirmed_warning_states(
     for event in events:
         if event.provider not in _TRUSTED or event.event_type not in _NEGATIVE_TYPES:
             continue
+        if event.issue_id:
+            continue
         for fact in _event_warning_facts(event):
             states.setdefault(
                 fact,
@@ -145,6 +154,31 @@ def backfill_confirmed_warning_states(
                     [event_fingerprint(event)],
                 ),
             )
+    issues = session.exec(
+        select(CanonicalIssue).where(
+            CanonicalIssue.ticker == thesis.ticker,
+            CanonicalIssue.economic_status == "open",
+        )
+    ).all()
+    issue_labels = {
+        "capital_raise": "유상증자에 따른 희석·자본조달 경제적 영향",
+        "convertible_bond": "전환사채의 잠재 희석·자본조달 경제적 영향",
+        "warrant": "신주인수권의 잠재 희석 영향",
+        "dilution": "주당가치 희석 영향",
+    }
+    for issue in issues:
+        warning = issue_labels.get(issue.issue_type, issue.title)
+        states.setdefault(
+            warning,
+            _state(
+                thesis.ticker,
+                warning,
+                issue.opened_date,
+                "canonical_issue",
+                _json_list(issue.event_ids),
+                warning_id=issue.issue_key,
+            ),
+        )
     for warning in _thesis_confirmed_warnings(thesis):
         states.setdefault(
             warning,

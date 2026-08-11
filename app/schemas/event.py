@@ -56,6 +56,7 @@ class EventType(StrEnum):
     dilution = "dilution"
     debt_liquidity = "debt_liquidity"
     regulatory_material = "regulatory_material"
+    financial_report = "financial_report"
     valuation_recalculation_needed = "valuation_recalculation_needed"
     non_thesis_noise = "non_thesis_noise"
 
@@ -64,12 +65,20 @@ class FinancialImpact(BaseModel):
     revenue_guidance_changed: bool = False
     margin_guidance_changed: bool = False
     guidance_changed: bool = False
+    earnings_guidance_changed: bool = False
+    cash_flow_guidance_changed: bool = False
+    major_order_change: bool = False
+    production_delay: bool = False
     material_customer_change: bool = False
     operating_cash_flow_impact_known: bool = False
     margin_quality_review: bool = False
     financial_statement_basis_warning: bool = False
     fcf_impact_known: bool = False
     dilution_risk: bool = False
+    debt_liquidity_risk: bool = False
+    accounting_issue: bool = False
+    regulatory_material: bool = False
+    financial_report_filed: bool = False
     capex_impact_known: bool = False
     inventory_risk: bool = False
     receivables_risk: bool = False

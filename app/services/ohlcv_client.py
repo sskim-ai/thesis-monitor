@@ -124,7 +124,7 @@ class OhlcvClient:
                         client, ticker, period, count
                     )
                     context.periods[period] = summary
-                    if period == "daily":
+                    if period in {"daily", "weekly"}:
                         for bar in bars:
                             close = _number(bar.get("close"))
                             raw_date = bar.get("date")
@@ -134,9 +134,11 @@ class OhlcvClient:
                                 bar_date = date.fromisoformat(str(raw_date)[:10])
                             except ValueError:
                                 continue
-                            context.daily_history.append(
-                                HistoricalPricePoint(date=bar_date, close=close)
-                            )
+                            point = HistoricalPricePoint(date=bar_date, close=close)
+                            if period == "daily":
+                                context.daily_history.append(point)
+                            else:
+                                context.valuation_history.append(point)
                 except (httpx.HTTPError, ValueError) as exc:
                     context.warnings.append(f"{period}: {type(exc).__name__}")
         context.available = any(item.actual_count > 0 for item in context.periods.values())

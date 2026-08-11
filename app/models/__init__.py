@@ -1,6 +1,12 @@
 from app.models.company import Company
-from app.models.event import Event, SourceDocument
-from app.models.financial import FinancialSnapshot, HistoricalValuationObservation
+from app.models.event import CanonicalIssue, Event, SourceDocument
+from app.models.financial import (
+    CapitalReturnHistory,
+    DataBackfillState,
+    DividendHistory,
+    FinancialSnapshot,
+    HistoricalValuationObservation,
+)
 from app.models.macro import (
     MacroBriefing,
     MacroEvent,
@@ -18,6 +24,10 @@ from app.models.watchlist import WatchlistItem
 
 __all__ = [
     "Company",
+    "CanonicalIssue",
+    "CapitalReturnHistory",
+    "DataBackfillState",
+    "DividendHistory",
     "Event",
     "FinancialSnapshot",
     "HistoricalValuationObservation",

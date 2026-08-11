@@ -104,6 +104,41 @@ FINANCING_PURPOSE_KEYS = (
 )
 
 
+def _extract_dividend_facts(items: list[dict[str, str]]) -> list[str]:
+    common_rows = [
+        item for item in items
+        if "보통주" in str(item.get("stock_knd", item.get("se", "")))
+        or str(item.get("stock_knd", item.get("se", ""))).strip() in {"", "-"}
+    ]
+    rows = common_rows or items
+    mappings = {
+        "dps": ("주당 현금배당금", "주당현금배당금", "dps"),
+        "total_dividend": ("현금배당금총액", "현금배당금 총액", "total_dividend"),
+        "payout_ratio": ("현금배당성향", "배당성향", "payout_ratio"),
+    }
+    facts: list[str] = []
+    for item in rows:
+        label = str(item.get("se", "")).replace(" ", "")
+        value = _clean_number(item.get("thstrm"))
+        if value is None:
+            continue
+        field = next(
+            (name for name, aliases in mappings.items() if any(alias.replace(" ", "") in label for alias in aliases)),
+            None,
+        )
+        if field == "dps":
+            facts.append(f"OpenDART dividend fact: dps = {value} KRW")
+        elif field == "total_dividend":
+            try:
+                amount = float(value) * 1_000_000
+                facts.append(f"OpenDART dividend fact: total_dividend = {amount:.0f} KRW")
+            except ValueError:
+                continue
+        elif field == "payout_ratio":
+            facts.append(f"OpenDART dividend fact: payout_ratio = {value} percent")
+    return list(dict.fromkeys(facts))
+
+
 def _yyyymmdd(value: date) -> str:
     return value.strftime("%Y%m%d")
 
@@ -459,6 +494,35 @@ class OpenDARTProvider(FilingProvider):
     supply_contract_endpoint = "https://opendart.fss.or.kr/api/singleSaleSupplyContract.json"
     capital_raise_endpoint = "https://opendart.fss.or.kr/api/piicDecsn.json"
     convertible_bond_endpoint = "https://opendart.fss.or.kr/api/cvbdIsDecsn.json"
+    dividend_endpoint = "https://opendart.fss.or.kr/api/alotMatter.json"
+
+    async def _fetch_dividend_facts(
+        self,
+        client: httpx.AsyncClient,
+        api_key: str,
+        corp_code: str,
+        title: str,
+        published: date,
+    ) -> tuple[list[str], list[str]]:
+        report_code = _report_code_from_title(title)
+        if report_code is None:
+            return [], []
+        params = {
+            "crtfc_key": api_key,
+            "corp_code": corp_code,
+            "bsns_year": _business_year_from_title_or_date(title, published),
+            "reprt_code": report_code,
+        }
+        try:
+            response = await client.get(self.dividend_endpoint, params=params)
+            response.raise_for_status()
+            payload = response.json()
+        except (httpx.HTTPError, ValueError):
+            return [], ["OpenDART dividend API request failed"]
+        if payload.get("status") != "000":
+            return [], [f"OpenDART dividend API status: {payload.get('status')}"]
+        facts = _extract_dividend_facts(payload.get("list", []))
+        return (facts, []) if facts else ([], ["OpenDART dividend API returned no mapped common-share facts"])
 
     async def _fetch_decision_facts(
         self,
@@ -673,6 +737,7 @@ class OpenDARTProvider(FilingProvider):
                     extra_unknowns: list[str] = []
                     for facts, unknowns in (
                         await self._fetch_financial_facts(client, settings.opendart_api_key, company.corp_code, title, published),
+                        await self._fetch_dividend_facts(client, settings.opendart_api_key, company.corp_code, title, published),
                         await self._fetch_share_status_facts(client, settings.opendart_api_key, company.corp_code, title, published),
                         await self._fetch_treasury_stock_facts(client, settings.opendart_api_key, company.corp_code, title, published, receipt_no),
                         await self._fetch_supply_contract_facts(client, settings.opendart_api_key, company.corp_code, title, published, receipt_no),
@@ -696,6 +761,7 @@ class OpenDARTProvider(FilingProvider):
                             confirmed_facts=confirmed_facts,
                             inferred_implications=[],
                             unknowns=_filing_unknowns(extra_unknowns),
+                            financial_report_filed=_report_code_from_title(title) is not None,
                         )
                     )
                 return events
@@ -707,16 +773,29 @@ class SecEdgarProvider(FilingProvider):
     name = "sec_edgar"
     endpoint_template = "https://data.sec.gov/submissions/CIK{cik}.json"
 
+    async def _resolve_cik(self, client: httpx.AsyncClient, ticker: str) -> str | None:
+        if ticker.upper() in SEC_TICKER_CIK:
+            return SEC_TICKER_CIK[ticker.upper()]
+        response = await client.get("https://www.sec.gov/files/company_tickers.json")
+        response.raise_for_status()
+        payload = response.json()
+        if not isinstance(payload, dict):
+            return None
+        for item in payload.values():
+            if isinstance(item, dict) and str(item.get("ticker", "")).upper() == ticker.upper():
+                return str(item.get("cik_str", "")).zfill(10)
+        return None
+
     async def fetch_events(self, ticker: str, lookback_days: int) -> list[RawEvent]:
         settings = get_settings()
         if not settings.sec_user_agent:
             return []
-        cik = SEC_TICKER_CIK.get(ticker.upper())
-        if not cik:
-            return []
         headers = {"User-Agent": settings.sec_user_agent, "Accept": "application/json"}
         try:
             async with httpx.AsyncClient(timeout=8.0, headers=headers) as client:
+                cik = await self._resolve_cik(client, ticker)
+                if not cik:
+                    return []
                 response = await client.get(self.endpoint_template.format(cik=cik))
                 response.raise_for_status()
                 payload = response.json()
@@ -731,7 +810,7 @@ class SecEdgarProvider(FilingProvider):
         cutoff = date.today() - timedelta(days=lookback_days)
         events: list[RawEvent] = []
         for form, filing_date, accession, primary_doc in zip(forms, filing_dates, accession_numbers, primary_documents, strict=False):
-            if form not in {"8-K", "10-Q", "10-K"}:
+            if form not in {"8-K", "10-Q", "10-K", "20-F", "6-K"}:
                 continue
             try:
                 published = date.fromisoformat(filing_date)
@@ -755,6 +834,7 @@ class SecEdgarProvider(FilingProvider):
                     confirmed_facts=[f"SEC EDGAR recent filing form: {form}", f"SEC accession number: {accession}"],
                     inferred_implications=[],
                     unknowns=_filing_unknowns(),
+                    financial_report_filed=form in {"10-Q", "10-K", "20-F", "6-K"},
                 )
             )
         return events

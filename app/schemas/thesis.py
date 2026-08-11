@@ -284,6 +284,7 @@ class PriceContext(BaseModel):
     decision: PriceDecisionContext = Field(default_factory=PriceDecisionContext)
     warnings: list[str] = Field(default_factory=list)
     daily_history: list[HistoricalPricePoint] = Field(default_factory=list, exclude=True)
+    valuation_history: list[HistoricalPricePoint] = Field(default_factory=list, exclude=True)
 
 
 class HistoricalValuationStatistics(BaseModel):
@@ -299,6 +300,28 @@ class HistoricalValuationStatistics(BaseModel):
     current_percentile: float | None = None
     observation_count: int = 0
     lookback_years: float = 0.0
+    history_start_date: str | None = None
+    history_end_date: str | None = None
+    target_lookback_years: float = 5.0
+    history_coverage_ratio: float = 0.0
+
+
+class DataCoverage(BaseModel):
+    issuer_type: str = "unknown"
+    financial_coverage_status: str = "unavailable"
+    financials: str = "unavailable"
+    earnings: str = "unavailable"
+    price: str = "unavailable"
+    valuation: str = "unavailable"
+    dividend: str = "unavailable"
+    capital_actions: str = "unavailable"
+    foreign_filing: str = "not_applicable"
+    financial_freshness: str = "unavailable"
+    business_thesis_confidence: float = 0.0
+    valuation_confidence: float = 0.0
+    price_confidence: float = 0.0
+    macro_impact_confidence: float = 0.0
+    reason_codes: list[str] = Field(default_factory=list)
 
 
 class ValuationSnapshot(BaseModel):
@@ -344,6 +367,11 @@ class ValuationSnapshot(BaseModel):
     valuation_relative_basis: str | None = None
     valuation_relative_position_confidence: str = "low"
     valuation_relative_position_reason: str | None = None
+    valuation_signal_summary: str | None = None
+    valuation_signal_conflict: bool = False
+    valuation_primary_signal: str | None = None
+    valuation_secondary_signals: list[str] = Field(default_factory=list)
+    valuation_relative_position_reason_codes: list[str] = Field(default_factory=list)
     historical_comparability: str = "normal"
     historical_pe_statistics: HistoricalValuationStatistics | None = None
     historical_pb_statistics: HistoricalValuationStatistics | None = None
@@ -353,6 +381,10 @@ class ValuationSnapshot(BaseModel):
     buyback_forecast_method: str | None = None
     buyback_assumption_quality: str = "unavailable"
     buyback_assumption: str | None = None
+    financial_refresh_required: bool = False
+    latest_material_financial_event_date: str | None = None
+    financial_freshness: str = "unavailable"
+    data_coverage: DataCoverage = Field(default_factory=DataCoverage)
     valuation_discrepancy_warning: bool = False
     valuation_calculation_warning: bool = False
     warnings: list[str] = Field(default_factory=list)

@@ -86,5 +86,58 @@ class HistoricalValuationObservation(SQLModel, table=True):
     trailing_pe: float | None = None
     price_to_book: float | None = None
     quality: str = "unavailable"
+    warnings: str = "[]"
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    updated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
+
+class DividendHistory(SQLModel, table=True):
+    __table_args__ = (
+        UniqueConstraint("ticker", "fiscal_year", "record_date", "source_filing_id"),
+    )
+
+    id: int | None = Field(default=None, primary_key=True)
+    ticker: str = Field(index=True)
+    fiscal_year: int | None = Field(default=None, index=True)
+    payment_date: date | None = None
+    record_date: date | None = Field(default=None, index=True)
+    dividend_per_share: float | None = None
+    total_dividend: float | None = None
+    payout_ratio: float | None = None
+    dividend_type: str = "cash_common"
+    source: str
+    provider: str
+    source_filing_id: str | None = Field(default=None, index=True)
+    quality: str = "partial"
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
+
+class CapitalReturnHistory(SQLModel, table=True):
+    __table_args__ = (
+        UniqueConstraint("ticker", "period_end", "return_type", "source_filing_id"),
+    )
+
+    id: int | None = Field(default=None, primary_key=True)
+    ticker: str = Field(index=True)
+    period_start: date | None = None
+    period_end: date | None = Field(default=None, index=True)
+    return_type: str = Field(index=True)
+    authorization_amount: float | None = None
+    actual_amount: float | None = None
+    shares: float | None = None
+    source: str
+    provider: str
+    source_filing_id: str | None = Field(default=None, index=True)
+    quality: str = "partial"
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
+
+class DataBackfillState(SQLModel, table=True):
+    ticker: str = Field(primary_key=True)
+    backfill_status: str = "pending"
+    backfill_started_at: datetime | None = None
+    backfill_completed_at: datetime | None = None
+    backfill_years_requested: int = 5
+    backfill_years_available: float = 0.0
+    backfill_gap_reason: str | None = None
     updated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))

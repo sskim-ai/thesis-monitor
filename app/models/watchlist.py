@@ -8,6 +8,11 @@ class WatchlistItem(SQLModel, table=True):
     ticker: str = Field(index=True, unique=True)
     company_name: str
     exchange: str | None = None
+    issuer_type: str | None = None
+    ordinary_share_identifier: str | None = None
+    adr_ratio: float | None = None
+    adr_currency: str | None = None
+    underlying_currency: str | None = None
     notes: str | None = None
     active: bool = True
     latest_status: str | None = Field(default=None, index=True)

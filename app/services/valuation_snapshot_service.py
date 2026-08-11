@@ -7,7 +7,8 @@ import httpx
 from sqlmodel import Session, select
 
 from app.config import get_settings
-from app.models.financial import FinancialSnapshot
+from app.models.financial import CapitalReturnHistory, DividendHistory, FinancialSnapshot
+from app.models.watchlist import WatchlistItem
 from app.models.thesis import InvestmentThesis
 from app.schemas.thesis import (
     PriceContext,
@@ -19,6 +20,9 @@ from app.services.historical_valuation_service import (
     filing_date,
     financial_period_end,
 )
+from app.services.data_coverage_service import DataCoverageService
+from app.services.dividend_history_service import DividendHistoryService
+from app.services.financial_freshness_service import FinancialFreshnessService
 from app.services.sec_financial_snapshot_service import SecFinancialSnapshotService
 
 
@@ -150,6 +154,9 @@ class ValuationSnapshotService:
         self.transport = transport
         self.history_service = HistoricalValuationService()
         self.sec_financial_service = SecFinancialSnapshotService(transport=transport)
+        self.dividend_service = DividendHistoryService()
+        self.coverage_service = DataCoverageService()
+        self.freshness_service = FinancialFreshnessService()
 
     def _financial_rows(
         self,
@@ -165,6 +172,32 @@ class ValuationSnapshotService:
                 .order_by(FinancialSnapshot.reported_date)
             ).all()
         )
+
+    def _apply_financial_metadata(
+        self, snapshot: ValuationSnapshot, rows: list[FinancialSnapshot]
+    ) -> None:
+        if not rows:
+            return
+        latest_row = max(
+            rows,
+            key=lambda row: (financial_period_end(row) or date.min, filing_date(row) or date.min),
+        )
+        period_end = financial_period_end(latest_row)
+        filed = filing_date(latest_row)
+        snapshot.financial_period_end = period_end.isoformat() if period_end else None
+        snapshot.filing_date = filed.isoformat() if filed else None
+        snapshot.financials_as_of = snapshot.financial_period_end
+        quarters = _valid_quarters(rows)[-4:]
+        if len(quarters) == 4:
+            start = financial_period_end(quarters[0])
+            end = financial_period_end(quarters[-1])
+            snapshot.ttm_period_start = start.isoformat() if start else None
+            snapshot.ttm_period_end = end.isoformat() if end else None
+            snapshot.ttm_source_filings = [
+                filed.isoformat()
+                for row in quarters
+                if (filed := filing_date(row)) is not None
+            ]
 
     def _apply_derived_trailing(
         self,
@@ -205,27 +238,7 @@ class ValuationSnapshotService:
                     snapshot.trailing_valuation_confidence = max(
                         snapshot.trailing_valuation_confidence, 0.85
                     )
-        if rows:
-            latest_row = max(
-                rows,
-                key=lambda row: (financial_period_end(row) or date.min, filing_date(row) or date.min),
-            )
-            period_end = financial_period_end(latest_row)
-            filed = filing_date(latest_row)
-            snapshot.financial_period_end = period_end.isoformat() if period_end else None
-            snapshot.filing_date = filed.isoformat() if filed else None
-            snapshot.financials_as_of = snapshot.financial_period_end
-            quarters = _valid_quarters(rows)[-4:]
-            if len(quarters) == 4:
-                start = financial_period_end(quarters[0])
-                end = financial_period_end(quarters[-1])
-                snapshot.ttm_period_start = start.isoformat() if start else None
-                snapshot.ttm_period_end = end.isoformat() if end else None
-                snapshot.ttm_source_filings = [
-                    filed.isoformat()
-                    for row in quarters
-                    if (filed := filing_date(row)) is not None
-                ]
+        self._apply_financial_metadata(snapshot, rows)
         return derived_pe, derived_pb
 
     def _forecast_dividends(
@@ -233,6 +246,7 @@ class ValuationSnapshotService:
         rows: list[FinancialSnapshot],
         fy1_income: float,
         framework: dict[str, object],
+        history: list[DividendHistory] | None = None,
     ) -> tuple[float | None, str | None, str, str | None]:
         policy = framework.get("official_dividend_forecast")
         if isinstance(policy, (int, float)) and float(policy) >= 0:
@@ -240,6 +254,15 @@ class ValuationSnapshotService:
         announced = framework.get("announced_common_dividend")
         if isinstance(announced, (int, float)) and float(announced) >= 0:
             return float(announced), "announced_dividend", "high", "발표된 보통주 배당"
+        usable_history = [row for row in (history or []) if row.total_dividend is not None]
+        payout_history = [row.payout_ratio for row in usable_history[-3:] if row.payout_ratio is not None]
+        if len(payout_history) >= 3:
+            payout = max(0.0, min(1.0, median(float(value) for value in payout_history)))
+            return fy1_income * payout, "median_3y_payout_ratio", "medium", f"최근 3년 중앙 지급률 {payout:.1%}"
+        if len(usable_history) >= 3:
+            return median(float(row.total_dividend) for row in usable_history[-3:]), "median_3y_dividend", "medium", "최근 3년 총배당 중앙값"
+        if usable_history:
+            return float(usable_history[-1].total_dividend), "latest_dividend", "low", "최근 총배당 유지"
         annual = [
             row
             for row in _valid_quarters(rows)
@@ -275,10 +298,14 @@ class ValuationSnapshotService:
         rows: list[FinancialSnapshot],
         framework: dict[str, object],
         ticker: str,
+        history: list[CapitalReturnHistory] | None = None,
     ) -> tuple[float | None, str | None, str, str | None]:
         announced = framework.get("announced_buyback")
         if isinstance(announced, (int, float)) and float(announced) >= 0:
             return float(announced), "announced_authorization", "high", "발표된 자사주 매입"
+        actual = [row.actual_amount for row in (history or []) if row.actual_amount is not None]
+        if actual:
+            return median(max(0.0, float(value)) for value in actual[-3:]), "historical_normalized_buyback", "medium", "최근 연간 자사주 매입 중앙값"
         annual = [row for row in _valid_quarters(rows) if row.period_type == "FY" and row.buybacks is not None]
         if annual:
             values = [max(0.0, float(row.buybacks or 0)) for row in annual[-3:]]
@@ -293,6 +320,8 @@ class ValuationSnapshotService:
         rows: list[FinancialSnapshot],
         ticker: str,
         framework: dict[str, object],
+        dividend_history: list[DividendHistory] | None = None,
+        capital_returns: list[CapitalReturnHistory] | None = None,
     ) -> None:
         if snapshot.current_price is None:
             return
@@ -402,10 +431,10 @@ class ValuationSnapshotService:
             common_shares = balance.common_shares_outstanding
             if equity and common_shares and equity > 0 and common_shares > 0:
                 expected_dividends, dividend_method, dividend_quality, dividend_assumption = (
-                    self._forecast_dividends(rows, fy1_income, framework)
+                    self._forecast_dividends(rows, fy1_income, framework, dividend_history)
                 )
                 expected_buybacks, buyback_method, buyback_quality, buyback_assumption = (
-                    self._forecast_buybacks(rows, framework, ticker)
+                    self._forecast_buybacks(rows, framework, ticker, capital_returns)
                 )
                 snapshot.dividend_forecast_method = dividend_method
                 snapshot.dividend_forecast_quality = dividend_quality
@@ -504,6 +533,19 @@ class ValuationSnapshotService:
                 rows = self._financial_rows(session, ticker)
             except (httpx.HTTPError, TypeError, ValueError):
                 pass
+        dividend_history: list[DividendHistory] = []
+        capital_returns: list[CapitalReturnHistory] = []
+        watchlist_item: WatchlistItem | None = None
+        if session is not None:
+            dividend_history = self.dividend_service.sync_financial_snapshots(
+                session, ticker, rows
+            )
+            capital_returns = self.dividend_service.sync_capital_returns(
+                session, ticker, rows
+            )
+            watchlist_item = session.exec(
+                select(WatchlistItem).where(WatchlistItem.ticker == ticker)
+            ).first()
         provider_pe: float | None = None
         provider_pb: float | None = None
 
@@ -568,16 +610,51 @@ class ValuationSnapshotService:
         elif _supports_finnhub(exchange, ticker):
             snapshot.warnings.append("Finnhub API key가 없어 Valuation 배수를 수집하지 못했습니다.")
 
-        derived_pe, derived_pb = self._apply_derived_trailing(snapshot, rows)
+        issuer_type = watchlist_item.issuer_type if watchlist_item else None
+        missing_adr_mapping = issuer_type in {"adr", "foreign_private_issuer"} and (
+            watchlist_item is None or watchlist_item.adr_ratio is None
+        )
+        if missing_adr_mapping:
+            derived_pe, derived_pb = None, None
+            self._apply_financial_metadata(snapshot, rows)
+            snapshot.valuation_calculation_warning = True
+            snapshot.warnings.append(
+                "foreign issuer/ADR의 주식 변환 비율이 확인되지 않아 per-share 자체 Valuation 계산을 보류합니다."
+            )
+        else:
+            derived_pe, derived_pb = self._apply_derived_trailing(snapshot, rows)
         framework = _json_dict(thesis.valuation_framework if thesis else None)
-        self._apply_forward_model(snapshot, rows, ticker, framework)
+        if not missing_adr_mapping:
+            self._apply_forward_model(
+                snapshot,
+                rows,
+                ticker,
+                framework,
+                dividend_history,
+                capital_returns,
+            )
         self._cross_check(snapshot, provider_pe, provider_pb, derived_pe, derived_pb)
-        if session is not None:
+        if session is not None and not missing_adr_mapping:
             observations = self.history_service.update_cache(
-                session, ticker, price_context.daily_history, rows
+                session,
+                ticker,
+                price_context.valuation_history or price_context.daily_history,
+                rows,
             )
             self.history_service.apply(snapshot, observations, framework, ticker)
-        if snapshot.valuation_relative_position == ValuationRelativePosition.unknown:
+        elif missing_adr_mapping:
+            snapshot.historical_pe_statistics = None
+            snapshot.historical_pb_statistics = None
+            snapshot.valuation_relative_position = ValuationRelativePosition.unknown
+            snapshot.valuation_relative_position_confidence = "low"
+            snapshot.valuation_relative_position_reason = (
+                "foreign issuer/ADR의 주식 변환 비율과 통화 기준이 확인되지 않아 역사적 per-share 배수 비교를 보류합니다."
+            )
+            snapshot.valuation_relative_position_reason_codes = ["missing_adr_ratio"]
+        if (
+            snapshot.valuation_relative_position == ValuationRelativePosition.unknown
+            and not missing_adr_mapping
+        ):
             relative, basis = _relative_position(snapshot, framework)
             if relative != ValuationRelativePosition.unknown:
                 snapshot.valuation_relative_position = relative
@@ -609,4 +686,20 @@ class ValuationSnapshotService:
             if financial_date and (now.date() - financial_date).days > self.settings.valuation_financial_max_age_days:
                 snapshot.quality = "stale"
                 snapshot.warnings.append("재무 분모 기준일이 오래되어 Valuation 판단 강도를 낮춥니다.")
+        if session is not None:
+            freshness = self.freshness_service.assess(session, ticker)
+            snapshot.financial_refresh_required = freshness.refresh_required
+            snapshot.latest_material_financial_event_date = (
+                freshness.latest_material_event_date.isoformat()
+                if freshness.latest_material_event_date else None
+            )
+            snapshot.financial_freshness = freshness.status
+            if freshness.refresh_required:
+                snapshot.quality = "stale"
+                snapshot.forward_valuation_confidence *= 0.5
+                snapshot.trailing_valuation_confidence *= 0.7
+                snapshot.warnings.append(
+                    "최근 실적 발표는 확인됐지만 Valuation 재무 snapshot이 최신 분기로 갱신되지 않았습니다."
+                )
+            snapshot.data_coverage = self.coverage_service.build(session, ticker, snapshot)
         return snapshot

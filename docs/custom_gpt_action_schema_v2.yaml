@@ -1419,6 +1419,89 @@
         ],
         "title": "DailyMonitorResponse"
       },
+      "DataCoverage": {
+        "properties": {
+          "issuer_type": {
+            "type": "string",
+            "title": "Issuer Type",
+            "default": "unknown"
+          },
+          "financial_coverage_status": {
+            "type": "string",
+            "title": "Financial Coverage Status",
+            "default": "unavailable"
+          },
+          "financials": {
+            "type": "string",
+            "title": "Financials",
+            "default": "unavailable"
+          },
+          "earnings": {
+            "type": "string",
+            "title": "Earnings",
+            "default": "unavailable"
+          },
+          "price": {
+            "type": "string",
+            "title": "Price",
+            "default": "unavailable"
+          },
+          "valuation": {
+            "type": "string",
+            "title": "Valuation",
+            "default": "unavailable"
+          },
+          "dividend": {
+            "type": "string",
+            "title": "Dividend",
+            "default": "unavailable"
+          },
+          "capital_actions": {
+            "type": "string",
+            "title": "Capital Actions",
+            "default": "unavailable"
+          },
+          "foreign_filing": {
+            "type": "string",
+            "title": "Foreign Filing",
+            "default": "not_applicable"
+          },
+          "financial_freshness": {
+            "type": "string",
+            "title": "Financial Freshness",
+            "default": "unavailable"
+          },
+          "business_thesis_confidence": {
+            "type": "number",
+            "title": "Business Thesis Confidence",
+            "default": 0.0
+          },
+          "valuation_confidence": {
+            "type": "number",
+            "title": "Valuation Confidence",
+            "default": 0.0
+          },
+          "price_confidence": {
+            "type": "number",
+            "title": "Price Confidence",
+            "default": 0.0
+          },
+          "macro_impact_confidence": {
+            "type": "number",
+            "title": "Macro Impact Confidence",
+            "default": 0.0
+          },
+          "reason_codes": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Reason Codes"
+          }
+        },
+        "type": "object",
+        "title": "DataCoverage"
+      },
       "EarningsCheckpoint": {
         "properties": {
           "ticker": {
@@ -1893,6 +1976,7 @@
           "dilution",
           "debt_liquidity",
           "regulatory_material",
+          "financial_report",
           "valuation_recalculation_needed",
           "non_thesis_noise"
         ],
@@ -1928,6 +2012,26 @@
             "title": "Guidance Changed",
             "default": false
           },
+          "earnings_guidance_changed": {
+            "type": "boolean",
+            "title": "Earnings Guidance Changed",
+            "default": false
+          },
+          "cash_flow_guidance_changed": {
+            "type": "boolean",
+            "title": "Cash Flow Guidance Changed",
+            "default": false
+          },
+          "major_order_change": {
+            "type": "boolean",
+            "title": "Major Order Change",
+            "default": false
+          },
+          "production_delay": {
+            "type": "boolean",
+            "title": "Production Delay",
+            "default": false
+          },
           "material_customer_change": {
             "type": "boolean",
             "title": "Material Customer Change",
@@ -1956,6 +2060,26 @@
           "dilution_risk": {
             "type": "boolean",
             "title": "Dilution Risk",
+            "default": false
+          },
+          "debt_liquidity_risk": {
+            "type": "boolean",
+            "title": "Debt Liquidity Risk",
+            "default": false
+          },
+          "accounting_issue": {
+            "type": "boolean",
+            "title": "Accounting Issue",
+            "default": false
+          },
+          "regulatory_material": {
+            "type": "boolean",
+            "title": "Regulatory Material",
+            "default": false
+          },
+          "financial_report_filed": {
+            "type": "boolean",
+            "title": "Financial Report Filed",
             "default": false
           },
           "capex_impact_known": {
@@ -2136,6 +2260,38 @@
           "lookback_years": {
             "type": "number",
             "title": "Lookback Years",
+            "default": 0.0
+          },
+          "history_start_date": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "History Start Date"
+          },
+          "history_end_date": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "History End Date"
+          },
+          "target_lookback_years": {
+            "type": "number",
+            "title": "Target Lookback Years",
+            "default": 5.0
+          },
+          "history_coverage_ratio": {
+            "type": "number",
+            "title": "History Coverage Ratio",
             "default": 0.0
           }
         },
@@ -4002,6 +4158,51 @@
           "mode": {
             "type": "string",
             "title": "Mode"
+          },
+          "markets": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Markets",
+            "default": []
+          },
+          "asset_types": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Asset Types",
+            "default": []
+          },
+          "supported_data": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Supported Data",
+            "default": []
+          },
+          "freshness_expectation": {
+            "type": "string",
+            "title": "Freshness Expectation",
+            "default": "unknown"
+          },
+          "historical_depth_years": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Historical Depth Years"
+          },
+          "forward_data_available": {
+            "type": "boolean",
+            "title": "Forward Data Available",
+            "default": false
           }
         },
         "type": "object",
@@ -5326,6 +5527,47 @@
             ],
             "title": "Valuation Relative Position Reason"
           },
+          "valuation_signal_summary": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Valuation Signal Summary"
+          },
+          "valuation_signal_conflict": {
+            "type": "boolean",
+            "title": "Valuation Signal Conflict",
+            "default": false
+          },
+          "valuation_primary_signal": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Valuation Primary Signal"
+          },
+          "valuation_secondary_signals": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Valuation Secondary Signals"
+          },
+          "valuation_relative_position_reason_codes": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Valuation Relative Position Reason Codes"
+          },
           "historical_comparability": {
             "type": "string",
             "title": "Historical Comparability",
@@ -5404,6 +5646,30 @@
               }
             ],
             "title": "Buyback Assumption"
+          },
+          "financial_refresh_required": {
+            "type": "boolean",
+            "title": "Financial Refresh Required",
+            "default": false
+          },
+          "latest_material_financial_event_date": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Latest Material Financial Event Date"
+          },
+          "financial_freshness": {
+            "type": "string",
+            "title": "Financial Freshness",
+            "default": "unavailable"
+          },
+          "data_coverage": {
+            "$ref": "#/components/schemas/DataCoverage"
           },
           "valuation_discrepancy_warning": {
             "type": "boolean",

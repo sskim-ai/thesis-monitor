@@ -358,6 +358,21 @@ def _assessment_report(
     snapshot_warnings = valuation_snapshot.get("warnings", [])
     if not isinstance(snapshot_warnings, list):
         snapshot_warnings = []
+    data_coverage = valuation_snapshot.get("data_coverage", {})
+    if not isinstance(data_coverage, dict):
+        data_coverage = {}
+    coverage_reason_labels = {
+        "provider_not_supported": "현재 provider가 이 종목의 표준 재무 데이터를 충분히 지원하지 않습니다.",
+        "latest_financial_event_without_snapshot": "최근 실적 이벤트는 확인됐지만 재무 snapshot이 아직 생성되지 않았습니다.",
+        "financial_event_newer_than_snapshot": "최근 실적 발표가 Valuation 계산 재무자료보다 새롭습니다.",
+        "insufficient_history": "현재 시스템에 확보된 point-in-time 재무 이력이 장기 비교에 충분하지 않습니다.",
+        "missing_adr_ratio": "foreign issuer/ADR의 주식 변환 비율이 확인되지 않았습니다.",
+        "stale_data": "핵심 재무 데이터의 최신성이 낮습니다.",
+    }
+    coverage_reasons = [
+        coverage_reason_labels.get(str(code), str(code))
+        for code in data_coverage.get("reason_codes", [])
+    ] if isinstance(data_coverage.get("reason_codes", []), list) else []
     relative_position = str(
         valuation_snapshot.get("valuation_relative_position", "unknown")
     )
@@ -394,7 +409,12 @@ def _assessment_report(
         count = raw.get("observation_count")
         median_text = f"중앙값 {float(median_value):.1f}배" if isinstance(median_value, (int, float)) else "중앙값 확인 불가"
         percentile_text = f"현재 {float(percentile):.0f} percentile" if isinstance(percentile, (int, float)) else "현재 위치 확인 불가"
-        return f"• {label}: 최근 {years}년 {median_text} · {percentile_text} · 주간 {count}개"
+        coverage = raw.get("history_coverage_ratio")
+        coverage_text = (
+            f" · 목표기간 충족률 {float(coverage):.0%}"
+            if isinstance(coverage, (int, float)) else ""
+        )
+        return f"• {label}: 최근 {years}년 {median_text} · {percentile_text} · 주간 {count}개{coverage_text}"
 
     historical_text = (
         f"{_history_line('trailing PER', 'historical_pe_statistics')}\n"
@@ -498,8 +518,12 @@ def _assessment_report(
         f"{relative_basis_text}\n"
         f"현재 Valuation 위치 신뢰도: {relative_confidence}\n"
         f"해석: {relative_reason or '역사적·peer 비교 근거가 부족해 현재 위치를 확정하지 않습니다.'}\n"
+        f"배수 신호: {valuation_snapshot.get('valuation_signal_summary') or '중요한 배수 충돌 없음'}\n"
         f"{caveat_text}\n"
         f"데이터 품질: {quality_label} · {valuation_snapshot.get('provider', '자료 없음')}\n"
+        f"재무 커버리지: {data_coverage.get('financials', 'unavailable')} · "
+        f"최신성 {data_coverage.get('financial_freshness', 'unavailable')}\n"
+        f"커버리지 설명: {coverage_reasons[0] if coverage_reasons else '핵심 데이터의 별도 커버리지 경고 없음'}\n"
         f"오늘 Valuation 영향: {impact_label} · {valuation_impact}\n"
         f"{_bullet_text(valuation_evidence, '오늘 배수를 바꿀 신규 근거 없음')}\n"
         f"이익 추정치 영향: {earnings_impact}\n\n"

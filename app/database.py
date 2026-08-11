@@ -51,6 +51,11 @@ def _ensure_sqlite_columns() -> None:
             "latest_assessment_date": "DATE",
             "latest_valuation_context": "VARCHAR",
             "latest_earnings_estimate_impact": "VARCHAR",
+            "issuer_type": "VARCHAR",
+            "ordinary_share_identifier": "VARCHAR",
+            "adr_ratio": "FLOAT",
+            "adr_currency": "VARCHAR",
+            "underlying_currency": "VARCHAR",
         },
         "event": {
             "raw_summary": "VARCHAR",
@@ -70,8 +75,20 @@ def _ensure_sqlite_columns() -> None:
             "financing_amount": "FLOAT",
             "dilution_amount": "FLOAT",
             "guidance_changed": "BOOLEAN DEFAULT 0",
+            "earnings_guidance_changed": "BOOLEAN DEFAULT 0",
+            "cash_flow_guidance_changed": "BOOLEAN DEFAULT 0",
+            "major_order_change": "BOOLEAN DEFAULT 0",
+            "production_delay": "BOOLEAN DEFAULT 0",
             "material_customer_change": "BOOLEAN DEFAULT 0",
+            "debt_liquidity_risk": "BOOLEAN DEFAULT 0",
+            "accounting_issue": "BOOLEAN DEFAULT 0",
+            "regulatory_material": "BOOLEAN DEFAULT 0",
+            "financial_report_filed": "BOOLEAN DEFAULT 0",
             "operating_cash_flow_impact_known": "BOOLEAN DEFAULT 0",
+            "issue_id": "VARCHAR",
+            "corporate_action_id": "VARCHAR",
+            "classification_override_reason": "VARCHAR",
+            "financial_refresh_required": "BOOLEAN DEFAULT 0",
         },
         "financialsnapshot": {
             "fcf": "FLOAT",
@@ -168,6 +185,9 @@ def _ensure_sqlite_columns() -> None:
         "macrobriefing": {
             "market_session": "VARCHAR DEFAULT 'unknown'",
             "assessment_state": "VARCHAR DEFAULT 'final'",
+        },
+        "historicalvaluationobservation": {
+            "warnings": "VARCHAR DEFAULT '[]'",
         },
     }
     with engine.begin() as connection:
