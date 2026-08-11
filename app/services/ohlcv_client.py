@@ -1,11 +1,16 @@
 import asyncio
 from collections.abc import Sequence
-from datetime import datetime
+from datetime import date, datetime
 
 import httpx
 
 from app.config import get_settings
-from app.schemas.thesis import PriceContext, PriceDecisionContext, PricePeriodSummary
+from app.schemas.thesis import (
+    HistoricalPricePoint,
+    PriceContext,
+    PriceDecisionContext,
+    PricePeriodSummary,
+)
 from app.services.market_session import market_session_for_ticker
 
 
@@ -68,7 +73,7 @@ class OhlcvClient:
         ticker: str,
         period: str,
         count: int,
-    ) -> PricePeriodSummary:
+    ) -> tuple[PricePeriodSummary, list[dict[str, object]]]:
         last_error: Exception | None = None
         attempts = max(1, self.settings.monitor_retry_attempts)
         for attempt in range(attempts):
@@ -89,7 +94,7 @@ class OhlcvClient:
                 bars = payload.get("periods", {}).get(period, [])
                 if not isinstance(bars, list):
                     bars = []
-                return _summarize_bars(count, bars)
+                return _summarize_bars(count, bars), bars
             except (httpx.HTTPError, ValueError) as exc:
                 last_error = exc
                 if attempt + 1 < attempts:
@@ -115,9 +120,23 @@ class OhlcvClient:
         ) as client:
             for period, count in PERIOD_COUNTS.items():
                 try:
-                    context.periods[period] = await self._request_period(
+                    summary, bars = await self._request_period(
                         client, ticker, period, count
                     )
+                    context.periods[period] = summary
+                    if period == "daily":
+                        for bar in bars:
+                            close = _number(bar.get("close"))
+                            raw_date = bar.get("date")
+                            if close is None or close <= 0 or not raw_date:
+                                continue
+                            try:
+                                bar_date = date.fromisoformat(str(raw_date)[:10])
+                            except ValueError:
+                                continue
+                            context.daily_history.append(
+                                HistoricalPricePoint(date=bar_date, close=close)
+                            )
                 except (httpx.HTTPError, ValueError) as exc:
                     context.warnings.append(f"{period}: {type(exc).__name__}")
         context.available = any(item.actual_count > 0 for item in context.periods.values())

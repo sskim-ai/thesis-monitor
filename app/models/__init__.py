@@ -1,6 +1,6 @@
 from app.models.company import Company
 from app.models.event import Event, SourceDocument
-from app.models.financial import FinancialSnapshot
+from app.models.financial import FinancialSnapshot, HistoricalValuationObservation
 from app.models.macro import (
     MacroBriefing,
     MacroEvent,
@@ -20,6 +20,7 @@ __all__ = [
     "Company",
     "Event",
     "FinancialSnapshot",
+    "HistoricalValuationObservation",
     "InvestmentThesis",
     "MacroBriefing",
     "MacroEvent",

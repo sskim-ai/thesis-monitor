@@ -41,6 +41,14 @@ class Settings(BaseSettings):
     valuation_model_min_quarters: int = 8
     valuation_model_growth_floor: float = -0.30
     valuation_model_growth_cap: float = 0.50
+    valuation_history_sampling: str = "weekly"
+    valuation_history_min_observations: int = 26
+    valuation_history_max_pe: float = 200.0
+    valuation_history_max_pb: float = 50.0
+    valuation_history_discounted_percentile: float = 20.0
+    valuation_history_somewhat_discounted_percentile: float = 40.0
+    valuation_history_somewhat_premium_percentile: float = 60.0
+    valuation_history_premium_percentile: float = 80.0
     macro_vix_material_pct: float = 5.0
     macro_real_yield_material_bp: float = 5.0
     macro_nominal_yield_material_bp: float = 7.0

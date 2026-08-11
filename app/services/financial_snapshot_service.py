@@ -1,4 +1,6 @@
 import json
+from calendar import monthrange
+from datetime import date
 import re
 
 from sqlmodel import Session, select
@@ -318,7 +320,9 @@ def upsert_financial_snapshot_from_event(session: Session, event: Event) -> Fina
     snapshot.normalization_method = ";".join(
         dict.fromkeys((revenue_method, profit_method, net_income_method, diluted_eps_method))
     )
-    snapshot.financials_as_of = event.date
+    snapshot.financial_period_end = _financial_period_end(fiscal_year, period_type)
+    snapshot.filing_date = event.date
+    snapshot.financials_as_of = snapshot.financial_period_end
     snapshot.reported_date = event.date
     snapshot.source = event.source
     snapshot.provider = event.provider
@@ -367,3 +371,12 @@ def upsert_financial_snapshot_from_event(session: Session, event: Event) -> Fina
         )
     _add_comparison(session, event, snapshot)
     return snapshot
+
+
+def _financial_period_end(fiscal_year: int | None, period_type: str | None) -> date | None:
+    if fiscal_year is None:
+        return None
+    month = {"Q1": 3, "H1": 6, "Q3": 9, "FY": 12}.get(period_type or "")
+    if month is None:
+        return None
+    return date(fiscal_year, month, monthrange(fiscal_year, month)[1])

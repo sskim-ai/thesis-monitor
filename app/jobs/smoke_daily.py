@@ -29,12 +29,49 @@ async def _run() -> None:
             "confidence": item.confidence,
             "valuation_context": item.valuation_change.value,
             "valuation_relative_position": item.valuation_snapshot.valuation_relative_position.value,
+            "valuation_relative_position_confidence": item.valuation_snapshot.valuation_relative_position_confidence,
+            "valuation_relative_position_reason": item.valuation_snapshot.valuation_relative_position_reason,
             "price_state": item.price_context.decision.price_state,
             "market_session": item.market_session,
             "trailing_pe_source": item.valuation_snapshot.trailing_pe_source,
             "price_to_book_source": item.valuation_snapshot.price_to_book_source,
             "forward_pe_source": item.valuation_snapshot.forward_pe_source,
             "forward_price_to_book_source": item.valuation_snapshot.forward_price_to_book_source,
+            "trailing_pe": item.valuation_snapshot.trailing_pe,
+            "price_to_book": item.valuation_snapshot.price_to_book,
+            "forward_pe": item.valuation_snapshot.forward_pe,
+            "forward_price_to_book": item.valuation_snapshot.forward_price_to_book,
+            "financial_period_end": item.valuation_snapshot.financial_period_end,
+            "filing_date": item.valuation_snapshot.filing_date,
+            "price_as_of": item.valuation_snapshot.price_as_of,
+            "historical_pe_median": (
+                item.valuation_snapshot.historical_pe_statistics.historical_median
+                if item.valuation_snapshot.historical_pe_statistics else None
+            ),
+            "historical_pb_median": (
+                item.valuation_snapshot.historical_pb_statistics.historical_median
+                if item.valuation_snapshot.historical_pb_statistics else None
+            ),
+            "historical_pe_percentile": (
+                item.valuation_snapshot.historical_pe_statistics.current_percentile
+                if item.valuation_snapshot.historical_pe_statistics else None
+            ),
+            "historical_pb_percentile": (
+                item.valuation_snapshot.historical_pb_statistics.current_percentile
+                if item.valuation_snapshot.historical_pb_statistics else None
+            ),
+            "history_observation_count": max(
+                item.valuation_snapshot.historical_pe_statistics.observation_count
+                if item.valuation_snapshot.historical_pe_statistics else 0,
+                item.valuation_snapshot.historical_pb_statistics.observation_count
+                if item.valuation_snapshot.historical_pb_statistics else 0,
+            ),
+            "historical_comparability": item.valuation_snapshot.historical_comparability,
+            "new_warnings_today": item.new_warnings,
+            "open_confirmed_warnings": item.open_confirmed_warnings,
+            "persistent_watch_risks": item.persistent_watch_risks,
+            "new_buyer_price_view": item.new_buyer_price_view,
+            "holder_price_view": item.holder_price_view,
             "valuation_quality": item.valuation_snapshot.quality,
         }
         for item in result.assessments

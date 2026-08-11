@@ -257,6 +257,11 @@ class PriceLevelCheck(BaseModel):
     price_high: float | None = None
 
 
+class HistoricalPricePoint(BaseModel):
+    date: date
+    close: float = Field(gt=0)
+
+
 class PriceDecisionContext(BaseModel):
     current_price: float | None = None
     currency: str | None = None
@@ -278,6 +283,22 @@ class PriceContext(BaseModel):
     rule_evaluation: PriceRuleEvaluation | None = None
     decision: PriceDecisionContext = Field(default_factory=PriceDecisionContext)
     warnings: list[str] = Field(default_factory=list)
+    daily_history: list[HistoricalPricePoint] = Field(default_factory=list, exclude=True)
+
+
+class HistoricalValuationStatistics(BaseModel):
+    metric: str
+    current_value: float | None = None
+    historical_median: float | None = None
+    historical_mean: float | None = None
+    percentile_10: float | None = None
+    percentile_25: float | None = None
+    percentile_50: float | None = None
+    percentile_75: float | None = None
+    percentile_90: float | None = None
+    current_percentile: float | None = None
+    observation_count: int = 0
+    lookback_years: float = 0.0
 
 
 class ValuationSnapshot(BaseModel):
@@ -309,12 +330,29 @@ class ValuationSnapshot(BaseModel):
     valuation_data_as_of: str | None = None
     denominator_as_of: str | None = None
     financials_as_of: str | None = None
+    financial_period_end: str | None = None
+    filing_date: str | None = None
+    valuation_calculated_at: str | None = None
+    ttm_period_start: str | None = None
+    ttm_period_end: str | None = None
+    ttm_source_filings: list[str] = Field(default_factory=list)
     quality: str = "unavailable"
     trailing_valuation_confidence: float = 0.0
     forward_valuation_confidence: float = 0.0
     forecast_method: str | None = None
     valuation_relative_position: ValuationRelativePosition = ValuationRelativePosition.unknown
     valuation_relative_basis: str | None = None
+    valuation_relative_position_confidence: str = "low"
+    valuation_relative_position_reason: str | None = None
+    historical_comparability: str = "normal"
+    historical_pe_statistics: HistoricalValuationStatistics | None = None
+    historical_pb_statistics: HistoricalValuationStatistics | None = None
+    dividend_forecast_method: str | None = None
+    dividend_forecast_quality: str = "unavailable"
+    dividend_assumption: str | None = None
+    buyback_forecast_method: str | None = None
+    buyback_assumption_quality: str = "unavailable"
+    buyback_assumption: str | None = None
     valuation_discrepancy_warning: bool = False
     valuation_calculation_warning: bool = False
     warnings: list[str] = Field(default_factory=list)

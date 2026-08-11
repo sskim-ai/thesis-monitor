@@ -20,6 +20,7 @@ from app.services.notification_service import (
 from app.services.ohlcv_client import OhlcvClient
 from app.services.thesis_evaluation_service import evaluate_thesis, recent_events_for_assessment
 from app.services.valuation_snapshot_service import ValuationSnapshotService
+from app.services.warning_backfill_service import backfill_confirmed_warning_states
 
 
 logger = logging.getLogger(__name__)
@@ -234,6 +235,9 @@ async def run_daily_monitor(
             )
             events = recent_events_for_assessment(session, item.ticker, run_date)
             previous_assessment = _previous_assessment(session, item.ticker, run_date)
+            baseline_warning_states = backfill_confirmed_warning_states(
+                session, thesis, run_date
+            )
             macro_impact = session.exec(
                 select(ThesisMacroImpact).where(
                     ThesisMacroImpact.ticker == item.ticker,
@@ -248,6 +252,7 @@ async def run_daily_monitor(
                 macro_impact=macro_impact,
                 previous_assessment=previous_assessment,
                 valuation_snapshot=valuation_snapshot,
+                baseline_warning_states=baseline_warning_states,
             )
             valuation_context = result.valuation_context.model_dump(mode="json")
             thesis_snapshot = _build_thesis_snapshot(

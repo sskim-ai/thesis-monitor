@@ -329,31 +329,66 @@ def _price_audience_views(
             "등록된 구조적 확인 가격이 없습니다. 투자 논리 조건과 실적 데이터를 우선 확인합니다.",
             "등록된 가격 관리 기준이 없습니다. 사업 투자 논리의 약화·무효화 조건을 우선 확인합니다.",
         )
-    state_text = {
-        "inside_support": "현재 지지구간 안에 있습니다.",
-        "below_support": "현재 지지구간을 하회하고 있습니다. 종가 기준 회복 여부를 확인합니다.",
-        "below_warning": "현재 재점검 시작 가격을 하회했습니다. 가격 약화와 사업 투자 논리를 분리해 확인합니다.",
-        "below_invalidation": "현재 가격 기반 투자 논리 재점검 기준을 하회했습니다. 가격만으로 자동 무효화하지 않고 핵심 사업 근거를 재평가합니다.",
-        "above_confirmation": "현재 상향 확인 가격을 넘어섰습니다. 가격 강세가 실적·주문·현금흐름 개선과 동반되는지 확인합니다.",
-        "between_confirmation_and_support": "현재 지지구간 위, 상향 확인 가격 아래에 있습니다.",
-        "unavailable": "현재가를 확인하지 못해 가격 상태 판단을 유보합니다.",
-    }.get(decision.price_state, "")
-    observer_lines = ([state_text] if state_text else []) + [
+    observer_state, holder_state = {
+        "above_confirmation": (
+            "현재 상향 확인 가격을 넘어서고 있습니다. 가격 강세가 실제 실적·주문·현금흐름 개선과 동반되는지 확인합니다.",
+            "상향 확인 가격 위에서 거래 중입니다. 종가 기준 안착 여부와 투자 논리 강화 조건의 실제 충족 여부를 확인합니다.",
+        ),
+        "inside_support": (
+            "현재 지지구간 안에 있습니다. 가격 지지와 함께 핵심 실적·현금흐름 근거가 유지되는지 확인합니다.",
+            "현재 핵심 지지구간에서 거래 중입니다. 종가 기준 방어 여부와 사업 투자 논리 훼손 여부를 함께 확인합니다.",
+        ),
+        "below_support": (
+            "현재 지지구간 아래입니다. 가격이 낮아졌다는 이유만으로 매력도가 높아졌다고 판단하지 않고 종가 기준 지지 회복과 사업 투자 논리 유지 여부를 확인합니다.",
+            "현재 지지구간을 이탈했습니다. 재점검 가격 도달 여부와 별개로 단순 가격 조정인지 사업 투자 논리 약화인지 분리해서 확인합니다.",
+        ),
+        "below_warning": (
+            "현재 재점검 시작 가격 아래입니다. 사업 투자 논리와 Valuation을 다시 검증하기 전에는 가격 하락 자체를 매력으로 해석하지 않습니다.",
+            "재점검 시작 가격을 하회했습니다. 가격 약화의 원인이 시장·업종인지 회사 실적·주문·현금흐름인지 우선 재평가합니다.",
+        ),
+        "below_invalidation": (
+            "현재 가격 기반 투자 논리 재점검 기준 아래입니다. 가격만으로 자동 무효화하지 않고 핵심 사업 근거와 Valuation을 전면 재검증합니다.",
+            "가격 기반 투자 논리 재점검 기준을 하회했습니다. 가격 약화와 사업 투자 논리 훼손 여부를 함께 다시 판단합니다.",
+        ),
+        "between_confirmation_and_support": (
+            "현재 지지구간 위, 상향 확인 가격 아래에 있습니다. 다음 확인 가격과 핵심 사업 근거를 함께 봅니다.",
+            "현재 지지구간 위에서 거래 중입니다. 상향 확인 가격 전까지 기존 관리 기준을 유지합니다.",
+        ),
+        "unavailable": (
+            "현재가를 확인하지 못해 가격 상태 판단을 유보합니다.",
+            "현재가를 확인하지 못해 등록 가격 기준의 상태 판단을 유보합니다.",
+        ),
+    }.get(decision.price_state, ("", ""))
+    observer_lines = ([observer_state] if observer_state else []) + [
         f"{_price_level_text(item, decision.currency)}: {item.label}. {item.meaning}"
         for item in decision.new_observer_checks
     ]
-    holder_lines = ([state_text] if state_text else []) + [
+    holder_lines = ([holder_state] if holder_state else []) + [
         f"{_price_level_text(item, decision.currency)}: {item.label}. {item.meaning}"
         for item in decision.holder_checks
     ]
     if expectation_level in {ExpectationLevel.very_high, ExpectationLevel.speculative}:
-        observer_lines.append(
-            "시장 기대가 높아 지지구간 진입만으로 Valuation 매력이 높아졌다고 판단하지 않습니다."
-        )
+        if decision.price_state == "above_confirmation":
+            observer_lines.append(
+                "가격은 강하지만 기대 수준도 매우 높아 추가 실적 상향이 동반되는지 확인합니다."
+            )
+        elif decision.price_state in {"below_support", "below_warning", "below_invalidation"}:
+            observer_lines.append(
+                "시장 기대가 높아 가격 하락만으로 Valuation 완충을 판단하기 어렵습니다."
+            )
+        else:
+            observer_lines.append(
+                "시장 기대가 높아 가격 지지만으로 Valuation 매력이 높아졌다고 판단하지 않습니다."
+            )
     elif expectation_level in {ExpectationLevel.balanced, ExpectationLevel.low}:
-        observer_lines.append(
-            "사업 투자 논리 훼손 없이 가격만 조정됐는지와 Valuation 완충 가능성을 함께 확인합니다."
-        )
+        if decision.price_state in {"inside_support", "below_support", "below_warning"}:
+            observer_lines.append(
+                "사업 투자 논리 훼손 없이 가격만 조정됐는지와 Valuation 완충 가능성을 함께 확인합니다."
+            )
+        elif decision.price_state == "above_confirmation":
+            observer_lines.append(
+                "가격 강세를 적정가치 상승으로 바로 해석하지 않고 이익 근거의 동반 개선을 확인합니다."
+            )
     return "\n".join(observer_lines), "\n".join(holder_lines)
 
 
@@ -638,7 +673,7 @@ def _warning_lifecycle(
     previous: ThesisAssessment | None,
     new_warnings: list[str],
     events: list[Event],
-    baseline_warnings: list[str] | None = None,
+    baseline_warnings: list[dict[str, object]] | None = None,
     *,
     ticker: str,
     assessment_date: date,
@@ -661,12 +696,10 @@ def _warning_lifecycle(
         legacy_open = _previous_json_list(previous, "confirmed_warnings")
     for warning in legacy_open:
         states.setdefault(warning, {"warning": warning, "status": "open"})
-    if previous is None:
-        for warning in baseline_warnings or []:
-            states.setdefault(
-                warning,
-                {"warning": warning, "status": "open", "source": "approved_thesis"},
-            )
+    for baseline in baseline_warnings or []:
+        warning = str(baseline.get("warning", "")).strip()
+        if warning:
+            states.setdefault(warning, dict(baseline))
 
     for warning in new_warnings:
         previous_state = states.get(warning)
@@ -814,6 +847,15 @@ def _structural_risk_level(
     )
     if len(open_warnings) >= 3:
         risk = StructuralRiskLevel.elevated
+    elif any(
+        marker in warning.lower()
+        for warning in open_warnings
+        for marker in (
+            "유상증자", "희석", "적자", "영업이익률", "부채", "유동성",
+            "고객 이탈", "회계", "dilution", "negative fcf", "margin deterioration",
+        )
+    ):
+        risk = StructuralRiskLevel.elevated
     if status in {AssessmentStatus.weakened, AssessmentStatus.mixed}:
         risk = max(risk, StructuralRiskLevel.elevated, key=rank.get)
     elif status == AssessmentStatus.invalidation_candidate:
@@ -893,6 +935,7 @@ def evaluate_thesis(
     macro_impact: ThesisMacroImpact | None = None,
     previous_assessment: ThesisAssessment | None = None,
     valuation_snapshot: ValuationSnapshot | None = None,
+    baseline_warning_states: list[dict[str, object]] | None = None,
 ) -> EvaluationResult:
     strengthen_signals = _json_list(thesis.strengthen_signals)
     weaken_signals = _json_list(thesis.weaken_signals)
@@ -994,7 +1037,7 @@ def evaluate_thesis(
                 }
             )
 
-    price_result = _evaluate_price_rules(thesis, price_context)
+    _evaluate_price_rules(thesis, price_context)
     price_decision = _build_price_decision(thesis, price_context)
 
     macro_valuation_effect = macro_impact.valuation_effect if macro_impact else "neutral"
@@ -1186,6 +1229,7 @@ def evaluate_thesis(
         previous_assessment,
         new_warnings,
         events,
+        baseline_warnings=baseline_warning_states,
         ticker=thesis.ticker,
         assessment_date=(
             macro_impact.assessment_date

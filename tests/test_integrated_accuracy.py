@@ -54,6 +54,7 @@ def _quarter(
     eps: float | None = 1,
     equity: float | None = None,
     shares: float | None = 10,
+    dividends: float | None = None,
     warning: bool = False,
 ) -> FinancialSnapshot:
     return FinancialSnapshot(
@@ -74,6 +75,7 @@ def _quarter(
         owners_parent_equity=equity,
         common_shares_outstanding=shares,
         diluted_shares=shares,
+        dividends=dividends,
         financial_statement_basis_warning=warning,
     )
 
@@ -217,6 +219,7 @@ async def test_internal_fy1_model_requires_eight_clean_quarters_and_is_labeled()
                         period_type,
                         month,
                         equity=1_000 if period_type == "FY" else None,
+                        dividends=2 if period_type == "FY" else None,
                     )
                 )
         session.commit()
@@ -293,10 +296,12 @@ def test_price_state_below_support_and_above_confirmation_are_current_state() ->
     above = evaluate_thesis(thesis, [], _price(115))
 
     assert below.valuation_snapshot.current_price == 92
-    assert "지지구간을 하회" in below.new_buyer_price_view
+    assert "지지구간 아래" in below.new_buyer_price_view
     assert above.valuation_snapshot.current_price == 115
-    assert "상향 확인 가격을 넘어섰습니다" in above.new_buyer_price_view
+    assert "상향 확인 가격을 넘어서고 있습니다" in above.new_buyer_price_view
     assert "돌파 여부" not in above.new_buyer_price_view
+    assert "가격 조정" not in above.new_buyer_price_view
+    assert "지지 회복" not in above.new_buyer_price_view
 
 
 def test_no_new_event_can_still_have_high_confidence() -> None:

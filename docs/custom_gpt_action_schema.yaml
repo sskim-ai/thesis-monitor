@@ -2003,6 +2003,148 @@
         ],
         "title": "HealthResponse"
       },
+      "HistoricalPricePoint": {
+        "properties": {
+          "date": {
+            "type": "string",
+            "format": "date",
+            "title": "Date"
+          },
+          "close": {
+            "type": "number",
+            "exclusiveMinimum": 0.0,
+            "title": "Close"
+          }
+        },
+        "type": "object",
+        "required": [
+          "date",
+          "close"
+        ],
+        "title": "HistoricalPricePoint"
+      },
+      "HistoricalValuationStatistics": {
+        "properties": {
+          "metric": {
+            "type": "string",
+            "title": "Metric"
+          },
+          "current_value": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Current Value"
+          },
+          "historical_median": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Historical Median"
+          },
+          "historical_mean": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Historical Mean"
+          },
+          "percentile_10": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Percentile 10"
+          },
+          "percentile_25": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Percentile 25"
+          },
+          "percentile_50": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Percentile 50"
+          },
+          "percentile_75": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Percentile 75"
+          },
+          "percentile_90": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Percentile 90"
+          },
+          "current_percentile": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Current Percentile"
+          },
+          "observation_count": {
+            "type": "integer",
+            "title": "Observation Count",
+            "default": 0
+          },
+          "lookback_years": {
+            "type": "number",
+            "title": "Lookback Years",
+            "default": 0.0
+          }
+        },
+        "type": "object",
+        "required": [
+          "metric"
+        ],
+        "title": "HistoricalValuationStatistics"
+      },
       "InvestmentThesisRead": {
         "properties": {
           "ticker": {
@@ -5065,6 +5207,68 @@
             ],
             "title": "Financials As Of"
           },
+          "financial_period_end": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Financial Period End"
+          },
+          "filing_date": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Filing Date"
+          },
+          "valuation_calculated_at": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Valuation Calculated At"
+          },
+          "ttm_period_start": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ttm Period Start"
+          },
+          "ttm_period_end": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ttm Period End"
+          },
+          "ttm_source_filings": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Ttm Source Filings"
+          },
           "quality": {
             "type": "string",
             "title": "Quality",
@@ -5105,6 +5309,101 @@
               }
             ],
             "title": "Valuation Relative Basis"
+          },
+          "valuation_relative_position_confidence": {
+            "type": "string",
+            "title": "Valuation Relative Position Confidence",
+            "default": "low"
+          },
+          "valuation_relative_position_reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Valuation Relative Position Reason"
+          },
+          "historical_comparability": {
+            "type": "string",
+            "title": "Historical Comparability",
+            "default": "normal"
+          },
+          "historical_pe_statistics": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/HistoricalValuationStatistics"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "historical_pb_statistics": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/HistoricalValuationStatistics"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "dividend_forecast_method": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Dividend Forecast Method"
+          },
+          "dividend_forecast_quality": {
+            "type": "string",
+            "title": "Dividend Forecast Quality",
+            "default": "unavailable"
+          },
+          "dividend_assumption": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Dividend Assumption"
+          },
+          "buyback_forecast_method": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Buyback Forecast Method"
+          },
+          "buyback_assumption_quality": {
+            "type": "string",
+            "title": "Buyback Assumption Quality",
+            "default": "unavailable"
+          },
+          "buyback_assumption": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Buyback Assumption"
           },
           "valuation_discrepancy_warning": {
             "type": "boolean",

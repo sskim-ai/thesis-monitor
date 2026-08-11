@@ -375,6 +375,31 @@ def _assessment_report(
         if relative_basis
         else f"현재 Valuation 위치: {relative_label}"
     )
+    relative_confidence = {
+        "high": "높음",
+        "medium": "보통",
+        "low": "낮음",
+    }.get(str(valuation_snapshot.get("valuation_relative_position_confidence", "low")), "낮음")
+    relative_reason = str(
+        valuation_snapshot.get("valuation_relative_position_reason") or ""
+    ).strip()
+
+    def _history_line(label: str, key: str) -> str:
+        raw = valuation_snapshot.get(key)
+        if not isinstance(raw, dict) or not raw.get("observation_count"):
+            return f"• {label}: 역사적 관측치 부족"
+        median_value = raw.get("historical_median")
+        percentile = raw.get("current_percentile")
+        years = raw.get("lookback_years")
+        count = raw.get("observation_count")
+        median_text = f"중앙값 {float(median_value):.1f}배" if isinstance(median_value, (int, float)) else "중앙값 확인 불가"
+        percentile_text = f"현재 {float(percentile):.0f} percentile" if isinstance(percentile, (int, float)) else "현재 위치 확인 불가"
+        return f"• {label}: 최근 {years}년 {median_text} · {percentile_text} · 주간 {count}개"
+
+    historical_text = (
+        f"{_history_line('trailing PER', 'historical_pe_statistics')}\n"
+        f"{_history_line('PBR', 'historical_pb_statistics')}"
+    )
     forward_basis = str(valuation_snapshot.get("forward_basis") or "").strip()
     forward_basis_label = (
         " · provider forward consensus 기준"
@@ -454,7 +479,11 @@ def _assessment_report(
         f"📐 시장 기대와 Valuation\n"
         f"시장 기대: {expectation_label} · {expectation_summary}\n"
         f"현재가: {_report_price(current_price, currency)}\n"
-        f"실적 기준: {valuation_snapshot.get('financials_as_of') or '확인 불가'}\n"
+        f"재무 기준: {valuation_snapshot.get('financial_period_end') or '확인 불가'}\n"
+        f"공시일: {valuation_snapshot.get('filing_date') or '확인 불가'}\n"
+        f"가격 기준: {price_basis_label}\n"
+        f"TTM 기준: {valuation_snapshot.get('ttm_period_start') or '확인 불가'}~"
+        f"{valuation_snapshot.get('ttm_period_end') or '확인 불가'}\n"
         f"• PER: {_multiple_text(valuation_snapshot, 'trailing_pe')} "
         f"({multiple_roles['PER']}) · {_multiple_source_text(valuation_snapshot, 'trailing_pe')}\n"
         f"• {forward_pe_label}: {_multiple_text(valuation_snapshot, 'forward_pe')} "
@@ -465,7 +494,10 @@ def _assessment_report(
         f"• {forward_pb_label}: {_multiple_text(valuation_snapshot, 'forward_price_to_book')} "
         f"({multiple_roles['fPBR']}) · {_multiple_source_text(valuation_snapshot, 'forward_price_to_book')}\n"
         f"주 평가 방식: {valuation_method}\n"
+        f"역사적 위치:\n{historical_text}\n"
         f"{relative_basis_text}\n"
+        f"현재 Valuation 위치 신뢰도: {relative_confidence}\n"
+        f"해석: {relative_reason or '역사적·peer 비교 근거가 부족해 현재 위치를 확정하지 않습니다.'}\n"
         f"{caveat_text}\n"
         f"데이터 품질: {quality_label} · {valuation_snapshot.get('provider', '자료 없음')}\n"
         f"오늘 Valuation 영향: {impact_label} · {valuation_impact}\n"
