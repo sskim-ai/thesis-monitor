@@ -10,10 +10,12 @@ from sqlmodel import SQLModel, Session, create_engine
 
 from app.jobs.probe_krx_night_futures import (
     KRX_FUTURES_DAILY_URL,
+    expected_latest_completed_krx_session,
     fetch_live_probe,
     parse_krx_futures_payload,
 )
 from app.macro.providers.krx import KrxNightFuturesProvider
+from app.macro.providers.base import CollectedObservation
 from app.macro.storage import persist_observation
 
 
@@ -229,6 +231,153 @@ def test_live_probe_continues_past_nonempty_unusable_date() -> None:
     assert any("2026-08-12: rows present" in item for item in result.warnings)
 
 
+def test_newer_market_rows_make_older_verified_pair_stale() -> None:
+    def handler(request: httpx.Request) -> httpx.Response:
+        target = request.url.params["basDd"]
+        if target == "20260813":
+            rows = []
+        elif target == "20260812":
+            rows = [
+                _row(
+                    "KOSPI 200 선물",
+                    "정규",
+                    "SEP",
+                    "코스피200 F 202609",
+                    "428",
+                    target,
+                )
+            ]
+        else:
+            rows = [
+                _row(
+                    "KOSPI 200 선물",
+                    "정규",
+                    "SEP",
+                    "코스피200 F 202609",
+                    "428",
+                    target,
+                ),
+                _row(
+                    "KOSPI 200 선물",
+                    "야간",
+                    "SEP",
+                    "코스피200 F 202609 야간",
+                    "429",
+                    target,
+                ),
+            ]
+        return httpx.Response(200, json={"OutBlock_1": rows})
+
+    result = asyncio.run(
+        fetch_live_probe(
+            run_date=date(2026, 8, 13),
+            api_key="dummy",
+            transport=httpx.MockTransport(handler),
+        )
+    )
+
+    assert result.source_date == date(2026, 8, 11)
+    assert result.expected_latest_session_date == date(2026, 8, 12)
+    assert result.session_freshness == "stale"
+    assert [item.result for item in result.date_statuses] == [
+        "empty",
+        "rows_without_verified_pair",
+        "verified_pair",
+    ]
+
+
+def test_empty_expected_business_date_is_refresh_due_not_a_holiday() -> None:
+    def handler(request: httpx.Request) -> httpx.Response:
+        target = request.url.params["basDd"]
+        rows = (
+            [
+                _row(
+                    "KOSPI 200 선물",
+                    "정규",
+                    "SEP",
+                    "코스피200 F 202609",
+                    "428",
+                    target,
+                ),
+                _row(
+                    "KOSPI 200 선물",
+                    "야간",
+                    "SEP",
+                    "코스피200 F 202609 야간",
+                    "429",
+                    target,
+                ),
+            ]
+            if target == "20260811"
+            else []
+        )
+        return httpx.Response(200, json={"OutBlock_1": rows})
+
+    result = asyncio.run(
+        fetch_live_probe(
+            run_date=date(2026, 8, 13),
+            api_key="dummy",
+            transport=httpx.MockTransport(handler),
+        )
+    )
+
+    assert expected_latest_completed_krx_session(date(2026, 8, 13)) == date(2026, 8, 12)
+    assert result.source_date == date(2026, 8, 11)
+    assert result.expected_latest_session_date == date(2026, 8, 12)
+    assert result.session_freshness == "stale"
+
+
+@pytest.mark.parametrize(
+    ("run_date", "source_date"),
+    [
+        (date(2026, 8, 10), date(2026, 8, 7)),
+        (date(2026, 8, 18), date(2026, 8, 14)),
+    ],
+)
+def test_empty_weekend_or_holiday_dates_keep_latest_verified_session_fresh(
+    run_date: date,
+    source_date: date,
+) -> None:
+    def handler(request: httpx.Request) -> httpx.Response:
+        target = request.url.params["basDd"]
+        rows = (
+            [
+                _row(
+                    "KOSPI 200 선물",
+                    "정규",
+                    "SEP",
+                    "코스피200 F 202609",
+                    "428",
+                    target,
+                ),
+                _row(
+                    "KOSPI 200 선물",
+                    "야간",
+                    "SEP",
+                    "코스피200 F 202609 야간",
+                    "429",
+                    target,
+                ),
+            ]
+            if target == source_date.strftime("%Y%m%d")
+            else []
+        )
+        return httpx.Response(200, json={"OutBlock_1": rows})
+
+    result = asyncio.run(
+        fetch_live_probe(
+            run_date=run_date,
+            api_key="dummy",
+            transport=httpx.MockTransport(handler),
+        )
+    )
+
+    assert expected_latest_completed_krx_session(run_date) == source_date
+    assert result.source_date == source_date
+    assert result.expected_latest_session_date == source_date
+    assert result.session_freshness == "fresh"
+
+
 def test_live_probe_prefers_fresh_partial_over_older_full_result() -> None:
     requests: list[httpx.Request] = []
 
@@ -405,6 +554,8 @@ def test_provider_preserves_same_contract_regular_close_as_comparison(monkeypatc
             ]
         }
     )
+    probe.expected_latest_session_date = date(2026, 8, 11)
+    probe.session_freshness = "fresh"
 
     async def fake_probe(**kwargs):
         return probe
@@ -421,6 +572,9 @@ def test_provider_preserves_same_contract_regular_close_as_comparison(monkeypatc
     assert observation.previous_value == 989.8
     assert observation.value == 974.95
     assert observation.change_value == -14.85
+    assert observation.quality_status == "fresh"
+    assert observation.raw_payload["trade_date"] == "2026-08-11"
+    assert observation.raw_payload["expected_latest_session_date"] == "2026-08-11"
 
     engine = create_engine(
         "sqlite://",
@@ -440,3 +594,104 @@ def test_provider_preserves_same_contract_regular_close_as_comparison(monkeypatc
     assert row.previous_value == 989.8
     assert row.change_value == -14.85
     assert row.change_pct == pytest.approx(-1.50030309)
+    assert row.quality_status == "fresh"
+
+
+def test_provider_marks_older_pair_stale_and_storage_refreshes_existing_quality(
+    monkeypatch,
+) -> None:
+    async def fake_probe(**kwargs):
+        return await fetch_live_probe(
+            run_date=date(2026, 8, 13),
+            api_key="dummy",
+            transport=httpx.MockTransport(
+                lambda request: httpx.Response(
+                    200,
+                    json={
+                        "OutBlock_1": (
+                            [
+                                _row(
+                                    "KOSPI 200 선물",
+                                    "정규",
+                                    "SEP",
+                                    "코스피200 F 202609",
+                                    "428",
+                                    request.url.params["basDd"],
+                                )
+                            ]
+                            if request.url.params["basDd"] == "20260812"
+                            else [
+                                _row(
+                                    "KOSPI 200 선물",
+                                    "정규",
+                                    "SEP",
+                                    "코스피200 F 202609",
+                                    "428",
+                                    "20260811",
+                                ),
+                                _row(
+                                    "KOSPI 200 선물",
+                                    "야간",
+                                    "SEP",
+                                    "코스피200 F 202609 야간",
+                                    "429",
+                                    "20260811",
+                                ),
+                            ]
+                            if request.url.params["basDd"] == "20260811"
+                            else []
+                        )
+                    },
+                )
+            ),
+        )
+
+    monkeypatch.setattr("app.macro.providers.krx.fetch_live_probe", fake_probe)
+    provider_result = asyncio.run(
+        KrxNightFuturesProvider().collect(
+            datetime(2026, 8, 12, 22, 50, tzinfo=timezone.utc)
+        )
+    )
+
+    assert provider_result.observations[0].quality_status == "stale"
+    assert (
+        provider_result.observations[0].raw_payload["expected_latest_session_date"]
+        == "2026-08-12"
+    )
+    assert provider_result.warnings
+
+    isolated_engine = create_engine(
+        "sqlite://",
+        connect_args={"check_same_thread": False},
+        poolclass=StaticPool,
+    )
+    SQLModel.metadata.create_all(isolated_engine)
+    stale = provider_result.observations[0]
+    fresh = CollectedObservation(
+        series_code="KRX_KOSPI200_NIGHT_FUT",
+        category="kr_night_futures",
+        observed_at=stale.observed_at,
+        value=429,
+        source_url=KRX_FUTURES_DAILY_URL,
+        quality_status="fresh",
+        raw_payload={"session_freshness": "fresh"},
+    )
+    with Session(isolated_engine) as session:
+        first, created = persist_observation(
+            session,
+            provider_result.provider,
+            fresh,
+            datetime(2026, 8, 12, 22, 40, tzinfo=timezone.utc),
+        )
+        updated, created_again = persist_observation(
+            session,
+            provider_result.provider,
+            stale,
+            datetime(2026, 8, 12, 22, 50, tzinfo=timezone.utc),
+        )
+
+    assert created is True
+    assert created_again is False
+    assert first.id == updated.id
+    assert updated.quality_status == "stale"
+    assert json.loads(updated.raw_payload)["session_freshness"] == "stale"

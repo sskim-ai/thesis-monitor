@@ -6,6 +6,7 @@ import math
 from pathlib import Path
 import re
 
+import exchange_calendars as exchange_calendar
 import httpx
 from pydantic import BaseModel, Field
 
@@ -19,6 +20,15 @@ TARGET_PRODUCTS = ("KOSPI200", "KOSDAQ150")
 
 _MATURITY_YYYYMM_RE = re.compile(r"(?<!\d)(20\d{2})[./\- ]?(0[1-9]|1[0-2])(?!\d)")
 _MATURITY_YYMM_RE = re.compile(r"(?<!\d)(\d{2})[./\- ]?(0[1-9]|1[0-2])(?!\d)")
+
+
+def expected_latest_completed_krx_session(run_date: date) -> date | None:
+    try:
+        calendar = exchange_calendar.get_calendar("XKRX")
+        session = calendar.date_to_session(run_date - timedelta(days=1), direction="previous")
+    except (ValueError, IndexError):
+        return None
+    return session.date()
 
 
 class KrxFuturesRow(BaseModel):
@@ -46,6 +56,13 @@ class KrxNightFutureObservation(BaseModel):
     session_evidence: str = "MKT_NM:정규/야간"
 
 
+class KrxProbeDateStatus(BaseModel):
+    query_date: date
+    row_count: int = 0
+    verified_products: list[str] = Field(default_factory=list)
+    result: str
+
+
 class KrxNightFuturesProbeResult(BaseModel):
     status: str
     service: str = KRX_SERVICE_NAME
@@ -59,6 +76,9 @@ class KrxNightFuturesProbeResult(BaseModel):
     session_values: list[str] = Field(default_factory=list)
     night_session_usable: bool = False
     observations: list[KrxNightFutureObservation] = Field(default_factory=list)
+    date_statuses: list[KrxProbeDateStatus] = Field(default_factory=list)
+    expected_latest_session_date: date | None = None
+    session_freshness: str = "unverified"
     warnings: list[str] = Field(default_factory=list)
 
     def compact_summary(self) -> dict[str, object]:
@@ -71,6 +91,9 @@ class KrxNightFuturesProbeResult(BaseModel):
             "field_names": self.field_names,
             "session_values": self.session_values,
             "night_session_usable": self.night_session_usable,
+            "expected_latest_session_date": self.expected_latest_session_date,
+            "session_freshness": self.session_freshness,
+            "date_statuses": [item.model_dump(mode="json") for item in self.date_statuses],
             "products": [item.model_dump(mode="json") for item in self.observations],
             "reason": self.reason,
             "warnings": self.warnings,
@@ -271,6 +294,8 @@ async def fetch_live_probe(
     latest_nonempty: KrxNightFuturesProbeResult | None = None
     last_fetch_error: str | None = None
     successful_response_count = 0
+    date_statuses: list[KrxProbeDateStatus] = []
+    calendar_expected_date = expected_latest_completed_krx_session(run_date)
     async with httpx.AsyncClient(
         timeout=get_settings().macro_provider_timeout_seconds,
         transport=transport,
@@ -288,6 +313,9 @@ async def fetch_live_probe(
                 payload = response.json()
             except (httpx.HTTPError, ValueError, TypeError) as exc:
                 last_fetch_error = f"krx_fetch_failed:{type(exc).__name__}"
+                date_statuses.append(
+                    KrxProbeDateStatus(query_date=target_date, result="fetch_error")
+                )
                 skipped_warnings.append(
                     f"{target_date}: fetch failed ({type(exc).__name__})"
                 )
@@ -298,7 +326,50 @@ async def fetch_live_probe(
                 fetched_at=fetched_at,
                 queried_dates=queried_dates,
             )
+            date_statuses.append(
+                KrxProbeDateStatus(
+                    query_date=target_date,
+                    row_count=result.row_count,
+                    verified_products=[item.product for item in result.observations],
+                    result=(
+                        "verified_pair"
+                        if result.night_session_usable
+                        else "rows_without_verified_pair"
+                        if result.row_count
+                        else "empty"
+                    ),
+                )
+            )
             if result.night_session_usable:
+                result.date_statuses = list(date_statuses)
+                prior_nonempty_dates = [
+                    item.query_date
+                    for item in date_statuses
+                    if item.query_date < run_date and item.row_count > 0
+                ]
+                result.expected_latest_session_date = (
+                    result.source_date
+                    if result.source_date == run_date
+                    else calendar_expected_date
+                    or max(prior_nonempty_dates, default=result.source_date)
+                )
+                intervening_errors = any(
+                    item.result == "fetch_error"
+                    and result.source_date is not None
+                    and result.source_date < item.query_date < run_date
+                    for item in date_statuses
+                )
+                if intervening_errors:
+                    result.session_freshness = "unverified"
+                elif result.source_date == result.expected_latest_session_date:
+                    result.session_freshness = "fresh"
+                else:
+                    result.session_freshness = "stale"
+                if result.session_freshness != "fresh":
+                    skipped_warnings.append(
+                        "verified night-futures pair is older than the latest completed "
+                        "session evidence"
+                    )
                 result.warnings = skipped_warnings + result.warnings
                 return result
             if result.row_count:
@@ -311,6 +382,7 @@ async def fetch_live_probe(
         latest_nonempty.status = "unavailable"
         latest_nonempty.reason = "no_recent_verified_night_pair"
         latest_nonempty.queried_dates = queried_dates
+        latest_nonempty.date_statuses = date_statuses
         latest_nonempty.warnings = skipped_warnings + latest_nonempty.warnings
         return latest_nonempty
     if successful_response_count == 0 and last_fetch_error is not None:
@@ -318,6 +390,7 @@ async def fetch_live_probe(
             status="unavailable",
             fetched_at=fetched_at,
             queried_dates=queried_dates,
+            date_statuses=date_statuses,
             reason=last_fetch_error,
             warnings=skipped_warnings,
         )
@@ -325,6 +398,7 @@ async def fetch_live_probe(
         status="unavailable",
         fetched_at=fetched_at,
         queried_dates=queried_dates,
+        date_statuses=date_statuses,
         reason="no_recent_business_date_data",
         warnings=skipped_warnings,
     )
@@ -337,6 +411,11 @@ def _report(result: KrxNightFuturesProbeResult) -> str:
         f"{item.point_change:+g} ({item.change_pct:+.4f}%)"
         for item in result.observations
     ) or "- No verified same-contract regular/night observation."
+    date_status_lines = "\n".join(
+        f"- {item.query_date}: {item.result}, rows={item.row_count}, "
+        f"verified={','.join(item.verified_products) or 'none'}"
+        for item in result.date_statuses
+    ) or "- No date-level diagnostics."
     recommendation = "production enabled" if result.night_session_usable else "not enabled"
     return f"""# KRX Night Futures Feasibility
 
@@ -352,10 +431,16 @@ def _report(result: KrxNightFuturesProbeResult) -> str:
 - Status: `{result.status}`
 - Queried dates: {', '.join(str(item) for item in result.queried_dates) or 'none'}
 - Source date: `{result.source_date or 'unavailable'}`
+- Expected latest completed session: `{result.expected_latest_session_date or 'unavailable'}`
+- Session freshness: `{result.session_freshness}`
 - Rows: {result.row_count}
 - Session values: {', '.join(result.session_values) or 'unavailable'}
 - Field names: {', '.join(result.field_names) or 'unavailable'}
 - Night/day separation usable: `{str(result.night_session_usable).lower()}`
+
+### Date Evidence
+
+{date_status_lines}
 
 ## Contract Evidence
 

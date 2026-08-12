@@ -58,6 +58,14 @@ def persist_observation(
         select(MacroObservation).where(MacroObservation.dedupe_key == dedupe_key)
     ).first()
     if existing is not None:
+        if observation.quality_status is not None:
+            existing.quality_status = observation.quality_status
+            existing.raw_payload = json.dumps(observation.raw_payload, ensure_ascii=False)
+            existing.retrieved_at = datetime.now(timezone.utc)
+            existing.vintage_at = as_of
+            session.add(existing)
+            session.commit()
+            session.refresh(existing)
         return existing, False
 
     previous = _previous_observation(session, provider, observation)
@@ -87,7 +95,7 @@ def persist_observation(
         vintage_at=as_of,
         is_preliminary=observation.is_preliminary,
         is_revised=observation.is_revised,
-        quality_status=_freshness_status(observation, as_of),
+        quality_status=observation.quality_status or _freshness_status(observation, as_of),
         raw_payload=json.dumps(observation.raw_payload, ensure_ascii=False),
     )
     session.add(row)

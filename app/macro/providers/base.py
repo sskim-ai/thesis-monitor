@@ -18,6 +18,7 @@ class CollectedObservation:
     change_pct: float | None = None
     is_preliminary: bool = False
     is_revised: bool = False
+    quality_status: str | None = None
     raw_payload: dict[str, object] = field(default_factory=dict)
 
 

@@ -42,12 +42,23 @@ class KrxNightFuturesProvider:
                     change_value=item.point_change,
                     change_pct=item.change_pct,
                     source_url=probe.source_url,
+                    quality_status=probe.session_freshness,
                     raw_payload={
                         "product": item.product,
                         "contract_code": item.contract_code,
                         "contract_name": item.contract_name,
                         "expiry": item.maturity,
                         "trade_date": item.source_date.isoformat(),
+                        "expected_latest_session_date": (
+                            probe.expected_latest_session_date.isoformat()
+                            if probe.expected_latest_session_date
+                            else None
+                        ),
+                        "session_freshness": probe.session_freshness,
+                        "queried_dates": [value.isoformat() for value in probe.queried_dates],
+                        "date_statuses": [
+                            value.model_dump(mode="json") for value in probe.date_statuses
+                        ],
                         "night_close": item.night_close,
                         "regular_close": item.regular_close,
                         "point_change": item.point_change,
@@ -56,4 +67,8 @@ class KrxNightFuturesProvider:
                     },
                 )
             )
-        return MacroProviderResult(provider=self.name, observations=observations)
+        return MacroProviderResult(
+            provider=self.name,
+            observations=observations,
+            warnings=(probe.warnings if probe.session_freshness != "fresh" else []),
+        )

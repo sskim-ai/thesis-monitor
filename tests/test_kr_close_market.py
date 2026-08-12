@@ -634,6 +634,10 @@ def test_morning_report_renders_verified_night_futures_as_context() -> None:
                         "change_value": -14.85,
                         "change_pct": -1.5003,
                         "observed_at": "2026-08-11T00:00:00+09:00",
+                        "trade_date": "2026-08-11",
+                        "expected_latest_session_date": "2026-08-11",
+                        "session_freshness": "fresh",
+                        "quality_status": "fresh",
                     },
                     {
                         "series_code": "KRX_KOSDAQ150_NIGHT_FUT",
@@ -641,6 +645,10 @@ def test_morning_report_renders_verified_night_futures_as_context() -> None:
                         "change_value": 3.7,
                         "change_pct": 0.2491,
                         "observed_at": "2026-08-11T00:00:00+09:00",
+                        "trade_date": "2026-08-11",
+                        "expected_latest_session_date": "2026-08-11",
+                        "session_freshness": "fresh",
+                        "quality_status": "fresh",
                     },
                 ]
             }
@@ -655,3 +663,49 @@ def test_morning_report_renders_verified_night_futures_as_context() -> None:
     assert "KOSPI200 최근월물 974.95 · -14.85pt (-1.50%)" in message
     assert "KOSDAQ150 최근월물 1,489.00 · +3.70pt (+0.25%)" in message
     assert message.index("📈 오늘 가장 중요한 변화") < message.index("🌙 한국 야간선물")
+
+
+def test_morning_report_excludes_stale_night_futures_with_compact_caution() -> None:
+    rows = [
+        {
+            "series_code": series_code,
+            "value": 974.95,
+            "change_value": -14.85,
+            "change_pct": -1.5003,
+            "observed_at": "2026-08-11T00:00:00+09:00",
+            "trade_date": "2026-08-11",
+            "expected_latest_session_date": "2026-08-12",
+            "session_freshness": "stale",
+            "quality_status": "stale",
+        }
+        for series_code in (
+            "KRX_KOSPI200_NIGHT_FUT",
+            "KRX_KOSDAQ150_NIGHT_FUT",
+        )
+    ]
+    briefing = MacroBriefing(
+        briefing_date=date(2026, 8, 13),
+        briefing_type="morning",
+        as_of=datetime(2026, 8, 12, 22, 50, tzinfo=timezone.utc),
+        headline="mixed",
+        market_summary=json.dumps({"observations": rows}),
+        data_quality=json.dumps(
+            [
+                {
+                    "series_code": row["series_code"],
+                    "quality_status": "stale",
+                    "observed_at": row["observed_at"],
+                }
+                for row in rows
+            ]
+        ),
+        kakao_text="morning",
+        dedupe_key="stale-night-futures-morning",
+    )
+
+    message, _context = _macro_report(briefing)
+
+    assert "🌙 한국 야간선물" not in message
+    assert message.count("한국 야간선물은 최신 완료 세션 데이터를 확인하지 못해") == 1
+    assert "KRX_KOSPI200_NIGHT_FUT" not in message
+    assert "session_freshness" not in message

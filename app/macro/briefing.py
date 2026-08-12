@@ -134,6 +134,33 @@ def _format_move(row: MacroObservation) -> str:
     return f"{label} {row.value:g}"
 
 
+def _market_observation(item: MacroObservation) -> dict[str, object]:
+    value: dict[str, object] = {
+        "series_code": item.series_code,
+        "category": item.category,
+        "value": item.value,
+        "unit": item.unit,
+        "change_value": item.change_value,
+        "change_pct": item.change_pct,
+        "observed_at": item.observed_at,
+        "retrieved_at": item.retrieved_at,
+        "market_session": item.market_session,
+        "quality_status": item.quality_status,
+        "source_url": item.source_url,
+    }
+    if item.category == "kr_night_futures":
+        raw = _json(item.raw_payload, {})
+        raw = raw if isinstance(raw, dict) else {}
+        for key in (
+            "trade_date",
+            "expected_latest_session_date",
+            "session_freshness",
+        ):
+            if raw.get(key) is not None:
+                value[key] = raw[key]
+    return value
+
+
 def build_macro_briefing(
     session: Session,
     briefing_date: date,
@@ -244,21 +271,7 @@ def build_macro_briefing(
         "market_summary": json.dumps(
             {
                 "items": market_items,
-                "observations": [
-                    {
-                        "series_code": item.series_code,
-                        "category": item.category,
-                        "value": item.value,
-                        "unit": item.unit,
-                        "change_value": item.change_value,
-                        "change_pct": item.change_pct,
-                        "observed_at": item.observed_at,
-                        "market_session": item.market_session,
-                        "quality_status": item.quality_status,
-                        "source_url": item.source_url,
-                    }
-                    for item in observations
-                ],
+                "observations": [_market_observation(item) for item in observations],
             },
             ensure_ascii=False,
             default=str,

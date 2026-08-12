@@ -14,6 +14,13 @@ from app.models.thesis import InvestmentThesis, MonitorRun, ThesisAssessment
 from app.models.watchlist import WatchlistItem
 from app.services.kr_close_fx import KrCloseFxSummary, summarize_kr_close_fx
 from app.services.market_session import MarketScope, market_scope_for_security
+from app.services.night_futures import (
+    NIGHT_FUTURES_LABELS,
+    NIGHT_FUTURES_SERIES,
+    NightFuturesSummary,
+    is_night_futures_warning,
+    summarize_night_futures,
+)
 
 
 @dataclass(frozen=True)
@@ -44,6 +51,7 @@ SERIES_LABELS = {
     "USDKRW": "원/달러 환율",
     "DCOILWTICO": "WTI 유가",
     "VIXCLS": "VIX",
+    **NIGHT_FUTURES_LABELS,
 }
 
 STATUS_LABELS = {
@@ -137,6 +145,7 @@ class DailyDigest:
     schedule: ScheduleSummary
     data_quality: DataQualitySummary
     kr_close_fx: KrCloseFxSummary | None = None
+    night_futures: NightFuturesSummary = field(default_factory=NightFuturesSummary)
 
 
 def _json(value: str, fallback: object) -> object:
@@ -774,6 +783,7 @@ def _data_quality(
     portfolio: PortfolioSummary,
     run_date: date,
     market_scope: MarketScope,
+    night_futures: NightFuturesSummary,
 ) -> DataQualitySummary:
     values = _list(briefing.data_quality) if briefing is not None else []
     lines: list[str] = []
@@ -784,12 +794,22 @@ def _data_quality(
             continue
         warning = item.get("warning")
         if warning:
+            if is_night_futures_warning(warning):
+                if not night_futures.cautions:
+                    lines.append(
+                        "한국 야간선물은 최신 완료 세션 데이터를 확인하지 못해 "
+                        "오늘 개장 전 신호에서 제외했습니다."
+                    )
+                continue
             lines.append(str(warning))
             continue
         code = str(item.get("series_code", "데이터"))
+        if code in NIGHT_FUTURES_SERIES:
+            continue
         label = SERIES_LABELS.get(code, code)
         status = str(item.get("quality_status", "점검 필요"))
         lines.append(f"{label}: {status} · 당일 방향 판단에서 제외하거나 신뢰도를 낮춤")
+    lines.extend(night_futures.cautions)
     run = session.exec(
         select(MonitorRun).where(
             MonitorRun.run_date == run_date,
@@ -834,14 +854,27 @@ def build_daily_digest(
     portfolio = _portfolio(
         session, run_date, max(3, min(5, detail_limit)), market_scope
     )
+    night_futures = (
+        summarize_night_futures(_dict(briefing.market_summary))
+        if briefing is not None and market_scope in {"all", "us"}
+        else NightFuturesSummary()
+    )
     return DailyDigest(
         digest_date=run_date,
         market_scope=market_scope,
         macro=_macro_interpretation(briefing) if briefing is not None else _unavailable_macro(),
         portfolio=portfolio,
         schedule=_schedule(session, run_date, market_scope),
-        data_quality=_data_quality(session, briefing, portfolio, run_date, market_scope),
+        data_quality=_data_quality(
+            session,
+            briefing,
+            portfolio,
+            run_date,
+            market_scope,
+            night_futures,
+        ),
         kr_close_fx=(
             summarize_kr_close_fx(kr_close_briefing) if market_scope == "kr" else None
         ),
+        night_futures=night_futures,
     )

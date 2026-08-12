@@ -21,6 +21,12 @@ from app.services.analysis_report_service import (
 from app.services.daily_digest import build_daily_digest, interpret_macro_briefing
 from app.services.daily_digest_renderer import render_daily_digest
 from app.services.kr_close_fx import render_kr_close_fx, summarize_kr_close_fx
+from app.services.night_futures import (
+    NIGHT_FUTURES_SERIES,
+    is_night_futures_warning,
+    render_night_futures,
+    summarize_night_futures,
+)
 
 
 MATERIAL_STATUSES = {
@@ -1895,31 +1901,7 @@ def _kr_close_macro_report(briefing: MacroBriefing) -> tuple[str, dict[str, obje
 
 
 def _night_futures_section(market: object) -> str:
-    observations = market.get("observations", []) if isinstance(market, dict) else []
-    rows = [
-        item
-        for item in observations
-        if isinstance(item, dict)
-        and item.get("series_code")
-        in {"KRX_KOSPI200_NIGHT_FUT", "KRX_KOSDAQ150_NIGHT_FUT"}
-        and item.get("value") is not None
-    ]
-    if not rows:
-        return ""
-    lines: list[str] = []
-    source_dates: list[str] = []
-    for item in rows:
-        label = SERIES_LABELS[str(item["series_code"])]
-        line = f"• {label} {float(item['value']):,.2f}"
-        if item.get("change_value") is not None:
-            line += f" · {float(item['change_value']):+,.2f}pt"
-        if item.get("change_pct") is not None:
-            line += f" ({float(item['change_pct']):+.2f}%)"
-        lines.append(line)
-        if item.get("observed_at"):
-            source_dates.append(str(item["observed_at"])[:10])
-    date_label = f" · {max(source_dates)[5:].replace('-', '/')} 기준" if source_dates else ""
-    return f"🌙 한국 야간선물{date_label}\n" + "\n".join(lines)
+    return render_night_futures(summarize_night_futures(market))
 
 
 def _macro_report(briefing: MacroBriefing) -> tuple[str, dict[str, object]]:
@@ -1953,6 +1935,7 @@ def _macro_report(briefing: MacroBriefing) -> tuple[str, dict[str, object]]:
     )
     calendar_items = calendar if isinstance(calendar, list) else []
     quality_items = quality if isinstance(quality, list) else []
+    night_futures = summarize_night_futures(market)
     calendar_text = (
         ", ".join(
             str(item.get("title", "일정")) for item in calendar_items[:5] if isinstance(item, dict)
@@ -1964,9 +1947,20 @@ def _macro_report(briefing: MacroBriefing) -> tuple[str, dict[str, object]]:
         if not isinstance(item, dict):
             continue
         if item.get("warning"):
+            if is_night_futures_warning(item["warning"]):
+                if not night_futures.cautions:
+                    line = (
+                        "• 한국 야간선물은 최신 완료 세션 데이터를 확인하지 못해 "
+                        "오늘 개장 전 신호에서 제외했습니다."
+                    )
+                    if line not in quality_lines:
+                        quality_lines.append(line)
+                continue
             quality_lines.append(f"• {item['warning']}")
             continue
         series_code = str(item.get("series_code", "데이터"))
+        if series_code in NIGHT_FUTURES_SERIES:
+            continue
         label = SERIES_LABELS.get(series_code, series_code)
         status = str(item.get("quality_status", "점검 필요"))
         observed_at = item.get("observed_at")
@@ -1979,6 +1973,7 @@ def _macro_report(briefing: MacroBriefing) -> tuple[str, dict[str, object]]:
             f"• {label}({series_code}): {status} · 최신 관측 {observed_at or '확인 불가'}. "
             f"{explanation}최신 관측일이 오래되어 당일 방향 판단에는 사용하지 않습니다."
         )
+    quality_lines.extend(f"• {item}" for item in night_futures.cautions)
     quality_text = "\n".join(quality_lines) or "• 특이사항 없음"
     night_futures_text = _night_futures_section(market)
     night_futures_block = f"\n\n{night_futures_text}" if night_futures_text else ""

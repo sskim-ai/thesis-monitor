@@ -4,6 +4,7 @@ from app.services.daily_digest import (
     VALUATION_LABELS,
 )
 from app.services.kr_close_fx import render_kr_close_fx
+from app.services.night_futures import render_night_futures
 
 
 def _bullet_lines(items: list[str], empty: str) -> list[str]:
@@ -42,10 +43,12 @@ def render_daily_digest(
         "",
         "📈 중요한 변화",
         *_bullet_lines(macro.key_changes[:3], "임계치를 넘은 핵심 시장 변화가 없습니다."),
-        "",
-        "🧭 현재 시장 상황",
         ]
     )
+    night_futures = render_night_futures(digest.night_futures)
+    if night_futures:
+        lines.extend(["", night_futures])
+    lines.extend(["", "🧭 현재 시장 상황"])
     for label, explanation in macro.axis_explanations[:3]:
         lines.extend([f"• {label}: {explanation}"])
     lines.extend(["", "💡 투자적 의미", *macro.integrated_view])

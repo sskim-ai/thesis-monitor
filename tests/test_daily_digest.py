@@ -21,6 +21,7 @@ from app.services.notification_service import (
     queue_daily_stock_notification,
     queue_notification,
 )
+from app.services.night_futures import summarize_night_futures
 
 
 TICKERS = [
@@ -160,6 +161,45 @@ def _kr_close_briefing(run_date: date) -> MacroBriefing:
     )
 
 
+def _night_future(
+    series_code: str,
+    *,
+    trade_date: date,
+    expected_date: date,
+    freshness: str = "fresh",
+) -> dict[str, object]:
+    return {
+        "series_code": series_code,
+        "category": "kr_night_futures",
+        "value": 1002.5 if "KOSPI200" in series_code else 1482.4,
+        "change_value": -32.8 if "KOSPI200" in series_code else 4.1,
+        "change_pct": -3.1682 if "KOSPI200" in series_code else 0.2773,
+        "observed_at": f"{trade_date}T23:30:00+09:00",
+        "trade_date": str(trade_date),
+        "expected_latest_session_date": str(expected_date),
+        "session_freshness": freshness,
+        "quality_status": freshness,
+    }
+
+
+def _set_night_futures(
+    session: Session,
+    run_date: date,
+    rows: list[dict[str, object]],
+) -> None:
+    briefing = session.exec(
+        select(MacroBriefing).where(
+            MacroBriefing.briefing_date == run_date,
+            MacroBriefing.briefing_type == "morning",
+        )
+    ).one()
+    market = json.loads(briefing.market_summary)
+    market["observations"].extend(rows)
+    briefing.market_summary = json.dumps(market)
+    session.add(briefing)
+    session.commit()
+
+
 def _seed_digest(
     session: Session,
     run_date: date,
@@ -272,6 +312,141 @@ def test_fourteen_stock_digest_is_deterministic_and_hides_axis_scores() -> None:
             "TSLAD",
             "000660D",
         ]
+
+
+def test_us_digest_renders_both_fresh_night_futures_between_sections() -> None:
+    init_db()
+    run_date = date(2041, 8, 13)
+    source_date = date(2041, 8, 12)
+    with Session(engine) as session:
+        _seed_digest(session, run_date, suffix="NF41")
+        _set_night_futures(
+            session,
+            run_date,
+            [
+                _night_future(
+                    "KRX_KOSPI200_NIGHT_FUT",
+                    trade_date=source_date,
+                    expected_date=source_date,
+                ),
+                _night_future(
+                    "KRX_KOSDAQ150_NIGHT_FUT",
+                    trade_date=source_date,
+                    expected_date=source_date,
+                ),
+            ],
+        )
+
+        report = render_daily_digest(
+            build_daily_digest(session, run_date, market_scope="us")
+        )
+
+    assert "🌙 한국 야간선물 · 08/12 기준" in report
+    assert "KOSPI200 최근월물 1,002.50 · -32.80pt (-3.17%)" in report
+    assert "KOSDAQ150 최근월물 1,482.40 · +4.10pt (+0.28%)" in report
+    assert report.index("📈 중요한 변화") < report.index("🌙 한국 야간선물")
+    assert report.index("🌙 한국 야간선물") < report.index("🧭 현재 시장 상황")
+
+
+def test_night_futures_use_explicit_trade_date_not_provider_timestamp_date() -> None:
+    summary = summarize_night_futures(
+        {
+            "observations": [
+                {
+                    **_night_future(
+                        "KRX_KOSPI200_NIGHT_FUT",
+                        trade_date=date(2041, 8, 12),
+                        expected_date=date(2041, 8, 12),
+                    ),
+                    "observed_at": "2041-08-13T05:30:00+09:00",
+                }
+            ]
+        }
+    )
+
+    assert len(summary.items) == 1
+    assert summary.items[0].session_date == date(2041, 8, 12)
+
+
+def test_us_digest_excludes_both_stale_night_futures_with_one_caution() -> None:
+    init_db()
+    run_date = date(2042, 8, 13)
+    with Session(engine) as session:
+        _seed_digest(session, run_date, suffix="NF42")
+        _set_night_futures(
+            session,
+            run_date,
+            [
+                _night_future(
+                    series_code,
+                    trade_date=date(2042, 8, 11),
+                    expected_date=date(2042, 8, 12),
+                    freshness="stale",
+                )
+                for series_code in (
+                    "KRX_KOSPI200_NIGHT_FUT",
+                    "KRX_KOSDAQ150_NIGHT_FUT",
+                )
+            ],
+        )
+
+        report = render_daily_digest(
+            build_daily_digest(session, run_date, market_scope="us")
+        )
+
+    assert "🌙 한국 야간선물" not in report
+    assert report.count("한국 야간선물은 최신 완료 세션 데이터를 확인하지 못해") == 1
+    assert "1,002.50" not in report
+
+
+@pytest.mark.parametrize(
+    ("fresh_series", "stale_label"),
+    [
+        ("KRX_KOSPI200_NIGHT_FUT", "KOSDAQ150 야간선물"),
+        ("KRX_KOSDAQ150_NIGHT_FUT", "KOSPI200 야간선물"),
+    ],
+)
+def test_us_digest_renders_only_fresh_night_future_with_partial_caution(
+    fresh_series: str,
+    stale_label: str,
+) -> None:
+    init_db()
+    run_date = date(2043, 8, 13) if "KOSPI200" in fresh_series else date(2044, 8, 13)
+    expected_date = run_date.replace(day=12)
+    stale_series = next(
+        item
+        for item in ("KRX_KOSPI200_NIGHT_FUT", "KRX_KOSDAQ150_NIGHT_FUT")
+        if item != fresh_series
+    )
+    with Session(engine) as session:
+        _seed_digest(session, run_date, suffix=f"NF{run_date.year}")
+        _set_night_futures(
+            session,
+            run_date,
+            [
+                _night_future(
+                    fresh_series,
+                    trade_date=expected_date,
+                    expected_date=expected_date,
+                ),
+                _night_future(
+                    stale_series,
+                    trade_date=run_date.replace(day=11),
+                    expected_date=expected_date,
+                    freshness="stale",
+                ),
+            ],
+        )
+
+        report = render_daily_digest(
+            build_daily_digest(session, run_date, market_scope="us")
+        )
+
+    assert "🌙 한국 야간선물" in report
+    assert stale_label in report
+    assert "최신 세션 확인이 되지 않아 제외했습니다." in report
+    assert "series_code" not in report
+    assert "session_freshness" not in report
 
 
 def test_daily_digest_and_material_alert_are_queued_separately() -> None:
