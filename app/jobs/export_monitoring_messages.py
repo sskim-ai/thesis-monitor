@@ -467,6 +467,44 @@ def export_messages(
         sections.extend(
             [
                 "",
+                "## 부록. Initial baseline / capital allocation materiality",
+                "",
+                "| 종목 | Assessment mode | Baseline events | Delta events | Consumed fingerprints | Capital action materiality |",
+                "|---|---|---|---|---|---|",
+            ]
+        )
+        for assessment in assessments:
+            try:
+                thesis_snapshot = json.loads(assessment.thesis_snapshot or "{}")
+                fingerprints = json.loads(
+                    assessment.used_event_fingerprints or "[]"
+                )
+            except json.JSONDecodeError:
+                thesis_snapshot = {}
+                fingerprints = []
+            materiality = thesis_snapshot.get("capital_action_materiality", [])
+            materiality_text = "; ".join(
+                f"{item.get('event_date')} {item.get('level')} "
+                f"shares={item.get('transaction_shares')}/"
+                f"base={item.get('share_denominator')}/"
+                f"share_pct={item.get('share_ratio_pct')}/"
+                f"market_cap_pct={item.get('market_cap_ratio_pct')}/"
+                f"purpose={item.get('purpose')}"
+                for item in materiality
+                if isinstance(item, dict)
+            )
+            sections.append(
+                f"| {assessment.ticker} | "
+                f"{thesis_snapshot.get('assessment_mode') or 'legacy'} | "
+                f"{thesis_snapshot.get('baseline_event_count', 0)} | "
+                f"{thesis_snapshot.get('delta_event_count', 0)} | "
+                f"{len(fingerprints) if isinstance(fingerprints, list) else 0} | "
+                f"{materiality_text.replace('|', '/') or '없음'} |"
+            )
+
+        sections.extend(
+            [
+                "",
                 "## 부록. Valuation 계산 lineage",
                 "",
                 "| 종목 | 가격 | Security identity | ADR ratio/direction | Currency/basis | PER provider/derived/EPS | PER basis/comparability | PBR provider/derived/BVPS | PBR basis/comparability | fPER provider/derived/EPS | fPER basis/comparability | fPBR provider/derived/BVPS | fPBR basis/comparability | Historical basis | Basis conflict | Source/method |",
@@ -517,7 +555,10 @@ def export_messages(
                 f"{snapshot.get('provider_forward_price_to_book') or '없음'}/{snapshot.get('derived_forward_price_to_book') or '없음'}/{snapshot.get('forward_bvps') or '없음'} | "
                 f"{snapshot.get('forward_price_to_book_basis_status') or '없음'}; "
                 f"{snapshot.get('forward_price_to_book_comparability') or '없음'}:{snapshot.get('forward_price_to_book_comparability_reason') or '없음'} | "
-                f"{snapshot.get('historical_per_share_basis_status') or '없음'} | "
+                f"{snapshot.get('historical_per_share_basis_status') or '없음'}; "
+                f"comparability={snapshot.get('historical_comparability') or '없음'}; "
+                f"PE sampling={(snapshot.get('historical_pe_statistics') or {}).get('sampling_frequency') or '없음'}; "
+                f"PBR sampling={(snapshot.get('historical_pb_statistics') or {}).get('sampling_frequency') or '없음'} | "
                 f"{','.join(snapshot.get('multiple_basis_conflicts') or []) or '없음'} | "
                 f"{str(snapshot.get('provider') or '없음').replace('|', '/')} · {methods.replace('|', '/')} |"
             )

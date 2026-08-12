@@ -51,6 +51,30 @@ async def test_ohlcv_client_requests_each_period_and_accepts_shorter_history() -
 
 
 @pytest.mark.anyio
+async def test_historical_valuation_uses_separate_unadjusted_weekly_prices() -> None:
+    requests: list[tuple[str, str]] = []
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        period = request.url.params["periods"]
+        adjusted = request.url.params["adjusted"]
+        requests.append((period, adjusted))
+        close = 55_400 if period == "weekly" and adjusted == "false" else 11_080
+        return httpx.Response(
+            200,
+            json={"periods": {period: [{"date": "2020-11-16", "close": close}]}},
+        )
+
+    context = await OhlcvClient(
+        transport=httpx.MockTransport(handler)
+    ).fetch_price_context("010120")
+
+    assert ("weekly", "true") in requests
+    assert ("weekly", "false") in requests
+    assert context.periods["weekly"].latest_close == 11_080
+    assert context.valuation_history[0].close == 55_400
+
+
+@pytest.mark.anyio
 async def test_us_premarket_uses_latest_completed_regular_close_date() -> None:
     def handler(request: httpx.Request) -> httpx.Response:
         period = request.url.params["periods"]

@@ -2193,10 +2193,16 @@ class ValuationSnapshotService:
             observations = self.history_service.update_cache(
                 session,
                 ticker,
-                price_context.valuation_history or price_context.daily_history,
+                price_context.valuation_history,
                 rows,
             )
-            self.history_service.apply(snapshot, observations, framework, ticker)
+            self.history_service.apply(
+                snapshot,
+                observations,
+                framework,
+                ticker,
+                basis_verified=bool(price_context.valuation_history or observations),
+            )
         elif not historical_allowed:
             snapshot.historical_pe_statistics = None
             snapshot.historical_pb_statistics = None

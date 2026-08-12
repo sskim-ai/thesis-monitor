@@ -14,7 +14,10 @@ from app.services.data_coverage_service import DataCoverageService
 from app.services.dividend_history_service import DividendHistoryService
 from app.services.event_classifier import classify_event
 from app.services.financial_freshness_service import FinancialFreshnessService
-from app.services.historical_valuation_service import HistoricalValuationService
+from app.services.historical_valuation_service import (
+    VALUATION_HISTORY_ALGORITHM,
+    HistoricalValuationService,
+)
 
 
 def _engine():
@@ -184,6 +187,7 @@ def test_conflicting_pe_pb_signals_are_not_high_confidence_directional() -> None
             price=10,
             trailing_pe=float(index + 1),
             price_to_book=float(index + 1),
+            sampling_frequency=VALUATION_HISTORY_ALGORITHM,
         )
         for index in range(40)
     ]
@@ -208,6 +212,7 @@ def test_short_internal_history_is_not_called_short_listing_history() -> None:
             observation_date=date(2024, 1, 1) + timedelta(days=7 * index),
             price=10,
             trailing_pe=10 + index,
+            sampling_frequency=VALUATION_HISTORY_ALGORITHM,
         )
         for index in range(30)
     ]

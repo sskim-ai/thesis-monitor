@@ -157,16 +157,11 @@ def _interpret_supply_contract(raw_event: RawEvent, implications: list[str], unk
 
 def _interpret_capital_allocation(raw_event: RawEvent, implications: list[str], unknowns: list[str]) -> None:
     facts = raw_event.confirmed_facts
-    shares = _fact_value(facts, "treasury stock fact: shares")
-    amount = _fact_value(facts, "treasury stock fact: amount")
-    purpose = _fact_value(facts, "treasury stock fact: purpose")
-    if shares:
-        _append_unique(implications, f"Treasury stock transaction involves {shares}; check dilution/shareholder-return context.")
-    if amount:
-        _append_unique(implications, f"Treasury stock transaction amount is {amount}; compare with market cap and cash position.")
-    if purpose:
-        _append_unique(implications, f"Disclosed purpose is {purpose}; classify as shareholder return, compensation, or other capital allocation.")
-    _append_unique(unknowns, "Per-share dilution or accretion cannot be concluded without share-count and treasury-stock treatment details.")
+    if any("treasury stock fact:" in fact.lower() for fact in facts):
+        _append_unique(
+            unknowns,
+            "Treasury-stock purpose and transaction size require share-count materiality review.",
+        )
 
 
 def _interpret_facility_investment(

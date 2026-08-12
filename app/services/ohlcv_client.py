@@ -210,6 +210,9 @@ class OhlcvClient:
         ticker: str,
         period: str,
         count: int,
+        *,
+        adjusted: bool = True,
+        include_indicators: bool = True,
     ) -> tuple[PricePeriodSummary, list[dict[str, object]]]:
         last_error: Exception | None = None
         attempts = max(1, self.settings.monitor_retry_attempts)
@@ -221,9 +224,9 @@ class OhlcvClient:
                         "symbol": ticker,
                         "periods": period,
                         "count": count,
-                        "include_indicators": "true",
-                        "indicator_limit": 1,
-                        "adjusted": "true",
+                        "include_indicators": str(include_indicators).lower(),
+                        "indicator_limit": 1 if include_indicators else 0,
+                        "adjusted": str(adjusted).lower(),
                     },
                 )
                 response.raise_for_status()
@@ -270,7 +273,7 @@ class OhlcvClient:
                     context.periods[period] = summary
                     if period == "daily":
                         context.supply = _investor_supply_context(bars)
-                    if period in {"daily", "weekly"}:
+                    if period == "daily":
                         for bar in bars:
                             close = _number(bar.get("close"))
                             raw_date = bar.get("date")
@@ -281,10 +284,7 @@ class OhlcvClient:
                             except ValueError:
                                 continue
                             point = HistoricalPricePoint(date=bar_date, close=close)
-                            if period == "daily":
-                                context.daily_history.append(point)
-                            else:
-                                context.valuation_history.append(point)
+                            context.daily_history.append(point)
                     if session is not None:
                         ProviderTelemetryService().record(
                             session,
@@ -307,6 +307,52 @@ class OhlcvClient:
                             error_type=type(exc).__name__,
                             error_reason="ohlcv_request_failed",
                         )
+            started_at = datetime.now(timezone.utc)
+            try:
+                _, valuation_bars = await self._request_period(
+                    client,
+                    ticker,
+                    "weekly",
+                    PERIOD_COUNTS["weekly"],
+                    adjusted=False,
+                    include_indicators=False,
+                )
+                for bar in valuation_bars:
+                    close = _number(bar.get("close"))
+                    raw_date = bar.get("date")
+                    if close is None or close <= 0 or not raw_date:
+                        continue
+                    try:
+                        bar_date = date.fromisoformat(str(raw_date)[:10])
+                    except ValueError:
+                        continue
+                    context.valuation_history.append(
+                        HistoricalPricePoint(date=bar_date, close=close)
+                    )
+                if session is not None:
+                    ProviderTelemetryService().record(
+                        session,
+                        provider="ohlcv_analyst",
+                        endpoint="ohlcv_weekly_unadjusted_valuation",
+                        ticker=ticker,
+                        started_at=started_at,
+                        status="success",
+                    )
+            except (httpx.HTTPError, ValueError) as exc:
+                context.warnings.append(
+                    f"valuation_history_unadjusted: {type(exc).__name__}"
+                )
+                if session is not None:
+                    ProviderTelemetryService().record(
+                        session,
+                        provider="ohlcv_analyst",
+                        endpoint="ohlcv_weekly_unadjusted_valuation",
+                        ticker=ticker,
+                        started_at=started_at,
+                        status="failed",
+                        error_type=type(exc).__name__,
+                        error_reason="ohlcv_unadjusted_valuation_request_failed",
+                    )
         context.available = any(item.actual_count > 0 for item in context.periods.values())
         daily = context.periods.get("daily")
         session_state = market_session_for_ticker(ticker, as_of)

@@ -21,6 +21,7 @@ _PERIOD_MONTH_DAY = {
     "Q3": (9, 30),
     "FY": (12, 31),
 }
+VALUATION_HISTORY_ALGORITHM = "weekly_last_valid_close_unadjusted_v2"
 
 
 def financial_period_end(row: FinancialSnapshot) -> date | None:
@@ -188,7 +189,7 @@ def _statistics(
         history_coverage_ratio=round(min(1.0, lookback_years / 5.0), 3),
         raw_observation_count=raw_observation_count,
         deduplicated_observation_count=len(values),
-        sampling_frequency="weekly_last_valid_close",
+        sampling_frequency=VALUATION_HISTORY_ALGORITHM,
         history_quality=history_quality,
     )
 
@@ -216,21 +217,30 @@ class HistoricalValuationService:
         prices: list[HistoricalPricePoint],
         rows: list[FinancialSnapshot],
     ) -> list[HistoricalValuationObservation]:
+        cached = list(
+            session.exec(
+                select(HistoricalValuationObservation)
+                .where(HistoricalValuationObservation.ticker == ticker)
+                .order_by(HistoricalValuationObservation.observation_date)
+            ).all()
+        )
         if not prices or not rows:
-            return list(
-                session.exec(
-                    select(HistoricalValuationObservation)
-                    .where(HistoricalValuationObservation.ticker == ticker)
-                    .order_by(HistoricalValuationObservation.observation_date)
-                ).all()
-            )
+            return [
+                item
+                for item in cached
+                if item.sampling_frequency == VALUATION_HISTORY_ALGORITHM
+            ]
+        if any(
+            item.sampling_frequency != VALUATION_HISTORY_ALGORITHM
+            for item in cached
+        ):
+            for item in cached:
+                session.delete(item)
+            session.flush()
+            cached = []
         existing = {
             item.observation_date: item
-            for item in session.exec(
-                select(HistoricalValuationObservation).where(
-                    HistoricalValuationObservation.ticker == ticker
-                )
-            ).all()
+            for item in cached
         }
         latest_filing = max((filing_date(row) for row in rows if filing_date(row)), default=None)
         rebuild_from = max(existing) if existing else date.min
@@ -310,7 +320,7 @@ class HistoricalValuationService:
             observation.quality = "fresh" if pe is not None or pb is not None else "unavailable"
             observation.warnings = json.dumps(warnings)
             iso = point.date.isocalendar()
-            observation.sampling_frequency = "weekly_last_valid_close"
+            observation.sampling_frequency = VALUATION_HISTORY_ALGORITHM
             observation.iso_year = iso.year
             observation.iso_week = iso.week
             observation.updated_at = now
@@ -330,7 +340,28 @@ class HistoricalValuationService:
         observations: list[HistoricalValuationObservation],
         framework: dict[str, object],
         ticker: str,
+        *,
+        basis_verified: bool = True,
     ) -> None:
+        observations = [
+            item
+            for item in observations
+            if item.sampling_frequency == VALUATION_HISTORY_ALGORITHM
+        ]
+        if not basis_verified or not observations:
+            snapshot.historical_pe_statistics = None
+            snapshot.historical_pb_statistics = None
+            snapshot.historical_comparability = "price_share_basis_unverified"
+            snapshot.valuation_relative_position = ValuationRelativePosition.unknown
+            snapshot.valuation_relative_position_confidence = "low"
+            snapshot.valuation_relative_position_reason = (
+                "과거 배수 비교의 가격·주식수 기준을 확인하지 못해 역사적 백분위를 보류했습니다."
+            )
+            if "price_share_basis_unverified" not in snapshot.valuation_relative_position_reason_codes:
+                snapshot.valuation_relative_position_reason_codes.append(
+                    "price_share_basis_unverified"
+                )
+            return
         raw_count = len(observations)
         observations = _weekly_observations(observations)
         snapshot.historical_pe_statistics = _statistics(
@@ -357,6 +388,69 @@ class HistoricalValuationService:
         snapshot.historical_distribution_confidence = (
             0.9 if "high" in qualities else 0.7 if "medium" in qualities else 0.4 if "low" in qualities else 0.1
         )
+        latest = observations[-1]
+        current_date = None
+        if snapshot.price_as_of:
+            try:
+                current_date = date.fromisoformat(snapshot.price_as_of[:10])
+            except ValueError:
+                current_date = None
+        close_enough = (
+            current_date is not None
+            and abs((current_date - latest.observation_date).days) <= 14
+        )
+        mismatch = False
+        if (
+            close_enough
+            and snapshot.price_to_book is not None
+            and latest.price_to_book is not None
+            and snapshot.pbr_denominator_period_end
+            and latest.financial_period_end
+            and snapshot.pbr_denominator_period_end
+            == latest.financial_period_end.isoformat()
+        ):
+            denominator = max(
+                abs(float(snapshot.price_to_book)), abs(float(latest.price_to_book))
+            )
+            mismatch = denominator > 0 and (
+                abs(float(snapshot.price_to_book) - float(latest.price_to_book))
+                / denominator
+                * 100
+                > self.settings.valuation_history_cross_check_threshold_pct
+            )
+        if (
+            not mismatch
+            and close_enough
+            and not snapshot.ttm_contains_preliminary
+            and snapshot.trailing_pe is not None
+            and latest.trailing_pe is not None
+            and snapshot.ttm_period_end
+            and latest.ttm_period_end
+            and snapshot.ttm_period_end == latest.ttm_period_end.isoformat()
+        ):
+            denominator = max(
+                abs(float(snapshot.trailing_pe)), abs(float(latest.trailing_pe))
+            )
+            mismatch = denominator > 0 and (
+                abs(float(snapshot.trailing_pe) - float(latest.trailing_pe))
+                / denominator
+                * 100
+                > self.settings.valuation_history_cross_check_threshold_pct
+            )
+        if mismatch:
+            snapshot.historical_pe_statistics = None
+            snapshot.historical_pb_statistics = None
+            snapshot.historical_comparability = "price_share_basis_mismatch"
+            snapshot.valuation_relative_position = ValuationRelativePosition.unknown
+            snapshot.valuation_relative_position_confidence = "low"
+            snapshot.valuation_relative_position_reason = (
+                "과거 배수 비교의 가격·주식수 기준을 확인하지 못해 역사적 백분위를 보류했습니다."
+            )
+            if "price_share_basis_mismatch" not in snapshot.valuation_relative_position_reason_codes:
+                snapshot.valuation_relative_position_reason_codes.append(
+                    "price_share_basis_mismatch"
+                )
+            return
         method = str(framework.get("primary_method", "")).lower()
         framework_text = json.dumps(framework, ensure_ascii=False).lower()
         max_lookback = max(

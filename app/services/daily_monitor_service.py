@@ -11,6 +11,8 @@ from app.models.security import SecurityMaster
 from app.models.watchlist import WatchlistItem
 from app.schemas.thesis import DailyMonitorResponse, PriceContext
 from app.services.collection_service import CollectionService
+from app.services.event_identity import event_fingerprint
+from app.services.event_materiality_service import treasury_stock_materiality
 from app.services.local_storage import export_assessment_history, export_monitor_run, export_thesis
 from app.services.market_session import MarketScope, market_scope_for_security
 from app.services.monitoring_service import assessment_to_read
@@ -126,15 +128,40 @@ def _previous_assessment(
     session: Session,
     ticker: str,
     run_date: date,
+    thesis_version: int | None = None,
 ) -> ThesisAssessment | None:
-    return session.exec(
-        select(ThesisAssessment)
-        .where(
+    query = select(ThesisAssessment).where(
+        ThesisAssessment.ticker == ticker,
+        ThesisAssessment.assessment_date < run_date,
+    )
+    if thesis_version is not None:
+        query = query.where(ThesisAssessment.thesis_version == thesis_version)
+    return session.exec(query.order_by(ThesisAssessment.assessment_date.desc())).first()
+
+
+def _is_initial_baseline(
+    session: Session,
+    ticker: str,
+    thesis_version: int,
+    run_date: date,
+    *,
+    has_new_events: bool,
+) -> bool:
+    same_date = session.exec(
+        select(ThesisAssessment).where(
             ThesisAssessment.ticker == ticker,
-            ThesisAssessment.assessment_date < run_date,
+            ThesisAssessment.thesis_version == thesis_version,
+            ThesisAssessment.assessment_date == run_date,
         )
-        .order_by(ThesisAssessment.assessment_date.desc())
     ).first()
+    if same_date is not None:
+        snapshot = _json_value(same_date.thesis_snapshot, {})
+        if snapshot.get("assessment_mode") == "initial_baseline":
+            return not has_new_events
+        if has_new_events:
+            return False
+        return _previous_assessment(session, ticker, run_date, thesis_version) is None
+    return _previous_assessment(session, ticker, run_date, thesis_version) is None
 
 
 def _json_value(value: str, fallback: object) -> object:
@@ -171,6 +198,10 @@ def _build_thesis_snapshot(
     valuation_context: dict[str, object],
     new_confirmed_facts: list[str],
     background_confirmed_facts: list[str],
+    assessment_mode: str,
+    baseline_event_count: int,
+    delta_event_count: int,
+    capital_action_materiality: list[dict[str, object]],
 ) -> dict[str, object]:
     previous = _previous_snapshot(session, thesis.ticker, run_date)
     return {
@@ -178,6 +209,10 @@ def _build_thesis_snapshot(
         "thesis_version": thesis.version,
         "effective_date": str(run_date),
         "status": status,
+        "assessment_mode": assessment_mode,
+        "baseline_event_count": baseline_event_count,
+        "delta_event_count": delta_event_count,
+        "capital_action_materiality": capital_action_materiality,
         "current_thesis": f"{thesis.core_thesis} 현재 평가: {summary}",
         "thesis_drivers": _json_value(thesis.thesis_drivers, []),
         "validation_metrics": _json_value(thesis.validation_metrics, []),
@@ -314,8 +349,45 @@ async def run_daily_monitor(
                 thesis=thesis,
             )
             IssueIdentityAuditService().audit(session, item.ticker)
-            events = recent_events_for_assessment(session, item.ticker, run_date)
-            previous_assessment = _previous_assessment(session, item.ticker, run_date)
+            all_recent_events = recent_events_for_assessment(
+                session, item.ticker, run_date
+            )
+            assessment_mode = (
+                "initial_baseline"
+                if _is_initial_baseline(
+                    session,
+                    item.ticker,
+                    thesis.version,
+                    run_date,
+                    has_new_events=bool(all_recent_events),
+                )
+                else "daily_delta"
+            )
+            current_price = price_context.decision.current_price
+            materiality_by_fingerprint: dict[str, str] = {}
+            materiality_audit: list[dict[str, object]] = []
+            evaluation_events = []
+            for event in all_recent_events:
+                materiality = treasury_stock_materiality(
+                    session, event, current_price
+                )
+                if materiality is not None:
+                    fingerprint = event_fingerprint(event)
+                    materiality_by_fingerprint[fingerprint] = materiality.level
+                    materiality_audit.append(
+                        {
+                            "event_fingerprint": fingerprint,
+                            "event_date": str(event.date),
+                            "event_title": event.title,
+                            **materiality.audit_dict(),
+                        }
+                    )
+                    if materiality.level == "immaterial":
+                        continue
+                evaluation_events.append(event)
+            previous_assessment = _previous_assessment(
+                session, item.ticker, run_date, thesis.version
+            )
             baseline_warning_states = backfill_confirmed_warning_states(
                 session, thesis, run_date
             )
@@ -328,12 +400,22 @@ async def run_daily_monitor(
             ).first()
             result = evaluate_thesis(
                 thesis,
-                events,
+                evaluation_events,
                 price_context,
                 macro_impact=macro_impact,
                 previous_assessment=previous_assessment,
                 valuation_snapshot=valuation_snapshot,
                 baseline_warning_states=baseline_warning_states,
+                assessment_mode=assessment_mode,
+                event_materiality=materiality_by_fingerprint,
+            )
+            result.used_event_fingerprints = list(
+                dict.fromkeys(
+                    [
+                        *result.used_event_fingerprints,
+                        *(event_fingerprint(event) for event in all_recent_events),
+                    ]
+                )
             )
             valuation_context = result.valuation_context.model_dump(mode="json")
             thesis_snapshot = _build_thesis_snapshot(
@@ -346,6 +428,10 @@ async def run_daily_monitor(
                 valuation_context,
                 result.confirmed_facts,
                 result.background_confirmed_facts,
+                assessment_mode,
+                len(all_recent_events) if assessment_mode == "initial_baseline" else 0,
+                len(evaluation_events) if assessment_mode == "daily_delta" else 0,
+                materiality_audit,
             )
             assessment = _assessment_for_date(session, item.ticker, run_date)
             if assessment is None:
@@ -473,7 +559,10 @@ async def run_daily_monitor(
             run.success_count += 1
             details["tickers"][item.ticker] = {
                 "status": result.status,
-                "event_count": len(events),
+                "assessment_mode": assessment_mode,
+                "event_count": len(all_recent_events),
+                "evaluation_event_count": len(evaluation_events),
+                "capital_action_materiality": materiality_audit,
                 "previous_status": (
                     previous_assessment.business_thesis_change or previous_assessment.status
                     if previous_assessment is not None

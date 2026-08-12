@@ -21,7 +21,7 @@ from app.providers.identity import OpenFigiProvider
 from app.models.watchlist import WatchlistItem
 from app.providers.base import RawEvent
 from app.providers.ir import CompanyIRProvider
-from app.schemas.thesis import ValuationSnapshot
+from app.schemas.thesis import HistoricalPricePoint, ValuationSnapshot
 from app.services.alpha_vantage_service import AlphaVantageService
 from app.services.capital_action_service import CapitalActionService
 from app.services.data_coverage_service import DataCoverageService
@@ -35,7 +35,10 @@ from app.services.event_relevance_service import EventRelevanceService, extract_
 from app.services.financial_freshness_service import FinancialFreshnessService
 from app.services.financial_snapshot_service import upsert_financial_snapshot_from_event
 from app.services.financial_validation import validate_event_financials
-from app.services.historical_valuation_service import HistoricalValuationService
+from app.services.historical_valuation_service import (
+    VALUATION_HISTORY_ALGORITHM,
+    HistoricalValuationService,
+)
 from app.services.issue_identity_audit_service import IssueIdentityAuditService
 from app.services.news_query_service import NewsQueryService
 from app.services.collection_service import (
@@ -954,6 +957,7 @@ def test_historical_distribution_deduplicates_iso_weeks() -> None:
                     observation_date=start + timedelta(days=7 * week + offset),
                     price=10,
                     trailing_pe=10 + week / 10,
+                    sampling_frequency=VALUATION_HISTORY_ALGORITHM,
                 )
             )
     snapshot = ValuationSnapshot(trailing_pe=12)
@@ -966,7 +970,110 @@ def test_historical_distribution_deduplicates_iso_weeks() -> None:
     assert stats.raw_observation_count == 104
     assert stats.deduplicated_observation_count == 52
     assert stats.current_percentile is not None
-    assert stats.sampling_frequency == "weekly_last_valid_close"
+    assert stats.sampling_frequency == VALUATION_HISTORY_ALGORITHM
+
+
+def test_old_historical_cache_is_fully_rebuilt_with_unadjusted_algorithm() -> None:
+    engine = _engine()
+    with Session(engine) as session:
+        session.add(
+            HistoricalValuationObservation(
+                ticker="BASIS",
+                observation_date=date(2026, 1, 2),
+                price=11_080,
+                trailing_pe=2.0,
+                sampling_frequency="weekly_last_valid_close",
+            )
+        )
+        for period_type, period_end, filing in (
+            ("Q1", date(2025, 3, 31), date(2025, 5, 15)),
+            ("H1", date(2025, 6, 30), date(2025, 8, 14)),
+            ("Q3", date(2025, 9, 30), date(2025, 11, 14)),
+            ("FY", date(2025, 12, 31), date(2026, 3, 20)),
+        ):
+            session.add(
+                FinancialSnapshot(
+                    ticker="BASIS",
+                    period=f"2025-{period_type}",
+                    period_type=period_type,
+                    fiscal_year=2025,
+                    financial_period_end=period_end,
+                    filing_date=filing,
+                    snapshot_type="full_statement",
+                    diluted_eps=1_000,
+                    common_equity=1_000_000,
+                    common_shares_outstanding=100,
+                )
+            )
+        session.commit()
+
+        observations = HistoricalValuationService().update_cache(
+            session,
+            "BASIS",
+            [HistoricalPricePoint(date=date(2026, 4, 3), close=55_400)],
+            list(
+                session.exec(
+                    select(FinancialSnapshot).where(
+                        FinancialSnapshot.ticker == "BASIS"
+                    )
+                ).all()
+            ),
+        )
+        session.commit()
+        rebuilt = [
+            (item.observation_date, item.price, item.sampling_frequency)
+            for item in observations
+        ]
+
+    assert rebuilt == [
+        (date(2026, 4, 3), 55_400, VALUATION_HISTORY_ALGORITHM)
+    ]
+
+
+def test_unverified_historical_basis_hides_history_but_keeps_current_multiples() -> None:
+    snapshot = ValuationSnapshot(trailing_pe=12.3, price_to_book=2.1)
+
+    HistoricalValuationService().apply(
+        snapshot,
+        [],
+        {"primary_method": "forward P/E"},
+        "BASIS",
+        basis_verified=False,
+    )
+
+    assert snapshot.trailing_pe == 12.3
+    assert snapshot.price_to_book == 2.1
+    assert snapshot.historical_pe_statistics is None
+    assert snapshot.historical_pb_statistics is None
+    assert snapshot.historical_comparability == "price_share_basis_unverified"
+    assert snapshot.valuation_relative_position == "unknown"
+
+
+def test_latest_historical_pbr_basis_mismatch_suppresses_percentile() -> None:
+    observation = HistoricalValuationObservation(
+        ticker="MISMATCH",
+        observation_date=date(2026, 8, 10),
+        price=100,
+        financial_period_end=date(2026, 6, 30),
+        price_to_book=1.0,
+        sampling_frequency=VALUATION_HISTORY_ALGORITHM,
+    )
+    snapshot = ValuationSnapshot(
+        price_as_of="2026-08-12",
+        price_to_book=5.0,
+        pbr_denominator_period_end="2026-06-30",
+    )
+
+    HistoricalValuationService().apply(
+        snapshot,
+        [observation],
+        {"primary_method": "P/B"},
+        "MISMATCH",
+    )
+
+    assert snapshot.historical_pb_statistics is None
+    assert snapshot.historical_comparability == "price_share_basis_mismatch"
+    assert "price_share_basis_mismatch" in snapshot.valuation_relative_position_reason_codes
 
 
 def test_alpha_vantage_estimates_shares_dividends_and_splits_are_cached() -> None:

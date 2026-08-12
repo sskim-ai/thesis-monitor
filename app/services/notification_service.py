@@ -202,6 +202,114 @@ def _report_price(value: object, currency: object) -> str:
     return rendered
 
 
+def _compact_krw(value: object) -> str | None:
+    if not isinstance(value, (int, float)) or isinstance(value, bool):
+        return None
+    amount = float(value)
+    if not math.isfinite(amount):
+        return None
+    sign = "-" if amount < 0 else ""
+    amount = abs(amount)
+    jo = int(amount // 1_000_000_000_000)
+    eok = int(round((amount - jo * 1_000_000_000_000) / 100_000_000))
+    if eok >= 10_000:
+        jo += 1
+        eok -= 10_000
+    if jo and eok:
+        return f"{sign}{jo}조{eok:,}억원"
+    if jo:
+        return f"{sign}{jo}조원"
+    return f"{sign}{eok:,}억원"
+
+
+def _earnings_period_label(value: object, preliminary: bool) -> str | None:
+    if not value:
+        return None
+    try:
+        period = date.fromisoformat(str(value)[:10])
+    except ValueError:
+        return str(value)
+    quarter = (period.month - 1) // 3 + 1
+    suffix = " 잠정" if preliminary else ""
+    return f"{period.year}년 {quarter}분기{suffix}"
+
+
+_INTERNAL_FACT_MARKERS = (
+    "opendart",
+    "dart text",
+    " financial fact:",
+    " treasury stock fact:",
+    "fs_div=",
+    "sj_div=",
+    "period_scope=",
+    "amount_scope=",
+    "report_code=",
+    "selected_for_valuation=",
+    "parser=",
+)
+
+
+def _is_internal_fact(value: object) -> bool:
+    lowered = str(value).lower()
+    return any(marker in lowered for marker in _INTERNAL_FACT_MARKERS)
+
+
+def _user_fact_lines(
+    valuation_snapshot: dict[str, object],
+    evidence: list[object],
+    confirmed_facts: list[object],
+    *,
+    initial_baseline: bool,
+) -> list[str]:
+    lines: list[str] = []
+    has_internal_financial_fact = any(
+        "financial fact:" in str(item).lower() for item in confirmed_facts
+    )
+    if initial_baseline or has_internal_financial_fact:
+        period = _earnings_period_label(
+            valuation_snapshot.get("latest_earnings_period"),
+            bool(valuation_snapshot.get("earnings_context_is_preliminary")),
+        )
+        revenue = _compact_krw(valuation_snapshot.get("latest_revenue"))
+        operating_income = _compact_krw(
+            valuation_snapshot.get("latest_operating_income")
+        )
+        margin = valuation_snapshot.get("latest_operating_margin")
+        if period and revenue:
+            lines.append(f"{period} 매출 {revenue}")
+        if operating_income:
+            operating_line = f"영업이익 {operating_income}"
+            if isinstance(margin, (int, float)) and math.isfinite(float(margin)):
+                operating_line += f" · 영업이익률 {float(margin):.1f}%"
+            lines.append(operating_line)
+    for item in evidence:
+        if not isinstance(item, dict):
+            continue
+        contract_name = str(item.get("contract_name") or "").strip()
+        contract_amount = _compact_krw(item.get("contract_amount"))
+        if contract_name:
+            lines.append(
+                f"{contract_name} · 계약금액 {contract_amount}"
+                if contract_amount
+                else contract_name
+            )
+        title = str(item.get("title") or "").strip()
+        if (
+            title
+            and not _is_internal_fact(title)
+            and not (
+                len(lines) >= 2 and item.get("event_type") == "financial_report"
+            )
+        ):
+            lines.append(title)
+    if not initial_baseline:
+        for item in confirmed_facts:
+            text = str(item).strip()
+            if text and not _is_internal_fact(text):
+                lines.append(text)
+    return _unique_text(lines)[:3]
+
+
 def _supply_quantity(value: object, *, signed: bool = True) -> str:
     if not isinstance(value, (int, float)) or isinstance(value, bool):
         return "자료 없음"
@@ -379,6 +487,37 @@ def _valuation_formula_lines(
     return [f"{label}: {float(multiple):.1f}배"]
 
 
+def _forward_denominator_label(
+    snapshot: dict[str, object],
+    *,
+    multiple_field: str,
+) -> tuple[str, bool]:
+    if multiple_field == "forward_price_to_book":
+        source = str(snapshot.get("forward_price_to_book_source") or "unavailable")
+        return (
+            ("내부 FY1 추정 BVPS", True)
+            if source == "modeled_forward"
+            else ("시장 예상 BVPS", False)
+            if source == "consensus_forward"
+            else ("예상 BVPS", False)
+        )
+    source = str(snapshot.get("forward_pe_source") or "unavailable")
+    method = str(
+        snapshot.get("forecast_method") or snapshot.get("forward_pe_method") or ""
+    ).lower()
+    if source == "modeled_forward":
+        if "normalized_roe" in method or "normalized roe" in method:
+            return "내부 정상화 ROE 추정 EPS", True
+        if "normalized_net_margin" in method or "normalized net margin" in method:
+            return "내부 정상화 마진 추정 EPS", True
+        if "cycle_adjusted" in method or "cycle adjusted" in method:
+            return "내부 사이클 조정 EPS", True
+        return "내부 FY1 추정 EPS", True
+    if source == "consensus_forward":
+        return "시장 예상 EPS", False
+    return "예상 EPS", False
+
+
 def _history_summary(snapshot: dict[str, object]) -> str | None:
     parts: list[str] = []
     for label, key in (
@@ -540,6 +679,13 @@ def _data_cautions(
         cautions.append(
             "최근 해외 공시 재무표의 자동 검증이 끝나지 않아 Valuation을 보수적으로 봅니다."
         )
+    if snapshot.get("historical_comparability") in {
+        "price_share_basis_unverified",
+        "price_share_basis_mismatch",
+    }:
+        cautions.append(
+            "과거 배수 비교의 가격·주식수 기준을 확인하지 못해 역사적 백분위는 보류했습니다."
+        )
     return list(dict.fromkeys(cautions))
 
 
@@ -575,6 +721,8 @@ def _assessment_report(
     )
     price_context = _json_value(assessment.price_context, {})
     thesis_snapshot = _json_value(assessment.thesis_snapshot, {})
+    assessment_mode = str(thesis_snapshot.get("assessment_mode") or "daily_delta")
+    is_initial_baseline = assessment_mode == "initial_baseline"
     thesis_drivers = _json_list_value(thesis.thesis_drivers) if thesis else []
     validation_metrics = _json_list_value(thesis.validation_metrics) if thesis else []
     strengthen_signals = _json_list_value(thesis.strengthen_signals) if thesis else []
@@ -631,10 +779,14 @@ def _assessment_report(
         if isinstance(item, dict)
     ]
     change_text = "\n".join(evidence_lines) or "• 투자 판단을 바꿀 새 근거가 확인되지 않았습니다."
-    fact_lines = [f"• {item}" for item in confirmed_facts[:3]]
-    inference_lines = [f"• 투자적 해석: {item}" for item in inferred_implications[:2]]
-    if fact_lines or inference_lines:
-        change_text = "\n".join([*fact_lines, *inference_lines])
+    user_facts = _user_fact_lines(
+        valuation_snapshot,
+        evidence_items,
+        confirmed_facts,
+        initial_baseline=is_initial_baseline,
+    )
+    if user_facts:
+        change_text = "\n".join(f"• {item}" for item in user_facts)
     elif business_change == "no_material_change":
         change_text = "• 오늘 투자 논리를 바꿀 신규 확정 사실은 확인되지 않았습니다."
     core_thesis = (
@@ -714,7 +866,9 @@ def _assessment_report(
         if str(signal).strip()
     )
     sections: list[str] = [f"🏢 {company_name}({assessment.ticker})"]
-    if business_change == "no_material_change":
+    if is_initial_baseline:
+        sections.append("투자 논리: 초기 설정")
+    elif business_change == "no_material_change":
         sections.append("투자 논리: 유지 · 오늘 중요한 신규 변화 없음")
     else:
         sections.append(f"투자 논리: {label}")
@@ -725,15 +879,17 @@ def _assessment_report(
             f"🎯 핵심\n{_concise_text(core_thesis)}",
         ]
     )
-    if business_change != "no_material_change" and change_text:
+    if is_initial_baseline and change_text:
+        sections.append(f"📌 초기 근거\n{change_text}")
+    elif business_change != "no_material_change" and change_text:
         sections.append(f"🔄 중요한 변화\n{change_text}")
-    if new_warnings:
+    if new_warnings and not is_initial_baseline:
         sections.append("🚨 오늘 새 경고\n" + _bullet_text(new_warnings, ""))
     if prior_open_warnings:
         sections.append("⚠️ 기존 경고\n" + _bullet_text(prior_open_warnings, ""))
     if persistent_watch_risks:
         sections.append("👁 핵심 감시\n" + _bullet_text(persistent_watch_risks, "", limit=3))
-    if matched_today:
+    if matched_today and not is_initial_baseline:
         sections.append("📍 오늘 접근한 조건\n" + _bullet_text(matched_today, ""))
 
     price_lines = [
@@ -765,6 +921,7 @@ def _assessment_report(
             sections.append(supply_section)
 
     valuation_lines = ["📐 Valuation"]
+    modeled_forward_formula = False
     for arguments in (
         ("PER", "trailing_pe", "ttm_eps", "TTM EPS"),
         ("PBR", "price_to_book", "bvps", "BVPS"),
@@ -772,8 +929,14 @@ def _assessment_report(
         ("fPBR", "forward_price_to_book", "forward_bvps", "예상 BVPS"),
     ):
         denominator_label = arguments[3]
+        is_modeled = False
         if arguments[0] == "PER" and valuation_snapshot.get("ttm_contains_preliminary"):
             denominator_label = "최근 4개 분기 EPS"
+        if arguments[0] in {"fPER", "fPBR"}:
+            denominator_label, is_modeled = _forward_denominator_label(
+                valuation_snapshot,
+                multiple_field=arguments[1],
+            )
         rendered_formula = _valuation_formula_lines(
             valuation_snapshot,
             label=arguments[0],
@@ -782,12 +945,18 @@ def _assessment_report(
             denominator_label=denominator_label,
         )
         valuation_lines.extend(rendered_formula)
+        modeled_forward_formula = modeled_forward_formula or (
+            is_modeled
+            and any(" = 현재가 ÷ " in line for line in rendered_formula)
+        )
         if (
             arguments[0] == "PER"
             and rendered_formula
             and valuation_snapshot.get("ttm_contains_preliminary")
         ):
             valuation_lines.append("※ 최근 분기 잠정실적 반영")
+    if modeled_forward_formula:
+        valuation_lines.append("※ 내부 모델 추정치이며 시장 컨센서스가 아닙니다.")
     if (
         valuation_snapshot.get("earnings_context_is_preliminary")
         and valuation_snapshot.get("earnings_context_usable")

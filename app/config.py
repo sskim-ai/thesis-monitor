@@ -63,6 +63,10 @@ class Settings(BaseSettings):
     valuation_history_somewhat_discounted_percentile: float = 40.0
     valuation_history_somewhat_premium_percentile: float = 60.0
     valuation_history_premium_percentile: float = 80.0
+    capital_action_review_share_pct: float = 0.5
+    capital_action_material_share_pct: float = 2.0
+    capital_action_review_market_cap_pct: float = 0.5
+    capital_action_material_market_cap_pct: float = 2.0
     macro_vix_material_pct: float = 5.0
     macro_real_yield_material_bp: float = 5.0
     macro_nominal_yield_material_bp: float = 7.0

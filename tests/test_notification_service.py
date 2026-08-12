@@ -190,6 +190,82 @@ def test_provider_only_forward_multiple_is_not_reverse_engineered() -> None:
     assert "현재가 ÷ 예상 EPS" not in message
 
 
+def test_initial_baseline_uses_clean_facts_and_modeled_forward_label() -> None:
+    assessment = _compact_assessment(
+        confirmed_facts=json.dumps(
+            [
+                "OpenDART financial fact: 매출액 = 1576998000000 KRW "
+                "(fs_div=CFS, sj_div=IS, period_scope=quarter)",
+                "DART text supply contract fact: contract_name = "
+                "북미 데이터센터용 연료전지 전력설비 공급 PJT",
+                "DART text supply contract fact: amount = 318,964,597,910",
+            ],
+            ensure_ascii=False,
+        ),
+        evidence=json.dumps(
+            [
+                {
+                    "title": "북미 데이터센터 전력 인프라 수주",
+                    "direction": "baseline",
+                    "contract_name": "북미 데이터센터용 연료전지 전력설비 공급 PJT",
+                    "contract_amount": 318_964_597_910,
+                }
+            ],
+            ensure_ascii=False,
+        ),
+        thesis_snapshot=json.dumps(
+            {
+                "base_thesis": "전력 인프라 수요와 수익성 개선이 핵심입니다.",
+                "assessment_mode": "initial_baseline",
+            },
+            ensure_ascii=False,
+        ),
+    )
+    snapshot = json.loads(assessment.valuation_snapshot)
+    snapshot.update(
+        {
+            "latest_earnings_period": "2026-06-30",
+            "earnings_context_is_preliminary": True,
+            "latest_revenue": 1_576_998_000_000,
+            "latest_operating_income": 178_520_000_000,
+            "latest_operating_margin": 11.32,
+            "forward_pe_source": "modeled_forward",
+            "forecast_method": "normalized_roe",
+            "forward_price_to_book": 6.1,
+            "forward_price_to_book_status": "value",
+            "forward_price_to_book_source": "modeled_forward",
+            "forward_bvps": 233_606.56,
+        }
+    )
+    assessment.valuation_snapshot = json.dumps(snapshot, ensure_ascii=False)
+
+    message = _message_for_assessment(assessment)
+
+    assert "투자 논리: 초기 설정" in message
+    assert "📌 초기 근거" in message
+    assert "🔄 중요한 변화" not in message
+    assert "2026년 2분기 잠정 매출 1조5,770억원" in message
+    assert "영업이익 1,785억원 · 영업이익률 11.3%" in message
+    assert "북미 데이터센터용 연료전지 전력설비 공급 PJT · 계약금액 3,190억원" in message
+    assert "현재가 ÷ 내부 정상화 ROE 추정 EPS" in message
+    assert "현재가 ÷ 내부 FY1 추정 BVPS" in message
+    assert "내부 모델 추정치이며 시장 컨센서스가 아닙니다." in message
+    for hidden in ("OpenDART", "DART text", "fs_div", "sj_div", "period_scope"):
+        assert hidden not in message
+
+
+def test_consensus_forward_denominator_uses_market_estimate_label() -> None:
+    assessment = _compact_assessment()
+    snapshot = json.loads(assessment.valuation_snapshot)
+    snapshot["forward_pe_source"] = "consensus_forward"
+    assessment.valuation_snapshot = json.dumps(snapshot, ensure_ascii=False)
+
+    message = _message_for_assessment(assessment)
+
+    assert "현재가 ÷ 시장 예상 EPS" in message
+    assert "내부 모델 추정치이며 시장 컨센서스가 아닙니다." not in message
+
+
 def test_data_caution_only_renders_for_material_quality_problem() -> None:
     normal = _compact_assessment()
     assert "⚠️ 데이터 주의" not in _message_for_assessment(normal)

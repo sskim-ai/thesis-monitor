@@ -581,6 +581,69 @@ def _unique(items: list[str]) -> list[str]:
     return list(dict.fromkeys(item.strip() for item in items if item.strip()))
 
 
+def _event_user_fields(event: Event) -> dict[str, object]:
+    facts = _json_list(event.confirmed_facts)
+    contract_name = None
+    contract_amount = None
+    for fact in facts:
+        lowered = fact.lower()
+        if "supply contract fact: contract_name" in lowered:
+            contract_name = fact.split("=", 1)[-1].strip() or None
+        elif "supply contract fact: amount" in lowered:
+            match = re.search(r"[-+]?\d[\d,]*(?:\.\d+)?", fact.split("=", 1)[-1])
+            if match:
+                contract_amount = float(match.group(0).replace(",", ""))
+    if contract_name:
+        return {
+            "contract_name": contract_name,
+            "contract_amount": contract_amount,
+        }
+    return {}
+
+
+def _baseline_evidence(events: list[Event]) -> list[dict[str, object]]:
+    priority = {
+        "earnings": 0,
+        "earnings_release": 0,
+        "provisional_earnings": 0,
+        "financial_report": 0,
+        "major_order": 1,
+        "large_order": 1,
+        "customer_change": 1,
+        "revenue_guidance_up": 2,
+        "revenue_guidance_down": 2,
+        "margin_guidance_up": 2,
+        "margin_guidance_down": 2,
+        "guidance_change": 2,
+        "capital_allocation": 3,
+    }
+    ordered = sorted(
+        [event for event in events if event.event_type != "non_thesis_noise"],
+        key=lambda event: (
+            priority.get(event.event_type, 4),
+            -event.relevance_score,
+            -event.date.toordinal(),
+        ),
+    )
+    return [
+        {
+            "date": str(event.date),
+            "title": event.title,
+            "url": event.url,
+            "provider": event.provider,
+            "event_type": event.event_type,
+            "direction": "baseline",
+            "valuation_direction": "neutral",
+            "relevance_score": event.relevance_score,
+            "matched_signals": [],
+            "matched_valuation_signals": [],
+            "fingerprint": event_fingerprint(event),
+            **_event_user_fields(event),
+        }
+        for event in ordered
+    ]
+
+
 def _assessment_evidence_layers(
     events: list[Event],
 ) -> tuple[list[str], list[str], list[str]]:
@@ -979,8 +1042,13 @@ def evaluate_thesis(
     previous_assessment: ThesisAssessment | None = None,
     valuation_snapshot: ValuationSnapshot | None = None,
     baseline_warning_states: list[dict[str, object]] | None = None,
+    assessment_mode: str = "daily_delta",
+    event_materiality: dict[str, str] | None = None,
 ) -> EvaluationResult:
-    events = [event for event in events if event_is_eligible_for_current_analysis(event)]
+    all_events = [event for event in events if event_is_eligible_for_current_analysis(event)]
+    is_initial_baseline = assessment_mode == "initial_baseline"
+    events = [] if is_initial_baseline else all_events
+    event_materiality = event_materiality or {}
     strengthen_signals = _json_list(thesis.strengthen_signals)
     weaken_signals = _json_list(thesis.weaken_signals)
     invalidation_signals = _json_list(thesis.invalidation_signals)
@@ -1051,12 +1119,17 @@ def evaluate_thesis(
         matched_expansion.extend(expansion_matches)
         matched_compression.extend(compression_matches)
 
-        if direction != "neutral" or (event.requires_review and event.relevance_score >= 70):
+        requires_review = (
+            event.requires_review
+            and event.relevance_score >= 70
+            and event_materiality.get(event_fingerprint(event)) not in {"immaterial", "unknown"}
+        )
+        if direction != "neutral" or requires_review:
             core_review_evidence = True
         if (
             direction != "neutral"
             or valuation_direction != "neutral"
-            or (event.requires_review and event.relevance_score >= 70)
+            or requires_review
         ):
             evidence.append(
                 {
@@ -1078,13 +1151,20 @@ def evaluate_thesis(
                         *compression_matches,
                     ],
                     "fingerprint": event_fingerprint(event),
+                    **_event_user_fields(event),
                 }
             )
 
     _evaluate_price_rules(thesis, price_context)
     price_decision = _build_price_decision(thesis, price_context)
 
-    macro_valuation_effect = macro_impact.valuation_effect if macro_impact else "neutral"
+    macro_valuation_effect = (
+        "neutral"
+        if is_initial_baseline
+        else macro_impact.valuation_effect
+        if macro_impact
+        else "neutral"
+    )
     if macro_valuation_effect == "strengthen":
         expansion_points += max(20, (macro_impact.magnitude if macro_impact else 0) * 10)
     elif macro_valuation_effect == "weaken":
@@ -1130,12 +1210,17 @@ def evaluate_thesis(
         status = AssessmentStatus.needs_review
     else:
         status = AssessmentStatus.no_material_change
-    status = _transition_guard(
-        previous_assessment,
-        status,
-        material_positive=material_positive,
-        material_invalidation=trusted_invalidation,
-    )
+    if is_initial_baseline:
+        status = AssessmentStatus.no_material_change
+        earnings_estimate_impact = EarningsEstimateImpact.unchanged
+        evidence = _baseline_evidence(all_events)
+    else:
+        status = _transition_guard(
+            previous_assessment,
+            status,
+            material_positive=material_positive,
+            material_invalidation=trusted_invalidation,
+        )
 
     expectations = _json_dict(thesis.market_expectations)
     framework = _json_dict(thesis.valuation_framework)
@@ -1257,7 +1342,8 @@ def evaluate_thesis(
     market_expectation_assessment = _expectation_assessment(
         expectations, valuation_context
     )
-    confirmed_facts, inferred_implications, unknowns = _assessment_evidence_layers(events)
+    fact_events = all_events if is_initial_baseline else events
+    confirmed_facts, inferred_implications, unknowns = _assessment_evidence_layers(fact_events)
     new_warnings = _unique(
         fact
         for event in events
@@ -1293,7 +1379,7 @@ def evaluate_thesis(
     confirmed_warnings = new_warnings
     watch_items = _unique(_watch_text(item) for item in unknowns)
     background_confirmed_facts = _previous_facts(previous_assessment)
-    used_event_fingerprints = [event_fingerprint(event) for event in events]
+    used_event_fingerprints = [event_fingerprint(event) for event in all_events]
 
     net_score = max(-100, min(100, positive_points - negative_points))
     confidence = _assessment_confidence(
@@ -1308,7 +1394,26 @@ def evaluate_thesis(
         expectation_level,
     )
 
-    if status == AssessmentStatus.strengthened:
+    if is_initial_baseline:
+        summary = "초기 투자 논리와 현재 가격·Valuation 기준선을 설정했습니다."
+        new_buyer_view = "신규 관찰자는 저장된 투자 논리와 현재 가격·Valuation 기준을 출발점으로 봅니다."
+        holder_view = "보유자는 초기 감시 항목과 무효화 조건을 기준선으로 확인합니다."
+        risk_level = "watch"
+        daily_change_severity = "none"
+        valuation_context.impact = ValuationImpact.neutral
+        valuation_context.summary = "초기 기준선에서는 일간 Valuation 변화를 평가하지 않습니다."
+        valuation_context.macro_valuation_effect = "neutral"
+        valuation_context.macro_valuation_effects = []
+        valuation_context.matched_expansion_signals = []
+        valuation_context.matched_compression_signals = []
+        valuation_context.matched_expansion_conditions = []
+        valuation_context.matched_compression_conditions = []
+        valuation_context.valuation_evidence = []
+        valuation_context.evidence_count = 0
+        new_warnings = []
+        confirmed_warnings = []
+        should_deactivate = False
+    elif status == AssessmentStatus.strengthened:
         summary = "새 근거가 현재 투자 논리를 강화했습니다."
         new_buyer_view = "신규 진입 관점에서는 가격 위치와 밸류에이션을 확인한 뒤 분할 접근을 검토할 수 있습니다."
         holder_view = "보유자 관점에서는 핵심 근거의 지속 여부를 확인하며 보유 논리를 유지할 수 있습니다."
@@ -1350,7 +1455,7 @@ def evaluate_thesis(
         open_warnings,
         previous_assessment,
     )
-    daily_change_severity = _daily_change_severity(status)
+    daily_change_severity = "none" if is_initial_baseline else _daily_change_severity(status)
     assessment_state = AssessmentState(price_decision.assessment_state)
     snapshot = valuation_snapshot or ValuationSnapshot(
         current_price=price_decision.current_price,
@@ -1393,7 +1498,7 @@ def evaluate_thesis(
         holder_price_view=holder_price_view,
         valuation_snapshot=snapshot,
         used_event_fingerprints=used_event_fingerprints,
-        should_deactivate=trusted_invalidation,
+        should_deactivate=should_deactivate if is_initial_baseline else trusted_invalidation,
     )
 
 

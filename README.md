@@ -442,6 +442,20 @@ Naver API keys can be issued from Naver Developers after creating an application
 
 Live provider normalization is intentionally conservative. Headlines and filing titles become `confirmed_facts`; unverified customer names, order size, revenue impact, margin impact, and FCF impact remain in `unknowns` or `inferred_implications`.
 
+The first assessment of each thesis version is stored as an initial baseline. Eligible
+backfill events are fingerprinted so they do not reappear as daily changes, while only
+events arriving after that baseline can drive strengthen/weaken/review transitions.
+Telegram renders verified financial snapshot values instead of internal filing-parser
+metadata. Treasury-stock events are scored only after share-count and market-cap
+materiality checks; the default review/material thresholds are configurable in
+`.env.example`.
+
+Technical price ranges continue to use adjusted OHLCV. Point-in-time historical
+PER/PBR uses a separate unadjusted weekly close series so historical prices remain
+comparable with contemporaneous EPS, BVPS, and share counts. If that basis cannot be
+verified, current multiples remain available but historical medians and percentiles are
+withheld.
+
 ## Security Notes
 
 - Keep API keys in `.env` only.

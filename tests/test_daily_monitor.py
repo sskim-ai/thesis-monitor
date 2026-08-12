@@ -921,12 +921,17 @@ async def test_daily_monitor_assesses_and_queues_dry_run_notification() -> None:
         monitor_run = session.exec(select(MonitorRun).where(MonitorRun.run_date == date(2030, 1, 2))).one()
         assert result.status == "success", monitor_run.details
         assessment = next(item for item in result.assessments if item.ticker == "TST1")
-        assert assessment.status == "strengthened"
+        assert assessment.status == "no_material_change"
         assert assessment.price_context.periods["daily"].actual_count == 420
-        assert assessment.thesis_snapshot.supporting_evidence
-        assert assessment.valuation_context.impact == "expansion"
-        assert assessment.thesis_snapshot.valuation_context.impact == "expansion"
+        assert assessment.valuation_context.impact == "neutral"
+        assert assessment.thesis_snapshot.valuation_context.impact == "neutral"
         assert "현재 평가" in assessment.thesis_snapshot.current_thesis
+        stored = session.exec(
+            select(ThesisAssessment).where(ThesisAssessment.ticker == "TST1")
+        ).one()
+        stored_snapshot = json.loads(stored.thesis_snapshot)
+        assert stored_snapshot["assessment_mode"] == "initial_baseline"
+        assert stored_snapshot["baseline_event_count"] == 1
         delivery = session.exec(
             select(NotificationDelivery).where(NotificationDelivery.ticker == "TST1")
         ).one()
@@ -947,6 +952,144 @@ async def test_daily_monitor_assesses_and_queues_dry_run_notification() -> None:
         assert retry_result.status == "already_completed"
         assert delivery.status == "dry_run"
         assert delivery.attempt_count == 5
+
+
+@pytest.mark.anyio
+async def test_baseline_consumes_backfill_then_only_new_events_drive_delta() -> None:
+    init_db()
+    with Session(engine) as session:
+        register_monitoring_item(
+            session,
+            MonitoringItemCreate(
+                ticker="BASE1",
+                company_name="Baseline Company",
+                core_thesis="New customer production orders support growth",
+                strengthen_signals=["new customer production order"],
+            ),
+        )
+        first_date = date(2032, 1, 2)
+        first = await run_daily_monitor(
+            session,
+            run_date=first_date,
+            collection_service=FakeCollectionService(),
+            price_client=FakePriceClient(),
+            queue_notifications=False,
+            dispatch_notifications=False,
+        )
+        first_stored = session.exec(
+            select(ThesisAssessment).where(
+                ThesisAssessment.ticker == "BASE1",
+                ThesisAssessment.assessment_date == first_date,
+            )
+        ).one()
+        first_fingerprints = json.loads(first_stored.used_event_fingerprints)
+
+        second = await run_daily_monitor(
+            session,
+            run_date=date(2032, 1, 3),
+            collection_service=EmptyCollectionService(),
+            price_client=FakePriceClient(),
+            queue_notifications=False,
+            dispatch_notifications=False,
+        )
+        session.add(
+            Event(
+                ticker="BASE1",
+                company_name="Baseline Company",
+                date=date(2032, 1, 4),
+                source="Company filing",
+                provider="sec_edgar",
+                title="New customer production order confirmed",
+                url="https://example.com/base1-new-order",
+                event_type="production_order",
+                confirmed_facts=json.dumps(
+                    ["New customer production order confirmed"]
+                ),
+                relevance_score=70,
+            )
+        )
+        session.commit()
+        third = await run_daily_monitor(
+            session,
+            run_date=date(2032, 1, 4),
+            collection_service=EmptyCollectionService(),
+            price_client=FakePriceClient(),
+            queue_notifications=False,
+            dispatch_notifications=False,
+        )
+
+    first_assessment = next(item for item in first.assessments if item.ticker == "BASE1")
+    second_assessment = next(item for item in second.assessments if item.ticker == "BASE1")
+    third_assessment = next(item for item in third.assessments if item.ticker == "BASE1")
+    assert first_assessment.status == "no_material_change"
+    assert first_fingerprints
+    assert second_assessment.status == "no_material_change"
+    assert second_assessment.evidence == []
+    assert third_assessment.status == "strengthened"
+    assert len(third_assessment.evidence) == 1
+
+
+@pytest.mark.anyio
+async def test_first_assessment_of_new_thesis_version_is_a_new_baseline() -> None:
+    init_db()
+    with Session(engine) as session:
+        register_monitoring_item(
+            session,
+            MonitoringItemCreate(
+                ticker="BASE2",
+                company_name="Versioned Baseline Company",
+                core_thesis="Original thesis",
+            ),
+        )
+        await run_daily_monitor(
+            session,
+            run_date=date(2033, 1, 2),
+            collection_service=EmptyCollectionService(),
+            price_client=FakePriceClient(),
+            queue_notifications=False,
+            dispatch_notifications=False,
+        )
+        original = session.exec(
+            select(InvestmentThesis).where(
+                InvestmentThesis.ticker == "BASE2",
+                InvestmentThesis.status == "active",
+            )
+        ).one()
+        original.status = "superseded"
+        session.add(original)
+        session.add(
+            InvestmentThesis(
+                ticker="BASE2",
+                version=2,
+                core_thesis="Materially revised thesis",
+                status="active",
+            )
+        )
+        session.commit()
+
+        result = await run_daily_monitor(
+            session,
+            run_date=date(2033, 1, 3),
+            collection_service=EmptyCollectionService(),
+            price_client=FakePriceClient(),
+            queue_notifications=False,
+            dispatch_notifications=False,
+        )
+        stored = session.exec(
+            select(ThesisAssessment).where(
+                ThesisAssessment.ticker == "BASE2",
+                ThesisAssessment.assessment_date == date(2033, 1, 3),
+            )
+        ).one()
+        stored_version = stored.thesis_version
+        stored_mode = json.loads(stored.thesis_snapshot)["assessment_mode"]
+
+    result_assessment = next(
+        item for item in result.assessments if item.ticker == "BASE2"
+    )
+    assert result_assessment.status == "no_material_change"
+    assert stored_version == 2
+    assert stored_mode == "initial_baseline"
 
 
 @pytest.mark.anyio
