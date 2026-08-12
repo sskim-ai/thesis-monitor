@@ -267,6 +267,10 @@ async def fetch_live_probe(
             reason="KRX_OPEN_API_KEY is not configured",
         )
     queried_dates: list[date] = []
+    skipped_warnings: list[str] = []
+    latest_nonempty: KrxNightFuturesProbeResult | None = None
+    last_fetch_error: str | None = None
+    successful_response_count = 0
     async with httpx.AsyncClient(
         timeout=get_settings().macro_provider_timeout_seconds,
         transport=transport,
@@ -283,26 +287,46 @@ async def fetch_live_probe(
                 response.raise_for_status()
                 payload = response.json()
             except (httpx.HTTPError, ValueError, TypeError) as exc:
-                if days_back + 1 < max_lookback_days:
-                    continue
-                return KrxNightFuturesProbeResult(
-                    status="unavailable",
-                    fetched_at=fetched_at,
-                    queried_dates=queried_dates,
-                    reason=f"krx_fetch_failed:{type(exc).__name__}",
+                last_fetch_error = f"krx_fetch_failed:{type(exc).__name__}"
+                skipped_warnings.append(
+                    f"{target_date}: fetch failed ({type(exc).__name__})"
                 )
+                continue
+            successful_response_count += 1
             result = parse_krx_futures_payload(
                 payload,
                 fetched_at=fetched_at,
                 queried_dates=queried_dates,
             )
-            if result.row_count:
+            if result.night_session_usable:
+                result.warnings = skipped_warnings + result.warnings
                 return result
+            if result.row_count:
+                if latest_nonempty is None:
+                    latest_nonempty = result
+                skipped_warnings.append(
+                    f"{target_date}: rows present but no verified regular/night pair"
+                )
+    if latest_nonempty is not None:
+        latest_nonempty.status = "unavailable"
+        latest_nonempty.reason = "no_recent_verified_night_pair"
+        latest_nonempty.queried_dates = queried_dates
+        latest_nonempty.warnings = skipped_warnings + latest_nonempty.warnings
+        return latest_nonempty
+    if successful_response_count == 0 and last_fetch_error is not None:
+        return KrxNightFuturesProbeResult(
+            status="unavailable",
+            fetched_at=fetched_at,
+            queried_dates=queried_dates,
+            reason=last_fetch_error,
+            warnings=skipped_warnings,
+        )
     return KrxNightFuturesProbeResult(
         status="unavailable",
         fetched_at=fetched_at,
         queried_dates=queried_dates,
         reason="no_recent_business_date_data",
+        warnings=skipped_warnings,
     )
 
 

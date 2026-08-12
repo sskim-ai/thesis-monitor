@@ -17,11 +17,58 @@ from app.services.notification_service import (
 
 KST = ZoneInfo("Asia/Seoul")
 FX_SERIES = ("USDKRW_KR_CLOSE", "JPYKRW100_KR_CLOSE", "EURKRW_KR_CLOSE")
+KR_CLOSE_PRODUCTION_TIME = time(16, 0)
 
 
 def _as_utc(value: datetime) -> datetime:
     return value.replace(tzinfo=timezone.utc) if value.tzinfo is None else value.astimezone(
         timezone.utc
+    )
+
+
+def kr_close_production_cutoff(run_date: date) -> datetime:
+    return datetime.combine(run_date, KR_CLOSE_PRODUCTION_TIME, tzinfo=KST)
+
+
+def _datetime_value(value: object) -> datetime | None:
+    if isinstance(value, datetime):
+        return value
+    if not isinstance(value, str):
+        return None
+    try:
+        return datetime.fromisoformat(value.replace("Z", "+00:00"))
+    except ValueError:
+        return None
+
+
+def _is_production_ready_briefing(
+    briefing: MacroBriefing,
+    run_date: date,
+) -> bool:
+    cutoff = kr_close_production_cutoff(run_date)
+    if briefing.status != "ready" or _as_utc(briefing.as_of) < _as_utc(cutoff):
+        return False
+    try:
+        market_summary = json.loads(briefing.market_summary)
+    except (json.JSONDecodeError, TypeError):
+        return False
+    if not isinstance(market_summary, dict):
+        return False
+    fx = market_summary.get("fx")
+    if not isinstance(fx, list):
+        return False
+    retrieved_by_series: dict[str, datetime] = {}
+    for item in fx:
+        if not isinstance(item, dict):
+            continue
+        series_code = item.get("series_code")
+        retrieved_at = _datetime_value(item.get("retrieved_at"))
+        if series_code in FX_SERIES and retrieved_at is not None:
+            retrieved_by_series[str(series_code)] = retrieved_at
+    return all(
+        series_code in retrieved_by_series
+        and _as_utc(retrieved_by_series[series_code]) >= _as_utc(cutoff)
+        for series_code in FX_SERIES
     )
 
 
@@ -118,22 +165,25 @@ def _current_close_observations(
     session: Session,
     provider: str,
     run_date: date,
+    *,
+    retrieved_after: datetime | None = None,
 ) -> list[MacroObservation]:
     day_start = datetime.combine(run_date, time.min, tzinfo=KST).astimezone(timezone.utc)
     next_day = datetime.combine(
         run_date + timedelta(days=1), time.min, tzinfo=KST
     ).astimezone(timezone.utc)
-    rows = session.exec(
-        select(MacroObservation)
-        .where(
-            MacroObservation.provider == provider,
-            MacroObservation.series_code.in_(FX_SERIES),
-            MacroObservation.market_session == "kr_close",
-            MacroObservation.retrieved_at >= day_start,
-            MacroObservation.retrieved_at < next_day,
+    query = select(MacroObservation).where(
+        MacroObservation.provider == provider,
+        MacroObservation.series_code.in_(FX_SERIES),
+        MacroObservation.market_session == "kr_close",
+        MacroObservation.retrieved_at >= day_start,
+        MacroObservation.retrieved_at < next_day,
+    )
+    if retrieved_after is not None:
+        query = query.where(
+            MacroObservation.retrieved_at >= _as_utc(retrieved_after)
         )
-        .order_by(MacroObservation.retrieved_at.desc())
-    ).all()
+    rows = session.exec(query.order_by(MacroObservation.retrieved_at.desc())).all()
     by_series: dict[str, MacroObservation] = {}
     for row in rows:
         by_series.setdefault(row.series_code, row)
@@ -159,23 +209,27 @@ def _briefing_values(
         raw_payload = json.loads(row.raw_payload)
         fx.append(
             {
-            "series_code": series_code,
-            "value": row.value,
-            "previous_value": row.previous_value,
-            "change_value": row.change_value,
-            "change_pct": row.change_pct,
-            "as_of": row.observed_at.isoformat(),
-            "comparison_date": _as_utc(previous.retrieved_at)
-            .astimezone(KST)
-            .date()
-            .isoformat()
-            if previous is not None
-            else None,
-            "quality_status": row.quality_status,
-            "provider_last_refreshed": raw_payload.get("provider_last_refreshed"),
-            "provider_timezone": raw_payload.get("provider_timezone"),
-            "retrieved_at": row.retrieved_at.isoformat(),
-                }
+                "series_code": series_code,
+                "value": row.value,
+                "previous_value": row.previous_value,
+                "change_value": row.change_value,
+                "change_pct": row.change_pct,
+                "as_of": row.observed_at.isoformat(),
+                "comparison_date": (
+                    _as_utc(previous.retrieved_at)
+                    .astimezone(KST)
+                    .date()
+                    .isoformat()
+                    if previous is not None
+                    else None
+                ),
+                "quality_status": row.quality_status,
+                "provider_last_refreshed": raw_payload.get(
+                    "provider_last_refreshed"
+                ),
+                "provider_timezone": raw_payload.get("provider_timezone"),
+                "retrieved_at": row.retrieved_at.isoformat(),
+            }
         )
     return {
         "as_of": as_of,
@@ -216,6 +270,8 @@ async def run_kr_close_market_briefing(
     dispatch_notifications: bool = True,
 ) -> KrCloseBriefingRunResult:
     as_of = as_of or datetime.now(timezone.utc)
+    cutoff = kr_close_production_cutoff(run_date)
+    post_cutoff = _as_utc(as_of) >= _as_utc(cutoff)
     existing = session.exec(
         select(MacroBriefing).where(
             MacroBriefing.briefing_date == run_date,
@@ -223,14 +279,28 @@ async def run_kr_close_market_briefing(
         )
     ).first()
     previous_status = existing.status if existing is not None else None
+    existing_production_ready = bool(
+        existing is not None and _is_production_ready_briefing(existing, run_date)
+    )
     if existing is not None and existing.status == "ready" and not force:
-        delivery = queue_macro_notification(session, existing) if queue_notifications else None
-        session.commit()
-        if dispatch_notifications and delivery is not None and delivery.id is not None:
-            await dispatch_pending_notifications(session, delivery_ids={delivery.id})
-        return KrCloseBriefingRunResult(
-            run_date, "already_completed", "reuse", 0, [], existing
-        )
+        if not post_cutoff or existing_production_ready:
+            delivery = (
+                queue_macro_notification(session, existing) if queue_notifications else None
+            )
+            session.commit()
+            if dispatch_notifications and delivery is not None and delivery.id is not None:
+                await dispatch_pending_notifications(session, delivery_ids={delivery.id})
+            return KrCloseBriefingRunResult(
+                run_date, "already_completed", "reuse", 0, [], existing
+            )
+
+    refresh_after_pre_cutoff = bool(
+        post_cutoff
+        and existing is not None
+        and existing.status == "ready"
+        and not existing_production_ready
+        and not force
+    )
 
     selected_provider = provider or AlphaVantageKrCloseFxProvider()
     try:
@@ -246,7 +316,12 @@ async def run_kr_close_market_briefing(
     for item in collected_observations:
         if item.series_code in FX_SERIES:
             _persist_close_observation(session, provider_name, item, run_date, as_of)
-    observations = _current_close_observations(session, provider_name, run_date)
+    observations = _current_close_observations(
+        session,
+        provider_name,
+        run_date,
+        retrieved_after=cutoff if post_cutoff else None,
+    )
     available_series = {item.series_code for item in observations}
     missing = [series_code for series_code in FX_SERIES if series_code not in available_series]
     warnings.extend(f"{series_code}:unavailable" for series_code in missing)
@@ -266,11 +341,21 @@ async def run_kr_close_market_briefing(
     session.commit()
     session.refresh(existing)
     recovered_after_partial = previous_status not in {None, "ready"} and existing.status == "ready"
+    if force:
+        action = "forced_refresh"
+    elif refresh_after_pre_cutoff:
+        action = "refresh_after_pre_cutoff"
+    elif recovered_after_partial:
+        action = "recovered_after_partial"
+    elif previous_status is None:
+        action = "fresh"
+    else:
+        action = "recovery"
     delivery = (
         queue_macro_notification(
             session,
             existing,
-            requeue_sent=recovered_after_partial,
+            requeue_sent=recovered_after_partial or refresh_after_pre_cutoff,
         )
         if queue_notifications
         else None
@@ -281,7 +366,7 @@ async def run_kr_close_market_briefing(
     return KrCloseBriefingRunResult(
         run_date,
         existing.status,
-        "fresh",
+        action,
         len(observations),
         warnings,
         existing,

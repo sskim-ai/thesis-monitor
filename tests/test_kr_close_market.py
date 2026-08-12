@@ -129,6 +129,17 @@ class FakeFxProvider:
         return MacroProviderResult(provider=self.name, observations=observations)
 
 
+class FailingFxProvider:
+    name = "alpha_vantage_fx_close"
+
+    def __init__(self) -> None:
+        self.calls = 0
+
+    async def collect(self, as_of: datetime) -> MacroProviderResult:
+        self.calls += 1
+        raise RuntimeError("provider unavailable")
+
+
 def _previous_row(
     series_code: str,
     value: float,
@@ -242,6 +253,7 @@ async def test_ready_briefing_retry_reuses_row_without_alpha_calls() -> None:
 
         assert first.status == "ready"
         assert second.status == "already_completed"
+        assert second.action == "reuse"
         assert provider.calls == 1
         deliveries = session.exec(select(NotificationDelivery)).all()
         assert [item.ticker for item in deliveries] == ["__MACRO_KR_CLOSE__"]
@@ -287,6 +299,7 @@ async def test_partial_pair_retry_merges_same_day_rows_and_requeues_recovered_me
 
     assert first.status == "partial"
     assert second.status == "ready"
+    assert second.action == "recovered_after_partial"
     assert {item["series_code"] for item in market["fx"]} == {
         "USDKRW_KR_CLOSE",
         "JPYKRW100_KR_CLOSE",
@@ -295,6 +308,266 @@ async def test_partial_pair_retry_merges_same_day_rows_and_requeues_recovered_me
     assert delivery.status == "pending"
     assert delivery.sent_at is None
     assert delivery.attempt_count == 0
+
+
+@pytest.mark.anyio
+async def test_pre_cutoff_ready_is_refreshed_for_production_window() -> None:
+    engine = _engine()
+    run_date = date(2026, 8, 12)
+    provider = FakeFxProvider(
+        {
+            "USDKRW_KR_CLOSE": 1380.0,
+            "JPYKRW100_KR_CLOSE": 920.0,
+            "EURKRW_KR_CLOSE": 1600.0,
+        }
+    )
+    with Session(engine) as session:
+        first = await run_kr_close_market_briefing(
+            session,
+            run_date,
+            as_of=datetime(2026, 8, 12, 6, 40, tzinfo=timezone.utc),
+            provider=provider,
+            queue_notifications=False,
+            dispatch_notifications=False,
+        )
+        provider.values = {
+            "USDKRW_KR_CLOSE": 1386.2,
+            "JPYKRW100_KR_CLOSE": 926.4,
+            "EURKRW_KR_CLOSE": 1611.7,
+        }
+        second = await run_kr_close_market_briefing(
+            session,
+            run_date,
+            as_of=datetime(2026, 8, 12, 7, 5, tzinfo=timezone.utc),
+            provider=provider,
+            queue_notifications=False,
+            dispatch_notifications=False,
+        )
+        market = json.loads(second.briefing.market_summary)
+
+    assert first.status == "ready"
+    assert second.status == "ready"
+    assert second.action == "refresh_after_pre_cutoff"
+    assert provider.calls == 2
+    assert {item["value"] for item in market["fx"]} == {1386.2, 926.4, 1611.7}
+    assert all(item["retrieved_at"].startswith("2026-08-12T07:05") for item in market["fx"])
+
+
+@pytest.mark.anyio
+async def test_post_cutoff_briefing_time_does_not_mask_pre_cutoff_fx_observations() -> None:
+    engine = _engine()
+    run_date = date(2026, 8, 12)
+    provider = FakeFxProvider(
+        {
+            "USDKRW_KR_CLOSE": 1380.0,
+            "JPYKRW100_KR_CLOSE": 920.0,
+            "EURKRW_KR_CLOSE": 1600.0,
+        }
+    )
+    with Session(engine) as session:
+        first = await run_kr_close_market_briefing(
+            session,
+            run_date,
+            as_of=datetime(2026, 8, 12, 6, 40, tzinfo=timezone.utc),
+            provider=provider,
+            queue_notifications=False,
+            dispatch_notifications=False,
+        )
+        first.briefing.as_of = datetime(2026, 8, 12, 7, 5, tzinfo=timezone.utc)
+        session.add(first.briefing)
+        session.commit()
+
+        provider.values = {
+            "USDKRW_KR_CLOSE": 1386.2,
+            "JPYKRW100_KR_CLOSE": 926.4,
+            "EURKRW_KR_CLOSE": 1611.7,
+        }
+        second = await run_kr_close_market_briefing(
+            session,
+            run_date,
+            as_of=datetime(2026, 8, 12, 7, 20, tzinfo=timezone.utc),
+            provider=provider,
+            queue_notifications=False,
+            dispatch_notifications=False,
+        )
+
+    assert provider.calls == 2
+    assert second.action == "refresh_after_pre_cutoff"
+
+
+@pytest.mark.anyio
+async def test_pre_cutoff_sent_close_message_is_requeued_with_production_values() -> None:
+    engine = _engine()
+    run_date = date(2026, 8, 12)
+    provider = FakeFxProvider(
+        {
+            "USDKRW_KR_CLOSE": 1380.0,
+            "JPYKRW100_KR_CLOSE": 920.0,
+            "EURKRW_KR_CLOSE": 1600.0,
+        }
+    )
+    with Session(engine) as session:
+        await run_kr_close_market_briefing(
+            session,
+            run_date,
+            as_of=datetime(2026, 8, 12, 6, 40, tzinfo=timezone.utc),
+            provider=provider,
+            dispatch_notifications=False,
+        )
+        delivery = session.exec(
+            select(NotificationDelivery).where(
+                NotificationDelivery.ticker == "__MACRO_KR_CLOSE__"
+            )
+        ).one()
+        delivery.status = "sent"
+        delivery.sent_at = datetime(2026, 8, 12, 6, 41, tzinfo=timezone.utc)
+        delivery.attempt_count = 1
+        session.add(delivery)
+        session.commit()
+
+        provider.values = {
+            "USDKRW_KR_CLOSE": 1401.0,
+            "JPYKRW100_KR_CLOSE": 930.0,
+            "EURKRW_KR_CLOSE": 1620.0,
+        }
+        result = await run_kr_close_market_briefing(
+            session,
+            run_date,
+            as_of=datetime(2026, 8, 12, 7, 5, tzinfo=timezone.utc),
+            provider=provider,
+            dispatch_notifications=False,
+        )
+        session.refresh(delivery)
+        payload = json.loads(delivery.payload)
+
+    assert result.action == "refresh_after_pre_cutoff"
+    assert delivery.status == "pending"
+    assert delivery.sent_at is None
+    assert delivery.attempt_count == 0
+    assert "1,401.0원" in payload["text"]
+
+
+@pytest.mark.anyio
+async def test_pre_cutoff_observations_cannot_make_failed_production_refresh_ready() -> None:
+    engine = _engine()
+    run_date = date(2026, 8, 12)
+    with Session(engine) as session:
+        await run_kr_close_market_briefing(
+            session,
+            run_date,
+            as_of=datetime(2026, 8, 12, 6, 40, tzinfo=timezone.utc),
+            provider=FakeFxProvider(
+                {
+                    "USDKRW_KR_CLOSE": 1380.0,
+                    "JPYKRW100_KR_CLOSE": 920.0,
+                    "EURKRW_KR_CLOSE": 1600.0,
+                }
+            ),
+            queue_notifications=False,
+            dispatch_notifications=False,
+        )
+        failing = FailingFxProvider()
+        result = await run_kr_close_market_briefing(
+            session,
+            run_date,
+            as_of=datetime(2026, 8, 12, 7, 5, tzinfo=timezone.utc),
+            provider=failing,
+            queue_notifications=False,
+            dispatch_notifications=False,
+        )
+        market = json.loads(result.briefing.market_summary)
+
+    assert failing.calls == 1
+    assert result.status == "partial"
+    assert result.action == "refresh_after_pre_cutoff"
+    assert market["fx"] == []
+    assert "provider_failed:RuntimeError" in result.warnings
+    assert all(f"{series}:unavailable" in result.warnings for series in (
+        "USDKRW_KR_CLOSE",
+        "JPYKRW100_KR_CLOSE",
+        "EURKRW_KR_CLOSE",
+    ))
+
+
+@pytest.mark.anyio
+async def test_production_refresh_does_not_merge_pre_cutoff_missing_pair() -> None:
+    engine = _engine()
+    run_date = date(2026, 8, 12)
+    with Session(engine) as session:
+        await run_kr_close_market_briefing(
+            session,
+            run_date,
+            as_of=datetime(2026, 8, 12, 6, 40, tzinfo=timezone.utc),
+            provider=FakeFxProvider(
+                {
+                    "USDKRW_KR_CLOSE": 1380.0,
+                    "JPYKRW100_KR_CLOSE": 920.0,
+                    "EURKRW_KR_CLOSE": 1600.0,
+                }
+            ),
+            queue_notifications=False,
+            dispatch_notifications=False,
+        )
+        result = await run_kr_close_market_briefing(
+            session,
+            run_date,
+            as_of=datetime(2026, 8, 12, 7, 5, tzinfo=timezone.utc),
+            provider=FakeFxProvider(
+                {
+                    "USDKRW_KR_CLOSE": 1386.2,
+                    "JPYKRW100_KR_CLOSE": 926.4,
+                }
+            ),
+            queue_notifications=False,
+            dispatch_notifications=False,
+        )
+        market = json.loads(result.briefing.market_summary)
+
+    assert result.status == "partial"
+    assert {item["series_code"] for item in market["fx"]} == {
+        "USDKRW_KR_CLOSE",
+        "JPYKRW100_KR_CLOSE",
+    }
+    assert "EURKRW_KR_CLOSE:unavailable" in result.warnings
+
+
+@pytest.mark.anyio
+async def test_force_refresh_collects_again_even_after_production_ready() -> None:
+    engine = _engine()
+    run_date = date(2026, 8, 12)
+    provider = FakeFxProvider(
+        {
+            "USDKRW_KR_CLOSE": 1386.2,
+            "JPYKRW100_KR_CLOSE": 926.4,
+            "EURKRW_KR_CLOSE": 1611.7,
+        }
+    )
+    with Session(engine) as session:
+        await run_kr_close_market_briefing(
+            session,
+            run_date,
+            as_of=datetime(2026, 8, 12, 7, 5, tzinfo=timezone.utc),
+            provider=provider,
+            queue_notifications=False,
+            dispatch_notifications=False,
+        )
+        provider.values["USDKRW_KR_CLOSE"] = 1390.0
+        result = await run_kr_close_market_briefing(
+            session,
+            run_date,
+            as_of=datetime(2026, 8, 12, 7, 20, tzinfo=timezone.utc),
+            provider=provider,
+            force=True,
+            queue_notifications=False,
+            dispatch_notifications=False,
+        )
+        market = json.loads(result.briefing.market_summary)
+
+    assert provider.calls == 2
+    assert result.action == "forced_refresh"
+    assert next(
+        item["value"] for item in market["fx"] if item["series_code"] == "USDKRW_KR_CLOSE"
+    ) == 1390.0
 
 
 def test_morning_and_kr_close_notifications_have_independent_markers() -> None:

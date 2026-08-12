@@ -159,6 +159,227 @@ def test_live_probe_uses_auth_header_and_never_query_string_for_secret() -> None
     assert secret not in json.dumps(result.model_dump(mode="json"))
 
 
+def test_live_probe_continues_past_nonempty_unusable_date() -> None:
+    requests: list[httpx.Request] = []
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        requests.append(request)
+        target = request.url.params["basDd"]
+        if target == "20260812":
+            return httpx.Response(
+                200,
+                json={
+                    "OutBlock_1": [
+                        _row(
+                            "KOSPI 200 선물",
+                            "정규",
+                            "SEP",
+                            "코스피200 F 202609",
+                            "428",
+                            "20260812",
+                        )
+                    ]
+                },
+            )
+        return httpx.Response(
+            200,
+            json={
+                "OutBlock_1": [
+                    _row("KOSPI 200 선물", "정규", "SEP", "코스피200 F 202609", "428"),
+                    _row(
+                        "KOSPI 200 선물",
+                        "야간",
+                        "SEP",
+                        "코스피200 F 202609 야간",
+                        "429",
+                    ),
+                    _row(
+                        "KOSDAQ 150 선물",
+                        "정규",
+                        "QSEP",
+                        "코스닥150 F 202609",
+                        "1330",
+                    ),
+                    _row(
+                        "KOSDAQ 150 선물",
+                        "야간",
+                        "QSEP",
+                        "코스닥150 F 202609 야간",
+                        "1332",
+                    ),
+                ]
+            },
+        )
+
+    result = asyncio.run(
+        fetch_live_probe(
+            run_date=date(2026, 8, 12),
+            api_key="dummy",
+            transport=httpx.MockTransport(handler),
+        )
+    )
+
+    assert [request.url.params["basDd"] for request in requests] == [
+        "20260812",
+        "20260811",
+    ]
+    assert result.night_session_usable is True
+    assert result.source_date == date(2026, 8, 11)
+    assert result.queried_dates == [date(2026, 8, 12), date(2026, 8, 11)]
+    assert any("2026-08-12: rows present" in item for item in result.warnings)
+
+
+def test_live_probe_prefers_fresh_partial_over_older_full_result() -> None:
+    requests: list[httpx.Request] = []
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        requests.append(request)
+        return httpx.Response(
+            200,
+            json={
+                "OutBlock_1": [
+                    _row(
+                        "KOSPI 200 선물",
+                        "정규",
+                        "SEP",
+                        "코스피200 F 202609",
+                        "428",
+                        "20260812",
+                    ),
+                    _row(
+                        "KOSPI 200 선물",
+                        "야간",
+                        "SEP",
+                        "코스피200 F 202609 야간",
+                        "429",
+                        "20260812",
+                    ),
+                    _row(
+                        "KOSDAQ 150 선물",
+                        "정규",
+                        "QSEP",
+                        "코스닥150 F 202609",
+                        "1330",
+                        "20260812",
+                    ),
+                ]
+            },
+        )
+
+    result = asyncio.run(
+        fetch_live_probe(
+            run_date=date(2026, 8, 12),
+            api_key="dummy",
+            transport=httpx.MockTransport(handler),
+        )
+    )
+
+    assert len(requests) == 1
+    assert result.source_date == date(2026, 8, 12)
+    assert [item.product for item in result.observations] == ["KOSPI200"]
+
+
+def test_live_probe_tracks_multiple_unusable_dates_before_verified_pair() -> None:
+    def handler(request: httpx.Request) -> httpx.Response:
+        target = request.url.params["basDd"]
+        if target == "20260812":
+            rows = [
+                _row(
+                    "KOSPI 200 선물",
+                    "정규",
+                    "SEP",
+                    "코스피200 F 202609",
+                    "428",
+                    target,
+                )
+            ]
+        elif target == "20260811":
+            rows = [
+                _row("KOSPI 200 선물", "정규", "A", "코스피200 최근월", "428", target),
+                _row("KOSPI 200 선물", "야간", "A", "코스피200 최근월 야간", "429", target),
+            ]
+        elif target == "20260810":
+            rows = []
+        else:
+            rows = [
+                _row("KOSPI 200 선물", "정규", "SEP", "코스피200 F 202609", "428", target),
+                _row(
+                    "KOSPI 200 선물",
+                    "야간",
+                    "SEP",
+                    "코스피200 F 202609 야간",
+                    "429",
+                    target,
+                ),
+            ]
+        return httpx.Response(200, json={"OutBlock_1": rows})
+
+    result = asyncio.run(
+        fetch_live_probe(
+            run_date=date(2026, 8, 12),
+            api_key="dummy",
+            transport=httpx.MockTransport(handler),
+            max_lookback_days=4,
+        )
+    )
+
+    assert result.source_date == date(2026, 8, 9)
+    assert result.queried_dates == [
+        date(2026, 8, 12),
+        date(2026, 8, 11),
+        date(2026, 8, 10),
+        date(2026, 8, 9),
+    ]
+    assert sum("rows present" in item for item in result.warnings) == 2
+
+
+def test_live_probe_distinguishes_all_nonempty_unusable_from_all_empty() -> None:
+    def unusable_handler(request: httpx.Request) -> httpx.Response:
+        target = request.url.params["basDd"]
+        return httpx.Response(
+            200,
+            json={
+                "OutBlock_1": [
+                    _row(
+                        "KOSPI 200 선물",
+                        "정규",
+                        "SEP",
+                        "코스피200 F 202609",
+                        "428",
+                        target,
+                    )
+                ]
+            },
+        )
+
+    unusable = asyncio.run(
+        fetch_live_probe(
+            run_date=date(2026, 8, 12),
+            api_key="dummy",
+            transport=httpx.MockTransport(unusable_handler),
+            max_lookback_days=3,
+        )
+    )
+    empty = asyncio.run(
+        fetch_live_probe(
+            run_date=date(2026, 8, 12),
+            api_key="dummy",
+            transport=httpx.MockTransport(
+                lambda _request: httpx.Response(200, json={"OutBlock_1": []})
+            ),
+            max_lookback_days=3,
+        )
+    )
+
+    assert unusable.night_session_usable is False
+    assert unusable.observations == []
+    assert unusable.reason == "no_recent_verified_night_pair"
+    assert unusable.row_count == 1
+    assert len(unusable.queried_dates) == 3
+    assert empty.reason == "no_recent_business_date_data"
+    assert empty.row_count == 0
+
+
 def test_missing_key_is_not_configured_without_http_request() -> None:
     calls = 0
 
@@ -194,6 +415,7 @@ def test_provider_preserves_same_contract_regular_close_as_comparison(monkeypatc
             datetime(2026, 8, 11, 22, 50, tzinfo=timezone.utc)
         )
     )
+    assert len(provider_result.observations) == 1
     observation = provider_result.observations[0]
     assert observation.series_code == "KRX_KOSPI200_NIGHT_FUT"
     assert observation.previous_value == 989.8
