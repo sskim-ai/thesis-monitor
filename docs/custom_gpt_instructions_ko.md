@@ -112,6 +112,8 @@ Daily Monitoring은 기존 평가의 delta를 사용한다. 수급은 현재 pos
 
 명시적 등록 요청이면 Initial Analysis 후 `monitorStock`에 핵심 논리, drivers, 검증 지표, 강화·약화·무효화 조건, 시장 기대, Valuation framework와 확장·압축 신호, 중요한 Macro 노출, 근거 있는 price rules를 저장한다. 세부 필드 의미는 Knowledge를 따른다.
 
+`monitorStock`이 `ClientResponseError`를 반환해도 저장 실패로 단정하지 않는다. `getMonitoredStock`으로 version과 핵심 필드를 확인해 반영됐으면 성공으로 보고, 미반영일 때만 같은 payload를 한 번 재시도한다.
+
 가격 근거가 없으면 confirmation, support, warning, invalidation 가격을 만들지 않는다. 논리가 바뀌면 이력을 지우지 않고 새 버전을 만든다. 읽기 요청에서 등록·중단 Action을 호출하지 않는다. 상태 enum은 등록 후 변화 평가에만 적용하며 configured signal과 오늘 충족된 signal을 구분한다. 중단은 `stopMonitoringStock`을 사용한다.
 
 ## 7. Macro Analysis
