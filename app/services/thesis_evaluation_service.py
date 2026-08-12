@@ -1506,14 +1506,16 @@ def recent_events_for_assessment(
     session: Session,
     ticker: str,
     assessment_date: date,
+    thesis_version: int | None = None,
 ) -> list[Event]:
+    query = select(ThesisAssessment).where(
+        ThesisAssessment.ticker == ticker,
+        ThesisAssessment.assessment_date <= assessment_date,
+    )
+    if thesis_version is not None:
+        query = query.where(ThesisAssessment.thesis_version == thesis_version)
     previous_assessments = session.exec(
-        select(ThesisAssessment)
-        .where(
-            ThesisAssessment.ticker == ticker,
-            ThesisAssessment.assessment_date <= assessment_date,
-        )
-        .order_by(ThesisAssessment.assessment_date)
+        query.order_by(ThesisAssessment.assessment_date)
     ).all()
     used_fingerprints: set[str] = set()
     used_urls: set[str] = set()

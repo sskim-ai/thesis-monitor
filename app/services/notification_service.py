@@ -239,19 +239,20 @@ _INTERNAL_FACT_MARKERS = (
     "dart text",
     " financial fact:",
     " treasury stock fact:",
-    "fs_div=",
-    "sj_div=",
-    "period_scope=",
-    "amount_scope=",
-    "report_code=",
-    "selected_for_valuation=",
-    "parser=",
+)
+_INTERNAL_FACT_FIELD = re.compile(
+    r"\b(?:fs_div|sj_div|period_scope|amount_scope|report_code|provider|parser|"
+    r"selected_for_valuation|thstrm_nm|unit)\s*(?:=|:)",
+    flags=re.IGNORECASE,
 )
 
 
 def _is_internal_fact(value: object) -> bool:
-    lowered = str(value).lower()
-    return any(marker in lowered for marker in _INTERNAL_FACT_MARKERS)
+    text = str(value)
+    lowered = text.lower()
+    return any(marker in lowered for marker in _INTERNAL_FACT_MARKERS) or bool(
+        _INTERNAL_FACT_FIELD.search(text)
+    )
 
 
 def _user_fact_lines(
@@ -287,7 +288,7 @@ def _user_fact_lines(
             continue
         contract_name = str(item.get("contract_name") or "").strip()
         contract_amount = _compact_krw(item.get("contract_amount"))
-        if contract_name:
+        if contract_name and not _is_internal_fact(contract_name):
             lines.append(
                 f"{contract_name} · 계약금액 {contract_amount}"
                 if contract_amount
@@ -302,11 +303,6 @@ def _user_fact_lines(
             )
         ):
             lines.append(title)
-    if not initial_baseline:
-        for item in confirmed_facts:
-            text = str(item).strip()
-            if text and not _is_internal_fact(text):
-                lines.append(text)
     return _unique_text(lines)[:3]
 
 
@@ -736,10 +732,25 @@ def _assessment_report(
     macro_exposures = _json_list_value(thesis.macro_exposures) if thesis else []
     valuation_context = _json_value(assessment.valuation_context, {})
     valuation_snapshot = _json_value(getattr(assessment, "valuation_snapshot", "{}"), {})
-    new_warnings = _json_list_value(getattr(assessment, "new_warnings", "[]"))
-    open_warnings = _json_list_value(getattr(assessment, "open_warnings", "[]"))
+    new_warnings = [
+        str(item)
+        for item in _json_list_value(getattr(assessment, "new_warnings", "[]"))
+        if not _is_internal_fact(item)
+    ]
+    open_warnings = [
+        str(item)
+        for item in _json_list_value(getattr(assessment, "open_warnings", "[]"))
+        if not _is_internal_fact(item)
+    ]
     open_confirmed_warnings = (
-        _json_list_value(getattr(assessment, "open_confirmed_warnings", "[]")) or open_warnings
+        [
+            str(item)
+            for item in _json_list_value(
+                getattr(assessment, "open_confirmed_warnings", "[]")
+            )
+            if not _is_internal_fact(item)
+        ]
+        or open_warnings
     )
     warning_states_raw = _json_value(getattr(assessment, "warning_states", "[]"), [])
     warning_states = (
@@ -776,7 +787,7 @@ def _assessment_report(
     evidence_lines = [
         f"• {item.get('title', '제목 없음')} ({item.get('direction', '확인')})"
         for item in evidence_items[:3]
-        if isinstance(item, dict)
+        if isinstance(item, dict) and not _is_internal_fact(item.get("title", ""))
     ]
     change_text = "\n".join(evidence_lines) or "• 투자 판단을 바꿀 새 근거가 확인되지 않았습니다."
     user_facts = _user_fact_lines(

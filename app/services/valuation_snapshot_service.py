@@ -796,6 +796,8 @@ def _provider_multiple_basis(
 def _relative_position(
     snapshot: ValuationSnapshot,
     framework: dict[str, object],
+    *,
+    historical_range_allowed: bool = True,
 ) -> tuple[ValuationRelativePosition, str | None]:
     method = str(framework.get("primary_method", "")).lower()
     metric = (
@@ -805,7 +807,13 @@ def _relative_position(
     if value is None and metric == "forward_pe":
         metric = "trailing_pe"
         value = snapshot.trailing_pe
-    ranges = framework.get("historical_multiple_range") or framework.get("peer_multiple_range")
+    historical_ranges = framework.get("historical_multiple_range")
+    peer_ranges = framework.get("peer_multiple_range")
+    ranges = historical_ranges if historical_range_allowed else None
+    range_label = "역사적"
+    if not isinstance(ranges, dict):
+        ranges = peer_ranges
+        range_label = "peer"
     if not isinstance(ranges, dict) or value is None:
         return ValuationRelativePosition.unknown, None
     low = ranges.get(f"{metric}_low", ranges.get("low"))
@@ -823,7 +831,7 @@ def _relative_position(
         position = ValuationRelativePosition.somewhat_premium
     else:
         position = ValuationRelativePosition.premium
-    return position, f"{metric} 비교 범위 {float(low):.1f}~{float(high):.1f}배"
+    return position, f"{metric} {range_label} 비교 범위 {float(low):.1f}~{float(high):.1f}배"
 
 
 class ValuationSnapshotService:
@@ -2212,17 +2220,27 @@ class ValuationSnapshotService:
             snapshot.valuation_relative_position_reason_codes = [
                 "historical_per_share_basis_unverified"
             ]
-        if (
-            snapshot.valuation_relative_position == ValuationRelativePosition.unknown
-            and historical_allowed
-        ):
-            relative, basis = _relative_position(snapshot, framework)
+        if snapshot.valuation_relative_position == ValuationRelativePosition.unknown:
+            relative, basis = _relative_position(
+                snapshot,
+                framework,
+                historical_range_allowed=(
+                    historical_allowed
+                    and snapshot.historical_comparability
+                    not in {
+                        "price_share_basis_unverified",
+                        "price_share_basis_mismatch",
+                    }
+                ),
+            )
             if relative != ValuationRelativePosition.unknown:
                 snapshot.valuation_relative_position = relative
                 snapshot.valuation_relative_basis = basis
                 snapshot.valuation_relative_position_confidence = "low"
                 snapshot.valuation_relative_position_reason = (
-                    "저장된 peer 또는 역사적 범위를 참고했습니다."
+                    "독립적인 peer 범위를 참고했습니다."
+                    if basis and "peer" in basis
+                    else "저장된 역사적 범위를 참고했습니다."
                 )
 
         if snapshot.multiple_basis_conflicts:

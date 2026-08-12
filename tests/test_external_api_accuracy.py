@@ -39,6 +39,7 @@ from app.services.historical_valuation_service import (
     VALUATION_HISTORY_ALGORITHM,
     HistoricalValuationService,
 )
+from app.services.valuation_snapshot_service import _relative_position
 from app.services.issue_identity_audit_service import IssueIdentityAuditService
 from app.services.news_query_service import NewsQueryService
 from app.services.collection_service import (
@@ -1031,7 +1032,12 @@ def test_old_historical_cache_is_fully_rebuilt_with_unadjusted_algorithm() -> No
 
 
 def test_unverified_historical_basis_hides_history_but_keeps_current_multiples() -> None:
-    snapshot = ValuationSnapshot(trailing_pe=12.3, price_to_book=2.1)
+    snapshot = ValuationSnapshot(
+        trailing_pe=12.3,
+        price_to_book=2.1,
+        forward_pe=11.4,
+        forward_price_to_book=1.9,
+    )
 
     HistoricalValuationService().apply(
         snapshot,
@@ -1043,6 +1049,8 @@ def test_unverified_historical_basis_hides_history_but_keeps_current_multiples()
 
     assert snapshot.trailing_pe == 12.3
     assert snapshot.price_to_book == 2.1
+    assert snapshot.forward_pe == 11.4
+    assert snapshot.forward_price_to_book == 1.9
     assert snapshot.historical_pe_statistics is None
     assert snapshot.historical_pb_statistics is None
     assert snapshot.historical_comparability == "price_share_basis_unverified"
@@ -1074,6 +1082,62 @@ def test_latest_historical_pbr_basis_mismatch_suppresses_percentile() -> None:
     assert snapshot.historical_pb_statistics is None
     assert snapshot.historical_comparability == "price_share_basis_mismatch"
     assert "price_share_basis_mismatch" in snapshot.valuation_relative_position_reason_codes
+
+
+def test_invalid_history_cannot_fallback_to_historical_range() -> None:
+    snapshot = ValuationSnapshot(
+        trailing_pe=30.0,
+        historical_comparability="price_share_basis_mismatch",
+    )
+    framework = {
+        "primary_method": "forward P/E",
+        "historical_multiple_range": {"trailing_pe_low": 10.0, "trailing_pe_high": 20.0},
+    }
+
+    position, basis = _relative_position(
+        snapshot,
+        framework,
+        historical_range_allowed=False,
+    )
+
+    assert position == "unknown"
+    assert basis is None
+    assert snapshot.trailing_pe == 30.0
+
+
+def test_invalid_history_can_use_independent_peer_range_only() -> None:
+    snapshot = ValuationSnapshot(
+        trailing_pe=30.0,
+        historical_comparability="price_share_basis_unverified",
+    )
+    framework = {
+        "primary_method": "forward P/E",
+        "historical_multiple_range": {"trailing_pe_low": 10.0, "trailing_pe_high": 20.0},
+        "peer_multiple_range": {"trailing_pe_low": 25.0, "trailing_pe_high": 35.0},
+    }
+
+    position, basis = _relative_position(
+        snapshot,
+        framework,
+        historical_range_allowed=False,
+    )
+
+    assert position == "neutral"
+    assert basis == "trailing_pe peer 비교 범위 25.0~35.0배"
+
+
+def test_verified_history_still_uses_historical_range() -> None:
+    snapshot = ValuationSnapshot(trailing_pe=15.0, historical_comparability="normal")
+    framework = {
+        "primary_method": "forward P/E",
+        "historical_multiple_range": {"trailing_pe_low": 10.0, "trailing_pe_high": 20.0},
+        "peer_multiple_range": {"trailing_pe_low": 25.0, "trailing_pe_high": 35.0},
+    }
+
+    position, basis = _relative_position(snapshot, framework)
+
+    assert position == "neutral"
+    assert basis == "trailing_pe 역사적 비교 범위 10.0~20.0배"
 
 
 def test_alpha_vantage_estimates_shares_dividends_and_splits_are_cached() -> None:

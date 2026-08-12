@@ -133,7 +133,11 @@ def backfill_confirmed_warning_states(
     states: dict[str, dict[str, object]] = {}
     assessments = session.exec(
         select(ThesisAssessment)
-        .where(ThesisAssessment.ticker == thesis.ticker, ThesisAssessment.assessment_date < as_of)
+        .where(
+            ThesisAssessment.ticker == thesis.ticker,
+            ThesisAssessment.thesis_version == thesis.version,
+            ThesisAssessment.assessment_date < as_of,
+        )
         .order_by(ThesisAssessment.assessment_date)
     ).all()
     for assessment in assessments:

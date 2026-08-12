@@ -11,7 +11,12 @@ from app.macro.regime import assess_macro_regime
 from app.macro.theses import update_macro_theses
 from app.models.macro import MacroThesis
 from app.models.thesis import InvestmentThesis, ThesisAssessment
-from app.schemas.thesis import PriceContext, PricePeriodSummary, PriceRulesInput
+from app.schemas.thesis import (
+    PriceContext,
+    PricePeriodSummary,
+    PriceRulesInput,
+    ValuationSnapshot,
+)
 from app.services.ohlcv_client import OhlcvClient
 from app.services.thesis_evaluation_service import evaluate_thesis
 from app.services.valuation_snapshot_service import ValuationSnapshotService
@@ -57,6 +62,43 @@ def test_configured_valuation_signals_do_not_trigger_without_new_match() -> None
     assert result.valuation_context.configured_expansion_signals == ["new customer order"]
     assert result.valuation_context.matched_expansion_signals == []
     assert result.valuation_context.matched_compression_signals == []
+
+
+def test_invalid_historical_basis_does_not_contaminate_market_expectations() -> None:
+    thesis = _base_thesis()
+    thesis.market_expectations = json.dumps(
+        {"level": "elevated", "summary": "Growth is partly reflected"}
+    )
+    thesis.valuation_framework = json.dumps(
+        {
+            "primary_method": "forward P/E",
+            "historical_multiple_range": {
+                "trailing_pe_low": 10.0,
+                "trailing_pe_high": 20.0,
+            },
+        }
+    )
+    snapshot = ValuationSnapshot(
+        trailing_pe=30.0,
+        price_to_book=2.0,
+        forward_pe=25.0,
+        forward_price_to_book=1.8,
+        historical_comparability="price_share_basis_mismatch",
+        valuation_relative_position="unknown",
+    )
+
+    result = evaluate_thesis(
+        thesis,
+        [],
+        PriceContext(),
+        valuation_snapshot=snapshot,
+    )
+
+    assert result.status == "no_material_change"
+    assert result.market_expectation_assessment.level == "elevated"
+    assert result.market_expectation_assessment.evidence_basis == []
+    assert result.valuation_snapshot.trailing_pe == 30.0
+    assert result.valuation_snapshot.forward_pe == 25.0
 
 
 def test_speculative_expectation_preserves_elevated_structural_risk_without_new_event() -> None:

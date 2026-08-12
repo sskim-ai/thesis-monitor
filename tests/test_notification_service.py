@@ -16,6 +16,7 @@ from app.services.notification_service import (
     TelegramDeliveryError,
     TelegramNotifier,
     _macro_report,
+    _is_internal_fact,
     _message_for_assessment,
     _notification_channel,
     _notifier_for_channel,
@@ -252,6 +253,83 @@ def test_initial_baseline_uses_clean_facts_and_modeled_forward_label() -> None:
     assert "내부 모델 추정치이며 시장 컨센서스가 아닙니다." in message
     for hidden in ("OpenDART", "DART text", "fs_div", "sj_div", "period_scope"):
         assert hidden not in message
+
+
+@pytest.mark.parametrize(
+    "raw_fact",
+    [
+        "OpenDART financial fact: revenue=100",
+        "fs_div=CFS",
+        "sj_div = IS",
+        "period_scope: quarter",
+        "amount_scope = current",
+        "report_code: 11012",
+        "provider=opendart",
+        "provider : opendart",
+        "parser = financial_v2",
+        "selected_for_valuation=true",
+        "thstrm_nm=당기",
+        "unit = KRW",
+    ],
+)
+def test_user_report_omits_internal_fact_metadata_variants(raw_fact: str) -> None:
+    assessment = _compact_assessment(
+        status="weakened",
+        business_thesis_change="weakened",
+        confirmed_facts=json.dumps([raw_fact], ensure_ascii=False),
+        evidence=json.dumps(
+            [
+                {
+                    "title": "공식 분기 실적 발표",
+                    "direction": "weaken",
+                    "event_type": "earnings_miss",
+                }
+            ],
+            ensure_ascii=False,
+        ),
+    )
+
+    message = _message_for_assessment(assessment)
+
+    assert _is_internal_fact(raw_fact) is True
+    assert raw_fact not in message
+    assert "공식 분기 실적 발표" in message
+    assert json.loads(assessment.confirmed_facts) == [raw_fact]
+
+
+def test_user_report_omits_uncanonicalized_fact_without_clean_evidence() -> None:
+    raw_fact = "provider=foo parser=bar unit=KRW secret-internal-detail"
+    assessment = _compact_assessment(
+        confirmed_facts=json.dumps([raw_fact]),
+        evidence="[]",
+    )
+
+    message = _message_for_assessment(assessment)
+
+    assert "secret-internal-detail" not in message
+
+
+def test_user_report_does_not_fallback_to_internal_evidence_or_warning() -> None:
+    internal_title = "provider = opendart unit: KRW raw evidence"
+    internal_warning = "thstrm_nm=당기 parser=financial_v2 raw warning"
+    assessment = _compact_assessment(
+        status="weakened",
+        business_thesis_change="weakened",
+        evidence=json.dumps(
+            [{"title": internal_title, "direction": "weaken"}],
+            ensure_ascii=False,
+        ),
+        new_warnings=json.dumps([internal_warning], ensure_ascii=False),
+        open_warnings=json.dumps([internal_warning], ensure_ascii=False),
+        open_confirmed_warnings=json.dumps([internal_warning], ensure_ascii=False),
+    )
+
+    message = _message_for_assessment(assessment)
+
+    assert internal_title not in message
+    assert internal_warning not in message
+    assert json.loads(assessment.evidence)[0]["title"] == internal_title
+    assert json.loads(assessment.new_warnings) == [internal_warning]
 
 
 def test_consensus_forward_denominator_uses_market_estimate_label() -> None:

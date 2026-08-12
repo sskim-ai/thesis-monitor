@@ -106,12 +106,18 @@ def _assessment_for_date(
     ).first()
 
 
-def _previous_snapshot(session: Session, ticker: str, run_date: date) -> dict[str, object]:
+def _previous_snapshot(
+    session: Session,
+    ticker: str,
+    run_date: date,
+    thesis_version: int,
+) -> dict[str, object]:
     previous = session.exec(
         select(ThesisAssessment)
         .where(
             ThesisAssessment.ticker == ticker,
-            ThesisAssessment.assessment_date < run_date,
+            ThesisAssessment.thesis_version == thesis_version,
+            ThesisAssessment.assessment_date <= run_date,
         )
         .order_by(ThesisAssessment.assessment_date.desc())
     ).first()
@@ -132,7 +138,7 @@ def _previous_assessment(
 ) -> ThesisAssessment | None:
     query = select(ThesisAssessment).where(
         ThesisAssessment.ticker == ticker,
-        ThesisAssessment.assessment_date < run_date,
+        ThesisAssessment.assessment_date <= run_date,
     )
     if thesis_version is not None:
         query = query.where(ThesisAssessment.thesis_version == thesis_version)
@@ -143,25 +149,14 @@ def _is_initial_baseline(
     session: Session,
     ticker: str,
     thesis_version: int,
-    run_date: date,
-    *,
-    has_new_events: bool,
 ) -> bool:
-    same_date = session.exec(
+    existing = session.exec(
         select(ThesisAssessment).where(
             ThesisAssessment.ticker == ticker,
             ThesisAssessment.thesis_version == thesis_version,
-            ThesisAssessment.assessment_date == run_date,
         )
     ).first()
-    if same_date is not None:
-        snapshot = _json_value(same_date.thesis_snapshot, {})
-        if snapshot.get("assessment_mode") == "initial_baseline":
-            return not has_new_events
-        if has_new_events:
-            return False
-        return _previous_assessment(session, ticker, run_date, thesis_version) is None
-    return _previous_assessment(session, ticker, run_date, thesis_version) is None
+    return existing is None
 
 
 def _json_value(value: str, fallback: object) -> object:
@@ -200,17 +195,38 @@ def _build_thesis_snapshot(
     background_confirmed_facts: list[str],
     assessment_mode: str,
     baseline_event_count: int,
+    baseline_event_fingerprints: list[str],
     delta_event_count: int,
     capital_action_materiality: list[dict[str, object]],
 ) -> dict[str, object]:
-    previous = _previous_snapshot(session, thesis.ticker, run_date)
+    previous = _previous_snapshot(session, thesis.ticker, run_date, thesis.version)
+    previous_baseline_fingerprints = previous.get("baseline_event_fingerprints", [])
+    if not isinstance(previous_baseline_fingerprints, list):
+        previous_baseline_fingerprints = []
+    effective_baseline_fingerprints = (
+        baseline_event_fingerprints
+        if assessment_mode == "initial_baseline"
+        else [str(item) for item in previous_baseline_fingerprints]
+    )
+    previous_baseline_count = previous.get("baseline_event_count", 0)
+    effective_baseline_count = (
+        baseline_event_count
+        if assessment_mode == "initial_baseline"
+        else previous_baseline_count if isinstance(previous_baseline_count, int) else 0
+    )
     return {
         "base_thesis": thesis.core_thesis,
         "thesis_version": thesis.version,
         "effective_date": str(run_date),
         "status": status,
         "assessment_mode": assessment_mode,
-        "baseline_event_count": baseline_event_count,
+        "baseline_established": (
+            assessment_mode == "initial_baseline"
+            or previous.get("assessment_mode") == "initial_baseline"
+            or previous.get("baseline_established") is True
+        ),
+        "baseline_event_count": effective_baseline_count,
+        "baseline_event_fingerprints": effective_baseline_fingerprints,
         "delta_event_count": delta_event_count,
         "capital_action_materiality": capital_action_materiality,
         "current_thesis": f"{thesis.core_thesis} 현재 평가: {summary}",
@@ -349,8 +365,21 @@ async def run_daily_monitor(
                 thesis=thesis,
             )
             IssueIdentityAuditService().audit(session, item.ticker)
+            assessment = _assessment_for_date(session, item.ticker, run_date)
+            same_version_assessment = (
+                assessment
+                if assessment is not None and assessment.thesis_version == thesis.version
+                else None
+            )
+            previous_used_fingerprints = (
+                _json_value(same_version_assessment.used_event_fingerprints, [])
+                if same_version_assessment is not None
+                else []
+            )
+            if not isinstance(previous_used_fingerprints, list):
+                previous_used_fingerprints = []
             all_recent_events = recent_events_for_assessment(
-                session, item.ticker, run_date
+                session, item.ticker, run_date, thesis.version
             )
             assessment_mode = (
                 "initial_baseline"
@@ -358,8 +387,6 @@ async def run_daily_monitor(
                     session,
                     item.ticker,
                     thesis.version,
-                    run_date,
-                    has_new_events=bool(all_recent_events),
                 )
                 else "daily_delta"
             )
@@ -412,6 +439,7 @@ async def run_daily_monitor(
             result.used_event_fingerprints = list(
                 dict.fromkeys(
                     [
+                        *(str(item) for item in previous_used_fingerprints),
                         *result.used_event_fingerprints,
                         *(event_fingerprint(event) for event in all_recent_events),
                     ]
@@ -430,10 +458,14 @@ async def run_daily_monitor(
                 result.background_confirmed_facts,
                 assessment_mode,
                 len(all_recent_events) if assessment_mode == "initial_baseline" else 0,
+                (
+                    [event_fingerprint(event) for event in all_recent_events]
+                    if assessment_mode == "initial_baseline"
+                    else []
+                ),
                 len(evaluation_events) if assessment_mode == "daily_delta" else 0,
                 materiality_audit,
             )
-            assessment = _assessment_for_date(session, item.ticker, run_date)
             if assessment is None:
                 assessment = ThesisAssessment(
                     ticker=item.ticker,

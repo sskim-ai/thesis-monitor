@@ -1030,6 +1030,124 @@ async def test_baseline_consumes_backfill_then_only_new_events_drive_delta() -> 
 
 
 @pytest.mark.anyio
+async def test_same_day_baseline_advances_to_delta_and_preserves_fingerprints() -> None:
+    init_db()
+    run_date = date(2046, 1, 5)
+    ticker = "STATE1"
+    with Session(engine) as session:
+        register_monitoring_item(
+            session,
+            MonitoringItemCreate(
+                ticker=ticker,
+                company_name="State Machine Company",
+                core_thesis="Material production orders support durable growth",
+                strengthen_signals=["material production order"],
+            ),
+        )
+        for suffix in ("A", "B", "C"):
+            session.add(
+                Event(
+                    ticker=ticker,
+                    company_name="State Machine Company",
+                    date=run_date,
+                    source="Company filing",
+                    provider="sec_edgar",
+                    title=f"Historical baseline evidence {suffix}",
+                    url=f"https://example.com/state1-{suffix.lower()}",
+                    event_type="production_order",
+                    confirmed_facts=json.dumps([f"Baseline fact {suffix}"]),
+                    relevance_score=70,
+                )
+            )
+        session.commit()
+
+        await run_daily_monitor(
+            session,
+            run_date=run_date,
+            collection_service=EmptyCollectionService(),
+            price_client=FakePriceClient(),
+            valuation_service=EmptyValuationService(),
+            queue_notifications=False,
+            dispatch_notifications=False,
+        )
+        first = session.exec(
+            select(ThesisAssessment).where(
+                ThesisAssessment.ticker == ticker,
+                ThesisAssessment.assessment_date == run_date,
+            )
+        ).one()
+        first_fingerprints = json.loads(first.used_event_fingerprints)
+        first_snapshot = json.loads(first.thesis_snapshot)
+        assert first_snapshot["assessment_mode"] == "initial_baseline"
+        assert first_snapshot["baseline_established"] is True
+        assert first_snapshot["baseline_event_count"] == 3
+        assert len(first_fingerprints) == 3
+
+        session.add(
+            Event(
+                ticker=ticker,
+                company_name="State Machine Company",
+                date=run_date,
+                source="Company filing",
+                provider="sec_edgar",
+                title="Material production order confirmed",
+                url="https://example.com/state1-d",
+                event_type="production_order",
+                confirmed_facts=json.dumps(["Material production order confirmed"]),
+                relevance_score=90,
+            )
+        )
+        session.commit()
+        await run_daily_monitor(
+            session,
+            run_date=run_date,
+            force=True,
+            collection_service=EmptyCollectionService(),
+            price_client=FakePriceClient(),
+            valuation_service=EmptyValuationService(),
+            queue_notifications=False,
+            dispatch_notifications=False,
+        )
+        session.refresh(first)
+        second_snapshot = json.loads(first.thesis_snapshot)
+        second_fingerprints = json.loads(first.used_event_fingerprints)
+        assert second_snapshot["assessment_mode"] == "daily_delta"
+        assert second_snapshot["baseline_established"] is True
+        assert second_snapshot["baseline_event_count"] == 3
+        assert len(second_fingerprints) == 4
+        assert set(first_fingerprints).issubset(second_fingerprints)
+
+        await run_daily_monitor(
+            session,
+            run_date=run_date,
+            force=True,
+            collection_service=EmptyCollectionService(),
+            price_client=FakePriceClient(),
+            valuation_service=EmptyValuationService(),
+            queue_notifications=False,
+            dispatch_notifications=False,
+        )
+        session.refresh(first)
+        third_snapshot = json.loads(first.thesis_snapshot)
+        third_fingerprints = json.loads(first.used_event_fingerprints)
+        assert third_snapshot["assessment_mode"] == "daily_delta"
+        assert third_fingerprints == second_fingerprints
+
+        next_day = await run_daily_monitor(
+            session,
+            run_date=date(2046, 1, 6),
+            collection_service=EmptyCollectionService(),
+            price_client=FakePriceClient(),
+            valuation_service=EmptyValuationService(),
+            queue_notifications=False,
+            dispatch_notifications=False,
+        )
+
+    next_assessment = next(item for item in next_day.assessments if item.ticker == ticker)
+    assert next_assessment.evidence == []
+
+
+@pytest.mark.anyio
 async def test_first_assessment_of_new_thesis_version_is_a_new_baseline() -> None:
     init_db()
     with Session(engine) as session:
@@ -1055,8 +1173,34 @@ async def test_first_assessment_of_new_thesis_version_is_a_new_baseline() -> Non
                 InvestmentThesis.status == "active",
             )
         ).one()
+        original_assessment = session.exec(
+            select(ThesisAssessment).where(
+                ThesisAssessment.ticker == "BASE2",
+                ThesisAssessment.assessment_date == date(2033, 1, 2),
+            )
+        ).one()
+        original_assessment.status = "strengthened"
+        original_assessment.business_thesis_change = "strengthened"
+        original_assessment.open_warnings = json.dumps(["v1 daily warning"])
+        original_assessment.open_confirmed_warnings = json.dumps(["v1 daily warning"])
+        original_assessment.warning_states = json.dumps(
+            [{"warning": "v1 daily warning", "status": "open"}]
+        )
+        original_assessment.thesis_snapshot = json.dumps(
+            {
+                "assessment_mode": "daily_delta",
+                "supporting_evidence": [
+                    {
+                        "direction": "strengthen",
+                        "title": "v1 strengthened evidence",
+                        "url": "https://example.com/v1-evidence",
+                    }
+                ],
+            }
+        )
         original.status = "superseded"
         session.add(original)
+        session.add(original_assessment)
         session.add(
             InvestmentThesis(
                 ticker="BASE2",
@@ -1082,7 +1226,9 @@ async def test_first_assessment_of_new_thesis_version_is_a_new_baseline() -> Non
             )
         ).one()
         stored_version = stored.thesis_version
-        stored_mode = json.loads(stored.thesis_snapshot)["assessment_mode"]
+        stored_snapshot = json.loads(stored.thesis_snapshot)
+        stored_mode = stored_snapshot["assessment_mode"]
+        stored_open_warnings = json.loads(stored.open_warnings)
 
     result_assessment = next(
         item for item in result.assessments if item.ticker == "BASE2"
@@ -1090,6 +1236,102 @@ async def test_first_assessment_of_new_thesis_version_is_a_new_baseline() -> Non
     assert result_assessment.status == "no_material_change"
     assert stored_version == 2
     assert stored_mode == "initial_baseline"
+    assert stored_snapshot["supporting_evidence"] == []
+    assert "v1 daily warning" not in stored_open_warnings
+
+
+@pytest.mark.anyio
+async def test_same_day_new_thesis_version_is_isolated_then_advances_to_delta() -> None:
+    init_db()
+    run_date = date(2046, 2, 2)
+    ticker = "VERSION1"
+    with Session(engine) as session:
+        register_monitoring_item(
+            session,
+            MonitoringItemCreate(
+                ticker=ticker,
+                company_name="Version Isolation Company",
+                core_thesis="Version one thesis",
+            ),
+        )
+        await run_daily_monitor(
+            session,
+            run_date=run_date,
+            collection_service=EmptyCollectionService(),
+            price_client=FakePriceClient(),
+            valuation_service=EmptyValuationService(),
+            queue_notifications=False,
+            dispatch_notifications=False,
+        )
+        v1 = session.exec(
+            select(InvestmentThesis).where(
+                InvestmentThesis.ticker == ticker,
+                InvestmentThesis.status == "active",
+            )
+        ).one()
+        v1.status = "superseded"
+        stored = session.exec(
+            select(ThesisAssessment).where(
+                ThesisAssessment.ticker == ticker,
+                ThesisAssessment.assessment_date == run_date,
+            )
+        ).one()
+        stored.open_warnings = json.dumps(["v1 warning"])
+        stored.thesis_snapshot = json.dumps(
+            {
+                "assessment_mode": "daily_delta",
+                "weakening_evidence": [
+                    {
+                        "direction": "weaken",
+                        "title": "v1 weakness",
+                        "url": "https://example.com/v1-weakness",
+                    }
+                ],
+            }
+        )
+        session.add(v1)
+        session.add(stored)
+        session.add(
+            InvestmentThesis(
+                ticker=ticker,
+                version=2,
+                core_thesis="Version two thesis",
+                status="active",
+                validation_metrics=json.dumps(["v2 persistent metric"]),
+            )
+        )
+        session.commit()
+
+        await run_daily_monitor(
+            session,
+            run_date=run_date,
+            force=True,
+            collection_service=EmptyCollectionService(),
+            price_client=FakePriceClient(),
+            valuation_service=EmptyValuationService(),
+            queue_notifications=False,
+            dispatch_notifications=False,
+        )
+        session.refresh(stored)
+        v2_baseline = json.loads(stored.thesis_snapshot)
+        assert stored.thesis_version == 2
+        assert v2_baseline["assessment_mode"] == "initial_baseline"
+        assert v2_baseline["weakening_evidence"] == []
+        assert "v1 warning" not in json.loads(stored.open_warnings)
+        assert v2_baseline["validation_metrics"] == ["v2 persistent metric"]
+
+        await run_daily_monitor(
+            session,
+            run_date=run_date,
+            force=True,
+            collection_service=EmptyCollectionService(),
+            price_client=FakePriceClient(),
+            valuation_service=EmptyValuationService(),
+            queue_notifications=False,
+            dispatch_notifications=False,
+        )
+        session.refresh(stored)
+        assert json.loads(stored.thesis_snapshot)["assessment_mode"] == "daily_delta"
 
 
 @pytest.mark.anyio
