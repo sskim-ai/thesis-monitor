@@ -362,7 +362,8 @@ def test_data_caution_only_renders_for_material_quality_problem() -> None:
 def test_neutral_valuation_delta_is_hidden_but_relative_position_remains() -> None:
     message = _message_for_assessment(_compact_assessment())
 
-    assert "현재 Valuation:\n부담 구간" in message
+    assert "현재 Valuation: 부담 구간" in message
+    assert "해석: PBR이 과거 범위 상단입니다." in message
     assert "Valuation: 중립" not in message
     assert "오늘 Valuation 변화" not in message
 
@@ -377,7 +378,7 @@ def test_non_neutral_valuation_delta_uses_change_label() -> None:
 
     message = _message_for_assessment(assessment)
 
-    assert "현재 Valuation:\n부담 구간" in message
+    assert "현재 Valuation: 부담 구간" in message
     assert "오늘 Valuation 변화: 압축" in message
     assert "오늘 Valuation 영향" not in message
 

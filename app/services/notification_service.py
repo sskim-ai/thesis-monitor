@@ -1260,9 +1260,9 @@ def _assessment_report(
     history_summary = _history_summary(valuation_snapshot)
     if history_summary:
         valuation_lines.extend(["과거 대비:", history_summary])
-    valuation_lines.extend(["현재 Valuation:", relative_label])
+    valuation_lines.append(f"현재 Valuation: {relative_label}")
     if relative_reason:
-        valuation_lines.extend(["해석:", relative_reason])
+        valuation_lines.append(f"해석: {relative_reason}")
     if impact_label != "중립":
         valuation_lines.append(f"오늘 Valuation 변화: {impact_label}")
         if valuation_impact:
