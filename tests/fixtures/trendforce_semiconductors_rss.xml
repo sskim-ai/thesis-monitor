@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0">
+  <channel>
+    <title>TrendForce Semiconductors</title>
+    <item>
+      <title>Daily Express Aug.11,2026 Spot Market Today</title>
+      <link>https://www.trendforce.com/presscenter/example/daily-20260811</link>
+      <pubDate>Tue, 11 Aug 2026 08:00:00 GMT</pubDate>
+      <category>Semiconductors</category>
+      <description><![CDATA[In today's DRAM spot market, the average price of DDR4 8G (1Gx8) 3200 rises to USD 42.140.]]></description>
+    </item>
+    <item>
+      <title>Daily Express Aug.10,2026 Spot Market Today</title>
+      <link>https://www.trendforce.com/presscenter/example/daily-20260810</link>
+      <pubDate>Mon, 10 Aug 2026 08:00:00 GMT</pubDate>
+      <category>Semiconductors</category>
+      <description><![CDATA[In today's DRAM spot market, the average price of DDR4 8G (1Gx8) 3200 drops to USD 41.900.]]></description>
+    </item>
+    <item>
+      <title>Daily Express Aug.7,2026 Spot Market Today</title>
+      <link>https://www.trendforce.com/presscenter/example/daily-20260807</link>
+      <pubDate>Fri, 07 Aug 2026 08:00:00 GMT</pubDate>
+      <category>Semiconductors</category>
+      <description><![CDATA[In today's DRAM spot market, the average price of DDR4 8G (1Gx8) 3200 stays at USD 41.900.]]></description>
+    </item>
+    <item>
+      <title>Daily Express Aug.6,2026 Spot Market Today</title>
+      <link>https://www.trendforce.com/presscenter/example/daily-20260806</link>
+      <pubDate>Thu, 06 Aug 2026 08:00:00 GMT</pubDate>
+      <category>Semiconductors</category>
+      <description><![CDATA[In today's DRAM spot market, buyers remained cautious and no representative price was stated.]]></description>
+    </item>
+    <item>
+      <title>Daily Express Aug.5,2026 Spot Market Today</title>
+      <link>https://www.trendforce.com/presscenter/example/daily-20260805</link>
+      <pubDate>Wed, 05 Aug 2026 08:00:00 GMT</pubDate>
+      <category>Display</category>
+      <description><![CDATA[In today's display panel market, TV panel demand remained steady.]]></description>
+    </item>
+    <item>
+      <title>Server DRAM Contract Prices Expected to Rise 10-15% QoQ</title>
+      <link>https://www.trendforce.com/presscenter/example/server-dram-contract</link>
+      <pubDate>Tue, 11 Aug 2026 06:00:00 GMT</pubDate>
+      <category>Semiconductors</category>
+      <description><![CDATA[TrendForce expects server DRAM contract pricing to rise with tight supply.]]></description>
+    </item>
+    <item>
+      <title>DRAM Vendor Launches New Low-Power Product</title>
+      <link>https://www.trendforce.com/presscenter/example/dram-product</link>
+      <pubDate>Mon, 10 Aug 2026 06:00:00 GMT</pubDate>
+      <category>Semiconductors</category>
+      <description><![CDATA[A memory supplier introduced a new component for mobile devices.]]></description>
+    </item>
+  </channel>
+</rss>
