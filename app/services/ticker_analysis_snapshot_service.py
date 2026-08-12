@@ -122,6 +122,7 @@ class TickerAnalysisSnapshotService:
             market_session=decision.market_session,
             current_position=current_position,
             periods=periods,
+            supply=price_context.supply,
         )
         earnings = AnalysisEarningsSnapshot(
             latest_period=valuation_snapshot.latest_earnings_period,

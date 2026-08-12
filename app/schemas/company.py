@@ -1,5 +1,7 @@
 from pydantic import BaseModel, ConfigDict, Field
 
+from app.schemas.thesis import InvestorSupplyContext
+
 
 class CompanyProfile(BaseModel):
     ticker: str
@@ -43,6 +45,7 @@ class AnalysisPriceSnapshot(BaseModel):
     market_session: str = "unknown"
     current_position: str | None = None
     periods: dict[str, AnalysisPricePeriod] = Field(default_factory=dict)
+    supply: InvestorSupplyContext = Field(default_factory=InvestorSupplyContext)
 
 
 class AnalysisEarningsSnapshot(BaseModel):

@@ -30,6 +30,7 @@
 - 사업 구조, 산업, 재무·이익의 질, 시장 기대, Valuation, 리스크와 다음 숫자 분석
 - snapshot의 현재 가격, 최신 earnings context, 가능한 PER/PBR/fPER/fPBR과 역사적 위치 반영
 - `daily.actual_count=500`, `daily.window_return_pct=35.0`이면 `500개 일봉 window 기준 약 +35%`로 해석하며 `일간 +35%`라고 쓰지 않음
+- `price.supply.available=true`이면 실제 기준일의 수급을 가격과 분리된 단기 포지셔닝으로 해석
 - `monitorStock` 호출 금지
 
 **Failure**
@@ -51,6 +52,7 @@ GOOGL
 - `getTickerAnalysisSnapshot` 사용
 - 광고와 Cloud 등 segment economics, AI Capex와 FCF·ROIC, 시장 기대와 Valuation 분석
 - 가능한 현재 가격, PER/PBR/fPER과 역사적 Valuation 위치 반영
+- `price.supply.available=false`이면 빈 수급 자료 없음 섹션을 만들지 않음
 - 최근 뉴스 3개 요약으로 끝나지 않음
 
 ## 3. Explicit Initial Analysis
@@ -362,6 +364,51 @@ TSM 분석해줘
 
 - 수급 점수만으로 사업 논리·이익 추정·Valuation·warning을 변경
 - 알려지지 않은 enum을 snake_case 그대로 사용자에게 노출
+
+## Korean Initial Analysis With Supply
+
+**Prompt**
+
+```text
+005930 분석해줘
+```
+
+**Fixture**
+
+- 현재 monitored stock이 아님
+- `getTickerAnalysisSnapshot.price.supply.available=true`
+- `price.supply.as_of_date`는 실제 latest daily bar 날짜
+- 외국인·기관 20일 누적 순매도, 개인 20일 누적 순매수
+- `price.supply.quality=distribution`
+- `price.supply.primary_signal=foreign_exit_retail_absorption`
+
+**Expected**
+
+- Mode A: Initial Thesis Analysis
+- `getCompanyProfile`, `getEarningsCheckpoints`, `getThesisEvents`, `getTickerAnalysisSnapshot` 사용
+- 사업 구조, 산업 포지셔닝, 재무·이익의 질, 시장 기대, 핵심 투자 논리, Valuation, 촉매, 리스크, Early Warning/Kill Condition, Macro exposure, 가격·수급/포지셔닝과 다음 확인 숫자를 포함
+- 최근 20일 외국인·기관 매도와 개인 흡수를 진입 시점의 단기 수급 부담으로 해석
+- 수급을 기업 fundamental 투자 논리의 약화 근거로 사용하지 않음
+- `monitorStock` 호출 금지
+
+**Failure**
+
+- Daily Monitoring 또는 Current Review로 routing
+- 최근 뉴스나 수급 요약으로만 끝남
+- 외국인 순매도를 이유로 투자 논리를 `weakened`로 변경
+- 자동 monitoring 등록
+
+**Prompt**
+
+```text
+005930 분석하고 앞으로 모니터링해줘
+```
+
+**Expected**
+
+- 위 Initial Analysis와 가격·수급/포지셔닝 해석을 먼저 수행
+- 투자 논리, 검증 지표, 기대와 Valuation framework를 만든 뒤 마지막에만 `monitorStock` 호출
+- `getTickerAnalysisSnapshot` 자체가 등록 side effect를 만들지 않음
 
 ## Action Contract Check
 

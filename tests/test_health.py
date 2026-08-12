@@ -81,7 +81,7 @@ def test_public_action_schema_includes_read_only_ticker_analysis_snapshot() -> N
     schema = response.json()
     operation = schema["paths"]["/ticker-analysis-snapshot"]["get"]
     assert operation["operationId"] == "getTickerAnalysisSnapshot"
-    assert schema["info"]["version"] == "0.4.4"
+    assert schema["info"]["version"] == "0.4.5"
 
     operation_ids = [
         operation["operationId"]
@@ -104,6 +104,10 @@ def test_public_action_schema_includes_read_only_ticker_analysis_snapshot() -> N
     supply = schema["components"]["schemas"]["InvestorSupplyContext"]["properties"]
     assert "foreign_net_buy_qty_20" in supply
     assert "primary_signal" in supply
+    analysis_supply = schema["components"]["schemas"]["AnalysisPriceSnapshot"][
+        "properties"
+    ]["supply"]
+    assert analysis_supply["$ref"] == "#/components/schemas/InvestorSupplyContext"
 
 
 def test_custom_gpt_docs_reference_analysis_snapshot_action() -> None:
@@ -114,3 +118,73 @@ def test_custom_gpt_docs_reference_analysis_snapshot_action() -> None:
         "docs/custom_gpt_regression_prompts.md",
     ):
         assert operation_id in Path(relative_path).read_text(encoding="utf-8")
+
+
+def test_custom_gpt_instructions_fit_product_limit_and_preserve_initial_analysis() -> None:
+    text = Path("docs/custom_gpt_instructions_ko.md").read_text(encoding="utf-8")
+
+    assert len(text) <= 8_000
+    for concept in (
+        "Mode A",
+        "Initial Thesis Analysis",
+        "getCompanyProfile",
+        "getEarningsCheckpoints",
+        "getThesisEvents",
+        "getTickerAnalysisSnapshot",
+        "monitorStock",
+        "Kill Condition",
+        "수급",
+    ):
+        assert concept in text
+    for knowledge_reference in ("Knowledge", "Initial Analysis", "Valuation", "수급"):
+        assert knowledge_reference in text
+
+
+def test_custom_gpt_knowledge_preserves_framework_and_market_schedule() -> None:
+    text = Path("docs/custom_gpt_knowledge_ko.md").read_text(encoding="utf-8")
+
+    for concept in (
+        "Initial Investment Thesis Framework",
+        "Earnings Quality",
+        "Market Expectations",
+        "업종별 Valuation",
+        "수급",
+        "Kill Condition",
+        "Macro",
+        "잠정실적",
+        "ADR",
+        "가격·수급/포지셔닝",
+        "price.supply.score",
+        "07:50",
+        "16:05",
+    ):
+        assert concept in text
+    assert "오전 모니터링은 기본 07:50" not in text
+
+
+def test_generated_action_schema_files_match() -> None:
+    rendered = {
+        Path(relative_path).read_text(encoding="utf-8")
+        for relative_path in (
+            "openapi.action.json",
+            "docs/custom_gpt_action_schema.yaml",
+            "docs/custom_gpt_action_schema_v2.yaml",
+        )
+    }
+
+    assert len(rendered) == 1
+
+
+def test_custom_gpt_regressions_cover_initial_supply_and_mode_separation() -> None:
+    text = Path("docs/custom_gpt_regression_prompts.md").read_text(encoding="utf-8")
+
+    for scenario in (
+        "005930",
+        "005930 분석해줘",
+        "005930 오늘 점검해줘",
+        "005930 분석하고 앞으로 모니터링해줘",
+        "GOOGL",
+        "Korean Initial Analysis With Supply",
+        "foreign_exit_retail_absorption",
+    ):
+        assert scenario in text

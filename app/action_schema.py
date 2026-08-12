@@ -238,7 +238,7 @@ def build_action_schema(app: FastAPI) -> dict[str, object]:
     schema = deepcopy(app.openapi())
     schema["info"] = {
         "title": "Thesis Monitor Public Action API",
-        "version": "0.4.4",
+        "version": "0.4.5",
         "description": (
             "Collect thesis evidence, read ticker analysis snapshots, register versioned investment "
             "theses, manage the monitored stock list, read daily thesis assessments, and retrieve "

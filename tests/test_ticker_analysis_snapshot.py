@@ -16,6 +16,7 @@ from app.schemas.company import CompanyProfile
 from app.schemas.thesis import (
     DataCoverage,
     HistoricalValuationStatistics,
+    InvestorSupplyContext,
     PriceContext,
     PriceDecisionContext,
     PricePeriodSummary,
@@ -65,6 +66,37 @@ def _price_context() -> PriceContext:
             price_as_of="2026-08-11",
             market_session="closed",
         ),
+    )
+
+
+def _investor_supply_context() -> InvestorSupplyContext:
+    return InvestorSupplyContext(
+        available=True,
+        as_of_date="2026-08-11",
+        foreign_net_buy_qty=-153_000,
+        institution_net_buy_qty=205_000,
+        individual_net_buy_qty=0,
+        foreign_net_buy_qty_5=-6_981_054,
+        institution_net_buy_qty_5=-34_386,
+        individual_net_buy_qty_5=5_829_492,
+        foreign_net_buy_qty_20=-8_108_432,
+        institution_net_buy_qty_20=-11_716_549,
+        individual_net_buy_qty_20=18_403_424,
+        foreign_holding_qty=2_724_356_859,
+        foreign_holding_ratio=46.6,
+        score=34,
+        quality="distribution",
+        quality_detail="foreign_holding_up_net_sell",
+        primary_signal="foreign_exit_retail_absorption",
+        foreign_flow_direction_20="selling",
+        institution_flow_direction_20="selling",
+        individual_flow_direction_20="buying",
+        confidence="high",
+        validation_status="validated",
+        data_scope="daily_latest",
+        investor_20d_validation_status="validated",
+        investor_20d_diff_ratio=0.0,
+        signals=["foreign_exit_retail_absorption"],
     )
 
 
@@ -218,6 +250,7 @@ def test_unmonitored_ticker_returns_compact_formula_inputs_without_side_effects(
     assert result.ticker == "GOOGL"
     assert result.exchange == "NASDAQ"
     assert result.price.current_price == 120.0
+    assert result.price.supply.available is False
     assert result.price.periods["daily"].actual_count == 250
     assert result.price.periods["daily"].window_return_pct == 20.0
     assert result.earnings.latest_period == "2026-06-30"
@@ -247,6 +280,41 @@ def test_unmonitored_ticker_returns_compact_formula_inputs_without_side_effects(
     }
     rendered_payload = str(payload)
     assert all(field not in rendered_payload for field in forbidden)
+
+
+def test_unmonitored_korean_ticker_exposes_supply_without_side_effects() -> None:
+    session = _session()
+    supply = _investor_supply_context()
+    price_context = _price_context().model_copy(
+        update={
+            "decision": _price_context().decision.model_copy(
+                update={"currency": "KRW", "price_as_of": "2026-08-12"}
+            ),
+            "supply": supply,
+        }
+    )
+    service, _ = _service(price=_PriceClient(price_context))
+    models = (WatchlistItem, InvestmentThesis, ThesisAssessment, NotificationDelivery)
+    before = [len(session.exec(select(model)).all()) for model in models]
+
+    result = asyncio.run(service.fetch(session, "005930"))
+
+    after = [len(session.exec(select(model)).all()) for model in models]
+    assert before == after == [0, 0, 0, 0]
+    assert result.price.price_as_of == "2026-08-12"
+    assert result.price.supply.available is True
+    assert result.price.supply.as_of_date == "2026-08-11"
+    assert result.price.supply.foreign_net_buy_qty == -153_000
+    assert result.price.supply.foreign_net_buy_qty_5 == -6_981_054
+    assert result.price.supply.foreign_net_buy_qty_20 == -8_108_432
+    assert result.price.supply.score == 34
+    assert result.price.supply.primary_signal == "foreign_exit_retail_absorption"
+    assert result.price.supply.confidence == "high"
+    assert result.price.supply.validation_status == "validated"
+    assert result.price.supply.data_scope == "daily_latest"
+    assert result.price.supply.investor_20d_validation_status == "validated"
+    assert result.price.supply.investor_20d_diff_ratio == 0.0
+    assert result.price.supply.signals == ["foreign_exit_retail_absorption"]
 
 
 def test_unsafe_adr_denominators_stay_null_with_compact_caution() -> None:
@@ -518,6 +586,7 @@ def test_ticker_analysis_snapshot_endpoint_returns_compact_response(
     assert payload["ticker"] == "GOOGL"
     assert payload["earnings"]["financial_currency"] == "USD"
     assert payload["price"]["periods"]["daily"]["window_return_pct"] == 20.0
+    assert payload["price"]["supply"]["available"] is False
     assert "period_return_pct" not in payload["price"]["periods"]["daily"]
     assert payload["valuation"]["ttm_eps"] == 10.0
     assert "provider" not in payload["valuation"]

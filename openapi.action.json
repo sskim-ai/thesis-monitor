@@ -2,7 +2,7 @@
   "openapi": "3.1.0",
   "info": {
     "title": "Thesis Monitor Public Action API",
-    "version": "0.4.4",
+    "version": "0.4.5",
     "description": "Collect thesis evidence, read ticker analysis snapshots, register versioned investment theses, manage the monitored stock list, read daily thesis assessments, and retrieve macro briefings, regimes, events, and ticker-level macro impacts. Administrative jobs are excluded."
   },
   "paths": {
@@ -1531,6 +1531,9 @@
             "type": "object",
             "title": "Periods",
             "properties": {}
+          },
+          "supply": {
+            "$ref": "#/components/schemas/InvestorSupplyContext"
           }
         },
         "type": "object",

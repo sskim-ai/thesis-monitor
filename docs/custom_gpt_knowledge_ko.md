@@ -49,7 +49,7 @@ Fact에서 파생한 투자적 해석이다. 사실처럼 단정하지 않고 �
 
 초기 분석은 다음 순서로 진행한다.
 
-`Fact → 사업 구조 → 산업·경쟁 위치 → 재무와 이익의 질 → 시장 기대 → 핵심 투자 논리 → 검증 지표 → Valuation → 촉매 → 리스크 → Macro exposure → 가격 위치 → 신규 관찰자 관점 → Kill Condition → 다음 확인 숫자`
+`Fact → 사업 구조 → 산업·경쟁 위치 → 재무와 이익의 질 → 시장 기대 → 핵심 투자 논리 → 검증 지표 → Valuation → 촉매 → 리스크 → Macro exposure → 가격·수급/포지셔닝 → 신규 관찰자 관점 → Kill Condition → 다음 확인 숫자`
 
 ### 회사와 사업 구조
 
@@ -340,7 +340,7 @@ Volume Ratio = Current Volume / 20-day Average Volume
 
 `daily`, `weekly`, `monthly`는 수익률 기간이 아니라 bar interval이다. 각 `window_return_pct`는 반환된 `actual_count`개 bar의 첫 종가에서 최신 종가까지 수익률이다. `range_position_pct`도 같은 반환 window의 고가·저가 범위 안에서 최신 종가가 차지하는 위치다. 별도 1일·1주·1개월 수익률이 없으면 이를 대신 만들지 않는다.
 
-한국 종목의 투자주체 수급은 OHLCV Analyst의 최신 유효 일봉을 기준으로 읽는다. `foreign_net_buy_qty`, `institution_net_buy_qty`, `individual_net_buy_qty`는 해당 거래일 순매수이며, 접미사 `_5`, `_20`은 각각 최근 5·20거래일 누적이다. `foreign_holding_qty`와 `foreign_holding_ratio`는 외국인 보유 포지션이고, `supply_score`, `supply_quality`, `supply_primary_signal`은 공급자가 계산한 종합 수급 해석이다. 점수의 범위를 임의로 가정하지 않으며 실제 `as_of_date`가 당일이 아니면 오늘 수급이라고 표현하지 않는다.
+한국 종목의 투자주체 수급은 OHLCV Analyst의 최신 유효 일봉을 기준으로 읽는다. `foreign_net_buy_qty`, `institution_net_buy_qty`, `individual_net_buy_qty`는 해당 거래일 순매수이며, 접미사 `_5`, `_20`은 각각 최근 5·20거래일 누적이다. `foreign_holding_qty`와 `foreign_holding_ratio`는 외국인 보유 포지션이다. 원본 `supply_score`, `supply_quality`, `supply_primary_signal`은 public snapshot에서 각각 `price.supply.score`, `price.supply.quality`, `price.supply.primary_signal`로 제공된다. `price.supply.as_of_date`가 실제 수급 기준일이며 `price.price_as_of`와 다를 수 있다. 점수 범위를 provider contract 없이 가정하지 않고 `score=34`를 `34/100`으로 바꾸지 않으며, 기준일이 과거면 오늘 수급이라고 표현하지 않는다.
 
 수급과 포지셔닝은 fundamental thesis가 아니다. 수급만으로 사업 논리, 이익 추정, Valuation 또는 warning lifecycle을 변경하지 않는다.
 
@@ -550,7 +550,7 @@ Catalyst / Risk
 
 정상 상태와 내부 flag는 사용자에게 반복하지 않는다. 실제 결론에 영향을 주는 component 문제만 자연어로 설명하고 상세 metadata는 audit에 보존한다.
 
-오전 모니터링은 기본 07:50 Asia/Seoul, 재수집은 08:05와 08:35다. `no_material_change`도 기록하며 이력은 SQLite와 `data/` 기록에 누적한다.
+자동 monitoring은 시장별 장 종료 데이터를 기준으로 한다. 미국 종목은 07:50 KST에 전일 미국 정규장 close 기준으로, 한국 종목은 16:05 KST에 당일 한국 정규장 close와 최신 일봉 수급 기준으로 평가한다. retry 운영 상세는 README를 따른다. `no_material_change`도 기록하며 이력은 SQLite와 `data/` 기록에 누적한다.
 
 ## 17. Action Reference
 
@@ -561,7 +561,7 @@ Catalyst / Risk
 - `getCompanyProfile`: 회사 기본 구조
 - `getEarningsCheckpoints`: 실적 체크포인트
 - `getThesisEvents`: 사건·공시·재무 근거와 선택적 backfill
-- `getTickerAnalysisSnapshot`: 미등록 종목도 등록 없이 현재 가격·최신 earnings context·PER/PBR/fPER/fPBR·역사적 Valuation 위치를 조회하는 read-only snapshot
+- `getTickerAnalysisSnapshot`: 미등록 종목도 등록 없이 현재 가격·수급·최신 earnings context·PER/PBR/fPER/fPBR·역사적 Valuation 위치를 조회하는 read-only snapshot
 - `getMonitoredStock`: 저장된 현재 투자 논리
 - `getThesisAssessmentHistory`: 날짜별 평가
 - `listMonitoredStockSummaries`: 모니터링 목록과 핵심 논리
@@ -635,9 +635,9 @@ Catalyst / Risk
 
 실제 전달 경로가 중요한 factor만.
 
-### 11. 가격 관점
+### 11. 가격·수급/포지셔닝 관점
 
-실제 가격·OHLCV가 있을 때만 신규 관찰자와 보유자 관점을 제시한다.
+실제 가격 context가 있을 때 현재 가격 위치를 본다. 한국 종목에서 `price.supply.available=true`이면 실제 `as_of_date` 기준 당일·5일·20일 외국인/기관/개인 흐름, 외국인 보유비중과 종합 수급 신호 중 중요한 것만 단기 포지셔닝으로 해석한다. 수급만으로 투자 논리를 변경하지 않는다. 수급이 없으면 가격만 해석하고, 가격도 없으면 차트·지지선·목표가를 만들지 않는다.
 
 ### 12. 다음 확인 숫자
 
