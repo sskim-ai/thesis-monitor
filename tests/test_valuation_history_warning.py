@@ -3,8 +3,8 @@ from datetime import date, datetime, timedelta, timezone
 
 from sqlmodel import Session, SQLModel, create_engine
 
-from app.models.event import Event
-from app.models.thesis import InvestmentThesis
+from app.models.event import CanonicalIssue, Event
+from app.models.thesis import InvestmentThesis, ThesisAssessment
 from app.schemas.thesis import HistoricalPricePoint, ValuationSnapshot
 from app.services.historical_valuation_service import (
     HistoricalValuationService,
@@ -218,3 +218,59 @@ def test_warning_backfill_excludes_filing_receipt_metadata() -> None:
     warnings = [str(item["warning"]) for item in states]
     assert warnings == ["주요사항보고서(유상증자결정) 공시 확인"]
     assert all("receipt" not in warning.lower() for warning in warnings)
+
+
+def test_new_version_excludes_old_daily_warning_but_rebuilds_open_factual_issue() -> None:
+    engine = _memory_engine()
+    v2 = InvestmentThesis(
+        ticker="VERSION-WARN",
+        version=2,
+        core_thesis="자본구조와 현금흐름을 새 기준선에서 확인한다.",
+    )
+    old_daily_warning = "v1 당일 마진 경고"
+    with Session(engine) as session:
+        session.add(v2)
+        session.add(
+            ThesisAssessment(
+                ticker="VERSION-WARN",
+                thesis_version=1,
+                assessment_date=date(2025, 1, 2),
+                status="weakened",
+                summary="v1 daily warning",
+                new_buyer_view="review",
+                holder_view="review",
+                price_view="review",
+                risk_level="caution",
+                open_warnings=json.dumps([old_daily_warning]),
+                open_confirmed_warnings=json.dumps([old_daily_warning]),
+                warning_states=json.dumps(
+                    [{"warning": old_daily_warning, "status": "open"}]
+                ),
+            )
+        )
+        session.add(
+            CanonicalIssue(
+                ticker="VERSION-WARN",
+                issue_key="capital-raise-open",
+                issue_type="capital_raise",
+                status="opened",
+                economic_status="open",
+                official_verification_status="verified",
+                provenance_status="valid",
+                opened_date=date(2025, 1, 1),
+                updated_date=date(2025, 1, 2),
+                latest_event_date=date(2025, 1, 2),
+                title="확인된 유상증자",
+            )
+        )
+        session.commit()
+
+        states = backfill_confirmed_warning_states(
+            session,
+            v2,
+            date(2025, 1, 3),
+        )
+
+    warnings = [str(item["warning"]) for item in states]
+    assert old_daily_warning not in warnings
+    assert "유상증자에 따른 희석·자본조달 경제적 영향" in warnings

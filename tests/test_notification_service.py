@@ -1,3 +1,4 @@
+import asyncio
 import hashlib
 import json
 from datetime import date, datetime, timezone
@@ -9,8 +10,10 @@ from sqlalchemy.pool import StaticPool
 from sqlmodel import SQLModel, Session, create_engine
 
 from app.config import get_settings
-from app.models.thesis import NotificationDelivery
+from app.models.thesis import InvestmentThesis, NotificationDelivery
+from app.models.watchlist import WatchlistItem
 from app.services.notification_service import (
+    STOCK_NOTIFICATION_METADATA_KEY,
     TELEGRAM_DELIVERY_METADATA_KEY,
     TelegramChunkResult,
     TelegramDeliveryError,
@@ -23,6 +26,7 @@ from app.services.notification_service import (
     _prepare_delivery_for_retry,
     _should_requeue_sent_delivery,
     dispatch_pending_notifications,
+    queue_daily_stock_notification,
 )
 
 
@@ -956,3 +960,175 @@ def test_pre_cutoff_production_requeue_resets_attempts_and_chunk_progress() -> N
     assert delivery.status == "pending"
     assert delivery.attempt_count == 0
     assert delivery.sent_at is None
+
+
+def _notification_test_thesis(ticker: str, version: int) -> InvestmentThesis:
+    return InvestmentThesis(
+        ticker=ticker,
+        version=version,
+        core_thesis=f"Version {version} operating thesis",
+        status="active" if version == 2 else "superseded",
+    )
+
+
+def _versioned_assessment(ticker: str, version: int, mode: str):
+    return _compact_assessment(
+        ticker=ticker,
+        assessment_date=date(2047, 4, 1),
+        thesis_version=version,
+        thesis_snapshot=json.dumps(
+            {
+                "base_thesis": f"Version {version} operating thesis",
+                "assessment_mode": mode,
+            }
+        ),
+    )
+
+
+def test_sent_v1_delivery_requeues_same_day_v2_baseline_once() -> None:
+    class RecordingNotifier:
+        def __init__(self) -> None:
+            self.payloads: list[dict[str, object]] = []
+
+        async def send(self, payload: dict[str, object]) -> str:
+            self.payloads.append(payload)
+            return "sent"
+
+    isolated_engine = create_engine(
+        "sqlite://",
+        connect_args={"check_same_thread": False},
+        poolclass=StaticPool,
+    )
+    SQLModel.metadata.create_all(isolated_engine)
+    ticker = "VERSION-NOTIFY"
+    with Session(isolated_engine) as session:
+        session.add(WatchlistItem(ticker=ticker, company_name="Version Notify"))
+        session.add(_notification_test_thesis(ticker, 1))
+        session.add(_notification_test_thesis(ticker, 2))
+        session.commit()
+
+        v1 = _versioned_assessment(ticker, 1, "initial_baseline")
+        delivery = queue_daily_stock_notification(session, v1)
+        session.commit()
+        delivery.status = "sent"
+        delivery.attempt_count = 1
+        delivery.sent_at = datetime(2047, 4, 1, 0, 2, tzinfo=timezone.utc)
+        session.commit()
+        delivery_id = delivery.id
+        v1_payload = delivery.payload
+
+        v2 = _versioned_assessment(ticker, 2, "initial_baseline")
+        requeued = queue_daily_stock_notification(session, v2)
+        session.commit()
+        session.refresh(requeued)
+        v2_payload = json.loads(requeued.payload)
+        metadata = v2_payload[STOCK_NOTIFICATION_METADATA_KEY]
+
+        assert requeued.id == delivery_id
+        assert requeued.status == "pending"
+        assert requeued.attempt_count == 0
+        assert requeued.sent_at is None
+        assert requeued.payload != v1_payload
+        assert v2_payload["thesis_version"] == 2
+        assert v2_payload["assessment_mode"] == "initial_baseline"
+        assert "투자 논리: 초기 설정" in v2_payload["text"]
+        assert "thesis_version=" not in v2_payload["text"]
+        assert "assessment_mode=" not in v2_payload["text"]
+        assert metadata == {
+            "thesis_version": 2,
+            "assessment_mode": "initial_baseline",
+            "previous_thesis_version": 1,
+            "previous_delivery_status": "sent",
+            "requeue_reason": "new_thesis_version_initial_baseline",
+            "status_transition": "sent->pending",
+        }
+
+        notifier = RecordingNotifier()
+        asyncio.run(
+            dispatch_pending_notifications(
+                session,
+                notifier=notifier,
+                delivery_ids={requeued.id},
+            )
+        )
+        session.refresh(requeued)
+        assert len(notifier.payloads) == 1
+        assert notifier.payloads[0]["thesis_version"] == 2
+        assert "투자 논리: 초기 설정" in str(notifier.payloads[0]["text"])
+        sent_payload = requeued.payload
+        sent_at = requeued.sent_at
+
+        duplicate = queue_daily_stock_notification(session, v2)
+        session.commit()
+        session.refresh(duplicate)
+
+        assert duplicate.id == delivery_id
+        assert duplicate.status == "sent"
+        assert duplicate.attempt_count == 1
+        assert duplicate.sent_at == sent_at
+        assert duplicate.payload == sent_payload
+        asyncio.run(
+            dispatch_pending_notifications(
+                session,
+                notifier=notifier,
+                delivery_ids={duplicate.id},
+            )
+        )
+        assert len(notifier.payloads) == 1
+
+
+@pytest.mark.parametrize("old_status", ["pending", "failed"])
+def test_new_version_replaces_stale_retry_payload_and_chunk_cursor(
+    old_status: str,
+) -> None:
+    isolated_engine = create_engine(
+        "sqlite://",
+        connect_args={"check_same_thread": False},
+        poolclass=StaticPool,
+    )
+    SQLModel.metadata.create_all(isolated_engine)
+    ticker = f"VERSION-{old_status.upper()}"
+    with Session(isolated_engine) as session:
+        session.add(WatchlistItem(ticker=ticker, company_name="Version Retry"))
+        session.add(_notification_test_thesis(ticker, 1))
+        session.add(_notification_test_thesis(ticker, 2))
+        session.commit()
+
+        delivery = queue_daily_stock_notification(
+            session,
+            _versioned_assessment(ticker, 1, "initial_baseline"),
+        )
+        session.commit()
+        payload = json.loads(delivery.payload)
+        payload[TELEGRAM_DELIVERY_METADATA_KEY] = {
+            "source_sha256": "v1-source",
+            "content_sha256": "v1-content",
+            "rendered_text": "v1 partial message",
+            "chunk_max_chars": 100,
+            "chunk_count": 3,
+            "next_chunk_index": 2,
+        }
+        delivery.payload = json.dumps(payload)
+        delivery.status = old_status
+        delivery.attempt_count = 4
+        delivery.last_error = "TelegramDeliveryError: v1 partial failure"
+        session.commit()
+
+        current = queue_daily_stock_notification(
+            session,
+            _versioned_assessment(ticker, 2, "initial_baseline"),
+        )
+        session.commit()
+        session.refresh(current)
+        current_payload = json.loads(current.payload)
+
+        assert current.status == "pending"
+        assert current.attempt_count == 0
+        assert current.last_error is None
+        assert TELEGRAM_DELIVERY_METADATA_KEY not in current_payload
+        assert current_payload["thesis_version"] == 2
+        assert "v1 partial message" not in current.payload
+        assert (
+            current_payload[STOCK_NOTIFICATION_METADATA_KEY]["requeue_reason"]
+            == "new_thesis_version_initial_baseline"
+        )

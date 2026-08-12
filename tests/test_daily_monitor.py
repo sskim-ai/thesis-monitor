@@ -36,6 +36,7 @@ from app.services.daily_monitor_service import run_daily_monitor
 from app.services.market_session import market_scope_for_security
 from app.services.monitoring_service import register_monitoring_item
 from app.services.notification_service import (
+    STOCK_NOTIFICATION_METADATA_KEY,
     TELEGRAM_DELIVERY_METADATA_KEY,
     TelegramChunkResult,
     TelegramDeliveryError,
@@ -1260,9 +1261,49 @@ async def test_same_day_new_thesis_version_is_isolated_then_advances_to_delta() 
             collection_service=EmptyCollectionService(),
             price_client=FakePriceClient(),
             valuation_service=EmptyValuationService(),
-            queue_notifications=False,
+            queue_notifications=True,
             dispatch_notifications=False,
         )
+        delivery = session.exec(
+            select(NotificationDelivery).where(
+                NotificationDelivery.ticker == ticker,
+                NotificationDelivery.assessment_date == run_date,
+            )
+        ).one()
+        delivery.status = "sent"
+        delivery.attempt_count = 1
+        delivery.sent_at = datetime(2046, 2, 2, 0, 2, tzinfo=timezone.utc)
+        session.commit()
+        v1_sent_payload = delivery.payload
+
+        session.add(
+            Event(
+                ticker=ticker,
+                company_name="Version Isolation Company",
+                date=run_date,
+                source="Company filing",
+                provider="sec_edgar",
+                title="Material customer order confirmed",
+                url="https://example.com/version1-material-order",
+                event_type="production_order",
+                confirmed_facts=json.dumps(["Material customer order confirmed"]),
+                relevance_score=90,
+            )
+        )
+        session.commit()
+        await run_daily_monitor(
+            session,
+            run_date=run_date,
+            force=True,
+            collection_service=EmptyCollectionService(),
+            price_client=FakePriceClient(),
+            valuation_service=EmptyValuationService(),
+            queue_notifications=True,
+            dispatch_notifications=False,
+        )
+        session.refresh(delivery)
+        assert delivery.status == "sent"
+        assert delivery.payload == v1_sent_payload
         v1 = session.exec(
             select(InvestmentThesis).where(
                 InvestmentThesis.ticker == ticker,
@@ -1309,16 +1350,68 @@ async def test_same_day_new_thesis_version_is_isolated_then_advances_to_delta() 
             collection_service=EmptyCollectionService(),
             price_client=FakePriceClient(),
             valuation_service=EmptyValuationService(),
-            queue_notifications=False,
+            queue_notifications=True,
             dispatch_notifications=False,
         )
         session.refresh(stored)
+        session.refresh(delivery)
         v2_baseline = json.loads(stored.thesis_snapshot)
+        v2_delivery_payload = json.loads(delivery.payload)
         assert stored.thesis_version == 2
         assert v2_baseline["assessment_mode"] == "initial_baseline"
         assert v2_baseline["weakening_evidence"] == []
         assert "v1 warning" not in json.loads(stored.open_warnings)
         assert v2_baseline["validation_metrics"] == ["v2 persistent metric"]
+        assert delivery.status == "pending"
+        assert delivery.attempt_count == 0
+        assert delivery.sent_at is None
+        assert delivery.payload != v1_sent_payload
+        assert v2_delivery_payload["thesis_version"] == 2
+        assert "투자 논리: 초기 설정" in v2_delivery_payload["text"]
+        assert (
+            v2_delivery_payload[STOCK_NOTIFICATION_METADATA_KEY]["requeue_reason"]
+            == "new_thesis_version_initial_baseline"
+        )
+
+        delivery.status = "sent"
+        delivery.attempt_count = 1
+        delivery.sent_at = datetime(2046, 2, 2, 7, 2, tzinfo=timezone.utc)
+        session.commit()
+        v2_sent_payload = delivery.payload
+        v2_sent_at = delivery.sent_at
+
+        session.add(
+            Event(
+                ticker=ticker,
+                company_name="Version Isolation Company",
+                date=run_date,
+                source="Company filing",
+                provider="sec_edgar",
+                title="Material customer loss confirmed",
+                url="https://example.com/version2-material-loss",
+                event_type="customer_loss",
+                confirmed_facts=json.dumps(["Material customer loss confirmed"]),
+                relevance_score=95,
+            )
+        )
+        session.commit()
+        await run_daily_monitor(
+            session,
+            run_date=run_date,
+            force=True,
+            collection_service=EmptyCollectionService(),
+            price_client=FakePriceClient(),
+            valuation_service=EmptyValuationService(),
+            queue_notifications=True,
+            dispatch_notifications=False,
+        )
+        session.refresh(stored)
+        session.refresh(delivery)
+        assert json.loads(stored.thesis_snapshot)["assessment_mode"] == "daily_delta"
+        assert delivery.status == "sent"
+        assert delivery.attempt_count == 1
+        assert delivery.sent_at == v2_sent_at
+        assert delivery.payload == v2_sent_payload
 
         await run_daily_monitor(
             session,
@@ -1327,11 +1420,29 @@ async def test_same_day_new_thesis_version_is_isolated_then_advances_to_delta() 
             collection_service=EmptyCollectionService(),
             price_client=FakePriceClient(),
             valuation_service=EmptyValuationService(),
-            queue_notifications=False,
+            queue_notifications=True,
             dispatch_notifications=False,
         )
         session.refresh(stored)
+        session.refresh(delivery)
         assert json.loads(stored.thesis_snapshot)["assessment_mode"] == "daily_delta"
+        assert delivery.status == "sent"
+        assert delivery.attempt_count == 1
+        assert delivery.sent_at == v2_sent_at
+        assert delivery.payload == v2_sent_payload
+
+        next_day = await run_daily_monitor(
+            session,
+            run_date=date(2046, 2, 3),
+            collection_service=EmptyCollectionService(),
+            price_client=FakePriceClient(),
+            valuation_service=EmptyValuationService(),
+            queue_notifications=False,
+            dispatch_notifications=False,
+        )
+
+    next_assessment = next(item for item in next_day.assessments if item.ticker == ticker)
+    assert next_assessment.evidence == []
 
 
 @pytest.mark.anyio
