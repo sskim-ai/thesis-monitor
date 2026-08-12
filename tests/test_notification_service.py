@@ -135,6 +135,38 @@ def test_compact_user_report_hides_internal_metadata_and_empty_sections() -> Non
     assert "⚠️ 데이터 주의" not in message
 
 
+def test_korean_supply_section_is_between_price_and_valuation() -> None:
+    assessment = _compact_assessment()
+    price_context = json.loads(assessment.price_context)
+    price_context["supply"] = {
+        "available": True,
+        "as_of_date": "2026-08-12",
+        "foreign_net_buy_qty": -153_000,
+        "institution_net_buy_qty": 205_000,
+        "individual_net_buy_qty": 0,
+        "confidence": "high",
+        "validation_status": "validated",
+    }
+    assessment.price_context = json.dumps(price_context)
+
+    message = _message_for_assessment(assessment)
+
+    assert message.index("💰 가격") < message.index("📊 수급") < message.index("📐 Valuation")
+
+
+def test_us_report_omits_supply_section() -> None:
+    assessment = _compact_assessment(ticker="GOOGL")
+    price_context = json.loads(assessment.price_context)
+    price_context["supply"] = {
+        "available": True,
+        "as_of_date": "2026-08-11",
+        "foreign_net_buy_qty": 10,
+    }
+    assessment.price_context = json.dumps(price_context)
+
+    assert "📊 수급" not in _message_for_assessment(assessment)
+
+
 def test_provider_only_forward_multiple_is_not_reverse_engineered() -> None:
     assessment = _compact_assessment()
     snapshot = json.loads(assessment.valuation_snapshot)

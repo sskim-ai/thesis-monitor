@@ -1,20 +1,31 @@
 import json
-from datetime import date
+import plistlib
+from datetime import date, datetime, timezone
+from pathlib import Path
 
 import pytest
-from sqlmodel import Session, select
+from sqlalchemy.pool import StaticPool
+from sqlmodel import SQLModel, Session, create_engine, select
 
 from app.database import engine, init_db
+from app.config import get_settings
+from app.jobs.monitor_daily import (
+    _macro_result_for_scope,
+    _requeue_cutoff,
+    _sent_after_cutoff,
+)
 from app.models.event import Event
-from app.models.thesis import MonitorRun, NotificationDelivery
+from app.models.thesis import InvestmentThesis, MonitorRun, NotificationDelivery
 from app.models.watchlist import WatchlistItem
 from app.schemas.thesis import (
     MonitoringItemCreate,
     PriceContext,
     PricePeriodSummary,
     PriceRulesInput,
+    ValuationSnapshot,
 )
 from app.services.daily_monitor_service import run_daily_monitor
+from app.services.market_session import market_scope_for_security
 from app.services.monitoring_service import register_monitoring_item
 
 
@@ -86,6 +97,214 @@ class RulePriceClient:
                 )
             },
         )
+
+
+class EmptyValuationService:
+    async def fetch(self, ticker, exchange, price_context, *, session, thesis):
+        return ValuationSnapshot(
+            current_price=price_context.periods.get("daily", PricePeriodSummary(
+                requested_count=500, actual_count=0
+            )).latest_close,
+            currency="KRW" if ticker.isdigit() else "USD",
+        )
+
+
+def test_market_scope_classification_uses_exchange_then_numeric_fallback() -> None:
+    assert market_scope_for_security("005930", "KRX") == "kr"
+    assert market_scope_for_security("GOOGL", "NASDAQ") == "us"
+    assert market_scope_for_security("005930", None) == "kr"
+    assert market_scope_for_security("UNKNOWN", None) == "unknown"
+
+
+def test_launch_agents_define_market_specific_schedules() -> None:
+    root = Path(__file__).resolve().parents[1]
+    with (root / "ops/com.seungsoo.thesis-monitor.daily.plist").open("rb") as stream:
+        us = plistlib.load(stream)
+    with (root / "ops/com.seungsoo.thesis-monitor.kr-close.plist").open("rb") as stream:
+        kr = plistlib.load(stream)
+
+    assert us["ProgramArguments"][-1].endswith("--market us")
+    assert us["StartCalendarInterval"] == [
+        {"Hour": 7, "Minute": 50},
+        {"Hour": 8, "Minute": 5},
+        {"Hour": 8, "Minute": 35},
+    ]
+    assert kr["ProgramArguments"][-1].endswith("--market kr")
+    assert kr["StartCalendarInterval"] == [
+        {"Hour": 16, "Minute": 5},
+        {"Hour": 16, "Minute": 20},
+        {"Hour": 16, "Minute": 50},
+    ]
+    assert "RunAtLoad" not in kr
+
+
+def test_market_cutoffs_keep_us_and_kr_dedupe_independent() -> None:
+    init_db()
+    run_date = date(2040, 8, 13)
+    channel = get_settings().notification_channel.strip().lower()
+    with Session(engine) as session:
+        us = NotificationDelivery(
+            ticker="__DAILY_DIGEST__",
+            assessment_date=run_date,
+            channel=channel,
+            status="sent",
+            payload="{}",
+            sent_at=datetime(2040, 8, 12, 22, 51, tzinfo=timezone.utc),
+        )
+        kr = NotificationDelivery(
+            ticker="__DAILY_DIGEST_KR__",
+            assessment_date=run_date,
+            channel=channel,
+            status="sent",
+            payload="{}",
+            sent_at=datetime(2040, 8, 13, 6, 50, tzinfo=timezone.utc),
+        )
+        session.add(us)
+        session.add(kr)
+        session.commit()
+
+        assert _sent_after_cutoff(
+            session,
+            run_date,
+            _requeue_cutoff(run_date, "us"),
+            "__DAILY_DIGEST__",
+        ) is True
+        assert _sent_after_cutoff(
+            session,
+            run_date,
+            _requeue_cutoff(run_date, "kr"),
+            "__DAILY_DIGEST_KR__",
+        ) is False
+
+
+@pytest.mark.anyio
+async def test_kr_scope_reuses_macro_without_collecting(monkeypatch) -> None:
+    async def fail_if_called(*args, **kwargs):
+        raise AssertionError("KR close run must not recollect macro providers")
+
+    monkeypatch.setattr("app.jobs.monitor_daily.run_macro_monitor", fail_if_called)
+    with Session(engine) as session:
+        result = await _macro_result_for_scope(
+            session,
+            date(2040, 8, 14),
+            "kr",
+            True,
+        )
+
+    assert result == {"run_date": "2040-08-14", "status": "reused"}
+
+
+@pytest.mark.anyio
+async def test_us_scope_collects_macro(monkeypatch) -> None:
+    calls: list[dict[str, object]] = []
+
+    class MacroResult:
+        def model_dump(self, mode: str) -> dict[str, object]:
+            return {"run_date": "2040-08-14", "status": "success"}
+
+    async def record_call(session, **kwargs):
+        calls.append(kwargs)
+        return MacroResult()
+
+    monkeypatch.setattr("app.jobs.monitor_daily.run_macro_monitor", record_call)
+    with Session(engine) as session:
+        result = await _macro_result_for_scope(
+            session,
+            date(2040, 8, 14),
+            "us",
+            True,
+        )
+
+    assert result["status"] == "success"
+    assert calls == [
+        {
+            "run_date": date(2040, 8, 14),
+            "force": True,
+            "queue_notifications": False,
+            "dispatch_notifications": False,
+        }
+    ]
+
+
+@pytest.mark.anyio
+async def test_daily_monitor_keeps_us_and_kr_runs_independent() -> None:
+    run_date = date(2040, 8, 12)
+    kr_tickers = ["100001", "100002", "100003", "100004", "100005"]
+    us_tickers = [f"USFIX{index}" for index in range(1, 10)]
+    isolated_engine = create_engine(
+        "sqlite://",
+        connect_args={"check_same_thread": False},
+        poolclass=StaticPool,
+    )
+    SQLModel.metadata.create_all(isolated_engine)
+    with Session(isolated_engine) as session:
+        for ticker in kr_tickers:
+            session.add(
+                WatchlistItem(
+                    ticker=ticker,
+                    company_name=ticker,
+                    exchange="KRX",
+                )
+            )
+            session.add(
+                InvestmentThesis(ticker=ticker, version=1, core_thesis="Scoped KR thesis")
+            )
+        for ticker in us_tickers:
+            session.add(
+                WatchlistItem(
+                    ticker=ticker,
+                    company_name=ticker,
+                    exchange="NASDAQ",
+                )
+            )
+            session.add(
+                InvestmentThesis(ticker=ticker, version=1, core_thesis="Scoped US thesis")
+            )
+        session.commit()
+
+        us_result = await run_daily_monitor(
+            session,
+            run_date=run_date,
+            market_scope="us",
+            collection_service=EmptyCollectionService(),
+            price_client=FakePriceClient(),
+            valuation_service=EmptyValuationService(),
+            queue_notifications=False,
+            dispatch_notifications=False,
+        )
+        kr_result = await run_daily_monitor(
+            session,
+            run_date=run_date,
+            market_scope="kr",
+            collection_service=EmptyCollectionService(),
+            price_client=FakePriceClient(),
+            valuation_service=EmptyValuationService(),
+            queue_notifications=False,
+            dispatch_notifications=False,
+        )
+        retry = await run_daily_monitor(
+            session,
+            run_date=run_date,
+            market_scope="us",
+            collection_service=EmptyCollectionService(),
+            price_client=FakePriceClient(),
+            valuation_service=EmptyValuationService(),
+            queue_notifications=False,
+            dispatch_notifications=False,
+        )
+        runs = session.exec(
+            select(MonitorRun).where(MonitorRun.run_date == run_date)
+        ).all()
+
+    assert us_result.ticker_count == 9
+    assert us_result.success_count == 9
+    assert {item.ticker for item in us_result.assessments} == set(us_tickers)
+    assert kr_result.ticker_count == 5
+    assert kr_result.success_count == 5
+    assert {item.ticker for item in kr_result.assessments} == set(kr_tickers)
+    assert retry.status == "already_completed"
+    assert {item.ticker for item in retry.assessments} == set(us_tickers)
+    assert {run.run_type for run in runs} == {"daily_us", "daily_kr"}
 
 
 @pytest.mark.anyio

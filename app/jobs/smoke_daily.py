@@ -1,7 +1,8 @@
 import asyncio
+import argparse
 import json
 from collections import Counter
-from datetime import date
+from datetime import date, datetime
 
 from sqlmodel import Session
 
@@ -10,6 +11,11 @@ from app.services.daily_monitor_service import run_daily_monitor
 
 
 async def _run() -> None:
+    parser = argparse.ArgumentParser(description="Run a scoped daily monitoring smoke test.")
+    parser.add_argument("--market", choices=("us", "kr", "all"), default="all")
+    parser.add_argument("--as-of")
+    args = parser.parse_args()
+    as_of = datetime.fromisoformat(args.as_of) if args.as_of else None
     init_db()
     with Session(engine) as session:
         result = await run_daily_monitor(
@@ -18,6 +24,8 @@ async def _run() -> None:
             force=True,
             queue_notifications=False,
             dispatch_notifications=False,
+            market_scope=args.market,
+            as_of=as_of,
         )
     thesis_counts = Counter(item.business_thesis_change.value for item in result.assessments)
     valuation_counts = Counter(item.valuation_change.value for item in result.assessments)
@@ -44,6 +52,13 @@ async def _run() -> None:
             "financial_period_end": item.valuation_snapshot.financial_period_end,
             "filing_date": item.valuation_snapshot.filing_date,
             "price_as_of": item.valuation_snapshot.price_as_of,
+            "supply": item.price_context.supply.model_dump(mode="json"),
+            "latest_eps_usable": item.valuation_snapshot.latest_eps_usable,
+            "ttm_eps_usable": item.valuation_snapshot.ttm_eps_usable,
+            "ttm_eps": item.valuation_snapshot.ttm_eps,
+            "trailing_pe_denominator_period_end": (
+                item.valuation_snapshot.trailing_pe_denominator_period_end
+            ),
             "historical_pe_median": (
                 item.valuation_snapshot.historical_pe_statistics.historical_median
                 if item.valuation_snapshot.historical_pe_statistics else None

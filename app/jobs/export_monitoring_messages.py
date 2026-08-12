@@ -6,16 +6,17 @@ from pathlib import Path
 from sqlmodel import Session, select
 
 from app.database import engine, init_db
+from app.models.event import CanonicalIssue, Event
+from app.models.security import ProviderCallTelemetry, SecurityMaster
 from app.models.thesis import InvestmentThesis, MonitorRun, ThesisAssessment
 from app.models.watchlist import WatchlistItem
-from app.models.security import ProviderCallTelemetry, SecurityMaster
-from app.models.event import CanonicalIssue, Event
 from app.providers.registry import provider_statuses
 from app.services.daily_digest import build_daily_digest
 from app.services.daily_digest_renderer import render_daily_digest
-from app.services.notification_service import _assessment_report
-from app.services.financial_freshness_service import FinancialFreshnessService
 from app.services.event_identity import source_document_id_from_url
+from app.services.financial_freshness_service import FinancialFreshnessService
+from app.services.market_session import MarketScope, market_scope_for_security
+from app.services.notification_service import _assessment_report
 from app.services.provider_telemetry_service import summarize_provider_run
 
 
@@ -81,24 +82,41 @@ def export_messages(
     run_date: date,
     output: Path,
     audit_output: Path | None = None,
+    market_scope: MarketScope = "all",
 ) -> int:
     init_db()
     with Session(engine) as session:
+        watchlist_items = list(session.exec(select(WatchlistItem)).all())
+        active_tickers: set[str] = set()
+        scope_tickers: set[str] = set()
+        for item in watchlist_items:
+            exchange = item.exchange
+            if not exchange:
+                security = session.exec(
+                    select(SecurityMaster).where(SecurityMaster.ticker == item.ticker)
+                ).first()
+                exchange = security.exchange if security else None
+            if market_scope == "all" or market_scope_for_security(
+                item.ticker, exchange
+            ) == market_scope:
+                scope_tickers.add(item.ticker)
+                if item.active:
+                    active_tickers.add(item.ticker)
         digest = render_daily_digest(
-            build_daily_digest(session, run_date),
+            build_daily_digest(session, run_date, market_scope=market_scope),
             include_stock_details=False,
         )
-        assessments = list(
-            session.exec(
-                select(ThesisAssessment)
-                .where(ThesisAssessment.assessment_date == run_date)
-                .order_by(ThesisAssessment.ticker)
-            ).all()
+        statement = select(ThesisAssessment).where(
+            ThesisAssessment.assessment_date == run_date
         )
+        if market_scope != "all":
+            statement = statement.where(ThesisAssessment.ticker.in_(scope_tickers))
+        assessments = list(session.exec(statement.order_by(ThesisAssessment.ticker)).all())
+        run_type = "daily" if market_scope == "all" else f"daily_{market_scope}"
         monitor_run = session.exec(
             select(MonitorRun).where(
                 MonitorRun.run_date == run_date,
-                MonitorRun.run_type == "daily",
+                MonitorRun.run_type == run_type,
             )
         ).first()
         run_started_at = (
@@ -106,13 +124,11 @@ def export_messages(
             if monitor_run
             else datetime.combine(run_date, datetime.min.time(), tzinfo=timezone.utc)
         )
-        active_tickers = {
-            item.ticker
-            for item in session.exec(
-                select(WatchlistItem).where(WatchlistItem.active.is_(True))
-            ).all()
-        }
-        events = list(session.exec(select(Event).where(Event.ticker.in_(active_tickers))).all())
+        events = (
+            list(session.exec(select(Event).where(Event.ticker.in_(active_tickers))).all())
+            if active_tickers
+            else []
+        )
         dart_identity_mismatches = [
             event
             for event in events
@@ -148,7 +164,7 @@ def export_messages(
             ):
                 us_premarket_date_mismatches += 1
         user_sections = [
-            f"# {run_date.isoformat()} Thesis Monitor 전체 메시지",
+            f"# {run_date.isoformat()} Thesis Monitor {market_scope.upper()} 메시지",
             "",
             "Telegram과 동일한 사용자용 monitoring renderer 기준입니다.",
             "",
@@ -157,11 +173,11 @@ def export_messages(
             _fenced(digest),
         ]
         audit_sections = [
-            f"# {run_date.isoformat()} Thesis Monitor 내부 감사",
+            f"# {run_date.isoformat()} Thesis Monitor {market_scope.upper()} 내부 감사",
             "",
             "## 검증 요약",
             "",
-            f"- 활성 종목 assessment: {len(assessments)}/14",
+            f"- 활성 종목 assessment: {len(assessments)}/{len(active_tickers)}",
             f"- 미국 장전 종가 날짜 불일치: {us_premarket_date_mismatches}건",
             f"- OpenDART URL/receipt 불일치: {len(dart_identity_mismatches)}건",
             f"- 과거 이력에서 식별자 불일치로 격리된 OpenDART 문서: {len(invalid_dart_documents)}건",
@@ -191,7 +207,7 @@ def export_messages(
         sections.extend(
             [
                 "",
-                "## 부록. 14종목 데이터 커버리지",
+                "## 부록. 종목 데이터 커버리지",
                 "",
                 "| 종목 | 정식 재무 | Full availability/freshness | 잠정실적 | 잠정 freshness | 갱신 상태 | Consensus | Provider | 가격 | 이벤트 | 격리/거절 감사 | 재무 | 역사 Valuation | Forward Valuation | 충돌 | Identity | Foreign | 남은 gap |",
                 "|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|",
@@ -334,6 +350,49 @@ def export_messages(
                 f"{snapshot.get('price_basis') or 'unavailable'} | "
                 f"{snapshot.get('price_observed_timezone') or '확인 불가'} |"
             )
+
+        sections.extend(
+            [
+                "",
+                "## 부록. 한국 종목 투자주체 수급 감사",
+                "",
+                "| 종목 | 기준일 | 외국인 1D/5D/20D | 기관 1D/5D/20D | 개인 1D/5D/20D | 외국인 보유/비중 | Score | Quality | Primary signal | Confidence | Validation | 20D validation |",
+                "|---|---|---|---|---|---|---|---|---|---|---|---|",
+            ]
+        )
+        kr_supply_rows = 0
+        for assessment in assessments:
+            item = session.exec(
+                select(WatchlistItem).where(WatchlistItem.ticker == assessment.ticker)
+            ).first()
+            exchange = item.exchange if item else None
+            if market_scope_for_security(assessment.ticker, exchange) != "kr":
+                continue
+            try:
+                price_context = json.loads(assessment.price_context or "{}")
+            except json.JSONDecodeError:
+                price_context = {}
+            supply = price_context.get("supply", {}) if isinstance(price_context, dict) else {}
+            if not isinstance(supply, dict):
+                supply = {}
+            kr_supply_rows += 1
+            sections.append(
+                f"| {assessment.ticker} | {supply.get('as_of_date') or '없음'} | "
+                f"{supply.get('foreign_net_buy_qty')}/{supply.get('foreign_net_buy_qty_5')}/"
+                f"{supply.get('foreign_net_buy_qty_20')} | "
+                f"{supply.get('institution_net_buy_qty')}/{supply.get('institution_net_buy_qty_5')}/"
+                f"{supply.get('institution_net_buy_qty_20')} | "
+                f"{supply.get('individual_net_buy_qty')}/{supply.get('individual_net_buy_qty_5')}/"
+                f"{supply.get('individual_net_buy_qty_20')} | "
+                f"{supply.get('foreign_holding_qty')}/{supply.get('foreign_holding_ratio')} | "
+                f"{supply.get('score')} | {supply.get('quality') or '없음'} | "
+                f"{supply.get('primary_signal') or '없음'} | "
+                f"{supply.get('confidence') or '없음'} | "
+                f"{supply.get('validation_status') or '없음'} | "
+                f"{supply.get('investor_20d_validation_status') or '없음'} |"
+            )
+        if kr_supply_rows == 0:
+            sections.append("| - | - | - | - | - | - | - | - | - | - | - | - |")
 
         sections.extend(
             [
@@ -562,16 +621,19 @@ def export_messages(
 def main() -> None:
     parser = argparse.ArgumentParser(description="Export rendered daily monitoring messages.")
     parser.add_argument("--date", default=date.today().isoformat())
+    parser.add_argument("--market", choices=("us", "kr", "all"), default="all")
     parser.add_argument("--output")
     parser.add_argument("--audit-output")
     args = parser.parse_args()
     run_date = date.fromisoformat(args.date)
+    scope_suffix = "" if args.market == "all" else f"-{args.market}"
     output = Path(
         args.output
-        or DEFAULT_EXPORT_DIR / f"{datetime.now():%Y%m%d-%H%M%S}-{run_date}-monitoring-messages.md"
+        or DEFAULT_EXPORT_DIR
+        / f"{datetime.now():%Y%m%d-%H%M%S}-{run_date}{scope_suffix}-monitoring-messages.md"
     )
     audit_output = Path(args.audit_output) if args.audit_output else _audit_output_for(output)
-    count = export_messages(run_date, output, audit_output)
+    count = export_messages(run_date, output, audit_output, market_scope=args.market)
     print(f"exported={count} output={output.resolve()} audit_output={audit_output.resolve()}")
 
 

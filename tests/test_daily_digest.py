@@ -14,6 +14,8 @@ from app.services.daily_digest import build_daily_digest
 from app.services.daily_digest_renderer import render_daily_digest
 from app.services.notification_service import (
     TelegramNotifier,
+    _supply_report,
+    dispatch_pending_notifications,
     queue_daily_digest_notification,
     queue_daily_stock_notification,
     queue_notification,
@@ -285,6 +287,137 @@ def test_queued_daily_digest_omits_duplicate_stock_detail_section() -> None:
         payload = json.loads(delivery.payload)
         assert "📊 14종목 상태" in payload["text"]
         assert "🔎 오늘 상세 점검" not in payload["text"]
+
+
+def test_market_scoped_digest_uses_separate_keys_and_portfolios() -> None:
+    init_db()
+    run_date = date(2038, 8, 14)
+    with Session(engine) as session:
+        assessments = _seed_digest(session, run_date, suffix="X")
+        for assessment in assessments:
+            item = session.exec(
+                select(WatchlistItem).where(WatchlistItem.ticker == assessment.ticker)
+            ).one()
+            item.exchange = "KRX" if item.company_name in {
+                "SK하이닉스", "코리안리", "POSCO홀딩스", "삼성전자", "현대글로비스"
+            } else "NASDAQ"
+        session.commit()
+
+        us_delivery = queue_daily_digest_notification(session, run_date, market_scope="us")
+        kr_delivery = queue_daily_digest_notification(session, run_date, market_scope="kr")
+
+        assert us_delivery is not None
+        assert kr_delivery is not None
+        assert us_delivery.ticker == "__DAILY_DIGEST__"
+        assert kr_delivery.ticker == "__DAILY_DIGEST_KR__"
+        us_payload = json.loads(us_delivery.payload)
+        kr_payload = json.loads(kr_delivery.payload)
+        assert us_payload["market_scope"] == "us"
+        assert kr_payload["market_scope"] == "kr"
+        assert "🌎 미국 종목 점검" in us_payload["text"]
+        assert "전체 9개 종목 평가 완료" in us_payload["text"]
+        assert "🇰🇷 한국 종목 장마감 점검" in kr_payload["text"]
+        assert "전체 5개 종목 평가 완료" in kr_payload["text"]
+
+
+@pytest.mark.anyio
+async def test_dispatcher_sends_only_selected_delivery_ids() -> None:
+    class RecordingNotifier:
+        def __init__(self) -> None:
+            self.payloads: list[dict[str, object]] = []
+
+        async def send(self, payload: dict[str, object]) -> str:
+            self.payloads.append(payload)
+            return "sent"
+
+    init_db()
+    run_date = date(2038, 8, 15)
+    with Session(engine) as session:
+        us_delivery = NotificationDelivery(
+            ticker="US-SCOPED",
+            assessment_date=run_date,
+            channel="telegram",
+            status="pending",
+            payload=json.dumps({"text": "US"}),
+        )
+        kr_delivery = NotificationDelivery(
+            ticker="KR-SCOPED",
+            assessment_date=run_date,
+            channel="telegram",
+            status="pending",
+            payload=json.dumps({"text": "KR"}),
+        )
+        session.add(us_delivery)
+        session.add(kr_delivery)
+        session.commit()
+        notifier = RecordingNotifier()
+
+        await dispatch_pending_notifications(
+            session, notifier=notifier, delivery_ids={us_delivery.id}
+        )
+        session.refresh(us_delivery)
+        session.refresh(kr_delivery)
+
+        assert us_delivery.status == "sent"
+        assert kr_delivery.status == "pending"
+        assert notifier.payloads == [{"text": "US"}]
+
+
+def test_samsung_supply_renderer_is_compact_and_uses_actual_as_of_date() -> None:
+    rendered = _supply_report(
+        {
+            "supply": {
+                "available": True,
+                "as_of_date": "2026-08-12",
+                "foreign_net_buy_qty": -153_000,
+                "institution_net_buy_qty": 205_000,
+                "individual_net_buy_qty": 0,
+                "foreign_net_buy_qty_5": -6_981_054,
+                "institution_net_buy_qty_5": -34_386,
+                "individual_net_buy_qty_5": 5_829_492,
+                "foreign_net_buy_qty_20": -8_108_432,
+                "institution_net_buy_qty_20": -11_716_549,
+                "individual_net_buy_qty_20": 18_403_424,
+                "foreign_holding_qty": 2_724_356_859,
+                "foreign_holding_ratio": 46.6,
+                "score": 29,
+                "quality": "distribution",
+                "primary_signal": "foreign_exit_retail_absorption",
+                "confidence": "high",
+                "validation_status": "validated",
+            }
+        }
+    )
+
+    assert rendered is not None
+    assert "📊 수급 · 8/12 기준" in rendered
+    assert "외국인 -15.3만주 · 기관 +20.5만주 · 개인 0주" in rendered
+    assert "외국인 -698.1만주 · 기관 -3.4만주 · 개인 +582.9만주" in rendered
+    assert "외국인 -810.8만주 · 기관 -1,171.7만주 · 개인 +1,840.3만주" in rendered
+    assert "외국인 보유: 27.24억주 · 46.6%" in rendered
+    assert "수급 점수: 29 · 분산/매도 우위 · 외국인 이탈·개인 흡수" in rendered
+
+
+def test_low_confidence_supply_hides_unmapped_summary_enum() -> None:
+    rendered = _supply_report(
+        {
+            "supply": {
+                "available": True,
+                "as_of_date": "2026-08-11",
+                "foreign_net_buy_qty": -10,
+                "quality": "new_unknown_quality",
+                "primary_signal": "new_unknown_signal",
+                "confidence": "low",
+                "validation_status": "failed",
+            }
+        }
+    )
+
+    assert rendered is not None
+    assert "📊 수급 · 8/11 기준" in rendered
+    assert "외국인 -10주" in rendered
+    assert "참고 수준" in rendered
+    assert "new_unknown" not in rendered
 
 
 @pytest.mark.anyio

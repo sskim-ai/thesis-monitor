@@ -1,5 +1,6 @@
 import asyncio
 import json
+import math
 import os
 import re
 from datetime import date, datetime, timezone
@@ -156,6 +157,106 @@ def _report_price(value: object, currency: object) -> str:
     if currency == "USD":
         return f"${rendered}"
     return rendered
+
+
+def _supply_quantity(value: object, *, signed: bool = True) -> str:
+    if not isinstance(value, (int, float)) or isinstance(value, bool):
+        return "자료 없음"
+    number = float(value)
+    if not math.isfinite(number):
+        return "자료 없음"
+    sign = "+" if signed and number > 0 else ""
+    absolute = abs(number)
+    if absolute >= 100_000_000:
+        rendered = f"{number / 100_000_000:.2f}억주"
+    elif absolute >= 10_000:
+        rendered = f"{number / 10_000:,.1f}만주"
+    else:
+        rendered = f"{number:,.0f}주"
+    return sign + rendered
+
+
+_SUPPLY_QUALITY_LABELS = {
+    "accumulation": "매집 우위",
+    "strong_joint": "외국인·기관 동반 매집",
+    "foreign_led": "외국인 주도 매집",
+    "institution_led": "기관 주도 매집",
+    "mixed_absorption": "혼합 흡수",
+    "retail_led": "개인 주도 매집",
+    "distribution": "분산/매도 우위",
+    "mixed": "혼재",
+    "neutral": "중립",
+    "unknown": "판단 보류",
+    "unavailable": "판단 보류",
+}
+
+_SUPPLY_SIGNAL_LABELS = {
+    "foreign_exit_retail_absorption": "외국인 이탈·개인 흡수",
+    "foreign_exit_institution_retail_absorption": "외국인 이탈·기관/개인 흡수",
+    "foreign_reentry": "외국인 재유입",
+    "foreign_reentry_signal": "외국인 재유입",
+    "foreign_institution_joint_accumulation": "외국인·기관 동반 매집",
+    "strong_joint": "외국인·기관 동반 매집",
+    "foreign_led": "외국인 주도 매집",
+    "institution_led": "기관 주도 매집",
+    "mixed_absorption": "혼합 흡수",
+    "retail_led": "개인 주도 매집",
+    "distribution": "분산/매도 우위",
+    "retail_chasing_warning": "개인 추격매수 주의",
+    "institutional_distribution_warning": "기관 매도/분산 주의",
+}
+
+
+def _supply_report(price_context: dict[str, object]) -> str | None:
+    supply = price_context.get("supply")
+    if not isinstance(supply, dict) or not supply.get("available"):
+        return None
+    as_of = str(supply.get("as_of_date") or "")
+    try:
+        parsed_date = date.fromisoformat(as_of[:10])
+        date_label = f"{parsed_date.month}/{parsed_date.day} 기준"
+    except ValueError:
+        date_label = "기준일 확인 불가"
+
+    def flow_line(label: str, suffix: str) -> str:
+        return (
+            f"{label}: 외국인 {_supply_quantity(supply.get(f'foreign_net_buy_qty{suffix}'))} · "
+            f"기관 {_supply_quantity(supply.get(f'institution_net_buy_qty{suffix}'))} · "
+            f"개인 {_supply_quantity(supply.get(f'individual_net_buy_qty{suffix}'))}"
+        )
+
+    lines = [
+        f"📊 수급 · {date_label}",
+        flow_line("당일", ""),
+        flow_line("5일", "_5"),
+        flow_line("20일", "_20"),
+    ]
+    holding = supply.get("foreign_holding_qty")
+    ratio = supply.get("foreign_holding_ratio")
+    if isinstance(holding, (int, float)) or isinstance(ratio, (int, float)):
+        holding_text = _supply_quantity(holding, signed=False)
+        ratio_text = f"{float(ratio):.1f}%" if isinstance(ratio, (int, float)) else "자료 없음"
+        lines.append(f"외국인 보유: {holding_text} · {ratio_text}")
+    validated = supply.get("validation_status") == "validated" and supply.get("confidence") not in {
+        "low",
+        "unavailable",
+    }
+    if validated:
+        summary = []
+        score = supply.get("score")
+        if isinstance(score, (int, float)):
+            summary.append(f"수급 점수: {float(score):g}")
+        quality = _SUPPLY_QUALITY_LABELS.get(str(supply.get("quality") or ""))
+        if quality:
+            summary.append(quality)
+        signal = _SUPPLY_SIGNAL_LABELS.get(str(supply.get("primary_signal") or ""))
+        if signal:
+            summary.append(signal)
+        if summary:
+            lines.append(" · ".join(dict.fromkeys(summary)))
+    else:
+        lines.append("⚠️ 수급 데이터 검증이 충분하지 않아 종합 신호는 참고 수준입니다.")
+    return "\n".join(lines)
 
 
 def _multiple_text(snapshot: dict[str, object], field: str) -> str:
@@ -615,6 +716,11 @@ def _assessment_report(
         price_lines.append("⚠️ 현재 장중 데이터로 가격 판단은 잠정입니다.")
     sections.append("\n".join(price_lines))
 
+    if is_krx:
+        supply_section = _supply_report(price_context)
+        if supply_section:
+            sections.append(supply_section)
+
     valuation_lines = ["📐 Valuation"]
     for arguments in (
         ("PER", "trailing_pe", "ttm_eps", "TTM EPS"),
@@ -878,14 +984,16 @@ def queue_macro_notification(session: Session, briefing: MacroBriefing) -> None:
 def queue_daily_digest_notification(
     session: Session,
     run_date: date,
+    market_scope: str = "all",
     requeue_sent_before: datetime | None = None,
 ) -> NotificationDelivery | None:
-    digest = build_daily_digest(session, run_date)
+    digest = build_daily_digest(session, run_date, market_scope=market_scope)
     payload = json.dumps(
         {
             "text": render_daily_digest(digest, include_stock_details=False),
             "briefing_date": str(run_date),
             "type": "daily_monitoring_digest",
+            "market_scope": market_scope,
             "presentation": "long_text",
             "use_llm": False,
         },
@@ -894,14 +1002,16 @@ def queue_daily_digest_notification(
     channel = _notification_channel()
     delivery = session.exec(
         select(NotificationDelivery).where(
-            NotificationDelivery.ticker == "__DAILY_DIGEST__",
+            NotificationDelivery.ticker == (
+                "__DAILY_DIGEST_KR__" if market_scope == "kr" else "__DAILY_DIGEST__"
+            ),
             NotificationDelivery.assessment_date == run_date,
             NotificationDelivery.channel == channel,
         )
     ).first()
     if delivery is None:
         delivery = NotificationDelivery(
-            ticker="__DAILY_DIGEST__",
+            ticker="__DAILY_DIGEST_KR__" if market_scope == "kr" else "__DAILY_DIGEST__",
             assessment_date=run_date,
             channel=channel,
             status="pending",
@@ -1447,12 +1557,17 @@ def _notifier_for_channel(
 async def dispatch_pending_notifications(
     session: Session,
     notifier: KakaoSelfNotifier | TelegramNotifier | None = None,
+    delivery_ids: set[int] | None = None,
 ) -> None:
     channel = _notification_channel()
     query = select(NotificationDelivery).where(
         NotificationDelivery.status == "pending",
         NotificationDelivery.channel == channel,
     )
+    if delivery_ids is not None:
+        if not delivery_ids:
+            return
+        query = query.where(NotificationDelivery.id.in_(delivery_ids))
     if notifier is None:
         notifier = _notifier_for_channel(channel)
     deliveries = session.exec(query.order_by(NotificationDelivery.created_at)).all()

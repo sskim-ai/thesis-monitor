@@ -9,8 +9,10 @@ from sqlmodel import Session, select
 
 from app.models.event import Event
 from app.models.macro import MacroBriefing, MacroEvent, ThesisMacroImpact
+from app.models.security import SecurityMaster
 from app.models.thesis import InvestmentThesis, MonitorRun, ThesisAssessment
 from app.models.watchlist import WatchlistItem
+from app.services.market_session import MarketScope, market_scope_for_security
 
 
 @dataclass(frozen=True)
@@ -128,6 +130,7 @@ class DataQualitySummary:
 @dataclass(frozen=True)
 class DailyDigest:
     digest_date: date
+    market_scope: MarketScope
     macro: MacroInterpretation
     portfolio: PortfolioSummary
     schedule: ScheduleSummary
@@ -154,6 +157,16 @@ def _list(value: str) -> list[object]:
 
 def _text_list(value: str) -> list[str]:
     return [str(item) for item in _list(value) if str(item).strip()]
+
+
+def _watchlist_market_scope(session: Session, item: WatchlistItem) -> str:
+    security = session.exec(
+        select(SecurityMaster).where(SecurityMaster.ticker == item.ticker)
+    ).first()
+    return market_scope_for_security(
+        item.ticker,
+        item.exchange or (security.exchange if security else None),
+    )
 
 
 def _observation_map(briefing: MacroBriefing) -> dict[str, dict[str, object]]:
@@ -649,7 +662,12 @@ def _ticker_summary(
     )
 
 
-def _portfolio(session: Session, run_date: date, detail_limit: int) -> PortfolioSummary:
+def _portfolio(
+    session: Session,
+    run_date: date,
+    detail_limit: int,
+    market_scope: MarketScope,
+) -> PortfolioSummary:
     assessments = session.exec(
         select(ThesisAssessment)
         .where(ThesisAssessment.assessment_date == run_date)
@@ -667,6 +685,10 @@ def _portfolio(session: Session, run_date: date, detail_limit: int) -> Portfolio
             )
         ).first()
         if item is None or thesis is None:
+            continue
+        if market_scope != "all" and _watchlist_market_scope(
+            session, item
+        ) != market_scope:
             continue
         impact = session.exec(
             select(ThesisMacroImpact).where(
@@ -703,7 +725,7 @@ def _portfolio(session: Session, run_date: date, detail_limit: int) -> Portfolio
     )
 
 
-def _schedule(session: Session, run_date: date) -> ScheduleSummary:
+def _schedule(session: Session, run_date: date, market_scope: MarketScope) -> ScheduleSummary:
     end_date = run_date + timedelta(days=7)
     macro_events = session.exec(
         select(MacroEvent)
@@ -723,6 +745,14 @@ def _schedule(session: Session, run_date: date) -> ScheduleSummary:
         if run_date <= event_date <= end_date:
             entries[(event_date, event.title)] = event.title
     for event in company_events:
+        item = session.exec(
+            select(WatchlistItem).where(WatchlistItem.ticker == event.ticker)
+        ).first()
+        if market_scope != "all" and (
+            item is None
+            or _watchlist_market_scope(session, item) != market_scope
+        ):
+            continue
         if event.date >= run_date and event.event_type in {
             "earnings_schedule", "shareholder_meeting", "scheduled_guidance", "product_milestone"
         }:
@@ -741,6 +771,7 @@ def _data_quality(
     briefing: MacroBriefing | None,
     portfolio: PortfolioSummary,
     run_date: date,
+    market_scope: MarketScope,
 ) -> DataQualitySummary:
     values = _list(briefing.data_quality) if briefing is not None else []
     lines: list[str] = []
@@ -760,7 +791,7 @@ def _data_quality(
     run = session.exec(
         select(MonitorRun).where(
             MonitorRun.run_date == run_date,
-            MonitorRun.run_type == "daily",
+            MonitorRun.run_type == ("daily" if market_scope == "all" else f"daily_{market_scope}"),
         )
     ).first()
     if run is not None and len(portfolio.tickers) < run.ticker_count:
@@ -780,6 +811,7 @@ def build_daily_digest(
     session: Session,
     run_date: date,
     detail_limit: int = 5,
+    market_scope: MarketScope = "all",
 ) -> DailyDigest:
     briefing = session.exec(
         select(MacroBriefing)
@@ -789,11 +821,14 @@ def build_daily_digest(
         )
         .order_by(MacroBriefing.created_at.desc())
     ).first()
-    portfolio = _portfolio(session, run_date, max(3, min(5, detail_limit)))
+    portfolio = _portfolio(
+        session, run_date, max(3, min(5, detail_limit)), market_scope
+    )
     return DailyDigest(
         digest_date=run_date,
+        market_scope=market_scope,
         macro=_macro_interpretation(briefing) if briefing is not None else _unavailable_macro(),
         portfolio=portfolio,
-        schedule=_schedule(session, run_date),
-        data_quality=_data_quality(session, briefing, portfolio, run_date),
+        schedule=_schedule(session, run_date, market_scope),
+        data_quality=_data_quality(session, briefing, portfolio, run_date, market_scope),
     )

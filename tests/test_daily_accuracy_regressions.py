@@ -9,7 +9,7 @@ from app.providers.filings import _filter_items_by_receipt
 from app.models.event import Event
 from app.models.macro import MacroRegimeAssessment, ThesisMacroImpact
 from app.models.thesis import InvestmentThesis, ThesisAssessment
-from app.schemas.thesis import AssessmentStatus, PriceContext
+from app.schemas.thesis import AssessmentStatus, InvestorSupplyContext, PriceContext
 from app.schemas.thesis import PricePeriodSummary, PriceRulesInput
 from app.services.daily_digest import _macro_paths
 from app.services.financial_validation import (
@@ -95,6 +95,38 @@ def test_case_b_real_yield_changes_valuation_not_business_thesis() -> None:
     assert result.status == AssessmentStatus.no_material_change
     assert result.valuation_context.impact == "compression"
     assert result.earnings_estimate_impact == "unchanged"
+
+
+def test_supply_context_does_not_change_fundamental_evaluation() -> None:
+    accumulating = evaluate_thesis(
+        _thesis(),
+        [],
+        PriceContext(
+            supply=InvestorSupplyContext(
+                available=True,
+                score=90,
+                quality="accumulation",
+                primary_signal="foreign_institution_joint_accumulation",
+            )
+        ),
+    )
+    distributing = evaluate_thesis(
+        _thesis(),
+        [],
+        PriceContext(
+            supply=InvestorSupplyContext(
+                available=True,
+                score=10,
+                quality="distribution",
+                primary_signal="foreign_exit_retail_absorption",
+            )
+        ),
+    )
+
+    assert accumulating.status == distributing.status
+    assert accumulating.earnings_estimate_impact == distributing.earnings_estimate_impact
+    assert accumulating.valuation_context == distributing.valuation_context
+    assert accumulating.warning_states == distributing.warning_states
 
 
 def test_unverified_market_article_cannot_trigger_business_invalidation() -> None:

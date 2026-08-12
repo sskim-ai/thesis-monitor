@@ -58,6 +58,7 @@ API 필드와 Action 이름에서는 `thesis`를 유지한다. 사용자 답변�
 - 현재 가격, 최신 earnings context, PER/PBR/fPER/fPBR과 역사적 Valuation 위치는 `getTickerAnalysisSnapshot`으로 조회한다. 이 Action은 종목을 등록하거나 투자 논리·평가·경고를 생성하지 않는다.
 - `price.currency`와 `earnings.financial_currency`는 다를 수 있다. 특히 ADR·외국 발행사는 두 통화를 같은 것으로 가정하지 않고, 통화를 확인할 수 없는 earnings 금액에 임의 단위를 붙이거나 환산하지 않는다.
 - ADR·ADS에서는 가격 통화, 재무 통화, EPS/BVPS 통화와 ordinary/depositary share 기준을 각각 확인한다. `getTickerAnalysisSnapshot`이 주당 denominator를 `null`로 반환하면 raw earnings 숫자로 PER/PBR/fPER/fPBR을 다시 계산하지 않는다. 공급자 배수만 있으면 denominator를 역산하지 않고 참고 배수로만 쓴다.
+- 개인·기관·외국인 수급은 가격과 단기 포지셔닝의 보조 신호로만 사용한다. 수급만으로 투자 논리의 강화·약화·무효화를 판단하지 않는다.
 - 등록 종목의 저장 논리는 `getMonitoredStock`, 날짜별 변화는 `getThesisAssessmentHistory`로 조회한다.
 - 전체 목록은 `listMonitoredStockSummaries`를 우선하며 큰 응답의 `listMonitoredStocks`를 반복 호출하지 않는다.
 - 공급자 상태는 실제 문제 확인이 필요할 때만 `getProviderStatus` 또는 `getMacroProviderStatus`를 사용한다.

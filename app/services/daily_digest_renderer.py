@@ -18,8 +18,12 @@ def render_daily_digest(
     portfolio = digest.portfolio
     thesis = portfolio.thesis_counts
     valuation = portfolio.valuation_counts
+    title = {
+        "us": f"🌎 미국 종목 점검 · {digest.digest_date}",
+        "kr": f"🇰🇷 한국 종목 장마감 점검 · {digest.digest_date}",
+    }.get(digest.market_scope, f"🌍 시장환경 점검 · {digest.digest_date}")
     lines = [
-        f"🌍 시장환경 점검 · {digest.digest_date}",
+        title,
         f"현재 환경: {macro.regime_label}",
     ]
     if macro.assessment_state == "provisional":
@@ -52,7 +56,7 @@ def render_daily_digest(
     lines.extend(
         [
             "",
-            "📊 14종목 상태",
+            f"📊 {len(portfolio.tickers)}종목 상태",
             (
                 f"투자 논리 · 강화 {thesis['strengthened']} · 유지 {thesis['maintained']} · "
                 f"약화/검토 {thesis['weakened']} · 무효화 {thesis['invalidated']}"

@@ -7,10 +7,12 @@ from sqlmodel import Session, select
 from app.config import get_settings
 from app.models.macro import ThesisMacroImpact
 from app.models.thesis import InvestmentThesis, MonitorRun, ThesisAssessment
+from app.models.security import SecurityMaster
 from app.models.watchlist import WatchlistItem
 from app.schemas.thesis import DailyMonitorResponse, PriceContext
 from app.services.collection_service import CollectionService
 from app.services.local_storage import export_assessment_history, export_monitor_run, export_thesis
+from app.services.market_session import MarketScope, market_scope_for_security
 from app.services.monitoring_service import assessment_to_read
 from app.services.notification_service import (
     dispatch_pending_notifications,
@@ -25,6 +27,60 @@ from app.services.warning_backfill_service import backfill_confirmed_warning_sta
 
 
 logger = logging.getLogger(__name__)
+
+
+def _run_type(market_scope: MarketScope) -> str:
+    return "daily" if market_scope == "all" else f"daily_{market_scope}"
+
+
+def _item_market_scope(session: Session, item: WatchlistItem) -> str:
+    security = session.exec(
+        select(SecurityMaster).where(SecurityMaster.ticker == item.ticker)
+    ).first()
+    exchange = item.exchange or (security.exchange if security else None)
+    return market_scope_for_security(item.ticker, exchange)
+
+
+def _watchlist_for_scope(
+    session: Session,
+    market_scope: MarketScope,
+    *,
+    active_only: bool,
+) -> list[WatchlistItem]:
+    query = select(WatchlistItem).order_by(WatchlistItem.ticker)
+    if active_only:
+        query = query.where(WatchlistItem.active.is_(True))
+    items = list(session.exec(query).all())
+    if market_scope == "all":
+        return items
+    return [item for item in items if _item_market_scope(session, item) == market_scope]
+
+
+def _queue_scoped_notifications(
+    session: Session,
+    run_date: date,
+    assessments: list[ThesisAssessment],
+    market_scope: MarketScope,
+    requeue_sent_before: datetime | None,
+) -> set[int]:
+    deliveries = [
+        queue_daily_digest_notification(
+            session,
+            run_date,
+            market_scope=market_scope,
+            requeue_sent_before=requeue_sent_before,
+        )
+    ]
+    deliveries.extend(
+        queue_daily_stock_notification(
+            session,
+            assessment,
+            requeue_sent_before=requeue_sent_before,
+        )
+        for assessment in assessments
+    )
+    session.commit()
+    return {delivery.id for delivery in deliveries if delivery is not None and delivery.id is not None}
 
 
 def _latest_thesis(session: Session, ticker: str) -> InvestmentThesis | None:
@@ -157,30 +213,34 @@ async def run_daily_monitor(
     queue_notifications: bool = True,
     dispatch_notifications: bool = True,
     requeue_sent_before: datetime | None = None,
+    market_scope: MarketScope = "all",
+    as_of: datetime | None = None,
 ) -> DailyMonitorResponse:
     run_date = run_date or date.today()
+    run_type = _run_type(market_scope)
+    scoped_items = _watchlist_for_scope(session, market_scope, active_only=True)
+    scoped_tickers = {item.ticker for item in _watchlist_for_scope(
+        session, market_scope, active_only=False
+    )}
     existing_run = session.exec(
-        select(MonitorRun).where(MonitorRun.run_date == run_date, MonitorRun.run_type == "daily")
+        select(MonitorRun).where(MonitorRun.run_date == run_date, MonitorRun.run_type == run_type)
     ).first()
     if existing_run is not None and existing_run.status == "success" and not force:
-        assessments = session.exec(
-            select(ThesisAssessment).where(ThesisAssessment.assessment_date == run_date)
-        ).all()
-        if queue_notifications:
-            queue_daily_digest_notification(
-                session,
-                run_date,
-                requeue_sent_before=requeue_sent_before,
-            )
-            for assessment in assessments:
-                queue_daily_stock_notification(
-                    session,
-                    assessment,
-                    requeue_sent_before=requeue_sent_before,
+        assessments = list(
+            session.exec(
+                select(ThesisAssessment).where(
+                    ThesisAssessment.assessment_date == run_date,
+                    ThesisAssessment.ticker.in_(scoped_tickers),
                 )
-            session.commit()
+            ).all()
+        ) if scoped_tickers else []
+        delivery_ids: set[int] = set()
+        if queue_notifications:
+            delivery_ids = _queue_scoped_notifications(
+                session, run_date, assessments, market_scope, requeue_sent_before
+            )
         if queue_notifications and dispatch_notifications:
-            await dispatch_pending_notifications(session)
+            await dispatch_pending_notifications(session, delivery_ids=delivery_ids)
         return DailyMonitorResponse(
             run_date=run_date,
             status="already_completed",
@@ -190,7 +250,7 @@ async def run_daily_monitor(
             assessments=[assessment_to_read(item) for item in assessments],
         )
 
-    run = existing_run or MonitorRun(run_date=run_date, run_type="daily")
+    run = existing_run or MonitorRun(run_date=run_date, run_type=run_type)
     run.status = "running"
     run.started_at = datetime.now(timezone.utc)
     run.completed_at = None
@@ -203,13 +263,18 @@ async def run_daily_monitor(
     price_client = price_client or OhlcvClient()
     valuation_service = valuation_service or ValuationSnapshotService()
     settings = get_settings()
-    watchlist = session.exec(
-        select(WatchlistItem)
-        .where(WatchlistItem.active.is_(True))
-        .order_by(WatchlistItem.ticker)
-    ).all()
+    watchlist = scoped_items
     run.ticker_count = len(watchlist)
-    details: dict[str, object] = {"tickers": {}}
+    unknown_tickers = [
+        item.ticker
+        for item in _watchlist_for_scope(session, "all", active_only=True)
+        if _item_market_scope(session, item) == "unknown"
+    ]
+    details: dict[str, object] = {
+        "market_scope": market_scope,
+        "market_scope_unknown": unknown_tickers,
+        "tickers": {},
+    }
     completed_assessments: list[ThesisAssessment] = []
 
     for item in watchlist:
@@ -226,7 +291,7 @@ async def run_daily_monitor(
             try:
                 if isinstance(price_client, OhlcvClient):
                     price_context = await price_client.fetch_price_context(
-                        item.ticker, session=session
+                        item.ticker, as_of=as_of, session=session
                     )
                 else:
                     price_context = await price_client.fetch_price_context(item.ticker)
@@ -492,21 +557,17 @@ async def run_daily_monitor(
     session.commit()
     session.refresh(run)
     export_monitor_run(run)
+    delivery_ids: set[int] = set()
     if queue_notifications:
-        queue_daily_digest_notification(
+        delivery_ids = _queue_scoped_notifications(
             session,
             run_date,
-            requeue_sent_before=requeue_sent_before,
+            completed_assessments,
+            market_scope,
+            requeue_sent_before,
         )
-        for assessment in completed_assessments:
-            queue_daily_stock_notification(
-                session,
-                assessment,
-                requeue_sent_before=requeue_sent_before,
-            )
-        session.commit()
     if queue_notifications and dispatch_notifications:
-        await dispatch_pending_notifications(session)
+        await dispatch_pending_notifications(session, delivery_ids=delivery_ids)
     return DailyMonitorResponse(
         run_date=run_date,
         status=run.status,

@@ -82,8 +82,8 @@ dropping analysis sections.
 
 ## Macro Monitoring
 
-The 07:50 daily job also builds a macro morning briefing before evaluating the
-stock watchlist. It collects U.S. rates, real yields, breakeven inflation,
+The 07:50 U.S. monitoring job also builds a macro morning briefing before evaluating the
+U.S. stock watchlist. It collects U.S. rates, real yields, breakeven inflation,
 credit spreads, volatility, oil, dollar liquidity, U.S. equity and sector
 proxies, Federal Reserve releases, big-tech earnings dates, and selected Korean
 macro indicators. A provider failure produces a partial briefing and does not
@@ -216,19 +216,24 @@ POST /monitoring-items/000660/deactivate
 ### Run Daily Monitoring
 
 ```bash
-python -m app.jobs.monitor_daily
+python -m app.jobs.monitor_daily --market us
+python -m app.jobs.monitor_daily --market kr
+python -m app.jobs.monitor_daily --market all
 ```
 
-The Mac mini LaunchAgent template is `ops/com.seungsoo.thesis-monitor.daily.plist`. It runs at
-07:50 KST and retries at 08:05 and 08:35. The flow is macro collection and assessment, all-stock
-assessment storage, daily digest generation, then Telegram delivery. Successful duplicate runs retry
-only pending delivery work. Same-date test messages sent before 07:45 do not suppress the scheduled
-morning run: the 07:50 job refreshes the assessment and requeues those earlier deliveries. Once the
-morning digest is sent after the cutoff, later retry slots do not resend completed messages.
+The Mac mini U.S. LaunchAgent template is `ops/com.seungsoo.thesis-monitor.daily.plist`. It runs at
+07:50 KST and retries at 08:05 and 08:35. It collects macro data and evaluates only U.S. stocks. The
+Korean close template is `ops/com.seungsoo.thesis-monitor.kr-close.plist`; it runs at 16:05 and retries
+pending work at 16:20 and 16:50 without recollecting macro providers. The Korean run reuses same-date
+macro data and evaluates only Korean stocks after the regular close. Successful duplicate runs retry
+only deliveries queued by their own market run. Same-date test messages sent before the 07:45 U.S. or
+16:00 Korean cutoff do not suppress the scheduled production report, while later retry slots do not
+resend completed messages.
 
 Price context is requested from the separate local OHLCV Analyst service using targets of 500 daily,
 300 weekly, and 100 monthly bars. Shorter provider histories are accepted and their actual counts are
-stored with each assessment.
+stored with each assessment. Korean investor flow uses only the latest valid daily bar from OHLCV
+Analyst, including individual, institution, and foreign net buying plus the provider's supply summary.
 
 Daily business and valuation decisions are delta-based. Configured expansion or compression
 conditions do not change today's valuation unless new evidence matches them. Structural risk and

@@ -338,6 +338,31 @@ TSM 분석해줘
 - provider PER와 price로 EPS를 역산
 - 최신 Q2 주당 기준도 확인하지 못했다고 잘못 설명
 
+## Korean Investor Supply Context
+
+**Prompt**
+
+```text
+005930 오늘 점검해줘
+```
+
+**Fixture**
+
+- 외국인·기관 20일 누적 순매도, 개인 20일 누적 순매수
+- `supply_quality=distribution`
+- `supply_primary_signal=foreign_exit_retail_absorption`
+
+**Expected**
+
+- 외국인·기관 매도와 개인 흡수를 단기 수급·포지셔닝 context로 설명
+- 실제 수급 기준일을 표시하고 stale 수급을 오늘 수급이라고 표현하지 않음
+- 수급만으로 삼성전자의 투자 논리가 약화됐다고 판단하지 않음
+
+**Failure**
+
+- 수급 점수만으로 사업 논리·이익 추정·Valuation·warning을 변경
+- 알려지지 않은 enum을 snake_case 그대로 사용자에게 노출
+
 ## Action Contract Check
 
 Instructions와 Knowledge에서 호출 대상으로 쓰는 이름은 Action schema의 operationId와 일치해야 한다.

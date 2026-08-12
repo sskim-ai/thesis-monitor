@@ -1,10 +1,33 @@
 from dataclasses import dataclass
 from datetime import date, datetime, time, timedelta, timezone
+from typing import Literal
 from zoneinfo import ZoneInfo
 
 
 NEW_YORK = ZoneInfo("America/New_York")
 SEOUL = ZoneInfo("Asia/Seoul")
+MarketScope = Literal["us", "kr", "all"]
+
+KR_EXCHANGES = {"KRX", "KOSPI", "KOSDAQ"}
+US_EXCHANGES = {
+    "NASDAQ",
+    "NYSE",
+    "AMEX",
+    "NYSE ARCA",
+    "NYSEARCA",
+    "ARCA",
+}
+
+
+def market_scope_for_security(ticker: str, exchange: str | None) -> Literal["us", "kr", "unknown"]:
+    normalized_exchange = " ".join(str(exchange or "").upper().replace("_", " ").split())
+    if normalized_exchange in KR_EXCHANGES:
+        return "kr"
+    if normalized_exchange in US_EXCHANGES:
+        return "us"
+    if ticker.strip().isdigit():
+        return "kr"
+    return "unknown"
 
 
 @dataclass(frozen=True)

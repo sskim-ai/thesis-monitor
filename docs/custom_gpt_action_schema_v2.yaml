@@ -2,7 +2,7 @@
   "openapi": "3.1.0",
   "info": {
     "title": "Thesis Monitor Public Action API",
-    "version": "0.4.3",
+    "version": "0.4.4",
     "description": "Collect thesis evidence, read ticker analysis snapshots, register versioned investment theses, manage the monitored stock list, read daily thesis assessments, and retrieve macro briefings, regimes, events, and ticker-level macro impacts. Administrative jobs are excluded."
   },
   "paths": {
@@ -3197,6 +3197,288 @@
         ],
         "title": "InvestmentThesisRead"
       },
+      "InvestorSupplyContext": {
+        "properties": {
+          "available": {
+            "type": "boolean",
+            "title": "Available",
+            "default": false
+          },
+          "as_of_date": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "As Of Date"
+          },
+          "foreign_net_buy_qty": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Foreign Net Buy Qty"
+          },
+          "institution_net_buy_qty": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Institution Net Buy Qty"
+          },
+          "individual_net_buy_qty": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Individual Net Buy Qty"
+          },
+          "foreign_net_buy_qty_5": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Foreign Net Buy Qty 5"
+          },
+          "institution_net_buy_qty_5": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Institution Net Buy Qty 5"
+          },
+          "individual_net_buy_qty_5": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Individual Net Buy Qty 5"
+          },
+          "foreign_net_buy_qty_20": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Foreign Net Buy Qty 20"
+          },
+          "institution_net_buy_qty_20": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Institution Net Buy Qty 20"
+          },
+          "individual_net_buy_qty_20": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Individual Net Buy Qty 20"
+          },
+          "foreign_holding_qty": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Foreign Holding Qty"
+          },
+          "foreign_holding_ratio": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Foreign Holding Ratio"
+          },
+          "score": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Score"
+          },
+          "quality": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Quality"
+          },
+          "quality_detail": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Quality Detail"
+          },
+          "primary_signal": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Primary Signal"
+          },
+          "foreign_flow_direction_20": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Foreign Flow Direction 20"
+          },
+          "institution_flow_direction_20": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Institution Flow Direction 20"
+          },
+          "individual_flow_direction_20": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Individual Flow Direction 20"
+          },
+          "confidence": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Confidence"
+          },
+          "validation_status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Validation Status"
+          },
+          "data_scope": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Data Scope"
+          },
+          "investor_20d_validation_status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Investor 20D Validation Status"
+          },
+          "investor_20d_diff_ratio": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Investor 20D Diff Ratio"
+          },
+          "signals": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Signals"
+          }
+        },
+        "type": "object",
+        "title": "InvestorSupplyContext"
+      },
       "MacroBriefingRead": {
         "properties": {
           "briefing_date": {
@@ -4497,6 +4779,9 @@
           },
           "decision": {
             "$ref": "#/components/schemas/PriceDecisionContext"
+          },
+          "supply": {
+            "$ref": "#/components/schemas/InvestorSupplyContext"
           },
           "warnings": {
             "items": {

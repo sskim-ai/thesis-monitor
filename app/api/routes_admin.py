@@ -1,3 +1,5 @@
+from typing import Literal
+
 from fastapi import APIRouter, Depends, Query
 from sqlmodel import Session
 
@@ -29,9 +31,10 @@ async def run_macro_monitor_now(
 @router.post("/run-daily-monitor", response_model=DailyMonitorResponse)
 async def run_daily_monitor_now(
     force: bool = Query(False),
+    market: Literal["us", "kr", "all"] = Query("all"),
     session: Session = Depends(get_session),
 ) -> DailyMonitorResponse:
-    return await run_daily_monitor(session=session, force=force)
+    return await run_daily_monitor(session=session, force=force, market_scope=market)
 
 
 @router.post(

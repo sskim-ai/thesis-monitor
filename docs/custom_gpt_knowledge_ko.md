@@ -340,6 +340,10 @@ Volume Ratio = Current Volume / 20-day Average Volume
 
 `daily`, `weekly`, `monthly`는 수익률 기간이 아니라 bar interval이다. 각 `window_return_pct`는 반환된 `actual_count`개 bar의 첫 종가에서 최신 종가까지 수익률이다. `range_position_pct`도 같은 반환 window의 고가·저가 범위 안에서 최신 종가가 차지하는 위치다. 별도 1일·1주·1개월 수익률이 없으면 이를 대신 만들지 않는다.
 
+한국 종목의 투자주체 수급은 OHLCV Analyst의 최신 유효 일봉을 기준으로 읽는다. `foreign_net_buy_qty`, `institution_net_buy_qty`, `individual_net_buy_qty`는 해당 거래일 순매수이며, 접미사 `_5`, `_20`은 각각 최근 5·20거래일 누적이다. `foreign_holding_qty`와 `foreign_holding_ratio`는 외국인 보유 포지션이고, `supply_score`, `supply_quality`, `supply_primary_signal`은 공급자가 계산한 종합 수급 해석이다. 점수의 범위를 임의로 가정하지 않으며 실제 `as_of_date`가 당일이 아니면 오늘 수급이라고 표현하지 않는다.
+
+수급과 포지셔닝은 fundamental thesis가 아니다. 수급만으로 사업 논리, 이익 추정, Valuation 또는 warning lifecycle을 변경하지 않는다.
+
 ## 9. 신규 관찰자 / 보유자 / 손익비
 
 ### 신규 관찰자

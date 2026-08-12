@@ -8,7 +8,7 @@
     <array>
         <string>/bin/zsh</string>
         <string>-lc</string>
-        <string>cd /Users/sskim/Codex/thesis-monitor &amp;&amp; . .venv/bin/activate &amp;&amp; exec python -m app.jobs.monitor_daily</string>
+        <string>cd /Users/sskim/Codex/thesis-monitor &amp;&amp; . .venv/bin/activate &amp;&amp; exec python -m app.jobs.monitor_daily --market us</string>
     </array>
     <key>WorkingDirectory</key>
     <string>/Users/sskim/Codex/thesis-monitor</string>

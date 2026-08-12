@@ -283,11 +283,41 @@ class PriceDecisionContext(BaseModel):
     registered_rules_available: bool = False
 
 
+class InvestorSupplyContext(BaseModel):
+    available: bool = False
+    as_of_date: str | None = None
+    foreign_net_buy_qty: int | None = None
+    institution_net_buy_qty: int | None = None
+    individual_net_buy_qty: int | None = None
+    foreign_net_buy_qty_5: int | None = None
+    institution_net_buy_qty_5: int | None = None
+    individual_net_buy_qty_5: int | None = None
+    foreign_net_buy_qty_20: int | None = None
+    institution_net_buy_qty_20: int | None = None
+    individual_net_buy_qty_20: int | None = None
+    foreign_holding_qty: int | None = None
+    foreign_holding_ratio: float | None = None
+    score: float | None = None
+    quality: str | None = None
+    quality_detail: str | None = None
+    primary_signal: str | None = None
+    foreign_flow_direction_20: str | None = None
+    institution_flow_direction_20: str | None = None
+    individual_flow_direction_20: str | None = None
+    confidence: str | None = None
+    validation_status: str | None = None
+    data_scope: str | None = None
+    investor_20d_validation_status: str | None = None
+    investor_20d_diff_ratio: float | None = None
+    signals: list[str] = Field(default_factory=list)
+
+
 class PriceContext(BaseModel):
     available: bool = False
     periods: dict[str, PricePeriodSummary] = Field(default_factory=dict)
     rule_evaluation: PriceRuleEvaluation | None = None
     decision: PriceDecisionContext = Field(default_factory=PriceDecisionContext)
+    supply: InvestorSupplyContext = Field(default_factory=InvestorSupplyContext)
     warnings: list[str] = Field(default_factory=list)
     daily_history: list[HistoricalPricePoint] = Field(default_factory=list, exclude=True)
     valuation_history: list[HistoricalPricePoint] = Field(default_factory=list, exclude=True)

@@ -81,7 +81,7 @@ def test_public_action_schema_includes_read_only_ticker_analysis_snapshot() -> N
     schema = response.json()
     operation = schema["paths"]["/ticker-analysis-snapshot"]["get"]
     assert operation["operationId"] == "getTickerAnalysisSnapshot"
-    assert schema["info"]["version"] == "0.4.3"
+    assert schema["info"]["version"] == "0.4.4"
 
     operation_ids = [
         operation["operationId"]
@@ -101,6 +101,9 @@ def test_public_action_schema_includes_read_only_ticker_analysis_snapshot() -> N
         "properties"
     ]
     assert "financial_currency" in earnings
+    supply = schema["components"]["schemas"]["InvestorSupplyContext"]["properties"]
+    assert "foreign_net_buy_qty_20" in supply
+    assert "primary_signal" in supply
 
 
 def test_custom_gpt_docs_reference_analysis_snapshot_action() -> None:

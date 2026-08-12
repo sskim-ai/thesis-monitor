@@ -1,4 +1,5 @@
 import asyncio
+import math
 from collections.abc import Sequence
 from datetime import date, datetime, timedelta, timezone
 from zoneinfo import ZoneInfo
@@ -9,6 +10,7 @@ from sqlmodel import Session
 from app.config import get_settings
 from app.schemas.thesis import (
     HistoricalPricePoint,
+    InvestorSupplyContext,
     PriceContext,
     PriceDecisionContext,
     PricePeriodSummary,
@@ -25,9 +27,141 @@ PERIOD_COUNTS = {
 
 
 def _number(value: object) -> float | None:
-    if isinstance(value, (int, float)):
-        return float(value)
+    if isinstance(value, (int, float)) and not isinstance(value, bool):
+        number = float(value)
+        return number if math.isfinite(number) else None
     return None
+
+
+_SUPPLY_NUMERIC_FIELDS = (
+    "foreign_net_buy_qty",
+    "institution_net_buy_qty",
+    "individual_net_buy_qty",
+    "foreign_net_buy_qty_5",
+    "institution_net_buy_qty_5",
+    "individual_net_buy_qty_5",
+    "foreign_net_buy_qty_20",
+    "institution_net_buy_qty_20",
+    "individual_net_buy_qty_20",
+    "foreign_holding_qty",
+    "foreign_holding_ratio",
+    "supply_score",
+    "investor_net_buy_20_diff_ratio",
+)
+
+_SUPPLY_TEXT_FIELDS = (
+    "supply_quality",
+    "supply_quality_detail",
+    "supply_primary_signal",
+    "supply_foreign_flow_direction_20",
+    "supply_institution_flow_direction_20",
+    "supply_individual_flow_direction_20",
+    "supply_confidence",
+    "supply_validation_status",
+    "supply_data_scope",
+    "investor_net_buy_20_validation_status",
+)
+
+_SUPPLY_CONTENT_TEXT_FIELDS = (
+    "supply_quality",
+    "supply_quality_detail",
+    "supply_primary_signal",
+    "supply_foreign_flow_direction_20",
+    "supply_institution_flow_direction_20",
+    "supply_individual_flow_direction_20",
+)
+
+_SUPPLY_SIGNAL_FIELDS = (
+    "supply_foreign_accumulation",
+    "supply_institution_accumulation",
+    "supply_individual_accumulation",
+    "supply_foreign_institution_joint_accumulation",
+    "supply_foreign_reentry_signal",
+    "supply_foreign_exit_retail_absorption",
+    "supply_foreign_exit_institution_retail_absorption",
+    "supply_retail_chasing_warning",
+    "supply_institutional_distribution_warning",
+)
+
+
+def _bar_values(bar: dict[str, object]) -> dict[str, object]:
+    values = dict(bar)
+    investor_flow = bar.get("investor_flow")
+    if isinstance(investor_flow, dict):
+        values.update(investor_flow)
+    indicators = bar.get("indicators")
+    if isinstance(indicators, dict):
+        values.update(indicators)
+    supply_demand = bar.get("supply_demand")
+    if isinstance(supply_demand, dict):
+        values.update(
+            {f"supply_{key}": value for key, value in supply_demand.items()}
+        )
+    return values
+
+
+def _investor_supply_context(bars: Sequence[dict[str, object]]) -> InvestorSupplyContext:
+    candidates: list[tuple[date, dict[str, object]]] = []
+    for bar in bars:
+        raw_date = bar.get("date")
+        if not raw_date:
+            continue
+        try:
+            bar_date = date.fromisoformat(str(raw_date)[:10])
+        except ValueError:
+            continue
+        values = _bar_values(bar)
+        has_numeric = any(_number(values.get(field)) is not None for field in _SUPPLY_NUMERIC_FIELDS)
+        has_text = any(
+            str(values.get(field) or "").strip() for field in _SUPPLY_CONTENT_TEXT_FIELDS
+        )
+        has_signal = any(values.get(field) is True for field in _SUPPLY_SIGNAL_FIELDS)
+        if has_numeric or has_text or has_signal:
+            candidates.append((bar_date, values))
+    if not candidates:
+        return InvestorSupplyContext()
+    bar_date, values = max(candidates, key=lambda item: item[0])
+
+    def quantity(field: str) -> int | None:
+        value = _number(values.get(field))
+        return int(value) if value is not None else None
+
+    def text(field: str) -> str | None:
+        value = str(values.get(field) or "").strip()
+        return value or None
+
+    signals = [field.removeprefix("supply_") for field in _SUPPLY_SIGNAL_FIELDS if values.get(field) is True]
+    divergence = text("supply_divergence_type")
+    if divergence:
+        signals.append(f"divergence:{divergence}")
+    return InvestorSupplyContext(
+        available=True,
+        as_of_date=bar_date.isoformat(),
+        foreign_net_buy_qty=quantity("foreign_net_buy_qty"),
+        institution_net_buy_qty=quantity("institution_net_buy_qty"),
+        individual_net_buy_qty=quantity("individual_net_buy_qty"),
+        foreign_net_buy_qty_5=quantity("foreign_net_buy_qty_5"),
+        institution_net_buy_qty_5=quantity("institution_net_buy_qty_5"),
+        individual_net_buy_qty_5=quantity("individual_net_buy_qty_5"),
+        foreign_net_buy_qty_20=quantity("foreign_net_buy_qty_20"),
+        institution_net_buy_qty_20=quantity("institution_net_buy_qty_20"),
+        individual_net_buy_qty_20=quantity("individual_net_buy_qty_20"),
+        foreign_holding_qty=quantity("foreign_holding_qty"),
+        foreign_holding_ratio=_number(values.get("foreign_holding_ratio")),
+        score=_number(values.get("supply_score")),
+        quality=text("supply_quality"),
+        quality_detail=text("supply_quality_detail"),
+        primary_signal=text("supply_primary_signal"),
+        foreign_flow_direction_20=text("supply_foreign_flow_direction_20"),
+        institution_flow_direction_20=text("supply_institution_flow_direction_20"),
+        individual_flow_direction_20=text("supply_individual_flow_direction_20"),
+        confidence=text("supply_confidence"),
+        validation_status=text("supply_validation_status"),
+        data_scope=text("supply_data_scope"),
+        investor_20d_validation_status=text("investor_net_buy_20_validation_status"),
+        investor_20d_diff_ratio=_number(values.get("investor_net_buy_20_diff_ratio")),
+        signals=list(dict.fromkeys(signals)),
+    )
 
 
 def _summarize_bars(requested_count: int, bars: Sequence[dict[str, object]]) -> PricePeriodSummary:
@@ -97,6 +231,11 @@ class OhlcvClient:
                 bars = payload.get("periods", {}).get(period, [])
                 if not isinstance(bars, list):
                     bars = []
+                supply_demand = payload.get("supply_demand")
+                if period == "daily" and bars and isinstance(supply_demand, dict):
+                    latest_bar = bars[-1]
+                    if isinstance(latest_bar, dict):
+                        bars[-1] = {**latest_bar, "supply_demand": supply_demand}
                 return _summarize_bars(count, bars), bars
             except (httpx.HTTPError, ValueError) as exc:
                 last_error = exc
@@ -129,6 +268,8 @@ class OhlcvClient:
                         client, ticker, period, count
                     )
                     context.periods[period] = summary
+                    if period == "daily":
+                        context.supply = _investor_supply_context(bars)
                     if period in {"daily", "weekly"}:
                         for bar in bars:
                             close = _number(bar.get("close"))
