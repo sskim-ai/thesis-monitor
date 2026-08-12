@@ -2,7 +2,7 @@
   "openapi": "3.1.0",
   "info": {
     "title": "Thesis Monitor Public Action API",
-    "version": "0.4.2",
+    "version": "0.4.3",
     "description": "Collect thesis evidence, read ticker analysis snapshots, register versioned investment theses, manage the monitored stock list, read daily thesis assessments, and retrieve macro briefings, regimes, events, and ticker-level macro impacts. Administrative jobs are excluded."
   },
   "paths": {
@@ -6669,6 +6669,16 @@
           "earnings_context_usable": {
             "type": "boolean",
             "title": "Earnings Context Usable",
+            "default": false
+          },
+          "latest_eps_usable": {
+            "type": "boolean",
+            "title": "Latest Eps Usable",
+            "default": false
+          },
+          "ttm_eps_usable": {
+            "type": "boolean",
+            "title": "Ttm Eps Usable",
             "default": false
           },
           "eps_per_usable": {

@@ -311,7 +311,8 @@ TSM 분석해줘
 - `price.currency=USD`
 - `earnings.financial_currency=TWD`
 - 최신 공식 SEC foreign preliminary에 매출·영업이익·영업이익률이 존재
-- raw EPS는 TWD ordinary-share 기준이거나 security basis가 불명확
+- 최신 Q2 EPS는 `USD 4.31/ADR`로 current-security basis가 확인됨
+- 이전 3개 분기 EPS는 security basis가 불충분
 - `valuation.ttm_eps=null`, derived PER denominator 없음
 - 공급자 PER/fPER가 있으면 reference multiple로만 존재 가능
 
@@ -322,11 +323,12 @@ TSM 분석해줘
 - local-currency EPS와 USD per ADR/ADS EPS가 함께 있으면 현재 거래 ADR에 직접 대응하는 USD EPS를 우선
 - structured table의 현재 분기 exact operating income을 margin 역산값보다 우선하고, 공시 margin은 그대로 유지
 - 최신 direct ADR EPS 한 분기만으로 4분기 TTM EPS나 PER를 생성하지 않음
+- 최신 분기 EPS는 확인됐지만 이전 분기 기준이 불충분해 TTM EPS/PER 자체 계산을 보류했다고 설명
 - unsafe raw EPS로 USD/ADR 가격의 PER를 직접 계산하지 않음
 - denominator가 `null`이면 GPT가 raw earnings로 재계산하지 않음
 - 공급자 fPER는 derived fPER가 없어도 provenance를 유지하고, denominator를 역산하지 않은 참고값으로 표시 가능
 - 단순 `Net Income`을 common/parent 귀속 이익으로 간주하지 않음
-- 주당 기준을 확인하지 못했다는 주의는 한 줄로 표시
+- `최근 분기 주당 실적은 확인했지만 이전 분기들의 주당 기준을 확인하지 못해 TTM EPS/PER 자체 계산을 보류했습니다.` 또는 같은 의미의 주의를 한 줄로 표시
 - `monitorStock` 자동 호출 금지
 
 **Failure**
@@ -334,6 +336,7 @@ TSM 분석해줘
 - ADR ratio 존재만으로 EPS/BVPS에 일괄 적용
 - TWD ordinary-share EPS를 USD ADR 가격과 직접 나눔
 - provider PER와 price로 EPS를 역산
+- 최신 Q2 주당 기준도 확인하지 못했다고 잘못 설명
 
 ## Action Contract Check
 

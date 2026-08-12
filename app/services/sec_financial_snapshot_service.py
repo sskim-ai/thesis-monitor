@@ -130,6 +130,51 @@ def _eps_security_basis(value: object) -> str:
     return "unknown"
 
 
+_EPS_ADJACENT_METRIC_PATTERN = re.compile(
+    r"\b(?:cash\s+dividend|dividend|distribution|revenue|operating\s+income|"
+    r"income\s+from\s+operations|net\s+income|book\s+value|cash\s+flow|capex)\b",
+    flags=re.IGNORECASE,
+)
+
+
+def _foreign_eps_semantic_segment(text: str, start: int, limit: int = 260) -> str:
+    """Return the EPS sentence plus an immediately attached parenthetical equivalent."""
+    window = text[start : start + limit]
+    depth = 0
+    index = 0
+    while index < len(window):
+        char = window[index]
+        if char == "(":
+            depth += 1
+        elif char == ")" and depth:
+            depth -= 1
+        if depth == 0 and char in ";|!?":
+            window = window[:index]
+            break
+        if depth == 0 and char == ".":
+            decimal_point = (
+                index > 0
+                and index + 1 < len(window)
+                and window[index - 1].isdigit()
+                and window[index + 1].isdigit()
+            )
+            if not decimal_point:
+                window = window[:index]
+                break
+        if depth == 0 and char == "\n":
+            remainder = window[index + 1 :]
+            if remainder.lstrip().startswith("("):
+                index += 1
+                continue
+            window = window[:index]
+            break
+        index += 1
+    metric_boundary = _EPS_ADJACENT_METRIC_PATTERN.search(window, pos=1)
+    if metric_boundary:
+        window = window[: metric_boundary.start()]
+    return window.strip()
+
+
 def _foreign_eps_candidates(text: str) -> list[dict[str, object]]:
     candidates: list[dict[str, object]] = []
     label_pattern = re.compile(
@@ -149,7 +194,7 @@ def _foreign_eps_candidates(text: str) -> list[dict[str, object]]:
     for label in re.finditer(
         r"diluted\s+(?:earnings\s+per\s+share|EPS)", text, flags=re.IGNORECASE
     ):
-        window = text[label.start() : label.start() + 260]
+        window = _foreign_eps_semantic_segment(text, label.start())
         direct = label_pattern.search(window)
         if direct:
             candidates.append(
@@ -344,7 +389,8 @@ def _parse_foreign_operating_income_table(
 
 
 def _parse_foreign_financial_release(text: str) -> dict[str, object] | None:
-    plain = re.sub(r"\s+", " ", _strip_html(text)).strip()
+    plain_with_boundaries = _strip_html(text)
+    plain = re.sub(r"\s+", " ", plain_with_boundaries).strip()
     period_end = _foreign_period_end(plain)
     revenue, currency, revenue_label = _scaled_financial_field(
         plain, r"(?:consolidated\s+)?(?:net\s+)?revenue"
@@ -366,7 +412,7 @@ def _parse_foreign_financial_release(text: str) -> dict[str, object] | None:
         r"(?:net\s+income|profit)\s+attributable\s+to\s+"
         r"(?:owners|shareholders|equity\s+holders)\s+of\s+(?:the\s+)?parent",
     )
-    eps_candidates = _foreign_eps_candidates(plain)
+    eps_candidates = _foreign_eps_candidates(plain_with_boundaries)
     primary_eps = eps_candidates[0] if eps_candidates else None
     margin_match = re.search(
         r"operating\s+margin(?:\s+for\s+the\s+quarter)?\s+(?:was|of)?\s*([\d.]+)%",

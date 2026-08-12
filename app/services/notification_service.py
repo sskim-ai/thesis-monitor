@@ -289,6 +289,38 @@ def _concise_text(value: str, *, sentence_limit: int = 2, character_limit: int =
     return shortened + "."
 
 
+def _preliminary_ttm_eps_caution(
+    snapshot: dict[str, object],
+    reason_codes: set[str] | list[str],
+) -> str | None:
+    reasons = set(reason_codes)
+    ttm_usable = bool(snapshot.get("ttm_eps_usable", snapshot.get("eps_per_usable")))
+    if not (
+        snapshot.get("earnings_context_is_preliminary")
+        and snapshot.get("earnings_context_usable")
+        and not ttm_usable
+    ):
+        return None
+    if snapshot.get("latest_eps_usable"):
+        if "per_share_basis_insufficient" in reasons:
+            return (
+                "최근 분기 주당 실적은 확인했지만 이전 분기들의 주당 기준을 확인하지 못해 "
+                "TTM EPS/PER 자체 계산을 보류했습니다."
+            )
+        return (
+            "최근 분기 주당 실적은 확인했지만 최근 4개 분기 자료가 충분하지 않아 "
+            "TTM EPS/PER 자체 계산을 보류했습니다."
+        )
+    if "per_share_basis_insufficient" in reasons:
+        return (
+            "최근 공식 잠정실적의 매출·영업이익은 반영했지만 주당 기준을 확인하지 못해 "
+            "자체 PER 계산은 보류했습니다."
+        )
+    if snapshot.get("trailing_pe_status") == "value":
+        return "최근 잠정실적은 매출·영업이익에 반영했지만 EPS 기준이 없어 PER는 이전 기준입니다."
+    return "최근 잠정실적은 매출·영업이익에 반영했지만 TTM EPS 자체 계산은 보류했습니다."
+
+
 def _data_cautions(
     snapshot: dict[str, object],
     coverage: dict[str, object],
@@ -328,20 +360,10 @@ def _data_cautions(
             if reason == "horizon_unknown"
             else "예상 이익 기준이 서로 달라 fPER는 참고 수준입니다."
         )
-    preliminary_without_eps = (
-        snapshot.get("earnings_context_is_preliminary")
-        and snapshot.get("earnings_context_usable")
-        and not snapshot.get("eps_per_usable")
-    )
     per_share_basis_insufficient = "per_share_basis_insufficient" in reasons
-    if preliminary_without_eps and per_share_basis_insufficient:
-        cautions.append(
-            "최근 공식 잠정실적의 매출·영업이익은 반영했지만 주당 기준을 확인하지 못해 자체 PER 계산은 보류했습니다."
-        )
-    elif preliminary_without_eps and snapshot.get("trailing_pe_status") == "value":
-        cautions.append(
-            "최근 잠정실적은 매출·영업이익에 반영했지만 EPS 기준이 없어 PER는 이전 기준입니다."
-        )
+    preliminary_ttm_caution = _preliminary_ttm_eps_caution(snapshot, reasons)
+    if preliminary_ttm_caution:
+        cautions.append(preliminary_ttm_caution)
     if snapshot.get("trailing_pe_basis_conflict"):
         cautions.append("PER 계산의 이익 기준이 서로 충돌해 해당 배수는 판단에서 제외했습니다.")
     if snapshot.get("price_to_book_basis_conflict"):
@@ -358,7 +380,7 @@ def _data_cautions(
         cautions.append(
             "이번 분기 이익률이 과거보다 매우 높아 일회성 손익과 지속 가능성을 추가 확인합니다."
         )
-    if per_share_basis_insufficient and not preliminary_without_eps:
+    if per_share_basis_insufficient and not preliminary_ttm_caution:
         basis_statuses = {
             str(snapshot.get("trailing_pe_basis_status") or ""),
             str(snapshot.get("price_to_book_basis_status") or ""),
@@ -368,7 +390,7 @@ def _data_cautions(
             if "currency_mismatch" in basis_statuses
             else "ADR/외국 상장주식의 주당 기준을 확인하지 못해 자체 PER/PBR 계산을 보류했습니다."
         )
-    elif "missing_adr_ratio" in reasons and not preliminary_without_eps:
+    elif "missing_adr_ratio" in reasons and not preliminary_ttm_caution:
         cautions.append("주식 변환 비율이 확인되지 않아 일부 주당 Valuation 계산을 보류했습니다.")
     if "foreign_financial_parsing_failed" in reasons:
         cautions.append(

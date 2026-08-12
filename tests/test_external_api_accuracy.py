@@ -1424,6 +1424,53 @@ def test_foreign_release_selects_direct_adr_eps_for_depositary_security() -> Non
     assert alternate["currency"] == "TWD"
 
 
+@pytest.mark.parametrize(
+    "release",
+    [
+        (
+            "Results for the quarter ended June 30, 2026. "
+            "Consolidated revenue was NT$100 billion. "
+            "Diluted EPS was NT$20.00. Dividend was US$0.50 per ADR."
+        ),
+        (
+            "Results for the quarter ended June 30, 2026. "
+            "Consolidated revenue was NT$100 billion. "
+            "Diluted EPS was NT$20.00; cash dividend was US$0.50 per ADR."
+        ),
+        (
+            "Results for the quarter ended June 30, 2026.\n"
+            "Consolidated revenue was NT$100 billion.\n"
+            "Diluted EPS was NT$20.00\nDividend per ADR: US$0.50"
+        ),
+    ],
+)
+def test_foreign_eps_candidates_do_not_capture_adjacent_dividend(release: str) -> None:
+    parsed = _parse_foreign_financial_release(release)
+
+    assert parsed is not None
+    candidates = parsed["eps_candidates"]
+    assert isinstance(candidates, list)
+    assert [(item["value"], item["currency"], item["security_basis"]) for item in candidates] == [
+        (20.0, "TWD", "unknown")
+    ]
+
+
+def test_foreign_eps_candidates_allow_immediate_multiline_adr_equivalent() -> None:
+    parsed = _parse_foreign_financial_release(
+        "Results for the quarter ended June 30, 2026.\n"
+        "Consolidated revenue was NT$100 billion.\n"
+        "Diluted EPS was NT$20.00\n(US$3.10 per ADR unit)"
+    )
+
+    assert parsed is not None
+    candidates = parsed["eps_candidates"]
+    assert isinstance(candidates, list)
+    assert {(item["value"], item["currency"], item["security_basis"]) for item in candidates} == {
+        (20.0, "TWD", "unknown"),
+        (3.1, "USD", "depositary_security"),
+    }
+
+
 def test_foreign_release_exact_table_operating_income_has_priority() -> None:
     release = """
         Results for the second quarter ended June 30, 2026.

@@ -450,6 +450,15 @@ class PerShareValueResult:
     ratio_used: float | None = None
 
 
+@dataclass(frozen=True)
+class QuarterEpsResult:
+    raw_value: float | None
+    method: str | None
+    raw_currency: str | None
+    raw_security_basis: str
+    normalized: PerShareValueResult
+
+
 def _is_depositary_security(
     issuer_type: str,
     security_type: str,
@@ -660,6 +669,26 @@ def _normalize_ttm_eps(
     )
 
 
+def _normalized_quarter_eps(
+    row: FinancialSnapshot,
+    rows: list[FinancialSnapshot],
+    context: PerShareBasisContext,
+) -> QuarterEpsResult:
+    value, method, currency, security_basis = _quarter_eps(row, rows)
+    return QuarterEpsResult(
+        raw_value=value,
+        method=method,
+        raw_currency=currency,
+        raw_security_basis=security_basis,
+        normalized=_normalize_per_share_value(
+            value,
+            value_currency=currency,
+            security_basis=security_basis,
+            context=context,
+        ),
+    )
+
+
 @dataclass(frozen=True)
 class BasisComparison:
     status: str
@@ -854,6 +883,7 @@ class ValuationSnapshotService:
         snapshot: ValuationSnapshot,
         rows: list[FinancialSnapshot],
         result: EarningsTtmResult,
+        basis_context: PerShareBasisContext,
     ) -> None:
         quarters = list(result.quarters)
         if not quarters:
@@ -870,11 +900,14 @@ class ValuationSnapshotService:
             value is not None
             for value in (latest.revenue, latest.operating_income, latest.net_income)
         )
-        snapshot.eps_per_usable = result.eps is not None
-        snapshot.ttm_contains_preliminary = result.contains_preliminary and snapshot.eps_per_usable
+        quarter_eps_results = [
+            _normalized_quarter_eps(row, rows, basis_context) for row in quarters
+        ]
+        snapshot.latest_eps_usable = quarter_eps_results[-1].normalized.value is not None
+        snapshot.ttm_contains_preliminary = result.contains_preliminary and snapshot.ttm_eps_usable
         snapshot.preliminary_quarter_count = (
             sum(row.snapshot_type == "preliminary_earnings" for row in quarters)
-            if snapshot.eps_per_usable
+            if snapshot.ttm_eps_usable
             else 0
         )
         snapshot.earnings_basis = result.method
@@ -888,16 +921,10 @@ class ValuationSnapshotService:
                 ),
                 "source": row.snapshot_type,
                 "filing": filing_date(row).isoformat() if filing_date(row) else None,
-                "eps": result.quarter_eps[index] if index < len(result.quarter_eps) else None,
-                "share_basis": result.share_basis[index]
-                if index < len(result.share_basis)
-                else None,
-                "eps_currency": result.eps_currency[index]
-                if index < len(result.eps_currency)
-                else None,
-                "eps_security_basis": result.eps_security_basis[index]
-                if index < len(result.eps_security_basis)
-                else "unknown",
+                "eps": quarter_eps_results[index].normalized.value,
+                "share_basis": quarter_eps_results[index].method,
+                "eps_currency": quarter_eps_results[index].normalized.currency,
+                "eps_security_basis": quarter_eps_results[index].normalized.security_basis,
                 "reported_diluted_eps": row.diluted_eps,
                 "reported_eps_currency": (
                     (_field_metadata_record(row, "diluted_eps", "eps") or {}).get("currency")
@@ -933,10 +960,9 @@ class ValuationSnapshotService:
                     value is not None
                     for value in (row.revenue, row.operating_income, row.net_income)
                 ),
-                "eps_usable": (
-                    result.quarter_eps[index] is not None
-                    if index < len(result.quarter_eps)
-                    else False
+                "raw_eps_available": quarter_eps_results[index].raw_value is not None,
+                "normalized_eps_usable": (
+                    quarter_eps_results[index].normalized.value is not None
                 ),
             }
             for index, row in enumerate(quarters)
@@ -1014,8 +1040,12 @@ class ValuationSnapshotService:
         snapshot.eps_currency = normalized_ttm.currency
         snapshot.eps_security_basis = normalized_ttm.security_basis
         snapshot.adr_ratio_used = normalized_ttm.ratio_used
+        snapshot.ttm_eps_usable = normalized_ttm.value is not None
+        snapshot.eps_per_usable = snapshot.ttm_eps_usable
         ttm_rows = list(ttm_result.quarters)
-        if len(ttm_rows) == 4:
+        snapshot.trailing_pe_denominator_period_end = None
+        snapshot.trailing_pe_denominator_filing_date = None
+        if snapshot.ttm_eps_usable and len(ttm_rows) == 4:
             ttm_end = financial_period_end(ttm_rows[-1])
             ttm_filed = max(
                 (filing_date(row) for row in ttm_rows if filing_date(row)),
@@ -1087,10 +1117,9 @@ class ValuationSnapshotService:
                             snapshot.trailing_valuation_confidence, 0.85
                         )
         self._apply_financial_metadata(snapshot, rows)
-        self._apply_earnings_context(snapshot, rows, ttm_result)
-        snapshot.eps_per_usable = ttm_eps is not None
+        self._apply_earnings_context(snapshot, rows, ttm_result, basis_context)
         snapshot.ttm_contains_preliminary = (
-            ttm_result.contains_preliminary and snapshot.eps_per_usable
+            ttm_result.contains_preliminary and snapshot.ttm_eps_usable
         )
         if ttm_eps is None:
             snapshot.preliminary_quarter_count = 0

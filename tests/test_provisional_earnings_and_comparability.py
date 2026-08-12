@@ -276,6 +276,8 @@ def test_foreign_preliminary_updates_context_without_unsafe_eps() -> None:
     assert snapshot.latest_earnings_period == "2026-06-30"
     assert snapshot.earnings_context_source == "preliminary_earnings"
     assert snapshot.earnings_context_usable is True
+    assert snapshot.latest_eps_usable is False
+    assert snapshot.ttm_eps_usable is False
     assert snapshot.eps_per_usable is False
     assert snapshot.latest_revenue == 1_000
     assert snapshot.latest_operating_income == 500
@@ -337,6 +339,8 @@ def test_foreign_preliminary_direct_adr_eps_remains_separately_eligible() -> Non
     )
 
     assert snapshot.earnings_context_usable is True
+    assert snapshot.latest_eps_usable is True
+    assert snapshot.ttm_eps_usable is True
     assert snapshot.eps_per_usable is True
     assert snapshot.ttm_contains_preliminary is True
     assert snapshot.ttm_eps == pytest.approx(10)
@@ -346,6 +350,110 @@ def test_foreign_preliminary_direct_adr_eps_remains_separately_eligible() -> Non
     assert latest_lineage["reported_eps_currency"] == "USD"
     assert latest_lineage["reported_eps_security_basis"] == "depositary_security"
     assert latest_lineage["eps_representation"] == "security_equivalent"
+    assert latest_lineage["normalized_eps_usable"] is True
+
+
+def test_latest_direct_adr_eps_can_be_usable_when_ttm_is_not() -> None:
+    older_rows = []
+    for period_end in (date(2022, 12, 31), date(2023, 12, 31), date(2024, 12, 31)):
+        row = _full(period_end, 1)
+        row.currency = "USD"
+        row.raw_financial_fields = json.dumps(
+            [
+                {
+                    "field": "diluted_eps",
+                    "currency": "USD",
+                    "security_basis": "unknown",
+                }
+            ]
+        )
+        older_rows.append(row)
+    latest = _foreign_preliminary(
+        diluted_eps=4.31,
+        eps_currency="USD",
+        eps_security_basis="depositary_security",
+    )
+    snapshot = ValuationSnapshot(current_price=100, currency="USD")
+    basis = PerShareBasisContext(
+        issuer_type="foreign_private_issuer",
+        security_type="ADR",
+        is_depositary_security=True,
+        price_currency="USD",
+        financial_currency="TWD",
+        adr_ratio=5,
+    )
+
+    derived_pe, _derived_pb = ValuationSnapshotService()._apply_derived_trailing(
+        snapshot, [*older_rows, latest], basis
+    )
+
+    assert derived_pe is None
+    assert snapshot.latest_eps_usable is True
+    assert snapshot.ttm_eps_usable is False
+    assert snapshot.eps_per_usable is False
+    assert snapshot.ttm_eps is None
+    assert snapshot.trailing_pe_denominator_period_end is None
+    assert snapshot.earnings_quarter_series[-1]["normalized_eps_usable"] is True
+
+
+def test_negative_normalized_ttm_eps_is_usable_and_keeps_denominator_date() -> None:
+    rows = []
+    for period_end, eps in (
+        (date(2025, 9, 30), -2.0),
+        (date(2025, 12, 31), -1.0),
+        (date(2026, 3, 31), 0.5),
+        (date(2026, 6, 30), 0.5),
+    ):
+        row = _full(period_end, eps)
+        row.currency = "USD"
+        row.raw_financial_fields = json.dumps(
+            [
+                {
+                    "field": "diluted_eps",
+                    "currency": "USD",
+                    "security_basis": "current_security",
+                }
+            ]
+        )
+        rows.append(row)
+    snapshot = ValuationSnapshot(current_price=100, currency="USD")
+    basis = PerShareBasisContext(
+        security_type="common_stock",
+        price_currency="USD",
+        financial_currency="USD",
+    )
+
+    derived_pe, _derived_pb = ValuationSnapshotService()._apply_derived_trailing(
+        snapshot, rows, basis
+    )
+
+    assert derived_pe is None
+    assert snapshot.latest_eps_usable is True
+    assert snapshot.ttm_eps_usable is True
+    assert snapshot.eps_per_usable is True
+    assert snapshot.ttm_eps == pytest.approx(-2)
+    assert snapshot.trailing_pe_status == "not_meaningful"
+    assert snapshot.trailing_pe_denominator_period_end == "2026-06-30"
+
+
+def test_provider_only_pe_does_not_keep_stale_derived_denominator_date() -> None:
+    snapshot = ValuationSnapshot(
+        current_price=100,
+        currency="USD",
+        trailing_pe=18,
+        trailing_pe_status="value",
+        trailing_pe_source="provider",
+        trailing_pe_denominator_period_end="2025-12-31",
+        trailing_pe_denominator_filing_date="2026-02-15",
+    )
+
+    derived_pe, _derived_pb = ValuationSnapshotService()._apply_derived_trailing(snapshot, [])
+
+    assert derived_pe is None
+    assert snapshot.trailing_pe == 18
+    assert snapshot.ttm_eps_usable is False
+    assert snapshot.trailing_pe_denominator_period_end is None
+    assert snapshot.trailing_pe_denominator_filing_date is None
 
 
 def test_foreign_preliminary_and_adr_basis_caution_is_compact() -> None:
@@ -362,6 +470,41 @@ def test_foreign_preliminary_and_adr_basis_caution_is_compact() -> None:
 
     assert cautions == [
         "최근 공식 잠정실적의 매출·영업이익은 반영했지만 주당 기준을 확인하지 못해 자체 PER 계산은 보류했습니다."
+    ]
+
+
+def test_preliminary_caution_distinguishes_latest_eps_from_ttm_basis() -> None:
+    cautions = _data_cautions(
+        {
+            "earnings_context_is_preliminary": True,
+            "earnings_context_usable": True,
+            "latest_eps_usable": True,
+            "ttm_eps_usable": False,
+            "eps_per_usable": False,
+            "trailing_pe_status": "value",
+        },
+        {"reason_codes": ["per_share_basis_insufficient"]},
+    )
+
+    assert cautions == [
+        "최근 분기 주당 실적은 확인했지만 이전 분기들의 주당 기준을 확인하지 못해 TTM EPS/PER 자체 계산을 보류했습니다."
+    ]
+
+
+def test_preliminary_caution_distinguishes_incomplete_ttm_coverage() -> None:
+    cautions = _data_cautions(
+        {
+            "earnings_context_is_preliminary": True,
+            "earnings_context_usable": True,
+            "latest_eps_usable": True,
+            "ttm_eps_usable": False,
+            "eps_per_usable": False,
+        },
+        {"reason_codes": []},
+    )
+
+    assert cautions == [
+        "최근 분기 주당 실적은 확인했지만 최근 4개 분기 자료가 충분하지 않아 TTM EPS/PER 자체 계산을 보류했습니다."
     ]
 
 
@@ -649,6 +792,9 @@ def test_adr_unsafe_eps_is_not_exposed_as_current_security_ttm_eps(
     assert snapshot.ttm_eps is None
     assert snapshot.trailing_pe == 18
     assert snapshot.trailing_pe_basis_status == expected_status
+    assert snapshot.latest_eps_usable is False
+    assert snapshot.ttm_eps_usable is False
+    assert snapshot.trailing_pe_denominator_period_end is None
 
 
 def test_foreign_private_issuer_common_stock_does_not_require_adr_ratio() -> None:

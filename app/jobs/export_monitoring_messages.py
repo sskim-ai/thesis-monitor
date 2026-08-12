@@ -468,7 +468,7 @@ def export_messages(
                 "",
                 "## 부록. Earnings quarter / TTM lineage",
                 "",
-                "| 종목 | Latest earnings | Context source/usable | EPS usable | Preliminary included | Latest revenue/op income/margin | TTM EPS | Earnings basis | Share basis | QoQ/YoY revenue | Quarter series |",
+                "| 종목 | Latest earnings | Context source/usable | Latest/TTM EPS usable | Preliminary included | Latest revenue/op income/margin | TTM EPS | Earnings basis | Share basis | QoQ/YoY revenue | Quarter series |",
                 "|---|---|---|---|---|---|---|---|---|---|---|",
             ]
         )
@@ -491,7 +491,9 @@ def export_messages(
                 f"{item.get('reported_eps_currency')}/"
                 f"{item.get('reported_eps_security_basis')}:"
                 f"eps_repr={item.get('eps_representation')}:"
-                f"eps_alt={item.get('eps_alternate_count')}"
+                f"eps_alt={item.get('eps_alternate_count')}:"
+                f"raw_eps={item.get('raw_eps_available')}:"
+                f"normalized_eps={item.get('normalized_eps_usable')}"
                 for item in snapshot.get("earnings_quarter_series", [])
                 if isinstance(item, dict)
             )
@@ -499,7 +501,8 @@ def export_messages(
                 f"| {assessment.ticker} | {snapshot.get('latest_earnings_period') or '없음'} | "
                 f"{snapshot.get('earnings_context_source') or '없음'}/"
                 f"{snapshot.get('earnings_context_usable', False)} | "
-                f"{snapshot.get('eps_per_usable', False)} | "
+                f"{snapshot.get('latest_eps_usable', False)}/"
+                f"{snapshot.get('ttm_eps_usable', snapshot.get('eps_per_usable', False))} | "
                 f"{snapshot.get('ttm_contains_preliminary', False)} "
                 f"({snapshot.get('preliminary_quarter_count', 0)}) | "
                 f"{snapshot.get('latest_revenue') or '없음'}/"

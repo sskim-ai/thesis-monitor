@@ -81,7 +81,7 @@ def test_public_action_schema_includes_read_only_ticker_analysis_snapshot() -> N
     schema = response.json()
     operation = schema["paths"]["/ticker-analysis-snapshot"]["get"]
     assert operation["operationId"] == "getTickerAnalysisSnapshot"
-    assert schema["info"]["version"] == "0.4.2"
+    assert schema["info"]["version"] == "0.4.3"
 
     operation_ids = [
         operation["operationId"]

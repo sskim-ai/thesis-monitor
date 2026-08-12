@@ -450,6 +450,9 @@ class ValuationSnapshot(BaseModel):
     earnings_context_source: str | None = None
     earnings_context_is_preliminary: bool = False
     earnings_context_usable: bool = False
+    latest_eps_usable: bool = False
+    ttm_eps_usable: bool = False
+    # Backward-compatible alias for ttm_eps_usable.
     eps_per_usable: bool = False
     latest_revenue: float | None = None
     latest_operating_income: float | None = None

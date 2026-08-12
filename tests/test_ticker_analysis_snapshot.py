@@ -79,6 +79,8 @@ def _valuation_snapshot() -> ValuationSnapshot:
         earnings_context_source="preliminary_earnings",
         earnings_context_is_preliminary=True,
         earnings_context_usable=True,
+        latest_eps_usable=True,
+        ttm_eps_usable=True,
         eps_per_usable=True,
         latest_revenue=1_000.0,
         latest_operating_income=250.0,
@@ -256,6 +258,10 @@ def test_unsafe_adr_denominators_stay_null_with_compact_caution() -> None:
             "forward_bvps": None,
             "trailing_pe": 18.0,
             "trailing_pe_source": "provider",
+            "earnings_context_source": "full_statement",
+            "earnings_context_is_preliminary": False,
+            "ttm_eps_usable": False,
+            "eps_per_usable": False,
             "price_to_book": None,
             "forward_pe": 15.0,
             "forward_pe_source": "consensus_forward",
@@ -452,6 +458,8 @@ def test_eps_less_preliminary_keeps_earnings_context_without_inventing_per() -> 
             "ttm_eps": None,
             "trailing_pe": None,
             "trailing_pe_status": "unavailable",
+            "latest_eps_usable": False,
+            "ttm_eps_usable": False,
             "eps_per_usable": False,
         }
     )
@@ -463,7 +471,7 @@ def test_eps_less_preliminary_keeps_earnings_context_without_inventing_per() -> 
     assert result.earnings.operating_margin == 25.0
     assert result.valuation.ttm_eps is None
     assert result.valuation.trailing_pe is None
-    assert any("EPS 기준이 없어" in caution for caution in result.cautions)
+    assert any("TTM EPS 자체 계산은 보류" in caution for caution in result.cautions)
 
 
 def test_partial_provider_failures_return_available_components() -> None:
