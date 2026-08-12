@@ -491,6 +491,51 @@ async def test_market_job_reuses_successful_analysis_for_delivery_retry(
 
 
 @pytest.mark.anyio
+async def test_kr_market_job_embeds_close_briefing_without_separate_delivery(
+    monkeypatch,
+) -> None:
+    isolated_engine = create_engine(
+        "sqlite://",
+        connect_args={"check_same_thread": False},
+        poolclass=StaticPool,
+    )
+    SQLModel.metadata.create_all(isolated_engine)
+    run_date = date(2042, 8, 15)
+    close_calls: list[dict[str, object]] = []
+
+    async def record_close(session, requested_date, **kwargs):
+        close_calls.append({"run_date": requested_date, **kwargs})
+        return SimpleNamespace(
+            model_dump=lambda mode: {
+                "status": "ready",
+                "action": "fresh",
+            }
+        )
+
+    async def record_daily(*args, **kwargs):
+        return SimpleNamespace(
+            status="success",
+            model_dump=lambda mode: {"status": "success"},
+        )
+
+    monkeypatch.setattr(
+        "app.jobs.monitor_daily.run_kr_close_market_briefing", record_close
+    )
+    monkeypatch.setattr("app.jobs.monitor_daily.run_daily_monitor", record_daily)
+    with Session(isolated_engine) as session:
+        output = await _run_market_job(session, run_date, "kr")
+
+    assert output["kr_close_market"] == {"status": "ready", "action": "fresh"}
+    assert close_calls == [
+        {
+            "run_date": run_date,
+            "queue_notifications": False,
+            "dispatch_notifications": False,
+        }
+    ]
+
+
+@pytest.mark.anyio
 async def test_market_job_does_not_overlap_running_analysis(monkeypatch) -> None:
     isolated_engine = create_engine(
         "sqlite://",

@@ -120,6 +120,46 @@ def _briefing(run_date: date) -> MacroBriefing:
     )
 
 
+def _kr_close_briefing(run_date: date) -> MacroBriefing:
+    return MacroBriefing(
+        briefing_date=run_date,
+        briefing_type="kr_close",
+        as_of=datetime.combine(run_date, datetime.min.time(), tzinfo=timezone.utc),
+        headline="한국 장마감 환율 점검",
+        market_summary=json.dumps(
+            {
+                "fx": [
+                    {
+                        "series_code": "USDKRW_KR_CLOSE",
+                        "value": 1417.4,
+                        "change_value": 7.1,
+                        "change_pct": 0.5035,
+                        "quality_status": "fresh",
+                    },
+                    {
+                        "series_code": "JPYKRW100_KR_CLOSE",
+                        "value": 886.9,
+                        "change_value": -2.8,
+                        "change_pct": -0.3147,
+                        "quality_status": "fresh",
+                    },
+                    {
+                        "series_code": "EURKRW_KR_CLOSE",
+                        "value": 1634.7,
+                        "change_value": 5.4,
+                        "change_pct": 0.3314,
+                        "quality_status": "fresh",
+                    },
+                ]
+            }
+        ),
+        data_quality="[]",
+        kakao_text="unused",
+        status="ready",
+        dedupe_key=f"digest-kr-close-test:{run_date}",
+    )
+
+
 def _seed_digest(
     session: Session,
     run_date: date,
@@ -302,6 +342,7 @@ def test_market_scoped_digest_uses_separate_keys_and_portfolios() -> None:
             item.exchange = "KRX" if item.company_name in {
                 "SK하이닉스", "코리안리", "POSCO홀딩스", "삼성전자", "현대글로비스"
             } else "NASDAQ"
+        session.add(_kr_close_briefing(run_date))
         session.commit()
 
         us_delivery = queue_daily_digest_notification(session, run_date, market_scope="us")
@@ -317,7 +358,16 @@ def test_market_scoped_digest_uses_separate_keys_and_portfolios() -> None:
         assert kr_payload["market_scope"] == "kr"
         assert "🌎 미국 종목 점검" in us_payload["text"]
         assert "전체 9개 종목 평가 완료" in us_payload["text"]
+        assert "💱 환율" not in us_payload["text"]
         assert "🇰🇷 한국 종목 장마감 점검" in kr_payload["text"]
+        assert "🇰🇷 한국 시장환경 점검" not in kr_payload["text"]
+        assert "💱 환율" in kr_payload["text"]
+        assert "원/달러 1,417.4원 · +7.1원 (+0.50%)" in kr_payload["text"]
+        assert "원/100엔 886.9원 · -2.8원 (-0.31%)" in kr_payload["text"]
+        assert "원/유로 1,634.7원 · +5.4원 (+0.33%)" in kr_payload["text"]
+        assert kr_payload["text"].index("💱 환율") < kr_payload["text"].index(
+            "현재 환경:"
+        )
         assert "전체 5개 종목 평가 완료" in kr_payload["text"]
 
 
@@ -362,6 +412,53 @@ async def test_dispatcher_sends_only_selected_delivery_ids() -> None:
         assert us_delivery.status == "sent"
         assert kr_delivery.status == "pending"
         assert notifier.payloads == [{"text": "US"}]
+
+
+@pytest.mark.anyio
+async def test_kr_digest_is_dispatched_before_older_stock_delivery() -> None:
+    class RecordingNotifier:
+        def __init__(self) -> None:
+            self.types: list[str] = []
+
+        async def send(self, payload: dict[str, object]) -> str:
+            self.types.append(str(payload["type"]))
+            return "sent"
+
+    isolated_engine = create_engine(
+        "sqlite://",
+        connect_args={"check_same_thread": False},
+        poolclass=StaticPool,
+    )
+    SQLModel.metadata.create_all(isolated_engine)
+    run_date = date(2038, 8, 15)
+    with Session(isolated_engine) as session:
+        stock = NotificationDelivery(
+            ticker="005930",
+            assessment_date=run_date,
+            channel="telegram",
+            status="pending",
+            payload=json.dumps({"text": "stock", "type": "daily_stock_analysis"}),
+            created_at=datetime(2038, 8, 15, 7, 0, tzinfo=timezone.utc),
+        )
+        digest = NotificationDelivery(
+            ticker="__DAILY_DIGEST_KR__",
+            assessment_date=run_date,
+            channel="telegram",
+            status="pending",
+            payload=json.dumps({"text": "digest", "type": "daily_monitoring_digest"}),
+            created_at=datetime(2038, 8, 15, 7, 1, tzinfo=timezone.utc),
+        )
+        session.add_all([stock, digest])
+        session.commit()
+        notifier = RecordingNotifier()
+
+        await dispatch_pending_notifications(
+            session,
+            notifier=notifier,
+            delivery_ids={stock.id, digest.id},
+        )
+
+    assert notifier.types == ["daily_monitoring_digest", "daily_stock_analysis"]
 
 
 @pytest.mark.anyio

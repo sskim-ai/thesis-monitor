@@ -253,7 +253,9 @@ evaluates U.S. stocks, and queues notifications. The 08:05 and
 Korean close template is `ops/com.seungsoo.thesis-monitor.kr-close.plist`; its 16:05 primary slot
 collects the dedicated KR-close FX snapshot, reuses same-date morning macro data, and evaluates
 Korean stocks after the regular close. FX collection is isolated from the stock run. The 16:20 and 16:50
-slots likewise retry pending Telegram deliveries after a successful analysis. A retry starts analysis
+slots likewise retry pending Telegram deliveries after a successful analysis. The KR-close FX section
+is included at the top of the Korean daily digest, which is dispatched before individual stock messages;
+it is not sent as a separate production notification. A retry starts analysis
 recovery only when that market has no successful post-cutoff run; it never refreshes analysis merely
 because a delivery is pending. Same-date test runs before the 07:45 U.S. or 16:00 Korean cutoff do not
 suppress the scheduled production analysis, while later retry slots do not resend completed messages.

@@ -7,6 +7,7 @@ from dataclasses import dataclass
 from datetime import date, datetime, timezone
 
 import httpx
+from sqlalchemy import case
 from sqlmodel import Session, select
 
 from app.config import get_settings
@@ -19,6 +20,7 @@ from app.services.analysis_report_service import (
 )
 from app.services.daily_digest import build_daily_digest, interpret_macro_briefing
 from app.services.daily_digest_renderer import render_daily_digest
+from app.services.kr_close_fx import render_kr_close_fx, summarize_kr_close_fx
 
 
 MATERIAL_STATUSES = {
@@ -1288,57 +1290,11 @@ def _fallback_thesis_signal(
     return signal, rationale
 
 
-def _fx_number(value: object) -> str:
-    number = float(value)
-    return f"{number:,.1f}"
-
-
 def _kr_close_macro_report(briefing: MacroBriefing) -> tuple[str, dict[str, object]]:
     market = _json_value(briefing.market_summary, {})
     quality = _json_value(briefing.data_quality, [])
-    fx = market.get("fx", []) if isinstance(market, dict) else []
-    labels = {
-        "USDKRW_KR_CLOSE": "원/달러",
-        "JPYKRW100_KR_CLOSE": "원/100엔",
-        "EURKRW_KR_CLOSE": "원/유로",
-    }
-    lines: list[str] = []
-    stale_dates: list[str] = []
-    for item in fx if isinstance(fx, list) else []:
-        if not isinstance(item, dict) or item.get("value") is None:
-            continue
-        label = labels.get(str(item.get("series_code")))
-        if label is None:
-            continue
-        line = f"• {label} {_fx_number(item['value'])}원"
-        if item.get("change_value") is not None and item.get("change_pct") is not None:
-            line += (
-                f" · {float(item['change_value']):+,.1f}원 "
-                f"({float(item['change_pct']):+.2f}%)"
-            )
-        lines.append(line)
-        if item.get("quality_status") == "stale" and item.get("as_of"):
-            stale_dates.append(str(item["as_of"])[:10])
     quality_items = quality if isinstance(quality, list) else []
-    unavailable = [
-        str(item.get("warning", ""))
-        for item in quality_items
-        if isinstance(item, dict) and str(item.get("warning", "")).endswith(":unavailable")
-    ]
-    if not lines:
-        body = "⚠️ 환율 자료를 이번 조회에서 확인하지 못했습니다."
-    else:
-        body = "💱 환율\n" + "\n".join(lines)
-        if unavailable:
-            missing_labels = [
-                labels[code]
-                for code in labels
-                if any(item.startswith(code) for item in unavailable)
-            ]
-            if missing_labels:
-                body += f"\n⚠️ {', '.join(missing_labels)} 환율은 이번 조회에서 확인하지 못했습니다."
-        if stale_dates:
-            body += f"\n⚠️ 환율 최신 관측은 {max(stale_dates)} 기준입니다."
+    body = render_kr_close_fx(summarize_kr_close_fx(briefing))
     text = f"🇰🇷 한국 시장환경 점검 · {briefing.briefing_date}\n{body}"
     return text, {
         "analysis_type": "macro_kr_close",
@@ -1655,7 +1611,15 @@ async def dispatch_pending_notifications(
         query = query.where(NotificationDelivery.id.in_(delivery_ids))
     if notifier is None:
         notifier = _notifier_for_channel(channel)
-    deliveries = session.exec(query.order_by(NotificationDelivery.created_at)).all()
+    deliveries = session.exec(
+        query.order_by(
+            case(
+                (NotificationDelivery.ticker == "__DAILY_DIGEST_KR__", 0),
+                else_=1,
+            ),
+            NotificationDelivery.created_at,
+        )
+    ).all()
     for delivery in deliveries:
         delivery.attempt_count += 1
         try:

@@ -12,6 +12,7 @@ from app.models.macro import MacroBriefing, MacroEvent, ThesisMacroImpact
 from app.models.security import SecurityMaster
 from app.models.thesis import InvestmentThesis, MonitorRun, ThesisAssessment
 from app.models.watchlist import WatchlistItem
+from app.services.kr_close_fx import KrCloseFxSummary, summarize_kr_close_fx
 from app.services.market_session import MarketScope, market_scope_for_security
 
 
@@ -135,6 +136,7 @@ class DailyDigest:
     portfolio: PortfolioSummary
     schedule: ScheduleSummary
     data_quality: DataQualitySummary
+    kr_close_fx: KrCloseFxSummary | None = None
 
 
 def _json(value: str, fallback: object) -> object:
@@ -821,6 +823,14 @@ def build_daily_digest(
         )
         .order_by(MacroBriefing.created_at.desc())
     ).first()
+    kr_close_briefing = None
+    if market_scope == "kr":
+        kr_close_briefing = session.exec(
+            select(MacroBriefing).where(
+                MacroBriefing.briefing_date == run_date,
+                MacroBriefing.briefing_type == "kr_close",
+            )
+        ).first()
     portfolio = _portfolio(
         session, run_date, max(3, min(5, detail_limit)), market_scope
     )
@@ -831,4 +841,7 @@ def build_daily_digest(
         portfolio=portfolio,
         schedule=_schedule(session, run_date, market_scope),
         data_quality=_data_quality(session, briefing, portfolio, run_date, market_scope),
+        kr_close_fx=(
+            summarize_kr_close_fx(kr_close_briefing) if market_scope == "kr" else None
+        ),
     )

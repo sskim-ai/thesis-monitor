@@ -140,7 +140,12 @@ async def _run_market_job(
     kr_close_result: dict[str, object] | None = None
     if market_scope == "kr":
         try:
-            close_run = await run_kr_close_market_briefing(session, run_date)
+            close_run = await run_kr_close_market_briefing(
+                session,
+                run_date,
+                queue_notifications=False,
+                dispatch_notifications=False,
+            )
             kr_close_result = close_run.model_dump(mode="json")
         except Exception as exc:  # noqa: BLE001
             kr_close_result = {

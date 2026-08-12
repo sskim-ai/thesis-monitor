@@ -3,6 +3,7 @@ from app.services.daily_digest import (
     EXPECTATION_LABELS,
     VALUATION_LABELS,
 )
+from app.services.kr_close_fx import render_kr_close_fx
 
 
 def _bullet_lines(items: list[str], empty: str) -> list[str]:
@@ -22,10 +23,10 @@ def render_daily_digest(
         "us": f"🌎 미국 종목 점검 · {digest.digest_date}",
         "kr": f"🇰🇷 한국 종목 장마감 점검 · {digest.digest_date}",
     }.get(digest.market_scope, f"🌍 시장환경 점검 · {digest.digest_date}")
-    lines = [
-        title,
-        f"현재 환경: {macro.regime_label}",
-    ]
+    lines = [title]
+    if digest.kr_close_fx is not None:
+        lines.extend([render_kr_close_fx(digest.kr_close_fx), ""])
+    lines.append(f"현재 환경: {macro.regime_label}")
     if macro.assessment_state == "provisional":
         lines.extend(
             [
