@@ -13,6 +13,9 @@ class CollectedObservation:
     unit: str | None = None
     frequency: str | None = None
     market_session: str | None = None
+    previous_value: float | None = None
+    change_value: float | None = None
+    change_pct: float | None = None
     is_preliminary: bool = False
     is_revised: bool = False
     raw_payload: dict[str, object] = field(default_factory=dict)

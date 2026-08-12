@@ -81,6 +81,8 @@ SERIES_LABELS = {
     "USDKRW": "원/달러",
     "DCOILWTICO": "WTI",
     "VIXCLS": "VIX",
+    "KRX_KOSPI200_NIGHT_FUT": "KOSPI200 최근월물",
+    "KRX_KOSDAQ150_NIGHT_FUT": "KOSDAQ150 최근월물",
 }
 
 REGIME_AXIS_KEYS = {
@@ -985,13 +987,20 @@ def queue_daily_stock_notification(
     return delivery
 
 
-def queue_macro_notification(session: Session, briefing: MacroBriefing) -> None:
+def queue_macro_notification(
+    session: Session,
+    briefing: MacroBriefing,
+    *,
+    requeue_sent: bool = False,
+) -> NotificationDelivery:
     text, analysis_context = _macro_report(briefing)
+    is_kr_close = briefing.briefing_type == "kr_close"
+    marker = "__MACRO_KR_CLOSE__" if is_kr_close else "__MACRO__"
     payload = json.dumps(
         {
             "text": text,
             "briefing_date": str(briefing.briefing_date),
-            "type": "macro_morning",
+            "type": "macro_kr_close" if is_kr_close else "macro_morning",
             "presentation": "long_text",
             "use_llm": False,
             "analysis_context": analysis_context,
@@ -1001,23 +1010,25 @@ def queue_macro_notification(session: Session, briefing: MacroBriefing) -> None:
     channel = _notification_channel()
     delivery = session.exec(
         select(NotificationDelivery).where(
-            NotificationDelivery.ticker == "__MACRO__",
+            NotificationDelivery.ticker == marker,
             NotificationDelivery.assessment_date == briefing.briefing_date,
             NotificationDelivery.channel == channel,
         )
     ).first()
     if delivery is None:
-        session.add(
-            NotificationDelivery(
-                ticker="__MACRO__",
-                assessment_date=briefing.briefing_date,
-                channel=channel,
-                status="pending",
-                payload=payload,
-            )
+        delivery = NotificationDelivery(
+            ticker=marker,
+            assessment_date=briefing.briefing_date,
+            channel=channel,
+            status="pending",
+            payload=payload,
         )
+        session.add(delivery)
     elif delivery.status != "sent":
         _prepare_delivery_for_retry(delivery, payload)
+    elif requeue_sent:
+        _prepare_delivery_for_retry(delivery, payload, reset_attempts=True)
+    return delivery
 
 
 def queue_daily_digest_notification(
@@ -1277,7 +1288,98 @@ def _fallback_thesis_signal(
     return signal, rationale
 
 
+def _fx_number(value: object) -> str:
+    number = float(value)
+    return f"{number:,.1f}"
+
+
+def _kr_close_macro_report(briefing: MacroBriefing) -> tuple[str, dict[str, object]]:
+    market = _json_value(briefing.market_summary, {})
+    quality = _json_value(briefing.data_quality, [])
+    fx = market.get("fx", []) if isinstance(market, dict) else []
+    labels = {
+        "USDKRW_KR_CLOSE": "원/달러",
+        "JPYKRW100_KR_CLOSE": "원/100엔",
+        "EURKRW_KR_CLOSE": "원/유로",
+    }
+    lines: list[str] = []
+    stale_dates: list[str] = []
+    for item in fx if isinstance(fx, list) else []:
+        if not isinstance(item, dict) or item.get("value") is None:
+            continue
+        label = labels.get(str(item.get("series_code")))
+        if label is None:
+            continue
+        line = f"• {label} {_fx_number(item['value'])}원"
+        if item.get("change_value") is not None and item.get("change_pct") is not None:
+            line += (
+                f" · {float(item['change_value']):+,.1f}원 "
+                f"({float(item['change_pct']):+.2f}%)"
+            )
+        lines.append(line)
+        if item.get("quality_status") == "stale" and item.get("as_of"):
+            stale_dates.append(str(item["as_of"])[:10])
+    quality_items = quality if isinstance(quality, list) else []
+    unavailable = [
+        str(item.get("warning", ""))
+        for item in quality_items
+        if isinstance(item, dict) and str(item.get("warning", "")).endswith(":unavailable")
+    ]
+    if not lines:
+        body = "⚠️ 환율 자료를 이번 조회에서 확인하지 못했습니다."
+    else:
+        body = "💱 환율\n" + "\n".join(lines)
+        if unavailable:
+            missing_labels = [
+                labels[code]
+                for code in labels
+                if any(item.startswith(code) for item in unavailable)
+            ]
+            if missing_labels:
+                body += f"\n⚠️ {', '.join(missing_labels)} 환율은 이번 조회에서 확인하지 못했습니다."
+        if stale_dates:
+            body += f"\n⚠️ 환율 최신 관측은 {max(stale_dates)} 기준입니다."
+    text = f"🇰🇷 한국 시장환경 점검 · {briefing.briefing_date}\n{body}"
+    return text, {
+        "analysis_type": "macro_kr_close",
+        "briefing_date": str(briefing.briefing_date),
+        "as_of": str(briefing.as_of),
+        "market": market,
+        "data_quality": quality_items,
+    }
+
+
+def _night_futures_section(market: object) -> str:
+    observations = market.get("observations", []) if isinstance(market, dict) else []
+    rows = [
+        item
+        for item in observations
+        if isinstance(item, dict)
+        and item.get("series_code")
+        in {"KRX_KOSPI200_NIGHT_FUT", "KRX_KOSDAQ150_NIGHT_FUT"}
+        and item.get("value") is not None
+    ]
+    if not rows:
+        return ""
+    lines: list[str] = []
+    source_dates: list[str] = []
+    for item in rows:
+        label = SERIES_LABELS[str(item["series_code"])]
+        line = f"• {label} {float(item['value']):,.2f}"
+        if item.get("change_value") is not None:
+            line += f" · {float(item['change_value']):+,.2f}pt"
+        if item.get("change_pct") is not None:
+            line += f" ({float(item['change_pct']):+.2f}%)"
+        lines.append(line)
+        if item.get("observed_at"):
+            source_dates.append(str(item["observed_at"])[:10])
+    date_label = f" · {max(source_dates)[5:].replace('-', '/')} 기준" if source_dates else ""
+    return f"🌙 한국 야간선물{date_label}\n" + "\n".join(lines)
+
+
 def _macro_report(briefing: MacroBriefing) -> tuple[str, dict[str, object]]:
+    if getattr(briefing, "briefing_type", "morning") == "kr_close":
+        return _kr_close_macro_report(briefing)
     market = _json_value(briefing.market_summary, {})
     regime = _json_value(briefing.regime_summary, {})
     theses = _json_value(briefing.macro_theses, [])
@@ -1333,12 +1435,15 @@ def _macro_report(briefing: MacroBriefing) -> tuple[str, dict[str, object]]:
             f"{explanation}최신 관측일이 오래되어 당일 방향 판단에는 사용하지 않습니다."
         )
     quality_text = "\n".join(quality_lines) or "• 특이사항 없음"
+    night_futures_text = _night_futures_section(market)
+    night_futures_block = f"\n\n{night_futures_text}" if night_futures_text else ""
     fallback = (
         f"🌍 시장환경 점검 · {briefing.briefing_date}\n"
         f"⚠️ {macro.regime_label} 국면 · 판단 신뢰도 {macro.confidence:.0%}\n\n"
         f"🎯 오늘 한 줄\n{macro.one_line}\n\n"
         f"📈 오늘 가장 중요한 변화\n"
-        f"{change_text or '• 임계치를 넘은 핵심 시장 변화가 없습니다.'}\n\n"
+        f"{change_text or '• 임계치를 넘은 핵심 시장 변화가 없습니다.'}"
+        f"{night_futures_block}\n\n"
         f"🧭 현재 시장 상황\n{axis_text}\n\n"
         f"💡 종합 해석\n{' '.join(macro.integrated_view)}\n\n"
         f"🔄 시장 가정\n"

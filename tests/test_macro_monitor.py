@@ -3,7 +3,8 @@ from datetime import date, datetime, timezone
 
 import pytest
 from fastapi.testclient import TestClient
-from sqlmodel import Session, select
+from sqlalchemy.pool import StaticPool
+from sqlmodel import SQLModel, Session, create_engine, select
 
 from app.database import engine, init_db
 from app.macro.providers.base import (
@@ -11,7 +12,9 @@ from app.macro.providers.base import (
     MacroProviderResult,
 )
 from app.macro.impact import assess_thesis_macro_impacts
+from app.macro.regime import assess_macro_regime
 from app.macro.service import run_macro_monitor
+from app.api.routes_macro import latest_macro_briefing, macro_briefing_by_date
 from app.main import app
 from app.models.macro import (
     MacroBriefing,
@@ -214,6 +217,80 @@ def test_macro_action_routes_require_auth_and_return_latest_briefing() -> None:
         )
         assert briefing.status_code == 200
         assert briefing.json()["briefing_type"] == "morning"
+
+
+def test_macro_briefing_actions_ignore_same_date_kr_close_row() -> None:
+    isolated_engine = create_engine(
+        "sqlite://",
+        connect_args={"check_same_thread": False},
+        poolclass=StaticPool,
+    )
+    SQLModel.metadata.create_all(isolated_engine)
+    run_date = date(2051, 8, 12)
+    with Session(isolated_engine) as session:
+        session.add_all(
+            [
+                MacroBriefing(
+                    briefing_date=run_date,
+                    briefing_type="morning",
+                    as_of=datetime(2051, 8, 11, 23, tzinfo=timezone.utc),
+                    headline="morning",
+                    kakao_text="morning",
+                    dedupe_key="macro-api-morning",
+                ),
+                MacroBriefing(
+                    briefing_date=run_date,
+                    briefing_type="kr_close",
+                    as_of=datetime(2051, 8, 12, 7, tzinfo=timezone.utc),
+                    headline="kr-close",
+                    kakao_text="kr-close",
+                    dedupe_key="macro-api-close",
+                ),
+            ]
+        )
+        session.commit()
+
+        latest = latest_macro_briefing(session=session)
+        by_date = macro_briefing_by_date(run_date, session=session)
+
+    assert latest.briefing_type == "morning"
+    assert by_date.briefing_type == "morning"
+
+
+def test_night_futures_do_not_change_six_axis_regime() -> None:
+    isolated_engine = create_engine(
+        "sqlite://",
+        connect_args={"check_same_thread": False},
+        poolclass=StaticPool,
+    )
+    SQLModel.metadata.create_all(isolated_engine)
+    run_date = date(2052, 8, 12)
+    with Session(isolated_engine) as session:
+        session.add(
+            MacroObservation(
+                dedupe_key="night-regime-isolation",
+                series_code="KRX_KOSPI200_NIGHT_FUT",
+                category="kr_night_futures",
+                provider="krx_night_futures",
+                observed_at=datetime(2052, 8, 11, tzinfo=timezone.utc),
+                market_session="kr_night",
+                value=500,
+                previous_value=450,
+                change_value=50,
+                change_pct=11.11,
+                source_url="https://data-dbg.krx.co.kr/",
+            )
+        )
+        session.commit()
+
+        regime = assess_macro_regime(session, run_date)
+
+    assert regime.growth_momentum == 0
+    assert regime.inflation_pressure == 0
+    assert regime.liquidity_condition == 0
+    assert regime.financial_conditions == 0
+    assert regime.risk_appetite == 0
+    assert regime.earnings_momentum == 0
 
 
 def test_macro_impacts_separate_overall_and_valuation_channels() -> None:

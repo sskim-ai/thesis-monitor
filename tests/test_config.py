@@ -29,7 +29,18 @@ def test_known_telegram_environment_settings_load(tmp_path: Path) -> None:
     assert settings.telegram_chat_id == "123"
 
 
-@pytest.mark.parametrize("unknown_key", ["TELEGRAM_BOT_TOKN", "KAKAO_REFRESH_TOKEN"])
+def test_known_krx_environment_setting_loads(tmp_path: Path) -> None:
+    env_file = _write_env(tmp_path / ".env", ["KRX_OPEN_API_KEY=dummy-key"])
+
+    settings = Settings(_env_file=env_file)
+
+    assert settings.krx_open_api_key == "dummy-key"
+
+
+@pytest.mark.parametrize(
+    "unknown_key",
+    ["TELEGRAM_BOT_TOKN", "KAKAO_REFRESH_TOKEN", "KRX_OPEN_API_KE"],
+)
 def test_unknown_environment_key_fails_strict_validation(
     tmp_path: Path,
     unknown_key: str,

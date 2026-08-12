@@ -18,6 +18,7 @@ class Settings(BaseSettings):
     enable_newsapi_provider: bool = False
     finnhub_api_key: str | None = None
     alpha_vantage_api_key: str | None = None
+    krx_open_api_key: str | None = None
     alpha_vantage_cache_hours: int = 24
     alpha_vantage_request_budget: int = 30
     alpha_vantage_consensus_discrepancy_pct: float = 20.0

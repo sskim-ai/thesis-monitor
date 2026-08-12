@@ -9,6 +9,7 @@ from sqlmodel import Session, select
 
 from app.database import engine, init_db
 from app.macro.service import run_macro_monitor
+from app.macro.kr_close import run_kr_close_market_briefing
 from app.models.macro import MacroBriefing
 from app.models.thesis import MonitorRun
 from app.services.daily_monitor_service import run_daily_monitor
@@ -136,6 +137,18 @@ async def _run_market_job(
 ) -> dict[str, object]:
     cutoff = _requeue_cutoff(run_date, market_scope)
     decision = _analysis_decision(session, run_date, cutoff, market_scope)
+    kr_close_result: dict[str, object] | None = None
+    if market_scope == "kr":
+        try:
+            close_run = await run_kr_close_market_briefing(session, run_date)
+            kr_close_result = close_run.model_dump(mode="json")
+        except Exception as exc:  # noqa: BLE001
+            kr_close_result = {
+                "run_date": run_date.isoformat(),
+                "status": "failed",
+                "action": "isolated_failure",
+                "error": type(exc).__name__,
+            }
     if decision.action == "in_progress":
         return {
             "market_scope": market_scope,
@@ -144,6 +157,7 @@ async def _run_market_job(
             "analysis_run_status": decision.run_status,
             "delivery_action": "deferred",
             "macro": _stored_macro_result(session, run_date),
+            "kr_close_market": kr_close_result,
             "theses": None,
         }
 
@@ -171,6 +185,7 @@ async def _run_market_job(
         "analysis_run_status": result.status,
         "delivery_action": delivery_action,
         "macro": macro_result,
+        "kr_close_market": kr_close_result,
         "theses": result.model_dump(mode="json"),
     }
 

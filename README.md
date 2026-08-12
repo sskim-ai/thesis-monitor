@@ -50,6 +50,7 @@ OPENDART_API_KEY=
 NEWSAPI_API_KEY=
 FINNHUB_API_KEY=
 ALPHA_VANTAGE_API_KEY=
+KRX_OPEN_API_KEY=
 FRED_API_KEY=
 EIA_API_KEY=
 ECOS_API_KEY=
@@ -101,10 +102,12 @@ The 07:50 U.S. monitoring job also builds a macro morning briefing before evalua
 U.S. stock watchlist. It collects U.S. rates, real yields, breakeven inflation,
 credit spreads, volatility, oil, dollar liquidity, U.S. equity and sector
 proxies, Federal Reserve releases, big-tech earnings dates, and selected Korean
-macro indicators. A provider failure produces a partial briefing and does not
+macro indicators. When the official KRX response explicitly identifies regular/night sessions,
+the same contract, and maturity, the briefing also shows KOSPI200 and KOSDAQ150 night-futures
+closes versus that contract's regular close. A provider failure produces a partial briefing and does not
 stop the stock thesis monitor.
 
-Three additional free API keys enable the full source set:
+Additional API keys enable the full source set:
 
 - `FRED_API_KEY`: U.S. rates, inflation expectations, credit, volatility, oil,
   dollar, and liquidity series.
@@ -113,7 +116,11 @@ Three additional free API keys enable the full source set:
 - `ECOS_API_KEY`: Bank of Korea rates, USD/KRW, CPI, and M2 key statistics.
 - `ALPHA_VANTAGE_API_KEY`: secondary U.S. consensus, share-count, dividend,
   split, and current-multiple cross-checks. Responses are cached and never used
-  as point-in-time historical truth.
+  as point-in-time historical truth. The same key supplies the dedicated 16:05
+  KR-close USD/KRW, 100JPY/KRW, and EUR/KRW snapshot.
+- `KRX_OPEN_API_KEY`: official KRX index-futures daily data. It is used only when
+  explicit session and same-contract evidence passes validation; the key is sent
+  in the `AUTH_KEY` header and is never stored in a source URL.
 - `ENABLE_NEWSAPI_PROVIDER`: defaults to `false`. A configured NewsAPI key does
   not add NewsAPI to the daily collection path unless this switch is enabled.
 - `OPENFIGI_API_KEY`: optional identity-mapping rate-limit upgrade. Keyless
@@ -136,6 +143,9 @@ GET /macro/events
 GET /macro/provider-status
 GET /macro/ticker/{ticker}/impacts
 ```
+
+The TrendForce DRAM RSS code remains a feasibility probe only. DRAM spot prices,
+contract news, and missing-data warnings are not wired into production briefings.
 
 ## Run Locally
 
@@ -237,10 +247,12 @@ python -m app.jobs.monitor_daily --market all
 ```
 
 The Mac mini U.S. LaunchAgent template is `ops/com.seungsoo.thesis-monitor.daily.plist`. Its 07:50
-KST primary slot collects macro data, evaluates U.S. stocks, and queues notifications. The 08:05 and
+KST primary slot collects macro data, adds verified KRX night-futures context when available,
+evaluates U.S. stocks, and queues notifications. The 08:05 and
 08:35 slots retry pending Telegram deliveries when the production analysis already succeeded. The
 Korean close template is `ops/com.seungsoo.thesis-monitor.kr-close.plist`; its 16:05 primary slot
-reuses same-date macro data and evaluates Korean stocks after the regular close. The 16:20 and 16:50
+collects the dedicated KR-close FX snapshot, reuses same-date morning macro data, and evaluates
+Korean stocks after the regular close. FX collection is isolated from the stock run. The 16:20 and 16:50
 slots likewise retry pending Telegram deliveries after a successful analysis. A retry starts analysis
 recovery only when that market has no successful post-cutoff run; it never refreshes analysis merely
 because a delivery is pending. Same-date test runs before the 07:45 U.S. or 16:00 Korean cutoff do not

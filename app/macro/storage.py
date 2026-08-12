@@ -61,10 +61,15 @@ def persist_observation(
         return existing, False
 
     previous = _previous_observation(session, provider, observation)
-    change_value = observation.value - previous.value if previous is not None else None
-    change_pct = None
-    if change_value is not None and previous is not None and previous.value != 0:
-        change_pct = round(change_value / abs(previous.value) * 100, 4)
+    previous_value = observation.previous_value
+    change_value = observation.change_value
+    change_pct = observation.change_pct
+    if previous_value is None and previous is not None:
+        previous_value = previous.value
+    if change_value is None and previous_value is not None:
+        change_value = observation.value - previous_value
+    if change_pct is None and change_value is not None and previous_value not in {None, 0}:
+        change_pct = round(change_value / abs(previous_value) * 100, 4)
     row = MacroObservation(
         dedupe_key=dedupe_key,
         series_code=observation.series_code,
@@ -75,7 +80,7 @@ def persist_observation(
         value=observation.value,
         unit=observation.unit,
         frequency=observation.frequency,
-        previous_value=previous.value if previous is not None else None,
+        previous_value=previous_value,
         change_value=change_value,
         change_pct=change_pct,
         source_url=observation.source_url,

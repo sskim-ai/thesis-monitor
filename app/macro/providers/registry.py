@@ -7,6 +7,7 @@ from app.macro.providers.eia import EiaProvider
 from app.macro.providers.fed import FederalReserveProvider
 from app.macro.providers.finnhub import FinnhubEarningsProvider
 from app.macro.providers.fred import FredProvider
+from app.macro.providers.krx import KrxNightFuturesProvider
 from app.macro.providers.market import OhlcvMarketProvider
 
 
@@ -34,6 +35,8 @@ def macro_providers() -> list[MacroProvider]:
         providers.append(OhlcvMarketProvider())
     if settings.finnhub_api_key:
         providers.append(FinnhubEarningsProvider())
+    if settings.krx_open_api_key:
+        providers.append(KrxNightFuturesProvider())
     return providers
 
 
@@ -66,5 +69,12 @@ def macro_provider_statuses() -> list[MacroProviderStatus]:
             bool(settings.finnhub_api_key),
             ["FINNHUB_API_KEY"],
             ["big_tech_earnings"],
+        ),
+        MacroProviderStatus(
+            "krx_night_futures",
+            enabled,
+            bool(settings.krx_open_api_key),
+            ["KRX_OPEN_API_KEY"],
+            ["kr_night_futures"],
         ),
     ]

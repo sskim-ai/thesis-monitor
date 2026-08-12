@@ -44,7 +44,7 @@ def _first_list(payload: dict[str, object], *keys: str) -> list[dict[str, object
     return []
 
 
-def _provider_error_reason(payload: dict[str, object]) -> str | None:
+def alpha_vantage_error_reason(payload: dict[str, object]) -> str | None:
     message = str(
         payload.get("Error Message")
         or payload.get("Note")
@@ -60,6 +60,9 @@ def _provider_error_reason(payload: dict[str, object]) -> str | None:
     if "symbol" in message or "invalid" in message:
         return "unsupported_symbol"
     return "provider_error_message"
+
+
+_provider_error_reason = alpha_vantage_error_reason
 
 
 @dataclass

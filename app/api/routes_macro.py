@@ -47,7 +47,9 @@ router = APIRouter(
 )
 def latest_macro_briefing(session: Session = Depends(get_session)) -> MacroBriefingRead:
     row = session.exec(
-        select(MacroBriefing).order_by(MacroBriefing.briefing_date.desc())
+        select(MacroBriefing)
+        .where(MacroBriefing.briefing_type == "morning")
+        .order_by(MacroBriefing.briefing_date.desc())
     ).first()
     if row is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="No macro briefing yet.")
@@ -64,7 +66,10 @@ def macro_briefing_by_date(
     session: Session = Depends(get_session),
 ) -> MacroBriefingRead:
     row = session.exec(
-        select(MacroBriefing).where(MacroBriefing.briefing_date == briefing_date)
+        select(MacroBriefing).where(
+            MacroBriefing.briefing_date == briefing_date,
+            MacroBriefing.briefing_type == "morning",
+        )
     ).first()
     if row is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Briefing not found.")

@@ -36,11 +36,17 @@ async def run_macro_monitor(
         )
     ).first()
     if existing is not None and existing.status == "ready" and not force:
+        delivery = None
         if queue_notifications:
-            queue_macro_notification(session, existing)
+            delivery = queue_macro_notification(session, existing)
         session.commit()
-        if queue_notifications and dispatch_notifications:
-            await dispatch_pending_notifications(session)
+        if (
+            queue_notifications
+            and dispatch_notifications
+            and delivery is not None
+            and delivery.id is not None
+        ):
+            await dispatch_pending_notifications(session, delivery_ids={delivery.id})
         return MacroMonitorResponse(
             run_date=run_date,
             status="already_completed",
@@ -75,12 +81,16 @@ async def run_macro_monitor(
     )
     briefing.status = "partial" if warnings else "ready"
     session.add(briefing)
-    if queue_notifications:
-        queue_macro_notification(session, briefing)
+    delivery = queue_macro_notification(session, briefing) if queue_notifications else None
     session.commit()
     export_macro_briefing(briefing)
-    if queue_notifications and dispatch_notifications:
-        await dispatch_pending_notifications(session)
+    if (
+        queue_notifications
+        and dispatch_notifications
+        and delivery is not None
+        and delivery.id is not None
+    ):
+        await dispatch_pending_notifications(session, delivery_ids={delivery.id})
     return MacroMonitorResponse(
         run_date=run_date,
         status=briefing.status,

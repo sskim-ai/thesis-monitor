@@ -651,6 +651,14 @@ async def test_post_cutoff_retry_reuses_assessment_and_dispatches_only_pending_d
         async def fail_macro(*args, **kwargs):
             raise AssertionError("delivery retry must not recollect macro providers")
 
+        async def reuse_close(*args, **kwargs):
+            return SimpleNamespace(
+                model_dump=lambda mode: {
+                    "status": "already_completed",
+                    "action": "reuse",
+                }
+            )
+
         retry_notifier = ThreeChunkNotifier()
 
         monkeypatch.setattr(
@@ -667,6 +675,10 @@ async def test_post_cutoff_retry_reuses_assessment_and_dispatches_only_pending_d
             "app.services.daily_monitor_service.evaluate_thesis", fail_evaluation
         )
         monkeypatch.setattr("app.jobs.monitor_daily.run_macro_monitor", fail_macro)
+        monkeypatch.setattr(
+            "app.jobs.monitor_daily.run_kr_close_market_briefing",
+            reuse_close,
+        )
         monkeypatch.setattr(
             "app.services.notification_service._notifier_for_channel",
             lambda channel: retry_notifier,

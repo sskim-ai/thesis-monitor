@@ -550,7 +550,7 @@ Catalyst / Risk
 
 정상 상태와 내부 flag는 사용자에게 반복하지 않는다. 실제 결론에 영향을 주는 component 문제만 자연어로 설명하고 상세 metadata는 audit에 보존한다.
 
-자동 monitoring은 시장별 장 종료 데이터를 기준으로 한다. 미국 종목은 07:50 KST에 전일 미국 정규장 close 기준으로, 한국 종목은 16:05 KST에 당일 한국 정규장 close와 최신 일봉 수급 기준으로 평가한다. retry 운영 상세는 README를 따른다. `no_material_change`도 기록하며 이력은 SQLite와 `data/` 기록에 누적한다.
+자동 monitoring은 시장별 장 종료 데이터를 기준으로 한다. 미국 종목은 07:50 KST에 전일 미국 정규장 close와, 검증 가능한 경우 동일 계약의 정규장 대비 KRX 야간선물을 시장 context로 함께 본다. 한국 종목은 16:05 KST에 당일 한국 정규장 close, 최신 일봉 수급, USD/KRW·100JPY/KRW·EUR/KRW KR-close snapshot을 평가한다. 야간선물과 하루 환율 변화는 시장 context이며 그 자체로 기업 투자 논리를 무효화하지 않는다. retry 운영 상세는 README를 따른다. `no_material_change`도 기록하며 이력은 SQLite와 `data/` 기록에 누적한다.
 
 ## 17. Action Reference
 

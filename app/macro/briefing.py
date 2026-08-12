@@ -26,6 +26,8 @@ MARKET_DISPLAY = {
     "USDKRW": "USD/KRW",
     "DCOILWTICO": "WTI",
     "VIXCLS": "VIX",
+    "KRX_KOSPI200_NIGHT_FUT": "KOSPI200 야간선물",
+    "KRX_KOSDAQ150_NIGHT_FUT": "KOSDAQ150 야간선물",
 }
 
 REGIME_DISPLAY = {
@@ -250,6 +252,8 @@ def build_macro_briefing(
                         "unit": item.unit,
                         "change_value": item.change_value,
                         "change_pct": item.change_pct,
+                        "observed_at": item.observed_at,
+                        "market_session": item.market_session,
                         "quality_status": item.quality_status,
                         "source_url": item.source_url,
                     }
