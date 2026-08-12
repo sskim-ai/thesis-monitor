@@ -138,6 +138,8 @@ def _foreign_preliminary(
                 "value": diluted_eps,
                 "currency": eps_currency,
                 "security_basis": eps_security_basis,
+                "representation_type": "security_equivalent",
+                "selected_for_valuation": True,
                 "source": "sec_foreign_filing",
                 "parse_method": "sec_foreign_release",
             }
@@ -281,6 +283,19 @@ def test_foreign_preliminary_updates_context_without_unsafe_eps() -> None:
     assert snapshot.ttm_eps is None
 
 
+def test_earnings_context_keeps_reported_operating_margin_with_exact_income() -> None:
+    latest = _foreign_preliminary()
+    latest.revenue = 1_270_380
+    latest.operating_income = 766_603
+    latest.operating_margin = 60.3
+    snapshot = ValuationSnapshot(current_price=100, currency="USD")
+
+    ValuationSnapshotService()._apply_derived_trailing(snapshot, [latest])
+
+    assert snapshot.latest_operating_income == 766_603
+    assert snapshot.latest_operating_margin == 60.3
+
+
 def test_foreign_preliminary_direct_adr_eps_remains_separately_eligible() -> None:
     rows = []
     for period_end, eps in (
@@ -326,6 +341,11 @@ def test_foreign_preliminary_direct_adr_eps_remains_separately_eligible() -> Non
     assert snapshot.ttm_contains_preliminary is True
     assert snapshot.ttm_eps == pytest.approx(10)
     assert derived_pe == pytest.approx(10)
+    latest_lineage = snapshot.earnings_quarter_series[-1]
+    assert latest_lineage["reported_diluted_eps"] == 4
+    assert latest_lineage["reported_eps_currency"] == "USD"
+    assert latest_lineage["reported_eps_security_basis"] == "depositary_security"
+    assert latest_lineage["eps_representation"] == "security_equivalent"
 
 
 def test_foreign_preliminary_and_adr_basis_caution_is_compact() -> None:

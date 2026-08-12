@@ -482,7 +482,16 @@ def export_messages(
                 f"{item.get('share_basis')}:{item.get('eps_currency')}:"
                 f"{item.get('eps_security_basis')}:"
                 f"net={item.get('net_income')}:common={item.get('common_net_income')}:"
-                f"parent={item.get('owners_parent_net_income')}"
+                f"parent={item.get('owners_parent_net_income')}:"
+                f"concepts={item.get('net_income_concept')}/"
+                f"{item.get('owners_parent_income_concept')}/"
+                f"{item.get('common_income_concept')}:"
+                f"op_source={item.get('operating_income_source')}:"
+                f"reported_eps={item.get('reported_diluted_eps')}/"
+                f"{item.get('reported_eps_currency')}/"
+                f"{item.get('reported_eps_security_basis')}:"
+                f"eps_repr={item.get('eps_representation')}:"
+                f"eps_alt={item.get('eps_alternate_count')}"
                 for item in snapshot.get("earnings_quarter_series", [])
                 if isinstance(item, dict)
             )

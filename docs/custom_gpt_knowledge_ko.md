@@ -462,6 +462,9 @@ EPS 산출 가능 여부와 earnings context 사용 가능 여부를 분리한�
 - 보통주 귀속 이익과 신뢰 가능한 주식수 또는 공식 EPS가 있을 때만 TTM EPS·PER에 반영
 - foreign preliminary의 `Net Income`, common-shareholder 귀속 이익, owners-of-parent 귀속 이익은 서로 다른 항목이다. 단순 total net income을 귀속 순이익으로 복사하거나 주식수로 나눠 EPS를 만들지 않는다.
 - 직접 공시된 EPS는 net income 귀속과 별도로 사용할 수 있지만, EPS 통화와 ordinary/ADR security basis가 현재 거래주식과 호환될 때만 per-share Valuation에 사용한다.
+- `ProfitLoss`, parent-attributable income, common-shareholder income은 taxonomy semantic이 다르다. 숫자가 같더라도 다른 귀속 field로 자동 복사하지 않으며, FY 분기화도 같은 semantic field끼리만 계산한다.
+- 현재 거래 ADR·ADS 기준 EPS가 직접 공시되면 ordinary-share EPS의 ratio 환산보다 우선한다. 직접 EPS 한 분기를 확보해도 안전한 최근 4개 분기가 없으면 TTM EPS와 derived PER는 보류한다.
+- 실적표의 현재 분기 exact operating income을 확인할 수 있으면 prose exact amount, `revenue × reported margin` 순으로 fallback한다. exact 금액과 반올림된 공시 margin은 각각 보존한다.
 - 같은 분기의 정식 재무제표가 오면 정식 수치가 잠정 수치를 대체하며 이중 계산 금지
 - 잠정실적에 없는 BVPS·PBR·현금·부채·FCF·ROIC·재고·매출채권·순부채는 정식 재무제표 기준 유지
 

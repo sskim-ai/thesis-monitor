@@ -319,6 +319,9 @@ TSM 분석해줘
 
 - 매출·영업이익 earnings context는 사용 가능
 - 최신 earnings period와 영업이익률은 official foreign preliminary를 반영
+- local-currency EPS와 USD per ADR/ADS EPS가 함께 있으면 현재 거래 ADR에 직접 대응하는 USD EPS를 우선
+- structured table의 현재 분기 exact operating income을 margin 역산값보다 우선하고, 공시 margin은 그대로 유지
+- 최신 direct ADR EPS 한 분기만으로 4분기 TTM EPS나 PER를 생성하지 않음
 - unsafe raw EPS로 USD/ADR 가격의 PER를 직접 계산하지 않음
 - denominator가 `null`이면 GPT가 raw earnings로 재계산하지 않음
 - 공급자 fPER는 derived fPER가 없어도 provenance를 유지하고, denominator를 역산하지 않은 참고값으로 표시 가능

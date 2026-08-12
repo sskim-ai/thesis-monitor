@@ -44,6 +44,7 @@ from app.services.collection_service import (
 )
 from app.services.sec_financial_snapshot_service import (
     SecFinancialSnapshotService,
+    _companyfacts_snapshots,
     _facts,
     _linked_documents,
     _parse_foreign_financial_release,
@@ -1117,6 +1118,7 @@ def test_foreign_release_link_and_financial_values_are_detected() -> None:
         ("Diluted EPS was US$2.50", "USD", "unknown"),
         ("Diluted EPS was 2.50", None, "unknown"),
         ("Diluted EPS per ADS was US$2.50", "USD", "depositary_security"),
+        ("Diluted EPS per ADS unit was US$2.50", "USD", "depositary_security"),
         (
             "Diluted EPS per ordinary share was NT$12.30",
             "TWD",
@@ -1235,6 +1237,227 @@ def test_companyfacts_preserves_eps_unit_metadata() -> None:
     assert entries[0]["_unit"] == "TWD/shares"
     assert entries[0]["_concept"] == "DilutedEarningsLossPerShare"
     assert _unit_currency(entries[0]["_unit"]) == "TWD"
+
+
+def _companyfact_entry(
+    value: float,
+    *,
+    fy: int = 2026,
+    fp: str = "Q1",
+    form: str = "10-Q",
+    start: str = "2026-01-01",
+    end: str = "2026-03-31",
+    filed: str = "2026-04-30",
+) -> dict[str, object]:
+    return {
+        "fy": fy,
+        "fp": fp,
+        "form": form,
+        "filed": filed,
+        "start": start,
+        "end": end,
+        "val": value,
+    }
+
+
+def _companyfacts_payload(
+    taxonomy: str,
+    concepts: dict[str, list[dict[str, object]]],
+) -> dict[str, object]:
+    return {
+        "facts": {
+            taxonomy: {
+                concept: {"units": {"USD": entries}} for concept, entries in concepts.items()
+            }
+        }
+    }
+
+
+def test_companyfacts_us_gaap_income_attribution_is_semantic() -> None:
+    rows = _companyfacts_snapshots(
+        _companyfacts_payload(
+            "us-gaap",
+            {
+                "ProfitLoss": [_companyfact_entry(110)],
+                "NetIncomeLoss": [_companyfact_entry(100)],
+                "NetIncomeLossAvailableToCommonStockholdersBasic": [_companyfact_entry(95)],
+            },
+        ),
+        "SEM",
+    )
+
+    assert len(rows) == 1
+    assert rows[0].net_income == 110
+    assert rows[0].owners_parent_net_income == 100
+    assert rows[0].common_net_income == 95
+    metadata = {item["field"]: item for item in json.loads(rows[0].raw_financial_fields)}
+    assert metadata["net_income"]["attribution"] == "total_or_including_nci"
+    assert metadata["owners_parent_net_income"]["attribution"] == "owners_parent"
+    assert metadata["common_net_income"]["attribution"] == "common_shareholders"
+    assert metadata["owners_parent_net_income"]["concept"] == "NetIncomeLoss"
+
+
+@pytest.mark.parametrize(
+    ("concept", "expected_total", "expected_parent", "expected_common"),
+    [
+        ("NetIncomeLoss", None, 100, None),
+        ("ProfitLoss", 100, None, None),
+    ],
+)
+def test_companyfacts_does_not_copy_us_gaap_income_roles(
+    concept: str,
+    expected_total: float | None,
+    expected_parent: float | None,
+    expected_common: float | None,
+) -> None:
+    row = _companyfacts_snapshots(
+        _companyfacts_payload("us-gaap", {concept: [_companyfact_entry(100)]}),
+        "SEM",
+    )[0]
+
+    assert row.net_income == expected_total
+    assert row.owners_parent_net_income == expected_parent
+    assert row.common_net_income == expected_common
+
+
+def test_companyfacts_ifrs_income_attribution_is_semantic() -> None:
+    row = _companyfacts_snapshots(
+        _companyfacts_payload(
+            "ifrs-full",
+            {
+                "ProfitLoss": [_companyfact_entry(110, form="6-K")],
+                "ProfitLossAttributableToOwnersOfParent": [_companyfact_entry(100, form="6-K")],
+            },
+        ),
+        "SEM",
+    )[0]
+
+    assert row.net_income == 110
+    assert row.owners_parent_net_income == 100
+    assert row.common_net_income is None
+
+
+def test_companyfacts_fy_normalizes_each_income_semantic_independently() -> None:
+    def entries(values: tuple[float, float, float, float]) -> list[dict[str, object]]:
+        return [
+            _companyfact_entry(values[0]),
+            _companyfact_entry(
+                values[1], fp="Q2", start="2026-04-01", end="2026-06-30", filed="2026-07-30"
+            ),
+            _companyfact_entry(
+                values[2], fp="Q3", start="2026-07-01", end="2026-09-30", filed="2026-10-30"
+            ),
+            _companyfact_entry(
+                values[3],
+                fp="FY",
+                form="10-K",
+                start="2026-01-01",
+                end="2026-12-31",
+                filed="2027-02-28",
+            ),
+        ]
+
+    rows = _companyfacts_snapshots(
+        _companyfacts_payload(
+            "us-gaap",
+            {
+                "ProfitLoss": entries((10, 20, 30, 100)),
+                "NetIncomeLoss": entries((8, 18, 28, 90)),
+                "NetIncomeLossAvailableToCommonStockholdersBasic": entries((7, 17, 27, 80)),
+            },
+        ),
+        "SEM",
+    )
+    q4 = next(row for row in rows if row.period_type == "FY")
+
+    assert q4.net_income == 40
+    assert q4.owners_parent_net_income == 36
+    assert q4.common_net_income == 29
+    assert q4.period_scope == "single-quarter"
+
+
+def test_foreign_release_selects_direct_adr_eps_for_depositary_security() -> None:
+    parsed = _parse_foreign_financial_release(
+        "Results for the quarter ended June 30, 2026. "
+        "Consolidated revenue was NT$100 billion. "
+        "Diluted earnings per share was NT$20.00 (US$3.10 per ADR unit)."
+    )
+    assert parsed is not None
+    candidates = parsed["eps_candidates"]
+    assert isinstance(candidates, list)
+    assert {(item["value"], item["currency"], item["security_basis"]) for item in candidates} == {
+        (20.0, "TWD", "unknown"),
+        (3.1, "USD", "depositary_security"),
+    }
+
+    engine = _engine()
+    with Session(engine) as session:
+        session.add(
+            SecurityMaster(
+                canonical_company_id="ADR",
+                canonical_security_id="ADR:NYSE:ADR",
+                ticker="ADR",
+                exchange="NYSE",
+                company_name="ADR Fixture",
+                security_type="Depositary Receipt",
+                issuer_type="foreign_private_issuer",
+            )
+        )
+        session.flush()
+        parsed.update(
+            {
+                "filing_date": "2026-07-16",
+                "source_filing_id": "0000000000-26-000002",
+                "source_url": "https://www.sec.gov/example",
+            }
+        )
+        SecFinancialSnapshotService._upsert_foreign_preliminary_snapshot(session, "ADR", parsed)
+        row = session.exec(select(FinancialSnapshot).where(FinancialSnapshot.ticker == "ADR")).one()
+
+    assert row.diluted_eps == 3.1
+    eps_fields = json.loads(row.raw_financial_fields)
+    selected = next(item for item in eps_fields if item["field"] == "diluted_eps")
+    alternate = next(item for item in eps_fields if item["field"] == "diluted_eps_alternate")
+    assert selected["currency"] == "USD"
+    assert selected["security_basis"] == "depositary_security"
+    assert selected["selected_for_valuation"] is True
+    assert alternate["currency"] == "TWD"
+
+
+def test_foreign_release_exact_table_operating_income_has_priority() -> None:
+    release = """
+        Results for the second quarter ended June 30, 2026.
+        Consolidated revenue was NT$1,270.38 billion.
+        Income from operations was NT$765.00 billion.
+        Operating margin was 60.3%.
+        <div>(Unit: NT$ million, except for EPS)</div>
+        <table>
+          <tr><th></th><th>2Q26 Amount</th><th>2Q25 Amount</th><th>YoY %</th><th>1Q26 Amount</th><th>QoQ %</th></tr>
+          <tr><td>Income from operations</td><td>766,603</td><td>463,423</td><td>65.4</td><td>658,966</td><td>16.3</td></tr>
+        </table>
+    """
+
+    parsed = _parse_foreign_financial_release(release)
+
+    assert parsed is not None
+    assert parsed["operating_income"] == 766_603_000_000
+    assert parsed["operating_income_source"] == "reported_table"
+    assert parsed["operating_income_currency"] == "TWD"
+    assert parsed["operating_income_source_label"] == "Income from operations"
+    assert parsed["operating_income_current_column"] == "2Q26 Amount"
+    assert parsed["operating_margin"] == 60.3
+
+
+def test_foreign_release_prose_operating_income_precedes_margin_fallback() -> None:
+    parsed = _parse_foreign_financial_release(
+        "Results for the quarter ended June 30, 2026. "
+        "Consolidated revenue was NT$100 billion. "
+        "Income from operations was NT$55 billion. Operating margin was 50%."
+    )
+
+    assert parsed is not None
+    assert parsed["operating_income"] == 55_000_000_000
+    assert parsed["operating_income_source"] == "reported_prose"
 
 
 def test_openfigi_identity_mismatch_does_not_overwrite_security_master() -> None:

@@ -1,6 +1,7 @@
 import json
 import re
 from html import unescape
+from html.parser import HTMLParser
 from datetime import date, datetime, timezone
 
 import httpx
@@ -13,7 +14,9 @@ from app.services.provider_telemetry_service import ProviderTelemetryService
 
 _CONCEPTS = {
     "revenue": ("RevenueFromContractWithCustomerExcludingAssessedTax", "Revenues"),
-    "common_net_income": ("NetIncomeLossAvailableToCommonStockholdersBasic", "NetIncomeLoss"),
+    "net_income": ("ProfitLoss",),
+    "owners_parent_net_income": ("NetIncomeLoss",),
+    "common_net_income": ("NetIncomeLossAvailableToCommonStockholdersBasic",),
     "diluted_eps": ("EarningsPerShareDiluted",),
     "common_equity": ("StockholdersEquity",),
     "common_shares_outstanding": ("CommonStockSharesOutstanding",),
@@ -25,7 +28,9 @@ _CONCEPTS = {
 }
 _IFRS_CONCEPTS = {
     "revenue": ("Revenue",),
-    "common_net_income": ("ProfitLossAttributableToOwnersOfParent", "ProfitLoss"),
+    "net_income": ("ProfitLoss",),
+    "owners_parent_net_income": ("ProfitLossAttributableToOwnersOfParent",),
+    "common_net_income": (),
     "diluted_eps": ("DilutedEarningsLossPerShare",),
     "common_equity": ("EquityAttributableToOwnersOfParent", "Equity"),
     "common_shares_outstanding": ("NumberOfSharesOutstanding",),
@@ -101,12 +106,250 @@ def _scaled_financial(text: str, label: str) -> tuple[float | None, str | None]:
     return value, currency
 
 
+def _currency_code(token: object) -> str | None:
+    value = str(token or "").strip().upper()
+    if value == "NT$":
+        return "TWD"
+    if value in {"US$", "$"}:
+        return "USD"
+    return value or None
+
+
+_EPS_BASIS_PATTERN = (
+    r"(?:ADS|ADR)(?:\s+units?)?|American\s+Depositary\s+Shares?|"
+    r"ordinary\s+shares?|common\s+shares?"
+)
+
+
+def _eps_security_basis(value: object) -> str:
+    text = str(value or "").lower()
+    if re.search(r"\b(?:ads|adr)(?:\s+units?)?\b|american\s+depositary\s+shares?", text):
+        return "depositary_security"
+    if re.search(r"\b(?:ordinary|common)\s+shares?\b", text):
+        return "ordinary_share"
+    return "unknown"
+
+
+def _foreign_eps_candidates(text: str) -> list[dict[str, object]]:
+    candidates: list[dict[str, object]] = []
+    label_pattern = re.compile(
+        r"diluted\s+(?:earnings\s+per\s+share|EPS)"
+        rf"(?P<basis>\s+per\s+(?:{_EPS_BASIS_PATTERN}))?"
+        r"(?:\s+(?:of|was|were|is)|\s*[:=])?\s*"
+        r"(?P<currency>NT\$|US\$|RMB|CNY|TWD|USD|\$)?\s*"
+        r"(?P<value>[\d,.]+)",
+        flags=re.IGNORECASE,
+    )
+    explicit_basis_pattern = re.compile(
+        r"(?P<currency>NT\$|US\$|RMB|CNY|TWD|USD|\$)?\s*"
+        r"(?P<value>[\d,.]+)\s+per\s+"
+        rf"(?P<basis>(?:{_EPS_BASIS_PATTERN}))",
+        flags=re.IGNORECASE,
+    )
+    for label in re.finditer(
+        r"diluted\s+(?:earnings\s+per\s+share|EPS)", text, flags=re.IGNORECASE
+    ):
+        window = text[label.start() : label.start() + 260]
+        direct = label_pattern.search(window)
+        if direct:
+            candidates.append(
+                {
+                    "value": float(direct.group("value").replace(",", "").rstrip(".")),
+                    "currency": _currency_code(direct.group("currency")),
+                    "security_basis": _eps_security_basis(direct.group("basis")),
+                    "source_label": re.sub(r"\s+", " ", direct.group(0)).strip(),
+                    "parse_method": "sec_foreign_release",
+                    "representation_type": "primary_eps",
+                }
+            )
+        for explicit in explicit_basis_pattern.finditer(window):
+            candidates.append(
+                {
+                    "value": float(explicit.group("value").replace(",", "").rstrip(".")),
+                    "currency": _currency_code(explicit.group("currency")),
+                    "security_basis": _eps_security_basis(explicit.group("basis")),
+                    "source_label": re.sub(r"\s+", " ", explicit.group(0)).strip(),
+                    "parse_method": "sec_foreign_release",
+                    "representation_type": "security_equivalent",
+                }
+            )
+    unique: list[dict[str, object]] = []
+    seen: set[tuple[float, str | None, str]] = set()
+    for candidate in candidates:
+        key = (
+            float(candidate["value"]),
+            candidate.get("currency") if isinstance(candidate.get("currency"), str) else None,
+            str(candidate.get("security_basis") or "unknown"),
+        )
+        if key in seen:
+            continue
+        seen.add(key)
+        unique.append(candidate)
+    return unique
+
+
+def _security_is_depositary(security: SecurityMaster | None) -> bool:
+    if security is None:
+        return False
+    security_type = security.security_type.strip().lower().replace("-", "_").replace(" ", "_")
+    return (
+        security.issuer_type.strip().lower() == "adr"
+        or bool(security.adr_identifier)
+        or security_type
+        in {
+            "adr",
+            "ads",
+            "depositary_receipt",
+            "depositary_security",
+            "american_depositary_receipt",
+            "american_depositary_share",
+        }
+    )
+
+
+def _select_foreign_eps_candidate(
+    candidates: list[dict[str, object]],
+    *,
+    is_depositary_security: bool,
+) -> dict[str, object] | None:
+    if not candidates:
+        return None
+    priorities = (
+        ("depositary_security", "ordinary_share", "unknown")
+        if is_depositary_security
+        else ("ordinary_share", "unknown")
+    )
+    for basis in priorities:
+        selected = next(
+            (candidate for candidate in candidates if candidate.get("security_basis") == basis),
+            None,
+        )
+        if selected is not None:
+            return selected
+    return None
+
+
+class _ForeignTableParser(HTMLParser):
+    def __init__(self) -> None:
+        super().__init__()
+        self.rows: list[list[str]] = []
+        self._row: list[str] | None = None
+        self._cell: list[str] | None = None
+
+    def handle_starttag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
+        if tag.lower() == "tr":
+            self._row = []
+        elif tag.lower() in {"td", "th"} and self._row is not None:
+            self._cell = []
+
+    def handle_data(self, data: str) -> None:
+        if self._cell is not None:
+            self._cell.append(data)
+
+    def handle_endtag(self, tag: str) -> None:
+        if tag.lower() in {"td", "th"} and self._cell is not None:
+            assert self._row is not None
+            self._row.append(re.sub(r"\s+", " ", " ".join(self._cell)).strip())
+            self._cell = None
+        elif tag.lower() == "tr" and self._row is not None:
+            if any(self._row):
+                self.rows.append(self._row)
+            self._row = None
+
+
+def _header_matches_period(header: str, period_end: date) -> bool:
+    quarter = (period_end.month - 1) // 3 + 1
+    year = str(period_end.year)
+    short_year = year[-2:]
+    normalized = re.sub(r"[^a-z0-9]", "", header.lower())
+    quarter_word = {1: "first", 2: "second", 3: "third", 4: "fourth"}[quarter]
+    return any(
+        token in normalized
+        for token in (
+            f"{quarter}q{short_year}",
+            f"q{quarter}{short_year}",
+            f"{quarter}q{year}",
+            f"q{quarter}{year}",
+            f"{quarter_word}quarter{year}",
+        )
+    )
+
+
+def _foreign_table_unit(text: str) -> tuple[str | None, float | None, str | None]:
+    match = re.search(
+        r"unit\s*[:：]?\s*(NT\$|US\$|USD|TWD|RMB|CNY|\$)\s*(million|billion)",
+        text,
+        flags=re.IGNORECASE,
+    )
+    if not match:
+        return None, None, None
+    scale_name = match.group(2).lower()
+    scale = 1_000_000_000.0 if scale_name == "billion" else 1_000_000.0
+    return _currency_code(match.group(1)), scale, re.sub(r"\s+", " ", match.group(0)).strip()
+
+
+def _parse_foreign_operating_income_table(
+    html: str,
+    period_end: date | None,
+) -> dict[str, object] | None:
+    if period_end is None:
+        return None
+    for table_match in re.finditer(r"<table\b.*?</table>", html, flags=re.IGNORECASE | re.DOTALL):
+        parser = _ForeignTableParser()
+        parser.feed(table_match.group(0))
+        current_column: int | None = None
+        current_header: str | None = None
+        for row in parser.rows:
+            for index, cell in enumerate(row):
+                if _header_matches_period(cell, period_end):
+                    current_column = index
+                    current_header = cell
+                    break
+            if current_column is not None:
+                break
+        if current_column is None:
+            continue
+        prefix = _strip_html(html[max(0, table_match.start() - 600) : table_match.start()])
+        currency, scale, unit_label = _foreign_table_unit(prefix)
+        if scale is None:
+            continue
+        for row in parser.rows:
+            if not row or current_column >= len(row):
+                continue
+            row_label = re.sub(r"\s+", " ", row[0]).strip()
+            normalized_label = row_label.lower()
+            if "margin" in normalized_label or not re.fullmatch(
+                r"(?:operating income|income from operations|operating profit)",
+                normalized_label,
+            ):
+                continue
+            raw_value = row[current_column]
+            value_match = re.search(r"\(?\s*([\d,]+(?:\.\d+)?)\s*\)?", raw_value)
+            if not value_match or "%" in raw_value:
+                continue
+            value = float(value_match.group(1).replace(",", "")) * scale
+            if raw_value.strip().startswith("("):
+                value *= -1
+            return {
+                "value": value,
+                "currency": currency,
+                "unit_scale": scale,
+                "unit_label": unit_label,
+                "row_label": row_label,
+                "current_column": current_header,
+                "raw_value": raw_value,
+                "parse_method": "sec_foreign_html_table",
+            }
+    return None
+
+
 def _parse_foreign_financial_release(text: str) -> dict[str, object] | None:
     plain = re.sub(r"\s+", " ", _strip_html(text)).strip()
     period_end = _foreign_period_end(plain)
     revenue, currency, revenue_label = _scaled_financial_field(
         plain, r"(?:consolidated\s+)?(?:net\s+)?revenue"
     )
+    table_operating_income = _parse_foreign_operating_income_table(text, period_end)
     operating_income, operating_currency, operating_income_label = _scaled_financial_field(
         plain, r"(?:consolidated\s+)?(?:operating\s+income|income\s+from\s+operations)"
     )
@@ -123,15 +366,8 @@ def _parse_foreign_financial_release(text: str) -> dict[str, object] | None:
         r"(?:net\s+income|profit)\s+attributable\s+to\s+"
         r"(?:owners|shareholders|equity\s+holders)\s+of\s+(?:the\s+)?parent",
     )
-    eps_match = re.search(
-        r"diluted\s+(?:earnings\s+per\s+share|EPS)"
-        r"(?P<basis>\s+per\s+(?:ADS|ADR|American\s+Depositary\s+Share|ordinary\s+share|common\s+share))?"
-        r"(?:\s+of|\s+was)?\s*"
-        r"(?P<currency>NT\$|US\$|RMB|CNY|TWD|\$)?\s*"
-        r"(?P<value>[\d,.]+)",
-        plain,
-        flags=re.IGNORECASE,
-    )
+    eps_candidates = _foreign_eps_candidates(plain)
+    primary_eps = eps_candidates[0] if eps_candidates else None
     margin_match = re.search(
         r"operating\s+margin(?:\s+for\s+the\s+quarter)?\s+(?:was|of)?\s*([\d.]+)%",
         plain,
@@ -150,25 +386,19 @@ def _parse_foreign_financial_release(text: str) -> dict[str, object] | None:
         return None
     if revenue is not None and net_income is not None and abs(net_income) > revenue:
         return None
-    eps_currency = (eps_match.group("currency") or "").upper() if eps_match else ""
-    eps_currency = (
-        "TWD"
-        if eps_currency == "NT$"
-        else "USD"
-        if eps_currency in {"US$", "$"}
-        else eps_currency or None
-    )
-    eps_basis_text = (eps_match.group("basis") or "").lower() if eps_match else ""
-    eps_security_basis = (
-        "depositary_security"
-        if re.search(r"\b(?:ads|adr|american\s+depositary\s+share)\b", eps_basis_text)
-        else "ordinary_share"
-        if re.search(r"\b(?:ordinary|common)\s+share\b", eps_basis_text)
-        else "unknown"
-    )
     operating_margin = float(margin_match.group(1)) if margin_match else None
-    operating_income_source = "reported"
-    if operating_income is None and revenue is not None and operating_margin is not None:
+    operating_income_source = "reported_prose" if operating_income is not None else None
+    operating_income_metadata = table_operating_income or {}
+    if table_operating_income is not None:
+        operating_income = float(table_operating_income["value"])
+        operating_currency = (
+            str(table_operating_income.get("currency"))
+            if table_operating_income.get("currency")
+            else None
+        )
+        operating_income_label = str(table_operating_income.get("row_label") or "") or None
+        operating_income_source = "reported_table"
+    elif operating_income is None and revenue is not None and operating_margin is not None:
         operating_income = revenue * operating_margin / 100
         operating_currency = currency
         operating_income_source = "derived_from_reported_revenue_and_operating_margin"
@@ -179,17 +409,24 @@ def _parse_foreign_financial_release(text: str) -> dict[str, object] | None:
         "operating_income": operating_income,
         "operating_income_source_label": operating_income_label,
         "operating_income_source": operating_income_source,
+        "operating_income_currency": operating_currency,
+        "operating_income_current_column": operating_income_metadata.get("current_column"),
+        "operating_income_unit_label": operating_income_metadata.get("unit_label"),
+        "operating_income_unit_scale": operating_income_metadata.get("unit_scale"),
+        "operating_income_raw_value": operating_income_metadata.get("raw_value"),
+        "operating_income_parse_method": operating_income_metadata.get("parse_method"),
         "net_income": net_income,
         "net_income_source_label": net_income_label,
         "common_net_income": common_net_income,
         "common_net_income_source_label": common_income_label,
         "owners_parent_net_income": owners_parent_net_income,
         "owners_parent_net_income_source_label": parent_income_label,
-        "diluted_eps": (
-            float(eps_match.group("value").replace(",", "").rstrip(".")) if eps_match else None
-        ),
-        "eps_currency": eps_currency,
-        "eps_security_basis": eps_security_basis,
+        "diluted_eps": float(primary_eps["value"]) if primary_eps else None,
+        "eps_currency": primary_eps.get("currency") if primary_eps else None,
+        "eps_security_basis": primary_eps.get("security_basis", "unknown")
+        if primary_eps
+        else "unknown",
+        "eps_candidates": eps_candidates,
         "operating_margin": operating_margin,
         "currency": (
             currency
@@ -299,6 +536,8 @@ def _duration_days(item: dict[str, object]) -> int:
 def _period_entries(payload: dict[str, object]) -> list[dict[str, object]]:
     candidates = [
         *_facts(payload, "diluted_eps"),
+        *_facts(payload, "net_income"),
+        *_facts(payload, "owners_parent_net_income"),
         *_facts(payload, "common_net_income"),
         *_facts(payload, "revenue"),
     ]
@@ -380,6 +619,154 @@ def _unit_currency(unit: object) -> str | None:
     if not match:
         return None
     return "CNY" if match.group(1) == "RMB" else match.group(1)
+
+
+_INCOME_ATTRIBUTION = {
+    "net_income": "total_or_including_nci",
+    "owners_parent_net_income": "owners_parent",
+    "common_net_income": "common_shareholders",
+}
+
+
+def _companyfacts_snapshots(
+    payload: dict[str, object],
+    ticker: str,
+) -> list[FinancialSnapshot]:
+    facts = {field: _facts(payload, field) for field in _CONCEPTS}
+    built: list[FinancialSnapshot] = []
+    for period in _period_entries(payload):
+        fy = int(period["fy"])
+        fp = str(period["fp"])
+        filed = _parse_date(period.get("filed"))
+        end = _parse_date(period.get("end"))
+        if filed is None or end is None:
+            continue
+        period_type = {"Q1": "Q1", "Q2": "H1", "Q3": "Q3", "FY": "FY"}[fp]
+        row = FinancialSnapshot(
+            ticker=ticker.upper(),
+            period=f"{fy}-{fp}",
+            period_type=period_type,
+            fiscal_year=fy,
+            period_scope="annual" if fp == "FY" else "single-quarter",
+            is_cumulative=fp == "FY",
+            financial_period_end=end,
+            financials_as_of=end,
+            filing_date=filed,
+            reported_date=filed,
+            source="SEC Company Facts",
+            provider="sec_companyfacts",
+            quality_warnings=(
+                "foreign issuer filing coverage is partial; ADR ratio and currency mapping required"
+                if str(period.get("form", "")) in {"20-F", "6-K"}
+                else None
+            ),
+        )
+        selected_facts: dict[str, dict[str, object] | None] = {}
+        for field in (
+            "revenue",
+            "net_income",
+            "owners_parent_net_income",
+            "common_net_income",
+            "diluted_eps",
+        ):
+            selected_facts[field] = _select_fact(facts[field], fy, fp, filed, end)
+            selected = selected_facts[field]
+            setattr(row, field, float(selected["val"]) if selected else None)
+        row.eps = row.diluted_eps
+        selected_facts["common_equity"] = _select_instant_fact(facts["common_equity"], filed, end)
+        row.common_equity = (
+            float(selected_facts["common_equity"]["val"])
+            if selected_facts["common_equity"]
+            else None
+        )
+        row.owners_parent_equity = row.common_equity
+        selected_facts["common_shares_outstanding"] = _select_instant_fact(
+            facts["common_shares_outstanding"], filed, end
+        )
+        row.common_shares_outstanding = (
+            float(selected_facts["common_shares_outstanding"]["val"])
+            if selected_facts["common_shares_outstanding"]
+            else None
+        )
+        selected_facts["diluted_shares"] = _select_fact(facts["diluted_shares"], fy, fp, filed, end)
+        row.diluted_shares = (
+            float(selected_facts["diluted_shares"]["val"])
+            if selected_facts["diluted_shares"]
+            else None
+        )
+        if row.common_shares_outstanding is None:
+            row.common_shares_outstanding = row.diluted_shares
+        financial_fact = next(
+            (
+                selected_facts.get(field)
+                for field in (
+                    "revenue",
+                    "net_income",
+                    "owners_parent_net_income",
+                    "common_net_income",
+                    "common_equity",
+                )
+                if selected_facts.get(field)
+            ),
+            None,
+        )
+        row.currency = _unit_currency(financial_fact.get("_unit")) if financial_fact else None
+        row.raw_financial_fields = json.dumps(
+            [
+                {
+                    "field": field,
+                    "unit": selected.get("_unit"),
+                    "currency": _unit_currency(selected.get("_unit")),
+                    "security_basis": "unknown",
+                    "source": "sec_companyfacts",
+                    "concept": selected.get("_concept"),
+                    "taxonomy": selected.get("_taxonomy"),
+                    "attribution": _INCOME_ATTRIBUTION.get(field),
+                }
+                for field, selected in selected_facts.items()
+                if selected is not None
+            ]
+        )
+        if fp == "FY":
+            row.cumulative_revenue = row.revenue
+            row.cumulative_net_income = row.net_income
+            row.cumulative_diluted_eps = row.diluted_eps
+            row.common_dividends = _select_value(facts["common_dividends"], fy, fp, filed, end)
+            row.dividends = row.common_dividends
+            row.buybacks = _select_value(facts["buybacks"], fy, fp, filed, end)
+            row.equity_issuance = _select_value(facts["equity_issuance"], fy, fp, filed, end)
+            row.other_comprehensive_income = _select_value(
+                facts["other_comprehensive_income"], fy, fp, filed, end
+            )
+        built.append(row)
+
+    by_year: dict[int, list[FinancialSnapshot]] = {}
+    for row in built:
+        by_year.setdefault(row.fiscal_year or 0, []).append(row)
+    for year_rows in by_year.values():
+        annual = next((row for row in year_rows if row.period_type == "FY"), None)
+        quarters = [row for row in year_rows if row.period_type != "FY"]
+        if annual and len(quarters) == 3:
+            for field in (
+                "revenue",
+                "net_income",
+                "owners_parent_net_income",
+                "common_net_income",
+                "diluted_eps",
+            ):
+                annual_value = getattr(annual, field)
+                quarter_values = [getattr(row, field) for row in quarters]
+                if annual_value is not None and all(value is not None for value in quarter_values):
+                    setattr(
+                        annual,
+                        field,
+                        float(annual_value) - sum(float(value) for value in quarter_values),
+                    )
+            annual.eps = annual.diluted_eps
+            annual.period_scope = "single-quarter"
+            annual.is_cumulative = False
+            annual.normalization_method = "FY minus Q1-Q3 standalone by semantic field"
+    return built
 
 
 class SecFinancialSnapshotService:
@@ -624,9 +1011,36 @@ class SecFinancialSnapshotService:
             if isinstance(parsed.get("owners_parent_net_income"), float)
             else None
         )
-        row.diluted_eps = (
-            parsed.get("diluted_eps") if isinstance(parsed.get("diluted_eps"), float) else None
+        security = session.exec(
+            select(SecurityMaster).where(SecurityMaster.ticker == ticker.upper())
+        ).first()
+        eps_candidates = [
+            item
+            for item in parsed.get("eps_candidates", [])
+            if isinstance(item, dict) and isinstance(item.get("value"), (int, float))
+        ]
+        if not eps_candidates and isinstance(parsed.get("diluted_eps"), (int, float)):
+            eps_candidates = [
+                {
+                    "value": float(parsed["diluted_eps"]),
+                    "currency": parsed.get("eps_currency"),
+                    "security_basis": parsed.get("eps_security_basis") or "unknown",
+                    "source_label": parsed.get("diluted_eps_source_label"),
+                    "parse_method": "sec_foreign_release",
+                    "representation_type": "primary_eps",
+                }
+            ]
+        selected_eps = (
+            _select_foreign_eps_candidate(
+                eps_candidates,
+                is_depositary_security=_security_is_depositary(security),
+            )
+            if security is not None
+            else eps_candidates[0]
+            if eps_candidates
+            else None
         )
+        row.diluted_eps = float(selected_eps["value"]) if selected_eps else None
         row.eps = row.diluted_eps
         raw_fields: list[dict[str, object]] = []
         for field in (
@@ -643,7 +1057,11 @@ class SecFinancialSnapshotService:
                 {
                     "field": field,
                     "value": value,
-                    "currency": row.currency,
+                    "currency": (
+                        parsed.get("operating_income_currency")
+                        if field == "operating_income"
+                        else row.currency
+                    ),
                     "source_label": parsed.get(f"{field}_source_label"),
                     "attribution": (
                         "common_shareholders"
@@ -655,18 +1073,62 @@ class SecFinancialSnapshotService:
                         else None
                     ),
                     "source": "sec_foreign_filing",
-                    "parse_method": "sec_foreign_release",
+                    "parse_method": (
+                        parsed.get("operating_income_parse_method")
+                        if field == "operating_income"
+                        else "sec_foreign_release"
+                    )
+                    or "sec_foreign_release",
+                    "current_column_header": (
+                        parsed.get("operating_income_current_column")
+                        if field == "operating_income"
+                        else None
+                    ),
+                    "raw_unit": (
+                        parsed.get("operating_income_unit_label")
+                        if field == "operating_income"
+                        else None
+                    ),
+                    "unit_scale": (
+                        parsed.get("operating_income_unit_scale")
+                        if field == "operating_income"
+                        else None
+                    ),
+                    "raw_value": (
+                        parsed.get("operating_income_raw_value")
+                        if field == "operating_income"
+                        else None
+                    ),
                 }
             )
-        if row.diluted_eps is not None:
+        if selected_eps is not None:
             raw_fields.append(
                 {
                     "field": "diluted_eps",
                     "value": row.diluted_eps,
-                    "currency": parsed.get("eps_currency"),
-                    "security_basis": parsed.get("eps_security_basis") or "unknown",
+                    "currency": selected_eps.get("currency"),
+                    "security_basis": selected_eps.get("security_basis") or "unknown",
+                    "source_label": selected_eps.get("source_label"),
+                    "representation_type": selected_eps.get("representation_type"),
+                    "selected_for_valuation": True,
                     "source": "sec_foreign_filing",
-                    "parse_method": "sec_foreign_release",
+                    "parse_method": selected_eps.get("parse_method") or "sec_foreign_release",
+                }
+            )
+        for candidate in eps_candidates:
+            if candidate is selected_eps:
+                continue
+            raw_fields.append(
+                {
+                    "field": "diluted_eps_alternate",
+                    "value": candidate.get("value"),
+                    "currency": candidate.get("currency"),
+                    "security_basis": candidate.get("security_basis") or "unknown",
+                    "source_label": candidate.get("source_label"),
+                    "representation_type": candidate.get("representation_type"),
+                    "selected_for_valuation": False,
+                    "source": "sec_foreign_filing",
+                    "parse_method": candidate.get("parse_method") or "sec_foreign_release",
                 }
             )
         row.raw_financial_fields = json.dumps(raw_fields)
@@ -797,135 +1259,7 @@ class SecFinancialSnapshotService:
             )
         if not isinstance(payload, dict) or not isinstance(payload.get("facts"), dict):
             return preliminary_count
-        facts = {field: _facts(payload, field) for field in _CONCEPTS}
-        built: list[FinancialSnapshot] = []
-        for period in _period_entries(payload):
-            fy = int(period["fy"])
-            fp = str(period["fp"])
-            filed = _parse_date(period.get("filed"))
-            end = _parse_date(period.get("end"))
-            if filed is None or end is None:
-                continue
-            period_type = {"Q1": "Q1", "Q2": "H1", "Q3": "Q3", "FY": "FY"}[fp]
-            row = FinancialSnapshot(
-                ticker=ticker.upper(),
-                period=f"{fy}-{fp}",
-                period_type=period_type,
-                fiscal_year=fy,
-                period_scope="annual" if fp == "FY" else "single-quarter",
-                is_cumulative=fp == "FY",
-                financial_period_end=end,
-                financials_as_of=end,
-                filing_date=filed,
-                reported_date=filed,
-                source="SEC Company Facts",
-                provider="sec_companyfacts",
-                quality_warnings=(
-                    "foreign issuer filing coverage is partial; ADR ratio and currency mapping required"
-                    if str(period.get("form", "")) in {"20-F", "6-K"}
-                    else None
-                ),
-            )
-            selected_facts: dict[str, dict[str, object] | None] = {}
-            for field in ("revenue", "common_net_income", "diluted_eps"):
-                selected_facts[field] = _select_fact(facts[field], fy, fp, filed, end)
-                selected = selected_facts[field]
-                setattr(row, field, float(selected["val"]) if selected else None)
-            row.owners_parent_net_income = row.common_net_income
-            row.net_income = row.common_net_income
-            row.eps = row.diluted_eps
-            selected_facts["common_equity"] = _select_instant_fact(
-                facts["common_equity"], filed, end
-            )
-            row.common_equity = (
-                float(selected_facts["common_equity"]["val"])
-                if selected_facts["common_equity"]
-                else None
-            )
-            row.owners_parent_equity = row.common_equity
-            selected_facts["common_shares_outstanding"] = _select_instant_fact(
-                facts["common_shares_outstanding"], filed, end
-            )
-            row.common_shares_outstanding = (
-                float(selected_facts["common_shares_outstanding"]["val"])
-                if selected_facts["common_shares_outstanding"]
-                else None
-            )
-            selected_facts["diluted_shares"] = _select_fact(
-                facts["diluted_shares"], fy, fp, filed, end
-            )
-            row.diluted_shares = (
-                float(selected_facts["diluted_shares"]["val"])
-                if selected_facts["diluted_shares"]
-                else None
-            )
-            if row.common_shares_outstanding is None:
-                row.common_shares_outstanding = row.diluted_shares
-            financial_fact = next(
-                (
-                    selected_facts.get(field)
-                    for field in ("revenue", "common_net_income", "common_equity")
-                    if selected_facts.get(field)
-                ),
-                None,
-            )
-            row.currency = _unit_currency(financial_fact.get("_unit")) if financial_fact else None
-            row.raw_financial_fields = json.dumps(
-                [
-                    {
-                        "field": field,
-                        "unit": selected.get("_unit"),
-                        "currency": _unit_currency(selected.get("_unit")),
-                        "security_basis": "unknown",
-                        "source": "sec_companyfacts",
-                        "concept": selected.get("_concept"),
-                        "taxonomy": selected.get("_taxonomy"),
-                    }
-                    for field, selected in selected_facts.items()
-                    if selected is not None
-                ]
-            )
-            if fp == "FY":
-                row.cumulative_revenue = row.revenue
-                row.cumulative_net_income = row.common_net_income
-                row.cumulative_diluted_eps = row.diluted_eps
-                row.common_dividends = _select_value(facts["common_dividends"], fy, fp, filed, end)
-                row.dividends = row.common_dividends
-                row.buybacks = _select_value(facts["buybacks"], fy, fp, filed, end)
-                row.equity_issuance = _select_value(facts["equity_issuance"], fy, fp, filed, end)
-                row.other_comprehensive_income = _select_value(
-                    facts["other_comprehensive_income"], fy, fp, filed, end
-                )
-            built.append(row)
-
-        by_year: dict[int, list[FinancialSnapshot]] = {}
-        for row in built:
-            by_year.setdefault(row.fiscal_year or 0, []).append(row)
-        for year_rows in by_year.values():
-            annual = next((row for row in year_rows if row.period_type == "FY"), None)
-            quarters = [row for row in year_rows if row.period_type != "FY"]
-            if annual and len(quarters) == 3:
-                for field, cumulative_field in (
-                    ("revenue", "cumulative_revenue"),
-                    ("common_net_income", "cumulative_net_income"),
-                    ("diluted_eps", "cumulative_diluted_eps"),
-                ):
-                    annual_value = getattr(annual, cumulative_field)
-                    quarter_values = [getattr(row, field) for row in quarters]
-                    if annual_value is not None and all(
-                        value is not None for value in quarter_values
-                    ):
-                        setattr(
-                            annual,
-                            field,
-                            float(annual_value) - sum(float(value) for value in quarter_values),
-                        )
-                annual.owners_parent_net_income = annual.common_net_income
-                annual.net_income = annual.common_net_income
-                annual.eps = annual.diluted_eps
-                annual.period_scope = "single-quarter"
-                annual.is_cumulative = False
-                annual.normalization_method = "FY minus Q1-Q3 standalone"
+        built = _companyfacts_snapshots(payload, ticker)
 
         updated = 0
         for row in built:

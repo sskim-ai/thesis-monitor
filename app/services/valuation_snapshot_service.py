@@ -245,13 +245,27 @@ class EarningsTtmResult:
         return any(row.snapshot_type == "preliminary_earnings" for row in self.quarters)
 
 
+def _field_metadata_record(
+    row: FinancialSnapshot,
+    *field_names: str,
+) -> dict[str, object] | None:
+    matches = [
+        item
+        for item in _json_dict_list(row.raw_financial_fields)
+        if str(item.get("field") or "") in field_names
+    ]
+    return next(
+        (item for item in matches if item.get("selected_for_valuation") is True),
+        matches[0] if matches else None,
+    )
+
+
 def _field_metadata(
     row: FinancialSnapshot,
     *field_names: str,
 ) -> tuple[str | None, str]:
-    for item in _json_dict_list(row.raw_financial_fields):
-        if str(item.get("field") or "") not in field_names:
-            continue
+    item = _field_metadata_record(row, *field_names)
+    if item is not None:
         currency = str(item.get("currency") or "").upper() or None
         security_basis = str(item.get("security_basis") or "unknown")
         return currency, security_basis
@@ -884,11 +898,37 @@ class ValuationSnapshotService:
                 "eps_security_basis": result.eps_security_basis[index]
                 if index < len(result.eps_security_basis)
                 else "unknown",
+                "reported_diluted_eps": row.diluted_eps,
+                "reported_eps_currency": (
+                    (_field_metadata_record(row, "diluted_eps", "eps") or {}).get("currency")
+                ),
+                "reported_eps_security_basis": (
+                    (_field_metadata_record(row, "diluted_eps", "eps") or {}).get("security_basis")
+                ),
                 "revenue": row.revenue,
                 "operating_income": row.operating_income,
                 "net_income": row.net_income,
                 "common_net_income": row.common_net_income,
                 "owners_parent_net_income": row.owners_parent_net_income,
+                "net_income_concept": (
+                    (_field_metadata_record(row, "net_income") or {}).get("concept")
+                ),
+                "owners_parent_income_concept": (
+                    (_field_metadata_record(row, "owners_parent_net_income") or {}).get("concept")
+                ),
+                "common_income_concept": (
+                    (_field_metadata_record(row, "common_net_income") or {}).get("concept")
+                ),
+                "operating_income_source": row.operating_income_basis,
+                "eps_representation": (
+                    (_field_metadata_record(row, "diluted_eps", "eps") or {}).get(
+                        "representation_type"
+                    )
+                ),
+                "eps_alternate_count": sum(
+                    item.get("field") == "diluted_eps_alternate"
+                    for item in _json_dict_list(row.raw_financial_fields)
+                ),
                 "context_usable": any(
                     value is not None
                     for value in (row.revenue, row.operating_income, row.net_income)
@@ -901,7 +941,9 @@ class ValuationSnapshotService:
             }
             for index, row in enumerate(quarters)
         ]
-        if latest.revenue not in {None, 0} and latest.operating_income is not None:
+        if latest.operating_margin is not None:
+            snapshot.latest_operating_margin = float(latest.operating_margin)
+        elif latest.revenue not in {None, 0} and latest.operating_income is not None:
             snapshot.latest_operating_margin = round(
                 float(latest.operating_income) / float(latest.revenue) * 100, 4
             )
