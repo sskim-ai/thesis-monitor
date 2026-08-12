@@ -33,6 +33,7 @@ from app.schemas.thesis import (
     ValuationSnapshot,
 )
 from app.services.daily_monitor_service import run_daily_monitor
+from app.services.event_identity import event_fingerprint
 from app.services.market_session import market_scope_for_security
 from app.services.monitoring_service import register_monitoring_item
 from app.services.notification_service import (
@@ -1415,7 +1416,7 @@ async def test_same_day_new_thesis_version_is_isolated_then_advances_to_delta() 
         assert delta_payload["assessment_mode"] == "daily_delta"
         assert (
             delta_payload[STOCK_NOTIFICATION_METADATA_KEY]["requeue_reason"]
-            == "material_delta_after_baseline_delivery"
+            == "material_delta_after_previous_delivery"
         )
 
         delivery.status = "sent"
@@ -1455,6 +1456,250 @@ async def test_same_day_new_thesis_version_is_isolated_then_advances_to_delta() 
 
     next_assessment = next(item for item in next_day.assessments if item.ticker == ticker)
     assert next_assessment.evidence == []
+
+
+@pytest.mark.anyio
+async def test_daily_monitor_dispatches_deferred_delta_after_pending_baseline(
+    monkeypatch,
+) -> None:
+    class RecordingNotifier:
+        def __init__(self) -> None:
+            self.payloads: list[dict[str, object]] = []
+
+        async def send(self, payload: dict[str, object]) -> str:
+            self.payloads.append(payload)
+            return "sent"
+
+    notifier = RecordingNotifier()
+
+    async def dispatch_with_recording_notifier(
+        session: Session,
+        delivery_ids: set[int] | None = None,
+    ) -> None:
+        await dispatch_pending_notifications(
+            session,
+            notifier=notifier,
+            delivery_ids=delivery_ids,
+        )
+
+    monkeypatch.setattr(
+        "app.services.daily_monitor_service.dispatch_pending_notifications",
+        dispatch_with_recording_notifier,
+    )
+    init_db()
+    run_date = date(2046, 2, 4)
+    ticker = "DEFERRED1"
+    with Session(engine) as session:
+        register_monitoring_item(
+            session,
+            MonitoringItemCreate(
+                ticker=ticker,
+                company_name="Deferred Delivery Company",
+                core_thesis="Version one thesis",
+            ),
+        )
+        await run_daily_monitor(
+            session,
+            run_date=run_date,
+            collection_service=EmptyCollectionService(),
+            price_client=FakePriceClient(),
+            valuation_service=EmptyValuationService(),
+            queue_notifications=True,
+            dispatch_notifications=False,
+        )
+        delivery = session.exec(
+            select(NotificationDelivery).where(
+                NotificationDelivery.ticker == ticker,
+                NotificationDelivery.assessment_date == run_date,
+            )
+        ).one()
+        delivery.status = "sent"
+        delivery.attempt_count = 1
+        delivery.sent_at = datetime(2046, 2, 4, 0, 2, tzinfo=timezone.utc)
+        v1 = session.exec(
+            select(InvestmentThesis).where(
+                InvestmentThesis.ticker == ticker,
+                InvestmentThesis.status == "active",
+            )
+        ).one()
+        v1.status = "superseded"
+        session.add(v1)
+        session.add(
+            InvestmentThesis(
+                ticker=ticker,
+                version=2,
+                core_thesis="Version two thesis",
+                status="active",
+            )
+        )
+        session.commit()
+
+        await run_daily_monitor(
+            session,
+            run_date=run_date,
+            force=True,
+            collection_service=EmptyCollectionService(),
+            price_client=FakePriceClient(),
+            valuation_service=EmptyValuationService(),
+            queue_notifications=True,
+            dispatch_notifications=False,
+        )
+        session.refresh(delivery)
+        baseline_payload = json.loads(delivery.payload)
+        assert delivery.status == "pending"
+        assert baseline_payload["assessment_mode"] == "initial_baseline"
+
+        material_event = Event(
+            ticker=ticker,
+            company_name="Deferred Delivery Company",
+            date=run_date,
+            source="Company filing",
+            provider="sec_edgar",
+            title="Material customer loss confirmed",
+            url="https://example.com/deferred-material-loss",
+            event_type="customer_loss",
+            confirmed_facts=json.dumps(["Material customer loss confirmed"]),
+            relevance_score=95,
+        )
+        session.add(material_event)
+        session.commit()
+
+        await run_daily_monitor(
+            session,
+            run_date=run_date,
+            force=True,
+            collection_service=EmptyCollectionService(),
+            price_client=FakePriceClient(),
+            valuation_service=EmptyValuationService(),
+            queue_notifications=True,
+            dispatch_notifications=True,
+        )
+        session.refresh(delivery)
+        assessment = session.exec(
+            select(ThesisAssessment).where(
+                ThesisAssessment.ticker == ticker,
+                ThesisAssessment.assessment_date == run_date,
+            )
+        ).one()
+        stock_payloads = [
+            payload for payload in notifier.payloads if payload.get("ticker") == ticker
+        ]
+
+        assert [payload["assessment_mode"] for payload in stock_payloads] == [
+            "initial_baseline",
+            "daily_delta",
+        ]
+        assert "투자 논리: 초기 설정" in str(stock_payloads[0]["text"])
+        assert "투자 논리: 초기 설정" not in str(stock_payloads[1]["text"])
+        assert delivery.status == "sent"
+        assert event_fingerprint(material_event) in json.loads(
+            assessment.used_event_fingerprints
+        )
+
+        await run_daily_monitor(
+            session,
+            run_date=run_date,
+            force=True,
+            collection_service=EmptyCollectionService(),
+            price_client=FakePriceClient(),
+            valuation_service=EmptyValuationService(),
+            queue_notifications=True,
+            dispatch_notifications=True,
+        )
+        assert len(
+            [payload for payload in notifier.payloads if payload.get("ticker") == ticker]
+        ) == 2
+
+
+@pytest.mark.anyio
+async def test_deferred_delta_survives_dispatch_disabled_without_reevaluation() -> None:
+    class RecordingNotifier:
+        def __init__(self) -> None:
+            self.modes: list[str] = []
+
+        async def send(self, payload: dict[str, object]) -> str:
+            if payload.get("ticker") == "DEFERRED2":
+                self.modes.append(str(payload["assessment_mode"]))
+            return "sent"
+
+    init_db()
+    run_date = date(2046, 2, 5)
+    ticker = "DEFERRED2"
+    with Session(engine) as session:
+        session.add(
+            WatchlistItem(
+                ticker=ticker,
+                company_name="Deferred Persistence Company",
+            )
+        )
+        session.add(
+            InvestmentThesis(
+                ticker=ticker,
+                version=2,
+                core_thesis="Version two thesis",
+                status="active",
+            )
+        )
+        session.commit()
+        await run_daily_monitor(
+            session,
+            run_date=run_date,
+            collection_service=EmptyCollectionService(),
+            price_client=FakePriceClient(),
+            valuation_service=EmptyValuationService(),
+            queue_notifications=True,
+            dispatch_notifications=False,
+        )
+        delivery = session.exec(
+            select(NotificationDelivery).where(
+                NotificationDelivery.ticker == ticker,
+                NotificationDelivery.assessment_date == run_date,
+            )
+        ).one()
+        material_event = Event(
+            ticker=ticker,
+            company_name="Deferred Persistence Company",
+            date=run_date,
+            source="Company filing",
+            provider="sec_edgar",
+            title="Material customer loss confirmed",
+            url="https://example.com/deferred-material-loss-2",
+            event_type="customer_loss",
+            confirmed_facts=json.dumps(["Material customer loss confirmed"]),
+            relevance_score=95,
+        )
+        session.add(material_event)
+        session.commit()
+
+        await run_daily_monitor(
+            session,
+            run_date=run_date,
+            force=True,
+            collection_service=EmptyCollectionService(),
+            price_client=FakePriceClient(),
+            valuation_service=EmptyValuationService(),
+            queue_notifications=True,
+            dispatch_notifications=False,
+        )
+        session.refresh(delivery)
+        queued = json.loads(delivery.payload)
+        deferred = queued[STOCK_NOTIFICATION_METADATA_KEY]["deferred_notifications"]
+        assert queued["assessment_mode"] == "initial_baseline"
+        assert len(deferred) == 1
+        assert deferred[0]["assessment_mode"] == "daily_delta"
+        assert deferred[0]["relevant_event_fingerprints"] == [
+            event_fingerprint(material_event)
+        ]
+
+        notifier = RecordingNotifier()
+        await dispatch_pending_notifications(
+            session,
+            notifier=notifier,
+            delivery_ids={delivery.id},
+        )
+        session.refresh(delivery)
+        assert notifier.modes == ["initial_baseline", "daily_delta"]
+        assert delivery.status == "sent"
 
 
 @pytest.mark.anyio

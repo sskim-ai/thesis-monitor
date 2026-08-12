@@ -169,6 +169,16 @@ def _prepare_delivery_for_retry(
     delivery.sent_at = None
 
 
+def _preserve_queued_delivery_payload(
+    delivery: NotificationDelivery,
+    payload: dict[str, object],
+) -> None:
+    delivery.payload = json.dumps(payload, ensure_ascii=False)
+    if delivery.status != "pending":
+        delivery.status = "pending"
+    delivery.sent_at = None
+
+
 def _assessment_mode(assessment: ThesisAssessment) -> str:
     snapshot = _json_value(getattr(assessment, "thesis_snapshot", "{}"), {})
     if not isinstance(snapshot, dict):
@@ -228,7 +238,14 @@ def _stock_notification_metadata(
     previous_thesis_version: int | None = None,
     previous_delivery_status: str | None = None,
     delivery_protection: str | None = None,
+    active_logical_sha256: str | None = None,
+    deferred_notifications: list[dict[str, object]] | None = None,
+    promotion_reason: str | None = None,
+    supersede_reason: str | None = None,
+    superseded_notification_hashes: list[str] | None = None,
+    relevant_event_fingerprints: list[str] | None = None,
 ) -> dict[str, object]:
+    deferred = deferred_notifications or []
     metadata: dict[str, object] = {
         "delivery_thesis_version": delivery_thesis_version,
         "delivery_assessment_mode": delivery_assessment_mode,
@@ -244,9 +261,24 @@ def _stock_notification_metadata(
             if previous_delivery_status
             else "new->pending"
         ),
+        "active_logical_sha256": active_logical_sha256,
+        "deferred_count": len(deferred),
+        "deferred_logical_sha256s": [
+            item["logical_sha256"]
+            for item in deferred
+            if isinstance(item.get("logical_sha256"), str)
+        ],
+        "deferred_notifications": deferred,
+        "relevant_event_fingerprints": relevant_event_fingerprints or [],
     }
     if delivery_protection:
         metadata["delivery_protection"] = delivery_protection
+    if promotion_reason:
+        metadata["promotion_reason"] = promotion_reason
+    if supersede_reason:
+        metadata["supersede_reason"] = supersede_reason
+    if superseded_notification_hashes:
+        metadata["superseded_notification_hashes"] = superseded_notification_hashes
     return metadata
 
 
@@ -274,6 +306,148 @@ def _material_daily_delta(assessment: ThesisAssessment) -> bool:
     }:
         return True
     return bool(_json_list_value(getattr(assessment, "new_warnings", "[]")))
+
+
+def _logical_notification_payload(payload: dict[str, object]) -> dict[str, object]:
+    return {
+        key: value
+        for key, value in payload.items()
+        if key not in {TELEGRAM_DELIVERY_METADATA_KEY, STOCK_NOTIFICATION_METADATA_KEY}
+    }
+
+
+def _notification_logical_sha256(payload: dict[str, object]) -> str:
+    return _telegram_source_sha256(payload)
+
+
+def _deferred_stock_notifications(
+    payload: dict[str, object],
+) -> list[dict[str, object]]:
+    metadata = payload.get(STOCK_NOTIFICATION_METADATA_KEY)
+    if not isinstance(metadata, dict):
+        return []
+    raw_items = metadata.get("deferred_notifications")
+    if not isinstance(raw_items, list):
+        return []
+    deferred: list[dict[str, object]] = []
+    for item in raw_items:
+        if not isinstance(item, dict):
+            continue
+        logical_payload = item.get("logical_payload")
+        logical_sha256 = item.get("logical_sha256")
+        if isinstance(logical_payload, dict) and isinstance(logical_sha256, str):
+            deferred.append(dict(item))
+    return deferred
+
+
+def _assessment_event_fingerprints(assessment: ThesisAssessment) -> list[str]:
+    fingerprints: list[str] = []
+    for item in _json_list_value(getattr(assessment, "evidence", "[]")):
+        if not isinstance(item, dict):
+            continue
+        fingerprint = item.get("fingerprint")
+        if isinstance(fingerprint, str) and fingerprint:
+            fingerprints.append(fingerprint)
+    return list(dict.fromkeys(fingerprints))
+
+
+def _deferred_stock_notification(
+    payload: dict[str, object],
+    assessment: ThesisAssessment,
+) -> dict[str, object]:
+    logical_payload = _logical_notification_payload(payload)
+    return {
+        "logical_payload": logical_payload,
+        "logical_sha256": _notification_logical_sha256(logical_payload),
+        "thesis_version": assessment.thesis_version,
+        "assessment_mode": _assessment_mode(assessment),
+        "queued_reason": "material_delta_while_delivery_pending",
+        "queued_at": datetime.now(timezone.utc).isoformat(),
+        "relevant_event_fingerprints": _assessment_event_fingerprints(assessment),
+    }
+
+
+def _append_deferred_notification(
+    deferred: list[dict[str, object]],
+    item: dict[str, object],
+    *,
+    active_logical_sha256: str,
+) -> list[dict[str, object]]:
+    logical_sha256 = item["logical_sha256"]
+    if logical_sha256 == active_logical_sha256:
+        return deferred
+    if any(existing.get("logical_sha256") == logical_sha256 for existing in deferred):
+        return deferred
+    return [*deferred, item]
+
+
+def _previous_thesis_version(metadata: object) -> int | None:
+    if not isinstance(metadata, dict):
+        return None
+    candidate = metadata.get("previous_thesis_version")
+    if isinstance(candidate, int) and not isinstance(candidate, bool):
+        return candidate
+    return None
+
+
+def _metadata_text_list(metadata: object, key: str) -> list[str]:
+    if not isinstance(metadata, dict):
+        return []
+    value = metadata.get(key)
+    if not isinstance(value, list):
+        return []
+    return [item for item in value if isinstance(item, str) and item]
+
+
+def _promote_deferred_stock_notification(
+    delivery: NotificationDelivery,
+) -> bool:
+    payload = _delivery_payload(delivery.payload)
+    deferred = _deferred_stock_notifications(payload)
+    if not deferred:
+        return False
+    item = deferred[0]
+    logical_payload = item.get("logical_payload")
+    if not isinstance(logical_payload, dict):
+        return False
+    remaining = deferred[1:]
+    thesis_version = _notification_thesis_version(logical_payload)
+    if thesis_version is None:
+        candidate = item.get("thesis_version")
+        if isinstance(candidate, int) and not isinstance(candidate, bool):
+            thesis_version = candidate
+    if thesis_version is None:
+        return False
+    assessment_mode = _notification_assessment_mode(logical_payload)
+    existing_metadata = payload.get(STOCK_NOTIFICATION_METADATA_KEY)
+    logical_sha256 = _notification_logical_sha256(logical_payload)
+    logical_payload[STOCK_NOTIFICATION_METADATA_KEY] = _stock_notification_metadata(
+        delivery_thesis_version=thesis_version,
+        delivery_assessment_mode=assessment_mode,
+        current_thesis_version=thesis_version,
+        current_assessment_mode=assessment_mode,
+        requeue_reason="deferred_material_delta_promoted",
+        previous_thesis_version=_notification_thesis_version(payload),
+        previous_delivery_status="sent",
+        active_logical_sha256=logical_sha256,
+        deferred_notifications=remaining,
+        promotion_reason="previous_delivery_sent",
+        relevant_event_fingerprints=_metadata_text_list(
+            item,
+            "relevant_event_fingerprints",
+        ),
+    )
+    if isinstance(existing_metadata, dict):
+        logical_payload[STOCK_NOTIFICATION_METADATA_KEY]["promoted_from_sha256"] = (
+            existing_metadata.get("active_logical_sha256")
+            or _notification_logical_sha256(payload)
+        )
+    _prepare_delivery_for_retry(
+        delivery,
+        json.dumps(logical_payload, ensure_ascii=False),
+        reset_attempts=True,
+    )
+    return True
 
 
 def _delivery_payload(payload: str) -> dict[str, object]:
@@ -1253,6 +1427,8 @@ def queue_daily_stock_notification(
         "assessment_mode": assessment_mode,
         "analysis_context": analysis_context,
     }
+    current_logical_sha256 = _notification_logical_sha256(payload_data)
+    current_event_fingerprints = _assessment_event_fingerprints(assessment)
     channel = _notification_channel()
     delivery = session.exec(
         select(NotificationDelivery).where(
@@ -1266,6 +1442,8 @@ def queue_daily_stock_notification(
             delivery_thesis_version=assessment.thesis_version,
             delivery_assessment_mode=assessment_mode,
             requeue_reason="new_delivery",
+            active_logical_sha256=current_logical_sha256,
+            relevant_event_fingerprints=current_event_fingerprints,
         )
         delivery = NotificationDelivery(
             ticker=assessment.ticker,
@@ -1278,54 +1456,76 @@ def queue_daily_stock_notification(
         return delivery
 
     existing_payload = _delivery_payload(delivery.payload)
+    existing_metadata = existing_payload.get(STOCK_NOTIFICATION_METADATA_KEY)
     previous_thesis_version = _notification_thesis_version(existing_payload)
     stored_delivery_mode = _notification_assessment_mode(existing_payload)
+    active_logical_sha256 = _notification_logical_sha256(existing_payload)
+    deferred = _deferred_stock_notifications(existing_payload)
     new_version_baseline = (
         assessment_mode == "initial_baseline"
         and previous_thesis_version is not None
         and previous_thesis_version != assessment.thesis_version
     )
     if new_version_baseline:
+        superseded_hashes = [
+            active_logical_sha256,
+            *[
+                str(item["logical_sha256"])
+                for item in deferred
+                if isinstance(item.get("logical_sha256"), str)
+            ],
+        ]
         payload_data[STOCK_NOTIFICATION_METADATA_KEY] = _stock_notification_metadata(
             delivery_thesis_version=assessment.thesis_version,
             delivery_assessment_mode=assessment_mode,
             requeue_reason="new_thesis_version_initial_baseline",
             previous_thesis_version=previous_thesis_version,
             previous_delivery_status=delivery.status,
+            active_logical_sha256=current_logical_sha256,
+            supersede_reason="superseded_by_new_thesis_version",
+            superseded_notification_hashes=superseded_hashes,
+            relevant_event_fingerprints=current_event_fingerprints,
         )
         _prepare_delivery_for_retry(
             delivery,
             json.dumps(payload_data, ensure_ascii=False),
             reset_attempts=True,
         )
-    elif (
-        previous_thesis_version == assessment.thesis_version
-        and stored_delivery_mode == "initial_baseline"
-        and delivery.status != "sent"
-        and assessment_mode == "daily_delta"
-    ):
-        existing_metadata = existing_payload.get(STOCK_NOTIFICATION_METADATA_KEY)
-        prior_version = None
-        if isinstance(existing_metadata, dict):
-            candidate = existing_metadata.get("previous_thesis_version")
-            if isinstance(candidate, int) and not isinstance(candidate, bool):
-                prior_version = candidate
+    elif previous_thesis_version == assessment.thesis_version and delivery.status != "sent":
+        if _material_daily_delta(assessment):
+            deferred = _append_deferred_notification(
+                deferred,
+                _deferred_stock_notification(payload_data, assessment),
+                active_logical_sha256=active_logical_sha256,
+            )
+        protected_baseline = stored_delivery_mode == "initial_baseline"
         existing_payload[STOCK_NOTIFICATION_METADATA_KEY] = (
             _stock_notification_metadata(
                 delivery_thesis_version=assessment.thesis_version,
-                delivery_assessment_mode="initial_baseline",
+                delivery_assessment_mode=stored_delivery_mode,
                 current_thesis_version=assessment.thesis_version,
                 current_assessment_mode=assessment_mode,
-                requeue_reason="undelivered_baseline_protected",
-                previous_thesis_version=prior_version,
+                requeue_reason=(
+                    "material_delta_deferred"
+                    if _material_daily_delta(assessment)
+                    else "undelivered_delivery_preserved"
+                ),
+                previous_thesis_version=_previous_thesis_version(existing_metadata),
                 previous_delivery_status=delivery.status,
-                delivery_protection="undelivered_baseline",
+                delivery_protection=(
+                    "undelivered_baseline"
+                    if protected_baseline
+                    else "undelivered_material_delta"
+                ),
+                active_logical_sha256=active_logical_sha256,
+                deferred_notifications=deferred,
+                relevant_event_fingerprints=_metadata_text_list(
+                    existing_metadata,
+                    "relevant_event_fingerprints",
+                ),
             )
         )
-        _prepare_delivery_for_retry(
-            delivery,
-            json.dumps(existing_payload, ensure_ascii=False),
-        )
+        _preserve_queued_delivery_payload(delivery, existing_payload)
     elif delivery.status != "sent":
         payload_data[STOCK_NOTIFICATION_METADATA_KEY] = _stock_notification_metadata(
             delivery_thesis_version=assessment.thesis_version,
@@ -1333,6 +1533,8 @@ def queue_daily_stock_notification(
             requeue_reason="pending_payload_refresh",
             previous_thesis_version=previous_thesis_version,
             previous_delivery_status=delivery.status,
+            active_logical_sha256=current_logical_sha256,
+            relevant_event_fingerprints=current_event_fingerprints,
         )
         _prepare_delivery_for_retry(
             delivery,
@@ -1340,15 +1542,18 @@ def queue_daily_stock_notification(
         )
     elif (
         previous_thesis_version == assessment.thesis_version
-        and stored_delivery_mode == "initial_baseline"
+        and delivery.status == "sent"
         and _material_daily_delta(assessment)
+        and current_logical_sha256 != active_logical_sha256
     ):
         payload_data[STOCK_NOTIFICATION_METADATA_KEY] = _stock_notification_metadata(
             delivery_thesis_version=assessment.thesis_version,
             delivery_assessment_mode=assessment_mode,
-            requeue_reason="material_delta_after_baseline_delivery",
+            requeue_reason="material_delta_after_previous_delivery",
             previous_thesis_version=previous_thesis_version,
             previous_delivery_status=delivery.status,
+            active_logical_sha256=current_logical_sha256,
+            relevant_event_fingerprints=current_event_fingerprints,
         )
         _prepare_delivery_for_retry(
             delivery,
@@ -1362,6 +1567,8 @@ def queue_daily_stock_notification(
             requeue_reason="sent_before_production_cutoff",
             previous_thesis_version=previous_thesis_version,
             previous_delivery_status=delivery.status,
+            active_logical_sha256=current_logical_sha256,
+            relevant_event_fingerprints=current_event_fingerprints,
         )
         _prepare_delivery_for_retry(
             delivery,
@@ -2003,35 +2210,49 @@ async def dispatch_pending_notifications(
         )
     ).all()
     for delivery in deliveries:
-        delivery.attempt_count += 1
-        try:
-            payload = _delivery_payload(delivery.payload)
-            if isinstance(notifier, TelegramNotifier) and not notifier.settings.notification_dry_run:
-                payload, chunks, next_chunk_index = await _telegram_delivery_plan(
-                    session,
-                    delivery,
-                    notifier,
-                )
-                for index in range(next_chunk_index, len(chunks)):
-                    await notifier.send_chunk(
-                        _render_telegram_chunk(chunks[index], index, len(chunks))
+        initial_payload = _delivery_payload(delivery.payload)
+        dispatch_budget = 1 + len(_deferred_stock_notifications(initial_payload))
+        for _ in range(dispatch_budget):
+            delivery.attempt_count += 1
+            try:
+                payload = _delivery_payload(delivery.payload)
+                if (
+                    isinstance(notifier, TelegramNotifier)
+                    and not notifier.settings.notification_dry_run
+                ):
+                    payload, chunks, next_chunk_index = await _telegram_delivery_plan(
+                        session,
+                        delivery,
+                        notifier,
                     )
-                    metadata = payload[TELEGRAM_DELIVERY_METADATA_KEY]
-                    if not isinstance(metadata, dict):
-                        raise ValueError("Telegram delivery metadata is invalid")
-                    metadata["next_chunk_index"] = index + 1
-                    delivery.payload = json.dumps(payload, ensure_ascii=False)
-                    session.add(delivery)
-                    session.commit()
-                result = "sent"
-            else:
-                result = await notifier.send(payload)
-        except (httpx.HTTPError, RuntimeError, ValueError) as exc:
-            delivery.last_error = f"{type(exc).__name__}: {exc}"
-            delivery.status = "pending"
-        else:
+                    for index in range(next_chunk_index, len(chunks)):
+                        await notifier.send_chunk(
+                            _render_telegram_chunk(chunks[index], index, len(chunks))
+                        )
+                        metadata = payload[TELEGRAM_DELIVERY_METADATA_KEY]
+                        if not isinstance(metadata, dict):
+                            raise ValueError("Telegram delivery metadata is invalid")
+                        metadata["next_chunk_index"] = index + 1
+                        delivery.payload = json.dumps(payload, ensure_ascii=False)
+                        session.add(delivery)
+                        session.commit()
+                    result = "sent"
+                else:
+                    result = await notifier.send(payload)
+            except (httpx.HTTPError, RuntimeError, ValueError) as exc:
+                delivery.last_error = f"{type(exc).__name__}: {exc}"
+                delivery.status = "pending"
+                session.commit()
+                break
             delivery.status = result
             delivery.last_error = None
-            if result == "sent":
-                delivery.sent_at = datetime.now(timezone.utc)
-        session.commit()
+            if result != "sent":
+                session.commit()
+                break
+            delivery.sent_at = datetime.now(timezone.utc)
+            if _promote_deferred_stock_notification(delivery):
+                session.add(delivery)
+                session.commit()
+                continue
+            session.commit()
+            break

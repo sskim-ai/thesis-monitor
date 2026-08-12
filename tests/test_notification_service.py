@@ -1035,16 +1035,16 @@ def test_sent_v1_delivery_requeues_same_day_v2_baseline_once() -> None:
         assert "투자 논리: 초기 설정" in v2_payload["text"]
         assert "thesis_version=" not in v2_payload["text"]
         assert "assessment_mode=" not in v2_payload["text"]
-        assert metadata == {
-            "delivery_thesis_version": 2,
-            "delivery_assessment_mode": "initial_baseline",
-            "current_thesis_version": 2,
-            "current_assessment_mode": "initial_baseline",
-            "previous_thesis_version": 1,
-            "previous_delivery_status": "sent",
-            "requeue_reason": "new_thesis_version_initial_baseline",
-            "status_transition": "sent->pending",
-        }
+        assert metadata["delivery_thesis_version"] == 2
+        assert metadata["delivery_assessment_mode"] == "initial_baseline"
+        assert metadata["current_thesis_version"] == 2
+        assert metadata["current_assessment_mode"] == "initial_baseline"
+        assert metadata["previous_thesis_version"] == 1
+        assert metadata["previous_delivery_status"] == "sent"
+        assert metadata["requeue_reason"] == "new_thesis_version_initial_baseline"
+        assert metadata["status_transition"] == "sent->pending"
+        assert metadata["deferred_count"] == 0
+        assert metadata["supersede_reason"] == "superseded_by_new_thesis_version"
 
         notifier = RecordingNotifier()
         asyncio.run(
@@ -1196,7 +1196,8 @@ def test_pending_new_version_baseline_is_delivered_before_material_delta() -> No
         assert metadata["current_thesis_version"] == 2
         assert metadata["current_assessment_mode"] == "daily_delta"
         assert metadata["delivery_protection"] == "undelivered_baseline"
-        assert metadata["requeue_reason"] == "undelivered_baseline_protected"
+        assert metadata["requeue_reason"] == "material_delta_deferred"
+        assert metadata["deferred_count"] == 1
         for token in (
             "assessment_mode",
             "delivery_mode",
@@ -1216,29 +1217,16 @@ def test_pending_new_version_baseline_is_delivered_before_material_delta() -> No
         )
         session.refresh(protected)
         assert protected.status == "sent"
-        assert notifier.texts == [baseline_payload["text"]]
-
-        delta_delivery = queue_daily_stock_notification(session, material_delta)
-        session.commit()
-        delta_payload = json.loads(delta_delivery.payload)
-        assert delta_delivery.status == "pending"
-        assert delta_payload["assessment_mode"] == "daily_delta"
-        assert "투자 논리: 초기 설정" not in delta_payload["text"]
-        assert (
-            delta_payload[STOCK_NOTIFICATION_METADATA_KEY]["requeue_reason"]
-            == "material_delta_after_baseline_delivery"
-        )
-
-        asyncio.run(
-            dispatch_pending_notifications(
-                session,
-                notifier=notifier,
-                delivery_ids={delta_delivery.id},
-            )
-        )
-        session.refresh(delta_delivery)
-        assert delta_delivery.status == "sent"
         assert len(notifier.texts) == 2
+        assert notifier.texts[0] == baseline_payload["text"]
+        assert "투자 논리: 초기 설정" not in notifier.texts[1]
+        delta_delivery = protected
+        delta_payload = json.loads(delta_delivery.payload)
+        assert delta_payload["assessment_mode"] == "daily_delta"
+        assert (
+            delta_payload[STOCK_NOTIFICATION_METADATA_KEY]["promotion_reason"]
+            == "previous_delivery_sent"
+        )
 
         duplicate = queue_daily_stock_notification(session, material_delta)
         session.commit()
@@ -1293,6 +1281,7 @@ def test_failed_baseline_retry_keeps_baseline_payload_and_attempts() -> None:
 
         assert protected.status == "pending"
         assert protected.attempt_count == 3
+        assert protected.last_error == "TelegramDeliveryError: temporary failure"
         assert payload["text"] == baseline_payload["text"]
         assert payload["assessment_mode"] == "initial_baseline"
         assert payload[STOCK_NOTIFICATION_METADATA_KEY]["status_transition"] == (
@@ -1356,10 +1345,16 @@ async def test_partial_baseline_keeps_chunk_cursor_when_daily_delta_arrives() ->
             delivery_ids={protected.id},
         )
         session.refresh(protected)
-        assert retry.calls == ["[2/3]\nchunk-two", "[3/3]\nchunk-three"]
-        assert retry.prepare_calls == 0
+        assert retry.calls == [
+            "[2/3]\nchunk-two",
+            "[3/3]\nchunk-three",
+            "[1/3]\nchunk-one",
+            "[2/3]\nchunk-two",
+            "[3/3]\nchunk-three",
+        ]
+        assert retry.prepare_calls == 1
         assert protected.status == "sent"
-        assert protected.attempt_count == 2
+        assert protected.attempt_count == 1
 
 
 def test_new_version_supersedes_protected_baseline_and_resets_progress() -> None:
@@ -1423,7 +1418,9 @@ def test_new_version_supersedes_protected_baseline_and_resets_progress() -> None
             ),
         )
         session.commit()
-        assert TELEGRAM_DELIVERY_METADATA_KEY in json.loads(protected.payload)
+        protected_payload = json.loads(protected.payload)
+        assert TELEGRAM_DELIVERY_METADATA_KEY in protected_payload
+        assert protected_payload[STOCK_NOTIFICATION_METADATA_KEY]["deferred_count"] == 1
 
         superseded = queue_daily_stock_notification(
             session,
@@ -1440,3 +1437,329 @@ def test_new_version_supersedes_protected_baseline_and_resets_progress() -> None
             superseded_payload[STOCK_NOTIFICATION_METADATA_KEY]["requeue_reason"]
             == "new_thesis_version_initial_baseline"
         )
+        assert superseded_payload[STOCK_NOTIFICATION_METADATA_KEY]["deferred_count"] == 0
+        assert (
+            superseded_payload[STOCK_NOTIFICATION_METADATA_KEY]["supersede_reason"]
+            == "superseded_by_new_thesis_version"
+        )
+        assert len(
+            superseded_payload[STOCK_NOTIFICATION_METADATA_KEY][
+                "superseded_notification_hashes"
+            ]
+        ) == 2
+
+
+def _material_versioned_assessment(ticker: str, summary: str):
+    return _versioned_assessment(
+        ticker,
+        2,
+        "daily_delta",
+        status="strengthened",
+        business_thesis_change="strengthened",
+        daily_change_severity="moderate",
+        summary=summary,
+        evidence=json.dumps(
+            [
+                {
+                    "title": summary,
+                    "fingerprint": f"fingerprint-{summary}",
+                }
+            ]
+        ),
+    )
+
+
+@pytest.mark.anyio
+async def test_multiple_material_deltas_are_deferred_fifo_and_deduplicated() -> None:
+    class RecordingNotifier:
+        def __init__(self) -> None:
+            self.payloads: list[dict[str, object]] = []
+
+        async def send(self, payload: dict[str, object]) -> str:
+            self.payloads.append(payload)
+            return "sent"
+
+    isolated_engine = create_engine(
+        "sqlite://",
+        connect_args={"check_same_thread": False},
+        poolclass=StaticPool,
+    )
+    SQLModel.metadata.create_all(isolated_engine)
+    ticker = "DEFERRED-FIFO"
+    with Session(isolated_engine) as session:
+        session.add(WatchlistItem(ticker=ticker, company_name="Deferred FIFO"))
+        session.add(_notification_test_thesis(ticker, 2))
+        session.commit()
+        delivery = queue_daily_stock_notification(
+            session,
+            _versioned_assessment(ticker, 2, "initial_baseline"),
+        )
+        session.commit()
+
+        for label in ("delta D", "delta E", "delta E", "delta F"):
+            queue_daily_stock_notification(
+                session,
+                _material_versioned_assessment(ticker, label),
+            )
+            session.commit()
+
+        payload = json.loads(delivery.payload)
+        metadata = payload[STOCK_NOTIFICATION_METADATA_KEY]
+        assert metadata["deferred_count"] == 3
+        deferred = metadata["deferred_notifications"]
+        assert [
+            item["logical_payload"]["analysis_context"]["assessment"]["summary"]
+            for item in deferred
+        ] == [
+            "delta D",
+            "delta E",
+            "delta F",
+        ]
+
+        no_news = _versioned_assessment(ticker, 2, "daily_delta")
+        queue_daily_stock_notification(session, no_news)
+        session.commit()
+        assert (
+            json.loads(delivery.payload)[STOCK_NOTIFICATION_METADATA_KEY]["deferred_count"]
+            == 3
+        )
+
+        notifier = RecordingNotifier()
+        await dispatch_pending_notifications(
+            session,
+            notifier=notifier,
+            delivery_ids={delivery.id},
+        )
+        session.refresh(delivery)
+        assert delivery.status == "sent"
+        assert len(notifier.payloads) == 4
+        assert notifier.payloads[0]["assessment_mode"] == "initial_baseline"
+        assert [payload["assessment_mode"] for payload in notifier.payloads[1:]] == [
+            "daily_delta",
+            "daily_delta",
+            "daily_delta",
+        ]
+        assert [
+            payload["analysis_context"]["assessment"]["summary"]
+            for payload in notifier.payloads[1:]
+        ] == [
+            "delta D",
+            "delta E",
+            "delta F",
+        ]
+        for sent_payload in notifier.payloads:
+            text = str(sent_payload["text"])
+            for token in (
+                "deferred_",
+                "delivery_",
+                "logical_sha",
+                "queued_reason",
+                "assessment_mode=",
+                "thesis_version=",
+            ):
+                assert token not in text
+
+
+@pytest.mark.anyio
+async def test_baseline_failure_keeps_deferred_delta_until_retry() -> None:
+    class FailingNotifier:
+        def __init__(self) -> None:
+            self.calls = 0
+
+        async def send(self, payload: dict[str, object]) -> str:
+            self.calls += 1
+            raise TelegramDeliveryError("baseline unavailable")
+
+    class RecordingNotifier:
+        def __init__(self) -> None:
+            self.modes: list[str] = []
+
+        async def send(self, payload: dict[str, object]) -> str:
+            self.modes.append(str(payload["assessment_mode"]))
+            return "sent"
+
+    isolated_engine = create_engine(
+        "sqlite://",
+        connect_args={"check_same_thread": False},
+        poolclass=StaticPool,
+    )
+    SQLModel.metadata.create_all(isolated_engine)
+    ticker = "DEFERRED-FAIL"
+    with Session(isolated_engine) as session:
+        session.add(WatchlistItem(ticker=ticker, company_name="Deferred Fail"))
+        session.add(_notification_test_thesis(ticker, 2))
+        session.commit()
+        delivery = queue_daily_stock_notification(
+            session,
+            _versioned_assessment(ticker, 2, "initial_baseline"),
+        )
+        session.commit()
+        queue_daily_stock_notification(
+            session,
+            _material_versioned_assessment(ticker, "delta D"),
+        )
+        session.commit()
+
+        failing = FailingNotifier()
+        await dispatch_pending_notifications(
+            session,
+            notifier=failing,
+            delivery_ids={delivery.id},
+        )
+        session.refresh(delivery)
+        failed_payload = json.loads(delivery.payload)
+        assert failing.calls == 1
+        assert delivery.status == "pending"
+        assert failed_payload["assessment_mode"] == "initial_baseline"
+        assert failed_payload[STOCK_NOTIFICATION_METADATA_KEY]["deferred_count"] == 1
+
+        retry = RecordingNotifier()
+        await dispatch_pending_notifications(
+            session,
+            notifier=retry,
+            delivery_ids={delivery.id},
+        )
+        session.refresh(delivery)
+        assert retry.modes == ["initial_baseline", "daily_delta"]
+        assert delivery.status == "sent"
+
+
+@pytest.mark.anyio
+async def test_deferred_delta_partial_retry_completes_before_next_delta() -> None:
+    isolated_engine = create_engine(
+        "sqlite://",
+        connect_args={"check_same_thread": False},
+        poolclass=StaticPool,
+    )
+    SQLModel.metadata.create_all(isolated_engine)
+    ticker = "DEFERRED-PARTIAL"
+    with Session(isolated_engine) as session:
+        session.add(WatchlistItem(ticker=ticker, company_name="Deferred Partial"))
+        session.add(_notification_test_thesis(ticker, 2))
+        session.commit()
+        delivery = queue_daily_stock_notification(
+            session,
+            _versioned_assessment(ticker, 2, "initial_baseline"),
+        )
+        session.commit()
+        queue_daily_stock_notification(
+            session,
+            _material_versioned_assessment(ticker, "delta D"),
+        )
+        queue_daily_stock_notification(
+            session,
+            _material_versioned_assessment(ticker, "delta E"),
+        )
+        session.commit()
+
+        first = ScriptedTelegramNotifier(fail_on_calls={5})
+        await dispatch_pending_notifications(
+            session,
+            notifier=first,
+            delivery_ids={delivery.id},
+        )
+        session.refresh(delivery)
+        failed = json.loads(delivery.payload)
+        assert first.calls == [
+            "[1/3]\nchunk-one",
+            "[2/3]\nchunk-two",
+            "[3/3]\nchunk-three",
+            "[1/3]\nchunk-one",
+            "[2/3]\nchunk-two",
+        ]
+        assert failed["assessment_mode"] == "daily_delta"
+        assert failed[TELEGRAM_DELIVERY_METADATA_KEY]["next_chunk_index"] == 1
+        assert failed[STOCK_NOTIFICATION_METADATA_KEY]["deferred_count"] == 1
+
+        retry = ScriptedTelegramNotifier(max_chars=250)
+        await dispatch_pending_notifications(
+            session,
+            notifier=retry,
+            delivery_ids={delivery.id},
+        )
+        session.refresh(delivery)
+        assert retry.calls == [
+            "[2/3]\nchunk-two",
+            "[3/3]\nchunk-three",
+            "[1/3]\nchunk-one",
+            "[2/3]\nchunk-two",
+            "[3/3]\nchunk-three",
+        ]
+        assert delivery.status == "sent"
+
+
+@pytest.mark.anyio
+async def test_pending_material_delta_keeps_priority_when_new_delta_arrives() -> None:
+    class FailSecondMessageNotifier:
+        def __init__(self) -> None:
+            self.calls: list[str] = []
+
+        async def send(self, payload: dict[str, object]) -> str:
+            mode = str(payload["assessment_mode"])
+            self.calls.append(mode)
+            if len(self.calls) == 2:
+                raise TelegramDeliveryError("delta D unavailable")
+            return "sent"
+
+    class RecordingNotifier:
+        def __init__(self) -> None:
+            self.summaries: list[str] = []
+
+        async def send(self, payload: dict[str, object]) -> str:
+            self.summaries.append(
+                str(payload["analysis_context"]["assessment"]["summary"])
+            )
+            return "sent"
+
+    isolated_engine = create_engine(
+        "sqlite://",
+        connect_args={"check_same_thread": False},
+        poolclass=StaticPool,
+    )
+    SQLModel.metadata.create_all(isolated_engine)
+    ticker = "DEFERRED-ACTIVE"
+    with Session(isolated_engine) as session:
+        session.add(WatchlistItem(ticker=ticker, company_name="Deferred Active"))
+        session.add(_notification_test_thesis(ticker, 2))
+        session.commit()
+        delivery = queue_daily_stock_notification(
+            session,
+            _versioned_assessment(ticker, 2, "initial_baseline"),
+        )
+        queue_daily_stock_notification(
+            session,
+            _material_versioned_assessment(ticker, "delta D"),
+        )
+        session.commit()
+
+        first = FailSecondMessageNotifier()
+        await dispatch_pending_notifications(
+            session,
+            notifier=first,
+            delivery_ids={delivery.id},
+        )
+        session.refresh(delivery)
+        active_d = json.loads(delivery.payload)
+        assert first.calls == ["initial_baseline", "daily_delta"]
+        assert delivery.status == "pending"
+        assert active_d["analysis_context"]["assessment"]["summary"] == "delta D"
+        assert active_d[STOCK_NOTIFICATION_METADATA_KEY]["deferred_count"] == 0
+
+        queue_daily_stock_notification(
+            session,
+            _material_versioned_assessment(ticker, "delta E"),
+        )
+        session.commit()
+        active_with_e = json.loads(delivery.payload)
+        assert active_with_e["analysis_context"]["assessment"]["summary"] == "delta D"
+        assert active_with_e[STOCK_NOTIFICATION_METADATA_KEY]["deferred_count"] == 1
+
+        retry = RecordingNotifier()
+        await dispatch_pending_notifications(
+            session,
+            notifier=retry,
+            delivery_ids={delivery.id},
+        )
+        session.refresh(delivery)
+        assert retry.summaries == ["delta D", "delta E"]
+        assert delivery.status == "sent"
