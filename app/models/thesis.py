@@ -94,7 +94,7 @@ class NotificationDelivery(SQLModel, table=True):
     id: int | None = Field(default=None, primary_key=True)
     ticker: str = Field(index=True)
     assessment_date: date = Field(index=True)
-    channel: str = Field(default="kakao_self")
+    channel: str = Field(default="telegram")
     status: str = Field(default="pending", index=True)
     payload: str = Field(sa_column=Column(Text))
     attempt_count: int = 0

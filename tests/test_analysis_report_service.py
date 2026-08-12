@@ -5,24 +5,8 @@ import pytest
 
 from app.services.analysis_report_service import (
     InvestmentNarrativeGenerator,
-    split_kakao_text,
     split_telegram_text,
 )
-
-
-def test_split_kakao_text_preserves_sections_within_limit() -> None:
-    report = (
-        "🌍 시장환경 점검\n⚠️ 혼합 국면\n\n"
-        "🎯 결론\n• 시장: " + "변화 확인 " * 35 + "\n\n"
-        "📌 오늘 확인\n• 주요 일정을 확인합니다."
-    )
-
-    chunks = split_kakao_text(report)
-
-    assert len(chunks) >= 2
-    assert all(len(chunk) <= 200 for chunk in chunks)
-    assert "🌍 시장환경 점검" in chunks[0]
-    assert "📌 오늘 확인" in chunks[-1]
 
 
 def test_split_telegram_text_preserves_long_sections() -> None:

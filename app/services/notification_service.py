@@ -1,11 +1,8 @@
 import asyncio
 import json
 import math
-import os
 import re
 from datetime import date, datetime, timezone
-from pathlib import Path
-from tempfile import NamedTemporaryFile
 
 import httpx
 from sqlmodel import Session, select
@@ -16,7 +13,6 @@ from app.models.thesis import InvestmentThesis, NotificationDelivery, ThesisAsse
 from app.models.watchlist import WatchlistItem
 from app.services.analysis_report_service import (
     InvestmentNarrativeGenerator,
-    split_kakao_text,
     split_telegram_text,
 )
 from app.services.daily_digest import build_daily_digest, interpret_macro_briefing
@@ -94,7 +90,7 @@ REGIME_AXIS_KEYS = {
     "earnings_momentum": "이익",
 }
 
-SUPPORTED_NOTIFICATION_CHANNELS = {"kakao_self", "telegram"}
+SUPPORTED_NOTIFICATION_CHANNELS = {"telegram"}
 
 
 def _json_value(value: str, fallback: object) -> object:
@@ -140,10 +136,13 @@ def _should_requeue_sent_delivery(
 def _prepare_delivery_for_retry(
     delivery: NotificationDelivery,
     payload: str,
+    *,
+    reset_attempts: bool = False,
 ) -> None:
     delivery.payload = payload
     delivery.status = "pending"
-    delivery.attempt_count = 0
+    if reset_attempts:
+        delivery.attempt_count = 0
     delivery.last_error = None
     delivery.sent_at = None
 
@@ -940,8 +939,10 @@ def queue_daily_stock_notification(
             payload=payload,
         )
         session.add(delivery)
-    elif delivery.status != "sent" or _should_requeue_sent_delivery(delivery, requeue_sent_before):
+    elif delivery.status != "sent":
         _prepare_delivery_for_retry(delivery, payload)
+    elif _should_requeue_sent_delivery(delivery, requeue_sent_before):
+        _prepare_delivery_for_retry(delivery, payload, reset_attempts=True)
     return delivery
 
 
@@ -1018,8 +1019,10 @@ def queue_daily_digest_notification(
             payload=payload,
         )
         session.add(delivery)
-    elif delivery.status != "sent" or _should_requeue_sent_delivery(delivery, requeue_sent_before):
+    elif delivery.status != "sent":
         _prepare_delivery_for_retry(delivery, payload)
+    elif _should_requeue_sent_delivery(delivery, requeue_sent_before):
+        _prepare_delivery_for_retry(delivery, payload, reset_attempts=True)
     session.commit()
     session.refresh(delivery)
     return delivery
@@ -1324,142 +1327,6 @@ def _macro_report(briefing: MacroBriefing) -> tuple[str, dict[str, object]]:
     return fallback, context
 
 
-class KakaoSelfNotifier:
-    def __init__(
-        self,
-        transport: httpx.AsyncBaseTransport | None = None,
-        narrative_generator: InvestmentNarrativeGenerator | None = None,
-    ) -> None:
-        self.settings = get_settings()
-        self.transport = transport
-        self.narrative_generator = narrative_generator
-
-    def _token_path(self) -> Path:
-        path = Path(self.settings.data_dir) / "kakao_tokens.json"
-        path.parent.mkdir(parents=True, exist_ok=True)
-        return path
-
-    def _load_refresh_token(self) -> str | None:
-        path = self._token_path()
-        if path.exists():
-            try:
-                payload = json.loads(path.read_text(encoding="utf-8"))
-                token = payload.get("refresh_token")
-                if isinstance(token, str) and token:
-                    return token
-            except (OSError, json.JSONDecodeError):
-                pass
-        return self.settings.kakao_refresh_token
-
-    def _store_refresh_token(self, refresh_token: str) -> None:
-        path = self._token_path()
-        with NamedTemporaryFile("w", encoding="utf-8", dir=path.parent, delete=False) as handle:
-            json.dump({"refresh_token": refresh_token}, handle)
-            handle.write("\n")
-            temporary_path = Path(handle.name)
-        os.chmod(temporary_path, 0o600)
-        os.replace(temporary_path, path)
-
-    async def _access_token(self, client: httpx.AsyncClient) -> str:
-        refresh_token = self._load_refresh_token()
-        if not self.settings.kakao_rest_api_key or not refresh_token:
-            raise RuntimeError("Kakao credentials are not configured")
-        form = {
-            "grant_type": "refresh_token",
-            "client_id": self.settings.kakao_rest_api_key,
-            "refresh_token": refresh_token,
-        }
-        if self.settings.kakao_client_secret:
-            form["client_secret"] = self.settings.kakao_client_secret
-        response = await client.post("https://kauth.kakao.com/oauth/token", data=form)
-        response.raise_for_status()
-        payload = response.json()
-        renewed_refresh_token = payload.get("refresh_token")
-        if isinstance(renewed_refresh_token, str) and renewed_refresh_token:
-            self._store_refresh_token(renewed_refresh_token)
-        access_token = payload.get("access_token")
-        if not isinstance(access_token, str) or not access_token:
-            raise RuntimeError("Kakao token response did not contain an access token")
-        return access_token
-
-    async def send(self, payload: dict[str, object]) -> str:
-        if self.settings.notification_dry_run:
-            return "dry_run"
-        async with httpx.AsyncClient(timeout=20, transport=self.transport) as client:
-            access_token = await self._access_token(client)
-            text = str(payload["text"])
-            if payload.get("use_llm") is True:
-                context = payload.get("analysis_context")
-                if isinstance(context, dict):
-                    generator = self.narrative_generator or InvestmentNarrativeGenerator()
-                    text = await generator.generate(context, text)
-            headers = {"Authorization": f"Bearer {access_token}"}
-            if payload.get("presentation") == "long_text":
-                for chunk in split_kakao_text(text):
-                    template = {
-                        "object_type": "text",
-                        "text": chunk,
-                        "link": {
-                            "web_url": self.settings.kakao_web_url,
-                            "mobile_web_url": self.settings.kakao_web_url,
-                        },
-                        "button_title": "상태 확인",
-                    }
-                    response = await client.post(
-                        "https://kapi.kakao.com/v2/api/talk/memo/default/send",
-                        headers=headers,
-                        data={"template_object": json.dumps(template, ensure_ascii=False)},
-                    )
-                    response.raise_for_status()
-            elif self.settings.kakao_template_id:
-                raw_messages = payload.get("messages")
-                messages = (
-                    [item for item in raw_messages if isinstance(item, dict)]
-                    if isinstance(raw_messages, list)
-                    else []
-                )
-                if not messages:
-                    lines = text.splitlines()
-                    messages = [
-                        {
-                            "title": lines[0] if lines else "투자 분석",
-                            "body": "\n".join(lines[1:]) or "유의미한 변화가 없습니다.",
-                        }
-                    ]
-                for message in messages:
-                    response = await client.post(
-                        "https://kapi.kakao.com/v2/api/talk/memo/send",
-                        headers=headers,
-                        data={
-                            "template_id": self.settings.kakao_template_id,
-                            "template_args": json.dumps(
-                                {
-                                    "TITLE": str(message.get("title", "투자 분석")),
-                                    "BODY": str(message.get("body", "")),
-                                },
-                                ensure_ascii=False,
-                            ),
-                        },
-                    )
-                    response.raise_for_status()
-            else:
-                template = {
-                    "object_type": "text",
-                    "text": text,
-                    "link": {
-                        "web_url": self.settings.kakao_web_url,
-                        "mobile_web_url": self.settings.kakao_web_url,
-                    },
-                }
-                response = await client.post(
-                    "https://kapi.kakao.com/v2/api/talk/memo/default/send",
-                    headers=headers,
-                    data={"template_object": json.dumps(template, ensure_ascii=False)},
-                )
-                response.raise_for_status()
-        return "sent"
-
-
 class TelegramDeliveryError(RuntimeError):
     pass
 
@@ -1546,17 +1413,15 @@ class TelegramNotifier:
 
 def _notifier_for_channel(
     channel: str,
-) -> KakaoSelfNotifier | TelegramNotifier:
+) -> TelegramNotifier:
     if channel == "telegram":
         return TelegramNotifier()
-    if channel == "kakao_self":
-        return KakaoSelfNotifier()
     raise RuntimeError(f"Unsupported notification channel: {channel}")
 
 
 async def dispatch_pending_notifications(
     session: Session,
-    notifier: KakaoSelfNotifier | TelegramNotifier | None = None,
+    notifier: TelegramNotifier | None = None,
     delivery_ids: set[int] | None = None,
 ) -> None:
     channel = _notification_channel()

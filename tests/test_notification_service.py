@@ -1,18 +1,22 @@
 import json
 from datetime import date, datetime, timezone
 from types import SimpleNamespace
-from urllib.parse import parse_qs
 
 import httpx
 import pytest
+from sqlalchemy.pool import StaticPool
+from sqlmodel import SQLModel, Session, create_engine
 
+from app.config import get_settings
 from app.models.thesis import NotificationDelivery
 from app.services.notification_service import (
-    KakaoSelfNotifier,
     TelegramNotifier,
     _macro_report,
     _message_for_assessment,
+    _notification_channel,
+    _notifier_for_channel,
     _should_requeue_sent_delivery,
+    dispatch_pending_notifications,
 )
 
 
@@ -393,95 +397,91 @@ def test_macro_report_explains_axes_confidence_and_friendly_series_names() -> No
     assert "당일 방향 판단에는 사용하지 않습니다" in report
 
 
-@pytest.mark.anyio
-async def test_kakao_notifier_refreshes_token_and_sends(tmp_path) -> None:
-    requests: list[str] = []
+def test_notification_channel_defaults_to_telegram(monkeypatch) -> None:
+    monkeypatch.delenv("NOTIFICATION_CHANNEL", raising=False)
+    get_settings.cache_clear()
+    try:
+        assert _notification_channel() == "telegram"
+    finally:
+        get_settings.cache_clear()
 
-    def handler(request: httpx.Request) -> httpx.Response:
-        requests.append(str(request.url))
-        if request.url.host == "kauth.kakao.com":
-            return httpx.Response(
-                200,
-                json={"access_token": "access", "refresh_token": "renewed-refresh"},
-            )
-        assert request.headers["Authorization"] == "Bearer access"
-        assert request.url.path == "/v2/api/talk/memo/send"
-        form = parse_qs(request.content.decode())
-        assert form["template_id"] == ["12345"]
-        template_args = json.loads(form["template_args"][0])
-        assert template_args == {
-            "TITLE": "[000660] 투자 논리 강화",
-            "BODY": "새 근거가 확인됐습니다.",
-        }
-        return httpx.Response(200, json={"result_code": 0})
 
-    notifier = KakaoSelfNotifier(transport=httpx.MockTransport(handler))
-    notifier.settings = notifier.settings.model_copy(
-        update={
-            "data_dir": str(tmp_path),
-            "notification_dry_run": False,
-            "kakao_rest_api_key": "rest-key",
-            "kakao_client_secret": "client-secret",
-            "kakao_refresh_token": "refresh",
-            "kakao_template_id": "12345",
-        }
+def test_notification_channel_accepts_only_telegram(monkeypatch) -> None:
+    monkeypatch.setenv("NOTIFICATION_CHANNEL", "telegram")
+    get_settings.cache_clear()
+    assert _notification_channel() == "telegram"
+
+    monkeypatch.setenv("NOTIFICATION_CHANNEL", "kakao_self")
+    get_settings.cache_clear()
+    try:
+        with pytest.raises(RuntimeError, match="Unsupported notification channel"):
+            _notification_channel()
+    finally:
+        monkeypatch.setenv("NOTIFICATION_CHANNEL", "telegram")
+        get_settings.cache_clear()
+
+
+def test_notifier_factory_supports_telegram_only() -> None:
+    assert isinstance(_notifier_for_channel("telegram"), TelegramNotifier)
+    with pytest.raises(RuntimeError, match="Unsupported notification channel"):
+        _notifier_for_channel("kakao_self")
+
+
+def test_notification_delivery_defaults_to_telegram() -> None:
+    delivery = NotificationDelivery(
+        ticker="DEFAULT-CHANNEL",
+        assessment_date=date(2045, 1, 1),
+        payload="{}",
     )
 
-    result = await notifier.send({"text": "[000660] 투자 논리 강화\n새 근거가 확인됐습니다."})
-
-    assert result == "sent"
-    assert len(requests) == 2
-    token_payload = json.loads((tmp_path / "kakao_tokens.json").read_text(encoding="utf-8"))
-    assert token_payload["refresh_token"] == "renewed-refresh"
+    assert delivery.channel == "telegram"
 
 
 @pytest.mark.anyio
-async def test_kakao_notifier_sends_long_report_as_text_chunks(tmp_path) -> None:
-    sent_chunks: list[str] = []
+async def test_telegram_dispatch_ignores_legacy_channel_rows() -> None:
+    class RecordingNotifier:
+        def __init__(self) -> None:
+            self.payloads: list[dict[str, object]] = []
 
-    class StubNarrativeGenerator:
-        async def generate(self, context: dict[str, object], fallback: str) -> str:
-            assert context == {"analysis_type": "macro"}
-            assert fallback == "기본 분석"
-            return "🌍 시장환경 점검\n\n" + "• 분석 근거를 확인합니다. " * 30
+        async def send(self, payload: dict[str, object]) -> str:
+            self.payloads.append(payload)
+            return "sent"
 
-    def handler(request: httpx.Request) -> httpx.Response:
-        if request.url.host == "kauth.kakao.com":
-            return httpx.Response(200, json={"access_token": "access"})
-        assert request.url.path == "/v2/api/talk/memo/default/send"
-        form = parse_qs(request.content.decode())
-        template = json.loads(form["template_object"][0])
-        assert template["object_type"] == "text"
-        assert template["button_title"] == "상태 확인"
-        sent_chunks.append(template["text"])
-        return httpx.Response(200, json={"result_code": 0})
-
-    notifier = KakaoSelfNotifier(
-        transport=httpx.MockTransport(handler),
-        narrative_generator=StubNarrativeGenerator(),
+    isolated_engine = create_engine(
+        "sqlite://",
+        connect_args={"check_same_thread": False},
+        poolclass=StaticPool,
     )
-    notifier.settings = notifier.settings.model_copy(
-        update={
-            "data_dir": str(tmp_path),
-            "notification_dry_run": False,
-            "kakao_rest_api_key": "rest-key",
-            "kakao_refresh_token": "refresh",
-            "kakao_template_id": "12345",
-        }
-    )
+    SQLModel.metadata.create_all(isolated_engine)
+    with Session(isolated_engine) as session:
+        telegram = NotificationDelivery(
+            ticker="TELEGRAM-PENDING",
+            assessment_date=date(2045, 1, 2),
+            channel="telegram",
+            status="pending",
+            payload=json.dumps({"text": "Telegram"}),
+        )
+        legacy = NotificationDelivery(
+            ticker="LEGACY-PENDING",
+            assessment_date=date(2045, 1, 2),
+            channel="kakao_self",
+            status="pending",
+            payload=json.dumps({"text": "Legacy"}),
+        )
+        session.add(telegram)
+        session.add(legacy)
+        session.commit()
+        notifier = RecordingNotifier()
 
-    result = await notifier.send(
-        {
-            "text": "기본 분석",
-            "presentation": "long_text",
-            "use_llm": True,
-            "analysis_context": {"analysis_type": "macro"},
-        }
-    )
+        await dispatch_pending_notifications(session, notifier=notifier)
+        session.refresh(telegram)
+        session.refresh(legacy)
 
-    assert result == "sent"
-    assert len(sent_chunks) >= 2
-    assert all(len(chunk) <= 200 for chunk in sent_chunks)
+        assert telegram.status == "sent"
+        assert telegram.attempt_count == 1
+        assert legacy.status == "pending"
+        assert legacy.attempt_count == 0
+        assert notifier.payloads == [{"text": "Telegram"}]
 
 
 @pytest.mark.anyio

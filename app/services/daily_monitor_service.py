@@ -225,6 +225,15 @@ async def run_daily_monitor(
     existing_run = session.exec(
         select(MonitorRun).where(MonitorRun.run_date == run_date, MonitorRun.run_type == run_type)
     ).first()
+    if existing_run is not None and existing_run.status == "running" and not force:
+        return DailyMonitorResponse(
+            run_date=run_date,
+            status="analysis_in_progress",
+            ticker_count=existing_run.ticker_count,
+            success_count=existing_run.success_count,
+            failure_count=existing_run.failure_count,
+            assessments=[],
+        )
     if existing_run is not None and existing_run.status == "success" and not force:
         assessments = list(
             session.exec(

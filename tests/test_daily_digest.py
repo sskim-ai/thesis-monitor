@@ -3,7 +3,8 @@ from datetime import date, datetime, timezone
 
 import httpx
 import pytest
-from sqlmodel import Session, select
+from sqlalchemy.pool import StaticPool
+from sqlmodel import SQLModel, Session, create_engine, select
 
 from app.database import engine, init_db
 from app.macro.regime import assess_macro_regime
@@ -361,6 +362,70 @@ async def test_dispatcher_sends_only_selected_delivery_ids() -> None:
         assert us_delivery.status == "sent"
         assert kr_delivery.status == "pending"
         assert notifier.payloads == [{"text": "US"}]
+
+
+@pytest.mark.anyio
+@pytest.mark.parametrize(
+    ("digest_status", "stock_status", "expected_texts"),
+    [
+        ("sent", "sent", []),
+        ("pending", "sent", ["digest"]),
+        ("sent", "pending", ["stock"]),
+        ("pending", "pending", ["digest", "stock"]),
+    ],
+)
+async def test_delivery_retry_sends_only_pending_rows(
+    digest_status: str,
+    stock_status: str,
+    expected_texts: list[str],
+) -> None:
+    class RecordingNotifier:
+        def __init__(self) -> None:
+            self.texts: list[str] = []
+
+        async def send(self, payload: dict[str, object]) -> str:
+            self.texts.append(str(payload["text"]))
+            return "sent"
+
+    isolated_engine = create_engine(
+        "sqlite://",
+        connect_args={"check_same_thread": False},
+        poolclass=StaticPool,
+    )
+    SQLModel.metadata.create_all(isolated_engine)
+    with Session(isolated_engine) as session:
+        digest = NotificationDelivery(
+            ticker="__DAILY_DIGEST_KR__",
+            assessment_date=date(2044, 8, 15),
+            channel="telegram",
+            status=digest_status,
+            payload=json.dumps({"text": "digest"}),
+            attempt_count=2,
+        )
+        stock = NotificationDelivery(
+            ticker="005930",
+            assessment_date=date(2044, 8, 15),
+            channel="telegram",
+            status=stock_status,
+            payload=json.dumps({"text": "stock"}),
+            attempt_count=3,
+        )
+        session.add(digest)
+        session.add(stock)
+        session.commit()
+        notifier = RecordingNotifier()
+
+        await dispatch_pending_notifications(
+            session,
+            notifier=notifier,
+            delivery_ids={digest.id, stock.id},
+        )
+        session.refresh(digest)
+        session.refresh(stock)
+
+        assert notifier.texts == expected_texts
+        assert digest.attempt_count == 2 + (digest_status == "pending")
+        assert stock.attempt_count == 3 + (stock_status == "pending")
 
 
 def test_samsung_supply_renderer_is_compact_and_uses_actual_as_of_date() -> None:

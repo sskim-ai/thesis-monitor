@@ -2,20 +2,28 @@ import json
 import plistlib
 from datetime import date, datetime, timezone
 from pathlib import Path
+from types import SimpleNamespace
 
 import pytest
 from sqlalchemy.pool import StaticPool
 from sqlmodel import SQLModel, Session, create_engine, select
 
 from app.database import engine, init_db
-from app.config import get_settings
 from app.jobs.monitor_daily import (
+    _analysis_completed_after_cutoff,
+    _analysis_decision,
     _macro_result_for_scope,
     _requeue_cutoff,
-    _sent_after_cutoff,
+    _run_market_job,
 )
 from app.models.event import Event
-from app.models.thesis import InvestmentThesis, MonitorRun, NotificationDelivery
+from app.models.macro import MacroBriefing
+from app.models.thesis import (
+    InvestmentThesis,
+    MonitorRun,
+    NotificationDelivery,
+    ThesisAssessment,
+)
 from app.models.watchlist import WatchlistItem
 from app.schemas.thesis import (
     MonitoringItemCreate,
@@ -74,6 +82,21 @@ class FakePriceClient:
 class EmptyCollectionService:
     async def collect_events(self, session: Session, ticker: str, lookback_days: int) -> list[Event]:
         return []
+
+
+class FailCollectionService:
+    async def collect_events(self, *args, **kwargs):
+        raise AssertionError("delivery retry must not recollect events")
+
+
+class FailPriceClient:
+    async def fetch_price_context(self, *args, **kwargs):
+        raise AssertionError("delivery retry must not refresh OHLCV")
+
+
+class FailValuationService:
+    async def fetch(self, *args, **kwargs):
+        raise AssertionError("delivery retry must not recalculate valuation")
 
 
 class RulePriceClient:
@@ -138,43 +161,77 @@ def test_launch_agents_define_market_specific_schedules() -> None:
     assert "RunAtLoad" not in kr
 
 
-def test_market_cutoffs_keep_us_and_kr_dedupe_independent() -> None:
-    init_db()
+def test_analysis_completion_uses_scoped_run_after_cutoff() -> None:
+    isolated_engine = create_engine(
+        "sqlite://",
+        connect_args={"check_same_thread": False},
+        poolclass=StaticPool,
+    )
+    SQLModel.metadata.create_all(isolated_engine)
     run_date = date(2040, 8, 13)
-    channel = get_settings().notification_channel.strip().lower()
-    with Session(engine) as session:
-        us = NotificationDelivery(
-            ticker="__DAILY_DIGEST__",
-            assessment_date=run_date,
-            channel=channel,
-            status="sent",
-            payload="{}",
-            sent_at=datetime(2040, 8, 12, 22, 51, tzinfo=timezone.utc),
+    with Session(isolated_engine) as session:
+        session.add(
+            MonitorRun(
+                run_date=run_date,
+                run_type="daily_us",
+                status="success",
+                completed_at=datetime(2040, 8, 12, 22, 50, tzinfo=timezone.utc),
+            )
         )
-        kr = NotificationDelivery(
-            ticker="__DAILY_DIGEST_KR__",
-            assessment_date=run_date,
-            channel=channel,
-            status="sent",
-            payload="{}",
-            sent_at=datetime(2040, 8, 13, 6, 50, tzinfo=timezone.utc),
+        session.add(
+            MonitorRun(
+                run_date=run_date,
+                run_type="daily_kr",
+                status="success",
+                completed_at=datetime(2040, 8, 13, 6, 59, tzinfo=timezone.utc),
+            )
         )
-        session.add(us)
-        session.add(kr)
         session.commit()
 
-        assert _sent_after_cutoff(
-            session,
-            run_date,
-            _requeue_cutoff(run_date, "us"),
-            "__DAILY_DIGEST__",
+        assert _analysis_completed_after_cutoff(
+            session, run_date, _requeue_cutoff(run_date, "us"), "us"
         ) is True
-        assert _sent_after_cutoff(
-            session,
-            run_date,
-            _requeue_cutoff(run_date, "kr"),
-            "__DAILY_DIGEST_KR__",
+        assert _analysis_completed_after_cutoff(
+            session, run_date, _requeue_cutoff(run_date, "kr"), "kr"
         ) is False
+        assert _analysis_decision(
+            session, run_date, _requeue_cutoff(run_date, "us"), "us"
+        ).action == "reuse"
+        assert _analysis_decision(
+            session, run_date, _requeue_cutoff(run_date, "kr"), "kr"
+        ).action == "refresh_after_pre_cutoff_run"
+
+
+def test_analysis_decision_handles_missing_failed_and_running_runs() -> None:
+    isolated_engine = create_engine(
+        "sqlite://",
+        connect_args={"check_same_thread": False},
+        poolclass=StaticPool,
+    )
+    SQLModel.metadata.create_all(isolated_engine)
+    cutoff_date = date(2041, 8, 13)
+    with Session(isolated_engine) as session:
+        cutoff = _requeue_cutoff(cutoff_date, "us")
+        assert _analysis_decision(session, cutoff_date, cutoff, "us").action == "fresh"
+
+        run = MonitorRun(run_date=cutoff_date, run_type="daily_us", status="failed")
+        session.add(run)
+        session.commit()
+        assert _analysis_decision(
+            session, cutoff_date, cutoff, "us"
+        ).action == "retry_after_failure"
+
+        run.status = "running"
+        session.commit()
+        decision = _analysis_decision(session, cutoff_date, cutoff, "us")
+        assert decision.action == "refresh_after_pre_cutoff_run"
+        assert decision.refresh is True
+
+        run.started_at = datetime(2041, 8, 12, 22, 50, tzinfo=timezone.utc)
+        session.commit()
+        decision = _analysis_decision(session, cutoff_date, cutoff, "us")
+        assert decision.action == "in_progress"
+        assert decision.refresh is False
 
 
 @pytest.mark.anyio
@@ -183,15 +240,45 @@ async def test_kr_scope_reuses_macro_without_collecting(monkeypatch) -> None:
         raise AssertionError("KR close run must not recollect macro providers")
 
     monkeypatch.setattr("app.jobs.monitor_daily.run_macro_monitor", fail_if_called)
+    run_date = date(2040, 8, 14)
+    init_db()
     with Session(engine) as session:
+        session.add(
+            MacroBriefing(
+                briefing_date=run_date,
+                as_of=datetime(2040, 8, 14, tzinfo=timezone.utc),
+                headline="stored",
+                kakao_text="legacy",
+                dedupe_key="macro:2040-08-14:morning",
+            )
+        )
+        session.commit()
         result = await _macro_result_for_scope(
             session,
-            date(2040, 8, 14),
+            run_date,
             "kr",
             True,
         )
 
     assert result == {"run_date": "2040-08-14", "status": "reused"}
+
+
+@pytest.mark.anyio
+async def test_macro_reuse_reports_unavailable_without_same_date_data(monkeypatch) -> None:
+    async def fail_if_called(*args, **kwargs):
+        raise AssertionError("delivery retry must not recollect macro providers")
+
+    monkeypatch.setattr("app.jobs.monitor_daily.run_macro_monitor", fail_if_called)
+    init_db()
+    with Session(engine) as session:
+        result = await _macro_result_for_scope(
+            session,
+            date(2040, 8, 15),
+            "us",
+            False,
+        )
+
+    assert result == {"run_date": "2040-08-15", "status": "unavailable"}
 
 
 @pytest.mark.anyio
@@ -224,6 +311,235 @@ async def test_us_scope_collects_macro(monkeypatch) -> None:
             "dispatch_notifications": False,
         }
     ]
+
+
+@pytest.mark.anyio
+@pytest.mark.parametrize(
+    ("market_scope", "run_type", "completed_at", "ticker_count"),
+    [
+        ("us", "daily_us", datetime(2042, 8, 12, 22, 50, tzinfo=timezone.utc), 9),
+        ("kr", "daily_kr", datetime(2042, 8, 13, 7, 8, tzinfo=timezone.utc), 5),
+    ],
+)
+async def test_market_job_reuses_successful_analysis_for_delivery_retry(
+    monkeypatch,
+    market_scope: str,
+    run_type: str,
+    completed_at: datetime,
+    ticker_count: int,
+) -> None:
+    isolated_engine = create_engine(
+        "sqlite://",
+        connect_args={"check_same_thread": False},
+        poolclass=StaticPool,
+    )
+    SQLModel.metadata.create_all(isolated_engine)
+    run_date = date(2042, 8, 13)
+    calls: list[dict[str, object]] = []
+
+    async def fail_macro(*args, **kwargs):
+        raise AssertionError("delivery retry must not recollect macro providers")
+
+    async def record_daily(*args, **kwargs):
+        calls.append(kwargs)
+        return SimpleNamespace(
+            status="already_completed",
+            model_dump=lambda mode: {"status": "already_completed"},
+        )
+
+    monkeypatch.setattr("app.jobs.monitor_daily.run_macro_monitor", fail_macro)
+    monkeypatch.setattr("app.jobs.monitor_daily.run_daily_monitor", record_daily)
+    with Session(isolated_engine) as session:
+        run = MonitorRun(
+            run_date=run_date,
+            run_type=run_type,
+            status="success",
+            started_at=completed_at,
+            completed_at=completed_at,
+            ticker_count=ticker_count,
+            success_count=ticker_count,
+        )
+        session.add(run)
+        session.commit()
+        started_at = run.started_at
+        completed_at = run.completed_at
+
+        output = await _run_market_job(session, run_date, market_scope)
+        session.refresh(run)
+
+        assert output["analysis_action"] == "reuse"
+        assert output["delivery_action"] == "retry"
+        assert calls == [
+            {
+                "run_date": run_date,
+                "force": False,
+                "requeue_sent_before": None,
+                "market_scope": market_scope,
+            }
+        ]
+        assert run.started_at == started_at
+        assert run.completed_at == completed_at
+        assert run.success_count == ticker_count
+
+
+@pytest.mark.anyio
+async def test_market_job_does_not_overlap_running_analysis(monkeypatch) -> None:
+    isolated_engine = create_engine(
+        "sqlite://",
+        connect_args={"check_same_thread": False},
+        poolclass=StaticPool,
+    )
+    SQLModel.metadata.create_all(isolated_engine)
+    run_date = date(2042, 8, 14)
+
+    async def fail_if_called(*args, **kwargs):
+        raise AssertionError("running analysis must not be started again")
+
+    monkeypatch.setattr("app.jobs.monitor_daily.run_macro_monitor", fail_if_called)
+    monkeypatch.setattr("app.jobs.monitor_daily.run_daily_monitor", fail_if_called)
+    with Session(isolated_engine) as session:
+        session.add(
+            MonitorRun(
+                run_date=run_date,
+                run_type="daily_us",
+                status="running",
+                started_at=datetime(2042, 8, 13, 22, 50, tzinfo=timezone.utc),
+            )
+        )
+        session.commit()
+
+        output = await _run_market_job(session, run_date, "us")
+
+    assert output["analysis_action"] == "in_progress"
+    assert output["delivery_action"] == "deferred"
+    assert output["theses"] is None
+
+
+@pytest.mark.anyio
+@pytest.mark.parametrize(
+    ("market_scope", "ticker", "exchange", "completed_at"),
+    [
+        ("us", "USRETRY", "NASDAQ", datetime(2043, 8, 12, 22, 50, tzinfo=timezone.utc)),
+        ("kr", "204301", "KRX", datetime(2043, 8, 13, 7, 8, tzinfo=timezone.utc)),
+    ],
+)
+async def test_post_cutoff_retry_reuses_assessment_and_dispatches_only_pending_digest(
+    monkeypatch,
+    market_scope: str,
+    ticker: str,
+    exchange: str,
+    completed_at: datetime,
+) -> None:
+    isolated_engine = create_engine(
+        "sqlite://",
+        connect_args={"check_same_thread": False},
+        poolclass=StaticPool,
+    )
+    SQLModel.metadata.create_all(isolated_engine)
+    run_date = date(2043, 8, 13)
+    run_type = f"daily_{market_scope}"
+    digest_ticker = "__DAILY_DIGEST_KR__" if market_scope == "kr" else "__DAILY_DIGEST__"
+
+    with Session(isolated_engine) as session:
+        session.add(
+            WatchlistItem(
+                ticker=ticker,
+                company_name="Retry Fixture",
+                exchange=exchange,
+            )
+        )
+        session.add(
+            InvestmentThesis(ticker=ticker, version=1, core_thesis="Retry fixture thesis")
+        )
+        session.commit()
+        primary = await run_daily_monitor(
+            session,
+            run_date=run_date,
+            market_scope=market_scope,
+            collection_service=EmptyCollectionService(),
+            price_client=FakePriceClient(),
+            valuation_service=EmptyValuationService(),
+            queue_notifications=False,
+            dispatch_notifications=False,
+        )
+        assert primary.status == "success"
+
+        run = session.exec(
+            select(MonitorRun).where(
+                MonitorRun.run_date == run_date,
+                MonitorRun.run_type == run_type,
+            )
+        ).one()
+        assessment = session.exec(
+            select(ThesisAssessment).where(
+                ThesisAssessment.ticker == ticker,
+                ThesisAssessment.assessment_date == run_date,
+            )
+        ).one()
+        run.started_at = completed_at
+        run.completed_at = completed_at
+        digest = NotificationDelivery(
+            ticker=digest_ticker,
+            assessment_date=run_date,
+            channel="telegram",
+            status="pending",
+            payload="{}",
+            attempt_count=2,
+        )
+        stock = NotificationDelivery(
+            ticker=ticker,
+            assessment_date=run_date,
+            channel="telegram",
+            status="sent",
+            payload="{}",
+            attempt_count=1,
+            sent_at=completed_at,
+        )
+        session.add(digest)
+        session.add(stock)
+        session.commit()
+        session.refresh(assessment)
+        original_run_times = (run.started_at, run.completed_at)
+        original_assessment = assessment.model_dump()
+
+        def fail_provider_init(*args, **kwargs):
+            raise AssertionError("delivery retry must not initialize analysis providers")
+
+        def fail_evaluation(*args, **kwargs):
+            raise AssertionError("delivery retry must not evaluate the thesis")
+
+        async def fail_macro(*args, **kwargs):
+            raise AssertionError("delivery retry must not recollect macro providers")
+
+        monkeypatch.setattr(
+            "app.services.daily_monitor_service.CollectionService", fail_provider_init
+        )
+        monkeypatch.setattr(
+            "app.services.daily_monitor_service.OhlcvClient", fail_provider_init
+        )
+        monkeypatch.setattr(
+            "app.services.daily_monitor_service.ValuationSnapshotService",
+            fail_provider_init,
+        )
+        monkeypatch.setattr(
+            "app.services.daily_monitor_service.evaluate_thesis", fail_evaluation
+        )
+        monkeypatch.setattr("app.jobs.monitor_daily.run_macro_monitor", fail_macro)
+
+        output = await _run_market_job(session, run_date, market_scope)
+        session.refresh(run)
+        session.refresh(assessment)
+        session.refresh(digest)
+        session.refresh(stock)
+
+        assert output["analysis_action"] == "reuse"
+        assert output["delivery_action"] == "retry"
+        assert (run.started_at, run.completed_at) == original_run_times
+        assert assessment.model_dump() == original_assessment
+        assert digest.status == "dry_run"
+        assert digest.attempt_count == 3
+        assert stock.status == "sent"
+        assert stock.attempt_count == 1
 
 
 @pytest.mark.anyio
@@ -282,16 +598,43 @@ async def test_daily_monitor_keeps_us_and_kr_runs_independent() -> None:
             queue_notifications=False,
             dispatch_notifications=False,
         )
+        us_run = session.exec(
+            select(MonitorRun).where(
+                MonitorRun.run_date == run_date,
+                MonitorRun.run_type == "daily_us",
+            )
+        ).one()
+        original_started_at = us_run.started_at
+        original_completed_at = us_run.completed_at
+        original_price_contexts = {
+            item.ticker: item.price_context
+            for item in session.exec(
+                select(ThesisAssessment).where(
+                    ThesisAssessment.assessment_date == run_date,
+                    ThesisAssessment.ticker.in_(set(us_tickers)),
+                )
+            ).all()
+        }
         retry = await run_daily_monitor(
             session,
             run_date=run_date,
             market_scope="us",
-            collection_service=EmptyCollectionService(),
-            price_client=FakePriceClient(),
-            valuation_service=EmptyValuationService(),
+            collection_service=FailCollectionService(),
+            price_client=FailPriceClient(),
+            valuation_service=FailValuationService(),
             queue_notifications=False,
             dispatch_notifications=False,
         )
+        session.refresh(us_run)
+        retry_price_contexts = {
+            item.ticker: item.price_context
+            for item in session.exec(
+                select(ThesisAssessment).where(
+                    ThesisAssessment.assessment_date == run_date,
+                    ThesisAssessment.ticker.in_(set(us_tickers)),
+                )
+            ).all()
+        }
         runs = session.exec(
             select(MonitorRun).where(MonitorRun.run_date == run_date)
         ).all()
@@ -305,6 +648,9 @@ async def test_daily_monitor_keeps_us_and_kr_runs_independent() -> None:
     assert retry.status == "already_completed"
     assert {item.ticker for item in retry.assessments} == set(us_tickers)
     assert {run.run_type for run in runs} == {"daily_us", "daily_kr"}
+    assert us_run.started_at == original_started_at
+    assert us_run.completed_at == original_completed_at
+    assert retry_price_contexts == original_price_contexts
 
 
 @pytest.mark.anyio
@@ -380,16 +726,19 @@ async def test_daily_monitor_assesses_and_queues_dry_run_notification() -> None:
         assert json.loads(delivery.payload)["type"] == "daily_stock_analysis"
 
         delivery.status = "pending"
+        delivery.attempt_count = 4
         session.commit()
         retry_result = await run_daily_monitor(
             session,
             run_date=date(2030, 1, 2),
-            collection_service=FakeCollectionService(),
-            price_client=FakePriceClient(),
+            collection_service=FailCollectionService(),
+            price_client=FailPriceClient(),
+            valuation_service=FailValuationService(),
         )
         session.refresh(delivery)
         assert retry_result.status == "already_completed"
         assert delivery.status == "dry_run"
+        assert delivery.attempt_count == 5
 
 
 @pytest.mark.anyio

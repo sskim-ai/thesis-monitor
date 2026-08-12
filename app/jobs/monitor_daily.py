@@ -1,15 +1,16 @@
 import argparse
 import asyncio
 import json
+from dataclasses import dataclass
 from datetime import date, datetime, time, timezone
 from zoneinfo import ZoneInfo
 
 from sqlmodel import Session, select
 
-from app.config import get_settings
 from app.database import engine, init_db
 from app.macro.service import run_macro_monitor
-from app.models.thesis import NotificationDelivery
+from app.models.macro import MacroBriefing
+from app.models.thesis import MonitorRun
 from app.services.daily_monitor_service import run_daily_monitor
 from app.services.market_session import MarketScope
 
@@ -19,6 +20,13 @@ MORNING_REQUEUE_CUTOFF = time(7, 45)
 KR_CLOSE_REQUEUE_CUTOFF = time(16, 0)
 
 
+@dataclass(frozen=True)
+class AnalysisDecision:
+    action: str
+    refresh: bool
+    run_status: str
+
+
 def _requeue_cutoff(run_date: date, market_scope: str) -> datetime:
     cutoff = KR_CLOSE_REQUEUE_CUTOFF if market_scope == "kr" else MORNING_REQUEUE_CUTOFF
     return datetime.combine(run_date, cutoff, tzinfo=KST).astimezone(
@@ -26,43 +34,86 @@ def _requeue_cutoff(run_date: date, market_scope: str) -> datetime:
     )
 
 
-def _sent_after_cutoff(
+def _run_type(market_scope: MarketScope) -> str:
+    return "daily" if market_scope == "all" else f"daily_{market_scope}"
+
+
+def _as_utc(value: datetime) -> datetime:
+    return value.replace(tzinfo=timezone.utc) if value.tzinfo is None else value.astimezone(timezone.utc)
+
+
+def _analysis_completed_after_cutoff(
     session: Session,
     run_date: date,
     cutoff: datetime,
-    digest_ticker: str = "__DAILY_DIGEST__",
+    market_scope: MarketScope,
 ) -> bool:
-    delivery = session.exec(
-        select(NotificationDelivery).where(
-            NotificationDelivery.ticker == digest_ticker,
-            NotificationDelivery.assessment_date == run_date,
-            NotificationDelivery.channel
-            == get_settings().notification_channel.strip().lower(),
-            NotificationDelivery.status == "sent",
+    run = session.exec(
+        select(MonitorRun).where(
+            MonitorRun.run_date == run_date,
+            MonitorRun.run_type == _run_type(market_scope),
         )
     ).first()
-    if delivery is None or delivery.sent_at is None:
-        return False
-    sent_at = delivery.sent_at
-    if sent_at.tzinfo is None:
-        sent_at = sent_at.replace(tzinfo=timezone.utc)
-    return sent_at >= cutoff
+    return bool(
+        run is not None
+        and run.status == "success"
+        and run.completed_at is not None
+        and _as_utc(run.completed_at) >= _as_utc(cutoff)
+    )
+
+
+def _analysis_decision(
+    session: Session,
+    run_date: date,
+    cutoff: datetime,
+    market_scope: MarketScope,
+) -> AnalysisDecision:
+    run = session.exec(
+        select(MonitorRun).where(
+            MonitorRun.run_date == run_date,
+            MonitorRun.run_type == _run_type(market_scope),
+        )
+    ).first()
+    if run is None:
+        return AnalysisDecision("fresh", True, "not_started")
+    if run.status == "running":
+        if run.started_at is not None and _as_utc(run.started_at) < _as_utc(cutoff):
+            return AnalysisDecision("refresh_after_pre_cutoff_run", True, "running")
+        return AnalysisDecision("in_progress", False, "running")
+    if _analysis_completed_after_cutoff(session, run_date, cutoff, market_scope):
+        return AnalysisDecision("reuse", False, "success")
+    if run.status == "success":
+        return AnalysisDecision("refresh_after_pre_cutoff_run", True, "success")
+    return AnalysisDecision("retry_after_failure", True, run.status)
+
+
+def _stored_macro_result(session: Session, run_date: date) -> dict[str, object]:
+    briefing = session.exec(
+        select(MacroBriefing).where(
+            MacroBriefing.briefing_date == run_date,
+            MacroBriefing.briefing_type == "morning",
+        )
+    ).first()
+    return {
+        "run_date": run_date.isoformat(),
+        "status": "reused" if briefing is not None else "unavailable",
+    }
 
 
 async def _macro_result_for_scope(
     session: Session,
     run_date: date,
     market_scope: MarketScope,
-    force_refresh: bool,
+    analysis_refresh: bool,
 ) -> dict[str, object]:
-    if market_scope == "kr":
-        return {"run_date": run_date.isoformat(), "status": "reused"}
+    if market_scope == "kr" or not analysis_refresh:
+        return _stored_macro_result(session, run_date)
     try:
         return (
             await run_macro_monitor(
                 session,
                 run_date=run_date,
-                force=force_refresh,
+                force=True,
                 queue_notifications=False,
                 dispatch_notifications=False,
             )
@@ -75,39 +126,61 @@ async def _macro_result_for_scope(
         }
 
 
+async def _run_market_job(
+    session: Session,
+    run_date: date,
+    market_scope: MarketScope,
+) -> dict[str, object]:
+    cutoff = _requeue_cutoff(run_date, market_scope)
+    decision = _analysis_decision(session, run_date, cutoff, market_scope)
+    if decision.action == "in_progress":
+        return {
+            "market_scope": market_scope,
+            "production_cutoff": cutoff.isoformat(),
+            "analysis_action": decision.action,
+            "analysis_run_status": decision.run_status,
+            "delivery_action": "deferred",
+            "macro": _stored_macro_result(session, run_date),
+            "theses": None,
+        }
+
+    macro_result = await _macro_result_for_scope(
+        session,
+        run_date,
+        market_scope,
+        decision.refresh,
+    )
+    result = await run_daily_monitor(
+        session,
+        run_date=run_date,
+        force=decision.refresh,
+        requeue_sent_before=cutoff if decision.refresh else None,
+        market_scope=market_scope,
+    )
+    delivery_action = {
+        "reuse": "retry",
+        "retry_after_failure": "recovery",
+    }.get(decision.action, "primary")
+    return {
+        "market_scope": market_scope,
+        "production_cutoff": cutoff.isoformat(),
+        "analysis_action": decision.action,
+        "analysis_run_status": result.status,
+        "delivery_action": delivery_action,
+        "macro": macro_result,
+        "theses": result.model_dump(mode="json"),
+    }
+
+
 async def main() -> None:
     parser = argparse.ArgumentParser(description="Run market-scoped daily thesis monitoring.")
     parser.add_argument("--market", choices=("us", "kr", "all"), default="all")
     args = parser.parse_args()
     init_db()
     run_date = date.today()
-    cutoff = _requeue_cutoff(run_date, args.market)
-    digest_ticker = "__DAILY_DIGEST_KR__" if args.market == "kr" else "__DAILY_DIGEST__"
     with Session(engine) as session:
-        already_sent = _sent_after_cutoff(session, run_date, cutoff, digest_ticker)
-        force_refresh = not already_sent
-        macro_result = await _macro_result_for_scope(
-            session,
-            run_date,
-            args.market,
-            force_refresh,
-        )
-        result = await run_daily_monitor(
-            session,
-            run_date=run_date,
-            force=force_refresh,
-            requeue_sent_before=cutoff if force_refresh else None,
-            market_scope=args.market,
-        )
-    print(
-        json.dumps(
-            {
-                "macro": macro_result,
-                "theses": result.model_dump(mode="json"),
-            },
-            ensure_ascii=False,
-        )
-    )
+        output = await _run_market_job(session, run_date, args.market)
+    print(json.dumps(output, ensure_ascii=False))
 
 
 if __name__ == "__main__":

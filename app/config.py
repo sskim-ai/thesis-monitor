@@ -74,18 +74,17 @@ class Settings(BaseSettings):
     macro_alert_min_magnitude: int = 3
     notification_dry_run: bool = True
     notification_channel: str = "telegram"
-    kakao_rest_api_key: str | None = None
-    kakao_client_secret: str | None = None
-    kakao_refresh_token: str | None = None
-    kakao_template_id: str | None = None
-    kakao_web_url: str = "https://sskim-macmini.tailb44bb1.ts.net/thesis/health"
     telegram_bot_token: str | None = None
     telegram_chat_id: str | None = None
     telegram_message_max_chars: int = 3500
     telegram_retry_attempts: int = 3
     telegram_retry_base_seconds: float = 2.0
 
-    model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8")
+    model_config = SettingsConfigDict(
+        env_file=".env",
+        env_file_encoding="utf-8",
+        extra="ignore",
+    )
 
 
 @lru_cache

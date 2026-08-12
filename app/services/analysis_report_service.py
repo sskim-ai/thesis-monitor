@@ -7,7 +7,6 @@ import httpx
 from app.config import get_settings
 
 
-KAKAO_TEXT_MAX_CHARS = 190
 TELEGRAM_TEXT_MAX_CHARS = 3500
 
 logger = logging.getLogger(__name__)
@@ -188,24 +187,6 @@ def _report_blocks(text: str, max_chars: int) -> Iterable[str]:
                     current = line
         if current:
             yield current
-
-
-def split_kakao_text(text: str, max_chars: int = KAKAO_TEXT_MAX_CHARS) -> list[str]:
-    if max_chars < 20:
-        raise ValueError("max_chars must be at least 20")
-    chunks: list[str] = []
-    current = ""
-    for block in _report_blocks(text, max_chars):
-        candidate = f"{current}\n\n{block}" if current else block
-        if len(candidate) <= max_chars:
-            current = candidate
-            continue
-        if current:
-            chunks.append(current)
-        current = block
-    if current:
-        chunks.append(current)
-    return chunks or ["분석할 수 있는 데이터가 없습니다."]
 
 
 def split_telegram_text(

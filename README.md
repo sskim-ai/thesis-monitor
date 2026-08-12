@@ -63,9 +63,9 @@ ACTION_API_KEY=
 OHLCV_BASE_URL=http://127.0.0.1:8765
 OHLCV_API_KEY=
 NOTIFICATION_DRY_RUN=true
-KAKAO_REST_API_KEY=
-KAKAO_CLIENT_SECRET=
-KAKAO_REFRESH_TOKEN=
+NOTIFICATION_CHANNEL=telegram
+TELEGRAM_BOT_TOKEN=
+TELEGRAM_CHAT_ID=
 MACRO_MONITOR_ENABLED=true
 ```
 
@@ -73,9 +73,9 @@ Set `ENABLE_LIVE_PROVIDERS=false` to use only `MockProvider`. Set it to `true` t
 
 ## Telegram Notifications
 
-Morning briefings and stock assessments are sent as readable Korean analysis reports through
-Telegram. Keep `NOTIFICATION_DRY_RUN=true` until `TELEGRAM_BOT_TOKEN` and `TELEGRAM_CHAT_ID` have
-been tested. The report is generated from structured
+Telegram is the only supported notification channel. Morning briefings and stock assessments are
+sent as readable Korean analysis reports through Telegram. Keep `NOTIFICATION_DRY_RUN=true` until
+`TELEGRAM_BOT_TOKEN` and `TELEGRAM_CHAT_ID` have been tested. The report is generated from structured
 macro, company, event, expectation, and valuation data by deterministic rules and templates; it does
 not consume OpenAI or other LLM credits. Long reports are split at Telegram-safe boundaries without
 dropping analysis sections.
@@ -221,14 +221,15 @@ python -m app.jobs.monitor_daily --market kr
 python -m app.jobs.monitor_daily --market all
 ```
 
-The Mac mini U.S. LaunchAgent template is `ops/com.seungsoo.thesis-monitor.daily.plist`. It runs at
-07:50 KST and retries at 08:05 and 08:35. It collects macro data and evaluates only U.S. stocks. The
-Korean close template is `ops/com.seungsoo.thesis-monitor.kr-close.plist`; it runs at 16:05 and retries
-pending work at 16:20 and 16:50 without recollecting macro providers. The Korean run reuses same-date
-macro data and evaluates only Korean stocks after the regular close. Successful duplicate runs retry
-only deliveries queued by their own market run. Same-date test messages sent before the 07:45 U.S. or
-16:00 Korean cutoff do not suppress the scheduled production report, while later retry slots do not
-resend completed messages.
+The Mac mini U.S. LaunchAgent template is `ops/com.seungsoo.thesis-monitor.daily.plist`. Its 07:50
+KST primary slot collects macro data, evaluates U.S. stocks, and queues notifications. The 08:05 and
+08:35 slots retry pending Telegram deliveries when the production analysis already succeeded. The
+Korean close template is `ops/com.seungsoo.thesis-monitor.kr-close.plist`; its 16:05 primary slot
+reuses same-date macro data and evaluates Korean stocks after the regular close. The 16:20 and 16:50
+slots likewise retry pending Telegram deliveries after a successful analysis. A retry starts analysis
+recovery only when that market has no successful post-cutoff run; it never refreshes analysis merely
+because a delivery is pending. Same-date test runs before the 07:45 U.S. or 16:00 Korean cutoff do not
+suppress the scheduled production analysis, while later retry slots do not resend completed messages.
 
 Price context is requested from the separate local OHLCV Analyst service using targets of 500 daily,
 300 weekly, and 100 monthly bars. Shorter provider histories are accepted and their actual counts are
