@@ -971,7 +971,7 @@ def _notification_test_thesis(ticker: str, version: int) -> InvestmentThesis:
     )
 
 
-def _versioned_assessment(ticker: str, version: int, mode: str):
+def _versioned_assessment(ticker: str, version: int, mode: str, **overrides):
     return _compact_assessment(
         ticker=ticker,
         assessment_date=date(2047, 4, 1),
@@ -982,6 +982,7 @@ def _versioned_assessment(ticker: str, version: int, mode: str):
                 "assessment_mode": mode,
             }
         ),
+        **overrides,
     )
 
 
@@ -1035,8 +1036,10 @@ def test_sent_v1_delivery_requeues_same_day_v2_baseline_once() -> None:
         assert "thesis_version=" not in v2_payload["text"]
         assert "assessment_mode=" not in v2_payload["text"]
         assert metadata == {
-            "thesis_version": 2,
-            "assessment_mode": "initial_baseline",
+            "delivery_thesis_version": 2,
+            "delivery_assessment_mode": "initial_baseline",
+            "current_thesis_version": 2,
+            "current_assessment_mode": "initial_baseline",
             "previous_thesis_version": 1,
             "previous_delivery_status": "sent",
             "requeue_reason": "new_thesis_version_initial_baseline",
@@ -1130,5 +1133,310 @@ def test_new_version_replaces_stale_retry_payload_and_chunk_cursor(
         assert "v1 partial message" not in current.payload
         assert (
             current_payload[STOCK_NOTIFICATION_METADATA_KEY]["requeue_reason"]
+            == "new_thesis_version_initial_baseline"
+        )
+
+
+def test_pending_new_version_baseline_is_delivered_before_material_delta() -> None:
+    class RecordingNotifier:
+        def __init__(self) -> None:
+            self.texts: list[str] = []
+
+        async def send(self, payload: dict[str, object]) -> str:
+            self.texts.append(str(payload["text"]))
+            return "sent"
+
+    isolated_engine = create_engine(
+        "sqlite://",
+        connect_args={"check_same_thread": False},
+        poolclass=StaticPool,
+    )
+    SQLModel.metadata.create_all(isolated_engine)
+    ticker = "BASELINE-ORDER"
+    with Session(isolated_engine) as session:
+        session.add(WatchlistItem(ticker=ticker, company_name="Baseline Order"))
+        session.add(_notification_test_thesis(ticker, 1))
+        session.add(_notification_test_thesis(ticker, 2))
+        session.commit()
+
+        v1_delivery = queue_daily_stock_notification(
+            session,
+            _versioned_assessment(ticker, 1, "initial_baseline"),
+        )
+        session.commit()
+        v1_delivery.status = "sent"
+        v1_delivery.attempt_count = 1
+        v1_delivery.sent_at = datetime(2047, 4, 1, 0, 2, tzinfo=timezone.utc)
+        session.commit()
+
+        baseline = _versioned_assessment(ticker, 2, "initial_baseline")
+        delivery = queue_daily_stock_notification(session, baseline)
+        session.commit()
+        baseline_payload = json.loads(delivery.payload)
+
+        material_delta = _versioned_assessment(
+            ticker,
+            2,
+            "daily_delta",
+            status="strengthened",
+            business_thesis_change="strengthened",
+            daily_change_severity="moderate",
+            summary="신규 대형 수주가 투자 논리를 강화했습니다.",
+        )
+        protected = queue_daily_stock_notification(session, material_delta)
+        session.commit()
+        protected_payload = json.loads(protected.payload)
+        metadata = protected_payload[STOCK_NOTIFICATION_METADATA_KEY]
+
+        assert protected_payload["text"] == baseline_payload["text"]
+        assert protected_payload["assessment_mode"] == "initial_baseline"
+        assert "투자 논리: 초기 설정" in protected_payload["text"]
+        assert metadata["delivery_thesis_version"] == 2
+        assert metadata["delivery_assessment_mode"] == "initial_baseline"
+        assert metadata["current_thesis_version"] == 2
+        assert metadata["current_assessment_mode"] == "daily_delta"
+        assert metadata["delivery_protection"] == "undelivered_baseline"
+        assert metadata["requeue_reason"] == "undelivered_baseline_protected"
+        for token in (
+            "assessment_mode",
+            "delivery_mode",
+            "delivery_protection",
+            "thesis_version=",
+            "requeue_reason",
+        ):
+            assert token not in protected_payload["text"]
+
+        notifier = RecordingNotifier()
+        asyncio.run(
+            dispatch_pending_notifications(
+                session,
+                notifier=notifier,
+                delivery_ids={protected.id},
+            )
+        )
+        session.refresh(protected)
+        assert protected.status == "sent"
+        assert notifier.texts == [baseline_payload["text"]]
+
+        delta_delivery = queue_daily_stock_notification(session, material_delta)
+        session.commit()
+        delta_payload = json.loads(delta_delivery.payload)
+        assert delta_delivery.status == "pending"
+        assert delta_payload["assessment_mode"] == "daily_delta"
+        assert "투자 논리: 초기 설정" not in delta_payload["text"]
+        assert (
+            delta_payload[STOCK_NOTIFICATION_METADATA_KEY]["requeue_reason"]
+            == "material_delta_after_baseline_delivery"
+        )
+
+        asyncio.run(
+            dispatch_pending_notifications(
+                session,
+                notifier=notifier,
+                delivery_ids={delta_delivery.id},
+            )
+        )
+        session.refresh(delta_delivery)
+        assert delta_delivery.status == "sent"
+        assert len(notifier.texts) == 2
+
+        duplicate = queue_daily_stock_notification(session, material_delta)
+        session.commit()
+        assert duplicate.status == "sent"
+        asyncio.run(
+            dispatch_pending_notifications(
+                session,
+                notifier=notifier,
+                delivery_ids={duplicate.id},
+            )
+        )
+        assert len(notifier.texts) == 2
+
+
+def test_failed_baseline_retry_keeps_baseline_payload_and_attempts() -> None:
+    isolated_engine = create_engine(
+        "sqlite://",
+        connect_args={"check_same_thread": False},
+        poolclass=StaticPool,
+    )
+    SQLModel.metadata.create_all(isolated_engine)
+    ticker = "BASELINE-FAILED"
+    with Session(isolated_engine) as session:
+        session.add(WatchlistItem(ticker=ticker, company_name="Baseline Failed"))
+        session.add(_notification_test_thesis(ticker, 2))
+        session.commit()
+
+        delivery = queue_daily_stock_notification(
+            session,
+            _versioned_assessment(ticker, 2, "initial_baseline"),
+        )
+        session.commit()
+        baseline_payload = json.loads(delivery.payload)
+        delivery.status = "failed"
+        delivery.attempt_count = 3
+        delivery.last_error = "TelegramDeliveryError: temporary failure"
+        session.commit()
+
+        protected = queue_daily_stock_notification(
+            session,
+            _versioned_assessment(
+                ticker,
+                2,
+                "daily_delta",
+                status="weakened",
+                business_thesis_change="weakened",
+                daily_change_severity="moderate",
+            ),
+        )
+        session.commit()
+        payload = json.loads(protected.payload)
+
+        assert protected.status == "pending"
+        assert protected.attempt_count == 3
+        assert payload["text"] == baseline_payload["text"]
+        assert payload["assessment_mode"] == "initial_baseline"
+        assert payload[STOCK_NOTIFICATION_METADATA_KEY]["status_transition"] == (
+            "failed->pending"
+        )
+
+
+@pytest.mark.anyio
+async def test_partial_baseline_keeps_chunk_cursor_when_daily_delta_arrives() -> None:
+    isolated_engine = create_engine(
+        "sqlite://",
+        connect_args={"check_same_thread": False},
+        poolclass=StaticPool,
+    )
+    SQLModel.metadata.create_all(isolated_engine)
+    ticker = "BASELINE-PARTIAL"
+    with Session(isolated_engine) as session:
+        session.add(WatchlistItem(ticker=ticker, company_name="Baseline Partial"))
+        session.add(_notification_test_thesis(ticker, 2))
+        session.commit()
+
+        delivery = queue_daily_stock_notification(
+            session,
+            _versioned_assessment(ticker, 2, "initial_baseline"),
+        )
+        session.commit()
+        baseline_text = json.loads(delivery.payload)["text"]
+
+        first = ScriptedTelegramNotifier(fail_on_calls={2})
+        await dispatch_pending_notifications(
+            session,
+            notifier=first,
+            delivery_ids={delivery.id},
+        )
+        session.refresh(delivery)
+        partial = json.loads(delivery.payload)
+        assert partial[TELEGRAM_DELIVERY_METADATA_KEY]["next_chunk_index"] == 1
+        assert delivery.attempt_count == 1
+
+        protected = queue_daily_stock_notification(
+            session,
+            _versioned_assessment(
+                ticker,
+                2,
+                "daily_delta",
+                status="strengthened",
+                business_thesis_change="strengthened",
+                daily_change_severity="moderate",
+            ),
+        )
+        session.commit()
+        protected_payload = json.loads(protected.payload)
+        assert protected_payload["text"] == baseline_text
+        assert protected_payload[TELEGRAM_DELIVERY_METADATA_KEY]["next_chunk_index"] == 1
+        assert protected.attempt_count == 1
+
+        retry = ScriptedTelegramNotifier(max_chars=250)
+        await dispatch_pending_notifications(
+            session,
+            notifier=retry,
+            delivery_ids={protected.id},
+        )
+        session.refresh(protected)
+        assert retry.calls == ["[2/3]\nchunk-two", "[3/3]\nchunk-three"]
+        assert retry.prepare_calls == 0
+        assert protected.status == "sent"
+        assert protected.attempt_count == 2
+
+
+def test_new_version_supersedes_protected_baseline_and_resets_progress() -> None:
+    isolated_engine = create_engine(
+        "sqlite://",
+        connect_args={"check_same_thread": False},
+        poolclass=StaticPool,
+    )
+    SQLModel.metadata.create_all(isolated_engine)
+    ticker = "BASELINE-SUPERSEDE"
+    with Session(isolated_engine) as session:
+        session.add(WatchlistItem(ticker=ticker, company_name="Baseline Supersede"))
+        session.add(_notification_test_thesis(ticker, 2))
+        session.add(_notification_test_thesis(ticker, 3))
+        session.commit()
+
+        delivery = queue_daily_stock_notification(
+            session,
+            _versioned_assessment(ticker, 2, "initial_baseline"),
+        )
+        session.commit()
+        payload = json.loads(delivery.payload)
+        source_sha256 = hashlib.sha256(
+            json.dumps(
+                {
+                    key: value
+                    for key, value in payload.items()
+                    if key
+                    not in {
+                        TELEGRAM_DELIVERY_METADATA_KEY,
+                        STOCK_NOTIFICATION_METADATA_KEY,
+                    }
+                },
+                ensure_ascii=False,
+                sort_keys=True,
+                separators=(",", ":"),
+                default=str,
+            ).encode("utf-8")
+        ).hexdigest()
+        payload[TELEGRAM_DELIVERY_METADATA_KEY] = {
+            "source_sha256": source_sha256,
+            "content_sha256": "v2-content",
+            "rendered_text": payload["text"],
+            "chunk_max_chars": 100,
+            "chunk_count": 3,
+            "next_chunk_index": 1,
+        }
+        delivery.payload = json.dumps(payload, ensure_ascii=False)
+        delivery.attempt_count = 2
+        session.commit()
+
+        protected = queue_daily_stock_notification(
+            session,
+            _versioned_assessment(
+                ticker,
+                2,
+                "daily_delta",
+                status="strengthened",
+                business_thesis_change="strengthened",
+                daily_change_severity="moderate",
+            ),
+        )
+        session.commit()
+        assert TELEGRAM_DELIVERY_METADATA_KEY in json.loads(protected.payload)
+
+        superseded = queue_daily_stock_notification(
+            session,
+            _versioned_assessment(ticker, 3, "initial_baseline"),
+        )
+        session.commit()
+        superseded_payload = json.loads(superseded.payload)
+        assert superseded.status == "pending"
+        assert superseded.attempt_count == 0
+        assert superseded_payload["thesis_version"] == 3
+        assert superseded_payload["assessment_mode"] == "initial_baseline"
+        assert TELEGRAM_DELIVERY_METADATA_KEY not in superseded_payload
+        assert (
+            superseded_payload[STOCK_NOTIFICATION_METADATA_KEY]["requeue_reason"]
             == "new_thesis_version_initial_baseline"
         )

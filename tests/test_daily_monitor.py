@@ -1378,7 +1378,6 @@ async def test_same_day_new_thesis_version_is_isolated_then_advances_to_delta() 
         delivery.sent_at = datetime(2046, 2, 2, 7, 2, tzinfo=timezone.utc)
         session.commit()
         v2_sent_payload = delivery.payload
-        v2_sent_at = delivery.sent_at
 
         session.add(
             Event(
@@ -1408,10 +1407,23 @@ async def test_same_day_new_thesis_version_is_isolated_then_advances_to_delta() 
         session.refresh(stored)
         session.refresh(delivery)
         assert json.loads(stored.thesis_snapshot)["assessment_mode"] == "daily_delta"
-        assert delivery.status == "sent"
-        assert delivery.attempt_count == 1
-        assert delivery.sent_at == v2_sent_at
-        assert delivery.payload == v2_sent_payload
+        assert delivery.status == "pending"
+        assert delivery.attempt_count == 0
+        assert delivery.sent_at is None
+        assert delivery.payload != v2_sent_payload
+        delta_payload = json.loads(delivery.payload)
+        assert delta_payload["assessment_mode"] == "daily_delta"
+        assert (
+            delta_payload[STOCK_NOTIFICATION_METADATA_KEY]["requeue_reason"]
+            == "material_delta_after_baseline_delivery"
+        )
+
+        delivery.status = "sent"
+        delivery.attempt_count = 1
+        delivery.sent_at = datetime(2046, 2, 2, 7, 12, tzinfo=timezone.utc)
+        session.commit()
+        v2_delta_payload = delivery.payload
+        v2_delta_sent_at = delivery.sent_at
 
         await run_daily_monitor(
             session,
@@ -1428,8 +1440,8 @@ async def test_same_day_new_thesis_version_is_isolated_then_advances_to_delta() 
         assert json.loads(stored.thesis_snapshot)["assessment_mode"] == "daily_delta"
         assert delivery.status == "sent"
         assert delivery.attempt_count == 1
-        assert delivery.sent_at == v2_sent_at
-        assert delivery.payload == v2_sent_payload
+        assert delivery.sent_at == v2_delta_sent_at
+        assert delivery.payload == v2_delta_payload
 
         next_day = await run_daily_monitor(
             session,

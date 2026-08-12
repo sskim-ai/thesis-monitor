@@ -181,7 +181,12 @@ def _notification_thesis_version(payload: dict[str, object]) -> int | None:
     candidates: list[object] = [payload.get("thesis_version")]
     metadata = payload.get(STOCK_NOTIFICATION_METADATA_KEY)
     if isinstance(metadata, dict):
-        candidates.append(metadata.get("thesis_version"))
+        candidates.extend(
+            [
+                metadata.get("delivery_thesis_version"),
+                metadata.get("thesis_version"),
+            ]
+        )
     analysis_context = payload.get("analysis_context")
     if isinstance(analysis_context, dict):
         thesis = analysis_context.get("thesis")
@@ -197,17 +202,40 @@ def _notification_thesis_version(payload: dict[str, object]) -> int | None:
     return None
 
 
+def _notification_assessment_mode(payload: dict[str, object]) -> str:
+    candidates: list[object] = [payload.get("assessment_mode")]
+    metadata = payload.get(STOCK_NOTIFICATION_METADATA_KEY)
+    if isinstance(metadata, dict):
+        candidates.extend(
+            [
+                metadata.get("delivery_assessment_mode"),
+                metadata.get("assessment_mode"),
+            ]
+        )
+    for candidate in candidates:
+        if candidate in {"initial_baseline", "daily_delta"}:
+            return str(candidate)
+    return "daily_delta"
+
+
 def _stock_notification_metadata(
     *,
-    thesis_version: int,
-    assessment_mode: str,
+    delivery_thesis_version: int,
+    delivery_assessment_mode: str,
     requeue_reason: str,
+    current_thesis_version: int | None = None,
+    current_assessment_mode: str | None = None,
     previous_thesis_version: int | None = None,
     previous_delivery_status: str | None = None,
+    delivery_protection: str | None = None,
 ) -> dict[str, object]:
-    return {
-        "thesis_version": thesis_version,
-        "assessment_mode": assessment_mode,
+    metadata: dict[str, object] = {
+        "delivery_thesis_version": delivery_thesis_version,
+        "delivery_assessment_mode": delivery_assessment_mode,
+        "current_thesis_version": current_thesis_version or delivery_thesis_version,
+        "current_assessment_mode": (
+            current_assessment_mode or delivery_assessment_mode
+        ),
         "previous_thesis_version": previous_thesis_version,
         "previous_delivery_status": previous_delivery_status,
         "requeue_reason": requeue_reason,
@@ -217,6 +245,35 @@ def _stock_notification_metadata(
             else "new->pending"
         ),
     }
+    if delivery_protection:
+        metadata["delivery_protection"] = delivery_protection
+    return metadata
+
+
+def _material_daily_delta(assessment: ThesisAssessment) -> bool:
+    if _assessment_mode(assessment) != "daily_delta":
+        return False
+    business_change = str(
+        getattr(assessment, "business_thesis_change", None)
+        or getattr(assessment, "status", "")
+    ).strip()
+    if business_change and business_change != "no_material_change":
+        return True
+    if str(getattr(assessment, "daily_change_severity", None) or "none") != "none":
+        return True
+    if str(
+        getattr(assessment, "earnings_estimate_impact", None) or "unchanged"
+    ) not in {
+        "",
+        "unchanged",
+    }:
+        return True
+    if str(getattr(assessment, "valuation_change", "neutral") or "neutral") not in {
+        "neutral",
+        "unknown",
+    }:
+        return True
+    return bool(_json_list_value(getattr(assessment, "new_warnings", "[]")))
 
 
 def _delivery_payload(payload: str) -> dict[str, object]:
@@ -1206,8 +1263,8 @@ def queue_daily_stock_notification(
     ).first()
     if delivery is None:
         payload_data[STOCK_NOTIFICATION_METADATA_KEY] = _stock_notification_metadata(
-            thesis_version=assessment.thesis_version,
-            assessment_mode=assessment_mode,
+            delivery_thesis_version=assessment.thesis_version,
+            delivery_assessment_mode=assessment_mode,
             requeue_reason="new_delivery",
         )
         delivery = NotificationDelivery(
@@ -1222,6 +1279,7 @@ def queue_daily_stock_notification(
 
     existing_payload = _delivery_payload(delivery.payload)
     previous_thesis_version = _notification_thesis_version(existing_payload)
+    stored_delivery_mode = _notification_assessment_mode(existing_payload)
     new_version_baseline = (
         assessment_mode == "initial_baseline"
         and previous_thesis_version is not None
@@ -1229,8 +1287,8 @@ def queue_daily_stock_notification(
     )
     if new_version_baseline:
         payload_data[STOCK_NOTIFICATION_METADATA_KEY] = _stock_notification_metadata(
-            thesis_version=assessment.thesis_version,
-            assessment_mode=assessment_mode,
+            delivery_thesis_version=assessment.thesis_version,
+            delivery_assessment_mode=assessment_mode,
             requeue_reason="new_thesis_version_initial_baseline",
             previous_thesis_version=previous_thesis_version,
             previous_delivery_status=delivery.status,
@@ -1240,27 +1298,67 @@ def queue_daily_stock_notification(
             json.dumps(payload_data, ensure_ascii=False),
             reset_attempts=True,
         )
-    elif delivery.status != "sent":
+    elif (
+        previous_thesis_version == assessment.thesis_version
+        and stored_delivery_mode == "initial_baseline"
+        and delivery.status != "sent"
+        and assessment_mode == "daily_delta"
+    ):
         existing_metadata = existing_payload.get(STOCK_NOTIFICATION_METADATA_KEY)
-        payload_data[STOCK_NOTIFICATION_METADATA_KEY] = (
-            existing_metadata
-            if isinstance(existing_metadata, dict)
-            else _stock_notification_metadata(
-                thesis_version=assessment.thesis_version,
-                assessment_mode=assessment_mode,
-                requeue_reason="pending_payload_refresh",
-                previous_thesis_version=previous_thesis_version,
+        prior_version = None
+        if isinstance(existing_metadata, dict):
+            candidate = existing_metadata.get("previous_thesis_version")
+            if isinstance(candidate, int) and not isinstance(candidate, bool):
+                prior_version = candidate
+        existing_payload[STOCK_NOTIFICATION_METADATA_KEY] = (
+            _stock_notification_metadata(
+                delivery_thesis_version=assessment.thesis_version,
+                delivery_assessment_mode="initial_baseline",
+                current_thesis_version=assessment.thesis_version,
+                current_assessment_mode=assessment_mode,
+                requeue_reason="undelivered_baseline_protected",
+                previous_thesis_version=prior_version,
                 previous_delivery_status=delivery.status,
+                delivery_protection="undelivered_baseline",
             )
+        )
+        _prepare_delivery_for_retry(
+            delivery,
+            json.dumps(existing_payload, ensure_ascii=False),
+        )
+    elif delivery.status != "sent":
+        payload_data[STOCK_NOTIFICATION_METADATA_KEY] = _stock_notification_metadata(
+            delivery_thesis_version=assessment.thesis_version,
+            delivery_assessment_mode=assessment_mode,
+            requeue_reason="pending_payload_refresh",
+            previous_thesis_version=previous_thesis_version,
+            previous_delivery_status=delivery.status,
         )
         _prepare_delivery_for_retry(
             delivery,
             json.dumps(payload_data, ensure_ascii=False),
         )
+    elif (
+        previous_thesis_version == assessment.thesis_version
+        and stored_delivery_mode == "initial_baseline"
+        and _material_daily_delta(assessment)
+    ):
+        payload_data[STOCK_NOTIFICATION_METADATA_KEY] = _stock_notification_metadata(
+            delivery_thesis_version=assessment.thesis_version,
+            delivery_assessment_mode=assessment_mode,
+            requeue_reason="material_delta_after_baseline_delivery",
+            previous_thesis_version=previous_thesis_version,
+            previous_delivery_status=delivery.status,
+        )
+        _prepare_delivery_for_retry(
+            delivery,
+            json.dumps(payload_data, ensure_ascii=False),
+            reset_attempts=True,
+        )
     elif _should_requeue_sent_delivery(delivery, requeue_sent_before):
         payload_data[STOCK_NOTIFICATION_METADATA_KEY] = _stock_notification_metadata(
-            thesis_version=assessment.thesis_version,
-            assessment_mode=assessment_mode,
+            delivery_thesis_version=assessment.thesis_version,
+            delivery_assessment_mode=assessment_mode,
             requeue_reason="sent_before_production_cutoff",
             previous_thesis_version=previous_thesis_version,
             previous_delivery_status=delivery.status,
