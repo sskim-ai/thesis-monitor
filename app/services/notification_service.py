@@ -1,7 +1,9 @@
 import asyncio
+import hashlib
 import json
 import math
 import re
+from dataclasses import dataclass
 from datetime import date, datetime, timezone
 
 import httpx
@@ -91,6 +93,7 @@ REGIME_AXIS_KEYS = {
 }
 
 SUPPORTED_NOTIFICATION_CHANNELS = {"telegram"}
+TELEGRAM_DELIVERY_METADATA_KEY = "_telegram_delivery"
 
 
 def _json_value(value: str, fallback: object) -> object:
@@ -139,12 +142,49 @@ def _prepare_delivery_for_retry(
     *,
     reset_attempts: bool = False,
 ) -> None:
-    delivery.payload = payload
+    new_payload = json.loads(payload)
+    if not isinstance(new_payload, dict):
+        raise ValueError("Notification payload must be a JSON object")
+    existing_payload = _delivery_payload(delivery.payload)
+    existing_metadata = existing_payload.get(TELEGRAM_DELIVERY_METADATA_KEY)
+    source_sha256 = _telegram_source_sha256(new_payload)
+    if (
+        not reset_attempts
+        and isinstance(existing_metadata, dict)
+        and existing_metadata.get("source_sha256") == source_sha256
+    ):
+        new_payload[TELEGRAM_DELIVERY_METADATA_KEY] = existing_metadata
+    else:
+        new_payload.pop(TELEGRAM_DELIVERY_METADATA_KEY, None)
+    delivery.payload = json.dumps(new_payload, ensure_ascii=False)
     delivery.status = "pending"
     if reset_attempts:
         delivery.attempt_count = 0
     delivery.last_error = None
     delivery.sent_at = None
+
+
+def _delivery_payload(payload: str) -> dict[str, object]:
+    parsed = json.loads(payload)
+    if not isinstance(parsed, dict):
+        raise ValueError("Notification payload must be a JSON object")
+    return parsed
+
+
+def _telegram_source_sha256(payload: dict[str, object]) -> str:
+    logical_payload = {
+        key: value
+        for key, value in payload.items()
+        if key != TELEGRAM_DELIVERY_METADATA_KEY
+    }
+    encoded = json.dumps(
+        logical_payload,
+        ensure_ascii=False,
+        sort_keys=True,
+        separators=(",", ":"),
+        default=str,
+    ).encode("utf-8")
+    return hashlib.sha256(encoded).hexdigest()
 
 
 def _report_price(value: object, currency: object) -> str:
@@ -888,8 +928,7 @@ def queue_notification(session: Session, assessment: ThesisAssessment) -> None:
             )
         )
     elif delivery.status != "sent":
-        delivery.payload = payload
-        delivery.status = "pending"
+        _prepare_delivery_for_retry(delivery, payload)
 
 
 def queue_daily_stock_notification(
@@ -978,8 +1017,7 @@ def queue_macro_notification(session: Session, briefing: MacroBriefing) -> None:
             )
         )
     elif delivery.status != "sent":
-        delivery.payload = payload
-        delivery.status = "pending"
+        _prepare_delivery_for_retry(delivery, payload)
 
 
 def queue_daily_digest_notification(
@@ -1331,6 +1369,11 @@ class TelegramDeliveryError(RuntimeError):
     pass
 
 
+@dataclass(frozen=True)
+class TelegramChunkResult:
+    message_id: int | None = None
+
+
 class TelegramNotifier:
     def __init__(
         self,
@@ -1341,7 +1384,11 @@ class TelegramNotifier:
         self.transport = transport
         self.narrative_generator = narrative_generator
 
-    async def _send_chunk(self, client: httpx.AsyncClient, text: str) -> None:
+    async def _send_chunk(
+        self,
+        client: httpx.AsyncClient,
+        text: str,
+    ) -> TelegramChunkResult:
         token = self.settings.telegram_bot_token
         chat_id = self.settings.telegram_chat_id
         if not token or not chat_id:
@@ -1390,24 +1437,38 @@ class TelegramNotifier:
                     f"Telegram sendMessage failed with HTTP {response.status_code}: "
                     f"{description[:200]}"
                 )
-            return
+            result = payload.get("result")
+            message_id = result.get("message_id") if isinstance(result, dict) else None
+            return TelegramChunkResult(
+                message_id=message_id if isinstance(message_id, int) else None
+            )
         raise TelegramDeliveryError("Telegram sendMessage retry limit exceeded")
 
-    async def send(self, payload: dict[str, object]) -> str:
-        if self.settings.notification_dry_run:
-            return "dry_run"
+    async def prepare_text(self, payload: dict[str, object]) -> str:
         text = str(payload["text"])
         if payload.get("use_llm") is True:
             context = payload.get("analysis_context")
             if isinstance(context, dict):
                 generator = self.narrative_generator or InvestmentNarrativeGenerator()
                 text = await generator.generate(context, text)
-        chunks = split_telegram_text(text, self.settings.telegram_message_max_chars)
+        return text
+
+    def build_chunks(self, text: str, max_chars: int) -> list[str]:
+        return split_telegram_text(text, max_chars)
+
+    async def send_chunk(self, text: str) -> TelegramChunkResult:
         timeout = httpx.Timeout(30.0, connect=10.0)
         async with httpx.AsyncClient(timeout=timeout, transport=self.transport) as client:
-            for index, chunk in enumerate(chunks, start=1):
-                rendered = f"[{index}/{len(chunks)}]\n{chunk}" if len(chunks) > 1 else chunk
-                await self._send_chunk(client, rendered)
+            return await self._send_chunk(client, text)
+
+    async def send(self, payload: dict[str, object]) -> str:
+        if self.settings.notification_dry_run:
+            return "dry_run"
+        text = await self.prepare_text(payload)
+        chunks = self.build_chunks(text, self.settings.telegram_message_max_chars)
+        for index, chunk in enumerate(chunks, start=1):
+            rendered = f"[{index}/{len(chunks)}]\n{chunk}" if len(chunks) > 1 else chunk
+            await self.send_chunk(rendered)
         return "sent"
 
 
@@ -1417,6 +1478,60 @@ def _notifier_for_channel(
     if channel == "telegram":
         return TelegramNotifier()
     raise RuntimeError(f"Unsupported notification channel: {channel}")
+
+
+async def _telegram_delivery_plan(
+    session: Session,
+    delivery: NotificationDelivery,
+    notifier: TelegramNotifier,
+) -> tuple[dict[str, object], list[str], int]:
+    # next_chunk_index is a zero-based cursor pointing to the next unsent chunk.
+    payload = _delivery_payload(delivery.payload)
+    source_sha256 = _telegram_source_sha256(payload)
+    metadata = payload.get(TELEGRAM_DELIVERY_METADATA_KEY)
+    rendered_text: str | None = None
+    chunk_max_chars: int | None = None
+    next_chunk_index = 0
+    if isinstance(metadata, dict) and metadata.get("source_sha256") == source_sha256:
+        stored_text = metadata.get("rendered_text")
+        stored_max = metadata.get("chunk_max_chars")
+        stored_next = metadata.get("next_chunk_index")
+        if isinstance(stored_text, str) and isinstance(stored_max, int) and stored_max >= 100:
+            rendered_text = stored_text
+            chunk_max_chars = stored_max
+            if isinstance(stored_next, int):
+                next_chunk_index = max(0, stored_next)
+
+    if rendered_text is None or chunk_max_chars is None:
+        rendered_text = await notifier.prepare_text(payload)
+        chunk_max_chars = notifier.settings.telegram_message_max_chars
+        next_chunk_index = 0
+
+    chunks = notifier.build_chunks(rendered_text, chunk_max_chars)
+    content_sha256 = hashlib.sha256(rendered_text.encode("utf-8")).hexdigest()
+    if (
+        not isinstance(metadata, dict)
+        or metadata.get("content_sha256") != content_sha256
+        or metadata.get("chunk_count") != len(chunks)
+    ):
+        next_chunk_index = 0
+    next_chunk_index = min(next_chunk_index, len(chunks))
+    payload[TELEGRAM_DELIVERY_METADATA_KEY] = {
+        "source_sha256": source_sha256,
+        "content_sha256": content_sha256,
+        "rendered_text": rendered_text,
+        "chunk_max_chars": chunk_max_chars,
+        "chunk_count": len(chunks),
+        "next_chunk_index": next_chunk_index,
+    }
+    delivery.payload = json.dumps(payload, ensure_ascii=False)
+    session.add(delivery)
+    session.commit()
+    return payload, chunks, next_chunk_index
+
+
+def _render_telegram_chunk(chunk: str, index: int, chunk_count: int) -> str:
+    return f"[{index + 1}/{chunk_count}]\n{chunk}" if chunk_count > 1 else chunk
 
 
 async def dispatch_pending_notifications(
@@ -1439,7 +1554,27 @@ async def dispatch_pending_notifications(
     for delivery in deliveries:
         delivery.attempt_count += 1
         try:
-            result = await notifier.send(json.loads(delivery.payload))
+            payload = _delivery_payload(delivery.payload)
+            if isinstance(notifier, TelegramNotifier) and not notifier.settings.notification_dry_run:
+                payload, chunks, next_chunk_index = await _telegram_delivery_plan(
+                    session,
+                    delivery,
+                    notifier,
+                )
+                for index in range(next_chunk_index, len(chunks)):
+                    await notifier.send_chunk(
+                        _render_telegram_chunk(chunks[index], index, len(chunks))
+                    )
+                    metadata = payload[TELEGRAM_DELIVERY_METADATA_KEY]
+                    if not isinstance(metadata, dict):
+                        raise ValueError("Telegram delivery metadata is invalid")
+                    metadata["next_chunk_index"] = index + 1
+                    delivery.payload = json.dumps(payload, ensure_ascii=False)
+                    session.add(delivery)
+                    session.commit()
+                result = "sent"
+            else:
+                result = await notifier.send(payload)
         except (httpx.HTTPError, RuntimeError, ValueError) as exc:
             delivery.last_error = f"{type(exc).__name__}: {exc}"
             delivery.status = "pending"

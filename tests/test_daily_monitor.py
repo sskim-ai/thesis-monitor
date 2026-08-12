@@ -35,6 +35,14 @@ from app.schemas.thesis import (
 from app.services.daily_monitor_service import run_daily_monitor
 from app.services.market_session import market_scope_for_security
 from app.services.monitoring_service import register_monitoring_item
+from app.services.notification_service import (
+    TELEGRAM_DELIVERY_METADATA_KEY,
+    TelegramChunkResult,
+    TelegramDeliveryError,
+    TelegramNotifier,
+    dispatch_pending_notifications,
+    queue_daily_digest_notification,
+)
 
 
 class FakeCollectionService:
@@ -175,6 +183,7 @@ def test_analysis_completion_uses_scoped_run_after_cutoff() -> None:
                 run_date=run_date,
                 run_type="daily_us",
                 status="success",
+                started_at=datetime(2040, 8, 12, 22, 46, tzinfo=timezone.utc),
                 completed_at=datetime(2040, 8, 12, 22, 50, tzinfo=timezone.utc),
             )
         )
@@ -183,6 +192,7 @@ def test_analysis_completion_uses_scoped_run_after_cutoff() -> None:
                 run_date=run_date,
                 run_type="daily_kr",
                 status="success",
+                started_at=datetime(2040, 8, 13, 6, 58, tzinfo=timezone.utc),
                 completed_at=datetime(2040, 8, 13, 6, 59, tzinfo=timezone.utc),
             )
         )
@@ -200,6 +210,67 @@ def test_analysis_completion_uses_scoped_run_after_cutoff() -> None:
         assert _analysis_decision(
             session, run_date, _requeue_cutoff(run_date, "kr"), "kr"
         ).action == "refresh_after_pre_cutoff_run"
+
+
+@pytest.mark.parametrize(
+    ("market_scope", "started_at", "completed_at", "expected_action"),
+    [
+        (
+            "us",
+            datetime(2040, 8, 12, 22, 44, tzinfo=timezone.utc),
+            datetime(2040, 8, 12, 22, 46, tzinfo=timezone.utc),
+            "refresh_after_pre_cutoff_run",
+        ),
+        (
+            "us",
+            datetime(2040, 8, 12, 22, 45, tzinfo=timezone.utc),
+            datetime(2040, 8, 12, 22, 48, tzinfo=timezone.utc),
+            "reuse",
+        ),
+        (
+            "kr",
+            datetime(2040, 8, 13, 6, 59, tzinfo=timezone.utc),
+            datetime(2040, 8, 13, 7, 3, tzinfo=timezone.utc),
+            "refresh_after_pre_cutoff_run",
+        ),
+        (
+            "kr",
+            datetime(2040, 8, 13, 7, 0, tzinfo=timezone.utc),
+            datetime(2040, 8, 13, 7, 4, tzinfo=timezone.utc),
+            "reuse",
+        ),
+    ],
+)
+def test_analysis_cutoff_requires_start_and_completion_in_production_window(
+    market_scope: str,
+    started_at: datetime,
+    completed_at: datetime,
+    expected_action: str,
+) -> None:
+    isolated_engine = create_engine(
+        "sqlite://",
+        connect_args={"check_same_thread": False},
+        poolclass=StaticPool,
+    )
+    SQLModel.metadata.create_all(isolated_engine)
+    run_date = date(2040, 8, 13)
+    with Session(isolated_engine) as session:
+        session.add(
+            MonitorRun(
+                run_date=run_date,
+                run_type=f"daily_{market_scope}",
+                status="success",
+                started_at=started_at,
+                completed_at=completed_at,
+            )
+        )
+        session.commit()
+        cutoff = _requeue_cutoff(run_date, market_scope)
+
+        decision = _analysis_decision(session, run_date, cutoff, market_scope)
+
+        assert decision.action == expected_action
+        assert decision.refresh is (expected_action != "reuse")
 
 
 def test_analysis_decision_handles_missing_failed_and_running_runs() -> None:
@@ -232,6 +303,43 @@ def test_analysis_decision_handles_missing_failed_and_running_runs() -> None:
         decision = _analysis_decision(session, cutoff_date, cutoff, "us")
         assert decision.action == "in_progress"
         assert decision.refresh is False
+
+
+def test_analysis_completion_rejects_missing_timestamps() -> None:
+    class QueryResult:
+        def __init__(self, run) -> None:
+            self.run = run
+
+        def first(self):
+            return self.run
+
+    class FakeSession:
+        def __init__(self, run) -> None:
+            self.run = run
+
+        def exec(self, _query):
+            return QueryResult(self.run)
+
+    run_date = date(2041, 8, 14)
+    cutoff = _requeue_cutoff(run_date, "kr")
+    for run in (
+        SimpleNamespace(
+            status="success",
+            started_at=None,
+            completed_at=datetime(2041, 8, 14, 7, 4, tzinfo=timezone.utc),
+        ),
+        SimpleNamespace(
+            status="success",
+            started_at=datetime(2041, 8, 14, 7, 1, tzinfo=timezone.utc),
+            completed_at=None,
+        ),
+    ):
+        assert _analysis_completed_after_cutoff(
+            FakeSession(run),  # type: ignore[arg-type]
+            run_date,
+            cutoff,
+            "kr",
+        ) is False
 
 
 @pytest.mark.anyio
@@ -430,6 +538,27 @@ async def test_post_cutoff_retry_reuses_assessment_and_dispatches_only_pending_d
     exchange: str,
     completed_at: datetime,
 ) -> None:
+    class ThreeChunkNotifier(TelegramNotifier):
+        def __init__(self, fail_on_call: int | None = None) -> None:
+            super().__init__()
+            self.settings = self.settings.model_copy(
+                update={"notification_dry_run": False, "telegram_message_max_chars": 100}
+            )
+            self.fail_on_call = fail_on_call
+            self.calls: list[str] = []
+
+        async def prepare_text(self, payload: dict[str, object]) -> str:
+            return str(payload["text"])
+
+        def build_chunks(self, text: str, max_chars: int) -> list[str]:
+            return ["first", "second", "third"]
+
+        async def send_chunk(self, text: str) -> TelegramChunkResult:
+            self.calls.append(text)
+            if self.fail_on_call == len(self.calls):
+                raise TelegramDeliveryError("scripted partial failure")
+            return TelegramChunkResult(message_id=len(self.calls))
+
     isolated_engine = create_engine(
         "sqlite://",
         connect_args={"check_same_thread": False},
@@ -478,13 +607,25 @@ async def test_post_cutoff_retry_reuses_assessment_and_dispatches_only_pending_d
         ).one()
         run.started_at = completed_at
         run.completed_at = completed_at
-        digest = NotificationDelivery(
-            ticker=digest_ticker,
-            assessment_date=run_date,
-            channel="telegram",
-            status="pending",
-            payload="{}",
-            attempt_count=2,
+        digest = queue_daily_digest_notification(
+            session,
+            run_date,
+            market_scope=market_scope,
+        )
+        assert digest is not None
+        assert digest.ticker == digest_ticker
+        first_notifier = ThreeChunkNotifier(fail_on_call=2)
+        await dispatch_pending_notifications(
+            session,
+            notifier=first_notifier,
+            delivery_ids={digest.id},
+        )
+        session.refresh(digest)
+        assert first_notifier.calls == ["[1/3]\nfirst", "[2/3]\nsecond"]
+        assert digest.status == "pending"
+        assert (
+            json.loads(digest.payload)[TELEGRAM_DELIVERY_METADATA_KEY]["next_chunk_index"]
+            == 1
         )
         stock = NotificationDelivery(
             ticker=ticker,
@@ -495,7 +636,6 @@ async def test_post_cutoff_retry_reuses_assessment_and_dispatches_only_pending_d
             attempt_count=1,
             sent_at=completed_at,
         )
-        session.add(digest)
         session.add(stock)
         session.commit()
         session.refresh(assessment)
@@ -511,6 +651,8 @@ async def test_post_cutoff_retry_reuses_assessment_and_dispatches_only_pending_d
         async def fail_macro(*args, **kwargs):
             raise AssertionError("delivery retry must not recollect macro providers")
 
+        retry_notifier = ThreeChunkNotifier()
+
         monkeypatch.setattr(
             "app.services.daily_monitor_service.CollectionService", fail_provider_init
         )
@@ -525,6 +667,10 @@ async def test_post_cutoff_retry_reuses_assessment_and_dispatches_only_pending_d
             "app.services.daily_monitor_service.evaluate_thesis", fail_evaluation
         )
         monkeypatch.setattr("app.jobs.monitor_daily.run_macro_monitor", fail_macro)
+        monkeypatch.setattr(
+            "app.services.notification_service._notifier_for_channel",
+            lambda channel: retry_notifier,
+        )
 
         output = await _run_market_job(session, run_date, market_scope)
         session.refresh(run)
@@ -536,8 +682,13 @@ async def test_post_cutoff_retry_reuses_assessment_and_dispatches_only_pending_d
         assert output["delivery_action"] == "retry"
         assert (run.started_at, run.completed_at) == original_run_times
         assert assessment.model_dump() == original_assessment
-        assert digest.status == "dry_run"
-        assert digest.attempt_count == 3
+        assert retry_notifier.calls == ["[2/3]\nsecond", "[3/3]\nthird"]
+        assert digest.status == "sent"
+        assert digest.attempt_count == 2
+        assert (
+            json.loads(digest.payload)[TELEGRAM_DELIVERY_METADATA_KEY]["next_chunk_index"]
+            == 3
+        )
         assert stock.status == "sent"
         assert stock.attempt_count == 1
 

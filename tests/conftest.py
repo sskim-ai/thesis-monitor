@@ -1,5 +1,7 @@
 import os
 
+os.environ["THESIS_MONITOR_ENV_FILE"] = ""
+
 from app.config import get_settings
 
 os.environ["DATABASE_URL"] = "sqlite://"

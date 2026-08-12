@@ -48,6 +48,7 @@ def _analysis_completed_after_cutoff(
     cutoff: datetime,
     market_scope: MarketScope,
 ) -> bool:
+    """Return whether a successful run both started and finished in production time."""
     run = session.exec(
         select(MonitorRun).where(
             MonitorRun.run_date == run_date,
@@ -57,7 +58,9 @@ def _analysis_completed_after_cutoff(
     return bool(
         run is not None
         and run.status == "success"
+        and run.started_at is not None
         and run.completed_at is not None
+        and _as_utc(run.started_at) >= _as_utc(cutoff)
         and _as_utc(run.completed_at) >= _as_utc(cutoff)
     )
 

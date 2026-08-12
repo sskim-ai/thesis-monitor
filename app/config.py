@@ -1,3 +1,4 @@
+import os
 from functools import lru_cache
 
 from pydantic_settings import BaseSettings, SettingsConfigDict
@@ -83,10 +84,17 @@ class Settings(BaseSettings):
     model_config = SettingsConfigDict(
         env_file=".env",
         env_file_encoding="utf-8",
-        extra="ignore",
+        extra="forbid",
     )
+
+
+def _settings_env_file() -> str | None:
+    override = os.environ.get("THESIS_MONITOR_ENV_FILE")
+    if override is None:
+        return ".env"
+    return override or None
 
 
 @lru_cache
 def get_settings() -> Settings:
-    return Settings()
+    return Settings(_env_file=_settings_env_file())

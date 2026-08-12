@@ -78,7 +78,22 @@ sent as readable Korean analysis reports through Telegram. Keep `NOTIFICATION_DR
 `TELEGRAM_BOT_TOKEN` and `TELEGRAM_CHAT_ID` have been tested. The report is generated from structured
 macro, company, event, expectation, and valuation data by deterministic rules and templates; it does
 not consume OpenAI or other LLM credits. Long reports are split at Telegram-safe boundaries without
-dropping analysis sections.
+dropping analysis sections. Successful chunks are checkpointed in the notification payload, so a
+persisted retry resumes from the next chunk instead of repeating normally completed chunks.
+
+The repository-root `.env` is dedicated to thesis-monitor settings. Unknown keys fail validation at
+startup, including removed `KAKAO_*` settings and misspelled Telegram keys. Before deploying:
+
+1. Back up `.env` outside the repository.
+2. Remove `KAKAO_REST_API_KEY`, `KAKAO_CLIENT_SECRET`, `KAKAO_REFRESH_TOKEN`,
+   `KAKAO_TEMPLATE_ID`, and `KAKAO_WEB_URL`.
+3. Review key names without printing values:
+   `grep -E '^[A-Za-z_][A-Za-z0-9_]*=' .env | cut -d= -f1`.
+4. Remove other keys that are not thesis-monitor settings, then run
+   `.venv/bin/python -m app.jobs.validate_env --env-file .env`.
+5. Run `.venv/bin/pytest` and reload the LaunchAgents after validation succeeds.
+
+The validator reports key names and validation categories only; it never prints configured values.
 
 ## Macro Monitoring
 
@@ -230,6 +245,9 @@ slots likewise retry pending Telegram deliveries after a successful analysis. A 
 recovery only when that market has no successful post-cutoff run; it never refreshes analysis merely
 because a delivery is pending. Same-date test runs before the 07:45 U.S. or 16:00 Korean cutoff do not
 suppress the scheduled production analysis, while later retry slots do not resend completed messages.
+Both `started_at` and `completed_at` must be at or after the market cutoff for a successful run to
+replace the scheduled production analysis. Telegram delivery retries resume persisted chunk progress
+without refreshing the completed assessment.
 
 Price context is requested from the separate local OHLCV Analyst service using targets of 500 daily,
 300 weekly, and 100 monthly bars. Shorter provider histories are accepted and their actual counts are

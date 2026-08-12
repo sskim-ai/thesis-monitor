@@ -1,3 +1,4 @@
+import hashlib
 import json
 from datetime import date, datetime, timezone
 from types import SimpleNamespace
@@ -10,11 +11,15 @@ from sqlmodel import SQLModel, Session, create_engine
 from app.config import get_settings
 from app.models.thesis import NotificationDelivery
 from app.services.notification_service import (
+    TELEGRAM_DELIVERY_METADATA_KEY,
+    TelegramChunkResult,
+    TelegramDeliveryError,
     TelegramNotifier,
     _macro_report,
     _message_for_assessment,
     _notification_channel,
     _notifier_for_channel,
+    _prepare_delivery_for_retry,
     _should_requeue_sent_delivery,
     dispatch_pending_notifications,
 )
@@ -556,3 +561,244 @@ async def test_telegram_notifier_retries_temporary_server_error() -> None:
 
     assert await notifier.send({"text": "전송 테스트"}) == "sent"
     assert calls == 2
+
+
+class ScriptedTelegramNotifier(TelegramNotifier):
+    def __init__(
+        self,
+        fail_on_calls: set[int] | None = None,
+        max_chars: int = 100,
+    ) -> None:
+        self.settings = get_settings().model_copy(
+            update={
+                "notification_dry_run": False,
+                "telegram_message_max_chars": max_chars,
+            }
+        )
+        self.fail_on_calls = fail_on_calls or set()
+        self.calls: list[str] = []
+        self.prepare_calls = 0
+        self.chunk_max_chars_seen: list[int] = []
+
+    async def prepare_text(self, payload: dict[str, object]) -> str:
+        self.prepare_calls += 1
+        return str(payload["text"])
+
+    def build_chunks(self, text: str, max_chars: int) -> list[str]:
+        self.chunk_max_chars_seen.append(max_chars)
+        return ["chunk-one", "chunk-two", "chunk-three"]
+
+    async def send_chunk(self, text: str) -> TelegramChunkResult:
+        self.calls.append(text)
+        if len(self.calls) in self.fail_on_calls:
+            raise TelegramDeliveryError("scripted chunk failure")
+        return TelegramChunkResult(message_id=len(self.calls))
+
+
+@pytest.mark.anyio
+@pytest.mark.parametrize(
+    ("failure_call", "expected_cursor", "expected_retry_chunks"),
+    [
+        (2, 1, ["[2/3]\nchunk-two", "[3/3]\nchunk-three"]),
+        (3, 2, ["[3/3]\nchunk-three"]),
+    ],
+)
+async def test_telegram_partial_delivery_resumes_from_persisted_chunk(
+    failure_call: int,
+    expected_cursor: int,
+    expected_retry_chunks: list[str],
+) -> None:
+    isolated_engine = create_engine(
+        "sqlite://",
+        connect_args={"check_same_thread": False},
+        poolclass=StaticPool,
+    )
+    SQLModel.metadata.create_all(isolated_engine)
+    run_date = date(2046, 1, failure_call)
+    with Session(isolated_engine) as session:
+        delivery = NotificationDelivery(
+            ticker=f"PARTIAL-{failure_call}",
+            assessment_date=run_date,
+            channel="telegram",
+            status="pending",
+            payload=json.dumps({"text": "three chunk report"}),
+        )
+        session.add(delivery)
+        session.commit()
+        delivery_id = delivery.id
+
+        first = ScriptedTelegramNotifier(fail_on_calls={failure_call})
+        await dispatch_pending_notifications(
+            session,
+            notifier=first,
+            delivery_ids={delivery_id},
+        )
+        session.refresh(delivery)
+        metadata = json.loads(delivery.payload)[TELEGRAM_DELIVERY_METADATA_KEY]
+        assert delivery.status == "pending"
+        assert delivery.attempt_count == 1
+        assert metadata["next_chunk_index"] == expected_cursor
+        assert metadata["chunk_count"] == 3
+        assert metadata["chunk_max_chars"] == 100
+        assert len(metadata["content_sha256"]) == 64
+
+    with Session(isolated_engine) as session:
+        persisted = session.get(NotificationDelivery, delivery_id)
+        assert persisted is not None
+        metadata = json.loads(persisted.payload)[TELEGRAM_DELIVERY_METADATA_KEY]
+        assert metadata["next_chunk_index"] == expected_cursor
+
+        retry = ScriptedTelegramNotifier(max_chars=250)
+        await dispatch_pending_notifications(
+            session,
+            notifier=retry,
+            delivery_ids={delivery_id},
+        )
+        session.refresh(persisted)
+        completed = json.loads(persisted.payload)[TELEGRAM_DELIVERY_METADATA_KEY]
+
+        assert retry.calls == expected_retry_chunks
+        assert retry.prepare_calls == 0
+        assert retry.chunk_max_chars_seen == [100]
+        assert persisted.status == "sent"
+        assert persisted.attempt_count == 2
+        assert persisted.last_error is None
+        assert persisted.sent_at is not None
+        assert completed["next_chunk_index"] == 3
+
+
+@pytest.mark.anyio
+async def test_completed_single_chunk_delivery_is_not_dispatched_again() -> None:
+    class SingleChunkNotifier(ScriptedTelegramNotifier):
+        def build_chunks(self, text: str, max_chars: int) -> list[str]:
+            self.chunk_max_chars_seen.append(max_chars)
+            return [text]
+
+    isolated_engine = create_engine(
+        "sqlite://",
+        connect_args={"check_same_thread": False},
+        poolclass=StaticPool,
+    )
+    SQLModel.metadata.create_all(isolated_engine)
+    with Session(isolated_engine) as session:
+        delivery = NotificationDelivery(
+            ticker="SINGLE-SENT",
+            assessment_date=date(2046, 2, 1),
+            channel="telegram",
+            status="pending",
+            payload=json.dumps({"text": "single chunk"}),
+        )
+        session.add(delivery)
+        session.commit()
+        first = SingleChunkNotifier()
+
+        await dispatch_pending_notifications(
+            session,
+            notifier=first,
+            delivery_ids={delivery.id},
+        )
+        session.refresh(delivery)
+
+        assert first.calls == ["single chunk"]
+        assert delivery.status == "sent"
+        assert delivery.attempt_count == 1
+
+        retry = SingleChunkNotifier()
+
+        await dispatch_pending_notifications(
+            session,
+            notifier=retry,
+            delivery_ids={delivery.id},
+        )
+
+        assert retry.calls == []
+        assert delivery.attempt_count == 1
+
+
+def _partial_payload(text: str, next_chunk_index: int = 1) -> str:
+    logical = {"text": text, "type": "daily_monitoring_digest"}
+    source_sha256 = hashlib.sha256(
+        json.dumps(
+            logical,
+            ensure_ascii=False,
+            sort_keys=True,
+            separators=(",", ":"),
+        ).encode("utf-8")
+    ).hexdigest()
+    logical[TELEGRAM_DELIVERY_METADATA_KEY] = {
+        "source_sha256": source_sha256,
+        "content_sha256": hashlib.sha256(text.encode("utf-8")).hexdigest(),
+        "rendered_text": text,
+        "chunk_max_chars": 100,
+        "chunk_count": 3,
+        "next_chunk_index": next_chunk_index,
+    }
+    return json.dumps(logical, ensure_ascii=False)
+
+
+def test_same_content_requeue_preserves_chunk_progress() -> None:
+    delivery = NotificationDelivery(
+        ticker="SAME-CONTENT",
+        assessment_date=date(2046, 3, 1),
+        channel="telegram",
+        status="pending",
+        payload=_partial_payload("same report"),
+        attempt_count=2,
+    )
+    new_payload = json.dumps(
+        {"text": "same report", "type": "daily_monitoring_digest"},
+        ensure_ascii=False,
+    )
+
+    _prepare_delivery_for_retry(delivery, new_payload)
+
+    metadata = json.loads(delivery.payload)[TELEGRAM_DELIVERY_METADATA_KEY]
+    assert metadata["next_chunk_index"] == 1
+    assert delivery.attempt_count == 2
+
+
+def test_changed_content_requeue_resets_chunk_progress() -> None:
+    delivery = NotificationDelivery(
+        ticker="CHANGED-CONTENT",
+        assessment_date=date(2046, 3, 2),
+        channel="telegram",
+        status="pending",
+        payload=_partial_payload("old report"),
+        attempt_count=2,
+    )
+    new_payload = json.dumps(
+        {"text": "new report", "type": "daily_monitoring_digest"},
+        ensure_ascii=False,
+    )
+
+    _prepare_delivery_for_retry(delivery, new_payload)
+
+    assert TELEGRAM_DELIVERY_METADATA_KEY not in json.loads(delivery.payload)
+    assert delivery.attempt_count == 2
+
+
+def test_pre_cutoff_production_requeue_resets_attempts_and_chunk_progress() -> None:
+    delivery = NotificationDelivery(
+        ticker="PRE-CUTOFF",
+        assessment_date=date(2046, 3, 3),
+        channel="telegram",
+        status="sent",
+        payload=_partial_payload("test report", next_chunk_index=3),
+        attempt_count=4,
+        sent_at=datetime(2046, 3, 2, 22, 30, tzinfo=timezone.utc),
+    )
+    production_payload = json.dumps(
+        {"text": "test report", "type": "daily_monitoring_digest"},
+        ensure_ascii=False,
+    )
+
+    _prepare_delivery_for_retry(
+        delivery,
+        production_payload,
+        reset_attempts=True,
+    )
+
+    assert TELEGRAM_DELIVERY_METADATA_KEY not in json.loads(delivery.payload)
+    assert delivery.status == "pending"
+    assert delivery.attempt_count == 0
+    assert delivery.sent_at is None
