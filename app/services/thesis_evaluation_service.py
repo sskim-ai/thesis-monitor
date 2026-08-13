@@ -9,6 +9,7 @@ from sqlmodel import Session, select
 from app.models.event import Event
 from app.models.macro import ThesisMacroImpact
 from app.models.thesis import InvestmentThesis, ThesisAssessment
+from app.services.canonical_fact_service import event_user_fields
 from app.services.event_identity import (
     event_fingerprint,
     event_is_eligible_for_current_analysis,
@@ -581,26 +582,6 @@ def _unique(items: list[str]) -> list[str]:
     return list(dict.fromkeys(item.strip() for item in items if item.strip()))
 
 
-def _event_user_fields(event: Event) -> dict[str, object]:
-    facts = _json_list(event.confirmed_facts)
-    contract_name = None
-    contract_amount = None
-    for fact in facts:
-        lowered = fact.lower()
-        if "supply contract fact: contract_name" in lowered:
-            contract_name = fact.split("=", 1)[-1].strip() or None
-        elif "supply contract fact: amount" in lowered:
-            match = re.search(r"[-+]?\d[\d,]*(?:\.\d+)?", fact.split("=", 1)[-1])
-            if match:
-                contract_amount = float(match.group(0).replace(",", ""))
-    if contract_name:
-        return {
-            "contract_name": contract_name,
-            "contract_amount": contract_amount,
-        }
-    return {}
-
-
 def _baseline_evidence(events: list[Event]) -> list[dict[str, object]]:
     priority = {
         "earnings": 0,
@@ -638,7 +619,7 @@ def _baseline_evidence(events: list[Event]) -> list[dict[str, object]]:
             "matched_signals": [],
             "matched_valuation_signals": [],
             "fingerprint": event_fingerprint(event),
-            **_event_user_fields(event),
+            **event_user_fields(event),
         }
         for event in ordered
     ]
@@ -1151,7 +1132,7 @@ def evaluate_thesis(
                         *compression_matches,
                     ],
                     "fingerprint": event_fingerprint(event),
-                    **_event_user_fields(event),
+                    **event_user_fields(event),
                 }
             )
 

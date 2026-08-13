@@ -37,3 +37,17 @@ For each stock, review:
 Do more than paraphrase the deterministic status. Combine compatible facts, identify noise, test the facts against thesis drivers and invalidation conditions, and state what remains unknown. Keep each stock focused on one to three decisive ideas.
 
 Hard deterministic warnings remain visible in the comparison record even when the AI view differs. Shadow output never mutates official state or Telegram.
+
+## Full Knowledge Requirement
+
+The compact policy is not the complete investment framework. Use `knowledge-index.md` to read the relevant sections of the full runtime mirror for every packet. Apply the selected industry framework to the decision, not merely to an audit list. Record stable semantic framework names in `frameworks_used`.
+
+## Evidence And Numbers
+
+Use canonical `fact_catalog` objects only. Link every interpretation to `fact_ids`. Contract profitability, customer mix, FCF, inventory, ROIC, ADR conversion, and other absent facts stay Unknown.
+
+Every investment-related number in prose requires a `numeric_claims` record tied to the exact `fact_id` and `field_path`. Preserve the backend value and unit; display-only KRW compaction and approved percentage rounding are allowed. A number found elsewhere in the packet is not interchangeable with the claimed semantic field.
+
+## Claim Fence
+
+Each worker owns a UUID claim and a claim-specific temporary output. The validator may accept an expired claim only while it remains the active claim. Once another worker reclaims the packet, the older claim can never finalize.

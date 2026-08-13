@@ -1,4 +1,5 @@
 import json
+import hashlib
 from datetime import UTC, date, datetime, timedelta
 from pathlib import Path
 
@@ -6,6 +7,7 @@ from sqlalchemy.pool import StaticPool
 from sqlmodel import SQLModel, Session, create_engine, select
 
 from app.config import get_settings
+from app.models.company import Company
 from app.models.macro import MacroBriefing
 from app.models.thesis import (
     InvestmentThesis,
@@ -18,6 +20,8 @@ from app.services.ai_review_service import (
     build_ai_review_packet,
     claim_next_ai_review_packet,
     finalize_ai_review_output,
+    investment_framework_routing,
+    knowledge_manifest,
     validate_ai_review_output,
     write_ai_review_packet,
 )
@@ -76,6 +80,11 @@ def _assessment(
                     "direction": "strengthen",
                     "materiality": "material",
                     "fingerprint": "event-D",
+                    "contract_name": "Verified data-center equipment order",
+                    "contract_amount": 318_964_597_910,
+                    "counterparty": "Verified Customer",
+                    "contract_period": "2026-08-14 to 2028-12-31",
+                    "sales_ratio_pct": 12.4,
                     "raw_fact": "provider=opendart unit=KRW",
                 }
             ]
@@ -119,12 +128,41 @@ def _assessment(
             }
         ),
         valuation_context=json.dumps({"impact": "neutral"}),
-        thesis_snapshot=json.dumps({"assessment_mode": "daily_delta"}),
+        thesis_snapshot=json.dumps(
+            {
+                "assessment_mode": "daily_delta",
+                "capital_action_materiality": [
+                    {
+                        "event_fingerprint": "treasury-D",
+                        "event_date": assessment_date.isoformat(),
+                        "transaction_shares": 32_520,
+                        "share_denominator": 29_700_000,
+                        "share_denominator_source": "common_shares_outstanding",
+                        "share_ratio_pct": 0.1095,
+                        "transaction_amount": 6_780_420_000,
+                        "market_cap": 6_192_450_000_000,
+                        "market_cap_ratio_pct": 0.1095,
+                        "purpose": "employee compensation",
+                        "level": "immaterial",
+                        "reason": "small employee treasury-stock transaction",
+                    }
+                ],
+            }
+        ),
     )
 
 
 def _seed(session: Session) -> None:
     ticker = "PACKETUS"
+    session.add(
+        Company(
+            ticker=ticker,
+            company_name="Packet Corp",
+            exchange="NASDAQ",
+            industry="Memory semiconductor",
+            business_units="DRAM and NAND",
+        )
+    )
     session.add(WatchlistItem(ticker=ticker, company_name="Packet Corp", exchange="NASDAQ"))
     session.add(
         InvestmentThesis(
@@ -271,19 +309,33 @@ def _seed_kr(session: Session) -> None:
     session.commit()
 
 
-def _valid_output(packet: dict[str, object]) -> dict[str, object]:
+def _valid_output(
+    packet: dict[str, object],
+    *,
+    claim_id: str = "fixture-claim",
+) -> dict[str, object]:
     stock = packet["stocks"][0]
     facts = stock["fact_catalog"]
     market_facts = packet["market_context"]["fact_catalog"]
     return {
         "schema_version": "1",
         "packet_id": packet["packet_id"],
+        "claim_id": claim_id,
         "analysis_policy_version": packet["analysis_policy_version"],
+        "knowledge_version": packet["knowledge"]["version"],
+        "knowledge_sha256": packet["knowledge"]["sha256"],
         "market": packet["market"],
         "assessment_date": packet["assessment_date"],
         "market_review": {
             "facts_used": [market_facts[0]["fact_id"]] if market_facts else [],
-            "interpretation": ["The verified market inputs do not establish a new regime."],
+            "frameworks_used": ["macro_transmission"],
+            "interpretation": [
+                {
+                    "text": "The verified market inputs do not establish a new regime.",
+                    "fact_ids": [market_facts[0]["fact_id"]] if market_facts else [],
+                }
+            ],
+            "numeric_claims": [],
             "unknowns": ["Direction remains uncertain."],
             "summary": "Keep the market context separate from company fundamentals.",
         },
@@ -295,7 +347,14 @@ def _valid_output(packet: dict[str, object]) -> dict[str, object]:
                 "earnings_estimate_view": "unchanged",
                 "valuation_view": "neutral",
                 "facts_used": [facts[0]["fact_id"]],
-                "interpretation": ["The verified order supports the existing demand thesis."],
+                "frameworks_used": ["memory_valuation", "market_expectations"],
+                "interpretation": [
+                    {
+                        "text": "The verified order supports the existing demand thesis.",
+                        "fact_ids": [facts[0]["fact_id"]],
+                    }
+                ],
+                "numeric_claims": [],
                 "unknowns": ["Delivery timing remains unknown."],
                 "summary": "The evidence is supportive but does not require a status change.",
                 "holder_view": "Track execution and margin delivery.",
@@ -335,6 +394,30 @@ def test_packet_is_immutable_version_isolated_and_sanitized(monkeypatch, tmp_pat
     rendered = json.dumps(packet, ensure_ascii=False)
     for token in ("OpenDART", "fs_div", "provider=", "unit=KRW", "raw_fact"):
         assert token not in rendered
+
+    stock = packet["stocks"][0]
+    facts = {item["fact_id"]: item for item in stock["fact_catalog"]}
+    contract = next(item for item in facts.values() if item["fact_type"] == "contract_award")
+    assert contract["fields"]["contract_amount"] == {
+        "value": 318_964_597_910,
+        "currency": "KRW",
+    }
+    assert contract["fields"]["counterparty"] == "Verified Customer"
+    assert contract["fields"]["contract_period"] == "2026-08-14 to 2028-12-31"
+    assert contract["fields"]["sales_ratio_pct"] == 12.4
+    capital = facts["event:treasury-D:capital_allocation"]
+    assert capital["fields"]["transaction_shares"] == 32_520
+    assert capital["fields"]["share_ratio_pct"] == 0.1095
+    assert capital["fields"]["purpose"] == "employee compensation"
+    assert capital["fields"]["materiality"] == "immaterial"
+    assert stock["knowledge_routing"]["industry_key"] == "memory"
+    assert "memory_valuation" in stock["knowledge_routing"]["required_frameworks"]
+    assert any(
+        item["field_path"] == "fields.contract_amount.value"
+        and item["semantic_type"] == "value"
+        and item["unit"] == "KRW"
+        for item in stock["numeric_registry"]
+    )
 
 
 def test_kr_packet_is_ready_after_successful_close_and_contains_verified_fx(
@@ -394,12 +477,14 @@ def test_claim_backup_atomic_finalize_and_shadow_no_mutation(monkeypatch, tmp_pa
         )
         packet = json.loads(Path(packet_result.path).read_text(encoding="utf-8"))
         Path(claim.temp_output_path).write_text(
-            json.dumps(_valid_output(packet), ensure_ascii=False), encoding="utf-8"
+            json.dumps(_valid_output(packet, claim_id=claim.claim_id), ensure_ascii=False),
+            encoding="utf-8",
         )
         assert not Path(claim.final_output_path).exists()
         completed = finalize_ai_review_output(
             session,
             packet_result.packet_id,
+            claim_id=claim.claim_id,
             now=datetime(2026, 8, 14, 0, 12, tzinfo=UTC),
         )
         after_assessment = session.exec(select(ThesisAssessment).where(
@@ -435,10 +520,13 @@ def test_stale_claim_is_recovered_without_duplicate_completion(monkeypatch, tmp_
     )
 
     assert first.status == "claimed"
+    assert first.claim_id != recovered.claim_id
     assert recovered.status == "claimed"
     assert recovered.packet_id == first.packet_id
     claim_data = json.loads(Path(recovered.claim_path).read_text(encoding="utf-8"))
     assert claim_data["owner"] == "backup"
+    assert claim_data["claim_id"] == recovered.claim_id
+    assert first.temp_output_path != recovered.temp_output_path
 
 
 def test_new_packet_version_supersedes_older_run_snapshot_for_claiming(
@@ -474,9 +562,12 @@ def test_new_packet_version_supersedes_older_run_snapshot_for_claiming(
         )
         packet = json.loads(Path(claim.packet_path).read_text(encoding="utf-8"))
         Path(claim.temp_output_path).write_text(
-            json.dumps(_valid_output(packet), ensure_ascii=False), encoding="utf-8"
+            json.dumps(_valid_output(packet, claim_id=claim.claim_id), ensure_ascii=False),
+            encoding="utf-8",
         )
-        completed = finalize_ai_review_output(session, claim.packet_id)
+        completed = finalize_ai_review_output(
+            session, claim.packet_id, claim_id=claim.claim_id
+        )
         backup = claim_next_ai_review_packet(
             "us",
             owner="backup",
@@ -507,7 +598,7 @@ def test_output_guardrails_reject_mismatch_hallucination_and_bad_basis(
         hallucination = _valid_output(packet)
         hallucination["stock_reviews"][0]["summary"] = "Revenue reached 999 billion."
         _, errors = validate_ai_review_output(session, packet, hallucination)
-        assert any("numbers_not_in_packet:999" in item for item in errors)
+        assert any("numbers_without_provenance:999" in item for item in errors)
 
         modeled_as_consensus = _valid_output(packet)
         modeled_as_consensus["stock_reviews"][0]["summary"] = "시장 컨센서스 EPS가 반영됐습니다."
@@ -518,6 +609,313 @@ def test_output_guardrails_reject_mismatch_hallucination_and_bad_basis(
         invalid_history["stock_reviews"][0]["summary"] = "과거 배수 기준으로 저평가입니다."
         _, errors = validate_ai_review_output(session, packet, invalid_history)
         assert any("invalid_historical_comparison_used" in item for item in errors)
+
+        knowledge_mismatch = _valid_output(packet)
+        knowledge_mismatch["knowledge_sha256"] = "0" * 64
+        _, errors = validate_ai_review_output(session, packet, knowledge_mismatch)
+        assert "identity_mismatch:knowledge_sha256" in errors
+
+
+def test_numeric_claims_require_exact_semantic_provenance_and_allow_display_formatting(
+    monkeypatch,
+    tmp_path: Path,
+) -> None:
+    _settings(monkeypatch, tmp_path)
+    with Session(_engine()) as session:
+        _seed(session)
+        packet = build_ai_review_packet(session, RUN_DATE, "us")
+        assert packet is not None
+        stock = packet["stocks"][0]
+
+        valid = _valid_output(packet)
+        review = valid["stock_reviews"][0]
+        earnings = next(
+            item for item in stock["fact_catalog"] if item["fact_type"] == "earnings"
+        )
+        review["facts_used"].append(earnings["fact_id"])
+        review["interpretation"].append(
+            {
+                "text": "영업이익률 10%는 현재 수익성의 확인된 기준입니다.",
+                "fact_ids": [earnings["fact_id"]],
+            }
+        )
+        review["numeric_claims"].append(
+            {
+                "fact_id": earnings["fact_id"],
+                "field_path": "fields.operating_margin_pct",
+                "value": 10.0,
+                "unit": "pct",
+                "usage": "영업이익률 10%",
+            }
+        )
+        _, errors = validate_ai_review_output(session, packet, valid)
+        assert errors == []
+
+        contract = next(
+            item for item in stock["fact_catalog"] if item["fact_type"] == "contract_award"
+        )
+        krw = _valid_output(packet)
+        krw_review = krw["stock_reviews"][0]
+        krw_review["facts_used"] = [contract["fact_id"]]
+        krw_review["interpretation"] = [
+            {
+                "text": "계약금액 3,190억원은 확인된 수주 규모입니다.",
+                "fact_ids": [contract["fact_id"]],
+            }
+        ]
+        krw_review["numeric_claims"] = [
+            {
+                "fact_id": contract["fact_id"],
+                "field_path": "fields.contract_amount.value",
+                "value": 318_964_597_910,
+                "unit": "KRW",
+                "usage": "계약금액 3,190억원",
+            }
+        ]
+        _, errors = validate_ai_review_output(session, packet, krw)
+        assert errors == []
+
+        wrong_semantic = _valid_output(packet)
+        wrong_review = wrong_semantic["stock_reviews"][0]
+        wrong_review["facts_used"] = ["price:current"]
+        wrong_review["interpretation"] = [
+            {
+                "text": "매출 성장률은 100 USD입니다.",
+                "fact_ids": ["price:current"],
+            }
+        ]
+        wrong_review["numeric_claims"] = [
+            {
+                "fact_id": "price:current",
+                "field_path": "fields.current_price",
+                "value": 100,
+                "unit": "USD",
+                "usage": "매출 성장률 100 USD",
+            }
+        ]
+        _, errors = validate_ai_review_output(session, packet, wrong_semantic)
+        assert any("numeric_usage_semantic_mismatch" in item for item in errors)
+
+        unsupported_derived = _valid_output(packet)
+        unsupported_derived["stock_reviews"][0]["summary"] = "추정 성장률은 55%입니다."
+        _, errors = validate_ai_review_output(session, packet, unsupported_derived)
+        assert any("numbers_without_provenance:55" in item for item in errors)
+
+
+def test_percentage_rounding_uses_the_exact_capital_action_field(
+    monkeypatch,
+    tmp_path: Path,
+) -> None:
+    _settings(monkeypatch, tmp_path)
+    with Session(_engine()) as session:
+        _seed(session)
+        packet = build_ai_review_packet(session, RUN_DATE, "us")
+        assert packet is not None
+        capital = next(
+            item
+            for item in packet["stocks"][0]["fact_catalog"]
+            if item["fact_type"] == "treasury_stock_transaction"
+        )
+        output = _valid_output(packet)
+        review = output["stock_reviews"][0]
+        review["facts_used"] = [capital["fact_id"]]
+        review["interpretation"] = [
+            {
+                "text": "처분 주식 비율 약 0.11%는 소규모입니다.",
+                "fact_ids": [capital["fact_id"]],
+            }
+        ]
+        review["numeric_claims"] = [
+            {
+                "fact_id": capital["fact_id"],
+                "field_path": "fields.share_ratio_pct",
+                "value": 0.11,
+                "unit": "pct",
+                "usage": "처분 주식 비율 약 0.11%",
+            }
+        ]
+        _, errors = validate_ai_review_output(session, packet, output)
+
+    assert errors == []
+
+
+def test_claim_fence_rejects_expired_primary_after_backup_reclaim(
+    monkeypatch,
+    tmp_path: Path,
+) -> None:
+    _settings(monkeypatch, tmp_path)
+    with Session(_engine()) as session:
+        _seed(session)
+        write_ai_review_packet(
+            session,
+            RUN_DATE,
+            "us",
+            generated_at=datetime(2026, 8, 14, 0, 0, tzinfo=UTC),
+        )
+        primary = claim_next_ai_review_packet(
+            "us", owner="us-primary", now=datetime(2026, 8, 14, 8, 50, tzinfo=UTC)
+        )
+        active_worker = claim_next_ai_review_packet(
+            "us", owner="early-backup", now=datetime(2026, 8, 14, 9, 10, tzinfo=UTC)
+        )
+        backup = claim_next_ai_review_packet(
+            "us", owner="us-backup", now=datetime(2026, 8, 14, 9, 30, tzinfo=UTC)
+        )
+        packet = json.loads(Path(backup.packet_path).read_text(encoding="utf-8"))
+        Path(primary.temp_output_path).write_text(
+            json.dumps(_valid_output(packet, claim_id=primary.claim_id)), encoding="utf-8"
+        )
+        Path(backup.temp_output_path).write_text(
+            json.dumps(_valid_output(packet, claim_id=backup.claim_id)), encoding="utf-8"
+        )
+        winner = finalize_ai_review_output(
+            session, backup.packet_id, claim_id=backup.claim_id
+        )
+        stale = finalize_ai_review_output(
+            session, primary.packet_id, claim_id=primary.claim_id
+        )
+        final_payload = json.loads(Path(winner.output_path).read_text(encoding="utf-8"))
+
+    assert active_worker.status == "no_pending_packet"
+    assert backup.status == "claimed"
+    assert winner.status == "completed"
+    assert stale.status == "rejected"
+    assert stale.errors == ("stale_claim_output",)
+    assert final_payload["claim_id"] == backup.claim_id
+    assert primary.temp_output_path != backup.temp_output_path
+
+
+def test_expired_claim_can_finalize_when_no_worker_reclaims(
+    monkeypatch,
+    tmp_path: Path,
+) -> None:
+    _settings(monkeypatch, tmp_path)
+    with Session(_engine()) as session:
+        _seed(session)
+        result = write_ai_review_packet(
+            session,
+            RUN_DATE,
+            "us",
+            generated_at=datetime(2026, 8, 14, 0, 0, tzinfo=UTC),
+        )
+        claim = claim_next_ai_review_packet(
+            "us", owner="primary", now=datetime(2026, 8, 14, 8, 50, tzinfo=UTC)
+        )
+        packet = json.loads(Path(result.path).read_text(encoding="utf-8"))
+        Path(claim.temp_output_path).write_text(
+            json.dumps(_valid_output(packet, claim_id=claim.claim_id)), encoding="utf-8"
+        )
+        completed = finalize_ai_review_output(
+            session,
+            claim.packet_id,
+            claim_id=claim.claim_id,
+            now=datetime(2026, 8, 14, 9, 30, tzinfo=UTC),
+        )
+
+    assert completed.status == "completed"
+
+
+def test_full_knowledge_manifest_and_industry_routing_are_valid() -> None:
+    root = Path(__file__).resolve().parents[1]
+    references = root / ".agents" / "skills" / "thesis-monitor-daily-review" / "references"
+    source = root / "docs" / "custom_gpt_knowledge_ko.md"
+    mirror = references / "investment-thesis-analysis-monitoring-knowledge.md"
+    manifest = knowledge_manifest()
+
+    assert source.read_bytes() == mirror.read_bytes()
+    assert hashlib.sha256(mirror.read_bytes()).hexdigest() == manifest["sha256"]
+    assert manifest["version"] == "2026-08-13"
+    index = (references / "knowledge-index.md").read_text(encoding="utf-8")
+    for framework in (
+        "earnings_quality",
+        "memory_valuation",
+        "insurance_reinsurance_valuation",
+        "epc_construction_valuation",
+        "saas_recurring_revenue_valuation",
+        "adr_share_basis",
+    ):
+        assert framework in index
+
+
+def test_industry_framework_router_handles_quality_fixtures() -> None:
+    fixtures = (
+        ("Memory semiconductor", "DRAM", "memory", "memory_valuation"),
+        ("Insurance", "Reinsurance", "insurance", "insurance_reinsurance_valuation"),
+        ("Software", "SaaS recurring revenue", "saas", "saas_recurring_revenue_valuation"),
+        ("Construction", "EPC projects", "epc", "epc_construction_valuation"),
+        ("Biotech", "Pre-profit drug development", "biotech", "biotech_valuation"),
+    )
+    for industry, business_model, key, framework in fixtures:
+        routing = investment_framework_routing(
+            industry,
+            business_model,
+            "verified thesis",
+            has_earnings=True,
+            preliminary_earnings=True,
+            has_price_context=True,
+            has_adr_basis_risk=True,
+        )
+        assert routing["industry_key"] == key
+        assert framework in routing["required_frameworks"]
+        assert "provisional_earnings" in routing["required_frameworks"]
+        assert "adr_share_basis" in routing["required_frameworks"]
+
+
+def test_incompatible_industry_framework_is_rejected(
+    monkeypatch,
+    tmp_path: Path,
+) -> None:
+    _settings(monkeypatch, tmp_path)
+    with Session(_engine()) as session:
+        _seed(session)
+        packet = build_ai_review_packet(session, RUN_DATE, "us")
+        assert packet is not None
+        output = _valid_output(packet)
+        output["stock_reviews"][0]["frameworks_used"] = ["saas_recurring_revenue_valuation"]
+        _, errors = validate_ai_review_output(session, packet, output)
+
+    assert any("framework_not_allowed:saas_recurring_revenue_valuation" in item for item in errors)
+    assert any("industry_framework_missing:memory_valuation" in item for item in errors)
+
+
+def test_shadow_comparison_flags_unsupported_quality_claims(
+    monkeypatch,
+    tmp_path: Path,
+) -> None:
+    _settings(monkeypatch, tmp_path)
+    with Session(_engine()) as session:
+        _seed(session)
+        result = write_ai_review_packet(
+            session,
+            RUN_DATE,
+            "us",
+            generated_at=datetime(2026, 8, 14, 0, 0, tzinfo=UTC),
+        )
+        claim = claim_next_ai_review_packet(
+            "us", owner="quality-fixture", now=datetime(2026, 8, 14, 0, 1, tzinfo=UTC)
+        )
+        packet = json.loads(Path(result.path).read_text(encoding="utf-8"))
+        output = _valid_output(packet, claim_id=claim.claim_id)
+        review = output["stock_reviews"][0]
+        review["interpretation"] = [
+            {
+                "text": "Free cash flow improved even though the packet has no FCF fact.",
+                "fact_ids": review["facts_used"],
+            }
+        ]
+        review["summary"] = "A low PER alone proves undervaluation."
+        Path(claim.temp_output_path).write_text(json.dumps(output), encoding="utf-8")
+        completed = finalize_ai_review_output(
+            session, claim.packet_id, claim_id=claim.claim_id
+        )
+        comparison = json.loads(
+            Path(completed.comparison_path).read_text(encoding="utf-8")
+        )
+
+    assert completed.status == "completed"
+    flags = comparison["comparisons"][0]["guardrail_conflicts"]
+    assert "unsupported_claim:free_cash_flow" in flags
+    assert "memory_low_per_only_conclusion" in flags
 
 
 def test_unknown_ticker_and_partial_output_are_rejected(monkeypatch, tmp_path: Path) -> None:
@@ -547,6 +945,10 @@ def test_skill_fixture_and_output_schema_are_present() -> None:
     skill = (skill_root / "SKILL.md").read_text(encoding="utf-8")
 
     assert schema["properties"]["schema_version"] == {"const": "1"}
+    assert "claim_id" in schema["required"]
+    assert "knowledge_sha256" in schema["required"]
     assert "$thesis-monitor-daily-review" in skill
     assert "Do not browse the web" in skill
     assert "data/ai_review" in skill
+    assert "knowledge-index.md" in skill
+    assert "--claim-id" in skill

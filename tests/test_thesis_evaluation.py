@@ -90,6 +90,9 @@ def test_baseline_contract_name_and_amount_remain_from_the_same_event() -> None:
             [
                 "DART text supply contract fact: contract_name = Data center project",
                 "DART text supply contract fact: amount = 318,964,597,910",
+                "DART text supply contract fact: counterparty = Verified Customer",
+                "DART text supply contract fact: recent_sales_ratio = 12.4",
+                "DART text supply contract fact: period = 2026-08-14 to 2028-12-31",
             ]
         ),
         relevance_score=85,
@@ -104,6 +107,9 @@ def test_baseline_contract_name_and_amount_remain_from_the_same_event() -> None:
 
     assert result.evidence[0]["contract_name"] == "Data center project"
     assert result.evidence[0]["contract_amount"] == 318_964_597_910
+    assert result.evidence[0]["counterparty"] == "Verified Customer"
+    assert result.evidence[0]["sales_ratio_pct"] == 12.4
+    assert result.evidence[0]["contract_period"] == "2026-08-14 to 2028-12-31"
 
 
 def test_treasury_stock_materiality_uses_share_and_purpose_context() -> None:

@@ -1,0 +1,9 @@
+{
+  "knowledge_name": "Investment Thesis Analysis & Monitoring Knowledge Guide",
+  "knowledge_version": "2026-08-13",
+  "source": "Custom GPT Knowledge runtime mirror",
+  "source_path": "docs/custom_gpt_knowledge_ko.md",
+  "mirror_path": ".agents/skills/thesis-monitor-daily-review/references/investment-thesis-analysis-monitoring-knowledge.md",
+  "sha256": "4af4e4f41ef65e1a1b5c7d8dece08a72a89f06f1774493947718fddb3d762c8c",
+  "imported_at": "2026-08-13T11:41:08+09:00"
+}

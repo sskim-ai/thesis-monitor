@@ -23,6 +23,7 @@ def main() -> None:
 
     validate = subparsers.add_parser("validate")
     validate.add_argument("--packet-id", required=True)
+    validate.add_argument("--claim-id", required=True)
     validate.add_argument("--policy-version", default=ANALYSIS_POLICY_VERSION)
 
     health = subparsers.add_parser("health")
@@ -43,6 +44,7 @@ def main() -> None:
         result = finalize_ai_review_output(
             session,
             args.packet_id,
+            claim_id=args.claim_id,
             policy_version=args.policy_version,
         )
     print(json.dumps(result.__dict__, ensure_ascii=False))

@@ -2,6 +2,7 @@ import os
 from functools import lru_cache
 from typing import Literal
 
+from pydantic import model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -88,7 +89,20 @@ class Settings(BaseSettings):
     telegram_retry_base_seconds: float = 2.0
     ai_review_mode: Literal["off", "shadow", "assist"] = "shadow"
     ai_review_claim_lease_minutes: int = 30
+    ai_review_backup_delay_minutes: int = 40
+    ai_review_claim_safety_margin_minutes: int = 5
     ai_review_shadow_catchup_hours: int = 24
+
+    @model_validator(mode="after")
+    def validate_ai_review_schedule(self) -> "Settings":
+        if self.ai_review_backup_delay_minutes <= (
+            self.ai_review_claim_lease_minutes
+            + self.ai_review_claim_safety_margin_minutes
+        ):
+            raise ValueError(
+                "AI review backup delay must exceed claim lease plus safety margin"
+            )
+        return self
 
     model_config = SettingsConfigDict(
         env_file=".env",

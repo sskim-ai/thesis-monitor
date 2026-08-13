@@ -19,23 +19,25 @@ Use this skill only for immutable packets under `data/ai_review/inbox`. Do not b
 
    Use `--market kr` for a Korean close review. If the result is `no_pending_packet`, stop without modifying anything.
 
-2. Read the returned `packet_path`, this skill, [daily-review-policy.md](references/daily-review-policy.md), and [output-schema.json](references/output-schema.json).
+2. Read the returned `packet_path`, this skill, [daily-review-policy.md](references/daily-review-policy.md), [knowledge-index.md](references/knowledge-index.md), and [output-schema.json](references/output-schema.json). Follow each stock's `knowledge_routing` and read the routed sections from [the full Knowledge mirror](references/investment-thesis-analysis-monitoring-knowledge.md). Do not replace the routed source with general model knowledge.
 
-3. Review the market once and every stock in `stocks`. Use only `fact_id` values from each `fact_catalog` in `facts_used`. Treat absent information as unknown.
+3. Review the market once and every stock in `stocks`. Use only `fact_id` values from each `fact_catalog` in `facts_used`. Record the semantic framework names actually applied in `frameworks_used`. Treat absent information as unknown.
 
-4. Write one complete JSON document to the returned `temp_output_path`. Do not write outside `data/ai_review`.
+4. Every interpretation item must contain concise `text` and the supporting `fact_ids`. Every investment-related number in prose must also have a `numeric_claims` entry that exactly identifies its `fact_id`, `field_path`, backend `value`, `unit`, and the rendered `usage`. Do not calculate a new value.
 
-5. Validate and finalize it:
+5. Write one complete JSON document to the returned claim-specific `temp_output_path`. Set `claim_id` from the claim response and copy the packet's Knowledge version and checksum. Do not write outside `data/ai_review`.
+
+6. Validate and finalize it:
 
    ```bash
-   .venv/bin/python -m app.jobs.ai_review validate --packet-id <packet-id> --policy-version <analysis-policy-version>
+   .venv/bin/python -m app.jobs.ai_review validate --packet-id <packet-id> --claim-id <claim-id> --policy-version <analysis-policy-version>
    ```
 
    A nonzero result means the review was rejected. Do not weaken the validator or invent replacement facts. Correct the JSON from the same packet once, then validate again.
 
 ## Output Rules
 
-- Keep `schema_version`, `packet_id`, `analysis_policy_version`, `market`, and `assessment_date` identical to the packet.
+- Keep `schema_version`, `packet_id`, `analysis_policy_version`, `knowledge_version`, `knowledge_sha256`, `market`, and `assessment_date` identical to the packet, and use the active claim's `claim_id`.
 - Produce exactly one stock review for every packet stock and no others.
 - Separate concise facts used, interpretation, and unknowns. Do not output hidden reasoning or chain-of-thought.
 - Explain why facts matter, what is noise, what expectations may already reflect, and what number or event should be checked next.
@@ -43,6 +45,8 @@ Use this skill only for immutable packets under `data/ai_review/inbox`. Do not b
 - Keep the deterministic assessment as a guardrail. You may propose a different AI view in shadow, but never erase a deterministic warning.
 - Never expose internal parser/provider fields. Never call a modeled estimate market or analyst consensus.
 - If historical comparability is withheld, do not use a historical percentile or range.
+- Apply the routed industry framework. A low peak-cycle PER alone is not a memory valuation conclusion; insurance does not use SaaS metrics; preliminary earnings do not prove FCF, inventory, ROIC, or balance-sheet changes.
+- A lease expiry only permits reclaim. Before finalization the validator fences the result against the currently active claim; never reuse another claim's temporary path.
 
 ## Runtime Boundary
 

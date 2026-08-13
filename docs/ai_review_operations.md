@@ -11,13 +11,18 @@ All times are Asia/Seoul.
 | Task | Time | Purpose |
 | --- | --- | --- |
 | US primary | 08:50 | Process the packet finalized after the morning KRX gate. |
-| US backup | 09:10 | Claim the packet only when the primary did not complete it. |
+| US backup | 09:30 | Reclaim after the primary's 30-minute lease has expired. |
 | KR primary | 16:15 | Process the successful Korean close packet. |
-| KR backup | 16:35 | Recover an unprocessed Korean packet. |
+| KR backup | 16:55 | Reclaim after the primary's 30-minute lease has expired. |
 
 Every invocation begins with a pending scan. Completed packet and policy combinations are no-ops.
-Shadow tasks may catch up an eligible packet from the preceding 24 hours. A claim expires after 30
-minutes, so an interrupted primary cannot permanently block its backup.
+Shadow tasks may catch up an eligible packet from the preceding 24 hours. The scheduling invariant is
+`backup_delay > claim_lease + safety_margin`: the current 40-minute delay exceeds the 30-minute lease
+by 10 minutes and the configured minimum safety margin is 5 minutes.
+
+Every claim has a UUID and a claim-specific temporary output. Lease expiry permits reclaim but does
+not invalidate the worker by itself. Once a backup creates a new claim, the prior worker is fenced and
+cannot finalize, even if it later recovers.
 
 ## Desktop Requirements
 
@@ -44,14 +49,16 @@ A task claims work with:
 .venv/bin/python -m app.jobs.ai_review claim --market us --owner manual-check
 ```
 
-The claim result contains the packet and temporary output paths. The scheduled model writes only the
-temporary JSON and finalizes it with:
+The claim result contains `claim_id`, packet path, and a claim-specific temporary output path. The
+scheduled model reads `knowledge-index.md`, the routed sections of the full Knowledge mirror, and only
+canonical packet facts. It writes only the temporary JSON and finalizes it with:
 
 ```bash
-.venv/bin/python -m app.jobs.ai_review validate --packet-id PACKET_ID
+.venv/bin/python -m app.jobs.ai_review validate --packet-id PACKET_ID --claim-id CLAIM_ID
 ```
 
-Files ending in `.json.tmp` are incomplete and are never considered completed.
+Files ending in `.json.tmp` are incomplete and are never considered completed. Every output records
+the analysis policy, Knowledge version/checksum, frameworks used, fact references, and numeric claims.
 
 ## Security Boundary
 

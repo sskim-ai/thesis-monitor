@@ -18,6 +18,7 @@ from app.services.analysis_report_service import (
     InvestmentNarrativeGenerator,
     split_telegram_text,
 )
+from app.services.canonical_fact_service import compact_krw_amount
 from app.services.daily_digest import build_daily_digest, interpret_macro_briefing
 from app.services.daily_digest_renderer import render_daily_digest
 from app.services.kr_close_fx import render_kr_close_fx, summarize_kr_close_fx
@@ -493,23 +494,7 @@ def _report_price(value: object, currency: object) -> str:
 
 
 def _compact_krw(value: object) -> str | None:
-    if not isinstance(value, (int, float)) or isinstance(value, bool):
-        return None
-    amount = float(value)
-    if not math.isfinite(amount):
-        return None
-    sign = "-" if amount < 0 else ""
-    amount = abs(amount)
-    jo = int(amount // 1_000_000_000_000)
-    eok = int(round((amount - jo * 1_000_000_000_000) / 100_000_000))
-    if eok >= 10_000:
-        jo += 1
-        eok -= 10_000
-    if jo and eok:
-        return f"{sign}{jo}조{eok:,}억원"
-    if jo:
-        return f"{sign}{jo}조원"
-    return f"{sign}{eok:,}억원"
+    return compact_krw_amount(value)
 
 
 def _earnings_period_label(value: object, preliminary: bool) -> str | None:

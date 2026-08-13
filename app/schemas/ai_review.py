@@ -16,11 +16,30 @@ EarningsViewValue = Literal["up", "down", "mixed", "unchanged", "unknown"]
 ValuationViewValue = Literal["expansion", "compression", "mixed", "neutral", "unknown"]
 
 
+class AIInterpretation(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    text: str
+    fact_ids: list[str] = Field(default_factory=list)
+
+
+class AINumericClaim(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    fact_id: str
+    field_path: str
+    value: float
+    unit: str
+    usage: str
+
+
 class AIMarketReview(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
     facts_used: list[str] = Field(default_factory=list)
-    interpretation: list[str] = Field(default_factory=list)
+    frameworks_used: list[str] = Field(default_factory=list)
+    interpretation: list[AIInterpretation] = Field(default_factory=list)
+    numeric_claims: list[AINumericClaim] = Field(default_factory=list)
     unknowns: list[str] = Field(default_factory=list)
     summary: str
 
@@ -34,7 +53,9 @@ class AIStockReview(BaseModel):
     earnings_estimate_view: EarningsViewValue
     valuation_view: ValuationViewValue
     facts_used: list[str] = Field(default_factory=list)
-    interpretation: list[str] = Field(default_factory=list)
+    frameworks_used: list[str] = Field(default_factory=list)
+    interpretation: list[AIInterpretation] = Field(default_factory=list)
+    numeric_claims: list[AINumericClaim] = Field(default_factory=list)
     unknowns: list[str] = Field(default_factory=list)
     summary: str
     holder_view: str
@@ -48,7 +69,10 @@ class AIDailyReviewOutput(BaseModel):
 
     schema_version: Literal["1"]
     packet_id: str
+    claim_id: str
     analysis_policy_version: str
+    knowledge_version: str
+    knowledge_sha256: str
     market: Literal["us", "kr"]
     assessment_date: str
     market_review: AIMarketReview

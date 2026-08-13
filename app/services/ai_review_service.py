@@ -3,9 +3,11 @@ from __future__ import annotations
 import hashlib
 import json
 import logging
+import math
 import os
 import re
 import socket
+import uuid
 from dataclasses import asdict, dataclass
 from datetime import UTC, date, datetime, timedelta
 from pathlib import Path
@@ -17,10 +19,16 @@ from sqlmodel import Session, select
 
 from app.config import get_settings
 from app.models.macro import MacroBriefing
+from app.models.company import Company
 from app.models.security import SecurityMaster
 from app.models.thesis import InvestmentThesis, MonitorRun, ThesisAssessment
 from app.models.watchlist import WatchlistItem
 from app.schemas.ai_review import AIDailyReviewOutput, AIStockReview
+from app.services.canonical_fact_service import (
+    canonical_capital_action_fact,
+    canonical_event_fact,
+    compact_krw_amount,
+)
 from app.services.daily_digest import build_daily_digest
 from app.services.market_session import market_scope_for_security
 
@@ -29,7 +37,7 @@ logger = logging.getLogger(__name__)
 
 PACKET_SCHEMA_VERSION = "1"
 OUTPUT_SCHEMA_VERSION = "1"
-ANALYSIS_POLICY_VERSION = "daily-review-v1"
+ANALYSIS_POLICY_VERSION = "daily-review-v2"
 AIReviewMarket = Literal["us", "kr"]
 
 _INTERNAL_TEXT = re.compile(
@@ -72,6 +80,7 @@ class PacketWriteResult:
 class ClaimResult:
     status: str
     packet_id: str | None = None
+    claim_id: str | None = None
     packet_path: str | None = None
     claim_path: str | None = None
     temp_output_path: str | None = None
@@ -88,6 +97,48 @@ class OutputValidationResult:
     errors: tuple[str, ...] = ()
 
 
+_CORE_FRAMEWORKS = (
+    "fact_interpretation_unknown",
+    "initial_thesis",
+    "market_expectations",
+    "risk_kill_condition",
+    "multiple_expansion_compression",
+    "macro_transmission",
+    "valuation_basis_comparability",
+    "monitoring_data_quality",
+)
+_INDUSTRY_FRAMEWORKS = {
+    "memory": "memory_valuation",
+    "semiconductor": "semiconductor_valuation",
+    "insurance": "insurance_reinsurance_valuation",
+    "bank": "bank_valuation",
+    "epc": "epc_construction_valuation",
+    "saas": "saas_recurring_revenue_valuation",
+    "biotech": "biotech_valuation",
+    "pre_profit": "pre_profit_valuation",
+    "automotive": "automotive_valuation",
+    "shipping": "shipping_transport_valuation",
+    "holding_company": "holding_company_valuation",
+    "consumer": "consumer_valuation",
+    "cloud": "cloud_platform_valuation",
+}
+_INDUSTRY_MARKERS = (
+    ("memory", ("memory", "메모리", "dram", "nand")),
+    ("insurance", ("insurance", "reinsurance", "보험", "재보험")),
+    ("bank", ("bank", "은행")),
+    ("epc", ("epc", "construction", "건설", "플랜트")),
+    ("saas", ("saas", "arr", "recurring revenue", "반복매출")),
+    ("biotech", ("biotech", "biopharma", "바이오", "신약")),
+    ("pre_profit", ("robotaxi", "pre-profit", "pre profit", "로보택시")),
+    ("automotive", ("automotive", "automobile", "자동차", "완성차")),
+    ("shipping", ("shipping", "transport", "해운", "운송")),
+    ("holding_company", ("holding company", "지주")),
+    ("consumer", ("consumer", "소비재")),
+    ("cloud", ("cloud", "platform", "클라우드", "플랫폼")),
+    ("semiconductor", ("semiconductor", "반도체")),
+)
+
+
 def _root() -> Path:
     return Path(get_settings().data_dir) / "ai_review"
 
@@ -101,6 +152,69 @@ def _directory(name: str) -> Path:
 def ensure_ai_review_layout() -> None:
     for child in ("inbox", "claims", "outbox", "rejected", "history"):
         _directory(child)
+
+
+def _skill_root() -> Path:
+    return (
+        Path(__file__).resolve().parents[2]
+        / ".agents"
+        / "skills"
+        / "thesis-monitor-daily-review"
+    )
+
+
+def knowledge_manifest() -> dict[str, str]:
+    reference_root = _skill_root() / "references"
+    manifest = _read_json(reference_root / "knowledge-manifest.json")
+    mirror = reference_root / "investment-thesis-analysis-monitoring-knowledge.md"
+    source = Path(__file__).resolve().parents[2] / str(manifest.get("source_path") or "")
+    expected = str(manifest.get("sha256") or "")
+    mirror_hash = hashlib.sha256(mirror.read_bytes()).hexdigest()
+    source_hash = hashlib.sha256(source.read_bytes()).hexdigest()
+    if not expected or mirror_hash != expected or source_hash != expected:
+        raise ValueError("Investment Knowledge mirror checksum mismatch")
+    return {
+        "name": str(manifest["knowledge_name"]),
+        "version": str(manifest["knowledge_version"]),
+        "sha256": expected,
+        "source": str(manifest["source"]),
+    }
+
+
+def investment_framework_routing(
+    industry: str | None,
+    business_model: str | None,
+    thesis_text: str,
+    *,
+    has_earnings: bool,
+    preliminary_earnings: bool,
+    has_price_context: bool,
+    has_adr_basis_risk: bool,
+) -> dict[str, object]:
+    haystack = " ".join(
+        item.lower() for item in (industry, business_model, thesis_text) if item
+    )
+    industry_key = "general"
+    for candidate, markers in _INDUSTRY_MARKERS:
+        if any(marker in haystack for marker in markers):
+            industry_key = candidate
+            break
+    required = list(_CORE_FRAMEWORKS)
+    if framework := _INDUSTRY_FRAMEWORKS.get(industry_key):
+        required.append(framework)
+    if has_earnings:
+        required.extend(("financial_calculation_safety", "earnings_quality"))
+    if preliminary_earnings:
+        required.append("provisional_earnings")
+    if has_price_context:
+        required.extend(("price_ohlcv", "holder_new_buyer"))
+    if has_adr_basis_risk:
+        required.append("adr_share_basis")
+    return {
+        "industry_key": industry_key,
+        "required_frameworks": list(dict.fromkeys(required)),
+        "knowledge_index": "references/knowledge-index.md",
+    }
 
 
 def _atomic_json(path: Path, payload: object) -> None:
@@ -221,6 +335,19 @@ def _material_evidence(assessment: ThesisAssessment) -> list[dict[str, object]]:
                 "title": title,
                 "direction": str(item.get("direction") or "neutral"),
                 "materiality": materiality,
+                **{
+                    key: value
+                    for key in (
+                        "contract_name",
+                        "contract_amount",
+                        "counterparty",
+                        "contract_period",
+                        "sales_ratio_pct",
+                        "region",
+                        "relevance_score",
+                    )
+                    if (value := _public_value(item.get(key))) is not None
+                },
                 "event_fingerprint": fingerprint,
             }
         )
@@ -330,41 +457,157 @@ def _fact_catalog(
     valuation: dict[str, object],
     price: dict[str, object],
 ) -> list[dict[str, object]]:
-    ticker = assessment.ticker
-    facts: list[dict[str, object]] = []
-    for index, item in enumerate(evidence, start=1):
+    facts = [fact for item in evidence if (fact := canonical_event_fact(item))]
+    currency = str(valuation.get("currency") or "unknown")
+    period = str(valuation.get("latest_earnings_period") or "latest")
+    earnings_fields: dict[str, object] = {
+        "period": period,
+        "preliminary": bool(valuation.get("earnings_context_is_preliminary")),
+    }
+    earnings_values = {
+        "revenue": "latest_revenue",
+        "operating_income": "latest_operating_income",
+    }
+    for target, source in earnings_values.items():
+        if (value := valuation.get(source)) is not None:
+            earnings_fields[target] = {"value": value, "currency": currency}
+    for target, source in (
+        ("operating_margin_pct", "latest_operating_margin"),
+        ("revenue_qoq_pct", "latest_revenue_qoq"),
+        ("revenue_yoy_pct", "latest_revenue_yoy"),
+        ("operating_income_qoq_pct", "latest_operating_income_qoq"),
+        ("operating_income_yoy_pct", "latest_operating_income_yoy"),
+    ):
+        if (value := valuation.get(source)) is not None:
+            earnings_fields[target] = value
+    if len(earnings_fields) > 2:
         facts.append(
             {
-                "fact_id": f"{ticker}:event:{index}:{item['event_fingerprint']}",
-                "category": "event",
-                "fact": item,
+                "fact_id": f"earnings:{period}",
+                "fact_type": "earnings",
+                "as_of_date": period,
+                "fields": earnings_fields,
             }
         )
-    if valuation:
+    valuation_fields = {
+        key: value
+        for key, value in valuation.items()
+        if key
+        in {
+            "ttm_eps",
+            "bvps",
+            "forward_eps",
+            "forward_bvps",
+            "trailing_pe",
+            "price_to_book",
+            "forward_pe",
+            "forward_price_to_book",
+            "forward_pe_source",
+            "forward_pe_method",
+            "forward_price_to_book_source",
+            "forward_price_to_book_method",
+            "forecast_method",
+            "forward_basis",
+            "forward_book_basis",
+            "estimate_period",
+            "historical_comparability",
+            "historical_pe_statistics",
+            "historical_pb_statistics",
+            "historical_comparison_withheld",
+            "valuation_relative_position",
+            "valuation_relative_basis",
+        }
+    }
+    if valuation_fields:
+        valuation_fields["currency"] = currency
         facts.append(
             {
-                "fact_id": f"{ticker}:valuation",
-                "category": "earnings_valuation",
-                "fact": valuation,
+                "fact_id": "valuation:current",
+                "fact_type": "valuation",
+                "as_of_date": str(valuation.get("price_as_of") or ""),
+                "fields": valuation_fields,
             }
         )
-    if price.get("price"):
+    price_fields = price.get("price")
+    if isinstance(price_fields, dict) and price_fields:
         facts.append(
             {
-                "fact_id": f"{ticker}:price",
-                "category": "price",
-                "fact": price["price"],
+                "fact_id": "price:current",
+                "fact_type": "price",
+                "as_of_date": str(price_fields.get("price_as_of") or ""),
+                "fields": price_fields,
             }
         )
-    if price.get("supply"):
+    supply_fields = price.get("supply")
+    if isinstance(supply_fields, dict) and supply_fields:
         facts.append(
             {
-                "fact_id": f"{ticker}:supply",
-                "category": "positioning",
-                "fact": price["supply"],
+                "fact_id": f"positioning:{supply_fields.get('as_of_date') or 'latest'}",
+                "fact_type": "positioning",
+                "as_of_date": str(supply_fields.get("as_of_date") or ""),
+                "fields": supply_fields,
             }
         )
+    snapshot = _dict(assessment.thesis_snapshot)
+    for item in snapshot.get("capital_action_materiality", []):
+        if isinstance(item, dict) and (fact := canonical_capital_action_fact(item)):
+            facts.append(fact)
     return facts
+
+
+def _numeric_unit(field_path: str, fields: dict[str, object]) -> str:
+    key = field_path.rsplit(".", 1)[-1]
+    if key == "value":
+        parent_path = field_path.rsplit(".", 1)[0]
+        node: object = fields
+        for part in parent_path.split(".")[1:]:
+            node = node.get(part) if isinstance(node, dict) else None
+        if isinstance(node, dict) and node.get("currency"):
+            return str(node["currency"])
+    if key.endswith("_pct") or key in {
+        "change_pct",
+        "percent_change",
+        "foreign_holding_ratio",
+        "current_percentile",
+    }:
+        return "pct"
+    if "shares" in key or key.endswith("_qty") or "_qty_" in key:
+        return "shares"
+    if key in {"trailing_pe", "price_to_book", "forward_pe", "forward_price_to_book"}:
+        return "x"
+    if key in {"ttm_eps", "bvps", "forward_eps", "forward_bvps", "current_price"}:
+        return str(fields.get("currency") or "unknown")
+    return "number"
+
+
+def _numeric_registry(facts: list[dict[str, object]]) -> list[dict[str, object]]:
+    registry: list[dict[str, object]] = []
+    for fact in facts:
+        fact_id = str(fact.get("fact_id") or "")
+        fields = fact.get("fields")
+        if not fact_id or not isinstance(fields, dict):
+            continue
+
+        def walk(value: object, path: str) -> None:
+            if isinstance(value, dict):
+                for key, item in value.items():
+                    walk(item, f"{path}.{key}")
+            elif isinstance(value, list):
+                for index, item in enumerate(value):
+                    walk(item, f"{path}.{index}")
+            elif isinstance(value, (int, float)) and not isinstance(value, bool):
+                registry.append(
+                    {
+                        "fact_id": fact_id,
+                        "field_path": path,
+                        "value": value,
+                        "unit": _numeric_unit(path, fields),
+                        "semantic_type": path.rsplit(".", 1)[-1],
+                    }
+                )
+
+        walk(fields, "fields")
+    return registry
 
 
 def _stock_packet(
@@ -380,14 +623,42 @@ def _stock_packet(
     ).first()
     if thesis is None:
         return None
+    company = session.exec(
+        select(Company).where(Company.ticker == assessment.ticker)
+    ).first()
     evidence = _material_evidence(assessment)
     valuation = _valuation_payload(assessment)
     price = _price_payload(assessment)
     previous = _previous_assessment(session, assessment)
     current_expectation = _public_value(_dict(assessment.market_expectation_assessment))
+    thesis_text = " ".join(
+        filter(
+            None,
+            (
+                thesis.core_thesis,
+                json.dumps(_dict(thesis.valuation_framework), ensure_ascii=False),
+                json.dumps(_list(thesis.thesis_drivers), ensure_ascii=False),
+            ),
+        )
+    )
+    industry = _clean_text(company.industry) if company is not None else None
+    business_model = _clean_text(company.business_units) if company is not None else None
+    routing = investment_framework_routing(
+        industry,
+        business_model,
+        thesis_text,
+        has_earnings=valuation.get("latest_revenue") is not None,
+        preliminary_earnings=bool(valuation.get("earnings_context_is_preliminary")),
+        has_price_context=bool(price.get("price")),
+        has_adr_basis_risk="adr" in thesis_text.lower()
+        or "adr" in json.dumps(valuation, ensure_ascii=False).lower(),
+    )
     stock = {
         "ticker": assessment.ticker,
         "company_name": item.company_name,
+        "industry": industry,
+        "business_model": business_model,
+        "knowledge_routing": routing,
         "thesis_version": assessment.thesis_version,
         "assessment_mode": _assessment_mode(assessment),
         "thesis": {
@@ -443,7 +714,9 @@ def _stock_packet(
             else None
         ),
     }
-    stock["fact_catalog"] = _fact_catalog(assessment, evidence, valuation, price)
+    facts = _fact_catalog(assessment, evidence, valuation, price)
+    stock["fact_catalog"] = facts
+    stock["numeric_registry"] = _numeric_registry(facts)
     return stock
 
 
@@ -457,15 +730,21 @@ def _market_packet(
     for index, text in enumerate(digest.macro.key_changes, start=1):
         if clean := _clean_text(text):
             market_facts.append(
-                {"fact_id": f"market:change:{index}", "category": "macro", "fact": clean}
+                {
+                    "fact_id": f"market:change:{index}",
+                    "fact_type": "macro_change",
+                    "as_of_date": run_date.isoformat(),
+                    "fields": {"text": clean},
+                }
             )
     night_futures = [asdict(item) for item in digest.night_futures.items]
     for index, item in enumerate(night_futures, start=1):
         market_facts.append(
             {
                 "fact_id": f"market:night_futures:{index}",
-                "category": "night_futures",
-                "fact": item,
+                "fact_type": "night_futures",
+                "as_of_date": str(item.get("session_date") or run_date),
+                "fields": _public_value(item),
             }
         )
     fx_items = []
@@ -473,7 +752,12 @@ def _market_packet(
         fx_items = [asdict(item) for item in digest.kr_close_fx.items]
         for index, item in enumerate(fx_items, start=1):
             market_facts.append(
-                {"fact_id": f"market:fx:{index}", "category": "fx", "fact": item}
+                {
+                    "fact_id": f"market:fx:{index}",
+                    "fact_type": "fx",
+                    "as_of_date": run_date.isoformat(),
+                    "fields": _public_value(item),
+                }
             )
     briefing = session.exec(
         select(MacroBriefing).where(
@@ -500,6 +784,11 @@ def _market_packet(
         "fx": fx_items,
         "data_cautions": _clean_texts(digest.data_quality.items),
         "fact_catalog": market_facts,
+        "numeric_registry": _numeric_registry(market_facts),
+        "knowledge_routing": {
+            "required_frameworks": [*_CORE_FRAMEWORKS, "macro_transmission"],
+            "knowledge_index": "references/knowledge-index.md",
+        },
     }
 
 
@@ -535,8 +824,11 @@ def build_ai_review_packet(
     ]
     if len(stocks) != run.success_count:
         return None
+    knowledge = knowledge_manifest()
     body = {
         "schema_version": PACKET_SCHEMA_VERSION,
+        "analysis_policy_version": ANALYSIS_POLICY_VERSION,
+        "knowledge": knowledge,
         "market": market,
         "assessment_date": run_date.isoformat(),
         "source_monitor_run_id": str(run.id),
@@ -558,7 +850,6 @@ def build_ai_review_packet(
         **body,
         "packet_id": packet_id,
         "generated_at": (generated_at or datetime.now(UTC)).astimezone(UTC).isoformat(),
-        "analysis_policy_version": ANALYSIS_POLICY_VERSION,
     }
 
 
@@ -599,9 +890,13 @@ def try_write_ai_review_packet(
         return PacketWriteResult(status="failed", reason=type(exc).__name__)
 
 
-def _completion_name(packet_id: str, policy_version: str) -> str:
+def _completion_name(
+    packet_id: str,
+    policy_version: str,
+    knowledge_sha256: str,
+) -> str:
     safe_policy = re.sub(r"[^A-Za-z0-9_.-]+", "-", policy_version)
-    return f"{packet_id}--{safe_policy}.json"
+    return f"{packet_id}--{safe_policy}--{knowledge_sha256[:12]}.json"
 
 
 def _read_json(path: Path) -> dict[str, object]:
@@ -645,6 +940,14 @@ def claim_next_ai_review_packet(
                 continue
             packet_id = str(packet["packet_id"])
             policy = str(packet.get("analysis_policy_version") or ANALYSIS_POLICY_VERSION)
+            knowledge = packet.get("knowledge")
+            knowledge_sha = (
+                str(knowledge.get("sha256") or "")
+                if isinstance(knowledge, dict)
+                else ""
+            )
+            if not knowledge_sha:
+                continue
         except (KeyError, ValueError, json.JSONDecodeError):
             continue
         identity = (
@@ -663,7 +966,11 @@ def claim_next_ai_review_packet(
     for _generated_at, packet_path, packet in ordered:
         packet_id = str(packet["packet_id"])
         policy = str(packet.get("analysis_policy_version") or ANALYSIS_POLICY_VERSION)
-        output_name = _completion_name(packet_id, policy)
+        knowledge = packet.get("knowledge")
+        knowledge_sha = (
+            str(knowledge.get("sha256") or "") if isinstance(knowledge, dict) else ""
+        )
+        output_name = _completion_name(packet_id, policy, knowledge_sha)
         final_path = _directory("outbox") / output_name
         if final_path.exists():
             continue
@@ -679,15 +986,19 @@ def claim_next_ai_review_packet(
             except (KeyError, ValueError, json.JSONDecodeError):
                 pass
             claim_path.unlink(missing_ok=True)
+        claim_id = str(uuid.uuid4())
+        temp_path = final_path.parent / f"{final_path.stem}--{claim_id}.json.tmp"
         claim = {
             "packet_id": packet_id,
+            "claim_id": claim_id,
             "market": market,
             "analysis_policy_version": policy,
             "owner": owner or socket.gethostname(),
             "claimed_at": current.isoformat(),
             "expires_at": (current + lease).isoformat(),
+            "lease_expires_at": (current + lease).isoformat(),
             "packet_path": str(packet_path),
-            "temp_output_path": str(final_path.with_suffix(".json.tmp")),
+            "temp_output_path": str(temp_path),
             "final_output_path": str(final_path),
         }
         try:
@@ -700,9 +1011,10 @@ def claim_next_ai_review_packet(
         return ClaimResult(
             status="claimed",
             packet_id=packet_id,
+            claim_id=claim_id,
             packet_path=str(packet_path),
             claim_path=str(claim_path),
-            temp_output_path=str(final_path.with_suffix(".json.tmp")),
+            temp_output_path=str(temp_path),
             final_output_path=str(final_path),
         )
     return ClaimResult(status="no_pending_packet", reason="no_eligible_unclaimed_packet")
@@ -711,7 +1023,8 @@ def claim_next_ai_review_packet(
 def _review_text(review: AIStockReview) -> str:
     return "\n".join(
         [
-            *review.interpretation,
+            *(item.text for item in review.interpretation),
+            *(item.usage for item in review.numeric_claims),
             *review.unknowns,
             review.summary,
             review.holder_view,
@@ -723,7 +1036,131 @@ def _review_text(review: AIStockReview) -> str:
 
 def _numeric_tokens(value: object) -> set[str]:
     text = json.dumps(value, ensure_ascii=False, default=str) if not isinstance(value, str) else value
-    return {match.group(0).lstrip("+") for match in _NUMBER.finditer(text)}
+    tokens: set[str] = set()
+    for match in _NUMBER.finditer(text):
+        raw = match.group(0).lstrip("+").rstrip("%").replace(",", "")
+        try:
+            tokens.add(f"{float(raw):.12g}")
+        except ValueError:
+            continue
+    return tokens
+
+
+def _provenance_tokens(text: str) -> set[str]:
+    cleaned = re.sub(r"\b(?:19|20)\d{2}[-./]\d{1,2}[-./]\d{1,2}\b", "", text)
+    cleaned = re.sub(r"\b(?:19|20)\d{2}\s*년\b", "", cleaned)
+    cleaned = re.sub(r"\bQ[1-4]\b|\b[1-4]Q\b", "", cleaned, flags=re.IGNORECASE)
+    cleaned = re.sub(r"\b[1-4]\s*분기\b", "", cleaned)
+    cleaned = re.sub(r"\b(?:thesis\s*)?version\s*\d+\b", "", cleaned, flags=re.IGNORECASE)
+    cleaned = re.sub(r"\b[1-3]\s*[~-]\s*[1-3]\s*개\b", "", cleaned)
+    return _numeric_tokens(cleaned)
+
+
+def _numbers_equal(expected: float, actual: float, unit: str) -> bool:
+    if math.isclose(expected, actual, rel_tol=1e-12, abs_tol=1e-12):
+        return True
+    if unit == "pct":
+        return any(math.isclose(round(expected, digits), actual) for digits in (1, 2, 4))
+    return False
+
+
+def _usage_unit_matches(unit: str, usage: str) -> bool:
+    lowered = usage.lower()
+    if unit == "pct":
+        return "%" in usage or "percent" in lowered or "퍼센트" in usage
+    if unit == "KRW":
+        return any(marker in usage for marker in ("원", "억원", "조")) or "krw" in lowered
+    if unit == "USD":
+        return "$" in usage or "usd" in lowered or "달러" in usage
+    if unit == "shares":
+        return "주" in usage or "share" in lowered
+    if unit == "x":
+        return "배" in usage or "multiple" in lowered
+    return True
+
+
+def _semantic_markers(field_path: str) -> tuple[str, ...]:
+    mappings = (
+        ("operating_margin", ("영업이익률", "operating margin")),
+        ("operating_income", ("영업이익", "operating income")),
+        ("revenue", ("매출", "revenue")),
+        ("current_price", ("현재가", "주가", "가격", "price")),
+        ("contract_amount", ("계약금액", "수주금액", "contract amount", "order value")),
+        ("share_ratio", ("주식", "지분", "share ratio")),
+        ("market_cap_ratio", ("시가총액", "market cap")),
+        ("forward_pe", ("fper", "forward pe", "선행 per")),
+        ("trailing_pe", ("per", "trailing pe")),
+        ("price_to_book", ("pbr", "price to book")),
+        ("eps", ("eps", "주당순이익")),
+        ("bvps", ("bvps", "주당순자산")),
+    )
+    lowered = field_path.lower()
+    for marker, labels in mappings:
+        if marker in lowered:
+            return labels
+    return ()
+
+
+def _usage_semantic_matches(field_path: str, usage: str) -> bool:
+    labels = _semantic_markers(field_path)
+    lowered = usage.lower()
+    return not labels or any(label in lowered for label in labels)
+
+
+def _allowed_display_tokens(expected: float, unit: str) -> set[str]:
+    tokens = _numeric_tokens(str(expected))
+    if unit == "pct":
+        for digits in (1, 2, 4):
+            tokens.update(_numeric_tokens(str(round(expected, digits))))
+    if unit == "KRW" and (compact := compact_krw_amount(expected)):
+        tokens.update(_numeric_tokens(compact))
+    return tokens
+
+
+def _validate_numeric_claims(
+    prefix: str,
+    review: object,
+    registry_value: object,
+    rendered: str,
+) -> list[str]:
+    errors: list[str] = []
+    registry = {
+        (str(item.get("fact_id")), str(item.get("field_path"))): item
+        for item in registry_value
+        if isinstance(item, dict)
+    } if isinstance(registry_value, list) else {}
+    claims = getattr(review, "numeric_claims", [])
+    claim_usage_tokens: set[str] = set()
+    facts_used = set(getattr(review, "facts_used", []))
+    for claim in claims:
+        source = registry.get((claim.fact_id, claim.field_path))
+        if source is None:
+            errors.append(f"{prefix}:numeric_provenance_not_found:{claim.fact_id}:{claim.field_path}")
+            continue
+        expected = float(source["value"])
+        expected_unit = str(source["unit"])
+        if claim.fact_id not in facts_used:
+            errors.append(f"{prefix}:numeric_fact_not_declared:{claim.fact_id}")
+        if claim.unit != expected_unit:
+            errors.append(f"{prefix}:numeric_unit_mismatch:{claim.fact_id}:{claim.field_path}")
+        if not _numbers_equal(expected, claim.value, expected_unit):
+            errors.append(f"{prefix}:numeric_value_mismatch:{claim.fact_id}:{claim.field_path}")
+        if not _usage_unit_matches(expected_unit, claim.usage):
+            errors.append(f"{prefix}:numeric_usage_unit_mismatch:{claim.fact_id}:{claim.field_path}")
+        if not _usage_semantic_matches(claim.field_path, claim.usage):
+            errors.append(f"{prefix}:numeric_usage_semantic_mismatch:{claim.fact_id}:{claim.field_path}")
+        display_tokens = _provenance_tokens(claim.usage)
+        if not display_tokens or not display_tokens.issubset(
+            _allowed_display_tokens(expected, expected_unit)
+        ):
+            errors.append(
+                f"{prefix}:numeric_usage_value_mismatch:{claim.fact_id}:{claim.field_path}"
+            )
+        claim_usage_tokens.update(display_tokens)
+    unsupported = sorted(_provenance_tokens(rendered) - claim_usage_tokens)
+    if unsupported:
+        errors.append(f"{prefix}:numbers_without_provenance:{','.join(unsupported)}")
+    return errors
 
 
 def _validate_stock_review(
@@ -743,12 +1180,38 @@ def _validate_stock_review(
     rendered = _review_text(review)
     if _INTERNAL_TEXT.search(rendered):
         errors.append(f"{review.ticker}:forbidden_internal_metadata")
-    allowed_numbers = _numeric_tokens(stock)
-    unsupported_numbers = sorted(_numeric_tokens(rendered) - allowed_numbers)
-    if unsupported_numbers:
+    interpretation_facts = {
+        fact_id for item in review.interpretation for fact_id in item.fact_ids
+    }
+    unknown_interpretation_facts = sorted(interpretation_facts - valid_fact_ids)
+    if unknown_interpretation_facts:
         errors.append(
-            f"{review.ticker}:numbers_not_in_packet:{','.join(unsupported_numbers)}"
+            f"{review.ticker}:interpretation_unknown_fact_ids:"
+            + ",".join(unknown_interpretation_facts)
         )
+    routing = stock.get("knowledge_routing")
+    allowed_frameworks = {
+        str(item)
+        for item in routing.get("required_frameworks", [])
+    } if isinstance(routing, dict) else set()
+    invalid_frameworks = sorted(set(review.frameworks_used) - allowed_frameworks)
+    if invalid_frameworks:
+        errors.append(
+            f"{review.ticker}:framework_not_allowed:{','.join(invalid_frameworks)}"
+        )
+    if isinstance(routing, dict):
+        industry_key = str(routing.get("industry_key") or "general")
+        industry_framework = _INDUSTRY_FRAMEWORKS.get(industry_key)
+        if industry_framework and industry_framework not in review.frameworks_used:
+            errors.append(f"{review.ticker}:industry_framework_missing:{industry_framework}")
+    errors.extend(
+        _validate_numeric_claims(
+            review.ticker,
+            review,
+            stock.get("numeric_registry"),
+            rendered,
+        )
+    )
     valuation = stock.get("valuation", {})
     if isinstance(valuation, dict):
         forward_source = str(valuation.get("forward_pe_source") or "")
@@ -790,6 +1253,14 @@ def validate_ai_review_output(
     for key in ("packet_id", "market", "assessment_date", "analysis_policy_version"):
         if getattr(output, key) != packet.get(key):
             errors.append(f"identity_mismatch:{key}")
+    knowledge = packet.get("knowledge")
+    if not isinstance(knowledge, dict):
+        errors.append("identity_mismatch:knowledge")
+    else:
+        if output.knowledge_version != knowledge.get("version"):
+            errors.append("identity_mismatch:knowledge_version")
+        if output.knowledge_sha256 != knowledge.get("sha256"):
+            errors.append("identity_mismatch:knowledge_sha256")
     if output.schema_version != OUTPUT_SCHEMA_VERSION:
         errors.append("identity_mismatch:schema_version")
     stocks = {
@@ -816,9 +1287,17 @@ def validate_ai_review_output(
     } if isinstance(packet.get("market_context"), dict) else set()
     if set(output.market_review.facts_used) - market_fact_ids:
         errors.append("market_review:unknown_fact_ids")
+    market_interpretation_facts = {
+        fact_id
+        for item in output.market_review.interpretation
+        for fact_id in item.fact_ids
+    }
+    if market_interpretation_facts - market_fact_ids:
+        errors.append("market_review:interpretation_unknown_fact_ids")
     market_text = "\n".join(
         [
-            *output.market_review.interpretation,
+            *(item.text for item in output.market_review.interpretation),
+            *(item.usage for item in output.market_review.numeric_claims),
             *output.market_review.unknowns,
             output.market_review.summary,
         ]
@@ -826,14 +1305,32 @@ def validate_ai_review_output(
     if _INTERNAL_TEXT.search(market_text):
         errors.append("market_review:forbidden_internal_metadata")
     market_context = packet.get("market_context", {})
-    unsupported_market_numbers = sorted(
-        _numeric_tokens(market_text) - _numeric_tokens(market_context)
+    market_routing = (
+        market_context.get("knowledge_routing")
+        if isinstance(market_context, dict)
+        else None
     )
-    if unsupported_market_numbers:
+    allowed_market_frameworks = {
+        str(item)
+        for item in market_routing.get("required_frameworks", [])
+    } if isinstance(market_routing, dict) else set()
+    invalid_market_frameworks = sorted(
+        set(output.market_review.frameworks_used) - allowed_market_frameworks
+    )
+    if invalid_market_frameworks:
         errors.append(
-            "market_review:numbers_not_in_packet:"
-            + ",".join(unsupported_market_numbers)
+            "market_review:framework_not_allowed:" + ",".join(invalid_market_frameworks)
         )
+    errors.extend(
+        _validate_numeric_claims(
+            "market_review",
+            output.market_review,
+            market_context.get("numeric_registry")
+            if isinstance(market_context, dict)
+            else None,
+            market_text,
+        )
+    )
     return output, list(dict.fromkeys(errors))
 
 
@@ -848,6 +1345,11 @@ def _comparison_payload(
         if isinstance(item, dict) and item.get("ticker")
     }
     comparisons = []
+    stock_packets = {
+        str(item["ticker"]): item
+        for item in packet.get("stocks", [])
+        if isinstance(item, dict) and item.get("ticker")
+    }
     for review in output.stock_reviews:
         base = deterministic.get(review.ticker, {})
         base_status = (
@@ -859,6 +1361,10 @@ def _comparison_payload(
         guardrail_conflicts = []
         if warnings and review.ai_thesis_assessment == "no_material_change":
             guardrail_conflicts.append("deterministic_warning_requires_human_review")
+        if any(not item.fact_ids for item in review.interpretation):
+            guardrail_conflicts.append("interpretation_without_fact_reference")
+        stock_packet = stock_packets.get(review.ticker, {})
+        guardrail_conflicts.extend(_semantic_guardrail_flags(review, stock_packet))
         comparisons.append(
             {
                 "ticker": review.ticker,
@@ -868,12 +1374,18 @@ def _comparison_payload(
                 "status_match": base_status == review.ai_thesis_assessment,
                 "deterministic_warnings": warnings,
                 "guardrail_conflicts": guardrail_conflicts,
+                "frameworks_used": review.frameworks_used,
+                "facts_used": review.facts_used,
+                "numeric_claims": [item.model_dump() for item in review.numeric_claims],
+                "unknowns": review.unknowns,
                 "ai_summary": review.summary,
             }
         )
     return {
         "packet_id": output.packet_id,
         "analysis_policy_version": output.analysis_policy_version,
+        "knowledge_version": output.knowledge_version,
+        "knowledge_sha256": output.knowledge_sha256,
         "mode": get_settings().ai_review_mode,
         "validated_at": validated_at.isoformat(),
         "official_assessment_mutated": False,
@@ -882,36 +1394,143 @@ def _comparison_payload(
     }
 
 
+def _semantic_guardrail_flags(
+    review: AIStockReview,
+    stock: dict[str, object],
+) -> list[str]:
+    assertions = "\n".join(
+        [
+            *(item.text for item in review.interpretation),
+            review.summary,
+            review.holder_view,
+            review.new_buyer_view,
+        ]
+    ).lower()
+    facts = json.dumps(stock.get("fact_catalog", []), ensure_ascii=False).lower()
+    change = r"(?:improv|increas|decreas|rose|fell|개선|증가|감소|상승|하락|확대|축소)"
+    metrics = {
+        "free_cash_flow": (r"(?:free cash flow|\bfcf\b|잉여현금흐름)", ("free_cash_flow", "fcf")),
+        "inventory": (r"(?:inventory|재고)", ("inventory", "재고")),
+        "roic": (r"(?:\broic\b|투하자본수익률)", ("roic",)),
+        "nrr": (r"(?:\bnrr\b|net revenue retention)", ("nrr", "net_revenue_retention")),
+        "arr": (r"(?:\barr\b|annual recurring revenue)", ("arr", "annual_recurring_revenue")),
+        "project_margin": (r"(?:project margin|contract margin|수주 마진|프로젝트 마진)", ("project_margin", "contract_margin")),
+    }
+    flags: list[str] = []
+    for name, (metric_pattern, fact_markers) in metrics.items():
+        if (
+            re.search(metric_pattern, assertions)
+            and re.search(change, assertions)
+            and not any(marker in facts for marker in fact_markers)
+        ):
+            flags.append(f"unsupported_claim:{name}")
+    routing = stock.get("knowledge_routing")
+    industry_key = (
+        str(routing.get("industry_key") or "general")
+        if isinstance(routing, dict)
+        else "general"
+    )
+    if industry_key == "memory" and re.search(
+        r"(?:low|낮은)\s*(?:current\s*)?per.*(?:undervalu|저평가)",
+        assertions,
+    ):
+        flags.append("memory_low_per_only_conclusion")
+    fact_types = {
+        str(item.get("fact_type") or "")
+        for item in stock.get("fact_catalog", [])
+        if isinstance(item, dict) and item.get("fact_id") in review.facts_used
+    }
+    if review.ai_thesis_assessment in {"strengthened", "weakened"} and fact_types and fact_types <= {
+        "price",
+        "positioning",
+    }:
+        flags.append("price_or_positioning_only_thesis_change")
+    return flags
+
+
 def finalize_ai_review_output(
     session: Session,
     packet_id: str,
     *,
+    claim_id: str,
     policy_version: str = ANALYSIS_POLICY_VERSION,
     now: datetime | None = None,
 ) -> OutputValidationResult:
     ensure_ai_review_layout()
     packet_path = _directory("inbox") / f"{packet_id}.json"
-    output_name = _completion_name(packet_id, policy_version)
-    final_path = _directory("outbox") / output_name
-    temp_path = final_path.with_suffix(".json.tmp")
-    if final_path.exists():
-        return OutputValidationResult(
-            status="already_completed", packet_id=packet_id, output_path=str(final_path)
-        )
-    if not packet_path.exists() or not temp_path.exists():
+    if not packet_path.exists():
         return OutputValidationResult(
             status="not_ready",
             packet_id=packet_id,
-            errors=("packet_or_temp_output_missing",),
+            errors=("packet_missing",),
         )
     try:
         packet = _read_json(packet_path)
+        knowledge = packet.get("knowledge")
+        knowledge_sha = (
+            str(knowledge.get("sha256") or "") if isinstance(knowledge, dict) else ""
+        )
+    except (ValueError, json.JSONDecodeError) as exc:
+        return OutputValidationResult(
+            status="rejected", packet_id=packet_id, errors=(type(exc).__name__,)
+        )
+    output_name = _completion_name(packet_id, policy_version, knowledge_sha)
+    final_path = _directory("outbox") / output_name
+    temp_path = final_path.parent / f"{final_path.stem}--{claim_id}.json.tmp"
+    if final_path.exists():
+        try:
+            completed_claim = str(_read_json(final_path).get("claim_id") or "")
+        except (ValueError, json.JSONDecodeError):
+            completed_claim = ""
+        if completed_claim != claim_id:
+            if temp_path.exists():
+                rejected = _directory("rejected") / (
+                    f"{output_name}.{claim_id}.stale_claim_output"
+                )
+                os.replace(temp_path, rejected)
+            return OutputValidationResult(
+                status="rejected",
+                packet_id=packet_id,
+                output_path=str(final_path),
+                errors=("stale_claim_output",),
+            )
+        return OutputValidationResult(
+            status="already_completed", packet_id=packet_id, output_path=str(final_path)
+        )
+    claim_path = _directory("claims") / f"{packet_id}.json"
+    try:
+        active_claim = _read_json(claim_path)
+    except (FileNotFoundError, ValueError, json.JSONDecodeError):
+        active_claim = {}
+    if str(active_claim.get("claim_id") or "") != claim_id:
+        if temp_path.exists():
+            rejected = _directory("rejected") / (
+                f"{output_name}.{claim_id}.stale_claim_output"
+            )
+            os.replace(temp_path, rejected)
+        return OutputValidationResult(
+            status="rejected",
+            packet_id=packet_id,
+            errors=("stale_claim_output",),
+        )
+    active_temp = Path(str(active_claim.get("temp_output_path") or temp_path))
+    if active_temp != temp_path or not temp_path.exists():
+        return OutputValidationResult(
+            status="not_ready",
+            packet_id=packet_id,
+            errors=("claim_temp_output_missing",),
+        )
+    try:
         candidate = _read_json(temp_path)
     except (ValueError, json.JSONDecodeError) as exc:
         return OutputValidationResult(
             status="rejected", packet_id=packet_id, errors=(type(exc).__name__,)
         )
-    output, errors = validate_ai_review_output(session, packet, candidate)
+    if candidate.get("claim_id") != claim_id:
+        output = None
+        errors = ["stale_claim_output"]
+    else:
+        output, errors = validate_ai_review_output(session, packet, candidate)
     if output is None or errors:
         rejected = _directory("rejected") / f"{output_name}.{int(datetime.now(UTC).timestamp())}"
         os.replace(temp_path, rejected)
@@ -919,6 +1538,18 @@ def finalize_ai_review_output(
             status="rejected", packet_id=packet_id, errors=tuple(errors)
         )
     validated_at = (now or datetime.now(UTC)).astimezone(UTC)
+    try:
+        final_claim = _read_json(claim_path)
+    except (FileNotFoundError, ValueError, json.JSONDecodeError):
+        final_claim = {}
+    if str(final_claim.get("claim_id") or "") != claim_id:
+        rejected = _directory("rejected") / f"{output_name}.{claim_id}.stale_claim_output"
+        os.replace(temp_path, rejected)
+        return OutputValidationResult(
+            status="rejected",
+            packet_id=packet_id,
+            errors=("stale_claim_output",),
+        )
     os.replace(temp_path, final_path)
     history_dir = _directory("history") / f"{validated_at:%Y}" / f"{validated_at:%m}"
     history_dir.mkdir(parents=True, exist_ok=True)
@@ -926,7 +1557,7 @@ def finalize_ai_review_output(
     _atomic_json(history_output, candidate)
     comparison_path = history_dir / output_name.replace(".json", ".comparison.json")
     _atomic_json(comparison_path, _comparison_payload(packet, output, validated_at))
-    (_directory("claims") / f"{packet_id}.json").unlink(missing_ok=True)
+    claim_path.unlink(missing_ok=True)
     return OutputValidationResult(
         status="completed",
         packet_id=packet_id,
@@ -945,7 +1576,13 @@ def ai_review_health(
         packet = _read_json(path)
         packet_id = str(packet.get("packet_id") or "")
         policy = str(packet.get("analysis_policy_version") or ANALYSIS_POLICY_VERSION)
-        final = _directory("outbox") / _completion_name(packet_id, policy)
+        knowledge = packet.get("knowledge")
+        knowledge_sha = (
+            str(knowledge.get("sha256") or "") if isinstance(knowledge, dict) else ""
+        )
+        final = _directory("outbox") / _completion_name(
+            packet_id, policy, knowledge_sha
+        )
         claim = _directory("claims") / f"{packet_id}.json"
         packets.append(
             {

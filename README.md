@@ -273,8 +273,10 @@ ready or reaches its deadline. A successful Korean close run writes its packet a
 assessment. Packets live under `data/ai_review/inbox`; Codex Scheduled Tasks claim them, write strict
 JSON to `outbox`, and run the local validator. No OpenAI API key or API call is used by this path.
 
-The reusable workflow is `.agents/skills/thesis-monitor-daily-review`. Primary and backup tasks scan
-the same pending queue, while lease claims and packet/policy completion keys prevent duplicate work.
+The reusable workflow is `.agents/skills/thesis-monitor-daily-review`. It routes each packet through
+the full checked Knowledge mirror and requires fact/field-level numeric provenance. Primary and backup
+tasks scan the same pending queue, while UUID-fenced lease claims and packet/policy/Knowledge
+completion keys prevent duplicate or stale-worker output.
 See `docs/ai_review_operations.md` for the schedule and recovery checks. Shadow output is comparison
 history only: official `ThesisAssessment`, deterministic Telegram, and notification retry state remain
 unchanged until a later, explicit assist-mode approval.

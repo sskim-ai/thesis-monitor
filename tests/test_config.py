@@ -43,6 +43,8 @@ def test_known_ai_review_environment_settings_load(tmp_path: Path) -> None:
         [
             "AI_REVIEW_MODE=shadow",
             "AI_REVIEW_CLAIM_LEASE_MINUTES=30",
+            "AI_REVIEW_BACKUP_DELAY_MINUTES=40",
+            "AI_REVIEW_CLAIM_SAFETY_MARGIN_MINUTES=5",
             "AI_REVIEW_SHADOW_CATCHUP_HOURS=24",
         ],
     )
@@ -51,6 +53,24 @@ def test_known_ai_review_environment_settings_load(tmp_path: Path) -> None:
 
     assert settings.ai_review_mode == "shadow"
     assert settings.ai_review_claim_lease_minutes == 30
+    assert settings.ai_review_backup_delay_minutes == 40
+    assert settings.ai_review_claim_safety_margin_minutes == 5
+
+
+def test_ai_review_backup_must_run_after_lease_and_safety_margin(tmp_path: Path) -> None:
+    env_file = _write_env(
+        tmp_path / ".env",
+        [
+            "AI_REVIEW_CLAIM_LEASE_MINUTES=30",
+            "AI_REVIEW_BACKUP_DELAY_MINUTES=35",
+            "AI_REVIEW_CLAIM_SAFETY_MARGIN_MINUTES=5",
+        ],
+    )
+
+    with pytest.raises(ValidationError) as exc_info:
+        Settings(_env_file=env_file)
+
+    assert any("backup delay" in item["msg"] for item in exc_info.value.errors())
 
 
 @pytest.mark.parametrize(
