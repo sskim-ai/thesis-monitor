@@ -484,6 +484,7 @@ async def deliver_validated_ai_review(
     with _pilot_lock(packet_id):
         deliveries = _session_deliveries(session, packet)
         prepared_ids: set[int] = set()
+        deterministic_messages: list[dict[str, object]] = []
         final_messages: list[dict[str, object]] = []
         for delivery in deliveries:
             payload = json.loads(delivery.payload)
@@ -491,6 +492,16 @@ async def deliver_validated_ai_review(
                 continue
             metadata = _pilot_metadata(payload)
             state = str(metadata.get("state") or "")
+            deterministic = metadata.get("deterministic_payload")
+            if not isinstance(deterministic, dict):
+                deterministic = _clean_deterministic_payload(payload)
+            deterministic_messages.append(
+                {
+                    "delivery_id": delivery.id,
+                    "ticker": delivery.ticker,
+                    "payload": deterministic,
+                }
+            )
             if state in {"fallback_pending", "fallback_sent"}:
                 continue
             if state in {"ai_assisted_pending", "ai_assisted_sent"} and metadata.get(
@@ -498,12 +509,17 @@ async def deliver_validated_ai_review(
             ) == packet_id:
                 if delivery.id is not None:
                     prepared_ids.add(delivery.id)
+                final_messages.append(
+                    {
+                        "delivery_id": delivery.id,
+                        "ticker": delivery.ticker,
+                        "logical_identity": metadata.get("delivery_identity"),
+                        "text": str(payload.get("text") or ""),
+                    }
+                )
                 continue
             if delivery.status == "sent" and not allow_duplicate:
                 continue
-            deterministic = metadata.get("deterministic_payload")
-            if not isinstance(deterministic, dict):
-                deterministic = _clean_deterministic_payload(payload)
             deterministic_text = str(deterministic.get("text") or "").strip()
             if delivery.ticker == PILOT_MARKERS[market]:
                 text = _render_ai_market_message(
@@ -562,7 +578,16 @@ async def deliver_validated_ai_review(
                 }
             )
         session.commit()
-        _archive_messages(packet, "ai-assisted-messages.json", final_messages)
+        deterministic_archive = archive_dir / "deterministic-messages.json"
+        if deterministic_messages or not deterministic_archive.exists():
+            _archive_messages(
+                packet,
+                "deterministic-messages.json",
+                deterministic_messages,
+            )
+        ai_archive = archive_dir / "ai-assisted-messages.json"
+        if final_messages or not ai_archive.exists():
+            _archive_messages(packet, "ai-assisted-messages.json", final_messages)
         _atomic_json(
             archive_dir / "validation-result.json",
             {

@@ -217,6 +217,8 @@ async def test_ai_pass_sends_only_one_ai_assisted_set(monkeypatch, tmp_path: Pat
     assert (archive / "deterministic-messages.json").exists()
     assert (archive / "ai-assisted-messages.json").exists()
     assert (archive / "delivery-result.json").exists()
+    assert len(json.loads((archive / "deterministic-messages.json").read_text())["messages"]) == 2
+    assert len(json.loads((archive / "ai-assisted-messages.json").read_text())["messages"]) == 2
 
 
 @pytest.mark.anyio
