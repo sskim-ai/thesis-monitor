@@ -68,19 +68,43 @@ filesystem with unknown lock semantics.
 Files ending in `.json.tmp` are incomplete and are never considered completed. Every output records
 the analysis policy, Knowledge version/checksum, frameworks used, fact references, and numeric claims.
 
-## Phase 2 Review Contract
+## Phase 3 Review Contract
 
-Output schema `2` and analysis policy `daily-review-v3.1` separate company identity from thematic
-exposure. The primary industry framework comes from structured company industry, sector, business
-model, or revenue-source fields in that order. Thesis wording can add a routed secondary framework,
-such as Hyperscaler CAPEX transmission, but cannot replace a high-confidence primary framework. An
-unclassified company stays on the general framework with low confidence.
+Output schema `2` and analysis policy `daily-review-v3.2` separate company identity from thematic
+exposure. The primary industry framework comes from verified structured company industry, sector,
+business model, or revenue-source fields in that order. Every active company has a profile provenance
+record with quality and a source or documented limitation. Thesis wording can add a routed secondary
+framework, such as Hyperscaler CAPEX transmission, but cannot replace a high-confidence primary
+framework. Ambiguous identity stays on the general framework instead of being guessed from a ticker
+or theme.
 
 Every investment-related prose number is occurrence-bound. Its claim records the exact `fact_id`,
 `field_path`, backend value, unit, semantic type, prose `text_ref`, and displayed usage. A claim cannot
 cover the same token in another prose field or reuse a price as a growth rate. Only deterministic
 registry variants, including the existing KRW compact formatter and approved percentage rounding,
 may differ from the raw backend value.
+
+Numeric prose also fails closed by semantic registry. Only entries marked `registered=true` and
+`prose_allowed=true` may be cited. Revenue, margin, price, flows, valuation multiples, FX, and night
+futures each have separate labels and units; unknown or audit-only semantics cannot use a generic
+label fallback.
+
+The `daily-review-v3.2` Shadow cohort starts only after active-company profile coverage, routing smoke,
+numeric-semantic coverage, Scheduled Task activation, and exact operational-checkout revision are
+verified. Earlier results remain history but do not count toward the new 5-10 trading-day quality
+window.
+
+Verified company profiles can be refreshed without a schema migration:
+
+```bash
+.venv/bin/python -m app.jobs.populate_company_profiles --dry-run
+.venv/bin/python -m app.jobs.populate_company_profiles
+```
+
+The first command checks the dynamically discovered active universe; the second persists official
+identity fields and atomic provenance sidecars. Rerun after a confirmed merger, spin-off, or segment
+reorganization, or when a profile's `verified_at` warrants review. A thesis-version change or news
+theme is not a profile-refresh trigger.
 
 ## Security Boundary
 

@@ -48,7 +48,11 @@ Use canonical `fact_catalog` objects only. Link every interpretation to `fact_id
 
 Every investment-related number in prose requires a `numeric_claims` record tied to the exact `fact_id`, `field_path`, `semantic_type`, and prose `text_ref`. Preserve the backend value and unit; display-only KRW compaction and approved percentage rounding are allowed. A claim covers only its exact prose occurrence, and a number found elsewhere in the packet or another prose field is not interchangeable with the claimed semantic field.
 
+Numeric prose is allowlisted. Use only registry entries with `registered=true` and `prose_allowed=true`, match an approved label for that exact semantic, and use an approved display variant. Unknown semantics, audit-only denominators, and fields with unverified currency or unit stay out of narrative prose.
+
 Use structured company identity for the primary industry framework. Thesis themes, macro exposure, customer CAPEX, and secondary segments may add only routed secondary frameworks; they never replace a high-confidence primary framework. When structured identity remains ambiguous, use the general framework instead of forcing a specialized industry classification.
+
+Company-profile provenance is backend identity evidence, not an invitation to infer classifications. A verified profile may drive a specialized framework. A partial profile reduces confidence, and an ambiguous or unavailable profile stays general unless the packet contains stronger structured identity.
 
 ## Claim Fence
 

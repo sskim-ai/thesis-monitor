@@ -61,6 +61,24 @@ def _settings(monkeypatch, tmp_path: Path) -> None:
         }
     )
     monkeypatch.setattr("app.services.ai_review_service.get_settings", lambda: settings)
+    provenance_dir = tmp_path / "company_profile_provenance"
+    provenance_dir.mkdir(parents=True, exist_ok=True)
+    for ticker, taxonomy_key in (("PACKETUS", "memory"), ("123450", None)):
+        (provenance_dir / f"{ticker}.json").write_text(
+            json.dumps(
+                {
+                    "schema_version": "1",
+                    "ticker": ticker,
+                    "quality": "verified",
+                    "source": "fixture_official_profile",
+                    "source_as_of": "2026-08-13",
+                    "verified_at": "2026-08-13T00:00:00+00:00",
+                    "classification_method": "official_industry_code",
+                    "taxonomy_key": taxonomy_key,
+                }
+            ),
+            encoding="utf-8",
+        )
 
 
 def _assessment(
@@ -246,6 +264,15 @@ def _seed(session: Session) -> None:
 
 def _seed_kr(session: Session) -> None:
     ticker = "123450"
+    session.add(
+        Company(
+            ticker=ticker,
+            company_name="Packet Korea",
+            exchange="KRX",
+            industry="Industrial Products",
+            sector="Industrials",
+        )
+    )
     session.add(WatchlistItem(ticker=ticker, company_name="Packet Korea", exchange="KRX"))
     session.add(
         InvestmentThesis(
@@ -463,6 +490,14 @@ def test_kr_packet_is_ready_after_successful_close_and_contains_verified_fx(
             "change_pct": 0.08,
         }
     ]
+    assert {
+        item["field_path"]: (item["semantic_type"], item["unit"])
+        for item in packet["market_context"]["numeric_registry"]
+    } == {
+        "fields.value": ("fx_rate", "KRW"),
+        "fields.change_value": ("fx_point_change", "KRW"),
+        "fields.change_pct": ("fx_return_pct", "pct"),
+    }
 
 
 def test_claim_backup_atomic_finalize_and_shadow_no_mutation(monkeypatch, tmp_path: Path) -> None:
@@ -898,7 +933,7 @@ def test_market_numeric_prose_and_structural_dates_are_validated(
                 "field_path": "fields.percent_change",
                 "value": -3.17,
                 "unit": "pct",
-                "semantic_type": "percent_change",
+                "semantic_type": "market_return_pct",
                 "text_ref": "summary",
                 "usage": "시장 등락률은 -3.17%",
             }
@@ -939,7 +974,7 @@ def test_signed_positive_market_numeric_prose_is_grounded(
                 "field_path": "fields.percent_change",
                 "value": 0.67,
                 "unit": "pct",
-                "semantic_type": "percent_change",
+                "semantic_type": "market_return_pct",
                 "text_ref": "summary",
                 "usage": "시장 등락률은 +0.67%",
             }
@@ -1401,12 +1436,347 @@ def test_knowledge_v3_sources_decisions_and_safety_markers() -> None:
 
 
 def test_knowledge_v3_policy_identity_starts_new_shadow_cohort() -> None:
-    assert ai_review_service.ANALYSIS_POLICY_VERSION == "daily-review-v3.1"
+    assert ai_review_service.ANALYSIS_POLICY_VERSION == "daily-review-v3.2"
     manifest = knowledge_manifest()
     assert manifest["version"] == "3.0"
     assert manifest["sha256"] == (
         "559ad45e4dd86cb0aec9bb09b51a5dc816bf323e8c2b4fd050cf28960a5a9d18"
     )
+
+
+def test_numeric_semantics_fail_closed_for_unknown_and_disallowed_fields(
+    monkeypatch,
+    tmp_path: Path,
+) -> None:
+    _settings(monkeypatch, tmp_path)
+    with Session(_engine()) as session:
+        _seed(session)
+        packet = build_ai_review_packet(session, RUN_DATE, "us")
+        assert packet is not None
+        stock = packet["stocks"][0]
+        stock["fact_catalog"].append(
+            {
+                "fact_id": "event:mystery",
+                "fact_type": "mystery_event",
+                "as_of_date": RUN_DATE.isoformat(),
+                "fields": {"mystery_ratio": 7.0},
+            }
+        )
+        stock["numeric_registry"] = ai_review_service._numeric_registry(
+            stock["fact_catalog"]
+        )
+        unknown = next(
+            item
+            for item in stock["numeric_registry"]
+            if item["fact_id"] == "event:mystery"
+        )
+        assert unknown["registered"] is False
+        assert unknown["prose_allowed"] is False
+
+        output = _valid_output(packet)
+        review = output["stock_reviews"][0]
+        review["facts_used"] = ["event:mystery"]
+        review["summary"] = "미확인 비율 7은 사용할 수 없습니다."
+        review["numeric_claims"] = [
+            {
+                "fact_id": "event:mystery",
+                "field_path": "fields.mystery_ratio",
+                "value": 7,
+                "unit": "number",
+                "semantic_type": unknown["semantic_type"],
+                "text_ref": "summary",
+                "usage": "미확인 비율 7",
+            }
+        ]
+        _, errors = validate_ai_review_output(session, packet, output)
+
+    assert any("numeric_semantic_not_supported" in error for error in errors)
+
+
+def test_numeric_semantics_reject_cross_metric_labels(
+    monkeypatch,
+    tmp_path: Path,
+) -> None:
+    _settings(monkeypatch, tmp_path)
+    with Session(_engine()) as session:
+        _seed(session)
+        packet = build_ai_review_packet(session, RUN_DATE, "us")
+        assert packet is not None
+        stock = packet["stocks"][0]
+        positioning = {
+            "fact_id": "positioning:test",
+            "fact_type": "positioning",
+            "as_of_date": RUN_DATE.isoformat(),
+            "fields": {"foreign_net_buy_qty": -100},
+        }
+        stock["fact_catalog"].append(positioning)
+        stock["numeric_registry"] = ai_review_service._numeric_registry(
+            stock["fact_catalog"]
+        )
+
+        output = _valid_output(packet)
+        review = output["stock_reviews"][0]
+        review["facts_used"] = ["positioning:test"]
+        review["summary"] = "기관 순매도 -100주는 확인된 수급입니다."
+        review["numeric_claims"] = [
+            {
+                "fact_id": "positioning:test",
+                "field_path": "fields.foreign_net_buy_qty",
+                "value": -100,
+                "unit": "shares",
+                "semantic_type": "foreign_net_buy_qty",
+                "text_ref": "summary",
+                "usage": "기관 순매도 -100주",
+            }
+        ]
+        _, supply_errors = validate_ai_review_output(session, packet, output)
+
+        valuation = _valid_output(packet)
+        valuation_review = valuation["stock_reviews"][0]
+        valuation_review["facts_used"] = ["valuation:current"]
+        valuation_review["summary"] = "현재 PBR 20배는 확인된 배수입니다."
+        valuation_review["numeric_claims"] = [
+            {
+                "fact_id": "valuation:current",
+                "field_path": "fields.trailing_pe",
+                "value": 20,
+                "unit": "x",
+                "semantic_type": "trailing_pe",
+                "text_ref": "summary",
+                "usage": "현재 PBR 20배",
+            }
+        ]
+        _, valuation_errors = validate_ai_review_output(session, packet, valuation)
+
+    assert any("numeric_usage_semantic_mismatch" in error for error in supply_errors)
+    assert any("numeric_usage_semantic_mismatch" in error for error in valuation_errors)
+
+
+def test_market_numeric_semantics_distinguish_futures_close_and_return(
+    monkeypatch,
+    tmp_path: Path,
+) -> None:
+    _settings(monkeypatch, tmp_path)
+    with Session(_engine()) as session:
+        _seed(session)
+        packet = build_ai_review_packet(session, RUN_DATE, "us")
+        assert packet is not None
+        context = packet["market_context"]
+        context["fact_catalog"].append(
+            {
+                "fact_id": "market:test:futures",
+                "fact_type": "night_futures",
+                "as_of_date": RUN_DATE.isoformat(),
+                "fields": {"value": 431.25, "change_pct": 0.67},
+            }
+        )
+        context["numeric_registry"] = ai_review_service._numeric_registry(
+            context["fact_catalog"]
+        )
+        output = _valid_output(packet)
+        review = output["market_review"]
+        review["facts_used"] = ["market:test:futures"]
+        review["summary"] = "야간선물 등락률은 431.25%입니다."
+        review["numeric_claims"] = [
+            {
+                "fact_id": "market:test:futures",
+                "field_path": "fields.value",
+                "value": 431.25,
+                "unit": "points",
+                "semantic_type": "futures_close",
+                "text_ref": "summary",
+                "usage": "야간선물 등락률은 431.25%",
+            }
+        ]
+        _, errors = validate_ai_review_output(session, packet, output)
+
+    assert any("numeric_usage_unit_mismatch" in error for error in errors)
+    assert any("numeric_usage_semantic_mismatch" in error for error in errors)
+
+
+def test_numeric_registry_distinguishes_all_night_futures_fields() -> None:
+    registry = ai_review_service._numeric_registry(
+        [
+            {
+                "fact_id": "market:test:futures-fields",
+                "fact_type": "night_futures",
+                "fields": {
+                    "value": 431.25,
+                    "change_value": -2.5,
+                    "change_pct": -0.58,
+                },
+            }
+        ]
+    )
+
+    assert {
+        item["field_path"]: (item["semantic_type"], item["unit"])
+        for item in registry
+    } == {
+        "fields.value": ("futures_close", "points"),
+        "fields.change_value": ("futures_point_change", "points"),
+        "fields.change_pct": ("futures_return_pct", "pct"),
+    }
+
+
+def test_signed_supply_value_and_audit_only_denominator_are_fail_closed(
+    monkeypatch,
+    tmp_path: Path,
+) -> None:
+    _settings(monkeypatch, tmp_path)
+    with Session(_engine()) as session:
+        _seed(session)
+        packet = build_ai_review_packet(session, RUN_DATE, "us")
+        assert packet is not None
+        stock = packet["stocks"][0]
+        stock["fact_catalog"].append(
+            {
+                "fact_id": "positioning:signed",
+                "fact_type": "positioning",
+                "fields": {"foreign_net_buy_qty": -100},
+            }
+        )
+        stock["numeric_registry"] = ai_review_service._numeric_registry(
+            stock["fact_catalog"]
+        )
+
+        valid = _valid_output(packet)
+        valid_review = valid["stock_reviews"][0]
+        valid_review["facts_used"] = ["positioning:signed"]
+        valid_review["summary"] = "외국인 순매도 -100주는 확인된 수급입니다."
+        valid_review["numeric_claims"] = [
+            {
+                "fact_id": "positioning:signed",
+                "field_path": "fields.foreign_net_buy_qty",
+                "value": -100,
+                "unit": "shares",
+                "semantic_type": "foreign_net_buy_qty",
+                "text_ref": "summary",
+                "usage": "외국인 순매도 -100주",
+            }
+        ]
+        _, valid_errors = validate_ai_review_output(session, packet, valid)
+
+        flipped = _valid_output(packet)
+        flipped_review = flipped["stock_reviews"][0]
+        flipped_review["facts_used"] = ["positioning:signed"]
+        flipped_review["summary"] = "외국인 순매도 100주는 확인된 수급입니다."
+        flipped_review["numeric_claims"] = [
+            {
+                **valid_review["numeric_claims"][0],
+                "usage": "외국인 순매도 100주",
+            }
+        ]
+        _, flipped_errors = validate_ai_review_output(session, packet, flipped)
+
+        capital = next(
+            item
+            for item in stock["fact_catalog"]
+            if item["fact_type"] == "treasury_stock_transaction"
+        )
+        denied = _valid_output(packet)
+        denied_review = denied["stock_reviews"][0]
+        denied_review["facts_used"] = [capital["fact_id"]]
+        denied_review["summary"] = "분모 주식 수 29,700,000주는 audit 전용입니다."
+        denied_review["numeric_claims"] = [
+            {
+                "fact_id": capital["fact_id"],
+                "field_path": "fields.share_denominator",
+                "value": 29_700_000,
+                "unit": "shares",
+                "semantic_type": "share_denominator",
+                "text_ref": "summary",
+                "usage": "분모 주식 수 29,700,000주",
+            }
+        ]
+        _, denied_errors = validate_ai_review_output(session, packet, denied)
+
+    assert valid_errors == []
+    assert any("numeric_usage_value_mismatch" in error for error in flipped_errors)
+    assert any("numeric_semantic_not_supported" in error for error in denied_errors)
+
+
+def test_representative_packet_numeric_registry_has_explicit_coverage(
+    monkeypatch,
+    tmp_path: Path,
+) -> None:
+    _settings(monkeypatch, tmp_path)
+    with Session(_engine()) as session:
+        _seed(session)
+        packet = build_ai_review_packet(session, RUN_DATE, "us")
+        assert packet is not None
+
+    registries = [packet["market_context"]["numeric_registry"]] + [
+        stock["numeric_registry"] for stock in packet["stocks"]
+    ]
+    unsupported = [
+        item
+        for registry in registries
+        for item in registry
+        if item["registered"] is not True
+    ]
+    denied = [
+        item
+        for registry in registries
+        for item in registry
+        if item["prose_allowed"] is not True
+    ]
+
+    assert unsupported == []
+    assert {item["semantic_type"] for item in denied} == {"share_denominator"}
+
+
+def test_v32_packet_waits_for_profile_and_numeric_activation_gates(
+    monkeypatch,
+    tmp_path: Path,
+) -> None:
+    _settings(monkeypatch, tmp_path)
+    provenance = tmp_path / "company_profile_provenance" / "PACKETUS.json"
+    provenance.unlink()
+    with Session(_engine()) as session:
+        _seed(session)
+        packet = build_ai_review_packet(session, RUN_DATE, "us")
+        blocked = write_ai_review_packet(session, RUN_DATE, "us")
+
+    assert packet is not None
+    assert packet["ready_for_ai"] is False
+    assert packet["shadow_cohort"]["profile_gate"]["ready"] is False
+    assert packet["shadow_cohort"]["numeric_semantic_gate"]["ready"] is True
+    assert blocked.status == "not_ready"
+    assert blocked.reason == "shadow_cohort_activation_gate_failed"
+
+
+def test_v32_packet_records_ready_shadow_cohort_metadata(
+    monkeypatch,
+    tmp_path: Path,
+) -> None:
+    _settings(monkeypatch, tmp_path)
+    with Session(_engine()) as session:
+        _seed(session)
+        packet = build_ai_review_packet(session, RUN_DATE, "us")
+
+    assert packet is not None
+    assert packet["analysis_policy_version"] == "daily-review-v3.2"
+    assert packet["ready_for_ai"] is True
+    assert packet["shadow_cohort"] == {
+        "policy_version": "daily-review-v3.2",
+        "eligible": True,
+        "profile_gate": {
+            "active_total": 1,
+            "complete_count": 1,
+            "missing_count": 0,
+            "unavailable_count": 0,
+            "ready": True,
+        },
+        "numeric_semantic_gate": {
+            "entry_count": 16,
+            "registered_count": 16,
+            "prose_allowed_count": 15,
+            "prose_denied_count": 1,
+            "unsupported": [],
+            "ready": True,
+        },
+    }
 
 
 def test_industry_framework_router_handles_quality_fixtures() -> None:

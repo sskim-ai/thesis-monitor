@@ -23,7 +23,7 @@ Use this skill only for immutable packets under `data/ai_review/inbox`. Do not b
 
 3. Review the market once and every stock in `stocks`. Use only `fact_id` values from each `fact_catalog` in `facts_used`. Record the semantic framework names actually applied in `frameworks_used`. Treat absent information as unknown.
 
-4. Every interpretation item must contain concise `text` and the supporting `fact_ids`. Every investment-related number in prose must also have a `numeric_claims` entry that exactly identifies its `fact_id`, `field_path`, backend `value`, `unit`, `semantic_type`, exact prose `text_ref`, and rendered `usage`. Copy the registry's raw value even when the prose uses an approved compact or rounded display. Do not calculate a new value.
+4. Every interpretation item must contain concise `text` and the supporting `fact_ids`. Every investment-related number in prose must also have a `numeric_claims` entry that exactly identifies its `fact_id`, `field_path`, backend `value`, `unit`, `semantic_type`, exact prose `text_ref`, and rendered `usage`. Use a number only when its registry entry has `registered=true` and `prose_allowed=true`, and use one of its approved semantic labels and display variants. Copy the registry's raw value even when the prose uses an approved compact or rounded display. Do not calculate a new value.
 
 5. Write one complete JSON document to the returned claim-specific `temp_output_path`. Set `claim_id` from the claim response and copy the packet's Knowledge version and checksum. Do not write outside `data/ai_review`.
 
@@ -47,7 +47,9 @@ Use this skill only for immutable packets under `data/ai_review/inbox`. Do not b
 - If historical comparability is withheld, do not use a historical percentile or range.
 - Apply the routed industry framework. A low peak-cycle PER alone is not a memory valuation conclusion; insurance does not use SaaS metrics; preliminary earnings do not prove FCF, inventory, ROIC, or balance-sheet changes.
 - Treat `knowledge_routing.industry_routing.primary_framework` as company identity. When routing confidence is high, include it in `frameworks_used`; use only listed secondary frameworks for thematic or segment context. Thesis wording must not replace the primary industry framework.
+- Use `company_profile` provenance and quality as an identity guardrail. `partial` or `ambiguous` profile data may reduce routing confidence; never infer a missing classification from the ticker, company name, or thesis theme.
 - Resolve every `numeric_claims[].text_ref` to the exact prose field containing `usage`. One claim cannot cover the same number in another prose field, and a fact with the same numeric value cannot support a different semantic meaning.
+- Numeric semantics fail closed. An unregistered semantic or an entry with `prose_allowed=false` must remain absent from prose, even when its raw value exists in the packet.
 - A lease expiry only permits reclaim. Before finalization the validator fences the result against the currently active claim; never reuse another claim's temporary path.
 
 ## Runtime Boundary

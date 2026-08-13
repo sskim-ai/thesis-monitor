@@ -29,17 +29,25 @@ from app.schemas.ai_review import AIDailyReviewOutput, AIStockReview
 from app.services.canonical_fact_service import (
     canonical_capital_action_fact,
     canonical_event_fact,
-    compact_krw_amount,
+)
+from app.services.company_profile_service import (
+    company_profile_coverage,
+    read_profile_provenance,
 )
 from app.services.daily_digest import build_daily_digest
 from app.services.market_session import market_scope_for_security
+from app.services.numeric_semantic_registry import (
+    build_numeric_registry,
+    numeric_registry_coverage,
+    usage_matches_semantic,
+)
 
 
 logger = logging.getLogger(__name__)
 
 PACKET_SCHEMA_VERSION = "1"
 OUTPUT_SCHEMA_VERSION = "2"
-ANALYSIS_POLICY_VERSION = "daily-review-v3.1"
+ANALYSIS_POLICY_VERSION = "daily-review-v3.2"
 AIReviewMarket = Literal["us", "kr"]
 
 _INTERNAL_TEXT = re.compile(
@@ -144,7 +152,16 @@ _INDUSTRY_PATTERNS = (
         ),
     ),
     ("pre_profit", (r"\brobotaxi\b", r"\bpre[- ]profit\b", r"로보택시")),
-    ("biotech", (r"\bbiotech\b", r"\bbiopharma\b", r"바이오", r"신약")),
+    (
+        "biotech",
+        (
+            r"\bbiotech(?:nology)?\b",
+            r"\bbiopharma(?:ceutical)?\b",
+            r"\bpharmaceuticals?\b",
+            r"바이오",
+            r"신약",
+        ),
+    ),
     ("automotive", (r"\bautomotive\b", r"\bautomobile\b", r"자동차", r"완성차")),
     ("shipping", (r"\bshipping\b", r"\btransport(?:ation)?\b", r"해운", r"운송")),
     ("consumer", (r"\bconsumer(?: goods)?\b", r"소비재")),
@@ -293,12 +310,14 @@ def investment_framework_routing(
     business_model: str | None,
     thesis_text: str,
     *,
+    normalized_industry: str | None = None,
     sector: str | None = None,
     revenue_sources: str | None = None,
     has_earnings: bool,
     preliminary_earnings: bool,
     has_price_context: bool,
     has_adr_basis_risk: bool,
+    profile_quality: str | None = None,
 ) -> dict[str, object]:
     structured_sources = (
         ("structured_industry", "company.industry", industry, "high"),
@@ -316,11 +335,17 @@ def investment_framework_routing(
             "low",
         ),
     )
-    industry_key = "general"
-    source = "unclassified"
-    confidence = "low"
-    evidence: list[str] = []
-    selected_index = len(structured_sources)
+    normalized_key = str(normalized_industry or "").strip()
+    normalized_valid = normalized_key in _INDUSTRY_FRAMEWORKS
+    industry_key = normalized_key if normalized_valid else "general"
+    source = "normalized_profile_taxonomy" if normalized_valid else "unclassified"
+    confidence = "high" if normalized_valid else "low"
+    evidence: list[str] = (
+        [f"company.profile.taxonomy_key={normalized_key}"]
+        if normalized_valid
+        else []
+    )
+    selected_index = -1 if normalized_valid else len(structured_sources)
     candidates_by_source: list[tuple[str, str, str | None, str, list[str]]] = []
     for index, (candidate_source, field, value, candidate_confidence) in enumerate(
         structured_sources
@@ -347,6 +372,15 @@ def investment_framework_routing(
         source = "structured_business_model_subtype"
         confidence = "high"
         evidence.append(f"company.business_units={business_model}")
+
+    if profile_quality in {"ambiguous", "unavailable"}:
+        industry_key = "general"
+        source = f"profile_{profile_quality}"
+        confidence = "low"
+        evidence = []
+        selected_index = len(structured_sources)
+    elif profile_quality == "partial" and confidence == "high":
+        confidence = "medium"
 
     secondary: list[str] = []
     for index, (_candidate_source, field, value, _candidate_confidence, candidates) in enumerate(
@@ -745,110 +779,8 @@ def _fact_catalog(
     return facts
 
 
-def _numeric_unit(field_path: str, fields: dict[str, object]) -> str:
-    key = field_path.rsplit(".", 1)[-1]
-    if key == "value":
-        parent_path = field_path.rsplit(".", 1)[0]
-        node: object = fields
-        for part in parent_path.split(".")[1:]:
-            node = node.get(part) if isinstance(node, dict) else None
-        if isinstance(node, dict) and node.get("currency"):
-            return str(node["currency"])
-    if key.endswith("_pct") or key in {
-        "change_pct",
-        "percent_change",
-        "foreign_holding_ratio",
-        "current_percentile",
-    }:
-        return "pct"
-    if "shares" in key or key.endswith("_qty") or "_qty_" in key:
-        return "shares"
-    if key in {"trailing_pe", "price_to_book", "forward_pe", "forward_price_to_book"}:
-        return "x"
-    if key in {"ttm_eps", "bvps", "forward_eps", "forward_bvps", "current_price"}:
-        return str(fields.get("currency") or "unknown")
-    return "number"
-
-
-def _numeric_semantic_type(field_path: str) -> str:
-    key = field_path.rsplit(".", 1)[-1]
-    if key == "value":
-        key = field_path.rsplit(".", 2)[-2]
-    aliases = {
-        "current_price": "share_price",
-        "operating_margin_pct": "operating_margin",
-        "revenue_qoq_pct": "revenue_qoq",
-        "revenue_yoy_pct": "revenue_yoy",
-        "operating_income_qoq_pct": "operating_income_qoq",
-        "operating_income_yoy_pct": "operating_income_yoy",
-        "sales_ratio_pct": "sales_ratio",
-        "share_ratio_pct": "share_ratio",
-        "market_cap_ratio_pct": "market_cap_ratio",
-        "foreign_holding_ratio": "foreign_holding_ratio",
-        "change_pct": "percent_change",
-        "percent_change": "percent_change",
-        "trailing_pe": "trailing_pe",
-        "forward_pe": "forward_pe",
-        "price_to_book": "price_to_book",
-        "forward_price_to_book": "forward_price_to_book",
-    }
-    return aliases.get(key, key)
-
-
-def _plain_number(value: float) -> str:
-    return str(int(value)) if value.is_integer() else f"{value:.12g}"
-
-
-def _approved_display_variants(value: float, unit: str) -> list[str]:
-    variants = [_plain_number(value), f"{value:,.12g}"]
-    if unit == "pct":
-        for digits in (1, 2, 4):
-            rounded = _plain_number(float(round(value, digits)))
-            variants.extend((f"{rounded}%", f"약 {rounded}%"))
-    elif unit == "KRW":
-        if compact := compact_krw_amount(value):
-            variants.append(compact)
-        variants.extend((f"{_plain_number(value)} KRW", f"{value:,.0f}원"))
-    elif unit == "USD":
-        variants.extend((f"${_plain_number(value)}", f"{_plain_number(value)} USD"))
-    elif unit == "shares":
-        variants.append(f"{value:,.0f}주")
-    elif unit == "x":
-        variants.append(f"{_plain_number(value)}배")
-    return list(dict.fromkeys(variants))
-
-
 def _numeric_registry(facts: list[dict[str, object]]) -> list[dict[str, object]]:
-    registry: list[dict[str, object]] = []
-    for fact in facts:
-        fact_id = str(fact.get("fact_id") or "")
-        fields = fact.get("fields")
-        if not fact_id or not isinstance(fields, dict):
-            continue
-
-        def walk(value: object, path: str) -> None:
-            if isinstance(value, dict):
-                for key, item in value.items():
-                    walk(item, f"{path}.{key}")
-            elif isinstance(value, list):
-                for index, item in enumerate(value):
-                    walk(item, f"{path}.{index}")
-            elif isinstance(value, (int, float)) and not isinstance(value, bool):
-                registry.append(
-                    {
-                        "fact_id": fact_id,
-                        "field_path": path,
-                        "value": value,
-                        "unit": _numeric_unit(path, fields),
-                        "semantic_type": _numeric_semantic_type(path),
-                        "approved_display_variants": _approved_display_variants(
-                            float(value), _numeric_unit(path, fields)
-                        ),
-                    }
-                )
-
-        walk(fields, "fields")
-    return registry
+    return build_numeric_registry(facts)
 
 
 def _stock_packet(
@@ -867,6 +799,10 @@ def _stock_packet(
     company = session.exec(
         select(Company).where(Company.ticker == assessment.ticker)
     ).first()
+    profile_provenance = read_profile_provenance(
+        assessment.ticker,
+        get_settings().data_dir,
+    )
     evidence = _material_evidence(assessment)
     valuation = _valuation_payload(assessment)
     price = _price_payload(assessment)
@@ -890,6 +826,10 @@ def _stock_packet(
         industry,
         business_model,
         thesis_text,
+        normalized_industry=str(
+            (profile_provenance or {}).get("taxonomy_key") or ""
+        )
+        or None,
         sector=sector,
         revenue_sources=revenue_sources,
         has_earnings=valuation.get("latest_revenue") is not None,
@@ -897,6 +837,7 @@ def _stock_packet(
         has_price_context=bool(price.get("price")),
         has_adr_basis_risk="adr" in thesis_text.lower()
         or "adr" in json.dumps(valuation, ensure_ascii=False).lower(),
+        profile_quality=str((profile_provenance or {}).get("quality") or "") or None,
     )
     stock = {
         "ticker": assessment.ticker,
@@ -905,6 +846,19 @@ def _stock_packet(
         "sector": sector,
         "business_model": business_model,
         "revenue_sources": revenue_sources,
+        "company_profile": {
+            key: value
+            for key in (
+                "quality",
+                "source",
+                "source_as_of",
+                "verified_at",
+                "classification_method",
+                "reason",
+                "taxonomy_key",
+            )
+            if (value := (profile_provenance or {}).get(key)) is not None
+        },
         "knowledge_routing": routing,
         "thesis_version": assessment.thesis_version,
         "assessment_mode": _assessment_mode(assessment),
@@ -1051,7 +1005,9 @@ def build_ai_review_packet(
         return None
     items = [
         item
-        for item in session.exec(select(WatchlistItem)).all()
+        for item in session.exec(
+            select(WatchlistItem).where(WatchlistItem.active.is_(True))
+        ).all()
         if _scope_for_item(session, item) == market
     ]
     assessments = {
@@ -1072,6 +1028,15 @@ def build_ai_review_packet(
     if len(stocks) != run.success_count:
         return None
     knowledge = knowledge_manifest()
+    market_context = _market_packet(session, run_date, market)
+    profile_gate = company_profile_coverage(session, get_settings().data_dir)
+    numeric_gate = numeric_registry_coverage(
+        [
+            market_context["numeric_registry"],
+            *(stock["numeric_registry"] for stock in stocks),
+        ]
+    )
+    cohort_ready = bool(profile_gate["ready"] and numeric_gate["ready"])
     body = {
         "schema_version": PACKET_SCHEMA_VERSION,
         "analysis_policy_version": ANALYSIS_POLICY_VERSION,
@@ -1086,9 +1051,24 @@ def build_ai_review_packet(
             "failure_count": run.failure_count,
             "completed_at": run.completed_at,
         },
-        "market_context": _market_packet(session, run_date, market),
+        "market_context": market_context,
         "stocks": stocks,
-        "ready_for_ai": True,
+        "shadow_cohort": {
+            "policy_version": ANALYSIS_POLICY_VERSION,
+            "eligible": cohort_ready,
+            "profile_gate": {
+                key: profile_gate[key]
+                for key in (
+                    "active_total",
+                    "complete_count",
+                    "missing_count",
+                    "unavailable_count",
+                    "ready",
+                )
+            },
+            "numeric_semantic_gate": numeric_gate,
+        },
+        "ready_for_ai": cohort_ready,
     }
     canonical = json.dumps(body, ensure_ascii=False, sort_keys=True, default=str)
     digest = hashlib.sha256(canonical.encode("utf-8")).hexdigest()[:12]
@@ -1112,6 +1092,12 @@ def write_ai_review_packet(
     packet = build_ai_review_packet(session, run_date, market, generated_at=generated_at)
     if packet is None:
         return PacketWriteResult(status="not_ready", reason="successful_complete_run_required")
+    if packet.get("ready_for_ai") is not True:
+        return PacketWriteResult(
+            status="not_ready",
+            packet_id=str(packet.get("packet_id") or "") or None,
+            reason="shadow_cohort_activation_gate_failed",
+        )
     ensure_ai_review_layout()
     packet_id = str(packet["packet_id"])
     path = _directory("inbox") / f"{packet_id}.json"
@@ -1330,67 +1316,17 @@ def _usage_unit_matches(unit: str, usage: str) -> bool:
         return "주" in usage or "share" in lowered
     if unit == "x":
         return "배" in usage or "multiple" in lowered
+    if unit == "points":
+        return "%" not in usage and any(
+            marker in lowered for marker in ("pt", "point", "포인트", "선물")
+        )
+    if unit in {"count", "years", "number"}:
+        return False
     return True
 
 
-_USAGE_SEMANTICS = (
-    ("revenue_yoy", (r"매출\s*(?:성장률|증가율|yoy)", r"revenue\s*(?:growth|yoy)")),
-    ("revenue_qoq", (r"매출\s*(?:qoq|전분기)", r"revenue\s*qoq")),
-    (
-        "operating_income_yoy",
-        (r"영업이익\s*(?:성장률|증가율|yoy)", r"operating income\s*(?:growth|yoy)"),
-    ),
-    ("operating_margin", (r"영업이익률", r"operating margin")),
-    ("operating_income", (r"영업이익", r"operating income")),
-    ("contract_amount", (r"계약금액", r"수주금액", r"contract amount", r"order value")),
-    ("market_cap_ratio", (r"시가총액\s*비율", r"market cap ratio")),
-    ("share_ratio", (r"주식\s*비율", r"지분\s*비율", r"share ratio")),
-    ("sales_ratio", (r"매출액\s*대비", r"sales ratio")),
-    ("share_price", (r"현재가", r"주가", r"share price", r"current price")),
-    ("forward_pe", (r"\bfper\b", r"forward pe", r"선행\s*per")),
-    ("trailing_pe", (r"trailing pe", r"현재\s*per", r"\bper\b")),
-    ("forward_price_to_book", (r"\bfpbr\b", r"forward pbr", r"선행\s*pbr")),
-    ("price_to_book", (r"price to book", r"현재\s*pbr", r"\bpbr\b")),
-    ("foreign_holding_ratio", (r"외국인\s*보유", r"foreign holding")),
-    ("percent_change", (r"등락률", r"변동률", r"percent change")),
-    ("transaction_amount", (r"처분금액", r"거래금액", r"transaction amount")),
-    ("market_cap", (r"시가총액", r"market cap")),
-    ("revenue", (r"매출액?", r"\brevenue\b")),
-    ("ttm_eps", (r"ttm\s*eps", r"최근\s*4개\s*분기\s*eps")),
-    ("forward_eps", (r"forward\s*eps", r"예상\s*eps", r"추정\s*eps")),
-    ("eps", (r"\beps\b", r"주당순이익")),
-    ("bvps", (r"\bbvps\b", r"주당순자산")),
-)
-
-
-def _usage_semantic(usage: str) -> str | None:
-    lowered = usage.lower()
-    for semantic_type, patterns in _USAGE_SEMANTICS:
-        if any(re.search(pattern, lowered) for pattern in patterns):
-            return semantic_type
-    return None
-
-
 def _usage_semantic_matches(semantic_type: str, usage: str) -> bool:
-    detected = _usage_semantic(usage)
-    known_semantics = {item[0] for item in _USAGE_SEMANTICS}
-    if semantic_type in known_semantics:
-        return detected == semantic_type
-    if detected is not None:
-        return detected == semantic_type
-    label = re.sub(r"[-+]?\d[\d,]*(?:\.\d+)?%?", "", usage)
-    label = re.sub(r"\b(?:krw|usd)\b|[$원억원조주배%]", "", label, flags=re.IGNORECASE)
-    return len(re.findall(r"[A-Za-z가-힣]", label)) >= 2
-
-
-def _allowed_display_tokens(expected: float, unit: str) -> set[str]:
-    tokens = _numeric_tokens(str(expected))
-    if unit == "pct":
-        for digits in (1, 2, 4):
-            tokens.update(_numeric_tokens(str(round(expected, digits))))
-    if unit == "KRW" and (compact := compact_krw_amount(expected)):
-        tokens.update(_numeric_tokens(compact))
-    return tokens
+    return usage_matches_semantic(semantic_type, usage)
 
 
 def _normalized_prose(text: str) -> str:
@@ -1460,6 +1396,12 @@ def _validate_numeric_claims(
         expected = float(source["value"])
         expected_unit = str(source["unit"])
         expected_semantic = str(source.get("semantic_type") or "")
+        if source.get("registered") is not True or source.get("prose_allowed") is not True:
+            errors.append(
+                f"{prefix}:numeric_semantic_not_supported:"
+                f"{claim.fact_id}:{claim.field_path}"
+            )
+            claim_is_valid = False
         if claim.fact_id not in facts_used:
             errors.append(f"{prefix}:numeric_fact_not_declared:{claim.fact_id}")
             claim_is_valid = False
@@ -1491,7 +1433,7 @@ def _validate_numeric_claims(
                 )
             )
             if isinstance(approved_variants, list) and approved_variants
-            else _allowed_display_tokens(expected, expected_unit)
+            else set()
         )
         if not display_tokens or not display_tokens.issubset(allowed_display_tokens):
             errors.append(
