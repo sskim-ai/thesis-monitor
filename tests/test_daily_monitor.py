@@ -507,6 +507,52 @@ async def test_us_primary_queues_at_0750_without_dispatching_or_querying_krx(
 
 
 @pytest.mark.anyio
+async def test_kr_pilot_holds_deterministic_delivery_after_packet_creation(
+    monkeypatch,
+) -> None:
+    daily_calls: list[dict[str, object]] = []
+    held: list[tuple[str, datetime]] = []
+
+    async def record_daily(*args, **kwargs):
+        daily_calls.append(kwargs)
+        return SimpleNamespace(
+            status="success",
+            model_dump=lambda mode: {"status": "success"},
+        )
+
+    monkeypatch.setattr("app.jobs.monitor_daily.ai_assisted_pilot_active", lambda market: True)
+    monkeypatch.setattr("app.jobs.monitor_daily.run_daily_monitor", record_daily)
+    monkeypatch.setattr(
+        "app.jobs.monitor_daily.try_write_ai_review_packet",
+        lambda *args, **kwargs: SimpleNamespace(packet_id="kr-packet"),
+    )
+    monkeypatch.setattr(
+        "app.jobs.monitor_daily.hold_ai_assisted_pilot_session",
+        lambda session, packet_id, held_at: SimpleNamespace(
+            as_dict=lambda: held.append((packet_id, held_at)) or {"status": "held"}
+        ),
+    )
+    monkeypatch.setattr(
+        "app.jobs.monitor_daily.run_kr_close_market_briefing",
+        lambda *args, **kwargs: None,
+    )
+    run_date = date(2040, 8, 14)
+    as_of = datetime(2040, 8, 14, 16, 5, tzinfo=KST)
+    isolated_engine = create_engine(
+        "sqlite://",
+        connect_args={"check_same_thread": False},
+        poolclass=StaticPool,
+    )
+    SQLModel.metadata.create_all(isolated_engine)
+    with Session(isolated_engine) as session:
+        result = await _run_market_job(session, run_date, "kr", as_of=as_of)
+
+    assert daily_calls[0]["dispatch_notifications"] is False
+    assert held == [("kr-packet", as_of)]
+    assert result["delivery_action"] == "held_for_ai_review"
+
+
+@pytest.mark.anyio
 @pytest.mark.parametrize(
     ("market_scope", "run_type", "completed_at", "ticker_count"),
     [

@@ -265,10 +265,13 @@ Both `started_at` and `completed_at` must be at or after the market cutoff for a
 replace the scheduled production analysis. Telegram delivery retries resume persisted chunk progress
 without refreshing the completed assessment.
 
-### Codex Daily Review Shadow
+### Codex Daily Review Shadow and Delivery Pilot
 
-`AI_REVIEW_MODE=shadow` adds an interpretation layer without changing the deterministic assessment or
-Telegram payload. A completed U.S. run becomes an immutable packet only after the morning KRX gate is
+`AI_REVIEW_MODE=shadow` adds an interpretation layer without changing the deterministic assessment.
+When the separate five-day pilot flag is off, Telegram remains deterministic. When it is on, the
+selected market session holds its deterministic payload until a validated AI narrative is available,
+then sends one combined set; the hard deadline releases only the saved deterministic fallback. A
+completed U.S. run becomes an immutable packet only after the morning KRX gate is
 ready or reaches its deadline. A successful Korean close run writes its packet after the close
 assessment. Packets live under `data/ai_review/inbox`; Codex Scheduled Tasks claim them, write strict
 JSON to `outbox`, and run the local validator. No OpenAI API key or API call is used by this path.
@@ -277,9 +280,9 @@ The reusable workflow is `.agents/skills/thesis-monitor-daily-review`. It routes
 the full checked Knowledge mirror and requires fact/field-level numeric provenance. Primary and backup
 tasks scan the same pending queue, while UUID-fenced lease claims and packet/policy/Knowledge
 completion keys prevent duplicate or stale-worker output.
-See `docs/ai_review_operations.md` for the schedule and recovery checks. Shadow output is comparison
-history only: official `ThesisAssessment`, deterministic Telegram, and notification retry state remain
-unchanged until a later, explicit assist-mode approval.
+See `docs/ai_review_operations.md` for the schedule, fallback deadlines, archive, and recovery checks.
+Official `ThesisAssessment` remains deterministic throughout the pilot, and Production Assist remains
+disabled.
 
 Price context is requested from the separate local OHLCV Analyst service using targets of 500 daily,
 300 weekly, and 100 monthly bars. Shorter provider histories are accepted and their actual counts are

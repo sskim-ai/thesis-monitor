@@ -107,6 +107,7 @@ SUPPORTED_NOTIFICATION_CHANNELS = {"telegram"}
 TELEGRAM_DELIVERY_METADATA_KEY = "_telegram_delivery"
 STOCK_NOTIFICATION_METADATA_KEY = "_stock_notification"
 MORNING_GATE_METADATA_KEY = "_morning_gate"
+AI_ASSISTED_PILOT_METADATA_KEY = "_ai_assisted_pilot"
 
 
 def _json_value(value: str, fallback: object) -> object:
@@ -325,7 +326,22 @@ def _logical_notification_payload(payload: dict[str, object]) -> dict[str, objec
             TELEGRAM_DELIVERY_METADATA_KEY,
             STOCK_NOTIFICATION_METADATA_KEY,
             MORNING_GATE_METADATA_KEY,
+            AI_ASSISTED_PILOT_METADATA_KEY,
         }
+    }
+
+
+def _ai_assisted_pilot_holds(payload: dict[str, object]) -> bool:
+    metadata = payload.get(AI_ASSISTED_PILOT_METADATA_KEY)
+    return isinstance(metadata, dict) and metadata.get("state") == "held"
+
+
+def _ai_assisted_pilot_owns_pending_payload(payload: dict[str, object]) -> bool:
+    metadata = payload.get(AI_ASSISTED_PILOT_METADATA_KEY)
+    return isinstance(metadata, dict) and metadata.get("state") in {
+        "held",
+        "ai_assisted_pending",
+        "fallback_pending",
     }
 
 
@@ -1652,6 +1668,10 @@ def queue_daily_digest_notification(
             payload=payload,
         )
         session.add(delivery)
+    elif delivery.status != "sent" and _ai_assisted_pilot_owns_pending_payload(
+        _delivery_payload(delivery.payload)
+    ):
+        return delivery
     elif delivery.status != "sent":
         _prepare_delivery_for_retry(delivery, payload)
     elif _should_requeue_sent_delivery(delivery, requeue_sent_before):
@@ -2198,6 +2218,8 @@ async def dispatch_pending_notifications(
     ).all()
     for delivery in deliveries:
         initial_payload = _delivery_payload(delivery.payload)
+        if _ai_assisted_pilot_holds(initial_payload):
+            continue
         dispatch_budget = 1 + len(_deferred_stock_notifications(initial_payload))
         for _ in range(dispatch_budget):
             delivery.attempt_count += 1

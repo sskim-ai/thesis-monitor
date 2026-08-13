@@ -1,8 +1,10 @@
 # Codex Scheduled Daily Review Operations
 
-The daily AI review starts in `shadow` mode. It reads backend-verified local packets and never changes
-the official assessment or Telegram message. It does not use `OPENAI_API_KEY`, Responses API, Chat
-Completions API, or external web research.
+The daily AI review keeps the official assessment in `shadow` mode. It reads backend-verified local
+packets and never changes the official assessment. During the separately gated five-success-day
+delivery pilot, the backend may combine a validated narrative with deterministic status and numbers;
+the Codex task itself never writes notification state. It does not use `OPENAI_API_KEY`, Responses
+API, Chat Completions API, or external web research.
 
 ## Schedule
 
@@ -68,6 +70,27 @@ filesystem with unknown lock semantics.
 Files ending in `.json.tmp` are incomplete and are never considered completed. Every output records
 the analysis policy, Knowledge version/checksum, frameworks used, fact references, and numeric claims.
 
+## Five-Day Single-Delivery Pilot
+
+`AI_REVIEW_PILOT_ENABLED=true` enables a market-scoped delivery gate while
+`AI_REVIEW_MODE=shadow` remains unchanged. The deterministic run queues and snapshots its exact
+messages but marks only that market session as held. A validated Codex output releases one combined
+AI-assisted market message and one combined message per stock. The official status, warnings,
+valuation, price, supply, and data cautions remain deterministic.
+
+KR holds after the 16:05 close run, uses the 16:15 primary and 16:55 backup, and releases the stored
+deterministic set at 17:10 if no valid AI output exists. US holds after the morning KRX gate, uses the
+08:50 primary and 09:30 backup, and falls back at 09:45. A validated AI delivery and deterministic
+fallback are mutually exclusive for one packet. A late AI result after fallback is archived only.
+Once AI-assisted delivery has started, Telegram failures resume that same rendered content and never
+switch to a full deterministic report mid-message.
+
+Install `ops/com.seungsoo.thesis-monitor.ai-review-fallback.plist` for the two local fallback checks.
+Exact deterministic, AI, comparison, rendered Telegram, and delivery-result artifacts are stored in
+`data/ai_review/pilot/history`. Only AI-assisted sessions whose validation, delivery, and archive all
+complete increment the market's success counter. Each market returns to deterministic delivery after
+five successful packets; this does not activate Production Assist.
+
 ## Phase 3 Review Contract
 
 Output schema `2` and analysis policy `daily-review-v3.2` separate company identity from thematic
@@ -115,7 +138,7 @@ fields.
 
 ## Promotion Policy
 
-Keep `AI_REVIEW_MODE=shadow` for at least 5 to 10 trading days covering both markets. Review factual
+Keep `AI_REVIEW_MODE=shadow`. Review factual
 accuracy, omission of material events, modeled-versus-consensus wording, historical-comparability
 guardrails, usefulness of next checks, and primary/backup recovery. Assist mode requires an explicit
 user decision; it is never enabled automatically.

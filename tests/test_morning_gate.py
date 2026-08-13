@@ -280,6 +280,53 @@ async def test_gate_dispatches_immediately_when_both_contracts_are_ready(
 
 
 @pytest.mark.anyio
+async def test_gate_holds_for_ai_pilot_after_both_contracts_are_ready(
+    monkeypatch,
+) -> None:
+    monkeypatch.setattr(
+        "app.services.morning_gate.expected_latest_completed_krx_session",
+        lambda run_date: EXPECTED_SESSION,
+    )
+    monkeypatch.setattr(
+        "app.services.morning_gate.ai_assisted_pilot_active", lambda market: True
+    )
+    monkeypatch.setattr(
+        "app.services.morning_gate.try_write_ai_review_packet",
+        lambda *args, **kwargs: type("Packet", (), {"packet_id": "us-packet"})(),
+    )
+    held: list[str] = []
+    monkeypatch.setattr(
+        "app.services.morning_gate.hold_ai_assisted_pilot_session",
+        lambda session, packet_id, held_at: held.append(packet_id),
+    )
+    provider = ScriptedKrxProvider(
+        [
+            _provider_result(
+                "KRX_KOSPI200_NIGHT_FUT",
+                "KRX_KOSDAQ150_NIGHT_FUT",
+            )
+        ]
+    )
+    notifier = RecordingNotifier()
+    with Session(_engine()) as session:
+        _seed_morning(session)
+        result = await run_morning_night_futures_gate(
+            session,
+            date(2026, 8, 14),
+            _at(8, 0),
+            provider=provider,
+            notifier=notifier,
+        )
+        metadata = _gate_metadata(session)
+
+    assert result.status == "ai_review_hold"
+    assert result.dispatch_action == "held_for_ai_review"
+    assert held == ["us-packet"]
+    assert notifier.payloads == []
+    assert metadata["state"] == "ai_review_hold"
+
+
+@pytest.mark.anyio
 async def test_gate_retries_only_krx_until_both_are_ready(monkeypatch) -> None:
     monkeypatch.setattr(
         "app.services.morning_gate.expected_latest_completed_krx_session",

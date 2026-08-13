@@ -92,6 +92,10 @@ class Settings(BaseSettings):
     ai_review_backup_delay_minutes: int = 40
     ai_review_claim_safety_margin_minutes: int = 5
     ai_review_shadow_catchup_hours: int = 24
+    ai_review_pilot_enabled: bool = False
+    ai_review_pilot_target_success_days: int = 5
+    ai_review_pilot_us_fallback_time: str = "09:45"
+    ai_review_pilot_kr_fallback_time: str = "17:10"
 
     @model_validator(mode="after")
     def validate_ai_review_schedule(self) -> "Settings":

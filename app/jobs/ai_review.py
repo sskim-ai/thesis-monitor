@@ -1,6 +1,8 @@
 import argparse
+import asyncio
 import json
 from datetime import UTC, date, datetime
+from zoneinfo import ZoneInfo
 
 from sqlmodel import Session
 
@@ -11,9 +13,16 @@ from app.services.ai_review_service import (
     claim_next_ai_review_packet,
     finalize_ai_review_output,
 )
+from app.services.ai_assisted_delivery_service import (
+    deliver_validated_ai_review,
+    dispatch_due_deterministic_fallbacks,
+)
 
 
-def main() -> None:
+KST = ZoneInfo("Asia/Seoul")
+
+
+async def _main() -> None:
     parser = argparse.ArgumentParser(description="Manage local Codex daily-review packets.")
     subparsers = parser.add_subparsers(dest="command", required=True)
 
@@ -30,6 +39,14 @@ def main() -> None:
     health.add_argument("--market", choices=("us", "kr"), required=True)
     health.add_argument("--date", default=None)
 
+    deliver = subparsers.add_parser("deliver")
+    deliver.add_argument("--packet-id", required=True)
+    deliver.add_argument("--allow-duplicate", action="store_true")
+
+    fallback = subparsers.add_parser("fallback")
+    fallback.add_argument("--market", choices=("us", "kr", "all"), default="all")
+    fallback.add_argument("--date", default=None)
+
     args = parser.parse_args()
     init_db()
     if args.command == "claim":
@@ -40,6 +57,29 @@ def main() -> None:
         review_date = date.fromisoformat(args.date) if args.date else datetime.now(UTC).date()
         print(json.dumps(ai_review_health(review_date, args.market), ensure_ascii=False))
         return
+    if args.command == "deliver":
+        with Session(engine) as session:
+            result = await deliver_validated_ai_review(
+                session,
+                args.packet_id,
+                allow_duplicate=args.allow_duplicate,
+            )
+        print(json.dumps(result.as_dict(), ensure_ascii=False))
+        return
+    if args.command == "fallback":
+        run_date = date.fromisoformat(args.date) if args.date else datetime.now(KST).date()
+        markets = ("us", "kr") if args.market == "all" else (args.market,)
+        results = []
+        with Session(engine) as session:
+            for market in markets:
+                values = await dispatch_due_deterministic_fallbacks(
+                    session,
+                    market=market,
+                    run_date=run_date,
+                )
+                results.extend(item.as_dict() for item in values)
+        print(json.dumps(results, ensure_ascii=False))
+        return
     with Session(engine) as session:
         result = finalize_ai_review_output(
             session,
@@ -47,9 +87,19 @@ def main() -> None:
             claim_id=args.claim_id,
             policy_version=args.policy_version,
         )
-    print(json.dumps(result.__dict__, ensure_ascii=False))
+        delivery = None
+        if result.status in {"completed", "already_completed"}:
+            delivery = await deliver_validated_ai_review(session, args.packet_id)
+    payload = dict(result.__dict__)
+    if delivery is not None:
+        payload["pilot_delivery"] = delivery.as_dict()
+    print(json.dumps(payload, ensure_ascii=False))
     if result.status == "rejected":
         raise SystemExit(1)
+
+
+def main() -> None:
+    asyncio.run(_main())
 
 
 if __name__ == "__main__":

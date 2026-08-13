@@ -1,13 +1,13 @@
 ---
 name: thesis-monitor-daily-review
-description: Analyze Thesis Monitor daily review packets using only backend-verified facts, then write and validate structured shadow-review JSON. Use for scheduled US or KR daily investment review, backup catch-up runs, and packet-based review validation.
+description: Analyze Thesis Monitor daily review packets using only backend-verified facts, then write and validate structured shadow-review JSON. Use for scheduled US or KR daily investment review, backup catch-up runs, packet-based review validation, and backend-controlled pilot delivery.
 ---
 
 # Thesis Monitor Daily Review
 
 Invoke this workflow as `$thesis-monitor-daily-review` from each scheduled task.
 
-Use this skill only for immutable packets under `data/ai_review/inbox`. Do not browse the web, call an external API, modify application code, or alter the database, official assessment, or Telegram delivery.
+Use this skill only for immutable packets under `data/ai_review/inbox`. Do not browse the web, call an external API, modify application code, or alter the database, official assessment, or Telegram delivery. In the delivery pilot, only the local validator/dispatcher may release the validated result; the Codex analyst still writes only its claim-specific JSON.
 
 ## Workflow
 
@@ -33,7 +33,7 @@ Use this skill only for immutable packets under `data/ai_review/inbox`. Do not b
    .venv/bin/python -m app.jobs.ai_review validate --packet-id <packet-id> --claim-id <claim-id> --policy-version <analysis-policy-version>
    ```
 
-   A nonzero result means the review was rejected. Do not weaken the validator or invent replacement facts. Correct the JSON from the same packet once, then validate again.
+   A nonzero result means the review was rejected. Do not weaken the validator or invent replacement facts. Correct the JSON from the same packet once, then validate again. When the five-day delivery pilot is enabled, a successful validator command invokes the backend-controlled single-delivery renderer; never send Telegram separately from the task.
 
 ## Output Rules
 

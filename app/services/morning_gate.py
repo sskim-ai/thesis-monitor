@@ -20,6 +20,10 @@ from app.models.watchlist import WatchlistItem
 from app.services.market_session import market_scope_for_security
 from app.services.night_futures import NIGHT_FUTURES_SERIES, summarize_night_futures
 from app.services.ai_review_service import try_write_ai_review_packet
+from app.services.ai_assisted_delivery_service import (
+    ai_assisted_pilot_active,
+    hold_ai_assisted_pilot_session,
+)
 from app.services.notification_service import (
     MORNING_GATE_METADATA_KEY,
     dispatch_pending_notifications,
@@ -265,6 +269,30 @@ async def run_morning_night_futures_gate(
 
     state = str(metadata.get("state") or "waiting")
     retry_count = int(metadata.get("retry_count") or 0)
+    if state == "ai_review_hold":
+        delivery_ids = _morning_delivery_ids(session, run_date)
+        if _all_deliveries_sent(session, delivery_ids):
+            metadata["state"] = "dispatched"
+            metadata["dispatch_at"] = current_as_of.isoformat()
+            _write_gate_metadata(session, run_date, metadata)
+            return MorningGateResult(
+                status="dispatched",
+                expected_session=expected_session,
+                retry_count=retry_count,
+                ready_products=list(metadata.get("ready_products") or []),
+                deadline_reached=bool(metadata.get("deadline_reached")),
+                refresh_performed=False,
+                dispatch_action="already_dispatched",
+            )
+        return MorningGateResult(
+            status="ai_review_hold",
+            expected_session=expected_session,
+            retry_count=retry_count,
+            ready_products=list(metadata.get("ready_products") or []),
+            deadline_reached=bool(metadata.get("deadline_reached")),
+            refresh_performed=False,
+            dispatch_action="held_for_ai_review",
+        )
     if state == "dispatched":
         try_write_ai_review_packet(
             session,
@@ -294,12 +322,29 @@ async def run_morning_night_futures_gate(
 
     delivery_ids = _morning_delivery_ids(session, run_date)
     if state in {"ready", "deadline_reached"}:
-        try_write_ai_review_packet(
+        packet_result = try_write_ai_review_packet(
             session,
             run_date,
             "us",
             generated_at=current_as_of,
         )
+        if ai_assisted_pilot_active("us") and packet_result.packet_id:
+            hold_ai_assisted_pilot_session(
+                session,
+                packet_result.packet_id,
+                held_at=current_as_of,
+            )
+            metadata["state"] = "ai_review_hold"
+            _write_gate_metadata(session, run_date, metadata)
+            return MorningGateResult(
+                status="ai_review_hold",
+                expected_session=expected_session,
+                retry_count=retry_count,
+                ready_products=list(metadata.get("ready_products") or []),
+                deadline_reached=bool(metadata.get("deadline_reached")),
+                refresh_performed=False,
+                dispatch_action="held_for_ai_review",
+            )
         await dispatch_pending_notifications(
             session,
             notifier=notifier,  # type: ignore[arg-type]
@@ -392,12 +437,29 @@ async def run_morning_night_futures_gate(
             dispatch_action="held_for_complete_snapshot",
         )
 
-    try_write_ai_review_packet(
+    packet_result = try_write_ai_review_packet(
         session,
         run_date,
         "us",
         generated_at=current_as_of,
     )
+    if ai_assisted_pilot_active("us") and packet_result.packet_id:
+        hold_ai_assisted_pilot_session(
+            session,
+            packet_result.packet_id,
+            held_at=current_as_of,
+        )
+        metadata["state"] = "ai_review_hold"
+        _write_gate_metadata(session, run_date, metadata)
+        return MorningGateResult(
+            status="ai_review_hold",
+            expected_session=expected_session,
+            retry_count=int(metadata["retry_count"]),
+            ready_products=ready_products,
+            deadline_reached=deadline_reached,
+            refresh_performed=True,
+            dispatch_action="held_for_ai_review",
+        )
     delivery_ids = _morning_delivery_ids(session, run_date)
     await dispatch_pending_notifications(
         session,

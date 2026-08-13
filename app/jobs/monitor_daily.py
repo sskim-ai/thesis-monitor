@@ -14,6 +14,10 @@ from app.models.macro import MacroBriefing
 from app.models.thesis import MonitorRun
 from app.services.daily_monitor_service import run_daily_monitor
 from app.services.ai_review_service import try_write_ai_review_packet
+from app.services.ai_assisted_delivery_service import (
+    ai_assisted_pilot_active,
+    hold_ai_assisted_pilot_session,
+)
 from app.services.market_session import MarketScope
 from app.services.morning_gate import (
     initialize_morning_gate,
@@ -205,16 +209,26 @@ async def _run_market_job(
         "requeue_sent_before": cutoff if decision.refresh else None,
         "market_scope": market_scope,
     }
-    if market_scope == "us":
+    pilot_active = market_scope in {"us", "kr"} and ai_assisted_pilot_active(
+        market_scope
+    )
+    if market_scope == "us" or pilot_active:
         daily_kwargs["dispatch_notifications"] = False
     result = await run_daily_monitor(session, **daily_kwargs)
+    pilot_hold: dict[str, object] | None = None
     if market_scope == "kr" and result.status in {"success", "already_completed"}:
-        try_write_ai_review_packet(
+        packet_result = try_write_ai_review_packet(
             session,
             run_date,
             "kr",
             generated_at=current_as_of or datetime.now(KST),
         )
+        if pilot_active and packet_result.packet_id:
+            pilot_hold = hold_ai_assisted_pilot_session(
+                session,
+                packet_result.packet_id,
+                held_at=current_as_of or datetime.now(KST),
+            ).as_dict()
     gate_result: dict[str, object] | None = None
     if market_scope == "us" and result.status not in {
         "failed",
@@ -239,6 +253,8 @@ async def _run_market_job(
     }.get(decision.action, "primary")
     if gate_result is not None:
         delivery_action = str(gate_result["dispatch_action"])
+    elif pilot_hold is not None:
+        delivery_action = "held_for_ai_review"
     return {
         "market_scope": market_scope,
         "production_cutoff": cutoff.isoformat(),
@@ -246,6 +262,7 @@ async def _run_market_job(
         "analysis_run_status": result.status,
         "delivery_action": delivery_action,
         "morning_gate": gate_result,
+        "ai_assisted_pilot": pilot_hold,
         "macro": macro_result,
         "kr_close_market": kr_close_result,
         "theses": result.model_dump(mode="json"),
