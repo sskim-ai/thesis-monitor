@@ -20,6 +20,7 @@ from app.models.thesis import (
     ThesisAssessment,
 )
 from app.models.watchlist import WatchlistItem
+from app.schemas.ai_review import AIDailyReviewOutput
 from app.services.ai_review_service import (
     build_ai_review_packet,
     claim_next_ai_review_packet,
@@ -357,7 +358,7 @@ def _valid_output(
     facts = stock["fact_catalog"]
     market_facts = packet["market_context"]["fact_catalog"]
     return {
-        "schema_version": "3",
+        "schema_version": "4",
         "packet_id": packet["packet_id"],
         "claim_id": claim_id,
         "analysis_policy_version": packet["analysis_policy_version"],
@@ -388,6 +389,8 @@ def _valid_output(
                 "text": "Do not infer a new regime without additional verified evidence.",
                 "fact_ids": [market_facts[0]["fact_id"]] if market_facts else [],
             },
+            "portfolio_transmission": [],
+            "next_checks": [],
             "numeric_claims": [],
             "unknowns": ["Direction remains uncertain."],
         },
@@ -1455,9 +1458,9 @@ def test_knowledge_v3_sources_decisions_and_safety_markers() -> None:
         assert marker not in text
 
 
-def test_dual_knowledge_policy_identity_starts_v35_structure_cohort() -> None:
-    assert ai_review_service.ANALYSIS_POLICY_VERSION == "daily-review-v3.5"
-    assert ai_review_service.OUTPUT_SCHEMA_VERSION == "3"
+def test_dual_knowledge_policy_identity_starts_v36_market_cohort() -> None:
+    assert ai_review_service.ANALYSIS_POLICY_VERSION == "daily-review-v3.6"
+    assert ai_review_service.OUTPUT_SCHEMA_VERSION == "4"
     manifest = knowledge_manifest()
     assert manifest["version"] == "3.0"
     assert manifest["sha256"] == (
@@ -2228,6 +2231,15 @@ def test_chart_and_supply_horizon_labels_are_structural_not_financial_values() -
     assert ai_review_service._provenance_tokens(text) == {"100", "0.81"}
 
 
+def test_market_index_names_and_yield_tenor_are_structural_numbers() -> None:
+    text = (
+        "S&P500 등락률 +0.22%, Russell 2000 등락률 +0.64%, "
+        "미국 10년물 금리 -2bp"
+    )
+
+    assert ai_review_service._provenance_tokens(text) == {"0.22", "0.64", "-2"}
+
+
 def test_quantitative_grounding_flags_vague_sections_when_safe_numbers_exist(
     monkeypatch,
     tmp_path: Path,
@@ -2252,6 +2264,141 @@ def test_quantitative_grounding_flags_vague_sections_when_safe_numbers_exist(
     assert "insufficient_quantitative_grounding:core" in row["flags"]
     assert "insufficient_quantitative_grounding:earnings" in row["flags"]
     assert "insufficient_quantitative_grounding:valuation" in row["flags"]
+
+
+def test_market_transmission_requires_exact_group_fact_and_prose_grounding(
+    monkeypatch,
+    tmp_path: Path,
+) -> None:
+    _settings(monkeypatch, tmp_path)
+    with Session(_engine()) as session:
+        _seed(session)
+        packet = build_ai_review_packet(session, RUN_DATE, "us")
+        assert packet is not None
+        context = packet["market_context"]
+        fact = {
+            "fact_id": "market:relative:SOXX:SPY",
+            "fact_type": "market_sector_relative",
+            "as_of_date": RUN_DATE.isoformat(),
+            "fields": {
+                "subject": "SOXX",
+                "subject_label": "반도체",
+                "benchmark": "SPY",
+                "benchmark_label": "S&P500",
+                "relative_return_pct": 1.9,
+                "source_fact_ids": ["market:sector:SOXX", "market:index:SPY"],
+            },
+        }
+        context["fact_catalog"] = [fact]
+        context["numeric_registry"] = ai_review_service._numeric_registry([fact])
+        context["key_change_fact_ids"] = [fact["fact_id"]]
+        context["portfolio_exposure_groups"] = [
+            {"group_key": "memory", "label": "메모리", "tickers": ["PACKETUS"]}
+        ]
+        context["transmission_candidates"] = [
+            {
+                "portfolio_group": "memory",
+                "market_fact_id": fact["fact_id"],
+                "tickers": ["PACKETUS"],
+                "channels": ["risk_appetite"],
+            }
+        ]
+        output = _valid_output(packet)
+        market_review = output["market_review"]
+        market_review["facts_used"] = [fact["fact_id"]]
+        market_review["important_changes"] = [
+            {
+                "text": "반도체 상대수익률 1.9%는 업종 선택적 강세를 보여줍니다.",
+                "fact_ids": [fact["fact_id"]],
+            }
+        ]
+        market_review["portfolio_transmission"] = [
+            {
+                "portfolio_group": "memory",
+                "text": "메모리 가격환경에는 우호적이지만 주문과 마진 확인은 별개입니다.",
+                "fact_ids": [fact["fact_id"]],
+            }
+        ]
+        market_review["next_checks"] = [
+            {
+                "text": "반도체 상대강도가 다음 세션에도 이어지는지 확인합니다.",
+                "fact_ids": [fact["fact_id"]],
+            }
+        ]
+        market_review["numeric_claims"] = [
+            {
+                "fact_id": fact["fact_id"],
+                "field_path": "fields.relative_return_pct",
+                "value": 1.9,
+                "unit": "pct",
+                "semantic_type": "sector_relative_return_pct",
+                "text_ref": "important_changes[0].text",
+                "usage": "반도체 상대수익률 1.9%",
+            }
+        ]
+
+        validated, errors = validate_ai_review_output(session, packet, output)
+        assert validated is not None
+        assert errors == []
+
+        output["market_review"]["portfolio_transmission"][0][
+            "portfolio_group"
+        ] = "insurance"
+        _, errors = validate_ai_review_output(session, packet, output)
+
+    assert "market_review:portfolio_group_not_found:insurance" in errors
+    assert any(
+        error.startswith("market_review:portfolio_transmission_fact_mismatch:insurance")
+        for error in errors
+    )
+
+
+def test_market_quality_flags_generic_summary_and_missing_transmission(
+    monkeypatch,
+    tmp_path: Path,
+) -> None:
+    _settings(monkeypatch, tmp_path)
+    with Session(_engine()) as session:
+        _seed(session)
+        packet = build_ai_review_packet(session, RUN_DATE, "us")
+        assert packet is not None
+        context = packet["market_context"]
+        context["numeric_registry"] = [
+            {
+                "fact_id": "market:index:SPY",
+                "field_path": "fields.return_pct",
+                "value": 1.0,
+                "unit": "pct",
+                "semantic_type": "index_return_pct",
+                "registered": True,
+                "prose_allowed": True,
+            },
+            {
+                "fact_id": "market:oil:DCOILWTICO",
+                "field_path": "fields.return_pct",
+                "value": 2.0,
+                "unit": "pct",
+                "semantic_type": "oil_return_pct",
+                "registered": True,
+                "prose_allowed": True,
+            },
+        ]
+        context["key_change_fact_ids"] = ["market:oil:DCOILWTICO"]
+        context["transmission_candidates"] = [
+            {
+                "portfolio_group": "general",
+                "market_fact_id": "market:oil:DCOILWTICO",
+            }
+        ]
+        output = AIDailyReviewOutput.model_validate(_valid_output(packet))
+        output.market_review.core_judgment.text = "시장 신호가 혼재했습니다."
+        report = ai_review_service.quantitative_grounding_report(packet, output)
+
+    assert report["market"]["flags"] == [
+        "insufficient_market_quantitative_grounding",
+        "market_fact_without_transmission",
+        "generic_market_summary",
+    ]
 
 
 def test_signed_supply_value_and_audit_only_denominator_are_fail_closed(
@@ -2415,11 +2562,11 @@ def test_v35_packet_records_structure_v2_shadow_cohort_metadata(
         packet = build_ai_review_packet(session, RUN_DATE, "us")
 
     assert packet is not None
-    assert packet["analysis_policy_version"] == "daily-review-v3.5"
+    assert packet["analysis_policy_version"] == "daily-review-v3.6"
     assert packet["structure_algorithm_version"] == "ohlcv-structure-v2"
     assert packet["ready_for_ai"] is True
     assert packet["shadow_cohort"] == {
-        "policy_version": "daily-review-v3.5",
+        "policy_version": "daily-review-v3.6",
         "eligible": True,
         "profile_gate": {
             "active_total": 1,
@@ -2720,7 +2867,7 @@ def test_skill_fixture_and_output_schema_are_present() -> None:
     )
     skill = (skill_root / "SKILL.md").read_text(encoding="utf-8")
 
-    assert schema["properties"]["schema_version"] == {"const": "3"}
+    assert schema["properties"]["schema_version"] == {"const": "4"}
     assert "claim_id" in schema["required"]
     assert "knowledge_sha256" in schema["required"]
     numeric_claim = schema["$defs"]["numericClaim"]
@@ -2732,5 +2879,5 @@ def test_skill_fixture_and_output_schema_are_present() -> None:
     assert "knowledge-index.md" in skill
     assert "chart-knowledge-index.md" in skill
     assert "stock-chart-value-analysis-knowledge-v1.md" in skill
-    assert "schema-3 reasoning sections" in skill
+    assert "schema-4 reasoning sections" in skill
     assert "--claim-id" in skill

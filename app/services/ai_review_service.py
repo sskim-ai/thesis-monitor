@@ -20,7 +20,7 @@ from pydantic import ValidationError
 from sqlmodel import Session, select
 
 from app.config import get_settings
-from app.models.macro import MacroBriefing
+from app.models.macro import MacroBriefing, ThesisMacroImpact
 from app.models.company import Company
 from app.models.security import SecurityMaster
 from app.models.thesis import InvestmentThesis, MonitorRun, ThesisAssessment
@@ -36,6 +36,7 @@ from app.services.company_profile_service import (
 )
 from app.services.daily_digest import build_daily_digest
 from app.services.market_session import market_scope_for_security
+from app.services.market_intelligence_service import build_market_intelligence
 from app.services.numeric_semantic_registry import (
     NUMERIC_SEMANTICS,
     build_numeric_registry,
@@ -49,8 +50,8 @@ from app.services.ohlcv_structure_service import ALGORITHM_VERSION
 logger = logging.getLogger(__name__)
 
 PACKET_SCHEMA_VERSION = "1"
-OUTPUT_SCHEMA_VERSION = "3"
-ANALYSIS_POLICY_VERSION = "daily-review-v3.5"
+OUTPUT_SCHEMA_VERSION = "4"
+ANALYSIS_POLICY_VERSION = "daily-review-v3.6"
 AIReviewMarket = Literal["us", "kr"]
 
 _INTERNAL_TEXT = re.compile(
@@ -77,6 +78,11 @@ _INTERNAL_KEYS = {
 }
 _NUMBER = re.compile(r"(?<![\w])[-+]?\d[\d,]*(?:\.\d+)?%?")
 _STRUCTURAL_NUMBER_PATTERNS = (
+    r"\bS&P\s*500\b",
+    r"\bRussell\s*2000\b",
+    r"\bKOSPI\s*200\b",
+    r"\bKOSDAQ\s*150\b",
+    r"\b(?:미국\s*)?10\s*년물\b",
     r"\b(?:19|20)\d{2}[-./]\d{1,2}[-./]\d{1,2}\b",
     r"\b(?:19|20)\d{2}\s*년(?:\s*[1-4]\s*분기)?",
     r"\bQ[1-4]\b|\b[1-4]Q\b",
@@ -1511,19 +1517,42 @@ def _market_packet(
     session: Session,
     run_date: date,
     market: AIReviewMarket,
+    stocks: list[dict[str, object]],
 ) -> dict[str, object]:
     digest = build_daily_digest(session, run_date, market_scope=market)
-    market_facts: list[dict[str, object]] = []
-    for index, text in enumerate(digest.macro.key_changes, start=1):
-        if clean := _clean_text(text):
-            market_facts.append(
-                {
-                    "fact_id": f"market:change:{index}",
-                    "fact_type": "macro_change",
-                    "as_of_date": run_date.isoformat(),
-                    "fields": {"text": clean},
-                }
+    briefing = session.exec(
+        select(MacroBriefing).where(
+            MacroBriefing.briefing_date == run_date,
+            MacroBriefing.briefing_type == "morning",
+        )
+    ).first()
+    tickers = [str(stock["ticker"]) for stock in stocks]
+    impact_rows = (
+        session.exec(
+            select(ThesisMacroImpact).where(
+                ThesisMacroImpact.assessment_date == run_date,
+                ThesisMacroImpact.ticker.in_(tickers),
             )
+        ).all()
+        if tickers
+        else []
+    )
+    intelligence = build_market_intelligence(
+        briefing,
+        run_date,
+        stocks,
+        [
+            {
+                "ticker": impact.ticker,
+                "direction": impact.direction,
+                "channels": _public_value(_list(impact.channels)),
+                "evidence": _public_value(_list(impact.evidence)),
+            }
+            for impact in impact_rows
+        ],
+        market=market,
+    )
+    market_facts = list(intelligence["fact_catalog"])
     night_futures = [asdict(item) for item in digest.night_futures.items]
     for index, item in enumerate(night_futures, start=1):
         market_facts.append(
@@ -1546,14 +1575,14 @@ def _market_packet(
                     "fields": _public_value(item),
                 }
             )
-    briefing = session.exec(
-        select(MacroBriefing).where(
-            MacroBriefing.briefing_date == run_date,
-            MacroBriefing.briefing_type == "morning",
-        )
-    ).first()
     macro_theses = _public_value(_list(briefing.macro_theses)) if briefing else []
     return {
+        "session": {
+            "market": market,
+            "assessment_date": run_date.isoformat(),
+            "market_session": digest.macro.market_session,
+            "assessment_state": digest.macro.assessment_state,
+        },
         "regime": {
             "label": digest.macro.regime_label,
             "confidence": digest.macro.confidence,
@@ -1564,9 +1593,14 @@ def _market_packet(
             ],
         },
         "important_changes": _clean_texts(digest.macro.key_changes),
+        "key_change_fact_ids": intelligence["key_change_fact_ids"],
         "integrated_view": _clean_texts(digest.macro.integrated_view),
         "market_assumptions": _clean_texts(digest.macro.market_assumptions),
         "market_theses": macro_theses,
+        "coverage": intelligence["coverage"],
+        "portfolio_exposure_groups": intelligence["portfolio_exposure_groups"],
+        "transmission_candidates": intelligence["transmission_candidates"],
+        "market_unknowns": intelligence["unknowns"],
         "night_futures": night_futures,
         "fx": fx_items,
         "data_cautions": _clean_texts(digest.data_quality.items),
@@ -1576,6 +1610,7 @@ def _market_packet(
             "required_frameworks": [*_CORE_FRAMEWORKS, "macro_transmission"],
             "knowledge_index": "references/knowledge-index.md",
         },
+        "_stock_transmissions": intelligence["stock_transmissions"],
     }
 
 
@@ -1615,7 +1650,34 @@ def build_ai_review_packet(
         return None
     knowledge = knowledge_manifest()
     chart_knowledge = chart_knowledge_manifest()
-    market_context = _market_packet(session, run_date, market)
+    market_context = _market_packet(session, run_date, market, stocks)
+    stock_transmissions = market_context.pop("_stock_transmissions", {})
+    market_facts_by_id = {
+        str(fact["fact_id"]): fact
+        for fact in market_context["fact_catalog"]
+        if isinstance(fact, dict) and fact.get("fact_id")
+    }
+    for stock in stocks:
+        links = (
+            stock_transmissions.get(str(stock["ticker"]), [])
+            if isinstance(stock_transmissions, dict)
+            else []
+        )
+        stock["market_transmission"] = {
+            "relevant_market_facts": links,
+            "not_fundamental_confirmation": bool(links),
+        }
+        relevant_ids = {
+            str(link.get("fact_id"))
+            for link in links
+            if isinstance(link, dict) and link.get("fact_id")
+        }
+        stock["fact_catalog"].extend(
+            market_facts_by_id[fact_id]
+            for fact_id in sorted(relevant_ids)
+            if fact_id in market_facts_by_id
+        )
+        stock["numeric_registry"] = _numeric_registry(stock["fact_catalog"])
     profile_gate = company_profile_coverage(session, get_settings().data_dir)
     numeric_gate = numeric_registry_coverage(
         [
@@ -1626,6 +1688,7 @@ def build_ai_review_packet(
     cohort_ready = bool(profile_gate["ready"] and numeric_gate["ready"])
     body = {
         "schema_version": PACKET_SCHEMA_VERSION,
+        "output_schema_version": OUTPUT_SCHEMA_VERSION,
         "analysis_policy_version": ANALYSIS_POLICY_VERSION,
         "structure_algorithm_version": ALGORITHM_VERSION,
         "knowledge": knowledge,
@@ -1881,6 +1944,16 @@ def _prose_fields(review: object) -> dict[str, str]:
                 },
                 "market_context.text": getattr(review, "market_context").text,
                 "market_assumptions.text": getattr(review, "market_assumptions").text,
+                **{
+                    f"portfolio_transmission[{index}].text": item.text
+                    for index, item in enumerate(
+                        getattr(review, "portfolio_transmission", [])
+                    )
+                },
+                **{
+                    f"next_checks[{index}].text": item.text
+                    for index, item in enumerate(getattr(review, "next_checks", []))
+                },
             }
         )
     return fields
@@ -1926,6 +1999,15 @@ def _usage_unit_matches(unit: str, usage: str) -> bool:
         return "%" not in usage and any(
             marker in lowered for marker in ("pt", "point", "포인트", "선물")
         )
+    if unit == "bp":
+        return "bp" in lowered or "베이시스포인트" in usage
+    if unit == "USD_per_barrel":
+        return (
+            ("$" in usage or "usd" in lowered or "달러" in usage)
+            and ("bbl" in lowered or "배럴" in usage)
+        )
+    if unit == "index":
+        return "%" not in usage
     if unit in {"count", "years", "number"}:
         return False
     return True
@@ -2234,6 +2316,8 @@ def validate_ai_review_output(
             *output.market_review.important_changes,
             output.market_review.market_context,
             output.market_review.market_assumptions,
+            *output.market_review.portfolio_transmission,
+            *output.market_review.next_checks,
         )
         for fact_id in item.fact_ids
     }
@@ -2259,6 +2343,37 @@ def validate_ai_review_output(
         errors.append(
             "market_review:framework_not_allowed:" + ",".join(invalid_market_frameworks)
         )
+    portfolio_groups = {
+        str(item.get("group_key"))
+        for item in market_context.get("portfolio_exposure_groups", [])
+        if isinstance(item, dict) and item.get("group_key")
+    } if isinstance(market_context, dict) else set()
+    transmission_facts: dict[str, set[str]] = {}
+    if isinstance(market_context, dict):
+        for item in market_context.get("transmission_candidates", []):
+            if not isinstance(item, dict):
+                continue
+            group = str(item.get("portfolio_group") or "")
+            fact_id = str(item.get("market_fact_id") or "")
+            if group and fact_id:
+                transmission_facts.setdefault(group, set()).add(fact_id)
+    for index, item in enumerate(output.market_review.portfolio_transmission):
+        if item.portfolio_group not in portfolio_groups:
+            errors.append(
+                f"market_review:portfolio_group_not_found:{item.portfolio_group}"
+            )
+        if not item.fact_ids:
+            errors.append(
+                f"market_review:portfolio_transmission_without_fact:{index}"
+            )
+            continue
+        allowed = transmission_facts.get(item.portfolio_group, set())
+        invalid = sorted(set(item.fact_ids) - allowed)
+        if invalid:
+            errors.append(
+                "market_review:portfolio_transmission_fact_mismatch:"
+                f"{item.portfolio_group}:" + ",".join(invalid)
+            )
     errors.extend(
         _validate_numeric_claims(
             "market_review",
@@ -2371,6 +2486,72 @@ def quantitative_grounding_report(
     packet: dict[str, object],
     output: AIDailyReviewOutput,
 ) -> dict[str, object]:
+    market_context = packet.get("market_context", {})
+    market_registry = (
+        market_context.get("numeric_registry", [])
+        if isinstance(market_context, dict)
+        else []
+    )
+    market_eligible = [
+        item
+        for item in market_registry
+        if isinstance(item, dict) and item.get("prose_allowed") is True
+    ]
+    market_claims = [
+        item.model_dump() for item in output.market_review.numeric_claims
+    ]
+    market_flags: list[str] = []
+    if len(market_eligible) >= 2 and len(market_claims) < 2:
+        market_flags.append("insufficient_market_quantitative_grounding")
+    key_change_ids = {
+        str(item)
+        for item in (
+            market_context.get("key_change_fact_ids", [])
+            if isinstance(market_context, dict)
+            else []
+        )
+    }
+    candidate_fact_ids = {
+        str(item.get("market_fact_id"))
+        for item in (
+            market_context.get("transmission_candidates", [])
+            if isinstance(market_context, dict)
+            else []
+        )
+        if isinstance(item, dict) and item.get("market_fact_id")
+    }
+    transmitted_fact_ids = {
+        fact_id
+        for item in output.market_review.portfolio_transmission
+        for fact_id in item.fact_ids
+    }
+    if (key_change_ids & candidate_fact_ids) - transmitted_fact_ids:
+        market_flags.append("market_fact_without_transmission")
+    if any(not item.fact_ids for item in output.market_review.portfolio_transmission):
+        market_flags.append("portfolio_transmission_without_fact")
+    user_market_prose = "\n".join(
+        [
+            output.market_review.core_judgment.text,
+            *(item.text for item in output.market_review.important_changes),
+            output.market_review.market_context.text,
+            *(item.text for item in output.market_review.portfolio_transmission),
+            *(item.text for item in output.market_review.next_checks),
+        ]
+    )
+    if len(market_eligible) >= 2 and len(market_claims) < 2 and re.search(
+        r"(?:시장이\s*혼조|시장\s*신호.*혼재|위험선호.*엇갈)", user_market_prose
+    ):
+        market_flags.append("generic_market_summary")
+    market_report = {
+        "eligible_numeric_anchors": len(market_eligible),
+        "numeric_claims_used": len(market_claims),
+        "selected_change_fact_ids": sorted(key_change_ids),
+        "portfolio_transmission_count": len(
+            output.market_review.portfolio_transmission
+        ),
+        "next_check_count": len(output.market_review.next_checks),
+        "flags": market_flags,
+    }
     stocks = {
         str(item["ticker"]): item
         for item in packet.get("stocks", [])
@@ -2483,7 +2664,12 @@ def quantitative_grounding_report(
     return {
         "packet_id": output.packet_id,
         "analysis_policy_version": output.analysis_policy_version,
-        "status": "flagged" if any(row["flags"] for row in rows) else "passed",
+        "status": (
+            "flagged"
+            if market_flags or any(row["flags"] for row in rows)
+            else "passed"
+        ),
+        "market": market_report,
         "stocks": rows,
     }
 

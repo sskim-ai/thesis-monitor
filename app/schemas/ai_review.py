@@ -47,6 +47,10 @@ class AIPricePositioningSection(AIReasoningSection):
     holder_view: str
 
 
+class AIMarketTransmission(AIInterpretation):
+    portfolio_group: str = Field(min_length=1)
+
+
 class AIMarketReview(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
@@ -56,6 +60,8 @@ class AIMarketReview(BaseModel):
     important_changes: list[AIInterpretation] = Field(default_factory=list)
     market_context: AIReasoningSection
     market_assumptions: AIReasoningSection
+    portfolio_transmission: list[AIMarketTransmission] = Field(default_factory=list)
+    next_checks: list[AIInterpretation] = Field(default_factory=list)
     numeric_claims: list[AINumericClaim] = Field(default_factory=list)
     unknowns: list[str] = Field(default_factory=list)
 
@@ -85,7 +91,7 @@ class AIStockReview(BaseModel):
 class AIDailyReviewOutput(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
-    schema_version: Literal["3"]
+    schema_version: Literal["4"]
     packet_id: str
     claim_id: str
     analysis_policy_version: str

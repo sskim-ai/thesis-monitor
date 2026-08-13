@@ -167,6 +167,34 @@ sections that avoid available evidence, but missing data never causes invented n
 Pilot v2 renders deterministic status and verified facts with validated AI interpretation once; it
 does not append the full deterministic report below the AI narrative.
 
+## Phase 6 Market Intelligence Contract
+
+Output schema `4` and analysis policy `daily-review-v3.6` add deterministic market-fact
+selection and verified portfolio transmission. The market packet now inventories indices,
+sector proxies, rates, real rates, inflation expectations, credit, FX, oil, volatility,
+liquidity, breadth, and market-wide flows. Only fresh or revised backend observations become
+facts. Missing and stale categories remain explicit unknowns; Codex never fills them from
+the web or general knowledge.
+
+The service deterministically calculates approved relative-performance facts and selects
+two to four material changes. It groups the session universe from verified company profiles
+and allows market-to-portfolio links only when backed by existing macro-impact evidence or
+the explicit semiconductor relative-performance contract. Every link is context, never
+fundamental confirmation, and never changes an official thesis state.
+
+Market numbers use the same exact prose-location and fail-closed semantic registry as stock
+numbers. Schema 4 requires portfolio transmission and next checks to cite allowed market
+facts. Grounding telemetry flags generic summaries, ungrounded market facts, and unsupported
+portfolio transmission.
+
+`ai-assisted-pilot-renderer-v3` shows one-line judgment, important changes, market structure,
+portfolio transmission, next confirmation, and material data limits. It omits analysis-method
+narration, raw provider metadata, market-assumption audit prose, and the duplicated full
+deterministic market report. The exact packet, deterministic report, AI review, grounding
+report, rendered message, and delivery result remain archived.
+
+The durable cross-session continuation reference is `docs/ai_review_project_handoff.md`.
+
 ## Security Boundary
 
 Scheduled review may write only under `data/ai_review`. It must not edit `app`, `tests`, `ops`, project

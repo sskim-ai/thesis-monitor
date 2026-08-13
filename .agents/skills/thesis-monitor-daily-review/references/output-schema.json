@@ -1,14 +1,14 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "title": "Thesis Monitor AI Daily Review Output v3",
+  "title": "Thesis Monitor AI Daily Review Output v4",
   "type": "object",
   "additionalProperties": false,
   "required": ["schema_version", "packet_id", "claim_id", "analysis_policy_version", "knowledge_version", "knowledge_sha256", "chart_knowledge_version", "chart_knowledge_sha256", "market", "assessment_date", "market_review", "stock_reviews"],
   "properties": {
-    "schema_version": {"const": "3"},
+    "schema_version": {"const": "4"},
     "packet_id": {"type": "string", "minLength": 1},
     "claim_id": {"type": "string", "minLength": 1},
-    "analysis_policy_version": {"const": "daily-review-v3.5"},
+    "analysis_policy_version": {"const": "daily-review-v3.6"},
     "knowledge_version": {"type": "string", "minLength": 1},
     "knowledge_sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
     "chart_knowledge_version": {"type": "string", "minLength": 1},
@@ -24,6 +24,15 @@
       "type": "object", "additionalProperties": false,
       "required": ["text", "fact_ids"],
       "properties": {"text": {"type": "string"}, "fact_ids": {"$ref": "#/$defs/textList"}}
+    },
+    "marketTransmission": {
+      "type": "object", "additionalProperties": false,
+      "required": ["text", "fact_ids", "portfolio_group"],
+      "properties": {
+        "text": {"type": "string"},
+        "fact_ids": {"$ref": "#/$defs/textList"},
+        "portfolio_group": {"type": "string", "minLength": 1}
+      }
     },
     "priceSection": {
       "type": "object", "additionalProperties": false,
@@ -42,20 +51,25 @@
         "semantic_type": {"type": "string", "minLength": 1},
         "text_ref": {
           "type": "string",
-          "pattern": "^(core_judgment\\.text|business_earnings\\.text|price_positioning\\.(text|new_observer_view|holder_view)|supply_analysis\\.text|valuation_analysis\\.text|important_changes\\[[0-9]+\\]\\.text|market_context\\.text|market_assumptions\\.text|priority_watch\\[[0-9]+\\]|unknowns\\[[0-9]+\\]|next_checks\\[[0-9]+\\])$"
+          "pattern": "^(core_judgment\\.text|business_earnings\\.text|price_positioning\\.(text|new_observer_view|holder_view)|supply_analysis\\.text|valuation_analysis\\.text|important_changes\\[[0-9]+\\]\\.text|market_context\\.text|market_assumptions\\.text|portfolio_transmission\\[[0-9]+\\]\\.text|priority_watch\\[[0-9]+\\]|unknowns\\[[0-9]+\\]|next_checks\\[[0-9]+\\](?:\\.text)?)$"
         },
         "usage": {"type": "string", "minLength": 1}
       }
     },
     "marketReview": {
       "type": "object", "additionalProperties": false,
-      "required": ["facts_used", "frameworks_used", "core_judgment", "important_changes", "market_context", "market_assumptions", "numeric_claims", "unknowns"],
+      "required": ["facts_used", "frameworks_used", "core_judgment", "important_changes", "market_context", "market_assumptions", "portfolio_transmission", "next_checks", "numeric_claims", "unknowns"],
       "properties": {
         "facts_used": {"$ref": "#/$defs/textList"}, "frameworks_used": {"$ref": "#/$defs/textList"},
         "core_judgment": {"$ref": "#/$defs/reasoningSection"},
         "important_changes": {"type": "array", "items": {"$ref": "#/$defs/reasoningSection"}},
         "market_context": {"$ref": "#/$defs/reasoningSection"},
         "market_assumptions": {"$ref": "#/$defs/reasoningSection"},
+        "portfolio_transmission": {
+          "type": "array",
+          "items": {"$ref": "#/$defs/marketTransmission"}
+        },
+        "next_checks": {"type": "array", "items": {"$ref": "#/$defs/reasoningSection"}},
         "numeric_claims": {"type": "array", "items": {"$ref": "#/$defs/numericClaim"}},
         "unknowns": {"$ref": "#/$defs/textList"}
       }

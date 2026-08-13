@@ -54,7 +54,13 @@ Investment Knowledge v3 remains the safety, company, earnings, valuation, expect
 
 Do not compute technical indicators in the review task. Missing support, resistance, ATR, Elliott, Fibonacci, risk/reward, or state-machine output remains unavailable. Adjusted technical prices and unadjusted historical-valuation prices are separate bases.
 
-Output schema 3 integrates deterministic facts and AI reasoning by section. Do not append the full deterministic report after the AI narrative. Keep deterministic official status and hard warnings, use numeric evidence when eligible, and place holder and new-observer views inside price positioning.
+Output schema 4 integrates deterministic facts and AI reasoning by section. Do not append the full deterministic report after the AI narrative. Keep deterministic official status and hard warnings, use numeric evidence when eligible, and place holder and new-observer views inside price positioning.
+
+## Market Intelligence
+
+Market analysis follows `verified fact -> market structure -> economic transmission -> monitored portfolio relevance -> next confirmation`. Prefer the backend-selected `key_change_fact_ids`, use two to four decisive changes at most, and distinguish index direction from breadth, sector concentration, market flow, discount-rate, FX, and commodity channels. An unavailable breadth or market-flow field stays Unknown and prevents a broad-market conclusion.
+
+Use only packet `transmission_candidates` for `portfolio_transmission`, with the exact verified `portfolio_group` and supporting market fact. Market context can be a tailwind, headwind, or neutral condition; it never changes the company thesis without company-level evidence. Keep collection timing, immutable-session notes, policy identity, and other operating metadata in audit artifacts rather than Telegram prose.
 
 Numeric prose is allowlisted. Use only registry entries with `registered=true` and `prose_allowed=true`, match an approved label for that exact semantic, and use an approved display variant. Unknown semantics, audit-only denominators, and fields with unverified currency or unit stay out of narrative prose.
 

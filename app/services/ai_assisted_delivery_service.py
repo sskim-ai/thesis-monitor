@@ -29,7 +29,7 @@ from app.services.notification_service import (
 KST = ZoneInfo("Asia/Seoul")
 PILOT_MODE = "ai_assisted_single_delivery"
 PILOT_VERSION = "ai-assisted-pilot-v2"
-PILOT_RENDERER_VERSION = "ai-assisted-pilot-renderer-v2"
+PILOT_RENDERER_VERSION = "ai-assisted-pilot-renderer-v3"
 PILOT_MARKERS = {"us": "__DAILY_DIGEST__", "kr": "__DAILY_DIGEST_KR__"}
 PilotMarket = Literal["us", "kr"]
 
@@ -161,7 +161,7 @@ def _output_path(packet: dict[str, object]) -> Path | None:
     chart_knowledge = packet.get("chart_knowledge")
     expected = {
         "packet_id": packet_id,
-        "schema_version": "3",
+        "schema_version": str(packet.get("output_schema_version") or "4"),
         "analysis_policy_version": str(packet.get("analysis_policy_version") or ""),
         "knowledge_version": str(
             knowledge.get("version") if isinstance(knowledge, dict) else ""
@@ -353,36 +353,64 @@ def _render_ai_market_message(
     deterministic_text: str,
     review: AIMarketReview,
     *,
+    market_context: dict[str, object],
     market: str,
     pilot_day: int,
     target_days: int,
 ) -> str:
     market_label = "US" if market == "us" else "KR"
+    title = "미국시장 점검" if market == "us" else "한국시장 마감"
     unknowns = _bullets(review.unknowns)
     changes = _bullets(
         [item.text.strip() for item in review.important_changes if item.text.strip()]
+    )
+    group_labels = {
+        str(item.get("group_key")): str(item.get("label") or item.get("group_key"))
+        for item in market_context.get("portfolio_exposure_groups", [])
+        if isinstance(item, dict) and item.get("group_key")
+    }
+    transmissions = _bullets(
+        [
+            f"{group_labels.get(item.portfolio_group, item.portfolio_group)}: "
+            f"{item.text.strip()}"
+            for item in review.portfolio_transmission
+            if item.text.strip()
+        ]
+    )
+    next_checks = _bullets(
+        [item.text.strip() for item in review.next_checks if item.text.strip()]
     )
     blocks = _deterministic_blocks(deterministic_text)
     night_futures = _first_block(blocks, "🌙 한국 야간선물")
     cautions = _first_block(blocks, "⚠️ 데이터 주의")
     sections = [
-        f"🤖 AI 보조 시장 점검 · {market_label} Pilot {pilot_day}/{target_days}",
-        f"🎯 핵심 판단\n{review.core_judgment.text.strip()}",
+        f"🤖 AI 보조 {title} · {market_label} Pilot {pilot_day}/{target_days}",
+        f"🎯 오늘 시장 한 줄\n{review.core_judgment.text.strip()}",
     ]
     if changes:
-        sections.append(f"📈 중요한 변화\n{changes}")
-    if night_futures:
+        sections.append(f"📈 실제 변화\n{changes}")
+    if market == "us" and night_futures:
         sections.append(night_futures)
-    sections.extend(
-        [
-            f"🧭 시장 상황\n{review.market_context.text.strip()}",
-            f"🔄 시장 가정\n{review.market_assumptions.text.strip()}",
-        ]
+    sections.append(f"🧭 시장 구조\n{review.market_context.text.strip()}")
+    if transmissions:
+        sections.append(f"🔗 모니터링 종목에 미치는 영향\n{transmissions}")
+    if next_checks:
+        sections.append(f"📌 다음 확인\n{next_checks}")
+    fallback_caution = (
+        "• 일부 시장 데이터의 최신성이 부족해 "
+        "관련 판단 강도를 낮춥니다."
+        if cautions
+        else ""
     )
-    if unknowns:
-        sections.append(f"⚠️ 확인 필요\n{unknowns}")
-    if cautions:
-        sections.append(cautions)
+    caution_parts = (
+        [unknowns] if unknowns else ([fallback_caution] if fallback_caution else [])
+    )
+    if caution_parts:
+        normalized_cautions = [
+            part.removeprefix("⚠️ 데이터 주의\n") for part in caution_parts
+        ]
+        caution_text = "\n".join(normalized_cautions)
+        sections.append(f"⚠️ 데이터 주의\n{caution_text}")
     return "\n\n".join(sections)
 
 
@@ -608,6 +636,11 @@ async def deliver_validated_ai_review(
                 text = _render_ai_market_message(
                     deterministic_text,
                     output.market_review,
+                    market_context=(
+                        packet.get("market_context")
+                        if isinstance(packet.get("market_context"), dict)
+                        else {}
+                    ),
                     market=market,
                     pilot_day=pilot_day,
                     target_days=target_days,

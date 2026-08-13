@@ -72,22 +72,32 @@ def _settings(monkeypatch, tmp_path: Path):
 def _packet() -> dict[str, object]:
     return {
         "schema_version": "1",
-        "analysis_policy_version": "daily-review-v3.5",
+        "output_schema_version": "4",
+        "analysis_policy_version": "daily-review-v3.6",
         "knowledge": {"version": "3.0", "sha256": "knowledge-sha"},
         "chart_knowledge": {"version": "1.0", "sha256": "chart-knowledge-sha"},
         "packet_id": PACKET_ID,
         "market": "kr",
         "assessment_date": RUN_DATE.isoformat(),
+        "market_context": {
+            "portfolio_exposure_groups": [
+                {
+                    "group_key": "semiconductor",
+                    "label": "반도체",
+                    "tickers": ["PILOT"],
+                }
+            ]
+        },
         "stocks": [{"ticker": "PILOT", "thesis_version": 1}],
     }
 
 
 def _output() -> dict[str, object]:
     return {
-        "schema_version": "3",
+        "schema_version": "4",
         "packet_id": PACKET_ID,
         "claim_id": "claim-1",
-        "analysis_policy_version": "daily-review-v3.5",
+        "analysis_policy_version": "daily-review-v3.6",
         "knowledge_version": "3.0",
         "knowledge_sha256": "knowledge-sha",
         "chart_knowledge_version": "1.0",
@@ -103,6 +113,19 @@ def _output() -> dict[str, object]:
             ],
             "market_context": {"text": "시장 환경은 혼재 상태입니다.", "fact_ids": []},
             "market_assumptions": {"text": "추가 확정 근거를 기다립니다.", "fact_ids": []},
+            "portfolio_transmission": [
+                {
+                    "portfolio_group": "semiconductor",
+                    "text": "업종 가격 강도는 가격환경에 우호적이지만 실적 확인은 별개입니다.",
+                    "fact_ids": ["market:sector:SOXX"],
+                }
+            ],
+            "next_checks": [
+                {
+                    "text": "다음 세션에서 업종 상대강도의 지속 여부를 확인합니다.",
+                    "fact_ids": ["market:sector:SOXX"],
+                }
+            ],
             "numeric_claims": [],
             "unknowns": ["다음 거래일 방향은 미확인입니다."],
         },
@@ -144,7 +167,7 @@ def _write_artifacts(tmp_path: Path, *, output: bool = True) -> None:
         json.dumps(_packet(), ensure_ascii=False), encoding="utf-8"
     )
     if output:
-        (outbox / f"{PACKET_ID}--daily-review-v3.5--knowledge.json").write_text(
+        (outbox / f"{PACKET_ID}--daily-review-v3.6--knowledge.json").write_text(
             json.dumps(_output(), ensure_ascii=False), encoding="utf-8"
         )
 
@@ -158,7 +181,10 @@ def _seed_deliveries(session: Session, *, status: str = "pending") -> None:
             status=status,
             payload=json.dumps(
                 {
-                    "text": "🇰🇷 한국 종목 장마감 점검 · 2026-08-14\n현재 환경: 혼합",
+                    "text": (
+                        "🇰🇷 한국 종목 장마감 점검 · 2026-08-14\n현재 환경: 혼합\n\n"
+                        "⚠️ 데이터 주의\n• 광의 달러지수: stale"
+                    ),
                     "type": "daily_monitoring_digest",
                     "market_scope": "kr",
                 },
@@ -235,6 +261,19 @@ async def test_ai_pass_sends_only_one_ai_assisted_set(monkeypatch, tmp_path: Pat
     assert "chart_state" not in stock_text
     assert "claim_id" not in stock_text
     assert "numeric_claims" not in stock_text
+    market_message = next(
+        item for item in notifier.payloads if item["type"].endswith("market")
+    )
+    market_text = str(market_message["text"])
+    assert "🎯 오늘 시장 한 줄" in market_text
+    assert "🧭 시장 구조" in market_text
+    assert "🔗 모니터링 종목에 미치는 영향" in market_text
+    assert "반도체:" in market_text
+    assert "📌 다음 확인" in market_text
+    assert "시장 가정" not in market_text
+    assert "추가 확정 근거를 기다립니다" not in market_text
+    assert market_text.count("⚠️ 데이터 주의") == 1
+    assert "stale" not in market_text
     assert all(item.status == "sent" for item in deliveries)
     archive = tmp_path / "ai_review" / "pilot" / "history" / "2026" / "08" / PACKET_ID
     assert (archive / "deterministic-messages.json").exists()
@@ -255,9 +294,9 @@ async def test_old_policy_output_is_not_eligible_for_pilot_v2_delivery(
     _write_artifacts(tmp_path, output=False)
     old_output = _output()
     old_output["schema_version"] = "3"
-    old_output["analysis_policy_version"] = "daily-review-v3.4"
+    old_output["analysis_policy_version"] = "daily-review-v3.5"
     outbox = tmp_path / "ai_review" / "outbox"
-    (outbox / f"{PACKET_ID}--daily-review-v3.4--knowledge.json").write_text(
+    (outbox / f"{PACKET_ID}--daily-review-v3.5--knowledge.json").write_text(
         json.dumps(old_output, ensure_ascii=False), encoding="utf-8"
     )
     notifier = RecordingNotifier()
@@ -291,7 +330,7 @@ async def test_fallback_sends_only_deterministic_and_late_ai_is_archive_only(
             notifier=fallback_notifier,
         )
         outbox = tmp_path / "ai_review" / "outbox"
-        (outbox / f"{PACKET_ID}--daily-review-v3.5--knowledge.json").write_text(
+        (outbox / f"{PACKET_ID}--daily-review-v3.6--knowledge.json").write_text(
             json.dumps(_output(), ensure_ascii=False), encoding="utf-8"
         )
         late = await deliver_validated_ai_review(

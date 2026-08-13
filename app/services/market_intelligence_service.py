@@ -1,0 +1,451 @@
+from __future__ import annotations
+
+import json
+from collections import defaultdict
+from datetime import date
+from typing import Iterable
+
+from app.models.macro import MacroBriefing
+
+
+USABLE_QUALITY = {"fresh", "revised"}
+
+_SERIES = {
+    "SPY": ("indices", "market_index", "S&P500"),
+    "QQQ": ("indices", "market_index", "Nasdaq"),
+    "IWM": ("indices", "market_index", "Russell 2000"),
+    "SOXX": ("sectors", "market_sector", "반도체"),
+    "DGS10": ("rates", "market_nominal_yield", "미국 10년물 금리"),
+    "DFII10": ("rates", "market_real_yield", "미국 10년물 실질금리"),
+    "T10YIE": ("rates", "market_breakeven_inflation", "미국 기대인플레이션"),
+    "BAMLH0A0HYM2": ("credit", "market_credit_spread", "미국 하이일드 신용스프레드"),
+    "DTWEXBGS": ("liquidity", "market_dollar_index", "미 달러지수(광의)"),
+    "USDKRW": ("fx", "market_fx", "원/달러 환율"),
+    "DCOILWTICO": ("commodities", "market_oil", "WTI 유가"),
+    "VIXCLS": ("risk_signals", "market_volatility", "VIX"),
+}
+
+_EXPECTED_SERIES = {
+    "indices": {"SPY", "QQQ", "IWM"},
+    "sectors": {"SOXX"},
+    "rates": {"DGS10", "DFII10", "T10YIE"},
+    "credit": {"BAMLH0A0HYM2"},
+    "liquidity": {"DTWEXBGS"},
+    "fx": {"USDKRW"},
+    "commodities": {"DCOILWTICO"},
+    "risk_signals": {"VIXCLS"},
+}
+
+_SELECTION_THRESHOLDS = {
+    ("SPY", "return_pct"): 1.0,
+    ("QQQ:SPY", "relative_return_pct"): 0.4,
+    ("SOXX:SPY", "relative_return_pct"): 0.5,
+    ("DGS10", "change_bp"): 5.0,
+    ("DFII10", "change_bp"): 3.0,
+    ("VIXCLS", "return_pct"): 5.0,
+    ("USDKRW", "change_pct"): 0.7,
+    ("DCOILWTICO", "return_pct"): 2.0,
+}
+
+_GROUP_LABELS = {
+    "semiconductor": "반도체",
+    "memory": "메모리",
+    "automotive": "자동차",
+    "bank": "은행",
+    "insurance": "보험·재보험",
+    "shipping": "운송·물류",
+    "holding_company": "지주회사",
+    "consumer": "소비재",
+    "epc_construction": "EPC·건설",
+    "saas_recurring": "SaaS·구독",
+    "cloud_platform": "클라우드·플랫폼",
+    "biotech": "바이오",
+    "robotaxi_preprofit": "로보택시·이익 전 단계",
+    "general": "기타·일반",
+}
+
+
+def _json_object(value: str) -> dict[str, object]:
+    try:
+        parsed = json.loads(value)
+    except (json.JSONDecodeError, TypeError):
+        return {}
+    return parsed if isinstance(parsed, dict) else {}
+
+
+def _observations(briefing: MacroBriefing | None) -> dict[str, dict[str, object]]:
+    if briefing is None:
+        return {}
+    values = _json_object(briefing.market_summary).get("observations", [])
+    if not isinstance(values, list):
+        return {}
+    return {
+        str(item["series_code"]): item
+        for item in values
+        if isinstance(item, dict) and item.get("series_code")
+    }
+
+
+def _number(item: dict[str, object], key: str) -> float | None:
+    value = item.get(key)
+    return float(value) if isinstance(value, (int, float)) else None
+
+
+def _fact_id(series_code: str) -> str:
+    fact_type = _SERIES[series_code][1]
+    category = fact_type.removeprefix("market_")
+    return f"market:{category}:{series_code}"
+
+
+def _observation_fact(
+    series_code: str,
+    item: dict[str, object],
+    run_date: date,
+) -> dict[str, object]:
+    _category, fact_type, label = _SERIES[series_code]
+    fields: dict[str, object] = {
+        "series_code": series_code,
+        "label": label,
+        "quality": str(item.get("quality_status") or "fresh"),
+        "observed_at": str(item.get("observed_at") or run_date),
+    }
+    if item.get("market_session"):
+        fields["market_session"] = str(item["market_session"])
+
+    value = _number(item, "value")
+    change_pct = _number(item, "change_pct")
+    change_value = _number(item, "change_value")
+    if fact_type in {"market_index", "market_sector"}:
+        if change_pct is not None:
+            fields["return_pct"] = change_pct
+    elif fact_type in {
+        "market_nominal_yield",
+        "market_real_yield",
+        "market_breakeven_inflation",
+        "market_credit_spread",
+    }:
+        if value is not None:
+            fields["level_pct"] = value
+        if change_value is not None:
+            fields["change_bp"] = change_value * 100.0
+    elif fact_type == "market_fx":
+        if value is not None:
+            fields["value"] = value
+        if change_pct is not None:
+            fields["change_pct"] = change_pct
+    elif fact_type == "market_oil":
+        if value is not None:
+            fields["price_usd_per_barrel"] = value
+        if change_pct is not None:
+            fields["return_pct"] = change_pct
+    elif fact_type == "market_volatility":
+        if value is not None:
+            fields["level"] = value
+        if change_pct is not None:
+            fields["return_pct"] = change_pct
+    elif fact_type == "market_dollar_index":
+        if value is not None:
+            fields["level"] = value
+        if change_pct is not None:
+            fields["return_pct"] = change_pct
+
+    return {
+        "fact_id": _fact_id(series_code),
+        "fact_type": fact_type,
+        "as_of_date": str(item.get("observed_at") or run_date).split(" ", 1)[0],
+        "source": "verified_macro_briefing",
+        "fields": fields,
+    }
+
+
+def _relative_fact(
+    subject: str,
+    benchmark: str,
+    facts_by_series: dict[str, dict[str, object]],
+) -> dict[str, object] | None:
+    subject_fact = facts_by_series.get(subject)
+    benchmark_fact = facts_by_series.get(benchmark)
+    if subject_fact is None or benchmark_fact is None:
+        return None
+    subject_fields = subject_fact["fields"]
+    benchmark_fields = benchmark_fact["fields"]
+    if not isinstance(subject_fields, dict) or not isinstance(benchmark_fields, dict):
+        return None
+    subject_return = _number(subject_fields, "return_pct")
+    benchmark_return = _number(benchmark_fields, "return_pct")
+    if subject_return is None or benchmark_return is None:
+        return None
+    fact_type = (
+        "market_sector_relative"
+        if subject_fact.get("fact_type") == "market_sector"
+        else "market_growth_relative"
+    )
+    return {
+        "fact_id": f"market:relative:{subject}:{benchmark}",
+        "fact_type": fact_type,
+        "as_of_date": subject_fact["as_of_date"],
+        "source": "deterministic_market_relative_performance",
+        "fields": {
+            "subject": subject,
+            "subject_label": subject_fields["label"],
+            "benchmark": benchmark,
+            "benchmark_label": benchmark_fields["label"],
+            "relative_return_pct": subject_return - benchmark_return,
+            "source_fact_ids": [subject_fact["fact_id"], benchmark_fact["fact_id"]],
+        },
+    }
+
+
+def _coverage(
+    observations: dict[str, dict[str, object]],
+    market: str,
+) -> tuple[dict[str, dict[str, object]], list[str]]:
+    coverage: dict[str, dict[str, object]] = {}
+    unknowns = [
+        "시장 breadth는 backend packet에 제공되지 않았습니다.",
+        "시장 전체 투자주체 수급은 backend packet에 제공되지 않았습니다.",
+    ]
+    for category, expected in _EXPECTED_SERIES.items():
+        present = {
+            code
+            for code in expected
+            if code in observations
+            and str(observations[code].get("quality_status") or "fresh")
+            in USABLE_QUALITY
+        }
+        status = "available" if present == expected else "partial" if present else "unavailable"
+        coverage[category] = {
+            "status": status,
+            "available_series": sorted(present),
+            "missing_series": sorted(expected - present),
+        }
+    if coverage["sectors"]["status"] == "available":
+        coverage["sectors"].update(
+            status="partial",
+            reason="single_sector_proxy_only",
+        )
+    if market == "kr":
+        coverage["indices"]["role"] = "overnight_cross_asset_context"
+        coverage["sectors"]["role"] = "overnight_cross_asset_context"
+        coverage["local_market_indices"] = {
+            "status": "unavailable",
+            "reason": "kr_local_index_not_provided_by_backend",
+        }
+        unknowns.append(
+            "한국 현물 지수는 packet에 없어 미국 지수와 반도체 가격은 전일 해외 맥락으로만 사용합니다."
+        )
+    else:
+        coverage["indices"]["role"] = "local_market_proxy"
+        coverage["sectors"]["role"] = "local_sector_proxy"
+        coverage["local_market_indices"] = {
+            "status": coverage["indices"]["status"],
+            "available_series": coverage["indices"]["available_series"],
+        }
+    coverage["breadth"] = {
+        "status": "unavailable",
+        "reason": "not_provided_by_backend",
+    }
+    coverage["market_flows"] = {
+        "status": "unavailable",
+        "reason": "not_provided_by_backend",
+    }
+    stale = sorted(
+        code
+        for code, item in observations.items()
+        if code in _SERIES
+        and str(item.get("quality_status") or "fresh") not in USABLE_QUALITY
+    )
+    if stale:
+        unknowns.append(
+            "최신성이 부족해 핵심 판단에서 제외한 시장 지표: " + ", ".join(stale)
+        )
+    return coverage, unknowns
+
+
+def _selected_change_fact_ids(
+    facts: list[dict[str, object]],
+) -> list[str]:
+    by_id = {str(fact["fact_id"]): fact for fact in facts}
+    candidates = (
+        ("SPY", "return_pct", "market:index:SPY"),
+        ("QQQ:SPY", "relative_return_pct", "market:relative:QQQ:SPY"),
+        ("SOXX:SPY", "relative_return_pct", "market:relative:SOXX:SPY"),
+        ("DGS10", "change_bp", "market:nominal_yield:DGS10"),
+        ("DFII10", "change_bp", "market:real_yield:DFII10"),
+        ("VIXCLS", "return_pct", "market:volatility:VIXCLS"),
+        ("USDKRW", "change_pct", "market:fx:USDKRW"),
+        ("DCOILWTICO", "return_pct", "market:oil:DCOILWTICO"),
+    )
+    ranked: list[tuple[float, str]] = []
+    for series, field, fact_id in candidates:
+        fact = by_id.get(fact_id)
+        if fact is None or not isinstance(fact.get("fields"), dict):
+            continue
+        value = _number(fact["fields"], field)
+        threshold = _SELECTION_THRESHOLDS.get((series, field))
+        if value is None or threshold is None or abs(value) < threshold:
+            continue
+        ranked.append((abs(value) / threshold, fact_id))
+    ranked.sort(key=lambda item: (-item[0], item[1]))
+    return [fact_id for _score, fact_id in ranked[:4]]
+
+
+def _group_key(stock: dict[str, object]) -> str:
+    profile = stock.get("company_profile")
+    if isinstance(profile, dict) and profile.get("taxonomy_key"):
+        return str(profile["taxonomy_key"])
+    routing = stock.get("knowledge_routing")
+    if isinstance(routing, dict):
+        value = str(routing.get("industry_key") or "")
+        if value and value != "general":
+            return value
+    return "general"
+
+
+def _portfolio_transmission(
+    stocks: list[dict[str, object]],
+    impacts: Iterable[dict[str, object]],
+    facts: list[dict[str, object]],
+) -> tuple[list[dict[str, object]], list[dict[str, object]], dict[str, list[dict[str, object]]]]:
+    fact_ids_by_series = {
+        str(fields["series_code"]): str(fact["fact_id"])
+        for fact in facts
+        if isinstance((fields := fact.get("fields")), dict) and fields.get("series_code")
+    }
+    fact_ids = {str(fact["fact_id"]) for fact in facts}
+    stock_groups = {str(stock["ticker"]): _group_key(stock) for stock in stocks}
+    group_members: dict[str, list[str]] = defaultdict(list)
+    for ticker, group in stock_groups.items():
+        group_members[group].append(ticker)
+
+    groups = [
+        {
+            "group_key": group,
+            "label": _GROUP_LABELS.get(group, group.replace("_", " ")),
+            "tickers": sorted(tickers),
+            "classification_source": "verified_company_profile",
+        }
+        for group, tickers in sorted(group_members.items())
+    ]
+
+    stock_links: dict[str, list[dict[str, object]]] = defaultdict(list)
+    for impact in impacts:
+        ticker = str(impact.get("ticker") or "")
+        if ticker not in stock_groups:
+            continue
+        evidence = impact.get("evidence")
+        if not isinstance(evidence, list):
+            continue
+        for item in evidence:
+            if not isinstance(item, dict):
+                continue
+            fact_id = fact_ids_by_series.get(str(item.get("series_code") or ""))
+            exposure = item.get("exposure")
+            if fact_id is None or not isinstance(exposure, dict):
+                continue
+            stock_links[ticker].append(
+                {
+                    "fact_id": fact_id,
+                    "factor": str(exposure.get("factor") or item.get("factor") or ""),
+                    "channel": str(exposure.get("channel") or item.get("channel") or ""),
+                    "direction": str(item.get("direction") or "neutral"),
+                    "condition": str(exposure.get("condition") or ""),
+                    "horizon": str(exposure.get("horizon") or ""),
+                    "materiality": str(item.get("materiality") or "unknown"),
+                    "earnings_link_validated": bool(item.get("earnings_link_validated")),
+                    "valuation_context_eligible": bool(
+                        item.get("eligible_for_valuation_context")
+                    ),
+                    "not_fundamental_confirmation": True,
+                }
+            )
+
+    sector_relative = "market:relative:SOXX:SPY"
+    if sector_relative in fact_ids:
+        for ticker, group in stock_groups.items():
+            if group not in {"semiconductor", "memory"}:
+                continue
+            stock_links[ticker].append(
+                {
+                    "fact_id": sector_relative,
+                    "factor": "semiconductor_relative_performance",
+                    "channel": "risk_appetite",
+                    "direction": "context",
+                    "condition": "업종 가격 강도는 실제 주문·마진 확인과 분리",
+                    "horizon": "단기",
+                    "materiality": "market_context",
+                    "earnings_link_validated": False,
+                    "valuation_context_eligible": False,
+                    "not_fundamental_confirmation": True,
+                }
+            )
+
+    combined: dict[tuple[str, str], dict[str, object]] = {}
+    for ticker, links in stock_links.items():
+        group = stock_groups[ticker]
+        for link in links:
+            key = (group, str(link["fact_id"]))
+            item = combined.setdefault(
+                key,
+                {
+                    "portfolio_group": group,
+                    "market_fact_id": link["fact_id"],
+                    "tickers": [],
+                    "channels": [],
+                    "directions": [],
+                    "conditions": [],
+                    "not_fundamental_confirmation": True,
+                },
+            )
+            item["tickers"].append(ticker)
+            if link["channel"]:
+                item["channels"].append(link["channel"])
+            if link["direction"]:
+                item["directions"].append(link["direction"])
+            if link["condition"]:
+                item["conditions"].append(link["condition"])
+
+    candidates = []
+    for item in combined.values():
+        for key in ("tickers", "channels", "directions", "conditions"):
+            item[key] = sorted(set(item[key]))
+        candidates.append(item)
+    candidates.sort(key=lambda item: (str(item["portfolio_group"]), str(item["market_fact_id"])))
+    return groups, candidates, {ticker: links for ticker, links in stock_links.items()}
+
+
+def build_market_intelligence(
+    briefing: MacroBriefing | None,
+    run_date: date,
+    stocks: list[dict[str, object]],
+    impacts: Iterable[dict[str, object]],
+    *,
+    market: str,
+) -> dict[str, object]:
+    observations = _observations(briefing)
+    facts_by_series = {
+        code: _observation_fact(code, item, run_date)
+        for code, item in observations.items()
+        if code in _SERIES
+        and str(item.get("quality_status") or "fresh") in USABLE_QUALITY
+    }
+    facts = list(facts_by_series.values())
+    for subject in ("QQQ", "SOXX"):
+        relative = _relative_fact(subject, "SPY", facts_by_series)
+        if relative is not None:
+            facts.append(relative)
+    facts.sort(key=lambda item: str(item["fact_id"]))
+
+    coverage, unknowns = _coverage(observations, market)
+    groups, transmissions, stock_transmissions = _portfolio_transmission(
+        stocks, impacts, facts
+    )
+    return {
+        "fact_catalog": facts,
+        "key_change_fact_ids": _selected_change_fact_ids(facts),
+        "coverage": coverage,
+        "portfolio_exposure_groups": groups,
+        "transmission_candidates": transmissions,
+        "stock_transmissions": stock_transmissions,
+        "unknowns": unknowns,
+    }

@@ -342,6 +342,150 @@ NUMERIC_SEMANTICS = {
         "signed_percentage",
         scope="market",
     ),
+    "index_return_pct": _spec(
+        "index_return_pct",
+        ("pct",),
+        ("S&P500 등락률", "Nasdaq 등락률", "Russell 2000 등락률"),
+        (r"(?:s&p\s*500|nasdaq|russell\s*2000|지수).*(?:등락|수익|상승|하락)",),
+        "signed_percentage",
+        scope="both",
+    ),
+    "sector_return_pct": _spec(
+        "sector_return_pct",
+        ("pct",),
+        ("반도체 업종 등락률", "SOXX 등락률"),
+        (r"(?:반도체|soxx).*(?:등락|수익|상승|하락)",),
+        "signed_percentage",
+        scope="both",
+    ),
+    "growth_relative_return_pct": _spec(
+        "growth_relative_return_pct",
+        ("pct",),
+        ("Nasdaq 상대수익률", "S&P500 대비 Nasdaq"),
+        (r"(?:nasdaq.*상대수익률|s&p\s*500.*대비.*nasdaq|nasdaq.*웃돌|nasdaq.*밑돌)",),
+        "signed_percentage",
+        scope="both",
+    ),
+    "sector_relative_return_pct": _spec(
+        "sector_relative_return_pct",
+        ("pct",),
+        ("반도체 상대수익률", "S&P500 대비 반도체"),
+        (r"(?:반도체.*상대수익률|s&p\s*500.*대비.*반도체|반도체.*웃돌|반도체.*밑돌)",),
+        "signed_percentage",
+        scope="both",
+    ),
+    "nominal_yield_level": _spec(
+        "nominal_yield_level",
+        ("pct",),
+        ("미국 10년물 금리", "US 10-year yield"),
+        (r"(?:미국|us).*10년물.*(?:금리|yield)",),
+        "percentage",
+        scope="both",
+    ),
+    "nominal_yield_change_bp": _spec(
+        "nominal_yield_change_bp",
+        ("bp",),
+        ("미국 10년물 금리 변동", "US 10-year yield change"),
+        (r"(?:미국|us).*10년물.*(?:금리|yield)",),
+        "signed_basis_points",
+        scope="both",
+    ),
+    "real_yield_level": _spec(
+        "real_yield_level",
+        ("pct",),
+        ("미국 10년물 실질금리", "US 10-year real yield"),
+        (r"(?:미국|us).*10년물.*실질금리|real yield",),
+        "percentage",
+        scope="both",
+    ),
+    "real_yield_change_bp": _spec(
+        "real_yield_change_bp",
+        ("bp",),
+        ("미국 10년물 실질금리 변동", "US 10-year real-yield change"),
+        (r"(?:미국|us).*10년물.*실질금리|real yield",),
+        "signed_basis_points",
+        scope="both",
+    ),
+    "breakeven_inflation_level": _spec(
+        "breakeven_inflation_level",
+        ("pct",),
+        ("미국 기대인플레이션", "US breakeven inflation"),
+        (r"기대인플레이션|breakeven inflation",),
+        "percentage",
+        scope="both",
+    ),
+    "breakeven_inflation_change_bp": _spec(
+        "breakeven_inflation_change_bp",
+        ("bp",),
+        ("미국 기대인플레이션 변동", "US breakeven-inflation change"),
+        (r"기대인플레이션|breakeven inflation",),
+        "signed_basis_points",
+        scope="both",
+    ),
+    "credit_spread_level": _spec(
+        "credit_spread_level",
+        ("pct",),
+        ("하이일드 신용스프레드", "high-yield credit spread"),
+        (r"(?:하이일드|high.?yield).*신용?스프레드|credit spread",),
+        "percentage",
+        scope="both",
+    ),
+    "credit_spread_change_bp": _spec(
+        "credit_spread_change_bp",
+        ("bp",),
+        ("하이일드 신용스프레드 변동", "high-yield spread change"),
+        (r"(?:하이일드|high.?yield).*신용?스프레드|credit spread",),
+        "signed_basis_points",
+        scope="both",
+    ),
+    "oil_price": _spec(
+        "oil_price",
+        ("USD_per_barrel",),
+        ("WTI 유가", "WTI oil price"),
+        (r"(?:wti|유가)",),
+        "usd_per_barrel",
+        scope="both",
+    ),
+    "oil_return_pct": _spec(
+        "oil_return_pct",
+        ("pct",),
+        ("WTI 등락률", "WTI return"),
+        (r"(?:wti|유가).*(?:등락|수익|상승|하락|return)",),
+        "signed_percentage",
+        scope="both",
+    ),
+    "volatility_index_level": _spec(
+        "volatility_index_level",
+        ("index",),
+        ("VIX", "변동성지수"),
+        (r"(?:vix|변동성지수)",),
+        "index",
+        scope="both",
+    ),
+    "volatility_return_pct": _spec(
+        "volatility_return_pct",
+        ("pct",),
+        ("VIX 등락률", "VIX return"),
+        (r"(?:vix|변동성지수).*(?:등락|수익|상승|하락|return)",),
+        "signed_percentage",
+        scope="both",
+    ),
+    "dollar_index_level": _spec(
+        "dollar_index_level",
+        ("index",),
+        ("미 달러지수", "broad dollar index"),
+        (r"(?:미\s*달러지수|broad dollar index)",),
+        "index",
+        scope="both",
+    ),
+    "dollar_index_return_pct": _spec(
+        "dollar_index_return_pct",
+        ("pct",),
+        ("미 달러지수 등락률", "broad dollar-index return"),
+        (r"(?:미\s*달러지수|broad dollar index).*(?:등락|수익|상승|하락|return)",),
+        "signed_percentage",
+        scope="both",
+    ),
     "chart_open_price": _spec(
         "chart_open_price", ("KRW", "USD"), ("시가", "open"),
         (r"(?:일봉|주봉|월봉)?\s*시가", r"(?:daily|weekly|monthly)?\s*open"),
@@ -852,6 +996,106 @@ _FIELD_RULES = (
         "market_return_pct",
         "pct",
     ),
+    NumericFieldRule(
+        ("market_index",), r"fields\.return_pct", "index_return_pct", "pct"
+    ),
+    NumericFieldRule(
+        ("market_sector",), r"fields\.return_pct", "sector_return_pct", "pct"
+    ),
+    NumericFieldRule(
+        ("market_growth_relative",),
+        r"fields\.relative_return_pct",
+        "growth_relative_return_pct",
+        "pct",
+    ),
+    NumericFieldRule(
+        ("market_sector_relative",),
+        r"fields\.relative_return_pct",
+        "sector_relative_return_pct",
+        "pct",
+    ),
+    NumericFieldRule(
+        ("market_nominal_yield",),
+        r"fields\.level_pct",
+        "nominal_yield_level",
+        "pct",
+    ),
+    NumericFieldRule(
+        ("market_nominal_yield",),
+        r"fields\.change_bp",
+        "nominal_yield_change_bp",
+        "bp",
+    ),
+    NumericFieldRule(
+        ("market_real_yield",),
+        r"fields\.level_pct",
+        "real_yield_level",
+        "pct",
+    ),
+    NumericFieldRule(
+        ("market_real_yield",),
+        r"fields\.change_bp",
+        "real_yield_change_bp",
+        "bp",
+    ),
+    NumericFieldRule(
+        ("market_breakeven_inflation",),
+        r"fields\.level_pct",
+        "breakeven_inflation_level",
+        "pct",
+    ),
+    NumericFieldRule(
+        ("market_breakeven_inflation",),
+        r"fields\.change_bp",
+        "breakeven_inflation_change_bp",
+        "bp",
+    ),
+    NumericFieldRule(
+        ("market_credit_spread",),
+        r"fields\.level_pct",
+        "credit_spread_level",
+        "pct",
+    ),
+    NumericFieldRule(
+        ("market_credit_spread",),
+        r"fields\.change_bp",
+        "credit_spread_change_bp",
+        "bp",
+    ),
+    NumericFieldRule(("market_fx",), r"fields\.value", "fx_rate", "KRW"),
+    NumericFieldRule(
+        ("market_fx",), r"fields\.change_pct", "fx_return_pct", "pct"
+    ),
+    NumericFieldRule(
+        ("market_oil",), r"fields\.price_usd_per_barrel", "oil_price", "USD_per_barrel"
+    ),
+    NumericFieldRule(
+        ("market_oil",), r"fields\.return_pct", "oil_return_pct", "pct"
+    ),
+    NumericFieldRule(
+        ("market_volatility",),
+        r"fields\.level",
+        "volatility_index_level",
+        "index",
+    ),
+    NumericFieldRule(
+        ("market_volatility",),
+        r"fields\.return_pct",
+        "volatility_return_pct",
+        "pct",
+    ),
+    NumericFieldRule(
+        ("market_dollar_index",),
+        r"fields\.level",
+        "dollar_index_level",
+        "index",
+    ),
+    NumericFieldRule(
+        ("market_dollar_index",),
+        r"fields\.return_pct",
+        "dollar_index_return_pct",
+        "pct",
+    ),
 )
 
 
@@ -944,6 +1188,17 @@ def approved_display_variants(
         variants.extend(
             (f"{_plain_number(value)}pt", f"{_plain_number(value)}포인트")
         )
+    elif unit == "bp":
+        variants.extend((f"{_plain_number(value)}bp", f"{_plain_number(value)}bp 변동"))
+    elif unit == "USD_per_barrel":
+        variants.extend(
+            (
+                f"${_plain_number(value)}/bbl",
+                f"{_plain_number(value)}달러/배럴",
+            )
+        )
+    elif unit == "index":
+        variants.extend((f"{_plain_number(value)}", f"{_plain_number(value)}포인트"))
     return list(dict.fromkeys(variants))
 
 
