@@ -1779,6 +1779,38 @@ def test_v32_packet_records_ready_shadow_cohort_metadata(
     }
 
 
+def test_v32_scheduled_claim_preserves_but_skips_old_policy_packet(
+    monkeypatch,
+    tmp_path: Path,
+) -> None:
+    _settings(monkeypatch, tmp_path)
+    with Session(_engine()) as session:
+        _seed(session)
+        old_packet = build_ai_review_packet(
+            session,
+            RUN_DATE,
+            "us",
+            generated_at=datetime(2026, 8, 14, 0, 0, tzinfo=UTC),
+        )
+        assert old_packet is not None
+
+    old_packet["packet_id"] = "preserved-v31-packet"
+    old_packet["analysis_policy_version"] = "daily-review-v3.1"
+    inbox = tmp_path / "ai_review" / "inbox"
+    inbox.mkdir(parents=True, exist_ok=True)
+    path = inbox / "preserved-v31-packet.json"
+    path.write_text(json.dumps(old_packet, default=str), encoding="utf-8")
+
+    claim = claim_next_ai_review_packet(
+        "us",
+        owner="v32-primary",
+        now=datetime(2026, 8, 14, 0, 1, tzinfo=UTC),
+    )
+
+    assert claim.status == "no_pending_packet"
+    assert path.exists()
+
+
 def test_industry_framework_router_handles_quality_fixtures() -> None:
     fixtures = (
         ("Memory semiconductor", "DRAM", "memory", "memory_valuation"),

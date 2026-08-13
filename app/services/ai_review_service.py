@@ -1173,6 +1173,8 @@ def claim_next_ai_review_packet(
                 continue
             packet_id = str(packet["packet_id"])
             policy = str(packet.get("analysis_policy_version") or ANALYSIS_POLICY_VERSION)
+            if policy != ANALYSIS_POLICY_VERSION:
+                continue
             knowledge = packet.get("knowledge")
             knowledge_sha = (
                 str(knowledge.get("sha256") or "")
