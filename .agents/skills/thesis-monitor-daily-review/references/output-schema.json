@@ -1,0 +1,77 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Thesis Monitor AI Daily Review Output",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "packet_id",
+    "analysis_policy_version",
+    "market",
+    "assessment_date",
+    "market_review",
+    "stock_reviews"
+  ],
+  "properties": {
+    "schema_version": {"const": "1"},
+    "packet_id": {"type": "string", "minLength": 1},
+    "analysis_policy_version": {"type": "string", "minLength": 1},
+    "market": {"enum": ["us", "kr"]},
+    "assessment_date": {"type": "string", "format": "date"},
+    "market_review": {"$ref": "#/$defs/marketReview"},
+    "stock_reviews": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/stockReview"}
+    }
+  },
+  "$defs": {
+    "textList": {"type": "array", "items": {"type": "string"}},
+    "marketReview": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["facts_used", "interpretation", "unknowns", "summary"],
+      "properties": {
+        "facts_used": {"$ref": "#/$defs/textList"},
+        "interpretation": {"$ref": "#/$defs/textList"},
+        "unknowns": {"$ref": "#/$defs/textList"},
+        "summary": {"type": "string"}
+      }
+    },
+    "stockReview": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "ticker",
+        "thesis_version",
+        "ai_thesis_assessment",
+        "earnings_estimate_view",
+        "valuation_view",
+        "facts_used",
+        "interpretation",
+        "unknowns",
+        "summary",
+        "holder_view",
+        "new_buyer_view",
+        "next_checks",
+        "confidence"
+      ],
+      "properties": {
+        "ticker": {"type": "string", "minLength": 1},
+        "thesis_version": {"type": "integer", "minimum": 1},
+        "ai_thesis_assessment": {
+          "enum": ["strengthened", "weakened", "mixed", "no_material_change", "needs_review", "invalidation_candidate", "invalidated"]
+        },
+        "earnings_estimate_view": {"enum": ["up", "down", "mixed", "unchanged", "unknown"]},
+        "valuation_view": {"enum": ["expansion", "compression", "mixed", "neutral", "unknown"]},
+        "facts_used": {"$ref": "#/$defs/textList"},
+        "interpretation": {"$ref": "#/$defs/textList"},
+        "unknowns": {"$ref": "#/$defs/textList"},
+        "summary": {"type": "string"},
+        "holder_view": {"type": "string"},
+        "new_buyer_view": {"type": "string"},
+        "next_checks": {"$ref": "#/$defs/textList"},
+        "confidence": {"type": "number", "minimum": 0, "maximum": 1}
+      }
+    }
+  }
+}

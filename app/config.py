@@ -1,5 +1,6 @@
 import os
 from functools import lru_cache
+from typing import Literal
 
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
@@ -85,6 +86,9 @@ class Settings(BaseSettings):
     telegram_message_max_chars: int = 3500
     telegram_retry_attempts: int = 3
     telegram_retry_base_seconds: float = 2.0
+    ai_review_mode: Literal["off", "shadow", "assist"] = "shadow"
+    ai_review_claim_lease_minutes: int = 30
+    ai_review_shadow_catchup_hours: int = 24
 
     model_config = SettingsConfigDict(
         env_file=".env",

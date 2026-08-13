@@ -37,6 +37,22 @@ def test_known_krx_environment_setting_loads(tmp_path: Path) -> None:
     assert settings.krx_open_api_key == "dummy-key"
 
 
+def test_known_ai_review_environment_settings_load(tmp_path: Path) -> None:
+    env_file = _write_env(
+        tmp_path / ".env",
+        [
+            "AI_REVIEW_MODE=shadow",
+            "AI_REVIEW_CLAIM_LEASE_MINUTES=30",
+            "AI_REVIEW_SHADOW_CATCHUP_HOURS=24",
+        ],
+    )
+
+    settings = Settings(_env_file=env_file)
+
+    assert settings.ai_review_mode == "shadow"
+    assert settings.ai_review_claim_lease_minutes == 30
+
+
 @pytest.mark.parametrize(
     "unknown_key",
     ["TELEGRAM_BOT_TOKN", "KAKAO_REFRESH_TOKEN", "KRX_OPEN_API_KE"],

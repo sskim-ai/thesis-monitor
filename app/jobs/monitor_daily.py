@@ -13,6 +13,7 @@ from app.macro.kr_close import run_kr_close_market_briefing
 from app.models.macro import MacroBriefing
 from app.models.thesis import MonitorRun
 from app.services.daily_monitor_service import run_daily_monitor
+from app.services.ai_review_service import try_write_ai_review_packet
 from app.services.market_session import MarketScope
 from app.services.morning_gate import (
     initialize_morning_gate,
@@ -207,6 +208,13 @@ async def _run_market_job(
     if market_scope == "us":
         daily_kwargs["dispatch_notifications"] = False
     result = await run_daily_monitor(session, **daily_kwargs)
+    if market_scope == "kr" and result.status in {"success", "already_completed"}:
+        try_write_ai_review_packet(
+            session,
+            run_date,
+            "kr",
+            generated_at=current_as_of or datetime.now(KST),
+        )
     gate_result: dict[str, object] | None = None
     if market_scope == "us" and result.status not in {
         "failed",

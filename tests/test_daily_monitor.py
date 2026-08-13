@@ -603,6 +603,7 @@ async def test_kr_market_job_embeds_close_briefing_without_separate_delivery(
     SQLModel.metadata.create_all(isolated_engine)
     run_date = date(2042, 8, 15)
     close_calls: list[dict[str, object]] = []
+    ai_packet_calls: list[tuple[date, str]] = []
 
     async def record_close(session, requested_date, **kwargs):
         close_calls.append({"run_date": requested_date, **kwargs})
@@ -623,6 +624,12 @@ async def test_kr_market_job_embeds_close_briefing_without_separate_delivery(
         "app.jobs.monitor_daily.run_kr_close_market_briefing", record_close
     )
     monkeypatch.setattr("app.jobs.monitor_daily.run_daily_monitor", record_daily)
+    monkeypatch.setattr(
+        "app.jobs.monitor_daily.try_write_ai_review_packet",
+        lambda _session, packet_date, market, **_kwargs: ai_packet_calls.append(
+            (packet_date, market)
+        ),
+    )
     with Session(isolated_engine) as session:
         output = await _run_market_job(session, run_date, "kr")
 
@@ -634,6 +641,7 @@ async def test_kr_market_job_embeds_close_briefing_without_separate_delivery(
             "dispatch_notifications": False,
         }
     ]
+    assert ai_packet_calls == [(run_date, "kr")]
 
 
 @pytest.mark.anyio

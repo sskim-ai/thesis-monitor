@@ -265,6 +265,20 @@ Both `started_at` and `completed_at` must be at or after the market cutoff for a
 replace the scheduled production analysis. Telegram delivery retries resume persisted chunk progress
 without refreshing the completed assessment.
 
+### Codex Daily Review Shadow
+
+`AI_REVIEW_MODE=shadow` adds an interpretation layer without changing the deterministic assessment or
+Telegram payload. A completed U.S. run becomes an immutable packet only after the morning KRX gate is
+ready or reaches its deadline. A successful Korean close run writes its packet after the close
+assessment. Packets live under `data/ai_review/inbox`; Codex Scheduled Tasks claim them, write strict
+JSON to `outbox`, and run the local validator. No OpenAI API key or API call is used by this path.
+
+The reusable workflow is `.agents/skills/thesis-monitor-daily-review`. Primary and backup tasks scan
+the same pending queue, while lease claims and packet/policy completion keys prevent duplicate work.
+See `docs/ai_review_operations.md` for the schedule and recovery checks. Shadow output is comparison
+history only: official `ThesisAssessment`, deterministic Telegram, and notification retry state remain
+unchanged until a later, explicit assist-mode approval.
+
 Price context is requested from the separate local OHLCV Analyst service using targets of 500 daily,
 300 weekly, and 100 monthly bars. Shorter provider histories are accepted and their actual counts are
 stored with each assessment. Korean investor flow uses only the latest valid daily bar from OHLCV

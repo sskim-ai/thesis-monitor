@@ -1,0 +1,4 @@
+interface:
+  display_name: "Thesis Monitor Daily Review"
+  short_description: "Review verified packets without external research"
+  default_prompt: "Use $thesis-monitor-daily-review to process the requested market's pending shadow-review packet."

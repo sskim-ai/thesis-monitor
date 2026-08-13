@@ -25,6 +25,17 @@ from app.services.notification_service import MORNING_GATE_METADATA_KEY
 EXPECTED_SESSION = date(2026, 8, 13)
 
 
+@pytest.fixture(autouse=True)
+def isolate_ai_review_packet(monkeypatch):
+    calls: list[tuple[date, str]] = []
+
+    def record(_session, run_date, market, **_kwargs):
+        calls.append((run_date, market))
+
+    monkeypatch.setattr("app.services.morning_gate.try_write_ai_review_packet", record)
+    return calls
+
+
 class ScriptedKrxProvider:
     name = "krx_night_futures"
 
@@ -224,6 +235,7 @@ async def test_gate_holds_until_0800_without_querying_krx(monkeypatch) -> None:
 @pytest.mark.anyio
 async def test_gate_dispatches_immediately_when_both_contracts_are_ready(
     monkeypatch,
+    isolate_ai_review_packet,
 ) -> None:
     monkeypatch.setattr(
         "app.services.morning_gate.expected_latest_completed_krx_session",
@@ -264,6 +276,7 @@ async def test_gate_dispatches_immediately_when_both_contracts_are_ready(
     assert metadata["first_complete_at"].endswith("08:00:00+09:00")
     assert metadata["dispatch_at"].endswith("08:00:00+09:00")
     assert kr_delivery.status == "pending"
+    assert isolate_ai_review_packet == [(date(2026, 8, 14), "us")]
 
 
 @pytest.mark.anyio

@@ -19,6 +19,7 @@ from app.models.thesis import NotificationDelivery, ThesisAssessment
 from app.models.watchlist import WatchlistItem
 from app.services.market_session import market_scope_for_security
 from app.services.night_futures import NIGHT_FUTURES_SERIES, summarize_night_futures
+from app.services.ai_review_service import try_write_ai_review_packet
 from app.services.notification_service import (
     MORNING_GATE_METADATA_KEY,
     dispatch_pending_notifications,
@@ -265,6 +266,12 @@ async def run_morning_night_futures_gate(
     state = str(metadata.get("state") or "waiting")
     retry_count = int(metadata.get("retry_count") or 0)
     if state == "dispatched":
+        try_write_ai_review_packet(
+            session,
+            run_date,
+            "us",
+            generated_at=current_as_of,
+        )
         return MorningGateResult(
             status="dispatched",
             expected_session=expected_session,
@@ -287,6 +294,12 @@ async def run_morning_night_futures_gate(
 
     delivery_ids = _morning_delivery_ids(session, run_date)
     if state in {"ready", "deadline_reached"}:
+        try_write_ai_review_packet(
+            session,
+            run_date,
+            "us",
+            generated_at=current_as_of,
+        )
         await dispatch_pending_notifications(
             session,
             notifier=notifier,  # type: ignore[arg-type]
@@ -379,6 +392,12 @@ async def run_morning_night_futures_gate(
             dispatch_action="held_for_complete_snapshot",
         )
 
+    try_write_ai_review_packet(
+        session,
+        run_date,
+        "us",
+        generated_at=current_as_of,
+    )
     delivery_ids = _morning_delivery_ids(session, run_date)
     await dispatch_pending_notifications(
         session,
