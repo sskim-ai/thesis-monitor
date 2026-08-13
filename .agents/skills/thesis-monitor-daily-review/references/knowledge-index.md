@@ -4,37 +4,33 @@ Read the full source at [investment-thesis-analysis-monitoring-knowledge.md](inv
 
 ## Always Read
 
-- Sections 1-3: system purpose, Fact / Interpretation / Unknown, and initial thesis framework.
-- Section 6: market expectations and surprise.
-- Sections 10-12: risk and kill conditions, multiple expansion/compression, and macro transmission.
-- Sections 14 and 16: valuation basis comparability and monitoring data quality.
+- Sections 0-3: document purpose, data hierarchy, Fact / Interpretation / Unknowns, and source hierarchy.
+- Section 8: market expectations and surprise.
+- Sections 13-16: thesis state, risk and kill conditions, multiple expansion/compression, and macro transmission.
+- Sections 20-22: provisional earnings, valuation comparability, and ADR/share-basis safety.
+- Sections 25-26: the initial-analysis response structure and final operating philosophy.
 
 Stable framework names: `fact_interpretation_unknown`, `initial_thesis`, `market_expectations`, `risk_kill_condition`, `multiple_expansion_compression`, `macro_transmission`, `valuation_basis_comparability`, `monitoring_data_quality`.
 
+`monitoring_data_quality` is completed by `daily-review-policy.md`; provider freshness, schedules, and packet lifecycle are runtime policy rather than additions to the canonical investment Knowledge.
+
 ## Event Routing
 
-- Earnings or guidance: Sections 4, 5, and 13. Use `financial_calculation_safety`, `earnings_quality`, and `provisional_earnings`.
-- Material price or positioning: Sections 8 and 9. Use `price_ohlcv` and `holder_new_buyer`.
-- Material macro transmission: Section 12. Use `macro_transmission`.
+- Earnings or guidance: Sections 5, 7, and 20. Use `financial_calculation_safety`, `earnings_quality`, and `provisional_earnings`.
+- Material price or positioning: Sections 9-12. Use `price_ohlcv` and `holder_new_buyer`.
+- Material macro transmission: Sections 16-19. Use `macro_transmission`.
 
 ## Industry Routing
 
-- Semiconductor: Section 7 `semiconductor_valuation`.
-- Memory: Section 7 `memory_valuation`; use mid-cycle earnings, PBR, FCF, inventory, ASP, supply discipline, and capex. A low peak-cycle PER is not sufficient.
-- Automotive: Section 7 `automotive_valuation`.
-- Bank: Section 7 `bank_valuation`.
-- Insurance or reinsurance: Section 7 `insurance_reinsurance_valuation`; do not use SaaS NRR or Rule of 40.
-- Shipping or transport: Section 7 `shipping_transport_valuation`.
-- Holding company: Section 7 `holding_company_valuation`.
-- Consumer: Section 7 `consumer_valuation`.
-- EPC or construction: Section 7 `epc_construction_valuation`; contract margin, collections, and contract assets remain Unknown unless packet facts support them.
-- SaaS or recurring revenue: Section 7 `saas_recurring_revenue_valuation`; do not claim ARR or NRR changes when absent.
-- Cloud or platform: Section 7 `cloud_platform_valuation`.
-- Biotech: Section 7 `biotech_valuation`; do not force PER onto a pre-profit company.
-- Robotaxi or other pre-profit model: Section 7 `pre_profit_valuation`.
+- All existing industry framework names route to Section 6. Keep the packet's current industry routing unchanged in this phase.
+- Memory `memory_valuation`: use mid-cycle earnings, PBR, FCF, inventory, ASP, supply discipline, and capex. A low peak-cycle PER is not sufficient.
+- Insurance or reinsurance `insurance_reinsurance_valuation`: do not use SaaS NRR or Rule of 40.
+- EPC or construction `epc_construction_valuation`: contract margin, collections, and contract assets remain Unknown unless packet facts support them.
+- SaaS or recurring revenue `saas_recurring_revenue_valuation`: do not claim ARR or NRR changes when absent.
+- Biotech and other pre-profit frameworks: do not force PER onto a pre-profit company.
 
 ## Basis-Safety Routing
 
-- Preliminary earnings: Section 13 `provisional_earnings`; do not infer balance sheet, FCF, inventory, or ROIC changes.
-- ADR or share-basis uncertainty: Sections 4 and 14 `adr_share_basis`; never infer a conversion ratio or recompute PER.
-- Historical comparability withheld: Section 14 only; current multiples may remain usable, historical percentile and range may not.
+- Preliminary earnings: Section 20 `provisional_earnings`; do not infer balance sheet, FCF, inventory, or ROIC changes.
+- ADR or share-basis uncertainty: Sections 5, 21, and 22 `adr_share_basis`; never infer a conversion ratio or recompute PER.
+- Historical comparability withheld: Section 21 only; current multiples may remain usable, historical percentile and range may not.

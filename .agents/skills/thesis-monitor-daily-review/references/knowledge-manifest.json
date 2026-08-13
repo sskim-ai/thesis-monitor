@@ -1,9 +1,13 @@
 {
+  "byte_count": 16599,
+  "imported_at": "2026-08-13T03:35:45.172429+00:00",
   "knowledge_name": "Investment Thesis Analysis & Monitoring Knowledge Guide",
   "knowledge_version": "2026-08-13",
-  "source": "Custom GPT Knowledge runtime mirror",
-  "source_path": "docs/custom_gpt_knowledge_ko.md",
+  "line_count": 942,
   "mirror_path": ".agents/skills/thesis-monitor-daily-review/references/investment-thesis-analysis-monitoring-knowledge.md",
-  "sha256": "4af4e4f41ef65e1a1b5c7d8dece08a72a89f06f1774493947718fddb3d762c8c",
-  "imported_at": "2026-08-13T11:41:08+09:00"
+  "mirror_revision": "canonical-parity-correction-2026-08-13",
+  "sha256": "9c769f6be1ea6d17b858a14b35a7b2cd63201c0dc8066f7b05368d9bab967176",
+  "source": "Custom GPT Knowledge",
+  "source_path": "docs/custom_gpt_knowledge_ko.md",
+  "source_role": "custom_gpt_canonical_mirror"
 }

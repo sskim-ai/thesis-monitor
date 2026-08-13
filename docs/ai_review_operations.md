@@ -57,6 +57,14 @@ canonical packet facts. It writes only the temporary JSON and finalizes it with:
 .venv/bin/python -m app.jobs.ai_review validate --packet-id PACKET_ID --claim-id CLAIM_ID
 ```
 
+Claim, reclaim, final promotion, and claim cleanup are serialized by a stable per-packet POSIX
+`flock` under `data/ai_review/locks`. The lock is held only for short filesystem mutations; Codex
+analysis and schema validation run outside it. Lease expiry permits another worker to reclaim the
+packet, but an expired worker may still finish while its claim remains current. Once a backup writes
+a new claim ID, the older worker cannot promote its claim-specific temporary output or remove the
+new claim. This guarantee assumes the configured Mac mini local POSIX filesystem, not a network
+filesystem with unknown lock semantics.
+
 Files ending in `.json.tmp` are incomplete and are never considered completed. Every output records
 the analysis policy, Knowledge version/checksum, frameworks used, fact references, and numeric claims.
 

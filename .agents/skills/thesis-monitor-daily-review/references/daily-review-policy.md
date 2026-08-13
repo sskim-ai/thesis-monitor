@@ -51,3 +51,7 @@ Every investment-related number in prose requires a `numeric_claims` record tied
 ## Claim Fence
 
 Each worker owns a UUID claim and a claim-specific temporary output. The validator may accept an expired claim only while it remains the active claim. Once another worker reclaims the packet, the older claim can never finalize.
+
+## Runtime Operational Context
+
+The US evaluation remains a 07:50 KST backend operation, and its packet becomes ready only after the backend resolves the KRX morning gate. Night futures are price context, not a direct business-thesis signal. The Korean close run uses the successful 16:05 KST monitoring result. Korean close FX and supply values in the packet are the backend source of truth; do not refresh, recompute, or substitute them. Supply fields such as `price.supply.score`, quality, signal, and as-of date retain their packet semantics. Provider retries, market-session freshness, monitor schedules, and Action routing remain backend policy and must not be inferred from the investment Knowledge reference.

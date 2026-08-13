@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import fcntl
 import hashlib
 import json
 import logging
@@ -8,11 +9,12 @@ import os
 import re
 import socket
 import uuid
+from contextlib import contextmanager
 from dataclasses import asdict, dataclass
 from datetime import UTC, date, datetime, timedelta
 from pathlib import Path
 from tempfile import NamedTemporaryFile
-from typing import Literal
+from typing import Iterator, Literal
 
 from pydantic import ValidationError
 from sqlmodel import Session, select
@@ -150,7 +152,7 @@ def _directory(name: str) -> Path:
 
 
 def ensure_ai_review_layout() -> None:
-    for child in ("inbox", "claims", "outbox", "rejected", "history"):
+    for child in ("inbox", "claims", "locks", "outbox", "rejected", "history"):
         _directory(child)
 
 
@@ -163,21 +165,32 @@ def _skill_root() -> Path:
     )
 
 
-def knowledge_manifest() -> dict[str, str]:
+def knowledge_manifest() -> dict[str, str | int]:
     reference_root = _skill_root() / "references"
     manifest = _read_json(reference_root / "knowledge-manifest.json")
     mirror = reference_root / "investment-thesis-analysis-monitoring-knowledge.md"
     source = Path(__file__).resolve().parents[2] / str(manifest.get("source_path") or "")
     expected = str(manifest.get("sha256") or "")
+    source_bytes = source.read_bytes()
     mirror_hash = hashlib.sha256(mirror.read_bytes()).hexdigest()
-    source_hash = hashlib.sha256(source.read_bytes()).hexdigest()
-    if not expected or mirror_hash != expected or source_hash != expected:
+    source_hash = hashlib.sha256(source_bytes).hexdigest()
+    line_count = len(source_bytes.splitlines())
+    byte_count = len(source_bytes)
+    if (
+        not expected
+        or mirror_hash != expected
+        or source_hash != expected
+        or int(manifest.get("line_count") or -1) != line_count
+        or int(manifest.get("byte_count") or -1) != byte_count
+    ):
         raise ValueError("Investment Knowledge mirror checksum mismatch")
     return {
         "name": str(manifest["knowledge_name"]),
         "version": str(manifest["knowledge_version"]),
         "sha256": expected,
         "source": str(manifest["source"]),
+        "line_count": line_count,
+        "byte_count": byte_count,
     }
 
 
@@ -222,8 +235,23 @@ def _atomic_json(path: Path, payload: object) -> None:
     with NamedTemporaryFile("w", encoding="utf-8", dir=path.parent, delete=False) as handle:
         json.dump(payload, handle, ensure_ascii=False, indent=2, sort_keys=True, default=str)
         handle.write("\n")
+        handle.flush()
+        os.fsync(handle.fileno())
         temporary = Path(handle.name)
     os.replace(temporary, path)
+
+
+@contextmanager
+def _packet_lock(packet_id: str) -> Iterator[Path]:
+    lock_key = hashlib.sha256(packet_id.encode("utf-8")).hexdigest()
+    lock_path = _directory("locks") / f"{lock_key}.lock"
+    descriptor = os.open(lock_path, os.O_RDWR | os.O_CREAT, 0o600)
+    try:
+        fcntl.flock(descriptor, fcntl.LOCK_EX)
+        yield lock_path
+    finally:
+        fcntl.flock(descriptor, fcntl.LOCK_UN)
+        os.close(descriptor)
 
 
 def _json(value: str, fallback: object) -> object:
@@ -972,42 +1000,37 @@ def claim_next_ai_review_packet(
         )
         output_name = _completion_name(packet_id, policy, knowledge_sha)
         final_path = _directory("outbox") / output_name
-        if final_path.exists():
-            continue
         claim_path = _directory("claims") / f"{packet_id}.json"
-        if claim_path.exists():
-            try:
-                claim = _read_json(claim_path)
-                expires_at = datetime.fromisoformat(str(claim["expires_at"]))
-                if expires_at.tzinfo is None:
-                    expires_at = expires_at.replace(tzinfo=UTC)
-                if expires_at.astimezone(UTC) > current:
-                    continue
-            except (KeyError, ValueError, json.JSONDecodeError):
-                pass
-            claim_path.unlink(missing_ok=True)
-        claim_id = str(uuid.uuid4())
-        temp_path = final_path.parent / f"{final_path.stem}--{claim_id}.json.tmp"
-        claim = {
-            "packet_id": packet_id,
-            "claim_id": claim_id,
-            "market": market,
-            "analysis_policy_version": policy,
-            "owner": owner or socket.gethostname(),
-            "claimed_at": current.isoformat(),
-            "expires_at": (current + lease).isoformat(),
-            "lease_expires_at": (current + lease).isoformat(),
-            "packet_path": str(packet_path),
-            "temp_output_path": str(temp_path),
-            "final_output_path": str(final_path),
-        }
-        try:
-            descriptor = os.open(claim_path, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
-        except FileExistsError:
-            continue
-        with os.fdopen(descriptor, "w", encoding="utf-8") as handle:
-            json.dump(claim, handle, ensure_ascii=False, indent=2)
-            handle.write("\n")
+        with _packet_lock(packet_id):
+            if final_path.exists():
+                continue
+            if claim_path.exists():
+                try:
+                    claim = _read_json(claim_path)
+                    expires_at = datetime.fromisoformat(str(claim["expires_at"]))
+                    if expires_at.tzinfo is None:
+                        expires_at = expires_at.replace(tzinfo=UTC)
+                    if expires_at.astimezone(UTC) > current:
+                        continue
+                except (KeyError, ValueError, json.JSONDecodeError):
+                    pass
+            claim_id = str(uuid.uuid4())
+            temp_path = final_path.parent / f"{final_path.stem}--{claim_id}.json.tmp"
+            claim = {
+                "packet_id": packet_id,
+                "claim_id": claim_id,
+                "market": market,
+                "analysis_policy_version": policy,
+                "knowledge_sha256": knowledge_sha,
+                "owner": owner or socket.gethostname(),
+                "claimed_at": current.isoformat(),
+                "expires_at": (current + lease).isoformat(),
+                "lease_expires_at": (current + lease).isoformat(),
+                "packet_path": str(packet_path),
+                "temp_output_path": str(temp_path),
+                "final_output_path": str(final_path),
+            }
+            _atomic_json(claim_path, claim)
         return ClaimResult(
             status="claimed",
             packet_id=packet_id,
@@ -1477,12 +1500,19 @@ def finalize_ai_review_output(
     output_name = _completion_name(packet_id, policy_version, knowledge_sha)
     final_path = _directory("outbox") / output_name
     temp_path = final_path.parent / f"{final_path.stem}--{claim_id}.json.tmp"
-    if final_path.exists():
-        try:
-            completed_claim = str(_read_json(final_path).get("claim_id") or "")
-        except (ValueError, json.JSONDecodeError):
-            completed_claim = ""
-        if completed_claim != claim_id:
+    claim_path = _directory("claims") / f"{packet_id}.json"
+    with _packet_lock(packet_id):
+        if final_path.exists():
+            try:
+                completed_claim = str(_read_json(final_path).get("claim_id") or "")
+            except (ValueError, json.JSONDecodeError):
+                completed_claim = ""
+            if completed_claim == claim_id:
+                return OutputValidationResult(
+                    status="already_completed",
+                    packet_id=packet_id,
+                    output_path=str(final_path),
+                )
             if temp_path.exists():
                 rejected = _directory("rejected") / (
                     f"{output_name}.{claim_id}.stale_claim_output"
@@ -1494,32 +1524,28 @@ def finalize_ai_review_output(
                 output_path=str(final_path),
                 errors=("stale_claim_output",),
             )
-        return OutputValidationResult(
-            status="already_completed", packet_id=packet_id, output_path=str(final_path)
-        )
-    claim_path = _directory("claims") / f"{packet_id}.json"
-    try:
-        active_claim = _read_json(claim_path)
-    except (FileNotFoundError, ValueError, json.JSONDecodeError):
-        active_claim = {}
-    if str(active_claim.get("claim_id") or "") != claim_id:
-        if temp_path.exists():
-            rejected = _directory("rejected") / (
-                f"{output_name}.{claim_id}.stale_claim_output"
+        try:
+            active_claim = _read_json(claim_path)
+        except (FileNotFoundError, ValueError, json.JSONDecodeError):
+            active_claim = {}
+        if str(active_claim.get("claim_id") or "") != claim_id:
+            if temp_path.exists():
+                rejected = _directory("rejected") / (
+                    f"{output_name}.{claim_id}.stale_claim_output"
+                )
+                os.replace(temp_path, rejected)
+            return OutputValidationResult(
+                status="rejected",
+                packet_id=packet_id,
+                errors=("stale_claim_output",),
             )
-            os.replace(temp_path, rejected)
-        return OutputValidationResult(
-            status="rejected",
-            packet_id=packet_id,
-            errors=("stale_claim_output",),
-        )
-    active_temp = Path(str(active_claim.get("temp_output_path") or temp_path))
-    if active_temp != temp_path or not temp_path.exists():
-        return OutputValidationResult(
-            status="not_ready",
-            packet_id=packet_id,
-            errors=("claim_temp_output_missing",),
-        )
+        active_temp = Path(str(active_claim.get("temp_output_path") or temp_path))
+        if active_temp != temp_path or not temp_path.exists():
+            return OutputValidationResult(
+                status="not_ready",
+                packet_id=packet_id,
+                errors=("claim_temp_output_missing",),
+            )
     try:
         candidate = _read_json(temp_path)
     except (ValueError, json.JSONDecodeError) as exc:
@@ -1538,26 +1564,68 @@ def finalize_ai_review_output(
             status="rejected", packet_id=packet_id, errors=tuple(errors)
         )
     validated_at = (now or datetime.now(UTC)).astimezone(UTC)
-    try:
-        final_claim = _read_json(claim_path)
-    except (FileNotFoundError, ValueError, json.JSONDecodeError):
-        final_claim = {}
-    if str(final_claim.get("claim_id") or "") != claim_id:
-        rejected = _directory("rejected") / f"{output_name}.{claim_id}.stale_claim_output"
-        os.replace(temp_path, rejected)
-        return OutputValidationResult(
-            status="rejected",
-            packet_id=packet_id,
-            errors=("stale_claim_output",),
-        )
-    os.replace(temp_path, final_path)
     history_dir = _directory("history") / f"{validated_at:%Y}" / f"{validated_at:%m}"
     history_dir.mkdir(parents=True, exist_ok=True)
     history_output = history_dir / output_name
-    _atomic_json(history_output, candidate)
     comparison_path = history_dir / output_name.replace(".json", ".comparison.json")
-    _atomic_json(comparison_path, _comparison_payload(packet, output, validated_at))
-    claim_path.unlink(missing_ok=True)
+    with _packet_lock(packet_id):
+        if final_path.exists():
+            try:
+                completed_claim = str(_read_json(final_path).get("claim_id") or "")
+            except (ValueError, json.JSONDecodeError):
+                completed_claim = ""
+            if completed_claim == claim_id:
+                return OutputValidationResult(
+                    status="already_completed",
+                    packet_id=packet_id,
+                    output_path=str(final_path),
+                )
+            if temp_path.exists():
+                rejected = _directory("rejected") / (
+                    f"{output_name}.{claim_id}.stale_claim_output"
+                )
+                os.replace(temp_path, rejected)
+            return OutputValidationResult(
+                status="rejected",
+                packet_id=packet_id,
+                output_path=str(final_path),
+                errors=("stale_claim_output",),
+            )
+        try:
+            final_claim = _read_json(claim_path)
+        except (FileNotFoundError, ValueError, json.JSONDecodeError):
+            final_claim = {}
+        claim_identity_matches = all(
+            (
+                str(final_claim.get("claim_id") or "") == claim_id,
+                str(final_claim.get("packet_id") or "") == packet_id,
+                str(final_claim.get("analysis_policy_version") or "") == policy_version,
+                str(final_claim.get("knowledge_sha256") or "") == knowledge_sha,
+                Path(str(final_claim.get("temp_output_path") or temp_path)) == temp_path,
+                Path(str(final_claim.get("final_output_path") or final_path)) == final_path,
+                str(candidate.get("packet_id") or "") == packet_id,
+                str(candidate.get("claim_id") or "") == claim_id,
+                str(candidate.get("analysis_policy_version") or "") == policy_version,
+                str(candidate.get("knowledge_sha256") or "") == knowledge_sha,
+            )
+        )
+        if not claim_identity_matches:
+            rejected = _directory("rejected") / (
+                f"{output_name}.{claim_id}.stale_claim_output"
+            )
+            if temp_path.exists():
+                os.replace(temp_path, rejected)
+            return OutputValidationResult(
+                status="rejected",
+                packet_id=packet_id,
+                errors=("stale_claim_output",),
+            )
+        os.replace(temp_path, final_path)
+        _atomic_json(history_output, candidate)
+        _atomic_json(comparison_path, _comparison_payload(packet, output, validated_at))
+        current_claim = _read_json(claim_path)
+        if str(current_claim.get("claim_id") or "") == claim_id:
+            claim_path.unlink(missing_ok=True)
     return OutputValidationResult(
         status="completed",
         packet_id=packet_id,

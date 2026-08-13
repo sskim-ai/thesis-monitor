@@ -114,7 +114,6 @@ def test_custom_gpt_docs_reference_analysis_snapshot_action() -> None:
     operation_id = "getTickerAnalysisSnapshot"
     for relative_path in (
         "docs/custom_gpt_instructions_ko.md",
-        "docs/custom_gpt_knowledge_ko.md",
         "docs/custom_gpt_regression_prompts.md",
     ):
         assert operation_id in Path(relative_path).read_text(encoding="utf-8")
@@ -140,26 +139,32 @@ def test_custom_gpt_instructions_fit_product_limit_and_preserve_initial_analysis
         assert knowledge_reference in text
 
 
-def test_custom_gpt_knowledge_preserves_framework_and_market_schedule() -> None:
+def test_custom_gpt_knowledge_and_runtime_policy_keep_separate_responsibilities() -> None:
     text = Path("docs/custom_gpt_knowledge_ko.md").read_text(encoding="utf-8")
 
     for concept in (
-        "Initial Investment Thesis Framework",
+        "Fact / Interpretation / Unknowns",
         "Earnings Quality",
-        "Market Expectations",
+        "시장 기대",
         "업종별 Valuation",
         "수급",
         "Kill Condition",
         "Macro",
         "잠정실적",
         "ADR",
-        "가격·수급/포지셔닝",
+    ):
+        assert concept in text
+
+    policy = Path(
+        ".agents/skills/thesis-monitor-daily-review/references/daily-review-policy.md"
+    ).read_text(encoding="utf-8")
+    for concept in (
+        "KRX morning gate",
         "price.supply.score",
         "07:50",
         "16:05",
     ):
-        assert concept in text
-    assert "오전 모니터링은 기본 07:50" not in text
+        assert concept in policy
 
 
 def test_generated_action_schema_files_match() -> None:

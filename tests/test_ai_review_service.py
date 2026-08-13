@@ -1,11 +1,14 @@
-import json
 import hashlib
+import json
+import threading
+from concurrent.futures import ThreadPoolExecutor
 from datetime import UTC, date, datetime, timedelta
 from pathlib import Path
 
 from sqlalchemy.pool import StaticPool
 from sqlmodel import SQLModel, Session, create_engine, select
 
+import app.services.ai_review_service as ai_review_service
 from app.config import get_settings
 from app.models.company import Company
 from app.models.macro import MacroBriefing
@@ -24,6 +27,10 @@ from app.services.ai_review_service import (
     knowledge_manifest,
     validate_ai_review_output,
     write_ai_review_packet,
+)
+from scripts.sync_custom_gpt_knowledge import (
+    sync_repository_mirror,
+    validate_repository_mirror,
 )
 
 
@@ -388,6 +395,9 @@ def test_packet_is_immutable_version_isolated_and_sanitized(monkeypatch, tmp_pat
     assert first.status == "created"
     assert second.status == "already_exists"
     assert first.packet_id == second.packet_id
+    manifest = knowledge_manifest()
+    assert packet["knowledge"]["version"] == manifest["version"]
+    assert packet["knowledge"]["sha256"] == manifest["sha256"]
     assert packet["stocks"][0]["previous_assessment"]["assessment_date"] == "2026-08-13"
     assert packet["stocks"][0]["valuation"]["historical_comparison_withheld"] is True
     assert "historical_pe_statistics" not in packet["stocks"][0]["valuation"]
@@ -815,6 +825,184 @@ def test_expired_claim_can_finalize_when_no_worker_reclaims(
     assert completed.status == "completed"
 
 
+def test_packet_lock_serializes_simultaneous_claims(monkeypatch, tmp_path: Path) -> None:
+    _settings(monkeypatch, tmp_path)
+    with Session(_engine()) as session:
+        _seed(session)
+        write_ai_review_packet(
+            session,
+            RUN_DATE,
+            "us",
+            generated_at=datetime(2026, 8, 14, 0, 0, tzinfo=UTC),
+        )
+
+    barrier = threading.Barrier(2)
+
+    def claim(owner: str):
+        barrier.wait(timeout=5)
+        return claim_next_ai_review_packet(
+            "us",
+            owner=owner,
+            now=datetime(2026, 8, 14, 8, 50, tzinfo=UTC),
+        )
+
+    with ThreadPoolExecutor(max_workers=2) as executor:
+        results = list(executor.map(claim, ("primary", "backup")))
+
+    assert sorted(item.status for item in results) == ["claimed", "no_pending_packet"]
+    winner = next(item for item in results if item.status == "claimed")
+    active = json.loads(Path(winner.claim_path).read_text(encoding="utf-8"))
+    assert active["claim_id"] == winner.claim_id
+
+
+def test_packet_lock_prevents_reclaim_after_finalizer_wins(
+    monkeypatch,
+    tmp_path: Path,
+) -> None:
+    _settings(monkeypatch, tmp_path)
+    engine = _engine()
+    with Session(engine) as session:
+        _seed(session)
+        result = write_ai_review_packet(
+            session,
+            RUN_DATE,
+            "us",
+            generated_at=datetime(2026, 8, 14, 0, 0, tzinfo=UTC),
+        )
+    primary = claim_next_ai_review_packet(
+        "us", owner="primary", now=datetime(2026, 8, 14, 8, 50, tzinfo=UTC)
+    )
+    packet = json.loads(Path(result.path).read_text(encoding="utf-8"))
+    Path(primary.temp_output_path).write_text(
+        json.dumps(_valid_output(packet, claim_id=primary.claim_id)),
+        encoding="utf-8",
+    )
+
+    original_read = ai_review_service._read_json
+    final_lock_held = threading.Event()
+    release_finalizer = threading.Event()
+    claim_reads = 0
+
+    def pausing_read(path: Path):
+        nonlocal claim_reads
+        value = original_read(path)
+        if threading.current_thread().name == "finalizer" and path == Path(primary.claim_path):
+            claim_reads += 1
+            if claim_reads == 2:
+                final_lock_held.set()
+                assert release_finalizer.wait(timeout=5)
+        return value
+
+    monkeypatch.setattr(ai_review_service, "_read_json", pausing_read)
+    outcomes: dict[str, object] = {}
+
+    def finalize() -> None:
+        with Session(engine) as session:
+            outcomes["final"] = finalize_ai_review_output(
+                session,
+                primary.packet_id,
+                claim_id=primary.claim_id,
+            )
+
+    def reclaim() -> None:
+        outcomes["backup"] = claim_next_ai_review_packet(
+            "us",
+            owner="backup",
+            now=datetime(2026, 8, 14, 9, 30, tzinfo=UTC),
+        )
+
+    final_thread = threading.Thread(target=finalize, name="finalizer")
+    final_thread.start()
+    assert final_lock_held.wait(timeout=5)
+    backup_thread = threading.Thread(target=reclaim, name="backup")
+    backup_thread.start()
+    backup_thread.join(timeout=0.1)
+    assert backup_thread.is_alive()
+    release_finalizer.set()
+    final_thread.join(timeout=5)
+    backup_thread.join(timeout=5)
+
+    assert outcomes["final"].status == "completed"
+    assert outcomes["backup"].status == "no_pending_packet"
+    final_payload = json.loads(Path(primary.final_output_path).read_text(encoding="utf-8"))
+    assert final_payload["claim_id"] == primary.claim_id
+
+
+def test_packet_lock_reclaim_fences_stale_finalizer_and_preserves_new_claim(
+    monkeypatch,
+    tmp_path: Path,
+) -> None:
+    _settings(monkeypatch, tmp_path)
+    engine = _engine()
+    with Session(engine) as session:
+        _seed(session)
+        result = write_ai_review_packet(
+            session,
+            RUN_DATE,
+            "us",
+            generated_at=datetime(2026, 8, 14, 0, 0, tzinfo=UTC),
+        )
+    primary = claim_next_ai_review_packet(
+        "us", owner="primary", now=datetime(2026, 8, 14, 8, 50, tzinfo=UTC)
+    )
+    packet = json.loads(Path(result.path).read_text(encoding="utf-8"))
+    Path(primary.temp_output_path).write_text(
+        json.dumps(_valid_output(packet, claim_id=primary.claim_id)),
+        encoding="utf-8",
+    )
+
+    original_atomic = ai_review_service._atomic_json
+    reclaim_lock_held = threading.Event()
+    release_backup = threading.Event()
+
+    def pausing_atomic(path: Path, payload: object) -> None:
+        if (
+            threading.current_thread().name == "backup"
+            and path == Path(primary.claim_path)
+        ):
+            reclaim_lock_held.set()
+            assert release_backup.wait(timeout=5)
+        original_atomic(path, payload)
+
+    monkeypatch.setattr(ai_review_service, "_atomic_json", pausing_atomic)
+    outcomes: dict[str, object] = {}
+
+    def reclaim() -> None:
+        outcomes["backup"] = claim_next_ai_review_packet(
+            "us",
+            owner="backup",
+            now=datetime(2026, 8, 14, 9, 30, tzinfo=UTC),
+        )
+
+    def finalize() -> None:
+        with Session(engine) as session:
+            outcomes["final"] = finalize_ai_review_output(
+                session,
+                primary.packet_id,
+                claim_id=primary.claim_id,
+            )
+
+    backup_thread = threading.Thread(target=reclaim, name="backup")
+    backup_thread.start()
+    assert reclaim_lock_held.wait(timeout=5)
+    final_thread = threading.Thread(target=finalize, name="finalizer")
+    final_thread.start()
+    final_thread.join(timeout=0.1)
+    assert final_thread.is_alive()
+    release_backup.set()
+    backup_thread.join(timeout=5)
+    final_thread.join(timeout=5)
+
+    backup = outcomes["backup"]
+    stale = outcomes["final"]
+    active = json.loads(Path(primary.claim_path).read_text(encoding="utf-8"))
+    assert backup.status == "claimed"
+    assert stale.status == "rejected"
+    assert stale.errors == ("stale_claim_output",)
+    assert active["claim_id"] == backup.claim_id
+    assert not Path(primary.final_output_path).exists()
+
+
 def test_full_knowledge_manifest_and_industry_routing_are_valid() -> None:
     root = Path(__file__).resolve().parents[1]
     references = root / ".agents" / "skills" / "thesis-monitor-daily-review" / "references"
@@ -824,8 +1012,23 @@ def test_full_knowledge_manifest_and_industry_routing_are_valid() -> None:
 
     assert source.read_bytes() == mirror.read_bytes()
     assert hashlib.sha256(mirror.read_bytes()).hexdigest() == manifest["sha256"]
+    assert len(source.read_bytes()) == manifest["byte_count"]
+    assert len(source.read_bytes().splitlines()) == manifest["line_count"]
     assert manifest["version"] == "2026-08-13"
     index = (references / "knowledge-index.md").read_text(encoding="utf-8")
+    knowledge = mirror.read_text(encoding="utf-8")
+    for heading in (
+        "## 7. Earnings Quality",
+        "## 8. 시장 기대와 Surprise",
+        "## 14. Thesis 강화·약화·Kill Condition",
+        "## 16. 거시경제 연결",
+        "## 20. 공식 잠정실적 처리",
+        "## 21. Valuation 비교 가능성",
+        "## 22. ADR 환산",
+        "## 25. 최종 답변 템플릿",
+        "## 26. 최종 운영 철학",
+    ):
+        assert heading in knowledge
     for framework in (
         "earnings_quality",
         "memory_valuation",
@@ -835,6 +1038,40 @@ def test_full_knowledge_manifest_and_industry_routing_are_valid() -> None:
         "adr_share_basis",
     ):
         assert framework in index
+
+
+def test_canonical_knowledge_import_preserves_exact_bytes(tmp_path: Path) -> None:
+    root = tmp_path / "repository"
+    references = root / ".agents" / "skills" / "thesis-monitor-daily-review" / "references"
+    references.mkdir(parents=True)
+    (root / "docs").mkdir()
+    manifest_path = references / "knowledge-manifest.json"
+    manifest_path.write_text(
+        json.dumps({"knowledge_version": "fixture-v1"}),
+        encoding="utf-8",
+    )
+    canonical = tmp_path / "canonical.md"
+    canonical_bytes = b"\xef\xbb\xbf# Canonical\r\n\r\nExact bytes without final newline"
+    canonical.write_bytes(canonical_bytes)
+
+    metrics = sync_repository_mirror(
+        canonical,
+        root,
+        mirror_revision="test-canonical-import",
+    )
+    validated = validate_repository_mirror(root)
+    docs = (root / "docs" / "custom_gpt_knowledge_ko.md").read_bytes()
+    runtime = (
+        references / "investment-thesis-analysis-monitoring-knowledge.md"
+    ).read_bytes()
+    manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+
+    assert docs == canonical_bytes
+    assert runtime == canonical_bytes
+    assert metrics == validated
+    assert manifest["sha256"] == hashlib.sha256(canonical_bytes).hexdigest()
+    assert manifest["source_role"] == "custom_gpt_canonical_mirror"
+    assert "/Users/" not in json.dumps(manifest)
 
 
 def test_industry_framework_router_handles_quality_fixtures() -> None:
