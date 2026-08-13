@@ -7,6 +7,8 @@
 - AI output schema: `3`
 - Delivery renderer: `ai-assisted-pilot-renderer-v2`
 - Pilot state: `data/ai_review/pilot/state-v2.json`
+- Feature deployment commit: `9209393b96ef77e06323b99a4aba08ddd4c957de`
+- Operational checkout: `/Users/sskim/Codex/thesis-monitor`
 - Investment Knowledge: v3.0, SHA
   `559ad45e4dd86cb0aec9bb09b51a5dc816bf323e8c2b4fd050cf28960a5a9d18`
 - Chart Knowledge: v1.0, SHA
@@ -51,7 +53,8 @@ The active local-project schedule remains:
 | KR Primary | 16:15 | Process ready KR packet |
 | KR Backup | 16:55 | Reclaim eligible pending KR packet |
 
-All four task prompts use `$thesis-monitor-daily-review`, `daily-review-v3.3`, schema 3, Investment
+The four tasks were verified ACTIVE in the Codex Scheduled Task configuration at
+2026-08-13 19:04 KST. All prompts use `$thesis-monitor-daily-review`, `daily-review-v3.3`, schema 3, Investment
 Knowledge v3, Chart Knowledge v1, exact numeric claims, and the existing claim/fencing workflow.
 They run in the operational local project with `gpt-5.6-sol` and high reasoning. External web research,
 source-code changes, direct database mutation, and direct Telegram writes are prohibited.
