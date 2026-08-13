@@ -30,6 +30,8 @@ class AINumericClaim(BaseModel):
     field_path: str
     value: float
     unit: str
+    semantic_type: str
+    text_ref: str
     usage: str
 
 
@@ -67,7 +69,7 @@ class AIStockReview(BaseModel):
 class AIDailyReviewOutput(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
-    schema_version: Literal["1"]
+    schema_version: Literal["2"]
     packet_id: str
     claim_id: str
     analysis_policy_version: str

@@ -5,7 +5,7 @@
   "additionalProperties": false,
   "required": ["schema_version", "packet_id", "claim_id", "analysis_policy_version", "knowledge_version", "knowledge_sha256", "market", "assessment_date", "market_review", "stock_reviews"],
   "properties": {
-    "schema_version": {"const": "1"},
+    "schema_version": {"const": "2"},
     "packet_id": {"type": "string", "minLength": 1},
     "claim_id": {"type": "string", "minLength": 1},
     "analysis_policy_version": {"type": "string", "minLength": 1},
@@ -27,10 +27,16 @@
     "numericClaim": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["fact_id", "field_path", "value", "unit", "usage"],
+      "required": ["fact_id", "field_path", "value", "unit", "semantic_type", "text_ref", "usage"],
       "properties": {
         "fact_id": {"type": "string"}, "field_path": {"type": "string"},
-        "value": {"type": "number"}, "unit": {"type": "string"}, "usage": {"type": "string"}
+        "value": {"type": "number"}, "unit": {"type": "string"},
+        "semantic_type": {"type": "string", "minLength": 1},
+        "text_ref": {
+          "type": "string",
+          "pattern": "^(summary|holder_view|new_buyer_view|interpretation\\[[0-9]+\\]\\.text|unknowns\\[[0-9]+\\]|next_checks\\[[0-9]+\\])$"
+        },
+        "usage": {"type": "string", "minLength": 1}
       }
     },
     "marketReview": {

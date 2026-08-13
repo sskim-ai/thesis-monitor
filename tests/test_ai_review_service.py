@@ -329,7 +329,7 @@ def _valid_output(
     facts = stock["fact_catalog"]
     market_facts = packet["market_context"]["fact_catalog"]
     return {
-        "schema_version": "1",
+        "schema_version": "2",
         "packet_id": packet["packet_id"],
         "claim_id": claim_id,
         "analysis_policy_version": packet["analysis_policy_version"],
@@ -428,8 +428,9 @@ def test_packet_is_immutable_version_isolated_and_sanitized(monkeypatch, tmp_pat
     assert "memory_valuation" in stock["knowledge_routing"]["required_frameworks"]
     assert any(
         item["field_path"] == "fields.contract_amount.value"
-        and item["semantic_type"] == "value"
+        and item["semantic_type"] == "contract_amount"
         and item["unit"] == "KRW"
+        and "3,190억원" in item["approved_display_variants"]
         for item in stock["numeric_registry"]
     )
 
@@ -612,7 +613,9 @@ def test_output_guardrails_reject_mismatch_hallucination_and_bad_basis(
         hallucination = _valid_output(packet)
         hallucination["stock_reviews"][0]["summary"] = "Revenue reached 999 billion."
         _, errors = validate_ai_review_output(session, packet, hallucination)
-        assert any("numbers_without_provenance:999" in item for item in errors)
+        assert any(
+            "numbers_without_provenance:summary:999" in item for item in errors
+        )
 
         modeled_as_consensus = _valid_output(packet)
         modeled_as_consensus["stock_reviews"][0]["summary"] = "시장 컨센서스 EPS가 반영됐습니다."
@@ -659,6 +662,8 @@ def test_numeric_claims_require_exact_semantic_provenance_and_allow_display_form
                 "field_path": "fields.operating_margin_pct",
                 "value": 10.0,
                 "unit": "pct",
+                "semantic_type": "operating_margin",
+                "text_ref": "interpretation[1].text",
                 "usage": "영업이익률 10%",
             }
         )
@@ -683,6 +688,8 @@ def test_numeric_claims_require_exact_semantic_provenance_and_allow_display_form
                 "field_path": "fields.contract_amount.value",
                 "value": 318_964_597_910,
                 "unit": "KRW",
+                "semantic_type": "contract_amount",
+                "text_ref": "interpretation[0].text",
                 "usage": "계약금액 3,190억원",
             }
         ]
@@ -704,6 +711,8 @@ def test_numeric_claims_require_exact_semantic_provenance_and_allow_display_form
                 "field_path": "fields.current_price",
                 "value": 100,
                 "unit": "USD",
+                "semantic_type": "share_price",
+                "text_ref": "interpretation[0].text",
                 "usage": "매출 성장률 100 USD",
             }
         ]
@@ -713,7 +722,9 @@ def test_numeric_claims_require_exact_semantic_provenance_and_allow_display_form
         unsupported_derived = _valid_output(packet)
         unsupported_derived["stock_reviews"][0]["summary"] = "추정 성장률은 55%입니다."
         _, errors = validate_ai_review_output(session, packet, unsupported_derived)
-        assert any("numbers_without_provenance:55" in item for item in errors)
+        assert any(
+            "numbers_without_provenance:summary:55" in item for item in errors
+        )
 
 
 def test_percentage_rounding_uses_the_exact_capital_action_field(
@@ -743,14 +754,248 @@ def test_percentage_rounding_uses_the_exact_capital_action_field(
             {
                 "fact_id": capital["fact_id"],
                 "field_path": "fields.share_ratio_pct",
-                "value": 0.11,
+                "value": 0.1095,
                 "unit": "pct",
+                "semantic_type": "share_ratio",
+                "text_ref": "interpretation[0].text",
                 "usage": "처분 주식 비율 약 0.11%",
             }
         ]
         _, errors = validate_ai_review_output(session, packet, output)
 
     assert errors == []
+
+
+def test_numeric_claim_is_fenced_to_exact_prose_location(
+    monkeypatch,
+    tmp_path: Path,
+) -> None:
+    _settings(monkeypatch, tmp_path)
+    with Session(_engine()) as session:
+        _seed(session)
+        packet = build_ai_review_packet(session, RUN_DATE, "us")
+        assert packet is not None
+        output = _valid_output(packet)
+        review = output["stock_reviews"][0]
+        review["facts_used"] = ["price:current"]
+        review["summary"] = "매출 성장률은 100%입니다."
+        review["holder_view"] = "현재가 100 USD에서는 실행 가격을 분리해 봅니다."
+        review["numeric_claims"] = [
+            {
+                "fact_id": "price:current",
+                "field_path": "fields.current_price",
+                "value": 100,
+                "unit": "USD",
+                "semantic_type": "share_price",
+                "text_ref": "holder_view",
+                "usage": "현재가 100 USD",
+            }
+        ]
+        _, errors = validate_ai_review_output(session, packet, output)
+
+    assert any(
+        "numbers_without_provenance:summary:100" in error for error in errors
+    )
+    assert not any(
+        "numbers_without_provenance:holder_view:100" in error for error in errors
+    )
+
+
+def test_numeric_claim_requires_valid_text_ref_usage_and_semantic_type(
+    monkeypatch,
+    tmp_path: Path,
+) -> None:
+    _settings(monkeypatch, tmp_path)
+    with Session(_engine()) as session:
+        _seed(session)
+        packet = build_ai_review_packet(session, RUN_DATE, "us")
+        assert packet is not None
+        output = _valid_output(packet)
+        review = output["stock_reviews"][0]
+        review["facts_used"] = ["price:current"]
+        review["summary"] = "현재가 100 USD는 확인된 가격입니다."
+        review["numeric_claims"] = [
+            {
+                "fact_id": "price:current",
+                "field_path": "fields.current_price",
+                "value": 100,
+                "unit": "USD",
+                "semantic_type": "revenue_yoy",
+                "text_ref": "holder_view",
+                "usage": "현재가 100 USD",
+            }
+        ]
+        _, errors = validate_ai_review_output(session, packet, output)
+
+    assert any("numeric_semantic_type_mismatch" in error for error in errors)
+    assert any("numeric_usage_not_in_text_ref" in error for error in errors)
+    assert any("numbers_without_provenance:summary:100" in error for error in errors)
+
+
+def test_numeric_display_rounding_rejects_unapproved_value(
+    monkeypatch,
+    tmp_path: Path,
+) -> None:
+    _settings(monkeypatch, tmp_path)
+    with Session(_engine()) as session:
+        _seed(session)
+        packet = build_ai_review_packet(session, RUN_DATE, "us")
+        assert packet is not None
+        capital = next(
+            item
+            for item in packet["stocks"][0]["fact_catalog"]
+            if item["fact_type"] == "treasury_stock_transaction"
+        )
+        output = _valid_output(packet)
+        review = output["stock_reviews"][0]
+        review["facts_used"] = [capital["fact_id"]]
+        review["summary"] = "처분 주식 비율 약 0.2%는 소규모입니다."
+        review["numeric_claims"] = [
+            {
+                "fact_id": capital["fact_id"],
+                "field_path": "fields.share_ratio_pct",
+                "value": 0.1095,
+                "unit": "pct",
+                "semantic_type": "share_ratio",
+                "text_ref": "summary",
+                "usage": "처분 주식 비율 약 0.2%",
+            }
+        ]
+        _, errors = validate_ai_review_output(session, packet, output)
+
+    assert any("numeric_usage_value_mismatch" in error for error in errors)
+    assert any("numbers_without_provenance:summary:0.2" in error for error in errors)
+
+
+def test_market_numeric_prose_and_structural_dates_are_validated(
+    monkeypatch,
+    tmp_path: Path,
+) -> None:
+    _settings(monkeypatch, tmp_path)
+    with Session(_engine()) as session:
+        _seed(session)
+        packet = build_ai_review_packet(session, RUN_DATE, "us")
+        assert packet is not None
+        context = packet["market_context"]
+        context["fact_catalog"].append(
+            {
+                "fact_id": "market:test:return",
+                "fact_type": "market_return",
+                "as_of_date": RUN_DATE.isoformat(),
+                "fields": {"percent_change": -3.17},
+            }
+        )
+        context["numeric_registry"] = ai_review_service._numeric_registry(
+            context["fact_catalog"]
+        )
+        output = _valid_output(packet)
+        market_review = output["market_review"]
+        market_review["facts_used"] = ["market:test:return"]
+        market_review["summary"] = "2026년 2분기 기준 시장 등락률은 -3.17%입니다."
+        market_review["numeric_claims"] = [
+            {
+                "fact_id": "market:test:return",
+                "field_path": "fields.percent_change",
+                "value": -3.17,
+                "unit": "pct",
+                "semantic_type": "percent_change",
+                "text_ref": "summary",
+                "usage": "시장 등락률은 -3.17%",
+            }
+        ]
+        _, errors = validate_ai_review_output(session, packet, output)
+
+    assert errors == []
+
+
+def test_signed_positive_market_numeric_prose_is_grounded(
+    monkeypatch,
+    tmp_path: Path,
+) -> None:
+    _settings(monkeypatch, tmp_path)
+    with Session(_engine()) as session:
+        _seed(session)
+        packet = build_ai_review_packet(session, RUN_DATE, "us")
+        assert packet is not None
+        context = packet["market_context"]
+        context["fact_catalog"].append(
+            {
+                "fact_id": "market:test:positive-return",
+                "fact_type": "market_return",
+                "as_of_date": RUN_DATE.isoformat(),
+                "fields": {"percent_change": 0.67},
+            }
+        )
+        context["numeric_registry"] = ai_review_service._numeric_registry(
+            context["fact_catalog"]
+        )
+        output = _valid_output(packet)
+        market_review = output["market_review"]
+        market_review["facts_used"] = ["market:test:positive-return"]
+        market_review["summary"] = "시장 등락률은 +0.67%였습니다."
+        market_review["numeric_claims"] = [
+            {
+                "fact_id": "market:test:positive-return",
+                "field_path": "fields.percent_change",
+                "value": 0.67,
+                "unit": "pct",
+                "semantic_type": "percent_change",
+                "text_ref": "summary",
+                "usage": "시장 등락률은 +0.67%",
+            }
+        ]
+        _, errors = validate_ai_review_output(session, packet, output)
+
+    assert errors == []
+
+
+def test_multiple_and_invented_derived_number_validation(
+    monkeypatch,
+    tmp_path: Path,
+) -> None:
+    _settings(monkeypatch, tmp_path)
+    with Session(_engine()) as session:
+        _seed(session)
+        packet = build_ai_review_packet(session, RUN_DATE, "us")
+        assert packet is not None
+        output = _valid_output(packet)
+        review = output["stock_reviews"][0]
+        review["facts_used"] = ["valuation:current"]
+        review["summary"] = "현재 PER 20배는 확인됐지만 순이익률 10%는 제공되지 않았습니다."
+        review["numeric_claims"] = [
+            {
+                "fact_id": "valuation:current",
+                "field_path": "fields.trailing_pe",
+                "value": 20,
+                "unit": "x",
+                "semantic_type": "trailing_pe",
+                "text_ref": "summary",
+                "usage": "현재 PER 20배",
+            }
+        ]
+        _, errors = validate_ai_review_output(session, packet, output)
+
+    assert not any("summary:20" in error for error in errors)
+    assert any("numbers_without_provenance:summary:10" in error for error in errors)
+
+
+def test_structural_count_whitelist_does_not_hide_business_quantity(
+    monkeypatch,
+    tmp_path: Path,
+) -> None:
+    _settings(monkeypatch, tmp_path)
+    with Session(_engine()) as session:
+        _seed(session)
+        packet = build_ai_review_packet(session, RUN_DATE, "us")
+        assert packet is not None
+        output = _valid_output(packet)
+        review = output["stock_reviews"][0]
+        review["summary"] = "핵심 요인 2가지를 봤지만 계약 수량 100개는 근거가 없습니다."
+        review["numeric_claims"] = []
+        _, errors = validate_ai_review_output(session, packet, output)
+
+    assert not any("summary:2" in error for error in errors)
+    assert any("numbers_without_provenance:summary:100" in error for error in errors)
 
 
 def test_claim_fence_rejects_expired_primary_after_backup_reclaim(
@@ -1156,7 +1401,7 @@ def test_knowledge_v3_sources_decisions_and_safety_markers() -> None:
 
 
 def test_knowledge_v3_policy_identity_starts_new_shadow_cohort() -> None:
-    assert ai_review_service.ANALYSIS_POLICY_VERSION == "daily-review-v3"
+    assert ai_review_service.ANALYSIS_POLICY_VERSION == "daily-review-v3.1"
     manifest = knowledge_manifest()
     assert manifest["version"] == "3.0"
     assert manifest["sha256"] == (
@@ -1188,6 +1433,119 @@ def test_industry_framework_router_handles_quality_fixtures() -> None:
         assert "adr_share_basis" in routing["required_frameworks"]
 
 
+def test_structured_industry_priority_and_secondary_frameworks() -> None:
+    fixtures = (
+        (
+            "Semiconductors",
+            "GPU and memory devices",
+            "AI cloud CAPEX beneficiary",
+            "semiconductor_valuation",
+            "hyperscaler_capex_transmission",
+        ),
+        (
+            "Insurance",
+            "Recurring premium revenue",
+            "Digital distribution growth",
+            "insurance_reinsurance_valuation",
+            None,
+        ),
+        (
+            "Construction / EPC",
+            "Engineering projects",
+            "Hyperscaler data-center projects",
+            "epc_construction_valuation",
+            "hyperscaler_capex_transmission",
+        ),
+        (
+            "Banking",
+            "Digital platform",
+            "Platform engagement",
+            "bank_valuation",
+            None,
+        ),
+        (
+            "Holding company",
+            "Semiconductor subsidiaries",
+            "Portfolio discount closes",
+            "holding_company_valuation",
+            "semiconductor_valuation",
+        ),
+        (
+            "Biotech",
+            "Recurring royalty income",
+            "Royalty growth",
+            "biotech_valuation",
+            None,
+        ),
+    )
+    for industry, business_model, thesis, primary, secondary in fixtures:
+        routing = investment_framework_routing(
+            industry,
+            business_model,
+            thesis,
+            has_earnings=False,
+            preliminary_earnings=False,
+            has_price_context=False,
+            has_adr_basis_risk=False,
+        )
+        detail = routing["industry_routing"]
+        assert detail["primary_framework"] == primary
+        assert detail["source"] == "structured_industry"
+        assert detail["confidence"] == "high"
+        if secondary:
+            assert secondary in detail["secondary_frameworks"]
+        if primary != "saas_recurring_revenue_valuation":
+            assert "saas_recurring_revenue_valuation" not in detail["secondary_frameworks"]
+
+
+def test_structured_subtype_dominance_and_ambiguous_fallback() -> None:
+    memory = investment_framework_routing(
+        "Semiconductors",
+        "DRAM and NAND memory",
+        "Cloud demand",
+        has_earnings=False,
+        preliminary_earnings=False,
+        has_price_context=False,
+        has_adr_basis_risk=False,
+    )
+    detail = memory["industry_routing"]
+    assert detail["primary_framework"] == "memory_valuation"
+    assert detail["source"] == "structured_business_model_subtype"
+    assert detail["confidence"] == "high"
+
+    dominant = investment_framework_routing(
+        None,
+        "Semiconductors 70%, cloud computing 30%",
+        "Cloud theme",
+        has_earnings=False,
+        preliminary_earnings=False,
+        has_price_context=False,
+        has_adr_basis_risk=False,
+    )
+    assert dominant["industry_routing"]["primary_framework"] == (
+        "semiconductor_valuation"
+    )
+    assert dominant["industry_routing"]["confidence"] == "medium"
+
+    ambiguous = investment_framework_routing(
+        None,
+        "Semiconductors and cloud computing",
+        "SaaS cloud thesis wording",
+        has_earnings=False,
+        preliminary_earnings=False,
+        has_price_context=False,
+        has_adr_basis_risk=False,
+    )
+    assert ambiguous["industry_key"] == "general"
+    assert ambiguous["industry_routing"] == {
+        "primary_framework": None,
+        "secondary_frameworks": [],
+        "source": "unclassified",
+        "confidence": "low",
+        "evidence": [],
+    }
+
+
 def test_incompatible_industry_framework_is_rejected(
     monkeypatch,
     tmp_path: Path,
@@ -1203,6 +1561,37 @@ def test_incompatible_industry_framework_is_rejected(
 
     assert any("framework_not_allowed:saas_recurring_revenue_valuation" in item for item in errors)
     assert any("industry_framework_missing:memory_valuation" in item for item in errors)
+
+
+def test_low_confidence_routing_does_not_force_specialized_framework(
+    monkeypatch,
+    tmp_path: Path,
+) -> None:
+    _settings(monkeypatch, tmp_path)
+    with Session(_engine()) as session:
+        _seed(session)
+        packet = build_ai_review_packet(session, RUN_DATE, "us")
+        assert packet is not None
+        routing = packet["stocks"][0]["knowledge_routing"]
+        routing["industry_key"] = "general"
+        routing["industry_routing"] = {
+            "primary_framework": None,
+            "secondary_frameworks": [],
+            "source": "unclassified",
+            "confidence": "low",
+            "evidence": [],
+        }
+        routing["required_frameworks"] = list(ai_review_service._CORE_FRAMEWORKS)
+        output = _valid_output(packet)
+        output["stock_reviews"][0]["frameworks_used"] = [
+            "market_expectations",
+            "earnings_quality",
+        ]
+        routing["required_frameworks"].append("earnings_quality")
+        _, errors = validate_ai_review_output(session, packet, output)
+
+    assert not any("industry_framework_missing" in item for item in errors)
+    assert errors == []
 
 
 def test_shadow_comparison_flags_unsupported_quality_claims(
@@ -1271,9 +1660,12 @@ def test_skill_fixture_and_output_schema_are_present() -> None:
     )
     skill = (skill_root / "SKILL.md").read_text(encoding="utf-8")
 
-    assert schema["properties"]["schema_version"] == {"const": "1"}
+    assert schema["properties"]["schema_version"] == {"const": "2"}
     assert "claim_id" in schema["required"]
     assert "knowledge_sha256" in schema["required"]
+    numeric_claim = schema["$defs"]["numericClaim"]
+    assert "semantic_type" in numeric_claim["required"]
+    assert "text_ref" in numeric_claim["required"]
     assert "$thesis-monitor-daily-review" in skill
     assert "Do not browse the web" in skill
     assert "data/ai_review" in skill

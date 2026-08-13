@@ -68,6 +68,20 @@ filesystem with unknown lock semantics.
 Files ending in `.json.tmp` are incomplete and are never considered completed. Every output records
 the analysis policy, Knowledge version/checksum, frameworks used, fact references, and numeric claims.
 
+## Phase 2 Review Contract
+
+Output schema `2` and analysis policy `daily-review-v3.1` separate company identity from thematic
+exposure. The primary industry framework comes from structured company industry, sector, business
+model, or revenue-source fields in that order. Thesis wording can add a routed secondary framework,
+such as Hyperscaler CAPEX transmission, but cannot replace a high-confidence primary framework. An
+unclassified company stays on the general framework with low confidence.
+
+Every investment-related prose number is occurrence-bound. Its claim records the exact `fact_id`,
+`field_path`, backend value, unit, semantic type, prose `text_ref`, and displayed usage. A claim cannot
+cover the same token in another prose field or reuse a price as a growth rate. Only deterministic
+registry variants, including the existing KRW compact formatter and approved percentage rounding,
+may differ from the raw backend value.
+
 ## Security Boundary
 
 Scheduled review may write only under `data/ai_review`. It must not edit `app`, `tests`, `ops`, project

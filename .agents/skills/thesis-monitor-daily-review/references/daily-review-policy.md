@@ -46,7 +46,9 @@ The compact policy is not the complete investment framework. Use `knowledge-inde
 
 Use canonical `fact_catalog` objects only. Link every interpretation to `fact_ids`. Contract profitability, customer mix, FCF, inventory, ROIC, ADR conversion, and other absent facts stay Unknown.
 
-Every investment-related number in prose requires a `numeric_claims` record tied to the exact `fact_id` and `field_path`. Preserve the backend value and unit; display-only KRW compaction and approved percentage rounding are allowed. A number found elsewhere in the packet is not interchangeable with the claimed semantic field.
+Every investment-related number in prose requires a `numeric_claims` record tied to the exact `fact_id`, `field_path`, `semantic_type`, and prose `text_ref`. Preserve the backend value and unit; display-only KRW compaction and approved percentage rounding are allowed. A claim covers only its exact prose occurrence, and a number found elsewhere in the packet or another prose field is not interchangeable with the claimed semantic field.
+
+Use structured company identity for the primary industry framework. Thesis themes, macro exposure, customer CAPEX, and secondary segments may add only routed secondary frameworks; they never replace a high-confidence primary framework. When structured identity remains ambiguous, use the general framework instead of forcing a specialized industry classification.
 
 ## Claim Fence
 
