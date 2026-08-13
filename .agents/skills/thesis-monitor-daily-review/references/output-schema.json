@@ -1,16 +1,18 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "title": "Thesis Monitor AI Daily Review Output",
+  "title": "Thesis Monitor AI Daily Review Output v3",
   "type": "object",
   "additionalProperties": false,
-  "required": ["schema_version", "packet_id", "claim_id", "analysis_policy_version", "knowledge_version", "knowledge_sha256", "market", "assessment_date", "market_review", "stock_reviews"],
+  "required": ["schema_version", "packet_id", "claim_id", "analysis_policy_version", "knowledge_version", "knowledge_sha256", "chart_knowledge_version", "chart_knowledge_sha256", "market", "assessment_date", "market_review", "stock_reviews"],
   "properties": {
-    "schema_version": {"const": "2"},
+    "schema_version": {"const": "3"},
     "packet_id": {"type": "string", "minLength": 1},
     "claim_id": {"type": "string", "minLength": 1},
-    "analysis_policy_version": {"type": "string", "minLength": 1},
+    "analysis_policy_version": {"const": "daily-review-v3.3"},
     "knowledge_version": {"type": "string", "minLength": 1},
     "knowledge_sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "chart_knowledge_version": {"type": "string", "minLength": 1},
+    "chart_knowledge_sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
     "market": {"enum": ["us", "kr"]},
     "assessment_date": {"type": "string", "format": "date"},
     "market_review": {"$ref": "#/$defs/marketReview"},
@@ -18,15 +20,21 @@
   },
   "$defs": {
     "textList": {"type": "array", "items": {"type": "string"}},
-    "interpretation": {
-      "type": "object",
-      "additionalProperties": false,
+    "reasoningSection": {
+      "type": "object", "additionalProperties": false,
       "required": ["text", "fact_ids"],
       "properties": {"text": {"type": "string"}, "fact_ids": {"$ref": "#/$defs/textList"}}
     },
+    "priceSection": {
+      "type": "object", "additionalProperties": false,
+      "required": ["text", "fact_ids", "new_observer_view", "holder_view"],
+      "properties": {
+        "text": {"type": "string"}, "fact_ids": {"$ref": "#/$defs/textList"},
+        "new_observer_view": {"type": "string"}, "holder_view": {"type": "string"}
+      }
+    },
     "numericClaim": {
-      "type": "object",
-      "additionalProperties": false,
+      "type": "object", "additionalProperties": false,
       "required": ["fact_id", "field_path", "value", "unit", "semantic_type", "text_ref", "usage"],
       "properties": {
         "fact_id": {"type": "string"}, "field_path": {"type": "string"},
@@ -34,35 +42,41 @@
         "semantic_type": {"type": "string", "minLength": 1},
         "text_ref": {
           "type": "string",
-          "pattern": "^(summary|holder_view|new_buyer_view|interpretation\\[[0-9]+\\]\\.text|unknowns\\[[0-9]+\\]|next_checks\\[[0-9]+\\])$"
+          "pattern": "^(core_judgment\\.text|business_earnings\\.text|price_positioning\\.(text|new_observer_view|holder_view)|supply_analysis\\.text|valuation_analysis\\.text|important_changes\\[[0-9]+\\]\\.text|market_context\\.text|market_assumptions\\.text|priority_watch\\[[0-9]+\\]|unknowns\\[[0-9]+\\]|next_checks\\[[0-9]+\\])$"
         },
         "usage": {"type": "string", "minLength": 1}
       }
     },
     "marketReview": {
       "type": "object", "additionalProperties": false,
-      "required": ["facts_used", "frameworks_used", "interpretation", "numeric_claims", "unknowns", "summary"],
+      "required": ["facts_used", "frameworks_used", "core_judgment", "important_changes", "market_context", "market_assumptions", "numeric_claims", "unknowns"],
       "properties": {
         "facts_used": {"$ref": "#/$defs/textList"}, "frameworks_used": {"$ref": "#/$defs/textList"},
-        "interpretation": {"type": "array", "items": {"$ref": "#/$defs/interpretation"}},
+        "core_judgment": {"$ref": "#/$defs/reasoningSection"},
+        "important_changes": {"type": "array", "items": {"$ref": "#/$defs/reasoningSection"}},
+        "market_context": {"$ref": "#/$defs/reasoningSection"},
+        "market_assumptions": {"$ref": "#/$defs/reasoningSection"},
         "numeric_claims": {"type": "array", "items": {"$ref": "#/$defs/numericClaim"}},
-        "unknowns": {"$ref": "#/$defs/textList"}, "summary": {"type": "string"}
+        "unknowns": {"$ref": "#/$defs/textList"}
       }
     },
     "stockReview": {
       "type": "object", "additionalProperties": false,
-      "required": ["ticker", "thesis_version", "ai_thesis_assessment", "earnings_estimate_view", "valuation_view", "facts_used", "frameworks_used", "interpretation", "numeric_claims", "unknowns", "summary", "holder_view", "new_buyer_view", "next_checks", "confidence"],
+      "required": ["ticker", "thesis_version", "ai_thesis_assessment", "earnings_estimate_view", "valuation_view", "facts_used", "frameworks_used", "core_judgment", "business_earnings", "price_positioning", "supply_analysis", "valuation_analysis", "numeric_claims", "priority_watch", "next_checks", "unknowns", "confidence"],
       "properties": {
         "ticker": {"type": "string"}, "thesis_version": {"type": "integer", "minimum": 1},
         "ai_thesis_assessment": {"enum": ["strengthened", "weakened", "mixed", "no_material_change", "needs_review", "invalidation_candidate", "invalidated"]},
         "earnings_estimate_view": {"enum": ["up", "down", "mixed", "unchanged", "unknown"]},
         "valuation_view": {"enum": ["expansion", "compression", "mixed", "neutral", "unknown"]},
         "facts_used": {"$ref": "#/$defs/textList"}, "frameworks_used": {"$ref": "#/$defs/textList"},
-        "interpretation": {"type": "array", "items": {"$ref": "#/$defs/interpretation"}},
+        "core_judgment": {"$ref": "#/$defs/reasoningSection"},
+        "business_earnings": {"$ref": "#/$defs/reasoningSection"},
+        "price_positioning": {"$ref": "#/$defs/priceSection"},
+        "supply_analysis": {"$ref": "#/$defs/reasoningSection"},
+        "valuation_analysis": {"$ref": "#/$defs/reasoningSection"},
         "numeric_claims": {"type": "array", "items": {"$ref": "#/$defs/numericClaim"}},
-        "unknowns": {"$ref": "#/$defs/textList"}, "summary": {"type": "string"},
-        "holder_view": {"type": "string"}, "new_buyer_view": {"type": "string"},
-        "next_checks": {"$ref": "#/$defs/textList"}, "confidence": {"type": "number", "minimum": 0, "maximum": 1}
+        "priority_watch": {"$ref": "#/$defs/textList"}, "next_checks": {"$ref": "#/$defs/textList"},
+        "unknowns": {"$ref": "#/$defs/textList"}, "confidence": {"type": "number", "minimum": 0, "maximum": 1}
       }
     }
   }

@@ -5,6 +5,7 @@ from concurrent.futures import ThreadPoolExecutor
 from datetime import UTC, date, datetime, timedelta
 from pathlib import Path
 
+import pytest
 from sqlalchemy.pool import StaticPool
 from sqlmodel import SQLModel, Session, create_engine, select
 
@@ -356,26 +357,39 @@ def _valid_output(
     facts = stock["fact_catalog"]
     market_facts = packet["market_context"]["fact_catalog"]
     return {
-        "schema_version": "2",
+        "schema_version": "3",
         "packet_id": packet["packet_id"],
         "claim_id": claim_id,
         "analysis_policy_version": packet["analysis_policy_version"],
         "knowledge_version": packet["knowledge"]["version"],
         "knowledge_sha256": packet["knowledge"]["sha256"],
+        "chart_knowledge_version": packet["chart_knowledge"]["version"],
+        "chart_knowledge_sha256": packet["chart_knowledge"]["sha256"],
         "market": packet["market"],
         "assessment_date": packet["assessment_date"],
         "market_review": {
             "facts_used": [market_facts[0]["fact_id"]] if market_facts else [],
             "frameworks_used": ["macro_transmission"],
-            "interpretation": [
+            "core_judgment": {
+                "text": "Keep the market context separate from company fundamentals.",
+                "fact_ids": [market_facts[0]["fact_id"]] if market_facts else [],
+            },
+            "important_changes": [
                 {
                     "text": "The verified market inputs do not establish a new regime.",
                     "fact_ids": [market_facts[0]["fact_id"]] if market_facts else [],
                 }
             ],
+            "market_context": {
+                "text": "The verified market inputs remain mixed.",
+                "fact_ids": [market_facts[0]["fact_id"]] if market_facts else [],
+            },
+            "market_assumptions": {
+                "text": "Do not infer a new regime without additional verified evidence.",
+                "fact_ids": [market_facts[0]["fact_id"]] if market_facts else [],
+            },
             "numeric_claims": [],
             "unknowns": ["Direction remains uncertain."],
-            "summary": "Keep the market context separate from company fundamentals.",
         },
         "stock_reviews": [
             {
@@ -386,17 +400,31 @@ def _valid_output(
                 "valuation_view": "neutral",
                 "facts_used": [facts[0]["fact_id"]],
                 "frameworks_used": ["memory_valuation", "market_expectations"],
-                "interpretation": [
-                    {
-                        "text": "The verified order supports the existing demand thesis.",
-                        "fact_ids": [facts[0]["fact_id"]],
-                    }
-                ],
+                "core_judgment": {
+                    "text": "The evidence is supportive but does not require a status change.",
+                    "fact_ids": [facts[0]["fact_id"]],
+                },
+                "business_earnings": {
+                    "text": "The verified order supports the existing demand thesis.",
+                    "fact_ids": [facts[0]["fact_id"]],
+                },
+                "price_positioning": {
+                    "text": "Price context remains separate from company quality.",
+                    "new_observer_view": "Separate company quality from entry valuation.",
+                    "holder_view": "Track price confirmation without changing the thesis status.",
+                    "fact_ids": ["price:current"],
+                },
+                "supply_analysis": {
+                    "text": "Positioning alone does not change the business thesis.",
+                    "fact_ids": [],
+                },
+                "valuation_analysis": {
+                    "text": "Valuation remains a separate decision layer.",
+                    "fact_ids": ["valuation:current"],
+                },
                 "numeric_claims": [],
                 "unknowns": ["Delivery timing remains unknown."],
-                "summary": "The evidence is supportive but does not require a status change.",
-                "holder_view": "Track execution and margin delivery.",
-                "new_buyer_view": "Separate company quality from entry valuation.",
+                "priority_watch": ["Track execution and margin delivery."],
                 "next_checks": ["Confirm the next customer delivery update."],
                 "confidence": 0.8,
             }
@@ -646,19 +674,19 @@ def test_output_guardrails_reject_mismatch_hallucination_and_bad_basis(
         assert any("thesis_version_mismatch" in item for item in errors)
 
         hallucination = _valid_output(packet)
-        hallucination["stock_reviews"][0]["summary"] = "Revenue reached 999 billion."
+        hallucination["stock_reviews"][0]["core_judgment"]["text"] = "Revenue reached 999 billion."
         _, errors = validate_ai_review_output(session, packet, hallucination)
         assert any(
-            "numbers_without_provenance:summary:999" in item for item in errors
+            "numbers_without_provenance:core_judgment.text:999" in item for item in errors
         )
 
         modeled_as_consensus = _valid_output(packet)
-        modeled_as_consensus["stock_reviews"][0]["summary"] = "시장 컨센서스 EPS가 반영됐습니다."
+        modeled_as_consensus["stock_reviews"][0]["valuation_analysis"]["text"] = "시장 컨센서스 EPS가 반영됐습니다."
         _, errors = validate_ai_review_output(session, packet, modeled_as_consensus)
         assert any("modeled_forward_called_consensus" in item for item in errors)
 
         invalid_history = _valid_output(packet)
-        invalid_history["stock_reviews"][0]["summary"] = "과거 배수 기준으로 저평가입니다."
+        invalid_history["stock_reviews"][0]["valuation_analysis"]["text"] = "과거 배수 기준으로 저평가입니다."
         _, errors = validate_ai_review_output(session, packet, invalid_history)
         assert any("invalid_historical_comparison_used" in item for item in errors)
 
@@ -685,12 +713,10 @@ def test_numeric_claims_require_exact_semantic_provenance_and_allow_display_form
             item for item in stock["fact_catalog"] if item["fact_type"] == "earnings"
         )
         review["facts_used"].append(earnings["fact_id"])
-        review["interpretation"].append(
-            {
-                "text": "영업이익률 10%는 현재 수익성의 확인된 기준입니다.",
-                "fact_ids": [earnings["fact_id"]],
-            }
-        )
+        review["business_earnings"] = {
+            "text": "영업이익률 10%는 현재 수익성의 확인된 기준입니다.",
+            "fact_ids": [earnings["fact_id"]],
+        }
         review["numeric_claims"].append(
             {
                 "fact_id": earnings["fact_id"],
@@ -698,7 +724,7 @@ def test_numeric_claims_require_exact_semantic_provenance_and_allow_display_form
                 "value": 10.0,
                 "unit": "pct",
                 "semantic_type": "operating_margin",
-                "text_ref": "interpretation[1].text",
+                "text_ref": "business_earnings.text",
                 "usage": "영업이익률 10%",
             }
         )
@@ -711,12 +737,10 @@ def test_numeric_claims_require_exact_semantic_provenance_and_allow_display_form
         krw = _valid_output(packet)
         krw_review = krw["stock_reviews"][0]
         krw_review["facts_used"] = [contract["fact_id"]]
-        krw_review["interpretation"] = [
-            {
-                "text": "계약금액 3,190억원은 확인된 수주 규모입니다.",
-                "fact_ids": [contract["fact_id"]],
-            }
-        ]
+        krw_review["business_earnings"] = {
+            "text": "계약금액 3,190억원은 확인된 수주 규모입니다.",
+            "fact_ids": [contract["fact_id"]],
+        }
         krw_review["numeric_claims"] = [
             {
                 "fact_id": contract["fact_id"],
@@ -724,7 +748,7 @@ def test_numeric_claims_require_exact_semantic_provenance_and_allow_display_form
                 "value": 318_964_597_910,
                 "unit": "KRW",
                 "semantic_type": "contract_amount",
-                "text_ref": "interpretation[0].text",
+                "text_ref": "business_earnings.text",
                 "usage": "계약금액 3,190억원",
             }
         ]
@@ -734,12 +758,10 @@ def test_numeric_claims_require_exact_semantic_provenance_and_allow_display_form
         wrong_semantic = _valid_output(packet)
         wrong_review = wrong_semantic["stock_reviews"][0]
         wrong_review["facts_used"] = ["price:current"]
-        wrong_review["interpretation"] = [
-            {
-                "text": "매출 성장률은 100 USD입니다.",
-                "fact_ids": ["price:current"],
-            }
-        ]
+        wrong_review["business_earnings"] = {
+            "text": "매출 성장률은 100 USD입니다.",
+            "fact_ids": ["price:current"],
+        }
         wrong_review["numeric_claims"] = [
             {
                 "fact_id": "price:current",
@@ -747,7 +769,7 @@ def test_numeric_claims_require_exact_semantic_provenance_and_allow_display_form
                 "value": 100,
                 "unit": "USD",
                 "semantic_type": "share_price",
-                "text_ref": "interpretation[0].text",
+                "text_ref": "business_earnings.text",
                 "usage": "매출 성장률 100 USD",
             }
         ]
@@ -755,10 +777,10 @@ def test_numeric_claims_require_exact_semantic_provenance_and_allow_display_form
         assert any("numeric_usage_semantic_mismatch" in item for item in errors)
 
         unsupported_derived = _valid_output(packet)
-        unsupported_derived["stock_reviews"][0]["summary"] = "추정 성장률은 55%입니다."
+        unsupported_derived["stock_reviews"][0]["core_judgment"]["text"] = "추정 성장률은 55%입니다."
         _, errors = validate_ai_review_output(session, packet, unsupported_derived)
         assert any(
-            "numbers_without_provenance:summary:55" in item for item in errors
+            "numbers_without_provenance:core_judgment.text:55" in item for item in errors
         )
 
 
@@ -779,12 +801,10 @@ def test_percentage_rounding_uses_the_exact_capital_action_field(
         output = _valid_output(packet)
         review = output["stock_reviews"][0]
         review["facts_used"] = [capital["fact_id"]]
-        review["interpretation"] = [
-            {
-                "text": "처분 주식 비율 약 0.11%는 소규모입니다.",
-                "fact_ids": [capital["fact_id"]],
-            }
-        ]
+        review["core_judgment"] = {
+            "text": "처분 주식 비율 약 0.11%는 소규모입니다.",
+            "fact_ids": [capital["fact_id"]],
+        }
         review["numeric_claims"] = [
             {
                 "fact_id": capital["fact_id"],
@@ -792,7 +812,7 @@ def test_percentage_rounding_uses_the_exact_capital_action_field(
                 "value": 0.1095,
                 "unit": "pct",
                 "semantic_type": "share_ratio",
-                "text_ref": "interpretation[0].text",
+                "text_ref": "core_judgment.text",
                 "usage": "처분 주식 비율 약 0.11%",
             }
         ]
@@ -813,8 +833,8 @@ def test_numeric_claim_is_fenced_to_exact_prose_location(
         output = _valid_output(packet)
         review = output["stock_reviews"][0]
         review["facts_used"] = ["price:current"]
-        review["summary"] = "매출 성장률은 100%입니다."
-        review["holder_view"] = "현재가 100 USD에서는 실행 가격을 분리해 봅니다."
+        review["core_judgment"]["text"] = "매출 성장률은 100%입니다."
+        review["price_positioning"]["holder_view"] = "현재가 100 USD에서는 실행 가격을 분리해 봅니다."
         review["numeric_claims"] = [
             {
                 "fact_id": "price:current",
@@ -822,17 +842,17 @@ def test_numeric_claim_is_fenced_to_exact_prose_location(
                 "value": 100,
                 "unit": "USD",
                 "semantic_type": "share_price",
-                "text_ref": "holder_view",
+                "text_ref": "price_positioning.holder_view",
                 "usage": "현재가 100 USD",
             }
         ]
         _, errors = validate_ai_review_output(session, packet, output)
 
     assert any(
-        "numbers_without_provenance:summary:100" in error for error in errors
+        "numbers_without_provenance:core_judgment.text:100" in error for error in errors
     )
     assert not any(
-        "numbers_without_provenance:holder_view:100" in error for error in errors
+        "numbers_without_provenance:price_positioning.holder_view:100" in error for error in errors
     )
 
 
@@ -848,7 +868,7 @@ def test_numeric_claim_requires_valid_text_ref_usage_and_semantic_type(
         output = _valid_output(packet)
         review = output["stock_reviews"][0]
         review["facts_used"] = ["price:current"]
-        review["summary"] = "현재가 100 USD는 확인된 가격입니다."
+        review["core_judgment"]["text"] = "현재가 100 USD는 확인된 가격입니다."
         review["numeric_claims"] = [
             {
                 "fact_id": "price:current",
@@ -856,7 +876,7 @@ def test_numeric_claim_requires_valid_text_ref_usage_and_semantic_type(
                 "value": 100,
                 "unit": "USD",
                 "semantic_type": "revenue_yoy",
-                "text_ref": "holder_view",
+                "text_ref": "price_positioning.holder_view",
                 "usage": "현재가 100 USD",
             }
         ]
@@ -864,7 +884,7 @@ def test_numeric_claim_requires_valid_text_ref_usage_and_semantic_type(
 
     assert any("numeric_semantic_type_mismatch" in error for error in errors)
     assert any("numeric_usage_not_in_text_ref" in error for error in errors)
-    assert any("numbers_without_provenance:summary:100" in error for error in errors)
+    assert any("numbers_without_provenance:core_judgment.text:100" in error for error in errors)
 
 
 def test_numeric_display_rounding_rejects_unapproved_value(
@@ -884,7 +904,7 @@ def test_numeric_display_rounding_rejects_unapproved_value(
         output = _valid_output(packet)
         review = output["stock_reviews"][0]
         review["facts_used"] = [capital["fact_id"]]
-        review["summary"] = "처분 주식 비율 약 0.2%는 소규모입니다."
+        review["core_judgment"]["text"] = "처분 주식 비율 약 0.2%는 소규모입니다."
         review["numeric_claims"] = [
             {
                 "fact_id": capital["fact_id"],
@@ -892,14 +912,14 @@ def test_numeric_display_rounding_rejects_unapproved_value(
                 "value": 0.1095,
                 "unit": "pct",
                 "semantic_type": "share_ratio",
-                "text_ref": "summary",
+                "text_ref": "core_judgment.text",
                 "usage": "처분 주식 비율 약 0.2%",
             }
         ]
         _, errors = validate_ai_review_output(session, packet, output)
 
     assert any("numeric_usage_value_mismatch" in error for error in errors)
-    assert any("numbers_without_provenance:summary:0.2" in error for error in errors)
+    assert any("numbers_without_provenance:core_judgment.text:0.2" in error for error in errors)
 
 
 def test_market_numeric_prose_and_structural_dates_are_validated(
@@ -926,7 +946,7 @@ def test_market_numeric_prose_and_structural_dates_are_validated(
         output = _valid_output(packet)
         market_review = output["market_review"]
         market_review["facts_used"] = ["market:test:return"]
-        market_review["summary"] = "2026년 2분기 기준 시장 등락률은 -3.17%입니다."
+        market_review["core_judgment"]["text"] = "2026년 2분기 기준 시장 등락률은 -3.17%입니다."
         market_review["numeric_claims"] = [
             {
                 "fact_id": "market:test:return",
@@ -934,7 +954,7 @@ def test_market_numeric_prose_and_structural_dates_are_validated(
                 "value": -3.17,
                 "unit": "pct",
                 "semantic_type": "market_return_pct",
-                "text_ref": "summary",
+                "text_ref": "core_judgment.text",
                 "usage": "시장 등락률은 -3.17%",
             }
         ]
@@ -967,7 +987,7 @@ def test_signed_positive_market_numeric_prose_is_grounded(
         output = _valid_output(packet)
         market_review = output["market_review"]
         market_review["facts_used"] = ["market:test:positive-return"]
-        market_review["summary"] = "시장 등락률은 +0.67%였습니다."
+        market_review["core_judgment"]["text"] = "시장 등락률은 +0.67%였습니다."
         market_review["numeric_claims"] = [
             {
                 "fact_id": "market:test:positive-return",
@@ -975,7 +995,7 @@ def test_signed_positive_market_numeric_prose_is_grounded(
                 "value": 0.67,
                 "unit": "pct",
                 "semantic_type": "market_return_pct",
-                "text_ref": "summary",
+                "text_ref": "core_judgment.text",
                 "usage": "시장 등락률은 +0.67%",
             }
         ]
@@ -996,7 +1016,7 @@ def test_multiple_and_invented_derived_number_validation(
         output = _valid_output(packet)
         review = output["stock_reviews"][0]
         review["facts_used"] = ["valuation:current"]
-        review["summary"] = "현재 PER 20배는 확인됐지만 순이익률 10%는 제공되지 않았습니다."
+        review["valuation_analysis"]["text"] = "현재 PER 20배는 확인됐지만 순이익률 10%는 제공되지 않았습니다."
         review["numeric_claims"] = [
             {
                 "fact_id": "valuation:current",
@@ -1004,14 +1024,14 @@ def test_multiple_and_invented_derived_number_validation(
                 "value": 20,
                 "unit": "x",
                 "semantic_type": "trailing_pe",
-                "text_ref": "summary",
+                "text_ref": "valuation_analysis.text",
                 "usage": "현재 PER 20배",
             }
         ]
         _, errors = validate_ai_review_output(session, packet, output)
 
-    assert not any("summary:20" in error for error in errors)
-    assert any("numbers_without_provenance:summary:10" in error for error in errors)
+    assert not any("valuation_analysis.text:20" in error for error in errors)
+    assert any("numbers_without_provenance:valuation_analysis.text:10" in error for error in errors)
 
 
 def test_structural_count_whitelist_does_not_hide_business_quantity(
@@ -1025,12 +1045,12 @@ def test_structural_count_whitelist_does_not_hide_business_quantity(
         assert packet is not None
         output = _valid_output(packet)
         review = output["stock_reviews"][0]
-        review["summary"] = "핵심 요인 2가지를 봤지만 계약 수량 100개는 근거가 없습니다."
+        review["core_judgment"]["text"] = "핵심 요인 2가지를 봤지만 계약 수량 100개는 근거가 없습니다."
         review["numeric_claims"] = []
         _, errors = validate_ai_review_output(session, packet, output)
 
-    assert not any("summary:2" in error for error in errors)
-    assert any("numbers_without_provenance:summary:100" in error for error in errors)
+    assert not any("core_judgment.text:2" in error for error in errors)
+    assert any("numbers_without_provenance:core_judgment.text:100" in error for error in errors)
 
 
 def test_claim_fence_rejects_expired_primary_after_backup_reclaim(
@@ -1435,13 +1455,223 @@ def test_knowledge_v3_sources_decisions_and_safety_markers() -> None:
         assert marker not in text
 
 
-def test_knowledge_v3_policy_identity_starts_new_shadow_cohort() -> None:
-    assert ai_review_service.ANALYSIS_POLICY_VERSION == "daily-review-v3.2"
+def test_dual_knowledge_policy_identity_starts_v33_pilot_cohort() -> None:
+    assert ai_review_service.ANALYSIS_POLICY_VERSION == "daily-review-v3.3"
+    assert ai_review_service.OUTPUT_SCHEMA_VERSION == "3"
     manifest = knowledge_manifest()
     assert manifest["version"] == "3.0"
     assert manifest["sha256"] == (
         "559ad45e4dd86cb0aec9bb09b51a5dc816bf323e8c2b4fd050cf28960a5a9d18"
     )
+    chart_manifest = ai_review_service.chart_knowledge_manifest()
+    assert chart_manifest["version"] == "1.0"
+    assert chart_manifest["sha256"] == (
+        "beee64559831479168f1347c43d979391126926d73e2473ce837cefbf0ede19b"
+    )
+
+
+def test_chart_knowledge_source_and_runtime_are_byte_identical() -> None:
+    root = Path(__file__).resolve().parents[1]
+    source = root / "docs" / "knowledge" / "stock-chart-value-analysis-knowledge-v1.md"
+    runtime = (
+        root
+        / ".agents"
+        / "skills"
+        / "thesis-monitor-daily-review"
+        / "references"
+        / "stock-chart-value-analysis-knowledge-v1.md"
+    )
+    manifest = json.loads(
+        (
+            runtime.parent / "chart-knowledge-manifest.json"
+        ).read_text(encoding="utf-8")
+    )
+    payload = source.read_bytes()
+
+    assert payload == runtime.read_bytes()
+    assert hashlib.sha256(payload).hexdigest() == manifest["sha256"]
+    assert len(payload.splitlines()) == manifest["line_count"] == 2472
+    assert len(payload) == manifest["byte_count"] == 51132
+
+
+def test_packet_adds_fresh_chart_context_transition_and_numeric_provenance(
+    monkeypatch,
+    tmp_path: Path,
+) -> None:
+    _settings(monkeypatch, tmp_path)
+    with Session(_engine()) as session:
+        _seed(session)
+        thesis = session.exec(
+            select(InvestmentThesis).where(InvestmentThesis.ticker == "PACKETUS")
+        ).one()
+        thesis.price_rules = json.dumps(
+            {
+                "currency": "USD",
+                "basis": "adjusted_close",
+                "confirmation_price": 95.0,
+                "support_zone_low": 80.0,
+                "support_zone_high": 85.0,
+                "warning_price": 75.0,
+                "invalidation_price": 70.0,
+            }
+        )
+        assessments = session.exec(
+            select(ThesisAssessment)
+            .where(ThesisAssessment.ticker == "PACKETUS")
+            .order_by(ThesisAssessment.assessment_date)
+        ).all()
+        previous, current = assessments
+        previous.price_context = json.dumps(
+            {
+                "decision": {
+                    "current_price": 90.0,
+                    "currency": "USD",
+                    "price_as_of": (RUN_DATE - timedelta(days=1)).isoformat(),
+                    "price_state": "between_confirmation_and_support",
+                }
+            }
+        )
+        current.price_context = json.dumps(
+            {
+                "decision": {
+                    "current_price": 100.0,
+                    "currency": "USD",
+                    "price_as_of": RUN_DATE.isoformat(),
+                    "price_state": "above_confirmation",
+                },
+                "supply": {
+                    "available": True,
+                    "as_of_date": RUN_DATE.isoformat(),
+                    "foreign_net_buy_qty": 10,
+                    "foreign_net_buy_qty_5": 50,
+                    "foreign_net_buy_qty_20": -200,
+                    "primary_signal": "mixed",
+                },
+                "chart": {
+                    "available": True,
+                    "source": "ohlcv_analyst",
+                    "as_of_date": RUN_DATE.isoformat(),
+                    "quality": "fresh",
+                    "price_basis": "adjusted_close",
+                    "timeframes": {
+                        "daily": {
+                            "timeframe": "daily",
+                            "as_of_date": RUN_DATE.isoformat(),
+                            "quality": "fresh",
+                            "price_basis": "adjusted_close",
+                            "candle": {
+                                "open": 98.0,
+                                "high": 102.0,
+                                "low": 97.0,
+                                "close": 100.0,
+                                "volume": 1000,
+                            },
+                            "bollinger_upper": {"3_month": 101.0},
+                            "bollinger_distance_pct": {"3_month": -0.9901},
+                            "volume_ratio_20": 1.2,
+                            "rsi_14": 61.4,
+                            "macd": 3.2,
+                        },
+                        "weekly": {
+                            "timeframe": "weekly",
+                            "quality": "unavailable",
+                        },
+                    },
+                    "unavailable_fields": ["support_zones", "atr", "elliott_wave"],
+                },
+            }
+        )
+        session.add(thesis)
+        session.add(previous)
+        session.add(current)
+        session.commit()
+
+        packet = build_ai_review_packet(session, RUN_DATE, "us")
+
+    assert packet is not None
+    stock = packet["stocks"][0]
+    chart = stock["chart_context"]
+    assert chart["source"] == "ohlcv_analyst"
+    assert chart["price_transition"]["threshold_event"] == "confirmation_crossed"
+    assert chart["price_transition"]["retest_status"] == "awaiting_retest"
+    assert chart["price_transition"]["volume_confirmation"] == "above_20d_average"
+    assert chart["distance_from_stored_rules_pct"]["confirmation_distance_pct"] == (
+        pytest.approx(5.2632)
+    )
+    fact_ids = {item["fact_id"] for item in stock["fact_catalog"]}
+    assert {"chart:daily", "chart:stored_price_rules", "chart:price_transition"} <= fact_ids
+    assert "chart:weekly" not in fact_ids
+    semantics = {item["semantic_type"] for item in stock["numeric_registry"]}
+    assert {
+        "chart_close_price",
+        "bollinger_upper_price",
+        "bollinger_distance_pct",
+        "volume_ratio_20",
+        "rsi_14",
+        "stored_confirmation_price",
+        "foreign_net_buy_qty_5d",
+        "foreign_net_buy_qty_20d",
+    } <= semantics
+    assert stock["chart_knowledge_routing"]["available"] is True
+    assert "chart_bollinger" in stock["chart_knowledge_routing"]["required_frameworks"]
+
+
+def test_stale_chart_is_not_routed_or_exposed_as_numeric_fact(
+    monkeypatch,
+    tmp_path: Path,
+) -> None:
+    _settings(monkeypatch, tmp_path)
+    with Session(_engine()) as session:
+        _seed(session)
+        current = session.exec(
+            select(ThesisAssessment).where(
+                ThesisAssessment.ticker == "PACKETUS",
+                ThesisAssessment.assessment_date == RUN_DATE,
+            )
+        ).one()
+        current.price_context = json.dumps(
+            {
+                "decision": {"current_price": 100.0, "currency": "USD"},
+                "chart": {
+                    "available": True,
+                    "quality": "stale",
+                    "price_basis": "adjusted_close",
+                    "timeframes": {
+                        "daily": {
+                            "timeframe": "daily",
+                            "quality": "stale",
+                            "candle": {"close": 100.0},
+                            "rsi_14": 70.0,
+                        }
+                    },
+                },
+            }
+        )
+        session.add(current)
+        session.commit()
+
+        packet = build_ai_review_packet(session, RUN_DATE, "us")
+
+    assert packet is not None
+    stock = packet["stocks"][0]
+    assert stock["chart_knowledge_routing"]["available"] is False
+    assert stock["chart_knowledge_routing"]["required_frameworks"] == []
+    assert not any(
+        item["fact_type"] == "chart_timeframe" for item in stock["fact_catalog"]
+    )
+
+
+def test_price_transition_baseline_does_not_inherit_another_thesis_version() -> None:
+    transition = ai_review_service._price_transition(
+        {
+            "price_state": "above_confirmation",
+            "price_as_of": RUN_DATE.isoformat(),
+        },
+        {},
+    )
+
+    assert transition["previous_state"] == "baseline"
+    assert transition["threshold_event"] == "baseline"
 
 
 def test_numeric_semantics_fail_closed_for_unknown_and_disallowed_fields(
@@ -1476,7 +1706,7 @@ def test_numeric_semantics_fail_closed_for_unknown_and_disallowed_fields(
         output = _valid_output(packet)
         review = output["stock_reviews"][0]
         review["facts_used"] = ["event:mystery"]
-        review["summary"] = "미확인 비율 7은 사용할 수 없습니다."
+        review["core_judgment"]["text"] = "미확인 비율 7은 사용할 수 없습니다."
         review["numeric_claims"] = [
             {
                 "fact_id": "event:mystery",
@@ -1484,7 +1714,7 @@ def test_numeric_semantics_fail_closed_for_unknown_and_disallowed_fields(
                 "value": 7,
                 "unit": "number",
                 "semantic_type": unknown["semantic_type"],
-                "text_ref": "summary",
+                "text_ref": "core_judgment.text",
                 "usage": "미확인 비율 7",
             }
         ]
@@ -1517,7 +1747,7 @@ def test_numeric_semantics_reject_cross_metric_labels(
         output = _valid_output(packet)
         review = output["stock_reviews"][0]
         review["facts_used"] = ["positioning:test"]
-        review["summary"] = "기관 순매도 -100주는 확인된 수급입니다."
+        review["supply_analysis"]["text"] = "기관 순매도 -100주는 확인된 수급입니다."
         review["numeric_claims"] = [
             {
                 "fact_id": "positioning:test",
@@ -1525,7 +1755,7 @@ def test_numeric_semantics_reject_cross_metric_labels(
                 "value": -100,
                 "unit": "shares",
                 "semantic_type": "foreign_net_buy_qty",
-                "text_ref": "summary",
+                "text_ref": "supply_analysis.text",
                 "usage": "기관 순매도 -100주",
             }
         ]
@@ -1534,7 +1764,7 @@ def test_numeric_semantics_reject_cross_metric_labels(
         valuation = _valid_output(packet)
         valuation_review = valuation["stock_reviews"][0]
         valuation_review["facts_used"] = ["valuation:current"]
-        valuation_review["summary"] = "현재 PBR 20배는 확인된 배수입니다."
+        valuation_review["valuation_analysis"]["text"] = "현재 PBR 20배는 확인된 배수입니다."
         valuation_review["numeric_claims"] = [
             {
                 "fact_id": "valuation:current",
@@ -1542,7 +1772,7 @@ def test_numeric_semantics_reject_cross_metric_labels(
                 "value": 20,
                 "unit": "x",
                 "semantic_type": "trailing_pe",
-                "text_ref": "summary",
+                "text_ref": "valuation_analysis.text",
                 "usage": "현재 PBR 20배",
             }
         ]
@@ -1576,7 +1806,7 @@ def test_market_numeric_semantics_distinguish_futures_close_and_return(
         output = _valid_output(packet)
         review = output["market_review"]
         review["facts_used"] = ["market:test:futures"]
-        review["summary"] = "야간선물 등락률은 431.25%입니다."
+        review["core_judgment"]["text"] = "야간선물 등락률은 431.25%입니다."
         review["numeric_claims"] = [
             {
                 "fact_id": "market:test:futures",
@@ -1584,7 +1814,7 @@ def test_market_numeric_semantics_distinguish_futures_close_and_return(
                 "value": 431.25,
                 "unit": "points",
                 "semantic_type": "futures_close",
-                "text_ref": "summary",
+                "text_ref": "core_judgment.text",
                 "usage": "야간선물 등락률은 431.25%",
             }
         ]
@@ -1619,6 +1849,149 @@ def test_numeric_registry_distinguishes_all_night_futures_fields() -> None:
     }
 
 
+def test_chart_numeric_semantics_reject_indicator_and_price_label_swap(
+    monkeypatch,
+    tmp_path: Path,
+) -> None:
+    _settings(monkeypatch, tmp_path)
+    with Session(_engine()) as session:
+        _seed(session)
+        packet = build_ai_review_packet(session, RUN_DATE, "us")
+        assert packet is not None
+        stock = packet["stocks"][0]
+        stock["fact_catalog"].append(
+            {
+                "fact_id": "chart:daily",
+                "fact_type": "chart_timeframe",
+                "as_of_date": RUN_DATE.isoformat(),
+                "fields": {
+                    "currency": "USD",
+                    "bollinger_upper": {"3_month": 101.0},
+                    "rsi_14": 61.4,
+                },
+            }
+        )
+        stock["numeric_registry"] = ai_review_service._numeric_registry(
+            stock["fact_catalog"]
+        )
+        output = _valid_output(packet)
+        review = output["stock_reviews"][0]
+        review["facts_used"] = ["chart:daily"]
+        review["price_positioning"]["text"] = "RSI14는 101달러입니다."
+        review["numeric_claims"] = [
+            {
+                "fact_id": "chart:daily",
+                "field_path": "fields.bollinger_upper.3_month",
+                "value": 101.0,
+                "unit": "USD",
+                "semantic_type": "bollinger_upper_price",
+                "text_ref": "price_positioning.text",
+                "usage": "RSI14는 101달러",
+            }
+        ]
+
+        _, errors = validate_ai_review_output(session, packet, output)
+
+    assert any("numeric_usage_semantic_mismatch" in error for error in errors)
+
+
+def test_supply_horizon_registry_keeps_1d_5d_20d_semantics_distinct() -> None:
+    registry = ai_review_service._numeric_registry(
+        [
+            {
+                "fact_id": "positioning:horizons",
+                "fact_type": "positioning",
+                "fields": {
+                    "foreign_net_buy_qty": 10,
+                    "foreign_net_buy_qty_5": 50,
+                    "foreign_net_buy_qty_20": -200,
+                },
+            }
+        ]
+    )
+
+    assert {
+        item["field_path"]: item["semantic_type"] for item in registry
+    } == {
+        "fields.foreign_net_buy_qty": "foreign_net_buy_qty",
+        "fields.foreign_net_buy_qty_5": "foreign_net_buy_qty_5d",
+        "fields.foreign_net_buy_qty_20": "foreign_net_buy_qty_20d",
+    }
+
+
+def test_krw_compact_formatter_is_limited_to_amount_semantics() -> None:
+    registry = ai_review_service._numeric_registry(
+        [
+            {
+                "fact_id": "price:current",
+                "fact_type": "price",
+                "fields": {"current_price": 1_593_000, "currency": "KRW"},
+            },
+            {
+                "fact_id": "event:order",
+                "fact_type": "contract_award",
+                "fields": {
+                    "contract_amount": {"value": 319_000_000_000, "currency": "KRW"}
+                },
+            },
+        ]
+    )
+    price = next(item for item in registry if item["fact_id"] == "price:current")
+    order = next(item for item in registry if item["fact_id"] == "event:order")
+
+    assert "0억원" not in price["approved_display_variants"]
+    assert "1,593,000원" in price["approved_display_variants"]
+    assert "3,190억원" in order["approved_display_variants"]
+
+
+def test_ratio_multiple_formatter_allows_backend_approved_rounding() -> None:
+    registry = ai_review_service._numeric_registry(
+        [
+            {
+                "fact_id": "chart:daily",
+                "fact_type": "chart_timeframe",
+                "fields": {"volume_ratio_20": 0.8053185211136238},
+            }
+        ]
+    )
+
+    assert "0.81배" in registry[0]["approved_display_variants"]
+
+
+def test_chart_and_supply_horizon_labels_are_structural_not_financial_values() -> None:
+    text = "5일 외국인 순매수 100주와 20일 거래량비 0.81배, 3개월 상단선"
+    occurrences = ai_review_service._prose_number_occurrences(text)
+
+    assert [item[2] for item in occurrences] == ["100", "0.81"]
+    assert ai_review_service._provenance_tokens(text) == {"100", "0.81"}
+
+
+def test_quantitative_grounding_flags_vague_sections_when_safe_numbers_exist(
+    monkeypatch,
+    tmp_path: Path,
+) -> None:
+    _settings(monkeypatch, tmp_path)
+    with Session(_engine()) as session:
+        _seed(session)
+        packet = build_ai_review_packet(session, RUN_DATE, "us")
+        assert packet is not None
+        raw_output = _valid_output(packet)
+        raw_output["stock_reviews"][0]["core_judgment"]["text"] = (
+            "강한 실적과 프리미엄을 함께 확인해야 합니다."
+        )
+        output, errors = validate_ai_review_output(session, packet, raw_output)
+
+    assert errors == []
+    assert output is not None
+    report = ai_review_service.quantitative_grounding_report(packet, output)
+    row = report["stocks"][0]
+    assert report["status"] == "flagged"
+    assert "vague_quantitative_language" in row["flags"]
+    assert "insufficient_quantitative_grounding:core" in row["flags"]
+    assert "insufficient_quantitative_grounding:earnings" in row["flags"]
+    assert "insufficient_quantitative_grounding:valuation" in row["flags"]
+
+
 def test_signed_supply_value_and_audit_only_denominator_are_fail_closed(
     monkeypatch,
     tmp_path: Path,
@@ -1643,7 +2016,7 @@ def test_signed_supply_value_and_audit_only_denominator_are_fail_closed(
         valid = _valid_output(packet)
         valid_review = valid["stock_reviews"][0]
         valid_review["facts_used"] = ["positioning:signed"]
-        valid_review["summary"] = "외국인 순매도 -100주는 확인된 수급입니다."
+        valid_review["supply_analysis"]["text"] = "외국인 순매도 -100주는 확인된 수급입니다."
         valid_review["numeric_claims"] = [
             {
                 "fact_id": "positioning:signed",
@@ -1651,23 +2024,43 @@ def test_signed_supply_value_and_audit_only_denominator_are_fail_closed(
                 "value": -100,
                 "unit": "shares",
                 "semantic_type": "foreign_net_buy_qty",
-                "text_ref": "summary",
+                "text_ref": "supply_analysis.text",
                 "usage": "외국인 순매도 -100주",
             }
         ]
         _, valid_errors = validate_ai_review_output(session, packet, valid)
 
-        flipped = _valid_output(packet)
-        flipped_review = flipped["stock_reviews"][0]
-        flipped_review["facts_used"] = ["positioning:signed"]
-        flipped_review["summary"] = "외국인 순매도 100주는 확인된 수급입니다."
-        flipped_review["numeric_claims"] = [
+        absolute_sell = _valid_output(packet)
+        absolute_sell_review = absolute_sell["stock_reviews"][0]
+        absolute_sell_review["facts_used"] = ["positioning:signed"]
+        absolute_sell_review["supply_analysis"]["text"] = (
+            "외국인 순매도 100주는 확인된 수급입니다."
+        )
+        absolute_sell_review["numeric_claims"] = [
             {
                 **valid_review["numeric_claims"][0],
                 "usage": "외국인 순매도 100주",
             }
         ]
-        _, flipped_errors = validate_ai_review_output(session, packet, flipped)
+        _, absolute_sell_errors = validate_ai_review_output(
+            session, packet, absolute_sell
+        )
+
+        wrong_direction = _valid_output(packet)
+        wrong_direction_review = wrong_direction["stock_reviews"][0]
+        wrong_direction_review["facts_used"] = ["positioning:signed"]
+        wrong_direction_review["supply_analysis"]["text"] = (
+            "외국인 순매수 100주는 확인된 수급입니다."
+        )
+        wrong_direction_review["numeric_claims"] = [
+            {
+                **valid_review["numeric_claims"][0],
+                "usage": "외국인 순매수 100주",
+            }
+        ]
+        _, wrong_direction_errors = validate_ai_review_output(
+            session, packet, wrong_direction
+        )
 
         capital = next(
             item
@@ -1677,7 +2070,7 @@ def test_signed_supply_value_and_audit_only_denominator_are_fail_closed(
         denied = _valid_output(packet)
         denied_review = denied["stock_reviews"][0]
         denied_review["facts_used"] = [capital["fact_id"]]
-        denied_review["summary"] = "분모 주식 수 29,700,000주는 audit 전용입니다."
+        denied_review["core_judgment"]["text"] = "분모 주식 수 29,700,000주는 audit 전용입니다."
         denied_review["numeric_claims"] = [
             {
                 "fact_id": capital["fact_id"],
@@ -1685,14 +2078,18 @@ def test_signed_supply_value_and_audit_only_denominator_are_fail_closed(
                 "value": 29_700_000,
                 "unit": "shares",
                 "semantic_type": "share_denominator",
-                "text_ref": "summary",
+                "text_ref": "core_judgment.text",
                 "usage": "분모 주식 수 29,700,000주",
             }
         ]
         _, denied_errors = validate_ai_review_output(session, packet, denied)
 
-    assert valid_errors == []
-    assert any("numeric_usage_value_mismatch" in error for error in flipped_errors)
+        assert valid_errors == []
+        assert absolute_sell_errors == []
+        assert any(
+            "numeric_usage_direction_mismatch" in error
+            for error in wrong_direction_errors
+        )
     assert any("numeric_semantic_not_supported" in error for error in denied_errors)
 
 
@@ -1756,10 +2153,10 @@ def test_v32_packet_records_ready_shadow_cohort_metadata(
         packet = build_ai_review_packet(session, RUN_DATE, "us")
 
     assert packet is not None
-    assert packet["analysis_policy_version"] == "daily-review-v3.2"
+    assert packet["analysis_policy_version"] == "daily-review-v3.3"
     assert packet["ready_for_ai"] is True
     assert packet["shadow_cohort"] == {
-        "policy_version": "daily-review-v3.2",
+        "policy_version": "daily-review-v3.3",
         "eligible": True,
         "profile_gate": {
             "active_total": 1,
@@ -2015,13 +2412,11 @@ def test_shadow_comparison_flags_unsupported_quality_claims(
         packet = json.loads(Path(result.path).read_text(encoding="utf-8"))
         output = _valid_output(packet, claim_id=claim.claim_id)
         review = output["stock_reviews"][0]
-        review["interpretation"] = [
-            {
-                "text": "Free cash flow improved even though the packet has no FCF fact.",
-                "fact_ids": review["facts_used"],
-            }
-        ]
-        review["summary"] = "A low PER alone proves undervaluation."
+        review["business_earnings"] = {
+            "text": "Free cash flow improved even though the packet has no FCF fact.",
+            "fact_ids": review["facts_used"],
+        }
+        review["core_judgment"]["text"] = "A low PER alone proves undervaluation."
         Path(claim.temp_output_path).write_text(json.dumps(output), encoding="utf-8")
         completed = finalize_ai_review_output(
             session, claim.packet_id, claim_id=claim.claim_id
@@ -2062,7 +2457,7 @@ def test_skill_fixture_and_output_schema_are_present() -> None:
     )
     skill = (skill_root / "SKILL.md").read_text(encoding="utf-8")
 
-    assert schema["properties"]["schema_version"] == {"const": "2"}
+    assert schema["properties"]["schema_version"] == {"const": "3"}
     assert "claim_id" in schema["required"]
     assert "knowledge_sha256" in schema["required"]
     numeric_claim = schema["$defs"]["numericClaim"]
@@ -2072,4 +2467,7 @@ def test_skill_fixture_and_output_schema_are_present() -> None:
     assert "Do not browse the web" in skill
     assert "data/ai_review" in skill
     assert "knowledge-index.md" in skill
+    assert "chart-knowledge-index.md" in skill
+    assert "stock-chart-value-analysis-knowledge-v1.md" in skill
+    assert "schema-3 reasoning sections" in skill
     assert "--claim-id" in skill

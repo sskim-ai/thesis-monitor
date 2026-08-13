@@ -312,12 +312,56 @@ class InvestorSupplyContext(BaseModel):
     signals: list[str] = Field(default_factory=list)
 
 
+class ChartCandleContext(BaseModel):
+    open: float | None = None
+    high: float | None = None
+    low: float | None = None
+    close: float | None = None
+    volume: float | None = None
+    trading_value: float | None = None
+    body_pct: float | None = None
+    range_pct: float | None = None
+    close_location_pct: float | None = None
+    upper_wick_pct: float | None = None
+    lower_wick_pct: float | None = None
+
+
+class ChartTimeframeContext(BaseModel):
+    timeframe: str
+    as_of_date: str | None = None
+    quality: str = "unavailable"
+    price_basis: str = "adjusted"
+    candle: ChartCandleContext = Field(default_factory=ChartCandleContext)
+    period_return_pct: float | None = None
+    range_position_pct: float | None = None
+    bollinger_upper: dict[str, float] = Field(default_factory=dict)
+    bollinger_distance_pct: dict[str, float] = Field(default_factory=dict)
+    volume_ratio_20: float | None = None
+    rsi_14: float | None = None
+    macd: float | None = None
+    macd_signal: float | None = None
+    macd_histogram: float | None = None
+
+
+class ChartContext(BaseModel):
+    available: bool = False
+    source: str = "ohlcv_analyst"
+    as_of_date: str | None = None
+    quality: str = "unavailable"
+    price_basis: str = "adjusted"
+    timeframes: dict[str, ChartTimeframeContext] = Field(default_factory=dict)
+    dynamic_levels: dict[str, object] = Field(default_factory=dict)
+    unavailable_fields: list[str] = Field(default_factory=list)
+    warnings: list[str] = Field(default_factory=list)
+
+
 class PriceContext(BaseModel):
     available: bool = False
     periods: dict[str, PricePeriodSummary] = Field(default_factory=dict)
     rule_evaluation: PriceRuleEvaluation | None = None
     decision: PriceDecisionContext = Field(default_factory=PriceDecisionContext)
     supply: InvestorSupplyContext = Field(default_factory=InvestorSupplyContext)
+    chart: ChartContext = Field(default_factory=ChartContext)
     warnings: list[str] = Field(default_factory=list)
     daily_history: list[HistoricalPricePoint] = Field(default_factory=list, exclude=True)
     valuation_history: list[HistoricalPricePoint] = Field(default_factory=list, exclude=True)

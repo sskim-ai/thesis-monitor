@@ -68,7 +68,8 @@ new claim. This guarantee assumes the configured Mac mini local POSIX filesystem
 filesystem with unknown lock semantics.
 
 Files ending in `.json.tmp` are incomplete and are never considered completed. Every output records
-the analysis policy, Knowledge version/checksum, frameworks used, fact references, and numeric claims.
+the analysis policy, both Knowledge versions/checksums, frameworks used, fact references, and numeric
+claims.
 
 ## Five-Day Single-Delivery Pilot
 
@@ -86,10 +87,12 @@ Once AI-assisted delivery has started, Telegram failures resume that same render
 switch to a full deterministic report mid-message.
 
 Install `ops/com.seungsoo.thesis-monitor.ai-review-fallback.plist` for the two local fallback checks.
-Exact deterministic, AI, comparison, rendered Telegram, and delivery-result artifacts are stored in
-`data/ai_review/pilot/history`. Only AI-assisted sessions whose validation, delivery, and archive all
-complete increment the market's success counter. Each market returns to deterministic delivery after
-five successful packets; this does not activate Production Assist.
+Exact deterministic, AI, comparison, chart context, price transition, quantitative-grounding,
+rendered Telegram, and delivery-result artifacts are stored in `data/ai_review/pilot/history`. Only
+AI-assisted sessions whose validation, delivery, and archive all complete increment the market's
+success counter. Pilot v1 history is preserved. Integrated Pilot v2 uses a separate state file and
+starts each market at 0/5; each market returns to deterministic delivery after five successful v2
+packets. This does not activate Production Assist.
 
 ## Phase 3 Review Contract
 
@@ -112,7 +115,7 @@ Numeric prose also fails closed by semantic registry. Only entries marked `regis
 futures each have separate labels and units; unknown or audit-only semantics cannot use a generic
 label fallback.
 
-The `daily-review-v3.2` Shadow cohort starts only after active-company profile coverage, routing smoke,
+The `daily-review-v3.2` Shadow cohort started only after active-company profile coverage, routing smoke,
 numeric-semantic coverage, Scheduled Task activation, and exact operational-checkout revision are
 verified. Earlier results remain history but do not count toward the new 5-10 trading-day quality
 window.
@@ -128,6 +131,34 @@ The first command checks the dynamically discovered active universe; the second 
 identity fields and atomic provenance sidecars. Rerun after a confirmed merger, spin-off, or segment
 reorganization, or when a profile's `verified_at` warrants review. A thesis-version change or news
 theme is not a profile-refresh trigger.
+
+## Phase 4 Dual-Knowledge Review Contract
+
+Output schema `3` and analysis policy `daily-review-v3.3` keep Investment Knowledge v3 as the
+fundamental, valuation, and data-safety authority and add Stock Chart & Value Analysis Knowledge v1 as
+a separate OHLCV interpretation reference. The two source files are never merged. Backend validated
+facts and Investment Knowledge safety rules take precedence over OHLCV outputs and chart examples.
+Codex does not calculate indicators, fair value, target prices, support, resistance, Elliott waves,
+Fibonacci levels, ATR, or risk/reward.
+
+The OHLCV Analyst supplies adjusted daily, weekly, and monthly bars plus available Bollinger bands,
+volume ratio, RSI, MACD, and Korean investor-flow horizons. AI packets contain compact chart summaries,
+not raw bar history. Unavailable support/resistance, box, ATR, Elliott, Fibonacci, risk/reward, and
+chart-state fields remain explicit unknowns. Stale chart timeframes are not routed into analysis or
+registered as prose-eligible numeric facts. Adjusted chart prices remain separate from unadjusted
+historical-valuation prices.
+
+Price-rule transitions are deterministic and thesis-version isolated. A crossed confirmation price
+advances the review to hold/retest/volume/supply questions without changing the business thesis.
+Persistent thesis rules are not rewritten by Codex. Korean positioning remains split into 1-day,
+5-day, and 20-day semantics; flow changes never alter the fundamental status by themselves.
+
+Schema 3 requires integrated sections for core judgment, business and earnings, price and positioning,
+supply, valuation, priority watches, next checks, and material unknowns. Safe numbers stay bound to
+their exact fact, semantic, text location, and approved display. Quantitative-grounding telemetry flags
+sections that avoid available evidence, but missing data never causes invented numbers. Integrated
+Pilot v2 renders deterministic status and verified facts with validated AI interpretation once; it
+does not append the full deterministic report below the AI narrative.
 
 ## Security Boundary
 

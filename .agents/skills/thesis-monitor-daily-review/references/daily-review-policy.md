@@ -48,6 +48,14 @@ Use canonical `fact_catalog` objects only. Link every interpretation to `fact_id
 
 Every investment-related number in prose requires a `numeric_claims` record tied to the exact `fact_id`, `field_path`, `semantic_type`, and prose `text_ref`. Preserve the backend value and unit; display-only KRW compaction and approved percentage rounding are allowed. A claim covers only its exact prose occurrence, and a number found elsewhere in the packet or another prose field is not interchangeable with the claimed semantic field.
 
+## Dual Knowledge and Chart Boundary
+
+Investment Knowledge v3 remains the safety, company, earnings, valuation, expectation, and monitoring authority. Chart Knowledge v1 is a separate OHLCV interpretation reference. Backend-validated facts rank first, then Investment Knowledge safety, OHLCV Analyst outputs, Chart Knowledge interpretation, and finally examples.
+
+Do not compute technical indicators in the review task. Missing support, resistance, ATR, Elliott, Fibonacci, risk/reward, or state-machine output remains unavailable. Adjusted technical prices and unadjusted historical-valuation prices are separate bases.
+
+Output schema 3 integrates deterministic facts and AI reasoning by section. Do not append the full deterministic report after the AI narrative. Keep deterministic official status and hard warnings, use numeric evidence when eligible, and place holder and new-observer views inside price positioning.
+
 Numeric prose is allowlisted. Use only registry entries with `registered=true` and `prose_allowed=true`, match an approved label for that exact semantic, and use an approved display variant. Unknown semantics, audit-only denominators, and fields with unverified currency or unit stay out of narrative prose.
 
 Use structured company identity for the primary industry framework. Thesis themes, macro exposure, customer CAPEX, and secondary segments may add only routed secondary frameworks; they never replace a high-confidence primary framework. When structured identity remains ambiguous, use the general framework instead of forcing a specialized industry classification.

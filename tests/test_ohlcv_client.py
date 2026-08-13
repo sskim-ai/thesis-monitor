@@ -248,6 +248,141 @@ def test_investor_supply_survives_price_context_json_round_trip() -> None:
 
 
 @pytest.mark.anyio
+async def test_chart_context_uses_provider_indicators_and_preserves_price_basis() -> None:
+    def handler(request: httpx.Request) -> httpx.Response:
+        period = request.url.params["periods"]
+        adjusted = request.url.params["adjusted"]
+        if adjusted == "false":
+            return httpx.Response(
+                200,
+                json={"periods": {period: [{"date": "2026-08-12", "close": 125}]}},
+            )
+        indicators = {
+            "VOLUME_RATIO_20": 1.25,
+            "RSI14": 61.4,
+            "MACD": 3.2,
+            "MACD_SIGNAL": 2.7,
+            "MACD_HIST": 0.5,
+        }
+        if period == "daily":
+            indicators.update(
+                {
+                    "BB_36_1.541_UPPER": 110,
+                    "BB_60_1.541_UPPER": 112,
+                    "BB_50_2.25_UPPER": 114,
+                    "BB_144_1.541_UPPER": 116,
+                    "BB_288_1.541_UPPER": 118,
+                    "BB_300_3.33_UPPER": 120,
+                }
+            )
+        return httpx.Response(
+            200,
+            json={
+                "periods": {
+                    period: [
+                        {
+                            "date": "2026-08-12",
+                            "open": 100,
+                            "high": 110,
+                            "low": 95,
+                            "close": 105,
+                            "volume": 1_000,
+                            "value": 105_000,
+                            "indicators": indicators,
+                        }
+                    ]
+                }
+            },
+        )
+
+    context = await OhlcvClient(
+        transport=httpx.MockTransport(handler)
+    ).fetch_price_context(
+        "005930",
+        as_of=datetime(2026, 8, 12, 16, 5, tzinfo=ZoneInfo("Asia/Seoul")),
+    )
+
+    daily = context.chart.timeframes["daily"]
+    assert context.chart.available is True
+    assert context.chart.source == "ohlcv_analyst"
+    assert context.chart.quality == "fresh"
+    assert context.chart.price_basis == "adjusted_close"
+    assert daily.candle.body_pct == 5.0
+    assert daily.candle.range_pct == 15.0
+    assert daily.candle.close_location_pct == pytest.approx(66.666667)
+    assert daily.bollinger_upper["3_month"] == 110
+    assert daily.bollinger_upper["54_month"] == 120
+    assert daily.bollinger_distance_pct["3_month"] == pytest.approx(-4.5455)
+    assert daily.volume_ratio_20 == 1.25
+    assert daily.rsi_14 == 61.4
+    assert daily.macd_histogram == 0.5
+    assert context.valuation_history[0].close == 125
+    assert "support_zones" in context.chart.unavailable_fields
+    assert "atr" in context.chart.unavailable_fields
+    assert "elliott_wave" in context.chart.unavailable_fields
+
+
+@pytest.mark.anyio
+async def test_chart_context_marks_stale_daily_and_keeps_partial_timeframes() -> None:
+    def handler(request: httpx.Request) -> httpx.Response:
+        period = request.url.params["periods"]
+        bars = [] if period in {"weekly", "monthly"} else [
+            {
+                "date": "2026-08-11",
+                "open": 100,
+                "high": 101,
+                "low": 99,
+                "close": 100,
+                "volume": 1_000,
+                "indicators": {},
+            }
+        ]
+        return httpx.Response(200, json={"periods": {period: bars}})
+
+    context = await OhlcvClient(
+        transport=httpx.MockTransport(handler)
+    ).fetch_price_context(
+        "005930",
+        as_of=datetime(2026, 8, 12, 16, 5, tzinfo=ZoneInfo("Asia/Seoul")),
+    )
+
+    assert context.chart.quality == "stale"
+    assert context.chart.timeframes["daily"].quality == "stale"
+    assert context.chart.timeframes["weekly"].quality == "unavailable"
+    assert context.chart.timeframes["monthly"].quality == "unavailable"
+
+
+def test_chart_context_survives_price_context_json_round_trip() -> None:
+    original = PriceContext.model_validate(
+        {
+            "available": True,
+            "chart": {
+                "available": True,
+                "source": "ohlcv_analyst",
+                "as_of_date": "2026-08-12",
+                "quality": "fresh",
+                "price_basis": "adjusted_close",
+                "timeframes": {
+                    "daily": {
+                        "timeframe": "daily",
+                        "as_of_date": "2026-08-12",
+                        "quality": "fresh",
+                        "candle": {"close": 105},
+                        "rsi_14": 61.4,
+                    }
+                },
+            },
+        }
+    )
+
+    restored = PriceContext.model_validate_json(original.model_dump_json())
+
+    assert restored.chart.source == "ohlcv_analyst"
+    assert restored.chart.price_basis == "adjusted_close"
+    assert restored.chart.timeframes["daily"].rsi_14 == 61.4
+
+
+@pytest.mark.anyio
 async def test_nested_ohlcv_supply_contract_is_mapped_from_latest_daily_bar() -> None:
     def handler(request: httpx.Request) -> httpx.Response:
         period = request.url.params["periods"]

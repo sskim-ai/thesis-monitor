@@ -19,15 +19,17 @@ Use this skill only for immutable packets under `data/ai_review/inbox`. Do not b
 
    Use `--market kr` for a Korean close review. If the result is `no_pending_packet`, stop without modifying anything.
 
-2. Read the returned `packet_path`, this skill, [daily-review-policy.md](references/daily-review-policy.md), [knowledge-index.md](references/knowledge-index.md), and [output-schema.json](references/output-schema.json). Follow each stock's `knowledge_routing` and read the routed sections from [the full Knowledge mirror](references/investment-thesis-analysis-monitoring-knowledge.md). Do not replace the routed source with general model knowledge.
+2. Read the returned `packet_path`, this skill, [daily-review-policy.md](references/daily-review-policy.md), [knowledge-index.md](references/knowledge-index.md), [chart-knowledge-index.md](references/chart-knowledge-index.md), and [output-schema.json](references/output-schema.json). Follow each stock's `knowledge_routing` against [Investment Knowledge v3](references/investment-thesis-analysis-monitoring-knowledge.md). When `chart_knowledge_routing.available=true`, also follow that route against [Chart Knowledge v1](references/stock-chart-value-analysis-knowledge-v1.md). Do not replace either routed source with general model knowledge.
 
-3. Review the market once and every stock in `stocks`. Use only `fact_id` values from each `fact_catalog` in `facts_used`. Record the semantic framework names actually applied in `frameworks_used`. Treat absent information as unknown.
+3. Review the market once and every stock in `stocks`. Use only `fact_id` values from each `fact_catalog` in `facts_used`. Record the semantic framework names actually applied in `frameworks_used`. Treat absent information as unknown. Investment Knowledge v3 and backend facts take precedence over Chart Knowledge examples or valuation shortcuts.
 
-4. Every interpretation item must contain concise `text` and the supporting `fact_ids`. Every investment-related number in prose must also have a `numeric_claims` entry that exactly identifies its `fact_id`, `field_path`, backend `value`, `unit`, `semantic_type`, exact prose `text_ref`, and rendered `usage`. Use a number only when its registry entry has `registered=true` and `prose_allowed=true`, and use one of its approved semantic labels and display variants. Copy the registry's raw value even when the prose uses an approved compact or rounded display. Do not calculate a new value.
+4. Fill the schema-3 reasoning sections. Each section must contain concise `text` and supporting `fact_ids`. Every investment-related number in prose must also have a `numeric_claims` entry that exactly identifies its `fact_id`, `field_path`, backend `value`, `unit`, `semantic_type`, exact prose `text_ref`, and rendered `usage`. Use a number only when its registry entry has `registered=true` and `prose_allowed=true`, and use one of its approved semantic labels and display variants. Copy the registry's raw value even when the prose uses an approved compact or rounded display. Do not calculate a new value.
 
-5. Write one complete JSON document to the returned claim-specific `temp_output_path`. Set `claim_id` from the claim response and copy the packet's Knowledge version and checksum. Do not write outside `data/ai_review`.
+5. When safe anchors are available, use 2-4 decisive numbers in `core_judgment`, at least two earnings anchors in `business_earnings`, current price plus a relevant stored rule or provided chart indicator in `price_positioning`, at least two available horizons in `supply_analysis`, and at least two relevant multiples or relative metrics in `valuation_analysis`. Missing data never authorizes invention. Explain why missing OCF, capex, FCF, inventory, or ROIC would change the judgment instead of merely saying that cash generation needs checking.
 
-6. Validate and finalize it:
+6. Write one complete JSON document to the returned claim-specific `temp_output_path`. Set `claim_id` from the claim response and copy both Knowledge versions and checksums. Do not write outside `data/ai_review`.
+
+7. Validate and finalize it:
 
    ```bash
    .venv/bin/python -m app.jobs.ai_review validate --packet-id <packet-id> --claim-id <claim-id> --policy-version <analysis-policy-version>
@@ -37,7 +39,7 @@ Use this skill only for immutable packets under `data/ai_review/inbox`. Do not b
 
 ## Output Rules
 
-- Keep `schema_version`, `packet_id`, `analysis_policy_version`, `knowledge_version`, `knowledge_sha256`, `market`, and `assessment_date` identical to the packet, and use the active claim's `claim_id`.
+- Keep `schema_version`, `packet_id`, `analysis_policy_version`, `knowledge_version`, `knowledge_sha256`, `chart_knowledge_version`, `chart_knowledge_sha256`, `market`, and `assessment_date` identical to the packet, and use the active claim's `claim_id`.
 - Produce exactly one stock review for every packet stock and no others.
 - Separate concise facts used, interpretation, and unknowns. Do not output hidden reasoning or chain-of-thought.
 - Explain why facts matter, what is noise, what expectations may already reflect, and what number or event should be checked next.
@@ -46,6 +48,10 @@ Use this skill only for immutable packets under `data/ai_review/inbox`. Do not b
 - Never expose internal parser/provider fields. Never call a modeled estimate market or analyst consensus.
 - If historical comparability is withheld, do not use a historical percentile or range.
 - Apply the routed industry framework. A low peak-cycle PER alone is not a memory valuation conclusion; insurance does not use SaaS metrics; preliminary earnings do not prove FCF, inventory, ROIC, or balance-sheet changes.
+- Use `chart_context` only when its quality permits. Interpret OHLCV Analyst values; never calculate RSI, MACD, Bollinger, support, resistance, ATR, Fibonacci, Elliott counts, target, stop, or risk/reward yourself.
+- Keep stored thesis price rules separate from dynamic chart levels. A price threshold crossing is price confirmation, not an automatic business-thesis change. Once confirmation is crossed, discuss hold/retest, volume, positioning, and subsequent fundamental evidence.
+- Treat 1-day supply as current momentum, 5-day supply as short-term positioning, and 20-day supply as medium-term positioning. Explain horizon divergence without changing the fundamental status from flows alone.
+- Chart state enums and risk/reward references are analytical context, not buy or sell commands. Chart Knowledge fair-value formulas never override backend valuation or Investment Knowledge v3 safety.
 - Treat `knowledge_routing.industry_routing.primary_framework` as company identity. When routing confidence is high, include it in `frameworks_used`; use only listed secondary frameworks for thematic or segment context. Thesis wording must not replace the primary industry framework.
 - Use `company_profile` provenance and quality as an identity guardrail. `partial` or `ambiguous` profile data may reduce routing confidence; never infer a missing classification from the ticker, company name, or thesis theme.
 - Resolve every `numeric_claims[].text_ref` to the exact prose field containing `usage`. One claim cannot cover the same number in another prose field, and a fact with the same numeric value cannot support a different semantic meaning.

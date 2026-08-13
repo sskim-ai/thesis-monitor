@@ -1,0 +1,11 @@
+{
+  "byte_count": 51132,
+  "knowledge_name": "Stock Chart & Value Analysis Knowledge",
+  "knowledge_version": "1.0",
+  "line_count": 2472,
+  "mirror_path": ".agents/skills/thesis-monitor-daily-review/references/stock-chart-value-analysis-knowledge-v1.md",
+  "sha256": "beee64559831479168f1347c43d979391126926d73e2473ce837cefbf0ede19b",
+  "source": "User-provided canonical attachment",
+  "source_path": "docs/knowledge/stock-chart-value-analysis-knowledge-v1.md",
+  "source_role": "ohlcv_analysis_reference"
+}

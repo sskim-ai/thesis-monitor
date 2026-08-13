@@ -17,6 +17,7 @@ from sqlmodel import Session, select
 from app.config import get_settings
 from app.models.thesis import NotificationDelivery
 from app.schemas.ai_review import AIDailyReviewOutput, AIMarketReview, AIStockReview
+from app.services.ai_review_service import quantitative_grounding_report
 from app.services.notification_service import (
     AI_ASSISTED_PILOT_METADATA_KEY,
     TELEGRAM_DELIVERY_METADATA_KEY,
@@ -27,7 +28,8 @@ from app.services.notification_service import (
 
 KST = ZoneInfo("Asia/Seoul")
 PILOT_MODE = "ai_assisted_single_delivery"
-PILOT_VERSION = "ai-assisted-pilot-v1"
+PILOT_VERSION = "ai-assisted-pilot-v2"
+PILOT_RENDERER_VERSION = "ai-assisted-pilot-renderer-v2"
 PILOT_MARKERS = {"us": "__DAILY_DIGEST__", "kr": "__DAILY_DIGEST_KR__"}
 PilotMarket = Literal["us", "kr"]
 
@@ -82,8 +84,12 @@ def _read_json(path: Path) -> dict[str, object]:
     return value
 
 
+def _pilot_state_path() -> Path:
+    return _pilot_root() / "state-v2.json"
+
+
 def _pilot_state() -> dict[str, object]:
-    path = _pilot_root() / "state.json"
+    path = _pilot_state_path()
     if not path.exists():
         return {
             "schema_version": "1",
@@ -110,7 +116,7 @@ def _pilot_state() -> dict[str, object]:
 
 
 def _write_pilot_state(state: dict[str, object]) -> None:
-    _atomic_json(_pilot_root() / "state.json", state)
+    _atomic_json(_pilot_state_path(), state)
 
 
 def _market_successes(state: dict[str, object], market: PilotMarket) -> list[str]:
@@ -149,13 +155,45 @@ def _packet_path(packet_id: str) -> Path:
     return Path(get_settings().data_dir) / "ai_review" / "inbox" / f"{packet_id}.json"
 
 
-def _output_path(packet_id: str) -> Path | None:
+def _output_path(packet: dict[str, object]) -> Path | None:
+    packet_id = str(packet["packet_id"])
+    knowledge = packet.get("knowledge")
+    chart_knowledge = packet.get("chart_knowledge")
+    expected = {
+        "packet_id": packet_id,
+        "schema_version": "3",
+        "analysis_policy_version": str(packet.get("analysis_policy_version") or ""),
+        "knowledge_version": str(
+            knowledge.get("version") if isinstance(knowledge, dict) else ""
+        ),
+        "knowledge_sha256": str(
+            knowledge.get("sha256") if isinstance(knowledge, dict) else ""
+        ),
+        "chart_knowledge_version": str(
+            chart_knowledge.get("version")
+            if isinstance(chart_knowledge, dict)
+            else ""
+        ),
+        "chart_knowledge_sha256": str(
+            chart_knowledge.get("sha256")
+            if isinstance(chart_knowledge, dict)
+            else ""
+        ),
+    }
     candidates = sorted(
         (Path(get_settings().data_dir) / "ai_review" / "outbox").glob(
             f"{packet_id}--*.json"
-        )
+        ),
+        reverse=True,
     )
-    return candidates[-1] if candidates else None
+    for candidate in candidates:
+        try:
+            value = _read_json(candidate)
+        except (OSError, ValueError, json.JSONDecodeError):
+            continue
+        if all(str(value.get(key) or "") == wanted for key, wanted in expected.items()):
+            return candidate
+    return None
 
 
 def _packet_tickers(packet: dict[str, object]) -> list[str]:
@@ -260,6 +298,7 @@ def hold_ai_assisted_pilot_session(
             payload[AI_ASSISTED_PILOT_METADATA_KEY] = {
                 "pilot_mode": PILOT_MODE,
                 "pilot_version": PILOT_VERSION,
+                "renderer_version": PILOT_RENDERER_VERSION,
                 "packet_id": packet_id,
                 "market": market,
                 "assessment_date": packet["assessment_date"],
@@ -302,10 +341,6 @@ def _bullets(values: list[str], empty: str | None = None) -> str:
     return "\n".join(items)
 
 
-def _interpretations(review: AIMarketReview | AIStockReview) -> list[str]:
-    return [item.text.strip() for item in review.interpretation if item.text.strip()]
-
-
 def _deterministic_blocks(text: str) -> list[str]:
     return [block.strip() for block in text.split("\n\n") if block.strip()]
 
@@ -323,16 +358,31 @@ def _render_ai_market_message(
     target_days: int,
 ) -> str:
     market_label = "US" if market == "us" else "KR"
-    interpretations = _bullets(_interpretations(review), "추가 해석이 없습니다.")
     unknowns = _bullets(review.unknowns)
+    changes = _bullets(
+        [item.text.strip() for item in review.important_changes if item.text.strip()]
+    )
+    blocks = _deterministic_blocks(deterministic_text)
+    night_futures = _first_block(blocks, "🌙 한국 야간선물")
+    cautions = _first_block(blocks, "⚠️ 데이터 주의")
     sections = [
         f"🤖 AI 보조 시장 점검 · {market_label} Pilot {pilot_day}/{target_days}",
-        f"🎯 핵심 해석\n{review.summary.strip()}",
-        f"🧩 투자적 의미\n{interpretations}",
+        f"🎯 핵심 판단\n{review.core_judgment.text.strip()}",
     ]
+    if changes:
+        sections.append(f"📈 중요한 변화\n{changes}")
+    if night_futures:
+        sections.append(night_futures)
+    sections.extend(
+        [
+            f"🧭 시장 상황\n{review.market_context.text.strip()}",
+            f"🔄 시장 가정\n{review.market_assumptions.text.strip()}",
+        ]
+    )
     if unknowns:
         sections.append(f"⚠️ 확인 필요\n{unknowns}")
-    sections.append(f"📋 검증된 시장 스냅샷\n{deterministic_text.strip()}")
+    if cautions:
+        sections.append(cautions)
     return "\n\n".join(sections)
 
 
@@ -358,15 +408,8 @@ def _render_ai_stock_message(
         for block in blocks
         if block.startswith(
             (
-                "📌 초기 근거",
-                "🔄 중요한 변화",
                 "🚨 오늘 새 경고",
                 "⚠️ 기존 경고",
-                "👁 핵심 감시",
-                "📍 오늘 접근한 조건",
-                "💰 가격",
-                "📊 수급",
-                "📐 Valuation",
                 "⚠️ 데이터 주의",
             )
         )
@@ -374,22 +417,26 @@ def _render_ai_stock_message(
     sections = [
         f"🤖 AI 보조 종목 점검 · {market_label} Pilot {pilot_day}/{target_days}",
         "\n".join([company, official, *fixed_context]),
-        f"🎯 핵심 해석\n{review.summary.strip()}",
+        f"🎯 핵심 판단\n{review.core_judgment.text.strip()}",
+        f"📈 사업·실적\n{review.business_earnings.text.strip()}",
+        (
+            "💰 가격·포지셔닝\n"
+            f"{review.price_positioning.text.strip()}\n"
+            f"• 신규 관찰자: {review.price_positioning.new_observer_view.strip()}\n"
+            f"• 보유자: {review.price_positioning.holder_view.strip()}"
+        ),
+        f"📊 수급\n{review.supply_analysis.text.strip()}",
+        f"📐 Valuation\n{review.valuation_analysis.text.strip()}",
     ]
-    interpretations = _bullets(_interpretations(review), "추가 해석이 없습니다.")
-    sections.append(f"🧩 투자적 의미\n{interpretations}")
     sections.extend(deterministic_details)
-    sections.extend(
-        [
-            f"💡 보유 관점\n{review.holder_view.strip()}",
-            f"🔎 신규 관찰자 관점\n{review.new_buyer_view.strip()}",
-        ]
-    )
+    priority_watch = _bullets(review.priority_watch)
+    if priority_watch:
+        sections.append(f"👁 핵심 감시\n{priority_watch}")
     next_checks = _bullets(review.next_checks)
     if next_checks:
         sections.append(f"📌 다음 확인\n{next_checks}")
     if review.unknowns:
-        sections.append(f"⚠️ 미확인 사항\n{_bullets(review.unknowns)}")
+        sections.append(f"⚠️ 미확인\n{_bullets(review.unknowns)}")
     return "\n\n".join(section for section in sections if section.strip())
 
 
@@ -456,7 +503,7 @@ async def deliver_validated_ai_review(
         return PilotDeliveryResult(status="invalid_market", market=market, packet_id=packet_id)
     if not get_settings().ai_review_pilot_enabled:
         return PilotDeliveryResult(status="not_active", market=market, packet_id=packet_id)
-    output_path = _output_path(packet_id)
+    output_path = _output_path(packet)
     if output_path is None:
         return PilotDeliveryResult(
             status="not_ready", market=market, packet_id=packet_id, reason="validated_output_missing"
@@ -469,6 +516,42 @@ async def deliver_validated_ai_review(
     archive_dir = _archive_directory(packet)
     _atomic_json(archive_dir / "packet.json", packet)
     _atomic_json(archive_dir / "ai-review.json", output.model_dump(mode="json"))
+    _atomic_json(
+        archive_dir / "chart-context.json",
+        {
+            "packet_id": packet_id,
+            "stocks": [
+                {
+                    "ticker": item.get("ticker"),
+                    "chart_context": item.get("chart_context", {}),
+                }
+                for item in packet.get("stocks", [])
+                if isinstance(item, dict)
+            ],
+        },
+    )
+    _atomic_json(
+        archive_dir / "chart-transition.json",
+        {
+            "packet_id": packet_id,
+            "stocks": [
+                {
+                    "ticker": item.get("ticker"),
+                    "price_transition": (
+                        item.get("chart_context", {}).get("price_transition", {})
+                        if isinstance(item.get("chart_context"), dict)
+                        else {}
+                    ),
+                }
+                for item in packet.get("stocks", [])
+                if isinstance(item, dict)
+            ],
+        },
+    )
+    _atomic_json(
+        archive_dir / "quantitative-grounding-report.json",
+        quantitative_grounding_report(packet, output),
+    )
     comparison_name = output_path.name.replace(".json", ".comparison.json")
     comparison_candidates = list(
         (Path(get_settings().data_dir) / "ai_review" / "history").glob(
@@ -552,6 +635,7 @@ async def deliver_validated_ai_review(
             new_payload[AI_ASSISTED_PILOT_METADATA_KEY] = {
                 "pilot_mode": PILOT_MODE,
                 "pilot_version": PILOT_VERSION,
+                "renderer_version": PILOT_RENDERER_VERSION,
                 "packet_id": packet_id,
                 "market": market,
                 "assessment_date": packet["assessment_date"],
@@ -597,6 +681,9 @@ async def deliver_validated_ai_review(
                 "analysis_policy_version": output.analysis_policy_version,
                 "knowledge_version": output.knowledge_version,
                 "knowledge_sha256": output.knowledge_sha256,
+                "chart_knowledge_version": output.chart_knowledge_version,
+                "chart_knowledge_sha256": output.chart_knowledge_sha256,
+                "renderer_version": PILOT_RENDERER_VERSION,
             },
         )
         if not prepared_ids:
@@ -809,7 +896,7 @@ async def dispatch_due_deterministic_fallbacks(
                     )
                 )
             continue
-        if _output_path(packet_id) is not None:
+        if _output_path(packet) is not None:
             ai_result = await deliver_validated_ai_review(
                 session,
                 packet_id,

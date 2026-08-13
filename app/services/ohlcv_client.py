@@ -9,6 +9,8 @@ from sqlmodel import Session
 
 from app.config import get_settings
 from app.schemas.thesis import (
+    ChartCandleContext,
+    ChartTimeframeContext,
     HistoricalPricePoint,
     InvestorSupplyContext,
     PriceContext,
@@ -24,6 +26,26 @@ PERIOD_COUNTS = {
     "weekly": 300,
     "monthly": 100,
 }
+
+_DAILY_BOLLINGER_UPPER = {
+    "3_month": "BB_36_1.541_UPPER",
+    "5_month": "BB_60_1.541_UPPER",
+    "6_month": "BB_50_2.25_UPPER",
+    "12_month": "BB_144_1.541_UPPER",
+    "24_month": "BB_288_1.541_UPPER",
+    "54_month": "BB_300_3.33_UPPER",
+}
+_UNAVAILABLE_CHART_FIELDS = (
+    "support_zones",
+    "resistance_zones",
+    "box_ranges",
+    "trading_value_ratio",
+    "atr",
+    "elliott_wave",
+    "fibonacci",
+    "risk_reward",
+    "chart_state_machine",
+)
 
 
 def _number(value: object) -> float | None:
@@ -199,6 +221,91 @@ def _summarize_bars(requested_count: int, bars: Sequence[dict[str, object]]) -> 
     )
 
 
+def _round(value: float | None) -> float | None:
+    return round(value, 6) if value is not None else None
+
+
+def _chart_timeframe_context(
+    timeframe: str,
+    bars: Sequence[dict[str, object]],
+    summary: PricePeriodSummary,
+) -> ChartTimeframeContext:
+    latest = _bar_values(bars[-1]) if bars else {}
+    open_price = _number(latest.get("open"))
+    high = _number(latest.get("high"))
+    low = _number(latest.get("low"))
+    close = _number(latest.get("close"))
+    price_range = high - low if high is not None and low is not None and high > low else None
+    body_pct = (
+        (close - open_price) / open_price * 100
+        if close is not None and open_price not in {None, 0}
+        else None
+    )
+    range_pct = (
+        price_range / open_price * 100
+        if price_range is not None and open_price not in {None, 0}
+        else None
+    )
+    close_location = (
+        (close - low) / price_range * 100
+        if close is not None and low is not None and price_range is not None
+        else None
+    )
+    upper_wick = (
+        (high - max(open_price, close)) / price_range * 100
+        if high is not None
+        and open_price is not None
+        and close is not None
+        and price_range is not None
+        else None
+    )
+    lower_wick = (
+        (min(open_price, close) - low) / price_range * 100
+        if low is not None
+        and open_price is not None
+        and close is not None
+        and price_range is not None
+        else None
+    )
+    bollinger_upper: dict[str, float] = {}
+    bollinger_distance: dict[str, float] = {}
+    if timeframe == "daily":
+        for label, field in _DAILY_BOLLINGER_UPPER.items():
+            value = _number(latest.get(field))
+            if value in {None, 0}:
+                continue
+            bollinger_upper[label] = value
+            if close not in {None, 0}:
+                bollinger_distance[label] = round((close / value - 1) * 100, 4)
+    return ChartTimeframeContext(
+        timeframe=timeframe,
+        as_of_date=summary.latest_date,
+        quality="available" if bars else "unavailable",
+        candle=ChartCandleContext(
+            open=open_price,
+            high=high,
+            low=low,
+            close=close,
+            volume=_number(latest.get("volume")),
+            trading_value=_number(latest.get("value")),
+            body_pct=_round(body_pct),
+            range_pct=_round(range_pct),
+            close_location_pct=_round(close_location),
+            upper_wick_pct=_round(upper_wick),
+            lower_wick_pct=_round(lower_wick),
+        ),
+        period_return_pct=summary.period_return_pct,
+        range_position_pct=summary.range_position_pct,
+        bollinger_upper=bollinger_upper,
+        bollinger_distance_pct=bollinger_distance,
+        volume_ratio_20=_number(latest.get("VOLUME_RATIO_20")),
+        rsi_14=_number(latest.get("RSI14")),
+        macd=_number(latest.get("MACD")),
+        macd_signal=_number(latest.get("MACD_SIGNAL")),
+        macd_histogram=_number(latest.get("MACD_HIST")),
+    )
+
+
 class OhlcvClient:
     def __init__(self, transport: httpx.AsyncBaseTransport | None = None) -> None:
         self.settings = get_settings()
@@ -271,6 +378,9 @@ class OhlcvClient:
                         client, ticker, period, count
                     )
                     context.periods[period] = summary
+                    context.chart.timeframes[period] = _chart_timeframe_context(
+                        period, bars, summary
+                    )
                     if period == "daily":
                         context.supply = _investor_supply_context(bars)
                     if period == "daily":
@@ -354,6 +464,8 @@ class OhlcvClient:
                         error_reason="ohlcv_unadjusted_valuation_request_failed",
                     )
         context.available = any(item.actual_count > 0 for item in context.periods.values())
+        context.chart.available = bool(context.chart.timeframes)
+        context.chart.unavailable_fields = list(_UNAVAILABLE_CHART_FIELDS)
         daily = context.periods.get("daily")
         session_state = market_session_for_ticker(ticker, as_of)
         observed_at = as_of or datetime.now(timezone.utc)
@@ -377,6 +489,8 @@ class OhlcvClient:
                 ).days
                 latest_date = session_state.latest_completed_regular_session_date.isoformat()
                 daily.latest_date = latest_date
+                if chart_daily := context.chart.timeframes.get("daily"):
+                    chart_daily.as_of_date = latest_date
         if date_shift_days:
             context.daily_history = [
                 HistoricalPricePoint(
@@ -410,4 +524,24 @@ class OhlcvClient:
             market_session=session_state.session,
             assessment_state="provisional" if is_live_bar else "final",
         )
+        chart_daily = context.chart.timeframes.get("daily")
+        context.chart.as_of_date = latest_date
+        context.chart.price_basis = "adjusted_intraday" if is_live_bar else "adjusted_close"
+        context.chart.quality = (
+            "provisional"
+            if is_live_bar
+            else "fresh"
+            if latest_date
+            == session_state.latest_completed_regular_session_date.isoformat()
+            else "stale"
+            if latest_date
+            else "unavailable"
+        )
+        if chart_daily is not None:
+            chart_daily.quality = context.chart.quality
+            chart_daily.price_basis = context.chart.price_basis
+        for timeframe, chart_period in context.chart.timeframes.items():
+            if timeframe != "daily":
+                chart_period.price_basis = "adjusted_close"
+        context.chart.warnings = list(context.warnings)
         return context

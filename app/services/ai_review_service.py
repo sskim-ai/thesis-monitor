@@ -37,8 +37,10 @@ from app.services.company_profile_service import (
 from app.services.daily_digest import build_daily_digest
 from app.services.market_session import market_scope_for_security
 from app.services.numeric_semantic_registry import (
+    NUMERIC_SEMANTICS,
     build_numeric_registry,
     numeric_registry_coverage,
+    usage_direction_matches,
     usage_matches_semantic,
 )
 
@@ -46,8 +48,8 @@ from app.services.numeric_semantic_registry import (
 logger = logging.getLogger(__name__)
 
 PACKET_SCHEMA_VERSION = "1"
-OUTPUT_SCHEMA_VERSION = "2"
-ANALYSIS_POLICY_VERSION = "daily-review-v3.2"
+OUTPUT_SCHEMA_VERSION = "3"
+ANALYSIS_POLICY_VERSION = "daily-review-v3.3"
 AIReviewMarket = Literal["us", "kr"]
 
 _INTERNAL_TEXT = re.compile(
@@ -73,6 +75,16 @@ _INTERNAL_KEYS = {
     "unit",
 }
 _NUMBER = re.compile(r"(?<![\w])[-+]?\d[\d,]*(?:\.\d+)?%?")
+_STRUCTURAL_NUMBER_PATTERNS = (
+    r"\b(?:19|20)\d{2}[-./]\d{1,2}[-./]\d{1,2}\b",
+    r"\b(?:19|20)\d{2}\s*년(?:\s*[1-4]\s*분기)?",
+    r"\bQ[1-4]\b|\b[1-4]Q\b",
+    r"\b[1-3]\s*[~-]\s*[1-3]\s*개\b",
+    r"\b(?:1|5|20|60)\s*일(?:간)?\b",
+    r"\b(?:3|5|6|12|24|54)\s*개월\b",
+    r"(?:핵심\s*(?:요인|근거)|다음\s*확인|확인\s*항목)\s*[1-3]\s*(?:가지|개)",
+    r"[1-3]\s*(?:가지|개)\s*(?:핵심\s*(?:요인|근거)|다음\s*확인|확인\s*항목)",
+)
 _INVALID_HISTORY = {"price_share_basis_unverified", "price_share_basis_mismatch"}
 _COMPARABLE_HISTORY = {"normal", "comparable", "verified"}
 
@@ -242,6 +254,35 @@ def knowledge_manifest() -> dict[str, str | int]:
     }
 
 
+def chart_knowledge_manifest() -> dict[str, str | int]:
+    reference_root = _skill_root() / "references"
+    manifest = _read_json(reference_root / "chart-knowledge-manifest.json")
+    mirror = reference_root / "stock-chart-value-analysis-knowledge-v1.md"
+    source = Path(__file__).resolve().parents[2] / str(manifest.get("source_path") or "")
+    expected = str(manifest.get("sha256") or "")
+    source_bytes = source.read_bytes()
+    mirror_hash = hashlib.sha256(mirror.read_bytes()).hexdigest()
+    source_hash = hashlib.sha256(source_bytes).hexdigest()
+    line_count = len(source_bytes.splitlines())
+    byte_count = len(source_bytes)
+    if (
+        not expected
+        or mirror_hash != expected
+        or source_hash != expected
+        or int(manifest.get("line_count") or -1) != line_count
+        or int(manifest.get("byte_count") or -1) != byte_count
+    ):
+        raise ValueError("Chart Knowledge mirror checksum mismatch")
+    return {
+        "name": str(manifest["knowledge_name"]),
+        "version": str(manifest["knowledge_version"]),
+        "sha256": expected,
+        "source": str(manifest["source"]),
+        "line_count": line_count,
+        "byte_count": byte_count,
+    }
+
+
 def _industry_candidates(value: str | None) -> list[str]:
     text = str(value or "").lower()
     return [
@@ -288,6 +329,44 @@ def _thematic_frameworks(value: str) -> list[str]:
         for framework, patterns in _THEMATIC_FRAMEWORKS
         if any(re.search(pattern, text) for pattern in patterns)
     ]
+
+
+def _chart_knowledge_routing(chart: dict[str, object]) -> dict[str, object]:
+    usable = bool(chart.get("available")) and str(chart.get("quality")) in {
+        "fresh",
+        "provisional",
+    }
+    required = [
+        "chart_principles",
+        "chart_holder_new_buyer",
+        "chart_multi_timeframe",
+        "chart_supply",
+        "chart_data_quality",
+    ]
+    timeframes = chart.get("timeframes")
+    values = list(timeframes.values()) if isinstance(timeframes, dict) else []
+    if any(isinstance(item, dict) and item.get("bollinger_upper") for item in values):
+        required.append("chart_bollinger")
+    if any(
+        isinstance(item, dict)
+        and isinstance(item.get("candle"), dict)
+        and item.get("candle")
+        for item in values
+    ):
+        required.append("chart_candle_volume")
+    if any(isinstance(item, dict) and item.get("rsi_14") is not None for item in values):
+        required.append("chart_rsi")
+    if any(isinstance(item, dict) and item.get("macd") is not None for item in values):
+        required.append("chart_macd")
+    transition = chart.get("price_transition")
+    if isinstance(transition, dict) and transition.get("threshold_event") != "baseline":
+        required.append("chart_threshold_transition")
+    return {
+        "available": usable,
+        "quality": str(chart.get("quality") or "unavailable"),
+        "required_frameworks": list(dict.fromkeys(required)) if usable else [],
+        "unavailable_fields": chart.get("unavailable_fields", []),
+    }
 
 
 def _has_explicit_memory_subtype(value: str | None) -> bool:
@@ -457,7 +536,11 @@ def _json(value: str, fallback: object) -> object:
         return fallback
 
 
-def _dict(value: str) -> dict[str, object]:
+def _dict(value: object) -> dict[str, object]:
+    if isinstance(value, dict):
+        return value
+    if not isinstance(value, str):
+        return {}
     parsed = _json(value, {})
     return parsed if isinstance(parsed, dict) else {}
 
@@ -675,11 +758,219 @@ def _price_payload(assessment: ThesisAssessment) -> dict[str, object]:
     }
 
 
+def _number(value: object) -> float | None:
+    if isinstance(value, (int, float)) and not isinstance(value, bool):
+        number = float(value)
+        return number if math.isfinite(number) else None
+    return None
+
+
+def _distance_pct(current: float | None, reference: float | None) -> float | None:
+    if current is None or reference in {None, 0}:
+        return None
+    return round((current / reference - 1) * 100, 4)
+
+
+def _price_transition(
+    current: dict[str, object],
+    previous: dict[str, object],
+) -> dict[str, object]:
+    current_state = str(current.get("price_state") or "unavailable")
+    previous_state = str(previous.get("price_state") or "baseline")
+    event = "no_transition"
+    if not previous:
+        event = "baseline"
+    elif current_state == "above_confirmation" and previous_state != current_state:
+        event = "confirmation_crossed"
+    elif previous_state == "above_confirmation" and current_state != previous_state:
+        event = "confirmation_failed"
+    elif current_state == "inside_support" and previous_state != current_state:
+        event = "support_entered"
+    elif previous_state in {"inside_support", "below_support"} and current_state in {
+        "between_confirmation_and_support",
+        "above_confirmation",
+    }:
+        event = "support_reclaimed"
+    elif current_state == "below_support" and previous_state != current_state:
+        event = "support_broken"
+    elif current_state == "below_warning" and previous_state != current_state:
+        event = "warning_crossed"
+    elif current_state == "below_invalidation" and previous_state != current_state:
+        event = "invalidation_crossed"
+    retest_status = "not_applicable"
+    if current_state == "above_confirmation":
+        retest_status = (
+            "holding_above_confirmation"
+            if previous_state == "above_confirmation"
+            else "awaiting_retest"
+        )
+    elif event == "confirmation_failed":
+        retest_status = "failed_retest"
+    return {
+        "previous_state": previous_state,
+        "current_state": current_state,
+        "threshold_event": event,
+        "crossed_at": (
+            current.get("price_as_of")
+            if event not in {"baseline", "no_transition"}
+            else None
+        ),
+        "retest_status": retest_status,
+    }
+
+
+def _chart_payload(
+    assessment: ThesisAssessment,
+    thesis: InvestmentThesis,
+    previous: ThesisAssessment | None,
+) -> dict[str, object]:
+    price_context = _dict(assessment.price_context)
+    chart = _public_value(_dict(price_context.get("chart")))
+    decision = _dict(price_context.get("decision"))
+    previous_decision = (
+        _dict(_dict(previous.price_context).get("decision"))
+        if previous is not None
+        else {}
+    )
+    rules = _dict(thesis.price_rules)
+    current_price = _number(decision.get("current_price"))
+    stored_rules = {
+        key: value
+        for key in (
+            "currency",
+            "basis",
+            "confirmation_price",
+            "support_zone_low",
+            "support_zone_high",
+            "warning_price",
+            "invalidation_price",
+        )
+        if (value := rules.get(key)) is not None
+    }
+    distances = {
+        key: distance
+        for field, key in (
+            ("confirmation_price", "confirmation_distance_pct"),
+            ("support_zone_low", "support_low_distance_pct"),
+            ("support_zone_high", "support_high_distance_pct"),
+            ("warning_price", "warning_distance_pct"),
+            ("invalidation_price", "invalidation_distance_pct"),
+        )
+        if (distance := _distance_pct(current_price, _number(rules.get(field))))
+        is not None
+    }
+    transition = _price_transition(decision, previous_decision)
+    daily = _dict(_dict(chart.get("timeframes")).get("daily"))
+    volume_ratio = _number(daily.get("volume_ratio_20"))
+    transition["volume_confirmation"] = (
+        "above_20d_average"
+        if volume_ratio is not None and volume_ratio >= 1
+        else "below_20d_average"
+        if volume_ratio is not None
+        else "unavailable"
+    )
+    supply = _dict(price_context.get("supply"))
+    transition["supply_confirmation"] = str(
+        supply.get("primary_signal") or "unavailable"
+    )
+    return {
+        **chart,
+        "stored_price_rules": stored_rules,
+        "price_transition": transition,
+        "distance_from_stored_rules_pct": distances,
+        "chart_unknowns": list(
+            dict.fromkeys(
+                [
+                    *(
+                        chart.get("unavailable_fields", [])
+                        if isinstance(chart.get("unavailable_fields"), list)
+                        else []
+                    ),
+                    *(
+                        chart.get("warnings", [])
+                        if isinstance(chart.get("warnings"), list)
+                        else []
+                    ),
+                ]
+            )
+        ),
+    }
+
+
+def _chart_facts(chart: dict[str, object], currency: str) -> list[dict[str, object]]:
+    facts: list[dict[str, object]] = []
+    timeframes = chart.get("timeframes")
+    chart_usable = bool(chart.get("available")) and str(chart.get("quality")) in {
+        "fresh",
+        "provisional",
+    }
+    if chart_usable and isinstance(timeframes, dict):
+        for timeframe in ("daily", "weekly", "monthly"):
+            value = timeframes.get(timeframe)
+            if not isinstance(value, dict) or value.get("quality") in {
+                "stale",
+                "unavailable",
+            }:
+                continue
+            fields = {
+                key: item
+                for key, item in value.items()
+                if key not in {"timeframe", "as_of_date", "quality", "price_basis"}
+                and item not in ({}, [], None)
+            }
+            fields.update(
+                {
+                    "currency": currency,
+                    "timeframe": timeframe,
+                    "quality": value.get("quality"),
+                    "price_basis": value.get("price_basis"),
+                }
+            )
+            facts.append(
+                {
+                    "fact_id": f"chart:{timeframe}",
+                    "fact_type": "chart_timeframe",
+                    "as_of_date": str(value.get("as_of_date") or ""),
+                    "source": str(chart.get("source") or "ohlcv_analyst"),
+                    "fields": fields,
+                }
+            )
+    rules = chart.get("stored_price_rules")
+    distances = chart.get("distance_from_stored_rules_pct")
+    if isinstance(rules, dict) and rules:
+        fields = {**rules}
+        if isinstance(distances, dict):
+            fields["distance_pct"] = distances
+        fields["currency"] = currency
+        facts.append(
+            {
+                "fact_id": "chart:stored_price_rules",
+                "fact_type": "chart_price_rules",
+                "as_of_date": str(chart.get("as_of_date") or ""),
+                "source": "investment_thesis",
+                "fields": fields,
+            }
+        )
+    transition = chart.get("price_transition")
+    if isinstance(transition, dict) and transition:
+        facts.append(
+            {
+                "fact_id": "chart:price_transition",
+                "fact_type": "chart_transition",
+                "as_of_date": str(chart.get("as_of_date") or ""),
+                "source": "deterministic_price_state",
+                "fields": transition,
+            }
+        )
+    return facts
+
+
 def _fact_catalog(
     assessment: ThesisAssessment,
     evidence: list[dict[str, object]],
     valuation: dict[str, object],
     price: dict[str, object],
+    chart: dict[str, object],
 ) -> list[dict[str, object]]:
     facts = [fact for item in evidence if (fact := canonical_event_fact(item))]
     currency = str(valuation.get("currency") or "unknown")
@@ -772,6 +1063,7 @@ def _fact_catalog(
                 "fields": supply_fields,
             }
         )
+    facts.extend(_chart_facts(chart, str(price.get("price", {}).get("currency") or currency)))
     snapshot = _dict(assessment.thesis_snapshot)
     for item in snapshot.get("capital_action_materiality", []):
         if isinstance(item, dict) and (fact := canonical_capital_action_fact(item)):
@@ -807,6 +1099,7 @@ def _stock_packet(
     valuation = _valuation_payload(assessment)
     price = _price_payload(assessment)
     previous = _previous_assessment(session, assessment)
+    chart = _chart_payload(assessment, thesis, previous)
     current_expectation = _public_value(_dict(assessment.market_expectation_assessment))
     thesis_text = " ".join(
         filter(
@@ -839,6 +1132,15 @@ def _stock_packet(
         or "adr" in json.dumps(valuation, ensure_ascii=False).lower(),
         profile_quality=str((profile_provenance or {}).get("quality") or "") or None,
     )
+    chart_routing = _chart_knowledge_routing(chart)
+    routing["required_frameworks"] = list(
+        dict.fromkeys(
+            [
+                *routing.get("required_frameworks", []),
+                *chart_routing["required_frameworks"],
+            ]
+        )
+    )
     stock = {
         "ticker": assessment.ticker,
         "company_name": item.company_name,
@@ -860,6 +1162,7 @@ def _stock_packet(
             if (value := (profile_provenance or {}).get(key)) is not None
         },
         "knowledge_routing": routing,
+        "chart_knowledge_routing": chart_routing,
         "thesis_version": assessment.thesis_version,
         "assessment_mode": _assessment_mode(assessment),
         "thesis": {
@@ -891,6 +1194,7 @@ def _stock_packet(
         "evidence": evidence,
         "valuation": valuation,
         "price_and_positioning": price,
+        "chart_context": chart,
         "unknowns": _clean_texts(_list(assessment.unknowns)),
         "data_cautions": list(
             dict.fromkeys(
@@ -915,7 +1219,7 @@ def _stock_packet(
             else None
         ),
     }
-    facts = _fact_catalog(assessment, evidence, valuation, price)
+    facts = _fact_catalog(assessment, evidence, valuation, price, chart)
     stock["fact_catalog"] = facts
     stock["numeric_registry"] = _numeric_registry(facts)
     return stock
@@ -1028,6 +1332,7 @@ def build_ai_review_packet(
     if len(stocks) != run.success_count:
         return None
     knowledge = knowledge_manifest()
+    chart_knowledge = chart_knowledge_manifest()
     market_context = _market_packet(session, run_date, market)
     profile_gate = company_profile_coverage(session, get_settings().data_dir)
     numeric_gate = numeric_registry_coverage(
@@ -1041,6 +1346,7 @@ def build_ai_review_packet(
         "schema_version": PACKET_SCHEMA_VERSION,
         "analysis_policy_version": ANALYSIS_POLICY_VERSION,
         "knowledge": knowledge,
+        "chart_knowledge": chart_knowledge,
         "market": market,
         "assessment_date": run_date.isoformat(),
         "source_monitor_run_id": str(run.id),
@@ -1229,6 +1535,9 @@ def claim_next_ai_review_packet(
                 "market": market,
                 "analysis_policy_version": policy,
                 "knowledge_sha256": knowledge_sha,
+                "chart_knowledge_sha256": str(
+                    _dict(packet.get("chart_knowledge")).get("sha256") or ""
+                ),
                 "owner": owner or socket.gethostname(),
                 "claimed_at": current.isoformat(),
                 "expires_at": (current + lease).isoformat(),
@@ -1256,25 +1565,39 @@ def _review_text(review: AIStockReview) -> str:
 
 def _prose_fields(review: object) -> dict[str, str]:
     fields = {
-        **{
-            f"interpretation[{index}].text": item.text
-            for index, item in enumerate(getattr(review, "interpretation", []))
-        },
-        **{
-            f"unknowns[{index}]": text
-            for index, text in enumerate(getattr(review, "unknowns", []))
-        },
-        "summary": str(getattr(review, "summary", "")),
+        f"unknowns[{index}]": text
+        for index, text in enumerate(getattr(review, "unknowns", []))
     }
     if isinstance(review, AIStockReview):
         fields.update(
             {
-                "holder_view": review.holder_view,
-                "new_buyer_view": review.new_buyer_view,
+                "core_judgment.text": review.core_judgment.text,
+                "business_earnings.text": review.business_earnings.text,
+                "price_positioning.text": review.price_positioning.text,
+                "price_positioning.new_observer_view": review.price_positioning.new_observer_view,
+                "price_positioning.holder_view": review.price_positioning.holder_view,
+                "supply_analysis.text": review.supply_analysis.text,
+                "valuation_analysis.text": review.valuation_analysis.text,
+                **{
+                    f"priority_watch[{index}]": text
+                    for index, text in enumerate(review.priority_watch)
+                },
                 **{
                     f"next_checks[{index}]": text
                     for index, text in enumerate(review.next_checks)
                 },
+            }
+        )
+    else:
+        fields.update(
+            {
+                "core_judgment.text": getattr(review, "core_judgment").text,
+                **{
+                    f"important_changes[{index}].text": item.text
+                    for index, item in enumerate(getattr(review, "important_changes", []))
+                },
+                "market_context.text": getattr(review, "market_context").text,
+                "market_assumptions.text": getattr(review, "market_assumptions").text,
             }
         )
     return fields
@@ -1293,12 +1616,10 @@ def _numeric_tokens(value: object) -> set[str]:
 
 
 def _provenance_tokens(text: str) -> set[str]:
-    cleaned = re.sub(r"\b(?:19|20)\d{2}[-./]\d{1,2}[-./]\d{1,2}\b", "", text)
-    cleaned = re.sub(r"\b(?:19|20)\d{2}\s*년\b", "", cleaned)
-    cleaned = re.sub(r"\bQ[1-4]\b|\b[1-4]Q\b", "", cleaned, flags=re.IGNORECASE)
-    cleaned = re.sub(r"\b[1-4]\s*분기\b", "", cleaned)
+    cleaned = text
+    for pattern in _STRUCTURAL_NUMBER_PATTERNS:
+        cleaned = re.sub(pattern, "", cleaned, flags=re.IGNORECASE)
     cleaned = re.sub(r"\b(?:thesis\s*)?version\s*\d+\b", "", cleaned, flags=re.IGNORECASE)
-    cleaned = re.sub(r"\b[1-3]\s*[~-]\s*[1-3]\s*개\b", "", cleaned)
     return _numeric_tokens(cleaned)
 
 
@@ -1336,17 +1657,9 @@ def _normalized_prose(text: str) -> str:
 
 
 def _structural_number_spans(text: str) -> list[tuple[int, int]]:
-    patterns = (
-        r"\b(?:19|20)\d{2}[-./]\d{1,2}[-./]\d{1,2}\b",
-        r"\b(?:19|20)\d{2}\s*년(?:\s*[1-4]\s*분기)?",
-        r"\bQ[1-4]\b|\b[1-4]Q\b",
-        r"\b[1-3]\s*[~-]\s*[1-3]\s*개\b",
-        r"(?:핵심\s*(?:요인|근거)|다음\s*확인|확인\s*항목)\s*[1-3]\s*(?:가지|개)",
-        r"[1-3]\s*(?:가지|개)\s*(?:핵심\s*(?:요인|근거)|다음\s*확인|확인\s*항목)",
-    )
     return [
         match.span()
-        for pattern in patterns
+        for pattern in _STRUCTURAL_NUMBER_PATTERNS
         for match in re.finditer(pattern, text, flags=re.IGNORECASE)
     ]
 
@@ -1425,6 +1738,12 @@ def _validate_numeric_claims(
         if not _usage_semantic_matches(expected_semantic, claim.usage):
             errors.append(f"{prefix}:numeric_usage_semantic_mismatch:{claim.fact_id}:{claim.field_path}")
             claim_is_valid = False
+        if not usage_direction_matches(expected_semantic, expected, claim.usage):
+            errors.append(
+                f"{prefix}:numeric_usage_direction_mismatch:"
+                f"{claim.fact_id}:{claim.field_path}"
+            )
+            claim_is_valid = False
         display_tokens = _provenance_tokens(claim.usage)
         approved_variants = source.get("approved_display_variants")
         allowed_display_tokens = (
@@ -1494,7 +1813,15 @@ def _validate_stock_review(
     if _INTERNAL_TEXT.search(rendered):
         errors.append(f"{review.ticker}:forbidden_internal_metadata")
     interpretation_facts = {
-        fact_id for item in review.interpretation for fact_id in item.fact_ids
+        fact_id
+        for item in (
+            review.core_judgment,
+            review.business_earnings,
+            review.price_positioning,
+            review.supply_analysis,
+            review.valuation_analysis,
+        )
+        for fact_id in item.fact_ids
     }
     unknown_interpretation_facts = sorted(interpretation_facts - valid_fact_ids)
     if unknown_interpretation_facts:
@@ -1583,6 +1910,14 @@ def validate_ai_review_output(
             errors.append("identity_mismatch:knowledge_version")
         if output.knowledge_sha256 != knowledge.get("sha256"):
             errors.append("identity_mismatch:knowledge_sha256")
+    chart_knowledge = packet.get("chart_knowledge")
+    if not isinstance(chart_knowledge, dict):
+        errors.append("identity_mismatch:chart_knowledge")
+    else:
+        if output.chart_knowledge_version != chart_knowledge.get("version"):
+            errors.append("identity_mismatch:chart_knowledge_version")
+        if output.chart_knowledge_sha256 != chart_knowledge.get("sha256"):
+            errors.append("identity_mismatch:chart_knowledge_sha256")
     if output.schema_version != OUTPUT_SCHEMA_VERSION:
         errors.append("identity_mismatch:schema_version")
     stocks = {
@@ -1611,18 +1946,17 @@ def validate_ai_review_output(
         errors.append("market_review:unknown_fact_ids")
     market_interpretation_facts = {
         fact_id
-        for item in output.market_review.interpretation
+        for item in (
+            output.market_review.core_judgment,
+            *output.market_review.important_changes,
+            output.market_review.market_context,
+            output.market_review.market_assumptions,
+        )
         for fact_id in item.fact_ids
     }
     if market_interpretation_facts - market_fact_ids:
         errors.append("market_review:interpretation_unknown_fact_ids")
-    market_text = "\n".join(
-        [
-            *(item.text for item in output.market_review.interpretation),
-            *output.market_review.unknowns,
-            output.market_review.summary,
-        ]
-    )
+    market_text = "\n".join(_prose_fields(output.market_review).values())
     if _INTERNAL_TEXT.search(market_text):
         errors.append("market_review:forbidden_internal_metadata")
     market_context = packet.get("market_context", {})
@@ -1681,7 +2015,17 @@ def _comparison_payload(
         guardrail_conflicts = []
         if warnings and review.ai_thesis_assessment == "no_material_change":
             guardrail_conflicts.append("deterministic_warning_requires_human_review")
-        if any(not item.fact_ids for item in review.interpretation):
+        if any(
+            not item.fact_ids
+            for item in (
+                review.core_judgment,
+                review.business_earnings,
+                review.price_positioning,
+                review.supply_analysis,
+                review.valuation_analysis,
+            )
+            if item.text.strip()
+        ):
             guardrail_conflicts.append("interpretation_without_fact_reference")
         stock_packet = stock_packets.get(review.ticker, {})
         guardrail_conflicts.extend(_semantic_guardrail_flags(review, stock_packet))
@@ -1722,7 +2066,7 @@ def _comparison_payload(
                 "facts_used": review.facts_used,
                 "numeric_claims": [item.model_dump() for item in review.numeric_claims],
                 "unknowns": review.unknowns,
-                "ai_summary": review.summary,
+                "ai_summary": review.core_judgment.text,
             }
         )
     return {
@@ -1730,6 +2074,8 @@ def _comparison_payload(
         "analysis_policy_version": output.analysis_policy_version,
         "knowledge_version": output.knowledge_version,
         "knowledge_sha256": output.knowledge_sha256,
+        "chart_knowledge_version": output.chart_knowledge_version,
+        "chart_knowledge_sha256": output.chart_knowledge_sha256,
         "mode": get_settings().ai_review_mode,
         "validated_at": validated_at.isoformat(),
         "official_assessment_mutated": False,
@@ -1738,18 +2084,132 @@ def _comparison_payload(
     }
 
 
+def quantitative_grounding_report(
+    packet: dict[str, object],
+    output: AIDailyReviewOutput,
+) -> dict[str, object]:
+    stocks = {
+        str(item["ticker"]): item
+        for item in packet.get("stocks", [])
+        if isinstance(item, dict) and item.get("ticker")
+    }
+    section_prefixes = {
+        "core": ("core_judgment.",),
+        "earnings": ("business_earnings.",),
+        "price": ("price_positioning.",),
+        "supply": ("supply_analysis.",),
+        "valuation": ("valuation_analysis.",),
+    }
+    semantic_sections = {
+        "earnings": {
+            "revenue",
+            "operating_income",
+            "operating_margin",
+            "revenue_qoq",
+            "revenue_yoy",
+            "operating_income_qoq",
+            "operating_income_yoy",
+        },
+        "price": {
+            "share_price",
+            "chart_open_price",
+            "chart_high_price",
+            "chart_low_price",
+            "chart_close_price",
+            "chart_period_return_pct",
+            "chart_range_position_pct",
+            "bollinger_upper_price",
+            "bollinger_distance_pct",
+            "volume_ratio_20",
+            "rsi_14",
+            "macd",
+            "macd_signal",
+            "macd_histogram",
+            "stored_confirmation_price",
+            "stored_support_price",
+            "stored_warning_price",
+            "stored_invalidation_price",
+            "price_rule_distance_pct",
+        },
+        "supply": {
+            semantic
+            for semantic in NUMERIC_SEMANTICS
+            if "net_buy_qty" in semantic or semantic.startswith("foreign_holding")
+        },
+        "valuation": {
+            "trailing_pe",
+            "price_to_book",
+            "forward_pe",
+            "forward_price_to_book",
+            "historical_pe_multiple",
+            "historical_pb_multiple",
+            "historical_pe_percentile",
+            "historical_pb_percentile",
+        },
+    }
+    rows: list[dict[str, object]] = []
+    for review in output.stock_reviews:
+        stock = stocks.get(review.ticker, {})
+        registry = (
+            stock.get("numeric_registry", []) if isinstance(stock, dict) else []
+        )
+        eligible = [
+            item
+            for item in registry
+            if isinstance(item, dict) and item.get("prose_allowed") is True
+        ]
+        claims = [item.model_dump() for item in review.numeric_claims]
+        sections: dict[str, dict[str, int]] = {}
+        flags: list[str] = []
+        for section, prefixes in section_prefixes.items():
+            if section == "core":
+                eligible_count = len(eligible)
+            else:
+                eligible_count = sum(
+                    str(item.get("semantic_type")) in semantic_sections[section]
+                    for item in eligible
+                )
+            used_count = sum(
+                any(str(item["text_ref"]).startswith(prefix) for prefix in prefixes)
+                for item in claims
+            )
+            sections[section] = {"eligible": eligible_count, "used": used_count}
+            minimum = 2 if section in {"core", "earnings", "supply", "valuation"} else 1
+            if eligible_count >= minimum and used_count < minimum:
+                flags.append(f"insufficient_quantitative_grounding:{section}")
+        prose = "\n".join(_prose_fields(review).values())
+        if len(eligible) >= 2 and not claims and re.search(
+            r"(?:강한\s*실적|높은\s*기대|프리미엄|현금창출.*확인)", prose
+        ):
+            flags.append("vague_quantitative_language")
+        chart = stock.get("chart_context", {}) if isinstance(stock, dict) else {}
+        timeframes = chart.get("timeframes", {}) if isinstance(chart, dict) else {}
+        rows.append(
+            {
+                "ticker": review.ticker,
+                "eligible_numeric_anchors": len(eligible),
+                "numeric_claims_used": len(claims),
+                "section_coverage": sections,
+                "chart_timeframes_available": sorted(timeframes) if isinstance(timeframes, dict) else [],
+                "chart_fact_ids_used": sorted(
+                    fact_id for fact_id in review.facts_used if fact_id.startswith("chart:")
+                ),
+                "flags": flags,
+            }
+        )
+    return {
+        "packet_id": output.packet_id,
+        "analysis_policy_version": output.analysis_policy_version,
+        "status": "flagged" if any(row["flags"] for row in rows) else "passed",
+        "stocks": rows,
+    }
+
+
 def _semantic_guardrail_flags(
     review: AIStockReview,
     stock: dict[str, object],
 ) -> list[str]:
-    assertions = "\n".join(
-        [
-            *(item.text for item in review.interpretation),
-            review.summary,
-            review.holder_view,
-            review.new_buyer_view,
-        ]
-    ).lower()
+    assertions = "\n".join(_prose_fields(review).values()).lower()
     facts = json.dumps(stock.get("fact_catalog", []), ensure_ascii=False).lower()
     change = r"(?:improv|increas|decreas|rose|fell|개선|증가|감소|상승|하락|확대|축소)"
     metrics = {
@@ -1889,6 +2349,9 @@ def finalize_ai_review_output(
     history_dir.mkdir(parents=True, exist_ok=True)
     history_output = history_dir / output_name
     comparison_path = history_dir / output_name.replace(".json", ".comparison.json")
+    grounding_path = history_dir / output_name.replace(
+        ".json", ".quantitative-grounding.json"
+    )
     with _packet_lock(packet_id):
         if final_path.exists():
             try:
@@ -1922,12 +2385,16 @@ def finalize_ai_review_output(
                 str(final_claim.get("packet_id") or "") == packet_id,
                 str(final_claim.get("analysis_policy_version") or "") == policy_version,
                 str(final_claim.get("knowledge_sha256") or "") == knowledge_sha,
+                str(final_claim.get("chart_knowledge_sha256") or "")
+                == str(_dict(packet.get("chart_knowledge")).get("sha256") or ""),
                 Path(str(final_claim.get("temp_output_path") or temp_path)) == temp_path,
                 Path(str(final_claim.get("final_output_path") or final_path)) == final_path,
                 str(candidate.get("packet_id") or "") == packet_id,
                 str(candidate.get("claim_id") or "") == claim_id,
                 str(candidate.get("analysis_policy_version") or "") == policy_version,
                 str(candidate.get("knowledge_sha256") or "") == knowledge_sha,
+                str(candidate.get("chart_knowledge_sha256") or "")
+                == str(_dict(packet.get("chart_knowledge")).get("sha256") or ""),
             )
         )
         if not claim_identity_matches:
@@ -1944,6 +2411,7 @@ def finalize_ai_review_output(
         os.replace(temp_path, final_path)
         _atomic_json(history_output, candidate)
         _atomic_json(comparison_path, _comparison_payload(packet, output, validated_at))
+        _atomic_json(grounding_path, quantitative_grounding_report(packet, output))
         current_claim = _read_json(claim_path)
         if str(current_claim.get("claim_id") or "") == claim_id:
             claim_path.unlink(missing_ok=True)

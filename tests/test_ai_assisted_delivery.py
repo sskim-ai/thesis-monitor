@@ -72,8 +72,9 @@ def _settings(monkeypatch, tmp_path: Path):
 def _packet() -> dict[str, object]:
     return {
         "schema_version": "1",
-        "analysis_policy_version": "daily-review-v3.2",
+        "analysis_policy_version": "daily-review-v3.3",
         "knowledge": {"version": "3.0", "sha256": "knowledge-sha"},
+        "chart_knowledge": {"version": "1.0", "sha256": "chart-knowledge-sha"},
         "packet_id": PACKET_ID,
         "market": "kr",
         "assessment_date": RUN_DATE.isoformat(),
@@ -83,23 +84,27 @@ def _packet() -> dict[str, object]:
 
 def _output() -> dict[str, object]:
     return {
-        "schema_version": "2",
+        "schema_version": "3",
         "packet_id": PACKET_ID,
         "claim_id": "claim-1",
-        "analysis_policy_version": "daily-review-v3.2",
+        "analysis_policy_version": "daily-review-v3.3",
         "knowledge_version": "3.0",
         "knowledge_sha256": "knowledge-sha",
+        "chart_knowledge_version": "1.0",
+        "chart_knowledge_sha256": "chart-knowledge-sha",
         "market": "kr",
         "assessment_date": RUN_DATE.isoformat(),
         "market_review": {
             "facts_used": [],
             "frameworks_used": ["macro_transmission"],
-            "interpretation": [
+            "core_judgment": {"text": "검증된 시장 맥락은 혼재 상태입니다.", "fact_ids": []},
+            "important_changes": [
                 {"text": "시장 신호는 기업 펀더멘털과 분리해 봐야 합니다.", "fact_ids": []}
             ],
+            "market_context": {"text": "시장 환경은 혼재 상태입니다.", "fact_ids": []},
+            "market_assumptions": {"text": "추가 확정 근거를 기다립니다.", "fact_ids": []},
             "numeric_claims": [],
             "unknowns": ["다음 거래일 방향은 미확인입니다."],
-            "summary": "검증된 시장 맥락은 혼재 상태입니다.",
         },
         "stock_reviews": [
             {
@@ -110,14 +115,19 @@ def _output() -> dict[str, object]:
                 "valuation_view": "neutral",
                 "facts_used": [],
                 "frameworks_used": ["market_expectations"],
-                "interpretation": [
-                    {"text": "추가 약화 여부는 다음 실적에서 확인해야 합니다.", "fact_ids": []}
-                ],
+                "core_judgment": {"text": "공식 상태를 바꿀 확정 근거는 아직 부족합니다.", "fact_ids": []},
+                "business_earnings": {"text": "추가 약화 여부는 다음 실적에서 확인해야 합니다.", "fact_ids": []},
+                "price_positioning": {
+                    "text": "현재 가격 신호는 사업 논리와 분리합니다.",
+                    "new_observer_view": "기업의 질과 진입 가격을 나누어 봅니다.",
+                    "holder_view": "가격 확인 조건을 계속 추적합니다.",
+                    "fact_ids": []
+                },
+                "supply_analysis": {"text": "수급만으로 공식 상태를 바꾸지 않습니다.", "fact_ids": []},
+                "valuation_analysis": {"text": "Valuation은 별도 판단 층위입니다.", "fact_ids": []},
                 "numeric_claims": [],
                 "unknowns": ["다음 분기 마진은 미확인입니다."],
-                "summary": "공식 상태를 바꿀 확정 근거는 아직 부족합니다.",
-                "holder_view": "확정된 경고와 실행 지표를 계속 확인합니다.",
-                "new_buyer_view": "기업의 질과 진입 가격을 나누어 봅니다.",
+                "priority_watch": ["확정된 경고와 실행 지표"],
                 "next_checks": ["다음 분기 영업이익률"],
                 "confidence": 0.8,
             }
@@ -134,7 +144,7 @@ def _write_artifacts(tmp_path: Path, *, output: bool = True) -> None:
         json.dumps(_packet(), ensure_ascii=False), encoding="utf-8"
     )
     if output:
-        (outbox / f"{PACKET_ID}--daily-review-v3.2--knowledge.json").write_text(
+        (outbox / f"{PACKET_ID}--daily-review-v3.3--knowledge.json").write_text(
             json.dumps(_output(), ensure_ascii=False), encoding="utf-8"
         )
 
@@ -210,15 +220,56 @@ async def test_ai_pass_sends_only_one_ai_assisted_set(monkeypatch, tmp_path: Pat
         "ai_assisted_pilot_stock",
     }
     stock = next(item for item in notifier.payloads if item["type"].endswith("stock"))
-    assert "투자 논리: 유지" in str(stock["text"])
-    assert "AI 투자 논리: 약화" not in str(stock["text"])
+    stock_text = str(stock["text"])
+    assert "투자 논리: 유지" in stock_text
+    assert "AI 투자 논리: 약화" not in stock_text
+    assert "🎯 핵심 판단" in stock_text
+    assert "📈 사업·실적" in stock_text
+    assert "💰 가격·포지셔닝" in stock_text
+    assert "📊 수급" in stock_text
+    assert "📐 Valuation" in stock_text
+    assert "• 신규 관찰자:" in stock_text
+    assert "• 보유자:" in stock_text
+    assert "현재가: $100" not in stock_text
+    assert "frameworks_used" not in stock_text
+    assert "chart_state" not in stock_text
+    assert "claim_id" not in stock_text
+    assert "numeric_claims" not in stock_text
     assert all(item.status == "sent" for item in deliveries)
     archive = tmp_path / "ai_review" / "pilot" / "history" / "2026" / "08" / PACKET_ID
     assert (archive / "deterministic-messages.json").exists()
     assert (archive / "ai-assisted-messages.json").exists()
     assert (archive / "delivery-result.json").exists()
+    assert (archive / "chart-context.json").exists()
+    assert (archive / "chart-transition.json").exists()
+    assert (archive / "quantitative-grounding-report.json").exists()
     assert len(json.loads((archive / "deterministic-messages.json").read_text())["messages"]) == 2
     assert len(json.loads((archive / "ai-assisted-messages.json").read_text())["messages"]) == 2
+
+
+@pytest.mark.anyio
+async def test_old_policy_output_is_not_eligible_for_pilot_v2_delivery(
+    monkeypatch, tmp_path: Path
+) -> None:
+    _settings(monkeypatch, tmp_path)
+    _write_artifacts(tmp_path, output=False)
+    old_output = _output()
+    old_output["schema_version"] = "2"
+    old_output["analysis_policy_version"] = "daily-review-v3.2"
+    outbox = tmp_path / "ai_review" / "outbox"
+    (outbox / f"{PACKET_ID}--daily-review-v3.2--knowledge.json").write_text(
+        json.dumps(old_output, ensure_ascii=False), encoding="utf-8"
+    )
+    notifier = RecordingNotifier()
+    with Session(_engine()) as session:
+        _seed_deliveries(session)
+        hold_ai_assisted_pilot_session(session, PACKET_ID)
+        result = await deliver_validated_ai_review(
+            session, PACKET_ID, notifier=notifier
+        )
+
+    assert result.status == "not_ready"
+    assert notifier.payloads == []
 
 
 @pytest.mark.anyio
@@ -240,7 +291,7 @@ async def test_fallback_sends_only_deterministic_and_late_ai_is_archive_only(
             notifier=fallback_notifier,
         )
         outbox = tmp_path / "ai_review" / "outbox"
-        (outbox / f"{PACKET_ID}--daily-review-v3.2--knowledge.json").write_text(
+        (outbox / f"{PACKET_ID}--daily-review-v3.3--knowledge.json").write_text(
             json.dumps(_output(), ensure_ascii=False), encoding="utf-8"
         )
         late = await deliver_validated_ai_review(
@@ -319,7 +370,7 @@ def test_pilot_stops_market_after_five_successful_packets(monkeypatch, tmp_path:
     _settings(monkeypatch, tmp_path)
     state = {
         "schema_version": "1",
-        "pilot_version": "ai-assisted-pilot-v1",
+        "pilot_version": "ai-assisted-pilot-v2",
         "markets": {
             "us": {"successful_packet_ids": [], "successful_assessment_dates": []},
             "kr": {
@@ -329,7 +380,7 @@ def test_pilot_stops_market_after_five_successful_packets(monkeypatch, tmp_path:
         },
         "sessions": {},
     }
-    path = tmp_path / "ai_review" / "pilot" / "state.json"
+    path = tmp_path / "ai_review" / "pilot" / "state-v2.json"
     path.parent.mkdir(parents=True)
     path.write_text(json.dumps(state), encoding="utf-8")
 
