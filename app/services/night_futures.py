@@ -87,6 +87,14 @@ def summarize_night_futures(market: object) -> NightFuturesSummary:
         if isinstance(item, dict) and item.get("series_code") in NIGHT_FUTURES_SERIES
     }
     if not rows:
+        gate = market.get("night_futures_gate", {}) if isinstance(market, dict) else {}
+        if isinstance(gate, dict) and gate.get("query_attempted"):
+            return NightFuturesSummary(
+                cautions=[
+                    "한국 야간선물은 최신 완료 세션 데이터를 확인하지 못해 "
+                    "오늘 개장 전 신호에서 제외했습니다."
+                ]
+            )
         return NightFuturesSummary()
 
     items: list[NightFuturesItem] = []

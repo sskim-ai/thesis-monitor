@@ -105,6 +105,7 @@ REGIME_AXIS_KEYS = {
 SUPPORTED_NOTIFICATION_CHANNELS = {"telegram"}
 TELEGRAM_DELIVERY_METADATA_KEY = "_telegram_delivery"
 STOCK_NOTIFICATION_METADATA_KEY = "_stock_notification"
+MORNING_GATE_METADATA_KEY = "_morning_gate"
 
 
 def _json_value(value: str, fallback: object) -> object:
@@ -318,7 +319,12 @@ def _logical_notification_payload(payload: dict[str, object]) -> dict[str, objec
     return {
         key: value
         for key, value in payload.items()
-        if key not in {TELEGRAM_DELIVERY_METADATA_KEY, STOCK_NOTIFICATION_METADATA_KEY}
+        if key
+        not in {
+            TELEGRAM_DELIVERY_METADATA_KEY,
+            STOCK_NOTIFICATION_METADATA_KEY,
+            MORNING_GATE_METADATA_KEY,
+        }
     }
 
 
@@ -464,11 +470,7 @@ def _delivery_payload(payload: str) -> dict[str, object]:
 
 
 def _telegram_source_sha256(payload: dict[str, object]) -> str:
-    logical_payload = {
-        key: value
-        for key, value in payload.items()
-        if key not in {TELEGRAM_DELIVERY_METADATA_KEY, STOCK_NOTIFICATION_METADATA_KEY}
-    }
+    logical_payload = _logical_notification_payload(payload)
     encoded = json.dumps(
         logical_payload,
         ensure_ascii=False,
@@ -2198,7 +2200,12 @@ async def dispatch_pending_notifications(
     deliveries = session.exec(
         query.order_by(
             case(
-                (NotificationDelivery.ticker == "__DAILY_DIGEST_KR__", 0),
+                (
+                    NotificationDelivery.ticker.in_(
+                        ("__DAILY_DIGEST__", "__DAILY_DIGEST_KR__")
+                    ),
+                    0,
+                ),
                 else_=1,
             ),
             NotificationDelivery.created_at,

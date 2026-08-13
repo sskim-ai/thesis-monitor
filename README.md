@@ -247,9 +247,11 @@ python -m app.jobs.monitor_daily --market all
 ```
 
 The Mac mini U.S. LaunchAgent template is `ops/com.seungsoo.thesis-monitor.daily.plist`. Its 07:50
-KST primary slot collects macro data, adds verified KRX night-futures context when available,
-evaluates U.S. stocks, and queues notifications. The 08:05 and
-08:35 slots retry pending Telegram deliveries when the production analysis already succeeded. The
+KST primary slot collects macro data, evaluates U.S. stocks, and queues notifications without
+dispatching them. From 08:00 through the 08:45 hard deadline, five-minute gate slots refresh only
+the official KRX night-futures source. Both verified contracts release the queued morning messages
+immediately; at the deadline, fresh partial data or a compact unavailable warning is used. These gate
+retries do not rerun macro scoring, event collection, valuation, or thesis evaluation. The
 Korean close template is `ops/com.seungsoo.thesis-monitor.kr-close.plist`; its 16:05 primary slot
 collects the dedicated KR-close FX snapshot, reuses same-date morning macro data, and evaluates
 Korean stocks after the regular close. FX collection is isolated from the stock run. The 16:20 and 16:50

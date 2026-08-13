@@ -14,6 +14,10 @@ from app.models.macro import MacroBriefing
 from app.models.thesis import MonitorRun
 from app.services.daily_monitor_service import run_daily_monitor
 from app.services.market_session import MarketScope
+from app.services.morning_gate import (
+    initialize_morning_gate,
+    run_morning_night_futures_gate,
+)
 
 
 KST = ZoneInfo("Asia/Seoul")
@@ -118,6 +122,7 @@ async def _macro_result_for_scope(
                 session,
                 run_date=run_date,
                 force=True,
+                excluded_provider_names={"krx_night_futures"},
                 queue_notifications=False,
                 dispatch_notifications=False,
             )
@@ -134,7 +139,10 @@ async def _run_market_job(
     session: Session,
     run_date: date,
     market_scope: MarketScope,
+    *,
+    as_of: datetime | None = None,
 ) -> dict[str, object]:
+    current_as_of = as_of
     cutoff = _requeue_cutoff(run_date, market_scope)
     decision = _analysis_decision(session, run_date, cutoff, market_scope)
     kr_close_result: dict[str, object] | None = None
@@ -166,29 +174,70 @@ async def _run_market_job(
             "theses": None,
         }
 
+    if market_scope == "us" and decision.action == "reuse":
+        gate = await run_morning_night_futures_gate(
+            session,
+            run_date,
+            current_as_of or datetime.now(KST),
+        )
+        return {
+            "market_scope": market_scope,
+            "production_cutoff": cutoff.isoformat(),
+            "analysis_action": decision.action,
+            "analysis_run_status": decision.run_status,
+            "delivery_action": gate.dispatch_action,
+            "morning_gate": gate.as_dict(),
+            "macro": _stored_macro_result(session, run_date),
+            "kr_close_market": None,
+            "theses": None,
+        }
+
     macro_result = await _macro_result_for_scope(
         session,
         run_date,
         market_scope,
         decision.refresh,
     )
-    result = await run_daily_monitor(
-        session,
-        run_date=run_date,
-        force=decision.refresh,
-        requeue_sent_before=cutoff if decision.refresh else None,
-        market_scope=market_scope,
-    )
+    daily_kwargs: dict[str, object] = {
+        "run_date": run_date,
+        "force": decision.refresh,
+        "requeue_sent_before": cutoff if decision.refresh else None,
+        "market_scope": market_scope,
+    }
+    if market_scope == "us":
+        daily_kwargs["dispatch_notifications"] = False
+    result = await run_daily_monitor(session, **daily_kwargs)
+    gate_result: dict[str, object] | None = None
+    if market_scope == "us" and result.status not in {
+        "failed",
+        "analysis_in_progress",
+    }:
+        initialize_morning_gate(
+            session,
+            run_date,
+            current_as_of or datetime.now(KST),
+            reset=decision.refresh,
+        )
+        gate_result = (
+            await run_morning_night_futures_gate(
+                session,
+                run_date,
+                current_as_of or datetime.now(KST),
+            )
+        ).as_dict()
     delivery_action = {
         "reuse": "retry",
         "retry_after_failure": "recovery",
     }.get(decision.action, "primary")
+    if gate_result is not None:
+        delivery_action = str(gate_result["dispatch_action"])
     return {
         "market_scope": market_scope,
         "production_cutoff": cutoff.isoformat(),
         "analysis_action": decision.action,
         "analysis_run_status": result.status,
         "delivery_action": delivery_action,
+        "morning_gate": gate_result,
         "macro": macro_result,
         "kr_close_market": kr_close_result,
         "theses": result.model_dump(mode="json"),
@@ -200,7 +249,7 @@ async def main() -> None:
     parser.add_argument("--market", choices=("us", "kr", "all"), default="all")
     args = parser.parse_args()
     init_db()
-    run_date = date.today()
+    run_date = datetime.now(KST).date()
     with Session(engine) as session:
         output = await _run_market_job(session, run_date, args.market)
     print(json.dumps(output, ensure_ascii=False))

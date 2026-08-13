@@ -134,7 +134,7 @@ def _format_move(row: MacroObservation) -> str:
     return f"{label} {row.value:g}"
 
 
-def _market_observation(item: MacroObservation) -> dict[str, object]:
+def market_observation_to_dict(item: MacroObservation) -> dict[str, object]:
     value: dict[str, object] = {
         "series_code": item.series_code,
         "category": item.category,
@@ -271,7 +271,7 @@ def build_macro_briefing(
         "market_summary": json.dumps(
             {
                 "items": market_items,
-                "observations": [_market_observation(item) for item in observations],
+                "observations": [market_observation_to_dict(item) for item in observations],
             },
             ensure_ascii=False,
             default=str,

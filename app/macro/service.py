@@ -23,6 +23,7 @@ async def run_macro_monitor(
     run_date: date | None = None,
     force: bool = False,
     providers: list[MacroProvider] | None = None,
+    excluded_provider_names: set[str] | None = None,
     as_of: datetime | None = None,
     queue_notifications: bool = True,
     dispatch_notifications: bool = True,
@@ -57,6 +58,12 @@ async def run_macro_monitor(
         )
 
     selected_providers = providers if providers is not None else macro_providers()
+    if excluded_provider_names:
+        selected_providers = [
+            provider
+            for provider in selected_providers
+            if provider.name not in excluded_provider_names
+        ]
     observation_count, event_count, warnings = await collect_macro_data(
         session, selected_providers, as_of
     )

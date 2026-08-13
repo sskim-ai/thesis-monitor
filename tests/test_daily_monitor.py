@@ -10,6 +10,7 @@ from sqlmodel import SQLModel, Session, create_engine, select
 
 from app.database import engine, init_db
 from app.jobs.monitor_daily import (
+    KST,
     _analysis_completed_after_cutoff,
     _analysis_decision,
     _macro_result_for_scope,
@@ -37,6 +38,7 @@ from app.services.event_identity import event_fingerprint
 from app.services.market_session import market_scope_for_security
 from app.services.monitoring_service import register_monitoring_item
 from app.services.notification_service import (
+    MORNING_GATE_METADATA_KEY,
     STOCK_NOTIFICATION_METADATA_KEY,
     TELEGRAM_DELIVERY_METADATA_KEY,
     TelegramChunkResult,
@@ -44,6 +46,7 @@ from app.services.notification_service import (
     TelegramNotifier,
     dispatch_pending_notifications,
     queue_daily_digest_notification,
+    _telegram_source_sha256,
 )
 
 
@@ -159,8 +162,16 @@ def test_launch_agents_define_market_specific_schedules() -> None:
     assert us["ProgramArguments"][-1].endswith("--market us")
     assert us["StartCalendarInterval"] == [
         {"Hour": 7, "Minute": 50},
+        {"Hour": 8, "Minute": 0},
         {"Hour": 8, "Minute": 5},
+        {"Hour": 8, "Minute": 10},
+        {"Hour": 8, "Minute": 15},
+        {"Hour": 8, "Minute": 20},
+        {"Hour": 8, "Minute": 25},
+        {"Hour": 8, "Minute": 30},
         {"Hour": 8, "Minute": 35},
+        {"Hour": 8, "Minute": 40},
+        {"Hour": 8, "Minute": 45},
     ]
     assert kr["ProgramArguments"][-1].endswith("--market kr")
     assert kr["StartCalendarInterval"] == [
@@ -417,10 +428,82 @@ async def test_us_scope_collects_macro(monkeypatch) -> None:
         {
             "run_date": date(2040, 8, 14),
             "force": True,
+            "excluded_provider_names": {"krx_night_futures"},
             "queue_notifications": False,
             "dispatch_notifications": False,
         }
     ]
+
+
+@pytest.mark.anyio
+async def test_us_primary_queues_at_0750_without_dispatching_or_querying_krx(
+    monkeypatch,
+) -> None:
+    daily_calls: list[dict[str, object]] = []
+    gate_calls: list[datetime] = []
+
+    class MacroResult:
+        def model_dump(self, mode: str) -> dict[str, object]:
+            return {"status": "ready"}
+
+    async def record_macro(*args, **kwargs):
+        assert kwargs["excluded_provider_names"] == {"krx_night_futures"}
+        return MacroResult()
+
+    async def record_daily(*args, **kwargs):
+        daily_calls.append(kwargs)
+        return SimpleNamespace(
+            status="success",
+            model_dump=lambda mode: {"status": "success"},
+        )
+
+    def record_initialize(*args, **kwargs):
+        return {"state": "waiting"}
+
+    async def record_gate(session, run_date, as_of):
+        gate_calls.append(as_of)
+        return SimpleNamespace(
+            dispatch_action="held_until_08:00",
+                as_dict=lambda: {
+                    "status": "waiting",
+                    "refresh_performed": False,
+                    "dispatch_action": "held_until_08:00",
+                },
+        )
+
+    monkeypatch.setattr("app.jobs.monitor_daily.run_macro_monitor", record_macro)
+    monkeypatch.setattr("app.jobs.monitor_daily.run_daily_monitor", record_daily)
+    monkeypatch.setattr(
+        "app.jobs.monitor_daily.initialize_morning_gate",
+        record_initialize,
+    )
+    monkeypatch.setattr(
+        "app.jobs.monitor_daily.run_morning_night_futures_gate",
+        record_gate,
+    )
+    run_date = date(2040, 8, 14)
+    as_of = datetime(2040, 8, 14, 7, 50, tzinfo=KST)
+    isolated_engine = create_engine(
+        "sqlite://",
+        connect_args={"check_same_thread": False},
+        poolclass=StaticPool,
+    )
+    SQLModel.metadata.create_all(isolated_engine)
+    with Session(isolated_engine) as session:
+        result = await _run_market_job(session, run_date, "us", as_of=as_of)
+
+    assert result["analysis_action"] == "fresh"
+    assert result["delivery_action"] == "held_until_08:00"
+    assert daily_calls == [
+        {
+            "run_date": run_date,
+            "force": True,
+            "requeue_sent_before": _requeue_cutoff(run_date, "us"),
+            "market_scope": "us",
+            "dispatch_notifications": False,
+        }
+    ]
+    assert gate_calls == [as_of]
 
 
 @pytest.mark.anyio
@@ -459,6 +542,16 @@ async def test_market_job_reuses_successful_analysis_for_delivery_retry(
 
     monkeypatch.setattr("app.jobs.monitor_daily.run_macro_monitor", fail_macro)
     monkeypatch.setattr("app.jobs.monitor_daily.run_daily_monitor", record_daily)
+    async def record_gate(*args, **kwargs):
+        return SimpleNamespace(
+            dispatch_action="dispatched",
+            as_dict=lambda: {"status": "dispatched"},
+        )
+
+    monkeypatch.setattr(
+        "app.jobs.monitor_daily.run_morning_night_futures_gate",
+        record_gate,
+    )
     with Session(isolated_engine) as session:
         run = MonitorRun(
             run_date=run_date,
@@ -478,15 +571,21 @@ async def test_market_job_reuses_successful_analysis_for_delivery_retry(
         session.refresh(run)
 
         assert output["analysis_action"] == "reuse"
-        assert output["delivery_action"] == "retry"
-        assert calls == [
-            {
-                "run_date": run_date,
-                "force": False,
-                "requeue_sent_before": None,
-                "market_scope": market_scope,
-            }
-        ]
+        assert output["delivery_action"] == (
+            "dispatched" if market_scope == "us" else "retry"
+        )
+        assert calls == (
+            []
+            if market_scope == "us"
+            else [
+                {
+                    "run_date": run_date,
+                    "force": False,
+                    "requeue_sent_before": None,
+                    "market_scope": market_scope,
+                }
+            ]
+        )
         assert run.started_at == started_at
         assert run.completed_at == completed_at
         assert run.success_count == ticker_count
@@ -708,6 +807,24 @@ async def test_post_cutoff_retry_reuses_assessment_and_dispatches_only_pending_d
 
         retry_notifier = ThreeChunkNotifier()
 
+        if market_scope == "us":
+            payload = json.loads(digest.payload)
+            payload[MORNING_GATE_METADATA_KEY] = {
+                "state": "ready",
+                "retry_count": 1,
+                "ready_products": [
+                    "KRX_KOSPI200_NIGHT_FUT",
+                    "KRX_KOSDAQ150_NIGHT_FUT",
+                ],
+                "deadline_reached": False,
+            }
+            digest.payload = json.dumps(payload)
+            session.add(digest)
+            session.commit()
+            assert payload[TELEGRAM_DELIVERY_METADATA_KEY]["source_sha256"] == (
+                _telegram_source_sha256(payload)
+            )
+
         monkeypatch.setattr(
             "app.services.daily_monitor_service.CollectionService", fail_provider_init
         )
@@ -731,14 +848,21 @@ async def test_post_cutoff_retry_reuses_assessment_and_dispatches_only_pending_d
             lambda channel: retry_notifier,
         )
 
-        output = await _run_market_job(session, run_date, market_scope)
+        output = await _run_market_job(
+            session,
+            run_date,
+            market_scope,
+            as_of=datetime(2043, 8, 13, 8, 20, tzinfo=KST),
+        )
         session.refresh(run)
         session.refresh(assessment)
         session.refresh(digest)
         session.refresh(stock)
 
         assert output["analysis_action"] == "reuse"
-        assert output["delivery_action"] == "retry"
+        assert output["delivery_action"] == (
+            "dispatched" if market_scope == "us" else "retry"
+        )
         assert (run.started_at, run.completed_at) == original_run_times
         assert assessment.model_dump() == original_assessment
         assert retry_notifier.calls == ["[2/3]\nsecond", "[3/3]\nthird"]
