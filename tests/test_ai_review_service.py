@@ -1455,8 +1455,8 @@ def test_knowledge_v3_sources_decisions_and_safety_markers() -> None:
         assert marker not in text
 
 
-def test_dual_knowledge_policy_identity_starts_v34_structure_cohort() -> None:
-    assert ai_review_service.ANALYSIS_POLICY_VERSION == "daily-review-v3.4"
+def test_dual_knowledge_policy_identity_starts_v35_structure_cohort() -> None:
+    assert ai_review_service.ANALYSIS_POLICY_VERSION == "daily-review-v3.5"
     assert ai_review_service.OUTPUT_SCHEMA_VERSION == "3"
     manifest = knowledge_manifest()
     assert manifest["version"] == "3.0"
@@ -1579,7 +1579,7 @@ def test_packet_adds_fresh_chart_context_transition_and_numeric_provenance(
                     },
                     "unavailable_fields": ["support_zones", "atr", "elliott_wave"],
                     "structure": {
-                        "algorithm_version": "ohlcv-structure-v1",
+                        "algorithm_version": "ohlcv-structure-v2",
                         "as_of_date": RUN_DATE.isoformat(),
                         "price_basis": "adjusted_close",
                         "availability": {
@@ -1663,9 +1663,18 @@ def test_packet_adds_fresh_chart_context_transition_and_numeric_provenance(
                                 "high_date": "2026-07-01",
                                 "timeframe": "weekly",
                                 "confidence": "high",
+                                "usable_in_core": True,
+                                "usable_as_context": True,
+                                "usable_as_sole_core_reason": True,
+                                "audit_only": False,
                                 "retracements": {"0.5": 100.0},
                                 "extensions": {"1.618": 144.72},
                             }
+                        },
+                        "fibonacci_status": {
+                            "available": True,
+                            "reason": None,
+                            "anchor_alignment": {"valid": True, "reason": None},
                         },
                         "invalidation": {
                             "available": True,
@@ -1763,9 +1772,44 @@ def test_packet_adds_fresh_chart_context_transition_and_numeric_provenance(
     assert "chart_bollinger" in stock["chart_knowledge_routing"]["required_frameworks"]
     assert "chart_support_resistance" in stock["chart_knowledge_routing"]["required_frameworks"]
     assert "chart_elliott" not in stock["chart_knowledge_routing"]["required_frameworks"]
-    assert chart["structure"]["algorithm_version"] == "ohlcv-structure-v1"
+    assert chart["structure"]["algorithm_version"] == "ohlcv-structure-v2"
     assert "all_zones" not in chart["structure"]
     assert "local_pivots" not in chart["structure"]
+
+
+def test_low_confidence_fibonacci_is_audit_only_and_not_an_ai_fact() -> None:
+    chart = {
+        "available": True,
+        "quality": "fresh",
+        "timeframes": {},
+        "structure": {
+            "as_of_date": RUN_DATE.isoformat(),
+            "fibonacci": {
+                "long_term": {
+                    "anchor_type": "long_term",
+                    "low_price": 80.0,
+                    "low_date": "2026-05-01",
+                    "high_price": 120.0,
+                    "high_date": "2026-07-01",
+                    "timeframe": "weekly",
+                    "confidence": "low",
+                    "usable_in_core": False,
+                    "usable_as_context": False,
+                    "usable_as_sole_core_reason": False,
+                    "audit_only": True,
+                    "retracements": {"0.5": 100.0},
+                    "extensions": {"1.618": 144.72},
+                }
+            },
+        },
+    }
+
+    facts = ai_review_service._chart_facts(chart, "USD")
+
+    assert not any(
+        fact["fact_id"] == "chart:structure:fibonacci:long_term"
+        for fact in facts
+    )
 
 
 def test_stale_chart_is_not_routed_or_exposed_as_numeric_fact(
@@ -2361,7 +2405,7 @@ def test_v32_packet_waits_for_profile_and_numeric_activation_gates(
     assert blocked.reason == "shadow_cohort_activation_gate_failed"
 
 
-def test_v34_packet_records_ready_shadow_cohort_metadata(
+def test_v35_packet_records_structure_v2_shadow_cohort_metadata(
     monkeypatch,
     tmp_path: Path,
 ) -> None:
@@ -2371,10 +2415,11 @@ def test_v34_packet_records_ready_shadow_cohort_metadata(
         packet = build_ai_review_packet(session, RUN_DATE, "us")
 
     assert packet is not None
-    assert packet["analysis_policy_version"] == "daily-review-v3.4"
+    assert packet["analysis_policy_version"] == "daily-review-v3.5"
+    assert packet["structure_algorithm_version"] == "ohlcv-structure-v2"
     assert packet["ready_for_ai"] is True
     assert packet["shadow_cohort"] == {
-        "policy_version": "daily-review-v3.4",
+        "policy_version": "daily-review-v3.5",
         "eligible": True,
         "profile_gate": {
             "active_total": 1,

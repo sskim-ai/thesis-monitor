@@ -9,7 +9,7 @@ from typing import Literal, Mapping, Sequence
 from app.schemas.thesis import InvestorSupplyContext
 
 
-ALGORITHM_VERSION = "ohlcv-structure-v1"
+ALGORITHM_VERSION = "ohlcv-structure-v2"
 Timeframe = Literal["daily", "weekly", "monthly"]
 PivotKind = Literal["low", "high"]
 SwingKind = Literal["low", "high"]
@@ -24,6 +24,17 @@ class StructureBar:
     low: float
     close: float
     volume: float | None = None
+
+
+@dataclass(frozen=True)
+class NormalizedBarSeries:
+    timeframe: Timeframe
+    bars: tuple[StructureBar, ...]
+    lookback_start_date: str | None
+    lookback_end_date: str | None
+    source_count: int
+    actual_count: int
+    price_basis: str
 
 
 @dataclass(frozen=True)
@@ -94,6 +105,18 @@ _RECENCY = {
     "monthly": ((3, 2), (6, 1)),
 }
 
+_HIGHER_TIMEFRAMES: dict[Timeframe, tuple[Timeframe, ...]] = {
+    "daily": ("weekly", "monthly"),
+    "weekly": ("monthly",),
+    "monthly": (),
+}
+
+_LOWER_TIMEFRAMES: dict[Timeframe, tuple[Timeframe, ...]] = {
+    "daily": (),
+    "weekly": ("daily",),
+    "monthly": ("daily", "weekly"),
+}
+
 
 def _number(value: object) -> float | None:
     if isinstance(value, (int, float)) and not isinstance(value, bool):
@@ -142,6 +165,38 @@ def normalize_structure_bars(
         )
         for index, (parsed_date, raw) in enumerate(normalized)
     ]
+
+
+def normalize_bar_series(
+    raw_bars: Sequence[Mapping[str, object]],
+    timeframe: Timeframe,
+    *,
+    lookback: int,
+    price_basis: str = "adjusted_close",
+) -> NormalizedBarSeries:
+    full_bars = normalize_structure_bars(raw_bars)
+    selected = full_bars[-lookback:]
+    bars = tuple(
+        StructureBar(
+            index=index,
+            date=bar.date,
+            open=bar.open,
+            high=bar.high,
+            low=bar.low,
+            close=bar.close,
+            volume=bar.volume,
+        )
+        for index, bar in enumerate(selected)
+    )
+    return NormalizedBarSeries(
+        timeframe=timeframe,
+        bars=bars,
+        lookback_start_date=bars[0].date if bars else None,
+        lookback_end_date=bars[-1].date if bars else None,
+        source_count=len(raw_bars),
+        actual_count=len(bars),
+        price_basis=price_basis,
+    )
 
 
 def calc_wilder_atr(
@@ -358,16 +413,23 @@ def score_price_zones(
     for timeframe in ("daily", "weekly", "monthly"):
         for original in zones_by_timeframe.get(timeframe, []):
             zone = dict(original)
-            overlaps = 0
-            for other_timeframe in ("daily", "weekly", "monthly"):
-                if other_timeframe == timeframe:
-                    continue
+            higher_overlaps = 0
+            for other_timeframe in _HIGHER_TIMEFRAMES[timeframe]:
                 if any(
                     _zones_overlap(zone, other)
                     for other in zones_by_timeframe.get(other_timeframe, [])
                 ):
-                    overlaps += 1
-            higher_score = 3 if overlaps >= 2 else 2 if overlaps == 1 else 0
+                    higher_overlaps += 1
+            lower_overlaps = sum(
+                any(
+                    _zones_overlap(zone, other)
+                    for other in zones_by_timeframe.get(other_timeframe, [])
+                )
+                for other_timeframe in _LOWER_TIMEFRAMES[timeframe]
+            )
+            higher_score = (
+                3 if higher_overlaps >= 2 else 2 if higher_overlaps == 1 else 0
+            )
             center = float(zone["center"])
             atr_value = float(zone.get("atr") or 0)
             overlap_tolerance = max(center * 0.01, atr_value * 0.5)
@@ -386,6 +448,8 @@ def score_price_zones(
             zone.update(
                 {
                     "higher_timeframe_score": higher_score,
+                    "higher_timeframe_overlap_count": higher_overlaps,
+                    "lower_timeframe_overlap_count": lower_overlaps,
                     "bollinger_overlap": bollinger,
                     "fibonacci_overlap": fibonacci,
                     "score": min(12, score),
@@ -494,8 +558,22 @@ def detect_major_swings(
     raw_bars: Sequence[Mapping[str, object]],
     timeframe: Timeframe,
 ) -> list[MajorSwing]:
+    if raw_bars and not isinstance(raw_bars[0], Mapping):
+        raise TypeError("OHLCV structure engines require raw bar mappings")
+    series = normalize_bar_series(
+        raw_bars,
+        timeframe,
+        lookback=MAJOR_CONFIG[timeframe].lookback,
+    )
+    return detect_major_swings_from_normalized_bars(series)
+
+
+def detect_major_swings_from_normalized_bars(
+    series: NormalizedBarSeries,
+) -> list[MajorSwing]:
+    timeframe = series.timeframe
     config = MAJOR_CONFIG[timeframe]
-    bars = normalize_structure_bars(raw_bars, lookback=config.lookback)
+    bars = list(series.bars)
     atr = calc_wilder_atr(bars)
     if len(bars) < 14 or atr[13] is None:
         return []
@@ -599,8 +677,9 @@ def _swing_dict(swing: MajorSwing) -> dict[str, object]:
 
 def select_major_anchors(
     major_swings: Sequence[MajorSwing],
-    raw_bars: Sequence[Mapping[str, object]],
-) -> dict[str, dict[str, object] | None]:
+    series: NormalizedBarSeries,
+) -> dict[str, object]:
+    alignment = validate_major_swing_alignment(major_swings, series)
     if not major_swings:
         return {
             "major_base_low": None,
@@ -608,8 +687,18 @@ def select_major_anchors(
             "first_higher_low": None,
             "dominant_major_high": None,
             "recent_major_high": None,
+            "alignment": alignment,
         }
-    bars = normalize_structure_bars(raw_bars)
+    if alignment["valid"] is not True:
+        return {
+            "major_base_low": None,
+            "breakout_start": None,
+            "first_higher_low": None,
+            "dominant_major_high": None,
+            "recent_major_high": None,
+            "alignment": alignment,
+        }
+    bars = list(series.bars)
     base_candidates: list[MajorSwing] = []
     for candidate in (swing for swing in major_swings if swing.kind == "low"):
         previous_highs = [
@@ -634,14 +723,33 @@ def select_major_anchors(
     )
 
     breakout_start: MajorSwing | None = None
-    for index in range(20, len(bars)):
-        if bars[index].close <= max(bar.close for bar in bars[index - 20:index]):
-            continue
-        preceding_lows = [
-            swing for swing in major_swings if swing.kind == "low" and swing.index < index
-        ]
-        if preceding_lows:
-            breakout_start = preceding_lows[-1]
+    breakout_signal_index: int | None = None
+    breakout_volume_ratio: float | None = None
+    if series.timeframe == "weekly":
+        for index in range(20, len(bars)):
+            if bars[index].close <= max(bar.close for bar in bars[index - 20:index]):
+                continue
+            preceding_lows = [
+                swing
+                for swing in major_swings
+                if swing.kind == "low" and swing.index < index
+            ]
+            if preceding_lows:
+                breakout_start = preceding_lows[-1]
+                breakout_signal_index = index
+                prior_volumes = [bar.volume for bar in bars[index - 20:index]]
+                current_volume = bars[index].volume
+                if (
+                    current_volume is not None
+                    and current_volume >= 0
+                    and all(volume is not None and volume >= 0 for volume in prior_volumes)
+                ):
+                    average_volume = sum(float(volume) for volume in prior_volumes) / 20
+                    breakout_volume_ratio = (
+                        current_volume / average_volume if average_volume > 0 else None
+                    )
+                else:
+                    breakout_volume_ratio = None
 
     first_higher_low: MajorSwing | None = None
     if major_base is not None:
@@ -677,37 +785,158 @@ def select_major_anchors(
         swing: MajorSwing | None,
         anchor_type: str,
         confidence: str,
+        *,
+        selection_reason: Sequence[str],
+        blocking_unknowns: Sequence[str] = (),
     ) -> dict[str, object] | None:
         if swing is None:
             return None
         return {
             "anchor_type": anchor_type,
+            "index": swing.index,
             "price": _round(swing.price),
             "date": swing.date,
             "timeframe": swing.timeframe,
             "confidence": confidence,
             "source": "major_swing_engine",
+            "selection_reason": list(selection_reason),
+            "blocking_unknowns": list(blocking_unknowns),
         }
 
+    breakout_volume_status = (
+        "not_applicable"
+        if breakout_signal_index is None
+        else "volume_confirmed"
+        if breakout_volume_ratio is not None and breakout_volume_ratio >= 1.2
+        else "volume_not_confirmed"
+        if breakout_volume_ratio is not None
+        else "volume_unknown"
+    )
+    breakout_confidence = (
+        "high" if breakout_volume_status == "volume_confirmed" else "medium"
+    )
+
     return {
-        "major_base_low": anchor_value(major_base, "major_base_low", "high"),
-        "breakout_start": anchor_value(breakout_start, "breakout_start", "medium"),
-        "first_higher_low": anchor_value(first_higher_low, "first_higher_low", "high"),
-        "dominant_major_high": anchor_value(dominant_high, "dominant_major_high", "high"),
-        "recent_major_high": anchor_value(recent_high, "recent_major_high", "high"),
+        "major_base_low": anchor_value(
+            major_base,
+            "major_base_low",
+            "medium",
+            selection_reason=(
+                "rise_threshold_passed",
+                "prior_major_high_broken",
+                "pre_base_regime_unverified",
+            ),
+            blocking_unknowns=("pre_base_regime_unverified",),
+        ),
+        "breakout_start": anchor_value(
+            breakout_start,
+            "breakout_start",
+            breakout_confidence,
+            selection_reason=("20_week_close_breakout", breakout_volume_status),
+            blocking_unknowns=(
+                ("historical_volume_confirmation_unavailable",)
+                if breakout_volume_status == "volume_unknown"
+                else ()
+            ),
+        ),
+        "first_higher_low": anchor_value(
+            first_higher_low,
+            "first_higher_low",
+            "high",
+            selection_reason=(
+                "higher_low_threshold_passed",
+                "prior_major_high_broken",
+            ),
+        ),
+        "dominant_major_high": anchor_value(
+            dominant_high,
+            "dominant_major_high",
+            "high",
+            selection_reason=("highest_confirmed_major_high_after_anchor",),
+        ),
+        "recent_major_high": anchor_value(
+            recent_high,
+            "recent_major_high",
+            "high",
+            selection_reason=("most_recent_confirmed_major_high_after_anchor",),
+        ),
+        "breakout_confirmation": {
+            "index": breakout_signal_index,
+            "date": (
+                bars[breakout_signal_index].date
+                if breakout_signal_index is not None
+                else None
+            ),
+            "price_condition": (
+                "20_week_close_breakout"
+                if breakout_signal_index is not None
+                else "not_found"
+            ),
+            "volume_confirmation": breakout_volume_status,
+            "volume_ratio_20": _round(breakout_volume_ratio),
+        },
+        "alignment": alignment,
+    }
+
+
+def validate_major_swing_alignment(
+    major_swings: Sequence[MajorSwing],
+    series: NormalizedBarSeries,
+) -> dict[str, object]:
+    mismatches = [
+        {
+            "index": swing.index,
+            "swing_date": swing.date,
+            "bar_date": (
+                series.bars[swing.index].date
+                if 0 <= swing.index < len(series.bars)
+                else None
+            ),
+        }
+        for swing in major_swings
+        if not (
+            swing.timeframe == series.timeframe
+            and 0 <= swing.index < len(series.bars)
+            and series.bars[swing.index].date == swing.date
+        )
+    ]
+    return {
+        "valid": not mismatches,
+        "reason": None if not mismatches else "major_swing_index_mismatch",
+        "canonical_timeframe": series.timeframe,
+        "lookback_start_date": series.lookback_start_date,
+        "lookback_end_date": series.lookback_end_date,
+        "source_count": series.source_count,
+        "actual_count": series.actual_count,
+        "price_basis": series.price_basis,
+        "mismatches": mismatches,
     }
 
 
 def build_tentative_elliott_count(
     major_swings: Sequence[MajorSwing],
-    anchors: Mapping[str, Mapping[str, object] | None],
+    anchors: Mapping[str, object],
 ) -> dict[str, object]:
+    alignment = anchors.get("alignment")
+    if isinstance(alignment, Mapping) and alignment.get("valid") is not True:
+        return {
+            "available": False,
+            "tentative_count": True,
+            "reason": "anchor_index_mismatch",
+        }
     base = anchors.get("major_base_low") or anchors.get("breakout_start")
-    if base is None:
+    if not isinstance(base, Mapping):
         return {"available": False, "tentative_count": True, "reason": "major_anchor_unavailable"}
+    anchor_index = base.get("index")
     start_date = str(base["date"])
     start_index = next(
-        (index for index, swing in enumerate(major_swings) if swing.date == start_date and swing.kind == "low"),
+        (
+            index
+            for index, swing in enumerate(major_swings)
+            if swing.index == anchor_index
+            and swing.date == start_date
+            and swing.kind == "low"
+        ),
         None,
     )
     if start_index is None:
@@ -762,15 +991,30 @@ def _fibonacci_set(
         (low_confidence, high_confidence),
         key=lambda value: confidence_rank.get(value, -1),
     )
+    blocking_unknowns = list(
+        dict.fromkeys(
+            [
+                *list(low.get("blocking_unknowns") or []),
+                *list(high.get("blocking_unknowns") or []),
+            ]
+        )
+    )
     return {
         "anchor_type": anchor_type,
+        "low_index": low["index"],
         "low_price": _round(low_price),
         "low_date": low["date"],
+        "high_index": high["index"],
         "high_price": _round(high_price),
         "high_date": high["date"],
         "timeframe": low["timeframe"],
         "confidence": confidence,
         "source": "major_swing_engine",
+        "usable_in_core": confidence == "high",
+        "usable_as_context": confidence in {"high", "medium"},
+        "usable_as_sole_core_reason": confidence == "high",
+        "audit_only": confidence == "low",
+        "blocking_unknowns": blocking_unknowns,
         "retracements": {
             str(ratio): _round(high_price - ratio * price_range)
             for ratio in (0.382, 0.5, 0.618)
@@ -783,8 +1027,11 @@ def _fibonacci_set(
 
 
 def calculate_fibonacci_sets(
-    anchors: Mapping[str, Mapping[str, object] | None],
+    anchors: Mapping[str, object],
+    series: NormalizedBarSeries | None = None,
 ) -> dict[str, dict[str, object]]:
+    if series is not None and validate_anchor_alignment(anchors, series)["valid"] is not True:
+        return {}
     values: dict[str, dict[str, object]] = {}
     candidates = (
         ("long_term", "major_base_low", "dominant_major_high"),
@@ -792,10 +1039,54 @@ def calculate_fibonacci_sets(
         ("breakout", "breakout_start", "recent_major_high"),
     )
     for name, low_key, high_key in candidates:
-        result = _fibonacci_set(name, anchors.get(low_key), anchors.get(high_key))
+        low = anchors.get(low_key)
+        high = anchors.get(high_key)
+        result = _fibonacci_set(
+            name,
+            low if isinstance(low, Mapping) else None,
+            high if isinstance(high, Mapping) else None,
+        )
         if result is not None:
             values[name] = result
     return values
+
+
+def validate_anchor_alignment(
+    anchors: Mapping[str, object],
+    series: NormalizedBarSeries,
+) -> dict[str, object]:
+    mismatches: list[dict[str, object]] = []
+    for anchor_type in (
+        "major_base_low",
+        "breakout_start",
+        "first_higher_low",
+        "dominant_major_high",
+        "recent_major_high",
+    ):
+        anchor = anchors.get(anchor_type)
+        if not isinstance(anchor, Mapping):
+            continue
+        index = anchor.get("index")
+        valid_index = isinstance(index, int) and 0 <= index < len(series.bars)
+        bar_date = series.bars[index].date if valid_index else None
+        if not (
+            valid_index
+            and anchor.get("timeframe") == series.timeframe
+            and bar_date == anchor.get("date")
+        ):
+            mismatches.append(
+                {
+                    "anchor_type": anchor_type,
+                    "index": index,
+                    "anchor_date": anchor.get("date"),
+                    "bar_date": bar_date,
+                }
+            )
+    return {
+        "valid": not mismatches,
+        "reason": None if not mismatches else "anchor_index_mismatch",
+        "mismatches": mismatches,
+    }
 
 
 def classify_supply_context(
@@ -859,6 +1150,20 @@ def calculate_invalidation(
     if support is None:
         return {"available": False, "reason": "support_unavailable"}
     timeframe = str(support.get("timeframe") or "daily")
+    if timeframe == "monthly":
+        return {
+            "available": False,
+            "reason": "monthly_invalidation_contract_undefined",
+            "timeframe": "monthly",
+            "nearest_support_preserved": True,
+        }
+    if timeframe not in {"daily", "weekly"}:
+        return {
+            "available": False,
+            "reason": "invalidation_timeframe_unsupported",
+            "timeframe": timeframe,
+            "nearest_support_preserved": True,
+        }
     atr_value = weekly_atr if timeframe == "weekly" else daily_atr
     if atr_value is None:
         return {"available": False, "reason": "atr_unavailable"}
@@ -918,8 +1223,14 @@ def calculate_risk_reward(
     invalidation: Mapping[str, object],
     support: Mapping[str, object] | None = None,
 ) -> dict[str, object]:
-    if resistance is None or invalidation.get("available") is not True:
-        return {"available": False, "reason": "resistance_or_invalidation_unavailable"}
+    if resistance is None:
+        return {"available": False, "reason": "resistance_unavailable"}
+    if invalidation.get("available") is not True:
+        return {
+            "available": False,
+            "reason": "invalidation_unavailable",
+            "blocking_reason": invalidation.get("reason"),
+        }
     target = float(resistance["zone_low"])
     invalidation_price = float(invalidation["price"])
 
@@ -954,6 +1265,28 @@ def calculate_risk_reward(
         "support_entry": support_entry,
         "nearest_target_enforced": True,
     }
+
+
+def select_nearest_meaningful_zones(
+    classified_zones: Mapping[str, Sequence[Mapping[str, object]]],
+) -> tuple[Mapping[str, object] | None, Mapping[str, object] | None]:
+    supports = [
+        zone
+        for zone in [
+            *classified_zones.get("active", []),
+            *classified_zones.get("support", []),
+        ]
+        if zone.get("strength") in {"Strong", "Medium"}
+    ]
+    resistances = [
+        zone
+        for zone in classified_zones.get("resistance", [])
+        if zone.get("strength") in {"Strong", "Medium"}
+    ]
+    return (
+        supports[0] if supports else None,
+        resistances[0] if resistances else None,
+    )
 
 
 def determine_chart_state(
@@ -1139,12 +1472,18 @@ def analyze_chart_structure(
     price_basis: str = "adjusted_close",
 ) -> dict[str, object]:
     timeframe_contexts = timeframe_contexts or {}
-    bars_by_timeframe = {
-        timeframe: normalize_structure_bars(
+    series_by_timeframe = {
+        timeframe: normalize_bar_series(
             raw_by_timeframe.get(timeframe, []),
-            lookback=300 if timeframe == "daily" else 156 if timeframe == "weekly" else 60,
+            timeframe,  # type: ignore[arg-type]
+            lookback=MAJOR_CONFIG[timeframe].lookback,  # type: ignore[index]
+            price_basis=price_basis,
         )
         for timeframe in ("daily", "weekly", "monthly")
+    }
+    bars_by_timeframe = {
+        timeframe: list(series.bars)
+        for timeframe, series in series_by_timeframe.items()
     }
     atr_series = {
         timeframe: calc_wilder_atr(bars)
@@ -1173,7 +1512,9 @@ def analyze_chart_structure(
         for timeframe in ("daily", "weekly", "monthly")
     }
     major_swings_by_timeframe = {
-        timeframe: detect_major_swings(raw_by_timeframe.get(timeframe, []), timeframe)  # type: ignore[arg-type]
+        timeframe: detect_major_swings_from_normalized_bars(
+            series_by_timeframe[timeframe]
+        )
         for timeframe in ("daily", "weekly", "monthly")
     }
     primary_timeframe: Timeframe = (
@@ -1182,13 +1523,30 @@ def analyze_chart_structure(
     primary_swings = major_swings_by_timeframe[primary_timeframe]
     anchors = select_major_anchors(
         primary_swings,
-        raw_by_timeframe.get(primary_timeframe, []),
+        series_by_timeframe[primary_timeframe],
     )
     elliott = build_tentative_elliott_count(primary_swings, anchors)
-    fibonacci = calculate_fibonacci_sets(anchors)
+    anchor_alignment = validate_anchor_alignment(
+        anchors,
+        series_by_timeframe[primary_timeframe],
+    )
+    fibonacci = calculate_fibonacci_sets(
+        anchors,
+        series_by_timeframe[primary_timeframe],
+    )
+    fibonacci_status = {
+        "available": bool(fibonacci),
+        "reason": (
+            anchor_alignment.get("reason")
+            if anchor_alignment.get("valid") is not True
+            else None if fibonacci else "eligible_anchor_pair_unavailable"
+        ),
+        "anchor_alignment": anchor_alignment,
+    }
     fib_retracements = [
         float(value)
         for item in fibonacci.values()
+        if item.get("usable_as_context") is True
         for key, value in dict(item.get("retracements") or {}).items()
         if key in {"0.382", "0.5", "0.618"}
     ]
@@ -1218,18 +1576,7 @@ def analyze_chart_structure(
         )
         for timeframe in ("daily", "weekly", "monthly")
     }
-    eligible_supports = [
-        zone
-        for zone in [*classified["active"], *classified["support"]]
-        if zone.get("strength") in {"Strong", "Medium"}
-    ]
-    eligible_resistances = [
-        zone
-        for zone in classified["resistance"]
-        if zone.get("strength") in {"Strong", "Medium"}
-    ]
-    support = eligible_supports[0] if eligible_supports else None
-    resistance = eligible_resistances[0] if eligible_resistances else None
+    support, resistance = select_nearest_meaningful_zones(classified)
     supply = classify_supply_context(investor_supply)
     volume_ratio = _number(daily_context.get("volume_ratio_20"))
     daily_candle = dict(daily_context.get("candle") or {})
@@ -1314,6 +1661,17 @@ def analyze_chart_structure(
         "major_swings": {
             "primary_timeframe": primary_timeframe,
             "fallback_used": primary_timeframe == "daily",
+            "canonical_series": {
+                "lookback_start_date": series_by_timeframe[
+                    primary_timeframe
+                ].lookback_start_date,
+                "lookback_end_date": series_by_timeframe[
+                    primary_timeframe
+                ].lookback_end_date,
+                "source_count": series_by_timeframe[primary_timeframe].source_count,
+                "actual_count": series_by_timeframe[primary_timeframe].actual_count,
+                "price_basis": series_by_timeframe[primary_timeframe].price_basis,
+            },
             "points": [_swing_dict(swing) for swing in primary_swings],
             "by_timeframe": {
                 timeframe: [_swing_dict(swing) for swing in swings]
@@ -1323,6 +1681,7 @@ def analyze_chart_structure(
         "major_anchors": anchors,
         "elliott": elliott,
         "fibonacci": fibonacci,
+        "fibonacci_status": fibonacci_status,
         "invalidation": invalidation,
         "risk_reward": risk_reward,
         "supply_classification": supply,

@@ -134,7 +134,7 @@ theme is not a profile-refresh trigger.
 
 ## Phase 4/5 Dual-Knowledge Review Contract
 
-Output schema `3` and analysis policy `daily-review-v3.4` keep Investment Knowledge v3 as the
+Output schema `3` and analysis policy `daily-review-v3.5` keep Investment Knowledge v3 as the
 fundamental, valuation, and data-safety authority and add Stock Chart & Value Analysis Knowledge v1 as
 a separate OHLCV interpretation reference. The two source files are never merged. Backend validated
 facts and Investment Knowledge safety rules take precedence over OHLCV outputs and chart examples.
@@ -148,7 +148,7 @@ structure that lacks sufficient history or confirmation remains an explicit unkn
 timeframes are not routed into analysis or registered as prose-eligible numeric facts. Adjusted chart
 prices remain separate from unadjusted historical-valuation prices.
 
-`ohlcv-structure-v1` deterministically supplies Wilder ATR14, Local-Pivot zones and boxes, an
+`ohlcv-structure-v2` deterministically supplies Wilder ATR14, Local-Pivot zones and boxes, an
 independent ATR-ZigZag Major Swing stream, Major-Swing-only Elliott/Fibonacci anchors, structural
 invalidation, nearest-resistance risk/reward, and an internal chart state. Full pivot/swing audit stays
 in the assessment price context; AI packets receive compact nearest zones, selected anchors, state,

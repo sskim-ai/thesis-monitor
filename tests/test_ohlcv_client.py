@@ -317,7 +317,7 @@ async def test_chart_context_uses_provider_indicators_and_preserves_price_basis(
     assert daily.rsi_14 == 61.4
     assert daily.macd_histogram == 0.5
     assert context.valuation_history[0].close == 125
-    assert context.chart.structure["algorithm_version"] == "ohlcv-structure-v1"
+    assert context.chart.structure["algorithm_version"] == "ohlcv-structure-v2"
     assert "support_resistance" in context.chart.unavailable_fields
     assert "atr" in context.chart.unavailable_fields
     assert "elliott_wave" in context.chart.unavailable_fields
@@ -355,7 +355,7 @@ async def test_chart_context_populates_structure_from_sufficient_adjusted_histor
     ).fetch_price_context("NVDA")
 
     structure = context.chart.structure
-    assert structure["algorithm_version"] == "ohlcv-structure-v1"
+    assert structure["algorithm_version"] == "ohlcv-structure-v2"
     assert structure["availability"]["atr"] is True
     assert structure["availability"]["support_resistance"] is True
     assert structure["availability"]["major_swings"] is True

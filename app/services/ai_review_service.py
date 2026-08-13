@@ -43,13 +43,14 @@ from app.services.numeric_semantic_registry import (
     usage_direction_matches,
     usage_matches_semantic,
 )
+from app.services.ohlcv_structure_service import ALGORITHM_VERSION
 
 
 logger = logging.getLogger(__name__)
 
 PACKET_SCHEMA_VERSION = "1"
 OUTPUT_SCHEMA_VERSION = "3"
-ANALYSIS_POLICY_VERSION = "daily-review-v3.4"
+ANALYSIS_POLICY_VERSION = "daily-review-v3.5"
 AIReviewMarket = Literal["us", "kr"]
 
 _INTERNAL_TEXT = re.compile(
@@ -892,6 +893,7 @@ def _compact_chart_structure(structure: dict[str, object]) -> dict[str, object]:
         "major_anchors": _dict(structure.get("major_anchors")),
         "elliott": compact_elliott,
         "fibonacci": _dict(structure.get("fibonacci")),
+        "fibonacci_status": _dict(structure.get("fibonacci_status")),
         "invalidation": _dict(structure.get("invalidation")),
         "risk_reward": _dict(structure.get("risk_reward")),
         "supply_classification": _dict(structure.get("supply_classification")),
@@ -1139,6 +1141,8 @@ def _chart_facts(chart: dict[str, object], currency: str) -> list[dict[str, obje
             )
         for name, item in _dict(structure.get("fibonacci")).items():
             if not isinstance(item, dict):
+                continue
+            if item.get("usable_as_context") is not True:
                 continue
             facts.append(
                 {
@@ -1623,6 +1627,7 @@ def build_ai_review_packet(
     body = {
         "schema_version": PACKET_SCHEMA_VERSION,
         "analysis_policy_version": ANALYSIS_POLICY_VERSION,
+        "structure_algorithm_version": ALGORITHM_VERSION,
         "knowledge": knowledge,
         "chart_knowledge": chart_knowledge,
         "market": market,
