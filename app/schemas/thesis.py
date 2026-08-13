@@ -351,6 +351,7 @@ class ChartContext(BaseModel):
     price_basis: str = "adjusted"
     timeframes: dict[str, ChartTimeframeContext] = Field(default_factory=dict)
     dynamic_levels: dict[str, object] = Field(default_factory=dict)
+    structure: dict[str, object] = Field(default_factory=dict)
     unavailable_fields: list[str] = Field(default_factory=list)
     warnings: list[str] = Field(default_factory=list)
 

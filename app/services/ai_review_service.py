@@ -49,7 +49,7 @@ logger = logging.getLogger(__name__)
 
 PACKET_SCHEMA_VERSION = "1"
 OUTPUT_SCHEMA_VERSION = "3"
-ANALYSIS_POLICY_VERSION = "daily-review-v3.3"
+ANALYSIS_POLICY_VERSION = "daily-review-v3.4"
 AIReviewMarket = Literal["us", "kr"]
 
 _INTERNAL_TEXT = re.compile(
@@ -361,6 +361,31 @@ def _chart_knowledge_routing(chart: dict[str, object]) -> dict[str, object]:
     transition = chart.get("price_transition")
     if isinstance(transition, dict) and transition.get("threshold_event") != "baseline":
         required.append("chart_threshold_transition")
+    structure = chart.get("structure")
+    availability = (
+        structure.get("availability")
+        if isinstance(structure, dict) and isinstance(structure.get("availability"), dict)
+        else {}
+    )
+    for available_key, framework in (
+        ("atr", "chart_atr"),
+        ("support_resistance", "chart_support_resistance"),
+        ("box_ranges", "chart_box"),
+        ("major_swings", "chart_major_swing"),
+        ("fibonacci", "chart_fibonacci"),
+        ("risk_reward", "chart_risk_reward"),
+        ("invalidation", "chart_invalidation"),
+        ("chart_state_machine", "chart_state_machine"),
+    ):
+        if availability.get(available_key) is True:
+            required.append(framework)
+    elliott = structure.get("elliott") if isinstance(structure, dict) else None
+    if (
+        availability.get("elliott_wave") is True
+        and isinstance(elliott, dict)
+        and elliott.get("usable_in_core") is True
+    ):
+        required.append("chart_elliott")
     return {
         "available": usable,
         "quality": str(chart.get("quality") or "unavailable"),
@@ -545,7 +570,11 @@ def _dict(value: object) -> dict[str, object]:
     return parsed if isinstance(parsed, dict) else {}
 
 
-def _list(value: str) -> list[object]:
+def _list(value: object) -> list[object]:
+    if isinstance(value, list):
+        return value
+    if not isinstance(value, str):
+        return []
     parsed = _json(value, [])
     return parsed if isinstance(parsed, list) else []
 
@@ -819,6 +848,57 @@ def _price_transition(
     }
 
 
+def _compact_chart_structure(structure: dict[str, object]) -> dict[str, object]:
+    zones = _dict(structure.get("zones"))
+    boxes = _dict(structure.get("boxes"))
+    major = _dict(structure.get("major_swings"))
+    elliott = _dict(structure.get("elliott"))
+    compact_elliott = {
+        key: value
+        for key in (
+            "available",
+            "tentative_count",
+            "confidence",
+            "possible_diagonal",
+            "usable_in_core",
+            "reason",
+            "blocking_unknowns",
+        )
+        if (value := elliott.get(key)) is not None
+    }
+    if elliott.get("usable_in_core") is True:
+        compact_elliott["points"] = _list(elliott.get("points"))[-6:]
+    return {
+        "algorithm_version": structure.get("algorithm_version"),
+        "as_of_date": structure.get("as_of_date"),
+        "price_basis": structure.get("price_basis"),
+        "availability": _dict(structure.get("availability")),
+        "atr": _dict(structure.get("atr")),
+        "nearest_supports": _list(zones.get("support"))[:2],
+        "nearest_resistance": (
+            _list(zones.get("resistance"))[:1]
+        ),
+        "active_zones": _list(zones.get("active"))[:2],
+        "boxes": {
+            timeframe: _list(boxes.get(timeframe))[:1]
+            for timeframe in ("daily", "weekly", "monthly")
+            if _list(boxes.get(timeframe))
+        },
+        "major_swings": {
+            "primary_timeframe": major.get("primary_timeframe"),
+            "fallback_used": major.get("fallback_used"),
+            "recent_points": _list(major.get("points"))[-6:],
+        },
+        "major_anchors": _dict(structure.get("major_anchors")),
+        "elliott": compact_elliott,
+        "fibonacci": _dict(structure.get("fibonacci")),
+        "invalidation": _dict(structure.get("invalidation")),
+        "risk_reward": _dict(structure.get("risk_reward")),
+        "supply_classification": _dict(structure.get("supply_classification")),
+        "chart_state": _dict(structure.get("chart_state")),
+    }
+
+
 def _chart_payload(
     assessment: ThesisAssessment,
     thesis: InvestmentThesis,
@@ -826,6 +906,10 @@ def _chart_payload(
 ) -> dict[str, object]:
     price_context = _dict(assessment.price_context)
     chart = _public_value(_dict(price_context.get("chart")))
+    if isinstance(chart, dict) and isinstance(chart.get("structure"), dict):
+        chart["structure"] = _public_value(
+            _compact_chart_structure(_dict(chart.get("structure")))
+        )
     decision = _dict(price_context.get("decision"))
     previous_decision = (
         _dict(_dict(previous.price_context).get("decision"))
@@ -962,6 +1046,200 @@ def _chart_facts(chart: dict[str, object], currency: str) -> list[dict[str, obje
                 "fields": transition,
             }
         )
+    structure = chart.get("structure")
+    if chart_usable and isinstance(structure, dict):
+        atr = _dict(structure.get("atr"))
+        for timeframe in ("daily", "weekly", "monthly"):
+            value = _dict(atr.get(timeframe))
+            if value.get("available") is not True or _number(value.get("value")) is None:
+                continue
+            facts.append(
+                {
+                    "fact_id": f"chart:structure:atr:{timeframe}",
+                    "fact_type": "chart_structure_atr",
+                    "as_of_date": str(structure.get("as_of_date") or ""),
+                    "source": "deterministic_ohlcv_structure",
+                    "fields": {
+                        "value": value["value"],
+                        "currency": currency,
+                        "timeframe": timeframe,
+                        "period": "Wilder 14",
+                        "algorithm_version": structure.get("algorithm_version"),
+                    },
+                }
+            )
+        for category, fact_type in (
+            ("nearest_supports", "chart_support_zone"),
+            ("nearest_resistance", "chart_resistance_zone"),
+            ("active_zones", "chart_active_zone"),
+        ):
+            for index, item in enumerate(_list(structure.get(category)), start=1):
+                if not isinstance(item, dict):
+                    continue
+                fields = {
+                    key: item[key]
+                    for key in (
+                        "zone_low",
+                        "zone_high",
+                        "distance_pct",
+                        "distance_to_lower_pct",
+                        "distance_to_upper_pct",
+                        "timeframe",
+                        "strength",
+                    )
+                    if item.get(key) is not None
+                }
+                fields["currency"] = currency
+                facts.append(
+                    {
+                        "fact_id": f"chart:structure:{category}:{index}",
+                        "fact_type": fact_type,
+                        "as_of_date": str(structure.get("as_of_date") or ""),
+                        "source": "deterministic_ohlcv_structure",
+                        "fields": fields,
+                    }
+                )
+        for timeframe, items in _dict(structure.get("boxes")).items():
+            for index, item in enumerate(_list(items), start=1):
+                if not isinstance(item, dict):
+                    continue
+                facts.append(
+                    {
+                        "fact_id": f"chart:structure:box:{timeframe}:{index}",
+                        "fact_type": "chart_box",
+                        "as_of_date": str(structure.get("as_of_date") or ""),
+                        "source": "deterministic_ohlcv_structure",
+                        "fields": {
+                            "box_low": item.get("box_low"),
+                            "box_high": item.get("box_high"),
+                            "width_pct": item.get("width_pct"),
+                            "currency": currency,
+                            "timeframe": timeframe,
+                        },
+                    }
+                )
+        major = _dict(structure.get("major_swings"))
+        for index, item in enumerate(_list(major.get("recent_points")), start=1):
+            if not isinstance(item, dict):
+                continue
+            facts.append(
+                {
+                    "fact_id": f"chart:structure:major_swing:{index}",
+                    "fact_type": "chart_major_swing",
+                    "as_of_date": str(item.get("date") or ""),
+                    "source": "deterministic_ohlcv_structure",
+                    "fields": {
+                        "price": item.get("price"),
+                        "currency": currency,
+                        "timeframe": item.get("timeframe"),
+                        "kind": item.get("kind"),
+                        "confirmed_at": item.get("confirmed_at"),
+                    },
+                }
+            )
+        for name, item in _dict(structure.get("fibonacci")).items():
+            if not isinstance(item, dict):
+                continue
+            facts.append(
+                {
+                    "fact_id": f"chart:structure:fibonacci:{name}",
+                    "fact_type": "chart_fibonacci",
+                    "as_of_date": str(item.get("high_date") or ""),
+                    "source": "deterministic_ohlcv_structure",
+                    "fields": {
+                        "low_price": item.get("low_price"),
+                        "high_price": item.get("high_price"),
+                        "retracements": item.get("retracements", {}),
+                        "extensions": item.get("extensions", {}),
+                        "currency": currency,
+                        "anchor_type": item.get("anchor_type"),
+                        "low_date": item.get("low_date"),
+                        "high_date": item.get("high_date"),
+                        "timeframe": item.get("timeframe"),
+                        "confidence": item.get("confidence"),
+                    },
+                }
+            )
+        invalidation = _dict(structure.get("invalidation"))
+        if invalidation.get("available") is True:
+            facts.append(
+                {
+                    "fact_id": "chart:structure:invalidation",
+                    "fact_type": "chart_invalidation",
+                    "as_of_date": str(structure.get("as_of_date") or ""),
+                    "source": "deterministic_ohlcv_structure",
+                    "fields": {
+                        key: value
+                        for key in (
+                            "price",
+                            "entry",
+                            "support_low",
+                            "buffer",
+                            "scenario",
+                            "timeframe",
+                            "status",
+                            "chart_only",
+                            "currency",
+                        )
+                        if (
+                            value := currency if key == "currency" else invalidation.get(key)
+                        )
+                        is not None
+                    },
+                }
+            )
+        risk_reward = _dict(structure.get("risk_reward"))
+        if risk_reward.get("available") is True:
+            for scenario in ("current_price", "support_entry"):
+                value = _dict(risk_reward.get(scenario))
+                if not value:
+                    continue
+                facts.append(
+                    {
+                        "fact_id": f"chart:structure:risk_reward:{scenario}",
+                        "fact_type": "chart_risk_reward",
+                        "as_of_date": str(structure.get("as_of_date") or ""),
+                        "source": "deterministic_ohlcv_structure",
+                        "fields": {
+                            **{
+                                key: value.get(key)
+                                for key in (
+                                    "entry",
+                                    "target",
+                                    "invalidation",
+                                    "upside",
+                                    "downside",
+                                    "ratio",
+                                    "scenario",
+                                    "classification",
+                                )
+                                if value.get(key) is not None
+                            },
+                            "currency": currency,
+                        },
+                    }
+                )
+        state = _dict(structure.get("chart_state"))
+        if state:
+            facts.append(
+                {
+                    "fact_id": "chart:structure:state",
+                    "fact_type": "chart_state",
+                    "as_of_date": str(structure.get("as_of_date") or ""),
+                    "source": "deterministic_ohlcv_structure",
+                    "fields": {
+                        key: state.get(key)
+                        for key in (
+                            "state",
+                            "confidence",
+                            "reasons",
+                            "blocking_unknowns",
+                            "user_semantics",
+                        )
+                        if state.get(key) not in (None, [], {})
+                    },
+                }
+            )
     return facts
 
 

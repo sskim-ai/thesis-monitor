@@ -1,6 +1,6 @@
 import json
 import math
-from datetime import datetime
+from datetime import datetime, timedelta
 from zoneinfo import ZoneInfo
 
 import httpx
@@ -317,9 +317,56 @@ async def test_chart_context_uses_provider_indicators_and_preserves_price_basis(
     assert daily.rsi_14 == 61.4
     assert daily.macd_histogram == 0.5
     assert context.valuation_history[0].close == 125
-    assert "support_zones" in context.chart.unavailable_fields
+    assert context.chart.structure["algorithm_version"] == "ohlcv-structure-v1"
+    assert "support_resistance" in context.chart.unavailable_fields
     assert "atr" in context.chart.unavailable_fields
     assert "elliott_wave" in context.chart.unavailable_fields
+
+
+@pytest.mark.anyio
+async def test_chart_context_populates_structure_from_sufficient_adjusted_history() -> None:
+    counts = {"daily": 240, "weekly": 100, "monthly": 60}
+    spacing = {"daily": 1, "weekly": 7, "monthly": 30}
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        period = request.url.params["periods"]
+        count = counts[period]
+        bars = []
+        for index in range(count):
+            cycle = 16 if period == "daily" else 10 if period == "weekly" else 8
+            center = 100 + index * 0.03 + 14 * math.sin(index * 2 * math.pi / cycle)
+            bars.append(
+                {
+                    "date": (
+                        datetime(2018, 1, 1) + timedelta(days=index * spacing[period])
+                    ).date().isoformat(),
+                    "open": center - 0.5,
+                    "high": center + 2,
+                    "low": center - 2,
+                    "close": center + 0.5,
+                    "volume": 1_000 + (index % cycle) * 50,
+                    "indicators": {"VOLUME_RATIO_20": 1.0},
+                }
+            )
+        return httpx.Response(200, json={"periods": {period: bars}})
+
+    context = await OhlcvClient(
+        transport=httpx.MockTransport(handler)
+    ).fetch_price_context("NVDA")
+
+    structure = context.chart.structure
+    assert structure["algorithm_version"] == "ohlcv-structure-v1"
+    assert structure["availability"]["atr"] is True
+    assert structure["availability"]["support_resistance"] is True
+    assert structure["availability"]["major_swings"] is True
+    assert structure["atr"]["daily"]["method"] == "wilder_recursive"
+    assert structure["major_swings"]["primary_timeframe"] == "weekly"
+    assert (
+        structure["local_pivots"]["weekly"]
+        != structure["major_swings"]["by_timeframe"]["weekly"]
+    )
+    assert context.chart.price_basis == "adjusted_close"
+    assert "atr" not in context.chart.unavailable_fields
 
 
 @pytest.mark.anyio

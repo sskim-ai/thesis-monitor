@@ -8,7 +8,7 @@
     "schema_version": {"const": "3"},
     "packet_id": {"type": "string", "minLength": 1},
     "claim_id": {"type": "string", "minLength": 1},
-    "analysis_policy_version": {"const": "daily-review-v3.3"},
+    "analysis_policy_version": {"const": "daily-review-v3.4"},
     "knowledge_version": {"type": "string", "minLength": 1},
     "knowledge_sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
     "chart_knowledge_version": {"type": "string", "minLength": 1},

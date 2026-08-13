@@ -276,7 +276,7 @@ ready or reaches its deadline. A successful Korean close run writes its packet a
 assessment. Packets live under `data/ai_review/inbox`; Codex Scheduled Tasks claim them, write strict
 JSON to `outbox`, and run the local validator. No OpenAI API key or API call is used by this path.
 
-The reusable workflow is `.agents/skills/thesis-monitor-daily-review`. Policy `daily-review-v3.3`
+The reusable workflow is `.agents/skills/thesis-monitor-daily-review`. Policy `daily-review-v3.4`
 routes each schema-3 packet through Investment Knowledge v3 and a separate byte-verified Stock Chart
 & Value Analysis Knowledge v1 reference. It consumes compact OHLCV Analyst summaries, deterministic
 price-rule transitions, and 1/5/20-day positioning while requiring exact prose-level numeric
@@ -290,10 +290,12 @@ disabled.
 Price context is requested from the separate local OHLCV Analyst service using targets of 500 daily,
 300 weekly, and 100 monthly bars. Shorter provider histories are accepted and their actual counts are
 stored with each assessment. Available provider Bollinger bands, volume ratio, RSI, and MACD are
-captured as compact adjusted-price chart context; unavailable support/resistance, ATR, Elliott,
-Fibonacci, and risk/reward remain unknown. Korean investor flow uses only the latest valid daily bar,
-including distinct 1-day, 5-day, and 20-day individual, institution, and foreign net buying plus the
-provider's supply summary.
+captured as compact adjusted-price chart context. `ohlcv-structure-v1` derives Wilder ATR14,
+Local-Pivot support/resistance zones and boxes, a separately computed Major-Swing stream,
+Major-Swing-only Fibonacci/Elliott context, structural invalidation, nearest-resistance risk/reward,
+and an internal chart state. Values remain unknown when history or confirmation evidence is
+insufficient. Korean investor flow uses only the latest valid daily bar, including distinct 1-day,
+5-day, and 20-day individual, institution, and foreign net buying plus the provider's supply summary.
 
 Daily business and valuation decisions are delta-based. Configured expansion or compression
 conditions do not change today's valuation unless new evidence matches them. Structural risk and

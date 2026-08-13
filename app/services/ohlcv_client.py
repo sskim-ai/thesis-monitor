@@ -18,6 +18,7 @@ from app.schemas.thesis import (
     PricePeriodSummary,
 )
 from app.services.market_session import market_session_for_ticker
+from app.services.ohlcv_structure_service import analyze_chart_structure
 from app.services.provider_telemetry_service import ProviderTelemetryService
 
 
@@ -35,17 +36,7 @@ _DAILY_BOLLINGER_UPPER = {
     "24_month": "BB_288_1.541_UPPER",
     "54_month": "BB_300_3.33_UPPER",
 }
-_UNAVAILABLE_CHART_FIELDS = (
-    "support_zones",
-    "resistance_zones",
-    "box_ranges",
-    "trading_value_ratio",
-    "atr",
-    "elliott_wave",
-    "fibonacci",
-    "risk_reward",
-    "chart_state_machine",
-)
+_UNAVAILABLE_PROVIDER_CHART_FIELDS = ("trading_value_ratio",)
 
 
 def _number(value: object) -> float | None:
@@ -365,6 +356,7 @@ class OhlcvClient:
         api_key = self.settings.ohlcv_api_key or self.settings.action_api_key
         headers = {"X-API-Key": api_key} if api_key else {}
         context = PriceContext()
+        adjusted_bars: dict[str, list[dict[str, object]]] = {}
         async with httpx.AsyncClient(
             base_url=self.settings.ohlcv_base_url.rstrip("/"),
             headers=headers,
@@ -378,6 +370,7 @@ class OhlcvClient:
                         client, ticker, period, count
                     )
                     context.periods[period] = summary
+                    adjusted_bars[period] = bars
                     context.chart.timeframes[period] = _chart_timeframe_context(
                         period, bars, summary
                     )
@@ -465,7 +458,6 @@ class OhlcvClient:
                     )
         context.available = any(item.actual_count > 0 for item in context.periods.values())
         context.chart.available = bool(context.chart.timeframes)
-        context.chart.unavailable_fields = list(_UNAVAILABLE_CHART_FIELDS)
         daily = context.periods.get("daily")
         session_state = market_session_for_ticker(ticker, as_of)
         observed_at = as_of or datetime.now(timezone.utc)
@@ -506,6 +498,21 @@ class OhlcvClient:
                 )
                 for point in context.valuation_history
             ]
+            shifted_bars: dict[str, list[dict[str, object]]] = {}
+            for period, bars in adjusted_bars.items():
+                shifted_bars[period] = []
+                for bar in bars:
+                    shifted = dict(bar)
+                    try:
+                        shifted_date = date.fromisoformat(str(bar.get("date") or "")[:10])
+                    except ValueError:
+                        pass
+                    else:
+                        shifted["date"] = (
+                            shifted_date - timedelta(days=date_shift_days)
+                        ).isoformat()
+                    shifted_bars[period].append(shifted)
+            adjusted_bars = shifted_bars
         is_live_bar = (
             session_state.session == "open"
             and latest_date == session_state.market_date.isoformat()
@@ -543,5 +550,27 @@ class OhlcvClient:
         for timeframe, chart_period in context.chart.timeframes.items():
             if timeframe != "daily":
                 chart_period.price_basis = "adjusted_close"
+        context.chart.structure = analyze_chart_structure(
+            adjusted_bars,
+            timeframe_contexts={
+                timeframe: value.model_dump(mode="json")
+                for timeframe, value in context.chart.timeframes.items()
+            },
+            investor_supply=context.supply,
+            price_basis=context.chart.price_basis,
+        )
+        structure_unavailable = context.chart.structure.get("unavailable_fields", [])
+        context.chart.unavailable_fields = list(
+            dict.fromkeys(
+                [
+                    *_UNAVAILABLE_PROVIDER_CHART_FIELDS,
+                    *(
+                        structure_unavailable
+                        if isinstance(structure_unavailable, list)
+                        else []
+                    ),
+                ]
+            )
+        )
         context.chart.warnings = list(context.warnings)
         return context

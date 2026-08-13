@@ -1455,8 +1455,8 @@ def test_knowledge_v3_sources_decisions_and_safety_markers() -> None:
         assert marker not in text
 
 
-def test_dual_knowledge_policy_identity_starts_v33_pilot_cohort() -> None:
-    assert ai_review_service.ANALYSIS_POLICY_VERSION == "daily-review-v3.3"
+def test_dual_knowledge_policy_identity_starts_v34_structure_cohort() -> None:
+    assert ai_review_service.ANALYSIS_POLICY_VERSION == "daily-review-v3.4"
     assert ai_review_service.OUTPUT_SCHEMA_VERSION == "3"
     manifest = knowledge_manifest()
     assert manifest["version"] == "3.0"
@@ -1578,6 +1578,131 @@ def test_packet_adds_fresh_chart_context_transition_and_numeric_provenance(
                         },
                     },
                     "unavailable_fields": ["support_zones", "atr", "elliott_wave"],
+                    "structure": {
+                        "algorithm_version": "ohlcv-structure-v1",
+                        "as_of_date": RUN_DATE.isoformat(),
+                        "price_basis": "adjusted_close",
+                        "availability": {
+                            "atr": True,
+                            "support_resistance": True,
+                            "box_ranges": True,
+                            "major_swings": True,
+                            "elliott_wave": True,
+                            "fibonacci": True,
+                            "risk_reward": True,
+                            "invalidation": True,
+                            "chart_state_machine": True,
+                        },
+                        "atr": {
+                            "daily": {
+                                "available": True,
+                                "period": 14,
+                                "method": "wilder_recursive",
+                                "value": 3.5,
+                            }
+                        },
+                        "zones": {
+                            "support": [
+                                {
+                                    "zone_low": 90.0,
+                                    "zone_high": 93.0,
+                                    "distance_pct": 7.0,
+                                    "timeframe": "daily",
+                                    "strength": "Strong",
+                                }
+                            ],
+                            "resistance": [
+                                {
+                                    "zone_low": 108.0,
+                                    "zone_high": 110.0,
+                                    "distance_pct": 8.0,
+                                    "timeframe": "weekly",
+                                    "strength": "Medium",
+                                }
+                            ],
+                            "active": [],
+                        },
+                        "boxes": {
+                            "daily": [
+                                {"box_low": 90.0, "box_high": 110.0, "width_pct": 20.0}
+                            ]
+                        },
+                        "major_swings": {
+                            "primary_timeframe": "weekly",
+                            "fallback_used": False,
+                            "points": [
+                                {
+                                    "date": "2026-05-01",
+                                    "price": 80.0,
+                                    "kind": "low",
+                                    "timeframe": "weekly",
+                                    "confirmed_at": "2026-05-29",
+                                },
+                                {
+                                    "date": "2026-07-01",
+                                    "price": 120.0,
+                                    "kind": "high",
+                                    "timeframe": "weekly",
+                                    "confirmed_at": "2026-07-29",
+                                },
+                            ],
+                        },
+                        "major_anchors": {},
+                        "elliott": {
+                            "available": True,
+                            "tentative_count": True,
+                            "confidence": "low",
+                            "usable_in_core": False,
+                        },
+                        "fibonacci": {
+                            "long_term": {
+                                "anchor_type": "long_term",
+                                "low_price": 80.0,
+                                "low_date": "2026-05-01",
+                                "high_price": 120.0,
+                                "high_date": "2026-07-01",
+                                "timeframe": "weekly",
+                                "confidence": "high",
+                                "retracements": {"0.5": 100.0},
+                                "extensions": {"1.618": 144.72},
+                            }
+                        },
+                        "invalidation": {
+                            "available": True,
+                            "price": 87.0,
+                            "entry": 91.5,
+                            "support_low": 90.0,
+                            "buffer": 3.0,
+                            "scenario": "support_entry",
+                            "timeframe": "daily",
+                            "status": "intact",
+                            "chart_only": True,
+                        },
+                        "risk_reward": {
+                            "available": True,
+                            "current_price": {
+                                "entry": 100.0,
+                                "target": 108.0,
+                                "invalidation": 87.0,
+                                "upside": 8.0,
+                                "downside": 13.0,
+                                "ratio": 0.615385,
+                                "scenario": "current_price",
+                                "classification": "poor_chase",
+                            }
+                        },
+                        "supply_classification": {
+                            "classification": "unavailable",
+                            "confidence": "low",
+                        },
+                        "chart_state": {
+                            "state": "WAIT",
+                            "confidence": "medium",
+                            "reasons": ["rr_below_1_5"],
+                            "blocking_unknowns": ["verified_supply_unavailable"],
+                            "user_semantics": "price_structure_wait_not_sell_command",
+                        },
+                    },
                 },
             }
         )
@@ -1599,7 +1724,20 @@ def test_packet_adds_fresh_chart_context_transition_and_numeric_provenance(
         pytest.approx(5.2632)
     )
     fact_ids = {item["fact_id"] for item in stock["fact_catalog"]}
-    assert {"chart:daily", "chart:stored_price_rules", "chart:price_transition"} <= fact_ids
+    assert {
+        "chart:daily",
+        "chart:stored_price_rules",
+        "chart:price_transition",
+        "chart:structure:atr:daily",
+        "chart:structure:nearest_supports:1",
+        "chart:structure:nearest_resistance:1",
+        "chart:structure:box:daily:1",
+        "chart:structure:major_swing:1",
+        "chart:structure:fibonacci:long_term",
+        "chart:structure:invalidation",
+        "chart:structure:risk_reward:current_price",
+        "chart:structure:state",
+    } <= fact_ids
     assert "chart:weekly" not in fact_ids
     semantics = {item["semantic_type"] for item in stock["numeric_registry"]}
     assert {
@@ -1611,9 +1749,23 @@ def test_packet_adds_fresh_chart_context_transition_and_numeric_provenance(
         "stored_confirmation_price",
         "foreign_net_buy_qty_5d",
         "foreign_net_buy_qty_20d",
+        "chart_atr",
+        "support_zone_price",
+        "resistance_zone_price",
+        "box_boundary_price",
+        "major_swing_price",
+        "fibonacci_retracement_price",
+        "fibonacci_extension_price",
+        "chart_invalidation_price",
+        "risk_reward_ratio",
     } <= semantics
     assert stock["chart_knowledge_routing"]["available"] is True
     assert "chart_bollinger" in stock["chart_knowledge_routing"]["required_frameworks"]
+    assert "chart_support_resistance" in stock["chart_knowledge_routing"]["required_frameworks"]
+    assert "chart_elliott" not in stock["chart_knowledge_routing"]["required_frameworks"]
+    assert chart["structure"]["algorithm_version"] == "ohlcv-structure-v1"
+    assert "all_zones" not in chart["structure"]
+    assert "local_pivots" not in chart["structure"]
 
 
 def test_stale_chart_is_not_routed_or_exposed_as_numeric_fact(
@@ -1895,6 +2047,72 @@ def test_chart_numeric_semantics_reject_indicator_and_price_label_swap(
     assert any("numeric_usage_semantic_mismatch" in error for error in errors)
 
 
+def test_structure_numeric_semantics_reject_zone_and_atr_label_swaps(
+    monkeypatch,
+    tmp_path: Path,
+) -> None:
+    _settings(monkeypatch, tmp_path)
+    with Session(_engine()) as session:
+        _seed(session)
+        packet = build_ai_review_packet(session, RUN_DATE, "us")
+        assert packet is not None
+        stock = packet["stocks"][0]
+        stock["fact_catalog"].extend(
+            [
+                {
+                    "fact_id": "chart:structure:atr:daily",
+                    "fact_type": "chart_structure_atr",
+                    "fields": {"currency": "USD", "value": 3.5},
+                },
+                {
+                    "fact_id": "chart:structure:nearest_supports:1",
+                    "fact_type": "chart_support_zone",
+                    "fields": {"currency": "USD", "zone_low": 90.0},
+                },
+            ]
+        )
+        stock["numeric_registry"] = ai_review_service._numeric_registry(
+            stock["fact_catalog"]
+        )
+
+        zone_output = _valid_output(packet)
+        zone_review = zone_output["stock_reviews"][0]
+        zone_review["facts_used"] = ["chart:structure:nearest_supports:1"]
+        zone_review["price_positioning"]["text"] = "동적 저항구간은 90달러입니다."
+        zone_review["numeric_claims"] = [
+            {
+                "fact_id": "chart:structure:nearest_supports:1",
+                "field_path": "fields.zone_low",
+                "value": 90.0,
+                "unit": "USD",
+                "semantic_type": "support_zone_price",
+                "text_ref": "price_positioning.text",
+                "usage": "동적 저항구간은 90달러",
+            }
+        ]
+        _, zone_errors = validate_ai_review_output(session, packet, zone_output)
+
+        atr_output = _valid_output(packet)
+        atr_review = atr_output["stock_reviews"][0]
+        atr_review["facts_used"] = ["chart:structure:atr:daily"]
+        atr_review["price_positioning"]["text"] = "매출은 3.5달러입니다."
+        atr_review["numeric_claims"] = [
+            {
+                "fact_id": "chart:structure:atr:daily",
+                "field_path": "fields.value",
+                "value": 3.5,
+                "unit": "USD",
+                "semantic_type": "chart_atr",
+                "text_ref": "price_positioning.text",
+                "usage": "매출은 3.5달러",
+            }
+        ]
+        _, atr_errors = validate_ai_review_output(session, packet, atr_output)
+
+    assert any("numeric_usage_semantic_mismatch" in error for error in zone_errors)
+    assert any("numeric_usage_semantic_mismatch" in error for error in atr_errors)
+
+
 def test_supply_horizon_registry_keeps_1d_5d_20d_semantics_distinct() -> None:
     registry = ai_review_service._numeric_registry(
         [
@@ -2143,7 +2361,7 @@ def test_v32_packet_waits_for_profile_and_numeric_activation_gates(
     assert blocked.reason == "shadow_cohort_activation_gate_failed"
 
 
-def test_v32_packet_records_ready_shadow_cohort_metadata(
+def test_v34_packet_records_ready_shadow_cohort_metadata(
     monkeypatch,
     tmp_path: Path,
 ) -> None:
@@ -2153,10 +2371,10 @@ def test_v32_packet_records_ready_shadow_cohort_metadata(
         packet = build_ai_review_packet(session, RUN_DATE, "us")
 
     assert packet is not None
-    assert packet["analysis_policy_version"] == "daily-review-v3.3"
+    assert packet["analysis_policy_version"] == "daily-review-v3.4"
     assert packet["ready_for_ai"] is True
     assert packet["shadow_cohort"] == {
-        "policy_version": "daily-review-v3.3",
+        "policy_version": "daily-review-v3.4",
         "eligible": True,
         "profile_gate": {
             "active_total": 1,

@@ -132,9 +132,9 @@ identity fields and atomic provenance sidecars. Rerun after a confirmed merger, 
 reorganization, or when a profile's `verified_at` warrants review. A thesis-version change or news
 theme is not a profile-refresh trigger.
 
-## Phase 4 Dual-Knowledge Review Contract
+## Phase 4/5 Dual-Knowledge Review Contract
 
-Output schema `3` and analysis policy `daily-review-v3.3` keep Investment Knowledge v3 as the
+Output schema `3` and analysis policy `daily-review-v3.4` keep Investment Knowledge v3 as the
 fundamental, valuation, and data-safety authority and add Stock Chart & Value Analysis Knowledge v1 as
 a separate OHLCV interpretation reference. The two source files are never merged. Backend validated
 facts and Investment Knowledge safety rules take precedence over OHLCV outputs and chart examples.
@@ -143,10 +143,17 @@ Fibonacci levels, ATR, or risk/reward.
 
 The OHLCV Analyst supplies adjusted daily, weekly, and monthly bars plus available Bollinger bands,
 volume ratio, RSI, MACD, and Korean investor-flow horizons. AI packets contain compact chart summaries,
-not raw bar history. Unavailable support/resistance, box, ATR, Elliott, Fibonacci, risk/reward, and
-chart-state fields remain explicit unknowns. Stale chart timeframes are not routed into analysis or
-registered as prose-eligible numeric facts. Adjusted chart prices remain separate from unadjusted
-historical-valuation prices.
+not raw bar history. The structure engine consumes those bars outside the AI Review service; any
+structure that lacks sufficient history or confirmation remains an explicit unknown. Stale chart
+timeframes are not routed into analysis or registered as prose-eligible numeric facts. Adjusted chart
+prices remain separate from unadjusted historical-valuation prices.
+
+`ohlcv-structure-v1` deterministically supplies Wilder ATR14, Local-Pivot zones and boxes, an
+independent ATR-ZigZag Major Swing stream, Major-Swing-only Elliott/Fibonacci anchors, structural
+invalidation, nearest-resistance risk/reward, and an internal chart state. Full pivot/swing audit stays
+in the assessment price context; AI packets receive compact nearest zones, selected anchors, state,
+and blocking unknowns. Local Pivots never feed the Major Swing detector. Chart invalidation never
+mutates thesis invalidation, and chart states are not trading commands.
 
 Price-rule transitions are deterministic and thesis-version isolated. A crossed confirmation price
 advances the review to hold/retest/volume/supply questions without changing the business thesis.

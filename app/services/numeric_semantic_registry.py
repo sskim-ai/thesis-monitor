@@ -446,6 +446,73 @@ NUMERIC_SEMANTICS = {
         (r"(?:확인|지지|경고|무효화|재점검).*이격", r"price rule distance"),
         "signed_percentage",
     ),
+    "chart_atr": _spec(
+        "chart_atr", ("KRW", "USD"), ("ATR14", "Wilder ATR14"),
+        (r"(?:일봉|주봉|월봉)?\s*(?:wilder\s*)?atr\s*14?",), "currency",
+    ),
+    "support_zone_price": _spec(
+        "support_zone_price", ("KRW", "USD"), ("동적 지지구간", "지지구간"),
+        (r"(?:동적\s*)?지지(?:구간|대)", r"support zone"), "currency",
+    ),
+    "resistance_zone_price": _spec(
+        "resistance_zone_price", ("KRW", "USD"), ("동적 저항구간", "저항구간"),
+        (r"(?:동적\s*)?저항(?:구간|대)", r"resistance zone"), "currency",
+    ),
+    "active_zone_price": _spec(
+        "active_zone_price", ("KRW", "USD"), ("현재 활성구간", "활성구간"),
+        (r"(?:현재\s*)?활성구간", r"active zone"), "currency",
+    ),
+    "distance_to_zone_pct": _spec(
+        "distance_to_zone_pct", ("pct",), ("구간 이격", "지지 이격", "저항 이격"),
+        (r"(?:구간|지지|저항).*이격", r"distance.*zone"), "percentage",
+    ),
+    "box_boundary_price": _spec(
+        "box_boundary_price", ("KRW", "USD"), ("박스 하단", "박스 상단"),
+        (r"박스.*(?:하단|상단)", r"box.*(?:low|high)"), "currency",
+    ),
+    "box_width_pct": _spec(
+        "box_width_pct", ("pct",), ("박스 폭",),
+        (r"박스.*폭", r"box width"), "percentage",
+    ),
+    "major_swing_price": _spec(
+        "major_swing_price", ("KRW", "USD"), ("Major Swing", "주요 스윙"),
+        (r"(?:major swing|주요 스윙).*(?:고점|저점|high|low)?",), "currency",
+    ),
+    "fibonacci_anchor_price": _spec(
+        "fibonacci_anchor_price", ("KRW", "USD"), ("Fibonacci 앵커", "피보나치 앵커"),
+        (r"(?:fibonacci|피보나치).*앵커",), "currency",
+    ),
+    "fibonacci_retracement_price": _spec(
+        "fibonacci_retracement_price", ("KRW", "USD"),
+        ("Fibonacci 되돌림", "피보나치 되돌림"),
+        (r"(?:fibonacci|피보나치).*되돌림",), "currency",
+    ),
+    "fibonacci_extension_price": _spec(
+        "fibonacci_extension_price", ("KRW", "USD"),
+        ("Fibonacci 확장", "피보나치 확장"),
+        (r"(?:fibonacci|피보나치).*확장",), "currency",
+    ),
+    "scenario_entry_price": _spec(
+        "scenario_entry_price", ("KRW", "USD"), ("시나리오 진입가", "시나리오 기준가"),
+        (r"시나리오.*(?:진입가|기준가)", r"scenario entry"), "currency",
+    ),
+    "chart_target_price": _spec(
+        "chart_target_price", ("KRW", "USD"), ("가까운 저항 목표", "차트 목표"),
+        (r"(?:가까운\s*저항\s*목표|차트\s*목표)", r"chart target"), "currency",
+    ),
+    "chart_invalidation_price": _spec(
+        "chart_invalidation_price", ("KRW", "USD"),
+        ("차트 무효화 가격", "가격 시나리오 무효화"),
+        (r"(?:차트|가격\s*시나리오).*무효화", r"chart invalidation"), "currency",
+    ),
+    "chart_price_risk": _spec(
+        "chart_price_risk", ("KRW", "USD"), ("차트 하방 위험", "차트 상승 여지"),
+        (r"차트.*(?:하방\s*위험|상승\s*여지)", r"chart.*(?:upside|downside)"), "currency",
+    ),
+    "risk_reward_ratio": _spec(
+        "risk_reward_ratio", ("x",), ("차트 손익비", "RR"),
+        (r"(?:차트\s*)?손익비", r"\brr\b", r"risk.?reward"), "multiple",
+    ),
     "historical_pe_multiple": _spec(
         "historical_pe_multiple",
         ("x",),
@@ -695,6 +762,74 @@ _FIELD_RULES = (
     NumericFieldRule(("chart_price_rules",), r"fields\.warning_price", "stored_warning_price", "currency"),
     NumericFieldRule(("chart_price_rules",), r"fields\.invalidation_price", "stored_invalidation_price", "currency"),
     NumericFieldRule(("chart_price_rules",), r"fields\.distance_pct\.[^.]+", "price_rule_distance_pct", "pct"),
+    NumericFieldRule(("chart_structure_atr",), r"fields\.value", "chart_atr", "currency"),
+    NumericFieldRule(("chart_support_zone",), r"fields\.zone_(?:low|high)", "support_zone_price", "currency"),
+    NumericFieldRule(("chart_resistance_zone",), r"fields\.zone_(?:low|high)", "resistance_zone_price", "currency"),
+    NumericFieldRule(("chart_active_zone",), r"fields\.zone_(?:low|high)", "active_zone_price", "currency"),
+    NumericFieldRule(
+        ("chart_support_zone", "chart_resistance_zone", "chart_active_zone"),
+        r"fields\.(?:distance_pct|distance_to_(?:lower|upper)_pct)",
+        "distance_to_zone_pct",
+        "pct",
+    ),
+    NumericFieldRule(("chart_box",), r"fields\.box_(?:low|high)", "box_boundary_price", "currency"),
+    NumericFieldRule(("chart_box",), r"fields\.width_pct", "box_width_pct", "pct"),
+    NumericFieldRule(("chart_major_swing",), r"fields\.price", "major_swing_price", "currency"),
+    NumericFieldRule(
+        ("chart_fibonacci",),
+        r"fields\.(?:low_price|high_price)",
+        "fibonacci_anchor_price",
+        "currency",
+    ),
+    NumericFieldRule(
+        ("chart_fibonacci",),
+        r"fields\.retracements\..+",
+        "fibonacci_retracement_price",
+        "currency",
+    ),
+    NumericFieldRule(
+        ("chart_fibonacci",),
+        r"fields\.extensions\..+",
+        "fibonacci_extension_price",
+        "currency",
+    ),
+    NumericFieldRule(
+        ("chart_invalidation",),
+        r"fields\.price",
+        "chart_invalidation_price",
+        "currency",
+    ),
+    NumericFieldRule(
+        ("chart_invalidation",),
+        r"fields\.support_low",
+        "support_zone_price",
+        "currency",
+    ),
+    NumericFieldRule(
+        ("chart_invalidation",), r"fields\.entry", "scenario_entry_price", "currency"
+    ),
+    NumericFieldRule(
+        ("chart_invalidation",), r"fields\.buffer", "chart_price_risk", "currency"
+    ),
+    NumericFieldRule(
+        ("chart_risk_reward",), r"fields\.entry", "scenario_entry_price", "currency"
+    ),
+    NumericFieldRule(
+        ("chart_risk_reward",), r"fields\.target", "chart_target_price", "currency"
+    ),
+    NumericFieldRule(
+        ("chart_risk_reward",),
+        r"fields\.invalidation",
+        "chart_invalidation_price",
+        "currency",
+    ),
+    NumericFieldRule(
+        ("chart_risk_reward",),
+        r"fields\.(?:upside|downside)",
+        "chart_price_risk",
+        "currency",
+    ),
+    NumericFieldRule(("chart_risk_reward",), r"fields\.ratio", "risk_reward_ratio", "x"),
     NumericFieldRule(("night_futures",), r"fields\.value", "futures_close", "points"),
     NumericFieldRule(
         ("night_futures",),

@@ -72,7 +72,7 @@ def _settings(monkeypatch, tmp_path: Path):
 def _packet() -> dict[str, object]:
     return {
         "schema_version": "1",
-        "analysis_policy_version": "daily-review-v3.3",
+        "analysis_policy_version": "daily-review-v3.4",
         "knowledge": {"version": "3.0", "sha256": "knowledge-sha"},
         "chart_knowledge": {"version": "1.0", "sha256": "chart-knowledge-sha"},
         "packet_id": PACKET_ID,
@@ -87,7 +87,7 @@ def _output() -> dict[str, object]:
         "schema_version": "3",
         "packet_id": PACKET_ID,
         "claim_id": "claim-1",
-        "analysis_policy_version": "daily-review-v3.3",
+        "analysis_policy_version": "daily-review-v3.4",
         "knowledge_version": "3.0",
         "knowledge_sha256": "knowledge-sha",
         "chart_knowledge_version": "1.0",
@@ -144,7 +144,7 @@ def _write_artifacts(tmp_path: Path, *, output: bool = True) -> None:
         json.dumps(_packet(), ensure_ascii=False), encoding="utf-8"
     )
     if output:
-        (outbox / f"{PACKET_ID}--daily-review-v3.3--knowledge.json").write_text(
+        (outbox / f"{PACKET_ID}--daily-review-v3.4--knowledge.json").write_text(
             json.dumps(_output(), ensure_ascii=False), encoding="utf-8"
         )
 
@@ -255,9 +255,9 @@ async def test_old_policy_output_is_not_eligible_for_pilot_v2_delivery(
     _write_artifacts(tmp_path, output=False)
     old_output = _output()
     old_output["schema_version"] = "2"
-    old_output["analysis_policy_version"] = "daily-review-v3.2"
+    old_output["analysis_policy_version"] = "daily-review-v3.3"
     outbox = tmp_path / "ai_review" / "outbox"
-    (outbox / f"{PACKET_ID}--daily-review-v3.2--knowledge.json").write_text(
+    (outbox / f"{PACKET_ID}--daily-review-v3.3--knowledge.json").write_text(
         json.dumps(old_output, ensure_ascii=False), encoding="utf-8"
     )
     notifier = RecordingNotifier()
@@ -291,7 +291,7 @@ async def test_fallback_sends_only_deterministic_and_late_ai_is_archive_only(
             notifier=fallback_notifier,
         )
         outbox = tmp_path / "ai_review" / "outbox"
-        (outbox / f"{PACKET_ID}--daily-review-v3.3--knowledge.json").write_text(
+        (outbox / f"{PACKET_ID}--daily-review-v3.4--knowledge.json").write_text(
             json.dumps(_output(), ensure_ascii=False), encoding="utf-8"
         )
         late = await deliver_validated_ai_review(
