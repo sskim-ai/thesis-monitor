@@ -143,7 +143,7 @@ def test_custom_gpt_knowledge_and_runtime_policy_keep_separate_responsibilities(
     text = Path("docs/custom_gpt_knowledge_ko.md").read_text(encoding="utf-8")
 
     for concept in (
-        "Fact / Interpretation / Unknowns",
+        "Fact / Interpretation / Unknown",
         "Earnings Quality",
         "시장 기대",
         "업종별 Valuation",

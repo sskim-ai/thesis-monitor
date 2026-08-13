@@ -4,11 +4,11 @@ Read the full source at [investment-thesis-analysis-monitoring-knowledge.md](inv
 
 ## Always Read
 
-- Sections 0-3: document purpose, data hierarchy, Fact / Interpretation / Unknowns, and source hierarchy.
-- Section 8: market expectations and surprise.
-- Sections 13-16: thesis state, risk and kill conditions, multiple expansion/compression, and macro transmission.
-- Sections 20-22: provisional earnings, valuation comparability, and ADR/share-basis safety.
-- Sections 25-26: the initial-analysis response structure and final operating philosophy.
+- Sections 1-3: system lifecycle, Fact / Interpretation / Unknown, source hierarchy, and initial thesis framework.
+- Section 6: market expectations and surprise.
+- Sections 10-12: risk and kill conditions, multiple expansion/compression, and macro transmission.
+- Sections 13-16: provisional earnings, valuation comparability, optional scoring, and monitoring data quality.
+- Section 18: the initial-analysis response structure.
 
 Stable framework names: `fact_interpretation_unknown`, `initial_thesis`, `market_expectations`, `risk_kill_condition`, `multiple_expansion_compression`, `macro_transmission`, `valuation_basis_comparability`, `monitoring_data_quality`.
 
@@ -16,13 +16,15 @@ Stable framework names: `fact_interpretation_unknown`, `initial_thesis`, `market
 
 ## Event Routing
 
-- Earnings or guidance: Sections 5, 7, and 20. Use `financial_calculation_safety`, `earnings_quality`, and `provisional_earnings`.
-- Material price or positioning: Sections 9-12. Use `price_ohlcv` and `holder_new_buyer`.
-- Material macro transmission: Sections 16-19. Use `macro_transmission`.
+- Earnings or guidance: Sections 4, 5, and 13. Use `financial_calculation_safety`, `earnings_quality`, and `provisional_earnings`.
+- Material price or positioning: Sections 8-9. Use `price_ohlcv` and `holder_new_buyer`.
+- Material macro transmission: Section 12. Use `macro_transmission`.
+- FOMC evidence: Section 12.3. Use `fomc_interpretation`; missing Decision, Statement, Dot Plot, SEP, Press Conference, or Market Reaction components stay Unknown.
+- Hyperscaler CAPEX evidence: Section 12.4. Use `hyperscaler_capex_transmission`; a budget announcement is not a supplier order.
 
 ## Industry Routing
 
-- All existing industry framework names route to Section 6. Keep the packet's current industry routing unchanged in this phase.
+- All existing industry framework names route to Section 7. Keep the packet's current industry routing unchanged in this phase.
 - Memory `memory_valuation`: use mid-cycle earnings, PBR, FCF, inventory, ASP, supply discipline, and capex. A low peak-cycle PER is not sufficient.
 - Insurance or reinsurance `insurance_reinsurance_valuation`: do not use SaaS NRR or Rule of 40.
 - EPC or construction `epc_construction_valuation`: contract margin, collections, and contract assets remain Unknown unless packet facts support them.
@@ -31,6 +33,6 @@ Stable framework names: `fact_interpretation_unknown`, `initial_thesis`, `market
 
 ## Basis-Safety Routing
 
-- Preliminary earnings: Section 20 `provisional_earnings`; do not infer balance sheet, FCF, inventory, or ROIC changes.
-- ADR or share-basis uncertainty: Sections 5, 21, and 22 `adr_share_basis`; never infer a conversion ratio or recompute PER.
-- Historical comparability withheld: Section 21 only; current multiples may remain usable, historical percentile and range may not.
+- Preliminary earnings: Section 13 `provisional_earnings`; do not infer balance sheet, FCF, inventory, or ROIC changes.
+- ADR or share-basis uncertainty: Sections 4 and 14 `adr_share_basis`; never infer a conversion ratio or recompute PER.
+- Historical comparability withheld: Section 14 only; current multiples may remain usable, historical percentile and range may not.

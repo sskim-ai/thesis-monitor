@@ -39,7 +39,7 @@ logger = logging.getLogger(__name__)
 
 PACKET_SCHEMA_VERSION = "1"
 OUTPUT_SCHEMA_VERSION = "1"
-ANALYSIS_POLICY_VERSION = "daily-review-v2"
+ANALYSIS_POLICY_VERSION = "daily-review-v3"
 AIReviewMarket = Literal["us", "kr"]
 
 _INTERNAL_TEXT = re.compile(

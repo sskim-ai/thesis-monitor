@@ -29,6 +29,10 @@ from app.services.ai_review_service import (
     write_ai_review_packet,
 )
 from scripts.sync_custom_gpt_knowledge import (
+    CANONICAL_PATH,
+    MANIFEST_PATH,
+    SKILL_PATH,
+    UPLOAD_PATH,
     sync_repository_mirror,
     validate_repository_mirror,
 )
@@ -1006,27 +1010,29 @@ def test_packet_lock_reclaim_fences_stale_finalizer_and_preserves_new_claim(
 def test_full_knowledge_manifest_and_industry_routing_are_valid() -> None:
     root = Path(__file__).resolve().parents[1]
     references = root / ".agents" / "skills" / "thesis-monitor-daily-review" / "references"
-    source = root / "docs" / "custom_gpt_knowledge_ko.md"
-    mirror = references / "investment-thesis-analysis-monitoring-knowledge.md"
+    source = root / CANONICAL_PATH
+    upload = root / UPLOAD_PATH
+    mirror = root / SKILL_PATH
     manifest = knowledge_manifest()
 
+    assert source.read_bytes() == upload.read_bytes()
     assert source.read_bytes() == mirror.read_bytes()
     assert hashlib.sha256(mirror.read_bytes()).hexdigest() == manifest["sha256"]
     assert len(source.read_bytes()) == manifest["byte_count"]
     assert len(source.read_bytes().splitlines()) == manifest["line_count"]
-    assert manifest["version"] == "2026-08-13"
+    assert manifest["version"] == "3.0"
     index = (references / "knowledge-index.md").read_text(encoding="utf-8")
     knowledge = mirror.read_text(encoding="utf-8")
     for heading in (
-        "## 7. Earnings Quality",
-        "## 8. 시장 기대와 Surprise",
-        "## 14. Thesis 강화·약화·Kill Condition",
-        "## 16. 거시경제 연결",
-        "## 20. 공식 잠정실적 처리",
-        "## 21. Valuation 비교 가능성",
-        "## 22. ADR 환산",
-        "## 25. 최종 답변 템플릿",
-        "## 26. 최종 운영 철학",
+        "## 5. Earnings Quality",
+        "## 6. Market Expectations & Surprise",
+        "## 10. Risk / Early Warning / Kill Condition",
+        "## 12. Macro Transmission",
+        "### 12.3 FOMC Interpretation Framework",
+        "### 12.4 Hyperscaler CAPEX Transmission",
+        "## 13. 공식 잠정실적",
+        "## 14. Valuation Basis Comparability",
+        "## 18. Initial Analysis 사용자 답변 Template",
     ):
         assert heading in knowledge
     for framework in (
@@ -1044,34 +1050,118 @@ def test_canonical_knowledge_import_preserves_exact_bytes(tmp_path: Path) -> Non
     root = tmp_path / "repository"
     references = root / ".agents" / "skills" / "thesis-monitor-daily-review" / "references"
     references.mkdir(parents=True)
-    (root / "docs").mkdir()
-    manifest_path = references / "knowledge-manifest.json"
-    manifest_path.write_text(
-        json.dumps({"knowledge_version": "fixture-v1"}),
-        encoding="utf-8",
-    )
-    canonical = tmp_path / "canonical.md"
+    canonical = root / CANONICAL_PATH
+    canonical.parent.mkdir(parents=True)
     canonical_bytes = b"\xef\xbb\xbf# Canonical\r\n\r\nExact bytes without final newline"
     canonical.write_bytes(canonical_bytes)
 
     metrics = sync_repository_mirror(
-        canonical,
         root,
         mirror_revision="test-canonical-import",
     )
     validated = validate_repository_mirror(root)
-    docs = (root / "docs" / "custom_gpt_knowledge_ko.md").read_bytes()
-    runtime = (
-        references / "investment-thesis-analysis-monitoring-knowledge.md"
-    ).read_bytes()
-    manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+    upload = (root / UPLOAD_PATH).read_bytes()
+    runtime = (root / SKILL_PATH).read_bytes()
+    manifest = json.loads((root / MANIFEST_PATH).read_text(encoding="utf-8"))
 
-    assert docs == canonical_bytes
+    assert upload == canonical_bytes
     assert runtime == canonical_bytes
     assert metrics == validated
     assert manifest["sha256"] == hashlib.sha256(canonical_bytes).hexdigest()
-    assert manifest["source_role"] == "custom_gpt_canonical_mirror"
+    assert manifest["source_role"] == "knowledge_v3_canonical"
+    assert manifest["knowledge_version"] == "3.0"
     assert "/Users/" not in json.dumps(manifest)
+
+
+def test_knowledge_v3_sources_decisions_and_safety_markers() -> None:
+    root = Path(__file__).resolve().parents[1]
+    knowledge_root = root / "docs" / "knowledge"
+    current = knowledge_root / "archive" / "current-custom-gpt-knowledge-before-v3.md"
+    donor = knowledge_root / "archive" / "1-thesis_monitor_analysis_knowledge_v2.md"
+    canonical = root / CANONICAL_PATH
+    decisions = json.loads(
+        (knowledge_root / "knowledge-v3-merge-decisions.json").read_text(
+            encoding="utf-8"
+        )
+    )
+    source_expectations = (
+        (
+            current,
+            "2acc979bcfc06c7fa8c30ddbbb0a73e1f30017359d9668613970fd1bb0fd8518",
+            648,
+            28988,
+        ),
+        (
+            donor,
+            "9c769f6be1ea6d17b858a14b35a7b2cd63201c0dc8066f7b05368d9bab967176",
+            942,
+            16599,
+        ),
+    )
+    for path, expected_hash, expected_lines, expected_bytes in source_expectations:
+        payload = path.read_bytes()
+        assert hashlib.sha256(payload).hexdigest() == expected_hash
+        assert len(payload.splitlines()) == expected_lines
+        assert len(payload) == expected_bytes
+
+    payload = canonical.read_bytes()
+    text = payload.decode("utf-8")
+    assert decisions["v3"]["sha256"] == hashlib.sha256(payload).hexdigest()
+    assert decisions["v3"]["line_count"] == len(payload.splitlines())
+    assert decisions["v3"]["byte_count"] == len(payload)
+    classifications = {
+        item["classification"] for item in decisions["decisions"]
+    }
+    assert classifications == {
+        "KEEP_CURRENT",
+        "MERGE_FROM_V2",
+        "REWRITE_COMBINED",
+        "DROP_V2",
+        "OPERATIONAL_NOT_KNOWLEDGE",
+    }
+
+    safety_markers = (
+        "최근 한 분기 EPS에 4를 곱하는 식의 임의 연율화는 금지",
+        "ratio 방향이 함께 확인된 경우에만 직접 계산",
+        "Historical percentile은 과거 분포와 같은 회계·주식 기준",
+        "내부 모델 추정치를 시장 컨센서스라고 표현하지 않는다",
+        "실제 Action 또는 backend packet에 제공된 지표만 사용",
+        "수급만으로 사업 논리, 이익 추정, Valuation 또는 warning lifecycle을 변경하지 않는다",
+    )
+    for marker in safety_markers:
+        assert marker in text
+
+    analytical_depth_markers = (
+        "Decision",
+        "Dot Plot",
+        "Press Conference",
+        "Hyperscaler CAPEX",
+        "Budget → Order → Shipment → Revenue Recognition",
+        "가격 상승 + 거래량 증가",
+    )
+    for marker in analytical_depth_markers:
+        assert marker in text
+
+    forbidden_or_operational = (
+        "80+: 고품질 재검토 후보",
+        "<1.0      추격 위험",
+        "Local Share Equivalent",
+        "07:50",
+        "08:45",
+        "16:05",
+        "LaunchAgent",
+    )
+    for marker in forbidden_or_operational:
+        assert marker not in text
+
+
+def test_knowledge_v3_policy_identity_starts_new_shadow_cohort() -> None:
+    assert ai_review_service.ANALYSIS_POLICY_VERSION == "daily-review-v3"
+    manifest = knowledge_manifest()
+    assert manifest["version"] == "3.0"
+    assert manifest["sha256"] == (
+        "559ad45e4dd86cb0aec9bb09b51a5dc816bf323e8c2b4fd050cf28960a5a9d18"
+    )
 
 
 def test_industry_framework_router_handles_quality_fixtures() -> None:

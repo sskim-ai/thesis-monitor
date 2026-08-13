@@ -1,0 +1,92 @@
+{
+  "schema_version": "1",
+  "sources": {
+    "current": {
+      "archive_path": "docs/knowledge/archive/current-custom-gpt-knowledge-before-v3.md",
+      "byte_count": 28988,
+      "line_count": 648,
+      "role": "safety_data_monitoring_base",
+      "sha256": "2acc979bcfc06c7fa8c30ddbbb0a73e1f30017359d9668613970fd1bb0fd8518"
+    },
+    "v2": {
+      "archive_path": "docs/knowledge/archive/1-thesis_monitor_analysis_knowledge_v2.md",
+      "byte_count": 16599,
+      "line_count": 942,
+      "role": "analytical_depth_donor",
+      "sha256": "9c769f6be1ea6d17b858a14b35a7b2cd63201c0dc8066f7b05368d9bab967176"
+    }
+  },
+  "conflict_priority": [
+    "data_safety",
+    "share_accounting_currency_comparability",
+    "backend_public_contract",
+    "monitoring_lifecycle",
+    "analytical_depth",
+    "examples"
+  ],
+  "decisions": [
+    {
+      "classification": "KEEP_CURRENT",
+      "topic": "fact_interpretation_unknown_and_source_hierarchy"
+    },
+    {
+      "classification": "KEEP_CURRENT",
+      "topic": "initial_research_and_daily_delta_lifecycle"
+    },
+    {
+      "classification": "KEEP_CURRENT",
+      "topic": "financial_and_earnings_calculation_safety"
+    },
+    {
+      "classification": "KEEP_CURRENT",
+      "topic": "market_expectations_and_surprise_safety"
+    },
+    {
+      "classification": "MERGE_FROM_V2",
+      "topic": "fomc_component_interpretation"
+    },
+    {
+      "classification": "MERGE_FROM_V2",
+      "topic": "hyperscaler_capex_value_chain"
+    },
+    {
+      "classification": "REWRITE_COMBINED",
+      "topic": "conditional_price_and_volume_interpretation"
+    },
+    {
+      "classification": "KEEP_CURRENT",
+      "topic": "industry_specific_valuation_frameworks"
+    },
+    {
+      "classification": "DROP_V2",
+      "topic": "fixed_100_point_score_and_trade_mapping"
+    },
+    {
+      "classification": "DROP_V2",
+      "topic": "mechanical_reward_risk_thresholds"
+    },
+    {
+      "classification": "DROP_V2",
+      "topic": "mandatory_technical_indicators"
+    },
+    {
+      "classification": "DROP_V2",
+      "topic": "adr_conversion_without_ratio_direction_and_basis_validation"
+    },
+    {
+      "classification": "DROP_V2",
+      "topic": "obsolete_action_examples_and_external_api_routing"
+    },
+    {
+      "classification": "OPERATIONAL_NOT_KNOWLEDGE",
+      "topic": "monitor_schedule_provider_retry_notification_and_claim_lease"
+    }
+  ],
+  "v3": {
+    "byte_count": 33624,
+    "line_count": 704,
+    "path": "docs/knowledge/investment-thesis-analysis-monitoring-knowledge-v3.md",
+    "sha256": "559ad45e4dd86cb0aec9bb09b51a5dc816bf323e8c2b4fd050cf28960a5a9d18",
+    "version": "3.0"
+  }
+}

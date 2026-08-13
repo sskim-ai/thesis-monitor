@@ -1,4 +1,4 @@
-# Investment Thesis Analysis & Monitoring Knowledge Guide v3
+# Investment Thesis Analysis & Monitoring Knowledge Guide
 
 ## 1. 시스템 목적
 
@@ -77,8 +77,6 @@ Fact에서 파생한 투자적 해석이다. 사실처럼 단정하지 않고 �
 - 시장이 이미 얼마나 반영했는가
 
 Initial Analysis는 전일 대비 delta가 아니다. 초기 논리, 기대 수준, 검증 지표, Early Warning과 Kill Condition을 설정한다.
-
-Initial Baseline과 Daily Delta는 서로 다른 lifecycle이다. 초기 분석은 기준선을 만드는 작업이고, 일일 모니터링은 동일 thesis version의 기준선 이후 새로 확인된 변화만 평가한다. 가격이나 수급이 움직였다는 이유만으로 과거 사실을 오늘의 신규 변화로 다시 해석하지 않는다.
 
 ## 4. 재무 계산 Framework
 
@@ -332,17 +330,6 @@ Rule of 40 = Revenue Growth(%) + FCF Margin(%)
 - MACD level, histogram 방향, 0선 회복과 시간축 정렬
 - 현재 가격이 지지·확인·경고 구간 중 어디에 있는지
 
-가격과 거래량을 함께 볼 때는 다음을 확정 신호가 아닌 조건부 해석으로 사용한다.
-
-```text
-가격 상승 + 거래량 증가 → 참여 확산과 추세 신뢰도 상승 가능성
-가격 상승 + 거래량 감소 → 매도 감소형 반등인지 추세 지속인지 재확인
-가격 하락 + 거래량 급증 → event-driven repricing, 분배 또는 투매 가능성
-가격 하락 + 거래량 감소 → 매도 압력 둔화 가능성
-```
-
-이 조합만으로 원인, 지속기간 또는 기업가치 변화를 확정하지 않는다. 공시·실적·산업 Fact와 가격 반응을 분리해 확인하고, 가격·거래량 신호만으로 `business_thesis_change`를 강화하거나 약화하지 않는다.
-
 ```text
 RSI < 30 → 과매도 가능성, 가치 확정 아님
 RSI > 70 → 과열 가능성, 즉시 매도 신호 아님
@@ -352,8 +339,6 @@ Volume Ratio = Current Volume / 20-day Average Volume
 `getTickerAnalysisSnapshot`은 등록 없이 현재가와 일봉·주봉·월봉 window 수익률·범위 내 위치를 compact context로 제공할 수 있다. 실제 응답에 없는 raw OHLCV, RSI, MACD, 지지·저항과 목표·손절 가격은 생성하지 않는다. backend monitoring이 내부적으로 더 많은 가격 자료를 쓰는 것과 Custom GPT의 공개 응답 범위는 별개다.
 
 `daily`, `weekly`, `monthly`는 수익률 기간이 아니라 bar interval이다. 각 `window_return_pct`는 반환된 `actual_count`개 bar의 첫 종가에서 최신 종가까지 수익률이다. `range_position_pct`도 같은 반환 window의 고가·저가 범위 안에서 최신 종가가 차지하는 위치다. 별도 1일·1주·1개월 수익률이 없으면 이를 대신 만들지 않는다.
-
-모든 종목에 MA, Bollinger, RSI, MACD 또는 지지·저항을 의무 적용하지 않는다. 실제 Action 또는 backend packet에 제공된 지표만 사용한다.
 
 한국 종목의 투자주체 수급은 OHLCV Analyst의 최신 유효 일봉을 기준으로 읽는다. `foreign_net_buy_qty`, `institution_net_buy_qty`, `individual_net_buy_qty`는 해당 거래일 순매수이며, 접미사 `_5`, `_20`은 각각 최근 5·20거래일 누적이다. `foreign_holding_qty`와 `foreign_holding_ratio`는 외국인 보유 포지션이다. 원본 `supply_score`, `supply_quality`, `supply_primary_signal`은 public snapshot에서 각각 `price.supply.score`, `price.supply.quality`, `price.supply.primary_signal`로 제공된다. `price.supply.as_of_date`가 실제 수급 기준일이며 `price.price_as_of`와 다를 수 있다. 점수 범위를 provider contract 없이 가정하지 않고 `score=34`를 `34/100`으로 바꾸지 않으며, 기준일이 과거면 오늘 수급이라고 표현하지 않는다.
 
@@ -386,7 +371,6 @@ Reward/Risk = Reward / Risk
 ```
 
 임의 Target·Stop·승률을 만들지 않는다. Expected Value는 실제 승률과 평균 손익 통계가 있을 때만 계산한다.
-고정 Reward/Risk 임계값 하나로 매수·매도 판단을 만들지 않는다. 손익비는 기업가치, 촉매, 무효화 조건과 실제 가격 자료가 모두 확인될 때 사용하는 보조 도구다.
 
 ### 가격 하락 해석
 
@@ -442,9 +426,19 @@ Reward/Risk = Reward / Risk
 
 ## 12. Macro Transmission
 
-거시환경은 기업 투자 논리에 실제 전달 경로가 있을 때 사용한다. 거시 사건의 방향을 곧바로 종목 상태로 복사하지 않고, 기업의 수요·비용·자금조달·Valuation에 도달하는 channel을 확인한다.
+거시환경은 기업 투자 논리에 실제 전달 경로가 있을 때 사용한다.
 
-### 12.1 Growth / Inflation / Liquidity / Financial Conditions
+주요 factor:
+
+- 미국 명목·실질금리
+- USD/KRW와 달러
+- WTI와 에너지 비용
+- Credit spread와 시장 변동성
+- 중국 경기와 한국 수출
+- Hyperscaler CAPEX
+- Memory price와 freight rate
+
+주요 channel은 demand, capex, cost, pricing, fx, discount_rate, funding과 liquidity다. 방향, weight, horizon과 발동 condition을 함께 본다.
 
 거시 레짐은 다음 여섯 축이다.
 
@@ -457,50 +451,10 @@ Reward/Risk = Reward / Risk
 
 각 축은 -2에서 +2이며 0은 안정이 아니라 강한 방향 신호가 없다는 뜻이다. 누적 상태와 오늘 신호를 분리한다.
 
-주요 factor는 미국 명목·실질금리, USD/KRW와 달러, WTI와 에너지 비용, Credit spread와 시장 변동성, 중국 경기와 한국 수출, Hyperscaler CAPEX, Memory price와 freight rate다. 주요 channel은 demand, capex, cost, pricing, fx, discount_rate, funding과 liquidity다. 방향, weight, horizon과 발동 condition을 함께 본다.
-
-### 12.2 Rates / FX / Oil / Credit
-
-- 실질금리 상승: 장기 성장주의 할인율에는 부정적일 수 있다. 은행 NIM에는 긍정 가능하지만 신용비용과 대출 수요를 함께 확인한다.
-- 원화 약세: 수출 환산에는 긍정 가능하지만 원재료 수입비용, 해외생산, 헤지와 외국인 자금 흐름을 함께 본다.
-- 유가 상승: 수요 회복형과 공급 충격형을 구분한다. 공급 충격형은 물가·금리·소비와 운송비 경로를 동시에 볼 필요가 있다.
-- Credit spread 확대: funding과 risk appetite의 악화 신호일 수 있으나 개별 기업의 만기, 유동성과 재조달 필요를 확인한다.
-
-### 12.3 FOMC Interpretation Framework
-
-FOMC는 금리 결정 한 줄로 해석하지 않고 최소 다음 순서로 분해한다.
-
-1. **Decision**: 정책금리, 대차대조표와 유동성 조치가 무엇이었는가.
-2. **Statement**: 성장, 고용, 물가와 위험 균형의 문구가 어떻게 바뀌었는가.
-3. **Dot Plot**: 향후 정책금리 경로와 위원 간 분산이 어떻게 달라졌는가.
-4. **SEP**: 성장률, 물가와 실업률 전망이 정책 경로와 정합적인가.
-5. **Press Conference**: 데이터 의존성, 위험 균형과 정책 반응함수에 대한 설명이 무엇인가.
-6. **Market Reaction**: 금리, 실질금리, 달러, 신용, 주식과 기대 경로가 어떻게 반응했는가.
-
-금리 동결이나 인하 자체를 bullish, bearish 또는 neutral로 기계적으로 분류하지 않는다. 가능한 경우 사전 시장 기대와 비교하고, growth, inflation, real_rate, discount_rate, liquidity, credit와 earnings 전달경로로 나눈다. packet에 Dot Plot, SEP 또는 시장 기대 자료가 없으면 해당 항목은 Unknown이며 일반 지식으로 보완하지 않는다.
-
-### 12.4 Hyperscaler CAPEX Transmission
-
-Hyperscaler CAPEX는 다음 value chain으로 전달될 수 있다.
-
-```text
-Hyperscaler CAPEX
-→ GPU / ASIC
-→ HBM
-→ Foundry
-→ Packaging
-→ Semiconductor Equipment
-→ Power / Cooling / Data-center Infrastructure
-```
-
-그러나 CAPEX announcement는 대상 기업의 실제 order가 아니다. 다음 단계를 구분한다.
-
-```text
-Budget → Order → Shipment → Revenue Recognition
-→ Margin → Cash Conversion → ROIC
-```
-
-상위 고객의 예산 증가만 확인됐으면 수요 환경의 Fact로 사용하되, 특정 공급사의 수주·매출·마진 개선은 Unknown으로 둔다. 동일 value chain에서도 병목, 고객 점유율, 제품 인증, 공급 discipline, 가격, 수율과 투자 회수기간에 따라 결과가 달라질 수 있다.
+- 실질금리 상승: 장기 성장주의 할인율에는 부정적, 은행 NIM에는 긍정 가능하나 신용비용 확인
+- 원화 약세: 수출 환산에는 긍정 가능하나 수입원가, 해외생산과 외국인 자금 흐름 확인
+- 유가 상승: 수요 회복형과 공급 충격형을 구분
+- 빅테크 CAPEX: GPU·ASIC → HBM → Foundry → 장비로 이어지는 실제 주문·매출 경로 확인
 
 ## 13. 공식 잠정실적
 
@@ -549,14 +503,6 @@ ordinary share와 ADR·ADS는 같은 주식 단위가 아니다. ADR ratio가 �
 
 Provider fPER provenance와 derived fPER 비교는 별도다. Provider 배수만 있고 비교 가능한 expected EPS가 없어도 provider 값·source·horizon은 audit에 보존하며, cross-check가 실행되지 않았다는 이유로 lineage를 잃지 않는다.
 
-Forward Valuation의 근거는 다음처럼 분리한다.
-
-- `modeled`: backend가 명시된 가정으로 계산한 내부 모델 추정치
-- `consensus`: 확인 가능한 analyst 또는 market consensus
-- `provider-only`: denominator를 직접 검증하지 못한 공급자 배수
-
-내부 모델 추정치를 시장 컨센서스라고 표현하지 않는다. Provider-only 배수를 modeled 또는 consensus로 바꾸지 않으며, 실제 expected EPS·BVPS가 없으면 배수에서 denominator를 역산하지 않는다.
-
 ADR 환산은 검증된 ratio 방향과 필요한 FX가 모두 있을 때만 수행한다. 현재 backend가 FX 또는 시점별 ADR ratio를 제공하지 않으면 해당 derived multiple과 historical percentile을 보류한다.
 
 ## 15. Portfolio와 Optional Scoring
@@ -581,7 +527,6 @@ Catalyst / Risk
 ```
 
 점수는 기본 출력이 아니며 매수 신호가 아니다. 데이터가 부족하면 만들지 않는다.
-고정 총점 구간을 매수·매도·제외 판정에 연결하지 않는다. 점수보다 각 항목의 근거, Unknown과 Kill Condition을 우선한다.
 
 ## 16. Monitoring 운영과 데이터 품질
 
@@ -605,7 +550,7 @@ Catalyst / Risk
 
 정상 상태와 내부 flag는 사용자에게 반복하지 않는다. 실제 결론에 영향을 주는 component 문제만 자연어로 설명하고 상세 metadata는 audit에 보존한다.
 
-자동 monitoring은 backend가 검증한 시장별 장 종료 자료와 session freshness를 기준으로 한다. 구체적인 운영 구현은 Investment Knowledge가 아니라 runtime policy와 운영 문서에서 관리한다. `no_material_change`도 유효한 평가 기록이며, 이력 보존 방식은 backend contract를 따른다.
+자동 monitoring은 시장별 장 종료 데이터를 기준으로 한다. 미국 종목은 07:50 KST에 전일 미국 정규장 close 기준으로, 한국 종목은 16:05 KST에 당일 한국 정규장 close와 최신 일봉 수급 기준으로 평가한다. retry 운영 상세는 README를 따른다. `no_material_change`도 기록하며 이력은 SQLite와 `data/` 기록에 누적한다.
 
 ## 17. Action Reference
 
@@ -625,7 +570,6 @@ Catalyst / Risk
 ### Monitoring 관리
 
 - `monitorStock`: 상세 투자 논리와 검증 지표를 버전형으로 등록·갱신
-- `recordThesisAssessment`: 검증된 평가 결과를 기록
 - `stopMonitoringStock`: 이력 보존 후 중단
 
 ### Macro
