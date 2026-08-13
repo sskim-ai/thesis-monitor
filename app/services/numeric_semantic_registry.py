@@ -316,7 +316,7 @@ NUMERIC_SEMANTICS = {
         ("환율", "원/달러", "원/100엔", "원/유로"),
         (r"(?:환율|원/(?:달러|100엔|유로))", r"exchange rate"),
         "currency",
-        scope="market",
+        scope="both",
     ),
     "fx_point_change": _spec(
         "fx_point_change",
@@ -324,7 +324,7 @@ NUMERIC_SEMANTICS = {
         ("환율 변동폭", "exchange-rate change"),
         (r"환율.*(?:변동폭|등락폭)", r"exchange[- ]rate change"),
         "signed_currency",
-        scope="market",
+        scope="both",
     ),
     "fx_return_pct": _spec(
         "fx_return_pct",
@@ -332,7 +332,7 @@ NUMERIC_SEMANTICS = {
         ("환율 등락률", "exchange-rate return"),
         (r"환율.*(?:등락률|상승|하락)", r"exchange[- ]rate.*(?:return|change)"),
         "signed_percentage",
-        scope="market",
+        scope="both",
     ),
     "market_return_pct": _spec(
         "market_return_pct",
@@ -1136,6 +1136,29 @@ def usage_matches_semantic(semantic_type: str, usage: str) -> bool:
     if spec is None or not spec.prose_allowed:
         return False
     lowered = usage.lower()
+    change_markers = re.compile(
+        r"(?:등락|상승|하락|변동|증가|감소|올랐|내렸|return|change|rose|fell)",
+        flags=re.IGNORECASE,
+    )
+    if semantic_type in {
+        "fx_rate",
+        "oil_price",
+        "volatility_index_level",
+        "dollar_index_level",
+    }:
+        if "%" in usage or change_markers.search(usage):
+            return False
+    if semantic_type in {
+        "nominal_yield_level",
+        "real_yield_level",
+        "breakeven_inflation_level",
+        "credit_spread_level",
+    } and (
+        "bp" in lowered
+        or "베이시스포인트" in usage
+        or change_markers.search(usage)
+    ):
+        return False
     return any(re.search(pattern, lowered) for pattern in spec.usage_patterns)
 
 
@@ -1243,6 +1266,7 @@ def build_numeric_registry(
                         "registered": registered,
                         "prose_allowed": prose_allowed,
                         "formatter": spec.formatter if spec is not None else None,
+                        "scope": spec.scope if spec is not None else None,
                         "approved_labels": (
                             list(spec.approved_labels) if spec is not None else []
                         ),

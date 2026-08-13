@@ -15,6 +15,17 @@ This project is a data collection and structuring system. It does not make buy, 
 - `docs`: architecture notes, data source roadmap, and Custom GPT Action schema.
 - `tests`: pytest coverage for endpoints, classifier, scoring, and fact separation.
 
+## Project Documentation
+
+- [Project handoff](docs/PROJECT_HANDOFF.md)
+- [AI-assisted monitoring architecture](docs/architecture/AI_ASSISTED_MONITORING.md)
+- [OHLCV structure engine](docs/architecture/OHLCV_STRUCTURE_ENGINE.md)
+- [Market intelligence](docs/architecture/MARKET_INTELLIGENCE.md)
+- [AI-assisted Pilot operations](docs/operations/AI_ASSISTED_PILOT.md)
+- [Knowledge guide](docs/knowledge/README.md)
+- [Next-session prompt](docs/NEXT_SESSION_PROMPT.md)
+- [Machine-readable project state](docs/project-state.json)
+
 ## Install
 
 ```bash

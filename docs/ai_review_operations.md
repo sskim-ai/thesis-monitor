@@ -90,9 +90,9 @@ Install `ops/com.seungsoo.thesis-monitor.ai-review-fallback.plist` for the two l
 Exact deterministic, AI, comparison, chart context, price transition, quantitative-grounding,
 rendered Telegram, and delivery-result artifacts are stored in `data/ai_review/pilot/history`. Only
 AI-assisted sessions whose validation, delivery, and archive all complete increment the market's
-success counter. Pilot v1 history is preserved. Integrated Pilot v2 uses a separate state file and
-starts each market at 0/5; each market returns to deterministic delivery after five successful v2
-packets. This does not activate Production Assist.
+success counter. Pilot v1 and v2 history is preserved. Market-intelligence Pilot v3 uses
+`data/ai_review/pilot/state-v3.json` and starts each market at 0/5. Each market returns to
+deterministic delivery after five successful v3 packets. This does not activate Production Assist.
 
 ## Phase 3 Review Contract
 
@@ -164,7 +164,7 @@ Schema 3 requires integrated sections for core judgment, business and earnings, 
 supply, valuation, priority watches, next checks, and material unknowns. Safe numbers stay bound to
 their exact fact, semantic, text location, and approved display. Quantitative-grounding telemetry flags
 sections that avoid available evidence, but missing data never causes invented numbers. Integrated
-Pilot v2 renders deterministic status and verified facts with validated AI interpretation once; it
+Pilot v2 historically rendered deterministic status and verified facts with validated AI interpretation once; it
 does not append the full deterministic report below the AI narrative.
 
 ## Phase 6 Market Intelligence Contract
@@ -193,7 +193,11 @@ narration, raw provider metadata, market-assumption audit prose, and the duplica
 deterministic market report. The exact packet, deterministic report, AI review, grounding
 report, rendered message, and delivery result remain archived.
 
-The durable cross-session continuation reference is `docs/ai_review_project_handoff.md`.
+Pilot v3 resets the KR and US counters because market and stock messages now form one materially
+different user experience. The state file is not backfilled from earlier cohorts. A session increments
+only after validation, full AI-assisted delivery, and archive completion.
+
+The durable cross-session continuation reference is `docs/PROJECT_HANDOFF.md`.
 
 ## Security Boundary
 

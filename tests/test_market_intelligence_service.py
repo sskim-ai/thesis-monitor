@@ -6,6 +6,7 @@ from app.services.market_intelligence_service import build_market_intelligence
 from app.services.numeric_semantic_registry import (
     build_numeric_registry,
     numeric_registry_coverage,
+    usage_matches_semantic,
 )
 
 
@@ -62,6 +63,24 @@ def _stocks() -> list[dict[str, object]]:
             "company_profile": {"quality": "verified", "taxonomy_key": "shipping"},
             "knowledge_routing": {"industry_key": "shipping"},
         },
+    ]
+
+
+def _diverse_stocks() -> list[dict[str, object]]:
+    return [
+        {
+            "ticker": ticker,
+            "company_profile": {"quality": "verified", "taxonomy_key": taxonomy},
+            "knowledge_routing": {"industry_key": taxonomy},
+        }
+        for ticker, taxonomy in (
+            ("CHIP", "semiconductor"),
+            ("INSURE", "insurance"),
+            ("SHIP", "shipping"),
+            ("AUTO", "automotive"),
+            ("BIO", "biotech"),
+            ("DIVERSE", "general"),
+        )
     ]
 
 
@@ -203,3 +222,124 @@ def test_market_numeric_semantics_have_complete_fail_closed_coverage() -> None:
         "volatility_index_level",
         "volatility_return_pct",
     } <= semantics
+
+
+def test_fx_yield_and_oil_level_change_semantics_are_distinct() -> None:
+    result = build_market_intelligence(
+        _briefing(_observations()), RUN_DATE, _stocks(), [], market="us"
+    )
+    registry = {
+        (item["fact_id"], item["field_path"]): item
+        for item in build_numeric_registry(result["fact_catalog"])
+    }
+
+    assert registry[("market:fx:USDKRW", "fields.value")]["semantic_type"] == "fx_rate"
+    assert registry[("market:fx:USDKRW", "fields.change_pct")][
+        "semantic_type"
+    ] == "fx_return_pct"
+    assert registry[("market:nominal_yield:DGS10", "fields.level_pct")][
+        "semantic_type"
+    ] == "nominal_yield_level"
+    assert registry[("market:nominal_yield:DGS10", "fields.change_bp")][
+        "semantic_type"
+    ] == "nominal_yield_change_bp"
+    assert registry[("market:oil:DCOILWTICO", "fields.price_usd_per_barrel")][
+        "semantic_type"
+    ] == "oil_price"
+    assert registry[("market:oil:DCOILWTICO", "fields.return_pct")][
+        "semantic_type"
+    ] == "oil_return_pct"
+    assert usage_matches_semantic("fx_rate", "원/달러 환율 1,415.7원")
+    assert not usage_matches_semantic("fx_rate", "원/달러 환율 등락률 +0.9%")
+    assert usage_matches_semantic("fx_return_pct", "원/달러 환율 등락률 +0.9%")
+    assert usage_matches_semantic("nominal_yield_level", "미국 10년물 금리 4.7%")
+    assert not usage_matches_semantic(
+        "nominal_yield_level", "미국 10년물 금리 2bp 상승"
+    )
+    assert usage_matches_semantic(
+        "nominal_yield_change_bp", "미국 10년물 금리 2bp 상승"
+    )
+    assert usage_matches_semantic("oil_price", "WTI 유가 84.77달러/배럴")
+    assert not usage_matches_semantic("oil_price", "WTI 등락률 +3.4%")
+    assert usage_matches_semantic("oil_return_pct", "WTI 등락률 +3.4%")
+
+
+def test_verified_profile_groups_do_not_receive_irrelevant_sector_links() -> None:
+    result = build_market_intelligence(
+        _briefing(_observations()), RUN_DATE, _diverse_stocks(), [], market="us"
+    )
+
+    assert {item["group_key"] for item in result["portfolio_exposure_groups"]} == {
+        "semiconductor",
+        "insurance",
+        "shipping",
+        "automotive",
+        "biotech",
+        "general",
+    }
+    assert {
+        item["fact_id"] for item in result["stock_transmissions"]["CHIP"]
+    } == {"market:relative:SOXX:SPY"}
+    assert all(
+        ticker not in result["stock_transmissions"]
+        for ticker in ("INSURE", "SHIP", "AUTO", "BIO", "DIVERSE")
+    )
+
+
+def test_rate_fx_and_oil_stay_generic_without_verified_company_exposure() -> None:
+    result = build_market_intelligence(
+        _briefing(_observations()), RUN_DATE, _diverse_stocks(), [], market="us"
+    )
+
+    linked_facts = {
+        item["market_fact_id"] for item in result["transmission_candidates"]
+    }
+    assert "market:nominal_yield:DGS10" not in linked_facts
+    assert "market:fx:USDKRW" not in linked_facts
+    assert "market:oil:DCOILWTICO" not in linked_facts
+
+
+def test_verified_oil_exposures_preserve_distinct_transmission_channels() -> None:
+    impacts = [
+        {
+            "ticker": ticker,
+            "evidence": [
+                {
+                    "series_code": "DCOILWTICO",
+                    "direction": direction,
+                    "materiality": "high",
+                    "earnings_link_validated": False,
+                    "eligible_for_valuation_context": False,
+                    "exposure": {
+                        "factor": "wti",
+                        "channel": channel,
+                        "condition": condition,
+                        "horizon": "conditional",
+                    },
+                }
+            ],
+        }
+        for ticker, channel, direction, condition in (
+            ("SHIP", "transport_cost", "negative", "fuel cost exceeds freight pass-through"),
+            ("DIVERSE", "inflation", "neutral", "oil broadens inflation pressure"),
+            ("AUTO", "energy_margin", "neutral", "verified energy exposure changes margin"),
+        )
+    ]
+    result = build_market_intelligence(
+        _briefing(_observations()), RUN_DATE, _diverse_stocks(), impacts, market="us"
+    )
+
+    channels = {
+        ticker: {item["channel"] for item in result["stock_transmissions"][ticker]}
+        for ticker in ("SHIP", "DIVERSE", "AUTO")
+    }
+    assert channels == {
+        "SHIP": {"transport_cost"},
+        "DIVERSE": {"inflation"},
+        "AUTO": {"energy_margin"},
+    }
+    assert all(
+        item["not_fundamental_confirmation"]
+        for ticker in channels
+        for item in result["stock_transmissions"][ticker]
+    )

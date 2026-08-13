@@ -2082,6 +2082,18 @@ def _validate_numeric_claims(
                 f"{claim.fact_id}:{claim.field_path}"
             )
             claim_is_valid = False
+        expected_scope = str(source.get("scope") or "")
+        allowed_scopes = (
+            {"market", "both"}
+            if prefix == "market_review"
+            else {"stock", "both"}
+        )
+        if expected_scope not in allowed_scopes:
+            errors.append(
+                f"{prefix}:numeric_semantic_scope_mismatch:"
+                f"{claim.fact_id}:{claim.field_path}:{expected_scope}"
+            )
+            claim_is_valid = False
         if claim.fact_id not in facts_used:
             errors.append(f"{prefix}:numeric_fact_not_declared:{claim.fact_id}")
             claim_is_valid = False
@@ -2374,6 +2386,15 @@ def validate_ai_review_output(
                 "market_review:portfolio_transmission_fact_mismatch:"
                 f"{item.portfolio_group}:" + ",".join(invalid)
             )
+    for index, item in enumerate(output.market_review.next_checks):
+        if not item.fact_ids:
+            errors.append(f"market_review:next_check_without_fact:{index}")
+        if re.search(
+            r"(?:향후|추가).{0,8}시장\s*상황.{0,8}확인",
+            item.text,
+            flags=re.IGNORECASE,
+        ):
+            errors.append(f"market_review:generic_next_check:{index}")
     errors.extend(
         _validate_numeric_claims(
             "market_review",
@@ -2529,6 +2550,17 @@ def quantitative_grounding_report(
         market_flags.append("market_fact_without_transmission")
     if any(not item.fact_ids for item in output.market_review.portfolio_transmission):
         market_flags.append("portfolio_transmission_without_fact")
+    if any(not item.fact_ids for item in output.market_review.next_checks):
+        market_flags.append("market_next_check_without_fact")
+    if any(
+        re.search(
+            r"(?:향후|추가).{0,8}시장\s*상황.{0,8}확인",
+            item.text,
+            flags=re.IGNORECASE,
+        )
+        for item in output.market_review.next_checks
+    ):
+        market_flags.append("generic_market_next_check")
     user_market_prose = "\n".join(
         [
             output.market_review.core_judgment.text,

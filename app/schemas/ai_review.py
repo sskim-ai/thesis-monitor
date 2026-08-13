@@ -57,13 +57,17 @@ class AIMarketReview(BaseModel):
     facts_used: list[str] = Field(default_factory=list)
     frameworks_used: list[str] = Field(default_factory=list)
     core_judgment: AIReasoningSection
-    important_changes: list[AIInterpretation] = Field(default_factory=list)
+    important_changes: list[AIInterpretation] = Field(
+        default_factory=list, max_length=4
+    )
     market_context: AIReasoningSection
     market_assumptions: AIReasoningSection
-    portfolio_transmission: list[AIMarketTransmission] = Field(default_factory=list)
-    next_checks: list[AIInterpretation] = Field(default_factory=list)
+    portfolio_transmission: list[AIMarketTransmission] = Field(
+        default_factory=list, max_length=4
+    )
+    next_checks: list[AIInterpretation] = Field(default_factory=list, max_length=3)
     numeric_claims: list[AINumericClaim] = Field(default_factory=list)
-    unknowns: list[str] = Field(default_factory=list)
+    unknowns: list[str] = Field(default_factory=list, max_length=3)
 
 
 class AIStockReview(BaseModel):

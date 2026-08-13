@@ -28,7 +28,7 @@ from app.services.notification_service import (
 
 KST = ZoneInfo("Asia/Seoul")
 PILOT_MODE = "ai_assisted_single_delivery"
-PILOT_VERSION = "ai-assisted-pilot-v2"
+PILOT_VERSION = "ai-assisted-pilot-v3"
 PILOT_RENDERER_VERSION = "ai-assisted-pilot-renderer-v3"
 PILOT_MARKERS = {"us": "__DAILY_DIGEST__", "kr": "__DAILY_DIGEST_KR__"}
 PilotMarket = Literal["us", "kr"]
@@ -85,7 +85,7 @@ def _read_json(path: Path) -> dict[str, object]:
 
 
 def _pilot_state_path() -> Path:
-    return _pilot_root() / "state-v2.json"
+    return _pilot_root() / "state-v3.json"
 
 
 def _pilot_state() -> dict[str, object]:
@@ -544,6 +544,22 @@ async def deliver_validated_ai_review(
     archive_dir = _archive_directory(packet)
     _atomic_json(archive_dir / "packet.json", packet)
     _atomic_json(archive_dir / "ai-review.json", output.model_dump(mode="json"))
+    _atomic_json(archive_dir / "market-context.json", packet.get("market_context", {}))
+    _atomic_json(
+        archive_dir / "market-review.json",
+        output.market_review.model_dump(mode="json"),
+    )
+    _atomic_json(
+        archive_dir / "market-numeric-claims.json",
+        [item.model_dump(mode="json") for item in output.market_review.numeric_claims],
+    )
+    _atomic_json(
+        archive_dir / "portfolio-transmission.json",
+        [
+            item.model_dump(mode="json")
+            for item in output.market_review.portfolio_transmission
+        ],
+    )
     _atomic_json(
         archive_dir / "chart-context.json",
         {

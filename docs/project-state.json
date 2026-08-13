@@ -1,0 +1,29 @@
+{
+  "repository": "sskim-ai/thesis-monitor",
+  "branch": "main",
+  "current_commit": "HEAD",
+  "current_commit_resolution": "git rev-parse HEAD",
+  "recorded_base_commit": "45b50b03e614d364cb8b396e04f79ec3ebdd1002",
+  "official_assessment_source": "deterministic",
+  "ai_review_mode": "shadow",
+  "investment_knowledge_version": "3.0",
+  "investment_knowledge_sha256": "559ad45e4dd86cb0aec9bb09b51a5dc816bf323e8c2b4fd050cf28960a5a9d18",
+  "chart_knowledge_version": "1.0",
+  "chart_knowledge_sha256": "beee64559831479168f1347c43d979391126926d73e2473ce837cefbf0ede19b",
+  "ohlcv_structure_version": "ohlcv-structure-v2",
+  "ai_policy_version": "daily-review-v3.6",
+  "output_schema_version": 4,
+  "pilot_version": "ai-assisted-pilot-v3",
+  "pilot_renderer_version": "ai-assisted-pilot-renderer-v3",
+  "pilot_target_successful_sessions_per_market": 5,
+  "pilot_counts_at_activation": {
+    "kr": 0,
+    "us": 0
+  },
+  "single_delivery": true,
+  "deterministic_fallback": true,
+  "production_assist": false,
+  "public_action_version": "0.4.5",
+  "public_action_operation_ids": "20/20",
+  "db_migration": false
+}

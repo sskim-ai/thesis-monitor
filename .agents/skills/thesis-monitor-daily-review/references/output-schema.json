@@ -62,16 +62,17 @@
       "properties": {
         "facts_used": {"$ref": "#/$defs/textList"}, "frameworks_used": {"$ref": "#/$defs/textList"},
         "core_judgment": {"$ref": "#/$defs/reasoningSection"},
-        "important_changes": {"type": "array", "items": {"$ref": "#/$defs/reasoningSection"}},
+        "important_changes": {"type": "array", "maxItems": 4, "items": {"$ref": "#/$defs/reasoningSection"}},
         "market_context": {"$ref": "#/$defs/reasoningSection"},
         "market_assumptions": {"$ref": "#/$defs/reasoningSection"},
         "portfolio_transmission": {
           "type": "array",
+          "maxItems": 4,
           "items": {"$ref": "#/$defs/marketTransmission"}
         },
-        "next_checks": {"type": "array", "items": {"$ref": "#/$defs/reasoningSection"}},
+        "next_checks": {"type": "array", "maxItems": 3, "items": {"$ref": "#/$defs/reasoningSection"}},
         "numeric_claims": {"type": "array", "items": {"$ref": "#/$defs/numericClaim"}},
-        "unknowns": {"$ref": "#/$defs/textList"}
+        "unknowns": {"type": "array", "maxItems": 3, "items": {"type": "string"}}
       }
     },
     "stockReview": {

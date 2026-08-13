@@ -121,6 +121,13 @@ Quality telemetry now includes:
 - `market_fact_without_transmission`
 - `portfolio_transmission_without_fact`
 - `generic_market_summary`
+- `market_next_check_without_fact`
+- `generic_market_next_check`
+
+The output contract caps important changes and portfolio groups at four and next checks and material
+data cautions at three. Numeric semantics also carry an explicit scope: stock-only facts cannot cover
+market prose, while verified market facts may appear in compact stock transmission only through a
+`both` scope and exact market fact provenance.
 
 ## Deployment gate
 
@@ -135,9 +142,12 @@ Single delivery remains unchanged:
 - no valid result by deadline: deterministic fallback set only;
 - late AI after fallback: archive only.
 
+The materially integrated market experience starts `ai-assisted-pilot-v3` at KR 0/5 and US 0/5.
+Pilot v1/v2 history remains immutable; `state-v3.json` is a fresh counter rather than a migration.
+
 ## Local validation
 
-- Full pytest: 581 passed, 1 external Starlette deprecation warning
+- Full pytest: 592 passed, 1 external Starlette deprecation warning
 - Ruff: passed
 - `git diff --check`: passed
 - Output schema JSON: v4 / `daily-review-v3.6`

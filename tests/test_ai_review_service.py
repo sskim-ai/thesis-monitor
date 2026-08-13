@@ -2353,6 +2353,71 @@ def test_market_transmission_requires_exact_group_fact_and_prose_grounding(
     )
 
 
+def test_market_next_check_requires_a_specific_backend_fact(
+    monkeypatch,
+    tmp_path: Path,
+) -> None:
+    _settings(monkeypatch, tmp_path)
+    with Session(_engine()) as session:
+        _seed(session)
+        packet = build_ai_review_packet(session, RUN_DATE, "us")
+        assert packet is not None
+        output = _valid_output(packet)
+        output["market_review"]["next_checks"] = [
+            {"text": "향후 시장 상황을 확인합니다.", "fact_ids": []}
+        ]
+        _, errors = validate_ai_review_output(session, packet, output)
+
+    assert "market_review:next_check_without_fact:0" in errors
+    assert "market_review:generic_next_check:0" in errors
+
+
+def test_market_numeric_claim_cannot_reuse_stock_flow_semantic_scope(
+    monkeypatch,
+    tmp_path: Path,
+) -> None:
+    _settings(monkeypatch, tmp_path)
+    with Session(_engine()) as session:
+        _seed(session)
+        packet = build_ai_review_packet(session, RUN_DATE, "us")
+        assert packet is not None
+        context = packet["market_context"]
+        context["fact_catalog"] = [
+            {
+                "fact_id": "market:test:stock-flow",
+                "fact_type": "positioning",
+                "as_of_date": RUN_DATE.isoformat(),
+                "fields": {"foreign_net_buy_qty": 100},
+            }
+        ]
+        context["numeric_registry"] = ai_review_service._numeric_registry(
+            context["fact_catalog"]
+        )
+        assert context["numeric_registry"][0]["semantic_type"] == "foreign_net_buy_qty"
+        assert context["numeric_registry"][0]["scope"] == "stock"
+        output = _valid_output(packet)
+        review = output["market_review"]
+        review["facts_used"] = ["market:test:stock-flow"]
+        review["core_judgment"] = {
+            "text": "외국인 순매수 100주를 시장 전체 수급처럼 사용했습니다.",
+            "fact_ids": ["market:test:stock-flow"],
+        }
+        review["numeric_claims"] = [
+            {
+                "fact_id": "market:test:stock-flow",
+                "field_path": "fields.foreign_net_buy_qty",
+                "value": 100,
+                "unit": "shares",
+                "semantic_type": "foreign_net_buy_qty",
+                "text_ref": "core_judgment.text",
+                "usage": "외국인 순매수 100주",
+            }
+        ]
+        _, errors = validate_ai_review_output(session, packet, output)
+
+    assert any("numeric_semantic_scope_mismatch" in error for error in errors)
+
+
 def test_market_quality_flags_generic_summary_and_missing_transmission(
     monkeypatch,
     tmp_path: Path,
@@ -2372,6 +2437,7 @@ def test_market_quality_flags_generic_summary_and_missing_transmission(
                 "semantic_type": "index_return_pct",
                 "registered": True,
                 "prose_allowed": True,
+                "scope": "market",
             },
             {
                 "fact_id": "market:oil:DCOILWTICO",
@@ -2381,6 +2447,7 @@ def test_market_quality_flags_generic_summary_and_missing_transmission(
                 "semantic_type": "oil_return_pct",
                 "registered": True,
                 "prose_allowed": True,
+                "scope": "market",
             },
         ]
         context["key_change_fact_ids"] = ["market:oil:DCOILWTICO"]
@@ -2881,3 +2948,8 @@ def test_skill_fixture_and_output_schema_are_present() -> None:
     assert "stock-chart-value-analysis-knowledge-v1.md" in skill
     assert "schema-4 reasoning sections" in skill
     assert "--claim-id" in skill
+    market_review = schema["$defs"]["marketReview"]["properties"]
+    assert market_review["important_changes"]["maxItems"] == 4
+    assert market_review["portfolio_transmission"]["maxItems"] == 4
+    assert market_review["next_checks"]["maxItems"] == 3
+    assert market_review["unknowns"]["maxItems"] == 3

@@ -9,7 +9,9 @@ from sqlmodel import SQLModel, Session, create_engine, select
 
 from app.config import get_settings
 from app.models.thesis import NotificationDelivery
+from app.schemas.ai_review import AIMarketReview
 from app.services.ai_assisted_delivery_service import (
+    _render_ai_market_message,
     ai_assisted_pilot_active,
     deliver_validated_ai_review,
     dispatch_due_deterministic_fallbacks,
@@ -282,6 +284,10 @@ async def test_ai_pass_sends_only_one_ai_assisted_set(monkeypatch, tmp_path: Pat
     assert (archive / "chart-context.json").exists()
     assert (archive / "chart-transition.json").exists()
     assert (archive / "quantitative-grounding-report.json").exists()
+    assert (archive / "market-context.json").exists()
+    assert (archive / "market-review.json").exists()
+    assert (archive / "market-numeric-claims.json").exists()
+    assert (archive / "portfolio-transmission.json").exists()
     assert len(json.loads((archive / "deterministic-messages.json").read_text())["messages"]) == 2
     assert len(json.loads((archive / "ai-assisted-messages.json").read_text())["messages"]) == 2
 
@@ -405,11 +411,13 @@ async def test_explicit_duplicate_exception_allows_sent_session_once(
     assert len(notifier.payloads) == 2
 
 
-def test_pilot_stops_market_after_five_successful_packets(monkeypatch, tmp_path: Path) -> None:
+def test_pilot_v3_stops_market_after_five_successful_packets(
+    monkeypatch, tmp_path: Path
+) -> None:
     _settings(monkeypatch, tmp_path)
     state = {
         "schema_version": "1",
-        "pilot_version": "ai-assisted-pilot-v2",
+        "pilot_version": "ai-assisted-pilot-v3",
         "markets": {
             "us": {"successful_packet_ids": [], "successful_assessment_dates": []},
             "kr": {
@@ -419,12 +427,46 @@ def test_pilot_stops_market_after_five_successful_packets(monkeypatch, tmp_path:
         },
         "sessions": {},
     }
-    path = tmp_path / "ai_review" / "pilot" / "state-v2.json"
+    path = tmp_path / "ai_review" / "pilot" / "state-v3.json"
     path.parent.mkdir(parents=True)
     path.write_text(json.dumps(state), encoding="utf-8")
 
     assert ai_assisted_pilot_active("kr") is False
     assert ai_assisted_pilot_active("us") is True
+
+
+def test_us_market_renderer_v3_integrates_night_futures_without_duplication() -> None:
+    review = AIMarketReview.model_validate(_output()["market_review"])
+    deterministic = (
+        "🇺🇸 미국시장 점검\n현재 환경: 선택적 강세\n\n"
+        "🌙 한국 야간선물\n• KOSPI200 야간선물 종가 431.25pt · +0.67%\n\n"
+        "🧭 시장 상황\n기존 deterministic 전체 블록\n\n"
+        "⚠️ 데이터 주의\n• 달러지수 지연"
+    )
+    text = _render_ai_market_message(
+        deterministic,
+        review,
+        market_context={
+            "portfolio_exposure_groups": [
+                {"group_key": "semiconductor", "label": "반도체"}
+            ]
+        },
+        market="us",
+        pilot_day=1,
+        target_days=5,
+    )
+
+    assert "🤖 AI 보조 미국시장 점검 · US Pilot 1/5" in text
+    assert "🌙 한국 야간선물" in text
+    assert "🎯 오늘 시장 한 줄" in text
+    assert "📈 실제 변화" in text
+    assert "🧭 시장 구조" in text
+    assert "🔗 모니터링 종목에 미치는 영향" in text
+    assert "📌 다음 확인" in text
+    assert "⚠️ 데이터 주의" in text
+    assert text.count("🌙 한국 야간선물") == 1
+    assert "기존 deterministic 전체 블록" not in text
+    assert "추가 확정 근거를 기다립니다" not in text
 
 
 @pytest.mark.anyio
