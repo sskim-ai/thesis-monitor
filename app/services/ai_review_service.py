@@ -52,7 +52,7 @@ logger = logging.getLogger(__name__)
 
 PACKET_SCHEMA_VERSION = "1"
 OUTPUT_SCHEMA_VERSION = "4"
-ANALYSIS_POLICY_VERSION = "daily-review-v3.7"
+ANALYSIS_POLICY_VERSION = "daily-review-v3.8"
 AIReviewMarket = Literal["us", "kr"]
 
 _INTERNAL_TEXT = re.compile(
@@ -876,16 +876,24 @@ def _compact_chart_structure(structure: dict[str, object]) -> dict[str, object]:
     }
     if elliott.get("usable_in_core") is True:
         compact_elliott["points"] = _list(elliott.get("points"))[-6:]
+    meaningful_supports = [
+        item
+        for item in [*_list(zones.get("active")), *_list(zones.get("support"))]
+        if isinstance(item, dict) and item.get("strength") in {"Strong", "Medium"}
+    ]
+    meaningful_resistances = [
+        item
+        for item in _list(zones.get("resistance"))
+        if isinstance(item, dict) and item.get("strength") in {"Strong", "Medium"}
+    ]
     return {
         "algorithm_version": structure.get("algorithm_version"),
         "as_of_date": structure.get("as_of_date"),
         "price_basis": structure.get("price_basis"),
         "availability": _dict(structure.get("availability")),
         "atr": _dict(structure.get("atr")),
-        "nearest_supports": _list(zones.get("support"))[:2],
-        "nearest_resistance": (
-            _list(zones.get("resistance"))[:1]
-        ),
+        "nearest_supports": meaningful_supports[:2],
+        "nearest_resistance": meaningful_resistances[:1],
         "active_zones": _list(zones.get("active"))[:2],
         "boxes": {
             timeframe: _list(boxes.get(timeframe))[:1]
@@ -1260,6 +1268,7 @@ def _fact_catalog(
     valuation: dict[str, object],
     price: dict[str, object],
     chart: dict[str, object],
+    monitoring_state: dict[str, object],
 ) -> list[dict[str, object]]:
     facts = [fact for item in evidence if (fact := canonical_event_fact(item))]
     currency = str(valuation.get("currency") or "unknown")
@@ -1332,6 +1341,43 @@ def _fact_catalog(
                 "fields": valuation_fields,
             }
         )
+    peer = _dict(_dict(monitoring_state.get("current")).get("peer_valuation"))
+    peer_metrics = _dict(peer.get("metrics"))
+    peer_fields: dict[str, object] = {
+        "peer_group": peer.get("peer_group"),
+        "peer_group_version": peer.get("peer_group_version"),
+        "sample_quality": peer.get("sample_quality"),
+    }
+    for metric, prefix in (
+        ("trailing_pe", "pe"),
+        ("price_to_book", "pb"),
+    ):
+        value = _dict(peer_metrics.get(metric))
+        if value.get("available") is not True:
+            continue
+        for source, target in (
+            ("median", f"{prefix}_median"),
+            ("mean", f"{prefix}_mean"),
+            ("percentile_25", f"{prefix}_percentile_25"),
+            ("percentile_75", f"{prefix}_percentile_75"),
+            ("sample_count", f"{prefix}_sample_count"),
+            ("company_vs_median_pct", f"company_{prefix}_vs_median_pct"),
+        ):
+            if value.get(source) is not None:
+                peer_fields[target] = value[source]
+    if any(key.endswith(("_median", "_mean")) for key in peer_fields):
+        facts.append(
+            {
+                "fact_id": "valuation:peer",
+                "fact_type": "peer_valuation",
+                "as_of_date": str(peer.get("as_of_date") or ""),
+                "source": str(
+                    peer.get("provider")
+                    or "validated_active_monitoring_assessments"
+                ),
+                "fields": peer_fields,
+            }
+        )
     price_fields = price.get("price")
     if isinstance(price_fields, dict) and price_fields:
         facts.append(
@@ -1364,6 +1410,96 @@ def _numeric_registry(facts: list[dict[str, object]]) -> list[dict[str, object]]
     return build_numeric_registry(facts)
 
 
+def _state_grounding_requirements(
+    monitoring_state: dict[str, object],
+    facts: list[dict[str, object]],
+) -> dict[str, list[dict[str, object]]]:
+    current = _dict(monitoring_state.get("current"))
+    structure = _dict(current.get("price_structure"))
+    price_requirements: list[dict[str, object]] = []
+    if _number(structure.get("current_price")) is not None:
+        price_requirements.append(
+            {
+                "fact_id": "price:current",
+                "field_paths": ["fields.current_price"],
+                "reason": "current_price",
+            }
+        )
+
+    def matching_zone_fact(
+        state_key: str,
+        fact_types: set[str],
+    ) -> dict[str, object] | None:
+        zone = _dict(structure.get(state_key))
+        if zone.get("available") is not True:
+            return None
+        for fact in facts:
+            if str(fact.get("fact_type") or "") not in fact_types:
+                continue
+            fields = _dict(fact.get("fields"))
+            if (
+                _number(fields.get("zone_low")) == _number(zone.get("zone_low"))
+                and _number(fields.get("zone_high")) == _number(zone.get("zone_high"))
+            ):
+                return {
+                    "fact_id": fact.get("fact_id"),
+                    "field_paths": ["fields.zone_low", "fields.zone_high"],
+                    "reason": state_key,
+                }
+        return None
+
+    for requirement in (
+        matching_zone_fact(
+            "active_support", {"chart_support_zone", "chart_active_zone"}
+        ),
+        matching_zone_fact("active_resistance", {"chart_resistance_zone"}),
+    ):
+        if requirement is not None:
+            price_requirements.append(requirement)
+    risk_reward = _dict(structure.get("risk_reward"))
+    if (
+        risk_reward.get("available") is True
+        and _dict(risk_reward.get("current_price")).get("ratio") is not None
+    ):
+        price_requirements.append(
+            {
+                "fact_id": "chart:structure:risk_reward:current_price",
+                "field_paths": ["fields.ratio"],
+                "reason": "current_price_risk_reward",
+            }
+        )
+    peer = _dict(current.get("peer_valuation"))
+    peer_metrics = _dict(peer.get("metrics"))
+    peer_field_paths: list[str] = []
+    for metric, prefix in (
+        ("trailing_pe", "pe"),
+        ("price_to_book", "pb"),
+    ):
+        if _dict(peer_metrics.get(metric)).get("available") is True:
+            peer_field_paths.extend(
+                [
+                    f"fields.{prefix}_median",
+                    f"fields.company_{prefix}_vs_median_pct",
+                ]
+            )
+    valuation_requirements = (
+        [
+            {
+                "fact_id": "valuation:peer",
+                "field_paths": peer_field_paths,
+                "reason": "sufficient_peer_valuation",
+            }
+        ]
+        if peer_field_paths
+        and any(fact.get("fact_id") == "valuation:peer" for fact in facts)
+        else []
+    )
+    return {
+        "price": price_requirements,
+        "valuation": valuation_requirements,
+    }
+
+
 def _stock_packet(
     session: Session,
     item: WatchlistItem,
@@ -1389,6 +1525,9 @@ def _stock_packet(
     price = _price_payload(assessment)
     previous = _previous_assessment(session, assessment)
     chart = _chart_payload(assessment, thesis, previous)
+    monitoring_state = _public_value(
+        _dict(_dict(assessment.price_context).get("monitoring_state"))
+    )
     current_expectation = _public_value(_dict(assessment.market_expectation_assessment))
     thesis_text = " ".join(
         filter(
@@ -1484,6 +1623,7 @@ def _stock_packet(
         "valuation": valuation,
         "price_and_positioning": price,
         "chart_context": chart,
+        "monitoring_state": monitoring_state,
         "unknowns": _clean_texts(_list(assessment.unknowns)),
         "data_cautions": list(
             dict.fromkeys(
@@ -1508,9 +1648,20 @@ def _stock_packet(
             else None
         ),
     }
-    facts = _fact_catalog(assessment, evidence, valuation, price, chart)
+    facts = _fact_catalog(
+        assessment,
+        evidence,
+        valuation,
+        price,
+        chart,
+        monitoring_state,
+    )
     stock["fact_catalog"] = facts
     stock["numeric_registry"] = _numeric_registry(facts)
+    stock["state_grounding_requirements"] = _state_grounding_requirements(
+        monitoring_state,
+        facts,
+    )
     return stock
 
 
@@ -2288,6 +2439,45 @@ def _validate_stock_review(
             stock.get("numeric_registry"),
         )
     )
+    grounding = _dict(stock.get("state_grounding_requirements"))
+    price_fact_ids = set(review.price_positioning.fact_ids)
+    price_claims = {
+        (claim.fact_id, claim.field_path)
+        for claim in review.numeric_claims
+        if claim.text_ref.startswith("price_positioning.")
+    }
+    for requirement in _list(grounding.get("price")):
+        if not isinstance(requirement, dict):
+            continue
+        fact_id = str(requirement.get("fact_id") or "")
+        if fact_id and fact_id not in price_fact_ids:
+            errors.append(
+                f"{review.ticker}:current_price_structure_fact_missing:{fact_id}"
+            )
+        for field_path in requirement.get("field_paths", []) or []:
+            if (fact_id, str(field_path)) not in price_claims:
+                errors.append(
+                    f"{review.ticker}:current_price_structure_numeric_missing:"
+                    f"{fact_id}:{field_path}"
+                )
+    valuation_fact_ids = set(review.valuation_analysis.fact_ids)
+    valuation_claims = {
+        (claim.fact_id, claim.field_path)
+        for claim in review.numeric_claims
+        if claim.text_ref.startswith("valuation_analysis.")
+    }
+    for requirement in _list(grounding.get("valuation")):
+        if not isinstance(requirement, dict):
+            continue
+        fact_id = str(requirement.get("fact_id") or "")
+        if fact_id and fact_id not in valuation_fact_ids:
+            errors.append(f"{review.ticker}:peer_valuation_fact_missing:{fact_id}")
+        for field_path in requirement.get("field_paths", []) or []:
+            if (fact_id, str(field_path)) not in valuation_claims:
+                errors.append(
+                    f"{review.ticker}:peer_valuation_numeric_grounding_missing:"
+                    f"{fact_id}:{field_path}"
+                )
     eligible_numeric = [
         item
         for item in stock.get("numeric_registry", [])
@@ -2309,6 +2499,12 @@ def _validate_stock_review(
             r"(?:역사적|과거)\s*(?:백분위|배수)", rendered
         ):
             errors.append(f"{review.ticker}:invalid_historical_comparison_used")
+        if re.search(
+            r"\b\d+(?:\.\d+)?%\s*(?:고평가|저평가)",
+            rendered,
+            flags=re.IGNORECASE,
+        ):
+            errors.append(f"{review.ticker}:historical_percentile_misrepresented")
     return errors
 
 
@@ -2769,6 +2965,10 @@ def quantitative_grounding_report(
             "historical_pb_multiple",
             "historical_pe_percentile",
             "historical_pb_percentile",
+            "peer_pe_multiple",
+            "peer_pb_multiple",
+            "peer_pe_relative_pct",
+            "peer_pb_relative_pct",
         },
     }
     rows: list[dict[str, object]] = []
@@ -2803,6 +3003,49 @@ def quantitative_grounding_report(
             if eligible_count >= minimum and used_count < minimum:
                 flags.append(f"insufficient_quantitative_grounding:{section}")
         prose = "\n".join(_prose_fields(review).values())
+        claim_semantics_by_section = {
+            section: {
+                str(item.get("semantic_type"))
+                for item in claims
+                if any(
+                    str(item.get("text_ref") or "").startswith(prefix)
+                    for prefix in prefixes
+                )
+            }
+            for section, prefixes in section_prefixes.items()
+        }
+        eligible_semantics = {
+            str(item.get("semantic_type")) for item in eligible
+        }
+        generic_requirements = (
+            (
+                "price",
+                review.price_positioning.text,
+                r"(?:가까운\s*저항|동적\s*지지|불리한\s*손익비)",
+                {
+                    "support_zone_price",
+                    "resistance_zone_price",
+                    "risk_reward_ratio",
+                },
+            ),
+            (
+                "supply",
+                review.supply_analysis.text,
+                r"중기\s*공동\s*수급",
+                {"foreign_net_buy_qty_20d", "institution_net_buy_qty_20d"},
+            ),
+            (
+                "valuation",
+                review.valuation_analysis.text,
+                r"(?:높은\s*valuation|역사적으로\s*높은\s*수준)",
+                {"historical_pe_percentile", "historical_pb_percentile"},
+            ),
+        )
+        for section, text, pattern, required_semantics in generic_requirements:
+            available = eligible_semantics & required_semantics
+            used = claim_semantics_by_section.get(section, set()) & required_semantics
+            if available and re.search(pattern, text, flags=re.IGNORECASE) and not used:
+                flags.append(f"generic_numeric_phrase_without_anchor:{section}")
         if len(eligible) >= 2 and not claims and re.search(
             r"(?:강한\s*실적|높은\s*기대|프리미엄|현금창출.*확인)", prose
         ):

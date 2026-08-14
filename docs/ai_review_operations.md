@@ -171,7 +171,7 @@ does not append the full deterministic report below the AI narrative.
 
 ## Phase 6 Market Intelligence Contract
 
-Output schema `4` and analysis policy `daily-review-v3.7` add deterministic market-fact
+Output schema `4` and analysis policy `daily-review-v3.8` retain deterministic market-fact
 selection and verified portfolio transmission. The market packet now inventories indices,
 sector proxies, rates, real rates, inflation expectations, credit, FX, oil, volatility,
 liquidity, breadth, and market-wide flows. Only fresh or revised backend observations become

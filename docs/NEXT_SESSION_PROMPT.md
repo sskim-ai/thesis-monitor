@@ -15,9 +15,11 @@ hash copied from an older conversation. Read these files before changing code:
 3. `docs/architecture/AI_ASSISTED_MONITORING.md`
 4. `docs/architecture/OHLCV_STRUCTURE_ENGINE.md`
 5. `docs/architecture/MARKET_INTELLIGENCE.md`
-6. `docs/operations/AI_ASSISTED_PILOT.md`
-7. `docs/knowledge/README.md`
-8. `.agents/skills/thesis-monitor-daily-review/SKILL.md`
+6. `docs/architecture/MONITORING_STATE_LIFECYCLE.md`
+7. `docs/architecture/PEER_VALUATION.md`
+8. `docs/operations/AI_ASSISTED_PILOT.md`
+9. `docs/knowledge/README.md`
+10. `.agents/skills/thesis-monitor-daily-review/SKILL.md`
 
 Project purpose: keep deterministic `ThesisAssessment` as official source of truth while Codex uses
 backend-verified facts, Investment Knowledge v3, and Chart Knowledge v1 to produce a validated,
@@ -30,10 +32,10 @@ Current contracts:
   `559ad45e4dd86cb0aec9bb09b51a5dc816bf323e8c2b4fd050cf28960a5a9d18`
 - Chart Knowledge 1.0 SHA
   `beee64559831479168f1347c43d979391126926d73e2473ce837cefbf0ede19b`
-- AI policy `daily-review-v3.7`
+- AI policy `daily-review-v3.8`
 - output schema 4
 - OHLCV structure `ohlcv-structure-v2`
-- Pilot `ai-assisted-pilot-v3`, KR 0/5 and US 0/5 at activation
+- Pilot `ai-assisted-pilot-v3`, current successful count KR 1/5 and US 0/5
 - renderer `ai-assisted-pilot-renderer-v3`
 - AI mode shadow; Production Assist disabled
 - Public Action 0.4.5, operationId 20/20
@@ -53,13 +55,18 @@ Absolute safety rules:
   packets remain Unknown rather than receiving invented numbers.
 - Fresh backend-selected KOSPI200/KOSDAQ150 night futures must be grounded and interpreted as Korean
   opening context, never as company-thesis confirmation.
+- Registered price rules remain audit history. Current Strong/Medium dynamic structure and state
+  delta are primary, and a crossed confirmation is never auto-promoted to support.
+- Peer valuation requires verified profile, same geography, comparable basis, same-date data, and at
+  least three peers excluding the company. Missing broad peer data remains unavailable.
 
 US morning schedule: deterministic run and first KRX fetch 08:05, KRX deadline 08:20, Codex Primary
 08:15, Backup 08:30, deterministic fallback 08:40. Telegram network retry reuses persisted final
 text and never reruns analysis.
 
-Known data gaps: KR local indices, market breadth, market-wide investor flows, broad sector coverage,
-and some conservative general-profile taxonomy. Do not fill them with model knowledge.
+Known data gaps: KR local indices, market breadth, market-wide investor flows, broad sector and peer
+valuation coverage, and some conservative general-profile taxonomy. Do not fill them with model
+knowledge.
 
 Next work order:
 

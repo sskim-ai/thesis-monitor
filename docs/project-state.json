@@ -3,7 +3,7 @@
   "branch": "main",
   "current_commit": "HEAD",
   "current_commit_resolution": "git rev-parse HEAD",
-  "recorded_base_commit": "abf61895dbe314cacb4687c42477403286f91c55",
+  "recorded_base_commit": "aeae616cda18bd610a7da1ea2fbcf2eb349d883d",
   "official_assessment_source": "deterministic",
   "ai_review_mode": "shadow",
   "investment_knowledge_version": "3.0",
@@ -11,13 +11,20 @@
   "chart_knowledge_version": "1.0",
   "chart_knowledge_sha256": "beee64559831479168f1347c43d979391126926d73e2473ce837cefbf0ede19b",
   "ohlcv_structure_version": "ohlcv-structure-v2",
-  "ai_policy_version": "daily-review-v3.7",
+  "ai_policy_version": "daily-review-v3.8",
   "output_schema_version": 4,
+  "monitoring_state_version": "monitoring-state-v1",
+  "peer_group_version": "verified-profile-peers-v1",
+  "peer_minimum_sample_excluding_company": 3,
   "pilot_version": "ai-assisted-pilot-v3",
   "pilot_renderer_version": "ai-assisted-pilot-renderer-v3",
   "pilot_target_successful_sessions_per_market": 5,
   "pilot_counts_at_activation": {
     "kr": 0,
+    "us": 0
+  },
+  "pilot_current_successful_sessions": {
+    "kr": 1,
     "us": 0
   },
   "us_morning_schedule_kst": {

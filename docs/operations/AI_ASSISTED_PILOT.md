@@ -60,8 +60,9 @@ If Telegram fails after validation, the persisted rendered set is retried at bou
 
 ## Cohorts and Counting
 
-Active cohort: `ai-assisted-pilot-v3` with policy `daily-review-v3.7`, schema 4, structure v2, and
-renderer v3. State is stored in `data/ai_review/pilot/state-v3.json` and starts KR 0/5, US 0/5.
+Active cohort: `ai-assisted-pilot-v3` with policy `daily-review-v3.8`, schema 4, structure v2, and
+renderer v3. State is stored in `data/ai_review/pilot/state-v3.json`; the current successful count is
+KR 1/5 and US 0/5.
 Earlier state files and history remain immutable.
 
 A market success increments only when:
@@ -95,7 +96,7 @@ Before Day 1:
 1. `origin/main`, development checkout, and operating checkout are the same clean commit.
 2. Full tests, lint, diff, Knowledge checksums, Skill, schema, renderer, and documentation validation
    pass for that exact commit.
-3. All four Scheduled Tasks name Pilot v3, policy v3.7, schema 4, structure v2, and renderer v3.
+3. All four Scheduled Tasks name Pilot v3, policy v3.8, schema 4, structure v2, and renderer v3.
 4. State-v3 has no migrated successes.
 5. The fallback LaunchAgent is loaded and single-delivery tests pass.
 

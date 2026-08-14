@@ -685,6 +685,40 @@ NUMERIC_SEMANTICS = {
         (r"pbr.*(?:역사적|과거).*백분위", r"historical pbr percentile"),
         "percentage",
     ),
+    "peer_pe_multiple": _spec(
+        "peer_pe_multiple",
+        ("x",),
+        ("peer PER 중앙값", "동종업계 PER 중앙값", "비교군 PER"),
+        (
+            r"(?:peer|동종업계|비교군).*per",
+            r"per.*(?:peer|동종업계|비교군)",
+        ),
+        "multiple",
+    ),
+    "peer_pb_multiple": _spec(
+        "peer_pb_multiple",
+        ("x",),
+        ("peer PBR 중앙값", "동종업계 PBR 중앙값", "비교군 PBR"),
+        (
+            r"(?:peer|동종업계|비교군).*pbr",
+            r"pbr.*(?:peer|동종업계|비교군)",
+        ),
+        "multiple",
+    ),
+    "peer_pe_relative_pct": _spec(
+        "peer_pe_relative_pct",
+        ("pct",),
+        ("peer PER 대비", "PER peer 프리미엄", "PER peer 할인"),
+        (r"(?:peer|동종업계|비교군).*per.*(?:대비|프리미엄|할인)",),
+        "signed_percentage",
+    ),
+    "peer_pb_relative_pct": _spec(
+        "peer_pb_relative_pct",
+        ("pct",),
+        ("peer PBR 대비", "PBR peer 프리미엄", "PBR peer 할인"),
+        (r"(?:peer|동종업계|비교군).*pbr.*(?:대비|프리미엄|할인)",),
+        "signed_percentage",
+    ),
     "audit_count": _spec(
         "audit_count",
         ("count",),
@@ -780,6 +814,36 @@ _FIELD_RULES = (
         r"fields\.historical_pe_statistics\.current_percentile",
         "historical_pe_percentile",
         "pct",
+    ),
+    NumericFieldRule(
+        ("peer_valuation",),
+        r"fields\.pe_(?:median|mean|percentile_25|percentile_75)",
+        "peer_pe_multiple",
+        "x",
+    ),
+    NumericFieldRule(
+        ("peer_valuation",),
+        r"fields\.pb_(?:median|mean|percentile_25|percentile_75)",
+        "peer_pb_multiple",
+        "x",
+    ),
+    NumericFieldRule(
+        ("peer_valuation",),
+        r"fields\.company_pe_vs_median_pct",
+        "peer_pe_relative_pct",
+        "pct",
+    ),
+    NumericFieldRule(
+        ("peer_valuation",),
+        r"fields\.company_pb_vs_median_pct",
+        "peer_pb_relative_pct",
+        "pct",
+    ),
+    NumericFieldRule(
+        ("peer_valuation",),
+        r"fields\.(?:pe|pb)_sample_count",
+        "audit_count",
+        "count",
     ),
     NumericFieldRule(
         ("valuation",),

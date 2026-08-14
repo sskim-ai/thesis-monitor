@@ -12,6 +12,8 @@ DOCUMENTS = (
     ROOT / "docs" / "architecture" / "AI_ASSISTED_MONITORING.md",
     ROOT / "docs" / "architecture" / "OHLCV_STRUCTURE_ENGINE.md",
     ROOT / "docs" / "architecture" / "MARKET_INTELLIGENCE.md",
+    ROOT / "docs" / "architecture" / "MONITORING_STATE_LIFECYCLE.md",
+    ROOT / "docs" / "architecture" / "PEER_VALUATION.md",
     ROOT / "docs" / "operations" / "AI_ASSISTED_PILOT.md",
     ROOT / "docs" / "knowledge" / "README.md",
 )
@@ -32,11 +34,13 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     assert state["current_commit"] == "HEAD"
     assert state["current_commit_resolution"] == "git rev-parse HEAD"
     assert state["ai_review_mode"] == "shadow"
-    assert state["ai_policy_version"] == "daily-review-v3.7"
+    assert state["ai_policy_version"] == "daily-review-v3.8"
     assert state["output_schema_version"] == 4
     assert state["ohlcv_structure_version"] == "ohlcv-structure-v2"
     assert state["pilot_version"] == "ai-assisted-pilot-v3"
     assert state["pilot_counts_at_activation"] == {"kr": 0, "us": 0}
+    assert state["pilot_current_successful_sessions"] == {"kr": 1, "us": 0}
+    assert state["monitoring_state_version"] == "monitoring-state-v1"
     assert state["single_delivery"] is True
     assert state["deterministic_fallback"] is True
     assert state["production_assist"] is False
@@ -78,6 +82,8 @@ def test_architecture_guides_record_decisions_and_readme_navigation() -> None:
         ROOT / "docs" / "architecture" / "AI_ASSISTED_MONITORING.md",
         ROOT / "docs" / "architecture" / "OHLCV_STRUCTURE_ENGINE.md",
         ROOT / "docs" / "architecture" / "MARKET_INTELLIGENCE.md",
+        ROOT / "docs" / "architecture" / "MONITORING_STATE_LIFECYCLE.md",
+        ROOT / "docs" / "architecture" / "PEER_VALUATION.md",
         ROOT / "docs" / "operations" / "AI_ASSISTED_PILOT.md",
         ROOT / "docs" / "knowledge" / "README.md",
     )
@@ -95,6 +101,8 @@ def test_architecture_guides_record_decisions_and_readme_navigation() -> None:
         "docs/architecture/AI_ASSISTED_MONITORING.md",
         "docs/architecture/OHLCV_STRUCTURE_ENGINE.md",
         "docs/architecture/MARKET_INTELLIGENCE.md",
+        "docs/architecture/MONITORING_STATE_LIFECYCLE.md",
+        "docs/architecture/PEER_VALUATION.md",
         "docs/operations/AI_ASSISTED_PILOT.md",
         "docs/knowledge/README.md",
         "docs/NEXT_SESSION_PROMPT.md",

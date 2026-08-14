@@ -129,9 +129,12 @@ wick-only breach that closes back above remains pending.
 Risk/reward uses current or explicitly labeled scenario entry, structural invalidation, and the lower
 bound of the nearest Strong/Medium resistance. Missing target or invalidation means unavailable.
 
+The compact selected Strong/Medium support, resistance, RR, invalidation, chart state, and stable zone
+identity are persisted in `monitoring-state-v1`. Registered thesis support is not substituted when a
+dynamic structure input is missing.
+
 ## Chart State
 
 Internal priority is `INVALID`, `TRIM`, `CONFIRM_ENTRY`, `SECOND_SUPPORT_ENTRY`, `SUPPORT_ENTRY`,
 `HOLD`, then `WAIT`. State output includes confidence, reasons, and blocking unknowns. Missing US
 investor-flow data limits supply-dependent confidence; it is never assumed neutral.
-

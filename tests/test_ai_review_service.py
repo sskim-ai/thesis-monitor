@@ -1569,8 +1569,8 @@ def test_knowledge_v3_sources_decisions_and_safety_markers() -> None:
         assert marker not in text
 
 
-def test_dual_knowledge_policy_identity_starts_v37_market_cohort() -> None:
-    assert ai_review_service.ANALYSIS_POLICY_VERSION == "daily-review-v3.7"
+def test_dual_knowledge_policy_identity_starts_v38_stateful_cohort() -> None:
+    assert ai_review_service.ANALYSIS_POLICY_VERSION == "daily-review-v3.8"
     assert ai_review_service.OUTPUT_SCHEMA_VERSION == "4"
     manifest = knowledge_manifest()
     assert manifest["version"] == "3.0"
@@ -2401,6 +2401,122 @@ def test_sparse_stock_allows_zero_numeric_claims(monkeypatch, tmp_path: Path) ->
     assert "PACKETUS:numeric_grounding_hard_fail" not in errors
 
 
+def test_state_price_grounding_requires_exact_fact_and_numeric_fields(
+    monkeypatch,
+    tmp_path: Path,
+) -> None:
+    _settings(monkeypatch, tmp_path)
+    with Session(_engine()) as session:
+        _seed(session)
+        packet = build_ai_review_packet(session, RUN_DATE, "us")
+        assert packet is not None
+        packet["stocks"][0]["state_grounding_requirements"] = {
+            "price": [
+                {
+                    "fact_id": "price:current",
+                    "field_paths": ["fields.current_price"],
+                    "reason": "current_price_structure",
+                }
+            ],
+            "valuation": [],
+        }
+        valid = _valid_output(packet)
+        _, valid_errors = validate_ai_review_output(session, packet, valid)
+
+        invalid = _valid_output(packet)
+        invalid["stock_reviews"][0]["price_positioning"]["fact_ids"] = []
+        invalid["stock_reviews"][0]["numeric_claims"] = []
+        _, invalid_errors = validate_ai_review_output(session, packet, invalid)
+
+    assert not any("current_price_structure" in item for item in valid_errors)
+    assert (
+        "PACKETUS:current_price_structure_fact_missing:price:current"
+        in invalid_errors
+    )
+    assert (
+        "PACKETUS:current_price_structure_numeric_missing:"
+        "price:current:fields.current_price"
+        in invalid_errors
+    )
+
+
+def test_state_grounding_requires_current_price_when_available() -> None:
+    requirements = ai_review_service._state_grounding_requirements(  # noqa: SLF001
+        {
+            "current": {
+                "price_structure": {
+                    "current_price": 211_000,
+                    "active_support": {"available": False},
+                    "active_resistance": {"available": False},
+                    "risk_reward": {"available": False},
+                }
+            }
+        },
+        [
+            {
+                "fact_id": "price:current",
+                "fact_type": "price",
+                "fields": {"current_price": 211_000},
+            }
+        ],
+    )
+
+    assert requirements["price"] == [
+        {
+            "fact_id": "price:current",
+            "field_paths": ["fields.current_price"],
+            "reason": "current_price",
+        }
+    ]
+
+
+def test_state_grounding_requires_peer_median_and_relative_value() -> None:
+    requirements = ai_review_service._state_grounding_requirements(  # noqa: SLF001
+        {
+            "current": {
+                "price_structure": {},
+                "peer_valuation": {
+                    "available": True,
+                    "metrics": {
+                        "trailing_pe": {"available": True},
+                        "price_to_book": {"available": False},
+                    },
+                },
+            }
+        },
+        [{"fact_id": "valuation:peer", "fact_type": "peer_valuation"}],
+    )
+
+    assert requirements["valuation"] == [
+        {
+            "fact_id": "valuation:peer",
+            "field_paths": [
+                "fields.pe_median",
+                "fields.company_pe_vs_median_pct",
+            ],
+            "reason": "sufficient_peer_valuation",
+        }
+    ]
+
+
+def test_historical_percentile_is_not_an_overvaluation_percentage(
+    monkeypatch,
+    tmp_path: Path,
+) -> None:
+    _settings(monkeypatch, tmp_path)
+    with Session(_engine()) as session:
+        _seed(session)
+        packet = build_ai_review_packet(session, RUN_DATE, "us")
+        assert packet is not None
+        output = _valid_output(packet)
+        output["stock_reviews"][0]["valuation_analysis"]["text"] = (
+            "현재 배수는 92.8% 고평가 상태입니다."
+        )
+        _, errors = validate_ai_review_output(session, packet, output)
+
+    assert "PACKETUS:historical_percentile_misrepresented" in errors
+
+
 def test_market_hard_fails_zero_claims_with_four_eligible_anchors(
     monkeypatch,
     tmp_path: Path,
@@ -2896,11 +3012,11 @@ def test_v35_packet_records_structure_v2_shadow_cohort_metadata(
         packet = build_ai_review_packet(session, RUN_DATE, "us")
 
     assert packet is not None
-    assert packet["analysis_policy_version"] == "daily-review-v3.7"
+    assert packet["analysis_policy_version"] == "daily-review-v3.8"
     assert packet["structure_algorithm_version"] == "ohlcv-structure-v2"
     assert packet["ready_for_ai"] is True
     assert packet["shadow_cohort"] == {
-        "policy_version": "daily-review-v3.7",
+        "policy_version": "daily-review-v3.8",
         "eligible": True,
         "profile_gate": {
             "active_total": 1,

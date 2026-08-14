@@ -363,6 +363,7 @@ class PriceContext(BaseModel):
     decision: PriceDecisionContext = Field(default_factory=PriceDecisionContext)
     supply: InvestorSupplyContext = Field(default_factory=InvestorSupplyContext)
     chart: ChartContext = Field(default_factory=ChartContext)
+    monitoring_state: dict[str, object] = Field(default_factory=dict)
     warnings: list[str] = Field(default_factory=list)
     daily_history: list[HistoricalPricePoint] = Field(default_factory=list, exclude=True)
     valuation_history: list[HistoricalPricePoint] = Field(default_factory=list, exclude=True)

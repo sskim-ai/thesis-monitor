@@ -26,6 +26,10 @@ The backend owns identity, calculations, status, warning state, and all persiste
 only interpretation. The validator owns the boundary between them. The dispatcher owns delivery
 exclusivity and does not run analysis.
 
+Final assessments also persist `monitoring-state-v1` current/previous/delta. This is separate from
+the slower thesis state and allows the review to evolve price, supply, and valuation context without
+rewriting the thesis.
+
 ## Why
 
 This arrangement preserves the existing source of truth while gaining deeper interpretation. A
@@ -63,6 +67,7 @@ by analysis policy, output schema, Knowledge hashes, structure algorithm, and Pi
 | Numeric contract | `app/services/numeric_semantic_registry.py` |
 | Market intelligence | `app/services/market_intelligence_service.py` |
 | OHLCV structure | `app/services/ohlcv_structure_service.py` |
+| Monitoring state and peers | `app/services/monitoring_state_service.py` |
 | Delivery and renderer | `app/services/ai_assisted_delivery_service.py` |
 | Scheduled CLI | `app/jobs/ai_review.py` |
 | Analyst workflow | `.agents/skills/thesis-monitor-daily-review/SKILL.md` |
@@ -73,4 +78,3 @@ Each Pilot session preserves the packet, deterministic messages, AI review, comp
 result, chart context and transition, quantitative grounding, market context, market numeric claims,
 portfolio transmission, exact rendered messages, and delivery result. Late AI after fallback is
 archive-only.
-

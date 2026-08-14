@@ -15,6 +15,7 @@ from app.services.event_identity import event_fingerprint
 from app.services.event_materiality_service import treasury_stock_materiality
 from app.services.local_storage import export_assessment_history, export_monitor_run, export_thesis
 from app.services.market_session import MarketScope, market_scope_for_security
+from app.services.monitoring_state_service import persist_monitoring_states
 from app.services.monitoring_service import assessment_to_read
 from app.services.notification_service import (
     dispatch_pending_notifications,
@@ -294,6 +295,9 @@ async def run_daily_monitor(
                 )
             ).all()
         ) if scoped_tickers else []
+        persist_monitoring_states(session, assessments, run_date)
+        for assessment in assessments:
+            export_assessment_history(session, assessment.ticker)
         delivery_ids: set[int] = set()
         if queue_notifications:
             delivery_ids = _queue_scoped_notifications(
@@ -613,6 +617,10 @@ async def run_daily_monitor(
                 "status": "failed",
                 "error": f"{type(exc).__name__}: {exc}",
             }
+
+    persist_monitoring_states(session, completed_assessments, run_date)
+    for assessment in completed_assessments:
+        export_assessment_history(session, assessment.ticker)
 
     if run.failure_count and run.success_count:
         run.status = "partial"

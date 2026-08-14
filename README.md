@@ -21,6 +21,8 @@ This project is a data collection and structuring system. It does not make buy, 
 - [AI-assisted monitoring architecture](docs/architecture/AI_ASSISTED_MONITORING.md)
 - [OHLCV structure engine](docs/architecture/OHLCV_STRUCTURE_ENGINE.md)
 - [Market intelligence](docs/architecture/MARKET_INTELLIGENCE.md)
+- [Monitoring state lifecycle](docs/architecture/MONITORING_STATE_LIFECYCLE.md)
+- [Peer valuation](docs/architecture/PEER_VALUATION.md)
 - [AI-assisted Pilot operations](docs/operations/AI_ASSISTED_PILOT.md)
 - [Knowledge guide](docs/knowledge/README.md)
 - [Next-session prompt](docs/NEXT_SESSION_PROMPT.md)

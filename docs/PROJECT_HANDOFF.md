@@ -18,12 +18,12 @@ execution or an autonomous investment adviser.
 | Branch | `main` |
 | Official assessment | Deterministic `ThesisAssessment` |
 | AI mode | `shadow` |
-| Analysis policy | `daily-review-v3.7` |
+| Analysis policy | `daily-review-v3.8` |
 | Output schema | `4` |
 | OHLCV structure | `ohlcv-structure-v2` |
 | Investment Knowledge | `3.0` |
 | Chart Knowledge | `1.0` |
-| Pilot | `ai-assisted-pilot-v3`, KR 0/5, US 0/5 at activation |
+| Pilot | `ai-assisted-pilot-v3`, current KR 1/5 and US 0/5 |
 | Renderer | `ai-assisted-pilot-renderer-v3` |
 | Public Action | `0.4.5`, operationId 20/20 |
 | Production Assist | Disabled |
@@ -92,6 +92,11 @@ transitions as today's delta. Fingerprints and warning lifecycles remain determi
 Initial research -> baseline -> daily delta -> deterministic assessment -> optional AI interpretation
 ```
 
+Every final assessment also stores `monitoring-state-v1` under `price_context`: current price
+structure, registered-rule lifecycle, supply, valuation, peer availability, the previous final state,
+and deterministic delta. This state evolves even when the official business thesis is unchanged.
+See [MONITORING_STATE_LIFECYCLE.md](architecture/MONITORING_STATE_LIFECYCLE.md).
+
 ## Dual Knowledge
 
 - [Investment Knowledge v3](knowledge/investment-thesis-analysis-monitoring-knowledge-v3.md) governs
@@ -150,15 +155,27 @@ The central boundaries are:
 
 ## Market Intelligence
 
-`daily-review-v3.7` turns verified market facts into selected changes, market structure, verified
+`daily-review-v3.8` retains the v3.7 market-intelligence contract and adds state-aware stock review.
+Verified market facts become selected changes, market structure, verified
 portfolio transmission, and next confirmation. Market context may be a tailwind or headwind but never
 becomes company fundamental confirmation. Rates, FX, oil, sectors, and flows use distinct semantic
 contracts. Details are in [MARKET_INTELLIGENCE.md](architecture/MARKET_INTELLIGENCE.md).
 
+## Stateful Price And Peer Context
+
+Registered thesis price rules remain immutable history. The user-facing price section first uses a
+new transition, then current Strong/Medium dynamic zones, current-price RR/invalidation, and only then
+a still-relevant registered rule. A crossed confirmation is never promoted to support automatically.
+
+Peer valuation is deterministic and fail-closed. The current repository can only use same-date active
+monitored assessments, explicitly labeled as a limited sample. At least three comparable peers are
+required, and the median is primary. The 2026-08-14 active universe had no qualifying peer metric, so
+no peer number was invented. See [PEER_VALUATION.md](architecture/PEER_VALUATION.md).
+
 ## Pilot Architecture
 
-Pilot v3 begins at KR 0/5 and US 0/5 after the exact commit is deployed and all four tasks use policy
-v3.7/schema 4/structure v2. A successful day requires Codex completion, validation pass, complete
+Pilot v3 activated at KR 0/5 and US 0/5; the current count is KR 1/5 and US 0/5. All four tasks use
+policy v3.8/schema 4/structure v2. A successful day requires Codex completion, validation pass, complete
 AI-assisted delivery, and archive completion. Fallback days do not increment the counter. Earlier
 Pilot cohorts remain history and are never rewritten.
 
@@ -183,6 +200,7 @@ session is retained as a failed-quality live sample and does not count toward US
 - Market facts and transmission: `app/services/market_intelligence_service.py`
 - Numeric semantics: `app/services/numeric_semantic_registry.py`
 - Chart structure: `app/services/ohlcv_structure_service.py`
+- Monitoring state and peer context: `app/services/monitoring_state_service.py`
 - Renderer and delivery: `app/services/ai_assisted_delivery_service.py`
 - Skill: `.agents/skills/thesis-monitor-daily-review/SKILL.md`
 - Runtime policy: `.agents/skills/thesis-monitor-daily-review/references/daily-review-policy.md`
@@ -197,6 +215,8 @@ session is retained as a failed-quality live sample and does not count toward US
 - Sector coverage is currently SOXX-only.
 - POSCO Holdings, Samsung Electronics, LS ELECTRIC, and Hanwha Aerospace are verified profiles whose
   current Knowledge taxonomy coverage can still route general/low; Phase 6 does not force a mapping.
+- There is no broad point-in-time peer valuation provider. Limited active-universe comparisons fail
+  closed unless at least three comparable peers pass all basis checks.
 - Production Assist remains disabled pending a separate decision after successful Pilot evidence.
 
 Never fill data gaps with model knowledge. Add a deterministic fact, semantic contract, and tests
@@ -216,11 +236,13 @@ first.
 10. Phase 6 market intelligence and portfolio transmission.
 11. Phase 6.1 quantitative hard gate, required night-futures grounding, fast morning pipeline, and
     persisted Telegram delivery retry.
+12. Phase 7 durable monitoring state, registered-rule lifecycle, dynamic-price grounding, and
+    fail-closed peer valuation.
 
 ## Next Steps
 
 1. Verify final `origin/main`, development checkout, and operating checkout are the same clean commit.
-2. Verify four Scheduled Tasks use Pilot v3, policy v3.7, schema 4, and structure v2.
+2. Verify four Scheduled Tasks use Pilot v3, policy v3.8, schema 4, and structure v2.
 3. Start Pilot v3 only after tests, Knowledge checksums, and archive gates pass.
 4. Review five successful sessions per market without changing policy mid-cohort for style alone.
 5. Treat DATA, CALCULATION, PACKET, KNOWLEDGE_ROUTING, AI_REASONING, VALIDATION, RENDERER, and DELIVERY
