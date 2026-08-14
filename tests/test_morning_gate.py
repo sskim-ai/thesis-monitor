@@ -211,7 +211,7 @@ def _gate_metadata(session: Session) -> dict[str, object]:
 
 
 @pytest.mark.anyio
-async def test_gate_holds_until_0800_without_querying_krx(monkeypatch) -> None:
+async def test_gate_holds_until_0805_without_querying_krx(monkeypatch) -> None:
     monkeypatch.setattr(
         "app.services.morning_gate.expected_latest_completed_krx_session",
         lambda run_date: EXPECTED_SESSION,
@@ -223,12 +223,12 @@ async def test_gate_holds_until_0800_without_querying_krx(monkeypatch) -> None:
         result = await run_morning_night_futures_gate(
             session,
             date(2026, 8, 14),
-            _at(7, 59),
+            _at(8, 4),
             provider=provider,
         )
 
     assert result.status == "waiting"
-    assert result.dispatch_action == "held_until_08:00"
+    assert result.dispatch_action == "held_until_08:05"
     assert provider.calls == []
 
 
@@ -256,7 +256,7 @@ async def test_gate_dispatches_immediately_when_both_contracts_are_ready(
         result = await run_morning_night_futures_gate(
             session,
             date(2026, 8, 14),
-            _at(8, 0),
+            _at(8, 5),
             provider=provider,
             notifier=notifier,
         )
@@ -272,9 +272,9 @@ async def test_gate_dispatches_immediately_when_both_contracts_are_ready(
         "daily_stock_analysis",
     ]
     assert "🌙 한국 야간선물 · 08/13 기준" in str(notifier.payloads[0]["text"])
-    assert metadata["first_query_at"].endswith("08:00:00+09:00")
-    assert metadata["first_complete_at"].endswith("08:00:00+09:00")
-    assert metadata["dispatch_at"].endswith("08:00:00+09:00")
+    assert metadata["first_query_at"].endswith("08:05:00+09:00")
+    assert metadata["first_complete_at"].endswith("08:05:00+09:00")
+    assert metadata["dispatch_at"].endswith("08:05:00+09:00")
     assert kr_delivery.status == "pending"
     assert isolate_ai_review_packet == [(date(2026, 8, 14), "us")]
 
@@ -313,7 +313,7 @@ async def test_gate_holds_for_ai_pilot_after_both_contracts_are_ready(
         result = await run_morning_night_futures_gate(
             session,
             date(2026, 8, 14),
-            _at(8, 0),
+            _at(8, 5),
             provider=provider,
             notifier=notifier,
         )
@@ -336,7 +336,6 @@ async def test_gate_retries_only_krx_until_both_are_ready(monkeypatch) -> None:
         [
             _provider_result(),
             _provider_result(),
-            _provider_result(),
             _provider_result("KRX_KOSPI200_NIGHT_FUT"),
             _provider_result(
                 "KRX_KOSPI200_NIGHT_FUT",
@@ -348,7 +347,7 @@ async def test_gate_retries_only_krx_until_both_are_ready(monkeypatch) -> None:
     with Session(_engine()) as session:
         _seed_morning(session)
 
-        for minute in (0, 5, 10, 15):
+        for minute in (5, 10, 15):
             result = await run_morning_night_futures_gate(
                 session,
                 date(2026, 8, 14),
@@ -368,11 +367,11 @@ async def test_gate_retries_only_krx_until_both_are_ready(monkeypatch) -> None:
         metadata = _gate_metadata(session)
 
     assert result.status == "dispatched"
-    assert len(provider.calls) == 5
+    assert len(provider.calls) == 4
     assert metadata["KOSPI200_first_available_at"].endswith("08:15:00+09:00")
     assert metadata["KOSDAQ150_first_available_at"].endswith("08:20:00+09:00")
     assert metadata["first_complete_at"].endswith("08:20:00+09:00")
-    assert metadata["retry_count"] == 5
+    assert metadata["retry_count"] == 4
 
 
 @pytest.mark.anyio
@@ -391,7 +390,7 @@ async def test_deadline_dispatches_partial_contract_with_caution(monkeypatch) ->
         result = await run_morning_night_futures_gate(
             session,
             date(2026, 8, 14),
-            _at(8, 45),
+            _at(8, 20),
             provider=provider,
             notifier=notifier,
         )
@@ -418,7 +417,7 @@ async def test_deadline_excludes_all_stale_values_with_one_caution(monkeypatch) 
         result = await run_morning_night_futures_gate(
             session,
             date(2026, 8, 14),
-            _at(8, 45),
+            _at(8, 20),
             provider=provider,
             notifier=notifier,
         )
@@ -449,7 +448,7 @@ async def test_provider_error_recovers_without_duplicate_dispatch(monkeypatch) -
     with Session(_engine()) as session:
         _seed_morning(session)
 
-        for minute in (0, 5, 10):
+        for minute in (5, 10, 15):
             result = await run_morning_night_futures_gate(
                 session,
                 date(2026, 8, 14),
@@ -460,7 +459,7 @@ async def test_provider_error_recovers_without_duplicate_dispatch(monkeypatch) -
         duplicate = await run_morning_night_futures_gate(
             session,
             date(2026, 8, 14),
-            _at(8, 10),
+            _at(8, 15),
             provider=provider,
             notifier=notifier,
         )
@@ -493,14 +492,14 @@ async def test_released_gate_retries_telegram_without_refetching_krx(monkeypatch
         first = await run_morning_night_futures_gate(
             session,
             date(2026, 8, 14),
-            _at(8, 0),
+            _at(8, 5),
             provider=provider,
             notifier=failed_notifier,
         )
         second = await run_morning_night_futures_gate(
             session,
             date(2026, 8, 14),
-            _at(8, 5),
+            _at(8, 10),
             provider=provider,
             notifier=recovered_notifier,
         )

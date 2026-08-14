@@ -349,6 +349,58 @@ def _seed_kr(session: Session) -> None:
     session.commit()
 
 
+def _set_fresh_night_futures(session: Session, *series_codes: str) -> None:
+    briefing = session.exec(
+        select(MacroBriefing).where(
+            MacroBriefing.briefing_date == RUN_DATE,
+            MacroBriefing.briefing_type == "morning",
+        )
+    ).one()
+    observations = []
+    for series_code in series_codes:
+        is_kospi = series_code == "KRX_KOSPI200_NIGHT_FUT"
+        observations.append(
+            {
+                "series_code": series_code,
+                "category": "kr_night_futures",
+                "value": 431.25 if is_kospi else 1432.5,
+                "unit": "index_points",
+                "change_value": 2.85 if is_kospi else -4.2,
+                "change_pct": 0.67 if is_kospi else -0.29,
+                "observed_at": "2026-08-13 00:00:00",
+                "retrieved_at": "2026-08-14 08:05:00",
+                "market_session": "kr_night",
+                "quality_status": "fresh",
+                "trade_date": "2026-08-13",
+                "expected_latest_session_date": "2026-08-13",
+                "session_freshness": "fresh",
+            }
+        )
+    briefing.market_summary = json.dumps(
+        {
+            "observations": observations,
+            "night_futures_gate": {
+                "expected_session": "2026-08-13",
+                "query_attempted": True,
+                "first_query_at": "2026-08-14T08:05:00+09:00",
+                "last_query_at": "2026-08-14T08:05:00+09:00",
+                "KOSPI200_first_available_at": (
+                    "2026-08-14T08:05:00+09:00"
+                    if "KRX_KOSPI200_NIGHT_FUT" in series_codes
+                    else None
+                ),
+                "KOSDAQ150_first_available_at": (
+                    "2026-08-14T08:05:00+09:00"
+                    if "KRX_KOSDAQ150_NIGHT_FUT" in series_codes
+                    else None
+                ),
+            },
+        }
+    )
+    session.add(briefing)
+    session.commit()
+
+
 def _valid_output(
     packet: dict[str, object],
     *,
@@ -357,6 +409,18 @@ def _valid_output(
     stock = packet["stocks"][0]
     facts = stock["fact_catalog"]
     market_facts = packet["market_context"]["fact_catalog"]
+    price_numeric = next(
+        item
+        for item in stock["numeric_registry"]
+        if item["fact_id"] == "price:current"
+        and item["field_path"] == "fields.current_price"
+    )
+    price_display = next(
+        str(item)
+        for item in price_numeric["approved_display_variants"]
+        if str(item).startswith("$")
+    )
+    price_usage = f"현재가 {price_display}"
     return {
         "schema_version": "4",
         "packet_id": packet["packet_id"],
@@ -401,7 +465,7 @@ def _valid_output(
                 "ai_thesis_assessment": "no_material_change",
                 "earnings_estimate_view": "unchanged",
                 "valuation_view": "neutral",
-                "facts_used": [facts[0]["fact_id"]],
+                "facts_used": [facts[0]["fact_id"], "price:current"],
                 "frameworks_used": ["memory_valuation", "market_expectations"],
                 "core_judgment": {
                     "text": "The evidence is supportive but does not require a status change.",
@@ -412,7 +476,7 @@ def _valid_output(
                     "fact_ids": [facts[0]["fact_id"]],
                 },
                 "price_positioning": {
-                    "text": "Price context remains separate from company quality.",
+                    "text": f"{price_usage}은 기업의 질과 별도인 가격 맥락입니다.",
                     "new_observer_view": "Separate company quality from entry valuation.",
                     "holder_view": "Track price confirmation without changing the thesis status.",
                     "fact_ids": ["price:current"],
@@ -425,7 +489,17 @@ def _valid_output(
                     "text": "Valuation remains a separate decision layer.",
                     "fact_ids": ["valuation:current"],
                 },
-                "numeric_claims": [],
+                "numeric_claims": [
+                    {
+                        "fact_id": price_numeric["fact_id"],
+                        "field_path": price_numeric["field_path"],
+                        "value": price_numeric["value"],
+                        "unit": price_numeric["unit"],
+                        "semantic_type": price_numeric["semantic_type"],
+                        "text_ref": "price_positioning.text",
+                        "usage": price_usage,
+                    }
+                ],
                 "unknowns": ["Delivery timing remains unknown."],
                 "priority_watch": ["Track execution and margin delivery."],
                 "next_checks": ["Confirm the next customer delivery update."],
@@ -739,12 +813,12 @@ def test_numeric_claims_require_exact_semantic_provenance_and_allow_display_form
         )
         krw = _valid_output(packet)
         krw_review = krw["stock_reviews"][0]
-        krw_review["facts_used"] = [contract["fact_id"]]
+        krw_review["facts_used"].append(contract["fact_id"])
         krw_review["business_earnings"] = {
             "text": "계약금액 3,190억원은 확인된 수주 규모입니다.",
             "fact_ids": [contract["fact_id"]],
         }
-        krw_review["numeric_claims"] = [
+        krw_review["numeric_claims"].append(
             {
                 "fact_id": contract["fact_id"],
                 "field_path": "fields.contract_amount.value",
@@ -754,7 +828,7 @@ def test_numeric_claims_require_exact_semantic_provenance_and_allow_display_form
                 "text_ref": "business_earnings.text",
                 "usage": "계약금액 3,190억원",
             }
-        ]
+        )
         _, errors = validate_ai_review_output(session, packet, krw)
         assert errors == []
 
@@ -803,12 +877,12 @@ def test_percentage_rounding_uses_the_exact_capital_action_field(
         )
         output = _valid_output(packet)
         review = output["stock_reviews"][0]
-        review["facts_used"] = [capital["fact_id"]]
+        review["facts_used"].append(capital["fact_id"])
         review["core_judgment"] = {
             "text": "처분 주식 비율 약 0.11%는 소규모입니다.",
             "fact_ids": [capital["fact_id"]],
         }
-        review["numeric_claims"] = [
+        review["numeric_claims"].append(
             {
                 "fact_id": capital["fact_id"],
                 "field_path": "fields.share_ratio_pct",
@@ -818,7 +892,7 @@ def test_percentage_rounding_uses_the_exact_capital_action_field(
                 "text_ref": "core_judgment.text",
                 "usage": "처분 주식 비율 약 0.11%",
             }
-        ]
+        )
         _, errors = validate_ai_review_output(session, packet, output)
 
     assert errors == []
@@ -1099,6 +1173,43 @@ def test_claim_fence_rejects_expired_primary_after_backup_reclaim(
     assert stale.status == "rejected"
     assert stale.errors == ("stale_claim_output",)
     assert final_payload["claim_id"] == backup.claim_id
+
+
+def test_us_primary_short_lease_allows_0830_backup_reclaim(
+    monkeypatch,
+    tmp_path: Path,
+) -> None:
+    _settings(monkeypatch, tmp_path)
+    with Session(_engine()) as session:
+        _seed(session)
+        write_ai_review_packet(
+            session,
+            RUN_DATE,
+            "us",
+            generated_at=datetime(2026, 8, 14, 0, 10, tzinfo=UTC),
+        )
+        primary = claim_next_ai_review_packet(
+            "us",
+            owner="us-primary",
+            now=datetime(2026, 8, 14, 0, 15, tzinfo=UTC),
+            lease_minutes=10,
+        )
+        early = claim_next_ai_review_packet(
+            "us",
+            owner="us-backup-early",
+            now=datetime(2026, 8, 14, 0, 24, tzinfo=UTC),
+        )
+        backup = claim_next_ai_review_packet(
+            "us",
+            owner="us-backup",
+            now=datetime(2026, 8, 14, 0, 30, tzinfo=UTC),
+        )
+
+    assert primary.status == "claimed"
+    assert early.status == "no_pending_packet"
+    assert backup.status == "claimed"
+    assert backup.claim_id != primary.claim_id
+    assert json.loads(Path(backup.claim_path).read_text())["owner"] == "us-backup"
     assert primary.temp_output_path != backup.temp_output_path
 
 
@@ -1458,8 +1569,8 @@ def test_knowledge_v3_sources_decisions_and_safety_markers() -> None:
         assert marker not in text
 
 
-def test_dual_knowledge_policy_identity_starts_v36_market_cohort() -> None:
-    assert ai_review_service.ANALYSIS_POLICY_VERSION == "daily-review-v3.6"
+def test_dual_knowledge_policy_identity_starts_v37_market_cohort() -> None:
+    assert ai_review_service.ANALYSIS_POLICY_VERSION == "daily-review-v3.7"
     assert ai_review_service.OUTPUT_SCHEMA_VERSION == "4"
     manifest = knowledge_manifest()
     assert manifest["version"] == "3.0"
@@ -2240,7 +2351,7 @@ def test_market_index_names_and_yield_tenor_are_structural_numbers() -> None:
     assert ai_review_service._provenance_tokens(text) == {"0.22", "0.64", "-2"}
 
 
-def test_quantitative_grounding_flags_vague_sections_when_safe_numbers_exist(
+def test_quantitative_grounding_hard_fails_zero_claims_when_safe_numbers_exist(
     monkeypatch,
     tmp_path: Path,
 ) -> None:
@@ -2253,17 +2364,174 @@ def test_quantitative_grounding_flags_vague_sections_when_safe_numbers_exist(
         raw_output["stock_reviews"][0]["core_judgment"]["text"] = (
             "강한 실적과 프리미엄을 함께 확인해야 합니다."
         )
+        raw_output["stock_reviews"][0]["price_positioning"]["text"] = (
+            "가격 맥락은 기업의 질과 분리합니다."
+        )
+        raw_output["stock_reviews"][0]["numeric_claims"] = []
         output, errors = validate_ai_review_output(session, packet, raw_output)
 
-    assert errors == []
+    assert "PACKETUS:numeric_grounding_hard_fail" in errors
     assert output is not None
     report = ai_review_service.quantitative_grounding_report(packet, output)
     row = report["stocks"][0]
-    assert report["status"] == "flagged"
+    assert report["status"] == "failed"
+    assert "numeric_grounding_hard_fail:PACKETUS" in row["hard_failures"]
     assert "vague_quantitative_language" in row["flags"]
     assert "insufficient_quantitative_grounding:core" in row["flags"]
     assert "insufficient_quantitative_grounding:earnings" in row["flags"]
     assert "insufficient_quantitative_grounding:valuation" in row["flags"]
+
+
+def test_sparse_stock_allows_zero_numeric_claims(monkeypatch, tmp_path: Path) -> None:
+    _settings(monkeypatch, tmp_path)
+    with Session(_engine()) as session:
+        _seed(session)
+        packet = build_ai_review_packet(session, RUN_DATE, "us")
+        assert packet is not None
+        output = _valid_output(packet)
+        packet["stocks"][0]["numeric_registry"] = packet["stocks"][0][
+            "numeric_registry"
+        ][:3]
+        output["stock_reviews"][0]["price_positioning"]["text"] = (
+            "가격 자료가 부족해 판단을 보류합니다."
+        )
+        output["stock_reviews"][0]["numeric_claims"] = []
+        _, errors = validate_ai_review_output(session, packet, output)
+
+    assert "PACKETUS:numeric_grounding_hard_fail" not in errors
+
+
+def test_market_hard_fails_zero_claims_with_four_eligible_anchors(
+    monkeypatch,
+    tmp_path: Path,
+) -> None:
+    _settings(monkeypatch, tmp_path)
+    with Session(_engine()) as session:
+        _seed(session)
+        packet = build_ai_review_packet(session, RUN_DATE, "us")
+        assert packet is not None
+        packet["market_context"]["numeric_registry"] = [
+            {
+                "fact_id": f"market:test:{index}",
+                "field_path": "fields.return_pct",
+                "value": float(index),
+                "unit": "pct",
+                "semantic_type": "index_return_pct",
+                "registered": True,
+                "prose_allowed": True,
+                "scope": "market",
+            }
+            for index in range(4)
+        ]
+        output = _valid_output(packet)
+        output["market_review"]["numeric_claims"] = []
+        _, errors = validate_ai_review_output(session, packet, output)
+
+    assert "market_review:numeric_grounding_hard_fail" in errors
+
+
+def test_fresh_night_futures_are_required_and_grounded_end_to_end(
+    monkeypatch,
+    tmp_path: Path,
+) -> None:
+    _settings(monkeypatch, tmp_path)
+    with Session(_engine()) as session:
+        _seed(session)
+        _set_fresh_night_futures(
+            session,
+            "KRX_KOSPI200_NIGHT_FUT",
+            "KRX_KOSDAQ150_NIGHT_FUT",
+        )
+        packet = build_ai_review_packet(session, RUN_DATE, "us")
+        assert packet is not None
+        context = packet["market_context"]
+        required = context["required_market_fact_ids"]
+        assert required == [
+            "market:night_futures:1",
+            "market:night_futures:2",
+        ]
+        assert all(
+            item["market_packet_included"]
+            and item["ai_fact_catalog_included"]
+            and item["freshness"] == "fresh"
+            for item in context["night_futures_audit"]["products"]
+        )
+
+        output = _valid_output(packet)
+        market_review = output["market_review"]
+        close_entries = [
+            next(
+                item
+                for item in context["numeric_registry"]
+                if item["fact_id"] == fact_id
+                and item["semantic_type"] == "futures_close"
+            )
+            for fact_id in required
+        ]
+        usages = [
+            f"{label} 야간선물 종가 {entry['approved_display_variants'][2]}"
+            for label, entry in zip(("KOSPI200", "KOSDAQ150"), close_entries)
+        ]
+        market_review["facts_used"] = required
+        market_review["core_judgment"] = {
+            "text": "두 계약의 방향 차이는 한국 개장 전 가격 맥락으로만 봅니다.",
+            "fact_ids": required,
+        }
+        market_review["important_changes"] = [
+            {
+                "text": f"{usages[0]}, {usages[1]}로 확인됐습니다.",
+                "fact_ids": required,
+            }
+        ]
+        market_review["market_context"] = {
+            "text": "야간선물은 기업 투자 논리 변화가 아니라 개장 전 가격 신호입니다.",
+            "fact_ids": required,
+        }
+        market_review["market_assumptions"]["fact_ids"] = required
+        market_review["numeric_claims"] = [
+            {
+                "fact_id": entry["fact_id"],
+                "field_path": entry["field_path"],
+                "value": entry["value"],
+                "unit": entry["unit"],
+                "semantic_type": entry["semantic_type"],
+                "text_ref": "important_changes[0].text",
+                "usage": usage,
+            }
+            for entry, usage in zip(close_entries, usages)
+        ]
+        _, errors = validate_ai_review_output(session, packet, output)
+
+    assert errors == []
+
+
+def test_partial_or_missing_night_futures_do_not_block_market_packet(
+    monkeypatch,
+    tmp_path: Path,
+) -> None:
+    _settings(monkeypatch, tmp_path)
+    with Session(_engine()) as session:
+        _seed(session)
+        _set_fresh_night_futures(session, "KRX_KOSPI200_NIGHT_FUT")
+        partial = build_ai_review_packet(session, RUN_DATE, "us")
+        assert partial is not None
+        assert partial["market_context"]["required_market_fact_ids"] == [
+            "market:night_futures:1"
+        ]
+        assert any(
+            "KOSDAQ150" in item
+            for item in partial["market_context"]["night_futures_cautions"]
+        )
+
+        _set_fresh_night_futures(session)
+        missing = build_ai_review_packet(session, RUN_DATE, "us")
+        assert missing is not None
+        assert missing["market_context"]["required_market_fact_ids"] == []
+        assert missing["ready_for_ai"] is True
+        assert any(
+            "최신 완료 세션 데이터를 확인하지 못해" in item
+            for item in missing["market_context"]["night_futures_cautions"]
+        )
 
 
 def test_market_transmission_requires_exact_group_fact_and_prose_grounding(
@@ -2491,10 +2759,9 @@ def test_signed_supply_value_and_audit_only_denominator_are_fail_closed(
 
         valid = _valid_output(packet)
         valid_review = valid["stock_reviews"][0]
-        valid_review["facts_used"] = ["positioning:signed"]
+        valid_review["facts_used"].append("positioning:signed")
         valid_review["supply_analysis"]["text"] = "외국인 순매도 -100주는 확인된 수급입니다."
-        valid_review["numeric_claims"] = [
-            {
+        signed_claim = {
                 "fact_id": "positioning:signed",
                 "field_path": "fields.foreign_net_buy_qty",
                 "value": -100,
@@ -2503,37 +2770,37 @@ def test_signed_supply_value_and_audit_only_denominator_are_fail_closed(
                 "text_ref": "supply_analysis.text",
                 "usage": "외국인 순매도 -100주",
             }
-        ]
+        valid_review["numeric_claims"].append(signed_claim)
         _, valid_errors = validate_ai_review_output(session, packet, valid)
 
         absolute_sell = _valid_output(packet)
         absolute_sell_review = absolute_sell["stock_reviews"][0]
-        absolute_sell_review["facts_used"] = ["positioning:signed"]
+        absolute_sell_review["facts_used"].append("positioning:signed")
         absolute_sell_review["supply_analysis"]["text"] = (
             "외국인 순매도 100주는 확인된 수급입니다."
         )
-        absolute_sell_review["numeric_claims"] = [
+        absolute_sell_review["numeric_claims"].append(
             {
-                **valid_review["numeric_claims"][0],
+                **signed_claim,
                 "usage": "외국인 순매도 100주",
             }
-        ]
+        )
         _, absolute_sell_errors = validate_ai_review_output(
             session, packet, absolute_sell
         )
 
         wrong_direction = _valid_output(packet)
         wrong_direction_review = wrong_direction["stock_reviews"][0]
-        wrong_direction_review["facts_used"] = ["positioning:signed"]
+        wrong_direction_review["facts_used"].append("positioning:signed")
         wrong_direction_review["supply_analysis"]["text"] = (
             "외국인 순매수 100주는 확인된 수급입니다."
         )
-        wrong_direction_review["numeric_claims"] = [
+        wrong_direction_review["numeric_claims"].append(
             {
-                **valid_review["numeric_claims"][0],
+                **signed_claim,
                 "usage": "외국인 순매수 100주",
             }
-        ]
+        )
         _, wrong_direction_errors = validate_ai_review_output(
             session, packet, wrong_direction
         )
@@ -2545,9 +2812,9 @@ def test_signed_supply_value_and_audit_only_denominator_are_fail_closed(
         )
         denied = _valid_output(packet)
         denied_review = denied["stock_reviews"][0]
-        denied_review["facts_used"] = [capital["fact_id"]]
+        denied_review["facts_used"].append(capital["fact_id"])
         denied_review["core_judgment"]["text"] = "분모 주식 수 29,700,000주는 audit 전용입니다."
-        denied_review["numeric_claims"] = [
+        denied_review["numeric_claims"].append(
             {
                 "fact_id": capital["fact_id"],
                 "field_path": "fields.share_denominator",
@@ -2557,7 +2824,7 @@ def test_signed_supply_value_and_audit_only_denominator_are_fail_closed(
                 "text_ref": "core_judgment.text",
                 "usage": "분모 주식 수 29,700,000주",
             }
-        ]
+        )
         _, denied_errors = validate_ai_review_output(session, packet, denied)
 
         assert valid_errors == []
@@ -2629,11 +2896,11 @@ def test_v35_packet_records_structure_v2_shadow_cohort_metadata(
         packet = build_ai_review_packet(session, RUN_DATE, "us")
 
     assert packet is not None
-    assert packet["analysis_policy_version"] == "daily-review-v3.6"
+    assert packet["analysis_policy_version"] == "daily-review-v3.7"
     assert packet["structure_algorithm_version"] == "ohlcv-structure-v2"
     assert packet["ready_for_ai"] is True
     assert packet["shadow_cohort"] == {
-        "policy_version": "daily-review-v3.6",
+        "policy_version": "daily-review-v3.7",
         "eligible": True,
         "profile_gate": {
             "active_total": 1,

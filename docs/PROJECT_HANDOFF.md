@@ -18,7 +18,7 @@ execution or an autonomous investment adviser.
 | Branch | `main` |
 | Official assessment | Deterministic `ThesisAssessment` |
 | AI mode | `shadow` |
-| Analysis policy | `daily-review-v3.6` |
+| Analysis policy | `daily-review-v3.7` |
 | Output schema | `4` |
 | OHLCV structure | `ohlcv-structure-v2` |
 | Investment Knowledge | `3.0` |
@@ -130,6 +130,9 @@ backend fact -> fact_id -> field_path -> value/unit -> semantic_type
 The single semantic registry defines unit, labels, formatter, rounding, prose permission, and scope.
 Unknown semantics fail closed. Same-number/different-meaning and cross-prose coverage are invalid.
 Derived numbers are usable only when the backend has registered them as canonical facts.
+During Pilot, a market or stock with at least four prose-eligible anchors cannot pass with zero
+numeric claims. Sparse packets remain exempt, and every used number still requires exact prose
+grounding rather than a quota-driven list.
 
 ## OHLCV Structure
 
@@ -147,7 +150,7 @@ The central boundaries are:
 
 ## Market Intelligence
 
-`daily-review-v3.6` turns verified market facts into selected changes, market structure, verified
+`daily-review-v3.7` turns verified market facts into selected changes, market structure, verified
 portfolio transmission, and next confirmation. Market context may be a tailwind or headwind but never
 becomes company fundamental confirmation. Rates, FX, oil, sectors, and flows use distinct semantic
 contracts. Details are in [MARKET_INTELLIGENCE.md](architecture/MARKET_INTELLIGENCE.md).
@@ -155,17 +158,24 @@ contracts. Details are in [MARKET_INTELLIGENCE.md](architecture/MARKET_INTELLIGE
 ## Pilot Architecture
 
 Pilot v3 begins at KR 0/5 and US 0/5 after the exact commit is deployed and all four tasks use policy
-v3.6/schema 4/structure v2. A successful day requires Codex completion, validation pass, complete
+v3.7/schema 4/structure v2. A successful day requires Codex completion, validation pass, complete
 AI-assisted delivery, and archive completion. Fallback days do not increment the counter. Earlier
 Pilot cohorts remain history and are never rewritten.
 
 | Market | Primary | Backup | Fallback deadline |
 |---|---:|---:|---:|
-| US | 08:50 | 09:30 | 09:45 |
+| US | 08:15 | 08:30 | 08:40 |
 | KR | 16:15 | 16:55 | 17:10 |
 
-US packet finalization also waits for the 08:00-08:45 KRX morning gate. Detailed recovery and
-single-delivery rules are in [AI_ASSISTED_PILOT.md](operations/AI_ASSISTED_PILOT.md).
+The US deterministic run and first KRX fetch start at 08:05. KRX-only retries run at 08:10, 08:15,
+and 08:20; the packet then proceeds with both contracts, a verified partial pair plus caution, or a
+compact unavailable caution. The 08:15 primary may poll backend packet readiness for five minutes.
+Detailed recovery and single-delivery rules are in
+[AI_ASSISTED_PILOT.md](operations/AI_ASSISTED_PILOT.md).
+
+The 2026-08-14 US v3.6 output had zero numeric claims and its initial Telegram delivery failed. A
+manual retry sent the messages before the v3.7 policy was adopted, so delivery cannot be undone; the
+session is retained as a failed-quality live sample and does not count toward US 0/5.
 
 ## Source Map
 
@@ -204,11 +214,13 @@ first.
 8. Single-delivery AI-assisted Pilot with deterministic fallback.
 9. Dual Knowledge and OHLCV structure v1/v2 correctness hardening.
 10. Phase 6 market intelligence and portfolio transmission.
+11. Phase 6.1 quantitative hard gate, required night-futures grounding, fast morning pipeline, and
+    persisted Telegram delivery retry.
 
 ## Next Steps
 
 1. Verify final `origin/main`, development checkout, and operating checkout are the same clean commit.
-2. Verify four Scheduled Tasks use Pilot v3, policy v3.6, schema 4, and structure v2.
+2. Verify four Scheduled Tasks use Pilot v3, policy v3.7, schema 4, and structure v2.
 3. Start Pilot v3 only after tests, Knowledge checksums, and archive gates pass.
 4. Review five successful sessions per market without changing policy mid-cohort for style alone.
 5. Treat DATA, CALCULATION, PACKET, KNOWLEDGE_ROUTING, AI_REASONING, VALIDATION, RENDERER, and DELIVERY

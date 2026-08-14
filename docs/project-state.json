@@ -3,7 +3,7 @@
   "branch": "main",
   "current_commit": "HEAD",
   "current_commit_resolution": "git rev-parse HEAD",
-  "recorded_base_commit": "45b50b03e614d364cb8b396e04f79ec3ebdd1002",
+  "recorded_base_commit": "abf61895dbe314cacb4687c42477403286f91c55",
   "official_assessment_source": "deterministic",
   "ai_review_mode": "shadow",
   "investment_knowledge_version": "3.0",
@@ -11,7 +11,7 @@
   "chart_knowledge_version": "1.0",
   "chart_knowledge_sha256": "beee64559831479168f1347c43d979391126926d73e2473ce837cefbf0ede19b",
   "ohlcv_structure_version": "ohlcv-structure-v2",
-  "ai_policy_version": "daily-review-v3.6",
+  "ai_policy_version": "daily-review-v3.7",
   "output_schema_version": 4,
   "pilot_version": "ai-assisted-pilot-v3",
   "pilot_renderer_version": "ai-assisted-pilot-renderer-v3",
@@ -20,6 +20,14 @@
     "kr": 0,
     "us": 0
   },
+  "us_morning_schedule_kst": {
+    "deterministic_and_first_krx_fetch": "08:05",
+    "krx_readiness_deadline": "08:20",
+    "codex_primary": "08:15",
+    "codex_backup": "08:30",
+    "deterministic_fallback": "08:40"
+  },
+  "persisted_telegram_retry_minutes_kst": ["08:22", "08:25", "08:30"],
   "single_delivery": true,
   "deterministic_fallback": true,
   "production_assist": false,

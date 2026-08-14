@@ -32,8 +32,8 @@ from app.services.notification_service import (
 
 
 KST = ZoneInfo("Asia/Seoul")
-MORNING_GATE_START = time(8, 0)
-MORNING_GATE_DEADLINE = time(8, 45)
+MORNING_GATE_START = time(8, 5)
+MORNING_GATE_DEADLINE = time(8, 20)
 MORNING_GATE_INTERVAL_MINUTES = 5
 MORNING_DIGEST_TICKER = "__DAILY_DIGEST__"
 
@@ -317,7 +317,7 @@ async def run_morning_night_futures_gate(
             ready_products=list(metadata.get("ready_products") or []),
             deadline_reached=False,
             refresh_performed=False,
-            dispatch_action="held_until_08:00",
+            dispatch_action="held_until_08:05",
         )
 
     delivery_ids = _morning_delivery_ids(session, run_date)

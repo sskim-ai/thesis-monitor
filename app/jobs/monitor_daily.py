@@ -26,7 +26,7 @@ from app.services.morning_gate import (
 
 
 KST = ZoneInfo("Asia/Seoul")
-MORNING_REQUEUE_CUTOFF = time(7, 45)
+MORNING_REQUEUE_CUTOFF = time(8, 5)
 KR_CLOSE_REQUEUE_CUTOFF = time(16, 0)
 
 

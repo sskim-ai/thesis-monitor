@@ -38,16 +38,16 @@ thesis changes only when the user or Custom GPT submits a revised version.
 
 ## Runtime and recovery
 
-- Primary schedule: every day at 07:50 Asia/Seoul.
-- Morning delivery gate: KRX night futures are queried at 08:00 and every five minutes through
-  08:45. Analysis remains fixed at its 07:50 result; only night-futures context and pending U.S.
+- Primary schedule: every day at 08:05 Asia/Seoul.
+- Morning delivery gate: KRX night futures are queried at 08:05 and every five minutes through
+  08:20. Analysis remains fixed at its 08:05 result; only night-futures context and pending U.S.
   morning notifications are refreshed.
 - Macro collection and assessment run first; provider failure is isolated so stock monitoring still runs.
 - Each macro provider fails independently and missing sources are shown as data-quality warnings.
 - Every active stock receives a dated assessment, including no-material-change days.
 - After all assessments are saved, one market digest and one analysis per active stock are queued for Telegram.
   U.S. morning deliveries remain queued until both expected-session KRX contracts are verified or
-  the 08:45 deadline applies the existing partial/unavailable rendering policy.
+  the 08:20 deadline applies the existing partial/unavailable rendering policy.
 - Strengthening, weakening, review, and invalidation events remain separate material-event alerts.
 - Provider calls retry with exponential backoff.
 - OHLCV and event-provider partial results are retained.

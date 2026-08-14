@@ -16,6 +16,7 @@ from app.services.ai_review_service import (
 from app.services.ai_assisted_delivery_service import (
     deliver_validated_ai_review,
     dispatch_due_deterministic_fallbacks,
+    retry_pending_ai_assisted_deliveries,
 )
 
 
@@ -29,6 +30,9 @@ async def _main() -> None:
     claim = subparsers.add_parser("claim")
     claim.add_argument("--market", choices=("us", "kr"), required=True)
     claim.add_argument("--owner", default=None)
+    claim.add_argument("--wait-seconds", type=int, default=0)
+    claim.add_argument("--poll-seconds", type=int, default=15)
+    claim.add_argument("--lease-minutes", type=int, default=None)
 
     validate = subparsers.add_parser("validate")
     validate.add_argument("--packet-id", required=True)
@@ -47,10 +51,26 @@ async def _main() -> None:
     fallback.add_argument("--market", choices=("us", "kr", "all"), default="all")
     fallback.add_argument("--date", default=None)
 
+    retry_delivery = subparsers.add_parser("retry-delivery")
+    retry_delivery.add_argument("--market", choices=("us", "kr", "all"), default="all")
+    retry_delivery.add_argument("--date", default=None)
+
     args = parser.parse_args()
     init_db()
     if args.command == "claim":
-        result = claim_next_ai_review_packet(args.market, owner=args.owner)
+        loop = asyncio.get_running_loop()
+        deadline = loop.time() + max(0, args.wait_seconds)
+        while True:
+            result = claim_next_ai_review_packet(
+                args.market,
+                owner=args.owner,
+                lease_minutes=args.lease_minutes,
+            )
+            if result.status != "no_pending_packet" or loop.time() >= deadline:
+                break
+            await asyncio.sleep(
+                min(max(1, args.poll_seconds), max(0.0, deadline - loop.time()))
+            )
         print(json.dumps(result.__dict__, ensure_ascii=False))
         return
     if args.command == "health":
@@ -73,6 +93,20 @@ async def _main() -> None:
         with Session(engine) as session:
             for market in markets:
                 values = await dispatch_due_deterministic_fallbacks(
+                    session,
+                    market=market,
+                    run_date=run_date,
+                )
+                results.extend(item.as_dict() for item in values)
+        print(json.dumps(results, ensure_ascii=False))
+        return
+    if args.command == "retry-delivery":
+        run_date = date.fromisoformat(args.date) if args.date else datetime.now(KST).date()
+        markets = ("us", "kr") if args.market == "all" else (args.market,)
+        results = []
+        with Session(engine) as session:
+            for market in markets:
+                values = await retry_pending_ai_assisted_deliveries(
                     session,
                     market=market,
                     run_date=run_date,

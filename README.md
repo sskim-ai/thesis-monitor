@@ -109,7 +109,7 @@ The validator reports key names and validation categories only; it never prints 
 
 ## Macro Monitoring
 
-The 07:50 U.S. monitoring job also builds a macro morning briefing before evaluating the
+The 08:05 U.S. monitoring job also builds a macro morning briefing before evaluating the
 U.S. stock watchlist. It collects U.S. rates, real yields, breakeven inflation,
 credit spreads, volatility, oil, dollar liquidity, U.S. equity and sector
 proxies, Federal Reserve releases, big-tech earnings dates, and selected Korean
@@ -257,9 +257,9 @@ python -m app.jobs.monitor_daily --market kr
 python -m app.jobs.monitor_daily --market all
 ```
 
-The Mac mini U.S. LaunchAgent template is `ops/com.seungsoo.thesis-monitor.daily.plist`. Its 07:50
+The Mac mini U.S. LaunchAgent template is `ops/com.seungsoo.thesis-monitor.daily.plist`. Its 08:05
 KST primary slot collects macro data, evaluates U.S. stocks, and queues notifications without
-dispatching them. From 08:00 through the 08:45 hard deadline, five-minute gate slots refresh only
+dispatching them. Through the 08:20 hard deadline, five-minute gate slots refresh only
 the official KRX night-futures source. Both verified contracts release the queued morning messages
 immediately; at the deadline, fresh partial data or a compact unavailable warning is used. These gate
 retries do not rerun macro scoring, event collection, valuation, or thesis evaluation. The
@@ -270,7 +270,7 @@ slots likewise retry pending Telegram deliveries after a successful analysis. Th
 is included at the top of the Korean daily digest, which is dispatched before individual stock messages;
 it is not sent as a separate production notification. A retry starts analysis
 recovery only when that market has no successful post-cutoff run; it never refreshes analysis merely
-because a delivery is pending. Same-date test runs before the 07:45 U.S. or 16:00 Korean cutoff do not
+because a delivery is pending. Same-date test runs before the 08:05 U.S. or 16:00 Korean cutoff do not
 suppress the scheduled production analysis, while later retry slots do not resend completed messages.
 Both `started_at` and `completed_at` must be at or after the market cutoff for a successful run to
 replace the scheduled production analysis. Telegram delivery retries resume persisted chunk progress

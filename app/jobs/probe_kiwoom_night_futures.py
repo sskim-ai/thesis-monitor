@@ -590,7 +590,7 @@ multi-session shadow reconciliation succeed independently for each product.
 - Actual night-session subscription and ticks
 - 05:50-06:00 closing-phase delivery
 - Provider-defined final close and session-final event
-- Persisted close availability before 07:50 KST
+- Persisted close availability before 08:05 KST
 - Same-contract KRX reconciliation over multiple sessions, including rollover
 """
 

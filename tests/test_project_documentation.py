@@ -32,7 +32,7 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     assert state["current_commit"] == "HEAD"
     assert state["current_commit_resolution"] == "git rev-parse HEAD"
     assert state["ai_review_mode"] == "shadow"
-    assert state["ai_policy_version"] == "daily-review-v3.6"
+    assert state["ai_policy_version"] == "daily-review-v3.7"
     assert state["output_schema_version"] == 4
     assert state["ohlcv_structure_version"] == "ohlcv-structure-v2"
     assert state["pilot_version"] == "ai-assisted-pilot-v3"

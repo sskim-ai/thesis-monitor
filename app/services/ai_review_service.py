@@ -37,6 +37,7 @@ from app.services.company_profile_service import (
 from app.services.daily_digest import build_daily_digest
 from app.services.market_session import market_scope_for_security
 from app.services.market_intelligence_service import build_market_intelligence
+from app.services.night_futures import NIGHT_FUTURES_SERIES
 from app.services.numeric_semantic_registry import (
     NUMERIC_SEMANTICS,
     build_numeric_registry,
@@ -51,7 +52,7 @@ logger = logging.getLogger(__name__)
 
 PACKET_SCHEMA_VERSION = "1"
 OUTPUT_SCHEMA_VERSION = "4"
-ANALYSIS_POLICY_VERSION = "daily-review-v3.6"
+ANALYSIS_POLICY_VERSION = "daily-review-v3.7"
 AIReviewMarket = Literal["us", "kr"]
 
 _INTERNAL_TEXT = re.compile(
@@ -1563,6 +1564,52 @@ def _market_packet(
                 "fields": _public_value(item),
             }
         )
+    night_fact_ids = [
+        f"market:night_futures:{index}"
+        for index, _item in enumerate(night_futures, start=1)
+    ]
+    briefing_market = (
+        _dict(_json(briefing.market_summary, {})) if briefing is not None else {}
+    )
+    gate = _dict(briefing_market.get("night_futures_gate"))
+    night_by_series = {
+        str(item.get("series_code")): item
+        for item in night_futures
+        if isinstance(item, dict) and item.get("series_code")
+    }
+    fact_id_by_series = {
+        str(item.get("series_code")): f"market:night_futures:{index}"
+        for index, item in enumerate(night_futures, start=1)
+        if isinstance(item, dict) and item.get("series_code")
+    }
+    night_audit = {
+        "expected_session": gate.get("expected_session"),
+        "query_time": gate.get("last_query_at") or gate.get("first_query_at"),
+        "products": [
+            {
+                "series_code": series_code,
+                "query_time": gate.get(
+                    "KOSPI200_first_available_at"
+                    if series_code == "KRX_KOSPI200_NIGHT_FUT"
+                    else "KOSDAQ150_first_available_at"
+                ),
+                "source_session": (
+                    night_by_series.get(series_code, {}).get("session_date")
+                ),
+                "freshness": (
+                    "fresh" if series_code in night_by_series else "unavailable"
+                ),
+                "verified_contract": series_code in night_by_series,
+                "selected_for_market_packet": series_code in night_by_series,
+                "market_packet_included": series_code in night_by_series,
+                "ai_fact_catalog_included": series_code in fact_id_by_series,
+                "fact_id": fact_id_by_series.get(series_code),
+                "ai_facts_used": False,
+                "rendered_in_telegram": False,
+            }
+            for series_code in NIGHT_FUTURES_SERIES
+        ],
+    }
     fx_items = []
     if digest.kr_close_fx is not None:
         fx_items = [asdict(item) for item in digest.kr_close_fx.items]
@@ -1594,6 +1641,7 @@ def _market_packet(
         },
         "important_changes": _clean_texts(digest.macro.key_changes),
         "key_change_fact_ids": intelligence["key_change_fact_ids"],
+        "required_market_fact_ids": night_fact_ids if market == "us" else [],
         "integrated_view": _clean_texts(digest.macro.integrated_view),
         "market_assumptions": _clean_texts(digest.macro.market_assumptions),
         "market_theses": macro_theses,
@@ -1602,6 +1650,8 @@ def _market_packet(
         "transmission_candidates": intelligence["transmission_candidates"],
         "market_unknowns": intelligence["unknowns"],
         "night_futures": night_futures,
+        "night_futures_cautions": list(digest.night_futures.cautions),
+        "night_futures_audit": night_audit,
         "fx": fx_items,
         "data_cautions": _clean_texts(digest.data_quality.items),
         "fact_catalog": market_facts,
@@ -2238,6 +2288,16 @@ def _validate_stock_review(
             stock.get("numeric_registry"),
         )
     )
+    eligible_numeric = [
+        item
+        for item in stock.get("numeric_registry", [])
+        if isinstance(item, dict)
+        and item.get("registered") is True
+        and item.get("prose_allowed") is True
+        and str(item.get("scope") or "") in {"stock", "both"}
+    ]
+    if len(eligible_numeric) >= 4 and not review.numeric_claims:
+        errors.append(f"{review.ticker}:numeric_grounding_hard_fail")
     valuation = stock.get("valuation", {})
     if isinstance(valuation, dict):
         forward_source = str(valuation.get("forward_pe_source") or "")
@@ -2314,11 +2374,12 @@ def validate_ai_review_output(
         if _current_thesis_version(session, ticker) != review.thesis_version:
             errors.append(f"{ticker}:not_currently_monitored_at_version")
         errors.extend(_validate_stock_review(review, stock))
+    market_context = packet.get("market_context")
     market_fact_ids = {
         str(item.get("fact_id"))
-        for item in packet.get("market_context", {}).get("fact_catalog", [])
+        for item in market_context.get("fact_catalog", [])
         if isinstance(item, dict) and item.get("fact_id")
-    } if isinstance(packet.get("market_context"), dict) else set()
+    } if isinstance(market_context, dict) else set()
     if set(output.market_review.facts_used) - market_fact_ids:
         errors.append("market_review:unknown_fact_ids")
     market_interpretation_facts = {
@@ -2335,6 +2396,43 @@ def validate_ai_review_output(
     }
     if market_interpretation_facts - market_fact_ids:
         errors.append("market_review:interpretation_unknown_fact_ids")
+    required_market_facts = {
+        str(item)
+        for item in (
+            market_context.get("required_market_fact_ids", [])
+            if isinstance(market_context, dict)
+            else []
+        )
+    }
+    missing_required_facts = sorted(
+        required_market_facts - set(output.market_review.facts_used)
+    )
+    if missing_required_facts:
+        errors.append(
+            "market_review:required_market_facts_missing:"
+            + ",".join(missing_required_facts)
+        )
+    missing_required_interpretation = sorted(
+        required_market_facts - market_interpretation_facts
+    )
+    if missing_required_interpretation:
+        errors.append(
+            "market_review:required_market_interpretation_missing:"
+            + ",".join(missing_required_interpretation)
+        )
+    important_change_facts = {
+        fact_id
+        for item in output.market_review.important_changes
+        for fact_id in item.fact_ids
+    }
+    missing_required_changes = sorted(
+        required_market_facts - important_change_facts
+    )
+    if missing_required_changes:
+        errors.append(
+            "market_review:night_futures_change_missing:"
+            + ",".join(missing_required_changes)
+        )
     market_text = "\n".join(_prose_fields(output.market_review).values())
     if _INTERNAL_TEXT.search(market_text):
         errors.append("market_review:forbidden_internal_metadata")
@@ -2404,6 +2502,32 @@ def validate_ai_review_output(
             else None,
         )
     )
+    market_registry = (
+        market_context.get("numeric_registry", [])
+        if isinstance(market_context, dict)
+        else []
+    )
+    market_eligible_numeric = [
+        item
+        for item in market_registry
+        if isinstance(item, dict)
+        and item.get("registered") is True
+        and item.get("prose_allowed") is True
+        and str(item.get("scope") or "") in {"market", "both"}
+    ]
+    if len(market_eligible_numeric) >= 4 and not output.market_review.numeric_claims:
+        errors.append("market_review:numeric_grounding_hard_fail")
+    numeric_claim_fact_ids = {
+        item.fact_id for item in output.market_review.numeric_claims
+    }
+    missing_required_numeric = sorted(
+        required_market_facts - numeric_claim_fact_ids
+    )
+    if missing_required_numeric:
+        errors.append(
+            "market_review:night_futures_numeric_grounding_missing:"
+            + ",".join(missing_required_numeric)
+        )
     return output, list(dict.fromkeys(errors))
 
 
@@ -2522,8 +2646,11 @@ def quantitative_grounding_report(
         item.model_dump() for item in output.market_review.numeric_claims
     ]
     market_flags: list[str] = []
+    market_hard_failures: list[str] = []
     if len(market_eligible) >= 2 and len(market_claims) < 2:
         market_flags.append("insufficient_market_quantitative_grounding")
+    if len(market_eligible) >= 4 and not market_claims:
+        market_hard_failures.append("numeric_grounding_hard_fail:market")
     key_change_ids = {
         str(item)
         for item in (
@@ -2582,6 +2709,7 @@ def quantitative_grounding_report(
             output.market_review.portfolio_transmission
         ),
         "next_check_count": len(output.market_review.next_checks),
+        "hard_failures": market_hard_failures,
         "flags": market_flags,
     }
     stocks = {
@@ -2657,6 +2785,7 @@ def quantitative_grounding_report(
         claims = [item.model_dump() for item in review.numeric_claims]
         sections: dict[str, dict[str, int]] = {}
         flags: list[str] = []
+        hard_failures: list[str] = []
         for section, prefixes in section_prefixes.items():
             if section == "core":
                 eligible_count = len(eligible)
@@ -2678,6 +2807,10 @@ def quantitative_grounding_report(
             r"(?:강한\s*실적|높은\s*기대|프리미엄|현금창출.*확인)", prose
         ):
             flags.append("vague_quantitative_language")
+        if len(eligible) >= 4 and not claims:
+            hard_failures.append(
+                f"numeric_grounding_hard_fail:{review.ticker}"
+            )
         chart = stock.get("chart_context", {}) if isinstance(stock, dict) else {}
         timeframes = chart.get("timeframes", {}) if isinstance(chart, dict) else {}
         rows.append(
@@ -2690,6 +2823,7 @@ def quantitative_grounding_report(
                 "chart_fact_ids_used": sorted(
                     fact_id for fact_id in review.facts_used if fact_id.startswith("chart:")
                 ),
+                "hard_failures": hard_failures,
                 "flags": flags,
             }
         )
@@ -2697,9 +2831,14 @@ def quantitative_grounding_report(
         "packet_id": output.packet_id,
         "analysis_policy_version": output.analysis_policy_version,
         "status": (
-            "flagged"
-            if market_flags or any(row["flags"] for row in rows)
-            else "passed"
+            "failed"
+            if market_hard_failures
+            or any(row["hard_failures"] for row in rows)
+            else (
+                "flagged"
+                if market_flags or any(row["flags"] for row in rows)
+                else "passed"
+            )
         ),
         "market": market_report,
         "stocks": rows,

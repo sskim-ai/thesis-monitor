@@ -31,6 +31,7 @@ PILOT_MODE = "ai_assisted_single_delivery"
 PILOT_VERSION = "ai-assisted-pilot-v3"
 PILOT_RENDERER_VERSION = "ai-assisted-pilot-renderer-v3"
 PILOT_MARKERS = {"us": "__DAILY_DIGEST__", "kr": "__DAILY_DIGEST_KR__"}
+MAX_PERSISTED_DELIVERY_RETRIES = 3
 PilotMarket = Literal["us", "kr"]
 
 
@@ -361,8 +362,20 @@ def _render_ai_market_message(
     market_label = "US" if market == "us" else "KR"
     title = "미국시장 점검" if market == "us" else "한국시장 마감"
     unknowns = _bullets(review.unknowns)
+    required_market_fact_ids = {
+        str(item) for item in market_context.get("required_market_fact_ids", [])
+    }
+    night_changes = [
+        item
+        for item in review.important_changes
+        if set(item.fact_ids) & required_market_fact_ids
+    ]
     changes = _bullets(
-        [item.text.strip() for item in review.important_changes if item.text.strip()]
+        [
+            item.text.strip()
+            for item in review.important_changes
+            if item.text.strip() and item not in night_changes
+        ]
     )
     group_labels = {
         str(item.get("group_key")): str(item.get("label") or item.get("group_key"))
@@ -381,7 +394,6 @@ def _render_ai_market_message(
         [item.text.strip() for item in review.next_checks if item.text.strip()]
     )
     blocks = _deterministic_blocks(deterministic_text)
-    night_futures = _first_block(blocks, "🌙 한국 야간선물")
     cautions = _first_block(blocks, "⚠️ 데이터 주의")
     sections = [
         f"🤖 AI 보조 {title} · {market_label} Pilot {pilot_day}/{target_days}",
@@ -389,8 +401,21 @@ def _render_ai_market_message(
     ]
     if changes:
         sections.append(f"📈 실제 변화\n{changes}")
-    if market == "us" and night_futures:
-        sections.append(night_futures)
+    if market == "us":
+        rendered_night_changes = _bullets(
+            [item.text.strip() for item in night_changes if item.text.strip()]
+        )
+        night_cautions = _bullets(
+            [
+                str(item)
+                for item in market_context.get("night_futures_cautions", [])
+                if str(item).strip()
+            ]
+        )
+        if rendered_night_changes:
+            sections.append(f"🌙 한국 개장 전 신호\n{rendered_night_changes}")
+        elif night_cautions:
+            sections.append(f"🌙 한국 개장 전 신호\n{night_cautions}")
     sections.append(f"🧭 시장 구조\n{review.market_context.text.strip()}")
     if transmissions:
         sections.append(f"🔗 모니터링 종목에 미치는 영향\n{transmissions}")
@@ -553,6 +578,24 @@ async def deliver_validated_ai_review(
         archive_dir / "market-numeric-claims.json",
         [item.model_dump(mode="json") for item in output.market_review.numeric_claims],
     )
+    night_audit = copy.deepcopy(
+        packet.get("market_context", {}).get("night_futures_audit", {})
+        if isinstance(packet.get("market_context"), dict)
+        else {}
+    )
+    if isinstance(night_audit, dict):
+        products = night_audit.get("products", [])
+        used_fact_ids = set(output.market_review.facts_used)
+        claimed_fact_ids = {
+            item.fact_id for item in output.market_review.numeric_claims
+        }
+        for product in (products if isinstance(products, list) else []):
+            if not isinstance(product, dict):
+                continue
+            fact_id = str(product.get("fact_id") or "")
+            product["ai_facts_used"] = fact_id in used_fact_ids
+            product["numeric_claim_included"] = fact_id in claimed_fact_ids
+            product["rendered_in_telegram"] = False
     _atomic_json(
         archive_dir / "portfolio-transmission.json",
         [
@@ -693,6 +736,7 @@ async def deliver_validated_ai_review(
                 "delivery_identity": identity,
                 "deterministic_payload": deterministic,
                 "prepared_at": current.isoformat(),
+                "persisted_delivery_retry_count": 0,
             }
             delivery.payload = json.dumps(new_payload, ensure_ascii=False)
             delivery.status = "pending"
@@ -721,6 +765,29 @@ async def deliver_validated_ai_review(
         ai_archive = archive_dir / "ai-assisted-messages.json"
         if final_messages or not ai_archive.exists():
             _archive_messages(packet, "ai-assisted-messages.json", final_messages)
+        if isinstance(night_audit, dict):
+            market_text = next(
+                (
+                    str(item.get("text") or "")
+                    for item in final_messages
+                    if item.get("ticker") == PILOT_MARKERS[market]
+                ),
+                "",
+            )
+            products = night_audit.get("products", [])
+            for product in (products if isinstance(products, list) else []):
+                if not isinstance(product, dict):
+                    continue
+                fact_id = str(product.get("fact_id") or "")
+                usages = [
+                    item.usage
+                    for item in output.market_review.numeric_claims
+                    if item.fact_id == fact_id
+                ]
+                product["rendered_in_telegram"] = bool(
+                    usages and all(usage in market_text for usage in usages)
+                )
+            _atomic_json(archive_dir / "night-futures-audit.json", night_audit)
         _atomic_json(
             archive_dir / "validation-result.json",
             {
@@ -842,6 +909,84 @@ def _pending_pilot_packets(
             if packet_id and packet_id not in values:
                 values.append(packet_id)
     return values
+
+
+async def retry_pending_ai_assisted_deliveries(
+    session: Session,
+    *,
+    market: PilotMarket,
+    run_date: date,
+    now: datetime | None = None,
+    notifier: TelegramNotifier | None = None,
+) -> list[PilotDeliveryResult]:
+    """Retry finalized AI messages without rerunning analysis or rendering."""
+    current = (now or datetime.now(KST)).astimezone(KST)
+    results: list[PilotDeliveryResult] = []
+    for packet_id in _pending_pilot_packets(session, market, run_date):
+        packet = _read_json(_packet_path(packet_id))
+        retryable: list[NotificationDelivery] = []
+        retry_count = 0
+        with _pilot_lock(packet_id):
+            for delivery in _session_deliveries(session, packet):
+                if delivery.status != "pending":
+                    continue
+                payload = json.loads(delivery.payload)
+                metadata = _pilot_metadata(payload) if isinstance(payload, dict) else {}
+                if (
+                    metadata.get("packet_id") != packet_id
+                    or metadata.get("state") != "ai_assisted_pending"
+                ):
+                    continue
+                retryable.append(delivery)
+                retry_count = max(
+                    retry_count,
+                    int(metadata.get("persisted_delivery_retry_count") or 0),
+                )
+            if not retryable:
+                continue
+            if retry_count >= MAX_PERSISTED_DELIVERY_RETRIES:
+                results.append(
+                    PilotDeliveryResult(
+                        status="retry_exhausted",
+                        market=market,
+                        packet_id=packet_id,
+                        delivery_mode="ai_assisted",
+                        pending_count=len(retryable),
+                        reason="persisted_delivery_retry_limit_reached",
+                    )
+                )
+                continue
+            next_retry = retry_count + 1
+            for delivery in retryable:
+                payload = json.loads(delivery.payload)
+                metadata = _pilot_metadata(payload)
+                metadata["persisted_delivery_retry_count"] = next_retry
+                metadata["persisted_delivery_last_retry_at"] = current.isoformat()
+                payload[AI_ASSISTED_PILOT_METADATA_KEY] = metadata
+                delivery.payload = json.dumps(payload, ensure_ascii=False)
+                session.add(delivery)
+            session.commit()
+        result = await deliver_validated_ai_review(
+            session,
+            packet_id,
+            notifier=notifier,
+            now=current,
+        )
+        _atomic_json(
+            _archive_directory(packet) / "delivery-retry-state.json",
+            {
+                "packet_id": packet_id,
+                "retry_count": next_retry,
+                "retry_at": current.isoformat(),
+                "status": result.status,
+                "sent_count": result.sent_count,
+                "pending_count": result.pending_count,
+                "analysis_rerun": False,
+                "packet_regenerated": False,
+            },
+        )
+        results.append(result)
+    return results or [PilotDeliveryResult(status="no_pending_ai_delivery", market=market)]
 
 
 async def _retry_fallback_delivery(

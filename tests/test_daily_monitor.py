@@ -161,17 +161,10 @@ def test_launch_agents_define_market_specific_schedules() -> None:
 
     assert us["ProgramArguments"][-1].endswith("--market us")
     assert us["StartCalendarInterval"] == [
-        {"Hour": 7, "Minute": 50},
-        {"Hour": 8, "Minute": 0},
         {"Hour": 8, "Minute": 5},
         {"Hour": 8, "Minute": 10},
         {"Hour": 8, "Minute": 15},
         {"Hour": 8, "Minute": 20},
-        {"Hour": 8, "Minute": 25},
-        {"Hour": 8, "Minute": 30},
-        {"Hour": 8, "Minute": 35},
-        {"Hour": 8, "Minute": 40},
-        {"Hour": 8, "Minute": 45},
     ]
     assert kr["ProgramArguments"][-1].endswith("--market kr")
     assert kr["StartCalendarInterval"] == [
@@ -180,6 +173,29 @@ def test_launch_agents_define_market_specific_schedules() -> None:
         {"Hour": 16, "Minute": 50},
     ]
     assert "RunAtLoad" not in kr
+
+
+def test_ai_fallback_and_persisted_delivery_retry_schedules_are_bounded() -> None:
+    root = Path(__file__).resolve().parents[1]
+    with (
+        root / "ops/com.seungsoo.thesis-monitor.ai-review-fallback.plist"
+    ).open("rb") as stream:
+        fallback = plistlib.load(stream)
+    with (
+        root / "ops/com.seungsoo.thesis-monitor.ai-review-delivery-retry.plist"
+    ).open("rb") as stream:
+        retry = plistlib.load(stream)
+
+    assert fallback["StartCalendarInterval"] == [
+        {"Hour": 8, "Minute": 40},
+        {"Hour": 17, "Minute": 10},
+    ]
+    assert retry["StartCalendarInterval"][:3] == [
+        {"Hour": 8, "Minute": 22},
+        {"Hour": 8, "Minute": 25},
+        {"Hour": 8, "Minute": 30},
+    ]
+    assert "retry-delivery --market all" in retry["ProgramArguments"][-1]
 
 
 def test_analysis_completion_uses_scoped_run_after_cutoff() -> None:
@@ -196,8 +212,8 @@ def test_analysis_completion_uses_scoped_run_after_cutoff() -> None:
                 run_date=run_date,
                 run_type="daily_us",
                 status="success",
-                started_at=datetime(2040, 8, 12, 22, 46, tzinfo=timezone.utc),
-                completed_at=datetime(2040, 8, 12, 22, 50, tzinfo=timezone.utc),
+                started_at=datetime(2040, 8, 12, 23, 6, tzinfo=timezone.utc),
+                completed_at=datetime(2040, 8, 12, 23, 10, tzinfo=timezone.utc),
             )
         )
         session.add(
@@ -230,14 +246,14 @@ def test_analysis_completion_uses_scoped_run_after_cutoff() -> None:
     [
         (
             "us",
-            datetime(2040, 8, 12, 22, 44, tzinfo=timezone.utc),
-            datetime(2040, 8, 12, 22, 46, tzinfo=timezone.utc),
+            datetime(2040, 8, 12, 23, 4, tzinfo=timezone.utc),
+            datetime(2040, 8, 12, 23, 6, tzinfo=timezone.utc),
             "refresh_after_pre_cutoff_run",
         ),
         (
             "us",
-            datetime(2040, 8, 12, 22, 45, tzinfo=timezone.utc),
-            datetime(2040, 8, 12, 22, 48, tzinfo=timezone.utc),
+            datetime(2040, 8, 12, 23, 5, tzinfo=timezone.utc),
+            datetime(2040, 8, 12, 23, 8, tzinfo=timezone.utc),
             "reuse",
         ),
         (
@@ -311,7 +327,7 @@ def test_analysis_decision_handles_missing_failed_and_running_runs() -> None:
         assert decision.action == "refresh_after_pre_cutoff_run"
         assert decision.refresh is True
 
-        run.started_at = datetime(2041, 8, 12, 22, 50, tzinfo=timezone.utc)
+        run.started_at = datetime(2041, 8, 12, 23, 10, tzinfo=timezone.utc)
         session.commit()
         decision = _analysis_decision(session, cutoff_date, cutoff, "us")
         assert decision.action == "in_progress"
@@ -436,7 +452,7 @@ async def test_us_scope_collects_macro(monkeypatch) -> None:
 
 
 @pytest.mark.anyio
-async def test_us_primary_queues_at_0750_without_dispatching_or_querying_krx(
+async def test_us_primary_starts_at_0805_without_dispatching(
     monkeypatch,
 ) -> None:
     daily_calls: list[dict[str, object]] = []
@@ -463,11 +479,11 @@ async def test_us_primary_queues_at_0750_without_dispatching_or_querying_krx(
     async def record_gate(session, run_date, as_of):
         gate_calls.append(as_of)
         return SimpleNamespace(
-            dispatch_action="held_until_08:00",
+            dispatch_action="held_for_complete_snapshot",
                 as_dict=lambda: {
                     "status": "waiting",
                     "refresh_performed": False,
-                    "dispatch_action": "held_until_08:00",
+                    "dispatch_action": "held_for_complete_snapshot",
                 },
         )
 
@@ -482,7 +498,7 @@ async def test_us_primary_queues_at_0750_without_dispatching_or_querying_krx(
         record_gate,
     )
     run_date = date(2040, 8, 14)
-    as_of = datetime(2040, 8, 14, 7, 50, tzinfo=KST)
+    as_of = datetime(2040, 8, 14, 8, 5, tzinfo=KST)
     isolated_engine = create_engine(
         "sqlite://",
         connect_args={"check_same_thread": False},
@@ -493,7 +509,7 @@ async def test_us_primary_queues_at_0750_without_dispatching_or_querying_krx(
         result = await _run_market_job(session, run_date, "us", as_of=as_of)
 
     assert result["analysis_action"] == "fresh"
-    assert result["delivery_action"] == "held_until_08:00"
+    assert result["delivery_action"] == "held_for_complete_snapshot"
     assert daily_calls == [
         {
             "run_date": run_date,
@@ -556,7 +572,7 @@ async def test_kr_pilot_holds_deterministic_delivery_after_packet_creation(
 @pytest.mark.parametrize(
     ("market_scope", "run_type", "completed_at", "ticker_count"),
     [
-        ("us", "daily_us", datetime(2042, 8, 12, 22, 50, tzinfo=timezone.utc), 9),
+        ("us", "daily_us", datetime(2042, 8, 12, 23, 10, tzinfo=timezone.utc), 9),
         ("kr", "daily_kr", datetime(2042, 8, 13, 7, 8, tzinfo=timezone.utc), 5),
     ],
 )
@@ -591,7 +607,10 @@ async def test_market_job_reuses_successful_analysis_for_delivery_retry(
     async def record_gate(*args, **kwargs):
         return SimpleNamespace(
             dispatch_action="dispatched",
-            as_dict=lambda: {"status": "dispatched"},
+            as_dict=lambda: {
+                "status": "dispatched",
+                "dispatch_action": "dispatched",
+            },
         )
 
     monkeypatch.setattr(
@@ -711,7 +730,7 @@ async def test_market_job_does_not_overlap_running_analysis(monkeypatch) -> None
                 run_date=run_date,
                 run_type="daily_us",
                 status="running",
-                started_at=datetime(2042, 8, 13, 22, 50, tzinfo=timezone.utc),
+                started_at=datetime(2042, 8, 13, 23, 10, tzinfo=timezone.utc),
             )
         )
         session.commit()
@@ -727,7 +746,7 @@ async def test_market_job_does_not_overlap_running_analysis(monkeypatch) -> None
 @pytest.mark.parametrize(
     ("market_scope", "ticker", "exchange", "completed_at"),
     [
-        ("us", "USRETRY", "NASDAQ", datetime(2043, 8, 12, 22, 50, tzinfo=timezone.utc)),
+        ("us", "USRETRY", "NASDAQ", datetime(2043, 8, 12, 23, 10, tzinfo=timezone.utc)),
         ("kr", "204301", "KRX", datetime(2043, 8, 13, 7, 8, tzinfo=timezone.utc)),
     ],
 )

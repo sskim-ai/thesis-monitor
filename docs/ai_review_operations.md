@@ -12,15 +12,15 @@ All times are Asia/Seoul.
 
 | Task | Time | Purpose |
 | --- | --- | --- |
-| US primary | 08:50 | Process the packet finalized after the morning KRX gate. |
-| US backup | 09:30 | Reclaim after the primary's 30-minute lease has expired. |
+| US primary | 08:15 | Poll packet readiness through 08:20, then process it with a 10-minute lease. |
+| US backup | 08:30 | Reclaim an interrupted primary after its short lease. |
 | KR primary | 16:15 | Process the successful Korean close packet. |
 | KR backup | 16:55 | Reclaim after the primary's 30-minute lease has expired. |
 
 Every invocation begins with a pending scan. Completed packet and policy combinations are no-ops.
-Shadow tasks may catch up an eligible packet from the preceding 24 hours. The scheduling invariant is
-`backup_delay > claim_lease + safety_margin`: the current 40-minute delay exceeds the 30-minute lease
-by 10 minutes and the configured minimum safety margin is 5 minutes.
+Shadow tasks may catch up an eligible packet from the preceding 24 hours. KR retains the 30-minute
+lease and 40-minute backup delay. The US primary explicitly uses a 10-minute lease; its 15-minute
+backup delay preserves reclaim safety while supporting the fast morning path.
 
 Every claim has a UUID and a claim-specific temporary output. Lease expiry permits reclaim but does
 not invalidate the worker by itself. Once a backup creates a new claim, the prior worker is fenced and
@@ -80,13 +80,15 @@ AI-assisted market message and one combined message per stock. The official stat
 valuation, price, supply, and data cautions remain deterministic.
 
 KR holds after the 16:05 close run, uses the 16:15 primary and 16:55 backup, and releases the stored
-deterministic set at 17:10 if no valid AI output exists. US holds after the morning KRX gate, uses the
-08:50 primary and 09:30 backup, and falls back at 09:45. A validated AI delivery and deterministic
+deterministic set at 17:10 if no valid AI output exists. US starts deterministic work and KRX fetch at
+08:05, uses the 08:15 primary and 08:30 backup, and falls back at 08:40. A validated AI delivery and deterministic
 fallback are mutually exclusive for one packet. A late AI result after fallback is archived only.
 Once AI-assisted delivery has started, Telegram failures resume that same rendered content and never
 switch to a full deterministic report mid-message.
 
 Install `ops/com.seungsoo.thesis-monitor.ai-review-fallback.plist` for the two local fallback checks.
+Install `ops/com.seungsoo.thesis-monitor.ai-review-delivery-retry.plist` for bounded retries of the
+same finalized text at 08:22, 08:25, and 08:30. These retries never rerun analysis or rendering.
 Exact deterministic, AI, comparison, chart context, price transition, quantitative-grounding,
 rendered Telegram, and delivery-result artifacts are stored in `data/ai_review/pilot/history`. Only
 AI-assisted sessions whose validation, delivery, and archive all complete increment the market's
@@ -169,7 +171,7 @@ does not append the full deterministic report below the AI narrative.
 
 ## Phase 6 Market Intelligence Contract
 
-Output schema `4` and analysis policy `daily-review-v3.6` add deterministic market-fact
+Output schema `4` and analysis policy `daily-review-v3.7` add deterministic market-fact
 selection and verified portfolio transmission. The market packet now inventories indices,
 sector proxies, rates, real rates, inflation expectations, credit, FX, oil, volatility,
 liquidity, breadth, and market-wide flows. Only fresh or revised backend observations become
@@ -186,6 +188,10 @@ Market numbers use the same exact prose-location and fail-closed semantic regist
 numbers. Schema 4 requires portfolio transmission and next checks to cite allowed market
 facts. Grounding telemetry flags generic summaries, ungrounded market facts, and unsupported
 portfolio transmission.
+
+Pilot validation now rejects zero numeric claims when a market or stock has at least four safe,
+prose-eligible anchors. Fresh backend-selected KRX night-futures facts are mandatory market evidence;
+partial or unavailable contracts add a compact caution without blocking analysis after 08:20.
 
 `ai-assisted-pilot-renderer-v3` shows one-line judgment, important changes, market structure,
 portfolio transmission, next confirmation, and material data limits. It omits analysis-method

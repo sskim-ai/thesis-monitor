@@ -9,7 +9,7 @@ market narratives.
 
 ## Decision
 
-`daily-review-v3.6` and output schema 4 use a deterministic market-intelligence layer:
+`daily-review-v3.7` and output schema 4 use a deterministic market-intelligence layer:
 
 ```text
 Verified market observations
@@ -50,6 +50,9 @@ or persistent assumption.
 - Portfolio groups come from verified company profile and existing thesis exposure, never ticker rules.
 - Market context is a tailwind, headwind, or neutral context; it is not fundamental confirmation.
 - Important changes and portfolio groups are capped at four; next checks and cautions at three.
+- With at least four prose-eligible market anchors, zero numeric claims is a hard validation failure.
+- Fresh KOSPI200/KOSDAQ150 night-futures facts selected by the backend are required market facts and
+  must appear in the interpretation, an important change, and exact numeric claims.
 
 ## Packet Inventory
 
@@ -63,6 +66,14 @@ Current verified limitations are:
 - Breadth and market-wide investor flows are unavailable.
 - Sector coverage is partial and currently SOXX-only.
 - A stale broad-dollar observation is excluded instead of being backfilled.
+
+## Night Futures
+
+The US packet records expected session, query timestamps, source session, contract verification,
+freshness, packet/catalog selection, AI usage, and Telegram rendering for both KRX contracts. Both
+fresh contracts are compared in the dedicated Korean-opening section. One fresh contract is used
+with a compact caution for the other; zero fresh contracts do not block market analysis. Night
+futures are opening-price and overnight-risk context only, never company fundamental confirmation.
 
 ## Fact Selection and Structure
 

@@ -30,7 +30,7 @@ Current contracts:
   `559ad45e4dd86cb0aec9bb09b51a5dc816bf323e8c2b4fd050cf28960a5a9d18`
 - Chart Knowledge 1.0 SHA
   `beee64559831479168f1347c43d979391126926d73e2473ce837cefbf0ede19b`
-- AI policy `daily-review-v3.6`
+- AI policy `daily-review-v3.7`
 - output schema 4
 - OHLCV structure `ohlcv-structure-v2`
 - Pilot `ai-assisted-pilot-v3`, KR 0/5 and US 0/5 at activation
@@ -49,6 +49,14 @@ Absolute safety rules:
 - Market context is not company fundamental confirmation.
 - Modeled estimates are not consensus. Suppressed historical valuation stays absent.
 - One session sends AI-assisted or deterministic fallback, never both.
+- Four or more safe prose-eligible anchors with zero numeric claims is a Pilot hard failure; sparse
+  packets remain Unknown rather than receiving invented numbers.
+- Fresh backend-selected KOSPI200/KOSDAQ150 night futures must be grounded and interpreted as Korean
+  opening context, never as company-thesis confirmation.
+
+US morning schedule: deterministic run and first KRX fetch 08:05, KRX deadline 08:20, Codex Primary
+08:15, Backup 08:30, deterministic fallback 08:40. Telegram network retry reuses persisted final
+text and never reruns analysis.
 
 Known data gaps: KR local indices, market breadth, market-wide investor flows, broad sector coverage,
 and some conservative general-profile taxonomy. Do not fill them with model knowledge.
@@ -67,4 +75,3 @@ schema validation, documentation path validation, push the exact commit, verify 
 and Lint, then align the operating checkout and Scheduled Tasks.
 
 ---
-

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>com.seungsoo.thesis-monitor.ai-review-delivery-retry</string>
+    <key>ProgramArguments</key>
+    <array>
+        <string>/bin/zsh</string>
+        <string>-lc</string>
+        <string>cd /Users/sskim/Codex/thesis-monitor &amp;&amp; . .venv/bin/activate &amp;&amp; exec python -m app.jobs.ai_review retry-delivery --market all</string>
+    </array>
+    <key>WorkingDirectory</key>
+    <string>/Users/sskim/Codex/thesis-monitor</string>
+    <key>StartCalendarInterval</key>
+    <array>
+        <dict><key>Hour</key><integer>8</integer><key>Minute</key><integer>22</integer></dict>
+        <dict><key>Hour</key><integer>8</integer><key>Minute</key><integer>25</integer></dict>
+        <dict><key>Hour</key><integer>8</integer><key>Minute</key><integer>30</integer></dict>
+        <dict><key>Hour</key><integer>16</integer><key>Minute</key><integer>22</integer></dict>
+        <dict><key>Hour</key><integer>16</integer><key>Minute</key><integer>25</integer></dict>
+        <dict><key>Hour</key><integer>16</integer><key>Minute</key><integer>30</integer></dict>
+    </array>
+    <key>StandardOutPath</key>
+    <string>/Users/sskim/Codex/thesis-monitor/logs/ai-review-delivery-retry.out.log</string>
+    <key>StandardErrorPath</key>
+    <string>/Users/sskim/Codex/thesis-monitor/logs/ai-review-delivery-retry.err.log</string>
+</dict>
+</plist>

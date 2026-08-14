@@ -159,9 +159,9 @@ def test_custom_gpt_knowledge_and_runtime_policy_keep_separate_responsibilities(
         ".agents/skills/thesis-monitor-daily-review/references/daily-review-policy.md"
     ).read_text(encoding="utf-8")
     for concept in (
-        "KRX morning gate",
+        "KRX night-futures fetch",
         "price.supply.score",
-        "07:50",
+        "08:05",
         "16:05",
     ):
         assert concept in policy

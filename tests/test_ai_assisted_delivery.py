@@ -16,6 +16,7 @@ from app.services.ai_assisted_delivery_service import (
     deliver_validated_ai_review,
     dispatch_due_deterministic_fallbacks,
     hold_ai_assisted_pilot_session,
+    retry_pending_ai_assisted_deliveries,
 )
 from app.services.notification_service import (
     AI_ASSISTED_PILOT_METADATA_KEY,
@@ -60,7 +61,7 @@ def _settings(monkeypatch, tmp_path: Path):
             "ai_review_mode": "shadow",
             "ai_review_pilot_enabled": True,
             "ai_review_pilot_target_success_days": 5,
-            "ai_review_pilot_us_fallback_time": "09:45",
+            "ai_review_pilot_us_fallback_time": "08:40",
             "ai_review_pilot_kr_fallback_time": "17:10",
         }
     )
@@ -75,7 +76,7 @@ def _packet() -> dict[str, object]:
     return {
         "schema_version": "1",
         "output_schema_version": "4",
-        "analysis_policy_version": "daily-review-v3.6",
+        "analysis_policy_version": "daily-review-v3.7",
         "knowledge": {"version": "3.0", "sha256": "knowledge-sha"},
         "chart_knowledge": {"version": "1.0", "sha256": "chart-knowledge-sha"},
         "packet_id": PACKET_ID,
@@ -99,7 +100,7 @@ def _output() -> dict[str, object]:
         "schema_version": "4",
         "packet_id": PACKET_ID,
         "claim_id": "claim-1",
-        "analysis_policy_version": "daily-review-v3.6",
+        "analysis_policy_version": "daily-review-v3.7",
         "knowledge_version": "3.0",
         "knowledge_sha256": "knowledge-sha",
         "chart_knowledge_version": "1.0",
@@ -169,7 +170,7 @@ def _write_artifacts(tmp_path: Path, *, output: bool = True) -> None:
         json.dumps(_packet(), ensure_ascii=False), encoding="utf-8"
     )
     if output:
-        (outbox / f"{PACKET_ID}--daily-review-v3.6--knowledge.json").write_text(
+        (outbox / f"{PACKET_ID}--daily-review-v3.7--knowledge.json").write_text(
             json.dumps(_output(), ensure_ascii=False), encoding="utf-8"
         )
 
@@ -336,7 +337,7 @@ async def test_fallback_sends_only_deterministic_and_late_ai_is_archive_only(
             notifier=fallback_notifier,
         )
         outbox = tmp_path / "ai_review" / "outbox"
-        (outbox / f"{PACKET_ID}--daily-review-v3.6--knowledge.json").write_text(
+        (outbox / f"{PACKET_ID}--daily-review-v3.7--knowledge.json").write_text(
             json.dumps(_output(), ensure_ascii=False), encoding="utf-8"
         )
         late = await deliver_validated_ai_review(
@@ -380,6 +381,48 @@ async def test_ai_delivery_failure_retries_ai_without_deterministic_mix(
     assert second.status == "sent"
     assert len(recovered.payloads) == 2
     assert all(str(item["type"]).startswith("ai_assisted") for item in recovered.payloads)
+
+
+@pytest.mark.anyio
+async def test_persisted_delivery_retry_reuses_final_text_without_reanalysis(
+    monkeypatch,
+    tmp_path: Path,
+) -> None:
+    _settings(monkeypatch, tmp_path)
+    _write_artifacts(tmp_path)
+    failed = RecordingNotifier(fail=True)
+    recovered = RecordingNotifier()
+    with Session(_engine()) as session:
+        _seed_deliveries(session)
+        hold_ai_assisted_pilot_session(session, PACKET_ID)
+        first = await deliver_validated_ai_review(session, PACKET_ID, notifier=failed)
+        retries = await retry_pending_ai_assisted_deliveries(
+            session,
+            market="kr",
+            run_date=RUN_DATE,
+            now=datetime(2026, 8, 14, 16, 22, tzinfo=KST),
+            notifier=recovered,
+        )
+
+    assert first.status == "pending"
+    assert retries[-1].status == "sent"
+    assert [item["text"] for item in recovered.payloads] == [
+        item["text"] for item in failed.payloads
+    ]
+    retry_state = (
+        tmp_path
+        / "ai_review"
+        / "pilot"
+        / "history"
+        / "2026"
+        / "08"
+        / PACKET_ID
+        / "delivery-retry-state.json"
+    )
+    payload = json.loads(retry_state.read_text())
+    assert payload["retry_count"] == 1
+    assert payload["analysis_rerun"] is False
+    assert payload["packet_regenerated"] is False
 
 
 @pytest.mark.anyio
@@ -436,7 +479,15 @@ def test_pilot_v3_stops_market_after_five_successful_packets(
 
 
 def test_us_market_renderer_v3_integrates_night_futures_without_duplication() -> None:
-    review = AIMarketReview.model_validate(_output()["market_review"])
+    raw_review = _output()["market_review"]
+    raw_review["facts_used"].append("market:night_futures:1")
+    raw_review["important_changes"].append(
+        {
+            "text": "KOSPI200 야간선물은 431.25pt로 한국 개장 전 약세 신호입니다.",
+            "fact_ids": ["market:night_futures:1"],
+        }
+    )
+    review = AIMarketReview.model_validate(raw_review)
     deterministic = (
         "🇺🇸 미국시장 점검\n현재 환경: 선택적 강세\n\n"
         "🌙 한국 야간선물\n• KOSPI200 야간선물 종가 431.25pt · +0.67%\n\n"
@@ -447,6 +498,7 @@ def test_us_market_renderer_v3_integrates_night_futures_without_duplication() ->
         deterministic,
         review,
         market_context={
+            "required_market_fact_ids": ["market:night_futures:1"],
             "portfolio_exposure_groups": [
                 {"group_key": "semiconductor", "label": "반도체"}
             ]
@@ -457,14 +509,14 @@ def test_us_market_renderer_v3_integrates_night_futures_without_duplication() ->
     )
 
     assert "🤖 AI 보조 미국시장 점검 · US Pilot 1/5" in text
-    assert "🌙 한국 야간선물" in text
+    assert "🌙 한국 개장 전 신호" in text
     assert "🎯 오늘 시장 한 줄" in text
     assert "📈 실제 변화" in text
     assert "🧭 시장 구조" in text
     assert "🔗 모니터링 종목에 미치는 영향" in text
     assert "📌 다음 확인" in text
     assert "⚠️ 데이터 주의" in text
-    assert text.count("🌙 한국 야간선물") == 1
+    assert text.count("🌙 한국 개장 전 신호") == 1
     assert "기존 deterministic 전체 블록" not in text
     assert "추가 확정 근거를 기다립니다" not in text
 
