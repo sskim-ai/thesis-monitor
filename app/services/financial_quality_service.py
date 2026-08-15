@@ -3,6 +3,12 @@ from __future__ import annotations
 import copy
 from collections.abc import Mapping
 
+from app.services.security_identity_service import (
+    IDENTITY_CONFLICT,
+    IDENTITY_UNKNOWN,
+    VERIFIED_NON_DEPOSITARY,
+)
+
 
 DECISION_VERSION = "financial-quality-taint-v2"
 
@@ -349,7 +355,8 @@ def build_financial_quality_state(
             forward_period
             and snapshot.get("provider")
             and snapshot.get("currency")
-            and snapshot.get("is_depositary_security") is not True
+            and snapshot.get("security_identity_state")
+            == VERIFIED_NON_DEPOSITARY
             and str(snapshot.get("forward_pe_basis_status") or "")
             == "not_applicable"
             and snapshot.get("forward_pe_basis_conflict") is not True
@@ -590,6 +597,90 @@ def build_financial_quality_state(
             ),
         )
 
+    identity_metadata = _dict(source.get("security_identity"))
+    identity_state = str(
+        snapshot.get("security_identity_state")
+        or identity_metadata.get("identity_state")
+        or IDENTITY_UNKNOWN
+    )
+    if identity_state in {IDENTITY_CONFLICT, IDENTITY_UNKNOWN}:
+        identity_denial = (
+            "security_identity_conflict"
+            if identity_state == IDENTITY_CONFLICT
+            else "security_identity_unverified"
+        )
+        identity_quality_state = (
+            "denied" if identity_state == IDENTITY_CONFLICT else "unknown"
+        )
+        identity_verification = (
+            "conflicted" if identity_state == IDENTITY_CONFLICT else "unverified"
+        )
+        identity_reasons = [
+            *(
+                str(item)
+                for item in (
+                    snapshot.get("security_identity_conflict_reasons")
+                    or identity_metadata.get("conflict_reasons")
+                    or []
+                )
+                if str(item).strip()
+            ),
+            identity_denial,
+        ]
+        security_basis_fields = (
+            "ttm_eps",
+            "trailing_pe",
+            "forward_eps",
+            "forward_pe",
+            "bvps",
+            "price_to_book",
+            "forward_bvps",
+            "forward_price_to_book",
+            "historical_pe_statistics.current_value",
+            "historical_pe_statistics.current_percentile",
+            "historical_pb_statistics.current_value",
+            "historical_pb_statistics.current_percentile",
+            "valuation_relative_position",
+            "valuation_relative_position_reason",
+        )
+        for field in security_basis_fields:
+            if _field_value(snapshot, field) is None:
+                continue
+            existing = _dict(fields.get(field))
+            fields[field] = _quality_record(
+                state=identity_quality_state,
+                source_period=(
+                    str(existing.get("source_period"))
+                    if existing.get("source_period") is not None
+                    else None
+                ),
+                source_type=str(existing.get("source_type") or "security_basis"),
+                provider=(
+                    str(existing.get("provider"))
+                    if existing.get("provider") is not None
+                    else None
+                ),
+                reason_codes=list(dict.fromkeys(identity_reasons)),
+                dependency_fields=[
+                    *(
+                        str(item)
+                        for item in existing.get("dependency_fields", [])
+                    ),
+                    "security_identity.current_security_basis",
+                ],
+                dependency_periods=[
+                    str(item)
+                    for item in existing.get("dependency_periods", [])
+                ],
+                denominator_period=(
+                    str(existing.get("denominator_period"))
+                    if existing.get("denominator_period") is not None
+                    else None
+                ),
+                lineage_verification_status=identity_verification,
+                denial_reason=identity_denial,
+            )
+
     denied_fields = sorted(
         field for field, quality in fields.items() if quality["state"] == "denied"
     )
@@ -658,7 +749,16 @@ def sanitize_financial_snapshot_for_prose(
             snapshot[f"{multiple}_status"] = "unavailable"
     if "valuation_relative_position" in quality["non_prose_fields"]:
         snapshot["valuation_relative_position"] = "unknown"
+        source = _dict(snapshot.get("financial_quality_source_metadata"))
+        identity = _dict(source.get("security_identity"))
+        identity_state = str(
+            snapshot.get("security_identity_state")
+            or identity.get("identity_state")
+            or IDENTITY_UNKNOWN
+        )
         snapshot["valuation_relative_position_reason"] = (
-            "검증 경고가 있는 이익 입력을 제외해 현재 Valuation 위치 판단을 보류합니다."
+            "증권 유형과 주당 기준의 일치 여부를 확인하지 못해 배수 비교를 보류합니다."
+            if identity_state in {IDENTITY_CONFLICT, IDENTITY_UNKNOWN}
+            else "검증 경고가 있는 이익 입력을 제외해 현재 Valuation 위치 판단을 보류합니다."
         )
     return snapshot

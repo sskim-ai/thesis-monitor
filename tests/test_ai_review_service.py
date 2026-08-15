@@ -15,6 +15,7 @@ from app.config import get_settings
 from app.models.company import Company
 from app.models.financial import FinancialSnapshot
 from app.models.macro import MacroBriefing
+from app.models.security import SecurityMaster
 from app.models.thesis import (
     InvestmentThesis,
     MonitorRun,
@@ -224,7 +225,28 @@ def _seed(session: Session) -> None:
             business_units="DRAM and NAND",
         )
     )
-    session.add(WatchlistItem(ticker=ticker, company_name="Packet Corp", exchange="NASDAQ"))
+    session.add(
+        WatchlistItem(
+            ticker=ticker,
+            company_name="Packet Corp",
+            exchange="NASDAQ",
+            issuer_type="domestic_us",
+        )
+    )
+    session.add(
+        SecurityMaster(
+            canonical_company_id="company:packetus",
+            canonical_security_id="security:packetus:nasdaq",
+            ticker=ticker,
+            exchange="NASDAQ",
+            country="US",
+            company_name="Packet Corp",
+            security_type="common_stock",
+            issuer_type="domestic_us",
+            identity_quality="verified",
+            identity_provider="fixture_identity",
+        )
+    )
     session.add(
         InvestmentThesis(
             ticker=ticker,
@@ -338,7 +360,28 @@ def _seed_kr(session: Session) -> None:
             sector="Industrials",
         )
     )
-    session.add(WatchlistItem(ticker=ticker, company_name="Packet Korea", exchange="KRX"))
+    session.add(
+        WatchlistItem(
+            ticker=ticker,
+            company_name="Packet Korea",
+            exchange="KRX",
+            issuer_type="krx",
+        )
+    )
+    session.add(
+        SecurityMaster(
+            canonical_company_id="company:packetkr",
+            canonical_security_id="security:packetkr:krx",
+            ticker=ticker,
+            exchange="KRX",
+            country="KR",
+            company_name="Packet Korea",
+            security_type="common_stock",
+            issuer_type="krx",
+            identity_quality="verified",
+            identity_provider="fixture_identity",
+        )
+    )
     session.add(
         InvestmentThesis(
             ticker=ticker,
@@ -3680,6 +3723,97 @@ def test_mixed_valuation_fact_cannot_bypass_field_level_interpretation_fence(
         for item in denied_errors
     )
     assert not any("financial_quality_denied_fact_used" in item for item in allowed_errors)
+
+
+def test_legacy_depositary_identity_conflict_rejects_numeric_and_qualitative_multiple(
+    monkeypatch,
+    tmp_path: Path,
+) -> None:
+    _settings(monkeypatch, tmp_path)
+    with Session(_engine()) as session:
+        _seed(session)
+        packet = build_ai_review_packet(session, RUN_DATE, "us")
+        assert packet is not None
+        stock = packet["stocks"][0]
+        stock["company_name"] = "Fixture Corp ADR"
+        valuation = stock["valuation"]
+        for key in tuple(valuation):
+            if str(key).startswith("security_identity_"):
+                valuation.pop(key)
+        valuation.update(
+            {
+                "resolved_issuer_type": "domestic_us",
+                "resolved_security_type": "common_stock",
+                "is_depositary_security": False,
+            }
+        )
+        output = _valid_output(packet)
+        review = output["stock_reviews"][0]
+        forward = next(
+            item
+            for item in stock["numeric_registry"]
+            if item["fact_id"] == "valuation:current"
+            and item["field_path"] == "fields.forward_pe"
+        )
+        usage = f"{forward['canonical_label']} {forward['canonical_display_value']}"
+        review["valuation_analysis"] = {
+            "text": f"{usage}는 큰 이익 성장을 전제합니다.",
+            "fact_ids": ["valuation:modeled_forward_earnings"],
+        }
+        review["facts_used"].append("valuation:modeled_forward_earnings")
+        review["numeric_claims"].append(
+            {
+                "fact_id": forward["fact_id"],
+                "field_path": forward["field_path"],
+                "value": forward["value"],
+                "unit": forward["unit"],
+                "semantic_type": forward["semantic_type"],
+                "text_ref": "valuation_analysis.text",
+                "usage": usage,
+            }
+        )
+
+        _, errors = validate_ai_review_output(session, packet, output)
+
+    assert any("security_identity_denied_fact_used" in item for item in errors)
+    assert any("security_identity_denied_numeric_claim" in item for item in errors)
+
+
+def test_identity_conflict_allows_specific_number_free_unknown(
+    monkeypatch,
+    tmp_path: Path,
+) -> None:
+    _settings(monkeypatch, tmp_path)
+    with Session(_engine()) as session:
+        _seed(session)
+        watchlist = session.exec(
+            select(WatchlistItem).where(WatchlistItem.ticker == "PACKETUS")
+        ).one()
+        watchlist.company_name = "Packet Corp ADR"
+        session.add(watchlist)
+        session.commit()
+        packet = build_ai_review_packet(session, RUN_DATE, "us")
+        assert packet is not None
+        stock = packet["stocks"][0]
+        assert stock["valuation"]["security_identity_state"] == "conflict"
+        output = _valid_output(packet)
+        review = output["stock_reviews"][0]
+        review["facts_used"] = [
+            fact_id
+            for fact_id in review["facts_used"]
+            if not str(fact_id).startswith("valuation:")
+        ]
+        review["facts_used"].append("security_identity:current")
+        review["valuation_analysis"] = {
+            "text": (
+                "ADR 여부와 주당 기준이 상충해 시장 예상 배수 비교를 보류합니다."
+            ),
+            "fact_ids": ["security_identity:current"],
+        }
+
+        _, errors = validate_ai_review_output(session, packet, output)
+
+    assert not any("security_identity_denied" in item for item in errors)
 
 
 def test_market_hard_fails_zero_claims_with_four_eligible_anchors(

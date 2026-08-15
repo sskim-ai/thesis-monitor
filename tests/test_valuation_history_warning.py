@@ -10,8 +10,12 @@ from app.services.historical_valuation_service import (
     HistoricalValuationService,
     point_in_time_denominators,
 )
+from app.services.security_identity_service import VERIFIED_NON_DEPOSITARY
 from app.services.thesis_evaluation_service import evaluate_thesis
-from app.services.valuation_snapshot_service import ValuationSnapshotService
+from app.services.valuation_snapshot_service import (
+    PerShareBasisContext,
+    ValuationSnapshotService,
+)
 from app.services.warning_backfill_service import backfill_confirmed_warning_states
 from tests.test_integrated_accuracy import _price, _quarter
 
@@ -20,6 +24,16 @@ def _memory_engine():
     engine = create_engine("sqlite://")
     SQLModel.metadata.create_all(engine)
     return engine
+
+
+def _verified_basis(currency: str) -> PerShareBasisContext:
+    return PerShareBasisContext(
+        issuer_type="krx" if currency == "KRW" else "domestic_us",
+        security_type="common_stock",
+        security_identity_state=VERIFIED_NON_DEPOSITARY,
+        price_currency=currency,
+        financial_currency=currency,
+    )
 
 
 def test_point_in_time_does_not_use_future_filing() -> None:
@@ -115,7 +129,13 @@ def test_insurer_without_dividend_history_does_not_get_modeled_fpbr() -> None:
         forward_pe_status="value",
         forward_pe_source="consensus_forward",
     )
-    service._apply_forward_model(snapshot, rows, "003690", {"primary_method": "P/B-ROE"})
+    service._apply_forward_model(
+        snapshot,
+        rows,
+        "003690",
+        {"primary_method": "P/B-ROE"},
+        basis_context=_verified_basis("KRW"),
+    )
 
     assert snapshot.forward_price_to_book_status == "unavailable"
     assert snapshot.dividend_forecast_quality == "unavailable"
@@ -134,7 +154,13 @@ def test_three_year_dividend_history_enables_modeled_fpbr() -> None:
             )
     service = ValuationSnapshotService()
     snapshot = ValuationSnapshot(current_price=100)
-    service._apply_forward_model(snapshot, rows, "DIV3Y", {"primary_method": "forward P/E"})
+    service._apply_forward_model(
+        snapshot,
+        rows,
+        "DIV3Y",
+        {"primary_method": "forward P/E"},
+        basis_context=_verified_basis("KRW"),
+    )
 
     assert snapshot.forward_price_to_book_status == "value"
     assert snapshot.dividend_forecast_method == "median_3y_payout_ratio"
@@ -158,7 +184,13 @@ def test_us_fpbr_fallback_uses_dividend_and_buyback_history() -> None:
         forward_pe_status="value",
         forward_pe_source="consensus_forward",
     )
-    service._apply_forward_model(snapshot, rows, "GOOGL", {"primary_method": "forward P/E"})
+    service._apply_forward_model(
+        snapshot,
+        rows,
+        "GOOGL",
+        {"primary_method": "forward P/E"},
+        basis_context=_verified_basis("USD"),
+    )
 
     assert snapshot.forward_price_to_book_status == "value"
     assert snapshot.forward_price_to_book_source == "modeled_forward"

@@ -49,6 +49,12 @@ from app.services.numeric_provenance_service import (
     canonical_numeric_label_mismatch,
     redundant_numeric_label_before,
 )
+from app.services.security_identity_service import (
+    IDENTITY_CONFLICT,
+    IDENTITY_UNKNOWN,
+    resolve_packet_security_identity,
+    resolve_security_identity,
+)
 from app.services.numeric_semantic_registry import (
     NUMERIC_SEMANTICS,
     build_numeric_registry,
@@ -931,6 +937,49 @@ def _valuation_payload(
     assessment: ThesisAssessment,
 ) -> dict[str, object]:
     snapshot = _dict(assessment.valuation_snapshot)
+    watchlist_item = session.exec(
+        select(WatchlistItem).where(WatchlistItem.ticker == assessment.ticker)
+    ).first()
+    security_master = session.exec(
+        select(SecurityMaster).where(SecurityMaster.ticker == assessment.ticker)
+    ).first()
+    identity = resolve_security_identity(
+        company_name=(
+            watchlist_item.company_name
+            if watchlist_item is not None
+            else security_master.company_name
+            if security_master is not None
+            else assessment.ticker
+        ),
+        watchlist_item=watchlist_item,
+        security_master=security_master,
+        legacy_issuer_type=str(snapshot.get("resolved_issuer_type") or ""),
+        legacy_security_type=str(snapshot.get("resolved_security_type") or ""),
+        legacy_is_depositary=(
+            snapshot.get("is_depositary_security")
+            if isinstance(snapshot.get("is_depositary_security"), bool)
+            else None
+        ),
+    )
+    snapshot.update(
+        {
+            "security_identity_state": identity["identity_state"],
+            "security_identity_decision_version": identity["decision_version"],
+            "security_identity_evidence": identity["evidence_sources"],
+            "security_identity_evidence_values": identity["evidence_values"],
+            "security_identity_conflict_reasons": identity["conflict_reasons"],
+            "security_identity_verification_status": identity[
+                "verification_status"
+            ],
+            "security_identity_as_of": identity["as_of"],
+            "security_identity_source_provenance": identity[
+                "source_provenance"
+            ],
+            "security_identity_eligibility_decision": identity[
+                "eligibility_decision"
+            ],
+        }
+    )
     fields = (
         "current_price",
         "currency",
@@ -977,6 +1026,15 @@ def _valuation_payload(
         "resolved_issuer_type",
         "resolved_security_type",
         "is_depositary_security",
+        "security_identity_state",
+        "security_identity_decision_version",
+        "security_identity_evidence",
+        "security_identity_evidence_values",
+        "security_identity_conflict_reasons",
+        "security_identity_verification_status",
+        "security_identity_as_of",
+        "security_identity_source_provenance",
+        "security_identity_eligibility_decision",
         "eps_currency",
         "eps_security_basis",
         "book_currency",
@@ -1545,6 +1603,36 @@ def _fact_catalog(
         else ""
     ) or "unknown"
     period = str(valuation.get("latest_earnings_period") or "latest")
+    identity_state = str(valuation.get("security_identity_state") or IDENTITY_UNKNOWN)
+    facts.append(
+        {
+            "fact_id": "security_identity:current",
+            "fact_type": "security_identity",
+            "as_of_date": str(valuation.get("security_identity_as_of") or ""),
+            "source": str(
+                valuation.get("security_identity_source_provenance")
+                or "deterministic_security_identity"
+            ),
+            "fields": {
+                "identity_state": identity_state,
+                "verification_status": valuation.get(
+                    "security_identity_verification_status"
+                ),
+                "conflict_reasons": valuation.get(
+                    "security_identity_conflict_reasons", []
+                ),
+                "eligibility_decision": valuation.get(
+                    "security_identity_eligibility_decision"
+                ),
+                "decision_version": valuation.get(
+                    "security_identity_decision_version"
+                ),
+            },
+            "prose_eligible": True,
+            "interpretation_eligible": True,
+            "numeric_registry_eligible": False,
+        }
+    )
     if financial_quality:
         field_states = {
             str(item.get("state") or "unknown")
@@ -2975,6 +3063,44 @@ def _validate_stock_review(
             f"{review.ticker}:financial_quality_denied_fact_used:"
             + ",".join(denied_interpretation_facts)
         )
+    valuation = _dict(stock.get("valuation"))
+    identity = resolve_packet_security_identity(stock)
+    identity_state = str(identity.get("identity_state") or IDENTITY_UNKNOWN)
+    identity_contract_present = bool(
+        valuation.get("security_identity_decision_version")
+    )
+    identity_blocks_valuation = bool(
+        identity_state == IDENTITY_CONFLICT
+        or (identity_contract_present and identity_state == IDENTITY_UNKNOWN)
+    )
+    if identity_blocks_valuation:
+        security_basis_fact_ids = {
+            str(item.get("fact_id"))
+            for item in fact_catalog
+            if isinstance(item, dict)
+            and item.get("fact_type")
+            in {"valuation", "valuation_interpretation", "peer_valuation"}
+        }
+        denied_identity_facts = sorted(
+            interpretation_facts.intersection(security_basis_fact_ids)
+        )
+        if denied_identity_facts:
+            errors.append(
+                f"{review.ticker}:security_identity_denied_fact_used:"
+                + ",".join(denied_identity_facts)
+            )
+        denied_identity_claims = sorted(
+            {
+                claim.fact_id
+                for claim in review.numeric_claims
+                if claim.fact_id in security_basis_fact_ids
+            }
+        )
+        if denied_identity_claims:
+            errors.append(
+                f"{review.ticker}:security_identity_denied_numeric_claim:"
+                + ",".join(denied_identity_claims)
+            )
     routing = stock.get("knowledge_routing")
     allowed_frameworks = {
         str(item)
@@ -3056,8 +3182,7 @@ def _validate_stock_review(
     ]
     if len(eligible_numeric) >= 4 and not review.numeric_claims:
         errors.append(f"{review.ticker}:numeric_grounding_hard_fail")
-    valuation = stock.get("valuation", {})
-    if isinstance(valuation, dict):
+    if valuation:
         errors.extend(
             _forward_source_language_errors(review.ticker, valuation, rendered)
         )

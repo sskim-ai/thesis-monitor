@@ -7,6 +7,7 @@ from sqlmodel import Session
 
 from app.database import engine, init_db
 from app.models.financial import FinancialSnapshot
+from app.models.security import SecurityMaster
 from app.models.thesis import InvestmentThesis
 from app.providers.filings import (
     OpenDARTProvider,
@@ -40,6 +41,21 @@ def _thesis(ticker: str, method: str = "forward P/E") -> InvestmentThesis:
         core_thesis="반복 가능한 이익과 현금흐름을 확인한다.",
         valuation_framework=json.dumps({"primary_method": method}),
         market_expectations=json.dumps({"level": "balanced"}),
+    )
+
+
+def _verified_kr_security(ticker: str) -> SecurityMaster:
+    return SecurityMaster(
+        canonical_company_id=f"company:{ticker}",
+        canonical_security_id=f"security:{ticker}:krx",
+        ticker=ticker,
+        exchange="KRX",
+        country="KR",
+        company_name=f"Fixture {ticker}",
+        security_type="common_stock",
+        issuer_type="krx",
+        identity_quality="verified",
+        identity_provider="fixture_identity",
     )
 
 
@@ -166,6 +182,7 @@ async def test_derived_trailing_per_and_pbr_use_ttm_and_common_equity() -> None:
             _quarter(ticker, 2054, "Q3", 9),
             _quarter(ticker, 2054, "FY", 12, equity=1_000),
         ]
+        session.add(_verified_kr_security(ticker))
         session.add_all(rows)
         session.commit()
         snapshot = await ValuationSnapshotService().fetch(
@@ -188,6 +205,7 @@ async def test_negative_ttm_eps_is_rendered_as_not_meaningful() -> None:
     init_db()
     ticker = "NEGTTM"
     with Session(engine) as session:
+        session.add(_verified_kr_security(ticker))
         for row in (
             _quarter(ticker, 2054, "Q1", 3, income=-5, eps=-0.5),
             _quarter(ticker, 2054, "H1", 6, income=-5, eps=-0.5),
@@ -210,6 +228,7 @@ async def test_internal_fy1_model_requires_eight_clean_quarters_and_is_labeled()
     ticker = "MODELFY1"
     periods = (("Q1", 3), ("H1", 6), ("Q3", 9), ("FY", 12))
     with Session(engine) as session:
+        session.add(_verified_kr_security(ticker))
         for year in (2053, 2054):
             for period_type, month in periods:
                 session.add(
@@ -240,6 +259,7 @@ async def test_low_quality_history_does_not_create_forward_values() -> None:
     init_db()
     ticker = "LOWMODEL"
     with Session(engine) as session:
+        session.add(_verified_kr_security(ticker))
         session.add(_quarter(ticker, 2054, "FY", 12, equity=1_000, warning=True))
         session.commit()
         snapshot = await ValuationSnapshotService().fetch(
@@ -256,6 +276,7 @@ async def test_sotp_company_does_not_receive_generic_forward_model() -> None:
     ticker = "SOTPNO"
     periods = (("Q1", 3), ("H1", 6), ("Q3", 9), ("FY", 12))
     with Session(engine) as session:
+        session.add(_verified_kr_security(ticker))
         for year in (2053, 2054):
             for period_type, month in periods:
                 session.add(

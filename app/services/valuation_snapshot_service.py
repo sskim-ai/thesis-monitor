@@ -34,6 +34,13 @@ from app.services.financial_freshness_service import FinancialFreshnessService
 from app.services.financial_validation import financial_snapshot_is_usable
 from app.services.provider_telemetry_service import ProviderTelemetryService
 from app.services.sec_financial_snapshot_service import SecFinancialSnapshotService
+from app.services.security_identity_service import (
+    IDENTITY_CONFLICT,
+    IDENTITY_UNKNOWN,
+    VERIFIED_DEPOSITARY,
+    VERIFIED_NON_DEPOSITARY,
+    resolve_security_identity,
+)
 
 
 def _positive_number(value: object) -> float | None:
@@ -432,6 +439,15 @@ class PerShareBasisContext:
     issuer_type: str = "unknown"
     security_type: str = "common_stock"
     is_depositary_security: bool = False
+    security_identity_state: str = IDENTITY_UNKNOWN
+    security_identity_decision_version: str | None = None
+    security_identity_evidence: tuple[dict[str, object], ...] = ()
+    security_identity_evidence_values: dict[str, object] | None = None
+    security_identity_conflict_reasons: tuple[str, ...] = ()
+    security_identity_verification_status: str = "unverified"
+    security_identity_as_of: str | None = None
+    security_identity_source_provenance: str | None = None
+    security_identity_eligibility_decision: str | None = None
     price_currency: str | None = None
     financial_currency: str | None = None
     adr_ratio: float | None = None
@@ -459,29 +475,6 @@ class QuarterEpsResult:
     normalized: PerShareValueResult
 
 
-def _is_depositary_security(
-    issuer_type: str,
-    security_type: str,
-    adr_identifier: str | None,
-) -> bool:
-    normalized_security = security_type.strip().lower().replace("-", "_").replace(" ", "_")
-    normalized_issuer = issuer_type.strip().lower()
-    depositary_security_type = normalized_security in {
-        "adr",
-        "ads",
-        "depositary_receipt",
-        "depositary_security",
-        "american_depositary_receipt",
-        "american_depositary_share",
-    }
-    return (
-        normalized_issuer == "adr"
-        or bool(adr_identifier)
-        or depositary_security_type
-        and normalized_issuer not in {"domestic_us", "krx"}
-    )
-
-
 def _resolve_per_share_basis_context(
     watchlist_item: WatchlistItem | None,
     security_master: SecurityMaster | None,
@@ -493,6 +486,17 @@ def _resolve_per_share_basis_context(
     security_issuer = security_master.issuer_type if security_master else None
     issuer_type = watchlist_issuer or security_issuer or "unknown"
     security_type = security_master.security_type if security_master else "common_stock"
+    identity = resolve_security_identity(
+        company_name=(
+            watchlist_item.company_name
+            if watchlist_item
+            else security_master.company_name
+            if security_master
+            else None
+        ),
+        watchlist_item=watchlist_item,
+        security_master=security_master,
+    )
     ratios = [
         value
         for value in (
@@ -518,17 +522,19 @@ def _resolve_per_share_basis_context(
         issuer_type=issuer_type,
         security_type=security_type,
         is_depositary_security=(
-            _is_depositary_security(
-                issuer_type,
-                security_type,
-                security_master.adr_identifier if security_master else None,
-            )
-            or bool(
-                watchlist_item
-                and watchlist_item.adr_ratio
-                and watchlist_item.ordinary_share_identifier
-            )
+            identity["identity_state"] == VERIFIED_DEPOSITARY
         ),
+        security_identity_state=str(identity["identity_state"]),
+        security_identity_decision_version=str(identity["decision_version"]),
+        security_identity_evidence=tuple(identity["evidence_sources"]),
+        security_identity_evidence_values=dict(identity["evidence_values"]),
+        security_identity_conflict_reasons=tuple(identity["conflict_reasons"]),
+        security_identity_verification_status=str(identity["verification_status"]),
+        security_identity_as_of=(
+            str(identity["as_of"]) if identity.get("as_of") is not None else None
+        ),
+        security_identity_source_provenance=str(identity["source_provenance"]),
+        security_identity_eligibility_decision=str(identity["eligibility_decision"]),
         price_currency=price_currency,
         financial_currency=financial_currency,
         adr_ratio=ratio,
@@ -546,6 +552,17 @@ def _normalize_per_share_value(
 ) -> PerShareValueResult:
     if value is None:
         return PerShareValueResult(None, "insufficient_metadata", "denominator_missing")
+    if context.security_identity_state in {IDENTITY_CONFLICT, IDENTITY_UNKNOWN}:
+        return PerShareValueResult(
+            None,
+            "insufficient_metadata",
+            (
+                "security_identity_conflict"
+                if context.security_identity_state == IDENTITY_CONFLICT
+                else "security_identity_unverified"
+            ),
+            security_basis=security_basis,
+        )
     if context.identity_warning:
         return PerShareValueResult(
             None,
@@ -555,7 +572,7 @@ def _normalize_per_share_value(
         )
     price_currency = (context.price_currency or "").upper()
     denominator_currency = (value_currency or "").upper()
-    if context.is_depositary_security:
+    if context.security_identity_state == VERIFIED_DEPOSITARY:
         if not denominator_currency:
             return PerShareValueResult(
                 None,
@@ -601,6 +618,14 @@ def _normalize_per_share_value(
             "security_basis_mismatch",
             "denominator_security_basis_unknown",
             denominator_currency,
+            security_basis,
+        )
+    if context.security_identity_state != VERIFIED_NON_DEPOSITARY:
+        return PerShareValueResult(
+            None,
+            "insufficient_metadata",
+            "security_identity_unverified",
+            denominator_currency or context.price_currency,
             security_basis,
         )
     if (
@@ -1468,7 +1493,7 @@ class ValuationSnapshotService:
             snapshot.forward_eps * shares
             if snapshot.forward_eps is not None
             and snapshot.forward_eps > 0
-            and not basis_context.is_depositary_security
+            and basis_context.security_identity_state == VERIFIED_NON_DEPOSITARY
             else None
         )
         book_fy1_income: float | None = None
@@ -2220,7 +2245,10 @@ class ValuationSnapshotService:
                 snapshot.estimate_analyst_count = alpha_estimate.analyst_count
                 snapshot.estimate_revision_direction = alpha_estimate.revision_direction
                 snapshot.consensus_status = alpha_estimate.coverage_status
-            if snapshot.current_price and not basis_context.is_depositary_security:
+            if (
+                snapshot.current_price
+                and basis_context.security_identity_state == VERIFIED_NON_DEPOSITARY
+            ):
                 alpha_forward_pe = snapshot.current_price / alpha_eps if alpha_eps > 0 else None
                 provider_forward_pe = (
                     snapshot.forward_pe
@@ -2285,7 +2313,7 @@ class ValuationSnapshotService:
             "security_basis_mismatch",
             "missing_adr_ratio",
         }
-        if basis_context.is_depositary_security and {
+        if basis_context.security_identity_state != VERIFIED_NON_DEPOSITARY and {
             snapshot.trailing_pe_basis_status,
             snapshot.price_to_book_basis_status,
         }.intersection(unsafe_basis_statuses):
@@ -2330,7 +2358,7 @@ class ValuationSnapshotService:
             basis_context,
         )
         if (
-            basis_context.is_depositary_security
+            basis_context.security_identity_state != VERIFIED_NON_DEPOSITARY
             and snapshot.forward_pe_status == "value"
             and snapshot.forward_pe_source == "consensus_forward"
             and snapshot.forward_eps is None
@@ -2372,7 +2400,9 @@ class ValuationSnapshotService:
                 else None
             ),
         )
-        historical_allowed = not basis_context.is_depositary_security
+        historical_allowed = (
+            basis_context.security_identity_state == VERIFIED_NON_DEPOSITARY
+        )
         snapshot.historical_per_share_basis_status = (
             "directly_comparable" if historical_allowed else "historical_per_share_basis_unverified"
         )
@@ -2588,7 +2618,27 @@ class ValuationSnapshotService:
                     "stale_financial_after_material_event"
                 )
             snapshot.data_coverage = self.coverage_service.build(session, ticker, snapshot)
-        snapshot.financial_quality_source_metadata = (
-            self._financial_quality_source_metadata(snapshot, rows)
+        financial_quality_metadata = self._financial_quality_source_metadata(
+            snapshot, rows
         )
+        financial_quality_metadata["security_identity"] = {
+            "decision_version": basis_context.security_identity_decision_version,
+            "identity_state": basis_context.security_identity_state,
+            "evidence_sources": list(basis_context.security_identity_evidence),
+            "evidence_values": basis_context.security_identity_evidence_values or {},
+            "conflict_reasons": list(
+                basis_context.security_identity_conflict_reasons
+            ),
+            "verification_status": (
+                basis_context.security_identity_verification_status
+            ),
+            "as_of": basis_context.security_identity_as_of,
+            "source_provenance": (
+                basis_context.security_identity_source_provenance
+            ),
+            "eligibility_decision": (
+                basis_context.security_identity_eligibility_decision
+            ),
+        }
+        snapshot.financial_quality_source_metadata = financial_quality_metadata
         return snapshot

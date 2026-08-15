@@ -10,6 +10,11 @@ from app.schemas.thesis import ValuationSnapshot
 from app.services.historical_valuation_service import point_in_time_denominators
 from app.services.financial_quality_service import sanitize_financial_snapshot_for_prose
 from app.services.notification_service import _data_cautions, _valuation_formula_lines
+from app.services.security_identity_service import (
+    IDENTITY_CONFLICT,
+    VERIFIED_DEPOSITARY,
+    VERIFIED_NON_DEPOSITARY,
+)
 from app.services.valuation_snapshot_service import (
     MultipleBasis,
     PerShareBasisContext,
@@ -20,6 +25,16 @@ from app.services.valuation_snapshot_service import (
     _ttm_earnings,
     determine_basis_comparability,
 )
+
+
+def _verified_common_basis(currency: str) -> PerShareBasisContext:
+    return PerShareBasisContext(
+        issuer_type="krx" if currency == "KRW" else "domestic_us",
+        security_type="common_stock",
+        security_identity_state=VERIFIED_NON_DEPOSITARY,
+        price_currency=currency,
+        financial_currency=currency,
+    )
 
 
 def _full(
@@ -264,6 +279,7 @@ def test_foreign_preliminary_updates_context_without_unsafe_eps() -> None:
         issuer_type="foreign_private_issuer",
         security_type="ADR",
         is_depositary_security=True,
+        security_identity_state=VERIFIED_DEPOSITARY,
         price_currency="USD",
         financial_currency="TWD",
         adr_ratio=5,
@@ -292,10 +308,14 @@ def test_valuation_snapshot_persists_exact_lineage_for_fallback() -> None:
     service = ValuationSnapshotService()
     snapshot = ValuationSnapshot(current_price=100, currency="KRW")
 
-    service._apply_derived_trailing(snapshot, rows)
-    snapshot.financial_quality_source_metadata = (
-        service._financial_quality_source_metadata(snapshot, rows)
-    )
+    service._apply_derived_trailing(snapshot, rows, _verified_common_basis("KRW"))
+    source_metadata = service._financial_quality_source_metadata(snapshot, rows)
+    source_metadata["security_identity"] = {
+        "identity_state": VERIFIED_NON_DEPOSITARY,
+        "decision_version": "security-identity-v1",
+        "verification_status": "verified",
+    }
+    snapshot.financial_quality_source_metadata = source_metadata
     restored = json.loads(snapshot.model_dump_json())
     sanitized = sanitize_financial_snapshot_for_prose(restored)
 
@@ -319,7 +339,9 @@ def test_earnings_context_keeps_reported_operating_margin_with_exact_income() ->
     latest.operating_margin = 60.3
     snapshot = ValuationSnapshot(current_price=100, currency="USD")
 
-    ValuationSnapshotService()._apply_derived_trailing(snapshot, [latest])
+    ValuationSnapshotService()._apply_derived_trailing(
+        snapshot, [latest], _verified_common_basis("KRW")
+    )
 
     assert snapshot.latest_operating_income == 766_603
     assert snapshot.latest_operating_margin == 60.3
@@ -356,6 +378,7 @@ def test_foreign_preliminary_direct_adr_eps_remains_separately_eligible() -> Non
         issuer_type="foreign_private_issuer",
         security_type="ADR",
         is_depositary_security=True,
+        security_identity_state=VERIFIED_DEPOSITARY,
         price_currency="USD",
         financial_currency="TWD",
         adr_ratio=5,
@@ -405,6 +428,7 @@ def test_latest_direct_adr_eps_can_be_usable_when_ttm_is_not() -> None:
         issuer_type="foreign_private_issuer",
         security_type="ADR",
         is_depositary_security=True,
+        security_identity_state=VERIFIED_DEPOSITARY,
         price_currency="USD",
         financial_currency="TWD",
         adr_ratio=5,
@@ -446,6 +470,7 @@ def test_negative_normalized_ttm_eps_is_usable_and_keeps_denominator_date() -> N
     snapshot = ValuationSnapshot(current_price=100, currency="USD")
     basis = PerShareBasisContext(
         security_type="common_stock",
+        security_identity_state=VERIFIED_NON_DEPOSITARY,
         price_currency="USD",
         financial_currency="USD",
     )
@@ -474,7 +499,9 @@ def test_provider_only_pe_does_not_keep_stale_derived_denominator_date() -> None
         trailing_pe_denominator_filing_date="2026-02-15",
     )
 
-    derived_pe, _derived_pb = ValuationSnapshotService()._apply_derived_trailing(snapshot, [])
+    derived_pe, _derived_pb = ValuationSnapshotService()._apply_derived_trailing(
+        snapshot, [], _verified_common_basis("KRW")
+    )
 
     assert derived_pe is None
     assert snapshot.trailing_pe == 18
@@ -544,7 +571,9 @@ def test_eps_less_preliminary_updates_earnings_context_without_recalculating_per
         trailing_pe_status="value",
     )
 
-    derived_pe, _derived_pb = ValuationSnapshotService()._apply_derived_trailing(snapshot, rows)
+    derived_pe, _derived_pb = ValuationSnapshotService()._apply_derived_trailing(
+        snapshot, rows, _verified_common_basis("KRW")
+    )
 
     assert derived_pe is None
     assert snapshot.trailing_pe == 20
@@ -570,7 +599,9 @@ def test_earnings_context_uses_selected_financial_snapshot_currency(
         row.currency = financial_currency
     snapshot = ValuationSnapshot(current_price=100, currency="USD")
 
-    ValuationSnapshotService()._apply_derived_trailing(snapshot, [*rows, latest])
+    ValuationSnapshotService()._apply_derived_trailing(
+        snapshot, [*rows, latest], _verified_common_basis("KRW")
+    )
 
     assert snapshot.currency == "USD"
     assert snapshot.financial_currency == financial_currency
@@ -587,7 +618,9 @@ def test_preliminary_updates_per_and_margin_but_not_full_balance_pbr() -> None:
     rows = [*_base_rows(), _preliminary()]
     snapshot = ValuationSnapshot(current_price=100, currency="KRW")
 
-    derived_pe, derived_pb = ValuationSnapshotService()._apply_derived_trailing(snapshot, rows)
+    derived_pe, derived_pb = ValuationSnapshotService()._apply_derived_trailing(
+        snapshot, rows, _verified_common_basis("KRW")
+    )
 
     assert derived_pe == pytest.approx(10)
     assert snapshot.ttm_contains_preliminary is True
@@ -602,6 +635,7 @@ def test_adr_ordinary_eps_is_normalized_only_with_same_currency_and_ratio() -> N
         issuer_type="adr",
         security_type="Depositary Receipt",
         is_depositary_security=True,
+        security_identity_state=VERIFIED_DEPOSITARY,
         price_currency="USD",
         financial_currency="USD",
         adr_ratio=5,
@@ -625,6 +659,7 @@ def test_adr_per_share_value_rejects_currency_mismatch_or_unknown_basis() -> Non
         issuer_type="adr",
         security_type="adr",
         is_depositary_security=True,
+        security_identity_state=VERIFIED_DEPOSITARY,
         price_currency="USD",
         financial_currency="TWD",
         adr_ratio=5,
@@ -655,6 +690,7 @@ def test_adr_direct_eps_does_not_apply_ratio_twice() -> None:
         issuer_type="adr",
         security_type="ads",
         is_depositary_security=True,
+        security_identity_state=VERIFIED_DEPOSITARY,
         price_currency="USD",
         financial_currency="TWD",
         adr_ratio=5,
@@ -697,7 +733,7 @@ def test_unmonitored_security_master_adr_activates_basis_gate() -> None:
     assert context.adr_ratio_direction == "ordinary_shares_per_adr"
 
 
-def test_domestic_common_issuer_is_not_reclassified_by_depositary_type_alone() -> None:
+def test_domestic_common_issuer_and_depositary_type_are_a_conflict() -> None:
     security = SecurityMaster(
         canonical_company_id="company:domestic-common",
         canonical_security_id="security:domestic-common",
@@ -715,6 +751,7 @@ def test_domestic_common_issuer_is_not_reclassified_by_depositary_type_alone() -
     )
 
     assert context.is_depositary_security is False
+    assert context.security_identity_state == IDENTITY_CONFLICT
 
 
 def _with_per_share_metadata(
@@ -754,6 +791,7 @@ def test_adr_derived_pe_and_pb_use_ordinary_shares_per_adr_direction() -> None:
         issuer_type="adr",
         security_type="adr",
         is_depositary_security=True,
+        security_identity_state=VERIFIED_DEPOSITARY,
         price_currency="USD",
         financial_currency="USD",
         adr_ratio=5,
@@ -798,6 +836,7 @@ def test_adr_unsafe_eps_is_not_exposed_as_current_security_ttm_eps(
         issuer_type="adr",
         security_type="adr",
         is_depositary_security=True,
+        security_identity_state=VERIFIED_DEPOSITARY,
         price_currency="USD",
         financial_currency=currency,
         adr_ratio=5,
@@ -829,6 +868,7 @@ def test_foreign_private_issuer_common_stock_does_not_require_adr_ratio() -> Non
         issuer_type="foreign_private_issuer",
         security_type="common_stock",
         is_depositary_security=False,
+        security_identity_state=VERIFIED_NON_DEPOSITARY,
         price_currency="USD",
         financial_currency="USD",
     )
@@ -874,6 +914,7 @@ def test_adr_unknown_share_count_basis_blocks_pbr_independently_of_pe() -> None:
         issuer_type="adr",
         security_type="adr",
         is_depositary_security=True,
+        security_identity_state=VERIFIED_DEPOSITARY,
         price_currency="USD",
         financial_currency="USD",
         adr_ratio=5,
@@ -919,6 +960,7 @@ def test_internal_forward_eps_uses_same_verified_adr_normalization() -> None:
         issuer_type="adr",
         security_type="adr",
         is_depositary_security=True,
+        security_identity_state=VERIFIED_DEPOSITARY,
         price_currency="USD",
         financial_currency="USD",
         adr_ratio=5,
@@ -960,7 +1002,13 @@ def test_internal_forward_model_uses_latest_valid_preliminary_earnings() -> None
     rows.append(_preliminary(owners_income=60, total_income=65))
     snapshot = ValuationSnapshot(current_price=100, currency="KRW")
 
-    ValuationSnapshotService()._apply_forward_model(snapshot, rows, "FIXTURE", {})
+    ValuationSnapshotService()._apply_forward_model(
+        snapshot,
+        rows,
+        "FIXTURE",
+        {},
+        basis_context=_verified_common_basis("KRW"),
+    )
 
     assert snapshot.forward_pe_status == "value"
     assert snapshot.forward_eps is not None

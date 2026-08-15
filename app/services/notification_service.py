@@ -1058,10 +1058,27 @@ def _assessment_report(
             "valuation_relative_position",
         }
     ):
+        quality_source_value = raw_valuation_snapshot.get(
+            "financial_quality_source_metadata"
+        )
+        quality_source = (
+            quality_source_value
+            if isinstance(quality_source_value, dict)
+            else _json_value(str(quality_source_value or "{}"), {})
+        )
+        identity_value = quality_source.get("security_identity", {})
+        identity = identity_value if isinstance(identity_value, dict) else {}
+        identity_state = str(
+            raw_valuation_snapshot.get("security_identity_state")
+            or identity.get("identity_state")
+            or ""
+        )
         valuation_context = {
             "impact": "unknown",
             "summary": (
-                "검증 경고가 있는 이익 입력을 제외하고 독립적인 장부가치 자료만 확인합니다."
+                "증권 유형과 주당 기준의 일치 여부를 확인하지 못해 배수 해석을 보류합니다."
+                if identity_state in {"conflict", "unknown"}
+                else "검증 경고가 있는 이익 입력을 제외하고 독립적인 장부가치 자료만 확인합니다."
             ),
         }
     new_warnings = [

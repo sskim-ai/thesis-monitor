@@ -16,6 +16,9 @@ def _snapshot(**overrides: object) -> dict[str, object]:
         "current_price": 211_000,
         "currency": "KRW",
         "financial_currency": "KRW",
+        "security_identity_state": "verified_non_depositary",
+        "security_identity_decision_version": "security-identity-v1",
+        "security_identity_verification_status": "verified",
         "latest_earnings_period": "2026-06-30",
         "earnings_context_source": "preliminary_earnings",
         "earnings_context_is_preliminary": True,
@@ -390,6 +393,7 @@ def test_provider_native_consensus_multiple_requires_non_depositary_identity() -
         {
             **common,
             "is_depositary_security": True,
+            "security_identity_state": "verified_depositary",
             "forward_pe_basis_status": "insufficient_metadata",
         },
         source_metadata=_clean_source(),

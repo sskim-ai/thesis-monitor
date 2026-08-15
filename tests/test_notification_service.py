@@ -129,6 +129,9 @@ def _compact_assessment(**overrides):
             {
                 "current_price": 1_425_000,
                 "currency": "KRW",
+                "security_identity_state": "verified_non_depositary",
+                "security_identity_decision_version": "security-identity-v1",
+                "security_identity_verification_status": "verified",
                 "latest_earnings_period": "2026-06-30",
                 "earnings_context_source": "full_statement",
                 "ttm_eps_usable": True,
@@ -418,6 +421,30 @@ def test_consensus_forward_denominator_uses_market_estimate_label() -> None:
     message = _message_for_assessment(assessment)
 
     assert "현재가 ÷ 시장 예상 EPS" in message
+
+
+def test_security_identity_conflict_fallback_hides_multiples_but_keeps_price() -> None:
+    assessment = _compact_assessment()
+    snapshot = json.loads(assessment.valuation_snapshot)
+    source = snapshot["financial_quality_source_metadata"]
+    source["security_identity"] = {
+        "decision_version": "security-identity-v1",
+        "identity_state": "conflict",
+        "conflict_reasons": ["profile_depositary_hint_conflicts_with_security_master"],
+        "verification_status": "conflicted",
+    }
+    snapshot.pop("security_identity_state", None)
+    snapshot.pop("security_identity_decision_version", None)
+    snapshot.pop("security_identity_verification_status", None)
+    assessment.valuation_snapshot = json.dumps(snapshot, ensure_ascii=False)
+
+    message = _message_for_assessment(assessment)
+
+    assert "현재가: 1,425,000원" in message
+    assert "PER =" not in message
+    assert "PBR =" not in message
+    assert "fPER:" not in message
+    assert "증권 유형과 주당 기준의 일치 여부를 확인하지 못해 배수 해석을 보류" in message
     assert "내부 모델 추정치이며 시장 컨센서스가 아닙니다." not in message
 
 
