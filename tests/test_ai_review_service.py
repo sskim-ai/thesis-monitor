@@ -13,6 +13,7 @@ from sqlmodel import SQLModel, Session, create_engine, select
 import app.services.ai_review_service as ai_review_service
 from app.config import get_settings
 from app.models.company import Company
+from app.models.financial import FinancialSnapshot
 from app.models.macro import MacroBriefing
 from app.models.thesis import (
     InvestmentThesis,
@@ -142,12 +143,35 @@ def _assessment(
                 "latest_revenue": 500.0,
                 "latest_operating_income": 50.0,
                 "latest_operating_margin": 10.0,
+                "ttm_eps_usable": True,
                 "trailing_pe": 20.0,
+                "trailing_pe_denominator_period_end": "2026-06-30",
+                "trailing_pe_denominator_filing_date": "2026-08-01",
+                "trailing_pe_basis_status": "directly_comparable",
                 "price_to_book": 3.0,
+                "pbr_denominator_period_end": "2026-06-30",
+                "pbr_denominator_filing_date": "2026-08-01",
+                "price_to_book_basis_status": "directly_comparable",
                 "forward_pe": 18.0,
                 "forward_eps": 5.5,
                 "forward_pe_source": "modeled_forward",
+                "forward_pe_input_period": "FY1",
+                "forward_pe_basis_status": "directly_comparable",
                 "forecast_method": "normalized_roe",
+                "earnings_quarter_series": [
+                    {
+                        "period": period,
+                        "source": "full_statement",
+                        "filing": filing,
+                        "normalized_eps_usable": True,
+                    }
+                    for period, filing in (
+                        ("2025-09-30", "2025-11-01"),
+                        ("2025-12-31", "2026-02-01"),
+                        ("2026-03-31", "2026-05-01"),
+                        ("2026-06-30", "2026-08-01"),
+                    )
+                ],
                 "historical_comparability": "price_share_basis_mismatch",
                 "historical_pe_statistics": {"current_percentile": 90.0},
             }
@@ -218,6 +242,39 @@ def _seed(session: Session) -> None:
     )
     session.add(_assessment(ticker, RUN_DATE - timedelta(days=1)))
     session.add(_assessment(ticker, RUN_DATE))
+    for index, (period_end, filing) in enumerate(
+        (
+            (date(2024, 9, 30), date(2024, 11, 1)),
+            (date(2024, 12, 31), date(2025, 2, 1)),
+            (date(2025, 3, 31), date(2025, 5, 1)),
+            (date(2025, 6, 30), date(2025, 8, 1)),
+            (date(2025, 9, 30), date(2025, 11, 1)),
+            (date(2025, 12, 31), date(2026, 2, 1)),
+            (date(2026, 3, 31), date(2026, 5, 1)),
+            (date(2026, 6, 30), date(2026, 8, 1)),
+        )
+    ):
+        session.add(
+            FinancialSnapshot(
+                ticker=ticker,
+                period=period_end.isoformat(),
+                snapshot_type="full_statement",
+                period_type=("Q1", "H1", "Q3", "FY")[index % 4],
+                financial_period_end=period_end,
+                financials_as_of=period_end,
+                filing_date=filing,
+                reported_date=filing,
+                provider="fixture_provider",
+                source="fixture_filing",
+                currency="USD",
+                revenue=500.0,
+                operating_income=50.0,
+                net_income=25.0,
+                diluted_eps=1.25,
+                common_equity=1_000.0,
+                common_shares_outstanding=30.0,
+            )
+        )
     session.add(
         MonitorRun(
             run_date=RUN_DATE,
@@ -3391,6 +3448,36 @@ def test_critical_financial_outlier_taints_packet_registry_and_raw_prose(
                 },
             }
         )
+        valuation["earnings_quarter_series"][-1].update(
+            {
+                "source": "preliminary_earnings",
+                "filing": "2026-08-02",
+                "revenue": 79_318_700_000_000,
+                "operating_income": 60_500_000_000_000,
+            }
+        )
+        session.add(
+            FinancialSnapshot(
+                ticker="PACKETUS",
+                period="2026-06-30 preliminary",
+                snapshot_type="preliminary_earnings",
+                financial_period_end=date(2026, 6, 30),
+                financials_as_of=date(2026, 6, 30),
+                filing_date=date(2026, 8, 2),
+                reported_date=date(2026, 8, 2),
+                provider="fixture_provider",
+                source="fixture_preliminary",
+                currency="USD",
+                revenue=79_318_700_000_000,
+                operating_income=60_500_000_000_000,
+                financial_soft_outliers=json.dumps(
+                    [
+                        "net_income_exceeds_revenue",
+                        "unusually_high_or_low_operating_margin",
+                    ]
+                ),
+            )
+        )
         assessment.valuation_snapshot = json.dumps(valuation)
         session.add(assessment)
         session.commit()
@@ -3427,11 +3514,10 @@ def test_critical_financial_outlier_taints_packet_registry_and_raw_prose(
     for fact_id, path in (
         (earnings_fact["fact_id"], "fields.revenue.value"),
         (earnings_fact["fact_id"], "fields.operating_margin_pct"),
-        ("valuation:current", "fields.trailing_pe"),
-        ("valuation:current", "fields.forward_pe"),
-        (
-            "valuation:current",
-            "fields.historical_pe_statistics.current_percentile",
+            ("valuation:current", "fields.trailing_pe"),
+            (
+                "valuation:current",
+                "fields.historical_pe_statistics.current_percentile",
         ),
     ):
         entry = registry[(fact_id, path)]
@@ -3439,6 +3525,12 @@ def test_critical_financial_outlier_taints_packet_registry_and_raw_prose(
         assert entry["prose_allowed"] is False
         assert entry["canonical_display_value"] is None
         assert entry["approved_display_variants"] == []
+    assert registry[("valuation:current", "fields.forward_pe")][
+        "financial_quality_state"
+    ] == "caution_usable"
+    assert registry[("valuation:current", "fields.forward_pe")][
+        "prose_allowed"
+    ] is True
     assert registry[("valuation:current", "fields.price_to_book")][
         "prose_allowed"
     ] is True
@@ -3477,18 +3569,117 @@ def test_critical_financial_outlier_allows_number_free_specific_unknown(
         assert packet is not None
         output = _valid_output(packet)
         review = output["stock_reviews"][0]
+        quality_fact = next(
+            item["fact_id"]
+            for item in packet["stocks"][0]["fact_catalog"]
+            if item["fact_type"] == "financial_quality"
+        )
+        book_fact = next(
+            item["fact_id"]
+            for item in packet["stocks"][0]["fact_catalog"]
+            if item["fact_id"] == "valuation:book"
+        )
+        review["facts_used"].extend([quality_fact, book_fact])
         review["business_earnings"] = {
             "text": (
                 "잠정실적의 수익성 관계에 검증 경고가 있어 정량 해석을 "
                 "보류하고 정식 재무의 매출·영업이익·현금흐름을 확인합니다."
             ),
-            "fact_ids": [],
+            "fact_ids": [quality_fact],
         }
+        review["valuation_analysis"]["fact_ids"] = [book_fact]
 
         _, errors = validate_ai_review_output(session, packet, output)
 
     assert not any("financial_quality_denied_fact_used" in error for error in errors)
     assert not any("business_earnings.text" in error for error in errors)
+
+
+def test_mixed_valuation_fact_cannot_bypass_field_level_interpretation_fence(
+    monkeypatch,
+    tmp_path: Path,
+) -> None:
+    _settings(monkeypatch, tmp_path)
+    with Session(_engine()) as session:
+        _seed(session)
+        packet = build_ai_review_packet(session, RUN_DATE, "us")
+        assert packet is not None
+        stock = packet["stocks"][0]
+        aggregate = next(
+            item for item in stock["fact_catalog"] if item["fact_id"] == "valuation:current"
+        )
+        aggregate["interpretation_eligible"] = False
+        aggregate["interpretation_denial_reason"] = (
+            "mixed_financial_lineage_requires_homogeneous_fact"
+        )
+        trailing = next(
+            item
+            for item in stock["fact_catalog"]
+            if item["fact_id"] == "valuation:trailing_earnings"
+        )
+        trailing["prose_eligible"] = False
+        trailing["interpretation_eligible"] = False
+        book = next(
+            item for item in stock["fact_catalog"] if item["fact_id"] == "valuation:book"
+        )
+        assert book["interpretation_eligible"] is True
+
+        aggregate_output = _valid_output(packet)
+        aggregate_review = AIDailyReviewOutput.model_validate(
+            aggregate_output
+        ).stock_reviews[0]
+        aggregate_review.valuation_analysis.text = (
+            "이익 배수가 높아 시장 기대가 매우 높습니다."
+        )
+        aggregate_errors = ai_review_service._validate_stock_review(
+            aggregate_review, stock
+        )
+
+        denied_output = _valid_output(packet)
+        denied_review = AIDailyReviewOutput.model_validate(denied_output).stock_reviews[0]
+        denied_review.facts_used.append(trailing["fact_id"])
+        denied_review.valuation_analysis.fact_ids = [trailing["fact_id"]]
+        denied_review.valuation_analysis.text = (
+            "낮은 이익 배수는 저평가를 뜻합니다."
+        )
+        denied_errors = ai_review_service._validate_stock_review(denied_review, stock)
+
+        pbr = next(
+            item
+            for item in stock["numeric_registry"]
+            if item["fact_id"] == "valuation:current"
+            and item["field_path"] == "fields.price_to_book"
+        )
+        usage = f"{pbr['canonical_label']} {pbr['canonical_display_value']}"
+        allowed_output = _valid_output(packet)
+        allowed_data = allowed_output["stock_reviews"][0]
+        allowed_data["facts_used"].extend([aggregate["fact_id"], book["fact_id"]])
+        allowed_data["valuation_analysis"]["fact_ids"] = [book["fact_id"]]
+        allowed_data["valuation_analysis"]["text"] = (
+            f"{usage}는 확인된 장부가 배수입니다."
+        )
+        allowed_data["numeric_claims"].append(
+            {
+                "fact_id": pbr["fact_id"],
+                "field_path": pbr["field_path"],
+                "value": pbr["value"],
+                "unit": pbr["unit"],
+                "semantic_type": pbr["semantic_type"],
+                "text_ref": "valuation_analysis.text",
+                "usage": usage,
+            }
+        )
+        allowed_review = AIDailyReviewOutput.model_validate(
+            allowed_output
+        ).stock_reviews[0]
+        allowed_errors = ai_review_service._validate_stock_review(allowed_review, stock)
+
+    assert any("financial_quality_denied_fact_used:valuation:current" in item for item in aggregate_errors)
+    assert any(
+        "financial_quality_denied_fact_used:valuation:trailing_earnings" in item
+        for item in denied_errors
+    )
+    assert not any("financial_quality_denied_fact_used" in item for item in allowed_errors)
 
 
 def test_market_hard_fails_zero_claims_with_four_eligible_anchors(

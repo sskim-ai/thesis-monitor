@@ -1455,6 +1455,8 @@ def build_numeric_registry(
 ) -> list[dict[str, object]]:
     registry: list[dict[str, object]] = []
     for fact in facts:
+        if fact.get("numeric_registry_eligible") is False:
+            continue
         fact_id = str(fact.get("fact_id") or "")
         fact_type = str(fact.get("fact_type") or "")
         fields = fact.get("fields")
@@ -1536,6 +1538,16 @@ def build_numeric_registry(
                         ),
                         "dependency_fields": list(
                             quality.get("dependency_fields") or []
+                        ),
+                        "dependency_periods": list(
+                            quality.get("dependency_periods") or []
+                        ),
+                        "denominator_period": quality.get("denominator_period"),
+                        "financial_source_period": quality.get("source_period"),
+                        "financial_source_type": quality.get("source_type"),
+                        "financial_source_provider": quality.get("provider"),
+                        "lineage_verification_status": quality.get(
+                            "lineage_verification_status"
                         ),
                         "denial_reason": quality.get("denial_reason"),
                         "quality_decision_version": quality.get("decision_version"),

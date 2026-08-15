@@ -4,9 +4,13 @@ import copy
 from collections.abc import Mapping
 
 
-DECISION_VERSION = "financial-quality-taint-v1"
+DECISION_VERSION = "financial-quality-taint-v2"
 
 PROSE_USABLE_STATES = {"verified_usable", "caution_usable"}
+COMPARABLE_BASIS_STATES = {
+    "directly_comparable",
+    "normalized_to_current_security",
+}
 
 CRITICAL_REASON_CODES = {
     "financial_hard_error",
@@ -21,6 +25,14 @@ CRITICAL_REASON_CODES = {
     "unusually_high_or_low_operating_margin",
 }
 
+BOOK_DENIAL_REASON_CODES = {
+    "financial_hard_error",
+    "financial_statement_basis_warning",
+    "period_mapping_validation_failure",
+    "preliminary_period_mapping_failed",
+    "preliminary_validation_failed",
+}
+
 DIRECT_EARNINGS_FIELDS = (
     "latest_revenue",
     "latest_operating_income",
@@ -31,17 +43,6 @@ DIRECT_EARNINGS_FIELDS = (
     "latest_operating_income_yoy",
 )
 
-PE_DEPENDENT_FIELDS = (
-    "ttm_eps",
-    "trailing_pe",
-    "forward_eps",
-    "forward_pe",
-    "historical_pe_statistics.current_value",
-    "historical_pe_statistics.current_percentile",
-    "valuation_relative_position",
-    "valuation_relative_position_reason",
-)
-
 
 def _dict(value: object) -> dict[str, object]:
     return dict(value) if isinstance(value, Mapping) else {}
@@ -49,6 +50,10 @@ def _dict(value: object) -> dict[str, object]:
 
 def _list(value: object) -> list[object]:
     return list(value) if isinstance(value, list) else []
+
+
+def _dict_list(value: object) -> list[dict[str, object]]:
+    return [dict(item) for item in _list(value) if isinstance(item, Mapping)]
 
 
 def _text_list(value: object) -> list[str]:
@@ -64,51 +69,10 @@ def _field_value(snapshot: Mapping[str, object], path: str) -> object:
     return value
 
 
-def _quality_record(
-    *,
-    state: str,
-    source_period: str | None,
-    source_type: str,
-    reason_codes: list[str],
-    dependency_fields: list[str],
-    denial_reason: str | None = None,
-) -> dict[str, object]:
-    return {
-        "state": state,
-        "source_period": source_period,
-        "source_type": source_type,
-        "quality_reason_codes": reason_codes,
-        "dependency_fields": dependency_fields,
-        "prose_eligible": state in PROSE_USABLE_STATES,
-        "denial_reason": denial_reason,
-        "decision_version": DECISION_VERSION,
-    }
-
-
-def build_financial_quality_state(
-    snapshot_value: Mapping[str, object],
-    *,
-    source_metadata: Mapping[str, object] | None = None,
-) -> dict[str, object]:
-    """Build field-level prose eligibility without discarding auditable raw values."""
-    snapshot = _dict(snapshot_value)
-    coverage = _dict(snapshot.get("data_coverage"))
-    source = _dict(source_metadata)
-    source_period = str(
-        source.get("period") or snapshot.get("latest_earnings_period") or ""
-    ) or None
-    source_type = str(
-        source.get("source_type")
-        or snapshot.get("earnings_context_source")
-        or (
-            "preliminary_earnings"
-            if snapshot.get("earnings_context_is_preliminary") is True
-            else "validated_financial_snapshot"
-        )
-    )
-
+def _source_reasons(source_value: Mapping[str, object]) -> list[str]:
+    source = _dict(source_value)
     reasons = {
-        *_text_list(coverage.get("reason_codes")),
+        *_text_list(source.get("quality_reason_codes")),
         *_text_list(source.get("hard_errors")),
         *_text_list(source.get("soft_outliers")),
     }
@@ -120,140 +84,508 @@ def build_financial_quality_state(
         reasons.add("period_mapping_validation_failure")
     if source.get("margin_quality_review") is True:
         reasons.add("financial_statement_basis_warning")
-    reason_codes = sorted(reasons)
-    critical_reasons = sorted(reasons.intersection(CRITICAL_REASON_CODES))
-    direct_denied = bool(critical_reasons)
+    return sorted(reasons)
 
-    if direct_denied:
-        direct_state = "denied"
-        direct_denial = "critical_financial_quality_outlier"
-    elif source_type == "preliminary_earnings":
-        direct_state = "caution_usable"
-        direct_denial = None
-    elif any(_field_value(snapshot, field) is not None for field in DIRECT_EARNINGS_FIELDS):
-        direct_state = "verified_usable"
-        direct_denial = None
-    else:
-        direct_state = "unknown"
-        direct_denial = "financial_source_not_available"
 
+def _quality_record(
+    *,
+    state: str,
+    source_period: str | None,
+    source_type: str,
+    provider: str | None,
+    reason_codes: list[str],
+    dependency_fields: list[str],
+    dependency_periods: list[str] | None = None,
+    denominator_period: str | None = None,
+    lineage_verification_status: str,
+    denial_reason: str | None = None,
+) -> dict[str, object]:
+    return {
+        "state": state,
+        "source_period": source_period,
+        "source_type": source_type,
+        "provider": provider,
+        "quality_reason_codes": reason_codes,
+        "dependency_fields": dependency_fields,
+        "dependency_periods": dependency_periods or [],
+        "denominator_period": denominator_period,
+        "lineage_verification_status": lineage_verification_status,
+        "prose_eligible": state in PROSE_USABLE_STATES,
+        "denial_reason": denial_reason,
+        "decision_version": DECISION_VERSION,
+    }
+
+
+def _dependency_periods(records: list[dict[str, object]]) -> list[str]:
+    return list(
+        dict.fromkeys(
+            str(item.get("period"))
+            for item in records
+            if item.get("period") not in (None, "")
+        )
+    )
+
+
+def _dependency_quality(
+    records: list[dict[str, object]],
+    *,
+    critical_codes: set[str] = CRITICAL_REASON_CODES,
+) -> tuple[list[str], bool, list[str], str | None]:
+    periods = _dependency_periods(records)
+    complete = bool(records) and all(
+        item.get("lineage_verified") is True and item.get("period")
+        for item in records
+    )
+    reasons = sorted(
+        {
+            reason
+            for item in records
+            for reason in _source_reasons(item)
+        }
+    )
+    critical = sorted(set(reasons).intersection(critical_codes))
+    provider_values = list(
+        dict.fromkeys(
+            str(item.get("provider"))
+            for item in records
+            if item.get("provider") not in (None, "")
+        )
+    )
+    provider = provider_values[0] if len(provider_values) == 1 else None
+    return periods, complete, critical, provider
+
+
+def _basis_is_usable(
+    snapshot: Mapping[str, object],
+    status_field: str,
+    conflict_field: str,
+) -> bool:
+    return (
+        str(snapshot.get(status_field) or "") in COMPARABLE_BASIS_STATES
+        and snapshot.get(conflict_field) is not True
+    )
+
+
+def _state_from_lineage(
+    *,
+    critical: list[str],
+    complete: bool,
+    usable_state: str,
+    denied_reason: str,
+    unknown_reason: str,
+) -> tuple[str, str | None, str]:
+    if critical:
+        return "denied", denied_reason, "verified_tainted"
+    if complete:
+        return usable_state, None, "verified"
+    return "unknown", unknown_reason, "unverified"
+
+
+def build_financial_quality_state(
+    snapshot_value: Mapping[str, object],
+    *,
+    source_metadata: Mapping[str, object] | None = None,
+) -> dict[str, object]:
+    """Build exact field-level eligibility while retaining raw audit values."""
+    snapshot = _dict(snapshot_value)
+    coverage = _dict(snapshot.get("data_coverage"))
+    source = _dict(
+        source_metadata
+        if source_metadata is not None
+        else snapshot.get("financial_quality_source_metadata")
+    )
+    source_period = str(
+        source.get("period") or snapshot.get("latest_earnings_period") or ""
+    ) or None
+    source_type = str(
+        source.get("source_type")
+        or snapshot.get("earnings_context_source")
+        or "unknown"
+    )
+    source_provider = str(source.get("provider") or "") or None
+
+    aggregate_reasons = {
+        *_text_list(coverage.get("reason_codes")),
+        *_source_reasons(source),
+    }
+    reason_codes = sorted(aggregate_reasons)
+    critical_reasons = sorted(aggregate_reasons.intersection(CRITICAL_REASON_CODES))
+
+    direct_sources = _dict(source.get("direct_field_sources"))
     fields: dict[str, dict[str, object]] = {}
     for field in DIRECT_EARNINGS_FIELDS:
         if _field_value(snapshot, field) is None:
             continue
+        records = _dict_list(direct_sources.get(field))
+        if records:
+            periods, complete, critical, provider = _dependency_quality(records)
+            field_reasons = sorted(
+                {
+                    reason
+                    for item in records
+                    for reason in _source_reasons(item)
+                }
+            )
+            state, denial, verification = _state_from_lineage(
+                critical=critical,
+                complete=complete,
+                usable_state=(
+                    "caution_usable"
+                    if any(
+                        item.get("source_type") == "preliminary_earnings"
+                        for item in records
+                    )
+                    else "verified_usable"
+                ),
+                denied_reason="critical_financial_quality_outlier",
+                unknown_reason="direct_financial_lineage_unverified",
+            )
+        else:
+            periods = [source_period] if source_period else []
+            provider = source_provider
+            field_reasons = reason_codes
+            if critical_reasons:
+                state, denial, verification = (
+                    "denied",
+                    "critical_financial_quality_outlier",
+                    "snapshot_quality_tainted",
+                )
+            elif source_period and source_type != "unknown":
+                state = (
+                    "caution_usable"
+                    if source_type == "preliminary_earnings"
+                    else "verified_usable"
+                )
+                denial = None
+                verification = "snapshot_source_metadata"
+            else:
+                state, denial, verification = (
+                    "unknown",
+                    "direct_financial_lineage_unverified",
+                    "unverified",
+                )
         fields[field] = _quality_record(
-            state=direct_state,
-            source_period=source_period,
+            state=state,
+            source_period=periods[-1] if periods else source_period,
             source_type=source_type,
-            reason_codes=reason_codes,
-            dependency_fields=[f"{source_period or 'latest'}:{field}"],
-            denial_reason=direct_denial,
+            provider=provider,
+            reason_codes=field_reasons,
+            dependency_fields=[f"earnings.{field}"],
+            dependency_periods=periods,
+            denominator_period=periods[-1] if periods else source_period,
+            lineage_verification_status=verification,
+            denial_reason=denial,
         )
 
-    ttm_tainted = direct_denied and snapshot.get("ttm_contains_preliminary") is True
-    modeled_forward_tainted = direct_denied and str(
-        snapshot.get("forward_pe_source") or ""
-    ) == "modeled_forward"
-    pe_tainted = ttm_tainted or modeled_forward_tainted
-
+    ttm_records = _dict_list(source.get("ttm_sources"))
+    ttm_periods, ttm_complete, ttm_critical, ttm_provider = _dependency_quality(
+        ttm_records
+    )
+    ttm_denominator = str(snapshot.get("trailing_pe_denominator_period_end") or "") or None
+    expected_ttm_periods = [
+        str(item.get("period"))
+        for item in _dict_list(snapshot.get("earnings_quarter_series"))
+        if item.get("period") and item.get("normalized_eps_usable") is not False
+    ]
+    ttm_complete = bool(
+        ttm_complete
+        and len(ttm_records) == len(expected_ttm_periods) >= 4
+        and ttm_periods == expected_ttm_periods
+        and ttm_denominator == expected_ttm_periods[-1]
+        and snapshot.get("ttm_eps_usable") is not False
+        and _basis_is_usable(
+            snapshot,
+            "trailing_pe_basis_status",
+            "trailing_pe_basis_conflict",
+        )
+    )
+    ttm_state, ttm_denial, ttm_verification = _state_from_lineage(
+        critical=ttm_critical,
+        complete=ttm_complete,
+        usable_state="verified_usable",
+        denied_reason="critical_input_in_ttm_denominator",
+        unknown_reason="ttm_dependency_lineage_unverified",
+    )
     for field in ("ttm_eps", "trailing_pe"):
         if _field_value(snapshot, field) is None:
             continue
         fields[field] = _quality_record(
-            state="denied" if ttm_tainted else "verified_usable",
-            source_period=source_period,
+            state=ttm_state,
+            source_period=ttm_denominator,
             source_type="derived_trailing",
-            reason_codes=reason_codes if ttm_tainted else [],
-            dependency_fields=["latest_earnings_period", "ttm_quarter_series"],
-            denial_reason=(
-                "denied_preliminary_input_in_ttm_denominator"
-                if ttm_tainted
-                else None
-            ),
+            provider=ttm_provider,
+            reason_codes=ttm_critical,
+            dependency_fields=["earnings_quarter_series.eps"],
+            dependency_periods=expected_ttm_periods,
+            denominator_period=ttm_denominator,
+            lineage_verification_status=ttm_verification,
+            denial_reason=ttm_denial,
         )
 
     forward_source = str(snapshot.get("forward_pe_source") or "unavailable")
+    forward_period = str(snapshot.get("forward_pe_input_period") or "") or None
+    forward_records = _dict_list(source.get("modeled_forward_sources"))
+    forward_periods, forward_complete, forward_critical, forward_provider = (
+        _dependency_quality(forward_records)
+    )
+    forward_basis_usable = _basis_is_usable(
+        snapshot,
+        "forward_pe_basis_status",
+        "forward_pe_basis_conflict",
+    )
+    if forward_source == "consensus_forward":
+        provider_native_multiple = bool(
+            forward_period
+            and snapshot.get("provider")
+            and snapshot.get("currency")
+            and snapshot.get("is_depositary_security") is not True
+            and str(snapshot.get("forward_pe_basis_status") or "")
+            == "not_applicable"
+            and snapshot.get("forward_pe_basis_conflict") is not True
+        )
+        forward_complete = bool(
+            forward_period and (forward_basis_usable or provider_native_multiple)
+        )
+        forward_state, forward_denial, forward_verification = _state_from_lineage(
+            critical=[],
+            complete=forward_complete,
+            usable_state="verified_usable",
+            denied_reason="unused",
+            unknown_reason="consensus_forward_lineage_unverified",
+        )
+        forward_periods = [forward_period] if forward_period else []
+        forward_provider = str(snapshot.get("provider") or "") or None
+        forward_dependency_fields = [
+            "independent_provider_consensus",
+            (
+                "provider_native_multiple_contract"
+                if provider_native_multiple
+                else "verified_per_security_basis"
+            ),
+        ]
+    elif forward_source == "modeled_forward":
+        expected_forward_count = int(
+            source.get("modeled_forward_expected_count") or len(forward_records)
+        )
+        forward_complete = bool(
+            forward_complete
+            and len(forward_records) >= expected_forward_count > 0
+            and forward_basis_usable
+        )
+        forward_state, forward_denial, forward_verification = _state_from_lineage(
+            critical=forward_critical,
+            complete=forward_complete,
+            usable_state="caution_usable",
+            denied_reason="critical_input_in_modeled_forward_earnings",
+            unknown_reason="modeled_forward_dependency_lineage_unverified",
+        )
+        forward_dependency_fields = ["modeled_forward_earnings_inputs"]
+    else:
+        forward_state, forward_denial, forward_verification = (
+            "unknown",
+            "forward_source_unavailable",
+            "unverified",
+        )
+        forward_dependency_fields = ["forward_valuation_source"]
     for field in ("forward_eps", "forward_pe"):
         if _field_value(snapshot, field) is None:
             continue
-        independent_consensus = forward_source == "consensus_forward"
         fields[field] = _quality_record(
-            state=(
-                "denied"
-                if modeled_forward_tainted
-                else "verified_usable"
-                if independent_consensus
-                else "caution_usable"
-            ),
-            source_period=source_period,
+            state=forward_state,
+            source_period=forward_period,
             source_type=forward_source,
-            reason_codes=reason_codes if modeled_forward_tainted else [],
-            dependency_fields=(
-                ["latest_earnings_period", "modeled_forward_earnings"]
-                if forward_source == "modeled_forward"
-                else ["independent_provider_consensus"]
-                if independent_consensus
-                else ["forward_valuation_source"]
-            ),
-            denial_reason=(
-                "denied_input_in_modeled_forward_earnings"
-                if modeled_forward_tainted
-                else None
-            ),
+            provider=forward_provider,
+            reason_codes=forward_critical,
+            dependency_fields=forward_dependency_fields,
+            dependency_periods=forward_periods,
+            denominator_period=forward_period,
+            lineage_verification_status=forward_verification,
+            denial_reason=forward_denial,
         )
 
+    trailing_quality = _dict(fields.get("trailing_pe"))
     for field in (
         "historical_pe_statistics.current_value",
         "historical_pe_statistics.current_percentile",
     ):
         if _field_value(snapshot, field) is None:
             continue
+        trailing_state = str(trailing_quality.get("state") or "unknown")
         fields[field] = _quality_record(
-            state="denied" if pe_tainted else "verified_usable",
-            source_period=source_period,
-            source_type="historical_valuation",
-            reason_codes=reason_codes if pe_tainted else [],
+            state=trailing_state,
+            source_period=ttm_denominator,
+            source_type="historical_trailing_pe",
+            provider=ttm_provider,
+            reason_codes=list(trailing_quality.get("quality_reason_codes") or []),
             dependency_fields=["trailing_pe", "historical_pe_distribution"],
-            denial_reason=("denied_current_pe_input" if pe_tainted else None),
+            dependency_periods=expected_ttm_periods,
+            denominator_period=ttm_denominator,
+            lineage_verification_status=str(
+                trailing_quality.get("lineage_verification_status") or "unverified"
+            ),
+            denial_reason=(
+                "current_trailing_pe_not_prose_eligible"
+                if trailing_state not in PROSE_USABLE_STATES
+                else None
+            ),
         )
 
-    if pe_tainted:
-        for field in ("valuation_relative_position", "valuation_relative_position_reason"):
+    if str(trailing_quality.get("state") or "unknown") not in PROSE_USABLE_STATES:
+        for field in (
+            "valuation_relative_position",
+            "valuation_relative_position_reason",
+        ):
             if _field_value(snapshot, field) is None:
                 continue
             fields[field] = _quality_record(
-                state="denied",
-                source_period=source_period,
+                state="unknown",
+                source_period=ttm_denominator,
                 source_type="derived_valuation_state",
-                reason_codes=reason_codes,
+                provider=ttm_provider,
+                reason_codes=list(trailing_quality.get("quality_reason_codes") or []),
                 dependency_fields=["trailing_pe", "historical_pe_statistics"],
-                denial_reason="denied_earnings_based_valuation_state",
+                dependency_periods=expected_ttm_periods,
+                denominator_period=ttm_denominator,
+                lineage_verification_status=str(
+                    trailing_quality.get("lineage_verification_status") or "unverified"
+                ),
+                denial_reason="earnings_based_valuation_state_unavailable",
             )
 
-    # Book-value metrics stay independent unless their own basis contract denies them.
+    book_period = str(snapshot.get("pbr_denominator_period_end") or "") or None
+    book_source = _dict(source.get("book_source"))
+    book_reasons = _source_reasons(book_source)
+    book_critical = sorted(set(book_reasons).intersection(BOOK_DENIAL_REASON_CODES))
+    book_basis_usable = _basis_is_usable(
+        snapshot,
+        "price_to_book_basis_status",
+        "price_to_book_basis_conflict",
+    )
+    book_lineage_verified = bool(
+        book_period
+        and book_basis_usable
+        and (
+            book_source.get("lineage_verified") is True
+            or not source_metadata
+        )
+    )
+    book_state, book_denial, book_verification = _state_from_lineage(
+        critical=book_critical,
+        complete=book_lineage_verified,
+        usable_state=("verified_usable" if book_source else "caution_usable"),
+        denied_reason="critical_book_value_input",
+        unknown_reason="book_value_dependency_lineage_unverified",
+    )
+    book_provider = str(book_source.get("provider") or "") or None
+    book_source_type = str(book_source.get("source_type") or "reported_book_value")
+    for field in ("bvps", "price_to_book"):
+        if _field_value(snapshot, field) is None:
+            continue
+        fields[field] = _quality_record(
+            state=book_state,
+            source_period=book_period,
+            source_type=book_source_type,
+            provider=book_provider,
+            reason_codes=book_reasons,
+            dependency_fields=["book_value_denominator"],
+            dependency_periods=[book_period] if book_period else [],
+            denominator_period=book_period,
+            lineage_verification_status=book_verification,
+            denial_reason=book_denial,
+        )
+
+    forward_book_source = str(
+        snapshot.get("forward_price_to_book_source") or "unavailable"
+    )
+    forward_book_period = str(snapshot.get("forward_pb_input_period") or "") or None
+    forward_book_records = _dict_list(source.get("modeled_forward_book_sources"))
+    (
+        forward_book_periods,
+        forward_book_complete,
+        forward_book_critical,
+        forward_book_provider,
+    ) = _dependency_quality(forward_book_records)
+    forward_book_basis_usable = _basis_is_usable(
+        snapshot,
+        "forward_price_to_book_basis_status",
+        "forward_price_to_book_basis_conflict",
+    )
+    if forward_book_source == "modeled_forward":
+        expected_forward_book_count = int(
+            source.get("modeled_forward_book_expected_count")
+            or len(forward_book_records)
+        )
+        forward_book_complete = bool(
+            forward_book_complete
+            and len(forward_book_records) >= expected_forward_book_count > 0
+            and forward_book_basis_usable
+            and book_state in PROSE_USABLE_STATES
+        )
+        forward_book_state, forward_book_denial, forward_book_verification = (
+            _state_from_lineage(
+                critical=forward_book_critical,
+                complete=forward_book_complete,
+                usable_state="caution_usable",
+                denied_reason="critical_input_in_modeled_forward_book_value",
+                unknown_reason="modeled_forward_book_lineage_unverified",
+            )
+        )
+    else:
+        forward_book_state, forward_book_denial, forward_book_verification = (
+            "unknown",
+            "forward_book_source_unavailable",
+            "unverified",
+        )
+    for field in ("forward_bvps", "forward_price_to_book"):
+        if _field_value(snapshot, field) is None:
+            continue
+        fields[field] = _quality_record(
+            state=forward_book_state,
+            source_period=forward_book_period,
+            source_type=forward_book_source,
+            provider=forward_book_provider,
+            reason_codes=forward_book_critical,
+            dependency_fields=["modeled_forward_book_value_inputs"],
+            dependency_periods=forward_book_periods,
+            denominator_period=forward_book_period,
+            lineage_verification_status=forward_book_verification,
+            denial_reason=forward_book_denial,
+        )
+
+    current_book_quality = _dict(fields.get("price_to_book"))
     for field in (
-        "bvps",
-        "price_to_book",
-        "forward_bvps",
-        "forward_price_to_book",
         "historical_pb_statistics.current_value",
         "historical_pb_statistics.current_percentile",
     ):
         if _field_value(snapshot, field) is None:
             continue
-        fields.setdefault(
-            field,
-            _quality_record(
-                state="verified_usable",
-                source_period=source_period,
-                source_type="independent_book_value_lineage",
-                reason_codes=[],
-                dependency_fields=["book_value_inputs"],
+        current_book_state = str(current_book_quality.get("state") or "unknown")
+        fields[field] = _quality_record(
+            state=current_book_state,
+            source_period=book_period,
+            source_type="historical_price_to_book",
+            provider=book_provider,
+            reason_codes=list(current_book_quality.get("quality_reason_codes") or []),
+            dependency_fields=["price_to_book", "historical_pb_distribution"],
+            dependency_periods=[book_period] if book_period else [],
+            denominator_period=book_period,
+            lineage_verification_status=str(
+                current_book_quality.get("lineage_verification_status") or "unverified"
+            ),
+            denial_reason=(
+                "current_price_to_book_not_prose_eligible"
+                if current_book_state not in PROSE_USABLE_STATES
+                else None
             ),
         )
 
     denied_fields = sorted(
         field for field, quality in fields.items() if quality["state"] == "denied"
+    )
+    non_prose_fields = sorted(
+        field
+        for field, quality in fields.items()
+        if quality["state"] not in PROSE_USABLE_STATES
     )
     return {
         "decision_version": DECISION_VERSION,
@@ -262,7 +594,7 @@ def build_financial_quality_state(
             for key, value in {
                 "period": source_period,
                 "source_type": source_type,
-                "provider": source.get("provider"),
+                "provider": source_provider,
                 "filing_date": source.get("filing_date"),
             }.items()
             if value is not None
@@ -271,6 +603,7 @@ def build_financial_quality_state(
         "critical_reason_codes": critical_reasons,
         "fields": fields,
         "denied_fields": denied_fields,
+        "non_prose_fields": non_prose_fields,
         "prose_eligible_fields": sorted(
             field
             for field, quality in fields.items()
@@ -294,7 +627,7 @@ def sanitize_financial_snapshot_for_prose(
     snapshot = copy.deepcopy(_dict(snapshot_value))
     quality = build_financial_quality_state(snapshot)
     snapshot["financial_quality"] = quality
-    for path in quality["denied_fields"]:
+    for path in quality["non_prose_fields"]:
         parts = str(path).split(".")
         target: object = snapshot
         for part in parts[:-1]:
@@ -304,10 +637,15 @@ def sanitize_financial_snapshot_for_prose(
         else:
             if isinstance(target, dict):
                 target[parts[-1]] = None
-    for multiple in ("trailing_pe", "forward_pe"):
-        if multiple in quality["denied_fields"]:
+    for multiple in (
+        "trailing_pe",
+        "forward_pe",
+        "price_to_book",
+        "forward_price_to_book",
+    ):
+        if multiple in quality["non_prose_fields"]:
             snapshot[f"{multiple}_status"] = "unavailable"
-    if "valuation_relative_position" in quality["denied_fields"]:
+    if "valuation_relative_position" in quality["non_prose_fields"]:
         snapshot["valuation_relative_position"] = "unknown"
         snapshot["valuation_relative_position_reason"] = (
             "검증 경고가 있는 이익 입력을 제외해 현재 Valuation 위치 판단을 보류합니다."

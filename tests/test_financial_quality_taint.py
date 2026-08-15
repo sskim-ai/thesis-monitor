@@ -27,6 +27,19 @@ def _snapshot(**overrides: object) -> dict[str, object]:
         "latest_operating_income_qoq": 44.2,
         "latest_operating_income_yoy": 557.2,
         "ttm_contains_preliminary": True,
+        "ttm_eps_usable": True,
+        "earnings_quarter_series": [
+            {
+                "period": period,
+                "source": "full_statement" if index < 3 else "preliminary_earnings",
+                "normalized_eps_usable": True,
+            }
+            for index, period in enumerate(
+                ("2025-09-30", "2025-12-31", "2026-03-31", "2026-06-30")
+            )
+        ],
+        "trailing_pe_denominator_period_end": "2026-06-30",
+        "trailing_pe_basis_status": "directly_comparable",
         "ttm_eps": 29_305.6,
         "trailing_pe": 7.2,
         "trailing_pe_status": "value",
@@ -34,9 +47,13 @@ def _snapshot(**overrides: object) -> dict[str, object]:
         "forward_pe": 16.38,
         "forward_pe_status": "value",
         "forward_pe_source": "modeled_forward",
+        "forward_pe_input_period": "FY1",
+        "forward_pe_basis_status": "directly_comparable",
         "bvps": 52_750,
         "price_to_book": 4.0,
         "price_to_book_status": "value",
+        "price_to_book_basis_status": "directly_comparable",
+        "pbr_denominator_period_end": "2026-03-31",
         "historical_pe_statistics": {
             "current_value": 7.2,
             "current_percentile": 12.0,
@@ -55,7 +72,7 @@ def _snapshot(**overrides: object) -> dict[str, object]:
 
 
 def _critical_source(*, official: bool = True) -> dict[str, object]:
-    return {
+    critical = {
         "period": "2026-06-30",
         "source_type": "preliminary_earnings",
         "provider": "opendart" if official else "unverified_feed",
@@ -64,24 +81,66 @@ def _critical_source(*, official: bool = True) -> dict[str, object]:
             "unusually_high_or_low_operating_margin",
         ],
         "hard_errors": [] if official else ["outlier_not_verified_by_official_source"],
+        "lineage_verified": True,
     }
+    clean = [
+        {
+            "period": period,
+            "source_type": "full_statement",
+            "provider": "opendart",
+            "hard_errors": [],
+            "soft_outliers": [],
+            "lineage_verified": True,
+        }
+        for period in ("2025-09-30", "2025-12-31", "2026-03-31")
+    ]
+    return {
+        **critical,
+        "direct_field_sources": {
+            field: [critical]
+            for field in (
+                "latest_revenue",
+                "latest_operating_income",
+                "latest_operating_margin",
+                "latest_revenue_qoq",
+                "latest_revenue_yoy",
+                "latest_operating_income_qoq",
+                "latest_operating_income_yoy",
+            )
+        },
+        "ttm_sources": [*clean, critical],
+        "modeled_forward_sources": [*clean, critical],
+        "book_source": {
+            **clean[-1],
+            "period": "2026-03-31",
+        },
+    }
+
+
+def _clean_source() -> dict[str, object]:
+    source = _critical_source()
+    for key in ("soft_outliers", "hard_errors"):
+        source[key] = []
+    for records in source["direct_field_sources"].values():
+        records[0]["soft_outliers"] = []
+        records[0]["hard_errors"] = []
+    source["ttm_sources"][-1]["soft_outliers"] = []
+    source["ttm_sources"][-1]["hard_errors"] = []
+    source["modeled_forward_sources"][-1]["soft_outliers"] = []
+    source["modeled_forward_sources"][-1]["hard_errors"] = []
+    return source
 
 
 def test_clean_official_preliminary_is_caution_usable() -> None:
     state = build_financial_quality_state(
         _snapshot(),
-        source_metadata={
-            "period": "2026-06-30",
-            "source_type": "preliminary_earnings",
-            "provider": "opendart",
-            "soft_outliers": [],
-            "hard_errors": [],
-        },
+        source_metadata=_clean_source(),
     )
 
     assert state["fields"]["latest_revenue"]["state"] == "caution_usable"
     assert state["fields"]["latest_revenue"]["prose_eligible"] is True
     assert state["denied_fields"] == []
+    assert state["decision_version"] == "financial-quality-taint-v2"
 
 
 def test_critical_official_preliminary_denies_direct_and_dependent_pe_fields() -> None:
@@ -167,6 +226,180 @@ def test_independent_consensus_forward_pe_survives_direct_earnings_taint() -> No
     assert state["fields"]["forward_eps"]["state"] == "verified_usable"
     assert state["fields"]["forward_pe"]["state"] == "verified_usable"
     assert state["fields"]["trailing_pe"]["state"] == "denied"
+
+
+def test_full_statement_critical_period_in_ttm_denies_trailing_and_historical_pe() -> None:
+    snapshot = _snapshot(
+        earnings_context_source="full_statement",
+        ttm_contains_preliminary=False,
+    )
+    source = _critical_source()
+    source["source_type"] = "full_statement"
+    for records in source["direct_field_sources"].values():
+        records[0]["source_type"] = "full_statement"
+    source["ttm_sources"][-1]["source_type"] = "full_statement"
+    source["modeled_forward_sources"][-1]["source_type"] = "full_statement"
+
+    state = build_financial_quality_state(snapshot, source_metadata=source)
+
+    assert snapshot["ttm_contains_preliminary"] is False
+    assert state["fields"]["ttm_eps"]["state"] == "denied"
+    assert state["fields"]["trailing_pe"]["state"] == "denied"
+    assert state["fields"]["historical_pe_statistics.current_value"]["state"] == "denied"
+    assert state["fields"]["historical_pe_statistics.current_percentile"]["state"] == "denied"
+    assert state["fields"]["trailing_pe"]["denial_reason"] == (
+        "critical_input_in_ttm_denominator"
+    )
+
+
+def test_direct_critical_period_outside_verified_ttm_does_not_taint_trailing() -> None:
+    snapshot = _snapshot(
+        latest_earnings_period="2026-09-30",
+        earnings_quarter_series=[
+            {
+                "period": period,
+                "source": "full_statement",
+                "normalized_eps_usable": True,
+            }
+            for period in ("2025-09-30", "2025-12-31", "2026-03-31", "2026-06-30")
+        ],
+    )
+    source = _critical_source()
+    source["period"] = "2026-09-30"
+    for records in source["direct_field_sources"].values():
+        records[0]["period"] = "2026-09-30"
+    source["ttm_sources"] = _clean_source()["ttm_sources"]
+
+    state = build_financial_quality_state(snapshot, source_metadata=source)
+
+    assert state["fields"]["latest_revenue"]["state"] == "denied"
+    assert state["fields"]["trailing_pe"]["state"] == "verified_usable"
+    assert state["fields"]["historical_pe_statistics.current_percentile"]["state"] == (
+        "verified_usable"
+    )
+
+
+def test_older_critical_ttm_quarter_denies_trailing_when_latest_is_clean() -> None:
+    source = _clean_source()
+    older = source["ttm_sources"][1]
+    older["soft_outliers"] = ["net_income_exceeds_revenue"]
+
+    state = build_financial_quality_state(_snapshot(), source_metadata=source)
+
+    assert state["fields"]["latest_revenue"]["state"] == "caution_usable"
+    assert state["fields"]["ttm_eps"]["state"] == "denied"
+    assert state["fields"]["trailing_pe"]["dependency_periods"] == [
+        "2025-09-30",
+        "2025-12-31",
+        "2026-03-31",
+        "2026-06-30",
+    ]
+
+
+def test_modeled_forward_only_taint_does_not_block_clean_historical_pe() -> None:
+    source = _clean_source()
+    source["modeled_forward_sources"] = [
+        {
+            "period": "2025-06-30",
+            "source_type": "full_statement",
+            "provider": "opendart",
+            "soft_outliers": ["unusually_high_or_low_net_margin"],
+            "lineage_verified": True,
+        },
+        *source["ttm_sources"],
+    ]
+
+    state = build_financial_quality_state(_snapshot(), source_metadata=source)
+
+    assert state["fields"]["forward_pe"]["state"] == "denied"
+    assert state["fields"]["trailing_pe"]["state"] == "verified_usable"
+    assert state["fields"]["historical_pe_statistics.current_percentile"]["state"] == (
+        "verified_usable"
+    )
+
+
+def test_clean_book_lineage_records_its_own_period_and_basis() -> None:
+    state = build_financial_quality_state(
+        _snapshot(), source_metadata=_critical_source()
+    )
+
+    pbr = state["fields"]["price_to_book"]
+    assert pbr["state"] == "verified_usable"
+    assert pbr["source_period"] == "2026-03-31"
+    assert pbr["denominator_period"] == "2026-03-31"
+    assert pbr["source_period"] != state["source_snapshot"]["period"]
+
+
+def test_book_basis_conflict_is_not_reapproved_by_quality_service() -> None:
+    state = build_financial_quality_state(
+        _snapshot(price_to_book_basis_conflict=True),
+        source_metadata=_clean_source(),
+    )
+
+    assert state["fields"]["price_to_book"]["state"] == "unknown"
+    assert state["fields"]["price_to_book"]["prose_eligible"] is False
+
+
+def test_unknown_ttm_lineage_is_not_promoted_to_verified() -> None:
+    state = build_financial_quality_state(
+        _snapshot(),
+        source_metadata={
+            "period": "2026-06-30",
+            "source_type": "full_statement",
+            "provider": "opendart",
+        },
+    )
+
+    assert state["fields"]["trailing_pe"]["state"] == "unknown"
+    assert state["fields"]["trailing_pe"]["prose_eligible"] is False
+    assert state["fields"]["trailing_pe"]["lineage_verification_status"] == (
+        "unverified"
+    )
+
+
+def test_fallback_sanitizer_preserves_independent_consensus_and_book() -> None:
+    snapshot = _snapshot(
+        forward_pe_source="consensus_forward",
+        forward_pe_input_period="FY1",
+        forward_eps=14_000,
+        forward_pe=15.1,
+        data_coverage={"reason_codes": ["preliminary_profitability_outlier"]},
+    )
+
+    sanitized = sanitize_financial_snapshot_for_prose(snapshot)
+
+    assert sanitized["latest_revenue"] is None
+    assert sanitized["trailing_pe"] is None
+    assert sanitized["forward_pe"] == 15.1
+    assert sanitized["price_to_book"] == 4.0
+
+
+def test_provider_native_consensus_multiple_requires_non_depositary_identity() -> None:
+    common = _snapshot(
+        provider="ohlcv-analyst + finnhub",
+        is_depositary_security=False,
+        forward_pe_source="consensus_forward",
+        forward_pe_input_period="provider-defined forward consensus",
+        forward_pe_basis_status="not_applicable",
+    )
+    common_state = build_financial_quality_state(
+        common,
+        source_metadata=_clean_source(),
+    )
+    depositary_state = build_financial_quality_state(
+        {
+            **common,
+            "is_depositary_security": True,
+            "forward_pe_basis_status": "insufficient_metadata",
+        },
+        source_metadata=_clean_source(),
+    )
+
+    assert common_state["fields"]["forward_pe"]["state"] == "verified_usable"
+    assert "provider_native_multiple_contract" in common_state["fields"][
+        "forward_pe"
+    ]["dependency_fields"]
+    assert depositary_state["fields"]["forward_pe"]["state"] == "unknown"
 
 
 def test_denied_numeric_registry_entry_has_no_display_and_binding_fails_closed() -> None:

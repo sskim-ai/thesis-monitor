@@ -30,6 +30,51 @@ from app.services.notification_service import (
 )
 
 
+def _clean_financial_lineage_metadata() -> dict[str, object]:
+    records = [
+        {
+            "period": period,
+            "source_type": "full_statement",
+            "provider": "fixture_provider",
+            "hard_errors": [],
+            "soft_outliers": [],
+            "lineage_verified": True,
+        }
+        for period in (
+            "2024-09-30",
+            "2024-12-31",
+            "2025-03-31",
+            "2025-06-30",
+            "2025-09-30",
+            "2025-12-31",
+            "2026-03-31",
+            "2026-06-30",
+        )
+    ]
+    latest = records[-1]
+    return {
+        **latest,
+        "direct_field_sources": {
+            field: [latest]
+            for field in (
+                "latest_revenue",
+                "latest_operating_income",
+                "latest_operating_margin",
+                "latest_revenue_qoq",
+                "latest_revenue_yoy",
+                "latest_operating_income_qoq",
+                "latest_operating_income_yoy",
+            )
+        },
+        "ttm_sources": records[-4:],
+        "modeled_forward_sources": records,
+        "modeled_forward_expected_count": 8,
+        "modeled_forward_book_sources": records,
+        "modeled_forward_book_expected_count": 8,
+        "book_source": latest,
+    }
+
+
 def _compact_assessment(**overrides):
     values = {
         "ticker": "000660",
@@ -84,21 +129,49 @@ def _compact_assessment(**overrides):
             {
                 "current_price": 1_425_000,
                 "currency": "KRW",
+                "latest_earnings_period": "2026-06-30",
+                "earnings_context_source": "full_statement",
+                "ttm_eps_usable": True,
+                "earnings_quarter_series": [
+                    {
+                        "period": period,
+                        "source": "full_statement",
+                        "normalized_eps_usable": True,
+                    }
+                    for period in (
+                        "2025-09-30",
+                        "2025-12-31",
+                        "2026-03-31",
+                        "2026-06-30",
+                    )
+                ],
                 "trailing_pe": 13.5,
                 "trailing_pe_status": "value",
+                "trailing_pe_denominator_period_end": "2026-06-30",
+                "trailing_pe_basis_status": "directly_comparable",
                 "ttm_eps": 105_555.56,
                 "price_to_book": 6.1,
                 "price_to_book_status": "value",
+                "pbr_denominator_period_end": "2026-06-30",
+                "price_to_book_basis_status": "directly_comparable",
                 "bvps": 233_606.56,
                 "forward_pe": 11.8,
                 "forward_pe_status": "value",
                 "forward_eps": 120_762.71,
+                "forward_pe_source": "modeled_forward",
+                "forward_pe_input_period": "FY1",
+                "forward_pe_basis_status": "directly_comparable",
                 "forward_price_to_book_status": "unavailable",
+                "forward_pb_input_period": "FY1",
+                "forward_price_to_book_basis_status": "directly_comparable",
                 "valuation_relative_position": "premium",
                 "valuation_relative_position_reason": "PBR이 과거 범위 상단입니다.",
                 "historical_pe_statistics": {"historical_median": 10.8, "current_percentile": 62, "observation_count": 100},
                 "historical_pb_statistics": {"historical_median": 1.7, "current_percentile": 92, "observation_count": 100},
                 "consensus_status": "unavailable",
+                "financial_quality_source_metadata": (
+                    _clean_financial_lineage_metadata()
+                ),
                 "data_coverage": {
                     "price_quality": "fresh",
                     "event_quality": "fresh",

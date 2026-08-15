@@ -1034,8 +1034,10 @@ def _assessment_report(
     valuation_snapshot = sanitize_financial_snapshot_for_prose(
         raw_valuation_snapshot
     )
-    denied_financial_fields = set(financial_quality.get("denied_fields", []))
-    if denied_financial_fields.intersection(
+    non_prose_financial_fields = set(
+        financial_quality.get("non_prose_fields", [])
+    )
+    if non_prose_financial_fields.intersection(
         {
             "latest_revenue",
             "latest_operating_income",
@@ -1047,7 +1049,7 @@ def _assessment_report(
         }
     ):
         earnings_impact = "unknown"
-    if denied_financial_fields.intersection(
+    if non_prose_financial_fields.intersection(
         {
             "ttm_eps",
             "trailing_pe",

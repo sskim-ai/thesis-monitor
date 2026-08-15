@@ -57,6 +57,11 @@ from app.services.numeric_semantic_registry import (
     usage_matches_semantic,
 )
 from app.services.ohlcv_structure_service import ALGORITHM_VERSION
+from app.services.valuation_snapshot_service import (
+    _earnings_quarters,
+    _latest_balance,
+    _valid_quarters,
+)
 
 
 logger = logging.getLogger(__name__)
@@ -719,16 +724,75 @@ def _financial_source_metadata(
     period = str(snapshot.get("latest_earnings_period") or "")
     if not period:
         return {}
-    rows = session.exec(
+    rows = list(session.exec(
         select(FinancialSnapshot).where(FinancialSnapshot.ticker == assessment.ticker)
-    ).all()
+    ).all())
+    calculated_at = str(snapshot.get("valuation_calculated_at") or "")
+    cutoff: datetime | None = None
+    if calculated_at:
+        try:
+            cutoff = datetime.fromisoformat(calculated_at.replace("Z", "+00:00"))
+            if cutoff.tzinfo is None:
+                cutoff = cutoff.replace(tzinfo=UTC)
+        except ValueError:
+            cutoff = None
+
+    def available(row: FinancialSnapshot) -> bool:
+        filed = row.filing_date or row.reported_date
+        if filed and filed > assessment.assessment_date:
+            return False
+        created = row.created_at
+        if cutoff is not None and created is not None:
+            if created.tzinfo is None:
+                created = created.replace(tzinfo=UTC)
+            if created > cutoff:
+                return False
+        return True
+
+    rows = [row for row in rows if available(row)]
+
+    def row_period(row: FinancialSnapshot) -> str:
+        return str(row.financial_period_end or row.financials_as_of or row.period)[:10]
+
+    def metadata(row: FinancialSnapshot) -> dict[str, object]:
+        return {
+            "period": row_period(row),
+            "source_type": row.snapshot_type,
+            "provider": row.provider,
+            "filing_date": str(row.filing_date or row.reported_date or "") or None,
+            "hard_errors": _list(row.financial_hard_errors),
+            "soft_outliers": _list(row.financial_soft_outliers),
+            "financial_statement_basis_warning": row.financial_statement_basis_warning,
+            "period_mapping_validation_failed": row.period_mapping_validation_failed,
+            "margin_quality_review": row.margin_quality_review,
+            "lineage_verified": True,
+        }
+
+    def match_series(item: dict[str, object]) -> FinancialSnapshot | None:
+        item_period = str(item.get("period") or "")[:10]
+        item_source = str(item.get("source") or "")
+        item_filing = str(item.get("filing") or "")[:10]
+        candidates = [
+            row
+            for row in rows
+            if row_period(row) == item_period
+            and (not item_source or row.snapshot_type == item_source)
+            and (
+                not item_filing
+                or str(row.filing_date or row.reported_date or "")[:10] == item_filing
+            )
+        ]
+        for field in ("revenue", "operating_income", "net_income"):
+            value = item.get(field)
+            matched = [row for row in candidates if value is None or getattr(row, field) == value]
+            if matched:
+                candidates = matched
+        return max(candidates, key=lambda item: item.id or 0) if candidates else None
+
     candidates = [
         row
         for row in rows
-        if str(row.financial_period_end or row.financials_as_of or row.period)[:10]
-        == period[:10]
-        and (row.filing_date or row.reported_date or assessment.assessment_date)
-        <= assessment.assessment_date
+        if row_period(row) == period[:10]
         and (
             not snapshot.get("earnings_context_source")
             or row.snapshot_type == snapshot.get("earnings_context_source")
@@ -757,17 +821,106 @@ def _financial_source_metadata(
             item.id or 0,
         ),
     )
-    return {
-        "period": period,
-        "source_type": row.snapshot_type,
-        "provider": row.provider,
-        "filing_date": str(row.filing_date or row.reported_date or "") or None,
-        "hard_errors": _list(row.financial_hard_errors),
-        "soft_outliers": _list(row.financial_soft_outliers),
-        "financial_statement_basis_warning": row.financial_statement_basis_warning,
-        "period_mapping_validation_failed": row.period_mapping_validation_failed,
-        "margin_quality_review": row.margin_quality_review,
+    result = metadata(row)
+
+    quarter_series = [
+        item
+        for item in _list(snapshot.get("earnings_quarter_series"))
+        if isinstance(item, dict)
+    ]
+    ttm_sources: list[dict[str, object]] = []
+    for item in quarter_series:
+        matched = match_series(item)
+        if matched is None:
+            ttm_sources.append(
+                {
+                    "period": item.get("period"),
+                    "source_type": item.get("source"),
+                    "filing_date": item.get("filing"),
+                    "lineage_verified": False,
+                }
+            )
+        else:
+            ttm_sources.append(metadata(matched))
+    result["ttm_sources"] = ttm_sources
+
+    selected_quarters = _earnings_quarters(rows)
+    latest = selected_quarters[-1] if selected_quarters else row
+    latest_period = latest.financial_period_end or latest.financials_as_of
+    prior = None
+    prior_year = None
+    if latest_period:
+        previous = [
+            candidate
+            for candidate in selected_quarters
+            if (candidate_period := candidate.financial_period_end or candidate.financials_as_of)
+            and candidate_period < latest_period
+        ]
+        if previous:
+            candidate = max(
+                previous,
+                key=lambda item: item.financial_period_end or item.financials_as_of or date.min,
+            )
+            candidate_period = candidate.financial_period_end or candidate.financials_as_of
+            if candidate_period and 60 <= (latest_period - candidate_period).days <= 120:
+                prior = candidate
+        prior_year = next(
+            (
+                candidate
+                for candidate in selected_quarters
+                if (candidate_period := candidate.financial_period_end or candidate.financials_as_of)
+                and 330 <= (latest_period - candidate_period).days <= 400
+            ),
+            None,
+        )
+    latest_metadata = metadata(row)
+    direct_field_sources: dict[str, list[dict[str, object]]] = {
+        field: [latest_metadata]
+        for field in (
+            "latest_revenue",
+            "latest_operating_income",
+            "latest_operating_margin",
+        )
     }
+    if prior is not None:
+        for field in ("latest_revenue_qoq", "latest_operating_income_qoq"):
+            direct_field_sources[field] = [latest_metadata, metadata(prior)]
+    if prior_year is not None:
+        for field in ("latest_revenue_yoy", "latest_operating_income_yoy"):
+            direct_field_sources[field] = [latest_metadata, metadata(prior_year)]
+    result["direct_field_sources"] = direct_field_sources
+
+    minimum = get_settings().valuation_model_min_quarters
+    modeled_sources = selected_quarters[-minimum:]
+    result["modeled_forward_sources"] = [metadata(item) for item in modeled_sources]
+    result["modeled_forward_expected_count"] = minimum
+    full_quarters = _valid_quarters(rows)
+    modeled_book_sources = (
+        full_quarters[-minimum:]
+        if any(item.snapshot_type == "preliminary_earnings" for item in modeled_sources)
+        else modeled_sources
+    )
+    result["modeled_forward_book_sources"] = [
+        metadata(item) for item in modeled_book_sources
+    ]
+    result["modeled_forward_book_expected_count"] = minimum
+
+    balance = _latest_balance(rows)
+    if balance is not None:
+        balance_metadata = metadata(balance)
+        expected_book_period = str(snapshot.get("pbr_denominator_period_end") or "")
+        expected_book_filing = str(snapshot.get("pbr_denominator_filing_date") or "")
+        balance_metadata["lineage_verified"] = bool(
+            expected_book_period
+            and row_period(balance) == expected_book_period[:10]
+            and (
+                not expected_book_filing
+                or str(balance.filing_date or balance.reported_date or "")[:10]
+                == expected_book_filing[:10]
+            )
+        )
+        result["book_source"] = balance_metadata
+    return result
 
 
 def _valuation_payload(
@@ -789,6 +942,12 @@ def _valuation_payload(
         "latest_revenue_yoy",
         "latest_operating_income_qoq",
         "latest_operating_income_yoy",
+        "ttm_period_start",
+        "ttm_period_end",
+        "ttm_source_filings",
+        "ttm_contains_preliminary",
+        "ttm_eps_usable",
+        "earnings_quarter_series",
         "ttm_eps",
         "bvps",
         "forward_eps",
@@ -799,8 +958,10 @@ def _valuation_payload(
         "forward_price_to_book",
         "forward_pe_source",
         "forward_pe_method",
+        "forward_pe_input_period",
         "forward_price_to_book_source",
         "forward_price_to_book_method",
+        "forward_pb_input_period",
         "forecast_method",
         "forward_basis",
         "forward_book_basis",
@@ -809,6 +970,26 @@ def _valuation_payload(
         "valuation_relative_position",
         "valuation_relative_basis",
         "quality",
+        "provider",
+        "resolved_issuer_type",
+        "resolved_security_type",
+        "is_depositary_security",
+        "eps_currency",
+        "eps_security_basis",
+        "book_currency",
+        "valuation_calculated_at",
+        "trailing_pe_denominator_period_end",
+        "trailing_pe_denominator_filing_date",
+        "pbr_denominator_period_end",
+        "pbr_denominator_filing_date",
+        "trailing_pe_basis_status",
+        "price_to_book_basis_status",
+        "forward_pe_basis_status",
+        "forward_price_to_book_basis_status",
+        "trailing_pe_basis_conflict",
+        "price_to_book_basis_conflict",
+        "forward_pe_basis_conflict",
+        "forward_price_to_book_basis_conflict",
     )
     result = {key: snapshot.get(key) for key in fields if snapshot.get(key) is not None}
     source_metadata = _financial_source_metadata(session, assessment, snapshot)
@@ -1424,6 +1605,17 @@ def _fact_catalog(
             if quality := field_quality(financial_quality, source):
                 earnings_field_quality[f"fields.{target}"] = quality
     if len(earnings_fields) > 2:
+        earnings_quality_records = [
+            _dict(item) for item in earnings_field_quality.values()
+        ]
+        earnings_interpretation_eligible = bool(
+            earnings_quality_records
+            and all(
+                item.get("state") in {"verified_usable", "caution_usable"}
+                and item.get("prose_eligible") is True
+                for item in earnings_quality_records
+            )
+        )
         facts.append(
             {
                 "fact_id": f"earnings:{period}",
@@ -1436,6 +1628,7 @@ def _fact_catalog(
                     _dict(item).get("prose_eligible") is True
                     for item in earnings_field_quality.values()
                 ),
+                "interpretation_eligible": earnings_interpretation_eligible,
             }
         )
     valuation_fields = {
@@ -1487,6 +1680,17 @@ def _fact_catalog(
             )
             if (quality := field_quality(financial_quality, field))
         }
+        valuation_quality_records = [
+            _dict(item) for item in valuation_field_quality.values()
+        ]
+        valuation_interpretation_eligible = bool(
+            not valuation_quality_records
+            or all(
+                item.get("state") in {"verified_usable", "caution_usable"}
+                and item.get("prose_eligible") is True
+                for item in valuation_quality_records
+            )
+        )
         facts.append(
             {
                 "fact_id": "valuation:current",
@@ -1495,7 +1699,97 @@ def _fact_catalog(
                 "fields": valuation_fields,
                 "financial_quality": financial_quality,
                 "field_quality": valuation_field_quality,
+                "interpretation_eligible": valuation_interpretation_eligible,
+                "interpretation_denial_reason": (
+                    None
+                    if valuation_interpretation_eligible
+                    else "mixed_financial_lineage_requires_homogeneous_fact"
+                ),
             }
+        )
+
+        def add_interpretation_fact(
+            fact_id: str,
+            field_names: tuple[str, ...],
+        ) -> None:
+            fields = {
+                field: valuation_fields[field]
+                for field in field_names
+                if field in valuation_fields
+            }
+            if not fields:
+                return
+            quality_by_path = {
+                path: quality
+                for path, quality in valuation_field_quality.items()
+                if any(
+                    path == f"fields.{field}"
+                    or path.startswith(f"fields.{field}.")
+                    for field in field_names
+                )
+            }
+            quality_records = [_dict(item) for item in quality_by_path.values()]
+            eligible = bool(
+                quality_records
+                and all(
+                    item.get("state") in {"verified_usable", "caution_usable"}
+                    and item.get("prose_eligible") is True
+                    for item in quality_records
+                )
+            )
+            facts.append(
+                {
+                    "fact_id": fact_id,
+                    "fact_type": "valuation_interpretation",
+                    "as_of_date": str(valuation.get("price_as_of") or ""),
+                    "fields": fields,
+                    "field_quality": quality_by_path,
+                    "prose_eligible": eligible,
+                    "interpretation_eligible": eligible,
+                    "interpretation_denial_reason": (
+                        None if eligible else "financial_lineage_not_prose_eligible"
+                    ),
+                    "numeric_registry_eligible": False,
+                }
+            )
+
+        add_interpretation_fact(
+            "valuation:trailing_earnings",
+            ("ttm_eps", "trailing_pe"),
+        )
+        forward_pe_fact_id = (
+            "valuation:consensus_forward_earnings"
+            if valuation.get("forward_pe_source") == "consensus_forward"
+            else "valuation:modeled_forward_earnings"
+            if valuation.get("forward_pe_source") == "modeled_forward"
+            else "valuation:forward_earnings_unknown"
+        )
+        add_interpretation_fact(
+            forward_pe_fact_id,
+            ("forward_eps", "forward_pe"),
+        )
+        add_interpretation_fact(
+            "valuation:book",
+            ("bvps", "price_to_book"),
+        )
+        forward_book_fact_id = (
+            "valuation:modeled_forward_book"
+            if valuation.get("forward_price_to_book_source") == "modeled_forward"
+            else "valuation:consensus_forward_book"
+            if valuation.get("forward_price_to_book_source") == "consensus_forward"
+            else "valuation:forward_book_unknown"
+        )
+        add_interpretation_fact(
+            forward_book_fact_id,
+            ("forward_bvps", "forward_price_to_book"),
+        )
+        add_interpretation_fact(
+            "valuation:historical_pe",
+            ("historical_pe_statistics",),
+        )
+        add_interpretation_fact(
+            "valuation:historical_pb",
+            ("historical_pb_statistics",),
         )
     peer = _dict(_dict(monitoring_state.get("current")).get("peer_valuation"))
     peer_metrics = _dict(peer.get("metrics"))
@@ -2668,8 +2962,7 @@ def _validate_stock_review(
         str(item.get("fact_id"))
         for item in fact_catalog
         if isinstance(item, dict)
-        and item.get("financial_quality")
-        and item.get("prose_eligible") is False
+        and item.get("interpretation_eligible") is False
     }
     denied_interpretation_facts = sorted(
         interpretation_facts.intersection(denied_financial_facts)
