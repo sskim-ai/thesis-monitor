@@ -108,6 +108,28 @@ def test_depositary_security_is_verified_without_guessing_ratio() -> None:
     assert result["evidence_values"]["security_master_adr_ratio"] is None
 
 
+def test_explicit_watchlist_depositary_evidence_outranks_inferred_local_default() -> None:
+    result = resolve_security_identity(
+        company_name="Fixture Depositary Receipt",
+        watchlist_item=_watchlist(
+            issuer_type="adr",
+            ordinary_share_identifier="FIXORD",
+            adr_ratio=0.5,
+        ),
+        security_master=_security(
+            issuer_type="domestic_us",
+            security_type="common_stock",
+            identity_quality="inferred",
+            identity_provider="local",
+        ),
+    )
+
+    assert result["identity_state"] == VERIFIED_DEPOSITARY
+    assert "security_master_inferred_issuer_type_ignored" in result[
+        "resolved_conflict_reasons"
+    ]
+
+
 def test_ratio_and_issuer_conflicts_are_not_resolved_by_source_priority() -> None:
     result = resolve_security_identity(
         company_name="Fixture ADR",

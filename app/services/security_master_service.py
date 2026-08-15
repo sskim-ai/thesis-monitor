@@ -8,6 +8,11 @@ from sqlmodel import Session, select
 from app.models.company import Company
 from app.models.security import SecurityMaster
 from app.models.watchlist import WatchlistItem
+from app.services.security_identity_service import (
+    TIER_A_AUTHORITATIVE,
+    TIER_B_DETERMINISTIC_REFERENCE,
+    identity_source_tier,
+)
 from app.utils.tickers import COMPANY_NAME_ALIASES
 
 
@@ -57,6 +62,15 @@ def _issuer_type(
     ticker: str,
     existing: SecurityMaster | None = None,
 ) -> str:
+    if (
+        existing
+        and existing.issuer_type != "unknown"
+        and identity_source_tier(
+            existing.identity_provider, existing.identity_quality
+        )
+        in {TIER_A_AUTHORITATIVE, TIER_B_DETERMINISTIC_REFERENCE}
+    ):
+        return existing.issuer_type
     if item and item.issuer_type:
         return item.issuer_type
     if existing and existing.issuer_type != "unknown":
@@ -77,10 +91,15 @@ class SecurityMasterService:
         company_name = (
             (company.company_name if company else None)
             or (item.company_name if item else None)
+            or (existing.company_name if existing else None)
             or COMPANY_NAME_ALIASES.get(ticker)
             or ticker
         )
-        exchange = (company.exchange if company else None) or (item.exchange if item else None)
+        exchange = (
+            (company.exchange if company else None)
+            or (item.exchange if item else None)
+            or (existing.exchange if existing else None)
+        )
         country = _country(exchange, ticker)
         aliases = list(dict.fromkeys((company_name.lower(), *SECURITY_ALIASES.get(ticker, ()))))
         search_aliases = [
@@ -103,7 +122,13 @@ class SecurityMasterService:
         )
         row.company_name = company_name
         row.legal_name = row.legal_name or company_name
-        row.exchange = exchange
+        if identity_source_tier(row.identity_provider, row.identity_quality) not in {
+            TIER_A_AUTHORITATIVE,
+            TIER_B_DETERMINISTIC_REFERENCE,
+        }:
+            row.exchange = exchange
+        elif row.exchange is None:
+            row.exchange = exchange
         row.country = country
         row.issuer_type = _issuer_type(item, ticker, existing)
         row.ordinary_share_identifier = (
@@ -125,7 +150,13 @@ class SecurityMasterService:
         row.known_products = json.dumps(
             list(SECURITY_PRODUCTS.get(ticker, ())), ensure_ascii=False
         )
-        row.identity_quality = "full" if exchange and company_name != ticker else "partial"
+        if identity_source_tier(row.identity_provider, row.identity_quality) not in {
+            TIER_A_AUTHORITATIVE,
+            TIER_B_DETERMINISTIC_REFERENCE,
+        }:
+            row.identity_quality = (
+                "inferred" if exchange and company_name != ticker else "partial"
+            )
         row.updated_at = datetime.now(timezone.utc)
         session.add(row)
         session.flush()

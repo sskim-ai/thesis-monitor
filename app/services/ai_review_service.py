@@ -44,6 +44,9 @@ from app.services.financial_quality_service import (
 from app.services.market_session import market_scope_for_security
 from app.services.market_intelligence_service import build_market_intelligence
 from app.services.night_futures import NIGHT_FUTURES_SERIES
+from app.services.official_security_identity_service import (
+    load_official_identity_provenance,
+)
 from app.services.numeric_provenance_service import (
     bind_numeric_fact_references,
     canonical_numeric_label_mismatch,
@@ -960,6 +963,9 @@ def _valuation_payload(
             if isinstance(snapshot.get("is_depositary_security"), bool)
             else None
         ),
+        identity_provenance=load_official_identity_provenance(
+            session, assessment.ticker
+        ),
     )
     snapshot.update(
         {
@@ -968,6 +974,9 @@ def _valuation_payload(
             "security_identity_evidence": identity["evidence_sources"],
             "security_identity_evidence_values": identity["evidence_values"],
             "security_identity_conflict_reasons": identity["conflict_reasons"],
+            "security_identity_resolved_conflict_reasons": identity[
+                "resolved_conflict_reasons"
+            ],
             "security_identity_verification_status": identity[
                 "verification_status"
             ],
@@ -975,6 +984,8 @@ def _valuation_payload(
             "security_identity_source_provenance": identity[
                 "source_provenance"
             ],
+            "security_identity_source_tier": identity["source_tier"],
+            "security_identity_provenance": identity["identity_provenance"],
             "security_identity_eligibility_decision": identity[
                 "eligibility_decision"
             ],
@@ -1031,9 +1042,12 @@ def _valuation_payload(
         "security_identity_evidence",
         "security_identity_evidence_values",
         "security_identity_conflict_reasons",
+        "security_identity_resolved_conflict_reasons",
         "security_identity_verification_status",
         "security_identity_as_of",
         "security_identity_source_provenance",
+        "security_identity_source_tier",
+        "security_identity_provenance",
         "security_identity_eligibility_decision",
         "eps_currency",
         "eps_security_basis",
@@ -1620,6 +1634,13 @@ def _fact_catalog(
                 ),
                 "conflict_reasons": valuation.get(
                     "security_identity_conflict_reasons", []
+                ),
+                "resolved_conflict_reasons": valuation.get(
+                    "security_identity_resolved_conflict_reasons", []
+                ),
+                "source_tier": valuation.get("security_identity_source_tier"),
+                "identity_provenance": valuation.get(
+                    "security_identity_provenance", {}
                 ),
                 "eligibility_decision": valuation.get(
                     "security_identity_eligibility_decision"

@@ -33,6 +33,9 @@ from app.services.dividend_history_service import DividendHistoryService
 from app.services.financial_freshness_service import FinancialFreshnessService
 from app.services.financial_validation import financial_snapshot_is_usable
 from app.services.provider_telemetry_service import ProviderTelemetryService
+from app.services.official_security_identity_service import (
+    load_official_identity_provenance,
+)
 from app.services.sec_financial_snapshot_service import SecFinancialSnapshotService
 from app.services.security_identity_service import (
     IDENTITY_CONFLICT,
@@ -444,9 +447,12 @@ class PerShareBasisContext:
     security_identity_evidence: tuple[dict[str, object], ...] = ()
     security_identity_evidence_values: dict[str, object] | None = None
     security_identity_conflict_reasons: tuple[str, ...] = ()
+    security_identity_resolved_conflict_reasons: tuple[str, ...] = ()
     security_identity_verification_status: str = "unverified"
     security_identity_as_of: str | None = None
     security_identity_source_provenance: str | None = None
+    security_identity_source_tier: str | None = None
+    security_identity_provenance: dict[str, object] | None = None
     security_identity_eligibility_decision: str | None = None
     price_currency: str | None = None
     financial_currency: str | None = None
@@ -481,6 +487,7 @@ def _resolve_per_share_basis_context(
     *,
     price_currency: str | None,
     financial_currency: str | None,
+    identity_provenance: dict[str, object] | None = None,
 ) -> PerShareBasisContext:
     watchlist_issuer = watchlist_item.issuer_type if watchlist_item else None
     security_issuer = security_master.issuer_type if security_master else None
@@ -496,49 +503,56 @@ def _resolve_per_share_basis_context(
         ),
         watchlist_item=watchlist_item,
         security_master=security_master,
+        identity_provenance=identity_provenance,
     )
-    ratios = [
-        value
-        for value in (
-            watchlist_item.adr_ratio if watchlist_item else None,
-            security_master.adr_ratio if security_master else None,
-        )
-        if value is not None and value > 0
-    ]
-    identity_warning = None
-    if watchlist_issuer and security_issuer and watchlist_issuer != security_issuer:
-        identity_warning = "issuer_type_conflict"
-    if len(ratios) == 2 and not math.isclose(ratios[0], ratios[1], rel_tol=1e-6):
-        identity_warning = "adr_ratio_conflict"
-    ratio = ratios[0] if ratios and identity_warning != "adr_ratio_conflict" else None
+    identity_warning = (
+        str(identity["conflict_reasons"][0])
+        if identity.get("conflict_reasons")
+        else None
+    )
+    ratio = (
+        float(identity["selected_adr_ratio"])
+        if isinstance(identity.get("selected_adr_ratio"), (int, float))
+        else None
+    )
     ratio_source = (
-        "watchlist"
-        if watchlist_item and watchlist_item.adr_ratio == ratio
-        else security_master.adr_ratio_source
-        if security_master and security_master.adr_ratio == ratio
+        str(identity["selected_adr_ratio_source"])
+        if identity.get("selected_adr_ratio_source")
         else None
     )
     return PerShareBasisContext(
-        issuer_type=issuer_type,
-        security_type=security_type,
+        issuer_type=str(identity.get("selected_issuer_type") or issuer_type),
+        security_type=str(identity.get("selected_security_type") or security_type),
         is_depositary_security=(
             identity["identity_state"] == VERIFIED_DEPOSITARY
+            or (
+                identity["identity_state"] == IDENTITY_UNKNOWN
+                and identity.get("is_depositary_evidence_present") is True
+            )
         ),
         security_identity_state=str(identity["identity_state"]),
         security_identity_decision_version=str(identity["decision_version"]),
         security_identity_evidence=tuple(identity["evidence_sources"]),
         security_identity_evidence_values=dict(identity["evidence_values"]),
         security_identity_conflict_reasons=tuple(identity["conflict_reasons"]),
+        security_identity_resolved_conflict_reasons=tuple(
+            identity["resolved_conflict_reasons"]
+        ),
         security_identity_verification_status=str(identity["verification_status"]),
         security_identity_as_of=(
             str(identity["as_of"]) if identity.get("as_of") is not None else None
         ),
         security_identity_source_provenance=str(identity["source_provenance"]),
+        security_identity_source_tier=str(identity["source_tier"]),
+        security_identity_provenance=dict(identity["identity_provenance"]),
         security_identity_eligibility_decision=str(identity["eligibility_decision"]),
         price_currency=price_currency,
         financial_currency=financial_currency,
         adr_ratio=ratio,
         adr_ratio_source=ratio_source,
+        adr_ratio_direction=str(
+            identity.get("adr_ratio_direction") or "ordinary_shares_per_adr"
+        ),
         identity_warning=identity_warning,
     )
 
@@ -1947,6 +1961,7 @@ class ValuationSnapshotService:
         watchlist_item: WatchlistItem | None = None
         security_master: SecurityMaster | None = None
         foreign_cache_metadata_missing = False
+        identity_provenance: dict[str, object] = {}
         if session is not None:
             watchlist_item = session.exec(
                 select(WatchlistItem).where(WatchlistItem.ticker == ticker)
@@ -1954,11 +1969,13 @@ class ValuationSnapshotService:
             security_master = session.exec(
                 select(SecurityMaster).where(SecurityMaster.ticker == ticker)
             ).first()
+            identity_provenance = load_official_identity_provenance(session, ticker)
             identity_context = _resolve_per_share_basis_context(
                 watchlist_item,
                 security_master,
                 price_currency=snapshot.currency,
                 financial_currency=None,
+                identity_provenance=identity_provenance,
             )
             if (
                 identity_context.issuer_type in {"adr", "foreign_private_issuer"}
@@ -2008,6 +2025,7 @@ class ValuationSnapshotService:
             security_master,
             price_currency=snapshot.currency,
             financial_currency=latest_financial_currency,
+            identity_provenance=identity_provenance,
         )
         snapshot.resolved_issuer_type = basis_context.issuer_type
         snapshot.resolved_security_type = basis_context.security_type
@@ -2629,12 +2647,19 @@ class ValuationSnapshotService:
             "conflict_reasons": list(
                 basis_context.security_identity_conflict_reasons
             ),
+            "resolved_conflict_reasons": list(
+                basis_context.security_identity_resolved_conflict_reasons
+            ),
             "verification_status": (
                 basis_context.security_identity_verification_status
             ),
             "as_of": basis_context.security_identity_as_of,
             "source_provenance": (
                 basis_context.security_identity_source_provenance
+            ),
+            "source_tier": basis_context.security_identity_source_tier,
+            "identity_provenance": (
+                basis_context.security_identity_provenance or {}
             ),
             "eligibility_decision": (
                 basis_context.security_identity_eligibility_decision

@@ -37,6 +37,10 @@ from app.services.numeric_semantic_registry import (
     canonical_display_value,
     semantic_spec,
 )
+from app.services.official_security_identity_service import (
+    OfficialSecurityIdentityEvidence,
+    OfficialSecurityIdentityService,
+)
 from scripts.sync_custom_gpt_knowledge import (
     CANONICAL_PATH,
     MANIFEST_PATH,
@@ -3814,6 +3818,53 @@ def test_identity_conflict_allows_specific_number_free_unknown(
         _, errors = validate_ai_review_output(session, packet, output)
 
     assert not any("security_identity_denied" in item for item in errors)
+
+
+def test_authoritative_identity_field_provenance_reaches_ai_packet(
+    monkeypatch,
+    tmp_path: Path,
+) -> None:
+    _settings(monkeypatch, tmp_path)
+    with Session(_engine()) as session:
+        _seed(session)
+        evidence = OfficialSecurityIdentityEvidence(
+            ticker="PACKETUS",
+            issuer_name="Packet Corp",
+            security_title="Class A Common Stock",
+            security_type="common_stock",
+            issuer_type="domestic_us",
+            exchange="NASDAQ",
+            source_url="https://www.sec.gov/Archives/example/packetus.htm",
+            source_form="SEC cover page",
+            filing_accession="0000000000-26-000001",
+            as_of_date="2026-08-13",
+            source_reference="SEC accession 0000000000-26-000001",
+            cik="0000000000",
+            share_class="Class A",
+        )
+        OfficialSecurityIdentityService().ingest(
+            session, evidence, dry_run=False
+        )
+        session.commit()
+
+        packet = build_ai_review_packet(session, RUN_DATE, "us")
+
+    assert packet is not None
+    stock = packet["stocks"][0]
+    valuation = stock["valuation"]
+    assert valuation["security_identity_state"] == "verified_non_depositary"
+    assert valuation["security_identity_source_tier"] == "tier_a_authoritative"
+    assert (
+        valuation["security_identity_provenance"]["field_provenance"]
+        ["security_type"]["value"]
+        == "common_stock"
+    )
+    identity_fact = next(
+        item
+        for item in stock["fact_catalog"]
+        if item["fact_id"] == "security_identity:current"
+    )
+    assert identity_fact["fields"]["source_tier"] == "tier_a_authoritative"
 
 
 def test_market_hard_fails_zero_claims_with_four_eligible_anchors(

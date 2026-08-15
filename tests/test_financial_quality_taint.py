@@ -572,3 +572,32 @@ def test_deterministic_fallback_hides_tainted_numbers_and_interpretation() -> No
     assert "4.0배" in message
     assert "현재가: 211,000원" in message
     assert "매출·이익과 이익 기반 배수의 정량 해석을 보류" in message
+
+
+def test_deterministic_fallback_withholds_unverified_depositary_multiple() -> None:
+    assessment = _Assessment()
+    snapshot = _snapshot(
+        security_identity_state="verified_depositary",
+        security_identity_decision_version="security-identity-v2",
+        security_identity_verification_status="verified",
+        is_depositary_security=True,
+        forward_pe=6.95,
+        forward_pe_source="consensus_forward",
+        forward_pe_input_period="FY1",
+        forward_pe_basis_status="not_applicable",
+        data_coverage={"reason_codes": ["per_share_basis_insufficient"]},
+        financial_quality_source_metadata={
+            "security_identity": {
+                "identity_state": "verified_depositary",
+                "verification_status": "verified",
+            }
+        },
+    )
+    assessment.valuation_snapshot = json.dumps(snapshot, ensure_ascii=False)
+
+    message = _message_for_assessment(assessment)
+
+    assert "6.95" not in message
+    assert "fPER" not in message
+    assert "주당 기준" in message
+    assert "현재가: 211,000원" in message

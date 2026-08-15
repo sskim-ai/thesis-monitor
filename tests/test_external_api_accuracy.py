@@ -1697,7 +1697,7 @@ def test_openfigi_identity_mismatch_does_not_overwrite_security_master() -> None
         ).one()
 
     assert mapped is False
-    assert reason == "identity_mismatch"
+    assert reason == "no_exact_instrument_match"
     assert refreshed is not None and refreshed.figi is None
 
 
