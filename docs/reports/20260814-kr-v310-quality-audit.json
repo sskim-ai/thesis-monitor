@@ -1,0 +1,115 @@
+{
+  "contract": "relational-reasoning-quality-v1",
+  "duplicate_threshold": 3,
+  "stock_count": 7,
+  "repeated_sentences": [
+    {
+      "sentence": "차트 무효화는 기업가치 무효화가 아닙니다.",
+      "stock_count": 4,
+      "tickers": [
+        "005490",
+        "010120",
+        "012450",
+        "086280"
+      ],
+      "classification": "required_common_safety"
+    }
+  ],
+  "substantive_repeated_sentence_count": 0,
+  "max_substantive_repeat": 0,
+  "observer_holder": [
+    {
+      "ticker": "000660",
+      "distinct": true
+    },
+    {
+      "ticker": "003690",
+      "distinct": true
+    },
+    {
+      "ticker": "005490",
+      "distinct": true
+    },
+    {
+      "ticker": "005930",
+      "distinct": true
+    },
+    {
+      "ticker": "010120",
+      "distinct": true
+    },
+    {
+      "ticker": "012450",
+      "distinct": true
+    },
+    {
+      "ticker": "086280",
+      "distinct": true
+    }
+  ],
+  "observer_holder_distinct_count": 7,
+  "section_numeric_grounding": {
+    "000660": {
+      "core": 2,
+      "earnings": 2,
+      "price": 4,
+      "supply": 6,
+      "valuation": 3
+    },
+    "003690": {
+      "core": 2,
+      "earnings": 2,
+      "price": 4,
+      "supply": 6,
+      "valuation": 3
+    },
+    "005490": {
+      "core": 2,
+      "earnings": 3,
+      "price": 8,
+      "supply": 6,
+      "valuation": 4
+    },
+    "005930": {
+      "core": 2,
+      "earnings": 3,
+      "price": 4,
+      "supply": 6,
+      "valuation": 3
+    },
+    "010120": {
+      "core": 2,
+      "earnings": 3,
+      "price": 7,
+      "supply": 6,
+      "valuation": 3
+    },
+    "012450": {
+      "core": 2,
+      "earnings": 3,
+      "price": 7,
+      "supply": 6,
+      "valuation": 0
+    },
+    "086280": {
+      "core": 2,
+      "earnings": 3,
+      "price": 8,
+      "supply": 6,
+      "valuation": 4
+    }
+  },
+  "stock_specific_next_check_count": 7,
+  "generic_next_check_count": 0,
+  "stock_specific_unknown_count": 7,
+  "generic_unknown_count": 0,
+  "numeric_label_quality": {
+    "redundant_authored_label_count": 0,
+    "repeated_bound_label_count": 0,
+    "source_label_mismatch_count": 0,
+    "instrument_label_mismatch_count": 0,
+    "details": [],
+    "hard_checks_passed": true
+  },
+  "hard_checks_passed": true
+}

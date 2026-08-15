@@ -951,6 +951,135 @@ def test_output_guardrails_reject_mismatch_hallucination_and_bad_basis(
         assert "identity_mismatch:knowledge_sha256" in errors
 
 
+@pytest.mark.parametrize(
+    ("valuation", "text"),
+    [
+        (
+            {
+                "forward_pe_source": "modeled_forward",
+                "forward_price_to_book_source": "modeled_forward",
+            },
+            "내부 추정 fPER 10배와 내부 추정 fPBR 2배를 함께 봅니다.",
+        ),
+        (
+            {
+                "forward_pe_source": "consensus_forward",
+                "forward_price_to_book_source": "consensus_forward",
+            },
+            "시장 예상 fPER 10배와 시장 예상 fPBR 2배를 함께 봅니다.",
+        ),
+        (
+            {
+                "forward_pe_source": "consensus_forward",
+                "forward_price_to_book_source": "modeled_forward",
+            },
+            "시장 예상 fPER 10배와 내부 추정 fPBR 2배를 함께 봅니다.",
+        ),
+        (
+            {
+                "forward_pe_source": "modeled_forward",
+                "forward_price_to_book_source": "consensus_forward",
+            },
+            "내부 추정 fPER 10배와 시장 예상 fPBR 2배를 함께 봅니다.",
+        ),
+        (
+            {
+                "forward_pe_source": "consensus_forward",
+                "forward_price_to_book_source": "modeled_forward",
+            },
+            "시장 예상 EPS와 내부 추정 BVPS를 함께 봅니다.",
+        ),
+        (
+            {
+                "forward_pe_source": "modeled_forward",
+                "forward_price_to_book_source": "consensus_forward",
+            },
+            "내부 추정 EPS와 시장 예상 BVPS를 함께 봅니다.",
+        ),
+    ],
+)
+def test_forward_source_language_accepts_metric_local_mixed_sources(
+    valuation: dict[str, object],
+    text: str,
+) -> None:
+    assert ai_review_service._forward_source_language_errors(
+        "GENERIC",
+        valuation,
+        text,
+    ) == []
+
+
+@pytest.mark.parametrize(
+    ("valuation", "text", "expected"),
+    [
+        (
+            {"forward_pe_source": "modeled_forward"},
+            "시장 예상 fPER 10배입니다.",
+            "modeled_forward_called_consensus",
+        ),
+        (
+            {"forward_pe_source": "consensus_forward"},
+            "내부 추정 fPER 10배입니다.",
+            "consensus_forward_called_modeled",
+        ),
+        (
+            {"forward_price_to_book_source": "modeled_forward"},
+            "시장 예상 fPBR 2배입니다.",
+            "modeled_forward_pbr_called_consensus",
+        ),
+        (
+            {"forward_price_to_book_source": "consensus_forward"},
+            "내부 추정 fPBR 2배입니다.",
+            "consensus_forward_pbr_called_modeled",
+        ),
+        (
+            {"forward_pe_source": "unavailable"},
+            "시장 예상 fPER 10배입니다.",
+            "unknown_forward_source_labeled",
+        ),
+        (
+            {"forward_price_to_book_source": "unavailable"},
+            "내부 추정 fPBR 2배입니다.",
+            "unknown_forward_pbr_source_labeled",
+        ),
+    ],
+)
+def test_forward_source_language_rejects_metric_local_mismatch(
+    valuation: dict[str, object],
+    text: str,
+    expected: str,
+) -> None:
+    errors = ai_review_service._forward_source_language_errors(
+        "GENERIC",
+        valuation,
+        text,
+    )
+    assert errors == [f"GENERIC:{expected}"]
+
+
+def test_forward_source_language_does_not_leak_across_metrics_or_sentences() -> None:
+    valuation = {
+        "forward_pe_source": "consensus_forward",
+        "forward_price_to_book_source": "modeled_forward",
+    }
+    assert ai_review_service._forward_source_language_errors(
+        "GENERIC",
+        valuation,
+        (
+            "시장 예상 fPER는 이익 확대를 전제합니다. "
+            "내부 추정 fPBR은 장부가 개선을 전제합니다."
+        ),
+    ) == []
+    assert ai_review_service._forward_source_language_errors(
+        "GENERIC",
+        valuation,
+        (
+            "시장 예상 fPER를 확인합니다. "
+            "기업 내부 모델의 운영 가정은 별도 자료입니다."
+        ),
+    ) == []
+
+
 def test_numeric_claims_require_exact_semantic_provenance_and_allow_display_formatting(
     monkeypatch,
     tmp_path: Path,

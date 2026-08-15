@@ -448,6 +448,81 @@ def test_forward_book_source_enum_selects_canonical_labels(
     assert expected_bvps in text
 
 
+@pytest.mark.parametrize(
+    (
+        "pe_source",
+        "book_source",
+        "expected_pe",
+        "expected_pbr",
+        "expected_eps",
+        "expected_bvps",
+    ),
+    [
+        (
+            "consensus_forward",
+            "modeled_forward",
+            "시장 예상 fPER 10배",
+            "내부 추정 fPBR 2배",
+            "시장 예상 EPS $3",
+            "내부 추정 BVPS $4",
+        ),
+        (
+            "modeled_forward",
+            "consensus_forward",
+            "내부 추정 fPER 10배",
+            "시장 예상 fPBR 2배",
+            "내부 추정 EPS $3",
+            "시장 예상 BVPS $4",
+        ),
+    ],
+)
+def test_mixed_forward_sources_bind_occurrence_level_claims_without_cross_talk(
+    pe_source: str,
+    book_source: str,
+    expected_pe: str,
+    expected_pbr: str,
+    expected_eps: str,
+    expected_bvps: str,
+) -> None:
+    fact = _fact(
+        "valuation:mixed",
+        "valuation",
+        {
+            "currency": "USD",
+            "forward_pe": 10.0,
+            "forward_eps": 3.0,
+            "forward_pe_source": pe_source,
+            "forward_price_to_book": 2.0,
+            "forward_bvps": 4.0,
+            "forward_price_to_book_source": book_source,
+        },
+    )
+    refs = [
+        _ref("fpe", "valuation:mixed", "fields.forward_pe"),
+        _ref("fpbr", "valuation:mixed", "fields.forward_price_to_book"),
+        _ref("eps", "valuation:mixed", "fields.forward_eps"),
+        _ref("bvps", "valuation:mixed", "fields.forward_bvps"),
+    ]
+    result = _bind_stock(
+        [fact],
+        (
+            "{{numeric:fpe}}와 {{numeric:fpbr}}를 함께 봅니다. "
+            "{{numeric:eps}}와 {{numeric:bvps}}도 같은 source 경계를 유지합니다."
+        ),
+        refs,
+    )
+
+    assert result.errors == ()
+    text = result.output["stock_reviews"][0]["core_judgment"]["text"]
+    assert all(
+        expected in text
+        for expected in (expected_pe, expected_pbr, expected_eps, expected_bvps)
+    )
+    claims = result.output["stock_reviews"][0]["numeric_claims"]
+    assert len(claims) == 4
+    assert {item["text_ref"] for item in claims} == {"core_judgment.text"}
+
+
 def test_crcl_consensus_forward_regression_uses_market_expected_label() -> None:
     fact = _fact(
         "valuation:CRCL",

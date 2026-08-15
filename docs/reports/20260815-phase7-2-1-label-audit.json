@@ -2,7 +2,8 @@
   "contract": "numeric-label-quality-v1",
   "packet_id": "2026-08-15-us-run-18-dca26c59bb82",
   "policy": "daily-review-v3.10",
-  "baseline_preview": "/tmp/phase72-v310-output/telegram-preview.md",
+  "baseline_preview": "docs/reports/20260815-us-v310-telegram-experimental-preview.md",
+  "baseline_preview_commit": "7596769f81e8dbc0272be76026b13c84ed0b766b",
   "baseline_known_duplicate_label_occurrences": 25,
   "corrected_duplicate_label_occurrences": 0,
   "numeric_label_quality": {

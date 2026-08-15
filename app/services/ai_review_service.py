@@ -2424,6 +2424,42 @@ _FORWARD_PB_LANGUAGE = re.compile(
     r"(?:fpbr|선행\s*pbr|forward\s*pbr|bvps)",
     re.IGNORECASE,
 )
+_FORWARD_SOURCE_METRIC_MAX_GAP = 12
+
+
+def _span_gap(left: re.Match[str], right: re.Match[str]) -> int:
+    if left.end() <= right.start():
+        return right.start() - left.end()
+    if right.end() <= left.start():
+        return left.start() - right.end()
+    return 0
+
+
+def _metric_local_forward_sources(text: str) -> dict[str, set[str]]:
+    sources: dict[str, set[str]] = {"pe": set(), "pbr": set()}
+    for sentence in re.split(r"(?<=[.!?])\s+|\n+", text):
+        metrics = [
+            *(("pe", match) for match in _FORWARD_PE_LANGUAGE.finditer(sentence)),
+            *(("pbr", match) for match in _FORWARD_PB_LANGUAGE.finditer(sentence)),
+        ]
+        source_matches = [
+            *(("consensus_forward", match) for match in _CONSENSUS_LANGUAGE.finditer(sentence)),
+            *(("modeled_forward", match) for match in _MODELED_LANGUAGE.finditer(sentence)),
+        ]
+        for source, source_match in source_matches:
+            candidates = sorted(
+                (_span_gap(source_match, metric_match), family)
+                for family, metric_match in metrics
+            )
+            if not candidates or candidates[0][0] > _FORWARD_SOURCE_METRIC_MAX_GAP:
+                continue
+            nearest_gap = candidates[0][0]
+            nearest_families = {
+                family for gap, family in candidates if gap == nearest_gap
+            }
+            if len(nearest_families) == 1:
+                sources[nearest_families.pop()].add(source)
+    return sources
 
 
 def _forward_source_language_errors(
@@ -2432,16 +2468,16 @@ def _forward_source_language_errors(
     rendered: str,
 ) -> list[str]:
     errors: list[str] = []
-    sentences = re.split(r"(?<=[.!?])\s+|\n+", rendered)
+    local_sources = _metric_local_forward_sources(rendered)
     contracts = (
-        ("forward_pe_source", _FORWARD_PE_LANGUAGE, ""),
-        ("forward_price_to_book_source", _FORWARD_PB_LANGUAGE, "_pbr"),
+        ("forward_pe_source", "pe", ""),
+        ("forward_price_to_book_source", "pbr", "_pbr"),
     )
-    for source_field, metric_pattern, suffix in contracts:
+    for source_field, family, suffix in contracts:
         source = str(valuation.get(source_field) or "unavailable")
-        relevant = [item for item in sentences if metric_pattern.search(item)]
-        uses_consensus = any(_CONSENSUS_LANGUAGE.search(item) for item in relevant)
-        uses_modeled = any(_MODELED_LANGUAGE.search(item) for item in relevant)
+        used_sources = local_sources[family]
+        uses_consensus = "consensus_forward" in used_sources
+        uses_modeled = "modeled_forward" in used_sources
         if source == "modeled_forward" and uses_consensus:
             errors.append(f"{ticker}:modeled_forward{suffix}_called_consensus")
         elif source == "consensus_forward" and uses_modeled:

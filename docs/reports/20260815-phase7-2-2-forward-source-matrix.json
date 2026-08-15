@@ -1,0 +1,198 @@
+{
+  "contract": "forward-source-metric-local-v1",
+  "case_count": 16,
+  "passed_count": 16,
+  "failed_count": 0,
+  "cases": [
+    {
+      "case": "modeled_fper_pass",
+      "valuation": {
+        "forward_pe_source": "modeled_forward"
+      },
+      "text": "내부 추정 fPER 10배입니다.",
+      "expected_errors": [],
+      "actual_errors": [],
+      "passed": true
+    },
+    {
+      "case": "consensus_fper_pass",
+      "valuation": {
+        "forward_pe_source": "consensus_forward"
+      },
+      "text": "시장 예상 fPER 10배입니다.",
+      "expected_errors": [],
+      "actual_errors": [],
+      "passed": true
+    },
+    {
+      "case": "modeled_fpbr_pass",
+      "valuation": {
+        "forward_price_to_book_source": "modeled_forward"
+      },
+      "text": "내부 추정 fPBR 2배입니다.",
+      "expected_errors": [],
+      "actual_errors": [],
+      "passed": true
+    },
+    {
+      "case": "consensus_fpbr_pass",
+      "valuation": {
+        "forward_price_to_book_source": "consensus_forward"
+      },
+      "text": "시장 예상 fPBR 2배입니다.",
+      "expected_errors": [],
+      "actual_errors": [],
+      "passed": true
+    },
+    {
+      "case": "consensus_fper_modeled_fpbr_pass",
+      "valuation": {
+        "forward_pe_source": "consensus_forward",
+        "forward_price_to_book_source": "modeled_forward"
+      },
+      "text": "시장 예상 fPER 10배와 내부 추정 fPBR 2배를 함께 봅니다.",
+      "expected_errors": [],
+      "actual_errors": [],
+      "passed": true
+    },
+    {
+      "case": "modeled_fper_consensus_fpbr_pass",
+      "valuation": {
+        "forward_pe_source": "modeled_forward",
+        "forward_price_to_book_source": "consensus_forward"
+      },
+      "text": "내부 추정 fPER 10배와 시장 예상 fPBR 2배를 함께 봅니다.",
+      "expected_errors": [],
+      "actual_errors": [],
+      "passed": true
+    },
+    {
+      "case": "consensus_eps_modeled_bvps_pass",
+      "valuation": {
+        "forward_pe_source": "consensus_forward",
+        "forward_price_to_book_source": "modeled_forward"
+      },
+      "text": "시장 예상 EPS와 내부 추정 BVPS를 함께 봅니다.",
+      "expected_errors": [],
+      "actual_errors": [],
+      "passed": true
+    },
+    {
+      "case": "modeled_eps_consensus_bvps_pass",
+      "valuation": {
+        "forward_pe_source": "modeled_forward",
+        "forward_price_to_book_source": "consensus_forward"
+      },
+      "text": "내부 추정 EPS와 시장 예상 BVPS를 함께 봅니다.",
+      "expected_errors": [],
+      "actual_errors": [],
+      "passed": true
+    },
+    {
+      "case": "modeled_fper_called_consensus",
+      "valuation": {
+        "forward_pe_source": "modeled_forward"
+      },
+      "text": "시장 예상 fPER 10배입니다.",
+      "expected_errors": [
+        "GENERIC:modeled_forward_called_consensus"
+      ],
+      "actual_errors": [
+        "GENERIC:modeled_forward_called_consensus"
+      ],
+      "passed": true
+    },
+    {
+      "case": "consensus_fper_called_modeled",
+      "valuation": {
+        "forward_pe_source": "consensus_forward"
+      },
+      "text": "내부 추정 fPER 10배입니다.",
+      "expected_errors": [
+        "GENERIC:consensus_forward_called_modeled"
+      ],
+      "actual_errors": [
+        "GENERIC:consensus_forward_called_modeled"
+      ],
+      "passed": true
+    },
+    {
+      "case": "modeled_fpbr_called_consensus",
+      "valuation": {
+        "forward_price_to_book_source": "modeled_forward"
+      },
+      "text": "시장 예상 fPBR 2배입니다.",
+      "expected_errors": [
+        "GENERIC:modeled_forward_pbr_called_consensus"
+      ],
+      "actual_errors": [
+        "GENERIC:modeled_forward_pbr_called_consensus"
+      ],
+      "passed": true
+    },
+    {
+      "case": "consensus_fpbr_called_modeled",
+      "valuation": {
+        "forward_price_to_book_source": "consensus_forward"
+      },
+      "text": "내부 추정 fPBR 2배입니다.",
+      "expected_errors": [
+        "GENERIC:consensus_forward_pbr_called_modeled"
+      ],
+      "actual_errors": [
+        "GENERIC:consensus_forward_pbr_called_modeled"
+      ],
+      "passed": true
+    },
+    {
+      "case": "unknown_fper_called_consensus",
+      "valuation": {
+        "forward_pe_source": "unavailable"
+      },
+      "text": "시장 예상 fPER 10배입니다.",
+      "expected_errors": [
+        "GENERIC:unknown_forward_source_labeled"
+      ],
+      "actual_errors": [
+        "GENERIC:unknown_forward_source_labeled"
+      ],
+      "passed": true
+    },
+    {
+      "case": "unknown_fpbr_called_modeled",
+      "valuation": {
+        "forward_price_to_book_source": "unavailable"
+      },
+      "text": "내부 추정 fPBR 2배입니다.",
+      "expected_errors": [
+        "GENERIC:unknown_forward_pbr_source_labeled"
+      ],
+      "actual_errors": [
+        "GENERIC:unknown_forward_pbr_source_labeled"
+      ],
+      "passed": true
+    },
+    {
+      "case": "other_sentence_no_leak",
+      "valuation": {
+        "forward_pe_source": "consensus_forward",
+        "forward_price_to_book_source": "modeled_forward"
+      },
+      "text": "시장 예상 fPER를 확인합니다. 기업 내부 모델의 운영 가정은 별도 자료입니다.",
+      "expected_errors": [],
+      "actual_errors": [],
+      "passed": true
+    },
+    {
+      "case": "mixed_nonnumeric_metric_local",
+      "valuation": {
+        "forward_pe_source": "consensus_forward",
+        "forward_price_to_book_source": "modeled_forward"
+      },
+      "text": "시장 예상 fPER는 이익 확대를 전제하지만 내부 추정 fPBR은 장부가 개선을 전제합니다.",
+      "expected_errors": [],
+      "actual_errors": [],
+      "passed": true
+    }
+  ]
+}
