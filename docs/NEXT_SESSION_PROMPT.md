@@ -63,7 +63,9 @@ Absolute safety rules:
 - Registered price rules remain audit history. Current Strong/Medium dynamic structure and state
   delta are primary, and a crossed confirmation is never auto-promoted to support.
 - Earnings amounts use verified financial currency; price and per-security valuation use verified
-  security/price currency. An ADR price currency never relabels issuer financial statements.
+  security/price currency. An ADR price currency never relabels issuer financial statements. Missing
+  or blank financial currency is `unknown`, and unsupported monetary units remain auditable but
+  prose-denied. Never substitute price currency.
 - Peer valuation requires verified profile, same geography, comparable basis, same-date data, and at
   least three peers excluding the company. Missing broad peer data remains unavailable.
 
@@ -77,8 +79,9 @@ knowledge.
 
 Next work order:
 
-1. Confirm the four ACTIVE local-project Scheduled Tasks still use v3.9 and the operating checkout.
-2. Observe the next naturally scheduled Pilot v3 session; do not trigger a duplicate manual run.
+1. Observe the next naturally scheduled Pilot v3 session after the financial-currency hotfix; do not
+   trigger a duplicate manual run.
+2. Confirm packet monetary units do not inherit price currency when `financial_currency` is absent.
 3. Review each successful market session by DATA, CALCULATION, PACKET, KNOWLEDGE_ROUTING,
    AI_REASONING, VALIDATION, RENDERER, and DELIVERY.
 4. Preserve exact archives and old cohorts.

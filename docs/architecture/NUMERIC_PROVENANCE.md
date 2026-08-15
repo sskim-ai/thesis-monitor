@@ -119,6 +119,13 @@ verified price/security basis. In particular, a TSM ADR price in USD does not ma
 revenue or operating income USD. TWD is a registered financial unit. ADR/ADS ratio and denominator
 rules remain in the valuation and security-basis layer and are never repaired inside provenance.
 
+Missing, empty, or whitespace-only `financial_currency` is normalized to `unknown`, never to the
+security price currency. The raw monetary fact may remain in the packet for audit, but its registry
+entry is registered with `prose_allowed=false`, a null canonical display, and no approved display
+variants. A non-empty formatter-unsupported currency code keeps its original identity and follows the
+same prose-denied path. The binder rejects references to either case. Revenue and operating-income
+growth rates and operating margin remain available because they do not require a monetary currency.
+
 ## Validation And Telemetry
 
 Each successful finalization archives:

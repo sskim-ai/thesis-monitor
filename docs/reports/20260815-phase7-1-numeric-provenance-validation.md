@@ -7,6 +7,10 @@ Policy: `daily-review-v3.9`
 Final output schema: `4`
 Base commit: `b1b495879b1d5bdbedc38a1dfe45a0cafcfd1ca0`
 
+Safety hotfix base: `0c041b57e66d48c607cd3f55f7faec804915988d`
+
+Safety hotfix code commit: `d66fcf80a2355eade7ef03f47ffb74e29006c993`
+
 ## Scope
 
 This phase moves numeric transcription, labeling, formatting, and claim construction from Codex into
@@ -117,3 +121,37 @@ Runtime evidence shows the 2026-08-15 US v3.8 session had already passed validat
 AI-assisted messages, and completed its archive at 08:40 KST before this retrospective. The verified
 current cohort is therefore KR 1/5 and US 1/5. This retrospective sent zero Telegram messages and
 made zero official database or Pilot-counter mutations.
+
+## Financial Currency Safety Hotfix
+
+The residual defect was in `CANONICALIZATION` and `PACKET`, not the binder or validator. Packet
+construction previously used security currency when `financial_currency` was absent. Read-only
+archive inventory found 30 historical stock packet rows with a monetary earnings amount and no
+verified financial currency. Representative immutable rows showed USD ADR price becoming USD issuer
+earnings currency and KRW price becoming KRW issuer earnings currency. No archive was rewritten.
+
+The hotfix removes that fallback. Missing, empty, and whitespace-only financial currency now becomes
+`unknown`. The monetary Fact remains auditable, while its registry entry is registered but
+prose-denied, with null canonical display and no approved variants. A non-empty unsupported currency
+such as GBP is preserved rather than relabeled, and is also prose-denied. Verified USD, KRW, and TWD
+continue to use their existing formatters; the generic foreign-issuer fixture retains USD security
+price while rendering TWD revenue as `NT$1.27T` and operating income as `NT$766.6B`. No conversion or
+ADR-ratio logic was added.
+
+Regression coverage includes USD- and KRW-priced securities with `None`, empty, and whitespace-only
+financial currency; unsupported GBP; verified USD/KRW/TWD; currency-independent earnings margins and
+growth rates; unknown-currency binder rejection; raw monetary prose rejection; and a number-free
+Unknown explanation that validates. The complete suite passed 651 tests. Ruff and diff checks passed.
+
+The immutable packet and seven-error rejected review retained SHA-256 values
+`9487b6a89a679ca29d66f2aca6b68f4d882f23c6664f0b14e3942094515634b1` and
+`7b0fa31e4cd899772d689b8cbf28490e74a5c85c793f0399c9c5fb8362ae8144`. Replaying the exact HUT
+reference still auto-bound one claim with zero formatting failures, and the full validator passed
+with zero errors. Telegram, official assessment, immutable artifacts, and Pilot counts were not
+mutated.
+
+The code commit was fast-forwarded to the operating checkout after GitHub Actions Test and Lint
+passed. API and US/KR AI Review health passed. All four existing Scheduled Tasks remain ACTIVE on the
+same operating checkout with v3.9/schema 4/structure v2/Pilot v3/renderer v3. Production Assist stays
+disabled. The remaining validation is the next naturally scheduled v3.9 session; no manual Live
+Pilot was started.

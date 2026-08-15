@@ -27,6 +27,7 @@ execution or an autonomous investment adviser.
 | Renderer | `ai-assisted-pilot-renderer-v3` |
 | Public Action | `0.4.5`, operationId 20/20 |
 | Production Assist | Disabled |
+| Financial currency safety | Missing/empty is `unknown`; unsupported units are prose-denied |
 
 Resolve the deployed commit with `git rev-parse HEAD`; a file inside a commit cannot contain that
 commit's own final hash. The machine-readable state records `HEAD` plus the last verified base.
@@ -141,6 +142,10 @@ Under `daily-review-v3.9`, Codex places `{{numeric:ref_id}}` and selects only th
 field, and prose location. The backend owns the value, unit, semantic, source-aware label, display
 format, and generated final claim. Legacy manual claims still validate, but the draft binding path is
 the production contract. See [NUMERIC_PROVENANCE.md](architecture/NUMERIC_PROVENANCE.md).
+Issuer earnings amounts never inherit security price currency. A missing or blank
+`financial_currency` becomes `unknown`; the amount remains auditable but has no canonical display and
+cannot bind into prose. A non-empty unsupported currency keeps its identity and is also prose-denied.
+Currency-independent earnings percentages remain usable.
 During Pilot, a market or stock with at least four prose-eligible anchors cannot pass with zero
 numeric claims. Sparse packets remain exempt, and every used number still requires exact prose
 grounding rather than a quota-driven list.
