@@ -135,6 +135,7 @@ def _assessment(
             {
                 "current_price": 100.0,
                 "currency": "USD",
+                "financial_currency": "USD",
                 "price_as_of": assessment_date.isoformat(),
                 "latest_earnings_period": "2026-06-30",
                 "latest_revenue": 500.0,
@@ -2902,6 +2903,273 @@ def test_earnings_fact_uses_financial_currency_not_adr_price_currency(
     assert revenue["prose_allowed"] is True
     assert "NT$1.27T" in revenue["approved_display_variants"]
     assert price["unit"] == "USD"
+
+
+def _packet_with_earnings_currency(
+    monkeypatch,
+    tmp_path: Path,
+    *,
+    price_currency: str,
+    financial_currency: str | None,
+    revenue: float = 1_270_380_000_000,
+    operating_income: float = 766_600_000_000,
+) -> dict[str, object]:
+    _settings(monkeypatch, tmp_path)
+    with Session(_engine()) as session:
+        _seed(session)
+        assessment = session.exec(
+            select(ThesisAssessment).where(
+                ThesisAssessment.ticker == "PACKETUS",
+                ThesisAssessment.assessment_date == RUN_DATE,
+            )
+        ).one()
+        valuation = json.loads(assessment.valuation_snapshot)
+        valuation.update(
+            {
+                "currency": price_currency,
+                "financial_currency": financial_currency,
+                "latest_revenue": revenue,
+                "latest_operating_income": operating_income,
+                "latest_operating_margin": 60.34,
+                "latest_revenue_qoq": 12.5,
+                "latest_revenue_yoy": 40.1,
+                "latest_operating_income_qoq": 8.2,
+                "latest_operating_income_yoy": 55.6,
+            }
+        )
+        price_context = json.loads(assessment.price_context)
+        price_context["decision"]["currency"] = price_currency
+        assessment.valuation_snapshot = json.dumps(valuation)
+        assessment.price_context = json.dumps(price_context)
+        session.add(assessment)
+        session.commit()
+        packet = build_ai_review_packet(session, RUN_DATE, "us")
+        assert packet is not None
+        return packet
+
+
+def _earnings_registry(
+    packet: dict[str, object],
+) -> tuple[dict[str, object], dict[str, dict[str, object]]]:
+    stock = packet["stocks"][0]
+    earnings = next(
+        item for item in stock["fact_catalog"] if item["fact_type"] == "earnings"
+    )
+    registry = {
+        item["field_path"]: item
+        for item in stock["numeric_registry"]
+        if item["fact_id"] == earnings["fact_id"]
+    }
+    return earnings, registry
+
+
+@pytest.mark.parametrize("price_currency", ["USD", "KRW"])
+@pytest.mark.parametrize("financial_currency", [None, "", "   "])
+def test_missing_financial_currency_never_inherits_price_currency(
+    monkeypatch,
+    tmp_path: Path,
+    price_currency: str,
+    financial_currency: str | None,
+) -> None:
+    packet = _packet_with_earnings_currency(
+        monkeypatch,
+        tmp_path,
+        price_currency=price_currency,
+        financial_currency=financial_currency,
+    )
+    earnings, registry = _earnings_registry(packet)
+    price_entry = next(
+        item
+        for item in packet["stocks"][0]["numeric_registry"]
+        if item["fact_id"] == "price:current"
+        and item["field_path"] == "fields.current_price"
+    )
+
+    for field in ("revenue", "operating_income"):
+        source = earnings["fields"][field]
+        entry = registry[f"fields.{field}.value"]
+        assert source["currency"] == "unknown"
+        assert entry["unit"] == "unknown"
+        assert entry["registered"] is True
+        assert entry["prose_allowed"] is False
+        assert entry["canonical_display_value"] is None
+        assert entry["approved_display_variants"] == []
+        rendered = json.dumps(entry, ensure_ascii=False)
+        assert "NT$" not in rendered
+        assert "$" not in rendered
+        assert "원" not in rendered
+    assert price_entry["unit"] == price_currency
+    assert registry["fields.operating_margin_pct"]["prose_allowed"] is True
+    assert registry["fields.revenue_qoq_pct"]["prose_allowed"] is True
+    assert registry["fields.revenue_yoy_pct"]["prose_allowed"] is True
+    assert registry["fields.operating_income_qoq_pct"]["prose_allowed"] is True
+    assert registry["fields.operating_income_yoy_pct"]["prose_allowed"] is True
+
+
+def test_unsupported_financial_currency_is_preserved_and_prose_denied(
+    monkeypatch,
+    tmp_path: Path,
+) -> None:
+    packet = _packet_with_earnings_currency(
+        monkeypatch,
+        tmp_path,
+        price_currency="USD",
+        financial_currency="GBP",
+    )
+    earnings, registry = _earnings_registry(packet)
+    revenue = registry["fields.revenue.value"]
+
+    assert earnings["fields"]["revenue"]["currency"] == "GBP"
+    assert revenue["unit"] == "GBP"
+    assert revenue["registered"] is True
+    assert revenue["prose_allowed"] is False
+    assert revenue["canonical_display_value"] is None
+    assert revenue["approved_display_variants"] == []
+
+
+@pytest.mark.parametrize(
+    ("financial_currency", "revenue", "expected"),
+    [
+        ("USD", 41_456_000_000, "$41.46B"),
+        ("KRW", 41_456_000_000, "415억원"),
+        ("TWD", 1_270_380_000_000, "NT$1.27T"),
+    ],
+)
+def test_verified_financial_currency_keeps_canonical_formatter(
+    monkeypatch,
+    tmp_path: Path,
+    financial_currency: str,
+    revenue: float,
+    expected: str,
+) -> None:
+    packet = _packet_with_earnings_currency(
+        monkeypatch,
+        tmp_path,
+        price_currency="USD",
+        financial_currency=financial_currency,
+        revenue=revenue,
+    )
+    earnings, registry = _earnings_registry(packet)
+    revenue_entry = registry["fields.revenue.value"]
+    price_entry = next(
+        item
+        for item in packet["stocks"][0]["numeric_registry"]
+        if item["fact_id"] == "price:current"
+        and item["field_path"] == "fields.current_price"
+    )
+
+    assert earnings["fields"]["revenue"]["currency"] == financial_currency
+    assert revenue_entry["unit"] == financial_currency
+    assert revenue_entry["prose_allowed"] is True
+    assert revenue_entry["canonical_display_value"] == expected
+    assert price_entry["unit"] == "USD"
+
+
+def test_twd_financial_amounts_remain_separate_from_usd_security_price(
+    monkeypatch,
+    tmp_path: Path,
+) -> None:
+    packet = _packet_with_earnings_currency(
+        monkeypatch,
+        tmp_path,
+        price_currency="USD",
+        financial_currency="TWD",
+    )
+    _earnings, registry = _earnings_registry(packet)
+
+    assert registry["fields.revenue.value"]["canonical_display_value"] == "NT$1.27T"
+    assert (
+        registry["fields.operating_income.value"]["canonical_display_value"]
+        == "NT$766.6B"
+    )
+
+
+def test_unknown_currency_monetary_binding_and_raw_prose_fail_closed(
+    monkeypatch,
+    tmp_path: Path,
+) -> None:
+    packet = _packet_with_earnings_currency(
+        monkeypatch,
+        tmp_path,
+        price_currency="USD",
+        financial_currency=None,
+    )
+    earnings, _registry = _earnings_registry(packet)
+    draft = _valid_output(packet)
+    review = draft["stock_reviews"][0]
+    review["facts_used"].append(earnings["fact_id"])
+    review["business_earnings"] = {
+        "text": "{{numeric:revenue}}의 재무 통화 basis를 확인해야 합니다.",
+        "fact_ids": [earnings["fact_id"]],
+    }
+    review["numeric_fact_refs"] = [
+        {
+            "ref_id": "revenue",
+            "fact_id": earnings["fact_id"],
+            "field_path": "fields.revenue.value",
+            "text_ref": "business_earnings.text",
+        }
+    ]
+
+    with Session(_engine()) as validation_session:
+        _seed(validation_session)
+        bound_output, binding_errors = validate_ai_review_output(
+            validation_session, packet, draft
+        )
+
+        raw_draft = _valid_output(packet)
+        raw_review = raw_draft["stock_reviews"][0]
+        raw_review["facts_used"].append(earnings["fact_id"])
+        raw_review["business_earnings"] = {
+            "text": (
+                "매출 $1,270,380,000,000은 재무 통화 basis가 "
+                "확인되지 않았습니다."
+            ),
+            "fact_ids": [earnings["fact_id"]],
+        }
+        _raw_output, raw_errors = validate_ai_review_output(
+            validation_session, packet, raw_draft
+        )
+
+    assert bound_output is None
+    assert binding_errors == [
+        "PACKETUS:numeric_fact_ref_semantic_not_supported:"
+        f"revenue:{earnings['fact_id']}:fields.revenue.value"
+    ]
+    assert any(
+        "numbers_without_provenance:business_earnings.text:1.27038e+12" in error
+        for error in raw_errors
+    )
+
+
+def test_unknown_currency_can_be_described_without_raw_monetary_number(
+    monkeypatch,
+    tmp_path: Path,
+) -> None:
+    packet = _packet_with_earnings_currency(
+        monkeypatch,
+        tmp_path,
+        price_currency="USD",
+        financial_currency=None,
+    )
+    earnings, _registry = _earnings_registry(packet)
+    draft = _valid_output(packet)
+    review = draft["stock_reviews"][0]
+    review["facts_used"].append(earnings["fact_id"])
+    review["business_earnings"] = {
+        "text": (
+            "매출 금액은 확인됐지만 재무 통화 basis가 확인되지 않아 "
+            "정량 표기는 보류합니다."
+        ),
+        "fact_ids": [earnings["fact_id"]],
+    }
+
+    with Session(_engine()) as validation_session:
+        _seed(validation_session)
+        output, errors = validate_ai_review_output(validation_session, packet, draft)
+
+    assert errors == []
+    assert output is not None
 
 
 def test_market_hard_fails_zero_claims_with_four_eligible_anchors(

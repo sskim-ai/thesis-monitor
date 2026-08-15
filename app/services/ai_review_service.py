@@ -1276,7 +1276,12 @@ def _fact_catalog(
 ) -> list[dict[str, object]]:
     facts = [fact for item in evidence if (fact := canonical_event_fact(item))]
     currency = str(valuation.get("currency") or "unknown")
-    financial_currency = str(valuation.get("financial_currency") or currency)
+    financial_currency_value = valuation.get("financial_currency")
+    financial_currency = (
+        str(financial_currency_value).strip()
+        if financial_currency_value is not None
+        else ""
+    ) or "unknown"
     period = str(valuation.get("latest_earnings_period") or "latest")
     earnings_fields: dict[str, object] = {
         "period": period,
