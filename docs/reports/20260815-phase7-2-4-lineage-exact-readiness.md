@@ -7,8 +7,8 @@
 - Required base: `09d7e42432478666c17b2d896e5cccbfb87f37ff`
 - Core lineage implementation: `aa00b47173e86db6a8bc920365d0c3633d104c53`
 - Persisted fallback-lineage implementation: `7b9dbf75b610faa20935fe120313dbbbfd0ce225`
-- Final validation/documentation commit: `PENDING_FINAL_COMMIT`
-- Exact final GitHub Actions run: `PENDING_FINAL_ACTIONS`
+- Validated implementation/documentation commit: `afd1ae7fdd2e705af7156ebe5301efa4ada65d74`
+- GitHub Actions validating that content: [run 31880750341](https://github.com/sskim-ai/thesis-monitor/actions/runs/31880750341), Test/Lint PASS
 - Production main and operating checkout: `7d9f59fa1b5bc6034ea5cc9620482b39e4a96f07` (unchanged)
 - Experimental/production policy: `daily-review-v3.10` / `daily-review-v3.9`
 - Pilot at experiment start: KR `1/5`, US `1/5`
@@ -127,7 +127,7 @@ The zeroes above describe this experiment. While it was running, the existing pr
 - Full pytest: `727 passed`, one third-party deprecation warning
 - Ruff: PASS
 - `git diff --check`: PASS
-- Exact final GitHub Actions Test/Lint: pending final branch push
+- GitHub Actions for `afd1ae7fdd2e705af7156ebe5301efa4ada65d74`: Test/Lint PASS ([run 31880750341](https://github.com/sskim-ai/thesis-monitor/actions/runs/31880750341))
 
 ## Artifacts
 
