@@ -50,5 +50,5 @@ Before marking the deployment gate passed, confirm in the ChatGPT desktop Schedu
 4. each prompt contains v3.9, schema 4, structure v2, Pilot v3, renderer v3, and the appropriate claim
    command;
 5. workspace-write is the only filesystem permission and external browsing is unavailable;
-6. KR remains 1/5 and US remains 0/5; prompt migration does not reset or increment either counter;
+6. KR remains 1/5 and US remains 1/5; prompt migration does not reset or increment either counter;
 7. Production Assist remains disabled.

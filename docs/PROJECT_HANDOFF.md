@@ -84,6 +84,8 @@ before atomic promotion. Unknown semantic types and stale or absent facts fail c
 Telegram is a delivery surface, not a source of truth. During Pilot, validated AI narrative is merged
 with deterministic status and numbers. A session sends either the AI-assisted set or the stored
 deterministic fallback, never both.
+The renderer preserves validated prose and only assembles headings, ordering, escaping, and Telegram
+length handling; user-facing terminology must be resolved before validation.
 
 ## Monitoring Lifecycle
 
@@ -188,8 +190,11 @@ no peer number was invented. See [PEER_VALUATION.md](architecture/PEER_VALUATION
 ## Pilot Architecture
 
 Pilot v3 activated at KR 0/5 and US 0/5; the current count is KR 1/5 and US 1/5. The required task
-contract is policy v3.9/schema 4/structure v2. A successful day requires Codex completion, validation pass, complete
-AI-assisted delivery, and archive completion. Fallback days do not increment the counter. Earlier
+contract is policy v3.9/schema 4/structure v2. A successful day requires Codex completion, validation
+pass, complete AI-assisted delivery, required artifact verification, and a verified atomic
+`archive-complete.json` marker. Only then is success recorded. Archive-only recovery reuses the
+persisted payload without resending Telegram, and packet/date idempotency prevents duplicate counts.
+Fallback days do not increment the counter. Earlier
 Pilot cohorts remain history and are never rewritten.
 
 On 2026-08-15 the owning desktop environment verified all four local-project tasks, retained their
@@ -215,6 +220,9 @@ session is retained as a failed-quality live sample and does not count toward Pi
 The 2026-08-15 US session completed under v3.8 before the v3.9 deployment: validator PASS, 14/14
 AI-assisted messages sent, and archive completion. Runtime state therefore counts it as US Day 1/5.
 The later v3.9 same-packet retrospective was archive-only and did not change that count or resend it.
+The `e2c9290` plain-language preview was also unsent experimental evidence. Broad renderer-side word
+replacement was removed because it crossed the post-validation semantic boundary; the Daily Review
+Skill remains responsible for avoiding internal analysis jargon in authored user prose.
 
 ## Source Map
 

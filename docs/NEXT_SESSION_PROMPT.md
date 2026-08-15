@@ -54,8 +54,12 @@ Absolute safety rules:
 - Market context is not company fundamental confirmation.
 - Modeled estimates are not consensus. Suppressed historical valuation stays absent.
 - One session sends AI-assisted or deterministic fallback, never both.
+- The renderer preserves validated prose and may not apply broad semantic word replacement.
 - AI validation rejection preserves held deterministic fallback eligibility. Delivery retry reuses
   the same persisted payload and never recollects, regenerates, reanalyzes, or reformats.
+- A Pilot success is recorded only after full delivery, required archive verification, and a verified
+  atomic `archive-complete.json` marker. Archive recovery must not resend Telegram and must count a
+  packet/date at most once.
 - Four or more safe prose-eligible anchors with zero numeric claims is a Pilot hard failure; sparse
   packets remain Unknown rather than receiving invented numbers.
 - Fresh backend-selected KOSPI200/KOSDAQ150 night futures must be grounded and interpreted as Korean

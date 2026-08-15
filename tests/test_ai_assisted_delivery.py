@@ -7,6 +7,7 @@ import pytest
 from sqlalchemy.pool import StaticPool
 from sqlmodel import SQLModel, Session, create_engine, select
 
+import app.services.ai_assisted_delivery_service as delivery_service
 from app.config import get_settings
 from app.models.thesis import NotificationDelivery
 from app.schemas.ai_review import AIMarketReview, AIStockReview
@@ -177,15 +178,13 @@ def _write_artifacts(tmp_path: Path, *, output: bool = True) -> None:
         )
 
 
-def test_stock_renderer_uses_plain_language_instead_of_anchor_jargon() -> None:
+def test_stock_renderer_preserves_validated_user_text_without_semantic_rewrite() -> None:
     review_value = _output()["stock_reviews"][0]
     review_value["business_earnings"]["text"] = (
-        "최신 안전 실적 앵커는 매출과 성장률입니다. "
-        "새로운 실적 숫자 앵커가 제공되지 않았습니다."
+        "앵커 투자자와 앵커 테넌트는 서로 다른 사업 요소입니다."
     )
-    review_value["valuation_analysis"]["text"] = (
-        "현재 평가 앵커는 PER이며 숫자 앵커를 함께 봅니다."
-    )
+    review_value["valuation_analysis"]["text"] = "업계 앵커 역할은 평가 기준과 다릅니다."
+    review_value["priority_watch"] = ["앵커 고객 유지율"]
     review = AIStockReview.model_validate(review_value)
 
     rendered = _render_ai_stock_message(
@@ -196,10 +195,11 @@ def test_stock_renderer_uses_plain_language_instead_of_anchor_jargon() -> None:
         target_days=5,
     )
 
-    assert "최근 확인된 핵심 실적은 매출과 성장률입니다." in rendered
-    assert "새로 확인된 핵심 실적 숫자가 없습니다." in rendered
-    assert "현재 평가 기준은 PER이며 핵심 숫자를 함께 봅니다." in rendered
-    assert "앵커" not in rendered
+    assert "앵커 투자자와 앵커 테넌트는 서로 다른 사업 요소입니다." in rendered
+    assert "업계 앵커 역할은 평가 기준과 다릅니다." in rendered
+    assert "• 앵커 고객 유지율" in rendered
+    assert "기준 투자자" not in rendered
+    assert "기준 테넌트" not in rendered
 
 
 def _seed_deliveries(session: Session, *, status: str = "pending") -> None:
@@ -316,8 +316,139 @@ async def test_ai_pass_sends_only_one_ai_assisted_set(monkeypatch, tmp_path: Pat
     assert (archive / "market-review.json").exists()
     assert (archive / "market-numeric-claims.json").exists()
     assert (archive / "portfolio-transmission.json").exists()
+    completion = json.loads((archive / "archive-complete.json").read_text())
+    assert completion["packet_id"] == PACKET_ID
+    assert completion["validator_status"] == "passed"
+    assert completion["delivery_status"] == "sent"
+    assert {item["filename"] for item in completion["artifacts"]} == set(
+        delivery_service.AI_SUCCESS_REQUIRED_ARTIFACTS
+    )
     assert len(json.loads((archive / "deterministic-messages.json").read_text())["messages"]) == 2
     assert len(json.loads((archive / "ai-assisted-messages.json").read_text())["messages"]) == 2
+
+
+@pytest.mark.anyio
+@pytest.mark.parametrize("failed_filename", ["delivery-result.json", "archive-complete.json"])
+async def test_ai_pilot_count_waits_for_archive_completion_and_recovers_without_resend(
+    monkeypatch,
+    tmp_path: Path,
+    failed_filename: str,
+) -> None:
+    _settings(monkeypatch, tmp_path)
+    _write_artifacts(tmp_path)
+    sent = RecordingNotifier()
+    recovery = RecordingNotifier()
+    original_atomic_json = delivery_service._atomic_json
+    failed = False
+
+    def fail_once(path: Path, payload: object) -> None:
+        nonlocal failed
+        if path.name == failed_filename and not failed:
+            failed = True
+            raise OSError(f"scripted {failed_filename} failure")
+        original_atomic_json(path, payload)
+
+    monkeypatch.setattr(delivery_service, "_atomic_json", fail_once)
+    with Session(_engine()) as session:
+        _seed_deliveries(session)
+        hold_ai_assisted_pilot_session(session, PACKET_ID)
+        with pytest.raises(OSError, match="scripted"):
+            await deliver_validated_ai_review(session, PACKET_ID, notifier=sent)
+
+        state_path = tmp_path / "ai_review" / "pilot" / "state-v3.json"
+        if state_path.exists():
+            state = json.loads(state_path.read_text())
+            assert state["markets"]["kr"]["successful_packet_ids"] == []
+
+        monkeypatch.setattr(delivery_service, "_atomic_json", original_atomic_json)
+        recovered = await retry_pending_ai_assisted_deliveries(
+            session,
+            market="kr",
+            run_date=RUN_DATE,
+            now=datetime(2026, 8, 14, 16, 25, tzinfo=KST),
+            notifier=recovery,
+        )
+        duplicate = await retry_pending_ai_assisted_deliveries(
+            session,
+            market="kr",
+            run_date=RUN_DATE,
+            now=datetime(2026, 8, 14, 16, 30, tzinfo=KST),
+            notifier=recovery,
+        )
+
+    assert len(sent.payloads) == 2
+    assert recovery.payloads == []
+    assert recovered[-1].status == "sent"
+    assert duplicate[-1].status == "no_pending_ai_delivery"
+    state = json.loads(state_path.read_text())
+    assert state["markets"]["kr"]["successful_packet_ids"] == [PACKET_ID]
+    assert state["markets"]["kr"]["successful_assessment_dates"] == [
+        RUN_DATE.isoformat()
+    ]
+    archive = tmp_path / "ai_review" / "pilot" / "history" / "2026" / "08" / PACKET_ID
+    assert (archive / "archive-complete.json").exists()
+    retry = json.loads((archive / "delivery-retry-state.json").read_text())
+    assert retry["archive_completion_recovery"] is True
+    assert retry["telegram_resent"] is False
+    assert retry["analysis_rerun"] is False
+    assert retry["renderer_rerun"] is False
+
+
+@pytest.mark.anyio
+async def test_missing_required_archive_after_delivery_does_not_count(
+    monkeypatch,
+    tmp_path: Path,
+) -> None:
+    _settings(monkeypatch, tmp_path)
+    _write_artifacts(tmp_path)
+    sent = RecordingNotifier()
+    recovery = RecordingNotifier()
+    original_dispatch = delivery_service.dispatch_pending_notifications
+
+    async def dispatch_then_remove_archive(*args, **kwargs) -> None:
+        await original_dispatch(*args, **kwargs)
+        archive = (
+            tmp_path
+            / "ai_review"
+            / "pilot"
+            / "history"
+            / "2026"
+            / "08"
+            / PACKET_ID
+            / "ai-review.json"
+        )
+        archive.unlink()
+
+    monkeypatch.setattr(
+        delivery_service,
+        "dispatch_pending_notifications",
+        dispatch_then_remove_archive,
+    )
+    with Session(_engine()) as session:
+        _seed_deliveries(session)
+        hold_ai_assisted_pilot_session(session, PACKET_ID)
+        with pytest.raises(FileNotFoundError):
+            await deliver_validated_ai_review(session, PACKET_ID, notifier=sent)
+
+        state_path = tmp_path / "ai_review" / "pilot" / "state-v3.json"
+        assert not state_path.exists()
+        monkeypatch.setattr(
+            delivery_service,
+            "dispatch_pending_notifications",
+            original_dispatch,
+        )
+        recovered = await retry_pending_ai_assisted_deliveries(
+            session,
+            market="kr",
+            run_date=RUN_DATE,
+            notifier=recovery,
+        )
+
+    assert recovered[-1].status == "sent"
+    assert len(sent.payloads) == 2
+    assert recovery.payloads == []
+    state = json.loads(state_path.read_text())
+    assert state["markets"]["kr"]["successful_packet_ids"] == [PACKET_ID]
 
 
 @pytest.mark.anyio
@@ -540,6 +671,8 @@ async def test_ai_delivery_failure_retries_ai_without_deterministic_mix(
         _seed_deliveries(session)
         hold_ai_assisted_pilot_session(session, PACKET_ID)
         first = await deliver_validated_ai_review(session, PACKET_ID, notifier=failed)
+        state_path = tmp_path / "ai_review" / "pilot" / "state-v3.json"
+        assert not state_path.exists()
         fallback = await dispatch_due_deterministic_fallbacks(
             session,
             market="kr",

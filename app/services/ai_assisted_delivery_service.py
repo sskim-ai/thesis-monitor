@@ -34,6 +34,22 @@ PILOT_MARKERS = {"us": "__DAILY_DIGEST__", "kr": "__DAILY_DIGEST_KR__"}
 MAX_PERSISTED_DELIVERY_RETRIES = 3
 PilotMarket = Literal["us", "kr"]
 
+AI_SUCCESS_REQUIRED_ARTIFACTS = (
+    "packet.json",
+    "ai-review.json",
+    "market-context.json",
+    "market-review.json",
+    "market-numeric-claims.json",
+    "portfolio-transmission.json",
+    "chart-context.json",
+    "chart-transition.json",
+    "quantitative-grounding-report.json",
+    "deterministic-messages.json",
+    "ai-assisted-messages.json",
+    "validation-result.json",
+    "delivery-result.json",
+)
+
 
 @dataclass(frozen=True)
 class PilotDeliveryResult:
@@ -259,6 +275,89 @@ def _archive_messages(
     return path
 
 
+def _file_sha256(path: Path) -> str:
+    digest = hashlib.sha256()
+    with path.open("rb") as handle:
+        for chunk in iter(lambda: handle.read(1024 * 1024), b""):
+            digest.update(chunk)
+    return digest.hexdigest()
+
+
+def _verified_ai_archive_artifacts(packet: dict[str, object]) -> list[dict[str, str]]:
+    packet_id = str(packet["packet_id"])
+    archive_dir = _archive_directory(packet)
+    artifacts: list[dict[str, str]] = []
+    for filename in AI_SUCCESS_REQUIRED_ARTIFACTS:
+        path = archive_dir / filename
+        value = json.loads(path.read_text(encoding="utf-8"))
+        if isinstance(value, dict):
+            archived_packet_id = value.get("packet_id")
+            if archived_packet_id is not None and str(archived_packet_id) != packet_id:
+                raise ValueError(f"Archive packet mismatch: {filename}")
+        artifacts.append({"filename": filename, "sha256": _file_sha256(path)})
+    delivery = _read_json(archive_dir / "delivery-result.json")
+    if (
+        delivery.get("delivery_mode") != "ai_assisted"
+        or delivery.get("status") != "sent"
+        or int(delivery.get("pending_count") or 0) != 0
+        or int(delivery.get("sent_count") or 0)
+        != int(delivery.get("delivery_count") or 0)
+    ):
+        raise ValueError("AI delivery archive is not complete")
+    validation = _read_json(archive_dir / "validation-result.json")
+    if validation.get("status") != "passed":
+        raise ValueError("AI validation archive is not passed")
+    return artifacts
+
+
+def _write_ai_archive_completion_marker(
+    packet: dict[str, object],
+    output: AIDailyReviewOutput,
+    *,
+    completed_at: datetime,
+) -> dict[str, object]:
+    archive_dir = _archive_directory(packet)
+    marker_path = archive_dir / "archive-complete.json"
+    marker = {
+        "packet_id": packet["packet_id"],
+        "pilot_version": PILOT_VERSION,
+        "renderer_version": PILOT_RENDERER_VERSION,
+        "analysis_policy_version": output.analysis_policy_version,
+        "schema_version": output.schema_version,
+        "validator_status": "passed",
+        "delivery_status": "sent",
+        "artifacts": _verified_ai_archive_artifacts(packet),
+        "completed_at": completed_at.isoformat(),
+    }
+    _atomic_json(marker_path, marker)
+    persisted = _read_json(marker_path)
+    if (
+        persisted.get("packet_id") != packet["packet_id"]
+        or persisted.get("validator_status") != "passed"
+        or persisted.get("delivery_status") != "sent"
+        or persisted.get("artifacts") != marker["artifacts"]
+    ):
+        raise ValueError("AI archive completion marker verification failed")
+    return persisted
+
+
+def _ai_archive_complete(packet: dict[str, object]) -> bool:
+    marker_path = _archive_directory(packet) / "archive-complete.json"
+    if not marker_path.exists():
+        return False
+    try:
+        marker = _read_json(marker_path)
+        artifacts = _verified_ai_archive_artifacts(packet)
+    except (OSError, ValueError, json.JSONDecodeError):
+        return False
+    return bool(
+        marker.get("packet_id") == packet["packet_id"]
+        and marker.get("validator_status") == "passed"
+        and marker.get("delivery_status") == "sent"
+        and marker.get("artifacts") == artifacts
+    )
+
+
 def hold_ai_assisted_pilot_session(
     session: Session,
     packet_id: str,
@@ -392,36 +491,10 @@ def record_ai_validation_rejection(
 
 
 def _bullets(values: list[str], empty: str | None = None) -> str:
-    items = [
-        f"• {_plain_language_user_text(value)}"
-        for value in values
-        if value.strip()
-    ]
+    items = [f"• {value}" for value in values if value.strip()]
     if not items and empty:
-        items.append(f"• {_plain_language_user_text(empty)}")
+        items.append(f"• {empty}")
     return "\n".join(items)
-
-
-def _plain_language_user_text(text: str) -> str:
-    replacements = (
-        ("최신 안전 실적 앵커는", "최근 확인된 핵심 실적은"),
-        ("최신 실적 숫자 앵커는", "최근 확인된 핵심 실적 숫자는"),
-        ("새로운 실적 숫자 앵커가 제공되지 않았습니다", "새로 확인된 핵심 실적 숫자가 없습니다"),
-        ("실적 숫자 앵커는", "핵심 실적 숫자는"),
-        ("실적 앵커는", "핵심 실적은"),
-        ("현재 평가 앵커는", "현재 평가 기준은"),
-        ("평가 앵커는", "평가 기준은"),
-        ("숫자 앵커를", "핵심 숫자를"),
-        ("앵커는", "기준은"),
-        ("앵커가", "기준이"),
-        ("앵커를", "기준을"),
-        ("앵커와", "기준과"),
-        ("앵커", "기준"),
-    )
-    rendered = text
-    for source, target in replacements:
-        rendered = rendered.replace(source, target)
-    return rendered
 
 
 def _deterministic_blocks(text: str) -> list[str]:
@@ -454,7 +527,7 @@ def _render_ai_market_message(
     ]
     changes = _bullets(
         [
-            _plain_language_user_text(item.text.strip())
+            item.text.strip()
             for item in review.important_changes
             if item.text.strip() and item not in night_changes
         ]
@@ -467,34 +540,25 @@ def _render_ai_market_message(
     transmissions = _bullets(
         [
             f"{group_labels.get(item.portfolio_group, item.portfolio_group)}: "
-            f"{_plain_language_user_text(item.text.strip())}"
+            f"{item.text.strip()}"
             for item in review.portfolio_transmission
             if item.text.strip()
         ]
     )
     next_checks = _bullets(
-        [
-            _plain_language_user_text(item.text.strip())
-            for item in review.next_checks
-            if item.text.strip()
-        ]
+        [item.text.strip() for item in review.next_checks if item.text.strip()]
     )
     blocks = _deterministic_blocks(deterministic_text)
     cautions = _first_block(blocks, "⚠️ 데이터 주의")
     sections = [
         f"🤖 AI 보조 {title} · {market_label} Pilot {pilot_day}/{target_days}",
-        "🎯 오늘 시장 한 줄\n"
-        f"{_plain_language_user_text(review.core_judgment.text.strip())}",
+        f"🎯 오늘 시장 한 줄\n{review.core_judgment.text.strip()}",
     ]
     if changes:
         sections.append(f"📈 실제 변화\n{changes}")
     if market == "us":
         rendered_night_changes = _bullets(
-            [
-                _plain_language_user_text(item.text.strip())
-                for item in night_changes
-                if item.text.strip()
-            ]
+            [item.text.strip() for item in night_changes if item.text.strip()]
         )
         night_cautions = _bullets(
             [
@@ -507,9 +571,7 @@ def _render_ai_market_message(
             sections.append(f"🌙 한국 개장 전 신호\n{rendered_night_changes}")
         elif night_cautions:
             sections.append(f"🌙 한국 개장 전 신호\n{night_cautions}")
-    sections.append(
-        f"🧭 시장 구조\n{_plain_language_user_text(review.market_context.text.strip())}"
-    )
+    sections.append(f"🧭 시장 구조\n{review.market_context.text.strip()}")
     if transmissions:
         sections.append(f"🔗 모니터링 종목에 미치는 영향\n{transmissions}")
     if next_checks:
@@ -563,18 +625,16 @@ def _render_ai_stock_message(
     sections = [
         f"🤖 AI 보조 종목 점검 · {market_label} Pilot {pilot_day}/{target_days}",
         "\n".join([company, official, *fixed_context]),
-        f"🎯 핵심 판단\n{_plain_language_user_text(review.core_judgment.text.strip())}",
-        f"📈 사업·실적\n{_plain_language_user_text(review.business_earnings.text.strip())}",
+        f"🎯 핵심 판단\n{review.core_judgment.text.strip()}",
+        f"📈 사업·실적\n{review.business_earnings.text.strip()}",
         (
             "💰 가격·포지셔닝\n"
-            f"{_plain_language_user_text(review.price_positioning.text.strip())}\n"
-            "• 신규 관찰자: "
-            f"{_plain_language_user_text(review.price_positioning.new_observer_view.strip())}\n"
-            "• 보유자: "
-            f"{_plain_language_user_text(review.price_positioning.holder_view.strip())}"
+            f"{review.price_positioning.text.strip()}\n"
+            f"• 신규 관찰자: {review.price_positioning.new_observer_view.strip()}\n"
+            f"• 보유자: {review.price_positioning.holder_view.strip()}"
         ),
-        f"📊 수급\n{_plain_language_user_text(review.supply_analysis.text.strip())}",
-        f"📐 Valuation\n{_plain_language_user_text(review.valuation_analysis.text.strip())}",
+        f"📊 수급\n{review.supply_analysis.text.strip()}",
+        f"📐 Valuation\n{review.valuation_analysis.text.strip()}",
     ]
     sections.extend(deterministic_details)
     priority_watch = _bullets(review.priority_watch)
@@ -602,6 +662,10 @@ def _record_session(
     sent: bool,
     now: datetime,
 ) -> int:
+    if sent and delivery_mode == "ai_assisted":
+        packet = _read_json(_packet_path(packet_id))
+        if not _ai_archive_complete(packet):
+            raise ValueError("Pilot success requires a verified archive completion marker")
     with _pilot_lock("state"):
         state = _pilot_state()
         markets = state.setdefault("markets", {})
@@ -932,27 +996,32 @@ async def deliver_validated_ai_review(
                     session.add(delivery)
         session.commit()
         complete = bool(prepared_ids) and pending_count == 0
-        recorded_day = _record_session(
-            packet_id,
-            market,
-            assessment_date=str(packet["assessment_date"]),
-            delivery_mode="ai_assisted",
-            sent=complete,
-            now=current,
-        )
-        _atomic_json(
-            _archive_directory(packet) / "delivery-result.json",
-            {
-                "packet_id": packet_id,
-                "delivery_mode": "ai_assisted",
-                "status": "sent" if complete else "pending",
-                "delivery_count": len(prepared_ids),
-                "sent_count": sent_count,
-                "pending_count": pending_count,
-                "pilot_day": recorded_day if complete else pilot_day,
-                "dispatched_at": current.isoformat() if complete else None,
-            },
-        )
+        delivery_result = {
+            "packet_id": packet_id,
+            "delivery_mode": "ai_assisted",
+            "status": "sent" if complete else "pending",
+            "delivery_count": len(prepared_ids),
+            "sent_count": sent_count,
+            "pending_count": pending_count,
+            "pilot_day": pilot_day,
+            "dispatched_at": current.isoformat() if complete else None,
+        }
+        _atomic_json(_archive_directory(packet) / "delivery-result.json", delivery_result)
+        recorded_day = pilot_day
+        if complete:
+            _write_ai_archive_completion_marker(
+                packet,
+                output,
+                completed_at=current,
+            )
+            recorded_day = _record_session(
+                packet_id,
+                market,
+                assessment_date=str(packet["assessment_date"]),
+                delivery_mode="ai_assisted",
+                sent=True,
+                now=current,
+            )
     return PilotDeliveryResult(
         status="sent" if complete else "pending",
         market=market,
@@ -986,7 +1055,6 @@ def _pending_pilot_packets(
         select(NotificationDelivery).where(
             NotificationDelivery.assessment_date == run_date,
             NotificationDelivery.channel == channel,
-            NotificationDelivery.status == "pending",
         )
     ).all()
     for delivery in deliveries:
@@ -995,14 +1063,26 @@ def _pending_pilot_packets(
         except json.JSONDecodeError:
             continue
         metadata = _pilot_metadata(payload) if isinstance(payload, dict) else {}
-        if metadata.get("market") == market and metadata.get("state") in {
+        if metadata.get("market") != market:
+            continue
+        state = str(metadata.get("state") or "")
+        packet_id = str(metadata.get("packet_id") or "")
+        if not packet_id:
+            continue
+        retryable = delivery.status == "pending" and state in {
             "held",
             "ai_assisted_pending",
             "fallback_pending",
-        }:
-            packet_id = str(metadata.get("packet_id") or "")
-            if packet_id and packet_id not in values:
-                values.append(packet_id)
+        }
+        if state == "ai_assisted_sent":
+            packet_path = _packet_path(packet_id)
+            if packet_path.exists():
+                packet = _read_json(packet_path)
+                retryable = not _ai_archive_complete(packet) or packet_id not in (
+                    _market_successes(_pilot_state(), market)
+                )
+        if retryable and packet_id not in values:
+            values.append(packet_id)
     return values
 
 
@@ -1020,13 +1100,21 @@ async def retry_pending_ai_assisted_deliveries(
     for packet_id in _pending_pilot_packets(session, market, run_date):
         packet = _read_json(_packet_path(packet_id))
         retryable: list[NotificationDelivery] = []
+        archive_recovery = False
         retry_count = 0
         with _pilot_lock(packet_id):
             for delivery in _session_deliveries(session, packet):
-                if delivery.status != "pending":
-                    continue
                 payload = json.loads(delivery.payload)
                 metadata = _pilot_metadata(payload) if isinstance(payload, dict) else {}
+                if (
+                    delivery.status == "sent"
+                    and metadata.get("packet_id") == packet_id
+                    and metadata.get("state") == "ai_assisted_sent"
+                ):
+                    archive_recovery = True
+                    continue
+                if delivery.status != "pending":
+                    continue
                 if (
                     metadata.get("packet_id") != packet_id
                     or metadata.get("state") != "ai_assisted_pending"
@@ -1037,8 +1125,11 @@ async def retry_pending_ai_assisted_deliveries(
                     retry_count,
                     int(metadata.get("persisted_delivery_retry_count") or 0),
                 )
-            if not retryable:
+            if not retryable and not archive_recovery:
                 continue
+            retry_path = _archive_directory(packet) / "delivery-retry-state.json"
+            if archive_recovery and not retryable and retry_path.exists():
+                retry_count = int(_read_json(retry_path).get("retry_count") or 0)
             if retry_count >= MAX_PERSISTED_DELIVERY_RETRIES:
                 results.append(
                     PilotDeliveryResult(
@@ -1078,6 +1169,9 @@ async def retry_pending_ai_assisted_deliveries(
                 "pending_count": result.pending_count,
                 "analysis_rerun": False,
                 "packet_regenerated": False,
+                "renderer_rerun": False,
+                "telegram_resent": False if archive_recovery and not retryable else None,
+                "archive_completion_recovery": archive_recovery and not retryable,
             },
         )
         results.append(result)

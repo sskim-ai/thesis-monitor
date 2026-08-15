@@ -42,6 +42,8 @@ add richer market and company interpretation without becoming the official asses
   it does not recollect, regenerate, reanalyze, or reformat.
 - Late AI after fallback is archive-only.
 - Official status, warnings, numbers, and assessment remain deterministic.
+- Validated AI prose is not semantically rewritten by the renderer. User-friendly terminology is
+  authored before validation under the Daily Review Skill contract.
 
 ## Schedule
 
@@ -66,7 +68,7 @@ If Telegram fails after validation, the persisted rendered set is retried at bou
 
 Active cohort: `ai-assisted-pilot-v3` with policy `daily-review-v3.9`, schema 4, structure v2, and
 renderer v3. State is stored in `data/ai_review/pilot/state-v3.json`; the current successful count is
-KR 1/5 and US 0/5.
+KR 1/5 and US 1/5.
 Earlier state files and history remain immutable.
 
 A market success increments only when:
@@ -76,11 +78,22 @@ A market success increments only when:
 3. Codex completes;
 4. validator passes;
 5. the full AI-assisted set is delivered;
-6. the archive completes.
+6. all required archive artifacts and `delivery-result.json` are present, parseable, and consistent;
+7. an atomic `archive-complete.json` marker is written and verified.
+
+Only after step 7 may the packet ID and assessment date be recorded as a Pilot success. If delivery
+finishes but archive completion fails, retry only archive completion using the already-persisted
+payload. Do not resend Telegram, rerun analysis, regenerate the packet, or rerender the message. The
+packet ID and assessment date are idempotency keys, so successful recovery increments exactly once.
 
 The 2026-08-14 US run is preserved as a failed-quality live sample. Its messages were manually sent
 after the initial network failure before v3.7 activation, but zero numeric claims make it ineligible
-for the Pilot counter. US remains 0/5.
+for the Pilot counter.
+
+The 2026-08-15 US live session passed validation, completed 14/14 delivery, and completed its archive,
+so it is the first US Pilot success. Later v3.9 retrospective and renderer previews were not sent and
+do not count. In particular, the preview committed at `e2c9290` was an experiment; its broad renderer
+word replacement is not part of the operating contract.
 
 Fallback is an operational success but not an AI Pilot success. Each market needs five successful
 sessions. Completion returns that market to deterministic delivery; it does not enable Production
@@ -91,7 +104,9 @@ Assist.
 Each session stores packet, deterministic messages, AI review, comparison, validator result, numeric
 binding telemetry, chart context, chart transition, quantitative-grounding report, market context,
 market review, market numeric claims, portfolio transmission, exact AI-assisted messages, fallback
-report when used, delivery retry state, and delivery result under `data/ai_review/pilot/history`.
+report when used, delivery retry state, and delivery result under `data/ai_review/pilot/history`. A
+successful AI Pilot archive also contains `archive-complete.json` with the packet, policy/schema,
+validator and delivery status, completion time, and hashes for required artifacts.
 
 ## Deployment Gate
 
