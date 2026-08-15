@@ -1,0 +1,199 @@
+{
+  "contract": "financial-quality-taint-v1+relational-reasoning-quality-v1",
+  "packet_id": "2026-08-14-kr-run-17-cbfc8bd24224",
+  "message_count": 8,
+  "stock_count": 7,
+  "tickers": [
+    "000660",
+    "003690",
+    "005490",
+    "005930",
+    "010120",
+    "012450",
+    "086280"
+  ],
+  "repeated_sentences": [
+    {
+      "sentence": "🤖 AI 보조 종목 점검 · KR Pilot 2/5",
+      "stock_count": 7,
+      "tickers": [
+        "000660",
+        "003690",
+        "005490",
+        "005930",
+        "010120",
+        "012450",
+        "086280"
+      ],
+      "classification": "required_common_safety"
+    },
+    {
+      "sentence": "투자 논리: 유지 · 오늘 중요한 신규 변화 없음",
+      "stock_count": 7,
+      "tickers": [
+        "000660",
+        "003690",
+        "005490",
+        "005930",
+        "010120",
+        "012450",
+        "086280"
+      ],
+      "classification": "required_common_safety"
+    },
+    {
+      "sentence": "차트 무효화는 기업가치 무효화가 아닙니다.",
+      "stock_count": 4,
+      "tickers": [
+        "005490",
+        "010120",
+        "012450",
+        "086280"
+      ],
+      "classification": "required_common_safety"
+    }
+  ],
+  "substantive_repeated_sentence_count": 0,
+  "max_substantive_repeat": 0,
+  "observer_holder_distinct_count": 7,
+  "section_numeric_grounding": {
+    "000660": {
+      "supply": 6,
+      "price": 4,
+      "core": 2,
+      "valuation": 3
+    },
+    "003690": {
+      "core": 2,
+      "earnings": 2,
+      "valuation": 3,
+      "supply": 6,
+      "price": 4
+    },
+    "005490": {
+      "core": 2,
+      "earnings": 3,
+      "valuation": 4,
+      "supply": 6,
+      "price": 8
+    },
+    "005930": {
+      "core": 2,
+      "earnings": 3,
+      "valuation": 3,
+      "supply": 6,
+      "price": 4
+    },
+    "010120": {
+      "core": 2,
+      "earnings": 3,
+      "valuation": 3,
+      "supply": 6,
+      "price": 7
+    },
+    "012450": {
+      "core": 2,
+      "earnings": 3,
+      "supply": 6,
+      "price": 7
+    },
+    "086280": {
+      "core": 2,
+      "earnings": 3,
+      "valuation": 4,
+      "supply": 6,
+      "price": 8
+    }
+  },
+  "stock_specific_next_check_count": 7,
+  "generic_next_check_count": 0,
+  "stock_specific_unknown_count": 7,
+  "generic_unknown_count": 0,
+  "automatic_bindings": 141,
+  "manual_bindings": 0,
+  "formatter_errors": 0,
+  "unresolved_placeholders": 0,
+  "denied_registry_count": 13,
+  "denied_display_variants_checked": [
+    "100,440.751777",
+    "100,441원",
+    "100440.751777",
+    "100440.751777 KRW",
+    "16.3778",
+    "16.3778배",
+    "16.38배",
+    "16.4배",
+    "228,510.888317",
+    "228,511원",
+    "228510.888317",
+    "228510.888317 KRW",
+    "256.7781",
+    "256.7781%",
+    "256.78%",
+    "256.8%",
+    "40.4",
+    "40.4%",
+    "50.86%",
+    "50.8641",
+    "50.8641%",
+    "50.9%",
+    "557.15%",
+    "557.1539",
+    "557.1539%",
+    "557.2%",
+    "6.0542608e+13",
+    "60,542,608,000,000원",
+    "60.97%",
+    "60.9736",
+    "60.9736%",
+    "60542608000000",
+    "60542608000000 KRW",
+    "60조5,426억원",
+    "61%",
+    "7.1988",
+    "7.1988배",
+    "7.2배",
+    "7.9318746e+13",
+    "76.3%",
+    "76.3282%",
+    "76.3282465409",
+    "76.33%",
+    "79,318,746,000,000원",
+    "79318746000000",
+    "79318746000000 KRW",
+    "79조3,187억원",
+    "약 256.7781%",
+    "약 256.78%",
+    "약 256.8%",
+    "약 40.4%",
+    "약 50.86%",
+    "약 50.8641%",
+    "약 50.9%",
+    "약 557.15%",
+    "약 557.1539%",
+    "약 557.2%",
+    "약 60.97%",
+    "약 60.9736%",
+    "약 61%",
+    "약 76.3%",
+    "약 76.3282%",
+    "약 76.33%"
+  ],
+  "denied_display_leakage": [],
+  "previously_rendered_denied_usages": [
+    "내부 추정 fPER 16.38배",
+    "매출 79조3,187억원",
+    "매출 성장률 256.8%",
+    "영업이익 성장률 557.2%",
+    "영업이익률 76.3%",
+    "현재 PER 7.2배"
+  ],
+  "previously_rendered_denied_usage_leakage": [],
+  "numeric_label_quality": {
+    "redundant_authored_label_count": 0,
+    "repeated_bound_label_count": 0,
+    "source_label_mismatch_count": 0,
+    "instrument_label_mismatch_count": 0
+  },
+  "hard_checks_passed": true
+}

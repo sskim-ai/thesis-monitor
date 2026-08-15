@@ -1,0 +1,41 @@
+{
+  "existing_packet_id": "2026-08-15-us-run-18-dca26c59bb82",
+  "revalidation_packet_id": "2026-08-15-us-run-18-b06174c84e69",
+  "existing_fact_snapshot_packet_sha256": "485f915a8b11adc2ac96aa1cc7e8995591a1bdc604f551daa49ff72bc7a21984",
+  "revalidation_packet_sha256": "b41683ff43bb3fdb8f641cfb16a38757b82b8a615cf820278005928e90b1871a",
+  "message_count": 14,
+  "stock_count": 13,
+  "automatic_bindings": 168,
+  "manual_bindings": 0,
+  "binding_errors": [],
+  "validator_status": "passed",
+  "validator_errors": [],
+  "denied_financial_registry_counts": {
+    "CORZ": 0,
+    "CRCL": 0,
+    "GOOGL": 0,
+    "HUT": 0,
+    "IBM": 0,
+    "MU": 0,
+    "RXRX": 0,
+    "SKHY": 0,
+    "SNDK": 0,
+    "TSLA": 0,
+    "TSM": 0,
+    "WRD": 0,
+    "WULF": 0
+  },
+  "payload_diff_message_indexes": [],
+  "payload_byte_identical": true,
+  "existing_payload_sha256": "7498f859abd69ad2adff1ae5d8242e0e7b23fa96b65417b3dc0879f4ccf4e7c5",
+  "revalidated_payload_sha256": "7498f859abd69ad2adff1ae5d8242e0e7b23fa96b65417b3dc0879f4ccf4e7c5",
+  "tsm_currency": {
+    "security": "USD",
+    "financial": "TWD"
+  },
+  "telegram_sent": 0,
+  "operating_db_mutations": 0,
+  "operating_archive_mutations": 0,
+  "assessment_mutations": 0,
+  "pilot_count_mutations": 0
+}

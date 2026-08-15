@@ -1,0 +1,488 @@
+{
+  "contract": "financial-quality-taint-v1",
+  "before_packet_id": "2026-08-14-kr-run-17-6c707522601d",
+  "after_packet_id": "2026-08-14-kr-run-17-cbfc8bd24224",
+  "ticker": "000660",
+  "source_snapshot": {
+    "period": "2026-06-30",
+    "source_type": "preliminary_earnings",
+    "provider": "opendart",
+    "filing_date": "2026-07-29"
+  },
+  "critical_reason_codes": [
+    "net_income_exceeds_revenue",
+    "preliminary_profitability_outlier",
+    "unusually_high_or_low_operating_margin"
+  ],
+  "rows": [
+    {
+      "ticker": "000660",
+      "fact_id": "earnings:2026-06-30",
+      "field_path": "fields.operating_income.value",
+      "source_period": "2026-06-30",
+      "source_type": "preliminary_earnings",
+      "source_quality_flags": [
+        "net_income_exceeds_revenue",
+        "preliminary_profitability_outlier",
+        "unusually_high_or_low_operating_margin"
+      ],
+      "lineage": "direct",
+      "dependency_chain": [
+        "2026-06-30:latest_operating_income"
+      ],
+      "before_prose_allowed": true,
+      "after_prose_allowed": false,
+      "quality_state": "denied",
+      "denial_or_approval_reason": "critical_financial_quality_outlier",
+      "used_in_before_message": false,
+      "used_in_after_message": false,
+      "raw_value_preserved_for_audit": true,
+      "after_canonical_display_value": null
+    },
+    {
+      "ticker": "000660",
+      "fact_id": "earnings:2026-06-30",
+      "field_path": "fields.operating_income_qoq_pct",
+      "source_period": "2026-06-30",
+      "source_type": "preliminary_earnings",
+      "source_quality_flags": [
+        "net_income_exceeds_revenue",
+        "preliminary_profitability_outlier",
+        "unusually_high_or_low_operating_margin"
+      ],
+      "lineage": "direct",
+      "dependency_chain": [
+        "2026-06-30:latest_operating_income_qoq"
+      ],
+      "before_prose_allowed": true,
+      "after_prose_allowed": false,
+      "quality_state": "denied",
+      "denial_or_approval_reason": "critical_financial_quality_outlier",
+      "used_in_before_message": false,
+      "used_in_after_message": false,
+      "raw_value_preserved_for_audit": true,
+      "after_canonical_display_value": null
+    },
+    {
+      "ticker": "000660",
+      "fact_id": "earnings:2026-06-30",
+      "field_path": "fields.operating_income_yoy_pct",
+      "source_period": "2026-06-30",
+      "source_type": "preliminary_earnings",
+      "source_quality_flags": [
+        "net_income_exceeds_revenue",
+        "preliminary_profitability_outlier",
+        "unusually_high_or_low_operating_margin"
+      ],
+      "lineage": "direct",
+      "dependency_chain": [
+        "2026-06-30:latest_operating_income_yoy"
+      ],
+      "before_prose_allowed": true,
+      "after_prose_allowed": false,
+      "quality_state": "denied",
+      "denial_or_approval_reason": "critical_financial_quality_outlier",
+      "used_in_before_message": true,
+      "used_in_after_message": false,
+      "raw_value_preserved_for_audit": true,
+      "after_canonical_display_value": null
+    },
+    {
+      "ticker": "000660",
+      "fact_id": "earnings:2026-06-30",
+      "field_path": "fields.operating_margin_pct",
+      "source_period": "2026-06-30",
+      "source_type": "preliminary_earnings",
+      "source_quality_flags": [
+        "net_income_exceeds_revenue",
+        "preliminary_profitability_outlier",
+        "unusually_high_or_low_operating_margin"
+      ],
+      "lineage": "direct",
+      "dependency_chain": [
+        "2026-06-30:latest_operating_margin"
+      ],
+      "before_prose_allowed": true,
+      "after_prose_allowed": false,
+      "quality_state": "denied",
+      "denial_or_approval_reason": "critical_financial_quality_outlier",
+      "used_in_before_message": true,
+      "used_in_after_message": false,
+      "raw_value_preserved_for_audit": true,
+      "after_canonical_display_value": null
+    },
+    {
+      "ticker": "000660",
+      "fact_id": "earnings:2026-06-30",
+      "field_path": "fields.revenue.value",
+      "source_period": "2026-06-30",
+      "source_type": "preliminary_earnings",
+      "source_quality_flags": [
+        "net_income_exceeds_revenue",
+        "preliminary_profitability_outlier",
+        "unusually_high_or_low_operating_margin"
+      ],
+      "lineage": "direct",
+      "dependency_chain": [
+        "2026-06-30:latest_revenue"
+      ],
+      "before_prose_allowed": true,
+      "after_prose_allowed": false,
+      "quality_state": "denied",
+      "denial_or_approval_reason": "critical_financial_quality_outlier",
+      "used_in_before_message": true,
+      "used_in_after_message": false,
+      "raw_value_preserved_for_audit": true,
+      "after_canonical_display_value": null
+    },
+    {
+      "ticker": "000660",
+      "fact_id": "earnings:2026-06-30",
+      "field_path": "fields.revenue_qoq_pct",
+      "source_period": "2026-06-30",
+      "source_type": "preliminary_earnings",
+      "source_quality_flags": [
+        "net_income_exceeds_revenue",
+        "preliminary_profitability_outlier",
+        "unusually_high_or_low_operating_margin"
+      ],
+      "lineage": "direct",
+      "dependency_chain": [
+        "2026-06-30:latest_revenue_qoq"
+      ],
+      "before_prose_allowed": true,
+      "after_prose_allowed": false,
+      "quality_state": "denied",
+      "denial_or_approval_reason": "critical_financial_quality_outlier",
+      "used_in_before_message": false,
+      "used_in_after_message": false,
+      "raw_value_preserved_for_audit": true,
+      "after_canonical_display_value": null
+    },
+    {
+      "ticker": "000660",
+      "fact_id": "earnings:2026-06-30",
+      "field_path": "fields.revenue_yoy_pct",
+      "source_period": "2026-06-30",
+      "source_type": "preliminary_earnings",
+      "source_quality_flags": [
+        "net_income_exceeds_revenue",
+        "preliminary_profitability_outlier",
+        "unusually_high_or_low_operating_margin"
+      ],
+      "lineage": "direct",
+      "dependency_chain": [
+        "2026-06-30:latest_revenue_yoy"
+      ],
+      "before_prose_allowed": true,
+      "after_prose_allowed": false,
+      "quality_state": "denied",
+      "denial_or_approval_reason": "critical_financial_quality_outlier",
+      "used_in_before_message": true,
+      "used_in_after_message": false,
+      "raw_value_preserved_for_audit": true,
+      "after_canonical_display_value": null
+    },
+    {
+      "ticker": "000660",
+      "fact_id": "valuation:current",
+      "field_path": "fields.bvps",
+      "source_period": "2026-06-30",
+      "source_type": "preliminary_earnings",
+      "source_quality_flags": [
+        "net_income_exceeds_revenue",
+        "preliminary_profitability_outlier",
+        "unusually_high_or_low_operating_margin"
+      ],
+      "lineage": "derived_or_independent",
+      "dependency_chain": [
+        "book_value_inputs"
+      ],
+      "before_prose_allowed": true,
+      "after_prose_allowed": true,
+      "quality_state": "verified_usable",
+      "denial_or_approval_reason": "independent_clean_lineage",
+      "used_in_before_message": false,
+      "used_in_after_message": false,
+      "raw_value_preserved_for_audit": true,
+      "after_canonical_display_value": "231,952원"
+    },
+    {
+      "ticker": "000660",
+      "fact_id": "valuation:current",
+      "field_path": "fields.forward_bvps",
+      "source_period": "2026-06-30",
+      "source_type": "preliminary_earnings",
+      "source_quality_flags": [
+        "net_income_exceeds_revenue",
+        "preliminary_profitability_outlier",
+        "unusually_high_or_low_operating_margin"
+      ],
+      "lineage": "derived_or_independent",
+      "dependency_chain": [
+        "book_value_inputs"
+      ],
+      "before_prose_allowed": true,
+      "after_prose_allowed": true,
+      "quality_state": "verified_usable",
+      "denial_or_approval_reason": "independent_clean_lineage",
+      "used_in_before_message": false,
+      "used_in_after_message": false,
+      "raw_value_preserved_for_audit": true,
+      "after_canonical_display_value": "318,566원"
+    },
+    {
+      "ticker": "000660",
+      "fact_id": "valuation:current",
+      "field_path": "fields.forward_eps",
+      "source_period": "2026-06-30",
+      "source_type": "preliminary_earnings",
+      "source_quality_flags": [
+        "net_income_exceeds_revenue",
+        "preliminary_profitability_outlier",
+        "unusually_high_or_low_operating_margin"
+      ],
+      "lineage": "derived_or_independent",
+      "dependency_chain": [
+        "latest_earnings_period",
+        "modeled_forward_earnings"
+      ],
+      "before_prose_allowed": true,
+      "after_prose_allowed": false,
+      "quality_state": "denied",
+      "denial_or_approval_reason": "denied_input_in_modeled_forward_earnings",
+      "used_in_before_message": false,
+      "used_in_after_message": false,
+      "raw_value_preserved_for_audit": true,
+      "after_canonical_display_value": null
+    },
+    {
+      "ticker": "000660",
+      "fact_id": "valuation:current",
+      "field_path": "fields.forward_pe",
+      "source_period": "2026-06-30",
+      "source_type": "preliminary_earnings",
+      "source_quality_flags": [
+        "net_income_exceeds_revenue",
+        "preliminary_profitability_outlier",
+        "unusually_high_or_low_operating_margin"
+      ],
+      "lineage": "derived_or_independent",
+      "dependency_chain": [
+        "latest_earnings_period",
+        "modeled_forward_earnings"
+      ],
+      "before_prose_allowed": true,
+      "after_prose_allowed": false,
+      "quality_state": "denied",
+      "denial_or_approval_reason": "denied_input_in_modeled_forward_earnings",
+      "used_in_before_message": true,
+      "used_in_after_message": false,
+      "raw_value_preserved_for_audit": true,
+      "after_canonical_display_value": null
+    },
+    {
+      "ticker": "000660",
+      "fact_id": "valuation:current",
+      "field_path": "fields.forward_price_to_book",
+      "source_period": "2026-06-30",
+      "source_type": "preliminary_earnings",
+      "source_quality_flags": [
+        "net_income_exceeds_revenue",
+        "preliminary_profitability_outlier",
+        "unusually_high_or_low_operating_margin"
+      ],
+      "lineage": "derived_or_independent",
+      "dependency_chain": [
+        "book_value_inputs"
+      ],
+      "before_prose_allowed": true,
+      "after_prose_allowed": true,
+      "quality_state": "verified_usable",
+      "denial_or_approval_reason": "independent_clean_lineage",
+      "used_in_before_message": false,
+      "used_in_after_message": true,
+      "raw_value_preserved_for_audit": true,
+      "after_canonical_display_value": "5.16배"
+    },
+    {
+      "ticker": "000660",
+      "fact_id": "valuation:current",
+      "field_path": "fields.historical_pb_statistics.current_percentile",
+      "source_period": "2026-06-30",
+      "source_type": "preliminary_earnings",
+      "source_quality_flags": [
+        "net_income_exceeds_revenue",
+        "preliminary_profitability_outlier",
+        "unusually_high_or_low_operating_margin"
+      ],
+      "lineage": "derived_or_independent",
+      "dependency_chain": [
+        "book_value_inputs"
+      ],
+      "before_prose_allowed": true,
+      "after_prose_allowed": true,
+      "quality_state": "verified_usable",
+      "denial_or_approval_reason": "independent_clean_lineage",
+      "used_in_before_message": true,
+      "used_in_after_message": true,
+      "raw_value_preserved_for_audit": true,
+      "after_canonical_display_value": "93.9%"
+    },
+    {
+      "ticker": "000660",
+      "fact_id": "valuation:current",
+      "field_path": "fields.historical_pb_statistics.current_value",
+      "source_period": "2026-06-30",
+      "source_type": "preliminary_earnings",
+      "source_quality_flags": [
+        "net_income_exceeds_revenue",
+        "preliminary_profitability_outlier",
+        "unusually_high_or_low_operating_margin"
+      ],
+      "lineage": "derived_or_independent",
+      "dependency_chain": [
+        "book_value_inputs"
+      ],
+      "before_prose_allowed": true,
+      "after_prose_allowed": true,
+      "quality_state": "verified_usable",
+      "denial_or_approval_reason": "independent_clean_lineage",
+      "used_in_before_message": false,
+      "used_in_after_message": false,
+      "raw_value_preserved_for_audit": true,
+      "after_canonical_display_value": "7.09배"
+    },
+    {
+      "ticker": "000660",
+      "fact_id": "valuation:current",
+      "field_path": "fields.historical_pe_statistics.current_percentile",
+      "source_period": "2026-06-30",
+      "source_type": "preliminary_earnings",
+      "source_quality_flags": [
+        "net_income_exceeds_revenue",
+        "preliminary_profitability_outlier",
+        "unusually_high_or_low_operating_margin"
+      ],
+      "lineage": "derived_or_independent",
+      "dependency_chain": [
+        "trailing_pe",
+        "historical_pe_distribution"
+      ],
+      "before_prose_allowed": true,
+      "after_prose_allowed": false,
+      "quality_state": "denied",
+      "denial_or_approval_reason": "denied_current_pe_input",
+      "used_in_before_message": false,
+      "used_in_after_message": false,
+      "raw_value_preserved_for_audit": true,
+      "after_canonical_display_value": null
+    },
+    {
+      "ticker": "000660",
+      "fact_id": "valuation:current",
+      "field_path": "fields.historical_pe_statistics.current_value",
+      "source_period": "2026-06-30",
+      "source_type": "preliminary_earnings",
+      "source_quality_flags": [
+        "net_income_exceeds_revenue",
+        "preliminary_profitability_outlier",
+        "unusually_high_or_low_operating_margin"
+      ],
+      "lineage": "derived_or_independent",
+      "dependency_chain": [
+        "trailing_pe",
+        "historical_pe_distribution"
+      ],
+      "before_prose_allowed": true,
+      "after_prose_allowed": false,
+      "quality_state": "denied",
+      "denial_or_approval_reason": "denied_current_pe_input",
+      "used_in_before_message": false,
+      "used_in_after_message": false,
+      "raw_value_preserved_for_audit": true,
+      "after_canonical_display_value": null
+    },
+    {
+      "ticker": "000660",
+      "fact_id": "valuation:current",
+      "field_path": "fields.price_to_book",
+      "source_period": "2026-06-30",
+      "source_type": "preliminary_earnings",
+      "source_quality_flags": [
+        "net_income_exceeds_revenue",
+        "preliminary_profitability_outlier",
+        "unusually_high_or_low_operating_margin"
+      ],
+      "lineage": "derived_or_independent",
+      "dependency_chain": [
+        "book_value_inputs"
+      ],
+      "before_prose_allowed": true,
+      "after_prose_allowed": true,
+      "quality_state": "verified_usable",
+      "denial_or_approval_reason": "independent_clean_lineage",
+      "used_in_before_message": false,
+      "used_in_after_message": true,
+      "raw_value_preserved_for_audit": true,
+      "after_canonical_display_value": "7.09배"
+    },
+    {
+      "ticker": "000660",
+      "fact_id": "valuation:current",
+      "field_path": "fields.trailing_pe",
+      "source_period": "2026-06-30",
+      "source_type": "preliminary_earnings",
+      "source_quality_flags": [
+        "net_income_exceeds_revenue",
+        "preliminary_profitability_outlier",
+        "unusually_high_or_low_operating_margin"
+      ],
+      "lineage": "derived_or_independent",
+      "dependency_chain": [
+        "latest_earnings_period",
+        "ttm_quarter_series"
+      ],
+      "before_prose_allowed": true,
+      "after_prose_allowed": false,
+      "quality_state": "denied",
+      "denial_or_approval_reason": "denied_preliminary_input_in_ttm_denominator",
+      "used_in_before_message": true,
+      "used_in_after_message": false,
+      "raw_value_preserved_for_audit": true,
+      "after_canonical_display_value": null
+    },
+    {
+      "ticker": "000660",
+      "fact_id": "valuation:current",
+      "field_path": "fields.ttm_eps",
+      "source_period": "2026-06-30",
+      "source_type": "preliminary_earnings",
+      "source_quality_flags": [
+        "net_income_exceeds_revenue",
+        "preliminary_profitability_outlier",
+        "unusually_high_or_low_operating_margin"
+      ],
+      "lineage": "derived_or_independent",
+      "dependency_chain": [
+        "latest_earnings_period",
+        "ttm_quarter_series"
+      ],
+      "before_prose_allowed": true,
+      "after_prose_allowed": false,
+      "quality_state": "denied",
+      "denial_or_approval_reason": "denied_preliminary_input_in_ttm_denominator",
+      "used_in_before_message": false,
+      "used_in_after_message": false,
+      "raw_value_preserved_for_audit": true,
+      "after_canonical_display_value": null
+    }
+  ],
+  "summary": {
+    "before_eligible": 19,
+    "after_denied": 13,
+    "after_usable": 6,
+    "before_message_uses": 7,
+    "after_message_uses": 3
+  }
+}

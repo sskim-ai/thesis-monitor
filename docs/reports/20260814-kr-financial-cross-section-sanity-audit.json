@@ -1,0 +1,587 @@
+{
+  "assessment_date": "2026-08-14",
+  "run_id": 17,
+  "packet_id": "2026-08-14-kr-run-17-cbfc8bd24224",
+  "ticker_count": 7,
+  "tickers": [
+    "000660",
+    "003690",
+    "005490",
+    "005930",
+    "010120",
+    "012450",
+    "086280"
+  ],
+  "rows": [
+    {
+      "ticker": "000660",
+      "source": {
+        "period": "2026-06-30",
+        "snapshot_type": "preliminary_earnings",
+        "provider": "opendart",
+        "filing_date": "2026-07-29",
+        "period_type": "Q2",
+        "period_scope": "single-quarter",
+        "is_cumulative": false,
+        "normalization_method": "reported_single_quarter",
+        "currency": "KRW",
+        "unit_scale": 1.0,
+        "financial_hard_errors": [],
+        "financial_soft_outliers": [
+          "net_income_exceeds_revenue",
+          "unusually_high_or_low_operating_margin"
+        ],
+        "financial_statement_basis_warning": false,
+        "period_mapping_validation_failed": false
+      },
+      "sanity": {
+        "revenue": 79318746000000.0,
+        "operating_income": 60542608000000.0,
+        "net_income": 93922593000000.0,
+        "operating_income_exceeds_revenue": false,
+        "net_income_exceeds_revenue": true,
+        "reported_operating_margin": 76.32824654086185,
+        "calculated_operating_margin": 76.3282,
+        "operating_margin_matches": true,
+        "qoq_comparison_period": "2026-03-31",
+        "revenue_qoq_reported": 50.8641,
+        "revenue_qoq_recalculated": 50.8641,
+        "revenue_qoq_matches": true,
+        "operating_income_qoq_reported": 60.9736,
+        "operating_income_qoq_recalculated": 60.9736,
+        "operating_income_qoq_matches": true,
+        "yoy_comparison_period": null,
+        "revenue_yoy_reported": 256.7781,
+        "revenue_yoy_recalculated": null,
+        "revenue_yoy_matches": null,
+        "operating_income_yoy_reported": 557.1539,
+        "operating_income_yoy_recalculated": null,
+        "operating_income_yoy_matches": null
+      },
+      "eps_share_basis": {
+        "earnings_basis": "TTM EPS including official preliminary earnings",
+        "share_basis": "reported_diluted_eps;latest_official_diluted_shares",
+        "eps_currency": "KRW",
+        "eps_security_basis": "current_security",
+        "ttm_contains_preliminary": true
+      },
+      "price_basis": {
+        "current_price": 1645000.0,
+        "decision_price_basis": "close",
+        "chart_price_basis": "adjusted_close",
+        "structure_version": "ohlcv-structure-v2"
+      },
+      "valuation_lineage": {
+        "trailing_pe_source": "derived_trailing",
+        "trailing_pe_method": "TTM EPS including official preliminary earnings",
+        "trailing_pe_denominator_period_end": "2026-06-30",
+        "forward_pe_source": "modeled_forward",
+        "forward_pe_method": "normalized_roe",
+        "price_to_book_source": "derived_trailing",
+        "price_to_book_method": "latest owners-parent common equity / current common shares"
+      },
+      "quality": {
+        "critical_reason_codes": [
+          "net_income_exceeds_revenue",
+          "preliminary_profitability_outlier",
+          "unusually_high_or_low_operating_margin"
+        ],
+        "denied_numeric_entries": [
+          {
+            "fact_id": "earnings:2026-06-30",
+            "field_path": "fields.revenue.value",
+            "reason": "critical_financial_quality_outlier"
+          },
+          {
+            "fact_id": "earnings:2026-06-30",
+            "field_path": "fields.operating_income.value",
+            "reason": "critical_financial_quality_outlier"
+          },
+          {
+            "fact_id": "earnings:2026-06-30",
+            "field_path": "fields.operating_margin_pct",
+            "reason": "critical_financial_quality_outlier"
+          },
+          {
+            "fact_id": "earnings:2026-06-30",
+            "field_path": "fields.revenue_qoq_pct",
+            "reason": "critical_financial_quality_outlier"
+          },
+          {
+            "fact_id": "earnings:2026-06-30",
+            "field_path": "fields.revenue_yoy_pct",
+            "reason": "critical_financial_quality_outlier"
+          },
+          {
+            "fact_id": "earnings:2026-06-30",
+            "field_path": "fields.operating_income_qoq_pct",
+            "reason": "critical_financial_quality_outlier"
+          },
+          {
+            "fact_id": "earnings:2026-06-30",
+            "field_path": "fields.operating_income_yoy_pct",
+            "reason": "critical_financial_quality_outlier"
+          },
+          {
+            "fact_id": "valuation:current",
+            "field_path": "fields.ttm_eps",
+            "reason": "denied_preliminary_input_in_ttm_denominator"
+          },
+          {
+            "fact_id": "valuation:current",
+            "field_path": "fields.forward_eps",
+            "reason": "denied_input_in_modeled_forward_earnings"
+          },
+          {
+            "fact_id": "valuation:current",
+            "field_path": "fields.trailing_pe",
+            "reason": "denied_preliminary_input_in_ttm_denominator"
+          },
+          {
+            "fact_id": "valuation:current",
+            "field_path": "fields.forward_pe",
+            "reason": "denied_input_in_modeled_forward_earnings"
+          },
+          {
+            "fact_id": "valuation:current",
+            "field_path": "fields.historical_pe_statistics.current_value",
+            "reason": "denied_current_pe_input"
+          },
+          {
+            "fact_id": "valuation:current",
+            "field_path": "fields.historical_pe_statistics.current_percentile",
+            "reason": "denied_current_pe_input"
+          }
+        ],
+        "denied_numeric_count": 13,
+        "prose_eligible_numeric_count": 149
+      }
+    },
+    {
+      "ticker": "003690",
+      "source": {
+        "period": "2026-03-31",
+        "snapshot_type": "full_statement",
+        "provider": "opendart",
+        "filing_date": "2026-05-29",
+        "period_type": "Q1",
+        "period_scope": "single-quarter",
+        "is_cumulative": false,
+        "normalization_method": "reported_single_quarter",
+        "currency": "KRW",
+        "unit_scale": 1.0,
+        "financial_hard_errors": [],
+        "financial_soft_outliers": [],
+        "financial_statement_basis_warning": false,
+        "period_mapping_validation_failed": false
+      },
+      "sanity": {
+        "revenue": null,
+        "operating_income": 291247018712.0,
+        "net_income": 214621970101.0,
+        "operating_income_exceeds_revenue": null,
+        "net_income_exceeds_revenue": null,
+        "reported_operating_margin": null,
+        "calculated_operating_margin": null,
+        "operating_margin_matches": null,
+        "qoq_comparison_period": "2025-12-31",
+        "revenue_qoq_reported": null,
+        "revenue_qoq_recalculated": null,
+        "revenue_qoq_matches": null,
+        "operating_income_qoq_reported": 423.4178,
+        "operating_income_qoq_recalculated": 423.4178,
+        "operating_income_qoq_matches": true,
+        "yoy_comparison_period": "2025-03-31",
+        "revenue_yoy_reported": null,
+        "revenue_yoy_recalculated": null,
+        "revenue_yoy_matches": null,
+        "operating_income_yoy_reported": 135.9057,
+        "operating_income_yoy_recalculated": 135.9057,
+        "operating_income_yoy_matches": true
+      },
+      "eps_share_basis": {
+        "earnings_basis": "TTM diluted EPS",
+        "share_basis": "reported_diluted_eps",
+        "eps_currency": "KRW",
+        "eps_security_basis": "current_security",
+        "ttm_contains_preliminary": false
+      },
+      "price_basis": {
+        "current_price": 15290.0,
+        "decision_price_basis": "close",
+        "chart_price_basis": "adjusted_close",
+        "structure_version": "ohlcv-structure-v2"
+      },
+      "valuation_lineage": {
+        "trailing_pe_source": "derived_trailing",
+        "trailing_pe_method": "TTM diluted EPS",
+        "trailing_pe_denominator_period_end": "2026-03-31",
+        "forward_pe_source": "modeled_forward",
+        "forward_pe_method": "normalized_roe",
+        "price_to_book_source": "derived_trailing",
+        "price_to_book_method": "latest owners-parent common equity / current common shares"
+      },
+      "quality": {
+        "critical_reason_codes": [],
+        "denied_numeric_entries": [],
+        "denied_numeric_count": 0,
+        "prose_eligible_numeric_count": 125
+      }
+    },
+    {
+      "ticker": "005490",
+      "source": {
+        "period": "2026-06-30",
+        "snapshot_type": "full_statement",
+        "provider": "opendart",
+        "filing_date": "2026-08-14",
+        "period_type": "Q2",
+        "period_scope": "half-year",
+        "is_cumulative": true,
+        "normalization_method": "cumulative_less_prior_cumulative",
+        "currency": "KRW",
+        "unit_scale": 1.0,
+        "financial_hard_errors": [],
+        "financial_soft_outliers": [],
+        "financial_statement_basis_warning": false,
+        "period_mapping_validation_failed": false
+      },
+      "sanity": {
+        "revenue": 19258684353345.0,
+        "operating_income": 819013515966.0,
+        "net_income": 761314069991.0,
+        "operating_income_exceeds_revenue": false,
+        "net_income_exceeds_revenue": false,
+        "reported_operating_margin": 4.252697125822862,
+        "calculated_operating_margin": 4.2527,
+        "operating_margin_matches": true,
+        "qoq_comparison_period": "2026-03-31",
+        "revenue_qoq_reported": 7.7342,
+        "revenue_qoq_recalculated": 7.7342,
+        "revenue_qoq_matches": true,
+        "operating_income_qoq_reported": 15.871,
+        "operating_income_qoq_recalculated": 15.871,
+        "operating_income_qoq_matches": true,
+        "yoy_comparison_period": null,
+        "revenue_yoy_reported": 9.7012,
+        "revenue_yoy_recalculated": null,
+        "revenue_yoy_matches": null,
+        "operating_income_yoy_reported": 34.8898,
+        "operating_income_yoy_recalculated": null,
+        "operating_income_yoy_matches": null
+      },
+      "eps_share_basis": {
+        "earnings_basis": "TTM diluted EPS",
+        "share_basis": "reported_diluted_eps",
+        "eps_currency": "KRW",
+        "eps_security_basis": "current_security",
+        "ttm_contains_preliminary": false
+      },
+      "price_basis": {
+        "current_price": 334000.0,
+        "decision_price_basis": "close",
+        "chart_price_basis": "adjusted_close",
+        "structure_version": "ohlcv-structure-v2"
+      },
+      "valuation_lineage": {
+        "trailing_pe_source": "derived_trailing",
+        "trailing_pe_method": "TTM diluted EPS",
+        "trailing_pe_denominator_period_end": "2026-06-30",
+        "forward_pe_source": "unavailable",
+        "forward_pe_method": null,
+        "price_to_book_source": "derived_trailing",
+        "price_to_book_method": "latest owners-parent common equity / current common shares"
+      },
+      "quality": {
+        "critical_reason_codes": [],
+        "denied_numeric_entries": [],
+        "denied_numeric_count": 0,
+        "prose_eligible_numeric_count": 194
+      }
+    },
+    {
+      "ticker": "005930",
+      "source": {
+        "period": "2026-03-31",
+        "snapshot_type": "full_statement",
+        "provider": "opendart",
+        "filing_date": "2026-05-15",
+        "period_type": "Q1",
+        "period_scope": "single-quarter",
+        "is_cumulative": false,
+        "normalization_method": "reported_single_quarter",
+        "currency": "KRW",
+        "unit_scale": 1.0,
+        "financial_hard_errors": [],
+        "financial_soft_outliers": [],
+        "financial_statement_basis_warning": false,
+        "period_mapping_validation_failed": false
+      },
+      "sanity": {
+        "revenue": 133873444000000.0,
+        "operating_income": 57232797000000.0,
+        "net_income": 47225272000000.0,
+        "operating_income_exceeds_revenue": false,
+        "net_income_exceeds_revenue": false,
+        "reported_operating_margin": 42.751419019294076,
+        "calculated_operating_margin": 42.7514,
+        "operating_margin_matches": true,
+        "qoq_comparison_period": "2025-12-31",
+        "revenue_qoq_reported": 42.6654,
+        "revenue_qoq_recalculated": 42.6654,
+        "revenue_qoq_matches": true,
+        "operating_income_qoq_reported": 185.1139,
+        "operating_income_qoq_recalculated": 185.1139,
+        "operating_income_qoq_matches": true,
+        "yoy_comparison_period": "2025-03-31",
+        "revenue_yoy_reported": 69.1592,
+        "revenue_yoy_recalculated": 69.1592,
+        "revenue_yoy_matches": true,
+        "operating_income_yoy_reported": 756.1027,
+        "operating_income_yoy_recalculated": 756.1027,
+        "operating_income_yoy_matches": true
+      },
+      "eps_share_basis": {
+        "earnings_basis": "TTM diluted EPS",
+        "share_basis": "reported_diluted_eps",
+        "eps_currency": "KRW",
+        "eps_security_basis": "current_security",
+        "ttm_contains_preliminary": false
+      },
+      "price_basis": {
+        "current_price": 274500.0,
+        "decision_price_basis": "close",
+        "chart_price_basis": "adjusted_close",
+        "structure_version": "ohlcv-structure-v2"
+      },
+      "valuation_lineage": {
+        "trailing_pe_source": "derived_trailing",
+        "trailing_pe_method": "TTM diluted EPS",
+        "trailing_pe_denominator_period_end": "2026-03-31",
+        "forward_pe_source": "unavailable",
+        "forward_pe_method": null,
+        "price_to_book_source": "derived_trailing",
+        "price_to_book_method": "latest owners-parent common equity / current common shares"
+      },
+      "quality": {
+        "critical_reason_codes": [],
+        "denied_numeric_entries": [],
+        "denied_numeric_count": 0,
+        "prose_eligible_numeric_count": 148
+      }
+    },
+    {
+      "ticker": "010120",
+      "source": {
+        "period": "2026-06-30",
+        "snapshot_type": "preliminary_earnings",
+        "provider": "opendart",
+        "filing_date": "2026-07-23",
+        "period_type": "Q2",
+        "period_scope": "single-quarter",
+        "is_cumulative": false,
+        "normalization_method": "reported_single_quarter",
+        "currency": "KRW",
+        "unit_scale": 1.0,
+        "financial_hard_errors": [],
+        "financial_soft_outliers": [],
+        "financial_statement_basis_warning": false,
+        "period_mapping_validation_failed": false
+      },
+      "sanity": {
+        "revenue": 1576998000000.0,
+        "operating_income": 178520000000.0,
+        "net_income": 115838000000.0,
+        "operating_income_exceeds_revenue": false,
+        "net_income_exceeds_revenue": false,
+        "reported_operating_margin": 11.320242638227823,
+        "calculated_operating_margin": 11.3202,
+        "operating_margin_matches": true,
+        "qoq_comparison_period": "2026-03-31",
+        "revenue_qoq_reported": null,
+        "revenue_qoq_recalculated": null,
+        "revenue_qoq_matches": null,
+        "operating_income_qoq_reported": 41.0477,
+        "operating_income_qoq_recalculated": 41.0477,
+        "operating_income_qoq_matches": true,
+        "yoy_comparison_period": null,
+        "revenue_yoy_reported": null,
+        "revenue_yoy_recalculated": null,
+        "revenue_yoy_matches": null,
+        "operating_income_yoy_reported": 64.3866,
+        "operating_income_yoy_recalculated": null,
+        "operating_income_yoy_matches": null
+      },
+      "eps_share_basis": {
+        "earnings_basis": "TTM EPS including official preliminary earnings",
+        "share_basis": "reported_diluted_eps;latest_official_diluted_shares",
+        "eps_currency": "KRW",
+        "eps_security_basis": "current_security",
+        "ttm_contains_preliminary": true
+      },
+      "price_basis": {
+        "current_price": 206500.0,
+        "decision_price_basis": "close",
+        "chart_price_basis": "adjusted_close",
+        "structure_version": "ohlcv-structure-v2"
+      },
+      "valuation_lineage": {
+        "trailing_pe_source": "derived_trailing",
+        "trailing_pe_method": "TTM EPS including official preliminary earnings",
+        "trailing_pe_denominator_period_end": "2026-06-30",
+        "forward_pe_source": "modeled_forward",
+        "forward_pe_method": "normalized_roe",
+        "price_to_book_source": "derived_trailing",
+        "price_to_book_method": "latest owners-parent common equity / current common shares"
+      },
+      "quality": {
+        "critical_reason_codes": [],
+        "denied_numeric_entries": [],
+        "denied_numeric_count": 0,
+        "prose_eligible_numeric_count": 167
+      }
+    },
+    {
+      "ticker": "012450",
+      "source": {
+        "period": "2026-06-30",
+        "snapshot_type": "preliminary_earnings",
+        "provider": "opendart",
+        "filing_date": "2026-07-31",
+        "period_type": "Q2",
+        "period_scope": "single-quarter",
+        "is_cumulative": false,
+        "normalization_method": "reported_single_quarter",
+        "currency": "KRW",
+        "unit_scale": 1.0,
+        "financial_hard_errors": [],
+        "financial_soft_outliers": [],
+        "financial_statement_basis_warning": false,
+        "period_mapping_validation_failed": false
+      },
+      "sanity": {
+        "revenue": 9292900000000.0,
+        "operating_income": 1365500000000.0,
+        "net_income": 1080500000000.0,
+        "operating_income_exceeds_revenue": false,
+        "net_income_exceeds_revenue": false,
+        "reported_operating_margin": 14.69401370939104,
+        "calculated_operating_margin": 14.694,
+        "operating_margin_matches": true,
+        "qoq_comparison_period": null,
+        "revenue_qoq_reported": null,
+        "revenue_qoq_recalculated": null,
+        "revenue_qoq_matches": null,
+        "operating_income_qoq_reported": null,
+        "operating_income_qoq_recalculated": null,
+        "operating_income_qoq_matches": null,
+        "yoy_comparison_period": null,
+        "revenue_yoy_reported": null,
+        "revenue_yoy_recalculated": null,
+        "revenue_yoy_matches": null,
+        "operating_income_yoy_reported": null,
+        "operating_income_yoy_recalculated": null,
+        "operating_income_yoy_matches": null
+      },
+      "eps_share_basis": {
+        "earnings_basis": null,
+        "share_basis": null,
+        "eps_currency": null,
+        "eps_security_basis": "unknown",
+        "ttm_contains_preliminary": false
+      },
+      "price_basis": {
+        "current_price": 1160000.0,
+        "decision_price_basis": "close",
+        "chart_price_basis": "adjusted_close",
+        "structure_version": "ohlcv-structure-v2"
+      },
+      "valuation_lineage": {
+        "trailing_pe_source": "unavailable",
+        "trailing_pe_method": null,
+        "trailing_pe_denominator_period_end": null,
+        "forward_pe_source": "unavailable",
+        "forward_pe_method": null,
+        "price_to_book_source": "unavailable",
+        "price_to_book_method": null
+      },
+      "quality": {
+        "critical_reason_codes": [],
+        "denied_numeric_entries": [],
+        "denied_numeric_count": 0,
+        "prose_eligible_numeric_count": 128
+      }
+    },
+    {
+      "ticker": "086280",
+      "source": {
+        "period": "2026-06-30",
+        "snapshot_type": "preliminary_earnings",
+        "provider": "opendart",
+        "filing_date": "2026-07-23",
+        "period_type": "Q2",
+        "period_scope": "single-quarter",
+        "is_cumulative": false,
+        "normalization_method": "reported_single_quarter",
+        "currency": "KRW",
+        "unit_scale": 1.0,
+        "financial_hard_errors": [],
+        "financial_soft_outliers": [],
+        "financial_statement_basis_warning": false,
+        "period_mapping_validation_failed": false
+      },
+      "sanity": {
+        "revenue": 8705366000000.0,
+        "operating_income": 495063000000.0,
+        "net_income": 369212000000.0,
+        "operating_income_exceeds_revenue": false,
+        "net_income_exceeds_revenue": false,
+        "reported_operating_margin": 5.686871752434073,
+        "calculated_operating_margin": 5.6869,
+        "operating_margin_matches": true,
+        "qoq_comparison_period": "2026-03-31",
+        "revenue_qoq_reported": 11.4254,
+        "revenue_qoq_recalculated": 11.4254,
+        "revenue_qoq_matches": true,
+        "operating_income_qoq_reported": -5.0612,
+        "operating_income_qoq_recalculated": -5.0612,
+        "operating_income_qoq_matches": true,
+        "yoy_comparison_period": null,
+        "revenue_yoy_reported": 15.825,
+        "revenue_yoy_recalculated": null,
+        "revenue_yoy_matches": null,
+        "operating_income_yoy_reported": -8.1309,
+        "operating_income_yoy_recalculated": null,
+        "operating_income_yoy_matches": null
+      },
+      "eps_share_basis": {
+        "earnings_basis": "TTM EPS including official preliminary earnings",
+        "share_basis": "reported_diluted_eps;latest_official_diluted_shares",
+        "eps_currency": "KRW",
+        "eps_security_basis": "current_security",
+        "ttm_contains_preliminary": true
+      },
+      "price_basis": {
+        "current_price": 211000.0,
+        "decision_price_basis": "close",
+        "chart_price_basis": "adjusted_close",
+        "structure_version": "ohlcv-structure-v2"
+      },
+      "valuation_lineage": {
+        "trailing_pe_source": "derived_trailing",
+        "trailing_pe_method": "TTM EPS including official preliminary earnings",
+        "trailing_pe_denominator_period_end": "2026-06-30",
+        "forward_pe_source": "modeled_forward",
+        "forward_pe_method": "normalized_net_margin",
+        "price_to_book_source": "derived_trailing",
+        "price_to_book_method": "latest owners-parent common equity / current common shares"
+      },
+      "quality": {
+        "critical_reason_codes": [],
+        "denied_numeric_entries": [],
+        "denied_numeric_count": 0,
+        "prose_eligible_numeric_count": 175
+      }
+    }
+  ]
+}
