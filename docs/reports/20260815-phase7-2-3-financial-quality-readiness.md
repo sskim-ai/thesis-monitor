@@ -125,7 +125,8 @@ The experiment used a SQLite-consistent copy in `/tmp`; packet generation and va
 - Full pytest: `714 passed`
 - Ruff: PASS
 - `git diff --check`: PASS
-- Exact-commit GitHub Actions: pending final documentation commit
+- Validation artifact commit: `d01ac031f649531f93bc439d34a6572c24a3ccba`
+- GitHub Actions: Test and Lint PASS ([run 31877893058](https://github.com/sskim-ai/thesis-monitor/actions/runs/31877893058))
 
 ## Artifacts
 
