@@ -69,6 +69,7 @@ Use this skill only for immutable packets under `data/ai_review/inbox`. Do not b
 - Use `company_profile` provenance and quality as an identity guardrail. `partial` or `ambiguous` profile data may reduce routing confidence; never infer a missing classification from the ticker, company name, or thesis theme.
 - Resolve every draft `numeric_fact_refs[].text_ref` to its exact placeholder-bearing prose field. The backend-generated `numeric_claims[].text_ref` and `usage` remain fenced to that exact occurrence. One binding cannot cover the same number in another prose field, and a fact with the same numeric value cannot support a different semantic meaning.
 - Numeric semantics fail closed. An unregistered semantic or an entry with `prose_allowed=false` must remain absent from prose, even when its raw value exists in the packet.
+- Financial quality also fails closed. Treat `financial_quality.fields[*].state=denied` and numeric-registry rows with `financial_quality_state=denied` as audit-only: do not cite the denied fact as an earnings or valuation conclusion, do not restate its raw value, and do not infer qualitative strength from it. Explain the listed denial reason without a number, then use only independent prose-eligible price, chart, supply, book-value, or verified-consensus facts.
 - A lease expiry only permits reclaim. Before finalization the validator fences the result against the currently active claim; never reuse another claim's temporary path.
 
 ## Runtime Boundary

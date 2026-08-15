@@ -21,6 +21,10 @@ from app.services.analysis_report_service import (
 from app.services.canonical_fact_service import compact_krw_amount
 from app.services.daily_digest import build_daily_digest, interpret_macro_briefing
 from app.services.daily_digest_renderer import render_daily_digest
+from app.services.financial_quality_service import (
+    build_financial_quality_state,
+    sanitize_financial_snapshot_for_prose,
+)
 from app.services.kr_close_fx import render_kr_close_fx, summarize_kr_close_fx
 from app.services.night_futures import (
     NIGHT_FUTURES_SERIES,
@@ -948,7 +952,8 @@ def _data_cautions(
         )
     if "preliminary_profitability_outlier" in reasons:
         cautions.append(
-            "이번 분기 이익률이 과거보다 매우 높아 일회성 손익과 지속 가능성을 추가 확인합니다."
+            "최신 잠정실적의 수익성 관계에 중대한 검증 경고가 있어 "
+            "매출·이익과 이익 기반 배수의 정량 해석을 보류합니다."
         )
     if per_share_basis_insufficient and not preliminary_ttm_caution:
         basis_statuses = {
@@ -1022,7 +1027,41 @@ def _assessment_report(
     compression_signals = _json_list_value(thesis.multiple_compression_signals) if thesis else []
     macro_exposures = _json_list_value(thesis.macro_exposures) if thesis else []
     valuation_context = _json_value(assessment.valuation_context, {})
-    valuation_snapshot = _json_value(getattr(assessment, "valuation_snapshot", "{}"), {})
+    raw_valuation_snapshot = _json_value(
+        getattr(assessment, "valuation_snapshot", "{}"), {}
+    )
+    financial_quality = build_financial_quality_state(raw_valuation_snapshot)
+    valuation_snapshot = sanitize_financial_snapshot_for_prose(
+        raw_valuation_snapshot
+    )
+    denied_financial_fields = set(financial_quality.get("denied_fields", []))
+    if denied_financial_fields.intersection(
+        {
+            "latest_revenue",
+            "latest_operating_income",
+            "latest_operating_margin",
+            "latest_revenue_qoq",
+            "latest_revenue_yoy",
+            "latest_operating_income_qoq",
+            "latest_operating_income_yoy",
+        }
+    ):
+        earnings_impact = "unknown"
+    if denied_financial_fields.intersection(
+        {
+            "ttm_eps",
+            "trailing_pe",
+            "forward_eps",
+            "forward_pe",
+            "valuation_relative_position",
+        }
+    ):
+        valuation_context = {
+            "impact": "unknown",
+            "summary": (
+                "검증 경고가 있는 이익 입력을 제외하고 독립적인 장부가치 자료만 확인합니다."
+            ),
+        }
     new_warnings = [
         str(item)
         for item in _json_list_value(getattr(assessment, "new_warnings", "[]"))

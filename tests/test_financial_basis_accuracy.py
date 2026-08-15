@@ -111,6 +111,16 @@ def test_high_margin_and_net_income_above_revenue_are_soft_outliers() -> None:
     assert event.net_income == 120
 
 
+def test_financial_company_structure_keeps_existing_industry_aware_exception() -> None:
+    event = _official_event(company_name="검증보험", title="보험사 잠정실적")
+
+    result = validate_event_financials(event, operating_margin_upper_bound=60)
+
+    assert result.valid is True
+    assert "unusually_high_or_low_operating_margin" not in result.soft_outliers
+    assert "net_income_exceeds_revenue" not in result.soft_outliers
+
+
 def test_reported_margin_arithmetic_mismatch_is_a_hard_error() -> None:
     event = _official_event(operating_margin=25)
 

@@ -20,6 +20,7 @@ from pydantic import ValidationError
 from sqlmodel import Session, select
 
 from app.config import get_settings
+from app.models.financial import FinancialSnapshot
 from app.models.macro import MacroBriefing, ThesisMacroImpact
 from app.models.company import Company
 from app.models.security import SecurityMaster
@@ -36,6 +37,10 @@ from app.services.company_profile_service import (
     read_profile_provenance,
 )
 from app.services.daily_digest import build_daily_digest
+from app.services.financial_quality_service import (
+    build_financial_quality_state,
+    field_quality,
+)
 from app.services.market_session import market_scope_for_security
 from app.services.market_intelligence_service import build_market_intelligence
 from app.services.night_futures import NIGHT_FUTURES_SERIES
@@ -706,7 +711,69 @@ def _material_evidence(assessment: ThesisAssessment) -> list[dict[str, object]]:
     return rows
 
 
-def _valuation_payload(assessment: ThesisAssessment) -> dict[str, object]:
+def _financial_source_metadata(
+    session: Session,
+    assessment: ThesisAssessment,
+    snapshot: dict[str, object],
+) -> dict[str, object]:
+    period = str(snapshot.get("latest_earnings_period") or "")
+    if not period:
+        return {}
+    rows = session.exec(
+        select(FinancialSnapshot).where(FinancialSnapshot.ticker == assessment.ticker)
+    ).all()
+    candidates = [
+        row
+        for row in rows
+        if str(row.financial_period_end or row.financials_as_of or row.period)[:10]
+        == period[:10]
+        and (row.filing_date or row.reported_date or assessment.assessment_date)
+        <= assessment.assessment_date
+        and (
+            not snapshot.get("earnings_context_source")
+            or row.snapshot_type == snapshot.get("earnings_context_source")
+        )
+    ]
+    matched_candidates = [
+        row
+        for row in candidates
+        if (
+            snapshot.get("latest_revenue") is None
+            or row.revenue == snapshot.get("latest_revenue")
+        )
+        and (
+            snapshot.get("latest_operating_income") is None
+            or row.operating_income == snapshot.get("latest_operating_income")
+        )
+    ]
+    if matched_candidates:
+        candidates = matched_candidates
+    if not candidates:
+        return {}
+    row = max(
+        candidates,
+        key=lambda item: (
+            item.filing_date or item.reported_date or date.min,
+            item.id or 0,
+        ),
+    )
+    return {
+        "period": period,
+        "source_type": row.snapshot_type,
+        "provider": row.provider,
+        "filing_date": str(row.filing_date or row.reported_date or "") or None,
+        "hard_errors": _list(row.financial_hard_errors),
+        "soft_outliers": _list(row.financial_soft_outliers),
+        "financial_statement_basis_warning": row.financial_statement_basis_warning,
+        "period_mapping_validation_failed": row.period_mapping_validation_failed,
+        "margin_quality_review": row.margin_quality_review,
+    }
+
+
+def _valuation_payload(
+    session: Session,
+    assessment: ThesisAssessment,
+) -> dict[str, object]:
     snapshot = _dict(assessment.valuation_snapshot)
     fields = (
         "current_price",
@@ -744,6 +811,11 @@ def _valuation_payload(assessment: ThesisAssessment) -> dict[str, object]:
         "quality",
     )
     result = {key: snapshot.get(key) for key in fields if snapshot.get(key) is not None}
+    source_metadata = _financial_source_metadata(session, assessment, snapshot)
+    result["financial_quality"] = build_financial_quality_state(
+        snapshot,
+        source_metadata=source_metadata,
+    )
     comparability = str(snapshot.get("historical_comparability") or "normal")
     if comparability in _COMPARABLE_HISTORY:
         for key in ("historical_pe_statistics", "historical_pb_statistics"):
@@ -1280,6 +1352,7 @@ def _fact_catalog(
     monitoring_state: dict[str, object],
 ) -> list[dict[str, object]]:
     facts = [fact for item in evidence if (fact := canonical_event_fact(item))]
+    financial_quality = _dict(valuation.get("financial_quality"))
     currency = str(valuation.get("currency") or "unknown")
     financial_currency_value = valuation.get("financial_currency")
     financial_currency = (
@@ -1288,6 +1361,40 @@ def _fact_catalog(
         else ""
     ) or "unknown"
     period = str(valuation.get("latest_earnings_period") or "latest")
+    if financial_quality:
+        field_states = {
+            str(item.get("state") or "unknown")
+            for item in _dict(financial_quality.get("fields")).values()
+            if isinstance(item, dict)
+        }
+        aggregate_state = (
+            "denied"
+            if "denied" in field_states
+            else "caution_usable"
+            if "caution_usable" in field_states
+            else "verified_usable"
+            if "verified_usable" in field_states
+            else "unknown"
+        )
+        source_snapshot = _dict(financial_quality.get("source_snapshot"))
+        facts.append(
+            {
+                "fact_id": f"financial_quality:{period}",
+                "fact_type": "financial_quality",
+                "as_of_date": period,
+                "source": "deterministic_financial_validation",
+                "fields": {
+                    "state": aggregate_state,
+                    "reason_codes": financial_quality.get(
+                        "quality_reason_codes", []
+                    ),
+                    "source_type": source_snapshot.get("source_type"),
+                    "source_period": source_snapshot.get("period"),
+                    "decision_version": financial_quality.get("decision_version"),
+                },
+                "prose_eligible": True,
+            }
+        )
     earnings_fields: dict[str, object] = {
         "period": period,
         "preliminary": bool(valuation.get("earnings_context_is_preliminary")),
@@ -1296,12 +1403,15 @@ def _fact_catalog(
         "revenue": "latest_revenue",
         "operating_income": "latest_operating_income",
     }
+    earnings_field_quality: dict[str, object] = {}
     for target, source in earnings_values.items():
         if (value := valuation.get(source)) is not None:
             earnings_fields[target] = {
                 "value": value,
                 "currency": financial_currency,
             }
+            if quality := field_quality(financial_quality, source):
+                earnings_field_quality[f"fields.{target}.value"] = quality
     for target, source in (
         ("operating_margin_pct", "latest_operating_margin"),
         ("revenue_qoq_pct", "latest_revenue_qoq"),
@@ -1311,6 +1421,8 @@ def _fact_catalog(
     ):
         if (value := valuation.get(source)) is not None:
             earnings_fields[target] = value
+            if quality := field_quality(financial_quality, source):
+                earnings_field_quality[f"fields.{target}"] = quality
     if len(earnings_fields) > 2:
         facts.append(
             {
@@ -1318,6 +1430,12 @@ def _fact_catalog(
                 "fact_type": "earnings",
                 "as_of_date": period,
                 "fields": earnings_fields,
+                "financial_quality": financial_quality,
+                "field_quality": earnings_field_quality,
+                "prose_eligible": any(
+                    _dict(item).get("prose_eligible") is True
+                    for item in earnings_field_quality.values()
+                ),
             }
         )
     valuation_fields = {
@@ -1351,12 +1469,32 @@ def _fact_catalog(
     }
     if valuation_fields:
         valuation_fields["currency"] = currency
+        valuation_field_quality = {
+            f"fields.{field}": quality
+            for field in (
+                "ttm_eps",
+                "trailing_pe",
+                "forward_eps",
+                "forward_pe",
+                "bvps",
+                "price_to_book",
+                "forward_bvps",
+                "forward_price_to_book",
+                "historical_pe_statistics.current_value",
+                "historical_pe_statistics.current_percentile",
+                "historical_pb_statistics.current_value",
+                "historical_pb_statistics.current_percentile",
+            )
+            if (quality := field_quality(financial_quality, field))
+        }
         facts.append(
             {
                 "fact_id": "valuation:current",
                 "fact_type": "valuation",
                 "as_of_date": str(valuation.get("price_as_of") or ""),
                 "fields": valuation_fields,
+                "financial_quality": financial_quality,
+                "field_quality": valuation_field_quality,
             }
         )
     peer = _dict(_dict(monitoring_state.get("current")).get("peer_valuation"))
@@ -1539,7 +1677,7 @@ def _stock_packet(
         get_settings().data_dir,
     )
     evidence = _material_evidence(assessment)
-    valuation = _valuation_payload(assessment)
+    valuation = _valuation_payload(session, assessment)
     price = _price_payload(assessment)
     previous = _previous_assessment(session, assessment)
     chart = _chart_payload(assessment, thesis, previous)
@@ -2525,6 +2663,21 @@ def _validate_stock_review(
         errors.append(
             f"{review.ticker}:interpretation_unknown_fact_ids:"
             + ",".join(unknown_interpretation_facts)
+        )
+    denied_financial_facts = {
+        str(item.get("fact_id"))
+        for item in fact_catalog
+        if isinstance(item, dict)
+        and item.get("financial_quality")
+        and item.get("prose_eligible") is False
+    }
+    denied_interpretation_facts = sorted(
+        interpretation_facts.intersection(denied_financial_facts)
+    )
+    if denied_interpretation_facts:
+        errors.append(
+            f"{review.ticker}:financial_quality_denied_fact_used:"
+            + ",".join(denied_interpretation_facts)
         )
     routing = stock.get("knowledge_routing")
     allowed_frameworks = {

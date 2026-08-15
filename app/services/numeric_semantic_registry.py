@@ -1460,6 +1460,22 @@ def build_numeric_registry(
         fields = fact.get("fields")
         if not fact_id or not isinstance(fields, dict):
             continue
+        field_quality = (
+            fact.get("field_quality")
+            if isinstance(fact.get("field_quality"), dict)
+            else {}
+        )
+
+        def quality_for_path(path: str) -> dict[str, object]:
+            candidate = path
+            while candidate.startswith("fields"):
+                value = field_quality.get(candidate)
+                if isinstance(value, dict):
+                    return value
+                if "." not in candidate:
+                    break
+                candidate = candidate.rsplit(".", 1)[0]
+            return {}
 
         def walk(value: object, path: str) -> None:
             if isinstance(value, dict):
@@ -1481,12 +1497,17 @@ def build_numeric_registry(
                     if spec is not None
                     else None
                 )
+                quality = quality_for_path(path)
+                quality_state = str(quality.get("state") or "verified_usable")
+                quality_prose_eligible = quality.get("prose_eligible") is not False
                 prose_allowed = bool(
                     spec is not None
                     and spec.prose_allowed
                     and unit in spec.units
                     and unit != "unknown"
                     and (source_label_kind is None or canonical_label is not None)
+                    and quality_state in {"verified_usable", "caution_usable"}
+                    and quality_prose_eligible
                 )
                 registry.append(
                     {
@@ -1509,6 +1530,15 @@ def build_numeric_registry(
                         "canonical_label": canonical_label,
                         "canonical_label_required": source_label_kind is not None,
                         "canonical_label_kind": source_label_kind,
+                        "financial_quality_state": quality_state,
+                        "financial_quality_reason_codes": list(
+                            quality.get("quality_reason_codes") or []
+                        ),
+                        "dependency_fields": list(
+                            quality.get("dependency_fields") or []
+                        ),
+                        "denial_reason": quality.get("denial_reason"),
+                        "quality_decision_version": quality.get("decision_version"),
                         "approved_display_variants": (
                             approved_display_variants(spec, float(value), unit)
                             if spec is not None and prose_allowed

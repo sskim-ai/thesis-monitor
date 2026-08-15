@@ -3350,6 +3350,147 @@ def test_unknown_currency_can_be_described_without_raw_monetary_number(
     assert output is not None
 
 
+def test_critical_financial_outlier_taints_packet_registry_and_raw_prose(
+    monkeypatch,
+    tmp_path: Path,
+) -> None:
+    _settings(monkeypatch, tmp_path)
+    with Session(_engine()) as session:
+        _seed(session)
+        assessment = session.exec(
+            select(ThesisAssessment).where(
+                ThesisAssessment.ticker == "PACKETUS",
+                ThesisAssessment.assessment_date == RUN_DATE,
+            )
+        ).one()
+        valuation = json.loads(assessment.valuation_snapshot)
+        valuation.update(
+            {
+                "earnings_context_source": "preliminary_earnings",
+                "earnings_context_is_preliminary": True,
+                "ttm_contains_preliminary": True,
+                "latest_revenue": 79_318_700_000_000,
+                "latest_operating_income": 60_500_000_000_000,
+                "latest_operating_margin": 76.3,
+                "latest_revenue_yoy": 256.8,
+                "latest_operating_income_yoy": 557.2,
+                "ttm_eps": 13.89,
+                "trailing_pe": 7.2,
+                "forward_eps": 6.1,
+                "forward_pe": 16.38,
+                "forward_pe_source": "modeled_forward",
+                "price_to_book": 3.0,
+                "historical_comparability": "normal",
+                "historical_pe_statistics": {
+                    "current_value": 7.2,
+                    "current_percentile": 12.0,
+                },
+                "historical_pb_statistics": {"current_percentile": 88.0},
+                "data_coverage": {
+                    "reason_codes": ["preliminary_profitability_outlier"]
+                },
+            }
+        )
+        assessment.valuation_snapshot = json.dumps(valuation)
+        session.add(assessment)
+        session.commit()
+        packet = build_ai_review_packet(session, RUN_DATE, "us")
+        assert packet is not None
+        stock = packet["stocks"][0]
+        registry = {
+            (item["fact_id"], item["field_path"]): item
+            for item in stock["numeric_registry"]
+        }
+        earnings_fact = next(
+            item for item in stock["fact_catalog"] if item["fact_type"] == "earnings"
+        )
+        quality_fact = next(
+            item
+            for item in stock["fact_catalog"]
+            if item["fact_type"] == "financial_quality"
+        )
+        assert quality_fact["prose_eligible"] is True
+        assert quality_fact["fields"]["state"] == "denied"
+        assert "preliminary_profitability_outlier" in quality_fact["fields"][
+            "reason_codes"
+        ]
+        output = _valid_output(packet)
+        review = output["stock_reviews"][0]
+        review["facts_used"].append(earnings_fact["fact_id"])
+        review["business_earnings"] = {
+            "text": "매출 79318700000000원으로 강한 이익 사이클입니다.",
+            "fact_ids": [earnings_fact["fact_id"]],
+        }
+
+        _, errors = validate_ai_review_output(session, packet, output)
+
+    for fact_id, path in (
+        (earnings_fact["fact_id"], "fields.revenue.value"),
+        (earnings_fact["fact_id"], "fields.operating_margin_pct"),
+        ("valuation:current", "fields.trailing_pe"),
+        ("valuation:current", "fields.forward_pe"),
+        (
+            "valuation:current",
+            "fields.historical_pe_statistics.current_percentile",
+        ),
+    ):
+        entry = registry[(fact_id, path)]
+        assert entry["financial_quality_state"] == "denied"
+        assert entry["prose_allowed"] is False
+        assert entry["canonical_display_value"] is None
+        assert entry["approved_display_variants"] == []
+    assert registry[("valuation:current", "fields.price_to_book")][
+        "prose_allowed"
+    ] is True
+    assert any("financial_quality_denied_fact_used" in error for error in errors)
+    assert any("numbers_without_provenance" in error for error in errors)
+
+
+def test_critical_financial_outlier_allows_number_free_specific_unknown(
+    monkeypatch,
+    tmp_path: Path,
+) -> None:
+    _settings(monkeypatch, tmp_path)
+    with Session(_engine()) as session:
+        _seed(session)
+        assessment = session.exec(
+            select(ThesisAssessment).where(
+                ThesisAssessment.ticker == "PACKETUS",
+                ThesisAssessment.assessment_date == RUN_DATE,
+            )
+        ).one()
+        valuation = json.loads(assessment.valuation_snapshot)
+        valuation.update(
+            {
+                "earnings_context_source": "preliminary_earnings",
+                "earnings_context_is_preliminary": True,
+                "latest_revenue": 79_318_700_000_000,
+                "data_coverage": {
+                    "reason_codes": ["preliminary_profitability_outlier"]
+                },
+            }
+        )
+        assessment.valuation_snapshot = json.dumps(valuation)
+        session.add(assessment)
+        session.commit()
+        packet = build_ai_review_packet(session, RUN_DATE, "us")
+        assert packet is not None
+        output = _valid_output(packet)
+        review = output["stock_reviews"][0]
+        review["business_earnings"] = {
+            "text": (
+                "잠정실적의 수익성 관계에 검증 경고가 있어 정량 해석을 "
+                "보류하고 정식 재무의 매출·영업이익·현금흐름을 확인합니다."
+            ),
+            "fact_ids": [],
+        }
+
+        _, errors = validate_ai_review_output(session, packet, output)
+
+    assert not any("financial_quality_denied_fact_used" in error for error in errors)
+    assert not any("business_earnings.text" in error for error in errors)
+
+
 def test_market_hard_fails_zero_claims_with_four_eligible_anchors(
     monkeypatch,
     tmp_path: Path,
