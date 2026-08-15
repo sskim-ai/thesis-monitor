@@ -3,7 +3,8 @@
   "branch": "main",
   "current_commit": "HEAD",
   "current_commit_resolution": "git rev-parse HEAD",
-  "recorded_base_commit": "b1b495879b1d5bdbedc38a1dfe45a0cafcfd1ca0",
+  "recorded_base_commit": "130719fb1b018fe0857259acc7cd9a46977a080a",
+  "deployed_code_commit": "130719fb1b018fe0857259acc7cd9a46977a080a",
   "official_assessment_source": "deterministic",
   "ai_review_mode": "shadow",
   "investment_knowledge_version": "3.0",
@@ -25,7 +26,7 @@
   },
   "pilot_current_successful_sessions": {
     "kr": 1,
-    "us": 0
+    "us": 1
   },
   "us_morning_schedule_kst": {
     "deterministic_and_first_krx_fetch": "08:05",
@@ -37,10 +38,12 @@
   "persisted_telegram_retry_minutes_kst": ["08:22", "08:25", "08:30"],
   "scheduled_task_contract_verification": {
     "checked_at": "2026-08-15",
-    "status": "blocked_target_local_tasks_not_visible",
+    "status": "passed",
     "expected_target_count": 4,
-    "visible_target_count": 0,
-    "required_policy_version": "daily-review-v3.9"
+    "visible_target_count": 4,
+    "active_target_count": 4,
+    "required_policy_version": "daily-review-v3.9",
+    "target_checkout": "/Users/sskim/Codex/thesis-monitor"
   },
   "single_delivery": true,
   "deterministic_fallback": true,

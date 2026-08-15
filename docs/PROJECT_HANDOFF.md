@@ -23,7 +23,7 @@ execution or an autonomous investment adviser.
 | OHLCV structure | `ohlcv-structure-v2` |
 | Investment Knowledge | `3.0` |
 | Chart Knowledge | `1.0` |
-| Pilot | `ai-assisted-pilot-v3`, current KR 1/5 and US 0/5 |
+| Pilot | `ai-assisted-pilot-v3`, current KR 1/5 and US 1/5 |
 | Renderer | `ai-assisted-pilot-renderer-v3` |
 | Public Action | `0.4.5`, operationId 20/20 |
 | Production Assist | Disabled |
@@ -182,15 +182,15 @@ no peer number was invented. See [PEER_VALUATION.md](architecture/PEER_VALUATION
 
 ## Pilot Architecture
 
-Pilot v3 activated at KR 0/5 and US 0/5; the current count is KR 1/5 and US 0/5. The required task
+Pilot v3 activated at KR 0/5 and US 0/5; the current count is KR 1/5 and US 1/5. The required task
 contract is policy v3.9/schema 4/structure v2. A successful day requires Codex completion, validation pass, complete
 AI-assisted delivery, and archive completion. Fallback days do not increment the counter. Earlier
 Pilot cohorts remain history and are never rewritten.
 
-The 2026-08-15 implementation session could not see the four local-project tasks in its accessible
-Scheduled list; it found only three unrelated inactive/completed automations. Their ACTIVE state and
-prompt migration therefore remain a deployment blocker, not a verified gate. Apply
-[SCHEDULED_TASK_CONTRACTS.md](operations/SCHEDULED_TASK_CONTRACTS.md) in the owning desktop app.
+On 2026-08-15 the owning desktop environment verified all four local-project tasks, retained their
+08:15/08:30/16:15/16:55 schedules, and migrated their exact prompts to v3.9. All four are ACTIVE,
+target the live local operating checkout, use GPT-5.6 Sol with high reasoning, and preserve the US
+Primary 300-second readiness wait. No duplicate standalone task was created.
 
 | Market | Primary | Backup | Fallback deadline |
 |---|---:|---:|---:|
@@ -205,7 +205,11 @@ Detailed recovery and single-delivery rules are in
 
 The 2026-08-14 US v3.6 output had zero numeric claims and its initial Telegram delivery failed. A
 manual retry sent the messages before the v3.7 policy was adopted, so delivery cannot be undone; the
-session is retained as a failed-quality live sample and does not count toward US 0/5.
+session is retained as a failed-quality live sample and does not count toward Pilot totals.
+
+The 2026-08-15 US session completed under v3.8 before the v3.9 deployment: validator PASS, 14/14
+AI-assisted messages sent, and archive completion. Runtime state therefore counts it as US Day 1/5.
+The later v3.9 same-packet retrospective was archive-only and did not change that count or resend it.
 
 ## Source Map
 
@@ -257,10 +261,9 @@ first.
 
 ## Next Steps
 
-1. Verify final `origin/main`, development checkout, and operating checkout are the same clean commit.
-2. Verify four Scheduled Tasks use Pilot v3, policy v3.9, schema 4, and structure v2.
-3. Start Pilot v3 only after tests, Knowledge checksums, and archive gates pass.
-4. Review five successful sessions per market without changing policy mid-cohort for style alone.
-5. Treat DATA, CALCULATION, PACKET, KNOWLEDGE_ROUTING, AI_REASONING, VALIDATION, RENDERER, and DELIVERY
+1. Keep `origin/main`, development checkout, and operating checkout on the same clean commit.
+2. Observe the next naturally scheduled v3.9 session; do not trigger a duplicate manual run.
+3. Review five successful sessions per market without changing policy mid-cohort for style alone.
+4. Treat DATA, CALCULATION, PACKET, KNOWLEDGE_ROUTING, AI_REASONING, VALIDATION, RENDERER, and DELIVERY
    as separate failure categories.
-6. Keep Production Assist disabled until explicit user approval.
+5. Keep Production Assist disabled until explicit user approval.

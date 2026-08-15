@@ -60,14 +60,23 @@ and covered by the TWD/USD split regression.
 
 An in-memory occurrence replay of the unchanged rejected review produced `7 -> 1` when only the
 token-span implementation changed: the six punctuation false negatives disappeared and HUT remained.
-Removing only the unsupported HUT `$0.59` token, one of the machine-authorized correction actions,
-produced `1 -> 0` uncovered occurrences. The source evidence file was not modified.
+Replacing only the HUT occurrence with its exact canonical numeric reference produced `1 -> 0`
+uncovered occurrences. The source evidence file was not modified.
 
-The immutable packet and original validator-result artifact were not present in the handoff ZIP,
-repository, or available Library copy. Therefore this report does not claim a full same-packet
-schema/fact validator PASS. It records the exact reproducible coverage diagnostics from the rejected
-review and code, plus focused regression tests. A full retrospective must reuse the original packet;
-canonical fact identity, source currency, or ADR basis must never be reconstructed from AI prose.
+The operating archive contained the immutable packet, both rejected attempts, and the original
+validator-result artifact. The packet SHA-256 is
+`9487b6a89a679ca29d66f2aca6b68f4d882f23c6664f0b14e3942094515634b1`; the seven-error rejected
+attempt SHA-256 is `7b0fa31e4cd899772d689b8cbf28490e74a5c85c793f0399c9c5fb8362ae8144`.
+Using a SQLite backup and the unchanged artifacts, the old validator reproduced the seven specified
+errors. v3.9 reduced the unchanged review to only HUT `$0.59`. The packet contains the exact
+`valuation:current` / `fields.forward_eps` / `USD` / `forward_eps` registry row, so the retrospective
+draft replaced `선행 EPS $0.59` with one `{{numeric:hut_forward_eps}}` reference. The backend bound
+`예상 EPS $0.59`, generated the exact claim, and the full validator passed with zero errors. The
+packet and rejected-review hashes remained unchanged; no packet was regenerated.
+
+The original v3.8 packet retains its historical TSM USD financial-currency defect and was not
+rewritten. A separate structural foreign-issuer fixture under v3.9 produced USD ADR price,
+TWD revenue `NT$1.27T`, and TWD operating income `NT$766.6B` without an ADR-ratio conversion.
 
 ## Regression Coverage
 
@@ -86,11 +95,25 @@ canonical fact identity, source currency, or ADR basis must never be reconstruct
 
 ## Operational Decision
 
-The Pilot cohort remains `ai-assisted-pilot-v3` with KR 1/5 and US 0/5. Schema remains 4, Production
-Assist remains disabled, and policy changes to `daily-review-v3.9`. Historical v3.8 archives and
-cohort evidence are not rewritten.
+The operating checkout was fast-forwarded to
+`130719fb1b018fe0857259acc7cd9a46977a080a` (tree
+`00dd9014726a31545821056baa0d436302a12388`) and the API LaunchAgent was restarted. API and US/KR AI
+health checks passed. Schema remains 4 and Production Assist remains disabled.
 
-The Scheduled-task lookup exposed three unrelated inactive/completed automations and none of the four
-thesis-monitor local-project tasks. Consequently their ACTIVE state and v3.9 prompt migration are not
-verified. No standalone web duplicates were created. The owning ChatGPT desktop environment must
-apply `docs/operations/SCHEDULED_TASK_CONTRACTS.md` and confirm all four tasks before Pilot resumes.
+The binder matrix auto-bound 13 representative values across USD, KRW, TWD, percentages, basis
+points, multiples, signed shares, zone endpoints, and futures points. It left the draft unchanged,
+removed all draft refs, emitted no unresolved placeholder, and recorded unique stable logical IDs.
+All 16 independent negative cases rejected without a guessed replacement; each produced machine
+context whose only actions were reference correction, wording correction, or unsafe-number removal.
+
+The isolated delivery tests preserved held fallback eligibility after AI rejection, delivered only
+the stored deterministic fallback at deadline, retried byte-identical persisted content, stopped
+after three retries, and archived late AI without sending or counting it.
+
+All four local-project Scheduled Tasks are ACTIVE and now use policy v3.9, schema 4, structure v2,
+Pilot v3, renderer v3, and the exact documented claim commands. No duplicate task was created.
+
+Runtime evidence shows the 2026-08-15 US v3.8 session had already passed validation, sent 14/14
+AI-assisted messages, and completed its archive at 08:40 KST before this retrospective. The verified
+current cohort is therefore KR 1/5 and US 1/5. This retrospective sent zero Telegram messages and
+made zero official database or Pilot-counter mutations.

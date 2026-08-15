@@ -37,7 +37,7 @@ Current contracts:
 - AI policy `daily-review-v3.9`
 - output schema 4
 - OHLCV structure `ohlcv-structure-v2`
-- Pilot `ai-assisted-pilot-v3`, current successful count KR 1/5 and US 0/5
+- Pilot `ai-assisted-pilot-v3`, current successful count KR 1/5 and US 1/5
 - renderer `ai-assisted-pilot-renderer-v3`
 - AI mode shadow; Production Assist disabled
 - Public Action 0.4.5, operationId 20/20
@@ -77,16 +77,12 @@ knowledge.
 
 Next work order:
 
-1. Verify exact deployment and four Scheduled Task contracts use policy v3.9 without resetting Pilot
-   v3 counters. The 2026-08-15 implementation session could not see the four local-project tasks, so
-   their ACTIVE state and prompt migration remain blocked on the owning desktop environment.
-2. Complete the immutable 2026-08-15 retrospective if the original packet and validator artifact
-   become available; never reconstruct canonical facts from model prose.
-3. Start/continue Pilot v3 only after all gates are green.
-4. Review each successful market session by DATA, CALCULATION, PACKET, KNOWLEDGE_ROUTING,
+1. Confirm the four ACTIVE local-project Scheduled Tasks still use v3.9 and the operating checkout.
+2. Observe the next naturally scheduled Pilot v3 session; do not trigger a duplicate manual run.
+3. Review each successful market session by DATA, CALCULATION, PACKET, KNOWLEDGE_ROUTING,
    AI_REASONING, VALIDATION, RENDERER, and DELIVERY.
-5. Preserve exact archives and old cohorts.
-6. Keep Production Assist disabled until a separate explicit user decision.
+4. Preserve exact archives and old cohorts.
+5. Keep Production Assist disabled until a separate explicit user decision.
 
 Before completion, run full pytest, Ruff, `git diff --check`, Knowledge checksum validation, Skill and
 schema validation, documentation path validation, push the exact commit, verify GitHub Actions Test
