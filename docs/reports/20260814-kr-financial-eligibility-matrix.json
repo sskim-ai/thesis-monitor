@@ -17,6 +17,29 @@
   "rows": [
     {
       "ticker": "000660",
+      "fact_id": null,
+      "field_path": "quarterly_eps",
+      "availability": "not_present_in_packet",
+      "source_period": "2026-06-30",
+      "source_type": "preliminary_earnings",
+      "source_quality_flags": [
+        "net_income_exceeds_revenue",
+        "preliminary_profitability_outlier",
+        "unusually_high_or_low_operating_margin"
+      ],
+      "lineage": "unavailable",
+      "dependency_chain": [],
+      "before_prose_allowed": null,
+      "after_prose_allowed": null,
+      "quality_state": "unknown",
+      "denial_or_approval_reason": "standalone_quarterly_eps_not_canonicalized",
+      "used_in_before_message": false,
+      "used_in_after_message": false,
+      "raw_value_preserved_for_audit": false,
+      "after_canonical_display_value": null
+    },
+    {
+      "ticker": "000660",
       "fact_id": "earnings:2026-06-30",
       "field_path": "fields.operating_income.value",
       "source_period": "2026-06-30",

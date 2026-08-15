@@ -39,6 +39,7 @@ After:
 - 13 direct or derived registry rows are denied.
 - Revenue, operating income, margin, QoQ/YoY, TTM EPS, trailing PER, modeled forward EPS/fPER, and current historical PE position are unavailable to prose.
 - Current price, OHLCV structure, dynamic resistance, 1/5/20-day supply, current PBR, modeled fPBR, and historical PB percentile remain available.
+- A standalone quarterly EPS fact is not present in this packet; it remains Unknown rather than being inferred from TTM or forward EPS.
 - The corrected message explains the exact financial-quality hold and the next official facts required to update it.
 - Previously rendered denied usage leakage: `0`.
 
