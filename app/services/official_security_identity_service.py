@@ -45,7 +45,10 @@ def _exchange_code(value: str) -> str:
     normalized = value.strip().lower()
     if "nasdaq" in normalized:
         return "NASDAQ"
-    if "new york stock exchange" in normalized or normalized == "nyse":
+    if (
+        "new york stock exchange" in normalized
+        or normalized in {"nyse", "nysetx"}
+    ):
         return "NYSE"
     return value.strip()
 
@@ -156,6 +159,41 @@ def parse_sec_cover_page_identity(
         and fields.get("Security12bTitle")
         and fields.get("SecurityExchangeName")
     ]
+    unique_matches = {
+        (
+            fields["Security12bTitle"],
+            fields["TradingSymbol"],
+            fields["SecurityExchangeName"],
+        ): fields
+        for fields in matches
+    }
+    matches = list(unique_matches.values())
+    if not matches:
+        symbol_rows = [
+            fields
+            for fields in contexts.values()
+            if fields.get("TradingSymbol", "").upper() == ticker.upper()
+            and fields.get("SecurityExchangeName")
+        ]
+        exchanges = {
+            _exchange_code(fields["SecurityExchangeName"])
+            for fields in symbol_rows
+        }
+        title_rows = [
+            fields
+            for fields in contexts.values()
+            if fields.get("Security12bTitle")
+            and not fields.get("TradingSymbol")
+            and _exchange_code(fields.get("SecurityExchangeName", "")) in exchanges
+        ]
+        if len(exchanges) == 1 and len(title_rows) == 1:
+            matches = [
+                {
+                    **title_rows[0],
+                    "TradingSymbol": ticker.upper(),
+                    "SecurityExchangeName": next(iter(exchanges)),
+                }
+            ]
     if len(matches) != 1:
         raise ValueError("official_cover_security_not_unique")
     fields = matches[0]

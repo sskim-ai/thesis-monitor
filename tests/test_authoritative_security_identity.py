@@ -42,6 +42,17 @@ We have been approved to list the ADSs on the Nasdaq Global Select Market under 
 “SKHY.” Our common shares are listed on the KRX KOSPI Market under identification code “000660.”
 """
 
+IBM_SPLIT_COVER = """
+<ix:nonNumeric contextRef="issuer" name="dei:EntityRegistrantName">International Business Machines Corporation</ix:nonNumeric>
+<ix:nonNumeric contextRef="symbol" name="dei:TradingSymbol">IBM</ix:nonNumeric>
+<ix:nonNumeric contextRef="symbol" name="dei:SecurityExchangeName">NYSETX</ix:nonNumeric>
+<ix:nonNumeric contextRef="stock" name="dei:Security12bTitle">Capital stock, par value $.20 per share</ix:nonNumeric>
+<ix:nonNumeric contextRef="stock" name="dei:SecurityExchangeName">New York Stock Exchange</ix:nonNumeric>
+<ix:nonNumeric contextRef="note" name="dei:Security12bTitle">0.300% Notes due 2026</ix:nonNumeric>
+<ix:nonNumeric contextRef="note" name="dei:TradingSymbol">IBM 26B</ix:nonNumeric>
+<ix:nonNumeric contextRef="note" name="dei:SecurityExchangeName">New York Stock Exchange</ix:nonNumeric>
+"""
+
 
 def _engine():
     engine = create_engine("sqlite://")
@@ -157,6 +168,21 @@ def test_official_cover_corrects_wrong_googl_depositary_identity_idempotently() 
     assert provenance["field_provenance"]["security_type"]["source_url"]
     assert second["action"] == "no_op_already_authoritative"
     assert second["mutated"] is False
+
+
+def test_official_cover_joins_unique_split_symbol_and_stock_title_contexts() -> None:
+    evidence = parse_sec_cover_page_identity(
+        IBM_SPLIT_COVER,
+        ticker="IBM",
+        source_url="https://www.sec.gov/Archives/example/ibm.htm",
+        filing_accession="0000051143-26-000078",
+        filing_date="2026-07-23",
+        cik="0000051143",
+    )
+
+    assert evidence.security_type == "common_stock"
+    assert evidence.issuer_type == "domestic_us"
+    assert evidence.exchange == "NYSE"
 
 
 def test_official_prospectus_verifies_skhy_ads_and_ratio_direction() -> None:
