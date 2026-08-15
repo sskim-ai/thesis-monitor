@@ -1,3 +1,6 @@
+from datetime import datetime, timezone
+from types import SimpleNamespace
+
 from app.models.security import SecurityMaster
 from app.models.watchlist import WatchlistItem
 from app.services.financial_quality_service import build_financial_quality_state
@@ -73,7 +76,10 @@ def test_verified_common_stock_requires_positive_identity_evidence() -> None:
     result = resolve_security_identity(
         company_name="Fixture Corp",
         watchlist_item=_watchlist(),
-        security_master=_security(),
+        security_master=_security(
+            identity_quality="full",
+            identity_provider="local",
+        ),
     )
 
     assert result["identity_state"] == VERIFIED_NON_DEPOSITARY
@@ -128,6 +134,64 @@ def test_explicit_watchlist_depositary_evidence_outranks_inferred_local_default(
     assert "security_master_inferred_issuer_type_ignored" in result[
         "resolved_conflict_reasons"
     ]
+
+
+def test_explicit_watchlist_non_depositary_assertion_is_tier_c_evidence() -> None:
+    result = resolve_security_identity(
+        company_name="Fixture Corp",
+        watchlist_item=SimpleNamespace(
+            issuer_type="domestic_us",
+            exchange="NASDAQ",
+            ordinary_share_identifier=None,
+            adr_ratio=None,
+            created_at=datetime(2026, 8, 1, tzinfo=timezone.utc),
+        ),
+        security_master=_security(
+            identity_quality="full",
+            identity_provider="local",
+        ),
+    )
+
+    assert result["identity_state"] == VERIFIED_NON_DEPOSITARY
+    assert result["source_tier"] == "tier_d_inferred_default"
+    assert result["verification_source_tier"] == "tier_c_explicit_local"
+
+
+def test_watchlist_non_depositary_value_without_assertion_date_is_unknown() -> None:
+    result = resolve_security_identity(
+        company_name="Fixture Corp",
+        watchlist_item=SimpleNamespace(
+            issuer_type="domestic_us",
+            exchange="NASDAQ",
+            ordinary_share_identifier=None,
+            adr_ratio=None,
+            created_at=None,
+        ),
+        security_master=_security(
+            identity_quality="full",
+            identity_provider="local",
+        ),
+    )
+
+    assert result["identity_state"] == IDENTITY_UNKNOWN
+
+
+def test_exact_krx_listing_identity_is_tier_c_non_depositary() -> None:
+    result = resolve_security_identity(
+        company_name="Fixture Korea",
+        security_master=_security(
+            ticker="123450",
+            country="KR",
+            exchange="KRX",
+            issuer_type="krx",
+            security_type="common_stock",
+            identity_quality="full",
+            identity_provider="local",
+        ),
+    )
+
+    assert result["identity_state"] == VERIFIED_NON_DEPOSITARY
+    assert result["verification_source_tier"] == "tier_c_explicit_local"
 
 
 def test_legacy_affirmative_provider_depositary_is_conservative_only() -> None:

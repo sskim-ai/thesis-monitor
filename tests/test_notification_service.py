@@ -448,6 +448,35 @@ def test_security_identity_conflict_fallback_hides_multiples_but_keeps_price() -
     assert "내부 모델 추정치이며 시장 컨센서스가 아닙니다." not in message
 
 
+def test_verified_ads_without_current_security_basis_keeps_fallback_fail_closed() -> None:
+    assessment = _compact_assessment()
+    snapshot = json.loads(assessment.valuation_snapshot)
+    source = snapshot["financial_quality_source_metadata"]
+    source["security_identity"] = {
+        "decision_version": "security-identity-v2",
+        "identity_state": "verified_depositary",
+        "conflict_reasons": [],
+        "verification_status": "verified",
+        "eligibility_decision": "requires_verified_current_security_denominator",
+    }
+    snapshot["security_identity_state"] = "verified_depositary"
+    snapshot["security_identity_decision_version"] = "security-identity-v2"
+    snapshot["trailing_pe_basis_status"] = "insufficient_metadata"
+    snapshot["price_to_book_basis_status"] = "insufficient_metadata"
+    snapshot["forward_pe_basis_status"] = "insufficient_metadata"
+    assessment.valuation_snapshot = json.dumps(snapshot, ensure_ascii=False)
+
+    message = _message_for_assessment(assessment)
+
+    assert "현재가: 1,425,000원" in message
+    assert "PER =" not in message
+    assert "PBR =" not in message
+    assert "fPER:" not in message
+    assert "예탁증권 identity는 확인됐지만 current-security denominator" in message
+    assert "환산" not in message
+    assert "프리미엄" not in message
+
+
 def test_data_caution_only_renders_for_material_quality_problem() -> None:
     normal = _compact_assessment()
     assert "⚠️ 데이터 주의" not in _message_for_assessment(normal)

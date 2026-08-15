@@ -3853,7 +3853,14 @@ def test_authoritative_identity_field_provenance_reaches_ai_packet(
     stock = packet["stocks"][0]
     valuation = stock["valuation"]
     assert valuation["security_identity_state"] == "verified_non_depositary"
+    assert valuation["resolved_issuer_type"] == "domestic_us"
+    assert valuation["resolved_security_type"] == "common_stock"
+    assert valuation["is_depositary_security"] is False
     assert valuation["security_identity_source_tier"] == "tier_a_authoritative"
+    assert (
+        valuation["security_identity_verification_source_tier"]
+        == "tier_a_authoritative"
+    )
     assert (
         valuation["security_identity_provenance"]["field_provenance"]
         ["security_type"]["value"]
@@ -3865,6 +3872,50 @@ def test_authoritative_identity_field_provenance_reaches_ai_packet(
         if item["fact_id"] == "security_identity:current"
     )
     assert identity_fact["fields"]["source_tier"] == "tier_a_authoritative"
+
+
+def test_authoritative_ads_identity_replaces_legacy_packet_compatibility_fields(
+    monkeypatch,
+    tmp_path: Path,
+) -> None:
+    _settings(monkeypatch, tmp_path)
+    with Session(_engine()) as session:
+        _seed(session)
+        evidence = OfficialSecurityIdentityEvidence(
+            ticker="PACKETUS",
+            issuer_name="Packet Corp",
+            security_title="American Depositary Shares",
+            security_type="ads",
+            issuer_type="adr",
+            exchange="NASDAQ",
+            source_url="https://www.sec.gov/Archives/example/packetus-ads.htm",
+            source_form="424(b)(4)",
+            filing_accession="0000000000-26-000002",
+            as_of_date="2026-08-13",
+            source_reference="SEC accession 0000000000-26-000002",
+            cik="0000000000",
+            adr_identifier="PACKETUS",
+            ordinary_share_identifier="000001",
+            adr_ratio=0.1,
+            adr_ratio_direction="ordinary_shares_per_adr",
+        )
+        OfficialSecurityIdentityService().ingest(
+            session, evidence, dry_run=False
+        )
+        session.commit()
+
+        packet = build_ai_review_packet(session, RUN_DATE, "us")
+
+    assert packet is not None
+    valuation = packet["stocks"][0]["valuation"]
+    assert valuation["security_identity_state"] == "verified_depositary"
+    assert valuation["resolved_issuer_type"] == "adr"
+    assert valuation["resolved_security_type"] == "ads"
+    assert valuation["is_depositary_security"] is True
+    assert (
+        valuation["security_identity_provenance"]["adr_ratio_direction"]
+        == "ordinary_shares_per_adr"
+    )
 
 
 def test_market_hard_fails_zero_claims_with_four_eligible_anchors(

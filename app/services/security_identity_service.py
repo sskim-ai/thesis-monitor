@@ -136,6 +136,7 @@ def resolve_security_identity(
         or ""
     ).strip()
     watch_ratio = _attribute(watchlist_item, "adr_ratio")
+    watch_created_at = _attribute(watchlist_item, "created_at")
     security_ratio = _attribute(security_master, "adr_ratio")
     identity_quality = _normalized(_attribute(security_master, "identity_quality"))
     identity_provider = str(
@@ -144,6 +145,7 @@ def resolve_security_identity(
     source_tier = identity_source_tier(identity_provider, identity_quality)
     identity_warnings = _json_list(_attribute(security_master, "identity_warnings"))
     country = str(_attribute(security_master, "country") or "").strip()
+    ticker = str(_attribute(security_master, "ticker") or "").strip().upper()
     exchange = str(
         _attribute(security_master, "exchange")
         or _attribute(watchlist_item, "exchange")
@@ -165,8 +167,10 @@ def resolve_security_identity(
             )
 
     add("watchlist.issuer_type", watch_issuer, "issuer_type")
+    add("watchlist.created_at", watch_created_at, "explicit_assertion_as_of")
     add("security_master.issuer_type", security_issuer, "issuer_type")
     add("security_master.security_type", security_type, "security_type")
+    add("security_master.ticker", ticker, "listing_identifier")
     add("security_master.adr_identifier", adr_identifier, "depositary_evidence")
     add("security_master.figi", figi, "reference_instrument_identifier")
     add("security_master.identity_quality", identity_quality, "identity_quality")
@@ -236,9 +240,14 @@ def resolve_security_identity(
         watch_issuer in _DEPOSITARY_ISSUER_TYPES
         and (ordinary_identifier or isinstance(watch_ratio, (int, float)))
     )
+    watch_non_depositary_explicit = bool(
+        watch_issuer in _NON_DEPOSITARY_ISSUER_TYPES
+        and watch_created_at is not None
+        and exchange
+    )
     watch_tier = (
         TIER_C_EXPLICIT_LOCAL
-        if watch_depositary_explicit
+        if watch_depositary_explicit or watch_non_depositary_explicit
         else TIER_D_INFERRED_DEFAULT
     )
 
@@ -289,7 +298,7 @@ def resolve_security_identity(
 
     verified_non_depositary = bool(
         non_depositary_tuple
-        and master_verified
+        and (master_verified or watch_non_depositary_explicit)
     )
     legacy_affirmative_depositary_reference = bool(
         _normalized(identity_provider) == "local+openfigi"
@@ -300,6 +309,17 @@ def resolve_security_identity(
         and country
         and exchange
         and security_issuer not in {"domestic_us", "krx"}
+    )
+    krx_listing_assertion = bool(
+        re.fullmatch(r"\d{6}", ticker)
+        and country.upper() == "KR"
+        and exchange.upper() in {"KRX", "KOSPI", "KOSDAQ"}
+        and security_issuer == "krx"
+        and security_non_depositary
+        and identity_quality in {"full", "verified"}
+    )
+    verified_non_depositary = bool(
+        verified_non_depositary or krx_listing_assertion
     )
     verified_depositary = bool(
         (master_verified and (security_depositary or adr_identifier))
@@ -373,8 +393,15 @@ def resolve_security_identity(
         "source_provenance": identity_provider or "packet_legacy_identity",
         "source_tier": source_tier,
         "verification_source_tier": (
-            TIER_C_EXPLICIT_LOCAL
-            if legacy_affirmative_depositary_reference
+            source_tier
+            if master_verified
+            else TIER_C_EXPLICIT_LOCAL
+            if (
+                legacy_affirmative_depositary_reference
+                or watch_depositary_explicit
+                or watch_non_depositary_explicit
+                or krx_listing_assertion
+            )
             else source_tier
         ),
         "identity_provenance": provenance,
@@ -417,6 +444,10 @@ def resolve_packet_security_identity(stock: dict[str, object]) -> dict[str, obje
             "as_of": valuation.get("security_identity_as_of"),
             "source_provenance": valuation.get("security_identity_source_provenance"),
             "source_tier": valuation.get("security_identity_source_tier"),
+            "verification_source_tier": valuation.get(
+                "security_identity_verification_source_tier"
+            )
+            or valuation.get("security_identity_source_tier"),
             "identity_provenance": valuation.get("security_identity_provenance", {}),
             "eligibility_decision": valuation.get(
                 "security_identity_eligibility_decision"

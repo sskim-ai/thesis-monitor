@@ -1078,6 +1078,8 @@ def _assessment_report(
             "summary": (
                 "증권 유형과 주당 기준의 일치 여부를 확인하지 못해 배수 해석을 보류합니다."
                 if identity_state in {"conflict", "unknown"}
+                else "예탁증권 identity는 확인됐지만 current-security denominator·share·currency basis를 확인하지 못해 배수 해석을 보류합니다."
+                if identity_state == "verified_depositary"
                 else "검증 경고가 있는 이익 입력을 제외하고 독립적인 장부가치 자료만 확인합니다."
             ),
         }

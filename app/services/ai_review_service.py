@@ -55,6 +55,7 @@ from app.services.numeric_provenance_service import (
 from app.services.security_identity_service import (
     IDENTITY_CONFLICT,
     IDENTITY_UNKNOWN,
+    VERIFIED_DEPOSITARY,
     resolve_packet_security_identity,
     resolve_security_identity,
 )
@@ -969,6 +970,15 @@ def _valuation_payload(
     )
     snapshot.update(
         {
+            "resolved_issuer_type": identity["selected_issuer_type"],
+            "resolved_security_type": identity["selected_security_type"],
+            "is_depositary_security": (
+                identity["identity_state"] == VERIFIED_DEPOSITARY
+                or (
+                    identity["identity_state"] == IDENTITY_UNKNOWN
+                    and identity.get("is_depositary_evidence_present") is True
+                )
+            ),
             "security_identity_state": identity["identity_state"],
             "security_identity_decision_version": identity["decision_version"],
             "security_identity_evidence": identity["evidence_sources"],
@@ -985,6 +995,9 @@ def _valuation_payload(
                 "source_provenance"
             ],
             "security_identity_source_tier": identity["source_tier"],
+            "security_identity_verification_source_tier": identity[
+                "verification_source_tier"
+            ],
             "security_identity_provenance": identity["identity_provenance"],
             "security_identity_eligibility_decision": identity[
                 "eligibility_decision"
@@ -1047,6 +1060,7 @@ def _valuation_payload(
         "security_identity_as_of",
         "security_identity_source_provenance",
         "security_identity_source_tier",
+        "security_identity_verification_source_tier",
         "security_identity_provenance",
         "security_identity_eligibility_decision",
         "eps_currency",
@@ -1638,7 +1652,13 @@ def _fact_catalog(
                 "resolved_conflict_reasons": valuation.get(
                     "security_identity_resolved_conflict_reasons", []
                 ),
-                "source_tier": valuation.get("security_identity_source_tier"),
+                "source_tier": valuation.get(
+                    "security_identity_verification_source_tier"
+                )
+                or valuation.get("security_identity_source_tier"),
+                "identity_record_source_tier": valuation.get(
+                    "security_identity_source_tier"
+                ),
                 "identity_provenance": valuation.get(
                     "security_identity_provenance", {}
                 ),
