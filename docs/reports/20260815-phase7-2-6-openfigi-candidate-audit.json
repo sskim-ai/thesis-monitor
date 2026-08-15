@@ -1,0 +1,168 @@
+{
+  "authoritative_write_precedence": "audit_only",
+  "forward_order": {
+    "candidate_audit": [
+      {
+        "accepted": true,
+        "identity": {
+          "composite_figi": "",
+          "exchange_codes": [
+            "XNAS"
+          ],
+          "figi": "BBG-CLASS-A",
+          "market_sector": "EQUITY",
+          "name": "ALPHABET INC.",
+          "security_type": "common_stock",
+          "share_class": "CLASS A",
+          "share_class_figi": "",
+          "ticker": "GOOGL"
+        },
+        "raw_candidate": {
+          "figi": "BBG-CLASS-A",
+          "marketSector": "Equity",
+          "micCode": "XNAS",
+          "name": "Alphabet Inc.",
+          "securityDescription": "Class A",
+          "securityType2": "Common Stock",
+          "ticker": "GOOGL"
+        },
+        "rejection_reasons": [],
+        "score": 205
+      },
+      {
+        "accepted": false,
+        "identity": {
+          "composite_figi": "BBG000QND791",
+          "exchange_codes": [
+            "AR"
+          ],
+          "figi": "BBG000QND791",
+          "market_sector": "EQUITY",
+          "name": "GOOGLE INC - CEDEAR",
+          "security_type": "ads",
+          "share_class": "GOOGL",
+          "share_class_figi": "BBG001T96QK0",
+          "ticker": "GOOGL"
+        },
+        "raw_candidate": {
+          "compositeFIGI": "BBG000QND791",
+          "exchCode": "AR",
+          "figi": "BBG000QND791",
+          "marketSector": "Equity",
+          "name": "GOOGLE INC - CEDEAR",
+          "securityDescription": "GOOGL",
+          "securityType": "CEDEAR",
+          "securityType2": "Depositary Receipt",
+          "shareClassFIGI": "BBG001T96QK0",
+          "ticker": "GOOGL"
+        },
+        "rejection_reasons": [
+          "exchange_mismatch",
+          "share_class_mismatch"
+        ],
+        "score": 155
+      }
+    ],
+    "decision_version": "openfigi-candidate-selection-v2",
+    "reason": "unique_exact_instrument_match",
+    "selected": {
+      "figi": "BBG-CLASS-A",
+      "marketSector": "Equity",
+      "micCode": "XNAS",
+      "name": "Alphabet Inc.",
+      "securityDescription": "Class A",
+      "securityType2": "Common Stock",
+      "ticker": "GOOGL"
+    },
+    "status": "selected"
+  },
+  "historical_first_row": {
+    "compositeFIGI": "BBG000QND791",
+    "exchCode": "AR",
+    "figi": "BBG000QND791",
+    "marketSector": "Equity",
+    "name": "GOOGLE INC - CEDEAR",
+    "securityDescription": "GOOGL",
+    "securityType": "CEDEAR",
+    "securityType2": "Depositary Receipt",
+    "shareClassFIGI": "BBG001T96QK0",
+    "ticker": "GOOGL"
+  },
+  "order_invariant": true,
+  "reverse_order": {
+    "candidate_audit": [
+      {
+        "accepted": true,
+        "identity": {
+          "composite_figi": "",
+          "exchange_codes": [
+            "XNAS"
+          ],
+          "figi": "BBG-CLASS-A",
+          "market_sector": "EQUITY",
+          "name": "ALPHABET INC.",
+          "security_type": "common_stock",
+          "share_class": "CLASS A",
+          "share_class_figi": "",
+          "ticker": "GOOGL"
+        },
+        "raw_candidate": {
+          "figi": "BBG-CLASS-A",
+          "marketSector": "Equity",
+          "micCode": "XNAS",
+          "name": "Alphabet Inc.",
+          "securityDescription": "Class A",
+          "securityType2": "Common Stock",
+          "ticker": "GOOGL"
+        },
+        "rejection_reasons": [],
+        "score": 205
+      },
+      {
+        "accepted": false,
+        "identity": {
+          "composite_figi": "BBG000QND791",
+          "exchange_codes": [
+            "AR"
+          ],
+          "figi": "BBG000QND791",
+          "market_sector": "EQUITY",
+          "name": "GOOGLE INC - CEDEAR",
+          "security_type": "ads",
+          "share_class": "GOOGL",
+          "share_class_figi": "BBG001T96QK0",
+          "ticker": "GOOGL"
+        },
+        "raw_candidate": {
+          "compositeFIGI": "BBG000QND791",
+          "exchCode": "AR",
+          "figi": "BBG000QND791",
+          "marketSector": "Equity",
+          "name": "GOOGLE INC - CEDEAR",
+          "securityDescription": "GOOGL",
+          "securityType": "CEDEAR",
+          "securityType2": "Depositary Receipt",
+          "shareClassFIGI": "BBG001T96QK0",
+          "ticker": "GOOGL"
+        },
+        "rejection_reasons": [
+          "exchange_mismatch",
+          "share_class_mismatch"
+        ],
+        "score": 155
+      }
+    ],
+    "decision_version": "openfigi-candidate-selection-v2",
+    "reason": "unique_exact_instrument_match",
+    "selected": {
+      "figi": "BBG-CLASS-A",
+      "marketSector": "Equity",
+      "micCode": "XNAS",
+      "name": "Alphabet Inc.",
+      "securityDescription": "Class A",
+      "securityType2": "Common Stock",
+      "ticker": "GOOGL"
+    },
+    "status": "selected"
+  }
+}

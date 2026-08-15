@@ -1,0 +1,39 @@
+{
+  "automatic_bindings": 161,
+  "binding_delta_from_pre_identity_162": -1,
+  "binding_delta_reasons": [
+    "GOOGL current PER, consensus fPER, and historical PER percentile restored",
+    "SKHY consensus fPER remains withheld because current-security denominator/share/currency basis is unverified"
+  ],
+  "changed_message_tickers": [
+    "GOOGL",
+    "SKHY"
+  ],
+  "formatter_errors": 0,
+  "identity_states": {
+    "CORZ": "verified_non_depositary",
+    "CRCL": "verified_non_depositary",
+    "GOOGL": "verified_non_depositary",
+    "HUT": "verified_non_depositary",
+    "IBM": "verified_non_depositary",
+    "MU": "verified_non_depositary",
+    "RXRX": "verified_non_depositary",
+    "SKHY": "verified_depositary",
+    "SNDK": "verified_non_depositary",
+    "TSLA": "verified_non_depositary",
+    "TSM": "verified_depositary",
+    "WRD": "verified_depositary",
+    "WULF": "verified_non_depositary"
+  },
+  "manual_bindings": 0,
+  "operating_mutations": 0,
+  "packet_id": "2026-08-15-us-run-18-a578d851c997",
+  "pilot_mutations": 0,
+  "preview_sha256": "b06819b9b7459a170a292f9a85bcd1f9fbd43991c6e332f1f514f5d4ceddabf3",
+  "rejected_bindings": 0,
+  "stock_count": 13,
+  "telegram_sends": 0,
+  "unresolved_placeholders": 0,
+  "validator_errors": 0,
+  "validator_status": "PASS"
+}

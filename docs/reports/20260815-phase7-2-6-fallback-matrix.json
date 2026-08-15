@@ -1,0 +1,33 @@
+{
+  "cases": [
+    {
+      "case": "verified_non_depositary",
+      "multiple": "eligible_only_if_financial_and_denominator_lineage_pass",
+      "result": "PASS"
+    },
+    {
+      "case": "verified_depositary_without_current_security_basis",
+      "conversion_or_premium_calculated": false,
+      "independent_price_visible": true,
+      "multiple_visible": false,
+      "result": "PASS",
+      "specific_unknown_visible": true
+    },
+    {
+      "case": "identity_conflict_or_unknown",
+      "independent_price_chart_volume": "retained",
+      "numeric_and_qualitative_multiple_inference": "withheld",
+      "result": "PASS"
+    }
+  ],
+  "decision_version": "security-identity-v2",
+  "delivery_contract": {
+    "persisted_payload_retry_unchanged": true,
+    "rejected_ai_sent": false,
+    "single_delivery_unchanged": true
+  },
+  "focused_tests": [
+    "tests/test_notification_service.py::test_verified_ads_without_current_security_basis_keeps_fallback_fail_closed",
+    "tests/test_notification_service.py::test_security_identity_conflict_fallback_hides_multiples_but_keeps_price"
+  ]
+}

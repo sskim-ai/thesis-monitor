@@ -1,0 +1,16 @@
+{
+  "automatic_bindings": 141,
+  "formatter_errors": 0,
+  "manual_bindings": 0,
+  "message_diff_indices": [],
+  "operating_mutations": 0,
+  "packet_id": "2026-08-14-kr-run-17-99bbafd73ab7",
+  "pilot_mutations": 0,
+  "preview_sha256": "3724ed999fc7bbc88796c82b33f6c041d072d23ebd470deb7d58faf2d8e55b0d",
+  "rejected_bindings": 0,
+  "stock_count": 7,
+  "telegram_sends": 0,
+  "unresolved_placeholders": 0,
+  "validator_errors": 0,
+  "validator_status": "PASS"
+}

@@ -1,0 +1,14 @@
+{
+  "isolated_database_sha256_after": "0470a002f9abc64f5691f40093c2ad75299d7e679d6b029f1816127eb7c42c76",
+  "kr_packet_id": "2026-08-14-kr-run-17-99bbafd73ab7",
+  "official_assessment_mutations": 0,
+  "operating_archive_writes": 0,
+  "operating_database_writes": 0,
+  "pilot_mutations": 0,
+  "production_assist_changes": 0,
+  "scheduled_task_changes": 0,
+  "source_database_sha256": "23451ab3ac99b08b203c6dd736f31aac1ced1f1603be2a387d2ce2a0d22018a1",
+  "source_database_unchanged": true,
+  "telegram_sends": 0,
+  "us_packet_id": "2026-08-15-us-run-18-a578d851c997"
+}

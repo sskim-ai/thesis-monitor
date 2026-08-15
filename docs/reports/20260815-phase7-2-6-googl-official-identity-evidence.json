@@ -1,0 +1,131 @@
+{
+  "adr_ratio_direction": null,
+  "contract_version": "authoritative-security-identity-v1",
+  "evidence": {
+    "adr_identifier": null,
+    "adr_ratio": null,
+    "adr_ratio_direction": null,
+    "as_of_date": "2026-07-23",
+    "cik": "0001652044",
+    "exchange": "NASDAQ",
+    "filing_accession": "0001652044-26-000071",
+    "issuer_name": "Alphabet Inc.",
+    "issuer_type": "domestic_us",
+    "ordinary_share_identifier": null,
+    "registration_number": null,
+    "security_title": "Class A Common Stock, $0.001 par value",
+    "security_type": "common_stock",
+    "share_class": "Class A",
+    "source_form": "SEC cover page",
+    "source_reference": "SEC accession 0001652044-26-000071",
+    "source_url": "https://www.sec.gov/Archives/edgar/data/1652044/000165204426000071/goog-20260630.htm",
+    "ticker": "GOOGL"
+  },
+  "field_provenance": {
+    "cik": {
+      "as_of": "2026-07-23",
+      "filing_accession": "0001652044-26-000071",
+      "provider": "sec_official_identity",
+      "resolution_reason": "authoritative_sec_security_identity",
+      "source_reference": "SEC accession 0001652044-26-000071",
+      "source_tier": "tier_a_authoritative",
+      "source_url": "https://www.sec.gov/Archives/edgar/data/1652044/000165204426000071/goog-20260630.htm",
+      "value": "0001652044",
+      "verification_status": "verified"
+    },
+    "exchange": {
+      "as_of": "2026-07-23",
+      "filing_accession": "0001652044-26-000071",
+      "provider": "sec_official_identity",
+      "resolution_reason": "authoritative_sec_security_identity",
+      "source_reference": "SEC accession 0001652044-26-000071",
+      "source_tier": "tier_a_authoritative",
+      "source_url": "https://www.sec.gov/Archives/edgar/data/1652044/000165204426000071/goog-20260630.htm",
+      "value": "NASDAQ",
+      "verification_status": "verified"
+    },
+    "issuer_name": {
+      "as_of": "2026-07-23",
+      "filing_accession": "0001652044-26-000071",
+      "provider": "sec_official_identity",
+      "resolution_reason": "authoritative_sec_security_identity",
+      "source_reference": "SEC accession 0001652044-26-000071",
+      "source_tier": "tier_a_authoritative",
+      "source_url": "https://www.sec.gov/Archives/edgar/data/1652044/000165204426000071/goog-20260630.htm",
+      "value": "Alphabet Inc.",
+      "verification_status": "verified"
+    },
+    "issuer_type": {
+      "as_of": "2026-07-23",
+      "filing_accession": "0001652044-26-000071",
+      "provider": "sec_official_identity",
+      "resolution_reason": "authoritative_sec_security_identity",
+      "source_reference": "SEC accession 0001652044-26-000071",
+      "source_tier": "tier_a_authoritative",
+      "source_url": "https://www.sec.gov/Archives/edgar/data/1652044/000165204426000071/goog-20260630.htm",
+      "value": "domestic_us",
+      "verification_status": "verified"
+    },
+    "security_title": {
+      "as_of": "2026-07-23",
+      "filing_accession": "0001652044-26-000071",
+      "provider": "sec_official_identity",
+      "resolution_reason": "authoritative_sec_security_identity",
+      "source_reference": "SEC accession 0001652044-26-000071",
+      "source_tier": "tier_a_authoritative",
+      "source_url": "https://www.sec.gov/Archives/edgar/data/1652044/000165204426000071/goog-20260630.htm",
+      "value": "Class A Common Stock, $0.001 par value",
+      "verification_status": "verified"
+    },
+    "security_type": {
+      "as_of": "2026-07-23",
+      "filing_accession": "0001652044-26-000071",
+      "provider": "sec_official_identity",
+      "resolution_reason": "authoritative_sec_security_identity",
+      "source_reference": "SEC accession 0001652044-26-000071",
+      "source_tier": "tier_a_authoritative",
+      "source_url": "https://www.sec.gov/Archives/edgar/data/1652044/000165204426000071/goog-20260630.htm",
+      "value": "common_stock",
+      "verification_status": "verified"
+    },
+    "share_class": {
+      "as_of": "2026-07-23",
+      "filing_accession": "0001652044-26-000071",
+      "provider": "sec_official_identity",
+      "resolution_reason": "authoritative_sec_security_identity",
+      "source_reference": "SEC accession 0001652044-26-000071",
+      "source_tier": "tier_a_authoritative",
+      "source_url": "https://www.sec.gov/Archives/edgar/data/1652044/000165204426000071/goog-20260630.htm",
+      "value": "Class A",
+      "verification_status": "verified"
+    },
+    "ticker": {
+      "as_of": "2026-07-23",
+      "filing_accession": "0001652044-26-000071",
+      "provider": "sec_official_identity",
+      "resolution_reason": "authoritative_sec_security_identity",
+      "source_reference": "SEC accession 0001652044-26-000071",
+      "source_tier": "tier_a_authoritative",
+      "source_url": "https://www.sec.gov/Archives/edgar/data/1652044/000165204426000071/goog-20260630.htm",
+      "value": "GOOGL",
+      "verification_status": "verified"
+    }
+  },
+  "provider": "sec_official_identity",
+  "source_tier": "tier_a_authoritative",
+  "validation_audit": {
+    "adr_ratio_direction": "ordinary_shares_per_adr",
+    "apply_action": "apply_authoritative_identity",
+    "apply_mutated_on_isolated_copy": true,
+    "dry_run_action": "apply_authoritative_identity",
+    "dry_run_mutated": false,
+    "operating_mutation": 0,
+    "repeat_action": "no_op_already_authoritative",
+    "repeat_mutated": false,
+    "resolved_identity_state": "verified_non_depositary",
+    "resolved_security_type": "common_stock",
+    "rollback_snapshot_sha256": "59357cf8a784b3717eb7cb08a6869fbdaf2983cffca93b0e5a1362d1556a23bc",
+    "selected_adr_ratio": null,
+    "ticker": "GOOGL"
+  }
+}

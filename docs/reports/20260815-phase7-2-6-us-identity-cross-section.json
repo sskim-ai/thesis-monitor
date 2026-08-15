@@ -1,0 +1,212 @@
+{
+  "packet_id": "2026-08-15-us-run-18-a578d851c997",
+  "rows": [
+    {
+      "denied_valuation_rows": [],
+      "eligibility_decision": "provider_native_multiple_may_be_eligible",
+      "identity_state": "verified_non_depositary",
+      "is_depositary_security": false,
+      "provider": "sec_official_identity",
+      "record_source_tier": "tier_a_authoritative",
+      "resolved_issuer_type": "domestic_us",
+      "resolved_security_type": "common_stock",
+      "ticker": "CORZ",
+      "verification_source_tier": "tier_a_authoritative"
+    },
+    {
+      "denied_valuation_rows": [
+        {
+          "denial_reason": "ttm_dependency_lineage_unverified",
+          "fact_id": "valuation:current",
+          "field_path": "fields.trailing_pe"
+        }
+      ],
+      "eligibility_decision": "provider_native_multiple_may_be_eligible",
+      "identity_state": "verified_non_depositary",
+      "is_depositary_security": false,
+      "provider": "local",
+      "record_source_tier": "tier_d_inferred_default",
+      "resolved_issuer_type": "domestic_us",
+      "resolved_security_type": "common_stock",
+      "ticker": "CRCL",
+      "verification_source_tier": "tier_c_explicit_local"
+    },
+    {
+      "denied_valuation_rows": [],
+      "eligibility_decision": "provider_native_multiple_may_be_eligible",
+      "identity_state": "verified_non_depositary",
+      "is_depositary_security": false,
+      "provider": "sec_official_identity",
+      "record_source_tier": "tier_a_authoritative",
+      "resolved_issuer_type": "domestic_us",
+      "resolved_security_type": "common_stock",
+      "ticker": "GOOGL",
+      "verification_source_tier": "tier_a_authoritative"
+    },
+    {
+      "denied_valuation_rows": [],
+      "eligibility_decision": "provider_native_multiple_may_be_eligible",
+      "identity_state": "verified_non_depositary",
+      "is_depositary_security": false,
+      "provider": "sec_official_identity",
+      "record_source_tier": "tier_a_authoritative",
+      "resolved_issuer_type": "domestic_us",
+      "resolved_security_type": "common_stock",
+      "ticker": "HUT",
+      "verification_source_tier": "tier_a_authoritative"
+    },
+    {
+      "denied_valuation_rows": [],
+      "eligibility_decision": "provider_native_multiple_may_be_eligible",
+      "identity_state": "verified_non_depositary",
+      "is_depositary_security": false,
+      "provider": "sec_official_identity",
+      "record_source_tier": "tier_a_authoritative",
+      "resolved_issuer_type": "domestic_us",
+      "resolved_security_type": "common_stock",
+      "ticker": "IBM",
+      "verification_source_tier": "tier_a_authoritative"
+    },
+    {
+      "denied_valuation_rows": [],
+      "eligibility_decision": "provider_native_multiple_may_be_eligible",
+      "identity_state": "verified_non_depositary",
+      "is_depositary_security": false,
+      "provider": "local",
+      "record_source_tier": "tier_d_inferred_default",
+      "resolved_issuer_type": "domestic_us",
+      "resolved_security_type": "common_stock",
+      "ticker": "MU",
+      "verification_source_tier": "tier_c_explicit_local"
+    },
+    {
+      "denied_valuation_rows": [],
+      "eligibility_decision": "provider_native_multiple_may_be_eligible",
+      "identity_state": "verified_non_depositary",
+      "is_depositary_security": false,
+      "provider": "local",
+      "record_source_tier": "tier_d_inferred_default",
+      "resolved_issuer_type": "domestic_us",
+      "resolved_security_type": "common_stock",
+      "ticker": "RXRX",
+      "verification_source_tier": "tier_c_explicit_local"
+    },
+    {
+      "denied_valuation_rows": [
+        {
+          "denial_reason": "ttm_dependency_lineage_unverified",
+          "fact_id": "valuation:current",
+          "field_path": "fields.trailing_pe"
+        },
+        {
+          "denial_reason": "book_value_dependency_lineage_unverified",
+          "fact_id": "valuation:current",
+          "field_path": "fields.price_to_book"
+        },
+        {
+          "denial_reason": "consensus_forward_lineage_unverified",
+          "fact_id": "valuation:current",
+          "field_path": "fields.forward_pe"
+        }
+      ],
+      "eligibility_decision": "requires_verified_current_security_denominator",
+      "identity_state": "verified_depositary",
+      "is_depositary_security": true,
+      "provider": "sec_official_identity",
+      "record_source_tier": "tier_a_authoritative",
+      "resolved_issuer_type": "adr",
+      "resolved_security_type": "ads",
+      "ticker": "SKHY",
+      "verification_source_tier": "tier_a_authoritative"
+    },
+    {
+      "denied_valuation_rows": [
+        {
+          "denial_reason": "ttm_dependency_lineage_unverified",
+          "fact_id": "valuation:current",
+          "field_path": "fields.trailing_pe"
+        }
+      ],
+      "eligibility_decision": "provider_native_multiple_may_be_eligible",
+      "identity_state": "verified_non_depositary",
+      "is_depositary_security": false,
+      "provider": "local",
+      "record_source_tier": "tier_d_inferred_default",
+      "resolved_issuer_type": "domestic_us",
+      "resolved_security_type": "common_stock",
+      "ticker": "SNDK",
+      "verification_source_tier": "tier_c_explicit_local"
+    },
+    {
+      "denied_valuation_rows": [],
+      "eligibility_decision": "provider_native_multiple_may_be_eligible",
+      "identity_state": "verified_non_depositary",
+      "is_depositary_security": false,
+      "provider": "local",
+      "record_source_tier": "tier_d_inferred_default",
+      "resolved_issuer_type": "domestic_us",
+      "resolved_security_type": "common_stock",
+      "ticker": "TSLA",
+      "verification_source_tier": "tier_c_explicit_local"
+    },
+    {
+      "denied_valuation_rows": [
+        {
+          "denial_reason": "ttm_dependency_lineage_unverified",
+          "fact_id": "valuation:current",
+          "field_path": "fields.trailing_pe"
+        },
+        {
+          "denial_reason": "book_value_dependency_lineage_unverified",
+          "fact_id": "valuation:current",
+          "field_path": "fields.price_to_book"
+        },
+        {
+          "denial_reason": "consensus_forward_lineage_unverified",
+          "fact_id": "valuation:current",
+          "field_path": "fields.forward_pe"
+        }
+      ],
+      "eligibility_decision": "requires_verified_current_security_denominator",
+      "identity_state": "verified_depositary",
+      "is_depositary_security": true,
+      "provider": "local+openfigi",
+      "record_source_tier": "tier_d_inferred_default",
+      "resolved_issuer_type": "foreign_private_issuer",
+      "resolved_security_type": "depositary_receipt",
+      "ticker": "TSM",
+      "verification_source_tier": "tier_c_explicit_local"
+    },
+    {
+      "denied_valuation_rows": [
+        {
+          "denial_reason": "book_value_dependency_lineage_unverified",
+          "fact_id": "valuation:current",
+          "field_path": "fields.price_to_book"
+        }
+      ],
+      "eligibility_decision": "requires_verified_current_security_denominator",
+      "identity_state": "verified_depositary",
+      "is_depositary_security": true,
+      "provider": "local+openfigi",
+      "record_source_tier": "tier_d_inferred_default",
+      "resolved_issuer_type": "foreign_private_issuer",
+      "resolved_security_type": "depositary_receipt",
+      "ticker": "WRD",
+      "verification_source_tier": "tier_c_explicit_local"
+    },
+    {
+      "denied_valuation_rows": [],
+      "eligibility_decision": "provider_native_multiple_may_be_eligible",
+      "identity_state": "verified_non_depositary",
+      "is_depositary_security": false,
+      "provider": "sec_official_identity",
+      "record_source_tier": "tier_a_authoritative",
+      "resolved_issuer_type": "domestic_us",
+      "resolved_security_type": "common_stock",
+      "ticker": "WULF",
+      "verification_source_tier": "tier_a_authoritative"
+    }
+  ],
+  "stock_count": 13
+}

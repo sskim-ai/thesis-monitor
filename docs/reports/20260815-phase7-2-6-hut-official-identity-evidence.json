@@ -1,0 +1,120 @@
+{
+  "adr_ratio_direction": null,
+  "contract_version": "authoritative-security-identity-v1",
+  "evidence": {
+    "adr_identifier": null,
+    "adr_ratio": null,
+    "adr_ratio_direction": null,
+    "as_of_date": "2026-08-04",
+    "cik": "0001964789",
+    "exchange": "NASDAQ",
+    "filing_accession": "0001104659-26-090025",
+    "issuer_name": "Hut 8 Corp.",
+    "issuer_type": "domestic_us",
+    "ordinary_share_identifier": null,
+    "registration_number": null,
+    "security_title": "Common Stock, par value $0.01 per share",
+    "security_type": "common_stock",
+    "share_class": null,
+    "source_form": "SEC cover page",
+    "source_reference": "SEC accession 0001104659-26-090025",
+    "source_url": "https://www.sec.gov/Archives/edgar/data/1964789/000110465926090025/hut-20260630x10q.htm",
+    "ticker": "HUT"
+  },
+  "field_provenance": {
+    "cik": {
+      "as_of": "2026-08-04",
+      "filing_accession": "0001104659-26-090025",
+      "provider": "sec_official_identity",
+      "resolution_reason": "authoritative_sec_security_identity",
+      "source_reference": "SEC accession 0001104659-26-090025",
+      "source_tier": "tier_a_authoritative",
+      "source_url": "https://www.sec.gov/Archives/edgar/data/1964789/000110465926090025/hut-20260630x10q.htm",
+      "value": "0001964789",
+      "verification_status": "verified"
+    },
+    "exchange": {
+      "as_of": "2026-08-04",
+      "filing_accession": "0001104659-26-090025",
+      "provider": "sec_official_identity",
+      "resolution_reason": "authoritative_sec_security_identity",
+      "source_reference": "SEC accession 0001104659-26-090025",
+      "source_tier": "tier_a_authoritative",
+      "source_url": "https://www.sec.gov/Archives/edgar/data/1964789/000110465926090025/hut-20260630x10q.htm",
+      "value": "NASDAQ",
+      "verification_status": "verified"
+    },
+    "issuer_name": {
+      "as_of": "2026-08-04",
+      "filing_accession": "0001104659-26-090025",
+      "provider": "sec_official_identity",
+      "resolution_reason": "authoritative_sec_security_identity",
+      "source_reference": "SEC accession 0001104659-26-090025",
+      "source_tier": "tier_a_authoritative",
+      "source_url": "https://www.sec.gov/Archives/edgar/data/1964789/000110465926090025/hut-20260630x10q.htm",
+      "value": "Hut 8 Corp.",
+      "verification_status": "verified"
+    },
+    "issuer_type": {
+      "as_of": "2026-08-04",
+      "filing_accession": "0001104659-26-090025",
+      "provider": "sec_official_identity",
+      "resolution_reason": "authoritative_sec_security_identity",
+      "source_reference": "SEC accession 0001104659-26-090025",
+      "source_tier": "tier_a_authoritative",
+      "source_url": "https://www.sec.gov/Archives/edgar/data/1964789/000110465926090025/hut-20260630x10q.htm",
+      "value": "domestic_us",
+      "verification_status": "verified"
+    },
+    "security_title": {
+      "as_of": "2026-08-04",
+      "filing_accession": "0001104659-26-090025",
+      "provider": "sec_official_identity",
+      "resolution_reason": "authoritative_sec_security_identity",
+      "source_reference": "SEC accession 0001104659-26-090025",
+      "source_tier": "tier_a_authoritative",
+      "source_url": "https://www.sec.gov/Archives/edgar/data/1964789/000110465926090025/hut-20260630x10q.htm",
+      "value": "Common Stock, par value $0.01 per share",
+      "verification_status": "verified"
+    },
+    "security_type": {
+      "as_of": "2026-08-04",
+      "filing_accession": "0001104659-26-090025",
+      "provider": "sec_official_identity",
+      "resolution_reason": "authoritative_sec_security_identity",
+      "source_reference": "SEC accession 0001104659-26-090025",
+      "source_tier": "tier_a_authoritative",
+      "source_url": "https://www.sec.gov/Archives/edgar/data/1964789/000110465926090025/hut-20260630x10q.htm",
+      "value": "common_stock",
+      "verification_status": "verified"
+    },
+    "ticker": {
+      "as_of": "2026-08-04",
+      "filing_accession": "0001104659-26-090025",
+      "provider": "sec_official_identity",
+      "resolution_reason": "authoritative_sec_security_identity",
+      "source_reference": "SEC accession 0001104659-26-090025",
+      "source_tier": "tier_a_authoritative",
+      "source_url": "https://www.sec.gov/Archives/edgar/data/1964789/000110465926090025/hut-20260630x10q.htm",
+      "value": "HUT",
+      "verification_status": "verified"
+    }
+  },
+  "provider": "sec_official_identity",
+  "source_tier": "tier_a_authoritative",
+  "validation_audit": {
+    "adr_ratio_direction": "ordinary_shares_per_adr",
+    "apply_action": "apply_authoritative_identity",
+    "apply_mutated_on_isolated_copy": true,
+    "dry_run_action": "apply_authoritative_identity",
+    "dry_run_mutated": false,
+    "operating_mutation": 0,
+    "repeat_action": "no_op_already_authoritative",
+    "repeat_mutated": false,
+    "resolved_identity_state": "verified_non_depositary",
+    "resolved_security_type": "common_stock",
+    "rollback_snapshot_sha256": "ef7b07012abbc91c2602f2e2f0dca69f362148b317dcb1dc568e12a0b1d086ef",
+    "selected_adr_ratio": null,
+    "ticker": "HUT"
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "analysis_reruns": 0,
+  "operating_mutations": 0,
+  "phase725_safe_pair": {
+    "error_count": 0,
+    "errors": [],
+    "packet_id": "2026-08-15-us-run-18-ac1f8a4d0253",
+    "validator_status": "PASS"
+  },
+  "pilot_mutations": 0,
+  "pre_identity_unsafe_pair": {
+    "error_count": 4,
+    "errors": [
+      "GOOGL:security_identity_denied_fact_used:valuation:current",
+      "GOOGL:security_identity_denied_numeric_claim:valuation:current",
+      "SKHY:security_identity_denied_fact_used:valuation:consensus_forward_earnings",
+      "SKHY:security_identity_denied_numeric_claim:valuation:current"
+    ],
+    "packet_id": "2026-08-15-us-run-18-39f4b8810c45",
+    "validator_status": "REJECT"
+  },
+  "renderer_reruns": 0,
+  "telegram_sends": 0
+}

@@ -1,0 +1,120 @@
+{
+  "adr_ratio_direction": null,
+  "contract_version": "authoritative-security-identity-v1",
+  "evidence": {
+    "adr_identifier": null,
+    "adr_ratio": null,
+    "adr_ratio_direction": null,
+    "as_of_date": "2026-08-05",
+    "cik": "0001083301",
+    "exchange": "NASDAQ",
+    "filing_accession": "0001083301-26-000166",
+    "issuer_name": "TERAWULF INC.",
+    "issuer_type": "domestic_us",
+    "ordinary_share_identifier": null,
+    "registration_number": null,
+    "security_title": "Common Stock, $0.001 par value per share",
+    "security_type": "common_stock",
+    "share_class": null,
+    "source_form": "SEC cover page",
+    "source_reference": "SEC accession 0001083301-26-000166",
+    "source_url": "https://www.sec.gov/Archives/edgar/data/1083301/000108330126000166/wulf-20260630.htm",
+    "ticker": "WULF"
+  },
+  "field_provenance": {
+    "cik": {
+      "as_of": "2026-08-05",
+      "filing_accession": "0001083301-26-000166",
+      "provider": "sec_official_identity",
+      "resolution_reason": "authoritative_sec_security_identity",
+      "source_reference": "SEC accession 0001083301-26-000166",
+      "source_tier": "tier_a_authoritative",
+      "source_url": "https://www.sec.gov/Archives/edgar/data/1083301/000108330126000166/wulf-20260630.htm",
+      "value": "0001083301",
+      "verification_status": "verified"
+    },
+    "exchange": {
+      "as_of": "2026-08-05",
+      "filing_accession": "0001083301-26-000166",
+      "provider": "sec_official_identity",
+      "resolution_reason": "authoritative_sec_security_identity",
+      "source_reference": "SEC accession 0001083301-26-000166",
+      "source_tier": "tier_a_authoritative",
+      "source_url": "https://www.sec.gov/Archives/edgar/data/1083301/000108330126000166/wulf-20260630.htm",
+      "value": "NASDAQ",
+      "verification_status": "verified"
+    },
+    "issuer_name": {
+      "as_of": "2026-08-05",
+      "filing_accession": "0001083301-26-000166",
+      "provider": "sec_official_identity",
+      "resolution_reason": "authoritative_sec_security_identity",
+      "source_reference": "SEC accession 0001083301-26-000166",
+      "source_tier": "tier_a_authoritative",
+      "source_url": "https://www.sec.gov/Archives/edgar/data/1083301/000108330126000166/wulf-20260630.htm",
+      "value": "TERAWULF INC.",
+      "verification_status": "verified"
+    },
+    "issuer_type": {
+      "as_of": "2026-08-05",
+      "filing_accession": "0001083301-26-000166",
+      "provider": "sec_official_identity",
+      "resolution_reason": "authoritative_sec_security_identity",
+      "source_reference": "SEC accession 0001083301-26-000166",
+      "source_tier": "tier_a_authoritative",
+      "source_url": "https://www.sec.gov/Archives/edgar/data/1083301/000108330126000166/wulf-20260630.htm",
+      "value": "domestic_us",
+      "verification_status": "verified"
+    },
+    "security_title": {
+      "as_of": "2026-08-05",
+      "filing_accession": "0001083301-26-000166",
+      "provider": "sec_official_identity",
+      "resolution_reason": "authoritative_sec_security_identity",
+      "source_reference": "SEC accession 0001083301-26-000166",
+      "source_tier": "tier_a_authoritative",
+      "source_url": "https://www.sec.gov/Archives/edgar/data/1083301/000108330126000166/wulf-20260630.htm",
+      "value": "Common Stock, $0.001 par value per share",
+      "verification_status": "verified"
+    },
+    "security_type": {
+      "as_of": "2026-08-05",
+      "filing_accession": "0001083301-26-000166",
+      "provider": "sec_official_identity",
+      "resolution_reason": "authoritative_sec_security_identity",
+      "source_reference": "SEC accession 0001083301-26-000166",
+      "source_tier": "tier_a_authoritative",
+      "source_url": "https://www.sec.gov/Archives/edgar/data/1083301/000108330126000166/wulf-20260630.htm",
+      "value": "common_stock",
+      "verification_status": "verified"
+    },
+    "ticker": {
+      "as_of": "2026-08-05",
+      "filing_accession": "0001083301-26-000166",
+      "provider": "sec_official_identity",
+      "resolution_reason": "authoritative_sec_security_identity",
+      "source_reference": "SEC accession 0001083301-26-000166",
+      "source_tier": "tier_a_authoritative",
+      "source_url": "https://www.sec.gov/Archives/edgar/data/1083301/000108330126000166/wulf-20260630.htm",
+      "value": "WULF",
+      "verification_status": "verified"
+    }
+  },
+  "provider": "sec_official_identity",
+  "source_tier": "tier_a_authoritative",
+  "validation_audit": {
+    "adr_ratio_direction": "ordinary_shares_per_adr",
+    "apply_action": "apply_authoritative_identity",
+    "apply_mutated_on_isolated_copy": true,
+    "dry_run_action": "apply_authoritative_identity",
+    "dry_run_mutated": false,
+    "operating_mutation": 0,
+    "repeat_action": "no_op_already_authoritative",
+    "repeat_mutated": false,
+    "resolved_identity_state": "verified_non_depositary",
+    "resolved_security_type": "common_stock",
+    "rollback_snapshot_sha256": "6f7a3b4a4191a232e4424a938b1fbf976fb5fdd2aa4ab4f7dd3f36fcb47eb7a9",
+    "selected_adr_ratio": null,
+    "ticker": "WULF"
+  }
+}

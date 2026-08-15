@@ -1,90 +1,113 @@
-# Deterministic Security Identity Resolution
+# Authoritative Security Identity Resolution
 
-## Problem
+## Boundary
 
-A missing depositary indicator was previously represented by `is_depositary_security=false`.
-The provider-native multiple contract treated that value as proof of a non-depositary security.
-This could expose a consensus multiple even when the company name, security type, issuer type,
-or ADR metadata conflicted and the current-security denominator had not been verified.
+Security identity is a prerequisite for any valuation that depends on a per-security or
+per-share denominator. A missing ADR flag, a local default, or a provider result selected only by
+ticker is not proof that the listed instrument is a common share.
 
-## Decision
+`security-identity-v2` keeps four states:
 
-Security identity eligibility uses `security-identity-v1` and four deterministic states:
-
-| State | Meaning | Security/share-basis valuation |
+| State | Meaning | Security-basis valuation |
 | --- | --- | --- |
-| `verified_depositary` | Depositary identity has affirmative evidence | Only with a verified current-security denominator and compatible currency/share basis |
-| `verified_non_depositary` | Issuer and security evidence consistently verify a non-depositary security | Provider-native multiple may be eligible if the remaining source/period/basis contract passes |
-| `conflict` | Two or more identity signals are inconsistent | Denied |
-| `unknown` | Evidence is incomplete | Unknown and prose-ineligible |
+| `verified_depositary` | Affirmative ADR/ADS evidence | Allowed only when the current-security denominator, share basis, and currency also pass |
+| `verified_non_depositary` | Affirmative common/ordinary-security evidence | Provider-native multiples may proceed through the remaining lineage gates |
+| `conflict` | Material evidence disagrees | Denied |
+| `unknown` | Evidence is insufficient | Denied |
 
-The resolver records evidence sources and values, conflict reasons, verification status,
-as-of/source provenance, and the eligibility decision. The durable assessment stores this
-metadata inside the existing `financial_quality_source_metadata.security_identity` JSON contract,
-so no database or Public Action schema change is required. The AI packet exposes the same result
-as `security_identity:current` and on the valuation payload.
+Identity and valuation eligibility remain separate. A verified ADS ratio proves the instrument
+relationship; it does not authorize an EPS conversion, FX conversion, PER reconstruction, or
+premium/discount calculation.
 
-## Evidence
+## Source Trust
 
-The resolver considers Watchlist issuer type, ordinary-share identifier and ADR ratio;
-SecurityMaster issuer/security types, ADR identifier and ratio, identity quality/provider/warnings;
-country and exchange; and an explicit ADR/ADS marker in the verified profile name. A profile-name
-marker is conflict evidence, not an ADR ratio or conversion input.
+Sources are ranked for resolution, while conflicting raw evidence is retained.
 
-Absence of an ADR identifier, a default `domestic_us` value, or legacy boolean `false` does not
-establish `verified_non_depositary`. Conflicting sources are not silently ranked or overwritten.
+| Tier | Source | Permitted effect |
+| --- | --- | --- |
+| A | SEC filing, issuer filing, official exchange or issuer listing | May establish authoritative identity |
+| B | Deterministically matched reference provider | May establish identity only after a unique instrument match |
+| C | Explicit Watchlist/operator assertion with provenance date; exact KRX listing assertion | May establish the asserted identity |
+| D | Inferred ticker class, default `domestic_us`, default `common_stock`, legacy boolean | Audit evidence only; never establishes verified identity |
 
-## Eligibility Propagation
+An explicit Watchlist issuer assertion requires its stored creation timestamp and listing exchange.
+An exact KRX assertion requires a six-digit ticker, KR country, KRX/KOSPI/KOSDAQ exchange,
+`krx` issuer type, and common-security type. A narrow legacy compatibility rule retains only
+affirmative depositary evidence with a FIGI, ADR identifier, depositary type, foreign issuer type,
+country, and exchange. It can never verify a common stock or unlock a multiple by itself.
 
-`conflict` and `unknown` propagate through `financial-quality-taint-v2` to all values that require
-a current-security/share basis: EPS, PER, BVPS, PBR, forward multiples, historical per-share
-percentiles, and derived valuation position. Raw audit values remain stored, but their numeric
-registry rows have `prose_allowed=false`, no canonical display value, and no approved variants.
+The packet records both the SecurityMaster record tier and the effective verification tier. This
+prevents a Tier C assertion from being presented as an authoritative Tier A source.
 
-Issuer-level monetary facts, price, OHLCV, chart structure, volume, and KR investor flow remain
-independent when their own contracts pass. A verified depositary still requires a compatible
-current-security denominator; no FX or ADR-ratio inference is performed.
+## OpenFIGI Canonicalization
 
-## Validator And Fallback
+`openfigi-candidate-selection-v2` removes first-row fallback. Every returned candidate is audited
+against ticker, issuer name, exchange/MIC, share class, market sector, security type, and stable
+FIGI identifiers.
 
-The binder rejects placeholders for identity-ineligible rows. The validator also rejects existing
-or raw numeric claims and number-free valuation interpretations that cite a denied valuation fact.
-The separate `security_identity:current` fact may support a concrete Unknown explanation.
+1. Only a unique exact instrument is selected.
+2. Candidate ordering cannot change the result.
+3. Equal eligible candidates are `ambiguous`; no SecurityMaster write occurs.
+4. Ticker, issuer, exchange, class, sector, or type mismatches are rejected with reasons.
+5. All candidates and rejection reasons are stored in `ProviderResponseCache`.
+6. A Tier B result cannot overwrite Tier A identity; it is cached as audit-only.
 
-The deterministic fallback reads the same persisted identity metadata. It removes denied numeric
-and qualitative multiple claims while retaining independent price, chart, volume, supply, and
-issuer-financial facts. Persisted-payload retry and single-delivery behavior are unchanged.
+This prevents the historical GOOGL CEDEAR candidate and IBM commercial-paper candidate from being
+accepted as the Nasdaq/NYSE equity merely because they appeared first.
 
-## Why
+## Official Ingestion
 
-Provider provenance validates where a multiple came from; it does not prove what security or share
-basis the denominator represents. Making identity an affirmative, auditable contract prevents an
-unknown or conflicting listing from becoming an apparently canonical valuation fact.
+`OfficialSecurityIdentityService` accepts structured evidence produced by reusable SEC cover-page
+or ADS prospectus parsers. The evidence stores field-level value, source tier, provider, source URL,
+filing accession or registration number, as-of date, verification status, and resolution reason.
 
-## Rejected Alternatives
+Inline XBRL normally binds ticker, security title, and exchange in one context. If a filing splits
+the ticker and title across contexts, the parser joins them only when one ticker exchange and one
+title-only row resolve to the same canonical exchange. Any ambiguity fails closed.
 
-- Trusting `is_depositary_security=false`: absence was the original unsafe shortcut.
-- Guessing from a ticker or company name: names are only conflict signals and cannot establish a ratio.
-- Provider priority overwrite: it would conceal evidence conflicts.
-- Prompt-only avoidance or renderer deletion: both operate after canonical eligibility and can be bypassed.
-- Adding FX or ADR conversion: the required ratios and denominator basis are not verified.
+The ingestion command is dry-run by default:
 
-## Safety Constraints
+```bash
+python -m app.jobs.security_identity_remediation \
+  --evidence-json docs/reports/<official-evidence>.json
+```
 
-- No ticker-specific production branch.
-- No inferred ADR ratio, currency conversion, premium, or discount.
-- `unknown` and `conflict` never become verified non-depositary states.
-- Numeric and qualitative valuation use share the same field-level eligibility boundary.
-- Renderer remains a layout component, not a semantic rewriter.
-- Schema 4, Public Action 0.4.5, and the existing database schema remain unchanged.
+`--apply` is reserved for the separately approved production remediation. The operation returns
+before/after state and a rollback snapshot, is idempotent, and becomes a no-op when the exact
+authoritative identity is already present. Conflicting Tier A evidence is cached without overwrite.
 
-## Phase 7.2.5 Evidence
+## GOOGL And SKHY
 
-The isolated 2026-08-15 US replay classified SKHY as `conflict` because the profile name identifies
-an ADR while SecurityMaster identifies a domestic common stock. Its previously visible consensus
-fPER was denied; price and 20-day volume remained usable. GOOGL exposed a separate SecurityMaster
-issuer/security-type conflict and was also failed closed. The 2026-08-14 KR replay remained
-message-identical after normalizing only the Pilot candidate label.
+GOOGL is verified from Alphabet's SEC cover page as Nasdaq Class A common stock. The old OpenFIGI
+CEDEAR result is retained as rejected evidence. Its trailing PER, consensus fPER, PBR, and historical
+percentiles return only because their independent financial and denominator lineage also passes.
 
-This contract is experimental on `codex/phase-7-2-relational-reasoning`. Production remains on
-`daily-review-v3.9` until a separate merge and deployment approval.
+SKHY is verified from the final 424(b)(4) prospectus as a Nasdaq ADS. The filing states that one ADS
+represents `0.1` common share and identifies KRX `000660`. The ratio direction is stored as
+`ordinary_shares_per_adr`. PER, PBR, fPER, and historical percentiles remain withheld because the
+current provider values do not prove a compatible current-ADS denominator/share/currency basis.
+No conversion or premium calculation is performed.
+
+## Packet, Binder, Validator, Fallback
+
+The AI packet recomputes compatibility fields from the canonical identity, so legacy
+`resolved_security_type` or `is_depositary_security` values cannot contradict the v2 state.
+Identity metadata is exposed as the homogeneous `security_identity:current` Fact.
+
+Identity-ineligible numeric registry rows have `prose_allowed=false`, no display value, and no
+approved variants. Binder references, raw numeric prose, qualitative multiple inference, and mixed
+aggregate valuation bypasses remain fail-closed. A concrete number-free identity Unknown is allowed.
+
+Deterministic fallback uses the same quality boundary. It retains independent price, chart, volume,
+issuer financial, and KR supply facts while withholding unverified multiples and their cheap/expensive
+interpretations. Persisted retry and single-delivery behavior are unchanged.
+
+## Contracts
+
+- No ticker-specific production branch; named securities are fixtures or evidence files only.
+- No database migration or Public Action change.
+- Output schema remains 4.
+- Renderer performs no semantic rewrite.
+- Historical packets and archives remain immutable.
+- This contract is experimental on `codex/phase-7-2-relational-reasoning`; production remains
+  `daily-review-v3.9` until separate approval.

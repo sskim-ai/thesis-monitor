@@ -1,0 +1,120 @@
+{
+  "adr_ratio_direction": null,
+  "contract_version": "authoritative-security-identity-v1",
+  "evidence": {
+    "adr_identifier": null,
+    "adr_ratio": null,
+    "adr_ratio_direction": null,
+    "as_of_date": "2026-07-28",
+    "cik": "0001839341",
+    "exchange": "NASDAQ",
+    "filing_accession": "0001839341-26-000014",
+    "issuer_name": "Core Scientific, Inc./tx",
+    "issuer_type": "domestic_us",
+    "ordinary_share_identifier": null,
+    "registration_number": null,
+    "security_title": "Common stock, par value $0.00001 per share",
+    "security_type": "common_stock",
+    "share_class": null,
+    "source_form": "SEC cover page",
+    "source_reference": "SEC accession 0001839341-26-000014",
+    "source_url": "https://www.sec.gov/Archives/edgar/data/1839341/000183934126000014/core-20260630.htm",
+    "ticker": "CORZ"
+  },
+  "field_provenance": {
+    "cik": {
+      "as_of": "2026-07-28",
+      "filing_accession": "0001839341-26-000014",
+      "provider": "sec_official_identity",
+      "resolution_reason": "authoritative_sec_security_identity",
+      "source_reference": "SEC accession 0001839341-26-000014",
+      "source_tier": "tier_a_authoritative",
+      "source_url": "https://www.sec.gov/Archives/edgar/data/1839341/000183934126000014/core-20260630.htm",
+      "value": "0001839341",
+      "verification_status": "verified"
+    },
+    "exchange": {
+      "as_of": "2026-07-28",
+      "filing_accession": "0001839341-26-000014",
+      "provider": "sec_official_identity",
+      "resolution_reason": "authoritative_sec_security_identity",
+      "source_reference": "SEC accession 0001839341-26-000014",
+      "source_tier": "tier_a_authoritative",
+      "source_url": "https://www.sec.gov/Archives/edgar/data/1839341/000183934126000014/core-20260630.htm",
+      "value": "NASDAQ",
+      "verification_status": "verified"
+    },
+    "issuer_name": {
+      "as_of": "2026-07-28",
+      "filing_accession": "0001839341-26-000014",
+      "provider": "sec_official_identity",
+      "resolution_reason": "authoritative_sec_security_identity",
+      "source_reference": "SEC accession 0001839341-26-000014",
+      "source_tier": "tier_a_authoritative",
+      "source_url": "https://www.sec.gov/Archives/edgar/data/1839341/000183934126000014/core-20260630.htm",
+      "value": "Core Scientific, Inc./tx",
+      "verification_status": "verified"
+    },
+    "issuer_type": {
+      "as_of": "2026-07-28",
+      "filing_accession": "0001839341-26-000014",
+      "provider": "sec_official_identity",
+      "resolution_reason": "authoritative_sec_security_identity",
+      "source_reference": "SEC accession 0001839341-26-000014",
+      "source_tier": "tier_a_authoritative",
+      "source_url": "https://www.sec.gov/Archives/edgar/data/1839341/000183934126000014/core-20260630.htm",
+      "value": "domestic_us",
+      "verification_status": "verified"
+    },
+    "security_title": {
+      "as_of": "2026-07-28",
+      "filing_accession": "0001839341-26-000014",
+      "provider": "sec_official_identity",
+      "resolution_reason": "authoritative_sec_security_identity",
+      "source_reference": "SEC accession 0001839341-26-000014",
+      "source_tier": "tier_a_authoritative",
+      "source_url": "https://www.sec.gov/Archives/edgar/data/1839341/000183934126000014/core-20260630.htm",
+      "value": "Common stock, par value $0.00001 per share",
+      "verification_status": "verified"
+    },
+    "security_type": {
+      "as_of": "2026-07-28",
+      "filing_accession": "0001839341-26-000014",
+      "provider": "sec_official_identity",
+      "resolution_reason": "authoritative_sec_security_identity",
+      "source_reference": "SEC accession 0001839341-26-000014",
+      "source_tier": "tier_a_authoritative",
+      "source_url": "https://www.sec.gov/Archives/edgar/data/1839341/000183934126000014/core-20260630.htm",
+      "value": "common_stock",
+      "verification_status": "verified"
+    },
+    "ticker": {
+      "as_of": "2026-07-28",
+      "filing_accession": "0001839341-26-000014",
+      "provider": "sec_official_identity",
+      "resolution_reason": "authoritative_sec_security_identity",
+      "source_reference": "SEC accession 0001839341-26-000014",
+      "source_tier": "tier_a_authoritative",
+      "source_url": "https://www.sec.gov/Archives/edgar/data/1839341/000183934126000014/core-20260630.htm",
+      "value": "CORZ",
+      "verification_status": "verified"
+    }
+  },
+  "provider": "sec_official_identity",
+  "source_tier": "tier_a_authoritative",
+  "validation_audit": {
+    "adr_ratio_direction": "ordinary_shares_per_adr",
+    "apply_action": "apply_authoritative_identity",
+    "apply_mutated_on_isolated_copy": true,
+    "dry_run_action": "apply_authoritative_identity",
+    "dry_run_mutated": false,
+    "operating_mutation": 0,
+    "repeat_action": "no_op_already_authoritative",
+    "repeat_mutated": false,
+    "resolved_identity_state": "verified_non_depositary",
+    "resolved_security_type": "common_stock",
+    "rollback_snapshot_sha256": "cbc555ac3c298249fca753ea2b3fc7337ac9b3a9970dca3984830da6ebe2ad81",
+    "selected_adr_ratio": null,
+    "ticker": "CORZ"
+  }
+}

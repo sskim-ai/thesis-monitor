@@ -1,0 +1,10 @@
+{
+  "corrected_packet_id": "2026-08-14-kr-run-17-99bbafd73ab7",
+  "header_difference_only": true,
+  "logical_message_count": 8,
+  "logical_payload_byte_identical": true,
+  "message_diff_indices": [],
+  "new_preview_sha256": "3724ed999fc7bbc88796c82b33f6c041d072d23ebd470deb7d58faf2d8e55b0d",
+  "old_preview_sha256": "6cc9f52f314ec7ace385622b7a8ab4d25431eadfb66547d30e903d2599fb8ed2",
+  "previous_packet_id": "2026-08-14-kr-run-17-a1dc3dbdc6a9"
+}
