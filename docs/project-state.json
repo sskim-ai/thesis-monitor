@@ -3,8 +3,8 @@
   "branch": "main",
   "current_commit": "HEAD",
   "current_commit_resolution": "git rev-parse HEAD",
-  "recorded_base_commit": "0c041b57e66d48c607cd3f55f7faec804915988d",
-  "deployed_code_commit": "d66fcf80a2355eade7ef03f47ffb74e29006c993",
+  "recorded_base_commit": "e2c92906496ef57f05f6c9597e8ea40cf8bdda23",
+  "deployed_code_commit": "b7733eb270dc3817a3014129bce7ad868b9c04bc",
   "official_assessment_source": "deterministic",
   "ai_review_mode": "shadow",
   "investment_knowledge_version": "3.0",
@@ -34,6 +34,12 @@
   "pilot_current_successful_sessions": {
     "kr": 1,
     "us": 1
+  },
+  "pilot_success_archive_contract": {
+    "completion_marker": "archive-complete.json",
+    "count_after_verified_marker": true,
+    "archive_recovery_resends_telegram": false,
+    "packet_and_assessment_date_idempotent": true
   },
   "us_morning_schedule_kst": {
     "deterministic_and_first_krx_fetch": "08:05",
