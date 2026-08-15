@@ -1,3 +1,4 @@
+import copy
 import hashlib
 import json
 import threading
@@ -890,6 +891,48 @@ def test_output_guardrails_reject_mismatch_hallucination_and_bad_basis(
         modeled_as_consensus["stock_reviews"][0]["valuation_analysis"]["text"] = "시장 컨센서스 EPS가 반영됐습니다."
         _, errors = validate_ai_review_output(session, packet, modeled_as_consensus)
         assert any("modeled_forward_called_consensus" in item for item in errors)
+
+        consensus_packet = copy.deepcopy(packet)
+        consensus_packet["stocks"][0]["valuation"]["forward_pe_source"] = (
+            "consensus_forward"
+        )
+        consensus_as_modeled = _valid_output(consensus_packet)
+        consensus_as_modeled["stock_reviews"][0]["valuation_analysis"]["text"] = (
+            "내부 추정 fPER가 반영됐습니다."
+        )
+        _, errors = validate_ai_review_output(
+            session,
+            consensus_packet,
+            consensus_as_modeled,
+        )
+        assert any("consensus_forward_called_modeled" in item for item in errors)
+
+        unknown_packet = copy.deepcopy(packet)
+        unknown_packet["stocks"][0]["valuation"]["forward_pe_source"] = "unavailable"
+        unknown_as_consensus = _valid_output(unknown_packet)
+        unknown_as_consensus["stock_reviews"][0]["valuation_analysis"]["text"] = (
+            "시장 예상 fPER가 반영됐습니다."
+        )
+        _, errors = validate_ai_review_output(
+            session,
+            unknown_packet,
+            unknown_as_consensus,
+        )
+        assert any("unknown_forward_source_labeled" in item for item in errors)
+
+        modeled_pbr_as_consensus = _valid_output(packet)
+        modeled_pbr_as_consensus["stock_reviews"][0]["valuation_analysis"][
+            "text"
+        ] = "시장 예상 fPBR가 반영됐습니다."
+        packet["stocks"][0]["valuation"]["forward_price_to_book_source"] = (
+            "modeled_forward"
+        )
+        _, errors = validate_ai_review_output(
+            session,
+            packet,
+            modeled_pbr_as_consensus,
+        )
+        assert any("modeled_forward_pbr_called_consensus" in item for item in errors)
 
         identical_audience = _valid_output(packet)
         price = identical_audience["stock_reviews"][0]["price_positioning"]
@@ -3353,7 +3396,7 @@ def test_market_transmission_requires_exact_group_fact_and_prose_grounding(
         market_review["facts_used"] = [fact["fact_id"]]
         market_review["important_changes"] = [
             {
-                "text": "반도체 상대수익률 1.9%는 업종 선택적 강세를 보여줍니다.",
+                "text": "S&P500 대비 반도체 상대수익률 1.9%는 업종 선택적 강세를 보여줍니다.",
                 "fact_ids": [fact["fact_id"]],
             }
         ]
@@ -3378,7 +3421,7 @@ def test_market_transmission_requires_exact_group_fact_and_prose_grounding(
                 "unit": "pct",
                 "semantic_type": "sector_relative_return_pct",
                 "text_ref": "important_changes[0].text",
-                "usage": "반도체 상대수익률 1.9%",
+                "usage": "S&P500 대비 반도체 상대수익률 1.9%",
             }
         ]
 

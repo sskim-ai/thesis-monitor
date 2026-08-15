@@ -123,3 +123,50 @@ def test_normalization_does_not_create_synonym_only_credit() -> None:
     assert normalize_decision_text("수급이 없습니다.") != normalize_decision_text(
         "투자주체 흐름은 미확인입니다."
     )
+
+
+def test_quality_audit_reports_repeated_numeric_labels_as_hard_failure() -> None:
+    payload = _output().model_dump()
+    packet_stocks = []
+    for index, review in enumerate(payload["stock_reviews"], start=1):
+        usage = f"현재 PER {index}배"
+        review["valuation_analysis"]["text"] = f"PER {usage}입니다."
+        review["numeric_claims"][0].update(
+            {
+                "field_path": "fields.trailing_pe",
+                "semantic_type": "trailing_pe",
+                "usage": usage,
+            }
+        )
+        packet_stocks.append(
+            {
+                "ticker": review["ticker"],
+                "numeric_registry": [
+                    {
+                        "fact_id": f"fact:{review['ticker']}",
+                        "field_path": "fields.trailing_pe",
+                        "value": index,
+                        "unit": "x",
+                        "semantic_type": "trailing_pe",
+                        "approved_labels": ["현재 PER", "PER"],
+                        "canonical_label": None,
+                        "canonical_label_required": False,
+                        "canonical_label_kind": None,
+                    }
+                ],
+            }
+        )
+    output = AIDailyReviewOutput.model_validate(payload)
+
+    report = relational_reasoning_quality_report(
+        output,
+        packet={"market_context": {"numeric_registry": []}, "stocks": packet_stocks},
+    )
+
+    label_quality = report["numeric_label_quality"]
+    assert label_quality["redundant_authored_label_count"] == 3
+    assert label_quality["repeated_bound_label_count"] == 3
+    assert label_quality["source_label_mismatch_count"] == 0
+    assert label_quality["instrument_label_mismatch_count"] == 0
+    assert label_quality["hard_checks_passed"] is False
+    assert report["hard_checks_passed"] is False

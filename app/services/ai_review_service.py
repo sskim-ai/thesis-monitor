@@ -39,7 +39,11 @@ from app.services.daily_digest import build_daily_digest
 from app.services.market_session import market_scope_for_security
 from app.services.market_intelligence_service import build_market_intelligence
 from app.services.night_futures import NIGHT_FUTURES_SERIES
-from app.services.numeric_provenance_service import bind_numeric_fact_references
+from app.services.numeric_provenance_service import (
+    bind_numeric_fact_references,
+    canonical_numeric_label_mismatch,
+    redundant_numeric_label_before,
+)
 from app.services.numeric_semantic_registry import (
     NUMERIC_SEMANTICS,
     build_numeric_registry,
@@ -2332,6 +2336,12 @@ def _validate_numeric_claims(
         if not _usage_semantic_matches(expected_semantic, claim.usage):
             errors.append(f"{prefix}:numeric_usage_semantic_mismatch:{claim.fact_id}:{claim.field_path}")
             claim_is_valid = False
+        if label_mismatch := canonical_numeric_label_mismatch(source, claim.usage):
+            errors.append(
+                f"{prefix}:numeric_{label_mismatch}_label_mismatch:"
+                f"{claim.fact_id}:{claim.field_path}:{claim.text_ref}"
+            )
+            claim_is_valid = False
         if not usage_direction_matches(expected_semantic, expected, claim.usage):
             errors.append(
                 f"{prefix}:numeric_usage_direction_mismatch:"
@@ -2367,6 +2377,15 @@ def _validate_numeric_claims(
                 f"{claim.fact_id}:{claim.field_path}:{claim.text_ref}"
             )
             continue
+        if any(
+            redundant_numeric_label_before(target, start, source)
+            for start, _ in spans
+        ):
+            errors.append(
+                f"{prefix}:numeric_repeated_bound_label:"
+                f"{claim.fact_id}:{claim.field_path}:{claim.text_ref}"
+            )
+            claim_is_valid = False
         if claim_is_valid:
             coverage[claim.text_ref].extend(
                 (start, end, display_tokens) for start, end in spans
@@ -2386,6 +2405,50 @@ def _validate_numeric_claims(
                 f"{prefix}:numbers_without_provenance:{path}:"
                 + ",".join(uncovered)
             )
+    return errors
+
+
+_CONSENSUS_LANGUAGE = re.compile(
+    r"(?:시장|애널리스트)\s*(?:컨센서스|예상)|\bconsensus\b",
+    re.IGNORECASE,
+)
+_MODELED_LANGUAGE = re.compile(
+    r"내부\s*(?:추정|모델)|\bfy1\s*model\b|\bmodeled\b",
+    re.IGNORECASE,
+)
+_FORWARD_PE_LANGUAGE = re.compile(
+    r"(?:fper|선행\s*per|forward\s*pe|eps)",
+    re.IGNORECASE,
+)
+_FORWARD_PB_LANGUAGE = re.compile(
+    r"(?:fpbr|선행\s*pbr|forward\s*pbr|bvps)",
+    re.IGNORECASE,
+)
+
+
+def _forward_source_language_errors(
+    ticker: str,
+    valuation: dict[str, object],
+    rendered: str,
+) -> list[str]:
+    errors: list[str] = []
+    sentences = re.split(r"(?<=[.!?])\s+|\n+", rendered)
+    contracts = (
+        ("forward_pe_source", _FORWARD_PE_LANGUAGE, ""),
+        ("forward_price_to_book_source", _FORWARD_PB_LANGUAGE, "_pbr"),
+    )
+    for source_field, metric_pattern, suffix in contracts:
+        source = str(valuation.get(source_field) or "unavailable")
+        relevant = [item for item in sentences if metric_pattern.search(item)]
+        uses_consensus = any(_CONSENSUS_LANGUAGE.search(item) for item in relevant)
+        uses_modeled = any(_MODELED_LANGUAGE.search(item) for item in relevant)
+        if source == "modeled_forward" and uses_consensus:
+            errors.append(f"{ticker}:modeled_forward{suffix}_called_consensus")
+        elif source == "consensus_forward" and uses_modeled:
+            errors.append(f"{ticker}:consensus_forward{suffix}_called_modeled")
+        elif source not in {"modeled_forward", "consensus_forward"}:
+            if uses_consensus or uses_modeled:
+                errors.append(f"{ticker}:unknown_forward{suffix}_source_labeled")
     return errors
 
 
@@ -2510,11 +2573,9 @@ def _validate_stock_review(
         errors.append(f"{review.ticker}:numeric_grounding_hard_fail")
     valuation = stock.get("valuation", {})
     if isinstance(valuation, dict):
-        forward_source = str(valuation.get("forward_pe_source") or "")
-        if forward_source == "modeled_forward" and re.search(
-            r"(?:시장|애널리스트)\s*(?:컨센서스|예상)\s*EPS", rendered
-        ):
-            errors.append(f"{review.ticker}:modeled_forward_called_consensus")
+        errors.extend(
+            _forward_source_language_errors(review.ticker, valuation, rendered)
+        )
         if str(valuation.get("historical_comparability") or "") in _INVALID_HISTORY and re.search(
             r"(?:역사적|과거)\s*(?:백분위|배수)", rendered
         ):

@@ -16,6 +16,8 @@ _REFERENCE_ID = re.compile(r"^[A-Za-z][A-Za-z0-9_-]{0,63}$")
 _PATH_PART = re.compile(r"^([A-Za-z_][A-Za-z0-9_]*)(?:\[([0-9]+)\])?$")
 _PLACEHOLDER = re.compile(r"\{\{numeric:([A-Za-z][A-Za-z0-9_-]{0,63})\}\}")
 _ANY_PLACEHOLDER = re.compile(r"\{\{numeric:[^}]*\}\}")
+_LABEL_SPACE = re.compile(r"\s+")
+_KOREAN_PARTICLE = r"(?:은|는|이|가|을|를|와|과)?"
 
 
 @dataclass(frozen=True)
@@ -81,6 +83,107 @@ def _canonical_label(source: dict[str, object], role: str) -> str | None:
     if role == "upper":
         return f"{selected} 상단"
     return selected
+
+
+def _normalized_label(value: str) -> str:
+    return _LABEL_SPACE.sub(" ", value.strip()).casefold()
+
+
+def numeric_label_candidates(
+    source: dict[str, object],
+    *,
+    role: str = "value",
+) -> tuple[str, ...]:
+    labels = source.get("approved_labels")
+    candidates = (
+        [str(item).strip() for item in labels if str(item).strip()]
+        if isinstance(labels, list)
+        else []
+    )
+    canonical = str(source.get("canonical_label") or "").strip()
+    if canonical:
+        candidates.insert(0, canonical)
+    if role in {"lower", "upper"}:
+        suffix = "하단" if role == "lower" else "상단"
+        candidates = [f"{item} {suffix}" for item in candidates] + candidates
+    return tuple(dict.fromkeys(candidates))
+
+
+def redundant_numeric_label_before(
+    text: str,
+    marker_start: int,
+    source: dict[str, object],
+    *,
+    role: str = "value",
+) -> bool:
+    prefix = _normalized_label(text[:marker_start])
+    for candidate in numeric_label_candidates(source, role=role):
+        label = _normalized_label(candidate)
+        if not label:
+            continue
+        if re.search(
+            rf"(?:^|[\s,;:()\[\]/]){re.escape(label)}{_KOREAN_PARTICLE}\s*$",
+            prefix,
+            flags=re.IGNORECASE,
+        ):
+            return True
+    return False
+
+
+def canonical_numeric_label_mismatch(
+    source: dict[str, object],
+    usage: str,
+) -> str | None:
+    if source.get("canonical_label_required") is not True:
+        return None
+    canonical = _normalized_label(str(source.get("canonical_label") or ""))
+    normalized_usage = _normalized_label(usage)
+    if canonical and (
+        normalized_usage == canonical or normalized_usage.startswith(f"{canonical} ")
+    ):
+        return None
+    kind = str(source.get("canonical_label_kind") or "source")
+    return "instrument" if kind == "instrument" else "source"
+
+
+def _bound_label_quality_errors(
+    review: dict[str, object],
+    registry: dict[tuple[str, str], dict[str, object]],
+    bindings: list[dict[str, object]],
+    *,
+    prefix: str,
+) -> list[str]:
+    errors: list[str] = []
+    for binding in bindings:
+        ref_id = str(binding["ref_id"])
+        text_ref = str(binding["text_ref"])
+        semantic_type = str(binding["semantic_type"])
+        source = registry.get(
+            (str(binding["fact_id"]), str(binding["field_path"]))
+        )
+        target = _text_target(review, text_ref)
+        if source is None or target is None:
+            continue
+        text = target[2]
+        usage = str(binding.get("usage") or "")
+        mismatch = canonical_numeric_label_mismatch(source, usage)
+        if mismatch is not None:
+            errors.append(
+                f"{prefix}:numeric_bound_{mismatch}_label_mismatch:"
+                f"{ref_id}:{text_ref}:{semantic_type}"
+            )
+        start = text.find(usage)
+        if start >= 0 and redundant_numeric_label_before(
+            text,
+            start,
+            source,
+            role=str(binding.get("role") or "value"),
+        ):
+            errors.append(
+                f"{prefix}:numeric_bound_repeated_label:"
+                f"{ref_id}:{text_ref}:{semantic_type}"
+            )
+    return errors
 
 
 def _bind_review(
@@ -194,6 +297,18 @@ def _bind_review(
             formatting_failures += 1
             errors.append(f"{prefix}:numeric_fact_ref_formatting_failed:{ref_id}")
             continue
+        marker_start = text.index(placeholder)
+        if redundant_numeric_label_before(
+            text,
+            marker_start,
+            source,
+            role=role,
+        ):
+            errors.append(
+                f"{prefix}:numeric_fact_ref_redundant_authored_label:"
+                f"{ref_id}:{text_ref}:{semantic_type}"
+            )
+            continue
         usage = f"{label} {display}"
         parent[child_key] = text.replace(placeholder, usage)
         claim = {
@@ -216,7 +331,11 @@ def _bind_review(
                 "text_ref": text_ref,
                 "semantic_type": semantic_type,
                 "unit": unit,
+                "role": role,
+                "canonical_label": label,
+                "canonical_label_kind": source.get("canonical_label_kind"),
                 "formatted_value": display,
+                "usage": usage,
             }
         )
     leftovers = sorted(set(_ANY_PLACEHOLDER.findall(str(review))))
@@ -228,6 +347,14 @@ def _bind_review(
         errors.append(
             f"{prefix}:numeric_fact_ref_unresolved_placeholder:{unresolved}"
         )
+    errors.extend(
+        _bound_label_quality_errors(
+            review,
+            registry,
+            bindings,
+            prefix=prefix,
+        )
+    )
     return (
         errors,
         bindings,
@@ -310,6 +437,23 @@ def bind_numeric_fact_references(
         **counters,
         "rejected": len(errors),
         "removed_unsafe": 0,
+        "label_quality": {
+            "redundant_authored_label_count": sum(
+                "numeric_fact_ref_redundant_authored_label" in item
+                for item in errors
+            ),
+            "repeated_bound_label_count": sum(
+                "numeric_bound_repeated_label" in item for item in errors
+            ),
+            "source_label_mismatch_count": sum(
+                "numeric_bound_source_label_mismatch" in item for item in errors
+            ),
+            "instrument_label_mismatch_count": sum(
+                "numeric_bound_instrument_label_mismatch" in item
+                for item in errors
+            ),
+        },
+        "errors": list(dict.fromkeys(errors)),
         "bindings": bindings,
     }
     return NumericBindingResult(

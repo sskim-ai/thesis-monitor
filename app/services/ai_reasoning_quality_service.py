@@ -2,13 +2,19 @@ from __future__ import annotations
 
 import re
 from collections import Counter, defaultdict
+from typing import Iterable
 
 from app.schemas.ai_review import AIDailyReviewOutput, AIStockReview
+from app.services.numeric_provenance_service import (
+    canonical_numeric_label_mismatch,
+    redundant_numeric_label_before,
+)
 
 
 _SENTENCE_BOUNDARY = re.compile(r"(?<=[.!?])\s+|\n+")
 _SPACE = re.compile(r"\s+")
 _BULLET_PREFIX = re.compile(r"^[•*-]\s*")
+_PATH_PART = re.compile(r"^([A-Za-z_][A-Za-z0-9_]*)(?:\[([0-9]+)\])?$")
 
 # These are safety boundaries, not stock analysis. They remain visible in the audit but do not
 # count as cross-stock investment boilerplate.
@@ -61,10 +67,122 @@ def _claim_section_counts(review: AIStockReview) -> dict[str, int]:
     }
 
 
+def _text_at_ref(review: dict[str, object], text_ref: str) -> str | None:
+    node: object = review
+    for raw_part in text_ref.split("."):
+        match = _PATH_PART.fullmatch(raw_part)
+        if match is None or not isinstance(node, dict):
+            return None
+        key, list_index = match.groups()
+        node = node.get(key)
+        if list_index is not None:
+            if not isinstance(node, list) or int(list_index) >= len(node):
+                return None
+            node = node[int(list_index)]
+    return node if isinstance(node, str) else None
+
+
+def _numeric_label_quality_report(
+    output: AIDailyReviewOutput,
+    packet: dict[str, object] | None,
+    binding_errors: Iterable[str],
+) -> dict[str, object]:
+    details: list[dict[str, str]] = []
+    redundant = sum(
+        "numeric_fact_ref_redundant_authored_label" in item
+        for item in binding_errors
+    )
+    repeated = 0
+    source_mismatch = 0
+    instrument_mismatch = 0
+    if packet is not None:
+        market_context = packet.get("market_context")
+        market_registry = (
+            market_context.get("numeric_registry", [])
+            if isinstance(market_context, dict)
+            else []
+        )
+        stock_packets = {
+            str(item.get("ticker") or ""): item
+            for item in packet.get("stocks", [])
+            if isinstance(item, dict)
+        }
+        reviews: list[tuple[str, dict[str, object], object]] = [
+            ("market_review", output.market_review.model_dump(), market_registry)
+        ]
+        reviews.extend(
+            (
+                review.ticker,
+                review.model_dump(),
+                stock_packets.get(review.ticker, {}).get("numeric_registry", []),
+            )
+            for review in output.stock_reviews
+        )
+        for scope, review, registry_value in reviews:
+            registry = {
+                (str(item.get("fact_id")), str(item.get("field_path"))): item
+                for item in registry_value
+                if isinstance(item, dict)
+            } if isinstance(registry_value, list) else {}
+            for claim in review.get("numeric_claims", []):
+                if not isinstance(claim, dict):
+                    continue
+                source = registry.get(
+                    (str(claim.get("fact_id")), str(claim.get("field_path")))
+                )
+                if source is None:
+                    continue
+                usage = str(claim.get("usage") or "")
+                text_ref = str(claim.get("text_ref") or "")
+                semantic_type = str(claim.get("semantic_type") or "")
+                mismatch = canonical_numeric_label_mismatch(source, usage)
+                if mismatch == "source":
+                    source_mismatch += 1
+                elif mismatch == "instrument":
+                    instrument_mismatch += 1
+                if mismatch is not None:
+                    details.append(
+                        {
+                            "scope": scope,
+                            "text_ref": text_ref,
+                            "semantic_type": semantic_type,
+                            "issue": f"{mismatch}_label_mismatch",
+                        }
+                    )
+                text = _text_at_ref(review, text_ref)
+                start = text.find(usage) if text is not None else -1
+                if text is not None and start >= 0 and redundant_numeric_label_before(
+                    text,
+                    start,
+                    source,
+                ):
+                    redundant += 1
+                    repeated += 1
+                    details.append(
+                        {
+                            "scope": scope,
+                            "text_ref": text_ref,
+                            "semantic_type": semantic_type,
+                            "issue": "repeated_bound_label",
+                        }
+                    )
+    hard_checks_passed = not any(
+        (redundant, repeated, source_mismatch, instrument_mismatch)
+    )
+    return {
+        "redundant_authored_label_count": redundant,
+        "repeated_bound_label_count": repeated,
+        "source_label_mismatch_count": source_mismatch,
+        "instrument_label_mismatch_count": instrument_mismatch,
+        "details": details,
+        "hard_checks_passed": hard_checks_passed,
+    }
 def relational_reasoning_quality_report(
     output: AIDailyReviewOutput,
     *,
     duplicate_threshold: int = 3,
+    packet: dict[str, object] | None = None,
+    binding_errors: Iterable[str] = (),
 ) -> dict[str, object]:
     sentence_tickers: dict[str, set[str]] = defaultdict(set)
     for review in output.stock_reviews:
@@ -114,6 +232,11 @@ def relational_reasoning_quality_report(
     substantive_repeats = [
         item for item in repeated if item["classification"] == "substantive"
     ]
+    numeric_label_quality = _numeric_label_quality_report(
+        output,
+        packet,
+        binding_errors,
+    )
     return {
         "contract": "relational-reasoning-quality-v1",
         "duplicate_threshold": duplicate_threshold,
@@ -141,5 +264,8 @@ def relational_reasoning_quality_report(
         "generic_unknown_count": sum(
             count for count in unknown_counts.values() if count >= duplicate_threshold
         ),
-        "hard_checks_passed": all(bool(item["distinct"]) for item in observer_holder),
+        "numeric_label_quality": numeric_label_quality,
+        "hard_checks_passed": all(
+            bool(item["distinct"]) for item in observer_holder
+        ) and bool(numeric_label_quality["hard_checks_passed"]),
     }

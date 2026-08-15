@@ -58,6 +58,16 @@ needs the current chart review boundary and the separate fundamental deteriorati
 thesis reassessment. Never repeat the same normalized sentence for both views, and never turn either
 view into a buy or sell instruction.
 
+Numeric placeholders are full phrases, not value-only slots. The deterministic binder owns the
+canonical semantic label, source identity, instrument identity, and formatted value. Draft
+`{{numeric:pe}}보다 {{numeric:fpe}}가 높습니다`, never `현재 PER {{numeric:pe}}보다 선행 PER
+{{numeric:fpe}}가 높습니다`. Draft `{{numeric:kospi_return}}와
+{{numeric:kosdaq_return}}가 반대 방향입니다`, never preface either placeholder with a manually
+written futures product or return label. Context such as `TWD 기준인 {{numeric:revenue}}` is allowed
+when it does not duplicate the registry label. A redundant authored label, unknown forward source,
+unknown market instrument, or source/instrument label mismatch is a hard failure; remove or correct
+the reference rather than rewriting the bound prose after validation.
+
 Hard deterministic warnings remain visible in the comparison record even when the AI view differs. Shadow output never mutates official state or Telegram.
 
 ## Full Knowledge Requirement

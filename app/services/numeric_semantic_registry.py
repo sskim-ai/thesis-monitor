@@ -1195,6 +1195,44 @@ def _currency_for_path(field_path: str, fields: dict[str, object]) -> str:
     return str(fields.get("currency") or "unknown")
 
 
+_INDEX_SERIES_LABELS = {
+    "SPY": "S&P500",
+    "QQQ": "Nasdaq",
+    "IWM": "Russell 2000",
+}
+_RELATIVE_SERIES_LABELS = {
+    **_INDEX_SERIES_LABELS,
+    "SOXX": "반도체",
+}
+_NIGHT_FUTURES_LABELS = {
+    "KRX_KOSPI200_NIGHT_FUT": "KOSPI200 야간선물",
+    "KRX_KOSDAQ150_NIGHT_FUT": "KOSDAQ150 야간선물",
+}
+_SOURCE_LABEL_SEMANTICS = {
+    "forward_eps",
+    "forward_pe",
+    "forward_bvps",
+    "forward_price_to_book",
+}
+_INSTRUMENT_LABEL_SEMANTICS = {
+    "index_return_pct",
+    "sector_return_pct",
+    "growth_relative_return_pct",
+    "sector_relative_return_pct",
+    "futures_close",
+    "futures_point_change",
+    "futures_return_pct",
+}
+
+
+def _source_label_kind(semantic_type: str) -> str | None:
+    if semantic_type in _SOURCE_LABEL_SEMANTICS:
+        return "source"
+    if semantic_type in _INSTRUMENT_LABEL_SEMANTICS:
+        return "instrument"
+    return None
+
+
 def _source_aware_label(
     semantic_type: str,
     fields: dict[str, object],
@@ -1203,14 +1241,42 @@ def _source_aware_label(
         source = str(fields.get("forward_pe_source") or "")
         if source == "modeled_forward":
             return "내부 추정 EPS" if semantic_type == "forward_eps" else "내부 추정 fPER"
-        if source == "consensus":
+        if source == "consensus_forward":
             return "시장 예상 EPS" if semantic_type == "forward_eps" else "시장 예상 fPER"
     if semantic_type in {"forward_bvps", "forward_price_to_book"}:
         source = str(fields.get("forward_price_to_book_source") or "")
         if source == "modeled_forward":
             return "내부 추정 BVPS" if semantic_type == "forward_bvps" else "내부 추정 fPBR"
-        if source == "consensus":
+        if source == "consensus_forward":
             return "시장 예상 BVPS" if semantic_type == "forward_bvps" else "시장 예상 fPBR"
+    if semantic_type == "index_return_pct":
+        series = str(fields.get("series_code") or "")
+        if label := _INDEX_SERIES_LABELS.get(series):
+            return f"{label} 등락률"
+    if semantic_type == "sector_return_pct":
+        series = str(fields.get("series_code") or "")
+        if series == "SOXX":
+            return "반도체 업종 등락률"
+    if semantic_type in {"growth_relative_return_pct", "sector_relative_return_pct"}:
+        subject = _RELATIVE_SERIES_LABELS.get(str(fields.get("subject") or ""))
+        benchmark = _RELATIVE_SERIES_LABELS.get(
+            str(fields.get("benchmark") or "")
+        )
+        if subject and benchmark:
+            return f"{benchmark} 대비 {subject} 상대수익률"
+    if semantic_type in {
+        "futures_close",
+        "futures_point_change",
+        "futures_return_pct",
+    }:
+        product = _NIGHT_FUTURES_LABELS.get(str(fields.get("series_code") or ""))
+        if product:
+            suffix = {
+                "futures_close": "종가",
+                "futures_point_change": "등락폭",
+                "futures_return_pct": "등락률",
+            }[semantic_type]
+            return f"{product} {suffix}"
     return None
 
 
@@ -1405,11 +1471,22 @@ def build_numeric_registry(
             elif isinstance(value, (int, float)) and not isinstance(value, bool):
                 spec, unit = resolve_numeric_semantic(fact_type, path, fields)
                 registered = spec is not None
+                canonical_label = (
+                    _source_aware_label(spec.semantic_type, fields)
+                    if spec is not None
+                    else None
+                )
+                source_label_kind = (
+                    _source_label_kind(spec.semantic_type)
+                    if spec is not None
+                    else None
+                )
                 prose_allowed = bool(
                     spec is not None
                     and spec.prose_allowed
                     and unit in spec.units
                     and unit != "unknown"
+                    and (source_label_kind is None or canonical_label is not None)
                 )
                 registry.append(
                     {
@@ -1429,11 +1506,9 @@ def build_numeric_registry(
                         "approved_labels": (
                             list(spec.approved_labels) if spec is not None else []
                         ),
-                        "canonical_label": (
-                            _source_aware_label(spec.semantic_type, fields)
-                            if spec is not None
-                            else None
-                        ),
+                        "canonical_label": canonical_label,
+                        "canonical_label_required": source_label_kind is not None,
+                        "canonical_label_kind": source_label_kind,
                         "approved_display_variants": (
                             approved_display_variants(spec, float(value), unit)
                             if spec is not None and prose_allowed

@@ -1,0 +1,169 @@
+{
+  "contract": "relational-reasoning-quality-v1",
+  "duplicate_threshold": 3,
+  "stock_count": 13,
+  "repeated_sentences": [],
+  "substantive_repeated_sentence_count": 0,
+  "max_substantive_repeat": 0,
+  "observer_holder": [
+    {
+      "ticker": "CORZ",
+      "distinct": true
+    },
+    {
+      "ticker": "CRCL",
+      "distinct": true
+    },
+    {
+      "ticker": "GOOGL",
+      "distinct": true
+    },
+    {
+      "ticker": "HUT",
+      "distinct": true
+    },
+    {
+      "ticker": "IBM",
+      "distinct": true
+    },
+    {
+      "ticker": "MU",
+      "distinct": true
+    },
+    {
+      "ticker": "RXRX",
+      "distinct": true
+    },
+    {
+      "ticker": "SKHY",
+      "distinct": true
+    },
+    {
+      "ticker": "SNDK",
+      "distinct": true
+    },
+    {
+      "ticker": "TSLA",
+      "distinct": true
+    },
+    {
+      "ticker": "TSM",
+      "distinct": true
+    },
+    {
+      "ticker": "WRD",
+      "distinct": true
+    },
+    {
+      "ticker": "WULF",
+      "distinct": true
+    }
+  ],
+  "observer_holder_distinct_count": 13,
+  "section_numeric_grounding": {
+    "CORZ": {
+      "core": 2,
+      "earnings": 2,
+      "price": 7,
+      "supply": 1,
+      "valuation": 1
+    },
+    "CRCL": {
+      "core": 2,
+      "earnings": 1,
+      "price": 7,
+      "supply": 1,
+      "valuation": 2
+    },
+    "GOOGL": {
+      "core": 2,
+      "earnings": 0,
+      "price": 7,
+      "supply": 1,
+      "valuation": 3
+    },
+    "HUT": {
+      "core": 2,
+      "earnings": 0,
+      "price": 7,
+      "supply": 1,
+      "valuation": 2
+    },
+    "IBM": {
+      "core": 2,
+      "earnings": 2,
+      "price": 7,
+      "supply": 1,
+      "valuation": 3
+    },
+    "MU": {
+      "core": 2,
+      "earnings": 2,
+      "price": 7,
+      "supply": 1,
+      "valuation": 4
+    },
+    "RXRX": {
+      "core": 2,
+      "earnings": 2,
+      "price": 7,
+      "supply": 1,
+      "valuation": 2
+    },
+    "SKHY": {
+      "core": 2,
+      "earnings": 0,
+      "price": 1,
+      "supply": 1,
+      "valuation": 3
+    },
+    "SNDK": {
+      "core": 2,
+      "earnings": 0,
+      "price": 3,
+      "supply": 1,
+      "valuation": 3
+    },
+    "TSLA": {
+      "core": 2,
+      "earnings": 2,
+      "price": 7,
+      "supply": 1,
+      "valuation": 3
+    },
+    "TSM": {
+      "core": 2,
+      "earnings": 2,
+      "price": 7,
+      "supply": 1,
+      "valuation": 3
+    },
+    "WRD": {
+      "core": 2,
+      "earnings": 0,
+      "price": 3,
+      "supply": 1,
+      "valuation": 1
+    },
+    "WULF": {
+      "core": 2,
+      "earnings": 0,
+      "price": 7,
+      "supply": 1,
+      "valuation": 2
+    }
+  },
+  "stock_specific_next_check_count": 13,
+  "generic_next_check_count": 0,
+  "stock_specific_unknown_count": 13,
+  "generic_unknown_count": 0,
+  "numeric_label_quality": {
+    "redundant_authored_label_count": 0,
+    "repeated_bound_label_count": 0,
+    "source_label_mismatch_count": 0,
+    "instrument_label_mismatch_count": 0,
+    "details": [],
+    "hard_checks_passed": true
+  },
+  "hard_checks_passed": true
+}
