@@ -129,6 +129,7 @@ def resolve_security_identity(
         _attribute(security_master, "security_type") or legacy_security_type
     )
     adr_identifier = str(_attribute(security_master, "adr_identifier") or "").strip()
+    figi = str(_attribute(security_master, "figi") or "").strip()
     ordinary_identifier = str(
         _attribute(watchlist_item, "ordinary_share_identifier")
         or _attribute(security_master, "ordinary_share_identifier")
@@ -167,6 +168,7 @@ def resolve_security_identity(
     add("security_master.issuer_type", security_issuer, "issuer_type")
     add("security_master.security_type", security_type, "security_type")
     add("security_master.adr_identifier", adr_identifier, "depositary_evidence")
+    add("security_master.figi", figi, "reference_instrument_identifier")
     add("security_master.identity_quality", identity_quality, "identity_quality")
     add("security_master.identity_provider", identity_provider, "identity_provider")
     add("security_master.identity_source_tier", source_tier, "identity_source_tier")
@@ -289,9 +291,20 @@ def resolve_security_identity(
         non_depositary_tuple
         and master_verified
     )
+    legacy_affirmative_depositary_reference = bool(
+        _normalized(identity_provider) == "local+openfigi"
+        and identity_quality in {"full", "verified"}
+        and figi
+        and adr_identifier
+        and security_depositary
+        and country
+        and exchange
+        and security_issuer not in {"domestic_us", "krx"}
+    )
     verified_depositary = bool(
         (master_verified and (security_depositary or adr_identifier))
         or watch_depositary_explicit
+        or legacy_affirmative_depositary_reference
     )
 
     selected_issuer_type = security_issuer if master_verified else watch_issuer or security_issuer
@@ -346,6 +359,7 @@ def resolve_security_identity(
             "security_master_issuer_type": security_issuer or None,
             "security_type": security_type or None,
             "adr_identifier": adr_identifier or None,
+            "figi": figi or None,
             "ordinary_share_identifier": ordinary_identifier or None,
             "watchlist_adr_ratio": watch_ratio,
             "security_master_adr_ratio": security_ratio,
@@ -358,6 +372,11 @@ def resolve_security_identity(
         "as_of": _serialized(updated_at),
         "source_provenance": identity_provider or "packet_legacy_identity",
         "source_tier": source_tier,
+        "verification_source_tier": (
+            TIER_C_EXPLICIT_LOCAL
+            if legacy_affirmative_depositary_reference
+            else source_tier
+        ),
         "identity_provenance": provenance,
         "selected_issuer_type": selected_issuer_type or None,
         "selected_security_type": selected_security_type or None,

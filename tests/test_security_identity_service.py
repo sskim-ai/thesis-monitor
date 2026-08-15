@@ -130,6 +130,35 @@ def test_explicit_watchlist_depositary_evidence_outranks_inferred_local_default(
     ]
 
 
+def test_legacy_affirmative_provider_depositary_is_conservative_only() -> None:
+    depositary = resolve_security_identity(
+        company_name="Fixture Foreign Issuer",
+        security_master=_security(
+            issuer_type="foreign_private_issuer",
+            security_type="Depositary Receipt",
+            figi="BBG000FIXADR",
+            adr_identifier="FIXADR",
+            identity_quality="full",
+            identity_provider="local+openfigi",
+        ),
+    )
+    common = resolve_security_identity(
+        company_name="Fixture Corp",
+        security_master=_security(
+            figi="BBG000FIXCOM",
+            identity_quality="full",
+            identity_provider="local+openfigi",
+        ),
+    )
+
+    assert depositary["identity_state"] == VERIFIED_DEPOSITARY
+    assert depositary["eligibility_decision"] == (
+        "requires_verified_current_security_denominator"
+    )
+    assert depositary["verification_source_tier"] == "tier_c_explicit_local"
+    assert common["identity_state"] == IDENTITY_UNKNOWN
+
+
 def test_ratio_and_issuer_conflicts_are_not_resolved_by_source_priority() -> None:
     result = resolve_security_identity(
         company_name="Fixture ADR",
