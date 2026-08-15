@@ -1,0 +1,105 @@
+{
+  "contract": "security-identity-v1",
+  "ticker": "SKHY",
+  "prior_packet": "2026-08-15-us-run-18-39f4b8810c45",
+  "corrected_packet": "2026-08-15-us-run-18-ac1f8a4d0253",
+  "identity": {
+    "company_name": "SK hynix Inc. ADR",
+    "state": "conflict",
+    "verification_status": "conflicted",
+    "conflict_reasons": [
+      "profile_depositary_hint_conflicts_with_security_master"
+    ],
+    "evidence": [
+      {
+        "source": "security_master.issuer_type",
+        "value": "domestic_us",
+        "meaning": "issuer_type"
+      },
+      {
+        "source": "security_master.security_type",
+        "value": "common_stock",
+        "meaning": "security_type"
+      },
+      {
+        "source": "security_master.identity_quality",
+        "value": "full",
+        "meaning": "identity_quality"
+      },
+      {
+        "source": "security_master.identity_provider",
+        "value": "local",
+        "meaning": "identity_provider"
+      },
+      {
+        "source": "security_master.country",
+        "value": "US",
+        "meaning": "listing_country"
+      },
+      {
+        "source": "security_master.exchange",
+        "value": "NASDAQ",
+        "meaning": "listing_exchange"
+      },
+      {
+        "source": "profile.company_name",
+        "value": "SK hynix Inc. ADR",
+        "meaning": "depositary_hint"
+      }
+    ],
+    "evidence_values": {
+      "watchlist_issuer_type": null,
+      "security_master_issuer_type": "domestic_us",
+      "security_type": "common_stock",
+      "adr_identifier": null,
+      "ordinary_share_identifier": null,
+      "watchlist_adr_ratio": null,
+      "security_master_adr_ratio": null,
+      "name_has_depositary_hint": true,
+      "legacy_is_depositary_security": false
+    },
+    "eligibility_decision": "security_share_basis_dependent_valuation_denied"
+  },
+  "denied_multiples": [
+    {
+      "field_path": "fields.trailing_pe",
+      "value": 14.5885,
+      "unit": "x",
+      "semantic_type": "trailing_pe",
+      "prose_allowed": false,
+      "canonical_display_value": null,
+      "approved_display_variants": [],
+      "denial_reason": "security_identity_conflict"
+    },
+    {
+      "field_path": "fields.price_to_book",
+      "value": 3.5008,
+      "unit": "x",
+      "semantic_type": "price_to_book",
+      "prose_allowed": false,
+      "canonical_display_value": null,
+      "approved_display_variants": [],
+      "denial_reason": "security_identity_conflict"
+    },
+    {
+      "field_path": "fields.forward_pe",
+      "value": 6.9509,
+      "unit": "x",
+      "semantic_type": "forward_pe",
+      "prose_allowed": false,
+      "canonical_display_value": null,
+      "approved_display_variants": [],
+      "denial_reason": "security_identity_conflict"
+    }
+  ],
+  "retained_user_facts": {
+    "current_price_usd": 166.33,
+    "volume_ratio_20d": 0.43
+  },
+  "old_validator_expected_errors": [
+    "SKHY:security_identity_denied_fact_used:valuation:consensus_forward_earnings",
+    "SKHY:security_identity_denied_numeric_claim:valuation:current"
+  ],
+  "adr_ratio_conversion_performed": false,
+  "premium_discount_calculated": false
+}

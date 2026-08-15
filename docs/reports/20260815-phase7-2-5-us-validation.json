@@ -1,0 +1,16 @@
+{
+  "packet_id": "2026-08-15-us-run-18-ac1f8a4d0253",
+  "market": "us",
+  "stock_count": 13,
+  "automatic_bindings": 158,
+  "manual_bindings": 0,
+  "rejected_bindings": 0,
+  "formatter_errors": 0,
+  "unresolved_placeholders": 0,
+  "validator_status": "PASS",
+  "validator_errors": 0,
+  "telegram_sends": 0,
+  "operating_mutations": 0,
+  "pilot_mutations": 0,
+  "preview_sha256": "3f7e03636d3178e5df7a17fc535d23eb8372b8c21c87a234e1dc780e3127ba01"
+}

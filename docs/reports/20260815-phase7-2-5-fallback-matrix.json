@@ -1,0 +1,63 @@
+{
+  "contract": "security-identity-v1",
+  "path": "deterministic_fallback",
+  "cases": [
+    {
+      "case": "verified_us_common_stock",
+      "identity_state": "verified_non_depositary",
+      "security_basis_multiple": "eligible_when_source_period_currency_and_share_basis_pass",
+      "independent_price_chart_volume": "retained",
+      "result": "PASS"
+    },
+    {
+      "case": "verified_depositary_with_current_security_denominator",
+      "identity_state": "verified_depositary",
+      "security_basis_multiple": "eligible_only_with_verified_current_security_denominator",
+      "adr_or_fx_inference": false,
+      "result": "PASS"
+    },
+    {
+      "case": "identity_conflict",
+      "identity_state": "conflict",
+      "security_basis_numeric_prose": "withheld",
+      "security_basis_qualitative_inference": "withheld",
+      "specific_unknown": "rendered",
+      "independent_price_chart_volume": "retained",
+      "result": "PASS"
+    },
+    {
+      "case": "identity_unknown",
+      "identity_state": "unknown",
+      "security_basis_numeric_prose": "withheld",
+      "security_basis_qualitative_inference": "withheld",
+      "specific_unknown": "rendered",
+      "independent_price_chart_volume": "retained",
+      "result": "PASS"
+    },
+    {
+      "case": "skhy_profile_adr_security_master_common_conflict",
+      "identity_state": "conflict",
+      "forward_pe_6_9509_visible": false,
+      "current_price_166_33_visible": true,
+      "volume_ratio_20d_0_43_visible": true,
+      "adr_conversion": false,
+      "premium_discount_calculation": false,
+      "result": "PASS"
+    }
+  ],
+  "delivery_contract": {
+    "rejected_ai_sent": false,
+    "persisted_payload_retry_unchanged": true,
+    "single_delivery_unchanged": true
+  },
+  "evidence": {
+    "focused_tests": [
+      "tests/test_security_identity_service.py",
+      "tests/test_notification_service.py::test_security_identity_conflict_fallback_hides_multiples_but_keeps_price",
+      "tests/test_ai_review_service.py::test_legacy_depositary_identity_conflict_rejects_numeric_and_qualitative_multiple",
+      "tests/test_ai_review_service.py::test_identity_conflict_allows_specific_number_free_unknown"
+    ],
+    "renderer_semantic_rewrite": false,
+    "ticker_specific_production_branch": false
+  }
+}

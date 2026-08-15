@@ -1,0 +1,25 @@
+{
+  "packet_id": "2026-08-14-kr-run-17-a1dc3dbdc6a9",
+  "stock_count": 7,
+  "automatic_bindings": 141,
+  "manual_bindings": 0,
+  "rejected_bindings": 0,
+  "formatter_errors": 0,
+  "unresolved_placeholders": 0,
+  "validator_status": "PASS",
+  "validator_errors": 0,
+  "message_diff_indices": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8
+  ],
+  "telegram_sends": 0,
+  "operating_mutations": 0,
+  "pilot_mutations": 0,
+  "preview_sha256": "6cc9f52f314ec7ace385622b7a8ab4d25431eadfb66547d30e903d2599fb8ed2"
+}

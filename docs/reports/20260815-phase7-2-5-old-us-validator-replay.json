@@ -1,0 +1,16 @@
+{
+  "packet_id": "2026-08-15-us-run-18-39f4b8810c45",
+  "output_changed_before_validation": false,
+  "validator_status": "REJECT",
+  "error_count": 4,
+  "errors": [
+    "GOOGL:security_identity_denied_fact_used:valuation:current",
+    "GOOGL:security_identity_denied_numeric_claim:valuation:current",
+    "SKHY:security_identity_denied_fact_used:valuation:consensus_forward_earnings",
+    "SKHY:security_identity_denied_numeric_claim:valuation:current"
+  ],
+  "unrelated_error_count": 0,
+  "telegram_sends": 0,
+  "operating_mutations": 0,
+  "pilot_mutations": 0
+}

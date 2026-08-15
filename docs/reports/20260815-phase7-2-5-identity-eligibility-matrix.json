@@ -1,0 +1,766 @@
+{
+  "contract": "security-identity-v1",
+  "source_packet": "2026-08-15-us-run-18-ac1f8a4d0253",
+  "rows": [
+    {
+      "ticker": "CORZ",
+      "company_name": "Core Scientific, Inc.",
+      "identity_state": "verified_non_depositary",
+      "verification_status": "verified",
+      "conflict_reasons": [],
+      "source_provenance": "local",
+      "eligibility_decision": "provider_native_multiple_may_be_eligible",
+      "evidence": [
+        {
+          "source": "security_master.issuer_type",
+          "value": "domestic_us",
+          "meaning": "issuer_type"
+        },
+        {
+          "source": "security_master.security_type",
+          "value": "common_stock",
+          "meaning": "security_type"
+        },
+        {
+          "source": "security_master.identity_quality",
+          "value": "full",
+          "meaning": "identity_quality"
+        },
+        {
+          "source": "security_master.identity_provider",
+          "value": "local",
+          "meaning": "identity_provider"
+        },
+        {
+          "source": "security_master.country",
+          "value": "US",
+          "meaning": "listing_country"
+        },
+        {
+          "source": "security_master.exchange",
+          "value": "NASDAQ",
+          "meaning": "listing_exchange"
+        }
+      ],
+      "denied_security_basis_fields": [],
+      "denied_registry_rows": []
+    },
+    {
+      "ticker": "CRCL",
+      "company_name": "Circle Internet Group",
+      "identity_state": "verified_non_depositary",
+      "verification_status": "verified",
+      "conflict_reasons": [],
+      "source_provenance": "local",
+      "eligibility_decision": "provider_native_multiple_may_be_eligible",
+      "evidence": [
+        {
+          "source": "watchlist.issuer_type",
+          "value": "domestic_us",
+          "meaning": "issuer_type"
+        },
+        {
+          "source": "security_master.issuer_type",
+          "value": "domestic_us",
+          "meaning": "issuer_type"
+        },
+        {
+          "source": "security_master.security_type",
+          "value": "common_stock",
+          "meaning": "security_type"
+        },
+        {
+          "source": "security_master.identity_quality",
+          "value": "full",
+          "meaning": "identity_quality"
+        },
+        {
+          "source": "security_master.identity_provider",
+          "value": "local",
+          "meaning": "identity_provider"
+        },
+        {
+          "source": "security_master.country",
+          "value": "US",
+          "meaning": "listing_country"
+        },
+        {
+          "source": "security_master.exchange",
+          "value": "NYSE",
+          "meaning": "listing_exchange"
+        }
+      ],
+      "denied_security_basis_fields": [],
+      "denied_registry_rows": []
+    },
+    {
+      "ticker": "GOOGL",
+      "company_name": "Alphabet Inc. Class A",
+      "identity_state": "conflict",
+      "verification_status": "conflicted",
+      "conflict_reasons": [
+        "issuer_security_type_conflict"
+      ],
+      "source_provenance": "local+openfigi",
+      "eligibility_decision": "security_share_basis_dependent_valuation_denied",
+      "evidence": [
+        {
+          "source": "watchlist.issuer_type",
+          "value": "domestic_us",
+          "meaning": "issuer_type"
+        },
+        {
+          "source": "security_master.issuer_type",
+          "value": "domestic_us",
+          "meaning": "issuer_type"
+        },
+        {
+          "source": "security_master.security_type",
+          "value": "depositary_receipt",
+          "meaning": "security_type"
+        },
+        {
+          "source": "security_master.identity_quality",
+          "value": "full",
+          "meaning": "identity_quality"
+        },
+        {
+          "source": "security_master.identity_provider",
+          "value": "local+openfigi",
+          "meaning": "identity_provider"
+        },
+        {
+          "source": "security_master.country",
+          "value": "US",
+          "meaning": "listing_country"
+        },
+        {
+          "source": "security_master.exchange",
+          "value": "NASDAQ",
+          "meaning": "listing_exchange"
+        }
+      ],
+      "denied_security_basis_fields": [
+        "bvps",
+        "forward_pe",
+        "historical_pb_statistics.current_percentile",
+        "historical_pb_statistics.current_value",
+        "historical_pe_statistics.current_percentile",
+        "historical_pe_statistics.current_value",
+        "price_to_book",
+        "trailing_pe",
+        "ttm_eps",
+        "valuation_relative_position",
+        "valuation_relative_position_reason"
+      ],
+      "denied_registry_rows": [
+        {
+          "field_path": "fields.ttm_eps",
+          "semantic_type": "ttm_eps",
+          "prose_allowed": false,
+          "canonical_display_value": null,
+          "approved_display_variants": [],
+          "denial_reason": "security_identity_conflict"
+        },
+        {
+          "field_path": "fields.bvps",
+          "semantic_type": "bvps",
+          "prose_allowed": false,
+          "canonical_display_value": null,
+          "approved_display_variants": [],
+          "denial_reason": "security_identity_conflict"
+        },
+        {
+          "field_path": "fields.trailing_pe",
+          "semantic_type": "trailing_pe",
+          "prose_allowed": false,
+          "canonical_display_value": null,
+          "approved_display_variants": [],
+          "denial_reason": "security_identity_conflict"
+        },
+        {
+          "field_path": "fields.price_to_book",
+          "semantic_type": "price_to_book",
+          "prose_allowed": false,
+          "canonical_display_value": null,
+          "approved_display_variants": [],
+          "denial_reason": "security_identity_conflict"
+        },
+        {
+          "field_path": "fields.forward_pe",
+          "semantic_type": "forward_pe",
+          "prose_allowed": false,
+          "canonical_display_value": null,
+          "approved_display_variants": [],
+          "denial_reason": "security_identity_conflict"
+        },
+        {
+          "field_path": "fields.historical_pe_statistics.current_value",
+          "semantic_type": "historical_pe_multiple",
+          "prose_allowed": false,
+          "canonical_display_value": null,
+          "approved_display_variants": [],
+          "denial_reason": "security_identity_conflict"
+        },
+        {
+          "field_path": "fields.historical_pe_statistics.current_percentile",
+          "semantic_type": "historical_pe_percentile",
+          "prose_allowed": false,
+          "canonical_display_value": null,
+          "approved_display_variants": [],
+          "denial_reason": "security_identity_conflict"
+        },
+        {
+          "field_path": "fields.historical_pb_statistics.current_value",
+          "semantic_type": "historical_pb_multiple",
+          "prose_allowed": false,
+          "canonical_display_value": null,
+          "approved_display_variants": [],
+          "denial_reason": "security_identity_conflict"
+        },
+        {
+          "field_path": "fields.historical_pb_statistics.current_percentile",
+          "semantic_type": "historical_pb_percentile",
+          "prose_allowed": false,
+          "canonical_display_value": null,
+          "approved_display_variants": [],
+          "denial_reason": "security_identity_conflict"
+        }
+      ]
+    },
+    {
+      "ticker": "HUT",
+      "company_name": "Hut 8 Corp.",
+      "identity_state": "verified_non_depositary",
+      "verification_status": "verified",
+      "conflict_reasons": [],
+      "source_provenance": "local",
+      "eligibility_decision": "provider_native_multiple_may_be_eligible",
+      "evidence": [
+        {
+          "source": "security_master.issuer_type",
+          "value": "domestic_us",
+          "meaning": "issuer_type"
+        },
+        {
+          "source": "security_master.security_type",
+          "value": "common_stock",
+          "meaning": "security_type"
+        },
+        {
+          "source": "security_master.identity_quality",
+          "value": "full",
+          "meaning": "identity_quality"
+        },
+        {
+          "source": "security_master.identity_provider",
+          "value": "local",
+          "meaning": "identity_provider"
+        },
+        {
+          "source": "security_master.country",
+          "value": "US",
+          "meaning": "listing_country"
+        },
+        {
+          "source": "security_master.exchange",
+          "value": "NASDAQ",
+          "meaning": "listing_exchange"
+        }
+      ],
+      "denied_security_basis_fields": [],
+      "denied_registry_rows": []
+    },
+    {
+      "ticker": "IBM",
+      "company_name": "IBM",
+      "identity_state": "verified_non_depositary",
+      "verification_status": "verified",
+      "conflict_reasons": [],
+      "source_provenance": "local+openfigi",
+      "eligibility_decision": "provider_native_multiple_may_be_eligible",
+      "evidence": [
+        {
+          "source": "watchlist.issuer_type",
+          "value": "domestic_us",
+          "meaning": "issuer_type"
+        },
+        {
+          "source": "security_master.issuer_type",
+          "value": "domestic_us",
+          "meaning": "issuer_type"
+        },
+        {
+          "source": "security_master.security_type",
+          "value": "cp",
+          "meaning": "security_type"
+        },
+        {
+          "source": "security_master.identity_quality",
+          "value": "partial",
+          "meaning": "identity_quality"
+        },
+        {
+          "source": "security_master.identity_provider",
+          "value": "local+openfigi",
+          "meaning": "identity_provider"
+        },
+        {
+          "source": "security_master.country",
+          "value": "US",
+          "meaning": "listing_country"
+        },
+        {
+          "source": "security_master.exchange",
+          "value": "NYSE",
+          "meaning": "listing_exchange"
+        },
+        {
+          "source": "security_master.identity_warnings",
+          "value": "OpenFIGI mapping과 기존 Security Master 회사 식별자가 일치하지 않습니다.",
+          "meaning": "identity_warning"
+        }
+      ],
+      "denied_security_basis_fields": [],
+      "denied_registry_rows": []
+    },
+    {
+      "ticker": "MU",
+      "company_name": "Micron Technology",
+      "identity_state": "verified_non_depositary",
+      "verification_status": "verified",
+      "conflict_reasons": [],
+      "source_provenance": "local",
+      "eligibility_decision": "provider_native_multiple_may_be_eligible",
+      "evidence": [
+        {
+          "source": "watchlist.issuer_type",
+          "value": "domestic_us",
+          "meaning": "issuer_type"
+        },
+        {
+          "source": "security_master.issuer_type",
+          "value": "domestic_us",
+          "meaning": "issuer_type"
+        },
+        {
+          "source": "security_master.security_type",
+          "value": "common_stock",
+          "meaning": "security_type"
+        },
+        {
+          "source": "security_master.identity_quality",
+          "value": "full",
+          "meaning": "identity_quality"
+        },
+        {
+          "source": "security_master.identity_provider",
+          "value": "local",
+          "meaning": "identity_provider"
+        },
+        {
+          "source": "security_master.country",
+          "value": "US",
+          "meaning": "listing_country"
+        },
+        {
+          "source": "security_master.exchange",
+          "value": "NASDAQ",
+          "meaning": "listing_exchange"
+        }
+      ],
+      "denied_security_basis_fields": [],
+      "denied_registry_rows": []
+    },
+    {
+      "ticker": "RXRX",
+      "company_name": "Recursion Pharmaceuticals",
+      "identity_state": "verified_non_depositary",
+      "verification_status": "verified",
+      "conflict_reasons": [],
+      "source_provenance": "local",
+      "eligibility_decision": "provider_native_multiple_may_be_eligible",
+      "evidence": [
+        {
+          "source": "watchlist.issuer_type",
+          "value": "domestic_us",
+          "meaning": "issuer_type"
+        },
+        {
+          "source": "security_master.issuer_type",
+          "value": "domestic_us",
+          "meaning": "issuer_type"
+        },
+        {
+          "source": "security_master.security_type",
+          "value": "common_stock",
+          "meaning": "security_type"
+        },
+        {
+          "source": "security_master.identity_quality",
+          "value": "full",
+          "meaning": "identity_quality"
+        },
+        {
+          "source": "security_master.identity_provider",
+          "value": "local",
+          "meaning": "identity_provider"
+        },
+        {
+          "source": "security_master.country",
+          "value": "US",
+          "meaning": "listing_country"
+        },
+        {
+          "source": "security_master.exchange",
+          "value": "NASDAQ",
+          "meaning": "listing_exchange"
+        }
+      ],
+      "denied_security_basis_fields": [],
+      "denied_registry_rows": []
+    },
+    {
+      "ticker": "SKHY",
+      "company_name": "SK hynix Inc. ADR",
+      "identity_state": "conflict",
+      "verification_status": "conflicted",
+      "conflict_reasons": [
+        "profile_depositary_hint_conflicts_with_security_master"
+      ],
+      "source_provenance": "local",
+      "eligibility_decision": "security_share_basis_dependent_valuation_denied",
+      "evidence": [
+        {
+          "source": "security_master.issuer_type",
+          "value": "domestic_us",
+          "meaning": "issuer_type"
+        },
+        {
+          "source": "security_master.security_type",
+          "value": "common_stock",
+          "meaning": "security_type"
+        },
+        {
+          "source": "security_master.identity_quality",
+          "value": "full",
+          "meaning": "identity_quality"
+        },
+        {
+          "source": "security_master.identity_provider",
+          "value": "local",
+          "meaning": "identity_provider"
+        },
+        {
+          "source": "security_master.country",
+          "value": "US",
+          "meaning": "listing_country"
+        },
+        {
+          "source": "security_master.exchange",
+          "value": "NASDAQ",
+          "meaning": "listing_exchange"
+        },
+        {
+          "source": "profile.company_name",
+          "value": "SK hynix Inc. ADR",
+          "meaning": "depositary_hint"
+        }
+      ],
+      "denied_security_basis_fields": [
+        "forward_pe",
+        "price_to_book",
+        "trailing_pe",
+        "valuation_relative_position",
+        "valuation_relative_position_reason"
+      ],
+      "denied_registry_rows": [
+        {
+          "field_path": "fields.trailing_pe",
+          "semantic_type": "trailing_pe",
+          "prose_allowed": false,
+          "canonical_display_value": null,
+          "approved_display_variants": [],
+          "denial_reason": "security_identity_conflict"
+        },
+        {
+          "field_path": "fields.price_to_book",
+          "semantic_type": "price_to_book",
+          "prose_allowed": false,
+          "canonical_display_value": null,
+          "approved_display_variants": [],
+          "denial_reason": "security_identity_conflict"
+        },
+        {
+          "field_path": "fields.forward_pe",
+          "semantic_type": "forward_pe",
+          "prose_allowed": false,
+          "canonical_display_value": null,
+          "approved_display_variants": [],
+          "denial_reason": "security_identity_conflict"
+        }
+      ]
+    },
+    {
+      "ticker": "SNDK",
+      "company_name": "SanDisk",
+      "identity_state": "verified_non_depositary",
+      "verification_status": "verified",
+      "conflict_reasons": [],
+      "source_provenance": "local",
+      "eligibility_decision": "provider_native_multiple_may_be_eligible",
+      "evidence": [
+        {
+          "source": "watchlist.issuer_type",
+          "value": "domestic_us",
+          "meaning": "issuer_type"
+        },
+        {
+          "source": "security_master.issuer_type",
+          "value": "domestic_us",
+          "meaning": "issuer_type"
+        },
+        {
+          "source": "security_master.security_type",
+          "value": "common_stock",
+          "meaning": "security_type"
+        },
+        {
+          "source": "security_master.identity_quality",
+          "value": "full",
+          "meaning": "identity_quality"
+        },
+        {
+          "source": "security_master.identity_provider",
+          "value": "local",
+          "meaning": "identity_provider"
+        },
+        {
+          "source": "security_master.country",
+          "value": "US",
+          "meaning": "listing_country"
+        },
+        {
+          "source": "security_master.exchange",
+          "value": "NASDAQ",
+          "meaning": "listing_exchange"
+        }
+      ],
+      "denied_security_basis_fields": [],
+      "denied_registry_rows": []
+    },
+    {
+      "ticker": "TSLA",
+      "company_name": "Tesla, Inc.",
+      "identity_state": "verified_non_depositary",
+      "verification_status": "verified",
+      "conflict_reasons": [],
+      "source_provenance": "local",
+      "eligibility_decision": "provider_native_multiple_may_be_eligible",
+      "evidence": [
+        {
+          "source": "watchlist.issuer_type",
+          "value": "domestic_us",
+          "meaning": "issuer_type"
+        },
+        {
+          "source": "security_master.issuer_type",
+          "value": "domestic_us",
+          "meaning": "issuer_type"
+        },
+        {
+          "source": "security_master.security_type",
+          "value": "common_stock",
+          "meaning": "security_type"
+        },
+        {
+          "source": "security_master.identity_quality",
+          "value": "full",
+          "meaning": "identity_quality"
+        },
+        {
+          "source": "security_master.identity_provider",
+          "value": "local",
+          "meaning": "identity_provider"
+        },
+        {
+          "source": "security_master.country",
+          "value": "US",
+          "meaning": "listing_country"
+        },
+        {
+          "source": "security_master.exchange",
+          "value": "NASDAQ",
+          "meaning": "listing_exchange"
+        }
+      ],
+      "denied_security_basis_fields": [],
+      "denied_registry_rows": []
+    },
+    {
+      "ticker": "TSM",
+      "company_name": "TSMC",
+      "identity_state": "verified_depositary",
+      "verification_status": "verified",
+      "conflict_reasons": [],
+      "source_provenance": "local+openfigi",
+      "eligibility_decision": "requires_verified_current_security_denominator",
+      "evidence": [
+        {
+          "source": "watchlist.issuer_type",
+          "value": "foreign_private_issuer",
+          "meaning": "issuer_type"
+        },
+        {
+          "source": "security_master.issuer_type",
+          "value": "foreign_private_issuer",
+          "meaning": "issuer_type"
+        },
+        {
+          "source": "security_master.security_type",
+          "value": "depositary_receipt",
+          "meaning": "security_type"
+        },
+        {
+          "source": "security_master.adr_identifier",
+          "value": "TSM",
+          "meaning": "depositary_evidence"
+        },
+        {
+          "source": "security_master.identity_quality",
+          "value": "full",
+          "meaning": "identity_quality"
+        },
+        {
+          "source": "security_master.identity_provider",
+          "value": "local+openfigi",
+          "meaning": "identity_provider"
+        },
+        {
+          "source": "security_master.country",
+          "value": "US",
+          "meaning": "listing_country"
+        },
+        {
+          "source": "security_master.exchange",
+          "value": "NYSE",
+          "meaning": "listing_exchange"
+        }
+      ],
+      "denied_security_basis_fields": [],
+      "denied_registry_rows": []
+    },
+    {
+      "ticker": "WRD",
+      "company_name": "WeRide",
+      "identity_state": "verified_depositary",
+      "verification_status": "verified",
+      "conflict_reasons": [],
+      "source_provenance": "local+openfigi",
+      "eligibility_decision": "requires_verified_current_security_denominator",
+      "evidence": [
+        {
+          "source": "watchlist.issuer_type",
+          "value": "foreign_private_issuer",
+          "meaning": "issuer_type"
+        },
+        {
+          "source": "security_master.issuer_type",
+          "value": "foreign_private_issuer",
+          "meaning": "issuer_type"
+        },
+        {
+          "source": "security_master.security_type",
+          "value": "depositary_receipt",
+          "meaning": "security_type"
+        },
+        {
+          "source": "security_master.adr_identifier",
+          "value": "WRD",
+          "meaning": "depositary_evidence"
+        },
+        {
+          "source": "security_master.identity_quality",
+          "value": "full",
+          "meaning": "identity_quality"
+        },
+        {
+          "source": "security_master.identity_provider",
+          "value": "local+openfigi",
+          "meaning": "identity_provider"
+        },
+        {
+          "source": "security_master.country",
+          "value": "US",
+          "meaning": "listing_country"
+        },
+        {
+          "source": "security_master.exchange",
+          "value": "NASDAQ",
+          "meaning": "listing_exchange"
+        },
+        {
+          "source": "security_master.adr_ratio",
+          "value": 3.0,
+          "meaning": "depositary_ratio"
+        },
+        {
+          "source": "security_master.identity_warnings",
+          "value": "OpenFIGI mapping과 기존 Security Master 회사 식별자가 일치하지 않습니다.",
+          "meaning": "identity_warning"
+        }
+      ],
+      "denied_security_basis_fields": [],
+      "denied_registry_rows": []
+    },
+    {
+      "ticker": "WULF",
+      "company_name": "TeraWulf Inc.",
+      "identity_state": "verified_non_depositary",
+      "verification_status": "verified",
+      "conflict_reasons": [],
+      "source_provenance": "local",
+      "eligibility_decision": "provider_native_multiple_may_be_eligible",
+      "evidence": [
+        {
+          "source": "security_master.issuer_type",
+          "value": "domestic_us",
+          "meaning": "issuer_type"
+        },
+        {
+          "source": "security_master.security_type",
+          "value": "common_stock",
+          "meaning": "security_type"
+        },
+        {
+          "source": "security_master.identity_quality",
+          "value": "full",
+          "meaning": "identity_quality"
+        },
+        {
+          "source": "security_master.identity_provider",
+          "value": "local",
+          "meaning": "identity_provider"
+        },
+        {
+          "source": "security_master.country",
+          "value": "US",
+          "meaning": "listing_country"
+        },
+        {
+          "source": "security_master.exchange",
+          "value": "NASDAQ",
+          "meaning": "listing_exchange"
+        }
+      ],
+      "denied_security_basis_fields": [],
+      "denied_registry_rows": []
+    }
+  ],
+  "invariants": {
+    "absence_is_not_verified_non_depositary": true,
+    "conflict_and_unknown_fail_closed": true,
+    "ticker_specific_branch": false,
+    "adr_ratio_or_fx_inference": false
+  }
+}
