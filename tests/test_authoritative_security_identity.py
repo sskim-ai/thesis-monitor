@@ -165,6 +165,7 @@ def test_official_cover_corrects_wrong_googl_depositary_identity_idempotently() 
     assert corrected.identity_provider == "sec_official_identity"
     assert result["identity_state"] == VERIFIED_NON_DEPOSITARY
     assert result["source_tier"] == TIER_A_AUTHORITATIVE
+    assert result["adr_ratio_direction"] is None
     assert provenance["field_provenance"]["security_type"]["source_url"]
     assert second["action"] == "no_op_already_authoritative"
     assert second["mutated"] is False

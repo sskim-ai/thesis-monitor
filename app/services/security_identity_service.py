@@ -55,6 +55,7 @@ _CONFLICT_WARNING = re.compile(
     r"conflict|mismatch|inconsistent|불일치|상충",
     re.IGNORECASE,
 )
+_ADR_RATIO_DIRECTION = "ordinary_shares_per_adr"
 
 
 def _normalized(value: object) -> str:
@@ -108,6 +109,35 @@ def identity_source_tier(provider: object, quality: object = None) -> str:
 
 def _higher_priority(left: str, right: str) -> bool:
     return _TIER_RANK[left] < _TIER_RANK[right]
+
+
+def _verified_adr_ratio_direction(
+    *,
+    state: str,
+    ratio: float | None,
+    ratio_source: str | None,
+    provenance: dict[str, object],
+) -> str | None:
+    if state != VERIFIED_DEPOSITARY or ratio is None or ratio <= 0 or not ratio_source:
+        return None
+    if provenance.get("adr_ratio_direction") != _ADR_RATIO_DIRECTION:
+        return None
+    fields = provenance.get("field_provenance")
+    if not isinstance(fields, dict):
+        return None
+    ratio_fact = fields.get("adr_ratio")
+    direction_fact = fields.get("adr_ratio_direction")
+    if not isinstance(ratio_fact, dict) or not isinstance(direction_fact, dict):
+        return None
+    if ratio_fact.get("verification_status") != "verified":
+        return None
+    if direction_fact.get("verification_status") != "verified":
+        return None
+    if ratio_fact.get("value") != ratio:
+        return None
+    if direction_fact.get("value") != _ADR_RATIO_DIRECTION:
+        return None
+    return _ADR_RATIO_DIRECTION
 
 
 def resolve_security_identity(
@@ -369,6 +399,12 @@ def resolve_security_identity(
         conflicts.append("legacy_depositary_flag_conflict")
         decision = "security_share_basis_dependent_valuation_denied"
 
+    adr_ratio_direction = _verified_adr_ratio_direction(
+        state=state,
+        ratio=selected_ratio,
+        ratio_source=selected_ratio_source,
+        provenance=provenance,
+    )
     updated_at = _attribute(security_master, "updated_at")
     return {
         "decision_version": SECURITY_IDENTITY_DECISION_VERSION,
@@ -410,11 +446,7 @@ def resolve_security_identity(
         "selected_adr_ratio": selected_ratio,
         "selected_adr_ratio_source": selected_ratio_source,
         "is_depositary_evidence_present": raw_depositary_evidence,
-        "adr_ratio_direction": (
-            str(provenance.get("adr_ratio_direction"))
-            if provenance.get("adr_ratio_direction")
-            else "ordinary_shares_per_adr"
-        ),
+        "adr_ratio_direction": adr_ratio_direction,
         "eligibility_decision": decision,
     }
 

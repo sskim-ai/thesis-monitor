@@ -114,7 +114,7 @@
   "provider": "sec_official_identity",
   "source_tier": "tier_a_authoritative",
   "validation_audit": {
-    "adr_ratio_direction": "ordinary_shares_per_adr",
+    "adr_ratio_direction": null,
     "apply_action": "apply_authoritative_identity",
     "apply_mutated_on_isolated_copy": true,
     "dry_run_action": "apply_authoritative_identity",

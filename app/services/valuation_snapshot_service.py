@@ -458,7 +458,7 @@ class PerShareBasisContext:
     financial_currency: str | None = None
     adr_ratio: float | None = None
     adr_ratio_source: str | None = None
-    adr_ratio_direction: str = "ordinary_shares_per_adr"
+    adr_ratio_direction: str | None = None
     identity_warning: str | None = None
 
 
@@ -550,8 +550,10 @@ def _resolve_per_share_basis_context(
         financial_currency=financial_currency,
         adr_ratio=ratio,
         adr_ratio_source=ratio_source,
-        adr_ratio_direction=str(
-            identity.get("adr_ratio_direction") or "ordinary_shares_per_adr"
+        adr_ratio_direction=(
+            str(identity["adr_ratio_direction"])
+            if identity.get("adr_ratio_direction")
+            else None
         ),
         identity_warning=identity_warning,
     )

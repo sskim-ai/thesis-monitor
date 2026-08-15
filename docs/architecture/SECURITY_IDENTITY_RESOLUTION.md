@@ -88,6 +88,13 @@ represents `0.1` common share and identifies KRX `000660`. The ratio direction i
 current provider values do not prove a compatible current-ADS denominator/share/currency basis.
 No conversion or premium calculation is performed.
 
+The ratio direction is metadata with its own fail-closed boundary. It is recorded only when the
+identity is `verified_depositary`, the ratio is positive, a ratio source exists, and verified field
+provenance confirms both the ratio and `ordinary_shares_per_adr` direction. Verified common stock,
+unknown or conflicting identity, and depositary identity without a proven ratio all store a null
+direction. A default direction must never be attached merely because the field exists in the
+contract.
+
 ## Packet, Binder, Validator, Fallback
 
 The AI packet recomputes compatibility fields from the canonical identity, so legacy

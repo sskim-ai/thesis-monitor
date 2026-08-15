@@ -84,6 +84,7 @@ def test_verified_common_stock_requires_positive_identity_evidence() -> None:
 
     assert result["identity_state"] == VERIFIED_NON_DEPOSITARY
     assert result["eligibility_decision"] == "provider_native_multiple_may_be_eligible"
+    assert result["adr_ratio_direction"] is None
 
 
 def test_profile_adr_hint_conflicts_with_non_depositary_security_master() -> None:
@@ -112,6 +113,7 @@ def test_depositary_security_is_verified_without_guessing_ratio() -> None:
     assert result["identity_state"] == VERIFIED_DEPOSITARY
     assert result["evidence_values"]["watchlist_adr_ratio"] is None
     assert result["evidence_values"]["security_master_adr_ratio"] is None
+    assert result["adr_ratio_direction"] is None
 
 
 def test_explicit_watchlist_depositary_evidence_outranks_inferred_local_default() -> None:
@@ -245,6 +247,20 @@ def test_ratio_and_issuer_conflicts_are_not_resolved_by_source_priority() -> Non
         "conflict_reasons"
     ]
     assert "adr_ratio_conflict" in result["conflict_reasons"]
+    assert result["adr_ratio_direction"] is None
+
+
+def test_unknown_identity_does_not_receive_adr_ratio_direction() -> None:
+    result = resolve_security_identity(
+        company_name="Fixture Corp",
+        security_master=_security(
+            identity_quality="inferred",
+            identity_provider="local",
+        ),
+    )
+
+    assert result["identity_state"] == IDENTITY_UNKNOWN
+    assert result["adr_ratio_direction"] is None
 
 
 def test_provider_native_consensus_requires_verified_non_depositary_state() -> None:

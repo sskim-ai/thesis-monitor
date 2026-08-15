@@ -730,7 +730,7 @@ def test_unmonitored_security_master_adr_activates_basis_gate() -> None:
     assert context.is_depositary_security is True
     assert context.issuer_type == "adr"
     assert context.adr_ratio == 5
-    assert context.adr_ratio_direction == "ordinary_shares_per_adr"
+    assert context.adr_ratio_direction is None
 
 
 def test_domestic_common_issuer_and_depositary_type_are_a_conflict() -> None:
