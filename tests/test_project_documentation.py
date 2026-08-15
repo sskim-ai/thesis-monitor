@@ -35,8 +35,10 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     assert state["current_commit"] == "HEAD"
     assert state["current_commit_resolution"] == "git rev-parse HEAD"
     assert state["ai_review_mode"] == "shadow"
-    assert state["ai_policy_version"] == "daily-review-v3.9"
+    assert state["ai_policy_version"] == "daily-review-v3.10"
     assert state["output_schema_version"] == 4
+    assert state["security_identity_version"] == "security-identity-v2"
+    assert state["financial_quality_version"] == "financial-quality-taint-v2"
     assert state["ohlcv_structure_version"] == "ohlcv-structure-v2"
     assert state["pilot_version"] == "ai-assisted-pilot-v3"
     assert state["pilot_counts_at_activation"] == {"kr": 0, "us": 0}
@@ -48,7 +50,7 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
         "expected_target_count": 4,
         "visible_target_count": 4,
         "active_target_count": 4,
-        "required_policy_version": "daily-review-v3.9",
+        "required_policy_version": "daily-review-v3.10",
         "target_checkout": "/Users/sskim/Codex/thesis-monitor",
     }
     assert state["single_delivery"] is True

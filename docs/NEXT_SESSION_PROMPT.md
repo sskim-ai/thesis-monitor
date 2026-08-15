@@ -34,9 +34,11 @@ Current contracts:
   `559ad45e4dd86cb0aec9bb09b51a5dc816bf323e8c2b4fd050cf28960a5a9d18`
 - Chart Knowledge 1.0 SHA
   `beee64559831479168f1347c43d979391126926d73e2473ce837cefbf0ede19b`
-- AI policy `daily-review-v3.9`
+- AI policy `daily-review-v3.10`
 - output schema 4
 - OHLCV structure `ohlcv-structure-v2`
+- security identity `security-identity-v2`
+- financial quality `financial-quality-taint-v2`
 - Pilot `ai-assisted-pilot-v3`, current successful count KR 2/5 and US 1/5
 - renderer `ai-assisted-pilot-renderer-v3`
 - AI mode shadow; Production Assist disabled
@@ -72,6 +74,10 @@ Absolute safety rules:
   prose-denied. Never substitute price currency.
 - Peer valuation requires verified profile, same geography, comparable basis, same-date data, and at
   least three peers excluding the company. Missing broad peer data remains unavailable.
+- Inferred/default security identity cannot establish verified non-depositary status. Identity and
+  current-security denominator/share/currency basis are separate gates. Critical financial inputs
+  taint only their exact direct and derived lineage, and denied lineage cannot be interpreted
+  qualitatively through an aggregate valuation fact.
 
 The natural 2026-08-15 KR v3.9 Scheduled Task packet
 `2026-08-15-kr-run-19-919a670464b4` passed validation, delivered 8/8, completed its verified archive,
@@ -89,13 +95,14 @@ knowledge.
 
 Next work order:
 
-1. Observe the next naturally scheduled Pilot v3 session after the financial-currency hotfix; do not
-   trigger a duplicate manual run.
-2. Confirm packet monetary units do not inherit price currency when `financial_currency` is absent.
+1. Observe the first naturally scheduled Pilot v3 session after the v3.10 production transition; do
+   not trigger a duplicate manual run.
+2. Confirm authoritative identity and financial-quality v2 metadata are present in the fresh packet.
 3. Review each successful market session by DATA, CALCULATION, PACKET, KNOWLEDGE_ROUTING,
    AI_REASONING, VALIDATION, RENDERER, and DELIVERY.
 4. Preserve exact archives and old cohorts.
-5. Keep Production Assist disabled until a separate explicit user decision.
+5. Confirm GOOGL identity/valuation and SKHY ADS multiple withholding without conversion.
+6. Keep Production Assist disabled until a separate explicit user decision.
 
 Before completion, run full pytest, Ruff, `git diff --check`, Knowledge checksum validation, Skill and
 schema validation, documentation path validation, push the exact commit, verify GitHub Actions Test

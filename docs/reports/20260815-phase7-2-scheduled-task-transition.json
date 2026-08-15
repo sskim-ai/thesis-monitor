@@ -1,0 +1,40 @@
+{
+  "status": "passed",
+  "transitioned_at": "2026-08-15",
+  "task_count": 4,
+  "duplicate_tasks": 0,
+  "target_checkout": "operating main checkout",
+  "policy": "daily-review-v3.10",
+  "schema": 4,
+  "structure": "ohlcv-structure-v2",
+  "pilot": "ai-assisted-pilot-v3",
+  "renderer": "ai-assisted-pilot-renderer-v3",
+  "security_identity": "security-identity-v2",
+  "financial_quality": "financial-quality-taint-v2",
+  "production_assist": false,
+  "tasks": [
+    {
+      "id": "thesis-monitor-ai-review-us-primary",
+      "time_kst": "08:15",
+      "status": "ACTIVE",
+      "claim_options": "--wait-seconds 300 --poll-seconds 15 --lease-minutes 10"
+    },
+    {
+      "id": "thesis-monitor-ai-review-us-backup",
+      "time_kst": "08:30",
+      "status": "ACTIVE"
+    },
+    {
+      "id": "thesis-monitor-ai-review-kr-primary",
+      "time_kst": "16:15",
+      "status": "ACTIVE"
+    },
+    {
+      "id": "thesis-monitor-ai-review-kr-backup",
+      "time_kst": "16:55",
+      "status": "ACTIVE"
+    }
+  ],
+  "manual_runs": 0,
+  "pilot_mutations": 0
+}

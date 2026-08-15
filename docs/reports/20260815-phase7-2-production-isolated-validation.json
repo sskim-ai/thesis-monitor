@@ -1,0 +1,51 @@
+{
+  "status": "passed",
+  "source": "post_remediation_consistent_database_copy",
+  "source_copy_sha256": "93e0e0f4b9e6eb620bdf6cc2732c1ed15ae2a44038d59f4de9a8293e2ef688dd",
+  "policy": "daily-review-v3.10",
+  "security_identity": "security-identity-v2",
+  "financial_quality": "financial-quality-taint-v2",
+  "us": {
+    "packet_id": "2026-08-15-us-run-18-c10358fd3a28",
+    "packet_sha256": "6c68b2c624299250fd6514fb830b4e7da92fdca9b18e42f9eda847369bd8b9ef",
+    "market_messages": 1,
+    "active_stocks": 13,
+    "packet_stocks": 13,
+    "output_stocks": 13,
+    "rendered_stocks": 13,
+    "automatic_bindings": 161,
+    "manual_bindings": 0,
+    "rejected_bindings": 0,
+    "formatter_errors": 0,
+    "unresolved_placeholders": 0,
+    "validator": "passed",
+    "validator_errors": 0,
+    "googl": "verified Class A common stock; clean PER/fPER/history lineage restored",
+    "skhy": "verified ADS ratio 0.1; PER/PBR/fPER withheld for unverified current-security basis"
+  },
+  "kr": {
+    "packet_id": "2026-08-14-kr-run-17-96464a52322a",
+    "market_messages": 1,
+    "active_stocks": 7,
+    "packet_stocks": 7,
+    "output_stocks": 7,
+    "rendered_stocks": 7,
+    "automatic_bindings": 141,
+    "manual_bindings": 0,
+    "validator": "passed",
+    "validator_errors": 0,
+    "message_differences": 0
+  },
+  "fallback": {
+    "reports": 13,
+    "skhy_identity_explanation": true,
+    "unsafe_skhy_multiple_leakage": 0,
+    "price_preserved": true,
+    "adr_or_premium_calculations": 0
+  },
+  "telegram_sends": 0,
+  "operating_database_mutations": 0,
+  "official_archive_mutations": 0,
+  "assessment_mutations": 0,
+  "pilot_mutations": 0
+}

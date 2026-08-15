@@ -18,7 +18,7 @@ execution or an autonomous investment adviser.
 | Branch | `main` |
 | Official assessment | Deterministic `ThesisAssessment` |
 | AI mode | `shadow` |
-| Analysis policy | `daily-review-v3.9` |
+| Analysis policy | `daily-review-v3.10` |
 | Output schema | `4` |
 | OHLCV structure | `ohlcv-structure-v2` |
 | Investment Knowledge | `3.0` |
@@ -28,6 +28,8 @@ execution or an autonomous investment adviser.
 | Public Action | `0.4.5`, operationId 20/20 |
 | Production Assist | Disabled |
 | Financial currency safety | Missing/empty is `unknown`; unsupported units are prose-denied |
+| Security identity | `security-identity-v2` |
+| Financial quality | `financial-quality-taint-v2` |
 
 Resolve the deployed commit with `git rev-parse HEAD`; a file inside a commit cannot contain that
 commit's own final hash. The machine-readable state records `HEAD` plus the last verified base.
@@ -140,7 +142,7 @@ backend fact -> fact_id -> field_path -> value/unit -> semantic_type
 The single semantic registry defines unit, labels, formatter, rounding, prose permission, and scope.
 Unknown semantics fail closed. Same-number/different-meaning and cross-prose coverage are invalid.
 Derived numbers are usable only when the backend has registered them as canonical facts.
-Under `daily-review-v3.9`, Codex places `{{numeric:ref_id}}` and selects only the canonical fact,
+Under `daily-review-v3.10`, Codex places `{{numeric:ref_id}}` and selects only the canonical fact,
 field, and prose location. The backend owns the value, unit, semantic, source-aware label, display
 format, and generated final claim. Legacy manual claims still validate, but the draft binding path is
 the production contract. See [NUMERIC_PROVENANCE.md](architecture/NUMERIC_PROVENANCE.md).
@@ -168,9 +170,8 @@ The central boundaries are:
 
 ## Market Intelligence
 
-`daily-review-v3.9` retains the v3.8 market-intelligence and state-aware review contract and adds
-deterministic numeric-fact binding, canonical display formatting, correction telemetry, and fallback
-hardening.
+`daily-review-v3.10` retains deterministic numeric binding and adds relational stock reasoning,
+canonical label ownership, lineage-exact financial eligibility, and authoritative security identity.
 Verified market facts become selected changes, market structure, verified
 portfolio transmission, and next confirmation. Market context may be a tailwind or headwind but never
 becomes company fundamental confirmation. Rates, FX, oil, sectors, and flows use distinct semantic
@@ -190,7 +191,7 @@ no peer number was invented. See [PEER_VALUATION.md](architecture/PEER_VALUATION
 ## Pilot Architecture
 
 Pilot v3 activated at KR 0/5 and US 0/5; the current count is KR 2/5 and US 1/5. The required task
-contract is policy v3.9/schema 4/structure v2. A successful day requires Codex completion, validation
+contract is policy v3.10/schema 4/structure v2. A successful day requires Codex completion, validation
 pass, complete AI-assisted delivery, required artifact verification, and a verified atomic
 `archive-complete.json` marker. Only then is success recorded. Archive-only recovery reuses the
 persisted payload without resending Telegram, and packet/date idempotency prevents duplicate counts.
@@ -198,7 +199,8 @@ Fallback days do not increment the counter. Earlier
 Pilot cohorts remain history and are never rewritten.
 
 On 2026-08-15 the owning desktop environment verified all four local-project tasks, retained their
-08:15/08:30/16:15/16:55 schedules, and migrated their exact prompts to v3.9. All four are ACTIVE,
+08:15/08:30/16:15/16:55 schedules, and migrated their exact prompts to v3.10 with
+`security-identity-v2` and `financial-quality-taint-v2`. All four are ACTIVE,
 target the live local operating checkout, use GPT-5.6 Sol with high reasoning, and preserve the US
 Primary 300-second readiness wait. No duplicate standalone task was created.
 
@@ -230,6 +232,14 @@ The natural 2026-08-15 KR v3.9 Scheduled Task completed packet
 was recorded exactly once. Runtime state therefore counts it as KR Day 2/5. Experimental v3.10
 retrospectives did not send this payload or mutate the count. A Preview label such as KR Pilot 3/5
 would be only the next-success candidate until runtime state records another completed session.
+
+Phase 7.2 production integration then deployed code commit `5f3aa5c37848092bcccf74bbc917604bebae33d4`.
+Authoritative SEC identity remediation changed exactly CORZ, GOOGL, HUT, IBM, SKHY, and WULF; a
+second pass was a six-of-six no-op. An isolated post-remediation US packet passed binder and full
+validation with 161 automatic bindings and no manual claims. GOOGL's clean valuation lineage was
+restored, while SKHY remained an ADS with ratio 0.1 and its unverified current-security multiples
+stayed withheld. The first naturally scheduled v3.10 Live session remains pending and no Pilot count
+was added by deployment or retrospective validation.
 
 ## Source Map
 

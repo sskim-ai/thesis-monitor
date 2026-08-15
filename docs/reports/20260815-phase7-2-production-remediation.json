@@ -1,0 +1,71 @@
+{
+  "status": "applied_and_idempotent",
+  "contract": "authoritative-security-identity-v1",
+  "code_commit": "5f3aa5c37848092bcccf74bbc917604bebae33d4",
+  "backup": {
+    "directory": "data/backups/phase72-production-integration-20260815T2252KST",
+    "database_sha256": "3418dbcf603d67684864113f975619e1153bf551433a3e92087b3adf9d5a344b",
+    "database_integrity": "ok",
+    "pilot_state_sha256": "5b1bd50eef20e60ec4f13eb84e8b78a0224b11dc876d4f290fb8e04c52b0fccf",
+    "target_rows_sha256": "372e27b311b9a49acc095523db0117b7763a35a7353ec2106631d076c8d07eac"
+  },
+  "targets": [
+    {
+      "ticker": "CORZ",
+      "accession": "0001839341-26-000014",
+      "before": "local common_stock",
+      "after": "Tier A SEC verified common_stock",
+      "adr_ratio": null,
+      "adr_ratio_direction": null
+    },
+    {
+      "ticker": "GOOGL",
+      "accession": "0001652044-26-000071",
+      "before": "local+openfigi Depositary Receipt",
+      "after": "Tier A SEC verified Class A common_stock",
+      "adr_ratio": null,
+      "adr_ratio_direction": null
+    },
+    {
+      "ticker": "HUT",
+      "accession": "0001104659-26-090025",
+      "before": "local common_stock",
+      "after": "Tier A SEC verified common_stock",
+      "adr_ratio": null,
+      "adr_ratio_direction": null
+    },
+    {
+      "ticker": "IBM",
+      "accession": "0000051143-26-000078",
+      "before": "local+openfigi commercial paper conflict",
+      "after": "Tier A SEC verified common_stock",
+      "adr_ratio": null,
+      "adr_ratio_direction": null
+    },
+    {
+      "ticker": "SKHY",
+      "accession": "0001193125-26-299963",
+      "registration": "333-296987",
+      "before": "local common_stock",
+      "after": "Tier A SEC verified ADS",
+      "ordinary_share_identifier": "000660",
+      "adr_ratio": 0.1,
+      "adr_ratio_direction": "ordinary_shares_per_adr"
+    },
+    {
+      "ticker": "WULF",
+      "accession": "0001083301-26-000166",
+      "before": "local common_stock",
+      "after": "Tier A SEC verified common_stock",
+      "adr_ratio": null,
+      "adr_ratio_direction": null
+    }
+  ],
+  "first_apply": "six_of_six_apply_authoritative_identity",
+  "repeat": "six_of_six_no_op_already_authoritative",
+  "non_target_securitymaster_sha_before_after": "0ea65ff7553fc3e69185c109b33d1ebc67f140dff529fc90cafbbc98af9771cc",
+  "non_target_provider_cache_sha_before_after": "78bf6c453eb5f7201a11732137f80ccc9e301495d2116e352f3550dda37a4864",
+  "historical_packet_mutations": 0,
+  "telegram_sends": 0,
+  "pilot_mutations": 0
+}

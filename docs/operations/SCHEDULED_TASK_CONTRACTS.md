@@ -3,8 +3,8 @@
 ## Required Runtime
 
 All four tasks run in the live local checkout of `sskim-ai/thesis-monitor` with workspace-write
-access. They invoke `$thesis-monitor-daily-review`, policy `daily-review-v3.9`, final output schema 4,
-OHLCV structure v2, Pilot v3, and renderer v3. Investment Knowledge v3 and Chart Knowledge v1 must
+access. They invoke `$thesis-monitor-daily-review`, policy `daily-review-v3.10`, final output schema 4,
+OHLCV structure v2, Pilot v3, renderer v3, security identity v2, and financial quality v2. Investment Knowledge v3 and Chart Knowledge v1 must
 match the checksums in `docs/project-state.json`.
 
 Each prompt must prohibit external research, source-code edits, direct database mutation, and direct
@@ -26,8 +26,9 @@ All times are Asia/Seoul and use an exact schedule.
 Use this prompt for each task, substituting its exact claim command:
 
 > In the current local thesis-monitor project, invoke `$thesis-monitor-daily-review`. Require Pilot
-> `ai-assisted-pilot-v3`, policy `daily-review-v3.9`, final schema 4, OHLCV
-> `ohlcv-structure-v2`, and renderer `ai-assisted-pilot-renderer-v3`. Run `<CLAIM_COMMAND>`. If it
+> `ai-assisted-pilot-v3`, policy `daily-review-v3.10`, final schema 4, OHLCV
+> `ohlcv-structure-v2`, renderer `ai-assisted-pilot-renderer-v3`, security identity
+> `security-identity-v2`, and financial quality `financial-quality-taint-v2`. Run `<CLAIM_COMMAND>`. If it
 > returns `no_pending_packet`, stop without modifying anything. Otherwise follow the skill against the
 > claimed immutable packet and claim-specific temporary path. Author every new investment number with
 > `{{numeric:ref_id}}` plus `numeric_fact_refs`; do not transcribe, calculate, round, relabel, or guess
@@ -47,8 +48,9 @@ Before marking the deployment gate passed, confirm in the ChatGPT desktop Schedu
 1. exactly these four local-project tasks exist and no duplicate standalone web tasks were created;
 2. all four are ACTIVE, use Asia/Seoul, and retain 08:15/08:30/16:15/16:55;
 3. each targets the clean operating checkout at the exact pushed `origin/main` commit;
-4. each prompt contains v3.9, schema 4, structure v2, Pilot v3, renderer v3, and the appropriate claim
+4. each prompt contains v3.10, schema 4, structure v2, Pilot v3, renderer v3, security identity v2,
+   financial quality v2, and the appropriate claim
    command;
 5. workspace-write is the only filesystem permission and external browsing is unavailable;
-6. KR remains 1/5 and US remains 1/5; prompt migration does not reset or increment either counter;
+6. KR remains 2/5 and US remains 1/5; prompt migration does not reset or increment either counter;
 7. Production Assist remains disabled.

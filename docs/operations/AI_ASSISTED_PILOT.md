@@ -66,7 +66,7 @@ If Telegram fails after validation, the persisted rendered set is retried at bou
 
 ## Cohorts and Counting
 
-Active cohort: `ai-assisted-pilot-v3` with policy `daily-review-v3.9`, schema 4, structure v2, and
+Active cohort: `ai-assisted-pilot-v3` with policy `daily-review-v3.10`, schema 4, structure v2, and
 renderer v3. State is stored in `data/ai_review/pilot/state-v3.json`; the current successful count is
 KR 2/5 and US 1/5.
 Earlier state files and history remain immutable.
@@ -122,9 +122,16 @@ Before Day 1:
 1. `origin/main`, development checkout, and operating checkout are the same clean commit.
 2. Full tests, lint, diff, Knowledge checksums, Skill, schema, renderer, and documentation validation
    pass for that exact commit.
-3. All four Scheduled Tasks name Pilot v3, policy v3.9, schema 4, structure v2, and renderer v3.
+3. All four Scheduled Tasks name Pilot v3, policy v3.10, schema 4, structure v2, renderer v3,
+   security identity v2, and financial quality v2.
 4. State-v3 has no migrated successes.
 5. The fallback LaunchAgent is loaded and single-delivery tests pass.
+
+On 2026-08-15 Phase 7.2 was deployed after exact-commit checks. The six approved authoritative
+identity remediations were applied and were all idempotent no-ops on the second pass. Four existing
+tasks were updated in place to v3.10 without changing schedules, checkout, or claim options. This
+deployment and its isolated validation did not send Telegram or increment Pilot state; the first
+naturally scheduled v3.10 Live session is pending.
 
 ## Incident Classification
 
