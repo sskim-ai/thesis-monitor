@@ -392,10 +392,36 @@ def record_ai_validation_rejection(
 
 
 def _bullets(values: list[str], empty: str | None = None) -> str:
-    items = [f"• {value}" for value in values if value.strip()]
+    items = [
+        f"• {_plain_language_user_text(value)}"
+        for value in values
+        if value.strip()
+    ]
     if not items and empty:
-        items.append(f"• {empty}")
+        items.append(f"• {_plain_language_user_text(empty)}")
     return "\n".join(items)
+
+
+def _plain_language_user_text(text: str) -> str:
+    replacements = (
+        ("최신 안전 실적 앵커는", "최근 확인된 핵심 실적은"),
+        ("최신 실적 숫자 앵커는", "최근 확인된 핵심 실적 숫자는"),
+        ("새로운 실적 숫자 앵커가 제공되지 않았습니다", "새로 확인된 핵심 실적 숫자가 없습니다"),
+        ("실적 숫자 앵커는", "핵심 실적 숫자는"),
+        ("실적 앵커는", "핵심 실적은"),
+        ("현재 평가 앵커는", "현재 평가 기준은"),
+        ("평가 앵커는", "평가 기준은"),
+        ("숫자 앵커를", "핵심 숫자를"),
+        ("앵커는", "기준은"),
+        ("앵커가", "기준이"),
+        ("앵커를", "기준을"),
+        ("앵커와", "기준과"),
+        ("앵커", "기준"),
+    )
+    rendered = text
+    for source, target in replacements:
+        rendered = rendered.replace(source, target)
+    return rendered
 
 
 def _deterministic_blocks(text: str) -> list[str]:
@@ -428,7 +454,7 @@ def _render_ai_market_message(
     ]
     changes = _bullets(
         [
-            item.text.strip()
+            _plain_language_user_text(item.text.strip())
             for item in review.important_changes
             if item.text.strip() and item not in night_changes
         ]
@@ -441,25 +467,34 @@ def _render_ai_market_message(
     transmissions = _bullets(
         [
             f"{group_labels.get(item.portfolio_group, item.portfolio_group)}: "
-            f"{item.text.strip()}"
+            f"{_plain_language_user_text(item.text.strip())}"
             for item in review.portfolio_transmission
             if item.text.strip()
         ]
     )
     next_checks = _bullets(
-        [item.text.strip() for item in review.next_checks if item.text.strip()]
+        [
+            _plain_language_user_text(item.text.strip())
+            for item in review.next_checks
+            if item.text.strip()
+        ]
     )
     blocks = _deterministic_blocks(deterministic_text)
     cautions = _first_block(blocks, "⚠️ 데이터 주의")
     sections = [
         f"🤖 AI 보조 {title} · {market_label} Pilot {pilot_day}/{target_days}",
-        f"🎯 오늘 시장 한 줄\n{review.core_judgment.text.strip()}",
+        "🎯 오늘 시장 한 줄\n"
+        f"{_plain_language_user_text(review.core_judgment.text.strip())}",
     ]
     if changes:
         sections.append(f"📈 실제 변화\n{changes}")
     if market == "us":
         rendered_night_changes = _bullets(
-            [item.text.strip() for item in night_changes if item.text.strip()]
+            [
+                _plain_language_user_text(item.text.strip())
+                for item in night_changes
+                if item.text.strip()
+            ]
         )
         night_cautions = _bullets(
             [
@@ -472,7 +507,9 @@ def _render_ai_market_message(
             sections.append(f"🌙 한국 개장 전 신호\n{rendered_night_changes}")
         elif night_cautions:
             sections.append(f"🌙 한국 개장 전 신호\n{night_cautions}")
-    sections.append(f"🧭 시장 구조\n{review.market_context.text.strip()}")
+    sections.append(
+        f"🧭 시장 구조\n{_plain_language_user_text(review.market_context.text.strip())}"
+    )
     if transmissions:
         sections.append(f"🔗 모니터링 종목에 미치는 영향\n{transmissions}")
     if next_checks:
@@ -526,16 +563,18 @@ def _render_ai_stock_message(
     sections = [
         f"🤖 AI 보조 종목 점검 · {market_label} Pilot {pilot_day}/{target_days}",
         "\n".join([company, official, *fixed_context]),
-        f"🎯 핵심 판단\n{review.core_judgment.text.strip()}",
-        f"📈 사업·실적\n{review.business_earnings.text.strip()}",
+        f"🎯 핵심 판단\n{_plain_language_user_text(review.core_judgment.text.strip())}",
+        f"📈 사업·실적\n{_plain_language_user_text(review.business_earnings.text.strip())}",
         (
             "💰 가격·포지셔닝\n"
-            f"{review.price_positioning.text.strip()}\n"
-            f"• 신규 관찰자: {review.price_positioning.new_observer_view.strip()}\n"
-            f"• 보유자: {review.price_positioning.holder_view.strip()}"
+            f"{_plain_language_user_text(review.price_positioning.text.strip())}\n"
+            "• 신규 관찰자: "
+            f"{_plain_language_user_text(review.price_positioning.new_observer_view.strip())}\n"
+            "• 보유자: "
+            f"{_plain_language_user_text(review.price_positioning.holder_view.strip())}"
         ),
-        f"📊 수급\n{review.supply_analysis.text.strip()}",
-        f"📐 Valuation\n{review.valuation_analysis.text.strip()}",
+        f"📊 수급\n{_plain_language_user_text(review.supply_analysis.text.strip())}",
+        f"📐 Valuation\n{_plain_language_user_text(review.valuation_analysis.text.strip())}",
     ]
     sections.extend(deterministic_details)
     priority_watch = _bullets(review.priority_watch)

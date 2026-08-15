@@ -9,9 +9,10 @@ from sqlmodel import SQLModel, Session, create_engine, select
 
 from app.config import get_settings
 from app.models.thesis import NotificationDelivery
-from app.schemas.ai_review import AIMarketReview
+from app.schemas.ai_review import AIMarketReview, AIStockReview
 from app.services.ai_assisted_delivery_service import (
     _render_ai_market_message,
+    _render_ai_stock_message,
     ai_assisted_pilot_active,
     deliver_validated_ai_review,
     dispatch_due_deterministic_fallbacks,
@@ -174,6 +175,31 @@ def _write_artifacts(tmp_path: Path, *, output: bool = True) -> None:
         (outbox / f"{PACKET_ID}--daily-review-v3.7--knowledge.json").write_text(
             json.dumps(_output(), ensure_ascii=False), encoding="utf-8"
         )
+
+
+def test_stock_renderer_uses_plain_language_instead_of_anchor_jargon() -> None:
+    review_value = _output()["stock_reviews"][0]
+    review_value["business_earnings"]["text"] = (
+        "최신 안전 실적 앵커는 매출과 성장률입니다. "
+        "새로운 실적 숫자 앵커가 제공되지 않았습니다."
+    )
+    review_value["valuation_analysis"]["text"] = (
+        "현재 평가 앵커는 PER이며 숫자 앵커를 함께 봅니다."
+    )
+    review = AIStockReview.model_validate(review_value)
+
+    rendered = _render_ai_stock_message(
+        "🏢 Pilot Corp(PILOT)\n\n투자 논리: 유지",
+        review,
+        market="kr",
+        pilot_day=1,
+        target_days=5,
+    )
+
+    assert "최근 확인된 핵심 실적은 매출과 성장률입니다." in rendered
+    assert "새로 확인된 핵심 실적 숫자가 없습니다." in rendered
+    assert "현재 평가 기준은 PER이며 핵심 숫자를 함께 봅니다." in rendered
+    assert "앵커" not in rendered
 
 
 def _seed_deliveries(session: Session, *, status: str = "pending") -> None:
