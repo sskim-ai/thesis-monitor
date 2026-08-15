@@ -37,7 +37,7 @@ Current contracts:
 - AI policy `daily-review-v3.9`
 - output schema 4
 - OHLCV structure `ohlcv-structure-v2`
-- Pilot `ai-assisted-pilot-v3`, current successful count KR 1/5 and US 1/5
+- Pilot `ai-assisted-pilot-v3`, current successful count KR 2/5 and US 1/5
 - renderer `ai-assisted-pilot-renderer-v3`
 - AI mode shadow; Production Assist disabled
 - Public Action 0.4.5, operationId 20/20
@@ -72,6 +72,12 @@ Absolute safety rules:
   prose-denied. Never substitute price currency.
 - Peer valuation requires verified profile, same geography, comparable basis, same-date data, and at
   least three peers excluding the company. Missing broad peer data remains unavailable.
+
+The natural 2026-08-15 KR v3.9 Scheduled Task packet
+`2026-08-15-kr-run-19-919a670464b4` passed validation, delivered 8/8, completed its verified archive,
+and was counted exactly once as KR Day 2/5. Experimental v3.10 retrospective or Preview output does
+not change this persisted count. Treat any next-day Pilot label as a candidate until delivery,
+archive completion, and runtime state all agree.
 
 US morning schedule: deterministic run and first KRX fetch 08:05, KRX deadline 08:20, Codex Primary
 08:15, Backup 08:30, deterministic fallback 08:40. Telegram network retry reuses persisted final

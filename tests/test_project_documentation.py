@@ -40,7 +40,7 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     assert state["ohlcv_structure_version"] == "ohlcv-structure-v2"
     assert state["pilot_version"] == "ai-assisted-pilot-v3"
     assert state["pilot_counts_at_activation"] == {"kr": 0, "us": 0}
-    assert state["pilot_current_successful_sessions"] == {"kr": 1, "us": 1}
+    assert state["pilot_current_successful_sessions"] == {"kr": 2, "us": 1}
     assert state["monitoring_state_version"] == "monitoring-state-v1"
     assert state["scheduled_task_contract_verification"] == {
         "checked_at": "2026-08-15",

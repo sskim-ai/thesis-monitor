@@ -23,7 +23,7 @@ execution or an autonomous investment adviser.
 | OHLCV structure | `ohlcv-structure-v2` |
 | Investment Knowledge | `3.0` |
 | Chart Knowledge | `1.0` |
-| Pilot | `ai-assisted-pilot-v3`, current KR 1/5 and US 1/5 |
+| Pilot | `ai-assisted-pilot-v3`, current KR 2/5 and US 1/5 |
 | Renderer | `ai-assisted-pilot-renderer-v3` |
 | Public Action | `0.4.5`, operationId 20/20 |
 | Production Assist | Disabled |
@@ -189,7 +189,7 @@ no peer number was invented. See [PEER_VALUATION.md](architecture/PEER_VALUATION
 
 ## Pilot Architecture
 
-Pilot v3 activated at KR 0/5 and US 0/5; the current count is KR 1/5 and US 1/5. The required task
+Pilot v3 activated at KR 0/5 and US 0/5; the current count is KR 2/5 and US 1/5. The required task
 contract is policy v3.9/schema 4/structure v2. A successful day requires Codex completion, validation
 pass, complete AI-assisted delivery, required artifact verification, and a verified atomic
 `archive-complete.json` marker. Only then is success recorded. Archive-only recovery reuses the
@@ -223,6 +223,13 @@ The later v3.9 same-packet retrospective was archive-only and did not change tha
 The `e2c9290` plain-language preview was also unsent experimental evidence. Broad renderer-side word
 replacement was removed because it crossed the post-validation semantic boundary; the Daily Review
 Skill remains responsible for avoiding internal analysis jargon in authored user prose.
+
+The natural 2026-08-15 KR v3.9 Scheduled Task completed packet
+`2026-08-15-kr-run-19-919a670464b4`: validator PASS, the market plus seven active stocks delivered
+8/8, all required archive hashes verified, and `archive-complete.json` was written before the packet
+was recorded exactly once. Runtime state therefore counts it as KR Day 2/5. Experimental v3.10
+retrospectives did not send this payload or mutate the count. A Preview label such as KR Pilot 3/5
+would be only the next-success candidate until runtime state records another completed session.
 
 ## Source Map
 

@@ -68,7 +68,7 @@ If Telegram fails after validation, the persisted rendered set is retried at bou
 
 Active cohort: `ai-assisted-pilot-v3` with policy `daily-review-v3.9`, schema 4, structure v2, and
 renderer v3. State is stored in `data/ai_review/pilot/state-v3.json`; the current successful count is
-KR 1/5 and US 1/5.
+KR 2/5 and US 1/5.
 Earlier state files and history remain immutable.
 
 A market success increments only when:
@@ -94,6 +94,13 @@ The 2026-08-15 US live session passed validation, completed 14/14 delivery, and 
 so it is the first US Pilot success. Later v3.9 retrospective and renderer previews were not sent and
 do not count. In particular, the preview committed at `e2c9290` was an experiment; its broad renderer
 word replacement is not part of the operating contract.
+
+The natural 2026-08-15 KR v3.9 Scheduled Task packet
+`2026-08-15-kr-run-19-919a670464b4` passed validation, delivered the market plus seven stocks 8/8,
+verified every required artifact hash, and wrote `archive-complete.json` before the success record.
+The packet and assessment date occur once in state, so it is KR Day 2/5. Experimental v3.10 output
+did not send or count this session. A renderer may show the next candidate day, but only persisted
+state after verified archive completion is the actual count.
 
 Fallback is an operational success but not an AI Pilot success. Each market needs five successful
 sessions. Completion returns that market to deterministic delivery; it does not enable Production
