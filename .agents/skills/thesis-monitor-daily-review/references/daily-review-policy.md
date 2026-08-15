@@ -36,6 +36,28 @@ For each stock, review:
 
 Do more than paraphrase the deterministic status. Combine compatible facts, identify noise, test the facts against thesis drivers and invalidation conditions, and state what remains unknown. Keep each stock focused on one to three decisive ideas.
 
+For each stock, select at least one company-specific investment question. Connect a canonical fact to
+another fact or verified basis, explain the relationship, identify the expectation embedded in the
+current price or valuation, and name the next supplied fact that would change the judgment. Do not
+create surface variety by replacing words in a shared template.
+
+When two relevant valuation facts exist, interpret their direction together. A modeled forward
+multiple above trailing can indicate a weaker modeled earnings denominator; a modeled forward
+multiple below trailing can indicate earnings expansion assumptions that may coexist with cycle-peak
+risk. These are qualitative relationships between backend values, not permission to calculate an
+unstated spread or call an internal model market consensus. Apply the routed industry framework:
+memory requires cycle, mix, utilization, inventory, capex, and FCF discipline; biotech requires
+clinical/regulatory milestones, runway, dilution, and partnerships; foundry requires process mix,
+utilization, capex, customer demand, and issuer-currency discipline; auto/platform requires growth,
+margin, cash flow, and segment execution; power-intensive compute requires power economics,
+utilization, expansion capital, and cash conversion.
+
+New-observer and holder views answer different questions. The new observer needs a verified entry
+condition, price asymmetry, retest, or missing business fact before committing new capital. The holder
+needs the current chart review boundary and the separate fundamental deterioration that would force
+thesis reassessment. Never repeat the same normalized sentence for both views, and never turn either
+view into a buy or sell instruction.
+
 Hard deterministic warnings remain visible in the comparison record even when the AI view differs. Shadow output never mutates official state or Telegram.
 
 ## Full Knowledge Requirement

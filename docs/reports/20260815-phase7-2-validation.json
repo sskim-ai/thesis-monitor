@@ -1,0 +1,11 @@
+{
+  "packet_id": "2026-08-15-us-run-18-118f331178d2",
+  "policy": "daily-review-v3.10",
+  "binding_status": "passed",
+  "binding_errors": [],
+  "validator_status": "passed",
+  "validator_errors": [],
+  "telegram_sent": 0,
+  "operating_mutations": 0,
+  "pilot_count_mutations": 0
+}

@@ -891,6 +891,12 @@ def test_output_guardrails_reject_mismatch_hallucination_and_bad_basis(
         _, errors = validate_ai_review_output(session, packet, modeled_as_consensus)
         assert any("modeled_forward_called_consensus" in item for item in errors)
 
+        identical_audience = _valid_output(packet)
+        price = identical_audience["stock_reviews"][0]["price_positioning"]
+        price["holder_view"] = price["new_observer_view"]
+        _, errors = validate_ai_review_output(session, packet, identical_audience)
+        assert any("observer_holder_not_distinct" in item for item in errors)
+
         invalid_history = _valid_output(packet)
         invalid_history["stock_reviews"][0]["valuation_analysis"]["text"] = "과거 배수 기준으로 저평가입니다."
         _, errors = validate_ai_review_output(session, packet, invalid_history)
@@ -1699,7 +1705,7 @@ def test_knowledge_v3_sources_decisions_and_safety_markers() -> None:
 
 
 def test_dual_knowledge_policy_identity_starts_v38_stateful_cohort() -> None:
-    assert ai_review_service.ANALYSIS_POLICY_VERSION == "daily-review-v3.9"
+    assert ai_review_service.ANALYSIS_POLICY_VERSION == "daily-review-v3.10"
     assert ai_review_service.OUTPUT_SCHEMA_VERSION == "4"
     manifest = knowledge_manifest()
     assert manifest["version"] == "3.0"
@@ -3667,11 +3673,11 @@ def test_v35_packet_records_structure_v2_shadow_cohort_metadata(
         packet = build_ai_review_packet(session, RUN_DATE, "us")
 
     assert packet is not None
-    assert packet["analysis_policy_version"] == "daily-review-v3.9"
+    assert packet["analysis_policy_version"] == "daily-review-v3.10"
     assert packet["structure_algorithm_version"] == "ohlcv-structure-v2"
     assert packet["ready_for_ai"] is True
     assert packet["shadow_cohort"] == {
-        "policy_version": "daily-review-v3.9",
+        "policy_version": "daily-review-v3.10",
         "eligible": True,
         "profile_gate": {
             "active_total": 1,

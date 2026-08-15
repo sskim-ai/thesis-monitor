@@ -1,0 +1,294 @@
+{
+  "packet_id": "2026-08-15-us-run-18-118f331178d2",
+  "source": "read_only_database_backup",
+  "policy": "daily-review-v3.10",
+  "schema": "4",
+  "logical_message_count": 14,
+  "telegram_chunk_count": 14,
+  "market_message_count": 1,
+  "stock_message_count": 13,
+  "tickers": [
+    "CORZ",
+    "CRCL",
+    "GOOGL",
+    "HUT",
+    "IBM",
+    "MU",
+    "RXRX",
+    "SKHY",
+    "SNDK",
+    "TSLA",
+    "TSM",
+    "WRD",
+    "WULF"
+  ],
+  "messages": [
+    {
+      "order": 1,
+      "ticker": "market",
+      "length": 870,
+      "chunks": 1
+    },
+    {
+      "order": 2,
+      "ticker": "CORZ",
+      "length": 1200,
+      "chunks": 1
+    },
+    {
+      "order": 3,
+      "ticker": "CRCL",
+      "length": 1249,
+      "chunks": 1
+    },
+    {
+      "order": 4,
+      "ticker": "GOOGL",
+      "length": 1253,
+      "chunks": 1
+    },
+    {
+      "order": 5,
+      "ticker": "HUT",
+      "length": 1245,
+      "chunks": 1
+    },
+    {
+      "order": 6,
+      "ticker": "IBM",
+      "length": 1285,
+      "chunks": 1
+    },
+    {
+      "order": 7,
+      "ticker": "MU",
+      "length": 1332,
+      "chunks": 1
+    },
+    {
+      "order": 8,
+      "ticker": "RXRX",
+      "length": 1264,
+      "chunks": 1
+    },
+    {
+      "order": 9,
+      "ticker": "SKHY",
+      "length": 1143,
+      "chunks": 1
+    },
+    {
+      "order": 10,
+      "ticker": "SNDK",
+      "length": 1158,
+      "chunks": 1
+    },
+    {
+      "order": 11,
+      "ticker": "TSLA",
+      "length": 1305,
+      "chunks": 1
+    },
+    {
+      "order": 12,
+      "ticker": "TSM",
+      "length": 1316,
+      "chunks": 1
+    },
+    {
+      "order": 13,
+      "ticker": "WRD",
+      "length": 1185,
+      "chunks": 1
+    },
+    {
+      "order": 14,
+      "ticker": "WULF",
+      "length": 1296,
+      "chunks": 1
+    }
+  ],
+  "numeric_binding": {
+    "status": "passed",
+    "auto_bound": 168,
+    "manual_legacy": 0,
+    "rejected": 0,
+    "removed_unsafe": 0,
+    "formatting_failures": 0
+  },
+  "validator": {
+    "status": "passed",
+    "error_count": 0
+  },
+  "quality": {
+    "contract": "relational-reasoning-quality-v1",
+    "duplicate_threshold": 3,
+    "stock_count": 13,
+    "repeated_sentences": [],
+    "substantive_repeated_sentence_count": 0,
+    "max_substantive_repeat": 0,
+    "observer_holder": [
+      {
+        "ticker": "CORZ",
+        "distinct": true
+      },
+      {
+        "ticker": "CRCL",
+        "distinct": true
+      },
+      {
+        "ticker": "GOOGL",
+        "distinct": true
+      },
+      {
+        "ticker": "HUT",
+        "distinct": true
+      },
+      {
+        "ticker": "IBM",
+        "distinct": true
+      },
+      {
+        "ticker": "MU",
+        "distinct": true
+      },
+      {
+        "ticker": "RXRX",
+        "distinct": true
+      },
+      {
+        "ticker": "SKHY",
+        "distinct": true
+      },
+      {
+        "ticker": "SNDK",
+        "distinct": true
+      },
+      {
+        "ticker": "TSLA",
+        "distinct": true
+      },
+      {
+        "ticker": "TSM",
+        "distinct": true
+      },
+      {
+        "ticker": "WRD",
+        "distinct": true
+      },
+      {
+        "ticker": "WULF",
+        "distinct": true
+      }
+    ],
+    "observer_holder_distinct_count": 13,
+    "section_numeric_grounding": {
+      "CORZ": {
+        "core": 2,
+        "earnings": 2,
+        "price": 7,
+        "supply": 1,
+        "valuation": 1
+      },
+      "CRCL": {
+        "core": 2,
+        "earnings": 1,
+        "price": 7,
+        "supply": 1,
+        "valuation": 2
+      },
+      "GOOGL": {
+        "core": 2,
+        "earnings": 0,
+        "price": 7,
+        "supply": 1,
+        "valuation": 3
+      },
+      "HUT": {
+        "core": 2,
+        "earnings": 0,
+        "price": 7,
+        "supply": 1,
+        "valuation": 2
+      },
+      "IBM": {
+        "core": 2,
+        "earnings": 2,
+        "price": 7,
+        "supply": 1,
+        "valuation": 3
+      },
+      "MU": {
+        "core": 2,
+        "earnings": 2,
+        "price": 7,
+        "supply": 1,
+        "valuation": 4
+      },
+      "RXRX": {
+        "core": 2,
+        "earnings": 2,
+        "price": 7,
+        "supply": 1,
+        "valuation": 2
+      },
+      "SKHY": {
+        "core": 2,
+        "earnings": 0,
+        "price": 1,
+        "supply": 1,
+        "valuation": 3
+      },
+      "SNDK": {
+        "core": 2,
+        "earnings": 0,
+        "price": 3,
+        "supply": 1,
+        "valuation": 3
+      },
+      "TSLA": {
+        "core": 2,
+        "earnings": 2,
+        "price": 7,
+        "supply": 1,
+        "valuation": 3
+      },
+      "TSM": {
+        "core": 2,
+        "earnings": 2,
+        "price": 7,
+        "supply": 1,
+        "valuation": 3
+      },
+      "WRD": {
+        "core": 2,
+        "earnings": 0,
+        "price": 3,
+        "supply": 1,
+        "valuation": 1
+      },
+      "WULF": {
+        "core": 2,
+        "earnings": 0,
+        "price": 7,
+        "supply": 1,
+        "valuation": 2
+      }
+    },
+    "stock_specific_next_check_count": 13,
+    "generic_next_check_count": 0,
+    "stock_specific_unknown_count": 13,
+    "generic_unknown_count": 0,
+    "hard_checks_passed": true
+  },
+  "telegram_sent": 0,
+  "operating_db_mutations": 0,
+  "operating_archive_mutations": 0,
+  "assessment_mutations": 0,
+  "pilot_count_mutations": 0,
+  "preview_candidate_pilot_day": "US 2/5",
+  "actual_pilot_count": {
+    "kr": "1/5",
+    "us": "1/5"
+  }
+}

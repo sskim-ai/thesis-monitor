@@ -26,6 +26,7 @@ from app.models.security import SecurityMaster
 from app.models.thesis import InvestmentThesis, MonitorRun, ThesisAssessment
 from app.models.watchlist import WatchlistItem
 from app.schemas.ai_review import AIDailyReviewOutput, AIStockReview
+from app.services.ai_reasoning_quality_service import normalize_decision_text
 from app.services.canonical_fact_service import (
     canonical_capital_action_fact,
     canonical_event_fact,
@@ -53,7 +54,7 @@ logger = logging.getLogger(__name__)
 
 PACKET_SCHEMA_VERSION = "1"
 OUTPUT_SCHEMA_VERSION = "4"
-ANALYSIS_POLICY_VERSION = "daily-review-v3.9"
+ANALYSIS_POLICY_VERSION = "daily-review-v3.10"
 AIReviewMarket = Literal["us", "kr"]
 
 _INTERNAL_TEXT = re.compile(
@@ -2393,6 +2394,10 @@ def _validate_stock_review(
     stock: dict[str, object],
 ) -> list[str]:
     errors: list[str] = []
+    if normalize_decision_text(
+        review.price_positioning.new_observer_view
+    ) == normalize_decision_text(review.price_positioning.holder_view):
+        errors.append(f"{review.ticker}:observer_holder_not_distinct")
     fact_catalog = stock.get("fact_catalog", [])
     valid_fact_ids = {
         str(item.get("fact_id"))
