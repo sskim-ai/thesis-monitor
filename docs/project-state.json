@@ -3,7 +3,7 @@
   "branch": "main",
   "current_commit": "HEAD",
   "current_commit_resolution": "git rev-parse HEAD",
-  "recorded_base_commit": "aeae616cda18bd610a7da1ea2fbcf2eb349d883d",
+  "recorded_base_commit": "b1b495879b1d5bdbedc38a1dfe45a0cafcfd1ca0",
   "official_assessment_source": "deterministic",
   "ai_review_mode": "shadow",
   "investment_knowledge_version": "3.0",
@@ -11,7 +11,7 @@
   "chart_knowledge_version": "1.0",
   "chart_knowledge_sha256": "beee64559831479168f1347c43d979391126926d73e2473ce837cefbf0ede19b",
   "ohlcv_structure_version": "ohlcv-structure-v2",
-  "ai_policy_version": "daily-review-v3.8",
+  "ai_policy_version": "daily-review-v3.9",
   "output_schema_version": 4,
   "monitoring_state_version": "monitoring-state-v1",
   "peer_group_version": "verified-profile-peers-v1",
@@ -35,6 +35,13 @@
     "deterministic_fallback": "08:40"
   },
   "persisted_telegram_retry_minutes_kst": ["08:22", "08:25", "08:30"],
+  "scheduled_task_contract_verification": {
+    "checked_at": "2026-08-15",
+    "status": "blocked_target_local_tasks_not_visible",
+    "expected_target_count": 4,
+    "visible_target_count": 0,
+    "required_policy_version": "daily-review-v3.9"
+  },
   "single_delivery": true,
   "deterministic_fallback": true,
   "production_assist": false,

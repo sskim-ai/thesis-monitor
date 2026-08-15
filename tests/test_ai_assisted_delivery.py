@@ -16,6 +16,7 @@ from app.services.ai_assisted_delivery_service import (
     deliver_validated_ai_review,
     dispatch_due_deterministic_fallbacks,
     hold_ai_assisted_pilot_session,
+    record_ai_validation_rejection,
     retry_pending_ai_assisted_deliveries,
 )
 from app.services.notification_service import (
@@ -350,6 +351,155 @@ async def test_fallback_sends_only_deterministic_and_late_ai_is_archive_only(
     assert all(not str(item["type"]).startswith("ai_assisted") for item in fallback_notifier.payloads)
     assert late.status == "archive_only"
     assert late_notifier.payloads == []
+
+
+@pytest.mark.anyio
+async def test_validation_reject_preserves_deadline_fallback_and_does_not_count_pilot(
+    monkeypatch,
+    tmp_path: Path,
+) -> None:
+    _settings(monkeypatch, tmp_path)
+    _write_artifacts(tmp_path, output=False)
+    notifier = RecordingNotifier()
+    with Session(_engine()) as session:
+        _seed_deliveries(session)
+        hold_ai_assisted_pilot_session(session, PACKET_ID)
+        recorded = record_ai_validation_rejection(
+            session,
+            PACKET_ID,
+            errors=("PILOT:numbers_without_provenance:valuation_analysis.text:0.59",),
+            rejected_at=datetime(2026, 8, 14, 16, 20, tzinfo=KST),
+        )
+        held = session.exec(
+            select(NotificationDelivery).where(NotificationDelivery.ticker == "PILOT")
+        ).one()
+        metadata = json.loads(held.payload)[AI_ASSISTED_PILOT_METADATA_KEY]
+        results = await dispatch_due_deterministic_fallbacks(
+            session,
+            market="kr",
+            run_date=RUN_DATE,
+            now=datetime(2026, 8, 14, 17, 10, tzinfo=KST),
+            notifier=notifier,
+        )
+
+    assert recorded.status == "fallback_preserved"
+    assert metadata["state"] == "held"
+    assert metadata["fallback_eligible"] is True
+    assert metadata["ai_validation_state"] == "rejected"
+    assert results[-1].delivery_mode == "deterministic_fallback"
+    assert results[-1].status == "sent"
+    assert len(notifier.payloads) == 2
+    state = json.loads((tmp_path / "ai_review" / "pilot" / "state-v3.json").read_text())
+    assert state["markets"]["kr"]["successful_packet_ids"] == []
+
+
+@pytest.mark.anyio
+async def test_fallback_network_failure_retries_same_persisted_payload(
+    monkeypatch,
+    tmp_path: Path,
+) -> None:
+    _settings(monkeypatch, tmp_path)
+    _write_artifacts(tmp_path, output=False)
+    failed = RecordingNotifier(fail=True)
+    recovered = RecordingNotifier()
+    with Session(_engine()) as session:
+        _seed_deliveries(session)
+        hold_ai_assisted_pilot_session(session, PACKET_ID)
+        first = await dispatch_due_deterministic_fallbacks(
+            session,
+            market="kr",
+            run_date=RUN_DATE,
+            now=datetime(2026, 8, 14, 17, 10, tzinfo=KST),
+            notifier=failed,
+        )
+        second = await dispatch_due_deterministic_fallbacks(
+            session,
+            market="kr",
+            run_date=RUN_DATE,
+            now=datetime(2026, 8, 14, 17, 15, tzinfo=KST),
+            notifier=recovered,
+        )
+
+    assert first[-1].status == "pending"
+    assert first[-1].delivery_mode == "deterministic_fallback"
+    assert second[-1].status == "sent"
+    assert second[-1].delivery_mode == "deterministic_fallback"
+    assert [item["text"] for item in recovered.payloads] == [
+        item["text"] for item in failed.payloads
+    ]
+    retry = json.loads(
+        (
+            tmp_path
+            / "ai_review"
+            / "pilot"
+            / "history"
+            / "2026"
+            / "08"
+            / PACKET_ID
+            / "fallback-delivery-retry-state.json"
+        ).read_text()
+    )
+    assert retry["retry_count"] == 1
+    assert retry["analysis_rerun"] is False
+    assert retry["packet_regenerated"] is False
+    assert retry["payload_reformatted"] is False
+
+
+@pytest.mark.anyio
+async def test_fallback_network_retry_is_bounded(
+    monkeypatch,
+    tmp_path: Path,
+) -> None:
+    _settings(monkeypatch, tmp_path)
+    _write_artifacts(tmp_path, output=False)
+    failed = RecordingNotifier(fail=True)
+    recovered = RecordingNotifier()
+    with Session(_engine()) as session:
+        _seed_deliveries(session)
+        hold_ai_assisted_pilot_session(session, PACKET_ID)
+        initial = await dispatch_due_deterministic_fallbacks(
+            session,
+            market="kr",
+            run_date=RUN_DATE,
+            now=datetime(2026, 8, 14, 17, 10, tzinfo=KST),
+            notifier=failed,
+        )
+        retries = [
+            await dispatch_due_deterministic_fallbacks(
+                session,
+                market="kr",
+                run_date=RUN_DATE,
+                now=datetime(2026, 8, 14, 17, minute, tzinfo=KST),
+                notifier=failed,
+            )
+            for minute in (15, 20, 25)
+        ]
+        exhausted = await dispatch_due_deterministic_fallbacks(
+            session,
+            market="kr",
+            run_date=RUN_DATE,
+            now=datetime(2026, 8, 14, 17, 30, tzinfo=KST),
+            notifier=recovered,
+        )
+
+    assert initial[-1].status == "pending"
+    assert [result[-1].status for result in retries] == ["pending"] * 3
+    assert exhausted[-1].status == "retry_exhausted"
+    assert exhausted[-1].reason == "persisted_delivery_retry_limit_reached"
+    assert recovered.payloads == []
+    retry = json.loads(
+        (
+            tmp_path
+            / "ai_review"
+            / "pilot"
+            / "history"
+            / "2026"
+            / "08"
+            / PACKET_ID
+            / "fallback-delivery-retry-state.json"
+        ).read_text()
+    )
+    assert retry["retry_count"] == 3
 
 
 @pytest.mark.anyio

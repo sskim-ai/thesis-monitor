@@ -9,7 +9,8 @@ market narratives.
 
 ## Decision
 
-`daily-review-v3.8` and output schema 4 retain the deterministic market-intelligence layer:
+`daily-review-v3.9` and output schema 4 retain the deterministic market-intelligence layer and bind
+all selected market numbers through the common backend numeric-reference service:
 
 ```text
 Verified market observations

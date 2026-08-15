@@ -30,6 +30,10 @@ from app.services.ai_review_service import (
     validate_ai_review_output,
     write_ai_review_packet,
 )
+from app.services.numeric_semantic_registry import (
+    canonical_display_value,
+    semantic_spec,
+)
 from scripts.sync_custom_gpt_knowledge import (
     CANONICAL_PATH,
     MANIFEST_PATH,
@@ -654,6 +658,130 @@ def test_claim_backup_atomic_finalize_and_shadow_no_mutation(monkeypatch, tmp_pa
     assert Path(completed.comparison_path).exists()
     assert before_assessment == after_assessment
     assert before_delivery == after_delivery
+
+
+def test_finalize_persists_bound_schema4_and_binding_telemetry(
+    monkeypatch,
+    tmp_path: Path,
+) -> None:
+    _settings(monkeypatch, tmp_path)
+    with Session(_engine()) as session:
+        _seed(session)
+        packet_result = write_ai_review_packet(
+            session,
+            RUN_DATE,
+            "us",
+            generated_at=datetime(2026, 8, 14, 0, 0, tzinfo=UTC),
+        )
+        claim = claim_next_ai_review_packet(
+            "us",
+            owner="binder",
+            now=datetime(2026, 8, 14, 0, 10, tzinfo=UTC),
+        )
+        packet = json.loads(Path(packet_result.path).read_text(encoding="utf-8"))
+        draft = _valid_output(packet, claim_id=claim.claim_id)
+        review = draft["stock_reviews"][0]
+        review["price_positioning"]["text"] = "{{numeric:price_now}} 가격 맥락입니다."
+        review["numeric_claims"] = []
+        review["numeric_fact_refs"] = [
+            {
+                "ref_id": "price_now",
+                "fact_id": "price:current",
+                "field_path": "fields.current_price",
+                "text_ref": "price_positioning.text",
+            }
+        ]
+        Path(claim.temp_output_path).write_text(
+            json.dumps(draft, ensure_ascii=False),
+            encoding="utf-8",
+        )
+
+        result = finalize_ai_review_output(
+            session,
+            packet_result.packet_id,
+            claim_id=claim.claim_id,
+            now=datetime(2026, 8, 14, 0, 12, tzinfo=UTC),
+        )
+
+    assert result.status == "completed"
+    final = json.loads(Path(result.output_path).read_text(encoding="utf-8"))
+    assert "numeric_fact_refs" not in json.dumps(final)
+    assert final["stock_reviews"][0]["price_positioning"]["text"].startswith(
+        "현재가 $100"
+    )
+    binding = next(
+        (tmp_path / "ai_review" / "history" / "2026" / "08").glob(
+            "*.numeric-binding.json"
+        )
+    )
+    report = json.loads(binding.read_text())
+    assert report["status"] == "passed"
+    assert report["auto_bound"] == 1
+    assert report["manual_legacy"] == 0
+    assert report["rejected"] == 0
+    assert report["formatting_failures"] == 0
+
+
+def test_finalize_rejection_archives_canonical_correction_context(
+    monkeypatch,
+    tmp_path: Path,
+) -> None:
+    _settings(monkeypatch, tmp_path)
+    with Session(_engine()) as session:
+        _seed(session)
+        packet_result = write_ai_review_packet(
+            session,
+            RUN_DATE,
+            "us",
+            generated_at=datetime(2026, 8, 14, 0, 0, tzinfo=UTC),
+        )
+        claim = claim_next_ai_review_packet(
+            "us",
+            owner="correction-context",
+            now=datetime(2026, 8, 14, 0, 10, tzinfo=UTC),
+        )
+        packet = json.loads(Path(packet_result.path).read_text(encoding="utf-8"))
+        draft = _valid_output(packet, claim_id=claim.claim_id)
+        draft["stock_reviews"][0]["valuation_analysis"]["text"] = (
+            "내부 추정 EPS $5.5는 수익성 확인이 필요합니다."
+        )
+        Path(claim.temp_output_path).write_text(
+            json.dumps(draft, ensure_ascii=False),
+            encoding="utf-8",
+        )
+
+        result = finalize_ai_review_output(
+            session,
+            packet_result.packet_id,
+            claim_id=claim.claim_id,
+            now=datetime(2026, 8, 14, 0, 12, tzinfo=UTC),
+        )
+
+    assert result.status == "rejected"
+    sidecar = next((tmp_path / "ai_review" / "rejected").glob("*.validation.json"))
+    report = json.loads(sidecar.read_text())
+    assert report["fallback_eligibility_preserved"] is True
+    context = next(
+        item
+        for item in report["correction_context"]
+        if "numbers_without_provenance" in item["error"]
+    )
+    assert context["text_ref"] == "valuation_analysis.text"
+    assert context["rendered_phrase"] == "내부 추정 EPS $5.5는 수익성 확인이 필요합니다."
+    assert context["allowed_actions"] == [
+        "correct_reference",
+        "correct_wording",
+        "remove_unsafe_number",
+    ]
+    candidate = next(
+        item
+        for item in context["canonical_candidates"]
+        if item["field_path"] == "fields.forward_eps"
+    )
+    assert candidate["canonical_raw_value"] == 5.5
+    assert candidate["canonical_unit"] == "USD"
+    assert candidate["canonical_semantic"] == "forward_eps"
+    assert candidate["approved_formatted_value"] == "$5.5"
 
 
 def test_stale_claim_is_recovered_without_duplicate_completion(monkeypatch, tmp_path: Path) -> None:
@@ -1570,7 +1698,7 @@ def test_knowledge_v3_sources_decisions_and_safety_markers() -> None:
 
 
 def test_dual_knowledge_policy_identity_starts_v38_stateful_cohort() -> None:
-    assert ai_review_service.ANALYSIS_POLICY_VERSION == "daily-review-v3.8"
+    assert ai_review_service.ANALYSIS_POLICY_VERSION == "daily-review-v3.9"
     assert ai_review_service.OUTPUT_SCHEMA_VERSION == "4"
     manifest = knowledge_manifest()
     assert manifest["version"] == "3.0"
@@ -2334,6 +2462,34 @@ def test_ratio_multiple_formatter_allows_backend_approved_rounding() -> None:
     assert "0.81배" in registry[0]["approved_display_variants"]
 
 
+@pytest.mark.parametrize(
+    ("semantic_type", "value", "unit", "expected"),
+    [
+        ("share_price", 868.390314, "USD", "$868.39"),
+        ("share_price", 197_803, "KRW", "197,803원"),
+        ("revenue", 41_456_000_000, "USD", "$41.46B"),
+        ("revenue", 1_270_380_000_000, "TWD", "NT$1.27T"),
+        ("revenue", 41_456_000_000, "KRW", "415억원"),
+        ("oil_return_pct", 3.4285, "pct", "+3.4%"),
+        ("real_yield_change_bp", -2.9999, "bp", "-3bp"),
+        ("trailing_pe", 10.273, "x", "10.27배"),
+        ("foreign_net_buy_qty_5d", -115_230, "shares", "115,230주"),
+        ("support_zone_price", 914.929686, "USD", "$914.93"),
+        ("risk_reward_ratio", 0.466, "x", "0.47배"),
+    ],
+)
+def test_canonical_numeric_formatters(
+    semantic_type: str,
+    value: float,
+    unit: str,
+    expected: str,
+) -> None:
+    spec = semantic_spec(semantic_type)
+
+    assert spec is not None
+    assert canonical_display_value(spec, value, unit) == expected
+
+
 def test_chart_and_supply_horizon_labels_are_structural_not_financial_values() -> None:
     text = "5일 외국인 순매수 100주와 20일 거래량비 0.81배, 3개월 상단선"
     occurrences = ai_review_service._prose_number_occurrences(text)
@@ -2515,6 +2671,237 @@ def test_historical_percentile_is_not_an_overvaluation_percentage(
         _, errors = validate_ai_review_output(session, packet, output)
 
     assert "PACKETUS:historical_percentile_misrepresented" in errors
+
+
+def test_numeric_fact_reference_is_bound_to_canonical_value_and_claim(
+    monkeypatch,
+    tmp_path: Path,
+) -> None:
+    _settings(monkeypatch, tmp_path)
+    with Session(_engine()) as session:
+        _seed(session)
+        packet = build_ai_review_packet(session, RUN_DATE, "us")
+        assert packet is not None
+        draft = _valid_output(packet)
+        review = draft["stock_reviews"][0]
+        review["price_positioning"]["text"] = (
+            "{{numeric:price_now}}은 기업의 질과 별도인 가격 맥락입니다."
+        )
+        review["numeric_claims"] = []
+        review["numeric_fact_refs"] = [
+            {
+                "ref_id": "price_now",
+                "fact_id": "price:current",
+                "field_path": "fields.current_price",
+                "text_ref": "price_positioning.text",
+            }
+        ]
+
+        output, errors = validate_ai_review_output(session, packet, draft)
+
+    assert errors == []
+    assert output is not None
+    assert output.stock_reviews[0].price_positioning.text.startswith("현재가 $100")
+    assert output.stock_reviews[0].numeric_claims[0].model_dump() == {
+        "fact_id": "price:current",
+        "field_path": "fields.current_price",
+        "value": 100.0,
+        "unit": "USD",
+        "semantic_type": "share_price",
+        "text_ref": "price_positioning.text",
+        "usage": "현재가 $100",
+    }
+    assert "{{numeric:price_now}}" in draft["stock_reviews"][0]["price_positioning"]["text"]
+
+
+def test_numeric_fact_reference_missing_source_fails_closed(
+    monkeypatch,
+    tmp_path: Path,
+) -> None:
+    _settings(monkeypatch, tmp_path)
+    with Session(_engine()) as session:
+        _seed(session)
+        packet = build_ai_review_packet(session, RUN_DATE, "us")
+        assert packet is not None
+        draft = _valid_output(packet)
+        review = draft["stock_reviews"][0]
+        review["price_positioning"]["text"] = "{{numeric:missing}}"
+        review["numeric_claims"] = []
+        review["numeric_fact_refs"] = [
+            {
+                "ref_id": "missing",
+                "fact_id": "price:missing",
+                "field_path": "fields.current_price",
+                "text_ref": "price_positioning.text",
+            }
+        ]
+
+        output, errors = validate_ai_review_output(session, packet, draft)
+
+    assert output is None
+    assert errors == [
+        "PACKETUS:numeric_fact_ref_source_not_found:"
+        "missing:price:missing:fields.current_price"
+    ]
+
+
+def test_malformed_numeric_placeholder_fails_closed(
+    monkeypatch,
+    tmp_path: Path,
+) -> None:
+    _settings(monkeypatch, tmp_path)
+    with Session(_engine()) as session:
+        _seed(session)
+        packet = build_ai_review_packet(session, RUN_DATE, "us")
+        assert packet is not None
+        draft = _valid_output(packet)
+        draft["stock_reviews"][0]["price_positioning"]["text"] = (
+            "{{numeric:123 invalid}} 가격 맥락입니다."
+        )
+
+        output, errors = validate_ai_review_output(session, packet, draft)
+
+    assert output is None
+    assert errors == [
+        "PACKETUS:numeric_fact_ref_unresolved_placeholder:"
+        "{{numeric:123 invalid}}"
+    ]
+
+
+def test_modeled_forward_binding_uses_source_aware_label(
+    monkeypatch,
+    tmp_path: Path,
+) -> None:
+    _settings(monkeypatch, tmp_path)
+    with Session(_engine()) as session:
+        _seed(session)
+        packet = build_ai_review_packet(session, RUN_DATE, "us")
+        assert packet is not None
+        draft = _valid_output(packet)
+        review = draft["stock_reviews"][0]
+        review["facts_used"].append("valuation:current")
+        review["valuation_analysis"]["text"] = (
+            "{{numeric:modeled_fper}}는 내부 정상화 가정의 결과입니다."
+        )
+        review["numeric_fact_refs"] = [
+            {
+                "ref_id": "modeled_fper",
+                "fact_id": "valuation:current",
+                "field_path": "fields.forward_pe",
+                "text_ref": "valuation_analysis.text",
+            }
+        ]
+
+        output, errors = validate_ai_review_output(session, packet, draft)
+
+    assert errors == []
+    assert output is not None
+    assert output.stock_reviews[0].valuation_analysis.text.startswith(
+        "내부 추정 fPER 18배"
+    )
+    assert output.stock_reviews[0].numeric_claims[-1].usage == "내부 추정 fPER 18배"
+
+
+def test_numeric_token_span_excludes_trailing_sentence_comma(
+    monkeypatch,
+    tmp_path: Path,
+) -> None:
+    _settings(monkeypatch, tmp_path)
+    with Session(_engine()) as session:
+        _seed(session)
+        packet = build_ai_review_packet(session, RUN_DATE, "us")
+        assert packet is not None
+        output = _valid_output(packet)
+        review = output["stock_reviews"][0]
+        review["facts_used"].append("earnings:2026-06-30")
+        review["business_earnings"] = {
+            "text": "매출 $500, 매출 성장이 확인됐습니다.",
+            "fact_ids": ["earnings:2026-06-30"],
+        }
+        review["numeric_claims"].append(
+            {
+                "fact_id": "earnings:2026-06-30",
+                "field_path": "fields.revenue.value",
+                "value": 500,
+                "unit": "USD",
+                "semantic_type": "revenue",
+                "text_ref": "business_earnings.text",
+                "usage": "매출 $500",
+            }
+        )
+
+        _, errors = validate_ai_review_output(session, packet, output)
+
+    assert not any("business_earnings.text:500" in item for item in errors)
+
+
+def test_hut_forward_eps_without_reference_remains_rejected(
+    monkeypatch,
+    tmp_path: Path,
+) -> None:
+    _settings(monkeypatch, tmp_path)
+    with Session(_engine()) as session:
+        _seed(session)
+        packet = build_ai_review_packet(session, RUN_DATE, "us")
+        assert packet is not None
+        output = _valid_output(packet)
+        review = output["stock_reviews"][0]
+        review["valuation_analysis"]["text"] = (
+            "내부 추정 fPER는 높고 추정 EPS $0.59는 계약 수익성 확인이 필요합니다."
+        )
+
+        _, errors = validate_ai_review_output(session, packet, output)
+
+    assert any(
+        "numbers_without_provenance:valuation_analysis.text:0.59" in item
+        for item in errors
+    )
+
+
+def test_earnings_fact_uses_financial_currency_not_adr_price_currency(
+    monkeypatch,
+    tmp_path: Path,
+) -> None:
+    _settings(monkeypatch, tmp_path)
+    with Session(_engine()) as session:
+        _seed(session)
+        assessment = session.exec(
+            select(ThesisAssessment).where(
+                ThesisAssessment.ticker == "PACKETUS",
+                ThesisAssessment.assessment_date == RUN_DATE,
+            )
+        ).one()
+        snapshot = json.loads(assessment.valuation_snapshot)
+        snapshot["currency"] = "USD"
+        snapshot["financial_currency"] = "TWD"
+        snapshot["latest_revenue"] = 1_270_380_000_000
+        assessment.valuation_snapshot = json.dumps(snapshot)
+        session.add(assessment)
+        session.commit()
+        packet = build_ai_review_packet(session, RUN_DATE, "us")
+        assert packet is not None
+
+    stock = packet["stocks"][0]
+    earnings = next(
+        item for item in stock["fact_catalog"] if item["fact_type"] == "earnings"
+    )
+    revenue = next(
+        item
+        for item in stock["numeric_registry"]
+        if item["fact_id"] == earnings["fact_id"]
+        and item["field_path"] == "fields.revenue.value"
+    )
+    price = next(
+        item
+        for item in stock["numeric_registry"]
+        if item["fact_id"] == "price:current"
+        and item["field_path"] == "fields.current_price"
+    )
+    assert earnings["fields"]["revenue"]["currency"] == "TWD"
+    assert revenue["unit"] == "TWD"
+    assert revenue["prose_allowed"] is True
+    assert "NT$1.27T" in revenue["approved_display_variants"]
+    assert price["unit"] == "USD"
 
 
 def test_market_hard_fails_zero_claims_with_four_eligible_anchors(
@@ -3012,11 +3399,11 @@ def test_v35_packet_records_structure_v2_shadow_cohort_metadata(
         packet = build_ai_review_packet(session, RUN_DATE, "us")
 
     assert packet is not None
-    assert packet["analysis_policy_version"] == "daily-review-v3.8"
+    assert packet["analysis_policy_version"] == "daily-review-v3.9"
     assert packet["structure_algorithm_version"] == "ohlcv-structure-v2"
     assert packet["ready_for_ai"] is True
     assert packet["shadow_cohort"] == {
-        "policy_version": "daily-review-v3.8",
+        "policy_version": "daily-review-v3.9",
         "eligible": True,
         "profile_gate": {
             "active_total": 1,

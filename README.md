@@ -21,9 +21,11 @@ This project is a data collection and structuring system. It does not make buy, 
 - [AI-assisted monitoring architecture](docs/architecture/AI_ASSISTED_MONITORING.md)
 - [OHLCV structure engine](docs/architecture/OHLCV_STRUCTURE_ENGINE.md)
 - [Market intelligence](docs/architecture/MARKET_INTELLIGENCE.md)
+- [Deterministic numeric provenance](docs/architecture/NUMERIC_PROVENANCE.md)
 - [Monitoring state lifecycle](docs/architecture/MONITORING_STATE_LIFECYCLE.md)
 - [Peer valuation](docs/architecture/PEER_VALUATION.md)
 - [AI-assisted Pilot operations](docs/operations/AI_ASSISTED_PILOT.md)
+- [Scheduled task contracts](docs/operations/SCHEDULED_TASK_CONTRACTS.md)
 - [Knowledge guide](docs/knowledge/README.md)
 - [Next-session prompt](docs/NEXT_SESSION_PROMPT.md)
 - [Machine-readable project state](docs/project-state.json)
@@ -289,13 +291,15 @@ ready or reaches its deadline. A successful Korean close run writes its packet a
 assessment. Packets live under `data/ai_review/inbox`; Codex Scheduled Tasks claim them, write strict
 JSON to `outbox`, and run the local validator. No OpenAI API key or API call is used by this path.
 
-The reusable workflow is `.agents/skills/thesis-monitor-daily-review`. Policy `daily-review-v3.5`
-routes each schema-3 packet through Investment Knowledge v3 and a separate byte-verified Stock Chart
-& Value Analysis Knowledge v1 reference. It consumes compact OHLCV Analyst summaries, deterministic
-price-rule transitions, and 1/5/20-day positioning while requiring exact prose-level numeric
-provenance. It never computes indicators or new price levels. Primary and backup tasks scan the same
-pending queue, while UUID-fenced lease claims and packet/policy/dual-Knowledge completion keys prevent
-duplicate or stale-worker output.
+The reusable workflow is `.agents/skills/thesis-monitor-daily-review`. Policy `daily-review-v3.9`
+routes the final schema-4 review through Investment Knowledge v3 and a separate byte-verified Stock
+Chart & Value Analysis Knowledge v1 reference. It consumes deterministic market intelligence,
+monitoring state, compact OHLCV structure, and 1/5/20-day positioning. Codex selects registered
+numeric fact references and prose locations; the backend owns the canonical value, security or
+financial currency, source-aware label, display formatter, and generated final claim. It never
+computes indicators or new price levels. Primary and backup tasks scan the same pending queue, while
+UUID-fenced lease claims and packet/policy/dual-Knowledge completion keys prevent duplicate or
+stale-worker output.
 See `docs/ai_review_operations.md` for the schedule, fallback deadlines, archive, and recovery checks.
 Official `ThesisAssessment` remains deterministic throughout the pilot, and Production Assist remains
 disabled.

@@ -35,6 +35,10 @@ For local-project Scheduled Tasks, verify all four conditions:
 3. The scheduled task points to the live local checkout of `sskim-ai/thesis-monitor`.
 4. The task is active and has workspace-write access only.
 
+The exact names, prompts, schedules, and verification checklist are maintained in
+[SCHEDULED_TASK_CONTRACTS.md](operations/SCHEDULED_TASK_CONTRACTS.md). Do not create standalone web
+duplicates when the local-project tasks are absent from the accessible task list.
+
 Closing the desktop app is an AI shadow failure, not a deterministic-monitoring failure. Existing
 monitoring and Telegram continue independently.
 
@@ -68,8 +72,9 @@ new claim. This guarantee assumes the configured Mac mini local POSIX filesystem
 filesystem with unknown lock semantics.
 
 Files ending in `.json.tmp` are incomplete and are never considered completed. Every output records
-the analysis policy, both Knowledge versions/checksums, frameworks used, fact references, and numeric
-claims.
+the analysis policy, both Knowledge versions/checksums, frameworks used, fact references, and final
+numeric claims. For policy v3.9 drafts, Codex places numeric placeholders and `numeric_fact_refs`;
+the backend renders those occurrences and generates the final schema-4 claims before validation.
 
 ## Five-Day Single-Delivery Pilot
 
@@ -202,6 +207,24 @@ report, rendered message, and delivery result remain archived.
 Pilot v3 resets the KR and US counters because market and stock messages now form one materially
 different user experience. The state file is not backfilled from earlier cohorts. A session increments
 only after validation, full AI-assisted delivery, and archive completion.
+
+## Phase 7.1 Numeric Binding Contract
+
+Analysis policy `daily-review-v3.9` keeps output schema 4 and introduces a draft-only
+`numeric-fact-ref-v1` contract. Codex chooses a registered `fact_id`, `field_path`, exact `text_ref`,
+and placeholder. The backend resolves the canonical value, unit, semantic, security/financial basis,
+source-aware label, and display formatter, then creates the occurrence-bound `numeric_claims` entry.
+Codex does not transcribe or round the raw number.
+
+The independent schema, fact, semantic, and occurrence validator still runs after binding. Missing,
+ambiguous, unregistered, prose-disallowed, wrong-scope, or improperly formatted references reject.
+Manual legacy claims remain supported but do not bypass validation. TWD financial statements are
+separate from USD ADR price and per-security valuation basis.
+
+Final validation rejection archives machine correction context and preserves the held deterministic
+fallback. Fallback network retries use the same persisted deterministic payload with bounded retry
+state. Neither rejection nor retry recollects data, regenerates a packet, reruns analysis, reformats,
+or increments the Pilot counter. See `docs/architecture/NUMERIC_PROVENANCE.md`.
 
 The durable cross-session continuation reference is `docs/PROJECT_HANDOFF.md`.
 

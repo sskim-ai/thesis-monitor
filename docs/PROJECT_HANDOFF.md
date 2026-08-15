@@ -18,7 +18,7 @@ execution or an autonomous investment adviser.
 | Branch | `main` |
 | Official assessment | Deterministic `ThesisAssessment` |
 | AI mode | `shadow` |
-| Analysis policy | `daily-review-v3.8` |
+| Analysis policy | `daily-review-v3.9` |
 | Output schema | `4` |
 | OHLCV structure | `ohlcv-structure-v2` |
 | Investment Knowledge | `3.0` |
@@ -41,6 +41,7 @@ Data providers
   -> per-packet claim UUID, lease, flock, and fencing
   -> Investment Knowledge v3 + Chart Knowledge v1
   -> Codex structured review
+  -> deterministic numeric-fact binding and canonical formatting
   -> schema, fact, semantic, routing, and grounding validator
   -> integrated market + stock renderer
   -> one AI-assisted Telegram set
@@ -72,7 +73,8 @@ browse, collect facts, calculate indicators, create targets, or mutate official 
 
 ### Validator
 
-The validator resolves every fact and prose path, enforces industry routing, rejects unsupported
+The backend first resolves draft numeric fact references into canonical prose and schema-4 claims.
+The validator then resolves every fact and prose path, enforces industry routing, rejects unsupported
 numeric semantics, verifies exact display variants, and checks current claim and policy identity
 before atomic promotion. Unknown semantic types and stale or absent facts fail closed.
 
@@ -135,6 +137,10 @@ backend fact -> fact_id -> field_path -> value/unit -> semantic_type
 The single semantic registry defines unit, labels, formatter, rounding, prose permission, and scope.
 Unknown semantics fail closed. Same-number/different-meaning and cross-prose coverage are invalid.
 Derived numbers are usable only when the backend has registered them as canonical facts.
+Under `daily-review-v3.9`, Codex places `{{numeric:ref_id}}` and selects only the canonical fact,
+field, and prose location. The backend owns the value, unit, semantic, source-aware label, display
+format, and generated final claim. Legacy manual claims still validate, but the draft binding path is
+the production contract. See [NUMERIC_PROVENANCE.md](architecture/NUMERIC_PROVENANCE.md).
 During Pilot, a market or stock with at least four prose-eligible anchors cannot pass with zero
 numeric claims. Sparse packets remain exempt, and every used number still requires exact prose
 grounding rather than a quota-driven list.
@@ -155,7 +161,9 @@ The central boundaries are:
 
 ## Market Intelligence
 
-`daily-review-v3.8` retains the v3.7 market-intelligence contract and adds state-aware stock review.
+`daily-review-v3.9` retains the v3.8 market-intelligence and state-aware review contract and adds
+deterministic numeric-fact binding, canonical display formatting, correction telemetry, and fallback
+hardening.
 Verified market facts become selected changes, market structure, verified
 portfolio transmission, and next confirmation. Market context may be a tailwind or headwind but never
 becomes company fundamental confirmation. Rates, FX, oil, sectors, and flows use distinct semantic
@@ -174,10 +182,15 @@ no peer number was invented. See [PEER_VALUATION.md](architecture/PEER_VALUATION
 
 ## Pilot Architecture
 
-Pilot v3 activated at KR 0/5 and US 0/5; the current count is KR 1/5 and US 0/5. All four tasks use
-policy v3.8/schema 4/structure v2. A successful day requires Codex completion, validation pass, complete
+Pilot v3 activated at KR 0/5 and US 0/5; the current count is KR 1/5 and US 0/5. The required task
+contract is policy v3.9/schema 4/structure v2. A successful day requires Codex completion, validation pass, complete
 AI-assisted delivery, and archive completion. Fallback days do not increment the counter. Earlier
 Pilot cohorts remain history and are never rewritten.
+
+The 2026-08-15 implementation session could not see the four local-project tasks in its accessible
+Scheduled list; it found only three unrelated inactive/completed automations. Their ACTIVE state and
+prompt migration therefore remain a deployment blocker, not a verified gate. Apply
+[SCHEDULED_TASK_CONTRACTS.md](operations/SCHEDULED_TASK_CONTRACTS.md) in the owning desktop app.
 
 | Market | Primary | Backup | Fallback deadline |
 |---|---:|---:|---:|
@@ -197,6 +210,7 @@ session is retained as a failed-quality live sample and does not count toward US
 ## Source Map
 
 - Packet, claim, validation, grounding: `app/services/ai_review_service.py`
+- Numeric draft binding: `app/services/numeric_provenance_service.py`
 - Market facts and transmission: `app/services/market_intelligence_service.py`
 - Numeric semantics: `app/services/numeric_semantic_registry.py`
 - Chart structure: `app/services/ohlcv_structure_service.py`
@@ -238,11 +252,13 @@ first.
     persisted Telegram delivery retry.
 12. Phase 7 durable monitoring state, registered-rule lifecycle, dynamic-price grounding, and
     fail-closed peer valuation.
+13. Phase 7.1 deterministic numeric provenance binding, canonical formatter and currency-basis
+    hardening, machine correction context, and persisted fallback retry safety.
 
 ## Next Steps
 
 1. Verify final `origin/main`, development checkout, and operating checkout are the same clean commit.
-2. Verify four Scheduled Tasks use Pilot v3, policy v3.8, schema 4, and structure v2.
+2. Verify four Scheduled Tasks use Pilot v3, policy v3.9, schema 4, and structure v2.
 3. Start Pilot v3 only after tests, Knowledge checksums, and archive gates pass.
 4. Review five successful sessions per market without changing policy mid-cohort for style alone.
 5. Treat DATA, CALCULATION, PACKET, KNOWLEDGE_ROUTING, AI_REASONING, VALIDATION, RENDERER, and DELIVERY

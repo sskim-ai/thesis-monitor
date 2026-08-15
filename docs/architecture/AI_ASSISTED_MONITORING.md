@@ -17,6 +17,7 @@ Providers
   -> official ThesisAssessment
   -> immutable packet
   -> Codex review using Investment Knowledge v3 + Chart Knowledge v1
+  -> deterministic numeric-reference binder and formatter
   -> validator
   -> integrated market + stock renderer
   -> AI-assisted set OR deterministic fallback
@@ -65,6 +66,7 @@ by analysis policy, output schema, Knowledge hashes, structure algorithm, and Pi
 |---|---|
 | Packet and validator | `app/services/ai_review_service.py` |
 | Numeric contract | `app/services/numeric_semantic_registry.py` |
+| Numeric binder | `app/services/numeric_provenance_service.py` |
 | Market intelligence | `app/services/market_intelligence_service.py` |
 | OHLCV structure | `app/services/ohlcv_structure_service.py` |
 | Monitoring state and peers | `app/services/monitoring_state_service.py` |
@@ -78,3 +80,6 @@ Each Pilot session preserves the packet, deterministic messages, AI review, comp
 result, chart context and transition, quantitative grounding, market context, market numeric claims,
 portfolio transmission, exact rendered messages, and delivery result. Late AI after fallback is
 archive-only.
+
+Policy `daily-review-v3.9` uses draft-only `numeric_fact_refs` and backend rendering while preserving
+the validated schema-4 shape. See [NUMERIC_PROVENANCE.md](NUMERIC_PROVENANCE.md).

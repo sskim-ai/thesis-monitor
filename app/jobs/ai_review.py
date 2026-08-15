@@ -16,6 +16,7 @@ from app.services.ai_review_service import (
 from app.services.ai_assisted_delivery_service import (
     deliver_validated_ai_review,
     dispatch_due_deterministic_fallbacks,
+    record_ai_validation_rejection,
     retry_pending_ai_assisted_deliveries,
 )
 
@@ -124,6 +125,12 @@ async def _main() -> None:
         delivery = None
         if result.status in {"completed", "already_completed"}:
             delivery = await deliver_validated_ai_review(session, args.packet_id)
+        elif result.status == "rejected":
+            delivery = record_ai_validation_rejection(
+                session,
+                args.packet_id,
+                errors=result.errors,
+            )
     payload = dict(result.__dict__)
     if delivery is not None:
         payload["pilot_delivery"] = delivery.as_dict()

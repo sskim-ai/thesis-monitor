@@ -15,11 +15,13 @@ hash copied from an older conversation. Read these files before changing code:
 3. `docs/architecture/AI_ASSISTED_MONITORING.md`
 4. `docs/architecture/OHLCV_STRUCTURE_ENGINE.md`
 5. `docs/architecture/MARKET_INTELLIGENCE.md`
-6. `docs/architecture/MONITORING_STATE_LIFECYCLE.md`
-7. `docs/architecture/PEER_VALUATION.md`
-8. `docs/operations/AI_ASSISTED_PILOT.md`
-9. `docs/knowledge/README.md`
-10. `.agents/skills/thesis-monitor-daily-review/SKILL.md`
+6. `docs/architecture/NUMERIC_PROVENANCE.md`
+7. `docs/architecture/MONITORING_STATE_LIFECYCLE.md`
+8. `docs/architecture/PEER_VALUATION.md`
+9. `docs/operations/AI_ASSISTED_PILOT.md`
+10. `docs/operations/SCHEDULED_TASK_CONTRACTS.md`
+11. `docs/knowledge/README.md`
+12. `.agents/skills/thesis-monitor-daily-review/SKILL.md`
 
 Project purpose: keep deterministic `ThesisAssessment` as official source of truth while Codex uses
 backend-verified facts, Investment Knowledge v3, and Chart Knowledge v1 to produce a validated,
@@ -32,7 +34,7 @@ Current contracts:
   `559ad45e4dd86cb0aec9bb09b51a5dc816bf323e8c2b4fd050cf28960a5a9d18`
 - Chart Knowledge 1.0 SHA
   `beee64559831479168f1347c43d979391126926d73e2473ce837cefbf0ede19b`
-- AI policy `daily-review-v3.8`
+- AI policy `daily-review-v3.9`
 - output schema 4
 - OHLCV structure `ohlcv-structure-v2`
 - Pilot `ai-assisted-pilot-v3`, current successful count KR 1/5 and US 0/5
@@ -44,19 +46,24 @@ Absolute safety rules:
 
 - Do not browse or add external facts to an AI review packet.
 - Do not let AI mutate assessment, thesis, warnings, notifications, or Telegram directly.
-- Unknown numeric semantics fail closed; every prose number needs exact fact, field, semantic, text
-  location, and approved display.
+- Codex must use draft numeric fact references and placeholders for new numbers. The backend owns raw
+  value, unit, semantic, source-aware label, rounding, approved display, and generated schema-4
+  claims. Unknown semantics and uncovered raw prose numbers fail closed.
 - Local Pivot is not Major Swing. Chart invalidation is not thesis invalidation. Chart state is not a
   buy/sell command.
 - Market context is not company fundamental confirmation.
 - Modeled estimates are not consensus. Suppressed historical valuation stays absent.
 - One session sends AI-assisted or deterministic fallback, never both.
+- AI validation rejection preserves held deterministic fallback eligibility. Delivery retry reuses
+  the same persisted payload and never recollects, regenerates, reanalyzes, or reformats.
 - Four or more safe prose-eligible anchors with zero numeric claims is a Pilot hard failure; sparse
   packets remain Unknown rather than receiving invented numbers.
 - Fresh backend-selected KOSPI200/KOSDAQ150 night futures must be grounded and interpreted as Korean
   opening context, never as company-thesis confirmation.
 - Registered price rules remain audit history. Current Strong/Medium dynamic structure and state
   delta are primary, and a crossed confirmation is never auto-promoted to support.
+- Earnings amounts use verified financial currency; price and per-security valuation use verified
+  security/price currency. An ADR price currency never relabels issuer financial statements.
 - Peer valuation requires verified profile, same geography, comparable basis, same-date data, and at
   least three peers excluding the company. Missing broad peer data remains unavailable.
 
@@ -70,12 +77,16 @@ knowledge.
 
 Next work order:
 
-1. Verify exact deployment and four Scheduled Task contracts.
-2. Start/continue Pilot v3 only after all gates are green.
-3. Review each successful market session by DATA, CALCULATION, PACKET, KNOWLEDGE_ROUTING,
+1. Verify exact deployment and four Scheduled Task contracts use policy v3.9 without resetting Pilot
+   v3 counters. The 2026-08-15 implementation session could not see the four local-project tasks, so
+   their ACTIVE state and prompt migration remain blocked on the owning desktop environment.
+2. Complete the immutable 2026-08-15 retrospective if the original packet and validator artifact
+   become available; never reconstruct canonical facts from model prose.
+3. Start/continue Pilot v3 only after all gates are green.
+4. Review each successful market session by DATA, CALCULATION, PACKET, KNOWLEDGE_ROUTING,
    AI_REASONING, VALIDATION, RENDERER, and DELIVERY.
-4. Preserve exact archives and old cohorts.
-5. Keep Production Assist disabled until a separate explicit user decision.
+5. Preserve exact archives and old cohorts.
+6. Keep Production Assist disabled until a separate explicit user decision.
 
 Before completion, run full pytest, Ruff, `git diff --check`, Knowledge checksum validation, Skill and
 schema validation, documentation path validation, push the exact commit, verify GitHub Actions Test

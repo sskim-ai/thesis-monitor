@@ -335,6 +335,62 @@ def hold_ai_assisted_pilot_session(
     )
 
 
+def record_ai_validation_rejection(
+    session: Session,
+    packet_id: str,
+    *,
+    errors: tuple[str, ...] | list[str],
+    rejected_at: datetime | None = None,
+) -> PilotDeliveryResult:
+    """Preserve deterministic fallback eligibility after an AI final reject."""
+    packet = _read_json(_packet_path(packet_id))
+    market = str(packet["market"])
+    current = (rejected_at or datetime.now(KST)).astimezone(KST)
+    held_count = 0
+    with _pilot_lock(packet_id):
+        for delivery in _session_deliveries(session, packet):
+            try:
+                payload = json.loads(delivery.payload)
+            except json.JSONDecodeError:
+                continue
+            if not isinstance(payload, dict):
+                continue
+            metadata = _pilot_metadata(payload)
+            if (
+                metadata.get("packet_id") != packet_id
+                or metadata.get("state") != "held"
+            ):
+                continue
+            metadata["fallback_eligible"] = True
+            metadata["ai_validation_state"] = "rejected"
+            metadata["ai_validation_rejected_at"] = current.isoformat()
+            metadata["ai_validation_errors"] = list(errors)
+            payload[AI_ASSISTED_PILOT_METADATA_KEY] = metadata
+            delivery.payload = json.dumps(payload, ensure_ascii=False)
+            session.add(delivery)
+            held_count += 1
+        session.commit()
+        _atomic_json(
+            _archive_directory(packet) / "validation-result.json",
+            {
+                "packet_id": packet_id,
+                "status": "rejected",
+                "errors": list(errors),
+                "rejected_ai_sent": False,
+                "fallback_eligibility_preserved": held_count > 0,
+                "recorded_at": current.isoformat(),
+            },
+        )
+    return PilotDeliveryResult(
+        status="fallback_preserved" if held_count else "no_held_session",
+        market=market,
+        packet_id=packet_id,
+        delivery_mode="held",
+        pending_count=held_count,
+        reason="ai_validation_rejected",
+    )
+
+
 def _bullets(values: list[str], empty: str | None = None) -> str:
     items = [f"• {value}" for value in values if value.strip()]
     if not items and empty:
@@ -1004,6 +1060,33 @@ async def _retry_fallback_delivery(
         metadata = _pilot_metadata(payload) if isinstance(payload, dict) else {}
         if metadata.get("state") == "fallback_pending" and delivery.id is not None:
             delivery_ids.add(delivery.id)
+    retry_path = _archive_directory(packet) / "fallback-delivery-retry-state.json"
+    retry_state = _read_json(retry_path) if retry_path.exists() else {}
+    retry_count = int(retry_state.get("retry_count") or 0)
+    if retry_count >= MAX_PERSISTED_DELIVERY_RETRIES:
+        return PilotDeliveryResult(
+            status="retry_exhausted",
+            market=market,
+            packet_id=packet_id,
+            delivery_mode="deterministic_fallback",
+            pending_count=len(delivery_ids),
+            reason="persisted_delivery_retry_limit_reached",
+        )
+    next_retry = retry_count + 1
+    _atomic_json(
+        retry_path,
+        {
+            "packet_id": packet_id,
+            "retry_count": next_retry,
+            "retry_at": current.isoformat(),
+            "status": "dispatching",
+            "sent_count": 0,
+            "pending_count": len(delivery_ids),
+            "analysis_rerun": False,
+            "packet_regenerated": False,
+            "payload_reformatted": False,
+        },
+    )
     await dispatch_pending_notifications(
         session,
         notifier=notifier,
@@ -1047,6 +1130,20 @@ async def _retry_fallback_delivery(
             "sent_count": sent_count,
             "pending_count": pending_count,
             "dispatched_at": current.isoformat() if complete else None,
+        },
+    )
+    _atomic_json(
+        retry_path,
+        {
+            "packet_id": packet_id,
+            "retry_count": next_retry,
+            "retry_at": current.isoformat(),
+            "status": "sent" if complete else "pending",
+            "sent_count": sent_count,
+            "pending_count": pending_count,
+            "analysis_rerun": False,
+            "packet_regenerated": False,
+            "payload_reformatted": False,
         },
     )
     return PilotDeliveryResult(

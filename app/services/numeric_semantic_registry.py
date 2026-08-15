@@ -53,14 +53,14 @@ def _spec(
 NUMERIC_SEMANTICS = {
     "revenue": _spec(
         "revenue",
-        ("KRW", "USD", "JPY", "EUR"),
+        ("KRW", "USD", "TWD", "JPY", "EUR"),
         ("매출", "매출액", "revenue"),
         (r"매출(?:액)?", r"\brevenue\b"),
         "currency_amount",
     ),
     "operating_income": _spec(
         "operating_income",
-        ("KRW", "USD", "JPY", "EUR"),
+        ("KRW", "USD", "TWD", "JPY", "EUR"),
         ("영업이익", "operating income"),
         (r"영업이익", r"operating income"),
         "currency_amount",
@@ -105,28 +105,28 @@ NUMERIC_SEMANTICS = {
     ),
     "ttm_eps": _spec(
         "ttm_eps",
-        ("KRW", "USD", "JPY", "EUR"),
+        ("KRW", "USD", "TWD", "JPY", "EUR"),
         ("TTM EPS", "최근 4개 분기 EPS"),
         (r"ttm\s*eps", r"최근\s*4개\s*분기\s*eps"),
         "currency",
     ),
     "bvps": _spec(
         "bvps",
-        ("KRW", "USD", "JPY", "EUR"),
+        ("KRW", "USD", "TWD", "JPY", "EUR"),
         ("BVPS", "주당순자산"),
         (r"\bbvps\b", r"주당순자산"),
         "currency",
     ),
     "forward_eps": _spec(
         "forward_eps",
-        ("KRW", "USD", "JPY", "EUR"),
+        ("KRW", "USD", "TWD", "JPY", "EUR"),
         ("예상 EPS", "추정 EPS", "forward EPS"),
         (r"(?:예상|추정)\s*eps", r"forward\s*eps"),
         "currency",
     ),
     "forward_bvps": _spec(
         "forward_bvps",
-        ("KRW", "USD", "JPY", "EUR"),
+        ("KRW", "USD", "TWD", "JPY", "EUR"),
         ("예상 BVPS", "추정 BVPS", "forward BVPS"),
         (r"(?:예상|추정)\s*bvps", r"forward\s*bvps"),
         "currency",
@@ -1195,6 +1195,25 @@ def _currency_for_path(field_path: str, fields: dict[str, object]) -> str:
     return str(fields.get("currency") or "unknown")
 
 
+def _source_aware_label(
+    semantic_type: str,
+    fields: dict[str, object],
+) -> str | None:
+    if semantic_type in {"forward_eps", "forward_pe"}:
+        source = str(fields.get("forward_pe_source") or "")
+        if source == "modeled_forward":
+            return "내부 추정 EPS" if semantic_type == "forward_eps" else "내부 추정 fPER"
+        if source == "consensus":
+            return "시장 예상 EPS" if semantic_type == "forward_eps" else "시장 예상 fPER"
+    if semantic_type in {"forward_bvps", "forward_price_to_book"}:
+        source = str(fields.get("forward_price_to_book_source") or "")
+        if source == "modeled_forward":
+            return "내부 추정 BVPS" if semantic_type == "forward_bvps" else "내부 추정 fPBR"
+        if source == "consensus":
+            return "시장 예상 BVPS" if semantic_type == "forward_bvps" else "시장 예상 fPBR"
+    return None
+
+
 def usage_matches_semantic(semantic_type: str, usage: str) -> bool:
     spec = semantic_spec(semantic_type)
     if spec is None or not spec.prose_allowed:
@@ -1244,6 +1263,76 @@ def _plain_number(value: float) -> str:
     return str(int(value)) if value.is_integer() else f"{value:.12g}"
 
 
+def _fixed_number(value: float, digits: int) -> str:
+    return f"{value:,.{digits}f}".rstrip("0").rstrip(".")
+
+
+def _compact_amount(value: float, prefix: str, suffix: str = "") -> str:
+    absolute = abs(value)
+    for scale, marker in (
+        (1_000_000_000_000, "T"),
+        (1_000_000_000, "B"),
+        (1_000_000, "M"),
+    ):
+        if absolute >= scale:
+            sign = "-" if value < 0 else ""
+            return f"{prefix}{sign}{_fixed_number(absolute / scale, 2)}{marker}{suffix}"
+    sign = "-" if value < 0 else ""
+    return f"{prefix}{sign}{absolute:,.0f}{suffix}"
+
+
+def canonical_display_value(
+    spec: NumericSemanticSpec,
+    value: float,
+    unit: str,
+) -> str | None:
+    """Render the single backend-owned display value used by numeric binding."""
+    formatter = spec.formatter
+    if unit == "KRW":
+        if formatter == "currency_amount":
+            return compact_krw_amount(value)
+        return f"{value:,.0f}원"
+    if unit == "USD":
+        if formatter == "currency_amount":
+            return _compact_amount(value, "$")
+        return f"${_fixed_number(value, 2)}"
+    if unit == "TWD":
+        if formatter == "currency_amount":
+            return _compact_amount(value, "NT$")
+        return f"NT${_fixed_number(value, 2)}"
+    if unit in {"JPY", "EUR"}:
+        prefix = "¥" if unit == "JPY" else "€"
+        if formatter == "currency_amount":
+            return _compact_amount(value, prefix)
+        return f"{prefix}{_fixed_number(value, 2)}"
+    if unit == "pct":
+        digits = 2 if spec.semantic_type == "futures_return_pct" else 1
+        rendered = _fixed_number(value, digits)
+        if formatter == "signed_percentage" and value > 0:
+            rendered = f"+{rendered}"
+        return f"{rendered}%"
+    if unit == "bp":
+        rendered = _fixed_number(value, 1)
+        if formatter == "signed_basis_points" and value > 0:
+            rendered = f"+{rendered}"
+        return f"{rendered}bp"
+    if unit == "x":
+        return f"{_fixed_number(value, 2)}배"
+    if unit == "shares":
+        displayed = abs(value) if formatter == "signed_shares" else value
+        return f"{displayed:,.0f}주"
+    if unit == "points":
+        rendered = _fixed_number(value, 2)
+        if formatter == "signed_points" and value > 0:
+            rendered = f"+{rendered}"
+        return f"{rendered}포인트"
+    if unit == "USD_per_barrel":
+        return f"${_fixed_number(value, 2)}/bbl"
+    if unit == "index":
+        return _fixed_number(value, 2)
+    return None
+
+
 def approved_display_variants(
     spec: NumericSemanticSpec,
     value: float,
@@ -1261,6 +1350,10 @@ def approved_display_variants(
         variants.extend((f"{_plain_number(value)} KRW", f"{value:,.0f}원"))
     elif unit == "USD":
         variants.extend((f"${_plain_number(value)}", f"{_plain_number(value)} USD"))
+    elif unit == "TWD":
+        variants.extend((f"NT${_plain_number(value)}", f"{_plain_number(value)} TWD"))
+        if spec.formatter == "currency_amount":
+            variants.append(_compact_amount(value, "NT$"))
     elif unit in {"JPY", "EUR"}:
         variants.append(f"{_plain_number(value)} {unit}")
     elif unit == "shares":
@@ -1286,6 +1379,8 @@ def approved_display_variants(
         )
     elif unit == "index":
         variants.extend((f"{_plain_number(value)}", f"{_plain_number(value)}포인트"))
+    if (canonical := canonical_display_value(spec, value, unit)) is not None:
+        variants.append(canonical)
     return list(dict.fromkeys(variants))
 
 
@@ -1334,10 +1429,20 @@ def build_numeric_registry(
                         "approved_labels": (
                             list(spec.approved_labels) if spec is not None else []
                         ),
+                        "canonical_label": (
+                            _source_aware_label(spec.semantic_type, fields)
+                            if spec is not None
+                            else None
+                        ),
                         "approved_display_variants": (
                             approved_display_variants(spec, float(value), unit)
                             if spec is not None and prose_allowed
                             else []
+                        ),
+                        "canonical_display_value": (
+                            canonical_display_value(spec, float(value), unit)
+                            if spec is not None and prose_allowed
+                            else None
                         ),
                     }
                 )

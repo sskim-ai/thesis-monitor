@@ -35,7 +35,11 @@ add richer market and company interpretation without becoming the official asses
 - `AI_REVIEW_MODE=shadow` and Production Assist remain disabled.
 - One session delivers AI-assisted or deterministic fallback, never both.
 - AI market validation failure causes the whole Pilot session to use deterministic fallback.
+- Any final AI validation rejection leaves the held deterministic payload fallback-eligible and does
+  not increment the Pilot counter.
 - Once any AI chunk is sent, resume that exact AI message from the persisted cursor.
+- A deterministic fallback network retry uses the same persisted payload and a bounded retry counter;
+  it does not recollect, regenerate, reanalyze, or reformat.
 - Late AI after fallback is archive-only.
 - Official status, warnings, numbers, and assessment remain deterministic.
 
@@ -60,7 +64,7 @@ If Telegram fails after validation, the persisted rendered set is retried at bou
 
 ## Cohorts and Counting
 
-Active cohort: `ai-assisted-pilot-v3` with policy `daily-review-v3.8`, schema 4, structure v2, and
+Active cohort: `ai-assisted-pilot-v3` with policy `daily-review-v3.9`, schema 4, structure v2, and
 renderer v3. State is stored in `data/ai_review/pilot/state-v3.json`; the current successful count is
 KR 1/5 and US 0/5.
 Earlier state files and history remain immutable.
@@ -84,10 +88,10 @@ Assist.
 
 ## Archive
 
-Each session stores packet, deterministic messages, AI review, comparison, validator result, chart
-context, chart transition, quantitative-grounding report, market context, market review, market
-numeric claims, portfolio transmission, exact AI-assisted messages, fallback report when used, and
-delivery result under `data/ai_review/pilot/history`.
+Each session stores packet, deterministic messages, AI review, comparison, validator result, numeric
+binding telemetry, chart context, chart transition, quantitative-grounding report, market context,
+market review, market numeric claims, portfolio transmission, exact AI-assisted messages, fallback
+report when used, delivery retry state, and delivery result under `data/ai_review/pilot/history`.
 
 ## Deployment Gate
 
@@ -96,7 +100,7 @@ Before Day 1:
 1. `origin/main`, development checkout, and operating checkout are the same clean commit.
 2. Full tests, lint, diff, Knowledge checksums, Skill, schema, renderer, and documentation validation
    pass for that exact commit.
-3. All four Scheduled Tasks name Pilot v3, policy v3.8, schema 4, structure v2, and renderer v3.
+3. All four Scheduled Tasks name Pilot v3, policy v3.9, schema 4, structure v2, and renderer v3.
 4. State-v3 has no migrated successes.
 5. The fallback LaunchAgent is loaded and single-delivery tests pass.
 

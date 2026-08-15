@@ -46,7 +46,7 @@ The compact policy is not the complete investment framework. Use `knowledge-inde
 
 Use canonical `fact_catalog` objects only. Link every interpretation to `fact_ids`. Contract profitability, customer mix, FCF, inventory, ROIC, ADR conversion, and other absent facts stay Unknown.
 
-Every investment-related number in prose requires a `numeric_claims` record tied to the exact `fact_id`, `field_path`, `semantic_type`, and prose `text_ref`. Preserve the backend value and unit; display-only KRW compaction and approved percentage rounding are allowed. A claim covers only its exact prose occurrence, and a number found elsewhere in the packet or another prose field is not interchangeable with the claimed semantic field.
+Every investment-related number starts as a draft `{{numeric:ref_id}}` placeholder plus `numeric_fact_refs` containing only `ref_id`, `fact_id`, `field_path`, exact prose `text_ref`, and optional lower/upper role. The backend binds the canonical value, unit, semantic, source-aware label, approved formatter, user text, and final `numeric_claims`; the model does not transcribe the same number twice. A generated claim covers only its exact prose occurrence, and a number found elsewhere in the packet or another prose field is not interchangeable with the referenced semantic field.
 
 Numeric grounding is fail-closed during the pilot. When a market or stock has at least four registered, prose-allowed numeric anchors, an output with zero numeric claims is rejected. This is not a quota for sparse packets: unavailable or unsafe numbers remain Unknown. When numbers are used, connect value to comparison, meaning, and the investment question instead of listing metrics without interpretation.
 
@@ -56,7 +56,7 @@ Investment Knowledge v3 remains the safety, company, earnings, valuation, expect
 
 Do not compute technical indicators in the review task. Missing support, resistance, ATR, Elliott, Fibonacci, risk/reward, or state-machine output remains unavailable. Adjusted technical prices and unadjusted historical-valuation prices are separate bases.
 
-Output schema 4 integrates deterministic facts and AI reasoning by section. Do not append the full deterministic report after the AI narrative. Keep deterministic official status and hard warnings, use numeric evidence when eligible, and place holder and new-observer views inside price positioning.
+Output schema 4 integrates deterministic facts and AI reasoning by section. The draft-only numeric-reference envelope is removed before schema validation, so the validated external shape remains schema 4. Do not append the full deterministic report after the AI narrative. Keep deterministic official status and hard warnings, use numeric evidence when eligible, and place holder and new-observer views inside price positioning.
 
 ## Market Intelligence
 

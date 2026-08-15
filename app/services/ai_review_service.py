@@ -38,6 +38,7 @@ from app.services.daily_digest import build_daily_digest
 from app.services.market_session import market_scope_for_security
 from app.services.market_intelligence_service import build_market_intelligence
 from app.services.night_futures import NIGHT_FUTURES_SERIES
+from app.services.numeric_provenance_service import bind_numeric_fact_references
 from app.services.numeric_semantic_registry import (
     NUMERIC_SEMANTICS,
     build_numeric_registry,
@@ -52,7 +53,7 @@ logger = logging.getLogger(__name__)
 
 PACKET_SCHEMA_VERSION = "1"
 OUTPUT_SCHEMA_VERSION = "4"
-ANALYSIS_POLICY_VERSION = "daily-review-v3.8"
+ANALYSIS_POLICY_VERSION = "daily-review-v3.9"
 AIReviewMarket = Literal["us", "kr"]
 
 _INTERNAL_TEXT = re.compile(
@@ -77,7 +78,9 @@ _INTERNAL_KEYS = {
     "thstrm_nm",
     "unit",
 }
-_NUMBER = re.compile(r"(?<![\w])[-+]?\d[\d,]*(?:\.\d+)?%?")
+_NUMBER = re.compile(
+    r"(?<![\w])[-+]?(?:\d{1,3}(?:,\d{3})+|\d+)(?:\.\d+)?%?"
+)
 _STRUCTURAL_NUMBER_PATTERNS = (
     r"\bS&P\s*500\b",
     r"\bRussell\s*2000\b",
@@ -703,6 +706,7 @@ def _valuation_payload(assessment: ThesisAssessment) -> dict[str, object]:
     fields = (
         "current_price",
         "currency",
+        "financial_currency",
         "price_as_of",
         "latest_earnings_period",
         "earnings_context_is_preliminary",
@@ -1272,6 +1276,7 @@ def _fact_catalog(
 ) -> list[dict[str, object]]:
     facts = [fact for item in evidence if (fact := canonical_event_fact(item))]
     currency = str(valuation.get("currency") or "unknown")
+    financial_currency = str(valuation.get("financial_currency") or currency)
     period = str(valuation.get("latest_earnings_period") or "latest")
     earnings_fields: dict[str, object] = {
         "period": period,
@@ -1283,7 +1288,10 @@ def _fact_catalog(
     }
     for target, source in earnings_values.items():
         if (value := valuation.get(source)) is not None:
-            earnings_fields[target] = {"value": value, "currency": currency}
+            earnings_fields[target] = {
+                "value": value,
+                "currency": financial_currency,
+            }
     for target, source in (
         ("operating_margin_pct", "latest_operating_margin"),
         ("revenue_qoq_pct", "latest_revenue_qoq"),
@@ -2192,6 +2200,8 @@ def _usage_unit_matches(unit: str, usage: str) -> bool:
         return any(marker in usage for marker in ("원", "억원", "조")) or "krw" in lowered
     if unit == "USD":
         return "$" in usage or "usd" in lowered or "달러" in usage
+    if unit == "TWD":
+        return "nt$" in lowered or "twd" in lowered or "대만달러" in usage
     if unit == "shares":
         return "주" in usage or "share" in lowered
     if unit == "x":
@@ -2522,7 +2532,7 @@ def _current_thesis_version(session: Session, ticker: str) -> int | None:
     return thesis.version if thesis is not None else None
 
 
-def validate_ai_review_output(
+def _validate_bound_ai_review_output(
     session: Session,
     packet: dict[str, object],
     output_value: object,
@@ -2725,6 +2735,17 @@ def validate_ai_review_output(
             + ",".join(missing_required_numeric)
         )
     return output, list(dict.fromkeys(errors))
+
+
+def validate_ai_review_output(
+    session: Session,
+    packet: dict[str, object],
+    output_value: object,
+) -> tuple[AIDailyReviewOutput | None, list[str]]:
+    binding = bind_numeric_fact_references(packet, output_value)
+    if binding.errors:
+        return None, list(binding.errors)
+    return _validate_bound_ai_review_output(session, packet, binding.output)
 
 
 def _comparison_payload(
@@ -3135,6 +3156,108 @@ def _semantic_guardrail_flags(
     return flags
 
 
+def _raw_text_at_ref(review: object, text_ref: str) -> str | None:
+    node = review
+    for part in text_ref.split("."):
+        match = re.fullmatch(r"([A-Za-z_][A-Za-z0-9_]*)(?:\[([0-9]+)\])?", part)
+        if match is None or not isinstance(node, dict):
+            return None
+        key, raw_index = match.groups()
+        node = node.get(key)
+        if raw_index is not None:
+            if not isinstance(node, list) or int(raw_index) >= len(node):
+                return None
+            node = node[int(raw_index)]
+    return node if isinstance(node, str) else None
+
+
+def _numeric_correction_context(
+    packet: dict[str, object],
+    candidate: dict[str, object],
+    errors: list[str],
+) -> list[dict[str, object]]:
+    packet_stocks = {
+        str(item.get("ticker") or ""): item
+        for item in packet.get("stocks", [])
+        if isinstance(item, dict)
+    }
+    candidate_stocks = {
+        str(item.get("ticker") or ""): item
+        for item in candidate.get("stock_reviews", [])
+        if isinstance(item, dict)
+    }
+    contexts: list[dict[str, object]] = []
+    for error in errors:
+        prefix = error.split(":", maxsplit=1)[0]
+        if prefix == "market_review":
+            review = candidate.get("market_review")
+            market_context = packet.get("market_context")
+            registry = (
+                market_context.get("numeric_registry", [])
+                if isinstance(market_context, dict)
+                else []
+            )
+        else:
+            review = candidate_stocks.get(prefix)
+            stock = packet_stocks.get(prefix)
+            registry = stock.get("numeric_registry", []) if isinstance(stock, dict) else []
+        text_ref = None
+        tokens: set[str] = set()
+        marker = ":numbers_without_provenance:"
+        if marker in error:
+            _, remainder = error.split(marker, maxsplit=1)
+            text_ref, _, token_text = remainder.partition(":")
+            tokens = {item for item in token_text.split(",") if item}
+        rendered_phrase = (
+            _raw_text_at_ref(review, text_ref)
+            if isinstance(review, dict) and text_ref
+            else None
+        )
+        candidates: list[dict[str, object]] = []
+        for source in registry if isinstance(registry, list) else []:
+            if not isinstance(source, dict):
+                continue
+            variants = source.get("approved_display_variants")
+            variant_tokens = set().union(
+                *(
+                    _provenance_tokens(str(variant))
+                    for variant in variants
+                )
+            ) if isinstance(variants, list) and variants else set()
+            referenced = (
+                str(source.get("fact_id") or "") in error
+                and str(source.get("field_path") or "") in error
+            )
+            if not referenced and (not tokens or not tokens & variant_tokens):
+                continue
+            candidates.append(
+                {
+                    "fact_id": source.get("fact_id"),
+                    "field_path": source.get("field_path"),
+                    "canonical_raw_value": source.get("value"),
+                    "canonical_unit": source.get("unit"),
+                    "canonical_semantic": source.get("semantic_type"),
+                    "approved_formatted_value": source.get(
+                        "canonical_display_value"
+                    ),
+                }
+            )
+        contexts.append(
+            {
+                "error": error,
+                "text_ref": text_ref,
+                "rendered_phrase": rendered_phrase,
+                "canonical_candidates": candidates,
+                "allowed_actions": [
+                    "correct_reference",
+                    "correct_wording",
+                    "remove_unsafe_number",
+                ],
+            }
+        )
+    return contexts
+
+
 def finalize_ai_review_output(
     session: Session,
     packet_id: str,
@@ -3216,17 +3339,48 @@ def finalize_ai_review_output(
         return OutputValidationResult(
             status="rejected", packet_id=packet_id, errors=(type(exc).__name__,)
         )
+    binding = bind_numeric_fact_references(packet, candidate)
+    binding_report = dict(binding.report)
     if candidate.get("claim_id") != claim_id:
         output = None
         errors = ["stale_claim_output"]
+    elif binding.errors:
+        output = None
+        errors = list(binding.errors)
     else:
-        output, errors = validate_ai_review_output(session, packet, candidate)
+        output, errors = _validate_bound_ai_review_output(
+            session,
+            packet,
+            binding.output,
+        )
     if output is None or errors:
         rejected = _directory("rejected") / f"{output_name}.{int(datetime.now(UTC).timestamp())}"
         os.replace(temp_path, rejected)
+        _atomic_json(
+            Path(f"{rejected}.validation.json"),
+            {
+                "packet_id": packet_id,
+                "claim_id": claim_id,
+                "status": "rejected",
+                "errors": errors,
+                "numeric_binding": binding_report,
+                "correction_context": _numeric_correction_context(
+                    packet,
+                    candidate,
+                    errors,
+                ),
+                "fallback_eligibility_preserved": True,
+            },
+        )
         return OutputValidationResult(
             status="rejected", packet_id=packet_id, errors=tuple(errors)
         )
+    validated_candidate = output.model_dump(mode="json")
+    binding_report["user_visible_numeric_tokens"] = sum(
+        len(_prose_number_occurrences(text))
+        for review in (output.market_review, *output.stock_reviews)
+        for text in _prose_fields(review).values()
+    )
     validated_at = (now or datetime.now(UTC)).astimezone(UTC)
     history_dir = _directory("history") / f"{validated_at:%Y}" / f"{validated_at:%m}"
     history_dir.mkdir(parents=True, exist_ok=True)
@@ -3234,6 +3388,9 @@ def finalize_ai_review_output(
     comparison_path = history_dir / output_name.replace(".json", ".comparison.json")
     grounding_path = history_dir / output_name.replace(
         ".json", ".quantitative-grounding.json"
+    )
+    binding_path = history_dir / output_name.replace(
+        ".json", ".numeric-binding.json"
     )
     with _packet_lock(packet_id):
         if final_path.exists():
@@ -3291,10 +3448,12 @@ def finalize_ai_review_output(
                 packet_id=packet_id,
                 errors=("stale_claim_output",),
             )
+        _atomic_json(temp_path, validated_candidate)
         os.replace(temp_path, final_path)
-        _atomic_json(history_output, candidate)
+        _atomic_json(history_output, validated_candidate)
         _atomic_json(comparison_path, _comparison_payload(packet, output, validated_at))
         _atomic_json(grounding_path, quantitative_grounding_report(packet, output))
+        _atomic_json(binding_path, binding_report)
         current_claim = _read_json(claim_path)
         if str(current_claim.get("claim_id") or "") == claim_id:
             claim_path.unlink(missing_ok=True)
