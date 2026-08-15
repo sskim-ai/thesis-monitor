@@ -32,8 +32,18 @@
     "us": 0
   },
   "pilot_current_successful_sessions": {
-    "kr": 1,
+    "kr": 2,
     "us": 1
+  },
+  "pilot_state_reconciliation": {
+    "checked_at": "2026-08-15",
+    "kr_success_packet_id": "2026-08-15-kr-run-19-919a670464b4",
+    "validator_status": "passed",
+    "delivery": "8/8 sent",
+    "archive_completion_marker_verified": true,
+    "counted_exactly_once": true,
+    "source": "natural_scheduled_task",
+    "experimental_run": false
   },
   "pilot_success_archive_contract": {
     "completion_marker": "archive-complete.json",
