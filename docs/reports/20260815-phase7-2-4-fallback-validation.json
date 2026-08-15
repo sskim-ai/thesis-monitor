@@ -1,0 +1,43 @@
+{
+  "contract": "financial-quality-taint-v2",
+  "cases": [
+    {
+      "case": "critical_preliminary_ttm",
+      "trailing_pe_visible": false,
+      "forward_pe_visible": false,
+      "pbr_visible": true,
+      "historical_pe_visible": false
+    },
+    {
+      "case": "critical_full_statement_ttm",
+      "trailing_pe_visible": false,
+      "forward_pe_visible": false,
+      "pbr_visible": true,
+      "historical_pe_visible": false
+    },
+    {
+      "case": "older_critical_quarter_in_ttm",
+      "trailing_pe_visible": false,
+      "forward_pe_visible": false,
+      "pbr_visible": true,
+      "historical_pe_visible": false
+    },
+    {
+      "case": "modeled_forward_only_taint",
+      "trailing_pe_visible": true,
+      "forward_pe_visible": false,
+      "pbr_visible": true,
+      "historical_pe_visible": true
+    },
+    {
+      "case": "independent_consensus_survives_trailing_taint",
+      "trailing_pe_visible": false,
+      "forward_pe_visible": true,
+      "pbr_visible": true,
+      "historical_pe_visible": false
+    }
+  ],
+  "persisted_payload_retry_contract": "unchanged",
+  "single_delivery_contract": "unchanged",
+  "hard_checks_passed": true
+}

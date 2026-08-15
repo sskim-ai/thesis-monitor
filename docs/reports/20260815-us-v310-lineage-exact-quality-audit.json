@@ -1,0 +1,124 @@
+{
+  "packet_id": "2026-08-15-us-run-18-39f4b8810c45",
+  "message_count": 14,
+  "stock_count": 13,
+  "tickers": [
+    "CORZ",
+    "CRCL",
+    "GOOGL",
+    "HUT",
+    "IBM",
+    "MU",
+    "RXRX",
+    "SKHY",
+    "SNDK",
+    "TSLA",
+    "TSM",
+    "WRD",
+    "WULF"
+  ],
+  "complete": true,
+  "automatic_bindings": 162,
+  "manual_bindings": 0,
+  "formatting_failures": 0,
+  "unresolved_placeholders": 0,
+  "label_quality": {
+    "redundant_authored_label_count": 0,
+    "repeated_bound_label_count": 0,
+    "source_label_mismatch_count": 0,
+    "instrument_label_mismatch_count": 0
+  },
+  "section_numeric_grounding": {
+    "CORZ": {
+      "business_earnings": 2,
+      "valuation_analysis": 1,
+      "core_judgment": 2,
+      "supply_analysis": 1,
+      "price_positioning": 7
+    },
+    "CRCL": {
+      "business_earnings": 1,
+      "supply_analysis": 1,
+      "price_positioning": 7,
+      "core_judgment": 2,
+      "valuation_analysis": 2
+    },
+    "GOOGL": {
+      "valuation_analysis": 3,
+      "core_judgment": 2,
+      "supply_analysis": 1,
+      "price_positioning": 7
+    },
+    "HUT": {
+      "valuation_analysis": 2,
+      "core_judgment": 2,
+      "supply_analysis": 1,
+      "price_positioning": 7
+    },
+    "IBM": {
+      "business_earnings": 2,
+      "valuation_analysis": 3,
+      "core_judgment": 2,
+      "supply_analysis": 1,
+      "price_positioning": 7
+    },
+    "MU": {
+      "business_earnings": 2,
+      "valuation_analysis": 4,
+      "core_judgment": 2,
+      "supply_analysis": 1,
+      "price_positioning": 7
+    },
+    "RXRX": {
+      "business_earnings": 2,
+      "valuation_analysis": 2,
+      "core_judgment": 2,
+      "supply_analysis": 1,
+      "price_positioning": 7
+    },
+    "SKHY": {
+      "supply_analysis": 1,
+      "price_positioning": 1,
+      "core_judgment": 2,
+      "valuation_analysis": 1
+    },
+    "SNDK": {
+      "supply_analysis": 1,
+      "price_positioning": 3,
+      "core_judgment": 2,
+      "valuation_analysis": 2
+    },
+    "TSLA": {
+      "business_earnings": 2,
+      "valuation_analysis": 3,
+      "core_judgment": 2,
+      "supply_analysis": 1,
+      "price_positioning": 7
+    },
+    "TSM": {
+      "business_earnings": 2,
+      "core_judgment": 2,
+      "supply_analysis": 1,
+      "price_positioning": 7,
+      "valuation_analysis": 2
+    },
+    "WRD": {
+      "supply_analysis": 1,
+      "price_positioning": 3,
+      "core_judgment": 1
+    },
+    "WULF": {
+      "valuation_analysis": 2,
+      "core_judgment": 2,
+      "supply_analysis": 1,
+      "price_positioning": 7
+    }
+  },
+  "substantive_repeated_sentence_count": 0,
+  "substantive_repeats": [],
+  "observer_holder_distinct_count": 13,
+  "denied_numeric_leakage": 0,
+  "denied_qualitative_leakage": 0,
+  "validator_errors": 0,
+  "hard_checks_passed": true
+}

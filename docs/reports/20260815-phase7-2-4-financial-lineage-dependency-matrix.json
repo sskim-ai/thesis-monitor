@@ -1,0 +1,699 @@
+{
+  "contract": "financial-quality-taint-v2",
+  "decision_version": "financial-quality-taint-v2",
+  "cases": [
+    {
+      "case": "critical_full_statement_in_ttm",
+      "result": {
+        "latest_revenue": {
+          "state": "denied",
+          "source_period": "2026-06-30",
+          "source_type": "full_statement",
+          "dependency_periods": [
+            "2026-06-30"
+          ],
+          "denominator_period": "2026-06-30",
+          "lineage_verification_status": "verified_tainted",
+          "prose_eligible": false,
+          "denial_reason": "critical_financial_quality_outlier"
+        },
+        "ttm_eps": {
+          "state": "denied",
+          "source_period": "2026-06-30",
+          "source_type": "derived_trailing",
+          "dependency_periods": [
+            "2025-09-30",
+            "2025-12-31",
+            "2026-03-31",
+            "2026-06-30"
+          ],
+          "denominator_period": "2026-06-30",
+          "lineage_verification_status": "verified_tainted",
+          "prose_eligible": false,
+          "denial_reason": "critical_input_in_ttm_denominator"
+        },
+        "trailing_pe": {
+          "state": "denied",
+          "source_period": "2026-06-30",
+          "source_type": "derived_trailing",
+          "dependency_periods": [
+            "2025-09-30",
+            "2025-12-31",
+            "2026-03-31",
+            "2026-06-30"
+          ],
+          "denominator_period": "2026-06-30",
+          "lineage_verification_status": "verified_tainted",
+          "prose_eligible": false,
+          "denial_reason": "critical_input_in_ttm_denominator"
+        },
+        "forward_eps": {
+          "state": "denied",
+          "source_period": "FY1",
+          "source_type": "modeled_forward",
+          "dependency_periods": [
+            "2025-09-30",
+            "2025-12-31",
+            "2026-03-31",
+            "2026-06-30"
+          ],
+          "denominator_period": "FY1",
+          "lineage_verification_status": "verified_tainted",
+          "prose_eligible": false,
+          "denial_reason": "critical_input_in_modeled_forward_earnings"
+        },
+        "forward_pe": {
+          "state": "denied",
+          "source_period": "FY1",
+          "source_type": "modeled_forward",
+          "dependency_periods": [
+            "2025-09-30",
+            "2025-12-31",
+            "2026-03-31",
+            "2026-06-30"
+          ],
+          "denominator_period": "FY1",
+          "lineage_verification_status": "verified_tainted",
+          "prose_eligible": false,
+          "denial_reason": "critical_input_in_modeled_forward_earnings"
+        },
+        "historical_pe_statistics.current_percentile": {
+          "state": "denied",
+          "source_period": "2026-06-30",
+          "source_type": "historical_trailing_pe",
+          "dependency_periods": [
+            "2025-09-30",
+            "2025-12-31",
+            "2026-03-31",
+            "2026-06-30"
+          ],
+          "denominator_period": "2026-06-30",
+          "lineage_verification_status": "verified_tainted",
+          "prose_eligible": false,
+          "denial_reason": "current_trailing_pe_not_prose_eligible"
+        },
+        "price_to_book": {
+          "state": "verified_usable",
+          "source_period": "2026-03-31",
+          "source_type": "full_statement",
+          "dependency_periods": [
+            "2026-03-31"
+          ],
+          "denominator_period": "2026-03-31",
+          "lineage_verification_status": "verified",
+          "prose_eligible": true,
+          "denial_reason": null
+        },
+        "historical_pb_statistics.current_percentile": {
+          "state": "verified_usable",
+          "source_period": "2026-03-31",
+          "source_type": "historical_price_to_book",
+          "dependency_periods": [
+            "2026-03-31"
+          ],
+          "denominator_period": "2026-03-31",
+          "lineage_verification_status": "verified",
+          "prose_eligible": true,
+          "denial_reason": null
+        }
+      }
+    },
+    {
+      "case": "critical_direct_period_outside_ttm",
+      "result": {
+        "latest_revenue": {
+          "state": "denied",
+          "source_period": "2026-09-30",
+          "source_type": "preliminary_earnings",
+          "dependency_periods": [
+            "2026-09-30"
+          ],
+          "denominator_period": "2026-09-30",
+          "lineage_verification_status": "verified_tainted",
+          "prose_eligible": false,
+          "denial_reason": "critical_financial_quality_outlier"
+        },
+        "ttm_eps": {
+          "state": "verified_usable",
+          "source_period": "2026-06-30",
+          "source_type": "derived_trailing",
+          "dependency_periods": [
+            "2025-09-30",
+            "2025-12-31",
+            "2026-03-31",
+            "2026-06-30"
+          ],
+          "denominator_period": "2026-06-30",
+          "lineage_verification_status": "verified",
+          "prose_eligible": true,
+          "denial_reason": null
+        },
+        "trailing_pe": {
+          "state": "verified_usable",
+          "source_period": "2026-06-30",
+          "source_type": "derived_trailing",
+          "dependency_periods": [
+            "2025-09-30",
+            "2025-12-31",
+            "2026-03-31",
+            "2026-06-30"
+          ],
+          "denominator_period": "2026-06-30",
+          "lineage_verification_status": "verified",
+          "prose_eligible": true,
+          "denial_reason": null
+        },
+        "forward_eps": {
+          "state": "denied",
+          "source_period": "FY1",
+          "source_type": "modeled_forward",
+          "dependency_periods": [
+            "2025-09-30",
+            "2025-12-31",
+            "2026-03-31",
+            "2026-09-30"
+          ],
+          "denominator_period": "FY1",
+          "lineage_verification_status": "verified_tainted",
+          "prose_eligible": false,
+          "denial_reason": "critical_input_in_modeled_forward_earnings"
+        },
+        "forward_pe": {
+          "state": "denied",
+          "source_period": "FY1",
+          "source_type": "modeled_forward",
+          "dependency_periods": [
+            "2025-09-30",
+            "2025-12-31",
+            "2026-03-31",
+            "2026-09-30"
+          ],
+          "denominator_period": "FY1",
+          "lineage_verification_status": "verified_tainted",
+          "prose_eligible": false,
+          "denial_reason": "critical_input_in_modeled_forward_earnings"
+        },
+        "historical_pe_statistics.current_percentile": {
+          "state": "verified_usable",
+          "source_period": "2026-06-30",
+          "source_type": "historical_trailing_pe",
+          "dependency_periods": [
+            "2025-09-30",
+            "2025-12-31",
+            "2026-03-31",
+            "2026-06-30"
+          ],
+          "denominator_period": "2026-06-30",
+          "lineage_verification_status": "verified",
+          "prose_eligible": true,
+          "denial_reason": null
+        },
+        "price_to_book": {
+          "state": "verified_usable",
+          "source_period": "2026-03-31",
+          "source_type": "full_statement",
+          "dependency_periods": [
+            "2026-03-31"
+          ],
+          "denominator_period": "2026-03-31",
+          "lineage_verification_status": "verified",
+          "prose_eligible": true,
+          "denial_reason": null
+        },
+        "historical_pb_statistics.current_percentile": {
+          "state": "verified_usable",
+          "source_period": "2026-03-31",
+          "source_type": "historical_price_to_book",
+          "dependency_periods": [
+            "2026-03-31"
+          ],
+          "denominator_period": "2026-03-31",
+          "lineage_verification_status": "verified",
+          "prose_eligible": true,
+          "denial_reason": null
+        }
+      }
+    },
+    {
+      "case": "older_critical_quarter_in_ttm",
+      "result": {
+        "latest_revenue": {
+          "state": "caution_usable",
+          "source_period": "2026-06-30",
+          "source_type": "preliminary_earnings",
+          "dependency_periods": [
+            "2026-06-30"
+          ],
+          "denominator_period": "2026-06-30",
+          "lineage_verification_status": "verified",
+          "prose_eligible": true,
+          "denial_reason": null
+        },
+        "ttm_eps": {
+          "state": "denied",
+          "source_period": "2026-06-30",
+          "source_type": "derived_trailing",
+          "dependency_periods": [
+            "2025-09-30",
+            "2025-12-31",
+            "2026-03-31",
+            "2026-06-30"
+          ],
+          "denominator_period": "2026-06-30",
+          "lineage_verification_status": "verified_tainted",
+          "prose_eligible": false,
+          "denial_reason": "critical_input_in_ttm_denominator"
+        },
+        "trailing_pe": {
+          "state": "denied",
+          "source_period": "2026-06-30",
+          "source_type": "derived_trailing",
+          "dependency_periods": [
+            "2025-09-30",
+            "2025-12-31",
+            "2026-03-31",
+            "2026-06-30"
+          ],
+          "denominator_period": "2026-06-30",
+          "lineage_verification_status": "verified_tainted",
+          "prose_eligible": false,
+          "denial_reason": "critical_input_in_ttm_denominator"
+        },
+        "forward_eps": {
+          "state": "denied",
+          "source_period": "FY1",
+          "source_type": "modeled_forward",
+          "dependency_periods": [
+            "2025-09-30",
+            "2025-12-31",
+            "2026-03-31",
+            "2026-06-30"
+          ],
+          "denominator_period": "FY1",
+          "lineage_verification_status": "verified_tainted",
+          "prose_eligible": false,
+          "denial_reason": "critical_input_in_modeled_forward_earnings"
+        },
+        "forward_pe": {
+          "state": "denied",
+          "source_period": "FY1",
+          "source_type": "modeled_forward",
+          "dependency_periods": [
+            "2025-09-30",
+            "2025-12-31",
+            "2026-03-31",
+            "2026-06-30"
+          ],
+          "denominator_period": "FY1",
+          "lineage_verification_status": "verified_tainted",
+          "prose_eligible": false,
+          "denial_reason": "critical_input_in_modeled_forward_earnings"
+        },
+        "historical_pe_statistics.current_percentile": {
+          "state": "denied",
+          "source_period": "2026-06-30",
+          "source_type": "historical_trailing_pe",
+          "dependency_periods": [
+            "2025-09-30",
+            "2025-12-31",
+            "2026-03-31",
+            "2026-06-30"
+          ],
+          "denominator_period": "2026-06-30",
+          "lineage_verification_status": "verified_tainted",
+          "prose_eligible": false,
+          "denial_reason": "current_trailing_pe_not_prose_eligible"
+        },
+        "price_to_book": {
+          "state": "verified_usable",
+          "source_period": "2026-03-31",
+          "source_type": "full_statement",
+          "dependency_periods": [
+            "2026-03-31"
+          ],
+          "denominator_period": "2026-03-31",
+          "lineage_verification_status": "verified",
+          "prose_eligible": true,
+          "denial_reason": null
+        },
+        "historical_pb_statistics.current_percentile": {
+          "state": "verified_usable",
+          "source_period": "2026-03-31",
+          "source_type": "historical_price_to_book",
+          "dependency_periods": [
+            "2026-03-31"
+          ],
+          "denominator_period": "2026-03-31",
+          "lineage_verification_status": "verified",
+          "prose_eligible": true,
+          "denial_reason": null
+        }
+      }
+    },
+    {
+      "case": "modeled_forward_only_taint",
+      "result": {
+        "latest_revenue": {
+          "state": "caution_usable",
+          "source_period": "2026-06-30",
+          "source_type": "preliminary_earnings",
+          "dependency_periods": [
+            "2026-06-30"
+          ],
+          "denominator_period": "2026-06-30",
+          "lineage_verification_status": "verified",
+          "prose_eligible": true,
+          "denial_reason": null
+        },
+        "ttm_eps": {
+          "state": "verified_usable",
+          "source_period": "2026-06-30",
+          "source_type": "derived_trailing",
+          "dependency_periods": [
+            "2025-09-30",
+            "2025-12-31",
+            "2026-03-31",
+            "2026-06-30"
+          ],
+          "denominator_period": "2026-06-30",
+          "lineage_verification_status": "verified",
+          "prose_eligible": true,
+          "denial_reason": null
+        },
+        "trailing_pe": {
+          "state": "verified_usable",
+          "source_period": "2026-06-30",
+          "source_type": "derived_trailing",
+          "dependency_periods": [
+            "2025-09-30",
+            "2025-12-31",
+            "2026-03-31",
+            "2026-06-30"
+          ],
+          "denominator_period": "2026-06-30",
+          "lineage_verification_status": "verified",
+          "prose_eligible": true,
+          "denial_reason": null
+        },
+        "forward_eps": {
+          "state": "denied",
+          "source_period": "FY1",
+          "source_type": "modeled_forward",
+          "dependency_periods": [
+            "2025-06-30",
+            "2025-09-30",
+            "2025-12-31",
+            "2026-03-31",
+            "2026-06-30"
+          ],
+          "denominator_period": "FY1",
+          "lineage_verification_status": "verified_tainted",
+          "prose_eligible": false,
+          "denial_reason": "critical_input_in_modeled_forward_earnings"
+        },
+        "forward_pe": {
+          "state": "denied",
+          "source_period": "FY1",
+          "source_type": "modeled_forward",
+          "dependency_periods": [
+            "2025-06-30",
+            "2025-09-30",
+            "2025-12-31",
+            "2026-03-31",
+            "2026-06-30"
+          ],
+          "denominator_period": "FY1",
+          "lineage_verification_status": "verified_tainted",
+          "prose_eligible": false,
+          "denial_reason": "critical_input_in_modeled_forward_earnings"
+        },
+        "historical_pe_statistics.current_percentile": {
+          "state": "verified_usable",
+          "source_period": "2026-06-30",
+          "source_type": "historical_trailing_pe",
+          "dependency_periods": [
+            "2025-09-30",
+            "2025-12-31",
+            "2026-03-31",
+            "2026-06-30"
+          ],
+          "denominator_period": "2026-06-30",
+          "lineage_verification_status": "verified",
+          "prose_eligible": true,
+          "denial_reason": null
+        },
+        "price_to_book": {
+          "state": "verified_usable",
+          "source_period": "2026-03-31",
+          "source_type": "full_statement",
+          "dependency_periods": [
+            "2026-03-31"
+          ],
+          "denominator_period": "2026-03-31",
+          "lineage_verification_status": "verified",
+          "prose_eligible": true,
+          "denial_reason": null
+        },
+        "historical_pb_statistics.current_percentile": {
+          "state": "verified_usable",
+          "source_period": "2026-03-31",
+          "source_type": "historical_price_to_book",
+          "dependency_periods": [
+            "2026-03-31"
+          ],
+          "denominator_period": "2026-03-31",
+          "lineage_verification_status": "verified",
+          "prose_eligible": true,
+          "denial_reason": null
+        }
+      }
+    },
+    {
+      "case": "trailing_taint_independent_consensus",
+      "result": {
+        "latest_revenue": {
+          "state": "denied",
+          "source_period": "2026-06-30",
+          "source_type": "preliminary_earnings",
+          "dependency_periods": [
+            "2026-06-30"
+          ],
+          "denominator_period": "2026-06-30",
+          "lineage_verification_status": "verified_tainted",
+          "prose_eligible": false,
+          "denial_reason": "critical_financial_quality_outlier"
+        },
+        "ttm_eps": {
+          "state": "denied",
+          "source_period": "2026-06-30",
+          "source_type": "derived_trailing",
+          "dependency_periods": [
+            "2025-09-30",
+            "2025-12-31",
+            "2026-03-31",
+            "2026-06-30"
+          ],
+          "denominator_period": "2026-06-30",
+          "lineage_verification_status": "verified_tainted",
+          "prose_eligible": false,
+          "denial_reason": "critical_input_in_ttm_denominator"
+        },
+        "trailing_pe": {
+          "state": "denied",
+          "source_period": "2026-06-30",
+          "source_type": "derived_trailing",
+          "dependency_periods": [
+            "2025-09-30",
+            "2025-12-31",
+            "2026-03-31",
+            "2026-06-30"
+          ],
+          "denominator_period": "2026-06-30",
+          "lineage_verification_status": "verified_tainted",
+          "prose_eligible": false,
+          "denial_reason": "critical_input_in_ttm_denominator"
+        },
+        "forward_eps": {
+          "state": "verified_usable",
+          "source_period": "FY1",
+          "source_type": "consensus_forward",
+          "dependency_periods": [
+            "FY1"
+          ],
+          "denominator_period": "FY1",
+          "lineage_verification_status": "verified",
+          "prose_eligible": true,
+          "denial_reason": null
+        },
+        "forward_pe": {
+          "state": "verified_usable",
+          "source_period": "FY1",
+          "source_type": "consensus_forward",
+          "dependency_periods": [
+            "FY1"
+          ],
+          "denominator_period": "FY1",
+          "lineage_verification_status": "verified",
+          "prose_eligible": true,
+          "denial_reason": null
+        },
+        "historical_pe_statistics.current_percentile": {
+          "state": "denied",
+          "source_period": "2026-06-30",
+          "source_type": "historical_trailing_pe",
+          "dependency_periods": [
+            "2025-09-30",
+            "2025-12-31",
+            "2026-03-31",
+            "2026-06-30"
+          ],
+          "denominator_period": "2026-06-30",
+          "lineage_verification_status": "verified_tainted",
+          "prose_eligible": false,
+          "denial_reason": "current_trailing_pe_not_prose_eligible"
+        },
+        "price_to_book": {
+          "state": "verified_usable",
+          "source_period": "2026-03-31",
+          "source_type": "full_statement",
+          "dependency_periods": [
+            "2026-03-31"
+          ],
+          "denominator_period": "2026-03-31",
+          "lineage_verification_status": "verified",
+          "prose_eligible": true,
+          "denial_reason": null
+        },
+        "historical_pb_statistics.current_percentile": {
+          "state": "verified_usable",
+          "source_period": "2026-03-31",
+          "source_type": "historical_price_to_book",
+          "dependency_periods": [
+            "2026-03-31"
+          ],
+          "denominator_period": "2026-03-31",
+          "lineage_verification_status": "verified",
+          "prose_eligible": true,
+          "denial_reason": null
+        }
+      }
+    },
+    {
+      "case": "critical_earnings_clean_book",
+      "result": {
+        "latest_revenue": {
+          "state": "denied",
+          "source_period": "2026-06-30",
+          "source_type": "preliminary_earnings",
+          "dependency_periods": [
+            "2026-06-30"
+          ],
+          "denominator_period": "2026-06-30",
+          "lineage_verification_status": "verified_tainted",
+          "prose_eligible": false,
+          "denial_reason": "critical_financial_quality_outlier"
+        },
+        "ttm_eps": {
+          "state": "denied",
+          "source_period": "2026-06-30",
+          "source_type": "derived_trailing",
+          "dependency_periods": [
+            "2025-09-30",
+            "2025-12-31",
+            "2026-03-31",
+            "2026-06-30"
+          ],
+          "denominator_period": "2026-06-30",
+          "lineage_verification_status": "verified_tainted",
+          "prose_eligible": false,
+          "denial_reason": "critical_input_in_ttm_denominator"
+        },
+        "trailing_pe": {
+          "state": "denied",
+          "source_period": "2026-06-30",
+          "source_type": "derived_trailing",
+          "dependency_periods": [
+            "2025-09-30",
+            "2025-12-31",
+            "2026-03-31",
+            "2026-06-30"
+          ],
+          "denominator_period": "2026-06-30",
+          "lineage_verification_status": "verified_tainted",
+          "prose_eligible": false,
+          "denial_reason": "critical_input_in_ttm_denominator"
+        },
+        "forward_eps": {
+          "state": "denied",
+          "source_period": "FY1",
+          "source_type": "modeled_forward",
+          "dependency_periods": [
+            "2025-09-30",
+            "2025-12-31",
+            "2026-03-31",
+            "2026-06-30"
+          ],
+          "denominator_period": "FY1",
+          "lineage_verification_status": "verified_tainted",
+          "prose_eligible": false,
+          "denial_reason": "critical_input_in_modeled_forward_earnings"
+        },
+        "forward_pe": {
+          "state": "denied",
+          "source_period": "FY1",
+          "source_type": "modeled_forward",
+          "dependency_periods": [
+            "2025-09-30",
+            "2025-12-31",
+            "2026-03-31",
+            "2026-06-30"
+          ],
+          "denominator_period": "FY1",
+          "lineage_verification_status": "verified_tainted",
+          "prose_eligible": false,
+          "denial_reason": "critical_input_in_modeled_forward_earnings"
+        },
+        "historical_pe_statistics.current_percentile": {
+          "state": "denied",
+          "source_period": "2026-06-30",
+          "source_type": "historical_trailing_pe",
+          "dependency_periods": [
+            "2025-09-30",
+            "2025-12-31",
+            "2026-03-31",
+            "2026-06-30"
+          ],
+          "denominator_period": "2026-06-30",
+          "lineage_verification_status": "verified_tainted",
+          "prose_eligible": false,
+          "denial_reason": "current_trailing_pe_not_prose_eligible"
+        },
+        "price_to_book": {
+          "state": "verified_usable",
+          "source_period": "2026-03-31",
+          "source_type": "full_statement",
+          "dependency_periods": [
+            "2026-03-31"
+          ],
+          "denominator_period": "2026-03-31",
+          "lineage_verification_status": "verified",
+          "prose_eligible": true,
+          "denial_reason": null
+        },
+        "historical_pb_statistics.current_percentile": {
+          "state": "verified_usable",
+          "source_period": "2026-03-31",
+          "source_type": "historical_price_to_book",
+          "dependency_periods": [
+            "2026-03-31"
+          ],
+          "denominator_period": "2026-03-31",
+          "lineage_verification_status": "verified",
+          "prose_eligible": true,
+          "denial_reason": null
+        }
+      }
+    }
+  ],
+  "hard_checks_passed": true
+}

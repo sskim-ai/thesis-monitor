@@ -1,0 +1,81 @@
+{
+  "packet_id": "2026-08-14-kr-run-17-9c9ba4a5dd73",
+  "message_count": 8,
+  "stock_count": 7,
+  "tickers": [
+    "000660",
+    "003690",
+    "005490",
+    "005930",
+    "010120",
+    "012450",
+    "086280"
+  ],
+  "complete": true,
+  "automatic_bindings": 141,
+  "manual_bindings": 0,
+  "formatting_failures": 0,
+  "unresolved_placeholders": 0,
+  "label_quality": {
+    "redundant_authored_label_count": 0,
+    "repeated_bound_label_count": 0,
+    "source_label_mismatch_count": 0,
+    "instrument_label_mismatch_count": 0
+  },
+  "section_numeric_grounding": {
+    "000660": {
+      "supply_analysis": 6,
+      "price_positioning": 4,
+      "core_judgment": 2,
+      "valuation_analysis": 3
+    },
+    "003690": {
+      "core_judgment": 2,
+      "business_earnings": 2,
+      "valuation_analysis": 3,
+      "supply_analysis": 6,
+      "price_positioning": 4
+    },
+    "005490": {
+      "core_judgment": 2,
+      "business_earnings": 3,
+      "valuation_analysis": 4,
+      "supply_analysis": 6,
+      "price_positioning": 8
+    },
+    "005930": {
+      "core_judgment": 2,
+      "business_earnings": 3,
+      "valuation_analysis": 3,
+      "supply_analysis": 6,
+      "price_positioning": 4
+    },
+    "010120": {
+      "core_judgment": 2,
+      "business_earnings": 3,
+      "valuation_analysis": 3,
+      "supply_analysis": 6,
+      "price_positioning": 7
+    },
+    "012450": {
+      "core_judgment": 2,
+      "business_earnings": 3,
+      "supply_analysis": 6,
+      "price_positioning": 7
+    },
+    "086280": {
+      "core_judgment": 2,
+      "business_earnings": 3,
+      "valuation_analysis": 4,
+      "supply_analysis": 6,
+      "price_positioning": 8
+    }
+  },
+  "substantive_repeated_sentence_count": 0,
+  "substantive_repeats": [],
+  "observer_holder_distinct_count": 7,
+  "denied_numeric_leakage": 0,
+  "denied_qualitative_leakage": 0,
+  "validator_errors": 0,
+  "hard_checks_passed": true
+}

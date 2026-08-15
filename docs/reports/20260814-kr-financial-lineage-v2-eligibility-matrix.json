@@ -1,0 +1,557 @@
+{
+  "contract": "financial-quality-taint-v2",
+  "before_packet_id": "2026-08-14-kr-run-17-cbfc8bd24224",
+  "after_packet_id": "2026-08-14-kr-run-17-9c9ba4a5dd73",
+  "source_db_sha256": "23451ab3ac99b08b203c6dd736f31aac1ced1f1603be2a387d2ce2a0d22018a1",
+  "rows": [
+    {
+      "ticker": "000660",
+      "field": "bvps",
+      "fact_id": "valuation:current",
+      "field_path": "fields.bvps",
+      "before_state": "verified_usable",
+      "after_state": "verified_usable",
+      "source_period": "2026-03-31",
+      "source_type": "full_statement",
+      "provider": "opendart",
+      "dependency_fields": [
+        "book_value_denominator"
+      ],
+      "dependency_periods": [
+        "2026-03-31"
+      ],
+      "denominator_period": "2026-03-31",
+      "lineage_verification_status": "verified",
+      "quality_reason_codes": [],
+      "prose_allowed": true,
+      "denial_reason": null,
+      "used_in_phase723_message": false,
+      "used_in_phase724_message": false
+    },
+    {
+      "ticker": "000660",
+      "field": "forward_bvps",
+      "fact_id": "valuation:current",
+      "field_path": "fields.forward_bvps",
+      "before_state": "verified_usable",
+      "after_state": "caution_usable",
+      "source_period": "FY1",
+      "source_type": "modeled_forward",
+      "provider": "opendart",
+      "dependency_fields": [
+        "modeled_forward_book_value_inputs"
+      ],
+      "dependency_periods": [
+        "2024-06-30",
+        "2024-09-30",
+        "2024-12-31",
+        "2025-03-31",
+        "2025-06-30",
+        "2025-09-30",
+        "2025-12-31",
+        "2026-03-31"
+      ],
+      "denominator_period": "FY1",
+      "lineage_verification_status": "verified",
+      "quality_reason_codes": [],
+      "prose_allowed": true,
+      "denial_reason": null,
+      "used_in_phase723_message": false,
+      "used_in_phase724_message": false
+    },
+    {
+      "ticker": "000660",
+      "field": "forward_eps",
+      "fact_id": "valuation:current",
+      "field_path": "fields.forward_eps",
+      "before_state": "denied",
+      "after_state": "denied",
+      "source_period": "FY1",
+      "source_type": "modeled_forward",
+      "provider": "opendart",
+      "dependency_fields": [
+        "modeled_forward_earnings_inputs"
+      ],
+      "dependency_periods": [
+        "2024-09-30",
+        "2024-12-31",
+        "2025-03-31",
+        "2025-06-30",
+        "2025-09-30",
+        "2025-12-31",
+        "2026-03-31",
+        "2026-06-30"
+      ],
+      "denominator_period": "FY1",
+      "lineage_verification_status": "verified_tainted",
+      "quality_reason_codes": [
+        "net_income_exceeds_revenue",
+        "unusually_high_or_low_operating_margin"
+      ],
+      "prose_allowed": false,
+      "denial_reason": "critical_input_in_modeled_forward_earnings",
+      "used_in_phase723_message": false,
+      "used_in_phase724_message": false
+    },
+    {
+      "ticker": "000660",
+      "field": "forward_pe",
+      "fact_id": "valuation:current",
+      "field_path": "fields.forward_pe",
+      "before_state": "denied",
+      "after_state": "denied",
+      "source_period": "FY1",
+      "source_type": "modeled_forward",
+      "provider": "opendart",
+      "dependency_fields": [
+        "modeled_forward_earnings_inputs"
+      ],
+      "dependency_periods": [
+        "2024-09-30",
+        "2024-12-31",
+        "2025-03-31",
+        "2025-06-30",
+        "2025-09-30",
+        "2025-12-31",
+        "2026-03-31",
+        "2026-06-30"
+      ],
+      "denominator_period": "FY1",
+      "lineage_verification_status": "verified_tainted",
+      "quality_reason_codes": [
+        "net_income_exceeds_revenue",
+        "unusually_high_or_low_operating_margin"
+      ],
+      "prose_allowed": false,
+      "denial_reason": "critical_input_in_modeled_forward_earnings",
+      "used_in_phase723_message": false,
+      "used_in_phase724_message": false
+    },
+    {
+      "ticker": "000660",
+      "field": "forward_price_to_book",
+      "fact_id": "valuation:current",
+      "field_path": "fields.forward_price_to_book",
+      "before_state": "verified_usable",
+      "after_state": "caution_usable",
+      "source_period": "FY1",
+      "source_type": "modeled_forward",
+      "provider": "opendart",
+      "dependency_fields": [
+        "modeled_forward_book_value_inputs"
+      ],
+      "dependency_periods": [
+        "2024-06-30",
+        "2024-09-30",
+        "2024-12-31",
+        "2025-03-31",
+        "2025-06-30",
+        "2025-09-30",
+        "2025-12-31",
+        "2026-03-31"
+      ],
+      "denominator_period": "FY1",
+      "lineage_verification_status": "verified",
+      "quality_reason_codes": [],
+      "prose_allowed": true,
+      "denial_reason": null,
+      "used_in_phase723_message": true,
+      "used_in_phase724_message": true
+    },
+    {
+      "ticker": "000660",
+      "field": "historical_pb_statistics.current_percentile",
+      "fact_id": "valuation:current",
+      "field_path": "fields.historical_pb_statistics.current_percentile",
+      "before_state": "verified_usable",
+      "after_state": "verified_usable",
+      "source_period": "2026-03-31",
+      "source_type": "historical_price_to_book",
+      "provider": "opendart",
+      "dependency_fields": [
+        "price_to_book",
+        "historical_pb_distribution"
+      ],
+      "dependency_periods": [
+        "2026-03-31"
+      ],
+      "denominator_period": "2026-03-31",
+      "lineage_verification_status": "verified",
+      "quality_reason_codes": [],
+      "prose_allowed": true,
+      "denial_reason": null,
+      "used_in_phase723_message": true,
+      "used_in_phase724_message": true
+    },
+    {
+      "ticker": "000660",
+      "field": "historical_pb_statistics.current_value",
+      "fact_id": "valuation:current",
+      "field_path": "fields.historical_pb_statistics.current_value",
+      "before_state": "verified_usable",
+      "after_state": "verified_usable",
+      "source_period": "2026-03-31",
+      "source_type": "historical_price_to_book",
+      "provider": "opendart",
+      "dependency_fields": [
+        "price_to_book",
+        "historical_pb_distribution"
+      ],
+      "dependency_periods": [
+        "2026-03-31"
+      ],
+      "denominator_period": "2026-03-31",
+      "lineage_verification_status": "verified",
+      "quality_reason_codes": [],
+      "prose_allowed": true,
+      "denial_reason": null,
+      "used_in_phase723_message": false,
+      "used_in_phase724_message": false
+    },
+    {
+      "ticker": "000660",
+      "field": "historical_pe_statistics.current_percentile",
+      "fact_id": "valuation:current",
+      "field_path": "fields.historical_pe_statistics.current_percentile",
+      "before_state": "denied",
+      "after_state": "denied",
+      "source_period": "2026-06-30",
+      "source_type": "historical_trailing_pe",
+      "provider": "opendart",
+      "dependency_fields": [
+        "trailing_pe",
+        "historical_pe_distribution"
+      ],
+      "dependency_periods": [
+        "2025-09-30",
+        "2025-12-31",
+        "2026-03-31",
+        "2026-06-30"
+      ],
+      "denominator_period": "2026-06-30",
+      "lineage_verification_status": "verified_tainted",
+      "quality_reason_codes": [
+        "net_income_exceeds_revenue",
+        "unusually_high_or_low_operating_margin"
+      ],
+      "prose_allowed": false,
+      "denial_reason": "current_trailing_pe_not_prose_eligible",
+      "used_in_phase723_message": false,
+      "used_in_phase724_message": false
+    },
+    {
+      "ticker": "000660",
+      "field": "historical_pe_statistics.current_value",
+      "fact_id": "valuation:current",
+      "field_path": "fields.historical_pe_statistics.current_value",
+      "before_state": "denied",
+      "after_state": "denied",
+      "source_period": "2026-06-30",
+      "source_type": "historical_trailing_pe",
+      "provider": "opendart",
+      "dependency_fields": [
+        "trailing_pe",
+        "historical_pe_distribution"
+      ],
+      "dependency_periods": [
+        "2025-09-30",
+        "2025-12-31",
+        "2026-03-31",
+        "2026-06-30"
+      ],
+      "denominator_period": "2026-06-30",
+      "lineage_verification_status": "verified_tainted",
+      "quality_reason_codes": [
+        "net_income_exceeds_revenue",
+        "unusually_high_or_low_operating_margin"
+      ],
+      "prose_allowed": false,
+      "denial_reason": "current_trailing_pe_not_prose_eligible",
+      "used_in_phase723_message": false,
+      "used_in_phase724_message": false
+    },
+    {
+      "ticker": "000660",
+      "field": "latest_operating_income",
+      "fact_id": "earnings:2026-06-30",
+      "field_path": "fields.operating_income.value",
+      "before_state": "denied",
+      "after_state": "denied",
+      "source_period": "2026-06-30",
+      "source_type": "preliminary_earnings",
+      "provider": "opendart",
+      "dependency_fields": [
+        "earnings.latest_operating_income"
+      ],
+      "dependency_periods": [
+        "2026-06-30"
+      ],
+      "denominator_period": "2026-06-30",
+      "lineage_verification_status": "verified_tainted",
+      "quality_reason_codes": [
+        "net_income_exceeds_revenue",
+        "unusually_high_or_low_operating_margin"
+      ],
+      "prose_allowed": false,
+      "denial_reason": "critical_financial_quality_outlier",
+      "used_in_phase723_message": false,
+      "used_in_phase724_message": false
+    },
+    {
+      "ticker": "000660",
+      "field": "latest_operating_income_qoq",
+      "fact_id": "earnings:2026-06-30",
+      "field_path": "fields.operating_income_qoq_pct",
+      "before_state": "denied",
+      "after_state": "denied",
+      "source_period": "2026-03-31",
+      "source_type": "mixed_sources",
+      "provider": "opendart",
+      "dependency_fields": [
+        "earnings.latest_operating_income_qoq"
+      ],
+      "dependency_periods": [
+        "2026-06-30",
+        "2026-03-31"
+      ],
+      "denominator_period": "2026-03-31",
+      "lineage_verification_status": "verified_tainted",
+      "quality_reason_codes": [
+        "net_income_exceeds_revenue",
+        "unusually_high_or_low_operating_margin"
+      ],
+      "prose_allowed": false,
+      "denial_reason": "critical_financial_quality_outlier",
+      "used_in_phase723_message": false,
+      "used_in_phase724_message": false
+    },
+    {
+      "ticker": "000660",
+      "field": "latest_operating_income_yoy",
+      "fact_id": "earnings:2026-06-30",
+      "field_path": "fields.operating_income_yoy_pct",
+      "before_state": "denied",
+      "after_state": "denied",
+      "source_period": "2025-06-30",
+      "source_type": "mixed_sources",
+      "provider": "opendart",
+      "dependency_fields": [
+        "earnings.latest_operating_income_yoy"
+      ],
+      "dependency_periods": [
+        "2026-06-30",
+        "2025-06-30"
+      ],
+      "denominator_period": "2025-06-30",
+      "lineage_verification_status": "verified_tainted",
+      "quality_reason_codes": [
+        "net_income_exceeds_revenue",
+        "unusually_high_or_low_operating_margin"
+      ],
+      "prose_allowed": false,
+      "denial_reason": "critical_financial_quality_outlier",
+      "used_in_phase723_message": false,
+      "used_in_phase724_message": false
+    },
+    {
+      "ticker": "000660",
+      "field": "latest_operating_margin",
+      "fact_id": "earnings:2026-06-30",
+      "field_path": "fields.operating_margin_pct",
+      "before_state": "denied",
+      "after_state": "denied",
+      "source_period": "2026-06-30",
+      "source_type": "preliminary_earnings",
+      "provider": "opendart",
+      "dependency_fields": [
+        "earnings.latest_operating_margin"
+      ],
+      "dependency_periods": [
+        "2026-06-30"
+      ],
+      "denominator_period": "2026-06-30",
+      "lineage_verification_status": "verified_tainted",
+      "quality_reason_codes": [
+        "net_income_exceeds_revenue",
+        "unusually_high_or_low_operating_margin"
+      ],
+      "prose_allowed": false,
+      "denial_reason": "critical_financial_quality_outlier",
+      "used_in_phase723_message": false,
+      "used_in_phase724_message": false
+    },
+    {
+      "ticker": "000660",
+      "field": "latest_revenue",
+      "fact_id": "earnings:2026-06-30",
+      "field_path": "fields.revenue.value",
+      "before_state": "denied",
+      "after_state": "denied",
+      "source_period": "2026-06-30",
+      "source_type": "preliminary_earnings",
+      "provider": "opendart",
+      "dependency_fields": [
+        "earnings.latest_revenue"
+      ],
+      "dependency_periods": [
+        "2026-06-30"
+      ],
+      "denominator_period": "2026-06-30",
+      "lineage_verification_status": "verified_tainted",
+      "quality_reason_codes": [
+        "net_income_exceeds_revenue",
+        "unusually_high_or_low_operating_margin"
+      ],
+      "prose_allowed": false,
+      "denial_reason": "critical_financial_quality_outlier",
+      "used_in_phase723_message": false,
+      "used_in_phase724_message": false
+    },
+    {
+      "ticker": "000660",
+      "field": "latest_revenue_qoq",
+      "fact_id": "earnings:2026-06-30",
+      "field_path": "fields.revenue_qoq_pct",
+      "before_state": "denied",
+      "after_state": "denied",
+      "source_period": "2026-03-31",
+      "source_type": "mixed_sources",
+      "provider": "opendart",
+      "dependency_fields": [
+        "earnings.latest_revenue_qoq"
+      ],
+      "dependency_periods": [
+        "2026-06-30",
+        "2026-03-31"
+      ],
+      "denominator_period": "2026-03-31",
+      "lineage_verification_status": "verified_tainted",
+      "quality_reason_codes": [
+        "net_income_exceeds_revenue",
+        "unusually_high_or_low_operating_margin"
+      ],
+      "prose_allowed": false,
+      "denial_reason": "critical_financial_quality_outlier",
+      "used_in_phase723_message": false,
+      "used_in_phase724_message": false
+    },
+    {
+      "ticker": "000660",
+      "field": "latest_revenue_yoy",
+      "fact_id": "earnings:2026-06-30",
+      "field_path": "fields.revenue_yoy_pct",
+      "before_state": "denied",
+      "after_state": "denied",
+      "source_period": "2025-06-30",
+      "source_type": "mixed_sources",
+      "provider": "opendart",
+      "dependency_fields": [
+        "earnings.latest_revenue_yoy"
+      ],
+      "dependency_periods": [
+        "2026-06-30",
+        "2025-06-30"
+      ],
+      "denominator_period": "2025-06-30",
+      "lineage_verification_status": "verified_tainted",
+      "quality_reason_codes": [
+        "net_income_exceeds_revenue",
+        "unusually_high_or_low_operating_margin"
+      ],
+      "prose_allowed": false,
+      "denial_reason": "critical_financial_quality_outlier",
+      "used_in_phase723_message": false,
+      "used_in_phase724_message": false
+    },
+    {
+      "ticker": "000660",
+      "field": "price_to_book",
+      "fact_id": "valuation:current",
+      "field_path": "fields.price_to_book",
+      "before_state": "verified_usable",
+      "after_state": "verified_usable",
+      "source_period": "2026-03-31",
+      "source_type": "full_statement",
+      "provider": "opendart",
+      "dependency_fields": [
+        "book_value_denominator"
+      ],
+      "dependency_periods": [
+        "2026-03-31"
+      ],
+      "denominator_period": "2026-03-31",
+      "lineage_verification_status": "verified",
+      "quality_reason_codes": [],
+      "prose_allowed": true,
+      "denial_reason": null,
+      "used_in_phase723_message": true,
+      "used_in_phase724_message": true
+    },
+    {
+      "ticker": "000660",
+      "field": "trailing_pe",
+      "fact_id": "valuation:current",
+      "field_path": "fields.trailing_pe",
+      "before_state": "denied",
+      "after_state": "denied",
+      "source_period": "2026-06-30",
+      "source_type": "derived_trailing",
+      "provider": "opendart",
+      "dependency_fields": [
+        "earnings_quarter_series.eps"
+      ],
+      "dependency_periods": [
+        "2025-09-30",
+        "2025-12-31",
+        "2026-03-31",
+        "2026-06-30"
+      ],
+      "denominator_period": "2026-06-30",
+      "lineage_verification_status": "verified_tainted",
+      "quality_reason_codes": [
+        "net_income_exceeds_revenue",
+        "unusually_high_or_low_operating_margin"
+      ],
+      "prose_allowed": false,
+      "denial_reason": "critical_input_in_ttm_denominator",
+      "used_in_phase723_message": false,
+      "used_in_phase724_message": false
+    },
+    {
+      "ticker": "000660",
+      "field": "ttm_eps",
+      "fact_id": "valuation:current",
+      "field_path": "fields.ttm_eps",
+      "before_state": "denied",
+      "after_state": "denied",
+      "source_period": "2026-06-30",
+      "source_type": "derived_trailing",
+      "provider": "opendart",
+      "dependency_fields": [
+        "earnings_quarter_series.eps"
+      ],
+      "dependency_periods": [
+        "2025-09-30",
+        "2025-12-31",
+        "2026-03-31",
+        "2026-06-30"
+      ],
+      "denominator_period": "2026-06-30",
+      "lineage_verification_status": "verified_tainted",
+      "quality_reason_codes": [
+        "net_income_exceeds_revenue",
+        "unusually_high_or_low_operating_margin"
+      ],
+      "prose_allowed": false,
+      "denial_reason": "critical_input_in_ttm_denominator",
+      "used_in_phase723_message": false,
+      "used_in_phase724_message": false
+    }
+  ],
+  "summary": {
+    "denied": 13,
+    "unknown": 0,
+    "usable": 6,
+    "used_after": 3
+  }
+}

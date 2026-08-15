@@ -1,0 +1,40 @@
+{
+  "contract": "field-level-interpretation-fence-v1",
+  "cases": [
+    {
+      "case": "mixed_aggregate_denied_pe_allowed_pbr",
+      "text": "이익 배수가 높아 시장 기대가 매우 높습니다.",
+      "fact_id": "valuation:current",
+      "expected": "REJECT",
+      "actual": "REJECT",
+      "error": "financial_quality_denied_fact_used:valuation:current"
+    },
+    {
+      "case": "denied_trailing_fact",
+      "text": "낮은 이익 배수는 저평가를 뜻합니다.",
+      "fact_id": "valuation:trailing_earnings",
+      "expected": "REJECT",
+      "actual": "REJECT",
+      "error": "financial_quality_denied_fact_used:valuation:trailing_earnings"
+    },
+    {
+      "case": "allowed_book_interpretation",
+      "text": "현재 장부가 배수는 확인된 기준입니다.",
+      "fact_id": "valuation:book",
+      "expected": "PASS",
+      "actual": "PASS",
+      "error": null
+    },
+    {
+      "case": "quality_unknown_explanation",
+      "text": "수익성 관계의 검증 경고로 이익 기반 배수 해석을 보류합니다.",
+      "fact_id": "financial_quality:<period>",
+      "expected": "PASS",
+      "actual": "PASS",
+      "error": null
+    }
+  ],
+  "primary_boundary": "lineage_homogeneous_fact_identity",
+  "keyword_regex_primary_boundary": false,
+  "hard_checks_passed": true
+}
