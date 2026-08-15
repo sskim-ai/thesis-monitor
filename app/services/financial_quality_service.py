@@ -219,6 +219,16 @@ def build_financial_quality_state(
         records = _dict_list(direct_sources.get(field))
         if records:
             periods, complete, critical, provider = _dependency_quality(records)
+            source_types = list(
+                dict.fromkeys(
+                    str(item.get("source_type"))
+                    for item in records
+                    if item.get("source_type") not in (None, "")
+                )
+            )
+            field_source_type = (
+                source_types[0] if len(source_types) == 1 else "mixed_sources"
+            )
             field_reasons = sorted(
                 {
                     reason
@@ -264,10 +274,11 @@ def build_financial_quality_state(
                     "direct_financial_lineage_unverified",
                     "unverified",
                 )
+            field_source_type = source_type
         fields[field] = _quality_record(
             state=state,
             source_period=periods[-1] if periods else source_period,
-            source_type=source_type,
+            source_type=field_source_type,
             provider=provider,
             reason_codes=field_reasons,
             dependency_fields=[f"earnings.{field}"],

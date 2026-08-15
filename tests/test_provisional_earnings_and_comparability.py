@@ -8,6 +8,7 @@ from app.models.security import SecurityMaster
 from app.providers.dart_text_fallback import extract_preliminary_earnings_facts_from_text
 from app.schemas.thesis import ValuationSnapshot
 from app.services.historical_valuation_service import point_in_time_denominators
+from app.services.financial_quality_service import sanitize_financial_snapshot_for_prose
 from app.services.notification_service import _data_cautions, _valuation_formula_lines
 from app.services.valuation_snapshot_service import (
     MultipleBasis,
@@ -283,6 +284,32 @@ def test_foreign_preliminary_updates_context_without_unsafe_eps() -> None:
     assert snapshot.latest_operating_income == 500
     assert snapshot.latest_operating_margin == 50
     assert snapshot.ttm_eps is None
+
+
+def test_valuation_snapshot_persists_exact_lineage_for_fallback() -> None:
+    rows = [*_base_rows(), _full(date(2026, 6, 30), 4)]
+    rows[1].financial_soft_outliers = json.dumps(["net_income_exceeds_revenue"])
+    service = ValuationSnapshotService()
+    snapshot = ValuationSnapshot(current_price=100, currency="KRW")
+
+    service._apply_derived_trailing(snapshot, rows)
+    snapshot.financial_quality_source_metadata = (
+        service._financial_quality_source_metadata(snapshot, rows)
+    )
+    restored = json.loads(snapshot.model_dump_json())
+    sanitized = sanitize_financial_snapshot_for_prose(restored)
+
+    sources = restored["financial_quality_source_metadata"]["ttm_sources"]
+    assert [item["period"] for item in sources] == [
+        "2025-09-30",
+        "2025-12-31",
+        "2026-03-31",
+        "2026-06-30",
+    ]
+    assert sources[1]["soft_outliers"] == ["net_income_exceeds_revenue"]
+    assert sanitized["ttm_eps"] is None
+    assert sanitized["trailing_pe"] is None
+    assert sanitized["price_to_book"] is not None
 
 
 def test_earnings_context_keeps_reported_operating_margin_with_exact_income() -> None:

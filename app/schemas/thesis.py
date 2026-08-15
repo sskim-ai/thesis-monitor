@@ -535,6 +535,7 @@ class ValuationSnapshot(BaseModel):
     earnings_basis: str | None = None
     share_basis: str | None = None
     earnings_quarter_series: list[dict[str, object]] = Field(default_factory=list)
+    financial_quality_source_metadata: dict[str, object] = Field(default_factory=dict)
     latest_operating_margin: float | None = None
     latest_revenue_qoq: float | None = None
     latest_revenue_yoy: float | None = None

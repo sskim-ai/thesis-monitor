@@ -465,6 +465,43 @@ def test_sanitizer_removes_only_tainted_financial_and_pe_values() -> None:
     assert sanitized["current_price"] == 211_000
 
 
+def test_fallback_sanitizer_uses_persisted_older_quarter_lineage() -> None:
+    source = _clean_source()
+    source["ttm_sources"][1]["soft_outliers"] = ["net_income_exceeds_revenue"]
+    snapshot = _snapshot(financial_quality_source_metadata=source)
+
+    sanitized = sanitize_financial_snapshot_for_prose(snapshot)
+
+    assert sanitized["latest_revenue"] == snapshot["latest_revenue"]
+    assert sanitized["ttm_eps"] is None
+    assert sanitized["trailing_pe"] is None
+    assert sanitized["historical_pe_statistics"]["current_percentile"] is None
+    assert sanitized["price_to_book"] == 4.0
+
+
+def test_fallback_sanitizer_separates_modeled_forward_from_clean_trailing() -> None:
+    source = _clean_source()
+    source["modeled_forward_sources"] = [
+        {
+            "period": "2025-06-30",
+            "source_type": "full_statement",
+            "provider": "opendart",
+            "soft_outliers": ["unusually_high_or_low_net_margin"],
+            "lineage_verified": True,
+        },
+        *source["ttm_sources"],
+    ]
+    snapshot = _snapshot(financial_quality_source_metadata=source)
+
+    sanitized = sanitize_financial_snapshot_for_prose(snapshot)
+
+    assert sanitized["ttm_eps"] == snapshot["ttm_eps"]
+    assert sanitized["trailing_pe"] == snapshot["trailing_pe"]
+    assert sanitized["historical_pe_statistics"]["current_percentile"] == 12.0
+    assert sanitized["forward_eps"] is None
+    assert sanitized["forward_pe"] is None
+
+
 class _Assessment:
     def __init__(self) -> None:
         self.ticker = "GENERIC"

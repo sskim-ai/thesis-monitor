@@ -862,6 +862,185 @@ class ValuationSnapshotService:
         )
         return [row for row in rows if financial_snapshot_is_usable(row)]
 
+    def _financial_quality_source_metadata(
+        self,
+        snapshot: ValuationSnapshot,
+        rows: list[FinancialSnapshot],
+    ) -> dict[str, object]:
+        """Persist the exact denominator lineage needed by fallback rendering."""
+        period = str(snapshot.latest_earnings_period or "")
+        if not period or not rows:
+            return {}
+
+        def row_period(row: FinancialSnapshot) -> str:
+            value = financial_period_end(row)
+            return value.isoformat() if value else ""
+
+        def metadata(row: FinancialSnapshot) -> dict[str, object]:
+            return {
+                "period": row_period(row),
+                "source_type": row.snapshot_type,
+                "provider": row.provider,
+                "filing_date": (
+                    value.isoformat() if (value := filing_date(row)) else None
+                ),
+                "hard_errors": _stored_list(row.financial_hard_errors),
+                "soft_outliers": _stored_list(row.financial_soft_outliers),
+                "financial_statement_basis_warning": (
+                    row.financial_statement_basis_warning
+                ),
+                "period_mapping_validation_failed": (
+                    row.period_mapping_validation_failed
+                ),
+                "margin_quality_review": row.margin_quality_review,
+                "lineage_verified": True,
+            }
+
+        def match_series(item: dict[str, object]) -> FinancialSnapshot | None:
+            item_period = str(item.get("period") or "")[:10]
+            item_source = str(item.get("source") or "")
+            item_filing = str(item.get("filing") or "")[:10]
+            candidates = [
+                row
+                for row in rows
+                if row_period(row) == item_period
+                and (not item_source or row.snapshot_type == item_source)
+                and (
+                    not item_filing
+                    or str(filing_date(row) or "")[:10] == item_filing
+                )
+            ]
+            for field in ("revenue", "operating_income", "net_income"):
+                value = item.get(field)
+                matched = [
+                    row
+                    for row in candidates
+                    if value is None or getattr(row, field) == value
+                ]
+                if matched:
+                    candidates = matched
+            return max(candidates, key=lambda item: item.id or 0) if candidates else None
+
+        candidates = [
+            row
+            for row in rows
+            if row_period(row) == period[:10]
+            and (
+                not snapshot.earnings_context_source
+                or row.snapshot_type == snapshot.earnings_context_source
+            )
+        ]
+        matched = [
+            row
+            for row in candidates
+            if (snapshot.latest_revenue is None or row.revenue == snapshot.latest_revenue)
+            and (
+                snapshot.latest_operating_income is None
+                or row.operating_income == snapshot.latest_operating_income
+            )
+        ]
+        if matched:
+            candidates = matched
+        if not candidates:
+            return {}
+        latest = max(
+            candidates,
+            key=lambda item: (filing_date(item) or date.min, item.id or 0),
+        )
+        result = metadata(latest)
+
+        ttm_sources: list[dict[str, object]] = []
+        for item in snapshot.earnings_quarter_series:
+            source_row = match_series(item)
+            ttm_sources.append(
+                metadata(source_row)
+                if source_row is not None
+                else {
+                    "period": item.get("period"),
+                    "source_type": item.get("source"),
+                    "filing_date": item.get("filing"),
+                    "lineage_verified": False,
+                }
+            )
+        result["ttm_sources"] = ttm_sources
+
+        selected_quarters = _earnings_quarters(rows)
+        latest_period = financial_period_end(latest)
+        prior = None
+        prior_year = None
+        if latest_period:
+            previous = [
+                row
+                for row in selected_quarters
+                if financial_period_end(row)
+                and financial_period_end(row) < latest_period
+            ]
+            if previous:
+                candidate = max(
+                    previous,
+                    key=lambda item: financial_period_end(item) or date.min,
+                )
+                candidate_period = financial_period_end(candidate)
+                if candidate_period and 60 <= (latest_period - candidate_period).days <= 120:
+                    prior = candidate
+            prior_year = next(
+                (
+                    row
+                    for row in selected_quarters
+                    if (candidate_period := financial_period_end(row))
+                    and 330 <= (latest_period - candidate_period).days <= 400
+                ),
+                None,
+            )
+        latest_metadata = metadata(latest)
+        direct_sources: dict[str, list[dict[str, object]]] = {
+            field: [latest_metadata]
+            for field in (
+                "latest_revenue",
+                "latest_operating_income",
+                "latest_operating_margin",
+            )
+        }
+        if prior is not None:
+            for field in ("latest_revenue_qoq", "latest_operating_income_qoq"):
+                direct_sources[field] = [latest_metadata, metadata(prior)]
+        if prior_year is not None:
+            for field in ("latest_revenue_yoy", "latest_operating_income_yoy"):
+                direct_sources[field] = [latest_metadata, metadata(prior_year)]
+        result["direct_field_sources"] = direct_sources
+
+        minimum = self.settings.valuation_model_min_quarters
+        modeled_sources = selected_quarters[-minimum:]
+        result["modeled_forward_sources"] = [metadata(row) for row in modeled_sources]
+        result["modeled_forward_expected_count"] = minimum
+        full_quarters = _valid_quarters(rows)
+        modeled_book_sources = (
+            full_quarters[-minimum:]
+            if any(row.snapshot_type == "preliminary_earnings" for row in modeled_sources)
+            else modeled_sources
+        )
+        result["modeled_forward_book_sources"] = [
+            metadata(row) for row in modeled_book_sources
+        ]
+        result["modeled_forward_book_expected_count"] = minimum
+
+        balance = _latest_balance(rows)
+        if balance is not None:
+            balance_metadata = metadata(balance)
+            expected_period = str(snapshot.pbr_denominator_period_end or "")
+            expected_filing = str(snapshot.pbr_denominator_filing_date or "")
+            balance_metadata["lineage_verified"] = bool(
+                expected_period
+                and row_period(balance) == expected_period[:10]
+                and (
+                    not expected_filing
+                    or str(filing_date(balance) or "")[:10]
+                    == expected_filing[:10]
+                )
+            )
+            result["book_source"] = balance_metadata
+        return result
+
     def _apply_financial_metadata(
         self, snapshot: ValuationSnapshot, rows: list[FinancialSnapshot]
     ) -> None:
@@ -2409,4 +2588,7 @@ class ValuationSnapshotService:
                     "stale_financial_after_material_event"
                 )
             snapshot.data_coverage = self.coverage_service.build(session, ticker, snapshot)
+        snapshot.financial_quality_source_metadata = (
+            self._financial_quality_source_metadata(snapshot, rows)
+        )
         return snapshot

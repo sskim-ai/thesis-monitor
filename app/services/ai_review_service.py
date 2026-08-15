@@ -721,6 +721,9 @@ def _financial_source_metadata(
     assessment: ThesisAssessment,
     snapshot: dict[str, object],
 ) -> dict[str, object]:
+    persisted = _dict(snapshot.get("financial_quality_source_metadata"))
+    if persisted:
+        return persisted
     period = str(snapshot.get("latest_earnings_period") or "")
     if not period:
         return {}
