@@ -1,0 +1,156 @@
+{
+  "contract": "kr-supply-numeric-horizon-v1",
+  "packet_id": "2026-08-14-kr-run-17-006189184b28",
+  "rows": [
+    {
+      "ticker": "000660",
+      "eligible_semantics": [
+        "foreign_net_buy_qty",
+        "foreign_net_buy_qty_20d",
+        "foreign_net_buy_qty_5d",
+        "institution_net_buy_qty",
+        "institution_net_buy_qty_20d",
+        "institution_net_buy_qty_5d"
+      ],
+      "claimed_semantics": [
+        "foreign_net_buy_qty",
+        "foreign_net_buy_qty_20d",
+        "foreign_net_buy_qty_5d",
+        "institution_net_buy_qty",
+        "institution_net_buy_qty_20d",
+        "institution_net_buy_qty_5d"
+      ],
+      "missing_semantics": [],
+      "numeric_horizon_coverage_passed": true
+    },
+    {
+      "ticker": "003690",
+      "eligible_semantics": [
+        "foreign_net_buy_qty",
+        "foreign_net_buy_qty_20d",
+        "foreign_net_buy_qty_5d",
+        "institution_net_buy_qty",
+        "institution_net_buy_qty_20d",
+        "institution_net_buy_qty_5d"
+      ],
+      "claimed_semantics": [
+        "foreign_net_buy_qty",
+        "foreign_net_buy_qty_20d",
+        "foreign_net_buy_qty_5d",
+        "institution_net_buy_qty",
+        "institution_net_buy_qty_20d",
+        "institution_net_buy_qty_5d"
+      ],
+      "missing_semantics": [],
+      "numeric_horizon_coverage_passed": true
+    },
+    {
+      "ticker": "005490",
+      "eligible_semantics": [
+        "foreign_net_buy_qty",
+        "foreign_net_buy_qty_20d",
+        "foreign_net_buy_qty_5d",
+        "institution_net_buy_qty",
+        "institution_net_buy_qty_20d",
+        "institution_net_buy_qty_5d"
+      ],
+      "claimed_semantics": [
+        "foreign_net_buy_qty",
+        "foreign_net_buy_qty_20d",
+        "foreign_net_buy_qty_5d",
+        "institution_net_buy_qty",
+        "institution_net_buy_qty_20d",
+        "institution_net_buy_qty_5d"
+      ],
+      "missing_semantics": [],
+      "numeric_horizon_coverage_passed": true
+    },
+    {
+      "ticker": "005930",
+      "eligible_semantics": [
+        "foreign_net_buy_qty",
+        "foreign_net_buy_qty_20d",
+        "foreign_net_buy_qty_5d",
+        "institution_net_buy_qty",
+        "institution_net_buy_qty_20d",
+        "institution_net_buy_qty_5d"
+      ],
+      "claimed_semantics": [
+        "foreign_net_buy_qty",
+        "foreign_net_buy_qty_20d",
+        "foreign_net_buy_qty_5d",
+        "institution_net_buy_qty",
+        "institution_net_buy_qty_20d",
+        "institution_net_buy_qty_5d"
+      ],
+      "missing_semantics": [],
+      "numeric_horizon_coverage_passed": true
+    },
+    {
+      "ticker": "010120",
+      "eligible_semantics": [
+        "foreign_net_buy_qty",
+        "foreign_net_buy_qty_20d",
+        "foreign_net_buy_qty_5d",
+        "institution_net_buy_qty",
+        "institution_net_buy_qty_20d",
+        "institution_net_buy_qty_5d"
+      ],
+      "claimed_semantics": [
+        "foreign_net_buy_qty",
+        "foreign_net_buy_qty_20d",
+        "foreign_net_buy_qty_5d",
+        "institution_net_buy_qty",
+        "institution_net_buy_qty_20d",
+        "institution_net_buy_qty_5d"
+      ],
+      "missing_semantics": [],
+      "numeric_horizon_coverage_passed": true
+    },
+    {
+      "ticker": "012450",
+      "eligible_semantics": [
+        "foreign_net_buy_qty",
+        "foreign_net_buy_qty_20d",
+        "foreign_net_buy_qty_5d",
+        "institution_net_buy_qty",
+        "institution_net_buy_qty_20d",
+        "institution_net_buy_qty_5d"
+      ],
+      "claimed_semantics": [
+        "foreign_net_buy_qty",
+        "foreign_net_buy_qty_20d",
+        "foreign_net_buy_qty_5d",
+        "institution_net_buy_qty",
+        "institution_net_buy_qty_20d",
+        "institution_net_buy_qty_5d"
+      ],
+      "missing_semantics": [],
+      "numeric_horizon_coverage_passed": true
+    },
+    {
+      "ticker": "086280",
+      "eligible_semantics": [
+        "foreign_net_buy_qty",
+        "foreign_net_buy_qty_20d",
+        "foreign_net_buy_qty_5d",
+        "institution_net_buy_qty",
+        "institution_net_buy_qty_20d",
+        "institution_net_buy_qty_5d"
+      ],
+      "claimed_semantics": [
+        "foreign_net_buy_qty",
+        "foreign_net_buy_qty_20d",
+        "foreign_net_buy_qty_5d",
+        "institution_net_buy_qty",
+        "institution_net_buy_qty_20d",
+        "institution_net_buy_qty_5d"
+      ],
+      "missing_semantics": [],
+      "numeric_horizon_coverage_passed": true
+    }
+  ],
+  "eligible_stock_count": 7,
+  "complete_numeric_horizon_stock_count": 7,
+  "qualitative_only_rows_counted_as_complete": 0
+}

@@ -146,8 +146,16 @@ separate dimensions; 5/5 operational sessions cannot enable Production Assist wi
 blocking findings and explicit user approval.
 
 Phase 7.2.7 adds deterministic transition-direction, identity-versus-basis, and market-aware supply
-validation. Its corrected retrospective passes in isolation, but remains unmerged, undeployed, and
-not human-approved. It does not change KR 2/5 or US 2/5.
+validation. Its corrected retrospective passed its automated gates, but its KR regression selected a
+v3.9 artifact from a closed KR session and later human review found additional blocking safety and
+language issues. It remains failed-review evidence and does not change KR 2/5 or US 2/5.
+
+Phase 7.2.8 uses a fresh current-code packet from the completed 2026-08-14 KR after-hours session and
+keeps the original natural US artifacts immutable. Its corrected isolated US 14-message and KR
+8-message sets pass binder, full validator, financial-quality, label/instrument, zone-role,
+postposition, identity, comparison, supply, and repetition hard checks. This is still experimental:
+it is unmerged, undeployed, not human-approved, and ineligible for Production Assist evidence. It
+does not send Telegram or change KR 2/5 or US 2/5.
 
 ## Incident Classification
 

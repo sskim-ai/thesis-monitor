@@ -1,0 +1,76 @@
+{
+  "contract": "phase-7.2.8-identity-prose-audit-v1",
+  "packet_id": "2026-08-16-us-run-20-a48638e987ce",
+  "rows": [
+    {
+      "ticker": "SKHY",
+      "identity_state": "verified_depositary",
+      "verification_status": "verified",
+      "source_tier": "tier_a_authoritative",
+      "identity_record_source_tier": "tier_a_authoritative",
+      "depositary_ratio": 0.1,
+      "depositary_ratio_direction": "ordinary_shares_per_adr",
+      "depositary_ratio_source": "https://www.sec.gov/Archives/edgar/data/2120882/000119312526299963/d32785d424b4.htm",
+      "depositary_ratio_state": "verified",
+      "valuation_basis_statuses": {
+        "trailing_pe": "insufficient_metadata",
+        "price_to_book": "not_applicable",
+        "forward_pe": "insufficient_metadata",
+        "forward_price_to_book": "not_applicable"
+      },
+      "eligibility_decision": "requires_verified_current_security_denominator"
+    },
+    {
+      "ticker": "TSM",
+      "identity_state": "unknown",
+      "verification_status": "unverified",
+      "source_tier": "tier_c_explicit_local",
+      "identity_record_source_tier": "tier_d_inferred_default",
+      "depositary_ratio": null,
+      "depositary_ratio_direction": null,
+      "depositary_ratio_source": null,
+      "depositary_ratio_state": "unknown",
+      "valuation_basis_statuses": {
+        "trailing_pe": "insufficient_metadata",
+        "price_to_book": "not_applicable",
+        "forward_pe": "insufficient_metadata",
+        "forward_price_to_book": "not_applicable"
+      },
+      "eligibility_decision": "unverified_depositary_evidence_requires_authoritative_resolution"
+    },
+    {
+      "ticker": "WRD",
+      "identity_state": "unknown",
+      "verification_status": "unverified",
+      "source_tier": "tier_c_explicit_local",
+      "identity_record_source_tier": "tier_d_inferred_default",
+      "depositary_ratio": null,
+      "depositary_ratio_direction": null,
+      "depositary_ratio_source": null,
+      "depositary_ratio_state": "unknown",
+      "valuation_basis_statuses": {
+        "trailing_pe": "insufficient_metadata",
+        "price_to_book": "not_applicable",
+        "forward_pe": "not_applicable",
+        "forward_price_to_book": "not_applicable"
+      },
+      "eligibility_decision": "unverified_depositary_evidence_requires_authoritative_resolution"
+    }
+  ],
+  "reconciliation": {
+    "phase_7_2_6_cross_section_claim": "verified_depositary",
+    "runtime_state": {
+      "TSM": "unknown",
+      "WRD": "unknown"
+    },
+    "root_cause": "Phase 7.2.6 accepted Tier C watchlist issuer metadata together with a Tier D inferred SecurityMaster row; production remediation covered only CORZ/GOOGL/HUT/IBM/SKHY/WULF, so TSM/WRD never received Tier A ingestion.",
+    "decision": "retain unknown until authoritative canonical ingestion",
+    "production_remediation_applied": false
+  },
+  "rendered_identity_prose_mismatch_count": 0,
+  "unsafe_multiple_leakage_count": 0,
+  "adr_ratio_or_fx_calculation_count": 0,
+  "unsupported_comparative_claim_count": 0,
+  "crcl_confirmation_transition": "failed_breakout_to_not_reached",
+  "crcl_transition_contradiction_count": 0
+}

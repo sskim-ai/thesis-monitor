@@ -1,0 +1,10 @@
+{
+  "packet_id": "2026-08-16-us-run-20-a48638e987ce",
+  "source_packet_id": "2026-08-16-us-run-20-6c15d0003955",
+  "status": "passed",
+  "errors": [],
+  "error_count": 0,
+  "stock_count": 13,
+  "market_message_count": 1,
+  "stock_message_count": 13
+}

@@ -1,0 +1,259 @@
+{
+  "contract": "phase-7.2.8-label-instrument-role-audit-v1",
+  "market": "kr",
+  "packet_id": "2026-08-14-kr-run-17-006189184b28",
+  "numeric_label_quality": {
+    "redundant_authored_label_count": 0,
+    "repeated_bound_label_count": 0,
+    "source_label_mismatch_count": 0,
+    "instrument_label_mismatch_count": 0,
+    "zone_role_mismatch_count": 0,
+    "postposition_mismatch_count": 0,
+    "details": [],
+    "hard_checks_passed": true
+  },
+  "rendered_heading_quality": {
+    "expected_heading": "📊 수급",
+    "mismatch_count": 0,
+    "message_indexes": []
+  },
+  "instrument_and_zone_claim_count": 28,
+  "instrument_and_zone_claims": [
+    {
+      "fact_id": "market:relative:QQQ:SPY",
+      "field_path": "fields.relative_return_pct",
+      "semantic_type": "growth_relative_return_pct",
+      "role": "value",
+      "canonical_label": "S&P500 대비 Nasdaq 상대수익률",
+      "usage": "S&P500 대비 Nasdaq 상대수익률 +0.7%"
+    },
+    {
+      "fact_id": "market:oil:DCOILWTICO",
+      "field_path": "fields.return_pct",
+      "semantic_type": "oil_return_pct",
+      "role": "value",
+      "canonical_label": "WTI 등락률",
+      "usage": "WTI 등락률 +3.4%"
+    },
+    {
+      "fact_id": "market:relative:SOXX:SPY",
+      "field_path": "fields.relative_return_pct",
+      "semantic_type": "sector_relative_return_pct",
+      "role": "value",
+      "canonical_label": "S&P500 대비 반도체 상대수익률",
+      "usage": "S&P500 대비 반도체 상대수익률 +0.2%"
+    },
+    {
+      "fact_id": "market:real_yield:DFII10",
+      "field_path": "fields.change_bp",
+      "semantic_type": "real_yield_change_bp",
+      "role": "value",
+      "canonical_label": "미국 10년물 실질금리 변동",
+      "usage": "미국 10년물 실질금리 변동 -1bp"
+    },
+    {
+      "fact_id": "market:volatility:VIXCLS",
+      "field_path": "fields.return_pct",
+      "semantic_type": "volatility_return_pct",
+      "role": "value",
+      "canonical_label": "VIX 등락률",
+      "usage": "VIX 등락률 -4.8%"
+    },
+    {
+      "fact_id": "market:index:SPY",
+      "field_path": "fields.return_pct",
+      "semantic_type": "index_return_pct",
+      "role": "value",
+      "canonical_label": "S&P500 등락률",
+      "usage": "S&P500 등락률 +0.7%"
+    },
+    {
+      "fact_id": "chart:structure:nearest_resistance:1",
+      "field_path": "fields.zone_low",
+      "semantic_type": "resistance_zone_price",
+      "role": "lower",
+      "canonical_label": "동적 저항구간 하단",
+      "usage": "동적 저항구간 하단 2,918,471원"
+    },
+    {
+      "fact_id": "chart:structure:nearest_resistance:1",
+      "field_path": "fields.zone_high",
+      "semantic_type": "resistance_zone_price",
+      "role": "upper",
+      "canonical_label": "동적 저항구간 상단",
+      "usage": "동적 저항구간 상단 3,055,529원"
+    },
+    {
+      "fact_id": "chart:structure:nearest_supports:1",
+      "field_path": "fields.zone_low",
+      "semantic_type": "support_zone_price",
+      "role": "lower",
+      "canonical_label": "동적 지지구간 하단",
+      "usage": "동적 지지구간 하단 14,608원"
+    },
+    {
+      "fact_id": "chart:structure:nearest_supports:1",
+      "field_path": "fields.zone_high",
+      "semantic_type": "support_zone_price",
+      "role": "upper",
+      "canonical_label": "동적 지지구간 상단",
+      "usage": "동적 지지구간 상단 15,712원"
+    },
+    {
+      "fact_id": "chart:structure:nearest_supports:1",
+      "field_path": "fields.zone_low",
+      "semantic_type": "support_zone_price",
+      "role": "lower",
+      "canonical_label": "동적 지지구간 하단",
+      "usage": "동적 지지구간 하단 325,327원"
+    },
+    {
+      "fact_id": "chart:structure:nearest_supports:1",
+      "field_path": "fields.zone_high",
+      "semantic_type": "support_zone_price",
+      "role": "upper",
+      "canonical_label": "동적 지지구간 상단",
+      "usage": "동적 지지구간 상단 348,173원"
+    },
+    {
+      "fact_id": "chart:structure:nearest_resistance:1",
+      "field_path": "fields.zone_low",
+      "semantic_type": "resistance_zone_price",
+      "role": "lower",
+      "canonical_label": "동적 저항구간 하단",
+      "usage": "동적 저항구간 하단 338,767원"
+    },
+    {
+      "fact_id": "chart:structure:nearest_resistance:1",
+      "field_path": "fields.zone_high",
+      "semantic_type": "resistance_zone_price",
+      "role": "upper",
+      "canonical_label": "동적 저항구간 상단",
+      "usage": "동적 저항구간 상단 345,233원"
+    },
+    {
+      "fact_id": "chart:structure:nearest_resistance:1",
+      "field_path": "fields.zone_low",
+      "semantic_type": "resistance_zone_price",
+      "role": "lower",
+      "canonical_label": "동적 저항구간 하단",
+      "usage": "동적 저항구간 하단 364,899원"
+    },
+    {
+      "fact_id": "chart:structure:nearest_resistance:1",
+      "field_path": "fields.zone_high",
+      "semantic_type": "resistance_zone_price",
+      "role": "upper",
+      "canonical_label": "동적 저항구간 상단",
+      "usage": "동적 저항구간 상단 379,601원"
+    },
+    {
+      "fact_id": "chart:structure:nearest_supports:1",
+      "field_path": "fields.zone_low",
+      "semantic_type": "support_zone_price",
+      "role": "lower",
+      "canonical_label": "동적 지지구간 하단",
+      "usage": "동적 지지구간 하단 170,811원"
+    },
+    {
+      "fact_id": "chart:structure:nearest_supports:1",
+      "field_path": "fields.zone_high",
+      "semantic_type": "support_zone_price",
+      "role": "upper",
+      "canonical_label": "동적 지지구간 상단",
+      "usage": "동적 지지구간 상단 182,189원"
+    },
+    {
+      "fact_id": "chart:structure:nearest_resistance:1",
+      "field_path": "fields.zone_low",
+      "semantic_type": "resistance_zone_price",
+      "role": "lower",
+      "canonical_label": "동적 저항구간 하단",
+      "usage": "동적 저항구간 하단 220,642원"
+    },
+    {
+      "fact_id": "chart:structure:nearest_resistance:1",
+      "field_path": "fields.zone_high",
+      "semantic_type": "resistance_zone_price",
+      "role": "upper",
+      "canonical_label": "동적 저항구간 상단",
+      "usage": "동적 저항구간 상단 231,358원"
+    },
+    {
+      "fact_id": "chart:structure:nearest_supports:1",
+      "field_path": "fields.zone_low",
+      "semantic_type": "support_zone_price",
+      "role": "lower",
+      "canonical_label": "동적 지지구간 하단",
+      "usage": "동적 지지구간 하단 1,105,169원"
+    },
+    {
+      "fact_id": "chart:structure:nearest_supports:1",
+      "field_path": "fields.zone_high",
+      "semantic_type": "support_zone_price",
+      "role": "upper",
+      "canonical_label": "동적 지지구간 상단",
+      "usage": "동적 지지구간 상단 1,148,831원"
+    },
+    {
+      "fact_id": "chart:structure:nearest_resistance:1",
+      "field_path": "fields.zone_low",
+      "semantic_type": "resistance_zone_price",
+      "role": "lower",
+      "canonical_label": "동적 저항구간 하단",
+      "usage": "동적 저항구간 하단 1,182,176원"
+    },
+    {
+      "fact_id": "chart:structure:nearest_resistance:1",
+      "field_path": "fields.zone_high",
+      "semantic_type": "resistance_zone_price",
+      "role": "upper",
+      "canonical_label": "동적 저항구간 상단",
+      "usage": "동적 저항구간 상단 1,217,824원"
+    },
+    {
+      "fact_id": "chart:structure:nearest_supports:1",
+      "field_path": "fields.zone_low",
+      "semantic_type": "support_zone_price",
+      "role": "lower",
+      "canonical_label": "동적 지지구간 하단",
+      "usage": "동적 지지구간 하단 197,803원"
+    },
+    {
+      "fact_id": "chart:structure:nearest_supports:1",
+      "field_path": "fields.zone_high",
+      "semantic_type": "support_zone_price",
+      "role": "upper",
+      "canonical_label": "동적 지지구간 상단",
+      "usage": "동적 지지구간 상단 210,197원"
+    },
+    {
+      "fact_id": "chart:structure:nearest_resistance:1",
+      "field_path": "fields.zone_low",
+      "semantic_type": "resistance_zone_price",
+      "role": "lower",
+      "canonical_label": "동적 저항구간 하단",
+      "usage": "동적 저항구간 하단 223,397원"
+    },
+    {
+      "fact_id": "chart:structure:nearest_resistance:1",
+      "field_path": "fields.zone_high",
+      "semantic_type": "resistance_zone_price",
+      "role": "upper",
+      "canonical_label": "동적 저항구간 상단",
+      "usage": "동적 저항구간 상단 230,603원"
+    }
+  ],
+  "fixture_matrix": {
+    "SPY": "S&P500 등락률",
+    "QQQ": "Nasdaq 등락률",
+    "IWM": "Russell 2000 등락률",
+    "DFII10_level": "미국 10년물 실질금리",
+    "DFII10_change": "미국 10년물 실질금리 변동",
+    "zone_roles": [
+      "lower",
+      "upper"
+    ]
+  },
+  "hard_checks_passed": true
+}

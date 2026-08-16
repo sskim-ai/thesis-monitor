@@ -1,0 +1,11 @@
+{
+  "contract": "deterministic-fallback-safety-v1",
+  "us_stock_count": 13,
+  "kr_stock_count": 7,
+  "sk_hynix_denied_financial_leakage_count": 0,
+  "tsm_wrd_unverified_security_type_assertion_count": 0,
+  "neutral_per_share_basis_warning_present": true,
+  "persisted_retry_regression": "covered_by_test_ai_assisted_delivery",
+  "single_delivery_regression": "covered_by_test_ai_assisted_delivery",
+  "telegram_sends": 0
+}

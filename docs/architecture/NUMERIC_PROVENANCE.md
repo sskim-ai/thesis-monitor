@@ -99,6 +99,19 @@ KRW financial amounts reuse the repository's canonical 억원/조원 formatter. 
 Forward labels are source-aware. `modeled_forward` renders as an internal estimate; only a verified
 consensus source may render as market or analyst expectation.
 
+Instrument-sensitive market semantics also require a verified series identity. SPY, QQQ, and IWM
+map to separate index labels; real-yield level and change have separate labels; night futures retain
+their exact product. Unknown identity has no first-approved-label fallback.
+
+Chart-zone endpoints carry a mandatory role. `zone_low` binds only as `lower` and renders with a
+lower-bound label; `zone_high` binds only as `upper` and renders with an upper-bound label. Missing,
+duplicated, or reversed roles reject. A single pivot remains a value and cannot impersonate a zone.
+
+The full numeric phrase includes its canonical label and display. The binder checks the immediately
+following Korean postposition against the spoken unit and rejects incompatible particles, including
+invalid connective combinations such as a numeric multiple followed by `가며`. It does not repair the
+validated sentence after binding.
+
 ## Failure Policy
 
 - Missing fact, field, semantic, unit, formatter, scope, or exact placeholder: reject.

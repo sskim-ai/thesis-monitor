@@ -118,7 +118,7 @@ interpretations. Persisted retry and single-delivery behavior are unchanged.
 - Output schema remains 4.
 - Renderer performs no semantic rewrite.
 - Historical packets and archives remain immutable.
-- Production uses this contract under `daily-review-v3.10`. Phase 7.2.7 hardening remains isolated
+- Production uses this contract under `daily-review-v3.10`. Phase 7.2.8 hardening remains isolated
   on its review branch until separate merge and deployment approval.
 
 ## Natural Live Reconciliation
@@ -128,4 +128,11 @@ rows were `local+openfigi`, `identity_quality=inferred`, Tier D, and had no auth
 cache. A prior isolated cross-section had promoted the same legacy affirmative fields to
 `verified_depositary`; that result is superseded. Runtime `unknown` is the correct fail-closed state,
 and their multiples remain withheld. No production identity remediation was performed in Phase
-7.2.7.
+7.2.7 or Phase 7.2.8.
+
+Phase 7.2.8 extends the boundary through the final rendered payload. `verified_depositary` may use
+ADR/ADS wording only when that state is canonical; `verified_non_depositary` may use verified common
+share wording; `unknown` and `conflict` must use neutral current-security wording. Identity and
+current-security denominator/share/currency basis remain independent. Authoritative depositary-ratio
+prose additionally requires a positive ratio, direction, and verified Tier A field provenance.
+Fallback follows the same matrix.

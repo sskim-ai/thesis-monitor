@@ -1,0 +1,499 @@
+{
+  "contract": "phase-7.2.8-label-instrument-role-audit-v1",
+  "market": "us",
+  "packet_id": "2026-08-16-us-run-20-a48638e987ce",
+  "numeric_label_quality": {
+    "redundant_authored_label_count": 0,
+    "repeated_bound_label_count": 0,
+    "source_label_mismatch_count": 0,
+    "instrument_label_mismatch_count": 0,
+    "zone_role_mismatch_count": 0,
+    "postposition_mismatch_count": 0,
+    "details": [],
+    "hard_checks_passed": true
+  },
+  "rendered_heading_quality": {
+    "expected_heading": "📊 거래량·포지셔닝",
+    "mismatch_count": 0,
+    "message_indexes": []
+  },
+  "instrument_and_zone_claim_count": 58,
+  "instrument_and_zone_claims": [
+    {
+      "fact_id": "market:breakeven_inflation:T10YIE",
+      "field_path": "fields.change_bp",
+      "semantic_type": "breakeven_inflation_change_bp",
+      "role": "value",
+      "canonical_label": "미국 기대인플레이션 변동",
+      "usage": "미국 기대인플레이션 변동 +3bp"
+    },
+    {
+      "fact_id": "market:oil:DCOILWTICO",
+      "field_path": "fields.return_pct",
+      "semantic_type": "oil_return_pct",
+      "role": "value",
+      "canonical_label": "WTI 등락률",
+      "usage": "WTI 등락률 +3.4%"
+    },
+    {
+      "fact_id": "market:night_futures:1",
+      "field_path": "fields.change_pct",
+      "semantic_type": "futures_return_pct",
+      "role": "value",
+      "canonical_label": "KOSPI200 야간선물 등락률",
+      "usage": "KOSPI200 야간선물 등락률 -0.32%"
+    },
+    {
+      "fact_id": "market:night_futures:2",
+      "field_path": "fields.change_pct",
+      "semantic_type": "futures_return_pct",
+      "role": "value",
+      "canonical_label": "KOSDAQ150 야간선물 등락률",
+      "usage": "KOSDAQ150 야간선물 등락률 +1.67%"
+    },
+    {
+      "fact_id": "market:real_yield:DFII10",
+      "field_path": "fields.level_pct",
+      "semantic_type": "real_yield_level",
+      "role": "value",
+      "canonical_label": "미국 10년물 실질금리",
+      "usage": "미국 10년물 실질금리 2.4%"
+    },
+    {
+      "fact_id": "market:real_yield:DFII10",
+      "field_path": "fields.change_bp",
+      "semantic_type": "real_yield_change_bp",
+      "role": "value",
+      "canonical_label": "미국 10년물 실질금리 변동",
+      "usage": "미국 10년물 실질금리 변동 -3bp"
+    },
+    {
+      "fact_id": "market:volatility:VIXCLS",
+      "field_path": "fields.level",
+      "semantic_type": "volatility_index_level",
+      "role": "value",
+      "canonical_label": "VIX",
+      "usage": "VIX 14.63"
+    },
+    {
+      "fact_id": "market:breakeven_inflation:T10YIE",
+      "field_path": "fields.level_pct",
+      "semantic_type": "breakeven_inflation_level",
+      "role": "value",
+      "canonical_label": "미국 기대인플레이션",
+      "usage": "미국 기대인플레이션 2.3%"
+    },
+    {
+      "fact_id": "market:breakeven_inflation:T10YIE",
+      "field_path": "fields.change_bp",
+      "semantic_type": "breakeven_inflation_change_bp",
+      "role": "value",
+      "canonical_label": "미국 기대인플레이션 변동",
+      "usage": "미국 기대인플레이션 변동 +3bp"
+    },
+    {
+      "fact_id": "market:relative:SOXX:SPY",
+      "field_path": "fields.relative_return_pct",
+      "semantic_type": "sector_relative_return_pct",
+      "role": "value",
+      "canonical_label": "S&P500 대비 반도체 상대수익률",
+      "usage": "S&P500 대비 반도체 상대수익률 -0.1%"
+    },
+    {
+      "fact_id": "market:oil:DCOILWTICO",
+      "field_path": "fields.price_usd_per_barrel",
+      "semantic_type": "oil_price",
+      "role": "value",
+      "canonical_label": "WTI 유가",
+      "usage": "WTI 유가 $84.77/bbl"
+    },
+    {
+      "fact_id": "market:oil:DCOILWTICO",
+      "field_path": "fields.return_pct",
+      "semantic_type": "oil_return_pct",
+      "role": "value",
+      "canonical_label": "WTI 등락률",
+      "usage": "WTI 등락률 +3.4%"
+    },
+    {
+      "fact_id": "market:night_futures:1",
+      "field_path": "fields.change_pct",
+      "semantic_type": "futures_return_pct",
+      "role": "value",
+      "canonical_label": "KOSPI200 야간선물 등락률",
+      "usage": "KOSPI200 야간선물 등락률 -0.32%"
+    },
+    {
+      "fact_id": "market:night_futures:2",
+      "field_path": "fields.change_pct",
+      "semantic_type": "futures_return_pct",
+      "role": "value",
+      "canonical_label": "KOSDAQ150 야간선물 등락률",
+      "usage": "KOSDAQ150 야간선물 등락률 +1.67%"
+    },
+    {
+      "fact_id": "chart:structure:nearest_supports:1",
+      "field_path": "fields.zone_low",
+      "semantic_type": "support_zone_price",
+      "role": "lower",
+      "canonical_label": "동적 지지구간 하단",
+      "usage": "동적 지지구간 하단 $19.44"
+    },
+    {
+      "fact_id": "chart:structure:nearest_supports:1",
+      "field_path": "fields.zone_high",
+      "semantic_type": "support_zone_price",
+      "role": "upper",
+      "canonical_label": "동적 지지구간 상단",
+      "usage": "동적 지지구간 상단 $20.34"
+    },
+    {
+      "fact_id": "chart:structure:nearest_resistance:1",
+      "field_path": "fields.zone_low",
+      "semantic_type": "resistance_zone_price",
+      "role": "lower",
+      "canonical_label": "동적 저항구간 하단",
+      "usage": "동적 저항구간 하단 $23.05"
+    },
+    {
+      "fact_id": "chart:structure:nearest_resistance:1",
+      "field_path": "fields.zone_high",
+      "semantic_type": "resistance_zone_price",
+      "role": "upper",
+      "canonical_label": "동적 저항구간 상단",
+      "usage": "동적 저항구간 상단 $24.21"
+    },
+    {
+      "fact_id": "chart:structure:nearest_supports:1",
+      "field_path": "fields.zone_low",
+      "semantic_type": "support_zone_price",
+      "role": "lower",
+      "canonical_label": "동적 지지구간 하단",
+      "usage": "동적 지지구간 하단 $71.1"
+    },
+    {
+      "fact_id": "chart:structure:nearest_supports:1",
+      "field_path": "fields.zone_high",
+      "semantic_type": "support_zone_price",
+      "role": "upper",
+      "canonical_label": "동적 지지구간 상단",
+      "usage": "동적 지지구간 상단 $74.43"
+    },
+    {
+      "fact_id": "chart:structure:nearest_resistance:1",
+      "field_path": "fields.zone_low",
+      "semantic_type": "resistance_zone_price",
+      "role": "lower",
+      "canonical_label": "동적 저항구간 하단",
+      "usage": "동적 저항구간 하단 $82.01"
+    },
+    {
+      "fact_id": "chart:structure:nearest_resistance:1",
+      "field_path": "fields.zone_high",
+      "semantic_type": "resistance_zone_price",
+      "role": "upper",
+      "canonical_label": "동적 저항구간 상단",
+      "usage": "동적 저항구간 상단 $86.53"
+    },
+    {
+      "fact_id": "chart:structure:nearest_supports:1",
+      "field_path": "fields.zone_low",
+      "semantic_type": "support_zone_price",
+      "role": "lower",
+      "canonical_label": "동적 지지구간 하단",
+      "usage": "동적 지지구간 하단 $343.65"
+    },
+    {
+      "fact_id": "chart:structure:nearest_supports:1",
+      "field_path": "fields.zone_high",
+      "semantic_type": "support_zone_price",
+      "role": "upper",
+      "canonical_label": "동적 지지구간 상단",
+      "usage": "동적 지지구간 상단 $353.79"
+    },
+    {
+      "fact_id": "chart:structure:nearest_resistance:1",
+      "field_path": "fields.zone_low",
+      "semantic_type": "resistance_zone_price",
+      "role": "lower",
+      "canonical_label": "동적 저항구간 하단",
+      "usage": "동적 저항구간 하단 $370.37"
+    },
+    {
+      "fact_id": "chart:structure:nearest_resistance:1",
+      "field_path": "fields.zone_high",
+      "semantic_type": "resistance_zone_price",
+      "role": "upper",
+      "canonical_label": "동적 저항구간 상단",
+      "usage": "동적 저항구간 상단 $378.79"
+    },
+    {
+      "fact_id": "chart:structure:nearest_supports:1",
+      "field_path": "fields.zone_low",
+      "semantic_type": "support_zone_price",
+      "role": "lower",
+      "canonical_label": "동적 지지구간 하단",
+      "usage": "동적 지지구간 하단 $84.76"
+    },
+    {
+      "fact_id": "chart:structure:nearest_supports:1",
+      "field_path": "fields.zone_high",
+      "semantic_type": "support_zone_price",
+      "role": "upper",
+      "canonical_label": "동적 지지구간 상단",
+      "usage": "동적 지지구간 상단 $88.88"
+    },
+    {
+      "fact_id": "chart:structure:nearest_resistance:1",
+      "field_path": "fields.zone_low",
+      "semantic_type": "resistance_zone_price",
+      "role": "lower",
+      "canonical_label": "동적 저항구간 하단",
+      "usage": "동적 저항구간 하단 $101.61"
+    },
+    {
+      "fact_id": "chart:structure:nearest_resistance:1",
+      "field_path": "fields.zone_high",
+      "semantic_type": "resistance_zone_price",
+      "role": "upper",
+      "canonical_label": "동적 저항구간 상단",
+      "usage": "동적 저항구간 상단 $106.89"
+    },
+    {
+      "fact_id": "chart:structure:nearest_supports:1",
+      "field_path": "fields.zone_low",
+      "semantic_type": "support_zone_price",
+      "role": "lower",
+      "canonical_label": "동적 지지구간 하단",
+      "usage": "동적 지지구간 하단 $228.6"
+    },
+    {
+      "fact_id": "chart:structure:nearest_supports:1",
+      "field_path": "fields.zone_high",
+      "semantic_type": "support_zone_price",
+      "role": "upper",
+      "canonical_label": "동적 지지구간 상단",
+      "usage": "동적 지지구간 상단 $235.66"
+    },
+    {
+      "fact_id": "chart:structure:nearest_resistance:1",
+      "field_path": "fields.zone_low",
+      "semantic_type": "resistance_zone_price",
+      "role": "lower",
+      "canonical_label": "동적 저항구간 하단",
+      "usage": "동적 저항구간 하단 $283.76"
+    },
+    {
+      "fact_id": "chart:structure:nearest_resistance:1",
+      "field_path": "fields.zone_high",
+      "semantic_type": "resistance_zone_price",
+      "role": "upper",
+      "canonical_label": "동적 저항구간 상단",
+      "usage": "동적 저항구간 상단 $293.31"
+    },
+    {
+      "fact_id": "chart:structure:nearest_supports:1",
+      "field_path": "fields.zone_low",
+      "semantic_type": "support_zone_price",
+      "role": "lower",
+      "canonical_label": "동적 지지구간 하단",
+      "usage": "동적 지지구간 하단 $868.39"
+    },
+    {
+      "fact_id": "chart:structure:nearest_supports:1",
+      "field_path": "fields.zone_high",
+      "semantic_type": "support_zone_price",
+      "role": "upper",
+      "canonical_label": "동적 지지구간 상단",
+      "usage": "동적 지지구간 상단 $914.93"
+    },
+    {
+      "fact_id": "chart:structure:nearest_resistance:1",
+      "field_path": "fields.zone_low",
+      "semantic_type": "resistance_zone_price",
+      "role": "lower",
+      "canonical_label": "동적 저항구간 하단",
+      "usage": "동적 저항구간 하단 $1,231.15"
+    },
+    {
+      "fact_id": "chart:structure:nearest_resistance:1",
+      "field_path": "fields.zone_high",
+      "semantic_type": "resistance_zone_price",
+      "role": "upper",
+      "canonical_label": "동적 저항구간 상단",
+      "usage": "동적 저항구간 상단 $1,278.85"
+    },
+    {
+      "fact_id": "chart:structure:nearest_supports:1",
+      "field_path": "fields.zone_low",
+      "semantic_type": "support_zone_price",
+      "role": "lower",
+      "canonical_label": "동적 지지구간 하단",
+      "usage": "동적 지지구간 하단 $2.78"
+    },
+    {
+      "fact_id": "chart:structure:nearest_supports:1",
+      "field_path": "fields.zone_high",
+      "semantic_type": "support_zone_price",
+      "role": "upper",
+      "canonical_label": "동적 지지구간 상단",
+      "usage": "동적 지지구간 상단 $2.92"
+    },
+    {
+      "fact_id": "chart:structure:nearest_resistance:1",
+      "field_path": "fields.zone_low",
+      "semantic_type": "resistance_zone_price",
+      "role": "lower",
+      "canonical_label": "동적 저항구간 하단",
+      "usage": "동적 저항구간 하단 $3.71"
+    },
+    {
+      "fact_id": "chart:structure:nearest_resistance:1",
+      "field_path": "fields.zone_high",
+      "semantic_type": "resistance_zone_price",
+      "role": "upper",
+      "canonical_label": "동적 저항구간 상단",
+      "usage": "동적 저항구간 상단 $3.91"
+    },
+    {
+      "fact_id": "chart:structure:nearest_resistance:1",
+      "field_path": "fields.zone_low",
+      "semantic_type": "resistance_zone_price",
+      "role": "lower",
+      "canonical_label": "동적 저항구간 하단",
+      "usage": "동적 저항구간 하단 $1,648.95"
+    },
+    {
+      "fact_id": "chart:structure:nearest_resistance:1",
+      "field_path": "fields.zone_high",
+      "semantic_type": "resistance_zone_price",
+      "role": "upper",
+      "canonical_label": "동적 저항구간 상단",
+      "usage": "동적 저항구간 상단 $1,743.79"
+    },
+    {
+      "fact_id": "chart:structure:nearest_supports:1",
+      "field_path": "fields.zone_low",
+      "semantic_type": "support_zone_price",
+      "role": "lower",
+      "canonical_label": "동적 지지구간 하단",
+      "usage": "동적 지지구간 하단 $334.44"
+    },
+    {
+      "fact_id": "chart:structure:nearest_supports:1",
+      "field_path": "fields.zone_high",
+      "semantic_type": "support_zone_price",
+      "role": "upper",
+      "canonical_label": "동적 지지구간 상단",
+      "usage": "동적 지지구간 상단 $341.56"
+    },
+    {
+      "fact_id": "chart:structure:nearest_resistance:1",
+      "field_path": "fields.zone_low",
+      "semantic_type": "resistance_zone_price",
+      "role": "lower",
+      "canonical_label": "동적 저항구간 하단",
+      "usage": "동적 저항구간 하단 $360.04"
+    },
+    {
+      "fact_id": "chart:structure:nearest_resistance:1",
+      "field_path": "fields.zone_high",
+      "semantic_type": "resistance_zone_price",
+      "role": "upper",
+      "canonical_label": "동적 저항구간 상단",
+      "usage": "동적 저항구간 상단 $372.58"
+    },
+    {
+      "fact_id": "chart:structure:nearest_supports:1",
+      "field_path": "fields.zone_low",
+      "semantic_type": "support_zone_price",
+      "role": "lower",
+      "canonical_label": "동적 지지구간 하단",
+      "usage": "동적 지지구간 하단 $380.77"
+    },
+    {
+      "fact_id": "chart:structure:nearest_supports:1",
+      "field_path": "fields.zone_high",
+      "semantic_type": "support_zone_price",
+      "role": "upper",
+      "canonical_label": "동적 지지구간 상단",
+      "usage": "동적 지지구간 상단 $390.31"
+    },
+    {
+      "fact_id": "chart:structure:nearest_resistance:1",
+      "field_path": "fields.zone_low",
+      "semantic_type": "resistance_zone_price",
+      "role": "lower",
+      "canonical_label": "동적 저항구간 하단",
+      "usage": "동적 저항구간 하단 $468.08"
+    },
+    {
+      "fact_id": "chart:structure:nearest_resistance:1",
+      "field_path": "fields.zone_high",
+      "semantic_type": "resistance_zone_price",
+      "role": "upper",
+      "canonical_label": "동적 저항구간 상단",
+      "usage": "동적 저항구간 상단 $489.92"
+    },
+    {
+      "fact_id": "chart:structure:nearest_resistance:1",
+      "field_path": "fields.zone_low",
+      "semantic_type": "resistance_zone_price",
+      "role": "lower",
+      "canonical_label": "동적 저항구간 하단",
+      "usage": "동적 저항구간 하단 $5.91"
+    },
+    {
+      "fact_id": "chart:structure:nearest_resistance:1",
+      "field_path": "fields.zone_high",
+      "semantic_type": "resistance_zone_price",
+      "role": "upper",
+      "canonical_label": "동적 저항구간 상단",
+      "usage": "동적 저항구간 상단 $6.15"
+    },
+    {
+      "fact_id": "chart:structure:nearest_supports:1",
+      "field_path": "fields.zone_low",
+      "semantic_type": "support_zone_price",
+      "role": "lower",
+      "canonical_label": "동적 지지구간 하단",
+      "usage": "동적 지지구간 하단 $17.32"
+    },
+    {
+      "fact_id": "chart:structure:nearest_supports:1",
+      "field_path": "fields.zone_high",
+      "semantic_type": "support_zone_price",
+      "role": "upper",
+      "canonical_label": "동적 지지구간 상단",
+      "usage": "동적 지지구간 상단 $18.12"
+    },
+    {
+      "fact_id": "chart:structure:nearest_resistance:1",
+      "field_path": "fields.zone_low",
+      "semantic_type": "resistance_zone_price",
+      "role": "lower",
+      "canonical_label": "동적 저항구간 하단",
+      "usage": "동적 저항구간 하단 $28.75"
+    },
+    {
+      "fact_id": "chart:structure:nearest_resistance:1",
+      "field_path": "fields.zone_high",
+      "semantic_type": "resistance_zone_price",
+      "role": "upper",
+      "canonical_label": "동적 저항구간 상단",
+      "usage": "동적 저항구간 상단 $30.93"
+    }
+  ],
+  "fixture_matrix": {
+    "SPY": "S&P500 등락률",
+    "QQQ": "Nasdaq 등락률",
+    "IWM": "Russell 2000 등락률",
+    "DFII10_level": "미국 10년물 실질금리",
+    "DFII10_change": "미국 10년물 실질금리 변동",
+    "zone_roles": [
+      "lower",
+      "upper"
+    ]
+  },
+  "hard_checks_passed": true
+}

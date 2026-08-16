@@ -254,12 +254,20 @@ made. See [the Live validation report](reports/20260816-first-natural-v310-live-
 
 Phase 7.2.7 keeps that operational count unchanged and adds deterministic validation for confirmation
 transition direction, security identity versus valuation basis, and market-aware supply routing.
-The corrected isolated US packet `2026-08-16-us-run-20-b2339f14d78d` passes 171 automatic bindings,
-the full validator, and the focused quality audit with zero US KR-style supply horizons. TSM and WRD
-remain `unknown`: their production identity evidence is lower-tier `local+openfigi` with no
-authoritative identity cache, while the older Phase 7.2.6 cross-section had over-promoted that
-legacy evidence. The patch is not merged or deployed and the corrected Preview still needs direct
-human approval. See [the reconciliation report](reports/20260816-phase7-2-7-live-quality-reconciliation.md).
+Its US correction passed automated gates, but human review found additional blocking label, zone,
+identity-prose, RR comparison, and sentence-quality issues. Its KR regression also reused a v3.9
+artifact from a closed 2026-08-15 KR session, so it is not current financial-quality acceptance
+evidence. The report and Previews remain preserved as failed-review evidence.
+
+Phase 7.2.8 supersedes that acceptance conclusion without changing production. Its isolated US
+packet `2026-08-16-us-run-20-a48638e987ce` passes 171 automatic bindings and 14/14 logical messages.
+Its fresh current-code KR packet `2026-08-14-kr-run-17-006189184b28` uses the latest eligible
+completed after-hours session, passes 141 automatic bindings and 8/8 logical messages, and keeps all
+SK Hynix denied earnings and dependent PE lineage out of prose. Both full validators report zero
+errors; label, instrument, zone-role, postposition, identity, comparative, and repetition hard checks
+report zero findings. TSM and WRD remain safely `unknown` because no authoritative identity cache
+exists. The branch is not merged or deployed and both Previews still require direct human approval.
+See [the Phase 7.2.8 readiness report](reports/20260816-phase7-2-8-human-review-safety-readiness.md).
 
 ## Source Map
 
@@ -316,7 +324,8 @@ first.
 
 ## Next Steps
 
-1. Review the Phase 7.2.7 corrected US and KR Preview on the experimental branch.
+1. Review the Phase 7.2.8 corrected US 14-message and current-code KR 8-message Previews on the
+   experimental branch.
 2. Merge and deploy only after explicit approval; do not alter the runtime 2/5 counters during
    retrospective or deployment.
 3. If deployed, observe the next natural v3.10 session without a duplicate manual run.

@@ -110,7 +110,7 @@
       "wrd_live_packet_unknown_vs_deployment_verified_depositary"
     ],
     "phase_7_2_7_reconciliation": {
-      "status": "experimental_branch_passed_pending_human_review",
+      "status": "human_review_failed_and_kr_evidence_superseded",
       "branch": "codex/phase-7-2-7-live-quality-reconciliation",
       "corrected_packet_id": "2026-08-16-us-run-20-b2339f14d78d",
       "automatic_numeric_bindings": 171,
@@ -126,6 +126,34 @@
       "production_deployed": false,
       "operating_state_mutation": 0,
       "report": "docs/reports/20260816-phase7-2-7-live-quality-reconciliation.md"
+    },
+    "phase_7_2_8_reconciliation": {
+      "status": "deterministic_gates_passed_pending_human_review",
+      "branch": "codex/phase-7-2-7-live-quality-reconciliation",
+      "required_base": "ffab85c2aa8e684cae4162246bb5bf98dbe62ab8",
+      "us_experiment_packet_id": "2026-08-16-us-run-20-a48638e987ce",
+      "us_messages": 14,
+      "us_automatic_numeric_bindings": 171,
+      "us_validator_status": "passed",
+      "kr_selected_assessment_date": "2026-08-14",
+      "kr_selection_reason": "latest_eligible_completed_session_2026_08_15_closed",
+      "kr_experiment_packet_id": "2026-08-14-kr-run-17-006189184b28",
+      "kr_messages": 8,
+      "kr_automatic_numeric_bindings": 141,
+      "kr_validator_status": "passed",
+      "manual_numeric_bindings": 0,
+      "rejected_numeric_bindings": 0,
+      "formatter_errors": 0,
+      "unresolved_placeholders": 0,
+      "sk_hynix_denied_leakage": 0,
+      "label_instrument_zone_postposition_mismatches": 0,
+      "unsupported_comparative_claims": 0,
+      "us_kr_style_supply_horizons": 0,
+      "production_assist_evidence_eligible": false,
+      "main_merged": false,
+      "production_deployed": false,
+      "operating_state_mutation": 0,
+      "report": "docs/reports/20260816-phase7-2-8-human-review-safety-readiness.md"
     },
     "report": "docs/reports/20260816-first-natural-v310-live-validation.md"
   },

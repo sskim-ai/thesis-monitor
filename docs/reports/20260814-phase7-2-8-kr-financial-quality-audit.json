@@ -1,0 +1,109 @@
+{
+  "contract": "financial-quality-taint-v2",
+  "packet_id": "2026-08-14-kr-run-17-006189184b28",
+  "ticker": "000660",
+  "denied_rows": [
+    {
+      "fact_id": "earnings:2026-06-30",
+      "field_path": "fields.revenue.value",
+      "semantic_type": "revenue",
+      "prose_allowed": false,
+      "denial_reason": "critical_financial_quality_outlier"
+    },
+    {
+      "fact_id": "earnings:2026-06-30",
+      "field_path": "fields.operating_income.value",
+      "semantic_type": "operating_income",
+      "prose_allowed": false,
+      "denial_reason": "critical_financial_quality_outlier"
+    },
+    {
+      "fact_id": "earnings:2026-06-30",
+      "field_path": "fields.operating_margin_pct",
+      "semantic_type": "operating_margin",
+      "prose_allowed": false,
+      "denial_reason": "critical_financial_quality_outlier"
+    },
+    {
+      "fact_id": "earnings:2026-06-30",
+      "field_path": "fields.revenue_qoq_pct",
+      "semantic_type": "revenue_qoq",
+      "prose_allowed": false,
+      "denial_reason": "critical_financial_quality_outlier"
+    },
+    {
+      "fact_id": "earnings:2026-06-30",
+      "field_path": "fields.revenue_yoy_pct",
+      "semantic_type": "revenue_yoy",
+      "prose_allowed": false,
+      "denial_reason": "critical_financial_quality_outlier"
+    },
+    {
+      "fact_id": "earnings:2026-06-30",
+      "field_path": "fields.operating_income_qoq_pct",
+      "semantic_type": "operating_income_qoq",
+      "prose_allowed": false,
+      "denial_reason": "critical_financial_quality_outlier"
+    },
+    {
+      "fact_id": "earnings:2026-06-30",
+      "field_path": "fields.operating_income_yoy_pct",
+      "semantic_type": "operating_income_yoy",
+      "prose_allowed": false,
+      "denial_reason": "critical_financial_quality_outlier"
+    },
+    {
+      "fact_id": "valuation:current",
+      "field_path": "fields.ttm_eps",
+      "semantic_type": "ttm_eps",
+      "prose_allowed": false,
+      "denial_reason": "critical_input_in_ttm_denominator"
+    },
+    {
+      "fact_id": "valuation:current",
+      "field_path": "fields.forward_eps",
+      "semantic_type": "forward_eps",
+      "prose_allowed": false,
+      "denial_reason": "critical_input_in_modeled_forward_earnings"
+    },
+    {
+      "fact_id": "valuation:current",
+      "field_path": "fields.trailing_pe",
+      "semantic_type": "trailing_pe",
+      "prose_allowed": false,
+      "denial_reason": "critical_input_in_ttm_denominator"
+    },
+    {
+      "fact_id": "valuation:current",
+      "field_path": "fields.forward_pe",
+      "semantic_type": "forward_pe",
+      "prose_allowed": false,
+      "denial_reason": "critical_input_in_modeled_forward_earnings"
+    },
+    {
+      "fact_id": "valuation:current",
+      "field_path": "fields.historical_pe_statistics.current_value",
+      "semantic_type": "historical_pe_multiple",
+      "prose_allowed": false,
+      "denial_reason": "current_trailing_pe_not_prose_eligible"
+    },
+    {
+      "fact_id": "valuation:current",
+      "field_path": "fields.historical_pe_statistics.current_percentile",
+      "semantic_type": "historical_pe_percentile",
+      "prose_allowed": false,
+      "denial_reason": "current_trailing_pe_not_prose_eligible"
+    }
+  ],
+  "denied_row_count": 13,
+  "denied_numeric_leakage_count": 0,
+  "denied_qualitative_leakage_count": 0,
+  "retained_independent_facts": [
+    "price",
+    "ohlcv_structure",
+    "foreign_and_institution_1d_5d_20d",
+    "book_value",
+    "pbr",
+    "historical_pb"
+  ]
+}

@@ -56,3 +56,9 @@ Before marking the deployment gate passed, confirm in the ChatGPT desktop Schedu
    human-quality FAIL status and is not Production Assist evidence;
 7. prompt migration, retrospective, or Preview work does not reset or increment either counter;
 8. Production Assist remains disabled.
+
+Phase 7.2.8 is an isolated branch validation only. The existing four task definitions, schedules,
+checkout, policy, and runtime state remain unchanged. Its current-code KR packet replaces the invalid
+Phase 7.2.7 closed-session v3.9 regression as financial-quality review evidence, but neither the US
+nor KR Preview is a Scheduled Task result or Pilot success. Runtime remains KR 2/5 and US 2/5, the
+2026-08-16 US human-quality disposition remains FAIL, and Production Assist evidence remains false.

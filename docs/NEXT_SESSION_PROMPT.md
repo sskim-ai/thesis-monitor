@@ -95,13 +95,18 @@ despite the deployment cross-section's `verified_depositary` result. Unsafe mult
 Do not edit the counter ad hoc; reconcile the quality/count contract explicitly before accepting a
 further US Pilot advance. Read `docs/reports/20260816-first-natural-v310-live-validation.md` first.
 
-Phase 7.2.7 on `codex/phase-7-2-7-live-quality-reconciliation` preserves runtime KR 2/5 and US 2/5
-while fixing those validation gaps in isolation. Corrected US experiment packet
-`2026-08-16-us-run-20-b2339f14d78d` passes 171 automatic bindings and full validation with no
-KR-style US supply horizon. TSM and WRD remain safely `unknown` because production has only Tier D
-`local+openfigi` identity evidence and no authoritative identity cache; the old isolated verified
-cross-section was over-permissive. Review
-`docs/reports/20260816-phase7-2-7-live-quality-reconciliation.md` and both linked full Previews.
+Phase 7.2.7 is preserved as failed human-review evidence. Its KR regression reused a v3.9 artifact
+from the closed 2026-08-15 KR session and is not current financial-quality acceptance evidence.
+
+Phase 7.2.8 on `codex/phase-7-2-7-live-quality-reconciliation` preserves runtime KR 2/5 and US 2/5
+while repairing the remaining deterministic boundaries. Corrected US experiment packet
+`2026-08-16-us-run-20-a48638e987ce` passes 171 automatic bindings and 14/14 logical messages. Fresh
+current-code KR packet `2026-08-14-kr-run-17-006189184b28` is built from the latest eligible complete
+after-hours session, passes 141 automatic bindings and 8/8 messages, and keeps SK Hynix denied
+earnings and dependent PE lineage out of prose. Both validators have zero errors and the label,
+instrument, zone-role, postposition, identity, comparison, supply, and repetition hard checks pass.
+TSM and WRD remain safely `unknown` because production has no authoritative identity cache. Review
+`docs/reports/20260816-phase7-2-8-human-review-safety-readiness.md` and its linked full Previews.
 The branch is not merged or deployed, and the correction is not human-approved evidence yet.
 
 US morning schedule: deterministic run and first KRX fetch 08:05, KRX deadline 08:20, Codex Primary
@@ -114,7 +119,7 @@ knowledge.
 
 Next work order:
 
-1. Directly review the Phase 7.2.7 corrected US 14-message and KR 8-message Previews.
+1. Directly review the Phase 7.2.8 corrected US 14-message and current-code KR 8-message Previews.
 2. Merge and deploy the branch only after explicit approval; do not edit the runtime counters.
 3. Keep TSM/WRD identity `unknown` unless authoritative evidence is separately ingested.
 4. Preserve exact archives and old cohorts; do not replay Telegram.

@@ -1,0 +1,34 @@
+{
+  "contract": "phase-7.2.8-isolation-v1",
+  "before_sha256": {
+    "us_live_packet": "83b33aa94f5c5428adb9cb7b0a6810142829ea2fa091c65265d7ec0c40180ec0",
+    "us_live_output": "2b3fc7047fb716ea3535c3d2a94652e58ebc129e0ac65e8b6d7e6f91bcc5f621",
+    "us_archive_complete": "ddce83e262e85e74d8459bb2d82795b5cd0b014699823a41e4aebaaa838179b6",
+    "pilot_state": "4f8600322a5b08a9eb58708dbf9146854dd4b4f40b5ccd345892de8fdb064076",
+    "operating_db": "419f8d2f7cc875b5379477f0ecc8582f85f49320c7a650158c5960c795bcc5d5"
+  },
+  "after_sha256": {
+    "us_live_packet": "83b33aa94f5c5428adb9cb7b0a6810142829ea2fa091c65265d7ec0c40180ec0",
+    "us_live_output": "2b3fc7047fb716ea3535c3d2a94652e58ebc129e0ac65e8b6d7e6f91bcc5f621",
+    "us_archive_complete": "ddce83e262e85e74d8459bb2d82795b5cd0b014699823a41e4aebaaa838179b6",
+    "pilot_state": "4f8600322a5b08a9eb58708dbf9146854dd4b4f40b5ccd345892de8fdb064076",
+    "operating_db": "419f8d2f7cc875b5379477f0ecc8582f85f49320c7a650158c5960c795bcc5d5"
+  },
+  "all_hashes_unchanged": true,
+  "source_database_copy_sha256": "06fc9e5f1f178d441a758bc37882730b4d5fe35efbc74d3a5ffd71d2c4a930b0",
+  "telegram_sends": 0,
+  "operating_db_writes": 0,
+  "official_assessment_mutations": 0,
+  "archive_mutations": 0,
+  "pilot_counter_mutations": 0,
+  "scheduled_task_changes": 0,
+  "api_restarts": 0,
+  "operating_checkout_changes": 0,
+  "main_merges": 0,
+  "production_assist_changes": 0,
+  "runtime_pilot": {
+    "kr": 2,
+    "us": 2
+  },
+  "production_assist": false
+}

@@ -1,0 +1,194 @@
+{
+  "contract": "relational-reasoning-quality-v2",
+  "duplicate_threshold": 3,
+  "stock_count": 13,
+  "repeated_sentences": [],
+  "substantive_repeated_sentence_count": 0,
+  "max_substantive_repeat": 0,
+  "template_skeleton_repeats": [],
+  "template_skeleton_repeat_count": 0,
+  "template_skeleton_exceptions": [],
+  "observer_holder": [
+    {
+      "ticker": "CORZ",
+      "distinct": true
+    },
+    {
+      "ticker": "CRCL",
+      "distinct": true
+    },
+    {
+      "ticker": "GOOGL",
+      "distinct": true
+    },
+    {
+      "ticker": "HUT",
+      "distinct": true
+    },
+    {
+      "ticker": "IBM",
+      "distinct": true
+    },
+    {
+      "ticker": "MU",
+      "distinct": true
+    },
+    {
+      "ticker": "RXRX",
+      "distinct": true
+    },
+    {
+      "ticker": "SKHY",
+      "distinct": true
+    },
+    {
+      "ticker": "SNDK",
+      "distinct": true
+    },
+    {
+      "ticker": "TSLA",
+      "distinct": true
+    },
+    {
+      "ticker": "TSM",
+      "distinct": true
+    },
+    {
+      "ticker": "WRD",
+      "distinct": true
+    },
+    {
+      "ticker": "WULF",
+      "distinct": true
+    }
+  ],
+  "observer_holder_distinct_count": 13,
+  "section_numeric_grounding": {
+    "CORZ": {
+      "core": 2,
+      "earnings": 3,
+      "price": 7,
+      "supply": 1,
+      "valuation": 2
+    },
+    "CRCL": {
+      "core": 2,
+      "earnings": 2,
+      "price": 7,
+      "supply": 1,
+      "valuation": 2
+    },
+    "GOOGL": {
+      "core": 2,
+      "earnings": 0,
+      "price": 7,
+      "supply": 1,
+      "valuation": 4
+    },
+    "HUT": {
+      "core": 2,
+      "earnings": 0,
+      "price": 7,
+      "supply": 1,
+      "valuation": 2
+    },
+    "IBM": {
+      "core": 2,
+      "earnings": 3,
+      "price": 7,
+      "supply": 1,
+      "valuation": 4
+    },
+    "MU": {
+      "core": 2,
+      "earnings": 2,
+      "price": 7,
+      "supply": 1,
+      "valuation": 4
+    },
+    "RXRX": {
+      "core": 2,
+      "earnings": 3,
+      "price": 7,
+      "supply": 1,
+      "valuation": 3
+    },
+    "SKHY": {
+      "core": 0,
+      "earnings": 0,
+      "price": 1,
+      "supply": 1,
+      "valuation": 0
+    },
+    "SNDK": {
+      "core": 0,
+      "earnings": 0,
+      "price": 3,
+      "supply": 1,
+      "valuation": 0
+    },
+    "TSLA": {
+      "core": 2,
+      "earnings": 2,
+      "price": 7,
+      "supply": 1,
+      "valuation": 4
+    },
+    "TSM": {
+      "core": 3,
+      "earnings": 3,
+      "price": 7,
+      "supply": 1,
+      "valuation": 0
+    },
+    "WRD": {
+      "core": 0,
+      "earnings": 0,
+      "price": 3,
+      "supply": 1,
+      "valuation": 0
+    },
+    "WULF": {
+      "core": 2,
+      "earnings": 0,
+      "price": 7,
+      "supply": 1,
+      "valuation": 3
+    }
+  },
+  "stock_specific_next_check_count": 39,
+  "generic_next_check_count": 0,
+  "stock_specific_unknown_count": 39,
+  "generic_unknown_count": 0,
+  "supply_routing": {
+    "substantive_repeated_supply_sentence_count": 0,
+    "us_kr_style_horizon_count": 0,
+    "generic_us_investor_flow_unknown_count": 0,
+    "us_kr_style_horizon_rows": [],
+    "generic_us_investor_flow_unknown_rows": []
+  },
+  "numeric_label_quality": {
+    "redundant_authored_label_count": 0,
+    "repeated_bound_label_count": 0,
+    "source_label_mismatch_count": 0,
+    "instrument_label_mismatch_count": 0,
+    "zone_role_mismatch_count": 0,
+    "postposition_mismatch_count": 0,
+    "details": [],
+    "hard_checks_passed": true
+  },
+  "kr_supply_numeric_coverage": [],
+  "identity_prose_mismatch_count": 0,
+  "unsupported_comparative_claim_count": 0,
+  "rendered_heading_quality": {
+    "expected_heading": "📊 거래량·포지셔닝",
+    "mismatch_count": 0,
+    "message_indexes": []
+  },
+  "rendered_identity_prose_mismatches": [],
+  "rendered_identity_prose_mismatch_count": 0,
+  "hard_checks_passed": true,
+  "deterministic_quality_gate_passed": true,
+  "production_assist_evidence_eligible": false,
+  "human_quality_approval_required": true
+}
