@@ -17,6 +17,10 @@ from sqlmodel import Session, select
 from app.config import get_settings
 from app.models.thesis import NotificationDelivery
 from app.schemas.ai_review import AIDailyReviewOutput, AIMarketReview, AIStockReview
+from app.services.ai_reasoning_quality_service import (
+    runtime_message_quality_receipt,
+    verify_runtime_message_quality_receipt,
+)
 from app.services.ai_review_service import quantitative_grounding_report
 from app.services.notification_service import (
     AI_ASSISTED_PILOT_METADATA_KEY,
@@ -46,6 +50,7 @@ AI_SUCCESS_REQUIRED_ARTIFACTS = (
     "quantitative-grounding-report.json",
     "deterministic-messages.json",
     "ai-assisted-messages.json",
+    "message-quality-receipt.json",
     "validation-result.json",
     "delivery-result.json",
 )
@@ -307,6 +312,18 @@ def _verified_ai_archive_artifacts(packet: dict[str, object]) -> list[dict[str, 
     validation = _read_json(archive_dir / "validation-result.json")
     if validation.get("status") != "passed":
         raise ValueError("AI validation archive is not passed")
+    receipt = _read_json(archive_dir / "message-quality-receipt.json")
+    output = AIDailyReviewOutput.model_validate(_read_json(archive_dir / "ai-review.json"))
+    archived_messages = _read_json(archive_dir / "ai-assisted-messages.json").get(
+        "messages"
+    )
+    if not isinstance(archived_messages, list) or not verify_runtime_message_quality_receipt(
+        receipt,
+        _read_json(archive_dir / "packet.json"),
+        output,
+        [item for item in archived_messages if isinstance(item, dict)],
+    ):
+        raise ValueError("AI message quality receipt does not match archived payload")
     return artifacts
 
 
@@ -814,6 +831,8 @@ async def deliver_validated_ai_review(
     with _pilot_lock(packet_id):
         deliveries = _session_deliveries(session, packet)
         prepared_ids: set[int] = set()
+        prepared_payloads: list[tuple[NotificationDelivery, dict[str, object]]] = []
+        reused_persisted_payload = False
         deterministic_messages: list[dict[str, object]] = []
         final_messages: list[dict[str, object]] = []
         for delivery in deliveries:
@@ -837,6 +856,7 @@ async def deliver_validated_ai_review(
             if state in {"ai_assisted_pending", "ai_assisted_sent"} and metadata.get(
                 "packet_id"
             ) == packet_id:
+                reused_persisted_payload = True
                 if delivery.id is not None:
                     prepared_ids.add(delivery.id)
                 final_messages.append(
@@ -898,12 +918,7 @@ async def deliver_validated_ai_review(
                 "prepared_at": current.isoformat(),
                 "persisted_delivery_retry_count": 0,
             }
-            delivery.payload = json.dumps(new_payload, ensure_ascii=False)
-            delivery.status = "pending"
-            delivery.attempt_count = 0
-            delivery.last_error = None
-            delivery.sent_at = None
-            session.add(delivery)
+            prepared_payloads.append((delivery, new_payload))
             if delivery.id is not None:
                 prepared_ids.add(delivery.id)
             final_messages.append(
@@ -914,7 +929,16 @@ async def deliver_validated_ai_review(
                     "text": text,
                 }
             )
-        session.commit()
+        ticker_order = {
+            ticker: index for index, ticker in enumerate(_packet_tickers(packet), start=1)
+        }
+        final_messages.sort(
+            key=lambda item: (
+                0
+                if item.get("ticker") == PILOT_MARKERS[market]
+                else ticker_order.get(str(item.get("ticker") or ""), 10_000)
+            )
+        )
         deterministic_archive = archive_dir / "deterministic-messages.json"
         if deterministic_messages or not deterministic_archive.exists():
             _archive_messages(
@@ -922,6 +946,120 @@ async def deliver_validated_ai_review(
                 "deterministic-messages.json",
                 deterministic_messages,
             )
+        if not prepared_ids:
+            return PilotDeliveryResult(
+                status="archive_only",
+                market=market,
+                packet_id=packet_id,
+                reason="fallback_or_existing_delivery_won",
+            )
+        receipt_path = archive_dir / "message-quality-receipt.json"
+        if reused_persisted_payload:
+            try:
+                receipt = _read_json(receipt_path)
+            except (OSError, ValueError, json.JSONDecodeError):
+                return PilotDeliveryResult(
+                    status="quality_receipt_invalid",
+                    market=market,
+                    packet_id=packet_id,
+                    delivery_mode="held",
+                    pending_count=len(prepared_ids),
+                    reason="persisted_quality_receipt_missing",
+                )
+            receipt_valid = verify_runtime_message_quality_receipt(
+                receipt,
+                packet,
+                output,
+                final_messages,
+            )
+        else:
+            receipt = runtime_message_quality_receipt(
+                packet,
+                output,
+                final_messages,
+                checked_at=current,
+            )
+            receipt_valid = receipt.get("status") == "passed"
+            _atomic_json(receipt_path, receipt)
+        if reused_persisted_payload and not receipt_valid:
+            _atomic_json(
+                archive_dir / "quality-receipt-integrity-error.json",
+                {
+                    "packet_id": packet_id,
+                    "status": "failed",
+                    "reason": "persisted_payload_hash_mismatch",
+                    "rejected_ai_sent": False,
+                    "recorded_at": current.isoformat(),
+                },
+            )
+            return PilotDeliveryResult(
+                status="quality_receipt_invalid",
+                market=market,
+                packet_id=packet_id,
+                delivery_mode="ai_assisted",
+                pending_count=len(prepared_ids),
+                reason="persisted_payload_hash_mismatch",
+            )
+        if not receipt_valid:
+            for delivery in deliveries:
+                try:
+                    payload = json.loads(delivery.payload)
+                except json.JSONDecodeError:
+                    continue
+                if not isinstance(payload, dict):
+                    continue
+                metadata = _pilot_metadata(payload)
+                if metadata.get("packet_id") != packet_id:
+                    continue
+                metadata["state"] = "held"
+                metadata["fallback_eligible"] = True
+                metadata["ai_validation_state"] = "quality_rejected"
+                metadata["message_quality_receipt_sha256"] = _file_sha256(
+                    receipt_path
+                )
+                payload[AI_ASSISTED_PILOT_METADATA_KEY] = metadata
+                delivery.payload = json.dumps(payload, ensure_ascii=False)
+                session.add(delivery)
+            session.commit()
+            _archive_messages(
+                packet,
+                "quality-rejected-ai-messages.json",
+                final_messages,
+            )
+            _atomic_json(
+                archive_dir / "validation-result.json",
+                {
+                    "packet_id": packet_id,
+                    "status": "quality_rejected",
+                    "errors": receipt.get("errors", []),
+                    "rejected_ai_sent": False,
+                    "fallback_eligibility_preserved": True,
+                    "recorded_at": current.isoformat(),
+                },
+            )
+            return PilotDeliveryResult(
+                status="quality_rejected",
+                market=market,
+                packet_id=packet_id,
+                delivery_mode="held",
+                pending_count=len(prepared_ids),
+                reason="runtime_message_quality_gate_failed",
+            )
+        receipt_sha256 = _file_sha256(receipt_path)
+        for delivery, new_payload in prepared_payloads:
+            metadata = _pilot_metadata(new_payload)
+            metadata["message_quality_receipt_sha256"] = receipt_sha256
+            metadata["rendered_payload_set_sha256"] = receipt.get(
+                "rendered_payload_set_sha256"
+            )
+            new_payload[AI_ASSISTED_PILOT_METADATA_KEY] = metadata
+            delivery.payload = json.dumps(new_payload, ensure_ascii=False)
+            delivery.status = "pending"
+            delivery.attempt_count = 0
+            delivery.last_error = None
+            delivery.sent_at = None
+            session.add(delivery)
+        session.commit()
         ai_archive = archive_dir / "ai-assisted-messages.json"
         if final_messages or not ai_archive.exists():
             _archive_messages(packet, "ai-assisted-messages.json", final_messages)
@@ -962,13 +1100,6 @@ async def deliver_validated_ai_review(
                 "renderer_version": PILOT_RENDERER_VERSION,
             },
         )
-        if not prepared_ids:
-            return PilotDeliveryResult(
-                status="archive_only",
-                market=market,
-                packet_id=packet_id,
-                reason="fallback_or_existing_delivery_won",
-            )
         await dispatch_pending_notifications(
             session,
             notifier=notifier,

@@ -1,7 +1,10 @@
 from __future__ import annotations
 
+import hashlib
+import json
 import re
 from collections import Counter, defaultdict
+from datetime import UTC, datetime
 from typing import Iterable
 
 from app.schemas.ai_review import AIDailyReviewOutput, AIStockReview
@@ -26,6 +29,15 @@ _US_INVESTOR_FLOW_UNKNOWN = re.compile(
     r"(?=.*(?:없|미확인|unknown)).+",
     re.IGNORECASE,
 )
+_US_GENERIC_SUPPLY = re.compile(
+    r"(?:수급(?:\s*(?:부재|공백|우호|약화|강화|개선|악화))?"
+    r"|매수\s*주체|공동\s*(?:매수|매도)|외국인|기관|개인|순매수|순매도)",
+    re.IGNORECASE,
+)
+_VARIABLE_NUMBER = re.compile(
+    r"(?<![A-Za-z0-9_])[-+]?\d[\d,]*(?:\.\d+)?(?:%|bp|배|원|억원|조원|주)?"
+)
+_VARIABLE_DATE = re.compile(r"\b20\d{2}(?:[-./년]\d{1,2})?(?:[-./월]\d{1,2})?일?\b")
 _DEPOSITARY_PROSE = re.compile(r"\b(?:ADR|ADS)\b|예탁증권", re.IGNORECASE)
 _COMMON_STOCK_PROSE = re.compile(r"common\s+(?:stock|share)|보통주", re.IGNORECASE)
 
@@ -55,6 +67,8 @@ def _review_sentences(review: AIStockReview) -> list[str]:
         review.core_judgment.text,
         review.business_earnings.text,
         review.price_positioning.text,
+        review.price_positioning.new_observer_view,
+        review.price_positioning.holder_view,
         review.supply_analysis.text,
         review.valuation_analysis.text,
         *review.priority_watch,
@@ -64,11 +78,20 @@ def _review_sentences(review: AIStockReview) -> list[str]:
     return [sentence for value in values for sentence in _sentences(value)]
 
 
-def _template_skeleton(review: AIStockReview, sentence: str) -> str:
+def _template_skeleton(
+    review: AIStockReview,
+    sentence: str,
+    company_name: str = "",
+) -> str:
     skeleton = normalize_decision_text(sentence)
     for claim in review.numeric_claims:
         skeleton = skeleton.replace(normalize_decision_text(claim.usage), "<numeric>")
-    return skeleton.replace(review.ticker.casefold(), "<ticker>")
+    skeleton = skeleton.replace(review.ticker.casefold(), "<ticker>")
+    if company_name.strip():
+        skeleton = skeleton.replace(company_name.strip().casefold(), "<company>")
+    skeleton = _VARIABLE_DATE.sub("<date>", skeleton)
+    skeleton = _VARIABLE_NUMBER.sub("<numeric>", skeleton)
+    return _SPACE.sub(" ", skeleton).strip()
 
 
 def _structural_template_exception(sentence: str, skeleton: str) -> str | None:
@@ -136,6 +159,7 @@ def _numeric_label_quality_report(
     repeated = 0
     source_mismatch = 0
     instrument_mismatch = 0
+    period_mismatch = 0
     zone_role_mismatch = sum("zone_role_mismatch" in item for item in binding_errors)
     postposition_mismatch = sum(
         "postposition_mismatch" in item for item in binding_errors
@@ -185,6 +209,8 @@ def _numeric_label_quality_report(
                     source_mismatch += 1
                 elif mismatch == "instrument":
                     instrument_mismatch += 1
+                elif mismatch == "period":
+                    period_mismatch += 1
                 elif mismatch == "role":
                     zone_role_mismatch += 1
                 if mismatch is not None:
@@ -233,6 +259,7 @@ def _numeric_label_quality_report(
             repeated,
             source_mismatch,
             instrument_mismatch,
+            period_mismatch,
             zone_role_mismatch,
             postposition_mismatch,
         )
@@ -242,6 +269,7 @@ def _numeric_label_quality_report(
         "repeated_bound_label_count": repeated,
         "source_label_mismatch_count": source_mismatch,
         "instrument_label_mismatch_count": instrument_mismatch,
+        "period_label_mismatch_count": period_mismatch,
         "zone_role_mismatch_count": zone_role_mismatch,
         "postposition_mismatch_count": postposition_mismatch,
         "details": details,
@@ -256,6 +284,11 @@ def relational_reasoning_quality_report(
     validation_errors: Iterable[str] = (),
     rendered_messages: Iterable[str] = (),
 ) -> dict[str, object]:
+    packet_stocks = {
+        str(item.get("ticker") or ""): item
+        for item in (packet or {}).get("stocks", [])
+        if isinstance(item, dict)
+    }
     sentence_tickers: dict[str, set[str]] = defaultdict(set)
     for review in output.stock_reviews:
         for sentence in set(_review_sentences(review)):
@@ -263,8 +296,15 @@ def relational_reasoning_quality_report(
     template_tickers: dict[str, set[str]] = defaultdict(set)
     template_exception_reasons: dict[str, dict[str, str]] = defaultdict(dict)
     for review in output.stock_reviews:
+        stock = packet_stocks.get(review.ticker, {})
+        company_name = str(
+            stock.get("company_name")
+            or stock.get("name")
+            or stock.get("company")
+            or ""
+        )
         for sentence in set(_review_sentences(review)):
-            skeleton = _template_skeleton(review, sentence)
+            skeleton = _template_skeleton(review, sentence, company_name)
             template_tickers[skeleton].add(review.ticker)
             reason = _structural_template_exception(sentence, skeleton)
             if reason is not None:
@@ -320,7 +360,7 @@ def relational_reasoning_quality_report(
             "tickers": sorted(tickers),
         }
         for skeleton, tickers in template_tickers.items()
-        if len(tickers) >= 5
+        if len(tickers) >= duplicate_threshold
         and skeleton not in common_safety
         and set(template_exception_reasons.get(skeleton, {})) != tickers
     ]
@@ -335,7 +375,7 @@ def relational_reasoning_quality_report(
             "reason": next(iter(template_exception_reasons[skeleton].values())),
         }
         for skeleton, tickers in template_tickers.items()
-        if len(tickers) >= 5
+        if len(tickers) >= duplicate_threshold
         and set(template_exception_reasons.get(skeleton, {})) == tickers
     ]
     template_exceptions.sort(
@@ -373,6 +413,42 @@ def relational_reasoning_quality_report(
         if output.market == "us"
         else []
     )
+    generic_us_supply_rows = (
+        [
+            {
+                "ticker": review.ticker,
+                "text_ref": text_ref,
+                "text": text,
+            }
+            for review in output.stock_reviews
+            for text_ref, text in {
+                "core_judgment.text": review.core_judgment.text,
+                "business_earnings.text": review.business_earnings.text,
+                "price_positioning.text": review.price_positioning.text,
+                "price_positioning.new_observer_view": (
+                    review.price_positioning.new_observer_view
+                ),
+                "price_positioning.holder_view": review.price_positioning.holder_view,
+                "supply_analysis.text": review.supply_analysis.text,
+                "valuation_analysis.text": review.valuation_analysis.text,
+                **{
+                    f"priority_watch[{index}]": text
+                    for index, text in enumerate(review.priority_watch)
+                },
+                **{
+                    f"next_checks[{index}]": text
+                    for index, text in enumerate(review.next_checks)
+                },
+                **{
+                    f"unknowns[{index}]": text
+                    for index, text in enumerate(review.unknowns)
+                },
+            }.items()
+            if _US_GENERIC_SUPPLY.search(text)
+        ]
+        if output.market == "us"
+        else []
+    )
     numeric_label_quality = _numeric_label_quality_report(
         output,
         packet,
@@ -380,11 +456,6 @@ def relational_reasoning_quality_report(
     )
     supply_numeric_coverage: list[dict[str, object]] = []
     if output.market == "kr" and packet is not None:
-        packet_stocks = {
-            str(item.get("ticker") or ""): item
-            for item in packet.get("stocks", [])
-            if isinstance(item, dict)
-        }
         supply_semantics = {
             "foreign_net_buy_qty",
             "foreign_net_buy_qty_5d",
@@ -434,6 +505,25 @@ def relational_reasoning_quality_report(
     unsupported_comparative_count = sum(
         "risk_reward_comparison" in item for item in validator_error_values
     )
+    supply_grounding_error_count = sum(
+        "kr_supply_" in item or "us_investor_flow_not_in_packet" in item
+        for item in validator_error_values
+    )
+    financial_period_error_count = sum(
+        "financial_period_label_missing" in item for item in validator_error_values
+    )
+    valuation_evidence_error_count = sum(
+        any(
+            marker in item
+            for marker in (
+                "negative_book_interpretation",
+                "historical_valuation_interpretation",
+                "peer_valuation_interpretation",
+                "valuation_coherence",
+            )
+        )
+        for item in validator_error_values
+    )
     expected_heading = "📊 거래량·포지셔닝" if output.market == "us" else "📊 수급"
     rendered_values = list(rendered_messages)
     heading_mismatches = [
@@ -473,6 +563,16 @@ def relational_reasoning_quality_report(
                 rendered_identity_mismatches.append(
                     {"ticker": review.ticker, "identity_state": state, "issue": issue}
                 )
+    expected_tickers = set(packet_stocks)
+    output_tickers = {review.ticker for review in output.stock_reviews}
+    completeness_passed = (
+        packet is None
+        or not rendered_values
+        or (
+            expected_tickers == output_tickers
+            and len(rendered_values) == len(output.stock_reviews) + 1
+        )
+    )
     generic_next_check_count = sum(
         count for count in next_check_counts.values() if count >= duplicate_threshold
     )
@@ -486,6 +586,7 @@ def relational_reasoning_quality_report(
         and not template_repeats
         and not supply_repeats
         and not us_kr_horizon_rows
+        and not generic_us_supply_rows
         and len(generic_us_investor_unknown_rows) < duplicate_threshold
         and generic_next_check_count == 0
         and generic_unknown_count == 0
@@ -495,6 +596,10 @@ def relational_reasoning_quality_report(
         )
         and identity_prose_mismatch_count == 0
         and unsupported_comparative_count == 0
+        and supply_grounding_error_count == 0
+        and financial_period_error_count == 0
+        and valuation_evidence_error_count == 0
+        and completeness_passed
         and not heading_mismatches
         and not rendered_identity_mismatches
     )
@@ -530,15 +635,26 @@ def relational_reasoning_quality_report(
             "generic_us_investor_flow_unknown_count": len(
                 generic_us_investor_unknown_rows
             ),
+            "generic_us_supply_count": len(generic_us_supply_rows),
             "us_kr_style_horizon_rows": us_kr_horizon_rows,
             "generic_us_investor_flow_unknown_rows": (
                 generic_us_investor_unknown_rows
             ),
+            "generic_us_supply_rows": generic_us_supply_rows,
         },
         "numeric_label_quality": numeric_label_quality,
         "kr_supply_numeric_coverage": supply_numeric_coverage,
         "identity_prose_mismatch_count": identity_prose_mismatch_count,
         "unsupported_comparative_claim_count": unsupported_comparative_count,
+        "supply_grounding_error_count": supply_grounding_error_count,
+        "financial_period_error_count": financial_period_error_count,
+        "valuation_evidence_error_count": valuation_evidence_error_count,
+        "message_set_completeness": {
+            "expected_stock_count": len(expected_tickers),
+            "output_stock_count": len(output_tickers),
+            "rendered_message_count": len(rendered_values),
+            "passed": completeness_passed,
+        },
         "rendered_heading_quality": {
             "expected_heading": expected_heading,
             "mismatch_count": len(heading_mismatches),
@@ -553,3 +669,93 @@ def relational_reasoning_quality_report(
         "production_assist_evidence_eligible": False,
         "human_quality_approval_required": True,
     }
+
+
+def _canonical_sha256(value: object) -> str:
+    encoded = json.dumps(
+        value,
+        ensure_ascii=False,
+        sort_keys=True,
+        separators=(",", ":"),
+        default=str,
+    ).encode("utf-8")
+    return hashlib.sha256(encoded).hexdigest()
+
+
+def runtime_message_quality_receipt(
+    packet: dict[str, object],
+    output: AIDailyReviewOutput,
+    rendered_messages: Iterable[dict[str, object]],
+    *,
+    binding_errors: Iterable[str] = (),
+    validation_errors: Iterable[str] = (),
+    checked_at: datetime | None = None,
+) -> dict[str, object]:
+    messages = [
+        {
+            "ticker": str(item.get("ticker") or ""),
+            "text": str(item.get("text") or ""),
+            "logical_identity": str(item.get("logical_identity") or ""),
+        }
+        for item in rendered_messages
+    ]
+    binding_error_values = list(binding_errors)
+    validation_error_values = list(validation_errors)
+    quality = relational_reasoning_quality_report(
+        output,
+        packet=packet,
+        binding_errors=binding_error_values,
+        validation_errors=validation_error_values,
+        rendered_messages=[item["text"] for item in messages],
+    )
+    status = (
+        "passed"
+        if quality.get("hard_checks_passed") is True
+        and len(messages) == len(output.stock_reviews) + 1
+        and not binding_error_values
+        and not validation_error_values
+        else "failed"
+    )
+    errors = [*binding_error_values, *validation_error_values]
+    if quality.get("hard_checks_passed") is not True:
+        errors.append("runtime_message_quality_gate_failed")
+    return {
+        "contract": "runtime-message-quality-v1",
+        "packet_id": str(packet.get("packet_id") or ""),
+        "policy_version": str(packet.get("analysis_policy_version") or ""),
+        "schema_version": str(packet.get("output_schema_version") or ""),
+        "packet_sha256": _canonical_sha256(packet),
+        "validated_output_sha256": _canonical_sha256(output.model_dump(mode="json")),
+        "rendered_payload_set_sha256": _canonical_sha256(messages),
+        "message_count": len(messages),
+        "check_results": quality,
+        "errors": errors,
+        "status": status,
+        "checked_at": (checked_at or datetime.now(UTC)).isoformat(),
+    }
+
+
+def verify_runtime_message_quality_receipt(
+    receipt: dict[str, object],
+    packet: dict[str, object],
+    output: AIDailyReviewOutput,
+    rendered_messages: Iterable[dict[str, object]],
+) -> bool:
+    messages = [
+        {
+            "ticker": str(item.get("ticker") or ""),
+            "text": str(item.get("text") or ""),
+            "logical_identity": str(item.get("logical_identity") or ""),
+        }
+        for item in rendered_messages
+    ]
+    return bool(
+        receipt.get("contract") == "runtime-message-quality-v1"
+        and receipt.get("status") == "passed"
+        and receipt.get("packet_id") == packet.get("packet_id")
+        and receipt.get("packet_sha256") == _canonical_sha256(packet)
+        and receipt.get("validated_output_sha256")
+        == _canonical_sha256(output.model_dump(mode="json"))
+        and receipt.get("rendered_payload_set_sha256") == _canonical_sha256(messages)
+        and int(receipt.get("message_count") or 0) == len(messages)
+    )

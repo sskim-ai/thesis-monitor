@@ -146,6 +146,113 @@ def test_clean_official_preliminary_is_caution_usable() -> None:
     assert state["decision_version"] == "financial-quality-taint-v2"
 
 
+def test_valuation_coherence_denies_positive_pbr_against_negative_bvps() -> None:
+    state = build_financial_quality_state(
+        _snapshot(
+            current_price=20.18,
+            currency="USD",
+            book_currency="USD",
+            bvps=-7.570257864055797,
+            price_to_book=0.3751,
+            pbr_denominator_period_end="2026-06-30",
+        ),
+        source_metadata={
+            **_clean_source(),
+            "book_source": {
+                "period": "2026-06-30",
+                "source_type": "full_statement",
+                "provider": "sec_companyfacts",
+                "hard_errors": [],
+                "soft_outliers": [],
+                "lineage_verified": True,
+            },
+        },
+    )
+
+    assert state["valuation_coherence"]["status"] == "failed"
+    assert "non_positive_bvps_cannot_support_pbr_multiple" in state[
+        "valuation_coherence"
+    ]["reasons"]
+    assert state["fields"]["bvps"]["prose_eligible"] is True
+    assert state["fields"]["price_to_book"]["prose_eligible"] is False
+    assert state["fields"]["historical_pb_statistics.current_percentile"][
+        "prose_eligible"
+    ] is False
+
+
+def test_valuation_coherence_keeps_clean_positive_book_lineage() -> None:
+    state = build_financial_quality_state(
+        _snapshot(book_currency="KRW", bvps=52_750, price_to_book=4.0),
+        source_metadata=_clean_source(),
+    )
+
+    assert state["valuation_coherence"]["status"] == "passed"
+    assert state["fields"]["price_to_book"]["prose_eligible"] is True
+
+
+def test_valuation_coherence_allows_verified_provider_pbr_without_bvps() -> None:
+    state = build_financial_quality_state(
+        _snapshot(bvps=None, price_to_book=1.2),
+        source_metadata=_clean_source(),
+    )
+
+    assert state["valuation_coherence"]["status"] == "passed"
+    assert state["fields"]["price_to_book"]["prose_eligible"] is True
+
+
+def test_valuation_coherence_denies_currency_or_period_basis_mismatch() -> None:
+    currency = build_financial_quality_state(
+        _snapshot(book_currency="USD", bvps=10, price_to_book=2.0),
+        source_metadata=_clean_source(),
+    )
+    period = build_financial_quality_state(
+        _snapshot(
+            bvps=10,
+            price_to_book=2.0,
+            pbr_denominator_period_end="2026-06-30",
+        ),
+        source_metadata=_clean_source(),
+    )
+
+    assert "price_to_book_currency_basis_mismatch" in currency[
+        "valuation_coherence"
+    ]["reasons"]
+    assert currency["fields"]["price_to_book"]["prose_eligible"] is False
+    assert "price_to_book_period_basis_mismatch" in period[
+        "valuation_coherence"
+    ]["reasons"]
+    assert period["fields"]["price_to_book"]["prose_eligible"] is False
+
+
+def test_fallback_sanitizer_withholds_incoherent_pbr_but_keeps_price_and_bvps() -> None:
+    snapshot = _snapshot(
+        current_price=20.18,
+        currency="USD",
+        book_currency="USD",
+        bvps=-7.57,
+        price_to_book=0.38,
+        financial_quality_source_metadata={
+            **_clean_source(),
+            "book_source": {
+                "period": "2026-06-30",
+                "source_type": "full_statement",
+                "provider": "sec_companyfacts",
+                "hard_errors": [],
+                "soft_outliers": [],
+                "lineage_verified": True,
+            },
+        },
+        pbr_denominator_period_end="2026-06-30",
+    )
+
+    sanitized = sanitize_financial_snapshot_for_prose(snapshot)
+
+    assert sanitized["current_price"] == 20.18
+    assert sanitized["bvps"] == -7.57
+    assert sanitized["price_to_book"] is None
+    assert sanitized["price_to_book_status"] == "unavailable"
+
+
 def test_critical_official_preliminary_denies_direct_and_dependent_pe_fields() -> None:
     state = build_financial_quality_state(
         _snapshot(), source_metadata=_critical_source()
@@ -428,7 +535,7 @@ def test_denied_numeric_registry_entry_has_no_display_and_binding_fails_closed()
             {
                 "ticker": "GENERIC",
                 "facts_used": ["earnings:2026-06-30"],
-                "core_judgment": {"text": "{{numeric:revenue}}는 검증 보류입니다."},
+                "core_judgment": {"text": "{{numeric:revenue}} 검증 보류입니다."},
                 "numeric_claims": [],
                 "numeric_fact_refs": [
                     {
@@ -436,6 +543,7 @@ def test_denied_numeric_registry_entry_has_no_display_and_binding_fails_closed()
                         "fact_id": "earnings:2026-06-30",
                         "field_path": "fields.revenue.value",
                         "text_ref": "core_judgment.text",
+                        "postposition": "은/는",
                     }
                 ],
             }

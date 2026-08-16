@@ -68,6 +68,12 @@ Current verified limitations are:
 - Sector coverage is partial and currently SOXX-only.
 - A stale broad-dollar observation is excluded instead of being backfilled.
 
+Stock positioning is market-aware. KR reviews may use foreign and institutional 1-day, 5-day, and
+20-day flow only through exact actor/horizon numeric claims. US stock reviews use volume, relative
+volume, or an explicitly verified US positioning fact; generic Korean `수급` language is not a
+substitute. Market-wide flow Unknowns remain valid market coverage statements and are not treated as
+stock-level flow claims.
+
 ## Night Futures
 
 The US packet records expected session, query timestamps, source session, contract verification,

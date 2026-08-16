@@ -1262,6 +1262,16 @@ _SOURCE_LABEL_SEMANTICS = {
     "forward_bvps",
     "forward_price_to_book",
 }
+_FINANCIAL_PERIOD_LABEL_SEMANTICS = {
+    "revenue",
+    "operating_income",
+    "net_income",
+    "operating_margin",
+    "revenue_qoq",
+    "revenue_yoy",
+    "operating_income_qoq",
+    "operating_income_yoy",
+}
 _INSTRUMENT_LABEL_SEMANTICS = {
     "index_return_pct",
     "sector_return_pct",
@@ -1274,7 +1284,15 @@ _INSTRUMENT_LABEL_SEMANTICS = {
 }
 
 
-def _source_label_kind(semantic_type: str) -> str | None:
+def _source_label_kind(
+    semantic_type: str,
+    fields: dict[str, object],
+) -> str | None:
+    if (
+        semantic_type in _FINANCIAL_PERIOD_LABEL_SEMANTICS
+        and fields.get("financial_period_required") is True
+    ):
+        return "period"
     if semantic_type in _SOURCE_LABEL_SEMANTICS:
         return "source"
     if semantic_type in _INSTRUMENT_LABEL_SEMANTICS:
@@ -1286,6 +1304,13 @@ def _source_aware_label(
     semantic_type: str,
     fields: dict[str, object],
 ) -> str | None:
+    if semantic_type in _FINANCIAL_PERIOD_LABEL_SEMANTICS:
+        period_label = str(fields.get("period_label") or "").strip()
+        spec = semantic_spec(semantic_type)
+        if period_label and spec is not None and spec.approved_labels:
+            return f"{period_label} {spec.approved_labels[0]}"
+        if fields.get("financial_period_required") is True:
+            return None
     series = str(fields.get("series_code") or "")
     if label := _MARKET_SERIES_LABELS.get((semantic_type, series)):
         return label
@@ -1547,7 +1572,7 @@ def build_numeric_registry(
                     else None
                 )
                 source_label_kind = (
-                    _source_label_kind(spec.semantic_type)
+                    _source_label_kind(spec.semantic_type, fields)
                     if spec is not None
                     else None
                 )

@@ -3,6 +3,8 @@ from app.services.ai_reasoning_quality_service import (
     _structural_template_exception,
     normalize_decision_text,
     relational_reasoning_quality_report,
+    runtime_message_quality_receipt,
+    verify_runtime_message_quality_receipt,
 )
 
 
@@ -200,10 +202,10 @@ def test_us_quality_audit_rejects_kr_horizons_and_repeated_flow_unknowns() -> No
     assert report["production_assist_evidence_eligible"] is False
 
 
-def test_quality_audit_rejects_five_stock_numeric_template_skeleton() -> None:
+def test_quality_audit_rejects_three_stock_numeric_template_skeleton() -> None:
     payload = _output().model_dump()
     rows = []
-    for index, ticker in enumerate(("AAA", "BBB", "CCC", "DDD", "EEE"), start=1):
+    for index, ticker in enumerate(("AAA", "BBB", "CCC"), start=1):
         row = payload["stock_reviews"][0].copy()
         row["ticker"] = ticker
         row["facts_used"] = [f"fact:{ticker}"]
@@ -344,3 +346,59 @@ def test_quality_audit_checks_identity_across_final_rendered_payload() -> None:
 
     assert report["rendered_identity_prose_mismatch_count"] == 1
     assert report["rendered_identity_prose_mismatches"][0]["ticker"] == "AAA"
+
+
+def test_runtime_quality_receipt_binds_packet_output_and_rendered_payload() -> None:
+    payload = _output().model_dump()
+    descriptions = (
+        ("수주 전환", "마진 회복", "박스 하단", "거래 감소", "현금흐름"),
+        ("재고 정상화", "원가 안정", "돌파 재시험", "거래 증가", "제품 믹스"),
+        ("고객 다변화", "매출 전환", "저항 확인", "거래 보통", "투자 집행"),
+    )
+    for review, description in zip(
+        payload["stock_reviews"], descriptions, strict=True
+    ):
+        ticker = review["ticker"]
+        core, earnings, price, volume, watch = description
+        review["core_judgment"]["text"] = f"{ticker}의 {core} 여부가 핵심입니다."
+        review["business_earnings"]["text"] = f"{earnings}의 공식 확인을 기다립니다."
+        review["price_positioning"]["text"] = f"현재 {price}이 가격 기준입니다."
+        review["price_positioning"]["new_observer_view"] = f"신규 자금은 {price} 방어를 봅니다."
+        review["price_positioning"]["holder_view"] = f"보유자는 {watch} 훼손을 봅니다."
+        review["supply_analysis"]["text"] = f"{volume} 상태를 상대거래량으로 확인합니다."
+        review["valuation_analysis"]["text"] = f"{watch} 전에는 절대 배수만 봅니다."
+        review["priority_watch"] = [f"{watch}의 다음 공시"]
+        review["next_checks"] = [f"{core}의 다음 확인"]
+        review["unknowns"] = [f"{earnings}의 지속성"]
+    output = AIDailyReviewOutput.model_validate(payload)
+    packet = {
+        "packet_id": output.packet_id,
+        "analysis_policy_version": output.analysis_policy_version,
+        "output_schema_version": output.schema_version,
+        "market_context": {"numeric_registry": []},
+        "stocks": [
+            {"ticker": review.ticker, "numeric_registry": []}
+            for review in output.stock_reviews
+        ],
+    }
+    messages = [
+        {"ticker": "__DAILY_DIGEST__", "logical_identity": "market", "text": "market"},
+        *(
+            {
+                "ticker": review.ticker,
+                "logical_identity": f"stock:{review.ticker}",
+                "text": "📊 거래량·포지셔닝\nbody",
+            }
+            for review in output.stock_reviews
+        ),
+    ]
+
+    receipt = runtime_message_quality_receipt(packet, output, messages)
+
+    assert receipt["status"] == "passed"
+    assert verify_runtime_message_quality_receipt(receipt, packet, output, messages)
+    tampered = [dict(item) for item in messages]
+    tampered[-1]["text"] += " changed"
+    assert not verify_runtime_message_quality_receipt(
+        receipt, packet, output, tampered
+    )

@@ -1203,9 +1203,16 @@ def test_numeric_claims_require_exact_semantic_provenance_and_allow_display_form
         earnings = next(
             item for item in stock["fact_catalog"] if item["fact_type"] == "earnings"
         )
+        margin_source = next(
+            item
+            for item in stock["numeric_registry"]
+            if item["fact_id"] == earnings["fact_id"]
+            and item["field_path"] == "fields.operating_margin_pct"
+        )
+        margin_usage = f"{margin_source['canonical_label']} 10%"
         review["facts_used"].append(earnings["fact_id"])
         review["business_earnings"] = {
-            "text": "영업이익률 10%는 현재 수익성의 확인된 기준입니다.",
+            "text": f"{margin_usage}는 현재 수익성의 확인된 기준입니다.",
             "fact_ids": [earnings["fact_id"]],
         }
         review["numeric_claims"].append(
@@ -1216,7 +1223,7 @@ def test_numeric_claims_require_exact_semantic_provenance_and_allow_display_form
                 "unit": "pct",
                 "semantic_type": "operating_margin",
                 "text_ref": "business_earnings.text",
-                "usage": "영업이익률 10%",
+                "usage": margin_usage,
             }
         )
         _, errors = validate_ai_review_output(session, packet, valid)
@@ -2971,7 +2978,7 @@ def test_numeric_fact_reference_is_bound_to_canonical_value_and_claim(
         draft = _valid_output(packet)
         review = draft["stock_reviews"][0]
         review["price_positioning"]["text"] = (
-            "{{numeric:price_now}}는 기업의 질과 별도인 가격 맥락입니다."
+            "{{numeric:price_now}} 기업의 질과 별도인 가격 맥락입니다."
         )
         review["numeric_claims"] = []
         review["numeric_fact_refs"] = [
@@ -2980,6 +2987,7 @@ def test_numeric_fact_reference_is_bound_to_canonical_value_and_claim(
                 "fact_id": "price:current",
                 "field_path": "fields.current_price",
                 "text_ref": "price_positioning.text",
+                "postposition": "은/는",
             }
         ]
 
@@ -3067,7 +3075,7 @@ def test_modeled_forward_binding_uses_source_aware_label(
         review = draft["stock_reviews"][0]
         review["facts_used"].append("valuation:current")
         review["valuation_analysis"]["text"] = (
-            "{{numeric:modeled_fper}}는 내부 정상화 가정의 결과입니다."
+            "{{numeric:modeled_fper}} 내부 정상화 가정의 결과입니다."
         )
         review["numeric_fact_refs"] = [
             {
@@ -3075,6 +3083,7 @@ def test_modeled_forward_binding_uses_source_aware_label(
                 "fact_id": "valuation:current",
                 "field_path": "fields.forward_pe",
                 "text_ref": "valuation_analysis.text",
+                "postposition": "은/는",
             }
         ]
 
@@ -3099,9 +3108,16 @@ def test_numeric_token_span_excludes_trailing_sentence_comma(
         assert packet is not None
         output = _valid_output(packet)
         review = output["stock_reviews"][0]
+        revenue_source = next(
+            item
+            for item in packet["stocks"][0]["numeric_registry"]
+            if item["fact_id"] == "earnings:2026-06-30"
+            and item["field_path"] == "fields.revenue.value"
+        )
+        revenue_usage = f"{revenue_source['canonical_label']} $500"
         review["facts_used"].append("earnings:2026-06-30")
         review["business_earnings"] = {
-            "text": "매출 $500, 매출 성장이 확인됐습니다.",
+            "text": f"{revenue_usage}, 매출 성장이 확인됐습니다.",
             "fact_ids": ["earnings:2026-06-30"],
         }
         review["numeric_claims"].append(
@@ -3112,7 +3128,7 @@ def test_numeric_token_span_excludes_trailing_sentence_comma(
                 "unit": "USD",
                 "semantic_type": "revenue",
                 "text_ref": "business_earnings.text",
-                "usage": "매출 $500",
+                "usage": revenue_usage,
             }
         )
 
@@ -4329,6 +4345,16 @@ def test_risk_reward_comparison_ignores_other_metric_in_same_sentence(
             None,
         ),
         (
+            "us",
+            "낮은 손익비와 수급 부재로 관찰을 유지합니다.",
+            "us_investor_flow_not_in_packet",
+        ),
+        (
+            "us",
+            "수급 약화가 가격 반응을 제한했습니다.",
+            "us_investor_flow_not_in_packet",
+        ),
+        (
             "kr",
             "외국인·기관의 1일·5일·20일 수급 차이를 함께 봅니다.",
             None,
@@ -4365,6 +4391,144 @@ def test_market_supply_language_contract_routes_kr_and_us_separately(
         assert errors == []
     else:
         assert any(expected_error in error for error in errors)
+
+
+def test_kr_supply_language_requires_exact_actor_horizon_and_direction() -> None:
+    review_value = {
+        "ticker": "PACKETUS",
+        "thesis_version": 1,
+        "ai_thesis_assessment": "no_material_change",
+        "earnings_estimate_view": "unchanged",
+        "valuation_view": "neutral",
+        "facts_used": ["positioning:test"],
+        "frameworks_used": [],
+        "core_judgment": {"text": "고유 판단입니다.", "fact_ids": []},
+        "business_earnings": {"text": "실적은 별도입니다.", "fact_ids": []},
+        "price_positioning": {
+            "text": "가격 구조입니다.",
+            "new_observer_view": "신규 조건입니다.",
+            "holder_view": "보유 조건입니다.",
+            "fact_ids": [],
+        },
+        "supply_analysis": {
+            "text": "외국인 5일 순매수 100주와 기관 20일 순매도 -50주를 비교합니다.",
+            "fact_ids": ["positioning:test"],
+        },
+        "valuation_analysis": {"text": "평가는 별도입니다.", "fact_ids": []},
+        "numeric_claims": [
+        {
+            "fact_id": "positioning:test",
+            "field_path": "fields.foreign_net_buy_qty_5",
+            "value": 100,
+            "unit": "shares",
+            "semantic_type": "foreign_net_buy_qty_5d",
+            "text_ref": "supply_analysis.text",
+            "usage": "외국인 5일 순매수 100주",
+        },
+        {
+            "fact_id": "positioning:test",
+            "field_path": "fields.institution_net_buy_qty_20",
+            "value": -50,
+            "unit": "shares",
+            "semantic_type": "institution_net_buy_qty_20d",
+            "text_ref": "supply_analysis.text",
+            "usage": "기관 20일 순매도 -50주",
+        },
+        ],
+        "unknowns": [],
+        "priority_watch": [],
+        "next_checks": [],
+        "confidence": 0.8,
+    }
+    review = AIStockReview.model_validate(review_value)
+
+    assert ai_review_service._kr_supply_grounding_errors(
+        review.ticker, "kr", review
+    ) == []
+
+    actor_mismatch = review.model_copy(deep=True)
+    actor_mismatch.supply_analysis.text = (
+        "외국인 5일 순매수 100주와 기관 5일 순매도를 함께 봅니다."
+    )
+    actor_errors = ai_review_service._kr_supply_grounding_errors(
+        review.ticker, "kr", actor_mismatch
+    )
+    assert any("기관:5d" in error for error in actor_errors)
+
+    sign_mismatch = review.model_copy(deep=True)
+    sign_mismatch.supply_analysis.text = (
+        "외국인 5일 순매수 100주와 기관 20일 순매수 -50주를 비교합니다."
+    )
+    sign_mismatch.numeric_claims[1].usage = "기관 20일 순매수 -50주"
+    sign_errors = ai_review_service._kr_supply_grounding_errors(
+        review.ticker, "kr", sign_mismatch
+    )
+    assert any("kr_supply_direction_mismatch" in error for error in sign_errors)
+
+    no_fact = review.model_copy(deep=True)
+    no_fact.supply_analysis.text = "당일 외국인과 기관이 공동 매수했습니다."
+    no_fact.numeric_claims = []
+    no_fact_errors = ai_review_service._kr_supply_grounding_errors(
+        review.ticker, "kr", no_fact
+    )
+    assert any("kr_supply_joint_1d_grounding_missing" in error for error in no_fact_errors)
+    assert ai_review_service._kr_supply_grounding_errors(
+        review.ticker, "us", no_fact
+    ) == []
+
+
+def test_financial_period_and_valuation_interpretation_require_exact_evidence(
+    monkeypatch,
+    tmp_path: Path,
+) -> None:
+    _settings(monkeypatch, tmp_path)
+    with Session(_engine()) as session:
+        _seed(session)
+        packet = build_ai_review_packet(session, RUN_DATE, "us")
+    assert packet is not None
+    review_value = _valid_output(packet)["stock_reviews"][0]
+    review_value["business_earnings"] = {
+        "text": "영업이익 5천만원은 확인된 값입니다.",
+        "fact_ids": ["earnings:2026-06-30"],
+    }
+    review_value["numeric_claims"].append(
+        {
+            "fact_id": "earnings:2026-06-30",
+            "field_path": "fields.operating_income.value",
+            "value": 50_000_000,
+            "unit": "KRW",
+            "semantic_type": "operating_income",
+            "text_ref": "business_earnings.text",
+            "usage": "영업이익 5천만원",
+        }
+    )
+    review_value["valuation_analysis"] = {
+        "text": "음의 주당순자산이며 역사적으로 높은 배수입니다.",
+        "fact_ids": ["valuation:current"],
+    }
+    review = AIStockReview.model_validate(review_value)
+
+    period_errors = ai_review_service._financial_period_language_errors(
+        review.ticker, review
+    )
+    valuation_errors = ai_review_service._valuation_interpretation_evidence_errors(
+        review.ticker, review
+    )
+
+    assert any("financial_period_label_missing" in error for error in period_errors)
+    assert any("negative_book_interpretation_without_homogeneous_fact" in error for error in valuation_errors)
+    assert any("historical_valuation_interpretation_without_comparison" in error for error in valuation_errors)
+
+    review.business_earnings.text = "2026년 2분기 영업이익 5천만원은 확인된 값입니다."
+    review.numeric_claims[-1].usage = "2026년 2분기 영업이익 5천만원"
+    review.valuation_analysis.fact_ids = ["valuation:book_value"]
+    review.valuation_analysis.text = "음의 주당순자산은 확인됐습니다."
+    assert ai_review_service._financial_period_language_errors(
+        review.ticker, review
+    ) == []
+    assert ai_review_service._valuation_interpretation_evidence_errors(
+        review.ticker, review
+    ) == []
 
 
 def test_authoritative_identity_field_provenance_reaches_ai_packet(

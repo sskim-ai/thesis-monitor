@@ -5,6 +5,7 @@ import pytest
 from app.services.numeric_provenance_service import (
     bind_numeric_fact_references,
     canonical_numeric_label_mismatch,
+    resolve_numeric_postposition,
 )
 from app.services.numeric_semantic_registry import build_numeric_registry
 
@@ -67,6 +68,7 @@ def _ref(
     field_path: str,
     *,
     role: str | None = None,
+    postposition: str | None = None,
 ) -> dict[str, str]:
     value = {
         "ref_id": ref_id,
@@ -76,6 +78,8 @@ def _ref(
     }
     if role is not None:
         value["role"] = role
+    if postposition is not None:
+        value["postposition"] = postposition
     return value
 
 
@@ -264,13 +268,29 @@ def test_bound_korean_numeric_postposition_fails_closed() -> None:
         "{{numeric:revenue}}와 다른 값을 비교합니다.",
         [_ref("revenue", "earnings", "fields.revenue.value")],
     )
-    valid = _bind_stock(
+    raw_also_invalid = _bind_stock(
         [fact],
         "{{numeric:revenue}}과 다른 값을 비교합니다.",
         [_ref("revenue", "earnings", "fields.revenue.value")],
     )
+    valid = _bind_stock(
+        [fact],
+        "{{numeric:revenue}} 다른 값을 비교합니다.",
+        [
+            _ref(
+                "revenue",
+                "earnings",
+                "fields.revenue.value",
+                postposition="와/과",
+            )
+        ],
+    )
 
-    assert any("numeric_fact_ref_postposition_mismatch" in error for error in invalid.errors)
+    assert any("numeric_fact_ref_raw_postposition" in error for error in invalid.errors)
+    assert any(
+        "numeric_fact_ref_raw_postposition" in error
+        for error in raw_also_invalid.errors
+    )
     assert valid.errors == ()
     assert "60조5,426억원과" in valid.output["stock_reviews"][0]["core_judgment"]["text"]
 
@@ -287,15 +307,44 @@ def test_bound_currency_numeric_postposition_uses_spoken_unit() -> None:
         "{{numeric:price}}은 현재 기준입니다.",
         [_ref("price", "price", "fields.current_price")],
     )
-    valid = _bind_stock(
+    raw_also_invalid = _bind_stock(
         [fact],
         "{{numeric:price}}는 현재 기준입니다.",
         [_ref("price", "price", "fields.current_price")],
     )
+    valid = _bind_stock(
+        [fact],
+        "{{numeric:price}} 현재 기준입니다.",
+        [_ref("price", "price", "fields.current_price", postposition="은/는")],
+    )
 
-    assert any("numeric_fact_ref_postposition_mismatch" in error for error in invalid.errors)
+    assert any("numeric_fact_ref_raw_postposition" in error for error in invalid.errors)
+    assert any(
+        "numeric_fact_ref_raw_postposition" in error
+        for error in raw_also_invalid.errors
+    )
     assert valid.errors == ()
     assert "$345.9는" in valid.output["stock_reviews"][0]["core_judgment"]["text"]
+
+
+@pytest.mark.parametrize(
+    ("display", "family", "expected"),
+    [
+        ("1원", "와/과", "과"),
+        ("1,750억원", "와/과", "과"),
+        ("1조3,655억원", "은/는", "은"),
+        ("100주", "와/과", "와"),
+        ("1.2배", "이/가", "가"),
+        ("3%", "을/를", "를"),
+        ("-3bp", "은/는", "는"),
+    ],
+)
+def test_numeric_postposition_uses_canonical_spoken_unit(
+    display: str,
+    family: str,
+    expected: str,
+) -> None:
+    assert resolve_numeric_postposition(display, family) == expected
 
 
 def test_bound_numeric_copula_rejects_subject_particle_connective() -> None:
@@ -306,8 +355,15 @@ def test_bound_numeric_copula_rejects_subject_particle_connective() -> None:
     )
     valid = _bind_stock(
         [fact],
-        "{{numeric:rr}}이며 현재 구조를 보여줍니다.",
-        [_ref("rr", "chart:risk_reward", "fields.ratio")],
+        "{{numeric:rr}} 현재 구조를 보여줍니다.",
+        [
+            _ref(
+                "rr",
+                "chart:risk_reward",
+                "fields.ratio",
+                postposition="이/가",
+            )
+        ],
     )
     invalid = _bind_stock(
         [fact],
@@ -316,7 +372,8 @@ def test_bound_numeric_copula_rejects_subject_particle_connective() -> None:
     )
 
     assert valid.errors == ()
-    assert any("numeric_fact_ref_postposition_mismatch" in error for error in invalid.errors)
+    assert "차트 손익비 1.75배가 현재" in valid.output["stock_reviews"][0]["core_judgment"]["text"]
+    assert any("numeric_fact_ref_raw_postposition" in error for error in invalid.errors)
 
 
 @pytest.mark.parametrize(
@@ -481,13 +538,18 @@ def test_numeric_context_does_not_trigger_redundant_label_false_positive() -> No
         ),
     ]
     text = (
-        "TWD 기준인 {{numeric:revenue}}를 ADR 가격과 직접 환산하지 않습니다. "
-        "현재 평가에서는 {{numeric:pe}}와 {{numeric:fpe}}의 방향을 비교합니다. "
+        "TWD 기준인 {{numeric:revenue}} ADR 가격과 직접 환산하지 않습니다. "
+        "현재 평가에서는 {{numeric:pe}} {{numeric:fpe}}의 방향을 비교합니다. "
         "다음 실적에서 {{numeric:margin}}의 지속성을 확인합니다."
     )
     refs = [
-        _ref("revenue", "earnings", "fields.revenue.value"),
-        _ref("pe", "valuation", "fields.trailing_pe"),
+        _ref(
+            "revenue",
+            "earnings",
+            "fields.revenue.value",
+            postposition="을/를",
+        ),
+        _ref("pe", "valuation", "fields.trailing_pe", postposition="와/과"),
         _ref("fpe", "valuation", "fields.forward_pe"),
         _ref("margin", "earnings", "fields.operating_margin_pct"),
     ]
@@ -621,16 +683,36 @@ def test_mixed_forward_sources_bind_occurrence_level_claims_without_cross_talk(
         },
     )
     refs = [
-        _ref("fpe", "valuation:mixed", "fields.forward_pe"),
-        _ref("fpbr", "valuation:mixed", "fields.forward_price_to_book"),
-        _ref("eps", "valuation:mixed", "fields.forward_eps"),
-        _ref("bvps", "valuation:mixed", "fields.forward_bvps"),
+        _ref(
+            "fpe",
+            "valuation:mixed",
+            "fields.forward_pe",
+            postposition="와/과",
+        ),
+        _ref(
+            "fpbr",
+            "valuation:mixed",
+            "fields.forward_price_to_book",
+            postposition="을/를",
+        ),
+        _ref(
+            "eps",
+            "valuation:mixed",
+            "fields.forward_eps",
+            postposition="와/과",
+        ),
+        _ref(
+            "bvps",
+            "valuation:mixed",
+            "fields.forward_bvps",
+            postposition="을/를",
+        ),
     ]
     result = _bind_stock(
         [fact],
         (
-            "{{numeric:fpe}}와 {{numeric:fpbr}}를 함께 봅니다. "
-            "{{numeric:eps}}와 {{numeric:bvps}}도 같은 source 경계를 유지합니다."
+            "{{numeric:fpe}} {{numeric:fpbr}} 함께 봅니다. "
+            "{{numeric:eps}} {{numeric:bvps}}도 같은 source 경계를 유지합니다."
         ),
         refs,
     )
@@ -659,10 +741,15 @@ def test_crcl_consensus_forward_regression_uses_market_expected_label() -> None:
     )
     result = _bind_stock(
         [fact],
-        "{{numeric:pe}}보다 {{numeric:fpe}}가 높습니다.",
+        "{{numeric:pe}}보다 {{numeric:fpe}} 높습니다.",
         [
             _ref("pe", "valuation:CRCL", "fields.trailing_pe"),
-            _ref("fpe", "valuation:CRCL", "fields.forward_pe"),
+            _ref(
+                "fpe",
+                "valuation:CRCL",
+                "fields.forward_pe",
+                postposition="이/가",
+            ),
         ],
         ticker="CRCL",
     )

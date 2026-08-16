@@ -20,6 +20,8 @@ Providers
   -> deterministic numeric-reference binder and formatter
   -> validator
   -> integrated market + stock renderer
+  -> runtime-message-quality-v1 gate and hash-bound receipt
+  -> atomic validated-payload promotion
   -> AI-assisted set OR deterministic fallback
 ```
 
@@ -53,6 +55,8 @@ evaluation. Exact packet, output, and message artifacts make disagreements audit
 - User-facing numbers require exact prose-level provenance and an allowed semantic scope.
 - Market context and chart state never mutate the company thesis.
 - Only one Telegram set can win a session delivery identity.
+- No AI payload becomes delivery-eligible until the rendered full message set passes the runtime
+  quality gate and its packet, validated-output, and rendered-set hashes match the persisted receipt.
 
 ## Lifecycle and Isolation
 
@@ -70,16 +74,20 @@ by analysis policy, output schema, Knowledge hashes, structure algorithm, and Pi
 | Market intelligence | `app/services/market_intelligence_service.py` |
 | OHLCV structure | `app/services/ohlcv_structure_service.py` |
 | Monitoring state and peers | `app/services/monitoring_state_service.py` |
+| Runtime quality gate | `app/services/ai_reasoning_quality_service.py` |
 | Delivery and renderer | `app/services/ai_assisted_delivery_service.py` |
 | Scheduled CLI | `app/jobs/ai_review.py` |
 | Analyst workflow | `.agents/skills/thesis-monitor-daily-review/SKILL.md` |
 
 ## Archive Contract
 
-Each Pilot session preserves the packet, deterministic messages, AI review, comparison, validator
-result, chart context and transition, quantitative grounding, market context, market numeric claims,
-portfolio transmission, exact rendered messages, and delivery result. Late AI after fallback is
-archive-only.
+Each new Pilot session preserves the packet, deterministic messages, AI review, comparison,
+validator result, chart context and transition, quantitative grounding, market context, market
+numeric claims, portfolio transmission, exact rendered messages, `message-quality-receipt.json`,
+and delivery result. The receipt binds the exact packet, validated output, and logical rendered
+payload set. A mismatch blocks delivery. Network retry reuses the same persisted payload and receipt;
+it does not rerun analysis, binding, validation, rendering, or the quality gate. Late AI after
+fallback is archive-only. Historical archives remain governed by the contract active when created.
 
 Policy `daily-review-v3.9` uses draft-only `numeric_fact_refs` and backend rendering while preserving
 the validated schema-4 shape. See [NUMERIC_PROVENANCE.md](NUMERIC_PROVENANCE.md).

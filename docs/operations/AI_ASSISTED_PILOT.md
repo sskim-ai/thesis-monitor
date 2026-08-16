@@ -80,11 +80,12 @@ A market success increments only when:
 2. profile and numeric gates pass;
 3. Codex completes;
 4. validator passes;
-5. the full AI-assisted set is delivered;
-6. all required archive artifacts and `delivery-result.json` are present, parseable, and consistent;
-7. an atomic `archive-complete.json` marker is written and verified.
+5. the rendered full set passes `runtime-message-quality-v1` and a hash-bound receipt is persisted;
+6. the full AI-assisted set is delivered;
+7. all required archive artifacts and `delivery-result.json` are present, parseable, and consistent;
+8. an atomic `archive-complete.json` marker is written and verified.
 
-Only after step 7 may the packet ID and assessment date be recorded as a Pilot success. If delivery
+Only after step 8 may the packet ID and assessment date be recorded as a Pilot success. If delivery
 finishes but archive completion fails, retry only archive completion using the already-persisted
 payload. Do not resend Telegram, rerun analysis, regenerate the packet, or rerender the message. The
 packet ID and assessment date are idempotency keys, so successful recovery increments exactly once.
@@ -121,10 +122,12 @@ Assist.
 
 ## Archive
 
-Each session stores packet, deterministic messages, AI review, comparison, validator result, numeric
+Each new session stores packet, deterministic messages, AI review, comparison, validator result, numeric
 binding telemetry, chart context, chart transition, quantitative-grounding report, market context,
 market review, market numeric claims, portfolio transmission, exact AI-assisted messages, fallback
-report when used, delivery retry state, and delivery result under `data/ai_review/pilot/history`. A
+report when used, `message-quality-receipt.json`, delivery retry state, and delivery result under
+`data/ai_review/pilot/history`. Gate failure keeps the deterministic fallback eligible and sends no
+rejected AI text. A network retry verifies and reuses the same payload and receipt. A
 successful AI Pilot archive also contains `archive-complete.json` with the packet, policy/schema,
 validator and delivery status, completion time, and hashes for required artifacts.
 

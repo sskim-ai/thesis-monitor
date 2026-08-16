@@ -11,6 +11,7 @@ from app.services.security_identity_service import (
 
 
 DECISION_VERSION = "financial-quality-taint-v2"
+VALUATION_COHERENCE_VERSION = "valuation-coherence-v1"
 
 PROSE_USABLE_STATES = {"verified_usable", "caution_usable"}
 COMPARABLE_BASIS_STATES = {
@@ -170,6 +171,88 @@ def _basis_is_usable(
         str(snapshot.get(status_field) or "") in COMPARABLE_BASIS_STATES
         and snapshot.get(conflict_field) is not True
     )
+
+
+def _book_valuation_coherence(
+    snapshot: Mapping[str, object],
+    fields: dict[str, dict[str, object]],
+) -> dict[str, object]:
+    price = _field_value(snapshot, "current_price")
+    bvps = _field_value(snapshot, "bvps")
+    pbr = _field_value(snapshot, "price_to_book")
+    price_currency = str(snapshot.get("currency") or "") or None
+    book_currency = str(snapshot.get("book_currency") or "") or None
+    pbr_quality = _dict(fields.get("price_to_book"))
+    bvps_quality = _dict(fields.get("bvps"))
+    pbr_period = (
+        snapshot.get("pbr_denominator_period_end")
+        or pbr_quality.get("denominator_period")
+    )
+    bvps_period = bvps_quality.get("denominator_period")
+    basis_status = str(snapshot.get("price_to_book_basis_status") or "")
+    reasons: list[str] = []
+    status = "not_applicable"
+    if isinstance(pbr, (int, float)):
+        status = "passed"
+        if not _basis_is_usable(
+            snapshot,
+            "price_to_book_basis_status",
+            "price_to_book_basis_conflict",
+        ):
+            reasons.append("price_to_book_basis_unverified")
+        if price_currency and book_currency and price_currency != book_currency:
+            reasons.append("price_to_book_currency_basis_mismatch")
+        if pbr_period and bvps_period and pbr_period != bvps_period:
+            reasons.append("price_to_book_period_basis_mismatch")
+        if (
+            isinstance(price, (int, float))
+            and float(price) > 0
+            and isinstance(bvps, (int, float))
+            and float(bvps) <= 0
+        ):
+            reasons.append("non_positive_bvps_cannot_support_pbr_multiple")
+        if reasons:
+            status = "failed"
+            for field in (
+                "price_to_book",
+                "historical_pb_statistics.current_value",
+                "historical_pb_statistics.current_percentile",
+            ):
+                existing = _dict(fields.get(field))
+                if not existing:
+                    continue
+                if existing.get("prose_eligible") is False:
+                    continue
+                fields[field] = {
+                    **existing,
+                    "state": "denied",
+                    "prose_eligible": False,
+                    "quality_reason_codes": list(
+                        dict.fromkeys(
+                            [
+                                *(str(item) for item in existing.get("quality_reason_codes", [])),
+                                *reasons,
+                            ]
+                        )
+                    ),
+                    "denial_reason": "valuation_coherence_failed",
+                }
+    return {
+        "contract": VALUATION_COHERENCE_VERSION,
+        "status": status,
+        "current_price": price,
+        "price_currency": price_currency,
+        "bvps": bvps,
+        "book_currency": book_currency,
+        "price_to_book": pbr,
+        "price_to_book_source": snapshot.get("price_to_book_source"),
+        "price_to_book_method": snapshot.get("price_to_book_method"),
+        "price_to_book_basis_status": basis_status or None,
+        "price_to_book_denominator_period": pbr_period,
+        "bvps_denominator_period": bvps_period,
+        "book_share_basis": snapshot.get("share_count_security_basis"),
+        "reasons": reasons,
+    }
 
 
 def _state_from_lineage(
@@ -470,8 +553,10 @@ def build_financial_quality_state(
                 denial_reason="earnings_based_valuation_state_unavailable",
             )
 
-    book_period = str(snapshot.get("pbr_denominator_period_end") or "") or None
     book_source = _dict(source.get("book_source"))
+    book_period = str(
+        book_source.get("period") or snapshot.get("pbr_denominator_period_end") or ""
+    ) or None
     book_reasons = _source_reasons(book_source)
     book_critical = sorted(set(book_reasons).intersection(BOOK_DENIAL_REASON_CODES))
     book_basis_usable = _basis_is_usable(
@@ -681,6 +766,7 @@ def build_financial_quality_state(
                 denial_reason=identity_denial,
             )
 
+    valuation_coherence = _book_valuation_coherence(snapshot, fields)
     denied_fields = sorted(
         field for field, quality in fields.items() if quality["state"] == "denied"
     )
@@ -695,6 +781,10 @@ def build_financial_quality_state(
             key: value
             for key, value in {
                 "period": source_period,
+                "period_type": source.get("period_type"),
+                "fiscal_year": source.get("fiscal_year"),
+                "period_scope": source.get("period_scope"),
+                "is_cumulative": source.get("is_cumulative"),
                 "source_type": source_type,
                 "provider": source_provider,
                 "filing_date": source.get("filing_date"),
@@ -703,6 +793,7 @@ def build_financial_quality_state(
         },
         "quality_reason_codes": reason_codes,
         "critical_reason_codes": critical_reasons,
+        "valuation_coherence": valuation_coherence,
         "fields": fields,
         "denied_fields": denied_fields,
         "non_prose_fields": non_prose_fields,

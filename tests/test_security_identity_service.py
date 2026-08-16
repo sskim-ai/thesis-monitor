@@ -310,7 +310,7 @@ def test_conflicted_multiple_has_no_display_and_placeholder_binding_fails() -> N
             {
                 "ticker": "FIXTURE",
                 "facts_used": ["valuation:current"],
-                "core_judgment": {"text": "{{numeric:fpe}}를 확인합니다."},
+                "core_judgment": {"text": "{{numeric:fpe}} 확인합니다."},
                 "numeric_claims": [],
                 "numeric_fact_refs": [
                     {
@@ -318,6 +318,7 @@ def test_conflicted_multiple_has_no_display_and_placeholder_binding_fails() -> N
                         "fact_id": "valuation:current",
                         "field_path": "fields.forward_pe",
                         "text_ref": "core_judgment.text",
+                        "postposition": "을/를",
                     }
                 ],
             }

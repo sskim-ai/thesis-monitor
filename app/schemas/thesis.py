@@ -506,6 +506,10 @@ class ValuationSnapshot(BaseModel):
     ttm_contains_preliminary: bool = False
     preliminary_quarter_count: int = 0
     latest_earnings_period: str | None = None
+    latest_earnings_period_type: str | None = None
+    latest_earnings_fiscal_year: int | None = None
+    latest_earnings_period_scope: str | None = None
+    latest_earnings_is_cumulative: bool = False
     financial_currency: str | None = None
     resolved_issuer_type: str = "unknown"
     resolved_security_type: str = "unknown"

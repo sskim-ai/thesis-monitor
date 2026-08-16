@@ -789,6 +789,78 @@ async def test_explicit_duplicate_exception_allows_sent_session_once(
     assert len(notifier.payloads) == 2
 
 
+@pytest.mark.anyio
+async def test_runtime_quality_gate_rejects_ai_and_preserves_single_fallback(
+    monkeypatch,
+    tmp_path: Path,
+) -> None:
+    _settings(monkeypatch, tmp_path)
+    _write_artifacts(tmp_path)
+    output_path = next((tmp_path / "ai_review" / "outbox").glob("*.json"))
+    output = json.loads(output_path.read_text(encoding="utf-8"))
+    stock = output["stock_reviews"][0]
+    stock["price_positioning"]["holder_view"] = stock["price_positioning"][
+        "new_observer_view"
+    ]
+    output_path.write_text(json.dumps(output, ensure_ascii=False), encoding="utf-8")
+    ai_notifier = RecordingNotifier()
+    fallback_notifier = RecordingNotifier()
+
+    with Session(_engine()) as session:
+        _seed_deliveries(session)
+        hold_ai_assisted_pilot_session(session, PACKET_ID)
+        rejected = await deliver_validated_ai_review(
+            session, PACKET_ID, notifier=ai_notifier
+        )
+        fallback = await dispatch_due_deterministic_fallbacks(
+            session,
+            market="kr",
+            run_date=RUN_DATE,
+            now=datetime(2026, 8, 14, 17, 10, tzinfo=KST),
+            notifier=fallback_notifier,
+        )
+
+    assert rejected.status == "quality_rejected"
+    assert ai_notifier.payloads == []
+    assert fallback[-1].status == "sent"
+    assert len(fallback_notifier.payloads) == 2
+    state = json.loads(
+        (tmp_path / "ai_review" / "pilot" / "state-v3.json").read_text()
+    )
+    assert state["markets"]["kr"]["successful_packet_ids"] == []
+
+
+@pytest.mark.anyio
+async def test_persisted_retry_rejects_payload_tampering_against_quality_receipt(
+    monkeypatch,
+    tmp_path: Path,
+) -> None:
+    _settings(monkeypatch, tmp_path)
+    _write_artifacts(tmp_path)
+    failed = RecordingNotifier(fail=True)
+    retry_notifier = RecordingNotifier()
+
+    with Session(_engine()) as session:
+        _seed_deliveries(session)
+        hold_ai_assisted_pilot_session(session, PACKET_ID)
+        first = await deliver_validated_ai_review(session, PACKET_ID, notifier=failed)
+        delivery = session.exec(
+            select(NotificationDelivery).where(NotificationDelivery.ticker == "PILOT")
+        ).one()
+        payload = json.loads(delivery.payload)
+        payload["text"] = f"{payload['text']} tampered"
+        delivery.payload = json.dumps(payload, ensure_ascii=False)
+        session.add(delivery)
+        session.commit()
+        retry = await deliver_validated_ai_review(
+            session, PACKET_ID, notifier=retry_notifier
+        )
+
+    assert first.status == "pending"
+    assert retry.status == "quality_receipt_invalid"
+    assert retry_notifier.payloads == []
+
+
 def test_pilot_v3_stops_market_after_five_successful_packets(
     monkeypatch, tmp_path: Path
 ) -> None:

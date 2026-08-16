@@ -19,6 +19,17 @@ _ANY_PLACEHOLDER = re.compile(r"\{\{numeric:[^}]*\}\}")
 _LABEL_SPACE = re.compile(r"\s+")
 _KOREAN_PARTICLE = r"(?:은|는|이|가|을|를|와|과)?"
 _ZONE_ROLE_PATH = re.compile(r"(?:^|\.)(?:zone|support_zone|box)_(low|high)$")
+_RAW_POSTPOSITION = re.compile(r"^(은|는|이|가|을|를|와|과)")
+_POSTPOSITION_FAMILIES = {
+    "은/는": "은",
+    "는/은": "은",
+    "이/가": "이",
+    "가/이": "이",
+    "을/를": "을",
+    "를/을": "을",
+    "와/과": "와",
+    "과/와": "와",
+}
 
 
 @dataclass(frozen=True)
@@ -189,6 +200,14 @@ def expected_numeric_postposition(display: str, particle: str) -> str | None:
     }[particle]
 
 
+def resolve_numeric_postposition(display: str, family: str) -> str | None:
+    """Resolve a typed Korean particle family from the backend-owned display phrase."""
+    representative = _POSTPOSITION_FAMILIES.get(family.strip())
+    if representative is None:
+        return None
+    return expected_numeric_postposition(display, representative)
+
+
 def numeric_conjunction_error(text: str, usage: str, display: str) -> bool:
     start = text.find(usage)
     if start < 0:
@@ -227,7 +246,7 @@ def canonical_numeric_label_mismatch(
     ):
         return None
     kind = str(source.get("canonical_label_kind") or "source")
-    return "instrument" if kind == "instrument" else "source"
+    return kind if kind in {"instrument", "period"} else "source"
 
 
 def _bound_label_quality_errors(
@@ -331,6 +350,7 @@ def _bind_review(
         field_path = str(item.get("field_path") or "")
         text_ref = str(item.get("text_ref") or "")
         role = str(item.get("role") or "value")
+        postposition = str(item.get("postposition") or "").strip()
         if not _REFERENCE_ID.fullmatch(ref_id) or ref_id in seen_refs:
             errors.append(f"{prefix}:numeric_fact_ref_invalid_id:{ref_id or index}")
             continue
@@ -348,6 +368,20 @@ def _bind_review(
             errors.append(
                 f"{prefix}:numeric_fact_ref_placeholder_count:{ref_id}:"
                 f"{text.count(placeholder)}"
+            )
+            continue
+        marker_start = text.index(placeholder)
+        raw_suffix = text[marker_start + len(placeholder) :]
+        if _RAW_POSTPOSITION.match(raw_suffix):
+            errors.append(
+                f"{prefix}:numeric_fact_ref_raw_postposition:"
+                f"{ref_id}:{text_ref}"
+            )
+            continue
+        if postposition and postposition not in _POSTPOSITION_FAMILIES:
+            errors.append(
+                f"{prefix}:numeric_fact_ref_invalid_postposition:"
+                f"{ref_id}:{postposition}"
             )
             continue
         source = registry.get((fact_id, field_path))
@@ -404,7 +438,6 @@ def _bind_review(
             formatting_failures += 1
             errors.append(f"{prefix}:numeric_fact_ref_formatting_failed:{ref_id}")
             continue
-        marker_start = text.index(placeholder)
         if redundant_numeric_label_before(
             text,
             marker_start,
@@ -417,7 +450,21 @@ def _bind_review(
             )
             continue
         usage = f"{label} {display}"
-        bound_text = text.replace(placeholder, usage)
+        selected_postposition = (
+            resolve_numeric_postposition(display, postposition)
+            if postposition
+            else None
+        )
+        if postposition and selected_postposition is None:
+            errors.append(
+                f"{prefix}:numeric_fact_ref_postposition_resolution_failed:"
+                f"{ref_id}:{postposition}"
+            )
+            continue
+        bound_text = text.replace(
+            placeholder,
+            usage + (selected_postposition or ""),
+        )
         if numeric_conjunction_error(bound_text, usage, display):
             errors.append(
                 f"{prefix}:numeric_fact_ref_postposition_mismatch:"
@@ -449,6 +496,8 @@ def _bind_review(
                 "canonical_label": label,
                 "canonical_label_kind": source.get("canonical_label_kind"),
                 "formatted_value": display,
+                "postposition_family": postposition or None,
+                "resolved_postposition": selected_postposition,
                 "usage": usage,
             }
         )
@@ -565,6 +614,9 @@ def bind_numeric_fact_references(
             "instrument_label_mismatch_count": sum(
                 "numeric_bound_instrument_label_mismatch" in item
                 for item in errors
+            ),
+            "period_label_mismatch_count": sum(
+                "numeric_bound_period_label_mismatch" in item for item in errors
             ),
             "zone_role_mismatch_count": sum(
                 "zone_role_mismatch" in item or "role_label_mismatch" in item

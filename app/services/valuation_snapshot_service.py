@@ -920,6 +920,10 @@ class ValuationSnapshotService:
         def metadata(row: FinancialSnapshot) -> dict[str, object]:
             return {
                 "period": row_period(row),
+                "period_type": row.period_type,
+                "fiscal_year": row.fiscal_year,
+                "period_scope": row.period_scope,
+                "is_cumulative": row.is_cumulative,
                 "source_type": row.snapshot_type,
                 "provider": row.provider,
                 "filing_date": (
@@ -1119,6 +1123,10 @@ class ValuationSnapshotService:
         latest = quarters[-1]
         latest_period = financial_period_end(latest)
         snapshot.latest_earnings_period = latest_period.isoformat() if latest_period else None
+        snapshot.latest_earnings_period_type = latest.period_type
+        snapshot.latest_earnings_fiscal_year = latest.fiscal_year
+        snapshot.latest_earnings_period_scope = latest.period_scope
+        snapshot.latest_earnings_is_cumulative = latest.is_cumulative
         snapshot.financial_currency = latest.currency
         snapshot.earnings_context_source = latest.snapshot_type
         snapshot.earnings_context_is_preliminary = latest.snapshot_type == "preliminary_earnings"

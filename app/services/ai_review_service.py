@@ -771,6 +771,10 @@ def _financial_source_metadata(
     def metadata(row: FinancialSnapshot) -> dict[str, object]:
         return {
             "period": row_period(row),
+            "period_type": row.period_type,
+            "fiscal_year": row.fiscal_year,
+            "period_scope": row.period_scope,
+            "is_cumulative": row.is_cumulative,
             "source_type": row.snapshot_type,
             "provider": row.provider,
             "filing_date": str(row.filing_date or row.reported_date or "") or None,
@@ -1029,6 +1033,10 @@ def _valuation_payload(
         "financial_currency",
         "price_as_of",
         "latest_earnings_period",
+        "latest_earnings_period_type",
+        "latest_earnings_fiscal_year",
+        "latest_earnings_period_scope",
+        "latest_earnings_is_cumulative",
         "earnings_context_is_preliminary",
         "latest_revenue",
         "latest_operating_income",
@@ -1638,6 +1646,34 @@ def _chart_facts(chart: dict[str, object], currency: str) -> list[dict[str, obje
     return facts
 
 
+def _financial_period_label(
+    period: str,
+    period_type: str,
+    fiscal_year: object,
+    period_scope: str,
+    is_cumulative: bool,
+) -> str | None:
+    try:
+        year = int(fiscal_year) if fiscal_year is not None else int(period[:4])
+    except (TypeError, ValueError):
+        return None
+    normalized = period_type.strip().upper()
+    scope = period_scope.strip().lower()
+    if normalized == "Q1":
+        suffix = "1분기"
+    elif normalized == "Q2":
+        suffix = "상반기 누적" if is_cumulative or "cumulative" in scope else "2분기"
+    elif normalized == "H1":
+        suffix = "상반기 누적"
+    elif normalized == "Q3":
+        suffix = "3분기 누적" if is_cumulative or "cumulative" in scope else "3분기"
+    elif normalized == "FY":
+        suffix = "연간"
+    else:
+        return None
+    return f"{year}년 {suffix}"
+
+
 def _fact_catalog(
     assessment: ThesisAssessment,
     evidence: list[dict[str, object]],
@@ -1902,8 +1938,49 @@ def _fact_catalog(
                 "prose_eligible": True,
             }
         )
+        valuation_coherence = _dict(financial_quality.get("valuation_coherence"))
+        if valuation_coherence:
+            facts.append(
+                {
+                    "fact_id": "valuation:book_quality",
+                    "fact_type": "valuation_quality",
+                    "as_of_date": str(valuation.get("price_as_of") or ""),
+                    "source": "deterministic_valuation_coherence",
+                    "fields": valuation_coherence,
+                    "prose_eligible": True,
+                    "interpretation_eligible": True,
+                    "numeric_registry_eligible": False,
+                }
+            )
+    earnings_period_type = str(
+        valuation.get("latest_earnings_period_type")
+        or _dict(financial_quality.get("source_snapshot")).get("period_type")
+        or ""
+    )
+    earnings_fiscal_year = valuation.get("latest_earnings_fiscal_year") or _dict(
+        financial_quality.get("source_snapshot")
+    ).get("fiscal_year")
+    earnings_period_scope = str(
+        valuation.get("latest_earnings_period_scope")
+        or _dict(financial_quality.get("source_snapshot")).get("period_scope")
+        or ""
+    )
+    earnings_is_cumulative = bool(
+        valuation.get("latest_earnings_is_cumulative")
+        or _dict(financial_quality.get("source_snapshot")).get("is_cumulative")
+    )
+    period_label = _financial_period_label(
+        period,
+        earnings_period_type,
+        earnings_fiscal_year,
+        earnings_period_scope,
+        earnings_is_cumulative,
+    )
     earnings_fields: dict[str, object] = {
         "period": period,
+        "period_type": earnings_period_type or None,
+        "period_label": period_label,
+        "financial_period_required": True,
         "preliminary": bool(valuation.get("earnings_context_is_preliminary")),
     }
     earnings_values = {
@@ -2097,6 +2174,14 @@ def _fact_catalog(
         add_interpretation_fact(
             "valuation:book",
             ("bvps", "price_to_book"),
+        )
+        add_interpretation_fact(
+            "valuation:book_value",
+            ("bvps",),
+        )
+        add_interpretation_fact(
+            "valuation:current_pbr",
+            ("price_to_book",),
         )
         forward_book_fact_id = (
             "valuation:modeled_forward_book"
@@ -3425,6 +3510,214 @@ _INVESTOR_FLOW_LANGUAGE = re.compile(
     r"(?:투자주체\s*수급|(?:외국인|기관|개인).{0,16}(?:수급|순매수|순매도))",
     re.IGNORECASE,
 )
+_GENERIC_STOCK_SUPPLY_LANGUAGE = re.compile(
+    r"(?:수급(?:\s*(?:부재|공백|우호|약화|강화|개선|악화))?"
+    r"|매수\s*주체|공동\s*(?:매수|매도)|외국인|기관|개인|순매수|순매도)",
+    re.IGNORECASE,
+)
+_KR_SUPPLY_DIRECTION = re.compile(
+    r"(?P<direction>순매수|순매도|매수\s*우위|매도\s*우위|매수|매도)",
+    re.IGNORECASE,
+)
+_FINANCIAL_PERIOD_USAGE = re.compile(
+    r"\b20\d{2}년\s*(?:[1-4]분기|상반기\s*누적|3분기\s*누적|연간)\b"
+)
+_FINANCIAL_PERIOD_SEMANTICS = {
+    "revenue",
+    "operating_income",
+    "net_income",
+    "operating_margin_pct",
+    "revenue_qoq_pct",
+    "revenue_yoy_pct",
+    "operating_income_qoq_pct",
+    "operating_income_yoy_pct",
+}
+_NEGATIVE_BOOK_LANGUAGE = re.compile(
+    r"(?:음의\s*(?:BVPS|주당순자산|장부가치)|"
+    r"(?:BVPS|주당순자산|장부가치)(?:가|는|은)?\s*음수|자본잠식)",
+    re.IGNORECASE,
+)
+_HISTORICAL_VALUATION_LANGUAGE = re.compile(
+    r"(?:역사적|과거|자체\s*역사).{0,24}(?:PER|PBR|배수|백분위|상단|하단|높|낮)",
+    re.IGNORECASE,
+)
+_PEER_VALUATION_LANGUAGE = re.compile(
+    r"(?:peer|피어|동종|업종).{0,24}(?:premium|discount|프리미엄|할인|높|낮|비싸|싸)",
+    re.IGNORECASE,
+)
+
+
+def _section_fact_ids(review: AIStockReview, text_ref: str) -> set[str]:
+    if text_ref.startswith("core_judgment."):
+        return set(review.core_judgment.fact_ids)
+    if text_ref.startswith("business_earnings."):
+        return set(review.business_earnings.fact_ids)
+    if text_ref.startswith("price_positioning."):
+        return set(review.price_positioning.fact_ids)
+    if text_ref.startswith("supply_analysis."):
+        return set(review.supply_analysis.fact_ids)
+    if text_ref.startswith("valuation_analysis."):
+        return set(review.valuation_analysis.fact_ids)
+    return set()
+
+
+def _claims_in_sentence(
+    review: AIStockReview,
+    text_ref: str,
+    sentence: str,
+) -> list[object]:
+    return [
+        claim
+        for claim in review.numeric_claims
+        if claim.text_ref == text_ref and claim.usage in sentence
+    ]
+
+
+def _kr_supply_grounding_errors(
+    ticker: str,
+    market: AIReviewMarket | None,
+    review: AIStockReview,
+) -> list[str]:
+    if market != "kr":
+        return []
+    errors: list[str] = []
+    actor_semantics = {
+        "외국인": {
+            "1d": "foreign_net_buy_qty",
+            "5d": "foreign_net_buy_qty_5d",
+            "20d": "foreign_net_buy_qty_20d",
+        },
+        "기관": {
+            "1d": "institution_net_buy_qty",
+            "5d": "institution_net_buy_qty_5d",
+            "20d": "institution_net_buy_qty_20d",
+        },
+    }
+    for text_ref, text in _prose_fields(review).items():
+        for sentence in re.split(r"(?<=[.!?])\s+|\n+", text):
+            if not _KR_SUPPLY_DIRECTION.search(sentence):
+                continue
+            claims = _claims_in_sentence(review, text_ref, sentence)
+            if re.search(r"(?:당일|1\s*일).{0,12}공동\s*(?:매수|매도)", sentence):
+                required = {
+                    "foreign_net_buy_qty",
+                    "institution_net_buy_qty",
+                }
+                claimed = {str(claim.semantic_type) for claim in claims}
+                if not required.issubset(claimed):
+                    errors.append(
+                        f"{ticker}:kr_supply_joint_1d_grounding_missing:{text_ref}"
+                    )
+            for actor, horizons in actor_semantics.items():
+                actor_pattern = re.compile(
+                    rf"{actor}\s*(?P<horizon>당일|1\s*일|5\s*일|20\s*일)?"
+                    r"[^.!?\n]{0,16}?(?P<direction>순매수|순매도|매수\s*우위|매도\s*우위)",
+                    re.IGNORECASE,
+                )
+                for match in actor_pattern.finditer(sentence):
+                    raw_horizon = (match.group("horizon") or "").replace(" ", "")
+                    horizon = {
+                        "": "1d",
+                        "당일": "1d",
+                        "1일": "1d",
+                        "5일": "5d",
+                        "20일": "20d",
+                    }[raw_horizon]
+                    semantic = horizons[horizon]
+                    matching = []
+                    for claim in claims:
+                        if claim.semantic_type != semantic:
+                            continue
+                        usage_start = sentence.find(claim.usage)
+                        usage_end = usage_start + len(claim.usage)
+                        if usage_start >= 0 and (
+                            usage_start < match.end() and match.start() < usage_end
+                        ):
+                            matching.append(claim)
+                    if not matching:
+                        errors.append(
+                            f"{ticker}:kr_supply_actor_horizon_grounding_missing:"
+                            f"{text_ref}:{actor}:{horizon}"
+                        )
+                        continue
+                    direction_text = match.group("direction")
+                    for claim in matching:
+                        if (
+                            claim.value < 0
+                            and "매수" in direction_text
+                            and "매도" not in direction_text
+                        ) or (
+                            claim.value >= 0
+                            and "매도" in direction_text
+                            and "매수" not in direction_text
+                        ):
+                            errors.append(
+                                f"{ticker}:kr_supply_direction_mismatch:"
+                                f"{text_ref}:{actor}:{horizon}"
+                            )
+    return list(dict.fromkeys(errors))
+
+
+def _financial_period_language_errors(
+    ticker: str,
+    review: AIStockReview,
+) -> list[str]:
+    errors: list[str] = []
+    for claim in review.numeric_claims:
+        if claim.semantic_type not in _FINANCIAL_PERIOD_SEMANTICS:
+            continue
+        if not _FINANCIAL_PERIOD_USAGE.search(claim.usage):
+            errors.append(
+                f"{ticker}:financial_period_label_missing:"
+                f"{claim.fact_id}:{claim.field_path}:{claim.text_ref}"
+            )
+    return list(dict.fromkeys(errors))
+
+
+def _valuation_interpretation_evidence_errors(
+    ticker: str,
+    review: AIStockReview,
+) -> list[str]:
+    errors: list[str] = []
+    historical_semantics = {
+        "historical_pe_percentile",
+        "historical_pb_percentile",
+        "company_pe_vs_median_pct",
+        "company_pb_vs_median_pct",
+    }
+    peer_semantics = {
+        "peer_pe_multiple",
+        "peer_pb_multiple",
+        "peer_pe_relative_pct",
+        "peer_pb_relative_pct",
+    }
+    for text_ref, text in _prose_fields(review).items():
+        facts = _section_fact_ids(review, text_ref)
+        claims = [
+            claim for claim in review.numeric_claims if claim.text_ref == text_ref
+        ]
+        if _NEGATIVE_BOOK_LANGUAGE.search(text) and not facts.intersection(
+            {"valuation:book_value", "valuation:book_quality"}
+        ):
+            errors.append(
+                f"{ticker}:negative_book_interpretation_without_homogeneous_fact:"
+                f"{text_ref}"
+            )
+        if _HISTORICAL_VALUATION_LANGUAGE.search(text) and not any(
+            claim.semantic_type in historical_semantics for claim in claims
+        ):
+            errors.append(
+                f"{ticker}:historical_valuation_interpretation_without_comparison:"
+                f"{text_ref}"
+            )
+        if _PEER_VALUATION_LANGUAGE.search(text) and not any(
+            claim.semantic_type in peer_semantics for claim in claims
+        ):
+            errors.append(
+                f"{ticker}:peer_valuation_interpretation_without_comparison:"
+                f"{text_ref}"
+            )
+    return list(dict.fromkeys(errors))
 
 
 def _security_identity_language_errors(
@@ -3593,7 +3886,13 @@ def _market_supply_language_errors(
     prose = _prose_fields(review)
     has_investor_flow_fact = any(
         str(item.get("semantic_type") or "").startswith(
-            ("foreign_net_buy_qty", "institution_net_buy_qty")
+            (
+                "us_investor_flow",
+                "us_fund_flow",
+                "short_interest_positioning",
+                "foreign_net_buy_qty",
+                "institution_net_buy_qty",
+            )
         )
         and item.get("prose_allowed") is True
         for item in stock.get("numeric_registry", [])
@@ -3602,7 +3901,10 @@ def _market_supply_language_errors(
     for text_ref, text in prose.items():
         if _US_KR_SUPPLY_HORIZON_LANGUAGE.search(text):
             errors.append(f"{ticker}:us_kr_supply_horizon_language:{text_ref}")
-        if not has_investor_flow_fact and _INVESTOR_FLOW_LANGUAGE.search(text):
+        if not has_investor_flow_fact and (
+            _INVESTOR_FLOW_LANGUAGE.search(text)
+            or _GENERIC_STOCK_SUPPLY_LANGUAGE.search(text)
+        ):
             errors.append(f"{ticker}:us_investor_flow_not_in_packet:{text_ref}")
     return list(dict.fromkeys(errors))
 
@@ -3684,6 +3986,9 @@ def _validate_stock_review(
     errors.extend(
         _market_supply_language_errors(review.ticker, market, stock, review)
     )
+    errors.extend(_kr_supply_grounding_errors(review.ticker, market, review))
+    errors.extend(_financial_period_language_errors(review.ticker, review))
+    errors.extend(_valuation_interpretation_evidence_errors(review.ticker, review))
     identity_blocks_valuation = bool(
         identity_state == IDENTITY_CONFLICT
         or (identity_contract_present and identity_state == IDENTITY_UNKNOWN)
