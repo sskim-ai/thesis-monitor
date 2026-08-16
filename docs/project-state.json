@@ -34,18 +34,25 @@
     "us": 0
   },
   "pilot_current_successful_sessions": {
-    "kr": 2,
+    "kr": 3,
     "us": 2
   },
   "pilot_state_reconciliation": {
-    "checked_at": "2026-08-15",
-    "kr_success_packet_id": "2026-08-15-kr-run-19-919a670464b4",
+    "checked_at": "2026-08-16",
+    "previous_kr_day_2_packet_id": "2026-08-15-kr-run-19-919a670464b4",
+    "kr_success_packet_id": "2026-08-16-kr-run-21-049f367f0274",
     "validator_status": "passed",
     "delivery": "8/8 sent",
     "archive_completion_marker_verified": true,
     "counted_exactly_once": true,
     "source": "natural_scheduled_task",
-    "experimental_run": false
+    "experimental_run": false,
+    "operational_pipeline_success": true,
+    "human_message_quality_status": "pending_work_human_review",
+    "production_assist_evidence_eligible": false,
+    "reconciliation_counter_mutation": 0,
+    "phase_7_2_9_implementation_started": false,
+    "report": "docs/reports/20260816-third-natural-kr-v310-operational-reconciliation.md"
   },
   "pilot_success_archive_contract": {
     "completion_marker": "archive-complete.json",

@@ -68,9 +68,10 @@ If Telegram fails after validation, the persisted rendered set is retried at bou
 
 Active cohort: `ai-assisted-pilot-v3` with policy `daily-review-v3.10`, schema 4, structure v2, and
 renderer v3. State is stored in `data/ai_review/pilot/state-v3.json`; the current successful count is
-persisted as KR 2/5 and US 2/5. The 2026-08-16 US session is operationally counted but failed the
-required human message-quality review. Its operational success remains exactly once, its human
-quality disposition remains FAIL, and it is not eligible Production Assist evidence.
+persisted as KR 3/5 and US 2/5. The 2026-08-16 US session is operationally counted but failed the
+required human message-quality review. The 2026-08-16 KR session is operationally counted, while its
+human message-quality disposition is `pending_work_human_review`. Neither session is currently
+eligible as Production Assist evidence.
 Earlier state files and history remain immutable.
 
 A market success increments only when:
@@ -103,6 +104,12 @@ verified every required artifact hash, and wrote `archive-complete.json` before 
 The packet and assessment date occur once in state, so it is KR Day 2/5. Experimental v3.10 output
 did not send or count this session. A renderer may show the next candidate day, but only persisted
 state after verified archive completion is the actual count.
+
+The natural 2026-08-16 KR v3.10 Scheduled Task packet
+`2026-08-16-kr-run-21-049f367f0274` also passed validation, delivered 8/8, verified all 13 required
+archive artifacts, and wrote its completion marker before the exactly-once state update. It is KR
+Day 3/5 operationally. Its human-quality status remains pending direct Work review, reconciliation
+did not mutate the counter, and the session is not yet Production Assist evidence.
 
 Fallback is an operational success but not an AI Pilot success. Each market needs five successful
 sessions. Completion returns that market to deterministic delivery; it does not enable Production
@@ -148,14 +155,16 @@ blocking findings and explicit user approval.
 Phase 7.2.7 adds deterministic transition-direction, identity-versus-basis, and market-aware supply
 validation. Its corrected retrospective passed its automated gates, but its KR regression selected a
 v3.9 artifact from a closed KR session and later human review found additional blocking safety and
-language issues. It remains failed-review evidence and does not change KR 2/5 or US 2/5.
+language issues. It remains failed-review evidence and did not change the then-current KR 2/5 or
+US 2/5.
 
 Phase 7.2.8 uses a fresh current-code packet from the completed 2026-08-14 KR after-hours session and
 keeps the original natural US artifacts immutable. Its corrected isolated US 14-message and KR
 8-message sets pass binder, full validator, financial-quality, label/instrument, zone-role,
 postposition, identity, comparison, supply, and repetition hard checks. This is still experimental:
 it is unmerged, undeployed, not human-approved, and ineligible for Production Assist evidence. It
-does not send Telegram or change KR 2/5 or US 2/5.
+did not send Telegram or change the then-current KR 2/5 or US 2/5; only the later natural KR Day 3
+session advanced current runtime to KR 3/5.
 
 ## Incident Classification
 

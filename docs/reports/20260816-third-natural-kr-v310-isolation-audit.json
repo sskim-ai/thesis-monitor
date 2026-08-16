@@ -1,0 +1,58 @@
+{
+  "schema_version": "1",
+  "packet_id": "2026-08-16-kr-run-21-049f367f0274",
+  "audit_mode": "read_only",
+  "before_sha256": {
+    "packet": "20e94eff4f16d9b95e3e5e196c3c8f0b349a24b581b38c8d807cae802066b6b4",
+    "validated_output_archive": "acb810c7d91e0d2df985fc7854a70c5c5aded9845b3f32aef69959ea0890e8da",
+    "persisted_telegram_payload": "202b83b805ceb39e8eb4fbed114a2754400be7da8db2e8d1a0920fe428d4edcc",
+    "archive_completion_marker": "1bfcbf4664dd0611d315da8a6329978e34bd94a8e4b264f212ebff383302dec4",
+    "pilot_state": "8aad97ed4110efb0f7bccd83aa5bd9e78c570e218ef59784c52dcf5cadf24450",
+    "operating_db": "987bfb4b82c8017054f8c3cef1213177246868f902dd134be0c4f4fd34e3eb78",
+    "finalized_outbox_semantic_copy": "91504323db349fc2fe67a2eddbeffd71bdb65eebc9c167cc9bde75f3b24c8526"
+  },
+  "after_sha256": {
+    "packet": "20e94eff4f16d9b95e3e5e196c3c8f0b349a24b581b38c8d807cae802066b6b4",
+    "validated_output_archive": "acb810c7d91e0d2df985fc7854a70c5c5aded9845b3f32aef69959ea0890e8da",
+    "persisted_telegram_payload": "202b83b805ceb39e8eb4fbed114a2754400be7da8db2e8d1a0920fe428d4edcc",
+    "archive_completion_marker": "1bfcbf4664dd0611d315da8a6329978e34bd94a8e4b264f212ebff383302dec4",
+    "pilot_state": "8aad97ed4110efb0f7bccd83aa5bd9e78c570e218ef59784c52dcf5cadf24450",
+    "operating_db": "987bfb4b82c8017054f8c3cef1213177246868f902dd134be0c4f4fd34e3eb78",
+    "finalized_outbox_semantic_copy": "91504323db349fc2fe67a2eddbeffd71bdb65eebc9c167cc9bde75f3b24c8526"
+  },
+  "all_immutable_hashes_equal": true,
+  "completion_ordering_mtime_ns": {
+    "delivery_result_mtime_ns": 1786865416505530020,
+    "archive_complete_mtime_ns": 1786865416533831111,
+    "pilot_state_mtime_ns": 1786865416572642183
+  },
+  "completion_ordering_verified": true,
+  "exactly_once": {
+    "packet_occurrences": 1,
+    "assessment_date_occurrences": 1,
+    "session_counted": true,
+    "runtime_after": {
+      "kr": 3,
+      "us": 2
+    }
+  },
+  "scheduled_task_definition_sha256": {
+    "Thesis Monitor US Primary": "281797923e70d37639fa440b255e8e1b94e2b80fdb56462579c3e689655c3f2a",
+    "Thesis Monitor US Backup": "f87c2a65e65de49a450f21dd7ee635c23f9a0b7efb4b9251895ee2237a46e7a1",
+    "Thesis Monitor KR Primary": "c4c1e2e9de0d90a0114dab4cca29896da422ea312ceba22f1ba2393ff9c7cce4",
+    "Thesis Monitor KR Backup": "4dbccd5f79723641f96134413ebdd7fb0dff2432bc75062f00ab596128fb7689"
+  },
+  "mutations_by_reconciliation": {
+    "telegram": 0,
+    "operating_db": 0,
+    "official_assessment": 0,
+    "original_packet": 0,
+    "validated_output": 0,
+    "archive": 0,
+    "pilot_state": 0,
+    "scheduled_tasks": 0,
+    "api_restart": 0,
+    "production_assist": 0
+  },
+  "phase_7_2_9_implementation_started": false
+}
