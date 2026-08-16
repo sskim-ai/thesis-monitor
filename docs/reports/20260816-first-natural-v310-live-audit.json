@@ -1,0 +1,187 @@
+{
+  "schema_version": "1",
+  "audited_at": "2026-08-16T10:02:39+09:00",
+  "overall_disposition": "failed_message_quality_review",
+  "runtime_pipeline_disposition": "passed_and_counted",
+  "quality_reconciliation_required": true,
+  "repository": {
+    "commit": "d0daa6816e171288e24baf59bb5894a1415e0bff",
+    "origin_main_aligned": true,
+    "development_checkout_aligned": true,
+    "operating_checkout_aligned": true,
+    "working_tree_clean_before_audit_docs": true
+  },
+  "session": {
+    "market": "us",
+    "assessment_date": "2026-08-16",
+    "source_run_id": 20,
+    "source_run_status": "success",
+    "source_ticker_count": 13,
+    "packet_id": "2026-08-16-us-run-20-6c15d0003955",
+    "claim_id": "b2d53426-1a78-4bbd-83bb-c6314b8014c1",
+    "natural_scheduled_session": true,
+    "primary_owner": "codex-us-primary",
+    "backup_result": "no_pending_packet",
+    "eligible": true
+  },
+  "contracts": {
+    "policy": "daily-review-v3.10",
+    "schema": 4,
+    "structure": "ohlcv-structure-v2",
+    "pilot": "ai-assisted-pilot-v3",
+    "renderer": "ai-assisted-pilot-renderer-v3",
+    "security_identity": "security-identity-v2",
+    "financial_quality": "financial-quality-taint-v2",
+    "ai_review_mode": "shadow",
+    "production_assist": false
+  },
+  "completeness": {
+    "active_us_tickers": 13,
+    "packet_tickers": 13,
+    "output_tickers": 13,
+    "rendered_stock_messages": 13,
+    "market_messages": 1,
+    "logical_messages": 14,
+    "telegram_chunks": 14,
+    "missing_tickers": [],
+    "extra_tickers": []
+  },
+  "binding": {
+    "initial_automatic": 162,
+    "final_automatic": 158,
+    "manual": 0,
+    "rejected": 0,
+    "formatter_errors": 0,
+    "unresolved_placeholders": 0,
+    "user_visible_numeric_tokens": 158,
+    "redundant_authored_labels": 0,
+    "repeated_bound_labels": 0,
+    "source_label_mismatches": 0,
+    "instrument_label_mismatches": 0
+  },
+  "validator": {
+    "initial_status": "rejected",
+    "initial_error_count": 9,
+    "correction_cycles": 1,
+    "final_status": "passed",
+    "final_error_count": 0,
+    "rejected_ai_sent": false,
+    "initial_fallback_eligibility_preserved": true
+  },
+  "delivery": {
+    "mode": "ai_assisted",
+    "status": "sent",
+    "expected_messages": 14,
+    "sent_messages": 14,
+    "pending_messages": 0,
+    "expected_chunks": 14,
+    "sent_chunks": 14,
+    "duplicates": 0,
+    "deterministic_fallback_sent": false,
+    "persisted_retry_count": 1,
+    "analysis_rerun": false,
+    "packet_regenerated": false,
+    "renderer_rerun": false,
+    "archive_message_file_sha256": "1e03196c239e73ed044c3862bdde1b25f38759e66a2dc116c8df3c7dfb224cdc",
+    "database_text_matches_archive": "14/14"
+  },
+  "archive": {
+    "status": "complete",
+    "required_artifacts_verified": "13/13",
+    "hash_mismatches": 0,
+    "delivery_result_written_before_completion_marker": true,
+    "completion_marker_written_before_pilot_state": true
+  },
+  "pilot": {
+    "before": {"kr": 2, "us": 1},
+    "persisted_after": {"kr": 2, "us": 2},
+    "packet_occurrences_in_success_ids": 1,
+    "assessment_date_occurrences_in_success_dates": 1,
+    "runtime_exactly_once": true,
+    "manual_mutations_by_audit": 0,
+    "quality_approved": false,
+    "note": "The runtime recorded the operational success before this required human message-quality review. The audit did not edit the counter."
+  },
+  "security_identity": {
+    "GOOGL": {
+      "state": "verified_non_depositary",
+      "tier": "tier_a_authoritative",
+      "valuation_exposed_only_when_eligible": true
+    },
+    "SKHY": {
+      "state": "verified_depositary",
+      "security_type": "ads",
+      "official_ratio": 0.1,
+      "ratio_direction": "ordinary_shares_per_adr",
+      "unsafe_multiples_exposed": false,
+      "message_identity_wording_accurate": false
+    },
+    "TSM": {
+      "packet_state": "unknown",
+      "database_record_quality": "inferred",
+      "database_provider": "local+openfigi",
+      "unsafe_multiples_exposed": false
+    },
+    "WRD": {
+      "packet_state": "unknown",
+      "database_record_quality": "inferred",
+      "database_provider": "local+openfigi",
+      "unsafe_multiples_exposed": false
+    }
+  },
+  "message_quality": {
+    "market": "passed",
+    "stocks_overall": "failed",
+    "observer_holder_distinct": "13/13",
+    "unsafe_numeric_leakage": 0,
+    "unsafe_qualitative_leakage": 0,
+    "normalized_us_supply_template_occurrences": 13,
+    "quantitative_grounding_report_status": "flagged",
+    "quantitative_grounding_flags": {
+      "SKHY": ["insufficient_quantitative_grounding:core"],
+      "SNDK": ["insufficient_quantitative_grounding:core", "insufficient_quantitative_grounding:valuation"],
+      "WRD": ["insufficient_quantitative_grounding:core"]
+    },
+    "findings": [
+      {
+        "severity": "fail",
+        "layers": ["AI_REASONING", "VALIDATION"],
+        "ticker": "CRCL",
+        "issue": "The core judgment says the confirmation transitioned to failed_breakout while the price section and packet delta say failed_breakout_to_not_reached."
+      },
+      {
+        "severity": "fail",
+        "layers": ["AI_REASONING", "VALIDATION"],
+        "ticker": "SKHY",
+        "issue": "The message says security identity is unverified although the packet contains verified ADS identity and official ratio 0.1; only the current-security denominator/share/currency basis is unverified."
+      },
+      {
+        "severity": "fail",
+        "layers": ["KNOWLEDGE_ROUTING", "AI_REASONING"],
+        "ticker": "ALL_US_STOCKS",
+        "issue": "All 13 stock messages mechanically repeat a Korean-style daily/short/medium investor-flow frame even though verified US investor-flow facts are unavailable."
+      },
+      {
+        "severity": "gap",
+        "layers": ["CANONICALIZATION", "PACKET", "DATA"],
+        "ticker": "TSM,WRD",
+        "issue": "The deployment cross-section recorded verified_depositary, but the natural packet resolves both identities as unknown from inferred local+openfigi records. Multiples remain safely withheld."
+      },
+      {
+        "severity": "gap",
+        "layers": ["PERSISTENCE"],
+        "ticker": null,
+        "issue": "The operational Pilot counter advanced before the required human message-quality review, so persisted US 2/5 and quality approval now disagree."
+      }
+    ]
+  },
+  "observation_mutations": {
+    "telegram_sends_by_audit": 0,
+    "database_writes_by_audit": 0,
+    "packet_or_archive_rewrites": 0,
+    "assessment_writes_by_audit": 0,
+    "pilot_writes_by_audit": 0,
+    "scheduled_task_changes": 0,
+    "production_assist_changes": 0
+  }
+}

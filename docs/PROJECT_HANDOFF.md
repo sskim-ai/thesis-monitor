@@ -23,7 +23,7 @@ execution or an autonomous investment adviser.
 | OHLCV structure | `ohlcv-structure-v2` |
 | Investment Knowledge | `3.0` |
 | Chart Knowledge | `1.0` |
-| Pilot | `ai-assisted-pilot-v3`, current KR 2/5 and US 1/5 |
+| Pilot | `ai-assisted-pilot-v3`, persisted runtime KR 2/5 and US 2/5; latest US quality review failed |
 | Renderer | `ai-assisted-pilot-renderer-v3` |
 | Public Action | `0.4.5`, operationId 20/20 |
 | Production Assist | Disabled |
@@ -190,7 +190,9 @@ no peer number was invented. See [PEER_VALUATION.md](architecture/PEER_VALUATION
 
 ## Pilot Architecture
 
-Pilot v3 activated at KR 0/5 and US 0/5; the current count is KR 2/5 and US 1/5. The required task
+Pilot v3 activated at KR 0/5 and US 0/5; the persisted runtime count is KR 2/5 and US 2/5. The
+2026-08-16 US session is not human-quality approved, so this count requires reconciliation before it
+is treated as an accepted second US success. The required task
 contract is policy v3.10/schema 4/structure v2. A successful day requires Codex completion, validation
 pass, complete AI-assisted delivery, required artifact verification, and a verified atomic
 `archive-complete.json` marker. Only then is success recorded. Archive-only recovery reuses the
@@ -238,8 +240,17 @@ Authoritative SEC identity remediation changed exactly CORZ, GOOGL, HUT, IBM, SK
 second pass was a six-of-six no-op. An isolated post-remediation US packet passed binder and full
 validation with 161 automatic bindings and no manual claims. GOOGL's clean valuation lineage was
 restored, while SKHY remained an ADS with ratio 0.1 and its unverified current-security multiples
-stayed withheld. The first naturally scheduled v3.10 Live session remains pending and no Pilot count
-was added by deployment or retrospective validation.
+stayed withheld. Deployment and retrospective validation did not add a Pilot count.
+
+The first natural v3.10 session was US packet `2026-08-16-us-run-20-6c15d0003955`. The automated
+pipeline passed after one correction cycle, delivered 14/14 AI-assisted messages, verified 13/13
+required archive hashes, wrote the completion marker before state, and recorded the packet exactly
+once. Runtime therefore advanced US to 2/5. The required human message review failed because CRCL's
+confirmation transition contradicted its packet delta, SKHY's prose incorrectly described its
+verified ADS identity as unverified, and all 13 US stocks repeated a KR-style investor-flow horizon
+frame. TSM and WRD also resolved to `unknown` identity despite the deployment cross-section recording
+`verified_depositary`; their unsafe multiples remained withheld. No manual count correction was
+made. See [the Live validation report](reports/20260816-first-natural-v310-live-validation.md).
 
 ## Source Map
 
@@ -265,6 +276,10 @@ was added by deployment or retrospective validation.
   current Knowledge taxonomy coverage can still route general/low; Phase 6 does not force a mapping.
 - There is no broad point-in-time peer valuation provider. Limited active-universe comparisons fail
   closed unless at least three comparable peers pass all basis checks.
+- The persisted US count includes the 2026-08-16 operationally complete session whose human message
+  quality review failed. Reconcile the count contract before accepting another US Pilot advance.
+- TSM and WRD live packet identity resolution must be reconciled with the post-remediation identity
+  cross-section; current multiple withholding is safe.
 - Production Assist remains disabled pending a separate decision after successful Pilot evidence.
 
 Never fill data gaps with model knowledge. Add a deterministic fact, semantic contract, and tests

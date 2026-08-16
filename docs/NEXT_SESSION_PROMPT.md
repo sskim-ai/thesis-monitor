@@ -39,7 +39,8 @@ Current contracts:
 - OHLCV structure `ohlcv-structure-v2`
 - security identity `security-identity-v2`
 - financial quality `financial-quality-taint-v2`
-- Pilot `ai-assisted-pilot-v3`, current successful count KR 2/5 and US 1/5
+- Pilot `ai-assisted-pilot-v3`, persisted runtime count KR 2/5 and US 2/5; the latest US quality
+  review failed and the count needs reconciliation
 - renderer `ai-assisted-pilot-renderer-v3`
 - AI mode shadow; Production Assist disabled
 - Public Action 0.4.5, operationId 20/20
@@ -85,6 +86,15 @@ and was counted exactly once as KR Day 2/5. Experimental v3.10 retrospective or 
 not change this persisted count. Treat any next-day Pilot label as a candidate until delivery,
 archive completion, and runtime state all agree.
 
+The first natural v3.10 US packet `2026-08-16-us-run-20-6c15d0003955` passed the automated pipeline,
+delivered 14/14, completed its archive, and was recorded exactly once, so runtime state now says US
+2/5. Human message-quality review failed: CRCL's confirmation transition is internally inconsistent,
+SKHY's prose incorrectly says its verified ADS identity is unverified, and all 13 US stock messages
+repeat a KR-style investor-flow horizon frame. TSM and WRD also resolve to `unknown` in the packet
+despite the deployment cross-section's `verified_depositary` result. Unsafe multiples stayed absent.
+Do not edit the counter ad hoc; reconcile the quality/count contract explicitly before accepting a
+further US Pilot advance. Read `docs/reports/20260816-first-natural-v310-live-validation.md` first.
+
 US morning schedule: deterministic run and first KRX fetch 08:05, KRX deadline 08:20, Codex Primary
 08:15, Backup 08:30, deterministic fallback 08:40. Telegram network retry reuses persisted final
 text and never reruns analysis.
@@ -95,14 +105,13 @@ knowledge.
 
 Next work order:
 
-1. Observe the first naturally scheduled Pilot v3 session after the v3.10 production transition; do
-   not trigger a duplicate manual run.
-2. Confirm authoritative identity and financial-quality v2 metadata are present in the fresh packet.
-3. Review each successful market session by DATA, CALCULATION, PACKET, KNOWLEDGE_ROUTING,
-   AI_REASONING, VALIDATION, RENDERER, and DELIVERY.
-4. Preserve exact archives and old cohorts.
-5. Confirm GOOGL identity/valuation and SKHY ADS multiple withholding without conversion.
-6. Keep Production Assist disabled until a separate explicit user decision.
+1. Reconcile the persisted US 2/5 count with the failed human-quality disposition without an ad hoc
+   counter edit.
+2. Correct CRCL transition interpretation, SKHY identity-aware wording, and the US supply-routing
+   repetition under a separately approved code task.
+3. Reconcile TSM/WRD deployment identity evidence with live packet resolution.
+4. Preserve exact archives and old cohorts; do not replay Telegram.
+5. Keep Production Assist disabled until a separate explicit user decision.
 
 Before completion, run full pytest, Ruff, `git diff --check`, Knowledge checksum validation, Skill and
 schema validation, documentation path validation, push the exact commit, verify GitHub Actions Test

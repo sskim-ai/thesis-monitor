@@ -68,7 +68,8 @@ If Telegram fails after validation, the persisted rendered set is retried at bou
 
 Active cohort: `ai-assisted-pilot-v3` with policy `daily-review-v3.10`, schema 4, structure v2, and
 renderer v3. State is stored in `data/ai_review/pilot/state-v3.json`; the current successful count is
-KR 2/5 and US 1/5.
+persisted as KR 2/5 and US 2/5. The 2026-08-16 US session is operationally counted but failed the
+required human message-quality review, so the accepted quality disposition is unresolved.
 Earlier state files and history remain immutable.
 
 A market success increments only when:
@@ -131,7 +132,16 @@ On 2026-08-15 Phase 7.2 was deployed after exact-commit checks. The six approved
 identity remediations were applied and were all idempotent no-ops on the second pass. Four existing
 tasks were updated in place to v3.10 without changing schedules, checkout, or claim options. This
 deployment and its isolated validation did not send Telegram or increment Pilot state; the first
-naturally scheduled v3.10 Live session is pending.
+naturally scheduled v3.10 Live session occurred on 2026-08-16.
+
+US packet `2026-08-16-us-run-20-6c15d0003955` passed the final validator after one permitted
+correction, delivered 14/14 AI-assisted messages, verified 13/13 required archive hashes, and wrote
+`archive-complete.json` before the exactly-once success record. Runtime advanced US from 1/5 to 2/5.
+Human review nevertheless failed the message-quality gate because CRCL's transition text contradicted
+the packet delta, SKHY's text denied a verified ADS identity rather than only the unverified
+current-security denominator, and all 13 US stock messages repeated a KR-style investor-flow frame.
+The audit made no counter mutation. The persisted count and human approval must be reconciled by an
+explicit follow-up decision before another US day is accepted.
 
 ## Incident Classification
 

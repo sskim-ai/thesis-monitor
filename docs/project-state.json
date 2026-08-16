@@ -21,7 +21,7 @@
     "unsupported_unit": "identity_preserved_prose_denied",
     "price_currency_fallback": false,
     "hotfix_status": "deployed",
-    "natural_live_validation": "pending_after_v3_10_activation"
+    "natural_live_validation": "safe_currency_boundary_passed_but_message_quality_failed"
   },
   "monitoring_state_version": "monitoring-state-v1",
   "peer_group_version": "verified-profile-peers-v1",
@@ -35,7 +35,7 @@
   },
   "pilot_current_successful_sessions": {
     "kr": 2,
-    "us": 1
+    "us": 2
   },
   "pilot_state_reconciliation": {
     "checked_at": "2026-08-15",
@@ -78,7 +78,36 @@
     "isolated_us_packet": "2026-08-15-us-run-18-c10358fd3a28",
     "isolated_validator_status": "passed",
     "scheduled_tasks_transitioned": 4,
-    "first_natural_live": "pending"
+    "first_natural_live": "2026-08-16-us-run-20-6c15d0003955"
+  },
+  "first_natural_v3_10_live_validation": {
+    "checked_at": "2026-08-16",
+    "packet_id": "2026-08-16-us-run-20-6c15d0003955",
+    "market": "us",
+    "runtime_pipeline_status": "passed_and_counted",
+    "human_message_quality_status": "failed",
+    "quality_reconciliation_required": true,
+    "final_validator_status": "passed",
+    "automatic_numeric_bindings": 158,
+    "manual_numeric_bindings": 0,
+    "delivery": "14/14 sent",
+    "archive_completion_marker_verified": true,
+    "counted_exactly_once": true,
+    "persisted_count_after": {
+      "kr": 2,
+      "us": 2
+    },
+    "audit_counter_mutation": 0,
+    "blocking_quality_findings": [
+      "crcl_confirmation_transition_contradiction",
+      "skhy_verified_ads_identity_described_as_unverified",
+      "us_stock_supply_horizon_boilerplate_13_of_13"
+    ],
+    "identity_follow_up": [
+      "tsm_live_packet_unknown_vs_deployment_verified_depositary",
+      "wrd_live_packet_unknown_vs_deployment_verified_depositary"
+    ],
+    "report": "docs/reports/20260816-first-natural-v310-live-validation.md"
   },
   "single_delivery": true,
   "deterministic_fallback": true,
