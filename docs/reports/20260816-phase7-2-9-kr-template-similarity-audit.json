@@ -1,0 +1,79 @@
+{
+  "contract": "relational-reasoning-quality-v2",
+  "source_packet_id": "2026-08-16-kr-run-21-049f367f0274",
+  "corrected_packet_id": "2026-08-16-kr-run-21-27d84c4e9795",
+  "source_database_copy_sha256": "4cfd7bb8cef53954de141c8201f510d0c9bd6c2a1ce3299ae22ad42a18826d39",
+  "packet_sha256": "bf05b58050bdaaad307095fb526ded3627289bd4b1ab6b34e4ad66669a45c199",
+  "validated_output_sha256": "2d07e1cddd7da4067063b61a20c0337be75ed1e0d17c4501548d9cb5d8cd14aa",
+  "rendered_payload_set_sha256": "67e41477c5dbd221f95344576bfb61d7ab4040e5b0a97c9a40f16ec4ea06abf2",
+  "output_stock_count": 7,
+  "rendered_message_count": 8,
+  "provider_network_calls": 0,
+  "telegram_sends": 0,
+  "operating_mutations": 0,
+  "pilot_mutations": 0,
+  "human_quality_status": "pending_work_human_review",
+  "negative_replay": {
+    "substantive_repeated_sentence_count": 1,
+    "template_skeleton_repeat_count": 2
+  },
+  "corrected": {
+    "substantive_repeated_sentence_count": 0,
+    "template_skeleton_repeat_count": 0,
+    "exceptions": [
+      {
+        "skeleton": "<numeric> 수준입니다.",
+        "stock_count": 7,
+        "tickers": [
+          "000660",
+          "003690",
+          "005490",
+          "005930",
+          "010120",
+          "012450",
+          "086280"
+        ],
+        "reason": "canonical_current_price_statement"
+      },
+      {
+        "skeleton": "<numeric>, <numeric>.",
+        "stock_count": 7,
+        "tickers": [
+          "000660",
+          "003690",
+          "005490",
+          "005930",
+          "010120",
+          "012450",
+          "086280"
+        ],
+        "reason": "kr_actor_horizon_numeric_pair"
+      },
+      {
+        "skeleton": "가까운 동적 지지는 <numeric>부터 <numeric>까지이고, 가까운 동적 저항은 <numeric>부터 <numeric>까지입니다.",
+        "stock_count": 4,
+        "tickers": [
+          "005490",
+          "010120",
+          "012450",
+          "086280"
+        ],
+        "reason": "canonical_zone_endpoint_contract"
+      },
+      {
+        "skeleton": "엔진이 가장 가까운 적격 저항을 쓴 <numeric>로 추격 부담이 큽니다.",
+        "stock_count": 4,
+        "tickers": [
+          "005490",
+          "010120",
+          "012450",
+          "086280"
+        ],
+        "reason": "canonical_nearest_resistance_rr_contract"
+      }
+    ],
+    "observer_holder_distinct_count": 7,
+    "generic_next_check_count": 0,
+    "generic_unknown_count": 0
+  }
+}

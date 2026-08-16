@@ -1,0 +1,222 @@
+{
+  "contract": "financial-period-label-v1",
+  "source_packet_id": "2026-08-16-kr-run-21-049f367f0274",
+  "corrected_packet_id": "2026-08-16-kr-run-21-27d84c4e9795",
+  "source_database_copy_sha256": "4cfd7bb8cef53954de141c8201f510d0c9bd6c2a1ce3299ae22ad42a18826d39",
+  "packet_sha256": "bf05b58050bdaaad307095fb526ded3627289bd4b1ab6b34e4ad66669a45c199",
+  "validated_output_sha256": "2d07e1cddd7da4067063b61a20c0337be75ed1e0d17c4501548d9cb5d8cd14aa",
+  "rendered_payload_set_sha256": "67e41477c5dbd221f95344576bfb61d7ab4040e5b0a97c9a40f16ec4ea06abf2",
+  "output_stock_count": 7,
+  "rendered_message_count": 8,
+  "provider_network_calls": 0,
+  "telegram_sends": 0,
+  "operating_mutations": 0,
+  "pilot_mutations": 0,
+  "human_quality_status": "pending_work_human_review",
+  "stocks": [
+    {
+      "ticker": "000660",
+      "period": "2026-06-30",
+      "period_type": "Q2",
+      "period_label": "2026년 상반기 누적",
+      "period_scope": "half-year",
+      "is_cumulative": true,
+      "provider": "opendart",
+      "fields": [
+        {
+          "semantic_type": "revenue",
+          "field_path": "fields.revenue.value",
+          "period_label": "2026년 상반기 누적",
+          "canonical_label": "2026년 상반기 누적 매출",
+          "prose_allowed": false,
+          "denial_reason": "critical_financial_quality_outlier",
+          "user_visible_usages": [],
+          "all_usages_include_period": true
+        },
+        {
+          "semantic_type": "operating_income",
+          "field_path": "fields.operating_income.value",
+          "period_label": "2026년 상반기 누적",
+          "canonical_label": "2026년 상반기 누적 영업이익",
+          "prose_allowed": false,
+          "denial_reason": "critical_financial_quality_outlier",
+          "user_visible_usages": [],
+          "all_usages_include_period": true
+        }
+      ]
+    },
+    {
+      "ticker": "003690",
+      "period": "2026-06-30",
+      "period_type": "Q2",
+      "period_label": "2026년 상반기 누적",
+      "period_scope": "half-year",
+      "is_cumulative": true,
+      "provider": "opendart",
+      "fields": [
+        {
+          "semantic_type": "operating_income",
+          "field_path": "fields.operating_income.value",
+          "period_label": "2026년 상반기 누적",
+          "canonical_label": "2026년 상반기 누적 영업이익",
+          "prose_allowed": true,
+          "denial_reason": null,
+          "user_visible_usages": [
+            "2026년 상반기 누적 영업이익 1,750억원",
+            "2026년 상반기 누적 영업이익 1,750억원"
+          ],
+          "all_usages_include_period": true
+        }
+      ]
+    },
+    {
+      "ticker": "005490",
+      "period": "2026-06-30",
+      "period_type": "Q2",
+      "period_label": "2026년 상반기 누적",
+      "period_scope": "half-year",
+      "is_cumulative": true,
+      "provider": "opendart",
+      "fields": [
+        {
+          "semantic_type": "revenue",
+          "field_path": "fields.revenue.value",
+          "period_label": "2026년 상반기 누적",
+          "canonical_label": "2026년 상반기 누적 매출",
+          "prose_allowed": true,
+          "denial_reason": null,
+          "user_visible_usages": [],
+          "all_usages_include_period": true
+        },
+        {
+          "semantic_type": "operating_income",
+          "field_path": "fields.operating_income.value",
+          "period_label": "2026년 상반기 누적",
+          "canonical_label": "2026년 상반기 누적 영업이익",
+          "prose_allowed": true,
+          "denial_reason": null,
+          "user_visible_usages": [
+            "2026년 상반기 누적 영업이익 8,190억원"
+          ],
+          "all_usages_include_period": true
+        }
+      ]
+    },
+    {
+      "ticker": "005930",
+      "period": "2026-06-30",
+      "period_type": "Q2",
+      "period_label": "2026년 상반기 누적",
+      "period_scope": "half-year",
+      "is_cumulative": true,
+      "provider": "opendart",
+      "fields": [
+        {
+          "semantic_type": "revenue",
+          "field_path": "fields.revenue.value",
+          "period_label": "2026년 상반기 누적",
+          "canonical_label": "2026년 상반기 누적 매출",
+          "prose_allowed": true,
+          "denial_reason": null,
+          "user_visible_usages": [],
+          "all_usages_include_period": true
+        },
+        {
+          "semantic_type": "operating_income",
+          "field_path": "fields.operating_income.value",
+          "period_label": "2026년 상반기 누적",
+          "canonical_label": "2026년 상반기 누적 영업이익",
+          "prose_allowed": true,
+          "denial_reason": null,
+          "user_visible_usages": [
+            "2026년 상반기 누적 영업이익 89조4,924억원"
+          ],
+          "all_usages_include_period": true
+        }
+      ]
+    },
+    {
+      "ticker": "010120",
+      "period": "2026-06-30",
+      "period_type": "Q2",
+      "period_label": "2026년 상반기 누적",
+      "period_scope": "half-year",
+      "is_cumulative": true,
+      "provider": "opendart",
+      "fields": [
+        {
+          "semantic_type": "operating_income",
+          "field_path": "fields.operating_income.value",
+          "period_label": "2026년 상반기 누적",
+          "canonical_label": "2026년 상반기 누적 영업이익",
+          "prose_allowed": true,
+          "denial_reason": null,
+          "user_visible_usages": [
+            "2026년 상반기 누적 영업이익 1,785억원",
+            "2026년 상반기 누적 영업이익 1,785억원"
+          ],
+          "all_usages_include_period": true
+        }
+      ]
+    },
+    {
+      "ticker": "012450",
+      "period": "2026-06-30",
+      "period_type": "Q2",
+      "period_label": "2026년 상반기 누적",
+      "period_scope": "half-year",
+      "is_cumulative": true,
+      "provider": "opendart",
+      "fields": [
+        {
+          "semantic_type": "operating_income",
+          "field_path": "fields.operating_income.value",
+          "period_label": "2026년 상반기 누적",
+          "canonical_label": "2026년 상반기 누적 영업이익",
+          "prose_allowed": true,
+          "denial_reason": null,
+          "user_visible_usages": [
+            "2026년 상반기 누적 영업이익 1조3,655억원",
+            "2026년 상반기 누적 영업이익 1조3,655억원"
+          ],
+          "all_usages_include_period": true
+        }
+      ]
+    },
+    {
+      "ticker": "086280",
+      "period": "2026-06-30",
+      "period_type": "Q2",
+      "period_label": "2026년 상반기 누적",
+      "period_scope": "half-year",
+      "is_cumulative": true,
+      "provider": "opendart",
+      "fields": [
+        {
+          "semantic_type": "revenue",
+          "field_path": "fields.revenue.value",
+          "period_label": "2026년 상반기 누적",
+          "canonical_label": "2026년 상반기 누적 매출",
+          "prose_allowed": true,
+          "denial_reason": null,
+          "user_visible_usages": [],
+          "all_usages_include_period": true
+        },
+        {
+          "semantic_type": "operating_income",
+          "field_path": "fields.operating_income.value",
+          "period_label": "2026년 상반기 누적",
+          "canonical_label": "2026년 상반기 누적 영업이익",
+          "prose_allowed": true,
+          "denial_reason": null,
+          "user_visible_usages": [
+            "2026년 상반기 누적 영업이익 4,951억원"
+          ],
+          "all_usages_include_period": true
+        }
+      ]
+    }
+  ],
+  "user_visible_financial_amount_without_period_count": 0,
+  "period_guess_from_report_date_count": 0
+}

@@ -1,0 +1,45 @@
+{
+  "contract": "runtime-message-quality-v1",
+  "checked_at": "2026-08-16T18:00:00+00:00",
+  "pipeline": [
+    "ai_draft",
+    "numeric_binder",
+    "full_validator",
+    "deterministic_renderer",
+    "runtime_message_quality_gate",
+    "atomic_payload_and_receipt_persistence",
+    "delivery",
+    "archive",
+    "pilot_record"
+  ],
+  "delivery_boundary_requires_receipt_pass": true,
+  "receipt_hashes": {
+    "kr": {
+      "packet_sha256": "bf05b58050bdaaad307095fb526ded3627289bd4b1ab6b34e4ad66669a45c199",
+      "validated_output_sha256": "2d07e1cddd7da4067063b61a20c0337be75ed1e0d17c4501548d9cb5d8cd14aa",
+      "rendered_payload_set_sha256": "67e41477c5dbd221f95344576bfb61d7ab4040e5b0a97c9a40f16ec4ea06abf2"
+    },
+    "us": {
+      "packet_sha256": "1cc335e0fc8359ac3d7801a5747f8bc54a2c3ce17c968304f5e1d7289c85ecf8",
+      "validated_output_sha256": "4915aaaef02aeb5ef8037853f50de43cd7f0d9b99191a3ee8c6ed44fdcf36e9d",
+      "rendered_payload_set_sha256": "607bda0367ed71141509c5a6c95836a298b3922c33706a844b89487090fda1cf"
+    }
+  },
+  "negative_cases": {
+    "quality_gate_failure_ai_telegram_sends": 0,
+    "quality_gate_failure_fallback_sets": 1,
+    "tampered_persisted_payload_delivery": "rejected_quality_receipt_invalid",
+    "retry_reanalysis_count": 0,
+    "retry_packet_regeneration_count": 0,
+    "retry_renderer_runs": 0,
+    "pilot_count_before_archive": 0
+  },
+  "focused_tests": [
+    "test_runtime_quality_gate_rejects_ai_and_preserves_single_fallback",
+    "test_persisted_retry_rejects_payload_tampering_against_quality_receipt",
+    "test_runtime_quality_receipt_binds_packet_output_and_rendered_payload"
+  ],
+  "focused_test_status": "passed",
+  "telegram_sends": 0,
+  "operating_mutations": 0
+}

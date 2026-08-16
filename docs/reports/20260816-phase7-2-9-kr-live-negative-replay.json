@@ -1,0 +1,501 @@
+{
+  "contract": "runtime-message-quality-negative-replay-v1",
+  "source_packet_id": "2026-08-16-kr-run-21-049f367f0274",
+  "immutable_replay": true,
+  "binding_report": {
+    "status": "passed",
+    "contract": "numeric-fact-ref-v1",
+    "auto_bound": 0,
+    "manual_legacy": 86,
+    "formatting_failures": 0,
+    "rejected": 0,
+    "removed_unsafe": 0,
+    "label_quality": {
+      "redundant_authored_label_count": 0,
+      "repeated_bound_label_count": 0,
+      "source_label_mismatch_count": 0,
+      "instrument_label_mismatch_count": 0,
+      "period_label_mismatch_count": 0,
+      "zone_role_mismatch_count": 0,
+      "postposition_mismatch_count": 0
+    },
+    "errors": [],
+    "bindings": []
+  },
+  "validation_errors": [
+    "003690:kr_supply_actor_horizon_grounding_missing:supply_analysis.text:외국인:1d",
+    "003690:financial_period_label_missing:earnings:2026-06-30:fields.operating_income.value:core_judgment.text",
+    "003690:financial_period_label_missing:earnings:2026-06-30:fields.operating_income.value:business_earnings.text",
+    "005490:kr_supply_actor_horizon_grounding_missing:supply_analysis.text:외국인:1d",
+    "005490:kr_supply_actor_horizon_grounding_missing:supply_analysis.text:기관:1d",
+    "005490:financial_period_label_missing:earnings:2026-06-30:fields.operating_income.value:core_judgment.text",
+    "005490:financial_period_label_missing:earnings:2026-06-30:fields.operating_income.value:business_earnings.text",
+    "005930:financial_period_label_missing:earnings:2026-06-30:fields.operating_income.value:core_judgment.text",
+    "005930:financial_period_label_missing:earnings:2026-06-30:fields.operating_income.value:business_earnings.text",
+    "005930:absolute_valuation_judgment_without_comparison:valuation_analysis.text",
+    "010120:kr_supply_joint_1d_grounding_missing:supply_analysis.text",
+    "010120:kr_supply_actor_horizon_grounding_missing:supply_analysis.text:외국인:1d",
+    "010120:kr_supply_actor_horizon_grounding_missing:supply_analysis.text:기관:1d",
+    "010120:financial_period_label_missing:earnings:2026-06-30:fields.operating_income.value:core_judgment.text",
+    "010120:financial_period_label_missing:earnings:2026-06-30:fields.operating_income.value:business_earnings.text",
+    "012450:kr_supply_actor_horizon_grounding_missing:supply_analysis.text:외국인:1d",
+    "012450:financial_period_label_missing:earnings:2026-06-30:fields.operating_income.value:core_judgment.text",
+    "012450:financial_period_label_missing:earnings:2026-06-30:fields.operating_income.value:business_earnings.text",
+    "086280:unsupported_risk_reward_comparison:price_positioning.text",
+    "086280:unsupported_risk_reward_comparison:price_positioning.new_observer_view",
+    "086280:kr_supply_joint_1d_grounding_missing:supply_analysis.text",
+    "086280:kr_supply_actor_horizon_grounding_missing:supply_analysis.text:외국인:1d",
+    "086280:financial_period_label_missing:earnings:2026-06-30:fields.operating_income.value:core_judgment.text",
+    "086280:financial_period_label_missing:earnings:2026-06-30:fields.operating_income.value:business_earnings.text",
+    "086280:absolute_valuation_judgment_without_comparison:valuation_analysis.text"
+  ],
+  "quality_receipt": {
+    "contract": "runtime-message-quality-v1",
+    "packet_id": "2026-08-16-kr-run-21-049f367f0274",
+    "policy_version": "daily-review-v3.10",
+    "schema_version": "4",
+    "packet_sha256": "9dbae75365e6e400c8aa51d600e289c55aa1eb0b861e773d3e2d5311194bee70",
+    "validated_output_sha256": "32c48ae78327834f07833ca9b07bbd8d17b761f35ea872dfd60679fe81cdc192",
+    "rendered_payload_set_sha256": "10f70093d4e6a12141b27d3f6cc21d52bedc70513db68d49614f69075fcd0a00",
+    "message_count": 8,
+    "check_results": {
+      "contract": "relational-reasoning-quality-v2",
+      "duplicate_threshold": 3,
+      "stock_count": 7,
+      "repeated_sentences": [
+        {
+          "sentence": "영업현금흐름·설비투자·자본수익률",
+          "stock_count": 3,
+          "tickers": [
+            "005490",
+            "005930",
+            "086280"
+          ],
+          "classification": "substantive"
+        }
+      ],
+      "substantive_repeated_sentence_count": 1,
+      "max_substantive_repeat": 3,
+      "template_skeleton_repeats": [
+        {
+          "skeleton": "<numeric>이고 <numeric>입니다.",
+          "stock_count": 7,
+          "tickers": [
+            "000660",
+            "003690",
+            "005490",
+            "005930",
+            "010120",
+            "012450",
+            "086280"
+          ]
+        },
+        {
+          "skeleton": "영업현금흐름·설비투자·자본수익률",
+          "stock_count": 3,
+          "tickers": [
+            "005490",
+            "005930",
+            "086280"
+          ]
+        }
+      ],
+      "template_skeleton_repeat_count": 2,
+      "template_skeleton_exceptions": [
+        {
+          "skeleton": "<numeric>입니다.",
+          "stock_count": 7,
+          "tickers": [
+            "000660",
+            "003690",
+            "005490",
+            "005930",
+            "010120",
+            "012450",
+            "086280"
+          ],
+          "reason": "single_canonical_numeric_statement"
+        },
+        {
+          "skeleton": "가까운 동적 지지는 <numeric>부터 <numeric>까지이고, 가까운 동적 저항은 <numeric>부터 <numeric>까지입니다.",
+          "stock_count": 4,
+          "tickers": [
+            "005490",
+            "010120",
+            "012450",
+            "086280"
+          ],
+          "reason": "canonical_zone_endpoint_contract"
+        },
+        {
+          "skeleton": "엔진이 가장 가까운 적격 저항을 쓴 <numeric>로 추격 부담이 큽니다.",
+          "stock_count": 4,
+          "tickers": [
+            "005490",
+            "010120",
+            "012450",
+            "086280"
+          ],
+          "reason": "canonical_nearest_resistance_rr_contract"
+        }
+      ],
+      "observer_holder": [
+        {
+          "ticker": "000660",
+          "distinct": true
+        },
+        {
+          "ticker": "003690",
+          "distinct": true
+        },
+        {
+          "ticker": "005490",
+          "distinct": true
+        },
+        {
+          "ticker": "005930",
+          "distinct": true
+        },
+        {
+          "ticker": "010120",
+          "distinct": true
+        },
+        {
+          "ticker": "012450",
+          "distinct": true
+        },
+        {
+          "ticker": "086280",
+          "distinct": true
+        }
+      ],
+      "observer_holder_distinct_count": 7,
+      "section_numeric_grounding": {
+        "000660": {
+          "core": 2,
+          "earnings": 0,
+          "price": 3,
+          "supply": 2,
+          "valuation": 2
+        },
+        "003690": {
+          "core": 2,
+          "earnings": 2,
+          "price": 3,
+          "supply": 2,
+          "valuation": 2
+        },
+        "005490": {
+          "core": 2,
+          "earnings": 2,
+          "price": 6,
+          "supply": 2,
+          "valuation": 2
+        },
+        "005930": {
+          "core": 2,
+          "earnings": 2,
+          "price": 3,
+          "supply": 2,
+          "valuation": 2
+        },
+        "010120": {
+          "core": 2,
+          "earnings": 2,
+          "price": 6,
+          "supply": 2,
+          "valuation": 0
+        },
+        "012450": {
+          "core": 2,
+          "earnings": 1,
+          "price": 6,
+          "supply": 2,
+          "valuation": 0
+        },
+        "086280": {
+          "core": 2,
+          "earnings": 2,
+          "price": 6,
+          "supply": 2,
+          "valuation": 2
+        }
+      },
+      "stock_specific_next_check_count": 21,
+      "generic_next_check_count": 0,
+      "stock_specific_unknown_count": 9,
+      "generic_unknown_count": 0,
+      "supply_routing": {
+        "substantive_repeated_supply_sentence_count": 0,
+        "us_kr_style_horizon_count": 0,
+        "generic_us_investor_flow_unknown_count": 0,
+        "generic_us_supply_count": 0,
+        "us_kr_style_horizon_rows": [],
+        "generic_us_investor_flow_unknown_rows": [],
+        "generic_us_supply_rows": []
+      },
+      "numeric_label_quality": {
+        "redundant_authored_label_count": 0,
+        "repeated_bound_label_count": 0,
+        "source_label_mismatch_count": 0,
+        "instrument_label_mismatch_count": 0,
+        "period_label_mismatch_count": 0,
+        "zone_role_mismatch_count": 0,
+        "postposition_mismatch_count": 6,
+        "details": [
+          {
+            "scope": "003690",
+            "text_ref": "core_judgment.text",
+            "semantic_type": "operating_income",
+            "issue": "postposition_mismatch"
+          },
+          {
+            "scope": "005490",
+            "text_ref": "core_judgment.text",
+            "semantic_type": "operating_income",
+            "issue": "postposition_mismatch"
+          },
+          {
+            "scope": "005930",
+            "text_ref": "core_judgment.text",
+            "semantic_type": "operating_income",
+            "issue": "postposition_mismatch"
+          },
+          {
+            "scope": "010120",
+            "text_ref": "core_judgment.text",
+            "semantic_type": "operating_income",
+            "issue": "postposition_mismatch"
+          },
+          {
+            "scope": "012450",
+            "text_ref": "core_judgment.text",
+            "semantic_type": "operating_income",
+            "issue": "postposition_mismatch"
+          },
+          {
+            "scope": "086280",
+            "text_ref": "core_judgment.text",
+            "semantic_type": "operating_income",
+            "issue": "postposition_mismatch"
+          }
+        ],
+        "hard_checks_passed": false
+      },
+      "kr_supply_numeric_coverage": [
+        {
+          "ticker": "000660",
+          "eligible_semantics": [
+            "foreign_net_buy_qty",
+            "foreign_net_buy_qty_20d",
+            "foreign_net_buy_qty_5d",
+            "institution_net_buy_qty",
+            "institution_net_buy_qty_20d",
+            "institution_net_buy_qty_5d"
+          ],
+          "claimed_semantics": [
+            "foreign_net_buy_qty_20d",
+            "foreign_net_buy_qty_5d"
+          ],
+          "missing_semantics": [
+            "foreign_net_buy_qty",
+            "institution_net_buy_qty",
+            "institution_net_buy_qty_20d",
+            "institution_net_buy_qty_5d"
+          ],
+          "numeric_horizon_coverage_passed": false
+        },
+        {
+          "ticker": "003690",
+          "eligible_semantics": [
+            "foreign_net_buy_qty",
+            "foreign_net_buy_qty_20d",
+            "foreign_net_buy_qty_5d",
+            "institution_net_buy_qty",
+            "institution_net_buy_qty_20d",
+            "institution_net_buy_qty_5d"
+          ],
+          "claimed_semantics": [
+            "foreign_net_buy_qty_20d",
+            "foreign_net_buy_qty_5d"
+          ],
+          "missing_semantics": [
+            "foreign_net_buy_qty",
+            "institution_net_buy_qty",
+            "institution_net_buy_qty_20d",
+            "institution_net_buy_qty_5d"
+          ],
+          "numeric_horizon_coverage_passed": false
+        },
+        {
+          "ticker": "005490",
+          "eligible_semantics": [
+            "foreign_net_buy_qty",
+            "foreign_net_buy_qty_20d",
+            "foreign_net_buy_qty_5d",
+            "institution_net_buy_qty",
+            "institution_net_buy_qty_20d",
+            "institution_net_buy_qty_5d"
+          ],
+          "claimed_semantics": [
+            "foreign_net_buy_qty_20d",
+            "foreign_net_buy_qty_5d"
+          ],
+          "missing_semantics": [
+            "foreign_net_buy_qty",
+            "institution_net_buy_qty",
+            "institution_net_buy_qty_20d",
+            "institution_net_buy_qty_5d"
+          ],
+          "numeric_horizon_coverage_passed": false
+        },
+        {
+          "ticker": "005930",
+          "eligible_semantics": [
+            "foreign_net_buy_qty",
+            "foreign_net_buy_qty_20d",
+            "foreign_net_buy_qty_5d",
+            "institution_net_buy_qty",
+            "institution_net_buy_qty_20d",
+            "institution_net_buy_qty_5d"
+          ],
+          "claimed_semantics": [
+            "foreign_net_buy_qty_20d",
+            "foreign_net_buy_qty_5d"
+          ],
+          "missing_semantics": [
+            "foreign_net_buy_qty",
+            "institution_net_buy_qty",
+            "institution_net_buy_qty_20d",
+            "institution_net_buy_qty_5d"
+          ],
+          "numeric_horizon_coverage_passed": false
+        },
+        {
+          "ticker": "010120",
+          "eligible_semantics": [
+            "foreign_net_buy_qty",
+            "foreign_net_buy_qty_20d",
+            "foreign_net_buy_qty_5d",
+            "institution_net_buy_qty",
+            "institution_net_buy_qty_20d",
+            "institution_net_buy_qty_5d"
+          ],
+          "claimed_semantics": [
+            "foreign_net_buy_qty_20d",
+            "foreign_net_buy_qty_5d"
+          ],
+          "missing_semantics": [
+            "foreign_net_buy_qty",
+            "institution_net_buy_qty",
+            "institution_net_buy_qty_20d",
+            "institution_net_buy_qty_5d"
+          ],
+          "numeric_horizon_coverage_passed": false
+        },
+        {
+          "ticker": "012450",
+          "eligible_semantics": [
+            "foreign_net_buy_qty",
+            "foreign_net_buy_qty_20d",
+            "foreign_net_buy_qty_5d",
+            "institution_net_buy_qty",
+            "institution_net_buy_qty_20d",
+            "institution_net_buy_qty_5d"
+          ],
+          "claimed_semantics": [
+            "foreign_net_buy_qty_20d",
+            "foreign_net_buy_qty_5d"
+          ],
+          "missing_semantics": [
+            "foreign_net_buy_qty",
+            "institution_net_buy_qty",
+            "institution_net_buy_qty_20d",
+            "institution_net_buy_qty_5d"
+          ],
+          "numeric_horizon_coverage_passed": false
+        },
+        {
+          "ticker": "086280",
+          "eligible_semantics": [
+            "foreign_net_buy_qty",
+            "foreign_net_buy_qty_20d",
+            "foreign_net_buy_qty_5d",
+            "institution_net_buy_qty",
+            "institution_net_buy_qty_20d",
+            "institution_net_buy_qty_5d"
+          ],
+          "claimed_semantics": [
+            "foreign_net_buy_qty_20d",
+            "foreign_net_buy_qty_5d"
+          ],
+          "missing_semantics": [
+            "foreign_net_buy_qty",
+            "institution_net_buy_qty",
+            "institution_net_buy_qty_20d",
+            "institution_net_buy_qty_5d"
+          ],
+          "numeric_horizon_coverage_passed": false
+        }
+      ],
+      "identity_prose_mismatch_count": 0,
+      "unsupported_comparative_claim_count": 2,
+      "supply_grounding_error_count": 9,
+      "financial_period_error_count": 12,
+      "valuation_evidence_error_count": 0,
+      "message_set_completeness": {
+        "expected_stock_count": 7,
+        "output_stock_count": 7,
+        "rendered_message_count": 8,
+        "passed": true
+      },
+      "rendered_heading_quality": {
+        "expected_heading": "📊 수급",
+        "mismatch_count": 1,
+        "message_indexes": [
+          8
+        ]
+      },
+      "rendered_identity_prose_mismatches": [],
+      "rendered_identity_prose_mismatch_count": 0,
+      "hard_checks_passed": false,
+      "deterministic_quality_gate_passed": false,
+      "production_assist_evidence_eligible": false,
+      "human_quality_approval_required": true
+    },
+    "errors": [
+      "003690:kr_supply_actor_horizon_grounding_missing:supply_analysis.text:외국인:1d",
+      "003690:financial_period_label_missing:earnings:2026-06-30:fields.operating_income.value:core_judgment.text",
+      "003690:financial_period_label_missing:earnings:2026-06-30:fields.operating_income.value:business_earnings.text",
+      "005490:kr_supply_actor_horizon_grounding_missing:supply_analysis.text:외국인:1d",
+      "005490:kr_supply_actor_horizon_grounding_missing:supply_analysis.text:기관:1d",
+      "005490:financial_period_label_missing:earnings:2026-06-30:fields.operating_income.value:core_judgment.text",
+      "005490:financial_period_label_missing:earnings:2026-06-30:fields.operating_income.value:business_earnings.text",
+      "005930:financial_period_label_missing:earnings:2026-06-30:fields.operating_income.value:core_judgment.text",
+      "005930:financial_period_label_missing:earnings:2026-06-30:fields.operating_income.value:business_earnings.text",
+      "005930:absolute_valuation_judgment_without_comparison:valuation_analysis.text",
+      "010120:kr_supply_joint_1d_grounding_missing:supply_analysis.text",
+      "010120:kr_supply_actor_horizon_grounding_missing:supply_analysis.text:외국인:1d",
+      "010120:kr_supply_actor_horizon_grounding_missing:supply_analysis.text:기관:1d",
+      "010120:financial_period_label_missing:earnings:2026-06-30:fields.operating_income.value:core_judgment.text",
+      "010120:financial_period_label_missing:earnings:2026-06-30:fields.operating_income.value:business_earnings.text",
+      "012450:kr_supply_actor_horizon_grounding_missing:supply_analysis.text:외국인:1d",
+      "012450:financial_period_label_missing:earnings:2026-06-30:fields.operating_income.value:core_judgment.text",
+      "012450:financial_period_label_missing:earnings:2026-06-30:fields.operating_income.value:business_earnings.text",
+      "086280:unsupported_risk_reward_comparison:price_positioning.text",
+      "086280:unsupported_risk_reward_comparison:price_positioning.new_observer_view",
+      "086280:kr_supply_joint_1d_grounding_missing:supply_analysis.text",
+      "086280:kr_supply_actor_horizon_grounding_missing:supply_analysis.text:외국인:1d",
+      "086280:financial_period_label_missing:earnings:2026-06-30:fields.operating_income.value:core_judgment.text",
+      "086280:financial_period_label_missing:earnings:2026-06-30:fields.operating_income.value:business_earnings.text",
+      "086280:absolute_valuation_judgment_without_comparison:valuation_analysis.text",
+      "runtime_message_quality_gate_failed"
+    ],
+    "status": "failed",
+    "checked_at": "2026-08-16T18:00:00+00:00"
+  },
+  "historical_delivery_or_pilot_mutation": 0,
+  "source_database_copy_sha256": "4cfd7bb8cef53954de141c8201f510d0c9bd6c2a1ce3299ae22ad42a18826d39",
+  "historical_artifacts_mutated": false,
+  "operational_pilot_count_changed": false
+}

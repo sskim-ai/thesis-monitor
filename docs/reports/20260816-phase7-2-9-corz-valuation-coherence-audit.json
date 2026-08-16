@@ -1,0 +1,96 @@
+{
+  "contract": "valuation-coherence-v1",
+  "source_packet_id": "2026-08-16-us-run-20-6c15d0003955",
+  "corrected_packet_id": "2026-08-16-us-run-20-53fa21541277",
+  "source_database_copy_sha256": "4cfd7bb8cef53954de141c8201f510d0c9bd6c2a1ce3299ae22ad42a18826d39",
+  "packet_sha256": "1cc335e0fc8359ac3d7801a5747f8bc54a2c3ce17c968304f5e1d7289c85ecf8",
+  "validated_output_sha256": "4915aaaef02aeb5ef8037853f50de43cd7f0d9b99191a3ee8c6ed44fdcf36e9d",
+  "rendered_payload_set_sha256": "607bda0367ed71141509c5a6c95836a298b3922c33706a844b89487090fda1cf",
+  "output_stock_count": 13,
+  "rendered_message_count": 14,
+  "provider_network_calls": 0,
+  "telegram_sends": 0,
+  "operating_mutations": 0,
+  "pilot_mutations": 0,
+  "human_quality_status": "pending_work_human_review",
+  "ticker": "CORZ",
+  "coherence_fact": {
+    "fact_id": "valuation:book_quality",
+    "fact_type": "valuation_quality",
+    "as_of_date": "2026-08-14",
+    "source": "deterministic_valuation_coherence",
+    "fields": {
+      "contract": "valuation-coherence-v1",
+      "status": "failed",
+      "current_price": 20.18,
+      "price_currency": "USD",
+      "bvps": -7.570257864055797,
+      "book_currency": "USD",
+      "price_to_book": 0.3751,
+      "price_to_book_source": "provider",
+      "price_to_book_method": "Finnhub reported P/B",
+      "price_to_book_basis_status": "directly_comparable",
+      "price_to_book_denominator_period": "2026-06-30",
+      "bvps_denominator_period": "2026-06-30",
+      "book_share_basis": "current_security",
+      "reasons": [
+        "non_positive_bvps_cannot_support_pbr_multiple"
+      ]
+    },
+    "prose_eligible": true,
+    "interpretation_eligible": true,
+    "numeric_registry_eligible": false
+  },
+  "numeric_registry": {
+    "price_to_book": {
+      "fact_id": "valuation:current",
+      "field_path": "fields.price_to_book",
+      "value": 0.3751,
+      "unit": "x",
+      "semantic_type": "price_to_book",
+      "registered": true,
+      "prose_allowed": false,
+      "formatter": "multiple",
+      "scope": "stock",
+      "approved_labels": [
+        "현재 PBR",
+        "price to book",
+        "PBR"
+      ],
+      "canonical_label": null,
+      "canonical_label_required": false,
+      "canonical_label_kind": null,
+      "financial_quality_state": "denied",
+      "financial_quality_reason_codes": [
+        "non_positive_bvps_cannot_support_pbr_multiple"
+      ],
+      "dependency_fields": [
+        "book_value_denominator"
+      ],
+      "dependency_periods": [
+        "2026-06-30"
+      ],
+      "denominator_period": "2026-06-30",
+      "financial_source_period": "2026-06-30",
+      "financial_source_type": "full_statement",
+      "financial_source_provider": "sec_companyfacts",
+      "lineage_verification_status": "verified",
+      "denial_reason": "valuation_coherence_failed",
+      "quality_decision_version": "financial-quality-taint-v2",
+      "approved_display_variants": [],
+      "canonical_display_value": null
+    }
+  },
+  "final_valuation_text": "TTM 이익 기준이 음수여서 PER 해석은 보류합니다. 현재 PBR과 BVPS의 부호가 동일한 증권·기간·통화 기준에서 정합적인지 확인되지 않아 PBR 및 역사적 PB 비교도 보류하며, 가격·매출·거래량 자료는 독립적으로 유지합니다.",
+  "positive_pbr_negative_bvps_contradiction_visible": false,
+  "unsupported_negative_book_claim_count": 0,
+  "aggregate_valuation_bypass_count": 0,
+  "retained_safe_semantics": [
+    "current_price",
+    "revenue",
+    "revenue_qoq",
+    "revenue_yoy",
+    "ttm_eps",
+    "volume_ratio_20d"
+  ]
+}

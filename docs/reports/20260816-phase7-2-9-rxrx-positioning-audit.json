@@ -1,0 +1,28 @@
+{
+  "contract": "us-positioning-language-v1",
+  "source_packet_id": "2026-08-16-us-run-20-6c15d0003955",
+  "corrected_packet_id": "2026-08-16-us-run-20-53fa21541277",
+  "source_database_copy_sha256": "4cfd7bb8cef53954de141c8201f510d0c9bd6c2a1ce3299ae22ad42a18826d39",
+  "packet_sha256": "1cc335e0fc8359ac3d7801a5747f8bc54a2c3ce17c968304f5e1d7289c85ecf8",
+  "validated_output_sha256": "4915aaaef02aeb5ef8037853f50de43cd7f0d9b99191a3ee8c6ed44fdcf36e9d",
+  "rendered_payload_set_sha256": "607bda0367ed71141509c5a6c95836a298b3922c33706a844b89487090fda1cf",
+  "output_stock_count": 13,
+  "rendered_message_count": 14,
+  "provider_network_calls": 0,
+  "telegram_sends": 0,
+  "operating_mutations": 0,
+  "pilot_mutations": 0,
+  "human_quality_status": "pending_work_human_review",
+  "ticker": "RXRX",
+  "volume_bindings": [],
+  "supply_analysis": {
+    "text": "20일 거래량비 0.68배 수준으로 평균보다 낮습니다. 현재 RR과 함께 보면 가격 반응의 참여 강도는 아직 제한적입니다.",
+    "fact_ids": [
+      "chart:daily"
+    ]
+  },
+  "new_observer_view": "현재 차트 손익비와 평균보다 낮은 거래량 참여를 함께 보고, 임상·자금조달 증거가 확인될 때까지 신규 조건을 보류합니다.",
+  "generic_supply_occurrences": 0,
+  "kr_investor_flow_occurrences": 0,
+  "result": "passed"
+}

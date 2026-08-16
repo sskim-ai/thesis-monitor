@@ -121,6 +121,15 @@ TSM and WRD remain safely `unknown` because production has no authoritative iden
 `docs/reports/20260816-phase7-2-8-human-review-safety-readiness.md` and its linked full Previews.
 The branch is not merged or deployed, and the correction is not human-approved evidence yet.
 
+Phase 7.2.9 on the same experimental branch adds typed Korean numeric postpositions, exact KR
+actor/horizon supply grounding, amount-period labels, comparison-backed valuation language,
+`valuation-coherence-v1`, US relative-volume semantics, normalized reasoning-template checks, and
+the mandatory `runtime-message-quality-v1` delivery receipt. Read
+`docs/reports/20260816-phase7-2-9-runtime-quality-readiness.md` and both linked full Previews. The
+immutable KR Day 3 output fails the new gate as expected; corrected isolated KR and US outputs pass
+the binder, full validator, and runtime gate but remain `pending_work_human_review`. Production main
+and the operating checkout do not contain this application code.
+
 US morning schedule: deterministic run and first KRX fetch 08:05, KRX deadline 08:20, Codex Primary
 08:15, Backup 08:30, deterministic fallback 08:40. Telegram network retry reuses persisted final
 text and never reruns analysis.
@@ -132,10 +141,10 @@ knowledge.
 Next work order:
 
 1. Preserve the KR Day 3 and US Day 2 human-quality failures separately from their operational counts.
-2. Implement Phase 7.2.9 only on the approved experimental branch after merging this documentation
-   reconciliation, with no main code merge or operating deployment.
-3. Keep the Phase 7.2.8 corrected US/KR Previews experimental and unmerged; retain TSM/WRD identity
-   as `unknown` unless authoritative evidence is separately ingested.
+2. Review the Phase 7.2.9 corrected KR/US Previews and runtime receipt evidence; do not call their
+   deterministic PASS a human-quality approval.
+3. Keep the Phase 7.2.9 implementation experimental and unmerged; retain TSM/WRD identity as
+   `unknown` unless authoritative evidence is separately ingested.
 4. Preserve exact packets, outputs, archives, and old cohorts; do not replay Telegram.
 5. Keep KR 3/5 and US 2/5 unchanged, and keep Production Assist disabled until blocking quality
    findings are closed and the user explicitly approves it.

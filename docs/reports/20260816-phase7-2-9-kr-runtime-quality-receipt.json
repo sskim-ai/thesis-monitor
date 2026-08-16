@@ -1,0 +1,362 @@
+{
+  "contract": "runtime-message-quality-v1",
+  "packet_id": "2026-08-16-kr-run-21-27d84c4e9795",
+  "policy_version": "daily-review-v3.10",
+  "schema_version": "4",
+  "packet_sha256": "bf05b58050bdaaad307095fb526ded3627289bd4b1ab6b34e4ad66669a45c199",
+  "validated_output_sha256": "2d07e1cddd7da4067063b61a20c0337be75ed1e0d17c4501548d9cb5d8cd14aa",
+  "rendered_payload_set_sha256": "67e41477c5dbd221f95344576bfb61d7ab4040e5b0a97c9a40f16ec4ea06abf2",
+  "message_count": 8,
+  "check_results": {
+    "contract": "relational-reasoning-quality-v2",
+    "duplicate_threshold": 3,
+    "stock_count": 7,
+    "repeated_sentences": [],
+    "substantive_repeated_sentence_count": 0,
+    "max_substantive_repeat": 0,
+    "template_skeleton_repeats": [],
+    "template_skeleton_repeat_count": 0,
+    "template_skeleton_exceptions": [
+      {
+        "skeleton": "<numeric> 수준입니다.",
+        "stock_count": 7,
+        "tickers": [
+          "000660",
+          "003690",
+          "005490",
+          "005930",
+          "010120",
+          "012450",
+          "086280"
+        ],
+        "reason": "canonical_current_price_statement"
+      },
+      {
+        "skeleton": "<numeric>, <numeric>.",
+        "stock_count": 7,
+        "tickers": [
+          "000660",
+          "003690",
+          "005490",
+          "005930",
+          "010120",
+          "012450",
+          "086280"
+        ],
+        "reason": "kr_actor_horizon_numeric_pair"
+      },
+      {
+        "skeleton": "가까운 동적 지지는 <numeric>부터 <numeric>까지이고, 가까운 동적 저항은 <numeric>부터 <numeric>까지입니다.",
+        "stock_count": 4,
+        "tickers": [
+          "005490",
+          "010120",
+          "012450",
+          "086280"
+        ],
+        "reason": "canonical_zone_endpoint_contract"
+      },
+      {
+        "skeleton": "엔진이 가장 가까운 적격 저항을 쓴 <numeric>로 추격 부담이 큽니다.",
+        "stock_count": 4,
+        "tickers": [
+          "005490",
+          "010120",
+          "012450",
+          "086280"
+        ],
+        "reason": "canonical_nearest_resistance_rr_contract"
+      }
+    ],
+    "observer_holder": [
+      {
+        "ticker": "000660",
+        "distinct": true
+      },
+      {
+        "ticker": "003690",
+        "distinct": true
+      },
+      {
+        "ticker": "005490",
+        "distinct": true
+      },
+      {
+        "ticker": "005930",
+        "distinct": true
+      },
+      {
+        "ticker": "010120",
+        "distinct": true
+      },
+      {
+        "ticker": "012450",
+        "distinct": true
+      },
+      {
+        "ticker": "086280",
+        "distinct": true
+      }
+    ],
+    "observer_holder_distinct_count": 7,
+    "section_numeric_grounding": {
+      "000660": {
+        "core": 2,
+        "earnings": 0,
+        "price": 3,
+        "supply": 6,
+        "valuation": 2
+      },
+      "003690": {
+        "core": 2,
+        "earnings": 2,
+        "price": 3,
+        "supply": 6,
+        "valuation": 2
+      },
+      "005490": {
+        "core": 3,
+        "earnings": 2,
+        "price": 6,
+        "supply": 6,
+        "valuation": 2
+      },
+      "005930": {
+        "core": 3,
+        "earnings": 2,
+        "price": 3,
+        "supply": 6,
+        "valuation": 2
+      },
+      "010120": {
+        "core": 2,
+        "earnings": 2,
+        "price": 6,
+        "supply": 6,
+        "valuation": 0
+      },
+      "012450": {
+        "core": 2,
+        "earnings": 1,
+        "price": 6,
+        "supply": 6,
+        "valuation": 0
+      },
+      "086280": {
+        "core": 3,
+        "earnings": 2,
+        "price": 6,
+        "supply": 6,
+        "valuation": 2
+      }
+    },
+    "stock_specific_next_check_count": 21,
+    "generic_next_check_count": 0,
+    "stock_specific_unknown_count": 9,
+    "generic_unknown_count": 0,
+    "supply_routing": {
+      "substantive_repeated_supply_sentence_count": 0,
+      "us_kr_style_horizon_count": 0,
+      "generic_us_investor_flow_unknown_count": 0,
+      "generic_us_supply_count": 0,
+      "us_kr_style_horizon_rows": [],
+      "generic_us_investor_flow_unknown_rows": [],
+      "generic_us_supply_rows": []
+    },
+    "numeric_label_quality": {
+      "redundant_authored_label_count": 0,
+      "repeated_bound_label_count": 0,
+      "source_label_mismatch_count": 0,
+      "instrument_label_mismatch_count": 0,
+      "period_label_mismatch_count": 0,
+      "zone_role_mismatch_count": 0,
+      "postposition_mismatch_count": 0,
+      "details": [],
+      "hard_checks_passed": true
+    },
+    "kr_supply_numeric_coverage": [
+      {
+        "ticker": "000660",
+        "eligible_semantics": [
+          "foreign_net_buy_qty",
+          "foreign_net_buy_qty_20d",
+          "foreign_net_buy_qty_5d",
+          "institution_net_buy_qty",
+          "institution_net_buy_qty_20d",
+          "institution_net_buy_qty_5d"
+        ],
+        "claimed_semantics": [
+          "foreign_net_buy_qty",
+          "foreign_net_buy_qty_20d",
+          "foreign_net_buy_qty_5d",
+          "institution_net_buy_qty",
+          "institution_net_buy_qty_20d",
+          "institution_net_buy_qty_5d"
+        ],
+        "missing_semantics": [],
+        "numeric_horizon_coverage_passed": true
+      },
+      {
+        "ticker": "003690",
+        "eligible_semantics": [
+          "foreign_net_buy_qty",
+          "foreign_net_buy_qty_20d",
+          "foreign_net_buy_qty_5d",
+          "institution_net_buy_qty",
+          "institution_net_buy_qty_20d",
+          "institution_net_buy_qty_5d"
+        ],
+        "claimed_semantics": [
+          "foreign_net_buy_qty",
+          "foreign_net_buy_qty_20d",
+          "foreign_net_buy_qty_5d",
+          "institution_net_buy_qty",
+          "institution_net_buy_qty_20d",
+          "institution_net_buy_qty_5d"
+        ],
+        "missing_semantics": [],
+        "numeric_horizon_coverage_passed": true
+      },
+      {
+        "ticker": "005490",
+        "eligible_semantics": [
+          "foreign_net_buy_qty",
+          "foreign_net_buy_qty_20d",
+          "foreign_net_buy_qty_5d",
+          "institution_net_buy_qty",
+          "institution_net_buy_qty_20d",
+          "institution_net_buy_qty_5d"
+        ],
+        "claimed_semantics": [
+          "foreign_net_buy_qty",
+          "foreign_net_buy_qty_20d",
+          "foreign_net_buy_qty_5d",
+          "institution_net_buy_qty",
+          "institution_net_buy_qty_20d",
+          "institution_net_buy_qty_5d"
+        ],
+        "missing_semantics": [],
+        "numeric_horizon_coverage_passed": true
+      },
+      {
+        "ticker": "005930",
+        "eligible_semantics": [
+          "foreign_net_buy_qty",
+          "foreign_net_buy_qty_20d",
+          "foreign_net_buy_qty_5d",
+          "institution_net_buy_qty",
+          "institution_net_buy_qty_20d",
+          "institution_net_buy_qty_5d"
+        ],
+        "claimed_semantics": [
+          "foreign_net_buy_qty",
+          "foreign_net_buy_qty_20d",
+          "foreign_net_buy_qty_5d",
+          "institution_net_buy_qty",
+          "institution_net_buy_qty_20d",
+          "institution_net_buy_qty_5d"
+        ],
+        "missing_semantics": [],
+        "numeric_horizon_coverage_passed": true
+      },
+      {
+        "ticker": "010120",
+        "eligible_semantics": [
+          "foreign_net_buy_qty",
+          "foreign_net_buy_qty_20d",
+          "foreign_net_buy_qty_5d",
+          "institution_net_buy_qty",
+          "institution_net_buy_qty_20d",
+          "institution_net_buy_qty_5d"
+        ],
+        "claimed_semantics": [
+          "foreign_net_buy_qty",
+          "foreign_net_buy_qty_20d",
+          "foreign_net_buy_qty_5d",
+          "institution_net_buy_qty",
+          "institution_net_buy_qty_20d",
+          "institution_net_buy_qty_5d"
+        ],
+        "missing_semantics": [],
+        "numeric_horizon_coverage_passed": true
+      },
+      {
+        "ticker": "012450",
+        "eligible_semantics": [
+          "foreign_net_buy_qty",
+          "foreign_net_buy_qty_20d",
+          "foreign_net_buy_qty_5d",
+          "institution_net_buy_qty",
+          "institution_net_buy_qty_20d",
+          "institution_net_buy_qty_5d"
+        ],
+        "claimed_semantics": [
+          "foreign_net_buy_qty",
+          "foreign_net_buy_qty_20d",
+          "foreign_net_buy_qty_5d",
+          "institution_net_buy_qty",
+          "institution_net_buy_qty_20d",
+          "institution_net_buy_qty_5d"
+        ],
+        "missing_semantics": [],
+        "numeric_horizon_coverage_passed": true
+      },
+      {
+        "ticker": "086280",
+        "eligible_semantics": [
+          "foreign_net_buy_qty",
+          "foreign_net_buy_qty_20d",
+          "foreign_net_buy_qty_5d",
+          "institution_net_buy_qty",
+          "institution_net_buy_qty_20d",
+          "institution_net_buy_qty_5d"
+        ],
+        "claimed_semantics": [
+          "foreign_net_buy_qty",
+          "foreign_net_buy_qty_20d",
+          "foreign_net_buy_qty_5d",
+          "institution_net_buy_qty",
+          "institution_net_buy_qty_20d",
+          "institution_net_buy_qty_5d"
+        ],
+        "missing_semantics": [],
+        "numeric_horizon_coverage_passed": true
+      }
+    ],
+    "identity_prose_mismatch_count": 0,
+    "unsupported_comparative_claim_count": 0,
+    "supply_grounding_error_count": 0,
+    "financial_period_error_count": 0,
+    "valuation_evidence_error_count": 0,
+    "message_set_completeness": {
+      "expected_stock_count": 7,
+      "output_stock_count": 7,
+      "rendered_message_count": 8,
+      "passed": true
+    },
+    "rendered_heading_quality": {
+      "expected_heading": "📊 수급",
+      "mismatch_count": 0,
+      "message_indexes": []
+    },
+    "rendered_identity_prose_mismatches": [],
+    "rendered_identity_prose_mismatch_count": 0,
+    "hard_checks_passed": true,
+    "deterministic_quality_gate_passed": true,
+    "production_assist_evidence_eligible": false,
+    "human_quality_approval_required": true
+  },
+  "errors": [],
+  "status": "passed",
+  "checked_at": "2026-08-16T18:00:00+00:00",
+  "source_packet_id": "2026-08-16-kr-run-21-049f367f0274",
+  "corrected_packet_id": "2026-08-16-kr-run-21-27d84c4e9795",
+  "source_database_copy_sha256": "4cfd7bb8cef53954de141c8201f510d0c9bd6c2a1ce3299ae22ad42a18826d39",
+  "output_stock_count": 7,
+  "rendered_message_count": 8,
+  "provider_network_calls": 0,
+  "telegram_sends": 0,
+  "operating_mutations": 0,
+  "pilot_mutations": 0,
+  "human_quality_status": "pending_work_human_review"
+}

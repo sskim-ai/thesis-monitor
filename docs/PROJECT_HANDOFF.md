@@ -285,6 +285,19 @@ report zero findings. TSM and WRD remain safely `unknown` because no authoritati
 exists. The branch is not merged or deployed and both Previews still require direct human approval.
 See [the Phase 7.2.8 readiness report](reports/20260816-phase7-2-8-human-review-safety-readiness.md).
 
+Phase 7.2.9 now supersedes the Phase 7.2.8 automated acceptance conclusion on the experimental
+branch only. The immutable KR Day 3 payload fails the new runtime gate with six particle errors,
+actor/horizon supply claims without occurrence-level numbers, missing financial periods,
+unsupported valuation judgments, and repeated reasoning skeletons. Corrected isolated packets
+`2026-08-16-kr-run-21-27d84c4e9795` and `2026-08-16-us-run-20-53fa21541277` pass automatic binding,
+the full validator, and `runtime-message-quality-v1`; their logical payload counts are 8 and 14.
+The gate is now in the delivery path and its receipt binds packet, validated-output, and rendered-set
+hashes before delivery eligibility. CORZ PBR and dependent historical PB are denied by
+`valuation-coherence-v1`, RXRX uses relative volume rather than generic supply language, and KR
+financial amounts carry verified amount-period labels. These corrected Previews remain
+`pending_work_human_review`, are not Production Assist evidence, and are neither merged nor deployed.
+See [the Phase 7.2.9 readiness report](reports/20260816-phase7-2-9-runtime-quality-readiness.md).
+
 ## Source Map
 
 - Packet, claim, validation, grounding: `app/services/ai_review_service.py`
@@ -340,11 +353,11 @@ first.
 
 ## Next Steps
 
-1. Review the persisted eight-message KR Day 3 payload; keep its human-quality status pending until
-   Work records an explicit disposition.
-2. Do not start Phase 7.2.9 implementation until Work explicitly resumes it.
-3. Preserve operational counts KR 3/5 and US 2/5 independently from human-quality disposition, and
-   keep Phase 7.2.8 experimental artifacts unmerged until separately approved.
+1. Review the corrected Phase 7.2.9 KR eight-message and US 14-message Previews directly; their
+   deterministic PASS is not human approval.
+2. Keep Phase 7.2.9 code and artifacts on the experimental branch until Work gives a separate merge
+   and deployment approval.
+3. Preserve operational counts KR 3/5 and US 2/5 independently from human-quality disposition.
 4. Keep TSM/WRD identity `unknown` without authoritative ingestion, preserve exact archives, and do
    not replay Telegram.
 5. Keep Production Assist disabled until blocking findings are closed and the user explicitly

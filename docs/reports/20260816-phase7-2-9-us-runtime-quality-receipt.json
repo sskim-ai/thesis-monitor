@@ -1,0 +1,240 @@
+{
+  "contract": "runtime-message-quality-v1",
+  "packet_id": "2026-08-16-us-run-20-53fa21541277",
+  "policy_version": "daily-review-v3.10",
+  "schema_version": "4",
+  "packet_sha256": "1cc335e0fc8359ac3d7801a5747f8bc54a2c3ce17c968304f5e1d7289c85ecf8",
+  "validated_output_sha256": "4915aaaef02aeb5ef8037853f50de43cd7f0d9b99191a3ee8c6ed44fdcf36e9d",
+  "rendered_payload_set_sha256": "607bda0367ed71141509c5a6c95836a298b3922c33706a844b89487090fda1cf",
+  "message_count": 14,
+  "check_results": {
+    "contract": "relational-reasoning-quality-v2",
+    "duplicate_threshold": 3,
+    "stock_count": 13,
+    "repeated_sentences": [],
+    "substantive_repeated_sentence_count": 0,
+    "max_substantive_repeat": 0,
+    "template_skeleton_repeats": [],
+    "template_skeleton_repeat_count": 0,
+    "template_skeleton_exceptions": [
+      {
+        "skeleton": "<numeric>는 사업 논리 무효화가 아니다.",
+        "stock_count": 3,
+        "tickers": [
+          "MU",
+          "TSLA",
+          "TSM"
+        ],
+        "reason": "chart_vs_thesis_invalidation_safety"
+      }
+    ],
+    "observer_holder": [
+      {
+        "ticker": "CORZ",
+        "distinct": true
+      },
+      {
+        "ticker": "CRCL",
+        "distinct": true
+      },
+      {
+        "ticker": "GOOGL",
+        "distinct": true
+      },
+      {
+        "ticker": "HUT",
+        "distinct": true
+      },
+      {
+        "ticker": "IBM",
+        "distinct": true
+      },
+      {
+        "ticker": "MU",
+        "distinct": true
+      },
+      {
+        "ticker": "RXRX",
+        "distinct": true
+      },
+      {
+        "ticker": "SKHY",
+        "distinct": true
+      },
+      {
+        "ticker": "SNDK",
+        "distinct": true
+      },
+      {
+        "ticker": "TSLA",
+        "distinct": true
+      },
+      {
+        "ticker": "TSM",
+        "distinct": true
+      },
+      {
+        "ticker": "WRD",
+        "distinct": true
+      },
+      {
+        "ticker": "WULF",
+        "distinct": true
+      }
+    ],
+    "observer_holder_distinct_count": 13,
+    "section_numeric_grounding": {
+      "CORZ": {
+        "core": 2,
+        "earnings": 3,
+        "price": 7,
+        "supply": 1,
+        "valuation": 0
+      },
+      "CRCL": {
+        "core": 2,
+        "earnings": 2,
+        "price": 7,
+        "supply": 1,
+        "valuation": 2
+      },
+      "GOOGL": {
+        "core": 2,
+        "earnings": 0,
+        "price": 7,
+        "supply": 1,
+        "valuation": 4
+      },
+      "HUT": {
+        "core": 2,
+        "earnings": 0,
+        "price": 7,
+        "supply": 1,
+        "valuation": 2
+      },
+      "IBM": {
+        "core": 2,
+        "earnings": 3,
+        "price": 7,
+        "supply": 1,
+        "valuation": 4
+      },
+      "MU": {
+        "core": 2,
+        "earnings": 2,
+        "price": 7,
+        "supply": 1,
+        "valuation": 4
+      },
+      "RXRX": {
+        "core": 2,
+        "earnings": 3,
+        "price": 7,
+        "supply": 1,
+        "valuation": 3
+      },
+      "SKHY": {
+        "core": 0,
+        "earnings": 0,
+        "price": 1,
+        "supply": 1,
+        "valuation": 0
+      },
+      "SNDK": {
+        "core": 0,
+        "earnings": 0,
+        "price": 3,
+        "supply": 1,
+        "valuation": 0
+      },
+      "TSLA": {
+        "core": 2,
+        "earnings": 2,
+        "price": 7,
+        "supply": 1,
+        "valuation": 4
+      },
+      "TSM": {
+        "core": 3,
+        "earnings": 3,
+        "price": 7,
+        "supply": 1,
+        "valuation": 0
+      },
+      "WRD": {
+        "core": 0,
+        "earnings": 0,
+        "price": 3,
+        "supply": 1,
+        "valuation": 0
+      },
+      "WULF": {
+        "core": 2,
+        "earnings": 0,
+        "price": 7,
+        "supply": 1,
+        "valuation": 3
+      }
+    },
+    "stock_specific_next_check_count": 39,
+    "generic_next_check_count": 0,
+    "stock_specific_unknown_count": 39,
+    "generic_unknown_count": 0,
+    "supply_routing": {
+      "substantive_repeated_supply_sentence_count": 0,
+      "us_kr_style_horizon_count": 0,
+      "generic_us_investor_flow_unknown_count": 0,
+      "generic_us_supply_count": 0,
+      "us_kr_style_horizon_rows": [],
+      "generic_us_investor_flow_unknown_rows": [],
+      "generic_us_supply_rows": []
+    },
+    "numeric_label_quality": {
+      "redundant_authored_label_count": 0,
+      "repeated_bound_label_count": 0,
+      "source_label_mismatch_count": 0,
+      "instrument_label_mismatch_count": 0,
+      "period_label_mismatch_count": 0,
+      "zone_role_mismatch_count": 0,
+      "postposition_mismatch_count": 0,
+      "details": [],
+      "hard_checks_passed": true
+    },
+    "kr_supply_numeric_coverage": [],
+    "identity_prose_mismatch_count": 0,
+    "unsupported_comparative_claim_count": 0,
+    "supply_grounding_error_count": 0,
+    "financial_period_error_count": 0,
+    "valuation_evidence_error_count": 0,
+    "message_set_completeness": {
+      "expected_stock_count": 13,
+      "output_stock_count": 13,
+      "rendered_message_count": 14,
+      "passed": true
+    },
+    "rendered_heading_quality": {
+      "expected_heading": "📊 거래량·포지셔닝",
+      "mismatch_count": 0,
+      "message_indexes": []
+    },
+    "rendered_identity_prose_mismatches": [],
+    "rendered_identity_prose_mismatch_count": 0,
+    "hard_checks_passed": true,
+    "deterministic_quality_gate_passed": true,
+    "production_assist_evidence_eligible": false,
+    "human_quality_approval_required": true
+  },
+  "errors": [],
+  "status": "passed",
+  "checked_at": "2026-08-16T18:00:00+00:00",
+  "source_packet_id": "2026-08-16-us-run-20-6c15d0003955",
+  "corrected_packet_id": "2026-08-16-us-run-20-53fa21541277",
+  "source_database_copy_sha256": "4cfd7bb8cef53954de141c8201f510d0c9bd6c2a1ce3299ae22ad42a18826d39",
+  "output_stock_count": 13,
+  "rendered_message_count": 14,
+  "provider_network_calls": 0,
+  "telegram_sends": 0,
+  "operating_mutations": 0,
+  "pilot_mutations": 0,
+  "human_quality_status": "pending_work_human_review"
+}

@@ -173,6 +173,16 @@ it is unmerged, undeployed, not human-approved, and ineligible for Production As
 did not send Telegram or change the then-current KR 2/5 or US 2/5; only the later natural KR Day 3
 session advanced current runtime to KR 3/5.
 
+Phase 7.2.9 preserves both operational counts and both failed human-review dispositions. A read-only
+replay of KR Day 3 fails the new gate; it does not rewrite the historical archive or counter. The
+corrected isolated KR and US payloads pass binder, full validator, and runtime quality receipt checks
+but remain pending Work review. The runtime delivery path now requires a PASS receipt binding the
+packet, validated output, and exact rendered set before AI delivery eligibility. Failure preserves
+one deterministic fallback set, sends no rejected AI text, and cannot increment Pilot state. Network
+retry verifies and reuses the same persisted payload and receipt without rerunning analysis,
+packet generation, binding, validation, rendering, or the quality gate. This contract is branch-only
+until separately approved and deployed.
+
 ## Incident Classification
 
 Classify issues as DATA, CALCULATION, PACKET, KNOWLEDGE_ROUTING, AI_REASONING, VALIDATION, RENDERER,

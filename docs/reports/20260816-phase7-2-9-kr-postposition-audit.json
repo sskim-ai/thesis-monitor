@@ -1,0 +1,33 @@
+{
+  "contract": "kr-numeric-postposition-v1",
+  "source_packet_id": "2026-08-16-kr-run-21-049f367f0274",
+  "corrected_packet_id": "2026-08-16-kr-run-21-27d84c4e9795",
+  "source_database_copy_sha256": "4cfd7bb8cef53954de141c8201f510d0c9bd6c2a1ce3299ae22ad42a18826d39",
+  "packet_sha256": "bf05b58050bdaaad307095fb526ded3627289bd4b1ab6b34e4ad66669a45c199",
+  "validated_output_sha256": "2d07e1cddd7da4067063b61a20c0337be75ed1e0d17c4501548d9cb5d8cd14aa",
+  "rendered_payload_set_sha256": "67e41477c5dbd221f95344576bfb61d7ab4040e5b0a97c9a40f16ec4ea06abf2",
+  "output_stock_count": 7,
+  "rendered_message_count": 8,
+  "provider_network_calls": 0,
+  "telegram_sends": 0,
+  "operating_mutations": 0,
+  "pilot_mutations": 0,
+  "human_quality_status": "pending_work_human_review",
+  "negative_replay_mismatch_count": 6,
+  "negative_replay_examples": [
+    "1,750억원와",
+    "8,190억원와",
+    "89조4,924억원와",
+    "1,785억원와",
+    "1조3,655억원는",
+    "4,951억원와"
+  ],
+  "corrected_mismatch_count": 0,
+  "typed_families": [
+    "와/과",
+    "은/는",
+    "이/가",
+    "을/를"
+  ],
+  "renderer_rewrites": 0
+}
