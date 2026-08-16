@@ -8,6 +8,12 @@ from app.models.financial import FinancialSnapshot
 
 
 AMOUNT_PERIOD_CONTRACT = "financial-amount-period-v1"
+STATEMENT_BASIS_CONTRACT = "financial-statement-basis-v1"
+
+VERIFIED_CONSOLIDATED = "verified_consolidated"
+VERIFIED_SEPARATE = "verified_separate"
+STATEMENT_BASIS_CONFLICT = "conflict"
+STATEMENT_BASIS_UNKNOWN = "unknown"
 
 _FINANCIAL_FIELDS = {
     "latest_revenue": ("revenue", "revenue_basis", "cumulative_revenue", "flow"),
@@ -97,33 +103,96 @@ def _statement_name(basis: str | None) -> str:
     return str(basis or "").split(";", maxsplit=1)[0].strip()
 
 
-def _statement_basis(row: FinancialSnapshot, basis: str | None) -> str | None:
-    fs_div = str(row.fs_div or _basis_value(basis, "fs_div") or "").upper()
-    if fs_div == "CFS":
-        return "consolidated"
-    if fs_div == "OFS":
-        return "separate"
+def financial_statement_basis_decision(
+    row: FinancialSnapshot,
+    basis: str | None,
+) -> dict[str, object]:
+    """Resolve consolidated/separate basis without promoting a statement type."""
+    row_fs_div = str(row.fs_div or "").upper()
+    embedded_fs_div = str(_basis_value(basis, "fs_div") or "").upper()
+    explicit_values = {
+        value for value in (row_fs_div, embedded_fs_div) if value in {"CFS", "OFS"}
+    }
     statement_name = _statement_name(basis)
-    if statement_name.startswith("연결"):
-        return "consolidated"
-    if statement_name in {
-        "손익계산서",
-        "포괄손익계산서",
-        "재무상태표",
-        "현금흐름표",
-        "자본변동표",
-    }:
-        return "separate"
-    return None
-
-
-def _statement_basis_source(row: FinancialSnapshot, basis: str | None) -> str | None:
-    fs_div = str(row.fs_div or _basis_value(basis, "fs_div") or "").upper()
-    if fs_div in {"CFS", "OFS"}:
-        return "source_row_fs_div"
-    if _statement_basis(row, basis) is not None:
-        return "source_row_statement_name"
-    return None
+    name_basis = (
+        "consolidated"
+        if statement_name.startswith("연결")
+        else "separate"
+        if statement_name.startswith("별도")
+        else None
+    )
+    fs_basis = (
+        "consolidated"
+        if explicit_values == {"CFS"}
+        else "separate"
+        if explicit_values == {"OFS"}
+        else None
+    )
+    conflict = bool(
+        len(explicit_values) > 1
+        or (fs_basis is not None and name_basis is not None and fs_basis != name_basis)
+    )
+    if conflict:
+        return {
+            "contract": STATEMENT_BASIS_CONTRACT,
+            "state": STATEMENT_BASIS_CONFLICT,
+            "basis": None,
+            "source": "conflicting_source_row_evidence",
+            "denial_reason": "financial_statement_basis_conflict",
+            "evidence": {
+                "row_fs_div": row_fs_div or None,
+                "embedded_fs_div": embedded_fs_div or None,
+                "statement_name": statement_name or None,
+            },
+        }
+    if fs_basis is not None:
+        return {
+            "contract": STATEMENT_BASIS_CONTRACT,
+            "state": (
+                VERIFIED_CONSOLIDATED
+                if fs_basis == "consolidated"
+                else VERIFIED_SEPARATE
+            ),
+            "basis": fs_basis,
+            "source": "source_row_fs_div",
+            "denial_reason": None,
+            "evidence": {
+                "row_fs_div": row_fs_div or None,
+                "embedded_fs_div": embedded_fs_div or None,
+                "statement_name": statement_name or None,
+            },
+        }
+    # A statement title is authoritative only when it explicitly says 연결/별도
+    # and is bound to an identified filing row. IS/CIS alone is not basis evidence.
+    if name_basis is not None and row.source_filing_id:
+        return {
+            "contract": STATEMENT_BASIS_CONTRACT,
+            "state": (
+                VERIFIED_CONSOLIDATED
+                if name_basis == "consolidated"
+                else VERIFIED_SEPARATE
+            ),
+            "basis": name_basis,
+            "source": "authoritative_statement_title",
+            "denial_reason": None,
+            "evidence": {
+                "row_fs_div": row_fs_div or None,
+                "embedded_fs_div": embedded_fs_div or None,
+                "statement_name": statement_name or None,
+            },
+        }
+    return {
+        "contract": STATEMENT_BASIS_CONTRACT,
+        "state": STATEMENT_BASIS_UNKNOWN,
+        "basis": None,
+        "source": None,
+        "denial_reason": "consolidated_or_separate_basis_unverified",
+        "evidence": {
+            "row_fs_div": row_fs_div or None,
+            "embedded_fs_div": embedded_fs_div or None,
+            "statement_name": statement_name or None,
+        },
+    }
 
 
 def _amount_period(
@@ -183,7 +252,8 @@ def financial_amount_period_lineage(
     amount_period_type, bounds, denial_reason = _amount_period(
         row, value_field, cumulative_field, amount_nature
     )
-    statement_basis = _statement_basis(row, basis)
+    statement_decision = financial_statement_basis_decision(row, basis)
+    statement_basis = statement_decision.get("basis")
     logical_account = "revenue" if value_field == "revenue" else value_field
     account_id = _basis_value(basis, "account_id")
     source_account_id = account_id or (
@@ -216,7 +286,10 @@ def financial_amount_period_lineage(
         and _period_end(row)
     )
     if not statement_basis:
-        denial_reason = "consolidated_or_separate_basis_unverified"
+        denial_reason = str(
+            statement_decision.get("denial_reason")
+            or "consolidated_or_separate_basis_unverified"
+        )
     elif not source_row_identity:
         denial_reason = "source_row_identity_unverified"
     return {
@@ -231,8 +304,11 @@ def financial_amount_period_lineage(
         "account_name": logical_account,
         "statement_type": str(row.sj_div or _basis_value(basis, "sj_div") or "")
         or None,
+        "statement_basis_contract": STATEMENT_BASIS_CONTRACT,
+        "statement_basis_state": statement_decision.get("state"),
         "consolidated_separate_basis": statement_basis,
-        "statement_basis_source": _statement_basis_source(row, basis),
+        "statement_basis_source": statement_decision.get("source"),
+        "statement_basis_evidence": statement_decision.get("evidence"),
         "amount_period_type": amount_period_type,
         "amount_period_start": str(bounds[0]) if bounds else None,
         "amount_period_end": str(bounds[1]) if bounds else None,
@@ -263,20 +339,27 @@ def financial_amount_period_label(lineage: dict[str, object]) -> str | None:
     year = int(end_text[:4])
     amount_type = str(lineage.get("amount_period_type") or "")
     month = int(end_text[5:7])
+    basis_label = {
+        VERIFIED_CONSOLIDATED: "연결 기준",
+        VERIFIED_SEPARATE: "별도 기준",
+    }.get(str(lineage.get("statement_basis_state") or ""))
+    if basis_label is None:
+        return None
     if amount_type == "single_quarter" and month in {3, 6, 9, 12}:
-        return f"{year}년 {month // 3}분기"
+        return f"{year}년 {month // 3}분기 {basis_label}"
     if amount_type == "year_to_date_cumulative":
-        return (
+        period_label = (
             f"{year}년 상반기 누적"
             if month == 6
             else f"{year}년 9개월 누적"
             if month == 9
             else None
         )
+        return f"{period_label} {basis_label}" if period_label else None
     if amount_type == "full_year":
-        return f"{year}년 연간"
+        return f"{year}년 연간 {basis_label}"
     if amount_type == "point_in_time":
-        return f"{end_text} 기준"
+        return f"{end_text} {basis_label}"
     return None
 
 
@@ -285,7 +368,22 @@ def unique_financial_source_row(
     field: str,
 ) -> FinancialSnapshot | None:
     candidates = list(rows)
-    if len(candidates) != 1:
+    mapping = _FINANCIAL_FIELDS.get(field)
+    if mapping is None:
+        return None
+    basis_field = mapping[1]
+    consolidated = [
+        row
+        for row in candidates
+        if financial_statement_basis_decision(
+            row,
+            getattr(row, basis_field),
+        ).get("state")
+        == VERIFIED_CONSOLIDATED
+    ]
+    if len(consolidated) == 1:
+        candidates = consolidated
+    elif len(consolidated) > 1 or len(candidates) != 1:
         return None
     lineage = financial_amount_period_lineage(candidates[0], field)
     return candidates[0] if lineage.get("source_row_identity") else None
@@ -305,6 +403,8 @@ def comparison_periods_compatible(
         return all(str(item.get("provider") or "") != "opendart" for item in values)
     current, previous = values
     if current.get("amount_period_type") != previous.get("amount_period_type"):
+        return False
+    if current.get("statement_basis_state") != previous.get("statement_basis_state"):
         return False
     current_end = date.fromisoformat(str(current["amount_period_end"]))
     previous_end = date.fromisoformat(str(previous["amount_period_end"]))

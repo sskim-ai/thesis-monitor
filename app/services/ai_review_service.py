@@ -43,6 +43,7 @@ from app.services.financial_quality_service import (
 )
 from app.services.financial_amount_period_service import (
     AMOUNT_PERIOD_CONTRACT,
+    STATEMENT_BASIS_CONTRACT,
     apply_comparison_period_metadata,
     financial_amount_period_label,
     financial_amount_period_lineage,
@@ -55,6 +56,7 @@ from app.services.official_security_identity_service import (
     load_official_identity_provenance,
 )
 from app.services.numeric_provenance_service import (
+    TYPED_VALUATION_CONTRACT,
     bind_numeric_fact_references,
     canonical_numeric_label_mismatch,
     redundant_numeric_label_before,
@@ -837,6 +839,9 @@ def _financial_source_metadata(
         enriched_persisted["financial_amount_period_contract"] = (
             AMOUNT_PERIOD_CONTRACT
         )
+        enriched_persisted["financial_statement_basis_contract"] = (
+            STATEMENT_BASIS_CONTRACT
+        )
         enriched_direct = _dict(enriched_persisted.get("direct_field_sources"))
         for field, values in enriched_direct.items():
             if not isinstance(values, list):
@@ -931,6 +936,7 @@ def _financial_source_metadata(
     )
     result = metadata(row)
     result["financial_amount_period_contract"] = AMOUNT_PERIOD_CONTRACT
+    result["financial_statement_basis_contract"] = STATEMENT_BASIS_CONTRACT
 
     quarter_series = [
         item
@@ -1779,6 +1785,17 @@ def _financial_period_label(
     return f"{year}년 {suffix}"
 
 
+def _valuation_forward_period_status(value: str | None) -> str:
+    normalized = str(value or "").strip()
+    if not normalized:
+        return "unknown"
+    try:
+        date.fromisoformat(normalized)
+    except ValueError:
+        return "provider_defined"
+    return "exact"
+
+
 def _fact_catalog(
     assessment: ThesisAssessment,
     evidence: list[dict[str, object]],
@@ -2080,6 +2097,16 @@ def _fact_catalog(
         for field, quality in direct_quality.items()
         if field.startswith("latest_") and isinstance(quality, dict)
     }
+    field_statement_basis = {
+        field: {
+            "contract": _dict(quality).get("statement_basis_contract"),
+            "state": _dict(quality).get("statement_basis_state"),
+            "basis": _dict(quality).get("consolidated_separate_basis"),
+            "source": _dict(quality).get("statement_basis_source"),
+        }
+        for field, quality in direct_quality.items()
+        if field.startswith("latest_") and isinstance(quality, dict)
+    }
     period_label = field_period_labels.get("latest_operating_income") or field_period_labels.get(
         "latest_revenue"
     )
@@ -2101,6 +2128,7 @@ def _fact_catalog(
         "period_type": earnings_period_type or None,
         "period_label": period_label,
         "field_period_labels": field_period_labels,
+        "field_statement_basis": field_statement_basis,
         "financial_period_required": True,
         "preliminary": bool(valuation.get("earnings_context_is_preliminary")),
     }
@@ -2376,6 +2404,9 @@ def _fact_catalog(
                 reasons.append("forward_denominator_period_unverified")
             if trailing_security_basis != "current_security":
                 reasons.append("trailing_share_basis_unverified")
+            forward_period_status = _valuation_forward_period_status(
+                forward_period
+            )
             basis_comparable = not reasons
             multiple_direction = (
                 "forward_higher"
@@ -2415,6 +2446,9 @@ def _fact_catalog(
                         ),
                         "trailing_denominator_period": trailing_period or None,
                         "forward_denominator_period": forward_period or None,
+                        "forward_period_status": forward_period_status,
+                        "security_basis": identity_state,
+                        "currency_basis": currency or None,
                         "trailing_basis_status": trailing_basis or None,
                         "forward_basis_status": forward_basis_status or None,
                         "basis_comparable": basis_comparable,
@@ -2748,7 +2782,7 @@ def _stock_packet(
     stock["fact_catalog"] = facts
     stock["numeric_registry"] = _numeric_registry(facts)
     stock["typed_valuation_interpretation_contract"] = (
-        "typed-valuation-interpretation-v1"
+        TYPED_VALUATION_CONTRACT
     )
     stock["state_grounding_requirements"] = _state_grounding_requirements(
         monitoring_state,
@@ -3753,6 +3787,7 @@ _KR_SUPPLY_DIRECTION = re.compile(
 _FINANCIAL_PERIOD_USAGE = re.compile(
     r"\b20\d{2}년\s*(?:[1-4]분기|상반기\s*누적|3분기\s*누적|연간)\b"
 )
+_FINANCIAL_STATEMENT_BASIS_USAGE = re.compile(r"(?:연결|별도)\s*기준")
 _FINANCIAL_CUMULATIVE_LANGUAGE = re.compile(
     r"(?:상반기\s*누적|(?:3분기|9개월)\s*누적|누적\s*(?:매출|이익|실적)|"
     r"(?:매출|이익|실적)\s*누적)"
@@ -3912,6 +3947,15 @@ def _financial_period_language_errors(
         if not _FINANCIAL_PERIOD_USAGE.search(claim.usage):
             errors.append(
                 f"{ticker}:financial_period_label_missing:"
+                f"{claim.fact_id}:{claim.field_path}:{claim.text_ref}"
+            )
+            continue
+        if (
+            claim.unit == "KRW"
+            and not _FINANCIAL_STATEMENT_BASIS_USAGE.search(claim.usage)
+        ):
+            errors.append(
+                f"{ticker}:financial_statement_basis_label_missing:"
                 f"{claim.fact_id}:{claim.field_path}:{claim.text_ref}"
             )
             continue

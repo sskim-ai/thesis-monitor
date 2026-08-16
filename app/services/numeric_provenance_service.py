@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import copy
+import hashlib
 import re
 from dataclasses import dataclass
 from typing import Any
@@ -13,7 +14,7 @@ from app.services.numeric_semantic_registry import (
 
 NUMERIC_REFERENCE_FIELD = "numeric_fact_refs"
 VALUATION_INTERPRETATION_REFERENCE_FIELD = "valuation_interpretation_refs"
-TYPED_VALUATION_CONTRACT = "typed-valuation-interpretation-v1"
+TYPED_VALUATION_CONTRACT = "typed-valuation-interpretation-v2"
 _REFERENCE_ID = re.compile(r"^[A-Za-z][A-Za-z0-9_-]{0,63}$")
 _PATH_PART = re.compile(r"^([A-Za-z_][A-Za-z0-9_]*)(?:\[([0-9]+)\])?$")
 _PLACEHOLDER = re.compile(r"\{\{numeric:([A-Za-z][A-Za-z0-9_-]{0,63})\}\}")
@@ -37,9 +38,9 @@ _VALUATION_METRIC_LANGUAGE = re.compile(
     re.IGNORECASE,
 )
 _VALUATION_DIRECTION_LANGUAGE = re.compile(
-    r"낮(?:다|은)|높(?:다|은)|싸다|비싸다|부담|저평가|고평가|기대가\s*(?:크|높)|"
-    r"치우치지\s*않|중립적\s*위치|정상\s*범위|premium|discount|"
-    r"프리미엄|디스카운트|역사|과거|peer|동종|비교군",
+    r"낮(?:다|은|습니다|지만|음)|높(?:다|은|습니다|지만|음)|싸다|비싸다|"
+    r"부담|저평가|고평가|기대가\s*(?:크|높)|치우친|치우치지\s*않|"
+    r"중립적\s*위치|정상\s*범위|premium|discount|프리미엄|디스카운트",
     re.IGNORECASE,
 )
 _VALUATION_UNKNOWN_LANGUAGE = re.compile(
@@ -85,6 +86,15 @@ _VALUATION_METRIC_SEMANTICS = {
         "historical_pb_percentile",
     },
 }
+_VALUATION_BINDING_SEMANTICS = set().union(*_VALUATION_METRIC_SEMANTICS.values())
+_VALUATION_CLAUSE_BOUNDARY = re.compile(
+    r"(?<!\d)[,.!?;:]|[,.!?;:](?!\d)|\n+"
+)
+_VALUATION_PERIOD_UNKNOWN = re.compile(
+    r"(?:fPER|시장\s*예상\s*배수|forward\s*(?:PER|multiple)).{0,24}"
+    r"(?:기간|시점).{0,12}(?:불명확|미확인|알\s*수\s*없|확인되지\s*않)",
+    re.IGNORECASE,
+)
 
 
 @dataclass(frozen=True)
@@ -619,6 +629,91 @@ def _valuation_interpretation_texts(
     return values
 
 
+def _normalize_interpretation_span(value: str) -> str:
+    return re.sub(r"\s+", " ", value).strip()
+
+
+def _interpretation_span_sha256(value: str) -> str:
+    return hashlib.sha256(
+        _normalize_interpretation_span(value).encode("utf-8")
+    ).hexdigest()
+
+
+def _bound_interpretation_span(
+    value: object,
+    binding_by_id: dict[str, dict[str, object]],
+) -> tuple[str | None, str | None]:
+    if not isinstance(value, str) or not value.strip():
+        return None, "exact_text_span_missing"
+    unresolved = False
+
+    def replace(match: re.Match[str]) -> str:
+        nonlocal unresolved
+        binding = binding_by_id.get(match.group(1))
+        if binding is None:
+            unresolved = True
+            return match.group(0)
+        return "".join(
+            (
+                str(binding.get("usage") or ""),
+                str(binding.get("resolved_postposition") or ""),
+            )
+        )
+
+    bound = _PLACEHOLDER.sub(replace, value)
+    if unresolved or _ANY_PLACEHOLDER.search(bound):
+        return None, "exact_text_span_numeric_ref_unresolved"
+    return _normalize_interpretation_span(bound), None
+
+
+def _valuation_metrics_in_span(value: str) -> set[str]:
+    metrics: set[str] = set()
+    if re.search(r"fPER|forward\s*PER|시장\s*예상\s*(?:fPER|이익\s*배수)", value, re.I):
+        metrics.add("forward_pe")
+    if re.search(r"(?<!f)PER|현재\s*PER|trailing\s*PER", value, re.I):
+        metrics.add("pe")
+    if re.search(r"fPBR|forward\s*PBR", value, re.I):
+        metrics.add("forward_pbr")
+    if re.search(r"(?<!f)PBR|자산\s*배수", value, re.I):
+        metrics.add("pbr")
+    if re.search(r"EPS|이익.{0,12}배수|피크\s*이익", value, re.I):
+        metrics.add("earnings")
+    if re.search(r"BVPS|장부가|주당순자산|자본잠식", value, re.I):
+        metrics.add("book")
+    return metrics
+
+
+def _metric_matches_span(metric: str, value: str) -> bool:
+    metrics = _valuation_metrics_in_span(value)
+    compatible = {
+        "pe": {"pe", "earnings"},
+        "forward_pe": {"forward_pe", "earnings"},
+        "pbr": {"pbr", "book"},
+        "forward_pbr": {"forward_pbr", "book"},
+        "earnings": {"pe", "forward_pe", "earnings"},
+        "book": {"pbr", "forward_pbr", "book"},
+    }
+    return bool(metrics.intersection(compatible.get(metric, {metric})))
+
+
+def _directional_valuation_occurrences(text: str) -> list[tuple[int, int]]:
+    values: list[tuple[int, int]] = []
+    for match in _VALUATION_DIRECTION_LANGUAGE.finditer(text):
+        before = text[: match.start()]
+        after = text[match.end() :]
+        left = max((boundary.end() for boundary in _VALUATION_CLAUSE_BOUNDARY.finditer(before)), default=0)
+        next_boundary = _VALUATION_CLAUSE_BOUNDARY.search(after)
+        right = match.end() + (next_boundary.start() if next_boundary else len(after))
+        clause = text[left:right]
+        if (
+            _valuation_metrics_in_span(clause)
+            or _VALUATION_GENERIC_LANGUAGE.search(clause)
+            or re.search(r"역사|과거|peer|동종|비교군|시장\s*기대", clause, re.I)
+        ):
+            values.append((match.start(), match.end()))
+    return values
+
+
 def _typed_valuation_reference_errors(
     review: dict[str, object],
     stock: dict[str, object],
@@ -627,8 +722,9 @@ def _typed_valuation_reference_errors(
     prefix: str,
 ) -> tuple[list[str], list[dict[str, object]]]:
     refs_value = review.pop(VALUATION_INTERPRETATION_REFERENCE_FIELD, [])
-    if stock.get("typed_valuation_interpretation_contract") != TYPED_VALUATION_CONTRACT:
-        return [], []
+    contract = stock.get("typed_valuation_interpretation_contract")
+    if contract != TYPED_VALUATION_CONTRACT:
+        return [f"{prefix}:typed_valuation_contract_unsupported:{contract or 'missing'}"], []
     if not isinstance(refs_value, list):
         return [f"{prefix}:valuation_interpretation_refs_not_list"], []
     fact_catalog = {
@@ -642,7 +738,7 @@ def _typed_valuation_reference_errors(
     binding_by_id = {str(item.get("ref_id") or ""): item for item in bindings}
     errors: list[str] = []
     accepted: list[dict[str, object]] = []
-    covered_refs: set[str] = set()
+    covered_spans: dict[str, list[tuple[int, int, str]]] = {}
     seen_ids: set[str] = set()
     for index, item in enumerate(refs_value):
         if not isinstance(item, dict):
@@ -667,7 +763,37 @@ def _typed_valuation_reference_errors(
         if target is None:
             errors.append(f"{prefix}:valuation_interpretation_text_not_found:{ref_id}:{text_ref}")
             continue
-        text = target[2]
+        text = _normalize_interpretation_span(target[2])
+        exact_span, span_error = _bound_interpretation_span(
+            item.get("exact_text_span"), binding_by_id
+        )
+        if span_error is not None or exact_span is None:
+            errors.append(
+                f"{prefix}:valuation_interpretation_{span_error}:{ref_id}"
+            )
+            continue
+        if text.count(exact_span) != 1:
+            errors.append(
+                f"{prefix}:valuation_interpretation_span_not_unique:{ref_id}"
+            )
+            continue
+        span_start = text.index(exact_span)
+        span_end = span_start + len(exact_span)
+        if any(
+            span_start < existing_end and span_end > existing_start
+            for existing_start, existing_end, _existing_ref in covered_spans.get(
+                text_ref, []
+            )
+        ):
+            errors.append(f"{prefix}:valuation_interpretation_span_overlap:{ref_id}")
+            continue
+        supplied_span_sha = str(item.get("normalized_span_sha256") or "")
+        span_sha = _interpretation_span_sha256(exact_span)
+        if supplied_span_sha and supplied_span_sha != span_sha:
+            errors.append(
+                f"{prefix}:valuation_interpretation_span_sha_mismatch:{ref_id}"
+            )
+            continue
         if interpretation_type not in _VALUATION_TYPES:
             errors.append(f"{prefix}:valuation_interpretation_type_invalid:{ref_id}")
             continue
@@ -685,6 +811,28 @@ def _typed_valuation_reference_errors(
         if any(str(value.get("text_ref") or "") != text_ref for value in comparison_bindings if value):
             errors.append(f"{prefix}:valuation_interpretation_numeric_ref_scope:{ref_id}")
             continue
+        if any(
+            str(value.get("usage") or "") not in exact_span
+            for value in comparison_bindings
+            if value is not None
+        ):
+            errors.append(
+                f"{prefix}:valuation_interpretation_numeric_ref_outside_span:{ref_id}"
+            )
+            continue
+        span_numeric_ids = {
+            binding_id
+            for binding_id, binding in binding_by_id.items()
+            if str(binding.get("text_ref") or "") == text_ref
+            and str(binding.get("semantic_type") or "")
+            in _VALUATION_BINDING_SEMANTICS
+            and str(binding.get("usage") or "") in exact_span
+        }
+        if not span_numeric_ids.issubset(set(comparison_ids)):
+            errors.append(
+                f"{prefix}:valuation_interpretation_numeric_ref_partial_coverage:{ref_id}"
+            )
+            continue
         semantics = {
             str(value.get("semantic_type") or "")
             for value in comparison_bindings
@@ -698,10 +846,22 @@ def _typed_valuation_reference_errors(
                 f"{ref_id}:{metric}"
             )
             continue
+        if not _metric_matches_span(metric, exact_span):
+            errors.append(
+                f"{prefix}:valuation_interpretation_metric_span_mismatch:"
+                f"{ref_id}:{metric}"
+            )
+            continue
+        directional_occurrences = _directional_valuation_occurrences(exact_span)
+        if len(directional_occurrences) > 1:
+            errors.append(
+                f"{prefix}:valuation_interpretation_multiple_occurrences:{ref_id}"
+            )
+            continue
         eligible = fact.get("interpretation_eligible") is not False
         valid = True
         if interpretation_type == "absolute":
-            valid = bool(comparison_ids and not _VALUATION_DIRECTION_LANGUAGE.search(text) and eligible)
+            valid = bool(comparison_ids and not directional_occurrences and eligible)
         elif interpretation_type == "historical":
             valid = bool(
                 fact_id in {"valuation:historical_pe", "valuation:historical_pb"}
@@ -709,6 +869,7 @@ def _typed_valuation_reference_errors(
                     {"historical_pe_percentile", "historical_pb_percentile"}
                 )
                 and eligible
+                and len(directional_occurrences) == 1
             )
         elif interpretation_type == "peer":
             peer_fields = (
@@ -729,20 +890,27 @@ def _typed_valuation_reference_errors(
                 and isinstance(sample_count, int)
                 and sample_count > 0
                 and eligible
+                and len(directional_occurrences) == 1
             )
         elif interpretation_type == "market_expectation":
-            valid = bool(fact_id.startswith("market_expectation:") and eligible)
+            valid = bool(
+                fact_id.startswith("market_expectation:")
+                and eligible
+                and len(directional_occurrences) == 1
+            )
         elif interpretation_type == "trailing_forward_relation":
             relation = fact.get("fields") if isinstance(fact.get("fields"), dict) else {}
             valid = bool(
                 fact_id == "valuation:multiple_relation"
                 and relation.get("basis_comparable") is True
+                and relation.get("forward_period_status") in {"exact", "provider_defined"}
                 and {"trailing_pe", "forward_pe"}.issubset(semantics)
                 and eligible
+                and len(directional_occurrences) == 1
             )
         elif interpretation_type == "quality_unknown":
             valid = bool(
-                _VALUATION_UNKNOWN_LANGUAGE.search(text)
+                _VALUATION_UNKNOWN_LANGUAGE.search(exact_span)
                 and fact.get("fact_type")
                 in {
                     "valuation_quality",
@@ -758,7 +926,7 @@ def _typed_valuation_reference_errors(
                 f"{ref_id}:{interpretation_type}:{metric}"
             )
             continue
-        covered_refs.add(text_ref)
+        covered_spans.setdefault(text_ref, []).append((span_start, span_end, ref_id))
         accepted.append(
             {
                 "ref_id": ref_id,
@@ -766,6 +934,8 @@ def _typed_valuation_reference_errors(
                 "metric": metric,
                 "fact_id": fact_id,
                 "text_ref": text_ref,
+                "exact_text_span": exact_span,
+                "normalized_span_sha256": span_sha,
                 "comparison_numeric_ref_ids": comparison_ids,
                 "basis_status": item.get("basis_status"),
                 "source_type": item.get("source_type"),
@@ -773,25 +943,55 @@ def _typed_valuation_reference_errors(
             }
         )
     for text_ref, text in _valuation_interpretation_texts(review):
-        valuation_section_requires_typed = bool(
-            text_ref == "valuation_analysis.text"
-            and (
-                _VALUATION_METRIC_LANGUAGE.search(text)
-                or _VALUATION_DIRECTION_LANGUAGE.search(text)
-                or (
-                    _VALUATION_GENERIC_LANGUAGE.search(text)
-                    and _VALUATION_UNKNOWN_LANGUAGE.search(text)
+        normalized_text = _normalize_interpretation_span(text)
+        spans = covered_spans.get(text_ref, [])
+        for start, end in _directional_valuation_occurrences(normalized_text):
+            if not any(span_start <= start and end <= span_end for span_start, span_end, _ in spans):
+                errors.append(
+                    f"{prefix}:valuation_interpretation_occurrence_uncovered:"
+                    f"{text_ref}:{start}"
                 )
-            )
-        )
-        cross_section_requires_typed = bool(
-            (_VALUATION_METRIC_LANGUAGE.search(text) or _VALUATION_GENERIC_LANGUAGE.search(text))
-            and _VALUATION_DIRECTION_LANGUAGE.search(text)
-        )
-        if (
-            valuation_section_requires_typed or cross_section_requires_typed
-        ) and text_ref not in covered_refs:
-            errors.append(f"{prefix}:valuation_interpretation_typed_reference_missing:{text_ref}")
+        if text_ref == "valuation_analysis.text":
+            valuation_binding_usages = [
+                str(binding.get("usage") or "")
+                for binding in bindings
+                if str(binding.get("text_ref") or "") == text_ref
+                and str(binding.get("semantic_type") or "")
+                in _VALUATION_BINDING_SEMANTICS
+            ]
+            for usage in valuation_binding_usages:
+                start = normalized_text.find(usage)
+                end = start + len(usage)
+                if start >= 0 and not any(
+                    span_start <= start and end <= span_end
+                    for span_start, span_end, _ in spans
+                ):
+                    errors.append(
+                        f"{prefix}:valuation_interpretation_numeric_occurrence_uncovered:"
+                        f"{text_ref}:{usage}"
+                    )
+            if (
+                _VALUATION_UNKNOWN_LANGUAGE.search(normalized_text)
+                and (_VALUATION_METRIC_LANGUAGE.search(normalized_text) or _VALUATION_GENERIC_LANGUAGE.search(normalized_text))
+                and not spans
+            ):
+                errors.append(
+                    f"{prefix}:valuation_interpretation_unknown_occurrence_uncovered:"
+                    f"{text_ref}"
+                )
+    relation_fact = fact_catalog.get("valuation:multiple_relation")
+    relation_fields = (
+        relation_fact.get("fields")
+        if isinstance(relation_fact, dict)
+        and isinstance(relation_fact.get("fields"), dict)
+        else {}
+    )
+    if relation_fields.get("forward_period_status") in {"exact", "provider_defined"}:
+        for text_ref, text in _valuation_interpretation_texts(review):
+            if _VALUATION_PERIOD_UNKNOWN.search(text):
+                errors.append(
+                    f"{prefix}:valuation_relation_caution_contradiction:{text_ref}"
+                )
     return errors, accepted
 
 

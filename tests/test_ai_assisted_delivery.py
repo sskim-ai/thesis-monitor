@@ -45,6 +45,18 @@ class RecordingNotifier:
         return "sent"
 
 
+class PartialFailureNotifier:
+    def __init__(self, *, successful_sends: int) -> None:
+        self.successful_sends = successful_sends
+        self.payloads: list[dict[str, object]] = []
+
+    async def send(self, payload: dict[str, object]) -> str:
+        self.payloads.append(payload)
+        if len(self.payloads) > self.successful_sends:
+            raise RuntimeError("scripted partial outage")
+        return "sent"
+
+
 def _engine():
     value = create_engine(
         "sqlite://",
@@ -929,6 +941,12 @@ async def test_persisted_retry_rejects_payload_tampering_against_quality_receipt
         "other_packet",
         "one_delivery_sha",
         "rendered_payload_sha",
+        "packet_sha",
+        "validated_output_sha",
+        "policy_version",
+        "schema_version",
+        "gate_version",
+        "checked_at",
     ],
 )
 async def test_receipt_integrity_failure_holds_ai_and_preserves_one_fallback_set(
@@ -981,6 +999,18 @@ async def test_receipt_integrity_failure_holds_ai_and_preserves_one_fallback_set
                 receipt["packet_id"] = "other-packet"
             elif tamper_mode == "rendered_payload_sha":
                 receipt["rendered_payload_set_sha256"] = "f" * 64
+            elif tamper_mode == "packet_sha":
+                receipt["packet_sha256"] = "1" * 64
+            elif tamper_mode == "validated_output_sha":
+                receipt["validated_output_sha256"] = "2" * 64
+            elif tamper_mode == "policy_version":
+                receipt["policy_version"] = "daily-review-v0"
+            elif tamper_mode == "schema_version":
+                receipt["schema_version"] = "3"
+            elif tamper_mode == "gate_version":
+                receipt["gate_version"] = "runtime-message-quality-v0"
+            elif tamper_mode == "checked_at":
+                receipt["checked_at"] = ""
             receipt_path.write_text(
                 json.dumps(receipt, ensure_ascii=False), encoding="utf-8"
             )
@@ -1007,6 +1037,106 @@ async def test_receipt_integrity_failure_holds_ai_and_preserves_one_fallback_set
     assert state["markets"]["kr"]["successful_packet_ids"] == []
     if tamper_mode == "missing":
         assert not receipt_path.exists()
+
+
+@pytest.mark.anyio
+async def test_validated_output_tamper_is_rejected_before_retry_send(
+    monkeypatch,
+    tmp_path: Path,
+) -> None:
+    _settings(monkeypatch, tmp_path)
+    _write_artifacts(tmp_path)
+    failed = RecordingNotifier(fail=True)
+    retry_notifier = RecordingNotifier()
+
+    with Session(_engine()) as session:
+        _seed_deliveries(session)
+        hold_ai_assisted_pilot_session(session, PACKET_ID)
+        first = await deliver_validated_ai_review(session, PACKET_ID, notifier=failed)
+        output_path = next((tmp_path / "ai_review" / "outbox").glob("*.json"))
+        output = json.loads(output_path.read_text(encoding="utf-8"))
+        output["stock_reviews"][0]["unknowns"][0] += " 변조"
+        output_path.write_text(json.dumps(output, ensure_ascii=False), encoding="utf-8")
+
+        retry = await deliver_validated_ai_review(
+            session, PACKET_ID, notifier=retry_notifier
+        )
+
+    assert first.status == "pending"
+    assert retry.status == "quality_receipt_invalid"
+    assert retry_notifier.payloads == []
+
+
+@pytest.mark.anyio
+async def test_post_partial_delivery_receipt_failure_stops_without_false_full_fallback(
+    monkeypatch,
+    tmp_path: Path,
+) -> None:
+    _settings(monkeypatch, tmp_path)
+    _write_artifacts(tmp_path)
+    partial = PartialFailureNotifier(successful_sends=1)
+    retry_notifier = RecordingNotifier()
+    fallback_notifier = RecordingNotifier()
+
+    with Session(_engine()) as session:
+        _seed_deliveries(session)
+        hold_ai_assisted_pilot_session(session, PACKET_ID)
+        first = await deliver_validated_ai_review(
+            session, PACKET_ID, notifier=partial
+        )
+        receipt_path = (
+            tmp_path
+            / "ai_review"
+            / "pilot"
+            / "history"
+            / "2026"
+            / "08"
+            / PACKET_ID
+            / "message-quality-receipt.json"
+        )
+        receipt = json.loads(receipt_path.read_text(encoding="utf-8"))
+        receipt["check_results"]["stock_count"] = 999
+        receipt_path.write_text(json.dumps(receipt, ensure_ascii=False), encoding="utf-8")
+
+        retry = await deliver_validated_ai_review(
+            session, PACKET_ID, notifier=retry_notifier
+        )
+        fallback = await dispatch_due_deterministic_fallbacks(
+            session,
+            market="kr",
+            run_date=RUN_DATE,
+            now=datetime(2026, 8, 14, 17, 10, tzinfo=KST),
+            notifier=fallback_notifier,
+        )
+        deliveries = session.exec(select(NotificationDelivery)).all()
+
+    assert first.status == "pending"
+    assert first.sent_count == 1
+    assert retry.status == "quality_receipt_invalid"
+    assert retry.delivery_mode == "partial_integrity"
+    assert retry.sent_count == 1
+    assert retry_notifier.payloads == []
+    assert fallback[-1].status == "partial_integrity_manual_intervention"
+    assert fallback_notifier.payloads == []
+    assert sum(delivery.status == "sent" for delivery in deliveries) == 1
+    audit = json.loads(
+        (
+            tmp_path
+            / "ai_review"
+            / "pilot"
+            / "history"
+            / "2026"
+            / "08"
+            / PACKET_ID
+            / "quality-receipt-integrity-error.json"
+        ).read_text(encoding="utf-8")
+    )
+    assert audit["integrity_failure_timing"] == "post_partial_delivery"
+    assert audit["manual_intervention_required"] is True
+    assert audit["fallback_eligible"] is False
+    assert audit["full_deterministic_fallback_recorded"] is False
+    state_path = tmp_path / "ai_review" / "pilot" / "state-v3.json"
+    assert not state_path.exists()
 
 
 def test_pilot_v3_stops_market_after_five_successful_packets(

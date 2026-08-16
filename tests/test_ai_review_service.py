@@ -3089,9 +3089,12 @@ def test_modeled_forward_binding_uses_source_aware_label(
                 "ref_id": "modeled_fper_interpretation",
                 "interpretation_type": "absolute",
                 "metric": "forward_pe",
-                "fact_id": "valuation:current",
-                "text_ref": "valuation_analysis.text",
-                "comparison_numeric_ref_ids": ["modeled_fper"],
+                    "fact_id": "valuation:current",
+                    "text_ref": "valuation_analysis.text",
+                    "exact_text_span": (
+                        "{{numeric:modeled_fper}} 내부 정상화 가정의 결과입니다."
+                    ),
+                    "comparison_numeric_ref_ids": ["modeled_fper"],
                 "basis_status": "verified",
                 "source_type": "modeled_forward",
                 "direction": "neutral",
@@ -4538,8 +4541,22 @@ def test_financial_period_and_valuation_interpretation_require_exact_evidence(
         for error in valuation_errors
     )
 
-    review.business_earnings.text = "2026년 2분기 영업이익 5천만원은 확인된 값입니다."
+    review.business_earnings.text = (
+        "2026년 2분기 영업이익 5천만원은 확인된 값입니다."
+    )
     review.numeric_claims[-1].usage = "2026년 2분기 영업이익 5천만원"
+    basis_errors = ai_review_service._financial_period_language_errors(
+        review.ticker, review
+    )
+    assert any(
+        "financial_statement_basis_label_missing" in error
+        for error in basis_errors
+    )
+
+    review.business_earnings.text = (
+        "2026년 2분기 연결 기준 영업이익 5천만원은 확인된 값입니다."
+    )
+    review.numeric_claims[-1].usage = "2026년 2분기 연결 기준 영업이익 5천만원"
     review.valuation_analysis.fact_ids = ["valuation:book_value"]
     review.valuation_analysis.text = "음의 주당순자산은 확인됐습니다."
     assert ai_review_service._financial_period_language_errors(
@@ -4550,7 +4567,7 @@ def test_financial_period_and_valuation_interpretation_require_exact_evidence(
     ) == []
 
     review.business_earnings.text = (
-        "2026년 2분기 영업이익 5천만원 수준의 누적 이익이 확인됐습니다."
+        "2026년 2분기 연결 기준 영업이익 5천만원 수준의 누적 이익이 확인됐습니다."
     )
     period_errors = ai_review_service._financial_period_language_errors(
         review.ticker, review
@@ -4561,9 +4578,11 @@ def test_financial_period_and_valuation_interpretation_require_exact_evidence(
     )
 
     review.business_earnings.text = (
-        "2026년 상반기 누적 영업이익 5천만원은 단일 분기 실적입니다."
+        "2026년 상반기 누적 연결 기준 영업이익 5천만원은 단일 분기 실적입니다."
     )
-    review.numeric_claims[-1].usage = "2026년 상반기 누적 영업이익 5천만원"
+    review.numeric_claims[-1].usage = (
+        "2026년 상반기 누적 연결 기준 영업이익 5천만원"
+    )
     period_errors = ai_review_service._financial_period_language_errors(
         review.ticker, review
     )
@@ -4635,6 +4654,21 @@ def test_financial_period_label_distinguishes_h1_filing_from_amount_scope() -> N
         )
         is None
     )
+
+
+@pytest.mark.parametrize(
+    ("value", "expected"),
+    [
+        ("2026-12-31", "exact"),
+        ("FY1", "provider_defined"),
+        ("provider-defined forward consensus", "provider_defined"),
+        (None, "unknown"),
+    ],
+)
+def test_forward_period_status_is_explicit(
+    value: str | None, expected: str
+) -> None:
+    assert ai_review_service._valuation_forward_period_status(value) == expected
 
 
 def test_authoritative_identity_field_provenance_reaches_ai_packet(

@@ -362,6 +362,50 @@ def test_quality_audit_checks_identity_across_final_rendered_payload() -> None:
     assert report["rendered_identity_prose_mismatches"][0]["ticker"] == "AAA"
 
 
+def test_quality_gate_rejects_final_rendered_particle_duplicate_and_internal_terms() -> None:
+    output = _output()
+    messages = [
+        "market",
+        "📊 거래량·포지셔닝\n현재가 $20.18는 지지 안입니다.",
+        "📊 거래량·포지셔닝\n현재가 현재가 기준 차트 손익비 1.77배입니다.",
+        "📊 거래량·포지셔닝\n엔진이 가장 가까운 적격 저항을 쓴 값입니다.",
+    ]
+
+    report = relational_reasoning_quality_report(
+        output, rendered_messages=messages
+    )
+    final = report["final_rendered_language"]
+
+    assert final["price_particle_error_count"] == 1
+    assert final["duplicate_canonical_label_count"] == 1
+    assert final["internal_implementation_term_count"] == 1
+    assert final["hard_checks_passed"] is False
+    assert report["hard_checks_passed"] is False
+
+
+def test_quality_gate_accepts_particle_safe_price_and_user_facing_rr_language() -> None:
+    output = _output()
+    messages = [
+        "market",
+        "📊 거래량·포지셔닝\n현재가는 $20.18이며 현재가 기준 차트 손익비는 1.77배입니다.",
+        "📊 거래량·포지셔닝\n동적 지지구간 하단 $19.44와 $345.9 수준의 현재 가격을 확인합니다.",
+        "📊 거래량·포지셔닝\n가장 가까운 적격 저항을 기준으로 현재가 손익비를 확인합니다.",
+    ]
+
+    report = relational_reasoning_quality_report(
+        output, rendered_messages=messages
+    )
+
+    assert report["final_rendered_language"]["hard_checks_passed"] is True
+
+
+def test_quality_gate_allows_typed_neutral_absolute_valuation_statement() -> None:
+    assert _structural_template_exception(
+        "현재 PER 10배는 이익 기준의 절대 배수입니다.",
+        "<numeric>는 이익 기준의 절대 배수입니다.",
+    ) == "typed_neutral_absolute_valuation_statement"
+
+
 def test_runtime_quality_receipt_binds_packet_output_and_rendered_payload() -> None:
     payload = _output().model_dump()
     descriptions = (
@@ -424,4 +468,12 @@ def test_runtime_quality_receipt_binds_packet_output_and_rendered_payload() -> N
     wrong_schema = dict(receipt, schema_version="3")
     assert not verify_runtime_message_quality_receipt(
         wrong_schema, packet, output, messages
+    )
+    invalid_checked_at = dict(receipt, checked_at="not-a-timestamp")
+    assert not verify_runtime_message_quality_receipt(
+        invalid_checked_at, packet, output, messages
+    )
+    naive_checked_at = dict(receipt, checked_at="2026-08-17T12:00:00")
+    assert not verify_runtime_message_quality_receipt(
+        naive_checked_at, packet, output, messages
     )

@@ -10,6 +10,7 @@ from app.services.financial_amount_period_service import (
     comparison_periods_compatible,
     financial_amount_period_label,
     financial_amount_period_lineage,
+    financial_statement_basis_decision,
     unique_financial_source_row,
 )
 
@@ -60,7 +61,7 @@ def test_h1_filing_can_contain_q2_single_quarter_amount() -> None:
     lineage = financial_amount_period_lineage(_row(), "latest_operating_income")
 
     assert lineage["amount_period_type"] == "single_quarter"
-    assert financial_amount_period_label(lineage) == "2026년 2분기"
+    assert financial_amount_period_label(lineage) == "2026년 2분기 연결 기준"
     assert "상반기" not in str(financial_amount_period_label(lineage))
 
 
@@ -73,7 +74,7 @@ def test_h1_cumulative_amount_keeps_cumulative_label() -> None:
     lineage = financial_amount_period_lineage(row, "latest_revenue")
 
     assert lineage["amount_period_type"] == "year_to_date_cumulative"
-    assert financial_amount_period_label(lineage) == "2026년 상반기 누적"
+    assert financial_amount_period_label(lineage) == "2026년 상반기 누적 연결 기준"
 
 
 def test_same_filing_can_have_distinct_amount_periods_by_field() -> None:
@@ -95,9 +96,9 @@ def test_same_filing_can_have_distinct_amount_periods_by_field() -> None:
 @pytest.mark.parametrize(
     ("period_type", "period_scope", "period_end", "expected"),
     [
-        ("Q3", "single-quarter", date(2026, 9, 30), "2026년 3분기"),
-        ("Q3", "ytd", date(2026, 9, 30), "2026년 9개월 누적"),
-        ("FY", "annual", date(2026, 12, 31), "2026년 연간"),
+        ("Q3", "single-quarter", date(2026, 9, 30), "2026년 3분기 연결 기준"),
+        ("Q3", "ytd", date(2026, 9, 30), "2026년 9개월 누적 연결 기준"),
+        ("FY", "annual", date(2026, 12, 31), "2026년 연간 연결 기준"),
     ],
 )
 def test_quarter_ytd_and_annual_labels(
@@ -129,7 +130,7 @@ def test_balance_sheet_amount_is_point_in_time() -> None:
     lineage = financial_amount_period_lineage(_row(), "latest_total_equity")
 
     assert lineage["amount_period_type"] == "point_in_time"
-    assert financial_amount_period_label(lineage) == "2026-06-30 기준"
+    assert financial_amount_period_label(lineage) == "2026-06-30 연결 기준"
 
 
 @pytest.mark.parametrize(
@@ -179,7 +180,7 @@ def test_statement_type_does_not_infer_consolidated_or_separate_basis() -> None:
     ("statement_name", "expected"),
     [
         ("연결포괄손익계산서", "consolidated"),
-        ("포괄손익계산서", "separate"),
+        ("별도포괄손익계산서", "separate"),
     ],
 )
 def test_explicit_source_row_statement_name_resolves_basis(
@@ -199,8 +200,55 @@ def test_explicit_source_row_statement_name_resolves_basis(
     lineage = financial_amount_period_lineage(row, "latest_operating_income")
 
     assert lineage["consolidated_separate_basis"] == expected
-    assert lineage["statement_basis_source"] == "source_row_statement_name"
+    assert lineage["statement_basis_source"] == "authoritative_statement_title"
     assert lineage["lineage_verified"] is True
+
+
+def test_plain_statement_name_does_not_infer_separate_basis() -> None:
+    row = _row(
+        fs_div=None,
+        operating_income_basis=(
+            "손익계산서; fs_div=unknown; sj_div=IS; "
+            "account_id=dart_OperatingIncomeLoss; thstrm_nm=제58기 반기; "
+            "report_code=11012"
+        ),
+    )
+
+    decision = financial_statement_basis_decision(
+        row, row.operating_income_basis
+    )
+    lineage = financial_amount_period_lineage(row, "latest_operating_income")
+
+    assert decision["state"] == "unknown"
+    assert lineage["lineage_verified"] is False
+    assert financial_amount_period_label(lineage) is None
+
+
+def test_conflicting_fs_div_and_statement_title_is_denied() -> None:
+    row = _row(
+        fs_div="CFS",
+        operating_income_basis=(
+            "별도손익계산서; fs_div=CFS; sj_div=IS; "
+            "account_id=dart_OperatingIncomeLoss; thstrm_nm=제58기 반기; "
+            "report_code=11012"
+        ),
+    )
+
+    lineage = financial_amount_period_lineage(row, "latest_operating_income")
+
+    assert lineage["statement_basis_state"] == "conflict"
+    assert lineage["denial_reason"] == "financial_statement_basis_conflict"
+    assert lineage["lineage_verified"] is False
+
+
+def test_unique_source_selection_prefers_single_cfs_row() -> None:
+    cfs = _row(fs_div="CFS")
+    ofs = _row(
+        fs_div="OFS",
+        revenue_basis=str(_row().revenue_basis).replace("fs_div=CFS", "fs_div=OFS"),
+    )
+
+    assert unique_financial_source_row([ofs, cfs], "latest_revenue") is cfs
 
 
 def test_source_row_must_match_uniquely() -> None:
@@ -224,6 +272,22 @@ def test_comparison_period_and_amount_type_must_match() -> None:
 
     assert comparison_periods_compatible([current, previous], comparison="yoy")
     assert not comparison_periods_compatible([current, wrong], comparison="yoy")
+
+
+def test_growth_comparison_rejects_mixed_cfs_ofs_basis() -> None:
+    current = financial_amount_period_lineage(_row(), "latest_revenue_yoy")
+    previous = financial_amount_period_lineage(
+        _row(
+            fiscal_year=2025,
+            financial_period_end=date(2025, 6, 30),
+            period="2025-06-30",
+            fs_div="OFS",
+            revenue_basis=str(_row().revenue_basis).replace("fs_div=CFS", "fs_div=OFS"),
+        ),
+        "latest_revenue_yoy",
+    )
+
+    assert not comparison_periods_compatible([current, previous], comparison="yoy")
 
 
 def test_comparison_period_metadata_records_exact_prior_bounds() -> None:
@@ -261,4 +325,4 @@ def test_preliminary_source_row_has_deterministic_identity() -> None:
 
     assert lineage["account_identifier"] == "preliminary:revenue"
     assert lineage["lineage_verified"] is True
-    assert financial_amount_period_label(lineage) == "2026년 2분기"
+    assert financial_amount_period_label(lineage) == "2026년 2분기 연결 기준"

@@ -40,6 +40,23 @@ _VARIABLE_NUMBER = re.compile(
 _VARIABLE_DATE = re.compile(r"\b20\d{2}(?:[-./년]\d{1,2})?(?:[-./월]\d{1,2})?일?\b")
 _DEPOSITARY_PROSE = re.compile(r"\b(?:ADR|ADS)\b|예탁증권", re.IGNORECASE)
 _COMMON_STOCK_PROSE = re.compile(r"common\s+(?:stock|share)|보통주", re.IGNORECASE)
+_RENDERED_DUPLICATE_LABEL = re.compile(
+    r"현재가\s+현재가\s*기준|차트\s*손익비\s+차트\s*손익비",
+    re.IGNORECASE,
+)
+_RENDERED_PRICE_PARTICLE = re.compile(
+    r"(?:현재가|차트\s*무효화\s*가격)\s+"
+    r"(?:(?:US\$|NT\$|\$)\s*\d[\d,]*(?:\.\d+)?"
+    r"|(?:₩)?\s*\d[\d,]*(?:\.\d+)?(?:원)?)"
+    r"(?:은|는|이|가|을|를|와|과)(?=$|[\s,.!?;:)])",
+    re.IGNORECASE,
+)
+_RENDERED_INTERNAL_LEXICON = re.compile(
+    r"(?:엔진이\s*(?:계산한|선택한|가장\s*가까운\s*적격\s*저항을\s*쓴)|"
+    r"\bbinder\b|\bvalidator\b|numeric\s*registry|canonical\s*semantic|"
+    r"\bplaceholder\b)",
+    re.IGNORECASE,
+)
 
 # These are safety boundaries, not stock analysis. They remain visible in the audit but do not
 # count as cross-stock investment boilerplate.
@@ -97,6 +114,18 @@ def _template_skeleton(
 def _structural_template_exception(sentence: str, skeleton: str) -> str | None:
     if skeleton == "<numeric>입니다.":
         return "single_canonical_numeric_statement"
+    if skeleton in {
+        "<numeric> 이익 기준의 절대 배수입니다.",
+        "<numeric>는 이익 기준의 절대 배수입니다.",
+        "<numeric> 장부가 기준의 절대 배수입니다.",
+        "<numeric>는 장부가 기준의 절대 배수입니다.",
+        "<numeric> 시장 예상 이익의 절대 배수입니다.",
+        "<numeric>는 시장 예상 이익의 절대 배수입니다.",
+        "<numeric> 현재 이익 기준의 절대 배수입니다.",
+        "<numeric> 현재 장부가 기준의 절대 배수입니다.",
+        "<numeric> 현재 시장 예상 이익의 절대 배수입니다.",
+    }:
+        return "typed_neutral_absolute_valuation_statement"
     if sentence.startswith("현재가 ") and skeleton == "<numeric> 수준입니다.":
         return "canonical_current_price_statement"
     if (
@@ -286,6 +315,34 @@ def _numeric_label_quality_report(
         "postposition_mismatch_count": postposition_mismatch,
         "details": details,
         "hard_checks_passed": hard_checks_passed,
+    }
+
+
+def _final_rendered_language_report(messages: Iterable[str]) -> dict[str, object]:
+    details: list[dict[str, object]] = []
+    counts = {
+        "duplicate_canonical_label_count": 0,
+        "price_particle_error_count": 0,
+        "internal_implementation_term_count": 0,
+    }
+    for index, message in enumerate(messages, start=1):
+        checks = (
+            ("duplicate_canonical_label", _RENDERED_DUPLICATE_LABEL),
+            ("price_particle_error", _RENDERED_PRICE_PARTICLE),
+            ("internal_implementation_term", _RENDERED_INTERNAL_LEXICON),
+        )
+        for issue, pattern in checks:
+            matches = [match.group(0) for match in pattern.finditer(message)]
+            if not matches:
+                continue
+            counts[f"{issue}_count"] += len(matches)
+            details.append(
+                {"message_index": index, "issue": issue, "matches": matches}
+            )
+    return {
+        **counts,
+        "details": details,
+        "hard_checks_passed": not any(counts.values()),
     }
 def relational_reasoning_quality_report(
     output: AIDailyReviewOutput,
@@ -544,6 +601,7 @@ def relational_reasoning_quality_report(
     )
     expected_heading = "📊 거래량·포지셔닝" if output.market == "us" else "📊 수급"
     rendered_values = list(rendered_messages)
+    final_rendered_language = _final_rendered_language_report(rendered_values)
     heading_mismatches = [
         index
         for index, message in enumerate(rendered_values, start=1)
@@ -620,6 +678,7 @@ def relational_reasoning_quality_report(
         and completeness_passed
         and not heading_mismatches
         and not rendered_identity_mismatches
+        and final_rendered_language["hard_checks_passed"] is True
     )
     return {
         "contract": "relational-reasoning-quality-v2",
@@ -682,6 +741,7 @@ def relational_reasoning_quality_report(
         "rendered_identity_prose_mismatch_count": len(
             rendered_identity_mismatches
         ),
+        "final_rendered_language": final_rendered_language,
         "hard_checks_passed": hard_checks_passed,
         "deterministic_quality_gate_passed": hard_checks_passed,
         "production_assist_evidence_eligible": False,
@@ -771,6 +831,15 @@ def verify_runtime_message_quality_receipt(
     ]
     quality = receipt.get("check_results")
     errors = receipt.get("errors")
+    checked_at = receipt.get("checked_at")
+    checked_at_valid = False
+    if isinstance(checked_at, str) and checked_at:
+        try:
+            parsed_checked_at = datetime.fromisoformat(checked_at)
+        except ValueError:
+            pass
+        else:
+            checked_at_valid = parsed_checked_at.tzinfo is not None
     return bool(
         receipt.get("contract") == "runtime-message-quality-receipt-v2"
         and receipt.get("receipt_schema_version") == "2"
@@ -790,6 +859,5 @@ def verify_runtime_message_quality_receipt(
         and quality.get("deterministic_quality_gate_passed") is True
         and isinstance(errors, list)
         and not errors
-        and isinstance(receipt.get("checked_at"), str)
-        and bool(receipt.get("checked_at"))
+        and checked_at_valid
     )

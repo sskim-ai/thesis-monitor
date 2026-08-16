@@ -488,9 +488,11 @@ def _hold_quality_integrity_rejection(
     *,
     reason: str,
     rejected_at: datetime,
-) -> int:
+) -> dict[str, object]:
     packet_id = str(packet["packet_id"])
     held_count = 0
+    sent_count = 0
+    matched_deliveries: list[tuple[NotificationDelivery, dict[str, object]]] = []
     for delivery in deliveries:
         try:
             payload = json.loads(delivery.payload)
@@ -499,27 +501,54 @@ def _hold_quality_integrity_rejection(
         if not isinstance(payload, dict):
             continue
         metadata = _pilot_metadata(payload)
-        if metadata.get("packet_id") != packet_id or delivery.status == "sent":
+        if metadata.get("packet_id") != packet_id:
             continue
-        metadata["state"] = "held"
-        metadata["fallback_eligible"] = True
-        metadata["quality_integrity_state"] = "rejected"
+        matched_deliveries.append((delivery, payload))
+        if delivery.status == "sent" or metadata.get("state") == "ai_assisted_sent":
+            sent_count += 1
+    partial_delivery = sent_count > 0
+    integrity_state = (
+        "post_partial_delivery_rejected" if partial_delivery else "rejected"
+    )
+    for delivery, payload in matched_deliveries:
+        metadata = _pilot_metadata(payload)
+        already_sent = (
+            delivery.status == "sent" or metadata.get("state") == "ai_assisted_sent"
+        )
+        if partial_delivery:
+            if not already_sent:
+                metadata["state"] = "partial_integrity_rejected"
+                metadata["fallback_eligible"] = False
+            metadata["manual_intervention_required"] = True
+        else:
+            metadata["state"] = "held"
+            metadata["fallback_eligible"] = True
+        metadata["quality_integrity_state"] = integrity_state
         metadata["quality_integrity_reason"] = reason
         metadata["quality_integrity_rejected_at"] = rejected_at.isoformat()
         payload[AI_ASSISTED_PILOT_METADATA_KEY] = metadata
         delivery.payload = json.dumps(payload, ensure_ascii=False)
-        delivery.status = "pending"
+        if not already_sent:
+            delivery.status = "pending"
         session.add(delivery)
-        held_count += 1
+        if not already_sent and not partial_delivery:
+            held_count += 1
     session.commit()
     _atomic_json(
         _archive_directory(packet) / "quality-receipt-integrity-error.json",
         {
             "packet_id": packet_id,
-            "status": "quality_integrity_rejected",
+            "status": integrity_state,
             "reason": reason,
-            "rejected_ai_sent": False,
-            "fallback_eligible": held_count > 0,
+            "integrity_failure_timing": (
+                "post_partial_delivery" if partial_delivery else "pre_send"
+            ),
+            "ai_sent_count": sent_count,
+            "rejected_ai_sent": sent_count > 0,
+            "held_count": held_count,
+            "fallback_eligible": not partial_delivery and held_count > 0,
+            "manual_intervention_required": partial_delivery,
+            "full_deterministic_fallback_recorded": False,
             "analysis_rerun": False,
             "packet_regenerated": False,
             "binder_rerun": False,
@@ -528,7 +557,13 @@ def _hold_quality_integrity_rejection(
             "recorded_at": rejected_at.isoformat(),
         },
     )
-    return held_count
+    return {
+        "integrity_state": integrity_state,
+        "partial_delivery": partial_delivery,
+        "sent_count": sent_count,
+        "held_count": held_count,
+        "fallback_eligible": not partial_delivery and held_count > 0,
+    }
 
 
 def hold_ai_assisted_pilot_session(
@@ -987,7 +1022,8 @@ async def deliver_validated_ai_review(
     with _pilot_lock(packet_id):
         deliveries = _session_deliveries(session, packet)
         if any(
-            _pilot_metadata(payload).get("quality_integrity_state") == "rejected"
+            _pilot_metadata(payload).get("quality_integrity_state")
+            in {"rejected", "post_partial_delivery_rejected"}
             for delivery in deliveries
             if isinstance((payload := json.loads(delivery.payload)), dict)
         ):
@@ -995,7 +1031,18 @@ async def deliver_validated_ai_review(
                 status="quality_receipt_invalid",
                 market=market,
                 packet_id=packet_id,
-                delivery_mode="held",
+                delivery_mode=(
+                    "partial_integrity"
+                    if any(
+                        _pilot_metadata(payload).get("quality_integrity_state")
+                        == "post_partial_delivery_rejected"
+                        for delivery in deliveries
+                        if isinstance(
+                            (payload := json.loads(delivery.payload)), dict
+                        )
+                    )
+                    else "held"
+                ),
                 pending_count=sum(delivery.status == "pending" for delivery in deliveries),
                 reason="quality_integrity_rejected_requires_fallback",
             )
@@ -1175,7 +1222,7 @@ async def deliver_validated_ai_review(
                 if integrity_errors
                 else "persisted_payload_or_receipt_content_mismatch"
             )
-            held_count = _hold_quality_integrity_rejection(
+            rejection = _hold_quality_integrity_rejection(
                 session,
                 packet,
                 deliveries,
@@ -1186,8 +1233,13 @@ async def deliver_validated_ai_review(
                 status="quality_receipt_invalid",
                 market=market,
                 packet_id=packet_id,
-                delivery_mode="held",
-                pending_count=held_count,
+                delivery_mode=(
+                    "partial_integrity"
+                    if rejection["partial_delivery"]
+                    else "held"
+                ),
+                sent_count=int(rejection["sent_count"]),
+                pending_count=int(rejection["held_count"]),
                 reason=reason,
             )
         if not receipt_valid:
@@ -1257,7 +1309,7 @@ async def deliver_validated_ai_review(
             receipt,
         )
         if persisted_integrity_errors:
-            held_count = _hold_quality_integrity_rejection(
+            rejection = _hold_quality_integrity_rejection(
                 session,
                 packet,
                 deliveries,
@@ -1268,8 +1320,13 @@ async def deliver_validated_ai_review(
                 status="quality_receipt_invalid",
                 market=market,
                 packet_id=packet_id,
-                delivery_mode="held",
-                pending_count=held_count,
+                delivery_mode=(
+                    "partial_integrity"
+                    if rejection["partial_delivery"]
+                    else "held"
+                ),
+                sent_count=int(rejection["sent_count"]),
+                pending_count=int(rejection["held_count"]),
                 reason="persisted_quality_metadata_mismatch",
             )
         ai_archive = archive_dir / "ai-assisted-messages.json"
@@ -1412,6 +1469,8 @@ def _pending_pilot_packets(
             continue
         metadata = _pilot_metadata(payload) if isinstance(payload, dict) else {}
         if metadata.get("market") != market:
+            continue
+        if metadata.get("quality_integrity_state") == "post_partial_delivery_rejected":
             continue
         state = str(metadata.get("state") or "")
         packet_id = str(metadata.get("packet_id") or "")
@@ -1649,7 +1708,36 @@ async def dispatch_due_deterministic_fallbacks(
     current = (now or datetime.now(KST)).astimezone(KST)
     if current < _fallback_deadline(run_date, market):
         return [PilotDeliveryResult(status="before_deadline", market=market)]
-    results: list[PilotDeliveryResult] = []
+    partial_packet_ids: set[str] = set()
+    channel = get_settings().notification_channel.strip().lower()
+    for delivery in session.exec(
+        select(NotificationDelivery).where(
+            NotificationDelivery.assessment_date == run_date,
+            NotificationDelivery.channel == channel,
+        )
+    ).all():
+        try:
+            payload = json.loads(delivery.payload)
+        except json.JSONDecodeError:
+            continue
+        metadata = _pilot_metadata(payload) if isinstance(payload, dict) else {}
+        if (
+            metadata.get("market") == market
+            and metadata.get("quality_integrity_state")
+            == "post_partial_delivery_rejected"
+            and metadata.get("packet_id")
+        ):
+            partial_packet_ids.add(str(metadata["packet_id"]))
+    results: list[PilotDeliveryResult] = [
+        PilotDeliveryResult(
+            status="partial_integrity_manual_intervention",
+            market=market,
+            packet_id=packet_id,
+            delivery_mode="partial_integrity",
+            reason="post_partial_delivery_receipt_integrity_failure",
+        )
+        for packet_id in sorted(partial_packet_ids)
+    ]
     for packet_id in _pending_pilot_packets(session, market, run_date):
         packet = _read_json(_packet_path(packet_id))
         session_states = {

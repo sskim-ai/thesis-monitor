@@ -324,6 +324,8 @@ def build_financial_quality_state(
                         and item.get("source_row_identity")
                         and item.get("consolidated_separate_basis")
                         and item.get("statement_basis_source")
+                        and item.get("statement_basis_state")
+                        in {"verified_consolidated", "verified_separate"}
                         for item in records
                     )
                 )
@@ -416,7 +418,10 @@ def build_financial_quality_state(
                         "source_filing_identifier",
                         "source_row_identity",
                         "consolidated_separate_basis",
+                        "statement_basis_contract",
+                        "statement_basis_state",
                         "statement_basis_source",
+                        "statement_basis_evidence",
                         "comparison_type",
                         "comparison_period_start",
                         "comparison_period_end",
