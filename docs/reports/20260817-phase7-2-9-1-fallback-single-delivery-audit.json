@@ -1,0 +1,21 @@
+{
+  "ai_reanalysis": 0,
+  "ai_sends_after_integrity_failure": 0,
+  "binder_rerun": 0,
+  "contract": "runtime-message-quality-v1",
+  "deterministic_fallback_sets_at_deadline": 1,
+  "integration_test_cases": [
+    "payload_tamper",
+    "receipt_check_results_tamper",
+    "receipt_status_tamper",
+    "receipt_missing",
+    "different_packet_receipt",
+    "partial_delivery_receipt_sha_mismatch",
+    "rendered_payload_set_hash_mismatch"
+  ],
+  "packet_regeneration": 0,
+  "pilot_mutations": 0,
+  "renderer_rerun": 0,
+  "status": "passed_by_integration_tests",
+  "validator_rerun": 0
+}

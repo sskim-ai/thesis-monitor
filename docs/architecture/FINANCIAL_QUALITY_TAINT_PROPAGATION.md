@@ -119,6 +119,12 @@ Eligibility must follow actual economic dependencies. Source type, value presenc
 
 ## Validation Evidence
 
+Phase 7.2.9.1 adds `financial-amount-period-v1` without changing `financial-quality-taint-v2`.
+Eligibility now requires an exact field-level source row and amount period in addition to the
+existing quality lineage. Filing type and report end date cannot promote a single-quarter flow into
+a cumulative period. Ambiguity suppresses the amount and its directly derived growth rate while
+preserving the raw audit value.
+
 See:
 
 - [Lineage dependency matrix](../reports/20260815-phase7-2-4-financial-lineage-dependency-matrix.json)

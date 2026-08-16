@@ -146,3 +146,12 @@ metadata is never shown.
 KR messages contain one-line judgment, actual changes, market structure, portfolio transmission,
 next confirmation, and material cautions. US messages add the backend-verified Korean pre-open night
 futures section. Night futures are opening context, never Korean company thesis confirmation.
+
+## Relational Valuation Evidence
+
+Absolute multiples are neutral observations unless a typed comparison Fact is present. Historical
+position requires a visible same-metric percentile or observation; peer comparison requires a
+verified sample; market-expectation claims require an independent expectation Fact. A backend
+`valuation:multiple_relation` Fact may connect trailing and forward multiples only when security,
+share, currency, price, and denominator periods are comparable. The model does not calculate the
+relationship or infer denominator direction itself.

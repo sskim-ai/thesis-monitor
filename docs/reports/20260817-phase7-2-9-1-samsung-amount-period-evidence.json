@@ -1,0 +1,76 @@
+{
+  "canonical_runtime_source": {
+    "operating_income": {
+      "amount_period_end": "2026-06-30",
+      "amount_period_start": "2026-04-01",
+      "amount_period_type": "single_quarter",
+      "comparison_period_end": null,
+      "comparison_period_start": null,
+      "comparison_type": null,
+      "consolidated_separate_basis": "separate",
+      "decision_version": "financial-quality-taint-v2",
+      "denial_reason": null,
+      "denominator_period": "2026-06-30",
+      "dependency_fields": [
+        "earnings.latest_operating_income"
+      ],
+      "dependency_periods": [
+        "2026-06-30"
+      ],
+      "lineage_verification_status": "verified",
+      "prose_eligible": true,
+      "provider": "opendart",
+      "quality_reason_codes": [],
+      "single_quarter_cumulative_flag": "single_quarter",
+      "source_filing_identifier": "20260814003699",
+      "source_period": "2026-06-30",
+      "source_row_identity": "20260814003699:opendart:dart_OperatingIncomeLoss:unknown:IS:제 58 기 반기:operating_income",
+      "source_type": "full_statement",
+      "state": "verified_usable",
+      "statement_basis_source": "source_row_statement_name"
+    },
+    "operating_income_yoy": {
+      "amount_period_end": "2026-06-30",
+      "amount_period_start": "2026-04-01",
+      "amount_period_type": "single_quarter",
+      "comparison_period_end": "2025-06-30",
+      "comparison_period_start": "2025-04-01",
+      "comparison_period_verified": true,
+      "comparison_type": "yoy",
+      "consolidated_separate_basis": "separate",
+      "decision_version": "financial-quality-taint-v2",
+      "denial_reason": null,
+      "denominator_period": "2025-06-30",
+      "dependency_fields": [
+        "earnings.latest_operating_income_yoy"
+      ],
+      "dependency_periods": [
+        "2026-06-30",
+        "2025-06-30"
+      ],
+      "lineage_verification_status": "verified",
+      "prose_eligible": true,
+      "provider": "opendart",
+      "quality_reason_codes": [],
+      "single_quarter_cumulative_flag": "single_quarter",
+      "source_filing_identifier": "20260814003699",
+      "source_period": "2025-06-30",
+      "source_row_identity": "20260814003699:opendart:dart_OperatingIncomeLoss:unknown:IS:제 58 기 반기:operating_income",
+      "source_type": "full_statement",
+      "state": "verified_usable",
+      "statement_basis_source": "source_row_statement_name"
+    },
+    "provider": "opendart"
+  },
+  "corrected_comparison_label": "2026년 2분기",
+  "corrected_label": "2026년 2분기",
+  "official_reference_basis": "consolidated",
+  "official_reference_period": "2026_Q2_single_quarter",
+  "official_reference_role": "validation_reference_only_no_runtime_lookup",
+  "official_validation_reference": "https://news.samsung.com/kr/삼성전자-2026년-2분기-잠정실적-발표",
+  "previous_incorrect_label": "2026년 상반기 누적 영업이익",
+  "runtime_web_lookup": 0,
+  "status": "passed",
+  "ticker": "005930",
+  "ticker_runtime_override": 0
+}

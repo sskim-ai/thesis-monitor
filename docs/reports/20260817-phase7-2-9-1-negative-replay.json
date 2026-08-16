@@ -1,0 +1,90 @@
+{
+  "contract": "phase-7.2.9.1-negative-replay-v1",
+  "focused_blocking_cases": [
+    {
+      "case": "samsung_q2_amount_described_as_h1_cumulative",
+      "errors": [
+        "005930:financial_amount_period_prose_mismatch:earnings:2026-06-30:fields.operating_income.value:business_earnings.text:single_quarter"
+      ],
+      "expected": "REJECT"
+    },
+    {
+      "case": "hanwha_support_entry_rr_used_as_current_price_rr",
+      "errors": [
+        "012450:support_entry_risk_reward_used_as_current_price:core_judgment.text",
+        "012450:support_entry_risk_reward_used_as_primary_current_rr:core_judgment.text"
+      ],
+      "expected": "REJECT"
+    },
+    {
+      "case": "korean_re_low_pbr_without_comparison",
+      "errors": [
+        "003690:valuation_interpretation_typed_reference_missing:core_judgment.text"
+      ],
+      "expected": "REJECT"
+    },
+    {
+      "case": "posco_historical_neutral_without_visible_comparison",
+      "errors": [
+        "005490:valuation_interpretation_evidence_invalid:k005490_val_pe:absolute:pe",
+        "005490:valuation_interpretation_evidence_invalid:k005490_val_pb:absolute:pbr",
+        "005490:valuation_interpretation_typed_reference_missing:valuation_analysis.text"
+      ],
+      "expected": "REJECT"
+    }
+  ],
+  "historical_archive_mutated": false,
+  "historical_phase729_receipt_mutated": false,
+  "new_contract_replay": {
+    "kr": {
+      "errors": [
+        "003690:numeric_fact_ref_semantic_not_supported:p3:earnings:2026-06-30:fields.operating_income.value",
+        "003690:numeric_fact_ref_semantic_not_supported:p4:earnings:2026-06-30:fields.operating_income_yoy_pct",
+        "003690:numeric_fact_ref_semantic_not_supported:kcore1:earnings:2026-06-30:fields.operating_income.value",
+        "010120:numeric_fact_ref_semantic_not_supported:p3:earnings:2026-06-30:fields.operating_income.value",
+        "010120:numeric_fact_ref_semantic_not_supported:p4:earnings:2026-06-30:fields.operating_income_yoy_pct",
+        "010120:numeric_fact_ref_semantic_not_supported:kcore1:earnings:2026-06-30:fields.operating_income.value",
+        "010120:numeric_fact_ref_semantic_not_supported:kcore2:earnings:2026-06-30:fields.operating_income_yoy_pct",
+        "012450:numeric_fact_ref_semantic_not_supported:p3:earnings:2026-06-30:fields.operating_income.value",
+        "012450:numeric_fact_ref_semantic_not_supported:kcore1:earnings:2026-06-30:fields.operating_income.value",
+        "086280:numeric_fact_ref_semantic_not_supported:p4:earnings:2026-06-30:fields.operating_income_yoy_pct",
+        "086280:numeric_fact_ref_semantic_not_supported:kcore1:earnings:2026-06-30:fields.revenue_yoy_pct",
+        "086280:numeric_fact_ref_semantic_not_supported:kcore2:earnings:2026-06-30:fields.operating_income_yoy_pct",
+        "000660:valuation_interpretation_typed_reference_missing:core_judgment.text",
+        "000660:valuation_interpretation_typed_reference_missing:valuation_analysis.text",
+        "003690:valuation_interpretation_typed_reference_missing:core_judgment.text",
+        "003690:valuation_interpretation_typed_reference_missing:valuation_analysis.text",
+        "005490:valuation_interpretation_typed_reference_missing:valuation_analysis.text",
+        "005930:valuation_interpretation_typed_reference_missing:core_judgment.text",
+        "005930:valuation_interpretation_typed_reference_missing:valuation_analysis.text",
+        "010120:valuation_interpretation_typed_reference_missing:valuation_analysis.text",
+        "012450:valuation_interpretation_typed_reference_missing:valuation_analysis.text",
+        "086280:valuation_interpretation_typed_reference_missing:valuation_analysis.text"
+      ],
+      "replay_packet": "2026-08-16-kr-run-21-5844682f15da",
+      "source_packet": "2026-08-16-kr-run-21-27d84c4e9795"
+    },
+    "us": {
+      "errors": [
+        "CORZ:valuation_interpretation_typed_reference_missing:valuation_analysis.text",
+        "CRCL:valuation_interpretation_typed_reference_missing:valuation_analysis.text",
+        "GOOGL:valuation_interpretation_typed_reference_missing:core_judgment.text",
+        "GOOGL:valuation_interpretation_typed_reference_missing:valuation_analysis.text",
+        "HUT:valuation_interpretation_typed_reference_missing:valuation_analysis.text",
+        "IBM:valuation_interpretation_typed_reference_missing:valuation_analysis.text",
+        "MU:valuation_interpretation_typed_reference_missing:valuation_analysis.text",
+        "RXRX:valuation_interpretation_typed_reference_missing:valuation_analysis.text",
+        "SKHY:valuation_interpretation_typed_reference_missing:valuation_analysis.text",
+        "SNDK:valuation_interpretation_typed_reference_missing:valuation_analysis.text",
+        "TSLA:valuation_interpretation_typed_reference_missing:valuation_analysis.text",
+        "TSM:valuation_interpretation_typed_reference_missing:valuation_analysis.text",
+        "WRD:valuation_interpretation_typed_reference_missing:valuation_analysis.text",
+        "WULF:valuation_interpretation_typed_reference_missing:core_judgment.text",
+        "WULF:valuation_interpretation_typed_reference_missing:valuation_analysis.text"
+      ],
+      "replay_packet": "2026-08-16-us-run-20-f9b252d77940",
+      "source_packet": "2026-08-16-us-run-20-53fa21541277"
+    }
+  },
+  "status": "passed"
+}

@@ -91,3 +91,10 @@ fallback is archive-only. Historical archives remain governed by the contract ac
 
 Policy `daily-review-v3.9` uses draft-only `numeric_fact_refs` and backend rendering while preserving
 the validated schema-4 shape. See [NUMERIC_PROVENANCE.md](NUMERIC_PROVENANCE.md).
+
+Newly gated output uses `runtime-message-quality-receipt-v2`. Retry and reuse compare the actual
+receipt file SHA with every persisted delivery row, then validate contract/schema, packet, policy,
+output and rendered-set hashes, message count, check results, errors, and timestamp. Integrity
+failure is not a network retry: AI delivery is held, receipt regeneration is forbidden, and the
+already persisted deterministic fallback remains eligible for one deadline delivery. Historical
+archive markers keep the manifest contract active when they were created.

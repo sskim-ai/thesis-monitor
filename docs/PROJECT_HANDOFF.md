@@ -298,6 +298,16 @@ financial amounts carry verified amount-period labels. These corrected Previews 
 `pending_work_human_review`, are not Production Assist evidence, and are neither merged nor deployed.
 See [the Phase 7.2.9 readiness report](reports/20260816-phase7-2-9-runtime-quality-readiness.md).
 
+Work subsequently failed the Phase 7.2.9 corrected KR Preview for amount-period, RR-basis, and
+valuation-interpretation defects; its US Preview remained unapproved. Phase 7.2.9.1 addresses those
+blockers on `codex/phase-7-2-9-1-quality-blockers`. It separates filing period from field-level amount
+period, gives current-price and support-entry RR distinct semantics, requires typed homogeneous
+valuation evidence, and verifies the full runtime receipt file SHA before retry or delivery reuse.
+Corrected isolated packets `2026-08-16-kr-run-21-5844682f15da` and
+`2026-08-16-us-run-20-f9b252d77940` pass their deterministic validators and runtime gates. Both remain
+`pending_work_human_review`; production main and the operating checkout are unchanged. See
+[the Phase 7.2.9.1 readiness report](reports/20260817-phase7-2-9-1-readiness.md).
+
 ## Source Map
 
 - Packet, claim, validation, grounding: `app/services/ai_review_service.py`
@@ -327,6 +337,9 @@ See [the Phase 7.2.9 readiness report](reports/20260816-phase7-2-9-runtime-quali
   Production Assist evidence.
 - TSM and WRD lack authoritative production identity evidence. Their live `unknown` state and
   multiple withholding are correct until a separately approved identity ingestion.
+- Hyundai Glovis has a safe direct Q2 operating-income field that remains conservatively withheld
+  because its aggregate earnings interpretation Fact also carries denied or unknown comparison
+  fields. This is field-level overblocking, not unsafe leakage.
 - Production Assist remains disabled pending a separate decision after successful Pilot evidence.
 
 Never fill data gaps with model knowledge. Add a deterministic fact, semantic contract, and tests
@@ -353,9 +366,9 @@ first.
 
 ## Next Steps
 
-1. Review the corrected Phase 7.2.9 KR eight-message and US 14-message Previews directly; their
+1. Review the corrected Phase 7.2.9.1 KR eight-message and US 14-message Previews directly; their
    deterministic PASS is not human approval.
-2. Keep Phase 7.2.9 code and artifacts on the experimental branch until Work gives a separate merge
+2. Keep Phase 7.2.9.1 code and artifacts on the experimental branch until Work gives a separate merge
    and deployment approval.
 3. Preserve operational counts KR 3/5 and US 2/5 independently from human-quality disposition.
 4. Keep TSM/WRD identity `unknown` without authoritative ingestion, preserve exact archives, and do

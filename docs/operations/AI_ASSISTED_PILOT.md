@@ -183,6 +183,14 @@ retry verifies and reuses the same persisted payload and receipt without rerunni
 packet generation, binding, validation, rendering, or the quality gate. This contract is branch-only
 until separately approved and deployed.
 
+Work later failed the Phase 7.2.9 corrected KR Preview and left the US Preview unapproved. Phase
+7.2.9.1 is an experimental repair only: field-level amount periods, explicit current-price versus
+support-entry RR, typed valuation interpretation, and whole-file receipt SHA verification. Its
+corrected KR and US outputs pass deterministic validation and runtime gating but remain pending Work
+review. A missing or tampered v2 receipt holds AI delivery, preserves exactly one deterministic
+fallback set, and cannot advance Pilot state. Historical completed archives remain governed by their
+original manifest and are never rewritten or replayed.
+
 ## Incident Classification
 
 Classify issues as DATA, CALCULATION, PACKET, KNOWLEDGE_ROUTING, AI_REASONING, VALIDATION, RENDERER,

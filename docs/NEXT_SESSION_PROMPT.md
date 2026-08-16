@@ -130,6 +130,15 @@ immutable KR Day 3 output fails the new gate as expected; corrected isolated KR 
 the binder, full validator, and runtime gate but remain `pending_work_human_review`. Production main
 and the operating checkout do not contain this application code.
 
+Work later failed the Phase 7.2.9 corrected KR Preview because Samsung's Q2 amount was labeled H1,
+Hanwha's current-price and support-entry RR were conflated, and valuation interpretation remained
+too permissive; the US Preview stayed unapproved. Phase 7.2.9.1 is on
+`codex/phase-7-2-9-1-quality-blockers`. Its corrected isolated KR and US payloads pass the new
+field-level amount-period, RR-basis, typed-valuation, receipt-integrity, validator, and runtime-gate
+checks, but remain `pending_work_human_review`. Start with
+`docs/reports/20260817-phase7-2-9-1-readiness.md` and its linked full Previews. Do not merge or deploy
+without a separate approval.
+
 US morning schedule: deterministic run and first KRX fetch 08:05, KRX deadline 08:20, Codex Primary
 08:15, Backup 08:30, deterministic fallback 08:40. Telegram network retry reuses persisted final
 text and never reruns analysis.
@@ -141,9 +150,9 @@ knowledge.
 Next work order:
 
 1. Preserve the KR Day 3 and US Day 2 human-quality failures separately from their operational counts.
-2. Review the Phase 7.2.9 corrected KR/US Previews and runtime receipt evidence; do not call their
+2. Review the Phase 7.2.9.1 corrected KR/US Previews and runtime receipt evidence; do not call their
    deterministic PASS a human-quality approval.
-3. Keep the Phase 7.2.9 implementation experimental and unmerged; retain TSM/WRD identity as
+3. Keep the Phase 7.2.9.1 implementation experimental and unmerged; retain TSM/WRD identity as
    `unknown` unless authoritative evidence is separately ingested.
 4. Preserve exact packets, outputs, archives, and old cohorts; do not replay Telegram.
 5. Keep KR 3/5 and US 2/5 unchanged, and keep Production Assist disabled until blocking quality

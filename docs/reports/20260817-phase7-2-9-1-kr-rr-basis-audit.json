@@ -1,0 +1,135 @@
+{
+  "basis_free_label_count": 0,
+  "contract": "rr-basis-v1",
+  "rows": [
+    {
+      "canonical_label": null,
+      "fact_id": "monitoring:risk_reward_transition",
+      "prose_allowed": true,
+      "semantic_type": "previous_risk_reward_ratio",
+      "ticker": "005490",
+      "value": 0.16778
+    },
+    {
+      "canonical_label": null,
+      "fact_id": "monitoring:risk_reward_transition",
+      "prose_allowed": true,
+      "semantic_type": "current_risk_reward_ratio",
+      "ticker": "005490",
+      "value": 0.16778
+    },
+    {
+      "canonical_label": null,
+      "fact_id": "chart:structure:risk_reward:current_price",
+      "prose_allowed": true,
+      "semantic_type": "current_price_risk_reward_ratio",
+      "ticker": "005490",
+      "value": 0.16778
+    },
+    {
+      "canonical_label": null,
+      "fact_id": "chart:structure:risk_reward:support_entry",
+      "prose_allowed": true,
+      "semantic_type": "support_entry_risk_reward_ratio",
+      "ticker": "005490",
+      "value": 0.064727
+    },
+    {
+      "canonical_label": null,
+      "fact_id": "monitoring:risk_reward_transition",
+      "prose_allowed": true,
+      "semantic_type": "previous_risk_reward_ratio",
+      "ticker": "010120",
+      "value": 0.318131
+    },
+    {
+      "canonical_label": null,
+      "fact_id": "monitoring:risk_reward_transition",
+      "prose_allowed": true,
+      "semantic_type": "current_risk_reward_ratio",
+      "ticker": "010120",
+      "value": 0.318131
+    },
+    {
+      "canonical_label": null,
+      "fact_id": "chart:structure:risk_reward:current_price",
+      "prose_allowed": true,
+      "semantic_type": "current_price_risk_reward_ratio",
+      "ticker": "010120",
+      "value": 0.318131
+    },
+    {
+      "canonical_label": null,
+      "fact_id": "chart:structure:risk_reward:support_entry",
+      "prose_allowed": true,
+      "semantic_type": "support_entry_risk_reward_ratio",
+      "ticker": "010120",
+      "value": 3.054025
+    },
+    {
+      "canonical_label": null,
+      "fact_id": "monitoring:risk_reward_transition",
+      "prose_allowed": true,
+      "semantic_type": "previous_risk_reward_ratio",
+      "ticker": "012450",
+      "value": 0.152999
+    },
+    {
+      "canonical_label": null,
+      "fact_id": "monitoring:risk_reward_transition",
+      "prose_allowed": true,
+      "semantic_type": "current_risk_reward_ratio",
+      "ticker": "012450",
+      "value": 0.152999
+    },
+    {
+      "canonical_label": null,
+      "fact_id": "chart:structure:risk_reward:current_price",
+      "prose_allowed": true,
+      "semantic_type": "current_price_risk_reward_ratio",
+      "ticker": "012450",
+      "value": 0.152999
+    },
+    {
+      "canonical_label": null,
+      "fact_id": "chart:structure:risk_reward:support_entry",
+      "prose_allowed": true,
+      "semantic_type": "support_entry_risk_reward_ratio",
+      "ticker": "012450",
+      "value": 0.492889
+    },
+    {
+      "canonical_label": null,
+      "fact_id": "monitoring:risk_reward_transition",
+      "prose_allowed": true,
+      "semantic_type": "previous_risk_reward_ratio",
+      "ticker": "086280",
+      "value": 0.466189
+    },
+    {
+      "canonical_label": null,
+      "fact_id": "monitoring:risk_reward_transition",
+      "prose_allowed": true,
+      "semantic_type": "current_risk_reward_ratio",
+      "ticker": "086280",
+      "value": 0.466189
+    },
+    {
+      "canonical_label": null,
+      "fact_id": "chart:structure:risk_reward:current_price",
+      "prose_allowed": true,
+      "semantic_type": "current_price_risk_reward_ratio",
+      "ticker": "086280",
+      "value": 0.466189
+    },
+    {
+      "canonical_label": null,
+      "fact_id": "chart:structure:risk_reward:support_entry",
+      "prose_allowed": true,
+      "semantic_type": "support_entry_risk_reward_ratio",
+      "ticker": "086280",
+      "value": 0.990021
+    }
+  ],
+  "status": "passed"
+}

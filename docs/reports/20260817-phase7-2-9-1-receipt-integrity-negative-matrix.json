@@ -1,0 +1,99 @@
+{
+  "all_expected": true,
+  "cases": [
+    {
+      "case": "untampered",
+      "expected": true,
+      "market": "kr",
+      "verified": true
+    },
+    {
+      "case": "check_results_tamper",
+      "expected": false,
+      "market": "kr",
+      "verified": false
+    },
+    {
+      "case": "status_tamper",
+      "expected": false,
+      "market": "kr",
+      "verified": false
+    },
+    {
+      "case": "different_packet_receipt",
+      "expected": false,
+      "market": "kr",
+      "verified": false
+    },
+    {
+      "case": "rendered_payload_hash_tamper",
+      "expected": false,
+      "market": "kr",
+      "verified": false
+    },
+    {
+      "case": "validated_output_hash_tamper",
+      "expected": false,
+      "market": "kr",
+      "verified": false
+    },
+    {
+      "case": "receipt_file_missing",
+      "delivery_transition": "quality_integrity_rejected_or_held",
+      "expected": false,
+      "fallback_eligible": true,
+      "market": "kr",
+      "verified": false
+    },
+    {
+      "case": "untampered",
+      "expected": true,
+      "market": "us",
+      "verified": true
+    },
+    {
+      "case": "check_results_tamper",
+      "expected": false,
+      "market": "us",
+      "verified": false
+    },
+    {
+      "case": "status_tamper",
+      "expected": false,
+      "market": "us",
+      "verified": false
+    },
+    {
+      "case": "different_packet_receipt",
+      "expected": false,
+      "market": "us",
+      "verified": false
+    },
+    {
+      "case": "rendered_payload_hash_tamper",
+      "expected": false,
+      "market": "us",
+      "verified": false
+    },
+    {
+      "case": "validated_output_hash_tamper",
+      "expected": false,
+      "market": "us",
+      "verified": false
+    },
+    {
+      "case": "receipt_file_missing",
+      "delivery_transition": "quality_integrity_rejected_or_held",
+      "expected": false,
+      "fallback_eligible": true,
+      "market": "us",
+      "verified": false
+    }
+  ],
+  "contract": "runtime-message-quality-receipt-v2",
+  "receipt_file_sha_binding": {
+    "kr": "b70c59f9758e22465f0f465f43fcbe42016e9482a77d595ea21b831294ea8948",
+    "us": "04bcbdffae8768f7fba326a21b93c1c633e3c10fe356ad893466ca734f30385d"
+  },
+  "status": "passed"
+}

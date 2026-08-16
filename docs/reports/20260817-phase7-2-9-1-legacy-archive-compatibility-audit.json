@@ -1,0 +1,12 @@
+{
+  "integration_test": "test_legacy_completed_archive_remains_complete_without_quality_receipt",
+  "legacy_archive_contract": "historical_manifest",
+  "legacy_completion_marker_rewritten": false,
+  "legacy_pilot_recount": 0,
+  "legacy_receipt_required": false,
+  "legacy_telegram_replay": 0,
+  "new_archive_contract": "ai-assisted-archive-v2",
+  "new_receipt_required": true,
+  "new_required_artifact_manifest": "ai-assisted-artifacts-v2",
+  "status": "passed_by_integration_test"
+}

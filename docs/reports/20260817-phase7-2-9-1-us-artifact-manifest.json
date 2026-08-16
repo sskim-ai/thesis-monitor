@@ -1,0 +1,14 @@
+{
+  "corrected_packet": "2026-08-16-us-run-20-f9b252d77940",
+  "human_quality_status": "pending_work_human_review",
+  "operating_mutations": 0,
+  "packet_sha256": "ef84311bf7c0703a1f0db2f6c27dfb6068dec623d9757c3035dfc1582e01580e",
+  "pilot_mutations": 0,
+  "provider_calls": 0,
+  "receipt_sha256": "04bcbdffae8768f7fba326a21b93c1c633e3c10fe356ad893466ca734f30385d",
+  "rendered_payload_sha256": "c3f4f0879fee054c8b1b8fc6edb7659f24a425ace89c44d9b4582c713e2e5adb",
+  "source_db_copy_sha256": "4cfd7bb8cef53954de141c8201f510d0c9bd6c2a1ce3299ae22ad42a18826d39",
+  "source_packet": "us-packet.json",
+  "telegram_sends": 0,
+  "validated_output_sha256": "04b4855281d7ea9161ed0f472f92be5eb4d7365c73d57a1b138fa78029f60088"
+}

@@ -1,0 +1,504 @@
+{
+  "contract": "typed-valuation-interpretation-v1",
+  "coverage": {
+    "accepted": 38,
+    "coverage_pct": 100,
+    "errors": 0
+  },
+  "kr": {
+    "accepted": 14,
+    "contract": "typed-valuation-interpretation-v1",
+    "errors": [],
+    "references": [
+      {
+        "basis_status": "verified",
+        "comparison_numeric_ref_ids": [
+          "p2"
+        ],
+        "direction": "high",
+        "fact_id": "valuation:historical_pb",
+        "interpretation_type": "historical",
+        "metric": "pbr",
+        "ref_id": "k000660_core_pb",
+        "source_type": "canonical_backend",
+        "text_ref": "core_judgment.text"
+      },
+      {
+        "basis_status": "verified",
+        "comparison_numeric_ref_ids": [
+          "p9"
+        ],
+        "direction": "high",
+        "fact_id": "valuation:historical_pb",
+        "interpretation_type": "historical",
+        "metric": "pbr",
+        "ref_id": "k000660_val_pb",
+        "source_type": "canonical_backend",
+        "text_ref": "valuation_analysis.text"
+      },
+      {
+        "basis_status": "verified",
+        "comparison_numeric_ref_ids": [
+          "p10"
+        ],
+        "direction": "neutral",
+        "fact_id": "valuation:trailing_earnings",
+        "interpretation_type": "absolute",
+        "metric": "pe",
+        "ref_id": "k003690_val_pe",
+        "source_type": "canonical_backend",
+        "text_ref": "valuation_analysis.text"
+      },
+      {
+        "basis_status": "verified",
+        "comparison_numeric_ref_ids": [
+          "p11"
+        ],
+        "direction": "neutral",
+        "fact_id": "valuation:book",
+        "interpretation_type": "absolute",
+        "metric": "pbr",
+        "ref_id": "k003690_val_pb",
+        "source_type": "canonical_backend",
+        "text_ref": "valuation_analysis.text"
+      },
+      {
+        "basis_status": "verified",
+        "comparison_numeric_ref_ids": [
+          "p13"
+        ],
+        "direction": "neutral",
+        "fact_id": "valuation:trailing_earnings",
+        "interpretation_type": "absolute",
+        "metric": "pe",
+        "ref_id": "k005490_val_pe",
+        "source_type": "canonical_backend",
+        "text_ref": "valuation_analysis.text"
+      },
+      {
+        "basis_status": "verified",
+        "comparison_numeric_ref_ids": [
+          "p14"
+        ],
+        "direction": "neutral",
+        "fact_id": "valuation:book",
+        "interpretation_type": "absolute",
+        "metric": "pbr",
+        "ref_id": "k005490_val_pb",
+        "source_type": "canonical_backend",
+        "text_ref": "valuation_analysis.text"
+      },
+      {
+        "basis_status": "verified",
+        "comparison_numeric_ref_ids": [
+          "kcore3"
+        ],
+        "direction": "high",
+        "fact_id": "valuation:historical_pb",
+        "interpretation_type": "historical",
+        "metric": "pbr",
+        "ref_id": "k005930_core_pb",
+        "source_type": "canonical_backend",
+        "text_ref": "core_judgment.text"
+      },
+      {
+        "basis_status": "verified",
+        "comparison_numeric_ref_ids": [
+          "p10"
+        ],
+        "direction": "neutral",
+        "fact_id": "valuation:trailing_earnings",
+        "interpretation_type": "absolute",
+        "metric": "pe",
+        "ref_id": "k005930_val_pe",
+        "source_type": "canonical_backend",
+        "text_ref": "valuation_analysis.text"
+      },
+      {
+        "basis_status": "verified",
+        "comparison_numeric_ref_ids": [
+          "p11"
+        ],
+        "direction": "neutral",
+        "fact_id": "valuation:book",
+        "interpretation_type": "absolute",
+        "metric": "pbr",
+        "ref_id": "k005930_val_pb",
+        "source_type": "canonical_backend",
+        "text_ref": "valuation_analysis.text"
+      },
+      {
+        "basis_status": "unknown",
+        "comparison_numeric_ref_ids": [],
+        "direction": "neutral",
+        "fact_id": "security_identity:current",
+        "interpretation_type": "quality_unknown",
+        "metric": "earnings",
+        "ref_id": "k010120_val_unknown",
+        "source_type": "canonical_backend",
+        "text_ref": "valuation_analysis.text"
+      },
+      {
+        "basis_status": "unknown",
+        "comparison_numeric_ref_ids": [],
+        "direction": "neutral",
+        "fact_id": "security_identity:current",
+        "interpretation_type": "quality_unknown",
+        "metric": "earnings",
+        "ref_id": "k012450_val_unknown",
+        "source_type": "canonical_backend",
+        "text_ref": "valuation_analysis.text"
+      },
+      {
+        "basis_status": "verified",
+        "comparison_numeric_ref_ids": [
+          "kcore3"
+        ],
+        "direction": "neutral",
+        "fact_id": "valuation:book",
+        "interpretation_type": "absolute",
+        "metric": "pbr",
+        "ref_id": "k086280_core_pb",
+        "source_type": "canonical_backend",
+        "text_ref": "core_judgment.text"
+      },
+      {
+        "basis_status": "verified",
+        "comparison_numeric_ref_ids": [
+          "p13"
+        ],
+        "direction": "neutral",
+        "fact_id": "valuation:trailing_earnings",
+        "interpretation_type": "absolute",
+        "metric": "pe",
+        "ref_id": "k086280_val_pe",
+        "source_type": "canonical_backend",
+        "text_ref": "valuation_analysis.text"
+      },
+      {
+        "basis_status": "verified",
+        "comparison_numeric_ref_ids": [
+          "p14"
+        ],
+        "direction": "neutral",
+        "fact_id": "valuation:book",
+        "interpretation_type": "absolute",
+        "metric": "pbr",
+        "ref_id": "k086280_val_pb",
+        "source_type": "canonical_backend",
+        "text_ref": "valuation_analysis.text"
+      }
+    ]
+  },
+  "us": {
+    "accepted": 24,
+    "contract": "typed-valuation-interpretation-v1",
+    "errors": [],
+    "references": [
+      {
+        "basis_status": "unknown",
+        "comparison_numeric_ref_ids": [],
+        "direction": "neutral",
+        "fact_id": "valuation:book_quality",
+        "interpretation_type": "quality_unknown",
+        "metric": "book",
+        "ref_id": "corz_book_unknown",
+        "source_type": "canonical_backend",
+        "text_ref": "valuation_analysis.text"
+      },
+      {
+        "basis_status": "verified",
+        "comparison_numeric_ref_ids": [
+          "p6"
+        ],
+        "direction": "neutral",
+        "fact_id": "valuation:consensus_forward_earnings",
+        "interpretation_type": "absolute",
+        "metric": "forward_pe",
+        "ref_id": "crcl_forward_absolute",
+        "source_type": "canonical_backend",
+        "text_ref": "valuation_analysis.text"
+      },
+      {
+        "basis_status": "verified",
+        "comparison_numeric_ref_ids": [
+          "p5"
+        ],
+        "direction": "neutral",
+        "fact_id": "valuation:book",
+        "interpretation_type": "absolute",
+        "metric": "pbr",
+        "ref_id": "crcl_book_absolute",
+        "source_type": "canonical_backend",
+        "text_ref": "valuation_analysis.text"
+      },
+      {
+        "basis_status": "verified",
+        "comparison_numeric_ref_ids": [
+          "p2"
+        ],
+        "direction": "low",
+        "fact_id": "valuation:historical_pe",
+        "interpretation_type": "historical",
+        "metric": "pe",
+        "ref_id": "googl_core_history",
+        "source_type": "canonical_backend",
+        "text_ref": "core_judgment.text"
+      },
+      {
+        "basis_status": "verified",
+        "comparison_numeric_ref_ids": [
+          "p3",
+          "p5"
+        ],
+        "direction": "backend_relation",
+        "fact_id": "valuation:multiple_relation",
+        "interpretation_type": "trailing_forward_relation",
+        "metric": "earnings",
+        "ref_id": "googl_relation",
+        "source_type": "canonical_backend",
+        "text_ref": "valuation_analysis.text"
+      },
+      {
+        "basis_status": "verified",
+        "comparison_numeric_ref_ids": [
+          "p6"
+        ],
+        "direction": "backend_percentile",
+        "fact_id": "valuation:historical_pe",
+        "interpretation_type": "historical",
+        "metric": "pe",
+        "ref_id": "googl_history",
+        "source_type": "canonical_backend",
+        "text_ref": "valuation_analysis.text"
+      },
+      {
+        "basis_status": "verified",
+        "comparison_numeric_ref_ids": [
+          "p2"
+        ],
+        "direction": "neutral",
+        "fact_id": "valuation:consensus_forward_earnings",
+        "interpretation_type": "absolute",
+        "metric": "forward_pe",
+        "ref_id": "hut_core_forward",
+        "source_type": "canonical_backend",
+        "text_ref": "core_judgment.text"
+      },
+      {
+        "basis_status": "verified",
+        "comparison_numeric_ref_ids": [
+          "p1"
+        ],
+        "direction": "neutral",
+        "fact_id": "valuation:book",
+        "interpretation_type": "absolute",
+        "metric": "pbr",
+        "ref_id": "hut_core_book",
+        "source_type": "canonical_backend",
+        "text_ref": "core_judgment.text"
+      },
+      {
+        "basis_status": "verified",
+        "comparison_numeric_ref_ids": [
+          "p4"
+        ],
+        "direction": "neutral",
+        "fact_id": "valuation:consensus_forward_earnings",
+        "interpretation_type": "absolute",
+        "metric": "forward_pe",
+        "ref_id": "hut_val_forward",
+        "source_type": "canonical_backend",
+        "text_ref": "valuation_analysis.text"
+      },
+      {
+        "basis_status": "verified",
+        "comparison_numeric_ref_ids": [
+          "p3"
+        ],
+        "direction": "neutral",
+        "fact_id": "valuation:book",
+        "interpretation_type": "absolute",
+        "metric": "pbr",
+        "ref_id": "hut_val_book",
+        "source_type": "canonical_backend",
+        "text_ref": "valuation_analysis.text"
+      },
+      {
+        "basis_status": "verified",
+        "comparison_numeric_ref_ids": [
+          "p6",
+          "p8"
+        ],
+        "direction": "backend_relation",
+        "fact_id": "valuation:multiple_relation",
+        "interpretation_type": "trailing_forward_relation",
+        "metric": "earnings",
+        "ref_id": "ibm_relation",
+        "source_type": "canonical_backend",
+        "text_ref": "valuation_analysis.text"
+      },
+      {
+        "basis_status": "verified",
+        "comparison_numeric_ref_ids": [
+          "p9"
+        ],
+        "direction": "backend_percentile",
+        "fact_id": "valuation:historical_pe",
+        "interpretation_type": "historical",
+        "metric": "pe",
+        "ref_id": "ibm_history",
+        "source_type": "canonical_backend",
+        "text_ref": "valuation_analysis.text"
+      },
+      {
+        "basis_status": "verified",
+        "comparison_numeric_ref_ids": [
+          "p5",
+          "p7"
+        ],
+        "direction": "backend_relation",
+        "fact_id": "valuation:multiple_relation",
+        "interpretation_type": "trailing_forward_relation",
+        "metric": "earnings",
+        "ref_id": "mu_relation",
+        "source_type": "canonical_backend",
+        "text_ref": "valuation_analysis.text"
+      },
+      {
+        "basis_status": "verified",
+        "comparison_numeric_ref_ids": [
+          "p8"
+        ],
+        "direction": "backend_percentile",
+        "fact_id": "valuation:historical_pb",
+        "interpretation_type": "historical",
+        "metric": "pbr",
+        "ref_id": "mu_history",
+        "source_type": "canonical_backend",
+        "text_ref": "valuation_analysis.text"
+      },
+      {
+        "basis_status": "verified",
+        "comparison_numeric_ref_ids": [
+          "p8"
+        ],
+        "direction": "backend_percentile",
+        "fact_id": "valuation:historical_pb",
+        "interpretation_type": "historical",
+        "metric": "pbr",
+        "ref_id": "rxrx_book_history",
+        "source_type": "canonical_backend",
+        "text_ref": "valuation_analysis.text"
+      },
+      {
+        "basis_status": "unknown",
+        "comparison_numeric_ref_ids": [],
+        "direction": "neutral",
+        "fact_id": "security_basis:current",
+        "interpretation_type": "quality_unknown",
+        "metric": "earnings",
+        "ref_id": "skhy_basis_unknown",
+        "source_type": "canonical_backend",
+        "text_ref": "valuation_analysis.text"
+      },
+      {
+        "basis_status": "unknown",
+        "comparison_numeric_ref_ids": [],
+        "direction": "neutral",
+        "fact_id": "security_basis:current",
+        "interpretation_type": "quality_unknown",
+        "metric": "earnings",
+        "ref_id": "sndk_core_unknown",
+        "source_type": "canonical_backend",
+        "text_ref": "core_judgment.text"
+      },
+      {
+        "basis_status": "unknown",
+        "comparison_numeric_ref_ids": [],
+        "direction": "neutral",
+        "fact_id": "security_basis:current",
+        "interpretation_type": "quality_unknown",
+        "metric": "earnings",
+        "ref_id": "sndk_quality_unknown",
+        "source_type": "canonical_backend",
+        "text_ref": "valuation_analysis.text"
+      },
+      {
+        "basis_status": "verified",
+        "comparison_numeric_ref_ids": [
+          "p5",
+          "p7"
+        ],
+        "direction": "backend_relation",
+        "fact_id": "valuation:multiple_relation",
+        "interpretation_type": "trailing_forward_relation",
+        "metric": "earnings",
+        "ref_id": "tsla_relation",
+        "source_type": "canonical_backend",
+        "text_ref": "valuation_analysis.text"
+      },
+      {
+        "basis_status": "verified",
+        "comparison_numeric_ref_ids": [
+          "p8"
+        ],
+        "direction": "backend_percentile",
+        "fact_id": "valuation:historical_pe",
+        "interpretation_type": "historical",
+        "metric": "pe",
+        "ref_id": "tsla_history",
+        "source_type": "canonical_backend",
+        "text_ref": "valuation_analysis.text"
+      },
+      {
+        "basis_status": "unknown",
+        "comparison_numeric_ref_ids": [],
+        "direction": "neutral",
+        "fact_id": "security_basis:current",
+        "interpretation_type": "quality_unknown",
+        "metric": "earnings",
+        "ref_id": "tsm_basis_unknown",
+        "source_type": "canonical_backend",
+        "text_ref": "valuation_analysis.text"
+      },
+      {
+        "basis_status": "unknown",
+        "comparison_numeric_ref_ids": [],
+        "direction": "neutral",
+        "fact_id": "security_basis:current",
+        "interpretation_type": "quality_unknown",
+        "metric": "earnings",
+        "ref_id": "wrd_basis_unknown",
+        "source_type": "canonical_backend",
+        "text_ref": "valuation_analysis.text"
+      },
+      {
+        "basis_status": "verified",
+        "comparison_numeric_ref_ids": [
+          "p2"
+        ],
+        "direction": "high",
+        "fact_id": "valuation:historical_pb",
+        "interpretation_type": "historical",
+        "metric": "pbr",
+        "ref_id": "wulf_core_history",
+        "source_type": "canonical_backend",
+        "text_ref": "core_judgment.text"
+      },
+      {
+        "basis_status": "verified",
+        "comparison_numeric_ref_ids": [
+          "p5"
+        ],
+        "direction": "backend_percentile",
+        "fact_id": "valuation:historical_pb",
+        "interpretation_type": "historical",
+        "metric": "pbr",
+        "ref_id": "wulf_val_history",
+        "source_type": "canonical_backend",
+        "text_ref": "valuation_analysis.text"
+      }
+    ]
+  }
+}
