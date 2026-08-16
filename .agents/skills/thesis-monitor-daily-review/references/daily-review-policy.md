@@ -70,6 +70,21 @@ the reference rather than rewriting the bound prose after validation.
 
 Hard deterministic warnings remain visible in the comparison record even when the AI view differs. Shadow output never mutates official state or Telegram.
 
+Confirmation lifecycle language uses `monitoring_state.delta.confirmation_transition` and the
+matching `monitoring:confirmation_transition` fact as its sole transition source. Preserve the
+recorded previous state, current state, and direction in every section; do not turn a prior
+`failed_breakout` into the current state when the canonical transition ends at `not_reached`.
+
+Security identity and valuation basis are separate. Use `security_identity:current` to state whether
+the security itself is a verified common share or depositary security. Use `security_basis:current`
+for current-security denominator, share, and currency basis. A verified ADS identity may coexist
+with withheld multiples; describe the specific basis gap without calling the identity unverified.
+
+Supply routing is market-specific. KR 1-day/5-day/20-day foreign and institutional horizons are
+usable only when those canonical KR facts exist. US reviews may use verified volume,
+relative-volume, or explicit positioning facts, but must not import KR investor horizons or repeat a
+generic missing-investor-flow sentence across the stock set.
+
 ## Full Knowledge Requirement
 
 The compact policy is not the complete investment framework. Use `knowledge-index.md` to read the relevant sections of the full runtime mirror for every packet. Apply the selected industry framework to the decision, not merely to an audit list. Record stable semantic framework names in `frameworks_used`.

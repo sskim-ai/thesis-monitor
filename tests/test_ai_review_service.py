@@ -23,7 +23,7 @@ from app.models.thesis import (
     ThesisAssessment,
 )
 from app.models.watchlist import WatchlistItem
-from app.schemas.ai_review import AIDailyReviewOutput
+from app.schemas.ai_review import AIDailyReviewOutput, AIStockReview
 from app.services.ai_review_service import (
     build_ai_review_packet,
     claim_next_ai_review_packet,
@@ -653,6 +653,9 @@ def test_packet_is_immutable_version_isolated_and_sanitized(monkeypatch, tmp_pat
 
     stock = packet["stocks"][0]
     facts = {item["fact_id"]: item for item in stock["fact_catalog"]}
+    assert facts["security_basis:current"]["fields"][
+        "security_identity_state"
+    ] == stock["valuation"]["security_identity_state"]
     contract = next(item for item in facts.values() if item["fact_type"] == "contract_award")
     assert contract["fields"]["contract_amount"] == {
         "value": 318_964_597_910,
@@ -3820,6 +3823,309 @@ def test_identity_conflict_allows_specific_number_free_unknown(
     assert not any("security_identity_denied" in item for item in errors)
 
 
+def _review_with_contract_text(
+    packet: dict[str, object],
+    *,
+    section: str,
+    text: str,
+) -> AIStockReview:
+    output = _valid_output(packet)
+    review = output["stock_reviews"][0]
+    review[section]["text"] = text
+    return AIDailyReviewOutput.model_validate(output).stock_reviews[0]
+
+
+@pytest.mark.parametrize(
+    ("previous_state", "current_state", "transition", "text"),
+    [
+        (
+            "not_reached",
+            "crossed",
+            "not_reached_to_crossed",
+            "확인 상태가 미도달에서 돌파 확인으로 전환됐습니다.",
+        ),
+        (
+            "crossed",
+            "holding_above",
+            "crossed_to_holding_above",
+            "확인 상태가 crossed에서 holding으로 전환됐습니다.",
+        ),
+        (
+            "failed_breakout",
+            "not_reached",
+            "failed_breakout_to_not_reached",
+            "확인 상태가 돌파 실패에서 미도달로 바뀌었습니다.",
+        ),
+        (
+            "holding_above",
+            "holding_above",
+            "holding_above_to_holding_above",
+            "holding_above_to_holding_above 상태가 이어졌습니다.",
+        ),
+    ],
+)
+def test_confirmation_transition_contract_accepts_canonical_direction(
+    monkeypatch,
+    tmp_path: Path,
+    previous_state: str,
+    current_state: str,
+    transition: str,
+    text: str,
+) -> None:
+    _settings(monkeypatch, tmp_path)
+    with Session(_engine()) as session:
+        _seed(session)
+        packet = build_ai_review_packet(session, RUN_DATE, "us")
+    assert packet is not None
+    stock = packet["stocks"][0]
+    stock["monitoring_state"] = {
+        "previous": {
+            "price_structure": {
+                "registered_rule_state": {
+                    "confirmation": {"state": previous_state}
+                }
+            }
+        },
+        "current": {
+            "price_structure": {
+                "registered_rule_state": {
+                    "confirmation": {"state": current_state}
+                }
+            }
+        },
+        "delta": {"confirmation_transition": transition},
+    }
+    review = _review_with_contract_text(packet, section="core_judgment", text=text)
+
+    errors = ai_review_service._confirmation_transition_errors(
+        review.ticker,
+        stock["monitoring_state"],
+        review,
+    )
+
+    assert errors == []
+
+
+@pytest.mark.parametrize(
+    ("section", "text", "error_fragment"),
+    [
+        (
+            "core_judgment",
+            "확인가격 돌파는 failed breakout으로 전환됐습니다.",
+            "confirmation_transition_current_state_mismatch",
+        ),
+        (
+            "price_positioning",
+            "현재 확인 상태는 failed_breakout입니다.",
+            "confirmation_transition_current_state_mismatch",
+        ),
+        (
+            "core_judgment",
+            (
+                "확인 상태가 돌파 실패에서 미도달로 바뀌었지만 "
+                "다시 crossed로 전환됐습니다."
+            ),
+            "confirmation_transition_current_state_mismatch",
+        ),
+    ],
+)
+def test_confirmation_transition_contract_rejects_reversed_or_conflicting_prose(
+    monkeypatch,
+    tmp_path: Path,
+    section: str,
+    text: str,
+    error_fragment: str,
+) -> None:
+    _settings(monkeypatch, tmp_path)
+    with Session(_engine()) as session:
+        _seed(session)
+        packet = build_ai_review_packet(session, RUN_DATE, "us")
+    assert packet is not None
+    stock = packet["stocks"][0]
+    stock["monitoring_state"] = {
+        "previous": {
+            "price_structure": {
+                "registered_rule_state": {
+                    "confirmation": {"state": "failed_breakout"}
+                }
+            }
+        },
+        "current": {
+            "price_structure": {
+                "registered_rule_state": {
+                    "confirmation": {"state": "not_reached"}
+                }
+            }
+        },
+        "delta": {"confirmation_transition": "failed_breakout_to_not_reached"},
+    }
+    review = _review_with_contract_text(packet, section=section, text=text)
+
+    errors = ai_review_service._confirmation_transition_errors(
+        review.ticker,
+        stock["monitoring_state"],
+        review,
+    )
+
+    assert any(error_fragment in error for error in errors)
+
+
+def test_confirmation_transition_contract_ignores_general_non_transition_comment(
+    monkeypatch,
+    tmp_path: Path,
+) -> None:
+    _settings(monkeypatch, tmp_path)
+    with Session(_engine()) as session:
+        _seed(session)
+        packet = build_ai_review_packet(session, RUN_DATE, "us")
+    assert packet is not None
+    stock = packet["stocks"][0]
+    stock["monitoring_state"] = {
+        "previous": {},
+        "current": {
+            "price_structure": {
+                "registered_rule_state": {
+                    "confirmation": {"state": "not_reached"}
+                }
+            }
+        },
+        "delta": {"confirmation_transition": "baseline_to_not_reached"},
+    }
+    review = _review_with_contract_text(
+        packet,
+        section="core_judgment",
+        text="돌파 실패 가능성은 거래량과 다음 가격 반응으로 별도 확인합니다.",
+    )
+
+    errors = ai_review_service._confirmation_transition_errors(
+        review.ticker,
+        stock["monitoring_state"],
+        review,
+    )
+
+    assert errors == []
+
+
+@pytest.mark.parametrize(
+    ("identity_state", "text", "expected_error"),
+    [
+        (
+            "verified_depositary",
+            "증권 정체성과 주식 기준이 검증되지 않아 배수를 보류합니다.",
+            "verified_security_identity_described_as_unverified",
+        ),
+        (
+            "verified_depositary",
+            (
+                "ADS 정체성은 검증됐지만 current-security denominator, "
+                "share basis와 currency basis가 미확인이라 배수를 보류합니다."
+            ),
+            None,
+        ),
+        (
+            "unknown",
+            "ADS 증권 정체성은 검증됐고 배수만 보류합니다.",
+            "unverified_security_identity_described_as_verified",
+        ),
+        (
+            "verified_non_depositary",
+            "현재 증권은 ADS로 확인됐습니다.",
+            "non_depositary_described_as_depositary",
+        ),
+    ],
+)
+def test_security_identity_and_valuation_basis_language_are_separate(
+    monkeypatch,
+    tmp_path: Path,
+    identity_state: str,
+    text: str,
+    expected_error: str | None,
+) -> None:
+    _settings(monkeypatch, tmp_path)
+    with Session(_engine()) as session:
+        _seed(session)
+        packet = build_ai_review_packet(session, RUN_DATE, "us")
+    assert packet is not None
+    review = _review_with_contract_text(
+        packet,
+        section="valuation_analysis",
+        text=text,
+    )
+
+    errors = ai_review_service._security_identity_language_errors(
+        review.ticker,
+        identity_state,
+        review,
+    )
+
+    if expected_error is None:
+        assert errors == []
+    else:
+        assert any(expected_error in error for error in errors)
+
+
+@pytest.mark.parametrize(
+    ("market", "text", "expected_error"),
+    [
+        (
+            "us",
+            "검증된 당일·단기·중기 투자주체 수급이 없어 방향은 미확인입니다.",
+            "us_kr_supply_horizon_language",
+        ),
+        (
+            "us",
+            "외국인 순매수는 확인되지 않아 가격 반응의 원인을 단정하지 않습니다.",
+            "us_investor_flow_not_in_packet",
+        ),
+        (
+            "us",
+            "20일 거래량비는 가격 반응의 참여 정도만 보여줍니다.",
+            None,
+        ),
+        (
+            "us",
+            "검증된 상대거래량만으로 회사 실적을 확인했다고 보지 않습니다.",
+            None,
+        ),
+        (
+            "kr",
+            "외국인·기관의 1일·5일·20일 수급 차이를 함께 봅니다.",
+            None,
+        ),
+    ],
+)
+def test_market_supply_language_contract_routes_kr_and_us_separately(
+    monkeypatch,
+    tmp_path: Path,
+    market: str,
+    text: str,
+    expected_error: str | None,
+) -> None:
+    _settings(monkeypatch, tmp_path)
+    with Session(_engine()) as session:
+        _seed(session)
+        packet = build_ai_review_packet(session, RUN_DATE, "us")
+    assert packet is not None
+    stock = packet["stocks"][0]
+    review = _review_with_contract_text(
+        packet,
+        section="supply_analysis",
+        text=text,
+    )
+
+    errors = ai_review_service._market_supply_language_errors(
+        review.ticker,
+        market,
+        stock,
+        review,
+    )
+
+    if expected_error is None:
+        assert errors == []
+    else:
+        assert any(expected_error in error for error in errors)
+
+
 def test_authoritative_identity_field_provenance_reaches_ai_packet(
     monkeypatch,
     tmp_path: Path,
@@ -3871,7 +4177,17 @@ def test_authoritative_identity_field_provenance_reaches_ai_packet(
         for item in stock["fact_catalog"]
         if item["fact_id"] == "security_identity:current"
     )
+    basis_fact = next(
+        item
+        for item in stock["fact_catalog"]
+        if item["fact_id"] == "security_basis:current"
+    )
     assert identity_fact["fields"]["source_tier"] == "tier_a_authoritative"
+    assert identity_fact["fields"]["selected_security_type"] == "common_stock"
+    assert basis_fact["fields"]["security_identity_state"] == (
+        "verified_non_depositary"
+    )
+    assert basis_fact["fields"]["depositary_ratio_state"] == "not_applicable"
 
 
 def test_authoritative_ads_identity_replaces_legacy_packet_compatibility_fields(

@@ -15,6 +15,16 @@ _SENTENCE_BOUNDARY = re.compile(r"(?<=[.!?])\s+|\n+")
 _SPACE = re.compile(r"\s+")
 _BULLET_PREFIX = re.compile(r"^[•*-]\s*")
 _PATH_PART = re.compile(r"^([A-Za-z_][A-Za-z0-9_]*)(?:\[([0-9]+)\])?$")
+_US_KR_SUPPLY_HORIZON = re.compile(
+    r"(?:\b(?:1|5|20)\s*일(?:간)?\b.{0,24}(?:투자주체|외국인|기관|수급|순매수|순매도)"
+    r"|당일.{0,8}단기.{0,8}중기.{0,16}(?:투자주체|수급|순매수|순매도))",
+    re.IGNORECASE,
+)
+_US_INVESTOR_FLOW_UNKNOWN = re.compile(
+    r"(?=.*(?:투자주체|외국인|기관))(?=.*(?:수급|순매수|순매도))"
+    r"(?=.*(?:없|미확인|unknown)).+",
+    re.IGNORECASE,
+)
 
 # These are safety boundaries, not stock analysis. They remain visible in the audit but do not
 # count as cross-stock investment boilerplate.
@@ -232,13 +242,52 @@ def relational_reasoning_quality_report(
     substantive_repeats = [
         item for item in repeated if item["classification"] == "substantive"
     ]
+    supply_repeats = [
+        item
+        for item in substantive_repeats
+        if any(
+            item["sentence"] in _sentences(review.supply_analysis.text)
+            for review in output.stock_reviews
+        )
+    ]
+    us_kr_horizon_rows = (
+        [
+            {
+                "ticker": review.ticker,
+                "text": review.supply_analysis.text,
+            }
+            for review in output.stock_reviews
+            if _US_KR_SUPPLY_HORIZON.search(review.supply_analysis.text)
+        ]
+        if output.market == "us"
+        else []
+    )
+    generic_us_investor_unknown_rows = (
+        [
+            {
+                "ticker": review.ticker,
+                "text": review.supply_analysis.text,
+            }
+            for review in output.stock_reviews
+            if _US_INVESTOR_FLOW_UNKNOWN.search(review.supply_analysis.text)
+        ]
+        if output.market == "us"
+        else []
+    )
     numeric_label_quality = _numeric_label_quality_report(
         output,
         packet,
         binding_errors,
     )
+    hard_checks_passed = (
+        all(bool(item["distinct"]) for item in observer_holder)
+        and bool(numeric_label_quality["hard_checks_passed"])
+        and not supply_repeats
+        and not us_kr_horizon_rows
+        and len(generic_us_investor_unknown_rows) < duplicate_threshold
+    )
     return {
-        "contract": "relational-reasoning-quality-v1",
+        "contract": "relational-reasoning-quality-v2",
         "duplicate_threshold": duplicate_threshold,
         "stock_count": len(output.stock_reviews),
         "repeated_sentences": repeated,
@@ -264,8 +313,20 @@ def relational_reasoning_quality_report(
         "generic_unknown_count": sum(
             count for count in unknown_counts.values() if count >= duplicate_threshold
         ),
+        "supply_routing": {
+            "substantive_repeated_supply_sentence_count": len(supply_repeats),
+            "us_kr_style_horizon_count": len(us_kr_horizon_rows),
+            "generic_us_investor_flow_unknown_count": len(
+                generic_us_investor_unknown_rows
+            ),
+            "us_kr_style_horizon_rows": us_kr_horizon_rows,
+            "generic_us_investor_flow_unknown_rows": (
+                generic_us_investor_unknown_rows
+            ),
+        },
         "numeric_label_quality": numeric_label_quality,
-        "hard_checks_passed": all(
-            bool(item["distinct"]) for item in observer_holder
-        ) and bool(numeric_label_quality["hard_checks_passed"]),
+        "hard_checks_passed": hard_checks_passed,
+        "deterministic_quality_gate_passed": hard_checks_passed,
+        "production_assist_evidence_eligible": False,
+        "human_quality_approval_required": True,
     }

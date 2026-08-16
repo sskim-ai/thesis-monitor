@@ -56,6 +56,7 @@ from app.services.security_identity_service import (
     IDENTITY_CONFLICT,
     IDENTITY_UNKNOWN,
     VERIFIED_DEPOSITARY,
+    VERIFIED_NON_DEPOSITARY,
     resolve_packet_security_identity,
     resolve_security_identity,
 )
@@ -1002,6 +1003,24 @@ def _valuation_payload(
             "security_identity_eligibility_decision": identity[
                 "eligibility_decision"
             ],
+            "security_identity_selected_issuer_type": identity[
+                "selected_issuer_type"
+            ],
+            "security_identity_selected_security_type": identity[
+                "selected_security_type"
+            ],
+            "security_identity_selected_adr_ratio": identity[
+                "selected_adr_ratio"
+            ],
+            "security_identity_selected_adr_ratio_source": identity[
+                "selected_adr_ratio_source"
+            ],
+            "security_identity_adr_ratio_direction": identity[
+                "adr_ratio_direction"
+            ],
+            "security_identity_depositary_evidence_present": identity[
+                "is_depositary_evidence_present"
+            ],
         }
     )
     fields = (
@@ -1063,6 +1082,12 @@ def _valuation_payload(
         "security_identity_verification_source_tier",
         "security_identity_provenance",
         "security_identity_eligibility_decision",
+        "security_identity_selected_issuer_type",
+        "security_identity_selected_security_type",
+        "security_identity_selected_adr_ratio",
+        "security_identity_selected_adr_ratio_source",
+        "security_identity_adr_ratio_direction",
+        "security_identity_depositary_evidence_present",
         "eps_currency",
         "eps_security_basis",
         "book_currency",
@@ -1668,12 +1693,137 @@ def _fact_catalog(
                 "decision_version": valuation.get(
                     "security_identity_decision_version"
                 ),
+                "selected_issuer_type": valuation.get(
+                    "security_identity_selected_issuer_type"
+                )
+                or valuation.get("resolved_issuer_type"),
+                "selected_security_type": valuation.get(
+                    "security_identity_selected_security_type"
+                )
+                or valuation.get("resolved_security_type"),
+                "depositary_evidence_present": valuation.get(
+                    "security_identity_depositary_evidence_present"
+                ),
+                "depositary_ratio": valuation.get(
+                    "security_identity_selected_adr_ratio"
+                ),
+                "depositary_ratio_source": valuation.get(
+                    "security_identity_selected_adr_ratio_source"
+                ),
+                "depositary_ratio_direction": valuation.get(
+                    "security_identity_adr_ratio_direction"
+                ),
             },
             "prose_eligible": True,
             "interpretation_eligible": True,
             "numeric_registry_eligible": False,
         }
     )
+    basis_statuses = {
+        metric: valuation.get(field)
+        for metric, field in (
+            ("trailing_pe", "trailing_pe_basis_status"),
+            ("price_to_book", "price_to_book_basis_status"),
+            ("forward_pe", "forward_pe_basis_status"),
+            ("forward_price_to_book", "forward_price_to_book_basis_status"),
+        )
+        if valuation.get(field) is not None
+    }
+    basis_quality = _dict(financial_quality.get("fields"))
+    facts.append(
+        {
+            "fact_id": "security_basis:current",
+            "fact_type": "security_basis",
+            "as_of_date": str(valuation.get("price_as_of") or ""),
+            "source": "deterministic_per_security_basis",
+            "fields": {
+                "security_identity_state": identity_state,
+                "depositary_ratio_state": (
+                    "verified"
+                    if identity_state == VERIFIED_DEPOSITARY
+                    and isinstance(
+                        valuation.get("security_identity_selected_adr_ratio"),
+                        (int, float),
+                    )
+                    and valuation.get("security_identity_adr_ratio_direction")
+                    else "not_applicable"
+                    if identity_state == VERIFIED_NON_DEPOSITARY
+                    else "unknown"
+                ),
+                "valuation_basis_statuses": basis_statuses,
+                "price_currency": valuation.get("currency"),
+                "earnings_per_share_currency": valuation.get("eps_currency"),
+                "book_value_currency": valuation.get("book_currency"),
+                "earnings_per_share_security_basis": valuation.get(
+                    "eps_security_basis"
+                ),
+                "eligibility_decision": valuation.get(
+                    "security_identity_eligibility_decision"
+                ),
+                "field_eligibility": {
+                    field: {
+                        key: quality.get(key)
+                        for key in (
+                            "state",
+                            "prose_eligible",
+                            "denial_reason",
+                            "lineage_verification_status",
+                        )
+                    }
+                    for field, quality in basis_quality.items()
+                    if isinstance(quality, dict)
+                    and field
+                    in {
+                        "ttm_eps",
+                        "trailing_pe",
+                        "forward_eps",
+                        "forward_pe",
+                        "bvps",
+                        "price_to_book",
+                        "forward_bvps",
+                        "forward_price_to_book",
+                    }
+                },
+            },
+            "prose_eligible": True,
+            "interpretation_eligible": True,
+            "numeric_registry_eligible": False,
+        }
+    )
+    current_monitoring = _dict(monitoring_state.get("current"))
+    previous_monitoring = _dict(monitoring_state.get("previous"))
+    monitoring_delta = _dict(monitoring_state.get("delta"))
+    current_confirmation = _dict(
+        _dict(_dict(current_monitoring.get("price_structure")).get("registered_rule_state")).get(
+            "confirmation"
+        )
+    )
+    previous_confirmation = _dict(
+        _dict(_dict(previous_monitoring.get("price_structure")).get("registered_rule_state")).get(
+            "confirmation"
+        )
+    )
+    confirmation_transition = monitoring_delta.get("confirmation_transition")
+    if confirmation_transition:
+        facts.append(
+            {
+                "fact_id": "monitoring:confirmation_transition",
+                "fact_type": "monitoring_transition",
+                "as_of_date": str(
+                    _dict(current_monitoring.get("price_structure")).get("as_of_date")
+                    or assessment.assessment_date.isoformat()
+                ),
+                "source": "deterministic_monitoring_state",
+                "fields": {
+                    "previous_state": previous_confirmation.get("state"),
+                    "current_state": current_confirmation.get("state"),
+                    "transition": confirmation_transition,
+                },
+                "prose_eligible": True,
+                "interpretation_eligible": True,
+                "numeric_registry_eligible": False,
+            }
+        )
     if financial_quality:
         field_states = {
             str(item.get("state") or "unknown")
@@ -3052,9 +3202,235 @@ def _forward_source_language_errors(
     return errors
 
 
+_CONFIRMATION_STATES = (
+    "retest_in_progress",
+    "failed_breakout",
+    "holding_above",
+    "retest_held",
+    "not_reached",
+    "crossed",
+)
+_CONFIRMATION_STATE_ALIASES = {
+    "retest_in_progress": "retest_in_progress",
+    "재시험 진행": "retest_in_progress",
+    "retest in progress": "retest_in_progress",
+    "failed_breakout": "failed_breakout",
+    "돌파 실패": "failed_breakout",
+    "failed breakout": "failed_breakout",
+    "holding_above": "holding_above",
+    "holding": "holding_above",
+    "돌파 후 유지": "holding_above",
+    "상단 유지": "holding_above",
+    "holding above": "holding_above",
+    "retest_held": "retest_held",
+    "재시험 유지": "retest_held",
+    "retest held": "retest_held",
+    "not_reached": "not_reached",
+    "미도달": "not_reached",
+    "not reached": "not_reached",
+    "crossed": "crossed",
+    "돌파 확인": "crossed",
+}
+_CONFIRMATION_STATE_TEXT = "|".join(
+    re.escape(value)
+    for value in sorted(_CONFIRMATION_STATE_ALIASES, key=len, reverse=True)
+)
+_CONFIRMATION_CANONICAL_TRANSITION = re.compile(
+    rf"\b(?P<previous>{'|'.join(_CONFIRMATION_STATES)})_to_"
+    rf"(?P<current>{'|'.join(_CONFIRMATION_STATES)})\b",
+    re.IGNORECASE,
+)
+_CONFIRMATION_FROM_TO = re.compile(
+    rf"(?P<previous>{_CONFIRMATION_STATE_TEXT})\s*(?:상태)?에서\s*"
+    rf"(?P<current>{_CONFIRMATION_STATE_TEXT})\s*(?:상태)?(?:로|으로)\s*"
+    r"(?:바뀌|전환|변경|이동)",
+    re.IGNORECASE,
+)
+_CONFIRMATION_TO_ONLY = re.compile(
+    rf"(?P<current>{_CONFIRMATION_STATE_TEXT})\s*(?:상태)?(?:로|으로)\s*"
+    r"(?:바뀌|전환|변경)",
+    re.IGNORECASE,
+)
+_CONFIRMATION_CURRENT_ASSERTION = re.compile(
+    rf"(?:현재\s*)?(?:확인\s*)?(?:상태|confirmation)\s*(?:은|는|이|가|:)\s*"
+    rf"(?P<current>{_CONFIRMATION_STATE_TEXT})",
+    re.IGNORECASE,
+)
+
+
+def _confirmation_state(value: str) -> str:
+    normalized = value.strip().lower().replace("_", " ")
+    return _CONFIRMATION_STATE_ALIASES.get(
+        normalized,
+        normalized.replace(" ", "_"),
+    )
+
+
+def _confirmation_transition_errors(
+    ticker: str,
+    monitoring_state: dict[str, object],
+    review: AIStockReview,
+) -> list[str]:
+    current = _dict(monitoring_state.get("current"))
+    previous = _dict(monitoring_state.get("previous"))
+    current_state = str(
+        _dict(
+            _dict(_dict(current.get("price_structure")).get("registered_rule_state")).get(
+                "confirmation"
+            )
+        ).get("state")
+        or ""
+    )
+    previous_state = str(
+        _dict(
+            _dict(_dict(previous.get("price_structure")).get("registered_rule_state")).get(
+                "confirmation"
+            )
+        ).get("state")
+        or ""
+    )
+    transition = str(_dict(monitoring_state.get("delta")).get("confirmation_transition") or "")
+    if not transition or not current_state:
+        return []
+
+    errors: list[str] = []
+    for text_ref, text in _prose_fields(review).items():
+        from_to_matches = list(_CONFIRMATION_FROM_TO.finditer(text))
+        from_to_spans = [item.span() for item in from_to_matches]
+        claims: list[tuple[str | None, str]] = []
+        claims.extend(
+            (match.group("previous").lower(), match.group("current").lower())
+            for match in _CONFIRMATION_CANONICAL_TRANSITION.finditer(text)
+        )
+        claims.extend(
+            (
+                _confirmation_state(match.group("previous")),
+                _confirmation_state(match.group("current")),
+            )
+            for match in from_to_matches
+        )
+        claims.extend(
+            (None, _confirmation_state(match.group("current")))
+            for match in _CONFIRMATION_TO_ONLY.finditer(text)
+            if not any(
+                start <= match.start() and match.end() <= end
+                for start, end in from_to_spans
+            )
+        )
+        claims.extend(
+            (None, _confirmation_state(match.group("current")))
+            for match in _CONFIRMATION_CURRENT_ASSERTION.finditer(text)
+            if not any(
+                match.start() < end and start < match.end()
+                for start, end in from_to_spans
+            )
+        )
+        for claimed_previous, claimed_current in claims:
+            if claimed_previous is not None and claimed_previous != previous_state:
+                errors.append(
+                    f"{ticker}:confirmation_transition_previous_state_mismatch:"
+                    f"{text_ref}:{claimed_previous}:{previous_state}"
+                )
+            if claimed_current != current_state:
+                errors.append(
+                    f"{ticker}:confirmation_transition_current_state_mismatch:"
+                    f"{text_ref}:{claimed_current}:{current_state}"
+                )
+        if transition in text and transition != f"{previous_state}_to_{current_state}":
+            errors.append(
+                f"{ticker}:confirmation_transition_contract_mismatch:"
+                f"{text_ref}:{transition}:{previous_state}_to_{current_state}"
+            )
+    return list(dict.fromkeys(errors))
+
+
+_IDENTITY_UNVERIFIED_LANGUAGE = re.compile(
+    r"(?:증권\s*(?:정체성|신원)|(?:ADR|ADS|예탁증권)\s*여부)"
+    r".{0,24}(?:검증되지|미검증|미확인|불명|unknown)",
+    re.IGNORECASE,
+)
+_IDENTITY_VERIFIED_LANGUAGE = re.compile(
+    r"(?:증권\s*(?:정체성|신원)|ADR|ADS|예탁증권)"
+    r".{0,24}(?:검증(?:됐|됨|완료)|확인(?:됐|됨)|verified)",
+    re.IGNORECASE,
+)
+_NON_DEPOSITARY_CALLED_DEPOSITARY = re.compile(
+    r"(?:(?:현재\s*)?(?:증권|주식|종목).{0,16}(?:ADR|ADS|예탁증권)"
+    r"|(?:ADR|ADS|예탁증권).{0,12}(?:입니다|이다|임|로\s*확인))",
+    re.IGNORECASE,
+)
+_US_KR_SUPPLY_HORIZON_LANGUAGE = re.compile(
+    r"(?:\b(?:1|5|20)\s*일(?:간)?\b.{0,24}(?:투자주체|외국인|기관|수급|순매수|순매도)"
+    r"|당일.{0,8}단기.{0,8}중기.{0,16}(?:투자주체|수급|순매수|순매도))",
+    re.IGNORECASE,
+)
+_INVESTOR_FLOW_LANGUAGE = re.compile(
+    r"(?:투자주체\s*수급|(?:외국인|기관|개인).{0,16}(?:수급|순매수|순매도))",
+    re.IGNORECASE,
+)
+
+
+def _security_identity_language_errors(
+    ticker: str,
+    identity_state: str,
+    review: AIStockReview,
+) -> list[str]:
+    errors: list[str] = []
+    for text_ref, text in _prose_fields(review).items():
+        if (
+            identity_state in {VERIFIED_DEPOSITARY, VERIFIED_NON_DEPOSITARY}
+            and _IDENTITY_UNVERIFIED_LANGUAGE.search(text)
+        ):
+            errors.append(
+                f"{ticker}:verified_security_identity_described_as_unverified:{text_ref}"
+            )
+        if (
+            identity_state in {IDENTITY_CONFLICT, IDENTITY_UNKNOWN}
+            and _IDENTITY_VERIFIED_LANGUAGE.search(text)
+        ):
+            errors.append(
+                f"{ticker}:unverified_security_identity_described_as_verified:{text_ref}"
+            )
+        if (
+            identity_state == VERIFIED_NON_DEPOSITARY
+            and _NON_DEPOSITARY_CALLED_DEPOSITARY.search(text)
+        ):
+            errors.append(
+                f"{ticker}:non_depositary_described_as_depositary:{text_ref}"
+            )
+    return list(dict.fromkeys(errors))
+
+
+def _market_supply_language_errors(
+    ticker: str,
+    market: AIReviewMarket | None,
+    stock: dict[str, object],
+    review: AIStockReview,
+) -> list[str]:
+    if market != "us":
+        return []
+    errors: list[str] = []
+    prose = _prose_fields(review)
+    has_investor_flow_fact = any(
+        str(item.get("semantic_type") or "").startswith(
+            ("foreign_net_buy_qty", "institution_net_buy_qty")
+        )
+        and item.get("prose_allowed") is True
+        for item in stock.get("numeric_registry", [])
+        if isinstance(item, dict)
+    )
+    for text_ref, text in prose.items():
+        if _US_KR_SUPPLY_HORIZON_LANGUAGE.search(text):
+            errors.append(f"{ticker}:us_kr_supply_horizon_language:{text_ref}")
+        if not has_investor_flow_fact and _INVESTOR_FLOW_LANGUAGE.search(text):
+            errors.append(f"{ticker}:us_investor_flow_not_in_packet:{text_ref}")
+    return list(dict.fromkeys(errors))
+
+
 def _validate_stock_review(
     review: AIStockReview,
     stock: dict[str, object],
+    market: AIReviewMarket | None = None,
 ) -> list[str]:
     errors: list[str] = []
     if normalize_decision_text(
@@ -3109,6 +3485,19 @@ def _validate_stock_review(
     identity_state = str(identity.get("identity_state") or IDENTITY_UNKNOWN)
     identity_contract_present = bool(
         valuation.get("security_identity_decision_version")
+    )
+    errors.extend(
+        _security_identity_language_errors(review.ticker, identity_state, review)
+    )
+    errors.extend(
+        _confirmation_transition_errors(
+            review.ticker,
+            _dict(stock.get("monitoring_state")),
+            review,
+        )
+    )
+    errors.extend(
+        _market_supply_language_errors(review.ticker, market, stock, review)
     )
     identity_blocks_valuation = bool(
         identity_state == IDENTITY_CONFLICT
@@ -3301,7 +3690,13 @@ def _validate_bound_ai_review_output(
             errors.append(f"{ticker}:thesis_version_mismatch")
         if _current_thesis_version(session, ticker) != review.thesis_version:
             errors.append(f"{ticker}:not_currently_monitored_at_version")
-        errors.extend(_validate_stock_review(review, stock))
+        errors.extend(
+            _validate_stock_review(
+                review,
+                stock,
+                str(packet.get("market") or "") or None,
+            )
+        )
     market_context = packet.get("market_context")
     market_fact_ids = {
         str(item.get("fact_id"))

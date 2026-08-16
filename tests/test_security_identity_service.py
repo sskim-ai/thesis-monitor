@@ -196,7 +196,7 @@ def test_exact_krx_listing_identity_is_tier_c_non_depositary() -> None:
     assert result["verification_source_tier"] == "tier_c_explicit_local"
 
 
-def test_legacy_affirmative_provider_depositary_is_conservative_only() -> None:
+def test_lower_tier_provider_depositary_is_not_promoted_to_verified() -> None:
     depositary = resolve_security_identity(
         company_name="Fixture Foreign Issuer",
         security_master=_security(
@@ -217,11 +217,11 @@ def test_legacy_affirmative_provider_depositary_is_conservative_only() -> None:
         ),
     )
 
-    assert depositary["identity_state"] == VERIFIED_DEPOSITARY
+    assert depositary["identity_state"] == IDENTITY_UNKNOWN
     assert depositary["eligibility_decision"] == (
-        "requires_verified_current_security_denominator"
+        "unverified_depositary_evidence_requires_authoritative_resolution"
     )
-    assert depositary["verification_source_tier"] == "tier_c_explicit_local"
+    assert depositary["verification_source_tier"] == "tier_d_inferred_default"
     assert common["identity_state"] == IDENTITY_UNKNOWN
 
 

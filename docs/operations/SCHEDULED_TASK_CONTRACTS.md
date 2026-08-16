@@ -52,5 +52,7 @@ Before marking the deployment gate passed, confirm in the ChatGPT desktop Schedu
    financial quality v2, and the appropriate claim
    command;
 5. workspace-write is the only filesystem permission and external browsing is unavailable;
-6. KR remains 2/5 and US remains 1/5; prompt migration does not reset or increment either counter;
-7. Production Assist remains disabled.
+6. persisted runtime remains KR 2/5 and US 2/5; the 2026-08-16 US operational success has separate
+   human-quality FAIL status and is not Production Assist evidence;
+7. prompt migration, retrospective, or Preview work does not reset or increment either counter;
+8. Production Assist remains disabled.

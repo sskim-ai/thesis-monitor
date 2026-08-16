@@ -39,8 +39,8 @@ Current contracts:
 - OHLCV structure `ohlcv-structure-v2`
 - security identity `security-identity-v2`
 - financial quality `financial-quality-taint-v2`
-- Pilot `ai-assisted-pilot-v3`, persisted runtime count KR 2/5 and US 2/5; the latest US quality
-  review failed and the count needs reconciliation
+- Pilot `ai-assisted-pilot-v3`, persisted runtime count KR 2/5 and US 2/5; the latest US session is
+  an operational success with separate human-quality FAIL status and is not Production Assist evidence
 - renderer `ai-assisted-pilot-renderer-v3`
 - AI mode shadow; Production Assist disabled
 - Public Action 0.4.5, operationId 20/20
@@ -95,6 +95,15 @@ despite the deployment cross-section's `verified_depositary` result. Unsafe mult
 Do not edit the counter ad hoc; reconcile the quality/count contract explicitly before accepting a
 further US Pilot advance. Read `docs/reports/20260816-first-natural-v310-live-validation.md` first.
 
+Phase 7.2.7 on `codex/phase-7-2-7-live-quality-reconciliation` preserves runtime KR 2/5 and US 2/5
+while fixing those validation gaps in isolation. Corrected US experiment packet
+`2026-08-16-us-run-20-b2339f14d78d` passes 171 automatic bindings and full validation with no
+KR-style US supply horizon. TSM and WRD remain safely `unknown` because production has only Tier D
+`local+openfigi` identity evidence and no authoritative identity cache; the old isolated verified
+cross-section was over-permissive. Review
+`docs/reports/20260816-phase7-2-7-live-quality-reconciliation.md` and both linked full Previews.
+The branch is not merged or deployed, and the correction is not human-approved evidence yet.
+
 US morning schedule: deterministic run and first KRX fetch 08:05, KRX deadline 08:20, Codex Primary
 08:15, Backup 08:30, deterministic fallback 08:40. Telegram network retry reuses persisted final
 text and never reruns analysis.
@@ -105,16 +114,16 @@ knowledge.
 
 Next work order:
 
-1. Reconcile the persisted US 2/5 count with the failed human-quality disposition without an ad hoc
-   counter edit.
-2. Correct CRCL transition interpretation, SKHY identity-aware wording, and the US supply-routing
-   repetition under a separately approved code task.
-3. Reconcile TSM/WRD deployment identity evidence with live packet resolution.
+1. Directly review the Phase 7.2.7 corrected US 14-message and KR 8-message Previews.
+2. Merge and deploy the branch only after explicit approval; do not edit the runtime counters.
+3. Keep TSM/WRD identity `unknown` unless authoritative evidence is separately ingested.
 4. Preserve exact archives and old cohorts; do not replay Telegram.
-5. Keep Production Assist disabled until a separate explicit user decision.
+5. Keep Production Assist disabled until blocking quality findings are closed and the user explicitly
+   approves it.
 
 Before completion, run full pytest, Ruff, `git diff --check`, Knowledge checksum validation, Skill and
-schema validation, documentation path validation, push the exact commit, verify GitHub Actions Test
-and Lint, then align the operating checkout and Scheduled Tasks.
+schema validation, documentation path validation, push the exact commit, and verify GitHub Actions
+Test and Lint. Do not align the operating checkout or Scheduled Tasks until a separate deployment
+approval.
 
 ---

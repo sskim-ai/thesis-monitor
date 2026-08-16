@@ -23,7 +23,7 @@ execution or an autonomous investment adviser.
 | OHLCV structure | `ohlcv-structure-v2` |
 | Investment Knowledge | `3.0` |
 | Chart Knowledge | `1.0` |
-| Pilot | `ai-assisted-pilot-v3`, persisted runtime KR 2/5 and US 2/5; latest US quality review failed |
+| Pilot | `ai-assisted-pilot-v3`, runtime KR 2/5 and US 2/5; 2026-08-16 US operational success, human quality FAIL |
 | Renderer | `ai-assisted-pilot-renderer-v3` |
 | Public Action | `0.4.5`, operationId 20/20 |
 | Production Assist | Disabled |
@@ -191,8 +191,8 @@ no peer number was invented. See [PEER_VALUATION.md](architecture/PEER_VALUATION
 ## Pilot Architecture
 
 Pilot v3 activated at KR 0/5 and US 0/5; the persisted runtime count is KR 2/5 and US 2/5. The
-2026-08-16 US session is not human-quality approved, so this count requires reconciliation before it
-is treated as an accepted second US success. The required task
+2026-08-16 US session remains an exactly-once operational pipeline success, but its separate human
+message-quality status is FAIL and it is not eligible Production Assist evidence. The required task
 contract is policy v3.10/schema 4/structure v2. A successful day requires Codex completion, validation
 pass, complete AI-assisted delivery, required artifact verification, and a verified atomic
 `archive-complete.json` marker. Only then is success recorded. Archive-only recovery reuses the
@@ -252,6 +252,15 @@ frame. TSM and WRD also resolved to `unknown` identity despite the deployment cr
 `verified_depositary`; their unsafe multiples remained withheld. No manual count correction was
 made. See [the Live validation report](reports/20260816-first-natural-v310-live-validation.md).
 
+Phase 7.2.7 keeps that operational count unchanged and adds deterministic validation for confirmation
+transition direction, security identity versus valuation basis, and market-aware supply routing.
+The corrected isolated US packet `2026-08-16-us-run-20-b2339f14d78d` passes 171 automatic bindings,
+the full validator, and the focused quality audit with zero US KR-style supply horizons. TSM and WRD
+remain `unknown`: their production identity evidence is lower-tier `local+openfigi` with no
+authoritative identity cache, while the older Phase 7.2.6 cross-section had over-promoted that
+legacy evidence. The patch is not merged or deployed and the corrected Preview still needs direct
+human approval. See [the reconciliation report](reports/20260816-phase7-2-7-live-quality-reconciliation.md).
+
 ## Source Map
 
 - Packet, claim, validation, grounding: `app/services/ai_review_service.py`
@@ -277,9 +286,10 @@ made. See [the Live validation report](reports/20260816-first-natural-v310-live-
 - There is no broad point-in-time peer valuation provider. Limited active-universe comparisons fail
   closed unless at least three comparable peers pass all basis checks.
 - The persisted US count includes the 2026-08-16 operationally complete session whose human message
-  quality review failed. Reconcile the count contract before accepting another US Pilot advance.
-- TSM and WRD live packet identity resolution must be reconciled with the post-remediation identity
-  cross-section; current multiple withholding is safe.
+  quality review failed. Operational count and human approval remain separate; this packet is not
+  Production Assist evidence.
+- TSM and WRD lack authoritative production identity evidence. Their live `unknown` state and
+  multiple withholding are correct until a separately approved identity ingestion.
 - Production Assist remains disabled pending a separate decision after successful Pilot evidence.
 
 Never fill data gaps with model knowledge. Add a deterministic fact, semantic contract, and tests
@@ -306,9 +316,11 @@ first.
 
 ## Next Steps
 
-1. Keep `origin/main`, development checkout, and operating checkout on the same clean commit.
-2. Observe the next naturally scheduled v3.9 session; do not trigger a duplicate manual run.
-3. Review five successful sessions per market without changing policy mid-cohort for style alone.
-4. Treat DATA, CALCULATION, PACKET, KNOWLEDGE_ROUTING, AI_REASONING, VALIDATION, RENDERER, and DELIVERY
-   as separate failure categories.
-5. Keep Production Assist disabled until explicit user approval.
+1. Review the Phase 7.2.7 corrected US and KR Preview on the experimental branch.
+2. Merge and deploy only after explicit approval; do not alter the runtime 2/5 counters during
+   retrospective or deployment.
+3. If deployed, observe the next natural v3.10 session without a duplicate manual run.
+4. Keep operational pipeline success, human message-quality approval, and Production Assist evidence
+   as separate states.
+5. Keep Production Assist disabled until blocking quality findings are closed and the user gives
+   explicit approval.

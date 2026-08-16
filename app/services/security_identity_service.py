@@ -330,16 +330,6 @@ def resolve_security_identity(
         non_depositary_tuple
         and (master_verified or watch_non_depositary_explicit)
     )
-    legacy_affirmative_depositary_reference = bool(
-        _normalized(identity_provider) == "local+openfigi"
-        and identity_quality in {"full", "verified"}
-        and figi
-        and adr_identifier
-        and security_depositary
-        and country
-        and exchange
-        and security_issuer not in {"domestic_us", "krx"}
-    )
     krx_listing_assertion = bool(
         re.fullmatch(r"\d{6}", ticker)
         and country.upper() == "KR"
@@ -354,7 +344,6 @@ def resolve_security_identity(
     verified_depositary = bool(
         (master_verified and (security_depositary or adr_identifier))
         or watch_depositary_explicit
-        or legacy_affirmative_depositary_reference
     )
 
     selected_issuer_type = security_issuer if master_verified else watch_issuer or security_issuer
@@ -433,8 +422,7 @@ def resolve_security_identity(
             if master_verified
             else TIER_C_EXPLICIT_LOCAL
             if (
-                legacy_affirmative_depositary_reference
-                or watch_depositary_explicit
+                watch_depositary_explicit
                 or watch_non_depositary_explicit
                 or krx_listing_assertion
             )

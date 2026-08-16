@@ -32,9 +32,9 @@ Sources are ranked for resolution, while conflicting raw evidence is retained.
 
 An explicit Watchlist issuer assertion requires its stored creation timestamp and listing exchange.
 An exact KRX assertion requires a six-digit ticker, KR country, KRX/KOSPI/KOSDAQ exchange,
-`krx` issuer type, and common-security type. A narrow legacy compatibility rule retains only
-affirmative depositary evidence with a FIGI, ADR identifier, depositary type, foreign issuer type,
-country, and exchange. It can never verify a common stock or unlock a multiple by itself.
+`krx` issuer type, and common-security type. Legacy `local+openfigi` fields, including an affirmative
+depositary type, FIGI, or ADR identifier, remain Tier D unless a higher-tier identity record verifies
+them. They cannot create either verified state or unlock a multiple.
 
 The packet records both the SecurityMaster record tier and the effective verification tier. This
 prevents a Tier C assertion from being presented as an authoritative Tier A source.
@@ -99,7 +99,9 @@ contract.
 
 The AI packet recomputes compatibility fields from the canonical identity, so legacy
 `resolved_security_type` or `is_depositary_security` values cannot contradict the v2 state.
-Identity metadata is exposed as the homogeneous `security_identity:current` Fact.
+Identity metadata is exposed as the homogeneous `security_identity:current` Fact. Current-security
+denominator, share, and currency status is exposed separately as `security_basis:current`; a
+verified ADS identity must not be described as unverified merely because a multiple is withheld.
 
 Identity-ineligible numeric registry rows have `prose_allowed=false`, no display value, and no
 approved variants. Binder references, raw numeric prose, qualitative multiple inference, and mixed
@@ -116,5 +118,14 @@ interpretations. Persisted retry and single-delivery behavior are unchanged.
 - Output schema remains 4.
 - Renderer performs no semantic rewrite.
 - Historical packets and archives remain immutable.
-- This contract is experimental on `codex/phase-7-2-relational-reasoning`; production remains
-  `daily-review-v3.9` until separate approval.
+- Production uses this contract under `daily-review-v3.10`. Phase 7.2.7 hardening remains isolated
+  on its review branch until separate merge and deployment approval.
+
+## Natural Live Reconciliation
+
+The 2026-08-16 natural packet resolved TSM and WRD as `unknown`. Their production SecurityMaster
+rows were `local+openfigi`, `identity_quality=inferred`, Tier D, and had no authoritative identity
+cache. A prior isolated cross-section had promoted the same legacy affirmative fields to
+`verified_depositary`; that result is superseded. Runtime `unknown` is the correct fail-closed state,
+and their multiples remain withheld. No production identity remediation was performed in Phase
+7.2.7.

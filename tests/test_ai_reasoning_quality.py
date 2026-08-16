@@ -109,6 +109,9 @@ def test_quality_audit_detects_substantive_repetition_without_counting_safety() 
     assert report["stock_specific_next_check_count"] == 3
     assert report["generic_next_check_count"] == 0
     assert report["section_numeric_grounding"]["AAA"]["valuation"] == 1
+    assert report["hard_checks_passed"] is True
+    assert report["deterministic_quality_gate_passed"] is True
+    assert report["production_assist_evidence_eligible"] is False
 
 
 def test_quality_audit_fails_identical_observer_and_holder_decisions() -> None:
@@ -170,3 +173,27 @@ def test_quality_audit_reports_repeated_numeric_labels_as_hard_failure() -> None
     assert label_quality["instrument_label_mismatch_count"] == 0
     assert label_quality["hard_checks_passed"] is False
     assert report["hard_checks_passed"] is False
+
+
+def test_us_quality_audit_rejects_kr_horizons_and_repeated_flow_unknowns() -> None:
+    payload = _output().model_dump()
+    flow_unknowns = (
+        "당일·단기·중기 투자주체 수급이 없어 방향은 미확인입니다.",
+        "1일·5일·20일 외국인 수급이 제공되지 않아 흐름은 Unknown입니다.",
+        "기관의 당일·단기·중기 순매수 자료가 없어 판단할 수 없습니다.",
+    )
+    for review, flow_unknown in zip(
+        payload["stock_reviews"], flow_unknowns, strict=True
+    ):
+        review["core_judgment"]["text"] = f"{review['ticker']} 고유 결론입니다."
+        review["supply_analysis"]["text"] = flow_unknown
+    output = AIDailyReviewOutput.model_validate(payload)
+
+    report = relational_reasoning_quality_report(output)
+
+    supply = report["supply_routing"]
+    assert supply["us_kr_style_horizon_count"] == 3
+    assert supply["generic_us_investor_flow_unknown_count"] == 3
+    assert report["hard_checks_passed"] is False
+    assert report["deterministic_quality_gate_passed"] is False
+    assert report["production_assist_evidence_eligible"] is False

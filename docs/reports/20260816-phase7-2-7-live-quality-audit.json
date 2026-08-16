@@ -1,0 +1,155 @@
+{
+  "schema_version": "1",
+  "phase": "7.2.7",
+  "branch": "codex/phase-7-2-7-live-quality-reconciliation",
+  "required_base": "ff577e4a31d19f855d2f5c1ccb2eb10567244dc8",
+  "runtime": {
+    "pilot_count": {
+      "kr": 2,
+      "us": 2
+    },
+    "operational_pipeline_success": true,
+    "human_message_quality_status": "failed",
+    "production_assist_evidence_eligible": false,
+    "production_assist": false,
+    "policy": "daily-review-v3.10"
+  },
+  "original_us": {
+    "packet_id": "2026-08-16-us-run-20-6c15d0003955",
+    "hashes": {
+      "packet": "83b33aa94f5c5428adb9cb7b0a6810142829ea2fa091c65265d7ec0c40180ec0",
+      "output": "2b3fc7047fb716ea3535c3d2a94652e58ebc129e0ac65e8b6d7e6f91bcc5f621",
+      "archive_complete": "ddce83e262e85e74d8459bb2d82795b5cd0b014699823a41e4aebaaa838179b6",
+      "pilot_state": "4f8600322a5b08a9eb58708dbf9146854dd4b4f40b5ccd345892de8fdb064076",
+      "operating_database": "419f8d2f7cc875b5379477f0ecc8582f85f49320c7a650158c5960c795bcc5d5"
+    },
+    "replay_validator_status": "rejected",
+    "replay_error_count": 31,
+    "error_summary": {
+      "confirmation_transition": 1,
+      "verified_identity_basis_conflation": 2,
+      "us_kr_style_supply_horizon": 13,
+      "unsupported_us_investor_flow": 15
+    },
+    "immutable": true
+  },
+  "corrected_us": {
+    "packet_id": "2026-08-16-us-run-20-b2339f14d78d",
+    "source_packet_id": "2026-08-16-us-run-20-6c15d0003955",
+    "market_messages": 1,
+    "stock_messages": 13,
+    "logical_messages": 14,
+    "telegram_chunks": 14,
+    "automatic_bindings": 171,
+    "manual_bindings": 0,
+    "rejected_bindings": 0,
+    "formatter_errors": 0,
+    "unresolved_placeholders": 0,
+    "validator_status": "passed",
+    "validator_errors": 0,
+    "numeric_label_quality": {
+      "redundant_authored_label_count": 0,
+      "repeated_bound_label_count": 0,
+      "source_label_mismatch_count": 0,
+      "instrument_label_mismatch_count": 0,
+      "details": [],
+      "hard_checks_passed": true
+    },
+    "supply_routing": {
+      "substantive_repeated_supply_sentence_count": 0,
+      "us_kr_style_horizon_count": 0,
+      "generic_us_investor_flow_unknown_count": 0,
+      "us_kr_style_horizon_rows": [],
+      "generic_us_investor_flow_unknown_rows": []
+    },
+    "observer_holder_distinct": 13,
+    "crcl_transition": "failed_breakout_to_not_reached",
+    "skhy_identity_state": "verified_depositary",
+    "skhy_withheld_basis": [
+      "current_security_denominator",
+      "share_basis",
+      "currency_basis"
+    ],
+    "tsm_identity_state": "unknown",
+    "wrd_identity_state": "unknown",
+    "unsafe_multiple_leakage": 0,
+    "deterministic_quality_gate_passed": true,
+    "human_quality_approval_required": true,
+    "production_assist_evidence_eligible": false,
+    "preview_sha256": "089b651389ea1b863cfabc5cf8cc58ead386c8f3189e71959a30c7d5e837a3db"
+  },
+  "identity_reconciliation": {
+    "root_cause": "phase_7_2_6_cross_section_promoted_lower_tier_legacy_affirmative_depositary_evidence",
+    "tsm": {
+      "provider": "local+openfigi",
+      "identity_quality": "inferred",
+      "source_tier": "tier_d_inferred_default",
+      "official_identity_cache": false,
+      "resolved_state": "unknown"
+    },
+    "wrd": {
+      "provider": "local+openfigi",
+      "identity_quality": "inferred",
+      "source_tier": "tier_d_inferred_default",
+      "official_identity_cache": false,
+      "resolved_state": "unknown"
+    },
+    "production_remediation_applied": false,
+    "multiple_eligibility": "withheld"
+  },
+  "kr_regression": {
+    "source_packet_id": "2026-08-15-kr-run-19-919a670464b4",
+    "source_policy": "daily-review-v3.9",
+    "market_messages": 1,
+    "stock_messages": 7,
+    "logical_messages": 8,
+    "automatic_bindings": 91,
+    "manual_bindings": 0,
+    "rejected_bindings": 0,
+    "formatter_errors": 0,
+    "unresolved_placeholders": 0,
+    "validator_status": "passed",
+    "validator_errors": 0,
+    "us_supply_false_positives": 0,
+    "kr_supply_horizon_stock_count": 7,
+    "rendered_payload_byte_identical": false,
+    "changed_message_count": 8,
+    "change_reason": "v3.9 redundant authored numeric labels removed before automatic rebinding"
+  },
+  "scheduled_tasks": {
+    "count": 4,
+    "active": 4,
+    "policy": "daily-review-v3.10",
+    "changed": 0,
+    "times_kst": [
+      "08:15",
+      "08:30",
+      "16:15",
+      "16:55"
+    ]
+  },
+  "local_validation": {
+    "pytest": "778 passed",
+    "ruff": "passed",
+    "git_diff_check": "passed",
+    "skill_schema": "passed",
+    "documentation_paths": "passed",
+    "public_action_version": "0.4.5",
+    "public_action_operation_ids": "20/20 unique",
+    "investment_knowledge_sha256": "559ad45e4dd86cb0aec9bb09b51a5dc816bf323e8c2b4fd050cf28960a5a9d18",
+    "chart_knowledge_sha256": "beee64559831479168f1347c43d979391126926d73e2473ce837cefbf0ede19b",
+    "db_migration": false
+  },
+  "isolation": {
+    "telegram_sends": 0,
+    "operating_database_mutations": 0,
+    "operating_archive_mutations": 0,
+    "assessment_mutations": 0,
+    "pilot_mutations": 0,
+    "scheduled_task_changes": 0,
+    "production_assist_changes": 0,
+    "main_branch_mutations": 0,
+    "operating_checkout_changes": 0,
+    "original_hashes_reverified_after_experiment": true
+  }
+}
