@@ -48,11 +48,20 @@
     "source": "natural_scheduled_task",
     "experimental_run": false,
     "operational_pipeline_success": true,
-    "human_message_quality_status": "pending_work_human_review",
+    "human_message_quality_status": "failed",
     "production_assist_evidence_eligible": false,
     "reconciliation_counter_mutation": 0,
     "phase_7_2_9_implementation_started": false,
-    "report": "docs/reports/20260816-third-natural-kr-v310-operational-reconciliation.md"
+    "blocking_quality_findings": [
+      "numeric_postposition_errors_6",
+      "supply_direction_claims_without_matching_visible_actor_horizon_numbers",
+      "stock_core_judgment_template_skeleton_repetition",
+      "financial_amount_period_basis_omitted",
+      "valuation_interpretation_without_historical_or_peer_evidence"
+    ],
+    "report": "docs/reports/20260816-third-natural-kr-v310-operational-reconciliation.md",
+    "operational_report": "docs/reports/20260816-third-natural-kr-v310-operational-reconciliation.md",
+    "human_review_report": "docs/reports/20260816-third-natural-kr-v310-work-human-review.md"
   },
   "pilot_success_archive_contract": {
     "completion_marker": "archive-complete.json",

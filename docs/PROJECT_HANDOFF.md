@@ -193,7 +193,7 @@ no peer number was invented. See [PEER_VALUATION.md](architecture/PEER_VALUATION
 Pilot v3 activated at KR 0/5 and US 0/5; the persisted runtime count is KR 3/5 and US 2/5. The
 2026-08-16 US session is operationally counted but failed human-quality review. The natural KR
 packet `2026-08-16-kr-run-21-049f367f0274` is operationally counted exactly once as Day 3/5, while
-its human-quality status remains `pending_work_human_review`. Neither packet is currently eligible
+its human-quality status is `failed`. Neither packet is currently eligible
 as Production Assist evidence. The required task
 contract is policy v3.10/schema 4/structure v2. A successful day requires Codex completion, validation
 pass, complete AI-assisted delivery, required artifact verification, and a verified atomic
@@ -229,10 +229,14 @@ AI-assisted messages sent, and archive completion. Runtime state therefore count
 The natural 2026-08-16 KR v3.10 packet `2026-08-16-kr-run-21-049f367f0274` passed validation,
 delivered the market plus all seven active stocks 8/8, verified 13 required archive artifacts, and
 wrote `archive-complete.json` before the exactly-once Pilot record. Runtime state therefore counts it
-as KR Day 3/5. Its actual persisted Telegram payload is awaiting direct Work review, so human quality
-is not approved and Production Assist evidence eligibility remains false. See
+as KR Day 3/5. Work's direct review failed the persisted payload because it contains six Korean
+numeric-postposition defects, supply-direction claims without matching visible actor/horizon numbers,
+a repeated stock core-judgment template, financial amounts without a user-visible period basis, and
+valuation conclusions without sufficient historical or peer evidence. The operational count is not
+rewritten, but Production Assist evidence eligibility remains false. See
 [the operational reconciliation](reports/20260816-third-natural-kr-v310-operational-reconciliation.md)
-and [the exact persisted preview](reports/20260816-third-natural-kr-v310-telegram-preview.md).
+and [the Work human review](reports/20260816-third-natural-kr-v310-work-human-review.md), alongside
+[the exact persisted preview](reports/20260816-third-natural-kr-v310-telegram-preview.md).
 The later v3.9 same-packet retrospective was archive-only and did not change that count or resend it.
 The `e2c9290` plain-language preview was also unsent experimental evidence. Broad renderer-side word
 replacement was removed because it crossed the post-validation semantic boundary; the Daily Review
