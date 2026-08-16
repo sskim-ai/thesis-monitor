@@ -1,0 +1,221 @@
+{
+  "schema_version": "1",
+  "audited_at": "2026-08-16T17:00:00+09:00",
+  "audit_mode": "read_only_mechanical_handoff",
+  "overall_disposition": "pending_work_human_review",
+  "operational_pipeline_success": true,
+  "human_message_quality_status": "pending_work_human_review",
+  "production_assist_evidence_eligible": false,
+  "session": {
+    "packet_id": "2026-08-16-kr-run-21-049f367f0274",
+    "market": "kr",
+    "assessment_date": "2026-08-16",
+    "source_monitor_run_id": "21",
+    "source_monitor_run_status": "success",
+    "source_ticker_count": 7,
+    "source_success_count": 7,
+    "source_failure_count": 0,
+    "natural_scheduled_session": true
+  },
+  "contracts": {
+    "policy": "daily-review-v3.10",
+    "schema": 4,
+    "structure": "ohlcv-structure-v2",
+    "pilot": "ai-assisted-pilot-v3",
+    "renderer": "ai-assisted-pilot-renderer-v3",
+    "security_identity": "security-identity-v2",
+    "financial_quality": "financial-quality-taint-v2",
+    "ai_review_mode": "shadow",
+    "production_assist": false
+  },
+  "completeness": {
+    "active_tickers": 7,
+    "packet_tickers": 7,
+    "output_tickers": 7,
+    "rendered_stock_messages": 7,
+    "market_messages": 1,
+    "logical_payloads": 8,
+    "active_packet_output_rendered": "7/7/7/7",
+    "tickers": [
+      "000660",
+      "003690",
+      "005490",
+      "005930",
+      "010120",
+      "012450",
+      "086280"
+    ],
+    "missing_tickers": [],
+    "extra_tickers": []
+  },
+  "validator_delivery_archive": {
+    "validator_status": "passed",
+    "numeric_claims_from_persisted_validated_output": 86,
+    "delivery_status": "sent",
+    "delivery": "8/8",
+    "pending_delivery": 0,
+    "rejected_ai_delivery": 0,
+    "deterministic_duplicate_delivery": 0,
+    "required_archive_artifacts": 13,
+    "archive_hash_mismatches": 0,
+    "archive_complete": true
+  },
+  "financial_quality": {
+    "ticker": "000660",
+    "denied_registry_entries": 15,
+    "denied_semantics": [
+      "forward_bvps",
+      "forward_eps",
+      "forward_pe",
+      "forward_price_to_book",
+      "historical_pe_multiple",
+      "historical_pe_percentile",
+      "operating_income",
+      "operating_income_qoq",
+      "operating_income_yoy",
+      "operating_margin",
+      "revenue",
+      "revenue_qoq",
+      "revenue_yoy",
+      "trailing_pe",
+      "ttm_eps"
+    ],
+    "denied_numeric_claim_leakage": 0,
+    "rendered_denied_numeric_leakage": 0,
+    "rendered_financial_quality_caution_present": true,
+    "independent_allowed_book_metrics_present": [
+      "price_to_book",
+      "historical_pb_percentile"
+    ],
+    "qualitative_leakage_final_disposition": "requires_work_review"
+  },
+  "market": {
+    "canonical_numeric_usages": [
+      "WTI 등락률 +3.4%",
+      "미국 10년물 실질금리 변동 -3bp",
+      "Russell 2000 등락률 +0.6%",
+      "S&P500 등락률 -0.2%"
+    ],
+    "instrument_label_mismatches_detected": 0,
+    "kr_spot_index_present": false,
+    "kr_breadth_present": false,
+    "market_wide_supply_present": false,
+    "specific_unknowns_present": true,
+    "human_review_required": true
+  },
+  "supply_horizon_numeric_coverage": {
+    "basis": "user_visible_numeric_claims_only",
+    "foreign_1d": 0,
+    "foreign_5d": 7,
+    "foreign_20d": 7,
+    "institution_1d": 0,
+    "institution_5d": 0,
+    "institution_20d": 0,
+    "all_six_numeric_horizons_present_tickers": 0,
+    "per_ticker_numeric_semantics": {
+      "000660": [
+        "foreign_net_buy_qty_5d",
+        "foreign_net_buy_qty_20d"
+      ],
+      "003690": [
+        "foreign_net_buy_qty_5d",
+        "foreign_net_buy_qty_20d"
+      ],
+      "005490": [
+        "foreign_net_buy_qty_5d",
+        "foreign_net_buy_qty_20d"
+      ],
+      "005930": [
+        "foreign_net_buy_qty_5d",
+        "foreign_net_buy_qty_20d"
+      ],
+      "010120": [
+        "foreign_net_buy_qty_5d",
+        "foreign_net_buy_qty_20d"
+      ],
+      "012450": [
+        "foreign_net_buy_qty_5d",
+        "foreign_net_buy_qty_20d"
+      ],
+      "086280": [
+        "foreign_net_buy_qty_5d",
+        "foreign_net_buy_qty_20d"
+      ]
+    },
+    "note": "Qualitative direction statements are not counted as numeric 1d/5d/20d coverage."
+  },
+  "price_structure": {
+    "rendered_zone_lower_labels": 11,
+    "rendered_zone_upper_labels": 11,
+    "zone_role_pair_mismatches_detected": 0,
+    "registered_confirmation_promoted_to_support_detected": 0,
+    "observer_holder_distinct": "7/7"
+  },
+  "language_and_repetition": {
+    "numeric_postposition_error_count": 6,
+    "numeric_postposition_errors": [
+      {
+        "ticker": "003690",
+        "occurrence": "1,750억원와"
+      },
+      {
+        "ticker": "005490",
+        "occurrence": "8,190억원와"
+      },
+      {
+        "ticker": "005930",
+        "occurrence": "89조4,924억원와"
+      },
+      {
+        "ticker": "010120",
+        "occurrence": "1,785억원와"
+      },
+      {
+        "ticker": "012450",
+        "occurrence": "1조3,655억원는"
+      },
+      {
+        "ticker": "086280",
+        "occurrence": "4,951억원와"
+      }
+    ],
+    "substantive_exact_sentence_repeated_across_3_or_more_stocks": 0,
+    "substantive_exact_repeats": [],
+    "unsafe_buy_sell_commands_detected": 0,
+    "template_similarity_final_disposition": "requires_work_review"
+  },
+  "work_review_checklist": {
+    "market_message_quality": "pending",
+    "stock_specific_reasoning": "pending",
+    "supply_horizon_interpretation": "pending",
+    "valuation_relationship_quality": "pending",
+    "observer_holder_decision_usefulness": "pending",
+    "unknown_and_next_check_specificity": "pending",
+    "repetition_and_readability": "pending"
+  },
+  "comparison_boundary": {
+    "phase_7_2_8_reference_date": "2026-08-14",
+    "same_fact_ab_comparison": false,
+    "allowed_comparison": [
+      "policy_and_structure",
+      "financial_quality_leakage",
+      "label_and_zone_roles",
+      "supply_horizon_coverage",
+      "observer_holder_structure",
+      "repetition"
+    ]
+  },
+  "mutations": {
+    "telegram_replay": 0,
+    "ai_reanalysis": 0,
+    "numeric_binder_rerun": 0,
+    "validator_rerun_for_text_change": 0,
+    "renderer_rerun": 0,
+    "operating_db": 0,
+    "archive": 0,
+    "assessment": 0,
+    "pilot_state": 0,
+    "scheduled_tasks": 0,
+    "production_assist": 0
+  }
+}

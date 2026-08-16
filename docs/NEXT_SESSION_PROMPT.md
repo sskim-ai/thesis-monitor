@@ -39,8 +39,8 @@ Current contracts:
 - OHLCV structure `ohlcv-structure-v2`
 - security identity `security-identity-v2`
 - financial quality `financial-quality-taint-v2`
-- Pilot `ai-assisted-pilot-v3`, persisted runtime count KR 2/5 and US 2/5; the latest US quality
-  review failed and the count needs reconciliation
+- Pilot `ai-assisted-pilot-v3`, persisted runtime count KR 3/5 and US 2/5; the latest US quality
+  review failed and the natural KR Day 3 message review is pending Work review
 - renderer `ai-assisted-pilot-renderer-v3`
 - AI mode shadow; Production Assist disabled
 - Public Action 0.4.5, operationId 20/20
@@ -86,6 +86,14 @@ and was counted exactly once as KR Day 2/5. Experimental v3.10 retrospective or 
 not change this persisted count. Treat any next-day Pilot label as a candidate until delivery,
 archive completion, and runtime state all agree.
 
+The natural 2026-08-16 KR v3.10 packet `2026-08-16-kr-run-21-049f367f0274` passed validation,
+delivered the market plus all seven active stocks 8/8, verified 13 required archive artifacts, and
+was counted exactly once after `archive-complete.json`. Runtime state is therefore KR 3/5 and US 2/5.
+Human message quality is `pending_work_human_review`, and the packet is not eligible Production
+Assist evidence unless Work explicitly approves the persisted eight-message payload. Read
+`docs/reports/20260816-third-natural-kr-v310-operational-reconciliation.md` and its linked Preview and
+audits. Do not rerun AI, binding, validation, rendering, or Telegram delivery for this session.
+
 The first natural v3.10 US packet `2026-08-16-us-run-20-6c15d0003955` passed the automated pipeline,
 delivered 14/14, completed its archive, and was recorded exactly once, so runtime state now says US
 2/5. Human message-quality review failed: CRCL's confirmation transition is internally inconsistent,
@@ -105,12 +113,11 @@ knowledge.
 
 Next work order:
 
-1. Reconcile the persisted US 2/5 count with the failed human-quality disposition without an ad hoc
-   counter edit.
-2. Correct CRCL transition interpretation, SKHY identity-aware wording, and the US supply-routing
-   repetition under a separately approved code task.
-3. Reconcile TSM/WRD deployment identity evidence with live packet resolution.
-4. Preserve exact archives and old cohorts; do not replay Telegram.
+1. Review the exact persisted KR Day 3 market-plus-seven-stock Preview and record Work's human-quality
+   disposition separately from the operational KR 3/5 count.
+2. Do not begin Phase 7.2.9 implementation without explicit resume approval.
+3. Preserve the US 2/5 human-quality failure and KR 3/5 pending status without ad hoc counter edits.
+4. Preserve exact packets, outputs, archives, and old cohorts; do not replay Telegram.
 5. Keep Production Assist disabled until a separate explicit user decision.
 
 Before completion, run full pytest, Ruff, `git diff --check`, Knowledge checksum validation, Skill and

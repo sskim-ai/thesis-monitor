@@ -23,7 +23,7 @@ execution or an autonomous investment adviser.
 | OHLCV structure | `ohlcv-structure-v2` |
 | Investment Knowledge | `3.0` |
 | Chart Knowledge | `1.0` |
-| Pilot | `ai-assisted-pilot-v3`, persisted runtime KR 2/5 and US 2/5; latest US quality review failed |
+| Pilot | `ai-assisted-pilot-v3`, persisted runtime KR 3/5 and US 2/5; latest US review failed and latest KR review is pending |
 | Renderer | `ai-assisted-pilot-renderer-v3` |
 | Public Action | `0.4.5`, operationId 20/20 |
 | Production Assist | Disabled |
@@ -190,9 +190,11 @@ no peer number was invented. See [PEER_VALUATION.md](architecture/PEER_VALUATION
 
 ## Pilot Architecture
 
-Pilot v3 activated at KR 0/5 and US 0/5; the persisted runtime count is KR 2/5 and US 2/5. The
-2026-08-16 US session is not human-quality approved, so this count requires reconciliation before it
-is treated as an accepted second US success. The required task
+Pilot v3 activated at KR 0/5 and US 0/5; the persisted runtime count is KR 3/5 and US 2/5. The
+2026-08-16 US session is operationally counted but failed human-quality review. The natural KR
+packet `2026-08-16-kr-run-21-049f367f0274` is operationally counted exactly once as Day 3/5, while
+its human-quality status remains `pending_work_human_review`. Neither packet is currently eligible
+as Production Assist evidence. The required task
 contract is policy v3.10/schema 4/structure v2. A successful day requires Codex completion, validation
 pass, complete AI-assisted delivery, required artifact verification, and a verified atomic
 `archive-complete.json` marker. Only then is success recorded. Archive-only recovery reuses the
@@ -223,6 +225,14 @@ session is retained as a failed-quality live sample and does not count toward Pi
 
 The 2026-08-15 US session completed under v3.8 before the v3.9 deployment: validator PASS, 14/14
 AI-assisted messages sent, and archive completion. Runtime state therefore counts it as US Day 1/5.
+
+The natural 2026-08-16 KR v3.10 packet `2026-08-16-kr-run-21-049f367f0274` passed validation,
+delivered the market plus all seven active stocks 8/8, verified 13 required archive artifacts, and
+wrote `archive-complete.json` before the exactly-once Pilot record. Runtime state therefore counts it
+as KR Day 3/5. Its actual persisted Telegram payload is awaiting direct Work review, so human quality
+is not approved and Production Assist evidence eligibility remains false. See
+[the operational reconciliation](reports/20260816-third-natural-kr-v310-operational-reconciliation.md)
+and [the exact persisted preview](reports/20260816-third-natural-kr-v310-telegram-preview.md).
 The later v3.9 same-packet retrospective was archive-only and did not change that count or resend it.
 The `e2c9290` plain-language preview was also unsent experimental evidence. Broad renderer-side word
 replacement was removed because it crossed the post-validation semantic boundary; the Daily Review
@@ -232,8 +242,9 @@ The natural 2026-08-15 KR v3.9 Scheduled Task completed packet
 `2026-08-15-kr-run-19-919a670464b4`: validator PASS, the market plus seven active stocks delivered
 8/8, all required archive hashes verified, and `archive-complete.json` was written before the packet
 was recorded exactly once. Runtime state therefore counts it as KR Day 2/5. Experimental v3.10
-retrospectives did not send this payload or mutate the count. A Preview label such as KR Pilot 3/5
-would be only the next-success candidate until runtime state records another completed session.
+retrospectives did not send this payload or mutate the count. At that time a Preview label such as
+KR Pilot 3/5 was only the next-success candidate; the later natural KR session documented above is
+the event that actually advanced runtime state.
 
 Phase 7.2 production integration then deployed code commit `5f3aa5c37848092bcccf74bbc917604bebae33d4`.
 Authoritative SEC identity remediation changed exactly CORZ, GOOGL, HUT, IBM, SKHY, and WULF; a
@@ -306,9 +317,10 @@ first.
 
 ## Next Steps
 
-1. Keep `origin/main`, development checkout, and operating checkout on the same clean commit.
-2. Observe the next naturally scheduled v3.9 session; do not trigger a duplicate manual run.
-3. Review five successful sessions per market without changing policy mid-cohort for style alone.
+1. Review the persisted eight-message KR Day 3 payload; keep its human-quality status pending until
+   Work records an explicit disposition.
+2. Do not start Phase 7.2.9 implementation until Work explicitly resumes it.
+3. Preserve operational counts KR 3/5 and US 2/5 independently from human-quality disposition.
 4. Treat DATA, CALCULATION, PACKET, KNOWLEDGE_ROUTING, AI_REASONING, VALIDATION, RENDERER, and DELIVERY
    as separate failure categories.
 5. Keep Production Assist disabled until explicit user approval.
