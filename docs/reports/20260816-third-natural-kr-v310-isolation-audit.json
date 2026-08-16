@@ -37,10 +37,10 @@
     }
   },
   "scheduled_task_definition_sha256": {
-    "Thesis Monitor US Primary": "281797923e70d37639fa440b255e8e1b94e2b80fdb56462579c3e689655c3f2a",
-    "Thesis Monitor US Backup": "f87c2a65e65de49a450f21dd7ee635c23f9a0b7efb4b9251895ee2237a46e7a1",
-    "Thesis Monitor KR Primary": "c4c1e2e9de0d90a0114dab4cca29896da422ea312ceba22f1ba2393ff9c7cce4",
-    "Thesis Monitor KR Backup": "4dbccd5f79723641f96134413ebdd7fb0dff2432bc75062f00ab596128fb7689"
+    "Thesis Monitor US Primary": "28179792c052f03c6e0c5b40ffee8f029442f9d1dc97df5552056d03680c3f2a",
+    "Thesis Monitor US Backup": "f87c2a653f34f72adaf4329f51ec79bd3318fbdab14e7e4fd7c74e4990ee97a1",
+    "Thesis Monitor KR Primary": "c4c1e2e9937d99ec3d32eb444d2e13fd9a97df64a3d0e6dac017a04de869cce4",
+    "Thesis Monitor KR Backup": "4dbccd5fa08301415e48dca5b3512d76f8ae77e7102f7ea51e924ed72eea7689"
   },
   "mutations_by_reconciliation": {
     "telegram": 0,
