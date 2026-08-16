@@ -2347,7 +2347,7 @@ class ValuationSnapshotService:
                 )
             else:
                 snapshot.warnings.append(
-                    "ADR/외국 상장주식의 주당 기준을 확인하지 못해 자체 PER/PBR 계산을 보류합니다."
+                    "현재 거래 증권의 주당 기준을 확인하지 못해 자체 PER/PBR 계산을 보류합니다."
                 )
         if alpha_shares and rows:
             official_shares = next(

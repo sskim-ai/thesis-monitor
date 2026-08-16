@@ -394,7 +394,7 @@ NUMERIC_SEMANTICS = {
         "real_yield_level",
         ("pct",),
         ("미국 10년물 실질금리", "US 10-year real yield"),
-        (r"(?:미국|us).*10년물.*실질금리|real yield",),
+        (r"(?:미국|us).*(?:10년물|장기).*실질금리|real yield",),
         "percentage",
         scope="both",
     ),
@@ -402,7 +402,10 @@ NUMERIC_SEMANTICS = {
         "real_yield_change_bp",
         ("bp",),
         ("미국 10년물 실질금리 변동", "US 10-year real-yield change"),
-        (r"(?:미국|us).*10년물.*실질금리|real yield",),
+        (
+            r"(?:미국|us).*(?:10년물|장기).*실질금리.*(?:변동|change)"
+            r"|real yield.*change",
+        ),
         "signed_basis_points",
         scope="both",
     ),
@@ -656,6 +659,14 @@ NUMERIC_SEMANTICS = {
     "risk_reward_ratio": _spec(
         "risk_reward_ratio", ("x",), ("차트 손익비", "RR"),
         (r"(?:차트\s*)?손익비", r"\brr\b", r"risk.?reward"), "multiple",
+    ),
+    "previous_risk_reward_ratio": _spec(
+        "previous_risk_reward_ratio", ("x",), ("이전 차트 손익비",),
+        (r"이전.*(?:차트\s*)?손익비", r"previous.*risk.?reward"), "multiple",
+    ),
+    "current_risk_reward_ratio": _spec(
+        "current_risk_reward_ratio", ("x",), ("현재 차트 손익비",),
+        (r"현재.*(?:차트\s*)?손익비", r"current.*risk.?reward"), "multiple",
     ),
     "historical_pe_multiple": _spec(
         "historical_pe_multiple",
@@ -1038,6 +1049,18 @@ _FIELD_RULES = (
         "currency",
     ),
     NumericFieldRule(("chart_risk_reward",), r"fields\.ratio", "risk_reward_ratio", "x"),
+    NumericFieldRule(
+        ("monitoring_metric_transition",),
+        r"fields\.previous_ratio",
+        "previous_risk_reward_ratio",
+        "x",
+    ),
+    NumericFieldRule(
+        ("monitoring_metric_transition",),
+        r"fields\.current_ratio",
+        "current_risk_reward_ratio",
+        "x",
+    ),
     NumericFieldRule(("night_futures",), r"fields\.value", "futures_close", "points"),
     NumericFieldRule(
         ("night_futures",),
@@ -1208,6 +1231,31 @@ _NIGHT_FUTURES_LABELS = {
     "KRX_KOSPI200_NIGHT_FUT": "KOSPI200 야간선물",
     "KRX_KOSDAQ150_NIGHT_FUT": "KOSDAQ150 야간선물",
 }
+_MARKET_SERIES_LABELS = {
+    ("nominal_yield_level", "DGS10"): "미국 10년물 금리",
+    ("nominal_yield_change_bp", "DGS10"): "미국 10년물 금리 변동",
+    ("real_yield_level", "DFII10"): "미국 10년물 실질금리",
+    ("real_yield_change_bp", "DFII10"): "미국 10년물 실질금리 변동",
+    ("breakeven_inflation_level", "T10YIE"): "미국 기대인플레이션",
+    ("breakeven_inflation_change_bp", "T10YIE"): "미국 기대인플레이션 변동",
+    ("credit_spread_level", "BAMLH0A0HYM2"): "하이일드 신용스프레드",
+    ("credit_spread_change_bp", "BAMLH0A0HYM2"): "하이일드 신용스프레드 변동",
+    ("oil_price", "DCOILWTICO"): "WTI 유가",
+    ("oil_return_pct", "DCOILWTICO"): "WTI 등락률",
+    ("volatility_index_level", "VIXCLS"): "VIX",
+    ("volatility_return_pct", "VIXCLS"): "VIX 등락률",
+    ("fx_rate", "USDKRW"): "원/달러 환율",
+    ("fx_return_pct", "USDKRW"): "원/달러 환율 등락률",
+    ("fx_rate", "USDKRW_KR_CLOSE"): "원/달러 환율",
+    ("fx_point_change", "USDKRW_KR_CLOSE"): "원/달러 환율 변동폭",
+    ("fx_return_pct", "USDKRW_KR_CLOSE"): "원/달러 환율 등락률",
+    ("fx_rate", "JPYKRW100_KR_CLOSE"): "원/100엔 환율",
+    ("fx_point_change", "JPYKRW100_KR_CLOSE"): "원/100엔 환율 변동폭",
+    ("fx_return_pct", "JPYKRW100_KR_CLOSE"): "원/100엔 환율 등락률",
+    ("fx_rate", "EURKRW_KR_CLOSE"): "원/유로 환율",
+    ("fx_point_change", "EURKRW_KR_CLOSE"): "원/유로 환율 변동폭",
+    ("fx_return_pct", "EURKRW_KR_CLOSE"): "원/유로 환율 등락률",
+}
 _SOURCE_LABEL_SEMANTICS = {
     "forward_eps",
     "forward_pe",
@@ -1222,6 +1270,7 @@ _INSTRUMENT_LABEL_SEMANTICS = {
     "futures_close",
     "futures_point_change",
     "futures_return_pct",
+    *{semantic for semantic, _ in _MARKET_SERIES_LABELS},
 }
 
 
@@ -1237,6 +1286,9 @@ def _source_aware_label(
     semantic_type: str,
     fields: dict[str, object],
 ) -> str | None:
+    series = str(fields.get("series_code") or "")
+    if label := _MARKET_SERIES_LABELS.get((semantic_type, series)):
+        return label
     if semantic_type in {"forward_eps", "forward_pe"}:
         source = str(fields.get("forward_pe_source") or "")
         if source == "modeled_forward":

@@ -1,5 +1,6 @@
 from app.schemas.ai_review import AIDailyReviewOutput
 from app.services.ai_reasoning_quality_service import (
+    _structural_template_exception,
     normalize_decision_text,
     relational_reasoning_quality_report,
 )
@@ -109,8 +110,8 @@ def test_quality_audit_detects_substantive_repetition_without_counting_safety() 
     assert report["stock_specific_next_check_count"] == 3
     assert report["generic_next_check_count"] == 0
     assert report["section_numeric_grounding"]["AAA"]["valuation"] == 1
-    assert report["hard_checks_passed"] is True
-    assert report["deterministic_quality_gate_passed"] is True
+    assert report["hard_checks_passed"] is False
+    assert report["deterministic_quality_gate_passed"] is False
     assert report["production_assist_evidence_eligible"] is False
 
 
@@ -197,3 +198,149 @@ def test_us_quality_audit_rejects_kr_horizons_and_repeated_flow_unknowns() -> No
     assert report["hard_checks_passed"] is False
     assert report["deterministic_quality_gate_passed"] is False
     assert report["production_assist_evidence_eligible"] is False
+
+
+def test_quality_audit_rejects_five_stock_numeric_template_skeleton() -> None:
+    payload = _output().model_dump()
+    rows = []
+    for index, ticker in enumerate(("AAA", "BBB", "CCC", "DDD", "EEE"), start=1):
+        row = payload["stock_reviews"][0].copy()
+        row["ticker"] = ticker
+        row["facts_used"] = [f"fact:{ticker}"]
+        row["core_judgment"] = {
+            "text": f"{ticker} 고유 판단은 현재 PER {index}배를 확인합니다.",
+            "fact_ids": [f"fact:{ticker}"],
+        }
+        row["business_earnings"] = {
+            "text": f"{ticker} 실적 조건입니다.",
+            "fact_ids": [f"fact:{ticker}"],
+        }
+        row["valuation_analysis"] = {
+            "text": f"{ticker} valuation 조건입니다.",
+            "fact_ids": [f"fact:{ticker}"],
+        }
+        row["priority_watch"] = [f"{ticker} 감시"]
+        row["next_checks"] = [f"{ticker} 다음 확인"]
+        row["unknowns"] = [f"{ticker} 미확인"]
+        row["numeric_claims"] = [
+            {
+                "fact_id": f"fact:{ticker}",
+                "field_path": "fields.value",
+                "value": index,
+                "unit": "x",
+                "semantic_type": "pe_multiple",
+                "text_ref": "core_judgment.text",
+                "usage": f"현재 PER {index}배",
+            }
+        ]
+        rows.append(row)
+    payload["stock_reviews"] = rows
+    output = AIDailyReviewOutput.model_validate(payload)
+
+    report = relational_reasoning_quality_report(output)
+
+    assert report["template_skeleton_repeat_count"] >= 1
+    assert report["hard_checks_passed"] is False
+
+
+def test_quality_audit_classifies_required_structural_templates() -> None:
+    assert (
+        _structural_template_exception(
+            "동적 지지구간 하단 10원부터 동적 지지구간 상단 12원까지입니다.",
+            "<numeric>부터 <numeric>까지입니다.",
+        )
+        == "canonical_zone_endpoint_contract"
+    )
+    assert (
+        _structural_template_exception(
+            (
+                "당일 외국인 순매수 1주와 기관 순매도 2주, 최근 흐름은 "
+                "외국인 5일 순매수 3주와 기관 5일 순매도 4주, 중기 누적은 "
+                "외국인 20일 순매수 5주와 기관 20일 순매도 6주입니다."
+            ),
+            "numeric supply skeleton",
+        )
+        == "kr_six_horizon_numeric_supply_contract"
+    )
+
+
+def test_kr_supply_coverage_requires_numeric_claims_for_eligible_horizons() -> None:
+    payload = _output().model_dump()
+    payload["market"] = "kr"
+    semantic_types = (
+        "foreign_net_buy_qty",
+        "foreign_net_buy_qty_5d",
+        "foreign_net_buy_qty_20d",
+        "institution_net_buy_qty",
+        "institution_net_buy_qty_5d",
+        "institution_net_buy_qty_20d",
+    )
+    packet_stocks = []
+    for review in payload["stock_reviews"]:
+        ticker = review["ticker"]
+        registry = [
+            {
+                "fact_id": f"positioning:{ticker}",
+                "field_path": f"fields.{semantic_type}",
+                "semantic_type": semantic_type,
+                "prose_allowed": True,
+            }
+            for semantic_type in semantic_types
+        ]
+        packet_stocks.append({"ticker": ticker, "numeric_registry": registry})
+    output = AIDailyReviewOutput.model_validate(payload)
+
+    report = relational_reasoning_quality_report(
+        output,
+        packet={"market_context": {"numeric_registry": []}, "stocks": packet_stocks},
+    )
+
+    assert all(
+        len(item["eligible_semantics"]) == 6
+        and len(item["missing_semantics"]) == 6
+        and item["numeric_horizon_coverage_passed"] is False
+        for item in report["kr_supply_numeric_coverage"]
+    )
+    assert report["hard_checks_passed"] is False
+
+
+def test_quality_audit_checks_rendered_market_specific_heading() -> None:
+    output = _output()
+    messages = ["market", *("📊 수급\nbody" for _ in output.stock_reviews)]
+
+    report = relational_reasoning_quality_report(output, rendered_messages=messages)
+
+    heading = report["rendered_heading_quality"]
+    assert heading["expected_heading"] == "📊 거래량·포지셔닝"
+    assert heading["mismatch_count"] == 3
+    assert report["hard_checks_passed"] is False
+
+
+def test_quality_audit_checks_identity_across_final_rendered_payload() -> None:
+    output = _output()
+    packet = {
+        "market_context": {"numeric_registry": []},
+        "stocks": [
+            {
+                "ticker": review.ticker,
+                "numeric_registry": [],
+                "valuation": {"security_identity_state": "unknown"},
+            }
+            for review in output.stock_reviews
+        ],
+    }
+    messages = [
+        "market",
+        "📊 거래량·포지셔닝\nADR 가격 기준입니다.",
+        "📊 거래량·포지셔닝\n현재 거래 증권 가격 기준입니다.",
+        "📊 거래량·포지셔닝\n현재 거래 증권 가격 기준입니다.",
+    ]
+
+    report = relational_reasoning_quality_report(
+        output,
+        packet=packet,
+        rendered_messages=messages,
+    )
+
+    assert report["rendered_identity_prose_mismatch_count"] == 1
+    assert report["rendered_identity_prose_mismatches"][0]["ticker"] == "AAA"

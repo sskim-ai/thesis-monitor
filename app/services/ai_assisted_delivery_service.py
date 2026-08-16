@@ -603,6 +603,7 @@ def _render_ai_stock_message(
     target_days: int,
 ) -> str:
     market_label = "US" if market == "us" else "KR"
+    positioning_heading = "📊 거래량·포지셔닝" if market == "us" else "📊 수급"
     blocks = _deterministic_blocks(deterministic_text)
     company = blocks[0] if blocks else f"🏢 {review.ticker}"
     official = _first_block(blocks, "투자 논리:") or "투자 논리: 확인 필요"
@@ -633,7 +634,7 @@ def _render_ai_stock_message(
             f"• 신규 관찰자: {review.price_positioning.new_observer_view.strip()}\n"
             f"• 보유자: {review.price_positioning.holder_view.strip()}"
         ),
-        f"📊 수급\n{review.supply_analysis.text.strip()}",
+        f"{positioning_heading}\n{review.supply_analysis.text.strip()}",
         f"📐 Valuation\n{review.valuation_analysis.text.strip()}",
     ]
     sections.extend(deterministic_details)

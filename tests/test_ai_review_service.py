@@ -2971,7 +2971,7 @@ def test_numeric_fact_reference_is_bound_to_canonical_value_and_claim(
         draft = _valid_output(packet)
         review = draft["stock_reviews"][0]
         review["price_positioning"]["text"] = (
-            "{{numeric:price_now}}은 기업의 질과 별도인 가격 맥락입니다."
+            "{{numeric:price_now}}는 기업의 질과 별도인 가격 맥락입니다."
         )
         review["numeric_claims"] = []
         review["numeric_fact_refs"] = [
@@ -4032,6 +4032,26 @@ def test_confirmation_transition_contract_ignores_general_non_transition_comment
             "현재 증권은 ADS로 확인됐습니다.",
             "non_depositary_described_as_depositary",
         ),
+        (
+            "verified_depositary",
+            "현재 증권은 보통주입니다.",
+            "depositary_described_as_common_stock",
+        ),
+        (
+            "unknown",
+            "현재 미국 상장 증권 가격만 확인합니다.",
+            None,
+        ),
+        (
+            "unknown",
+            "ADR 가격만 확인합니다.",
+            "unverified_security_type_asserted",
+        ),
+        (
+            "conflict",
+            "현재 증권은 common stock입니다.",
+            "unverified_security_type_asserted",
+        ),
     ],
 )
 def test_security_identity_and_valuation_basis_language_are_separate(
@@ -4062,6 +4082,227 @@ def test_security_identity_and_valuation_basis_language_are_separate(
         assert errors == []
     else:
         assert any(expected_error in error for error in errors)
+
+
+def test_depositary_ratio_language_requires_value_direction_and_provenance(
+    monkeypatch,
+    tmp_path: Path,
+) -> None:
+    _settings(monkeypatch, tmp_path)
+    with Session(_engine()) as session:
+        _seed(session)
+        packet = build_ai_review_packet(session, RUN_DATE, "us")
+    assert packet is not None
+    review = _review_with_contract_text(
+        packet,
+        section="valuation_analysis",
+        text="공식 예탁비율은 확인됐지만 현재 증권 기준 배수는 보류합니다.",
+    )
+
+    missing = ai_review_service._security_identity_language_errors(
+        review.ticker,
+        {"identity_state": "verified_depositary"},
+        review,
+    )
+    verified = ai_review_service._security_identity_language_errors(
+        review.ticker,
+        {
+            "identity_state": "verified_depositary",
+            "identity_provenance": {
+                "adr_ratio_direction": "ordinary_shares_per_adr",
+                "evidence": {
+                    "adr_ratio": 0.1,
+                    "adr_ratio_direction": "ordinary_shares_per_adr",
+                },
+                "field_provenance": {
+                    "adr_ratio": {
+                        "value": 0.1,
+                        "verification_status": "verified",
+                        "source_url": "https://example.test/filing",
+                    },
+                    "adr_ratio_direction": {
+                        "value": "ordinary_shares_per_adr",
+                        "verification_status": "verified",
+                        "source_url": "https://example.test/filing",
+                    },
+                },
+            },
+        },
+        review,
+    )
+
+    assert any(
+        "unverified_depositary_ratio_described_as_verified" in error
+        for error in missing
+    )
+    assert verified == []
+
+
+def _review_with_rr_transition_claims(
+    review: AIStockReview,
+    *,
+    previous_usage: str,
+    current_usage: str,
+) -> AIStockReview:
+    value = review.model_dump()
+    value["numeric_claims"] = [
+        {
+            "fact_id": "monitoring:risk_reward_transition",
+            "field_path": "fields.previous_ratio",
+            "value": 2.0,
+            "unit": "x",
+            "semantic_type": "previous_risk_reward_ratio",
+            "text_ref": "price_positioning.text",
+            "usage": previous_usage,
+        },
+        {
+            "fact_id": "monitoring:risk_reward_transition",
+            "field_path": "fields.current_ratio",
+            "value": 3.0,
+            "unit": "x",
+            "semantic_type": "current_risk_reward_ratio",
+            "text_ref": "price_positioning.text",
+            "usage": current_usage,
+        },
+    ]
+    return AIStockReview.model_validate(value)
+
+
+def test_risk_reward_comparison_requires_occurrence_level_previous_and_current(
+    monkeypatch,
+    tmp_path: Path,
+) -> None:
+    _settings(monkeypatch, tmp_path)
+    with Session(_engine()) as session:
+        _seed(session)
+        packet = build_ai_review_packet(session, RUN_DATE, "us")
+    assert packet is not None
+    review = _review_with_contract_text(
+        packet,
+        section="price_positioning",
+        text="차트 손익비 3.45배의 개선이 확인됐습니다.",
+    )
+
+    errors = ai_review_service._risk_reward_comparative_errors(
+        review.ticker,
+        {"delta": {"rr_previous": 2.0, "rr_current": 3.0}},
+        review,
+    )
+
+    assert any("unsupported_risk_reward_comparison" in error for error in errors)
+
+
+def test_risk_reward_comparison_accepts_bound_previous_current_direction(
+    monkeypatch,
+    tmp_path: Path,
+) -> None:
+    _settings(monkeypatch, tmp_path)
+    with Session(_engine()) as session:
+        _seed(session)
+        packet = build_ai_review_packet(session, RUN_DATE, "us")
+    assert packet is not None
+    previous_usage = "이전 차트 손익비 2배"
+    current_usage = "현재 차트 손익비 3배"
+    review = _review_with_contract_text(
+        packet,
+        section="price_positioning",
+        text=f"{previous_usage}에서 {current_usage}로 개선됐습니다.",
+    )
+    review = _review_with_rr_transition_claims(
+        review,
+        previous_usage=previous_usage,
+        current_usage=current_usage,
+    )
+
+    errors = ai_review_service._risk_reward_comparative_errors(
+        review.ticker,
+        {"delta": {"rr_previous": 2.0, "rr_current": 3.0}},
+        review,
+    )
+
+    assert errors == []
+
+
+def test_risk_reward_comparison_rejects_opposite_direction(
+    monkeypatch,
+    tmp_path: Path,
+) -> None:
+    _settings(monkeypatch, tmp_path)
+    with Session(_engine()) as session:
+        _seed(session)
+        packet = build_ai_review_packet(session, RUN_DATE, "us")
+    assert packet is not None
+    previous_usage = "이전 차트 손익비 2배"
+    current_usage = "현재 차트 손익비 3배"
+    review = _review_with_contract_text(
+        packet,
+        section="price_positioning",
+        text=f"{previous_usage}에서 {current_usage}로 악화됐습니다.",
+    )
+    review = _review_with_rr_transition_claims(
+        review,
+        previous_usage=previous_usage,
+        current_usage=current_usage,
+    )
+
+    errors = ai_review_service._risk_reward_comparative_errors(
+        review.ticker,
+        {"delta": {"rr_previous": 2.0, "rr_current": 3.0}},
+        review,
+    )
+
+    assert any("risk_reward_comparison_direction_mismatch" in error for error in errors)
+
+
+def test_risk_reward_comparison_ignores_unrelated_later_sentence(
+    monkeypatch,
+    tmp_path: Path,
+) -> None:
+    _settings(monkeypatch, tmp_path)
+    with Session(_engine()) as session:
+        _seed(session)
+        packet = build_ai_review_packet(session, RUN_DATE, "us")
+    assert packet is not None
+    review = _review_with_contract_text(
+        packet,
+        section="price_positioning",
+        text="현재 차트 손익비를 확인합니다. 다음 실적의 이익 개선은 별도 조건입니다.",
+    )
+
+    errors = ai_review_service._risk_reward_comparative_errors(
+        review.ticker,
+        {"delta": {"rr_previous": 2.0, "rr_current": 3.0}},
+        review,
+    )
+
+    assert errors == []
+
+
+def test_risk_reward_comparison_ignores_other_metric_in_same_sentence(
+    monkeypatch,
+    tmp_path: Path,
+) -> None:
+    _settings(monkeypatch, tmp_path)
+    with Session(_engine()) as session:
+        _seed(session)
+        packet = build_ai_review_packet(session, RUN_DATE, "us")
+    assert packet is not None
+    review = _review_with_contract_text(
+        packet,
+        section="price_positioning",
+        text=(
+            "낮은 현재 차트 손익비를 감안해 이익률 회복과 "
+            "가격 여유를 별도로 확인합니다."
+        ),
+    )
+
+    errors = ai_review_service._risk_reward_comparative_errors(
+        review.ticker,
+        {"delta": {"rr_previous": 2.0, "rr_current": 3.0}},
+        review,
+    )
+
+    assert errors == []
 
 
 @pytest.mark.parametrize(
@@ -4232,6 +4473,25 @@ def test_authoritative_ads_identity_replaces_legacy_packet_compatibility_fields(
         valuation["security_identity_provenance"]["adr_ratio_direction"]
         == "ordinary_shares_per_adr"
     )
+    identity_fact = next(
+        item
+        for item in packet["stocks"][0]["fact_catalog"]
+        if item["fact_id"] == "security_identity:current"
+    )
+    basis_fact = next(
+        item
+        for item in packet["stocks"][0]["fact_catalog"]
+        if item["fact_id"] == "security_basis:current"
+    )
+    assert identity_fact["fields"]["depositary_ratio"] == 0.1
+    assert (
+        identity_fact["fields"]["depositary_ratio_direction"]
+        == "ordinary_shares_per_adr"
+    )
+    assert identity_fact["fields"]["depositary_ratio_source"].startswith(
+        "https://www.sec.gov/"
+    )
+    assert basis_fact["fields"]["depositary_ratio_state"] == "verified"
 
 
 def test_market_hard_fails_zero_claims_with_four_eligible_anchors(

@@ -963,7 +963,7 @@ def _data_cautions(
         cautions.append(
             "가격 통화와 주당 실적 기준 통화가 달라 자체 PER/PBR 계산을 보류했습니다."
             if "currency_mismatch" in basis_statuses
-            else "ADR/외국 상장주식의 주당 기준을 확인하지 못해 자체 PER/PBR 계산을 보류했습니다."
+            else "현재 거래 증권의 주당 기준을 확인하지 못해 자체 PER/PBR 계산을 보류했습니다."
         )
     elif "missing_adr_ratio" in reasons and not preliminary_ttm_caution:
         cautions.append("주식 변환 비율이 확인되지 않아 일부 주당 Valuation 계산을 보류했습니다.")

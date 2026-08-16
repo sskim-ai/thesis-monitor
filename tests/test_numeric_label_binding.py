@@ -197,6 +197,129 @@ def test_placeholder_contract_binds_complete_stock_numeric_phrases() -> None:
 
 
 @pytest.mark.parametrize(
+    ("field_path", "role", "expected_role"),
+    [
+        ("fields.zone_low", None, "lower"),
+        ("fields.zone_low", "upper", "lower"),
+        ("fields.zone_high", None, "upper"),
+        ("fields.zone_high", "lower", "upper"),
+    ],
+)
+def test_zone_endpoint_role_is_mandatory_and_directional(
+    field_path: str,
+    role: str | None,
+    expected_role: str,
+) -> None:
+    fact = _fact(
+        "chart:zone",
+        "chart_support_zone",
+        {"zone_low": 19.44, "zone_high": 20.34, "currency": "USD"},
+    )
+
+    result = _bind_stock(
+        [fact],
+        "{{numeric:zone}}",
+        [_ref("zone", "chart:zone", field_path, role=role)],
+    )
+
+    assert any(
+        f"numeric_fact_ref_zone_role_mismatch:zone:core_judgment.text:"
+        f"support_zone_price:{role or 'value'}:{expected_role}" in error
+        for error in result.errors
+    )
+    assert result.report["label_quality"]["zone_role_mismatch_count"] == 1
+
+
+def test_single_pivot_rejects_zone_role_and_binds_without_one() -> None:
+    fact = _fact(
+        "chart:invalidation",
+        "chart_invalidation",
+        {"price": 18.5, "currency": "USD"},
+    )
+    invalid = _bind_stock(
+        [fact],
+        "{{numeric:pivot}}",
+        [_ref("pivot", "chart:invalidation", "fields.price", role="lower")],
+    )
+    valid = _bind_stock(
+        [fact],
+        "{{numeric:pivot}}",
+        [_ref("pivot", "chart:invalidation", "fields.price")],
+    )
+
+    assert any("numeric_fact_ref_unexpected_role" in error for error in invalid.errors)
+    assert valid.errors == ()
+    assert "차트 무효화 가격 $18.5" in valid.output["stock_reviews"][0]["core_judgment"]["text"]
+
+
+def test_bound_korean_numeric_postposition_fails_closed() -> None:
+    fact = _fact(
+        "earnings",
+        "earnings",
+        {"revenue": {"value": 60_542_600_000_000, "currency": "KRW"}},
+    )
+
+    invalid = _bind_stock(
+        [fact],
+        "{{numeric:revenue}}와 다른 값을 비교합니다.",
+        [_ref("revenue", "earnings", "fields.revenue.value")],
+    )
+    valid = _bind_stock(
+        [fact],
+        "{{numeric:revenue}}과 다른 값을 비교합니다.",
+        [_ref("revenue", "earnings", "fields.revenue.value")],
+    )
+
+    assert any("numeric_fact_ref_postposition_mismatch" in error for error in invalid.errors)
+    assert valid.errors == ()
+    assert "60조5,426억원과" in valid.output["stock_reviews"][0]["core_judgment"]["text"]
+
+
+def test_bound_currency_numeric_postposition_uses_spoken_unit() -> None:
+    fact = _fact(
+        "price",
+        "price",
+        {"current_price": 345.9, "currency": "USD"},
+    )
+
+    invalid = _bind_stock(
+        [fact],
+        "{{numeric:price}}은 현재 기준입니다.",
+        [_ref("price", "price", "fields.current_price")],
+    )
+    valid = _bind_stock(
+        [fact],
+        "{{numeric:price}}는 현재 기준입니다.",
+        [_ref("price", "price", "fields.current_price")],
+    )
+
+    assert any("numeric_fact_ref_postposition_mismatch" in error for error in invalid.errors)
+    assert valid.errors == ()
+    assert "$345.9는" in valid.output["stock_reviews"][0]["core_judgment"]["text"]
+
+
+def test_bound_numeric_copula_rejects_subject_particle_connective() -> None:
+    fact = _fact(
+        "chart:risk_reward",
+        "chart_risk_reward",
+        {"ratio": 1.75, "currency": "USD"},
+    )
+    valid = _bind_stock(
+        [fact],
+        "{{numeric:rr}}이며 현재 구조를 보여줍니다.",
+        [_ref("rr", "chart:risk_reward", "fields.ratio")],
+    )
+    invalid = _bind_stock(
+        [fact],
+        "{{numeric:rr}}가며 현재 구조를 보여줍니다.",
+        [_ref("rr", "chart:risk_reward", "fields.ratio")],
+    )
+
+    assert valid.errors == ()
+    assert any("numeric_fact_ref_postposition_mismatch" in error for error in invalid.errors)
+
+
+@pytest.mark.parametrize(
     ("fact", "field_path", "authored_label"),
     [
         (
@@ -598,6 +721,72 @@ def test_market_index_identity_selects_canonical_label(
 
     assert result.errors == ()
     assert result.output["market_review"]["core_judgment"]["text"] == expected
+
+
+@pytest.mark.parametrize(
+    ("fact_type", "series_code", "field_path", "value", "expected"),
+    [
+        (
+            "market_real_yield",
+            "DFII10",
+            "fields.level_pct",
+            2.42,
+            "미국 10년물 실질금리 2.4%",
+        ),
+        (
+            "market_real_yield",
+            "DFII10",
+            "fields.change_bp",
+            -3.0,
+            "미국 10년물 실질금리 변동 -3bp",
+        ),
+        (
+            "market_fx",
+            "USDKRW",
+            "fields.change_pct",
+            0.26,
+            "원/달러 환율 등락률 +0.3%",
+        ),
+    ],
+)
+def test_market_series_identity_owns_level_and_change_labels(
+    fact_type: str,
+    series_code: str,
+    field_path: str,
+    value: float,
+    expected: str,
+) -> None:
+    field = field_path.removeprefix("fields.")
+    fact = _fact(
+        "market:series",
+        fact_type,
+        {"series_code": series_code, field: value},
+    )
+
+    result = _bind_market(
+        [fact],
+        "{{numeric:value}}",
+        [_ref("value", "market:series", field_path)],
+    )
+
+    assert result.errors == ()
+    assert result.output["market_review"]["core_judgment"]["text"] == expected
+
+
+def test_authored_real_yield_synonym_before_full_phrase_is_rejected() -> None:
+    fact = _fact(
+        "market:real-yield",
+        "market_real_yield",
+        {"series_code": "DFII10", "change_bp": -3.0},
+    )
+
+    result = _bind_market(
+        [fact],
+        "미국 장기 실질금리 변동 {{numeric:change}}",
+        [_ref("change", "market:real-yield", "fields.change_bp")],
+    )
+
+    assert any("numeric_fact_ref_redundant_authored_label" in error for error in result.errors)
 
 
 def test_unknown_index_does_not_fall_back_to_sp500() -> None:

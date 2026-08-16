@@ -202,6 +202,32 @@ def test_stock_renderer_preserves_validated_user_text_without_semantic_rewrite()
     assert "기준 테넌트" not in rendered
 
 
+@pytest.mark.parametrize(
+    ("market", "expected", "forbidden"),
+    [
+        ("kr", "📊 수급", "📊 거래량·포지셔닝"),
+        ("us", "📊 거래량·포지셔닝", "📊 수급"),
+    ],
+)
+def test_stock_renderer_uses_market_specific_positioning_heading(
+    market: str,
+    expected: str,
+    forbidden: str,
+) -> None:
+    review = AIStockReview.model_validate(_output()["stock_reviews"][0])
+
+    rendered = _render_ai_stock_message(
+        "🏢 Pilot Corp(PILOT)\n\n투자 논리: 유지",
+        review,
+        market=market,
+        pilot_day=1,
+        target_days=5,
+    )
+
+    assert expected in rendered
+    assert forbidden not in rendered
+
+
 def _seed_deliveries(session: Session, *, status: str = "pending") -> None:
     session.add(
         NotificationDelivery(

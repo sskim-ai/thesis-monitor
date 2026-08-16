@@ -1657,6 +1657,31 @@ def _fact_catalog(
     ) or "unknown"
     period = str(valuation.get("latest_earnings_period") or "latest")
     identity_state = str(valuation.get("security_identity_state") or IDENTITY_UNKNOWN)
+    identity_provenance = _dict(valuation.get("security_identity_provenance"))
+    identity_evidence = _dict(identity_provenance.get("evidence"))
+    identity_field_provenance = _dict(identity_provenance.get("field_provenance"))
+    ratio = valuation.get("security_identity_selected_adr_ratio")
+    if not isinstance(ratio, (int, float)):
+        ratio = identity_evidence.get("adr_ratio")
+    ratio_direction = valuation.get("security_identity_adr_ratio_direction")
+    if not ratio_direction:
+        ratio_direction = identity_evidence.get("adr_ratio_direction")
+    ratio_provenance = _dict(identity_field_provenance.get("adr_ratio"))
+    direction_provenance = _dict(
+        identity_field_provenance.get("adr_ratio_direction")
+    )
+    ratio_verified = bool(
+        identity_state == VERIFIED_DEPOSITARY
+        and isinstance(ratio, (int, float))
+        and float(ratio) > 0
+        and ratio_direction
+        and all(
+            item.get("verification_status") == "verified"
+            and item.get("source_tier") == "tier_a_authoritative"
+            and (item.get("source_url") or item.get("source_reference"))
+            for item in (ratio_provenance, direction_provenance)
+        )
+    )
     facts.append(
         {
             "fact_id": "security_identity:current",
@@ -1706,13 +1731,16 @@ def _fact_catalog(
                 ),
                 "depositary_ratio": valuation.get(
                     "security_identity_selected_adr_ratio"
-                ),
+                ) if not ratio_verified else ratio,
                 "depositary_ratio_source": valuation.get(
                     "security_identity_selected_adr_ratio_source"
+                ) if not ratio_verified else (
+                    ratio_provenance.get("source_url")
+                    or ratio_provenance.get("source_reference")
                 ),
                 "depositary_ratio_direction": valuation.get(
                     "security_identity_adr_ratio_direction"
-                ),
+                ) if not ratio_verified else ratio_direction,
             },
             "prose_eligible": True,
             "interpretation_eligible": True,
@@ -1740,12 +1768,7 @@ def _fact_catalog(
                 "security_identity_state": identity_state,
                 "depositary_ratio_state": (
                     "verified"
-                    if identity_state == VERIFIED_DEPOSITARY
-                    and isinstance(
-                        valuation.get("security_identity_selected_adr_ratio"),
-                        (int, float),
-                    )
-                    and valuation.get("security_identity_adr_ratio_direction")
+                    if ratio_verified
                     else "not_applicable"
                     if identity_state == VERIFIED_NON_DEPOSITARY
                     else "unknown"
@@ -1822,6 +1845,27 @@ def _fact_catalog(
                 "prose_eligible": True,
                 "interpretation_eligible": True,
                 "numeric_registry_eligible": False,
+            }
+        )
+    rr_previous = _number(monitoring_delta.get("rr_previous"))
+    rr_current = _number(monitoring_delta.get("rr_current"))
+    if rr_previous is not None and rr_current is not None:
+        facts.append(
+            {
+                "fact_id": "monitoring:risk_reward_transition",
+                "fact_type": "monitoring_metric_transition",
+                "as_of_date": str(
+                    _dict(current_monitoring.get("price_structure")).get("as_of_date")
+                    or assessment.assessment_date.isoformat()
+                ),
+                "source": "deterministic_monitoring_state",
+                "fields": {
+                    "previous_ratio": rr_previous,
+                    "current_ratio": rr_current,
+                    "change_state": monitoring_delta.get("rr_change"),
+                },
+                "prose_eligible": True,
+                "interpretation_eligible": True,
             }
         )
     if financial_quality:
@@ -3359,6 +3403,19 @@ _NON_DEPOSITARY_CALLED_DEPOSITARY = re.compile(
     r"|(?:ADR|ADS|예탁증권).{0,12}(?:입니다|이다|임|로\s*확인))",
     re.IGNORECASE,
 )
+_DEPOSITARY_CALLED_COMMON_STOCK = re.compile(
+    r"(?:현재\s*)?(?:증권|주식|종목)?.{0,12}(?:보통주|common\s+(?:stock|share))"
+    r".{0,12}(?:입니다|이다|임|로\s*확인)?",
+    re.IGNORECASE,
+)
+_EXPLICIT_SECURITY_TYPE_LANGUAGE = re.compile(
+    r"(?:\bADR\b|\bADS\b|예탁증권|보통주|common\s+(?:stock|share)|외국\s*상장주식)",
+    re.IGNORECASE,
+)
+_VERIFIED_DEPOSITARY_RATIO_LANGUAGE = re.compile(
+    r"(?:공식|검증된|확인된).{0,12}(?:예탁)?비율|(?:예탁)?비율.{0,12}(?:검증|확인)",
+    re.IGNORECASE,
+)
 _US_KR_SUPPLY_HORIZON_LANGUAGE = re.compile(
     r"(?:\b(?:1|5|20)\s*일(?:간)?\b.{0,24}(?:투자주체|외국인|기관|수급|순매수|순매도)"
     r"|당일.{0,8}단기.{0,8}중기.{0,16}(?:투자주체|수급|순매수|순매도))",
@@ -3372,9 +3429,39 @@ _INVESTOR_FLOW_LANGUAGE = re.compile(
 
 def _security_identity_language_errors(
     ticker: str,
-    identity_state: str,
+    identity_value: str | dict[str, object],
     review: AIStockReview,
 ) -> list[str]:
+    identity = identity_value if isinstance(identity_value, dict) else {}
+    identity_state = str(
+        identity.get("identity_state") if identity else identity_value
+    )
+    identity_provenance = _dict(identity.get("identity_provenance"))
+    identity_evidence = _dict(identity_provenance.get("evidence"))
+    field_provenance = _dict(identity_provenance.get("field_provenance"))
+    ratio_fact = _dict(field_provenance.get("adr_ratio"))
+    direction_fact = _dict(field_provenance.get("adr_ratio_direction"))
+    ratio = _number(
+        identity.get("selected_adr_ratio") or identity_evidence.get("adr_ratio")
+    )
+    ratio_direction = str(
+        identity.get("adr_ratio_direction")
+        or identity_provenance.get("adr_ratio_direction")
+        or identity_evidence.get("adr_ratio_direction")
+        or ""
+    )
+    ratio_verified = bool(
+        identity_state == VERIFIED_DEPOSITARY
+        and ratio is not None
+        and ratio > 0
+        and ratio_direction == "ordinary_shares_per_adr"
+        and ratio_fact.get("verification_status") == "verified"
+        and direction_fact.get("verification_status") == "verified"
+        and _number(ratio_fact.get("value")) == ratio
+        and direction_fact.get("value") == ratio_direction
+        and ratio_fact.get("source_url")
+        and direction_fact.get("source_url")
+    )
     errors: list[str] = []
     for text_ref, text in _prose_fields(review).items():
         if (
@@ -3398,6 +3485,99 @@ def _security_identity_language_errors(
             errors.append(
                 f"{ticker}:non_depositary_described_as_depositary:{text_ref}"
             )
+        if (
+            identity_state == VERIFIED_DEPOSITARY
+            and _DEPOSITARY_CALLED_COMMON_STOCK.search(text)
+        ):
+            errors.append(
+                f"{ticker}:depositary_described_as_common_stock:{text_ref}"
+            )
+        if (
+            identity_state in {IDENTITY_CONFLICT, IDENTITY_UNKNOWN}
+            and _EXPLICIT_SECURITY_TYPE_LANGUAGE.search(text)
+        ):
+            errors.append(
+                f"{ticker}:unverified_security_type_asserted:{text_ref}"
+            )
+        if (
+            not ratio_verified
+            and _VERIFIED_DEPOSITARY_RATIO_LANGUAGE.search(text)
+        ):
+            errors.append(
+                f"{ticker}:unverified_depositary_ratio_described_as_verified:{text_ref}"
+            )
+    return list(dict.fromkeys(errors))
+
+
+_RR_LANGUAGE = re.compile(r"(?:차트\s*)?손익비|\bRR\b|risk.?reward", re.IGNORECASE)
+_POSITIVE_COMPARISON = re.compile(r"개선|상승|확대|회복")
+_NEGATIVE_COMPARISON = re.compile(r"악화|하락|축소|둔화")
+_OTHER_COMPARATIVE_SUBJECT = re.compile(
+    r"이익률|마진|매출|가격|거래량|실적|수급|현금흐름|재고|가동률|수익성"
+)
+
+
+def _risk_reward_comparative_errors(
+    ticker: str,
+    monitoring_state: dict[str, object],
+    review: AIStockReview,
+) -> list[str]:
+    delta = _dict(monitoring_state.get("delta"))
+    previous = _number(delta.get("rr_previous"))
+    current = _number(delta.get("rr_current"))
+    errors: list[str] = []
+    for text_ref, text in _prose_fields(review).items():
+        for sentence in re.split(r"(?<=[.!?])\s+|\n+", text):
+            mentions = list(_RR_LANGUAGE.finditer(sentence))
+            if not mentions:
+                continue
+            comparison_matches = [
+                *(('positive', match) for match in _POSITIVE_COMPARISON.finditer(sentence)),
+                *(('negative', match) for match in _NEGATIVE_COMPARISON.finditer(sentence)),
+            ]
+            local_directions = {
+                direction
+                for direction, comparison in comparison_matches
+                if any(
+                    abs(comparison.start() - mention.end()) <= 32
+                    and not _OTHER_COMPARATIVE_SUBJECT.search(
+                        sentence[
+                            min(comparison.end(), mention.end()) : max(
+                                comparison.start(), mention.start()
+                            )
+                        ]
+                    )
+                    for mention in mentions
+                )
+            }
+            if not local_directions:
+                continue
+            transition_claim_paths = {
+                claim.field_path
+                for claim in review.numeric_claims
+                if claim.text_ref == text_ref
+                and claim.fact_id == "monitoring:risk_reward_transition"
+                and claim.usage in sentence
+            }
+            required = {"fields.previous_ratio", "fields.current_ratio"}
+            if not required.issubset(transition_claim_paths):
+                errors.append(
+                    f"{ticker}:unsupported_risk_reward_comparison:{text_ref}"
+                )
+                continue
+            if previous is None or current is None:
+                errors.append(
+                    f"{ticker}:risk_reward_comparison_lineage_missing:{text_ref}"
+                )
+                continue
+            if (
+                "positive" in local_directions and current <= previous
+            ) or (
+                "negative" in local_directions and current >= previous
+            ):
+                errors.append(
+                    f"{ticker}:risk_reward_comparison_direction_mismatch:{text_ref}"
+                )
     return list(dict.fromkeys(errors))
 
 
@@ -3486,11 +3666,16 @@ def _validate_stock_review(
     identity_contract_present = bool(
         valuation.get("security_identity_decision_version")
     )
-    errors.extend(
-        _security_identity_language_errors(review.ticker, identity_state, review)
-    )
+    errors.extend(_security_identity_language_errors(review.ticker, identity, review))
     errors.extend(
         _confirmation_transition_errors(
+            review.ticker,
+            _dict(stock.get("monitoring_state")),
+            review,
+        )
+    )
+    errors.extend(
+        _risk_reward_comparative_errors(
             review.ticker,
             _dict(stock.get("monitoring_state")),
             review,

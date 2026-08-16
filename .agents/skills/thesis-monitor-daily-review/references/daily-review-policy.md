@@ -67,6 +67,9 @@ written futures product or return label. Context such as `TWD 기준인 {{numeri
 when it does not duplicate the registry label. A redundant authored label, unknown forward source,
 unknown market instrument, or source/instrument label mismatch is a hard failure; remove or correct
 the reference rather than rewriting the bound prose after validation.
+Every zone endpoint must use its exact `lower` or `upper` reference role so the bound phrase says
+하단 or 상단. A missing, duplicated, or reversed endpoint role is a hard failure; a single pivot is
+not a zone endpoint and must not receive a role.
 
 Hard deterministic warnings remain visible in the comparison record even when the AI view differs. Shadow output never mutates official state or Telegram.
 
@@ -74,11 +77,17 @@ Confirmation lifecycle language uses `monitoring_state.delta.confirmation_transi
 matching `monitoring:confirmation_transition` fact as its sole transition source. Preserve the
 recorded previous state, current state, and direction in every section; do not turn a prior
 `failed_breakout` into the current state when the canonical transition ends at `not_reached`.
+Directional language for RR or another monitoring metric requires that metric's canonical
+previous/current pair or registered delta. A current value alone supports no claim of improvement,
+deterioration, rise, fall, expansion, contraction, recovery, or slowdown.
 
 Security identity and valuation basis are separate. Use `security_identity:current` to state whether
 the security itself is a verified common share or depositary security. Use `security_basis:current`
 for current-security denominator, share, and currency basis. A verified ADS identity may coexist
 with withheld multiples; describe the specific basis gap without calling the identity unverified.
+When identity is `unknown` or `conflict`, use neutral security wording and do not assert ADR, ADS,
+common stock, or ordinary-share status. A depositary ratio is verified only with value, direction,
+and authoritative source provenance.
 
 Supply routing is market-specific. KR 1-day/5-day/20-day foreign and institutional horizons are
 usable only when those canonical KR facts exist. US reviews may use verified volume,
@@ -93,7 +102,7 @@ The compact policy is not the complete investment framework. Use `knowledge-inde
 
 Use canonical `fact_catalog` objects only. Link every interpretation to `fact_ids`. Contract profitability, customer mix, FCF, inventory, ROIC, ADR conversion, and other absent facts stay Unknown.
 
-Every investment-related number starts as a draft `{{numeric:ref_id}}` placeholder plus `numeric_fact_refs` containing only `ref_id`, `fact_id`, `field_path`, exact prose `text_ref`, and optional lower/upper role. The backend binds the canonical value, unit, semantic, source-aware label, approved formatter, user text, and final `numeric_claims`; the model does not transcribe the same number twice. A generated claim covers only its exact prose occurrence, and a number found elsewhere in the packet or another prose field is not interchangeable with the referenced semantic field.
+Every investment-related number starts as a draft `{{numeric:ref_id}}` placeholder plus `numeric_fact_refs` containing only `ref_id`, `fact_id`, `field_path`, exact prose `text_ref`, and the mandatory exact lower/upper role for zone endpoints. The backend binds the canonical value, unit, semantic, source-aware label, endpoint role, approved formatter, user text, and final `numeric_claims`; the model does not transcribe the same number twice. A generated claim covers only its exact prose occurrence, and a number found elsewhere in the packet or another prose field is not interchangeable with the referenced semantic field. Do not attach an unchecked Korean conjunction directly to a placeholder; use punctuation, separate clauses, or a grammatically verified postposition.
 
 Numeric grounding is fail-closed during the pilot. When a market or stock has at least four registered, prose-allowed numeric anchors, an output with zero numeric claims is rejected. This is not a quota for sparse packets: unavailable or unsafe numbers remain Unknown. When numbers are used, connect value to comparison, meaning, and the investment question instead of listing metrics without interpretation.
 

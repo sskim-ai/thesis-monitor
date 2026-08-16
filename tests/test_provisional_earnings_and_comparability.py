@@ -900,6 +900,24 @@ def test_user_caution_hides_internal_adr_basis_status() -> None:
     assert "currency_mismatch" not in cautions[0]
 
 
+def test_unknown_security_basis_caution_stays_identity_neutral() -> None:
+    snapshot = ValuationSnapshot(
+        trailing_pe_basis_status="security_basis_mismatch",
+        price_to_book_basis_status="insufficient_metadata",
+        valuation_calculation_warning=True,
+    )
+
+    cautions = _data_cautions(
+        snapshot.model_dump(),
+        {"reason_codes": ["per_share_basis_insufficient"]},
+    )
+
+    assert cautions == [
+        "현재 거래 증권의 주당 기준을 확인하지 못해 자체 PER/PBR 계산을 보류했습니다."
+    ]
+    assert "ADR" not in cautions[0]
+
+
 def test_adr_unknown_share_count_basis_blocks_pbr_independently_of_pe() -> None:
     rows = [
         _with_per_share_metadata(

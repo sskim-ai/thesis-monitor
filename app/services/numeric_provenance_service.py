@@ -18,6 +18,7 @@ _PLACEHOLDER = re.compile(r"\{\{numeric:([A-Za-z][A-Za-z0-9_-]{0,63})\}\}")
 _ANY_PLACEHOLDER = re.compile(r"\{\{numeric:[^}]*\}\}")
 _LABEL_SPACE = re.compile(r"\s+")
 _KOREAN_PARTICLE = r"(?:은|는|이|가|을|를|와|과)?"
+_ZONE_ROLE_PATH = re.compile(r"(?:^|\.)(?:zone|support_zone|box)_(low|high)$")
 
 
 @dataclass(frozen=True)
@@ -85,6 +86,13 @@ def _canonical_label(source: dict[str, object], role: str) -> str | None:
     return selected
 
 
+def expected_numeric_role(source: dict[str, object]) -> str | None:
+    match = _ZONE_ROLE_PATH.search(str(source.get("field_path") or ""))
+    if match is None:
+        return None
+    return "lower" if match.group(1) == "low" else "upper"
+
+
 def _normalized_label(value: str) -> str:
     return _LABEL_SPACE.sub(" ", value.strip()).casefold()
 
@@ -127,13 +135,89 @@ def redundant_numeric_label_before(
             flags=re.IGNORECASE,
         ):
             return True
+    spec = semantic_spec(str(source.get("semantic_type") or ""))
+    if spec is not None:
+        tail = text[:marker_start].rstrip()[-96:]
+        for pattern in spec.usage_patterns:
+            if re.search(
+                rf"(?:^|[\s,;:()\[\]/])(?:{pattern}){_KOREAN_PARTICLE}\s*$",
+                tail,
+                flags=re.IGNORECASE,
+            ):
+                return True
     return False
+
+
+def _display_has_final_consonant(display: str) -> bool | None:
+    normalized = display.strip()
+    if not normalized:
+        return None
+    hangul_suffix = re.search(r"([가-힣])$", normalized)
+    if hangul_suffix is not None:
+        return (ord(hangul_suffix.group(1)) - ord("가")) % 28 != 0
+    if normalized.endswith("%"):
+        return False  # 퍼센트
+    if re.search(r"bp$", normalized, flags=re.IGNORECASE):
+        return False  # 비피
+    if normalized.startswith(("$", "NT$")):
+        return False  # 달러
+    multiple_suffix = re.search(r"(?:x|배)$", normalized, flags=re.IGNORECASE)
+    if multiple_suffix is not None:
+        return False  # 배
+    unit_letter = re.search(r"([A-Za-z])$", normalized)
+    if unit_letter is not None:
+        return unit_letter.group(1).upper() in {"F", "L", "M", "N", "R", "S", "X"}
+    digit = re.search(r"([0-9])$", normalized)
+    if digit is not None:
+        return digit.group(1) in {"0", "1", "3", "6", "7", "8"}
+    return None
+
+
+def expected_numeric_postposition(display: str, particle: str) -> str | None:
+    has_final_consonant = _display_has_final_consonant(display)
+    if has_final_consonant is None or particle not in "은는이가을를와과":
+        return None
+    return {
+        "은": "은" if has_final_consonant else "는",
+        "는": "은" if has_final_consonant else "는",
+        "이": "이" if has_final_consonant else "가",
+        "가": "이" if has_final_consonant else "가",
+        "을": "을" if has_final_consonant else "를",
+        "를": "을" if has_final_consonant else "를",
+        "와": "과" if has_final_consonant else "와",
+        "과": "과" if has_final_consonant else "와",
+    }[particle]
+
+
+def numeric_conjunction_error(text: str, usage: str, display: str) -> bool:
+    start = text.find(usage)
+    if start < 0:
+        return False
+    suffix = text[start + len(usage) :]
+    if suffix.startswith(("가며", "가고")):
+        return True
+    if suffix.startswith(("이며", "이고")):
+        return False
+    particle = re.match(r"은|는|이|가|을|를|와|과", suffix)
+    if particle is None:
+        return False
+    expected = expected_numeric_postposition(display, particle.group(0))
+    if expected is None:
+        return False
+    return particle.group(0) != expected
 
 
 def canonical_numeric_label_mismatch(
     source: dict[str, object],
     usage: str,
 ) -> str | None:
+    if role := expected_numeric_role(source):
+        expected = _normalized_label(str(_canonical_label(source, role) or ""))
+        normalized_usage = _normalized_label(usage)
+        if expected and not (
+            normalized_usage == expected or normalized_usage.startswith(f"{expected} ")
+        ):
+            return "role"
     if source.get("canonical_label_required") is not True:
         return None
     canonical = _normalized_label(str(source.get("canonical_label") or ""))
@@ -170,6 +254,15 @@ def _bound_label_quality_errors(
         if mismatch is not None:
             errors.append(
                 f"{prefix}:numeric_bound_{mismatch}_label_mismatch:"
+                f"{ref_id}:{text_ref}:{semantic_type}"
+            )
+        if numeric_conjunction_error(
+            text,
+            usage,
+            str(binding.get("formatted_value") or ""),
+        ):
+            errors.append(
+                f"{prefix}:numeric_bound_postposition_mismatch:"
                 f"{ref_id}:{text_ref}:{semantic_type}"
             )
         start = text.find(usage)
@@ -263,6 +356,20 @@ def _bind_review(
                 f"{prefix}:numeric_fact_ref_source_not_found:{ref_id}:{fact_id}:{field_path}"
             )
             continue
+        expected_role = expected_numeric_role(source)
+        if expected_role is not None and role != expected_role:
+            errors.append(
+                f"{prefix}:numeric_fact_ref_zone_role_mismatch:"
+                f"{ref_id}:{text_ref}:{source.get('semantic_type') or ''}:"
+                f"{role}:{expected_role}"
+            )
+            continue
+        if expected_role is None and role in {"lower", "upper"}:
+            errors.append(
+                f"{prefix}:numeric_fact_ref_unexpected_role:"
+                f"{ref_id}:{text_ref}:{role}"
+            )
+            continue
         if fact_id not in facts_used:
             errors.append(f"{prefix}:numeric_fact_ref_fact_not_declared:{ref_id}:{fact_id}")
             continue
@@ -310,7 +417,14 @@ def _bind_review(
             )
             continue
         usage = f"{label} {display}"
-        parent[child_key] = text.replace(placeholder, usage)
+        bound_text = text.replace(placeholder, usage)
+        if numeric_conjunction_error(bound_text, usage, display):
+            errors.append(
+                f"{prefix}:numeric_fact_ref_postposition_mismatch:"
+                f"{ref_id}:{text_ref}:{semantic_type}"
+            )
+            continue
+        parent[child_key] = bound_text
         claim = {
             "fact_id": fact_id,
             "field_path": field_path,
@@ -451,6 +565,13 @@ def bind_numeric_fact_references(
             "instrument_label_mismatch_count": sum(
                 "numeric_bound_instrument_label_mismatch" in item
                 for item in errors
+            ),
+            "zone_role_mismatch_count": sum(
+                "zone_role_mismatch" in item or "role_label_mismatch" in item
+                for item in errors
+            ),
+            "postposition_mismatch_count": sum(
+                "postposition_mismatch" in item for item in errors
             ),
         },
         "errors": list(dict.fromkeys(errors)),
