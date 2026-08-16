@@ -1,0 +1,24 @@
+{
+  "after_core": "현재가 기준 차트 손익비 0.15배는 현재 가격에서 신규 자금의 저항 대비 비대칭이 제한적임을 보여줍니다. 가격이 검증된 지지에 접근한다는 조건부 시나리오의 동적 지지 접근 가정 차트 손익비 0.49배와 구분하며, 프로젝트 인도와 현금 회수를 먼저 확인합니다.",
+  "after_price": "현재가 1,160,000원 수준입니다. 가까운 동적 지지는 동적 지지구간 하단 1,105,169원부터 동적 지지구간 상단 1,148,831원까지이고, 가까운 동적 저항은 동적 저항구간 하단 1,182,176원부터 동적 저항구간 상단 1,217,824원까지입니다. 가장 가까운 적격 저항을 기준으로 계산한 현재가 기준 차트 손익비 0.15배로 추격 부담이 큽니다. 구조와 관망 상태는 전일과 같으며, 차트 무효화는 사업 논리 무효화가 아닙니다.\n• 신규 관찰자: 신규 관찰자는 가까운 저항과 낮은 손익비 때문에 추격보다 지지와 신규 수주·현금흐름 확인을 우선해야 합니다.\n• 보유자: 기존 보유자는 동적 지지와 프로젝트 인도, 마진, 인수 조건을 함께 관리해야 합니다.",
+  "artifact_context": {
+    "corrected_packet": "2026-08-16-kr-run-21-23491b3e8f73",
+    "human_quality_status": "pending_work_human_review",
+    "operating_mutations": 0,
+    "packet_sha256": "f5cb6a8b682d846263d9990c22e6770509ef9c9220f4159d4a402257acac5c62",
+    "pilot_mutations": 0,
+    "provider_calls": 0,
+    "receipt_sha256": "48857f3c0519cf29755c1de9a536629e1f7076a477170c65e08d5a643eecb067",
+    "rendered_payload_sha256": "d92a4f00635c56c80215f9ce21407f2f1f0beb7c83c700cd36a18da336219ace",
+    "source_db_copy_sha256": "4cfd7bb8cef53954de141c8201f510d0c9bd6c2a1ce3299ae22ad42a18826d39",
+    "source_packet": "2026-08-16-kr-run-21-5844682f15da",
+    "telegram_sends": 0,
+    "validated_output_sha256": "c8131741ee7c14c8409eb6d20dec79821c460faa55a14252ee426697b7e2cde7"
+  },
+  "basis_mismatch_count": 0,
+  "before_core": "현재가 기준 차트 손익비 0.15배는 현재 가격에서 신규 자금의 저항 대비 비대칭이 제한적임을 보여줍니다. 가격이 검증된 지지에 접근한다는 조건부 시나리오의 동적 지지 접근 가정 차트 손익비 0.49배와 구분하며, 프로젝트 인도와 현금 회수를 먼저 확인합니다.",
+  "current_price_rr_fact": "chart:structure:risk_reward:current_price",
+  "same_label_for_different_basis": false,
+  "support_entry_rr_fact": "chart:structure:risk_reward:support_entry",
+  "ticker": "012450"
+}

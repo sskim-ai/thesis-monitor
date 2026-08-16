@@ -1,0 +1,270 @@
+{
+  "artifact_context": {
+    "corrected_packet": "2026-08-16-us-run-20-fb918a643ae6",
+    "human_quality_status": "pending_work_human_review",
+    "operating_mutations": 0,
+    "packet_sha256": "e9fafec975f317f581fb13e9d365a66ef45bf5b5eb260b6e7e4aaa489f263e54",
+    "pilot_mutations": 0,
+    "provider_calls": 0,
+    "receipt_sha256": "3faef48ff134beb22c8012770ed7dec18f9a7943a55358675b0de3ca01782e3d",
+    "rendered_payload_sha256": "ee39600753ef19b7f29382dbd10095697d8bafbef767f46a6d98cf7e26418c31",
+    "source_db_copy_sha256": "4cfd7bb8cef53954de141c8201f510d0c9bd6c2a1ce3299ae22ad42a18826d39",
+    "source_packet": "2026-08-16-us-run-20-f9b252d77940",
+    "telegram_sends": 0,
+    "validated_output_sha256": "248d90cafdc51663e276dc37c1c9f83a29cd5e87678f29efeb3fea4c4cbcde82"
+  },
+  "result": {
+    "check_results": {
+      "contract": "relational-reasoning-quality-v2",
+      "deterministic_quality_gate_passed": true,
+      "duplicate_threshold": 3,
+      "final_rendered_language": {
+        "details": [],
+        "duplicate_canonical_label_count": 0,
+        "hard_checks_passed": true,
+        "internal_implementation_term_count": 0,
+        "price_particle_error_count": 0
+      },
+      "financial_period_error_count": 0,
+      "generic_next_check_count": 0,
+      "generic_unknown_count": 0,
+      "hard_checks_passed": true,
+      "human_quality_approval_required": true,
+      "identity_prose_mismatch_count": 0,
+      "kr_supply_numeric_coverage": [],
+      "max_substantive_repeat": 0,
+      "message_set_completeness": {
+        "expected_stock_count": 13,
+        "output_stock_count": 13,
+        "passed": true,
+        "rendered_message_count": 14
+      },
+      "numeric_label_quality": {
+        "details": [],
+        "hard_checks_passed": true,
+        "instrument_label_mismatch_count": 0,
+        "period_label_mismatch_count": 0,
+        "postposition_mismatch_count": 0,
+        "redundant_authored_label_count": 0,
+        "repeated_bound_label_count": 0,
+        "source_label_mismatch_count": 0,
+        "zone_role_mismatch_count": 0
+      },
+      "observer_holder": [
+        {
+          "distinct": true,
+          "ticker": "CORZ"
+        },
+        {
+          "distinct": true,
+          "ticker": "CRCL"
+        },
+        {
+          "distinct": true,
+          "ticker": "GOOGL"
+        },
+        {
+          "distinct": true,
+          "ticker": "HUT"
+        },
+        {
+          "distinct": true,
+          "ticker": "IBM"
+        },
+        {
+          "distinct": true,
+          "ticker": "MU"
+        },
+        {
+          "distinct": true,
+          "ticker": "RXRX"
+        },
+        {
+          "distinct": true,
+          "ticker": "SKHY"
+        },
+        {
+          "distinct": true,
+          "ticker": "SNDK"
+        },
+        {
+          "distinct": true,
+          "ticker": "TSLA"
+        },
+        {
+          "distinct": true,
+          "ticker": "TSM"
+        },
+        {
+          "distinct": true,
+          "ticker": "WRD"
+        },
+        {
+          "distinct": true,
+          "ticker": "WULF"
+        }
+      ],
+      "observer_holder_distinct_count": 13,
+      "production_assist_evidence_eligible": false,
+      "rendered_heading_quality": {
+        "expected_heading": "📊 거래량·포지셔닝",
+        "message_indexes": [],
+        "mismatch_count": 0
+      },
+      "rendered_identity_prose_mismatch_count": 0,
+      "rendered_identity_prose_mismatches": [],
+      "repeated_sentences": [],
+      "section_numeric_grounding": {
+        "CORZ": {
+          "core": 2,
+          "earnings": 3,
+          "price": 7,
+          "supply": 1,
+          "valuation": 0
+        },
+        "CRCL": {
+          "core": 2,
+          "earnings": 2,
+          "price": 7,
+          "supply": 1,
+          "valuation": 2
+        },
+        "GOOGL": {
+          "core": 2,
+          "earnings": 0,
+          "price": 7,
+          "supply": 1,
+          "valuation": 4
+        },
+        "HUT": {
+          "core": 2,
+          "earnings": 0,
+          "price": 7,
+          "supply": 1,
+          "valuation": 2
+        },
+        "IBM": {
+          "core": 2,
+          "earnings": 3,
+          "price": 7,
+          "supply": 1,
+          "valuation": 4
+        },
+        "MU": {
+          "core": 2,
+          "earnings": 2,
+          "price": 7,
+          "supply": 1,
+          "valuation": 4
+        },
+        "RXRX": {
+          "core": 2,
+          "earnings": 3,
+          "price": 7,
+          "supply": 1,
+          "valuation": 3
+        },
+        "SKHY": {
+          "core": 0,
+          "earnings": 0,
+          "price": 1,
+          "supply": 1,
+          "valuation": 0
+        },
+        "SNDK": {
+          "core": 0,
+          "earnings": 0,
+          "price": 3,
+          "supply": 1,
+          "valuation": 0
+        },
+        "TSLA": {
+          "core": 2,
+          "earnings": 2,
+          "price": 7,
+          "supply": 1,
+          "valuation": 4
+        },
+        "TSM": {
+          "core": 3,
+          "earnings": 3,
+          "price": 7,
+          "supply": 1,
+          "valuation": 0
+        },
+        "WRD": {
+          "core": 0,
+          "earnings": 0,
+          "price": 3,
+          "supply": 1,
+          "valuation": 0
+        },
+        "WULF": {
+          "core": 2,
+          "earnings": 0,
+          "price": 7,
+          "supply": 1,
+          "valuation": 3
+        }
+      },
+      "stock_count": 13,
+      "stock_specific_next_check_count": 39,
+      "stock_specific_unknown_count": 39,
+      "substantive_repeated_sentence_count": 0,
+      "supply_grounding_error_count": 0,
+      "supply_routing": {
+        "generic_us_investor_flow_unknown_count": 0,
+        "generic_us_investor_flow_unknown_rows": [],
+        "generic_us_supply_count": 0,
+        "generic_us_supply_rows": [],
+        "substantive_repeated_supply_sentence_count": 0,
+        "us_kr_style_horizon_count": 0,
+        "us_kr_style_horizon_rows": []
+      },
+      "template_skeleton_exceptions": [
+        {
+          "reason": "typed_neutral_absolute_valuation_statement",
+          "skeleton": "<numeric>는 장부가 기준의 절대 배수입니다.",
+          "stock_count": 8,
+          "tickers": [
+            "CRCL",
+            "GOOGL",
+            "HUT",
+            "IBM",
+            "MU",
+            "RXRX",
+            "TSLA",
+            "WULF"
+          ]
+        },
+        {
+          "reason": "chart_vs_thesis_invalidation_safety",
+          "skeleton": "<numeric> 수준의 훼손은 사업 논리 무효화가 아니다.",
+          "stock_count": 3,
+          "tickers": [
+            "MU",
+            "TSLA",
+            "TSM"
+          ]
+        }
+      ],
+      "template_skeleton_repeat_count": 0,
+      "template_skeleton_repeats": [],
+      "unsupported_comparative_claim_count": 0,
+      "valuation_evidence_error_count": 0
+    },
+    "checked_at": "2026-08-16T16:44:51.366207+00:00",
+    "contract": "runtime-message-quality-receipt-v2",
+    "errors": [],
+    "gate_version": "runtime-message-quality-v1",
+    "message_count": 14,
+    "packet_id": "2026-08-16-us-run-20-fb918a643ae6",
+    "packet_sha256": "4b939f80f73e52e210aed2637abb0dda5168a5dbacc78dc4f14fb1e5c3a725f5",
+    "policy_version": "daily-review-v3.10",
+    "receipt_schema_version": "2",
+    "rendered_payload_set_sha256": "399f18b45420037658d4674151cad254a5012699b96ea9e7fb3a7b7424dc4988",
+    "schema_version": "4",
+    "status": "passed",
+    "validated_output_sha256": "a14adb54f890ef6d4023cb4e7db759b0fc636696eaa7bc69a52e8c466d726f71"
+  }
+}

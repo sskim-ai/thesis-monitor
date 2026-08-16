@@ -1,0 +1,8 @@
+{
+  "archive_rewrites": 0,
+  "legacy_marker_remains_valid": true,
+  "pilot_recounts": 0,
+  "status": "passed",
+  "telegram_replays": 0,
+  "test_node": "tests/test_ai_assisted_delivery.py::test_legacy_completed_archive_remains_complete_without_quality_receipt[asyncio]"
+}

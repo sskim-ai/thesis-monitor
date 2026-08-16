@@ -1,0 +1,10 @@
+{
+  "additional_ai_sends": 0,
+  "already_sent_ai_messages": 1,
+  "deterministic_fallback_sets": 0,
+  "full_deterministic_fallback_recorded": false,
+  "manual_intervention_required": true,
+  "pilot_mutations": 0,
+  "status": "passed",
+  "test_node": "tests/test_ai_assisted_delivery.py::test_post_partial_delivery_receipt_failure_stops_without_false_full_fallback[asyncio]"
+}

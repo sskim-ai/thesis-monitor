@@ -305,8 +305,21 @@ period, gives current-price and support-entry RR distinct semantics, requires ty
 valuation evidence, and verifies the full runtime receipt file SHA before retry or delivery reuse.
 Corrected isolated packets `2026-08-16-kr-run-21-5844682f15da` and
 `2026-08-16-us-run-20-f9b252d77940` pass their deterministic validators and runtime gates. Both remain
-`pending_work_human_review`; production main and the operating checkout are unchanged. See
+preserved artifacts, but Work subsequently failed both Previews. The failures were missing
+consolidated/separate statement basis, a denied PER qualitative bypass, final-text particle and
+duplicate-label defects, internal implementation language, a MU relation/caution contradiction, and
+receipt audit coverage that overstated its partial-delivery evidence. They are not Production Assist
+evidence. See [the Work review](reports/20260817-phase7-2-9-1-work-human-review.md) and
 [the Phase 7.2.9.1 readiness report](reports/20260817-phase7-2-9-1-readiness.md).
+
+Phase 7.2.9.2 repairs those blockers on `codex/phase-7-2-9-2-human-quality-hardening`. It adds
+`financial-statement-basis-v1`, exact occurrence-bound `typed-valuation-interpretation-v2`, a final
+rendered-language gate, forward-period relation/caution consistency, and explicit pre-send versus
+post-partial receipt-integrity states. Corrected isolated packets
+`2026-08-16-kr-run-21-23491b3e8f73` and `2026-08-16-us-run-20-fb918a643ae6` pass automatic binding,
+the full validator, and the runtime final-message gate with 8 and 14 logical payloads. Their human
+quality remains `pending_work_human_review`; production main and the operating checkout are
+unchanged. See [the Phase 7.2.9.2 readiness report](reports/20260817-phase7-2-9-2-readiness.md).
 
 ## Source Map
 
@@ -366,9 +379,9 @@ first.
 
 ## Next Steps
 
-1. Review the corrected Phase 7.2.9.1 KR eight-message and US 14-message Previews directly; their
+1. Review the corrected Phase 7.2.9.2 KR eight-message and US 14-message Previews directly; their
    deterministic PASS is not human approval.
-2. Keep Phase 7.2.9.1 code and artifacts on the experimental branch until Work gives a separate merge
+2. Keep Phase 7.2.9.2 code and artifacts on the experimental branch until Work gives a separate merge
    and deployment approval.
 3. Preserve operational counts KR 3/5 and US 2/5 independently from human-quality disposition.
 4. Keep TSM/WRD identity `unknown` without authoritative ingestion, preserve exact archives, and do

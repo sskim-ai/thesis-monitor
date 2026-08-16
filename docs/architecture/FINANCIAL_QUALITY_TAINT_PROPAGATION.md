@@ -125,6 +125,11 @@ existing quality lineage. Filing type and report end date cannot promote a singl
 a cumulative period. Ambiguity suppresses the amount and its directly derived growth rate while
 preserving the raw audit value.
 
+Phase 7.2.9.2 adds `financial-statement-basis-v1`. CFS and OFS are distinct verified states; IS/CIS
+alone supplies no consolidated/separate evidence. User-visible amounts include their verified basis,
+growth comparisons cannot mix bases, and unknown or conflicting basis remains audit-only. This is an
+additional eligibility boundary and does not change `financial-quality-taint-v2` decisions.
+
 See:
 
 - [Lineage dependency matrix](../reports/20260815-phase7-2-4-financial-lineage-dependency-matrix.json)

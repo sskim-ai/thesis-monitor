@@ -1,0 +1,872 @@
+{
+  "kr": {
+    "binding": {
+      "errors": [],
+      "status": "failed",
+      "typed_valuation_errors": [
+        "000660:typed_valuation_contract_unsupported:typed-valuation-interpretation-v1",
+        "003690:typed_valuation_contract_unsupported:typed-valuation-interpretation-v1",
+        "005490:typed_valuation_contract_unsupported:typed-valuation-interpretation-v1",
+        "005930:typed_valuation_contract_unsupported:typed-valuation-interpretation-v1",
+        "010120:typed_valuation_contract_unsupported:typed-valuation-interpretation-v1",
+        "012450:typed_valuation_contract_unsupported:typed-valuation-interpretation-v1",
+        "086280:typed_valuation_contract_unsupported:typed-valuation-interpretation-v1"
+      ]
+    },
+    "full_validator": {
+      "errors": [
+        "005490:financial_statement_basis_label_missing:earnings:2026-06-30:fields.operating_income.value:business_earnings.text",
+        "005930:financial_statement_basis_label_missing:earnings:2026-06-30:fields.operating_income.value:business_earnings.text",
+        "000660:typed_valuation_contract_unsupported:typed-valuation-interpretation-v1",
+        "003690:typed_valuation_contract_unsupported:typed-valuation-interpretation-v1",
+        "005490:typed_valuation_contract_unsupported:typed-valuation-interpretation-v1",
+        "005930:typed_valuation_contract_unsupported:typed-valuation-interpretation-v1",
+        "010120:typed_valuation_contract_unsupported:typed-valuation-interpretation-v1",
+        "012450:typed_valuation_contract_unsupported:typed-valuation-interpretation-v1",
+        "086280:typed_valuation_contract_unsupported:typed-valuation-interpretation-v1"
+      ],
+      "status": "failed"
+    },
+    "input_sha256": {
+      "draft": "7ac91adad339bc38e1a1627a648cc6b226572b892386b47b07c2495f1470b7e1",
+      "packet": "be1e8940322d7acc382956629ab3ca5cbd5581c35ba0a4532b469793d64f55ac",
+      "rendered_payload": "8268192e4bfe3a1429dd8e68fc213499016803df8820aaeb12048a4b0fc26a60",
+      "validated_output": "8ee460766ecd088e9d51abe4a7d8d0d6c2e9c8056fd1dfa41033434fda1d8a06"
+    },
+    "market": "KR",
+    "negative_replay_status": "failed_as_required",
+    "operating_mutations": 0,
+    "pilot_mutations": 0,
+    "provider_calls": 0,
+    "required_failures": {
+      "denied_per_qualitative_inference": true,
+      "internal_renderer_terminology": true,
+      "occurrence_contract_rejected": true,
+      "statement_basis_missing": true
+    },
+    "runtime_quality_gate": {
+      "contract": "relational-reasoning-quality-v2",
+      "deterministic_quality_gate_passed": false,
+      "duplicate_threshold": 3,
+      "final_rendered_language": {
+        "details": [
+          {
+            "issue": "internal_implementation_term",
+            "matches": [
+              "엔진이 가장 가까운 적격 저항을 쓴"
+            ],
+            "message_index": 4
+          },
+          {
+            "issue": "internal_implementation_term",
+            "matches": [
+              "엔진이 가장 가까운 적격 저항을 쓴"
+            ],
+            "message_index": 6
+          },
+          {
+            "issue": "internal_implementation_term",
+            "matches": [
+              "엔진이 가장 가까운 적격 저항을 쓴"
+            ],
+            "message_index": 7
+          },
+          {
+            "issue": "internal_implementation_term",
+            "matches": [
+              "엔진이 가장 가까운 적격 저항을 쓴"
+            ],
+            "message_index": 8
+          }
+        ],
+        "duplicate_canonical_label_count": 0,
+        "hard_checks_passed": false,
+        "internal_implementation_term_count": 4,
+        "price_particle_error_count": 0
+      },
+      "financial_period_error_count": 0,
+      "generic_next_check_count": 0,
+      "generic_unknown_count": 0,
+      "hard_checks_passed": false,
+      "human_quality_approval_required": true,
+      "identity_prose_mismatch_count": 0,
+      "kr_supply_numeric_coverage": [
+        {
+          "claimed_semantics": [
+            "foreign_net_buy_qty",
+            "foreign_net_buy_qty_20d",
+            "foreign_net_buy_qty_5d",
+            "institution_net_buy_qty",
+            "institution_net_buy_qty_20d",
+            "institution_net_buy_qty_5d"
+          ],
+          "eligible_semantics": [
+            "foreign_net_buy_qty",
+            "foreign_net_buy_qty_20d",
+            "foreign_net_buy_qty_5d",
+            "institution_net_buy_qty",
+            "institution_net_buy_qty_20d",
+            "institution_net_buy_qty_5d"
+          ],
+          "missing_semantics": [],
+          "numeric_horizon_coverage_passed": true,
+          "ticker": "000660"
+        },
+        {
+          "claimed_semantics": [
+            "foreign_net_buy_qty",
+            "foreign_net_buy_qty_20d",
+            "foreign_net_buy_qty_5d",
+            "institution_net_buy_qty",
+            "institution_net_buy_qty_20d",
+            "institution_net_buy_qty_5d"
+          ],
+          "eligible_semantics": [
+            "foreign_net_buy_qty",
+            "foreign_net_buy_qty_20d",
+            "foreign_net_buy_qty_5d",
+            "institution_net_buy_qty",
+            "institution_net_buy_qty_20d",
+            "institution_net_buy_qty_5d"
+          ],
+          "missing_semantics": [],
+          "numeric_horizon_coverage_passed": true,
+          "ticker": "003690"
+        },
+        {
+          "claimed_semantics": [
+            "foreign_net_buy_qty",
+            "foreign_net_buy_qty_20d",
+            "foreign_net_buy_qty_5d",
+            "institution_net_buy_qty",
+            "institution_net_buy_qty_20d",
+            "institution_net_buy_qty_5d"
+          ],
+          "eligible_semantics": [
+            "foreign_net_buy_qty",
+            "foreign_net_buy_qty_20d",
+            "foreign_net_buy_qty_5d",
+            "institution_net_buy_qty",
+            "institution_net_buy_qty_20d",
+            "institution_net_buy_qty_5d"
+          ],
+          "missing_semantics": [],
+          "numeric_horizon_coverage_passed": true,
+          "ticker": "005490"
+        },
+        {
+          "claimed_semantics": [
+            "foreign_net_buy_qty",
+            "foreign_net_buy_qty_20d",
+            "foreign_net_buy_qty_5d",
+            "institution_net_buy_qty",
+            "institution_net_buy_qty_20d",
+            "institution_net_buy_qty_5d"
+          ],
+          "eligible_semantics": [
+            "foreign_net_buy_qty",
+            "foreign_net_buy_qty_20d",
+            "foreign_net_buy_qty_5d",
+            "institution_net_buy_qty",
+            "institution_net_buy_qty_20d",
+            "institution_net_buy_qty_5d"
+          ],
+          "missing_semantics": [],
+          "numeric_horizon_coverage_passed": true,
+          "ticker": "005930"
+        },
+        {
+          "claimed_semantics": [
+            "foreign_net_buy_qty",
+            "foreign_net_buy_qty_20d",
+            "foreign_net_buy_qty_5d",
+            "institution_net_buy_qty",
+            "institution_net_buy_qty_20d",
+            "institution_net_buy_qty_5d"
+          ],
+          "eligible_semantics": [
+            "foreign_net_buy_qty",
+            "foreign_net_buy_qty_20d",
+            "foreign_net_buy_qty_5d",
+            "institution_net_buy_qty",
+            "institution_net_buy_qty_20d",
+            "institution_net_buy_qty_5d"
+          ],
+          "missing_semantics": [],
+          "numeric_horizon_coverage_passed": true,
+          "ticker": "010120"
+        },
+        {
+          "claimed_semantics": [
+            "foreign_net_buy_qty",
+            "foreign_net_buy_qty_20d",
+            "foreign_net_buy_qty_5d",
+            "institution_net_buy_qty",
+            "institution_net_buy_qty_20d",
+            "institution_net_buy_qty_5d"
+          ],
+          "eligible_semantics": [
+            "foreign_net_buy_qty",
+            "foreign_net_buy_qty_20d",
+            "foreign_net_buy_qty_5d",
+            "institution_net_buy_qty",
+            "institution_net_buy_qty_20d",
+            "institution_net_buy_qty_5d"
+          ],
+          "missing_semantics": [],
+          "numeric_horizon_coverage_passed": true,
+          "ticker": "012450"
+        },
+        {
+          "claimed_semantics": [
+            "foreign_net_buy_qty",
+            "foreign_net_buy_qty_20d",
+            "foreign_net_buy_qty_5d",
+            "institution_net_buy_qty",
+            "institution_net_buy_qty_20d",
+            "institution_net_buy_qty_5d"
+          ],
+          "eligible_semantics": [
+            "foreign_net_buy_qty",
+            "foreign_net_buy_qty_20d",
+            "foreign_net_buy_qty_5d",
+            "institution_net_buy_qty",
+            "institution_net_buy_qty_20d",
+            "institution_net_buy_qty_5d"
+          ],
+          "missing_semantics": [],
+          "numeric_horizon_coverage_passed": true,
+          "ticker": "086280"
+        }
+      ],
+      "max_substantive_repeat": 0,
+      "message_set_completeness": {
+        "expected_stock_count": 7,
+        "output_stock_count": 7,
+        "passed": true,
+        "rendered_message_count": 8
+      },
+      "numeric_label_quality": {
+        "details": [],
+        "hard_checks_passed": true,
+        "instrument_label_mismatch_count": 0,
+        "period_label_mismatch_count": 0,
+        "postposition_mismatch_count": 0,
+        "redundant_authored_label_count": 0,
+        "repeated_bound_label_count": 0,
+        "source_label_mismatch_count": 0,
+        "zone_role_mismatch_count": 0
+      },
+      "observer_holder": [
+        {
+          "distinct": true,
+          "ticker": "000660"
+        },
+        {
+          "distinct": true,
+          "ticker": "003690"
+        },
+        {
+          "distinct": true,
+          "ticker": "005490"
+        },
+        {
+          "distinct": true,
+          "ticker": "005930"
+        },
+        {
+          "distinct": true,
+          "ticker": "010120"
+        },
+        {
+          "distinct": true,
+          "ticker": "012450"
+        },
+        {
+          "distinct": true,
+          "ticker": "086280"
+        }
+      ],
+      "observer_holder_distinct_count": 7,
+      "production_assist_evidence_eligible": false,
+      "rendered_heading_quality": {
+        "expected_heading": "📊 수급",
+        "message_indexes": [],
+        "mismatch_count": 0
+      },
+      "rendered_identity_prose_mismatch_count": 0,
+      "rendered_identity_prose_mismatches": [],
+      "repeated_sentences": [],
+      "section_numeric_grounding": {
+        "000660": {
+          "core": 2,
+          "earnings": 0,
+          "price": 3,
+          "supply": 6,
+          "valuation": 2
+        },
+        "003690": {
+          "core": 1,
+          "earnings": 0,
+          "price": 3,
+          "supply": 6,
+          "valuation": 2
+        },
+        "005490": {
+          "core": 3,
+          "earnings": 2,
+          "price": 6,
+          "supply": 6,
+          "valuation": 2
+        },
+        "005930": {
+          "core": 3,
+          "earnings": 2,
+          "price": 3,
+          "supply": 6,
+          "valuation": 2
+        },
+        "010120": {
+          "core": 0,
+          "earnings": 0,
+          "price": 6,
+          "supply": 6,
+          "valuation": 0
+        },
+        "012450": {
+          "core": 2,
+          "earnings": 0,
+          "price": 6,
+          "supply": 6,
+          "valuation": 0
+        },
+        "086280": {
+          "core": 1,
+          "earnings": 0,
+          "price": 6,
+          "supply": 6,
+          "valuation": 2
+        }
+      },
+      "stock_count": 7,
+      "stock_specific_next_check_count": 21,
+      "stock_specific_unknown_count": 9,
+      "substantive_repeated_sentence_count": 0,
+      "supply_grounding_error_count": 0,
+      "supply_routing": {
+        "generic_us_investor_flow_unknown_count": 0,
+        "generic_us_investor_flow_unknown_rows": [],
+        "generic_us_supply_count": 0,
+        "generic_us_supply_rows": [],
+        "substantive_repeated_supply_sentence_count": 0,
+        "us_kr_style_horizon_count": 0,
+        "us_kr_style_horizon_rows": []
+      },
+      "template_skeleton_exceptions": [
+        {
+          "reason": "canonical_current_price_statement",
+          "skeleton": "<numeric> 수준입니다.",
+          "stock_count": 7,
+          "tickers": [
+            "000660",
+            "003690",
+            "005490",
+            "005930",
+            "010120",
+            "012450",
+            "086280"
+          ]
+        },
+        {
+          "reason": "kr_actor_horizon_numeric_pair",
+          "skeleton": "<numeric>, <numeric>.",
+          "stock_count": 7,
+          "tickers": [
+            "000660",
+            "003690",
+            "005490",
+            "005930",
+            "010120",
+            "012450",
+            "086280"
+          ]
+        },
+        {
+          "reason": "canonical_zone_endpoint_contract",
+          "skeleton": "가까운 동적 지지는 <numeric>부터 <numeric>까지이고, 가까운 동적 저항은 <numeric>부터 <numeric>까지입니다.",
+          "stock_count": 4,
+          "tickers": [
+            "005490",
+            "010120",
+            "012450",
+            "086280"
+          ]
+        },
+        {
+          "reason": "canonical_nearest_resistance_rr_contract",
+          "skeleton": "엔진이 가장 가까운 적격 저항을 쓴 <numeric>로 추격 부담이 큽니다.",
+          "stock_count": 4,
+          "tickers": [
+            "005490",
+            "010120",
+            "012450",
+            "086280"
+          ]
+        }
+      ],
+      "template_skeleton_repeat_count": 0,
+      "template_skeleton_repeats": [],
+      "unsupported_comparative_claim_count": 0,
+      "valuation_evidence_error_count": 0
+    },
+    "source_packet": "2026-08-16-kr-run-21-5844682f15da",
+    "telegram_sends": 0
+  },
+  "us": {
+    "binding": {
+      "errors": [],
+      "status": "failed",
+      "typed_valuation_errors": [
+        "CORZ:typed_valuation_contract_unsupported:typed-valuation-interpretation-v1",
+        "CRCL:typed_valuation_contract_unsupported:typed-valuation-interpretation-v1",
+        "GOOGL:typed_valuation_contract_unsupported:typed-valuation-interpretation-v1",
+        "HUT:typed_valuation_contract_unsupported:typed-valuation-interpretation-v1",
+        "IBM:typed_valuation_contract_unsupported:typed-valuation-interpretation-v1",
+        "MU:typed_valuation_contract_unsupported:typed-valuation-interpretation-v1",
+        "RXRX:typed_valuation_contract_unsupported:typed-valuation-interpretation-v1",
+        "SKHY:typed_valuation_contract_unsupported:typed-valuation-interpretation-v1",
+        "SNDK:typed_valuation_contract_unsupported:typed-valuation-interpretation-v1",
+        "TSLA:typed_valuation_contract_unsupported:typed-valuation-interpretation-v1",
+        "TSM:typed_valuation_contract_unsupported:typed-valuation-interpretation-v1",
+        "WRD:typed_valuation_contract_unsupported:typed-valuation-interpretation-v1",
+        "WULF:typed_valuation_contract_unsupported:typed-valuation-interpretation-v1"
+      ]
+    },
+    "full_validator": {
+      "errors": [
+        "CORZ:typed_valuation_contract_unsupported:typed-valuation-interpretation-v1",
+        "CRCL:typed_valuation_contract_unsupported:typed-valuation-interpretation-v1",
+        "GOOGL:typed_valuation_contract_unsupported:typed-valuation-interpretation-v1",
+        "HUT:typed_valuation_contract_unsupported:typed-valuation-interpretation-v1",
+        "IBM:typed_valuation_contract_unsupported:typed-valuation-interpretation-v1",
+        "MU:typed_valuation_contract_unsupported:typed-valuation-interpretation-v1",
+        "RXRX:typed_valuation_contract_unsupported:typed-valuation-interpretation-v1",
+        "SKHY:typed_valuation_contract_unsupported:typed-valuation-interpretation-v1",
+        "SNDK:typed_valuation_contract_unsupported:typed-valuation-interpretation-v1",
+        "TSLA:typed_valuation_contract_unsupported:typed-valuation-interpretation-v1",
+        "TSM:typed_valuation_contract_unsupported:typed-valuation-interpretation-v1",
+        "WRD:typed_valuation_contract_unsupported:typed-valuation-interpretation-v1",
+        "WULF:typed_valuation_contract_unsupported:typed-valuation-interpretation-v1"
+      ],
+      "status": "failed"
+    },
+    "input_sha256": {
+      "draft": "ab641bb5a6b70fd890ecb4d3b6a25bccae2c0350e58d3e57fd6351651f35bd0e",
+      "packet": "ef84311bf7c0703a1f0db2f6c27dfb6068dec623d9757c3035dfc1582e01580e",
+      "rendered_payload": "c3f4f0879fee054c8b1b8fc6edb7659f24a425ace89c44d9b4582c713e2e5adb",
+      "validated_output": "04b4855281d7ea9161ed0f472f92be5eb4d7365c73d57a1b138fa78029f60088"
+    },
+    "market": "US",
+    "negative_replay_status": "failed_as_required",
+    "operating_mutations": 0,
+    "pilot_mutations": 0,
+    "provider_calls": 0,
+    "required_failures": {
+      "duplicate_current_price_label": true,
+      "mu_relation_caution_contradiction": true,
+      "occurrence_contract_rejected": true,
+      "usd_price_particle_error": true
+    },
+    "runtime_quality_gate": {
+      "contract": "relational-reasoning-quality-v2",
+      "deterministic_quality_gate_passed": false,
+      "duplicate_threshold": 3,
+      "final_rendered_language": {
+        "details": [
+          {
+            "issue": "duplicate_canonical_label",
+            "matches": [
+              "현재가 현재가 기준"
+            ],
+            "message_index": 2
+          },
+          {
+            "issue": "price_particle_error",
+            "matches": [
+              "현재가 $20.18는",
+              "차트 무효화 가격 $18.56는"
+            ],
+            "message_index": 2
+          },
+          {
+            "issue": "duplicate_canonical_label",
+            "matches": [
+              "현재가 현재가 기준"
+            ],
+            "message_index": 3
+          },
+          {
+            "issue": "price_particle_error",
+            "matches": [
+              "현재가 $71.6는",
+              "차트 무효화 가격 $68.58는"
+            ],
+            "message_index": 3
+          },
+          {
+            "issue": "duplicate_canonical_label",
+            "matches": [
+              "현재가 현재가 기준"
+            ],
+            "message_index": 4
+          },
+          {
+            "issue": "price_particle_error",
+            "matches": [
+              "현재가 $345.9는",
+              "차트 무효화 가격 $338.15는"
+            ],
+            "message_index": 4
+          },
+          {
+            "issue": "duplicate_canonical_label",
+            "matches": [
+              "현재가 현재가 기준"
+            ],
+            "message_index": 5
+          },
+          {
+            "issue": "price_particle_error",
+            "matches": [
+              "현재가 $85.44는",
+              "차트 무효화 가격 $79.57는"
+            ],
+            "message_index": 5
+          },
+          {
+            "issue": "duplicate_canonical_label",
+            "matches": [
+              "현재가 현재가 기준"
+            ],
+            "message_index": 6
+          },
+          {
+            "issue": "price_particle_error",
+            "matches": [
+              "현재가 $234.32는",
+              "차트 무효화 가격 $224.11는"
+            ],
+            "message_index": 6
+          },
+          {
+            "issue": "duplicate_canonical_label",
+            "matches": [
+              "현재가 현재가 기준"
+            ],
+            "message_index": 7
+          },
+          {
+            "issue": "price_particle_error",
+            "matches": [
+              "현재가 $971.66는",
+              "차트 무효화 가격 $832.01는"
+            ],
+            "message_index": 7
+          },
+          {
+            "issue": "duplicate_canonical_label",
+            "matches": [
+              "현재가 현재가 기준"
+            ],
+            "message_index": 8
+          },
+          {
+            "issue": "price_particle_error",
+            "matches": [
+              "현재가 $3.16는",
+              "차트 무효화 가격 $2.7는"
+            ],
+            "message_index": 8
+          },
+          {
+            "issue": "price_particle_error",
+            "matches": [
+              "현재가 $1,641.11는"
+            ],
+            "message_index": 10
+          },
+          {
+            "issue": "duplicate_canonical_label",
+            "matches": [
+              "현재가 현재가 기준"
+            ],
+            "message_index": 11
+          },
+          {
+            "issue": "price_particle_error",
+            "matches": [
+              "현재가 $342.27는",
+              "차트 무효화 가격 $327.5는"
+            ],
+            "message_index": 11
+          },
+          {
+            "issue": "duplicate_canonical_label",
+            "matches": [
+              "현재가 현재가 기준"
+            ],
+            "message_index": 12
+          },
+          {
+            "issue": "price_particle_error",
+            "matches": [
+              "현재가 $426.35는",
+              "차트 무효화 가격 $373.6는"
+            ],
+            "message_index": 12
+          },
+          {
+            "issue": "price_particle_error",
+            "matches": [
+              "현재가 $5.85는"
+            ],
+            "message_index": 13
+          },
+          {
+            "issue": "duplicate_canonical_label",
+            "matches": [
+              "현재가 현재가 기준"
+            ],
+            "message_index": 14
+          },
+          {
+            "issue": "price_particle_error",
+            "matches": [
+              "현재가 $17.38는",
+              "차트 무효화 가격 $16.47는"
+            ],
+            "message_index": 14
+          }
+        ],
+        "duplicate_canonical_label_count": 10,
+        "hard_checks_passed": false,
+        "internal_implementation_term_count": 0,
+        "price_particle_error_count": 22
+      },
+      "financial_period_error_count": 0,
+      "generic_next_check_count": 0,
+      "generic_unknown_count": 0,
+      "hard_checks_passed": false,
+      "human_quality_approval_required": true,
+      "identity_prose_mismatch_count": 0,
+      "kr_supply_numeric_coverage": [],
+      "max_substantive_repeat": 0,
+      "message_set_completeness": {
+        "expected_stock_count": 13,
+        "output_stock_count": 13,
+        "passed": true,
+        "rendered_message_count": 14
+      },
+      "numeric_label_quality": {
+        "details": [],
+        "hard_checks_passed": true,
+        "instrument_label_mismatch_count": 0,
+        "period_label_mismatch_count": 0,
+        "postposition_mismatch_count": 0,
+        "redundant_authored_label_count": 0,
+        "repeated_bound_label_count": 0,
+        "source_label_mismatch_count": 0,
+        "zone_role_mismatch_count": 0
+      },
+      "observer_holder": [
+        {
+          "distinct": true,
+          "ticker": "CORZ"
+        },
+        {
+          "distinct": true,
+          "ticker": "CRCL"
+        },
+        {
+          "distinct": true,
+          "ticker": "GOOGL"
+        },
+        {
+          "distinct": true,
+          "ticker": "HUT"
+        },
+        {
+          "distinct": true,
+          "ticker": "IBM"
+        },
+        {
+          "distinct": true,
+          "ticker": "MU"
+        },
+        {
+          "distinct": true,
+          "ticker": "RXRX"
+        },
+        {
+          "distinct": true,
+          "ticker": "SKHY"
+        },
+        {
+          "distinct": true,
+          "ticker": "SNDK"
+        },
+        {
+          "distinct": true,
+          "ticker": "TSLA"
+        },
+        {
+          "distinct": true,
+          "ticker": "TSM"
+        },
+        {
+          "distinct": true,
+          "ticker": "WRD"
+        },
+        {
+          "distinct": true,
+          "ticker": "WULF"
+        }
+      ],
+      "observer_holder_distinct_count": 13,
+      "production_assist_evidence_eligible": false,
+      "rendered_heading_quality": {
+        "expected_heading": "📊 거래량·포지셔닝",
+        "message_indexes": [],
+        "mismatch_count": 0
+      },
+      "rendered_identity_prose_mismatch_count": 0,
+      "rendered_identity_prose_mismatches": [],
+      "repeated_sentences": [],
+      "section_numeric_grounding": {
+        "CORZ": {
+          "core": 2,
+          "earnings": 3,
+          "price": 7,
+          "supply": 1,
+          "valuation": 0
+        },
+        "CRCL": {
+          "core": 2,
+          "earnings": 2,
+          "price": 7,
+          "supply": 1,
+          "valuation": 2
+        },
+        "GOOGL": {
+          "core": 2,
+          "earnings": 0,
+          "price": 7,
+          "supply": 1,
+          "valuation": 4
+        },
+        "HUT": {
+          "core": 2,
+          "earnings": 0,
+          "price": 7,
+          "supply": 1,
+          "valuation": 2
+        },
+        "IBM": {
+          "core": 2,
+          "earnings": 3,
+          "price": 7,
+          "supply": 1,
+          "valuation": 4
+        },
+        "MU": {
+          "core": 2,
+          "earnings": 2,
+          "price": 7,
+          "supply": 1,
+          "valuation": 4
+        },
+        "RXRX": {
+          "core": 2,
+          "earnings": 3,
+          "price": 7,
+          "supply": 1,
+          "valuation": 3
+        },
+        "SKHY": {
+          "core": 0,
+          "earnings": 0,
+          "price": 1,
+          "supply": 1,
+          "valuation": 0
+        },
+        "SNDK": {
+          "core": 0,
+          "earnings": 0,
+          "price": 3,
+          "supply": 1,
+          "valuation": 0
+        },
+        "TSLA": {
+          "core": 2,
+          "earnings": 2,
+          "price": 7,
+          "supply": 1,
+          "valuation": 4
+        },
+        "TSM": {
+          "core": 3,
+          "earnings": 3,
+          "price": 7,
+          "supply": 1,
+          "valuation": 0
+        },
+        "WRD": {
+          "core": 0,
+          "earnings": 0,
+          "price": 3,
+          "supply": 1,
+          "valuation": 0
+        },
+        "WULF": {
+          "core": 2,
+          "earnings": 0,
+          "price": 7,
+          "supply": 1,
+          "valuation": 3
+        }
+      },
+      "stock_count": 13,
+      "stock_specific_next_check_count": 39,
+      "stock_specific_unknown_count": 39,
+      "substantive_repeated_sentence_count": 0,
+      "supply_grounding_error_count": 0,
+      "supply_routing": {
+        "generic_us_investor_flow_unknown_count": 0,
+        "generic_us_investor_flow_unknown_rows": [],
+        "generic_us_supply_count": 0,
+        "generic_us_supply_rows": [],
+        "substantive_repeated_supply_sentence_count": 0,
+        "us_kr_style_horizon_count": 0,
+        "us_kr_style_horizon_rows": []
+      },
+      "template_skeleton_exceptions": [
+        {
+          "reason": "chart_vs_thesis_invalidation_safety",
+          "skeleton": "<numeric>는 사업 논리 무효화가 아니다.",
+          "stock_count": 3,
+          "tickers": [
+            "MU",
+            "TSLA",
+            "TSM"
+          ]
+        }
+      ],
+      "template_skeleton_repeat_count": 0,
+      "template_skeleton_repeats": [],
+      "unsupported_comparative_claim_count": 0,
+      "valuation_evidence_error_count": 0
+    },
+    "source_packet": "2026-08-16-us-run-20-f9b252d77940",
+    "telegram_sends": 0
+  }
+}

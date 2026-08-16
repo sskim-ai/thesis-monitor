@@ -1,0 +1,21 @@
+{
+  "ai_sends": 0,
+  "contract": "runtime-message-quality-receipt-v2",
+  "deterministic_fallback_sets": 1,
+  "pilot_mutations": 0,
+  "status": "passed",
+  "test_nodes": [
+    "tests/test_ai_assisted_delivery.py::test_receipt_integrity_failure_holds_ai_and_preserves_one_fallback_set[asyncio-check_results]",
+    "tests/test_ai_assisted_delivery.py::test_receipt_integrity_failure_holds_ai_and_preserves_one_fallback_set[asyncio-status]",
+    "tests/test_ai_assisted_delivery.py::test_receipt_integrity_failure_holds_ai_and_preserves_one_fallback_set[asyncio-missing]",
+    "tests/test_ai_assisted_delivery.py::test_receipt_integrity_failure_holds_ai_and_preserves_one_fallback_set[asyncio-other_packet]",
+    "tests/test_ai_assisted_delivery.py::test_receipt_integrity_failure_holds_ai_and_preserves_one_fallback_set[asyncio-one_delivery_sha]",
+    "tests/test_ai_assisted_delivery.py::test_receipt_integrity_failure_holds_ai_and_preserves_one_fallback_set[asyncio-rendered_payload_sha]",
+    "tests/test_ai_assisted_delivery.py::test_receipt_integrity_failure_holds_ai_and_preserves_one_fallback_set[asyncio-packet_sha]",
+    "tests/test_ai_assisted_delivery.py::test_receipt_integrity_failure_holds_ai_and_preserves_one_fallback_set[asyncio-validated_output_sha]",
+    "tests/test_ai_assisted_delivery.py::test_receipt_integrity_failure_holds_ai_and_preserves_one_fallback_set[asyncio-policy_version]",
+    "tests/test_ai_assisted_delivery.py::test_receipt_integrity_failure_holds_ai_and_preserves_one_fallback_set[asyncio-schema_version]",
+    "tests/test_ai_assisted_delivery.py::test_receipt_integrity_failure_holds_ai_and_preserves_one_fallback_set[asyncio-gate_version]",
+    "tests/test_ai_assisted_delivery.py::test_receipt_integrity_failure_holds_ai_and_preserves_one_fallback_set[asyncio-checked_at]"
+  ]
+}

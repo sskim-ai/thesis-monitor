@@ -1,0 +1,90 @@
+{
+  "contract": "runtime-message-quality-receipt-v2",
+  "test_run": {
+    "failed": 0,
+    "junit_sha256": "73aa9c3d20c4f1a3496ae8110797924431ae28fc5be98bf4db4eaf8567bdd311",
+    "passed": 16
+  },
+  "testcases": [
+    {
+      "node_id": "tests/test_ai_assisted_delivery.py::test_legacy_completed_archive_remains_complete_without_quality_receipt[asyncio]",
+      "status": "passed",
+      "time_seconds": "0.048"
+    },
+    {
+      "node_id": "tests/test_ai_assisted_delivery.py::test_persisted_retry_rejects_payload_tampering_against_quality_receipt[asyncio]",
+      "status": "passed",
+      "time_seconds": "0.021"
+    },
+    {
+      "node_id": "tests/test_ai_assisted_delivery.py::test_receipt_integrity_failure_holds_ai_and_preserves_one_fallback_set[asyncio-check_results]",
+      "status": "passed",
+      "time_seconds": "0.025"
+    },
+    {
+      "node_id": "tests/test_ai_assisted_delivery.py::test_receipt_integrity_failure_holds_ai_and_preserves_one_fallback_set[asyncio-status]",
+      "status": "passed",
+      "time_seconds": "0.026"
+    },
+    {
+      "node_id": "tests/test_ai_assisted_delivery.py::test_receipt_integrity_failure_holds_ai_and_preserves_one_fallback_set[asyncio-missing]",
+      "status": "passed",
+      "time_seconds": "0.025"
+    },
+    {
+      "node_id": "tests/test_ai_assisted_delivery.py::test_receipt_integrity_failure_holds_ai_and_preserves_one_fallback_set[asyncio-other_packet]",
+      "status": "passed",
+      "time_seconds": "0.029"
+    },
+    {
+      "node_id": "tests/test_ai_assisted_delivery.py::test_receipt_integrity_failure_holds_ai_and_preserves_one_fallback_set[asyncio-one_delivery_sha]",
+      "status": "passed",
+      "time_seconds": "0.027"
+    },
+    {
+      "node_id": "tests/test_ai_assisted_delivery.py::test_receipt_integrity_failure_holds_ai_and_preserves_one_fallback_set[asyncio-rendered_payload_sha]",
+      "status": "passed",
+      "time_seconds": "0.025"
+    },
+    {
+      "node_id": "tests/test_ai_assisted_delivery.py::test_receipt_integrity_failure_holds_ai_and_preserves_one_fallback_set[asyncio-packet_sha]",
+      "status": "passed",
+      "time_seconds": "0.027"
+    },
+    {
+      "node_id": "tests/test_ai_assisted_delivery.py::test_receipt_integrity_failure_holds_ai_and_preserves_one_fallback_set[asyncio-validated_output_sha]",
+      "status": "passed",
+      "time_seconds": "0.025"
+    },
+    {
+      "node_id": "tests/test_ai_assisted_delivery.py::test_receipt_integrity_failure_holds_ai_and_preserves_one_fallback_set[asyncio-policy_version]",
+      "status": "passed",
+      "time_seconds": "0.025"
+    },
+    {
+      "node_id": "tests/test_ai_assisted_delivery.py::test_receipt_integrity_failure_holds_ai_and_preserves_one_fallback_set[asyncio-schema_version]",
+      "status": "passed",
+      "time_seconds": "0.026"
+    },
+    {
+      "node_id": "tests/test_ai_assisted_delivery.py::test_receipt_integrity_failure_holds_ai_and_preserves_one_fallback_set[asyncio-gate_version]",
+      "status": "passed",
+      "time_seconds": "0.024"
+    },
+    {
+      "node_id": "tests/test_ai_assisted_delivery.py::test_receipt_integrity_failure_holds_ai_and_preserves_one_fallback_set[asyncio-checked_at]",
+      "status": "passed",
+      "time_seconds": "0.024"
+    },
+    {
+      "node_id": "tests/test_ai_assisted_delivery.py::test_validated_output_tamper_is_rejected_before_retry_send[asyncio]",
+      "status": "passed",
+      "time_seconds": "0.023"
+    },
+    {
+      "node_id": "tests/test_ai_assisted_delivery.py::test_post_partial_delivery_receipt_failure_stops_without_false_full_fallback[asyncio]",
+      "status": "passed",
+      "time_seconds": "0.050"
+    }
+  ]
+}

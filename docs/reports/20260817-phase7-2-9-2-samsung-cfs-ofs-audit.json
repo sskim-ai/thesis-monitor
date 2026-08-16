@@ -1,0 +1,66 @@
+{
+  "artifact_context": {
+    "corrected_packet": "2026-08-16-kr-run-21-23491b3e8f73",
+    "human_quality_status": "pending_work_human_review",
+    "operating_mutations": 0,
+    "packet_sha256": "f5cb6a8b682d846263d9990c22e6770509ef9c9220f4159d4a402257acac5c62",
+    "pilot_mutations": 0,
+    "provider_calls": 0,
+    "receipt_sha256": "48857f3c0519cf29755c1de9a536629e1f7076a477170c65e08d5a643eecb067",
+    "rendered_payload_sha256": "d92a4f00635c56c80215f9ce21407f2f1f0beb7c83c700cd36a18da336219ace",
+    "source_db_copy_sha256": "4cfd7bb8cef53954de141c8201f510d0c9bd6c2a1ce3299ae22ad42a18826d39",
+    "source_packet": "2026-08-16-kr-run-21-5844682f15da",
+    "telegram_sends": 0,
+    "validated_output_sha256": "c8131741ee7c14c8409eb6d20dec79821c460faa55a14252ee426697b7e2cde7"
+  },
+  "basis_comparable": false,
+  "final_decision": "withheld_unknown_statement_basis",
+  "official_reference_scope": "period-and-consolidated-context-only",
+  "official_reference_statement_basis": "consolidated",
+  "official_validation_reference": "https://news.samsung.com/kr/삼성전자-2026년-2분기-잠정실적-발표",
+  "phase7291_user_visible_usage": [
+    "2026년 2분기 영업이익 89조4,924억원",
+    "2026년 2분기 전년 동기 대비 영업이익 성장률 1,813.8%",
+    "2026년 2분기 전년 동기 대비 매출 성장률 130%",
+    "2026년 2분기 전년 동기 대비 영업이익 성장률 1,813.8%"
+  ],
+  "phase7292_user_visible_usage": [],
+  "reason": "runtime source has plain IS and unknown fs_div; official consolidated reference cannot overwrite it",
+  "runtime_source": {
+    "amount_period_end": "2026-06-30",
+    "amount_period_start": "2026-04-01",
+    "amount_period_type": "single_quarter",
+    "comparison_period_end": null,
+    "comparison_period_start": null,
+    "comparison_type": null,
+    "consolidated_separate_basis": null,
+    "decision_version": "financial-quality-taint-v2",
+    "denial_reason": "direct_financial_lineage_unverified",
+    "denominator_period": "2026-06-30",
+    "dependency_fields": [
+      "earnings.latest_operating_income"
+    ],
+    "dependency_periods": [
+      "2026-06-30"
+    ],
+    "lineage_verification_status": "unverified",
+    "prose_eligible": false,
+    "provider": "opendart",
+    "quality_reason_codes": [],
+    "single_quarter_cumulative_flag": "single_quarter",
+    "source_filing_identifier": "20260814003699",
+    "source_period": "2026-06-30",
+    "source_row_identity": "20260814003699:opendart:dart_OperatingIncomeLoss:unknown:IS:제 58 기 반기:operating_income",
+    "source_type": "full_statement",
+    "state": "unknown",
+    "statement_basis_contract": "financial-statement-basis-v1",
+    "statement_basis_evidence": {
+      "embedded_fs_div": "UNKNOWN",
+      "row_fs_div": "UNKNOWN",
+      "statement_name": "손익계산서"
+    },
+    "statement_basis_source": null,
+    "statement_basis_state": "unknown"
+  },
+  "ticker": "005930"
+}

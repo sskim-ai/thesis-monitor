@@ -95,6 +95,12 @@ the validated schema-4 shape. See [NUMERIC_PROVENANCE.md](NUMERIC_PROVENANCE.md)
 Newly gated output uses `runtime-message-quality-receipt-v2`. Retry and reuse compare the actual
 receipt file SHA with every persisted delivery row, then validate contract/schema, packet, policy,
 output and rendered-set hashes, message count, check results, errors, and timestamp. Integrity
-failure is not a network retry: AI delivery is held, receipt regeneration is forbidden, and the
-already persisted deterministic fallback remains eligible for one deadline delivery. Historical
-archive markers keep the manifest contract active when they were created.
+failure is not a network retry and receipt regeneration is forbidden. Before any AI send, failure
+holds AI delivery and keeps one persisted deterministic fallback set eligible. After a partial AI
+delivery, failure moves the remaining rows to an explicit partial-integrity state, sends neither more
+AI text nor a duplicate deterministic set, and requires manual intervention. Historical archive
+markers keep the manifest contract active when they were created.
+
+The final rendered-language check runs on the exact Telegram text before receipt persistence. It
+rejects duplicate canonical labels, unsafe particles after bound price phrases, and internal
+implementation terms. This is validation only; the renderer does not repair user text after binding.

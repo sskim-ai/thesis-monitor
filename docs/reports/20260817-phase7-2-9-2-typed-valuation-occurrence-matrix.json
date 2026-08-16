@@ -1,0 +1,789 @@
+{
+  "contract": "typed-valuation-interpretation-v2",
+  "denied_metric_coverage": 0,
+  "kr": {
+    "accepted": 18,
+    "artifact_context": {
+      "corrected_packet": "2026-08-16-kr-run-21-23491b3e8f73",
+      "human_quality_status": "pending_work_human_review",
+      "operating_mutations": 0,
+      "packet_sha256": "f5cb6a8b682d846263d9990c22e6770509ef9c9220f4159d4a402257acac5c62",
+      "pilot_mutations": 0,
+      "provider_calls": 0,
+      "receipt_sha256": "48857f3c0519cf29755c1de9a536629e1f7076a477170c65e08d5a643eecb067",
+      "rendered_payload_sha256": "d92a4f00635c56c80215f9ce21407f2f1f0beb7c83c700cd36a18da336219ace",
+      "source_db_copy_sha256": "4cfd7bb8cef53954de141c8201f510d0c9bd6c2a1ce3299ae22ad42a18826d39",
+      "source_packet": "2026-08-16-kr-run-21-5844682f15da",
+      "telegram_sends": 0,
+      "validated_output_sha256": "c8131741ee7c14c8409eb6d20dec79821c460faa55a14252ee426697b7e2cde7"
+    },
+    "contract": "typed-valuation-interpretation-v2",
+    "errors": [],
+    "references": [
+      {
+        "basis_status": "verified",
+        "comparison_numeric_ref_ids": [
+          "p1"
+        ],
+        "direction": "neutral",
+        "exact_text_span": "현재 PBR 4.46배는 장부가 기준의 절대 배수입니다.",
+        "fact_id": "valuation:book",
+        "interpretation_type": "absolute",
+        "metric": "pbr",
+        "normalized_span_sha256": "d645ea65572c0501241d68a515461da7286ef1b44bbef8f6b70b18147011d98e",
+        "ref_id": "kr000660_core_pbr",
+        "source_type": "canonical_backend",
+        "text_ref": "core_judgment.text"
+      },
+      {
+        "basis_status": "verified",
+        "comparison_numeric_ref_ids": [
+          "p2"
+        ],
+        "direction": "high",
+        "exact_text_span": "PBR 역사적 백분위 87%는 과거 관측치에서 높은 위치입니다.",
+        "fact_id": "valuation:historical_pb",
+        "interpretation_type": "historical",
+        "metric": "pbr",
+        "normalized_span_sha256": "bd9a4dd29f2c7499e61e17930388d0e8682a0345886b26df3d0d009cacb5b62b",
+        "ref_id": "kr000660_core_pb_history",
+        "source_type": "canonical_backend",
+        "text_ref": "core_judgment.text"
+      },
+      {
+        "basis_status": "verified",
+        "comparison_numeric_ref_ids": [
+          "p8"
+        ],
+        "direction": "neutral",
+        "exact_text_span": "현재 PBR 4.46배는 장부가 기준의 절대 배수입니다.",
+        "fact_id": "valuation:book",
+        "interpretation_type": "absolute",
+        "metric": "pbr",
+        "normalized_span_sha256": "d645ea65572c0501241d68a515461da7286ef1b44bbef8f6b70b18147011d98e",
+        "ref_id": "kr000660_val_pbr",
+        "source_type": "canonical_backend",
+        "text_ref": "valuation_analysis.text"
+      },
+      {
+        "basis_status": "verified",
+        "comparison_numeric_ref_ids": [
+          "p9"
+        ],
+        "direction": "high",
+        "exact_text_span": "PBR 역사적 백분위 87%는 과거 관측치에서 높은 위치입니다.",
+        "fact_id": "valuation:historical_pb",
+        "interpretation_type": "historical",
+        "metric": "pbr",
+        "normalized_span_sha256": "bd9a4dd29f2c7499e61e17930388d0e8682a0345886b26df3d0d009cacb5b62b",
+        "ref_id": "kr000660_val_pb_history",
+        "source_type": "canonical_backend",
+        "text_ref": "valuation_analysis.text"
+      },
+      {
+        "basis_status": "verified",
+        "comparison_numeric_ref_ids": [
+          "kcore2"
+        ],
+        "direction": "neutral",
+        "exact_text_span": "현재 PBR 0.67배는 장부가 기준의 절대 배수입니다.",
+        "fact_id": "valuation:book",
+        "interpretation_type": "absolute",
+        "metric": "pbr",
+        "normalized_span_sha256": "fe3ae4ded5fb0316158d5a075193392f671ee4234894a9e4b8b51fc84c875def",
+        "ref_id": "kr003690_core_pbr",
+        "source_type": "canonical_backend",
+        "text_ref": "core_judgment.text"
+      },
+      {
+        "basis_status": "verified",
+        "comparison_numeric_ref_ids": [
+          "p10"
+        ],
+        "direction": "neutral",
+        "exact_text_span": "현재 PER 6.34배는 이익 기준의 절대 배수입니다.",
+        "fact_id": "valuation:trailing_earnings",
+        "interpretation_type": "absolute",
+        "metric": "pe",
+        "normalized_span_sha256": "c9355d8de9e0de07d37d6ba50720dab939e2f616727ad9f336fe0de0bb146bd3",
+        "ref_id": "kr003690_val_pe",
+        "source_type": "canonical_backend",
+        "text_ref": "valuation_analysis.text"
+      },
+      {
+        "basis_status": "verified",
+        "comparison_numeric_ref_ids": [
+          "p11"
+        ],
+        "direction": "neutral",
+        "exact_text_span": "현재 PBR 0.67배는 장부가 기준의 절대 배수입니다.",
+        "fact_id": "valuation:book",
+        "interpretation_type": "absolute",
+        "metric": "pbr",
+        "normalized_span_sha256": "fe3ae4ded5fb0316158d5a075193392f671ee4234894a9e4b8b51fc84c875def",
+        "ref_id": "kr003690_val_pbr",
+        "source_type": "canonical_backend",
+        "text_ref": "valuation_analysis.text"
+      },
+      {
+        "basis_status": "verified",
+        "comparison_numeric_ref_ids": [
+          "kcore3"
+        ],
+        "direction": "neutral",
+        "exact_text_span": "현재 PBR 0.44배는 장부가 기준의 절대 배수입니다.",
+        "fact_id": "valuation:book",
+        "interpretation_type": "absolute",
+        "metric": "pbr",
+        "normalized_span_sha256": "57e13093566bcee9cb221fe31983e9a95c9170157c4f1d11f8c58f0c2cf5eaf3",
+        "ref_id": "kr005490_core_pbr",
+        "source_type": "canonical_backend",
+        "text_ref": "core_judgment.text"
+      },
+      {
+        "basis_status": "verified",
+        "comparison_numeric_ref_ids": [
+          "p13"
+        ],
+        "direction": "neutral",
+        "exact_text_span": "현재 PER 18.75배는 이익 기준의 절대 배수입니다.",
+        "fact_id": "valuation:trailing_earnings",
+        "interpretation_type": "absolute",
+        "metric": "pe",
+        "normalized_span_sha256": "f0d4b1b0a4a664cccb3a3f793f36acf471166e814c9ca44b7d436f30efe2f984",
+        "ref_id": "kr005490_val_pe",
+        "source_type": "canonical_backend",
+        "text_ref": "valuation_analysis.text"
+      },
+      {
+        "basis_status": "verified",
+        "comparison_numeric_ref_ids": [
+          "p14"
+        ],
+        "direction": "neutral",
+        "exact_text_span": "현재 PBR 0.44배는 장부가 기준의 절대 배수입니다.",
+        "fact_id": "valuation:book",
+        "interpretation_type": "absolute",
+        "metric": "pbr",
+        "normalized_span_sha256": "57e13093566bcee9cb221fe31983e9a95c9170157c4f1d11f8c58f0c2cf5eaf3",
+        "ref_id": "kr005490_val_pbr",
+        "source_type": "canonical_backend",
+        "text_ref": "valuation_analysis.text"
+      },
+      {
+        "basis_status": "verified",
+        "comparison_numeric_ref_ids": [
+          "kcore3"
+        ],
+        "direction": "high",
+        "exact_text_span": "PBR 역사적 백분위 91.6%는 과거 관측치에서 높은 위치입니다.",
+        "fact_id": "valuation:historical_pb",
+        "interpretation_type": "historical",
+        "metric": "pbr",
+        "normalized_span_sha256": "ed160518893eed727c4f4dac73e30afc05aedc9a941a995577cf0beb452d282d",
+        "ref_id": "kr005930_core_pb_history",
+        "source_type": "canonical_backend",
+        "text_ref": "core_judgment.text"
+      },
+      {
+        "basis_status": "verified",
+        "comparison_numeric_ref_ids": [
+          "p10"
+        ],
+        "direction": "neutral",
+        "exact_text_span": "현재 PER 12.23배는 이익 기준의 절대 배수입니다.",
+        "fact_id": "valuation:trailing_earnings",
+        "interpretation_type": "absolute",
+        "metric": "pe",
+        "normalized_span_sha256": "814888fd3193ee5684fbc9e073c4b82036fce3b10f24c792928650a5157aa122",
+        "ref_id": "kr005930_val_pe",
+        "source_type": "canonical_backend",
+        "text_ref": "valuation_analysis.text"
+      },
+      {
+        "basis_status": "verified",
+        "comparison_numeric_ref_ids": [
+          "p11"
+        ],
+        "direction": "neutral",
+        "exact_text_span": "현재 PBR 2.8배는 장부가 기준의 절대 배수입니다.",
+        "fact_id": "valuation:book",
+        "interpretation_type": "absolute",
+        "metric": "pbr",
+        "normalized_span_sha256": "478d4b9e09ed6e167fe3058efa322f7d5d15ae55aff42c58373dfb2cf172b0c7",
+        "ref_id": "kr005930_val_pbr",
+        "source_type": "canonical_backend",
+        "text_ref": "valuation_analysis.text"
+      },
+      {
+        "basis_status": "unknown",
+        "comparison_numeric_ref_ids": [],
+        "direction": "neutral",
+        "exact_text_span": "현재 거래증권의 주식 기준이 불충분해 PER·PBR 해석을 보류합니다.",
+        "fact_id": "security_basis:current",
+        "interpretation_type": "quality_unknown",
+        "metric": "earnings",
+        "normalized_span_sha256": "9b23bcfa96d69a8ae188a61c02f206cbf5cb8f3b6d8bc3e6215a4918d01d978f",
+        "ref_id": "kr010120_valuation_unknown",
+        "source_type": "canonical_backend",
+        "text_ref": "valuation_analysis.text"
+      },
+      {
+        "basis_status": "unknown",
+        "comparison_numeric_ref_ids": [],
+        "direction": "neutral",
+        "exact_text_span": "현재 거래증권의 주식 기준이 불충분해 PER·PBR 해석을 보류합니다.",
+        "fact_id": "security_basis:current",
+        "interpretation_type": "quality_unknown",
+        "metric": "earnings",
+        "normalized_span_sha256": "9b23bcfa96d69a8ae188a61c02f206cbf5cb8f3b6d8bc3e6215a4918d01d978f",
+        "ref_id": "kr012450_valuation_unknown",
+        "source_type": "canonical_backend",
+        "text_ref": "valuation_analysis.text"
+      },
+      {
+        "basis_status": "verified",
+        "comparison_numeric_ref_ids": [
+          "kcore3"
+        ],
+        "direction": "neutral",
+        "exact_text_span": "현재 PBR 1.45배는 장부가 기준의 절대 배수입니다.",
+        "fact_id": "valuation:book",
+        "interpretation_type": "absolute",
+        "metric": "pbr",
+        "normalized_span_sha256": "66af3002b24a27ef1ff2cbbbf1a956623f93344910381df6b7ebfd6f789f4c4d",
+        "ref_id": "kr086280_core_pbr",
+        "source_type": "canonical_backend",
+        "text_ref": "core_judgment.text"
+      },
+      {
+        "basis_status": "verified",
+        "comparison_numeric_ref_ids": [
+          "p13"
+        ],
+        "direction": "neutral",
+        "exact_text_span": "현재 PER 10.27배는 이익 기준의 절대 배수입니다.",
+        "fact_id": "valuation:trailing_earnings",
+        "interpretation_type": "absolute",
+        "metric": "pe",
+        "normalized_span_sha256": "48e13dd3f069fdcee39c538d1d559fcc76217431409ffef3c9bf76b72c099ae7",
+        "ref_id": "kr086280_val_pe",
+        "source_type": "canonical_backend",
+        "text_ref": "valuation_analysis.text"
+      },
+      {
+        "basis_status": "verified",
+        "comparison_numeric_ref_ids": [
+          "p14"
+        ],
+        "direction": "neutral",
+        "exact_text_span": "현재 PBR 1.45배는 장부가 기준의 절대 배수입니다.",
+        "fact_id": "valuation:book",
+        "interpretation_type": "absolute",
+        "metric": "pbr",
+        "normalized_span_sha256": "66af3002b24a27ef1ff2cbbbf1a956623f93344910381df6b7ebfd6f789f4c4d",
+        "ref_id": "kr086280_val_pbr",
+        "source_type": "canonical_backend",
+        "text_ref": "valuation_analysis.text"
+      }
+    ]
+  },
+  "uncovered_occurrences": 0,
+  "us": {
+    "accepted": 32,
+    "artifact_context": {
+      "corrected_packet": "2026-08-16-us-run-20-fb918a643ae6",
+      "human_quality_status": "pending_work_human_review",
+      "operating_mutations": 0,
+      "packet_sha256": "e9fafec975f317f581fb13e9d365a66ef45bf5b5eb260b6e7e4aaa489f263e54",
+      "pilot_mutations": 0,
+      "provider_calls": 0,
+      "receipt_sha256": "3faef48ff134beb22c8012770ed7dec18f9a7943a55358675b0de3ca01782e3d",
+      "rendered_payload_sha256": "ee39600753ef19b7f29382dbd10095697d8bafbef767f46a6d98cf7e26418c31",
+      "source_db_copy_sha256": "4cfd7bb8cef53954de141c8201f510d0c9bd6c2a1ce3299ae22ad42a18826d39",
+      "source_packet": "2026-08-16-us-run-20-f9b252d77940",
+      "telegram_sends": 0,
+      "validated_output_sha256": "248d90cafdc51663e276dc37c1c9f83a29cd5e87678f29efeb3fea4c4cbcde82"
+    },
+    "contract": "typed-valuation-interpretation-v2",
+    "errors": [],
+    "references": [
+      {
+        "basis_status": "unknown",
+        "comparison_numeric_ref_ids": [],
+        "direction": "neutral",
+        "exact_text_span": "현재 PBR과 BVPS의 부호가 동일한 증권·기간·통화 기준에서 정합적인지 확인되지 않아 장부가치 배수와 역사 비교를 보류합니다.",
+        "fact_id": "valuation:book_quality",
+        "interpretation_type": "quality_unknown",
+        "metric": "book",
+        "normalized_span_sha256": "002d19601736100013dae63a5d072f4847b27e37509496c95d4bcb2e5e683b9d",
+        "ref_id": "corz_book_quality_unknown",
+        "source_type": "canonical_backend",
+        "text_ref": "valuation_analysis.text"
+      },
+      {
+        "basis_status": "verified",
+        "comparison_numeric_ref_ids": [
+          "p6"
+        ],
+        "direction": "neutral",
+        "exact_text_span": "시장 예상 fPER 68.94배는 시장 예상 이익의 절대 배수입니다.",
+        "fact_id": "valuation:consensus_forward_earnings",
+        "interpretation_type": "absolute",
+        "metric": "forward_pe",
+        "normalized_span_sha256": "144b9634c0b920023cdf30ae163fb3d48c546ebbf986c7648e984d4b5dbcdcb2",
+        "ref_id": "crcl_p6_absolute",
+        "source_type": "canonical_backend",
+        "text_ref": "valuation_analysis.text"
+      },
+      {
+        "basis_status": "verified",
+        "comparison_numeric_ref_ids": [
+          "p5"
+        ],
+        "direction": "neutral",
+        "exact_text_span": "현재 PBR 5.57배는 장부가 기준의 절대 배수입니다.",
+        "fact_id": "valuation:book",
+        "interpretation_type": "absolute",
+        "metric": "pbr",
+        "normalized_span_sha256": "c5a0b2d1c50e312e06624b525595a3c1194a0063980f379459a4eee502a838d1",
+        "ref_id": "crcl_p5_absolute",
+        "source_type": "canonical_backend",
+        "text_ref": "valuation_analysis.text"
+      },
+      {
+        "basis_status": "verified",
+        "comparison_numeric_ref_ids": [
+          "p1",
+          "p2"
+        ],
+        "direction": "low",
+        "exact_text_span": "현재 PER 12.4배와 PER 역사적 백분위 13%의 관계는 현재 PER가 과거 관측치에서 낮은 위치임을 보여줍니다.",
+        "fact_id": "valuation:historical_pe",
+        "interpretation_type": "historical",
+        "metric": "pe",
+        "normalized_span_sha256": "783590f8e79bb69d8e6e9090134ba3a67ac435533b7acdc3113b29345174b130",
+        "ref_id": "googl_core_history",
+        "source_type": "canonical_backend",
+        "text_ref": "core_judgment.text"
+      },
+      {
+        "basis_status": "verified",
+        "comparison_numeric_ref_ids": [
+          "p3",
+          "p5"
+        ],
+        "direction": "forward_higher",
+        "exact_text_span": "현재 PER 12.4배와 시장 예상 fPER 19.29배의 관계는 동일한 가격·증권·주식·통화 기준에서 선행 이익 분모가 현재 이익 분모보다 낮은 방향임을 보여줍니다.",
+        "fact_id": "valuation:multiple_relation",
+        "interpretation_type": "trailing_forward_relation",
+        "metric": "earnings",
+        "normalized_span_sha256": "4e9fa0da0e8da5ca5465581fb05364d4e459b5eccab394a1de6874b54c937816",
+        "ref_id": "googl_relation",
+        "source_type": "canonical_backend",
+        "text_ref": "valuation_analysis.text"
+      },
+      {
+        "basis_status": "verified",
+        "comparison_numeric_ref_ids": [
+          "p4"
+        ],
+        "direction": "neutral",
+        "exact_text_span": "현재 PBR 6.61배는 장부가 기준의 절대 배수입니다.",
+        "fact_id": "valuation:book",
+        "interpretation_type": "absolute",
+        "metric": "pbr",
+        "normalized_span_sha256": "4923d2b4438c74960721ff81ab8182836c36500833248e4ebb82f4b9e810594e",
+        "ref_id": "googl_p4_absolute",
+        "source_type": "canonical_backend",
+        "text_ref": "valuation_analysis.text"
+      },
+      {
+        "basis_status": "verified",
+        "comparison_numeric_ref_ids": [
+          "p6"
+        ],
+        "direction": "low",
+        "exact_text_span": "PER 역사적 백분위 13%는 현재 PER가 과거 관측치에서 낮은 위치입니다.",
+        "fact_id": "valuation:historical_pe",
+        "interpretation_type": "historical",
+        "metric": "pe",
+        "normalized_span_sha256": "dcacf212bd3925a96b436b44fc2196f72b7976852e511ca1b01359533846a0de",
+        "ref_id": "googl_history",
+        "source_type": "canonical_backend",
+        "text_ref": "valuation_analysis.text"
+      },
+      {
+        "basis_status": "verified",
+        "comparison_numeric_ref_ids": [
+          "p2"
+        ],
+        "direction": "neutral",
+        "exact_text_span": "시장 예상 fPER 144.81배는 시장 예상 이익의 절대 배수입니다.",
+        "fact_id": "valuation:consensus_forward_earnings",
+        "interpretation_type": "absolute",
+        "metric": "forward_pe",
+        "normalized_span_sha256": "af6c7176371401b838898f09190558670a96db1cb4392fbf7889ecd090d3de59",
+        "ref_id": "hut_core_forward",
+        "source_type": "canonical_backend",
+        "text_ref": "core_judgment.text"
+      },
+      {
+        "basis_status": "verified",
+        "comparison_numeric_ref_ids": [
+          "p1"
+        ],
+        "direction": "neutral",
+        "exact_text_span": "현재 PBR 6.97배는 장부가 기준의 절대 배수입니다.",
+        "fact_id": "valuation:book",
+        "interpretation_type": "absolute",
+        "metric": "pbr",
+        "normalized_span_sha256": "ea5d115c5c8d6cf08b051fbcb8b5373ac9a17ca3f1f5aa5cee85dbeb52a6b4f2",
+        "ref_id": "hut_core_pbr",
+        "source_type": "canonical_backend",
+        "text_ref": "core_judgment.text"
+      },
+      {
+        "basis_status": "verified",
+        "comparison_numeric_ref_ids": [
+          "p4"
+        ],
+        "direction": "neutral",
+        "exact_text_span": "시장 예상 fPER 144.81배는 시장 예상 이익의 절대 배수입니다.",
+        "fact_id": "valuation:consensus_forward_earnings",
+        "interpretation_type": "absolute",
+        "metric": "forward_pe",
+        "normalized_span_sha256": "af6c7176371401b838898f09190558670a96db1cb4392fbf7889ecd090d3de59",
+        "ref_id": "hut_p4_absolute",
+        "source_type": "canonical_backend",
+        "text_ref": "valuation_analysis.text"
+      },
+      {
+        "basis_status": "verified",
+        "comparison_numeric_ref_ids": [
+          "p3"
+        ],
+        "direction": "neutral",
+        "exact_text_span": "현재 PBR 6.97배는 장부가 기준의 절대 배수입니다.",
+        "fact_id": "valuation:book",
+        "interpretation_type": "absolute",
+        "metric": "pbr",
+        "normalized_span_sha256": "ea5d115c5c8d6cf08b051fbcb8b5373ac9a17ca3f1f5aa5cee85dbeb52a6b4f2",
+        "ref_id": "hut_p3_absolute",
+        "source_type": "canonical_backend",
+        "text_ref": "valuation_analysis.text"
+      },
+      {
+        "basis_status": "verified",
+        "comparison_numeric_ref_ids": [
+          "p6",
+          "p8"
+        ],
+        "direction": "backend_relation",
+        "exact_text_span": "현재 PER 14.15배와 시장 예상 fPER 17.35배의 관계는 동일한 가격·증권·주식·통화 기준에서 시장 예상 이익 분모가 현재 이익 분모보다 낮은 방향임을 보여줍니다.",
+        "fact_id": "valuation:multiple_relation",
+        "interpretation_type": "trailing_forward_relation",
+        "metric": "earnings",
+        "normalized_span_sha256": "56eec6016471323d27bc96a154bb8be75d8b7edc88153373394f8d086ba8bc76",
+        "ref_id": "ibm_relation",
+        "source_type": "canonical_backend",
+        "text_ref": "valuation_analysis.text"
+      },
+      {
+        "basis_status": "verified",
+        "comparison_numeric_ref_ids": [
+          "p7"
+        ],
+        "direction": "neutral",
+        "exact_text_span": "현재 PBR 6.48배는 장부가 기준의 절대 배수입니다.",
+        "fact_id": "valuation:book",
+        "interpretation_type": "absolute",
+        "metric": "pbr",
+        "normalized_span_sha256": "d17e59796d0349404255b09e3a6dd058f7466e367803c71e2fd99225b6ca4aab",
+        "ref_id": "ibm_p7_absolute",
+        "source_type": "canonical_backend",
+        "text_ref": "valuation_analysis.text"
+      },
+      {
+        "basis_status": "verified",
+        "comparison_numeric_ref_ids": [
+          "p9"
+        ],
+        "direction": "neutral",
+        "exact_text_span": "PER 역사적 백분위 41.4%는 과거 관측치 내 위치입니다.",
+        "fact_id": "valuation:historical_pe",
+        "interpretation_type": "absolute",
+        "metric": "pe",
+        "normalized_span_sha256": "0115e65e462f8cd28ab0a6f691bea92ece3775a2e336501beb051d34d9c82096",
+        "ref_id": "ibm_history_position",
+        "source_type": "canonical_backend",
+        "text_ref": "valuation_analysis.text"
+      },
+      {
+        "basis_status": "verified",
+        "comparison_numeric_ref_ids": [
+          "p5",
+          "p7"
+        ],
+        "direction": "backend_relation",
+        "exact_text_span": "현재 PER 19.86배와 시장 예상 fPER 5.87배의 관계는 동일한 가격·증권·주식·통화 기준에서 시장 예상 이익 분모가 현재 이익 분모보다 높은 방향임을 보여줍니다. 시장 예상 기간 기준도 확인됐습니다.",
+        "fact_id": "valuation:multiple_relation",
+        "interpretation_type": "trailing_forward_relation",
+        "metric": "earnings",
+        "normalized_span_sha256": "65608ef5c34bbfc03cee7fc572f46f4d8750e53b12a768ca250dc9f39ea82a41",
+        "ref_id": "mu_relation",
+        "source_type": "canonical_backend",
+        "text_ref": "valuation_analysis.text"
+      },
+      {
+        "basis_status": "verified",
+        "comparison_numeric_ref_ids": [
+          "p6"
+        ],
+        "direction": "neutral",
+        "exact_text_span": "현재 PBR 10.89배는 장부가 기준의 절대 배수입니다.",
+        "fact_id": "valuation:book",
+        "interpretation_type": "absolute",
+        "metric": "pbr",
+        "normalized_span_sha256": "f7b7645426ee032c9c135bebfe2908caea7bf82e2ae24dfc1cfa40aab47893a4",
+        "ref_id": "mu_p6_absolute",
+        "source_type": "canonical_backend",
+        "text_ref": "valuation_analysis.text"
+      },
+      {
+        "basis_status": "verified",
+        "comparison_numeric_ref_ids": [
+          "p8"
+        ],
+        "direction": "high",
+        "exact_text_span": "PBR 역사적 백분위 96.7%는 과거 관측치보다 높은 위치입니다.",
+        "fact_id": "valuation:historical_pb",
+        "interpretation_type": "historical",
+        "metric": "pbr",
+        "normalized_span_sha256": "7f3164fa569b098862e161e2b239f315016d8b76c8f9bfb3009d6a3b3c85a382",
+        "ref_id": "mu_history",
+        "source_type": "canonical_backend",
+        "text_ref": "valuation_analysis.text"
+      },
+      {
+        "basis_status": "verified",
+        "comparison_numeric_ref_ids": [
+          "p6"
+        ],
+        "direction": "neutral",
+        "exact_text_span": "TTM EPS $-2.27 수준의 현재 이익 기준은 PER 해석에 사용하지 않습니다.",
+        "fact_id": "valuation:trailing_earnings",
+        "interpretation_type": "absolute",
+        "metric": "earnings",
+        "normalized_span_sha256": "7b57921d667cfad23558c093ea805d456f8be14f1df1795224938612eaadaf2a",
+        "ref_id": "rxrx_p6_absolute",
+        "source_type": "canonical_backend",
+        "text_ref": "valuation_analysis.text"
+      },
+      {
+        "basis_status": "verified",
+        "comparison_numeric_ref_ids": [
+          "p7"
+        ],
+        "direction": "neutral",
+        "exact_text_span": "현재 PBR 1.84배는 장부가 기준의 절대 배수입니다.",
+        "fact_id": "valuation:book",
+        "interpretation_type": "absolute",
+        "metric": "pbr",
+        "normalized_span_sha256": "78d27a8aa12142df27f79ea3ac6a86e9a3bd64fe930b08529a562240333ae5a3",
+        "ref_id": "rxrx_p7_absolute",
+        "source_type": "canonical_backend",
+        "text_ref": "valuation_analysis.text"
+      },
+      {
+        "basis_status": "verified",
+        "comparison_numeric_ref_ids": [
+          "p8"
+        ],
+        "direction": "low",
+        "exact_text_span": "PBR 역사적 백분위 10.7%는 관측 분포의 낮은 구간입니다.",
+        "fact_id": "valuation:historical_pb",
+        "interpretation_type": "historical",
+        "metric": "pbr",
+        "normalized_span_sha256": "d857d7a6bd912655447fb0d4f2c262b770779618449ea7c628f2e80c0f2cbd77",
+        "ref_id": "rxrx_pb_history",
+        "source_type": "canonical_backend",
+        "text_ref": "valuation_analysis.text"
+      },
+      {
+        "basis_status": "unknown",
+        "comparison_numeric_ref_ids": [],
+        "direction": "neutral",
+        "exact_text_span": "다만 현재 ADS의 배수 분모·주식수·통화 기준이 부족해 PER·PBR 수치를 해석하지 않고, HBM ASP·재고·CAPEX·FCF를 독립적으로 확인합니다.",
+        "fact_id": "security_basis:current",
+        "interpretation_type": "quality_unknown",
+        "metric": "earnings",
+        "normalized_span_sha256": "54af35602d2ead319e5f2db626e35ee42f2b7a4e93c6ec2f64748d489ce46541",
+        "ref_id": "skhy_basis_unknown",
+        "source_type": "canonical_backend",
+        "text_ref": "valuation_analysis.text"
+      },
+      {
+        "basis_status": "unknown",
+        "comparison_numeric_ref_ids": [],
+        "direction": "neutral",
+        "exact_text_span": "후행 이익 배수의 현재 증권 분모와 기간 기준이 불충분해 관계 해석을 보류합니다.",
+        "fact_id": "security_basis:current",
+        "interpretation_type": "quality_unknown",
+        "metric": "earnings",
+        "normalized_span_sha256": "6f60785794720c4b5c1a2406e341477ba27fceddf6062d95617f920f50b8a61b",
+        "ref_id": "sndk_basis_unknown",
+        "source_type": "canonical_backend",
+        "text_ref": "valuation_analysis.text"
+      },
+      {
+        "basis_status": "verified",
+        "comparison_numeric_ref_ids": [
+          "p5",
+          "p7"
+        ],
+        "direction": "backend_relation",
+        "exact_text_span": "현재 PER 178.27배와 시장 예상 fPER 145.9배의 관계는 동일한 가격·증권·주식·통화 기준에서 시장 예상 이익 분모가 현재 이익 분모보다 높은 방향임을 보여줍니다.",
+        "fact_id": "valuation:multiple_relation",
+        "interpretation_type": "trailing_forward_relation",
+        "metric": "earnings",
+        "normalized_span_sha256": "d37a87bb9e517e2e596f4282e4a4365753e68ca4373db3664d53edf19a65f75c",
+        "ref_id": "tsla_relation",
+        "source_type": "canonical_backend",
+        "text_ref": "valuation_analysis.text"
+      },
+      {
+        "basis_status": "verified",
+        "comparison_numeric_ref_ids": [
+          "p6"
+        ],
+        "direction": "neutral",
+        "exact_text_span": "현재 PBR 15.56배는 장부가 기준의 절대 배수입니다.",
+        "fact_id": "valuation:book",
+        "interpretation_type": "absolute",
+        "metric": "pbr",
+        "normalized_span_sha256": "600885fb3d64c0600b6de2e7f5b96e3b66a90c67d4fddc6e056a0cffd528c019",
+        "ref_id": "tsla_p6_absolute",
+        "source_type": "canonical_backend",
+        "text_ref": "valuation_analysis.text"
+      },
+      {
+        "basis_status": "verified",
+        "comparison_numeric_ref_ids": [
+          "p8"
+        ],
+        "direction": "high",
+        "exact_text_span": "PER 역사적 백분위 95.9%는 역사 분포에서 높습니다.",
+        "fact_id": "valuation:historical_pe",
+        "interpretation_type": "historical",
+        "metric": "pe",
+        "normalized_span_sha256": "1485b0c10fe9a7d09f050a58d3a819e3ef06cbdb7e1be2e9e885543406525875",
+        "ref_id": "tsla_history",
+        "source_type": "canonical_backend",
+        "text_ref": "valuation_analysis.text"
+      },
+      {
+        "basis_status": "unknown",
+        "comparison_numeric_ref_ids": [],
+        "direction": "neutral",
+        "exact_text_span": "현재 거래 증권의 배수 분모·주식수·통화 기준이 확인되지 않아 PER·PBR 수치를 해석하지 않는다.",
+        "fact_id": "security_basis:current",
+        "interpretation_type": "quality_unknown",
+        "metric": "earnings",
+        "normalized_span_sha256": "411c50232f213b759c12bd05e85d5d9f024be0aaf4ec7b4ef48b4164904dbde8",
+        "ref_id": "tsm_basis_unknown",
+        "source_type": "canonical_backend",
+        "text_ref": "valuation_analysis.text"
+      },
+      {
+        "basis_status": "unknown",
+        "comparison_numeric_ref_ids": [],
+        "direction": "neutral",
+        "exact_text_span": "현재 거래 증권의 배수 분모·주식수·통화 기준이 확인되지 않아 PER·PBR 해석을 보류합니다.",
+        "fact_id": "security_basis:current",
+        "interpretation_type": "quality_unknown",
+        "metric": "earnings",
+        "normalized_span_sha256": "957896445ae609ffdb5623423bd252dc2d4b8367eeeeec1c081bada6937abcd3",
+        "ref_id": "wrd_basis_unknown",
+        "source_type": "canonical_backend",
+        "text_ref": "valuation_analysis.text"
+      },
+      {
+        "basis_status": "verified",
+        "comparison_numeric_ref_ids": [
+          "p1"
+        ],
+        "direction": "neutral",
+        "exact_text_span": "현재 PBR 58.88배는 장부가 기준의 절대 배수입니다.",
+        "fact_id": "valuation:book",
+        "interpretation_type": "absolute",
+        "metric": "pbr",
+        "normalized_span_sha256": "15398db731fae3e2cb9d36e7dfc0d28d0f88a062a553bc33e985d42698cbcc42",
+        "ref_id": "wulf_core_pbr",
+        "source_type": "canonical_backend",
+        "text_ref": "core_judgment.text"
+      },
+      {
+        "basis_status": "verified",
+        "comparison_numeric_ref_ids": [
+          "p2"
+        ],
+        "direction": "high",
+        "exact_text_span": "PBR 역사적 백분위 100%는 과거 관측치 대부분보다 높습니다.",
+        "fact_id": "valuation:historical_pb",
+        "interpretation_type": "historical",
+        "metric": "pbr",
+        "normalized_span_sha256": "b3b2256dbe0ae76d02f06ced577fc2b202dcffda1275632c00a53ff04dd00a67",
+        "ref_id": "wulf_core_history",
+        "source_type": "canonical_backend",
+        "text_ref": "core_judgment.text"
+      },
+      {
+        "basis_status": "verified",
+        "comparison_numeric_ref_ids": [
+          "p3"
+        ],
+        "direction": "neutral",
+        "exact_text_span": "TTM EPS $-5.74 수준의 현재 이익 기준은 PER 해석에 사용하지 않습니다.",
+        "fact_id": "valuation:trailing_earnings",
+        "interpretation_type": "absolute",
+        "metric": "earnings",
+        "normalized_span_sha256": "586e074751e4fea96568a78e770c679c2f3bf805e10e7f3b7775cbfa9373cb22",
+        "ref_id": "wulf_p3_absolute",
+        "source_type": "canonical_backend",
+        "text_ref": "valuation_analysis.text"
+      },
+      {
+        "basis_status": "verified",
+        "comparison_numeric_ref_ids": [
+          "p4"
+        ],
+        "direction": "neutral",
+        "exact_text_span": "현재 PBR 58.88배는 장부가 기준의 절대 배수입니다.",
+        "fact_id": "valuation:book",
+        "interpretation_type": "absolute",
+        "metric": "pbr",
+        "normalized_span_sha256": "15398db731fae3e2cb9d36e7dfc0d28d0f88a062a553bc33e985d42698cbcc42",
+        "ref_id": "wulf_p4_absolute",
+        "source_type": "canonical_backend",
+        "text_ref": "valuation_analysis.text"
+      },
+      {
+        "basis_status": "verified",
+        "comparison_numeric_ref_ids": [
+          "p5"
+        ],
+        "direction": "high",
+        "exact_text_span": "PBR 역사적 백분위 100%는 역사 분포에서 높습니다.",
+        "fact_id": "valuation:historical_pb",
+        "interpretation_type": "historical",
+        "metric": "pbr",
+        "normalized_span_sha256": "277fd7027117b1b92c405aadf9104ea365590646f1972ce3e7a6a5325e14647b",
+        "ref_id": "wulf_val_history",
+        "source_type": "canonical_backend",
+        "text_ref": "valuation_analysis.text"
+      }
+    ]
+  },
+  "wrong_metric_coverage": 0
+}

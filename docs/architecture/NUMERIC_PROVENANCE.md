@@ -123,14 +123,21 @@ statement basis, amount start/end, period type, and comparison period. A report 
 not make every amount H1 cumulative; Q2 and H1 rows from one filing retain different semantics.
 Ambiguous row matches or comparison periods fail closed.
 
+`financial-statement-basis-v1` independently resolves CFS, OFS, conflict, and unknown states. CFS is
+preferred when a unique row exists; an OFS-only amount is eligible only with an explicit separate
+basis label. IS/CIS identifies statement type, not consolidated status. Current and comparison rows
+must share the same verified basis, and an official reference with a different basis cannot validate
+or overwrite the runtime amount.
+
 RR claims also carry a mandatory basis. `current_price_risk_reward_ratio` renders as current-price
 RR, while `support_entry_risk_reward_ratio` renders as a conditional dynamic-support-entry scenario.
 Their labels and prose scopes are not interchangeable.
 
-Valuation prose carries draft-only `typed-valuation-interpretation-v1` references. Historical,
-peer, expectation, and trailing/forward claims identify a homogeneous Fact plus the exact visible
-numeric comparison. Absolute multiples may be displayed neutrally, but an aggregate valuation Fact
-cannot authorize a directional interpretation.
+Valuation prose carries draft-only `typed-valuation-interpretation-v2` references. Each reference
+binds one exact normalized occurrence span, metric, homogeneous Fact, comparison claim IDs, direction,
+and basis state. A reference cannot cover another sentence, another metric, a duplicate occurrence,
+or a denied interpretation in the same section. Absolute multiples may be displayed neutrally, but
+an aggregate valuation Fact cannot authorize a directional interpretation.
 
 `valuation-coherence-v1` keeps book-value lineage homogeneous. A positive price and positive PBR
 cannot coexist as an eligible multiple with non-positive BVPS on the same verified period, currency,

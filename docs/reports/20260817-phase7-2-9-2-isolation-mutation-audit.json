@@ -1,0 +1,57 @@
+{
+  "ai_review_mode": "shadow",
+  "archive_mutations": 0,
+  "assessment_mutations": 0,
+  "isolated_artifacts": {
+    "kr": {
+      "corrected_packet": "2026-08-16-kr-run-21-23491b3e8f73",
+      "human_quality_status": "pending_work_human_review",
+      "operating_mutations": 0,
+      "packet_sha256": "f5cb6a8b682d846263d9990c22e6770509ef9c9220f4159d4a402257acac5c62",
+      "pilot_mutations": 0,
+      "provider_calls": 0,
+      "receipt_sha256": "48857f3c0519cf29755c1de9a536629e1f7076a477170c65e08d5a643eecb067",
+      "rendered_payload_sha256": "d92a4f00635c56c80215f9ce21407f2f1f0beb7c83c700cd36a18da336219ace",
+      "source_db_copy_sha256": "4cfd7bb8cef53954de141c8201f510d0c9bd6c2a1ce3299ae22ad42a18826d39",
+      "source_packet": "2026-08-16-kr-run-21-5844682f15da",
+      "telegram_sends": 0,
+      "validated_output_sha256": "c8131741ee7c14c8409eb6d20dec79821c460faa55a14252ee426697b7e2cde7"
+    },
+    "us": {
+      "corrected_packet": "2026-08-16-us-run-20-fb918a643ae6",
+      "human_quality_status": "pending_work_human_review",
+      "operating_mutations": 0,
+      "packet_sha256": "e9fafec975f317f581fb13e9d365a66ef45bf5b5eb260b6e7e4aaa489f263e54",
+      "pilot_mutations": 0,
+      "provider_calls": 0,
+      "receipt_sha256": "3faef48ff134beb22c8012770ed7dec18f9a7943a55358675b0de3ca01782e3d",
+      "rendered_payload_sha256": "ee39600753ef19b7f29382dbd10095697d8bafbef767f46a6d98cf7e26418c31",
+      "source_db_copy_sha256": "4cfd7bb8cef53954de141c8201f510d0c9bd6c2a1ce3299ae22ad42a18826d39",
+      "source_packet": "2026-08-16-us-run-20-f9b252d77940",
+      "telegram_sends": 0,
+      "validated_output_sha256": "248d90cafdc51663e276dc37c1c9f83a29cd5e87678f29efeb3fea4c4cbcde82"
+    }
+  },
+  "operating_artifact_sha256": {
+    "database": "987bfb4b82c8017054f8c3cef1213177246868f902dd134be0c4f4fd34e3eb78",
+    "kr_live_archive_complete": "1bfcbf4664dd0611d315da8a6329978e34bd94a8e4b264f212ebff383302dec4",
+    "kr_live_packet": "20e94eff4f16d9b95e3e5e196c3c8f0b349a24b581b38c8d807cae802066b6b4",
+    "kr_live_rendered_payload": "202b83b805ceb39e8eb4fbed114a2754400be7da8db2e8d1a0920fe428d4edcc",
+    "kr_live_validated_output": "acb810c7d91e0d2df985fc7854a70c5c5aded9845b3f32aef69959ea0890e8da",
+    "pilot_state": "8aad97ed4110efb0f7bccd83aa5bd9e78c570e218ef59784c52dcf5cadf24450",
+    "us_live_archive_complete": "ddce83e262e85e74d8459bb2d82795b5cd0b014699823a41e4aebaaa838179b6",
+    "us_live_packet": "7165c38af95d530116596f5ec5f62ee17e075a997f5fb867619d78263ad8684d",
+    "us_live_rendered_payload": "1e03196c239e73ed044c3862bdde1b25f38759e66a2dc116c8df3c7dfb224cdc",
+    "us_live_validated_output": "62673a28353282f0930ebe4bebe1b91cf8b96e7b15a7346a2dbc32d10c7df955"
+  },
+  "operating_db_mutations": 0,
+  "pilot_mutations": 0,
+  "production_assist": "OFF",
+  "provider_calls": 0,
+  "runtime_pilot": {
+    "kr": 3,
+    "us": 2
+  },
+  "scheduled_task_mutations": 0,
+  "telegram_sends": 0
+}
