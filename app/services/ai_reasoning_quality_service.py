@@ -97,6 +97,8 @@ def _template_skeleton(
 def _structural_template_exception(sentence: str, skeleton: str) -> str | None:
     if skeleton == "<numeric>입니다.":
         return "single_canonical_numeric_statement"
+    if sentence.startswith("현재가 ") and skeleton == "<numeric> 수준입니다.":
+        return "canonical_current_price_statement"
     if (
         "동적 지지구간 하단" in sentence
         and "동적 지지구간 상단" in sentence
@@ -112,6 +114,16 @@ def _structural_template_exception(sentence: str, skeleton: str) -> str | None:
         for marker in ("당일 외국인", "기관", "최근 흐름", "중기 누적")
     ):
         return "kr_six_horizon_numeric_supply_contract"
+    if (
+        "외국인" in sentence
+        and "기관" in sentence
+        and skeleton == "<numeric>, <numeric>."
+    ):
+        return "kr_actor_horizon_numeric_pair"
+    if "차트 무효화 가격" in sentence and "사업 논리 무효화가 아니다" in sentence:
+        return "chart_vs_thesis_invalidation_safety"
+    if "가장 가까운 적격 저항" in sentence and "차트 손익비" in sentence:
+        return "canonical_nearest_resistance_rr_contract"
     return None
 
 
@@ -295,6 +307,7 @@ def relational_reasoning_quality_report(
             sentence_tickers[sentence].add(review.ticker)
     template_tickers: dict[str, set[str]] = defaultdict(set)
     template_exception_reasons: dict[str, dict[str, str]] = defaultdict(dict)
+    sentence_exception_reasons: dict[str, dict[str, str]] = defaultdict(dict)
     for review in output.stock_reviews:
         stock = packet_stocks.get(review.ticker, {})
         company_name = str(
@@ -309,6 +322,7 @@ def relational_reasoning_quality_report(
             reason = _structural_template_exception(sentence, skeleton)
             if reason is not None:
                 template_exception_reasons[skeleton][review.ticker] = reason
+                sentence_exception_reasons[sentence][review.ticker] = reason
 
     common_safety = {normalize_decision_text(value) for value in _COMMON_SAFETY_SENTENCES}
     repeated = [
@@ -317,7 +331,11 @@ def relational_reasoning_quality_report(
             "stock_count": len(tickers),
             "tickers": sorted(tickers),
             "classification": (
-                "required_common_safety" if sentence in common_safety else "substantive"
+                "required_common_safety"
+                if sentence in common_safety
+                else "required_structural_safety"
+                if set(sentence_exception_reasons.get(sentence, {})) == tickers
+                else "substantive"
             ),
         }
         for sentence, tickers in sentence_tickers.items()

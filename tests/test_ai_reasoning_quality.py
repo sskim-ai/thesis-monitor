@@ -264,6 +264,20 @@ def test_quality_audit_classifies_required_structural_templates() -> None:
         )
         == "kr_six_horizon_numeric_supply_contract"
     )
+    assert (
+        _structural_template_exception(
+            "현재가 10,000원 수준입니다.",
+            "<numeric> 수준입니다.",
+        )
+        == "canonical_current_price_statement"
+    )
+    assert (
+        _structural_template_exception(
+            "외국인 당일 순매수 1주, 기관 당일 순매도 2주.",
+            "<numeric>, <numeric>.",
+        )
+        == "kr_actor_horizon_numeric_pair"
+    )
 
 
 def test_kr_supply_coverage_requires_numeric_claims_for_eligible_horizons() -> None:

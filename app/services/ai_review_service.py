@@ -733,10 +733,8 @@ def _financial_source_metadata(
     snapshot: dict[str, object],
 ) -> dict[str, object]:
     persisted = _dict(snapshot.get("financial_quality_source_metadata"))
-    if persisted:
-        return persisted
     period = str(snapshot.get("latest_earnings_period") or "")
-    if not period:
+    if not period and not persisted:
         return {}
     rows = list(session.exec(
         select(FinancialSnapshot).where(FinancialSnapshot.ticker == assessment.ticker)
@@ -785,6 +783,44 @@ def _financial_source_metadata(
             "margin_quality_review": row.margin_quality_review,
             "lineage_verified": True,
         }
+
+    def enrich_persisted_period_metadata(value: object) -> object:
+        if isinstance(value, list):
+            return [enrich_persisted_period_metadata(item) for item in value]
+        if not isinstance(value, dict):
+            return value
+        enriched = {
+            key: enrich_persisted_period_metadata(item)
+            for key, item in value.items()
+        }
+        item_period = str(enriched.get("period") or "")[:10]
+        if not item_period:
+            return enriched
+        item_source = str(enriched.get("source_type") or "")
+        item_provider = str(enriched.get("provider") or "")
+        item_filing = str(enriched.get("filing_date") or "")[:10]
+        matches = [
+            row
+            for row in rows
+            if row_period(row) == item_period
+            and (not item_source or row.snapshot_type == item_source)
+            and (not item_provider or row.provider == item_provider)
+            and (
+                not item_filing
+                or str(row.filing_date or row.reported_date or "")[:10]
+                == item_filing
+            )
+        ]
+        for field in ("period_type", "fiscal_year", "period_scope", "is_cumulative"):
+            if enriched.get(field) is not None:
+                continue
+            values = {getattr(row, field) for row in matches if getattr(row, field) is not None}
+            if len(values) == 1:
+                enriched[field] = values.pop()
+        return enriched
+
+    if persisted:
+        return _dict(enrich_persisted_period_metadata(persisted))
 
     def match_series(item: dict[str, object]) -> FinancialSnapshot | None:
         item_period = str(item.get("period") or "")[:10]
@@ -3545,6 +3581,12 @@ _PEER_VALUATION_LANGUAGE = re.compile(
     r"(?:peer|피어|동종|업종).{0,24}(?:premium|discount|프리미엄|할인|높|낮|비싸|싸)",
     re.IGNORECASE,
 )
+_ABSOLUTE_VALUATION_JUDGMENT = re.compile(
+    r"(?:(?:PER|PBR|fPER|fPBR|배수).{0,32}"
+    r"(?:고평가|저평가|비싸|싸다|부담|기대가?\s*(?:높|낮))|"
+    r"(?:고평가|저평가|기대\s*부담).{0,32}(?:PER|PBR|fPER|fPBR|배수))",
+    re.IGNORECASE,
+)
 
 
 def _section_fact_ids(review: AIStockReview, text_ref: str) -> set[str]:
@@ -3715,6 +3757,15 @@ def _valuation_interpretation_evidence_errors(
         ):
             errors.append(
                 f"{ticker}:peer_valuation_interpretation_without_comparison:"
+                f"{text_ref}"
+            )
+        comparison_supported = any(
+            claim.semantic_type in historical_semantics | peer_semantics
+            for claim in claims
+        ) or any(fact_id.startswith("market_expectation:") for fact_id in facts)
+        if _ABSOLUTE_VALUATION_JUDGMENT.search(text) and not comparison_supported:
+            errors.append(
+                f"{ticker}:absolute_valuation_judgment_without_comparison:"
                 f"{text_ref}"
             )
     return list(dict.fromkeys(errors))

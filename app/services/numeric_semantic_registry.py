@@ -218,22 +218,22 @@ NUMERIC_SEMANTICS = {
     "foreign_net_buy_qty": _spec(
         "foreign_net_buy_qty",
         ("shares",),
-        ("외국인 순매수", "외국인 순매도"),
-        (r"외국인.*(?:순매수|순매도)", r"foreign.*net (?:buy|sell)"),
+        ("외국인 당일 순매수", "외국인 당일 순매도"),
+        (r"외국인.*(?:당일)?.*(?:순매수|순매도)", r"foreign.*net (?:buy|sell)"),
         "signed_shares",
     ),
     "institution_net_buy_qty": _spec(
         "institution_net_buy_qty",
         ("shares",),
-        ("기관 순매수", "기관 순매도"),
-        (r"기관.*(?:순매수|순매도)", r"institution.*net (?:buy|sell)"),
+        ("기관 당일 순매수", "기관 당일 순매도"),
+        (r"기관.*(?:당일)?.*(?:순매수|순매도)", r"institution.*net (?:buy|sell)"),
         "signed_shares",
     ),
     "individual_net_buy_qty": _spec(
         "individual_net_buy_qty",
         ("shares",),
-        ("개인 순매수", "개인 순매도"),
-        (r"개인.*(?:순매수|순매도)", r"individual.*net (?:buy|sell)"),
+        ("개인 당일 순매수", "개인 당일 순매도"),
+        (r"개인.*(?:당일)?.*(?:순매수|순매도)", r"individual.*net (?:buy|sell)"),
         "signed_shares",
     ),
     "foreign_net_buy_qty_5d": _spec(

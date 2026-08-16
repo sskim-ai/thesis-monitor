@@ -4518,6 +4518,14 @@ def test_financial_period_and_valuation_interpretation_require_exact_evidence(
     assert any("financial_period_label_missing" in error for error in period_errors)
     assert any("negative_book_interpretation_without_homogeneous_fact" in error for error in valuation_errors)
     assert any("historical_valuation_interpretation_without_comparison" in error for error in valuation_errors)
+    review.valuation_analysis.text = "현재 PER와 PBR 모두 기대 부담이 큽니다."
+    valuation_errors = ai_review_service._valuation_interpretation_evidence_errors(
+        review.ticker, review
+    )
+    assert any(
+        "absolute_valuation_judgment_without_comparison" in error
+        for error in valuation_errors
+    )
 
     review.business_earnings.text = "2026년 2분기 영업이익 5천만원은 확인된 값입니다."
     review.numeric_claims[-1].usage = "2026년 2분기 영업이익 5천만원"
@@ -4529,6 +4537,49 @@ def test_financial_period_and_valuation_interpretation_require_exact_evidence(
     assert ai_review_service._valuation_interpretation_evidence_errors(
         review.ticker, review
     ) == []
+
+
+def test_persisted_financial_quality_lineage_is_enriched_with_verified_period_metadata(
+    monkeypatch,
+    tmp_path: Path,
+) -> None:
+    _settings(monkeypatch, tmp_path)
+    with Session(_engine()) as session:
+        _seed(session)
+        latest = session.exec(
+            select(FinancialSnapshot)
+            .where(FinancialSnapshot.ticker == "PACKETUS")
+            .where(FinancialSnapshot.financial_period_end == date(2026, 6, 30))
+        ).one()
+        latest.period_type = "Q2"
+        latest.period_scope = "half-year"
+        latest.is_cumulative = True
+        session.add(latest)
+        session.commit()
+        assessment = session.exec(
+            select(ThesisAssessment)
+            .where(ThesisAssessment.ticker == "PACKETUS")
+            .where(ThesisAssessment.assessment_date == RUN_DATE)
+        ).one()
+        metadata = ai_review_service._financial_source_metadata(
+            session,
+            assessment,
+            {
+                "latest_earnings_period": "2026-06-30",
+                "financial_quality_source_metadata": {
+                    "period": "2026-06-30",
+                    "source_type": "full_statement",
+                    "provider": "fixture_provider",
+                    "filing_date": "2026-08-01",
+                    "lineage_verified": True,
+                },
+            },
+        )
+
+    assert metadata["period_type"] == "Q2"
+    assert metadata["period_scope"] == "half-year"
+    assert metadata["is_cumulative"] is True
+    assert metadata["lineage_verified"] is True
 
 
 def test_authoritative_identity_field_provenance_reaches_ai_packet(
