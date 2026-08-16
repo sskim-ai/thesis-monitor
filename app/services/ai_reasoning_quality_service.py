@@ -738,7 +738,9 @@ def runtime_message_quality_receipt(
     if quality.get("hard_checks_passed") is not True:
         errors.append("runtime_message_quality_gate_failed")
     return {
-        "contract": "runtime-message-quality-v1",
+        "contract": "runtime-message-quality-receipt-v2",
+        "receipt_schema_version": "2",
+        "gate_version": "runtime-message-quality-v1",
         "packet_id": str(packet.get("packet_id") or ""),
         "policy_version": str(packet.get("analysis_policy_version") or ""),
         "schema_version": str(packet.get("output_schema_version") or ""),
@@ -767,13 +769,27 @@ def verify_runtime_message_quality_receipt(
         }
         for item in rendered_messages
     ]
+    quality = receipt.get("check_results")
+    errors = receipt.get("errors")
     return bool(
-        receipt.get("contract") == "runtime-message-quality-v1"
+        receipt.get("contract") == "runtime-message-quality-receipt-v2"
+        and receipt.get("receipt_schema_version") == "2"
+        and receipt.get("gate_version") == "runtime-message-quality-v1"
         and receipt.get("status") == "passed"
         and receipt.get("packet_id") == packet.get("packet_id")
+        and receipt.get("policy_version") == packet.get("analysis_policy_version")
+        and receipt.get("schema_version") == str(packet.get("output_schema_version") or "")
         and receipt.get("packet_sha256") == _canonical_sha256(packet)
         and receipt.get("validated_output_sha256")
         == _canonical_sha256(output.model_dump(mode="json"))
         and receipt.get("rendered_payload_set_sha256") == _canonical_sha256(messages)
         and int(receipt.get("message_count") or 0) == len(messages)
+        and isinstance(quality, dict)
+        and quality.get("contract") == "relational-reasoning-quality-v2"
+        and quality.get("hard_checks_passed") is True
+        and quality.get("deterministic_quality_gate_passed") is True
+        and isinstance(errors, list)
+        and not errors
+        and isinstance(receipt.get("checked_at"), str)
+        and bool(receipt.get("checked_at"))
     )

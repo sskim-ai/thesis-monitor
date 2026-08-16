@@ -139,6 +139,30 @@ def test_opendart_q3_and_cumulative_amount_are_explicit() -> None:
     assert any("period_scope=ytd" in fact for fact in facts)
 
 
+def test_opendart_ambiguous_top_source_rows_fail_closed() -> None:
+    base = {
+        "account_nm": "매출액",
+        "account_id": "ifrs-full_Revenue",
+        "fs_div": "CFS",
+        "sj_div": "IS",
+        "sj_nm": "연결 손익계산서",
+        "thstrm_nm": "제2분기",
+        "frmtrm_nm": "전기",
+        "thstrm_add_amount": "430",
+    }
+
+    facts = _extract_financial_facts(
+        [
+            {**base, "rcept_no": "A", "thstrm_amount": "150"},
+            {**base, "rcept_no": "B", "thstrm_amount": "151"},
+        ],
+        "11012",
+    )
+
+    assert not any("financial fact: 매출액" in fact for fact in facts)
+    assert any("ambiguous source rows for revenue" in fact for fact in facts)
+
+
 @pytest.mark.anyio
 async def test_opendart_common_share_status_is_structured() -> None:
     def handler(_request: httpx.Request) -> httpx.Response:

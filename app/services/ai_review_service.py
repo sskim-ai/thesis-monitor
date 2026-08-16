@@ -41,6 +41,13 @@ from app.services.financial_quality_service import (
     build_financial_quality_state,
     field_quality,
 )
+from app.services.financial_amount_period_service import (
+    AMOUNT_PERIOD_CONTRACT,
+    apply_comparison_period_metadata,
+    financial_amount_period_label,
+    financial_amount_period_lineage,
+    unique_financial_source_row,
+)
 from app.services.market_session import market_scope_for_security
 from app.services.market_intelligence_service import build_market_intelligence
 from app.services.night_futures import NIGHT_FUTURES_SERIES
@@ -766,8 +773,11 @@ def _financial_source_metadata(
     def row_period(row: FinancialSnapshot) -> str:
         return str(row.financial_period_end or row.financials_as_of or row.period)[:10]
 
-    def metadata(row: FinancialSnapshot) -> dict[str, object]:
-        return {
+    def metadata(
+        row: FinancialSnapshot,
+        field: str | None = None,
+    ) -> dict[str, object]:
+        value = {
             "period": row_period(row),
             "period_type": row.period_type,
             "fiscal_year": row.fiscal_year,
@@ -783,6 +793,9 @@ def _financial_source_metadata(
             "margin_quality_review": row.margin_quality_review,
             "lineage_verified": True,
         }
+        if field is not None and row.provider == "opendart":
+            value.update(financial_amount_period_lineage(row, field))
+        return value
 
     def enrich_persisted_period_metadata(value: object) -> object:
         if isinstance(value, list):
@@ -820,7 +833,48 @@ def _financial_source_metadata(
         return enriched
 
     if persisted:
-        return _dict(enrich_persisted_period_metadata(persisted))
+        enriched_persisted = _dict(enrich_persisted_period_metadata(persisted))
+        enriched_persisted["financial_amount_period_contract"] = (
+            AMOUNT_PERIOD_CONTRACT
+        )
+        enriched_direct = _dict(enriched_persisted.get("direct_field_sources"))
+        for field, values in enriched_direct.items():
+            if not isinstance(values, list):
+                continue
+            for item in values:
+                if not isinstance(item, dict):
+                    continue
+                item_period = str(item.get("period") or "")[:10]
+                item_filing = str(item.get("filing_date") or "")[:10]
+                matches = [
+                    row
+                    for row in rows
+                    if row_period(row) == item_period
+                    and (
+                        not item_filing
+                        or str(row.filing_date or row.reported_date or "")[:10]
+                        == item_filing
+                    )
+                ]
+                sourced_matches = [row for row in matches if row.source_filing_id]
+                if sourced_matches:
+                    matches = sourced_matches
+                matched_row = unique_financial_source_row(matches, field)
+                if matched_row is not None and matched_row.provider == "opendart":
+                    item.update(financial_amount_period_lineage(matched_row, field))
+            comparison = (
+                "qoq"
+                if str(field).endswith("_qoq")
+                else "yoy"
+                if str(field).endswith("_yoy")
+                else None
+            )
+            if comparison:
+                apply_comparison_period_metadata(
+                    [item for item in values if isinstance(item, dict)],
+                    comparison=comparison,
+                )
+        return enriched_persisted
 
     def match_series(item: dict[str, object]) -> FinancialSnapshot | None:
         item_period = str(item.get("period") or "")[:10]
@@ -876,6 +930,7 @@ def _financial_source_metadata(
         ),
     )
     result = metadata(row)
+    result["financial_amount_period_contract"] = AMOUNT_PERIOD_CONTRACT
 
     quarter_series = [
         item
@@ -927,9 +982,8 @@ def _financial_source_metadata(
             ),
             None,
         )
-    latest_metadata = metadata(row)
     direct_field_sources: dict[str, list[dict[str, object]]] = {
-        field: [latest_metadata]
+        field: [metadata(row, field)]
         for field in (
             "latest_revenue",
             "latest_operating_income",
@@ -938,10 +992,14 @@ def _financial_source_metadata(
     }
     if prior is not None:
         for field in ("latest_revenue_qoq", "latest_operating_income_qoq"):
-            direct_field_sources[field] = [latest_metadata, metadata(prior)]
+            records = [metadata(row, field), metadata(prior, field)]
+            apply_comparison_period_metadata(records, comparison="qoq")
+            direct_field_sources[field] = records
     if prior_year is not None:
         for field in ("latest_revenue_yoy", "latest_operating_income_yoy"):
-            direct_field_sources[field] = [latest_metadata, metadata(prior_year)]
+            records = [metadata(row, field), metadata(prior_year, field)]
+            apply_comparison_period_metadata(records, comparison="yoy")
+            direct_field_sources[field] = records
     result["direct_field_sources"] = direct_field_sources
 
     minimum = get_settings().valuation_model_min_quarters
@@ -1068,6 +1126,7 @@ def _valuation_payload(
         "currency",
         "financial_currency",
         "price_as_of",
+        "price_basis",
         "latest_earnings_period",
         "latest_earnings_period_type",
         "latest_earnings_fiscal_year",
@@ -1636,7 +1695,7 @@ def _chart_facts(chart: dict[str, object], currency: str) -> list[dict[str, obje
                 facts.append(
                     {
                         "fact_id": f"chart:structure:risk_reward:{scenario}",
-                        "fact_type": "chart_risk_reward",
+                        "fact_type": f"chart_risk_reward_{scenario}",
                         "as_of_date": str(structure.get("as_of_date") or ""),
                         "source": "deterministic_ohlcv_structure",
                         "fields": {
@@ -1654,6 +1713,7 @@ def _chart_facts(chart: dict[str, object], currency: str) -> list[dict[str, obje
                                 )
                                 if value.get(key) is not None
                             },
+                            "rr_basis": scenario,
                             "currency": currency,
                         },
                     }
@@ -2014,17 +2074,33 @@ def _fact_catalog(
         valuation.get("latest_earnings_is_cumulative")
         or _dict(financial_quality.get("source_snapshot")).get("is_cumulative")
     )
-    period_label = _financial_period_label(
-        period,
-        earnings_period_type,
-        earnings_fiscal_year,
-        earnings_period_scope,
-        earnings_is_cumulative,
+    direct_quality = _dict(financial_quality.get("fields"))
+    field_period_labels = {
+        field: financial_amount_period_label(_dict(quality))
+        for field, quality in direct_quality.items()
+        if field.startswith("latest_") and isinstance(quality, dict)
+    }
+    period_label = field_period_labels.get("latest_operating_income") or field_period_labels.get(
+        "latest_revenue"
     )
+    direct_financial_providers = {
+        str(_dict(value).get("provider") or "")
+        for key, value in direct_quality.items()
+        if key.startswith("latest_") and isinstance(value, dict)
+    }
+    if period_label is None and "opendart" not in direct_financial_providers:
+        period_label = _financial_period_label(
+            period,
+            earnings_period_type,
+            earnings_fiscal_year,
+            earnings_period_scope,
+            earnings_is_cumulative,
+        )
     earnings_fields: dict[str, object] = {
         "period": period,
         "period_type": earnings_period_type or None,
         "period_label": period_label,
+        "field_period_labels": field_period_labels,
         "financial_period_required": True,
         "preliminary": bool(valuation.get("earnings_context_is_preliminary")),
     }
@@ -2247,6 +2323,113 @@ def _fact_catalog(
             "valuation:historical_pb",
             ("historical_pb_statistics",),
         )
+        trailing_pe = _number(valuation.get("trailing_pe"))
+        forward_pe = _number(valuation.get("forward_pe"))
+        if trailing_pe is not None and forward_pe is not None:
+            trailing_quality = _dict(valuation_field_quality.get("fields.trailing_pe"))
+            forward_quality = _dict(valuation_field_quality.get("fields.forward_pe"))
+            forward_source = str(valuation.get("forward_pe_source") or "unknown")
+            trailing_basis = str(valuation.get("trailing_pe_basis_status") or "")
+            forward_basis_status = str(valuation.get("forward_pe_basis_status") or "")
+            price_basis = str(valuation.get("price_basis") or "")
+            price_as_of = str(valuation.get("price_as_of") or "")
+            trailing_period = str(
+                valuation.get("trailing_pe_denominator_period_end") or ""
+            )
+            forward_period = str(valuation.get("forward_pe_input_period") or "")
+            trailing_security_basis = str(
+                valuation.get("eps_security_basis") or "unknown"
+            )
+            comparable_statuses = {
+                "directly_comparable",
+                "normalized_to_current_security",
+            }
+            provider_native_consensus = bool(
+                forward_source == "consensus_forward"
+                and identity_state == VERIFIED_NON_DEPOSITARY
+                and forward_basis_status == "not_applicable"
+            )
+            reasons: list[str] = []
+            if trailing_quality.get("prose_eligible") is not True:
+                reasons.append("trailing_multiple_not_prose_eligible")
+            if forward_quality.get("prose_eligible") is not True:
+                reasons.append("forward_multiple_not_prose_eligible")
+            if trailing_basis not in comparable_statuses:
+                reasons.append("trailing_security_basis_unverified")
+            if (
+                forward_basis_status not in comparable_statuses
+                and not provider_native_consensus
+            ):
+                reasons.append("forward_security_basis_unverified")
+            if identity_state not in {
+                VERIFIED_DEPOSITARY,
+                VERIFIED_NON_DEPOSITARY,
+            }:
+                reasons.append("security_identity_unverified")
+            if not currency:
+                reasons.append("price_currency_unverified")
+            if price_basis in {"", "unavailable", "unknown"} or not price_as_of:
+                reasons.append("price_basis_unverified")
+            if not trailing_period:
+                reasons.append("trailing_denominator_period_unverified")
+            if not forward_period:
+                reasons.append("forward_denominator_period_unverified")
+            if trailing_security_basis != "current_security":
+                reasons.append("trailing_share_basis_unverified")
+            basis_comparable = not reasons
+            multiple_direction = (
+                "forward_higher"
+                if forward_pe > trailing_pe
+                else "forward_lower"
+                if forward_pe < trailing_pe
+                else "unchanged"
+            )
+            denominator_direction = (
+                "forward_denominator_lower"
+                if forward_pe > trailing_pe
+                else "forward_denominator_higher"
+                if forward_pe < trailing_pe
+                else "unchanged"
+            )
+            facts.append(
+                {
+                    "fact_id": "valuation:multiple_relation",
+                    "fact_type": "valuation_multiple_relation",
+                    "as_of_date": str(valuation.get("price_as_of") or ""),
+                    "source": "deterministic_valuation_relation",
+                    "fields": {
+                        "trailing_metric": "PER",
+                        "trailing_value": trailing_pe,
+                        "forward_metric": "fPER",
+                        "forward_value": forward_pe,
+                        "forward_source": forward_source,
+                        "security_identity_state": identity_state,
+                        "price_currency": currency,
+                        "price_basis": price_basis or None,
+                        "price_as_of": price_as_of or None,
+                        "trailing_share_basis": trailing_security_basis,
+                        "forward_share_basis": (
+                            "current_security_provider_contract"
+                            if provider_native_consensus
+                            else trailing_security_basis
+                        ),
+                        "trailing_denominator_period": trailing_period or None,
+                        "forward_denominator_period": forward_period or None,
+                        "trailing_basis_status": trailing_basis or None,
+                        "forward_basis_status": forward_basis_status or None,
+                        "basis_comparable": basis_comparable,
+                        "multiple_direction": multiple_direction,
+                        "denominator_direction": denominator_direction,
+                        "interpretation_eligibility": (
+                            "eligible" if basis_comparable else "unknown"
+                        ),
+                        "reason_codes": reasons,
+                    },
+                    "prose_eligible": True,
+                    "interpretation_eligible": basis_comparable,
+                    "numeric_registry_eligible": False,
+                }
+            )
     peer = _dict(_dict(monitoring_state.get("current")).get("peer_valuation"))
     peer_metrics = _dict(peer.get("metrics"))
     peer_fields: dict[str, object] = {
@@ -2564,6 +2747,9 @@ def _stock_packet(
     )
     stock["fact_catalog"] = facts
     stock["numeric_registry"] = _numeric_registry(facts)
+    stock["typed_valuation_interpretation_contract"] = (
+        "typed-valuation-interpretation-v1"
+    )
     stock["state_grounding_requirements"] = _state_grounding_requirements(
         monitoring_state,
         facts,
@@ -3567,15 +3753,20 @@ _KR_SUPPLY_DIRECTION = re.compile(
 _FINANCIAL_PERIOD_USAGE = re.compile(
     r"\b20\d{2}년\s*(?:[1-4]분기|상반기\s*누적|3분기\s*누적|연간)\b"
 )
+_FINANCIAL_CUMULATIVE_LANGUAGE = re.compile(
+    r"(?:상반기\s*누적|(?:3분기|9개월)\s*누적|누적\s*(?:매출|이익|실적)|"
+    r"(?:매출|이익|실적)\s*누적)"
+)
+_FINANCIAL_SINGLE_QUARTER_LANGUAGE = re.compile(r"(?:단일\s*분기|분기\s*단일)")
 _FINANCIAL_PERIOD_SEMANTICS = {
     "revenue",
     "operating_income",
     "net_income",
-    "operating_margin_pct",
-    "revenue_qoq_pct",
-    "revenue_yoy_pct",
-    "operating_income_qoq_pct",
-    "operating_income_yoy_pct",
+    "operating_margin",
+    "revenue_qoq",
+    "revenue_yoy",
+    "operating_income_qoq",
+    "operating_income_yoy",
 }
 _NEGATIVE_BOOK_LANGUAGE = re.compile(
     r"(?:음의\s*(?:BVPS|주당순자산|장부가치)|"
@@ -3714,6 +3905,7 @@ def _financial_period_language_errors(
     review: AIStockReview,
 ) -> list[str]:
     errors: list[str] = []
+    prose_fields = _prose_fields(review)
     for claim in review.numeric_claims:
         if claim.semantic_type not in _FINANCIAL_PERIOD_SEMANTICS:
             continue
@@ -3721,6 +3913,44 @@ def _financial_period_language_errors(
             errors.append(
                 f"{ticker}:financial_period_label_missing:"
                 f"{claim.fact_id}:{claim.field_path}:{claim.text_ref}"
+            )
+            continue
+        text = prose_fields.get(claim.text_ref, "")
+        usage_start = text.find(claim.usage)
+        if usage_start < 0:
+            continue
+        sentence_start = max(
+            text.rfind(".", 0, usage_start),
+            text.rfind("!", 0, usage_start),
+            text.rfind("?", 0, usage_start),
+            text.rfind("\n", 0, usage_start),
+        ) + 1
+        sentence_ends = [
+            index
+            for index in (
+                text.find(".", usage_start),
+                text.find("!", usage_start),
+                text.find("?", usage_start),
+                text.find("\n", usage_start),
+            )
+            if index >= 0
+        ]
+        sentence_end = min(sentence_ends) if sentence_ends else len(text)
+        sentence = text[sentence_start:sentence_end]
+        usage_is_cumulative = bool(re.search(r"(?:상반기|3분기)\s*누적", claim.usage))
+        usage_is_single_quarter = bool(
+            re.search(r"20\d{2}년\s*[1-4]분기", claim.usage)
+            and not usage_is_cumulative
+        )
+        if usage_is_single_quarter and _FINANCIAL_CUMULATIVE_LANGUAGE.search(sentence):
+            errors.append(
+                f"{ticker}:financial_amount_period_prose_mismatch:"
+                f"{claim.fact_id}:{claim.field_path}:{claim.text_ref}:single_quarter"
+            )
+        if usage_is_cumulative and _FINANCIAL_SINGLE_QUARTER_LANGUAGE.search(sentence):
+            errors.append(
+                f"{ticker}:financial_amount_period_prose_mismatch:"
+                f"{claim.fact_id}:{claim.field_path}:{claim.text_ref}:cumulative"
             )
     return list(dict.fromkeys(errors))
 
@@ -3934,6 +4164,80 @@ def _risk_reward_comparative_errors(
     return list(dict.fromkeys(errors))
 
 
+_SUPPORT_ENTRY_RR_BASIS = re.compile(
+    r"(?:동적\s*)?지지(?:구간)?[^.!?\n]{0,18}(?:접근|도달|가정|조건부)",
+    re.IGNORECASE,
+)
+
+
+def _risk_reward_basis_errors(
+    ticker: str,
+    review: AIStockReview,
+) -> list[str]:
+    errors: list[str] = []
+    for text_ref, text in _prose_fields(review).items():
+        claims = [
+            claim
+            for claim in review.numeric_claims
+            if claim.text_ref == text_ref
+            and "risk_reward" in claim.semantic_type
+        ]
+        for claim in claims:
+            if claim.semantic_type == "risk_reward_ratio":
+                errors.append(f"{ticker}:risk_reward_basis_missing:{text_ref}")
+            if (
+                claim.semantic_type == "support_entry_risk_reward_ratio"
+                and not _SUPPORT_ENTRY_RR_BASIS.search(text)
+            ):
+                errors.append(
+                    f"{ticker}:support_entry_risk_reward_basis_not_disclosed:{text_ref}"
+                )
+            if (
+                claim.semantic_type == "current_price_risk_reward_ratio"
+                and "지지 접근 가정 차트 손익비" in claim.usage
+            ):
+                errors.append(
+                    f"{ticker}:current_price_risk_reward_mislabeled:{text_ref}"
+                )
+            if (
+                claim.semantic_type == "current_price_risk_reward_ratio"
+                and re.search(
+                    rf"(?:동적\s*)?지지(?:구간)?[^.!?\n]{{0,28}}"
+                    rf"(?:접근|도달|가정|조건부)[^.!?\n]{{0,28}}"
+                    rf"{re.escape(claim.usage)}",
+                    text,
+                )
+            ):
+                errors.append(
+                    f"{ticker}:current_price_risk_reward_used_as_support_scenario:"
+                    f"{text_ref}"
+                )
+            if (
+                claim.semantic_type == "support_entry_risk_reward_ratio"
+                and re.search(
+                    rf"(?:현재가|현재\s*가격).{{0,28}}{re.escape(claim.usage)}"
+                    rf"|{re.escape(claim.usage)}.{{0,28}}(?:현재가|현재\s*가격)",
+                    text,
+                )
+            ):
+                errors.append(
+                    f"{ticker}:support_entry_risk_reward_used_as_current_price:"
+                    f"{text_ref}"
+                )
+        if text_ref == "core_judgment.text" and any(
+            claim.semantic_type == "support_entry_risk_reward_ratio"
+            for claim in claims
+        ) and not any(
+            claim.semantic_type == "current_price_risk_reward_ratio"
+            for claim in claims
+        ):
+            errors.append(
+                f"{ticker}:support_entry_risk_reward_used_as_primary_current_rr:"
+                f"{text_ref}"
+            )
+    return list(dict.fromkeys(errors))
+
+
 def _market_supply_language_errors(
     ticker: str,
     market: AIReviewMarket | None,
@@ -4043,6 +4347,7 @@ def _validate_stock_review(
             review,
         )
     )
+    errors.extend(_risk_reward_basis_errors(review.ticker, review))
     errors.extend(
         _market_supply_language_errors(review.ticker, market, stock, review)
     )
@@ -4410,9 +4715,15 @@ def validate_ai_review_output(
     output_value: object,
 ) -> tuple[AIDailyReviewOutput | None, list[str]]:
     binding = bind_numeric_fact_references(packet, output_value)
+    typed_errors = list(
+        _dict(binding.report.get("typed_valuation_interpretations")).get(
+            "errors", []
+        )
+    )
     if binding.errors:
-        return None, list(binding.errors)
-    return _validate_bound_ai_review_output(session, packet, binding.output)
+        return None, list(dict.fromkeys([*binding.errors, *typed_errors]))
+    output, errors = _validate_bound_ai_review_output(session, packet, binding.output)
+    return output, list(dict.fromkeys([*errors, *typed_errors]))
 
 
 def _comparison_payload(
@@ -5008,6 +5319,11 @@ def finalize_ai_review_output(
         )
     binding = bind_numeric_fact_references(packet, candidate)
     binding_report = dict(binding.report)
+    typed_errors = list(
+        _dict(binding_report.get("typed_valuation_interpretations")).get(
+            "errors", []
+        )
+    )
     if candidate.get("claim_id") != claim_id:
         output = None
         errors = ["stale_claim_output"]
@@ -5020,6 +5336,7 @@ def finalize_ai_review_output(
             packet,
             binding.output,
         )
+        errors = list(dict.fromkeys([*errors, *typed_errors]))
     if output is None or errors:
         rejected = _directory("rejected") / f"{output_name}.{int(datetime.now(UTC).timestamp())}"
         os.replace(temp_path, rejected)

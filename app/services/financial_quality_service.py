@@ -3,6 +3,7 @@ from __future__ import annotations
 import copy
 from collections.abc import Mapping
 
+from app.services.financial_amount_period_service import AMOUNT_PERIOD_CONTRACT
 from app.services.security_identity_service import (
     IDENTITY_CONFLICT,
     IDENTITY_UNKNOWN,
@@ -301,6 +302,9 @@ def build_financial_quality_state(
     critical_reasons = sorted(aggregate_reasons.intersection(CRITICAL_REASON_CODES))
 
     direct_sources = _dict(source.get("direct_field_sources"))
+    amount_period_contract_active = (
+        source.get("financial_amount_period_contract") == AMOUNT_PERIOD_CONTRACT
+    )
     fields: dict[str, dict[str, object]] = {}
     for field in DIRECT_EARNINGS_FIELDS:
         if _field_value(snapshot, field) is None:
@@ -308,6 +312,29 @@ def build_financial_quality_state(
         records = _dict_list(direct_sources.get(field))
         if records:
             periods, complete, critical, provider = _dependency_quality(records)
+            if amount_period_contract_active and any(
+                item.get("provider") == "opendart" for item in records
+            ):
+                complete = bool(
+                    complete
+                    and all(
+                        item.get("amount_period_type")
+                        and item.get("amount_period_start")
+                        and item.get("amount_period_end")
+                        and item.get("source_row_identity")
+                        and item.get("consolidated_separate_basis")
+                        and item.get("statement_basis_source")
+                        for item in records
+                    )
+                )
+            if amount_period_contract_active and field.endswith(("_qoq", "_yoy")):
+                complete = bool(
+                    complete
+                    and all(
+                        item.get("comparison_period_verified") is True
+                        for item in records
+                    )
+                )
             source_types = list(
                 dict.fromkeys(
                     str(item.get("source_type"))
@@ -364,7 +391,7 @@ def build_financial_quality_state(
                     "unverified",
                 )
             field_source_type = source_type
-        fields[field] = _quality_record(
+        quality_record = _quality_record(
             state=state,
             source_period=periods[-1] if periods else source_period,
             source_type=field_source_type,
@@ -376,6 +403,39 @@ def build_financial_quality_state(
             lineage_verification_status=verification,
             denial_reason=denial,
         )
+        if records:
+            amount = records[0]
+            quality_record.update(
+                {
+                    key: amount.get(key)
+                    for key in (
+                        "amount_period_type",
+                        "amount_period_start",
+                        "amount_period_end",
+                        "single_quarter_cumulative_flag",
+                        "source_filing_identifier",
+                        "source_row_identity",
+                        "consolidated_separate_basis",
+                        "statement_basis_source",
+                        "comparison_type",
+                        "comparison_period_start",
+                        "comparison_period_end",
+                    )
+                }
+            )
+            if amount_period_contract_active and field.endswith(("_qoq", "_yoy")):
+                quality_record["comparison_period_verified"] = all(
+                    item.get("comparison_period_verified") is True
+                    for item in records
+                )
+                if not quality_record["comparison_period_verified"]:
+                    quality_record.update(
+                        state="unknown",
+                        prose_eligible=False,
+                        denial_reason="financial_comparison_period_unverified",
+                        lineage_verification_status="unverified",
+                    )
+        fields[field] = quality_record
 
     ttm_records = _dict_list(source.get("ttm_sources"))
     ttm_periods, ttm_complete, ttm_critical, ttm_provider = _dependency_quality(

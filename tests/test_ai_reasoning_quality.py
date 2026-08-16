@@ -416,3 +416,12 @@ def test_runtime_quality_receipt_binds_packet_output_and_rendered_payload() -> N
     assert not verify_runtime_message_quality_receipt(
         receipt, packet, output, tampered
     )
+
+    wrong_policy = dict(receipt, policy_version="daily-review-v0")
+    assert not verify_runtime_message_quality_receipt(
+        wrong_policy, packet, output, messages
+    )
+    wrong_schema = dict(receipt, schema_version="3")
+    assert not verify_runtime_message_quality_receipt(
+        wrong_schema, packet, output, messages
+    )

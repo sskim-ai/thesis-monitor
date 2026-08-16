@@ -76,7 +76,10 @@ NUMERIC_SEMANTICS = {
         "revenue_qoq",
         ("pct",),
         ("매출 QoQ", "매출 전분기 대비", "revenue QoQ"),
-        (r"매출.*(?:qoq|전분기)", r"revenue.*qoq"),
+        (
+            r"(?:매출.*(?:qoq|전분기)|(?:qoq|전분기).*매출)",
+            r"(?:revenue.*qoq|qoq.*revenue)",
+        ),
         "percentage",
     ),
     "revenue_yoy": _spec(
@@ -90,7 +93,10 @@ NUMERIC_SEMANTICS = {
         "operating_income_qoq",
         ("pct",),
         ("영업이익 QoQ", "영업이익 전분기 대비"),
-        (r"영업이익.*(?:qoq|전분기)", r"operating income.*qoq"),
+        (
+            r"(?:영업이익.*(?:qoq|전분기)|(?:qoq|전분기).*영업이익)",
+            r"(?:operating income.*qoq|qoq.*operating income)",
+        ),
         "percentage",
     ),
     "operating_income_yoy": _spec(
@@ -657,8 +663,28 @@ NUMERIC_SEMANTICS = {
         (r"차트.*(?:하방\s*위험|상승\s*여지)", r"chart.*(?:upside|downside)"), "currency",
     ),
     "risk_reward_ratio": _spec(
-        "risk_reward_ratio", ("x",), ("차트 손익비", "RR"),
-        (r"(?:차트\s*)?손익비", r"\brr\b", r"risk.?reward"), "multiple",
+        "risk_reward_ratio",
+        ("x",),
+        ("차트 손익비", "RR"),
+        (r"(?:차트\s*)?손익비", r"\brr\b", r"risk.?reward"),
+        "multiple",
+    ),
+    "current_price_risk_reward_ratio": _spec(
+        "current_price_risk_reward_ratio",
+        ("x",),
+        ("현재가 기준 차트 손익비",),
+        (r"현재가\s*기준\s*차트\s*손익비", r"current price.*risk.?reward"),
+        "multiple",
+    ),
+    "support_entry_risk_reward_ratio": _spec(
+        "support_entry_risk_reward_ratio",
+        ("x",),
+        ("동적 지지 접근 가정 차트 손익비",),
+        (
+            r"동적\s*지지\s*접근\s*가정\s*차트\s*손익비",
+            r"support entry.*risk.?reward",
+        ),
+        "multiple",
     ),
     "previous_risk_reward_ratio": _spec(
         "previous_risk_reward_ratio", ("x",), ("이전 차트 손익비",),
@@ -715,6 +741,13 @@ NUMERIC_SEMANTICS = {
             r"pbr.*(?:peer|동종업계|비교군)",
         ),
         "multiple",
+    ),
+    "peer_sample_count": _spec(
+        "peer_sample_count",
+        ("count",),
+        ("비교군 표본 수",),
+        (r"비교군\s*표본\s*수", r"peer sample"),
+        "count",
     ),
     "peer_pe_relative_pct": _spec(
         "peer_pe_relative_pct",
@@ -1031,24 +1064,44 @@ _FIELD_RULES = (
         ("chart_invalidation",), r"fields\.buffer", "chart_price_risk", "currency"
     ),
     NumericFieldRule(
-        ("chart_risk_reward",), r"fields\.entry", "scenario_entry_price", "currency"
+        ("chart_risk_reward_current_price", "chart_risk_reward_support_entry"),
+        r"fields\.entry",
+        "scenario_entry_price",
+        "currency",
     ),
     NumericFieldRule(
-        ("chart_risk_reward",), r"fields\.target", "chart_target_price", "currency"
+        ("chart_risk_reward_current_price", "chart_risk_reward_support_entry"),
+        r"fields\.target",
+        "chart_target_price",
+        "currency",
     ),
     NumericFieldRule(
-        ("chart_risk_reward",),
+        ("chart_risk_reward_current_price", "chart_risk_reward_support_entry"),
         r"fields\.invalidation",
         "chart_invalidation_price",
         "currency",
     ),
     NumericFieldRule(
-        ("chart_risk_reward",),
+        ("chart_risk_reward_current_price", "chart_risk_reward_support_entry"),
         r"fields\.(?:upside|downside)",
         "chart_price_risk",
         "currency",
     ),
-    NumericFieldRule(("chart_risk_reward",), r"fields\.ratio", "risk_reward_ratio", "x"),
+    NumericFieldRule(
+        ("chart_risk_reward",), r"fields\.ratio", "risk_reward_ratio", "x"
+    ),
+    NumericFieldRule(
+        ("chart_risk_reward_current_price",),
+        r"fields\.ratio",
+        "current_price_risk_reward_ratio",
+        "x",
+    ),
+    NumericFieldRule(
+        ("chart_risk_reward_support_entry",),
+        r"fields\.ratio",
+        "support_entry_risk_reward_ratio",
+        "x",
+    ),
     NumericFieldRule(
         ("monitoring_metric_transition",),
         r"fields\.previous_ratio",
@@ -1303,10 +1356,37 @@ def _source_label_kind(
 def _source_aware_label(
     semantic_type: str,
     fields: dict[str, object],
+    field_path: str = "",
 ) -> str | None:
     if semantic_type in _FINANCIAL_PERIOD_LABEL_SEMANTICS:
-        period_label = str(fields.get("period_label") or "").strip()
+        source_fields = {
+            "revenue": "latest_revenue",
+            "operating_income": "latest_operating_income",
+            "operating_margin": "latest_operating_margin",
+            "revenue_qoq": "latest_revenue_qoq",
+            "revenue_yoy": "latest_revenue_yoy",
+            "operating_income_qoq": "latest_operating_income_qoq",
+            "operating_income_yoy": "latest_operating_income_yoy",
+        }
+        field_period_labels = fields.get("field_period_labels")
+        period_label = str(
+            (
+                field_period_labels.get(source_fields.get(semantic_type, ""))
+                if isinstance(field_period_labels, dict)
+                else None
+            )
+            or fields.get("period_label")
+            or ""
+        ).strip()
         spec = semantic_spec(semantic_type)
+        period_suffix = {
+            "revenue_qoq": "전분기 대비 매출 변화율",
+            "revenue_yoy": "전년 동기 대비 매출 성장률",
+            "operating_income_qoq": "전분기 대비 영업이익 변화율",
+            "operating_income_yoy": "전년 동기 대비 영업이익 성장률",
+        }.get(semantic_type)
+        if period_label and period_suffix:
+            return f"{period_label} {period_suffix}"
         if period_label and spec is not None and spec.approved_labels:
             return f"{period_label} {spec.approved_labels[0]}"
         if fields.get("financial_period_required") is True:
@@ -1567,7 +1647,7 @@ def build_numeric_registry(
                 spec, unit = resolve_numeric_semantic(fact_type, path, fields)
                 registered = spec is not None
                 canonical_label = (
-                    _source_aware_label(spec.semantic_type, fields)
+                    _source_aware_label(spec.semantic_type, fields, path)
                     if spec is not None
                     else None
                 )

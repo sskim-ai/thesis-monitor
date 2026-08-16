@@ -12,6 +12,8 @@ from app.services.numeric_semantic_registry import (
 
 
 NUMERIC_REFERENCE_FIELD = "numeric_fact_refs"
+VALUATION_INTERPRETATION_REFERENCE_FIELD = "valuation_interpretation_refs"
+TYPED_VALUATION_CONTRACT = "typed-valuation-interpretation-v1"
 _REFERENCE_ID = re.compile(r"^[A-Za-z][A-Za-z0-9_-]{0,63}$")
 _PATH_PART = re.compile(r"^([A-Za-z_][A-Za-z0-9_]*)(?:\[([0-9]+)\])?$")
 _PLACEHOLDER = re.compile(r"\{\{numeric:([A-Za-z][A-Za-z0-9_-]{0,63})\}\}")
@@ -29,6 +31,59 @@ _POSTPOSITION_FAMILIES = {
     "를/을": "을",
     "와/과": "와",
     "과/와": "와",
+}
+_VALUATION_METRIC_LANGUAGE = re.compile(
+    r"(?:f?PER|f?PBR|EPS|BVPS|장부가|이익\s*배수)",
+    re.IGNORECASE,
+)
+_VALUATION_DIRECTION_LANGUAGE = re.compile(
+    r"낮(?:다|은)|높(?:다|은)|싸다|비싸다|부담|저평가|고평가|기대가\s*(?:크|높)|"
+    r"치우치지\s*않|중립적\s*위치|정상\s*범위|premium|discount|"
+    r"프리미엄|디스카운트|역사|과거|peer|동종|비교군",
+    re.IGNORECASE,
+)
+_VALUATION_UNKNOWN_LANGUAGE = re.compile(
+    r"보류|확인하지\s*못|확인되지\s*않|확인\s*불가|불충분|부족|미확인|unknown",
+    re.IGNORECASE,
+)
+_VALUATION_GENERIC_LANGUAGE = re.compile(
+    r"valuation|밸류에이션|가치평가|자산\s*배수|이익\s*배수|장부가치",
+    re.IGNORECASE,
+)
+_VALUATION_TYPES = {
+    "absolute",
+    "historical",
+    "peer",
+    "market_expectation",
+    "trailing_forward_relation",
+    "quality_unknown",
+}
+_VALUATION_METRICS = {"pe", "forward_pe", "pbr", "forward_pbr", "earnings", "book"}
+_VALUATION_METRIC_SEMANTICS = {
+    "pe": {
+        "trailing_pe",
+        "historical_pe_multiple",
+        "historical_pe_percentile",
+        "peer_pe_multiple",
+        "peer_pe_relative_pct",
+    },
+    "forward_pe": {"forward_pe"},
+    "pbr": {
+        "price_to_book",
+        "historical_pb_multiple",
+        "historical_pb_percentile",
+        "peer_pb_multiple",
+        "peer_pb_relative_pct",
+    },
+    "forward_pbr": {"forward_price_to_book"},
+    "earnings": {"trailing_pe", "forward_pe", "ttm_eps", "forward_eps"},
+    "book": {
+        "price_to_book",
+        "forward_price_to_book",
+        "bvps",
+        "forward_bvps",
+        "historical_pb_percentile",
+    },
 }
 
 
@@ -529,6 +584,217 @@ def _bind_review(
     )
 
 
+def _section_fact_ids(review: dict[str, object], text_ref: str) -> set[str]:
+    if "." not in text_ref:
+        return set()
+    section_name = text_ref.split(".", maxsplit=1)[0]
+    section = review.get(section_name)
+    if not isinstance(section, dict):
+        return set()
+    values = section.get("fact_ids")
+    return {str(item) for item in values} if isinstance(values, list) else set()
+
+
+def _valuation_interpretation_texts(
+    review: dict[str, object],
+) -> list[tuple[str, str]]:
+    refs = [
+        "core_judgment.text",
+        "business_earnings.text",
+        "price_positioning.text",
+        "price_positioning.new_observer_view",
+        "price_positioning.holder_view",
+        "supply_analysis.text",
+        "valuation_analysis.text",
+    ]
+    for field in ("priority_watch", "next_checks", "unknowns"):
+        values = review.get(field)
+        if isinstance(values, list):
+            refs.extend(f"{field}[{index}]" for index in range(len(values)))
+    values: list[tuple[str, str]] = []
+    for text_ref in refs:
+        target = _text_target(review, text_ref)
+        if target is not None:
+            values.append((text_ref, target[2]))
+    return values
+
+
+def _typed_valuation_reference_errors(
+    review: dict[str, object],
+    stock: dict[str, object],
+    bindings: list[dict[str, object]],
+    *,
+    prefix: str,
+) -> tuple[list[str], list[dict[str, object]]]:
+    refs_value = review.pop(VALUATION_INTERPRETATION_REFERENCE_FIELD, [])
+    if stock.get("typed_valuation_interpretation_contract") != TYPED_VALUATION_CONTRACT:
+        return [], []
+    if not isinstance(refs_value, list):
+        return [f"{prefix}:valuation_interpretation_refs_not_list"], []
+    fact_catalog = {
+        str(item.get("fact_id") or ""): item
+        for item in stock.get("fact_catalog", [])
+        if isinstance(item, dict) and item.get("fact_id")
+    }
+    facts_used = {
+        str(item) for item in review.get("facts_used", [])
+    } if isinstance(review.get("facts_used"), list) else set()
+    binding_by_id = {str(item.get("ref_id") or ""): item for item in bindings}
+    errors: list[str] = []
+    accepted: list[dict[str, object]] = []
+    covered_refs: set[str] = set()
+    seen_ids: set[str] = set()
+    for index, item in enumerate(refs_value):
+        if not isinstance(item, dict):
+            errors.append(f"{prefix}:valuation_interpretation_ref_not_object:{index}")
+            continue
+        ref_id = str(item.get("ref_id") or "")
+        interpretation_type = str(item.get("interpretation_type") or "")
+        metric = str(item.get("metric") or "")
+        fact_id = str(item.get("fact_id") or "")
+        text_ref = str(item.get("text_ref") or "")
+        comparison_ids = item.get("comparison_numeric_ref_ids")
+        comparison_ids = (
+            [str(value) for value in comparison_ids]
+            if isinstance(comparison_ids, list)
+            else []
+        )
+        if not _REFERENCE_ID.fullmatch(ref_id) or ref_id in seen_ids:
+            errors.append(f"{prefix}:valuation_interpretation_ref_invalid_id:{ref_id or index}")
+            continue
+        seen_ids.add(ref_id)
+        target = _text_target(review, text_ref)
+        if target is None:
+            errors.append(f"{prefix}:valuation_interpretation_text_not_found:{ref_id}:{text_ref}")
+            continue
+        text = target[2]
+        if interpretation_type not in _VALUATION_TYPES:
+            errors.append(f"{prefix}:valuation_interpretation_type_invalid:{ref_id}")
+            continue
+        if metric not in _VALUATION_METRICS:
+            errors.append(f"{prefix}:valuation_interpretation_metric_invalid:{ref_id}")
+            continue
+        fact = fact_catalog.get(fact_id)
+        if fact is None or fact_id not in facts_used or fact_id not in _section_fact_ids(review, text_ref):
+            errors.append(f"{prefix}:valuation_interpretation_fact_not_grounded:{ref_id}:{fact_id}")
+            continue
+        comparison_bindings = [binding_by_id.get(value) for value in comparison_ids]
+        if any(value is None for value in comparison_bindings):
+            errors.append(f"{prefix}:valuation_interpretation_numeric_ref_missing:{ref_id}")
+            continue
+        if any(str(value.get("text_ref") or "") != text_ref for value in comparison_bindings if value):
+            errors.append(f"{prefix}:valuation_interpretation_numeric_ref_scope:{ref_id}")
+            continue
+        semantics = {
+            str(value.get("semantic_type") or "")
+            for value in comparison_bindings
+            if value is not None
+        }
+        if semantics and not semantics.intersection(
+            _VALUATION_METRIC_SEMANTICS.get(metric, set())
+        ):
+            errors.append(
+                f"{prefix}:valuation_interpretation_metric_evidence_mismatch:"
+                f"{ref_id}:{metric}"
+            )
+            continue
+        eligible = fact.get("interpretation_eligible") is not False
+        valid = True
+        if interpretation_type == "absolute":
+            valid = bool(comparison_ids and not _VALUATION_DIRECTION_LANGUAGE.search(text) and eligible)
+        elif interpretation_type == "historical":
+            valid = bool(
+                fact_id in {"valuation:historical_pe", "valuation:historical_pb"}
+                and semantics.intersection(
+                    {"historical_pe_percentile", "historical_pb_percentile"}
+                )
+                and eligible
+            )
+        elif interpretation_type == "peer":
+            peer_fields = (
+                fact.get("fields") if isinstance(fact.get("fields"), dict) else {}
+            )
+            sample_field = "pe_sample_count" if metric == "pe" else "pb_sample_count"
+            sample_count = peer_fields.get(sample_field)
+            valid = bool(
+                fact_id == "valuation:peer"
+                and semantics.intersection(
+                    {
+                        "peer_pe_multiple",
+                        "peer_pb_multiple",
+                        "peer_pe_relative_pct",
+                        "peer_pb_relative_pct",
+                    }
+                )
+                and isinstance(sample_count, int)
+                and sample_count > 0
+                and eligible
+            )
+        elif interpretation_type == "market_expectation":
+            valid = bool(fact_id.startswith("market_expectation:") and eligible)
+        elif interpretation_type == "trailing_forward_relation":
+            relation = fact.get("fields") if isinstance(fact.get("fields"), dict) else {}
+            valid = bool(
+                fact_id == "valuation:multiple_relation"
+                and relation.get("basis_comparable") is True
+                and {"trailing_pe", "forward_pe"}.issubset(semantics)
+                and eligible
+            )
+        elif interpretation_type == "quality_unknown":
+            valid = bool(
+                _VALUATION_UNKNOWN_LANGUAGE.search(text)
+                and fact.get("fact_type")
+                in {
+                    "valuation_quality",
+                    "valuation_multiple_relation",
+                    "financial_quality",
+                    "security_identity",
+                    "security_basis",
+                }
+            )
+        if not valid:
+            errors.append(
+                f"{prefix}:valuation_interpretation_evidence_invalid:"
+                f"{ref_id}:{interpretation_type}:{metric}"
+            )
+            continue
+        covered_refs.add(text_ref)
+        accepted.append(
+            {
+                "ref_id": ref_id,
+                "interpretation_type": interpretation_type,
+                "metric": metric,
+                "fact_id": fact_id,
+                "text_ref": text_ref,
+                "comparison_numeric_ref_ids": comparison_ids,
+                "basis_status": item.get("basis_status"),
+                "source_type": item.get("source_type"),
+                "direction": item.get("direction"),
+            }
+        )
+    for text_ref, text in _valuation_interpretation_texts(review):
+        valuation_section_requires_typed = bool(
+            text_ref == "valuation_analysis.text"
+            and (
+                _VALUATION_METRIC_LANGUAGE.search(text)
+                or _VALUATION_DIRECTION_LANGUAGE.search(text)
+                or (
+                    _VALUATION_GENERIC_LANGUAGE.search(text)
+                    and _VALUATION_UNKNOWN_LANGUAGE.search(text)
+                )
+            )
+        )
+        cross_section_requires_typed = bool(
+            (_VALUATION_METRIC_LANGUAGE.search(text) or _VALUATION_GENERIC_LANGUAGE.search(text))
+            and _VALUATION_DIRECTION_LANGUAGE.search(text)
+        )
+        if (
+            valuation_section_requires_typed or cross_section_requires_typed
+        ) and text_ref not in covered_refs:
+            errors.append(f"{prefix}:valuation_interpretation_typed_reference_missing:{text_ref}")
+    return errors, accepted
+
+
 def bind_numeric_fact_references(
     packet: dict[str, object],
     output_value: object,
@@ -552,6 +818,8 @@ def bind_numeric_fact_references(
     output = copy.deepcopy(output_value)
     errors: list[str] = []
     bindings: list[dict[str, object]] = []
+    typed_interpretations: list[dict[str, object]] = []
+    typed_interpretation_errors: list[str] = []
     counters = {
         "auto_bound": 0,
         "manual_legacy": 0,
@@ -592,6 +860,15 @@ def bind_numeric_fact_references(
             )
             errors.extend(stock_errors)
             bindings.extend(stock_bindings)
+            if isinstance(stock, dict):
+                typed_errors, typed_values = _typed_valuation_reference_errors(
+                    review,
+                    stock,
+                    stock_bindings,
+                    prefix=ticker,
+                )
+                typed_interpretation_errors.extend(typed_errors)
+                typed_interpretations.extend(typed_values)
             for key in counters:
                 counters[key] += stock_counts[key]
     report: dict[str, Any] = {
@@ -628,6 +905,12 @@ def bind_numeric_fact_references(
         },
         "errors": list(dict.fromkeys(errors)),
         "bindings": bindings,
+        "typed_valuation_interpretations": {
+            "contract": TYPED_VALUATION_CONTRACT,
+            "accepted": len(typed_interpretations),
+            "errors": list(dict.fromkeys(typed_interpretation_errors)),
+            "references": typed_interpretations,
+        },
     }
     return NumericBindingResult(
         output=output,

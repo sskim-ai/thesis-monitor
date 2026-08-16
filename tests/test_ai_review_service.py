@@ -2301,7 +2301,7 @@ def test_packet_adds_fresh_chart_context_transition_and_numeric_provenance(
         "fibonacci_retracement_price",
         "fibonacci_extension_price",
         "chart_invalidation_price",
-        "risk_reward_ratio",
+        "current_price_risk_reward_ratio",
     } <= semantics
     assert stock["chart_knowledge_routing"]["available"] is True
     assert "chart_bollinger" in stock["chart_knowledge_routing"]["required_frameworks"]
@@ -2990,7 +2990,6 @@ def test_numeric_fact_reference_is_bound_to_canonical_value_and_claim(
                 "postposition": "은/는",
             }
         ]
-
         output, errors = validate_ai_review_output(session, packet, draft)
 
     assert errors == []
@@ -3029,7 +3028,6 @@ def test_numeric_fact_reference_missing_source_fails_closed(
                 "text_ref": "price_positioning.text",
             }
         ]
-
         output, errors = validate_ai_review_output(session, packet, draft)
 
     assert output is None
@@ -3084,6 +3082,19 @@ def test_modeled_forward_binding_uses_source_aware_label(
                 "field_path": "fields.forward_pe",
                 "text_ref": "valuation_analysis.text",
                 "postposition": "은/는",
+            }
+        ]
+        review["valuation_interpretation_refs"] = [
+            {
+                "ref_id": "modeled_fper_interpretation",
+                "interpretation_type": "absolute",
+                "metric": "forward_pe",
+                "fact_id": "valuation:current",
+                "text_ref": "valuation_analysis.text",
+                "comparison_numeric_ref_ids": ["modeled_fper"],
+                "basis_status": "verified",
+                "source_type": "modeled_forward",
+                "direction": "neutral",
             }
         ]
 
@@ -4538,6 +4549,29 @@ def test_financial_period_and_valuation_interpretation_require_exact_evidence(
         review.ticker, review
     ) == []
 
+    review.business_earnings.text = (
+        "2026년 2분기 영업이익 5천만원 수준의 누적 이익이 확인됐습니다."
+    )
+    period_errors = ai_review_service._financial_period_language_errors(
+        review.ticker, review
+    )
+    assert any(
+        "financial_amount_period_prose_mismatch" in error
+        for error in period_errors
+    )
+
+    review.business_earnings.text = (
+        "2026년 상반기 누적 영업이익 5천만원은 단일 분기 실적입니다."
+    )
+    review.numeric_claims[-1].usage = "2026년 상반기 누적 영업이익 5천만원"
+    period_errors = ai_review_service._financial_period_language_errors(
+        review.ticker, review
+    )
+    assert any(
+        "financial_amount_period_prose_mismatch" in error
+        for error in period_errors
+    )
+
 
 def test_persisted_financial_quality_lineage_is_enriched_with_verified_period_metadata(
     monkeypatch,
@@ -5516,6 +5550,85 @@ def test_unknown_ticker_and_partial_output_are_rejected(monkeypatch, tmp_path: P
         _, errors = validate_ai_review_output(session, packet, output)
 
     assert "ticker_set_mismatch" in errors
+
+
+def test_risk_reward_basis_contract_separates_current_and_support_scenarios(
+    monkeypatch,
+    tmp_path: Path,
+) -> None:
+    _settings(monkeypatch, tmp_path)
+    with Session(_engine()) as session:
+        _seed(session)
+        packet = build_ai_review_packet(session, RUN_DATE, "us")
+        assert packet is not None
+        raw = _valid_output(packet)["stock_reviews"][0]
+
+    def review_with(
+        text_ref: str,
+        text: str,
+        semantic_type: str,
+        usage: str,
+    ) -> AIStockReview:
+        value = copy.deepcopy(raw)
+        section, field = text_ref.split(".", maxsplit=1)
+        value[section][field] = text
+        value["numeric_claims"].append(
+            {
+                "fact_id": "chart:structure:risk_reward:support_entry",
+                "field_path": "fields.ratio",
+                "value": 0.49,
+                "unit": "x",
+                "semantic_type": semantic_type,
+                "text_ref": text_ref,
+                "usage": usage,
+            }
+        )
+        return AIStockReview.model_validate(value)
+
+    support = review_with(
+        "price_positioning.new_observer_view",
+        "동적 지지 접근 가정 차트 손익비 0.49배는 조건부 시나리오입니다.",
+        "support_entry_risk_reward_ratio",
+        "동적 지지 접근 가정 차트 손익비 0.49배",
+    )
+    assert ai_review_service._risk_reward_basis_errors("TEST", support) == []
+
+    current_as_support = review_with(
+        "price_positioning.new_observer_view",
+        "동적 지지 접근 가정에서 현재가 기준 차트 손익비 0.49배를 봅니다.",
+        "current_price_risk_reward_ratio",
+        "현재가 기준 차트 손익비 0.49배",
+    )
+    assert any(
+        "current_price_risk_reward_used_as_support_scenario" in error
+        for error in ai_review_service._risk_reward_basis_errors(
+            "TEST", current_as_support
+        )
+    )
+
+    support_as_current = review_with(
+        "core_judgment.text",
+        "현재 가격의 동적 지지 접근 가정 차트 손익비 0.49배가 핵심입니다.",
+        "support_entry_risk_reward_ratio",
+        "동적 지지 접근 가정 차트 손익비 0.49배",
+    )
+    assert any(
+        "support_entry_risk_reward_used_as_primary_current_rr" in error
+        for error in ai_review_service._risk_reward_basis_errors(
+            "TEST", support_as_current
+        )
+    )
+
+    basisless = review_with(
+        "price_positioning.text",
+        "차트 손익비 0.49배를 확인합니다.",
+        "risk_reward_ratio",
+        "차트 손익비 0.49배",
+    )
+    assert any(
+        "risk_reward_basis_missing" in error
+        for error in ai_review_service._risk_reward_basis_errors("TEST", basisless)
+    )
 
 
 def test_skill_fixture_and_output_schema_are_present() -> None:

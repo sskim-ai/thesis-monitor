@@ -34,6 +34,8 @@ KST = ZoneInfo("Asia/Seoul")
 PILOT_MODE = "ai_assisted_single_delivery"
 PILOT_VERSION = "ai-assisted-pilot-v3"
 PILOT_RENDERER_VERSION = "ai-assisted-pilot-renderer-v3"
+AI_ARCHIVE_CONTRACT_VERSION = "ai-assisted-archive-v2"
+AI_ARTIFACT_MANIFEST_VERSION = "runtime-quality-receipt-v2"
 PILOT_MARKERS = {"us": "__DAILY_DIGEST__", "kr": "__DAILY_DIGEST_KR__"}
 MAX_PERSISTED_DELIVERY_RETRIES = 3
 PilotMarket = Literal["us", "kr"]
@@ -313,6 +315,7 @@ def _verified_ai_archive_artifacts(packet: dict[str, object]) -> list[dict[str, 
     if validation.get("status") != "passed":
         raise ValueError("AI validation archive is not passed")
     receipt = _read_json(archive_dir / "message-quality-receipt.json")
+    receipt_sha256 = _file_sha256(archive_dir / "message-quality-receipt.json")
     output = AIDailyReviewOutput.model_validate(_read_json(archive_dir / "ai-review.json"))
     archived_messages = _read_json(archive_dir / "ai-assisted-messages.json").get(
         "messages"
@@ -324,7 +327,53 @@ def _verified_ai_archive_artifacts(packet: dict[str, object]) -> list[dict[str, 
         [item for item in archived_messages if isinstance(item, dict)],
     ):
         raise ValueError("AI message quality receipt does not match archived payload")
+    if (
+        delivery.get("message_quality_receipt_sha256") != receipt_sha256
+        or delivery.get("rendered_payload_set_sha256")
+        != receipt.get("rendered_payload_set_sha256")
+    ):
+        raise ValueError("AI delivery archive receipt integrity mismatch")
     return artifacts
+
+
+def _verified_legacy_archive_artifacts(
+    packet: dict[str, object],
+    marker: dict[str, object],
+) -> list[dict[str, str]]:
+    packet_id = str(packet["packet_id"])
+    archive_dir = _archive_directory(packet)
+    manifest = marker.get("artifacts")
+    if not isinstance(manifest, list) or not manifest:
+        raise ValueError("Legacy archive artifact manifest is unavailable")
+    verified: list[dict[str, str]] = []
+    for item in manifest:
+        if not isinstance(item, dict):
+            raise ValueError("Legacy archive artifact entry is invalid")
+        filename = str(item.get("filename") or "")
+        expected = str(item.get("sha256") or "")
+        if not filename or not expected:
+            raise ValueError("Legacy archive artifact identity is invalid")
+        path = archive_dir / filename
+        if not path.exists() or _file_sha256(path) != expected:
+            raise ValueError(f"Legacy archive artifact mismatch: {filename}")
+        value = json.loads(path.read_text(encoding="utf-8"))
+        if (
+            isinstance(value, dict)
+            and value.get("packet_id") is not None
+            and str(value.get("packet_id")) != packet_id
+        ):
+            raise ValueError(f"Legacy archive packet mismatch: {filename}")
+        verified.append({"filename": filename, "sha256": expected})
+    delivery = _read_json(archive_dir / "delivery-result.json")
+    validation = _read_json(archive_dir / "validation-result.json")
+    if (
+        delivery.get("delivery_mode") != "ai_assisted"
+        or delivery.get("status") != "sent"
+        or int(delivery.get("pending_count") or 0) != 0
+        or validation.get("status") != "passed"
+    ):
+        raise ValueError("Legacy AI archive is not complete")
+    return verified
 
 
 def _write_ai_archive_completion_marker(
@@ -337,6 +386,9 @@ def _write_ai_archive_completion_marker(
     marker_path = archive_dir / "archive-complete.json"
     marker = {
         "packet_id": packet["packet_id"],
+        "archive_contract_version": AI_ARCHIVE_CONTRACT_VERSION,
+        "required_artifact_manifest_version": AI_ARTIFACT_MANIFEST_VERSION,
+        "runtime_quality_gate_version": "runtime-message-quality-v1",
         "pilot_version": PILOT_VERSION,
         "renderer_version": PILOT_RENDERER_VERSION,
         "analysis_policy_version": output.analysis_policy_version,
@@ -364,7 +416,12 @@ def _ai_archive_complete(packet: dict[str, object]) -> bool:
         return False
     try:
         marker = _read_json(marker_path)
-        artifacts = _verified_ai_archive_artifacts(packet)
+        artifacts = (
+            _verified_ai_archive_artifacts(packet)
+            if marker.get("archive_contract_version")
+            == AI_ARCHIVE_CONTRACT_VERSION
+            else _verified_legacy_archive_artifacts(packet, marker)
+        )
     except (OSError, ValueError, json.JSONDecodeError):
         return False
     return bool(
@@ -373,6 +430,105 @@ def _ai_archive_complete(packet: dict[str, object]) -> bool:
         and marker.get("delivery_status") == "sent"
         and marker.get("artifacts") == artifacts
     )
+
+
+def _persisted_quality_integrity_errors(
+    deliveries: list[NotificationDelivery],
+    packet_id: str,
+    receipt_path: Path,
+    receipt: dict[str, object],
+) -> list[str]:
+    if not receipt_path.exists():
+        return ["quality_receipt_file_missing"]
+    actual_receipt_sha = _file_sha256(receipt_path)
+    rendered_sha = str(receipt.get("rendered_payload_set_sha256") or "")
+    errors: list[str] = []
+    matched = 0
+    receipt_shas: set[str] = set()
+    rendered_shas: set[str] = set()
+    for delivery in deliveries:
+        try:
+            payload = json.loads(delivery.payload)
+        except json.JSONDecodeError:
+            continue
+        if not isinstance(payload, dict):
+            continue
+        metadata = _pilot_metadata(payload)
+        if metadata.get("packet_id") != packet_id or metadata.get("state") not in {
+            "ai_assisted_pending",
+            "ai_assisted_sent",
+        }:
+            continue
+        matched += 1
+        metadata_receipt_sha = str(
+            metadata.get("message_quality_receipt_sha256") or ""
+        )
+        metadata_rendered_sha = str(
+            metadata.get("rendered_payload_set_sha256") or ""
+        )
+        receipt_shas.add(metadata_receipt_sha)
+        rendered_shas.add(metadata_rendered_sha)
+        if metadata_receipt_sha != actual_receipt_sha:
+            errors.append("delivery_receipt_file_sha_mismatch")
+        if metadata_rendered_sha != rendered_sha:
+            errors.append("delivery_rendered_payload_set_sha_mismatch")
+    if matched == 0:
+        errors.append("persisted_ai_delivery_metadata_missing")
+    if len(receipt_shas) != 1:
+        errors.append("delivery_receipt_sha_not_uniform")
+    if len(rendered_shas) != 1:
+        errors.append("delivery_rendered_payload_sha_not_uniform")
+    return list(dict.fromkeys(errors))
+
+
+def _hold_quality_integrity_rejection(
+    session: Session,
+    packet: dict[str, object],
+    deliveries: list[NotificationDelivery],
+    *,
+    reason: str,
+    rejected_at: datetime,
+) -> int:
+    packet_id = str(packet["packet_id"])
+    held_count = 0
+    for delivery in deliveries:
+        try:
+            payload = json.loads(delivery.payload)
+        except json.JSONDecodeError:
+            continue
+        if not isinstance(payload, dict):
+            continue
+        metadata = _pilot_metadata(payload)
+        if metadata.get("packet_id") != packet_id or delivery.status == "sent":
+            continue
+        metadata["state"] = "held"
+        metadata["fallback_eligible"] = True
+        metadata["quality_integrity_state"] = "rejected"
+        metadata["quality_integrity_reason"] = reason
+        metadata["quality_integrity_rejected_at"] = rejected_at.isoformat()
+        payload[AI_ASSISTED_PILOT_METADATA_KEY] = metadata
+        delivery.payload = json.dumps(payload, ensure_ascii=False)
+        delivery.status = "pending"
+        session.add(delivery)
+        held_count += 1
+    session.commit()
+    _atomic_json(
+        _archive_directory(packet) / "quality-receipt-integrity-error.json",
+        {
+            "packet_id": packet_id,
+            "status": "quality_integrity_rejected",
+            "reason": reason,
+            "rejected_ai_sent": False,
+            "fallback_eligible": held_count > 0,
+            "analysis_rerun": False,
+            "packet_regenerated": False,
+            "binder_rerun": False,
+            "validator_rerun": False,
+            "renderer_rerun": False,
+            "recorded_at": rejected_at.isoformat(),
+        },
+    )
+    return held_count
 
 
 def hold_ai_assisted_pilot_session(
@@ -830,6 +986,19 @@ async def deliver_validated_ai_review(
 
     with _pilot_lock(packet_id):
         deliveries = _session_deliveries(session, packet)
+        if any(
+            _pilot_metadata(payload).get("quality_integrity_state") == "rejected"
+            for delivery in deliveries
+            if isinstance((payload := json.loads(delivery.payload)), dict)
+        ):
+            return PilotDeliveryResult(
+                status="quality_receipt_invalid",
+                market=market,
+                packet_id=packet_id,
+                delivery_mode="held",
+                pending_count=sum(delivery.status == "pending" for delivery in deliveries),
+                reason="quality_integrity_rejected_requires_fallback",
+            )
         prepared_ids: set[int] = set()
         prepared_payloads: list[tuple[NotificationDelivery, dict[str, object]]] = []
         reused_persisted_payload = False
@@ -958,6 +1127,13 @@ async def deliver_validated_ai_review(
             try:
                 receipt = _read_json(receipt_path)
             except (OSError, ValueError, json.JSONDecodeError):
+                _hold_quality_integrity_rejection(
+                    session,
+                    packet,
+                    deliveries,
+                    reason="persisted_quality_receipt_missing",
+                    rejected_at=current,
+                )
                 return PilotDeliveryResult(
                     status="quality_receipt_invalid",
                     market=market,
@@ -972,6 +1148,13 @@ async def deliver_validated_ai_review(
                 output,
                 final_messages,
             )
+            integrity_errors = _persisted_quality_integrity_errors(
+                deliveries,
+                packet_id,
+                receipt_path,
+                receipt,
+            )
+            receipt_valid = bool(receipt_valid and not integrity_errors)
         else:
             receipt = runtime_message_quality_receipt(
                 packet,
@@ -979,26 +1162,33 @@ async def deliver_validated_ai_review(
                 final_messages,
                 checked_at=current,
             )
-            receipt_valid = receipt.get("status") == "passed"
+            receipt_valid = verify_runtime_message_quality_receipt(
+                receipt,
+                packet,
+                output,
+                final_messages,
+            )
             _atomic_json(receipt_path, receipt)
         if reused_persisted_payload and not receipt_valid:
-            _atomic_json(
-                archive_dir / "quality-receipt-integrity-error.json",
-                {
-                    "packet_id": packet_id,
-                    "status": "failed",
-                    "reason": "persisted_payload_hash_mismatch",
-                    "rejected_ai_sent": False,
-                    "recorded_at": current.isoformat(),
-                },
+            reason = (
+                ",".join(integrity_errors)
+                if integrity_errors
+                else "persisted_payload_or_receipt_content_mismatch"
+            )
+            held_count = _hold_quality_integrity_rejection(
+                session,
+                packet,
+                deliveries,
+                reason=reason,
+                rejected_at=current,
             )
             return PilotDeliveryResult(
                 status="quality_receipt_invalid",
                 market=market,
                 packet_id=packet_id,
-                delivery_mode="ai_assisted",
-                pending_count=len(prepared_ids),
-                reason="persisted_payload_hash_mismatch",
+                delivery_mode="held",
+                pending_count=held_count,
+                reason=reason,
             )
         if not receipt_valid:
             for delivery in deliveries:
@@ -1060,6 +1250,28 @@ async def deliver_validated_ai_review(
             delivery.sent_at = None
             session.add(delivery)
         session.commit()
+        persisted_integrity_errors = _persisted_quality_integrity_errors(
+            deliveries,
+            packet_id,
+            receipt_path,
+            receipt,
+        )
+        if persisted_integrity_errors:
+            held_count = _hold_quality_integrity_rejection(
+                session,
+                packet,
+                deliveries,
+                reason=",".join(persisted_integrity_errors),
+                rejected_at=current,
+            )
+            return PilotDeliveryResult(
+                status="quality_receipt_invalid",
+                market=market,
+                packet_id=packet_id,
+                delivery_mode="held",
+                pending_count=held_count,
+                reason="persisted_quality_metadata_mismatch",
+            )
         ai_archive = archive_dir / "ai-assisted-messages.json"
         if final_messages or not ai_archive.exists():
             _archive_messages(packet, "ai-assisted-messages.json", final_messages)
@@ -1136,6 +1348,10 @@ async def deliver_validated_ai_review(
             "sent_count": sent_count,
             "pending_count": pending_count,
             "pilot_day": pilot_day,
+            "message_quality_receipt_sha256": receipt_sha256,
+            "rendered_payload_set_sha256": receipt.get(
+                "rendered_payload_set_sha256"
+            ),
             "dispatched_at": current.isoformat() if complete else None,
         }
         _atomic_json(_archive_directory(packet) / "delivery-result.json", delivery_result)

@@ -284,12 +284,32 @@ def _period_scope(report_code: str) -> str:
 
 
 def _financial_basis(item: dict[str, str], report_code: str, amount_scope: str) -> str:
+    source_row_identity = ":".join(
+        str(item.get(key) or "unknown")
+        for key in (
+            "rcept_no",
+            "fs_div",
+            "sj_div",
+            "account_id",
+            "account_nm",
+            "thstrm_nm",
+        )
+    )
     return "; ".join(
         [
             *(
                 f"{key}={item.get(key) or 'unknown'}"
-                for key in ("fs_div", "sj_div", "account_id", "thstrm_nm", "frmtrm_nm")
+                for key in (
+                    "fs_div",
+                    "sj_div",
+                    "account_id",
+                    "account_nm",
+                    "thstrm_nm",
+                    "frmtrm_nm",
+                    "rcept_no",
+                )
             ),
+            f"source_row_identity={source_row_identity}",
             "unit=KRW",
             f"period_scope={_period_scope(report_code)}",
             f"amount_scope={amount_scope}",
@@ -314,8 +334,7 @@ def _financial_basis_warnings(selected: dict[str, dict[str, str]]) -> list[str]:
 
 
 def _extract_financial_facts(items: list[dict[str, str]], report_code: str = "") -> list[str]:
-    selected: dict[str, dict[str, str]] = {}
-    id_selected: set[str] = set()
+    candidates: dict[str, list[tuple[bool, dict[str, str]]]] = {}
     for item in items:
         account_name = item.get("account_nm", "")
         account_id = item.get("account_id", "").lower()
@@ -330,18 +349,39 @@ def _extract_financial_facts(items: list[dict[str, str]], report_code: str = "")
             None,
         )
         if id_key is not None:
-            if id_key not in selected or _financial_item_score(item) > _financial_item_score(selected[id_key]):
-                selected[id_key] = item
-                id_selected.add(id_key)
+            candidates.setdefault(id_key, []).append((True, item))
             continue
         for key, aliases in FINANCIAL_ACCOUNT_ALIASES.items():
             if account_name in aliases:
-                if key not in id_selected and (
-                    key not in selected
-                    or _financial_item_score(item) > _financial_item_score(selected[key])
-                ):
-                    selected[key] = item
+                candidates.setdefault(key, []).append((False, item))
                 break
+    selected: dict[str, dict[str, str]] = {}
+    ambiguous: list[str] = []
+    for key, values in candidates.items():
+        preferred = [item for explicit, item in values if explicit]
+        pool = preferred or [item for _explicit, item in values]
+        top_score = max(_financial_item_score(item) for item in pool)
+        top = [item for item in pool if _financial_item_score(item) == top_score]
+        identities = {
+            tuple(
+                str(item.get(field) or "")
+                for field in (
+                    "rcept_no",
+                    "fs_div",
+                    "sj_div",
+                    "account_id",
+                    "account_nm",
+                    "thstrm_nm",
+                    "thstrm_amount",
+                    "thstrm_add_amount",
+                )
+            )
+            for item in top
+        }
+        if len(identities) != 1:
+            ambiguous.append(key)
+            continue
+        selected[key] = top[0]
     facts: list[str] = []
     for key in (
         "assets", "liabilities", "equity", "owners_parent_equity", "revenue",
@@ -367,6 +407,10 @@ def _extract_financial_facts(items: list[dict[str, str]], report_code: str = "")
                 f"({item.get('sj_nm', '')}; {_financial_basis(item, report_code, 'cumulative')})"
             )
     facts.extend(_financial_basis_warnings(selected))
+    facts.extend(
+        f"OpenDART financial quality warning: ambiguous source rows for {key}"
+        for key in sorted(ambiguous)
+    )
     return facts
 
 

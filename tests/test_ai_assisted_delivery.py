@@ -421,6 +421,64 @@ async def test_ai_pilot_count_waits_for_archive_completion_and_recovers_without_
 
 
 @pytest.mark.anyio
+async def test_legacy_completed_archive_remains_complete_without_quality_receipt(
+    monkeypatch,
+    tmp_path: Path,
+) -> None:
+    _settings(monkeypatch, tmp_path)
+    _write_artifacts(tmp_path)
+    sent = RecordingNotifier()
+
+    with Session(_engine()) as session:
+        _seed_deliveries(session)
+        hold_ai_assisted_pilot_session(session, PACKET_ID)
+        await deliver_validated_ai_review(session, PACKET_ID, notifier=sent)
+
+        archive = (
+            tmp_path
+            / "ai_review"
+            / "pilot"
+            / "history"
+            / "2026"
+            / "08"
+            / PACKET_ID
+        )
+        delivery_path = archive / "delivery-result.json"
+        delivery = json.loads(delivery_path.read_text())
+        delivery.pop("message_quality_receipt_sha256", None)
+        delivery.pop("rendered_payload_set_sha256", None)
+        delivery_path.write_text(json.dumps(delivery), encoding="utf-8")
+        (archive / "message-quality-receipt.json").unlink()
+
+        marker_path = archive / "archive-complete.json"
+        marker = json.loads(marker_path.read_text())
+        marker.pop("archive_contract_version", None)
+        marker.pop("required_artifact_manifest_version", None)
+        marker.pop("runtime_quality_gate_version", None)
+        marker["artifacts"] = [
+            {
+                "filename": item["filename"],
+                "sha256": delivery_service._file_sha256(archive / item["filename"]),
+            }
+            for item in marker["artifacts"]
+            if item["filename"] != "message-quality-receipt.json"
+        ]
+        marker_path.write_text(json.dumps(marker), encoding="utf-8")
+
+        assert delivery_service._ai_archive_complete(_packet()) is True
+        recovered = await retry_pending_ai_assisted_deliveries(
+            session,
+            market="kr",
+            run_date=RUN_DATE,
+            now=datetime(2026, 8, 14, 16, 30, tzinfo=KST),
+            notifier=RecordingNotifier(),
+        )
+
+    assert len(sent.payloads) == 2
+    assert recovered[-1].status == "no_pending_ai_delivery"
+
+
+@pytest.mark.anyio
 async def test_missing_required_archive_after_delivery_does_not_count(
     monkeypatch,
     tmp_path: Path,
@@ -859,6 +917,96 @@ async def test_persisted_retry_rejects_payload_tampering_against_quality_receipt
     assert first.status == "pending"
     assert retry.status == "quality_receipt_invalid"
     assert retry_notifier.payloads == []
+
+
+@pytest.mark.anyio
+@pytest.mark.parametrize(
+    "tamper_mode",
+    [
+        "check_results",
+        "status",
+        "missing",
+        "other_packet",
+        "one_delivery_sha",
+        "rendered_payload_sha",
+    ],
+)
+async def test_receipt_integrity_failure_holds_ai_and_preserves_one_fallback_set(
+    monkeypatch,
+    tmp_path: Path,
+    tamper_mode: str,
+) -> None:
+    _settings(monkeypatch, tmp_path)
+    _write_artifacts(tmp_path)
+    failed = RecordingNotifier(fail=True)
+    retry_notifier = RecordingNotifier()
+    fallback_notifier = RecordingNotifier()
+
+    with Session(_engine()) as session:
+        _seed_deliveries(session)
+        hold_ai_assisted_pilot_session(session, PACKET_ID)
+        first = await deliver_validated_ai_review(session, PACKET_ID, notifier=failed)
+        receipt_path = (
+            tmp_path
+            / "ai_review"
+            / "pilot"
+            / "history"
+            / "2026"
+            / "08"
+            / PACKET_ID
+            / "message-quality-receipt.json"
+        )
+        if tamper_mode == "missing":
+            receipt_path.unlink()
+        elif tamper_mode == "one_delivery_sha":
+            delivery = session.exec(
+                select(NotificationDelivery).where(
+                    NotificationDelivery.ticker == "PILOT"
+                )
+            ).one()
+            payload = json.loads(delivery.payload)
+            payload[AI_ASSISTED_PILOT_METADATA_KEY][
+                "message_quality_receipt_sha256"
+            ] = "0" * 64
+            delivery.payload = json.dumps(payload, ensure_ascii=False)
+            session.add(delivery)
+            session.commit()
+        else:
+            receipt = json.loads(receipt_path.read_text(encoding="utf-8"))
+            if tamper_mode == "check_results":
+                receipt["check_results"]["stock_count"] = 999
+            elif tamper_mode == "status":
+                receipt["status"] = "failed"
+            elif tamper_mode == "other_packet":
+                receipt["packet_id"] = "other-packet"
+            elif tamper_mode == "rendered_payload_sha":
+                receipt["rendered_payload_set_sha256"] = "f" * 64
+            receipt_path.write_text(
+                json.dumps(receipt, ensure_ascii=False), encoding="utf-8"
+            )
+
+        retry = await deliver_validated_ai_review(
+            session, PACKET_ID, notifier=retry_notifier
+        )
+        fallback = await dispatch_due_deterministic_fallbacks(
+            session,
+            market="kr",
+            run_date=RUN_DATE,
+            now=datetime(2026, 8, 14, 17, 10, tzinfo=KST),
+            notifier=fallback_notifier,
+        )
+
+    assert first.status == "pending"
+    assert retry.status == "quality_receipt_invalid"
+    assert retry_notifier.payloads == []
+    assert fallback[-1].delivery_mode == "deterministic_fallback"
+    assert len(fallback_notifier.payloads) == 2
+    state = json.loads(
+        (tmp_path / "ai_review" / "pilot" / "state-v3.json").read_text()
+    )
+    assert state["markets"]["kr"]["successful_packet_ids"] == []
+    if tamper_mode == "missing":
+        assert not receipt_path.exists()
 
 
 def test_pilot_v3_stops_market_after_five_successful_packets(

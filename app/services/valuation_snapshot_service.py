@@ -31,6 +31,11 @@ from app.services.alpha_vantage_service import AlphaVantageService
 from app.services.data_coverage_service import DataCoverageService
 from app.services.dividend_history_service import DividendHistoryService
 from app.services.financial_freshness_service import FinancialFreshnessService
+from app.services.financial_amount_period_service import (
+    AMOUNT_PERIOD_CONTRACT,
+    apply_comparison_period_metadata,
+    financial_amount_period_lineage,
+)
 from app.services.financial_validation import financial_snapshot_is_usable
 from app.services.provider_telemetry_service import ProviderTelemetryService
 from app.services.official_security_identity_service import (
@@ -917,8 +922,11 @@ class ValuationSnapshotService:
             value = financial_period_end(row)
             return value.isoformat() if value else ""
 
-        def metadata(row: FinancialSnapshot) -> dict[str, object]:
-            return {
+        def metadata(
+            row: FinancialSnapshot,
+            field: str | None = None,
+        ) -> dict[str, object]:
+            value = {
                 "period": row_period(row),
                 "period_type": row.period_type,
                 "fiscal_year": row.fiscal_year,
@@ -940,6 +948,9 @@ class ValuationSnapshotService:
                 "margin_quality_review": row.margin_quality_review,
                 "lineage_verified": True,
             }
+            if field is not None and row.provider == "opendart":
+                value.update(financial_amount_period_lineage(row, field))
+            return value
 
         def match_series(item: dict[str, object]) -> FinancialSnapshot | None:
             item_period = str(item.get("period") or "")[:10]
@@ -993,6 +1004,7 @@ class ValuationSnapshotService:
             key=lambda item: (filing_date(item) or date.min, item.id or 0),
         )
         result = metadata(latest)
+        result["financial_amount_period_contract"] = AMOUNT_PERIOD_CONTRACT
 
         ttm_sources: list[dict[str, object]] = []
         for item in snapshot.earnings_quarter_series:
@@ -1037,9 +1049,8 @@ class ValuationSnapshotService:
                 ),
                 None,
             )
-        latest_metadata = metadata(latest)
         direct_sources: dict[str, list[dict[str, object]]] = {
-            field: [latest_metadata]
+            field: [metadata(latest, field)]
             for field in (
                 "latest_revenue",
                 "latest_operating_income",
@@ -1048,10 +1059,14 @@ class ValuationSnapshotService:
         }
         if prior is not None:
             for field in ("latest_revenue_qoq", "latest_operating_income_qoq"):
-                direct_sources[field] = [latest_metadata, metadata(prior)]
+                records = [metadata(latest, field), metadata(prior, field)]
+                apply_comparison_period_metadata(records, comparison="qoq")
+                direct_sources[field] = records
         if prior_year is not None:
             for field in ("latest_revenue_yoy", "latest_operating_income_yoy"):
-                direct_sources[field] = [latest_metadata, metadata(prior_year)]
+                records = [metadata(latest, field), metadata(prior_year, field)]
+                apply_comparison_period_metadata(records, comparison="yoy")
+                direct_sources[field] = records
         result["direct_field_sources"] = direct_sources
 
         minimum = self.settings.valuation_model_min_quarters
