@@ -4582,6 +4582,27 @@ def test_persisted_financial_quality_lineage_is_enriched_with_verified_period_me
     assert metadata["lineage_verified"] is True
 
 
+def test_financial_period_label_distinguishes_h1_filing_from_amount_scope() -> None:
+    assert (
+        ai_review_service._financial_period_label(
+            "2026-06-30", "H1", 2026, "single-quarter", False
+        )
+        == "2026년 2분기"
+    )
+    assert (
+        ai_review_service._financial_period_label(
+            "2026-06-30", "H1", 2026, "half-year", True
+        )
+        == "2026년 상반기 누적"
+    )
+    assert (
+        ai_review_service._financial_period_label(
+            "2026-06-30", "H1", 2026, "", False
+        )
+        is None
+    )
+
+
 def test_authoritative_identity_field_provenance_reaches_ai_packet(
     monkeypatch,
     tmp_path: Path,

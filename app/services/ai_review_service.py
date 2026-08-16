@@ -1695,14 +1695,23 @@ def _financial_period_label(
         return None
     normalized = period_type.strip().upper()
     scope = period_scope.strip().lower()
+    cumulative_scope = any(
+        marker in scope for marker in ("cumulative", "half-year", "half_year", "ytd")
+    )
+    single_quarter_scope = scope in {"single-quarter", "single_quarter", "quarter"}
     if normalized == "Q1":
         suffix = "1분기"
     elif normalized == "Q2":
-        suffix = "상반기 누적" if is_cumulative or "cumulative" in scope else "2분기"
+        suffix = "상반기 누적" if is_cumulative or cumulative_scope else "2분기"
     elif normalized == "H1":
-        suffix = "상반기 누적"
+        if single_quarter_scope and not is_cumulative:
+            suffix = "2분기"
+        elif is_cumulative or cumulative_scope:
+            suffix = "상반기 누적"
+        else:
+            return None
     elif normalized == "Q3":
-        suffix = "3분기 누적" if is_cumulative or "cumulative" in scope else "3분기"
+        suffix = "3분기 누적" if is_cumulative or cumulative_scope else "3분기"
     elif normalized == "FY":
         suffix = "연간"
     else:
