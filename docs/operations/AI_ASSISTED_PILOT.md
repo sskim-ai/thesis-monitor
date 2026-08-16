@@ -70,7 +70,7 @@ Active cohort: `ai-assisted-pilot-v3` with policy `daily-review-v3.10`, schema 4
 renderer v3. State is stored in `data/ai_review/pilot/state-v3.json`; the current successful count is
 persisted as KR 3/5 and US 2/5. The 2026-08-16 US session is operationally counted but failed the
 required human message-quality review. The 2026-08-16 KR session is operationally counted, while its
-human message-quality disposition is `pending_work_human_review`. Neither session is currently
+human message-quality disposition is `failed`. Neither session is currently
 eligible as Production Assist evidence.
 Earlier state files and history remain immutable.
 
@@ -108,8 +108,12 @@ state after verified archive completion is the actual count.
 The natural 2026-08-16 KR v3.10 Scheduled Task packet
 `2026-08-16-kr-run-21-049f367f0274` also passed validation, delivered 8/8, verified all 13 required
 archive artifacts, and wrote its completion marker before the exactly-once state update. It is KR
-Day 3/5 operationally. Its human-quality status remains pending direct Work review, reconciliation
-did not mutate the counter, and the session is not yet Production Assist evidence.
+Day 3/5 operationally. Its human-quality status was subsequently set to FAIL by Work. Six
+numeric-postposition defects, unsupported actor/horizon
+supply claims, repeated core-judgment structure, missing financial period labels, and unsupported
+valuation conclusions block evidence eligibility. The review did not mutate the counter, and the
+session is not Production Assist evidence. See
+[the Work human review](../reports/20260816-third-natural-kr-v310-work-human-review.md).
 
 Fallback is an operational success but not an AI Pilot success. Each market needs five successful
 sessions. Completion returns that market to deterministic delivery; it does not enable Production
