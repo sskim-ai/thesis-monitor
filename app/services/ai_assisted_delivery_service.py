@@ -17,6 +17,7 @@ from sqlmodel import Session, select
 from app.config import get_settings
 from app.models.thesis import NotificationDelivery
 from app.schemas.ai_review import AIDailyReviewOutput, AIMarketReview, AIStockReview
+from app.services.delta_first_rendering_service import DeltaFirstRenderPlan
 from app.services.ai_reasoning_quality_service import (
     runtime_message_quality_receipt,
     verify_runtime_message_quality_receipt,
@@ -809,6 +810,7 @@ def _render_ai_stock_message(
     market: str,
     pilot_day: int,
     target_days: int,
+    render_plan: DeltaFirstRenderPlan | None = None,
 ) -> str:
     market_label = "US" if market == "us" else "KR"
     positioning_heading = "📊 거래량·포지셔닝" if market == "us" else "📊 수급"
@@ -831,7 +833,7 @@ def _render_ai_stock_message(
             )
         )
     ]
-    sections = [
+    standard_sections = [
         f"🤖 AI 보조 종목 점검 · {market_label} Pilot {pilot_day}/{target_days}",
         "\n".join([company, official, *fixed_context]),
         f"🎯 핵심 판단\n{review.core_judgment.text.strip()}",
@@ -845,15 +847,50 @@ def _render_ai_stock_message(
         f"{positioning_heading}\n{review.supply_analysis.text.strip()}",
         f"📐 Valuation\n{review.valuation_analysis.text.strip()}",
     ]
-    sections.extend(deterministic_details)
-    priority_watch = _bullets(review.priority_watch)
-    if priority_watch:
-        sections.append(f"👁 핵심 감시\n{priority_watch}")
-    next_checks = _bullets(review.next_checks)
-    if next_checks:
-        sections.append(f"📌 다음 확인\n{next_checks}")
-    if review.unknowns:
-        sections.append(f"⚠️ 미확인\n{_bullets(review.unknowns)}")
+    if render_plan is None:
+        sections = standard_sections
+        sections.extend(deterministic_details)
+        priority_watch = _bullets(review.priority_watch)
+        if priority_watch:
+            sections.append(f"👁 핵심 감시\n{priority_watch}")
+        next_checks = _bullets(review.next_checks)
+        if next_checks:
+            sections.append(f"📌 다음 확인\n{next_checks}")
+        if review.unknowns:
+            sections.append(f"⚠️ 미확인\n{_bullets(review.unknowns)}")
+        return "\n\n".join(section for section in sections if section.strip())
+
+    header = standard_sections[0]
+    adaptive_context = [company, official, *fixed_context]
+    if render_plan.material_delta != "none":
+        adaptive_context.append(f"오늘 관찰 변화: {render_plan.today_change_label}")
+    context = "\n".join(adaptive_context)
+    adaptive_sections = {
+        "core": standard_sections[2],
+        "business": standard_sections[3],
+        "price": standard_sections[4],
+        "supply": standard_sections[5],
+        "valuation": standard_sections[6],
+        "warnings": "\n\n".join(deterministic_details),
+        "priority_watch": (
+            f"👁 핵심 감시\n{_bullets(review.priority_watch)}"
+            if review.priority_watch
+            else ""
+        ),
+        "next": (
+            f"📌 다음 확인\n{_bullets(review.next_checks)}"
+            if review.next_checks
+            else ""
+        ),
+        "unknown": (
+            f"⚠️ 미확인\n{_bullets(review.unknowns)}" if review.unknowns else ""
+        ),
+    }
+    sections = [
+        header,
+        context,
+        *(adaptive_sections.get(name, "") for name in render_plan.section_order),
+    ]
     return "\n\n".join(section for section in sections if section.strip())
 
 
