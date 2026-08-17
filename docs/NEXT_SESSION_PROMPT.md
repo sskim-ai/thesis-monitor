@@ -134,6 +134,19 @@ observer/holder distinction, concrete Unknowns, next checks, or price/financial 
 the Phase 8.1.2 artifacts as merge or Production Assist evidence. Prefer Phase 8.4 then Phase 8.5,
 unless KRX approval makes Phase 8.2A the immediate priority.
 
+Phase 8.4 on `codex/phase-8-4-delta-first-integrated-renderer` now supplies the missing integrated
+evidence. It combines the immutable KR Day 3 monitoring, price, supply, and valuation context with
+Phase 8.1.1 recovered financial Facts in five complete schema-4 reviews, then uses the existing
+production renderer with a deterministic adaptive section plan. Automatic binding is 82 with no
+manual/rejected/formatter/unresolved result; the full validator and runtime quality receipt pass.
+Supply transitions render their six actor/horizon values before static context, unchanged sessions
+do not invent a delta, and SK hynix denied earnings/PE stay absent. The provisional review score is
+16.6/20, but this is not Work approval: status remains `pending_work_human_review`, main is unmerged,
+and Production Assist eligibility is false. Read the exact
+`docs/reports/20260817-phase8-4-delta-first-full-preview.md` first, then the human-quality report.
+After Work review, prefer Phase 8.5 for deeper industry reasoning or Phase 8.4.1 if tighter
+compression is the priority.
+
 Massive Phase 8.1 remains shadow-only. Reference cache TTL is one trading day; adjusted decimal
 volume and deterministic close-times-adjusted-volume are audit-only. Exact 08:05 KST readiness is
 `NOT_YET_OBSERVED`, despite complete after-deadline capability data. Do not change Scheduled Task

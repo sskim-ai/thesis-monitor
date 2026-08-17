@@ -89,6 +89,12 @@ are captured. Adjusted Massive volume and close-times-adjusted-volume stay audit
 lineage retrospective work uses an immutable DB copy and never rewrites an assessment, archive, or
 Pilot state.
 
+Phase 8.4 is also archive-only. It renders five complete retrospective stock messages from the
+immutable KR Day 3 packet plus recovered canonical financial Facts. Its schema-4 validator and
+runtime quality receipt pass, but the Preview remains `pending_work_human_review`. It is not an
+operating Pilot session, does not send Telegram, does not increment KR 3/5 or US 3/5, and cannot
+become Production Assist evidence without separate approval.
+
 A market success increments only when:
 
 1. packet is ready;

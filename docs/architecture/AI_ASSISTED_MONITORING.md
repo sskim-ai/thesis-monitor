@@ -40,6 +40,13 @@ recent CFS/OFS occurrences to v2, while pre-existing critical quality conflicts 
 Structured ambiguity may enter exact XBRL reconciliation, but unresolved OCF or CAPEX duration is
 not converted into a user-visible cash-flow Fact.
 
+`delta-first-rendering-v1` can assemble those safe Facts with monitoring state, dynamic price
+structure, actor/horizon supply, and typed valuation into a complete schema-4 review. The packet's
+deterministic delta selects section order: matching supply or price evidence leads when it changed,
+while unchanged sessions say so without creating a retrospective event. The renderer only assembles
+the validated sections; it does not select Facts or rewrite prose. See
+[DELTA_FIRST_RENDERING.md](DELTA_FIRST_RENDERING.md).
+
 Final assessments also persist `monitoring-state-v1` current/previous/delta. This is separate from
 the slower thesis state and allows the review to evolve price, supply, and valuation context without
 rewriting the thesis.
@@ -87,6 +94,7 @@ by analysis policy, output schema, Knowledge hashes, structure algorithm, and Pi
 | Monitoring state and peers | `app/services/monitoring_state_service.py` |
 | Runtime quality gate | `app/services/ai_reasoning_quality_service.py` |
 | Delivery and renderer | `app/services/ai_assisted_delivery_service.py` |
+| Delta-first full-message planning | `app/services/delta_first_rendering_service.py` |
 | Scheduled CLI | `app/jobs/ai_review.py` |
 | Analyst workflow | `.agents/skills/thesis-monitor-daily-review/SKILL.md` |
 

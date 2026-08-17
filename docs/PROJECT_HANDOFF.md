@@ -289,6 +289,28 @@ Production Assist evidence eligibility remains false. See the
 [verbatim Preview](reports/20260817-phase8-1-2-kr-before-after-preview.md). The recommended order is
 Phase 8.4 then Phase 8.5, with Phase 8.2A inserted first if KRX approval is available.
 
+## Phase 8.4 Delta-First Full Messages
+
+Phase 8.4 closes the financial-only evidence gap on
+`codex/phase-8-4-delta-first-integrated-renderer`. Using the same immutable KR Day 3 context and the
+Phase 8.1.1 recovery artifact, it produces five complete schema-4 stock reviews and renders them
+through the existing production stock renderer. A deterministic materiality plan puts grounded
+supply or price evidence first when the packet records that transition; on unchanged days it states
+that no material event occurred and moves to current decision relevance. Redundant business and
+priority-watch display sections are suppressed when their evidence is already integrated into the
+core, next check, and unknown.
+
+The archive-only set has 82 automatic bindings, zero manual/rejected/formatter/unresolved results,
+nine valid occurrence-bound valuation interpretations, and no SK hynix denied earnings or PE
+leakage. The full validator and runtime receipt pass with zero errors; final-language, zone, supply,
+observer/holder, and repeat checks also pass. The five messages are 11.5% shorter by character and
+23.3% shorter by section than their immutable full-message baseline. The review score is a
+provisional 16.6/20, but the authoritative status remains `pending_work_human_review` and Production
+Assist evidence eligibility is false. See [the exact Preview](reports/20260817-phase8-4-delta-first-full-preview.md),
+[human-quality evidence](reports/20260817-phase8-4-human-quality-review.md), and
+[the rendering contract](architecture/DELTA_FIRST_RENDERING.md). No main merge, deployment,
+Telegram send, provider call, operating mutation, or Pilot mutation occurred.
+
 On 2026-08-15 the owning desktop environment verified all four local-project tasks, retained their
 08:15/08:30/16:15/16:55 schedules, and migrated their exact prompts to v3.10 with
 `security-identity-v2` and `financial-quality-taint-v2`. All four are ACTIVE,
