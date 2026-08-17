@@ -311,6 +311,30 @@ Assist evidence eligibility is false. See [the exact Preview](reports/20260817-p
 [the rendering contract](architecture/DELTA_FIRST_RENDERING.md). No main merge, deployment,
 Telegram send, provider call, operating mutation, or Pilot mutation occurred.
 
+## Phase 8.4.1 Semantic And Decision Hardening
+
+Phase 8.4.1 on `codex/phase-8-4-1-semantic-decision-hardening` keeps the Phase 8.4 integrated
+architecture and closes its four direct semantic blockers. Ordinary PER/PBR and own-history Facts
+now carry listed-security scope, so company multiples cannot be rendered as memory, transport, or
+materials segment multiples. Denied financial families are fenced across qualitative claims, while
+an exact Fact-bound denial explanation remains allowed.
+
+The deterministic decision hierarchy no longer promotes mild supply divergence solely because it
+changed most recently. Samsung and Hyundai Glovis move earnings/valuation and entry relevance ahead
+of supply; SK hynix correctly retains supply as the best available delta because earnings are
+denied. Safe decision-band history is retained for Samsung PBR, Hyundai Glovis PER, and SK hynix PBR.
+Samsung's extreme Q2 values classify `VALID_AND_COHERENT` from exact CFS account, period, currency,
+comparison, and formula checks; the audit makes no external plausibility guess.
+
+The five corrected reviews use 86 automatic bindings and 12 typed valuation occurrences. Full
+schema validation and the runtime receipt pass with no final-language or template errors. Average
+characters rise 4.2% from Phase 8.4 while lines fall 1.3%. The exact Preview remains
+`pending_work_human_review`; Production Assist evidence eligibility is false. See the
+[validation report](reports/20260817-phase8-4-1-semantic-decision-validation.md),
+[semantic audit](reports/20260817-phase8-4-1-semantic-audit.md), and
+[exact Preview](reports/20260817-phase8-4-1-semantic-decision-preview.md). Main remains unmerged and
+no deployment, Telegram, provider, operating-state, or Pilot mutation occurred.
+
 On 2026-08-15 the owning desktop environment verified all four local-project tasks, retained their
 08:15/08:30/16:15/16:55 schedules, and migrated their exact prompts to v3.10 with
 `security-identity-v2` and `financial-quality-taint-v2`. All four are ACTIVE,

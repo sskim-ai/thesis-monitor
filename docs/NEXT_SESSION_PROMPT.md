@@ -147,6 +147,18 @@ and Production Assist eligibility is false. Read the exact
 After Work review, prefer Phase 8.5 for deeper industry reasoning or Phase 8.4.1 if tighter
 compression is the priority.
 
+Phase 8.4.1 on `codex/phase-8-4-1-semantic-decision-hardening` addresses the semantic review
+findings without redesigning Phase 8.4. Company/listed-security PER/PBR can no longer be described as
+segment multiples, denied financial families cannot return as qualitative premises, mild supply is
+secondary when stronger current earnings/valuation context exists, and safe decision-band history
+is retained with an audit reason. The five-stock binder has 86 automatic bindings and 12 scoped
+typed valuation occurrences; full validation and runtime receipt pass. Samsung's extreme Q2 values
+are internally `VALID_AND_COHERENT`; no external plausibility inference was used. Read
+`docs/reports/20260817-phase8-4-1-semantic-decision-preview.md` and the semantic audit directly.
+Status remains `pending_work_human_review`; main is unmerged, Production Assist is OFF, and no
+Telegram/Pilot/operating mutation occurred. If Work accepts the Preview, Phase 8.5 is next unless
+KRX approval makes Phase 8.2A the immediate priority.
+
 Massive Phase 8.1 remains shadow-only. Reference cache TTL is one trading day; adjusted decimal
 volume and deterministic close-times-adjusted-volume are audit-only. Exact 08:05 KST readiness is
 `NOT_YET_OBSERVED`, despite complete after-deadline capability data. Do not change Scheduled Task

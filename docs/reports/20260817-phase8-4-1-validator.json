@@ -1,0 +1,20 @@
+{
+  "artifact_context": {
+    "database_mutations": 0,
+    "human_quality_status": "pending_work_human_review",
+    "pilot_mutations": 0,
+    "provider_calls": 0,
+    "recovery_audit_sha256": "cc5c5eb49f7f723c3ae07fd2f6481cb9c47ac554735db895a0bfbeddaf4667cf",
+    "retrospective_packet": "2026-08-16-kr-phase8-4-1-semantic-retrospective",
+    "source_database_sha256": "d1b4b121d11005952bd050ca5d0c0c1056b310d223afb4f6db57ae00086936fd",
+    "source_messages_sha256": "202b83b805ceb39e8eb4fbed114a2754400be7da8db2e8d1a0920fe428d4edcc",
+    "source_output_sha256": "acb810c7d91e0d2df985fc7854a70c5c5aded9845b3f32aef69959ea0890e8da",
+    "source_packet": "2026-08-16-kr-run-21-049f367f0274",
+    "source_packet_sha256": "20e94eff4f16d9b95e3e5e196c3c8f0b349a24b581b38c8d807cae802066b6b4",
+    "telegram_sends": 0
+  },
+  "result": {
+    "errors": [],
+    "status": "passed"
+  }
+}

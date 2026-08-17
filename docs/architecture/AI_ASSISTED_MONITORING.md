@@ -42,9 +42,12 @@ not converted into a user-visible cash-flow Fact.
 
 `delta-first-rendering-v1` can assemble those safe Facts with monitoring state, dynamic price
 structure, actor/horizon supply, and typed valuation into a complete schema-4 review. The packet's
-deterministic delta selects section order: matching supply or price evidence leads when it changed,
-while unchanged sessions say so without creating a retrospective event. The renderer only assembles
-the validated sections; it does not select Facts or rewrite prose. See
+deterministic candidate set is ranked by `decision-material-delta-v1`; a mild latest supply change
+does not override more important verified earnings or valuation context without an explicit
+materiality reason. `semantic-scope-and-decision-hierarchy-v1` also binds company/listed-security
+valuation scope, blocks qualitative echoes of denied financial families, and retains safe
+decision-band history. The renderer only assembles the validated sections; it does not select Facts
+or rewrite prose. See
 [DELTA_FIRST_RENDERING.md](DELTA_FIRST_RENDERING.md).
 
 Final assessments also persist `monitoring-state-v1` current/previous/delta. This is separate from
@@ -95,6 +98,7 @@ by analysis policy, output schema, Knowledge hashes, structure algorithm, and Pi
 | Runtime quality gate | `app/services/ai_reasoning_quality_service.py` |
 | Delivery and renderer | `app/services/ai_assisted_delivery_service.py` |
 | Delta-first full-message planning | `app/services/delta_first_rendering_service.py` |
+| Semantic scope and decision hierarchy | `app/services/semantic_decision_service.py` |
 | Scheduled CLI | `app/jobs/ai_review.py` |
 | Analyst workflow | `.agents/skills/thesis-monitor-daily-review/SKILL.md` |
 
