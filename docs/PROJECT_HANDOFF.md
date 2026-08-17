@@ -30,6 +30,7 @@ execution or an autonomous investment adviser.
 | Financial currency safety | Missing/empty is `unknown`; unsupported units are prose-denied |
 | Security identity | `security-identity-v2` |
 | Financial quality | `financial-quality-taint-v2` |
+| KR financial lineage | Production remains legacy; experimental `financial-lineage-v2` on Phase 8.1 branch |
 
 Resolve the deployed commit with `git rev-parse HEAD`; a file inside a commit cannot contain that
 commit's own final hash. The machine-readable state records `HEAD` plus the last verified base.
@@ -222,6 +223,25 @@ remains `bridge_shadow` and rejects canonical collection unless efficient market
 universe semantics are explicitly SUPPORTED. KRX remains the intended primary after API approval.
 See [MARKET_CROSS_SECTION.md](architecture/MARKET_CROSS_SECTION.md) and the
 [capability report](reports/20260817-phase8-massive-kiwoom-capability.md).
+
+## Phase 8.1 KR Financial Lineage
+
+The experimental Phase 8.1 branch changes new formal OpenDART collection to the full-financial-
+statement API and persists exact field occurrences under `financial-lineage-v2`. Filing period,
+amount period, comparison period, CFS/OFS basis, account, source type, currency, and correction
+identity remain distinct. Direct amounts can remain usable when only a growth comparison is unsafe.
+
+The immutable operating DB copy predates this contract: its active KR cross-section has no v2 rows
+and retains `fs_div=unknown` for most latest formal filings. Phase 8.1 does not infer or backfill those
+rows. It records 60 persisted source-value cells across the requested 119-cell matrix and zero safe
+historical v2 promotions. SK hynix denied earnings and dependent valuation remain denied.
+
+Massive remains shadow-only. The adjusted grouped volume is explicitly audit-only because split
+adjustment can produce decimal volume, and `close * adjusted volume` is not official turnover.
+Reference metadata may be reused for one trading day. Exact 08:05 KST readiness remains
+`NOT_YET_OBSERVED`; the normal-day 3-5 session telemetry requirement is still open. See
+[the Phase 8.1 financial report](reports/20260817-phase8-1-kr-financial-lineage-validation.md) and
+[Massive readiness report](reports/20260817-massive-0805-shadow-readiness.md).
 
 On 2026-08-15 the owning desktop environment verified all four local-project tasks, retained their
 08:15/08:30/16:15/16:55 schedules, and migrated their exact prompts to v3.10 with

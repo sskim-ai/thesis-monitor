@@ -39,6 +39,7 @@ Current contracts:
 - OHLCV structure `ohlcv-structure-v2`
 - security identity `security-identity-v2`
 - financial quality `financial-quality-taint-v2`
+- experimental KR field lineage `financial-lineage-v2` on the Phase 8.1 branch; not deployed
 - Pilot `ai-assisted-pilot-v3`, persisted runtime count KR 3/5 and US 3/5; the natural US Day 2 and
   KR Day 3 human message-quality reviews failed, while US Day 3 has no Phase 8 human-quality approval
 - renderer `ai-assisted-pilot-renderer-v3`
@@ -102,6 +103,21 @@ The later natural US packet `2026-08-17-us-run-22-217ce9f324b9` passed the opera
 delivered 14/14, archived 13 required artifacts, and was counted exactly once after its completion
 marker. Current operational state is KR 3/5 and US 3/5. Phase 8 did not perform a human-quality review
 of this packet, so do not treat it as Production Assist evidence.
+
+Phase 8.1 on `codex/phase-8-1-kr-financial-lineage` is a branch-only provider/canonical experiment.
+It uses OpenDART full financial statements to preserve field-level CFS/OFS, amount-period, account,
+currency, comparison, source-type, and correction lineage. Growth and margin are exact dependency
+Facts, so an unsafe comparison no longer requires suppressing a separately verified current amount.
+The operating DB predates v2 and has no source rows that can be safely reconstructed, so no
+historical amount was backfilled. XBRL context parsing is exact and fail-closed. Read
+`docs/architecture/KR_FINANCIAL_LINEAGE.md`, `docs/providers/OPENDART_FINANCIALS.md`, and
+`docs/reports/20260817-phase8-1-kr-financial-lineage-validation.md` before continuing.
+
+Massive Phase 8.1 remains shadow-only. Reference cache TTL is one trading day; adjusted decimal
+volume and deterministic close-times-adjusted-volume are audit-only. Exact 08:05 KST readiness is
+`NOT_YET_OBSERVED`, despite complete after-deadline capability data. Do not change Scheduled Task
+times until 3-5 normal sessions are observed. See
+`docs/reports/20260817-massive-0805-shadow-readiness.md`.
 
 The first natural v3.10 US packet `2026-08-16-us-run-20-6c15d0003955` passed the automated pipeline,
 delivered 14/14, completed its archive, and was recorded exactly once, so runtime state now says US

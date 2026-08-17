@@ -1,0 +1,37 @@
+{
+  "contract": "massive-0805-shadow-v1",
+  "credentials_recorded": false,
+  "live_probe": {
+    "date": "2026-08-17",
+    "grouped_daily": {
+      "http_status": 200,
+      "session_date": "2026-08-14",
+      "row_count": 12424,
+      "rate_limit_headers_present": false
+    },
+    "reference_one_row": {
+      "http_status": 200,
+      "next_url_present": true,
+      "rate_limit_headers_present": false
+    },
+    "bounded_burst": {
+      "request_count": 2,
+      "http_statuses": [200, 200],
+      "latency_seconds": [0.649415, 0.569972],
+      "interpretation": "limited burst accepted; official five-calls-per-minute contract still governs"
+    },
+    "live_429_intentionally_provoked": false
+  },
+  "readiness_0805_kst": "NOT_YET_OBSERVED",
+  "normal_session_observation_count": 0,
+  "required_normal_session_observations": "3-5",
+  "reference_cache_ttl": "one_trading_day",
+  "volume_semantics": "split_adjusted_aggregate_volume",
+  "trading_value_semantics": "deterministic_close_times_adjusted_volume_estimate",
+  "user_visible_total_volume_eligible": false,
+  "user_visible_trading_value_eligible": false,
+  "provider_calls": 4,
+  "telegram_sends": 0,
+  "pilot_mutations": 0,
+  "operating_mutations": 0
+}

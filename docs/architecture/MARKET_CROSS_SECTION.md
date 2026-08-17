@@ -32,6 +32,12 @@ The `MarketCrossSection` model records:
 - market flow only when an official/queryable aggregate source exists;
 - provider, coverage, freshness, universe version, calculation version, exclusions, and source hash.
 
+Volume and trading-value semantics are explicit quality fields. Massive `adjusted=true` volume is
+`split_adjusted_aggregate_volume`; decimal values are expected after split adjustment. Its sum and
+the derived `close * adjusted volume` estimate are audit-only and are not registered as user-facing
+“shares traded” or official turnover. Raw reported shares and official trading value require
+different verified semantics.
+
 Missing is never zero. Stale data is not promoted as the current session. Partial data exposes only
 the verified subset.
 
@@ -46,6 +52,11 @@ without the same ticker's previous adjusted close.
 The grouped endpoint alone is not sufficient because it includes non-operating securities. Massive
 reference metadata is therefore a required input to breadth. Provider row order never affects the
 result.
+
+Reference metadata is cached for at most one XNYS session so a Friday cache can support Monday's
+08:05 critical path, including intervening US holidays. Current and previous grouped inputs remain
+exact-date caches. Missing or stale reference metadata fails closed instead of refreshing on every
+critical path without a bound.
 
 ## Concentration And Sectors
 

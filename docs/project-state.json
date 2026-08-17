@@ -285,6 +285,41 @@
     "operating_mutations": 0,
     "report": "docs/reports/20260817-phase8-massive-kiwoom-capability.md"
   },
+  "phase_8_1_kr_financial_lineage": {
+    "status": "experimental_shadow_validation",
+    "branch": "codex/phase-8-1-kr-financial-lineage",
+    "base": "33c9898547852e500fa26cabf7566e3613561768",
+    "contract": "financial-lineage-v2",
+    "opendart_primary": "fnlttSinglAcntAll",
+    "xbrl_context_parser": "implemented_fail_closed",
+    "database_migration": false,
+    "active_kr_tickers": 7,
+    "coverage_cells": 119,
+    "persisted_source_available_cells": 60,
+    "historical_v2_rows": 0,
+    "historical_safe_promotions": 0,
+    "unsafe_growth_leakage": 0,
+    "sk_hynix_taint_preserved": true,
+    "cash_flow": {
+      "operating_cash_flow": "PARTIAL",
+      "capex": "PARTIAL",
+      "fcf": "OPEN"
+    },
+    "massive": {
+      "shadow_contract": "massive-0805-shadow-v1",
+      "readiness_0805_kst": "NOT_YET_OBSERVED",
+      "reference_cache_ttl": "one_trading_day",
+      "volume_semantics": "split_adjusted_aggregate_volume",
+      "user_visible_total_volume_eligible": false
+    },
+    "runtime_pilot": {"kr": 3, "us": 3},
+    "production_assist": false,
+    "main_merged": false,
+    "production_deployed": false,
+    "telegram_sends": 0,
+    "operating_mutations": 0,
+    "report": "docs/reports/20260817-phase8-1-kr-financial-lineage-validation.md"
+  },
   "production_assist": false,
   "public_action_version": "0.4.5",
   "public_action_operation_ids": "20/20",

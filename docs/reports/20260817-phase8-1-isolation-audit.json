@@ -1,0 +1,22 @@
+{
+  "contract": "phase8-1-isolation-audit-v1",
+  "operating_commit_before": "aeb87a9d2aee0d4b840c0a8717319e01b375f5f5",
+  "operating_commit_after": "aeb87a9d2aee0d4b840c0a8717319e01b375f5f5",
+  "operating_database_sha256_before": "c9a76f463f4e86862e65fae1fe51ab2b62dc8318c0b7bb95655c4ba9415a6726",
+  "operating_database_sha256_after": "c9a76f463f4e86862e65fae1fe51ab2b62dc8318c0b7bb95655c4ba9415a6726",
+  "isolated_database_copy_sha256": "d1b4b121d11005952bd050ca5d0c0c1056b310d223afb4f6db57ae00086936fd",
+  "pilot_state_sha256_before": "ec77edaedcee670d86e3fbcf266813f96761dac1130c4466f2508d0f4a698e91",
+  "pilot_state_sha256_after": "ec77edaedcee670d86e3fbcf266813f96761dac1130c4466f2508d0f4a698e91",
+  "runtime_pilot": {"kr": 3, "us": 3},
+  "production_assist": false,
+  "ai_mode": "shadow",
+  "opendart_retrospective_provider_calls": 0,
+  "massive_sanity_provider_calls": 4,
+  "telegram_sends": 0,
+  "operating_database_mutations": 0,
+  "assessment_mutations": 0,
+  "archive_mutations": 0,
+  "pilot_mutations": 0,
+  "scheduled_task_mutations": 0,
+  "operating_checkout_mutations": 0
+}

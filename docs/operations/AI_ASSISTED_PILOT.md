@@ -83,6 +83,12 @@ Phase 8 market providers are shadow-only. Capability probes and cached cross-sec
 Pilot session, send Telegram, or increment state. Scheduled Task times and payload sources remain
 unchanged until separate deployment approval.
 
+Phase 8.1 adds a standalone `massive-0805-shadow-v1` recorder, but does not register or schedule it
+in production. The 08:05 readiness verdict remains `NOT_YET_OBSERVED` until 3-5 normal US sessions
+are captured. Adjusted Massive volume and close-times-adjusted-volume stay audit-only. OpenDART
+lineage retrospective work uses an immutable DB copy and never rewrites an assessment, archive, or
+Pilot state.
+
 A market success increments only when:
 
 1. packet is ready;

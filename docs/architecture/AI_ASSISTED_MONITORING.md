@@ -29,6 +29,12 @@ The backend owns identity, calculations, status, warning state, and all persiste
 only interpretation. The validator owns the boundary between them. The dispatcher owns delivery
 exclusivity and does not run analysis.
 
+Korean financial amounts follow the same ownership boundary. `financial-lineage-v2` binds each
+OpenDART amount to one filing, statement basis, account, amount period, source column, currency, and
+source-row identity before it can become a canonical Fact. Margin and growth are separate derived
+Facts with explicit dependency lineages. A failed comparison blocks that derived Fact, not an
+independently verified current amount. See [KR_FINANCIAL_LINEAGE.md](KR_FINANCIAL_LINEAGE.md).
+
 Final assessments also persist `monitoring-state-v1` current/previous/delta. This is separate from
 the slower thesis state and allows the review to evolve price, supply, and valuation context without
 rewriting the thesis.
