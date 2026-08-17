@@ -39,8 +39,8 @@ Current contracts:
 - OHLCV structure `ohlcv-structure-v2`
 - security identity `security-identity-v2`
 - financial quality `financial-quality-taint-v2`
-- Pilot `ai-assisted-pilot-v3`, persisted runtime count KR 3/5 and US 2/5; the natural US Day 2 and
-  KR Day 3 human message-quality reviews both failed, and neither session is Production Assist evidence
+- Pilot `ai-assisted-pilot-v3`, persisted runtime count KR 3/5 and US 3/5; the natural US Day 2 and
+  KR Day 3 human message-quality reviews failed, while US Day 3 has no Phase 8 human-quality approval
 - renderer `ai-assisted-pilot-renderer-v3`
 - AI mode shadow; Production Assist disabled
 - Public Action 0.4.5, operationId 20/20
@@ -88,7 +88,8 @@ archive completion, and runtime state all agree.
 
 The natural 2026-08-16 KR v3.10 packet `2026-08-16-kr-run-21-049f367f0274` passed validation,
 delivered the market plus all seven active stocks 8/8, verified 13 required archive artifacts, and
-was counted exactly once after `archive-complete.json`. Runtime state is therefore KR 3/5 and US 2/5.
+was counted exactly once after `archive-complete.json`. Runtime state at that point was KR 3/5 and
+US 2/5.
 Human message quality is `failed`, while the operational KR 3/5 count remains unchanged. The packet
 is not eligible Production Assist evidence. Work found six numeric-postposition defects,
 actor/horizon supply claims without matching visible numbers, a repeated core-judgment template,
@@ -96,6 +97,11 @@ financial amounts without period labels, and valuation conclusions without adequ
 evidence. Read `docs/reports/20260816-third-natural-kr-v310-work-human-review.md` and the linked
 operational report, Preview, and audits. Do not rerun AI, binding, validation, rendering, or Telegram
 delivery for this session.
+
+The later natural US packet `2026-08-17-us-run-22-217ce9f324b9` passed the operating validator,
+delivered 14/14, archived 13 required artifacts, and was counted exactly once after its completion
+marker. Current operational state is KR 3/5 and US 3/5. Phase 8 did not perform a human-quality review
+of this packet, so do not treat it as Production Assist evidence.
 
 The first natural v3.10 US packet `2026-08-16-us-run-20-6c15d0003955` passed the automated pipeline,
 delivered 14/14, completed its archive, and was recorded exactly once, so runtime state now says US
@@ -152,9 +158,16 @@ US morning schedule: deterministic run and first KRX fetch 08:05, KRX deadline 0
 08:15, Backup 08:30, deterministic fallback 08:40. Telegram network retry reuses persisted final
 text and never reruns analysis.
 
-Known data gaps: KR local indices, market breadth, market-wide investor flows, broad sector and peer
-valuation coverage, and some conservative general-profile taxonomy. Do not fill them with model
-knowledge.
+Phase 8 on `codex/phase-8-0a-8-2-market-breadth` implements a shadow Massive US cross-section and a
+fail-closed Kiwoom Windows-gateway bridge contract. Massive capability is supported, but exact 08:05
+KST readiness remains pending weekday shadow. Kiwoom remains PARTIAL/NOT_CONFIGURED; KRX remains the
+future primary. Read `docs/reports/20260817-phase8-massive-kiwoom-capability.md` and
+`docs/architecture/MARKET_CROSS_SECTION.md`. Do not call ETF proxy returns breadth or infer absent KR
+flow.
+
+Known data gaps: KR local breadth, market-wide investor flows, constituent sector participation,
+broad peer valuation coverage, and some conservative general-profile taxonomy. Do not fill them with
+model knowledge.
 
 Next work order:
 
@@ -164,8 +177,10 @@ Next work order:
 3. Keep the Phase 7.2.9.2 implementation experimental and unmerged; retain TSM/WRD identity as
    `unknown` unless authoritative evidence is separately ingested.
 4. Preserve exact packets, outputs, archives, and old cohorts; do not replay Telegram.
-5. Keep KR 3/5 and US 2/5 unchanged, and keep Production Assist disabled until blocking quality
+5. Keep KR 3/5 and US 3/5 unchanged, and keep Production Assist disabled until blocking quality
    findings are closed and the user explicitly approves it.
+6. Keep Massive and Kiwoom shadow-only. Gather Massive 08:05 timing evidence and wait for KRX
+   activation plus a configured Kiwoom gateway before any production source transition.
 
 Before completion, run full pytest, Ruff, `git diff --check`, Knowledge checksum validation, Skill and
 schema validation, documentation path validation, push the exact commit, and verify GitHub Actions

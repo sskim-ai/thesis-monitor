@@ -23,7 +23,7 @@ execution or an autonomous investment adviser.
 | OHLCV structure | `ohlcv-structure-v2` |
 | Investment Knowledge | `3.0` |
 | Chart Knowledge | `1.0` |
-| Pilot | `ai-assisted-pilot-v3`, persisted runtime KR 3/5 and US 2/5; latest US review failed and latest KR review is pending |
+| Pilot | `ai-assisted-pilot-v3`, persisted runtime KR 3/5 and US 3/5; US Day 3 is operationally counted but not human-reviewed here |
 | Renderer | `ai-assisted-pilot-renderer-v3` |
 | Public Action | `0.4.5`, operationId 20/20 |
 | Production Assist | Disabled |
@@ -190,7 +190,7 @@ no peer number was invented. See [PEER_VALUATION.md](architecture/PEER_VALUATION
 
 ## Pilot Architecture
 
-Pilot v3 activated at KR 0/5 and US 0/5; the persisted runtime count is KR 3/5 and US 2/5. The
+Pilot v3 activated at KR 0/5 and US 0/5; the persisted runtime count is KR 3/5 and US 3/5. The
 2026-08-16 US session remains an exactly-once operational success but failed human-quality review.
 The natural KR
 packet `2026-08-16-kr-run-21-049f367f0274` is operationally counted exactly once as Day 3/5, while
@@ -202,6 +202,26 @@ pass, complete AI-assisted delivery, required artifact verification, and a verif
 persisted payload without resending Telegram, and packet/date idempotency prevents duplicate counts.
 Fallback days do not increment the counter. Earlier
 Pilot cohorts remain history and are never rewritten.
+
+The natural US packet `2026-08-17-us-run-22-217ce9f324b9` passed the operating validator, delivered
+14/14, archived 13 required artifacts with `archive-complete.json`, and appears exactly once in Pilot
+state. It advanced the operational US count to Day 3/5. Phase 8 did not review its investment-message
+quality and does not mark it as Production Assist evidence.
+
+## Phase 8 Market Cross-Section
+
+The experimental branch adds `market-cross-section-v1` without registering a new production provider.
+Massive free-plan live probing confirms full US grouped daily and paginated reference access. The
+2026-08-14 sample produced 5,461 eligible security-level rows after deterministic filtering and
+same-ticker previous adjusted-close validation. Massive remains shadow until 08:05 KST completeness is
+observed over normal weekday sessions.
+
+Kiwoom OpenAPI+ documentation exposes multi-symbol and industry-index/change primitives, but there is
+no configured Windows market gateway or KOA-verified production TR evidence. The provider therefore
+remains `bridge_shadow` and rejects canonical collection unless efficient market-wide capability and
+universe semantics are explicitly SUPPORTED. KRX remains the intended primary after API approval.
+See [MARKET_CROSS_SECTION.md](architecture/MARKET_CROSS_SECTION.md) and the
+[capability report](reports/20260817-phase8-massive-kiwoom-capability.md).
 
 On 2026-08-15 the owning desktop environment verified all four local-project tasks, retained their
 08:15/08:30/16:15/16:55 schedules, and migrated their exact prompts to v3.10 with
@@ -383,8 +403,12 @@ first.
    deterministic PASS is not human approval.
 2. Keep Phase 7.2.9.2 code and artifacts on the experimental branch until Work gives a separate merge
    and deployment approval.
-3. Preserve operational counts KR 3/5 and US 2/5 independently from human-quality disposition.
+3. Preserve operational counts KR 3/5 and US 3/5 independently from human-quality disposition.
 4. Keep TSM/WRD identity `unknown` without authoritative ingestion, preserve exact archives, and do
    not replay Telegram.
 5. Keep Production Assist disabled until blocking findings are closed and the user explicitly
    approves it.
+6. Run 3-5 Massive weekday shadow captures at the 08:05 KST readiness boundary; do not enable
+   Telegram consumption from this branch.
+7. When the KRX service is active, implement the same common contract as primary and collect five
+   trading days of KRX/Kiwoom reconciliation before considering metric-level fallback.

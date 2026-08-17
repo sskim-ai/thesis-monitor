@@ -1,5 +1,18 @@
 # Market Intelligence and Portfolio Transmission
 
+## Phase 8 Cross-Section Input
+
+`market-cross-section-v1` adds an optional, provider-neutral source of actual breadth. The service
+accepts it only when market, session date, and freshness match. When absent or stale, existing
+coverage remains `unavailable`; SPY, QQQ, IWM, or SOXX proxy observations are not relabeled as
+breadth.
+
+Massive supplies the initial US security-level cross-section in shadow. Kiwoom is a KR
+`bridge_shadow` candidate behind an authenticated Windows gateway, and KRX remains the future primary.
+Canonical breadth and flow Facts use the existing numeric semantic registry. They provide market
+structure and portfolio context only and set no company thesis state. See
+[MARKET_CROSS_SECTION.md](MARKET_CROSS_SECTION.md).
+
 ## Problem
 
 Earlier market messages explained method and repeated deterministic text but did not consistently

@@ -35,7 +35,22 @@
   },
   "pilot_current_successful_sessions": {
     "kr": 3,
-    "us": 2
+    "us": 3
+  },
+  "latest_runtime_reconciliation": {
+    "checked_at": "2026-08-17",
+    "packet_id": "2026-08-17-us-run-22-217ce9f324b9",
+    "market": "us",
+    "validator_status": "passed",
+    "delivery": "14/14 sent",
+    "archive_required_artifacts": 13,
+    "archive_completion_marker_verified": true,
+    "counted_exactly_once": true,
+    "source": "natural_scheduled_task",
+    "operational_pipeline_success": true,
+    "human_message_quality_status": "not_reviewed_in_phase_8",
+    "production_assist_evidence_eligible": false,
+    "phase_8_counter_mutation": 0
   },
   "pilot_state_reconciliation": {
     "checked_at": "2026-08-16",
@@ -244,6 +259,32 @@
   },
   "single_delivery": true,
   "deterministic_fallback": true,
+  "phase_8_market_cross_section": {
+    "status": "experimental_shadow_implementation",
+    "branch": "codex/phase-8-0a-8-2-market-breadth",
+    "contract": "market-cross-section-v1",
+    "calculation": "market-breadth-v1",
+    "massive": {
+      "capability": "SUPPORTED",
+      "provider_role": "shadow",
+      "sample_session": "2026-08-14",
+      "raw_rows": 12424,
+      "eligible_rows": 5461,
+      "readiness_0805_kst": "PARTIAL_PENDING_WEEKDAY_SHADOW"
+    },
+    "kiwoom": {
+      "capability": "PARTIAL_NOT_CONFIGURED",
+      "provider_role": "bridge_shadow",
+      "live_gateway_calls": 0,
+      "canonical_promotion": false
+    },
+    "krx_primary": "PENDING_PROVIDER_APPROVAL",
+    "production_registered": false,
+    "scheduled_task_changed": false,
+    "telegram_sends": 0,
+    "operating_mutations": 0,
+    "report": "docs/reports/20260817-phase8-massive-kiwoom-capability.md"
+  },
   "production_assist": false,
   "public_action_version": "0.4.5",
   "public_action_operation_ids": "20/20",

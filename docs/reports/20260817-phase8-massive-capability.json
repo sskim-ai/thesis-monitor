@@ -1,0 +1,67 @@
+{
+  "captured_at": "2026-08-17T09:00:00+09:00",
+  "credentials_recorded": false,
+  "provider": "massive",
+  "plan": "Stocks Basic Free",
+  "status": "SUPPORTED",
+  "session_date": "2026-08-14",
+  "previous_session_date": "2026-08-13",
+  "grouped_daily": {
+    "http_status": 200,
+    "adjusted": true,
+    "row_count": 12424,
+    "duplicate_ticker_count": 0,
+    "missing_close_count": 0,
+    "missing_volume_count": 0,
+    "fields": ["T", "c", "h", "l", "n", "o", "t", "v", "vw"],
+    "latency_seconds": 1.572041,
+    "response_sha256": "51d4399020e754d979eab8a89b0fa8e5122d05b2a27aeca8d1bb8cba6a14f94e"
+  },
+  "reference": {
+    "http_status": 200,
+    "page_count": 14,
+    "row_count": 13110,
+    "total_response_latency_seconds": 14.24072,
+    "response_sha256": "8c8c8ea7dbb2e808ac1fdd126c4d087b50d4cdff6617cad7d4f5ff596c54ef8b"
+  },
+  "free_plan_limits": {
+    "requests_per_minute": 5,
+    "documented_history": "2 years",
+    "beyond_entitlement_date": "2024-08-13",
+    "beyond_entitlement_http_status": 403,
+    "beyond_entitlement_status": "NOT_AUTHORIZED"
+  },
+  "universe": {
+    "version": "massive-us-active-common-equities-v1",
+    "eligible_count": 5461,
+    "exclusions": {
+      "ineligible_security_type": 6889,
+      "previous_adjusted_close_missing": 176,
+      "reference_missing": 13
+    }
+  },
+  "breadth": {
+    "advance_count": 2772,
+    "decline_count": 2502,
+    "unchanged_count": 187,
+    "advance_ratio": 0.507599340780077,
+    "ad_ratio": 1.1079136690647482,
+    "median_return_pct": 0.042335115864533535,
+    "equal_weight_return_pct": 0.2286522949693059,
+    "positive_return_pct": 50.759934078007696,
+    "negative_return_pct": 45.81578465482512,
+    "total_trading_volume": 10949744095.505903,
+    "total_trading_value": 614178243240.3809
+  },
+  "concentration": {
+    "metric_role": "broad_cap_weight_proxy_gap",
+    "proxy_symbol": "SPY",
+    "proxy_return_pct": -0.1979739805625491,
+    "equal_weight_return_pct": 0.2286522949693059,
+    "concentration_gap_pct": -0.426626275531855
+  },
+  "readiness_0805_kst": "PARTIAL_PENDING_WEEKDAY_SHADOW",
+  "provider_calls_mutating_production": 0,
+  "telegram_sends": 0,
+  "pilot_mutations": 0
+}

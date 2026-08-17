@@ -68,11 +68,20 @@ If Telegram fails after validation, the persisted rendered set is retried at bou
 
 Active cohort: `ai-assisted-pilot-v3` with policy `daily-review-v3.10`, schema 4, structure v2, and
 renderer v3. State is stored in `data/ai_review/pilot/state-v3.json`; the current successful count is
-persisted as KR 3/5 and US 2/5. The 2026-08-16 US session is operationally counted but failed the
+persisted as KR 3/5 and US 3/5. The 2026-08-16 US session is operationally counted but failed the
 required human message-quality review. The 2026-08-16 KR session is operationally counted, while its
 human message-quality disposition is `failed`. Neither session is currently
 eligible as Production Assist evidence.
 Earlier state files and history remain immutable.
+
+The natural 2026-08-17 US packet `2026-08-17-us-run-22-217ce9f324b9` passed the operating validator,
+delivered 14/14, archived all 13 required artifacts, and was counted exactly once after
+`archive-complete.json`. It is US Day 3/5 operationally. Phase 8 performed no human investment-message
+approval for this packet, so its Production Assist evidence eligibility remains false.
+
+Phase 8 market providers are shadow-only. Capability probes and cached cross-sections do not create a
+Pilot session, send Telegram, or increment state. Scheduled Task times and payload sources remain
+unchanged until separate deployment approval.
 
 A market success increments only when:
 
