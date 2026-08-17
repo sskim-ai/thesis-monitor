@@ -107,7 +107,7 @@ _KSIC_RULES = (
         "Health Care",
         "biotech",
     ),
-    _IndustryRule(("241",), "Steel Manufacturing", "Materials"),
+    _IndustryRule(("241",), "Steel Manufacturing", "Materials", "steel_materials"),
     _IndustryRule(("264",), "Communications Equipment", "Technology"),
     _IndustryRule(("281",), "Electrical Equipment", "Industrials"),
     _IndustryRule(("313",), "Aerospace Manufacturing", "Industrials"),

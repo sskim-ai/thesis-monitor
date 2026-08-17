@@ -6,6 +6,10 @@ import re
 from dataclasses import dataclass
 from typing import Any
 
+from app.services.industry_reasoning_service import (
+    INDUSTRY_REASONING_CONTRACT,
+    industry_reasoning_reference_errors,
+)
 from app.services.numeric_semantic_registry import (
     canonical_display_value,
     semantic_spec,
@@ -1039,6 +1043,8 @@ def bind_numeric_fact_references(
     semantic_claim_errors: list[str] = []
     valuation_contexts: list[dict[str, object]] = []
     valuation_context_errors: list[str] = []
+    industry_reasoning_claims: list[dict[str, object]] = []
+    industry_reasoning_errors: list[str] = []
     counters = {
         "auto_bound": 0,
         "manual_legacy": 0,
@@ -1105,6 +1111,16 @@ def bind_numeric_fact_references(
                     valuation_context_errors.extend(context_errors)
                     if context_value is not None:
                         valuation_contexts.append(context_value)
+                if stock.get("industry_reasoning_contract") == INDUSTRY_REASONING_CONTRACT:
+                    industry_errors, industry_values = (
+                        industry_reasoning_reference_errors(
+                            review,
+                            stock,
+                            prefix=ticker,
+                        )
+                    )
+                    industry_reasoning_errors.extend(industry_errors)
+                    industry_reasoning_claims.extend(industry_values)
             for key in counters:
                 counters[key] += stock_counts[key]
     report: dict[str, Any] = {
@@ -1159,9 +1175,16 @@ def bind_numeric_fact_references(
             "errors": list(dict.fromkeys(valuation_context_errors)),
             "references": valuation_contexts,
         },
+        "industry_reasoning": {
+            "contract": INDUSTRY_REASONING_CONTRACT,
+            "accepted": len(industry_reasoning_claims),
+            "errors": list(dict.fromkeys(industry_reasoning_errors)),
+            "references": industry_reasoning_claims,
+        },
     }
     errors.extend(semantic_claim_errors)
     errors.extend(valuation_context_errors)
+    errors.extend(industry_reasoning_errors)
     report["status"] = "failed" if errors else "passed"
     report["rejected"] = len(errors)
     report["errors"] = list(dict.fromkeys(errors))

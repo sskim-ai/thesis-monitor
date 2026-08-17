@@ -37,10 +37,11 @@ _SEGMENT_VALUATION = re.compile(
 _OBSERVER_ROLE = re.compile(r"^(?:신규\s*관찰자|관찰자)(?:는|은)?\s*")
 _HOLDER_ROLE = re.compile(r"^(?:기존\s*)?보유자(?:는|은)?\s*")
 _OBSERVER_DECISION = re.compile(
-    r"진입|추격|손익비|저항|지지\s*접근|매수\s*조건|가격\s*매력"
+    r"진입|추격|손익비|저항|지지\s*(?:접근|재시험)|확인선|매수\s*조건|가격\s*매력"
 )
 _HOLDER_DECISION = re.compile(
-    r"논리|무효화|실적|이익|수익성|현금흐름|재고|경고|지지\s*유지|실행|자본"
+    r"논리|무효화|실적|이익|수익성|마진|margin|현금흐름|FCF|CAPEX|재고|"
+    r"경고|지지\s*유지|실행|자본|부채|희석|계약|billing"
 )
 _DENIED_ECHO_PATTERNS = {
     "revenue": re.compile(r"외형\s*(?:성장|증가|둔화|감소)|매출.{0,10}(?:성장|증가|둔화|감소|개선|악화)"),

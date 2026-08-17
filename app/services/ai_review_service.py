@@ -28,6 +28,9 @@ from app.models.thesis import InvestmentThesis, MonitorRun, ThesisAssessment
 from app.models.watchlist import WatchlistItem
 from app.schemas.ai_review import AIDailyReviewOutput, AIStockReview
 from app.services.ai_reasoning_quality_service import normalize_decision_text
+from app.services.industry_reasoning_service import (
+    industry_reasoning_guardrail_flags,
+)
 from app.services.semantic_decision_service import (
     SEMANTIC_SCOPE_CONTRACT,
     observer_holder_semantic_error,
@@ -193,6 +196,9 @@ _INDUSTRY_FRAMEWORKS = {
     "holding_company": "holding_company_valuation",
     "consumer": "consumer_valuation",
     "cloud": "cloud_platform_valuation",
+    "semiconductor_foundry": "semiconductor_foundry_valuation",
+    "steel_materials": "steel_materials_valuation",
+    "hpc_crypto_infrastructure": "hpc_crypto_infrastructure_valuation",
 }
 _INDUSTRY_PATTERNS = (
     ("memory", (r"\bmemory\b", r"\bdram\b", r"\bnand\b", r"메모리")),
@@ -227,6 +233,7 @@ _INDUSTRY_PATTERNS = (
     ("automotive", (r"\bautomotive\b", r"\bautomobile\b", r"자동차", r"완성차")),
     ("shipping", (r"\bshipping\b", r"\btransport(?:ation)?\b", r"해운", r"운송")),
     ("consumer", (r"\bconsumer(?: goods)?\b", r"소비재")),
+    ("steel_materials", (r"\bsteel\b", r"\bmaterials?\b", r"철강", r"소재")),
     (
         "cloud",
         (r"\bcloud computing\b", r"\bpublic cloud\b", r"클라우드 서비스"),
@@ -5186,6 +5193,7 @@ def _semantic_guardrail_flags(
         "positioning",
     }:
         flags.append("price_or_positioning_only_thesis_change")
+    flags.extend(industry_reasoning_guardrail_flags(review, stock))
     return flags
 
 

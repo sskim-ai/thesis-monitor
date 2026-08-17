@@ -6,6 +6,11 @@ from typing import Iterable
 
 from app.services.numeric_provenance_service import TYPED_VALUATION_CONTRACT
 from app.services.numeric_semantic_registry import build_numeric_registry
+from app.services.industry_reasoning_service import (
+    INDUSTRY_REASONING_CONTRACT,
+    INDUSTRY_REASONING_REFERENCE_FIELD,
+    build_industry_reasoning_plan,
+)
 from app.services.semantic_decision_service import (
     SEMANTIC_CLAIM_REFERENCE_FIELD,
     SEMANTIC_SCOPE_CONTRACT,
@@ -233,6 +238,7 @@ def prepare_delta_first_packet(
         stock["numeric_registry"] = build_numeric_registry(catalog)
         stock["typed_valuation_interpretation_contract"] = TYPED_VALUATION_CONTRACT
         stock["semantic_scope_contract"] = SEMANTIC_SCOPE_CONTRACT
+        stock["industry_reasoning_contract"] = INDUSTRY_REASONING_CONTRACT
         stock["denied_semantic_families"] = _denied_semantic_families(
             stock,
             recovery,
@@ -293,7 +299,8 @@ def build_delta_first_stock_draft(
             fact_ids_by_section[section].add(fact_id)
         return f"{{{{numeric:{ref_id}}}}}"
 
-    profile = _reasoning_profile(stock, original_review)
+    industry_plan = build_industry_reasoning_plan(stock)
+    profile = _reasoning_profile(stock)
     recovery_fact_id = f"{RECOVERY_FACT_PREFIX}{ticker}"
     financial_available = any(
         (recovery_fact_id, path) in registry
@@ -407,6 +414,51 @@ def build_delta_first_stock_draft(
     if primary and primary not in frameworks:
         frameworks.append(primary)
 
+    industry_reasoning_refs: list[dict[str, object]] = []
+    missing_family = _unknown_required_family(
+        profile,
+        industry_plan.missing_drivers,
+    )
+    if missing_family:
+        industry_reasoning_refs.append(
+            {
+                "ref_id": "industry_missing_driver",
+                "text_ref": "unknowns[0]",
+                "exact_text_span": unknown,
+                "claim_type": "missing_driver_unknown",
+                "primary_framework": industry_plan.primary_framework,
+                "supporting_fact_ids": [],
+                "required_fact_families": [missing_family],
+            }
+        )
+    valuation_boundary = _valuation_boundary_span(profile, valuation_text)
+    valuation_support = sorted(fact_ids_by_section["valuation"])
+    if valuation_boundary and valuation_support:
+        industry_reasoning_refs.append(
+            {
+                "ref_id": "industry_valuation_boundary",
+                "text_ref": "valuation_analysis.text",
+                "exact_text_span": valuation_boundary,
+                "claim_type": "valuation_boundary",
+                "primary_framework": industry_plan.primary_framework,
+                "supporting_fact_ids": valuation_support,
+                "required_fact_families": [],
+            }
+        )
+    valuation_relation = _valuation_relation_span(profile, valuation_text)
+    if valuation_relation and valuation_support:
+        industry_reasoning_refs.append(
+            {
+                "ref_id": "industry_valuation_relation",
+                "text_ref": "valuation_analysis.text",
+                "exact_text_span": valuation_relation,
+                "claim_type": "valuation_boundary",
+                "primary_framework": industry_plan.primary_framework,
+                "supporting_fact_ids": valuation_support,
+                "required_fact_families": [],
+            }
+        )
+
     draft = {
         "ticker": ticker,
         "thesis_version": original_review.get("thesis_version"),
@@ -446,6 +498,7 @@ def build_delta_first_stock_draft(
             "exact_text_span": valuation_context_span,
         },
         SEMANTIC_CLAIM_REFERENCE_FIELD: semantic_claim_refs,
+        INDUSTRY_REASONING_REFERENCE_FIELD: industry_reasoning_refs,
         "unknowns": [unknown],
         "priority_watch": list(original_review.get("priority_watch", []))[:2],
         "next_checks": [next_check],
@@ -483,6 +536,10 @@ def build_delta_first_stock_draft(
         "financial_cross_field_coherence": financial_cross_field_coherence_report(
             recovery
         ),
+        "industry_reasoning": build_industry_reasoning_plan(
+            stock,
+            facts_used=facts_used,
+        ).as_dict(),
     }
     return draft, audit
 
@@ -727,6 +784,9 @@ def _valuation_text(
         statements.append(
             f"{_company_valuation_prefix(profile, 'pbr')} {values['pbr']}입니다."
         )
+    relation = _profile_valuation_relation(profile, values)
+    if relation:
+        statements.append(relation)
     selected = historical.get("selected")
     history_used = False
     if isinstance(selected, dict):
@@ -896,22 +956,16 @@ def _period_label(lineage: dict[str, object]) -> str:
     return " ".join(item for item in (period, basis) if item)
 
 
-def _reasoning_profile(
-    stock: dict[str, object],
-    original_review: dict[str, object],
-) -> str:
-    routing = _mapping(_mapping(stock.get("knowledge_routing")).get("industry_routing"))
-    primary = str(routing.get("primary_framework") or "").lower()
-    watch = " ".join(str(item) for item in original_review.get("priority_watch", []))
-    if "insurance" in primary or "보험" in watch or "합산비율" in watch:
-        return "insurance"
-    if "shipping" in primary or "운임" in watch or "해상운송" in watch:
-        return "shipping"
-    if "semiconductor" in primary or "HBM" in watch or "메모리" in watch:
-        return "semiconductor"
-    if "철강" in watch or "소재" in watch:
-        return "cyclical_materials"
-    return "general"
+def _reasoning_profile(stock: dict[str, object]) -> str:
+    framework = build_industry_reasoning_plan(stock).primary_framework
+    return {
+        "memory": "semiconductor",
+        "semiconductor": "semiconductor",
+        "semiconductor_foundry": "semiconductor",
+        "insurance": "insurance",
+        "transport_logistics": "shipping",
+        "steel_materials": "cyclical_materials",
+    }.get(framework, "general")
 
 
 def _profile_opening(profile: str) -> str:
@@ -1014,6 +1068,20 @@ def _profile_valuation_context(profile: str) -> str:
     }[profile]
 
 
+def _profile_valuation_relation(profile: str, values: dict[str, str]) -> str | None:
+    if profile == "cyclical_materials" and {"pe", "pbr"}.issubset(values):
+        return (
+            "이익배수와 장부가 배수가 서로 다른 신호를 주므로 PBR 하나만으로 "
+            "가치평가 결론을 내리지 않습니다."
+        )
+    if profile == "insurance" and "pbr" in values:
+        return (
+            "장부가 배수는 자기자본이익률과 자본적정성이 없어 현재 숫자만으로 "
+            "가치평가 결론을 내리지 않습니다."
+        )
+    return None
+
+
 def _valuation_context_wording(
     profile: str,
     context: dict[str, object],
@@ -1097,10 +1165,12 @@ def _company_valuation_prefix(profile: str, metric: str) -> str:
 
 def _profile_unknown(profile: str, financial_available: bool) -> str:
     if not financial_available:
-        return (
-            "HBM 고객별 출하·수율과 재고·설비투자 이후 현금흐름이 "
-            "확인되지 않았습니다."
-        )
+        if profile == "semiconductor":
+            return (
+                "HBM 고객별 출하·수율과 재고·설비투자 이후 현금흐름이 "
+                "확인되지 않았습니다."
+            )
+        return "검증된 영업현금흐름과 업종 핵심 실행 지표가 확인되지 않았습니다."
     return {
         "semiconductor": "사업부별 이익 기여도와 영업현금흐름·설비투자가 없어 전사 실적 개선의 현금 회수 여부는 확인되지 않았습니다.",
         "insurance": "합산비율·대형재해 손실·투자수익률과 자본적정성이 없어 영업이익 증가의 질은 확인되지 않았습니다.",
@@ -1117,7 +1187,9 @@ def _profile_next_check(
     numeric: object,
 ) -> str:
     if not financial_available:
-        return "HBM 출하·수율과 재고·설비투자 이후 현금흐름이 검증되기 전에는 장부가치 배수만으로 투자 논리를 강화하지 않습니다."
+        if profile == "semiconductor":
+            return "HBM 출하·수율과 재고·설비투자 이후 현금흐름이 검증되기 전에는 장부가치 배수만으로 투자 논리를 강화하지 않습니다."
+        return "업종 핵심 실행 지표와 영업현금흐름이 검증되기 전에는 현재 배수만으로 투자 논리를 강화하지 않습니다."
     if profile == "shipping":
         current_margin = numeric(
             "next_checks[0]",
@@ -1136,6 +1208,45 @@ def _profile_next_check(
         "cyclical_materials": "철강·소재 부문 마진과 영업현금흐름이 함께 개선돼야 현재 이익 증가를 사이클 회복 이상의 변화로 봅니다.",
         "general": "다음 분기 이익률과 영업현금흐름이 함께 개선돼야 현재 실적 변화를 지속 가능한 변화로 봅니다.",
     }[profile]
+
+
+def _unknown_required_family(
+    profile: str,
+    missing_drivers: tuple[str, ...],
+) -> str | None:
+    preferences = {
+        "semiconductor": ("inventory", "capex", "free_cash_flow"),
+        "insurance": ("combined_ratio", "capital_adequacy", "roe"),
+        "shipping": ("freight_rate", "contract_mix", "operating_cash_flow"),
+        "cyclical_materials": ("spread", "inventory", "operating_cash_flow"),
+        "general": ("operating_cash_flow", "balance_sheet"),
+    }[profile]
+    return next((item for item in preferences if item in missing_drivers), None)
+
+
+def _valuation_boundary_span(profile: str, text: str) -> str | None:
+    candidates = {
+        "semiconductor": (
+            "이 배수는 HBM 실행과 재고·현금흐름의 확인과 함께 봐야 합니다."
+        ),
+        "insurance": (
+            "보험업 배수는 합산비율·자기자본이익률·자본적정성과 함께 봐야 합니다."
+        ),
+        "shipping": (
+            "운송업 배수는 운임·물량보다 마진과 현금전환의 지속성과 함께 봐야 합니다."
+        ),
+        "cyclical_materials": (
+            "철강·소재 배수는 정상화 이익과 현금전환의 지속성과 함께 봐야 합니다."
+        ),
+        "general": "현재 배수는 수익성과 현금전환의 지속성과 함께 봐야 합니다.",
+    }
+    candidate = candidates[profile]
+    return candidate if candidate in text else None
+
+
+def _valuation_relation_span(profile: str, text: str) -> str | None:
+    candidate = _profile_valuation_relation(profile, {"pe": "", "pbr": ""})
+    return candidate if candidate and candidate in text else None
 
 
 def _financial_quality_facts(stock: dict[str, object]) -> set[str]:
