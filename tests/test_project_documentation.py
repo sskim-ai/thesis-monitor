@@ -6,6 +6,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 DOCUMENTS = (
+    ROOT / "docs" / "MASTER_WORKFLOW.md",
     ROOT / "docs" / "PROJECT_HANDOFF.md",
     ROOT / "docs" / "NEXT_SESSION_PROMPT.md",
     ROOT / "docs" / "project-state.json",
@@ -34,10 +35,17 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     assert state["branch"] == "main"
     assert (
         state["experimental_branch"]
-        == "codex/phase-8-5-1-runtime-current-price-rr-repair"
+        == "codex/phase-8-5-2-shadow-release-promotion"
     )
-    assert state["current_phase"] == "phase_8_5_1_complete_experimental"
-    assert state["next_default_phase"] == "phase_8_x_natural_live_rr_validation"
+    assert state["current_phase"] == "phase_8_5_2_operating_shadow_promoted"
+    assert state["last_completed_phase"] == "phase_8_5_2_shadow_release_promotion"
+    assert (
+        state["next_default_phase"]
+        == "natural_live_shadow_validation_then_phase_8_3_peer_sector_valuation"
+    )
+    assert state["deployed_code_commit"] == (
+        "2cd78de4f87a1c875d8ee94d546bf6d4a48c8acf"
+    )
     assert state["persistent_gaps"]["current_price_rr_packet_numeric_path"] == "PARTIAL"
     assert state["persistent_gaps"]["natural_live_validation"] == "OPEN"
     assert state["current_commit"] == "HEAD"
@@ -52,15 +60,14 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     assert state["pilot_counts_at_activation"] == {"kr": 0, "us": 0}
     assert state["pilot_current_successful_sessions"] == {"kr": 3, "us": 3}
     assert state["monitoring_state_version"] == "monitoring-state-v1"
-    assert state["scheduled_task_contract_verification"] == {
-        "checked_at": "2026-08-17",
-        "status": "passed",
-        "expected_target_count": 4,
-        "visible_target_count": 4,
-        "active_target_count": 4,
-        "required_policy_version": "daily-review-v3.10",
-        "target_checkout": "/Users/sskim/Codex/thesis-monitor",
-    }
+    task_state = state["scheduled_task_contract_verification"]
+    assert task_state["status"] == "passed"
+    assert task_state["expected_target_count"] == 4
+    assert task_state["visible_target_count"] == 4
+    assert task_state["active_target_count"] == 4
+    assert task_state["required_policy_version"] == "daily-review-v3.10"
+    assert task_state["times_kst"] == ["08:15", "08:30", "16:15", "16:55"]
+    assert task_state["manual_executions_during_promotion"] == 0
     assert state["single_delivery"] is True
     assert state["deterministic_fallback"] is True
     assert state["production_assist"] is False

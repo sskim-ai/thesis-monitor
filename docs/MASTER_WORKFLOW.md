@@ -3,10 +3,12 @@
 Master Workflow: `v2`
 As of: `2026-08-17`
 Repository: `sskim-ai/thesis-monitor`
-Experimental branch: `codex/phase-8-5-1-runtime-current-price-rr-repair`
+Operating branch: `main`
+Release evidence branch: `codex/phase-8-5-2-shadow-release-promotion`
 Commit resolution: run `git rev-parse HEAD`; this document is part of that commit and must not
-hardcode a self-referential final SHA. Phase 8.5 is based on the completed Phase 8.4.1.1 commit
-`9c4c1cdae3c790d2fc66afa05fe35dfd09553e80`.
+hardcode a self-referential final SHA. Phase 8.5.1 code commit
+`2cd78de4f87a1c875d8ee94d546bf6d4a48c8acf` is promoted to `origin/main` and the clean operating
+checkout configured for thesis-monitor.
 
 ## 1. Project Mission
 
@@ -212,6 +214,7 @@ implemented, while specialized taxonomy coverage remains a strong PARTIAL gap.
 | 8.4.1.1 | Valuation-context wording matrix and contradiction validator; Phase 8.4 foundation finalized |
 | 8.5 | Fact-dependent industry routing/causal guardrails; archive-only KR/US full-message evidence; specialized coverage strong PARTIAL |
 | 8.5.1 | Exchange-calendar session repair and exact current-price RR packet/numeric-path replay; natural-live proof pending |
+| 8.5.2 | Phase 8.5.1 linear ancestry promoted to main and the operating shadow checkout; API/task health verified; natural-live proof pending |
 
 ## 21. Current Persistent Gaps
 
@@ -241,8 +244,8 @@ integrity, fallback/retry, and exactly-once accounting.
 Default next: observe the next natural KR session and verify that the repaired current-price RR path
 passes packet completeness, the full validator, receipt, archive, and exactly-once checks. If KRX
 approval is explicitly confirmed first, Phase 8.2A KRX Market Breadth Primary may be inserted.
-Then proceed to Phase 8.3 Peer/Sector Valuation and structured taxonomy enrichment, natural-live
-quality validation, and a separate production decision.
+After checking the next natural US/KR results, proceed to Phase 8.3 Peer/Sector Valuation and
+structured taxonomy enrichment, natural-live quality validation, and a separate production decision.
 
 Do not keep subdividing mature safety infrastructure or Phase 8.4 message assembly without a real
 regression. The current priority sequence is better industry coverage, peer context, KR breadth,
@@ -285,6 +288,15 @@ paths for all four affected stocks; three unavailable controls remain unavailabl
 immutable source validation's eight RR missing-path errors fall to zero in replay. The gap is
 PARTIAL, not CLOSED, until a new natural KR session proves the path end to end.
 
+Phase 8.5.2 fast-forwarded the complete 31-commit Phase 8 chain from the prior main
+`aeb87a9d2aee0d4b840c0a8717319e01b375f5f5` to code commit
+`2cd78de4f87a1c875d8ee94d546bf6d4a48c8acf`. The exact main Actions run passed Test and Lint, the
+operating checkout was clean and exact, the API was restarted and healthy, and operating smoke tests
+passed. All four Codex Scheduled Tasks remain ACTIVE at 08:15/08:30/16:15/16:55 KST, use policy
+v3.10/schema 4, and target the operating checkout. No task was run manually. This is an operating
+shadow promotion only: Production Assist remains OFF, AI mode remains shadow, Telegram sends and
+Pilot mutations from the promotion are zero, and Natural Live Validation remains OPEN.
+
 ## 26. Production Assist Approval Rules
 
 Production Assist remains OFF. Five operational Pilot successes are not enough. Approval requires
@@ -294,11 +306,13 @@ approval. Main merge and shadow deployment still do not authorize AI-assisted pr
 
 ## 27. Current Next Task
 
-Obtain the next natural KR full-message result and verify the repaired current-price RR path without
-manual execution or replay. KRX status remains pending or unknown from repository evidence; if
-explicit approval becomes available, report whether Phase 8.2A should be inserted before later peer
-or taxonomy work. Missing metrics remain Unknown and industry conditions never become company
-achievements.
+Inspect the next naturally generated US and KR results from the promoted operating shadow checkout.
+For KR, verify the repaired current-price RR path without manual execution or replay. For both
+markets, verify framework routing, full validation, receipt, single delivery/fallback, archive, and
+exactly-once state before human message review. KRX status remains pending or unknown from repository
+evidence; if explicit approval becomes available, report whether Phase 8.2A should be inserted before
+Phase 8.3 peer/sector work. Missing metrics remain Unknown and industry conditions never become
+company achievements.
 
 ## 28. New Session Bootstrap Prompt
 

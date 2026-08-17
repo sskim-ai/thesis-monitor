@@ -18,7 +18,9 @@ checkout. Read, in this order:
 6. `docs/reports/20260817-phase8-5-industry-reasoning-audit.md`
 7. `docs/reports/20260817-runtime-current-price-rr-repair-validation.md`
 8. `docs/reports/20260817-runtime-current-price-rr-run23-replay.md`
-9. the KR and US Phase 8.5 full Previews
+9. `docs/reports/20260817-phase8-5-2-shadow-release-validation.md`
+10. `docs/reports/20260817-operating-shadow-state.md`
+11. the KR and US Phase 8.5 full Previews
 
 Repository and immutable runtime state override stale conversation or document claims. Resolve the
 current commit from Git rather than copying a historical SHA.
@@ -91,12 +93,20 @@ affected stocks in read-only replay. Three unavailable controls remain unavailab
 original eight RR missing-path errors become zero, but Current-Price RR Packet/Numeric Path remains
 PARTIAL and Natural Live Validation remains OPEN pending the next natural KR session.
 
-Default next task: **Natural Live RR Validation**. Do not run the Scheduled Task manually. Inspect
-the next naturally generated KR packet for RR completeness, full-validator status, receipt,
-delivery/fallback, archive, exactly-once state, and human message quality. Before starting,
-determine whether KRX API approval is now available. If approved, report whether **Phase 8.2A KRX
-Market Breadth Primary** should be inserted before later roadmap work. Do not combine scopes without
-user approval.
+Phase 8.5.2 promoted the complete Phase 8.5.1 ancestry to `origin/main` and the clean operating
+checkout. Promoted code SHA: `2cd78de4f87a1c875d8ee94d546bf6d4a48c8acf`. Exact-main GitHub
+Actions run `32023730416` passed Test and Lint. The API was restarted and healthy; operating smoke
+tests passed 89/89. All four Scheduled Tasks still target the configured operating checkout, and
+no task was manually run. This is shadow deployment readiness, not Natural Live proof or Production
+Assist approval.
+
+Default next task: **Natural Live Shadow Validation**. Do not run a Scheduled Task manually. First
+inspect the next naturally generated US and KR packets from the promoted checkout. For KR, verify RR
+completeness; for both markets, verify framework routing, full-validator status, receipt,
+delivery/fallback, archive, exactly-once state, and human message quality. Then proceed to **Phase
+8.3 Peer/Sector Valuation** unless an operating blocker takes priority. Before starting, determine
+whether KRX API approval is now available. If approved, report whether **Phase 8.2A KRX Market
+Breadth Primary** should be inserted before Phase 8.3. Do not combine scopes without user approval.
 
 Preserve the Phase 8.5 boundary: do not infer missing metrics, promote themes into company
 achievements, force fine-grained taxonomy, create thresholds, or relax numeric, lineage, scope,

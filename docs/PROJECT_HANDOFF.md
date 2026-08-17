@@ -16,7 +16,7 @@ execution or an autonomous investment adviser.
 
 | Component | Contract |
 |---|---|
-| Branch | `codex/phase-8-5-1-runtime-current-price-rr-repair` (experimental; `main` unchanged) |
+| Branch | `main`; Phase 8.5.1 code `2cd78de4f87a1c875d8ee94d546bf6d4a48c8acf` promoted to operating shadow |
 | Official assessment | Deterministic `ThesisAssessment` |
 | AI mode | `shadow` |
 | Analysis policy | `daily-review-v3.10` |
@@ -31,7 +31,7 @@ execution or an autonomous investment adviser.
 | Financial currency safety | Missing/empty is `unknown`; unsupported units are prose-denied |
 | Security identity | `security-identity-v2` |
 | Financial quality | `financial-quality-taint-v2` |
-| KR financial lineage | Production remains legacy; Phase 8.1.1 archive-only recovery proves `financial-lineage-v2` with recent formal rows |
+| KR financial lineage | `financial-lineage-v2` is present in operating code; recovered historical Facts remain archive-only pending separate data promotion |
 | Delta-first rendering | `delta-first-rendering-v1` |
 | Semantic decision hierarchy | `semantic-scope-and-decision-hierarchy-v1`, `decision-material-delta-v1` |
 | Valuation context wording | `valuation-context-wording-v1` |
@@ -40,7 +40,8 @@ execution or an autonomous investment adviser.
 | Runtime quality | `runtime-message-quality-v1`, receipt `runtime-message-quality-receipt-v2` |
 
 Resolve the deployed commit with `git rev-parse HEAD`; a file inside a commit cannot contain that
-commit's own final hash. The machine-readable state records `HEAD` plus the last verified base.
+commit's own final hash. The machine-readable state records `HEAD`, the promoted code SHA, and the
+last verified base separately.
 
 ## Architecture
 
@@ -367,9 +368,10 @@ five valuation-context references with zero rejection. Full validator and runtim
 valuation-scope violations, denied echo, unsafe history, and after-message contradictions are zero.
 Average characters rise 1.1% from Phase 8.4.1, with no line or section increase.
 
-This completes the Phase 8.4 message-intelligence foundation. The exact final Preview still requires
-the user's merge decision; main and the operating checkout are unchanged, Production Assist remains
-OFF, and this retrospective sent no Telegram or mutated no runtime state. See the
+This completes the Phase 8.4 message-intelligence foundation. At Phase 8.4.1.1 completion, the exact
+final Preview still required the user's merge decision and the retrospective sent no Telegram or
+mutated no runtime state. The implementation was subsequently promoted with Phase 8.5.2 while
+Production Assist remained OFF. See the
 [final Preview](reports/20260817-phase8-4-1-1-final-preview.md) and
 [Master Workflow v2](MASTER_WORKFLOW.md).
 
@@ -418,6 +420,28 @@ the next naturally scheduled KR session passes without this blocker. See the
 [root-cause report](reports/20260817-runtime-current-price-rr-root-cause.md),
 [validation report](reports/20260817-runtime-current-price-rr-repair-validation.md), and
 [run-23 replay](reports/20260817-runtime-current-price-rr-run23-replay.md).
+
+## Phase 8.5.2 Operating Shadow Promotion
+
+Phase 8.5.2 verified that the Phase 8.5.1 source is a linear 31-commit descendant of the prior main
+and includes the required Phase 7.2.9.2, 8.0A, 8.1, 8.1.1, 8.1.2, 8.4, 8.4.1, 8.4.1.1, 8.5, and
+8.5.1 implementation chain. `origin/main` and the clean operating checkout were fast-forwarded from
+`aeb87a9d2aee0d4b840c0a8717319e01b375f5f5` to
+`2cd78de4f87a1c875d8ee94d546bf6d4a48c8acf`. GitHub Actions run `32023730416` passed Test and Lint
+for that exact code SHA.
+
+The API LaunchAgent was restarted from the configured operating checkout; `/health` returned
+`ok`, US AI Review health remained valid, and KR health correctly preserved the rejected natural
+run-23 state rather than rewriting it. Operating smoke tests passed 89/89. The four Codex Scheduled
+Tasks remain ACTIVE at 08:15/08:30/16:15/16:55 KST, use GPT-5.6 Sol/high, policy v3.10/schema 4,
+and target the same operating checkout. No Scheduled Task was manually run. The deterministic US/KR
+and fallback LaunchAgents also target that checkout and report last exit code zero.
+
+This promotion sent no Telegram, changed no Pilot state, performed no DB migration, and did not
+enable Production Assist. AI mode remains shadow. Natural Live Validation and the RR path remain
+OPEN/PARTIAL until a later naturally scheduled session exercises the promoted code. See the
+[release validation](reports/20260817-phase8-5-2-shadow-release-validation.md) and
+[operating state](reports/20260817-operating-shadow-state.md) reports.
 
 On 2026-08-15 the owning desktop environment verified all four local-project tasks, retained their
 08:15/08:30/16:15/16:55 schedules, and migrated their exact prompts to v3.10 with
@@ -498,7 +522,8 @@ completed after-hours session, passes 141 automatic bindings and 8/8 logical mes
 SK Hynix denied earnings and dependent PE lineage out of prose. Both full validators report zero
 errors; label, instrument, zone-role, postposition, identity, comparative, and repetition hard checks
 report zero findings. TSM and WRD remain safely `unknown` because no authoritative identity cache
-exists. The branch is not merged or deployed and both Previews still require direct human approval.
+exists. At Phase 7.2.8 completion the branch was not merged or deployed and both Previews required
+direct human approval; later ancestry promotion does not retroactively make them live evidence.
 See [the Phase 7.2.8 readiness report](reports/20260816-phase7-2-8-human-review-safety-readiness.md).
 
 Phase 7.2.9 now supersedes the Phase 7.2.8 automated acceptance conclusion on the experimental
