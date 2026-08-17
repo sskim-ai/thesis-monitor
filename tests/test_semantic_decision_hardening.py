@@ -3,16 +3,22 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
+import pytest
+
 from app.services.semantic_decision_service import (
     SEMANTIC_CLAIM_REFERENCE_FIELD,
     SEMANTIC_SCOPE_CONTRACT,
+    VALUATION_CONTEXT_CONTRACT,
+    VALUATION_CONTEXT_REFERENCE_FIELD,
     assign_listed_security_valuation_scope,
     financial_cross_field_coherence_report,
     historical_valuation_selection,
     observer_holder_semantic_error,
     select_decision_material_delta,
+    select_valuation_context,
     semantic_claim_reference_errors,
     typed_valuation_scope_error,
+    valuation_context_reference_errors,
 )
 
 
@@ -270,3 +276,156 @@ def test_observer_holder_distinct_decision_variables_pass() -> None:
     )
 
     assert error is None
+
+
+@pytest.mark.parametrize(
+    (
+        "historical_status",
+        "peer_status",
+        "history_used",
+        "peer_used",
+        "expected_class",
+    ),
+    [
+        ("available", "unavailable", True, False, "CURRENT_PLUS_HISTORY"),
+        ("unavailable", "unavailable", False, False, "CURRENT_ONLY"),
+        ("available", "available", True, True, "CURRENT_PLUS_HISTORY_PLUS_PEER"),
+        ("unsafe", "unavailable", False, False, "CURRENT_ONLY"),
+        ("unsafe", "available", False, True, "CURRENT_PLUS_PEER"),
+    ],
+)
+def test_valuation_context_availability_matrix(
+    historical_status: str,
+    peer_status: str,
+    history_used: bool,
+    peer_used: bool,
+    expected_class: str,
+) -> None:
+    result = select_valuation_context(
+        current_status="available",
+        historical_status=historical_status,
+        peer_status=peer_status,
+        forward_status="unavailable",
+        current_used=True,
+        history_used=history_used,
+        peer_used=peer_used,
+        forward_used=False,
+    )
+
+    assert result.valuation_context_class == expected_class
+
+
+def test_valuation_context_rejects_history_with_current_only_wording() -> None:
+    context_span = "같은 시점의 동종기업 비교값이 없어 현재 절대 배수만 표시합니다."
+    review = {
+        "valuation_analysis": {
+            "text": (
+                "회사 전체 PBR의 자체 역사 위치는 PBR 역사적 백분위 91.6%입니다. "
+                + context_span
+            ),
+            "fact_ids": [],
+        },
+        VALUATION_CONTEXT_REFERENCE_FIELD: {
+            "contract": VALUATION_CONTEXT_CONTRACT,
+            "valuation_context_class": "CURRENT_PLUS_HISTORY",
+            "current_status": "available",
+            "historical_status": "available",
+            "peer_status": "unavailable",
+            "forward_status": "unavailable",
+            "current_used": True,
+            "history_used": True,
+            "peer_used": False,
+            "forward_used": False,
+            "text_ref": "valuation_analysis.text",
+            "exact_text_span": context_span,
+        },
+    }
+    bindings = [
+        {"text_ref": "valuation_analysis.text", "semantic_type": "price_to_book"},
+        {
+            "text_ref": "valuation_analysis.text",
+            "semantic_type": "historical_pb_percentile",
+        },
+    ]
+
+    errors, accepted = valuation_context_reference_errors(
+        review,
+        {"fact_catalog": []},
+        bindings,
+        prefix="TEST",
+    )
+
+    assert accepted is not None
+    assert any("current_only_history_contradiction" in error for error in errors)
+
+
+def test_valuation_context_accepts_current_plus_history_wording() -> None:
+    context_span = (
+        "같은 시점의 동종기업 비교값은 없어 이번 평가는 회사 전체 현재 배수와 "
+        "자체 역사 위치를 중심으로 봅니다."
+    )
+    review = {
+        "valuation_analysis": {"text": context_span, "fact_ids": []},
+        VALUATION_CONTEXT_REFERENCE_FIELD: {
+            "contract": VALUATION_CONTEXT_CONTRACT,
+            "valuation_context_class": "CURRENT_PLUS_HISTORY",
+            "current_status": "available",
+            "historical_status": "available",
+            "peer_status": "unavailable",
+            "forward_status": "unavailable",
+            "current_used": True,
+            "history_used": True,
+            "peer_used": False,
+            "forward_used": False,
+            "text_ref": "valuation_analysis.text",
+            "exact_text_span": context_span,
+        },
+    }
+    bindings = [
+        {"text_ref": "valuation_analysis.text", "semantic_type": "price_to_book"},
+        {
+            "text_ref": "valuation_analysis.text",
+            "semantic_type": "historical_pb_percentile",
+        },
+    ]
+
+    errors, accepted = valuation_context_reference_errors(
+        review,
+        {"fact_catalog": []},
+        bindings,
+        prefix="TEST",
+    )
+
+    assert errors == []
+    assert accepted is not None
+    assert accepted["valuation_context_class"] == "CURRENT_PLUS_HISTORY"
+
+
+def test_representative_valuation_context_classes_match_final_preview() -> None:
+    path = Path(
+        "docs/reports/20260817-phase8-4-1-1-valuation-context-audit.json"
+    )
+    artifact = json.loads(path.read_text(encoding="utf-8"))
+    stocks = artifact["stocks"]
+    expected = {
+        "005930": "CURRENT_PLUS_HISTORY",
+        "005490": "CURRENT_ONLY",
+        "086280": "CURRENT_PLUS_HISTORY",
+        "003690": "CURRENT_ONLY",
+        "000660": "CURRENT_PLUS_HISTORY",
+    }
+
+    assert {
+        ticker: value["valuation_context"]["valuation_context_class"]
+        for ticker, value in stocks.items()
+    } == expected
+    rendered = {
+        item["ticker"]: item["text"]
+        for item in artifact["rendered_messages"]
+        if item["ticker"] in expected
+    }
+    for ticker, value in stocks.items():
+        context = value["valuation_context"]
+        if context["history_used"]:
+            assert "현재 절대 배수만" not in rendered[ticker]
+            assert "자체 역사 위치" in rendered[ticker]

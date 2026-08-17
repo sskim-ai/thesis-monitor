@@ -208,6 +208,8 @@ def test_integrated_draft_binds_and_passes_stock_validator() -> None:
     assert binding.report["manual_legacy"] == 0
     assert binding.report["typed_valuation_interpretations"]["accepted"] == 2
     assert binding.report["typed_valuation_interpretations"]["errors"] == []
+    assert binding.report["valuation_contexts"]["accepted"] == 1
+    assert binding.report["valuation_contexts"]["errors"] == []
     review = AIStockReview.model_validate(binding.output["stock_reviews"][0])
     assert _validate_stock_review(review, stock, "kr") == []
     assert audit["financial_available"] is True

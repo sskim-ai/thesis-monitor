@@ -12,8 +12,10 @@ from app.services.numeric_semantic_registry import (
 )
 from app.services.semantic_decision_service import (
     SEMANTIC_SCOPE_CONTRACT,
+    VALUATION_CONTEXT_CONTRACT,
     semantic_claim_reference_errors,
     typed_valuation_scope_error,
+    valuation_context_reference_errors,
 )
 
 
@@ -1035,6 +1037,8 @@ def bind_numeric_fact_references(
     typed_interpretation_errors: list[str] = []
     semantic_claims: list[dict[str, object]] = []
     semantic_claim_errors: list[str] = []
+    valuation_contexts: list[dict[str, object]] = []
+    valuation_context_errors: list[str] = []
     counters = {
         "auto_bound": 0,
         "manual_legacy": 0,
@@ -1092,6 +1096,15 @@ def bind_numeric_fact_references(
                     )
                     semantic_claim_errors.extend(semantic_errors)
                     semantic_claims.extend(semantic_values)
+                    context_errors, context_value = valuation_context_reference_errors(
+                        review,
+                        stock,
+                        stock_bindings,
+                        prefix=ticker,
+                    )
+                    valuation_context_errors.extend(context_errors)
+                    if context_value is not None:
+                        valuation_contexts.append(context_value)
             for key in counters:
                 counters[key] += stock_counts[key]
     report: dict[str, Any] = {
@@ -1140,8 +1153,15 @@ def bind_numeric_fact_references(
             "errors": list(dict.fromkeys(semantic_claim_errors)),
             "references": semantic_claims,
         },
+        "valuation_contexts": {
+            "contract": VALUATION_CONTEXT_CONTRACT,
+            "accepted": len(valuation_contexts),
+            "errors": list(dict.fromkeys(valuation_context_errors)),
+            "references": valuation_contexts,
+        },
     }
     errors.extend(semantic_claim_errors)
+    errors.extend(valuation_context_errors)
     report["status"] = "failed" if errors else "passed"
     report["rejected"] = len(errors)
     report["errors"] = list(dict.fromkeys(errors))

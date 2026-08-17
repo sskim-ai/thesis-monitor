@@ -10,6 +10,16 @@ from typing import Iterable
 SEMANTIC_SCOPE_CONTRACT = "semantic-scope-and-decision-hierarchy-v1"
 SEMANTIC_CLAIM_REFERENCE_FIELD = "semantic_claim_refs"
 DECISION_MATERIAL_DELTA_CONTRACT = "decision-material-delta-v1"
+VALUATION_CONTEXT_CONTRACT = "valuation-context-wording-v1"
+VALUATION_CONTEXT_REFERENCE_FIELD = "valuation_context_ref"
+VALUATION_CONTEXT_CLASSES = {
+    "CURRENT_ONLY",
+    "CURRENT_PLUS_HISTORY",
+    "CURRENT_PLUS_PEER",
+    "CURRENT_PLUS_HISTORY_PLUS_PEER",
+    "LIMITED_VALUATION",
+}
+VALUATION_CONTEXT_STATUSES = {"available", "unsafe", "unavailable"}
 VALUATION_SCOPES = {
     "company",
     "listed_security",
@@ -41,6 +51,10 @@ _DENIED_ECHO_PATTERNS = {
     "earnings": re.compile(r"전사\s*실적|실적.{0,10}(?:개선|증가|둔화|악화|강화|약화)"),
     "pe": re.compile(r"낮은\s*이익\s*배수|높은\s*이익\s*배수|피크\s*이익", re.IGNORECASE),
 }
+_EXCLUSIVE_CURRENT_ONLY = re.compile(
+    r"현재\s*(?:회사\s*전체\s*)?(?:절대\s*)?배수(?:만|에만)|"
+    r"현재\s*(?:회사\s*전체\s*)?배수에\s*한정"
+)
 
 
 @dataclass(frozen=True)
@@ -83,6 +97,117 @@ class DecisionMaterialSelection:
             "override": self.override,
             "reason": self.reason,
         }
+
+
+@dataclass(frozen=True)
+class ValuationContextSelection:
+    contract: str
+    valuation_context_class: str
+    current_status: str
+    historical_status: str
+    peer_status: str
+    forward_status: str
+    current_used: bool
+    history_used: bool
+    peer_used: bool
+    forward_used: bool
+    reason: str
+
+    def as_dict(self) -> dict[str, object]:
+        return {
+            "contract": self.contract,
+            "valuation_context_class": self.valuation_context_class,
+            "current_status": self.current_status,
+            "historical_status": self.historical_status,
+            "peer_status": self.peer_status,
+            "forward_status": self.forward_status,
+            "current_used": self.current_used,
+            "history_used": self.history_used,
+            "peer_used": self.peer_used,
+            "forward_used": self.forward_used,
+            "reason": self.reason,
+        }
+
+
+def select_valuation_context(
+    *,
+    current_status: str,
+    historical_status: str,
+    peer_status: str,
+    forward_status: str,
+    current_used: bool,
+    history_used: bool,
+    peer_used: bool,
+    forward_used: bool,
+) -> ValuationContextSelection:
+    statuses = (current_status, historical_status, peer_status, forward_status)
+    if any(status not in VALUATION_CONTEXT_STATUSES for status in statuses):
+        raise ValueError("unsupported valuation context availability status")
+    for status, used, name in (
+        (current_status, current_used, "current"),
+        (historical_status, history_used, "history"),
+        (peer_status, peer_used, "peer"),
+        (forward_status, forward_used, "forward"),
+    ):
+        if used and status != "available":
+            raise ValueError(f"{name} valuation context cannot be used when {status}")
+
+    context_class = _valuation_context_class(
+        current_used=current_used,
+        history_used=history_used,
+        peer_used=peer_used,
+    )
+    return ValuationContextSelection(
+        contract=VALUATION_CONTEXT_CONTRACT,
+        valuation_context_class=context_class,
+        current_status=current_status,
+        historical_status=historical_status,
+        peer_status=peer_status,
+        forward_status=forward_status,
+        current_used=current_used,
+        history_used=history_used,
+        peer_used=peer_used,
+        forward_used=forward_used,
+        reason=_valuation_context_reason(
+            context_class,
+            historical_status=historical_status,
+            peer_status=peer_status,
+        ),
+    )
+
+
+def build_valuation_context_selection(
+    stock: dict[str, object],
+    historical: dict[str, object],
+    *,
+    current_used: bool,
+    history_used: bool,
+    peer_used: bool = False,
+    forward_used: bool = False,
+) -> ValuationContextSelection:
+    candidates = historical.get("candidates")
+    historical_items = (
+        [item for item in candidates if isinstance(item, dict)]
+        if isinstance(candidates, list)
+        else []
+    )
+    historical_status = (
+        "available"
+        if any(item.get("safe") is True for item in historical_items)
+        else "unsafe"
+        if any(item.get("percentile") is not None for item in historical_items)
+        else "unavailable"
+    )
+    return select_valuation_context(
+        current_status="available" if current_used else "unavailable",
+        historical_status=historical_status,
+        peer_status=_peer_context_status(stock),
+        forward_status=_forward_context_status(stock),
+        current_used=current_used,
+        history_used=history_used,
+        peer_used=peer_used,
+        forward_used=forward_used,
+    )
 
 
 def assign_listed_security_valuation_scope(
@@ -529,6 +654,113 @@ def semantic_claim_reference_errors(
     return list(dict.fromkeys(errors)), accepted
 
 
+def valuation_context_reference_errors(
+    review: dict[str, object],
+    stock: dict[str, object],
+    bindings: list[dict[str, object]],
+    *,
+    prefix: str,
+) -> tuple[list[str], dict[str, object] | None]:
+    value = review.pop(VALUATION_CONTEXT_REFERENCE_FIELD, None)
+    if value is None:
+        return [], None
+    if not isinstance(value, dict):
+        return [f"{prefix}:valuation_context_ref_not_object"], None
+
+    context_class = str(value.get("valuation_context_class") or "")
+    text_ref = str(value.get("text_ref") or "")
+    exact_span = _normalize(str(value.get("exact_text_span") or ""))
+    current_used = value.get("current_used") is True
+    history_used = value.get("history_used") is True
+    peer_used = value.get("peer_used") is True
+    forward_used = value.get("forward_used") is True
+    statuses = {
+        name: str(value.get(f"{name}_status") or "")
+        for name in ("current", "historical", "peer", "forward")
+    }
+    errors: list[str] = []
+    if value.get("contract") != VALUATION_CONTEXT_CONTRACT:
+        errors.append(f"{prefix}:valuation_context_contract_unsupported")
+    if context_class not in VALUATION_CONTEXT_CLASSES:
+        errors.append(f"{prefix}:valuation_context_class_invalid")
+    if any(status not in VALUATION_CONTEXT_STATUSES for status in statuses.values()):
+        errors.append(f"{prefix}:valuation_context_status_invalid")
+
+    expected = _valuation_context_class(
+        current_used=current_used,
+        history_used=history_used,
+        peer_used=peer_used,
+    )
+    if context_class != expected:
+        errors.append(f"{prefix}:valuation_context_class_state_mismatch")
+    for name, used in (
+        ("current", current_used),
+        ("historical", history_used),
+        ("peer", peer_used),
+        ("forward", forward_used),
+    ):
+        if used and statuses[name] != "available":
+            errors.append(f"{prefix}:valuation_context_used_unsafe:{name}")
+
+    target = _normalize(_text_value(review, text_ref))
+    if not exact_span or target.count(exact_span) != 1:
+        errors.append(f"{prefix}:valuation_context_span_not_unique")
+
+    semantics = {
+        str(item.get("semantic_type") or "")
+        for item in bindings
+        if str(item.get("text_ref") or "") == text_ref
+    }
+    actual_current = bool({"trailing_pe", "price_to_book"}.intersection(semantics))
+    actual_history = bool(
+        {"historical_pe_percentile", "historical_pb_percentile"}.intersection(
+            semantics
+        )
+    )
+    actual_peer = bool(
+        {
+            "peer_pe_multiple",
+            "peer_pb_multiple",
+            "peer_pe_relative_pct",
+            "peer_pb_relative_pct",
+        }.intersection(semantics)
+    )
+    actual_forward = bool(
+        {"forward_pe", "forward_price_to_book"}.intersection(semantics)
+    )
+    for name, declared, actual in (
+        ("current", current_used, actual_current),
+        ("history", history_used, actual_history),
+        ("peer", peer_used, actual_peer),
+        ("forward", forward_used, actual_forward),
+    ):
+        if declared != actual:
+            errors.append(f"{prefix}:valuation_context_usage_mismatch:{name}")
+
+    if actual_history and _EXCLUSIVE_CURRENT_ONLY.search(target):
+        errors.append(f"{prefix}:valuation_context_current_only_history_contradiction")
+    if history_used and "자체 역사" not in exact_span:
+        errors.append(f"{prefix}:valuation_context_history_wording_missing")
+    if peer_used and "동종기업" not in exact_span:
+        errors.append(f"{prefix}:valuation_context_peer_wording_missing")
+
+    accepted = {
+        "contract": VALUATION_CONTEXT_CONTRACT,
+        "valuation_context_class": context_class,
+        "text_ref": text_ref,
+        "exact_text_span": exact_span,
+        "normalized_span_sha256": hashlib.sha256(
+            exact_span.encode("utf-8")
+        ).hexdigest(),
+        **{f"{name}_status": status for name, status in statuses.items()},
+        "current_used": current_used,
+        "history_used": history_used,
+        "peer_used": peer_used,
+        "forward_used": forward_used,
+    }
+    return list(dict.fromkeys(errors)), accepted
+
+
 def typed_valuation_scope_error(
     item: dict[str, object],
     fact: dict[str, object],
@@ -627,6 +859,82 @@ def _fact(stock: dict[str, object], fact_id: str) -> dict[str, object]:
 def _has_safe_historical_book_context(stock: dict[str, object]) -> bool:
     fact = _fact(stock, "valuation:historical_pb")
     return bool(fact and fact.get("interpretation_eligible") is not False)
+
+
+def _peer_context_status(stock: dict[str, object]) -> str:
+    fact = _fact(stock, "valuation:peer")
+    if not fact:
+        return "unavailable"
+    fields = _mapping(fact.get("fields"))
+    usable = any(
+        _number(fields.get(f"{prefix}_median")) is not None
+        and isinstance(fields.get(f"{prefix}_sample_count"), int)
+        and int(fields[f"{prefix}_sample_count"]) > 0
+        for prefix in ("pe", "pb")
+    )
+    if usable and fact.get("interpretation_eligible") is not False:
+        return "available"
+    return "unsafe"
+
+
+def _forward_context_status(stock: dict[str, object]) -> str:
+    fact = _fact(stock, "valuation:multiple_relation")
+    if not fact:
+        return "unavailable"
+    fields = _mapping(fact.get("fields"))
+    if (
+        fields.get("basis_comparable") is True
+        and fields.get("forward_period_status") in {"exact", "provider_defined"}
+        and fact.get("interpretation_eligible") is not False
+    ):
+        return "available"
+    return "unsafe"
+
+
+def _valuation_context_class(
+    *,
+    current_used: bool,
+    history_used: bool,
+    peer_used: bool,
+) -> str:
+    if not current_used:
+        return "LIMITED_VALUATION"
+    if history_used and peer_used:
+        return "CURRENT_PLUS_HISTORY_PLUS_PEER"
+    if history_used:
+        return "CURRENT_PLUS_HISTORY"
+    if peer_used:
+        return "CURRENT_PLUS_PEER"
+    return "CURRENT_ONLY"
+
+
+def _valuation_context_reason(
+    context_class: str,
+    *,
+    historical_status: str,
+    peer_status: str,
+) -> str:
+    if context_class == "CURRENT_PLUS_HISTORY_PLUS_PEER":
+        return "current_history_and_peer_selected"
+    if context_class == "CURRENT_PLUS_HISTORY":
+        return (
+            "current_and_history_selected_peer_unavailable"
+            if peer_status != "available"
+            else "current_and_history_selected_peer_not_decision_relevant"
+        )
+    if context_class == "CURRENT_PLUS_PEER":
+        return (
+            "current_and_peer_selected_history_unsafe"
+            if historical_status == "unsafe"
+            else "current_and_peer_selected_history_not_decision_relevant"
+        )
+    if context_class == "CURRENT_ONLY":
+        return (
+            "current_only_history_unsafe_or_unavailable"
+            if historical_status != "available"
+            else "current_only_history_not_decision_relevant"
+        )
+    return "current_valuation_unavailable"
 
 
 def _transition_changed(value: str) -> bool:

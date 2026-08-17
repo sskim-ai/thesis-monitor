@@ -9,7 +9,9 @@ from app.services.numeric_semantic_registry import build_numeric_registry
 from app.services.semantic_decision_service import (
     SEMANTIC_CLAIM_REFERENCE_FIELD,
     SEMANTIC_SCOPE_CONTRACT,
+    VALUATION_CONTEXT_REFERENCE_FIELD,
     assign_listed_security_valuation_scope,
+    build_valuation_context_selection,
     financial_cross_field_coherence_report,
     historical_valuation_selection,
     select_decision_material_delta,
@@ -338,7 +340,12 @@ def build_delta_first_stock_draft(
         numeric,
     )
     supply_text = _supply_text(profile, stock, numeric)
-    valuation_text, historical_valuation = _valuation_text(
+    (
+        valuation_text,
+        historical_valuation,
+        valuation_context,
+        valuation_context_span,
+    ) = _valuation_text(
         profile,
         recovery,
         stock,
@@ -433,6 +440,11 @@ def build_delta_first_stock_draft(
         "numeric_claims": [],
         "numeric_fact_refs": references,
         "valuation_interpretation_refs": valuation_interpretation_refs,
+        VALUATION_CONTEXT_REFERENCE_FIELD: {
+            **valuation_context,
+            "text_ref": "valuation_analysis.text",
+            "exact_text_span": valuation_context_span,
+        },
         SEMANTIC_CLAIM_REFERENCE_FIELD: semantic_claim_refs,
         "unknowns": [unknown],
         "priority_watch": list(original_review.get("priority_watch", []))[:2],
@@ -467,6 +479,7 @@ def build_delta_first_stock_draft(
         "plan": plan.as_dict(),
         "decision_hierarchy": plan.decision_selection,
         "historical_valuation": historical_valuation,
+        "valuation_context": valuation_context,
         "financial_cross_field_coherence": financial_cross_field_coherence_report(
             recovery
         ),
@@ -673,7 +686,7 @@ def _valuation_text(
     recovery: dict[str, object],
     stock: dict[str, object],
     numeric: object,
-) -> tuple[str, dict[str, object]]:
+) -> tuple[str, dict[str, object], dict[str, object], str]:
     denied_earnings = any(
         _mapping(_mapping(recovery.get("fields")).get(field)).get("status") == "denied"
         for field in ("revenue", "operating_income", "net_income")
@@ -695,7 +708,16 @@ def _valuation_text(
         denied_earnings=denied_earnings,
     )
     if not values:
-        return "현재 배수는 비교 가능한 근거가 없어 해석을 보류합니다.", historical
+        context = build_valuation_context_selection(
+            stock,
+            historical,
+            current_used=False,
+            history_used=False,
+        )
+        context_span = (
+            "현재 회사 전체 배수가 확인되지 않아 가치평가 해석을 제한합니다."
+        )
+        return context_span, historical, context.as_dict(), context_span
     statements = []
     if "pe" in values:
         statements.append(
@@ -706,6 +728,7 @@ def _valuation_text(
             f"{_company_valuation_prefix(profile, 'pbr')} {values['pbr']}입니다."
         )
     selected = historical.get("selected")
+    history_used = False
     if isinstance(selected, dict):
         metric = str(selected.get("metric") or "")
         percentile = numeric(
@@ -714,6 +737,7 @@ def _valuation_text(
             str(selected.get("field_path") or ""),
         )
         if percentile:
+            history_used = True
             label = "PER" if metric == "pe" else "PBR"
             direction = (
                 "대부분보다 높은 구간"
@@ -724,10 +748,18 @@ def _valuation_text(
                 f"회사 전체 {label}의 자체 역사 위치는 {percentile}입니다. 이는 현재 "
                 f"{label}이 비교 가능한 과거 관측치 {direction}이라는 뜻입니다."
             )
-    return (
-        f"{' '.join(statements)} {_profile_valuation_context(profile)} "
-        f"{_profile_peer_gap(profile)}",
+    context = build_valuation_context_selection(
+        stock,
         historical,
+        current_used=True,
+        history_used=history_used,
+    )
+    context_span = _valuation_context_wording(profile, context.as_dict())
+    return (
+        f"{' '.join(statements)} {_profile_valuation_context(profile)} {context_span}",
+        historical,
+        context.as_dict(),
+        context_span,
     )
 
 
@@ -982,14 +1014,67 @@ def _profile_valuation_context(profile: str) -> str:
     }[profile]
 
 
-def _profile_peer_gap(profile: str) -> str:
-    return {
-        "semiconductor": "같은 시점의 메모리 동종기업 비교값이 없어 현재 절대 배수만 표시합니다.",
-        "insurance": "같은 시점의 재보험 비교군 배수가 없어 현재 절대 배수만 표시합니다.",
-        "shipping": "같은 시점의 운송 비교군 배수가 없어 현재 절대 배수만 표시합니다.",
-        "cyclical_materials": "같은 시점의 철강·소재 비교군 배수가 없어 현재 절대 배수만 표시합니다.",
-        "general": "같은 시점의 동종기업 비교값이 없어 현재 절대 배수만 표시합니다.",
-    }[profile]
+def _valuation_context_wording(
+    profile: str,
+    context: dict[str, object],
+) -> str:
+    context_class = str(context.get("valuation_context_class") or "")
+    historical_status = str(context.get("historical_status") or "unavailable")
+    peer_status = str(context.get("peer_status") or "unavailable")
+    if context_class == "CURRENT_PLUS_HISTORY_PLUS_PEER":
+        return (
+            "이번 평가는 회사 전체 현재 배수와 자체 역사 위치, 같은 시점의 "
+            "동종기업 비교를 함께 봅니다."
+        )
+    if context_class == "CURRENT_PLUS_HISTORY":
+        if peer_status == "available":
+            return (
+                "이번 평가는 회사 전체 현재 배수와 자체 역사 위치를 중심으로 "
+                "봅니다."
+            )
+        return {
+            "semiconductor": (
+                "같은 시점의 동종기업 비교값은 없어 회사 전체 현재 배수와 "
+                "자체 역사 위치를 함께 봅니다."
+            ),
+            "insurance": (
+                "동종기업의 같은 시점 비교값은 없어 회사 전체 현재 배수와 "
+                "자체 역사 위치를 판단 근거로 사용합니다."
+            ),
+            "shipping": (
+                "동종기업의 같은 시점 비교값은 없어 회사 전체 현재 배수와 "
+                "자체 역사 위치를 중심으로 판단합니다."
+            ),
+            "cyclical_materials": (
+                "같은 시점의 동종기업 비교값 없이 회사 전체 현재 배수와 "
+                "자체 역사 위치를 함께 봅니다."
+            ),
+            "general": (
+                "같은 시점의 동종기업 비교값은 없어 이번 평가는 회사 전체 현재 "
+                "배수와 자체 역사 위치를 중심으로 봅니다."
+            ),
+        }[profile]
+    if context_class == "CURRENT_PLUS_PEER":
+        if historical_status == "unsafe":
+            return (
+                "자체 역사 비교는 기준 일치 문제로 사용하지 않고 회사 전체 현재 "
+                "배수와 같은 시점의 동종기업 비교를 중심으로 봅니다."
+            )
+        return (
+            "이번 평가는 회사 전체 현재 배수와 같은 시점의 동종기업 비교를 "
+            "중심으로 봅니다."
+        )
+    if context_class == "CURRENT_ONLY":
+        if historical_status in {"unsafe", "unavailable"}:
+            return (
+                "동종기업 비교값과 안전한 자체 역사 비교값이 없어 이번 평가는 "
+                "회사 전체 현재 배수에 한정합니다."
+            )
+        return (
+            "같은 시점의 동종기업 비교값은 없으며 이번 판단에는 회사 전체 현재 "
+            "배수를 중심으로 봅니다."
+        )
+    return "현재 회사 전체 배수가 확인되지 않아 가치평가 해석을 제한합니다."
 
 
 def _company_valuation_prefix(profile: str, metric: str) -> str:

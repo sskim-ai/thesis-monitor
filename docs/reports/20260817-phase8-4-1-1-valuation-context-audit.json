@@ -1,0 +1,1486 @@
+{
+  "artifact_context": {
+    "database_mutations": 0,
+    "human_quality_status": "pending_work_human_review",
+    "pilot_mutations": 0,
+    "provider_calls": 0,
+    "recovery_audit_sha256": "cc5c5eb49f7f723c3ae07fd2f6481cb9c47ac554735db895a0bfbeddaf4667cf",
+    "retrospective_packet": "2026-08-16-kr-phase8-4-1-1-valuation-context-retrospective",
+    "source_database_sha256": "d1b4b121d11005952bd050ca5d0c0c1056b310d223afb4f6db57ae00086936fd",
+    "source_messages_sha256": "202b83b805ceb39e8eb4fbed114a2754400be7da8db2e8d1a0920fe428d4edcc",
+    "source_output_sha256": "acb810c7d91e0d2df985fc7854a70c5c5aded9845b3f32aef69959ea0890e8da",
+    "source_packet": "2026-08-16-kr-run-21-049f367f0274",
+    "source_packet_sha256": "20e94eff4f16d9b95e3e5e196c3c8f0b349a24b581b38c8d807cae802066b6b4",
+    "telegram_sends": 0
+  },
+  "contract": "delta-first-rendering-v1",
+  "rendered_messages": [
+    {
+      "logical_identity": "phase8-4-1-1:2026-08-16-kr-phase8-4-1-1-valuation-context-retrospective:market",
+      "text": "🤖 AI 보조 한국시장 마감 · KR Pilot 3/5\n\n🎯 오늘 시장 한 줄\nWTI 등락률 +3.4%는 물가·운송비 경로의 부담을 높였지만 미국 10년물 실질금리 변동 -3bp는 할인율 부담을 일부 완화했습니다. Russell 2000 등락률 +0.6%와 S&P500 등락률 -0.2%의 엇갈림, 국내 시장 폭과 현물 지수 부재를 함께 보면 광범위한 위험선호 개선이 아니라 혼합 환경입니다.\n\n📈 실제 변화\n• WTI 상승이 오늘의 핵심 변화이며 물가와 운송·에너지 비용 경로를 재점검하게 하지만 공급 충격의 지속성은 아직 확인되지 않았습니다.\n• 장기 실질금리 하락은 할인율 부담을 일부 덜지만 정책경로의 구조적 전환을 뜻하지 않습니다.\n• 미국 소형주와 대형주 흐름이 엇갈리고 변동성도 안정적 방향을 확정하지 못해 위험선호는 혼합입니다.\n\n🧭 시장 구조\n유가의 비용 부담과 실질금리의 할인율 완화가 맞서는 가운데, 한국 현물 지수·시장 폭·시장 전체 수급이 없어 종목별 실적과 현금흐름 확인을 우선할 환경입니다.\n\n🔗 모니터링 종목에 미치는 영향\n• 운송·물류: 유가 상승은 운송·물류 그룹의 연료비 부담이 운임 전가보다 빨라질 때만 이익에 부정적으로 전달되며 현재는 기업 실적 확인이 아닙니다.\n• 반도체: 실질금리 하락은 반도체 그룹의 할인율 부담을 일부 덜 수 있지만 실제 주문·마진과 회사 논리를 확인하지는 않습니다.\n• 기타·일반: 변동성 신호는 일반 그룹의 위험 프리미엄 맥락이지만 철강·반도체 개별 이익 변화로 옮겨 적을 수 없습니다.\n\n📌 다음 확인\n• 다음 미국 기대인플레이션 갱신이 유가 상승의 물가 전이를 확인하는지 봅니다.\n• 다음 하이일드 신용스프레드 갱신이 금융여건 악화를 확인하는지 봅니다.\n• 다음 WTI 갱신에서 상승이 지속되는지와 운송 비용 경로를 다시 확인합니다.\n\n⚠️ 데이터 주의\n• 국내 시장 폭이 없어 상승·하락 종목 확산 정도는 알 수 없습니다.\n• 국내 시장 전체 투자주체 수급이 없어 광범위한 자금 흐름은 알 수 없습니다.\n• 한국 현물 지수가 없어 미국 지수와 반도체 가격은 전일 해외 맥락으로만 사용합니다.",
+      "ticker": "__DAILY_DIGEST_KR__"
+    },
+    {
+      "logical_identity": "phase8-4-1-1:2026-08-16-kr-phase8-4-1-1-valuation-context-retrospective:stock:005930",
+      "text": "🤖 AI 보조 종목 점검 · KR Pilot 3/5\n\n🏢 삼성전자(005930)\n투자 논리: 유지 · 오늘 중요한 신규 변화 없음\n구조적 위험: 보통\n시장 기대: 매우 높음\n\n🎯 핵심 판단\n메모리·HBM 실행 논리 자체는 바뀌지 않았습니다. 2026년 2분기 연결 기준 전년 동기 대비 매출 성장률 130%, 2026년 2분기 연결 기준 전년 동기 대비 영업이익 성장률 1,813.8%로 외형과 영업이익이 같은 방향으로 움직였습니다. 2026년 2분기 연결 기준 영업이익률 52.2%입니다. 사업별 기여도와 HBM 실행, 재고·현금흐름이 없어 전사 실적만으로 원인을 단정하지 않습니다.\n\n💰 가격·포지셔닝\n현재가 274,500원입니다. 현재 구조에서 적격 동적 지지는 확인되지 않았습니다. 가까운 저항은 동적 저항구간 하단 364,899원부터 동적 저항구간 상단 379,601원까지입니다. 손익비 구성에 필요한 적격 지지가 없어 현재가 기준 손익비는 보류하며 동적 지지 형성과 HBM 실행을 먼저 봅니다.\n• 신규 관찰자: 신규 관찰자는 동적 지지와 HBM 실행 근거가 함께 형성되기 전까지 확인 가격만으로 진입 근거를 만들지 않습니다.\n• 보유자: 보유자는 신규 진입 조건과 분리해 HBM 실행과 재고·현금흐름을 우선 점검합니다.\n\n📊 수급\n외국인 당일 순매수 4,922,472주, 기관 당일 순매도 1,830,920주.\n외국인 5일 순매수 8,417,860주, 기관 5일 순매수 5,435,073주.\n외국인 20일 순매수 1,445,664주, 기관 20일 순매도 2,449,441주.\n세 시간축의 매매 방향이 엇갈려 메모리 실행 근거와 분리해 봅니다.\n\n📐 Valuation\n상장주식 기준 회사 전체 이익 배수는 현재 PER 12.23배입니다. 상장주식 기준 회사 전체 장부가 배수는 현재 PBR 2.8배입니다. 회사 전체 PBR의 자체 역사 위치는 PBR 역사적 백분위 91.6%입니다. 이는 현재 PBR이 비교 가능한 과거 관측치 대부분보다 높은 구간이라는 뜻입니다. 이 배수는 HBM 실행과 재고·현금흐름의 확인과 함께 봐야 합니다. 같은 시점의 동종기업 비교값은 없어 회사 전체 현재 배수와 자체 역사 위치를 함께 봅니다.\n\n📌 다음 확인\n• 다음 공시에서 사업부별 이익과 영업현금흐름이 함께 개선돼야 전사 실적 증가를 지속 가능한 변화로 봅니다.\n\n⚠️ 미확인\n• 사업부별 이익 기여도와 영업현금흐름·설비투자가 없어 전사 실적 개선의 현금 회수 여부는 확인되지 않았습니다.",
+      "ticker": "005930"
+    },
+    {
+      "logical_identity": "phase8-4-1-1:2026-08-16-kr-phase8-4-1-1-valuation-context-retrospective:stock:005490",
+      "text": "🤖 AI 보조 종목 점검 · KR Pilot 3/5\n\n🏢 POSCO홀딩스(005490)\n투자 논리: 유지 · 오늘 중요한 신규 변화 없음\n구조적 위험: 높아진 상태\n시장 기대: 균형\n\n🎯 핵심 판단\n철강·소재 회복 논리를 바꿀 새 사건은 없습니다. 2026년 2분기 연결 기준 전년 동기 대비 매출 성장률 9.7%, 2026년 2분기 연결 기준 전년 동기 대비 영업이익 성장률 34.9%로 외형과 영업이익이 같은 방향으로 움직였습니다. 2026년 2분기 연결 기준 영업이익률 4.3%입니다. 철강 스프레드·소재 손익과 현금전환이 없어 사이클상 위치는 아직 확인되지 않았습니다.\n\n💰 가격·포지셔닝\n현재가 334,000원입니다. 가까운 지지는 동적 지지구간 하단 325,327원부터 동적 지지구간 상단 348,173원까지입니다. 가까운 저항은 동적 저항구간 하단 338,767원부터 동적 저항구간 상단 345,233원까지입니다. 현재가 기준 차트 손익비 0.17배입니다. 가까운 저항 대비 하방 무효화 폭이 더 커 신규 추격의 가격 비대칭은 불리합니다.\n• 신규 관찰자: 현재가 기준 차트 손익비 0.17배입니다. 신규 관찰자는 추격보다 지지 접근이나 실적 근거의 추가 확인을 우선합니다.\n• 보유자: 보유자는 신규 진입 조건과 분리해 지지 유지와 철강·소재 현금전환을 우선 점검합니다.\n\n📊 수급\n외국인 당일 순매수 33,655주, 기관 당일 순매도 8,347주.\n외국인 5일 순매수 97,645주, 기관 5일 순매도 215,719주.\n외국인 20일 순매수 260,831주, 기관 20일 순매도 207,622주.\n기간별 매매 방향이 엇갈려 철강·소재 사이클 회복 근거와 분리합니다.\n\n📐 Valuation\n연결 회사 전체의 이익 기준 값은 현재 PER 18.75배입니다. 연결 회사 전체의 장부가 기준 값은 현재 PBR 0.44배입니다. 철강·소재 배수는 정상화 이익과 현금전환의 지속성과 함께 봐야 합니다. 같은 시점의 동종기업 비교값은 없으며 이번 판단에는 회사 전체 현재 배수를 중심으로 봅니다.\n\n⚠️ 기존 경고\n• 신주인수권의 잠재 희석 영향\n\n📌 다음 확인\n• 철강·소재 부문 마진과 영업현금흐름이 함께 개선돼야 현재 이익 증가를 사이클 회복 이상의 변화로 봅니다.\n\n⚠️ 미확인\n• 철강 스프레드·소재 부문 손익과 영업현금흐름·설비투자가 없어 현재 이익의 사이클상 위치는 확인되지 않았습니다.",
+      "ticker": "005490"
+    },
+    {
+      "logical_identity": "phase8-4-1-1:2026-08-16-kr-phase8-4-1-1-valuation-context-retrospective:stock:086280",
+      "text": "🤖 AI 보조 종목 점검 · KR Pilot 3/5\n\n🏢 현대글로비스(086280)\n투자 논리: 유지 · 오늘 중요한 신규 변화 없음\n구조적 위험: 보통\n시장 기대: 높음\n\n🎯 핵심 판단\n완성차 운송과 물류 성장 논리는 유지됩니다. 2026년 2분기 연결 기준 전년 동기 대비 매출 성장률 15.8%, 2026년 2분기 연결 기준 전년 동기 대비 영업이익 성장률 -8.1%로 외형과 영업이익 방향이 엇갈렸습니다. 2026년 2분기 연결 기준 영업이익률 5.7%입니다. 운임·연료비·계약 믹스와 현금전환이 없어 외형 변화의 질은 아직 확인되지 않았습니다.\n\n💰 가격·포지셔닝\n현재가 211,000원입니다. 가까운 지지는 동적 지지구간 하단 197,803원부터 동적 지지구간 상단 210,197원까지입니다. 가까운 저항은 동적 저항구간 하단 223,397원부터 동적 저항구간 상단 230,603원까지입니다. 현재가 기준 차트 손익비 0.47배입니다. 가까운 저항 대비 하방 무효화 폭이 더 커 신규 추격의 가격 비대칭은 불리합니다.\n• 신규 관찰자: 현재가 기준 차트 손익비 0.47배입니다. 신규 관찰자는 추격보다 지지 접근이나 실적 근거의 추가 확인을 우선합니다.\n• 보유자: 보유자는 신규 진입 조건과 분리해 지지 유지와 운임·마진·현금전환을 우선 점검합니다.\n\n📊 수급\n외국인 당일 순매수 10,613주, 기관 당일 순매수 18,618주.\n외국인 5일 순매수 124,950주, 기관 5일 순매도 115,229주.\n외국인 20일 순매수 174,664주, 기관 20일 순매수 218,752주.\n단기와 중기 매매 방향이 달라 물류 실적의 질을 확인하는 근거로 승격하지 않습니다.\n\n📐 Valuation\n상장회사 전체의 이익 기준 값은 현재 PER 10.27배입니다. 상장회사 전체의 장부가 기준 값은 현재 PBR 1.45배입니다. 회사 전체 PER의 자체 역사 위치는 PER 역사적 백분위 92.8%입니다. 이는 현재 PER이 비교 가능한 과거 관측치 대부분보다 높은 구간이라는 뜻입니다. 운송업 배수는 운임·물량보다 마진과 현금전환의 지속성과 함께 봐야 합니다. 동종기업의 같은 시점 비교값은 없어 회사 전체 현재 배수와 자체 역사 위치를 중심으로 판단합니다.\n\n📌 다음 확인\n• 다음 분기 수익성이 2026년 2분기 연결 기준 영업이익률 5.7%보다 더 낮아지면 외형 성장의 이익 전환이 약해진 것으로 봅니다.\n\n⚠️ 미확인\n• 운임·연료비 전가·계약 믹스와 영업현금흐름이 없어 매출과 이익 방향이 엇갈린 원인은 확인되지 않았습니다.",
+      "ticker": "086280"
+    },
+    {
+      "logical_identity": "phase8-4-1-1:2026-08-16-kr-phase8-4-1-1-valuation-context-retrospective:stock:003690",
+      "text": "🤖 AI 보조 종목 점검 · KR Pilot 3/5\n\n🏢 코리안리(003690)\n투자 논리: 유지 · 오늘 중요한 신규 변화 없음\n구조적 위험: 보통\n시장 기대: 균형\n\n🎯 핵심 판단\n재보험 언더라이팅과 자본관리 논리는 유지됩니다. 2026년 2분기 연결 기준 전년 동기 대비 영업이익 성장률 26.9%로 영업이익 방향은 확인됩니다. 합산비율·대형재해 손실·자본적정성이 없어 이익 증가의 반복 가능성은 아직 확인되지 않았습니다.\n\n💰 가격·포지셔닝\n현재가 15,290원입니다. 가까운 지지는 동적 지지구간 하단 14,608원부터 동적 지지구간 상단 15,712원까지입니다. 현재 구조에서 적격 동적 저항은 확인되지 않았습니다. 가까운 목표로 쓸 적격 저항이 없어 현재가 기준 손익비는 보류하며 월봉 지지와 보험 수익성을 먼저 봅니다.\n• 신규 관찰자: 신규 관찰자는 동적 지지와 보험 수익성 지표가 함께 확인되기 전까지 확인 가격만으로 진입 근거를 만들지 않습니다.\n• 보유자: 보유자는 신규 진입 조건과 분리해 지지 유지와 합산비율·자본적정성을 우선 점검합니다.\n\n📊 수급\n외국인 당일 순매수 91,114주, 기관 당일 순매도 60,281주.\n외국인 5일 순매수 204,276주, 기관 5일 순매도 128,539주.\n외국인 20일 순매수 1,097,785주, 기관 20일 순매도 137,024주.\n투자주체별 시간축이 엇갈려 재보험 수익성의 확인 근거로 사용하지 않습니다.\n\n📐 Valuation\n재보험사 전체의 이익 기준 값은 현재 PER 6.34배입니다. 재보험사 전체의 장부가 기준 값은 현재 PBR 0.67배입니다. 보험업 배수는 합산비율·자기자본이익률·자본적정성과 함께 봐야 합니다. 동종기업 비교값과 안전한 자체 역사 비교값이 없어 이번 평가는 회사 전체 현재 배수에 한정합니다.\n\n📌 다음 확인\n• 다음 갱신의 합산비율과 대형재해 손실, 자본적정성이 함께 개선돼야 이익 증가의 반복 가능성을 높게 봅니다.\n\n⚠️ 미확인\n• 합산비율·대형재해 손실·투자수익률과 자본적정성이 없어 영업이익 증가의 질은 확인되지 않았습니다.",
+      "ticker": "003690"
+    },
+    {
+      "logical_identity": "phase8-4-1-1:2026-08-16-kr-phase8-4-1-1-valuation-context-retrospective:stock:000660",
+      "text": "🤖 AI 보조 종목 점검 · KR Pilot 3/5\n\n🏢 SK하이닉스(000660)\n투자 논리: 유지 · 오늘 중요한 신규 변화 없음\n구조적 위험: 높아진 상태\n시장 기대: 매우 높음\n오늘 관찰 변화: 수급 시간축 엇갈림\n\n📊 수급\n외국인 당일 순매수 750,200주, 기관 당일 순매도 334,859주.\n외국인 5일 순매수 1,470,414주, 기관 5일 순매수 154,329주.\n외국인 20일 순매도 1,103,364주, 기관 20일 순매도 134,797주.\n세 시간축의 매매 방향이 엇갈려 메모리 실행 근거와 분리해 봅니다.\n\n🎯 핵심 판단\n메모리·HBM 실행 논리 자체는 바뀌지 않았습니다. 공식 손익 수치는 품질 충돌 때문에 이번 판단에 사용하지 않습니다. 따라서 현재 판단은 PBR, 가격구조, 수급과 독립적으로 확인 가능한 사업 지표에 한정합니다.\n\n💰 가격·포지셔닝\n현재가 1,645,000원입니다. 현재 구조에서 적격 동적 지지는 확인되지 않았습니다. 가까운 저항은 동적 저항구간 하단 2,918,471원부터 동적 저항구간 상단 3,055,529원까지입니다. 손익비 구성에 필요한 적격 지지가 없어 현재가 기준 손익비는 보류하며 동적 지지 형성과 HBM 실행을 먼저 봅니다.\n• 신규 관찰자: 신규 관찰자는 동적 지지와 HBM 실행 근거가 함께 형성되기 전까지 확인 가격만으로 진입 근거를 만들지 않습니다.\n• 보유자: 보유자는 신규 진입 조건과 분리해 HBM 실행과 재고·현금흐름을 우선 점검합니다.\n\n📐 Valuation\n상장주식 기준 회사 전체 장부가 배수는 현재 PBR 4.46배입니다. 회사 전체 PBR의 자체 역사 위치는 PBR 역사적 백분위 87%입니다. 이는 현재 PBR이 비교 가능한 과거 관측치 대부분보다 높은 구간이라는 뜻입니다. 이 배수는 HBM 실행과 재고·현금흐름의 확인과 함께 봐야 합니다. 같은 시점의 동종기업 비교값은 없어 회사 전체 현재 배수와 자체 역사 위치를 함께 봅니다.\n\n⚠️ 기존 경고\n• 유상증자에 따른 희석·자본조달 경제적 영향\n\n⚠️ 데이터 주의\n• 최신 잠정실적의 수익성 관계에 중대한 검증 경고가 있어 매출·이익과 이익 기반 배수의 정량 해석을 보류합니다.\n\n📌 다음 확인\n• HBM 출하·수율과 재고·설비투자 이후 현금흐름이 검증되기 전에는 장부가치 배수만으로 투자 논리를 강화하지 않습니다.\n\n⚠️ 미확인\n• HBM 고객별 출하·수율과 재고·설비투자 이후 현금흐름이 확인되지 않았습니다.",
+      "ticker": "000660"
+    }
+  ],
+  "stocks": {
+    "000660": {
+      "available_sections": [
+        "core",
+        "business",
+        "price",
+        "supply",
+        "valuation",
+        "priority_watch",
+        "next",
+        "unknown"
+      ],
+      "core_investment_claim_count": 3,
+      "decision_hierarchy": {
+        "candidates": [
+          {
+            "changed": true,
+            "fact_ids": [],
+            "key": "supply",
+            "materiality": "supporting",
+            "reason": "verified_mild_actor_horizon_divergence",
+            "tier": 3
+          }
+        ],
+        "contract": "decision-material-delta-v1",
+        "decision_context": "valuation_price_and_execution",
+        "override": null,
+        "reason": "best_available_verified_delta_without_safe_earnings_context",
+        "selected_primary": "supply",
+        "selected_secondary": null
+      },
+      "eligible_fact_counts": {
+        "financial": 0,
+        "price": 3,
+        "supply": 6,
+        "valuation": 2
+      },
+      "financial_available": false,
+      "financial_cross_field_coherence": {
+        "classification": "LINEAGE_CONFLICT",
+        "economic_plausibility_inferred": false,
+        "operating_income": {
+          "lineage": {
+            "account_id": "dart_OperatingIncomeLoss",
+            "account_name": "영업이익",
+            "amount_period_end": "2026-06-30",
+            "amount_period_start": "2026-04-01",
+            "amount_period_type": "single_quarter",
+            "currency": "KRW",
+            "fs_div": "CFS",
+            "rcept_no": "20260814003509",
+            "source_filing": "20260814003509",
+            "source_row_identity": "20260814003509:11012:2026:CFS:CIS:dart_OperatingIncomeLoss:영업이익:-:6:thstrm_amount",
+            "statement_type": "CIS"
+          },
+          "value": 60542608000000.0
+        },
+        "operating_margin": {
+          "calculated_pct": 76.32824654086185,
+          "formula_match": false,
+          "rendered_pct": null
+        },
+        "revenue": {
+          "lineage": {
+            "account_id": "ifrs-full_Revenue",
+            "account_name": "매출액",
+            "amount_period_end": "2026-06-30",
+            "amount_period_start": "2026-04-01",
+            "amount_period_type": "single_quarter",
+            "currency": "KRW",
+            "fs_div": "CFS",
+            "rcept_no": "20260814003509",
+            "source_filing": "20260814003509",
+            "source_row_identity": "20260814003509:11012:2026:CFS:CIS:ifrs-full_Revenue:매출액:-:34:thstrm_amount",
+            "statement_type": "CIS"
+          },
+          "value": 79318746000000.0
+        },
+        "yoy": {
+          "operating_income": {
+            "comparison_amount": 9212851000000.0,
+            "comparison_lineage": {
+              "account_id": "dart_OperatingIncomeLoss",
+              "account_name": "영업이익",
+              "amount_period_end": "2025-06-30",
+              "amount_period_start": "2025-04-01",
+              "amount_period_type": "single_quarter",
+              "currency": "KRW",
+              "fs_div": "CFS",
+              "rcept_no": "20260814003509",
+              "source_filing": "20260814003509",
+              "source_row_identity": "20260814003509:11012:2026:CFS:CIS:dart_OperatingIncomeLoss:영업이익:-:6:frmtrm_q_amount",
+              "statement_type": "CIS"
+            },
+            "current_amount": 60542608000000.0,
+            "current_lineage": {
+              "account_id": "dart_OperatingIncomeLoss",
+              "account_name": "영업이익",
+              "amount_period_end": "2026-06-30",
+              "amount_period_start": "2026-04-01",
+              "amount_period_type": "single_quarter",
+              "currency": "KRW",
+              "fs_div": "CFS",
+              "rcept_no": "20260814003509",
+              "source_filing": "20260814003509",
+              "source_row_identity": "20260814003509:11012:2026:CFS:CIS:dart_OperatingIncomeLoss:영업이익:-:6:thstrm_amount",
+              "statement_type": "CIS"
+            },
+            "derived_yoy_pct": 557.1538821153191,
+            "formula_match": false,
+            "lineage_comparable": true,
+            "rendered_yoy_pct": null,
+            "status": "unknown"
+          },
+          "revenue": {
+            "comparison_amount": 22231952000000.0,
+            "comparison_lineage": {
+              "account_id": "ifrs-full_Revenue",
+              "account_name": "매출액",
+              "amount_period_end": "2025-06-30",
+              "amount_period_start": "2025-04-01",
+              "amount_period_type": "single_quarter",
+              "currency": "KRW",
+              "fs_div": "CFS",
+              "rcept_no": "20260814003509",
+              "source_filing": "20260814003509",
+              "source_row_identity": "20260814003509:11012:2026:CFS:CIS:ifrs-full_Revenue:매출액:-:34:frmtrm_q_amount",
+              "statement_type": "CIS"
+            },
+            "current_amount": 79318746000000.0,
+            "current_lineage": {
+              "account_id": "ifrs-full_Revenue",
+              "account_name": "매출액",
+              "amount_period_end": "2026-06-30",
+              "amount_period_start": "2026-04-01",
+              "amount_period_type": "single_quarter",
+              "currency": "KRW",
+              "fs_div": "CFS",
+              "rcept_no": "20260814003509",
+              "source_filing": "20260814003509",
+              "source_row_identity": "20260814003509:11012:2026:CFS:CIS:ifrs-full_Revenue:매출액:-:34:thstrm_amount",
+              "statement_type": "CIS"
+            },
+            "derived_yoy_pct": 256.77814525688075,
+            "formula_match": false,
+            "lineage_comparable": true,
+            "rendered_yoy_pct": null,
+            "status": "unknown"
+          }
+        }
+      },
+      "historical_valuation": {
+        "available": true,
+        "candidates": [
+          {
+            "comparability": "normal",
+            "coverage_ratio": 0.847,
+            "decision_relevant": false,
+            "fact_id": "valuation:historical_pe",
+            "field_path": "fields.historical_pe_statistics.current_percentile",
+            "history_end_date": "2026-08-10",
+            "history_quality": "high",
+            "history_start_date": "2022-05-16",
+            "metric": "pe",
+            "percentile": 40.4,
+            "reason": "denied_earnings_family",
+            "safe": false,
+            "sample_count": 156,
+            "selected": false,
+            "stale": false
+          },
+          {
+            "comparability": "normal",
+            "coverage_ratio": 0.996,
+            "decision_relevant": true,
+            "fact_id": "valuation:historical_pb",
+            "field_path": "fields.historical_pb_statistics.current_percentile",
+            "history_end_date": "2026-08-10",
+            "history_quality": "high",
+            "history_start_date": "2021-08-17",
+            "metric": "pbr",
+            "percentile": 87.0,
+            "reason": "selected_decision_band_candidate",
+            "safe": true,
+            "sample_count": 261,
+            "selected": true,
+            "stale": false
+          }
+        ],
+        "replacement_context": null,
+        "safe_context_lost": false,
+        "selected": {
+          "comparability": "normal",
+          "coverage_ratio": 0.996,
+          "decision_relevant": true,
+          "fact_id": "valuation:historical_pb",
+          "field_path": "fields.historical_pb_statistics.current_percentile",
+          "history_end_date": "2026-08-10",
+          "history_quality": "high",
+          "history_start_date": "2021-08-17",
+          "metric": "pbr",
+          "percentile": 87.0,
+          "reason": "selected_decision_band_candidate",
+          "safe": true,
+          "sample_count": 261,
+          "selected": true,
+          "stale": false
+        }
+      },
+      "plan": {
+        "contract": "delta-first-rendering-v1",
+        "decision_selection": {
+          "candidates": [
+            {
+              "changed": true,
+              "fact_ids": [],
+              "key": "supply",
+              "materiality": "supporting",
+              "reason": "verified_mild_actor_horizon_divergence",
+              "tier": 3
+            }
+          ],
+          "contract": "decision-material-delta-v1",
+          "decision_context": "valuation_price_and_execution",
+          "override": null,
+          "reason": "best_available_verified_delta_without_safe_earnings_context",
+          "selected_primary": "supply",
+          "selected_secondary": null
+        },
+        "material_delta": "supply",
+        "section_order": [
+          "supply",
+          "core",
+          "price",
+          "valuation",
+          "warnings",
+          "next",
+          "unknown"
+        ],
+        "suppressed_sections": [
+          "business",
+          "priority_watch"
+        ],
+        "suppression_reasons": {
+          "business": "decision_relevant_financial_facts_integrated_into_core",
+          "priority_watch": "overlaps_with_next_confirmation_and_unknown"
+        },
+        "today_change_label": "수급 시간축 엇갈림"
+      },
+      "profile": "semiconductor",
+      "selected_sections": [
+        "supply",
+        "core",
+        "price",
+        "valuation",
+        "warnings",
+        "next",
+        "unknown"
+      ],
+      "suppressed_sections": [
+        "business",
+        "priority_watch"
+      ],
+      "suppression_reasons": {
+        "business": "decision_relevant_financial_facts_integrated_into_core",
+        "priority_watch": "overlaps_with_next_confirmation_and_unknown"
+      },
+      "ticker": "000660",
+      "used_fact_counts": {
+        "financial": 0,
+        "price": 3,
+        "supply": 6,
+        "valuation": 2
+      },
+      "valuation_context": {
+        "contract": "valuation-context-wording-v1",
+        "current_status": "available",
+        "current_used": true,
+        "forward_status": "unavailable",
+        "forward_used": false,
+        "historical_status": "available",
+        "history_used": true,
+        "peer_status": "unavailable",
+        "peer_used": false,
+        "reason": "current_and_history_selected_peer_unavailable",
+        "valuation_context_class": "CURRENT_PLUS_HISTORY"
+      }
+    },
+    "003690": {
+      "available_sections": [
+        "core",
+        "business",
+        "price",
+        "supply",
+        "valuation",
+        "priority_watch",
+        "next",
+        "unknown"
+      ],
+      "core_investment_claim_count": 3,
+      "decision_hierarchy": {
+        "candidates": [
+          {
+            "changed": false,
+            "fact_ids": [],
+            "key": "earnings_context",
+            "materiality": "decision_context",
+            "reason": "verified_financial_relation_is_current_context_not_historical_date_delta",
+            "tier": 1
+          }
+        ],
+        "contract": "decision-material-delta-v1",
+        "decision_context": "earnings_and_valuation",
+        "override": null,
+        "reason": "no_verified_material_delta",
+        "selected_primary": "none",
+        "selected_secondary": null
+      },
+      "eligible_fact_counts": {
+        "financial": 2,
+        "price": 3,
+        "supply": 6,
+        "valuation": 2
+      },
+      "financial_available": true,
+      "financial_cross_field_coherence": {
+        "classification": "LINEAGE_CONFLICT",
+        "economic_plausibility_inferred": false,
+        "operating_income": {
+          "lineage": {
+            "account_id": "ifrs-full_ProfitLossFromOperatingActivities",
+            "account_name": "영업이익",
+            "amount_period_end": "2026-06-30",
+            "amount_period_start": "2026-04-01",
+            "amount_period_type": "single_quarter",
+            "currency": "KRW",
+            "fs_div": "CFS",
+            "rcept_no": "20260814003862",
+            "source_filing": "20260814003862",
+            "source_row_identity": "20260814003862:11012:2026:CFS:CIS:ifrs-full_ProfitLossFromOperatingActivities:영업이익:-:59:thstrm_amount",
+            "statement_type": "CIS"
+          },
+          "value": 175045476922.0
+        },
+        "operating_margin": {
+          "calculated_pct": null,
+          "formula_match": false,
+          "rendered_pct": null
+        },
+        "revenue": {
+          "lineage": {
+            "account_id": null,
+            "account_name": null,
+            "amount_period_end": null,
+            "amount_period_start": null,
+            "amount_period_type": null,
+            "currency": null,
+            "fs_div": null,
+            "rcept_no": null,
+            "source_filing": null,
+            "source_row_identity": null,
+            "statement_type": null
+          },
+          "value": null
+        },
+        "yoy": {
+          "operating_income": {
+            "comparison_amount": 137949202208.0,
+            "comparison_lineage": {
+              "account_id": "ifrs-full_ProfitLossFromOperatingActivities",
+              "account_name": "영업이익",
+              "amount_period_end": "2025-06-30",
+              "amount_period_start": "2025-04-01",
+              "amount_period_type": "single_quarter",
+              "currency": "KRW",
+              "fs_div": "CFS",
+              "rcept_no": "20260814003862",
+              "source_filing": "20260814003862",
+              "source_row_identity": "20260814003862:11012:2026:CFS:CIS:ifrs-full_ProfitLossFromOperatingActivities:영업이익:-:59:frmtrm_q_amount",
+              "statement_type": "CIS"
+            },
+            "current_amount": 175045476922.0,
+            "current_lineage": {
+              "account_id": "ifrs-full_ProfitLossFromOperatingActivities",
+              "account_name": "영업이익",
+              "amount_period_end": "2026-06-30",
+              "amount_period_start": "2026-04-01",
+              "amount_period_type": "single_quarter",
+              "currency": "KRW",
+              "fs_div": "CFS",
+              "rcept_no": "20260814003862",
+              "source_filing": "20260814003862",
+              "source_row_identity": "20260814003862:11012:2026:CFS:CIS:ifrs-full_ProfitLossFromOperatingActivities:영업이익:-:59:thstrm_amount",
+              "statement_type": "CIS"
+            },
+            "derived_yoy_pct": 26.89125715860696,
+            "formula_match": true,
+            "lineage_comparable": true,
+            "rendered_yoy_pct": 26.89125715860696,
+            "status": "verified_usable"
+          },
+          "revenue": {
+            "comparison_amount": null,
+            "comparison_lineage": {
+              "account_id": null,
+              "account_name": null,
+              "amount_period_end": null,
+              "amount_period_start": null,
+              "amount_period_type": null,
+              "currency": null,
+              "fs_div": null,
+              "rcept_no": null,
+              "source_filing": null,
+              "source_row_identity": null,
+              "statement_type": null
+            },
+            "current_amount": null,
+            "current_lineage": {
+              "account_id": null,
+              "account_name": null,
+              "amount_period_end": null,
+              "amount_period_start": null,
+              "amount_period_type": null,
+              "currency": null,
+              "fs_div": null,
+              "rcept_no": null,
+              "source_filing": null,
+              "source_row_identity": null,
+              "statement_type": null
+            },
+            "derived_yoy_pct": null,
+            "formula_match": false,
+            "lineage_comparable": false,
+            "rendered_yoy_pct": null,
+            "status": null
+          }
+        }
+      },
+      "historical_valuation": {
+        "available": false,
+        "candidates": [
+          {
+            "comparability": "low",
+            "coverage_ratio": null,
+            "decision_relevant": false,
+            "fact_id": "valuation:historical_pe",
+            "field_path": "fields.historical_pe_statistics.current_percentile",
+            "history_end_date": null,
+            "history_quality": "unknown",
+            "history_start_date": null,
+            "metric": "pe",
+            "percentile": null,
+            "reason": "historical_comparability_failed",
+            "safe": false,
+            "sample_count": null,
+            "selected": false,
+            "stale": true
+          },
+          {
+            "comparability": "low",
+            "coverage_ratio": null,
+            "decision_relevant": false,
+            "fact_id": "valuation:historical_pb",
+            "field_path": "fields.historical_pb_statistics.current_percentile",
+            "history_end_date": null,
+            "history_quality": "unknown",
+            "history_start_date": null,
+            "metric": "pbr",
+            "percentile": null,
+            "reason": "historical_comparability_failed",
+            "safe": false,
+            "sample_count": null,
+            "selected": false,
+            "stale": true
+          }
+        ],
+        "replacement_context": null,
+        "safe_context_lost": false,
+        "selected": null
+      },
+      "plan": {
+        "contract": "delta-first-rendering-v1",
+        "decision_selection": {
+          "candidates": [
+            {
+              "changed": false,
+              "fact_ids": [],
+              "key": "earnings_context",
+              "materiality": "decision_context",
+              "reason": "verified_financial_relation_is_current_context_not_historical_date_delta",
+              "tier": 1
+            }
+          ],
+          "contract": "decision-material-delta-v1",
+          "decision_context": "earnings_and_valuation",
+          "override": null,
+          "reason": "no_verified_material_delta",
+          "selected_primary": "none",
+          "selected_secondary": null
+        },
+        "material_delta": "none",
+        "section_order": [
+          "core",
+          "price",
+          "supply",
+          "valuation",
+          "warnings",
+          "next",
+          "unknown"
+        ],
+        "suppressed_sections": [
+          "business",
+          "priority_watch"
+        ],
+        "suppression_reasons": {
+          "business": "decision_relevant_financial_facts_integrated_into_core",
+          "priority_watch": "overlaps_with_next_confirmation_and_unknown"
+        },
+        "today_change_label": "중요 변화 없음"
+      },
+      "profile": "insurance",
+      "selected_sections": [
+        "core",
+        "price",
+        "supply",
+        "valuation",
+        "warnings",
+        "next",
+        "unknown"
+      ],
+      "suppressed_sections": [
+        "business",
+        "priority_watch"
+      ],
+      "suppression_reasons": {
+        "business": "decision_relevant_financial_facts_integrated_into_core",
+        "priority_watch": "overlaps_with_next_confirmation_and_unknown"
+      },
+      "ticker": "003690",
+      "used_fact_counts": {
+        "financial": 1,
+        "price": 3,
+        "supply": 6,
+        "valuation": 2
+      },
+      "valuation_context": {
+        "contract": "valuation-context-wording-v1",
+        "current_status": "available",
+        "current_used": true,
+        "forward_status": "unavailable",
+        "forward_used": false,
+        "historical_status": "unavailable",
+        "history_used": false,
+        "peer_status": "unavailable",
+        "peer_used": false,
+        "reason": "current_only_history_unsafe_or_unavailable",
+        "valuation_context_class": "CURRENT_ONLY"
+      }
+    },
+    "005490": {
+      "available_sections": [
+        "core",
+        "business",
+        "price",
+        "supply",
+        "valuation",
+        "priority_watch",
+        "next",
+        "unknown"
+      ],
+      "core_investment_claim_count": 4,
+      "decision_hierarchy": {
+        "candidates": [
+          {
+            "changed": false,
+            "fact_ids": [],
+            "key": "earnings_context",
+            "materiality": "decision_context",
+            "reason": "verified_financial_relation_is_current_context_not_historical_date_delta",
+            "tier": 1
+          }
+        ],
+        "contract": "decision-material-delta-v1",
+        "decision_context": "earnings_and_valuation",
+        "override": null,
+        "reason": "no_verified_material_delta",
+        "selected_primary": "none",
+        "selected_secondary": null
+      },
+      "eligible_fact_counts": {
+        "financial": 5,
+        "price": 6,
+        "supply": 6,
+        "valuation": 4
+      },
+      "financial_available": true,
+      "financial_cross_field_coherence": {
+        "classification": "VALID_AND_COHERENT",
+        "economic_plausibility_inferred": false,
+        "operating_income": {
+          "lineage": {
+            "account_id": "dart_OperatingIncomeLoss",
+            "account_name": "영업이익",
+            "amount_period_end": "2026-06-30",
+            "amount_period_start": "2026-04-01",
+            "amount_period_type": "single_quarter",
+            "currency": "KRW",
+            "fs_div": "CFS",
+            "rcept_no": "20260814000957",
+            "source_filing": "20260814000957",
+            "source_row_identity": "20260814000957:11012:2026:CFS:CIS:dart_OperatingIncomeLoss:영업이익:-:6:thstrm_amount",
+            "statement_type": "CIS"
+          },
+          "value": 819013515966.0
+        },
+        "operating_margin": {
+          "calculated_pct": 4.252697125822862,
+          "formula_match": true,
+          "rendered_pct": 4.252697125822862
+        },
+        "revenue": {
+          "lineage": {
+            "account_id": "ifrs-full_Revenue",
+            "account_name": "매출액",
+            "amount_period_end": "2026-06-30",
+            "amount_period_start": "2026-04-01",
+            "amount_period_type": "single_quarter",
+            "currency": "KRW",
+            "fs_div": "CFS",
+            "rcept_no": "20260814000957",
+            "source_filing": "20260814000957",
+            "source_row_identity": "20260814000957:11012:2026:CFS:CIS:ifrs-full_Revenue:매출액:-:41:thstrm_amount",
+            "statement_type": "CIS"
+          },
+          "value": 19258684353345.0
+        },
+        "yoy": {
+          "operating_income": {
+            "comparison_amount": 607172109226.0,
+            "comparison_lineage": {
+              "account_id": "dart_OperatingIncomeLoss",
+              "account_name": "영업이익",
+              "amount_period_end": "2025-06-30",
+              "amount_period_start": "2025-04-01",
+              "amount_period_type": "single_quarter",
+              "currency": "KRW",
+              "fs_div": "CFS",
+              "rcept_no": "20260814000957",
+              "source_filing": "20260814000957",
+              "source_row_identity": "20260814000957:11012:2026:CFS:CIS:dart_OperatingIncomeLoss:영업이익:-:6:frmtrm_q_amount",
+              "statement_type": "CIS"
+            },
+            "current_amount": 819013515966.0,
+            "current_lineage": {
+              "account_id": "dart_OperatingIncomeLoss",
+              "account_name": "영업이익",
+              "amount_period_end": "2026-06-30",
+              "amount_period_start": "2026-04-01",
+              "amount_period_type": "single_quarter",
+              "currency": "KRW",
+              "fs_div": "CFS",
+              "rcept_no": "20260814000957",
+              "source_filing": "20260814000957",
+              "source_row_identity": "20260814000957:11012:2026:CFS:CIS:dart_OperatingIncomeLoss:영업이익:-:6:thstrm_amount",
+              "statement_type": "CIS"
+            },
+            "derived_yoy_pct": 34.88984482670776,
+            "formula_match": true,
+            "lineage_comparable": true,
+            "rendered_yoy_pct": 34.88984482670776,
+            "status": "verified_usable"
+          },
+          "revenue": {
+            "comparison_amount": 17555587387894.0,
+            "comparison_lineage": {
+              "account_id": "ifrs-full_Revenue",
+              "account_name": "매출액",
+              "amount_period_end": "2025-06-30",
+              "amount_period_start": "2025-04-01",
+              "amount_period_type": "single_quarter",
+              "currency": "KRW",
+              "fs_div": "CFS",
+              "rcept_no": "20260814000957",
+              "source_filing": "20260814000957",
+              "source_row_identity": "20260814000957:11012:2026:CFS:CIS:ifrs-full_Revenue:매출액:-:41:frmtrm_q_amount",
+              "statement_type": "CIS"
+            },
+            "current_amount": 19258684353345.0,
+            "current_lineage": {
+              "account_id": "ifrs-full_Revenue",
+              "account_name": "매출액",
+              "amount_period_end": "2026-06-30",
+              "amount_period_start": "2026-04-01",
+              "amount_period_type": "single_quarter",
+              "currency": "KRW",
+              "fs_div": "CFS",
+              "rcept_no": "20260814000957",
+              "source_filing": "20260814000957",
+              "source_row_identity": "20260814000957:11012:2026:CFS:CIS:ifrs-full_Revenue:매출액:-:41:thstrm_amount",
+              "statement_type": "CIS"
+            },
+            "derived_yoy_pct": 9.70116765574829,
+            "formula_match": true,
+            "lineage_comparable": true,
+            "rendered_yoy_pct": 9.70116765574829,
+            "status": "verified_usable"
+          }
+        }
+      },
+      "historical_valuation": {
+        "available": true,
+        "candidates": [
+          {
+            "comparability": "normal",
+            "coverage_ratio": 0.847,
+            "decision_relevant": false,
+            "fact_id": "valuation:historical_pe",
+            "field_path": "fields.historical_pe_statistics.current_percentile",
+            "history_end_date": "2026-08-10",
+            "history_quality": "high",
+            "history_start_date": "2022-05-16",
+            "metric": "pe",
+            "percentile": 53.2,
+            "reason": "percentile_not_in_decision_band",
+            "safe": true,
+            "sample_count": 222,
+            "selected": false,
+            "stale": false
+          },
+          {
+            "comparability": "normal",
+            "coverage_ratio": 0.996,
+            "decision_relevant": false,
+            "fact_id": "valuation:historical_pb",
+            "field_path": "fields.historical_pb_statistics.current_percentile",
+            "history_end_date": "2026-08-10",
+            "history_quality": "high",
+            "history_start_date": "2021-08-17",
+            "metric": "pbr",
+            "percentile": 46.4,
+            "reason": "percentile_not_in_decision_band",
+            "safe": true,
+            "sample_count": 261,
+            "selected": false,
+            "stale": false
+          }
+        ],
+        "replacement_context": null,
+        "safe_context_lost": false,
+        "selected": null
+      },
+      "plan": {
+        "contract": "delta-first-rendering-v1",
+        "decision_selection": {
+          "candidates": [
+            {
+              "changed": false,
+              "fact_ids": [],
+              "key": "earnings_context",
+              "materiality": "decision_context",
+              "reason": "verified_financial_relation_is_current_context_not_historical_date_delta",
+              "tier": 1
+            }
+          ],
+          "contract": "decision-material-delta-v1",
+          "decision_context": "earnings_and_valuation",
+          "override": null,
+          "reason": "no_verified_material_delta",
+          "selected_primary": "none",
+          "selected_secondary": null
+        },
+        "material_delta": "none",
+        "section_order": [
+          "core",
+          "price",
+          "supply",
+          "valuation",
+          "warnings",
+          "next",
+          "unknown"
+        ],
+        "suppressed_sections": [
+          "business",
+          "priority_watch"
+        ],
+        "suppression_reasons": {
+          "business": "decision_relevant_financial_facts_integrated_into_core",
+          "priority_watch": "overlaps_with_next_confirmation_and_unknown"
+        },
+        "today_change_label": "중요 변화 없음"
+      },
+      "profile": "cyclical_materials",
+      "selected_sections": [
+        "core",
+        "price",
+        "supply",
+        "valuation",
+        "warnings",
+        "next",
+        "unknown"
+      ],
+      "suppressed_sections": [
+        "business",
+        "priority_watch"
+      ],
+      "suppression_reasons": {
+        "business": "decision_relevant_financial_facts_integrated_into_core",
+        "priority_watch": "overlaps_with_next_confirmation_and_unknown"
+      },
+      "ticker": "005490",
+      "used_fact_counts": {
+        "financial": 3,
+        "price": 6,
+        "supply": 6,
+        "valuation": 2
+      },
+      "valuation_context": {
+        "contract": "valuation-context-wording-v1",
+        "current_status": "available",
+        "current_used": true,
+        "forward_status": "unavailable",
+        "forward_used": false,
+        "historical_status": "available",
+        "history_used": false,
+        "peer_status": "unavailable",
+        "peer_used": false,
+        "reason": "current_only_history_not_decision_relevant",
+        "valuation_context_class": "CURRENT_ONLY"
+      }
+    },
+    "005930": {
+      "available_sections": [
+        "core",
+        "business",
+        "price",
+        "supply",
+        "valuation",
+        "priority_watch",
+        "next",
+        "unknown"
+      ],
+      "core_investment_claim_count": 4,
+      "decision_hierarchy": {
+        "candidates": [
+          {
+            "changed": false,
+            "fact_ids": [],
+            "key": "earnings_context",
+            "materiality": "decision_context",
+            "reason": "verified_financial_relation_is_current_context_not_historical_date_delta",
+            "tier": 1
+          },
+          {
+            "changed": true,
+            "fact_ids": [],
+            "key": "supply",
+            "materiality": "supporting",
+            "reason": "verified_mild_actor_horizon_divergence",
+            "tier": 3
+          }
+        ],
+        "contract": "decision-material-delta-v1",
+        "decision_context": "earnings_and_valuation",
+        "override": null,
+        "reason": "supporting_delta_does_not_override_verified_earnings_context",
+        "selected_primary": "none",
+        "selected_secondary": "supply"
+      },
+      "eligible_fact_counts": {
+        "financial": 5,
+        "price": 3,
+        "supply": 6,
+        "valuation": 4
+      },
+      "financial_available": true,
+      "financial_cross_field_coherence": {
+        "classification": "VALID_AND_COHERENT",
+        "economic_plausibility_inferred": false,
+        "operating_income": {
+          "lineage": {
+            "account_id": "dart_OperatingIncomeLoss",
+            "account_name": "영업이익",
+            "amount_period_end": "2026-06-30",
+            "amount_period_start": "2026-04-01",
+            "amount_period_type": "single_quarter",
+            "currency": "KRW",
+            "fs_div": "CFS",
+            "rcept_no": "20260814003699",
+            "source_filing": "20260814003699",
+            "source_row_identity": "20260814003699:11012:2026:CFS:IS:dart_OperatingIncomeLoss:영업이익:-:6:thstrm_amount",
+            "statement_type": "IS"
+          },
+          "value": 89492412000000.0
+        },
+        "operating_margin": {
+          "calculated_pct": 52.182325694650835,
+          "formula_match": true,
+          "rendered_pct": 52.182325694650835
+        },
+        "revenue": {
+          "lineage": {
+            "account_id": "ifrs-full_Revenue",
+            "account_name": "매출액",
+            "amount_period_end": "2026-06-30",
+            "amount_period_start": "2026-04-01",
+            "amount_period_type": "single_quarter",
+            "currency": "KRW",
+            "fs_div": "CFS",
+            "rcept_no": "20260814003699",
+            "source_filing": "20260814003699",
+            "source_row_identity": "20260814003699:11012:2026:CFS:IS:ifrs-full_Revenue:매출액:-:23:thstrm_amount",
+            "statement_type": "IS"
+          },
+          "value": 171499470000000.0
+        },
+        "yoy": {
+          "operating_income": {
+            "comparison_amount": 4676057000000.0,
+            "comparison_lineage": {
+              "account_id": "dart_OperatingIncomeLoss",
+              "account_name": "영업이익",
+              "amount_period_end": "2025-06-30",
+              "amount_period_start": "2025-04-01",
+              "amount_period_type": "single_quarter",
+              "currency": "KRW",
+              "fs_div": "CFS",
+              "rcept_no": "20260814003699",
+              "source_filing": "20260814003699",
+              "source_row_identity": "20260814003699:11012:2026:CFS:IS:dart_OperatingIncomeLoss:영업이익:-:6:frmtrm_q_amount",
+              "statement_type": "IS"
+            },
+            "current_amount": 89492412000000.0,
+            "current_lineage": {
+              "account_id": "dart_OperatingIncomeLoss",
+              "account_name": "영업이익",
+              "amount_period_end": "2026-06-30",
+              "amount_period_start": "2026-04-01",
+              "amount_period_type": "single_quarter",
+              "currency": "KRW",
+              "fs_div": "CFS",
+              "rcept_no": "20260814003699",
+              "source_filing": "20260814003699",
+              "source_row_identity": "20260814003699:11012:2026:CFS:IS:dart_OperatingIncomeLoss:영업이익:-:6:thstrm_amount",
+              "statement_type": "IS"
+            },
+            "derived_yoy_pct": 1813.8434796667361,
+            "formula_match": true,
+            "lineage_comparable": true,
+            "rendered_yoy_pct": 1813.8434796667361,
+            "status": "verified_usable"
+          },
+          "revenue": {
+            "comparison_amount": 74566317000000.0,
+            "comparison_lineage": {
+              "account_id": "ifrs-full_Revenue",
+              "account_name": "매출액",
+              "amount_period_end": "2025-06-30",
+              "amount_period_start": "2025-04-01",
+              "amount_period_type": "single_quarter",
+              "currency": "KRW",
+              "fs_div": "CFS",
+              "rcept_no": "20260814003699",
+              "source_filing": "20260814003699",
+              "source_row_identity": "20260814003699:11012:2026:CFS:IS:ifrs-full_Revenue:매출액:-:23:frmtrm_q_amount",
+              "statement_type": "IS"
+            },
+            "current_amount": 171499470000000.0,
+            "current_lineage": {
+              "account_id": "ifrs-full_Revenue",
+              "account_name": "매출액",
+              "amount_period_end": "2026-06-30",
+              "amount_period_start": "2026-04-01",
+              "amount_period_type": "single_quarter",
+              "currency": "KRW",
+              "fs_div": "CFS",
+              "rcept_no": "20260814003699",
+              "source_filing": "20260814003699",
+              "source_row_identity": "20260814003699:11012:2026:CFS:IS:ifrs-full_Revenue:매출액:-:23:thstrm_amount",
+              "statement_type": "IS"
+            },
+            "derived_yoy_pct": 129.99589747740927,
+            "formula_match": true,
+            "lineage_comparable": true,
+            "rendered_yoy_pct": 129.99589747740927,
+            "status": "verified_usable"
+          }
+        }
+      },
+      "historical_valuation": {
+        "available": true,
+        "candidates": [
+          {
+            "comparability": "normal",
+            "coverage_ratio": 0.847,
+            "decision_relevant": false,
+            "fact_id": "valuation:historical_pe",
+            "field_path": "fields.historical_pe_statistics.current_percentile",
+            "history_end_date": "2026-08-10",
+            "history_quality": "high",
+            "history_start_date": "2022-05-16",
+            "metric": "pe",
+            "percentile": 43.2,
+            "reason": "percentile_not_in_decision_band",
+            "safe": true,
+            "sample_count": 222,
+            "selected": false,
+            "stale": false
+          },
+          {
+            "comparability": "normal",
+            "coverage_ratio": 0.996,
+            "decision_relevant": true,
+            "fact_id": "valuation:historical_pb",
+            "field_path": "fields.historical_pb_statistics.current_percentile",
+            "history_end_date": "2026-08-10",
+            "history_quality": "high",
+            "history_start_date": "2021-08-17",
+            "metric": "pbr",
+            "percentile": 91.6,
+            "reason": "selected_decision_band_candidate",
+            "safe": true,
+            "sample_count": 261,
+            "selected": true,
+            "stale": false
+          }
+        ],
+        "replacement_context": null,
+        "safe_context_lost": false,
+        "selected": {
+          "comparability": "normal",
+          "coverage_ratio": 0.996,
+          "decision_relevant": true,
+          "fact_id": "valuation:historical_pb",
+          "field_path": "fields.historical_pb_statistics.current_percentile",
+          "history_end_date": "2026-08-10",
+          "history_quality": "high",
+          "history_start_date": "2021-08-17",
+          "metric": "pbr",
+          "percentile": 91.6,
+          "reason": "selected_decision_band_candidate",
+          "safe": true,
+          "sample_count": 261,
+          "selected": true,
+          "stale": false
+        }
+      },
+      "plan": {
+        "contract": "delta-first-rendering-v1",
+        "decision_selection": {
+          "candidates": [
+            {
+              "changed": false,
+              "fact_ids": [],
+              "key": "earnings_context",
+              "materiality": "decision_context",
+              "reason": "verified_financial_relation_is_current_context_not_historical_date_delta",
+              "tier": 1
+            },
+            {
+              "changed": true,
+              "fact_ids": [],
+              "key": "supply",
+              "materiality": "supporting",
+              "reason": "verified_mild_actor_horizon_divergence",
+              "tier": 3
+            }
+          ],
+          "contract": "decision-material-delta-v1",
+          "decision_context": "earnings_and_valuation",
+          "override": null,
+          "reason": "supporting_delta_does_not_override_verified_earnings_context",
+          "selected_primary": "none",
+          "selected_secondary": "supply"
+        },
+        "material_delta": "none",
+        "section_order": [
+          "core",
+          "price",
+          "supply",
+          "valuation",
+          "warnings",
+          "next",
+          "unknown"
+        ],
+        "suppressed_sections": [
+          "business",
+          "priority_watch"
+        ],
+        "suppression_reasons": {
+          "business": "decision_relevant_financial_facts_integrated_into_core",
+          "priority_watch": "overlaps_with_next_confirmation_and_unknown"
+        },
+        "today_change_label": "중요 변화 없음"
+      },
+      "profile": "semiconductor",
+      "selected_sections": [
+        "core",
+        "price",
+        "supply",
+        "valuation",
+        "warnings",
+        "next",
+        "unknown"
+      ],
+      "suppressed_sections": [
+        "business",
+        "priority_watch"
+      ],
+      "suppression_reasons": {
+        "business": "decision_relevant_financial_facts_integrated_into_core",
+        "priority_watch": "overlaps_with_next_confirmation_and_unknown"
+      },
+      "ticker": "005930",
+      "used_fact_counts": {
+        "financial": 3,
+        "price": 3,
+        "supply": 6,
+        "valuation": 3
+      },
+      "valuation_context": {
+        "contract": "valuation-context-wording-v1",
+        "current_status": "available",
+        "current_used": true,
+        "forward_status": "unavailable",
+        "forward_used": false,
+        "historical_status": "available",
+        "history_used": true,
+        "peer_status": "unavailable",
+        "peer_used": false,
+        "reason": "current_and_history_selected_peer_unavailable",
+        "valuation_context_class": "CURRENT_PLUS_HISTORY"
+      }
+    },
+    "086280": {
+      "available_sections": [
+        "core",
+        "business",
+        "price",
+        "supply",
+        "valuation",
+        "priority_watch",
+        "next",
+        "unknown"
+      ],
+      "core_investment_claim_count": 4,
+      "decision_hierarchy": {
+        "candidates": [
+          {
+            "changed": false,
+            "fact_ids": [],
+            "key": "earnings_context",
+            "materiality": "decision_context",
+            "reason": "verified_financial_relation_is_current_context_not_historical_date_delta",
+            "tier": 1
+          },
+          {
+            "changed": true,
+            "fact_ids": [],
+            "key": "supply",
+            "materiality": "supporting",
+            "reason": "verified_mild_actor_horizon_divergence",
+            "tier": 3
+          }
+        ],
+        "contract": "decision-material-delta-v1",
+        "decision_context": "earnings_and_valuation",
+        "override": null,
+        "reason": "supporting_delta_does_not_override_verified_earnings_context",
+        "selected_primary": "none",
+        "selected_secondary": "supply"
+      },
+      "eligible_fact_counts": {
+        "financial": 5,
+        "price": 6,
+        "supply": 6,
+        "valuation": 4
+      },
+      "financial_available": true,
+      "financial_cross_field_coherence": {
+        "classification": "VALID_AND_COHERENT",
+        "economic_plausibility_inferred": false,
+        "operating_income": {
+          "lineage": {
+            "account_id": "dart_OperatingIncomeLoss",
+            "account_name": "영업이익",
+            "amount_period_end": "2026-06-30",
+            "amount_period_start": "2026-04-01",
+            "amount_period_type": "single_quarter",
+            "currency": "KRW",
+            "fs_div": "CFS",
+            "rcept_no": "20260814002854",
+            "source_filing": "20260814002854",
+            "source_row_identity": "20260814002854:11012:2026:CFS:IS:dart_OperatingIncomeLoss:영업이익:-:6:thstrm_amount",
+            "statement_type": "IS"
+          },
+          "value": 495063379908.0
+        },
+        "operating_margin": {
+          "calculated_pct": 5.6868761142818895,
+          "formula_match": true,
+          "rendered_pct": 5.6868761142818895
+        },
+        "revenue": {
+          "lineage": {
+            "account_id": "ifrs-full_Revenue",
+            "account_name": "매출액",
+            "amount_period_end": "2026-06-30",
+            "amount_period_start": "2026-04-01",
+            "amount_period_type": "single_quarter",
+            "currency": "KRW",
+            "fs_div": "CFS",
+            "rcept_no": "20260814002854",
+            "source_filing": "20260814002854",
+            "source_row_identity": "20260814002854:11012:2026:CFS:IS:ifrs-full_Revenue:매출액:-:23:thstrm_amount",
+            "statement_type": "IS"
+          },
+          "value": 8705366003397.0
+        },
+        "yoy": {
+          "operating_income": {
+            "comparison_amount": 538878486559.0,
+            "comparison_lineage": {
+              "account_id": "dart_OperatingIncomeLoss",
+              "account_name": "영업이익",
+              "amount_period_end": "2025-06-30",
+              "amount_period_start": "2025-04-01",
+              "amount_period_type": "single_quarter",
+              "currency": "KRW",
+              "fs_div": "CFS",
+              "rcept_no": "20260814002854",
+              "source_filing": "20260814002854",
+              "source_row_identity": "20260814002854:11012:2026:CFS:IS:dart_OperatingIncomeLoss:영업이익:-:6:frmtrm_q_amount",
+              "statement_type": "IS"
+            },
+            "current_amount": 495063379908.0,
+            "current_lineage": {
+              "account_id": "dart_OperatingIncomeLoss",
+              "account_name": "영업이익",
+              "amount_period_end": "2026-06-30",
+              "amount_period_start": "2026-04-01",
+              "amount_period_type": "single_quarter",
+              "currency": "KRW",
+              "fs_div": "CFS",
+              "rcept_no": "20260814002854",
+              "source_filing": "20260814002854",
+              "source_row_identity": "20260814002854:11012:2026:CFS:IS:dart_OperatingIncomeLoss:영업이익:-:6:thstrm_amount",
+              "statement_type": "IS"
+            },
+            "derived_yoy_pct": -8.130795298728788,
+            "formula_match": true,
+            "lineage_comparable": true,
+            "rendered_yoy_pct": -8.130795298728788,
+            "status": "verified_usable"
+          },
+          "revenue": {
+            "comparison_amount": 7515967179642.0,
+            "comparison_lineage": {
+              "account_id": "ifrs-full_Revenue",
+              "account_name": "매출액",
+              "amount_period_end": "2025-06-30",
+              "amount_period_start": "2025-04-01",
+              "amount_period_type": "single_quarter",
+              "currency": "KRW",
+              "fs_div": "CFS",
+              "rcept_no": "20260814002854",
+              "source_filing": "20260814002854",
+              "source_row_identity": "20260814002854:11012:2026:CFS:IS:ifrs-full_Revenue:매출액:-:23:frmtrm_q_amount",
+              "statement_type": "IS"
+            },
+            "current_amount": 8705366003397.0,
+            "current_lineage": {
+              "account_id": "ifrs-full_Revenue",
+              "account_name": "매출액",
+              "amount_period_end": "2026-06-30",
+              "amount_period_start": "2026-04-01",
+              "amount_period_type": "single_quarter",
+              "currency": "KRW",
+              "fs_div": "CFS",
+              "rcept_no": "20260814002854",
+              "source_filing": "20260814002854",
+              "source_row_identity": "20260814002854:11012:2026:CFS:IS:ifrs-full_Revenue:매출액:-:23:thstrm_amount",
+              "statement_type": "IS"
+            },
+            "derived_yoy_pct": 15.82496031883489,
+            "formula_match": true,
+            "lineage_comparable": true,
+            "rendered_yoy_pct": 15.82496031883489,
+            "status": "verified_usable"
+          }
+        }
+      },
+      "historical_valuation": {
+        "available": true,
+        "candidates": [
+          {
+            "comparability": "normal",
+            "coverage_ratio": 0.847,
+            "decision_relevant": true,
+            "fact_id": "valuation:historical_pe",
+            "field_path": "fields.historical_pe_statistics.current_percentile",
+            "history_end_date": "2026-08-10",
+            "history_quality": "high",
+            "history_start_date": "2022-05-16",
+            "metric": "pe",
+            "percentile": 92.8,
+            "reason": "selected_decision_band_candidate",
+            "safe": true,
+            "sample_count": 209,
+            "selected": true,
+            "stale": false
+          },
+          {
+            "comparability": "normal",
+            "coverage_ratio": 0.996,
+            "decision_relevant": true,
+            "fact_id": "valuation:historical_pb",
+            "field_path": "fields.historical_pb_statistics.current_percentile",
+            "history_end_date": "2026-08-10",
+            "history_quality": "high",
+            "history_start_date": "2021-08-17",
+            "metric": "pbr",
+            "percentile": 87.4,
+            "reason": "suppressed_by_stronger_safe_historical_context",
+            "safe": true,
+            "sample_count": 261,
+            "selected": false,
+            "stale": false
+          }
+        ],
+        "replacement_context": null,
+        "safe_context_lost": false,
+        "selected": {
+          "comparability": "normal",
+          "coverage_ratio": 0.847,
+          "decision_relevant": true,
+          "fact_id": "valuation:historical_pe",
+          "field_path": "fields.historical_pe_statistics.current_percentile",
+          "history_end_date": "2026-08-10",
+          "history_quality": "high",
+          "history_start_date": "2022-05-16",
+          "metric": "pe",
+          "percentile": 92.8,
+          "reason": "selected_decision_band_candidate",
+          "safe": true,
+          "sample_count": 209,
+          "selected": true,
+          "stale": false
+        }
+      },
+      "plan": {
+        "contract": "delta-first-rendering-v1",
+        "decision_selection": {
+          "candidates": [
+            {
+              "changed": false,
+              "fact_ids": [],
+              "key": "earnings_context",
+              "materiality": "decision_context",
+              "reason": "verified_financial_relation_is_current_context_not_historical_date_delta",
+              "tier": 1
+            },
+            {
+              "changed": true,
+              "fact_ids": [],
+              "key": "supply",
+              "materiality": "supporting",
+              "reason": "verified_mild_actor_horizon_divergence",
+              "tier": 3
+            }
+          ],
+          "contract": "decision-material-delta-v1",
+          "decision_context": "earnings_and_valuation",
+          "override": null,
+          "reason": "supporting_delta_does_not_override_verified_earnings_context",
+          "selected_primary": "none",
+          "selected_secondary": "supply"
+        },
+        "material_delta": "none",
+        "section_order": [
+          "core",
+          "price",
+          "supply",
+          "valuation",
+          "warnings",
+          "next",
+          "unknown"
+        ],
+        "suppressed_sections": [
+          "business",
+          "priority_watch"
+        ],
+        "suppression_reasons": {
+          "business": "decision_relevant_financial_facts_integrated_into_core",
+          "priority_watch": "overlaps_with_next_confirmation_and_unknown"
+        },
+        "today_change_label": "중요 변화 없음"
+      },
+      "profile": "shipping",
+      "selected_sections": [
+        "core",
+        "price",
+        "supply",
+        "valuation",
+        "warnings",
+        "next",
+        "unknown"
+      ],
+      "suppressed_sections": [
+        "business",
+        "priority_watch"
+      ],
+      "suppression_reasons": {
+        "business": "decision_relevant_financial_facts_integrated_into_core",
+        "priority_watch": "overlaps_with_next_confirmation_and_unknown"
+      },
+      "ticker": "086280",
+      "used_fact_counts": {
+        "financial": 3,
+        "price": 6,
+        "supply": 6,
+        "valuation": 3
+      },
+      "valuation_context": {
+        "contract": "valuation-context-wording-v1",
+        "current_status": "available",
+        "current_used": true,
+        "forward_status": "unavailable",
+        "forward_used": false,
+        "historical_status": "available",
+        "history_used": true,
+        "peer_status": "unavailable",
+        "peer_used": false,
+        "reason": "current_and_history_selected_peer_unavailable",
+        "valuation_context_class": "CURRENT_PLUS_HISTORY"
+      }
+    }
+  }
+}
