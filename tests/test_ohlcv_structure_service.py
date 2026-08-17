@@ -737,6 +737,32 @@ def test_risk_reward_uses_passed_nearest_resistance_and_scenario_midpoint() -> N
     )["available"] is False
 
 
+@pytest.mark.parametrize(
+    ("current_price", "target", "invalidation_price"),
+    [
+        (105, 105, 88),
+        (100, 105, 100),
+        (100, 95, 88),
+        (88, 105, 90),
+    ],
+)
+def test_current_price_rr_rejects_non_positive_upside_or_downside(
+    current_price: float,
+    target: float,
+    invalidation_price: float,
+) -> None:
+    result = calculate_risk_reward(
+        current_price=current_price,
+        resistance=_zone(target, target + 2, pivot_type="high"),
+        invalidation={"available": True, "price": invalidation_price},
+    )
+
+    assert result == {
+        "available": False,
+        "reason": "non_positive_upside_or_downside",
+    }
+
+
 def _state(**overrides: object) -> dict[str, object]:
     values: dict[str, object] = {
         "current_price": 100.0,

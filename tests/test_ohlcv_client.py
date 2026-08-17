@@ -141,6 +141,42 @@ async def test_kr_close_run_uses_same_day_completed_close() -> None:
 
 
 @pytest.mark.anyio
+async def test_kr_holiday_keeps_latest_exchange_session_chart_fresh() -> None:
+    def handler(request: httpx.Request) -> httpx.Response:
+        period = request.url.params["periods"]
+        return httpx.Response(
+            200,
+            json={
+                "periods": {
+                    period: [
+                        {
+                            "date": "2026-08-14",
+                            "open": 100,
+                            "high": 101,
+                            "low": 99,
+                            "close": 100,
+                            "volume": 1_000,
+                        }
+                    ]
+                }
+            },
+        )
+
+    context = await OhlcvClient(
+        transport=httpx.MockTransport(handler)
+    ).fetch_price_context(
+        "086280",
+        as_of=datetime(2026, 8, 17, 16, 5, tzinfo=ZoneInfo("Asia/Seoul")),
+    )
+
+    assert context.decision.market_session == "closed"
+    assert context.decision.exchange_trade_date == "2026-08-14"
+    assert context.decision.latest_completed_regular_session_date == "2026-08-14"
+    assert context.chart.quality == "fresh"
+    assert context.chart.timeframes["daily"].quality == "fresh"
+
+
+@pytest.mark.anyio
 async def test_latest_daily_bar_maps_investor_supply_without_using_weekly_summary() -> None:
     sample = {
         "date": "2026-08-12",
