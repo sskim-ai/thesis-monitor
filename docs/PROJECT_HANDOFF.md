@@ -274,6 +274,21 @@ See the [readiness report](reports/20260817-phase8-1-1-authoritative-financial-r
 No main merge, operating DB write, Telegram send, assessment rewrite, archive rewrite, or Pilot
 mutation occurred.
 
+## Phase 8.1.2 Human Quality Review
+
+Phase 8.1.2 preserves the engineering result but places investment-message quality on HOLD. Across
+Samsung, POSCO Holdings, Hyundai Glovis, Korean Re, and SK hynix, 17 of 25 message-eligible recovered
+Facts are used with numeric provenance and no unsafe leakage. The portfolio score is 7.4/20.
+
+The limiting evidence is structural: each archived AFTER is a financial-only recovery payload, not
+a complete runtime-rendered stock message. It does not preserve the price, supply, valuation,
+observer/holder, Unknown, or next-check sections needed to judge relational investment analysis.
+Data Recovery and Safety are PASS; Investment Message Quality and main readiness are HOLD.
+Production Assist evidence eligibility remains false. See the
+[human review](reports/20260817-phase8-1-2-kr-financial-human-review.md) and
+[verbatim Preview](reports/20260817-phase8-1-2-kr-before-after-preview.md). The recommended order is
+Phase 8.4 then Phase 8.5, with Phase 8.2A inserted first if KRX approval is available.
+
 On 2026-08-15 the owning desktop environment verified all four local-project tasks, retained their
 08:15/08:30/16:15/16:55 schedules, and migrated their exact prompts to v3.10 with
 `security-identity-v2` and `financial-quality-taint-v2`. All four are ACTIVE,

@@ -125,6 +125,15 @@ persisted Before / recovered After messages. These Previews are `pending_work_hu
 not Production Assist evidence. Do not promote the shadow cache or merge/deploy this branch without
 separate approval.
 
+Phase 8.1.2 human review records Data Recovery PASS and Safety PASS, but Investment Message Quality
+HOLD. The five archived AFTER payloads use 17/25 eligible recovered Facts and contain no unsafe
+financial claims, yet they are financial-only recovery outputs rather than complete runtime stock
+messages. They do not prove industry-specific investment meaning, delta-first reasoning,
+observer/holder distinction, concrete Unknowns, next checks, or price/financial balance. Review
+`docs/reports/20260817-phase8-1-2-kr-financial-human-review.md` and its verbatim Preview. Do not treat
+the Phase 8.1.2 artifacts as merge or Production Assist evidence. Prefer Phase 8.4 then Phase 8.5,
+unless KRX approval makes Phase 8.2A the immediate priority.
+
 Massive Phase 8.1 remains shadow-only. Reference cache TTL is one trading day; adjusted decimal
 volume and deterministic close-times-adjusted-volume are audit-only. Exact 08:05 KST readiness is
 `NOT_YET_OBSERVED`, despite complete after-deadline capability data. Do not change Scheduled Task
