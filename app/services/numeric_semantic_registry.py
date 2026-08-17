@@ -380,6 +380,74 @@ NUMERIC_SEMANTICS = {
         "signed_percentage",
         scope="both",
     ),
+    "market_index_close": _spec(
+        "market_index_close", ("index",), ("시장 지수 종가", "index close"),
+        (r"(?:시장|지수).*종가", r"index close"), "index", scope="market",
+    ),
+    "market_eligible_count": _spec(
+        "market_eligible_count", ("count",), ("적격 종목 수",),
+        (r"적격.*종목.*수", r"eligible.*count"), "count", scope="market",
+    ),
+    "market_advance_count": _spec(
+        "market_advance_count", ("count",), ("상승 종목 수",),
+        (r"상승.*종목.*수", r"advance.*count"), "count", scope="market",
+    ),
+    "market_decline_count": _spec(
+        "market_decline_count", ("count",), ("하락 종목 수",),
+        (r"하락.*종목.*수", r"decline.*count"), "count", scope="market",
+    ),
+    "market_unchanged_count": _spec(
+        "market_unchanged_count", ("count",), ("보합 종목 수",),
+        (r"보합.*종목.*수", r"unchanged.*count"), "count", scope="market",
+    ),
+    "market_advance_ratio": _spec(
+        "market_advance_ratio", ("pct",), ("상승 종목 비율",),
+        (r"상승.*종목.*비율", r"advance.*ratio"), "percentage", scope="market",
+    ),
+    "market_positive_return_pct": _spec(
+        "market_positive_return_pct", ("pct",), ("양의 수익률 종목 비율",),
+        (r"양의.*수익률.*종목.*비율", r"positive.*return.*pct"), "percentage", scope="market",
+    ),
+    "market_negative_return_pct": _spec(
+        "market_negative_return_pct", ("pct",), ("음의 수익률 종목 비율",),
+        (r"음의.*수익률.*종목.*비율", r"negative.*return.*pct"), "percentage", scope="market",
+    ),
+    "market_ad_ratio": _spec(
+        "market_ad_ratio", ("x",), ("상승/하락 종목 비율", "A/D ratio"),
+        (r"(?:상승/하락|a/d).*비율", r"a/d ratio"), "multiple", scope="market",
+    ),
+    "market_median_return_pct": _spec(
+        "market_median_return_pct", ("pct",), ("종목 수익률 중앙값",),
+        (r"종목.*수익률.*중앙값", r"median.*return"), "signed_percentage", scope="market",
+    ),
+    "market_equal_weight_return_pct": _spec(
+        "market_equal_weight_return_pct", ("pct",), ("동일가중 수익률",),
+        (r"동일가중.*수익률", r"equal.weight.*return"), "signed_percentage", scope="market",
+    ),
+    "market_concentration_gap_pct": _spec(
+        "market_concentration_gap_pct", ("pct",), ("집중도 격차",),
+        (r"집중도.*격차", r"concentration.*gap"), "signed_percentage", scope="market",
+    ),
+    "market_total_volume": _spec(
+        "market_total_volume", ("shares",), ("시장 총거래량",),
+        (r"시장.*총거래량", r"market.*total volume"), "shares", scope="market",
+    ),
+    "market_total_trading_value": _spec(
+        "market_total_trading_value", ("KRW", "USD"), ("시장 총거래대금",),
+        (r"시장.*총거래대금", r"market.*trading value"), "currency_amount", scope="market",
+    ),
+    "market_foreign_net_buy_amount": _spec(
+        "market_foreign_net_buy_amount", ("KRW", "USD"), ("시장 외국인 순매수",),
+        (r"시장.*외국인.*순매수",), "currency_amount", scope="market",
+    ),
+    "market_institution_net_buy_amount": _spec(
+        "market_institution_net_buy_amount", ("KRW", "USD"), ("시장 기관 순매수",),
+        (r"시장.*기관.*순매수",), "currency_amount", scope="market",
+    ),
+    "market_retail_net_buy_amount": _spec(
+        "market_retail_net_buy_amount", ("KRW", "USD"), ("시장 개인 순매수",),
+        (r"시장.*개인.*순매수",), "currency_amount", scope="market",
+    ),
     "nominal_yield_level": _spec(
         "nominal_yield_level",
         ("pct",),
@@ -1154,6 +1222,25 @@ _FIELD_RULES = (
         "sector_relative_return_pct",
         "pct",
     ),
+    NumericFieldRule(("market_cross_section_index",), r"fields\.close", "market_index_close", "index"),
+    NumericFieldRule(("market_cross_section_index",), r"fields\.return_pct", "index_return_pct", "pct"),
+    NumericFieldRule(("market_cross_section_sector",), r"fields\.return_pct", "sector_return_pct", "pct"),
+    NumericFieldRule(("market_cross_section_sector",), r"fields\.advance_ratio_pct", "market_advance_ratio", "pct"),
+    NumericFieldRule(("market_cross_section_sector",), r"fields\.relative_return_pct", "sector_relative_return_pct", "pct"),
+    NumericFieldRule(("market_breadth_counts",), r"fields\.eligible_count", "market_eligible_count", "count"),
+    NumericFieldRule(("market_breadth_counts",), r"fields\.advance_count", "market_advance_count", "count"),
+    NumericFieldRule(("market_breadth_counts",), r"fields\.decline_count", "market_decline_count", "count"),
+    NumericFieldRule(("market_breadth_counts",), r"fields\.unchanged_count", "market_unchanged_count", "count"),
+    NumericFieldRule(("market_breadth_returns",), r"fields\.advance_ratio_pct", "market_advance_ratio", "pct"),
+    NumericFieldRule(("market_breadth_returns",), r"fields\.ad_ratio", "market_ad_ratio", "x"),
+    NumericFieldRule(("market_breadth_returns",), r"fields\.median_return_pct", "market_median_return_pct", "pct"),
+    NumericFieldRule(("market_breadth_returns",), r"fields\.equal_weight_return_pct", "market_equal_weight_return_pct", "pct"),
+    NumericFieldRule(("market_breadth_returns",), r"fields\.positive_return_pct", "market_positive_return_pct", "pct"),
+    NumericFieldRule(("market_breadth_returns",), r"fields\.negative_return_pct", "market_negative_return_pct", "pct"),
+    NumericFieldRule(("market_breadth_activity",), r"fields\.total_trading_volume", "market_total_volume", "shares"),
+    NumericFieldRule(("market_breadth_activity",), r"fields\.total_trading_value", "market_total_trading_value", "currency"),
+    NumericFieldRule(("market_concentration",), r"fields\.concentration_gap_pct", "market_concentration_gap_pct", "pct"),
+    NumericFieldRule(("market_flow",), r"fields\.net_buy_amount", "market_foreign_net_buy_amount", "currency"),
     NumericFieldRule(
         ("market_nominal_yield",),
         r"fields\.level_pct",
@@ -1248,6 +1335,16 @@ def resolve_numeric_semantic(
     field_path: str,
     fields: dict[str, object],
 ) -> tuple[NumericSemanticSpec | None, str]:
+    if fact_type == "market_flow" and field_path == "fields.net_buy_amount":
+        actor = str(fields.get("actor") or "")
+        semantic_type = {
+            "foreign": "market_foreign_net_buy_amount",
+            "institution": "market_institution_net_buy_amount",
+            "retail": "market_retail_net_buy_amount",
+        }.get(actor)
+        if semantic_type is None:
+            return None, "number"
+        return semantic_spec(semantic_type), str(fields.get("currency") or "unknown")
     for rule in _FIELD_RULES:
         if (
             (fact_type in rule.fact_types or "*" in rule.fact_types)

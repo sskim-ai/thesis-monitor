@@ -6,6 +6,7 @@ from datetime import date
 from typing import Iterable
 
 from app.models.macro import MacroBriefing
+from app.services.market_cross_section_service import MarketCrossSection
 
 
 USABLE_QUALITY = {"fresh", "revised"}
@@ -421,6 +422,7 @@ def build_market_intelligence(
     impacts: Iterable[dict[str, object]],
     *,
     market: str,
+    cross_section: MarketCrossSection | None = None,
 ) -> dict[str, object]:
     observations = _observations(briefing)
     facts_by_series = {
@@ -434,9 +436,148 @@ def build_market_intelligence(
         relative = _relative_fact(subject, "SPY", facts_by_series)
         if relative is not None:
             facts.append(relative)
+    cross_section_facts: list[dict[str, object]] = []
+    if (
+        cross_section is not None
+        and cross_section.market.lower() == market.lower()
+        and cross_section.session_date == run_date
+        and cross_section.quality.freshness == "fresh"
+    ):
+        for index in cross_section.indices:
+            cross_section_facts.append(
+                {
+                    "fact_id": f"market:cross-section:index:{index.symbol}",
+                    "fact_type": "market_cross_section_index",
+                    "as_of_date": run_date.isoformat(),
+                    "source": cross_section.quality.provider,
+                    "fields": {
+                        "symbol": index.symbol,
+                        "label": index.label,
+                        "close": index.close,
+                        "return_pct": index.return_pct,
+                    },
+                }
+            )
+        if cross_section.breadth is not None:
+            breadth = cross_section.breadth
+            cross_section_facts.extend(
+                [
+                    {
+                        "fact_id": f"market:breadth:{market}:counts",
+                        "fact_type": "market_breadth_counts",
+                        "as_of_date": run_date.isoformat(),
+                        "source": cross_section.quality.provider,
+                        "fields": {
+                            "eligible_count": breadth.eligible_count,
+                            "advance_count": breadth.advance_count,
+                            "decline_count": breadth.decline_count,
+                            "unchanged_count": breadth.unchanged_count,
+                        },
+                    },
+                    {
+                        "fact_id": f"market:breadth:{market}:returns",
+                        "fact_type": "market_breadth_returns",
+                        "as_of_date": run_date.isoformat(),
+                        "source": cross_section.quality.provider,
+                        "fields": {
+                            "advance_ratio_pct": (
+                                breadth.advance_ratio * 100
+                                if breadth.advance_ratio is not None
+                                else None
+                            ),
+                            "ad_ratio": breadth.ad_ratio,
+                            "median_return_pct": breadth.median_return_pct,
+                            "equal_weight_return_pct": breadth.equal_weight_return_pct,
+                            "positive_return_pct": breadth.positive_return_pct,
+                            "negative_return_pct": breadth.negative_return_pct,
+                        },
+                    },
+                    {
+                        "fact_id": f"market:breadth:{market}:activity",
+                        "fact_type": "market_breadth_activity",
+                        "as_of_date": run_date.isoformat(),
+                        "source": cross_section.quality.provider,
+                        "fields": {
+                            "total_trading_volume": breadth.total_trading_volume,
+                            "total_trading_value": breadth.total_trading_value,
+                            "currency": "USD" if market.lower() == "us" else "KRW",
+                        },
+                    },
+                ]
+            )
+        if cross_section.concentration.get("concentration_gap_pct") is not None:
+            cross_section_facts.append(
+                {
+                    "fact_id": f"market:concentration:{market}",
+                    "fact_type": "market_concentration",
+                    "as_of_date": run_date.isoformat(),
+                    "source": cross_section.quality.provider,
+                    "fields": {
+                        "metric_role": cross_section.concentration.get("metric_role"),
+                        "proxy_symbol": cross_section.concentration.get("proxy_symbol"),
+                        "concentration_gap_pct": cross_section.concentration[
+                            "concentration_gap_pct"
+                        ],
+                    },
+                }
+            )
+        for sector in cross_section.sectors:
+            cross_section_facts.append(
+                {
+                    "fact_id": f"market:cross-section:sector:{sector.taxonomy}:{sector.sector}",
+                    "fact_type": "market_cross_section_sector",
+                    "as_of_date": run_date.isoformat(),
+                    "source": cross_section.quality.provider,
+                    "fields": {
+                        **sector.model_dump(mode="json", exclude={"advance_ratio"}),
+                        "advance_ratio_pct": (
+                            sector.advance_ratio * 100
+                            if sector.advance_ratio is not None
+                            else None
+                        ),
+                    },
+                }
+            )
+        for flow in cross_section.market_flows:
+            cross_section_facts.append(
+                {
+                    "fact_id": f"market:flow:{market}:{flow.actor}",
+                    "fact_type": "market_flow",
+                    "as_of_date": run_date.isoformat(),
+                    "source": cross_section.quality.provider,
+                    "fields": {
+                        "actor": flow.actor,
+                        "net_buy_amount": flow.net_buy_amount,
+                        "currency": flow.currency,
+                    },
+                }
+            )
+        facts.extend(cross_section_facts)
     facts.sort(key=lambda item: str(item["fact_id"]))
 
     coverage, unknowns = _coverage(observations, market)
+    if cross_section_facts:
+        if cross_section.breadth is not None:
+            coverage["breadth"] = {
+                "status": "available",
+                "provider": cross_section.quality.provider,
+                "universe_version": cross_section.quality.universe_version,
+            }
+            unknowns = [item for item in unknowns if not item.startswith("시장 breadth")]
+        if cross_section.market_flows:
+            coverage["market_flows"] = {
+                "status": "available",
+                "provider": cross_section.quality.provider,
+            }
+            unknowns = [
+                item for item in unknowns if not item.startswith("시장 전체 투자주체")
+            ]
+        if cross_section.indices and market.lower() == "kr":
+            coverage["local_market_indices"] = {
+                "status": "available",
+                "provider": cross_section.quality.provider,
+                "available_series": [item.symbol for item in cross_section.indices],
+            }
     groups, transmissions, stock_transmissions = _portfolio_transmission(
         stocks, impacts, facts
     )

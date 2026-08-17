@@ -21,6 +21,13 @@ class Settings(BaseSettings):
     finnhub_api_key: str | None = None
     alpha_vantage_api_key: str | None = None
     krx_open_api_key: str | None = None
+    massive_api_key: str | None = None
+    massive_base_url: str = "https://api.massive.com"
+    massive_cache_dir: str = "./data/cache/massive"
+    massive_requests_per_minute: int = 5
+    kiwoom_gateway_url: str | None = None
+    kiwoom_gateway_api_key: str | None = None
+    kiwoom_gateway_timeout_seconds: float = 15.0
     alpha_vantage_cache_hours: int = 24
     alpha_vantage_request_budget: int = 30
     alpha_vantage_consensus_discrepancy_pct: float = 20.0

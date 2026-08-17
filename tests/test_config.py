@@ -37,6 +37,23 @@ def test_known_krx_environment_setting_loads(tmp_path: Path) -> None:
     assert settings.krx_open_api_key == "dummy-key"
 
 
+def test_known_market_cross_section_settings_load(tmp_path: Path) -> None:
+    env_file = _write_env(
+        tmp_path / ".env",
+        [
+            "MASSIVE_API_KEY=dummy-key",
+            "KIWOOM_GATEWAY_URL=https://gateway.example.test",
+            "KIWOOM_GATEWAY_API_KEY=dummy-gateway-key",
+        ],
+    )
+
+    settings = Settings(_env_file=env_file)
+
+    assert settings.massive_api_key == "dummy-key"
+    assert settings.kiwoom_gateway_url == "https://gateway.example.test"
+    assert settings.kiwoom_gateway_api_key == "dummy-gateway-key"
+
+
 def test_known_ai_review_environment_settings_load(tmp_path: Path) -> None:
     env_file = _write_env(
         tmp_path / ".env",

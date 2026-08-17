@@ -3,6 +3,11 @@ from datetime import UTC, date, datetime
 
 from app.models.macro import MacroBriefing
 from app.services.market_intelligence_service import build_market_intelligence
+from app.services.market_cross_section_service import (
+    MarketBreadth,
+    MarketCrossSection,
+    MarketCrossSectionQuality,
+)
 from app.services.numeric_semantic_registry import (
     build_numeric_registry,
     numeric_registry_coverage,
@@ -147,6 +152,115 @@ def test_us_indices_are_local_proxies_but_breadth_remains_unknown() -> None:
     assert result["coverage"]["sectors"]["role"] == "local_sector_proxy"
     assert result["coverage"]["local_market_indices"]["status"] == "available"
     assert result["coverage"]["breadth"]["status"] == "unavailable"
+
+
+def test_verified_fresh_cross_section_adds_breadth_facts_without_thesis_mutation() -> None:
+    section = MarketCrossSection(
+        market="US",
+        session_date=RUN_DATE,
+        as_of=datetime(2026, 8, 13, tzinfo=UTC),
+        breadth=MarketBreadth(
+            eligible_count=4,
+            advance_count=2,
+            decline_count=1,
+            unchanged_count=1,
+            advance_ratio=0.5,
+            ad_ratio=2.0,
+            median_return_pct=0.1,
+            equal_weight_return_pct=0.2,
+            positive_return_pct=50.0,
+            negative_return_pct=25.0,
+            total_trading_volume=1000,
+            total_trading_value=20000,
+        ),
+        concentration={
+            "metric_role": "broad_cap_weight_proxy_gap",
+            "proxy_symbol": "SPY",
+            "proxy_return_pct": 1.0,
+            "equal_weight_return_pct": 0.2,
+            "concentration_gap_pct": 0.8,
+        },
+        quality=MarketCrossSectionQuality(
+            provider="massive",
+            provider_role="shadow",
+            coverage="full",
+            freshness="fresh",
+            universe_version="massive-v1",
+            raw_count=5,
+            eligible_count=4,
+            excluded_count=1,
+        ),
+        source_payload_sha256="a" * 64,
+    )
+    result = build_market_intelligence(
+        _briefing(_observations()),
+        RUN_DATE,
+        _stocks(),
+        [],
+        market="us",
+        cross_section=section,
+    )
+
+    facts = {item["fact_id"]: item for item in result["fact_catalog"]}
+    assert result["coverage"]["breadth"]["provider"] == "massive"
+    assert facts["market:breadth:us:counts"]["fields"]["advance_count"] == 2
+    assert facts["market:concentration:us"]["fields"]["metric_role"] == (
+        "broad_cap_weight_proxy_gap"
+    )
+    assert all(
+        link["not_fundamental_confirmation"]
+        for links in result["stock_transmissions"].values()
+        for link in links
+    )
+    registry = build_numeric_registry(result["fact_catalog"])
+    assert numeric_registry_coverage([registry])["ready"] is True
+    semantics = {item["semantic_type"] for item in registry}
+    assert {
+        "market_eligible_count",
+        "market_advance_count",
+        "market_decline_count",
+        "market_unchanged_count",
+        "market_advance_ratio",
+        "market_ad_ratio",
+        "market_median_return_pct",
+        "market_equal_weight_return_pct",
+        "market_positive_return_pct",
+        "market_negative_return_pct",
+        "market_total_volume",
+        "market_total_trading_value",
+        "market_concentration_gap_pct",
+    } <= semantics
+
+
+def test_stale_cross_section_is_excluded_and_breadth_remains_unknown() -> None:
+    section = MarketCrossSection(
+        market="US",
+        session_date=RUN_DATE,
+        as_of=datetime(2026, 8, 13, tzinfo=UTC),
+        breadth=None,
+        quality=MarketCrossSectionQuality(
+            provider="massive",
+            provider_role="shadow",
+            coverage="unavailable",
+            freshness="stale",
+            universe_version="massive-v1",
+        ),
+        source_payload_sha256="a" * 64,
+    )
+    result = build_market_intelligence(
+        _briefing(_observations()),
+        RUN_DATE,
+        _stocks(),
+        [],
+        market="us",
+        cross_section=section,
+    )
+
+    assert result["coverage"]["breadth"]["status"] == "unavailable"
+    assert not any(
+        str(item["fact_id"]).startswith("market:breadth")
+        for item in result["fact_catalog"]
+    )
 
 
 def test_portfolio_transmission_uses_verified_profiles_and_macro_evidence() -> None:
