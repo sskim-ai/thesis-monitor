@@ -1,8 +1,9 @@
 # Thesis Monitor Project Handoff
 
-This document is the canonical continuation point for the AI-assisted monitoring project. Read it
-with [project-state.json](project-state.json) and [NEXT_SESSION_PROMPT.md](NEXT_SESSION_PROMPT.md)
-before changing runtime policy, Knowledge, validation, delivery, or Scheduled Tasks.
+This document is a canonical continuation point for the AI-assisted monitoring project. Read it
+with [MASTER_WORKFLOW.md](MASTER_WORKFLOW.md), [project-state.json](project-state.json), and
+[NEXT_SESSION_PROMPT.md](NEXT_SESSION_PROMPT.md) before changing runtime policy, Knowledge,
+validation, delivery, or Scheduled Tasks.
 
 ## Project Purpose
 
@@ -15,7 +16,7 @@ execution or an autonomous investment adviser.
 
 | Component | Contract |
 |---|---|
-| Branch | `main` |
+| Branch | `codex/phase-8-4-1-1-valuation-context-finalization` (experimental; `main` unchanged) |
 | Official assessment | Deterministic `ThesisAssessment` |
 | AI mode | `shadow` |
 | Analysis policy | `daily-review-v3.10` |
@@ -31,6 +32,10 @@ execution or an autonomous investment adviser.
 | Security identity | `security-identity-v2` |
 | Financial quality | `financial-quality-taint-v2` |
 | KR financial lineage | Production remains legacy; Phase 8.1.1 archive-only recovery proves `financial-lineage-v2` with recent formal rows |
+| Delta-first rendering | `delta-first-rendering-v1` |
+| Semantic decision hierarchy | `semantic-scope-and-decision-hierarchy-v1`, `decision-material-delta-v1` |
+| Valuation context wording | `valuation-context-wording-v1` |
+| Runtime quality | `runtime-message-quality-v1`, receipt `runtime-message-quality-receipt-v2` |
 
 Resolve the deployed commit with `git rev-parse HEAD`; a file inside a commit cannot contain that
 commit's own final hash. The machine-readable state records `HEAD` plus the last verified base.
@@ -209,6 +214,12 @@ The natural US packet `2026-08-17-us-run-22-217ce9f324b9` passed the operating v
 state. It advanced the operational US count to Day 3/5. Phase 8 did not review its investment-message
 quality and does not mark it as Production Assist evidence.
 
+The next natural KR packet `2026-08-17-kr-run-23-378ee562573e` was rejected before AI delivery
+because POSCO Holdings, LS ELECTRIC, Hanwha Aerospace, and Hyundai Glovis lacked the required
+current-price RR Fact and numeric path. Rejected AI sends were zero and deterministic fallback
+eligibility was preserved. No completed AI delivery or archive marker was recorded, so runtime
+remains KR 3/5 and US 3/5. This is a separate natural-live gap, not a Phase 8 retrospective mutation.
+
 ## Phase 8 Market Cross-Section
 
 The experimental branch adds `market-cross-section-v1` without registering a new production provider.
@@ -328,12 +339,36 @@ comparison, and formula checks; the audit makes no external plausibility guess.
 
 The five corrected reviews use 86 automatic bindings and 12 typed valuation occurrences. Full
 schema validation and the runtime receipt pass with no final-language or template errors. Average
-characters rise 4.2% from Phase 8.4 while lines fall 1.3%. The exact Preview remains
-`pending_work_human_review`; Production Assist evidence eligibility is false. See the
+characters rise 4.2% from Phase 8.4 while lines fall 1.3%. Work directly scored Samsung 17, POSCO
+16, Hyundai Glovis 18, Korean Re 16, and SK hynix 17, averaging 16.8/20. It accepted the integrated
+architecture and identified one follow-up contradiction in valuation context wording. Production
+Assist evidence eligibility remains false. See the
 [validation report](reports/20260817-phase8-4-1-semantic-decision-validation.md),
 [semantic audit](reports/20260817-phase8-4-1-semantic-audit.md), and
 [exact Preview](reports/20260817-phase8-4-1-semantic-decision-preview.md). Main remains unmerged and
 no deployment, Telegram, provider, operating-state, or Pilot mutation occurred.
+
+## Phase 8.4.1.1 Valuation Context Finalization
+
+Phase 8.4.1.1 closes that follow-up on
+`codex/phase-8-4-1-1-valuation-context-finalization`. The old fixed peer-gap fallback ignored whether
+own-history context was already visible and could say “current multiple only” beside a historical
+percentile. `valuation-context-wording-v1` now records current, history, peer, and forward
+availability separately from actual use and selects an auditable wording class.
+
+Samsung, Hyundai Glovis, and SK hynix resolve to `CURRENT_PLUS_HISTORY`; POSCO resolves to
+`CURRENT_ONLY` because safe history was not selected for the current decision; Korean Re resolves to
+`CURRENT_ONLY` because no safe history is available. All five draft references agree with actual
+numeric bindings. The binder accepts 86 automatic references, 12 typed valuation occurrences, and
+five valuation-context references with zero rejection. Full validator and runtime receipt pass;
+valuation-scope violations, denied echo, unsafe history, and after-message contradictions are zero.
+Average characters rise 1.1% from Phase 8.4.1, with no line or section increase.
+
+This completes the Phase 8.4 message-intelligence foundation. The exact final Preview still requires
+the user's merge decision; main and the operating checkout are unchanged, Production Assist remains
+OFF, and this retrospective sent no Telegram or mutated no runtime state. See the
+[final Preview](reports/20260817-phase8-4-1-1-final-preview.md) and
+[Master Workflow v2](MASTER_WORKFLOW.md).
 
 On 2026-08-15 the owning desktop environment verified all four local-project tasks, retained their
 08:15/08:30/16:15/16:55 schedules, and migrated their exact prompts to v3.10 with
@@ -469,22 +504,23 @@ unchanged. See [the Phase 7.2.9.2 readiness report](reports/20260817-phase7-2-9-
 
 ## Known Gaps
 
-- KR local KOSPI/KOSDAQ facts are not in the AI market packet.
-- Market breadth is unavailable for both markets.
-- Market-wide investor flow is unavailable.
-- Sector coverage is currently SOXX-only.
-- POSCO Holdings, Samsung Electronics, LS ELECTRIC, and Hanwha Aerospace are verified profiles whose
-  current Knowledge taxonomy coverage can still route general/low; Phase 6 does not force a mapping.
+- Massive US breadth is implemented in shadow, but exact 08:05 KST readiness over 3-5 normal
+  sessions is not yet established.
+- KR market breadth is partial pending KRX approval; the Kiwoom Windows gateway is not configured.
+- KR market-wide investor flow is unavailable, and constituent-level sector participation remains
+  incomplete.
+- Industry-specific causal reasoning is partial. Memory, insurance, transport, steel/materials,
+  foundry, biotech, and other frameworks need Fact-dependent Phase 8.5 contracts.
 - There is no broad point-in-time peer valuation provider. Limited active-universe comparisons fail
   closed unless at least three comparable peers pass all basis checks.
+- OCF extraction is partial; CAPEX aggregation and FCF remain open.
 - The persisted US count includes the 2026-08-16 operationally complete session whose human message
   quality review failed. Operational count and human approval remain separate; this packet is not
   Production Assist evidence.
 - TSM and WRD lack authoritative production identity evidence. Their live `unknown` state and
   multiple withholding are correct until a separately approved identity ingestion.
-- Hyundai Glovis has a safe direct Q2 operating-income field that remains conservatively withheld
-  because its aggregate earnings interpretation Fact also carries denied or unknown comparison
-  fields. This is field-level overblocking, not unsafe leakage.
+- Natural KR run-23 failed pre-send on missing required current-price RR Facts for four stocks; the
+  natural-live Phase 8 validation gap remains open.
 - Production Assist remains disabled pending a separate decision after successful Pilot evidence.
 
 Never fill data gaps with model knowledge. Add a deterministic fact, semantic contract, and tests
@@ -511,16 +547,15 @@ first.
 
 ## Next Steps
 
-1. Review the corrected Phase 7.2.9.2 KR eight-message and US 14-message Previews directly; their
-   deterministic PASS is not human approval.
-2. Keep Phase 7.2.9.2 code and artifacts on the experimental branch until Work gives a separate merge
-   and deployment approval.
-3. Preserve operational counts KR 3/5 and US 3/5 independently from human-quality disposition.
-4. Keep TSM/WRD identity `unknown` without authoritative ingestion, preserve exact archives, and do
-   not replay Telegram.
-5. Keep Production Assist disabled until blocking findings are closed and the user explicitly
-   approves it.
-6. Run 3-5 Massive weekday shadow captures at the 08:05 KST readiness boundary; do not enable
-   Telegram consumption from this branch.
-7. When the KRX service is active, implement the same common contract as primary and collect five
-   trading days of KRX/Kiwoom reconciliation before considering metric-level fallback.
+1. Review the Phase 8.4.1.1 exact final Preview and Master Workflow v2; decide main merge and shadow
+   deployment separately from Production Assist.
+2. Start Phase 8.5 Industry-Specific Investment Reasoning by default. If KRX approval is confirmed,
+   report whether Phase 8.2A KRX Market Breadth Primary should be inserted first.
+3. Preserve operational counts KR 3/5 and US 3/5 and reconcile natural run-23 as a rejected pre-send
+   session without replay, counter edits, or archive rewriting.
+4. Keep TSM/WRD identity `unknown`, peer data unavailable where absent, and OCF/CAPEX/FCF gaps
+   explicit.
+5. Run 3-5 Massive weekday shadow captures at 08:05 KST and, after KRX activation, collect five
+   KRX/Kiwoom reconciliation sessions before metric-level fallback.
+6. Keep Production Assist disabled until natural full-message evidence passes direct human review
+   and the user explicitly approves it.

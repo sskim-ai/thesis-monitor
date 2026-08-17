@@ -32,6 +32,7 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
 
     assert state["repository"] == "sskim-ai/thesis-monitor"
     assert state["branch"] == "main"
+    assert state["experimental_branch"] == "codex/phase-8-4-1-1-valuation-context-finalization"
     assert state["current_commit"] == "HEAD"
     assert state["current_commit_resolution"] == "git rev-parse HEAD"
     assert state["ai_review_mode"] == "shadow"
@@ -45,7 +46,7 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     assert state["pilot_current_successful_sessions"] == {"kr": 3, "us": 3}
     assert state["monitoring_state_version"] == "monitoring-state-v1"
     assert state["scheduled_task_contract_verification"] == {
-        "checked_at": "2026-08-15",
+        "checked_at": "2026-08-17",
         "status": "passed",
         "expected_target_count": 4,
         "visible_target_count": 4,

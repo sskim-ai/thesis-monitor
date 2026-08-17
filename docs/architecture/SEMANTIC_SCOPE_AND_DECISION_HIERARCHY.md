@@ -75,6 +75,24 @@ Denied earnings suppress historical PE but do not suppress an independently safe
 Percentiles describe rank among comparable observations and never become a percentage overvaluation
 claim. Cyclical PER percentiles do not independently establish cheap or expensive valuation.
 
+## Valuation Context Availability
+
+`valuation-context-wording-v1` separates availability from use for current, own-history, peer, and
+forward contexts. The renderer chooses wording from the structured class, while the binder checks
+the exact sentence against the numeric semantics actually present in `valuation_analysis.text`.
+
+| Current | History used | Peer used | Class |
+|---|---:|---:|---|
+| used | no | no | `CURRENT_ONLY` |
+| used | yes | no | `CURRENT_PLUS_HISTORY` |
+| used | no | yes | `CURRENT_PLUS_PEER` |
+| used | yes | yes | `CURRENT_PLUS_HISTORY_PLUS_PEER` |
+| unavailable | any | any | `LIMITED_VALUATION` |
+
+A safe history candidate may be available but not selected because it is not decision-relevant. That
+case is not described as unsafe or missing. When history is visible, current-only wording is always
+invalid. Draft-only availability metadata is removed before public schema validation.
+
 ## Next-Check Baselines
 
 An existing canonical current value may be the reference point for a next check. The binder owns the
@@ -97,6 +115,7 @@ precedence, while the portfolio target is no more than about 5% average characte
 
 ## Activation Boundary
 
-Mechanical binder, validator, renderer, and receipt PASS do not constitute Work human-quality
-approval. Production Assist remains off; Scheduled Tasks, Pilot state, Telegram, the operating DB,
-and immutable archives are unchanged.
+Phase 8.4.1 received direct Work scores of 17/16/18/16/17. Phase 8.4.1.1 completes the wording
+follow-up without changing decision hierarchy, denied-family rules, or historical selection.
+Production Assist remains off; Scheduled Tasks, Pilot state, Telegram, the operating DB, and
+immutable archives are unchanged by this retrospective.

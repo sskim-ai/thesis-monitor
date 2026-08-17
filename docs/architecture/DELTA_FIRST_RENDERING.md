@@ -98,6 +98,19 @@ meaning after validation. The final gate runs on the exact Telegram text and rej
 placeholders, duplicate labels, particle defects, zone-role errors, and internal implementation
 terms.
 
+## Valuation Context Wording
+
+`valuation-context-wording-v1` binds the valuation sentence to structured current, own-history,
+peer, and forward availability plus actual use. The draft-only class is one of `CURRENT_ONLY`,
+`CURRENT_PLUS_HISTORY`, `CURRENT_PLUS_PEER`, `CURRENT_PLUS_HISTORY_PLUS_PEER`, or
+`LIMITED_VALUATION`; it is removed before schema-4 validation.
+
+The binder derives actual use again from numeric semantics. A visible historical percentile with an
+exclusive current-only sentence is a contradiction and fails validation. Safe history that was not
+selected for the current decision remains distinct from unsafe or unavailable history. Peer absence
+never becomes peer zero, and a reasoning profile may vary sentence structure without changing the
+class or inventing an industry-specific peer set.
+
 ## Length Goal
 
 There is no hard character cap. The target is fewer repeated sections and fewer duplicated claims,
@@ -113,5 +126,8 @@ state.
 
 ## Activation Boundary
 
-Mechanical PASS is not human approval. Main merge, operating deployment, Scheduled Task use, and
-Production Assist eligibility require separate Work review of the exact full-message Preview.
+Phase 8.4.1 Work review scored the five representative full messages 17, 16, 18, 16, and 17, for an
+average 16.8/20. Phase 8.4.1.1 closes the one remaining valuation-context contradiction. The Phase
+8.4 message-intelligence foundation is complete, but main merge, operating deployment, Scheduled
+Task use, and Production Assist eligibility still require separate approval and natural-live
+evidence.

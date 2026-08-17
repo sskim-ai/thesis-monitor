@@ -50,6 +50,11 @@ decision-band history. The renderer only assembles the validated sections; it do
 or rewrite prose. See
 [DELTA_FIRST_RENDERING.md](DELTA_FIRST_RENDERING.md).
 
+`valuation-context-wording-v1` records current, own-history, peer, and forward availability
+separately from actual use. Its draft-only class is checked against the bound numeric semantics, so
+a visible historical percentile cannot coexist with exclusive current-only wording. The metadata is
+removed before schema-4 validation.
+
 Final assessments also persist `monitoring-state-v1` current/previous/delta. This is separate from
 the slower thesis state and allows the review to evolve price, supply, and valuation context without
 rewriting the thesis.
@@ -99,6 +104,7 @@ by analysis policy, output schema, Knowledge hashes, structure algorithm, and Pi
 | Delivery and renderer | `app/services/ai_assisted_delivery_service.py` |
 | Delta-first full-message planning | `app/services/delta_first_rendering_service.py` |
 | Semantic scope and decision hierarchy | `app/services/semantic_decision_service.py` |
+| Valuation context class and contradiction validation | `app/services/semantic_decision_service.py` |
 | Scheduled CLI | `app/jobs/ai_review.py` |
 | Analyst workflow | `.agents/skills/thesis-monitor-daily-review/SKILL.md` |
 
@@ -112,7 +118,7 @@ payload set. A mismatch blocks delivery. Network retry reuses the same persisted
 it does not rerun analysis, binding, validation, rendering, or the quality gate. Late AI after
 fallback is archive-only. Historical archives remain governed by the contract active when created.
 
-Policy `daily-review-v3.9` uses draft-only `numeric_fact_refs` and backend rendering while preserving
+Policy `daily-review-v3.10` uses draft-only `numeric_fact_refs` and backend rendering while preserving
 the validated schema-4 shape. See [NUMERIC_PROVENANCE.md](NUMERIC_PROVENANCE.md).
 
 Newly gated output uses `runtime-message-quality-receipt-v2`. Retry and reuse compare the actual

@@ -98,7 +98,18 @@ become Production Assist evidence without separate approval.
 Phase 8.4.1 remains under the same archive-only boundary. Its semantic-scope, denied-echo,
 decision-hierarchy, history-retention, and current-value next-check checks run before the existing
 schema-4 renderer and receipt. The retrospective generated six logical messages but sent none. Its
-mechanical PASS does not increment KR 3/5 or US 3/5 and remains `pending_work_human_review`.
+mechanical PASS does not increment KR 3/5 or US 3/5. Work scored the five stock messages
+17/16/18/16/17 and identified one valuation-context wording contradiction.
+
+Phase 8.4.1.1 closes that contradiction with `valuation-context-wording-v1`. Five exact full stock
+messages pass the binder, full validator, renderer gate, and receipt with zero sends or Pilot
+mutation. This closes the Phase 8.4 engineering foundation but does not authorize main merge,
+deployment, Scheduled Task changes, or Production Assist.
+
+The natural 2026-08-17 KR packet `2026-08-17-kr-run-23-378ee562573e` is separate operating evidence.
+It was rejected before AI delivery because four stocks lacked required current-price RR Facts and
+numeric paths. Rejected AI sends were zero, deterministic fallback eligibility was preserved, and no
+Pilot success was recorded. Persisted runtime therefore remains KR 3/5 and US 3/5.
 
 A market success increments only when:
 
