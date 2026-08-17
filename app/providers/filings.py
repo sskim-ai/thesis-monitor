@@ -13,6 +13,7 @@ from app.providers.dart_text_fallback import (
     fetch_dart_document_text,
 )
 from app.providers.opendart_corp_codes import OpenDARTCompany, resolve_opendart_company
+from app.services.kr_financial_lineage_service import opendart_lineage_records
 
 OPENDART_CORP_CODES = {
     "005930": "00126380",
@@ -306,7 +307,11 @@ def _financial_basis(item: dict[str, str], report_code: str, amount_scope: str) 
                     "account_nm",
                     "thstrm_nm",
                     "frmtrm_nm",
+                    "frmtrm_q_nm",
                     "rcept_no",
+                    "reprt_code",
+                    "bsns_year",
+                    "currency",
                 )
             ),
             f"source_row_identity={source_row_identity}",
@@ -333,7 +338,13 @@ def _financial_basis_warnings(selected: dict[str, dict[str, str]]) -> list[str]:
     return warnings
 
 
-def _extract_financial_facts(items: list[dict[str, str]], report_code: str = "") -> list[str]:
+def _extract_financial_facts(
+    items: list[dict[str, str]],
+    report_code: str = "",
+    *,
+    lineage_output: list[dict[str, object]] | None = None,
+    requested_fs_div: str | None = None,
+) -> list[str]:
     candidates: dict[str, list[tuple[bool, dict[str, str]]]] = {}
     for item in items:
         account_name = item.get("account_nm", "")
@@ -391,6 +402,16 @@ def _extract_financial_facts(items: list[dict[str, str]], report_code: str = "")
         item = selected.get(key)
         if not item:
             continue
+        if lineage_output is not None:
+            lineage_output.extend(
+                opendart_lineage_records(
+                    item,
+                    logical_field=key,
+                    report_code=report_code,
+                    selected=True,
+                    requested_fs_div=requested_fs_div,
+                )
+            )
         amount = _format_krw(item.get("thstrm_amount"))
         if amount:
             facts.append(
@@ -659,50 +680,71 @@ class OpenDARTProvider(FilingProvider):
         facts = extractor(items)
         return (facts, []) if facts else ([], [_available_keys_debug(items, label)])
 
-    async def _fetch_financial_facts(self, client: httpx.AsyncClient, api_key: str, corp_code: str, title: str, published: date) -> tuple[list[str], list[str]]:
+    async def _fetch_financial_facts(
+        self,
+        client: httpx.AsyncClient,
+        api_key: str,
+        corp_code: str,
+        title: str,
+        published: date,
+        receipt_no: str,
+    ) -> tuple[list[str], list[str], list[dict[str, object]]]:
         report_code = _report_code_from_title(title)
         if report_code is None:
-            return [], []
+            return [], [], []
         params = {"crtfc_key": api_key, "corp_code": corp_code, "bsns_year": _business_year_from_title_or_date(title, published), "reprt_code": report_code}
+        failures: list[str] = []
+        full_statement_rows: list[dict[str, str]] = []
+        for fs_div in ("CFS", "OFS"):
+            try:
+                response = await client.get(
+                    self.financial_all_endpoint,
+                    params={**params, "fs_div": fs_div},
+                )
+                response.raise_for_status()
+                payload = response.json()
+            except (httpx.HTTPError, ValueError):
+                failures.append(f"OpenDART full financial statement {fs_div} request failed")
+                continue
+            if payload.get("status") != "000":
+                failures.append(
+                    f"OpenDART full financial statement {fs_div} status: {payload.get('status')}"
+                )
+                continue
+            rows = _filter_items_by_receipt(payload.get("list", []), receipt_no)
+            rows = [
+                {**item, "fs_div": item.get("fs_div") or fs_div}
+                for item in rows
+                if isinstance(item, dict)
+            ]
+            full_statement_rows.extend(rows)
+
+        if full_statement_rows:
+            lineage: list[dict[str, object]] = []
+            facts = _extract_financial_facts(
+                full_statement_rows,
+                report_code,
+                lineage_output=lineage,
+            )
+            if any("OpenDART financial fact:" in fact for fact in facts):
+                return facts, failures, lineage
+
+        # The major-account endpoint is retained only as audit context. Its rows may
+        # lack field-level CFS/OFS evidence and therefore cannot become verified v2
+        # lineage.
         try:
             response = await client.get(self.financial_endpoint, params=params)
             response.raise_for_status()
             payload = response.json()
         except (httpx.HTTPError, ValueError):
-            return [], ["OpenDART financial statement API request failed"]
+            return [], [*failures, "OpenDART financial statement API request failed"], []
         if payload.get("status") != "000":
-            return [], [f"OpenDART financial statement API status: {payload.get('status')}"]
-        facts = _extract_financial_facts(payload.get("list", []), report_code)
-        has_income_statement = any(
-            marker in fact
-            for fact in facts
-            for marker in ("영업이익 =", "당기순이익 =", "지배주주순이익 =")
-        )
-        has_ownership_basis = any(
-            marker in fact
-            for fact in facts
-            for marker in ("지배주주순이익 =", "지배주주지분 =", "희석주당이익 =")
-        )
-        if not has_income_statement or not has_ownership_basis:
-            for fs_div in ("CFS", "OFS"):
-                try:
-                    detailed_response = await client.get(
-                        self.financial_all_endpoint,
-                        params={**params, "fs_div": fs_div},
-                    )
-                    detailed_response.raise_for_status()
-                    detailed_payload = detailed_response.json()
-                except (httpx.HTTPError, ValueError):
-                    continue
-                if detailed_payload.get("status") != "000":
-                    continue
-                detailed_facts = _extract_financial_facts(
-                    detailed_payload.get("list", []), report_code
-                )
-                if detailed_facts:
-                    facts = detailed_facts
-                    break
-        return (facts, []) if facts else ([], ["OpenDART financial statement API returned no mapped financial facts"])
+            return [], [*failures, f"OpenDART financial statement API status: {payload.get('status')}"], []
+        rows = _filter_items_by_receipt(payload.get("list", []), receipt_no)
+        facts = _extract_financial_facts(rows, report_code)
+        if facts:
+            return facts, [*failures, "OpenDART field-level statement basis unavailable"], []
+        return [], [*failures, "OpenDART financial statement API returned no mapped financial facts"], []
 
     async def _fetch_share_status_facts(
         self,
@@ -839,8 +881,19 @@ class OpenDARTProvider(FilingProvider):
                     if preliminary:
                         extra_facts.extend(preliminary.facts)
                     extra_unknowns.extend(preliminary_unknowns)
+                    financial_facts, financial_unknowns, financial_lineage = (
+                        await self._fetch_financial_facts(
+                            client,
+                            settings.opendart_api_key,
+                            company.corp_code,
+                            title,
+                            published,
+                            receipt_no,
+                        )
+                    )
+                    extra_facts.extend(financial_facts)
+                    extra_unknowns.extend(financial_unknowns)
                     for facts, unknowns in (
-                        await self._fetch_financial_facts(client, settings.opendart_api_key, company.corp_code, title, published),
                         await self._fetch_dividend_facts(client, settings.opendart_api_key, company.corp_code, title, published),
                         await self._fetch_share_status_facts(client, settings.opendart_api_key, company.corp_code, title, published),
                         await self._fetch_treasury_stock_facts(client, settings.opendart_api_key, company.corp_code, title, published, receipt_no),
@@ -882,7 +935,10 @@ class OpenDARTProvider(FilingProvider):
                             claim_actor=item.get("corp_name") or company.corp_name,
                             claim_actor_type="company_official_filing",
                             raw_financial_fields=(
-                                preliminary.raw_fields if preliminary else []
+                                [
+                                    *(preliminary.raw_fields if preliminary else []),
+                                    *financial_lineage,
+                                ]
                             ),
                             reporting_period_end=reporting_period_end,
                             reporting_period_source=(

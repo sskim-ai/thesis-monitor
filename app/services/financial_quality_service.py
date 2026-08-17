@@ -414,9 +414,13 @@ def build_financial_quality_state(
                         "amount_period_type",
                         "amount_period_start",
                         "amount_period_end",
+                        "financial_lineage_contract",
                         "single_quarter_cumulative_flag",
                         "source_filing_identifier",
                         "source_row_identity",
+                        "account_identifier",
+                        "account_name",
+                        "currency",
                         "consolidated_separate_basis",
                         "statement_basis_contract",
                         "statement_basis_state",
@@ -425,6 +429,7 @@ def build_financial_quality_state(
                         "comparison_type",
                         "comparison_period_start",
                         "comparison_period_end",
+                        "dependency_lineages",
                     )
                 }
             )

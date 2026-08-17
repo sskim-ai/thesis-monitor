@@ -180,16 +180,18 @@ def test_verified_fresh_cross_section_adds_breadth_facts_without_thesis_mutation
             "equal_weight_return_pct": 0.2,
             "concentration_gap_pct": 0.8,
         },
-        quality=MarketCrossSectionQuality(
-            provider="massive",
-            provider_role="shadow",
-            coverage="full",
-            freshness="fresh",
-            universe_version="massive-v1",
-            raw_count=5,
-            eligible_count=4,
-            excluded_count=1,
-        ),
+            quality=MarketCrossSectionQuality(
+                provider="massive",
+                provider_role="shadow",
+                coverage="full",
+                freshness="fresh",
+                universe_version="massive-v1",
+                volume_semantics="raw_reported_shares",
+                trading_value_semantics="official_reported",
+                raw_count=5,
+                eligible_count=4,
+                excluded_count=1,
+            ),
         source_payload_sha256="a" * 64,
     )
     result = build_market_intelligence(
@@ -230,6 +232,59 @@ def test_verified_fresh_cross_section_adds_breadth_facts_without_thesis_mutation
         "market_total_trading_value",
         "market_concentration_gap_pct",
     } <= semantics
+
+
+def test_adjusted_volume_and_close_times_volume_stay_audit_only() -> None:
+    section = MarketCrossSection(
+        market="US",
+        session_date=RUN_DATE,
+        as_of=datetime(2026, 8, 13, tzinfo=UTC),
+        breadth=MarketBreadth(
+            eligible_count=4,
+            advance_count=2,
+            decline_count=1,
+            unchanged_count=1,
+            advance_ratio=0.5,
+            ad_ratio=2.0,
+            median_return_pct=0.1,
+            equal_weight_return_pct=0.2,
+            positive_return_pct=50.0,
+            negative_return_pct=25.0,
+            total_trading_volume=1000.5,
+            total_trading_value=20000.25,
+        ),
+        quality=MarketCrossSectionQuality(
+            provider="massive",
+            provider_role="shadow",
+            coverage="full",
+            freshness="fresh",
+            universe_version="massive-v1",
+            volume_semantics="split_adjusted_aggregate_volume",
+            trading_value_semantics=(
+                "deterministic_close_times_adjusted_volume_estimate"
+            ),
+            raw_count=5,
+            eligible_count=4,
+            excluded_count=1,
+        ),
+        source_payload_sha256="a" * 64,
+    )
+
+    result = build_market_intelligence(
+        _briefing(_observations()),
+        RUN_DATE,
+        _stocks(),
+        [],
+        market="us",
+        cross_section=section,
+    )
+    semantics = {
+        item["semantic_type"]
+        for item in build_numeric_registry(result["fact_catalog"])
+    }
+
+    assert "market_total_volume" not in semantics
+    assert "market_total_trading_value" not in semantics
 
 
 def test_stale_cross_section_is_excluded_and_breadth_remains_unknown() -> None:

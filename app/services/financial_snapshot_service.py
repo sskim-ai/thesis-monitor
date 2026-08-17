@@ -11,6 +11,7 @@ from app.services.financial_validation import (
     normalize_standalone_quarter,
     validate_snapshot_period_chronology,
 )
+from app.services.kr_financial_lineage_service import FINANCIAL_LINEAGE_VERSION
 
 
 def _json_list(value: str) -> list[str]:
@@ -19,6 +20,26 @@ def _json_list(value: str) -> list[str]:
     except json.JSONDecodeError:
         return []
     return parsed if isinstance(parsed, list) else []
+
+
+def _verified_v2_direct_field(event: Event, logical_field: str) -> bool:
+    try:
+        values = json.loads(event.raw_financial_fields or "[]")
+    except json.JSONDecodeError:
+        return False
+    matches = [
+        item
+        for item in values
+        if isinstance(item, dict)
+        and item.get("contract") == FINANCIAL_LINEAGE_VERSION
+        and item.get("logical_field") == logical_field
+        and item.get("selected_for_canonical") is True
+        and item.get("source_column") == "thstrm_amount"
+        and item.get("amount_period_type") in {"single_quarter", "full_year"}
+        and item.get("lineage_verified") is True
+    ]
+    identities = {str(item.get("source_row_identity") or "") for item in matches}
+    return len(matches) == 1 and len(identities) == 1 and "" not in identities
 
 
 def _fact_line(
@@ -461,6 +482,27 @@ def upsert_financial_snapshot_from_event(session: Session, event: Event) -> Fina
         prior.cumulative_diluted_eps if prior else None,
         period_scope,
     )
+    if _verified_v2_direct_field(event, "revenue"):
+        revenue, revenue_method = reported_revenue, "verified_source_column"
+    if _verified_v2_direct_field(event, "operating_income"):
+        profit, profit_method = reported_profit, "verified_source_column"
+    if _verified_v2_direct_field(event, "owners_parent_net_income"):
+        owners_net_income, net_income_method = (
+            reported_owners_net_income,
+            "verified_source_column",
+        )
+    elif _verified_v2_direct_field(event, "net_income"):
+        owners_net_income, net_income_method = (
+            reported_net_income,
+            "verified_source_column",
+        )
+    if _verified_v2_direct_field(event, "basic_eps"):
+        basic_eps = _amount(basic_eps_fact)
+    if _verified_v2_direct_field(event, "diluted_eps"):
+        diluted_eps, diluted_eps_method = (
+            _amount(diluted_eps_fact),
+            "verified_source_column",
+        )
     liabilities = _amount(liabilities_fact)
     assets = _amount(assets_fact)
     equity = _amount(equity_fact)

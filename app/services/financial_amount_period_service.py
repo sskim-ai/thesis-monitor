@@ -5,6 +5,11 @@ from datetime import date
 from typing import Iterable
 
 from app.models.financial import FinancialSnapshot
+from app.services.kr_financial_lineage_service import (
+    FINANCIAL_LINEAGE_VERSION,
+    growth_lineage_compatible,
+    selected_field_lineage,
+)
 
 
 AMOUNT_PERIOD_CONTRACT = "financial-amount-period-v1"
@@ -248,6 +253,73 @@ def financial_amount_period_lineage(
             "denial_reason": "amount_period_field_not_supported",
         }
     value_field, basis_field, cumulative_field, amount_nature = mapping
+    field_lineage = selected_field_lineage(row, field)
+    if field_lineage is not None:
+        amount_value = getattr(row, value_field)
+        source_amount = field_lineage.get("amount")
+        amount_matches = bool(
+            amount_value is not None
+            and source_amount is not None
+            and abs(float(amount_value) - float(source_amount))
+            <= max(1.0, abs(float(amount_value)) * 1e-12)
+        )
+        dependencies = field_lineage.get("dependency_lineages")
+        if field == "latest_operating_margin":
+            amount_matches = bool(
+                row.operating_margin is not None
+                and isinstance(dependencies, list)
+                and len(dependencies) == 2
+            )
+        verified = bool(field_lineage.get("lineage_verified") is True and amount_matches)
+        denial_reason = (
+            None
+            if verified
+            else str(
+                field_lineage.get("denial_reason")
+                or "source_row_amount_does_not_match_snapshot"
+            )
+        )
+        return {
+            "contract": AMOUNT_PERIOD_CONTRACT,
+            "financial_lineage_contract": FINANCIAL_LINEAGE_VERSION,
+            "field": field,
+            "source_provider": field_lineage.get("source_provider") or row.provider,
+            "source_document_type": row.snapshot_type,
+            "source_filing_identifier": field_lineage.get("source_filing"),
+            "filing_date": str(row.filing_date or row.reported_date or "") or None,
+            "reporting_period_end": field_lineage.get("amount_period_end"),
+            "account_identifier": field_lineage.get("account_id"),
+            "account_name": field_lineage.get("account_name"),
+            "statement_type": field_lineage.get("statement_type"),
+            "statement_basis_contract": STATEMENT_BASIS_CONTRACT,
+            "statement_basis_state": field_lineage.get("statement_basis_state"),
+            "consolidated_separate_basis": field_lineage.get("statement_basis"),
+            "statement_basis_source": field_lineage.get("statement_basis_source"),
+            "statement_basis_evidence": {
+                "fs_div": field_lineage.get("fs_div"),
+                "sj_div": field_lineage.get("sj_div"),
+                "source_column": field_lineage.get("source_column"),
+            },
+            "amount_period_type": field_lineage.get("amount_period_type"),
+            "amount_period_start": field_lineage.get("amount_period_start"),
+            "amount_period_end": field_lineage.get("amount_period_end"),
+            "single_quarter_cumulative_flag": (
+                "single_quarter"
+                if field_lineage.get("amount_period_type") == "single_quarter"
+                else "cumulative"
+                if field_lineage.get("amount_period_type")
+                in {"year_to_date_cumulative", "full_year"}
+                else "unknown"
+            ),
+            "currency": field_lineage.get("currency"),
+            "source_type": field_lineage.get("source_type"),
+            "normalization_method": row.normalization_method,
+            "source_row_identity": field_lineage.get("source_row_identity"),
+            "dependency_lineages": dependencies or [],
+            "lineage_verified": verified,
+            "lineage_verification_status": "verified" if verified else "unverified",
+            "denial_reason": denial_reason,
+        }
     basis = getattr(row, basis_field)
     amount_period_type, bounds, denial_reason = _amount_period(
         row, value_field, cumulative_field, amount_nature
@@ -402,10 +474,24 @@ def comparison_periods_compatible(
     if not all(item.get("amount_period_end") for item in values):
         return all(str(item.get("provider") or "") != "opendart" for item in values)
     current, previous = values
+    if current.get("financial_lineage_contract") == FINANCIAL_LINEAGE_VERSION or (
+        previous.get("financial_lineage_contract") == FINANCIAL_LINEAGE_VERSION
+    ):
+        return growth_lineage_compatible(
+            current,
+            previous,
+            comparison_type=comparison,
+        )
     if current.get("amount_period_type") != previous.get("amount_period_type"):
         return False
     if current.get("statement_basis_state") != previous.get("statement_basis_state"):
         return False
+    for key in ("account_identifier", "currency", "source_type"):
+        current_value = current.get(key)
+        previous_value = previous.get(key)
+        if current_value or previous_value:
+            if current_value != previous_value:
+                return False
     current_end = date.fromisoformat(str(current["amount_period_end"]))
     previous_end = date.fromisoformat(str(previous["amount_period_end"]))
     days = (current_end - previous_end).days

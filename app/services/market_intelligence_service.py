@@ -492,19 +492,32 @@ def build_market_intelligence(
                             "negative_return_pct": breadth.negative_return_pct,
                         },
                     },
+                ]
+            )
+            safe_volume = (
+                breadth.total_trading_volume
+                if cross_section.quality.volume_semantics == "raw_reported_shares"
+                else None
+            )
+            safe_value = (
+                breadth.total_trading_value
+                if cross_section.quality.trading_value_semantics == "official_reported"
+                else None
+            )
+            if safe_volume is not None or safe_value is not None:
+                cross_section_facts.append(
                     {
                         "fact_id": f"market:breadth:{market}:activity",
                         "fact_type": "market_breadth_activity",
                         "as_of_date": run_date.isoformat(),
                         "source": cross_section.quality.provider,
                         "fields": {
-                            "total_trading_volume": breadth.total_trading_volume,
-                            "total_trading_value": breadth.total_trading_value,
+                            "total_trading_volume": safe_volume,
+                            "total_trading_value": safe_value,
                             "currency": "USD" if market.lower() == "us" else "KRW",
                         },
-                    },
-                ]
-            )
+                    }
+                )
         if cross_section.concentration.get("concentration_gap_pct") is not None:
             cross_section_facts.append(
                 {

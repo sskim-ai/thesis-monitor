@@ -11,6 +11,7 @@ from pathlib import Path
 from typing import Any
 from zoneinfo import ZoneInfo
 
+import exchange_calendars as exchange_calendar
 import httpx
 
 from app.config import get_settings
@@ -28,7 +29,9 @@ REFERENCE_PATH = "/v3/reference/tickers"
 ELIGIBLE_SECURITY_TYPES = frozenset({"CS", "ADRC", "OS", "NYRS"})
 ELIGIBLE_PRIMARY_EXCHANGES = frozenset({"XNAS", "XNYS", "XASE", "ARCX", "BATS"})
 UNIVERSE_VERSION = "massive-us-active-common-equities-v1"
+REFERENCE_CACHE_MAX_TRADING_AGE = 1
 NEW_YORK = ZoneInfo("America/New_York")
+XNYS = exchange_calendar.get_calendar("XNYS")
 
 
 def _canonical_json(value: object) -> bytes:
@@ -44,6 +47,19 @@ def _atomic_json(path: Path, payload: object) -> None:
     temporary = path.with_name(f".{path.name}.{os.getpid()}.tmp")
     temporary.write_bytes(_canonical_json(payload))
     os.replace(temporary, path)
+
+
+def massive_reference_session_age(cached_date: date, as_of: date) -> int:
+    if cached_date > as_of:
+        return -1
+    try:
+        cached_session = XNYS.date_to_session(cached_date, direction="next")
+        as_of_session = XNYS.date_to_session(as_of, direction="previous")
+        if cached_session > as_of_session:
+            return -1
+        return len(XNYS.sessions_in_range(cached_session, as_of_session)) - 1
+    except (ValueError, IndexError):
+        return -1
 
 
 class MassiveUsMarketProvider:
@@ -67,6 +83,7 @@ class MassiveUsMarketProvider:
         self.requests_per_minute = requests_per_minute or settings.massive_requests_per_minute
         self._last_request_at = 0.0
         self._request_lock = asyncio.Lock()
+        self._last_response_metadata: dict[str, object] = {}
 
     @property
     def configured(self) -> bool:
@@ -93,10 +110,23 @@ class MassiveUsMarketProvider:
                 self._last_request_at = time.monotonic()
                 total_latency += self._last_request_at - started
                 last_response = response
+                self._last_response_metadata = {
+                    "status_code": response.status_code,
+                    "rate_limit_headers": {
+                        key.lower(): value
+                        for key, value in response.headers.items()
+                        if key.lower().startswith("x-ratelimit")
+                        or key.lower() == "retry-after"
+                    },
+                }
                 if response.status_code not in {429, 500, 502, 503, 504}:
                     break
-                if attempt < 2 and self.transport is not None:
-                    await asyncio.sleep(0)
+                if attempt < 2:
+                    retry_after = response.headers.get("Retry-After")
+                    if retry_after and retry_after.isdigit():
+                        await asyncio.sleep(min(float(retry_after), 60.0))
+                    elif self.transport is not None:
+                        await asyncio.sleep(0)
             if last_response is None:
                 raise RuntimeError("Massive request did not produce a response")
             last_response.raise_for_status()
@@ -141,9 +171,14 @@ class MassiveUsMarketProvider:
 
     @staticmethod
     def _validate_reference_envelope(
-        envelope: dict[str, Any], as_of: date
+        envelope: dict[str, Any], as_of: date, *, max_trading_age: int = 0
     ) -> dict[str, Any]:
-        if envelope.get("request_date") != as_of.isoformat():
+        try:
+            request_date = date.fromisoformat(str(envelope.get("request_date") or ""))
+        except ValueError as error:
+            raise ValueError("Massive reference cache request date is invalid") from error
+        age = massive_reference_session_age(request_date, as_of)
+        if age < 0 or age > max_trading_age:
             raise ValueError("Massive reference cache request date mismatch")
         rows = envelope.get("rows")
         if not isinstance(rows, list) or not rows:
@@ -156,6 +191,21 @@ class MassiveUsMarketProvider:
         if len(tickers) != len(rows) or len(tickers) != len(set(tickers)):
             raise ValueError("Massive reference cache contains missing or duplicate tickers")
         return envelope
+
+    def _reusable_reference_cache(self, as_of: date) -> Path | None:
+        directory = self.cache_dir / "reference"
+        if not directory.exists():
+            return None
+        candidates: list[tuple[date, Path]] = []
+        for path in directory.glob("us_active_*.json"):
+            try:
+                value = date.fromisoformat(path.stem.removeprefix("us_active_"))
+            except ValueError:
+                continue
+            age = massive_reference_session_age(value, as_of)
+            if 0 <= age <= REFERENCE_CACHE_MAX_TRADING_AGE:
+                candidates.append((value, path))
+        return max(candidates, default=(date.min, None), key=lambda item: item[0])[1]
 
     async def grouped_daily(self, session_date: date, *, refresh: bool = False) -> dict[str, Any]:
         cache_path = self._daily_cache_path(session_date)
@@ -183,6 +233,7 @@ class MassiveUsMarketProvider:
             "request_date": session_date.isoformat(),
             "fetched_at": datetime.now(timezone.utc).isoformat(),
             "latency_seconds": latency,
+            "http_metadata": self._last_response_metadata,
             "response_sha256": _sha256(payload),
             "payload": payload,
         }
@@ -192,16 +243,33 @@ class MassiveUsMarketProvider:
 
     async def reference_tickers(self, as_of: date, *, refresh: bool = False) -> dict[str, Any]:
         cache_path = self._reference_cache_path(as_of)
-        if cache_path.exists() and not refresh:
-            cached = json.loads(cache_path.read_text(encoding="utf-8"))
+        reusable = cache_path if cache_path.exists() else self._reusable_reference_cache(as_of)
+        if reusable is not None and not refresh:
+            cached = json.loads(reusable.read_text(encoding="utf-8"))
             if not isinstance(cached, dict):
                 raise ValueError("Massive reference cache must be an object")
-            return self._validate_reference_envelope(cached, as_of)
+            validated = self._validate_reference_envelope(
+                cached,
+                as_of,
+                max_trading_age=REFERENCE_CACHE_MAX_TRADING_AGE,
+            )
+            return {
+                **validated,
+                "cache_reused_for": as_of.isoformat(),
+                "cache_age_calendar_days": (
+                    as_of - date.fromisoformat(str(validated["request_date"]))
+                ).days,
+                "cache_age_trading_days": massive_reference_session_age(
+                    date.fromisoformat(str(validated["request_date"])),
+                    as_of,
+                ),
+            }
         if not self.api_key:
             raise RuntimeError("MASSIVE_API_KEY is not configured")
         headers = {"Authorization": f"Bearer {self.api_key}"}
         rows: list[dict[str, Any]] = []
         latencies: list[float] = []
+        page_http_metadata: list[dict[str, object]] = []
         next_url: str | None = REFERENCE_PATH
         params: dict[str, object] | None = {
             "market": "stocks",
@@ -221,6 +289,7 @@ class MassiveUsMarketProvider:
             while next_url:
                 payload, latency = await self._get_json(client, next_url, params=params)
                 latencies.append(latency)
+                page_http_metadata.append(dict(self._last_response_metadata))
                 results = payload.get("results")
                 if not isinstance(results, list):
                     raise ValueError("Massive reference results must be a list")
@@ -235,6 +304,8 @@ class MassiveUsMarketProvider:
             "fetched_at": datetime.now(timezone.utc).isoformat(),
             "page_count": len(latencies),
             "latency_seconds": sum(latencies),
+            "http_metadata": self._last_response_metadata,
+            "page_http_metadata": page_http_metadata,
             "response_sha256": _sha256(rows),
             "rows": rows,
         }
@@ -373,6 +444,13 @@ class MassiveUsMarketProvider:
                 eligible_count=breadth.eligible_count,
                 excluded_count=raw_count - breadth.eligible_count,
                 exclusion_reason_counts=dict(sorted(exclusions.items())),
+                warnings=[
+                    "Massive adjusted aggregates include split-adjusted volume; total volume and close-times-volume are audit-only."
+                ],
+                volume_semantics="split_adjusted_aggregate_volume",
+                trading_value_semantics=(
+                    "deterministic_close_times_adjusted_volume_estimate"
+                ),
             ),
             source_payload_sha256=source_hash,
         )

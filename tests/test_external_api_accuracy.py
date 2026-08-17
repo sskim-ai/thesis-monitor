@@ -41,6 +41,7 @@ from app.services.historical_valuation_service import (
 )
 from app.services.valuation_snapshot_service import _relative_position
 from app.services.issue_identity_audit_service import IssueIdentityAuditService
+from app.services.kr_financial_lineage_service import opendart_lineage_records
 from app.services.news_query_service import NewsQueryService
 from app.services.collection_service import (
     CollectionService,
@@ -764,6 +765,83 @@ def test_cumulative_preliminary_event_creates_standalone_q2_snapshot() -> None:
     assert row.snapshot_type == "preliminary_earnings"
     assert row.revenue == 100_000_000
     assert row.operating_income == 20_000_000
+
+
+def test_verified_opendart_source_column_survives_cumulative_difference() -> None:
+    engine = _engine()
+    raw_lineage = opendart_lineage_records(
+        {
+            "rcept_no": "20260814000999",
+            "reprt_code": "11012",
+            "bsns_year": "2026",
+            "fs_div": "CFS",
+            "sj_div": "CIS",
+            "sj_nm": "연결포괄손익계산서",
+            "account_id": "ifrs-full_Revenue",
+            "account_nm": "매출액",
+            "account_detail": "-",
+            "thstrm_nm": "제58기 반기",
+            "thstrm_amount": "100",
+            "thstrm_add_amount": "250",
+            "frmtrm_q_amount": "90",
+            "frmtrm_add_amount": "200",
+            "currency": "KRW",
+        },
+        logical_field="revenue",
+        report_code="11012",
+        selected=True,
+    )
+    event = Event(
+        ticker="V2SOURCE",
+        date=date(2026, 8, 14),
+        source="OpenDART",
+        provider="opendart",
+        title="반기보고서 (2026.06)",
+        url="https://example.com/v2-source",
+        event_type="financial_report",
+        document_type="full_statement",
+        reporting_period_end=date(2026, 6, 30),
+        source_document_id="20260814000999",
+        confirmed_facts=json.dumps(
+            [
+                "OpenDART receipt number: 20260814000999",
+                "OpenDART financial fact: 매출액 = 100 KRW "
+                "(연결포괄손익계산서; fs_div=CFS; sj_div=CIS; "
+                "account_id=ifrs-full_Revenue; thstrm_nm=제58기 반기; "
+                "unit=KRW; period_scope=half-year; amount_scope=standalone_or_balance; "
+                "report_code=11012)",
+                "OpenDART financial cumulative fact: 매출액 = 250 KRW "
+                "(연결포괄손익계산서; fs_div=CFS; sj_div=CIS; "
+                "account_id=ifrs-full_Revenue; thstrm_nm=제58기 반기; "
+                "unit=KRW; period_scope=half-year; amount_scope=cumulative; "
+                "report_code=11012)",
+            ],
+            ensure_ascii=False,
+        ),
+        raw_financial_fields=json.dumps(raw_lineage, ensure_ascii=False),
+    )
+    with Session(engine) as session:
+        session.add(
+            FinancialSnapshot(
+                ticker="V2SOURCE",
+                period="2026-Q1",
+                snapshot_type="full_statement",
+                provider="opendart",
+                fiscal_year=2026,
+                period_type="Q1",
+                cumulative_revenue=120,
+                financial_period_end=date(2026, 3, 31),
+                filing_date=date(2026, 5, 15),
+                reported_date=date(2026, 5, 15),
+            )
+        )
+        session.add(event)
+        session.flush()
+        row = upsert_financial_snapshot_from_event(session, event)
+
+    assert row is not None
+    assert row.revenue == 100
+    assert "verified_source_column" in str(row.normalization_method)
 
 
 def test_invalid_preliminary_numbers_keep_period_but_not_financial_values() -> None:

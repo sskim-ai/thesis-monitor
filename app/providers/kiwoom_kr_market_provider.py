@@ -230,6 +230,8 @@ class KiwoomKrMarketProvider:
                 raw_count=snapshot.breadth.eligible_count,
                 eligible_count=snapshot.breadth.eligible_count,
                 excluded_count=0,
+                volume_semantics="raw_reported_shares",
+                trading_value_semantics="official_reported",
             ),
             source_payload_sha256=snapshot.source_payload_sha256,
         )

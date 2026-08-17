@@ -34,7 +34,12 @@ from app.services.financial_freshness_service import FinancialFreshnessService
 from app.services.financial_amount_period_service import (
     AMOUNT_PERIOD_CONTRACT,
     apply_comparison_period_metadata,
+    comparison_periods_compatible,
     financial_amount_period_lineage,
+)
+from app.services.kr_financial_lineage_service import (
+    FINANCIAL_LINEAGE_VERSION,
+    select_field_source,
 )
 from app.services.financial_validation import financial_snapshot_is_usable
 from app.services.provider_telemetry_service import ProviderTelemetryService
@@ -1049,8 +1054,22 @@ class ValuationSnapshotService:
                 ),
                 None,
             )
+        def field_row(
+            period_end: date | None,
+            field: str,
+            fallback: FinancialSnapshot,
+        ) -> FinancialSnapshot:
+            period_rows = [
+                row
+                for row in rows
+                if financial_period_end(row) == period_end
+                and row.snapshot_type in {"full_statement", "preliminary_earnings"}
+            ]
+            selected = select_field_source(period_rows, field)
+            return selected[0] if selected is not None else fallback
+
         direct_sources: dict[str, list[dict[str, object]]] = {
-            field: [metadata(latest, field)]
+            field: [metadata(field_row(latest_period, field, latest), field)]
             for field in (
                 "latest_revenue",
                 "latest_operating_income",
@@ -1059,12 +1078,24 @@ class ValuationSnapshotService:
         }
         if prior is not None:
             for field in ("latest_revenue_qoq", "latest_operating_income_qoq"):
-                records = [metadata(latest, field), metadata(prior, field)]
+                records = [
+                    metadata(field_row(latest_period, field, latest), field),
+                    metadata(
+                        field_row(financial_period_end(prior), field, prior),
+                        field,
+                    ),
+                ]
                 apply_comparison_period_metadata(records, comparison="qoq")
                 direct_sources[field] = records
         if prior_year is not None:
             for field in ("latest_revenue_yoy", "latest_operating_income_yoy"):
-                records = [metadata(latest, field), metadata(prior_year, field)]
+                records = [
+                    metadata(field_row(latest_period, field, latest), field),
+                    metadata(
+                        field_row(financial_period_end(prior_year), field, prior_year),
+                        field,
+                    ),
+                ]
                 apply_comparison_period_metadata(records, comparison="yoy")
                 direct_sources[field] = records
         result["direct_field_sources"] = direct_sources
@@ -1137,6 +1168,19 @@ class ValuationSnapshotService:
             return
         latest = quarters[-1]
         latest_period = financial_period_end(latest)
+        latest_period_rows = [
+            row
+            for row in rows
+            if financial_period_end(row) == latest_period
+            and row.snapshot_type in {"full_statement", "preliminary_earnings"}
+        ]
+
+        def direct_source(field: str, fallback: FinancialSnapshot) -> FinancialSnapshot:
+            selected = select_field_source(latest_period_rows, field)
+            return selected[0] if selected is not None else fallback
+
+        revenue_source = direct_source("latest_revenue", latest)
+        operating_source = direct_source("latest_operating_income", latest)
         snapshot.latest_earnings_period = latest_period.isoformat() if latest_period else None
         snapshot.latest_earnings_period_type = latest.period_type
         snapshot.latest_earnings_fiscal_year = latest.fiscal_year
@@ -1145,11 +1189,15 @@ class ValuationSnapshotService:
         snapshot.financial_currency = latest.currency
         snapshot.earnings_context_source = latest.snapshot_type
         snapshot.earnings_context_is_preliminary = latest.snapshot_type == "preliminary_earnings"
-        snapshot.latest_revenue = latest.revenue
-        snapshot.latest_operating_income = latest.operating_income
+        snapshot.latest_revenue = revenue_source.revenue
+        snapshot.latest_operating_income = operating_source.operating_income
         snapshot.earnings_context_usable = any(
             value is not None
-            for value in (latest.revenue, latest.operating_income, latest.net_income)
+            for value in (
+                snapshot.latest_revenue,
+                snapshot.latest_operating_income,
+                latest.net_income,
+            )
         )
         quarter_eps_results = [
             _normalized_quarter_eps(row, rows, basis_context) for row in quarters
@@ -1218,11 +1266,36 @@ class ValuationSnapshotService:
             }
             for index, row in enumerate(quarters)
         ]
-        if latest.operating_margin is not None:
-            snapshot.latest_operating_margin = float(latest.operating_margin)
-        elif latest.revenue not in {None, 0} and latest.operating_income is not None:
+        margin_source = direct_source("latest_operating_margin", latest)
+        margin_lineage = financial_amount_period_lineage(
+            margin_source,
+            "latest_operating_margin",
+        )
+        margin_requires_v2 = (
+            margin_lineage.get("financial_lineage_contract")
+            == FINANCIAL_LINEAGE_VERSION
+        )
+        margin_usable = (
+            margin_lineage.get("lineage_verified") is True
+            if margin_requires_v2
+            else True
+        )
+        if (
+            margin_source.operating_margin is not None
+            and margin_usable
+        ):
+            snapshot.latest_operating_margin = float(margin_source.operating_margin)
+        elif (
+            revenue_source is operating_source
+            and snapshot.latest_revenue not in {None, 0}
+            and snapshot.latest_operating_income is not None
+            and margin_usable
+        ):
             snapshot.latest_operating_margin = round(
-                float(latest.operating_income) / float(latest.revenue) * 100, 4
+                float(snapshot.latest_operating_income)
+                / float(snapshot.latest_revenue)
+                * 100,
+                4,
             )
 
         latest_key = _quarter_key(latest)
@@ -1251,10 +1324,64 @@ class ValuationSnapshotService:
                 return None
             return round((float(current) / float(comparison) - 1) * 100, 4)
 
+        def field_source_for_period(
+            period_end: date | None,
+            field: str,
+            fallback: FinancialSnapshot,
+        ) -> FinancialSnapshot:
+            period_rows = [
+                row
+                for row in rows
+                if financial_period_end(row) == period_end
+                and row.snapshot_type in {"full_statement", "preliminary_earnings"}
+            ]
+            selected = select_field_source(period_rows, field)
+            return selected[0] if selected is not None else fallback
+
+        def verified_growth(
+            *,
+            current_row: FinancialSnapshot,
+            comparison_row: FinancialSnapshot,
+            value_field: str,
+            lineage_field: str,
+            comparison: str,
+        ) -> float | None:
+            records = [
+                financial_amount_period_lineage(current_row, lineage_field),
+                financial_amount_period_lineage(comparison_row, lineage_field),
+            ]
+            if not comparison_periods_compatible(records, comparison=comparison):
+                return None
+            return growth(
+                getattr(current_row, value_field),
+                getattr(comparison_row, value_field),
+            )
+
         if prior is not None:
-            snapshot.latest_revenue_qoq = growth(latest.revenue, prior.revenue)
-            snapshot.latest_operating_income_qoq = growth(
-                latest.operating_income, prior.operating_income
+            prior_period = financial_period_end(prior)
+            prior_revenue = field_source_for_period(
+                prior_period,
+                "latest_revenue_qoq",
+                prior,
+            )
+            prior_operating = field_source_for_period(
+                prior_period,
+                "latest_operating_income_qoq",
+                prior,
+            )
+            snapshot.latest_revenue_qoq = verified_growth(
+                current_row=revenue_source,
+                comparison_row=prior_revenue,
+                value_field="revenue",
+                lineage_field="latest_revenue_qoq",
+                comparison="qoq",
+            )
+            snapshot.latest_operating_income_qoq = verified_growth(
+                current_row=operating_source,
+                comparison_row=prior_operating,
+                value_field="operating_income",
+                lineage_field="latest_operating_income_qoq",
+                comparison="qoq",
             )
             if (
                 snapshot.latest_operating_margin is not None
@@ -1266,9 +1393,30 @@ class ValuationSnapshotService:
                     snapshot.latest_operating_margin - prior_margin, 4
                 )
         if prior_year is not None:
-            snapshot.latest_revenue_yoy = growth(latest.revenue, prior_year.revenue)
-            snapshot.latest_operating_income_yoy = growth(
-                latest.operating_income, prior_year.operating_income
+            prior_year_period = financial_period_end(prior_year)
+            prior_year_revenue = field_source_for_period(
+                prior_year_period,
+                "latest_revenue_yoy",
+                prior_year,
+            )
+            prior_year_operating = field_source_for_period(
+                prior_year_period,
+                "latest_operating_income_yoy",
+                prior_year,
+            )
+            snapshot.latest_revenue_yoy = verified_growth(
+                current_row=revenue_source,
+                comparison_row=prior_year_revenue,
+                value_field="revenue",
+                lineage_field="latest_revenue_yoy",
+                comparison="yoy",
+            )
+            snapshot.latest_operating_income_yoy = verified_growth(
+                current_row=operating_source,
+                comparison_row=prior_year_operating,
+                value_field="operating_income",
+                lineage_field="latest_operating_income_yoy",
+                comparison="yoy",
             )
 
     def _apply_derived_trailing(

@@ -109,6 +109,17 @@ class MarketCrossSectionQuality(BaseModel):
     excluded_count: int = 0
     exclusion_reason_counts: dict[str, int] = Field(default_factory=dict)
     warnings: list[str] = Field(default_factory=list)
+    volume_semantics: Literal[
+        "raw_reported_shares",
+        "split_adjusted_aggregate_volume",
+        "unknown",
+    ] = "unknown"
+    trading_value_semantics: Literal[
+        "official_reported",
+        "deterministic_close_times_raw_volume_estimate",
+        "deterministic_close_times_adjusted_volume_estimate",
+        "unknown",
+    ] = "unknown"
 
 
 class MarketCrossSection(BaseModel):

@@ -323,6 +323,56 @@ def test_high_growth_without_quality_outlier_is_not_blocked() -> None:
     assert state["fields"]["latest_operating_income_yoy"]["state"] == "caution_usable"
 
 
+def test_safe_standalone_amount_survives_unverified_growth_comparison() -> None:
+    current = {
+        "period": "2026-06-30",
+        "source_type": "formal",
+        "provider": "opendart",
+        "lineage_verified": True,
+        "financial_lineage_contract": "financial-lineage-v2",
+        "amount_period_type": "single_quarter",
+        "amount_period_start": "2026-04-01",
+        "amount_period_end": "2026-06-30",
+        "source_row_identity": "current-operating-income",
+        "source_filing_identifier": "20260814000001",
+        "account_identifier": "ifrs-full_OperatingProfitLoss",
+        "currency": "KRW",
+        "consolidated_separate_basis": "consolidated",
+        "statement_basis_state": "verified_consolidated",
+        "statement_basis_source": "source_row_fs_div",
+        "comparison_period_verified": False,
+    }
+    comparison = {
+        **current,
+        "period": "2025-06-30",
+        "amount_period_start": "2025-01-01",
+        "amount_period_end": "2025-06-30",
+        "amount_period_type": "year_to_date_cumulative",
+        "source_row_identity": "comparison-operating-income",
+    }
+    state = build_financial_quality_state(
+        _snapshot(latest_operating_income=495_100_000_000),
+        source_metadata={
+            "period": "2026-06-30",
+            "source_type": "formal",
+            "provider": "opendart",
+            "financial_amount_period_contract": "financial-amount-period-v1",
+            "direct_field_sources": {
+                "latest_operating_income": [current],
+                "latest_operating_income_yoy": [current, comparison],
+            },
+        },
+    )
+
+    assert state["fields"]["latest_operating_income"]["state"] == "verified_usable"
+    assert state["fields"]["latest_operating_income"]["prose_eligible"] is True
+    assert state["fields"]["latest_operating_income_yoy"]["state"] == "unknown"
+    assert state["fields"]["latest_operating_income_yoy"]["prose_eligible"] is False
+    assert state["fields"]["latest_operating_income_yoy"]["denial_reason"] == (
+        "financial_comparison_period_unverified"
+    )
+
+
 def test_independent_consensus_forward_pe_survives_direct_earnings_taint() -> None:
     snapshot = _snapshot(
         forward_pe_source="consensus_forward",
