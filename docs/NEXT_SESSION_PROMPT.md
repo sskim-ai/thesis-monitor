@@ -39,7 +39,8 @@ Current contracts:
 - OHLCV structure `ohlcv-structure-v2`
 - security identity `security-identity-v2`
 - financial quality `financial-quality-taint-v2`
-- experimental KR field lineage `financial-lineage-v2` on the Phase 8.1 branch; not deployed
+- experimental KR field lineage `financial-lineage-v2` with Phase 8.1.1 authoritative archive-only
+  recovery on `codex/phase-8-1-1-authoritative-financial-recovery`; not deployed
 - Pilot `ai-assisted-pilot-v3`, persisted runtime count KR 3/5 and US 3/5; the natural US Day 2 and
   KR Day 3 human message-quality reviews failed, while US Day 3 has no Phase 8 human-quality approval
 - renderer `ai-assisted-pilot-renderer-v3`
@@ -112,6 +113,17 @@ The operating DB predates v2 and has no source rows that can be safely reconstru
 historical amount was backfilled. XBRL context parsing is exact and fail-closed. Read
 `docs/architecture/KR_FINANCIAL_LINEAGE.md`, `docs/providers/OPENDART_FINANCIALS.md`, and
 `docs/reports/20260817-phase8-1-kr-financial-lineage-validation.md` before continuing.
+
+Phase 8.1.1 resolves the Phase 8.1 evidence gap without mutating production. Seven latest formal
+filings yielded 1,818 CFS and 1,291 OFS rows. Exact field promotion recovered 17 safe
+income-statement amounts, five margins, six inventory Facts, and 17 comparable YoY Facts across the
+active KR universe. Three SK hynix income fields remain denied under the existing quality conflict.
+All seven interim OCF candidates remain Unknown after exact XBRL reconciliation produced zero
+unique basis/period matches; 28 CAPEX components are audit-only and FCF stays unavailable. Review
+`docs/reports/20260817-phase8-1-1-authoritative-financial-recovery.md`, its JSON audit, and the five
+persisted Before / recovered After messages. These Previews are `pending_work_human_review` and are
+not Production Assist evidence. Do not promote the shadow cache or merge/deploy this branch without
+separate approval.
 
 Massive Phase 8.1 remains shadow-only. Reference cache TTL is one trading day; adjusted decimal
 volume and deterministic close-times-adjusted-volume are audit-only. Exact 08:05 KST readiness is

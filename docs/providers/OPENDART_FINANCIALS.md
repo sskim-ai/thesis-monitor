@@ -36,6 +36,18 @@ The Phase 8.1 runtime path does not backfill old snapshots because their origina
 rows and XBRL archives are not persisted. Future ingestion can retain exact v2 lineage without a DB
 migration.
 
+Phase 8.1.1 adds a separate archive-only recovery client. It discovers the latest formal filing and
+its correction history, stores sanitized CFS/OFS raw envelopes atomically, and promotes only exact
+field occurrences into shadow canonical Facts. XBRL is downloaded only when a structured candidate
+exists but its period, basis, unit, or occurrence is ambiguous. A cached filing archive is reused;
+missing or multiple exact-like facts stay unresolved.
+
+The 2026-08-17 validation recovered seven H1 filings with 1,818 CFS and 1,291 OFS rows. It restored
+17 safe income-statement amounts while keeping three SK hynix fields denied. Interim OCF had seven
+conditional XBRL attempts and zero unique resolutions. Exact PPE and intangible-acquisition rows are
+retained as `capex_components[]` audit candidates, but their periods are not safe enough to aggregate
+and no FCF is calculated.
+
 ## Safety
 
 - CFS and OFS are never inferred from IS/CIS/BS/CF.

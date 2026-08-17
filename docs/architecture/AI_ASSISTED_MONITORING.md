@@ -35,6 +35,11 @@ source-row identity before it can become a canonical Fact. Margin and growth are
 Facts with explicit dependency lineages. A failed comparison blocks that derived Fact, not an
 independently verified current amount. See [KR_FINANCIAL_LINEAGE.md](KR_FINANCIAL_LINEAGE.md).
 
+Historical source recovery uses the same boundary. The archive-only recovery client supplies exact
+recent CFS/OFS occurrences to v2, while pre-existing critical quality conflicts remain authoritative.
+Structured ambiguity may enter exact XBRL reconciliation, but unresolved OCF or CAPEX duration is
+not converted into a user-visible cash-flow Fact.
+
 Final assessments also persist `monitoring-state-v1` current/previous/delta. This is separate from
 the slower thesis state and allows the review to evolve price, supply, and valuation context without
 rewriting the thesis.

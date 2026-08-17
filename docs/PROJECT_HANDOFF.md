@@ -30,7 +30,7 @@ execution or an autonomous investment adviser.
 | Financial currency safety | Missing/empty is `unknown`; unsupported units are prose-denied |
 | Security identity | `security-identity-v2` |
 | Financial quality | `financial-quality-taint-v2` |
-| KR financial lineage | Production remains legacy; experimental `financial-lineage-v2` on Phase 8.1 branch |
+| KR financial lineage | Production remains legacy; Phase 8.1.1 archive-only recovery proves `financial-lineage-v2` with recent formal rows |
 
 Resolve the deployed commit with `git rev-parse HEAD`; a file inside a commit cannot contain that
 commit's own final hash. The machine-readable state records `HEAD` plus the last verified base.
@@ -242,6 +242,37 @@ Reference metadata may be reused for one trading day. Exact 08:05 KST readiness 
 `NOT_YET_OBSERVED`; the normal-day 3-5 session telemetry requirement is still open. See
 [the Phase 8.1 financial report](reports/20260817-phase8-1-kr-financial-lineage-validation.md) and
 [Massive readiness report](reports/20260817-massive-0805-shadow-readiness.md).
+
+## Phase 8.1.1 Authoritative Financial Recovery
+
+Phase 8.1.1 supplies the missing official source rows without touching production history. It reads a
+consistent operating-DB copy, discovers the latest formal filing and correction chain, re-requests
+both `fnlttSinglAcntAll` CFS and OFS scopes, and stores sanitized raw responses in an ignored cache.
+The field selector uses exact taxonomy/account identity first, rejects multiple occurrences, and
+uses OFS only when that field has no CFS occurrence. Current and prior-year quarter occurrences are
+separate canonical lineages; growth is available only when basis, account, duration, source type,
+and currency match.
+
+The seven active KR tickers returned 1,818 CFS and 1,291 OFS rows from seven latest formal filings.
+The archive-only cross-section recovered 37 safe direct Facts: 17 income-statement amounts, five
+operating margins, six inventory Facts, plus balance-sheet fields. Seventeen same-quarter YoY Facts
+passed exact comparison lineage and three remained withheld. SK hynix's revenue, operating income,
+and net income remain denied because the existing critical profitability conflict was not resolved
+merely by finding a formal source row.
+
+Interim OCF entered XBRL fallback for all seven filings because its structured column does not prove
+single-quarter versus cumulative duration. No XBRL occurrence had a unique exact period, unit, and
+statement-basis match, so OCF promotion is zero. Twenty-eight exact PPE/intangible CAPEX component
+candidates remain audit-only and none are aggregated; FCF remains unavailable. The cold-cache run
+used 29 provider calls. Final reproducibility reused seven XBRL archives and made 22 calls. The five
+representative archive-only messages all pass automatic numeric binding with no manual, rejected,
+or formatting result. Human quality remains pending Work review.
+
+See the [readiness report](reports/20260817-phase8-1-1-authoritative-financial-recovery.md),
+[full audit](reports/20260817-phase8-1-1-authoritative-financial-recovery-audit.json), and
+[persisted Before / recovered After Preview](reports/20260817-phase8-1-1-kr-financial-preview.md).
+No main merge, operating DB write, Telegram send, assessment rewrite, archive rewrite, or Pilot
+mutation occurred.
 
 On 2026-08-15 the owning desktop environment verified all four local-project tasks, retained their
 08:15/08:30/16:15/16:55 schedules, and migrated their exact prompts to v3.10 with

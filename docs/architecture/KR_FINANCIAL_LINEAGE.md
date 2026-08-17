@@ -91,3 +91,21 @@ OpenDART CF statements make authoritative OCF extraction feasible when an exact 
 is stable. CAPEX is not one universal account and can span tangible, intangible, construction, and
 other investment cash outflows. CAPEX and FCF therefore remain unavailable until a validated
 company-neutral account aggregation contract exists.
+
+## Authoritative Recovery
+
+`opendart-authoritative-recovery-v1` is the archive-only source-supply path for historical records
+that predate v2. It discovers periodic filings with corrections included, selects the latest
+authoritative filing per economic period, and requests both full-statement scopes. Raw response
+envelopes retain receipt, request basis, row identity, response SHA, and request date without the API
+key. They are cached outside Git; only sanitized lineage and hashes become report artifacts.
+
+Field selection is generic and field-local. Exact account IDs outrank bounded aliases, statement
+type constrains the search, and multiple source identities remain ambiguous. An ambiguous CFS field
+cannot escape through OFS. CFS absence may use one exact OFS occurrence. A newly recovered formal row
+does not clear an existing critical quality conflict by itself.
+
+For interim income statements, the current three-month and prior-year three-month source columns
+become separate occurrences before deterministic YoY calculation. Interim CF `thstrm_amount` is not
+treated as a quarter: it requires a unique XBRL duration and statement-basis context. This boundary
+kept all seven recovered OCF candidates Unknown in the Phase 8.1.1 cross-section.
