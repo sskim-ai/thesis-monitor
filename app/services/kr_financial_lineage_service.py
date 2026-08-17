@@ -73,6 +73,11 @@ def _bounds(
     period_end = date(period_year, month, monthrange(period_year, month)[1])
     if statement_type == "BS":
         return "point_in_time", period_end, period_end
+    # Interim cash-flow rows are cumulative in OpenDART, but the full-statement
+    # response does not expose that distinction through the same columns used by
+    # IS/CIS. Require an exact XBRL duration before promoting them.
+    if statement_type == "CF" and report_scope != "annual":
+        return None, None, None
     if amount_variant == "annual_or_point" and report_scope != "annual":
         return None, None, None
     if amount_variant == "cumulative":
