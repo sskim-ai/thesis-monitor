@@ -36,6 +36,20 @@ def _parser() -> argparse.ArgumentParser:
     parser.add_argument("--database", required=True, type=Path)
     parser.add_argument("--output-dir", required=True, type=Path)
     parser.add_argument("--prefix", default="20260817-phase8-4")
+    parser.add_argument("--before-rendered-audit", type=Path)
+    parser.add_argument(
+        "--retrospective-packet-id",
+        default=RETROSPECTIVE_PACKET_ID,
+    )
+    parser.add_argument(
+        "--preview-title",
+        default="Phase 8.4 Delta-First Integrated Full Message Preview",
+    )
+    parser.add_argument("--before-label", default="BEFORE")
+    parser.add_argument("--after-label", default="AFTER")
+    parser.add_argument("--preview-suffix", default="delta-first-full-preview")
+    parser.add_argument("--audit-suffix", default="adaptive-selection-audit")
+    parser.add_argument("--logical-prefix", default="phase8-4")
     return parser
 
 
@@ -83,6 +97,18 @@ def _message_map(value: dict[str, object], *, deterministic: bool = False) -> di
     return output
 
 
+def _rendered_message_map(value: dict[str, object]) -> dict[str, str]:
+    output: dict[str, str] = {}
+    for item in value.get("rendered_messages", []):
+        if not isinstance(item, dict):
+            continue
+        ticker = str(item.get("ticker") or "")
+        message = item.get("text")
+        if ticker and isinstance(message, str):
+            output[ticker] = message
+    return output
+
+
 def _counts(text: str) -> dict[str, int]:
     return {
         "characters": len(text),
@@ -100,9 +126,13 @@ def _markdown_preview(
     after: dict[str, str],
     audits: dict[str, object],
     names: dict[str, str],
+    *,
+    title: str,
+    before_label: str,
+    after_label: str,
 ) -> str:
     sections = [
-        "# Phase 8.4 Delta-First Integrated Full Message Preview",
+        f"# {title}",
         "",
         (
             "Archive-only Preview from source packet "
@@ -123,11 +153,11 @@ def _markdown_preview(
                 "",
                 f"## {names[ticker]} ({ticker})",
                 "",
-                "### BEFORE",
+                f"### {before_label}",
                 "",
                 before_text,
                 "",
-                "### AFTER",
+                f"### {after_label}",
                 "",
                 after_text,
                 "",
@@ -155,7 +185,7 @@ def _markdown_preview(
                 "",
                 "### HUMAN SCORE",
                 "",
-                "Recorded in the separate Phase 8.4 human-quality report.",
+                "Recorded in the separate human-quality validation report.",
             ]
         )
     return "\n".join(sections)
@@ -176,7 +206,7 @@ def main() -> None:
         source_packet,
         recoveries,
         REPRESENTATIVE_TICKERS,
-        packet_id=RETROSPECTIVE_PACKET_ID,
+        packet_id=args.retrospective_packet_id,
     )
     packet_stocks = {
         str(item.get("ticker") or ""): item
@@ -211,7 +241,7 @@ def main() -> None:
             + "; ".join(str(item) for item in typed_errors)
         )
     output_value = dict(source_output)
-    output_value["packet_id"] = RETROSPECTIVE_PACKET_ID
+    output_value["packet_id"] = args.retrospective_packet_id
     output_value["stock_reviews"] = binding.output["stock_reviews"]
     output = AIDailyReviewOutput.model_validate(output_value)
 
@@ -226,7 +256,11 @@ def main() -> None:
     if validated is None or validation_errors:
         raise ValueError("full validation failed: " + "; ".join(validation_errors))
 
-    before_messages = _message_map(source_messages)
+    before_messages = (
+        _rendered_message_map(_load(args.before_rendered_audit))
+        if args.before_rendered_audit is not None
+        else _message_map(source_messages)
+    )
     deterministic = _message_map(deterministic_messages, deterministic=True)
     names = {
         ticker: str(packet_stocks[ticker].get("company_name") or ticker)
@@ -239,7 +273,9 @@ def main() -> None:
         {
             "ticker": market_ticker,
             "text": before_messages[market_ticker],
-            "logical_identity": f"phase8-4:{RETROSPECTIVE_PACKET_ID}:market",
+            "logical_identity": (
+                f"{args.logical_prefix}:{args.retrospective_packet_id}:market"
+            ),
         }
     )
     for review in output.stock_reviews:
@@ -262,7 +298,10 @@ def main() -> None:
             {
                 "ticker": review.ticker,
                 "text": text,
-                "logical_identity": f"phase8-4:{RETROSPECTIVE_PACKET_ID}:stock:{review.ticker}",
+                "logical_identity": (
+                    f"{args.logical_prefix}:{args.retrospective_packet_id}:"
+                    f"stock:{review.ticker}"
+                ),
             }
         )
 
@@ -298,7 +337,7 @@ def main() -> None:
     output_dir = args.output_dir
     context = {
         "source_packet": source_packet.get("packet_id"),
-        "retrospective_packet": RETROSPECTIVE_PACKET_ID,
+        "retrospective_packet": args.retrospective_packet_id,
         "source_packet_sha256": _sha256(args.source_packet),
         "source_output_sha256": _sha256(args.source_output),
         "source_messages_sha256": _sha256(args.source_messages),
@@ -330,7 +369,7 @@ def main() -> None:
         {"artifact_context": context, "receipt": receipt},
     )
     _write_json(
-        output_dir / f"{prefix}-adaptive-selection-audit.json",
+        output_dir / f"{prefix}-{args.audit_suffix}.json",
         {
             "artifact_context": context,
             "contract": "delta-first-rendering-v1",
@@ -339,13 +378,16 @@ def main() -> None:
         },
     )
     _write_text(
-        output_dir / f"{prefix}-delta-first-full-preview.md",
+        output_dir / f"{prefix}-{args.preview_suffix}.md",
         _markdown_preview(
             source_packet,
             before_messages,
             after_messages,
             selection_audit,
             names,
+            title=args.preview_title,
+            before_label=args.before_label,
+            after_label=args.after_label,
         ),
     )
 

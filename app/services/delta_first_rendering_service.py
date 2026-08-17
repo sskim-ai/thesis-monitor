@@ -6,6 +6,14 @@ from typing import Iterable
 
 from app.services.numeric_provenance_service import TYPED_VALUATION_CONTRACT
 from app.services.numeric_semantic_registry import build_numeric_registry
+from app.services.semantic_decision_service import (
+    SEMANTIC_CLAIM_REFERENCE_FIELD,
+    SEMANTIC_SCOPE_CONTRACT,
+    assign_listed_security_valuation_scope,
+    financial_cross_field_coherence_report,
+    historical_valuation_selection,
+    select_decision_material_delta,
+)
 
 
 DELTA_FIRST_RENDERING_CONTRACT = "delta-first-rendering-v1"
@@ -20,6 +28,7 @@ class DeltaFirstRenderPlan:
     section_order: tuple[str, ...]
     suppressed_sections: tuple[str, ...]
     suppression_reasons: dict[str, str]
+    decision_selection: dict[str, object]
 
     def as_dict(self) -> dict[str, object]:
         return {
@@ -29,6 +38,7 @@ class DeltaFirstRenderPlan:
             "section_order": list(self.section_order),
             "suppressed_sections": list(self.suppressed_sections),
             "suppression_reasons": dict(self.suppression_reasons),
+            "decision_selection": dict(self.decision_selection),
         }
 
 
@@ -37,25 +47,19 @@ def build_delta_first_render_plan(
     *,
     financial_available: bool,
 ) -> DeltaFirstRenderPlan:
-    monitoring = _mapping(stock.get("monitoring_state"))
-    delta = _mapping(monitoring.get("delta"))
-    assessment = _mapping(stock.get("deterministic_assessment"))
-    severity = str(assessment.get("daily_change_severity") or "none")
-    supply_transition = str(delta.get("supply_transition") or "unavailable")
-    chart_transition = str(delta.get("chart_state_change") or "")
-
-    if severity not in {"", "none"}:
-        material_delta = "assessment"
-        today_change = "투자 판단 근거 변화"
-    elif chart_transition and not _is_unchanged_transition(chart_transition):
-        material_delta = "price_structure"
-        today_change = "가격 구조 전환"
-    elif supply_transition not in {"", "aligned", "unavailable", "unknown"}:
-        material_delta = "supply"
-        today_change = "수급 시간축 엇갈림"
-    else:
-        material_delta = "none"
-        today_change = "중요 변화 없음"
+    selection = select_decision_material_delta(
+        stock,
+        financial_available=financial_available,
+    )
+    material_delta = selection.selected_primary
+    today_change = {
+        "earnings_or_thesis": "사업·실적 판단 근거 변화",
+        "valuation": "가치평가 구간 변화",
+        "price_structure": "가격 구조 전환",
+        "risk_reward": "현재가 손익비 변화",
+        "supply": "수급 시간축 엇갈림",
+        "none": "중요 변화 없음",
+    }.get(material_delta, "검증된 판단 근거 변화")
 
     if material_delta == "price_structure":
         section_order = (
@@ -107,6 +111,7 @@ def build_delta_first_render_plan(
             "business": "decision_relevant_financial_facts_integrated_into_core",
             "priority_watch": "overlaps_with_next_confirmation_and_unknown",
         },
+        decision_selection=selection.as_dict(),
     )
 
 
@@ -160,7 +165,11 @@ def financial_recovery_fact(
         source = _mapping(fields.get(source_name))
         yoy = _mapping(source.get("yoy"))
         lineage = _mapping(source.get("lineage"))
-        if yoy.get("status") != "verified_usable" or not lineage:
+        if (
+            source.get("status") != "verified_usable"
+            or yoy.get("status") != "verified_usable"
+            or not lineage
+        ):
             continue
         earnings[target_name] = yoy.get("value")
         _add_period_basis(
@@ -215,11 +224,17 @@ def prepare_delta_first_packet(
             elif fact_id == "chart:structure:risk_reward:support_entry":
                 item["fact_type"] = "chart_risk_reward_support_entry"
                 _mapping(item.get("fields"))["rr_basis"] = "support_entry"
+        assign_listed_security_valuation_scope(catalog)
         if fact is not None:
             catalog.append(fact)
         stock["fact_catalog"] = catalog
         stock["numeric_registry"] = build_numeric_registry(catalog)
         stock["typed_valuation_interpretation_contract"] = TYPED_VALUATION_CONTRACT
+        stock["semantic_scope_contract"] = SEMANTIC_SCOPE_CONTRACT
+        stock["denied_semantic_families"] = _denied_semantic_families(
+            stock,
+            recovery,
+        )
         stocks.append(stock)
     packet["stocks"] = stocks
     return packet
@@ -239,6 +254,7 @@ def build_delta_first_stock_draft(
         and item.get("prose_allowed") is True
     }
     references: list[dict[str, object]] = []
+    semantic_claim_refs: list[dict[str, object]] = []
     fact_ids_by_section: dict[str, set[str]] = {
         name: set()
         for name in ("core", "business", "price", "supply", "valuation")
@@ -271,7 +287,8 @@ def build_delta_first_stock_draft(
         section = "valuation" if section == "valuation_analysis" else section
         section = "core" if section == "core_judgment" else section
         section = "business" if section == "business_earnings" else section
-        fact_ids_by_section[section].add(fact_id)
+        if section in fact_ids_by_section:
+            fact_ids_by_section[section].add(fact_id)
         return f"{{{{numeric:{ref_id}}}}}"
 
     profile = _reasoning_profile(stock, original_review)
@@ -299,6 +316,21 @@ def build_delta_first_stock_draft(
         quality_facts = _financial_quality_facts(stock)
         fact_ids_by_section["core"].update(quality_facts)
         fact_ids_by_section["business"].update(quality_facts)
+        if quality_facts:
+            semantic_claim_refs.append(
+                {
+                    "ref_id": "financial_denial_explanation",
+                    "text_ref": "core_judgment.text",
+                    "exact_text_span": (
+                        "공식 손익 수치는 품질 충돌 때문에 이번 판단에 "
+                        "사용하지 않습니다."
+                    ),
+                    "claim_type": "denial_explanation",
+                    "economic_scope": "company",
+                    "supporting_fact_ids": [sorted(quality_facts)[0]],
+                    "semantic_families": ["earnings"],
+                }
+            )
 
     price_text, observer_text, holder_text = _price_texts(
         profile,
@@ -306,9 +338,10 @@ def build_delta_first_stock_draft(
         numeric,
     )
     supply_text = _supply_text(profile, stock, numeric)
-    valuation_text = _valuation_text(
+    valuation_text, historical_valuation = _valuation_text(
         profile,
         recovery,
+        stock,
         numeric,
     )
     valuation_reference_paths = {
@@ -321,13 +354,24 @@ def build_delta_first_stock_draft(
         fact_ids_by_section["valuation"].add("valuation:trailing_earnings")
     if "fields.price_to_book" in valuation_reference_paths:
         fact_ids_by_section["valuation"].add("valuation:book")
+    selected_historical = historical_valuation.get("selected")
+    if isinstance(selected_historical, dict):
+        fact_ids_by_section["valuation"].add(
+            str(selected_historical.get("fact_id") or "")
+        )
     valuation_interpretation_refs = _valuation_interpretation_refs(
         profile,
         references,
+        selected_historical,
     )
 
     unknown = _profile_unknown(profile, financial_available)
-    next_check = _profile_next_check(profile, financial_available)
+    next_check = _profile_next_check(
+        profile,
+        financial_available,
+        recovery_fact_id,
+        numeric,
+    )
     valid_fact_ids = {
         str(item.get("fact_id") or "")
         for item in stock.get("fact_catalog", [])
@@ -389,6 +433,7 @@ def build_delta_first_stock_draft(
         "numeric_claims": [],
         "numeric_fact_refs": references,
         "valuation_interpretation_refs": valuation_interpretation_refs,
+        SEMANTIC_CLAIM_REFERENCE_FIELD: semantic_claim_refs,
         "unknowns": [unknown],
         "priority_watch": list(original_review.get("priority_watch", []))[:2],
         "next_checks": [next_check],
@@ -420,6 +465,11 @@ def build_delta_first_stock_draft(
         "used_fact_counts": _used_fact_counts(references, plan.section_order),
         "core_investment_claim_count": _sentence_count(core_text),
         "plan": plan.as_dict(),
+        "decision_hierarchy": plan.decision_selection,
+        "historical_valuation": historical_valuation,
+        "financial_cross_field_coherence": financial_cross_field_coherence_report(
+            recovery
+        ),
     }
     return draft, audit
 
@@ -462,8 +512,9 @@ def _financial_core_text(
             f"{_profile_meaning(profile)}"
         )
     return (
-        f"{_profile_opening(profile)} 공식 손익 항목은 기존의 중대한 품질 충돌이 "
-        f"해소되지 않아 이번 판단에 사용하지 않습니다. {_profile_meaning(profile)}"
+        f"{_profile_opening(profile)} 공식 손익 수치는 품질 충돌 때문에 이번 판단에 "
+        "사용하지 않습니다. 따라서 현재 판단은 PBR, 가격구조, 수급과 독립적으로 "
+        "확인 가능한 사업 지표에 한정합니다."
     )
 
 
@@ -620,8 +671,9 @@ def _supply_text(
 def _valuation_text(
     profile: str,
     recovery: dict[str, object],
+    stock: dict[str, object],
     numeric: object,
-) -> str:
+) -> tuple[str, dict[str, object]]:
     denied_earnings = any(
         _mapping(_mapping(recovery.get("fields")).get(field)).get("status") == "denied"
         for field in ("revenue", "operating_income", "net_income")
@@ -638,25 +690,52 @@ def _valuation_text(
     )
     if pbr:
         values["pbr"] = pbr
+    historical = historical_valuation_selection(
+        stock,
+        denied_earnings=denied_earnings,
+    )
     if not values:
-        return "현재 배수는 비교 가능한 근거가 없어 해석을 보류합니다."
-    subject = _profile_valuation_subject(profile)
+        return "현재 배수는 비교 가능한 근거가 없어 해석을 보류합니다.", historical
     statements = []
     if "pe" in values:
-        statements.append(f"{subject}의 이익 기준 값은 {values['pe']}입니다.")
+        statements.append(
+            f"{_company_valuation_prefix(profile, 'pe')} {values['pe']}입니다."
+        )
     if "pbr" in values:
-        statements.append(f"{subject}의 장부가 기준 값은 {values['pbr']}입니다.")
+        statements.append(
+            f"{_company_valuation_prefix(profile, 'pbr')} {values['pbr']}입니다."
+        )
+    selected = historical.get("selected")
+    if isinstance(selected, dict):
+        metric = str(selected.get("metric") or "")
+        percentile = numeric(
+            "valuation_analysis.text",
+            "valuation:current",
+            str(selected.get("field_path") or ""),
+        )
+        if percentile:
+            label = "PER" if metric == "pe" else "PBR"
+            direction = (
+                "대부분보다 높은 구간"
+                if float(selected.get("percentile") or 0.0) >= 50.0
+                else "대부분보다 낮은 구간"
+            )
+            statements.append(
+                f"회사 전체 {label}의 자체 역사 위치는 {percentile}입니다. 이는 현재 "
+                f"{label}이 비교 가능한 과거 관측치 {direction}이라는 뜻입니다."
+            )
     return (
         f"{' '.join(statements)} {_profile_valuation_context(profile)} "
-        f"{_profile_peer_gap(profile)}"
+        f"{_profile_peer_gap(profile)}",
+        historical,
     )
 
 
 def _valuation_interpretation_refs(
     profile: str,
     references: list[dict[str, object]],
+    selected_historical: object,
 ) -> list[dict[str, object]]:
-    subject = _profile_valuation_subject(profile)
     output: list[dict[str, object]] = []
     for item in references:
         if item.get("text_ref") != "valuation_analysis.text":
@@ -666,16 +745,47 @@ def _valuation_interpretation_refs(
             metric = "pe"
             fact_id = "valuation:trailing_earnings"
             exact_span = (
-                f"{subject}의 이익 기준 값은 "
+                f"{_company_valuation_prefix(profile, 'pe')} "
                 f"{{{{numeric:{item['ref_id']}}}}}입니다."
             )
         elif field_path == "fields.price_to_book":
             metric = "pbr"
             fact_id = "valuation:book"
             exact_span = (
-                f"{subject}의 장부가 기준 값은 "
+                f"{_company_valuation_prefix(profile, 'pbr')} "
                 f"{{{{numeric:{item['ref_id']}}}}}입니다."
             )
+        elif field_path in {
+            "fields.historical_pe_statistics.current_percentile",
+            "fields.historical_pb_statistics.current_percentile",
+        } and isinstance(selected_historical, dict):
+            metric = str(selected_historical.get("metric") or "")
+            label = "PER" if metric == "pe" else "PBR"
+            direction = (
+                "대부분보다 높은 구간"
+                if float(selected_historical.get("percentile") or 0.0) >= 50.0
+                else "대부분보다 낮은 구간"
+            )
+            output.append(
+                {
+                    "ref_id": f"valuation_historical_{metric}",
+                    "interpretation_type": "historical",
+                    "metric": metric,
+                    "fact_id": str(selected_historical.get("fact_id") or ""),
+                    "text_ref": "valuation_analysis.text",
+                    "exact_text_span": (
+                        f"회사 전체 {label}의 자체 역사 위치는 "
+                        f"{{{{numeric:{item['ref_id']}}}}}입니다. 이는 현재 {label}이 "
+                        f"비교 가능한 과거 관측치 {direction}이라는 뜻입니다."
+                    ),
+                    "comparison_numeric_ref_ids": [str(item["ref_id"])],
+                    "basis_status": "verified",
+                    "source_type": "canonical_history",
+                    "direction": "high" if direction.endswith("높은 구간") else "low",
+                    "economic_scope": "listed_security",
+                }
+            )
+            continue
         else:
             continue
         output.append(
@@ -690,6 +800,7 @@ def _valuation_interpretation_refs(
                 "basis_status": "verified",
                 "source_type": "canonical",
                 "direction": "neutral",
+                "economic_scope": "listed_security",
             }
         )
     return output
@@ -871,16 +982,6 @@ def _profile_valuation_context(profile: str) -> str:
     }[profile]
 
 
-def _profile_valuation_subject(profile: str) -> str:
-    return {
-        "semiconductor": "메모리 사업",
-        "insurance": "재보험사",
-        "shipping": "운송 사업",
-        "cyclical_materials": "철강·소재 혼합 사업",
-        "general": "현재 사업",
-    }[profile]
-
-
 def _profile_peer_gap(profile: str) -> str:
     return {
         "semiconductor": "같은 시점의 메모리 동종기업 비교값이 없어 현재 절대 배수만 표시합니다.",
@@ -891,9 +992,30 @@ def _profile_peer_gap(profile: str) -> str:
     }[profile]
 
 
+def _company_valuation_prefix(profile: str, metric: str) -> str:
+    if metric == "pe":
+        return {
+            "semiconductor": "상장주식 기준 회사 전체 이익 배수는",
+            "insurance": "재보험사 전체의 이익 기준 값은",
+            "shipping": "상장회사 전체의 이익 기준 값은",
+            "cyclical_materials": "연결 회사 전체의 이익 기준 값은",
+            "general": "회사 전체의 이익 기준 값은",
+        }[profile]
+    return {
+        "semiconductor": "상장주식 기준 회사 전체 장부가 배수는",
+        "insurance": "재보험사 전체의 장부가 기준 값은",
+        "shipping": "상장회사 전체의 장부가 기준 값은",
+        "cyclical_materials": "연결 회사 전체의 장부가 기준 값은",
+        "general": "회사 전체의 장부가 기준 값은",
+    }[profile]
+
+
 def _profile_unknown(profile: str, financial_available: bool) -> str:
     if not financial_available:
-        return "손익 자료의 품질 충돌과 HBM 고객별 출하·수율, 재고·설비투자 이후 현금흐름이 확인되지 않았습니다."
+        return (
+            "HBM 고객별 출하·수율과 재고·설비투자 이후 현금흐름이 "
+            "확인되지 않았습니다."
+        )
     return {
         "semiconductor": "사업부별 이익 기여도와 영업현금흐름·설비투자가 없어 전사 실적 개선의 현금 회수 여부는 확인되지 않았습니다.",
         "insurance": "합산비율·대형재해 손실·투자수익률과 자본적정성이 없어 영업이익 증가의 질은 확인되지 않았습니다.",
@@ -903,9 +1025,25 @@ def _profile_unknown(profile: str, financial_available: bool) -> str:
     }[profile]
 
 
-def _profile_next_check(profile: str, financial_available: bool) -> str:
+def _profile_next_check(
+    profile: str,
+    financial_available: bool,
+    recovery_fact_id: str,
+    numeric: object,
+) -> str:
     if not financial_available:
         return "HBM 출하·수율과 재고·설비투자 이후 현금흐름이 검증되기 전에는 장부가치 배수만으로 투자 논리를 강화하지 않습니다."
+    if profile == "shipping":
+        current_margin = numeric(
+            "next_checks[0]",
+            recovery_fact_id,
+            "fields.operating_margin_pct",
+        )
+        if current_margin:
+            return (
+                f"다음 분기 수익성이 {current_margin}보다 더 낮아지면 외형 성장의 "
+                "이익 전환이 약해진 것으로 봅니다."
+            )
     return {
         "semiconductor": "다음 공시에서 사업부별 이익과 영업현금흐름이 함께 개선돼야 전사 실적 증가를 지속 가능한 변화로 봅니다.",
         "insurance": "다음 갱신의 합산비율과 대형재해 손실, 자본적정성이 함께 개선돼야 이익 증가의 반복 가능성을 높게 봅니다.",
@@ -921,6 +1059,30 @@ def _financial_quality_facts(stock: dict[str, object]) -> set[str]:
         for item in stock.get("fact_catalog", [])
         if isinstance(item, dict) and item.get("fact_type") == "financial_quality"
     }
+
+
+def _denied_semantic_families(
+    stock: dict[str, object],
+    recovery: dict[str, object],
+) -> list[str]:
+    families: set[str] = set()
+    fields = _mapping(recovery.get("fields"))
+    if _mapping(fields.get("revenue")).get("status") == "denied":
+        families.add("revenue")
+    if _mapping(fields.get("operating_income")).get("status") == "denied":
+        families.update({"operating_income", "margin"})
+    if _mapping(fields.get("net_income")).get("status") == "denied":
+        families.update({"earnings", "pe"})
+    denied_quality = any(
+        str(_mapping(item.get("fields")).get("state") or "") == "denied"
+        for item in stock.get("fact_catalog", [])
+        if isinstance(item, dict) and item.get("fact_type") == "financial_quality"
+    )
+    if denied_quality:
+        families.update(
+            {"earnings", "revenue", "operating_income", "margin", "pe"}
+        )
+    return sorted(families)
 
 
 def _supply_signs_diverge(stock: dict[str, object], fact_id: str) -> bool:
@@ -1009,11 +1171,6 @@ def _used_fact_counts(
         elif section == "valuation":
             categories["valuation"].add(key)
     return {name: len(values) for name, values in categories.items()}
-
-
-def _is_unchanged_transition(value: str) -> bool:
-    left, separator, right = value.partition("_to_")
-    return bool(separator and left == right)
 
 
 def _sentence_count(value: str) -> int:

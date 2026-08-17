@@ -28,6 +28,10 @@ from app.models.thesis import InvestmentThesis, MonitorRun, ThesisAssessment
 from app.models.watchlist import WatchlistItem
 from app.schemas.ai_review import AIDailyReviewOutput, AIStockReview
 from app.services.ai_reasoning_quality_service import normalize_decision_text
+from app.services.semantic_decision_service import (
+    SEMANTIC_SCOPE_CONTRACT,
+    observer_holder_semantic_error,
+)
 from app.services.canonical_fact_service import (
     canonical_capital_action_fact,
     canonical_event_fact,
@@ -4327,6 +4331,13 @@ def _validate_stock_review(
         review.price_positioning.new_observer_view
     ) == normalize_decision_text(review.price_positioning.holder_view):
         errors.append(f"{review.ticker}:observer_holder_not_distinct")
+    if stock.get("semantic_scope_contract") == SEMANTIC_SCOPE_CONTRACT:
+        semantic_error = observer_holder_semantic_error(
+            review.price_positioning.new_observer_view,
+            review.price_positioning.holder_view,
+        )
+        if semantic_error is not None:
+            errors.append(f"{review.ticker}:{semantic_error}")
     fact_catalog = stock.get("fact_catalog", [])
     valid_fact_ids = {
         str(item.get("fact_id"))

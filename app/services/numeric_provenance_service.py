@@ -10,6 +10,11 @@ from app.services.numeric_semantic_registry import (
     canonical_display_value,
     semantic_spec,
 )
+from app.services.semantic_decision_service import (
+    SEMANTIC_SCOPE_CONTRACT,
+    semantic_claim_reference_errors,
+    typed_valuation_scope_error,
+)
 
 
 NUMERIC_REFERENCE_FIELD = "numeric_fact_refs"
@@ -804,6 +809,13 @@ def _typed_valuation_reference_errors(
         if fact is None or fact_id not in facts_used or fact_id not in _section_fact_ids(review, text_ref):
             errors.append(f"{prefix}:valuation_interpretation_fact_not_grounded:{ref_id}:{fact_id}")
             continue
+        if stock.get("semantic_scope_contract") == SEMANTIC_SCOPE_CONTRACT:
+            scope_error = typed_valuation_scope_error(item, fact, exact_span)
+            if scope_error is not None:
+                errors.append(
+                    f"{prefix}:valuation_interpretation_scope_{scope_error}:{ref_id}"
+                )
+                continue
         comparison_bindings = [binding_by_id.get(value) for value in comparison_ids]
         if any(value is None for value in comparison_bindings):
             errors.append(f"{prefix}:valuation_interpretation_numeric_ref_missing:{ref_id}")
@@ -940,6 +952,7 @@ def _typed_valuation_reference_errors(
                 "basis_status": item.get("basis_status"),
                 "source_type": item.get("source_type"),
                 "direction": item.get("direction"),
+                "economic_scope": item.get("economic_scope"),
             }
         )
     for text_ref, text in _valuation_interpretation_texts(review):
@@ -1020,6 +1033,8 @@ def bind_numeric_fact_references(
     bindings: list[dict[str, object]] = []
     typed_interpretations: list[dict[str, object]] = []
     typed_interpretation_errors: list[str] = []
+    semantic_claims: list[dict[str, object]] = []
+    semantic_claim_errors: list[str] = []
     counters = {
         "auto_bound": 0,
         "manual_legacy": 0,
@@ -1069,6 +1084,14 @@ def bind_numeric_fact_references(
                 )
                 typed_interpretation_errors.extend(typed_errors)
                 typed_interpretations.extend(typed_values)
+                if stock.get("semantic_scope_contract") == SEMANTIC_SCOPE_CONTRACT:
+                    semantic_errors, semantic_values = semantic_claim_reference_errors(
+                        review,
+                        stock,
+                        prefix=ticker,
+                    )
+                    semantic_claim_errors.extend(semantic_errors)
+                    semantic_claims.extend(semantic_values)
             for key in counters:
                 counters[key] += stock_counts[key]
     report: dict[str, Any] = {
@@ -1111,7 +1134,17 @@ def bind_numeric_fact_references(
             "errors": list(dict.fromkeys(typed_interpretation_errors)),
             "references": typed_interpretations,
         },
+        "semantic_claims": {
+            "contract": SEMANTIC_SCOPE_CONTRACT,
+            "accepted": len(semantic_claims),
+            "errors": list(dict.fromkeys(semantic_claim_errors)),
+            "references": semantic_claims,
+        },
     }
+    errors.extend(semantic_claim_errors)
+    report["status"] = "failed" if errors else "passed"
+    report["rejected"] = len(errors)
+    report["errors"] = list(dict.fromkeys(errors))
     return NumericBindingResult(
         output=output,
         errors=tuple(dict.fromkeys(errors)),

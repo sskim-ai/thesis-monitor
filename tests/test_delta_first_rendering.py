@@ -258,7 +258,7 @@ def test_adaptive_renderer_suppresses_static_sections_without_rewriting_text() -
     assert _final_rendered_language_report([adaptive])["hard_checks_passed"] is True
 
 
-def test_supply_delta_places_grounded_supply_before_static_context() -> None:
+def test_mild_supply_delta_does_not_override_safe_earnings_context() -> None:
     stock = _source_packet()["stocks"][0]
     stock["monitoring_state"] = {
         "delta": {
@@ -269,8 +269,9 @@ def test_supply_delta_places_grounded_supply_before_static_context() -> None:
 
     plan = build_delta_first_render_plan(stock, financial_available=True)
 
-    assert plan.material_delta == "supply"
-    assert plan.section_order.index("supply") < plan.section_order.index("core")
+    assert plan.material_delta == "none"
+    assert plan.section_order.index("core") < plan.section_order.index("supply")
+    assert plan.decision_selection["selected_secondary"] == "supply"
 
 
 def test_denied_recovery_does_not_restore_earnings_or_pe() -> None:
@@ -297,3 +298,5 @@ def test_denied_recovery_does_not_restore_earnings_or_pe() -> None:
     assert "영업이익 1,000억원" not in rendered
     assert "현재 PER" not in rendered
     assert "현재 PBR 1배" in rendered
+    assert "매출 성장률" not in rendered
+    assert "영업이익 성장률" not in rendered
