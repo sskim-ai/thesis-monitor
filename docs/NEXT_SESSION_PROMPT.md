@@ -14,16 +14,17 @@ checkout. Read, in this order:
 2. `docs/MASTER_WORKFLOW.md`
 3. `docs/PROJECT_HANDOFF.md`
 4. `docs/NEXT_SESSION_PROMPT.md`
-5. `docs/reports/20260817-phase8-4-1-1-finalization-validation.md`
-6. `docs/reports/20260817-phase8-4-1-1-final-preview.md`
-7. `docs/reports/20260817-master-workflow-v2-validation.md`
+5. `docs/reports/20260817-phase8-5-industry-reasoning-validation.md`
+6. `docs/reports/20260817-phase8-5-industry-reasoning-audit.md`
+7. the KR and US Phase 8.5 full Previews
 
 Repository and immutable runtime state override stale conversation or document claims. Resolve the
 current commit from Git rather than copying a historical SHA.
 
 Current architecture is deterministic Facts plus Investment Knowledge v3 and Chart Knowledge v1,
 bounded Codex reasoning, numeric/semantic validation, adaptive schema-4 rendering, and a hash-bound
-runtime receipt. Phase 8.4.x is the completed message-intelligence foundation:
+runtime receipt. Phase 8.4.x is the completed message-intelligence foundation, and Phase 8.5 adds
+`industry-specific-reasoning-v1`:
 
 - integrated full schema-4 messages;
 - delta-first and adaptive section selection;
@@ -33,11 +34,19 @@ runtime receipt. Phase 8.4.x is the completed message-intelligence foundation:
 - safe historical valuation retention;
 - `valuation-context-wording-v1` availability/use classes;
 - observer/holder, concrete Unknown, and current-value next-check foundations.
+- structured primary/secondary industry routing with confidence;
+- Fact-dependent causal and valuation-boundary references;
+- framework mismatch and unsupported causal-leap guardrails.
 
 Phase 8.4.1 Work scores were Samsung 17, POSCO 16, Hyundai Glovis 18, Korean Re 16, and SK hynix 17,
 average 16.8/20. Phase 8.4.1.1 fixes the one remaining contradiction: visible own-history context can
 no longer coexist with current-only wording. The exact final Preview is archive-only and sent no
 Telegram.
+
+The Phase 8.5 immutable active audit covers 20 stocks: nine have high-confidence specialized routes
+and eleven remain low-confidence general fallback. This is strong PARTIAL because current structured
+profiles do not prove finer routes for every company. Human-quality status remains pending Work
+review; Codex's archive-only KR assessment averages 17.0/20 and is not Production Assist evidence.
 
 Current core contracts:
 
@@ -53,6 +62,7 @@ Current core contracts:
 - delta-first `delta-first-rendering-v1`
 - decision hierarchy `decision-material-delta-v1`
 - valuation context `valuation-context-wording-v1`
+- industry reasoning `industry-specific-reasoning-v1`
 - runtime gate `runtime-message-quality-v1`
 - receipt `runtime-message-quality-receipt-v2`
 - Pilot `ai-assisted-pilot-v3`, renderer v3
@@ -68,18 +78,19 @@ Knowledge checksums:
 Runtime source of truth at handoff: KR 3/5 and US 3/5, AI mode shadow, Production Assist OFF, four
 Scheduled Tasks ACTIVE at 08:15/08:30/16:15/16:55 KST on the operating checkout. The natural KR
 packet `2026-08-17-kr-run-23-378ee562573e` was rejected pre-send because four stocks lacked required
-current-price RR Facts. AI send was zero, fallback eligibility was preserved, and Pilot did not
-advance. Reconcile any later natural result instead of forcing these counts.
+current-price RR Facts. AI send was zero, fallback eligibility was preserved, deterministic fallback
+later sent 8/8 at 17:10 KST, and Pilot did not advance. Reconcile any later natural result instead of
+forcing these counts.
 
-Default next task: **Phase 8.5 Industry-Specific Investment Reasoning**. Before starting, determine
-whether KRX API approval is now available. If approved, report whether **Phase 8.2A KRX Market
-Breadth Primary** should be inserted first. Do not combine both scopes without user approval.
+Default next task: **Runtime RR Packet Repair**. Repair the missing required current-price RR
+Fact/numeric path without weakening validation, then collect natural Phase 8.5 evidence. Before
+starting, determine whether KRX API approval is now available. If approved, report whether **Phase
+8.2A KRX Market Breadth Primary** should be inserted first. Do not combine both scopes without user
+approval.
 
-Phase 8.5 should add Fact-dependent causal reasoning for memory, foundry/semiconductor, insurance,
-transport/logistics, steel/materials, automotive, biotech, HPC/crypto infrastructure,
-EPC/construction, SaaS where relevant, holding companies, and general companies. It must not infer
-missing metrics, promote industry conditions into company achievements, create thresholds, or relax
-numeric, lineage, scope, renderer, receipt, fallback, or exactly-once validation.
+Preserve the Phase 8.5 boundary: do not infer missing metrics, promote themes into company
+achievements, force fine-grained taxonomy, create thresholds, or relax numeric, lineage, scope,
+renderer, receipt, fallback, or exactly-once validation.
 
 Do not merge main, deploy, run Scheduled Tasks manually, send Telegram, mutate the operating DB,
 assessment, archive, notification, delivery, or Pilot, or enable Production Assist without an

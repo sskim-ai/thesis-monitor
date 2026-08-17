@@ -3,11 +3,10 @@
 Master Workflow: `v2`
 As of: `2026-08-17`
 Repository: `sskim-ai/thesis-monitor`
-Experimental branch: `codex/phase-8-4-1-1-valuation-context-finalization`
+Experimental branch: `codex/phase-8-5-industry-specific-reasoning`
 Commit resolution: run `git rev-parse HEAD`; this document is part of that commit and must not
-hardcode a self-referential final SHA. Phase 8.4.1 base is
-`3ee719e9bc7db1ffea441f1de4b2a3ca8e8f26de`; the Phase 8.4.1.1 implementation anchor is
-`f6a772c`.
+hardcode a self-referential final SHA. Phase 8.5 is based on the completed Phase 8.4.1.1 commit
+`9c4c1cdae3c790d2fc66afa05fe35dfd09553e80`.
 
 ## 1. Project Mission
 
@@ -192,6 +191,13 @@ Telegram text must pass `runtime-message-quality-v1`. Phase 8.4.1 Work review sc
 17, POSCO 16, Hyundai Glovis 18, Korean Re 16, and SK hynix 17: average 16.8/20. Phase 8.4.1.1 fixes
 the one remaining valuation-context contradiction without reopening the architecture.
 
+`industry-specific-reasoning-v1` now sits between verified Fact selection and adaptive rendering.
+It routes only from structured company classification, records confidence and missing drivers, and
+requires exact supporting Fact IDs for causal claims. Thesis and themes cannot replace the primary
+framework. The Phase 8.5 archive audit covers 20 active KR/US stocks: nine have high-confidence
+specialized routes and eleven correctly remain low-confidence `general`. The reasoning contract is
+implemented, while specialized taxonomy coverage remains a strong PARTIAL gap.
+
 ## 20. Phase History
 
 | Phase | Result |
@@ -204,12 +210,14 @@ the one remaining valuation-context contradiction without reopening the architec
 | 8.4 | Integrated schema-4 delta-first full messages |
 | 8.4.1 | Economic scope, denied echo, decision hierarchy, history retention |
 | 8.4.1.1 | Valuation-context wording matrix and contradiction validator; Phase 8.4 foundation finalized |
+| 8.5 | Fact-dependent industry routing/causal guardrails; archive-only KR/US full-message evidence; specialized coverage strong PARTIAL |
 
 ## 21. Current Persistent Gaps
 
 | Gap | Status |
 |---|---|
-| Industry-specific investment reasoning | PARTIAL |
+| Industry-specific investment reasoning | STRONG PARTIAL |
+| Structured specialized taxonomy coverage | PARTIAL |
 | Peer/sector valuation | OPEN/PARTIAL |
 | KR market breadth | PARTIAL |
 | KR market-wide flow | OPEN |
@@ -218,6 +226,7 @@ the one remaining valuation-context contradiction without reopening the architec
 | CAPEX aggregation | OPEN |
 | FCF | OPEN |
 | Natural live validation of Phase 8 code | OPEN |
+| Current-price RR packet/numeric path | OPEN |
 | Human-approved Production Assist evidence | INSUFFICIENT |
 
 Closed engineering gaps include numeric provenance, canonical formatting, financial quality taint,
@@ -228,14 +237,14 @@ integrity, fallback/retry, and exactly-once accounting.
 
 ## 22. Current Roadmap
 
-Default next: Phase 8.5 Industry-Specific Investment Reasoning. If KRX approval is confirmed first,
-insert Phase 8.2A KRX Market Breadth Primary. Then proceed to Phase 8.3 Peer/Sector Valuation,
-natural-live quality validation, and a separate production decision.
+Default next: a narrow Runtime RR Packet Repair for the missing required current-price RR Fact/path
+seen in natural KR run-23. If KRX approval is explicitly confirmed first, Phase 8.2A KRX Market
+Breadth Primary may be inserted. Then proceed to Phase 8.3 Peer/Sector Valuation and structured
+taxonomy enrichment, natural-live quality validation, and a separate production decision.
 
-Phase 8.5 moves from generic relational reasoning to causal industry frameworks: memory, foundry and
-semiconductor, insurance, transport/logistics, steel/materials, automotive, biotech, HPC/crypto
-infrastructure, EPC/construction, SaaS where relevant, holding companies, and general. Templates may
-route questions but cannot replace missing company Facts.
+Do not keep subdividing mature safety infrastructure or Phase 8.4 message assembly without a real
+regression. The current priority sequence is better industry coverage, peer context, KR breadth,
+and natural-live evidence.
 
 ## 23. Codex Work Order Standard
 
@@ -263,8 +272,9 @@ failure stops all further delivery and requires manual intervention.
 
 The natural 2026-08-17 KR packet `2026-08-17-kr-run-23-378ee562573e` was rejected pre-send because
 four stocks lacked the required current-price RR Fact and numeric path. Rejected AI sent: 0;
-fallback eligibility: preserved; Pilot change: 0. This is live evidence that Natural Live Validation
-remains OPEN, not a Phase 8.4.1.1 mutation.
+fallback eligibility: preserved; the deterministic fallback later sent 8/8 at 17:10 KST; Pilot
+change: 0. This is a packet/numeric-path and Natural Live Validation gap, not a Phase 8.4 renderer
+failure.
 
 ## 26. Production Assist Approval Rules
 
@@ -275,9 +285,10 @@ approval. Main merge and shadow deployment still do not authorize AI-assisted pr
 
 ## 27. Current Next Task
 
-Start Phase 8.5 unless KRX approval has become available. Phase 8.5 must keep existing scope,
-lineage, numeric, and renderer contracts while adding Fact-dependent industry causal reasoning and
-industry-specific next checks. Missing metrics remain Unknown; industry conditions never become
+Repair the required current-price RR Fact/numeric path without relaxing the validator, then obtain
+natural full-message evidence for `industry-specific-reasoning-v1`. KRX status remains pending or
+unknown from repository evidence; if explicit approval becomes available, report whether Phase 8.2A
+should precede the RR repair. Missing metrics remain Unknown and industry conditions never become
 company achievements.
 
 ## 28. New Session Bootstrap Prompt
@@ -288,5 +299,5 @@ company achievements.
 > Recover the actual repository, runtime Pilot, Scheduled Task, contract, and Production Assist
 > state. If the repository is newer than a commit or statement in this workflow, the repository and
 > immutable runtime win and the documentation must be reconciled. Confirm whether the next task is
-> Phase 8.5 Industry-Specific Investment Reasoning or whether newly approved KRX access makes Phase
-> 8.2A KRX Market Breadth Primary the immediate priority. Report the recovered state before editing.
+> the narrow Runtime RR Packet Repair or whether newly approved KRX access makes Phase 8.2A KRX
+> Market Breadth Primary the immediate priority. Report the recovered state before editing.

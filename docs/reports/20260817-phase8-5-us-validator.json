@@ -1,0 +1,21 @@
+{
+  "artifact_context": {
+    "baseline_preview_sha256": "82166c316c6918c0c651bcc6f1ec82fe5ed226eba6f5019d81fb36282f0cc400",
+    "database_mutations": 0,
+    "human_quality_status": "pending_work_human_review",
+    "pilot_mutations": 0,
+    "provider_calls": 0,
+    "retrospective_packet": "2026-08-17-us-phase8-5-industry-reasoning-retrospective",
+    "source_database_sha256": "d1b4b121d11005952bd050ca5d0c0c1056b310d223afb4f6db57ae00086936fd",
+    "source_messages_sha256": "1e03196c239e73ed044c3862bdde1b25f38759e66a2dc116c8df3c7dfb224cdc",
+    "source_output_sha256": "62673a28353282f0930ebe4bebe1b91cf8b96e7b15a7346a2dbc32d10c7df955",
+    "source_packet": "2026-08-16-us-run-20-6c15d0003955",
+    "source_packet_sha256": "7165c38af95d530116596f5ec5f62ee17e075a997f5fb867619d78263ad8684d",
+    "telegram_sends": 0
+  },
+  "result": {
+    "errors": [],
+    "industry_guardrail_errors": 0,
+    "status": "passed"
+  }
+}

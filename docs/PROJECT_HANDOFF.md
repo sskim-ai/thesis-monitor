@@ -217,8 +217,9 @@ quality and does not mark it as Production Assist evidence.
 The next natural KR packet `2026-08-17-kr-run-23-378ee562573e` was rejected before AI delivery
 because POSCO Holdings, LS ELECTRIC, Hanwha Aerospace, and Hyundai Glovis lacked the required
 current-price RR Fact and numeric path. Rejected AI sends were zero and deterministic fallback
-eligibility was preserved. No completed AI delivery or archive marker was recorded, so runtime
-remains KR 3/5 and US 3/5. This is a separate natural-live gap, not a Phase 8 retrospective mutation.
+eligibility was preserved; the deterministic fallback later sent 8/8 at 17:10 KST. No completed AI
+delivery or AI archive marker was recorded, so runtime remains KR 3/5 and US 3/5. This is a separate
+packet/numeric-path and natural-live gap, not a Phase 8 retrospective mutation.
 
 ## Phase 8 Market Cross-Section
 
@@ -297,8 +298,8 @@ observer/holder, Unknown, or next-check sections needed to judge relational inve
 Data Recovery and Safety are PASS; Investment Message Quality and main readiness are HOLD.
 Production Assist evidence eligibility remains false. See the
 [human review](reports/20260817-phase8-1-2-kr-financial-human-review.md) and
-[verbatim Preview](reports/20260817-phase8-1-2-kr-before-after-preview.md). The recommended order is
-Phase 8.4 then Phase 8.5, with Phase 8.2A inserted first if KRX approval is available.
+[verbatim Preview](reports/20260817-phase8-1-2-kr-before-after-preview.md). At that point the
+recommended order was Phase 8.4 then Phase 8.5, both of which are now represented by later sections.
 
 ## Phase 8.4 Delta-First Full Messages
 
@@ -369,6 +370,33 @@ the user's merge decision; main and the operating checkout are unchanged, Produc
 OFF, and this retrospective sent no Telegram or mutated no runtime state. See the
 [final Preview](reports/20260817-phase8-4-1-1-final-preview.md) and
 [Master Workflow v2](MASTER_WORKFLOW.md).
+
+## Phase 8.5 Industry-Specific Investment Reasoning
+
+Phase 8.5 on `codex/phase-8-5-industry-specific-reasoning` adds
+`industry-specific-reasoning-v1` without changing Investment Knowledge, Chart Knowledge, schema 4,
+or the Phase 8.4 renderer architecture. The contract routes from verified company taxonomy,
+separates primary framework from secondary themes, records confidence and missing drivers, and
+requires supporting Facts for causal claims. It rejects memory low-PER cheap claims, insurance
+low-PBR cheap claims without ROE/capital, biotech PER forcing, EPC order-to-margin leaps, and
+hyperscaler-theme promotion to company revenue.
+
+Archive-only full messages pass both the full validator and runtime receipt for five KR and six US
+representatives. KR binding has 86 automatic numeric references and 12 accepted industry references
+with zero error; SK hynix denied earnings/PER leakage remains zero. The active immutable routing
+audit covers 20 stocks: nine high-confidence specialized routes and eleven low-confidence general
+fallbacks. MU and TSM remain broad `semiconductor`, while WULF remains `general`, because current
+structured evidence does not prove the finer memory/foundry/HPC primary labels. Phase 8.5 is
+therefore strong PARTIAL pending better taxonomy coverage and natural-live evidence. See the
+[architecture](architecture/INDUSTRY_SPECIFIC_REASONING.md),
+[audit](reports/20260817-phase8-5-industry-reasoning-audit.md),
+[KR Preview](reports/20260817-phase8-5-kr-industry-reasoning-preview.md), and
+[US Preview](reports/20260817-phase8-5-us-industry-reasoning-preview.md).
+
+The separate natural KR packet `2026-08-17-kr-run-23-378ee562573e` rejected four stocks pre-send for
+missing required current-price RR Facts/paths. Rejected AI sends were zero; deterministic fallback
+eligibility was preserved and later sent 8/8 at 17:10 KST; Pilot stayed KR 3/5 and US 3/5. This is a
+packet/numeric-path and natural-live gap, not a renderer or Phase 8.5 reasoning failure.
 
 On 2026-08-15 the owning desktop environment verified all four local-project tasks, retained their
 08:15/08:30/16:15/16:55 schedules, and migrated their exact prompts to v3.10 with
@@ -497,6 +525,7 @@ unchanged. See [the Phase 7.2.9.2 readiness report](reports/20260817-phase7-2-9-
 - Chart structure: `app/services/ohlcv_structure_service.py`
 - Monitoring state and peer context: `app/services/monitoring_state_service.py`
 - Renderer and delivery: `app/services/ai_assisted_delivery_service.py`
+- Industry routing and causal guardrails: `app/services/industry_reasoning_service.py`
 - Skill: `.agents/skills/thesis-monitor-daily-review/SKILL.md`
 - Runtime policy: `.agents/skills/thesis-monitor-daily-review/references/daily-review-policy.md`
 - Output schema: `.agents/skills/thesis-monitor-daily-review/references/output-schema.json`
@@ -509,8 +538,8 @@ unchanged. See [the Phase 7.2.9.2 readiness report](reports/20260817-phase7-2-9-
 - KR market breadth is partial pending KRX approval; the Kiwoom Windows gateway is not configured.
 - KR market-wide investor flow is unavailable, and constituent-level sector participation remains
   incomplete.
-- Industry-specific causal reasoning is partial. Memory, insurance, transport, steel/materials,
-  foundry, biotech, and other frameworks need Fact-dependent Phase 8.5 contracts.
+- Industry-specific causal reasoning contracts are implemented, but specialized structured routing
+  covers 9/20 immutable active stocks; taxonomy and business-unit coverage remain partial.
 - There is no broad point-in-time peer valuation provider. Limited active-universe comparisons fail
   closed unless at least three comparable peers pass all basis checks.
 - OCF extraction is partial; CAPEX aggregation and FCF remain open.
@@ -520,7 +549,8 @@ unchanged. See [the Phase 7.2.9.2 readiness report](reports/20260817-phase7-2-9-
 - TSM and WRD lack authoritative production identity evidence. Their live `unknown` state and
   multiple withholding are correct until a separately approved identity ingestion.
 - Natural KR run-23 failed pre-send on missing required current-price RR Facts for four stocks; the
-  natural-live Phase 8 validation gap remains open.
+  deterministic fallback later sent 8/8, but the packet/numeric-path and natural-live gaps remain
+  open.
 - Production Assist remains disabled pending a separate decision after successful Pilot evidence.
 
 Never fill data gaps with model knowledge. Add a deterministic fact, semantic contract, and tests
@@ -547,14 +577,14 @@ first.
 
 ## Next Steps
 
-1. Review the Phase 8.4.1.1 exact final Preview and Master Workflow v2; decide main merge and shadow
-   deployment separately from Production Assist.
-2. Start Phase 8.5 Industry-Specific Investment Reasoning by default. If KRX approval is confirmed,
-   report whether Phase 8.2A KRX Market Breadth Primary should be inserted first.
+1. Review the Phase 8.5 exact KR/US Previews; decide main merge and shadow deployment separately
+   from Production Assist.
+2. Repair the natural current-price RR Fact/numeric path as a separate narrow work order. If KRX
+   approval is confirmed, report whether Phase 8.2A should be inserted first.
 3. Preserve operational counts KR 3/5 and US 3/5 and reconcile natural run-23 as a rejected pre-send
    session without replay, counter edits, or archive rewriting.
-4. Keep TSM/WRD identity `unknown`, peer data unavailable where absent, and OCF/CAPEX/FCF gaps
-   explicit.
+4. Keep TSM/WRD identity `unknown`, fine-grained industry routes general where unproved, peer data
+   unavailable where absent, and OCF/CAPEX/FCF gaps explicit.
 5. Run 3-5 Massive weekday shadow captures at 08:05 KST and, after KRX activation, collect five
    KRX/Kiwoom reconciliation sessions before metric-level fallback.
 6. Keep Production Assist disabled until natural full-message evidence passes direct human review
