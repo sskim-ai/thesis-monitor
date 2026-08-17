@@ -3,7 +3,7 @@
 Master Workflow: `v2`
 As of: `2026-08-17`
 Repository: `sskim-ai/thesis-monitor`
-Experimental branch: `codex/phase-8-5-industry-specific-reasoning`
+Experimental branch: `codex/phase-8-5-1-runtime-current-price-rr-repair`
 Commit resolution: run `git rev-parse HEAD`; this document is part of that commit and must not
 hardcode a self-referential final SHA. Phase 8.5 is based on the completed Phase 8.4.1.1 commit
 `9c4c1cdae3c790d2fc66afa05fe35dfd09553e80`.
@@ -211,6 +211,7 @@ implemented, while specialized taxonomy coverage remains a strong PARTIAL gap.
 | 8.4.1 | Economic scope, denied echo, decision hierarchy, history retention |
 | 8.4.1.1 | Valuation-context wording matrix and contradiction validator; Phase 8.4 foundation finalized |
 | 8.5 | Fact-dependent industry routing/causal guardrails; archive-only KR/US full-message evidence; specialized coverage strong PARTIAL |
+| 8.5.1 | Exchange-calendar session repair and exact current-price RR packet/numeric-path replay; natural-live proof pending |
 
 ## 21. Current Persistent Gaps
 
@@ -226,7 +227,7 @@ implemented, while specialized taxonomy coverage remains a strong PARTIAL gap.
 | CAPEX aggregation | OPEN |
 | FCF | OPEN |
 | Natural live validation of Phase 8 code | OPEN |
-| Current-price RR packet/numeric path | OPEN |
+| Current-price RR packet/numeric path | PARTIAL |
 | Human-approved Production Assist evidence | INSUFFICIENT |
 
 Closed engineering gaps include numeric provenance, canonical formatting, financial quality taint,
@@ -237,10 +238,11 @@ integrity, fallback/retry, and exactly-once accounting.
 
 ## 22. Current Roadmap
 
-Default next: a narrow Runtime RR Packet Repair for the missing required current-price RR Fact/path
-seen in natural KR run-23. If KRX approval is explicitly confirmed first, Phase 8.2A KRX Market
-Breadth Primary may be inserted. Then proceed to Phase 8.3 Peer/Sector Valuation and structured
-taxonomy enrichment, natural-live quality validation, and a separate production decision.
+Default next: observe the next natural KR session and verify that the repaired current-price RR path
+passes packet completeness, the full validator, receipt, archive, and exactly-once checks. If KRX
+approval is explicitly confirmed first, Phase 8.2A KRX Market Breadth Primary may be inserted.
+Then proceed to Phase 8.3 Peer/Sector Valuation and structured taxonomy enrichment, natural-live
+quality validation, and a separate production decision.
 
 Do not keep subdividing mature safety infrastructure or Phase 8.4 message assembly without a real
 regression. The current priority sequence is better industry coverage, peer context, KR breadth,
@@ -276,6 +278,13 @@ fallback eligibility: preserved; the deterministic fallback later sent 8/8 at 17
 change: 0. This is a packet/numeric-path and Natural Live Validation gap, not a Phase 8.4 renderer
 failure.
 
+Phase 8.5.1 traces that failure to weekday-only KRX session handling. 2026-08-17 was an XKRX
+substitute holiday, so the actual 2026-08-14 chart was the latest completed session rather than
+stale. Exchange-calendar-aware reconstruction restores exact current-price RR Facts and registry
+paths for all four affected stocks; three unavailable controls remain unavailable by contract. The
+immutable source validation's eight RR missing-path errors fall to zero in replay. The gap is
+PARTIAL, not CLOSED, until a new natural KR session proves the path end to end.
+
 ## 26. Production Assist Approval Rules
 
 Production Assist remains OFF. Five operational Pilot successes are not enough. Approval requires
@@ -285,11 +294,11 @@ approval. Main merge and shadow deployment still do not authorize AI-assisted pr
 
 ## 27. Current Next Task
 
-Repair the required current-price RR Fact/numeric path without relaxing the validator, then obtain
-natural full-message evidence for `industry-specific-reasoning-v1`. KRX status remains pending or
-unknown from repository evidence; if explicit approval becomes available, report whether Phase 8.2A
-should precede the RR repair. Missing metrics remain Unknown and industry conditions never become
-company achievements.
+Obtain the next natural KR full-message result and verify the repaired current-price RR path without
+manual execution or replay. KRX status remains pending or unknown from repository evidence; if
+explicit approval becomes available, report whether Phase 8.2A should be inserted before later peer
+or taxonomy work. Missing metrics remain Unknown and industry conditions never become company
+achievements.
 
 ## 28. New Session Bootstrap Prompt
 
@@ -299,5 +308,5 @@ company achievements.
 > Recover the actual repository, runtime Pilot, Scheduled Task, contract, and Production Assist
 > state. If the repository is newer than a commit or statement in this workflow, the repository and
 > immutable runtime win and the documentation must be reconciled. Confirm whether the next task is
-> the narrow Runtime RR Packet Repair or whether newly approved KRX access makes Phase 8.2A KRX
-> Market Breadth Primary the immediate priority. Report the recovered state before editing.
+> natural-live proof of the repaired RR path or whether newly approved KRX access makes Phase 8.2A
+> KRX Market Breadth Primary the immediate priority. Report the recovered state before editing.

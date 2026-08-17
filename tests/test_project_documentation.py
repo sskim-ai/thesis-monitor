@@ -32,7 +32,14 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
 
     assert state["repository"] == "sskim-ai/thesis-monitor"
     assert state["branch"] == "main"
-    assert state["experimental_branch"] == "codex/phase-8-5-industry-specific-reasoning"
+    assert (
+        state["experimental_branch"]
+        == "codex/phase-8-5-1-runtime-current-price-rr-repair"
+    )
+    assert state["current_phase"] == "phase_8_5_1_complete_experimental"
+    assert state["next_default_phase"] == "phase_8_x_natural_live_rr_validation"
+    assert state["persistent_gaps"]["current_price_rr_packet_numeric_path"] == "PARTIAL"
+    assert state["persistent_gaps"]["natural_live_validation"] == "OPEN"
     assert state["current_commit"] == "HEAD"
     assert state["current_commit_resolution"] == "git rev-parse HEAD"
     assert state["ai_review_mode"] == "shadow"

@@ -16,7 +16,9 @@ checkout. Read, in this order:
 4. `docs/NEXT_SESSION_PROMPT.md`
 5. `docs/reports/20260817-phase8-5-industry-reasoning-validation.md`
 6. `docs/reports/20260817-phase8-5-industry-reasoning-audit.md`
-7. the KR and US Phase 8.5 full Previews
+7. `docs/reports/20260817-runtime-current-price-rr-repair-validation.md`
+8. `docs/reports/20260817-runtime-current-price-rr-run23-replay.md`
+9. the KR and US Phase 8.5 full Previews
 
 Repository and immutable runtime state override stale conversation or document claims. Resolve the
 current commit from Git rather than copying a historical SHA.
@@ -82,11 +84,19 @@ current-price RR Facts. AI send was zero, fallback eligibility was preserved, de
 later sent 8/8 at 17:10 KST, and Pilot did not advance. Reconcile any later natural result instead of
 forcing these counts.
 
-Default next task: **Runtime RR Packet Repair**. Repair the missing required current-price RR
-Fact/numeric path without weakening validation, then collect natural Phase 8.5 evidence. Before
-starting, determine whether KRX API approval is now available. If approved, report whether **Phase
-8.2A KRX Market Breadth Primary** should be inserted first. Do not combine both scopes without user
-approval.
+Phase 8.5.1 traced the failure to weekday-only KRX session classification. XKRX was closed on
+2026-08-17, so the 2026-08-14 chart was the latest completed session and should have remained fresh.
+The exchange-calendar repair restores exact canonical RR Facts and numeric paths for all four
+affected stocks in read-only replay. Three unavailable controls remain unavailable by contract. The
+original eight RR missing-path errors become zero, but Current-Price RR Packet/Numeric Path remains
+PARTIAL and Natural Live Validation remains OPEN pending the next natural KR session.
+
+Default next task: **Natural Live RR Validation**. Do not run the Scheduled Task manually. Inspect
+the next naturally generated KR packet for RR completeness, full-validator status, receipt,
+delivery/fallback, archive, exactly-once state, and human message quality. Before starting,
+determine whether KRX API approval is now available. If approved, report whether **Phase 8.2A KRX
+Market Breadth Primary** should be inserted before later roadmap work. Do not combine scopes without
+user approval.
 
 Preserve the Phase 8.5 boundary: do not infer missing metrics, promote themes into company
 achievements, force fine-grained taxonomy, create thresholds, or relax numeric, lineage, scope,

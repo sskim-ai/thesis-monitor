@@ -16,7 +16,7 @@ execution or an autonomous investment adviser.
 
 | Component | Contract |
 |---|---|
-| Branch | `codex/phase-8-4-1-1-valuation-context-finalization` (experimental; `main` unchanged) |
+| Branch | `codex/phase-8-5-1-runtime-current-price-rr-repair` (experimental; `main` unchanged) |
 | Official assessment | Deterministic `ThesisAssessment` |
 | AI mode | `shadow` |
 | Analysis policy | `daily-review-v3.10` |
@@ -35,6 +35,8 @@ execution or an autonomous investment adviser.
 | Delta-first rendering | `delta-first-rendering-v1` |
 | Semantic decision hierarchy | `semantic-scope-and-decision-hierarchy-v1`, `decision-material-delta-v1` |
 | Valuation context wording | `valuation-context-wording-v1` |
+| Industry reasoning | `industry-specific-reasoning-v1` |
+| Runtime packet completeness | current-price RR preflight v1; natural proof pending |
 | Runtime quality | `runtime-message-quality-v1`, receipt `runtime-message-quality-receipt-v2` |
 
 Resolve the deployed commit with `git rev-parse HEAD`; a file inside a commit cannot contain that
@@ -398,6 +400,25 @@ missing required current-price RR Facts/paths. Rejected AI sends were zero; dete
 eligibility was preserved and later sent 8/8 at 17:10 KST; Pilot stayed KR 3/5 and US 3/5. This is a
 packet/numeric-path and natural-live gap, not a renderer or Phase 8.5 reasoning failure.
 
+## Phase 8.5.1 Runtime Current-Price RR Repair
+
+Phase 8.5.1 on `codex/phase-8-5-1-runtime-current-price-rr-repair` identifies the run-23 failure as
+`CALCULATED_BUT_NOT_CANONICALIZED`. The runtime session helper treated 2026-08-17 as a regular KRX
+weekday even though XKRX was closed for a substitute holiday. That made the valid 2026-08-14 chart
+look stale. Monitoring state retained the calculated RR and required grounding, while stale-chart
+Fact filtering correctly withheld its canonical Fact.
+
+The repair uses XKRX/XNYS calendars to determine sessions and preceding completed sessions. It does
+not change RR calculation, nearest-resistance selection, stale-data denial, grounding requirements,
+the binder, validator, or renderer. Read-only run-23 reconstruction restores exact RR paths for
+POSCO Holdings, LS ELECTRIC, Hanwha Aerospace, and Hyundai Glovis; Samsung Electronics, Korean Re,
+and SK hynix remain unavailable by contract. The original eight RR missing-path errors become zero.
+Current-price RR packet completeness advances to PARTIAL; Natural Live Validation remains OPEN until
+the next naturally scheduled KR session passes without this blocker. See the
+[root-cause report](reports/20260817-runtime-current-price-rr-root-cause.md),
+[validation report](reports/20260817-runtime-current-price-rr-repair-validation.md), and
+[run-23 replay](reports/20260817-runtime-current-price-rr-run23-replay.md).
+
 On 2026-08-15 the owning desktop environment verified all four local-project tasks, retained their
 08:15/08:30/16:15/16:55 schedules, and migrated their exact prompts to v3.10 with
 `security-identity-v2` and `financial-quality-taint-v2`. All four are ACTIVE,
@@ -524,6 +545,8 @@ unchanged. See [the Phase 7.2.9.2 readiness report](reports/20260817-phase7-2-9-
 - Numeric semantics: `app/services/numeric_semantic_registry.py`
 - Chart structure: `app/services/ohlcv_structure_service.py`
 - Monitoring state and peer context: `app/services/monitoring_state_service.py`
+- Exchange-session eligibility: `app/services/market_session.py`
+- Runtime packet preflight: `app/services/runtime_packet_completeness_service.py`
 - Renderer and delivery: `app/services/ai_assisted_delivery_service.py`
 - Industry routing and causal guardrails: `app/services/industry_reasoning_service.py`
 - Skill: `.agents/skills/thesis-monitor-daily-review/SKILL.md`
@@ -548,9 +571,9 @@ unchanged. See [the Phase 7.2.9.2 readiness report](reports/20260817-phase7-2-9-
   Production Assist evidence.
 - TSM and WRD lack authoritative production identity evidence. Their live `unknown` state and
   multiple withholding are correct until a separately approved identity ingestion.
-- Natural KR run-23 failed pre-send on missing required current-price RR Facts for four stocks; the
-  deterministic fallback later sent 8/8, but the packet/numeric-path and natural-live gaps remain
-  open.
+- Natural KR run-23 failed pre-send on missing required current-price RR Facts for four stocks. The
+  retrospective packet repair is verified and the packet/numeric-path gap is PARTIAL; a new natural
+  KR session is still required to close it. Natural Live Validation remains OPEN.
 - Production Assist remains disabled pending a separate decision after successful Pilot evidence.
 
 Never fill data gaps with model knowledge. Add a deterministic fact, semantic contract, and tests
@@ -577,11 +600,12 @@ first.
 
 ## Next Steps
 
-1. Review the Phase 8.5 exact KR/US Previews; decide main merge and shadow deployment separately
+1. Review the Phase 8.5 and Phase 8.5.1 evidence; decide main merge and shadow deployment separately
    from Production Assist.
-2. Repair the natural current-price RR Fact/numeric path as a separate narrow work order. If KRX
-   approval is confirmed, report whether Phase 8.2A should be inserted first.
-3. Preserve operational counts KR 3/5 and US 3/5 and reconcile natural run-23 as a rejected pre-send
+2. Wait for the next natural KR session and verify current-price RR packet completeness, the full
+   validator, runtime receipt, archive, and exactly-once behavior. If KRX approval is confirmed,
+   report whether Phase 8.2A should be inserted before later roadmap work.
+3. Preserve operational counts KR 3/5 and US 3/5 and retain natural run-23 as a rejected pre-send
    session without replay, counter edits, or archive rewriting.
 4. Keep TSM/WRD identity `unknown`, fine-grained industry routes general where unproved, peer data
    unavailable where absent, and OCF/CAPEX/FCF gaps explicit.
