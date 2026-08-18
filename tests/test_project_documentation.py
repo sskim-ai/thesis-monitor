@@ -36,22 +36,22 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     assert state["branch"] == "main"
     assert (
         state["experimental_branch"]
-        == "codex/phase-8-5-3-1-language-dedup-hardening"
+        == "codex/phase-8-5-3-2-rxrx-valuation-label-repair"
     )
     assert (
         state["current_phase"]
-        == "phase_8_5_3_1_shadow_promoted_pending_natural_ai_delivery_proof"
+        == "phase_8_5_3_2_shadow_promoted_pending_natural_ai_delivery_proof"
     )
     assert (
         state["last_completed_phase"]
-        == "phase_8_5_3_1_language_dedup_shadow_promotion"
+        == "phase_8_5_3_2_valuation_label_shadow_promotion"
     )
     assert (
         state["next_default_phase"]
-        == "natural_us_kr_live_proof_then_phase_8_2a_krx_market_breadth_primary"
+        == "natural_us_kr_live_proof_with_phase_8_2a_experimental_development_only"
     )
     assert state["deployed_code_commit"] == (
-        "e166aaf6a4c13f9009a3885737d3b48e34c895d5"
+        "b3ad1ea82bdbd3fe003831d449b0dcaa7c6a2da2"
     )
     assert state["main_code_commit"] == "HEAD"
     assert state["operating_code_commit"] == "HEAD"
