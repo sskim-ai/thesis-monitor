@@ -1,0 +1,5283 @@
+{
+  "schema_version": "phase8-3-peer-audit-v1",
+  "assessment_date": "2026-08-18",
+  "source": "read_only_operating_assessment_archive",
+  "provider_scope": "limited_active_monitoring_universe",
+  "assessment_count": 20,
+  "market_counts": {
+    "kr": 7,
+    "us": 13
+  },
+  "user_visible_peer_state_count": 0,
+  "snapshot_metric_status_counts": {
+    "trailing_pe": {
+      "not_meaningful": 5,
+      "unavailable": 2,
+      "value": 13
+    },
+    "price_to_book": {
+      "unavailable": 2,
+      "value": 18
+    },
+    "forward_pe_consensus": {
+      "basis_not_selected": 11,
+      "value": 9
+    },
+    "forward_pe_modeled": {
+      "basis_not_selected": 14,
+      "not_meaningful": 3,
+      "value": 3
+    },
+    "forward_price_to_book_consensus": {
+      "basis_not_selected": 20
+    },
+    "forward_price_to_book_modeled": {
+      "basis_not_selected": 15,
+      "value": 5
+    }
+  },
+  "mandatory_fixtures": {
+    "kr": {
+      "005930": {
+        "ticker": "005930",
+        "market": "kr",
+        "available": false,
+        "reason": "insufficient_verified_peer_universe",
+        "contract": "peer-sector-valuation-v1",
+        "provider": "validated_active_monitoring_assessments",
+        "peer_scope": null,
+        "as_of_date": null,
+        "group_basis": null,
+        "group_value": null,
+        "candidate_count": 0,
+        "issuer_deduplicated_count": 0,
+        "sample_quality": null,
+        "framework": null,
+        "interpretation_contract": null,
+        "metrics": {
+          "trailing_pe": {},
+          "price_to_book": {},
+          "forward_pe_consensus": {},
+          "forward_pe_modeled": {},
+          "forward_price_to_book_consensus": {},
+          "forward_price_to_book_modeled": {}
+        },
+        "exclusion_reason_counts": {},
+        "audit": {}
+      },
+      "000660": {
+        "ticker": "000660",
+        "market": "kr",
+        "available": false,
+        "reason": "insufficient_verified_peer_universe",
+        "contract": "peer-sector-valuation-v1",
+        "provider": "validated_active_monitoring_assessments",
+        "peer_scope": null,
+        "as_of_date": null,
+        "group_basis": null,
+        "group_value": null,
+        "candidate_count": 0,
+        "issuer_deduplicated_count": 0,
+        "sample_quality": null,
+        "framework": null,
+        "interpretation_contract": null,
+        "metrics": {
+          "trailing_pe": {},
+          "price_to_book": {},
+          "forward_pe_consensus": {},
+          "forward_pe_modeled": {},
+          "forward_price_to_book_consensus": {},
+          "forward_price_to_book_modeled": {}
+        },
+        "exclusion_reason_counts": {},
+        "audit": {}
+      },
+      "005490": {
+        "ticker": "005490",
+        "market": "kr",
+        "available": false,
+        "reason": "insufficient_verified_peer_universe",
+        "contract": "peer-sector-valuation-v1",
+        "provider": "validated_active_monitoring_assessments",
+        "peer_scope": null,
+        "as_of_date": null,
+        "group_basis": null,
+        "group_value": null,
+        "candidate_count": 0,
+        "issuer_deduplicated_count": 0,
+        "sample_quality": null,
+        "framework": null,
+        "interpretation_contract": null,
+        "metrics": {
+          "trailing_pe": {},
+          "price_to_book": {},
+          "forward_pe_consensus": {},
+          "forward_pe_modeled": {},
+          "forward_price_to_book_consensus": {},
+          "forward_price_to_book_modeled": {}
+        },
+        "exclusion_reason_counts": {},
+        "audit": {}
+      },
+      "086280": {
+        "ticker": "086280",
+        "market": "kr",
+        "available": false,
+        "reason": "insufficient_verified_peer_universe",
+        "contract": "peer-sector-valuation-v1",
+        "provider": "validated_active_monitoring_assessments",
+        "peer_scope": null,
+        "as_of_date": null,
+        "group_basis": null,
+        "group_value": null,
+        "candidate_count": 0,
+        "issuer_deduplicated_count": 0,
+        "sample_quality": null,
+        "framework": null,
+        "interpretation_contract": null,
+        "metrics": {
+          "trailing_pe": {},
+          "price_to_book": {},
+          "forward_pe_consensus": {},
+          "forward_pe_modeled": {},
+          "forward_price_to_book_consensus": {},
+          "forward_price_to_book_modeled": {}
+        },
+        "exclusion_reason_counts": {},
+        "audit": {}
+      },
+      "003690": {
+        "ticker": "003690",
+        "market": "kr",
+        "available": false,
+        "reason": "insufficient_verified_peer_universe",
+        "contract": "peer-sector-valuation-v1",
+        "provider": "validated_active_monitoring_assessments",
+        "peer_scope": null,
+        "as_of_date": null,
+        "group_basis": null,
+        "group_value": null,
+        "candidate_count": 0,
+        "issuer_deduplicated_count": 0,
+        "sample_quality": null,
+        "framework": null,
+        "interpretation_contract": null,
+        "metrics": {
+          "trailing_pe": {},
+          "price_to_book": {},
+          "forward_pe_consensus": {},
+          "forward_pe_modeled": {},
+          "forward_price_to_book_consensus": {},
+          "forward_price_to_book_modeled": {}
+        },
+        "exclusion_reason_counts": {},
+        "audit": {}
+      }
+    },
+    "us": {
+      "MU": {
+        "ticker": "MU",
+        "market": "us",
+        "available": false,
+        "reason": null,
+        "contract": "peer-sector-valuation-v1",
+        "provider": "validated_active_monitoring_assessments",
+        "peer_scope": "limited_active_monitoring_universe",
+        "as_of_date": "2026-08-17",
+        "group_basis": "sector",
+        "group_value": "technology",
+        "candidate_count": 6,
+        "issuer_deduplicated_count": 6,
+        "sample_quality": "LOW",
+        "framework": "semiconductor",
+        "interpretation_contract": {
+          "framework": "semiconductor",
+          "rule": "cycle_normalized_earnings_and_cash_conversion",
+          "required_drivers": [
+            "asp_or_utilization",
+            "product_mix",
+            "capex",
+            "free_cash_flow"
+          ],
+          "automatic_cheap_or_expensive_verdict": false
+        },
+        "metrics": {
+          "trailing_pe": {
+            "available": false,
+            "reason": "insufficient_comparable_metric_sample",
+            "quality": "LOW",
+            "sample_count": 2
+          },
+          "price_to_book": {
+            "available": false,
+            "audit_available": true,
+            "reason": "broad_fallback_low_quality",
+            "quality": "LOW",
+            "sample_count": 3,
+            "company_value": 11.3406,
+            "median": 6.5687,
+            "company_relative_multiple": 1.7265,
+            "company_vs_median_pct": 72.646,
+            "company_cross_section_percentile": 62.5
+          },
+          "forward_pe_consensus": {
+            "available": false,
+            "reason": "insufficient_comparable_metric_sample",
+            "quality": "LOW",
+            "sample_count": 0
+          },
+          "forward_pe_modeled": {
+            "available": false,
+            "reason": "forward_basis_mismatch",
+            "quality": "LOW",
+            "sample_count": 0
+          },
+          "forward_price_to_book_consensus": {
+            "available": false,
+            "reason": "forward_basis_mismatch",
+            "quality": "LOW",
+            "sample_count": 0
+          },
+          "forward_price_to_book_modeled": {
+            "available": false,
+            "reason": "insufficient_comparable_metric_sample",
+            "quality": "LOW",
+            "sample_count": 1
+          }
+        },
+        "exclusion_reason_counts": {
+          "forward_basis_mismatch": 2,
+          "missing_bvps": 3,
+          "missing_forward_bvps": 10,
+          "missing_forward_eps": 8,
+          "missing_ttm_eps": 4,
+          "period_mismatch": 1,
+          "security_basis_unknown": 2
+        },
+        "audit": {
+          "candidate_tickers": [
+            "GOOGL",
+            "IBM",
+            "SKHY",
+            "SNDK",
+            "TSM",
+            "WRD"
+          ],
+          "issuer_deduplicated_tickers": [
+            "GOOGL",
+            "IBM",
+            "SKHY",
+            "SNDK",
+            "TSM",
+            "WRD"
+          ],
+          "duplicate_issuer_exclusions": {},
+          "metrics": {
+            "trailing_pe": {
+              "included": [
+                {
+                  "ticker": "GOOGL",
+                  "issuer_id": "e7681fb5d62fc211e936",
+                  "security_id": "a7f76a2ac082be327e68",
+                  "identity_tier": "tier_a_authoritative",
+                  "issuer_dedup_reliable": true,
+                  "taxonomy": null,
+                  "industry": "information_technology_services",
+                  "metric": "trailing_pe",
+                  "value": 12.3297,
+                  "as_of": "2026-08-17",
+                  "source": "derived_trailing",
+                  "basis": "directly_comparable",
+                  "denominator_period": "2026-06-30",
+                  "eligibility": "CAUTION",
+                  "cautions": [
+                    "period_caution"
+                  ]
+                },
+                {
+                  "ticker": "IBM",
+                  "issuer_id": "baf0312c9c37b4c10324",
+                  "security_id": "068739af2857355ce5a2",
+                  "identity_tier": "tier_a_authoritative",
+                  "issuer_dedup_reliable": true,
+                  "taxonomy": null,
+                  "industry": "computer_and_office_equipment",
+                  "metric": "trailing_pe",
+                  "value": 13.8194,
+                  "as_of": "2026-08-17",
+                  "source": "derived_trailing",
+                  "basis": "directly_comparable",
+                  "denominator_period": "2026-06-30",
+                  "eligibility": "CAUTION",
+                  "cautions": [
+                    "period_caution"
+                  ]
+                }
+              ],
+              "excluded": [
+                {
+                  "ticker": "SKHY",
+                  "issuer_id": "5b65cdca867f3dd4d3b3",
+                  "reason": "missing_ttm_eps"
+                },
+                {
+                  "ticker": "SNDK",
+                  "issuer_id": "ticker:SNDK",
+                  "reason": "missing_ttm_eps"
+                },
+                {
+                  "ticker": "TSM",
+                  "issuer_id": "ticker:TSM",
+                  "reason": "missing_ttm_eps"
+                },
+                {
+                  "ticker": "WRD",
+                  "issuer_id": "ticker:WRD",
+                  "reason": "missing_ttm_eps"
+                }
+              ]
+            },
+            "price_to_book": {
+              "included": [
+                {
+                  "ticker": "GOOGL",
+                  "issuer_id": "e7681fb5d62fc211e936",
+                  "security_id": "a7f76a2ac082be327e68",
+                  "identity_tier": "tier_a_authoritative",
+                  "issuer_dedup_reliable": true,
+                  "taxonomy": null,
+                  "industry": "information_technology_services",
+                  "metric": "price_to_book",
+                  "value": 6.5687,
+                  "as_of": "2026-08-17",
+                  "source": "derived_trailing",
+                  "basis": "directly_comparable",
+                  "denominator_period": "2026-06-30",
+                  "eligibility": "CAUTION",
+                  "cautions": [
+                    "period_caution"
+                  ]
+                },
+                {
+                  "ticker": "IBM",
+                  "issuer_id": "baf0312c9c37b4c10324",
+                  "security_id": "068739af2857355ce5a2",
+                  "identity_tier": "tier_a_authoritative",
+                  "issuer_dedup_reliable": true,
+                  "taxonomy": null,
+                  "industry": "computer_and_office_equipment",
+                  "metric": "price_to_book",
+                  "value": 6.3321,
+                  "as_of": "2026-08-17",
+                  "source": "derived_trailing",
+                  "basis": "directly_comparable",
+                  "denominator_period": "2026-06-30",
+                  "eligibility": "CAUTION",
+                  "cautions": [
+                    "period_caution"
+                  ]
+                },
+                {
+                  "ticker": "SNDK",
+                  "issuer_id": "ticker:SNDK",
+                  "security_id": "65be1c7e651cae02db25",
+                  "identity_tier": "tier_d_inferred_default",
+                  "issuer_dedup_reliable": false,
+                  "taxonomy": null,
+                  "industry": "computer_storage_devices",
+                  "metric": "price_to_book",
+                  "value": 16.5786,
+                  "as_of": "2026-08-17",
+                  "source": "derived_trailing",
+                  "basis": "directly_comparable",
+                  "denominator_period": "2026-07-03",
+                  "eligibility": "CAUTION",
+                  "cautions": [
+                    "period_caution"
+                  ]
+                }
+              ],
+              "excluded": [
+                {
+                  "ticker": "SKHY",
+                  "issuer_id": "5b65cdca867f3dd4d3b3",
+                  "reason": "missing_bvps"
+                },
+                {
+                  "ticker": "TSM",
+                  "issuer_id": "ticker:TSM",
+                  "reason": "missing_bvps"
+                },
+                {
+                  "ticker": "WRD",
+                  "issuer_id": "ticker:WRD",
+                  "reason": "missing_bvps"
+                }
+              ]
+            },
+            "forward_pe_consensus": {
+              "included": [],
+              "excluded": [
+                {
+                  "ticker": "GOOGL",
+                  "issuer_id": "e7681fb5d62fc211e936",
+                  "reason": "missing_forward_eps"
+                },
+                {
+                  "ticker": "IBM",
+                  "issuer_id": "baf0312c9c37b4c10324",
+                  "reason": "period_mismatch"
+                },
+                {
+                  "ticker": "SKHY",
+                  "issuer_id": "5b65cdca867f3dd4d3b3",
+                  "reason": "missing_forward_eps"
+                },
+                {
+                  "ticker": "SNDK",
+                  "issuer_id": "ticker:SNDK",
+                  "reason": "security_basis_unknown"
+                },
+                {
+                  "ticker": "TSM",
+                  "issuer_id": "ticker:TSM",
+                  "reason": "missing_forward_eps"
+                },
+                {
+                  "ticker": "WRD",
+                  "issuer_id": "ticker:WRD",
+                  "reason": "missing_forward_eps"
+                }
+              ]
+            },
+            "forward_pe_modeled": {
+              "included": [],
+              "excluded": [
+                {
+                  "ticker": "GOOGL",
+                  "issuer_id": "e7681fb5d62fc211e936",
+                  "reason": "missing_forward_eps"
+                },
+                {
+                  "ticker": "IBM",
+                  "issuer_id": "baf0312c9c37b4c10324",
+                  "reason": "forward_basis_mismatch"
+                },
+                {
+                  "ticker": "SKHY",
+                  "issuer_id": "5b65cdca867f3dd4d3b3",
+                  "reason": "missing_forward_eps"
+                },
+                {
+                  "ticker": "SNDK",
+                  "issuer_id": "ticker:SNDK",
+                  "reason": "security_basis_unknown"
+                },
+                {
+                  "ticker": "TSM",
+                  "issuer_id": "ticker:TSM",
+                  "reason": "missing_forward_eps"
+                },
+                {
+                  "ticker": "WRD",
+                  "issuer_id": "ticker:WRD",
+                  "reason": "missing_forward_eps"
+                }
+              ]
+            },
+            "forward_price_to_book_consensus": {
+              "included": [],
+              "excluded": [
+                {
+                  "ticker": "GOOGL",
+                  "issuer_id": "e7681fb5d62fc211e936",
+                  "reason": "missing_forward_bvps"
+                },
+                {
+                  "ticker": "IBM",
+                  "issuer_id": "baf0312c9c37b4c10324",
+                  "reason": "forward_basis_mismatch"
+                },
+                {
+                  "ticker": "SKHY",
+                  "issuer_id": "5b65cdca867f3dd4d3b3",
+                  "reason": "missing_forward_bvps"
+                },
+                {
+                  "ticker": "SNDK",
+                  "issuer_id": "ticker:SNDK",
+                  "reason": "missing_forward_bvps"
+                },
+                {
+                  "ticker": "TSM",
+                  "issuer_id": "ticker:TSM",
+                  "reason": "missing_forward_bvps"
+                },
+                {
+                  "ticker": "WRD",
+                  "issuer_id": "ticker:WRD",
+                  "reason": "missing_forward_bvps"
+                }
+              ]
+            },
+            "forward_price_to_book_modeled": {
+              "included": [
+                {
+                  "ticker": "IBM",
+                  "issuer_id": "baf0312c9c37b4c10324",
+                  "security_id": "068739af2857355ce5a2",
+                  "identity_tier": "tier_a_authoritative",
+                  "issuer_dedup_reliable": true,
+                  "taxonomy": null,
+                  "industry": "computer_and_office_equipment",
+                  "metric": "forward_price_to_book_modeled",
+                  "value": 6.6761,
+                  "as_of": "2026-08-17",
+                  "source": "modeled_forward",
+                  "basis": "directly_comparable",
+                  "denominator_period": "FY1",
+                  "eligibility": "ELIGIBLE",
+                  "cautions": []
+                }
+              ],
+              "excluded": [
+                {
+                  "ticker": "GOOGL",
+                  "issuer_id": "e7681fb5d62fc211e936",
+                  "reason": "missing_forward_bvps"
+                },
+                {
+                  "ticker": "SKHY",
+                  "issuer_id": "5b65cdca867f3dd4d3b3",
+                  "reason": "missing_forward_bvps"
+                },
+                {
+                  "ticker": "SNDK",
+                  "issuer_id": "ticker:SNDK",
+                  "reason": "missing_forward_bvps"
+                },
+                {
+                  "ticker": "TSM",
+                  "issuer_id": "ticker:TSM",
+                  "reason": "missing_forward_bvps"
+                },
+                {
+                  "ticker": "WRD",
+                  "issuer_id": "ticker:WRD",
+                  "reason": "missing_forward_bvps"
+                }
+              ]
+            }
+          }
+        }
+      },
+      "TSM": {
+        "ticker": "TSM",
+        "market": "us",
+        "available": false,
+        "reason": null,
+        "contract": "peer-sector-valuation-v1",
+        "provider": "validated_active_monitoring_assessments",
+        "peer_scope": "limited_active_monitoring_universe",
+        "as_of_date": "2026-08-17",
+        "group_basis": "sector",
+        "group_value": "technology",
+        "candidate_count": 6,
+        "issuer_deduplicated_count": 6,
+        "sample_quality": "LOW",
+        "framework": "semiconductor",
+        "interpretation_contract": {
+          "framework": "semiconductor",
+          "rule": "cycle_normalized_earnings_and_cash_conversion",
+          "required_drivers": [
+            "asp_or_utilization",
+            "product_mix",
+            "capex",
+            "free_cash_flow"
+          ],
+          "automatic_cheap_or_expensive_verdict": false
+        },
+        "metrics": {
+          "trailing_pe": {
+            "available": false,
+            "reason": "missing_ttm_eps",
+            "quality": "LOW",
+            "sample_count": 3
+          },
+          "price_to_book": {
+            "available": false,
+            "reason": "missing_bvps",
+            "quality": "LOW",
+            "sample_count": 4
+          },
+          "forward_pe_consensus": {
+            "available": false,
+            "reason": "missing_forward_eps",
+            "quality": "LOW",
+            "sample_count": 0
+          },
+          "forward_pe_modeled": {
+            "available": false,
+            "reason": "missing_forward_eps",
+            "quality": "LOW",
+            "sample_count": 0
+          },
+          "forward_price_to_book_consensus": {
+            "available": false,
+            "reason": "missing_forward_bvps",
+            "quality": "LOW",
+            "sample_count": 0
+          },
+          "forward_price_to_book_modeled": {
+            "available": false,
+            "reason": "missing_forward_bvps",
+            "quality": "LOW",
+            "sample_count": 2
+          }
+        },
+        "exclusion_reason_counts": {
+          "forward_basis_mismatch": 4,
+          "missing_bvps": 2,
+          "missing_forward_bvps": 8,
+          "missing_forward_eps": 6,
+          "missing_ttm_eps": 3,
+          "period_mismatch": 2,
+          "security_basis_unknown": 2
+        },
+        "audit": {
+          "candidate_tickers": [
+            "GOOGL",
+            "IBM",
+            "MU",
+            "SKHY",
+            "SNDK",
+            "WRD"
+          ],
+          "issuer_deduplicated_tickers": [
+            "GOOGL",
+            "IBM",
+            "MU",
+            "SKHY",
+            "SNDK",
+            "WRD"
+          ],
+          "duplicate_issuer_exclusions": {},
+          "metrics": {
+            "trailing_pe": {
+              "included": [
+                {
+                  "ticker": "GOOGL",
+                  "issuer_id": "e7681fb5d62fc211e936",
+                  "security_id": "a7f76a2ac082be327e68",
+                  "identity_tier": "tier_a_authoritative",
+                  "issuer_dedup_reliable": true,
+                  "taxonomy": null,
+                  "industry": "information_technology_services",
+                  "metric": "trailing_pe",
+                  "value": 12.3297,
+                  "as_of": "2026-08-17",
+                  "source": "derived_trailing",
+                  "basis": "directly_comparable",
+                  "denominator_period": "2026-06-30",
+                  "eligibility": "CAUTION",
+                  "cautions": [
+                    "period_partial"
+                  ]
+                },
+                {
+                  "ticker": "IBM",
+                  "issuer_id": "baf0312c9c37b4c10324",
+                  "security_id": "068739af2857355ce5a2",
+                  "identity_tier": "tier_a_authoritative",
+                  "issuer_dedup_reliable": true,
+                  "taxonomy": null,
+                  "industry": "computer_and_office_equipment",
+                  "metric": "trailing_pe",
+                  "value": 13.8194,
+                  "as_of": "2026-08-17",
+                  "source": "derived_trailing",
+                  "basis": "directly_comparable",
+                  "denominator_period": "2026-06-30",
+                  "eligibility": "CAUTION",
+                  "cautions": [
+                    "period_partial"
+                  ]
+                },
+                {
+                  "ticker": "MU",
+                  "issuer_id": "ticker:MU",
+                  "security_id": "d2d9c866655e3dd91198",
+                  "identity_tier": "tier_d_inferred_default",
+                  "issuer_dedup_reliable": false,
+                  "taxonomy": "semiconductor",
+                  "industry": "semiconductors",
+                  "metric": "trailing_pe",
+                  "value": 20.6775,
+                  "as_of": "2026-08-17",
+                  "source": "derived_trailing",
+                  "basis": "directly_comparable",
+                  "denominator_period": "2026-05-28",
+                  "eligibility": "CAUTION",
+                  "cautions": [
+                    "period_partial"
+                  ]
+                }
+              ],
+              "excluded": [
+                {
+                  "ticker": "SKHY",
+                  "issuer_id": "5b65cdca867f3dd4d3b3",
+                  "reason": "missing_ttm_eps"
+                },
+                {
+                  "ticker": "SNDK",
+                  "issuer_id": "ticker:SNDK",
+                  "reason": "missing_ttm_eps"
+                },
+                {
+                  "ticker": "WRD",
+                  "issuer_id": "ticker:WRD",
+                  "reason": "missing_ttm_eps"
+                }
+              ]
+            },
+            "price_to_book": {
+              "included": [
+                {
+                  "ticker": "GOOGL",
+                  "issuer_id": "e7681fb5d62fc211e936",
+                  "security_id": "a7f76a2ac082be327e68",
+                  "identity_tier": "tier_a_authoritative",
+                  "issuer_dedup_reliable": true,
+                  "taxonomy": null,
+                  "industry": "information_technology_services",
+                  "metric": "price_to_book",
+                  "value": 6.5687,
+                  "as_of": "2026-08-17",
+                  "source": "derived_trailing",
+                  "basis": "directly_comparable",
+                  "denominator_period": "2026-06-30",
+                  "eligibility": "CAUTION",
+                  "cautions": [
+                    "period_partial"
+                  ]
+                },
+                {
+                  "ticker": "IBM",
+                  "issuer_id": "baf0312c9c37b4c10324",
+                  "security_id": "068739af2857355ce5a2",
+                  "identity_tier": "tier_a_authoritative",
+                  "issuer_dedup_reliable": true,
+                  "taxonomy": null,
+                  "industry": "computer_and_office_equipment",
+                  "metric": "price_to_book",
+                  "value": 6.3321,
+                  "as_of": "2026-08-17",
+                  "source": "derived_trailing",
+                  "basis": "directly_comparable",
+                  "denominator_period": "2026-06-30",
+                  "eligibility": "CAUTION",
+                  "cautions": [
+                    "period_partial"
+                  ]
+                },
+                {
+                  "ticker": "MU",
+                  "issuer_id": "ticker:MU",
+                  "security_id": "d2d9c866655e3dd91198",
+                  "identity_tier": "tier_d_inferred_default",
+                  "issuer_dedup_reliable": false,
+                  "taxonomy": "semiconductor",
+                  "industry": "semiconductors",
+                  "metric": "price_to_book",
+                  "value": 11.3406,
+                  "as_of": "2026-08-17",
+                  "source": "derived_trailing",
+                  "basis": "directly_comparable",
+                  "denominator_period": "2026-05-28",
+                  "eligibility": "CAUTION",
+                  "cautions": [
+                    "period_partial"
+                  ]
+                },
+                {
+                  "ticker": "SNDK",
+                  "issuer_id": "ticker:SNDK",
+                  "security_id": "65be1c7e651cae02db25",
+                  "identity_tier": "tier_d_inferred_default",
+                  "issuer_dedup_reliable": false,
+                  "taxonomy": null,
+                  "industry": "computer_storage_devices",
+                  "metric": "price_to_book",
+                  "value": 16.5786,
+                  "as_of": "2026-08-17",
+                  "source": "derived_trailing",
+                  "basis": "directly_comparable",
+                  "denominator_period": "2026-07-03",
+                  "eligibility": "CAUTION",
+                  "cautions": [
+                    "period_partial"
+                  ]
+                }
+              ],
+              "excluded": [
+                {
+                  "ticker": "SKHY",
+                  "issuer_id": "5b65cdca867f3dd4d3b3",
+                  "reason": "missing_bvps"
+                },
+                {
+                  "ticker": "WRD",
+                  "issuer_id": "ticker:WRD",
+                  "reason": "missing_bvps"
+                }
+              ]
+            },
+            "forward_pe_consensus": {
+              "included": [],
+              "excluded": [
+                {
+                  "ticker": "GOOGL",
+                  "issuer_id": "e7681fb5d62fc211e936",
+                  "reason": "missing_forward_eps"
+                },
+                {
+                  "ticker": "IBM",
+                  "issuer_id": "baf0312c9c37b4c10324",
+                  "reason": "period_mismatch"
+                },
+                {
+                  "ticker": "MU",
+                  "issuer_id": "ticker:MU",
+                  "reason": "period_mismatch"
+                },
+                {
+                  "ticker": "SKHY",
+                  "issuer_id": "5b65cdca867f3dd4d3b3",
+                  "reason": "missing_forward_eps"
+                },
+                {
+                  "ticker": "SNDK",
+                  "issuer_id": "ticker:SNDK",
+                  "reason": "security_basis_unknown"
+                },
+                {
+                  "ticker": "WRD",
+                  "issuer_id": "ticker:WRD",
+                  "reason": "missing_forward_eps"
+                }
+              ]
+            },
+            "forward_pe_modeled": {
+              "included": [],
+              "excluded": [
+                {
+                  "ticker": "GOOGL",
+                  "issuer_id": "e7681fb5d62fc211e936",
+                  "reason": "missing_forward_eps"
+                },
+                {
+                  "ticker": "IBM",
+                  "issuer_id": "baf0312c9c37b4c10324",
+                  "reason": "forward_basis_mismatch"
+                },
+                {
+                  "ticker": "MU",
+                  "issuer_id": "ticker:MU",
+                  "reason": "forward_basis_mismatch"
+                },
+                {
+                  "ticker": "SKHY",
+                  "issuer_id": "5b65cdca867f3dd4d3b3",
+                  "reason": "missing_forward_eps"
+                },
+                {
+                  "ticker": "SNDK",
+                  "issuer_id": "ticker:SNDK",
+                  "reason": "security_basis_unknown"
+                },
+                {
+                  "ticker": "WRD",
+                  "issuer_id": "ticker:WRD",
+                  "reason": "missing_forward_eps"
+                }
+              ]
+            },
+            "forward_price_to_book_consensus": {
+              "included": [],
+              "excluded": [
+                {
+                  "ticker": "GOOGL",
+                  "issuer_id": "e7681fb5d62fc211e936",
+                  "reason": "missing_forward_bvps"
+                },
+                {
+                  "ticker": "IBM",
+                  "issuer_id": "baf0312c9c37b4c10324",
+                  "reason": "forward_basis_mismatch"
+                },
+                {
+                  "ticker": "MU",
+                  "issuer_id": "ticker:MU",
+                  "reason": "forward_basis_mismatch"
+                },
+                {
+                  "ticker": "SKHY",
+                  "issuer_id": "5b65cdca867f3dd4d3b3",
+                  "reason": "missing_forward_bvps"
+                },
+                {
+                  "ticker": "SNDK",
+                  "issuer_id": "ticker:SNDK",
+                  "reason": "missing_forward_bvps"
+                },
+                {
+                  "ticker": "WRD",
+                  "issuer_id": "ticker:WRD",
+                  "reason": "missing_forward_bvps"
+                }
+              ]
+            },
+            "forward_price_to_book_modeled": {
+              "included": [
+                {
+                  "ticker": "IBM",
+                  "issuer_id": "baf0312c9c37b4c10324",
+                  "security_id": "068739af2857355ce5a2",
+                  "identity_tier": "tier_a_authoritative",
+                  "issuer_dedup_reliable": true,
+                  "taxonomy": null,
+                  "industry": "computer_and_office_equipment",
+                  "metric": "forward_price_to_book_modeled",
+                  "value": 6.6761,
+                  "as_of": "2026-08-17",
+                  "source": "modeled_forward",
+                  "basis": "directly_comparable",
+                  "denominator_period": "FY1",
+                  "eligibility": "CAUTION",
+                  "cautions": [
+                    "period_partial"
+                  ]
+                },
+                {
+                  "ticker": "MU",
+                  "issuer_id": "ticker:MU",
+                  "security_id": "d2d9c866655e3dd91198",
+                  "identity_tier": "tier_d_inferred_default",
+                  "issuer_dedup_reliable": false,
+                  "taxonomy": "semiconductor",
+                  "industry": "semiconductors",
+                  "metric": "forward_price_to_book_modeled",
+                  "value": 6.2035,
+                  "as_of": "2026-08-17",
+                  "source": "modeled_forward",
+                  "basis": "directly_comparable",
+                  "denominator_period": "FY1",
+                  "eligibility": "CAUTION",
+                  "cautions": [
+                    "period_partial"
+                  ]
+                }
+              ],
+              "excluded": [
+                {
+                  "ticker": "GOOGL",
+                  "issuer_id": "e7681fb5d62fc211e936",
+                  "reason": "missing_forward_bvps"
+                },
+                {
+                  "ticker": "SKHY",
+                  "issuer_id": "5b65cdca867f3dd4d3b3",
+                  "reason": "missing_forward_bvps"
+                },
+                {
+                  "ticker": "SNDK",
+                  "issuer_id": "ticker:SNDK",
+                  "reason": "missing_forward_bvps"
+                },
+                {
+                  "ticker": "WRD",
+                  "issuer_id": "ticker:WRD",
+                  "reason": "missing_forward_bvps"
+                }
+              ]
+            }
+          }
+        }
+      },
+      "TSLA": {
+        "ticker": "TSLA",
+        "market": "us",
+        "available": false,
+        "reason": "insufficient_verified_peer_universe",
+        "contract": "peer-sector-valuation-v1",
+        "provider": "validated_active_monitoring_assessments",
+        "peer_scope": null,
+        "as_of_date": null,
+        "group_basis": null,
+        "group_value": null,
+        "candidate_count": 0,
+        "issuer_deduplicated_count": 0,
+        "sample_quality": null,
+        "framework": null,
+        "interpretation_contract": null,
+        "metrics": {
+          "trailing_pe": {},
+          "price_to_book": {},
+          "forward_pe_consensus": {},
+          "forward_pe_modeled": {},
+          "forward_price_to_book_consensus": {},
+          "forward_price_to_book_modeled": {}
+        },
+        "exclusion_reason_counts": {},
+        "audit": {}
+      },
+      "RXRX": {
+        "ticker": "RXRX",
+        "market": "us",
+        "available": false,
+        "reason": "insufficient_verified_peer_universe",
+        "contract": "peer-sector-valuation-v1",
+        "provider": "validated_active_monitoring_assessments",
+        "peer_scope": null,
+        "as_of_date": null,
+        "group_basis": null,
+        "group_value": null,
+        "candidate_count": 0,
+        "issuer_deduplicated_count": 0,
+        "sample_quality": null,
+        "framework": null,
+        "interpretation_contract": null,
+        "metrics": {
+          "trailing_pe": {},
+          "price_to_book": {},
+          "forward_pe_consensus": {},
+          "forward_pe_modeled": {},
+          "forward_price_to_book_consensus": {},
+          "forward_price_to_book_modeled": {}
+        },
+        "exclusion_reason_counts": {},
+        "audit": {}
+      },
+      "CORZ": {
+        "ticker": "CORZ",
+        "market": "us",
+        "available": false,
+        "reason": null,
+        "contract": "peer-sector-valuation-v1",
+        "provider": "validated_active_monitoring_assessments",
+        "peer_scope": "limited_active_monitoring_universe",
+        "as_of_date": "2026-08-17",
+        "group_basis": "sub_industry",
+        "group_value": "finance_services",
+        "candidate_count": 3,
+        "issuer_deduplicated_count": 3,
+        "sample_quality": "LOW",
+        "framework": "general",
+        "interpretation_contract": {
+          "framework": "general",
+          "rule": "relative_multiple_is_context_not_verdict",
+          "required_drivers": [
+            "earnings_quality",
+            "cash_conversion",
+            "balance_sheet"
+          ],
+          "automatic_cheap_or_expensive_verdict": false
+        },
+        "metrics": {
+          "trailing_pe": {
+            "available": false,
+            "reason": "negative_eps",
+            "quality": "LOW",
+            "sample_count": 0
+          },
+          "price_to_book": {
+            "available": false,
+            "reason": "negative_equity",
+            "quality": "MEDIUM",
+            "sample_count": 3
+          },
+          "forward_pe_consensus": {
+            "available": false,
+            "reason": "missing_forward_eps",
+            "quality": "LOW",
+            "sample_count": 1
+          },
+          "forward_pe_modeled": {
+            "available": false,
+            "reason": "missing_forward_eps",
+            "quality": "LOW",
+            "sample_count": 0
+          },
+          "forward_price_to_book_consensus": {
+            "available": false,
+            "reason": "industry_metric_not_primary",
+            "sample_count": 0
+          },
+          "forward_price_to_book_modeled": {
+            "available": false,
+            "reason": "industry_metric_not_primary",
+            "sample_count": 0
+          }
+        },
+        "exclusion_reason_counts": {
+          "forward_basis_mismatch": 1,
+          "missing_forward_eps": 4,
+          "missing_ttm_eps": 2,
+          "negative_eps": 1
+        },
+        "audit": {
+          "candidate_tickers": [
+            "CRCL",
+            "HUT",
+            "WULF"
+          ],
+          "issuer_deduplicated_tickers": [
+            "CRCL",
+            "HUT",
+            "WULF"
+          ],
+          "duplicate_issuer_exclusions": {},
+          "metrics": {
+            "trailing_pe": {
+              "included": [],
+              "excluded": [
+                {
+                  "ticker": "CRCL",
+                  "issuer_id": "ticker:CRCL",
+                  "reason": "missing_ttm_eps"
+                },
+                {
+                  "ticker": "HUT",
+                  "issuer_id": "8ddb4a908785bc146898",
+                  "reason": "missing_ttm_eps"
+                },
+                {
+                  "ticker": "WULF",
+                  "issuer_id": "4612da9c62892e215384",
+                  "reason": "negative_eps"
+                }
+              ]
+            },
+            "price_to_book": {
+              "included": [
+                {
+                  "ticker": "CRCL",
+                  "issuer_id": "ticker:CRCL",
+                  "security_id": "7abf33f9a295ccb7a485",
+                  "identity_tier": "tier_d_inferred_default",
+                  "issuer_dedup_reliable": false,
+                  "taxonomy": null,
+                  "industry": "financial_services",
+                  "metric": "price_to_book",
+                  "value": 5.8042,
+                  "as_of": "2026-08-17",
+                  "source": "derived_trailing",
+                  "basis": "directly_comparable",
+                  "denominator_period": "2026-03-31",
+                  "eligibility": "CAUTION",
+                  "cautions": [
+                    "period_caution"
+                  ]
+                },
+                {
+                  "ticker": "HUT",
+                  "issuer_id": "8ddb4a908785bc146898",
+                  "security_id": "702d8339e60ea4ff7d34",
+                  "identity_tier": "tier_a_authoritative",
+                  "issuer_dedup_reliable": true,
+                  "taxonomy": null,
+                  "industry": "financial_services",
+                  "metric": "price_to_book",
+                  "value": 7.181,
+                  "as_of": "2026-08-17",
+                  "source": "derived_trailing",
+                  "basis": "directly_comparable",
+                  "denominator_period": "2026-03-31",
+                  "eligibility": "CAUTION",
+                  "cautions": [
+                    "period_caution"
+                  ]
+                },
+                {
+                  "ticker": "WULF",
+                  "issuer_id": "4612da9c62892e215384",
+                  "security_id": "4b52b6589dc659131d60",
+                  "identity_tier": "tier_a_authoritative",
+                  "issuer_dedup_reliable": true,
+                  "taxonomy": null,
+                  "industry": "financial_services",
+                  "metric": "price_to_book",
+                  "value": 59.6209,
+                  "as_of": "2026-08-17",
+                  "source": "derived_trailing",
+                  "basis": "directly_comparable",
+                  "denominator_period": "2026-06-30",
+                  "eligibility": "ELIGIBLE",
+                  "cautions": []
+                }
+              ],
+              "excluded": []
+            },
+            "forward_pe_consensus": {
+              "included": [
+                {
+                  "ticker": "HUT",
+                  "issuer_id": "8ddb4a908785bc146898",
+                  "security_id": "702d8339e60ea4ff7d34",
+                  "identity_tier": "tier_a_authoritative",
+                  "issuer_dedup_reliable": true,
+                  "taxonomy": null,
+                  "industry": "financial_services",
+                  "metric": "forward_pe_consensus",
+                  "value": 149.2203,
+                  "as_of": "2026-08-17",
+                  "source": "consensus_forward",
+                  "basis": "directly_comparable",
+                  "denominator_period": "2026-12-31",
+                  "eligibility": "CAUTION",
+                  "cautions": [
+                    "period_partial"
+                  ]
+                }
+              ],
+              "excluded": [
+                {
+                  "ticker": "CRCL",
+                  "issuer_id": "ticker:CRCL",
+                  "reason": "missing_forward_eps"
+                },
+                {
+                  "ticker": "WULF",
+                  "issuer_id": "4612da9c62892e215384",
+                  "reason": "missing_forward_eps"
+                }
+              ]
+            },
+            "forward_pe_modeled": {
+              "included": [],
+              "excluded": [
+                {
+                  "ticker": "CRCL",
+                  "issuer_id": "ticker:CRCL",
+                  "reason": "missing_forward_eps"
+                },
+                {
+                  "ticker": "HUT",
+                  "issuer_id": "8ddb4a908785bc146898",
+                  "reason": "forward_basis_mismatch"
+                },
+                {
+                  "ticker": "WULF",
+                  "issuer_id": "4612da9c62892e215384",
+                  "reason": "missing_forward_eps"
+                }
+              ]
+            },
+            "forward_price_to_book_consensus": {
+              "included": [],
+              "excluded": []
+            },
+            "forward_price_to_book_modeled": {
+              "included": [],
+              "excluded": []
+            }
+          }
+        }
+      },
+      "GOOGL": {
+        "ticker": "GOOGL",
+        "market": "us",
+        "available": false,
+        "reason": null,
+        "contract": "peer-sector-valuation-v1",
+        "provider": "validated_active_monitoring_assessments",
+        "peer_scope": "limited_active_monitoring_universe",
+        "as_of_date": "2026-08-17",
+        "group_basis": "sector",
+        "group_value": "technology",
+        "candidate_count": 6,
+        "issuer_deduplicated_count": 6,
+        "sample_quality": "LOW",
+        "framework": "general",
+        "interpretation_contract": {
+          "framework": "general",
+          "rule": "relative_multiple_is_context_not_verdict",
+          "required_drivers": [
+            "earnings_quality",
+            "cash_conversion",
+            "balance_sheet"
+          ],
+          "automatic_cheap_or_expensive_verdict": false
+        },
+        "metrics": {
+          "trailing_pe": {
+            "available": false,
+            "reason": "insufficient_comparable_metric_sample",
+            "quality": "LOW",
+            "sample_count": 2
+          },
+          "price_to_book": {
+            "available": false,
+            "audit_available": true,
+            "reason": "broad_fallback_low_quality",
+            "quality": "LOW",
+            "sample_count": 3,
+            "company_value": 6.5687,
+            "median": 11.3406,
+            "company_relative_multiple": 0.5792,
+            "company_vs_median_pct": -42.078,
+            "company_cross_section_percentile": 37.5
+          },
+          "forward_pe_consensus": {
+            "available": false,
+            "reason": "missing_forward_eps",
+            "quality": "LOW",
+            "sample_count": 0
+          },
+          "forward_pe_modeled": {
+            "available": false,
+            "reason": "missing_forward_eps",
+            "quality": "LOW",
+            "sample_count": 0
+          },
+          "forward_price_to_book_consensus": {
+            "available": false,
+            "reason": "industry_metric_not_primary",
+            "sample_count": 0
+          },
+          "forward_price_to_book_modeled": {
+            "available": false,
+            "reason": "industry_metric_not_primary",
+            "sample_count": 0
+          }
+        },
+        "exclusion_reason_counts": {
+          "forward_basis_mismatch": 2,
+          "missing_bvps": 3,
+          "missing_forward_eps": 6,
+          "missing_ttm_eps": 4,
+          "period_mismatch": 2,
+          "security_basis_unknown": 2
+        },
+        "audit": {
+          "candidate_tickers": [
+            "IBM",
+            "MU",
+            "SKHY",
+            "SNDK",
+            "TSM",
+            "WRD"
+          ],
+          "issuer_deduplicated_tickers": [
+            "IBM",
+            "MU",
+            "SKHY",
+            "SNDK",
+            "TSM",
+            "WRD"
+          ],
+          "duplicate_issuer_exclusions": {},
+          "metrics": {
+            "trailing_pe": {
+              "included": [
+                {
+                  "ticker": "IBM",
+                  "issuer_id": "baf0312c9c37b4c10324",
+                  "security_id": "068739af2857355ce5a2",
+                  "identity_tier": "tier_a_authoritative",
+                  "issuer_dedup_reliable": true,
+                  "taxonomy": null,
+                  "industry": "computer_and_office_equipment",
+                  "metric": "trailing_pe",
+                  "value": 13.8194,
+                  "as_of": "2026-08-17",
+                  "source": "derived_trailing",
+                  "basis": "directly_comparable",
+                  "denominator_period": "2026-06-30",
+                  "eligibility": "ELIGIBLE",
+                  "cautions": []
+                },
+                {
+                  "ticker": "MU",
+                  "issuer_id": "ticker:MU",
+                  "security_id": "d2d9c866655e3dd91198",
+                  "identity_tier": "tier_d_inferred_default",
+                  "issuer_dedup_reliable": false,
+                  "taxonomy": "semiconductor",
+                  "industry": "semiconductors",
+                  "metric": "trailing_pe",
+                  "value": 20.6775,
+                  "as_of": "2026-08-17",
+                  "source": "derived_trailing",
+                  "basis": "directly_comparable",
+                  "denominator_period": "2026-05-28",
+                  "eligibility": "CAUTION",
+                  "cautions": [
+                    "period_caution"
+                  ]
+                }
+              ],
+              "excluded": [
+                {
+                  "ticker": "SKHY",
+                  "issuer_id": "5b65cdca867f3dd4d3b3",
+                  "reason": "missing_ttm_eps"
+                },
+                {
+                  "ticker": "SNDK",
+                  "issuer_id": "ticker:SNDK",
+                  "reason": "missing_ttm_eps"
+                },
+                {
+                  "ticker": "TSM",
+                  "issuer_id": "ticker:TSM",
+                  "reason": "missing_ttm_eps"
+                },
+                {
+                  "ticker": "WRD",
+                  "issuer_id": "ticker:WRD",
+                  "reason": "missing_ttm_eps"
+                }
+              ]
+            },
+            "price_to_book": {
+              "included": [
+                {
+                  "ticker": "IBM",
+                  "issuer_id": "baf0312c9c37b4c10324",
+                  "security_id": "068739af2857355ce5a2",
+                  "identity_tier": "tier_a_authoritative",
+                  "issuer_dedup_reliable": true,
+                  "taxonomy": null,
+                  "industry": "computer_and_office_equipment",
+                  "metric": "price_to_book",
+                  "value": 6.3321,
+                  "as_of": "2026-08-17",
+                  "source": "derived_trailing",
+                  "basis": "directly_comparable",
+                  "denominator_period": "2026-06-30",
+                  "eligibility": "ELIGIBLE",
+                  "cautions": []
+                },
+                {
+                  "ticker": "MU",
+                  "issuer_id": "ticker:MU",
+                  "security_id": "d2d9c866655e3dd91198",
+                  "identity_tier": "tier_d_inferred_default",
+                  "issuer_dedup_reliable": false,
+                  "taxonomy": "semiconductor",
+                  "industry": "semiconductors",
+                  "metric": "price_to_book",
+                  "value": 11.3406,
+                  "as_of": "2026-08-17",
+                  "source": "derived_trailing",
+                  "basis": "directly_comparable",
+                  "denominator_period": "2026-05-28",
+                  "eligibility": "CAUTION",
+                  "cautions": [
+                    "period_caution"
+                  ]
+                },
+                {
+                  "ticker": "SNDK",
+                  "issuer_id": "ticker:SNDK",
+                  "security_id": "65be1c7e651cae02db25",
+                  "identity_tier": "tier_d_inferred_default",
+                  "issuer_dedup_reliable": false,
+                  "taxonomy": null,
+                  "industry": "computer_storage_devices",
+                  "metric": "price_to_book",
+                  "value": 16.5786,
+                  "as_of": "2026-08-17",
+                  "source": "derived_trailing",
+                  "basis": "directly_comparable",
+                  "denominator_period": "2026-07-03",
+                  "eligibility": "CAUTION",
+                  "cautions": [
+                    "period_caution"
+                  ]
+                }
+              ],
+              "excluded": [
+                {
+                  "ticker": "SKHY",
+                  "issuer_id": "5b65cdca867f3dd4d3b3",
+                  "reason": "missing_bvps"
+                },
+                {
+                  "ticker": "TSM",
+                  "issuer_id": "ticker:TSM",
+                  "reason": "missing_bvps"
+                },
+                {
+                  "ticker": "WRD",
+                  "issuer_id": "ticker:WRD",
+                  "reason": "missing_bvps"
+                }
+              ]
+            },
+            "forward_pe_consensus": {
+              "included": [],
+              "excluded": [
+                {
+                  "ticker": "IBM",
+                  "issuer_id": "baf0312c9c37b4c10324",
+                  "reason": "period_mismatch"
+                },
+                {
+                  "ticker": "MU",
+                  "issuer_id": "ticker:MU",
+                  "reason": "period_mismatch"
+                },
+                {
+                  "ticker": "SKHY",
+                  "issuer_id": "5b65cdca867f3dd4d3b3",
+                  "reason": "missing_forward_eps"
+                },
+                {
+                  "ticker": "SNDK",
+                  "issuer_id": "ticker:SNDK",
+                  "reason": "security_basis_unknown"
+                },
+                {
+                  "ticker": "TSM",
+                  "issuer_id": "ticker:TSM",
+                  "reason": "missing_forward_eps"
+                },
+                {
+                  "ticker": "WRD",
+                  "issuer_id": "ticker:WRD",
+                  "reason": "missing_forward_eps"
+                }
+              ]
+            },
+            "forward_pe_modeled": {
+              "included": [],
+              "excluded": [
+                {
+                  "ticker": "IBM",
+                  "issuer_id": "baf0312c9c37b4c10324",
+                  "reason": "forward_basis_mismatch"
+                },
+                {
+                  "ticker": "MU",
+                  "issuer_id": "ticker:MU",
+                  "reason": "forward_basis_mismatch"
+                },
+                {
+                  "ticker": "SKHY",
+                  "issuer_id": "5b65cdca867f3dd4d3b3",
+                  "reason": "missing_forward_eps"
+                },
+                {
+                  "ticker": "SNDK",
+                  "issuer_id": "ticker:SNDK",
+                  "reason": "security_basis_unknown"
+                },
+                {
+                  "ticker": "TSM",
+                  "issuer_id": "ticker:TSM",
+                  "reason": "missing_forward_eps"
+                },
+                {
+                  "ticker": "WRD",
+                  "issuer_id": "ticker:WRD",
+                  "reason": "missing_forward_eps"
+                }
+              ]
+            },
+            "forward_price_to_book_consensus": {
+              "included": [],
+              "excluded": []
+            },
+            "forward_price_to_book_modeled": {
+              "included": [],
+              "excluded": []
+            }
+          }
+        }
+      }
+    }
+  },
+  "states": {
+    "000660": {
+      "ticker": "000660",
+      "market": "kr",
+      "available": false,
+      "reason": "insufficient_verified_peer_universe",
+      "contract": "peer-sector-valuation-v1",
+      "provider": "validated_active_monitoring_assessments",
+      "peer_scope": null,
+      "as_of_date": null,
+      "group_basis": null,
+      "group_value": null,
+      "candidate_count": 0,
+      "issuer_deduplicated_count": 0,
+      "sample_quality": null,
+      "framework": null,
+      "interpretation_contract": null,
+      "metrics": {
+        "trailing_pe": {},
+        "price_to_book": {},
+        "forward_pe_consensus": {},
+        "forward_pe_modeled": {},
+        "forward_price_to_book_consensus": {},
+        "forward_price_to_book_modeled": {}
+      },
+      "exclusion_reason_counts": {},
+      "audit": {}
+    },
+    "003690": {
+      "ticker": "003690",
+      "market": "kr",
+      "available": false,
+      "reason": "insufficient_verified_peer_universe",
+      "contract": "peer-sector-valuation-v1",
+      "provider": "validated_active_monitoring_assessments",
+      "peer_scope": null,
+      "as_of_date": null,
+      "group_basis": null,
+      "group_value": null,
+      "candidate_count": 0,
+      "issuer_deduplicated_count": 0,
+      "sample_quality": null,
+      "framework": null,
+      "interpretation_contract": null,
+      "metrics": {
+        "trailing_pe": {},
+        "price_to_book": {},
+        "forward_pe_consensus": {},
+        "forward_pe_modeled": {},
+        "forward_price_to_book_consensus": {},
+        "forward_price_to_book_modeled": {}
+      },
+      "exclusion_reason_counts": {},
+      "audit": {}
+    },
+    "005490": {
+      "ticker": "005490",
+      "market": "kr",
+      "available": false,
+      "reason": "insufficient_verified_peer_universe",
+      "contract": "peer-sector-valuation-v1",
+      "provider": "validated_active_monitoring_assessments",
+      "peer_scope": null,
+      "as_of_date": null,
+      "group_basis": null,
+      "group_value": null,
+      "candidate_count": 0,
+      "issuer_deduplicated_count": 0,
+      "sample_quality": null,
+      "framework": null,
+      "interpretation_contract": null,
+      "metrics": {
+        "trailing_pe": {},
+        "price_to_book": {},
+        "forward_pe_consensus": {},
+        "forward_pe_modeled": {},
+        "forward_price_to_book_consensus": {},
+        "forward_price_to_book_modeled": {}
+      },
+      "exclusion_reason_counts": {},
+      "audit": {}
+    },
+    "005930": {
+      "ticker": "005930",
+      "market": "kr",
+      "available": false,
+      "reason": "insufficient_verified_peer_universe",
+      "contract": "peer-sector-valuation-v1",
+      "provider": "validated_active_monitoring_assessments",
+      "peer_scope": null,
+      "as_of_date": null,
+      "group_basis": null,
+      "group_value": null,
+      "candidate_count": 0,
+      "issuer_deduplicated_count": 0,
+      "sample_quality": null,
+      "framework": null,
+      "interpretation_contract": null,
+      "metrics": {
+        "trailing_pe": {},
+        "price_to_book": {},
+        "forward_pe_consensus": {},
+        "forward_pe_modeled": {},
+        "forward_price_to_book_consensus": {},
+        "forward_price_to_book_modeled": {}
+      },
+      "exclusion_reason_counts": {},
+      "audit": {}
+    },
+    "010120": {
+      "ticker": "010120",
+      "market": "kr",
+      "available": false,
+      "reason": "insufficient_verified_peer_universe",
+      "contract": "peer-sector-valuation-v1",
+      "provider": "validated_active_monitoring_assessments",
+      "peer_scope": null,
+      "as_of_date": null,
+      "group_basis": null,
+      "group_value": null,
+      "candidate_count": 0,
+      "issuer_deduplicated_count": 0,
+      "sample_quality": null,
+      "framework": null,
+      "interpretation_contract": null,
+      "metrics": {
+        "trailing_pe": {},
+        "price_to_book": {},
+        "forward_pe_consensus": {},
+        "forward_pe_modeled": {},
+        "forward_price_to_book_consensus": {},
+        "forward_price_to_book_modeled": {}
+      },
+      "exclusion_reason_counts": {},
+      "audit": {}
+    },
+    "012450": {
+      "ticker": "012450",
+      "market": "kr",
+      "available": false,
+      "reason": "insufficient_verified_peer_universe",
+      "contract": "peer-sector-valuation-v1",
+      "provider": "validated_active_monitoring_assessments",
+      "peer_scope": null,
+      "as_of_date": null,
+      "group_basis": null,
+      "group_value": null,
+      "candidate_count": 0,
+      "issuer_deduplicated_count": 0,
+      "sample_quality": null,
+      "framework": null,
+      "interpretation_contract": null,
+      "metrics": {
+        "trailing_pe": {},
+        "price_to_book": {},
+        "forward_pe_consensus": {},
+        "forward_pe_modeled": {},
+        "forward_price_to_book_consensus": {},
+        "forward_price_to_book_modeled": {}
+      },
+      "exclusion_reason_counts": {},
+      "audit": {}
+    },
+    "086280": {
+      "ticker": "086280",
+      "market": "kr",
+      "available": false,
+      "reason": "insufficient_verified_peer_universe",
+      "contract": "peer-sector-valuation-v1",
+      "provider": "validated_active_monitoring_assessments",
+      "peer_scope": null,
+      "as_of_date": null,
+      "group_basis": null,
+      "group_value": null,
+      "candidate_count": 0,
+      "issuer_deduplicated_count": 0,
+      "sample_quality": null,
+      "framework": null,
+      "interpretation_contract": null,
+      "metrics": {
+        "trailing_pe": {},
+        "price_to_book": {},
+        "forward_pe_consensus": {},
+        "forward_pe_modeled": {},
+        "forward_price_to_book_consensus": {},
+        "forward_price_to_book_modeled": {}
+      },
+      "exclusion_reason_counts": {},
+      "audit": {}
+    },
+    "CORZ": {
+      "ticker": "CORZ",
+      "market": "us",
+      "available": false,
+      "reason": null,
+      "contract": "peer-sector-valuation-v1",
+      "provider": "validated_active_monitoring_assessments",
+      "peer_scope": "limited_active_monitoring_universe",
+      "as_of_date": "2026-08-17",
+      "group_basis": "sub_industry",
+      "group_value": "finance_services",
+      "candidate_count": 3,
+      "issuer_deduplicated_count": 3,
+      "sample_quality": "LOW",
+      "framework": "general",
+      "interpretation_contract": {
+        "framework": "general",
+        "rule": "relative_multiple_is_context_not_verdict",
+        "required_drivers": [
+          "earnings_quality",
+          "cash_conversion",
+          "balance_sheet"
+        ],
+        "automatic_cheap_or_expensive_verdict": false
+      },
+      "metrics": {
+        "trailing_pe": {
+          "available": false,
+          "reason": "negative_eps",
+          "quality": "LOW",
+          "sample_count": 0
+        },
+        "price_to_book": {
+          "available": false,
+          "reason": "negative_equity",
+          "quality": "MEDIUM",
+          "sample_count": 3
+        },
+        "forward_pe_consensus": {
+          "available": false,
+          "reason": "missing_forward_eps",
+          "quality": "LOW",
+          "sample_count": 1
+        },
+        "forward_pe_modeled": {
+          "available": false,
+          "reason": "missing_forward_eps",
+          "quality": "LOW",
+          "sample_count": 0
+        },
+        "forward_price_to_book_consensus": {
+          "available": false,
+          "reason": "industry_metric_not_primary",
+          "sample_count": 0
+        },
+        "forward_price_to_book_modeled": {
+          "available": false,
+          "reason": "industry_metric_not_primary",
+          "sample_count": 0
+        }
+      },
+      "exclusion_reason_counts": {
+        "forward_basis_mismatch": 1,
+        "missing_forward_eps": 4,
+        "missing_ttm_eps": 2,
+        "negative_eps": 1
+      },
+      "audit": {
+        "candidate_tickers": [
+          "CRCL",
+          "HUT",
+          "WULF"
+        ],
+        "issuer_deduplicated_tickers": [
+          "CRCL",
+          "HUT",
+          "WULF"
+        ],
+        "duplicate_issuer_exclusions": {},
+        "metrics": {
+          "trailing_pe": {
+            "included": [],
+            "excluded": [
+              {
+                "ticker": "CRCL",
+                "issuer_id": "ticker:CRCL",
+                "reason": "missing_ttm_eps"
+              },
+              {
+                "ticker": "HUT",
+                "issuer_id": "8ddb4a908785bc146898",
+                "reason": "missing_ttm_eps"
+              },
+              {
+                "ticker": "WULF",
+                "issuer_id": "4612da9c62892e215384",
+                "reason": "negative_eps"
+              }
+            ]
+          },
+          "price_to_book": {
+            "included": [
+              {
+                "ticker": "CRCL",
+                "issuer_id": "ticker:CRCL",
+                "security_id": "7abf33f9a295ccb7a485",
+                "identity_tier": "tier_d_inferred_default",
+                "issuer_dedup_reliable": false,
+                "taxonomy": null,
+                "industry": "financial_services",
+                "metric": "price_to_book",
+                "value": 5.8042,
+                "as_of": "2026-08-17",
+                "source": "derived_trailing",
+                "basis": "directly_comparable",
+                "denominator_period": "2026-03-31",
+                "eligibility": "CAUTION",
+                "cautions": [
+                  "period_caution"
+                ]
+              },
+              {
+                "ticker": "HUT",
+                "issuer_id": "8ddb4a908785bc146898",
+                "security_id": "702d8339e60ea4ff7d34",
+                "identity_tier": "tier_a_authoritative",
+                "issuer_dedup_reliable": true,
+                "taxonomy": null,
+                "industry": "financial_services",
+                "metric": "price_to_book",
+                "value": 7.181,
+                "as_of": "2026-08-17",
+                "source": "derived_trailing",
+                "basis": "directly_comparable",
+                "denominator_period": "2026-03-31",
+                "eligibility": "CAUTION",
+                "cautions": [
+                  "period_caution"
+                ]
+              },
+              {
+                "ticker": "WULF",
+                "issuer_id": "4612da9c62892e215384",
+                "security_id": "4b52b6589dc659131d60",
+                "identity_tier": "tier_a_authoritative",
+                "issuer_dedup_reliable": true,
+                "taxonomy": null,
+                "industry": "financial_services",
+                "metric": "price_to_book",
+                "value": 59.6209,
+                "as_of": "2026-08-17",
+                "source": "derived_trailing",
+                "basis": "directly_comparable",
+                "denominator_period": "2026-06-30",
+                "eligibility": "ELIGIBLE",
+                "cautions": []
+              }
+            ],
+            "excluded": []
+          },
+          "forward_pe_consensus": {
+            "included": [
+              {
+                "ticker": "HUT",
+                "issuer_id": "8ddb4a908785bc146898",
+                "security_id": "702d8339e60ea4ff7d34",
+                "identity_tier": "tier_a_authoritative",
+                "issuer_dedup_reliable": true,
+                "taxonomy": null,
+                "industry": "financial_services",
+                "metric": "forward_pe_consensus",
+                "value": 149.2203,
+                "as_of": "2026-08-17",
+                "source": "consensus_forward",
+                "basis": "directly_comparable",
+                "denominator_period": "2026-12-31",
+                "eligibility": "CAUTION",
+                "cautions": [
+                  "period_partial"
+                ]
+              }
+            ],
+            "excluded": [
+              {
+                "ticker": "CRCL",
+                "issuer_id": "ticker:CRCL",
+                "reason": "missing_forward_eps"
+              },
+              {
+                "ticker": "WULF",
+                "issuer_id": "4612da9c62892e215384",
+                "reason": "missing_forward_eps"
+              }
+            ]
+          },
+          "forward_pe_modeled": {
+            "included": [],
+            "excluded": [
+              {
+                "ticker": "CRCL",
+                "issuer_id": "ticker:CRCL",
+                "reason": "missing_forward_eps"
+              },
+              {
+                "ticker": "HUT",
+                "issuer_id": "8ddb4a908785bc146898",
+                "reason": "forward_basis_mismatch"
+              },
+              {
+                "ticker": "WULF",
+                "issuer_id": "4612da9c62892e215384",
+                "reason": "missing_forward_eps"
+              }
+            ]
+          },
+          "forward_price_to_book_consensus": {
+            "included": [],
+            "excluded": []
+          },
+          "forward_price_to_book_modeled": {
+            "included": [],
+            "excluded": []
+          }
+        }
+      }
+    },
+    "CRCL": {
+      "ticker": "CRCL",
+      "market": "us",
+      "available": false,
+      "reason": null,
+      "contract": "peer-sector-valuation-v1",
+      "provider": "validated_active_monitoring_assessments",
+      "peer_scope": "limited_active_monitoring_universe",
+      "as_of_date": "2026-08-17",
+      "group_basis": "sub_industry",
+      "group_value": "finance_services",
+      "candidate_count": 3,
+      "issuer_deduplicated_count": 3,
+      "sample_quality": "LOW",
+      "framework": "general",
+      "interpretation_contract": {
+        "framework": "general",
+        "rule": "relative_multiple_is_context_not_verdict",
+        "required_drivers": [
+          "earnings_quality",
+          "cash_conversion",
+          "balance_sheet"
+        ],
+        "automatic_cheap_or_expensive_verdict": false
+      },
+      "metrics": {
+        "trailing_pe": {
+          "available": false,
+          "reason": "missing_ttm_eps",
+          "quality": "LOW",
+          "sample_count": 0
+        },
+        "price_to_book": {
+          "available": false,
+          "reason": "insufficient_comparable_metric_sample",
+          "quality": "LOW",
+          "sample_count": 2
+        },
+        "forward_pe_consensus": {
+          "available": false,
+          "reason": "missing_forward_eps",
+          "quality": "LOW",
+          "sample_count": 0
+        },
+        "forward_pe_modeled": {
+          "available": false,
+          "reason": "missing_forward_eps",
+          "quality": "LOW",
+          "sample_count": 0
+        },
+        "forward_price_to_book_consensus": {
+          "available": false,
+          "reason": "industry_metric_not_primary",
+          "sample_count": 0
+        },
+        "forward_price_to_book_modeled": {
+          "available": false,
+          "reason": "industry_metric_not_primary",
+          "sample_count": 0
+        }
+      },
+      "exclusion_reason_counts": {
+        "forward_basis_mismatch": 1,
+        "missing_forward_eps": 4,
+        "missing_ttm_eps": 1,
+        "negative_eps": 2,
+        "negative_equity": 1,
+        "period_mismatch": 1
+      },
+      "audit": {
+        "candidate_tickers": [
+          "CORZ",
+          "HUT",
+          "WULF"
+        ],
+        "issuer_deduplicated_tickers": [
+          "CORZ",
+          "HUT",
+          "WULF"
+        ],
+        "duplicate_issuer_exclusions": {},
+        "metrics": {
+          "trailing_pe": {
+            "included": [],
+            "excluded": [
+              {
+                "ticker": "CORZ",
+                "issuer_id": "199f480b5a9d07e85545",
+                "reason": "negative_eps"
+              },
+              {
+                "ticker": "HUT",
+                "issuer_id": "8ddb4a908785bc146898",
+                "reason": "missing_ttm_eps"
+              },
+              {
+                "ticker": "WULF",
+                "issuer_id": "4612da9c62892e215384",
+                "reason": "negative_eps"
+              }
+            ]
+          },
+          "price_to_book": {
+            "included": [
+              {
+                "ticker": "HUT",
+                "issuer_id": "8ddb4a908785bc146898",
+                "security_id": "702d8339e60ea4ff7d34",
+                "identity_tier": "tier_a_authoritative",
+                "issuer_dedup_reliable": true,
+                "taxonomy": null,
+                "industry": "financial_services",
+                "metric": "price_to_book",
+                "value": 7.181,
+                "as_of": "2026-08-17",
+                "source": "derived_trailing",
+                "basis": "directly_comparable",
+                "denominator_period": "2026-03-31",
+                "eligibility": "ELIGIBLE",
+                "cautions": []
+              },
+              {
+                "ticker": "WULF",
+                "issuer_id": "4612da9c62892e215384",
+                "security_id": "4b52b6589dc659131d60",
+                "identity_tier": "tier_a_authoritative",
+                "issuer_dedup_reliable": true,
+                "taxonomy": null,
+                "industry": "financial_services",
+                "metric": "price_to_book",
+                "value": 59.6209,
+                "as_of": "2026-08-17",
+                "source": "derived_trailing",
+                "basis": "directly_comparable",
+                "denominator_period": "2026-06-30",
+                "eligibility": "CAUTION",
+                "cautions": [
+                  "period_caution"
+                ]
+              }
+            ],
+            "excluded": [
+              {
+                "ticker": "CORZ",
+                "issuer_id": "199f480b5a9d07e85545",
+                "reason": "negative_equity"
+              }
+            ]
+          },
+          "forward_pe_consensus": {
+            "included": [],
+            "excluded": [
+              {
+                "ticker": "CORZ",
+                "issuer_id": "199f480b5a9d07e85545",
+                "reason": "missing_forward_eps"
+              },
+              {
+                "ticker": "HUT",
+                "issuer_id": "8ddb4a908785bc146898",
+                "reason": "period_mismatch"
+              },
+              {
+                "ticker": "WULF",
+                "issuer_id": "4612da9c62892e215384",
+                "reason": "missing_forward_eps"
+              }
+            ]
+          },
+          "forward_pe_modeled": {
+            "included": [],
+            "excluded": [
+              {
+                "ticker": "CORZ",
+                "issuer_id": "199f480b5a9d07e85545",
+                "reason": "missing_forward_eps"
+              },
+              {
+                "ticker": "HUT",
+                "issuer_id": "8ddb4a908785bc146898",
+                "reason": "forward_basis_mismatch"
+              },
+              {
+                "ticker": "WULF",
+                "issuer_id": "4612da9c62892e215384",
+                "reason": "missing_forward_eps"
+              }
+            ]
+          },
+          "forward_price_to_book_consensus": {
+            "included": [],
+            "excluded": []
+          },
+          "forward_price_to_book_modeled": {
+            "included": [],
+            "excluded": []
+          }
+        }
+      }
+    },
+    "GOOGL": {
+      "ticker": "GOOGL",
+      "market": "us",
+      "available": false,
+      "reason": null,
+      "contract": "peer-sector-valuation-v1",
+      "provider": "validated_active_monitoring_assessments",
+      "peer_scope": "limited_active_monitoring_universe",
+      "as_of_date": "2026-08-17",
+      "group_basis": "sector",
+      "group_value": "technology",
+      "candidate_count": 6,
+      "issuer_deduplicated_count": 6,
+      "sample_quality": "LOW",
+      "framework": "general",
+      "interpretation_contract": {
+        "framework": "general",
+        "rule": "relative_multiple_is_context_not_verdict",
+        "required_drivers": [
+          "earnings_quality",
+          "cash_conversion",
+          "balance_sheet"
+        ],
+        "automatic_cheap_or_expensive_verdict": false
+      },
+      "metrics": {
+        "trailing_pe": {
+          "available": false,
+          "reason": "insufficient_comparable_metric_sample",
+          "quality": "LOW",
+          "sample_count": 2
+        },
+        "price_to_book": {
+          "available": false,
+          "audit_available": true,
+          "reason": "broad_fallback_low_quality",
+          "quality": "LOW",
+          "sample_count": 3,
+          "company_value": 6.5687,
+          "median": 11.3406,
+          "company_relative_multiple": 0.5792,
+          "company_vs_median_pct": -42.078,
+          "company_cross_section_percentile": 37.5
+        },
+        "forward_pe_consensus": {
+          "available": false,
+          "reason": "missing_forward_eps",
+          "quality": "LOW",
+          "sample_count": 0
+        },
+        "forward_pe_modeled": {
+          "available": false,
+          "reason": "missing_forward_eps",
+          "quality": "LOW",
+          "sample_count": 0
+        },
+        "forward_price_to_book_consensus": {
+          "available": false,
+          "reason": "industry_metric_not_primary",
+          "sample_count": 0
+        },
+        "forward_price_to_book_modeled": {
+          "available": false,
+          "reason": "industry_metric_not_primary",
+          "sample_count": 0
+        }
+      },
+      "exclusion_reason_counts": {
+        "forward_basis_mismatch": 2,
+        "missing_bvps": 3,
+        "missing_forward_eps": 6,
+        "missing_ttm_eps": 4,
+        "period_mismatch": 2,
+        "security_basis_unknown": 2
+      },
+      "audit": {
+        "candidate_tickers": [
+          "IBM",
+          "MU",
+          "SKHY",
+          "SNDK",
+          "TSM",
+          "WRD"
+        ],
+        "issuer_deduplicated_tickers": [
+          "IBM",
+          "MU",
+          "SKHY",
+          "SNDK",
+          "TSM",
+          "WRD"
+        ],
+        "duplicate_issuer_exclusions": {},
+        "metrics": {
+          "trailing_pe": {
+            "included": [
+              {
+                "ticker": "IBM",
+                "issuer_id": "baf0312c9c37b4c10324",
+                "security_id": "068739af2857355ce5a2",
+                "identity_tier": "tier_a_authoritative",
+                "issuer_dedup_reliable": true,
+                "taxonomy": null,
+                "industry": "computer_and_office_equipment",
+                "metric": "trailing_pe",
+                "value": 13.8194,
+                "as_of": "2026-08-17",
+                "source": "derived_trailing",
+                "basis": "directly_comparable",
+                "denominator_period": "2026-06-30",
+                "eligibility": "ELIGIBLE",
+                "cautions": []
+              },
+              {
+                "ticker": "MU",
+                "issuer_id": "ticker:MU",
+                "security_id": "d2d9c866655e3dd91198",
+                "identity_tier": "tier_d_inferred_default",
+                "issuer_dedup_reliable": false,
+                "taxonomy": "semiconductor",
+                "industry": "semiconductors",
+                "metric": "trailing_pe",
+                "value": 20.6775,
+                "as_of": "2026-08-17",
+                "source": "derived_trailing",
+                "basis": "directly_comparable",
+                "denominator_period": "2026-05-28",
+                "eligibility": "CAUTION",
+                "cautions": [
+                  "period_caution"
+                ]
+              }
+            ],
+            "excluded": [
+              {
+                "ticker": "SKHY",
+                "issuer_id": "5b65cdca867f3dd4d3b3",
+                "reason": "missing_ttm_eps"
+              },
+              {
+                "ticker": "SNDK",
+                "issuer_id": "ticker:SNDK",
+                "reason": "missing_ttm_eps"
+              },
+              {
+                "ticker": "TSM",
+                "issuer_id": "ticker:TSM",
+                "reason": "missing_ttm_eps"
+              },
+              {
+                "ticker": "WRD",
+                "issuer_id": "ticker:WRD",
+                "reason": "missing_ttm_eps"
+              }
+            ]
+          },
+          "price_to_book": {
+            "included": [
+              {
+                "ticker": "IBM",
+                "issuer_id": "baf0312c9c37b4c10324",
+                "security_id": "068739af2857355ce5a2",
+                "identity_tier": "tier_a_authoritative",
+                "issuer_dedup_reliable": true,
+                "taxonomy": null,
+                "industry": "computer_and_office_equipment",
+                "metric": "price_to_book",
+                "value": 6.3321,
+                "as_of": "2026-08-17",
+                "source": "derived_trailing",
+                "basis": "directly_comparable",
+                "denominator_period": "2026-06-30",
+                "eligibility": "ELIGIBLE",
+                "cautions": []
+              },
+              {
+                "ticker": "MU",
+                "issuer_id": "ticker:MU",
+                "security_id": "d2d9c866655e3dd91198",
+                "identity_tier": "tier_d_inferred_default",
+                "issuer_dedup_reliable": false,
+                "taxonomy": "semiconductor",
+                "industry": "semiconductors",
+                "metric": "price_to_book",
+                "value": 11.3406,
+                "as_of": "2026-08-17",
+                "source": "derived_trailing",
+                "basis": "directly_comparable",
+                "denominator_period": "2026-05-28",
+                "eligibility": "CAUTION",
+                "cautions": [
+                  "period_caution"
+                ]
+              },
+              {
+                "ticker": "SNDK",
+                "issuer_id": "ticker:SNDK",
+                "security_id": "65be1c7e651cae02db25",
+                "identity_tier": "tier_d_inferred_default",
+                "issuer_dedup_reliable": false,
+                "taxonomy": null,
+                "industry": "computer_storage_devices",
+                "metric": "price_to_book",
+                "value": 16.5786,
+                "as_of": "2026-08-17",
+                "source": "derived_trailing",
+                "basis": "directly_comparable",
+                "denominator_period": "2026-07-03",
+                "eligibility": "CAUTION",
+                "cautions": [
+                  "period_caution"
+                ]
+              }
+            ],
+            "excluded": [
+              {
+                "ticker": "SKHY",
+                "issuer_id": "5b65cdca867f3dd4d3b3",
+                "reason": "missing_bvps"
+              },
+              {
+                "ticker": "TSM",
+                "issuer_id": "ticker:TSM",
+                "reason": "missing_bvps"
+              },
+              {
+                "ticker": "WRD",
+                "issuer_id": "ticker:WRD",
+                "reason": "missing_bvps"
+              }
+            ]
+          },
+          "forward_pe_consensus": {
+            "included": [],
+            "excluded": [
+              {
+                "ticker": "IBM",
+                "issuer_id": "baf0312c9c37b4c10324",
+                "reason": "period_mismatch"
+              },
+              {
+                "ticker": "MU",
+                "issuer_id": "ticker:MU",
+                "reason": "period_mismatch"
+              },
+              {
+                "ticker": "SKHY",
+                "issuer_id": "5b65cdca867f3dd4d3b3",
+                "reason": "missing_forward_eps"
+              },
+              {
+                "ticker": "SNDK",
+                "issuer_id": "ticker:SNDK",
+                "reason": "security_basis_unknown"
+              },
+              {
+                "ticker": "TSM",
+                "issuer_id": "ticker:TSM",
+                "reason": "missing_forward_eps"
+              },
+              {
+                "ticker": "WRD",
+                "issuer_id": "ticker:WRD",
+                "reason": "missing_forward_eps"
+              }
+            ]
+          },
+          "forward_pe_modeled": {
+            "included": [],
+            "excluded": [
+              {
+                "ticker": "IBM",
+                "issuer_id": "baf0312c9c37b4c10324",
+                "reason": "forward_basis_mismatch"
+              },
+              {
+                "ticker": "MU",
+                "issuer_id": "ticker:MU",
+                "reason": "forward_basis_mismatch"
+              },
+              {
+                "ticker": "SKHY",
+                "issuer_id": "5b65cdca867f3dd4d3b3",
+                "reason": "missing_forward_eps"
+              },
+              {
+                "ticker": "SNDK",
+                "issuer_id": "ticker:SNDK",
+                "reason": "security_basis_unknown"
+              },
+              {
+                "ticker": "TSM",
+                "issuer_id": "ticker:TSM",
+                "reason": "missing_forward_eps"
+              },
+              {
+                "ticker": "WRD",
+                "issuer_id": "ticker:WRD",
+                "reason": "missing_forward_eps"
+              }
+            ]
+          },
+          "forward_price_to_book_consensus": {
+            "included": [],
+            "excluded": []
+          },
+          "forward_price_to_book_modeled": {
+            "included": [],
+            "excluded": []
+          }
+        }
+      }
+    },
+    "HUT": {
+      "ticker": "HUT",
+      "market": "us",
+      "available": false,
+      "reason": null,
+      "contract": "peer-sector-valuation-v1",
+      "provider": "validated_active_monitoring_assessments",
+      "peer_scope": "limited_active_monitoring_universe",
+      "as_of_date": "2026-08-17",
+      "group_basis": "sub_industry",
+      "group_value": "finance_services",
+      "candidate_count": 3,
+      "issuer_deduplicated_count": 3,
+      "sample_quality": "LOW",
+      "framework": "general",
+      "interpretation_contract": {
+        "framework": "general",
+        "rule": "relative_multiple_is_context_not_verdict",
+        "required_drivers": [
+          "earnings_quality",
+          "cash_conversion",
+          "balance_sheet"
+        ],
+        "automatic_cheap_or_expensive_verdict": false
+      },
+      "metrics": {
+        "trailing_pe": {
+          "available": false,
+          "reason": "missing_ttm_eps",
+          "quality": "LOW",
+          "sample_count": 0
+        },
+        "price_to_book": {
+          "available": false,
+          "reason": "insufficient_comparable_metric_sample",
+          "quality": "LOW",
+          "sample_count": 2
+        },
+        "forward_pe_consensus": {
+          "available": false,
+          "reason": "insufficient_comparable_metric_sample",
+          "quality": "LOW",
+          "sample_count": 0
+        },
+        "forward_pe_modeled": {
+          "available": false,
+          "reason": "forward_basis_mismatch",
+          "quality": "LOW",
+          "sample_count": 0
+        },
+        "forward_price_to_book_consensus": {
+          "available": false,
+          "reason": "industry_metric_not_primary",
+          "sample_count": 0
+        },
+        "forward_price_to_book_modeled": {
+          "available": false,
+          "reason": "industry_metric_not_primary",
+          "sample_count": 0
+        }
+      },
+      "exclusion_reason_counts": {
+        "missing_forward_eps": 6,
+        "missing_ttm_eps": 1,
+        "negative_eps": 2,
+        "negative_equity": 1
+      },
+      "audit": {
+        "candidate_tickers": [
+          "CORZ",
+          "CRCL",
+          "WULF"
+        ],
+        "issuer_deduplicated_tickers": [
+          "CORZ",
+          "CRCL",
+          "WULF"
+        ],
+        "duplicate_issuer_exclusions": {},
+        "metrics": {
+          "trailing_pe": {
+            "included": [],
+            "excluded": [
+              {
+                "ticker": "CORZ",
+                "issuer_id": "199f480b5a9d07e85545",
+                "reason": "negative_eps"
+              },
+              {
+                "ticker": "CRCL",
+                "issuer_id": "ticker:CRCL",
+                "reason": "missing_ttm_eps"
+              },
+              {
+                "ticker": "WULF",
+                "issuer_id": "4612da9c62892e215384",
+                "reason": "negative_eps"
+              }
+            ]
+          },
+          "price_to_book": {
+            "included": [
+              {
+                "ticker": "CRCL",
+                "issuer_id": "ticker:CRCL",
+                "security_id": "7abf33f9a295ccb7a485",
+                "identity_tier": "tier_d_inferred_default",
+                "issuer_dedup_reliable": false,
+                "taxonomy": null,
+                "industry": "financial_services",
+                "metric": "price_to_book",
+                "value": 5.8042,
+                "as_of": "2026-08-17",
+                "source": "derived_trailing",
+                "basis": "directly_comparable",
+                "denominator_period": "2026-03-31",
+                "eligibility": "ELIGIBLE",
+                "cautions": []
+              },
+              {
+                "ticker": "WULF",
+                "issuer_id": "4612da9c62892e215384",
+                "security_id": "4b52b6589dc659131d60",
+                "identity_tier": "tier_a_authoritative",
+                "issuer_dedup_reliable": true,
+                "taxonomy": null,
+                "industry": "financial_services",
+                "metric": "price_to_book",
+                "value": 59.6209,
+                "as_of": "2026-08-17",
+                "source": "derived_trailing",
+                "basis": "directly_comparable",
+                "denominator_period": "2026-06-30",
+                "eligibility": "CAUTION",
+                "cautions": [
+                  "period_caution"
+                ]
+              }
+            ],
+            "excluded": [
+              {
+                "ticker": "CORZ",
+                "issuer_id": "199f480b5a9d07e85545",
+                "reason": "negative_equity"
+              }
+            ]
+          },
+          "forward_pe_consensus": {
+            "included": [],
+            "excluded": [
+              {
+                "ticker": "CORZ",
+                "issuer_id": "199f480b5a9d07e85545",
+                "reason": "missing_forward_eps"
+              },
+              {
+                "ticker": "CRCL",
+                "issuer_id": "ticker:CRCL",
+                "reason": "missing_forward_eps"
+              },
+              {
+                "ticker": "WULF",
+                "issuer_id": "4612da9c62892e215384",
+                "reason": "missing_forward_eps"
+              }
+            ]
+          },
+          "forward_pe_modeled": {
+            "included": [],
+            "excluded": [
+              {
+                "ticker": "CORZ",
+                "issuer_id": "199f480b5a9d07e85545",
+                "reason": "missing_forward_eps"
+              },
+              {
+                "ticker": "CRCL",
+                "issuer_id": "ticker:CRCL",
+                "reason": "missing_forward_eps"
+              },
+              {
+                "ticker": "WULF",
+                "issuer_id": "4612da9c62892e215384",
+                "reason": "missing_forward_eps"
+              }
+            ]
+          },
+          "forward_price_to_book_consensus": {
+            "included": [],
+            "excluded": []
+          },
+          "forward_price_to_book_modeled": {
+            "included": [],
+            "excluded": []
+          }
+        }
+      }
+    },
+    "IBM": {
+      "ticker": "IBM",
+      "market": "us",
+      "available": false,
+      "reason": null,
+      "contract": "peer-sector-valuation-v1",
+      "provider": "validated_active_monitoring_assessments",
+      "peer_scope": "limited_active_monitoring_universe",
+      "as_of_date": "2026-08-17",
+      "group_basis": "sector",
+      "group_value": "technology",
+      "candidate_count": 6,
+      "issuer_deduplicated_count": 6,
+      "sample_quality": "LOW",
+      "framework": "general",
+      "interpretation_contract": {
+        "framework": "general",
+        "rule": "relative_multiple_is_context_not_verdict",
+        "required_drivers": [
+          "earnings_quality",
+          "cash_conversion",
+          "balance_sheet"
+        ],
+        "automatic_cheap_or_expensive_verdict": false
+      },
+      "metrics": {
+        "trailing_pe": {
+          "available": false,
+          "reason": "insufficient_comparable_metric_sample",
+          "quality": "LOW",
+          "sample_count": 2
+        },
+        "price_to_book": {
+          "available": false,
+          "audit_available": true,
+          "reason": "broad_fallback_low_quality",
+          "quality": "LOW",
+          "sample_count": 3,
+          "company_value": 6.3321,
+          "median": 11.3406,
+          "company_relative_multiple": 0.5584,
+          "company_vs_median_pct": -44.1643,
+          "company_cross_section_percentile": 12.5
+        },
+        "forward_pe_consensus": {
+          "available": false,
+          "reason": "insufficient_comparable_metric_sample",
+          "quality": "LOW",
+          "sample_count": 0
+        },
+        "forward_pe_modeled": {
+          "available": false,
+          "reason": "forward_basis_mismatch",
+          "quality": "LOW",
+          "sample_count": 0
+        },
+        "forward_price_to_book_consensus": {
+          "available": false,
+          "reason": "industry_metric_not_primary",
+          "sample_count": 0
+        },
+        "forward_price_to_book_modeled": {
+          "available": false,
+          "reason": "industry_metric_not_primary",
+          "sample_count": 0
+        }
+      },
+      "exclusion_reason_counts": {
+        "forward_basis_mismatch": 1,
+        "missing_bvps": 3,
+        "missing_forward_eps": 8,
+        "missing_ttm_eps": 4,
+        "period_mismatch": 1,
+        "security_basis_unknown": 2
+      },
+      "audit": {
+        "candidate_tickers": [
+          "GOOGL",
+          "MU",
+          "SKHY",
+          "SNDK",
+          "TSM",
+          "WRD"
+        ],
+        "issuer_deduplicated_tickers": [
+          "GOOGL",
+          "MU",
+          "SKHY",
+          "SNDK",
+          "TSM",
+          "WRD"
+        ],
+        "duplicate_issuer_exclusions": {},
+        "metrics": {
+          "trailing_pe": {
+            "included": [
+              {
+                "ticker": "GOOGL",
+                "issuer_id": "e7681fb5d62fc211e936",
+                "security_id": "a7f76a2ac082be327e68",
+                "identity_tier": "tier_a_authoritative",
+                "issuer_dedup_reliable": true,
+                "taxonomy": null,
+                "industry": "information_technology_services",
+                "metric": "trailing_pe",
+                "value": 12.3297,
+                "as_of": "2026-08-17",
+                "source": "derived_trailing",
+                "basis": "directly_comparable",
+                "denominator_period": "2026-06-30",
+                "eligibility": "ELIGIBLE",
+                "cautions": []
+              },
+              {
+                "ticker": "MU",
+                "issuer_id": "ticker:MU",
+                "security_id": "d2d9c866655e3dd91198",
+                "identity_tier": "tier_d_inferred_default",
+                "issuer_dedup_reliable": false,
+                "taxonomy": "semiconductor",
+                "industry": "semiconductors",
+                "metric": "trailing_pe",
+                "value": 20.6775,
+                "as_of": "2026-08-17",
+                "source": "derived_trailing",
+                "basis": "directly_comparable",
+                "denominator_period": "2026-05-28",
+                "eligibility": "CAUTION",
+                "cautions": [
+                  "period_caution"
+                ]
+              }
+            ],
+            "excluded": [
+              {
+                "ticker": "SKHY",
+                "issuer_id": "5b65cdca867f3dd4d3b3",
+                "reason": "missing_ttm_eps"
+              },
+              {
+                "ticker": "SNDK",
+                "issuer_id": "ticker:SNDK",
+                "reason": "missing_ttm_eps"
+              },
+              {
+                "ticker": "TSM",
+                "issuer_id": "ticker:TSM",
+                "reason": "missing_ttm_eps"
+              },
+              {
+                "ticker": "WRD",
+                "issuer_id": "ticker:WRD",
+                "reason": "missing_ttm_eps"
+              }
+            ]
+          },
+          "price_to_book": {
+            "included": [
+              {
+                "ticker": "GOOGL",
+                "issuer_id": "e7681fb5d62fc211e936",
+                "security_id": "a7f76a2ac082be327e68",
+                "identity_tier": "tier_a_authoritative",
+                "issuer_dedup_reliable": true,
+                "taxonomy": null,
+                "industry": "information_technology_services",
+                "metric": "price_to_book",
+                "value": 6.5687,
+                "as_of": "2026-08-17",
+                "source": "derived_trailing",
+                "basis": "directly_comparable",
+                "denominator_period": "2026-06-30",
+                "eligibility": "ELIGIBLE",
+                "cautions": []
+              },
+              {
+                "ticker": "MU",
+                "issuer_id": "ticker:MU",
+                "security_id": "d2d9c866655e3dd91198",
+                "identity_tier": "tier_d_inferred_default",
+                "issuer_dedup_reliable": false,
+                "taxonomy": "semiconductor",
+                "industry": "semiconductors",
+                "metric": "price_to_book",
+                "value": 11.3406,
+                "as_of": "2026-08-17",
+                "source": "derived_trailing",
+                "basis": "directly_comparable",
+                "denominator_period": "2026-05-28",
+                "eligibility": "CAUTION",
+                "cautions": [
+                  "period_caution"
+                ]
+              },
+              {
+                "ticker": "SNDK",
+                "issuer_id": "ticker:SNDK",
+                "security_id": "65be1c7e651cae02db25",
+                "identity_tier": "tier_d_inferred_default",
+                "issuer_dedup_reliable": false,
+                "taxonomy": null,
+                "industry": "computer_storage_devices",
+                "metric": "price_to_book",
+                "value": 16.5786,
+                "as_of": "2026-08-17",
+                "source": "derived_trailing",
+                "basis": "directly_comparable",
+                "denominator_period": "2026-07-03",
+                "eligibility": "CAUTION",
+                "cautions": [
+                  "period_caution"
+                ]
+              }
+            ],
+            "excluded": [
+              {
+                "ticker": "SKHY",
+                "issuer_id": "5b65cdca867f3dd4d3b3",
+                "reason": "missing_bvps"
+              },
+              {
+                "ticker": "TSM",
+                "issuer_id": "ticker:TSM",
+                "reason": "missing_bvps"
+              },
+              {
+                "ticker": "WRD",
+                "issuer_id": "ticker:WRD",
+                "reason": "missing_bvps"
+              }
+            ]
+          },
+          "forward_pe_consensus": {
+            "included": [],
+            "excluded": [
+              {
+                "ticker": "GOOGL",
+                "issuer_id": "e7681fb5d62fc211e936",
+                "reason": "missing_forward_eps"
+              },
+              {
+                "ticker": "MU",
+                "issuer_id": "ticker:MU",
+                "reason": "period_mismatch"
+              },
+              {
+                "ticker": "SKHY",
+                "issuer_id": "5b65cdca867f3dd4d3b3",
+                "reason": "missing_forward_eps"
+              },
+              {
+                "ticker": "SNDK",
+                "issuer_id": "ticker:SNDK",
+                "reason": "security_basis_unknown"
+              },
+              {
+                "ticker": "TSM",
+                "issuer_id": "ticker:TSM",
+                "reason": "missing_forward_eps"
+              },
+              {
+                "ticker": "WRD",
+                "issuer_id": "ticker:WRD",
+                "reason": "missing_forward_eps"
+              }
+            ]
+          },
+          "forward_pe_modeled": {
+            "included": [],
+            "excluded": [
+              {
+                "ticker": "GOOGL",
+                "issuer_id": "e7681fb5d62fc211e936",
+                "reason": "missing_forward_eps"
+              },
+              {
+                "ticker": "MU",
+                "issuer_id": "ticker:MU",
+                "reason": "forward_basis_mismatch"
+              },
+              {
+                "ticker": "SKHY",
+                "issuer_id": "5b65cdca867f3dd4d3b3",
+                "reason": "missing_forward_eps"
+              },
+              {
+                "ticker": "SNDK",
+                "issuer_id": "ticker:SNDK",
+                "reason": "security_basis_unknown"
+              },
+              {
+                "ticker": "TSM",
+                "issuer_id": "ticker:TSM",
+                "reason": "missing_forward_eps"
+              },
+              {
+                "ticker": "WRD",
+                "issuer_id": "ticker:WRD",
+                "reason": "missing_forward_eps"
+              }
+            ]
+          },
+          "forward_price_to_book_consensus": {
+            "included": [],
+            "excluded": []
+          },
+          "forward_price_to_book_modeled": {
+            "included": [],
+            "excluded": []
+          }
+        }
+      }
+    },
+    "MU": {
+      "ticker": "MU",
+      "market": "us",
+      "available": false,
+      "reason": null,
+      "contract": "peer-sector-valuation-v1",
+      "provider": "validated_active_monitoring_assessments",
+      "peer_scope": "limited_active_monitoring_universe",
+      "as_of_date": "2026-08-17",
+      "group_basis": "sector",
+      "group_value": "technology",
+      "candidate_count": 6,
+      "issuer_deduplicated_count": 6,
+      "sample_quality": "LOW",
+      "framework": "semiconductor",
+      "interpretation_contract": {
+        "framework": "semiconductor",
+        "rule": "cycle_normalized_earnings_and_cash_conversion",
+        "required_drivers": [
+          "asp_or_utilization",
+          "product_mix",
+          "capex",
+          "free_cash_flow"
+        ],
+        "automatic_cheap_or_expensive_verdict": false
+      },
+      "metrics": {
+        "trailing_pe": {
+          "available": false,
+          "reason": "insufficient_comparable_metric_sample",
+          "quality": "LOW",
+          "sample_count": 2
+        },
+        "price_to_book": {
+          "available": false,
+          "audit_available": true,
+          "reason": "broad_fallback_low_quality",
+          "quality": "LOW",
+          "sample_count": 3,
+          "company_value": 11.3406,
+          "median": 6.5687,
+          "company_relative_multiple": 1.7265,
+          "company_vs_median_pct": 72.646,
+          "company_cross_section_percentile": 62.5
+        },
+        "forward_pe_consensus": {
+          "available": false,
+          "reason": "insufficient_comparable_metric_sample",
+          "quality": "LOW",
+          "sample_count": 0
+        },
+        "forward_pe_modeled": {
+          "available": false,
+          "reason": "forward_basis_mismatch",
+          "quality": "LOW",
+          "sample_count": 0
+        },
+        "forward_price_to_book_consensus": {
+          "available": false,
+          "reason": "forward_basis_mismatch",
+          "quality": "LOW",
+          "sample_count": 0
+        },
+        "forward_price_to_book_modeled": {
+          "available": false,
+          "reason": "insufficient_comparable_metric_sample",
+          "quality": "LOW",
+          "sample_count": 1
+        }
+      },
+      "exclusion_reason_counts": {
+        "forward_basis_mismatch": 2,
+        "missing_bvps": 3,
+        "missing_forward_bvps": 10,
+        "missing_forward_eps": 8,
+        "missing_ttm_eps": 4,
+        "period_mismatch": 1,
+        "security_basis_unknown": 2
+      },
+      "audit": {
+        "candidate_tickers": [
+          "GOOGL",
+          "IBM",
+          "SKHY",
+          "SNDK",
+          "TSM",
+          "WRD"
+        ],
+        "issuer_deduplicated_tickers": [
+          "GOOGL",
+          "IBM",
+          "SKHY",
+          "SNDK",
+          "TSM",
+          "WRD"
+        ],
+        "duplicate_issuer_exclusions": {},
+        "metrics": {
+          "trailing_pe": {
+            "included": [
+              {
+                "ticker": "GOOGL",
+                "issuer_id": "e7681fb5d62fc211e936",
+                "security_id": "a7f76a2ac082be327e68",
+                "identity_tier": "tier_a_authoritative",
+                "issuer_dedup_reliable": true,
+                "taxonomy": null,
+                "industry": "information_technology_services",
+                "metric": "trailing_pe",
+                "value": 12.3297,
+                "as_of": "2026-08-17",
+                "source": "derived_trailing",
+                "basis": "directly_comparable",
+                "denominator_period": "2026-06-30",
+                "eligibility": "CAUTION",
+                "cautions": [
+                  "period_caution"
+                ]
+              },
+              {
+                "ticker": "IBM",
+                "issuer_id": "baf0312c9c37b4c10324",
+                "security_id": "068739af2857355ce5a2",
+                "identity_tier": "tier_a_authoritative",
+                "issuer_dedup_reliable": true,
+                "taxonomy": null,
+                "industry": "computer_and_office_equipment",
+                "metric": "trailing_pe",
+                "value": 13.8194,
+                "as_of": "2026-08-17",
+                "source": "derived_trailing",
+                "basis": "directly_comparable",
+                "denominator_period": "2026-06-30",
+                "eligibility": "CAUTION",
+                "cautions": [
+                  "period_caution"
+                ]
+              }
+            ],
+            "excluded": [
+              {
+                "ticker": "SKHY",
+                "issuer_id": "5b65cdca867f3dd4d3b3",
+                "reason": "missing_ttm_eps"
+              },
+              {
+                "ticker": "SNDK",
+                "issuer_id": "ticker:SNDK",
+                "reason": "missing_ttm_eps"
+              },
+              {
+                "ticker": "TSM",
+                "issuer_id": "ticker:TSM",
+                "reason": "missing_ttm_eps"
+              },
+              {
+                "ticker": "WRD",
+                "issuer_id": "ticker:WRD",
+                "reason": "missing_ttm_eps"
+              }
+            ]
+          },
+          "price_to_book": {
+            "included": [
+              {
+                "ticker": "GOOGL",
+                "issuer_id": "e7681fb5d62fc211e936",
+                "security_id": "a7f76a2ac082be327e68",
+                "identity_tier": "tier_a_authoritative",
+                "issuer_dedup_reliable": true,
+                "taxonomy": null,
+                "industry": "information_technology_services",
+                "metric": "price_to_book",
+                "value": 6.5687,
+                "as_of": "2026-08-17",
+                "source": "derived_trailing",
+                "basis": "directly_comparable",
+                "denominator_period": "2026-06-30",
+                "eligibility": "CAUTION",
+                "cautions": [
+                  "period_caution"
+                ]
+              },
+              {
+                "ticker": "IBM",
+                "issuer_id": "baf0312c9c37b4c10324",
+                "security_id": "068739af2857355ce5a2",
+                "identity_tier": "tier_a_authoritative",
+                "issuer_dedup_reliable": true,
+                "taxonomy": null,
+                "industry": "computer_and_office_equipment",
+                "metric": "price_to_book",
+                "value": 6.3321,
+                "as_of": "2026-08-17",
+                "source": "derived_trailing",
+                "basis": "directly_comparable",
+                "denominator_period": "2026-06-30",
+                "eligibility": "CAUTION",
+                "cautions": [
+                  "period_caution"
+                ]
+              },
+              {
+                "ticker": "SNDK",
+                "issuer_id": "ticker:SNDK",
+                "security_id": "65be1c7e651cae02db25",
+                "identity_tier": "tier_d_inferred_default",
+                "issuer_dedup_reliable": false,
+                "taxonomy": null,
+                "industry": "computer_storage_devices",
+                "metric": "price_to_book",
+                "value": 16.5786,
+                "as_of": "2026-08-17",
+                "source": "derived_trailing",
+                "basis": "directly_comparable",
+                "denominator_period": "2026-07-03",
+                "eligibility": "CAUTION",
+                "cautions": [
+                  "period_caution"
+                ]
+              }
+            ],
+            "excluded": [
+              {
+                "ticker": "SKHY",
+                "issuer_id": "5b65cdca867f3dd4d3b3",
+                "reason": "missing_bvps"
+              },
+              {
+                "ticker": "TSM",
+                "issuer_id": "ticker:TSM",
+                "reason": "missing_bvps"
+              },
+              {
+                "ticker": "WRD",
+                "issuer_id": "ticker:WRD",
+                "reason": "missing_bvps"
+              }
+            ]
+          },
+          "forward_pe_consensus": {
+            "included": [],
+            "excluded": [
+              {
+                "ticker": "GOOGL",
+                "issuer_id": "e7681fb5d62fc211e936",
+                "reason": "missing_forward_eps"
+              },
+              {
+                "ticker": "IBM",
+                "issuer_id": "baf0312c9c37b4c10324",
+                "reason": "period_mismatch"
+              },
+              {
+                "ticker": "SKHY",
+                "issuer_id": "5b65cdca867f3dd4d3b3",
+                "reason": "missing_forward_eps"
+              },
+              {
+                "ticker": "SNDK",
+                "issuer_id": "ticker:SNDK",
+                "reason": "security_basis_unknown"
+              },
+              {
+                "ticker": "TSM",
+                "issuer_id": "ticker:TSM",
+                "reason": "missing_forward_eps"
+              },
+              {
+                "ticker": "WRD",
+                "issuer_id": "ticker:WRD",
+                "reason": "missing_forward_eps"
+              }
+            ]
+          },
+          "forward_pe_modeled": {
+            "included": [],
+            "excluded": [
+              {
+                "ticker": "GOOGL",
+                "issuer_id": "e7681fb5d62fc211e936",
+                "reason": "missing_forward_eps"
+              },
+              {
+                "ticker": "IBM",
+                "issuer_id": "baf0312c9c37b4c10324",
+                "reason": "forward_basis_mismatch"
+              },
+              {
+                "ticker": "SKHY",
+                "issuer_id": "5b65cdca867f3dd4d3b3",
+                "reason": "missing_forward_eps"
+              },
+              {
+                "ticker": "SNDK",
+                "issuer_id": "ticker:SNDK",
+                "reason": "security_basis_unknown"
+              },
+              {
+                "ticker": "TSM",
+                "issuer_id": "ticker:TSM",
+                "reason": "missing_forward_eps"
+              },
+              {
+                "ticker": "WRD",
+                "issuer_id": "ticker:WRD",
+                "reason": "missing_forward_eps"
+              }
+            ]
+          },
+          "forward_price_to_book_consensus": {
+            "included": [],
+            "excluded": [
+              {
+                "ticker": "GOOGL",
+                "issuer_id": "e7681fb5d62fc211e936",
+                "reason": "missing_forward_bvps"
+              },
+              {
+                "ticker": "IBM",
+                "issuer_id": "baf0312c9c37b4c10324",
+                "reason": "forward_basis_mismatch"
+              },
+              {
+                "ticker": "SKHY",
+                "issuer_id": "5b65cdca867f3dd4d3b3",
+                "reason": "missing_forward_bvps"
+              },
+              {
+                "ticker": "SNDK",
+                "issuer_id": "ticker:SNDK",
+                "reason": "missing_forward_bvps"
+              },
+              {
+                "ticker": "TSM",
+                "issuer_id": "ticker:TSM",
+                "reason": "missing_forward_bvps"
+              },
+              {
+                "ticker": "WRD",
+                "issuer_id": "ticker:WRD",
+                "reason": "missing_forward_bvps"
+              }
+            ]
+          },
+          "forward_price_to_book_modeled": {
+            "included": [
+              {
+                "ticker": "IBM",
+                "issuer_id": "baf0312c9c37b4c10324",
+                "security_id": "068739af2857355ce5a2",
+                "identity_tier": "tier_a_authoritative",
+                "issuer_dedup_reliable": true,
+                "taxonomy": null,
+                "industry": "computer_and_office_equipment",
+                "metric": "forward_price_to_book_modeled",
+                "value": 6.6761,
+                "as_of": "2026-08-17",
+                "source": "modeled_forward",
+                "basis": "directly_comparable",
+                "denominator_period": "FY1",
+                "eligibility": "ELIGIBLE",
+                "cautions": []
+              }
+            ],
+            "excluded": [
+              {
+                "ticker": "GOOGL",
+                "issuer_id": "e7681fb5d62fc211e936",
+                "reason": "missing_forward_bvps"
+              },
+              {
+                "ticker": "SKHY",
+                "issuer_id": "5b65cdca867f3dd4d3b3",
+                "reason": "missing_forward_bvps"
+              },
+              {
+                "ticker": "SNDK",
+                "issuer_id": "ticker:SNDK",
+                "reason": "missing_forward_bvps"
+              },
+              {
+                "ticker": "TSM",
+                "issuer_id": "ticker:TSM",
+                "reason": "missing_forward_bvps"
+              },
+              {
+                "ticker": "WRD",
+                "issuer_id": "ticker:WRD",
+                "reason": "missing_forward_bvps"
+              }
+            ]
+          }
+        }
+      }
+    },
+    "RXRX": {
+      "ticker": "RXRX",
+      "market": "us",
+      "available": false,
+      "reason": "insufficient_verified_peer_universe",
+      "contract": "peer-sector-valuation-v1",
+      "provider": "validated_active_monitoring_assessments",
+      "peer_scope": null,
+      "as_of_date": null,
+      "group_basis": null,
+      "group_value": null,
+      "candidate_count": 0,
+      "issuer_deduplicated_count": 0,
+      "sample_quality": null,
+      "framework": null,
+      "interpretation_contract": null,
+      "metrics": {
+        "trailing_pe": {},
+        "price_to_book": {},
+        "forward_pe_consensus": {},
+        "forward_pe_modeled": {},
+        "forward_price_to_book_consensus": {},
+        "forward_price_to_book_modeled": {}
+      },
+      "exclusion_reason_counts": {},
+      "audit": {}
+    },
+    "SKHY": {
+      "ticker": "SKHY",
+      "market": "us",
+      "available": false,
+      "reason": null,
+      "contract": "peer-sector-valuation-v1",
+      "provider": "validated_active_monitoring_assessments",
+      "peer_scope": "limited_active_monitoring_universe",
+      "as_of_date": "2026-08-17",
+      "group_basis": "sector",
+      "group_value": "technology",
+      "candidate_count": 6,
+      "issuer_deduplicated_count": 6,
+      "sample_quality": "LOW",
+      "framework": "semiconductor",
+      "interpretation_contract": {
+        "framework": "semiconductor",
+        "rule": "cycle_normalized_earnings_and_cash_conversion",
+        "required_drivers": [
+          "asp_or_utilization",
+          "product_mix",
+          "capex",
+          "free_cash_flow"
+        ],
+        "automatic_cheap_or_expensive_verdict": false
+      },
+      "metrics": {
+        "trailing_pe": {
+          "available": false,
+          "reason": "missing_ttm_eps",
+          "quality": "LOW",
+          "sample_count": 3
+        },
+        "price_to_book": {
+          "available": false,
+          "reason": "missing_bvps",
+          "quality": "LOW",
+          "sample_count": 4
+        },
+        "forward_pe_consensus": {
+          "available": false,
+          "reason": "missing_forward_eps",
+          "quality": "LOW",
+          "sample_count": 0
+        },
+        "forward_pe_modeled": {
+          "available": false,
+          "reason": "missing_forward_eps",
+          "quality": "LOW",
+          "sample_count": 0
+        },
+        "forward_price_to_book_consensus": {
+          "available": false,
+          "reason": "missing_forward_bvps",
+          "quality": "LOW",
+          "sample_count": 0
+        },
+        "forward_price_to_book_modeled": {
+          "available": false,
+          "reason": "missing_forward_bvps",
+          "quality": "LOW",
+          "sample_count": 2
+        }
+      },
+      "exclusion_reason_counts": {
+        "forward_basis_mismatch": 4,
+        "missing_bvps": 2,
+        "missing_forward_bvps": 8,
+        "missing_forward_eps": 6,
+        "missing_ttm_eps": 3,
+        "period_mismatch": 2,
+        "security_basis_unknown": 2
+      },
+      "audit": {
+        "candidate_tickers": [
+          "GOOGL",
+          "IBM",
+          "MU",
+          "SNDK",
+          "TSM",
+          "WRD"
+        ],
+        "issuer_deduplicated_tickers": [
+          "GOOGL",
+          "IBM",
+          "MU",
+          "SNDK",
+          "TSM",
+          "WRD"
+        ],
+        "duplicate_issuer_exclusions": {},
+        "metrics": {
+          "trailing_pe": {
+            "included": [
+              {
+                "ticker": "GOOGL",
+                "issuer_id": "e7681fb5d62fc211e936",
+                "security_id": "a7f76a2ac082be327e68",
+                "identity_tier": "tier_a_authoritative",
+                "issuer_dedup_reliable": true,
+                "taxonomy": null,
+                "industry": "information_technology_services",
+                "metric": "trailing_pe",
+                "value": 12.3297,
+                "as_of": "2026-08-17",
+                "source": "derived_trailing",
+                "basis": "directly_comparable",
+                "denominator_period": "2026-06-30",
+                "eligibility": "CAUTION",
+                "cautions": [
+                  "period_partial"
+                ]
+              },
+              {
+                "ticker": "IBM",
+                "issuer_id": "baf0312c9c37b4c10324",
+                "security_id": "068739af2857355ce5a2",
+                "identity_tier": "tier_a_authoritative",
+                "issuer_dedup_reliable": true,
+                "taxonomy": null,
+                "industry": "computer_and_office_equipment",
+                "metric": "trailing_pe",
+                "value": 13.8194,
+                "as_of": "2026-08-17",
+                "source": "derived_trailing",
+                "basis": "directly_comparable",
+                "denominator_period": "2026-06-30",
+                "eligibility": "CAUTION",
+                "cautions": [
+                  "period_partial"
+                ]
+              },
+              {
+                "ticker": "MU",
+                "issuer_id": "ticker:MU",
+                "security_id": "d2d9c866655e3dd91198",
+                "identity_tier": "tier_d_inferred_default",
+                "issuer_dedup_reliable": false,
+                "taxonomy": "semiconductor",
+                "industry": "semiconductors",
+                "metric": "trailing_pe",
+                "value": 20.6775,
+                "as_of": "2026-08-17",
+                "source": "derived_trailing",
+                "basis": "directly_comparable",
+                "denominator_period": "2026-05-28",
+                "eligibility": "CAUTION",
+                "cautions": [
+                  "period_partial"
+                ]
+              }
+            ],
+            "excluded": [
+              {
+                "ticker": "SNDK",
+                "issuer_id": "ticker:SNDK",
+                "reason": "missing_ttm_eps"
+              },
+              {
+                "ticker": "TSM",
+                "issuer_id": "ticker:TSM",
+                "reason": "missing_ttm_eps"
+              },
+              {
+                "ticker": "WRD",
+                "issuer_id": "ticker:WRD",
+                "reason": "missing_ttm_eps"
+              }
+            ]
+          },
+          "price_to_book": {
+            "included": [
+              {
+                "ticker": "GOOGL",
+                "issuer_id": "e7681fb5d62fc211e936",
+                "security_id": "a7f76a2ac082be327e68",
+                "identity_tier": "tier_a_authoritative",
+                "issuer_dedup_reliable": true,
+                "taxonomy": null,
+                "industry": "information_technology_services",
+                "metric": "price_to_book",
+                "value": 6.5687,
+                "as_of": "2026-08-17",
+                "source": "derived_trailing",
+                "basis": "directly_comparable",
+                "denominator_period": "2026-06-30",
+                "eligibility": "CAUTION",
+                "cautions": [
+                  "period_partial"
+                ]
+              },
+              {
+                "ticker": "IBM",
+                "issuer_id": "baf0312c9c37b4c10324",
+                "security_id": "068739af2857355ce5a2",
+                "identity_tier": "tier_a_authoritative",
+                "issuer_dedup_reliable": true,
+                "taxonomy": null,
+                "industry": "computer_and_office_equipment",
+                "metric": "price_to_book",
+                "value": 6.3321,
+                "as_of": "2026-08-17",
+                "source": "derived_trailing",
+                "basis": "directly_comparable",
+                "denominator_period": "2026-06-30",
+                "eligibility": "CAUTION",
+                "cautions": [
+                  "period_partial"
+                ]
+              },
+              {
+                "ticker": "MU",
+                "issuer_id": "ticker:MU",
+                "security_id": "d2d9c866655e3dd91198",
+                "identity_tier": "tier_d_inferred_default",
+                "issuer_dedup_reliable": false,
+                "taxonomy": "semiconductor",
+                "industry": "semiconductors",
+                "metric": "price_to_book",
+                "value": 11.3406,
+                "as_of": "2026-08-17",
+                "source": "derived_trailing",
+                "basis": "directly_comparable",
+                "denominator_period": "2026-05-28",
+                "eligibility": "CAUTION",
+                "cautions": [
+                  "period_partial"
+                ]
+              },
+              {
+                "ticker": "SNDK",
+                "issuer_id": "ticker:SNDK",
+                "security_id": "65be1c7e651cae02db25",
+                "identity_tier": "tier_d_inferred_default",
+                "issuer_dedup_reliable": false,
+                "taxonomy": null,
+                "industry": "computer_storage_devices",
+                "metric": "price_to_book",
+                "value": 16.5786,
+                "as_of": "2026-08-17",
+                "source": "derived_trailing",
+                "basis": "directly_comparable",
+                "denominator_period": "2026-07-03",
+                "eligibility": "CAUTION",
+                "cautions": [
+                  "period_partial"
+                ]
+              }
+            ],
+            "excluded": [
+              {
+                "ticker": "TSM",
+                "issuer_id": "ticker:TSM",
+                "reason": "missing_bvps"
+              },
+              {
+                "ticker": "WRD",
+                "issuer_id": "ticker:WRD",
+                "reason": "missing_bvps"
+              }
+            ]
+          },
+          "forward_pe_consensus": {
+            "included": [],
+            "excluded": [
+              {
+                "ticker": "GOOGL",
+                "issuer_id": "e7681fb5d62fc211e936",
+                "reason": "missing_forward_eps"
+              },
+              {
+                "ticker": "IBM",
+                "issuer_id": "baf0312c9c37b4c10324",
+                "reason": "period_mismatch"
+              },
+              {
+                "ticker": "MU",
+                "issuer_id": "ticker:MU",
+                "reason": "period_mismatch"
+              },
+              {
+                "ticker": "SNDK",
+                "issuer_id": "ticker:SNDK",
+                "reason": "security_basis_unknown"
+              },
+              {
+                "ticker": "TSM",
+                "issuer_id": "ticker:TSM",
+                "reason": "missing_forward_eps"
+              },
+              {
+                "ticker": "WRD",
+                "issuer_id": "ticker:WRD",
+                "reason": "missing_forward_eps"
+              }
+            ]
+          },
+          "forward_pe_modeled": {
+            "included": [],
+            "excluded": [
+              {
+                "ticker": "GOOGL",
+                "issuer_id": "e7681fb5d62fc211e936",
+                "reason": "missing_forward_eps"
+              },
+              {
+                "ticker": "IBM",
+                "issuer_id": "baf0312c9c37b4c10324",
+                "reason": "forward_basis_mismatch"
+              },
+              {
+                "ticker": "MU",
+                "issuer_id": "ticker:MU",
+                "reason": "forward_basis_mismatch"
+              },
+              {
+                "ticker": "SNDK",
+                "issuer_id": "ticker:SNDK",
+                "reason": "security_basis_unknown"
+              },
+              {
+                "ticker": "TSM",
+                "issuer_id": "ticker:TSM",
+                "reason": "missing_forward_eps"
+              },
+              {
+                "ticker": "WRD",
+                "issuer_id": "ticker:WRD",
+                "reason": "missing_forward_eps"
+              }
+            ]
+          },
+          "forward_price_to_book_consensus": {
+            "included": [],
+            "excluded": [
+              {
+                "ticker": "GOOGL",
+                "issuer_id": "e7681fb5d62fc211e936",
+                "reason": "missing_forward_bvps"
+              },
+              {
+                "ticker": "IBM",
+                "issuer_id": "baf0312c9c37b4c10324",
+                "reason": "forward_basis_mismatch"
+              },
+              {
+                "ticker": "MU",
+                "issuer_id": "ticker:MU",
+                "reason": "forward_basis_mismatch"
+              },
+              {
+                "ticker": "SNDK",
+                "issuer_id": "ticker:SNDK",
+                "reason": "missing_forward_bvps"
+              },
+              {
+                "ticker": "TSM",
+                "issuer_id": "ticker:TSM",
+                "reason": "missing_forward_bvps"
+              },
+              {
+                "ticker": "WRD",
+                "issuer_id": "ticker:WRD",
+                "reason": "missing_forward_bvps"
+              }
+            ]
+          },
+          "forward_price_to_book_modeled": {
+            "included": [
+              {
+                "ticker": "IBM",
+                "issuer_id": "baf0312c9c37b4c10324",
+                "security_id": "068739af2857355ce5a2",
+                "identity_tier": "tier_a_authoritative",
+                "issuer_dedup_reliable": true,
+                "taxonomy": null,
+                "industry": "computer_and_office_equipment",
+                "metric": "forward_price_to_book_modeled",
+                "value": 6.6761,
+                "as_of": "2026-08-17",
+                "source": "modeled_forward",
+                "basis": "directly_comparable",
+                "denominator_period": "FY1",
+                "eligibility": "CAUTION",
+                "cautions": [
+                  "period_partial"
+                ]
+              },
+              {
+                "ticker": "MU",
+                "issuer_id": "ticker:MU",
+                "security_id": "d2d9c866655e3dd91198",
+                "identity_tier": "tier_d_inferred_default",
+                "issuer_dedup_reliable": false,
+                "taxonomy": "semiconductor",
+                "industry": "semiconductors",
+                "metric": "forward_price_to_book_modeled",
+                "value": 6.2035,
+                "as_of": "2026-08-17",
+                "source": "modeled_forward",
+                "basis": "directly_comparable",
+                "denominator_period": "FY1",
+                "eligibility": "CAUTION",
+                "cautions": [
+                  "period_partial"
+                ]
+              }
+            ],
+            "excluded": [
+              {
+                "ticker": "GOOGL",
+                "issuer_id": "e7681fb5d62fc211e936",
+                "reason": "missing_forward_bvps"
+              },
+              {
+                "ticker": "SNDK",
+                "issuer_id": "ticker:SNDK",
+                "reason": "missing_forward_bvps"
+              },
+              {
+                "ticker": "TSM",
+                "issuer_id": "ticker:TSM",
+                "reason": "missing_forward_bvps"
+              },
+              {
+                "ticker": "WRD",
+                "issuer_id": "ticker:WRD",
+                "reason": "missing_forward_bvps"
+              }
+            ]
+          }
+        }
+      }
+    },
+    "SNDK": {
+      "ticker": "SNDK",
+      "market": "us",
+      "available": false,
+      "reason": null,
+      "contract": "peer-sector-valuation-v1",
+      "provider": "validated_active_monitoring_assessments",
+      "peer_scope": "limited_active_monitoring_universe",
+      "as_of_date": "2026-08-17",
+      "group_basis": "sector",
+      "group_value": "technology",
+      "candidate_count": 6,
+      "issuer_deduplicated_count": 6,
+      "sample_quality": "LOW",
+      "framework": "general",
+      "interpretation_contract": {
+        "framework": "general",
+        "rule": "relative_multiple_is_context_not_verdict",
+        "required_drivers": [
+          "earnings_quality",
+          "cash_conversion",
+          "balance_sheet"
+        ],
+        "automatic_cheap_or_expensive_verdict": false
+      },
+      "metrics": {
+        "trailing_pe": {
+          "available": false,
+          "reason": "missing_ttm_eps",
+          "quality": "LOW",
+          "sample_count": 3
+        },
+        "price_to_book": {
+          "available": false,
+          "audit_available": true,
+          "reason": "broad_fallback_low_quality",
+          "quality": "LOW",
+          "sample_count": 3,
+          "company_value": 16.5786,
+          "median": 6.5687,
+          "company_relative_multiple": 2.5239,
+          "company_vs_median_pct": 152.3878,
+          "company_cross_section_percentile": 87.5
+        },
+        "forward_pe_consensus": {
+          "available": false,
+          "reason": "security_basis_unknown",
+          "quality": "LOW",
+          "sample_count": 0
+        },
+        "forward_pe_modeled": {
+          "available": false,
+          "reason": "security_basis_unknown",
+          "quality": "LOW",
+          "sample_count": 0
+        },
+        "forward_price_to_book_consensus": {
+          "available": false,
+          "reason": "industry_metric_not_primary",
+          "sample_count": 0
+        },
+        "forward_price_to_book_modeled": {
+          "available": false,
+          "reason": "industry_metric_not_primary",
+          "sample_count": 0
+        }
+      },
+      "exclusion_reason_counts": {
+        "forward_basis_mismatch": 2,
+        "missing_bvps": 3,
+        "missing_forward_eps": 8,
+        "missing_ttm_eps": 3,
+        "period_mismatch": 2
+      },
+      "audit": {
+        "candidate_tickers": [
+          "GOOGL",
+          "IBM",
+          "MU",
+          "SKHY",
+          "TSM",
+          "WRD"
+        ],
+        "issuer_deduplicated_tickers": [
+          "GOOGL",
+          "IBM",
+          "MU",
+          "SKHY",
+          "TSM",
+          "WRD"
+        ],
+        "duplicate_issuer_exclusions": {},
+        "metrics": {
+          "trailing_pe": {
+            "included": [
+              {
+                "ticker": "GOOGL",
+                "issuer_id": "e7681fb5d62fc211e936",
+                "security_id": "a7f76a2ac082be327e68",
+                "identity_tier": "tier_a_authoritative",
+                "issuer_dedup_reliable": true,
+                "taxonomy": null,
+                "industry": "information_technology_services",
+                "metric": "trailing_pe",
+                "value": 12.3297,
+                "as_of": "2026-08-17",
+                "source": "derived_trailing",
+                "basis": "directly_comparable",
+                "denominator_period": "2026-06-30",
+                "eligibility": "CAUTION",
+                "cautions": [
+                  "period_partial"
+                ]
+              },
+              {
+                "ticker": "IBM",
+                "issuer_id": "baf0312c9c37b4c10324",
+                "security_id": "068739af2857355ce5a2",
+                "identity_tier": "tier_a_authoritative",
+                "issuer_dedup_reliable": true,
+                "taxonomy": null,
+                "industry": "computer_and_office_equipment",
+                "metric": "trailing_pe",
+                "value": 13.8194,
+                "as_of": "2026-08-17",
+                "source": "derived_trailing",
+                "basis": "directly_comparable",
+                "denominator_period": "2026-06-30",
+                "eligibility": "CAUTION",
+                "cautions": [
+                  "period_partial"
+                ]
+              },
+              {
+                "ticker": "MU",
+                "issuer_id": "ticker:MU",
+                "security_id": "d2d9c866655e3dd91198",
+                "identity_tier": "tier_d_inferred_default",
+                "issuer_dedup_reliable": false,
+                "taxonomy": "semiconductor",
+                "industry": "semiconductors",
+                "metric": "trailing_pe",
+                "value": 20.6775,
+                "as_of": "2026-08-17",
+                "source": "derived_trailing",
+                "basis": "directly_comparable",
+                "denominator_period": "2026-05-28",
+                "eligibility": "CAUTION",
+                "cautions": [
+                  "period_partial"
+                ]
+              }
+            ],
+            "excluded": [
+              {
+                "ticker": "SKHY",
+                "issuer_id": "5b65cdca867f3dd4d3b3",
+                "reason": "missing_ttm_eps"
+              },
+              {
+                "ticker": "TSM",
+                "issuer_id": "ticker:TSM",
+                "reason": "missing_ttm_eps"
+              },
+              {
+                "ticker": "WRD",
+                "issuer_id": "ticker:WRD",
+                "reason": "missing_ttm_eps"
+              }
+            ]
+          },
+          "price_to_book": {
+            "included": [
+              {
+                "ticker": "GOOGL",
+                "issuer_id": "e7681fb5d62fc211e936",
+                "security_id": "a7f76a2ac082be327e68",
+                "identity_tier": "tier_a_authoritative",
+                "issuer_dedup_reliable": true,
+                "taxonomy": null,
+                "industry": "information_technology_services",
+                "metric": "price_to_book",
+                "value": 6.5687,
+                "as_of": "2026-08-17",
+                "source": "derived_trailing",
+                "basis": "directly_comparable",
+                "denominator_period": "2026-06-30",
+                "eligibility": "CAUTION",
+                "cautions": [
+                  "period_caution"
+                ]
+              },
+              {
+                "ticker": "IBM",
+                "issuer_id": "baf0312c9c37b4c10324",
+                "security_id": "068739af2857355ce5a2",
+                "identity_tier": "tier_a_authoritative",
+                "issuer_dedup_reliable": true,
+                "taxonomy": null,
+                "industry": "computer_and_office_equipment",
+                "metric": "price_to_book",
+                "value": 6.3321,
+                "as_of": "2026-08-17",
+                "source": "derived_trailing",
+                "basis": "directly_comparable",
+                "denominator_period": "2026-06-30",
+                "eligibility": "CAUTION",
+                "cautions": [
+                  "period_caution"
+                ]
+              },
+              {
+                "ticker": "MU",
+                "issuer_id": "ticker:MU",
+                "security_id": "d2d9c866655e3dd91198",
+                "identity_tier": "tier_d_inferred_default",
+                "issuer_dedup_reliable": false,
+                "taxonomy": "semiconductor",
+                "industry": "semiconductors",
+                "metric": "price_to_book",
+                "value": 11.3406,
+                "as_of": "2026-08-17",
+                "source": "derived_trailing",
+                "basis": "directly_comparable",
+                "denominator_period": "2026-05-28",
+                "eligibility": "CAUTION",
+                "cautions": [
+                  "period_caution"
+                ]
+              }
+            ],
+            "excluded": [
+              {
+                "ticker": "SKHY",
+                "issuer_id": "5b65cdca867f3dd4d3b3",
+                "reason": "missing_bvps"
+              },
+              {
+                "ticker": "TSM",
+                "issuer_id": "ticker:TSM",
+                "reason": "missing_bvps"
+              },
+              {
+                "ticker": "WRD",
+                "issuer_id": "ticker:WRD",
+                "reason": "missing_bvps"
+              }
+            ]
+          },
+          "forward_pe_consensus": {
+            "included": [],
+            "excluded": [
+              {
+                "ticker": "GOOGL",
+                "issuer_id": "e7681fb5d62fc211e936",
+                "reason": "missing_forward_eps"
+              },
+              {
+                "ticker": "IBM",
+                "issuer_id": "baf0312c9c37b4c10324",
+                "reason": "period_mismatch"
+              },
+              {
+                "ticker": "MU",
+                "issuer_id": "ticker:MU",
+                "reason": "period_mismatch"
+              },
+              {
+                "ticker": "SKHY",
+                "issuer_id": "5b65cdca867f3dd4d3b3",
+                "reason": "missing_forward_eps"
+              },
+              {
+                "ticker": "TSM",
+                "issuer_id": "ticker:TSM",
+                "reason": "missing_forward_eps"
+              },
+              {
+                "ticker": "WRD",
+                "issuer_id": "ticker:WRD",
+                "reason": "missing_forward_eps"
+              }
+            ]
+          },
+          "forward_pe_modeled": {
+            "included": [],
+            "excluded": [
+              {
+                "ticker": "GOOGL",
+                "issuer_id": "e7681fb5d62fc211e936",
+                "reason": "missing_forward_eps"
+              },
+              {
+                "ticker": "IBM",
+                "issuer_id": "baf0312c9c37b4c10324",
+                "reason": "forward_basis_mismatch"
+              },
+              {
+                "ticker": "MU",
+                "issuer_id": "ticker:MU",
+                "reason": "forward_basis_mismatch"
+              },
+              {
+                "ticker": "SKHY",
+                "issuer_id": "5b65cdca867f3dd4d3b3",
+                "reason": "missing_forward_eps"
+              },
+              {
+                "ticker": "TSM",
+                "issuer_id": "ticker:TSM",
+                "reason": "missing_forward_eps"
+              },
+              {
+                "ticker": "WRD",
+                "issuer_id": "ticker:WRD",
+                "reason": "missing_forward_eps"
+              }
+            ]
+          },
+          "forward_price_to_book_consensus": {
+            "included": [],
+            "excluded": []
+          },
+          "forward_price_to_book_modeled": {
+            "included": [],
+            "excluded": []
+          }
+        }
+      }
+    },
+    "TSLA": {
+      "ticker": "TSLA",
+      "market": "us",
+      "available": false,
+      "reason": "insufficient_verified_peer_universe",
+      "contract": "peer-sector-valuation-v1",
+      "provider": "validated_active_monitoring_assessments",
+      "peer_scope": null,
+      "as_of_date": null,
+      "group_basis": null,
+      "group_value": null,
+      "candidate_count": 0,
+      "issuer_deduplicated_count": 0,
+      "sample_quality": null,
+      "framework": null,
+      "interpretation_contract": null,
+      "metrics": {
+        "trailing_pe": {},
+        "price_to_book": {},
+        "forward_pe_consensus": {},
+        "forward_pe_modeled": {},
+        "forward_price_to_book_consensus": {},
+        "forward_price_to_book_modeled": {}
+      },
+      "exclusion_reason_counts": {},
+      "audit": {}
+    },
+    "TSM": {
+      "ticker": "TSM",
+      "market": "us",
+      "available": false,
+      "reason": null,
+      "contract": "peer-sector-valuation-v1",
+      "provider": "validated_active_monitoring_assessments",
+      "peer_scope": "limited_active_monitoring_universe",
+      "as_of_date": "2026-08-17",
+      "group_basis": "sector",
+      "group_value": "technology",
+      "candidate_count": 6,
+      "issuer_deduplicated_count": 6,
+      "sample_quality": "LOW",
+      "framework": "semiconductor",
+      "interpretation_contract": {
+        "framework": "semiconductor",
+        "rule": "cycle_normalized_earnings_and_cash_conversion",
+        "required_drivers": [
+          "asp_or_utilization",
+          "product_mix",
+          "capex",
+          "free_cash_flow"
+        ],
+        "automatic_cheap_or_expensive_verdict": false
+      },
+      "metrics": {
+        "trailing_pe": {
+          "available": false,
+          "reason": "missing_ttm_eps",
+          "quality": "LOW",
+          "sample_count": 3
+        },
+        "price_to_book": {
+          "available": false,
+          "reason": "missing_bvps",
+          "quality": "LOW",
+          "sample_count": 4
+        },
+        "forward_pe_consensus": {
+          "available": false,
+          "reason": "missing_forward_eps",
+          "quality": "LOW",
+          "sample_count": 0
+        },
+        "forward_pe_modeled": {
+          "available": false,
+          "reason": "missing_forward_eps",
+          "quality": "LOW",
+          "sample_count": 0
+        },
+        "forward_price_to_book_consensus": {
+          "available": false,
+          "reason": "missing_forward_bvps",
+          "quality": "LOW",
+          "sample_count": 0
+        },
+        "forward_price_to_book_modeled": {
+          "available": false,
+          "reason": "missing_forward_bvps",
+          "quality": "LOW",
+          "sample_count": 2
+        }
+      },
+      "exclusion_reason_counts": {
+        "forward_basis_mismatch": 4,
+        "missing_bvps": 2,
+        "missing_forward_bvps": 8,
+        "missing_forward_eps": 6,
+        "missing_ttm_eps": 3,
+        "period_mismatch": 2,
+        "security_basis_unknown": 2
+      },
+      "audit": {
+        "candidate_tickers": [
+          "GOOGL",
+          "IBM",
+          "MU",
+          "SKHY",
+          "SNDK",
+          "WRD"
+        ],
+        "issuer_deduplicated_tickers": [
+          "GOOGL",
+          "IBM",
+          "MU",
+          "SKHY",
+          "SNDK",
+          "WRD"
+        ],
+        "duplicate_issuer_exclusions": {},
+        "metrics": {
+          "trailing_pe": {
+            "included": [
+              {
+                "ticker": "GOOGL",
+                "issuer_id": "e7681fb5d62fc211e936",
+                "security_id": "a7f76a2ac082be327e68",
+                "identity_tier": "tier_a_authoritative",
+                "issuer_dedup_reliable": true,
+                "taxonomy": null,
+                "industry": "information_technology_services",
+                "metric": "trailing_pe",
+                "value": 12.3297,
+                "as_of": "2026-08-17",
+                "source": "derived_trailing",
+                "basis": "directly_comparable",
+                "denominator_period": "2026-06-30",
+                "eligibility": "CAUTION",
+                "cautions": [
+                  "period_partial"
+                ]
+              },
+              {
+                "ticker": "IBM",
+                "issuer_id": "baf0312c9c37b4c10324",
+                "security_id": "068739af2857355ce5a2",
+                "identity_tier": "tier_a_authoritative",
+                "issuer_dedup_reliable": true,
+                "taxonomy": null,
+                "industry": "computer_and_office_equipment",
+                "metric": "trailing_pe",
+                "value": 13.8194,
+                "as_of": "2026-08-17",
+                "source": "derived_trailing",
+                "basis": "directly_comparable",
+                "denominator_period": "2026-06-30",
+                "eligibility": "CAUTION",
+                "cautions": [
+                  "period_partial"
+                ]
+              },
+              {
+                "ticker": "MU",
+                "issuer_id": "ticker:MU",
+                "security_id": "d2d9c866655e3dd91198",
+                "identity_tier": "tier_d_inferred_default",
+                "issuer_dedup_reliable": false,
+                "taxonomy": "semiconductor",
+                "industry": "semiconductors",
+                "metric": "trailing_pe",
+                "value": 20.6775,
+                "as_of": "2026-08-17",
+                "source": "derived_trailing",
+                "basis": "directly_comparable",
+                "denominator_period": "2026-05-28",
+                "eligibility": "CAUTION",
+                "cautions": [
+                  "period_partial"
+                ]
+              }
+            ],
+            "excluded": [
+              {
+                "ticker": "SKHY",
+                "issuer_id": "5b65cdca867f3dd4d3b3",
+                "reason": "missing_ttm_eps"
+              },
+              {
+                "ticker": "SNDK",
+                "issuer_id": "ticker:SNDK",
+                "reason": "missing_ttm_eps"
+              },
+              {
+                "ticker": "WRD",
+                "issuer_id": "ticker:WRD",
+                "reason": "missing_ttm_eps"
+              }
+            ]
+          },
+          "price_to_book": {
+            "included": [
+              {
+                "ticker": "GOOGL",
+                "issuer_id": "e7681fb5d62fc211e936",
+                "security_id": "a7f76a2ac082be327e68",
+                "identity_tier": "tier_a_authoritative",
+                "issuer_dedup_reliable": true,
+                "taxonomy": null,
+                "industry": "information_technology_services",
+                "metric": "price_to_book",
+                "value": 6.5687,
+                "as_of": "2026-08-17",
+                "source": "derived_trailing",
+                "basis": "directly_comparable",
+                "denominator_period": "2026-06-30",
+                "eligibility": "CAUTION",
+                "cautions": [
+                  "period_partial"
+                ]
+              },
+              {
+                "ticker": "IBM",
+                "issuer_id": "baf0312c9c37b4c10324",
+                "security_id": "068739af2857355ce5a2",
+                "identity_tier": "tier_a_authoritative",
+                "issuer_dedup_reliable": true,
+                "taxonomy": null,
+                "industry": "computer_and_office_equipment",
+                "metric": "price_to_book",
+                "value": 6.3321,
+                "as_of": "2026-08-17",
+                "source": "derived_trailing",
+                "basis": "directly_comparable",
+                "denominator_period": "2026-06-30",
+                "eligibility": "CAUTION",
+                "cautions": [
+                  "period_partial"
+                ]
+              },
+              {
+                "ticker": "MU",
+                "issuer_id": "ticker:MU",
+                "security_id": "d2d9c866655e3dd91198",
+                "identity_tier": "tier_d_inferred_default",
+                "issuer_dedup_reliable": false,
+                "taxonomy": "semiconductor",
+                "industry": "semiconductors",
+                "metric": "price_to_book",
+                "value": 11.3406,
+                "as_of": "2026-08-17",
+                "source": "derived_trailing",
+                "basis": "directly_comparable",
+                "denominator_period": "2026-05-28",
+                "eligibility": "CAUTION",
+                "cautions": [
+                  "period_partial"
+                ]
+              },
+              {
+                "ticker": "SNDK",
+                "issuer_id": "ticker:SNDK",
+                "security_id": "65be1c7e651cae02db25",
+                "identity_tier": "tier_d_inferred_default",
+                "issuer_dedup_reliable": false,
+                "taxonomy": null,
+                "industry": "computer_storage_devices",
+                "metric": "price_to_book",
+                "value": 16.5786,
+                "as_of": "2026-08-17",
+                "source": "derived_trailing",
+                "basis": "directly_comparable",
+                "denominator_period": "2026-07-03",
+                "eligibility": "CAUTION",
+                "cautions": [
+                  "period_partial"
+                ]
+              }
+            ],
+            "excluded": [
+              {
+                "ticker": "SKHY",
+                "issuer_id": "5b65cdca867f3dd4d3b3",
+                "reason": "missing_bvps"
+              },
+              {
+                "ticker": "WRD",
+                "issuer_id": "ticker:WRD",
+                "reason": "missing_bvps"
+              }
+            ]
+          },
+          "forward_pe_consensus": {
+            "included": [],
+            "excluded": [
+              {
+                "ticker": "GOOGL",
+                "issuer_id": "e7681fb5d62fc211e936",
+                "reason": "missing_forward_eps"
+              },
+              {
+                "ticker": "IBM",
+                "issuer_id": "baf0312c9c37b4c10324",
+                "reason": "period_mismatch"
+              },
+              {
+                "ticker": "MU",
+                "issuer_id": "ticker:MU",
+                "reason": "period_mismatch"
+              },
+              {
+                "ticker": "SKHY",
+                "issuer_id": "5b65cdca867f3dd4d3b3",
+                "reason": "missing_forward_eps"
+              },
+              {
+                "ticker": "SNDK",
+                "issuer_id": "ticker:SNDK",
+                "reason": "security_basis_unknown"
+              },
+              {
+                "ticker": "WRD",
+                "issuer_id": "ticker:WRD",
+                "reason": "missing_forward_eps"
+              }
+            ]
+          },
+          "forward_pe_modeled": {
+            "included": [],
+            "excluded": [
+              {
+                "ticker": "GOOGL",
+                "issuer_id": "e7681fb5d62fc211e936",
+                "reason": "missing_forward_eps"
+              },
+              {
+                "ticker": "IBM",
+                "issuer_id": "baf0312c9c37b4c10324",
+                "reason": "forward_basis_mismatch"
+              },
+              {
+                "ticker": "MU",
+                "issuer_id": "ticker:MU",
+                "reason": "forward_basis_mismatch"
+              },
+              {
+                "ticker": "SKHY",
+                "issuer_id": "5b65cdca867f3dd4d3b3",
+                "reason": "missing_forward_eps"
+              },
+              {
+                "ticker": "SNDK",
+                "issuer_id": "ticker:SNDK",
+                "reason": "security_basis_unknown"
+              },
+              {
+                "ticker": "WRD",
+                "issuer_id": "ticker:WRD",
+                "reason": "missing_forward_eps"
+              }
+            ]
+          },
+          "forward_price_to_book_consensus": {
+            "included": [],
+            "excluded": [
+              {
+                "ticker": "GOOGL",
+                "issuer_id": "e7681fb5d62fc211e936",
+                "reason": "missing_forward_bvps"
+              },
+              {
+                "ticker": "IBM",
+                "issuer_id": "baf0312c9c37b4c10324",
+                "reason": "forward_basis_mismatch"
+              },
+              {
+                "ticker": "MU",
+                "issuer_id": "ticker:MU",
+                "reason": "forward_basis_mismatch"
+              },
+              {
+                "ticker": "SKHY",
+                "issuer_id": "5b65cdca867f3dd4d3b3",
+                "reason": "missing_forward_bvps"
+              },
+              {
+                "ticker": "SNDK",
+                "issuer_id": "ticker:SNDK",
+                "reason": "missing_forward_bvps"
+              },
+              {
+                "ticker": "WRD",
+                "issuer_id": "ticker:WRD",
+                "reason": "missing_forward_bvps"
+              }
+            ]
+          },
+          "forward_price_to_book_modeled": {
+            "included": [
+              {
+                "ticker": "IBM",
+                "issuer_id": "baf0312c9c37b4c10324",
+                "security_id": "068739af2857355ce5a2",
+                "identity_tier": "tier_a_authoritative",
+                "issuer_dedup_reliable": true,
+                "taxonomy": null,
+                "industry": "computer_and_office_equipment",
+                "metric": "forward_price_to_book_modeled",
+                "value": 6.6761,
+                "as_of": "2026-08-17",
+                "source": "modeled_forward",
+                "basis": "directly_comparable",
+                "denominator_period": "FY1",
+                "eligibility": "CAUTION",
+                "cautions": [
+                  "period_partial"
+                ]
+              },
+              {
+                "ticker": "MU",
+                "issuer_id": "ticker:MU",
+                "security_id": "d2d9c866655e3dd91198",
+                "identity_tier": "tier_d_inferred_default",
+                "issuer_dedup_reliable": false,
+                "taxonomy": "semiconductor",
+                "industry": "semiconductors",
+                "metric": "forward_price_to_book_modeled",
+                "value": 6.2035,
+                "as_of": "2026-08-17",
+                "source": "modeled_forward",
+                "basis": "directly_comparable",
+                "denominator_period": "FY1",
+                "eligibility": "CAUTION",
+                "cautions": [
+                  "period_partial"
+                ]
+              }
+            ],
+            "excluded": [
+              {
+                "ticker": "GOOGL",
+                "issuer_id": "e7681fb5d62fc211e936",
+                "reason": "missing_forward_bvps"
+              },
+              {
+                "ticker": "SKHY",
+                "issuer_id": "5b65cdca867f3dd4d3b3",
+                "reason": "missing_forward_bvps"
+              },
+              {
+                "ticker": "SNDK",
+                "issuer_id": "ticker:SNDK",
+                "reason": "missing_forward_bvps"
+              },
+              {
+                "ticker": "WRD",
+                "issuer_id": "ticker:WRD",
+                "reason": "missing_forward_bvps"
+              }
+            ]
+          }
+        }
+      }
+    },
+    "WRD": {
+      "ticker": "WRD",
+      "market": "us",
+      "available": false,
+      "reason": null,
+      "contract": "peer-sector-valuation-v1",
+      "provider": "validated_active_monitoring_assessments",
+      "peer_scope": "limited_active_monitoring_universe",
+      "as_of_date": "2026-08-17",
+      "group_basis": "sector",
+      "group_value": "technology",
+      "candidate_count": 6,
+      "issuer_deduplicated_count": 6,
+      "sample_quality": "LOW",
+      "framework": "general",
+      "interpretation_contract": {
+        "framework": "general",
+        "rule": "relative_multiple_is_context_not_verdict",
+        "required_drivers": [
+          "earnings_quality",
+          "cash_conversion",
+          "balance_sheet"
+        ],
+        "automatic_cheap_or_expensive_verdict": false
+      },
+      "metrics": {
+        "trailing_pe": {
+          "available": false,
+          "reason": "missing_ttm_eps",
+          "quality": "LOW",
+          "sample_count": 3
+        },
+        "price_to_book": {
+          "available": false,
+          "reason": "missing_bvps",
+          "quality": "LOW",
+          "sample_count": 4
+        },
+        "forward_pe_consensus": {
+          "available": false,
+          "reason": "missing_forward_eps",
+          "quality": "LOW",
+          "sample_count": 2
+        },
+        "forward_pe_modeled": {
+          "available": false,
+          "reason": "missing_forward_eps",
+          "quality": "LOW",
+          "sample_count": 0
+        },
+        "forward_price_to_book_consensus": {
+          "available": false,
+          "reason": "industry_metric_not_primary",
+          "sample_count": 0
+        },
+        "forward_price_to_book_modeled": {
+          "available": false,
+          "reason": "industry_metric_not_primary",
+          "sample_count": 0
+        }
+      },
+      "exclusion_reason_counts": {
+        "forward_basis_mismatch": 2,
+        "missing_bvps": 2,
+        "missing_forward_eps": 6,
+        "missing_ttm_eps": 3,
+        "security_basis_unknown": 2
+      },
+      "audit": {
+        "candidate_tickers": [
+          "GOOGL",
+          "IBM",
+          "MU",
+          "SKHY",
+          "SNDK",
+          "TSM"
+        ],
+        "issuer_deduplicated_tickers": [
+          "GOOGL",
+          "IBM",
+          "MU",
+          "SKHY",
+          "SNDK",
+          "TSM"
+        ],
+        "duplicate_issuer_exclusions": {},
+        "metrics": {
+          "trailing_pe": {
+            "included": [
+              {
+                "ticker": "GOOGL",
+                "issuer_id": "e7681fb5d62fc211e936",
+                "security_id": "a7f76a2ac082be327e68",
+                "identity_tier": "tier_a_authoritative",
+                "issuer_dedup_reliable": true,
+                "taxonomy": null,
+                "industry": "information_technology_services",
+                "metric": "trailing_pe",
+                "value": 12.3297,
+                "as_of": "2026-08-17",
+                "source": "derived_trailing",
+                "basis": "directly_comparable",
+                "denominator_period": "2026-06-30",
+                "eligibility": "CAUTION",
+                "cautions": [
+                  "period_partial"
+                ]
+              },
+              {
+                "ticker": "IBM",
+                "issuer_id": "baf0312c9c37b4c10324",
+                "security_id": "068739af2857355ce5a2",
+                "identity_tier": "tier_a_authoritative",
+                "issuer_dedup_reliable": true,
+                "taxonomy": null,
+                "industry": "computer_and_office_equipment",
+                "metric": "trailing_pe",
+                "value": 13.8194,
+                "as_of": "2026-08-17",
+                "source": "derived_trailing",
+                "basis": "directly_comparable",
+                "denominator_period": "2026-06-30",
+                "eligibility": "CAUTION",
+                "cautions": [
+                  "period_partial"
+                ]
+              },
+              {
+                "ticker": "MU",
+                "issuer_id": "ticker:MU",
+                "security_id": "d2d9c866655e3dd91198",
+                "identity_tier": "tier_d_inferred_default",
+                "issuer_dedup_reliable": false,
+                "taxonomy": "semiconductor",
+                "industry": "semiconductors",
+                "metric": "trailing_pe",
+                "value": 20.6775,
+                "as_of": "2026-08-17",
+                "source": "derived_trailing",
+                "basis": "directly_comparable",
+                "denominator_period": "2026-05-28",
+                "eligibility": "CAUTION",
+                "cautions": [
+                  "period_partial"
+                ]
+              }
+            ],
+            "excluded": [
+              {
+                "ticker": "SKHY",
+                "issuer_id": "5b65cdca867f3dd4d3b3",
+                "reason": "missing_ttm_eps"
+              },
+              {
+                "ticker": "SNDK",
+                "issuer_id": "ticker:SNDK",
+                "reason": "missing_ttm_eps"
+              },
+              {
+                "ticker": "TSM",
+                "issuer_id": "ticker:TSM",
+                "reason": "missing_ttm_eps"
+              }
+            ]
+          },
+          "price_to_book": {
+            "included": [
+              {
+                "ticker": "GOOGL",
+                "issuer_id": "e7681fb5d62fc211e936",
+                "security_id": "a7f76a2ac082be327e68",
+                "identity_tier": "tier_a_authoritative",
+                "issuer_dedup_reliable": true,
+                "taxonomy": null,
+                "industry": "information_technology_services",
+                "metric": "price_to_book",
+                "value": 6.5687,
+                "as_of": "2026-08-17",
+                "source": "derived_trailing",
+                "basis": "directly_comparable",
+                "denominator_period": "2026-06-30",
+                "eligibility": "CAUTION",
+                "cautions": [
+                  "period_partial"
+                ]
+              },
+              {
+                "ticker": "IBM",
+                "issuer_id": "baf0312c9c37b4c10324",
+                "security_id": "068739af2857355ce5a2",
+                "identity_tier": "tier_a_authoritative",
+                "issuer_dedup_reliable": true,
+                "taxonomy": null,
+                "industry": "computer_and_office_equipment",
+                "metric": "price_to_book",
+                "value": 6.3321,
+                "as_of": "2026-08-17",
+                "source": "derived_trailing",
+                "basis": "directly_comparable",
+                "denominator_period": "2026-06-30",
+                "eligibility": "CAUTION",
+                "cautions": [
+                  "period_partial"
+                ]
+              },
+              {
+                "ticker": "MU",
+                "issuer_id": "ticker:MU",
+                "security_id": "d2d9c866655e3dd91198",
+                "identity_tier": "tier_d_inferred_default",
+                "issuer_dedup_reliable": false,
+                "taxonomy": "semiconductor",
+                "industry": "semiconductors",
+                "metric": "price_to_book",
+                "value": 11.3406,
+                "as_of": "2026-08-17",
+                "source": "derived_trailing",
+                "basis": "directly_comparable",
+                "denominator_period": "2026-05-28",
+                "eligibility": "CAUTION",
+                "cautions": [
+                  "period_partial"
+                ]
+              },
+              {
+                "ticker": "SNDK",
+                "issuer_id": "ticker:SNDK",
+                "security_id": "65be1c7e651cae02db25",
+                "identity_tier": "tier_d_inferred_default",
+                "issuer_dedup_reliable": false,
+                "taxonomy": null,
+                "industry": "computer_storage_devices",
+                "metric": "price_to_book",
+                "value": 16.5786,
+                "as_of": "2026-08-17",
+                "source": "derived_trailing",
+                "basis": "directly_comparable",
+                "denominator_period": "2026-07-03",
+                "eligibility": "CAUTION",
+                "cautions": [
+                  "period_partial"
+                ]
+              }
+            ],
+            "excluded": [
+              {
+                "ticker": "SKHY",
+                "issuer_id": "5b65cdca867f3dd4d3b3",
+                "reason": "missing_bvps"
+              },
+              {
+                "ticker": "TSM",
+                "issuer_id": "ticker:TSM",
+                "reason": "missing_bvps"
+              }
+            ]
+          },
+          "forward_pe_consensus": {
+            "included": [
+              {
+                "ticker": "IBM",
+                "issuer_id": "baf0312c9c37b4c10324",
+                "security_id": "068739af2857355ce5a2",
+                "identity_tier": "tier_a_authoritative",
+                "issuer_dedup_reliable": true,
+                "taxonomy": null,
+                "industry": "computer_and_office_equipment",
+                "metric": "forward_pe_consensus",
+                "value": 17.3518,
+                "as_of": "2026-08-17",
+                "source": "consensus_forward",
+                "basis": "directly_comparable",
+                "denominator_period": "2026-12-31",
+                "eligibility": "CAUTION",
+                "cautions": [
+                  "period_partial"
+                ]
+              },
+              {
+                "ticker": "MU",
+                "issuer_id": "ticker:MU",
+                "security_id": "d2d9c866655e3dd91198",
+                "identity_tier": "tier_d_inferred_default",
+                "issuer_dedup_reliable": false,
+                "taxonomy": "semiconductor",
+                "industry": "semiconductors",
+                "metric": "forward_pe_consensus",
+                "value": 5.8662,
+                "as_of": "2026-08-17",
+                "source": "consensus_forward",
+                "basis": "directly_comparable",
+                "denominator_period": "2026-08-31",
+                "eligibility": "CAUTION",
+                "cautions": [
+                  "period_partial"
+                ]
+              }
+            ],
+            "excluded": [
+              {
+                "ticker": "GOOGL",
+                "issuer_id": "e7681fb5d62fc211e936",
+                "reason": "missing_forward_eps"
+              },
+              {
+                "ticker": "SKHY",
+                "issuer_id": "5b65cdca867f3dd4d3b3",
+                "reason": "missing_forward_eps"
+              },
+              {
+                "ticker": "SNDK",
+                "issuer_id": "ticker:SNDK",
+                "reason": "security_basis_unknown"
+              },
+              {
+                "ticker": "TSM",
+                "issuer_id": "ticker:TSM",
+                "reason": "missing_forward_eps"
+              }
+            ]
+          },
+          "forward_pe_modeled": {
+            "included": [],
+            "excluded": [
+              {
+                "ticker": "GOOGL",
+                "issuer_id": "e7681fb5d62fc211e936",
+                "reason": "missing_forward_eps"
+              },
+              {
+                "ticker": "IBM",
+                "issuer_id": "baf0312c9c37b4c10324",
+                "reason": "forward_basis_mismatch"
+              },
+              {
+                "ticker": "MU",
+                "issuer_id": "ticker:MU",
+                "reason": "forward_basis_mismatch"
+              },
+              {
+                "ticker": "SKHY",
+                "issuer_id": "5b65cdca867f3dd4d3b3",
+                "reason": "missing_forward_eps"
+              },
+              {
+                "ticker": "SNDK",
+                "issuer_id": "ticker:SNDK",
+                "reason": "security_basis_unknown"
+              },
+              {
+                "ticker": "TSM",
+                "issuer_id": "ticker:TSM",
+                "reason": "missing_forward_eps"
+              }
+            ]
+          },
+          "forward_price_to_book_consensus": {
+            "included": [],
+            "excluded": []
+          },
+          "forward_price_to_book_modeled": {
+            "included": [],
+            "excluded": []
+          }
+        }
+      }
+    },
+    "WULF": {
+      "ticker": "WULF",
+      "market": "us",
+      "available": false,
+      "reason": null,
+      "contract": "peer-sector-valuation-v1",
+      "provider": "validated_active_monitoring_assessments",
+      "peer_scope": "limited_active_monitoring_universe",
+      "as_of_date": "2026-08-17",
+      "group_basis": "sub_industry",
+      "group_value": "finance_services",
+      "candidate_count": 3,
+      "issuer_deduplicated_count": 3,
+      "sample_quality": "LOW",
+      "framework": "general",
+      "interpretation_contract": {
+        "framework": "general",
+        "rule": "relative_multiple_is_context_not_verdict",
+        "required_drivers": [
+          "earnings_quality",
+          "cash_conversion",
+          "balance_sheet"
+        ],
+        "automatic_cheap_or_expensive_verdict": false
+      },
+      "metrics": {
+        "trailing_pe": {
+          "available": false,
+          "reason": "negative_eps",
+          "quality": "LOW",
+          "sample_count": 0
+        },
+        "price_to_book": {
+          "available": false,
+          "reason": "insufficient_comparable_metric_sample",
+          "quality": "LOW",
+          "sample_count": 2
+        },
+        "forward_pe_consensus": {
+          "available": false,
+          "reason": "missing_forward_eps",
+          "quality": "LOW",
+          "sample_count": 1
+        },
+        "forward_pe_modeled": {
+          "available": false,
+          "reason": "missing_forward_eps",
+          "quality": "LOW",
+          "sample_count": 0
+        },
+        "forward_price_to_book_consensus": {
+          "available": false,
+          "reason": "industry_metric_not_primary",
+          "sample_count": 0
+        },
+        "forward_price_to_book_modeled": {
+          "available": false,
+          "reason": "industry_metric_not_primary",
+          "sample_count": 0
+        }
+      },
+      "exclusion_reason_counts": {
+        "forward_basis_mismatch": 1,
+        "missing_forward_eps": 4,
+        "missing_ttm_eps": 2,
+        "negative_eps": 1,
+        "negative_equity": 1
+      },
+      "audit": {
+        "candidate_tickers": [
+          "CORZ",
+          "CRCL",
+          "HUT"
+        ],
+        "issuer_deduplicated_tickers": [
+          "CORZ",
+          "CRCL",
+          "HUT"
+        ],
+        "duplicate_issuer_exclusions": {},
+        "metrics": {
+          "trailing_pe": {
+            "included": [],
+            "excluded": [
+              {
+                "ticker": "CORZ",
+                "issuer_id": "199f480b5a9d07e85545",
+                "reason": "negative_eps"
+              },
+              {
+                "ticker": "CRCL",
+                "issuer_id": "ticker:CRCL",
+                "reason": "missing_ttm_eps"
+              },
+              {
+                "ticker": "HUT",
+                "issuer_id": "8ddb4a908785bc146898",
+                "reason": "missing_ttm_eps"
+              }
+            ]
+          },
+          "price_to_book": {
+            "included": [
+              {
+                "ticker": "CRCL",
+                "issuer_id": "ticker:CRCL",
+                "security_id": "7abf33f9a295ccb7a485",
+                "identity_tier": "tier_d_inferred_default",
+                "issuer_dedup_reliable": false,
+                "taxonomy": null,
+                "industry": "financial_services",
+                "metric": "price_to_book",
+                "value": 5.8042,
+                "as_of": "2026-08-17",
+                "source": "derived_trailing",
+                "basis": "directly_comparable",
+                "denominator_period": "2026-03-31",
+                "eligibility": "CAUTION",
+                "cautions": [
+                  "period_caution"
+                ]
+              },
+              {
+                "ticker": "HUT",
+                "issuer_id": "8ddb4a908785bc146898",
+                "security_id": "702d8339e60ea4ff7d34",
+                "identity_tier": "tier_a_authoritative",
+                "issuer_dedup_reliable": true,
+                "taxonomy": null,
+                "industry": "financial_services",
+                "metric": "price_to_book",
+                "value": 7.181,
+                "as_of": "2026-08-17",
+                "source": "derived_trailing",
+                "basis": "directly_comparable",
+                "denominator_period": "2026-03-31",
+                "eligibility": "CAUTION",
+                "cautions": [
+                  "period_caution"
+                ]
+              }
+            ],
+            "excluded": [
+              {
+                "ticker": "CORZ",
+                "issuer_id": "199f480b5a9d07e85545",
+                "reason": "negative_equity"
+              }
+            ]
+          },
+          "forward_pe_consensus": {
+            "included": [
+              {
+                "ticker": "HUT",
+                "issuer_id": "8ddb4a908785bc146898",
+                "security_id": "702d8339e60ea4ff7d34",
+                "identity_tier": "tier_a_authoritative",
+                "issuer_dedup_reliable": true,
+                "taxonomy": null,
+                "industry": "financial_services",
+                "metric": "forward_pe_consensus",
+                "value": 149.2203,
+                "as_of": "2026-08-17",
+                "source": "consensus_forward",
+                "basis": "directly_comparable",
+                "denominator_period": "2026-12-31",
+                "eligibility": "CAUTION",
+                "cautions": [
+                  "period_partial"
+                ]
+              }
+            ],
+            "excluded": [
+              {
+                "ticker": "CORZ",
+                "issuer_id": "199f480b5a9d07e85545",
+                "reason": "missing_forward_eps"
+              },
+              {
+                "ticker": "CRCL",
+                "issuer_id": "ticker:CRCL",
+                "reason": "missing_forward_eps"
+              }
+            ]
+          },
+          "forward_pe_modeled": {
+            "included": [],
+            "excluded": [
+              {
+                "ticker": "CORZ",
+                "issuer_id": "199f480b5a9d07e85545",
+                "reason": "missing_forward_eps"
+              },
+              {
+                "ticker": "CRCL",
+                "issuer_id": "ticker:CRCL",
+                "reason": "missing_forward_eps"
+              },
+              {
+                "ticker": "HUT",
+                "issuer_id": "8ddb4a908785bc146898",
+                "reason": "forward_basis_mismatch"
+              }
+            ]
+          },
+          "forward_price_to_book_consensus": {
+            "included": [],
+            "excluded": []
+          },
+          "forward_price_to_book_modeled": {
+            "included": [],
+            "excluded": []
+          }
+        }
+      }
+    }
+  },
+  "safety": {
+    "ticker_hard_code_in_selection": 0,
+    "renderer_calculation": 0,
+    "ai_calculation": 0,
+    "telegram_sends": 0,
+    "database_mutations": 0,
+    "operating_deployment": 0
+  }
+}

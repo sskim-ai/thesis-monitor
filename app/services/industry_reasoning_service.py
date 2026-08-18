@@ -217,6 +217,11 @@ _CHEAP_LANGUAGE = re.compile(r"cheap|undervalu|저평가|싸다|싼\s*구간", r
 _LOW_PE_LANGUAGE = re.compile(r"(?:low|낮은).{0,18}(?:per|이익\s*배수)", re.I)
 _LOW_PBR_LANGUAGE = re.compile(r"(?:low|낮은).{0,18}(?:pbr|장부가|장부가치)", re.I)
 _PER_LANGUAGE = re.compile(r"(?<![A-Za-z])per(?![A-Za-z])|이익\s*배수", re.I)
+_PEER_VERDICT_LEAP = re.compile(
+    r"(?:peer|동종업계|비교군).{0,60}(?:discount|할인|premium|프리미엄)"
+    r".{0,35}(?:cheap|저평가|overvalued|고평가|비싸)",
+    re.I,
+)
 _ORDER_MARGIN_LEAP = re.compile(
     r"(?:수주|order).{0,45}(?:마진|margin|수익성).{0,15}(?:개선|상승|확대|improv|increase)",
     re.I,
@@ -481,6 +486,8 @@ def industry_reasoning_guardrail_flags(
             flags.append("industry_reasoning:insurance_low_pbr_without_returns_or_capital")
     if plan.primary_framework == "biotech" and _PER_LANGUAGE.search(text) and _CHEAP_LANGUAGE.search(text):
         flags.append("industry_reasoning:biotech_per_cheap")
+    if _PEER_VERDICT_LEAP.search(text):
+        flags.append("industry_reasoning:peer_relative_multiple_used_as_verdict")
     if plan.primary_framework == "epc_construction" and _ORDER_MARGIN_LEAP.search(text):
         if "project_margin" not in available:
             flags.append("industry_reasoning:epc_order_to_margin_leap")

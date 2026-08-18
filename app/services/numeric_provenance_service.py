@@ -80,6 +80,8 @@ _VALUATION_METRIC_SEMANTICS = {
         "historical_pe_percentile",
         "peer_pe_multiple",
         "peer_pe_relative_pct",
+        "peer_pe_relative_multiple",
+        "peer_pe_cross_section_percentile",
     },
     "forward_pe": {"forward_pe"},
     "pbr": {
@@ -88,6 +90,8 @@ _VALUATION_METRIC_SEMANTICS = {
         "historical_pb_percentile",
         "peer_pb_multiple",
         "peer_pb_relative_pct",
+        "peer_pb_relative_multiple",
+        "peer_pb_cross_section_percentile",
     },
     "forward_pbr": {"forward_price_to_book"},
     "earnings": {"trailing_pe", "forward_pe", "ttm_eps", "forward_eps"},
@@ -932,10 +936,14 @@ def _typed_valuation_reference_errors(
                         "peer_pb_multiple",
                         "peer_pe_relative_pct",
                         "peer_pb_relative_pct",
+                        "peer_pe_relative_multiple",
+                        "peer_pb_relative_multiple",
+                        "peer_pe_cross_section_percentile",
+                        "peer_pb_cross_section_percentile",
                     }
                 )
                 and isinstance(sample_count, int)
-                and sample_count > 0
+                and sample_count >= 3
                 and eligible
                 and len(directional_occurrences) == 1
             )

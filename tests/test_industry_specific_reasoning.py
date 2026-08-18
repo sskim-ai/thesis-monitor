@@ -245,6 +245,15 @@ def test_biotech_per_cheap_reasoning_is_rejected() -> None:
     assert "industry_reasoning:biotech_per_cheap" in flags
 
 
+def test_peer_discount_is_context_not_an_automatic_cheap_verdict() -> None:
+    flags = industry_reasoning_guardrail_flags(
+        _review("비교군 PER 할인만으로 저평가라고 판단합니다."),
+        _stock("general", fact_fields={"peer_pe_relative_pct": -20.0}),
+    )
+
+    assert "industry_reasoning:peer_relative_multiple_used_as_verdict" in flags
+
+
 def test_epc_order_to_margin_leap_requires_project_margin() -> None:
     flags = industry_reasoning_guardrail_flags(
         _review("수주 증가로 프로젝트 마진이 개선됐습니다."),

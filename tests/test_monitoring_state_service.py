@@ -534,13 +534,12 @@ def test_peer_valuation_fails_closed_for_small_or_invalid_sample(monkeypatch) ->
             session, assessments, assessment_date
         )["TARGET"]
 
-    assert state == {
-        "available": False,
-        "reason": "insufficient_verified_peer_universe",
-        "provider": "validated_active_monitoring_assessments",
-        "minimum_sample": 3,
-        "profile_quality": "verified",
-    }
+    assert state["available"] is False
+    assert state["reason"] == "insufficient_verified_peer_universe"
+    assert state["provider"] == "validated_active_monitoring_assessments"
+    assert state["contract"] == "peer-sector-valuation-v1"
+    assert state["minimum_sample"] == 3
+    assert state["profile_quality"] == "verified"
 
 
 def test_peer_metric_excludes_loss_stale_and_unverified_security_basis() -> None:
@@ -601,9 +600,13 @@ def test_biotech_profile_does_not_force_peer_pe(monkeypatch) -> None:
     assert state["metrics"]["trailing_pe"] == {
         "available": False,
         "sample_count": 0,
-        "reason": "industry_metric_not_primary",
+        "reason": "industry_metric_not_meaningful",
     }
-    assert state["metrics"]["price_to_book"]["available"] is True
+    assert state["metrics"]["price_to_book"] == {
+        "available": False,
+        "sample_count": 0,
+        "reason": "industry_metric_not_meaningful",
+    }
 
 
 def test_peer_numeric_semantics_are_explicit_and_fail_closed() -> None:
