@@ -65,6 +65,27 @@ _COMMON_SAFETY_SENTENCES = {
     "차트 무효화는 기업가치 무효화가 아닙니다.",
 }
 
+_GENERIC_METHODOLOGY_FAMILIES = {
+    "registered_rule_methodology": re.compile(
+        r"(?:자동\s*지지.{0,12}승격|과거\s*가격\s*규칙.{0,24}동적\s*지지)",
+        re.IGNORECASE,
+    ),
+    "supply_separation_methodology": re.compile(
+        r"(?:사업\s*논리|펀더멘털).{0,20}분리.{0,12}(?:해석|판단|봅니다?)",
+        re.IGNORECASE,
+    ),
+    "cash_conversion_checklist": re.compile(
+        r"^(?:영업현금흐름.{0,12}설비투자.{0,12}잉여현금흐름.{0,20}"
+        r"이익의\s*현금전환.{0,12}(?:확인|판단)|"
+        r"\bocf\b.{0,12}\bcapex\b.{0,12}\bfcf\b.{0,20}(?:확인|판단))",
+        re.IGNORECASE,
+    ),
+    "price_not_company_value_methodology": re.compile(
+        r"가격\s*구조.{0,24}기업가치\s*변화.{0,12}(?:아니|아닙)",
+        re.IGNORECASE,
+    ),
+}
+
 
 def normalize_decision_text(value: str) -> str:
     normalized = _BULLET_PREFIX.sub("", value.strip())
@@ -442,6 +463,34 @@ def relational_reasoning_quality_report(
     template_repeats.sort(
         key=lambda item: (-int(item["stock_count"]), str(item["skeleton"]))
     )
+    methodology_rows: list[dict[str, object]] = []
+    for family, pattern in _GENERIC_METHODOLOGY_FAMILIES.items():
+        matches = [
+            {
+                "ticker": review.ticker,
+                "sentences": sorted(
+                    {
+                        sentence
+                        for sentence in _review_sentences(review)
+                        if pattern.search(sentence)
+                    }
+                ),
+            }
+            for review in output.stock_reviews
+            if any(pattern.search(sentence) for sentence in _review_sentences(review))
+        ]
+        if matches:
+            methodology_rows.append(
+                {
+                    "family": family,
+                    "stock_count": len(matches),
+                    "matches": matches,
+                    "repeated": len(matches) >= duplicate_threshold,
+                }
+            )
+    repeated_methodology = [
+        item for item in methodology_rows if item["repeated"] is True
+    ]
     template_exceptions = [
         {
             "skeleton": skeleton,
@@ -660,6 +709,7 @@ def relational_reasoning_quality_report(
         and bool(numeric_label_quality["hard_checks_passed"])
         and not substantive_repeats
         and not template_repeats
+        and not repeated_methodology
         and not supply_repeats
         and not us_kr_horizon_rows
         and not generic_us_supply_rows
@@ -693,6 +743,8 @@ def relational_reasoning_quality_report(
         "template_skeleton_repeats": template_repeats,
         "template_skeleton_repeat_count": len(template_repeats),
         "template_skeleton_exceptions": template_exceptions,
+        "generic_methodology_families": methodology_rows,
+        "generic_methodology_repeat_count": len(repeated_methodology),
         "observer_holder": observer_holder,
         "observer_holder_distinct_count": sum(
             bool(item["distinct"]) for item in observer_holder

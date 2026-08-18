@@ -29,6 +29,8 @@ from app.models.watchlist import WatchlistItem
 from app.schemas.ai_review import AIDailyReviewOutput, AIStockReview
 from app.services.ai_reasoning_quality_service import normalize_decision_text
 from app.services.industry_reasoning_service import (
+    INDUSTRY_REASONING_CONTRACT,
+    build_industry_reasoning_plan,
     industry_reasoning_guardrail_flags,
 )
 from app.services.semantic_decision_service import (
@@ -43,6 +45,7 @@ from app.services.company_profile_service import (
     company_profile_coverage,
     read_profile_provenance,
 )
+from app.services.current_price_context_service import select_current_price_context
 from app.services.daily_digest import build_daily_digest
 from app.services.financial_quality_service import (
     build_financial_quality_state,
@@ -84,6 +87,7 @@ from app.services.numeric_semantic_registry import (
     usage_matches_semantic,
 )
 from app.services.ohlcv_structure_service import ALGORITHM_VERSION
+from app.services.runtime_specificity_service import build_runtime_specificity_plan
 from app.services.valuation_snapshot_service import (
     _earnings_quarters,
     _latest_balance,
@@ -2799,6 +2803,12 @@ def _stock_packet(
         monitoring_state,
         facts,
     )
+    stock["industry_reasoning_contract"] = INDUSTRY_REASONING_CONTRACT
+    stock["industry_reasoning_plan"] = build_industry_reasoning_plan(stock).as_dict()
+    stock["current_price_context"] = select_current_price_context(
+        _dict(assessment.price_context)
+    )
+    stock["runtime_specificity_plan"] = build_runtime_specificity_plan(stock)
     return stock
 
 

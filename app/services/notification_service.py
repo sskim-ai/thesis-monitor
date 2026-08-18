@@ -19,6 +19,10 @@ from app.services.analysis_report_service import (
     split_telegram_text,
 )
 from app.services.canonical_fact_service import compact_krw_amount
+from app.services.current_price_context_service import (
+    fallback_price_context_errors,
+    select_current_price_context,
+)
 from app.services.daily_digest import build_daily_digest, interpret_macro_briefing
 from app.services.daily_digest_renderer import render_daily_digest
 from app.services.financial_quality_service import (
@@ -31,6 +35,10 @@ from app.services.night_futures import (
     is_night_futures_warning,
     render_night_futures,
     summarize_night_futures,
+)
+from app.services.numeric_semantic_registry import (
+    NUMERIC_SEMANTICS,
+    canonical_display_value,
 )
 
 
@@ -513,6 +521,12 @@ def _report_price(value: object, currency: object) -> str:
     return rendered
 
 
+def _report_chart_price(value: object, currency: object) -> str:
+    if isinstance(value, (int, float)) and currency == "KRW":
+        return f"{float(value):,.0f}원"
+    return _report_price(value, currency)
+
+
 def _compact_krw(value: object) -> str | None:
     return compact_krw_amount(value)
 
@@ -854,6 +868,111 @@ def _price_check_lines(
     return lines
 
 
+def _zone_price_text(zone: dict[str, object], currency: object) -> str | None:
+    low = zone.get("zone_low")
+    high = zone.get("zone_high")
+    if not isinstance(low, (int, float)) or not isinstance(high, (int, float)):
+        return None
+    return f"{_report_chart_price(low, currency)}~{_report_chart_price(high, currency)}"
+
+
+def _risk_reward_unavailable_text(reason: object) -> str:
+    return {
+        "resistance_unavailable": (
+            "가까운 유효 저항이 없어 현재가 기준 차트 손익비는 계산하지 않습니다."
+        ),
+        "invalidation_unavailable": (
+            "유효한 차트 무효화 가격이 없어 현재가 기준 차트 손익비는 계산하지 않습니다."
+        ),
+        "monthly_invalidation_contract_undefined": (
+            "월봉 지지의 무효화 기준이 정의되지 않아 현재가 기준 차트 손익비는 계산하지 않습니다."
+        ),
+        "support_unavailable": (
+            "유효한 동적 지지가 없어 현재가 기준 차트 손익비는 계산하지 않습니다."
+        ),
+    }.get(str(reason or ""), "현재 가격 구조로는 차트 손익비를 계산할 수 없습니다.")
+
+
+def _registered_confirmation_text(
+    confirmation: dict[str, object],
+    currency: object,
+) -> str | None:
+    price = confirmation.get("price")
+    if not isinstance(price, (int, float)):
+        return None
+    rendered = _report_chart_price(price, currency)
+    state = str(confirmation.get("state") or "")
+    return {
+        "not_reached": f"등록 확인선 {rendered}은 아직 도달하지 않았습니다.",
+        "crossed": f"기존 {rendered} 확인선은 이번에 돌파했습니다.",
+        "holding_above": f"기존 {rendered} 확인선은 이미 돌파한 상태입니다.",
+        "retest_in_progress": f"기존 {rendered} 확인선의 재시험이 진행 중입니다.",
+        "retest_held": f"기존 {rendered} 확인선 재시험 뒤 상단을 유지하고 있습니다.",
+        "failed_breakout": f"기존 {rendered} 확인선 돌파 뒤 다시 이탈했습니다.",
+    }.get(state)
+
+
+def _dynamic_price_block(
+    selection: dict[str, object],
+    *,
+    currency: object,
+) -> tuple[list[str], list[str], list[str], str | None]:
+    support = selection.get("active_support")
+    resistance = selection.get("active_resistance")
+    rr = selection.get("current_price_risk_reward")
+    invalidation = selection.get("chart_invalidation")
+    chart_state = selection.get("chart_state")
+    confirmation = selection.get("registered_confirmation")
+    support = support if isinstance(support, dict) else {}
+    resistance = resistance if isinstance(resistance, dict) else {}
+    rr = rr if isinstance(rr, dict) else {}
+    invalidation = invalidation if isinstance(invalidation, dict) else {}
+    chart_state = chart_state if isinstance(chart_state, dict) else {}
+    confirmation = confirmation if isinstance(confirmation, dict) else {}
+
+    observer: list[str] = []
+    holder: list[str] = []
+    history: list[str] = []
+    support_text = _zone_price_text(support, currency)
+    resistance_text = _zone_price_text(resistance, currency)
+    if support.get("available") is True and support_text:
+        observer.append(f"• 동적 지지: {support_text}")
+    if resistance.get("available") is True and resistance_text:
+        observer.append(f"• 동적 저항: {resistance_text}")
+    if rr.get("available") is True and isinstance(rr.get("ratio"), (int, float)):
+        rr_display = canonical_display_value(
+            NUMERIC_SEMANTICS["current_price_risk_reward_ratio"],
+            float(rr["ratio"]),
+            "x",
+        )
+        if rr_display:
+            observer.append(f"• 현재가 기준 차트 손익비: {rr_display}")
+    else:
+        observer.append(f"• {_risk_reward_unavailable_text(rr.get('reason'))}")
+    if invalidation.get("available") is True and isinstance(
+        invalidation.get("price"), (int, float)
+    ):
+        holder.append(
+            f"• 차트 무효화 가격: {_report_chart_price(invalidation['price'], currency)}"
+        )
+    if support.get("available") is True and support_text:
+        holder.append(f"• 동적 지지 유지 여부: {support_text}")
+    if not holder:
+        holder.append(
+            "• 유효한 동적 지지와 차트 무효화 가격이 없어 현재 가격 관리 기준은 제공하지 않습니다."
+        )
+    confirmation_text = _registered_confirmation_text(confirmation, currency)
+    if confirmation_text:
+        history.append(f"• {confirmation_text}")
+    state_text = {
+        "WAIT": "가격 구조상 추가 확인 대기",
+        "HOLD": "가격 구조상 유지 여부 점검",
+        "TRIM": "가격 구조상 위험 관리 필요",
+        "INVALID": "가격 구조 재검토 필요",
+    }.get(str(chart_state.get("state") or ""))
+    return observer, holder, history, state_text
+
+
 def _concise_text(value: str, *, sentence_limit: int = 2, character_limit: int = 320) -> str:
     sentences = re.split(r"(?<=[.!?])\s+", value.strip())
     concise = " ".join(sentence for sentence in sentences[:sentence_limit] if sentence)
@@ -1184,15 +1303,31 @@ def _assessment_report(
     decision = price_context.get("decision", {}) if isinstance(price_context, dict) else {}
     if not isinstance(decision, dict):
         decision = {}
-    current_price = valuation_snapshot.get("current_price", decision.get("current_price"))
-    currency = valuation_snapshot.get("currency", decision.get("currency"))
+    current_price_context = select_current_price_context(price_context)
+    uses_current_structure = current_price_context.get("availability") != "legacy_only"
+    current_price = (
+        current_price_context.get("current_price")
+        if uses_current_structure
+        else valuation_snapshot.get("current_price", decision.get("current_price"))
+    )
+    currency = (
+        current_price_context.get("currency")
+        if uses_current_structure
+        else valuation_snapshot.get("currency", decision.get("currency"))
+    ) or valuation_snapshot.get("currency", decision.get("currency"))
     price_as_of = valuation_snapshot.get(
         "exchange_trade_date",
         valuation_snapshot.get(
             "price_as_of", decision.get("exchange_trade_date", decision.get("price_as_of"))
         ),
     )
-    price_basis = str(valuation_snapshot.get("price_basis", decision.get("price_basis", "")))
+    if uses_current_structure:
+        price_as_of = current_price_context.get("as_of_date") or price_as_of
+    price_basis = str(
+        current_price_context.get("price_basis")
+        if uses_current_structure
+        else valuation_snapshot.get("price_basis", decision.get("price_basis", ""))
+    )
     is_krx = assessment.ticker.isdigit()
     price_basis_label = (
         f"{price_as_of} 장중 · 잠정"
@@ -1257,13 +1392,25 @@ def _assessment_report(
     price_lines = [
         "💰 가격",
         f"현재가: {_report_price(current_price, currency)} · {price_basis_label}",
-        f"현재 위치: {decision.get('current_position', assessment.price_view)}",
     ]
-    observer_checks = _price_check_lines(decision.get("new_observer_checks"), currency)
-    holder_checks = _price_check_lines(decision.get("holder_checks"), currency)
+    if uses_current_structure:
+        observer_checks, holder_checks, history_checks, chart_state_text = (
+            _dynamic_price_block(current_price_context, currency=currency)
+        )
+        if chart_state_text:
+            price_lines.append(f"현재 구조: {chart_state_text}")
+    else:
+        price_lines.append(
+            f"현재 위치: {decision.get('current_position', assessment.price_view)}"
+        )
+        observer_checks = _price_check_lines(
+            decision.get("new_observer_checks"), currency
+        )
+        holder_checks = _price_check_lines(decision.get("holder_checks"), currency)
+        history_checks = []
     if observer_checks:
         price_lines.extend(["신규 관찰자:", *observer_checks])
-    elif new_buyer_price_view:
+    elif new_buyer_price_view and not uses_current_structure:
         price_lines.extend(
             ["신규 관찰자:", *_audience_price_text(new_buyer_price_view, "").splitlines()]
         )
@@ -1271,8 +1418,10 @@ def _assessment_report(
         holder_checks = [line for line in holder_checks if line not in observer_checks]
     if holder_checks:
         price_lines.extend(["보유자:", *holder_checks])
-    elif holder_price_view:
+    elif holder_price_view and not uses_current_structure:
         price_lines.extend(["보유자:", *_audience_price_text(holder_price_view, "").splitlines()])
+    if history_checks:
+        price_lines.extend(["가격 규칙 이력:", *history_checks])
     if assessment_state == "provisional":
         price_lines.append("⚠️ 현재 장중 데이터로 가격 판단은 잠정입니다.")
     sections.append("\n".join(price_lines))
@@ -1351,6 +1500,12 @@ def _assessment_report(
     if next_checks:
         sections.append("📌 다음 확인\n" + _bullet_text(next_checks, ""))
     fallback = "\n\n".join(section for section in sections if section.strip())
+    fallback_price_errors = fallback_price_context_errors(
+        current_price_context,
+        fallback,
+    )
+    if fallback_price_errors:
+        raise ValueError(";".join(fallback_price_errors))
     context: dict[str, object] = {
         "analysis_type": "stock",
         "assessment_date": str(assessment.assessment_date),
@@ -1400,6 +1555,11 @@ def _assessment_report(
             "market_session": market_session,
             "evidence": evidence_items,
             "price_context": price_context,
+            "current_price_context": current_price_context,
+            "fallback_price_context_validation": {
+                "status": "passed",
+                "errors": [],
+            },
             "new_buyer_price_view": new_buyer_price_view,
             "holder_price_view": holder_price_view,
             "valuation_snapshot": valuation_snapshot,

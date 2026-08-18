@@ -41,6 +41,13 @@ another fact or verified basis, explain the relationship, identify the expectati
 current price or valuation, and name the next supplied fact that would change the judgment. Do not
 create surface variety by replacing words in a shared template.
 
+Before prose generation, use the packet's `runtime_specificity_plan` to assign a primary decision
+point, supporting evidence, material Unknown, and next confirmation for each stock. This is a
+portfolio planning pass, not a category quota. Shared safety methods belong in validation and audit;
+repeat them in user prose only when a specific current fact would otherwise be misunderstood. A
+synonym-only rewrite of the same price-rule, supply-separation, or cash-conversion checklist remains
+a semantic duplicate.
+
 When two relevant valuation facts exist, interpret their direction together. A modeled forward
 multiple above trailing can indicate a weaker modeled earnings denominator; a modeled forward
 multiple below trailing can indicate earnings expansion assumptions that may coexist with cycle-peak

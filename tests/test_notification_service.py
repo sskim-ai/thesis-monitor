@@ -257,6 +257,101 @@ def test_us_report_omits_supply_section() -> None:
     assert "📊 수급" not in _message_for_assessment(assessment)
 
 
+def test_fallback_price_block_uses_dynamic_context_before_registered_rules() -> None:
+    assessment = _compact_assessment()
+    price_context = json.loads(assessment.price_context)
+    price_context["monitoring_state"] = {
+        "current": {
+            "price_structure": {
+                "as_of_date": "2026-08-18",
+                "price_basis": "adjusted_close",
+                "current_price": 1_662_000,
+                "active_support": {
+                    "available": True,
+                    "zone_low": 1_190_320.54,
+                    "zone_high": 1_301_679.46,
+                },
+                "active_resistance": {
+                    "available": True,
+                    "zone_low": 2_918_470.83,
+                    "zone_high": 3_055_529.17,
+                },
+                "risk_reward": {
+                    "available": True,
+                    "current_price": {"ratio": 2.24933},
+                },
+                "chart_invalidation": {
+                    "available": True,
+                    "price": 1_103_402.3,
+                    "chart_only": True,
+                },
+                "chart_state": {"state": "WAIT"},
+                "registered_rule_state": {
+                    "confirmation": {
+                        "price": 1_550_000,
+                        "state": "holding_above",
+                        "relevance": "background",
+                    }
+                },
+            }
+        }
+    }
+    assessment.price_context = json.dumps(price_context, ensure_ascii=False)
+
+    message = _message_for_assessment(assessment)
+
+    assert "동적 지지: 1,190,321원~1,301,679원" in message
+    assert "동적 저항: 2,918,471원~3,055,529원" in message
+    assert "현재가 기준 차트 손익비: 2.25배" in message
+    assert "차트 무효화 가격: 1,103,402원" in message
+    assert "기존 1,550,000원 확인선은 이미 돌파한 상태입니다." in message
+    assert "상향 확인 가격: 1,550,000원" not in message
+    assert "지지 확인 구간: 1,397,000원~1,420,000원" not in message
+
+
+def test_fallback_dynamic_context_explains_unavailable_rr_without_fake_value() -> None:
+    assessment = _compact_assessment(ticker="003690")
+    price_context = json.loads(assessment.price_context)
+    price_context["monitoring_state"] = {
+        "current": {
+            "price_structure": {
+                "as_of_date": "2026-08-18",
+                "price_basis": "adjusted_close",
+                "current_price": 15_230,
+                "active_support": {
+                    "available": True,
+                    "zone_low": 14_608.45,
+                    "zone_high": 15_711.55,
+                },
+                "active_resistance": {"available": False},
+                "risk_reward": {
+                    "available": False,
+                    "reason": "resistance_unavailable",
+                },
+                "chart_invalidation": {
+                    "available": False,
+                    "reason": "monthly_invalidation_contract_undefined",
+                },
+                "chart_state": {"state": "WAIT"},
+                "registered_rule_state": {
+                    "confirmation": {
+                        "price": 14_300,
+                        "state": "holding_above",
+                        "relevance": "background",
+                    }
+                },
+            }
+        }
+    }
+    assessment.price_context = json.dumps(price_context, ensure_ascii=False)
+
+    message = _message_for_assessment(assessment)
+
+    assert "가까운 유효 저항이 없어 현재가 기준 차트 손익비는 계산하지 않습니다." in message
+    assert "현재가 기준 차트 손익비:" not in message
+    assert "상향 확인 가격: 14,300원" not in message
+
+
 def test_provider_only_forward_multiple_is_not_reverse_engineered() -> None:
     assessment = _compact_assessment()
     snapshot = json.loads(assessment.valuation_snapshot)

@@ -131,6 +131,27 @@ def test_normalization_does_not_create_synonym_only_credit() -> None:
     )
 
 
+def test_quality_audit_flags_synonym_only_methodology_repetition() -> None:
+    payload = _output().model_dump()
+    phrases = (
+        "수급은 사업 논리와 분리해 해석합니다.",
+        "투자주체 흐름은 펀더멘털과 분리해서 판단합니다.",
+        "매매 흐름을 사업 논리에서 분리해 봅니다.",
+    )
+    for review, phrase in zip(payload["stock_reviews"], phrases, strict=True):
+        review["core_judgment"]["text"] = f"{review['ticker']} 고유 판단입니다."
+        review["supply_analysis"]["text"] = phrase
+    report = relational_reasoning_quality_report(
+        AIDailyReviewOutput.model_validate(payload)
+    )
+
+    assert report["generic_methodology_repeat_count"] == 1
+    assert report["generic_methodology_families"][0]["family"] == (
+        "supply_separation_methodology"
+    )
+    assert report["hard_checks_passed"] is False
+
+
 def test_quality_audit_reports_repeated_numeric_labels_as_hard_failure() -> None:
     payload = _output().model_dump()
     packet_stocks = []
