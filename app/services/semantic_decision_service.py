@@ -724,6 +724,10 @@ def valuation_context_reference_errors(
             "peer_pb_multiple",
             "peer_pe_relative_pct",
             "peer_pb_relative_pct",
+            "peer_pe_relative_multiple",
+            "peer_pb_relative_multiple",
+            "peer_pe_cross_section_percentile",
+            "peer_pb_cross_section_percentile",
         }.intersection(semantics)
     )
     actual_forward = bool(

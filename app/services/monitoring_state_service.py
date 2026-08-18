@@ -5,7 +5,6 @@ import json
 import math
 import re
 from datetime import date
-from statistics import mean, median
 from typing import Iterable, Mapping
 
 from sqlmodel import Session, select
@@ -15,11 +14,16 @@ from app.models.company import Company
 from app.models.thesis import InvestmentThesis, ThesisAssessment
 from app.models.watchlist import WatchlistItem
 from app.services.company_profile_service import read_profile_provenance
+from app.services.peer_sector_valuation_service import (
+    MINIMUM_PEER_SAMPLE as PHASE_8_3_MINIMUM_PEER_SAMPLE,
+    PEER_GROUP_VERSION as PHASE_8_3_PEER_GROUP_VERSION,
+    build_peer_valuation_states as build_phase_8_3_peer_valuation_states,
+)
 
 
 MONITORING_STATE_VERSION = "monitoring-state-v1"
-PEER_GROUP_VERSION = "verified-profile-peers-v1"
-MINIMUM_PEER_SAMPLE = 3
+PEER_GROUP_VERSION = PHASE_8_3_PEER_GROUP_VERSION
+MINIMUM_PEER_SAMPLE = PHASE_8_3_MINIMUM_PEER_SAMPLE
 _COMPARABLE_BASIS = {"directly_comparable", "normalized_to_current_security"}
 _PE_UNSUITABLE_PROFILE_TOKENS = {
     "biotech",
@@ -297,129 +301,13 @@ def build_peer_valuation_states(
     assessments: Iterable[ThesisAssessment],
     assessment_date: date,
 ) -> dict[str, dict[str, object]]:
-    rows = list(assessments)
-    tickers = {row.ticker for row in rows}
-    companies = {
-        item.ticker: item
-        for item in session.exec(select(Company).where(Company.ticker.in_(tickers))).all()
-    }
-    snapshots = {row.ticker: _dict(row.valuation_snapshot) for row in rows}
-    profiles = {
-        ticker: _profile_key(company) for ticker, company in companies.items()
-    }
-    results: dict[str, dict[str, object]] = {}
-    for row in rows:
-        company = companies.get(row.ticker)
-        profile = profiles.get(row.ticker, {})
-        if company is None or profile.get("quality") != "verified":
-            results[row.ticker] = {
-                "available": False,
-                "reason": "verified_company_profile_unavailable",
-                "provider": "validated_active_monitoring_assessments",
-            }
-            continue
-        market = _market(company)
-        group_basis = None
-        group_value = None
-        candidate_tickers: list[str] = []
-        for basis in ("taxonomy", "industry", "sector"):
-            value = profile.get(basis)
-            if not value:
-                continue
-            matches = [
-                ticker
-                for ticker, candidate in companies.items()
-                if ticker != row.ticker
-                and _market(candidate) == market
-                and profiles.get(ticker, {}).get("quality") == "verified"
-                and profiles.get(ticker, {}).get(basis) == value
-            ]
-            if len(matches) >= MINIMUM_PEER_SAMPLE:
-                group_basis = basis
-                group_value = value
-                candidate_tickers = sorted(matches)
-                break
-        if group_basis is None:
-            results[row.ticker] = {
-                "available": False,
-                "reason": "insufficient_verified_peer_universe",
-                "provider": "validated_active_monitoring_assessments",
-                "minimum_sample": MINIMUM_PEER_SAMPLE,
-                "profile_quality": profile.get("quality"),
-            }
-            continue
-        metrics: dict[str, object] = {}
-        audit: dict[str, object] = {"included": {}, "excluded": {}}
-        company_snapshot = snapshots.get(row.ticker, {})
-        for metric in ("trailing_pe", "price_to_book"):
-            if not _metric_allowed_for_profile(metric, profile):
-                metrics[metric] = {
-                    "available": False,
-                    "sample_count": 0,
-                    "reason": "industry_metric_not_primary",
-                }
-                audit["included"][metric] = []  # type: ignore[index]
-                audit["excluded"][metric] = []  # type: ignore[index]
-                continue
-            values: list[float] = []
-            included: list[str] = []
-            excluded: list[dict[str, str]] = []
-            for ticker in candidate_tickers:
-                value, reason = _metric_value(
-                    snapshots.get(ticker, {}), metric, assessment_date
-                )
-                if value is None:
-                    excluded.append({"ticker": ticker, "reason": reason or "unavailable"})
-                else:
-                    values.append(value)
-                    included.append(ticker)
-            audit["included"][metric] = included  # type: ignore[index]
-            audit["excluded"][metric] = excluded  # type: ignore[index]
-            company_value, company_reason = _metric_value(
-                company_snapshot, metric, assessment_date
-            )
-            if len(values) < MINIMUM_PEER_SAMPLE or company_value is None:
-                metrics[metric] = {
-                    "available": False,
-                    "sample_count": len(values),
-                    "reason": (
-                        company_reason
-                        if company_value is None
-                        else "insufficient_comparable_metric_sample"
-                    ),
-                }
-                continue
-            peer_median = float(median(values))
-            metrics[metric] = {
-                "available": True,
-                "company_value": round(company_value, 4),
-                "median": round(peer_median, 4),
-                "mean": round(mean(values), 4),
-                "percentile_25": _percentile(values, 0.25),
-                "percentile_75": _percentile(values, 0.75),
-                "sample_count": len(values),
-                "company_vs_median_pct": round(
-                    (company_value / peer_median - 1) * 100, 4
-                ),
-            }
-        available = any(
-            isinstance(value, dict) and value.get("available") is True
-            for value in metrics.values()
-        )
-        results[row.ticker] = {
-            "available": available,
-            "as_of_date": assessment_date.isoformat(),
-            "provider": "validated_active_monitoring_assessments",
-            "peer_group": f"{market}_{group_basis}_{group_value}",
-            "peer_group_version": PEER_GROUP_VERSION,
-            "group_basis": group_basis,
-            "group_value": group_value,
-            "minimum_sample": MINIMUM_PEER_SAMPLE,
-            "sample_quality": "sufficient" if available else "limited",
-            "metrics": metrics,
-            "audit": audit,
-        }
-    return results
+    return build_phase_8_3_peer_valuation_states(
+        session,
+        assessments,
+        assessment_date,
+        profile_reader=read_profile_provenance,
+        data_dir=get_settings().data_dir,
+    )
 
 
 def _confirmation_history(

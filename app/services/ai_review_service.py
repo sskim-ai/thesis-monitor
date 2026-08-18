@@ -2482,9 +2482,14 @@ def _fact_catalog(
     peer = _dict(_dict(monitoring_state.get("current")).get("peer_valuation"))
     peer_metrics = _dict(peer.get("metrics"))
     peer_fields: dict[str, object] = {
+        "contract": peer.get("contract"),
+        "peer_scope": peer.get("peer_scope"),
         "peer_group": peer.get("peer_group"),
         "peer_group_version": peer.get("peer_group_version"),
+        "group_basis": peer.get("group_basis"),
+        "group_value": peer.get("group_value"),
         "sample_quality": peer.get("sample_quality"),
+        "framework": peer.get("framework"),
     }
     for metric, prefix in (
         ("trailing_pe", "pe"),
@@ -2499,7 +2504,12 @@ def _fact_catalog(
             ("percentile_25", f"{prefix}_percentile_25"),
             ("percentile_75", f"{prefix}_percentile_75"),
             ("sample_count", f"{prefix}_sample_count"),
+            ("company_relative_multiple", f"company_{prefix}_relative_multiple"),
             ("company_vs_median_pct", f"company_{prefix}_vs_median_pct"),
+            (
+                "company_cross_section_percentile",
+                f"company_{prefix}_cross_section_percentile",
+            ),
         ):
             if value.get(source) is not None:
                 peer_fields[target] = value[source]
@@ -4036,6 +4046,10 @@ def _valuation_interpretation_evidence_errors(
         "peer_pb_multiple",
         "peer_pe_relative_pct",
         "peer_pb_relative_pct",
+        "peer_pe_relative_multiple",
+        "peer_pb_relative_multiple",
+        "peer_pe_cross_section_percentile",
+        "peer_pb_cross_section_percentile",
     }
     for text_ref, text in _prose_fields(review).items():
         facts = _section_fact_ids(review, text_ref)
@@ -5040,6 +5054,10 @@ def quantitative_grounding_report(
             "peer_pb_multiple",
             "peer_pe_relative_pct",
             "peer_pb_relative_pct",
+            "peer_pe_relative_multiple",
+            "peer_pb_relative_multiple",
+            "peer_pe_cross_section_percentile",
+            "peer_pb_cross_section_percentile",
         },
     }
     rows: list[dict[str, object]] = []
