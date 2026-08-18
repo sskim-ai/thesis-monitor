@@ -164,14 +164,18 @@ publication is not observed and current readiness remains PARTIAL. Phase 8.2A.2 
 reconciliation remain `NOT_YET_PROVEN`, while historical retrieval is `SUPPORTED`. Market-wide actor
 flow remains unsupported. Review the role Preview after the natural Phase 8.5.x proof; do not merge
 or deploy it from this branch without a separate promotion decision and sufficient exact-slot
-evidence. Phase 8.3
-Peer/Sector Valuation is now the current development-only phase on
-`codex/phase-8-3-peer-sector-valuation`. Do not combine operating and experimental scopes.
+evidence. Phase 8.3 Peer/Sector Valuation is validated `STRONG PARTIAL` on
+`codex/phase-8-3-peer-sector-valuation`; implementation commit
+`37a785448b2d9e7506beb2aef84e08e5bfb6e5fb` remains experimental and not deployed. Its
+`peer-sector-valuation-v1` contract passes, but the immutable 20-stock active universe yields zero
+safe user-visible peer states and no broad point-in-time provider is available. Do not combine
+operating and experimental scopes.
 
 Session order: first inspect the latest natural US/KR AI-assisted result; then load the KRX
-publication telemetry, evaluate the 16:05/08:05/T+1 role matrix, and continue Phase 8.3 capability-
-first development. Collect only the next required KRX observation. Any critical operating blocker
-takes priority over Phase 8.3. Neither experimental lane is eligible for automatic deployment.
+publication telemetry and evaluate the 16:05/08:05/T+1 role matrix. Review Phase 8.3 capability and
+Human Preview before deciding whether to extend a peer provider or keep safe suppression. Collect
+only the next required KRX observation. Any critical operating blocker takes priority. Neither
+experimental lane is eligible for automatic deployment.
 
 Preserve the Phase 8.5 boundary: do not infer missing metrics, promote themes into company
 achievements, force fine-grained taxonomy, create thresholds, or relax numeric, lineage, scope,

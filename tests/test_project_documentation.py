@@ -16,6 +16,7 @@ DOCUMENTS = (
     ROOT / "docs" / "architecture" / "NUMERIC_PROVENANCE.md",
     ROOT / "docs" / "architecture" / "MONITORING_STATE_LIFECYCLE.md",
     ROOT / "docs" / "architecture" / "PEER_VALUATION.md",
+    ROOT / "docs" / "architecture" / "PEER_SECTOR_VALUATION.md",
     ROOT / "docs" / "architecture" / "NATURAL_LIVE_MESSAGE_HARDENING.md",
     ROOT / "docs" / "architecture" / "KRX_MARKET_BREADTH.md",
     ROOT / "docs" / "operations" / "AI_ASSISTED_PILOT.md",
@@ -41,15 +42,15 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     )
     assert (
         state["current_phase"]
-        == "phase_8_3_peer_sector_valuation_capability_first_experimental_only"
+        == "phase_8_3_peer_sector_valuation_strong_partial_experimental_validation"
     )
     assert (
         state["last_completed_phase"]
-        == "phase_8_5_3_2_valuation_label_shadow_promotion"
+        == "phase_8_3_peer_sector_valuation_experimental_validation"
     )
     assert (
         state["next_default_phase"]
-        == "operating_natural_proof_parallel_krx_observation_and_phase_8_3_development"
+        == "natural_proof_krx_observation_and_peer_provider_capability_review"
     )
     assert state["deployed_code_commit"] == (
         "b3ad1ea82bdbd3fe003831d449b0dcaa7c6a2da2"
@@ -89,10 +90,20 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     assert publication["main_merged"] is False
     assert publication["operating_deployed"] is False
     workflow = state["master_workflow_v3"]
-    assert workflow["status"] == "synchronized_before_phase_8_3_implementation"
+    assert workflow["status"] == "synchronized_and_phase_8_3_validated"
     assert workflow["priority_rule"] == "OPERATING_BLOCKER_BEFORE_NEW_FEATURE"
     assert workflow["development_lane"]["phase"] == "8.3"
     assert workflow["development_lane"]["operating_deployment"] is False
+    peer = state["phase_8_3_peer_sector_valuation"]
+    assert peer["status"] == "STRONG_PARTIAL"
+    assert peer["contract"] == "peer-sector-valuation-v1"
+    assert peer["peer_group_version"] == "verified-profile-peers-v2"
+    assert peer["assessment_count"] == 20
+    assert peer["market_counts"] == {"kr": 7, "us": 13}
+    assert peer["user_visible_peer_state_count"] == 0
+    assert peer["numeric_provenance"] == "PASS"
+    assert peer["main_merged"] is False
+    assert peer["operating_deployed"] is False
     assert (
         state["persistent_gaps"]["fallback_price_lifecycle"]
         == "CLOSED_RETROSPECTIVE_AND_OPERATING_CODE_PROMOTED"
@@ -161,6 +172,7 @@ def test_architecture_guides_record_decisions_and_readme_navigation() -> None:
         ROOT / "docs" / "architecture" / "NUMERIC_PROVENANCE.md",
         ROOT / "docs" / "architecture" / "MONITORING_STATE_LIFECYCLE.md",
         ROOT / "docs" / "architecture" / "PEER_VALUATION.md",
+        ROOT / "docs" / "architecture" / "PEER_SECTOR_VALUATION.md",
         ROOT / "docs" / "operations" / "AI_ASSISTED_PILOT.md",
         ROOT / "docs" / "knowledge" / "README.md",
     )
@@ -181,6 +193,7 @@ def test_architecture_guides_record_decisions_and_readme_navigation() -> None:
         "docs/architecture/NUMERIC_PROVENANCE.md",
         "docs/architecture/MONITORING_STATE_LIFECYCLE.md",
         "docs/architecture/PEER_VALUATION.md",
+        "docs/architecture/PEER_SECTOR_VALUATION.md",
         "docs/operations/AI_ASSISTED_PILOT.md",
         "docs/operations/SCHEDULED_TASK_CONTRACTS.md",
         "docs/knowledge/README.md",

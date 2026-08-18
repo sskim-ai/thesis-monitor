@@ -11,17 +11,20 @@
     "phase_8_3_peer_sector": {
       "branch": "codex/phase-8-3-peer-sector-valuation",
       "base_commit": "b94f709eb146655a6a2e35377073727aee7cd7ca",
-      "status": "development_only_not_deployed"
+      "workflow_sync_commit": "82b95cd",
+      "implementation_commit": "37a785448b2d9e7506beb2aef84e08e5bfb6e5fb",
+      "status": "strong_partial_validated_experimental_not_deployed"
     }
   },
   "current_commit": "HEAD",
   "current_commit_resolution": "git rev-parse HEAD",
-  "recorded_base_commit": "9c4c1cdae3c790d2fc66afa05fe35dfd09553e80",
-  "current_phase": "phase_8_3_peer_sector_valuation_capability_first_experimental_only",
-  "last_completed_phase": "phase_8_5_3_2_valuation_label_shadow_promotion",
-  "next_default_phase": "operating_natural_proof_parallel_krx_observation_and_phase_8_3_development",
+  "recorded_base_commit": "b94f709eb146655a6a2e35377073727aee7cd7ca",
+  "current_phase": "phase_8_3_peer_sector_valuation_strong_partial_experimental_validation",
+  "last_completed_phase": "phase_8_3_peer_sector_valuation_experimental_validation",
+  "last_operating_phase": "phase_8_5_3_2_valuation_label_shadow_promotion",
+  "next_default_phase": "natural_proof_krx_observation_and_peer_provider_capability_review",
   "alternative_next_phase": "targeted_runtime_repair_if_blocked",
-  "latest_validation_report": "docs/reports/20260818-master-workflow-v3-validation.md",
+  "latest_validation_report": "docs/reports/20260818-phase8-3-peer-valuation-validation.md",
   "deployed_code_commit": "b3ad1ea82bdbd3fe003831d449b0dcaa7c6a2da2",
   "main_code_commit": "e925ee05eabcc1e89c74dfb1ec0d2dabbb01729d",
   "main_code_commit_resolution": "git rev-parse origin/main",
@@ -63,6 +66,7 @@
     "decision_material_delta": "decision-material-delta-v1",
     "valuation_context_wording": "valuation-context-wording-v1",
     "valuation_comparison_label": "valuation-comparison-label-v1",
+    "peer_sector_valuation": "peer-sector-valuation-v1",
     "industry_specific_reasoning": "industry-specific-reasoning-v1",
     "current_price_context": "current-price-context-v1",
     "runtime_specificity": "runtime-message-specificity-v1",
@@ -73,7 +77,7 @@
   "persistent_gaps": {
     "industry_specific_reasoning": "STRONG_PARTIAL",
     "structured_specialized_taxonomy_coverage": "PARTIAL",
-    "peer_sector_valuation": "CURRENT_DEVELOPMENT_OPEN_PARTIAL",
+    "peer_sector_valuation": "STRONG_PARTIAL_VALIDATED_EXPERIMENTAL_ZERO_USER_VISIBLE_ACTIVE_UNIVERSE_NOT_DEPLOYED",
     "kr_market_breadth": "EXPERIMENTAL_ARCHIVE_PASS_UNIVERSE_CLOSED_PUBLICATION_CONTRACT_PASS_TIMING_UNDER_OBSERVATION_NOT_INTEGRATED",
     "kr_market_wide_flow": "UNSUPPORTED_KRX_OPEN_API",
     "massive_0805_readiness": "OPEN",
@@ -95,7 +99,7 @@
     "natural_live_validation": "safe_currency_boundary_passed_but_message_quality_failed"
   },
   "monitoring_state_version": "monitoring-state-v1",
-  "peer_group_version": "verified-profile-peers-v1",
+  "peer_group_version": "verified-profile-peers-v2",
   "peer_minimum_sample_excluding_company": 3,
   "pilot_version": "ai-assisted-pilot-v3",
   "pilot_renderer_version": "ai-assisted-pilot-renderer-v3",
@@ -1039,7 +1043,7 @@
     "recommended_next": "natural_us_kr_proof_and_additional_exact_slot_publication_observation"
   },
   "master_workflow_v3": {
-    "status": "synchronized_before_phase_8_3_implementation",
+    "status": "synchronized_and_phase_8_3_validated",
     "report": "docs/reports/20260818-master-workflow-v3-validation.md",
     "operating_lane": {
       "main_sha": "e925ee05eabcc1e89c74dfb1ec0d2dabbb01729d",
@@ -1058,10 +1062,48 @@
     "development_lane": {
       "phase": "8.3",
       "branch": "codex/phase-8-3-peer-sector-valuation",
-      "status": "capability_first_development_only",
+      "status": "strong_partial_validated_experimental_only",
       "operating_deployment": false
     },
     "priority_rule": "OPERATING_BLOCKER_BEFORE_NEW_FEATURE"
+  },
+  "phase_8_3_peer_sector_valuation": {
+    "status": "STRONG_PARTIAL",
+    "contract": "peer-sector-valuation-v1",
+    "peer_group_version": "verified-profile-peers-v2",
+    "provider": "validated_active_monitoring_assessments",
+    "provider_scope": "limited_active_monitoring_universe",
+    "workflow_sync_commit": "82b95cd",
+    "implementation_commit": "37a785448b2d9e7506beb2aef84e08e5bfb6e5fb",
+    "assessment_date": "2026-08-18",
+    "assessment_count": 20,
+    "market_counts": {"kr": 7, "us": 13},
+    "minimum_peer_sample": 3,
+    "high_quality_peer_sample": 5,
+    "user_visible_peer_state_count": 0,
+    "statistics_contract": [
+      "median",
+      "mean",
+      "q1",
+      "q3",
+      "iqr",
+      "minimum",
+      "maximum",
+      "relative_multiple",
+      "premium_discount_pct",
+      "cross_section_percentile"
+    ],
+    "forward_basis_policy": "consensus_and_modeled_distributions_separate",
+    "broad_sector_policy": "low_quality_audit_only",
+    "biotech_policy": "generic_per_pbr_peer_valuation_suppressed",
+    "numeric_provenance": "PASS",
+    "human_preview": "PASS_FAIL_CLOSED",
+    "broad_point_in_time_provider": "UNAVAILABLE",
+    "main_merged": false,
+    "operating_deployed": false,
+    "telegram_sends": 0,
+    "pilot_mutations": 0,
+    "scheduled_task_manual_runs": 0
   },
   "production_assist": false,
   "public_action_version": "0.4.5",

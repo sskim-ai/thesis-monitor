@@ -262,6 +262,19 @@ recovered from its exact field path. Different values with different roles canno
 label in a stock message. RXRX now renders current PBR, historical PBR median, and historical PBR
 percentile distinctly without changing its biotech valuation boundary.
 
+Phase 8.3 adds the experimental `peer-sector-valuation-v1` and
+`verified-profile-peers-v2` contracts. Selection is taxonomy-first, same-market, issuer-deduplicated,
+and aligned to the subject's completed exchange price session. Trailing, consensus-forward, and
+modeled-forward distributions stay separate. Median is primary; relative multiple,
+premium/discount, quartiles, IQR and cross-sectional percentile are backend calculations. Three
+eligible independent issuers are required, five gives HIGH quality, and broad sector fallback is
+always LOW/audit-only. Relative discount or premium is context, never an automatic valuation
+verdict. The immutable 2026-08-18 active universe had 7 KR and 13 US assessments but zero
+user-visible peer states after the complete contract. Phase 8.3 is therefore `STRONG PARTIAL`:
+engineering and fail-closed Human Preview pass, while broad point-in-time provider coverage remains
+open. It is not merged, integrated, active, or deployed. See
+[PEER_SECTOR_VALUATION.md](architecture/PEER_SECTOR_VALUATION.md).
+
 ## 20. Phase History
 
 | Phase | Result |
@@ -283,7 +296,7 @@ percentile distinctly without changing its biotech valuation boundary.
 | 8.2A development | KRX primary-candidate provider, explicit universe, index/breadth Facts, archive Preview and numeric provenance PASS; experimental only, not deployed |
 | 8.2A.1 | Listing-date contract CLOSED with unchanged denominator; publication-readiness state machine PASS; current complete observation still pending; experimental only |
 | 8.2A.2 | Append-only publication timing and time-slot role contracts PASS; 2026-08-18 remained provider-pending through 21:06; live roles not yet proven; experimental only |
-| 8.3 development | Comparable-universe and point-in-time peer/sector valuation capability audit and implementation in progress; experimental only |
+| 8.3 development | `peer-sector-valuation-v1` comparable-universe, point-in-time, issuer/basis/statistics and industry guardrails PASS; active 20-stock universe emits 0 safe peer Facts; STRONG PARTIAL, experimental only |
 
 ## 21. Current Persistent Gaps
 
@@ -291,7 +304,7 @@ percentile distinctly without changing its biotech valuation boundary.
 |---|---|
 | Industry-specific investment reasoning | STRONG PARTIAL |
 | Structured specialized taxonomy coverage | PARTIAL |
-| Peer/sector valuation | OPEN/PARTIAL |
+| Peer/sector valuation | STRONG PARTIAL: contract/Preview PASS, broad point-in-time provider unavailable, not deployed |
 | KR market breadth | PARTIAL |
 | KR market-wide flow | OPEN |
 | Massive 08:05 readiness | OPEN |
@@ -317,11 +330,11 @@ integrity, fallback/retry, exactly-once accounting, and valuation comparison-lab
 
 Immediate operating evidence remains the next natural US/KR AI-assisted delivery, final-language,
 receipt, archive, fallback, and exactly-once proof. KRX publication observation continues in parallel
-for exact 16:05, 08:05, and T+1 roles. Current feature development is Phase 8.3 Peer/Sector
-Valuation on a separate experimental branch. After its capability and Human Preview review, KRX
-8.2A shadow promotion is considered only when live baseline and provider-role evidence pass; Phase
-8.3 receives its own later shadow decision. Cash conversion, taxonomy enrichment, and production
-evidence follow.
+for exact 16:05, 08:05, and T+1 roles. Phase 8.3 contract development and archive-only Preview are
+complete on its experimental branch at `STRONG PARTIAL`; the next decision is whether to extend a
+broad point-in-time provider or retain safe suppression. KRX 8.2A shadow promotion is considered only
+when live baseline and provider-role evidence pass; Phase 8.3 receives its own later shadow decision.
+Cash conversion, taxonomy enrichment, and production evidence follow.
 
 An operating blocker always outranks new feature work. If a natural session exposes a critical
 runtime, delivery, validator, or safety regression, Phase 8.3 pauses behind that targeted repair.
@@ -417,11 +430,12 @@ approval. Main merge and shadow deployment still do not authorize AI-assisted pr
 
 ## 27. Current Next Task
 
-Develop Phase 8.3 Peer/Sector Valuation on its experimental branch while preserving two higher-level
-observations: inspect the next naturally generated US/KR result without manual task execution, and
-continue exact-slot KRX publication telemetry without changing production schedules. Phase 8.3 must
-start with actual provider/DB capability, use taxonomy and security-basis contracts, and remain
-archive-only. A new critical operating blocker outranks this feature.
+Review the next naturally generated US/KR result without manual task execution and continue exact-slot
+KRX publication telemetry without changing production schedules. Review the Phase 8.3 capability and
+fail-closed Preview: the contract is validated, but the limited active universe yields zero safe
+user-visible peer Facts and no broad point-in-time provider exists. Decide whether provider extension
+has enough value before any separate shadow promotion. A new critical operating blocker outranks this
+feature.
 Missing metrics remain Unknown and industry conditions never become company achievements.
 
 ## 28. New Session Bootstrap Prompt
@@ -434,6 +448,7 @@ Missing metrics remain Unknown and industry conditions never become company achi
 > immutable runtime win and the documentation must be reconciled. Confirm whether a later natural
 > US/KR AI-assisted delivery exists after the Phase 8.5.3.2 shadow promotion. If not, the next task
 > is read-only natural proof review. Also inspect the experimental Phase 8.2A.2 KRX reports and the
-> Phase 8.3 peer/sector branch; do not call either integrated or deployed. Continue Phase 8.3 only
-> when no operating blocker takes priority. Report the recovered state
+> Phase 8.3 peer/sector branch; do not call either integrated or deployed. Review the validated
+> STRONG PARTIAL capability before any provider extension, and let any operating blocker take
+> priority. Report the recovered state
 > before editing.

@@ -18,7 +18,7 @@ execution or an autonomous investment adviser.
 |---|---|
 | Operating branch | `main`; resolve exact SHA with Git; Phase 8.5.3.2 implementation `b3ad1ea82bdbd3fe003831d449b0dcaa7c6a2da2` is promoted |
 | KRX experimental branch | `codex/phase-8-2a-krx-market-breadth`; final `b94f709eb146655a6a2e35377073727aee7cd7ca`; not deployed |
-| Current development branch | `codex/phase-8-3-peer-sector-valuation`; Phase 8.3 development only |
+| Current development branch | `codex/phase-8-3-peer-sector-valuation`; Phase 8.3 implementation `37a785448b2d9e7506beb2aef84e08e5bfb6e5fb`; STRONG PARTIAL, experimental only |
 | Official assessment | Deterministic `ThesisAssessment` |
 | AI mode | `shadow` |
 | Analysis policy | `daily-review-v3.10` |
@@ -197,10 +197,15 @@ Registered thesis price rules remain immutable history. The shared deterministic
 RR/invalidation and chart state, then only a still-relevant registered lifecycle. It calculates
 nothing. A crossed confirmation is history, never a future trigger or automatically promoted support.
 
-Peer valuation is deterministic and fail-closed. The current repository can only use same-date active
-monitored assessments, explicitly labeled as a limited sample. At least three comparable peers are
-required, and the median is primary. The 2026-08-14 active universe had no qualifying peer metric, so
-no peer number was invented. See [PEER_VALUATION.md](architecture/PEER_VALUATION.md).
+Peer valuation is deterministic and fail-closed. Phase 8.3's experimental
+`peer-sector-valuation-v1` selects verified taxonomy/sub-industry/industry peers, aligns the subject
+and candidates to one completed exchange price session, deduplicates reliable issuer identities, and
+separates trailing, consensus-forward, and modeled-forward samples. Three eligible independent
+issuers are required; five is HIGH quality, while sector fallback stays LOW/audit-only. Median is
+primary, and all relative statistics are backend Facts rather than renderer or AI calculations. The
+2026-08-18 active universe had 7 KR and 13 US assessments but no qualifying user-visible peer metric,
+so the Phase 8.5.x prose remains unchanged. This is `STRONG PARTIAL` data coverage, not a validator
+failure. See [PEER_SECTOR_VALUATION.md](architecture/PEER_SECTOR_VALUATION.md).
 
 ## Pilot Architecture
 
@@ -270,13 +275,12 @@ Historical retrieval is `SUPPORTED`; 16:05 same-day, 08:05 next-morning, and T+1
 all `NOT_YET_PROVEN`. The observer wrote one ignored mode-0600 JSONL record and made no production
 schedule, delivery, or runtime change.
 
-Master Workflow Synchronization v3 starts Phase 8.3 on a separate development-only branch. The
-operating baseline remains unchanged for natural Phase 8.5.x proof, while KRX publication timing
-continues as a separate experimental observation. Phase 8.3 begins from the existing Phase 7 peer
-foundation: verified active-universe taxonomy matching, same-market preference, minimum three-peer
-sample, median-first statistics, denominator/security/date filters, and numeric semantics already
-exist. The missing capability is broad point-in-time peer coverage and richer issuer/basis/audit
-contracts, not renderer arithmetic.
+Master Workflow Synchronization v3 prepared Phase 8.3 on a separate development-only branch. Commit
+`37a785448b2d9e7506beb2aef84e08e5bfb6e5fb` completes the comparable-universe, issuer/basis,
+point-in-time, statistics, numeric semantics, industry guardrail, audit, and fail-closed Preview
+contracts. The operating baseline remains unchanged for natural Phase 8.5.x proof, while KRX
+publication timing continues as a separate experimental observation. The remaining Phase 8.3 gap is
+broad point-in-time provider coverage; no unsafe active-universe median was printed.
 
 ## Phase 8.1 KR Financial Lineage
 
@@ -744,9 +748,9 @@ first.
    counter edits, resends, or archive rewriting.
 3. Keep TSM/WRD identity `unknown`, fine-grained industry routes general where unproved, peer data
    unavailable where absent, and OCF/CAPEX/FCF gaps explicit.
-4. Continue Phase 8.3 capability-first development and archive-only Human Preview on its separate
-   branch. Review Phase 8.2A.2 publication telemetry in parallel. Do not merge or deploy either lane
-   until its separate evidence and Human Review gates pass.
+4. Review the completed Phase 8.3 capability/Preview and decide whether broad point-in-time provider
+   extension is justified. Review Phase 8.2A.2 publication telemetry in parallel. Do not merge or
+   deploy either lane until its separate evidence, role and Human Review gates pass.
 5. Run 3-5 Massive weekday shadow captures at 08:05 KST and, after KRX activation, collect five
    KRX/Kiwoom reconciliation sessions before metric-level fallback.
 6. Keep Production Assist disabled until natural full-message evidence passes direct human review
