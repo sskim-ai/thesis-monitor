@@ -16,7 +16,7 @@ execution or an autonomous investment adviser.
 
 | Component | Contract |
 |---|---|
-| Branch | `main`; Phase 8.5.1 code `2cd78de4f87a1c875d8ee94d546bf6d4a48c8acf` promoted to operating shadow |
+| Branch | operating `main` at `a8ebb02753e28795f36dbf72c9deb3520f75ed44`; Phase 8.5.3 validated on its experimental branch, not promoted |
 | Official assessment | Deterministic `ThesisAssessment` |
 | AI mode | `shadow` |
 | Analysis policy | `daily-review-v3.10` |
@@ -36,7 +36,9 @@ execution or an autonomous investment adviser.
 | Semantic decision hierarchy | `semantic-scope-and-decision-hierarchy-v1`, `decision-material-delta-v1` |
 | Valuation context wording | `valuation-context-wording-v1` |
 | Industry reasoning | `industry-specific-reasoning-v1` |
-| Runtime packet completeness | current-price RR preflight v1; natural proof pending |
+| Runtime packet completeness | current-price RR preflight v1; 2026-08-18 natural live path PASS |
+| Current price context | `current-price-context-v1` |
+| Runtime specificity | `runtime-message-specificity-v1` |
 | Runtime quality | `runtime-message-quality-v1`, receipt `runtime-message-quality-receipt-v2` |
 
 Resolve the deployed commit with `git rev-parse HEAD`; a file inside a commit cannot contain that
@@ -188,9 +190,10 @@ contracts. Details are in [MARKET_INTELLIGENCE.md](architecture/MARKET_INTELLIGE
 
 ## Stateful Price And Peer Context
 
-Registered thesis price rules remain immutable history. The user-facing price section first uses a
-new transition, then current Strong/Medium dynamic zones, current-price RR/invalidation, and only then
-a still-relevant registered rule. A crossed confirmation is never promoted to support automatically.
+Registered thesis price rules remain immutable history. The shared deterministic
+`current-price-context-v1` selector first uses current Strong/Medium dynamic zones, current-price
+RR/invalidation and chart state, then only a still-relevant registered lifecycle. It calculates
+nothing. A crossed confirmation is history, never a future trigger or automatically promoted support.
 
 Peer valuation is deterministic and fail-closed. The current repository can only use same-date active
 monitored assessments, explicitly labeled as a limited sample. At least three comparable peers are
@@ -235,7 +238,8 @@ observed over normal weekday sessions.
 Kiwoom OpenAPI+ documentation exposes multi-symbol and industry-index/change primitives, but there is
 no configured Windows market gateway or KOA-verified production TR evidence. The provider therefore
 remains `bridge_shadow` and rejects canonical collection unless efficient market-wide capability and
-universe semantics are explicitly SUPPORTED. KRX remains the intended primary after API approval.
+universe semantics are explicitly SUPPORTED. KRX Open API is approved but not yet integrated and
+remains the intended primary.
 See [MARKET_CROSS_SECTION.md](architecture/MARKET_CROSS_SECTION.md) and the
 [capability report](reports/20260817-phase8-massive-kiwoom-capability.md).
 
@@ -415,8 +419,7 @@ not change RR calculation, nearest-resistance selection, stale-data denial, grou
 the binder, validator, or renderer. Read-only run-23 reconstruction restores exact RR paths for
 POSCO Holdings, LS ELECTRIC, Hanwha Aerospace, and Hyundai Glovis; Samsung Electronics, Korean Re,
 and SK hynix remain unavailable by contract. The original eight RR missing-path errors become zero.
-Current-price RR packet completeness advances to PARTIAL; Natural Live Validation remains OPEN until
-the next naturally scheduled KR session passes without this blocker. See the
+See the
 [root-cause report](reports/20260817-runtime-current-price-rr-root-cause.md),
 [validation report](reports/20260817-runtime-current-price-rr-repair-validation.md), and
 [run-23 replay](reports/20260817-runtime-current-price-rr-run23-replay.md).
@@ -426,9 +429,9 @@ the next naturally scheduled KR session passes without this blocker. See the
 Phase 8.5.2 verified that the Phase 8.5.1 source is a linear 31-commit descendant of the prior main
 and includes the required Phase 7.2.9.2, 8.0A, 8.1, 8.1.1, 8.1.2, 8.4, 8.4.1, 8.4.1.1, 8.5, and
 8.5.1 implementation chain. `origin/main` and the clean operating checkout were fast-forwarded from
-`aeb87a9d2aee0d4b840c0a8717319e01b375f5f5` to
-`2cd78de4f87a1c875d8ee94d546bf6d4a48c8acf`. GitHub Actions run `32023730416` passed Test and Lint
-for that exact code SHA.
+`aeb87a9d2aee0d4b840c0a8717319e01b375f5f5` through code commit
+`2cd78de4f87a1c875d8ee94d546bf6d4a48c8acf` and final promotion commit
+`a8ebb02753e28795f36dbf72c9deb3520f75ed44`. GitHub Actions run `32023730416` passed Test and Lint.
 
 The API LaunchAgent was restarted from the configured operating checkout; `/health` returned
 `ok`, US AI Review health remained valid, and KR health correctly preserved the rejected natural
@@ -442,6 +445,35 @@ enable Production Assist. AI mode remains shadow. Natural Live Validation and th
 OPEN/PARTIAL until a later naturally scheduled session exercises the promoted code. See the
 [release validation](reports/20260817-phase8-5-2-shadow-release-validation.md) and
 [operating state](reports/20260817-operating-shadow-state.md) reports.
+
+## Phase 8.5.3 Natural Live Message Hardening
+
+The promoted code ran naturally on 2026-08-18. US packet
+`2026-08-18-us-run-24-487c07bde4e1` and KR packet
+`2026-08-18-kr-run-25-23b5e31dc20e` had zero numeric/semantic hard errors, but AI output failed the
+unchanged runtime quality gate. Deterministic fallback delivered 14/14 US and 8/8 KR; Pilot remained
+KR 3/5 and US 3/5. The KR packet carried complete canonical current-price RR paths for POSCO
+Holdings, LS ELECTRIC, Hanwha Aerospace, and Hyundai Glovis, so the RR runtime path is `LIVE PATH
+PASS`. Full natural AI-assisted delivery remains PARTIAL.
+
+Phase 8.5.3 adds `runtime-message-specificity-v1` to plan company evidence, industry driver,
+decision point, Unknown, and next check before prose. It suppresses repeated methodology instead of
+randomly paraphrasing it. Immutable replay reduces literal/skeleton duplicates from 3/7 to 0/0 in
+US and 5/7 to 0/0 in KR with no gate relaxation and both full validators PASS.
+
+Deterministic fallback now consumes `current-price-context-v1`, the same canonical current structure
+available to AI packets. Dynamic support/resistance, current-price RR, chart invalidation/state, and
+registered lifecycle are selected without renderer calculation. Nine crossed confirmations that had
+been rendered as future triggers fall to zero; fake RR and automatic support promotion remain zero.
+See the [root-cause report](reports/20260818-phase8-5-3-natural-live-message-root-cause.md),
+[validation report](reports/20260818-phase8-5-3-natural-live-message-validation.md),
+[AI Preview](reports/20260818-phase8-5-3-ai-natural-live-hardening-preview.md), and
+[fallback Preview](reports/20260818-phase8-5-3-fallback-price-parity-preview.md).
+
+This evidence is archive-only. It sent no Telegram, ran no Scheduled Task, changed no Pilot/DB/
+assessment/archive state, and did not alter operating main. A separate shadow promotion followed by
+a natural AI-assisted US/KR delivery is required. KRX Open API is approved but not integrated;
+Phase 8.2A becomes the next analytical infrastructure task after this live blocker is cleared.
 
 On 2026-08-15 the owning desktop environment verified all four local-project tasks, retained their
 08:15/08:30/16:15/16:55 schedules, and migrated their exact prompts to v3.10 with
@@ -572,7 +604,10 @@ unchanged. See [the Phase 7.2.9.2 readiness report](reports/20260817-phase7-2-9-
 - Monitoring state and peer context: `app/services/monitoring_state_service.py`
 - Exchange-session eligibility: `app/services/market_session.py`
 - Runtime packet preflight: `app/services/runtime_packet_completeness_service.py`
+- Current price-context selector: `app/services/current_price_context_service.py`
+- Runtime specificity plan: `app/services/runtime_specificity_service.py`
 - Renderer and delivery: `app/services/ai_assisted_delivery_service.py`
+- Deterministic fallback assembly: `app/services/notification_service.py`
 - Industry routing and causal guardrails: `app/services/industry_reasoning_service.py`
 - Skill: `.agents/skills/thesis-monitor-daily-review/SKILL.md`
 - Runtime policy: `.agents/skills/thesis-monitor-daily-review/references/daily-review-policy.md`
@@ -583,7 +618,8 @@ unchanged. See [the Phase 7.2.9.2 readiness report](reports/20260817-phase7-2-9-
 
 - Massive US breadth is implemented in shadow, but exact 08:05 KST readiness over 3-5 normal
   sessions is not yet established.
-- KR market breadth is partial pending KRX approval; the Kiwoom Windows gateway is not configured.
+- KRX Open API is approved but not integrated; KR market breadth remains partial. The Kiwoom
+  Windows gateway is not configured.
 - KR market-wide investor flow is unavailable, and constituent-level sector participation remains
   incomplete.
 - Industry-specific causal reasoning contracts are implemented, but specialized structured routing
@@ -596,9 +632,10 @@ unchanged. See [the Phase 7.2.9.2 readiness report](reports/20260817-phase7-2-9-
   Production Assist evidence.
 - TSM and WRD lack authoritative production identity evidence. Their live `unknown` state and
   multiple withholding are correct until a separately approved identity ingestion.
-- Natural KR run-23 failed pre-send on missing required current-price RR Facts for four stocks. The
-  retrospective packet repair is verified and the packet/numeric-path gap is PARTIAL; a new natural
-  KR session is still required to close it. Natural Live Validation remains OPEN.
+- The 2026-08-18 natural KR packet proves the repaired current-price RR paths for the four run-23
+  affected stocks. RR runtime path is LIVE PATH PASS. Both natural US and KR AI drafts still failed
+  the runtime quality gate and delivered deterministic fallback, so full Natural Live AI quality is
+  PARTIAL. Phase 8.5.3 passes immutable replay but still needs shadow promotion and natural proof.
 - Production Assist remains disabled pending a separate decision after successful Pilot evidence.
 
 Never fill data gaps with model knowledge. Add a deterministic fact, semantic contract, and tests
@@ -625,16 +662,17 @@ first.
 
 ## Next Steps
 
-1. Review the Phase 8.5 and Phase 8.5.1 evidence; decide main merge and shadow deployment separately
-   from Production Assist.
-2. Wait for the next natural KR session and verify current-price RR packet completeness, the full
-   validator, runtime receipt, archive, and exactly-once behavior. If KRX approval is confirmed,
-   report whether Phase 8.2A should be inserted before later roadmap work.
-3. Preserve operational counts KR 3/5 and US 3/5 and retain natural run-23 as a rejected pre-send
-   session without replay, counter edits, or archive rewriting.
+1. Review Phase 8.5.3 evidence and promote it to operating shadow under a separate release order,
+   independently of Production Assist.
+2. Wait for the next natural US/KR sessions and verify AI quality, current price-context parity,
+   full validator, runtime receipt, archive, and exactly-once behavior.
+3. Preserve operational counts KR 3/5 and US 3/5 and retain all natural/replay artifacts without
+   counter edits, resends, or archive rewriting.
 4. Keep TSM/WRD identity `unknown`, fine-grained industry routes general where unproved, peer data
    unavailable where absent, and OCF/CAPEX/FCF gaps explicit.
-5. Run 3-5 Massive weekday shadow captures at 08:05 KST and, after KRX activation, collect five
+5. After the live message blocker clears, implement Phase 8.2A KRX Open API Primary Market Breadth;
+   Phase 8.3 Peer/Sector Valuation follows unless a new blocker takes priority.
+6. Run 3-5 Massive weekday shadow captures at 08:05 KST and, after KRX activation, collect five
    KRX/Kiwoom reconciliation sessions before metric-level fallback.
-6. Keep Production Assist disabled until natural full-message evidence passes direct human review
+7. Keep Production Assist disabled until natural full-message evidence passes direct human review
    and the user explicitly approves it.

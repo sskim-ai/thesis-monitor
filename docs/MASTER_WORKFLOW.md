@@ -1,14 +1,14 @@
 # Thesis Monitor Master Workflow
 
 Master Workflow: `v2`
-As of: `2026-08-17`
+As of: `2026-08-18`
 Repository: `sskim-ai/thesis-monitor`
 Operating branch: `main`
-Release evidence branch: `codex/phase-8-5-2-shadow-release-promotion`
+Experimental evidence branch: `codex/phase-8-5-3-natural-live-message-hardening`
 Commit resolution: run `git rev-parse HEAD`; this document is part of that commit and must not
-hardcode a self-referential final SHA. Phase 8.5.1 code commit
-`2cd78de4f87a1c875d8ee94d546bf6d4a48c8acf` is promoted to `origin/main` and the clean operating
-checkout configured for thesis-monitor.
+hardcode a self-referential final SHA. Operating `origin/main` and the clean shadow checkout are at
+`a8ebb02753e28795f36dbf72c9deb3520f75ed44`. Phase 8.5.3 is validated retrospectively on the
+experimental branch and is not yet promoted.
 
 ## 1. Project Mission
 
@@ -163,7 +163,7 @@ adjusted decimal volume and close-times-volume remain audit-only. Exact 08:05 KS
 
 ## 17. KR Breadth Status
 
-KRX remains `PENDING_PROVIDER_APPROVAL` and is the intended primary. Kiwoom remains an unconfigured
+KRX Open API is `APPROVED_NOT_INTEGRATED` and remains the intended primary. Kiwoom remains an unconfigured
 Windows-gateway `bridge_shadow`; it is not an authoritative KRX replacement. Automatic metric-level
 fallback requires five same-date reconciliation sessions and explicit universe/unit comparability.
 Market-wide KR investor flow remains unavailable.
@@ -200,6 +200,14 @@ framework. The Phase 8.5 archive audit covers 20 active KR/US stocks: nine have 
 specialized routes and eleven correctly remain low-confidence `general`. The reasoning contract is
 implemented, while specialized taxonomy coverage remains a strong PARTIAL gap.
 
+Phase 8.5.3 adds two bounded runtime contracts without redesigning schema 4. The
+`runtime-message-specificity-v1` plan selects each stock's decision point, company evidence,
+industry driver, Unknown, and next confirmation before prose; methodology-only safety boilerplate is
+suppressed rather than paraphrased. The `current-price-context-v1` selector gives AI and deterministic
+fallback the same current price, dynamic support/resistance, current-price RR, chart invalidation,
+chart state, and registered-rule lifecycle. The selector performs no calculation. Crossed registered
+confirmations are history, never future triggers or automatically promoted support.
+
 ## 20. Phase History
 
 | Phase | Result |
@@ -215,6 +223,7 @@ implemented, while specialized taxonomy coverage remains a strong PARTIAL gap.
 | 8.5 | Fact-dependent industry routing/causal guardrails; archive-only KR/US full-message evidence; specialized coverage strong PARTIAL |
 | 8.5.1 | Exchange-calendar session repair and exact current-price RR packet/numeric-path replay; natural-live proof pending |
 | 8.5.2 | Phase 8.5.1 linear ancestry promoted to main and the operating shadow checkout; API/task health verified; natural-live proof pending |
+| 8.5.3 | Natural US/KR quality failure reconstructed; archive-only AI specificity and fallback dynamic-price parity PASS; shadow promotion and natural AI delivery pending |
 
 ## 21. Current Persistent Gaps
 
@@ -229,8 +238,11 @@ implemented, while specialized taxonomy coverage remains a strong PARTIAL gap.
 | OCF | PARTIAL |
 | CAPEX aggregation | OPEN |
 | FCF | OPEN |
-| Natural live validation of Phase 8 code | OPEN |
-| Current-price RR packet/numeric path | PARTIAL |
+| Natural live validation of Phase 8 code | PARTIAL |
+| Current-price RR packet/numeric path | LIVE PATH PASS |
+| AI natural-live message quality | PARTIAL: retrospective PASS, natural AI delivery pending |
+| Fallback dynamic-price lifecycle | RETROSPECTIVE PASS, shadow promotion pending |
+| KRX Open API primary breadth | APPROVED, NOT INTEGRATED |
 | Human-approved Production Assist evidence | INSUFFICIENT |
 
 Closed engineering gaps include numeric provenance, canonical formatting, financial quality taint,
@@ -241,15 +253,15 @@ integrity, fallback/retry, and exactly-once accounting.
 
 ## 22. Current Roadmap
 
-Default next: observe the next natural KR session and verify that the repaired current-price RR path
-passes packet completeness, the full validator, receipt, archive, and exactly-once checks. If KRX
-approval is explicitly confirmed first, Phase 8.2A KRX Market Breadth Primary may be inserted.
-After checking the next natural US/KR results, proceed to Phase 8.3 Peer/Sector Valuation and
-structured taxonomy enrichment, natural-live quality validation, and a separate production decision.
+Default next: promote the Phase 8.5.3 hardening branch to operating shadow under a separate release
+work order, then observe the next natural US/KR sessions for actual AI-assisted delivery, receipt,
+archive, fallback, and exactly-once proof. KRX Open API approval is confirmed, so after clearing this
+live blocker the default analytical infrastructure task is Phase 8.2A KRX Market Breadth Primary.
+Phase 8.3 Peer/Sector Valuation follows unless a new operating blocker takes priority.
 
 Do not keep subdividing mature safety infrastructure or Phase 8.4 message assembly without a real
-regression. The current priority sequence is better industry coverage, peer context, KR breadth,
-and natural-live evidence.
+regression. The current priority sequence is Phase 8.5.3 shadow promotion, natural AI delivery,
+KRX breadth, peer context, and broader natural-live evidence.
 
 ## 23. Codex Work Order Standard
 
@@ -285,17 +297,32 @@ Phase 8.5.1 traces that failure to weekday-only KRX session handling. 2026-08-17
 substitute holiday, so the actual 2026-08-14 chart was the latest completed session rather than
 stale. Exchange-calendar-aware reconstruction restores exact current-price RR Facts and registry
 paths for all four affected stocks; three unavailable controls remain unavailable by contract. The
-immutable source validation's eight RR missing-path errors fall to zero in replay. The gap is
-PARTIAL, not CLOSED, until a new natural KR session proves the path end to end.
+immutable source validation's eight RR missing-path errors fall to zero in replay.
 
 Phase 8.5.2 fast-forwarded the complete 31-commit Phase 8 chain from the prior main
 `aeb87a9d2aee0d4b840c0a8717319e01b375f5f5` to code commit
-`2cd78de4f87a1c875d8ee94d546bf6d4a48c8acf`. The exact main Actions run passed Test and Lint, the
+`2cd78de4f87a1c875d8ee94d546bf6d4a48c8acf`; the final promotion documentation commit is
+`a8ebb02753e28795f36dbf72c9deb3520f75ed44`. The exact main Actions run passed Test and Lint, the
 operating checkout was clean and exact, the API was restarted and healthy, and operating smoke tests
 passed. All four Codex Scheduled Tasks remain ACTIVE at 08:15/08:30/16:15/16:55 KST, use policy
 v3.10/schema 4, and target the operating checkout. No task was run manually. This is an operating
 shadow promotion only: Production Assist remains OFF, AI mode remains shadow, Telegram sends and
 Pilot mutations from the promotion are zero, and Natural Live Validation remains OPEN.
+
+The promoted code then ran naturally on 2026-08-18. US packet
+`2026-08-18-us-run-24-487c07bde4e1` and KR packet
+`2026-08-18-kr-run-25-23b5e31dc20e` both kept numeric and semantic hard errors at zero, but their AI
+drafts failed `runtime-message-quality-v1`; deterministic fallback delivered 14/14 US and 8/8 KR.
+The KR packet contains complete canonical current-price RR paths for 005490, 010120, 012450, and
+086280, so the RR runtime path is now `LIVE PATH PASS`. Full natural AI delivery remains PARTIAL.
+
+Phase 8.5.3 reconstructs both quality failures from immutable archives. The bounded retrospective
+correction reduces US literal/skeleton duplicate groups from 3/7 to 0/0 and KR from 5/7 to 0/0,
+with no threshold relaxation and full validators PASS. The new deterministic fallback selector
+reduces crossed confirmations rendered as future triggers from nine to zero and preserves dynamic
+support, resistance, RR, and explicit unavailable reasons. This is archive-only evidence: no
+Telegram, task, Pilot, DB, assessment, or archive mutation occurred, and operating main remains at
+the Phase 8.5.2 release until a separate shadow promotion.
 
 ## 26. Production Assist Approval Rules
 
@@ -306,13 +333,12 @@ approval. Main merge and shadow deployment still do not authorize AI-assisted pr
 
 ## 27. Current Next Task
 
-Inspect the next naturally generated US and KR results from the promoted operating shadow checkout.
-For KR, verify the repaired current-price RR path without manual execution or replay. For both
-markets, verify framework routing, full validation, receipt, single delivery/fallback, archive, and
-exactly-once state before human message review. KRX status remains pending or unknown from repository
-evidence; if explicit approval becomes available, report whether Phase 8.2A should be inserted before
-Phase 8.3 peer/sector work. Missing metrics remain Unknown and industry conditions never become
-company achievements.
+Promote Phase 8.5.3 to operating shadow under an explicit release work order, then inspect the next
+naturally generated US and KR results without manual task execution. Verify AI specificity, current
+price-context parity, full validation, receipt, single delivery/fallback, archive, and exactly-once
+state before human message review. After natural AI-assisted delivery proof, begin Phase 8.2A KRX
+Market Breadth Primary; KRX is approved but not integrated. Phase 8.3 peer/sector work follows.
+Missing metrics remain Unknown and industry conditions never become company achievements.
 
 ## 28. New Session Bootstrap Prompt
 
@@ -321,6 +347,8 @@ company achievements.
 > `docs/NEXT_SESSION_PROMPT.md`, `docs/MASTER_WORKFLOW.md`, and the latest validation reports.
 > Recover the actual repository, runtime Pilot, Scheduled Task, contract, and Production Assist
 > state. If the repository is newer than a commit or statement in this workflow, the repository and
-> immutable runtime win and the documentation must be reconciled. Confirm whether the next task is
-> natural-live proof of the repaired RR path or whether newly approved KRX access makes Phase 8.2A
-> KRX Market Breadth Primary the immediate priority. Report the recovered state before editing.
+> immutable runtime win and the documentation must be reconciled. Confirm whether Phase 8.5.3 has
+> been promoted and whether a later natural US/KR AI-assisted delivery exists. If not, the next task
+> is shadow promotion followed by natural proof. Once the live blocker is cleared, proceed to the
+> approved-but-not-integrated Phase 8.2A KRX Market Breadth Primary. Report the recovered state
+> before editing.

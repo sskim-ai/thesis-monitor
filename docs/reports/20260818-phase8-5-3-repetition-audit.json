@@ -1,0 +1,533 @@
+{
+  "contract": "phase8-5-3-repetition-audit-v1",
+  "as_of": "2026-08-18",
+  "quality_gate_changed": false,
+  "runs": {
+    "us": {
+      "packet_id": "2026-08-18-us-run-24-487c07bde4e1",
+      "before": {
+        "hard_checks_passed": false,
+        "literal_duplicate_groups": 3,
+        "semantic_skeleton_groups": 7,
+        "generic_methodology_families": 1,
+        "generic_methodology_stock_occurrences": 13,
+        "repeated_sentences": [
+          {
+            "sentence": "현재 차트 상태는 주문이 아니라 가격 구조의 검토 경계이며, 저장된 과거 가격 규칙을 동적 지지로 승격하지 않습니다.",
+            "stock_count": 13,
+            "tickers": [
+              "CORZ",
+              "CRCL",
+              "GOOGL",
+              "HUT",
+              "IBM",
+              "MU",
+              "RXRX",
+              "SKHY",
+              "SNDK",
+              "TSLA",
+              "TSM",
+              "WRD",
+              "WULF"
+            ],
+            "classification": "substantive"
+          },
+          {
+            "sentence": "가격 전환 신호는 없고 거래량 확인은 최근 평균보다 약합니다.",
+            "stock_count": 3,
+            "tickers": [
+              "GOOGL",
+              "RXRX",
+              "WULF"
+            ],
+            "classification": "substantive"
+          },
+          {
+            "sentence": "확인 lifecycle은 상단 유지 상태입니다.",
+            "stock_count": 3,
+            "tickers": [
+              "MU",
+              "SKHY",
+              "SNDK"
+            ],
+            "classification": "substantive"
+          }
+        ],
+        "template_skeleton_repeats": [
+          {
+            "skeleton": "현재 차트 상태는 주문이 아니라 가격 구조의 검토 경계이며, 저장된 과거 가격 규칙을 동적 지지로 승격하지 않습니다.",
+            "stock_count": 13,
+            "tickers": [
+              "CORZ",
+              "CRCL",
+              "GOOGL",
+              "HUT",
+              "IBM",
+              "MU",
+              "RXRX",
+              "SKHY",
+              "SNDK",
+              "TSLA",
+              "TSM",
+              "WRD",
+              "WULF"
+            ]
+          },
+          {
+            "skeleton": "현재 판단의 핵심 숫자는 <numeric>; <numeric>; <numeric>입니다.",
+            "stock_count": 10,
+            "tickers": [
+              "CORZ",
+              "CRCL",
+              "GOOGL",
+              "HUT",
+              "IBM",
+              "MU",
+              "RXRX",
+              "SNDK",
+              "TSLA",
+              "TSM"
+            ]
+          },
+          {
+            "skeleton": "현재 확인된 핵심 숫자는 <numeric>; <numeric>입니다.",
+            "stock_count": 6,
+            "tickers": [
+              "GOOGL",
+              "IBM",
+              "MU",
+              "RXRX",
+              "TSLA",
+              "WULF"
+            ]
+          },
+          {
+            "skeleton": "<numeric>; <numeric>.",
+            "stock_count": 4,
+            "tickers": [
+              "GOOGL",
+              "IBM",
+              "MU",
+              "TSLA"
+            ]
+          },
+          {
+            "skeleton": "가격 전환 신호는 없고 거래량 확인은 최근 평균보다 약합니다.",
+            "stock_count": 3,
+            "tickers": [
+              "GOOGL",
+              "RXRX",
+              "WULF"
+            ]
+          },
+          {
+            "skeleton": "현재 확인된 핵심 숫자는 <numeric>입니다.",
+            "stock_count": 3,
+            "tickers": [
+              "CORZ",
+              "CRCL",
+              "SNDK"
+            ]
+          },
+          {
+            "skeleton": "확인 lifecycle은 상단 유지 상태입니다.",
+            "stock_count": 3,
+            "tickers": [
+              "MU",
+              "SKHY",
+              "SNDK"
+            ]
+          }
+        ],
+        "generic_methodology": [
+          {
+            "family": "registered_rule_methodology",
+            "stock_count": 13,
+            "matches": [
+              {
+                "ticker": "CORZ",
+                "sentences": [
+                  "현재 차트 상태는 주문이 아니라 가격 구조의 검토 경계이며, 저장된 과거 가격 규칙을 동적 지지로 승격하지 않습니다."
+                ]
+              },
+              {
+                "ticker": "CRCL",
+                "sentences": [
+                  "현재 차트 상태는 주문이 아니라 가격 구조의 검토 경계이며, 저장된 과거 가격 규칙을 동적 지지로 승격하지 않습니다."
+                ]
+              },
+              {
+                "ticker": "GOOGL",
+                "sentences": [
+                  "현재 차트 상태는 주문이 아니라 가격 구조의 검토 경계이며, 저장된 과거 가격 규칙을 동적 지지로 승격하지 않습니다."
+                ]
+              },
+              {
+                "ticker": "HUT",
+                "sentences": [
+                  "현재 차트 상태는 주문이 아니라 가격 구조의 검토 경계이며, 저장된 과거 가격 규칙을 동적 지지로 승격하지 않습니다."
+                ]
+              },
+              {
+                "ticker": "IBM",
+                "sentences": [
+                  "현재 차트 상태는 주문이 아니라 가격 구조의 검토 경계이며, 저장된 과거 가격 규칙을 동적 지지로 승격하지 않습니다."
+                ]
+              },
+              {
+                "ticker": "MU",
+                "sentences": [
+                  "현재 차트 상태는 주문이 아니라 가격 구조의 검토 경계이며, 저장된 과거 가격 규칙을 동적 지지로 승격하지 않습니다."
+                ]
+              },
+              {
+                "ticker": "RXRX",
+                "sentences": [
+                  "현재 차트 상태는 주문이 아니라 가격 구조의 검토 경계이며, 저장된 과거 가격 규칙을 동적 지지로 승격하지 않습니다."
+                ]
+              },
+              {
+                "ticker": "SKHY",
+                "sentences": [
+                  "현재 차트 상태는 주문이 아니라 가격 구조의 검토 경계이며, 저장된 과거 가격 규칙을 동적 지지로 승격하지 않습니다."
+                ]
+              },
+              {
+                "ticker": "SNDK",
+                "sentences": [
+                  "현재 차트 상태는 주문이 아니라 가격 구조의 검토 경계이며, 저장된 과거 가격 규칙을 동적 지지로 승격하지 않습니다."
+                ]
+              },
+              {
+                "ticker": "TSLA",
+                "sentences": [
+                  "현재 차트 상태는 주문이 아니라 가격 구조의 검토 경계이며, 저장된 과거 가격 규칙을 동적 지지로 승격하지 않습니다."
+                ]
+              },
+              {
+                "ticker": "TSM",
+                "sentences": [
+                  "현재 차트 상태는 주문이 아니라 가격 구조의 검토 경계이며, 저장된 과거 가격 규칙을 동적 지지로 승격하지 않습니다."
+                ]
+              },
+              {
+                "ticker": "WRD",
+                "sentences": [
+                  "현재 차트 상태는 주문이 아니라 가격 구조의 검토 경계이며, 저장된 과거 가격 규칙을 동적 지지로 승격하지 않습니다."
+                ]
+              },
+              {
+                "ticker": "WULF",
+                "sentences": [
+                  "현재 차트 상태는 주문이 아니라 가격 구조의 검토 경계이며, 저장된 과거 가격 규칙을 동적 지지로 승격하지 않습니다."
+                ]
+              }
+            ],
+            "repeated": true
+          }
+        ]
+      },
+      "after": {
+        "full_validator_errors": [],
+        "hard_checks_passed": true,
+        "literal_duplicate_groups": 0,
+        "semantic_skeleton_groups": 0,
+        "generic_methodology_families": 0,
+        "generic_methodology_stock_occurrences": 0
+      },
+      "message_length": {
+        "before": {
+          "messages": 13,
+          "characters": 15406,
+          "lines": 440
+        },
+        "after": {
+          "messages": 13,
+          "characters": 14953,
+          "lines": 440
+        }
+      }
+    },
+    "kr": {
+      "packet_id": "2026-08-18-kr-run-25-23b5e31dc20e",
+      "before": {
+        "hard_checks_passed": false,
+        "literal_duplicate_groups": 5,
+        "semantic_skeleton_groups": 7,
+        "generic_methodology_families": 4,
+        "generic_methodology_stock_occurrences": 16,
+        "repeated_sentences": [
+          {
+            "sentence": "기존 확인 가격 상단 유지 상태는 이어졌지만 이를 자동 지지로 승격하지 않습니다.",
+            "stock_count": 4,
+            "tickers": [
+              "000660",
+              "003690",
+              "005930",
+              "086280"
+            ],
+            "classification": "substantive"
+          },
+          {
+            "sentence": "기간별 투자주체 흐름이 엇갈려 사업 논리와 분리해 해석합니다.",
+            "stock_count": 3,
+            "tickers": [
+              "005930",
+              "010120",
+              "012450"
+            ],
+            "classification": "substantive"
+          },
+          {
+            "sentence": "영업현금흐름·설비투자·잉여현금흐름이 확인되어야 이익의 현금전환을 판단할 수 있습니다.",
+            "stock_count": 3,
+            "tickers": [
+              "005490",
+              "005930",
+              "086280"
+            ],
+            "classification": "substantive"
+          },
+          {
+            "sentence": "재고·capex 이후 fcf·roic",
+            "stock_count": 3,
+            "tickers": [
+              "000660",
+              "005490",
+              "005930"
+            ],
+            "classification": "substantive"
+          },
+          {
+            "sentence": "재무 품질 자체는 사용 가능하지만 금액별 기간·연결 기준이 표시 조건을 충족하지 않아 손익 금액과 성장률을 표시하지 않습니다.",
+            "stock_count": 3,
+            "tickers": [
+              "005490",
+              "005930",
+              "086280"
+            ],
+            "classification": "substantive"
+          }
+        ],
+        "template_skeleton_repeats": [
+          {
+            "skeleton": "<numeric>는 가격 구조 검토 기준일 뿐 기업가치 변화는 아닙니다.",
+            "stock_count": 6,
+            "tickers": [
+              "000660",
+              "005490",
+              "005930",
+              "010120",
+              "012450",
+              "086280"
+            ]
+          },
+          {
+            "skeleton": "<numeric>를 새 자금의 단독 근거로 삼지 않고, 동적 지지 접근 또는 거래량과 다음 사업 지표가 함께 확인될 때 가격·사실 비대칭을 다시 판단합니다.",
+            "stock_count": 6,
+            "tickers": [
+              "000660",
+              "005490",
+              "005930",
+              "010120",
+              "012450",
+              "086280"
+            ]
+          },
+          {
+            "skeleton": "기존 확인 가격 상단 유지 상태는 이어졌지만 이를 자동 지지로 승격하지 않습니다.",
+            "stock_count": 4,
+            "tickers": [
+              "000660",
+              "003690",
+              "005930",
+              "086280"
+            ]
+          },
+          {
+            "skeleton": "기간별 투자주체 흐름이 엇갈려 사업 논리와 분리해 해석합니다.",
+            "stock_count": 3,
+            "tickers": [
+              "005930",
+              "010120",
+              "012450"
+            ]
+          },
+          {
+            "skeleton": "영업현금흐름·설비투자·잉여현금흐름이 확인되어야 이익의 현금전환을 판단할 수 있습니다.",
+            "stock_count": 3,
+            "tickers": [
+              "005490",
+              "005930",
+              "086280"
+            ]
+          },
+          {
+            "skeleton": "재고·capex 이후 fcf·roic",
+            "stock_count": 3,
+            "tickers": [
+              "000660",
+              "005490",
+              "005930"
+            ]
+          },
+          {
+            "skeleton": "재무 품질 자체는 사용 가능하지만 금액별 기간·연결 기준이 표시 조건을 충족하지 않아 손익 금액과 성장률을 표시하지 않습니다.",
+            "stock_count": 3,
+            "tickers": [
+              "005490",
+              "005930",
+              "086280"
+            ]
+          }
+        ],
+        "generic_methodology": [
+          {
+            "family": "registered_rule_methodology",
+            "stock_count": 4,
+            "matches": [
+              {
+                "ticker": "000660",
+                "sentences": [
+                  "기존 확인 가격 상단 유지 상태는 이어졌지만 이를 자동 지지로 승격하지 않습니다."
+                ]
+              },
+              {
+                "ticker": "003690",
+                "sentences": [
+                  "기존 확인 가격 상단 유지 상태는 이어졌지만 이를 자동 지지로 승격하지 않습니다."
+                ]
+              },
+              {
+                "ticker": "005930",
+                "sentences": [
+                  "기존 확인 가격 상단 유지 상태는 이어졌지만 이를 자동 지지로 승격하지 않습니다."
+                ]
+              },
+              {
+                "ticker": "086280",
+                "sentences": [
+                  "기존 확인 가격 상단 유지 상태는 이어졌지만 이를 자동 지지로 승격하지 않습니다."
+                ]
+              }
+            ],
+            "repeated": true
+          },
+          {
+            "family": "supply_separation_methodology",
+            "stock_count": 3,
+            "matches": [
+              {
+                "ticker": "005930",
+                "sentences": [
+                  "기간별 투자주체 흐름이 엇갈려 사업 논리와 분리해 해석합니다."
+                ]
+              },
+              {
+                "ticker": "010120",
+                "sentences": [
+                  "기간별 투자주체 흐름이 엇갈려 사업 논리와 분리해 해석합니다."
+                ]
+              },
+              {
+                "ticker": "012450",
+                "sentences": [
+                  "기간별 투자주체 흐름이 엇갈려 사업 논리와 분리해 해석합니다."
+                ]
+              }
+            ],
+            "repeated": true
+          },
+          {
+            "family": "cash_conversion_checklist",
+            "stock_count": 3,
+            "matches": [
+              {
+                "ticker": "005490",
+                "sentences": [
+                  "영업현금흐름·설비투자·잉여현금흐름이 확인되어야 이익의 현금전환을 판단할 수 있습니다."
+                ]
+              },
+              {
+                "ticker": "005930",
+                "sentences": [
+                  "영업현금흐름·설비투자·잉여현금흐름이 확인되어야 이익의 현금전환을 판단할 수 있습니다."
+                ]
+              },
+              {
+                "ticker": "086280",
+                "sentences": [
+                  "영업현금흐름·설비투자·잉여현금흐름이 확인되어야 이익의 현금전환을 판단할 수 있습니다."
+                ]
+              }
+            ],
+            "repeated": true
+          },
+          {
+            "family": "price_not_company_value_methodology",
+            "stock_count": 6,
+            "matches": [
+              {
+                "ticker": "000660",
+                "sentences": [
+                  "현재가 기준 차트 손익비 2.25배는 가격 구조 검토 기준일 뿐 기업가치 변화는 아닙니다."
+                ]
+              },
+              {
+                "ticker": "005490",
+                "sentences": [
+                  "현재가 기준 차트 손익비 0.08배는 가격 구조 검토 기준일 뿐 기업가치 변화는 아닙니다."
+                ]
+              },
+              {
+                "ticker": "005930",
+                "sentences": [
+                  "현재가 기준 차트 손익비 1배는 가격 구조 검토 기준일 뿐 기업가치 변화는 아닙니다."
+                ]
+              },
+              {
+                "ticker": "010120",
+                "sentences": [
+                  "현재가 기준 차트 손익비 0.25배는 가격 구조 검토 기준일 뿐 기업가치 변화는 아닙니다."
+                ]
+              },
+              {
+                "ticker": "012450",
+                "sentences": [
+                  "현재가 기준 차트 손익비 0.23배는 가격 구조 검토 기준일 뿐 기업가치 변화는 아닙니다."
+                ]
+              },
+              {
+                "ticker": "086280",
+                "sentences": [
+                  "현재가 기준 차트 손익비 0.54배는 가격 구조 검토 기준일 뿐 기업가치 변화는 아닙니다."
+                ]
+              }
+            ],
+            "repeated": true
+          }
+        ]
+      },
+      "after": {
+        "full_validator_errors": [],
+        "hard_checks_passed": true,
+        "literal_duplicate_groups": 0,
+        "semantic_skeleton_groups": 0,
+        "generic_methodology_families": 0,
+        "generic_methodology_stock_occurrences": 0
+      },
+      "message_length": {
+        "before": {
+          "messages": 7,
+          "characters": 9748,
+          "lines": 261
+        },
+        "after": {
+          "messages": 7,
+          "characters": 9272,
+          "lines": 240
+        }
+      }
+    }
+  }
+}

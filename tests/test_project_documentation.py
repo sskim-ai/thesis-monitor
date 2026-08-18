@@ -16,6 +16,7 @@ DOCUMENTS = (
     ROOT / "docs" / "architecture" / "NUMERIC_PROVENANCE.md",
     ROOT / "docs" / "architecture" / "MONITORING_STATE_LIFECYCLE.md",
     ROOT / "docs" / "architecture" / "PEER_VALUATION.md",
+    ROOT / "docs" / "architecture" / "NATURAL_LIVE_MESSAGE_HARDENING.md",
     ROOT / "docs" / "operations" / "AI_ASSISTED_PILOT.md",
     ROOT / "docs" / "knowledge" / "README.md",
 )
@@ -35,19 +36,26 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     assert state["branch"] == "main"
     assert (
         state["experimental_branch"]
-        == "codex/phase-8-5-2-shadow-release-promotion"
+        == "codex/phase-8-5-3-natural-live-message-hardening"
     )
-    assert state["current_phase"] == "phase_8_5_2_operating_shadow_promoted"
+    assert (
+        state["current_phase"]
+        == "phase_8_5_3_retrospective_hardening_pass_pending_shadow_promotion"
+    )
     assert state["last_completed_phase"] == "phase_8_5_2_shadow_release_promotion"
     assert (
         state["next_default_phase"]
-        == "natural_live_shadow_validation_then_phase_8_3_peer_sector_valuation"
+        == "phase_8_5_3_shadow_promotion_then_natural_live_ai_delivery_proof"
     )
     assert state["deployed_code_commit"] == (
-        "2cd78de4f87a1c875d8ee94d546bf6d4a48c8acf"
+        "a8ebb02753e28795f36dbf72c9deb3520f75ed44"
     )
-    assert state["persistent_gaps"]["current_price_rr_packet_numeric_path"] == "PARTIAL"
-    assert state["persistent_gaps"]["natural_live_validation"] == "OPEN"
+    assert (
+        state["persistent_gaps"]["current_price_rr_packet_numeric_path"]
+        == "LIVE_PATH_PASS"
+    )
+    assert state["persistent_gaps"]["natural_live_validation"] == "PARTIAL"
+    assert state["persistent_gaps"]["krx_open_api"] == "APPROVED_NOT_INTEGRATED"
     assert state["current_commit"] == "HEAD"
     assert state["current_commit_resolution"] == "git rev-parse HEAD"
     assert state["ai_review_mode"] == "shadow"
