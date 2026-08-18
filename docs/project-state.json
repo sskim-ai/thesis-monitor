@@ -1153,6 +1153,7 @@
     "status": "RESEARCH_COMPLETE_PROVIDER_SELECTION_OPEN",
     "branch": "codex/phase-8-3-1-broad-peer-provider-research",
     "base_commit": "ffafccc9e71619f2ebc16b0e60b9c2d3d3b75f05",
+    "research_commit": "711204a187b8e3262dcc2016bfafb5defa4eaad0",
     "merge_base_with_main": "e925ee05eabcc1e89c74dfb1ec0d2dabbb01729d",
     "ahead_of_main_at_start": 9,
     "krx_ancestry_commits": 6,
@@ -1182,6 +1183,11 @@
     "scorecard": "docs/reports/20260818-phase8-3-1-provider-scorecard.json",
     "recommendation": "docs/reports/20260818-phase8-3-1-provider-recommendation.md",
     "validation": "docs/reports/20260818-phase8-3-1-validation.md",
+    "research_commit_actions": {
+      "run_id": 32144123210,
+      "test": "PASS",
+      "lint": "PASS"
+    },
     "main_merged": false,
     "operating_deployed": false,
     "telegram_sends": 0,

@@ -3,6 +3,7 @@
 Date: `2026-08-18`
 Branch: `codex/phase-8-3-1-broad-peer-provider-research`
 Base: `ffafccc9e71619f2ebc16b0e60b9c2d3d3b75f05`
+Research commit: `711204a187b8e3262dcc2016bfafb5defa4eaad0`
 Status: `PASS RESEARCH / PROVIDER SELECTION OPEN / DEVELOPMENT ONLY`
 
 ## Scope Result
@@ -48,7 +49,8 @@ OpenFIGI observations remain audit-only and produced zero canonical Facts.
 | Chart Knowledge parity | PASS, `beee64559831479168f1347c43d979391126926d73e2473ce837cefbf0ede19b` |
 | Public Action | `0.4.5` |
 | operationId | `20/20` unique, zero missing |
-| GitHub Actions | exact final SHA result recorded after push |
+| Research commit GitHub Actions | run `32144123210`; exact SHA `711204a187b8e3262dcc2016bfafb5defa4eaad0`; Test PASS; Lint PASS |
+| Final documentation GitHub Actions | exact final branch SHA verified after final push; resolve with Git/Actions rather than self-referencing this commit |
 
 The warning is the existing Starlette `httpx` TestClient deprecation and is unrelated to this phase.
 

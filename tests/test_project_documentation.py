@@ -115,12 +115,20 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     assert peer["operating_deployed"] is False
     provider_research = state["phase_8_3_1_peer_provider_research"]
     assert provider_research["status"] == "RESEARCH_COMPLETE_PROVIDER_SELECTION_OPEN"
+    assert provider_research["research_commit"] == (
+        "711204a187b8e3262dcc2016bfafb5defa4eaad0"
+    )
     assert provider_research["krx_ancestry_commits"] == 6
     assert provider_research["phase_8_3_commits"] == 3
     assert provider_research["measured_user_visible_coverage"] == "0/20"
     assert provider_research["live_probe"]["credential_exposure"] == 0
     assert provider_research["main_merged"] is False
     assert provider_research["operating_deployed"] is False
+    assert provider_research["research_commit_actions"] == {
+        "run_id": 32144123210,
+        "test": "PASS",
+        "lint": "PASS",
+    }
     peer_state = state["peer_valuation"]
     assert peer_state == {
         "contract": "pass",
