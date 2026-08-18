@@ -10,6 +10,7 @@ DOCUMENTS = (
     ROOT / "docs" / "PROJECT_HANDOFF.md",
     ROOT / "docs" / "NEXT_SESSION_PROMPT.md",
     ROOT / "docs" / "project-state.json",
+    ROOT / "docs" / "BRANCH_DEPENDENCY.md",
     ROOT / "docs" / "architecture" / "AI_ASSISTED_MONITORING.md",
     ROOT / "docs" / "architecture" / "OHLCV_STRUCTURE_ENGINE.md",
     ROOT / "docs" / "architecture" / "MARKET_INTELLIGENCE.md",
@@ -17,6 +18,7 @@ DOCUMENTS = (
     ROOT / "docs" / "architecture" / "MONITORING_STATE_LIFECYCLE.md",
     ROOT / "docs" / "architecture" / "PEER_VALUATION.md",
     ROOT / "docs" / "architecture" / "PEER_SECTOR_VALUATION.md",
+    ROOT / "docs" / "architecture" / "FREE_SOURCE_PEER_VALUATION.md",
     ROOT / "docs" / "architecture" / "NATURAL_LIVE_MESSAGE_HARDENING.md",
     ROOT / "docs" / "operations" / "AI_ASSISTED_PILOT.md",
     ROOT / "docs" / "knowledge" / "README.md",
@@ -37,19 +39,19 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     assert state["branch"] == "main"
     assert (
         state["experimental_branch"]
-        == "codex/phase-8-5-3-2-rxrx-valuation-label-repair"
+        == "codex/phase-8-3-2a-free-peer-poc"
     )
     assert (
         state["current_phase"]
-        == "phase_8_5_3_2_shadow_promoted_pending_natural_ai_delivery_proof"
+        == "phase_8_3_2a_free_source_peer_poc_complete_experimental_only"
     )
     assert (
         state["last_completed_phase"]
-        == "phase_8_5_3_2_valuation_label_shadow_promotion"
+        == "phase_8_3_2a_free_source_current_peer_coverage_poc"
     )
     assert (
         state["next_default_phase"]
-        == "natural_us_kr_live_proof_with_phase_8_2a_experimental_development_only"
+        == "natural_us_kr_live_proof_then_krx_slot_observation_and_free_peer_human_review"
     )
     assert state["deployed_code_commit"] == (
         "b3ad1ea82bdbd3fe003831d449b0dcaa7c6a2da2"
@@ -61,7 +63,22 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
         == "LIVE_PATH_PASS"
     )
     assert state["persistent_gaps"]["natural_live_validation"] == "PARTIAL"
-    assert state["persistent_gaps"]["krx_open_api"] == "APPROVED_NOT_INTEGRATED"
+    assert state["persistent_gaps"]["krx_open_api"] == (
+        "APPROVED_EXPERIMENTAL_NOT_OPERATING_INTEGRATED"
+    )
+    peer = state["peer_valuation"]
+    assert peer["provider_policy"] == "free_only"
+    assert peer["paid_provider_path"] == "closed_by_policy"
+    assert peer["measured_medium_plus_coverage"] == 1
+    assert peer["active_subject_count"] == 20
+    assert peer["meaningful_subject_count"] == 15
+    assert peer["operating_integration"] is False
+    dependency = state["branch_dependency"]
+    assert dependency["phase_8_3_original_includes_krx_ancestry"] is True
+    assert dependency["phase_8_3_2a_excludes_krx_implementation"] is True
+    assert state["krx"]["same_day_1605_role"] == "not_yet_proven"
+    assert state["krx"]["next_morning_0805_role"] == "not_yet_proven"
+    assert state["krx"]["operating_integration"] is False
     assert (
         state["persistent_gaps"]["fallback_price_lifecycle"]
         == "CLOSED_RETROSPECTIVE_AND_OPERATING_CODE_PROMOTED"

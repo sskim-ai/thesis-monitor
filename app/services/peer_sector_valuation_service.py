@@ -176,6 +176,45 @@ def _cross_section_percentile(values: list[float], company_value: float) -> floa
     return round((below + 0.5 * equal) / len(values) * 100, 4)
 
 
+def calculate_peer_statistics(
+    company_value: float,
+    peer_values: list[float],
+    *,
+    quality: str,
+    subject_cautions: list[str] | None = None,
+) -> dict[str, object]:
+    """Return the canonical Phase 8.3 distribution without renderer-side math."""
+    peer_median = float(median(peer_values))
+    percentile_25 = _percentile(peer_values, 0.25)
+    percentile_75 = _percentile(peer_values, 0.75)
+    return {
+        "company_value": round(company_value, 4),
+        "median": round(peer_median, 4),
+        "mean": round(mean(peer_values), 4),
+        "percentile_25": percentile_25,
+        "percentile_75": percentile_75,
+        "iqr": round(percentile_75 - percentile_25, 4),
+        "minimum": round(min(peer_values), 4),
+        "maximum": round(max(peer_values), 4),
+        "sample_count": len(peer_values),
+        "company_relative_multiple": round(company_value / peer_median, 4),
+        "company_vs_median_pct": round((company_value / peer_median - 1) * 100, 4),
+        "company_cross_section_percentile": _cross_section_percentile(
+            [*peer_values, company_value], company_value
+        ),
+        "quality": quality,
+        "subject_cautions": subject_cautions or [],
+    }
+
+
+def metric_spec(metric: str) -> MetricSpec:
+    return next(spec for spec in _METRIC_SPECS if spec.key == metric)
+
+
+def metric_allowed(metric: str, framework: str) -> tuple[bool, str | None]:
+    return _metric_allowed(metric, framework)
+
+
 def _profile(
     company: Company,
     *,
@@ -567,25 +606,12 @@ def _metric_state(
             },
             {"included": included, "excluded": excluded},
         )
-    peer_median = float(median(values))
-    stats = {
-        "company_value": round(subject_value, 4),
-        "median": round(peer_median, 4),
-        "mean": round(mean(values), 4),
-        "percentile_25": _percentile(values, 0.25),
-        "percentile_75": _percentile(values, 0.75),
-        "iqr": round(_percentile(values, 0.75) - _percentile(values, 0.25), 4),
-        "minimum": round(min(values), 4),
-        "maximum": round(max(values), 4),
-        "sample_count": len(values),
-        "company_relative_multiple": round(subject_value / peer_median, 4),
-        "company_vs_median_pct": round((subject_value / peer_median - 1) * 100, 4),
-        "company_cross_section_percentile": _cross_section_percentile(
-            [*values, subject_value], subject_value
-        ),
-        "quality": quality,
-        "subject_cautions": subject_cautions,
-    }
+    stats = calculate_peer_statistics(
+        subject_value,
+        values,
+        quality=quality,
+        subject_cautions=subject_cautions,
+    )
     if quality == "LOW":
         return (
             {

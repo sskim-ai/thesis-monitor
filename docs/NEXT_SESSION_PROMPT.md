@@ -32,6 +32,13 @@ checkout. Read, in this order:
 20. `docs/reports/20260818-phase8-5-3-2-rxrx-valuation-label-preview.md`
 21. `docs/reports/20260818-phase8-5-3-2-valuation-label-audit.json`
 22. `docs/reports/20260818-phase8-5-3-2-shadow-promotion.md`
+23. `docs/BRANCH_DEPENDENCY.md`
+24. `docs/architecture/FREE_SOURCE_PEER_VALUATION.md`
+25. `docs/reports/20260819-phase8-3-2a-free-peer-coverage.md`
+26. `docs/reports/20260819-phase8-3-2a-kr-peer-coverage.md`
+27. `docs/reports/20260819-phase8-3-2a-us-peer-coverage.md`
+28. `docs/reports/20260819-phase8-3-2a-full-message-preview.md`
+29. `docs/reports/20260819-phase8-3-2a-validation.md`
 
 Repository and immutable runtime state override stale conversation or document claims. Resolve the
 current commit from Git rather than copying a historical SHA.
@@ -82,6 +89,8 @@ Current core contracts:
 - runtime specificity `runtime-message-specificity-v1`
 - runtime gate `runtime-message-quality-v1`
 - receipt `runtime-message-quality-receipt-v2`
+- peer selection `peer-sector-valuation-v1`, group `verified-profile-peers-v2`
+- free current peer POC `free-source-current-peer-v1`
 - Pilot `ai-assisted-pilot-v3`, renderer v3
 - Public Action `0.4.5`, operationId 20/20 unique
 
@@ -97,6 +106,19 @@ Scheduled Tasks ACTIVE at 08:15/08:30/16:15/16:55 KST on the operating checkout.
 implementation commit `e166aaf6a4c13f9009a3885737d3b48e34c895d5` is included in main and the
 operating checkout; always re-resolve the final documentation SHA. Reconcile any later natural
 result instead of forcing these counts.
+
+Phase 8.3.2A is complete on the experimental clean peer-only ancestry. Provider policy is
+`FREE_ONLY`; the paid path is `CLOSED_BY_POLICY`. The immutable 20-stock POC measured one
+user-visible `MEDIUM` state: 1/20 overall and 1/15 among economically meaningful subjects. KR is
+0/7; US is 1/13. TSLA alone qualifies with an exact automotive group and three eligible PER
+issuers. Broad Technology/Media groups and generic semiconductor candidates remain `LOW`; RXRX,
+HPC, SaaS and holding frameworks remain not meaningful or suppressed; TSM/SKHY ADR basis remains
+unsafe. Historical peer PIT and forward peer expansion are deferred. This is selective archive
+evidence, not operating integration.
+
+The Phase 8.3.2A branch starts from `codex/integration-phase-8-3-peer-only`, whose merge-base is the
+operating main. It contains no KRX provider/readiness implementation. The original Phase 8.3 branch
+does contain KRX Git ancestry; never promote it implicitly when KRX has not been approved.
 
 Phase 8.5.1 traced the failure to weekday-only KRX session classification. XKRX was closed on
 2026-08-17, so the 2026-08-14 chart was the latest completed session and should have remained fresh.
@@ -137,10 +159,14 @@ promoted to operating shadow. Natural AI-assisted delivery remains PARTIAL.
 
 Default operating task: inspect the **next natural US/KR packets** for AI specificity, Korean language,
 intra-message dedup, dynamic-price parity, full-validator status, receipt, delivery/fallback,
-archive, exactly-once state, and human message quality. Do not run a Scheduled Task manually. KRX
-Open API is **APPROVED / NOT INTEGRATED**. Phase 8.2A may be developed and archive-validated on an
-experimental branch while live proof is pending, but must not be merged or deployed. Phase 8.3
-Peer/Sector Valuation follows. Do not combine operating and experimental scopes.
+archive, exactly-once state, and human message quality. Do not run a Scheduled Task manually.
+
+Then inspect the latest KRX exact-slot evidence for 16:05, 08:05 and T+1. Historical capability and
+universe/publication contracts pass, but all three operational roles remain `NOT_YET_PROVEN` and
+operating integration remains false. Review the Phase 8.3.2A Human Preview and keep free peer
+valuation selective unless measured exact-taxonomy coverage improves. The next development choice
+is KRX readiness or cash-flow/taxonomy enrichment, subject to any natural-live blocker. Do not
+combine operating and experimental scopes.
 
 Preserve the Phase 8.5 boundary: do not infer missing metrics, promote themes into company
 achievements, force fine-grained taxonomy, create thresholds, or relax numeric, lineage, scope,

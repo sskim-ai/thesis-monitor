@@ -16,7 +16,7 @@ execution or an autonomous investment adviser.
 
 | Component | Contract |
 |---|---|
-| Branch | operating `main`; resolve exact SHA with Git; Phase 8.5.3.2 implementation `b3ad1ea82bdbd3fe003831d449b0dcaa7c6a2da2` is promoted |
+| Branch | operating `main` remains the Phase 8.5.x baseline; experimental `codex/phase-8-3-2a-free-peer-poc` starts from clean peer-only `e17d992c...` |
 | Official assessment | Deterministic `ThesisAssessment` |
 | AI mode | `shadow` |
 | Analysis policy | `daily-review-v3.10` |
@@ -40,6 +40,30 @@ execution or an autonomous investment adviser.
 | Current price context | `current-price-context-v1` |
 | Runtime specificity | `runtime-message-specificity-v1` |
 | Runtime quality | `runtime-message-quality-v1`, receipt `runtime-message-quality-receipt-v2` |
+
+## Phase 8.3.2A Experimental State
+
+The operating checkout remains unchanged for the next natural Phase 8.5.x live proof. Phase 8.3.2A
+is archive-only and excludes KRX implementation ancestry. Its branch base is
+`codex/integration-phase-8-3-peer-only`, which reconstructs the peer contract from operating main.
+The original Phase 8.3 branch still contains KRX Git ancestry but no required KRX runtime import;
+see [BRANCH_DEPENDENCY.md](BRANCH_DEPENDENCY.md).
+
+Peer provider policy is `FREE_ONLY`. Paid/institutional providers and commercial inquiries are
+`CLOSED_BY_POLICY`; earlier research remains reference history. Historical peer point-in-time data
+is deferred, and forward consensus was not pursued after the trailing value gate.
+
+The 2026-08-18 POC measured one `MEDIUM+` state among 20 active stocks: 5.0% raw and 6.67% among 15
+economically meaningful subjects. KR is 0/7. US is 1/13 overall and 1/8 meaningful. TSLA alone has
+nine exact automotive candidates and three positive/current PER issuers. Broad Technology, Media
+and semiconductor groups remain `LOW`; MU does not receive a memory comparison from generic
+semiconductor candidates. RXRX and HPC/SaaS/holding frameworks remain correctly suppressed or
+not meaningful. TSM/SKHY ADR basis remains unsafe.
+
+The full Preview adds one sentence inside TSLA's existing Valuation section, increases that message
+8.34%, creates no section, and leaves the other ten representative messages character-identical.
+Recommendation: retain selective optional context as development evidence; do not build a broad
+runtime feature or forward extension under current free coverage.
 
 Resolve the deployed commit with `git rev-parse HEAD`; a file inside a commit cannot contain that
 commit's own final hash. The machine-readable state records `HEAD`, the promoted code SHA, and the
@@ -195,10 +219,12 @@ Registered thesis price rules remain immutable history. The shared deterministic
 RR/invalidation and chart state, then only a still-relevant registered lifecycle. It calculates
 nothing. A crossed confirmation is history, never a future trigger or automatically promoted support.
 
-Peer valuation is deterministic and fail-closed. The current repository can only use same-date active
-monitored assessments, explicitly labeled as a limited sample. At least three comparable peers are
-required, and the median is primary. The 2026-08-14 active universe had no qualifying peer metric, so
-no peer number was invented. See [PEER_VALUATION.md](architecture/PEER_VALUATION.md).
+Peer valuation is deterministic and fail-closed. Operating code only uses same-date active monitored
+assessments and still has no qualifying state. The free-source experimental path extends candidate
+discovery without changing operating monitoring state. At least three comparable independent
+issuers are required and the median is primary. Broad sector samples remain audit-only. See
+[PEER_VALUATION.md](architecture/PEER_VALUATION.md) and
+[FREE_SOURCE_PEER_VALUATION.md](architecture/FREE_SOURCE_PEER_VALUATION.md).
 
 ## Pilot Architecture
 
@@ -655,14 +681,16 @@ unchanged. See [the Phase 7.2.9.2 readiness report](reports/20260817-phase7-2-9-
 
 - Massive US breadth is implemented in shadow, but exact 08:05 KST readiness over 3-5 normal
   sessions is not yet established.
-- KRX Open API is approved but not integrated; KR market breadth remains partial. The Kiwoom
+- KRX historical capability, universe and publication-state contracts pass experimentally, but
+  16:05, 08:05 and T+1 roles remain `NOT_YET_PROVEN`; operating integration is false. The Kiwoom
   Windows gateway is not configured.
 - KR market-wide investor flow is unavailable, and constituent-level sector participation remains
   incomplete.
 - Industry-specific causal reasoning contracts are implemented, but specialized structured routing
   covers 9/20 immutable active stocks; taxonomy and business-unit coverage remain partial.
-- There is no broad point-in-time peer valuation provider. Limited active-universe comparisons fail
-  closed unless at least three comparable peers pass all basis checks.
+- Peer provider policy is FREE_ONLY. The current free-source POC covers 1/20 active and 1/15
+  meaningful subjects; historical peer PIT is deferred. The feature is selective and not
+  operating-integrated.
 - OCF extraction is partial; CAPEX aggregation and FCF remain open.
 - The persisted US count includes the 2026-08-16 operationally complete session whose human message
   quality review failed. Operational count and human approval remain separate; this packet is not
@@ -706,10 +734,11 @@ first.
    counter edits, resends, or archive rewriting.
 3. Keep TSM/WRD identity `unknown`, fine-grained industry routes general where unproved, peer data
    unavailable where absent, and OCF/CAPEX/FCF gaps explicit.
-4. Develop Phase 8.2A KRX Open API Primary Market Breadth on an experimental branch only while the
-   live proof is pending. Do not merge or deploy it until the separate data/Human Review gates pass.
-   Phase 8.3 Peer/Sector Valuation follows unless a new blocker takes priority.
-5. Run 3-5 Massive weekday shadow captures at 08:05 KST and, after KRX activation, collect five
-   KRX/Kiwoom reconciliation sessions before metric-level fallback.
-6. Keep Production Assist disabled until natural full-message evidence passes direct human review
+4. Continue exact-slot KRX 16:05, 08:05 and T+1 observations on its separate experimental branch.
+   Do not merge or deploy until role evidence and Human Review pass.
+5. Review the Phase 8.3.2A selective peer Preview. Do not extend to forward estimates unless a
+   free source proves another exact group with three clean issuers and complete estimate metadata.
+6. Prefer KRX readiness or cash-flow/taxonomy enrichment over broad free-peer expansion unless the
+   measured coverage changes.
+7. Keep Production Assist disabled until natural full-message evidence passes direct human review
    and the user explicitly approves it.

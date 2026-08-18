@@ -159,10 +159,10 @@ in the audit state and do not enter the AI packet.
 If no metric qualifies, the current absolute, own-history and industry reasoning paths remain
 unchanged. The renderer does not print an empty peer section and does not calculate a replacement.
 
-## Current Capability Result
+## Operating Capability Result
 
-The immutable 2026-08-18 active universe contains 7 KR and 13 US assessments. It produced zero
-user-visible peer states under the full Phase 8.3 contract. KR mandatory fixtures lack three verified
+The immutable 2026-08-18 active universe contains 7 KR and 13 US assessments. Operating Phase 8.3
+state produced zero user-visible peer states under the limited active-universe provider. KR mandatory fixtures lack three verified
 same-market comparable issuers. US technology groups fall to a broad sector sample, while finance
 services candidates lose eligibility through economic mismatch, negative denominators, or small
 clean samples. TSM and SKHY depositary bases remain unsafe for trailing peer comparison. This is a
@@ -171,3 +171,11 @@ data coverage result, not a validator failure.
 The implementation is therefore `STRONG PARTIAL`: selection, safety, statistics, canonical semantics
 and audit contracts pass, but broad point-in-time provider coverage remains open. It is development
 only and is not integrated, active, merged to main, or deployed.
+
+## Free-Source POC Addendum
+
+Phase 8.3.2A changes provider policy to `FREE_ONLY` and extends candidate discovery on the clean
+peer-only experimental branch. It does not change operating state. The free current cross-section
+measures one `MEDIUM` state among 20 subjects, or 1/15 among economically meaningful subjects.
+TSLA qualifies; KR remains 0/7. Broad free provider groups remain audit-only and historical peer PIT
+is deferred. See [FREE_SOURCE_PEER_VALUATION.md](FREE_SOURCE_PEER_VALUATION.md).
