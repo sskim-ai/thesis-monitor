@@ -36,22 +36,22 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     state = json.loads((ROOT / "docs" / "project-state.json").read_text())
 
     assert state["repository"] == "sskim-ai/thesis-monitor"
-    assert state["branch"] == "codex/phase-8-3-1-broad-peer-provider-research"
+    assert state["branch"] == "codex/phase-8-3-1-1-peer-provider-decision"
     assert (
         state["experimental_branch"]
-        == "codex/phase-8-3-1-broad-peer-provider-research"
+        == "codex/phase-8-3-1-1-peer-provider-decision"
     )
     assert (
         state["current_phase"]
-        == "phase_8_3_1_peer_provider_capability_research_complete"
+        == "phase_8_3_1_1_peer_provider_decision_complete_blocked"
     )
     assert (
         state["last_completed_phase"]
-        == "phase_8_3_1_peer_provider_capability_research"
+        == "phase_8_3_1_1_peer_provider_decision_and_clean_readiness"
     )
     assert (
         state["next_default_phase"]
-        == "natural_proof_krx_observation_and_peer_provider_selection_decision"
+        == "natural_proof_krx_observation_and_vendor_commercial_decision"
     )
     assert state["deployed_code_commit"] == (
         "b3ad1ea82bdbd3fe003831d449b0dcaa7c6a2da2"
@@ -129,15 +129,35 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
         "test": "PASS",
         "lint": "PASS",
     }
+    workflow_v5 = state["master_workflow_v5"]
+    assert workflow_v5["status"] == (
+        "provider_decision_hardened_and_peer_only_clean_path_validated"
+    )
+    assert workflow_v5["peer_provider_lane"]["phase_8_3_2_entry_gate"] == (
+        "BLOCKED_ON_PROVIDER_DECISION"
+    )
+    assert workflow_v5["peer_only_clean_lane"]["dependency_class"] == (
+        "GIT_ANCESTRY_ONLY"
+    )
+    decision = state["phase_8_3_1_1_peer_provider_decision"]
+    assert decision["provider_selected"] is False
+    assert decision["phase_8_3_2_entry_gate"] == "BLOCKED_ON_PROVIDER_DECISION"
+    assert decision["peer_only_clean_branch_available"] is True
+    assert decision["peer_only_behavioral_equivalence"] == "PASS"
+    assert decision["peer_only_krx_implementation_files"] == 0
+    assert decision["main_merged"] is False
+    assert decision["operating_deployed"] is False
     peer_state = state["peer_valuation"]
     assert peer_state == {
         "contract": "pass",
         "capability": "strong_partial",
         "current_user_visible_coverage": 0,
         "active_universe_count": 20,
+        "meaningful_coverage_with_broad_provider": "not_yet_measured",
         "broad_provider": "open",
         "provider_research": "complete",
-        "provider_selection": "open",
+        "provider_decision": "complete_no_provider_selected",
+        "phase_8_3_2_entry_gate": "blocked_on_provider_decision",
         "operating_integration": False,
     }
     assert (

@@ -21,13 +21,22 @@ e925ee0  origin/main and operating main
             37a7854  Phase 8.3 implementation, tests, and evidence
             ffafccc  Phase 8.3 final validation docs
               |
-              +-- codex/phase-8-3-1-broad-peer-provider-research
+              +-- 711204a / ae41d5d  Phase 8.3.1 provider research
+                  |
+                  +-- codex/phase-8-3-1-1-peer-provider-decision
+
+e925ee0  origin/main
+  |
+  +-- codex/integration-phase-8-3-peer-only
+      9828bb1  peer implementation replay, KRX excluded
 ```
 
 `origin/main...ffafccc` is `0 behind / 9 ahead`. The merge base is
 `e925ee05eabcc1e89c74dfb1ec0d2dabbb01729d`. Six commits are KRX ancestry and three are Phase 8.3
 commits. Phase 8.3 therefore has a real KRX dependency in Git history even though the peer contract
-does not declare KRX as a data provider.
+does not declare KRX as a data provider. Phase 8.3.1.1 proves the implementation dependency is
+`GIT_ANCESTRY_ONLY`: the clean replay has no KRX import, schema, provider, readiness, or telemetry
+dependency.
 
 ## Branches
 
@@ -37,6 +46,8 @@ does not declare KRX as a data provider.
 | `codex/phase-8-2a-krx-market-breadth` | `origin/main` | 6 | operating main | no |
 | `codex/phase-8-3-peer-sector-valuation` | KRX final `b94f709` | 3 | KRX experimental ancestry | no |
 | `codex/phase-8-3-1-broad-peer-provider-research` | Phase 8.3 final `ffafccc` | this research phase | KRX plus Phase 8.3 ancestry | no |
+| `codex/phase-8-3-1-1-peer-provider-decision` | Phase 8.3.1 final `ae41d5d` | provider decision docs | KRX plus Phase 8.3 ancestry | no |
+| `codex/integration-phase-8-3-peer-only` | `origin/main` `e925ee0` | peer implementation and required docs | no KRX code/history | prepared only; not approved |
 
 Existing branches are retained. This phase performs no force push, history rewrite, tag rewrite, or
 remote branch deletion.
@@ -76,9 +87,10 @@ latest main -> clean Phase 8.3 integration branch
               KRX commits excluded
 ```
 
-No clean promotion branch is created in Phase 8.3.1 because promotion is not approved and provider
-selection is still open. This is a read-only reconstruction plan, not proof that a future selective
-cherry-pick is conflict-free.
+A clean branch is prepared in Phase 8.3.1.1 without promotion. `37a7854` cherry-picked without
+conflict as `9828bb1`; focused/full tests and a read-only 20-stock replay pass, and no KRX
+implementation file is present in the unique diff. This proves a clean path exists, not that
+promotion is approved.
 
 ## Rule
 

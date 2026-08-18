@@ -26,7 +26,8 @@ The initial shortlist is:
 - identity auxiliaries only: SEC EDGAR and OpenFIGI;
 - existing supplemental sources only: Massive, Finnhub, and Alpha Vantage.
 
-No candidate currently clears the Phase 8.3.2 entry gate.
+No candidate currently clears the Phase 8.3.2 entry gate. Phase 8.3.1.1 revalidates the shortlist
+but leaves the overall result `BLOCKED_ON_PROVIDER_DECISION`.
 
 ## Why
 
@@ -61,6 +62,20 @@ and entitlement:
 - restatement and revision-history behavior;
 - license rights for storage, derived statistics, external AI processing, and Telegram display; and
 - a 20-stock audit showing exact exclusions and no regression of the existing Phase 8.3 validators.
+
+## Licensing And AI Boundary
+
+The license gate precedes coverage. Evaluate each product and Order Form separately for internal
+analytics, persistent storage, derived statistics, user-visible display, redistribution, hosted LLM
+input, and AI-derived user output. Permission for an internal desktop or vendor-hosted AI feature
+does not imply permission to send fields to an external LLM or publish a Telegram message.
+
+FnSpace standard terms prohibit database construction and application/customer/third-party
+exposure. Intrinio treats hosted third-party LLM transmission and external AI output as
+redistribution/display and requires the applicable Startup/Enterprise Order Form. S&P, FactSet, and
+LSEG provide technical AI/PIT products, but project-specific storage, downstream display, and hosted
+LLM rights remain entitlement questions. `UNKNOWN_REQUIRES_VENDOR_CONFIRMATION` never becomes a
+production pass.
 
 ## Time Classes
 
@@ -108,3 +123,14 @@ Start integration only after the user selects a provider and the repository reco
 
 Until then, active user-visible peer coverage remains `0/20`, the contract stays `PASS`, capability
 stays `STRONG PARTIAL`, and operating integration remains `NO`.
+
+If a trailing provider passes before consensus history, integration may be split into Phase 8.3.2A
+for current/trailing peers and Phase 8.3.2B for consensus forward. The second phase must not inherit
+the first phase's license or point-in-time decision implicitly.
+
+## Clean Integration Path
+
+The original Phase 8.3 branch includes six KRX commits in Git ancestry but has no KRX code or schema
+dependency. `codex/integration-phase-8-3-peer-only` reconstructs the peer implementation from latest
+operating main, excludes all KRX provider/publication code, and reproduces the 20-stock fail-closed
+audit. It is preparation only: no merge, deployment, or activation follows from its existence.

@@ -1,7 +1,7 @@
 {
   "repository": "sskim-ai/thesis-monitor",
-  "branch": "codex/phase-8-3-1-broad-peer-provider-research",
-  "experimental_branch": "codex/phase-8-3-1-broad-peer-provider-research",
+  "branch": "codex/phase-8-3-1-1-peer-provider-decision",
+  "experimental_branch": "codex/phase-8-3-1-1-peer-provider-decision",
   "experimental_branches": {
     "phase_8_2a_krx": {
       "branch": "codex/phase-8-2a-krx-market-breadth",
@@ -20,17 +20,39 @@
       "base_commit": "ffafccc9e71619f2ebc16b0e60b9c2d3d3b75f05",
       "depends_on": ["phase_8_2a_krx", "phase_8_3_peer_sector"],
       "status": "research_complete_provider_selection_open_not_deployed"
+    },
+    "phase_8_3_1_1_provider_decision": {
+      "branch": "codex/phase-8-3-1-1-peer-provider-decision",
+      "base_commit": "ae41d5d2df71e41ac1e3ce3ad31621e6b1cdd905",
+      "depends_on": ["phase_8_2a_krx", "phase_8_3_peer_sector", "phase_8_3_1_provider_research"],
+      "status": "decision_research_complete_entry_gate_blocked_not_deployed"
+    },
+    "phase_8_3_peer_only_clean": {
+      "branch": "codex/integration-phase-8-3-peer-only",
+      "base_commit": "e925ee05eabcc1e89c74dfb1ec0d2dabbb01729d",
+      "implementation_commit": "9828bb1",
+      "depends_on": ["operating_main", "phase_8_3_peer_contract_only"],
+      "status": "prepared_validated_not_promoted"
     }
+  },
+  "branch_dependency": {
+    "phase_8_3_includes_krx_ancestry": true,
+    "phase_8_3_dependency_class": "GIT_ANCESTRY_ONLY",
+    "peer_only_clean_branch_available": true,
+    "peer_only_clean_branch": "codex/integration-phase-8-3-peer-only",
+    "peer_only_clean_base": "e925ee05eabcc1e89c74dfb1ec0d2dabbb01729d",
+    "promotion_path_documented": true,
+    "peer_only_promoted": false
   },
   "current_commit": "HEAD",
   "current_commit_resolution": "git rev-parse HEAD",
-  "recorded_base_commit": "ffafccc9e71619f2ebc16b0e60b9c2d3d3b75f05",
-  "current_phase": "phase_8_3_1_peer_provider_capability_research_complete",
-  "last_completed_phase": "phase_8_3_1_peer_provider_capability_research",
+  "recorded_base_commit": "ae41d5d2df71e41ac1e3ce3ad31621e6b1cdd905",
+  "current_phase": "phase_8_3_1_1_peer_provider_decision_complete_blocked",
+  "last_completed_phase": "phase_8_3_1_1_peer_provider_decision_and_clean_readiness",
   "last_operating_phase": "phase_8_5_3_2_valuation_label_shadow_promotion",
-  "next_default_phase": "natural_proof_krx_observation_and_peer_provider_selection_decision",
+  "next_default_phase": "natural_proof_krx_observation_and_vendor_commercial_decision",
   "alternative_next_phase": "targeted_runtime_repair_if_blocked",
-  "latest_validation_report": "docs/reports/20260818-phase8-3-1-validation.md",
+  "latest_validation_report": "docs/reports/20260818-phase8-3-1-1-phase8-3-2-entry-gate.md",
   "deployed_code_commit": "b3ad1ea82bdbd3fe003831d449b0dcaa7c6a2da2",
   "main_code_commit": "e925ee05eabcc1e89c74dfb1ec0d2dabbb01729d",
   "main_code_commit_resolution": "git rev-parse origin/main",
@@ -83,7 +105,7 @@
   "persistent_gaps": {
     "industry_specific_reasoning": "STRONG_PARTIAL",
     "structured_specialized_taxonomy_coverage": "PARTIAL",
-    "peer_sector_valuation": "STRONG_PARTIAL_CONTRACT_PASS_PROVIDER_RESEARCH_COMPLETE_SELECTION_OPEN_ZERO_OF_20_NOT_DEPLOYED",
+    "peer_sector_valuation": "STRONG_PARTIAL_CONTRACT_PASS_PROVIDER_DECISION_BLOCKED_ZERO_OF_20_CLEAN_PATH_READY_NOT_DEPLOYED",
     "kr_market_breadth": "EXPERIMENTAL_ARCHIVE_PASS_UNIVERSE_CLOSED_PUBLICATION_CONTRACT_PASS_TIMING_UNDER_OBSERVATION_NOT_INTEGRATED",
     "kr_market_wide_flow": "UNSUPPORTED_KRX_OPEN_API",
     "massive_0805_readiness": "OPEN",
@@ -1101,6 +1123,40 @@
     },
     "priority_rule": "OPERATING_BLOCKER_BEFORE_NEW_FEATURE"
   },
+  "master_workflow_v5": {
+    "status": "provider_decision_hardened_and_peer_only_clean_path_validated",
+    "provider_decision_report": "docs/reports/20260818-phase8-3-1-1-provider-decision.md",
+    "operating_lane": {
+      "main_sha": "e925ee05eabcc1e89c74dfb1ec0d2dabbb01729d",
+      "natural_ai_assisted_delivery": "PARTIAL_PENDING_NEXT_NATURAL_PROOF",
+      "production_assist": false,
+      "ai_mode": "shadow"
+    },
+    "krx_observation_lane": {
+      "same_day_1605": "NOT_YET_PROVEN",
+      "next_morning_0805": "NOT_YET_PROVEN",
+      "t_plus_1_reconciliation": "NOT_YET_PROVEN",
+      "historical": "SUPPORTED",
+      "operating_integration": false
+    },
+    "peer_provider_lane": {
+      "provider_research": "COMPLETE",
+      "provider_decision": "COMPLETE_NO_PROVIDER_SELECTED",
+      "phase_8_3_2_entry_gate": "BLOCKED_ON_PROVIDER_DECISION",
+      "measured_user_visible_coverage": "0/20",
+      "meaningful_coverage_with_broad_provider": "NOT_YET_MEASURED",
+      "operating_integration": false
+    },
+    "peer_only_clean_lane": {
+      "branch": "codex/integration-phase-8-3-peer-only",
+      "base": "e925ee05eabcc1e89c74dfb1ec0d2dabbb01729d",
+      "dependency_class": "GIT_ANCESTRY_ONLY",
+      "krx_implementation_files": 0,
+      "behavioral_equivalence": "PASS",
+      "promoted": false
+    },
+    "priority_rule": "OPERATING_BLOCKER_BEFORE_NEW_FEATURE"
+  },
   "phase_8_3_peer_sector_valuation": {
     "status": "STRONG_PARTIAL",
     "contract": "peer-sector-valuation-v1",
@@ -1144,9 +1200,11 @@
     "capability": "strong_partial",
     "current_user_visible_coverage": 0,
     "active_universe_count": 20,
+    "meaningful_coverage_with_broad_provider": "not_yet_measured",
     "broad_provider": "open",
     "provider_research": "complete",
-    "provider_selection": "open",
+    "provider_decision": "complete_no_provider_selected",
+    "phase_8_3_2_entry_gate": "blocked_on_provider_decision",
     "operating_integration": false
   },
   "phase_8_3_1_peer_provider_research": {
@@ -1193,6 +1251,41 @@
     "telegram_sends": 0,
     "pilot_mutations": 0,
     "scheduled_task_manual_runs": 0,
+    "production_assist": false
+  },
+  "phase_8_3_1_1_peer_provider_decision": {
+    "status": "DECISION_COMPLETE_BLOCKED_ON_PROVIDER_DECISION",
+    "branch": "codex/phase-8-3-1-1-peer-provider-decision",
+    "base_commit": "ae41d5d2df71e41ac1e3ce3ad31621e6b1cdd905",
+    "merge_base_with_main": "e925ee05eabcc1e89c74dfb1ec0d2dabbb01729d",
+    "phase_8_3_original_dependency": "GIT_ANCESTRY_ONLY",
+    "peer_only_clean_branch": "codex/integration-phase-8-3-peer-only",
+    "peer_only_clean_base": "e925ee05eabcc1e89c74dfb1ec0d2dabbb01729d",
+    "peer_only_clean_implementation_commit": "9828bb1",
+    "peer_only_clean_branch_available": true,
+    "peer_only_behavioral_equivalence": "PASS",
+    "peer_only_krx_implementation_files": 0,
+    "provider_selected": false,
+    "provider_research": "COMPLETE",
+    "provider_decision": "COMPLETE_NO_PROVIDER_SELECTED",
+    "measured_user_visible_coverage": "0/20",
+    "meaningful_coverage_with_broad_provider": "NOT_YET_MEASURED",
+    "phase_8_3_2_entry_gate": "BLOCKED_ON_PROVIDER_DECISION",
+    "institutional_shortlist": ["sp_global_market_intelligence", "factset", "lseg"],
+    "kr_shortlist": ["fnguide_enterprise_custom_conditional", "deepsearch_conditional"],
+    "us_shortlist": ["intrinio_startup_or_enterprise_conditional"],
+    "standard_fnspace_license": "BLOCKED_BY_LICENSE",
+    "intrinio_external_ai_and_display": "CONDITIONAL_ORDER_FORM_REQUIRED",
+    "vendor_inquiry": "docs/reports/20260818-phase8-3-1-1-vendor-inquiry-draft.md",
+    "decision_report": "docs/reports/20260818-phase8-3-1-1-provider-decision.md",
+    "scorecard": "docs/reports/20260818-phase8-3-1-1-provider-decision-scorecard.json",
+    "main_merged": false,
+    "operating_deployed": false,
+    "database_migration": false,
+    "telegram_sends": 0,
+    "pilot_mutations": 0,
+    "scheduled_task_manual_runs_or_changes": 0,
+    "credential_exposure": 0,
     "production_assist": false
   },
   "production_assist": false,

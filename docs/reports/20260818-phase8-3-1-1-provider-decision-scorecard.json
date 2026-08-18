@@ -1,0 +1,104 @@
+{
+  "date": "2026-08-18",
+  "status": "blocked_on_provider_decision",
+  "measured_user_visible_coverage": {"visible": 0, "active_universe": 20},
+  "meaningful_coverage_with_broad_provider": "not_yet_measured",
+  "gate_values": ["PASS", "CONDITIONAL", "FAIL"],
+  "providers": [
+    {
+      "provider": "S&P Global Market Intelligence",
+      "market": "global",
+      "pit_fundamentals": "SUPPORTED_PRODUCT_SPECIFIC",
+      "consensus_history": "SUPPORTED_PRODUCT_SPECIFIC",
+      "adr_basis": "PARTIAL_POC_REQUIRED",
+      "user_display_rights": "UNKNOWN_REQUIRES_VENDOR_CONFIRMATION",
+      "ai_rights": "UNKNOWN_REQUIRES_VENDOR_CONFIRMATION",
+      "storage_rights": "UNKNOWN_REQUIRES_VENDOR_CONFIRMATION",
+      "cost_band": "INSTITUTIONAL_CONTACT_REQUIRED",
+      "entry_gate": "CONDITIONAL"
+    },
+    {
+      "provider": "FactSet",
+      "market": "global",
+      "pit_fundamentals": "SUPPORTED_SEPARATE_PIT_PRODUCT",
+      "consensus_history": "SUPPORTED_SEPARATE_PIT_PRODUCT",
+      "adr_basis": "PARTIAL_POC_REQUIRED",
+      "user_display_rights": "UNKNOWN_REQUIRES_VENDOR_CONFIRMATION",
+      "ai_rights": "UNKNOWN_REQUIRES_VENDOR_CONFIRMATION",
+      "storage_rights": "UNKNOWN_REQUIRES_VENDOR_CONFIRMATION",
+      "cost_band": "INSTITUTIONAL_CONTACT_REQUIRED",
+      "entry_gate": "CONDITIONAL"
+    },
+    {
+      "provider": "LSEG",
+      "market": "global",
+      "pit_fundamentals": "SUPPORTED_ADD_ON",
+      "consensus_history": "SUPPORTED_IBES_PIT",
+      "adr_basis": "PARTIAL_POC_REQUIRED",
+      "user_display_rights": "UNKNOWN_REQUIRES_VENDOR_CONFIRMATION",
+      "ai_rights": "UNKNOWN_REQUIRES_VENDOR_CONFIRMATION",
+      "storage_rights": "UNKNOWN_REQUIRES_VENDOR_CONFIRMATION",
+      "cost_band": "INSTITUTIONAL_CONTACT_REQUIRED",
+      "entry_gate": "CONDITIONAL"
+    },
+    {
+      "provider": "FnGuide FnSpace standard",
+      "market": "kr",
+      "pit_fundamentals": "UNKNOWN",
+      "consensus_history": "PARTIAL_HISTORICAL_SERIES",
+      "adr_basis": "NOT_APPLICABLE_KR_SHARE_BASIS_POC_REQUIRED",
+      "user_display_rights": "BLOCKED_BY_LICENSE",
+      "ai_rights": "BLOCKED_BY_LICENSE",
+      "storage_rights": "BLOCKED_BY_LICENSE",
+      "cost_band": "MID_TIER_PUBLIC_PRICING",
+      "entry_gate": "FAIL"
+    },
+    {
+      "provider": "DeepSearch",
+      "market": "kr",
+      "pit_fundamentals": "UNKNOWN",
+      "consensus_history": "PARTIAL_TARGET_PRICE_ONLY",
+      "adr_basis": "NOT_APPLICABLE_KR_SHARE_BASIS_UNKNOWN",
+      "user_display_rights": "UNKNOWN_REQUIRES_VENDOR_CONFIRMATION",
+      "ai_rights": "UNKNOWN_REQUIRES_VENDOR_CONFIRMATION",
+      "storage_rights": "UNKNOWN_REQUIRES_VENDOR_CONFIRMATION",
+      "cost_band": "CONTACT_REQUIRED",
+      "entry_gate": "CONDITIONAL"
+    },
+    {
+      "provider": "Intrinio Startup or Enterprise",
+      "market": "us",
+      "pit_fundamentals": "POINT_IN_TIME_RECONSTRUCTABLE",
+      "consensus_history": "PARTIAL_ENTERPRISE_ADD_ON",
+      "adr_basis": "PARTIAL_RATIO_ABSENT",
+      "user_display_rights": "CONDITIONAL_ORDER_FORM",
+      "ai_rights": "CONDITIONAL_REDISTRIBUTION_RIGHTS",
+      "storage_rights": "CONDITIONAL_ORDER_FORM",
+      "cost_band": "LOW_COST_TO_ENTERPRISE_PUBLIC_STARTING_PRICES",
+      "entry_gate": "CONDITIONAL"
+    }
+  ],
+  "recommendations": {
+    "best_technical": "institutional_single_vendor_no_forced_winner_before_quote_and_poc",
+    "best_cost_benefit": "conditional_kr_us_split",
+    "best_low_cost_experimental": "audit_only_existing_sources_and_trials",
+    "next_action": "vendor_commercial_inquiry_before_adapter"
+  },
+  "clean_peer_only_branch": {
+    "branch": "codex/integration-phase-8-3-peer-only",
+    "base": "e925ee05eabcc1e89c74dfb1ec0d2dabbb01729d",
+    "krx_implementation_files": 0,
+    "behavioral_equivalence": "PASS",
+    "promoted": false
+  },
+  "safety": {
+    "main_merge": 0,
+    "operating_deployment": 0,
+    "database_migration": 0,
+    "telegram_sends": 0,
+    "scheduled_task_runs_or_changes": 0,
+    "pilot_mutations": 0,
+    "credential_exposure": 0,
+    "production_assist": false
+  }
+}

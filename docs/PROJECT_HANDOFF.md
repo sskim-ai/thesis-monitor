@@ -18,7 +18,8 @@ execution or an autonomous investment adviser.
 |---|---|
 | Operating branch | `main`; resolve exact SHA with Git; Phase 8.5.3.2 implementation `b3ad1ea82bdbd3fe003831d449b0dcaa7c6a2da2` is promoted |
 | KRX experimental branch | `codex/phase-8-2a-krx-market-breadth`; final `b94f709eb146655a6a2e35377073727aee7cd7ca`; not deployed |
-| Current development branch | `codex/phase-8-3-1-broad-peer-provider-research`; base `ffafccc9e71619f2ebc16b0e60b9c2d3d3b75f05`; provider research complete, selection open, experimental only |
+| Current development branch | `codex/phase-8-3-1-1-peer-provider-decision`; base `ae41d5d2df71e41ac1e3ce3ad31621e6b1cdd905`; decision research complete, entry gate blocked, experimental only |
+| Peer-only clean branch | `codex/integration-phase-8-3-peer-only`; latest main base; KRX implementation excluded; validated and not promoted |
 | Official assessment | Deterministic `ThesisAssessment` |
 | AI mode | `shadow` |
 | Analysis policy | `daily-review-v3.10` |
@@ -282,10 +283,12 @@ contracts. The operating baseline remains unchanged for natural Phase 8.5.x proo
 publication timing continues as a separate experimental observation. The remaining Phase 8.3 gap is
 broad point-in-time provider coverage; no unsafe active-universe median was printed.
 
-Master Workflow v4 makes the branch dependency explicit: Phase 8.3 contains six KRX experimental
+Master Workflow v5 makes the branch dependency explicit: Phase 8.3 contains six KRX experimental
 commits followed by three peer commits. KRX-first promotion may retain that ancestry after approval;
-peer-first promotion requires a new latest-main branch with all six KRX commits excluded. See
-[BRANCH_DEPENDENCY.md](BRANCH_DEPENDENCY.md). No clean integration branch or promotion was created.
+peer-first promotion can use `codex/integration-phase-8-3-peer-only`, reconstructed from latest main
+with all six KRX commits excluded. The Phase 8.3 implementation replayed without conflict and the
+20-stock audit is behaviorally identical, proving `GIT_ANCESTRY_ONLY`. See
+[BRANCH_DEPENDENCY.md](BRANCH_DEPENDENCY.md). The branch is prepared, not promoted.
 
 Phase 8.3.1 researched broad KR/US providers from official product, API, pricing, and license sources.
 S&P Global MI, FactSet, and LSEG are the institutional global shortlist. FnGuide FnSpace and
@@ -298,6 +301,14 @@ IDs without issuer ID or ADR ratio. Massive was not configured. Measured coverag
 Phase 8.3.2 is blocked pending provider selection, credential/trial, mandatory fields, and written
 display/AI-processing rights. See
 [PEER_DATA_PROVIDER_STRATEGY.md](architecture/PEER_DATA_PROVIDER_STRATEGY.md).
+
+Phase 8.3.1.1 revalidated commercial rights, PIT, consensus, and security basis. FnSpace standard
+terms remain blocked for DB/app/customer exposure. Intrinio is a credible US commercial candidate,
+but hosted-LLM input and external AI-derived display require explicit Startup/Enterprise Order Form
+rights; its ADR ratio remains unproven. S&P, FactSet, and LSEG remain technical institutional
+candidates with contract-specific display, storage, and AI rights. DeepSearch remains conditional.
+No provider is selected, meaningful broad-provider coverage is unmeasured, and the overall gate is
+`BLOCKED_ON_PROVIDER_DECISION`. The copy-ready vendor questionnaire was not sent.
 
 ## Phase 8.1 KR Financial Lineage
 
@@ -720,10 +731,10 @@ unchanged. See [the Phase 7.2.9.2 readiness report](reports/20260817-phase7-2-9-
   participation remains open; sector-index return proxies are partial context only.
 - Industry-specific causal reasoning contracts are implemented, but specialized structured routing
   covers 9/20 immutable active stocks; taxonomy and business-unit coverage remain partial.
-- Broad peer-provider research is complete but provider selection is open. Measured user-visible
-  coverage remains 0/20; institutional and KR/US split shortlists still require entitlement, license,
-  ADR/share-basis and observed-coverage proof. Limited active-universe comparisons fail closed unless
-  at least three comparable peers pass all basis checks.
+- Broad peer-provider research and decision revalidation are complete but no provider is selected.
+  Measured user-visible coverage remains 0/20 and meaningful broad-provider coverage is unmeasured;
+  institutional and KR/US split shortlists still require entitlement, license, ADR/share-basis and
+  observed-coverage proof. The Phase 8.3.2 gate is `BLOCKED_ON_PROVIDER_DECISION`.
 - OCF extraction is partial; CAPEX aggregation and FCF remain open.
 - The persisted US count includes the 2026-08-16 operationally complete session whose human message
   quality review failed. Operational count and human approval remain separate; this packet is not
@@ -767,10 +778,10 @@ first.
    counter edits, resends, or archive rewriting.
 3. Keep TSM/WRD identity `unknown`, fine-grained industry routes general where unproved, peer data
    unavailable where absent, and OCF/CAPEX/FCF gaps explicit.
-4. Review the Phase 8.3.1 shortlist and decide between institutional global evaluation, a conditional
-   KR/US split POC, or continued suppression. Do not start Phase 8.3.2 before provider, credential,
-   mandatory fields, and licensing pass. Review Phase 8.2A.2 telemetry in parallel; do not merge or
-   deploy either lane until its separate evidence, role and Human Review gates pass.
+4. Use the Phase 8.3.1.1 questionnaire to request institutional or conditional KR/US split commercial
+   rights, then make the provider/cost decision. Do not start Phase 8.3.2 before provider, credential,
+   mandatory fields, storage/display/external-AI rights, and licensing pass. The clean peer-only
+   branch is a future promotion path, not approval. Review Phase 8.2A.2 telemetry in parallel.
 5. Run 3-5 Massive weekday shadow captures at 08:05 KST and, after KRX activation, collect five
    KRX/Kiwoom reconciliation sessions before metric-level fallback.
 6. Keep Production Assist disabled until natural full-message evidence passes direct human review

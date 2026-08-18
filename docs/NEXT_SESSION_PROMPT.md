@@ -56,6 +56,14 @@ checkout. Read, in this order:
 44. `docs/reports/20260818-phase8-3-1-provider-scorecard.json`
 45. `docs/reports/20260818-phase8-3-1-provider-recommendation.md`
 46. `docs/reports/20260818-phase8-3-1-validation.md`
+47. `docs/reports/20260818-phase8-3-1-1-provider-decision.md`
+48. `docs/reports/20260818-phase8-3-1-1-commercial-license-matrix.md`
+49. `docs/reports/20260818-phase8-3-1-1-pit-consensus-matrix.md`
+50. `docs/reports/20260818-phase8-3-1-1-security-adr-matrix.md`
+51. `docs/reports/20260818-phase8-3-1-1-branch-hygiene.md`
+52. `docs/reports/20260818-phase8-3-1-1-phase8-3-2-entry-gate.md`
+53. `docs/reports/20260818-phase8-3-1-1-vendor-inquiry-draft.md`
+54. `docs/reports/20260818-phase8-3-1-1-provider-decision-scorecard.json`
 
 Repository and immutable runtime state override stale conversation or document claims. Resolve the
 current commit from Git rather than copying a historical SHA.
@@ -189,11 +197,23 @@ has yet passed provider selection, credential/trial, entitlement-specific mandat
 basis, storage/derived-display/external-AI licensing, or observed 20-stock coverage. Phase 8.3.2 is
 therefore not open, measured coverage remains 0/20, and operating integration remains NO.
 
+Phase 8.3.1.1 is complete on `codex/phase-8-3-1-1-peer-provider-decision`. Official-current legal
+and product evidence leaves every provider conditional: FnSpace standard terms are blocked for the
+required DB/app/external display; Intrinio requires explicit Startup/Enterprise Order Form rights for
+hosted-LLM input and external AI-derived display; institutional vendor rights remain negotiated; and
+DeepSearch needs vendor confirmation. Overall Phase 8.3.2 status is
+`BLOCKED_ON_PROVIDER_DECISION`. A copy-ready inquiry exists but was not sent.
+
+The original Phase 8.3 chain's KRX relation is `GIT_ANCESTRY_ONLY`. The separate
+`codex/integration-phase-8-3-peer-only` branch is based on current main, excludes KRX implementation,
+passes full validation, and reproduces the original 20-stock zero-visible-state audit. It is not
+merged, deployed, or approved for promotion.
+
 Session order: first inspect the latest natural US/KR AI-assisted result; then load the KRX
-publication telemetry and evaluate the 16:05/08:05/T+1 role matrix. Review the Phase 8.3.1 provider
-recommendation and obtain a provider/credential/license decision before Phase 8.3.2, or retain safe
-suppression. Collect only the next required KRX observation. Any critical operating blocker takes
-priority. Neither experimental lane is eligible for automatic deployment.
+publication telemetry and evaluate the 16:05/08:05/T+1 role matrix. Review the Phase 8.3.1.1 entry
+gate and obtain vendor answers plus a provider/cost/credential decision before Phase 8.3.2, or retain
+safe suppression. Collect only the next required KRX observation. Any critical operating blocker
+takes priority. No experimental branch is eligible for automatic deployment.
 
 Preserve the Phase 8.5 boundary: do not infer missing metrics, promote themes into company
 achievements, force fine-grained taxonomy, create thresholds, or relax numeric, lineage, scope,
