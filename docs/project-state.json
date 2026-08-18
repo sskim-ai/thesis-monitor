@@ -31,6 +31,7 @@
       "branch": "codex/integration-phase-8-3-peer-only",
       "base_commit": "e925ee05eabcc1e89c74dfb1ec0d2dabbb01729d",
       "implementation_commit": "9828bb1",
+      "validation_commit": "e17d992c4c5d40030294eff5a74504e88ab35911",
       "depends_on": ["operating_main", "phase_8_3_peer_contract_only"],
       "status": "prepared_validated_not_promoted"
     }
@@ -52,7 +53,7 @@
   "last_operating_phase": "phase_8_5_3_2_valuation_label_shadow_promotion",
   "next_default_phase": "natural_proof_krx_observation_and_vendor_commercial_decision",
   "alternative_next_phase": "targeted_runtime_repair_if_blocked",
-  "latest_validation_report": "docs/reports/20260818-phase8-3-1-1-phase8-3-2-entry-gate.md",
+  "latest_validation_report": "docs/reports/20260818-phase8-3-1-1-validation.md",
   "deployed_code_commit": "b3ad1ea82bdbd3fe003831d449b0dcaa7c6a2da2",
   "main_code_commit": "e925ee05eabcc1e89c74dfb1ec0d2dabbb01729d",
   "main_code_commit_resolution": "git rev-parse origin/main",

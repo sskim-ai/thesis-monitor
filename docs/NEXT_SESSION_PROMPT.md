@@ -64,6 +64,7 @@ checkout. Read, in this order:
 52. `docs/reports/20260818-phase8-3-1-1-phase8-3-2-entry-gate.md`
 53. `docs/reports/20260818-phase8-3-1-1-vendor-inquiry-draft.md`
 54. `docs/reports/20260818-phase8-3-1-1-provider-decision-scorecard.json`
+55. `docs/reports/20260818-phase8-3-1-1-validation.md`
 
 Repository and immutable runtime state override stale conversation or document claims. Resolve the
 current commit from Git rather than copying a historical SHA.
