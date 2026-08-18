@@ -30,6 +30,8 @@ from app.services.numeric_semantic_registry import (
 REPORT_DATE = "20260818"
 SESSION = date(2026, 8, 14)
 CURRENT_SESSION = date(2026, 8, 18)
+IMPLEMENTATION_COMMIT = "f90f686fd261a4eb19b6132e79389e8351cc87b2"
+GITHUB_ACTIONS_RUN = 32132655162
 REPORTS = ROOT / "docs" / "reports"
 CACHE = ROOT / "data" / "cache" / "krx"
 PREVIOUS_AUDIT = REPORTS / "20260818-phase8-2a-krx-market-audit.json"
@@ -421,7 +423,8 @@ Status: EXPERIMENTAL / ARCHIVE ONLY
 - Investment Knowledge SHA-256: `559ad45e4dd86cb0aec9bb09b51a5dc816bf323e8c2b4fd050cf28960a5a9d18`
 - Chart Knowledge SHA-256: `beee64559831479168f1347c43d979391126926d73e2473ce837cefbf0ede19b`
 - Public Action 0.4.5; operationId 20/20 unique: PASS
-- GitHub Actions: pending exact experimental branch SHA
+- Implementation commit: `{IMPLEMENTATION_COMMIT}`
+- GitHub Actions run `{GITHUB_ACTIONS_RUN}`: Test/Lint PASS
 
 ## Safety
 
