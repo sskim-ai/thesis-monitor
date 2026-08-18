@@ -1,0 +1,160 @@
+{
+  "phase": "8.2A.2",
+  "status": "engineering_pass_publication_observation_partial_not_deployed",
+  "branch": "codex/phase-8-2a-krx-market-breadth",
+  "base_main": "e925ee05eabcc1e89c74dfb1ec0d2dabbb01729d",
+  "implementation_commit": "cd284013075d6b846f3614e694517a17a5c755bf",
+  "contracts": {
+    "market_cross_section": "market-cross-section-v1",
+    "market_breadth": "market-breadth-v1",
+    "universe": "krx-kospi-kosdaq-common-share-v1",
+    "publication_readiness": "krx-publication-readiness-v1",
+    "publication_telemetry": "krx-publication-telemetry-v1",
+    "provider_role": "krx-time-slot-provider-role-v1"
+  },
+  "observation_timeline": [
+    {
+      "observed_at_kst": "2026-08-18T20:27:09.594575+09:00",
+      "source": "committed_phase_8_2a_1_observation",
+      "target_session": "2026-08-18",
+      "core_endpoint_rows": [0, 0, 0, 0],
+      "readiness": "MARKET_COMPLETED_PROVIDER_PENDING"
+    },
+    {
+      "observed_at_kst": "2026-08-18T21:02:01.961915+09:00",
+      "source": "phase_8_2a_2_immediate_audit",
+      "target_session": "2026-08-18",
+      "core_endpoint_rows": [0, 0, 0, 0],
+      "readiness": "MARKET_COMPLETED_PROVIDER_PENDING"
+    },
+    {
+      "observed_at_kst": "2026-08-18T21:06:36.928866+09:00",
+      "source": "phase_8_2a_2_append_only_observer",
+      "target_session": "2026-08-18",
+      "endpoints": [
+        {
+          "endpoint": "sto/stk_bydd_trd",
+          "http_status": 200,
+          "row_count": 0,
+          "provider_date": null,
+          "latency_ms": 104.5,
+          "payload_sha256": "82c0031bc13af348ac1e1304aca28f309632975110f2508534e93216791dfa90"
+        },
+        {
+          "endpoint": "sto/ksq_bydd_trd",
+          "http_status": 200,
+          "row_count": 0,
+          "provider_date": null,
+          "latency_ms": 81.9,
+          "payload_sha256": "82c0031bc13af348ac1e1304aca28f309632975110f2508534e93216791dfa90"
+        },
+        {
+          "endpoint": "idx/kospi_dd_trd",
+          "http_status": 200,
+          "row_count": 0,
+          "provider_date": null,
+          "latency_ms": 249.3,
+          "payload_sha256": "82c0031bc13af348ac1e1304aca28f309632975110f2508534e93216791dfa90"
+        },
+        {
+          "endpoint": "idx/kosdaq_dd_trd",
+          "http_status": 200,
+          "row_count": 0,
+          "provider_date": null,
+          "latency_ms": 78.7,
+          "payload_sha256": "82c0031bc13af348ac1e1304aca28f309632975110f2508534e93216791dfa90"
+        }
+      ],
+      "readiness": "MARKET_COMPLETED_PROVIDER_PENDING"
+    }
+  ],
+  "time_metadata": {
+    "first_non_empty_at": null,
+    "first_complete_at": null,
+    "observed_complete_by": null,
+    "last_empty_at_kst": "2026-08-18T21:06:36.928866+09:00",
+    "publication_window_start": null,
+    "publication_window_end": null,
+    "provider_publication_timestamp": null,
+    "row_count_plausibility": "NOT_EXERCISED_ALL_CORE_RESULTS_EMPTY",
+    "false_precision_claims": 0
+  },
+  "provider_roles": [
+    {
+      "time_slot": "16:05_same_day_close",
+      "role": "SAME_DAY_CLOSE_PRIMARY",
+      "status": "NOT_YET_PROVEN",
+      "exact_slot_observed_sessions": 0,
+      "required_complete_sessions": 5
+    },
+    {
+      "time_slot": "08:05_next_morning",
+      "role": "NEXT_MORNING_PRIMARY",
+      "status": "NOT_YET_PROVEN",
+      "exact_slot_observed_sessions": 0,
+      "required_complete_sessions": 5
+    },
+    {
+      "time_slot": "T_plus_1_reconciliation",
+      "role": "T_PLUS_1_AUTHORITATIVE_RECONCILIATION",
+      "status": "NOT_YET_PROVEN",
+      "exact_slot_observed_sessions": 0,
+      "required_complete_sessions": 3
+    },
+    {
+      "time_slot": "explicit_historical",
+      "role": "HISTORICAL_ONLY",
+      "status": "SUPPORTED",
+      "validated_session": "2026-08-14"
+    }
+  ],
+  "historical_regression": {
+    "session": "2026-08-14",
+    "raw": 2763,
+    "eligible": 2532,
+    "excluded": 231,
+    "aggregate": {"advance": 1441, "decline": 898, "unchanged": 193},
+    "KOSPI": {"eligible": 804, "advance": 575, "decline": 180, "unchanged": 49},
+    "KOSDAQ": {"eligible": 1728, "advance": 866, "decline": 718, "unchanged": 144},
+    "changed": false
+  },
+  "request_budget": {
+    "phase_calls": 8,
+    "official_daily_limit": 10000,
+    "usage_pct": 0.08
+  },
+  "validation": {
+    "focused_tests": 36,
+    "full_pytest": 1068,
+    "full_pytest_warnings": 1,
+    "ruff": "passed",
+    "diff_check": "passed",
+    "knowledge_checksum_parity": "passed",
+    "public_action": "0.4.5_20_of_20_unique",
+    "github_actions_run": 32135724640,
+    "github_actions": "passed_test_and_lint"
+  },
+  "safety": {
+    "credential_exposure": 0,
+    "main_merge": 0,
+    "operating_deployment": 0,
+    "scheduled_task_changes": 0,
+    "scheduled_task_executions": 0,
+    "telegram_sends": 0,
+    "pilot_mutations": 0,
+    "database_mutations": 0,
+    "production_assist": false
+  },
+  "persistent_status": {
+    "historical_capability": "PASS",
+    "universe_contract": "CLOSED",
+    "publication_readiness_contract": "PASS",
+    "same_day_publication_timing": "UNKNOWN_UNDER_OBSERVATION",
+    "current_session_readiness": "PARTIAL",
+    "provider_role": "NOT_YET_FINALIZED",
+    "operating_integration": false,
+    "market_wide_flow": "UNSUPPORTED",
+    "sector_coverage": "PARTIAL_PRICE_PROXY_ONLY",
+    "natural_ai_assisted_delivery": "PARTIAL_PENDING_SEPARATE_LIVE_PROOF"
+  }
+}

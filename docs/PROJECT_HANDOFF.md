@@ -259,6 +259,15 @@ provider-pending, partial, error, and stale bundles. At 20:27 KST on completed s
 all four core endpoints still returned HTTP 200 with zero rows; current readiness is PARTIAL and
 first complete remains unobserved. No partial Fact is promoted.
 
+Phase 8.2A.2 adds append-only `krx-publication-telemetry-v1` and
+`krx-time-slot-provider-role-v1`. Point probes no longer claim they are the first observation;
+tracked timelines distinguish first non-empty, first complete, observed-complete upper bounds,
+last-empty time, and publication intervals. The 2026-08-18 core bundle remained HTTP 200/empty at
+21:02 and 21:06 KST. Thus first non-empty, first complete, and observed complete remain unobserved.
+Historical retrieval is `SUPPORTED`; 16:05 same-day, 08:05 next-morning, and T+1 reconciliation are
+all `NOT_YET_PROVEN`. The observer wrote one ignored mode-0600 JSONL record and made no production
+schedule, delivery, or runtime change.
+
 ## Phase 8.1 KR Financial Lineage
 
 The experimental Phase 8.1 branch changes new formal OpenDART collection to the full-financial-
@@ -673,7 +682,8 @@ unchanged. See [the Phase 7.2.9.2 readiness report](reports/20260817-phase7-2-9-
   sessions is not yet established.
 - KRX Open API historical capability and the explicit universe pass on an experimental branch, but
   it is not integrated or deployed. The universe contract is CLOSED; current-session readiness is
-  PARTIAL because provider-complete publication has not yet been observed. User Preview review also
+  PARTIAL because provider-complete publication has not yet been observed. Publication telemetry
+  semantics pass, but every live time-slot role remains `NOT_YET_PROVEN`. User Preview review also
   remains pending. The Kiwoom Windows gateway is not configured.
 - KR market-wide investor flow is unsupported by the approved KRX Open API. Security-level sector
   participation remains open; sector-index return proxies are partial context only.
@@ -724,9 +734,9 @@ first.
    counter edits, resends, or archive rewriting.
 3. Keep TSM/WRD identity `unknown`, fine-grained industry routes general where unproved, peer data
    unavailable where absent, and OCF/CAPEX/FCF gaps explicit.
-4. Review the experimental Phase 8.2A.1 final KRX Preview and readiness evidence. Do not merge or
-   deploy it until natural Phase 8.5.x live proof, user Preview review, and at least one complete
-   current-session observation pass. Phase 8.3 follows unless blocked.
+4. Review the experimental Phase 8.2A.2 publication timeline, provider-role matrix, and scenario
+   Preview. Do not merge or deploy it until natural Phase 8.5.x live proof, user Preview review, and
+   sufficient exact-slot complete observations pass. Phase 8.3 follows unless blocked.
 5. Run 3-5 Massive weekday shadow captures at 08:05 KST and, after KRX activation, collect five
    KRX/Kiwoom reconciliation sessions before metric-level fallback.
 6. Keep Production Assist disabled until natural full-message evidence passes direct human review

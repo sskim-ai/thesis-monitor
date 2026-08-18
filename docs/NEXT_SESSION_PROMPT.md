@@ -152,10 +152,19 @@ Open API is **APPROVED / EXPERIMENTAL INTEGRATION DEVELOPED / NOT DEPLOYED**. Ph
 coverage. Phase 8.2A.1 confirms the universe predicate and denominator are correct and adds
 `krx-publication-readiness-v1`. The completed 2026-08-18 session remained
 `MARKET_COMPLETED_PROVIDER_PENDING` with four empty HTTP 200 core responses, so first-complete
-publication is not observed and current readiness remains PARTIAL. Market-wide actor flow remains
-unsupported. Review the final Preview after the natural Phase 8.5.x proof; do not merge or deploy it
-from this branch without a separate promotion decision and current complete observation. Phase 8.3
+publication is not observed and current readiness remains PARTIAL. Phase 8.2A.2 adds append-only
+`krx-publication-telemetry-v1` and `krx-time-slot-provider-role-v1`; the bundle was still empty at
+21:06 KST. Check new exact-slot observations first. Same-day 16:05, next-morning 08:05, and T+1
+reconciliation remain `NOT_YET_PROVEN`, while historical retrieval is `SUPPORTED`. Market-wide actor
+flow remains unsupported. Review the role Preview after the natural Phase 8.5.x proof; do not merge
+or deploy it from this branch without a separate promotion decision and sufficient exact-slot
+evidence. Phase 8.3
 Peer/Sector Valuation follows. Do not combine operating and experimental scopes.
+
+Session order: first inspect the latest natural US/KR AI-assisted result; then load the KRX
+publication telemetry, evaluate the 16:05/08:05/T+1 role matrix, collect only the next required
+adaptive observation, and decide on Phase 8.2A promotion only after the evidence and Human Review
+gates pass. Phase 8.3 follows that decision unless an operating blocker takes priority.
 
 Preserve the Phase 8.5 boundary: do not infer missing metrics, promote themes into company
 achievements, force fine-grained taxonomy, create thresholds, or relax numeric, lineage, scope,

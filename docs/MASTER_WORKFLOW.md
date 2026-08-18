@@ -172,8 +172,12 @@ or deployed. Phase 8.2A.1 confirms the universe implementation already required 
 before the session plus a positive comparable previous close; the reversed capability wording was a
 documentation error, and the denominator stays at v1. `krx-publication-readiness-v1` now separates
 market-not-completed, provider-pending, partial, complete, error, and stale states. The completed
-2026-08-18 session still returned empty HTTP 200 across all four core endpoints at 20:27 KST, so no
-current snapshot was promoted and first-complete publication remains unobserved. KRX Open API does
+2026-08-18 session still returned empty HTTP 200 across all four core endpoints through 21:06 KST,
+so no current snapshot was promoted and first-complete publication remains unobserved. Phase 8.2A.2
+adds append-only `krx-publication-telemetry-v1` and time-slot-specific
+`krx-time-slot-provider-role-v1` without a production schedule. The 16:05 same-day, 08:05
+next-morning, and T+1 reconciliation roles are `NOT_YET_PROVEN`; historical retrieval is
+`SUPPORTED`. KRX Open API does
 not provide market-wide investor flow or security-level sector breadth; selected KOSPI 200/KOSDAQ
 150 industry indices remain price proxies only. Kiwoom remains an unconfigured Windows-gateway
 `bridge_shadow`; automatic fallback requires five comparable sessions. See
@@ -252,6 +256,7 @@ percentile distinctly without changing its biotech valuation boundary.
 | 8.5.3.2 | Valuation comparison-role labels and collision validator PASS; targeted repair promoted to operating shadow; natural AI delivery pending |
 | 8.2A development | KRX primary-candidate provider, explicit universe, index/breadth Facts, archive Preview and numeric provenance PASS; experimental only, not deployed |
 | 8.2A.1 | Listing-date contract CLOSED with unchanged denominator; publication-readiness state machine PASS; current complete observation still pending; experimental only |
+| 8.2A.2 | Append-only publication timing and time-slot role contracts PASS; 2026-08-18 remained provider-pending through 21:06; live roles not yet proven; experimental only |
 
 ## 21. Current Persistent Gaps
 
@@ -270,7 +275,7 @@ percentile distinctly without changing its biotech valuation boundary.
 | Current-price RR packet/numeric path | LIVE PATH PASS |
 | AI natural-live message quality | PARTIAL: retrospective PASS, natural AI delivery pending |
 | Fallback dynamic-price lifecycle | CLOSED: retrospective PASS and operating code promoted |
-| KRX Open API primary breadth | HISTORICAL PASS; UNIVERSE CLOSED; CURRENT READINESS PARTIAL; NOT INTEGRATED/DEPLOYED |
+| KRX Open API primary breadth | HISTORICAL PASS; UNIVERSE CLOSED; PUBLICATION CONTRACT PASS; LIVE SLOT TIMING UNDER OBSERVATION; NOT INTEGRATED/DEPLOYED |
 | KRX market-wide investor flow | UNSUPPORTED by approved Open API; remains Unknown |
 | KRX security-level sector breadth | OPEN; sector-index price proxies only |
 | Human-approved Production Assist evidence | INSUFFICIENT |
@@ -286,9 +291,9 @@ integrity, fallback/retry, exactly-once accounting, and valuation comparison-lab
 Default operating task: observe the next natural US/KR sessions for actual AI-assisted delivery,
 final-language quality, receipt, archive, fallback, and exactly-once proof. Phase 8.2A KRX Market
 Breadth Primary is implemented and archive-validated on an experimental branch only. Phase 8.2A.1
-closes the universe contract and finalizes the Preview, but current-session readiness remains PARTIAL
-because no complete normal-session publication has been observed. Promotion waits for live baseline
-review, user Preview review, and a current-session complete provider proof. Phase 8.3 Peer/Sector
+closes the universe contract; Phase 8.2A.2 closes observation semantics, but current-session readiness
+remains PARTIAL because no complete normal-session publication has been observed. Promotion waits
+for live baseline review, user Preview review, and time-slot-specific complete evidence. Phase 8.3 Peer/Sector
 Valuation follows unless a new operating blocker takes priority.
 
 Do not keep subdividing mature safety infrastructure or Phase 8.4 message assembly without a real
@@ -385,10 +390,10 @@ approval. Main merge and shadow deployment still do not authorize AI-assisted pr
 Inspect the next naturally generated US and KR results without manual task execution. Verify AI
 specificity, Korean language, watch/next separation, numeric dedup, current price-context parity,
 full validation, receipt, single delivery/fallback, archive, and exactly-once state before human
-message review. Review the committed Phase 8.2A.1 universe audit, readiness report, validation,
-audit, and final market Preview. Its provider remains experimental and archive-only; promotion waits
-for the natural baseline proof, user Preview review, and at least one current-session complete
-observation. Phase 8.3 peer/sector work follows.
+message review. Review the committed Phase 8.2A.2 publication timeline, provider-role matrix,
+validation, audit, and scenario Preview. Its provider remains experimental and archive-only;
+promotion waits for the natural baseline proof, user Preview review, and exact-slot publication
+evidence. Phase 8.3 peer/sector work follows.
 Missing metrics remain Unknown and industry conditions never become company achievements.
 
 ## 28. New Session Bootstrap Prompt
@@ -400,7 +405,7 @@ Missing metrics remain Unknown and industry conditions never become company achi
 > state. If the repository is newer than a commit or statement in this workflow, the repository and
 > immutable runtime win and the documentation must be reconciled. Confirm whether a later natural
 > US/KR AI-assisted delivery exists after the Phase 8.5.3.2 shadow promotion. If not, the next task
-> is read-only natural proof review. Also inspect the experimental Phase 8.2A KRX reports and branch;
+> is read-only natural proof review. Also inspect the experimental Phase 8.2A.2 KRX reports and branch;
 > do not call it integrated or deployed. Once live proof and KRX Human Review pass, decide whether to
 > promote Phase 8.2A. Report the recovered state
 > before editing.
