@@ -41,6 +41,12 @@ checkout. Read, in this order:
 29. `docs/reports/20260818-phase8-2a-1-validation.md`
 30. `docs/reports/20260818-phase8-2a-1-market-preview.md`
 31. `docs/reports/20260818-phase8-2a-1-audit.json`
+32. `docs/reports/20260818-phase8-2a-2-publication-timing.md`
+33. `docs/reports/20260818-phase8-2a-2-provider-role.md`
+34. `docs/reports/20260818-phase8-2a-2-validation.md`
+35. `docs/reports/20260818-phase8-2a-2-publication-audit.json`
+36. `docs/reports/20260818-phase8-2a-2-market-role-preview.md`
+37. `docs/reports/20260818-master-workflow-v3-validation.md`
 
 Repository and immutable runtime state override stale conversation or document claims. Resolve the
 current commit from Git rather than copying a historical SHA.
@@ -159,12 +165,13 @@ reconciliation remain `NOT_YET_PROVEN`, while historical retrieval is `SUPPORTED
 flow remains unsupported. Review the role Preview after the natural Phase 8.5.x proof; do not merge
 or deploy it from this branch without a separate promotion decision and sufficient exact-slot
 evidence. Phase 8.3
-Peer/Sector Valuation follows. Do not combine operating and experimental scopes.
+Peer/Sector Valuation is now the current development-only phase on
+`codex/phase-8-3-peer-sector-valuation`. Do not combine operating and experimental scopes.
 
 Session order: first inspect the latest natural US/KR AI-assisted result; then load the KRX
-publication telemetry, evaluate the 16:05/08:05/T+1 role matrix, collect only the next required
-adaptive observation, and decide on Phase 8.2A promotion only after the evidence and Human Review
-gates pass. Phase 8.3 follows that decision unless an operating blocker takes priority.
+publication telemetry, evaluate the 16:05/08:05/T+1 role matrix, and continue Phase 8.3 capability-
+first development. Collect only the next required KRX observation. Any critical operating blocker
+takes priority over Phase 8.3. Neither experimental lane is eligible for automatic deployment.
 
 Preserve the Phase 8.5 boundary: do not infer missing metrics, promote themes into company
 achievements, force fine-grained taxonomy, create thresholds, or relax numeric, lineage, scope,

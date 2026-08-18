@@ -183,6 +183,32 @@ not provide market-wide investor flow or security-level sector breadth; selected
 `bridge_shadow`; automatic fallback requires five comparable sessions. See
 [KRX_MARKET_BREADTH.md](architecture/KRX_MARKET_BREADTH.md).
 
+KRX authority is not the same as same-day operational suitability. Provider roles remain separate:
+
+- 16:05 same-day close: `NOT_YET_PROVEN`;
+- 08:05 next-morning: `NOT_YET_PROVEN`;
+- T+1 reconciliation: `NOT_YET_PROVEN`; and
+- explicit historical retrieval: `SUPPORTED`.
+
+The 2026-08-18 observations at 20:27, 21:02, and 21:06 KST all returned HTTP 200 with zero rows on
+the four core endpoints. This is `MARKET_COMPLETED_PROVIDER_PENDING`; it does not prove that KRX is a
+late or T+1 provider. First non-empty, first complete, and observed-complete-by remain unobserved.
+Same-day and next-morning roles require 3-5 clean sessions; reconciliation requires at least three.
+
+## 17A. Operating And Experimental Lanes
+
+The operating baseline remains clean `main` for Phase 8.5.x natural AI-assisted delivery proof.
+Production Assist is OFF and AI mode is shadow. Development ahead of that baseline is split into
+independent experimental lanes:
+
+- Phase 8.2A.x KRX breadth: historical and contract validation only; publication timing observation
+  continues; not merged or deployed.
+- Phase 8.3 peer/sector valuation: current development on
+  `codex/phase-8-3-peer-sector-valuation`; not merged or deployed.
+
+An experimental branch may contain validated predecessor ancestry without making those features
+operating. `Development Ahead != Operating Baseline` is a persistent release boundary.
+
 ## 18. Numeric Provenance
 
 Every visible investment number follows:
@@ -257,6 +283,7 @@ percentile distinctly without changing its biotech valuation boundary.
 | 8.2A development | KRX primary-candidate provider, explicit universe, index/breadth Facts, archive Preview and numeric provenance PASS; experimental only, not deployed |
 | 8.2A.1 | Listing-date contract CLOSED with unchanged denominator; publication-readiness state machine PASS; current complete observation still pending; experimental only |
 | 8.2A.2 | Append-only publication timing and time-slot role contracts PASS; 2026-08-18 remained provider-pending through 21:06; live roles not yet proven; experimental only |
+| 8.3 development | Comparable-universe and point-in-time peer/sector valuation capability audit and implementation in progress; experimental only |
 
 ## 21. Current Persistent Gaps
 
@@ -288,13 +315,16 @@ integrity, fallback/retry, exactly-once accounting, and valuation comparison-lab
 
 ## 22. Current Roadmap
 
-Default operating task: observe the next natural US/KR sessions for actual AI-assisted delivery,
-final-language quality, receipt, archive, fallback, and exactly-once proof. Phase 8.2A KRX Market
-Breadth Primary is implemented and archive-validated on an experimental branch only. Phase 8.2A.1
-closes the universe contract; Phase 8.2A.2 closes observation semantics, but current-session readiness
-remains PARTIAL because no complete normal-session publication has been observed. Promotion waits
-for live baseline review, user Preview review, and time-slot-specific complete evidence. Phase 8.3 Peer/Sector
-Valuation follows unless a new operating blocker takes priority.
+Immediate operating evidence remains the next natural US/KR AI-assisted delivery, final-language,
+receipt, archive, fallback, and exactly-once proof. KRX publication observation continues in parallel
+for exact 16:05, 08:05, and T+1 roles. Current feature development is Phase 8.3 Peer/Sector
+Valuation on a separate experimental branch. After its capability and Human Preview review, KRX
+8.2A shadow promotion is considered only when live baseline and provider-role evidence pass; Phase
+8.3 receives its own later shadow decision. Cash conversion, taxonomy enrichment, and production
+evidence follow.
+
+An operating blocker always outranks new feature work. If a natural session exposes a critical
+runtime, delivery, validator, or safety regression, Phase 8.3 pauses behind that targeted repair.
 
 Do not keep subdividing mature safety infrastructure or Phase 8.4 message assembly without a real
 regression. The current priority sequence is natural AI delivery proof, KRX breadth, peer context,
@@ -387,13 +417,11 @@ approval. Main merge and shadow deployment still do not authorize AI-assisted pr
 
 ## 27. Current Next Task
 
-Inspect the next naturally generated US and KR results without manual task execution. Verify AI
-specificity, Korean language, watch/next separation, numeric dedup, current price-context parity,
-full validation, receipt, single delivery/fallback, archive, and exactly-once state before human
-message review. Review the committed Phase 8.2A.2 publication timeline, provider-role matrix,
-validation, audit, and scenario Preview. Its provider remains experimental and archive-only;
-promotion waits for the natural baseline proof, user Preview review, and exact-slot publication
-evidence. Phase 8.3 peer/sector work follows.
+Develop Phase 8.3 Peer/Sector Valuation on its experimental branch while preserving two higher-level
+observations: inspect the next naturally generated US/KR result without manual task execution, and
+continue exact-slot KRX publication telemetry without changing production schedules. Phase 8.3 must
+start with actual provider/DB capability, use taxonomy and security-basis contracts, and remain
+archive-only. A new critical operating blocker outranks this feature.
 Missing metrics remain Unknown and industry conditions never become company achievements.
 
 ## 28. New Session Bootstrap Prompt
@@ -405,7 +433,7 @@ Missing metrics remain Unknown and industry conditions never become company achi
 > state. If the repository is newer than a commit or statement in this workflow, the repository and
 > immutable runtime win and the documentation must be reconciled. Confirm whether a later natural
 > US/KR AI-assisted delivery exists after the Phase 8.5.3.2 shadow promotion. If not, the next task
-> is read-only natural proof review. Also inspect the experimental Phase 8.2A.2 KRX reports and branch;
-> do not call it integrated or deployed. Once live proof and KRX Human Review pass, decide whether to
-> promote Phase 8.2A. Report the recovered state
+> is read-only natural proof review. Also inspect the experimental Phase 8.2A.2 KRX reports and the
+> Phase 8.3 peer/sector branch; do not call either integrated or deployed. Continue Phase 8.3 only
+> when no operating blocker takes priority. Report the recovered state
 > before editing.

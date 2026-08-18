@@ -1,15 +1,27 @@
 {
   "repository": "sskim-ai/thesis-monitor",
-  "branch": "codex/phase-8-2a-krx-market-breadth",
-  "experimental_branch": "codex/phase-8-2a-krx-market-breadth",
+  "branch": "codex/phase-8-3-peer-sector-valuation",
+  "experimental_branch": "codex/phase-8-3-peer-sector-valuation",
+  "experimental_branches": {
+    "phase_8_2a_krx": {
+      "branch": "codex/phase-8-2a-krx-market-breadth",
+      "final_commit": "b94f709eb146655a6a2e35377073727aee7cd7ca",
+      "status": "historical_pass_publication_timing_under_observation_not_deployed"
+    },
+    "phase_8_3_peer_sector": {
+      "branch": "codex/phase-8-3-peer-sector-valuation",
+      "base_commit": "b94f709eb146655a6a2e35377073727aee7cd7ca",
+      "status": "development_only_not_deployed"
+    }
+  },
   "current_commit": "HEAD",
   "current_commit_resolution": "git rev-parse HEAD",
   "recorded_base_commit": "9c4c1cdae3c790d2fc66afa05fe35dfd09553e80",
-  "current_phase": "phase_8_2a_2_publication_timing_under_observation_experimental_only",
+  "current_phase": "phase_8_3_peer_sector_valuation_capability_first_experimental_only",
   "last_completed_phase": "phase_8_5_3_2_valuation_label_shadow_promotion",
-  "next_default_phase": "natural_us_kr_live_proof_then_phase_8_2a_promotion_review",
-  "alternative_next_phase": "targeted_runtime_repair_if_blocked_else_phase_8_3_after_phase_8_2a",
-  "latest_validation_report": "docs/reports/20260818-phase8-2a-2-validation.md",
+  "next_default_phase": "operating_natural_proof_parallel_krx_observation_and_phase_8_3_development",
+  "alternative_next_phase": "targeted_runtime_repair_if_blocked",
+  "latest_validation_report": "docs/reports/20260818-master-workflow-v3-validation.md",
   "deployed_code_commit": "b3ad1ea82bdbd3fe003831d449b0dcaa7c6a2da2",
   "main_code_commit": "e925ee05eabcc1e89c74dfb1ec0d2dabbb01729d",
   "main_code_commit_resolution": "git rev-parse origin/main",
@@ -61,7 +73,7 @@
   "persistent_gaps": {
     "industry_specific_reasoning": "STRONG_PARTIAL",
     "structured_specialized_taxonomy_coverage": "PARTIAL",
-    "peer_sector_valuation": "OPEN_PARTIAL",
+    "peer_sector_valuation": "CURRENT_DEVELOPMENT_OPEN_PARTIAL",
     "kr_market_breadth": "EXPERIMENTAL_ARCHIVE_PASS_UNIVERSE_CLOSED_PUBLICATION_CONTRACT_PASS_TIMING_UNDER_OBSERVATION_NOT_INTEGRATED",
     "kr_market_wide_flow": "UNSUPPORTED_KRX_OPEN_API",
     "massive_0805_readiness": "OPEN",
@@ -1025,6 +1037,31 @@
     "audit": "docs/reports/20260818-phase8-2a-2-publication-audit.json",
     "validation": "docs/reports/20260818-phase8-2a-2-validation.md",
     "recommended_next": "natural_us_kr_proof_and_additional_exact_slot_publication_observation"
+  },
+  "master_workflow_v3": {
+    "status": "synchronized_before_phase_8_3_implementation",
+    "report": "docs/reports/20260818-master-workflow-v3-validation.md",
+    "operating_lane": {
+      "main_sha": "e925ee05eabcc1e89c74dfb1ec0d2dabbb01729d",
+      "natural_ai_assisted_delivery": "PARTIAL_PENDING_NEXT_NATURAL_PROOF",
+      "production_assist": false,
+      "ai_mode": "shadow"
+    },
+    "krx_observation_lane": {
+      "branch": "codex/phase-8-2a-krx-market-breadth",
+      "same_day_1605": "NOT_YET_PROVEN",
+      "next_morning_0805": "NOT_YET_PROVEN",
+      "t_plus_1_reconciliation": "NOT_YET_PROVEN",
+      "historical": "SUPPORTED",
+      "operating_integration": false
+    },
+    "development_lane": {
+      "phase": "8.3",
+      "branch": "codex/phase-8-3-peer-sector-valuation",
+      "status": "capability_first_development_only",
+      "operating_deployment": false
+    },
+    "priority_rule": "OPERATING_BLOCKER_BEFORE_NEW_FEATURE"
   },
   "production_assist": false,
   "public_action_version": "0.4.5",

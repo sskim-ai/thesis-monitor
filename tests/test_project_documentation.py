@@ -34,14 +34,14 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     state = json.loads((ROOT / "docs" / "project-state.json").read_text())
 
     assert state["repository"] == "sskim-ai/thesis-monitor"
-    assert state["branch"] == "codex/phase-8-2a-krx-market-breadth"
+    assert state["branch"] == "codex/phase-8-3-peer-sector-valuation"
     assert (
         state["experimental_branch"]
-        == "codex/phase-8-2a-krx-market-breadth"
+        == "codex/phase-8-3-peer-sector-valuation"
     )
     assert (
         state["current_phase"]
-        == "phase_8_2a_2_publication_timing_under_observation_experimental_only"
+        == "phase_8_3_peer_sector_valuation_capability_first_experimental_only"
     )
     assert (
         state["last_completed_phase"]
@@ -49,7 +49,7 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     )
     assert (
         state["next_default_phase"]
-        == "natural_us_kr_live_proof_then_phase_8_2a_promotion_review"
+        == "operating_natural_proof_parallel_krx_observation_and_phase_8_3_development"
     )
     assert state["deployed_code_commit"] == (
         "b3ad1ea82bdbd3fe003831d449b0dcaa7c6a2da2"
@@ -88,6 +88,11 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     }
     assert publication["main_merged"] is False
     assert publication["operating_deployed"] is False
+    workflow = state["master_workflow_v3"]
+    assert workflow["status"] == "synchronized_before_phase_8_3_implementation"
+    assert workflow["priority_rule"] == "OPERATING_BLOCKER_BEFORE_NEW_FEATURE"
+    assert workflow["development_lane"]["phase"] == "8.3"
+    assert workflow["development_lane"]["operating_deployment"] is False
     assert (
         state["persistent_gaps"]["fallback_price_lifecycle"]
         == "CLOSED_RETROSPECTIVE_AND_OPERATING_CODE_PROMOTED"

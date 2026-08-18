@@ -16,7 +16,9 @@ execution or an autonomous investment adviser.
 
 | Component | Contract |
 |---|---|
-| Branch | operating `main`; resolve exact SHA with Git; Phase 8.5.3.2 implementation `b3ad1ea82bdbd3fe003831d449b0dcaa7c6a2da2` is promoted |
+| Operating branch | `main`; resolve exact SHA with Git; Phase 8.5.3.2 implementation `b3ad1ea82bdbd3fe003831d449b0dcaa7c6a2da2` is promoted |
+| KRX experimental branch | `codex/phase-8-2a-krx-market-breadth`; final `b94f709eb146655a6a2e35377073727aee7cd7ca`; not deployed |
+| Current development branch | `codex/phase-8-3-peer-sector-valuation`; Phase 8.3 development only |
 | Official assessment | Deterministic `ThesisAssessment` |
 | AI mode | `shadow` |
 | Analysis policy | `daily-review-v3.10` |
@@ -267,6 +269,14 @@ last-empty time, and publication intervals. The 2026-08-18 core bundle remained 
 Historical retrieval is `SUPPORTED`; 16:05 same-day, 08:05 next-morning, and T+1 reconciliation are
 all `NOT_YET_PROVEN`. The observer wrote one ignored mode-0600 JSONL record and made no production
 schedule, delivery, or runtime change.
+
+Master Workflow Synchronization v3 starts Phase 8.3 on a separate development-only branch. The
+operating baseline remains unchanged for natural Phase 8.5.x proof, while KRX publication timing
+continues as a separate experimental observation. Phase 8.3 begins from the existing Phase 7 peer
+foundation: verified active-universe taxonomy matching, same-market preference, minimum three-peer
+sample, median-first statistics, denominator/security/date filters, and numeric semantics already
+exist. The missing capability is broad point-in-time peer coverage and richer issuer/basis/audit
+contracts, not renderer arithmetic.
 
 ## Phase 8.1 KR Financial Lineage
 
@@ -734,9 +744,9 @@ first.
    counter edits, resends, or archive rewriting.
 3. Keep TSM/WRD identity `unknown`, fine-grained industry routes general where unproved, peer data
    unavailable where absent, and OCF/CAPEX/FCF gaps explicit.
-4. Review the experimental Phase 8.2A.2 publication timeline, provider-role matrix, and scenario
-   Preview. Do not merge or deploy it until natural Phase 8.5.x live proof, user Preview review, and
-   sufficient exact-slot complete observations pass. Phase 8.3 follows unless blocked.
+4. Continue Phase 8.3 capability-first development and archive-only Human Preview on its separate
+   branch. Review Phase 8.2A.2 publication telemetry in parallel. Do not merge or deploy either lane
+   until its separate evidence and Human Review gates pass.
 5. Run 3-5 Massive weekday shadow captures at 08:05 KST and, after KRX activation, collect five
    KRX/Kiwoom reconciliation sessions before metric-level fallback.
 6. Keep Production Assist disabled until natural full-message evidence passes direct human review
