@@ -238,10 +238,17 @@ observed over normal weekday sessions.
 Kiwoom OpenAPI+ documentation exposes multi-symbol and industry-index/change primitives, but there is
 no configured Windows market gateway or KOA-verified production TR evidence. The provider therefore
 remains `bridge_shadow` and rejects canonical collection unless efficient market-wide capability and
-universe semantics are explicitly SUPPORTED. KRX Open API is approved but not yet integrated and
-remains the intended primary.
-See [MARKET_CROSS_SECTION.md](architecture/MARKET_CROSS_SECTION.md) and the
-[capability report](reports/20260817-phase8-massive-kiwoom-capability.md).
+universe semantics are explicitly SUPPORTED.
+
+Phase 8.2A implements the approved KRX Open API as an experimental primary candidate. The archive-only
+2026-08-14 snapshot validates KOSPI/KOSDAQ daily rows and issue metadata, four major indices, explicit
+common-share breadth, KOSPI/KOSDAQ segment breadth, 18 sector-index price proxies, and 76/76 numeric
+registry entries. Raw 2,763 rows become 2,532 eligible common-share rows after preferred/security-
+group/SPAC exclusions. Market-wide investor flow is unsupported and security-level sector breadth is
+not inferred. The branch is not merged, deployed, scheduled, or registered in operating runtime.
+See [MARKET_CROSS_SECTION.md](architecture/MARKET_CROSS_SECTION.md),
+[KRX_MARKET_BREADTH.md](architecture/KRX_MARKET_BREADTH.md), and the
+[Phase 8.2A validation](reports/20260818-phase8-2a-krx-validation.md).
 
 ## Phase 8.1 KR Financial Lineage
 
@@ -655,10 +662,11 @@ unchanged. See [the Phase 7.2.9.2 readiness report](reports/20260817-phase7-2-9-
 
 - Massive US breadth is implemented in shadow, but exact 08:05 KST readiness over 3-5 normal
   sessions is not yet established.
-- KRX Open API is approved but not integrated; KR market breadth remains partial. The Kiwoom
+- KRX Open API provider development and archive validation pass on an experimental branch, but it is
+  not integrated or deployed. Current-session readiness and Human Review remain pending. The Kiwoom
   Windows gateway is not configured.
-- KR market-wide investor flow is unavailable, and constituent-level sector participation remains
-  incomplete.
+- KR market-wide investor flow is unsupported by the approved KRX Open API. Security-level sector
+  participation remains open; sector-index return proxies are partial context only.
 - Industry-specific causal reasoning contracts are implemented, but specialized structured routing
   covers 9/20 immutable active stocks; taxonomy and business-unit coverage remain partial.
 - There is no broad point-in-time peer valuation provider. Limited active-universe comparisons fail
@@ -706,9 +714,9 @@ first.
    counter edits, resends, or archive rewriting.
 3. Keep TSM/WRD identity `unknown`, fine-grained industry routes general where unproved, peer data
    unavailable where absent, and OCF/CAPEX/FCF gaps explicit.
-4. Develop Phase 8.2A KRX Open API Primary Market Breadth on an experimental branch only while the
-   live proof is pending. Do not merge or deploy it until the separate data/Human Review gates pass.
-   Phase 8.3 Peer/Sector Valuation follows unless a new blocker takes priority.
+4. Review the experimental Phase 8.2A KRX capability, archive Preview, explicit denominator, and
+   current-session empty-response boundary. Do not merge or deploy it until natural Phase 8.5.x live
+   proof, KRX Human Review, and current-session readiness pass. Phase 8.3 follows unless blocked.
 5. Run 3-5 Massive weekday shadow captures at 08:05 KST and, after KRX activation, collect five
    KRX/Kiwoom reconciliation sessions before metric-level fallback.
 6. Keep Production Assist disabled until natural full-message evidence passes direct human review

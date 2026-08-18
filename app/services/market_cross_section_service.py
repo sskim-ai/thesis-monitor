@@ -18,7 +18,9 @@ class NormalizedMarketRow(BaseModel):
     close: float
     previous_close: float | None = None
     volume: float | None = None
+    trading_value: float | None = None
     vwap: float | None = None
+    official_return_pct: float | None = None
     security_type: str | None = None
     primary_exchange: str | None = None
     currency: str | None = None
@@ -29,7 +31,14 @@ class NormalizedMarketRow(BaseModel):
     def validate_row(self) -> "NormalizedMarketRow":
         if not self.ticker.strip():
             raise ValueError("ticker is required")
-        for value in (self.close, self.previous_close, self.volume, self.vwap):
+        for value in (
+            self.close,
+            self.previous_close,
+            self.volume,
+            self.trading_value,
+            self.vwap,
+            self.official_return_pct,
+        ):
             if value is not None and not math.isfinite(value):
                 raise ValueError("market row values must be finite")
         if self.close <= 0:
@@ -38,12 +47,16 @@ class NormalizedMarketRow(BaseModel):
             raise ValueError("previous close must be positive")
         if self.volume is not None and self.volume < 0:
             raise ValueError("volume cannot be negative")
+        if self.trading_value is not None and self.trading_value < 0:
+            raise ValueError("trading value cannot be negative")
         if self.eligible and self.exclusion_reasons:
             raise ValueError("eligible row cannot have exclusion reasons")
         return self
 
     @property
     def return_pct(self) -> float | None:
+        if self.official_return_pct is not None:
+            return self.official_return_pct
         if self.previous_close is None:
             return None
         return (self.close / self.previous_close - 1.0) * 100.0
@@ -129,6 +142,7 @@ class MarketCrossSection(BaseModel):
     as_of: datetime
     indices: list[MarketIndexFact] = Field(default_factory=list)
     breadth: MarketBreadth | None = None
+    breadth_by_segment: dict[str, MarketBreadth] = Field(default_factory=dict)
     concentration: dict[str, object] = Field(default_factory=dict)
     sectors: list[MarketSectorFact] = Field(default_factory=list)
     market_flows: list[MarketFlowFact] = Field(default_factory=list)
@@ -144,6 +158,21 @@ class MarketCrossSection(BaseModel):
                 raise ValueError("unavailable coverage cannot publish breadth")
             if self.breadth.eligible_count != self.quality.eligible_count:
                 raise ValueError("quality and breadth eligible counts differ")
+        if self.breadth_by_segment:
+            if self.breadth is None:
+                raise ValueError("segment breadth requires aggregate breadth")
+            segment_eligible = sum(
+                item.eligible_count for item in self.breadth_by_segment.values()
+            )
+            if segment_eligible != self.breadth.eligible_count:
+                raise ValueError("segment and aggregate breadth eligible counts differ")
+            for field in ("advance_count", "decline_count", "unchanged_count"):
+                if sum(
+                    getattr(item, field) for item in self.breadth_by_segment.values()
+                ) != getattr(self.breadth, field):
+                    raise ValueError(
+                        f"segment and aggregate breadth {field} values differ"
+                    )
         return self
 
 
@@ -155,9 +184,11 @@ def calculate_market_breadth(rows: list[NormalizedMarketRow]) -> MarketBreadth:
     unchanged = len(returns) - advance - decline
     volume_rows = [row.volume for row in eligible if row.volume is not None]
     trading_values = [
-        row.close * row.volume
+        row.trading_value
+        if row.trading_value is not None
+        else row.close * row.volume
         for row in eligible
-        if row.volume is not None and row.close > 0
+        if row.trading_value is not None or row.volume is not None
     ]
     return MarketBreadth(
         eligible_count=len(eligible),

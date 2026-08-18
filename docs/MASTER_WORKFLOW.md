@@ -163,10 +163,15 @@ adjusted decimal volume and close-times-volume remain audit-only. Exact 08:05 KS
 
 ## 17. KR Breadth Status
 
-KRX Open API is `APPROVED_NOT_INTEGRATED` and remains the intended primary. Kiwoom remains an unconfigured
-Windows-gateway `bridge_shadow`; it is not an authoritative KRX replacement. Automatic metric-level
-fallback requires five same-date reconciliation sessions and explicit universe/unit comparability.
-Market-wide KR investor flow remains unavailable.
+KRX Open API is approved and Phase 8.2A now has an experimental archive-only provider on
+`codex/phase-8-2a-krx-market-breadth`. It reuses `market-cross-section-v1` and
+`market-breadth-v1`, validates exact session/identity/unit semantics, and computes explicit
+KOSPI/KOSDAQ common-share breadth. The 2026-08-14 dry run produced 2,532 eligible rows from 2,763
+daily rows with 76/76 numeric registry entries supported. It is not merged, registered, scheduled,
+or deployed. KRX Open API does not provide market-wide investor flow or security-level sector
+breadth; selected KOSPI 200/KOSDAQ 150 industry indices remain price proxies only. Kiwoom remains an
+unconfigured Windows-gateway `bridge_shadow`; automatic fallback requires five comparable sessions.
+See [KRX_MARKET_BREADTH.md](architecture/KRX_MARKET_BREADTH.md).
 
 ## 18. Numeric Provenance
 
@@ -239,6 +244,7 @@ percentile distinctly without changing its biotech valuation boundary.
 | 8.5.3 | Natural US/KR quality failure reconstructed; AI specificity and fallback dynamic-price parity PASS; promoted with 8.5.3.1, natural AI delivery pending |
 | 8.5.3.1 | Korean language and intra-message dedup PASS; Phase 8.5.3 chain promoted to operating shadow; natural AI delivery pending |
 | 8.5.3.2 | Valuation comparison-role labels and collision validator PASS; targeted repair promoted to operating shadow; natural AI delivery pending |
+| 8.2A development | KRX primary-candidate provider, explicit universe, index/breadth Facts, archive Preview and numeric provenance PASS; experimental only, not deployed |
 
 ## 21. Current Persistent Gaps
 
@@ -257,7 +263,9 @@ percentile distinctly without changing its biotech valuation boundary.
 | Current-price RR packet/numeric path | LIVE PATH PASS |
 | AI natural-live message quality | PARTIAL: retrospective PASS, natural AI delivery pending |
 | Fallback dynamic-price lifecycle | CLOSED: retrospective PASS and operating code promoted |
-| KRX Open API primary breadth | APPROVED, NOT INTEGRATED; experimental development authorized |
+| KRX Open API primary breadth | EXPERIMENTAL ARCHIVE PASS; NOT INTEGRATED/DEPLOYED |
+| KRX market-wide investor flow | UNSUPPORTED by approved Open API; remains Unknown |
+| KRX security-level sector breadth | OPEN; sector-index price proxies only |
 | Human-approved Production Assist evidence | INSUFFICIENT |
 
 Closed engineering gaps include numeric provenance, canonical formatting, financial quality taint,
@@ -269,10 +277,10 @@ integrity, fallback/retry, exactly-once accounting, and valuation comparison-lab
 ## 22. Current Roadmap
 
 Default operating task: observe the next natural US/KR sessions for actual AI-assisted delivery,
-final-language quality, receipt, archive, fallback, and exactly-once proof. In parallel, Phase 8.2A
-KRX Market Breadth Primary may be developed and archive-validated on an experimental branch only.
-It cannot merge or deploy until live baseline review and separate KRX data/Human Review pass. Phase
-8.3 Peer/Sector Valuation follows unless a new operating blocker takes priority.
+final-language quality, receipt, archive, fallback, and exactly-once proof. Phase 8.2A KRX Market
+Breadth Primary is implemented and archive-validated on an experimental branch only. Promotion waits
+for live baseline review, KRX Human Review, and a current-session non-empty provider proof. Phase 8.3
+Peer/Sector Valuation follows unless a new operating blocker takes priority.
 
 Do not keep subdividing mature safety infrastructure or Phase 8.4 message assembly without a real
 regression. The current priority sequence is natural AI delivery proof, KRX breadth, peer context,
@@ -368,9 +376,9 @@ approval. Main merge and shadow deployment still do not authorize AI-assisted pr
 Inspect the next naturally generated US and KR results without manual task execution. Verify AI
 specificity, Korean language, watch/next separation, numeric dedup, current price-context parity,
 full validation, receipt, single delivery/fallback, archive, and exactly-once state before human
-message review. Phase 8.2A KRX Market Breadth Primary development may proceed concurrently on an
-experimental branch, but promotion waits for the natural baseline proof and KRX Human Review. KRX
-is approved but not integrated. Phase 8.3 peer/sector work follows.
+message review. Review the committed Phase 8.2A capability, validation, audit, and market Preview.
+Its provider is developed but remains experimental and archive-only; promotion waits for the natural
+baseline proof, KRX Human Review, and current-session readiness. Phase 8.3 peer/sector work follows.
 Missing metrics remain Unknown and industry conditions never become company achievements.
 
 ## 28. New Session Bootstrap Prompt
@@ -382,6 +390,7 @@ Missing metrics remain Unknown and industry conditions never become company achi
 > state. If the repository is newer than a commit or statement in this workflow, the repository and
 > immutable runtime win and the documentation must be reconciled. Confirm whether a later natural
 > US/KR AI-assisted delivery exists after the Phase 8.5.3.2 shadow promotion. If not, the next task
-> is read-only natural proof review. Once the live blocker is cleared, proceed to the
-> approved-but-not-integrated Phase 8.2A KRX Market Breadth Primary. Report the recovered state
+> is read-only natural proof review. Also inspect the experimental Phase 8.2A KRX reports and branch;
+> do not call it integrated or deployed. Once live proof and KRX Human Review pass, decide whether to
+> promote Phase 8.2A. Report the recovered state
 > before editing.

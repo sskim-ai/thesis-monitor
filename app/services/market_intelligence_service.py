@@ -287,8 +287,33 @@ def _selected_change_fact_ids(
         if value is None or threshold is None or abs(value) < threshold:
             continue
         ranked.append((abs(value) / threshold, fact_id))
+    for fact in facts:
+        fields = fact.get("fields")
+        if not isinstance(fields, dict):
+            continue
+        fact_id = str(fact.get("fact_id") or "")
+        if fact.get("fact_type") == "market_cross_section_index":
+            if fields.get("symbol") not in {"KOSPI", "KOSDAQ"}:
+                continue
+            value = _number(fields, "return_pct")
+            if value is not None and abs(value) >= 1.0:
+                ranked.append((abs(value), fact_id))
+        if fact.get("fact_type") == "market_breadth_returns":
+            if fields.get("segment") not in {"KOSPI", "KOSDAQ"}:
+                continue
+            advance_ratio = _number(fields, "advance_ratio_pct")
+            equal_weight = _number(fields, "equal_weight_return_pct")
+            scores = [
+                abs(advance_ratio - 50.0) / 10.0
+                if advance_ratio is not None
+                else 0.0,
+                abs(equal_weight) if equal_weight is not None else 0.0,
+            ]
+            score = max(scores)
+            if score >= 1.0:
+                ranked.append((score, fact_id))
     ranked.sort(key=lambda item: (-item[0], item[1]))
-    return [fact_id for _score, fact_id in ranked[:4]]
+    return [fact_id for _score, fact_id in ranked[:5]]
 
 
 def _group_key(stock: dict[str, object]) -> str:
@@ -517,6 +542,52 @@ def build_market_intelligence(
                             "currency": "USD" if market.lower() == "us" else "KRW",
                         },
                     }
+                )
+            for segment, segment_breadth in sorted(
+                cross_section.breadth_by_segment.items()
+            ):
+                segment_id = segment.lower()
+                cross_section_facts.extend(
+                    [
+                        {
+                            "fact_id": f"market:breadth:{market}:{segment_id}:counts",
+                            "fact_type": "market_breadth_counts",
+                            "as_of_date": run_date.isoformat(),
+                            "source": cross_section.quality.provider,
+                            "fields": {
+                                "segment": segment,
+                                "eligible_count": segment_breadth.eligible_count,
+                                "advance_count": segment_breadth.advance_count,
+                                "decline_count": segment_breadth.decline_count,
+                                "unchanged_count": segment_breadth.unchanged_count,
+                            },
+                        },
+                        {
+                            "fact_id": f"market:breadth:{market}:{segment_id}:returns",
+                            "fact_type": "market_breadth_returns",
+                            "as_of_date": run_date.isoformat(),
+                            "source": cross_section.quality.provider,
+                            "fields": {
+                                "segment": segment,
+                                "advance_ratio_pct": (
+                                    segment_breadth.advance_ratio * 100
+                                    if segment_breadth.advance_ratio is not None
+                                    else None
+                                ),
+                                "ad_ratio": segment_breadth.ad_ratio,
+                                "median_return_pct": segment_breadth.median_return_pct,
+                                "equal_weight_return_pct": (
+                                    segment_breadth.equal_weight_return_pct
+                                ),
+                                "positive_return_pct": (
+                                    segment_breadth.positive_return_pct
+                                ),
+                                "negative_return_pct": (
+                                    segment_breadth.negative_return_pct
+                                ),
+                            },
+                        },
+                    ]
                 )
         if cross_section.concentration.get("concentration_gap_pct") is not None:
             cross_section_facts.append(

@@ -17,6 +17,7 @@ DOCUMENTS = (
     ROOT / "docs" / "architecture" / "MONITORING_STATE_LIFECYCLE.md",
     ROOT / "docs" / "architecture" / "PEER_VALUATION.md",
     ROOT / "docs" / "architecture" / "NATURAL_LIVE_MESSAGE_HARDENING.md",
+    ROOT / "docs" / "architecture" / "KRX_MARKET_BREADTH.md",
     ROOT / "docs" / "operations" / "AI_ASSISTED_PILOT.md",
     ROOT / "docs" / "knowledge" / "README.md",
 )
@@ -33,14 +34,14 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     state = json.loads((ROOT / "docs" / "project-state.json").read_text())
 
     assert state["repository"] == "sskim-ai/thesis-monitor"
-    assert state["branch"] == "main"
+    assert state["branch"] == "codex/phase-8-2a-krx-market-breadth"
     assert (
         state["experimental_branch"]
-        == "codex/phase-8-5-3-2-rxrx-valuation-label-repair"
+        == "codex/phase-8-2a-krx-market-breadth"
     )
     assert (
         state["current_phase"]
-        == "phase_8_5_3_2_shadow_promoted_pending_natural_ai_delivery_proof"
+        == "phase_8_2a_experimental_archive_only_pending_human_review_and_natural_baseline"
     )
     assert (
         state["last_completed_phase"]
@@ -48,19 +49,23 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     )
     assert (
         state["next_default_phase"]
-        == "natural_us_kr_live_proof_with_phase_8_2a_experimental_development_only"
+        == "natural_us_kr_live_proof_then_phase_8_2a_promotion_review"
     )
     assert state["deployed_code_commit"] == (
         "b3ad1ea82bdbd3fe003831d449b0dcaa7c6a2da2"
     )
-    assert state["main_code_commit"] == "HEAD"
-    assert state["operating_code_commit"] == "HEAD"
+    assert state["main_code_commit"] == "e925ee05eabcc1e89c74dfb1ec0d2dabbb01729d"
+    assert state["operating_code_commit"] == (
+        "e925ee05eabcc1e89c74dfb1ec0d2dabbb01729d"
+    )
     assert (
         state["persistent_gaps"]["current_price_rr_packet_numeric_path"]
         == "LIVE_PATH_PASS"
     )
     assert state["persistent_gaps"]["natural_live_validation"] == "PARTIAL"
-    assert state["persistent_gaps"]["krx_open_api"] == "APPROVED_NOT_INTEGRATED"
+    assert state["persistent_gaps"]["krx_open_api"] == (
+        "APPROVED_INTEGRATION_DEVELOPED_EXPERIMENTAL_NOT_DEPLOYED"
+    )
     assert (
         state["persistent_gaps"]["fallback_price_lifecycle"]
         == "CLOSED_RETROSPECTIVE_AND_OPERATING_CODE_PROMOTED"

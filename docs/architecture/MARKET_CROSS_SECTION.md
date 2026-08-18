@@ -81,6 +81,11 @@ Kiwoom never becomes an authoritative replacement for KRX. Automatic metric-leve
 disabled until the same-date universe, units, session, and calculation semantics reconcile for at
 least five trading sessions.
 
+Phase 8.2A implements the KRX primary candidate on an experimental branch. Its explicit
+KOSPI/KOSDAQ common-share denominator, session fail-closed behavior, official index/activity fields,
+and capability limitations are documented in [KRX_MARKET_BREADTH.md](KRX_MARKET_BREADTH.md). It is
+not registered or deployed until a separate promotion gate passes.
+
 ## Reconciliation
 
 Every provider records raw count, eligible count, excluded count, and exclusion reasons. A comparison

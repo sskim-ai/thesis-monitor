@@ -32,6 +32,10 @@ checkout. Read, in this order:
 20. `docs/reports/20260818-phase8-5-3-2-rxrx-valuation-label-preview.md`
 21. `docs/reports/20260818-phase8-5-3-2-valuation-label-audit.json`
 22. `docs/reports/20260818-phase8-5-3-2-shadow-promotion.md`
+23. `docs/reports/20260818-phase8-2a-krx-capability.md`
+24. `docs/reports/20260818-phase8-2a-krx-validation.md`
+25. `docs/reports/20260818-phase8-2a-krx-market-preview.md`
+26. `docs/reports/20260818-phase8-2a-krx-market-audit.json`
 
 Repository and immutable runtime state override stale conversation or document claims. Resolve the
 current commit from Git rather than copying a historical SHA.
@@ -138,8 +142,11 @@ promoted to operating shadow. Natural AI-assisted delivery remains PARTIAL.
 Default operating task: inspect the **next natural US/KR packets** for AI specificity, Korean language,
 intra-message dedup, dynamic-price parity, full-validator status, receipt, delivery/fallback,
 archive, exactly-once state, and human message quality. Do not run a Scheduled Task manually. KRX
-Open API is **APPROVED / NOT INTEGRATED**. Phase 8.2A may be developed and archive-validated on an
-experimental branch while live proof is pending, but must not be merged or deployed. Phase 8.3
+Open API is **APPROVED / EXPERIMENTAL INTEGRATION DEVELOPED / NOT DEPLOYED**. Phase 8.2A's
+2026-08-14 archive snapshot has explicit KOSPI/KOSDAQ common-share breadth and 76/76 numeric registry
+coverage, while market-wide actor flow remains unsupported and current 2026-08-18 responses were
+empty at audit time. Review its Preview and Human boundary after the natural Phase 8.5.x proof; do
+not merge or deploy it from this branch without a separate promotion decision. Phase 8.3
 Peer/Sector Valuation follows. Do not combine operating and experimental scopes.
 
 Preserve the Phase 8.5 boundary: do not infer missing metrics, promote themes into company

@@ -1372,6 +1372,10 @@ _INDEX_SERIES_LABELS = {
     "SPY": "S&P500",
     "QQQ": "Nasdaq",
     "IWM": "Russell 2000",
+    "KOSPI": "KOSPI",
+    "KOSPI200": "KOSPI 200",
+    "KOSDAQ": "KOSDAQ",
+    "KOSDAQ150": "KOSDAQ 150",
 }
 _RELATIVE_SERIES_LABELS = {
     **_INDEX_SERIES_LABELS,
@@ -1507,14 +1511,17 @@ def _source_aware_label(
             return "내부 추정 BVPS" if semantic_type == "forward_bvps" else "내부 추정 fPBR"
         if source == "consensus_forward":
             return "시장 예상 BVPS" if semantic_type == "forward_bvps" else "시장 예상 fPBR"
-    if semantic_type == "index_return_pct":
-        series = str(fields.get("series_code") or "")
+    if semantic_type in {"market_index_close", "index_return_pct"}:
+        series = str(fields.get("series_code") or fields.get("symbol") or "")
         if label := _INDEX_SERIES_LABELS.get(series):
-            return f"{label} 등락률"
+            suffix = "종가" if semantic_type == "market_index_close" else "등락률"
+            return f"{label} {suffix}"
     if semantic_type == "sector_return_pct":
         series = str(fields.get("series_code") or "")
         if series == "SOXX":
             return "반도체 업종 등락률"
+        if fields.get("sector"):
+            return f"{fields['sector']} 등락률"
     if semantic_type in {"growth_relative_return_pct", "sector_relative_return_pct"}:
         subject = _RELATIVE_SERIES_LABELS.get(str(fields.get("subject") or ""))
         benchmark = _RELATIVE_SERIES_LABELS.get(
@@ -1522,6 +1529,23 @@ def _source_aware_label(
         )
         if subject and benchmark:
             return f"{benchmark} 대비 {subject} 상대수익률"
+        if semantic_type == "sector_relative_return_pct" and fields.get("sector"):
+            return f"{fields['sector']} 기준지수 대비 상대수익률"
+    if fields.get("segment"):
+        suffix = {
+            "market_eligible_count": "breadth 대상 종목 수",
+            "market_advance_count": "상승 종목 수",
+            "market_decline_count": "하락 종목 수",
+            "market_unchanged_count": "보합 종목 수",
+            "market_advance_ratio": "상승 종목 비율",
+            "market_ad_ratio": "상승/하락 종목 비율",
+            "market_median_return_pct": "종목 수익률 중앙값",
+            "market_equal_weight_return_pct": "동일가중 평균 수익률",
+            "market_positive_return_pct": "양(+) 수익률 종목 비율",
+            "market_negative_return_pct": "음(-) 수익률 종목 비율",
+        }.get(semantic_type)
+        if suffix:
+            return f"{fields['segment']} {suffix}"
     if semantic_type in {
         "futures_close",
         "futures_point_change",

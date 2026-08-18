@@ -1,0 +1,352 @@
+{
+  "phase": "8.2A",
+  "status": "experimental_archive_only",
+  "session_date": "2026-08-14",
+  "provider": "krx",
+  "provider_role": "primary_candidate_not_deployed",
+  "contract": "market-cross-section-v1",
+  "breadth_calculation": "market-breadth-v1",
+  "universe_version": "krx-kospi-kosdaq-common-share-v1",
+  "official_daily_request_limit": 10000,
+  "credentialed_read_only_audit_calls": 31,
+  "canonical_snapshot_calls": 6,
+  "credential_exposure_count": 0,
+  "endpoints": [
+    {
+      "endpoint": "sto/stk_bydd_trd",
+      "http_status": 200,
+      "latency_ms": 1510.1,
+      "row_count": 942,
+      "provider_date": "2026-08-14",
+      "rate_limit_headers": {},
+      "payload_sha256": "c362e026ffe0b0bd5842df179a064fdaa5eecb688bbc8008bd5820c23530a2bb"
+    },
+    {
+      "endpoint": "sto/ksq_bydd_trd",
+      "http_status": 200,
+      "latency_ms": 2041.5,
+      "row_count": 1821,
+      "provider_date": "2026-08-14",
+      "rate_limit_headers": {},
+      "payload_sha256": "891d8e277f2c974663d9047e89a41376d1412a6a9bb90aa67039aa8d2492461f"
+    },
+    {
+      "endpoint": "sto/stk_isu_base_info",
+      "http_status": 200,
+      "latency_ms": 451.8,
+      "row_count": 942,
+      "provider_date": "2026-08-14",
+      "rate_limit_headers": {},
+      "payload_sha256": "8aaa16a109c7479c7ebe72748d3a449ec1dd52c68498d700fcbe846f716584c6"
+    },
+    {
+      "endpoint": "sto/ksq_isu_base_info",
+      "http_status": 200,
+      "latency_ms": 778.2,
+      "row_count": 1821,
+      "provider_date": "2026-08-14",
+      "rate_limit_headers": {},
+      "payload_sha256": "d9d8c3565bedf5ca7be7fafd2d2b0fcf68b248e666ad8f14771ba7cc85354726"
+    },
+    {
+      "endpoint": "idx/kospi_dd_trd",
+      "http_status": 200,
+      "latency_ms": 270.2,
+      "row_count": 51,
+      "provider_date": "2026-08-14",
+      "rate_limit_headers": {},
+      "payload_sha256": "433eaa38df63575f4267c9bafb5f05e9d5e326e47497fec60c04a2d71d319925"
+    },
+    {
+      "endpoint": "idx/kosdaq_dd_trd",
+      "http_status": 200,
+      "latency_ms": 139.8,
+      "row_count": 40,
+      "provider_date": "2026-08-14",
+      "rate_limit_headers": {},
+      "payload_sha256": "ed5aa8da8b0b1f507b0be943a8951749687f648003c646626b679bc1ff22a06b"
+    }
+  ],
+  "indices": [
+    {
+      "symbol": "KOSDAQ",
+      "label": "KOSDAQ",
+      "close": 864.65,
+      "return_pct": 0.38,
+      "volume": 685534520.0,
+      "trading_value": 7274455896559.0
+    },
+    {
+      "symbol": "KOSDAQ150",
+      "label": "KOSDAQ 150",
+      "close": 1495.95,
+      "return_pct": 0.25,
+      "volume": 97021988.0,
+      "trading_value": 3997871391361.0
+    },
+    {
+      "symbol": "KOSPI",
+      "label": "KOSPI",
+      "close": 6977.94,
+      "return_pct": 2.42,
+      "volume": 332578488.0,
+      "trading_value": 27196055859236.0
+    },
+    {
+      "symbol": "KOSPI200",
+      "label": "KOSPI 200",
+      "close": 1098.18,
+      "return_pct": 2.51,
+      "volume": 144889899.0,
+      "trading_value": 24300838564350.0
+    }
+  ],
+  "breadth": {
+    "eligible_count": 2532,
+    "advance_count": 1441,
+    "decline_count": 898,
+    "unchanged_count": 193,
+    "advance_ratio": 0.5691153238546603,
+    "ad_ratio": 1.6046770601336302,
+    "median_return_pct": 0.41,
+    "equal_weight_return_pct": 0.7764454976303318,
+    "positive_return_pct": 56.91153238546603,
+    "negative_return_pct": 35.46603475513428,
+    "total_trading_volume": 1008520659.0,
+    "total_trading_value": 33573550267681.0
+  },
+  "breadth_by_segment": {
+    "KOSPI": {
+      "eligible_count": 804,
+      "advance_count": 575,
+      "decline_count": 180,
+      "unchanged_count": 49,
+      "advance_ratio": 0.7151741293532339,
+      "ad_ratio": 3.1944444444444446,
+      "median_return_pct": 1.0550000000000002,
+      "equal_weight_return_pct": 1.3048383084577113,
+      "positive_return_pct": 71.51741293532339,
+      "negative_return_pct": 22.388059701492537,
+      "total_trading_volume": 323374579.0,
+      "total_trading_value": 26299989134230.0
+    },
+    "KOSDAQ": {
+      "eligible_count": 1728,
+      "advance_count": 866,
+      "decline_count": 718,
+      "unchanged_count": 144,
+      "advance_ratio": 0.5011574074074074,
+      "ad_ratio": 1.2061281337047354,
+      "median_return_pct": 0.07,
+      "equal_weight_return_pct": 0.5305960648148148,
+      "positive_return_pct": 50.11574074074075,
+      "negative_return_pct": 41.550925925925924,
+      "total_trading_volume": 685146080.0,
+      "total_trading_value": 7273561133451.0
+    }
+  },
+  "sectors": [
+    {
+      "sector": "코스피 200 경기소비재",
+      "taxonomy": "KRX_KOSPI200_SECTOR_INDEX",
+      "metric_role": "sector_price_proxy",
+      "return_pct": 4.23,
+      "advance_ratio": null,
+      "relative_return_pct": 1.7200000000000006
+    },
+    {
+      "sector": "코스피 200 정보기술",
+      "taxonomy": "KRX_KOSPI200_SECTOR_INDEX",
+      "metric_role": "sector_price_proxy",
+      "return_pct": 3.42,
+      "advance_ratio": null,
+      "relative_return_pct": 0.9100000000000001
+    },
+    {
+      "sector": "코스피 200 에너지/화학",
+      "taxonomy": "KRX_KOSPI200_SECTOR_INDEX",
+      "metric_role": "sector_price_proxy",
+      "return_pct": 3.2,
+      "advance_ratio": null,
+      "relative_return_pct": 0.6900000000000004
+    },
+    {
+      "sector": "코스닥 150 자유소비재",
+      "taxonomy": "KRX_KOSDAQ150_SECTOR_INDEX",
+      "metric_role": "sector_price_proxy",
+      "return_pct": 2.68,
+      "advance_ratio": null,
+      "relative_return_pct": 2.43
+    },
+    {
+      "sector": "코스피 200 커뮤니케이션서비스",
+      "taxonomy": "KRX_KOSPI200_SECTOR_INDEX",
+      "metric_role": "sector_price_proxy",
+      "return_pct": 2.61,
+      "advance_ratio": null,
+      "relative_return_pct": 0.10000000000000009
+    },
+    {
+      "sector": "코스닥 150 산업재",
+      "taxonomy": "KRX_KOSDAQ150_SECTOR_INDEX",
+      "metric_role": "sector_price_proxy",
+      "return_pct": 1.93,
+      "advance_ratio": null,
+      "relative_return_pct": 1.68
+    },
+    {
+      "sector": "코스피 200 중공업",
+      "taxonomy": "KRX_KOSPI200_SECTOR_INDEX",
+      "metric_role": "sector_price_proxy",
+      "return_pct": 1.75,
+      "advance_ratio": null,
+      "relative_return_pct": -0.7599999999999998
+    },
+    {
+      "sector": "코스피 200 금융",
+      "taxonomy": "KRX_KOSPI200_SECTOR_INDEX",
+      "metric_role": "sector_price_proxy",
+      "return_pct": 1.13,
+      "advance_ratio": null,
+      "relative_return_pct": -1.38
+    },
+    {
+      "sector": "코스피 200 건설",
+      "taxonomy": "KRX_KOSPI200_SECTOR_INDEX",
+      "metric_role": "sector_price_proxy",
+      "return_pct": 1.0,
+      "advance_ratio": null,
+      "relative_return_pct": -1.5099999999999998
+    },
+    {
+      "sector": "코스피 200 생활소비재",
+      "taxonomy": "KRX_KOSPI200_SECTOR_INDEX",
+      "metric_role": "sector_price_proxy",
+      "return_pct": 0.94,
+      "advance_ratio": null,
+      "relative_return_pct": -1.5699999999999998
+    },
+    {
+      "sector": "코스피 200 철강/소재",
+      "taxonomy": "KRX_KOSPI200_SECTOR_INDEX",
+      "metric_role": "sector_price_proxy",
+      "return_pct": 0.58,
+      "advance_ratio": null,
+      "relative_return_pct": -1.9299999999999997
+    },
+    {
+      "sector": "코스닥 150 정보기술",
+      "taxonomy": "KRX_KOSDAQ150_SECTOR_INDEX",
+      "metric_role": "sector_price_proxy",
+      "return_pct": 0.42,
+      "advance_ratio": null,
+      "relative_return_pct": 0.16999999999999998
+    },
+    {
+      "sector": "코스피 200 헬스케어",
+      "taxonomy": "KRX_KOSPI200_SECTOR_INDEX",
+      "metric_role": "sector_price_proxy",
+      "return_pct": 0.33,
+      "advance_ratio": null,
+      "relative_return_pct": -2.1799999999999997
+    },
+    {
+      "sector": "코스닥 150 소재",
+      "taxonomy": "KRX_KOSDAQ150_SECTOR_INDEX",
+      "metric_role": "sector_price_proxy",
+      "return_pct": 0.21,
+      "advance_ratio": null,
+      "relative_return_pct": -0.04000000000000001
+    },
+    {
+      "sector": "코스닥 150 커뮤니케이션서비스",
+      "taxonomy": "KRX_KOSDAQ150_SECTOR_INDEX",
+      "metric_role": "sector_price_proxy",
+      "return_pct": 0.18,
+      "advance_ratio": null,
+      "relative_return_pct": -0.07
+    },
+    {
+      "sector": "코스닥 150 필수소비재",
+      "taxonomy": "KRX_KOSDAQ150_SECTOR_INDEX",
+      "metric_role": "sector_price_proxy",
+      "return_pct": -0.22,
+      "advance_ratio": null,
+      "relative_return_pct": -0.47
+    },
+    {
+      "sector": "코스피 200 산업재",
+      "taxonomy": "KRX_KOSPI200_SECTOR_INDEX",
+      "metric_role": "sector_price_proxy",
+      "return_pct": -0.66,
+      "advance_ratio": null,
+      "relative_return_pct": -3.17
+    },
+    {
+      "sector": "코스닥 150 헬스케어",
+      "taxonomy": "KRX_KOSDAQ150_SECTOR_INDEX",
+      "metric_role": "sector_price_proxy",
+      "return_pct": -0.89,
+      "advance_ratio": null,
+      "relative_return_pct": -1.1400000000000001
+    }
+  ],
+  "market_flows": {
+    "status": "UNSUPPORTED",
+    "facts": [],
+    "missing_is_zero": false
+  },
+  "quality": {
+    "provider": "krx",
+    "provider_role": "primary",
+    "coverage": "partial",
+    "freshness": "fresh",
+    "universe_version": "krx-kospi-kosdaq-common-share-v1",
+    "calculation_version": "market-breadth-v1",
+    "raw_count": 2763,
+    "eligible_count": 2532,
+    "excluded_count": 231,
+    "exclusion_reason_counts": {
+      "ineligible_certificate_type": 113,
+      "ineligible_security_group": 47,
+      "spac": 71
+    },
+    "warnings": [
+      "KRX Open API does not expose a suspension flag; otherwise eligible zero-volume rows remain in the unchanged denominator.",
+      "SPAC exclusion uses official segment metadata plus the official issue-name marker for residual cases.",
+      "Sector facts are KRX sector-index price proxies, not security-level sector breadth.",
+      "Market-wide investor flows are unavailable in the approved KRX Open API catalog."
+    ],
+    "volume_semantics": "raw_reported_shares",
+    "trading_value_semantics": "official_reported"
+  },
+  "market_intelligence": {
+    "fact_count": 29,
+    "selected_fact_ids": [
+      "market:cross-section:index:KOSPI",
+      "market:breadth:kr:kospi:returns"
+    ],
+    "numeric_registry": {
+      "entry_count": 76,
+      "registered_count": 76,
+      "prose_allowed_count": 76,
+      "prose_denied_count": 0,
+      "unsupported": [],
+      "ready": true
+    }
+  },
+  "current_session_probe": {
+    "date": "2026-08-18",
+    "http_status": 200,
+    "rows_per_endpoint": 0,
+    "canonical_promotion": false,
+    "reason": "empty provider result at audit time"
+  },
+  "production_mutations": {
+    "main_merge": 0,
+    "operating_deployment": 0,
+    "scheduled_task_changes": 0,
+    "telegram_sends": 0,
+    "pilot_mutations": 0
+  }
+}

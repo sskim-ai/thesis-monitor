@@ -7,6 +7,7 @@ from app.services.market_cross_section_service import (
     MarketBreadth,
     MarketCrossSection,
     MarketCrossSectionQuality,
+    MarketIndexFact,
 )
 from app.services.numeric_semantic_registry import (
     build_numeric_registry,
@@ -232,6 +233,100 @@ def test_verified_fresh_cross_section_adds_breadth_facts_without_thesis_mutation
         "market_total_trading_value",
         "market_concentration_gap_pct",
     } <= semantics
+
+
+def test_kr_segment_breadth_is_provenanced_and_selected_by_materiality() -> None:
+    kospi = MarketBreadth(
+        eligible_count=10,
+        advance_count=2,
+        decline_count=7,
+        unchanged_count=1,
+        advance_ratio=0.2,
+        ad_ratio=2 / 7,
+        median_return_pct=-0.4,
+        equal_weight_return_pct=-0.3,
+        positive_return_pct=20.0,
+        negative_return_pct=70.0,
+        total_trading_volume=1000,
+        total_trading_value=20000,
+    )
+    kosdaq = MarketBreadth(
+        eligible_count=10,
+        advance_count=5,
+        decline_count=4,
+        unchanged_count=1,
+        advance_ratio=0.5,
+        ad_ratio=1.25,
+        median_return_pct=0.1,
+        equal_weight_return_pct=0.2,
+        positive_return_pct=50.0,
+        negative_return_pct=40.0,
+        total_trading_volume=2000,
+        total_trading_value=30000,
+    )
+    aggregate = MarketBreadth(
+        eligible_count=20,
+        advance_count=7,
+        decline_count=11,
+        unchanged_count=2,
+        advance_ratio=0.35,
+        ad_ratio=7 / 11,
+        median_return_pct=-0.1,
+        equal_weight_return_pct=-0.05,
+        positive_return_pct=35.0,
+        negative_return_pct=55.0,
+        total_trading_volume=3000,
+        total_trading_value=50000,
+    )
+    section = MarketCrossSection(
+        market="KR",
+        session_date=RUN_DATE,
+        as_of=datetime(2026, 8, 13, tzinfo=UTC),
+        indices=[
+            MarketIndexFact(
+                symbol="KOSPI", label="KOSPI", close=3000, return_pct=2.0
+            ),
+            MarketIndexFact(
+                symbol="KOSDAQ", label="KOSDAQ", close=900, return_pct=0.2
+            ),
+        ],
+        breadth=aggregate,
+        breadth_by_segment={"KOSPI": kospi, "KOSDAQ": kosdaq},
+        quality=MarketCrossSectionQuality(
+            provider="krx",
+            provider_role="primary",
+            coverage="partial",
+            freshness="fresh",
+            universe_version="krx-v1",
+            raw_count=20,
+            eligible_count=20,
+            excluded_count=0,
+            volume_semantics="raw_reported_shares",
+            trading_value_semantics="official_reported",
+        ),
+        source_payload_sha256="a" * 64,
+    )
+
+    result = build_market_intelligence(
+        _briefing([]), RUN_DATE, _stocks(), [], market="kr", cross_section=section
+    )
+    facts = {item["fact_id"]: item for item in result["fact_catalog"]}
+
+    assert facts["market:breadth:kr:kospi:returns"]["fields"][
+        "advance_ratio_pct"
+    ] == 20.0
+    assert result["key_change_fact_ids"] == [
+        "market:breadth:kr:kospi:returns",
+        "market:cross-section:index:KOSPI",
+    ]
+    registry = build_numeric_registry(result["fact_catalog"])
+    kospi_advance = next(
+        item
+        for item in registry
+        if item["fact_id"] == "market:breadth:kr:kospi:returns"
+        and item["field_path"] == "fields.advance_ratio_pct"
+    )
+    assert kospi_advance["canonical_label"] == "KOSPI 상승 종목 비율"
 
 
 def test_adjusted_volume_and_close_times_volume_stay_audit_only() -> None:

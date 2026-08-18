@@ -21,6 +21,8 @@ class Settings(BaseSettings):
     finnhub_api_key: str | None = None
     alpha_vantage_api_key: str | None = None
     krx_open_api_key: str | None = None
+    krx_open_api_base_url: str = "https://data-dbg.krx.co.kr/svc/apis"
+    krx_cache_dir: str = "./data/cache/krx"
     massive_api_key: str | None = None
     massive_base_url: str = "https://api.massive.com"
     massive_cache_dir: str = "./data/cache/massive"
