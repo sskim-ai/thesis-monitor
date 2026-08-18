@@ -17,6 +17,7 @@ DOCUMENTS = (
     ROOT / "docs" / "architecture" / "MONITORING_STATE_LIFECYCLE.md",
     ROOT / "docs" / "architecture" / "PEER_VALUATION.md",
     ROOT / "docs" / "architecture" / "PEER_SECTOR_VALUATION.md",
+    ROOT / "docs" / "architecture" / "PEER_DATA_PROVIDER_STRATEGY.md",
     ROOT / "docs" / "architecture" / "NATURAL_LIVE_MESSAGE_HARDENING.md",
     ROOT / "docs" / "architecture" / "KRX_MARKET_BREADTH.md",
     ROOT / "docs" / "operations" / "AI_ASSISTED_PILOT.md",
@@ -35,22 +36,22 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     state = json.loads((ROOT / "docs" / "project-state.json").read_text())
 
     assert state["repository"] == "sskim-ai/thesis-monitor"
-    assert state["branch"] == "codex/phase-8-3-peer-sector-valuation"
+    assert state["branch"] == "codex/phase-8-3-1-broad-peer-provider-research"
     assert (
         state["experimental_branch"]
-        == "codex/phase-8-3-peer-sector-valuation"
+        == "codex/phase-8-3-1-broad-peer-provider-research"
     )
     assert (
         state["current_phase"]
-        == "phase_8_3_peer_sector_valuation_strong_partial_experimental_validation"
+        == "phase_8_3_1_peer_provider_capability_research_complete"
     )
     assert (
         state["last_completed_phase"]
-        == "phase_8_3_peer_sector_valuation_experimental_validation"
+        == "phase_8_3_1_peer_provider_capability_research"
     )
     assert (
         state["next_default_phase"]
-        == "natural_proof_krx_observation_and_peer_provider_capability_review"
+        == "natural_proof_krx_observation_and_peer_provider_selection_decision"
     )
     assert state["deployed_code_commit"] == (
         "b3ad1ea82bdbd3fe003831d449b0dcaa7c6a2da2"
@@ -94,6 +95,14 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     assert workflow["priority_rule"] == "OPERATING_BLOCKER_BEFORE_NEW_FEATURE"
     assert workflow["development_lane"]["phase"] == "8.3"
     assert workflow["development_lane"]["operating_deployment"] is False
+    workflow_v4 = state["master_workflow_v4"]
+    assert workflow_v4["status"] == (
+        "dependency_hardened_and_phase_8_3_1_provider_research_complete"
+    )
+    assert workflow_v4["peer_development_lane"]["krx_ancestry_commit_count"] == 6
+    assert workflow_v4["peer_development_lane"]["phase_8_3_commit_count"] == 3
+    assert workflow_v4["peer_development_lane"]["provider_selection"] == "OPEN"
+    assert workflow_v4["peer_development_lane"]["operating_deployment"] is False
     peer = state["phase_8_3_peer_sector_valuation"]
     assert peer["status"] == "STRONG_PARTIAL"
     assert peer["contract"] == "peer-sector-valuation-v1"
@@ -104,6 +113,25 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     assert peer["numeric_provenance"] == "PASS"
     assert peer["main_merged"] is False
     assert peer["operating_deployed"] is False
+    provider_research = state["phase_8_3_1_peer_provider_research"]
+    assert provider_research["status"] == "RESEARCH_COMPLETE_PROVIDER_SELECTION_OPEN"
+    assert provider_research["krx_ancestry_commits"] == 6
+    assert provider_research["phase_8_3_commits"] == 3
+    assert provider_research["measured_user_visible_coverage"] == "0/20"
+    assert provider_research["live_probe"]["credential_exposure"] == 0
+    assert provider_research["main_merged"] is False
+    assert provider_research["operating_deployed"] is False
+    peer_state = state["peer_valuation"]
+    assert peer_state == {
+        "contract": "pass",
+        "capability": "strong_partial",
+        "current_user_visible_coverage": 0,
+        "active_universe_count": 20,
+        "broad_provider": "open",
+        "provider_research": "complete",
+        "provider_selection": "open",
+        "operating_integration": False,
+    }
     assert (
         state["persistent_gaps"]["fallback_price_lifecycle"]
         == "CLOSED_RETROSPECTIVE_AND_OPERATING_CODE_PROMOTED"
@@ -173,6 +201,7 @@ def test_architecture_guides_record_decisions_and_readme_navigation() -> None:
         ROOT / "docs" / "architecture" / "MONITORING_STATE_LIFECYCLE.md",
         ROOT / "docs" / "architecture" / "PEER_VALUATION.md",
         ROOT / "docs" / "architecture" / "PEER_SECTOR_VALUATION.md",
+        ROOT / "docs" / "architecture" / "PEER_DATA_PROVIDER_STRATEGY.md",
         ROOT / "docs" / "operations" / "AI_ASSISTED_PILOT.md",
         ROOT / "docs" / "knowledge" / "README.md",
     )
@@ -194,6 +223,8 @@ def test_architecture_guides_record_decisions_and_readme_navigation() -> None:
         "docs/architecture/MONITORING_STATE_LIFECYCLE.md",
         "docs/architecture/PEER_VALUATION.md",
         "docs/architecture/PEER_SECTOR_VALUATION.md",
+        "docs/architecture/PEER_DATA_PROVIDER_STRATEGY.md",
+        "docs/BRANCH_DEPENDENCY.md",
         "docs/operations/AI_ASSISTED_PILOT.md",
         "docs/operations/SCHEDULED_TASK_CONTRACTS.md",
         "docs/knowledge/README.md",

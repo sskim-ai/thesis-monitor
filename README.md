@@ -25,6 +25,8 @@ This project is a data collection and structuring system. It does not make buy, 
 - [Monitoring state lifecycle](docs/architecture/MONITORING_STATE_LIFECYCLE.md)
 - [Peer valuation](docs/architecture/PEER_VALUATION.md)
 - [Peer / sector valuation intelligence](docs/architecture/PEER_SECTOR_VALUATION.md)
+- [Peer data provider strategy](docs/architecture/PEER_DATA_PROVIDER_STRATEGY.md)
+- [Branch dependency manifest](docs/BRANCH_DEPENDENCY.md)
 - [Industry-specific reasoning](docs/architecture/INDUSTRY_SPECIFIC_REASONING.md)
 - [AI-assisted Pilot operations](docs/operations/AI_ASSISTED_PILOT.md)
 - [Scheduled task contracts](docs/operations/SCHEDULED_TASK_CONTRACTS.md)

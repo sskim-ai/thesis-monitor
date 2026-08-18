@@ -1,10 +1,10 @@
 # Thesis Monitor Master Workflow
 
-Master Workflow: `v2`
+Master Workflow: `v4`
 As of: `2026-08-18`
 Repository: `sskim-ai/thesis-monitor`
 Operating branch: `main`
-Latest evidence branch: `codex/phase-8-5-3-2-rxrx-valuation-label-repair`
+Latest evidence branch: `codex/phase-8-3-1-broad-peer-provider-research`
 Commit resolution: run `git rev-parse HEAD`; this document is part of that commit and must not
 hardcode a self-referential final SHA. Resolve `origin/main` and the clean operating checkout at
 session start. Phase 8.5.3.2 passed immutable US/KR replay and was promoted to operating shadow;
@@ -205,9 +205,17 @@ independent experimental lanes:
   continues; not merged or deployed.
 - Phase 8.3 peer/sector valuation: current development on
   `codex/phase-8-3-peer-sector-valuation`; not merged or deployed.
+- Phase 8.3.1 provider research: official-source provider capability and licensing research on
+  `codex/phase-8-3-1-broad-peer-provider-research`; no adapter or operating integration.
 
 An experimental branch may contain validated predecessor ancestry without making those features
 operating. `Development Ahead != Operating Baseline` is a persistent release boundary.
+
+The Phase 8.3 branch contains the complete six-commit Phase 8.2A.x KRX ancestry followed by three
+Phase 8.3 commits. This dependency is explicit in [BRANCH_DEPENDENCY.md](BRANCH_DEPENDENCY.md). If
+KRX is promoted first, Phase 8.3 may retain that ancestry after review. If peer valuation is promoted
+first, reconstruct it from latest main and exclude the six KRX commits; do not blindly copy the two
+Phase 8.3 documentation commits because they also describe the KRX lane.
 
 ## 18. Numeric Provenance
 
@@ -275,6 +283,17 @@ engineering and fail-closed Human Preview pass, while broad point-in-time provid
 open. It is not merged, integrated, active, or deployed. See
 [PEER_SECTOR_VALUATION.md](architecture/PEER_SECTOR_VALUATION.md).
 
+Phase 8.3.1 evaluates that provider gap rather than changing the peer calculation. Official-source
+research shortlists S&P Global Market Intelligence, FactSet, and LSEG for institutional global
+coverage; FnGuide FnSpace and DeepSearch are conditional KR candidates; Intrinio is the conditional
+US cost/benefit candidate. Standard licenses and public documentation do not yet close storage,
+derived Telegram display, external AI processing, ADR ratio, or exact entitlement coverage. Live
+audit-only probes confirm that current Finnhub/Alpha fields do not prove PIT or TSM ADR basis, while
+OpenFIGI strengthens share-class identity but supplies no issuer ID or ADR ratio. Provider research
+is complete, provider selection remains open, measured user-visible coverage remains 0/20, and no
+Phase 8.3.2 integration gate is open. See
+[PEER_DATA_PROVIDER_STRATEGY.md](architecture/PEER_DATA_PROVIDER_STRATEGY.md).
+
 ## 20. Phase History
 
 | Phase | Result |
@@ -297,6 +316,7 @@ open. It is not merged, integrated, active, or deployed. See
 | 8.2A.1 | Listing-date contract CLOSED with unchanged denominator; publication-readiness state machine PASS; current complete observation still pending; experimental only |
 | 8.2A.2 | Append-only publication timing and time-slot role contracts PASS; 2026-08-18 remained provider-pending through 21:06; live roles not yet proven; experimental only |
 | 8.3 development | `peer-sector-valuation-v1` comparable-universe, point-in-time, issuer/basis/statistics and industry guardrails PASS; active 20-stock universe emits 0 safe peer Facts; STRONG PARTIAL, experimental only |
+| 8.3.1 | Broad KR/US provider, PIT, identity, forward-consensus, cost and licensing research complete; shortlist conditional; provider selection and integration remain open |
 
 ## 21. Current Persistent Gaps
 
@@ -304,7 +324,8 @@ open. It is not merged, integrated, active, or deployed. See
 |---|---|
 | Industry-specific investment reasoning | STRONG PARTIAL |
 | Structured specialized taxonomy coverage | PARTIAL |
-| Peer/sector valuation | STRONG PARTIAL: contract/Preview PASS, broad point-in-time provider unavailable, not deployed |
+| Peer/sector valuation | STRONG PARTIAL: contract/Preview PASS, broad point-in-time provider not selected, not deployed |
+| Broad point-in-time peer provider | RESEARCH COMPLETE; selection, credential, license and entitlement POC OPEN; measured coverage 0/20 |
 | KR market breadth | PARTIAL |
 | KR market-wide flow | OPEN |
 | Massive 08:05 readiness | OPEN |
@@ -331,8 +352,10 @@ integrity, fallback/retry, exactly-once accounting, and valuation comparison-lab
 Immediate operating evidence remains the next natural US/KR AI-assisted delivery, final-language,
 receipt, archive, fallback, and exactly-once proof. KRX publication observation continues in parallel
 for exact 16:05, 08:05, and T+1 roles. Phase 8.3 contract development and archive-only Preview are
-complete on its experimental branch at `STRONG PARTIAL`; the next decision is whether to extend a
-broad point-in-time provider or retain safe suppression. KRX 8.2A shadow promotion is considered only
+complete on its experimental branch at `STRONG PARTIAL`; Phase 8.3.1 provider research is complete,
+but no provider clears the credential, license, mandatory-field, ADR-basis, and observed-coverage
+gate. The next peer decision is institutional global evaluation versus a conditional KR/US split,
+or continued safe suppression. KRX 8.2A shadow promotion is considered only
 when live baseline and provider-role evidence pass; Phase 8.3 receives its own later shadow decision.
 Cash conversion, taxonomy enrichment, and production evidence follow.
 
@@ -431,11 +454,10 @@ approval. Main merge and shadow deployment still do not authorize AI-assisted pr
 ## 27. Current Next Task
 
 Review the next naturally generated US/KR result without manual task execution and continue exact-slot
-KRX publication telemetry without changing production schedules. Review the Phase 8.3 capability and
-fail-closed Preview: the contract is validated, but the limited active universe yields zero safe
-user-visible peer Facts and no broad point-in-time provider exists. Decide whether provider extension
-has enough value before any separate shadow promotion. A new critical operating blocker outranks this
-feature.
+KRX publication telemetry without changing production schedules. Phase 8.3.1 research is complete:
+review the provider shortlist and choose whether to request institutional pricing/rights or a
+conditional FnSpace/DeepSearch plus Intrinio POC. Do not start Phase 8.3.2 until provider, credential,
+mandatory fields, and licensing are confirmed. A new critical operating blocker outranks this feature.
 Missing metrics remain Unknown and industry conditions never become company achievements.
 
 ## 28. New Session Bootstrap Prompt
@@ -448,7 +470,8 @@ Missing metrics remain Unknown and industry conditions never become company achi
 > immutable runtime win and the documentation must be reconciled. Confirm whether a later natural
 > US/KR AI-assisted delivery exists after the Phase 8.5.3.2 shadow promotion. If not, the next task
 > is read-only natural proof review. Also inspect the experimental Phase 8.2A.2 KRX reports and the
-> Phase 8.3 peer/sector branch; do not call either integrated or deployed. Review the validated
-> STRONG PARTIAL capability before any provider extension, and let any operating blocker take
-> priority. Report the recovered state
+> Phase 8.3/8.3.1 peer branches; do not call either integrated or deployed. Confirm the six-commit KRX
+> ancestry before any promotion. Review the validated STRONG PARTIAL capability and the official-
+> source provider shortlist before selecting a Phase 8.3.2 source; current measured coverage remains
+> 0/20. Let any operating blocker take priority. Report the recovered state
 > before editing.

@@ -1,7 +1,7 @@
 {
   "repository": "sskim-ai/thesis-monitor",
-  "branch": "codex/phase-8-3-peer-sector-valuation",
-  "experimental_branch": "codex/phase-8-3-peer-sector-valuation",
+  "branch": "codex/phase-8-3-1-broad-peer-provider-research",
+  "experimental_branch": "codex/phase-8-3-1-broad-peer-provider-research",
   "experimental_branches": {
     "phase_8_2a_krx": {
       "branch": "codex/phase-8-2a-krx-market-breadth",
@@ -14,17 +14,23 @@
       "workflow_sync_commit": "82b95cd",
       "implementation_commit": "37a785448b2d9e7506beb2aef84e08e5bfb6e5fb",
       "status": "strong_partial_validated_experimental_not_deployed"
+    },
+    "phase_8_3_1_provider_research": {
+      "branch": "codex/phase-8-3-1-broad-peer-provider-research",
+      "base_commit": "ffafccc9e71619f2ebc16b0e60b9c2d3d3b75f05",
+      "depends_on": ["phase_8_2a_krx", "phase_8_3_peer_sector"],
+      "status": "research_complete_provider_selection_open_not_deployed"
     }
   },
   "current_commit": "HEAD",
   "current_commit_resolution": "git rev-parse HEAD",
-  "recorded_base_commit": "b94f709eb146655a6a2e35377073727aee7cd7ca",
-  "current_phase": "phase_8_3_peer_sector_valuation_strong_partial_experimental_validation",
-  "last_completed_phase": "phase_8_3_peer_sector_valuation_experimental_validation",
+  "recorded_base_commit": "ffafccc9e71619f2ebc16b0e60b9c2d3d3b75f05",
+  "current_phase": "phase_8_3_1_peer_provider_capability_research_complete",
+  "last_completed_phase": "phase_8_3_1_peer_provider_capability_research",
   "last_operating_phase": "phase_8_5_3_2_valuation_label_shadow_promotion",
-  "next_default_phase": "natural_proof_krx_observation_and_peer_provider_capability_review",
+  "next_default_phase": "natural_proof_krx_observation_and_peer_provider_selection_decision",
   "alternative_next_phase": "targeted_runtime_repair_if_blocked",
-  "latest_validation_report": "docs/reports/20260818-phase8-3-peer-valuation-validation.md",
+  "latest_validation_report": "docs/reports/20260818-phase8-3-1-validation.md",
   "deployed_code_commit": "b3ad1ea82bdbd3fe003831d449b0dcaa7c6a2da2",
   "main_code_commit": "e925ee05eabcc1e89c74dfb1ec0d2dabbb01729d",
   "main_code_commit_resolution": "git rev-parse origin/main",
@@ -77,7 +83,7 @@
   "persistent_gaps": {
     "industry_specific_reasoning": "STRONG_PARTIAL",
     "structured_specialized_taxonomy_coverage": "PARTIAL",
-    "peer_sector_valuation": "STRONG_PARTIAL_VALIDATED_EXPERIMENTAL_ZERO_USER_VISIBLE_ACTIVE_UNIVERSE_NOT_DEPLOYED",
+    "peer_sector_valuation": "STRONG_PARTIAL_CONTRACT_PASS_PROVIDER_RESEARCH_COMPLETE_SELECTION_OPEN_ZERO_OF_20_NOT_DEPLOYED",
     "kr_market_breadth": "EXPERIMENTAL_ARCHIVE_PASS_UNIVERSE_CLOSED_PUBLICATION_CONTRACT_PASS_TIMING_UNDER_OBSERVATION_NOT_INTEGRATED",
     "kr_market_wide_flow": "UNSUPPORTED_KRX_OPEN_API",
     "massive_0805_readiness": "OPEN",
@@ -1067,6 +1073,34 @@
     },
     "priority_rule": "OPERATING_BLOCKER_BEFORE_NEW_FEATURE"
   },
+  "master_workflow_v4": {
+    "status": "dependency_hardened_and_phase_8_3_1_provider_research_complete",
+    "report": "docs/reports/20260818-phase8-3-1-workflow-dependency.md",
+    "operating_lane": {
+      "main_sha": "e925ee05eabcc1e89c74dfb1ec0d2dabbb01729d",
+      "natural_ai_assisted_delivery": "PARTIAL_PENDING_NEXT_NATURAL_PROOF",
+      "production_assist": false,
+      "ai_mode": "shadow"
+    },
+    "krx_observation_lane": {
+      "branch": "codex/phase-8-2a-krx-market-breadth",
+      "same_day_1605": "NOT_YET_PROVEN",
+      "next_morning_0805": "NOT_YET_PROVEN",
+      "t_plus_1_reconciliation": "NOT_YET_PROVEN",
+      "historical": "SUPPORTED",
+      "operating_integration": false
+    },
+    "peer_development_lane": {
+      "branch": "codex/phase-8-3-1-broad-peer-provider-research",
+      "base": "ffafccc9e71619f2ebc16b0e60b9c2d3d3b75f05",
+      "krx_ancestry_commit_count": 6,
+      "phase_8_3_commit_count": 3,
+      "provider_research": "COMPLETE",
+      "provider_selection": "OPEN",
+      "operating_deployment": false
+    },
+    "priority_rule": "OPERATING_BLOCKER_BEFORE_NEW_FEATURE"
+  },
   "phase_8_3_peer_sector_valuation": {
     "status": "STRONG_PARTIAL",
     "contract": "peer-sector-valuation-v1",
@@ -1098,12 +1132,62 @@
     "biotech_policy": "generic_per_pbr_peer_valuation_suppressed",
     "numeric_provenance": "PASS",
     "human_preview": "PASS_FAIL_CLOSED",
-    "broad_point_in_time_provider": "UNAVAILABLE",
+    "broad_point_in_time_provider": "RESEARCH_COMPLETE_SELECTION_OPEN",
     "main_merged": false,
     "operating_deployed": false,
     "telegram_sends": 0,
     "pilot_mutations": 0,
     "scheduled_task_manual_runs": 0
+  },
+  "peer_valuation": {
+    "contract": "pass",
+    "capability": "strong_partial",
+    "current_user_visible_coverage": 0,
+    "active_universe_count": 20,
+    "broad_provider": "open",
+    "provider_research": "complete",
+    "provider_selection": "open",
+    "operating_integration": false
+  },
+  "phase_8_3_1_peer_provider_research": {
+    "status": "RESEARCH_COMPLETE_PROVIDER_SELECTION_OPEN",
+    "branch": "codex/phase-8-3-1-broad-peer-provider-research",
+    "base_commit": "ffafccc9e71619f2ebc16b0e60b9c2d3d3b75f05",
+    "merge_base_with_main": "e925ee05eabcc1e89c74dfb1ec0d2dabbb01729d",
+    "ahead_of_main_at_start": 9,
+    "krx_ancestry_commits": 6,
+    "phase_8_3_commits": 3,
+    "provider_strategy": "institutional_global_or_controlled_kr_us_split",
+    "kr_shortlist": [
+      "fnguide_fnspace_conditional_custom_license",
+      "deepsearch_conditional_vendor_clarification",
+      "sp_global_or_factset_institutional_entitlement"
+    ],
+    "us_shortlist": [
+      "factset",
+      "sp_global_market_intelligence",
+      "intrinio_conditional_commercial_entitlement"
+    ],
+    "cross_market_shortlist": ["sp_global_market_intelligence", "factset", "lseg"],
+    "measured_user_visible_coverage": "0/20",
+    "live_probe": {
+      "provider_request_attempts": 8,
+      "parseable_responses": 7,
+      "credential_exposure": 0,
+      "canonical_promotions": 0
+    },
+    "phase_8_3_2_entry_gate": "NOT_MET_PROVIDER_CREDENTIAL_LICENSE_AND_MANDATORY_FIELDS_REQUIRED",
+    "architecture": "docs/architecture/PEER_DATA_PROVIDER_STRATEGY.md",
+    "capability_report": "docs/reports/20260818-phase8-3-1-peer-provider-capability.md",
+    "scorecard": "docs/reports/20260818-phase8-3-1-provider-scorecard.json",
+    "recommendation": "docs/reports/20260818-phase8-3-1-provider-recommendation.md",
+    "validation": "docs/reports/20260818-phase8-3-1-validation.md",
+    "main_merged": false,
+    "operating_deployed": false,
+    "telegram_sends": 0,
+    "pilot_mutations": 0,
+    "scheduled_task_manual_runs": 0,
+    "production_assist": false
   },
   "production_assist": false,
   "public_action_version": "0.4.5",

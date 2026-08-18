@@ -1,0 +1,149 @@
+{
+  "date": "2026-08-18",
+  "status": "research_complete_provider_selection_open",
+  "scale": {
+    "minimum": 0,
+    "maximum": 4,
+    "meaning": {
+      "0": "unsupported_or_hard_fail",
+      "1": "weak_or_unknown",
+      "2": "partial",
+      "3": "good",
+      "4": "strong"
+    },
+    "direction": "higher_is_better_including_cost_affordability_licensing_clarity_and_implementation_ease",
+    "warning": "scores_are_evidence_triage_not_a_procurement_or_integration_decision"
+  },
+  "dimensions": [
+    "coverage",
+    "taxonomy",
+    "current_valuation",
+    "forward_consensus",
+    "point_in_time",
+    "security_basis",
+    "adr_support",
+    "issuer_dedup",
+    "data_freshness",
+    "rate_limit",
+    "cost",
+    "licensing",
+    "implementation_ease",
+    "reliability"
+  ],
+  "providers": [
+    {
+      "provider": "S&P Global Market Intelligence",
+      "market_scope": "global_including_kr_us_subject_to_entitlement",
+      "scores": {"coverage": 4, "taxonomy": 4, "current_valuation": 4, "forward_consensus": 4, "point_in_time": 4, "security_basis": 4, "adr_support": 3, "issuer_dedup": 4, "data_freshness": 4, "rate_limit": 3, "cost": 0, "licensing": 2, "implementation_ease": 2, "reliability": 4},
+      "hard_gaps": ["pricing_not_public", "telegram_and_external_ai_rights_require_contract", "adr_ratio_requires_entitlement_poc"],
+      "verdict": "best_institutional_point_in_time_fit"
+    },
+    {
+      "provider": "FactSet",
+      "market_scope": "global_including_kr_us_subject_to_entitlement",
+      "scores": {"coverage": 4, "taxonomy": 4, "current_valuation": 4, "forward_consensus": 4, "point_in_time": 4, "security_basis": 4, "adr_support": 3, "issuer_dedup": 4, "data_freshness": 4, "rate_limit": 3, "cost": 0, "licensing": 2, "implementation_ease": 3, "reliability": 4},
+      "hard_gaps": ["pricing_not_public", "display_and_external_ai_rights_require_contract", "adr_ratio_requires_entitlement_poc"],
+      "verdict": "best_technical_api_fit"
+    },
+    {
+      "provider": "LSEG",
+      "market_scope": "global_including_kr_us_subject_to_entitlement",
+      "scores": {"coverage": 4, "taxonomy": 4, "current_valuation": 4, "forward_consensus": 4, "point_in_time": 4, "security_basis": 4, "adr_support": 3, "issuer_dedup": 4, "data_freshness": 4, "rate_limit": 3, "cost": 0, "licensing": 2, "implementation_ease": 2, "reliability": 4},
+      "hard_gaps": ["pricing_not_public", "display_and_external_ai_rights_require_contract", "per_adr_denominator_requires_poc"],
+      "verdict": "institutional_shortlist"
+    },
+    {
+      "provider": "Bloomberg Data License",
+      "market_scope": "global",
+      "scores": {"coverage": 4, "taxonomy": 4, "current_valuation": 4, "forward_consensus": 4, "point_in_time": 4, "security_basis": 4, "adr_support": 4, "issuer_dedup": 4, "data_freshness": 4, "rate_limit": 3, "cost": 0, "licensing": 1, "implementation_ease": 1, "reliability": 4},
+      "hard_gaps": ["institutional_cost", "complex_entitlement", "redistribution_requires_separate_agreement"],
+      "verdict": "technically_strong_highest_complexity"
+    },
+    {
+      "provider": "FnGuide FnSpace",
+      "market_scope": "kr",
+      "scores": {"coverage": 3, "taxonomy": 3, "current_valuation": 4, "forward_consensus": 4, "point_in_time": 3, "security_basis": 2, "adr_support": 0, "issuer_dedup": 3, "data_freshness": 3, "rate_limit": 3, "cost": 3, "licensing": 0, "implementation_ease": 4, "reliability": 3},
+      "hard_gaps": ["standard_license_prohibits_database_and_external_customer_display", "share_class_and_denominator_basis_require_poc", "restatement_model_requires_confirmation"],
+      "verdict": "conditional_best_kr_technical_fit_only_with_custom_license"
+    },
+    {
+      "provider": "DeepSearch",
+      "market_scope": "kr",
+      "scores": {"coverage": 3, "taxonomy": 3, "current_valuation": 3, "forward_consensus": 1, "point_in_time": 1, "security_basis": 2, "adr_support": 0, "issuer_dedup": 3, "data_freshness": 3, "rate_limit": 2, "cost": 2, "licensing": 1, "implementation_ease": 3, "reliability": 2},
+      "hard_gaps": ["consensus_eps_history_unproven", "true_point_in_time_unproven", "pricing_and_redistribution_unknown", "share_basis_unknown"],
+      "verdict": "conditional_kr_cost_benefit_research"
+    },
+    {
+      "provider": "NICE ValueSearch",
+      "market_scope": "kr",
+      "scores": {"coverage": 3, "taxonomy": 3, "current_valuation": 3, "forward_consensus": 0, "point_in_time": 0, "security_basis": 2, "adr_support": 0, "issuer_dedup": 2, "data_freshness": 2, "rate_limit": 1, "cost": 1, "licensing": 0, "implementation_ease": 1, "reliability": 3},
+      "hard_gaps": ["public_api_contract_unproven", "point_in_time_unproven", "forward_consensus_unproven", "display_rights_unknown"],
+      "verdict": "sales_clarification_only"
+    },
+    {
+      "provider": "KRX Data Marketplace",
+      "market_scope": "kr",
+      "scores": {"coverage": 4, "taxonomy": 3, "current_valuation": 3, "forward_consensus": 0, "point_in_time": 3, "security_basis": 4, "adr_support": 0, "issuer_dedup": 3, "data_freshness": 1, "rate_limit": 3, "cost": 3, "licensing": 1, "implementation_ease": 3, "reliability": 4},
+      "hard_gaps": ["forward_consensus_unsupported", "open_api_publication_timing_not_proven", "redistribution_review_required"],
+      "verdict": "authoritative_market_auxiliary_not_peer_primary"
+    },
+    {
+      "provider": "Intrinio",
+      "market_scope": "us",
+      "scores": {"coverage": 3, "taxonomy": 3, "current_valuation": 4, "forward_consensus": 3, "point_in_time": 3, "security_basis": 3, "adr_support": 2, "issuer_dedup": 3, "data_freshness": 4, "rate_limit": 3, "cost": 3, "licensing": 2, "implementation_ease": 4, "reliability": 3},
+      "hard_gaps": ["estimate_entitlement_separate", "individual_plan_no_display", "external_ai_rights_require_order_form", "adr_ratio_requires_poc"],
+      "verdict": "best_us_cost_benefit_conditional"
+    },
+    {
+      "provider": "Tiingo",
+      "market_scope": "us",
+      "scores": {"coverage": 3, "taxonomy": 3, "current_valuation": 4, "forward_consensus": 0, "point_in_time": 3, "security_basis": 3, "adr_support": 2, "issuer_dedup": 3, "data_freshness": 3, "rate_limit": 4, "cost": 4, "licensing": 1, "implementation_ease": 4, "reliability": 3},
+      "hard_gaps": ["consensus_unsupported", "adr_ratio_absent", "business_display_license_required"],
+      "verdict": "trailing_fundamentals_component_only"
+    },
+    {
+      "provider": "Financial Modeling Prep",
+      "market_scope": "global_claim_us_primary_for_this_audit",
+      "scores": {"coverage": 4, "taxonomy": 3, "current_valuation": 3, "forward_consensus": 2, "point_in_time": 1, "security_basis": 2, "adr_support": 1, "issuer_dedup": 2, "data_freshness": 3, "rate_limit": 4, "cost": 4, "licensing": 1, "implementation_ease": 4, "reliability": 2},
+      "hard_gaps": ["true_point_in_time_unproven", "estimate_revision_history_unproven", "issuer_hierarchy_and_adr_ratio_unproven", "display_license_separate"],
+      "verdict": "low_cost_poc_only"
+    },
+    {
+      "provider": "Massive",
+      "market_scope": "us",
+      "scores": {"coverage": 4, "taxonomy": 3, "current_valuation": 3, "forward_consensus": 0, "point_in_time": 1, "security_basis": 4, "adr_support": 1, "issuer_dedup": 3, "data_freshness": 4, "rate_limit": 4, "cost": 4, "licensing": 1, "implementation_ease": 4, "reliability": 4},
+      "hard_gaps": ["ratio_endpoint_current_only", "consensus_unsupported", "adr_ratio_absent", "business_derived_display_rights_separate", "no_live_credential_in_environment"],
+      "verdict": "price_identity_and_current_fundamental_supplement"
+    },
+    {
+      "provider": "Finnhub",
+      "market_scope": "global_claim_us_probe",
+      "scores": {"coverage": 4, "taxonomy": 3, "current_valuation": 3, "forward_consensus": 3, "point_in_time": 1, "security_basis": 2, "adr_support": 1, "issuer_dedup": 2, "data_freshness": 4, "rate_limit": 3, "cost": 1, "licensing": 1, "implementation_ease": 4, "reliability": 3},
+      "hard_gaps": ["payload_as_of_absent_in_live_probe", "forward_basis_undefined", "tsm_resolved_to_underlying_symbol_without_adr_ratio", "true_point_in_time_unproven"],
+      "verdict": "not_recommended_as_primary_without_vendor_confirmation"
+    },
+    {
+      "provider": "Alpha Vantage",
+      "market_scope": "us_and_selected_global",
+      "scores": {"coverage": 2, "taxonomy": 2, "current_valuation": 2, "forward_consensus": 2, "point_in_time": 1, "security_basis": 1, "adr_support": 0, "issuer_dedup": 1, "data_freshness": 3, "rate_limit": 1, "cost": 4, "licensing": 1, "implementation_ease": 4, "reliability": 3},
+      "hard_gaps": ["true_point_in_time_unproven", "overview_as_of_absent", "mu_estimates_empty_in_live_probe", "issuer_and_adr_basis_weak", "commercial_use_requires_contact"],
+      "verdict": "narrow_supplement_only"
+    },
+    {
+      "provider": "OpenFIGI",
+      "market_scope": "global_identity_only",
+      "scores": {"coverage": 4, "taxonomy": 1, "current_valuation": 0, "forward_consensus": 0, "point_in_time": 0, "security_basis": 3, "adr_support": 1, "issuer_dedup": 2, "data_freshness": 3, "rate_limit": 3, "cost": 4, "licensing": 4, "implementation_ease": 4, "reliability": 4},
+      "hard_gaps": ["no_valuation", "no_consensus", "no_issuer_id", "no_adr_ratio"],
+      "verdict": "identity_auxiliary_only"
+    }
+  ],
+  "shortlist": {
+    "kr": ["FnGuide FnSpace conditional custom license", "DeepSearch conditional vendor clarification", "S&P Global MI or FactSet institutional entitlement"],
+    "us": ["FactSet", "S&P Global Market Intelligence", "Intrinio conditional commercial entitlement"],
+    "cross_market": ["S&P Global Market Intelligence", "FactSet", "LSEG"],
+    "not_primary": ["Massive", "Finnhub", "Alpha Vantage", "OpenFIGI", "KRX Data Marketplace"]
+  },
+  "current_measured_user_visible_coverage": {"eligible": 0, "active_universe": 20},
+  "credential_exposure_count": 0,
+  "production_mutation_count": 0
+}

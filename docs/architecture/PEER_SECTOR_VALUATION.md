@@ -67,6 +67,12 @@ Web search never becomes a canonical current peer number. A future provider must
 same contract with explicit price date, denominator period, security basis, source, and issuer
 identity.
 
+Phase 8.3.1 official-source research does not change this boundary. S&P Global MI, FactSet, and LSEG
+are the institutional shortlist; FnGuide FnSpace/DeepSearch and Intrinio are conditional market-
+specific candidates. No provider has passed entitlement-specific field, ADR, license, credential, or
+observed-coverage gates, so measured user-visible coverage remains 0/20. See
+[PEER_DATA_PROVIDER_STRATEGY.md](PEER_DATA_PROVIDER_STRATEGY.md).
+
 ## Comparable Universe
 
 Candidate selection is deterministic and contains no ticker peer lists. The hierarchy is:

@@ -47,6 +47,15 @@ checkout. Read, in this order:
 35. `docs/reports/20260818-phase8-2a-2-publication-audit.json`
 36. `docs/reports/20260818-phase8-2a-2-market-role-preview.md`
 37. `docs/reports/20260818-master-workflow-v3-validation.md`
+38. `docs/BRANCH_DEPENDENCY.md`
+39. `docs/architecture/PEER_DATA_PROVIDER_STRATEGY.md`
+40. `docs/reports/20260818-phase8-3-1-workflow-dependency.md`
+41. `docs/reports/20260818-phase8-3-1-peer-provider-capability.md`
+42. `docs/reports/20260818-phase8-3-1-kr-provider-matrix.md`
+43. `docs/reports/20260818-phase8-3-1-us-provider-matrix.md`
+44. `docs/reports/20260818-phase8-3-1-provider-scorecard.json`
+45. `docs/reports/20260818-phase8-3-1-provider-recommendation.md`
+46. `docs/reports/20260818-phase8-3-1-validation.md`
 
 Repository and immutable runtime state override stale conversation or document claims. Resolve the
 current commit from Git rather than copying a historical SHA.
@@ -171,11 +180,20 @@ evidence. Phase 8.3 Peer/Sector Valuation is validated `STRONG PARTIAL` on
 safe user-visible peer states and no broad point-in-time provider is available. Do not combine
 operating and experimental scopes.
 
+Phase 8.3.1 provider research is complete on
+`codex/phase-8-3-1-broad-peer-provider-research`, based on Phase 8.3 final `ffafccc`. That ancestry
+contains six KRX experimental commits and three Phase 8.3 commits; consult the dependency manifest
+before any promotion. The institutional shortlist is S&P Global MI, FactSet, and LSEG. Conditional
+market-specific candidates are FnGuide FnSpace/DeepSearch for KR and Intrinio for US. No candidate
+has yet passed provider selection, credential/trial, entitlement-specific mandatory fields, ADR
+basis, storage/derived-display/external-AI licensing, or observed 20-stock coverage. Phase 8.3.2 is
+therefore not open, measured coverage remains 0/20, and operating integration remains NO.
+
 Session order: first inspect the latest natural US/KR AI-assisted result; then load the KRX
-publication telemetry and evaluate the 16:05/08:05/T+1 role matrix. Review Phase 8.3 capability and
-Human Preview before deciding whether to extend a peer provider or keep safe suppression. Collect
-only the next required KRX observation. Any critical operating blocker takes priority. Neither
-experimental lane is eligible for automatic deployment.
+publication telemetry and evaluate the 16:05/08:05/T+1 role matrix. Review the Phase 8.3.1 provider
+recommendation and obtain a provider/credential/license decision before Phase 8.3.2, or retain safe
+suppression. Collect only the next required KRX observation. Any critical operating blocker takes
+priority. Neither experimental lane is eligible for automatic deployment.
 
 Preserve the Phase 8.5 boundary: do not infer missing metrics, promote themes into company
 achievements, force fine-grained taxonomy, create thresholds, or relax numeric, lineage, scope,
