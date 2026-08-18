@@ -56,6 +56,37 @@ Issue reference metadata remains separately cacheable. KRX rows expose `BAS_DD` 
 publication timestamp, so a future shadow observer must retain the first non-empty and first
 complete observation times without treating either as a provider-authored timestamp.
 
+`krx-publication-telemetry-v1` supplies that observer boundary. Each point probe is stateless and
+records only what was visible at its timezone-aware observation time. It does not label itself the
+first observation. Sanitized records are appended to an ignored per-session JSONL file under
+`data/telemetry/krx/publication-readiness/`; the API key and request headers are never serialized.
+The timeline derives:
+
+- `first_non_empty_at`: the first tracked probe with any core rows;
+- `first_complete_at`: the first tracked complete probe only when an earlier non-complete probe is
+  present in the same timeline;
+- `observed_complete_by`: the earliest complete upper bound, including an initially complete probe;
+- `last_empty_at`: the latest tracked all-empty pending probe; and
+- `publication_window_start/end`: the interval between the last tracked pending/partial probe and
+  the first tracked complete probe.
+
+These are observer timestamps, never a provider-authored publication time. An initial complete probe
+has `observed_complete_by` but no `first_complete_at`, preventing false precision.
+
+`krx-time-slot-provider-role-v1` evaluates separate roles rather than calling KRX a universal KR
+primary. Evidence is accepted only for explicitly observed normal-session slots:
+
+| Time slot | Candidate role | Supported gate |
+|---|---|---|
+| 16:05 KST, same session | `SAME_DAY_CLOSE_PRIMARY` | five clean complete sessions |
+| 08:05 KST, prior session | `NEXT_MORNING_PRIMARY` | five clean complete sessions |
+| T+1 reconciliation | `T_PLUS_1_AUTHORITATIVE_RECONCILIATION` | three clean complete sessions |
+| Explicit historical request | `HISTORICAL_ONLY` | existing archive validation |
+
+One complete live-slot observation is only `CANDIDATE`; three observations with no complete result
+can establish `NOT_SUPPORTED` for that exact slot. Observations made at other times do not count as
+16:05 or 08:05 evidence.
+
 ## Universe
 
 The denominator version is `krx-kospi-kosdaq-common-share-v1`.
@@ -132,3 +163,7 @@ to strong partial; 3-5 sessions are recommended before closing it. Proposed obse
 15:35, 15:45, 16:00, 16:05, and 16:10 KST, but no production schedule is configured by Phase 8.2A.1.
 Kiwoom remains a future reconciliation source; KRX failure does not automatically activate Kiwoom
 fallback.
+
+Phase 8.2A.2 keeps the provider experimental and adds no production schedule. Its local observer is
+development telemetry, not a Scheduled Task. Same-day, next-morning, and reconciliation roles remain
+independent until their own normal-session evidence gates pass.

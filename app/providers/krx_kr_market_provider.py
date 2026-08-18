@@ -101,6 +101,7 @@ class KrxEndpointReadiness(BaseModel):
     row_count: int = 0
     provider_dates: list[date] = Field(default_factory=list)
     latency_seconds: float | None = None
+    payload_sha256: str | None = None
     missing_required_identities: list[str] = Field(default_factory=list)
     error_code: str | None = None
 
@@ -116,6 +117,8 @@ class KrxPublicationReadiness(BaseModel):
     endpoints: list[KrxEndpointReadiness] = Field(default_factory=list)
     first_non_empty_at: datetime | None = None
     first_complete_at: datetime | None = None
+    observed_complete_by: datetime | None = None
+    last_empty_at: datetime | None = None
     provider_publication_timestamp: datetime | None = None
     current_snapshot_promotable: bool = False
     reason_codes: list[str] = Field(default_factory=list)
@@ -126,8 +129,8 @@ class KrxPublicationReadiness(BaseModel):
             raise ValueError("publication observation must be timezone-aware")
         if self.current_snapshot_promotable != (self.status == "PROVIDER_COMPLETE"):
             raise ValueError("only a complete provider snapshot can be promoted")
-        if self.status == "PROVIDER_COMPLETE" and self.first_complete_at is None:
-            raise ValueError("complete readiness requires first-complete telemetry")
+        if self.status == "PROVIDER_COMPLETE" and self.observed_complete_by is None:
+            raise ValueError("complete readiness requires observed-complete telemetry")
         if self.status == "PROVIDER_COMPLETE" and (
             {item.endpoint for item in self.endpoints} != set(CORE_READINESS_ENDPOINTS)
             or any(item.status != "READY" for item in self.endpoints)
@@ -445,6 +448,7 @@ class KrxKrMarketProvider:
                 "http_status": metadata.get("status_code"),
                 "row_count": len(rows),
                 "latency_seconds": latency,
+                "payload_sha256": str(envelope.get("response_sha256") or "") or None,
             }
             if not rows:
                 endpoint_results.append(
@@ -546,16 +550,20 @@ class KrxKrMarketProvider:
             status = "PROVIDER_PARTIAL"
             reason_codes = ["core_endpoint_bundle_not_complete"]
 
-        has_rows = any(item.row_count > 0 for item in endpoint_results)
         complete = status == "PROVIDER_COMPLETE"
+        empty = status == "MARKET_COMPLETED_PROVIDER_PENDING"
         return KrxPublicationReadiness(
             status=status,
             target_session=target_session,
             latest_completed_session=latest_completed_session,
             observed_at=observed_at,
             endpoints=endpoint_results,
-            first_non_empty_at=observed_at if has_rows else None,
-            first_complete_at=observed_at if complete else None,
+            # A stateless point probe cannot know whether it is the first observation.
+            # The append-only publication timeline owns first-observed semantics.
+            first_non_empty_at=None,
+            first_complete_at=None,
+            observed_complete_by=observed_at if complete else None,
+            last_empty_at=observed_at if empty else None,
             provider_publication_timestamp=None,
             current_snapshot_promotable=complete,
             reason_codes=reason_codes,

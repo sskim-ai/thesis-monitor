@@ -371,10 +371,13 @@ def test_readiness_complete_bundle_is_promotable(tmp_path: Path) -> None:
 
     assert result.status == "PROVIDER_COMPLETE"
     assert result.current_snapshot_promotable is True
-    assert result.first_non_empty_at is not None
-    assert result.first_complete_at is not None
+    assert result.first_non_empty_at is None
+    assert result.first_complete_at is None
+    assert result.observed_complete_by == result.observed_at
+    assert result.last_empty_at is None
     assert result.provider_publication_timestamp is None
     assert {item.status for item in result.endpoints} == {"READY"}
+    assert all(item.payload_sha256 for item in result.endpoints)
 
 
 def test_readiness_missing_required_index_identity_is_partial(tmp_path: Path) -> None:

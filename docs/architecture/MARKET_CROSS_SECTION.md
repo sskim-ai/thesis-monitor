@@ -92,6 +92,12 @@ official comparison base. `krx-publication-readiness-v1` is a mandatory prefligh
 current-session integration. A complete XKRX session plus empty HTTP 200 responses means provider
 publication pending; partial, error, stale, and pending states publish no current full snapshot.
 
+Phase 8.2A.2 separates KRX authority from time-slot fitness. Append-only
+`krx-publication-telemetry-v1` records observer times without claiming an exact provider publication
+timestamp. `krx-time-slot-provider-role-v1` evaluates 16:05 same-day close, 08:05 next-morning,
+T+1 reconciliation, and historical roles independently. A complete historical provider does not
+therefore become a same-day production primary by implication.
+
 ## Reconciliation
 
 Every provider records raw count, eligible count, excluded count, and exclusion reasons. A comparison
