@@ -28,6 +28,10 @@ checkout. Read, in this order:
 16. `docs/reports/20260818-phase8-5-3-1-language-dedup-preview.md`
 17. `docs/reports/20260818-phase8-5-3-1-language-dedup-audit.json`
 18. `docs/reports/20260818-phase8-5-3-1-shadow-promotion.md`
+19. `docs/reports/20260818-phase8-5-3-2-rxrx-valuation-label-validation.md`
+20. `docs/reports/20260818-phase8-5-3-2-rxrx-valuation-label-preview.md`
+21. `docs/reports/20260818-phase8-5-3-2-valuation-label-audit.json`
+22. `docs/reports/20260818-phase8-5-3-2-shadow-promotion.md`
 
 Repository and immutable runtime state override stale conversation or document claims. Resolve the
 current commit from Git rather than copying a historical SHA.
@@ -125,12 +129,18 @@ six KR stocks to zero. Both immutable full validators, runtime quality, and fina
 The full Phase 8.5.3/8.5.3.1 chain was fast-forwarded to operating shadow after exact-SHA Actions
 Test/Lint PASS; API health and 154 focused operating tests pass. Production Assist remains OFF.
 
-Default next task: inspect the **next natural US/KR packets** for AI specificity, Korean language,
+Phase 8.5.3.2 fixes the remaining RXRX valuation display collision. The current PBR, historical PBR
+median, and historical percentile now retain distinct comparison roles and labels; one additional
+WULF legacy collision is closed by the same generic rule. Implementation
+`b3ad1ea82bdbd3fe003831d449b0dcaa7c6a2da2` passed exact-SHA Actions run `32126079970` and is
+promoted to operating shadow. Natural AI-assisted delivery remains PARTIAL.
+
+Default operating task: inspect the **next natural US/KR packets** for AI specificity, Korean language,
 intra-message dedup, dynamic-price parity, full-validator status, receipt, delivery/fallback,
 archive, exactly-once state, and human message quality. Do not run a Scheduled Task manually. KRX
-Open API is **APPROVED / NOT INTEGRATED**; after a blocker-free live result, proceed to **Phase 8.2A
-KRX Market Breadth Primary**, then Phase 8.3 Peer/Sector Valuation. Do not combine scopes without
-user approval.
+Open API is **APPROVED / NOT INTEGRATED**. Phase 8.2A may be developed and archive-validated on an
+experimental branch while live proof is pending, but must not be merged or deployed. Phase 8.3
+Peer/Sector Valuation follows. Do not combine operating and experimental scopes.
 
 Preserve the Phase 8.5 boundary: do not infer missing metrics, promote themes into company
 achievements, force fine-grained taxonomy, create thresholds, or relax numeric, lineage, scope,

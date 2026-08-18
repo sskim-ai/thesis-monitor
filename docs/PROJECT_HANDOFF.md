@@ -16,7 +16,7 @@ execution or an autonomous investment adviser.
 
 | Component | Contract |
 |---|---|
-| Branch | operating `main`; resolve exact SHA with Git; Phase 8.5.3.1 implementation `e166aaf6a4c13f9009a3885737d3b48e34c895d5` is promoted |
+| Branch | operating `main`; resolve exact SHA with Git; Phase 8.5.3.2 implementation `b3ad1ea82bdbd3fe003831d449b0dcaa7c6a2da2` is promoted |
 | Official assessment | Deterministic `ThesisAssessment` |
 | AI mode | `shadow` |
 | Analysis policy | `daily-review-v3.10` |
@@ -495,6 +495,23 @@ remains shadow. See the [validation report](reports/20260818-phase8-5-3-1-langua
 [Preview](reports/20260818-phase8-5-3-1-language-dedup-preview.md), and
 [promotion report](reports/20260818-phase8-5-3-1-shadow-promotion.md).
 
+## Phase 8.5.3.2 Valuation Label Repair
+
+RXRX's immutable valuation sentence contained valid values and typed provenance but displayed both
+the current PBR `1.82x` and five-year historical median `3.28x` as `역사적 PBR`. The registry had
+collapsed multiple comparison roles into one display label. `valuation-comparison-label-v1` now
+retains the role from `field_path`, produces `현재 PBR`, `역사적 PBR 중앙값`, and
+`PBR 역사적 백분위`, and rejects same-label/different-role collisions. RXRX and one additional
+WULF legacy occurrence are repaired; portfolio collisions after replay are zero. Biotech
+interpretation remains cash-runway/pipeline/milestone/dilution first.
+
+Implementation `b3ad1ea82bdbd3fe003831d449b0dcaa7c6a2da2` passed GitHub Actions run
+`32126079970`, full `1043` tests, API health, and 74 operating focused tests before targeted shadow
+promotion. Telegram, Scheduled Task, Pilot, and Production Assist mutations were zero. See the
+[validation](reports/20260818-phase8-5-3-2-rxrx-valuation-label-validation.md),
+[Preview](reports/20260818-phase8-5-3-2-rxrx-valuation-label-preview.md), and
+[audit](reports/20260818-phase8-5-3-2-valuation-label-audit.json).
+
 On 2026-08-15 the owning desktop environment verified all four local-project tasks, retained their
 08:15/08:30/16:15/16:55 schedules, and migrated their exact prompts to v3.10 with
 `security-identity-v2` and `financial-quality-taint-v2`. All four are ACTIVE,
@@ -655,7 +672,7 @@ unchanged. See [the Phase 7.2.9.2 readiness report](reports/20260817-phase7-2-9-
 - The 2026-08-18 natural KR packet proves the repaired current-price RR paths for the four run-23
   affected stocks. RR runtime path is LIVE PATH PASS. Both natural US and KR AI drafts still failed
   the runtime quality gate and delivered deterministic fallback, so full Natural Live AI quality is
-  PARTIAL. Phase 8.5.3.1 passes immutable replay and is shadow-promoted but still needs natural proof.
+  PARTIAL. Phase 8.5.3.2 passes immutable replay and is shadow-promoted but still needs natural proof.
 - Production Assist remains disabled pending a separate decision after successful Pilot evidence.
 
 Never fill data gaps with model knowledge. Add a deterministic fact, semantic contract, and tests
@@ -689,7 +706,8 @@ first.
    counter edits, resends, or archive rewriting.
 3. Keep TSM/WRD identity `unknown`, fine-grained industry routes general where unproved, peer data
    unavailable where absent, and OCF/CAPEX/FCF gaps explicit.
-4. After the live message blocker clears, implement Phase 8.2A KRX Open API Primary Market Breadth;
+4. Develop Phase 8.2A KRX Open API Primary Market Breadth on an experimental branch only while the
+   live proof is pending. Do not merge or deploy it until the separate data/Human Review gates pass.
    Phase 8.3 Peer/Sector Valuation follows unless a new blocker takes priority.
 5. Run 3-5 Massive weekday shadow captures at 08:05 KST and, after KRX activation, collect five
    KRX/Kiwoom reconciliation sessions before metric-level fallback.

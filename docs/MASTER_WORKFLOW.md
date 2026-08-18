@@ -4,11 +4,11 @@ Master Workflow: `v2`
 As of: `2026-08-18`
 Repository: `sskim-ai/thesis-monitor`
 Operating branch: `main`
-Latest evidence branch: `codex/phase-8-5-3-1-language-dedup-hardening`
+Latest evidence branch: `codex/phase-8-5-3-2-rxrx-valuation-label-repair`
 Commit resolution: run `git rev-parse HEAD`; this document is part of that commit and must not
 hardcode a self-referential final SHA. Resolve `origin/main` and the clean operating checkout at
-session start. Phase 8.5.3.1 passed immutable US/KR replay and was conditionally promoted to
-operating shadow; natural AI-assisted delivery remains pending.
+session start. Phase 8.5.3.2 passed immutable US/KR replay and was promoted to operating shadow;
+natural AI-assisted delivery remains pending.
 
 ## 1. Project Mission
 
@@ -214,6 +214,13 @@ events. Numeric repetition is audited by `fact_id` and `field_path`; the same ex
 printed three or more times in one stock message. These checks extend `runtime-message-quality-v1`
 without changing its existing portfolio repetition threshold.
 
+Phase 8.5.3.2 adds `valuation-comparison-label-v1`. Historical-distribution `current_value`,
+`historical_median`, `historical_mean`, percentile cut values, and current percentile retain
+distinct comparison roles through the numeric registry and binder. A legacy schema-4 packet is
+recovered from its exact field path. Different values with different roles cannot share one visible
+label in a stock message. RXRX now renders current PBR, historical PBR median, and historical PBR
+percentile distinctly without changing its biotech valuation boundary.
+
 ## 20. Phase History
 
 | Phase | Result |
@@ -231,6 +238,7 @@ without changing its existing portfolio repetition threshold.
 | 8.5.2 | Phase 8.5.1 linear ancestry promoted to main and the operating shadow checkout; API/task health verified; natural-live proof pending |
 | 8.5.3 | Natural US/KR quality failure reconstructed; AI specificity and fallback dynamic-price parity PASS; promoted with 8.5.3.1, natural AI delivery pending |
 | 8.5.3.1 | Korean language and intra-message dedup PASS; Phase 8.5.3 chain promoted to operating shadow; natural AI delivery pending |
+| 8.5.3.2 | Valuation comparison-role labels and collision validator PASS; targeted repair promoted to operating shadow; natural AI delivery pending |
 
 ## 21. Current Persistent Gaps
 
@@ -249,22 +257,22 @@ without changing its existing portfolio repetition threshold.
 | Current-price RR packet/numeric path | LIVE PATH PASS |
 | AI natural-live message quality | PARTIAL: retrospective PASS, natural AI delivery pending |
 | Fallback dynamic-price lifecycle | CLOSED: retrospective PASS and operating code promoted |
-| KRX Open API primary breadth | APPROVED, NOT INTEGRATED |
+| KRX Open API primary breadth | APPROVED, NOT INTEGRATED; experimental development authorized |
 | Human-approved Production Assist evidence | INSUFFICIENT |
 
 Closed engineering gaps include numeric provenance, canonical formatting, financial quality taint,
 security identity fail-closed, field-level financial lineage, unsafe growth blocking, integrated
 full messages, valuation scope, denied echo, decision-material delta, historical retention,
 valuation-context wording, observer/holder foundation, Unknown/next-check foundation, receipt
-integrity, fallback/retry, and exactly-once accounting.
+integrity, fallback/retry, exactly-once accounting, and valuation comparison-label collisions.
 
 ## 22. Current Roadmap
 
-Default next: observe the next natural US/KR sessions for actual AI-assisted delivery, final-language
-quality, receipt, archive, fallback, and exactly-once proof. KRX Open API approval is confirmed, so
-after a blocker-free live result the default analytical infrastructure task is Phase 8.2A KRX
-Market Breadth Primary. Phase 8.3 Peer/Sector Valuation follows unless a new operating blocker takes
-priority.
+Default operating task: observe the next natural US/KR sessions for actual AI-assisted delivery,
+final-language quality, receipt, archive, fallback, and exactly-once proof. In parallel, Phase 8.2A
+KRX Market Breadth Primary may be developed and archive-validated on an experimental branch only.
+It cannot merge or deploy until live baseline review and separate KRX data/Human Review pass. Phase
+8.3 Peer/Sector Valuation follows unless a new operating blocker takes priority.
 
 Do not keep subdividing mature safety infrastructure or Phase 8.4 message assembly without a real
 regression. The current priority sequence is natural AI delivery proof, KRX breadth, peer context,
@@ -339,6 +347,15 @@ shadow checkout at implementation commit `e166aaf6a4c13f9009a3885737d3b48e34c895
 Actions Test/Lint PASS. API health and 154 operating smoke tests pass; all four Codex automations
 remain ACTIVE and were not run manually. Production Assist remains OFF and AI mode remains shadow.
 
+Phase 8.5.3.2 traces the RXRX display defect to a numeric registry mapping that collapsed the
+historical distribution's current value and historical median into one `historical_pb_multiple`
+label. Immutable replay now renders `현재 PBR 1.82배`, `역사적 PBR 중앙값 3.28배`, and
+`PBR 역사적 백분위 9.5%`. The same generic repair also closes one WULF legacy collision; portfolio
+same-label/different-role collisions are zero. Exact implementation commit
+`b3ad1ea82bdbd3fe003831d449b0dcaa7c6a2da2` passed Actions run `32126079970`, was
+fast-forwarded to main and operating shadow, and passed API health plus 74 operating focused tests.
+Natural AI-assisted delivery is still pending.
+
 ## 26. Production Assist Approval Rules
 
 Production Assist remains OFF. Five operational Pilot successes are not enough. Approval requires
@@ -351,8 +368,9 @@ approval. Main merge and shadow deployment still do not authorize AI-assisted pr
 Inspect the next naturally generated US and KR results without manual task execution. Verify AI
 specificity, Korean language, watch/next separation, numeric dedup, current price-context parity,
 full validation, receipt, single delivery/fallback, archive, and exactly-once state before human
-message review. After natural AI-assisted delivery proof, begin Phase 8.2A KRX Market Breadth
-Primary; KRX is approved but not integrated. Phase 8.3 peer/sector work follows.
+message review. Phase 8.2A KRX Market Breadth Primary development may proceed concurrently on an
+experimental branch, but promotion waits for the natural baseline proof and KRX Human Review. KRX
+is approved but not integrated. Phase 8.3 peer/sector work follows.
 Missing metrics remain Unknown and industry conditions never become company achievements.
 
 ## 28. New Session Bootstrap Prompt
@@ -363,7 +381,7 @@ Missing metrics remain Unknown and industry conditions never become company achi
 > Recover the actual repository, runtime Pilot, Scheduled Task, contract, and Production Assist
 > state. If the repository is newer than a commit or statement in this workflow, the repository and
 > immutable runtime win and the documentation must be reconciled. Confirm whether a later natural
-> US/KR AI-assisted delivery exists after the Phase 8.5.3.1 shadow promotion. If not, the next task
+> US/KR AI-assisted delivery exists after the Phase 8.5.3.2 shadow promotion. If not, the next task
 > is read-only natural proof review. Once the live blocker is cleared, proceed to the
 > approved-but-not-integrated Phase 8.2A KRX Market Breadth Primary. Report the recovered state
 > before editing.
