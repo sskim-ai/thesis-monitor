@@ -877,6 +877,7 @@
     "status": "experimental_archive_pass_pending_human_review_and_current_session_readiness",
     "branch": "codex/phase-8-2a-krx-market-breadth",
     "base_main": "e925ee05eabcc1e89c74dfb1ec0d2dabbb01729d",
+    "implementation_commit": "0bf8921981bd3bd226e65291e785a831832055bd",
     "contracts": {
       "market_cross_section": "market-cross-section-v1",
       "market_breadth": "market-breadth-v1",
@@ -897,7 +898,8 @@
     "diff_check": "passed",
     "knowledge_checksum_parity": "passed",
     "public_action": "0.4.5_20_of_20_unique",
-    "github_actions": "pending_exact_experimental_branch_sha",
+    "github_actions_run": 32129314573,
+    "github_actions": "passed_test_and_lint",
     "credential_exposure": 0,
     "current_session_probe": "2026-08-18_http_200_empty_not_promoted",
     "main_merged": false,
