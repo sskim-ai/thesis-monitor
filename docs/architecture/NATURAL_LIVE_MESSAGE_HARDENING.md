@@ -83,6 +83,25 @@ Fallback semantic validation rejects:
 AI validation retains all numeric provenance, financial lineage/quality, security identity,
 valuation scope, denied echo, industry reasoning, message-quality, receipt, and exactly-once gates.
 
+## Final Language And Intra-Message Dedup
+
+Phase 8.5.3.1 extends the same fail-closed quality report without lowering any portfolio repetition
+threshold. The final rendered-language audit rejects mismatched Korean object particles for Hangul
+terms and a bounded canonical metric vocabulary, incomplete predicates, and malformed KR
+actor-flow fragments. It does not apply a global particle replacement or guess arbitrary Latin
+pronunciation.
+
+`priority_watch` owns ongoing thesis drivers and risks. `next_checks` owns the next filing,
+earnings release, or other time-bound confirmation that could change the judgment. Exact copies,
+event-oriented watch items, and semantic overlap without a distinct event condition fail quality;
+either section may be suppressed when it adds no new decision information.
+
+Numeric dedup is based on `fact_id` plus `field_path`, not surface text. One exact number has one
+primary owner section and may appear twice only when its second use has a distinct decision role.
+Three or more occurrences in one stock message fail quality. Current-price RR is normally owned by
+price positioning, while core judgment and observer prose carry its supported meaning without
+printing the same value again.
+
 ## Evidence Boundary
 
 The 2026-08-18 immutable US/KR replay is retrospective evidence only. A PASS does not update Pilot,

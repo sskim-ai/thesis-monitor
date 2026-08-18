@@ -1,5 +1,6 @@
 from app.schemas.ai_review import AIDailyReviewOutput
 from app.services.ai_reasoning_quality_service import (
+    _final_rendered_language_report,
     _structural_template_exception,
     normalize_decision_text,
     relational_reasoning_quality_report,
@@ -420,6 +421,123 @@ def test_quality_gate_accepts_particle_safe_price_and_user_facing_rr_language() 
     assert report["final_rendered_language"]["hard_checks_passed"] is True
 
 
+def test_final_language_gate_checks_metric_and_korean_object_particles() -> None:
+    failed = _final_rendered_language_report(
+        ["FCF을 확인하고 투자 회수을 점검하며 cash runway을 검증합니다."]
+    )
+    passed = _final_rendered_language_report(
+        ["FCF를 확인하고 투자 회수를 점검하며 cash runway를 검증합니다."]
+    )
+
+    assert failed["korean_particle_error_count"] == 3
+    assert failed["hard_checks_passed"] is False
+    assert passed["korean_particle_error_count"] == 0
+    assert passed["hard_checks_passed"] is True
+
+
+def test_final_language_gate_uses_canonical_metric_particle_vocabulary() -> None:
+    failed = _final_rendered_language_report(
+        ["PBR를, ROE을, RR를, HBM를 각각 확인합니다."]
+    )
+    passed = _final_rendered_language_report(
+        ["PBR을, ROE를, RR을, HBM을 각각 확인합니다."]
+    )
+
+    assert failed["korean_particle_error_count"] == 4
+    assert failed["hard_checks_passed"] is False
+    assert passed["korean_particle_error_count"] == 0
+    assert passed["hard_checks_passed"] is True
+
+
+def test_final_language_gate_rejects_malformed_supply_parallel_fragment() -> None:
+    failed = _final_rendered_language_report(
+        ["외국인 5일 순매수 163,521주는, 기관 5일 순매도 124,946주를."]
+    )
+    passed = _final_rendered_language_report(
+        [
+            "최근 5일 외국인은 163,521주 순매수했지만 기관은 "
+            "124,946주 순매도해 최근 수급 방향이 엇갈립니다."
+        ]
+    )
+
+    assert failed["malformed_actor_flow_count"] == 2
+    assert failed["incomplete_predicate_count"] >= 1
+    assert failed["hard_checks_passed"] is False
+    assert passed["malformed_actor_flow_count"] == 0
+    assert passed["incomplete_predicate_count"] == 0
+    assert passed["hard_checks_passed"] is True
+
+
+def test_quality_gate_rejects_watch_next_exact_and_role_overlap() -> None:
+    payload = _output().model_dump()
+    duplicate = "다음 공식 실적에서 HBM 수율을 확인합니다."
+    payload["stock_reviews"][0]["priority_watch"] = [duplicate]
+    payload["stock_reviews"][0]["next_checks"] = [duplicate]
+
+    report = relational_reasoning_quality_report(
+        AIDailyReviewOutput.model_validate(payload)
+    )
+    overlap = report["watch_next_check_overlap"]
+
+    assert overlap["exact_overlap_count"] == 1
+    assert overlap["watch_role_violation_count"] == 1
+    assert overlap["meaningless_overlap_count"] == 1
+    assert overlap["hard_checks_passed"] is False
+
+
+def test_quality_gate_allows_ongoing_watch_and_event_oriented_next_check() -> None:
+    payload = _output().model_dump()
+    payload["stock_reviews"][0]["priority_watch"] = [
+        "HBM 수율과 공급 discipline"
+    ]
+    payload["stock_reviews"][0]["next_checks"] = [
+        "다음 공식 실적에서 HBM 수율과 재고가 마진으로 이어지는지 확인합니다."
+    ]
+    payload["stock_reviews"][1]["priority_watch"] = []
+
+    report = relational_reasoning_quality_report(
+        AIDailyReviewOutput.model_validate(payload)
+    )
+    overlap = report["watch_next_check_overlap"]
+
+    assert overlap["meaningless_overlap_count"] == 0
+    assert overlap["hard_checks_passed"] is True
+
+
+def test_quality_gate_rejects_semantically_same_watch_and_undated_check() -> None:
+    payload = _output().model_dump()
+    payload["stock_reviews"][0]["priority_watch"] = ["HBM 수율 확인"]
+    payload["stock_reviews"][0]["next_checks"] = ["HBM 수율 점검"]
+
+    report = relational_reasoning_quality_report(
+        AIDailyReviewOutput.model_validate(payload)
+    )
+    overlap = report["watch_next_check_overlap"]
+
+    assert overlap["semantic_overlap_count"] == 1
+    assert overlap["meaningless_overlap_count"] == 1
+    assert overlap["hard_checks_passed"] is False
+
+
+def test_quality_gate_rejects_same_numeric_fact_in_three_sections() -> None:
+    payload = _output().model_dump()
+    claim = payload["stock_reviews"][0]["numeric_claims"][0]
+    payload["stock_reviews"][0]["numeric_claims"] = [
+        dict(claim, text_ref="core_judgment.text"),
+        dict(claim, text_ref="price_positioning.text"),
+        dict(claim, text_ref="price_positioning.new_observer_view"),
+    ]
+
+    report = relational_reasoning_quality_report(
+        AIDailyReviewOutput.model_validate(payload)
+    )
+    repetition = report["numeric_fact_repetition"]
+
+    assert repetition["same_fact_three_or_more_count"] == 1
+    assert repetition["rows"][0]["occurrence_count"] == 3
+    assert repetition["hard_checks_passed"] is False
+
+
 def test_quality_gate_allows_typed_neutral_absolute_valuation_statement() -> None:
     assert _structural_template_exception(
         "현재 PER 10배는 이익 기준의 절대 배수입니다.",
@@ -446,8 +564,8 @@ def test_runtime_quality_receipt_binds_packet_output_and_rendered_payload() -> N
         review["price_positioning"]["holder_view"] = f"보유자는 {watch} 훼손을 봅니다."
         review["supply_analysis"]["text"] = f"{volume} 상태를 상대거래량으로 확인합니다."
         review["valuation_analysis"]["text"] = f"{watch} 전에는 절대 배수만 봅니다."
-        review["priority_watch"] = [f"{watch}의 다음 공시"]
-        review["next_checks"] = [f"{core}의 다음 확인"]
+        review["priority_watch"] = [f"{watch}의 지속 여부"]
+        review["next_checks"] = [f"다음 공식 공시에서 {core} 여부를 확인합니다."]
         review["unknowns"] = [f"{earnings}의 지속성"]
     output = AIDailyReviewOutput.model_validate(payload)
     packet = {

@@ -57,6 +57,48 @@ _RENDERED_INTERNAL_LEXICON = re.compile(
     r"\bplaceholder\b)",
     re.IGNORECASE,
 )
+_KOREAN_PARTICLE = re.compile(
+    r"(?P<term>[가-힣]+|[A-Za-z][A-Za-z0-9]*)"
+    r"(?P<particle>을|를)"
+    r"(?=$|[\s,.;:!?)}\]])"
+)
+_MALFORMED_ACTOR_FLOW = re.compile(
+    r"(?:외국인|기관).{0,24}순(?:매수|매도)\s+"
+    r"[-+]?\d[\d,]*(?:\.\d+)?주(?:은|는|이|가|을|를)"
+    r"(?=$|\s*[,.;!?])"
+)
+_INCOMPLETE_PARTICLE_PREDICATE = re.compile(
+    r"(?:은|는|이|가|을|를|와|과)\s*[.!?](?:\s|$)"
+)
+_EVENT_ORIENTED_CHECK = re.compile(
+    r"(?:다음|향후|차기|공식\s*(?:실적|공시|자료|발표)|"
+    r"실적\s*(?:발표|공시)|공시에서|발표에서)"
+)
+_CHECK_WORDS = re.compile(
+    r"(?:확인(?:합니다|되는지|할지|해야\s*합니다)?|점검(?:합니다)?|"
+    r"검증(?:합니다|되는지)?|봅니다|판단합니다)"
+)
+
+# Preferred Korean usage for canonical finance and industry abbreviations. Unknown Latin
+# words are not guessed because their spoken Korean ending is not deterministic.
+_LATIN_FINAL_CONSONANT = {
+    "asp": False,
+    "capex": False,
+    "fcf": False,
+    "hbm": True,
+    "ocf": False,
+    "pbr": True,
+    "per": True,
+    "roe": False,
+    "rr": True,
+    "runway": False,
+}
+_PARTICLE_BY_FINAL = {
+    "은/는": ("은", "는"),
+    "이/가": ("이", "가"),
+    "을/를": ("을", "를"),
+    "와/과": ("과", "와"),
+}
 
 # These are safety boundaries, not stock analysis. They remain visible in the audit but do not
 # count as cross-stock investment boilerplate.
@@ -339,12 +381,122 @@ def _numeric_label_quality_report(
     }
 
 
+def _term_has_final_consonant(term: str) -> bool | None:
+    if not term:
+        return None
+    last = term[-1]
+    if "가" <= last <= "힣":
+        return (ord(last) - ord("가")) % 28 != 0
+    return _LATIN_FINAL_CONSONANT.get(term.casefold())
+
+
+def _expected_particle(term: str, particle: str) -> str | None:
+    has_final = _term_has_final_consonant(term)
+    if has_final is None:
+        return None
+    for family, choices in _PARTICLE_BY_FINAL.items():
+        if particle in choices:
+            return choices[0] if has_final else choices[1]
+    return None
+
+
+def _watch_next_overlap_report(output: AIDailyReviewOutput) -> dict[str, object]:
+    rows: list[dict[str, object]] = []
+    for review in output.stock_reviews:
+        for watch_index, watch in enumerate(review.priority_watch):
+            watch_normalized = normalize_decision_text(watch)
+            watch_event_oriented = bool(_EVENT_ORIENTED_CHECK.search(watch))
+            watch_core = normalize_decision_text(
+                _CHECK_WORDS.sub("", _EVENT_ORIENTED_CHECK.sub("", watch))
+            ).strip(" .,;:")
+            for next_index, next_check in enumerate(review.next_checks):
+                next_normalized = normalize_decision_text(next_check)
+                next_event_oriented = bool(_EVENT_ORIENTED_CHECK.search(next_check))
+                next_core = normalize_decision_text(
+                    _CHECK_WORDS.sub("", _EVENT_ORIENTED_CHECK.sub("", next_check))
+                ).strip(" .,;:")
+                exact = watch_normalized == next_normalized
+                semantic_same = bool(
+                    watch_core
+                    and next_core
+                    and (
+                        watch_core == next_core
+                        or watch_core in next_core
+                        or next_core in watch_core
+                    )
+                )
+                role_violation = watch_event_oriented
+                meaningless_overlap = exact or role_violation or (
+                    semantic_same and not next_event_oriented
+                )
+                if meaningless_overlap or semantic_same:
+                    rows.append(
+                        {
+                            "ticker": review.ticker,
+                            "watch_index": watch_index,
+                            "next_check_index": next_index,
+                            "watch": watch,
+                            "next_check": next_check,
+                            "exact": exact,
+                            "semantic_same": semantic_same,
+                            "watch_event_oriented": watch_event_oriented,
+                            "next_check_event_oriented": next_event_oriented,
+                            "meaningless_overlap": meaningless_overlap,
+                        }
+                    )
+    failures = [item for item in rows if item["meaningless_overlap"] is True]
+    return {
+        "rows": rows,
+        "exact_overlap_count": sum(bool(item["exact"]) for item in rows),
+        "semantic_overlap_count": sum(bool(item["semantic_same"]) for item in rows),
+        "watch_role_violation_count": sum(
+            bool(item["watch_event_oriented"]) for item in rows
+        ),
+        "meaningless_overlap_count": len(failures),
+        "hard_checks_passed": not failures,
+    }
+
+
+def _numeric_fact_repetition_report(output: AIDailyReviewOutput) -> dict[str, object]:
+    rows: list[dict[str, object]] = []
+    for review in output.stock_reviews:
+        claims: dict[tuple[str, str], list[dict[str, str]]] = defaultdict(list)
+        for claim in review.numeric_claims:
+            claims[(claim.fact_id, claim.field_path)].append(
+                {
+                    "text_ref": claim.text_ref,
+                    "usage": claim.usage,
+                    "semantic_type": claim.semantic_type,
+                }
+            )
+        for (fact_id, field_path), occurrences in claims.items():
+            if len(occurrences) < 3:
+                continue
+            rows.append(
+                {
+                    "ticker": review.ticker,
+                    "fact_id": fact_id,
+                    "field_path": field_path,
+                    "occurrence_count": len(occurrences),
+                    "occurrences": occurrences,
+                }
+            )
+    return {
+        "rows": rows,
+        "same_fact_three_or_more_count": len(rows),
+        "hard_checks_passed": not rows,
+    }
+
+
 def _final_rendered_language_report(messages: Iterable[str]) -> dict[str, object]:
     details: list[dict[str, object]] = []
     counts = {
         "duplicate_canonical_label_count": 0,
         "price_particle_error_count": 0,
         "internal_implementation_term_count": 0,
+        "korean_particle_error_count": 0,
+        "malformed_actor_flow_count": 0,
+        "incomplete_predicate_count": 0,
     }
     for index, message in enumerate(messages, start=1):
         checks = (
@@ -360,11 +512,61 @@ def _final_rendered_language_report(messages: Iterable[str]) -> dict[str, object
             details.append(
                 {"message_index": index, "issue": issue, "matches": matches}
             )
+        particle_matches = []
+        for match in _KOREAN_PARTICLE.finditer(message):
+            term = match.group("term")
+            particle = match.group("particle")
+            expected = _expected_particle(term, particle)
+            if expected is not None and expected != particle:
+                particle_matches.append(
+                    {
+                        "text": match.group(0),
+                        "term": term,
+                        "actual": particle,
+                        "expected": expected,
+                    }
+                )
+        if particle_matches:
+            counts["korean_particle_error_count"] += len(particle_matches)
+            details.append(
+                {
+                    "message_index": index,
+                    "issue": "korean_particle_error",
+                    "matches": particle_matches,
+                }
+            )
+        malformed_actor_flow = [
+            match.group(0) for match in _MALFORMED_ACTOR_FLOW.finditer(message)
+        ]
+        if malformed_actor_flow:
+            counts["malformed_actor_flow_count"] += len(malformed_actor_flow)
+            details.append(
+                {
+                    "message_index": index,
+                    "issue": "malformed_actor_flow",
+                    "matches": malformed_actor_flow,
+                }
+            )
+        incomplete_predicates = [
+            match.group(0)
+            for match in _INCOMPLETE_PARTICLE_PREDICATE.finditer(message)
+        ]
+        if incomplete_predicates:
+            counts["incomplete_predicate_count"] += len(incomplete_predicates)
+            details.append(
+                {
+                    "message_index": index,
+                    "issue": "incomplete_predicate",
+                    "matches": incomplete_predicates,
+                }
+            )
     return {
         **counts,
         "details": details,
         "hard_checks_passed": not any(counts.values()),
     }
+
+
 def relational_reasoning_quality_report(
     output: AIDailyReviewOutput,
     *,
@@ -651,6 +853,8 @@ def relational_reasoning_quality_report(
     expected_heading = "📊 거래량·포지셔닝" if output.market == "us" else "📊 수급"
     rendered_values = list(rendered_messages)
     final_rendered_language = _final_rendered_language_report(rendered_values)
+    watch_next_overlap = _watch_next_overlap_report(output)
+    numeric_fact_repetition = _numeric_fact_repetition_report(output)
     heading_mismatches = [
         index
         for index, message in enumerate(rendered_values, start=1)
@@ -729,6 +933,8 @@ def relational_reasoning_quality_report(
         and not heading_mismatches
         and not rendered_identity_mismatches
         and final_rendered_language["hard_checks_passed"] is True
+        and watch_next_overlap["hard_checks_passed"] is True
+        and numeric_fact_repetition["hard_checks_passed"] is True
     )
     return {
         "contract": "relational-reasoning-quality-v2",
@@ -794,6 +1000,8 @@ def relational_reasoning_quality_report(
             rendered_identity_mismatches
         ),
         "final_rendered_language": final_rendered_language,
+        "watch_next_check_overlap": watch_next_overlap,
+        "numeric_fact_repetition": numeric_fact_repetition,
         "hard_checks_passed": hard_checks_passed,
         "deterministic_quality_gate_passed": hard_checks_passed,
         "production_assist_evidence_eligible": False,

@@ -1,0 +1,297 @@
+{
+  "contract": "phase8-5-3-1-language-dedup-audit-v1",
+  "as_of": "2026-08-18",
+  "immutable_runs": {
+    "us": "2026-08-18-us-run-24-487c07bde4e1",
+    "kr": "2026-08-18-kr-run-25-23b5e31dc20e"
+  },
+  "quality_threshold_changed": false,
+  "telegram_sends": 0,
+  "pilot_mutations": 0,
+  "markets": {
+    "us": {
+      "before": {
+        "korean_particle_errors": 6,
+        "malformed_actor_flow": 0,
+        "incomplete_predicates": 0,
+        "watch_next_meaningless_overlap": 13,
+        "same_fact_three_or_more": 0,
+        "message_stats": {
+          "message_count": 13,
+          "characters": 14953,
+          "lines": 440,
+          "sections": 137,
+          "average_characters": 1150.2
+        }
+      },
+      "after": {
+        "korean_particle_errors": 0,
+        "malformed_actor_flow": 0,
+        "incomplete_predicates": 0,
+        "watch_next_meaningless_overlap": 0,
+        "same_fact_three_or_more": 0,
+        "message_stats": {
+          "message_count": 13,
+          "characters": 14730,
+          "lines": 453,
+          "sections": 137,
+          "average_characters": 1133.1
+        }
+      },
+      "rows": [
+        {
+          "ticker": "CORZ",
+          "watch_next_overlap_before": true,
+          "watch_next_overlap_after": false,
+          "same_fact_three_or_more_before": 0,
+          "same_fact_three_or_more_after": 0,
+          "max_exact_fact_occurrences_before": 2,
+          "max_exact_fact_occurrences_after": 2,
+          "priority_watch_count_after": 2,
+          "next_check_count_after": 1
+        },
+        {
+          "ticker": "CRCL",
+          "watch_next_overlap_before": true,
+          "watch_next_overlap_after": false,
+          "same_fact_three_or_more_before": 0,
+          "same_fact_three_or_more_after": 0,
+          "max_exact_fact_occurrences_before": 2,
+          "max_exact_fact_occurrences_after": 2,
+          "priority_watch_count_after": 2,
+          "next_check_count_after": 1
+        },
+        {
+          "ticker": "GOOGL",
+          "watch_next_overlap_before": true,
+          "watch_next_overlap_after": false,
+          "same_fact_three_or_more_before": 0,
+          "same_fact_three_or_more_after": 0,
+          "max_exact_fact_occurrences_before": 2,
+          "max_exact_fact_occurrences_after": 2,
+          "priority_watch_count_after": 2,
+          "next_check_count_after": 1
+        },
+        {
+          "ticker": "HUT",
+          "watch_next_overlap_before": true,
+          "watch_next_overlap_after": false,
+          "same_fact_three_or_more_before": 0,
+          "same_fact_three_or_more_after": 0,
+          "max_exact_fact_occurrences_before": 2,
+          "max_exact_fact_occurrences_after": 2,
+          "priority_watch_count_after": 2,
+          "next_check_count_after": 1
+        },
+        {
+          "ticker": "IBM",
+          "watch_next_overlap_before": true,
+          "watch_next_overlap_after": false,
+          "same_fact_three_or_more_before": 0,
+          "same_fact_three_or_more_after": 0,
+          "max_exact_fact_occurrences_before": 2,
+          "max_exact_fact_occurrences_after": 2,
+          "priority_watch_count_after": 2,
+          "next_check_count_after": 1
+        },
+        {
+          "ticker": "MU",
+          "watch_next_overlap_before": true,
+          "watch_next_overlap_after": false,
+          "same_fact_three_or_more_before": 0,
+          "same_fact_three_or_more_after": 0,
+          "max_exact_fact_occurrences_before": 2,
+          "max_exact_fact_occurrences_after": 2,
+          "priority_watch_count_after": 2,
+          "next_check_count_after": 1
+        },
+        {
+          "ticker": "RXRX",
+          "watch_next_overlap_before": true,
+          "watch_next_overlap_after": false,
+          "same_fact_three_or_more_before": 0,
+          "same_fact_three_or_more_after": 0,
+          "max_exact_fact_occurrences_before": 2,
+          "max_exact_fact_occurrences_after": 2,
+          "priority_watch_count_after": 2,
+          "next_check_count_after": 1
+        },
+        {
+          "ticker": "SKHY",
+          "watch_next_overlap_before": true,
+          "watch_next_overlap_after": false,
+          "same_fact_three_or_more_before": 0,
+          "same_fact_three_or_more_after": 0,
+          "max_exact_fact_occurrences_before": 2,
+          "max_exact_fact_occurrences_after": 2,
+          "priority_watch_count_after": 2,
+          "next_check_count_after": 1
+        },
+        {
+          "ticker": "SNDK",
+          "watch_next_overlap_before": true,
+          "watch_next_overlap_after": false,
+          "same_fact_three_or_more_before": 0,
+          "same_fact_three_or_more_after": 0,
+          "max_exact_fact_occurrences_before": 2,
+          "max_exact_fact_occurrences_after": 2,
+          "priority_watch_count_after": 2,
+          "next_check_count_after": 1
+        },
+        {
+          "ticker": "TSLA",
+          "watch_next_overlap_before": true,
+          "watch_next_overlap_after": false,
+          "same_fact_three_or_more_before": 0,
+          "same_fact_three_or_more_after": 0,
+          "max_exact_fact_occurrences_before": 2,
+          "max_exact_fact_occurrences_after": 2,
+          "priority_watch_count_after": 2,
+          "next_check_count_after": 1
+        },
+        {
+          "ticker": "TSM",
+          "watch_next_overlap_before": true,
+          "watch_next_overlap_after": false,
+          "same_fact_three_or_more_before": 0,
+          "same_fact_three_or_more_after": 0,
+          "max_exact_fact_occurrences_before": 2,
+          "max_exact_fact_occurrences_after": 2,
+          "priority_watch_count_after": 2,
+          "next_check_count_after": 1
+        },
+        {
+          "ticker": "WRD",
+          "watch_next_overlap_before": true,
+          "watch_next_overlap_after": false,
+          "same_fact_three_or_more_before": 0,
+          "same_fact_three_or_more_after": 0,
+          "max_exact_fact_occurrences_before": 2,
+          "max_exact_fact_occurrences_after": 2,
+          "priority_watch_count_after": 2,
+          "next_check_count_after": 1
+        },
+        {
+          "ticker": "WULF",
+          "watch_next_overlap_before": true,
+          "watch_next_overlap_after": false,
+          "same_fact_three_or_more_before": 0,
+          "same_fact_three_or_more_after": 0,
+          "max_exact_fact_occurrences_before": 2,
+          "max_exact_fact_occurrences_after": 2,
+          "priority_watch_count_after": 2,
+          "next_check_count_after": 1
+        }
+      ]
+    },
+    "kr": {
+      "before": {
+        "korean_particle_errors": 0,
+        "malformed_actor_flow": 2,
+        "incomplete_predicates": 1,
+        "watch_next_meaningless_overlap": 0,
+        "same_fact_three_or_more": 6,
+        "message_stats": {
+          "message_count": 7,
+          "characters": 9272,
+          "lines": 240,
+          "sections": 73,
+          "average_characters": 1324.6
+        }
+      },
+      "after": {
+        "korean_particle_errors": 0,
+        "malformed_actor_flow": 0,
+        "incomplete_predicates": 0,
+        "watch_next_meaningless_overlap": 0,
+        "same_fact_three_or_more": 0,
+        "message_stats": {
+          "message_count": 7,
+          "characters": 9371,
+          "lines": 240,
+          "sections": 73,
+          "average_characters": 1338.7
+        }
+      },
+      "rows": [
+        {
+          "ticker": "000660",
+          "watch_next_overlap_before": false,
+          "watch_next_overlap_after": false,
+          "same_fact_three_or_more_before": 1,
+          "same_fact_three_or_more_after": 0,
+          "max_exact_fact_occurrences_before": 3,
+          "max_exact_fact_occurrences_after": 2,
+          "priority_watch_count_after": 2,
+          "next_check_count_after": 1
+        },
+        {
+          "ticker": "003690",
+          "watch_next_overlap_before": false,
+          "watch_next_overlap_after": false,
+          "same_fact_three_or_more_before": 0,
+          "same_fact_three_or_more_after": 0,
+          "max_exact_fact_occurrences_before": 2,
+          "max_exact_fact_occurrences_after": 2,
+          "priority_watch_count_after": 2,
+          "next_check_count_after": 1
+        },
+        {
+          "ticker": "005490",
+          "watch_next_overlap_before": false,
+          "watch_next_overlap_after": false,
+          "same_fact_three_or_more_before": 1,
+          "same_fact_three_or_more_after": 0,
+          "max_exact_fact_occurrences_before": 3,
+          "max_exact_fact_occurrences_after": 2,
+          "priority_watch_count_after": 2,
+          "next_check_count_after": 1
+        },
+        {
+          "ticker": "005930",
+          "watch_next_overlap_before": false,
+          "watch_next_overlap_after": false,
+          "same_fact_three_or_more_before": 1,
+          "same_fact_three_or_more_after": 0,
+          "max_exact_fact_occurrences_before": 3,
+          "max_exact_fact_occurrences_after": 2,
+          "priority_watch_count_after": 2,
+          "next_check_count_after": 1
+        },
+        {
+          "ticker": "010120",
+          "watch_next_overlap_before": false,
+          "watch_next_overlap_after": false,
+          "same_fact_three_or_more_before": 1,
+          "same_fact_three_or_more_after": 0,
+          "max_exact_fact_occurrences_before": 3,
+          "max_exact_fact_occurrences_after": 2,
+          "priority_watch_count_after": 2,
+          "next_check_count_after": 1
+        },
+        {
+          "ticker": "012450",
+          "watch_next_overlap_before": false,
+          "watch_next_overlap_after": false,
+          "same_fact_three_or_more_before": 1,
+          "same_fact_three_or_more_after": 0,
+          "max_exact_fact_occurrences_before": 3,
+          "max_exact_fact_occurrences_after": 2,
+          "priority_watch_count_after": 2,
+          "next_check_count_after": 1
+        },
+        {
+          "ticker": "086280",
+          "watch_next_overlap_before": false,
+          "watch_next_overlap_after": false,
+          "same_fact_three_or_more_before": 1,
+          "same_fact_three_or_more_after": 0,
+          "max_exact_fact_occurrences_before": 3,
+          "max_exact_fact_occurrences_after": 2,
+          "priority_watch_count_after": 2,
+          "next_check_count_after": 1
+        }
+      ]
+    }
+  }
+}
