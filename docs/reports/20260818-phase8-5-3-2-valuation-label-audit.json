@@ -1,0 +1,429 @@
+{
+  "contract": "valuation-comparison-label-v1",
+  "as_of": "2026-08-18",
+  "immutable_runs": {
+    "us": "2026-08-18-us-run-24-487c07bde4e1",
+    "kr": "2026-08-18-kr-run-25-23b5e31dc20e"
+  },
+  "root_cause": "typed valuation comparison role lost in numeric display label mapping",
+  "rxrx": {
+    "ticker": "RXRX",
+    "company": "Recursion Pharmaceuticals",
+    "rows": [
+      {
+        "ref_id": "rxrx_val_cur",
+        "fact_id": "valuation:current",
+        "field_path": "fields.historical_pb_statistics.current_value",
+        "semantic_type": "historical_pb_multiple",
+        "comparison_role": "current_value",
+        "canonical_label": "현재 PBR",
+        "formatted_value": "1.82배",
+        "text_ref": "valuation_analysis.text",
+        "usage": "현재 PBR 1.82배",
+        "period": "2026-06-30",
+        "comparison_period": {
+          "start": "2021-08-16",
+          "end": "2026-08-17",
+          "lookback_years": 5.0,
+          "sampling_frequency": "weekly_last_valid_close_unadjusted_v2"
+        },
+        "source_period": "2026-06-30",
+        "source_type": "historical_price_to_book",
+        "valuation_context_class": "CURRENT_PLUS_HISTORY",
+        "typed_valuation_ref": "rxrx_val_history",
+        "typed_valuation_type": "historical",
+        "economic_scope": "listed_security"
+      },
+      {
+        "ref_id": "rxrx_val_med",
+        "fact_id": "valuation:current",
+        "field_path": "fields.historical_pb_statistics.historical_median",
+        "semantic_type": "historical_pb_multiple",
+        "comparison_role": "historical_median",
+        "canonical_label": "역사적 PBR 중앙값",
+        "formatted_value": "3.28배",
+        "text_ref": "valuation_analysis.text",
+        "usage": "역사적 PBR 중앙값 3.28배",
+        "period": "2026-08-17",
+        "comparison_period": {
+          "start": "2021-08-16",
+          "end": "2026-08-17",
+          "lookback_years": 5.0,
+          "sampling_frequency": "weekly_last_valid_close_unadjusted_v2"
+        },
+        "source_period": null,
+        "source_type": null,
+        "valuation_context_class": "CURRENT_PLUS_HISTORY",
+        "typed_valuation_ref": "rxrx_val_history",
+        "typed_valuation_type": "historical",
+        "economic_scope": "listed_security"
+      },
+      {
+        "ref_id": "rxrx_val_pct",
+        "fact_id": "valuation:current",
+        "field_path": "fields.historical_pb_statistics.current_percentile",
+        "semantic_type": "historical_pb_percentile",
+        "comparison_role": "current_percentile",
+        "canonical_label": "PBR 역사적 백분위",
+        "formatted_value": "9.5%",
+        "text_ref": "valuation_analysis.text",
+        "usage": "PBR 역사적 백분위 9.5%",
+        "period": "2026-06-30",
+        "comparison_period": {
+          "start": "2021-08-16",
+          "end": "2026-08-17",
+          "lookback_years": 5.0,
+          "sampling_frequency": "weekly_last_valid_close_unadjusted_v2"
+        },
+        "source_period": "2026-06-30",
+        "source_type": "historical_price_to_book",
+        "valuation_context_class": "CURRENT_PLUS_HISTORY",
+        "typed_valuation_ref": "rxrx_val_history",
+        "typed_valuation_type": "historical",
+        "economic_scope": "listed_security"
+      }
+    ],
+    "typed_valuation_reference": {
+      "ref_id": "rxrx_val_history",
+      "interpretation_type": "historical",
+      "metric": "pbr",
+      "fact_id": "valuation:historical_pb",
+      "text_ref": "valuation_analysis.text",
+      "exact_text_span": "{{numeric:rxrx_val_cur}}; {{numeric:rxrx_val_med}}; {{numeric:rxrx_val_pct}}. 현재 PBR은 비교 가능한 과거 관측치 대부분보다 낮은 구간이지만, cash runway·희석·임상 성공확률을 대신하지 않습니다.",
+      "comparison_numeric_ref_ids": [
+        "rxrx_val_cur",
+        "rxrx_val_med",
+        "rxrx_val_pct"
+      ],
+      "basis_status": "verified",
+      "source_type": "canonical",
+      "direction": "low",
+      "economic_scope": "listed_security"
+    },
+    "biotech_framework": "biotech",
+    "valuation_text": "임상 milestone과 cash runway의 배수 관계에서 현재 PBR 1.82배; 역사적 PBR 중앙값 3.28배; PBR 역사적 백분위 9.5%. 현재 PBR은 비교 가능한 과거 관측치 대부분보다 낮은 구간이지만, cash runway·희석·임상 성공확률을 대신하지 않습니다."
+  },
+  "markets": {
+    "us": {
+      "full_validator": "PASS",
+      "runtime_quality": "PASS",
+      "label_quality": {
+        "redundant_authored_label_count": 0,
+        "repeated_bound_label_count": 0,
+        "semantic_label_collision_count": 0,
+        "source_label_mismatch_count": 0,
+        "instrument_label_mismatch_count": 0,
+        "period_label_mismatch_count": 0,
+        "zone_role_mismatch_count": 0,
+        "postposition_mismatch_count": 0
+      },
+      "representative_rows": [
+        {
+          "ticker": "GOOGL",
+          "ref_id": "googl_val_pe",
+          "fact_id": "valuation:current",
+          "field_path": "fields.trailing_pe",
+          "semantic_type": "trailing_pe",
+          "comparison_role": null,
+          "canonical_label": "현재 PER",
+          "formatted_value": "12.33배",
+          "text_ref": "valuation_analysis.text",
+          "usage": "현재 PER 12.33배"
+        },
+        {
+          "ticker": "GOOGL",
+          "ref_id": "googl_val_fpe",
+          "fact_id": "valuation:current",
+          "field_path": "fields.forward_pe",
+          "semantic_type": "forward_pe",
+          "comparison_role": null,
+          "canonical_label": "시장 예상 fPER",
+          "formatted_value": "19.29배",
+          "text_ref": "valuation_analysis.text",
+          "usage": "시장 예상 fPER 19.29배"
+        },
+        {
+          "ticker": "MU",
+          "ref_id": "mu_val_pe",
+          "fact_id": "valuation:current",
+          "field_path": "fields.trailing_pe",
+          "semantic_type": "trailing_pe",
+          "comparison_role": null,
+          "canonical_label": "현재 PER",
+          "formatted_value": "20.68배",
+          "text_ref": "valuation_analysis.text",
+          "usage": "현재 PER 20.68배"
+        },
+        {
+          "ticker": "MU",
+          "ref_id": "mu_val_fpe",
+          "fact_id": "valuation:current",
+          "field_path": "fields.forward_pe",
+          "semantic_type": "forward_pe",
+          "comparison_role": null,
+          "canonical_label": "시장 예상 fPER",
+          "formatted_value": "5.87배",
+          "text_ref": "valuation_analysis.text",
+          "usage": "시장 예상 fPER 5.87배"
+        },
+        {
+          "ticker": "RXRX",
+          "ref_id": "rxrx_val_cur",
+          "fact_id": "valuation:current",
+          "field_path": "fields.historical_pb_statistics.current_value",
+          "semantic_type": "historical_pb_multiple",
+          "comparison_role": "current_value",
+          "canonical_label": "현재 PBR",
+          "formatted_value": "1.82배",
+          "text_ref": "valuation_analysis.text",
+          "usage": "현재 PBR 1.82배"
+        },
+        {
+          "ticker": "RXRX",
+          "ref_id": "rxrx_val_med",
+          "fact_id": "valuation:current",
+          "field_path": "fields.historical_pb_statistics.historical_median",
+          "semantic_type": "historical_pb_multiple",
+          "comparison_role": "historical_median",
+          "canonical_label": "역사적 PBR 중앙값",
+          "formatted_value": "3.28배",
+          "text_ref": "valuation_analysis.text",
+          "usage": "역사적 PBR 중앙값 3.28배"
+        },
+        {
+          "ticker": "RXRX",
+          "ref_id": "rxrx_val_pct",
+          "fact_id": "valuation:current",
+          "field_path": "fields.historical_pb_statistics.current_percentile",
+          "semantic_type": "historical_pb_percentile",
+          "comparison_role": "current_percentile",
+          "canonical_label": "PBR 역사적 백분위",
+          "formatted_value": "9.5%",
+          "text_ref": "valuation_analysis.text",
+          "usage": "PBR 역사적 백분위 9.5%"
+        },
+        {
+          "ticker": "TSLA",
+          "ref_id": "tsla_val_pe",
+          "fact_id": "valuation:current",
+          "field_path": "fields.trailing_pe",
+          "semantic_type": "trailing_pe",
+          "comparison_role": null,
+          "canonical_label": "현재 PER",
+          "formatted_value": "176.72배",
+          "text_ref": "valuation_analysis.text",
+          "usage": "현재 PER 176.72배"
+        },
+        {
+          "ticker": "TSLA",
+          "ref_id": "tsla_val_fpe",
+          "fact_id": "valuation:current",
+          "field_path": "fields.forward_pe",
+          "semantic_type": "forward_pe",
+          "comparison_role": null,
+          "canonical_label": "시장 예상 fPER",
+          "formatted_value": "145.9배",
+          "text_ref": "valuation_analysis.text",
+          "usage": "시장 예상 fPER 145.9배"
+        },
+        {
+          "ticker": "TSLA",
+          "ref_id": "tsla_val_hist",
+          "fact_id": "valuation:current",
+          "field_path": "fields.historical_pe_statistics.current_percentile",
+          "semantic_type": "historical_pe_percentile",
+          "comparison_role": "current_percentile",
+          "canonical_label": "PER 역사적 백분위",
+          "formatted_value": "95.9%",
+          "text_ref": "valuation_analysis.text",
+          "usage": "PER 역사적 백분위 95.9%"
+        }
+      ],
+      "representatives_without_selected_valuation_numbers": [
+        "TSM"
+      ],
+      "legacy_collisions": [
+        {
+          "ticker": "RXRX",
+          "label": "역사적 pbr",
+          "entries": [
+            {
+              "ref_id": "rxrx_val_cur",
+              "label": "역사적 PBR",
+              "fact_id": "valuation:current",
+              "field_path": "fields.historical_pb_statistics.current_value",
+              "semantic_type": "historical_pb_multiple",
+              "value": "1.82배"
+            },
+            {
+              "ref_id": "rxrx_val_med",
+              "label": "역사적 PBR",
+              "fact_id": "valuation:current",
+              "field_path": "fields.historical_pb_statistics.historical_median",
+              "semantic_type": "historical_pb_multiple",
+              "value": "3.28배"
+            }
+          ]
+        },
+        {
+          "ticker": "WULF",
+          "label": "역사적 pbr",
+          "entries": [
+            {
+              "ref_id": "wulf_val_cur",
+              "label": "역사적 PBR",
+              "fact_id": "valuation:current",
+              "field_path": "fields.historical_pb_statistics.current_value",
+              "semantic_type": "historical_pb_multiple",
+              "value": "59.62배"
+            },
+            {
+              "ref_id": "wulf_val_med",
+              "label": "역사적 PBR",
+              "fact_id": "valuation:current",
+              "field_path": "fields.historical_pb_statistics.historical_median",
+              "semantic_type": "historical_pb_multiple",
+              "value": "3.16배"
+            }
+          ]
+        }
+      ]
+    },
+    "kr": {
+      "full_validator": "PASS",
+      "runtime_quality": "PASS",
+      "label_quality": {
+        "redundant_authored_label_count": 0,
+        "repeated_bound_label_count": 0,
+        "semantic_label_collision_count": 0,
+        "source_label_mismatch_count": 0,
+        "instrument_label_mismatch_count": 0,
+        "period_label_mismatch_count": 0,
+        "zone_role_mismatch_count": 0,
+        "postposition_mismatch_count": 0
+      },
+      "representative_rows": [
+        {
+          "ticker": "000660",
+          "ref_id": "d14",
+          "fact_id": "valuation:current",
+          "field_path": "fields.price_to_book",
+          "semantic_type": "price_to_book",
+          "comparison_role": null,
+          "canonical_label": "현재 PBR",
+          "formatted_value": "4.5배",
+          "text_ref": "valuation_analysis.text",
+          "usage": "현재 PBR 4.5배"
+        },
+        {
+          "ticker": "000660",
+          "ref_id": "d15",
+          "fact_id": "valuation:current",
+          "field_path": "fields.historical_pb_statistics.current_percentile",
+          "semantic_type": "historical_pb_percentile",
+          "comparison_role": "current_percentile",
+          "canonical_label": "PBR 역사적 백분위",
+          "formatted_value": "87%",
+          "text_ref": "valuation_analysis.text",
+          "usage": "PBR 역사적 백분위 87%"
+        },
+        {
+          "ticker": "003690",
+          "ref_id": "d10",
+          "fact_id": "valuation:current",
+          "field_path": "fields.trailing_pe",
+          "semantic_type": "trailing_pe",
+          "comparison_role": null,
+          "canonical_label": "현재 PER",
+          "formatted_value": "6.32배",
+          "text_ref": "valuation_analysis.text",
+          "usage": "현재 PER 6.32배"
+        },
+        {
+          "ticker": "003690",
+          "ref_id": "d11",
+          "fact_id": "valuation:current",
+          "field_path": "fields.price_to_book",
+          "semantic_type": "price_to_book",
+          "comparison_role": null,
+          "canonical_label": "현재 PBR",
+          "formatted_value": "0.67배",
+          "text_ref": "valuation_analysis.text",
+          "usage": "현재 PBR 0.67배"
+        },
+        {
+          "ticker": "005490",
+          "ref_id": "d14",
+          "fact_id": "valuation:current",
+          "field_path": "fields.trailing_pe",
+          "semantic_type": "trailing_pe",
+          "comparison_role": null,
+          "canonical_label": "현재 PER",
+          "formatted_value": "18.21배",
+          "text_ref": "valuation_analysis.text",
+          "usage": "현재 PER 18.21배"
+        },
+        {
+          "ticker": "005490",
+          "ref_id": "d15",
+          "fact_id": "valuation:current",
+          "field_path": "fields.price_to_book",
+          "semantic_type": "price_to_book",
+          "comparison_role": null,
+          "canonical_label": "현재 PBR",
+          "formatted_value": "0.43배",
+          "text_ref": "valuation_analysis.text",
+          "usage": "현재 PBR 0.43배"
+        },
+        {
+          "ticker": "086280",
+          "ref_id": "d14",
+          "fact_id": "valuation:current",
+          "field_path": "fields.trailing_pe",
+          "semantic_type": "trailing_pe",
+          "comparison_role": null,
+          "canonical_label": "현재 PER",
+          "formatted_value": "10.05배",
+          "text_ref": "valuation_analysis.text",
+          "usage": "현재 PER 10.05배"
+        },
+        {
+          "ticker": "086280",
+          "ref_id": "d15",
+          "fact_id": "valuation:current",
+          "field_path": "fields.price_to_book",
+          "semantic_type": "price_to_book",
+          "comparison_role": null,
+          "canonical_label": "현재 PBR",
+          "formatted_value": "1.42배",
+          "text_ref": "valuation_analysis.text",
+          "usage": "현재 PBR 1.42배"
+        },
+        {
+          "ticker": "086280",
+          "ref_id": "d16",
+          "fact_id": "valuation:current",
+          "field_path": "fields.historical_pe_statistics.current_percentile",
+          "semantic_type": "historical_pe_percentile",
+          "comparison_role": "current_percentile",
+          "canonical_label": "PER 역사적 백분위",
+          "formatted_value": "91.4%",
+          "text_ref": "valuation_analysis.text",
+          "usage": "PER 역사적 백분위 91.4%"
+        }
+      ],
+      "representatives_without_selected_valuation_numbers": [],
+      "legacy_collisions": []
+    }
+  },
+  "summary": {
+    "rxrx_collision_before": 1,
+    "rxrx_collision_after": 0,
+    "portfolio_collision_before": 2,
+    "same_label_different_role_after": 0,
+    "typed_valuation_errors": 0,
+    "biotech_valuation_misuse": 0,
+    "telegram_sends": 0,
+    "pilot_mutations": 0
+  }
+}

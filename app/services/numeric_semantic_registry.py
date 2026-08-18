@@ -1411,6 +1411,8 @@ _SOURCE_LABEL_SEMANTICS = {
     "forward_pe",
     "forward_bvps",
     "forward_price_to_book",
+    "historical_pe_multiple",
+    "historical_pb_multiple",
 }
 _FINANCIAL_PERIOD_LABEL_SEMANTICS = {
     "revenue",
@@ -1455,6 +1457,8 @@ def _source_aware_label(
     fields: dict[str, object],
     field_path: str = "",
 ) -> str | None:
+    if historical_label := valuation_comparison_label(field_path):
+        return historical_label
     if semantic_type in _FINANCIAL_PERIOD_LABEL_SEMANTICS:
         source_fields = {
             "revenue": "latest_revenue",
@@ -1532,6 +1536,35 @@ def _source_aware_label(
             }[semantic_type]
             return f"{product} {suffix}"
     return None
+
+
+def valuation_comparison_label(field_path: str) -> str | None:
+    match = re.fullmatch(
+        r"fields\.historical_(pe|pb)_statistics\."
+        r"(current_value|historical_median|historical_mean|percentile_(?:10|25|50|75|90))",
+        field_path,
+    )
+    if match is None:
+        return None
+    metric_code, comparison_role = match.groups()
+    metric = "PER" if metric_code == "pe" else "PBR"
+    if comparison_role == "current_value":
+        return f"현재 {metric}"
+    if comparison_role == "historical_median":
+        return f"역사적 {metric} 중앙값"
+    if comparison_role == "historical_mean":
+        return f"역사적 {metric} 평균"
+    percentile = comparison_role.rsplit("_", maxsplit=1)[-1]
+    return f"역사적 {metric} {percentile}백분위 값"
+
+
+def valuation_comparison_role(field_path: str) -> str | None:
+    match = re.fullmatch(
+        r"fields\.historical_(?:pe|pb)_statistics\."
+        r"(current_value|historical_median|historical_mean|percentile_(?:10|25|50|75|90)|current_percentile)",
+        field_path,
+    )
+    return match.group(1) if match is not None else None
 
 
 def usage_matches_semantic(semantic_type: str, usage: str) -> bool:
@@ -1776,6 +1809,7 @@ def build_numeric_registry(
                             if spec is not None
                             else f"unregistered:{fact_type}:{path}"
                         ),
+                        "comparison_role": valuation_comparison_role(path),
                         "registered": registered,
                         "prose_allowed": prose_allowed,
                         "formatter": spec.formatter if spec is not None else None,

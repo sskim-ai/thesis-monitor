@@ -13,6 +13,8 @@ from app.services.industry_reasoning_service import (
 from app.services.numeric_semantic_registry import (
     canonical_display_value,
     semantic_spec,
+    valuation_comparison_label,
+    valuation_comparison_role,
 )
 from app.services.semantic_decision_service import (
     SEMANTIC_SCOPE_CONTRACT,
@@ -156,8 +158,13 @@ def _canonical_label(source: dict[str, object], role: str) -> str | None:
     semantic_type = str(source.get("semantic_type") or "")
     value = float(source["value"])
     candidates = [str(item) for item in labels if str(item).strip()]
+    comparison_label = valuation_comparison_label(
+        str(source.get("field_path") or "")
+    )
     source_label = str(source.get("canonical_label") or "").strip()
-    if source_label:
+    if comparison_label:
+        selected = comparison_label
+    elif source_label:
         selected = source_label
     elif semantic_type.endswith(
         ("net_buy_qty", "net_buy_qty_5d", "net_buy_qty_20d")
@@ -371,6 +378,26 @@ def _bound_label_quality_errors(
                 f"{prefix}:numeric_bound_repeated_label:"
                 f"{ref_id}:{text_ref}:{semantic_type}"
             )
+    by_label: dict[str, list[dict[str, object]]] = {}
+    for binding in bindings:
+        label = _normalized_label(str(binding.get("canonical_label") or ""))
+        if label:
+            by_label.setdefault(label, []).append(binding)
+    for label, grouped in by_label.items():
+        values = {str(item.get("formatted_value") or "") for item in grouped}
+        semantic_roles = {
+            (
+                str(item.get("semantic_type") or ""),
+                str(item.get("comparison_role") or ""),
+            )
+            for item in grouped
+        }
+        if len(values) > 1 and len(semantic_roles) > 1:
+            ref_ids = ",".join(str(item.get("ref_id") or "") for item in grouped)
+            errors.append(
+                f"{prefix}:numeric_bound_label_semantic_collision:"
+                f"{label}:{ref_ids}"
+            )
     return errors
 
 
@@ -571,6 +598,8 @@ def _bind_review(
                 "role": role,
                 "canonical_label": label,
                 "canonical_label_kind": source.get("canonical_label_kind"),
+                "comparison_role": source.get("comparison_role")
+                or valuation_comparison_role(field_path),
                 "formatted_value": display,
                 "postposition_family": postposition or None,
                 "resolved_postposition": selected_postposition,
@@ -1136,6 +1165,10 @@ def bind_numeric_fact_references(
             ),
             "repeated_bound_label_count": sum(
                 "numeric_bound_repeated_label" in item for item in errors
+            ),
+            "semantic_label_collision_count": sum(
+                "numeric_bound_label_semantic_collision" in item
+                for item in errors
             ),
             "source_label_mismatch_count": sum(
                 "numeric_bound_source_label_mismatch" in item for item in errors

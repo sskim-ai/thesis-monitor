@@ -200,6 +200,163 @@ def test_placeholder_contract_binds_complete_stock_numeric_phrases() -> None:
     assert len(result.report["bindings"]) == len(refs)
 
 
+def test_historical_valuation_distribution_roles_bind_distinct_labels() -> None:
+    fact = _fact(
+        "valuation:current",
+        "valuation",
+        {
+            "historical_pb_statistics": {
+                "current_value": 1.8154,
+                "historical_median": 3.279,
+                "current_percentile": 9.5,
+            }
+        },
+    )
+    refs = [
+        _ref(
+            "current",
+            "valuation:current",
+            "fields.historical_pb_statistics.current_value",
+        ),
+        _ref(
+            "median",
+            "valuation:current",
+            "fields.historical_pb_statistics.historical_median",
+        ),
+        _ref(
+            "percentile",
+            "valuation:current",
+            "fields.historical_pb_statistics.current_percentile",
+        ),
+    ]
+
+    result = _bind_stock(
+        [fact],
+        "{{numeric:current}}; {{numeric:median}}; {{numeric:percentile}}",
+        refs,
+    )
+
+    assert result.errors == ()
+    text = result.output["stock_reviews"][0]["core_judgment"]["text"]
+    assert text == (
+        "현재 PBR 1.82배; 역사적 PBR 중앙값 3.28배; "
+        "PBR 역사적 백분위 9.5%"
+    )
+    bindings = result.report["bindings"]
+    assert [item["comparison_role"] for item in bindings] == [
+        "current_value",
+        "historical_median",
+        "current_percentile",
+    ]
+
+
+def test_legacy_historical_registry_recovers_comparison_labels_from_path() -> None:
+    fact = _fact(
+        "valuation:current",
+        "valuation",
+        {
+            "historical_pb_statistics": {
+                "current_value": 1.8154,
+                "historical_median": 3.279,
+            }
+        },
+    )
+    registry = build_numeric_registry([fact])
+    for item in registry:
+        item["canonical_label"] = None
+        item["canonical_label_kind"] = None
+        item["canonical_label_required"] = False
+        item["comparison_role"] = None
+    packet = {"stocks": [{"ticker": "GENERIC", "numeric_registry": registry}]}
+    output = {
+        "stock_reviews": [
+            {
+                "ticker": "GENERIC",
+                "facts_used": ["valuation:current"],
+                "core_judgment": {
+                    "text": "{{numeric:current}}; {{numeric:median}}"
+                },
+                "numeric_claims": [],
+                "numeric_fact_refs": [
+                    _ref(
+                        "current",
+                        "valuation:current",
+                        "fields.historical_pb_statistics.current_value",
+                    ),
+                    _ref(
+                        "median",
+                        "valuation:current",
+                        "fields.historical_pb_statistics.historical_median",
+                    ),
+                ],
+            }
+        ]
+    }
+
+    result = bind_numeric_fact_references(packet, output)
+
+    assert result.errors == ()
+    assert (
+        result.output["stock_reviews"][0]["core_judgment"]["text"]
+        == "현재 PBR 1.82배; 역사적 PBR 중앙값 3.28배"
+    )
+    assert [item["comparison_role"] for item in result.report["bindings"]] == [
+        "current_value",
+        "historical_median",
+    ]
+
+
+def test_same_label_with_different_valuation_roles_fails_closed() -> None:
+    fact = _fact(
+        "valuation:current",
+        "valuation",
+        {"price_to_book": 1.8154, "trailing_pe": 3.279},
+    )
+    packet = {
+        "stocks": [
+            {
+                "ticker": "GENERIC",
+                "numeric_registry": build_numeric_registry([fact]),
+            }
+        ]
+    }
+    for item in packet["stocks"][0]["numeric_registry"]:
+        item["canonical_label"] = "가치평가 배수"
+    output = {
+        "stock_reviews": [
+            {
+                "ticker": "GENERIC",
+                "facts_used": ["valuation:current"],
+                "core_judgment": {
+                    "text": "{{numeric:current}}; {{numeric:median}}"
+                },
+                "numeric_claims": [],
+                "numeric_fact_refs": [
+                    _ref(
+                        "current",
+                        "valuation:current",
+                        "fields.price_to_book",
+                    ),
+                    _ref(
+                        "median",
+                        "valuation:current",
+                        "fields.trailing_pe",
+                    ),
+                ],
+            }
+        ]
+    }
+
+    result = bind_numeric_fact_references(packet, output)
+
+    assert any(
+        "numeric_bound_label_semantic_collision:가치평가 배수:current,median"
+        in error
+        for error in result.errors
+    )
+    assert result.report["label_quality"]["semantic_label_collision_count"] == 1
+
+
 @pytest.mark.parametrize(
     ("field_path", "role", "expected_role"),
     [
