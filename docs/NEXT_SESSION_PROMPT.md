@@ -39,6 +39,10 @@ checkout. Read, in this order:
 27. `docs/reports/20260819-phase8-3-2a-us-peer-coverage.md`
 28. `docs/reports/20260819-phase8-3-2a-full-message-preview.md`
 29. `docs/reports/20260819-phase8-3-2a-validation.md`
+30. `docs/reports/20260819-phase8-3-finalization.md`
+31. `docs/reports/20260819-phase8-3-final-tsla-peer-wording-preview.md`
+32. `docs/reports/20260819-master-workflow-v7-validation.md`
+33. `docs/reports/20260819-phase8-3-final-status.json`
 
 Repository and immutable runtime state override stale conversation or document claims. Resolve the
 current commit from Git rather than copying a historical SHA.
@@ -107,14 +111,14 @@ implementation commit `e166aaf6a4c13f9009a3885737d3b48e34c895d5` is included in 
 operating checkout; always re-resolve the final documentation SHA. Reconcile any later natural
 result instead of forcing these counts.
 
-Phase 8.3.2A is complete on the experimental clean peer-only ancestry. Provider policy is
-`FREE_ONLY`; the paid path is `CLOSED_BY_POLICY`. The immutable 20-stock POC measured one
-user-visible `MEDIUM` state: 1/20 overall and 1/15 among economically meaningful subjects. KR is
-0/7; US is 1/13. TSLA alone qualifies with an exact automotive group and three eligible PER
-issuers. Broad Technology/Media groups and generic semiconductor candidates remain `LOW`; RXRX,
-HPC, SaaS and holding frameworks remain not meaningful or suppressed; TSM/SKHY ADR basis remains
-unsafe. Historical peer PIT and forward peer expansion are deferred. This is selective archive
-evidence, not operating integration.
+Phase 8.3 is finalized on the experimental clean peer-only ancestry. Provider policy is `FREE_ONLY`;
+the paid path is `CLOSED_BY_POLICY`. The immutable 20-stock POC measured one user-visible `MEDIUM`
+state: 1/20 overall and 1/15 among economically meaningful subjects. KR is 0/7; US is 1/13. Broad
+runtime value is `LOW_ROI`; feature scope is `SELECTIVE_OPTIONAL_CONTEXT`, historical PIT and
+forward expansion are deferred, and operating integration is false. The TSLA sentence now calls
+the sample a same-automotive-classification baseline group and explicitly limits direct economic
+comparability while preserving all canonical values. Do not reopen Phase 8.3 without materially
+new free-source, taxonomy, exact-group or natural-message evidence.
 
 The Phase 8.3.2A branch starts from `codex/integration-phase-8-3-peer-only`, whose merge-base is the
 operating main. It contains no KRX provider/readiness implementation. The original Phase 8.3 branch
@@ -157,16 +161,30 @@ WULF legacy collision is closed by the same generic rule. Implementation
 `b3ad1ea82bdbd3fe003831d449b0dcaa7c6a2da2` passed exact-SHA Actions run `32126079970` and is
 promoted to operating shadow. Natural AI-assisted delivery remains PARTIAL.
 
-Default operating task: inspect the **next natural US/KR packets** for AI specificity, Korean language,
-intra-message dedup, dynamic-price parity, full-validator status, receipt, delivery/fallback,
-archive, exactly-once state, and human message quality. Do not run a Scheduled Task manually.
+Default operating task: inspect the **next natural US/KR packets** without manual task execution.
+For both markets verify, in order:
 
-Then inspect the latest KRX exact-slot evidence for 16:05, 08:05 and T+1. Historical capability and
-universe/publication contracts pass, but all three operational roles remain `NOT_YET_PROVEN` and
-operating integration remains false. Review the Phase 8.3.2A Human Preview and keep free peer
-valuation selective unless measured exact-taxonomy coverage improves. The next development choice
-is KRX readiness or cash-flow/taxonomy enrichment, subject to any natural-live blocker. Do not
-combine operating and experimental scopes.
+1. actual delivery mode;
+2. AI-assisted versus deterministic fallback;
+3. full validator and runtime-quality status;
+4. actual Telegram message human quality;
+5. price, RR and confirmation lifecycle;
+6. KR supply prose;
+7. valuation wording;
+8. industry-specific reasoning;
+9. concrete Unknown and next check;
+10. duplicate/repetition regression;
+11. receipt, archive and exactly-once state.
+
+If a critical blocker appears, prioritize a targeted runtime repair. If the review passes, the next
+development candidate is Cash Flow / Capital Efficiency Enrichment covering OCF, CAPEX, FCF, ROIC,
+relevant ROE, inventory, working capital, cash conversion and segment margin. Do not begin that
+phase before the natural review.
+
+In parallel, inspect the latest KRX exact-slot evidence for 16:05, 08:05 and T+1. Historical
+capability and universe/publication contracts pass, but all three operational roles remain
+`NOT_YET_PROVEN` and operating integration remains false. KRX promotion is a separate evidence-based
+decision. Do not combine operating and experimental scopes.
 
 Preserve the Phase 8.5 boundary: do not infer missing metrics, promote themes into company
 achievements, force fine-grained taxonomy, create thresholds, or relax numeric, lineage, scope,

@@ -1,10 +1,10 @@
 # Thesis Monitor Master Workflow
 
-Master Workflow: `v6`
+Master Workflow: `v7`
 As of: `2026-08-19`
 Repository: `sskim-ai/thesis-monitor`
 Operating branch: `main`
-Latest evidence branch: `codex/phase-8-3-2a-free-peer-poc`
+Latest evidence branch: `codex/phase-8-3-finalization`
 Commit resolution: run `git rev-parse HEAD`; this document is part of that commit and must not
 hardcode a self-referential final SHA. Resolve `origin/main` and the clean operating checkout at
 session start. Phase 8.5.3.2 remains the operating shadow baseline and natural AI-assisted delivery
@@ -184,21 +184,33 @@ investor flow remains unavailable. For copyable official references, use the
 
 ## 17A. Peer Valuation Status
 
-`peer-sector-valuation-v1` and `verified-profile-peers-v2` pass. Phase 8.3 remains `STRONG PARTIAL`
-and is not operating-integrated. The original Phase 8.3 branch includes KRX Git ancestry, while
+`peer-sector-valuation-v1` and `verified-profile-peers-v2` pass, including taxonomy selection,
+issuer deduplication, security basis, denominator safety, staleness, minimum sample, industry
+guardrails and numeric provenance. Phase 8.3 is finalized on the current roadmap as
+`SELECTIVE_OPTIONAL_CONTEXT`; its broad runtime value is `LOW_ROI` and operating integration is
+`NO`. The original Phase 8.3 branch includes KRX Git ancestry, while
 `codex/integration-phase-8-3-peer-only` reconstructs the peer contract from operating main without
-KRX code. Phase 8.3.2A starts from that clean branch.
+KRX code. Phase 8.3.2A and finalization start from that clean ancestry.
 
 Peer provider policy is permanently `FREE_ONLY` on the current roadmap. Paid/institutional research
-is retained as reference but the paid path is `CLOSED_BY_POLICY`. Historical peer PIT is
-`DEFERRED_BY_FREE_ONLY_POLICY`; forward peer consensus is optional and currently deferred.
+is retained as reference but the paid path is `CLOSED_BY_POLICY`. Historical peer PIT and forward
+peer consensus are `DEFERRED`; broad provider, forward and PIT expansion are stopped.
 
 The immutable free-source POC measures one `MEDIUM+` subject among 20 active stocks: 1/20 raw
 coverage and 1/15 among economically meaningful subjects. KR is 0/7; US is 1/13. TSLA alone has an
 exact automotive group and three clean PER issuers. Broad Technology, Media and semiconductor
 groups remain `LOW`, including MU because semiconductor is not a verified memory peer universe.
-The recommendation is selective optional context, not a broad runtime feature. Operating
-integration remains `NO`.
+The recommendation is selective optional context, not a broad runtime feature. Tooling, validators,
+statistics, audit artifacts and the clean peer-only branch are preserved. `LOW` remains audit-only,
+and `NOT_MEANINGFUL` is correct suppression rather than a coverage failure. Reopen only when exact
+taxonomy or free valuation coverage improves naturally, a safe new free source appears, a specific
+industry reliably has three clean issuers, or a natural operating-message review establishes a new
+peer need.
+
+The TSLA sample retains `MEDIUM` quality and the same four visible numeric claims, but user-facing
+wording now identifies the sample as a same-automotive-classification `기초 비교군`. Taxonomy and
+current-multiple eligibility do not prove full economic comparability, so the sentence explicitly
+limits direct peer-premium interpretation without adding unverified TSLA narratives.
 
 ## 18. Numeric Provenance
 
@@ -275,6 +287,25 @@ percentile distinctly without changing its biotech valuation boundary.
 | 8.3 | Peer selection/safety/statistics contract PASS; capability strong PARTIAL; original measured coverage 0/20 |
 | 8.3.1/8.3.1.1 | Paid provider research completed; clean peer-only branch prepared; production provider gate not passed |
 | 8.3.2A | Policy changed to FREE_ONLY; current free-source POC measured 1/20 and recommends selective optional context; not merged or deployed |
+| 8.3 Finalization | Contract/safety PASS; broad expansion stopped at LOW_ROI; tooling retained as SELECTIVE_OPTIONAL_CONTEXT; not merged or deployed |
+
+### Current Status Summary
+
+| Area | Status |
+|---|---|
+| Phase 8.4 Message Intelligence | COMPLETE |
+| Phase 8.5 Industry-Specific Reasoning | STRONG PARTIAL |
+| Phase 8.5.1 RR Runtime | LIVE PATH PASS |
+| Phase 8.5.3 Runtime Specificity | PASS retrospective |
+| Phase 8.5.3.1 Language/Dedup | PASS |
+| RXRX valuation label repair | CLOSED |
+| Fallback dynamic price | CLOSED |
+| Natural AI-Assisted Delivery | PARTIAL |
+| Phase 8.3 Contract / Safety | PASS / PASS |
+| Phase 8.3 broad value / scope | LOW_ROI / SELECTIVE_OPTIONAL_CONTEXT |
+| KRX historical / universe / breadth | PASS / CLOSED / PASS |
+| KRX 16:05 / 08:05 / T+1 | NOT_YET_PROVEN / NOT_YET_PROVEN / NOT_YET_PROVEN |
+| Production Assist / AI mode | OFF / shadow |
 
 ## 21. Current Persistent Gaps
 
@@ -282,10 +313,10 @@ percentile distinctly without changing its biotech valuation boundary.
 |---|---|
 | Industry-specific investment reasoning | STRONG PARTIAL |
 | Structured specialized taxonomy coverage | PARTIAL |
-| Peer/sector valuation | STRONG PARTIAL: contract PASS, free current coverage 1/20, operating NO |
+| Peer/sector valuation | CLOSED SCOPE: contract/safety PASS, SELECTIVE_OPTIONAL_CONTEXT, operating NO |
 | Peer provider policy | FREE_ONLY; paid path CLOSED_BY_POLICY |
-| Historical peer PIT | DEFERRED_BY_FREE_ONLY_POLICY |
-| Forward peer consensus | DEFERRED after low trailing value gate |
+| Historical peer PIT | DEFERRED |
+| Forward peer consensus | DEFERRED |
 | KR market breadth | historical PASS; current readiness PARTIAL; operating integration NO |
 | KRX 16:05 / 08:05 / T+1 roles | NOT_YET_PROVEN |
 | KR market-wide flow | UNSUPPORTED |
@@ -311,12 +342,13 @@ integrity, fallback/retry, exactly-once accounting, and valuation comparison-lab
 Operating blocker outranks new feature work. First observe the next natural US/KR sessions for
 actual AI-assisted delivery, final-language quality, receipt, archive, fallback and exactly-once
 proof. In parallel, continue the exact-slot KRX 16:05, 08:05 and T+1 observation without changing
-operating tasks. Review the Phase 8.3.2A human Preview, but do not expand the free peer feature or
-begin forward estimates unless a new exact free taxonomy group improves the value gate.
+operating tasks. Phase 8.3 is closed as selective optional context and is not the next priority.
 
-If no natural blocker appears, the next development choice is KRX shadow-promotion readiness or
-cash-flow/taxonomy enrichment. Peer valuation remains selective and experimental. Do not keep
-subdividing mature safety infrastructure or Phase 8.4 message assembly without a real regression.
+The next state is `WAIT_FOR_NATURAL_US_KR_REVIEW`. If that review has a critical blocker, perform a
+targeted runtime repair before any new feature. If it passes, the default development candidate is
+Cash Flow / Capital Efficiency Enrichment: OCF, CAPEX, FCF, ROIC, relevant ROE, inventory, working
+capital, cash conversion and segment margin. This candidate is recorded but must not start before
+the natural review. KRX promotion remains a separate evidence-based decision.
 
 ## 23. Codex Work Order Standard
 
@@ -405,12 +437,12 @@ approval. Main merge and shadow deployment still do not authorize AI-assisted pr
 
 ## 27. Current Next Task
 
-Inspect the next naturally generated US and KR results without manual task execution. Verify AI
-specificity, Korean language, watch/next separation, numeric dedup, current price-context parity,
-full validation, receipt, single delivery/fallback, archive, and exactly-once state before human
-message review. Phase 8.2A KRX Market Breadth Primary development may proceed concurrently on an
-experimental branch, but promotion waits for the natural baseline proof and KRX Human Review. KRX
-is approved but not integrated. Phase 8.3 peer/sector work follows.
+Inspect the next naturally generated US and KR results without manual task execution. Verify actual
+delivery mode, AI-assisted versus fallback, full validator/runtime quality, Telegram human quality,
+price/RR/confirmation lifecycle, KR supply prose, valuation wording, industry reasoning, concrete
+Unknown/next check, dedup, receipt, archive and exactly-once state. If no critical blocker appears,
+design Cash Flow / Capital Efficiency Enrichment. If a blocker appears, repair it first. Check KRX
+16:05, 08:05 and T+1 evidence in parallel; do not reopen peer work without new material evidence.
 Missing metrics remain Unknown and industry conditions never become company achievements.
 
 ## 28. New Session Bootstrap Prompt
@@ -422,6 +454,7 @@ Missing metrics remain Unknown and industry conditions never become company achi
 > state. If the repository is newer than a commit or statement in this workflow, the repository and
 > immutable runtime win and the documentation must be reconciled. Confirm whether a later natural
 > US/KR AI-assisted delivery exists after the Phase 8.5.3.2 shadow promotion. If not, the next task
-> is read-only natural proof review. Once the live blocker is cleared, proceed to the
-> approved-but-not-integrated Phase 8.2A KRX Market Breadth Primary. Report the recovered state
-> before editing.
+> is read-only natural proof review. Phase 8.3 is finalized as selective optional context and must
+> not be reopened without new evidence. If the natural review passes, begin design for Cash Flow /
+> Capital Efficiency Enrichment; if it fails, prioritize targeted runtime repair. Evaluate KRX
+> exact-slot evidence separately. Report the recovered state before editing.

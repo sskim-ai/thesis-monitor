@@ -39,6 +39,14 @@ _NOT_MEANINGFUL_FRAMEWORKS = {
     "holding_company",
     "saas",
 }
+_COMPARISON_SCOPE_LABELS = {
+    "automotive": "자동차",
+    "insurance": "보험",
+    "memory": "메모리",
+    "semiconductor": "반도체",
+    "steel_materials": "철강·소재",
+    "transport_logistics": "운송·물류",
+}
 
 
 def _normalized(value: object) -> str | None:
@@ -249,6 +257,20 @@ def _display_metric(framework: str, metrics: Mapping[str, object]) -> str | None
             and metrics[metric].get("available") is True
         ),
         None,
+    )
+
+
+def _comparison_scope_label(state: Mapping[str, object]) -> str:
+    selection = state.get("selection")
+    group_value = (
+        _normalized(selection.get("group_value"))
+        if isinstance(selection, Mapping)
+        else None
+    )
+    framework = _normalized(state.get("framework"))
+    return _COMPARISON_SCOPE_LABELS.get(
+        group_value or "",
+        _COMPARISON_SCOPE_LABELS.get(framework or "", "산업"),
     )
 
 
@@ -484,7 +506,9 @@ def render_free_peer_context(state: Mapping[str, object]) -> str | None:
     peer_median = metric["median"]
     sample_count = metric["sample_count"]
     difference = metric["company_vs_median_pct"]
-    relation = "높습니다." if float(difference) >= 0 else "낮습니다."
+    relation = "높지만" if float(difference) >= 0 else "낮지만"
+    relative_label = "프리미엄" if float(difference) >= 0 else "할인"
+    scope_label = _comparison_scope_label(state)
     framework = str(state.get("framework") or "general")
     caution = {
         "memory": "메모리 사이클·마진·현금흐름 차이를 함께 봐야 합니다.",
@@ -492,10 +516,12 @@ def render_free_peer_context(state: Mapping[str, object]) -> str | None:
         "insurance": "ROE·자본적정성 차이 확인 전에는 할인 여부만으로 결론 내리지 않습니다.",
         "steel_materials": "사이클 정상화 이익과 현금전환 차이를 함께 봐야 합니다.",
         "transport_logistics": "운임·물량·중기 마진과 현금전환 차이를 함께 봐야 합니다.",
-        "automotive": "물량·믹스·마진과 잉여현금흐름 차이를 함께 봐야 합니다.",
-    }.get(framework, "수익성·성장·현금전환 차이를 함께 봐야 합니다.")
+    }.get(framework)
+    caution_suffix = f" {caution}" if caution else ""
     return (
-        f"같은 업종의 검증 가능한 {sample_count}개 peer {label} 중앙값은 "
-        f"{peer_median:.2f}배이며, 현재 회사 {label} {company_value:.2f}배는 "
-        f"중앙값보다 {abs(float(difference)):.1f}% {relation} {caution}"
+        f"동일 {scope_label} 분류에서 {label} 비교가 가능한 {sample_count}개 상장사 "
+        f"중앙값은 {peer_median:.2f}배입니다. 현재 {label} {company_value:.2f}배는 "
+        f"이 기초 비교군보다 {abs(float(difference)):.1f}% {relation}, 사업모델·성장 "
+        f"기대가 달라 직접 동종기업 {relative_label} 해석에는 한계가 있습니다."
+        f"{caution_suffix}"
     )

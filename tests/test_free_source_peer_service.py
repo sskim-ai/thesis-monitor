@@ -293,20 +293,33 @@ def test_rendering_uses_precomputed_statistics_without_valuation_verdict() -> No
     text = render_free_peer_context(state)
 
     assert text is not None
-    assert "3개 peer" in text
+    assert "동일 반도체 분류" in text
+    assert "3개 상장사 중앙값" in text
+    assert "이 기초 비교군" in text
+    assert "검증 가능한" not in text
+    assert "peer" not in text
+    assert "직접 동종기업 프리미엄 해석에는 한계가 있습니다" in text
     assert "저평가" not in text
     assert "고평가" not in text
 
 
 def test_automotive_display_prefers_per_while_pbr_remains_auditable() -> None:
     state = build_free_source_peer_state(
-        _subject(framework="automotive"),
-        [_candidate(ticker) for ticker in ("A", "B", "C")],
+        _subject(framework="automotive", taxonomy="automotive"),
+        [
+            _candidate(ticker, taxonomy="automotive")
+            for ticker in ("A", "B", "C")
+        ],
         _snapshot(),
         {ticker: _fact(ticker) for ticker in ("A", "B", "C")},
         target_session=PRICE_DATE,
     )
 
     assert state["display_metric"] == "trailing_pe"
-    assert "peer PER 중앙값" in render_free_peer_context(state)
+    rendered = render_free_peer_context(state)
+    assert rendered is not None
+    assert "동일 자동차 분류" in rendered
+    assert "PER 비교가 가능한 3개 상장사" in rendered
+    assert "현재 PER 12.00배" in rendered
+    assert "20.0% 높지만" in rendered
     assert state["metrics"]["price_to_book"]["available"] is True

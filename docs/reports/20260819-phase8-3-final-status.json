@@ -1,0 +1,60 @@
+{
+  "as_of": "2026-08-19",
+  "phase": "8.3",
+  "status": "finalized",
+  "contract": "pass",
+  "selection_and_safety": "pass",
+  "provider_policy": "free_only",
+  "paid_provider_path": "closed_by_policy",
+  "broad_runtime_value": "low_roi",
+  "feature_scope": "selective_optional_context",
+  "operating_integration": false,
+  "historical_peer_pit": "deferred",
+  "forward_peer": "deferred",
+  "coverage": {
+    "high": 0,
+    "medium": 1,
+    "low": 9,
+    "suppressed": 5,
+    "not_meaningful": 5,
+    "medium_plus_active": {
+      "numerator": 1,
+      "denominator": 20,
+      "pct": 5.0
+    },
+    "medium_plus_meaningful": {
+      "numerator": 1,
+      "denominator": 15,
+      "pct": 6.67
+    },
+    "kr_medium_plus": 0,
+    "us_medium_plus": 1
+  },
+  "request_audit": {
+    "total_read_only": 263,
+    "finnhub": 232,
+    "visible_subjects": 1
+  },
+  "tsla_wording": {
+    "quality": "medium",
+    "numeric_change": 0,
+    "numeric_provenance_pct": 100,
+    "direct_peer_overstatement": 0,
+    "comparability_limit_explicit": true,
+    "unsupported_new_narrative": 0,
+    "message_length_change_pct": 9.78,
+    "other_representative_messages_changed": 0
+  },
+  "next_state": "wait_for_natural_us_kr_review",
+  "next_candidate": "cash_flow_capital_efficiency_enrichment",
+  "failure_path": "targeted_runtime_repair",
+  "natural_ai_assisted_delivery": "partial",
+  "krx_roles": {
+    "same_day_1605": "not_yet_proven",
+    "next_morning_0805": "not_yet_proven",
+    "t_plus_1": "not_yet_proven",
+    "historical": "supported"
+  },
+  "production_assist": false,
+  "operating_mutations": 0
+}

@@ -39,20 +39,21 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     assert state["branch"] == "main"
     assert (
         state["experimental_branch"]
-        == "codex/phase-8-3-2a-free-peer-poc"
+        == "codex/phase-8-3-finalization"
     )
     assert (
         state["current_phase"]
-        == "phase_8_3_2a_free_source_peer_poc_complete_experimental_only"
+        == "phase_8_3_finalized_selective_optional_context_experimental_only"
     )
     assert (
         state["last_completed_phase"]
-        == "phase_8_3_2a_free_source_current_peer_coverage_poc"
+        == "phase_8_3_finalization_and_master_workflow_v7"
     )
     assert (
         state["next_default_phase"]
-        == "natural_us_kr_live_proof_then_krx_slot_observation_and_free_peer_human_review"
+        == "pending_natural_message_review"
     )
+    assert state["next_candidate"] == "cash_flow_capital_efficiency_enrichment"
     assert state["deployed_code_commit"] == (
         "b3ad1ea82bdbd3fe003831d449b0dcaa7c6a2da2"
     )
@@ -72,10 +73,21 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     assert peer["measured_medium_plus_coverage"] == 1
     assert peer["active_subject_count"] == 20
     assert peer["meaningful_subject_count"] == 15
+    assert peer["broad_runtime_value"] == "low_roi"
+    assert peer["feature_scope"] == "selective_optional_context"
+    assert peer["high_subjects"] == 0
+    assert peer["medium_subjects"] == 1
+    assert peer["low_subjects"] == 9
+    assert peer["suppressed_subjects"] == 5
+    assert peer["not_meaningful_subjects"] == 5
+    assert peer["historical_peer_pit"] == "deferred"
+    assert peer["forward_peer"] == "deferred"
+    assert peer["phase_status"] == "finalized"
     assert peer["operating_integration"] is False
     dependency = state["branch_dependency"]
     assert dependency["phase_8_3_original_includes_krx_ancestry"] is True
     assert dependency["phase_8_3_2a_excludes_krx_implementation"] is True
+    assert dependency["phase_8_3_finalization_excludes_krx_implementation"] is True
     assert state["krx"]["same_day_1605_role"] == "not_yet_proven"
     assert state["krx"]["next_morning_0805_role"] == "not_yet_proven"
     assert state["krx"]["operating_integration"] is False
@@ -108,6 +120,18 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     assert state["production_assist"] is False
     assert state["public_action_version"] == "0.4.5"
     assert state["public_action_operation_ids"] == "20/20"
+
+    status = json.loads(
+        (ROOT / "docs" / "reports" / "20260819-phase8-3-final-status.json").read_text()
+    )
+    assert status["status"] == "finalized"
+    assert status["feature_scope"] == "selective_optional_context"
+    assert status["coverage"]["medium_plus_active"] == {
+        "numerator": 1,
+        "denominator": 20,
+        "pct": 5.0,
+    }
+    assert status["next_state"] == "wait_for_natural_us_kr_review"
 
 
 def test_knowledge_checksums_and_runtime_parity_are_documented() -> None:

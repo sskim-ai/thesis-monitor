@@ -53,4 +53,7 @@ Next section.
     assert "Peer context added: 1 / 2" in preview
     assert "| US | RXRX | UNCHANGED |" in preview
     assert preview.count("Biotech valuation.") == 2
-    assert "3개 peer PER 중앙값" in preview
+    assert "동일 자동차 분류" in preview
+    assert "3개 상장사 중앙값" in preview
+    assert "이 기초 비교군" in preview
+    assert "peer PER" not in preview

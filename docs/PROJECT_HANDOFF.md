@@ -16,7 +16,7 @@ execution or an autonomous investment adviser.
 
 | Component | Contract |
 |---|---|
-| Branch | operating `main` remains the Phase 8.5.x baseline; experimental `codex/phase-8-3-2a-free-peer-poc` starts from clean peer-only `e17d992c...` |
+| Branch | operating `main` remains the Phase 8.5.x baseline; experimental `codex/phase-8-3-finalization` starts from Phase 8.3.2A `ad1b98a...` on clean peer-only ancestry |
 | Official assessment | Deterministic `ThesisAssessment` |
 | AI mode | `shadow` |
 | Analysis policy | `daily-review-v3.10` |
@@ -41,10 +41,11 @@ execution or an autonomous investment adviser.
 | Runtime specificity | `runtime-message-specificity-v1` |
 | Runtime quality | `runtime-message-quality-v1`, receipt `runtime-message-quality-receipt-v2` |
 
-## Phase 8.3.2A Experimental State
+## Phase 8.3 Final State
 
-The operating checkout remains unchanged for the next natural Phase 8.5.x live proof. Phase 8.3.2A
-is archive-only and excludes KRX implementation ancestry. Its branch base is
+The operating checkout remains unchanged for the next natural Phase 8.5.x live proof. Phase 8.3 is
+finalized as archive-only `SELECTIVE_OPTIONAL_CONTEXT` and excludes KRX implementation ancestry. Its
+clean lineage starts from
 `codex/integration-phase-8-3-peer-only`, which reconstructs the peer contract from operating main.
 The original Phase 8.3 branch still contains KRX Git ancestry but no required KRX runtime import;
 see [BRANCH_DEPENDENCY.md](BRANCH_DEPENDENCY.md).
@@ -60,10 +61,24 @@ and semiconductor groups remain `LOW`; MU does not receive a memory comparison f
 semiconductor candidates. RXRX and HPC/SaaS/holding frameworks remain correctly suppressed or
 not meaningful. TSM/SKHY ADR basis remains unsafe.
 
-The full Preview adds one sentence inside TSLA's existing Valuation section, increases that message
-8.34%, creates no section, and leaves the other ten representative messages character-identical.
-Recommendation: retain selective optional context as development evidence; do not build a broad
-runtime feature or forward extension under current free coverage.
+The original full Preview added one sentence inside TSLA's existing Valuation section, increased
+that message 8.34%, created no section, and left the other ten representative messages
+character-identical. The final wording calls the sample a same-automotive-classification `기초
+비교군`, retains the same canonical numbers, and explicitly says business-model and growth-
+expectation differences limit direct peer-premium interpretation. The final targeted replay is
+1,319 to 1,448 characters, or +9.78%; the other ten messages remain unchanged.
+
+The Phase 8.3 contract and selection/safety tooling pass, but 263 read-only requests produced one
+visible `MEDIUM` subject. Broad runtime value is therefore `LOW_ROI`; daily broad collection,
+provider expansion, forward consensus, historical PIT and coverage-driven taxonomy widening stop.
+The engine, validators, audit artifacts and clean peer-only branch remain available for naturally
+qualifying MEDIUM/HIGH contexts. This is not integrated, deployed or active operating behavior.
+
+The next state is `WAIT_FOR_NATURAL_US_KR_REVIEW`. Do not start a new feature before reviewing the
+next natural messages. A critical failure takes priority as a targeted repair; otherwise the default
+candidate is Cash Flow / Capital Efficiency Enrichment because OCF, CAPEX, FCF, ROIC, inventory,
+working capital, cash conversion and segment economics remain more persistent decision gaps than
+peer coverage.
 
 Resolve the deployed commit with `git rev-parse HEAD`; a file inside a commit cannot contain that
 commit's own final hash. The machine-readable state records `HEAD`, the promoted code SHA, and the
@@ -688,9 +703,9 @@ unchanged. See [the Phase 7.2.9.2 readiness report](reports/20260817-phase7-2-9-
   incomplete.
 - Industry-specific causal reasoning contracts are implemented, but specialized structured routing
   covers 9/20 immutable active stocks; taxonomy and business-unit coverage remain partial.
-- Peer provider policy is FREE_ONLY. The current free-source POC covers 1/20 active and 1/15
-  meaningful subjects; historical peer PIT is deferred. The feature is selective and not
-  operating-integrated.
+- Peer provider policy is FREE_ONLY. Phase 8.3 is finalized at 1/20 active and 1/15 meaningful
+  coverage as SELECTIVE_OPTIONAL_CONTEXT. Broad runtime value is LOW_ROI; historical PIT and
+  forward expansion are deferred, and operating integration is false.
 - OCF extraction is partial; CAPEX aggregation and FCF remain open.
 - The persisted US count includes the 2026-08-16 operationally complete session whose human message
   quality review failed. Operational count and human approval remain separate; this packet is not
@@ -736,9 +751,9 @@ first.
    unavailable where absent, and OCF/CAPEX/FCF gaps explicit.
 4. Continue exact-slot KRX 16:05, 08:05 and T+1 observations on its separate experimental branch.
    Do not merge or deploy until role evidence and Human Review pass.
-5. Review the Phase 8.3.2A selective peer Preview. Do not extend to forward estimates unless a
-   free source proves another exact group with three clean issuers and complete estimate metadata.
-6. Prefer KRX readiness or cash-flow/taxonomy enrichment over broad free-peer expansion unless the
-   measured coverage changes.
+5. Keep Phase 8.3 closed as selective optional context unless materially new free-source, taxonomy,
+   exact-group or natural-message evidence appears.
+6. If the natural review passes without a critical blocker, begin Cash Flow / Capital Efficiency
+   Enrichment design. If it fails, perform the targeted runtime repair first.
 7. Keep Production Assist disabled until natural full-message evidence passes direct human review
    and the user explicitly approves it.

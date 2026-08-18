@@ -10,6 +10,10 @@ current peer cross-section only; historical peer point-in-time reconstruction is
 The contract is `free-source-current-peer-v1` layered on `peer-sector-valuation-v1` and
 `verified-profile-peers-v2`.
 
+Phase 8.3 is finalized as `SELECTIVE_OPTIONAL_CONTEXT`. Its selection, safety, statistics,
+provenance and audit tooling remain available, but broad runtime expansion is stopped because the
+measured free-source value is `LOW_ROI`. Operating integration remains `NO`.
+
 ## Pipeline
 
 ```text
@@ -79,6 +83,12 @@ subject. A memory subject therefore falls back to `LOW` unless memory peers are 
 verified. An exact provider `Automobiles` taxonomy can qualify, but interpretation still requires
 volume, mix, margin, CAPEX and FCF context.
 
+A qualifying taxonomy and safe multiple prove a calculation-eligible baseline group, not full
+economic comparability. User-facing wording therefore calls it a same-classification `기초 비교군`
+and states that business-model and growth-expectation differences limit direct peer-premium or
+peer-discount interpretation. The formatter applies this rule by verified classification, never by
+ticker. It does not add unverified company narratives.
+
 Biotech, HPC/crypto infrastructure, SaaS and holding-company frameworks remain
 `NOT_MEANINGFUL` for generic PER/PBR under this free-source contract. Relative discount is not
 `cheap`, and relative premium is not `overvalued`.
@@ -102,6 +112,8 @@ message fixtures remain byte-for-byte unchanged; TSLA grows 8.34% and adds no ne
 ## Continuation Decision
 
 The free-source combination is technically safe but has low analytical return for a broad feature.
-Keep it as a selective optional context and do not add runtime integration. Do not proceed to a
-forward-consensus POC until another free source can prove at least one additional exact industry
-group with three clean issuers and complete estimate metadata.
+Phase 8.3 is closed on the current roadmap as selective optional context. Keep the tooling and clean
+peer-only branch, but do not add runtime integration, daily broad collection, taxonomy widening,
+forward-consensus expansion or historical PIT work. Reopen only if verified taxonomy or free current
+valuation coverage improves naturally, a new safe free source appears, an exact industry group
+reliably reaches three clean issuers, or operating-message review establishes a new peer need.
