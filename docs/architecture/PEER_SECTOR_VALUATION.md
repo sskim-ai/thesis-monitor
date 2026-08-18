@@ -1,5 +1,37 @@
 # Peer / Sector Valuation Intelligence
 
+## Problem
+
+Absolute and own-history valuation do not answer how a subject compares with economically similar
+issuers at the same point in time. The repository also lacks a broad current peer provider, so a
+loosely selected average would create false precision.
+
+## Decision
+
+Use `peer-sector-valuation-v1`: a taxonomy-first, issuer-deduplicated, denominator-safe and
+point-in-time contract. Emit a peer Fact only for at least three eligible independent issuers and
+keep broad sector fallback audit-only.
+
+## Why
+
+This gives the AI an exact relative context when evidence exists and preserves honest
+unavailability when it does not. The contract can accept a future broad provider without changing
+renderer or AI arithmetic boundaries.
+
+## Rejected Alternative
+
+- ticker-specific peer lists;
+- web-scraped current multiples;
+- mixed consensus and modeled forward samples;
+- sector averages presented as industry peers; and
+- relative discount or premium used as an automatic valuation verdict.
+
+## Safety Constraint
+
+Every selected metric must align on price session, positive denominator, security/share basis,
+issuer identity, taxonomy and minimum sample. Raw candidate rows stay in the audit; visible numbers
+use canonical Facts and numeric provenance. No operating deployment is part of Phase 8.3.
+
 ## Status And Scope
 
 `peer-sector-valuation-v1` is an experimental Phase 8.3 contract. It extends the Phase 7
@@ -139,4 +171,3 @@ data coverage result, not a validator failure.
 The implementation is therefore `STRONG PARTIAL`: selection, safety, statistics, canonical semantics
 and audit contracts pass, but broad point-in-time provider coverage remains open. It is development
 only and is not integrated, active, merged to main, or deployed.
-

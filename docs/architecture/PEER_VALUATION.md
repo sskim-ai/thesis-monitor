@@ -1,5 +1,10 @@
 # Peer Valuation
 
+> Historical Phase 7 foundation. Phase 8.3 extends this contract with issuer deduplication,
+> exchange-session alignment, forward-basis separation, quality classes and industry guardrails in
+> [PEER_SECTOR_VALUATION.md](PEER_SECTOR_VALUATION.md). The extension remains experimental and is
+> not deployed.
+
 ## Problem
 
 Company multiples and historical percentiles do not show how a company compares with current peers.

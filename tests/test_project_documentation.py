@@ -16,6 +16,7 @@ DOCUMENTS = (
     ROOT / "docs" / "architecture" / "NUMERIC_PROVENANCE.md",
     ROOT / "docs" / "architecture" / "MONITORING_STATE_LIFECYCLE.md",
     ROOT / "docs" / "architecture" / "PEER_VALUATION.md",
+    ROOT / "docs" / "architecture" / "PEER_SECTOR_VALUATION.md",
     ROOT / "docs" / "architecture" / "NATURAL_LIVE_MESSAGE_HARDENING.md",
     ROOT / "docs" / "operations" / "AI_ASSISTED_PILOT.md",
     ROOT / "docs" / "knowledge" / "README.md",
@@ -129,6 +130,7 @@ def test_architecture_guides_record_decisions_and_readme_navigation() -> None:
         ROOT / "docs" / "architecture" / "NUMERIC_PROVENANCE.md",
         ROOT / "docs" / "architecture" / "MONITORING_STATE_LIFECYCLE.md",
         ROOT / "docs" / "architecture" / "PEER_VALUATION.md",
+        ROOT / "docs" / "architecture" / "PEER_SECTOR_VALUATION.md",
         ROOT / "docs" / "operations" / "AI_ASSISTED_PILOT.md",
         ROOT / "docs" / "knowledge" / "README.md",
     )
@@ -149,6 +151,7 @@ def test_architecture_guides_record_decisions_and_readme_navigation() -> None:
         "docs/architecture/NUMERIC_PROVENANCE.md",
         "docs/architecture/MONITORING_STATE_LIFECYCLE.md",
         "docs/architecture/PEER_VALUATION.md",
+        "docs/architecture/PEER_SECTOR_VALUATION.md",
         "docs/operations/AI_ASSISTED_PILOT.md",
         "docs/operations/SCHEDULED_TASK_CONTRACTS.md",
         "docs/knowledge/README.md",
