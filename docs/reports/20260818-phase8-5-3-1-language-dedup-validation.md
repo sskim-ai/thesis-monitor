@@ -40,6 +40,15 @@ Representative US scores: MU 18, SNDK 18, SKHY 17, TSM 18, TSLA 18, RXRX 18; ave
 
 Semantic gates: Korean Grammar PASS; Intra-Message Redundancy PASS; Watch vs Next Check Separation PASS.
 
+## Message Length
+
+| Market | Average characters before | Average characters after | Change |
+|---|---:|---:|---:|
+| US | 1150.2 | 1133.1 | -1.5% |
+| KR | 1324.6 | 1338.7 | 1.1% |
+
+US lines move from 440 to 453; KR lines remain 240. Section counts remain unchanged in both markets.
+
 ## Operations
 
 - Replay Telegram sends: 0.

@@ -16,7 +16,7 @@ execution or an autonomous investment adviser.
 
 | Component | Contract |
 |---|---|
-| Branch | operating `main` at `a8ebb02753e28795f36dbf72c9deb3520f75ed44`; Phase 8.5.3 validated on its experimental branch, not promoted |
+| Branch | operating `main`; resolve exact SHA with Git; Phase 8.5.3.1 implementation `e166aaf6a4c13f9009a3885737d3b48e34c895d5` is promoted |
 | Official assessment | Deterministic `ThesisAssessment` |
 | AI mode | `shadow` |
 | Analysis policy | `daily-review-v3.10` |
@@ -471,9 +471,29 @@ See the [root-cause report](reports/20260818-phase8-5-3-natural-live-message-roo
 [fallback Preview](reports/20260818-phase8-5-3-fallback-price-parity-preview.md).
 
 This evidence is archive-only. It sent no Telegram, ran no Scheduled Task, changed no Pilot/DB/
-assessment/archive state, and did not alter operating main. A separate shadow promotion followed by
-a natural AI-assisted US/KR delivery is required. KRX Open API is approved but not integrated;
-Phase 8.2A becomes the next analytical infrastructure task after this live blocker is cleared.
+assessment/archive state. Phase 8.5.3.1 subsequently completed the final language/dedup hardening
+and promoted the full chain. A natural AI-assisted US/KR delivery is still required. KRX Open API is
+approved but not integrated; Phase 8.2A becomes the next analytical infrastructure task after this
+live blocker is cleared.
+
+## Phase 8.5.3.1 Language/Dedup And Shadow Promotion
+
+The 2026-08-18 immutable packets were replayed with no new Facts or provider calls. US Korean
+object-particle errors fell from six to zero; the KR malformed actor-flow phrases fell from two to
+zero and incomplete predicates from one to zero. Exact watch/next overlap fell from 13 US stocks to
+zero. The same current-price RR Fact had appeared three times in six KR messages; exact RR is now
+owned by price positioning and the three-or-more count is zero. Both full validators, runtime
+quality, final language, fallback parity, and denied-Fact controls PASS.
+
+Implementation commit `e166aaf6a4c13f9009a3885737d3b48e34c895d5` passed exact-SHA GitHub
+Actions run `32122804278` Test/Lint and was fast-forwarded to main and the clean operating shadow
+checkout. The API was restarted and `/health` passed. US/KR AI health passed, operating focused
+tests passed 154/154, and all four Codex automations remain ACTIVE at
+08:15/08:30/16:15/16:55 KST on the operating checkout. No automation was manually run; Telegram,
+Pilot, DB, assessment, and archive mutations were zero. Production Assist remains OFF and AI mode
+remains shadow. See the [validation report](reports/20260818-phase8-5-3-1-language-dedup-validation.md),
+[Preview](reports/20260818-phase8-5-3-1-language-dedup-preview.md), and
+[promotion report](reports/20260818-phase8-5-3-1-shadow-promotion.md).
 
 On 2026-08-15 the owning desktop environment verified all four local-project tasks, retained their
 08:15/08:30/16:15/16:55 schedules, and migrated their exact prompts to v3.10 with
@@ -635,7 +655,7 @@ unchanged. See [the Phase 7.2.9.2 readiness report](reports/20260817-phase7-2-9-
 - The 2026-08-18 natural KR packet proves the repaired current-price RR paths for the four run-23
   affected stocks. RR runtime path is LIVE PATH PASS. Both natural US and KR AI drafts still failed
   the runtime quality gate and delivered deterministic fallback, so full Natural Live AI quality is
-  PARTIAL. Phase 8.5.3 passes immutable replay but still needs shadow promotion and natural proof.
+  PARTIAL. Phase 8.5.3.1 passes immutable replay and is shadow-promoted but still needs natural proof.
 - Production Assist remains disabled pending a separate decision after successful Pilot evidence.
 
 Never fill data gaps with model knowledge. Add a deterministic fact, semantic contract, and tests
@@ -662,17 +682,16 @@ first.
 
 ## Next Steps
 
-1. Review Phase 8.5.3 evidence and promote it to operating shadow under a separate release order,
-   independently of Production Assist.
-2. Wait for the next natural US/KR sessions and verify AI quality, current price-context parity,
+1. Wait for the next natural US/KR sessions and verify AI quality, Korean language, intra-message
+   dedup, current price-context parity,
    full validator, runtime receipt, archive, and exactly-once behavior.
-3. Preserve operational counts KR 3/5 and US 3/5 and retain all natural/replay artifacts without
+2. Preserve operational counts KR 3/5 and US 3/5 and retain all natural/replay artifacts without
    counter edits, resends, or archive rewriting.
-4. Keep TSM/WRD identity `unknown`, fine-grained industry routes general where unproved, peer data
+3. Keep TSM/WRD identity `unknown`, fine-grained industry routes general where unproved, peer data
    unavailable where absent, and OCF/CAPEX/FCF gaps explicit.
-5. After the live message blocker clears, implement Phase 8.2A KRX Open API Primary Market Breadth;
+4. After the live message blocker clears, implement Phase 8.2A KRX Open API Primary Market Breadth;
    Phase 8.3 Peer/Sector Valuation follows unless a new blocker takes priority.
-6. Run 3-5 Massive weekday shadow captures at 08:05 KST and, after KRX activation, collect five
+5. Run 3-5 Massive weekday shadow captures at 08:05 KST and, after KRX activation, collect five
    KRX/Kiwoom reconciliation sessions before metric-level fallback.
-7. Keep Production Assist disabled until natural full-message evidence passes direct human review
+6. Keep Production Assist disabled until natural full-message evidence passes direct human review
    and the user explicitly approves it.

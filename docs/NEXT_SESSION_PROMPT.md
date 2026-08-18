@@ -24,6 +24,10 @@ checkout. Read, in this order:
 12. `docs/reports/20260818-phase8-5-3-natural-live-message-validation.md`
 13. `docs/reports/20260818-phase8-5-3-ai-natural-live-hardening-preview.md`
 14. `docs/reports/20260818-phase8-5-3-fallback-price-parity-preview.md`
+15. `docs/reports/20260818-phase8-5-3-1-language-dedup-validation.md`
+16. `docs/reports/20260818-phase8-5-3-1-language-dedup-preview.md`
+17. `docs/reports/20260818-phase8-5-3-1-language-dedup-audit.json`
+18. `docs/reports/20260818-phase8-5-3-1-shadow-promotion.md`
 
 Repository and immutable runtime state override stale conversation or document claims. Resolve the
 current commit from Git rather than copying a historical SHA.
@@ -85,8 +89,9 @@ Knowledge checksums:
   `beee64559831479168f1347c43d979391126926d73e2473ce837cefbf0ede19b`
 
 Runtime source of truth at handoff: KR 3/5 and US 3/5, AI mode shadow, Production Assist OFF, four
-Scheduled Tasks ACTIVE at 08:15/08:30/16:15/16:55 KST on the operating checkout. The operating main
-commit is `a8ebb02753e28795f36dbf72c9deb3520f75ed44`; always re-resolve it. Reconcile any later natural
+Scheduled Tasks ACTIVE at 08:15/08:30/16:15/16:55 KST on the operating checkout. Phase 8.5.3.1
+implementation commit `e166aaf6a4c13f9009a3885737d3b48e34c895d5` is included in main and the
+operating checkout; always re-resolve the final documentation SHA. Reconcile any later natural
 result instead of forcing these counts.
 
 Phase 8.5.1 traced the failure to weekday-only KRX session classification. XKRX was closed on
@@ -111,14 +116,21 @@ message quality gate. Deterministic fallback delivered 14/14 US and 8/8 KR. Phas
 replay passes both full validators and the unchanged quality gate: literal/skeleton duplicates fall
 from US 3/7 and KR 5/7 to zero. Its fallback selector uses current dynamic support/resistance, RR,
 invalidation, chart state, and registered lifecycle; crossed confirmations rendered as future
-triggers fall from nine to zero. This branch is not merged or operating-deployed.
+triggers fall from nine to zero. This code is now included in the Phase 8.5.3.1 operating promotion.
 
-Default next task: **Phase 8.5.3 Shadow Promotion** under an explicit release order. Do not run a
-Scheduled Task manually. After promotion, inspect the next natural US/KR packets for AI specificity,
-dynamic-price parity, full-validator status, receipt, delivery/fallback, archive, exactly-once state,
-and human message quality. KRX Open API is **APPROVED / NOT INTEGRATED**; after the live blocker is
-cleared, proceed to **Phase 8.2A KRX Market Breadth Primary**, then Phase 8.3 Peer/Sector Valuation.
-Do not combine scopes without user approval.
+Phase 8.5.3.1 fixes the remaining Preview language and within-stock repetition defects. US object-
+particle errors fall from six to zero, KR malformed supply phrases from two to zero, US watch/next
+meaningless overlap from 13 stocks to zero, and the same RR Fact appearing three or more times from
+six KR stocks to zero. Both immutable full validators, runtime quality, and final language pass.
+The full Phase 8.5.3/8.5.3.1 chain was fast-forwarded to operating shadow after exact-SHA Actions
+Test/Lint PASS; API health and 154 focused operating tests pass. Production Assist remains OFF.
+
+Default next task: inspect the **next natural US/KR packets** for AI specificity, Korean language,
+intra-message dedup, dynamic-price parity, full-validator status, receipt, delivery/fallback,
+archive, exactly-once state, and human message quality. Do not run a Scheduled Task manually. KRX
+Open API is **APPROVED / NOT INTEGRATED**; after a blocker-free live result, proceed to **Phase 8.2A
+KRX Market Breadth Primary**, then Phase 8.3 Peer/Sector Valuation. Do not combine scopes without
+user approval.
 
 Preserve the Phase 8.5 boundary: do not infer missing metrics, promote themes into company
 achievements, force fine-grained taxonomy, create thresholds, or relax numeric, lineage, scope,

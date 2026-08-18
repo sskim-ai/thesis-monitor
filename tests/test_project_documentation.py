@@ -36,26 +36,35 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     assert state["branch"] == "main"
     assert (
         state["experimental_branch"]
-        == "codex/phase-8-5-3-natural-live-message-hardening"
+        == "codex/phase-8-5-3-1-language-dedup-hardening"
     )
     assert (
         state["current_phase"]
-        == "phase_8_5_3_retrospective_hardening_pass_pending_shadow_promotion"
+        == "phase_8_5_3_1_shadow_promoted_pending_natural_ai_delivery_proof"
     )
-    assert state["last_completed_phase"] == "phase_8_5_2_shadow_release_promotion"
+    assert (
+        state["last_completed_phase"]
+        == "phase_8_5_3_1_language_dedup_shadow_promotion"
+    )
     assert (
         state["next_default_phase"]
-        == "phase_8_5_3_shadow_promotion_then_natural_live_ai_delivery_proof"
+        == "natural_us_kr_live_proof_then_phase_8_2a_krx_market_breadth_primary"
     )
     assert state["deployed_code_commit"] == (
-        "a8ebb02753e28795f36dbf72c9deb3520f75ed44"
+        "e166aaf6a4c13f9009a3885737d3b48e34c895d5"
     )
+    assert state["main_code_commit"] == "HEAD"
+    assert state["operating_code_commit"] == "HEAD"
     assert (
         state["persistent_gaps"]["current_price_rr_packet_numeric_path"]
         == "LIVE_PATH_PASS"
     )
     assert state["persistent_gaps"]["natural_live_validation"] == "PARTIAL"
     assert state["persistent_gaps"]["krx_open_api"] == "APPROVED_NOT_INTEGRATED"
+    assert (
+        state["persistent_gaps"]["fallback_price_lifecycle"]
+        == "CLOSED_RETROSPECTIVE_AND_OPERATING_CODE_PROMOTED"
+    )
     assert state["current_commit"] == "HEAD"
     assert state["current_commit_resolution"] == "git rev-parse HEAD"
     assert state["ai_review_mode"] == "shadow"

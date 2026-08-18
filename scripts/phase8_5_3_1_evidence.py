@@ -486,6 +486,15 @@ Representative US scores: MU 18, SNDK 18, SKHY 17, TSM 18, TSLA 18, RXRX 18; ave
 
 Semantic gates: Korean Grammar PASS; Intra-Message Redundancy PASS; Watch vs Next Check Separation PASS.
 
+## Message Length
+
+| Market | Average characters before | Average characters after | Change |
+|---|---:|---:|---:|
+| US | {audit['markets']['us']['before']['message_stats']['average_characters']} | {audit['markets']['us']['after']['message_stats']['average_characters']} | {(audit['markets']['us']['after']['message_stats']['average_characters'] / audit['markets']['us']['before']['message_stats']['average_characters'] - 1) * 100:.1f}% |
+| KR | {audit['markets']['kr']['before']['message_stats']['average_characters']} | {audit['markets']['kr']['after']['message_stats']['average_characters']} | {(audit['markets']['kr']['after']['message_stats']['average_characters'] / audit['markets']['kr']['before']['message_stats']['average_characters'] - 1) * 100:.1f}% |
+
+US lines move from {audit['markets']['us']['before']['message_stats']['lines']} to {audit['markets']['us']['after']['message_stats']['lines']}; KR lines remain {audit['markets']['kr']['after']['message_stats']['lines']}. Section counts remain unchanged in both markets.
+
 ## Operations
 
 - Replay Telegram sends: 0.
