@@ -250,6 +250,15 @@ See [MARKET_CROSS_SECTION.md](architecture/MARKET_CROSS_SECTION.md),
 [KRX_MARKET_BREADTH.md](architecture/KRX_MARKET_BREADTH.md), and the
 [Phase 8.2A validation](reports/20260818-phase8-2a-krx-validation.md).
 
+Phase 8.2A.1 confirms the effective universe rule was already `LIST_DD < session_date` plus a
+positive official comparison base. The earlier capability code block made the exclusion read like an
+inclusion rule; the 2026-08-14 raw/eligible counts and all breadth results remain unchanged, so the
+universe stays v1. Separate reason codes now cover same-session, future, missing/invalid listing date,
+and missing comparable previous close. `krx-publication-readiness-v1` fail-closes market-open,
+provider-pending, partial, error, and stale bundles. At 20:27 KST on completed session 2026-08-18,
+all four core endpoints still returned HTTP 200 with zero rows; current readiness is PARTIAL and
+first complete remains unobserved. No partial Fact is promoted.
+
 ## Phase 8.1 KR Financial Lineage
 
 The experimental Phase 8.1 branch changes new formal OpenDART collection to the full-financial-
@@ -662,9 +671,10 @@ unchanged. See [the Phase 7.2.9.2 readiness report](reports/20260817-phase7-2-9-
 
 - Massive US breadth is implemented in shadow, but exact 08:05 KST readiness over 3-5 normal
   sessions is not yet established.
-- KRX Open API provider development and archive validation pass on an experimental branch, but it is
-  not integrated or deployed. Current-session readiness and Human Review remain pending. The Kiwoom
-  Windows gateway is not configured.
+- KRX Open API historical capability and the explicit universe pass on an experimental branch, but
+  it is not integrated or deployed. The universe contract is CLOSED; current-session readiness is
+  PARTIAL because provider-complete publication has not yet been observed. User Preview review also
+  remains pending. The Kiwoom Windows gateway is not configured.
 - KR market-wide investor flow is unsupported by the approved KRX Open API. Security-level sector
   participation remains open; sector-index return proxies are partial context only.
 - Industry-specific causal reasoning contracts are implemented, but specialized structured routing
@@ -714,9 +724,9 @@ first.
    counter edits, resends, or archive rewriting.
 3. Keep TSM/WRD identity `unknown`, fine-grained industry routes general where unproved, peer data
    unavailable where absent, and OCF/CAPEX/FCF gaps explicit.
-4. Review the experimental Phase 8.2A KRX capability, archive Preview, explicit denominator, and
-   current-session empty-response boundary. Do not merge or deploy it until natural Phase 8.5.x live
-   proof, KRX Human Review, and current-session readiness pass. Phase 8.3 follows unless blocked.
+4. Review the experimental Phase 8.2A.1 final KRX Preview and readiness evidence. Do not merge or
+   deploy it until natural Phase 8.5.x live proof, user Preview review, and at least one complete
+   current-session observation pass. Phase 8.3 follows unless blocked.
 5. Run 3-5 Massive weekday shadow captures at 08:05 KST and, after KRX activation, collect five
    KRX/Kiwoom reconciliation sessions before metric-level fallback.
 6. Keep Production Assist disabled until natural full-message evidence passes direct human review

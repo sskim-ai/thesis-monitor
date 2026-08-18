@@ -41,7 +41,7 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     )
     assert (
         state["current_phase"]
-        == "phase_8_2a_experimental_archive_only_pending_human_review_and_natural_baseline"
+        == "phase_8_2a_1_universe_closed_current_session_readiness_partial_experimental_only"
     )
     assert (
         state["last_completed_phase"]
@@ -64,8 +64,16 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     )
     assert state["persistent_gaps"]["natural_live_validation"] == "PARTIAL"
     assert state["persistent_gaps"]["krx_open_api"] == (
-        "APPROVED_INTEGRATION_DEVELOPED_EXPERIMENTAL_NOT_DEPLOYED"
+        "APPROVED_HISTORICAL_PASS_UNIVERSE_CLOSED_READINESS_PARTIAL_EXPERIMENTAL_NOT_DEPLOYED"
     )
+    krx = state["phase_8_2a_1_krx_universe_and_readiness"]
+    assert krx["universe_contract"] == "CLOSED"
+    assert krx["denominator_before_after"] == [2532, 2532]
+    assert krx["readiness_contract"] == "krx-publication-readiness-v1"
+    assert krx["current_session_readiness"] == "PARTIAL"
+    assert krx["current_session_observation"]["current_snapshot_promotable"] is False
+    assert krx["main_merged"] is False
+    assert krx["operating_deployed"] is False
     assert (
         state["persistent_gaps"]["fallback_price_lifecycle"]
         == "CLOSED_RETROSPECTIVE_AND_OPERATING_CODE_PROMOTED"

@@ -44,6 +44,18 @@ An `expected_session_date` mismatch fails before a provider call.
 Current-session emptiness is not permission to reuse an older session. Historical sessions are used
 only when the caller explicitly requests archive-only validation.
 
+`krx-publication-readiness-v1` evaluates the four core daily endpoints after XKRX determines the
+latest completed session. The states are `MARKET_NOT_COMPLETED`,
+`MARKET_COMPLETED_PROVIDER_PENDING`, `PROVIDER_PARTIAL`, `PROVIDER_COMPLETE`, `PROVIDER_ERROR`, and
+`STALE_PROVIDER_DATE`. HTTP 200 with zero rows is pending after market completion, not success. A
+partial, errored, stale, or pending bundle cannot publish a full current cross-section. Only
+`PROVIDER_COMPLETE` is promotable, and Phase 8.2A.1 does not promote individual partial Facts.
+
+The four readiness calls are KOSPI stock daily, KOSDAQ stock daily, KOSPI index, and KOSDAQ index.
+Issue reference metadata remains separately cacheable. KRX rows expose `BAS_DD` but no explicit
+publication timestamp, so a future shadow observer must retain the first non-empty and first
+complete observation times without treating either as a provider-authored timestamp.
+
 ## Universe
 
 The denominator version is `krx-kospi-kosdaq-common-share-v1`.
@@ -61,6 +73,14 @@ Eligible rows require:
 Preferred shares, REITs, infrastructure funds, investment companies, foreign shares, depositary
 receipts, SPACs, and same-session new listings are excluded. ETF, ETN, and ELW data belong to
 separate KRX services and never enter this universe.
+
+Listing-date and comparison-base exclusions are explicit: `new_listing_no_prior_close`,
+`future_listing`, `listing_date_missing`, `listing_date_invalid`, and
+`missing_comparable_previous_close`. A same-session KRX comparison value can be an offering/reference
+comparison rather than a previous exchange close, so it never overrides the listing-date boundary.
+Phase 8.2A.1 found that the implementation already used `listing_date < session`; the earlier
+capability report contained the reversed wording. The 2026-08-14 denominator is therefore unchanged
+and remains `krx-kospi-kosdaq-common-share-v1`.
 
 KRX Open API does not expose a suspension flag in these responses. An otherwise eligible zero-volume
 row remains in the unchanged denominator. Coverage is therefore `partial`, and the limitation is
@@ -107,5 +127,8 @@ SHA-256, and raw rows. Atomic writes prevent partial cache promotion. Git ignore
 ## Future Promotion
 
 Promotion requires separate approval after natural Phase 8.5.x live review, KRX preview human review,
-and current-session provider readiness. Kiwoom remains a future reconciliation source; KRX failure
-does not automatically activate Kiwoom fallback.
+and current-session provider readiness. One normal-session complete observation moves readiness only
+to strong partial; 3-5 sessions are recommended before closing it. Proposed observation windows are
+15:35, 15:45, 16:00, 16:05, and 16:10 KST, but no production schedule is configured by Phase 8.2A.1.
+Kiwoom remains a future reconciliation source; KRX failure does not automatically activate Kiwoom
+fallback.

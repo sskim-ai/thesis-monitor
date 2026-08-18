@@ -36,6 +36,11 @@ checkout. Read, in this order:
 24. `docs/reports/20260818-phase8-2a-krx-validation.md`
 25. `docs/reports/20260818-phase8-2a-krx-market-preview.md`
 26. `docs/reports/20260818-phase8-2a-krx-market-audit.json`
+27. `docs/reports/20260818-phase8-2a-1-universe-audit.md`
+28. `docs/reports/20260818-phase8-2a-1-current-session-readiness.md`
+29. `docs/reports/20260818-phase8-2a-1-validation.md`
+30. `docs/reports/20260818-phase8-2a-1-market-preview.md`
+31. `docs/reports/20260818-phase8-2a-1-audit.json`
 
 Repository and immutable runtime state override stale conversation or document claims. Resolve the
 current commit from Git rather than copying a historical SHA.
@@ -144,9 +149,12 @@ intra-message dedup, dynamic-price parity, full-validator status, receipt, deliv
 archive, exactly-once state, and human message quality. Do not run a Scheduled Task manually. KRX
 Open API is **APPROVED / EXPERIMENTAL INTEGRATION DEVELOPED / NOT DEPLOYED**. Phase 8.2A's
 2026-08-14 archive snapshot has explicit KOSPI/KOSDAQ common-share breadth and 76/76 numeric registry
-coverage, while market-wide actor flow remains unsupported and current 2026-08-18 responses were
-empty at audit time. Review its Preview and Human boundary after the natural Phase 8.5.x proof; do
-not merge or deploy it from this branch without a separate promotion decision. Phase 8.3
+coverage. Phase 8.2A.1 confirms the universe predicate and denominator are correct and adds
+`krx-publication-readiness-v1`. The completed 2026-08-18 session remained
+`MARKET_COMPLETED_PROVIDER_PENDING` with four empty HTTP 200 core responses, so first-complete
+publication is not observed and current readiness remains PARTIAL. Market-wide actor flow remains
+unsupported. Review the final Preview after the natural Phase 8.5.x proof; do not merge or deploy it
+from this branch without a separate promotion decision and current complete observation. Phase 8.3
 Peer/Sector Valuation follows. Do not combine operating and experimental scopes.
 
 Preserve the Phase 8.5 boundary: do not infer missing metrics, promote themes into company

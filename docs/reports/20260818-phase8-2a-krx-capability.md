@@ -44,7 +44,7 @@ KOSPI or KOSDAQ daily row
 + SECUGRP_NM = 주권
 + KIND_STKCERT_TP_NM = 보통주
 - SPAC official segment/name marker
-- listing date on or after the requested session
++ LIST_DD strictly before the requested session
 ```
 
 Preferred shares, REITs, infrastructure funds, investment companies, foreign shares, depositary receipts, SPACs, and same-session new listings are excluded. ETF/ETN/ELW are separate KRX services and never enter this denominator.

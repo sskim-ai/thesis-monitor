@@ -86,6 +86,12 @@ KOSPI/KOSDAQ common-share denominator, session fail-closed behavior, official in
 and capability limitations are documented in [KRX_MARKET_BREADTH.md](KRX_MARKET_BREADTH.md). It is
 not registered or deployed until a separate promotion gate passes.
 
+Phase 8.2A.1 keeps the universe at v1 after confirming the implementation already excludes listings
+whose official listing date is the requested session or later and excludes rows without a positive
+official comparison base. `krx-publication-readiness-v1` is a mandatory preflight for any future
+current-session integration. A complete XKRX session plus empty HTTP 200 responses means provider
+publication pending; partial, error, stale, and pending states publish no current full snapshot.
+
 ## Reconciliation
 
 Every provider records raw count, eligible count, excluded count, and exclusion reasons. A comparison

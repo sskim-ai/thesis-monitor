@@ -13,7 +13,7 @@ from typing import Any, Literal
 from urllib.parse import urlsplit
 
 import httpx
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, model_validator
 
 from app.config import get_settings
 from app.services.market_cross_section_service import (
@@ -36,6 +36,27 @@ KOSDAQ_INDEX_PATH = "idx/kosdaq_dd_trd"
 UNIVERSE_VERSION = "krx-kospi-kosdaq-common-share-v1"
 OFFICIAL_DAILY_REQUEST_LIMIT = 10_000
 CapabilityStatus = Literal["SUPPORTED", "PARTIAL", "UNSUPPORTED"]
+PublicationReadinessStatus = Literal[
+    "MARKET_NOT_COMPLETED",
+    "MARKET_COMPLETED_PROVIDER_PENDING",
+    "PROVIDER_PARTIAL",
+    "PROVIDER_COMPLETE",
+    "PROVIDER_ERROR",
+    "STALE_PROVIDER_DATE",
+]
+EndpointReadinessStatus = Literal["EMPTY", "PARTIAL", "READY", "ERROR", "STALE"]
+
+CORE_READINESS_ENDPOINTS = (
+    KOSPI_DAILY_PATH,
+    KOSDAQ_DAILY_PATH,
+    KOSPI_INDEX_PATH,
+    KOSDAQ_INDEX_PATH,
+)
+
+REQUIRED_INDEX_IDENTITIES = {
+    KOSPI_INDEX_PATH: {("KOSPI", "코스피"), ("KOSPI", "코스피 200")},
+    KOSDAQ_INDEX_PATH: {("KOSDAQ", "코스닥"), ("KOSDAQ", "코스닥 150")},
+}
 
 MAJOR_INDEX_IDENTITIES = {
     ("KOSPI", "코스피"): ("KOSPI", "KOSPI"),
@@ -71,6 +92,48 @@ class KrxCapability(BaseModel):
     status: CapabilityStatus
     evidence: str
     notes: list[str] = Field(default_factory=list)
+
+
+class KrxEndpointReadiness(BaseModel):
+    endpoint: str
+    status: EndpointReadinessStatus
+    http_status: int | None = None
+    row_count: int = 0
+    provider_dates: list[date] = Field(default_factory=list)
+    latency_seconds: float | None = None
+    missing_required_identities: list[str] = Field(default_factory=list)
+    error_code: str | None = None
+
+
+class KrxPublicationReadiness(BaseModel):
+    contract_version: Literal["krx-publication-readiness-v1"] = (
+        "krx-publication-readiness-v1"
+    )
+    status: PublicationReadinessStatus
+    target_session: date
+    latest_completed_session: date
+    observed_at: datetime
+    endpoints: list[KrxEndpointReadiness] = Field(default_factory=list)
+    first_non_empty_at: datetime | None = None
+    first_complete_at: datetime | None = None
+    provider_publication_timestamp: datetime | None = None
+    current_snapshot_promotable: bool = False
+    reason_codes: list[str] = Field(default_factory=list)
+
+    @model_validator(mode="after")
+    def validate_promotion_boundary(self) -> "KrxPublicationReadiness":
+        if self.observed_at.tzinfo is None:
+            raise ValueError("publication observation must be timezone-aware")
+        if self.current_snapshot_promotable != (self.status == "PROVIDER_COMPLETE"):
+            raise ValueError("only a complete provider snapshot can be promoted")
+        if self.status == "PROVIDER_COMPLETE" and self.first_complete_at is None:
+            raise ValueError("complete readiness requires first-complete telemetry")
+        if self.status == "PROVIDER_COMPLETE" and (
+            {item.endpoint for item in self.endpoints} != set(CORE_READINESS_ENDPOINTS)
+            or any(item.status != "READY" for item in self.endpoints)
+        ):
+            raise ValueError("complete readiness requires all core endpoints")
+        return self
 
 
 def krx_capability_matrix() -> list[KrxCapability]:
@@ -161,6 +224,16 @@ def _number(value: object) -> float | None:
     return result if math.isfinite(result) else None
 
 
+def _krx_date(value: object) -> date | None:
+    text = str(value or "").strip()
+    if not text:
+        return None
+    try:
+        return datetime.strptime(text, "%Y%m%d").date()
+    except ValueError:
+        return None
+
+
 def _identity_field(endpoint: str) -> tuple[str, ...]:
     if endpoint in {KOSPI_DAILY_PATH, KOSDAQ_DAILY_PATH}:
         return ("ISU_CD",)
@@ -237,17 +310,9 @@ class KrxKrMarketProvider:
             raise ValueError("KRX response contains duplicate identities")
         return envelope
 
-    async def _request(
-        self, endpoint: str, session_date: date, *, refresh: bool = False
+    async def _fetch_envelope(
+        self, endpoint: str, session_date: date
     ) -> dict[str, Any]:
-        cache_path = self._cache_path(endpoint, session_date)
-        if cache_path.exists() and not refresh:
-            cached = json.loads(cache_path.read_text(encoding="utf-8"))
-            if not isinstance(cached, dict):
-                raise ValueError("KRX cache must contain an object")
-            return self._validate_envelope(
-                cached, endpoint=endpoint, session_date=session_date
-            )
         if not self.api_key:
             raise RuntimeError("KRX_OPEN_API_KEY is not configured")
 
@@ -271,7 +336,7 @@ class KrxKrMarketProvider:
         rows = payload.get("OutBlock_1")
         if not isinstance(rows, list):
             raise ValueError("KRX response must contain OutBlock_1 rows")
-        envelope = {
+        return {
             "provider": self.name,
             "endpoint": endpoint,
             "request_date": session_date.isoformat(),
@@ -290,12 +355,211 @@ class KrxKrMarketProvider:
             "row_count": len(rows),
             "rows": rows,
         }
+
+    async def _request(
+        self, endpoint: str, session_date: date, *, refresh: bool = False
+    ) -> dict[str, Any]:
+        cache_path = self._cache_path(endpoint, session_date)
+        if cache_path.exists() and not refresh:
+            cached = json.loads(cache_path.read_text(encoding="utf-8"))
+            if not isinstance(cached, dict):
+                raise ValueError("KRX cache must contain an object")
+            return self._validate_envelope(
+                cached, endpoint=endpoint, session_date=session_date
+            )
+        if not self.api_key:
+            raise RuntimeError("KRX_OPEN_API_KEY is not configured")
+        envelope = await self._fetch_envelope(endpoint, session_date)
         self._validate_envelope(
             envelope, endpoint=endpoint, session_date=session_date
         )
         _atomic_json(cache_path, envelope)
         self._last_response_metadata = dict(envelope["http_metadata"])
         return envelope
+
+    async def probe_publication_readiness(
+        self,
+        *,
+        target_session: date,
+        latest_completed_session: date,
+    ) -> KrxPublicationReadiness:
+        observed_at = datetime.now(timezone.utc)
+        if target_session > latest_completed_session:
+            return KrxPublicationReadiness(
+                status="MARKET_NOT_COMPLETED",
+                target_session=target_session,
+                latest_completed_session=latest_completed_session,
+                observed_at=observed_at,
+                current_snapshot_promotable=False,
+                reason_codes=["target_session_not_completed"],
+            )
+
+        endpoint_results: list[KrxEndpointReadiness] = []
+        expected_date = target_session.strftime("%Y%m%d")
+        for endpoint in CORE_READINESS_ENDPOINTS:
+            try:
+                envelope = await self._fetch_envelope(endpoint, target_session)
+            except httpx.HTTPStatusError as exc:
+                endpoint_results.append(
+                    KrxEndpointReadiness(
+                        endpoint=endpoint,
+                        status="ERROR",
+                        http_status=exc.response.status_code,
+                        error_code="http_error",
+                    )
+                )
+                continue
+            except httpx.RequestError:
+                endpoint_results.append(
+                    KrxEndpointReadiness(
+                        endpoint=endpoint,
+                        status="ERROR",
+                        error_code="network_error",
+                    )
+                )
+                continue
+            except RuntimeError:
+                endpoint_results.append(
+                    KrxEndpointReadiness(
+                        endpoint=endpoint,
+                        status="ERROR",
+                        error_code="configuration_error",
+                    )
+                )
+                continue
+            except (TypeError, ValueError):
+                endpoint_results.append(
+                    KrxEndpointReadiness(
+                        endpoint=endpoint,
+                        status="ERROR",
+                        error_code="schema_error",
+                    )
+                )
+                continue
+
+            rows = self._rows(envelope)
+            metadata = envelope.get("http_metadata") or {}
+            latency = _number(envelope.get("latency_seconds"))
+            common = {
+                "endpoint": endpoint,
+                "http_status": metadata.get("status_code"),
+                "row_count": len(rows),
+                "latency_seconds": latency,
+            }
+            if not rows:
+                endpoint_results.append(
+                    KrxEndpointReadiness(status="EMPTY", **common)
+                )
+                continue
+
+            raw_dates = [str(row.get("BAS_DD") or "") for row in rows]
+            parsed_dates = sorted(
+                {parsed for value in raw_dates if (parsed := _krx_date(value))}
+            )
+            if any(not value for value in raw_dates):
+                endpoint_results.append(
+                    KrxEndpointReadiness(
+                        status="ERROR",
+                        provider_dates=parsed_dates,
+                        error_code="provider_date_missing",
+                        **common,
+                    )
+                )
+                continue
+            if len(parsed_dates) != len(set(raw_dates)):
+                endpoint_results.append(
+                    KrxEndpointReadiness(
+                        status="ERROR",
+                        provider_dates=parsed_dates,
+                        error_code="provider_date_invalid",
+                        **common,
+                    )
+                )
+                continue
+            if set(raw_dates) != {expected_date}:
+                endpoint_results.append(
+                    KrxEndpointReadiness(
+                        status="STALE",
+                        provider_dates=parsed_dates,
+                        error_code="provider_date_mismatch",
+                        **common,
+                    )
+                )
+                continue
+            try:
+                self._validate_envelope(
+                    envelope,
+                    endpoint=endpoint,
+                    session_date=target_session,
+                )
+            except (TypeError, ValueError):
+                endpoint_results.append(
+                    KrxEndpointReadiness(
+                        status="ERROR",
+                        provider_dates=parsed_dates,
+                        error_code="identity_or_schema_error",
+                        **common,
+                    )
+                )
+                continue
+
+            required = REQUIRED_INDEX_IDENTITIES.get(endpoint, set())
+            observed_identities = {
+                (str(row.get("IDX_CLSS") or ""), str(row.get("IDX_NM") or ""))
+                for row in rows
+            }
+            missing = sorted(f"{item[0]}:{item[1]}" for item in required - observed_identities)
+            if missing:
+                endpoint_results.append(
+                    KrxEndpointReadiness(
+                        status="PARTIAL",
+                        provider_dates=parsed_dates,
+                        missing_required_identities=missing,
+                        error_code="required_index_identity_missing",
+                        **common,
+                    )
+                )
+                continue
+            endpoint_results.append(
+                KrxEndpointReadiness(
+                    status="READY",
+                    provider_dates=parsed_dates,
+                    **common,
+                )
+            )
+
+        endpoint_states = {item.status for item in endpoint_results}
+        reason_codes: list[str]
+        if "ERROR" in endpoint_states:
+            status: PublicationReadinessStatus = "PROVIDER_ERROR"
+            reason_codes = ["one_or_more_core_endpoints_failed"]
+        elif "STALE" in endpoint_states:
+            status = "STALE_PROVIDER_DATE"
+            reason_codes = ["provider_date_does_not_match_target_session"]
+        elif endpoint_states == {"EMPTY"}:
+            status = "MARKET_COMPLETED_PROVIDER_PENDING"
+            reason_codes = ["all_core_endpoints_returned_empty_200"]
+        elif endpoint_states == {"READY"}:
+            status = "PROVIDER_COMPLETE"
+            reason_codes = []
+        else:
+            status = "PROVIDER_PARTIAL"
+            reason_codes = ["core_endpoint_bundle_not_complete"]
+
+        has_rows = any(item.row_count > 0 for item in endpoint_results)
+        complete = status == "PROVIDER_COMPLETE"
+        return KrxPublicationReadiness(
+            status=status,
+            target_session=target_session,
+            latest_completed_session=latest_completed_session,
+            observed_at=observed_at,
+            endpoints=endpoint_results,
+            first_non_empty_at=observed_at if has_rows else None,
+            first_complete_at=observed_at if complete else None,
+            provider_publication_timestamp=None,
+            current_snapshot_promotable=complete,
+            reason_codes=reason_codes,
+        )
 
     @staticmethod
     def _rows(envelope: dict[str, Any]) -> list[dict[str, Any]]:
@@ -325,7 +589,6 @@ class KrxKrMarketProvider:
         }
         rows: list[NormalizedMarketRow] = []
         exclusions: Counter[str] = Counter()
-        session_value = session_date.strftime("%Y%m%d")
         for envelope in daily_envelopes:
             for raw in self._rows(envelope):
                 ticker = str(raw.get("ISU_CD") or "")
@@ -344,11 +607,16 @@ class KrxKrMarketProvider:
                         reasons.append("ineligible_certificate_type")
                     if self._is_spac(reference):
                         reasons.append("spac")
-                    listing_date = str(reference.get("LIST_DD") or "")
-                    if not listing_date:
+                    listing_date_text = str(reference.get("LIST_DD") or "").strip()
+                    listing_date = _krx_date(listing_date_text)
+                    if not listing_date_text:
                         reasons.append("listing_date_missing")
-                    elif listing_date >= session_value:
-                        reasons.append("new_listing_without_comparable_history")
+                    elif listing_date is None:
+                        reasons.append("listing_date_invalid")
+                    elif listing_date == session_date:
+                        reasons.append("new_listing_no_prior_close")
+                    elif listing_date > session_date:
+                        reasons.append("future_listing")
 
                 close = _number(raw.get("TDD_CLSPRC"))
                 change = _number(raw.get("CMPPREVDD_PRC"))
@@ -362,7 +630,7 @@ class KrxKrMarketProvider:
                     exclusions["invalid_close"] += 1
                     continue
                 if previous_close is None or previous_close <= 0:
-                    reasons.append("official_comparison_base_missing")
+                    reasons.append("missing_comparable_previous_close")
                     previous_close = None
                 if return_pct is None:
                     reasons.append("official_return_missing")

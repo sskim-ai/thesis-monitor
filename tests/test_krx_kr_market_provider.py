@@ -187,7 +187,7 @@ def test_collect_builds_explicit_common_share_and_segment_breadth(tmp_path: Path
     assert section.quality.exclusion_reason_counts == {
         "ineligible_certificate_type": 1,
         "ineligible_security_group": 1,
-        "new_listing_without_comparable_history": 1,
+        "new_listing_no_prior_close": 1,
         "spac": 1,
     }
     assert section.market_flows == []
@@ -257,6 +257,179 @@ def test_invalid_official_units_are_unavailable_not_zero(tmp_path: Path) -> None
     assert section.breadth is not None
     assert section.breadth.eligible_count == 1
     assert section.quality.exclusion_reason_counts["official_return_missing"] == 1
+
+
+def test_listing_date_and_comparable_close_contract_is_fail_closed(
+    tmp_path: Path,
+) -> None:
+    provider, _requests = _provider(tmp_path)
+    daily = [
+        _daily("200001", "KOSPI", "110", "10", "10.00"),
+        _daily("200002", "KOSPI", "110", "10", "10.00"),
+        _daily("200003", "KOSPI", "110", "10", "10.00"),
+        _daily("200004", "KOSPI", "110", "10", "10.00"),
+        _daily("200005", "KOSPI", "100", "100", "0.00"),
+    ]
+    references = [
+        _reference("200001", "KOSPI", listing_date="20260813"),
+        _reference("200002", "KOSPI", listing_date="20260814"),
+        _reference("200003", "KOSPI", listing_date="20260815"),
+        _reference("200004", "KOSPI", listing_date=""),
+        _reference("200005", "KOSPI", listing_date="20200101"),
+    ]
+
+    rows, exclusions = provider.normalize(
+        session_date=SESSION,
+        daily_envelopes=[{"rows": daily}],
+        reference_envelopes=[{"rows": references}],
+    )
+    by_ticker = {row.ticker: row for row in rows}
+
+    assert by_ticker["200001"].eligible is True
+    assert by_ticker["200001"].previous_close == 100
+    assert by_ticker["200002"].eligible is False
+    assert by_ticker["200002"].exclusion_reasons == ["new_listing_no_prior_close"]
+    assert by_ticker["200003"].exclusion_reasons == ["future_listing"]
+    assert by_ticker["200004"].exclusion_reasons == ["listing_date_missing"]
+    assert by_ticker["200005"].exclusion_reasons == [
+        "missing_comparable_previous_close"
+    ]
+    assert exclusions == {
+        "new_listing_no_prior_close": 1,
+        "future_listing": 1,
+        "listing_date_missing": 1,
+        "missing_comparable_previous_close": 1,
+    }
+
+
+def test_readiness_market_not_completed_does_not_call_provider(tmp_path: Path) -> None:
+    provider, requests = _provider(tmp_path)
+
+    result = asyncio.run(
+        provider.probe_publication_readiness(
+            target_session=date(2026, 8, 18),
+            latest_completed_session=SESSION,
+        )
+    )
+
+    assert result.status == "MARKET_NOT_COMPLETED"
+    assert result.current_snapshot_promotable is False
+    assert result.endpoints == []
+    assert requests == []
+
+
+def test_readiness_empty_200_is_provider_pending(tmp_path: Path) -> None:
+    fixtures = _fixtures()
+    for endpoint in (
+        KOSPI_DAILY_PATH,
+        KOSDAQ_DAILY_PATH,
+        KOSPI_INDEX_PATH,
+        KOSDAQ_INDEX_PATH,
+    ):
+        fixtures[endpoint] = []
+    provider, requests = _provider(tmp_path, fixtures)
+
+    result = asyncio.run(
+        provider.probe_publication_readiness(
+            target_session=SESSION,
+            latest_completed_session=SESSION,
+        )
+    )
+
+    assert result.status == "MARKET_COMPLETED_PROVIDER_PENDING"
+    assert result.current_snapshot_promotable is False
+    assert {item.status for item in result.endpoints} == {"EMPTY"}
+    assert len(requests) == 4
+
+
+def test_readiness_partial_bundle_is_not_promotable(tmp_path: Path) -> None:
+    fixtures = _fixtures()
+    fixtures[KOSDAQ_DAILY_PATH] = []
+    provider, _requests = _provider(tmp_path, fixtures)
+
+    result = asyncio.run(
+        provider.probe_publication_readiness(
+            target_session=SESSION,
+            latest_completed_session=SESSION,
+        )
+    )
+
+    assert result.status == "PROVIDER_PARTIAL"
+    assert result.current_snapshot_promotable is False
+    assert {item.status for item in result.endpoints} == {"EMPTY", "READY"}
+
+
+def test_readiness_complete_bundle_is_promotable(tmp_path: Path) -> None:
+    provider, _requests = _provider(tmp_path)
+
+    result = asyncio.run(
+        provider.probe_publication_readiness(
+            target_session=SESSION,
+            latest_completed_session=SESSION,
+        )
+    )
+
+    assert result.status == "PROVIDER_COMPLETE"
+    assert result.current_snapshot_promotable is True
+    assert result.first_non_empty_at is not None
+    assert result.first_complete_at is not None
+    assert result.provider_publication_timestamp is None
+    assert {item.status for item in result.endpoints} == {"READY"}
+
+
+def test_readiness_missing_required_index_identity_is_partial(tmp_path: Path) -> None:
+    fixtures = _fixtures()
+    fixtures[KOSPI_INDEX_PATH] = [fixtures[KOSPI_INDEX_PATH][0]]
+    provider, _requests = _provider(tmp_path, fixtures)
+
+    result = asyncio.run(
+        provider.probe_publication_readiness(
+            target_session=SESSION,
+            latest_completed_session=SESSION,
+        )
+    )
+
+    assert result.status == "PROVIDER_PARTIAL"
+    kospi = next(item for item in result.endpoints if item.endpoint == KOSPI_INDEX_PATH)
+    assert kospi.status == "PARTIAL"
+    assert kospi.missing_required_identities == ["KOSPI:코스피 200"]
+
+
+def test_readiness_stale_provider_date_is_not_promotable(tmp_path: Path) -> None:
+    provider, _requests = _provider(tmp_path)
+
+    result = asyncio.run(
+        provider.probe_publication_readiness(
+            target_session=date(2026, 8, 18),
+            latest_completed_session=date(2026, 8, 18),
+        )
+    )
+
+    assert result.status == "STALE_PROVIDER_DATE"
+    assert result.current_snapshot_promotable is False
+    assert {item.status for item in result.endpoints} == {"STALE"}
+
+
+def test_readiness_provider_error_is_distinct_from_pending(tmp_path: Path) -> None:
+    provider = KrxKrMarketProvider(
+        api_key="test",
+        base_url="https://krx.example.test/svc/apis",
+        cache_dir=tmp_path,
+        transport=httpx.MockTransport(
+            lambda _request: httpx.Response(503, json={"error": "unavailable"})
+        ),
+    )
+
+    result = asyncio.run(
+        provider.probe_publication_readiness(
+            target_session=SESSION,
+            latest_completed_session=SESSION,
+        )
+    )
+
+    assert result.status == "PROVIDER_ERROR"
+    assert result.current_snapshot_promotable is False
+    assert {item.error_code for item in result.endpoints} == {"http_error"}
 
 
 def test_zero_volume_common_share_stays_in_explicit_unchanged_denominator(

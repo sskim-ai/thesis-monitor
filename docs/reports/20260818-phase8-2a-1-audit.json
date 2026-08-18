@@ -1,0 +1,211 @@
+{
+  "phase": "8.2A.1",
+  "status": "experimental_archive_pass_not_deployed",
+  "root_cause": "documentation_predicate_wording_error",
+  "universe": {
+    "version": "krx-kospi-kosdaq-common-share-v1",
+    "version_bumped": false,
+    "actual_eligibility_predicate": "LIST_DD < session_date and comparable_previous_close exists",
+    "implementation_before": "listing_date >= session_date excluded",
+    "implementation_after": "same-session and future listings remain excluded with distinct reason codes",
+    "listing_audit": {
+      "raw_daily_rows": 2763,
+      "listing_date_relations": {
+        "prior_session": 2763
+      },
+      "same_session_listings": 0,
+      "future_listings": 0,
+      "missing_listing_dates": 0,
+      "missing_comparable_previous_close": 0
+    },
+    "before": {
+      "raw": 2763,
+      "eligible": 2532,
+      "excluded": 231,
+      "breadth": {
+        "aggregate": {
+          "eligible_count": 2532,
+          "advance_count": 1441,
+          "decline_count": 898,
+          "unchanged_count": 193,
+          "advance_ratio": 0.5691153238546603,
+          "ad_ratio": 1.6046770601336302,
+          "median_return_pct": 0.41,
+          "equal_weight_return_pct": 0.7764454976303318,
+          "positive_return_pct": 56.91153238546603,
+          "negative_return_pct": 35.46603475513428,
+          "total_trading_volume": 1008520659.0,
+          "total_trading_value": 33573550267681.0
+        },
+        "KOSPI": {
+          "eligible_count": 804,
+          "advance_count": 575,
+          "decline_count": 180,
+          "unchanged_count": 49,
+          "advance_ratio": 0.7151741293532339,
+          "ad_ratio": 3.1944444444444446,
+          "median_return_pct": 1.0550000000000002,
+          "equal_weight_return_pct": 1.3048383084577113,
+          "positive_return_pct": 71.51741293532339,
+          "negative_return_pct": 22.388059701492537,
+          "total_trading_volume": 323374579.0,
+          "total_trading_value": 26299989134230.0
+        },
+        "KOSDAQ": {
+          "eligible_count": 1728,
+          "advance_count": 866,
+          "decline_count": 718,
+          "unchanged_count": 144,
+          "advance_ratio": 0.5011574074074074,
+          "ad_ratio": 1.2061281337047354,
+          "median_return_pct": 0.07,
+          "equal_weight_return_pct": 0.5305960648148148,
+          "positive_return_pct": 50.11574074074075,
+          "negative_return_pct": 41.550925925925924,
+          "total_trading_volume": 685146080.0,
+          "total_trading_value": 7273561133451.0
+        }
+      }
+    },
+    "after": {
+      "raw": 2763,
+      "eligible": 2532,
+      "excluded": 231,
+      "exclusion_reason_counts": {
+        "ineligible_certificate_type": 113,
+        "ineligible_security_group": 47,
+        "spac": 71
+      },
+      "breadth": {
+        "aggregate": {
+          "eligible_count": 2532,
+          "advance_count": 1441,
+          "decline_count": 898,
+          "unchanged_count": 193,
+          "advance_ratio": 0.5691153238546603,
+          "ad_ratio": 1.6046770601336302,
+          "median_return_pct": 0.41,
+          "equal_weight_return_pct": 0.7764454976303318,
+          "positive_return_pct": 56.91153238546603,
+          "negative_return_pct": 35.46603475513428,
+          "total_trading_volume": 1008520659.0,
+          "total_trading_value": 33573550267681.0
+        },
+        "KOSPI": {
+          "eligible_count": 804,
+          "advance_count": 575,
+          "decline_count": 180,
+          "unchanged_count": 49,
+          "advance_ratio": 0.7151741293532339,
+          "ad_ratio": 3.1944444444444446,
+          "median_return_pct": 1.0550000000000002,
+          "equal_weight_return_pct": 1.3048383084577113,
+          "positive_return_pct": 71.51741293532339,
+          "negative_return_pct": 22.388059701492537,
+          "total_trading_volume": 323374579.0,
+          "total_trading_value": 26299989134230.0
+        },
+        "KOSDAQ": {
+          "eligible_count": 1728,
+          "advance_count": 866,
+          "decline_count": 718,
+          "unchanged_count": 144,
+          "advance_ratio": 0.5011574074074074,
+          "ad_ratio": 1.2061281337047354,
+          "median_return_pct": 0.07,
+          "equal_weight_return_pct": 0.5305960648148148,
+          "positive_return_pct": 50.11574074074075,
+          "negative_return_pct": 41.550925925925924,
+          "total_trading_volume": 685146080.0,
+          "total_trading_value": 7273561133451.0
+        }
+      }
+    },
+    "denominator_changed": false
+  },
+  "publication_readiness": {
+    "contract_version": "krx-publication-readiness-v1",
+    "status": "MARKET_COMPLETED_PROVIDER_PENDING",
+    "target_session": "2026-08-18",
+    "latest_completed_session": "2026-08-18",
+    "observed_at": "2026-08-18T11:27:09.594575Z",
+    "observed_at_kst": "2026-08-18T20:27:09.594575+09:00",
+    "endpoints": [
+      {
+        "endpoint": "sto/stk_bydd_trd",
+        "http_status": 200,
+        "row_count": 0,
+        "status": "EMPTY",
+        "latency_ms": 124.3
+      },
+      {
+        "endpoint": "sto/ksq_bydd_trd",
+        "http_status": 200,
+        "row_count": 0,
+        "status": "EMPTY",
+        "latency_ms": 139.2
+      },
+      {
+        "endpoint": "idx/kospi_dd_trd",
+        "http_status": 200,
+        "row_count": 0,
+        "status": "EMPTY",
+        "latency_ms": 107.2
+      },
+      {
+        "endpoint": "idx/kosdaq_dd_trd",
+        "http_status": 200,
+        "row_count": 0,
+        "status": "EMPTY",
+        "latency_ms": 75.2
+      }
+    ],
+    "first_non_empty_at": null,
+    "first_complete_at": null,
+    "provider_publication_timestamp": null,
+    "current_snapshot_promotable": false,
+    "reason_codes": [
+      "all_core_endpoints_returned_empty_200"
+    ]
+  },
+  "publication_observation": {
+    "explicit_provider_timestamp_available": false,
+    "first_complete_observed": false,
+    "current_session_readiness": "PARTIAL",
+    "future_shadow_windows_kst": [
+      "15:35",
+      "15:45",
+      "16:00",
+      "16:05",
+      "16:10"
+    ],
+    "production_schedule_configured": false
+  },
+  "sector": {
+    "status": "PARTIAL_PRICE_PROXY_ONLY",
+    "security_level_sector_breadth": "UNSUPPORTED",
+    "selected_count": 2
+  },
+  "market_flow": {
+    "status": "UNSUPPORTED",
+    "facts": [],
+    "missing_is_zero": false
+  },
+  "numeric_registry": {
+    "entry_count": 76,
+    "registered_count": 76,
+    "prose_allowed_count": 76,
+    "prose_denied_count": 0,
+    "unsupported": [],
+    "ready": true
+  },
+  "production_mutations": {
+    "main_merge": 0,
+    "operating_deployment": 0,
+    "scheduled_task_changes": 0,
+    "scheduled_task_executions": 0,
+    "telegram_sends": 0,
+    "pilot_mutations": 0,
+    "database_mutations": 0
+  }
+}
