@@ -2330,6 +2330,13 @@ def test_packet_adds_fresh_chart_context_transition_and_numeric_provenance(
     assert stock["chart_knowledge_routing"]["available"] is True
     assert "chart_bollinger" in stock["chart_knowledge_routing"]["required_frameworks"]
     assert "chart_support_resistance" in stock["chart_knowledge_routing"]["required_frameworks"]
+    assert stock["chart_knowledge_routing"]["framework_role"] == "price_context"
+    assert "chart_risk_reward" in stock["knowledge_routing"]["framework_roles"][
+        "price_context"
+    ]
+    assert "chart_risk_reward" not in stock["knowledge_routing"]["framework_roles"][
+        "investment_industry"
+    ]
     assert "chart_elliott" not in stock["chart_knowledge_routing"]["required_frameworks"]
     assert chart["structure"]["algorithm_version"] == "ohlcv-structure-v2"
     assert "all_zones" not in chart["structure"]
@@ -4192,6 +4199,69 @@ def test_depositary_ratio_language_requires_value_direction_and_provenance(
     assert verified == []
 
 
+def test_non_depositary_combined_ratio_confirmation_is_not_depositary_prose(
+    monkeypatch,
+    tmp_path: Path,
+) -> None:
+    _settings(monkeypatch, tmp_path)
+    with Session(_engine()) as session:
+        _seed(session)
+        packet = build_ai_review_packet(session, RUN_DATE, "us")
+    assert packet is not None
+    review = _review_with_contract_text(
+        packet,
+        section="price_positioning",
+        text=(
+            "합산비율과 자기자본이익률 확인이 함께 나타날 때 "
+            "신규 자금의 조건을 판단합니다."
+        ),
+    )
+
+    errors = ai_review_service._security_identity_language_errors(
+        review.ticker,
+        {"identity_state": "verified_non_depositary"},
+        review,
+    )
+
+    assert errors == []
+
+
+@pytest.mark.parametrize(
+    "text",
+    (
+        "공식 ADR 비율이 확인됐습니다.",
+        "검증된 ADS 전환 비율을 사용합니다.",
+        "예탁증권 비율 검증이 완료됐습니다.",
+    ),
+)
+def test_depositary_ratio_detector_requires_depositary_qualifier(
+    monkeypatch,
+    tmp_path: Path,
+    text: str,
+) -> None:
+    _settings(monkeypatch, tmp_path)
+    with Session(_engine()) as session:
+        _seed(session)
+        packet = build_ai_review_packet(session, RUN_DATE, "us")
+    assert packet is not None
+    review = _review_with_contract_text(
+        packet,
+        section="valuation_analysis",
+        text=text,
+    )
+
+    errors = ai_review_service._security_identity_language_errors(
+        review.ticker,
+        {"identity_state": "verified_depositary"},
+        review,
+    )
+
+    assert any(
+        "unverified_depositary_ratio_described_as_verified" in item
+        for item in errors
+    )
+
+
 def _review_with_rr_transition_claims(
     review: AIStockReview,
     *,
@@ -5552,6 +5622,68 @@ def test_incompatible_industry_framework_is_rejected(
 
     assert any("framework_not_allowed:saas_recurring_revenue_valuation" in item for item in errors)
     assert any("industry_framework_missing:memory_valuation" in item for item in errors)
+
+
+def test_chart_risk_reward_requires_price_context_role(
+    monkeypatch,
+    tmp_path: Path,
+) -> None:
+    _settings(monkeypatch, tmp_path)
+    with Session(_engine()) as session:
+        _seed(session)
+        packet = build_ai_review_packet(session, RUN_DATE, "us")
+        assert packet is not None
+        routing = packet["stocks"][0]["knowledge_routing"]
+        routing["required_frameworks"] = [
+            item
+            for item in routing["required_frameworks"]
+            if item != "chart_risk_reward"
+        ]
+        routing["framework_roles"]["price_context"] = [
+            item
+            for item in routing["framework_roles"]["price_context"]
+            if item != "chart_risk_reward"
+        ]
+        output = _valid_output(packet)
+        output["stock_reviews"][0]["frameworks_used"].append(
+            "chart_risk_reward"
+        )
+        _, errors = validate_ai_review_output(session, packet, output)
+
+    assert any("framework_not_allowed:chart_risk_reward" in item for item in errors)
+    assert any(
+        "framework_role_mismatch:chart_risk_reward:price_context" in item
+        for item in errors
+    )
+
+
+def test_chart_risk_reward_price_context_role_does_not_replace_industry(
+    monkeypatch,
+    tmp_path: Path,
+) -> None:
+    _settings(monkeypatch, tmp_path)
+    with Session(_engine()) as session:
+        _seed(session)
+        packet = build_ai_review_packet(session, RUN_DATE, "us")
+        assert packet is not None
+        routing = packet["stocks"][0]["knowledge_routing"]
+        routing["required_frameworks"].append("chart_risk_reward")
+        routing["framework_roles"]["price_context"].append("chart_risk_reward")
+        output = _valid_output(packet)
+        output["stock_reviews"][0]["frameworks_used"].append(
+            "chart_risk_reward"
+        )
+        _, errors = validate_ai_review_output(session, packet, output)
+
+    assert not any("framework_not_allowed:chart_risk_reward" in item for item in errors)
+    assert not any("framework_role_mismatch:chart_risk_reward" in item for item in errors)
+    assert (
+        routing["industry_routing"]["primary_framework"]
+        in output["stock_reviews"][0]["frameworks_used"]
+    )
+    assert "chart_risk_reward" not in routing["framework_roles"][
+        "investment_industry"
+    ]
 
 
 def test_low_confidence_routing_does_not_force_specialized_framework(

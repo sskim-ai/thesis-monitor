@@ -5,11 +5,83 @@ from typing import Mapping
 from app.services.industry_reasoning_service import build_industry_reasoning_plan
 
 
-RUNTIME_SPECIFICITY_CONTRACT = "runtime-message-specificity-v1"
+RUNTIME_SPECIFICITY_CONTRACT = "runtime-message-specificity-v2"
+RUNTIME_REASONING_OWNERSHIP_CONTRACT = "runtime-reasoning-ownership-v1"
 
 
 def _mapping(value: object) -> dict[str, object]:
     return dict(value) if isinstance(value, Mapping) else {}
+
+
+def _security_identity_policy(stock: dict[str, object]) -> dict[str, object]:
+    identity_fact = next(
+        (
+            item
+            for item in stock.get("fact_catalog", [])
+            if isinstance(item, dict) and item.get("fact_id") == "security_identity:current"
+        ),
+        {},
+    )
+    basis_fact = next(
+        (
+            item
+            for item in stock.get("fact_catalog", [])
+            if isinstance(item, dict) and item.get("fact_id") == "security_basis:current"
+        ),
+        {},
+    )
+    identity_fields = _mapping(_mapping(identity_fact).get("fields"))
+    basis_fields = _mapping(_mapping(basis_fact).get("fields"))
+    identity_state = str(identity_fields.get("identity_state") or "unknown")
+    ratio_state = str(basis_fields.get("depositary_ratio_state") or "unknown")
+    depositary_reasoning_allowed = identity_state == "verified_depositary"
+    ratio_reasoning_allowed = bool(
+        depositary_reasoning_allowed
+        and ratio_state == "verified"
+        and identity_fields.get("depositary_ratio") is not None
+        and identity_fields.get("depositary_ratio_direction")
+        and identity_fields.get("depositary_ratio_source")
+    )
+    return {
+        "owner": "security_identity",
+        "identity_state": identity_state,
+        "depositary_reasoning_allowed": depositary_reasoning_allowed,
+        "depositary_ratio_reasoning_allowed": ratio_reasoning_allowed,
+        "generic_basis_caution_allowed": identity_state in {"unknown", "conflict"},
+        "suppression_reason": (
+            None
+            if ratio_reasoning_allowed
+            else "security_identity_not_depositary"
+            if identity_state in {"verified_non_depositary", "domestic_common"}
+            else "depositary_ratio_not_verified"
+        ),
+    }
+
+
+def _candidate(
+    *,
+    category: str,
+    value: str,
+    base_tier: int,
+    owner: str,
+    evidence_type: str,
+    decision_role: str,
+    section: str,
+    specificity_key: str,
+    fact_ids: list[str] | None = None,
+) -> dict[str, object]:
+    return {
+        "category": category,
+        "value": value,
+        "base_tier": base_tier,
+        "owner": owner,
+        "evidence_type": evidence_type,
+        "decision_role": decision_role,
+        "section": section,
+        "specificity_key": specificity_key,
+        "materiality": "decision_relevant",
+        "fact_ids": fact_ids or [],
+    }
 
 
 def build_runtime_specificity_plan(stock: dict[str, object]) -> dict[str, object]:
@@ -18,78 +90,128 @@ def build_runtime_specificity_plan(stock: dict[str, object]) -> dict[str, object
     delta = _mapping(monitoring.get("delta"))
     deterministic = _mapping(stock.get("deterministic_assessment"))
     industry = build_industry_reasoning_plan(stock)
+    routing = _mapping(stock.get("knowledge_routing"))
+    framework_roles = _mapping(routing.get("framework_roles"))
+    security_policy = _security_identity_policy(stock)
     candidates: list[dict[str, object]] = []
 
-    business_change = str(
-        deterministic.get("business_thesis_change") or "no_material_change"
-    )
+    business_change = str(deterministic.get("business_thesis_change") or "no_material_change")
     if business_change != "no_material_change":
         candidates.append(
-            {
-                "category": "business_thesis",
-                "value": business_change,
-                "base_tier": 1,
-            }
+            _candidate(
+                category="business_thesis",
+                value=business_change,
+                base_tier=1,
+                owner="business_earnings",
+                evidence_type="deterministic_assessment",
+                decision_role="thesis_delta",
+                section="core_judgment",
+                specificity_key=f"{industry.primary_framework}:business:{business_change}",
+            )
         )
     confirmation = str(delta.get("confirmation_transition") or "")
     if confirmation and not confirmation.endswith("_to_not_reached"):
         candidates.append(
-            {
-                "category": "price_lifecycle",
-                "value": confirmation,
-                "base_tier": 2,
-                "fact_ids": ["monitoring:confirmation_transition"],
-            }
+            _candidate(
+                category="price_lifecycle",
+                value=confirmation,
+                base_tier=2,
+                owner="price_context",
+                evidence_type="monitoring_transition",
+                decision_role="entry_confirmation",
+                section="price_positioning",
+                specificity_key=f"price_lifecycle:{confirmation}",
+                fact_ids=["monitoring:confirmation_transition"],
+            )
         )
     rr_change = str(delta.get("rr_change") or "")
     if rr_change in {"improved", "deteriorated", "became_available", "became_unavailable"}:
         candidates.append(
-            {
-                "category": "risk_reward",
-                "value": rr_change,
-                "base_tier": 3,
-                "fact_ids": ["monitoring:risk_reward_transition"],
-            }
+            _candidate(
+                category="risk_reward",
+                value=rr_change,
+                base_tier=3,
+                owner="price_context",
+                evidence_type="chart_structure",
+                decision_role="entry_asymmetry",
+                section="price_positioning",
+                specificity_key=f"price_rr:{rr_change}",
+                fact_ids=["monitoring:risk_reward_transition"],
+            )
         )
     supply = str(delta.get("supply_transition") or "")
     if supply and supply not in {"unchanged", "unavailable"}:
         candidates.append(
-            {
-                "category": "supply",
-                "value": supply,
-                "base_tier": 3,
-            }
+            _candidate(
+                category="supply",
+                value=supply,
+                base_tier=3,
+                owner="positioning",
+                evidence_type="actor_horizon_flow",
+                decision_role="positioning_context",
+                section="supply_analysis",
+                specificity_key=f"positioning:{supply}:{industry.primary_framework}",
+            )
         )
     valuation = str(delta.get("valuation_change") or "")
     if valuation not in {"", "unchanged_or_unavailable"}:
         candidates.append(
-            {
-                "category": "valuation",
-                "value": valuation,
-                "base_tier": 2,
-            }
+            _candidate(
+                category="valuation",
+                value=valuation,
+                base_tier=2,
+                owner="valuation",
+                evidence_type="typed_valuation",
+                decision_role="expectation_context",
+                section="valuation_analysis",
+                specificity_key=f"valuation:{valuation}:{industry.primary_framework}",
+            )
         )
     if not candidates:
+        missing_driver = next(iter(industry.missing_drivers), "company_evidence")
         candidates.append(
-            {
-                "category": "no_material_delta",
-                "value": "use_current_decision_context",
-                "base_tier": 4,
-            }
+            _candidate(
+                category="no_material_delta",
+                value="use_current_decision_context",
+                base_tier=4,
+                owner="industry_driver",
+                evidence_type="industry_specific_unknown",
+                decision_role="next_confirmation",
+                section="core_judgment",
+                specificity_key=(
+                    f"{industry.primary_framework}:{missing_driver}:{industry.next_confirmation}"
+                ),
+            )
         )
 
     required_price_facts = [
         str(item.get("fact_id"))
-        for item in _mapping(stock.get("state_grounding_requirements")).get(
-            "price", []
-        )
+        for item in _mapping(stock.get("state_grounding_requirements")).get("price", [])
         if isinstance(item, dict) and item.get("fact_id")
     ]
     return {
         "contract": RUNTIME_SPECIFICITY_CONTRACT,
+        "ownership_contract": RUNTIME_REASONING_OWNERSHIP_CONTRACT,
         "decision_candidates": candidates,
         "primary_framework": industry.primary_framework,
         "framework_confidence": industry.confidence,
+        "framework_ownership": {
+            "investment_industry": list(framework_roles.get("investment_industry", [])),
+            "price_context": list(framework_roles.get("price_context", [])),
+            "security_identity": list(framework_roles.get("security_identity", [])),
+        },
+        "security_reasoning_policy": security_policy,
+        "suppressed_candidates": (
+            []
+            if security_policy["depositary_ratio_reasoning_allowed"]
+            else [
+                {
+                    "owner": "security_identity",
+                    "category": "depositary_ratio",
+                    "reason": security_policy["suppression_reason"],
+                }
+            ]
+        ),
         "available_driver_families": list(industry.available_fact_families),
         "missing_driver_candidates": list(industry.missing_drivers[:3]),
         "observer_focus": industry.observer_focus,
@@ -97,4 +219,10 @@ def build_runtime_specificity_plan(stock: dict[str, object]) -> dict[str, object
         "next_confirmation": industry.next_confirmation,
         "required_current_price_fact_ids": list(dict.fromkeys(required_price_facts)),
         "user_visible_methodology_policy": "suppress_unless_needed_to_prevent_misinterpretation",
+        "selection_constraints": {
+            "one_primary_owner_per_evidence": True,
+            "generic_cash_flow_tail_requires_industry_driver": True,
+            "cross_ticker_template_reuse": ("suppress_or_ground_with_subject_specific_evidence"),
+            "synonym_only_variation": "not_credit",
+        },
     }

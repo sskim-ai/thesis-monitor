@@ -1,15 +1,15 @@
 # Thesis Monitor Master Workflow
 
-Master Workflow: `v10`
+Master Workflow: `v11`
 As of: `2026-08-19`
 Repository: `sskim-ai/thesis-monitor`
 Operating branch: `main`
-Latest evidence branch: `codex/phase-8-5-4-2-night-futures-calendar-repair`
+Latest evidence branch: `codex/phase-8-5-5-natural-reasoning-ownership-repair`
 Commit resolution: run `git rev-parse HEAD`; this document is part of that commit and must not
 hardcode a self-referential final SHA. Resolve `origin/main` and the clean operating checkout at
-session start. Phase 8.5.4.2 is now the operating shadow code baseline. Its holiday-aware preceding
-DAY repair passes retrospectively, while natural US/KR proof remains pending. Natural AI-assisted
-delivery remains `PARTIAL`.
+session start. Phase 8.5.5 closes the run-27 reasoning-ownership and repetition blockers
+retrospectively and is eligible for operating shadow promotion. Natural US/KR proof remains pending,
+and Natural AI-assisted delivery remains `PARTIAL`.
 KRX 8.2A.x and peer 8.3.x also remain experimental.
 
 ## 1. Project Mission
@@ -303,6 +303,22 @@ KOSDAQ150 -10.20 changes agree with provider audit fields. The current 2026-08-1
 empty, so those historical pairs remain stale and user-visible current exposure remains zero.
 Same-date, future-session, rollover, raw-change-conflict and stale controls remain fail-closed.
 
+Phase 8.5.5 reconstructs natural KR packet `2026-08-19-kr-run-27-63a064e837ff`. AI sent 0 and
+deterministic fallback delivered 8/8 exactly once. Korean Re's alleged depositary prose was a
+validator false positive: the optional depositary qualifier made `합산비율 ... 확인` match an ADR
+ratio expression even though canonical identity was verified non-depositary common stock. The
+repair requires an explicit ADR/ADS/depositary qualifier and suppresses depositary candidates before
+prose for domestic/non-depositary securities.
+
+The same phase separates `chart_risk_reward` from industry frameworks. It is owned only by
+`price_context`; POSCO retains steel/materials reasoning and Hyundai Glovis retains
+transport/logistics reasoning. `runtime-reasoning-ownership-v1` and
+`runtime-message-specificity-v2` publish candidate owner, evidence, decision role, section,
+specificity key and suppression reason. The immutable replay automatically binds all 117 numeric
+references, has zero validator errors, reduces substantive/template repeats from 2/4 to 0/0, and
+passes the unchanged runtime-quality threshold and receipt verification. Average stock-message
+length falls 2.34%. This is retrospective proof only.
+
 ## 20. Phase History
 
 | Phase | Result |
@@ -324,6 +340,7 @@ Same-date, future-session, rollover, raw-change-conflict and stale controls rema
 | 8.5.4 | Run-26 night-session, semantic binding, typed valuation, fallback parity and overlapping-zone RR repairs PASS retrospectively |
 | 8.5.4.1 | Phase 8.5.4 promoted to main and operating shadow; API/health/smoke PASS; latest night pair unavailable fail-closed; natural proof pending |
 | 8.5.4.2 | Holiday-aware XKRX preceding-DAY lookup PASS retrospectively and promoted to operating shadow; current provider row pending; natural proof pending |
+| 8.5.5 | Run-27 security/framework ownership and repetition repair PASS retrospectively; operating shadow promotion target; natural proof pending |
 | 8.2A.x | KRX historical engine, universe and publication-state contracts PASS on experimental branch; slot timing/roles not yet proven; not deployed |
 | 8.3 | Peer selection/safety/statistics contract PASS; capability strong PARTIAL; original measured coverage 0/20 |
 | 8.3.1/8.3.1.1 | Paid provider research completed; clean peer-only branch prepared; production provider gate not passed |
@@ -342,6 +359,8 @@ Same-date, future-session, rollover, raw-change-conflict and stale controls rema
 | RXRX valuation label repair | CLOSED |
 | Fallback dynamic price | CLOSED |
 | Natural AI-Assisted Delivery | PARTIAL |
+| Phase 8.5.5 reasoning ownership | CLOSED_RETROSPECTIVE_PENDING_NATURAL |
+| Phase 8.5.5 natural repetition | CLOSED_RETROSPECTIVE_PENDING_NATURAL |
 | Phase 8.5.4.2 calendar repair / operating | PASS retrospective / OPERATING_SHADOW |
 | Night-futures session basis | CLOSED_RETROSPECTIVE |
 | Preceding DAY calendar lookup | CLOSED_RETROSPECTIVE_PENDING_NATURAL; current provider row pending |
@@ -372,6 +391,8 @@ Same-date, future-session, rollover, raw-change-conflict and stale controls rema
 | Natural live validation of Phase 8 code | PARTIAL |
 | Current-price RR packet/numeric path | LIVE PATH PASS |
 | AI natural-live message quality | PARTIAL: retrospective PASS, natural AI delivery pending |
+| Reasoning ownership | CLOSED_RETROSPECTIVE_PENDING_NATURAL |
+| Natural cross-ticker repetition | CLOSED_RETROSPECTIVE_PENDING_NATURAL |
 | Fallback dynamic-price lifecycle | CLOSED: retrospective PASS and operating code promoted |
 | Night-futures session-basis integrity | CLOSED_RETROSPECTIVE |
 | Night-futures preceding DAY calendar lookup | CLOSED_RETROSPECTIVE_PENDING_NATURAL |
@@ -388,10 +409,12 @@ integrity, fallback/retry, exactly-once accounting, and valuation comparison-lab
 ## 22. Current Roadmap
 
 Operating blocker outranks new feature work. The current state is
-`WAIT_FOR_NATURAL_US_KR_PROOF`: Phase 8.5.4.2 has retrospective PASS evidence and is operating shadow.
+`WAIT_FOR_NEXT_NATURAL_US_KR_PROOF`: Phase 8.5.5 has retrospective PASS evidence and is the next
+operating shadow baseline after promotion.
 Observe the next natural US/KR sessions
-for actual AI-assisted delivery, night-session integrity, fallback parity, final language, receipt,
-archive and exactly-once proof. Phase 8.3 remains closed as selective optional context.
+for actual AI-assisted delivery, reasoning ownership, cross-ticker repetition, night-session
+integrity, fallback parity, final language, receipt, archive and exactly-once proof. Phase 8.3
+remains closed as selective optional context.
 
 Cash Flow / Capital Efficiency Enrichment remains the next major candidate: OCF, CAPEX, FCF, ROIC,
 relevant ROE, inventory, working capital, cash conversion and segment margin. Do not start it until
@@ -487,8 +510,9 @@ approval. Main merge and shadow deployment still do not authorize AI-assisted pr
 
 Wait for and inspect the next naturally generated US and KR results without manual task execution.
 Verify delivery mode, AI-assisted versus fallback,
-night-futures session/reference evidence, full validator/runtime quality, fallback valuation parity,
-price/RR/confirmation lifecycle, human quality, receipt, archive and exactly-once state. Only after
+night-futures session/reference evidence, reasoning ownership, cross-ticker repetition, full
+validator/runtime quality, fallback valuation parity, price/RR/confirmation lifecycle, human
+quality, receipt, archive and exactly-once state. Only after
 that natural proof may Cash Flow / Capital Efficiency Enrichment start. Check KRX 16:05, 08:05 and
 T+1 evidence separately; do not reopen peer work without new evidence.
 
@@ -502,7 +526,9 @@ T+1 evidence separately; do not reopen peer work without new evidence.
 > immutable runtime win and the documentation must be reconciled. Confirm whether a later natural
 > US/KR AI-assisted delivery exists after the Phase 8.5.3.2 shadow promotion. Run-26 delivered
 > fallback 14/14 while AI was rejected; Phase 8.5.4 closes its blockers retrospectively and Phase
-> 8.5.4.2 closes holiday-aware preceding-DAY lookup retrospectively in operating shadow. Wait for
+> 8.5.4.2 closes holiday-aware preceding-DAY lookup retrospectively in operating shadow. Natural KR
+> run-27 then delivered fallback 8/8 while AI was rejected; Phase 8.5.5 closes its reasoning-owner
+> and repetition blockers retrospectively. Wait for
 > the next natural proof. Phase 8.3
 > is finalized as selective optional context and must not be reopened without new evidence. Cash
 > Flow / Capital Efficiency remains pending behind natural proof. Evaluate

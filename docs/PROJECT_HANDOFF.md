@@ -16,7 +16,7 @@ execution or an autonomous investment adviser.
 
 | Component | Contract |
 |---|---|
-| Branch | operating `main` contains Phase 8.5.4.2 code through `7e7ab5a...`; evidence is on `codex/phase-8-5-4-2-night-futures-calendar-repair`; peer/KRX experimental ancestry remains excluded |
+| Branch | Phase 8.5.5 is on `codex/phase-8-5-5-natural-reasoning-ownership-repair` from operating main; peer/KRX experimental ancestry remains excluded |
 | Official assessment | Deterministic `ThesisAssessment` |
 | AI mode | `shadow` |
 | Analysis policy | `daily-review-v3.10` |
@@ -38,7 +38,8 @@ execution or an autonomous investment adviser.
 | Industry reasoning | `industry-specific-reasoning-v1` |
 | Runtime packet completeness | current-price RR preflight v1; 2026-08-18 natural live path PASS |
 | Current price context | `current-price-context-v1` |
-| Runtime specificity | `runtime-message-specificity-v1` |
+| Runtime specificity | `runtime-message-specificity-v2` |
+| Runtime reasoning ownership | `runtime-reasoning-ownership-v1` |
 | Runtime quality | `runtime-message-quality-v1`, receipt `runtime-message-quality-receipt-v2` |
 | Night futures | `night-futures-session-basis-v1` CLOSED retrospective; holiday-aware preceding DAY lookup operating shadow, natural proof pending |
 
@@ -76,7 +77,7 @@ provider expansion, forward consensus, historical PIT and coverage-driven taxono
 The engine, validators, audit artifacts and clean peer-only branch remain available for naturally
 qualifying MEDIUM/HIGH contexts. This is not integrated, deployed or active operating behavior.
 
-The next state is `WAIT_FOR_NATURAL_US_KR_PROOF`. Do not start a new feature before reviewing the
+The next state is `WAIT_FOR_NEXT_NATURAL_US_KR_PROOF`. Do not start a new feature before reviewing the
 next natural messages. A critical failure takes priority as a targeted repair; otherwise the default
 candidate is Cash Flow / Capital Efficiency Enrichment because OCF, CAPEX, FCF, ROIC, inventory,
 working capital, cash conversion and segment economics remain more persistent decision gaps than
@@ -644,6 +645,41 @@ DB, archive and receipt mutations were all zero. See the
 [promotion](reports/20260819-phase8-5-4-2-shadow-promotion.md), and
 [operating state](reports/20260819-phase8-5-4-2-operating-state.md) reports.
 
+## Phase 8.5.5 Natural Reasoning Ownership Repair
+
+Natural KR packet `2026-08-19-kr-run-27-63a064e837ff` produced a rejected AI candidate and then
+delivered deterministic fallback 8/8 exactly once. AI sent 0. The initial errors were one Korean Re
+depositary-ratio false positive and unauthorized `chart_risk_reward` use by POSCO Holdings and
+Hyundai Glovis. The bounded correction then failed runtime quality because two substantive
+candidates and four sentence skeletons repeated across the portfolio.
+
+Korean Re is canonical `verified_non_depositary` common stock. Its sentence said `합산비율 ... 확인`,
+not ADR ratio. The old validator made the depositary qualifier optional and falsely matched the
+insurance metric. Phase 8.5.5 requires explicit ADR/ADS/depositary wording and suppresses
+depositary candidates before prose for domestic/non-depositary securities. Verified depositary
+fixtures remain eligible.
+
+Framework ownership now separates business/industry reasoning from price context.
+`chart_risk_reward` is price context only; it never becomes steel or transport reasoning. POSCO
+retains `steel_materials_valuation`, Hyundai Glovis retains `shipping_transport_valuation`, and
+Korean Re retains `insurance_reinsurance_valuation`. Candidate plans expose owner, evidence,
+decision role, specificity key and suppression reason under `runtime-reasoning-ownership-v1`.
+
+The immutable replay binds 117 numeric references automatically with manual/rejected/unresolved 0,
+has zero full-validator errors, and passes final language and receipt verification. Existing quality
+thresholds remain unchanged. Substantive repeats fall 2 -> 0 and template skeletons 4 -> 0; average
+stock-message length falls 2.34%. The actual fallback, dynamic price, RR overlap guard,
+night-futures contract, archive, receipt and Pilot state were not modified.
+
+See the [root cause](reports/20260819-run27-natural-reasoning-root-cause.md),
+[ownership architecture](architecture/RUNTIME_REASONING_OWNERSHIP.md),
+[repetition audit](reports/20260819-run27-repetition-audit.md),
+[archive-only preview](reports/20260819-run27-repaired-ai-preview.md), and
+[validation](reports/20260819-phase8-5-5-validation.md).
+
+This is `CLOSED_RETROSPECTIVE_PENDING_NATURAL`, not a natural AI-assisted PASS. After operating
+promotion, wait for the next natural US/KR sessions. Cash Flow / Capital Efficiency remains pending.
+
 On 2026-08-15 the owning desktop environment verified all four local-project tasks, retained their
 08:15/08:30/16:15/16:55 schedules, and migrated their exact prompts to v3.10 with
 `security-identity-v2` and `financial-quality-taint-v2`. All four are ACTIVE,
@@ -833,7 +869,7 @@ first.
 
 ## Next Steps
 
-1. Wait for the next natural US/KR sessions and verify AI quality,
+1. Wait for the next natural US/KR sessions and verify AI quality, reasoning ownership, repetition,
    night-futures session/reference evidence, fallback context parity, Korean language, price/RR,
    full validator, runtime receipt, archive, and exactly-once behavior.
 2. Preserve operational counts KR 3/5 and US 3/5 and retain all natural/replay artifacts without

@@ -48,6 +48,22 @@ repeat them in user prose only when a specific current fact would otherwise be m
 synonym-only rewrite of the same price-rule, supply-separation, or cash-conversion checklist remains
 a semantic duplicate.
 
+The plan's ownership contract is binding. `security_identity` owns ADR and depositary statements,
+`industry_driver` owns business and valuation causality, and `price_context` owns support,
+resistance, confirmation lifecycle, and chart RR. `chart_risk_reward` is never an industry
+framework; use it only when the packet explicitly lists it in `framework_roles.price_context`.
+Apply `security_reasoning_policy` before drafting: `verified_non_depositary` cannot produce ADR,
+ADS, depositary-ratio, or ordinary-per-ADR prose, while `unknown` and `conflict` permit only a
+neutral security-basis caution. Ratio prose additionally requires
+`depositary_ratio_reasoning_allowed=true`.
+
+Give each selected candidate one owner, evidence type, decision role, section, and specificity key.
+When a generic candidate would recur across three or more stocks, suppress it unless each
+occurrence has different subject evidence and a different decision consequence. KR supply must
+retain every eligible foreign/institution 1/5/20-day claim, but organize those claims around the
+stock's actual horizon relationship instead of reusing one portfolio-wide numeric sentence
+skeleton.
+
 When two relevant valuation facts exist, interpret their direction together. A modeled forward
 multiple above trailing can indicate a weaker modeled earnings denominator; a modeled forward
 multiple below trailing can indicate earnings expansion assumptions that may coexist with cycle-peak

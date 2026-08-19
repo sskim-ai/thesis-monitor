@@ -18,6 +18,7 @@ DOCUMENTS = (
     ROOT / "docs" / "architecture" / "PEER_VALUATION.md",
     ROOT / "docs" / "architecture" / "NATURAL_LIVE_MESSAGE_HARDENING.md",
     ROOT / "docs" / "architecture" / "NIGHT_FUTURES_SESSION_BASIS.md",
+    ROOT / "docs" / "architecture" / "RUNTIME_REASONING_OWNERSHIP.md",
     ROOT / "docs" / "operations" / "AI_ASSISTED_PILOT.md",
     ROOT / "docs" / "knowledge" / "README.md",
 )
@@ -35,33 +36,25 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
 
     assert state["repository"] == "sskim-ai/thesis-monitor"
     assert state["branch"] == "main"
-    assert state["experimental_branch"] == (
-        "codex/phase-8-5-4-2-night-futures-calendar-repair"
-    )
-    assert state["current_phase"] == "wait_for_natural_us_kr_proof"
-    assert state["last_completed_phase"] == (
-        "phase_8_5_4_2_operating_shadow_promotion"
-    )
-    assert state["next_default_phase"] == "wait_for_natural_us_kr_proof"
-    assert state["deployed_code_commit"] == (
-        "7e7ab5acee2176bc8a452115da19ac6e14d312ab"
-    )
+    assert state["experimental_branch"] == ("codex/phase-8-5-5-natural-reasoning-ownership-repair")
+    assert state["current_phase"] == "wait_for_next_natural_us_kr_proof"
+    assert state["last_completed_phase"] == ("phase_8_5_5_retrospective_repair")
+    assert state["next_default_phase"] == "wait_for_next_natural_us_kr_proof"
+    assert state["deployed_code_commit"] == "HEAD"
     assert state["main_code_commit"] == "HEAD"
     assert state["operating_code_commit"] == "HEAD"
-    assert (
-        state["persistent_gaps"]["current_price_rr_packet_numeric_path"]
-        == "LIVE_PATH_PASS"
-    )
+    assert state["persistent_gaps"]["current_price_rr_packet_numeric_path"] == "LIVE_PATH_PASS"
     assert state["persistent_gaps"]["natural_live_validation"] == "PARTIAL"
+    assert state["persistent_gaps"]["reasoning_ownership"] == (
+        "CLOSED_RETROSPECTIVE_PENDING_NATURAL"
+    )
+    assert state["contracts"]["runtime_specificity"] == ("runtime-message-specificity-v2")
+    assert state["contracts"]["runtime_reasoning_ownership"] == ("runtime-reasoning-ownership-v1")
     assert state["persistent_gaps"]["krx_open_api"] == (
         "APPROVED_EXPERIMENTAL_NOT_OPERATING_INTEGRATED"
     )
-    assert state["persistent_gaps"]["night_futures_session_basis"] == (
-        "CLOSED_RETROSPECTIVE"
-    )
-    assert state["persistent_gaps"][
-        "night_futures_preceding_day_calendar_lookup"
-    ] == (
+    assert state["persistent_gaps"]["night_futures_session_basis"] == ("CLOSED_RETROSPECTIVE")
+    assert state["persistent_gaps"]["night_futures_preceding_day_calendar_lookup"] == (
         "CLOSED_RETROSPECTIVE_PENDING_NATURAL"
     )
     assert (

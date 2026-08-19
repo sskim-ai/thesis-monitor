@@ -42,6 +42,11 @@ checkout. Read, in this order:
 30. `docs/reports/20260819-fallback-valuation-context-parity.md`
 31. `docs/reports/20260819-run26-targeted-repair-preview.md`
 32. `docs/reports/20260819-phase8-5-4-validation.md`
+33. `docs/reports/20260819-run27-natural-reasoning-root-cause.md`
+34. `docs/architecture/RUNTIME_REASONING_OWNERSHIP.md`
+35. `docs/reports/20260819-run27-repetition-audit.md`
+36. `docs/reports/20260819-run27-repaired-ai-preview.md`
+37. `docs/reports/20260819-phase8-5-5-validation.md`
 
 Phase 8.3.2A/finalization architecture, coverage reports and previews remain on the preserved
 `codex/phase-8-3-finalization` branch. Read them with `git show <branch>:<path>` when peer history is
@@ -187,12 +192,21 @@ matching provider audit fields. The expected 2026-08-19 provider rows remain emp
 are stale and current exposure remains suppressed. This is retrospective calendar-lookup PASS, not
 natural proof. Explicit current-PBR history-to-base-Fact lineage remains low-priority technical debt.
 
-Default next task: inspect the **next natural US/KR packets** without manual task execution. For both
+Natural KR packet `2026-08-19-kr-run-27-63a064e837ff` then delivered deterministic fallback 8/8;
+AI sent 0. Phase 8.5.5 closes its Korean Re depositary-regex false positive, separates
+`chart_risk_reward` into price-context ownership, and removes repeated generic candidates before
+prose. Immutable replay has 117 automatic numeric bindings, zero validator errors, zero substantive
+or skeleton repeats, and a verified PASS receipt. This remains retrospective evidence. Reasoning
+Ownership and Natural Repetition are `CLOSED_RETROSPECTIVE_PENDING_NATURAL`; Natural AI-Assisted
+Delivery remains `PARTIAL`.
+
+Default next task after Phase 8.5.5 operating promotion: inspect the **next natural US/KR packets**
+without manual task execution. For both
 markets verify, in order:
 
 1. actual delivery mode;
 2. AI-assisted versus deterministic fallback;
-3. full validator and runtime-quality status;
+3. full validator, reasoning ownership, repetition, and runtime-quality status;
 4. actual Telegram message human quality;
 5. night-futures session/reference lineage and price/RR/confirmation lifecycle;
 6. KR supply prose;

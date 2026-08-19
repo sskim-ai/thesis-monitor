@@ -451,6 +451,10 @@ def _chart_knowledge_routing(chart: dict[str, object]) -> dict[str, object]:
         "available": usable,
         "quality": str(chart.get("quality") or "unavailable"),
         "required_frameworks": list(dict.fromkeys(required)) if usable else [],
+        "framework_role": "price_context",
+        "price_context_frameworks": (
+            list(dict.fromkeys(required)) if usable else []
+        ),
         "unavailable_fields": chart.get("unavailable_fields", []),
     }
 
@@ -2699,10 +2703,58 @@ def _stock_packet(
         profile_quality=str((profile_provenance or {}).get("quality") or "") or None,
     )
     chart_routing = _chart_knowledge_routing(chart)
+    original_required_frameworks = list(routing.get("required_frameworks", []))
+    industry_routing = _dict(routing.get("industry_routing"))
+    investment_industry_frameworks = list(
+        dict.fromkeys(
+            [
+                str(industry_routing.get("primary_framework") or ""),
+                *[
+                    str(item)
+                    for item in industry_routing.get("secondary_frameworks", [])
+                ],
+            ]
+        )
+    )
+    investment_industry_frameworks = [
+        item for item in investment_industry_frameworks if item
+    ]
+    price_context_frameworks = list(
+        dict.fromkeys(
+            [
+                *[
+                    item
+                    for item in ("price_ohlcv", "holder_new_buyer")
+                    if item in original_required_frameworks
+                ],
+                *chart_routing["price_context_frameworks"],
+            ]
+        )
+    )
+    security_identity_frameworks = (
+        ["adr_share_basis"]
+        if "adr_share_basis" in original_required_frameworks
+        else []
+    )
+    routing["framework_roles"] = {
+        "investment_industry": investment_industry_frameworks,
+        "price_context": price_context_frameworks,
+        "security_identity": security_identity_frameworks,
+        "general_reasoning": [
+            item
+            for item in original_required_frameworks
+            if item
+            not in {
+                *investment_industry_frameworks,
+                *price_context_frameworks,
+                *security_identity_frameworks,
+            }
+        ],
+    }
     routing["required_frameworks"] = list(
         dict.fromkeys(
             [
-                *routing.get("required_frameworks", []),
+                *original_required_frameworks,
                 *chart_routing["required_frameworks"],
             ]
         )
@@ -3784,7 +3836,10 @@ _EXPLICIT_SECURITY_TYPE_LANGUAGE = re.compile(
     re.IGNORECASE,
 )
 _VERIFIED_DEPOSITARY_RATIO_LANGUAGE = re.compile(
-    r"(?:공식|검증된|확인된).{0,12}(?:예탁)?비율|(?:예탁)?비율.{0,12}(?:검증|확인)",
+    r"(?:(?:공식|검증된|확인된).{0,12}"
+    r"(?:ADR|ADS|예탁(?:증권|주식)?)(?:\s*전환)?\s*비율"
+    r"|(?:ADR|ADS|예탁(?:증권|주식)?)(?:\s*전환)?\s*비율"
+    r".{0,12}(?:검증|확인))",
     re.IGNORECASE,
 )
 _US_KR_SUPPLY_HORIZON_LANGUAGE = re.compile(
@@ -4470,6 +4525,19 @@ def _validate_stock_review(
             f"{review.ticker}:framework_not_allowed:{','.join(invalid_frameworks)}"
         )
     if isinstance(routing, dict):
+        framework_roles = _dict(routing.get("framework_roles"))
+        price_context_frameworks = {
+            str(item) for item in framework_roles.get("price_context", [])
+        }
+        if (
+            framework_roles
+            and "chart_risk_reward" in review.frameworks_used
+            and "chart_risk_reward" not in price_context_frameworks
+        ):
+            errors.append(
+                f"{review.ticker}:framework_role_mismatch:"
+                "chart_risk_reward:price_context"
+            )
         industry_routing = routing.get("industry_routing")
         if isinstance(industry_routing, dict):
             primary_framework = str(
