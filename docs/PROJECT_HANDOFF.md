@@ -16,7 +16,7 @@ execution or an autonomous investment adviser.
 
 | Component | Contract |
 |---|---|
-| Branch | operating `main` contains Phase 8.5.4 code through `3a6547e...`; promotion evidence is on `codex/phase-8-5-4-1-operating-shadow-promotion`; peer/KRX experimental ancestry remains excluded |
+| Branch | operating `main` contains Phase 8.5.4.2 code through `7e7ab5a...`; evidence is on `codex/phase-8-5-4-2-night-futures-calendar-repair`; peer/KRX experimental ancestry remains excluded |
 | Official assessment | Deterministic `ThesisAssessment` |
 | AI mode | `shadow` |
 | Analysis policy | `daily-review-v3.10` |
@@ -40,7 +40,7 @@ execution or an autonomous investment adviser.
 | Current price context | `current-price-context-v1` |
 | Runtime specificity | `runtime-message-specificity-v1` |
 | Runtime quality | `runtime-message-quality-v1`, receipt `runtime-message-quality-receipt-v2` |
-| Night futures | `night-futures-session-basis-v1`; retrospective PASS, natural proof pending |
+| Night futures | `night-futures-session-basis-v1` CLOSED retrospective; holiday-aware preceding DAY lookup operating shadow, natural proof pending |
 
 ## Phase 8.3 Final State
 
@@ -614,6 +614,35 @@ See the [promotion](reports/20260819-phase8-5-4-1-shadow-promotion.md),
 [preflight](reports/20260819-night-futures-live-readiness-preflight.md),
 [operating state](reports/20260819-phase8-5-4-1-operating-shadow-state.md), and
 [smoke](reports/20260819-phase8-5-4-1-operating-smoke.md) reports.
+
+## Phase 8.5.4.2 Night Futures Calendar Repair
+
+The remaining collector failure was a calendar traversal bug, not missing provider history. Both
+the parser and canonicalizer required `NIGHT BAS_DD - 1 calendar day`, so 2026-08-18 NIGHT looked for
+2026-08-17 DAY and stopped even though XKRX marks 2026-08-17 as a holiday and the correct 2026-08-14
+DAY rows were already within the bounded provider lookback.
+
+Implementation `7e7ab5acee2176bc8a452115da19ac6e14d312ab` now uses one shared XKRX predecessor
+function. It selects only the latest eligible earlier DAY session, then requires the same product,
+contract and maturity. It does not reconnect an older contract after rollover. Provider raw change
+is audit-only and must agree with the deterministic two-price calculation when present.
+
+Historical replay and the live read-only probe both resolve:
+
+| Instrument | NIGHT | DAY reference | Contract | Derived | Provider audit |
+|---|---|---|---|---:|---:|
+| KOSPI200 | 2026-08-18 1094.95 | 2026-08-14 1098.90 | `A0169000` | -3.95 / -0.35945036% | -3.95 match |
+| KOSDAQ150 | 2026-08-18 1477.30 | 2026-08-14 1487.50 | `A0669000` | -10.20 / -0.68571429% | -10.20 match |
+
+The 2026-08-19 provider response still has zero rows. These pairs are therefore historical/stale,
+not current, and user-visible promotion remains zero. Operating smoke passed 494 tests after API
+restart; `/health` passed; all four tasks remain ACTIVE and unchanged. Telegram, task runs, Pilot,
+DB, archive and receipt mutations were all zero. See the
+[repair](reports/20260819-night-futures-preceding-session-calendar-repair.md),
+[holiday audit](reports/20260819-night-futures-holiday-traversal-audit.md),
+[validation](reports/20260819-phase8-5-4-2-validation.md),
+[promotion](reports/20260819-phase8-5-4-2-shadow-promotion.md), and
+[operating state](reports/20260819-phase8-5-4-2-operating-state.md) reports.
 
 On 2026-08-15 the owning desktop environment verified all four local-project tasks, retained their
 08:15/08:30/16:15/16:55 schedules, and migrated their exact prompts to v3.10 with

@@ -1,14 +1,15 @@
 # Thesis Monitor Master Workflow
 
-Master Workflow: `v9`
+Master Workflow: `v10`
 As of: `2026-08-19`
 Repository: `sskim-ai/thesis-monitor`
 Operating branch: `main`
-Latest evidence branch: `codex/phase-8-5-4-1-operating-shadow-promotion`
+Latest evidence branch: `codex/phase-8-5-4-2-night-futures-calendar-repair`
 Commit resolution: run `git rev-parse HEAD`; this document is part of that commit and must not
 hardcode a self-referential final SHA. Resolve `origin/main` and the clean operating checkout at
-session start. Phase 8.5.4 is now the operating shadow code baseline. Its retrospective repair and
-promotion gates pass, while natural US/KR proof remains pending. Natural AI-assisted delivery remains `PARTIAL`.
+session start. Phase 8.5.4.2 is now the operating shadow code baseline. Its holiday-aware preceding
+DAY repair passes retrospectively, while natural US/KR proof remains pending. Natural AI-assisted
+delivery remains `PARTIAL`.
 KRX 8.2A.x and peer 8.3.x also remain experimental.
 
 ## 1. Project Mission
@@ -294,6 +295,14 @@ valid 2026-08-14 NIGHT -> 2026-08-13 DAY same-contract pair proves the ordinary-
 collector still cannot bridge a multi-day holiday reference such as 2026-08-18 -> 2026-08-14;
 this is an availability debt, not a wrong-session safety opening. Natural proof is still required.
 
+Phase 8.5.4.2 closes that availability debt retrospectively and is promoted to operating shadow at
+implementation commit `7e7ab5a`. Parser and canonical validation now share an XKRX previous-session
+lookup rather than calendar subtraction. The 2026-08-18 NIGHT rows resolve through the 2026-08-17
+holiday to 2026-08-14 DAY for matching September contracts. Backend-derived KOSPI200 -3.95 and
+KOSDAQ150 -10.20 changes agree with provider audit fields. The current 2026-08-19 response is still
+empty, so those historical pairs remain stale and user-visible current exposure remains zero.
+Same-date, future-session, rollover, raw-change-conflict and stale controls remain fail-closed.
+
 ## 20. Phase History
 
 | Phase | Result |
@@ -314,6 +323,7 @@ this is an availability debt, not a wrong-session safety opening. Natural proof 
 | 8.5.3.2 | Valuation comparison-role labels and collision validator PASS; targeted repair promoted to operating shadow; natural AI delivery pending |
 | 8.5.4 | Run-26 night-session, semantic binding, typed valuation, fallback parity and overlapping-zone RR repairs PASS retrospectively |
 | 8.5.4.1 | Phase 8.5.4 promoted to main and operating shadow; API/health/smoke PASS; latest night pair unavailable fail-closed; natural proof pending |
+| 8.5.4.2 | Holiday-aware XKRX preceding-DAY lookup PASS retrospectively and promoted to operating shadow; current provider row pending; natural proof pending |
 | 8.2A.x | KRX historical engine, universe and publication-state contracts PASS on experimental branch; slot timing/roles not yet proven; not deployed |
 | 8.3 | Peer selection/safety/statistics contract PASS; capability strong PARTIAL; original measured coverage 0/20 |
 | 8.3.1/8.3.1.1 | Paid provider research completed; clean peer-only branch prepared; production provider gate not passed |
@@ -332,8 +342,9 @@ this is an availability debt, not a wrong-session safety opening. Natural proof 
 | RXRX valuation label repair | CLOSED |
 | Fallback dynamic price | CLOSED |
 | Natural AI-Assisted Delivery | PARTIAL |
-| Phase 8.5.4 AI replay / operating | PASS retrospective / OPERATING_SHADOW |
-| Night-futures session basis | CLOSED_RETROSPECTIVE_PENDING_NATURAL; latest live pair unavailable |
+| Phase 8.5.4.2 calendar repair / operating | PASS retrospective / OPERATING_SHADOW |
+| Night-futures session basis | CLOSED_RETROSPECTIVE |
+| Preceding DAY calendar lookup | CLOSED_RETROSPECTIVE_PENDING_NATURAL; current provider row pending |
 | Fallback valuation context parity | CLOSED_RETROSPECTIVE_PENDING_NATURAL |
 | Phase 8.3 Contract / Safety | PASS / PASS |
 | Phase 8.3 broad value / scope | LOW_ROI / SELECTIVE_OPTIONAL_CONTEXT |
@@ -362,7 +373,8 @@ this is an availability debt, not a wrong-session safety opening. Natural proof 
 | Current-price RR packet/numeric path | LIVE PATH PASS |
 | AI natural-live message quality | PARTIAL: retrospective PASS, natural AI delivery pending |
 | Fallback dynamic-price lifecycle | CLOSED: retrospective PASS and operating code promoted |
-| Night-futures session-basis integrity | CLOSED_RETROSPECTIVE_PENDING_NATURAL |
+| Night-futures session-basis integrity | CLOSED_RETROSPECTIVE |
+| Night-futures preceding DAY calendar lookup | CLOSED_RETROSPECTIVE_PENDING_NATURAL |
 | Fallback valuation context parity | CLOSED_RETROSPECTIVE_PENDING_NATURAL |
 | KRX Open API primary breadth | APPROVED, NOT INTEGRATED; experimental development authorized |
 | Human-approved Production Assist evidence | INSUFFICIENT |
@@ -376,7 +388,7 @@ integrity, fallback/retry, exactly-once accounting, and valuation comparison-lab
 ## 22. Current Roadmap
 
 Operating blocker outranks new feature work. The current state is
-`WAIT_FOR_NATURAL_US_KR_PROOF`: Phase 8.5.4 has retrospective PASS evidence and is operating shadow.
+`WAIT_FOR_NATURAL_US_KR_PROOF`: Phase 8.5.4.2 has retrospective PASS evidence and is operating shadow.
 Observe the next natural US/KR sessions
 for actual AI-assisted delivery, night-session integrity, fallback parity, final language, receipt,
 archive and exactly-once proof. Phase 8.3 remains closed as selective optional context.
@@ -489,8 +501,9 @@ T+1 evidence separately; do not reopen peer work without new evidence.
 > state. If the repository is newer than a commit or statement in this workflow, the repository and
 > immutable runtime win and the documentation must be reconciled. Confirm whether a later natural
 > US/KR AI-assisted delivery exists after the Phase 8.5.3.2 shadow promotion. Run-26 delivered
-> fallback 14/14 while AI was rejected; Phase 8.5.4 closes its blockers retrospectively and is now
-> operating shadow. Wait for the next natural proof. Phase 8.3
+> fallback 14/14 while AI was rejected; Phase 8.5.4 closes its blockers retrospectively and Phase
+> 8.5.4.2 closes holiday-aware preceding-DAY lookup retrospectively in operating shadow. Wait for
+> the next natural proof. Phase 8.3
 > is finalized as selective optional context and must not be reopened without new evidence. Cash
 > Flow / Capital Efficiency remains pending behind natural proof. Evaluate
 > KRX exact-slot evidence separately. Report the recovered state before editing.

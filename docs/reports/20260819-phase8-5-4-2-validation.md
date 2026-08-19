@@ -27,6 +27,8 @@ As of: `2026-08-19 KST`
 | `git diff --check` | PASS |
 | Investment/Chart Knowledge parity | PASS |
 | Public Action / operationId | `0.4.5` / `20/20` unique |
+| Exact implementation-SHA Actions | run `32207530665`, Test/Lint PASS |
+| Operating smoke | `494 passed` |
 
 ## Live Read-Only Probe
 
@@ -47,5 +49,6 @@ As of: `2026-08-19 KST`
 - Production Assist: OFF.
 - Phase 8.3/KRX 8.2A experimental leakage: 0.
 
-Local validation passes. Operating promotion remains conditional on exact implementation-SHA
-GitHub Actions Test/Lint and a final main-drift check.
+Implementation SHA `7e7ab5acee2176bc8a452115da19ac6e14d312ab` passed GitHub Actions Test/Lint and
+the final main-drift check. It was promoted by linear fast-forward and passed operating health,
+smoke and read-only provider verification. Natural US/KR proof remains pending.

@@ -181,10 +181,11 @@ publishing 0.66x/0.42x. No source archive was changed and no Telegram, task, Pil
 occurred. Phase 8.5.4 is now promoted to operating shadow. This is
 `CLOSED_RETROSPECTIVE_PENDING_NATURAL`, not natural live proof.
 
-The promotion preflight found the expected 2026-08-19 KRX rows pending. Both latest instrument
-states are unavailable fail-closed; the stale 2026-08-14 NIGHT -> 2026-08-13 DAY pair is valid for
-both matching 2026-09 contracts. Holiday-gap pairing is an availability follow-up, and explicit
-current-PBR history-to-base-Fact lineage is low-priority technical debt.
+Phase 8.5.4.2 is now operating shadow. XKRX holiday traversal reconstructs the 2026-08-18 NIGHT ->
+2026-08-14 DAY same-contract pair for both KOSPI200 and KOSDAQ150, with backend-derived changes
+matching provider audit fields. The expected 2026-08-19 provider rows remain empty, so both pairs
+are stale and current exposure remains suppressed. This is retrospective calendar-lookup PASS, not
+natural proof. Explicit current-PBR history-to-base-Fact lineage remains low-priority technical debt.
 
 Default next task: inspect the **next natural US/KR packets** without manual task execution. For both
 markets verify, in order:
