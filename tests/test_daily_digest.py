@@ -168,14 +168,40 @@ def _night_future(
     expected_date: date,
     freshness: str = "fresh",
 ) -> dict[str, object]:
+    value = 1002.5 if "KOSPI200" in series_code else 1482.4
+    change = -32.8 if "KOSPI200" in series_code else 4.1
+    reference_price = value - change
     return {
         "series_code": series_code,
         "category": "kr_night_futures",
-        "value": 1002.5 if "KOSPI200" in series_code else 1482.4,
-        "change_value": -32.8 if "KOSPI200" in series_code else 4.1,
-        "change_pct": -3.1682 if "KOSPI200" in series_code else 0.2773,
-        "observed_at": f"{trade_date}T23:30:00+09:00",
+        "value": value,
+        "previous_value": reference_price,
+        "change_value": change,
+        "change_pct": change / reference_price * 100,
+        "observed_at": f"{trade_date}T06:00:00+09:00",
+        "retrieved_at": f"{trade_date}T08:05:00+09:00",
+        "source_url": "https://data-dbg.krx.co.kr/svc/apis/drv/fut_bydd_trd",
+        "market_session": "kr_night",
+        "session_basis_contract": "night-futures-session-basis-v1",
+        "instrument": "KOSPI200" if "KOSPI200" in series_code else "KOSDAQ150",
+        "contract_code": "SEP",
+        "exchange": "XKRX",
+        "session_type": "NIGHT",
+        "session_date": str(trade_date),
         "trade_date": str(trade_date),
+        "reference_session": "DAY",
+        "reference_date": str(trade_date - date.resolution),
+        "reference_price": reference_price,
+        "current_session_price": value,
+        "comparison_semantic": (
+            "completed_night_close_minus_immediately_preceding_day_close"
+        ),
+        "night_source_record_id": f"{trade_date}:NIGHT:SEP",
+        "reference_source_record_id": (
+            f"{trade_date - date.resolution}:DAY:SEP"
+        ),
+        "night_source_payload_sha256": "a" * 64,
+        "reference_source_payload_sha256": "b" * 64,
         "expected_latest_session_date": str(expected_date),
         "session_freshness": freshness,
         "quality_status": freshness,
@@ -341,7 +367,7 @@ def test_us_digest_renders_both_fresh_night_futures_between_sections() -> None:
             build_daily_digest(session, run_date, market_scope="us")
         )
 
-    assert "🌙 한국 야간선물 · 08/12 기준" in report
+    assert "🌙 한국 야간선물 · 08/12 새벽 종료 · 08/11 주간장 대비" in report
     assert "KOSPI200 최근월물 1,002.50 · -32.80pt (-3.17%)" in report
     assert "KOSDAQ150 최근월물 1,482.40 · +4.10pt (+0.28%)" in report
     assert report.index("📈 중요한 변화") < report.index("🌙 한국 야간선물")
@@ -366,6 +392,35 @@ def test_night_futures_use_explicit_trade_date_not_provider_timestamp_date() -> 
 
     assert len(summary.items) == 1
     assert summary.items[0].session_date == date(2041, 8, 12)
+
+
+@pytest.mark.parametrize(
+    ("field", "value"),
+    [
+        ("session_type", "DAY"),
+        ("reference_session", "UNKNOWN"),
+        ("reference_date", "2041-08-12"),
+        ("contract_code", ""),
+        ("night_source_payload_sha256", "unknown"),
+        ("comparison_semantic", "provider_defined_change"),
+        ("change_value", 999.0),
+    ],
+)
+def test_night_futures_fail_closed_when_session_basis_is_ambiguous(
+    field: str,
+    value: object,
+) -> None:
+    row = _night_future(
+        "KRX_KOSPI200_NIGHT_FUT",
+        trade_date=date(2041, 8, 12),
+        expected_date=date(2041, 8, 12),
+    )
+    row[field] = value
+
+    summary = summarize_night_futures({"observations": [row]})
+
+    assert summary.items == []
+    assert summary.cautions
 
 
 def test_us_digest_excludes_both_stale_night_futures_with_one_caution() -> None:

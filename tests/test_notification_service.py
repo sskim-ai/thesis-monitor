@@ -18,6 +18,7 @@ from app.services.notification_service import (
     TelegramChunkResult,
     TelegramDeliveryError,
     TelegramNotifier,
+    _fallback_valuation_context,
     _macro_report,
     _is_internal_fact,
     _message_for_assessment,
@@ -28,6 +29,83 @@ from app.services.notification_service import (
     dispatch_pending_notifications,
     queue_daily_stock_notification,
 )
+
+
+@pytest.mark.parametrize(
+    ("ticker", "snapshot", "expected", "forbidden"),
+    [
+        (
+            "GOOGL",
+            {
+                "trailing_pe": 12.34,
+                "trailing_pe_status": "value",
+                "price_to_book": 6.57,
+                "price_to_book_status": "value",
+                "forward_pe_status": "unavailable",
+                "historical_pe_statistics": {
+                    "historical_median": 20.0,
+                    "observation_count": 100,
+                },
+                "historical_pb_statistics": {
+                    "historical_median": 5.0,
+                    "observation_count": 100,
+                },
+            },
+            "검증된 현재 PER/PBR과 과거 배수 분포",
+            "이익 입력을 제외",
+        ),
+        (
+            "HUT",
+            {
+                "trailing_pe_status": "not_meaningful",
+                "price_to_book": 6.59,
+                "price_to_book_status": "value",
+                "forward_pe": 136.93,
+                "forward_pe_status": "value",
+            },
+            "현재 PBR과 예상 이익 배수",
+            "모든 이익 입력",
+        ),
+        (
+            "RXRX/WULF",
+            {
+                "trailing_pe_status": "not_meaningful",
+                "price_to_book": 1.8,
+                "price_to_book_status": "value",
+                "historical_pb_statistics": {
+                    "historical_median": 3.2,
+                    "observation_count": 100,
+                },
+            },
+            "현재 PBR과 과거 장부가 배수 분포",
+            "저평가",
+        ),
+        (
+            "CORZ",
+            {
+                "trailing_pe_status": "not_meaningful",
+                "price_to_book_status": "conflict",
+                "forward_pe_status": "unavailable",
+            },
+            "검증 가능한 현재 배수가 없어",
+            "장부가치 자료만 확인",
+        ),
+    ],
+)
+def test_fallback_valuation_wording_tracks_actual_usable_context(
+    ticker: str,
+    snapshot: dict[str, object],
+    expected: str,
+    forbidden: str,
+) -> None:
+    context = _fallback_valuation_context(
+        snapshot,
+        identity_state="verified_non_depositary",
+    )
+
+    assert context["contract"] == "valuation-context-wording-v1", ticker
+    assert expected in context["summary"]
+    assert forbidden not in context["summary"]
 
 
 def _clean_financial_lineage_metadata() -> dict[str, object]:
@@ -570,6 +648,29 @@ def test_verified_ads_without_current_security_basis_keeps_fallback_fail_closed(
     assert "예탁증권 identity는 확인됐지만 current-security denominator" in message
     assert "환산" not in message
     assert "프리미엄" not in message
+
+
+def test_partial_fallback_valuation_context_removes_generic_relative_reason() -> None:
+    assessment = _compact_assessment(ticker="HUT")
+    snapshot = json.loads(assessment.valuation_snapshot)
+    snapshot.update(
+        {
+            "ttm_eps": -1.0,
+            "trailing_pe": None,
+            "trailing_pe_status": "not_meaningful",
+            "valuation_relative_position": "unknown",
+            "valuation_relative_position_reason": (
+                "검증 경고가 있는 이익 입력을 제외해 현재 Valuation 위치 판단을 "
+                "보류합니다."
+            ),
+        }
+    )
+    assessment.valuation_snapshot = json.dumps(snapshot, ensure_ascii=False)
+
+    message = _message_for_assessment(assessment)
+
+    assert "검증 경고가 있는 이익 입력을 제외해" not in message
+    assert "검증된 현재 PBR과 예상 이익 배수" in message
 
 
 def test_data_caution_only_renders_for_material_quality_problem() -> None:

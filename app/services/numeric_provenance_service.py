@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import copy
 import hashlib
+import math
 import re
 from dataclasses import dataclass
 from typing import Any
@@ -108,6 +109,10 @@ _VALUATION_PERIOD_UNKNOWN = re.compile(
     r"(?:기간|시점).{0,12}(?:불명확|미확인|알\s*수\s*없|확인되지\s*않)",
     re.IGNORECASE,
 )
+_CURRENT_MULTIPLE_SOURCE_PATHS = {
+    "fields.historical_pe_statistics.current_value": "fields.trailing_pe",
+    "fields.historical_pb_statistics.current_value": "fields.price_to_book",
+}
 
 
 @dataclass(frozen=True)
@@ -115,6 +120,34 @@ class NumericBindingResult:
     output: object
     errors: tuple[str, ...]
     report: dict[str, object]
+
+
+def _canonical_current_multiple_source(
+    registry: dict[tuple[str, str], dict[str, object]],
+    *,
+    fact_id: str,
+    field_path: str,
+) -> tuple[str, dict[str, object] | None]:
+    """Bind visible current multiples to their canonical base valuation field."""
+    source = registry.get((fact_id, field_path))
+    canonical_path = _CURRENT_MULTIPLE_SOURCE_PATHS.get(field_path)
+    if canonical_path is None or source is None:
+        return field_path, source
+    canonical = registry.get((fact_id, canonical_path))
+    if canonical is None:
+        return field_path, source
+    try:
+        values_match = math.isclose(
+            float(source["value"]),
+            float(canonical["value"]),
+            rel_tol=0,
+            abs_tol=1e-9,
+        )
+    except (KeyError, TypeError, ValueError):
+        values_match = False
+    if not values_match:
+        return field_path, source
+    return canonical_path, canonical
 
 
 def _text_target(
@@ -487,7 +520,11 @@ def _bind_review(
                 f"{ref_id}:{postposition}"
             )
             continue
-        source = registry.get((fact_id, field_path))
+        field_path, source = _canonical_current_multiple_source(
+            registry,
+            fact_id=fact_id,
+            field_path=field_path,
+        )
         if source is None:
             errors.append(
                 f"{prefix}:numeric_fact_ref_source_not_found:{ref_id}:{fact_id}:{field_path}"
@@ -716,7 +753,11 @@ def _valuation_metrics_in_span(value: str) -> set[str]:
         metrics.add("forward_pbr")
     if re.search(r"(?<!f)PBR|자산\s*배수", value, re.I):
         metrics.add("pbr")
-    if re.search(r"EPS|이익.{0,12}배수|피크\s*이익", value, re.I):
+    if re.search(
+        r"EPS|이익.{0,12}배수|피크\s*이익|(?:실적|이익)\s*기반\s*가치평가",
+        value,
+        re.I,
+    ):
         metrics.add("earnings")
     if re.search(r"BVPS|장부가|주당순자산|자본잠식", value, re.I):
         metrics.add("book")

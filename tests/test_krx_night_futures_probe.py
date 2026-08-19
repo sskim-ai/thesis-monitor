@@ -13,6 +13,7 @@ from app.jobs.probe_krx_night_futures import (
     expected_latest_completed_krx_session,
     fetch_live_probe,
     parse_krx_futures_payload,
+    parse_krx_futures_payloads,
 )
 from app.macro.providers.krx import KrxNightFuturesProvider
 from app.macro.providers.base import CollectedObservation
@@ -40,7 +41,7 @@ def _row(
     }
 
 
-def test_same_contract_regular_and_night_rows_produce_verified_changes() -> None:
+def test_same_business_date_day_and_night_rows_are_not_compared() -> None:
     result = parse_krx_futures_payload(
         {
             "OutBlock_1": [
@@ -52,6 +53,57 @@ def test_same_contract_regular_and_night_rows_produce_verified_changes() -> None
         }
     )
 
+    assert result.night_session_usable is False
+    assert result.observations == []
+    assert result.reason == "night_reference_session_or_contract_identity_not_verifiable"
+
+
+def test_preceding_day_same_contract_rows_produce_verified_changes() -> None:
+    result = parse_krx_futures_payloads(
+        {
+            date(2026, 8, 10): {
+                "OutBlock_1": [
+                    _row(
+                        "KOSPI 200 선물",
+                        "정규",
+                        "KR4101V60003",
+                        "코스피200 F 202609",
+                        "428.35",
+                        "20260810",
+                    ),
+                    _row(
+                        "KOSDAQ 150 선물",
+                        "정규",
+                        "KR4201V60001",
+                        "코스닥150 F 202609",
+                        "1335.20",
+                        "20260810",
+                    ),
+                ]
+            },
+            date(2026, 8, 11): {
+                "OutBlock_1": [
+                    _row(
+                        "KOSPI 200 선물",
+                        "야간",
+                        "KR4101V60003",
+                        "코스피200 F 202609 야간",
+                        "431.20",
+                        "20260811",
+                    ),
+                    _row(
+                        "KOSDAQ 150 선물",
+                        "야간",
+                        "KR4201V60001",
+                        "코스닥150 F 202609 야간",
+                        "1331.00",
+                        "20260811",
+                    ),
+                ]
+            },
+        }
+    )
+
     assert result.night_session_usable is True
     assert result.source_date == date(2026, 8, 11)
     by_product = {item.product: item for item in result.observations}
@@ -59,6 +111,40 @@ def test_same_contract_regular_and_night_rows_produce_verified_changes() -> None
     assert by_product["KOSPI200"].point_change == 2.85
     assert by_product["KOSPI200"].change_pct == pytest.approx(0.66534376)
     assert by_product["KOSDAQ150"].point_change == -4.2
+
+
+def test_zero_reference_price_is_not_promoted() -> None:
+    result = parse_krx_futures_payloads(
+        {
+            date(2026, 8, 10): {
+                "OutBlock_1": [
+                    _row(
+                        "KOSPI 200 선물",
+                        "정규",
+                        "SEP",
+                        "코스피200 F 202609",
+                        "0",
+                        "20260810",
+                    )
+                ]
+            },
+            date(2026, 8, 11): {
+                "OutBlock_1": [
+                    _row(
+                        "KOSPI 200 선물",
+                        "야간",
+                        "SEP",
+                        "코스피200 F 202609 야간",
+                        "431.20",
+                        "20260811",
+                    )
+                ]
+            },
+        }
+    )
+
+    assert result.night_session_usable is False
+    assert result.observations == []
 
 
 def test_rows_without_explicit_session_are_not_inferred() -> None:
@@ -74,12 +160,32 @@ def test_rows_without_explicit_session_are_not_inferred() -> None:
 
 
 def test_contract_mismatch_is_not_compared() -> None:
-    result = parse_krx_futures_payload(
+    result = parse_krx_futures_payloads(
         {
-            "OutBlock_1": [
-                _row("KOSPI 200 선물", "정규", "SEP", "코스피200 F 202609", "428.35"),
-                _row("KOSPI 200 선물", "야간", "DEC", "코스피200 F 202612 야간", "431.20"),
-            ]
+            date(2026, 8, 10): {
+                "OutBlock_1": [
+                    _row(
+                        "KOSPI 200 선물",
+                        "정규",
+                        "SEP",
+                        "코스피200 F 202609",
+                        "428.35",
+                        "20260810",
+                    )
+                ]
+            },
+            date(2026, 8, 11): {
+                "OutBlock_1": [
+                    _row(
+                        "KOSPI 200 선물",
+                        "야간",
+                        "DEC",
+                        "코스피200 F 202612 야간",
+                        "431.20",
+                        "20260811",
+                    )
+                ]
+            },
         }
     )
 
@@ -87,28 +193,41 @@ def test_contract_mismatch_is_not_compared() -> None:
 
 
 def test_roll_selection_uses_nearest_complete_expiry_not_volume() -> None:
-    rows = [
-        _row("KOSPI 200 선물", "정규", "SEP", "코스피200 F 202609", "428"),
-        _row("KOSPI 200 선물", "야간", "SEP", "코스피200 F 202609 야간", "429"),
-        _row("KOSPI 200 선물", "정규", "DEC", "코스피200 F 202612", "430"),
-        _row("KOSPI 200 선물", "야간", "DEC", "코스피200 F 202612 야간", "435"),
+    day_rows = [
+        _row("KOSPI 200 선물", "정규", "SEP", "코스피200 F 202609", "428", "20260810"),
+        _row("KOSPI 200 선물", "정규", "DEC", "코스피200 F 202612", "430", "20260810"),
     ]
-    rows[2]["ACC_TRDVOL"] = "9999999"
-    rows[3]["ACC_TRDVOL"] = "9999999"
+    night_rows = [
+        _row("KOSPI 200 선물", "야간", "SEP", "코스피200 F 202609 야간", "429", "20260811"),
+        _row("KOSPI 200 선물", "야간", "DEC", "코스피200 F 202612 야간", "435", "20260811"),
+    ]
+    day_rows[1]["ACC_TRDVOL"] = "9999999"
+    night_rows[1]["ACC_TRDVOL"] = "9999999"
 
-    result = parse_krx_futures_payload({"OutBlock_1": rows})
+    result = parse_krx_futures_payloads(
+        {
+            date(2026, 8, 10): {"OutBlock_1": day_rows},
+            date(2026, 8, 11): {"OutBlock_1": night_rows},
+        }
+    )
 
     assert result.observations[0].contract_code == "SEP"
 
 
 def test_partial_and_stale_source_preserve_only_verified_product_and_date() -> None:
-    result = parse_krx_futures_payload(
+    result = parse_krx_futures_payloads(
         {
-            "OutBlock_1": [
-                _row("KOSPI 200 선물", "정규", "SEP", "코스피200 F 202609", "428", "20260808"),
-                _row("KOSPI 200 선물", "야간", "SEP", "코스피200 F 202609 야간", "429", "20260808"),
-                _row("KOSDAQ 150 선물", "정규", "QSEP", "코스닥150 F 202609", "1330", "20260808"),
-            ]
+            date(2026, 8, 7): {
+                "OutBlock_1": [
+                    _row("KOSPI 200 선물", "정규", "SEP", "코스피200 F 202609", "428", "20260807"),
+                    _row("KOSDAQ 150 선물", "정규", "QSEP", "코스닥150 F 202609", "1330", "20260807"),
+                ]
+            },
+            date(2026, 8, 8): {
+                "OutBlock_1": [
+                    _row("KOSPI 200 선물", "야간", "SEP", "코스피200 F 202609 야간", "429", "20260808")
+                ]
+            },
         }
     )
 
@@ -136,12 +255,13 @@ def test_live_probe_uses_auth_header_and_never_query_string_for_secret() -> None
 
     def handler(request: httpx.Request) -> httpx.Response:
         requests.append(request)
-        payload = {
-            "OutBlock_1": [
-                _row("KOSPI 200 선물", "정규", "SEP", "코스피200 F 202609", "428"),
-                _row("KOSPI 200 선물", "야간", "SEP", "코스피200 F 202609 야간", "429"),
-            ]
-        }
+        target = request.url.params["basDd"]
+        rows = (
+            [_row("KOSPI 200 선물", "야간", "SEP", "코스피200 F 202609 야간", "429", target)]
+            if target == "20260812"
+            else [_row("KOSPI 200 선물", "정규", "SEP", "코스피200 F 202609", "428", target)]
+        )
+        payload = {"OutBlock_1": rows}
         return httpx.Response(200, json=payload)
 
     result = asyncio.run(
@@ -153,11 +273,14 @@ def test_live_probe_uses_auth_header_and_never_query_string_for_secret() -> None
     )
 
     assert result.night_session_usable is True
-    assert len(requests) == 1
+    assert len(requests) == 2
     assert requests[0].headers["AUTH_KEY"] == secret
     assert str(requests[0].url).startswith(KRX_FUTURES_DAILY_URL)
     assert secret not in str(requests[0].url)
-    assert parse_qs(requests[0].url.query.decode())["basDd"] == ["20260812"]
+    assert [parse_qs(item.url.query.decode())["basDd"] for item in requests] == [
+        ["20260812"],
+        ["20260811"],
+    ]
     assert secret not in json.dumps(result.model_dump(mode="json"))
 
 
@@ -174,10 +297,10 @@ def test_live_probe_continues_past_nonempty_unusable_date() -> None:
                     "OutBlock_1": [
                         _row(
                             "KOSPI 200 선물",
-                            "정규",
+                            "야간",
                             "SEP",
-                            "코스피200 F 202609",
-                            "428",
+                            "코스피200 F 202609 야간",
+                            "429",
                             "20260812",
                         )
                     ]
@@ -189,25 +312,11 @@ def test_live_probe_continues_past_nonempty_unusable_date() -> None:
                 "OutBlock_1": [
                     _row("KOSPI 200 선물", "정규", "SEP", "코스피200 F 202609", "428"),
                     _row(
-                        "KOSPI 200 선물",
-                        "야간",
-                        "SEP",
-                        "코스피200 F 202609 야간",
-                        "429",
-                    ),
-                    _row(
                         "KOSDAQ 150 선물",
                         "정규",
                         "QSEP",
                         "코스닥150 F 202609",
                         "1330",
-                    ),
-                    _row(
-                        "KOSDAQ 150 선물",
-                        "야간",
-                        "QSEP",
-                        "코스닥150 F 202609 야간",
-                        "1332",
                     ),
                 ]
             },
@@ -226,7 +335,7 @@ def test_live_probe_continues_past_nonempty_unusable_date() -> None:
         "20260811",
     ]
     assert result.night_session_usable is True
-    assert result.source_date == date(2026, 8, 11)
+    assert result.source_date == date(2026, 8, 12)
     assert result.queried_dates == [date(2026, 8, 12), date(2026, 8, 11)]
     assert any("2026-08-12: rows present" in item for item in result.warnings)
 
@@ -248,24 +357,29 @@ def test_newer_market_rows_make_older_verified_pair_stale() -> None:
                 )
             ]
         else:
-            rows = [
-                _row(
-                    "KOSPI 200 선물",
-                    "정규",
-                    "SEP",
-                    "코스피200 F 202609",
-                    "428",
-                    target,
-                ),
-                _row(
-                    "KOSPI 200 선물",
-                    "야간",
-                    "SEP",
-                    "코스피200 F 202609 야간",
-                    "429",
-                    target,
-                ),
-            ]
+            rows = (
+                [
+                    _row(
+                        "KOSPI 200 선물",
+                        "야간",
+                        "SEP",
+                        "코스피200 F 202609 야간",
+                        "429",
+                        target,
+                    )
+                ]
+                if target == "20260811"
+                else [
+                    _row(
+                        "KOSPI 200 선물",
+                        "정규",
+                        "SEP",
+                        "코스피200 F 202609",
+                        "428",
+                        target,
+                    )
+                ]
+            )
         return httpx.Response(200, json={"OutBlock_1": rows})
 
     result = asyncio.run(
@@ -277,12 +391,13 @@ def test_newer_market_rows_make_older_verified_pair_stale() -> None:
     )
 
     assert result.source_date == date(2026, 8, 11)
-    assert result.expected_latest_session_date == date(2026, 8, 12)
+    assert result.expected_latest_session_date == date(2026, 8, 13)
     assert result.session_freshness == "stale"
     assert [item.result for item in result.date_statuses] == [
         "empty",
         "rows_without_verified_pair",
         "verified_pair",
+        "rows_without_verified_pair",
     ]
 
 
@@ -293,22 +408,25 @@ def test_empty_expected_business_date_is_refresh_due_not_a_holiday() -> None:
             [
                 _row(
                     "KOSPI 200 선물",
-                    "정규",
-                    "SEP",
-                    "코스피200 F 202609",
-                    "428",
-                    target,
-                ),
-                _row(
-                    "KOSPI 200 선물",
                     "야간",
                     "SEP",
                     "코스피200 F 202609 야간",
                     "429",
                     target,
-                ),
+                )
             ]
             if target == "20260811"
+            else [
+                _row(
+                    "KOSPI 200 선물",
+                    "정규",
+                    "SEP",
+                    "코스피200 F 202609",
+                    "428",
+                    target,
+                )
+            ]
+            if target == "20260810"
             else []
         )
         return httpx.Response(200, json={"OutBlock_1": rows})
@@ -321,17 +439,17 @@ def test_empty_expected_business_date_is_refresh_due_not_a_holiday() -> None:
         )
     )
 
-    assert expected_latest_completed_krx_session(date(2026, 8, 13)) == date(2026, 8, 12)
+    assert expected_latest_completed_krx_session(date(2026, 8, 13)) == date(2026, 8, 13)
     assert result.source_date == date(2026, 8, 11)
-    assert result.expected_latest_session_date == date(2026, 8, 12)
+    assert result.expected_latest_session_date == date(2026, 8, 13)
     assert result.session_freshness == "stale"
 
 
 @pytest.mark.parametrize(
     ("run_date", "source_date"),
     [
-        (date(2026, 8, 10), date(2026, 8, 7)),
-        (date(2026, 8, 18), date(2026, 8, 14)),
+        (date(2026, 8, 10), date(2026, 8, 8)),
+        (date(2026, 8, 18), date(2026, 8, 15)),
     ],
 )
 def test_empty_weekend_or_holiday_dates_keep_latest_verified_session_fresh(
@@ -344,22 +462,25 @@ def test_empty_weekend_or_holiday_dates_keep_latest_verified_session_fresh(
             [
                 _row(
                     "KOSPI 200 선물",
-                    "정규",
-                    "SEP",
-                    "코스피200 F 202609",
-                    "428",
-                    target,
-                ),
-                _row(
-                    "KOSPI 200 선물",
                     "야간",
                     "SEP",
                     "코스피200 F 202609 야간",
                     "429",
                     target,
-                ),
+                )
             ]
             if target == source_date.strftime("%Y%m%d")
+            else [
+                _row(
+                    "KOSPI 200 선물",
+                    "정규",
+                    "SEP",
+                    "코스피200 F 202609",
+                    "428",
+                    target,
+                )
+            ]
+            if target == (source_date - date.resolution).strftime("%Y%m%d")
             else []
         )
         return httpx.Response(200, json={"OutBlock_1": rows})
@@ -383,36 +504,41 @@ def test_live_probe_prefers_fresh_partial_over_older_full_result() -> None:
 
     def handler(request: httpx.Request) -> httpx.Response:
         requests.append(request)
+        target = request.url.params["basDd"]
+        rows = (
+            [
+                _row(
+                    "KOSPI 200 선물",
+                    "야간",
+                    "SEP",
+                    "코스피200 F 202609 야간",
+                    "429",
+                    target,
+                )
+            ]
+            if target == "20260812"
+            else [
+                _row(
+                    "KOSPI 200 선물",
+                    "정규",
+                    "SEP",
+                    "코스피200 F 202609",
+                    "428",
+                    target,
+                ),
+                _row(
+                    "KOSDAQ 150 선물",
+                    "정규",
+                    "QSEP",
+                    "코스닥150 F 202609",
+                    "1330",
+                    target,
+                ),
+            ]
+        )
         return httpx.Response(
             200,
-            json={
-                "OutBlock_1": [
-                    _row(
-                        "KOSPI 200 선물",
-                        "정규",
-                        "SEP",
-                        "코스피200 F 202609",
-                        "428",
-                        "20260812",
-                    ),
-                    _row(
-                        "KOSPI 200 선물",
-                        "야간",
-                        "SEP",
-                        "코스피200 F 202609 야간",
-                        "429",
-                        "20260812",
-                    ),
-                    _row(
-                        "KOSDAQ 150 선물",
-                        "정규",
-                        "QSEP",
-                        "코스닥150 F 202609",
-                        "1330",
-                        "20260812",
-                    ),
-                ]
-            },
+            json={"OutBlock_1": rows},
         )
 
     result = asyncio.run(
@@ -423,7 +549,7 @@ def test_live_probe_prefers_fresh_partial_over_older_full_result() -> None:
         )
     )
 
-    assert len(requests) == 1
+    assert len(requests) == 2
     assert result.source_date == date(2026, 8, 12)
     assert [item.product for item in result.observations] == ["KOSPI200"]
 
@@ -449,9 +575,8 @@ def test_live_probe_tracks_multiple_unusable_dates_before_verified_pair() -> Non
             ]
         elif target == "20260810":
             rows = []
-        else:
+        elif target == "20260809":
             rows = [
-                _row("KOSPI 200 선물", "정규", "SEP", "코스피200 F 202609", "428", target),
                 _row(
                     "KOSPI 200 선물",
                     "야간",
@@ -461,6 +586,17 @@ def test_live_probe_tracks_multiple_unusable_dates_before_verified_pair() -> Non
                     target,
                 ),
             ]
+        else:
+            rows = [
+                _row(
+                    "KOSPI 200 선물",
+                    "정규",
+                    "SEP",
+                    "코스피200 F 202609",
+                    "428",
+                    target,
+                )
+            ]
         return httpx.Response(200, json={"OutBlock_1": rows})
 
     result = asyncio.run(
@@ -468,7 +604,7 @@ def test_live_probe_tracks_multiple_unusable_dates_before_verified_pair() -> Non
             run_date=date(2026, 8, 12),
             api_key="dummy",
             transport=httpx.MockTransport(handler),
-            max_lookback_days=4,
+            max_lookback_days=5,
         )
     )
 
@@ -478,8 +614,9 @@ def test_live_probe_tracks_multiple_unusable_dates_before_verified_pair() -> Non
         date(2026, 8, 11),
         date(2026, 8, 10),
         date(2026, 8, 9),
+        date(2026, 8, 8),
     ]
-    assert sum("rows present" in item for item in result.warnings) == 2
+    assert sum("rows present" in item for item in result.warnings) == 3
 
 
 def test_live_probe_distinguishes_all_nonempty_unusable_from_all_empty() -> None:
@@ -522,8 +659,8 @@ def test_live_probe_distinguishes_all_nonempty_unusable_from_all_empty() -> None
 
     assert unusable.night_session_usable is False
     assert unusable.observations == []
-    assert unusable.reason == "no_recent_verified_night_pair"
-    assert unusable.row_count == 1
+    assert unusable.reason == "no_recent_verified_night_reference_pair"
+    assert unusable.row_count == 3
     assert len(unusable.queried_dates) == 3
     assert empty.reason == "no_recent_business_date_data"
     assert empty.row_count == 0
@@ -546,12 +683,32 @@ def test_missing_key_is_not_configured_without_http_request() -> None:
 
 
 def test_provider_preserves_same_contract_regular_close_as_comparison(monkeypatch) -> None:
-    probe = parse_krx_futures_payload(
+    probe = parse_krx_futures_payloads(
         {
-            "OutBlock_1": [
-                _row("KOSPI 200 선물", "정규", "SEP", "코스피200 F 202609", "989.80"),
-                _row("KOSPI 200 선물", "야간", "SEP", "코스피200 F 202609 야간", "974.95"),
-            ]
+            date(2026, 8, 10): {
+                "OutBlock_1": [
+                    _row(
+                        "KOSPI 200 선물",
+                        "정규",
+                        "SEP",
+                        "코스피200 F 202609",
+                        "989.80",
+                        "20260810",
+                    )
+                ]
+            },
+            date(2026, 8, 11): {
+                "OutBlock_1": [
+                    _row(
+                        "KOSPI 200 선물",
+                        "야간",
+                        "SEP",
+                        "코스피200 F 202609 야간",
+                        "974.95",
+                        "20260811",
+                    )
+                ]
+            },
         }
     )
     probe.expected_latest_session_date = date(2026, 8, 11)
@@ -574,6 +731,9 @@ def test_provider_preserves_same_contract_regular_close_as_comparison(monkeypatc
     assert observation.change_value == -14.85
     assert observation.quality_status == "fresh"
     assert observation.raw_payload["trade_date"] == "2026-08-11"
+    assert observation.raw_payload["reference_date"] == "2026-08-10"
+    assert observation.raw_payload["session_type"] == "NIGHT"
+    assert observation.raw_payload["reference_session"] == "DAY"
     assert observation.raw_payload["expected_latest_session_date"] == "2026-08-11"
 
     engine = create_engine(
@@ -600,50 +760,40 @@ def test_provider_preserves_same_contract_regular_close_as_comparison(monkeypatc
 def test_provider_marks_older_pair_stale_and_storage_refreshes_existing_quality(
     monkeypatch,
 ) -> None:
+    def handler(request: httpx.Request) -> httpx.Response:
+        target = request.url.params["basDd"]
+        rows = (
+            [
+                _row(
+                    "KOSPI 200 선물",
+                    "정규",
+                    "SEP",
+                    "코스피200 F 202609",
+                    "428",
+                    target,
+                )
+            ]
+            if target in {"20260812", "20260810"}
+            else [
+                _row(
+                    "KOSPI 200 선물",
+                    "야간",
+                    "SEP",
+                    "코스피200 F 202609 야간",
+                    "429",
+                    target,
+                )
+            ]
+            if target == "20260811"
+            else []
+        )
+        return httpx.Response(200, json={"OutBlock_1": rows})
+
     async def fake_probe(**kwargs):
         return await fetch_live_probe(
             run_date=date(2026, 8, 13),
             api_key="dummy",
-            transport=httpx.MockTransport(
-                lambda request: httpx.Response(
-                    200,
-                    json={
-                        "OutBlock_1": (
-                            [
-                                _row(
-                                    "KOSPI 200 선물",
-                                    "정규",
-                                    "SEP",
-                                    "코스피200 F 202609",
-                                    "428",
-                                    request.url.params["basDd"],
-                                )
-                            ]
-                            if request.url.params["basDd"] == "20260812"
-                            else [
-                                _row(
-                                    "KOSPI 200 선물",
-                                    "정규",
-                                    "SEP",
-                                    "코스피200 F 202609",
-                                    "428",
-                                    "20260811",
-                                ),
-                                _row(
-                                    "KOSPI 200 선물",
-                                    "야간",
-                                    "SEP",
-                                    "코스피200 F 202609 야간",
-                                    "429",
-                                    "20260811",
-                                ),
-                            ]
-                            if request.url.params["basDd"] == "20260811"
-                            else []
-                        )
-                    },
-                )
-            ),
+            transport=httpx.MockTransport(handler),
         )
 
     monkeypatch.setattr("app.macro.providers.krx.fetch_live_probe", fake_probe)
@@ -656,7 +806,7 @@ def test_provider_marks_older_pair_stale_and_storage_refreshes_existing_quality(
     assert provider_result.observations[0].quality_status == "stale"
     assert (
         provider_result.observations[0].raw_payload["expected_latest_session_date"]
-        == "2026-08-12"
+        == "2026-08-13"
     )
     assert provider_result.warnings
 

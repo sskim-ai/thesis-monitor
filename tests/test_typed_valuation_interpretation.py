@@ -258,6 +258,31 @@ def test_aggregate_fact_cannot_ground_negative_book_claim() -> None:
     assert any("evidence_invalid" in error for error in errors)
 
 
+def test_earnings_based_valuation_unknown_phrase_matches_typed_metric() -> None:
+    fact_id = "financial_quality:2026-06-30"
+    text = "재무 품질을 확인하지 못해 현재 실적 기반 가치평가는 보류합니다."
+    review = _review(text, fact_id)
+    review["valuation_interpretation_refs"] = [
+        _typed(
+            interpretation_type="quality_unknown",
+            metric="earnings",
+            fact_id=fact_id,
+            numeric_refs=[],
+            exact_span=text,
+        )
+    ]
+
+    errors, accepted = _typed_valuation_reference_errors(
+        review,
+        _stock(fact_id, fact_type="financial_quality"),
+        [],
+        prefix="CORZ",
+    )
+
+    assert errors == []
+    assert accepted[0]["metric"] == "earnings"
+
+
 def test_valid_historical_pbr_span_cannot_cover_denied_per_occurrence() -> None:
     fact_id = "valuation:historical_pb"
     text = (

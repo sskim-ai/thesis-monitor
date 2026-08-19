@@ -79,21 +79,42 @@ def _at(hour: int, minute: int) -> datetime:
 
 def _observation(series_code: str) -> CollectedObservation:
     is_kospi = "KOSPI200" in series_code
+    value = 431.25 if is_kospi else 1432.5
+    reference_price = 428.4 if is_kospi else 1436.7
+    change_value = value - reference_price
+    contract_code = "KOSPI-SEP" if is_kospi else "KOSDAQ-SEP"
     return CollectedObservation(
         series_code=series_code,
         category="kr_night_futures",
-        observed_at=datetime.combine(EXPECTED_SESSION, time.min, tzinfo=KST),
-        value=431.25 if is_kospi else 1432.5,
+        observed_at=datetime.combine(EXPECTED_SESSION, time(6), tzinfo=KST),
+        value=value,
         unit="index_points",
         frequency="daily",
         market_session="kr_night",
-        previous_value=428.4 if is_kospi else 1436.7,
-        change_value=2.85 if is_kospi else -4.2,
-        change_pct=0.67 if is_kospi else -0.29,
+        previous_value=reference_price,
+        change_value=change_value,
+        change_pct=change_value / reference_price * 100,
         source_url="https://data-dbg.krx.co.kr/",
         quality_status="fresh",
         raw_payload={
+            "instrument": "KOSPI200" if is_kospi else "KOSDAQ150",
+            "contract_code": contract_code,
+            "exchange": "XKRX",
+            "session_basis_contract": "night-futures-session-basis-v1",
+            "session_type": "NIGHT",
+            "session_date": EXPECTED_SESSION.isoformat(),
             "trade_date": EXPECTED_SESSION.isoformat(),
+            "reference_session": "DAY",
+            "reference_date": date(2026, 8, 12).isoformat(),
+            "reference_price": reference_price,
+            "current_session_price": value,
+            "comparison_semantic": "completed_night_close_minus_immediately_preceding_day_close",
+            "night_source_record_id": (
+                f"{EXPECTED_SESSION.isoformat()}:NIGHT:{contract_code}"
+            ),
+            "reference_source_record_id": f"2026-08-12:DAY:{contract_code}",
+            "night_source_payload_sha256": "a" * 64,
+            "reference_source_payload_sha256": "b" * 64,
             "expected_latest_session_date": EXPECTED_SESSION.isoformat(),
             "session_freshness": "fresh",
         },
@@ -271,7 +292,9 @@ async def test_gate_dispatches_immediately_when_both_contracts_are_ready(
         "daily_monitoring_digest",
         "daily_stock_analysis",
     ]
-    assert "🌙 한국 야간선물 · 08/13 기준" in str(notifier.payloads[0]["text"])
+    assert "🌙 한국 야간선물 · 08/13 새벽 종료 · 08/12 주간장 대비" in str(
+        notifier.payloads[0]["text"]
+    )
     assert metadata["first_query_at"].endswith("08:05:00+09:00")
     assert metadata["first_complete_at"].endswith("08:05:00+09:00")
     assert metadata["dispatch_at"].endswith("08:05:00+09:00")

@@ -250,6 +250,47 @@ def test_historical_valuation_distribution_roles_bind_distinct_labels() -> None:
     ]
 
 
+@pytest.mark.parametrize(
+    ("base_field", "history_field", "expected_semantic"),
+    [
+        ("price_to_book", "historical_pb_statistics", "price_to_book"),
+        ("trailing_pe", "historical_pe_statistics", "trailing_pe"),
+    ],
+)
+def test_visible_current_historical_multiple_binds_to_canonical_base_field(
+    base_field: str,
+    history_field: str,
+    expected_semantic: str,
+) -> None:
+    fact = _fact(
+        "valuation:current",
+        "valuation",
+        {
+            base_field: 1.8154,
+            history_field: {
+                "current_value": 1.8154,
+                "historical_median": 3.279,
+            },
+        },
+    )
+    result = _bind_stock(
+        [fact],
+        "{{numeric:current}}",
+        [
+            _ref(
+                "current",
+                "valuation:current",
+                f"fields.{history_field}.current_value",
+            )
+        ],
+    )
+
+    assert result.errors == ()
+    binding = result.report["bindings"][0]
+    assert binding["field_path"] == f"fields.{base_field}"
+    assert binding["semantic_type"] == expected_semantic
+
+
 def test_legacy_historical_registry_recovers_comparison_labels_from_path() -> None:
     fact = _fact(
         "valuation:current",

@@ -40,6 +40,10 @@ from app.services.numeric_semantic_registry import (
     NUMERIC_SEMANTICS,
     canonical_display_value,
 )
+from app.services.semantic_decision_service import (
+    VALUATION_CONTEXT_CONTRACT,
+    select_valuation_context,
+)
 
 
 MATERIAL_STATUSES = {
@@ -844,6 +848,84 @@ def _history_summary(snapshot: dict[str, object]) -> str | None:
     return " · ".join(parts) if parts else None
 
 
+def _usable_multiple(snapshot: dict[str, object], field: str) -> bool:
+    value = snapshot.get(field)
+    return bool(
+        snapshot.get(f"{field}_status") == "value"
+        and isinstance(value, (int, float))
+        and not isinstance(value, bool)
+        and math.isfinite(float(value))
+        and float(value) > 0
+    )
+
+
+def _fallback_valuation_context(
+    snapshot: dict[str, object],
+    *,
+    identity_state: str,
+) -> dict[str, object]:
+    current_pe = _usable_multiple(snapshot, "trailing_pe")
+    current_pb = _usable_multiple(snapshot, "price_to_book")
+    forward_pe = _usable_multiple(snapshot, "forward_pe")
+    forward_pb = _usable_multiple(snapshot, "forward_price_to_book")
+    history_used = _history_summary(snapshot) is not None
+    current_used = current_pe or current_pb
+    forward_used = forward_pe or forward_pb
+    selection = select_valuation_context(
+        current_status="available" if current_used else "unavailable",
+        historical_status="available" if history_used else "unavailable",
+        peer_status="unavailable",
+        forward_status="available" if forward_used else "unavailable",
+        current_used=current_used,
+        history_used=history_used,
+        peer_used=False,
+        forward_used=forward_used,
+    )
+    if identity_state in {"conflict", "unknown"}:
+        summary = (
+            "증권 유형과 주당 기준의 일치 여부를 확인하지 못해 배수 해석을 "
+            "보류합니다."
+        )
+    elif identity_state == "verified_depositary" and not current_used:
+        summary = (
+            "예탁증권 identity는 확인됐지만 current-security denominator·share·"
+            "currency basis를 확인하지 못해 배수 해석을 보류합니다."
+        )
+    elif current_pe and current_pb:
+        summary = (
+            "검증된 현재 PER/PBR과 과거 배수 분포를 함께 확인합니다."
+            if history_used
+            else "검증된 현재 PER/PBR 범위에서 해석합니다."
+        )
+    elif current_pe:
+        summary = (
+            "검증된 현재 PER과 과거 이익 배수 분포를 함께 확인합니다."
+            if history_used
+            else "검증된 현재 PER 범위에서 해석합니다."
+        )
+    elif current_pb and forward_pe:
+        summary = (
+            "검증된 현재 PBR과 예상 이익 배수를 사용하며, 사용할 수 없는 "
+            "trailing PER은 제외합니다."
+        )
+    elif current_pb:
+        summary = (
+            "검증된 현재 PBR과 과거 장부가 배수 분포를 함께 확인하며, "
+            "이익 기반 배수는 사용하지 않습니다."
+            if history_used
+            else "검증된 현재 PBR만 사용하며, 이익 기반 배수는 사용하지 않습니다."
+        )
+    elif forward_pe:
+        summary = "검증된 예상 이익 배수만 사용하며, 현재 PER/PBR은 제외합니다."
+    else:
+        summary = "검증 가능한 현재 배수가 없어 Valuation 해석을 보류합니다."
+    return {
+        **selection.as_dict(),
+        "impact": "unknown",
+        "summary": summary,
+    }
+
+
 def _price_check_lines(
     checks: object,
     currency: object,
@@ -889,6 +971,9 @@ def _risk_reward_unavailable_text(reason: object) -> str:
         ),
         "support_unavailable": (
             "유효한 동적 지지가 없어 현재가 기준 차트 손익비는 계산하지 않습니다."
+        ),
+        "nearest_support_resistance_overlap": (
+            "가까운 지지·저항 구간이 겹쳐 현재가 기준 차트 손익비는 계산하지 않습니다."
         ),
     }.get(str(reason or ""), "현재 가격 구조로는 차트 손익비를 계산할 수 없습니다.")
 
@@ -1192,16 +1277,10 @@ def _assessment_report(
             or identity.get("identity_state")
             or ""
         )
-        valuation_context = {
-            "impact": "unknown",
-            "summary": (
-                "증권 유형과 주당 기준의 일치 여부를 확인하지 못해 배수 해석을 보류합니다."
-                if identity_state in {"conflict", "unknown"}
-                else "예탁증권 identity는 확인됐지만 current-security denominator·share·currency basis를 확인하지 못해 배수 해석을 보류합니다."
-                if identity_state == "verified_depositary"
-                else "검증 경고가 있는 이익 입력을 제외하고 독립적인 장부가치 자료만 확인합니다."
-            ),
-        }
+        valuation_context = _fallback_valuation_context(
+            valuation_snapshot,
+            identity_state=identity_state,
+        )
     new_warnings = [
         str(item)
         for item in _json_list_value(getattr(assessment, "new_warnings", "[]"))
@@ -1355,6 +1434,11 @@ def _assessment_report(
     relative_reason = str(
         valuation_snapshot.get("valuation_relative_position_reason") or ""
     ).strip()
+    if (
+        relative_position == "unknown"
+        and valuation_context.get("contract") == VALUATION_CONTEXT_CONTRACT
+    ):
+        relative_reason = ""
     matched_today = _unique_text(
         str(signal)
         for item in evidence_items

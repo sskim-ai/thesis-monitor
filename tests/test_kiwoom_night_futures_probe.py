@@ -54,6 +54,31 @@ def _final_observation(
     }
 
 
+def _krx_observation(**updates: object) -> KrxNightFutureObservation:
+    regular_close = float(updates.get("regular_close", 428.0))
+    night_close = float(updates.get("night_close", 429.0))
+    point_change = night_close - regular_close
+    values: dict[str, object] = {
+        "product": "KOSPI200",
+        "contract_code": "KR4101V60003",
+        "contract_name": "코스피200 F 202609 야간",
+        "maturity": "2026-09",
+        "source_date": date(2026, 8, 13),
+        "session_date": date(2026, 8, 13),
+        "reference_date": date(2026, 8, 12),
+        "regular_close": regular_close,
+        "night_close": night_close,
+        "reference_price": regular_close,
+        "current_session_price": night_close,
+        "point_change": point_change,
+        "change_pct": point_change / regular_close * 100,
+        "night_source_record_id": "2026-08-13:NIGHT:KR4101V60003",
+        "reference_source_record_id": "2026-08-12:DAY:KR4101V60003",
+    }
+    values.update(updates)
+    return KrxNightFutureObservation.model_validate(values)
+
+
 def _product_evidence(
     product: str,
     *,
@@ -262,17 +287,7 @@ def test_sensitive_gateway_fields_are_rejected_without_value_leakage() -> None:
 
 def test_reconciliation_requires_same_product_contract_maturity_and_session() -> None:
     kiwoom = KiwoomFinalNightClose.model_validate(_final_observation())
-    krx = KrxNightFutureObservation(
-        product="KOSPI200",
-        contract_code="DIFFERENT",
-        contract_name="코스피200 F 202609 야간",
-        maturity="2026-09",
-        source_date=date(2026, 8, 13),
-        regular_close=428.0,
-        night_close=429.0,
-        point_change=1.0,
-        change_pct=1 / 428 * 100,
-    )
+    krx = _krx_observation(contract_code="DIFFERENT")
 
     result = reconcile_with_krx(kiwoom, krx)
 
@@ -282,17 +297,7 @@ def test_reconciliation_requires_same_product_contract_maturity_and_session() ->
 
 def test_reconciliation_uses_contract_tick_size_tolerance() -> None:
     kiwoom = KiwoomFinalNightClose.model_validate(_final_observation())
-    within_tick = KrxNightFutureObservation(
-        product="KOSPI200",
-        contract_code="KR4101V60003",
-        contract_name="코스피200 F 202609 야간",
-        maturity="2026-09",
-        source_date=date(2026, 8, 13),
-        regular_close=428.0,
-        night_close=429.05,
-        point_change=1.05,
-        change_pct=1.05 / 428 * 100,
-    )
+    within_tick = _krx_observation(night_close=429.05)
     mismatch = within_tick.model_copy(
         update={"night_close": 429.2, "point_change": 1.2, "change_pct": 1.2 / 428 * 100}
     )
@@ -303,17 +308,7 @@ def test_reconciliation_uses_contract_tick_size_tolerance() -> None:
 
 def test_reconciliation_rejects_regular_close_basis_mismatch() -> None:
     kiwoom = KiwoomFinalNightClose.model_validate(_final_observation())
-    krx = KrxNightFutureObservation(
-        product="KOSPI200",
-        contract_code="KR4101V60003",
-        contract_name="코스피200 F 202609 야간",
-        maturity="2026-09",
-        source_date=date(2026, 8, 13),
-        regular_close=427.0,
-        night_close=429.0,
-        point_change=2.0,
-        change_pct=2 / 427 * 100,
-    )
+    krx = _krx_observation(regular_close=427.0)
 
     assert reconcile_with_krx(kiwoom, krx).result == "mismatch"
 

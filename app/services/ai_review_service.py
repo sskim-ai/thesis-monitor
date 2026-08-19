@@ -4161,7 +4161,8 @@ _RR_LANGUAGE = re.compile(r"(?:차트\s*)?손익비|\bRR\b|risk.?reward", re.IGN
 _POSITIVE_COMPARISON = re.compile(r"개선|상승|확대|회복")
 _NEGATIVE_COMPARISON = re.compile(r"악화|하락|축소|둔화")
 _OTHER_COMPARATIVE_SUBJECT = re.compile(
-    r"이익률|마진|매출|가격|거래량|실적|수급|현금흐름|재고|가동률|수익성"
+    r"이익률|마진|매출|가격|거래량|실적|수급|현금흐름|재고|가동률|수익성|"
+    r"지지|저항|가격\s*구조"
 )
 
 

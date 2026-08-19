@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import math
+import re
 from dataclasses import dataclass, field
 from datetime import date, datetime
 
@@ -13,6 +15,11 @@ NIGHT_FUTURES_LABELS = {
     "KRX_KOSPI200_NIGHT_FUT": "KOSPI200 최근월물",
     "KRX_KOSDAQ150_NIGHT_FUT": "KOSDAQ150 최근월물",
 }
+NIGHT_FUTURES_SESSION_BASIS_CONTRACT = "night-futures-session-basis-v1"
+NIGHT_COMPARISON_SEMANTIC = (
+    "completed_night_close_minus_immediately_preceding_day_close"
+)
+_SHA256 = re.compile(r"[0-9a-f]{64}")
 
 
 @dataclass(frozen=True)
@@ -23,6 +30,19 @@ class NightFuturesItem:
     change_value: float | None
     change_pct: float | None
     session_date: date
+    contract_code: str
+    exchange: str
+    session_type: str
+    reference_session: str
+    reference_date: date
+    reference_price: float
+    comparison_semantic: str
+    as_of: str
+    source: str
+    night_source_record_id: str
+    reference_source_record_id: str
+    night_source_payload_sha256: str
+    reference_source_payload_sha256: str
 
 
 @dataclass(frozen=True)
@@ -33,6 +53,11 @@ class NightFuturesSummary:
     @property
     def source_date(self) -> date | None:
         dates = {item.session_date for item in self.items}
+        return next(iter(dates)) if len(dates) == 1 else None
+
+    @property
+    def reference_date(self) -> date | None:
+        dates = {item.reference_date for item in self.items}
         return next(iter(dates)) if len(dates) == 1 else None
 
 
@@ -59,8 +84,10 @@ def _number(value: object) -> float | None:
 
 
 def _session_is_fresh(item: dict[str, object]) -> tuple[bool, date | None]:
-    session_date = _date_value(item.get("trade_date")) or _date_value(
-        item.get("observed_at")
+    session_date = (
+        _date_value(item.get("session_date"))
+        or _date_value(item.get("trade_date"))
+        or _date_value(item.get("observed_at"))
     )
     expected_date = _date_value(item.get("expected_latest_session_date"))
     session_freshness = str(item.get("session_freshness") or "").lower()
@@ -77,6 +104,65 @@ def _session_is_fresh(item: dict[str, object]) -> tuple[bool, date | None]:
     if expected_date is not None and session_date != expected_date:
         fresh = False
     return fresh, session_date
+
+
+def _verified_session_basis(
+    item: dict[str, object],
+    *,
+    session_date: date,
+) -> tuple[bool, date | None, float | None]:
+    reference_date = _date_value(item.get("reference_date"))
+    reference_price = _number(item.get("reference_price"))
+    current_price = _number(item.get("current_session_price"))
+    value = _number(item.get("value"))
+    change_value = _number(item.get("change_value"))
+    change_pct = _number(item.get("change_pct"))
+    night_sha = str(item.get("night_source_payload_sha256") or "")
+    reference_sha = str(item.get("reference_source_payload_sha256") or "")
+    expected_change_pct = (
+        (current_price - reference_price) / reference_price * 100
+        if current_price is not None
+        and reference_price is not None
+        and reference_price != 0
+        else None
+    )
+    valid = bool(
+        item.get("session_basis_contract")
+        == NIGHT_FUTURES_SESSION_BASIS_CONTRACT
+        and str(item.get("exchange") or "") == "XKRX"
+        and str(item.get("market_session") or "").lower() == "kr_night"
+        and str(item.get("session_type") or "").upper() == "NIGHT"
+        and str(item.get("reference_session") or "").upper() == "DAY"
+        and reference_date == session_date.fromordinal(session_date.toordinal() - 1)
+        and str(item.get("contract_code") or "").strip()
+        and str(item.get("retrieved_at") or item.get("session_close") or "").strip()
+        and str(item.get("source_url") or item.get("provider") or "").strip()
+        and str(item.get("night_source_record_id") or "").strip()
+        and str(item.get("reference_source_record_id") or "").strip()
+        and _SHA256.fullmatch(night_sha)
+        and _SHA256.fullmatch(reference_sha)
+        and item.get("comparison_semantic") == NIGHT_COMPARISON_SEMANTIC
+        and reference_price is not None
+        and current_price is not None
+        and value is not None
+        and math.isclose(value, current_price, rel_tol=0, abs_tol=1e-8)
+        and change_value is not None
+        and math.isclose(
+            change_value,
+            current_price - reference_price,
+            rel_tol=0,
+            abs_tol=1e-8,
+        )
+        and change_pct is not None
+        and expected_change_pct is not None
+        and math.isclose(
+            change_pct,
+            expected_change_pct,
+            rel_tol=0,
+            abs_tol=1e-6,
+        )
+    )
+    return valid, reference_date, reference_price
 
 
 def summarize_night_futures(market: object) -> NightFuturesSummary:
@@ -109,6 +195,13 @@ def summarize_night_futures(market: object) -> NightFuturesSummary:
         if not fresh or session_date is None or value is None:
             excluded.append(series_code)
             continue
+        verified, reference_date, reference_price = _verified_session_basis(
+            row,
+            session_date=session_date,
+        )
+        if not verified or reference_date is None or reference_price is None:
+            excluded.append(series_code)
+            continue
         items.append(
             NightFuturesItem(
                 series_code=series_code,
@@ -117,6 +210,25 @@ def summarize_night_futures(market: object) -> NightFuturesSummary:
                 change_value=_number(row.get("change_value")),
                 change_pct=_number(row.get("change_pct")),
                 session_date=session_date,
+                contract_code=str(row.get("contract_code")),
+                exchange=str(row.get("exchange")),
+                session_type="NIGHT",
+                reference_session="DAY",
+                reference_date=reference_date,
+                reference_price=reference_price,
+                comparison_semantic=str(row.get("comparison_semantic")),
+                as_of=str(row.get("retrieved_at") or row.get("session_close") or ""),
+                source=str(row.get("source_url") or row.get("provider") or ""),
+                night_source_record_id=str(row.get("night_source_record_id")),
+                reference_source_record_id=str(
+                    row.get("reference_source_record_id")
+                ),
+                night_source_payload_sha256=str(
+                    row.get("night_source_payload_sha256")
+                ),
+                reference_source_payload_sha256=str(
+                    row.get("reference_source_payload_sha256")
+                ),
             )
         )
 
@@ -137,7 +249,12 @@ def render_night_futures(summary: NightFuturesSummary) -> str:
     if not summary.items:
         return ""
     source_date = summary.source_date
-    date_label = f" · {source_date:%m/%d} 기준" if source_date is not None else ""
+    reference_date = summary.reference_date
+    date_label = (
+        f" · {source_date:%m/%d} 새벽 종료 · {reference_date:%m/%d} 주간장 대비"
+        if source_date is not None and reference_date is not None
+        else ""
+    )
     lines: list[str] = []
     for item in summary.items:
         line = f"• {item.label} {item.value:,.2f}"

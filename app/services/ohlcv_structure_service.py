@@ -1232,6 +1232,19 @@ def calculate_risk_reward(
             "blocking_reason": invalidation.get("reason"),
         }
     target = float(resistance["zone_low"])
+    if support is not None:
+        support_low = float(support["zone_low"])
+        support_high = float(support["zone_high"])
+        resistance_high = float(resistance["zone_high"])
+        if target <= support_high and resistance_high >= support_low:
+            return {
+                "available": False,
+                "reason": "nearest_support_resistance_overlap",
+                "support_zone_low": _round(support_low),
+                "support_zone_high": _round(support_high),
+                "resistance_zone_low": _round(target),
+                "resistance_zone_high": _round(resistance_high),
+            }
     invalidation_price = float(invalidation["price"])
 
     def scenario(entry: float, label: str) -> dict[str, object] | None:
@@ -1317,6 +1330,14 @@ def determine_chart_state(
             "reasons": [invalid_status],
             "blocking_unknowns": blockers,
             "user_semantics": "price_scenario_reassessment",
+        }
+    if risk_reward.get("reason") == "nearest_support_resistance_overlap":
+        return {
+            "state": "WAIT",
+            "confidence": "medium",
+            "reasons": ["support_resistance_overlap"],
+            "blocking_unknowns": blockers,
+            "user_semantics": "price_structure_wait_not_sell_command",
         }
 
     extension_levels = [

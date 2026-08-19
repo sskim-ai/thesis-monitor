@@ -469,19 +469,43 @@ def _set_fresh_night_futures(session: Session, *series_codes: str) -> None:
     observations = []
     for series_code in series_codes:
         is_kospi = series_code == "KRX_KOSPI200_NIGHT_FUT"
+        value = 431.25 if is_kospi else 1432.5
+        change = 2.85 if is_kospi else -4.2
+        reference_price = value - change
         observations.append(
             {
                 "series_code": series_code,
                 "category": "kr_night_futures",
-                "value": 431.25 if is_kospi else 1432.5,
+                "value": value,
                 "unit": "index_points",
-                "change_value": 2.85 if is_kospi else -4.2,
-                "change_pct": 0.67 if is_kospi else -0.29,
-                "observed_at": "2026-08-13 00:00:00",
+                "previous_value": reference_price,
+                "change_value": change,
+                "change_pct": change / reference_price * 100,
+                "observed_at": "2026-08-13 06:00:00",
                 "retrieved_at": "2026-08-14 08:05:00",
                 "market_session": "kr_night",
                 "quality_status": "fresh",
+                "source_url": (
+                    "https://data-dbg.krx.co.kr/svc/apis/drv/fut_bydd_trd"
+                ),
+                "session_basis_contract": "night-futures-session-basis-v1",
+                "instrument": "KOSPI200" if is_kospi else "KOSDAQ150",
+                "contract_code": "SEP",
+                "exchange": "XKRX",
+                "session_type": "NIGHT",
+                "session_date": "2026-08-13",
                 "trade_date": "2026-08-13",
+                "reference_session": "DAY",
+                "reference_date": "2026-08-12",
+                "reference_price": reference_price,
+                "current_session_price": value,
+                "comparison_semantic": (
+                    "completed_night_close_minus_immediately_preceding_day_close"
+                ),
+                "night_source_record_id": "2026-08-13:NIGHT:SEP",
+                "reference_source_record_id": "2026-08-12:DAY:SEP",
+                "night_source_payload_sha256": "a" * 64,
+                "reference_source_payload_sha256": "b" * 64,
                 "expected_latest_session_date": "2026-08-13",
                 "session_freshness": "fresh",
             }
@@ -4220,6 +4244,33 @@ def test_risk_reward_comparison_requires_occurrence_level_previous_and_current(
     )
 
     assert any("unsupported_risk_reward_comparison" in error for error in errors)
+
+
+def test_support_recovery_is_not_misattributed_to_nearby_risk_reward(
+    monkeypatch,
+    tmp_path: Path,
+) -> None:
+    _settings(monkeypatch, tmp_path)
+    with Session(_engine()) as session:
+        _seed(session)
+        packet = build_ai_review_packet(session, RUN_DATE, "us")
+    assert packet is not None
+    review = _review_with_contract_text(
+        packet,
+        section="price_positioning",
+        text=(
+            "동적 지지를 회복했지만 근접 저항과 현재 손익비 때문에 "
+            "가격 구조는 WAIT입니다."
+        ),
+    )
+
+    errors = ai_review_service._risk_reward_comparative_errors(
+        review.ticker,
+        {"delta": {"rr_previous": 2.0, "rr_current": 1.0}},
+        review,
+    )
+
+    assert errors == []
 
 
 def test_risk_reward_comparison_accepts_bound_previous_current_direction(

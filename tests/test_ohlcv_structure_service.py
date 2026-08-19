@@ -763,6 +763,30 @@ def test_current_price_rr_rejects_non_positive_upside_or_downside(
     }
 
 
+def test_current_price_rr_fails_closed_when_selected_zones_overlap() -> None:
+    result = calculate_risk_reward(
+        current_price=80.79,
+        support=_zone(80.64, 85.96),
+        resistance=_zone(84.11, 89.67, pivot_type="high"),
+        invalidation={"available": True, "price": 75.75},
+    )
+
+    assert result["available"] is False
+    assert result["reason"] == "nearest_support_resistance_overlap"
+
+
+def test_chart_state_waits_when_selected_zones_overlap() -> None:
+    state = _state(
+        risk_reward={
+            "available": False,
+            "reason": "nearest_support_resistance_overlap",
+        }
+    )
+
+    assert state["state"] == "WAIT"
+    assert state["reasons"] == ["support_resistance_overlap"]
+
+
 def _state(**overrides: object) -> dict[str, object]:
     values: dict[str, object] = {
         "current_price": 100.0,

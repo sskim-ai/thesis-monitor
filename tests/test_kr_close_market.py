@@ -631,24 +631,60 @@ def test_morning_report_renders_verified_night_futures_as_context() -> None:
                     {
                         "series_code": "KRX_KOSPI200_NIGHT_FUT",
                         "value": 974.95,
+                        "previous_value": 989.8,
                         "change_value": -14.85,
-                        "change_pct": -1.5003,
-                        "observed_at": "2026-08-11T00:00:00+09:00",
+                        "change_pct": -14.85 / 989.8 * 100,
+                        "observed_at": "2026-08-11T06:00:00+09:00",
+                        "retrieved_at": "2026-08-11T06:01:00+09:00",
                         "trade_date": "2026-08-11",
+                        "session_date": "2026-08-11",
+                        "reference_date": "2026-08-10",
                         "expected_latest_session_date": "2026-08-11",
                         "session_freshness": "fresh",
                         "quality_status": "fresh",
+                        "market_session": "kr_night",
+                        "provider": "krx_night_futures",
+                        "contract_code": "KOSPI-SEP",
+                        "exchange": "XKRX",
+                        "session_basis_contract": "night-futures-session-basis-v1",
+                        "session_type": "NIGHT",
+                        "reference_session": "DAY",
+                        "reference_price": 989.8,
+                        "current_session_price": 974.95,
+                        "comparison_semantic": "completed_night_close_minus_immediately_preceding_day_close",
+                        "night_source_record_id": "2026-08-11:NIGHT:KOSPI-SEP",
+                        "reference_source_record_id": "2026-08-10:DAY:KOSPI-SEP",
+                        "night_source_payload_sha256": "a" * 64,
+                        "reference_source_payload_sha256": "b" * 64,
                     },
                     {
                         "series_code": "KRX_KOSDAQ150_NIGHT_FUT",
                         "value": 1489.0,
+                        "previous_value": 1485.3,
                         "change_value": 3.7,
-                        "change_pct": 0.2491,
-                        "observed_at": "2026-08-11T00:00:00+09:00",
+                        "change_pct": 3.7 / 1485.3 * 100,
+                        "observed_at": "2026-08-11T06:00:00+09:00",
+                        "retrieved_at": "2026-08-11T06:01:00+09:00",
                         "trade_date": "2026-08-11",
+                        "session_date": "2026-08-11",
+                        "reference_date": "2026-08-10",
                         "expected_latest_session_date": "2026-08-11",
                         "session_freshness": "fresh",
                         "quality_status": "fresh",
+                        "market_session": "kr_night",
+                        "provider": "krx_night_futures",
+                        "contract_code": "KOSDAQ-SEP",
+                        "exchange": "XKRX",
+                        "session_basis_contract": "night-futures-session-basis-v1",
+                        "session_type": "NIGHT",
+                        "reference_session": "DAY",
+                        "reference_price": 1485.3,
+                        "current_session_price": 1489.0,
+                        "comparison_semantic": "completed_night_close_minus_immediately_preceding_day_close",
+                        "night_source_record_id": "2026-08-11:NIGHT:KOSDAQ-SEP",
+                        "reference_source_record_id": "2026-08-10:DAY:KOSDAQ-SEP",
+                        "night_source_payload_sha256": "c" * 64,
+                        "reference_source_payload_sha256": "d" * 64,
                     },
                 ]
             }
@@ -659,7 +695,7 @@ def test_morning_report_renders_verified_night_futures_as_context() -> None:
 
     message, _context = _macro_report(briefing)
 
-    assert "🌙 한국 야간선물 · 08/11 기준" in message
+    assert "🌙 한국 야간선물 · 08/11 새벽 종료 · 08/10 주간장 대비" in message
     assert "KOSPI200 최근월물 974.95 · -14.85pt (-1.50%)" in message
     assert "KOSDAQ150 최근월물 1,489.00 · +3.70pt (+0.25%)" in message
     assert message.index("📈 오늘 가장 중요한 변화") < message.index("🌙 한국 야간선물")

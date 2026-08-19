@@ -140,11 +140,13 @@ def market_observation_to_dict(item: MacroObservation) -> dict[str, object]:
         "category": item.category,
         "value": item.value,
         "unit": item.unit,
+        "previous_value": item.previous_value,
         "change_value": item.change_value,
         "change_pct": item.change_pct,
         "observed_at": item.observed_at,
         "retrieved_at": item.retrieved_at,
         "market_session": item.market_session,
+        "provider": item.provider,
         "quality_status": item.quality_status,
         "source_url": item.source_url,
     }
@@ -152,9 +154,28 @@ def market_observation_to_dict(item: MacroObservation) -> dict[str, object]:
         raw = _json(item.raw_payload, {})
         raw = raw if isinstance(raw, dict) else {}
         for key in (
+            "instrument",
+            "contract_code",
+            "contract_name",
+            "expiry",
+            "exchange",
+            "session_basis_contract",
+            "session_type",
+            "session_date",
             "trade_date",
+            "session_open",
+            "session_close",
+            "reference_session",
+            "reference_date",
+            "reference_price",
+            "current_session_price",
+            "comparison_semantic",
             "expected_latest_session_date",
             "session_freshness",
+            "night_source_record_id",
+            "reference_source_record_id",
+            "night_source_payload_sha256",
+            "reference_source_payload_sha256",
         ):
             if raw.get(key) is not None:
                 value[key] = raw[key]

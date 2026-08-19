@@ -1,10 +1,11 @@
 import argparse
 import asyncio
-from datetime import date, datetime, timedelta, timezone
+import hashlib
 import json
 import math
-from pathlib import Path
 import re
+from datetime import date, datetime, timedelta, timezone
+from pathlib import Path
 
 import exchange_calendars as exchange_calendar
 import httpx
@@ -17,18 +18,27 @@ KRX_FUTURES_DAILY_URL = "https://data-dbg.krx.co.kr/svc/apis/drv/fut_bydd_trd"
 KRX_SERVICE_NAME = "fut_bydd_trd"
 USER_AGENT = "thesis-monitor/KRX-night-futures-probe"
 TARGET_PRODUCTS = ("KOSPI200", "KOSDAQ150")
+NIGHT_FUTURES_SESSION_BASIS_CONTRACT = "night-futures-session-basis-v1"
+NIGHT_COMPARISON_SEMANTIC = (
+    "completed_night_close_minus_immediately_preceding_day_close"
+)
 
 _MATURITY_YYYYMM_RE = re.compile(r"(?<!\d)(20\d{2})[./\- ]?(0[1-9]|1[0-2])(?!\d)")
 _MATURITY_YYMM_RE = re.compile(r"(?<!\d)(\d{2})[./\- ]?(0[1-9]|1[0-2])(?!\d)")
 
 
 def expected_latest_completed_krx_session(run_date: date) -> date | None:
+    """Return the latest completed KRX night session by its 06:00 end date."""
     try:
         calendar = exchange_calendar.get_calendar("XKRX")
-        session = calendar.date_to_session(run_date - timedelta(days=1), direction="previous")
-    except (ValueError, IndexError):
+        for days_back in range(8):
+            session_date = run_date - timedelta(days=days_back)
+            start_date = session_date - timedelta(days=1)
+            if calendar.is_session(start_date):
+                return session_date
+    except (ValueError, IndexError, TypeError):
         return None
-    return session.date()
+    return None
 
 
 class KrxFuturesRow(BaseModel):
@@ -49,10 +59,22 @@ class KrxNightFutureObservation(BaseModel):
     contract_name: str
     maturity: str
     source_date: date
+    session_type: str = "NIGHT"
+    session_date: date
+    reference_session: str = "DAY"
+    reference_date: date
+    exchange: str = "XKRX"
     regular_close: float
     night_close: float
+    reference_price: float
+    current_session_price: float
     point_change: float
-    change_pct: float | None = None
+    change_pct: float
+    comparison_semantic: str = NIGHT_COMPARISON_SEMANTIC
+    night_source_record_id: str
+    reference_source_record_id: str
+    night_source_payload_sha256: str | None = None
+    reference_source_payload_sha256: str | None = None
     session_evidence: str = "MKT_NM:정규/야간"
 
 
@@ -174,7 +196,10 @@ def _parse_row(item: dict[str, object]) -> KrxFuturesRow | None:
     contract_code = str(item.get("ISU_CD") or "").strip()
     contract_name = str(item.get("ISU_NM") or "").strip()
     close = _number(item.get("TDD_CLSPRC"))
-    if not all((business_date, product, session, contract_code, contract_name)) or close is None:
+    if (
+        not all((business_date, product, session, contract_code, contract_name))
+        or close is None
+    ):
         return None
     return KrxFuturesRow(
         business_date=business_date,
@@ -194,83 +219,162 @@ def _maturity_key(value: str) -> tuple[int, int]:
     return int(year), int(month)
 
 
+def _source_record_id(row: KrxFuturesRow) -> str:
+    return ":".join(
+        (
+            row.business_date.isoformat(),
+            row.session.upper(),
+            row.contract_code,
+        )
+    )
+
+
+def _payload_sha256(payload: object) -> str:
+    value = json.dumps(
+        payload,
+        ensure_ascii=False,
+        sort_keys=True,
+        separators=(",", ":"),
+        default=str,
+    )
+    return hashlib.sha256(value.encode("utf-8")).hexdigest()
+
+
+def parse_krx_futures_payloads(
+    payloads: dict[date, object],
+    *,
+    fetched_at: datetime | None = None,
+    queried_dates: list[date] | None = None,
+    payload_sha256_by_date: dict[date, str] | None = None,
+) -> KrxNightFuturesProbeResult:
+    """Pair a NIGHT close with the preceding calendar day's DAY close.
+
+    KRX assigns the trading day from the night session's 06:00 end time. A
+    NIGHT row for T+1 therefore cannot be compared with the DAY row carrying
+    the same BAS_DD; that DAY session occurs later. Both source dates and the
+    same contract are required before a change can be promoted.
+    """
+    fetched_at = fetched_at or datetime.now(timezone.utc)
+    payload_sha256_by_date = payload_sha256_by_date or {
+        key: _payload_sha256(value) for key, value in payloads.items()
+    }
+    raw_rows_by_date = {key: _rows(value) for key, value in payloads.items()}
+    raw_rows = [row for rows in raw_rows_by_date.values() for row in rows]
+    result = KrxNightFuturesProbeResult(
+        status="ok" if raw_rows else "unavailable",
+        fetched_at=fetched_at,
+        queried_dates=queried_dates or list(payloads),
+        field_names=sorted({key for row in raw_rows for key in row}),
+        row_count=len(raw_rows),
+        session_values=sorted(
+            {
+                str(row.get("MKT_NM") or "").strip()
+                for row in raw_rows
+                if row.get("MKT_NM")
+            }
+        ),
+        reason=None if raw_rows else "empty_response",
+    )
+    parsed = [row for item in raw_rows if (row := _parse_row(item)) is not None]
+    night_dates = sorted(
+        {row.business_date for row in parsed if row.session == "night"},
+        reverse=True,
+    )
+    for session_date in night_dates:
+        reference_date = session_date - timedelta(days=1)
+        observations: list[KrxNightFutureObservation] = []
+        for product in TARGET_PRODUCTS:
+            nights = [
+                row
+                for row in parsed
+                if row.product == product
+                and row.session == "night"
+                and row.business_date == session_date
+            ]
+            candidates: list[tuple[tuple[int, int], KrxFuturesRow, KrxFuturesRow]] = []
+            for night in nights:
+                regular = [
+                    row
+                    for row in parsed
+                    if row.product == product
+                    and row.session == "regular"
+                    and row.business_date == reference_date
+                    and row.contract_code == night.contract_code
+                    and row.maturity == night.maturity
+                ]
+                if (
+                    len(regular) != 1
+                    or night.maturity is None
+                    or regular[0].close == 0
+                ):
+                    continue
+                if _maturity_key(night.maturity) < (
+                    reference_date.year,
+                    reference_date.month,
+                ):
+                    continue
+                candidates.append((_maturity_key(night.maturity), regular[0], night))
+            if not candidates:
+                if nights:
+                    result.warnings.append(
+                        f"{product}:preceding-day same-contract DAY reference unavailable"
+                    )
+                continue
+            _, regular, night = min(candidates, key=lambda item: item[0])
+            point_change = night.close - regular.close
+            observations.append(
+                KrxNightFutureObservation(
+                    product=product,
+                    contract_code=night.contract_code,
+                    contract_name=night.contract_name,
+                    maturity=night.maturity or "",
+                    source_date=session_date,
+                    session_date=session_date,
+                    reference_date=reference_date,
+                    regular_close=regular.close,
+                    night_close=night.close,
+                    reference_price=regular.close,
+                    current_session_price=night.close,
+                    point_change=round(point_change, 8),
+                    change_pct=round(point_change / regular.close * 100, 8),
+                    night_source_record_id=_source_record_id(night),
+                    reference_source_record_id=_source_record_id(regular),
+                    night_source_payload_sha256=payload_sha256_by_date.get(
+                        session_date
+                    ),
+                    reference_source_payload_sha256=payload_sha256_by_date.get(
+                        reference_date
+                    ),
+                )
+            )
+        if observations:
+            result.source_date = session_date
+            result.observations = observations
+            result.night_session_usable = True
+            result.reason = None
+            return result
+    if parsed:
+        result.reason = "night_reference_session_or_contract_identity_not_verifiable"
+    return result
+
+
 def parse_krx_futures_payload(
     payload: object,
     *,
     fetched_at: datetime | None = None,
     queried_dates: list[date] | None = None,
 ) -> KrxNightFuturesProbeResult:
-    fetched_at = fetched_at or datetime.now(timezone.utc)
-    raw_rows = _rows(payload)
-    field_names = sorted({key for row in raw_rows for key in row})
-    session_values = sorted(
-        {str(row.get("MKT_NM") or "").strip() for row in raw_rows if row.get("MKT_NM")}
-    )
-    result = KrxNightFuturesProbeResult(
-        status="ok" if raw_rows else "unavailable",
+    dates = {
+        row.business_date
+        for item in _rows(payload)
+        if (row := _parse_row(item)) is not None
+    }
+    key = max(dates) if dates else date.min
+    return parse_krx_futures_payloads(
+        {key: payload},
         fetched_at=fetched_at,
-        queried_dates=queried_dates or [],
-        field_names=field_names,
-        row_count=len(raw_rows),
-        session_values=session_values,
-        reason=None if raw_rows else "empty_response",
+        queried_dates=queried_dates,
     )
-    parsed = [row for item in raw_rows if (row := _parse_row(item)) is not None]
-    if not parsed:
-        if raw_rows:
-            result.reason = "no_unambiguous_target_contract_rows"
-        return result
-
-    source_date = max(row.business_date for row in parsed)
-    result.source_date = source_date
-    source_rows = [row for row in parsed if row.business_date == source_date]
-    for product in TARGET_PRODUCTS:
-        product_rows = [row for row in source_rows if row.product == product]
-        by_contract: dict[str, list[KrxFuturesRow]] = {}
-        for row in product_rows:
-            by_contract.setdefault(row.contract_code, []).append(row)
-        candidates: list[tuple[tuple[int, int], KrxFuturesRow, KrxFuturesRow]] = []
-        for contract_rows in by_contract.values():
-            regular = [row for row in contract_rows if row.session == "regular"]
-            night = [row for row in contract_rows if row.session == "night"]
-            maturities = {row.maturity for row in contract_rows if row.maturity}
-            if len(regular) != 1 or len(night) != 1 or len(maturities) != 1:
-                continue
-            maturity = next(iter(maturities))
-            if maturity is None:
-                continue
-            if _maturity_key(maturity) < (source_date.year, source_date.month):
-                continue
-            candidates.append((_maturity_key(maturity), regular[0], night[0]))
-        if not candidates:
-            if product_rows:
-                result.warnings.append(
-                    f"{product}:same-contract regular/night pair with maturity unavailable"
-                )
-            continue
-        _, regular, night = min(candidates, key=lambda item: item[0])
-        point_change = night.close - regular.close
-        result.observations.append(
-            KrxNightFutureObservation(
-                product=product,
-                contract_code=regular.contract_code,
-                contract_name=regular.contract_name,
-                maturity=regular.maturity or "",
-                source_date=source_date,
-                regular_close=regular.close,
-                night_close=night.close,
-                point_change=round(point_change, 8),
-                change_pct=(
-                    round(point_change / regular.close * 100, 8)
-                    if regular.close != 0
-                    else None
-                ),
-            )
-        )
-    result.night_session_usable = bool(result.observations)
-    if not result.night_session_usable:
-        result.reason = "night_session_or_contract_identity_not_verifiable"
-    return result
 
 
 async def fetch_live_probe(
@@ -291,11 +395,12 @@ async def fetch_live_probe(
         )
     queried_dates: list[date] = []
     skipped_warnings: list[str] = []
-    latest_nonempty: KrxNightFuturesProbeResult | None = None
     last_fetch_error: str | None = None
     successful_response_count = 0
     date_statuses: list[KrxProbeDateStatus] = []
     calendar_expected_date = expected_latest_completed_krx_session(run_date)
+    payloads: dict[date, object] = {}
+    payload_shas: dict[date, str] = {}
     async with httpx.AsyncClient(
         timeout=get_settings().macro_provider_timeout_seconds,
         transport=transport,
@@ -321,38 +426,31 @@ async def fetch_live_probe(
                 )
                 continue
             successful_response_count += 1
-            result = parse_krx_futures_payload(
-                payload,
-                fetched_at=fetched_at,
-                queried_dates=queried_dates,
-            )
+            payloads[target_date] = payload
+            payload_shas[target_date] = hashlib.sha256(response.content).hexdigest()
+            row_count = len(_rows(payload))
             date_statuses.append(
                 KrxProbeDateStatus(
                     query_date=target_date,
-                    row_count=result.row_count,
-                    verified_products=[item.product for item in result.observations],
-                    result=(
-                        "verified_pair"
-                        if result.night_session_usable
-                        else "rows_without_verified_pair"
-                        if result.row_count
-                        else "empty"
-                    ),
+                    row_count=row_count,
+                    result="rows_without_verified_pair" if row_count else "empty",
                 )
             )
+            result = parse_krx_futures_payloads(
+                payloads,
+                fetched_at=fetched_at,
+                queried_dates=queried_dates,
+                payload_sha256_by_date=payload_shas,
+            )
             if result.night_session_usable:
+                for status in date_statuses:
+                    if status.query_date == result.source_date:
+                        status.result = "verified_pair"
+                        status.verified_products = [
+                            item.product for item in result.observations
+                        ]
                 result.date_statuses = list(date_statuses)
-                prior_nonempty_dates = [
-                    item.query_date
-                    for item in date_statuses
-                    if item.query_date < run_date and item.row_count > 0
-                ]
-                result.expected_latest_session_date = (
-                    result.source_date
-                    if result.source_date == run_date
-                    else calendar_expected_date
-                    or max(prior_nonempty_dates, default=result.source_date)
-                )
+                result.expected_latest_session_date = calendar_expected_date
                 intervening_errors = any(
                     item.result == "fetch_error"
                     and result.source_date is not None
@@ -372,19 +470,23 @@ async def fetch_live_probe(
                     )
                 result.warnings = skipped_warnings + result.warnings
                 return result
-            if result.row_count:
-                if latest_nonempty is None:
-                    latest_nonempty = result
+            if row_count:
                 skipped_warnings.append(
-                    f"{target_date}: rows present but no verified regular/night pair"
+                    f"{target_date}: rows present but no verified NIGHT/preceding-DAY pair"
                 )
-    if latest_nonempty is not None:
-        latest_nonempty.status = "unavailable"
-        latest_nonempty.reason = "no_recent_verified_night_pair"
-        latest_nonempty.queried_dates = queried_dates
-        latest_nonempty.date_statuses = date_statuses
-        latest_nonempty.warnings = skipped_warnings + latest_nonempty.warnings
-        return latest_nonempty
+    aggregate = parse_krx_futures_payloads(
+        payloads,
+        fetched_at=fetched_at,
+        queried_dates=queried_dates,
+        payload_sha256_by_date=payload_shas,
+    )
+    if aggregate.row_count:
+        aggregate.status = "unavailable"
+        aggregate.expected_latest_session_date = calendar_expected_date
+        aggregate.date_statuses = date_statuses
+        aggregate.reason = "no_recent_verified_night_reference_pair"
+        aggregate.warnings = skipped_warnings + aggregate.warnings
+        return aggregate
     if successful_response_count == 0 and last_fetch_error is not None:
         return KrxNightFuturesProbeResult(
             status="unavailable",
@@ -406,11 +508,12 @@ async def fetch_live_probe(
 
 def _report(result: KrxNightFuturesProbeResult) -> str:
     observation_lines = "\n".join(
-        f"- {item.product}: {item.contract_code}, {item.maturity}, regular "
-        f"{item.regular_close:g}, night {item.night_close:g}, "
+        f"- {item.product}: {item.contract_code}, {item.maturity}, "
+        f"{item.reference_date} DAY {item.regular_close:g}, "
+        f"{item.session_date} NIGHT {item.night_close:g}, "
         f"{item.point_change:+g} ({item.change_pct:+.4f}%)"
         for item in result.observations
-    ) or "- No verified same-contract regular/night observation."
+    ) or "- No verified same-contract NIGHT/preceding-DAY observation."
     date_status_lines = "\n".join(
         f"- {item.query_date}: {item.result}, rows={item.row_count}, "
         f"verified={','.join(item.verified_products) or 'none'}"
@@ -446,9 +549,11 @@ def _report(result: KrxNightFuturesProbeResult) -> str:
 
 {observation_lines}
 
-Only rows with explicit regular/night session metadata, the same contract code, and an
-interpretable maturity were paired. Spot-index comparisons, cross-expiry comparisons,
-row-order inference, and volume-based front-month inference were not used.
+Only a NIGHT row and the preceding calendar day's DAY row with explicit session
+metadata, the same contract code, and an interpretable maturity were paired. A DAY row
+with the same `BAS_DD` occurs after that NIGHT session and is never used as its
+reference. Spot-index comparisons, cross-expiry comparisons, row-order inference, and
+volume-based front-month inference were not used.
 
 ## Production Decision
 
