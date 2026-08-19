@@ -51,8 +51,11 @@ and exactly-once behavior.
 | Public Action | `0.4.5` |
 | operationId | 20/20 unique |
 
-Exact final SHA, GitHub Actions, promotion, operating health, and task state are recorded after the
-promotion gate.
+Implementation SHA `2ac9091d2865727194d6cf5ae63c73fe0c1cc5e0` passed GitHub Actions run
+`32234428454`, including Test and Lint. It was promoted to main and the clean operating checkout by
+linear fast-forward. The API restart passed `/health`, and 276 operating smoke tests passed. All
+four Scheduled Tasks remained ACTIVE at 08:15/08:30/16:15/16:55 KST with zero configuration change
+and zero manual run.
 
 ## Safety
 

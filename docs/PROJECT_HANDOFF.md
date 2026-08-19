@@ -16,7 +16,7 @@ execution or an autonomous investment adviser.
 
 | Component | Contract |
 |---|---|
-| Branch | Phase 8.5.5 is on `codex/phase-8-5-5-natural-reasoning-ownership-repair` from operating main; peer/KRX experimental ancestry remains excluded |
+| Branch | Phase 8.5.5 is operating shadow from `codex/phase-8-5-5-natural-reasoning-ownership-repair`; peer/KRX experimental ancestry remains excluded |
 | Official assessment | Deterministic `ThesisAssessment` |
 | AI mode | `shadow` |
 | Analysis policy | `daily-review-v3.10` |
@@ -677,8 +677,11 @@ See the [root cause](reports/20260819-run27-natural-reasoning-root-cause.md),
 [archive-only preview](reports/20260819-run27-repaired-ai-preview.md), and
 [validation](reports/20260819-phase8-5-5-validation.md).
 
-This is `CLOSED_RETROSPECTIVE_PENDING_NATURAL`, not a natural AI-assisted PASS. After operating
-promotion, wait for the next natural US/KR sessions. Cash Flow / Capital Efficiency remains pending.
+Implementation `2ac9091d2865727194d6cf5ae63c73fe0c1cc5e0` passed Actions run `32234428454`
+Test/Lint, was fast-forwarded to main and operating, passed API health, and passed 276 operating
+smoke tests. All four automations remain ACTIVE and unchanged. This is
+`CLOSED_RETROSPECTIVE_PENDING_NATURAL`, not a natural AI-assisted PASS. Wait for the next natural
+US/KR sessions. Cash Flow / Capital Efficiency remains pending.
 
 On 2026-08-15 the owning desktop environment verified all four local-project tasks, retained their
 08:15/08:30/16:15/16:55 schedules, and migrated their exact prompts to v3.10 with

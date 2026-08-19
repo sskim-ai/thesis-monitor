@@ -8,7 +8,7 @@ Latest evidence branch: `codex/phase-8-5-5-natural-reasoning-ownership-repair`
 Commit resolution: run `git rev-parse HEAD`; this document is part of that commit and must not
 hardcode a self-referential final SHA. Resolve `origin/main` and the clean operating checkout at
 session start. Phase 8.5.5 closes the run-27 reasoning-ownership and repetition blockers
-retrospectively and is eligible for operating shadow promotion. Natural US/KR proof remains pending,
+retrospectively and is now operating shadow. Natural US/KR proof remains pending,
 and Natural AI-assisted delivery remains `PARTIAL`.
 KRX 8.2A.x and peer 8.3.x also remain experimental.
 
@@ -340,7 +340,7 @@ length falls 2.34%. This is retrospective proof only.
 | 8.5.4 | Run-26 night-session, semantic binding, typed valuation, fallback parity and overlapping-zone RR repairs PASS retrospectively |
 | 8.5.4.1 | Phase 8.5.4 promoted to main and operating shadow; API/health/smoke PASS; latest night pair unavailable fail-closed; natural proof pending |
 | 8.5.4.2 | Holiday-aware XKRX preceding-DAY lookup PASS retrospectively and promoted to operating shadow; current provider row pending; natural proof pending |
-| 8.5.5 | Run-27 security/framework ownership and repetition repair PASS retrospectively; operating shadow promotion target; natural proof pending |
+| 8.5.5 | Run-27 security/framework ownership and repetition repair PASS retrospectively and promoted to operating shadow; natural proof pending |
 | 8.2A.x | KRX historical engine, universe and publication-state contracts PASS on experimental branch; slot timing/roles not yet proven; not deployed |
 | 8.3 | Peer selection/safety/statistics contract PASS; capability strong PARTIAL; original measured coverage 0/20 |
 | 8.3.1/8.3.1.1 | Paid provider research completed; clean peer-only branch prepared; production provider gate not passed |
@@ -361,6 +361,7 @@ length falls 2.34%. This is retrospective proof only.
 | Natural AI-Assisted Delivery | PARTIAL |
 | Phase 8.5.5 reasoning ownership | CLOSED_RETROSPECTIVE_PENDING_NATURAL |
 | Phase 8.5.5 natural repetition | CLOSED_RETROSPECTIVE_PENDING_NATURAL |
+| Phase 8.5.5 operating state | OPERATING_SHADOW |
 | Phase 8.5.4.2 calendar repair / operating | PASS retrospective / OPERATING_SHADOW |
 | Night-futures session basis | CLOSED_RETROSPECTIVE |
 | Preceding DAY calendar lookup | CLOSED_RETROSPECTIVE_PENDING_NATURAL; current provider row pending |
@@ -409,8 +410,8 @@ integrity, fallback/retry, exactly-once accounting, and valuation comparison-lab
 ## 22. Current Roadmap
 
 Operating blocker outranks new feature work. The current state is
-`WAIT_FOR_NEXT_NATURAL_US_KR_PROOF`: Phase 8.5.5 has retrospective PASS evidence and is the next
-operating shadow baseline after promotion.
+`WAIT_FOR_NEXT_NATURAL_US_KR_PROOF`: Phase 8.5.5 has retrospective PASS evidence and is the current
+operating shadow baseline.
 Observe the next natural US/KR sessions
 for actual AI-assisted delivery, reasoning ownership, cross-ticker repetition, night-session
 integrity, fallback parity, final language, receipt, archive and exactly-once proof. Phase 8.3

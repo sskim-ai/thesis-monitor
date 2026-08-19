@@ -38,7 +38,9 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     assert state["branch"] == "main"
     assert state["experimental_branch"] == ("codex/phase-8-5-5-natural-reasoning-ownership-repair")
     assert state["current_phase"] == "wait_for_next_natural_us_kr_proof"
-    assert state["last_completed_phase"] == ("phase_8_5_5_retrospective_repair")
+    assert state["last_completed_phase"] == (
+        "phase_8_5_5_operating_shadow_promotion"
+    )
     assert state["next_default_phase"] == "wait_for_next_natural_us_kr_proof"
     assert state["deployed_code_commit"] == "HEAD"
     assert state["main_code_commit"] == "HEAD"
