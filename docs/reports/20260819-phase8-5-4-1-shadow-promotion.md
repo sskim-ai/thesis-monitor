@@ -36,8 +36,10 @@ As of: `2026-08-19 KST`
 ## Night Futures
 
 The latest expected 2026-08-19 KRX response was empty. Both KOSPI200 and KOSDAQ150 are currently
-`LIVE_PAIR_UNAVAILABLE` and will be suppressed. A stale 2026-08-14 NIGHT -> 2026-08-13 DAY pair is
-valid for both matching contracts. Same-date wrong-session promotion remains zero.
+`LIVE_PAIR_UNAVAILABLE` and will be suppressed. Raw checks confirm a safe 2026-08-18 NIGHT ->
+2026-08-14 DAY same-contract candidate for both instruments, but the collector cannot bridge the
+holiday gap yet. A stale 2026-08-14 NIGHT -> 2026-08-13 DAY pair passes the current ordinary-session
+path. Same-date wrong-session promotion remains zero.
 
 ## PBR Lineage Follow-Up
 
@@ -56,4 +58,3 @@ Current-PBR binding uses an equality-checked redirect from history `current_valu
 
 Natural AI-Assisted Delivery remains `PARTIAL`. The next state is
 `WAIT_FOR_NATURAL_US_KR_PROOF`; Cash Flow / Capital Efficiency remains pending.
-

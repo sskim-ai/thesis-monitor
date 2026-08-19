@@ -602,9 +602,10 @@ and received no configuration change or manual execution.
 
 The live KRX preflight queried 2026-08-19 through 2026-08-13. The expected 2026-08-19 payload was
 empty, while 2026-08-18 had rows but no verified reference under the current strict collector. Both
-KOSPI200 and KOSDAQ150 are therefore live-unavailable and suppressed. A stale 2026-08-14 NIGHT ->
-2026-08-13 DAY pair was verified for both instruments with matching 2026-09 contracts and source
-payload SHA. Holiday-gap pairing remains an availability debt; it cannot reopen same-date promotion.
+KOSPI200 and KOSDAQ150 are therefore live-unavailable and suppressed. Targeted raw checks confirm
+matching 2026-09 contracts for the safe 2026-08-18 NIGHT -> 2026-08-14 DAY candidate, but the
+collector cannot bridge that holiday gap. A stale 2026-08-14 NIGHT -> 2026-08-13 DAY pair passes the
+ordinary path. This availability debt cannot reopen same-date promotion.
 
 Visible current-PBR ownership currently redirects a history `current_value` to the canonical base
 Fact only when the values are equal. An explicit `source_current_fact_id` lineage edge does not yet

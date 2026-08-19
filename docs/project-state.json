@@ -120,7 +120,7 @@
     "night_futures_kosdaq150": "live_pair_unavailable_provider_data_pending",
     "stale_verified_pair_date": "2026-08-14",
     "stale_verified_reference_date": "2026-08-13",
-    "holiday_gap_pairing": "open_availability_debt_fail_closed",
+    "holiday_gap_pairing": "raw_same_contract_pair_confirmed_collector_unavailable_fail_closed",
     "current_pbr_history_lineage_explicit_ref": "open_low_priority",
     "scheduled_tasks_active": 4,
     "scheduled_task_config_changes": 0,
