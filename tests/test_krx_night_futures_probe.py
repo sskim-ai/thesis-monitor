@@ -18,6 +18,7 @@ from app.jobs.probe_krx_night_futures import (
 from app.macro.providers.krx import KrxNightFuturesProvider
 from app.macro.providers.base import CollectedObservation
 from app.macro.storage import persist_observation
+from app.services.market_session import preceding_exchange_session_date
 
 
 def _row(
@@ -27,6 +28,7 @@ def _row(
     name: str,
     close: str,
     business_date: str = "20260811",
+    provider_change: str | None = None,
 ) -> dict[str, str]:
     return {
         "BAS_DD": business_date,
@@ -35,10 +37,264 @@ def _row(
         "ISU_CD": contract,
         "ISU_NM": name,
         "TDD_CLSPRC": close,
-        "CMPPREVDD_PRC": "0",
+        "CMPPREVDD_PRC": provider_change or "",
         "ACC_TRDVOL": "1000",
         "ACC_OPNINT_QTY": "500",
     }
+
+
+@pytest.mark.parametrize(
+    ("session_date", "expected_reference"),
+    [
+        (date(2026, 8, 14), date(2026, 8, 13)),
+        (date(2026, 8, 15), date(2026, 8, 14)),
+        (date(2026, 8, 17), date(2026, 8, 14)),
+        (date(2026, 8, 18), date(2026, 8, 14)),
+    ],
+)
+def test_preceding_xkrx_session_traverses_weekends_and_holidays(
+    session_date: date,
+    expected_reference: date,
+) -> None:
+    assert preceding_exchange_session_date("XKRX", session_date) == expected_reference
+
+
+def test_holiday_aware_pair_uses_preceding_eligible_day_for_both_products() -> None:
+    result = parse_krx_futures_payloads(
+        {
+            date(2026, 8, 14): {
+                "OutBlock_1": [
+                    _row(
+                        "KOSPI 200 선물",
+                        "정규",
+                        "A0169000",
+                        "코스피200 F 202609",
+                        "1098.90",
+                        "20260814",
+                    ),
+                    _row(
+                        "KOSDAQ 150 선물",
+                        "정규",
+                        "A0669000",
+                        "코스닥150 F 202609",
+                        "1487.50",
+                        "20260814",
+                    ),
+                ]
+            },
+            date(2026, 8, 18): {
+                "OutBlock_1": [
+                    _row(
+                        "KOSPI 200 선물",
+                        "야간",
+                        "A0169000",
+                        "코스피200 F 202609 야간",
+                        "1094.95",
+                        "20260818",
+                        "-3.95",
+                    ),
+                    _row(
+                        "KOSDAQ 150 선물",
+                        "야간",
+                        "A0669000",
+                        "코스닥150 F 202609 야간",
+                        "1477.30",
+                        "20260818",
+                        "-10.20",
+                    ),
+                ]
+            },
+        }
+    )
+
+    assert result.night_session_usable is True
+    assert result.source_date == date(2026, 8, 18)
+    by_product = {item.product: item for item in result.observations}
+    kospi = by_product["KOSPI200"]
+    kosdaq = by_product["KOSDAQ150"]
+    assert kospi.reference_date == date(2026, 8, 14)
+    assert kospi.contract_code == "A0169000"
+    assert kospi.point_change == -3.95
+    assert kospi.change_pct == pytest.approx(-0.35945036)
+    assert kospi.provider_change_point == -3.95
+    assert kospi.provider_change_match is True
+    assert kosdaq.reference_date == date(2026, 8, 14)
+    assert kosdaq.contract_code == "A0669000"
+    assert kosdaq.point_change == -10.20
+    assert kosdaq.change_pct == pytest.approx(-0.68571429)
+    assert kosdaq.provider_change_match is True
+    assert "source_timestamp" not in kospi.model_dump()
+    assert "night_timestamp" not in kospi.model_dump()
+
+
+def test_regular_preceding_session_control_uses_august_13_for_august_14() -> None:
+    result = parse_krx_futures_payloads(
+        {
+            date(2026, 8, 13): {
+                "OutBlock_1": [
+                    _row(
+                        "KOSPI 200 선물",
+                        "정규",
+                        "A0169000",
+                        "코스피200 F 202609",
+                        "1073.70",
+                        "20260813",
+                    ),
+                    _row(
+                        "KOSDAQ 150 선물",
+                        "정규",
+                        "A0669000",
+                        "코스닥150 F 202609",
+                        "1500.00",
+                        "20260813",
+                    ),
+                ]
+            },
+            date(2026, 8, 14): {
+                "OutBlock_1": [
+                    _row(
+                        "KOSPI 200 선물",
+                        "야간",
+                        "A0169000",
+                        "코스피200 F 202609 야간",
+                        "1095.40",
+                        "20260814",
+                        "+21.70",
+                    ),
+                    _row(
+                        "KOSDAQ 150 선물",
+                        "야간",
+                        "A0669000",
+                        "코스닥150 F 202609 야간",
+                        "1512.30",
+                        "20260814",
+                        "+12.30",
+                    ),
+                ]
+            },
+        }
+    )
+
+    assert result.night_session_usable is True
+    by_product = {item.product: item for item in result.observations}
+    assert by_product["KOSPI200"].reference_date == date(2026, 8, 13)
+    assert by_product["KOSPI200"].point_change == 21.70
+    assert by_product["KOSDAQ150"].reference_date == date(2026, 8, 13)
+    assert by_product["KOSDAQ150"].point_change == 12.30
+
+
+def test_provider_change_conflict_is_fail_closed() -> None:
+    result = parse_krx_futures_payloads(
+        {
+            date(2026, 8, 14): {
+                "OutBlock_1": [
+                    _row(
+                        "KOSPI 200 선물",
+                        "정규",
+                        "A0169000",
+                        "코스피200 F 202609",
+                        "1098.90",
+                        "20260814",
+                    )
+                ]
+            },
+            date(2026, 8, 18): {
+                "OutBlock_1": [
+                    _row(
+                        "KOSPI 200 선물",
+                        "야간",
+                        "A0169000",
+                        "코스피200 F 202609 야간",
+                        "1094.95",
+                        "20260818",
+                        "+16.70",
+                    )
+                ]
+            },
+        }
+    )
+
+    assert result.night_session_usable is False
+    assert result.observations == []
+    assert any("provider change conflicts" in item for item in result.warnings)
+
+
+def test_current_empty_does_not_promote_older_holiday_pair_as_fresh() -> None:
+    def handler(request: httpx.Request) -> httpx.Response:
+        target = request.url.params["basDd"]
+        if target == "20260818":
+            rows = [
+                _row(
+                    "KOSPI 200 선물",
+                    "야간",
+                    "A0169000",
+                    "코스피200 F 202609 야간",
+                    "1094.95",
+                    target,
+                    "-3.95",
+                )
+            ]
+        elif target == "20260814":
+            rows = [
+                _row(
+                    "KOSPI 200 선물",
+                    "정규",
+                    "A0169000",
+                    "코스피200 F 202609",
+                    "1098.90",
+                    target,
+                )
+            ]
+        else:
+            rows = []
+        return httpx.Response(200, json={"OutBlock_1": rows})
+
+    result = asyncio.run(
+        fetch_live_probe(
+            run_date=date(2026, 8, 19),
+            api_key="dummy",
+            transport=httpx.MockTransport(handler),
+        )
+    )
+
+    assert result.source_date == date(2026, 8, 18)
+    assert result.expected_latest_session_date == date(2026, 8, 19)
+    assert result.session_freshness == "stale"
+    assert result.observations[0].reference_date == date(2026, 8, 14)
+
+
+def test_future_day_row_cannot_be_used_as_night_reference() -> None:
+    result = parse_krx_futures_payloads(
+        {
+            date(2026, 8, 18): {
+                "OutBlock_1": [
+                    _row(
+                        "KOSPI 200 선물",
+                        "야간",
+                        "A0169000",
+                        "코스피200 F 202609 야간",
+                        "1094.95",
+                        "20260818",
+                    )
+                ]
+            },
+            date(2026, 8, 19): {
+                "OutBlock_1": [
+                    _row(
+                        "KOSPI 200 선물",
+                        "정규",
+                        "A0169000",
+                        "코스피200 F 202609",
+                        "1098.90",
+                        "20260819",
+                    )
+                ]
+            },
+        }
+    )
+
+    assert result.night_session_usable is False
+    assert result.observations == []
 
 
 def test_same_business_date_day_and_night_rows_are_not_compared() -> None:
@@ -337,7 +593,7 @@ def test_live_probe_continues_past_nonempty_unusable_date() -> None:
     assert result.night_session_usable is True
     assert result.source_date == date(2026, 8, 12)
     assert result.queried_dates == [date(2026, 8, 12), date(2026, 8, 11)]
-    assert any("2026-08-12: rows present" in item for item in result.warnings)
+    assert not any("2026-08-12: rows present" in item for item in result.warnings)
 
 
 def test_newer_market_rows_make_older_verified_pair_stale() -> None:
@@ -604,7 +860,7 @@ def test_live_probe_tracks_multiple_unusable_dates_before_verified_pair() -> Non
             run_date=date(2026, 8, 12),
             api_key="dummy",
             transport=httpx.MockTransport(handler),
-            max_lookback_days=5,
+            max_lookback_days=6,
         )
     )
 
@@ -615,6 +871,7 @@ def test_live_probe_tracks_multiple_unusable_dates_before_verified_pair() -> Non
         date(2026, 8, 10),
         date(2026, 8, 9),
         date(2026, 8, 8),
+        date(2026, 8, 7),
     ]
     assert sum("rows present" in item for item in result.warnings) == 3
 

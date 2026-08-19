@@ -79,6 +79,8 @@ class KrxNightFuturesProvider:
                         "regular_close": item.regular_close,
                         "point_change": item.point_change,
                         "change_pct": item.change_pct,
+                        "provider_change_point": item.provider_change_point,
+                        "provider_change_match": item.provider_change_match,
                         "night_source_record_id": item.night_source_record_id,
                         "reference_source_record_id": item.reference_source_record_id,
                         "night_source_payload_sha256": (

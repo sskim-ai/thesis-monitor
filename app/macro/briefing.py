@@ -172,6 +172,8 @@ def market_observation_to_dict(item: MacroObservation) -> dict[str, object]:
             "comparison_semantic",
             "expected_latest_session_date",
             "session_freshness",
+            "provider_change_point",
+            "provider_change_match",
             "night_source_record_id",
             "reference_source_record_id",
             "night_source_payload_sha256",

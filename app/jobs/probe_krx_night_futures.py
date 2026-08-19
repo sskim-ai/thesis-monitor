@@ -12,6 +12,7 @@ import httpx
 from pydantic import BaseModel, Field
 
 from app.config import get_settings
+from app.services.market_session import preceding_exchange_session_date
 
 
 KRX_FUTURES_DAILY_URL = "https://data-dbg.krx.co.kr/svc/apis/drv/fut_bydd_trd"
@@ -49,6 +50,7 @@ class KrxFuturesRow(BaseModel):
     contract_name: str
     maturity: str | None = None
     close: float
+    provider_change_point: float | None = None
     volume: int | None = None
     open_interest: int | None = None
 
@@ -70,6 +72,8 @@ class KrxNightFutureObservation(BaseModel):
     current_session_price: float
     point_change: float
     change_pct: float
+    provider_change_point: float | None = None
+    provider_change_match: bool | None = None
     comparison_semantic: str = NIGHT_COMPARISON_SEMANTIC
     night_source_record_id: str
     reference_source_record_id: str
@@ -209,6 +213,7 @@ def _parse_row(item: dict[str, object]) -> KrxFuturesRow | None:
         contract_name=contract_name,
         maturity=_maturity(contract_name),
         close=close,
+        provider_change_point=_number(item.get("CMPPREVDD_PRC")),
         volume=_integer(item.get("ACC_TRDVOL")),
         open_interest=_integer(item.get("ACC_OPNINT_QTY")),
     )
@@ -247,11 +252,12 @@ def parse_krx_futures_payloads(
     queried_dates: list[date] | None = None,
     payload_sha256_by_date: dict[date, str] | None = None,
 ) -> KrxNightFuturesProbeResult:
-    """Pair a NIGHT close with the preceding calendar day's DAY close.
+    """Pair a NIGHT close with the preceding eligible XKRX DAY close.
 
     KRX assigns the trading day from the night session's 06:00 end time. A
     NIGHT row for T+1 therefore cannot be compared with the DAY row carrying
-    the same BAS_DD; that DAY session occurs later. Both source dates and the
+    the same BAS_DD; that DAY session occurs later. Weekends and exchange
+    holidays are traversed with the XKRX calendar. Both source dates and the
     same contract are required before a change can be promoted.
     """
     fetched_at = fetched_at or datetime.now(timezone.utc)
@@ -281,7 +287,12 @@ def parse_krx_futures_payloads(
         reverse=True,
     )
     for session_date in night_dates:
-        reference_date = session_date - timedelta(days=1)
+        reference_date = preceding_exchange_session_date("XKRX", session_date)
+        if reference_date is None:
+            result.warnings.append(
+                f"{session_date}:preceding eligible XKRX DAY session unavailable"
+            )
+            continue
         observations: list[KrxNightFutureObservation] = []
         for product in TARGET_PRODUCTS:
             nights = [
@@ -313,15 +324,30 @@ def parse_krx_futures_payloads(
                     reference_date.month,
                 ):
                     continue
+                derived_change = night.close - regular[0].close
+                if night.provider_change_point is not None and not math.isclose(
+                    night.provider_change_point,
+                    derived_change,
+                    rel_tol=0,
+                    abs_tol=1e-8,
+                ):
+                    result.warnings.append(
+                        f"{product}:{session_date}:provider change conflicts with "
+                        "verified NIGHT/preceding-DAY prices"
+                    )
+                    continue
                 candidates.append((_maturity_key(night.maturity), regular[0], night))
             if not candidates:
                 if nights:
                     result.warnings.append(
-                        f"{product}:preceding-day same-contract DAY reference unavailable"
+                        f"{product}:preceding-eligible same-contract DAY reference unavailable"
                     )
                 continue
             _, regular, night = min(candidates, key=lambda item: item[0])
             point_change = night.close - regular.close
+            provider_change_match = (
+                None if night.provider_change_point is None else True
+            )
             observations.append(
                 KrxNightFutureObservation(
                     product=product,
@@ -337,6 +363,8 @@ def parse_krx_futures_payloads(
                     current_session_price=night.close,
                     point_change=round(point_change, 8),
                     change_pct=round(point_change / regular.close * 100, 8),
+                    provider_change_point=night.provider_change_point,
+                    provider_change_match=provider_change_match,
                     night_source_record_id=_source_record_id(night),
                     reference_source_record_id=_source_record_id(regular),
                     night_source_payload_sha256=payload_sha256_by_date.get(
@@ -443,6 +471,13 @@ async def fetch_live_probe(
                 payload_sha256_by_date=payload_shas,
             )
             if result.night_session_usable:
+                source_pending_warning = (
+                    f"{result.source_date}: rows present but no verified "
+                    "NIGHT/preceding-DAY pair"
+                )
+                skipped_warnings = [
+                    item for item in skipped_warnings if item != source_pending_warning
+                ]
                 for status in date_statuses:
                     if status.query_date == result.source_date:
                         status.result = "verified_pair"
@@ -549,11 +584,12 @@ def _report(result: KrxNightFuturesProbeResult) -> str:
 
 {observation_lines}
 
-Only a NIGHT row and the preceding calendar day's DAY row with explicit session
-metadata, the same contract code, and an interpretable maturity were paired. A DAY row
-with the same `BAS_DD` occurs after that NIGHT session and is never used as its
-reference. Spot-index comparisons, cross-expiry comparisons, row-order inference, and
-volume-based front-month inference were not used.
+Only a NIGHT row and the preceding eligible XKRX DAY row with explicit session metadata,
+the same contract code, and an interpretable maturity were paired. Weekends and exchange
+holidays are traversed by the exchange calendar. A DAY row with the same `BAS_DD` occurs
+after that NIGHT session and is never used as its reference. Spot-index comparisons,
+cross-expiry comparisons, row-order inference, and volume-based front-month inference
+were not used.
 
 ## Production Decision
 

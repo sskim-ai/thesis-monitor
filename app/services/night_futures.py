@@ -5,6 +5,8 @@ import re
 from dataclasses import dataclass, field
 from datetime import date, datetime
 
+from app.services.market_session import preceding_exchange_session_date
+
 
 NIGHT_FUTURES_SERIES = (
     "KRX_KOSPI200_NIGHT_FUT",
@@ -117,6 +119,8 @@ def _verified_session_basis(
     value = _number(item.get("value"))
     change_value = _number(item.get("change_value"))
     change_pct = _number(item.get("change_pct"))
+    provider_change = _number(item.get("provider_change_point"))
+    provider_change_match = item.get("provider_change_match")
     night_sha = str(item.get("night_source_payload_sha256") or "")
     reference_sha = str(item.get("reference_source_payload_sha256") or "")
     expected_change_pct = (
@@ -126,6 +130,17 @@ def _verified_session_basis(
         and reference_price != 0
         else None
     )
+    expected_reference_date = preceding_exchange_session_date("XKRX", session_date)
+    provider_cross_check_valid = provider_change is None or bool(
+        provider_change_match is True
+        and change_value is not None
+        and math.isclose(
+            provider_change,
+            change_value,
+            rel_tol=0,
+            abs_tol=1e-8,
+        )
+    )
     valid = bool(
         item.get("session_basis_contract")
         == NIGHT_FUTURES_SESSION_BASIS_CONTRACT
@@ -133,7 +148,8 @@ def _verified_session_basis(
         and str(item.get("market_session") or "").lower() == "kr_night"
         and str(item.get("session_type") or "").upper() == "NIGHT"
         and str(item.get("reference_session") or "").upper() == "DAY"
-        and reference_date == session_date.fromordinal(session_date.toordinal() - 1)
+        and expected_reference_date is not None
+        and reference_date == expected_reference_date
         and str(item.get("contract_code") or "").strip()
         and str(item.get("retrieved_at") or item.get("session_close") or "").strip()
         and str(item.get("source_url") or item.get("provider") or "").strip()
@@ -161,6 +177,7 @@ def _verified_session_basis(
             rel_tol=0,
             abs_tol=1e-6,
         )
+        and provider_cross_check_valid
     )
     return valid, reference_date, reference_price
 

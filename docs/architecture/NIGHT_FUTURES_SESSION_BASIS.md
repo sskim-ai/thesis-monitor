@@ -23,6 +23,12 @@ KRX defines the night session as 18:00 through 06:00 and assigns its trading day
 The NIGHT row for trading date T is therefore paired with the preceding DAY session, normally T-1,
 not with the later DAY row carrying T. See the [official KRX night-session rules](https://global.krx.co.kr/contents/GLB/02/0201/0201041004/GLB0201041004.jsp).
 
+"Preceding" is an exchange-session relationship, not calendar subtraction. The backend asks the
+XKRX calendar for the latest completed session strictly before the NIGHT `BAS_DD`. Weekends,
+exchange holidays and multi-day closures are skipped. The selected DAY row must be on that exact
+eligible session and must retain the same instrument, contract code and maturity. A contract
+mismatch fails closed; the collector does not reach farther back to reconnect an older contract.
+
 ## Why
 
 The previous same-`BAS_DD` pair was reverse chronological and produced a precise but semantically
@@ -43,6 +49,11 @@ overnight trading-date semantics, including weekends, holidays and contract roll
 Provider change fields, same-date DAY/NIGHT pairs, user-observed values, AI corrections and renderer
 calculations are not accepted as repairs when the comparison basis cannot be proved.
 
+When `CMPPREVDD_PRC` is present, it is audit evidence only. The backend still derives the change
+from the two verified prices, then requires the provider field to agree. A conflict suppresses the
+pair. The daily endpoint has no row-level timestamp, so none is invented; ordering comes from the
+exchange-session/date contract and distinct source row identities.
+
 ## Safety Constraint
 
 Suppress the visible number when session or reference type is unknown, the reference is missing or
@@ -52,3 +63,8 @@ missing, or the provider change-field basis is ambiguous. Missing values are nev
 Run-26's same-`BAS_DD` DAY/NIGHT pair is reverse chronological. Because the required 2026-08-19
 NIGHT source row and exact raw payload could not be reconstructed, the retrospective result is
 `UNAVAILABLE_BY_CONTRACT`.
+
+Phase 8.5.4.2 proves the holiday case separately: 2026-08-18 NIGHT resolves through the XKRX
+calendar to 2026-08-14 DAY because 2026-08-17 is not a session. Both KOSPI200 and KOSDAQ150 retain
+matching September contracts and their backend-derived changes agree with the provider audit
+fields. This historical proof never substitutes for a missing current NIGHT row.

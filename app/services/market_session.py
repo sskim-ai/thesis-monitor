@@ -69,6 +69,38 @@ def _exchange_session_dates(calendar_name: str, value: date) -> tuple[bool, date
         return value.weekday() < 5, _previous_weekday(value)
 
 
+def preceding_exchange_session_date(
+    calendar_name: str,
+    value: date,
+) -> date | None:
+    """Return the latest exchange session strictly before ``value``.
+
+    Unlike the general market-state helper, this function has no weekday
+    fallback. Contracts that use it require authoritative holiday traversal
+    and must fail closed outside the packaged calendar range.
+    """
+    def _preceding(calendar) -> date:
+        if calendar.is_session(value):
+            session = calendar.previous_session(calendar.date_to_session(value))
+        else:
+            session = calendar.date_to_session(value, direction="previous")
+        return session.date()
+
+    try:
+        result = _preceding(_exchange_calendar(calendar_name))
+    except (ValueError, IndexError, TypeError):
+        try:
+            calendar = exchange_calendar.get_calendar(
+                calendar_name,
+                start=value - timedelta(days=370),
+                end=value + timedelta(days=370),
+            )
+            result = _preceding(calendar)
+        except (ValueError, IndexError, TypeError):
+            return None
+    return result if result < value else None
+
+
 def us_market_session(as_of: datetime | None = None) -> MarketSessionState:
     current = as_of or datetime.now(timezone.utc)
     if current.tzinfo is None:

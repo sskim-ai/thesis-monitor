@@ -22,6 +22,7 @@ from app.services.notification_service import (
     queue_notification,
 )
 from app.services.night_futures import summarize_night_futures
+from app.services.market_session import preceding_exchange_session_date
 
 
 TICKERS = [
@@ -171,6 +172,8 @@ def _night_future(
     value = 1002.5 if "KOSPI200" in series_code else 1482.4
     change = -32.8 if "KOSPI200" in series_code else 4.1
     reference_price = value - change
+    reference_date = preceding_exchange_session_date("XKRX", trade_date)
+    assert reference_date is not None
     return {
         "series_code": series_code,
         "category": "kr_night_futures",
@@ -190,7 +193,7 @@ def _night_future(
         "session_date": str(trade_date),
         "trade_date": str(trade_date),
         "reference_session": "DAY",
-        "reference_date": str(trade_date - date.resolution),
+        "reference_date": str(reference_date),
         "reference_price": reference_price,
         "current_session_price": value,
         "comparison_semantic": (
@@ -198,7 +201,7 @@ def _night_future(
         ),
         "night_source_record_id": f"{trade_date}:NIGHT:SEP",
         "reference_source_record_id": (
-            f"{trade_date - date.resolution}:DAY:SEP"
+            f"{reference_date}:DAY:SEP"
         ),
         "night_source_payload_sha256": "a" * 64,
         "reference_source_payload_sha256": "b" * 64,
@@ -367,7 +370,7 @@ def test_us_digest_renders_both_fresh_night_futures_between_sections() -> None:
             build_daily_digest(session, run_date, market_scope="us")
         )
 
-    assert "🌙 한국 야간선물 · 08/12 새벽 종료 · 08/11 주간장 대비" in report
+    assert "🌙 한국 야간선물 · 08/12 새벽 종료 · 08/09 주간장 대비" in report
     assert "KOSPI200 최근월물 1,002.50 · -32.80pt (-3.17%)" in report
     assert "KOSDAQ150 최근월물 1,482.40 · +4.10pt (+0.28%)" in report
     assert report.index("📈 중요한 변화") < report.index("🌙 한국 야간선물")
@@ -392,6 +395,37 @@ def test_night_futures_use_explicit_trade_date_not_provider_timestamp_date() -> 
 
     assert len(summary.items) == 1
     assert summary.items[0].session_date == date(2041, 8, 12)
+
+
+def test_night_futures_accept_holiday_aware_preceding_day_basis() -> None:
+    row = _night_future(
+        "KRX_KOSPI200_NIGHT_FUT",
+        trade_date=date(2026, 8, 18),
+        expected_date=date(2026, 8, 18),
+    )
+    row["provider_change_point"] = row["change_value"]
+    row["provider_change_match"] = True
+
+    summary = summarize_night_futures({"observations": [row]})
+
+    assert len(summary.items) == 1
+    assert summary.items[0].session_date == date(2026, 8, 18)
+    assert summary.items[0].reference_date == date(2026, 8, 14)
+
+
+def test_night_futures_reject_provider_change_cross_check_conflict() -> None:
+    row = _night_future(
+        "KRX_KOSPI200_NIGHT_FUT",
+        trade_date=date(2026, 8, 18),
+        expected_date=date(2026, 8, 18),
+    )
+    row["provider_change_point"] = 16.70
+    row["provider_change_match"] = False
+
+    summary = summarize_night_futures({"observations": [row]})
+
+    assert summary.items == []
+    assert summary.cautions
 
 
 @pytest.mark.parametrize(
