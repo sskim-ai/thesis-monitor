@@ -12,6 +12,11 @@ is `quality_rejected`; fallback eligibility was preserved. Pilot v3 records this
 `deterministic_fallback` and not counted as an AI Pilot success. Original packet, output, fallback,
 delivery, receipt, DB, and Pilot records were read-only during this repair.
 
+`archive-complete.json` is absent and `NOT_APPLICABLE` for this session: that marker certifies a
+validator-PASS AI-assisted delivery, while run-27 correctly finished through deterministic fallback.
+The fallback payload and delivery-result artifacts are present and immutable; their existence is not
+misreported as an AI archive-complete success.
+
 The initial hard errors were:
 
 ```text
@@ -90,4 +95,3 @@ qualitative RR interpretation contract, but no threshold or RR formula changed h
 
 The KR market digest remains dependent on available global macro context and lacks operating KRX
 breadth. That is a separate persistent gap; no market feature was added.
-

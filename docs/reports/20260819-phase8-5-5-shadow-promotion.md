@@ -44,10 +44,11 @@ promotion occurred.
 Manual Telegram 0; Pilot mutation 0; DB migration/mutation 0; run-27 archive/receipt rewrite 0;
 Scheduled Task manual execution 0. The persisted run-27 AI output and original quality receipt retain
 SHA256 `50edb815...` and `75ffdb5f...` respectively.
+Run-27 has no `archive-complete.json` because AI was rejected and fallback was delivered; the AI
+success marker is `NOT_APPLICABLE`, not fabricated or backfilled.
 
 ## Next State
 
 `WAIT_FOR_NEXT_NATURAL_US_KR_PROOF`. Natural AI-Assisted Delivery remains `PARTIAL`. Reasoning
 Ownership and Natural Repetition are `CLOSED_RETROSPECTIVE_PENDING_NATURAL`. Cash Flow / Capital
 Efficiency remains `PENDING` and must not begin until natural proof has no critical blocker.
-

@@ -161,6 +161,7 @@
     "delivery_mode": "deterministic_fallback",
     "fallback_delivery": "8_of_8",
     "ai_sent": 0,
+    "ai_archive_complete_marker": "not_applicable_ai_rejected_fallback_delivered",
     "reasoning_ownership": "closed_retrospective_pending_natural",
     "natural_repetition": "closed_retrospective_pending_natural",
     "numeric_binding": {
