@@ -36,17 +36,15 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     assert state["repository"] == "sskim-ai/thesis-monitor"
     assert state["branch"] == "main"
     assert state["experimental_branch"] == (
-        "codex/phase-8-5-4-natural-live-targeted-repair"
+        "codex/phase-8-5-4-1-operating-shadow-promotion"
     )
-    assert state["current_phase"] == "natural_live_blocker_repair"
+    assert state["current_phase"] == "wait_for_natural_us_kr_proof"
     assert state["last_completed_phase"] == (
-        "phase_8_5_4_retrospective_repair_validation"
+        "phase_8_5_4_1_operating_shadow_promotion"
     )
-    assert state["next_default_phase"] == (
-        "phase_8_5_4_promotion_decision_then_natural_us_kr_proof"
-    )
+    assert state["next_default_phase"] == "wait_for_natural_us_kr_proof"
     assert state["deployed_code_commit"] == (
-        "b3ad1ea82bdbd3fe003831d449b0dcaa7c6a2da2"
+        "3a6547e394452e6e1b986a8193f56c98fd07ef89"
     )
     assert state["main_code_commit"] == "HEAD"
     assert state["operating_code_commit"] == "HEAD"

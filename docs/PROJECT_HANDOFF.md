@@ -16,7 +16,7 @@ execution or an autonomous investment adviser.
 
 | Component | Contract |
 |---|---|
-| Branch | operating `main` remains at `e925ee0...`; experimental `codex/phase-8-5-4-natural-live-targeted-repair` starts directly from that operating main and excludes peer/KRX experimental ancestry |
+| Branch | operating `main` contains Phase 8.5.4 code through `3a6547e...`; promotion evidence is on `codex/phase-8-5-4-1-operating-shadow-promotion`; peer/KRX experimental ancestry remains excluded |
 | Official assessment | Deterministic `ThesisAssessment` |
 | AI mode | `shadow` |
 | Analysis policy | `daily-review-v3.10` |
@@ -44,7 +44,8 @@ execution or an autonomous investment adviser.
 
 ## Phase 8.3 Final State
 
-The operating checkout remains unchanged for the next natural Phase 8.5.x live proof. Phase 8.3 is
+The operating checkout now contains Phase 8.5.4 and remains unchanged with respect to Phase 8.3.
+Phase 8.3 is
 finalized as archive-only `SELECTIVE_OPTIONAL_CONTEXT` and excludes KRX implementation ancestry. Its
 clean lineage starts from
 `codex/integration-phase-8-3-peer-only`, which reconstructs the peer contract from operating main.
@@ -75,7 +76,7 @@ provider expansion, forward consensus, historical PIT and coverage-driven taxono
 The engine, validators, audit artifacts and clean peer-only branch remain available for naturally
 qualifying MEDIUM/HIGH contexts. This is not integrated, deployed or active operating behavior.
 
-The next state is `WAIT_FOR_NATURAL_US_KR_REVIEW`. Do not start a new feature before reviewing the
+The next state is `WAIT_FOR_NATURAL_US_KR_PROOF`. Do not start a new feature before reviewing the
 next natural messages. A critical failure takes priority as a targeted repair; otherwise the default
 candidate is Cash Flow / Capital Efficiency Enrichment because OCF, CAPEX, FCF, ROIC, inventory,
 working capital, cash conversion and segment economics remain more persistent decision gaps than
@@ -582,13 +583,36 @@ selected support/resistance zones make RR unavailable; HUT 0.66x and WULF 0.42x 
 archive-only replay without moving the zones.
 
 The repaired immutable replay has zero numeric-binding, typed-valuation and full-validator errors,
-and `runtime-message-quality-v1` passes. It sent no Telegram, ran no Scheduled Task, mutated no
-Pilot/DB/archive, and is not merged or deployed. See the [root-cause report](reports/20260819-run26-natural-live-root-cause.md),
+and `runtime-message-quality-v1` passes. Its validation sent no Telegram, ran no Scheduled Task, and
+mutated no Pilot/DB/archive. It is now promoted to operating shadow; natural proof is still pending.
+See the [root-cause report](reports/20260819-run26-natural-live-root-cause.md),
 [night audit](reports/20260819-night-futures-session-basis-audit.md),
 [validation repair](reports/20260819-run26-ai-validation-repair.md),
 [fallback parity](reports/20260819-fallback-valuation-context-parity.md), and
 [archive-only Preview](reports/20260819-run26-targeted-repair-preview.md). Full test and safety
 results are in the [Phase 8.5.4 validation report](reports/20260819-phase8-5-4-validation.md).
+
+## Phase 8.5.4.1 Operating Shadow Promotion
+
+Validated source `3a6547e394452e6e1b986a8193f56c98fd07ef89` was fast-forwarded to `main` and
+the clean operating checkout. The Thesis Monitor API restarted from that checkout, `/health`
+passed, and 430 read-only operating smoke tests passed. All four Codex Scheduled Tasks remain ACTIVE
+at 08:15/08:30/16:15/16:55 KST, keep the operating checkout, policy `daily-review-v3.10`, schema 4,
+and received no configuration change or manual execution.
+
+The live KRX preflight queried 2026-08-19 through 2026-08-13. The expected 2026-08-19 payload was
+empty, while 2026-08-18 had rows but no verified reference under the current strict collector. Both
+KOSPI200 and KOSDAQ150 are therefore live-unavailable and suppressed. A stale 2026-08-14 NIGHT ->
+2026-08-13 DAY pair was verified for both instruments with matching 2026-09 contracts and source
+payload SHA. Holiday-gap pairing remains an availability debt; it cannot reopen same-date promotion.
+
+Visible current-PBR ownership currently redirects a history `current_value` to the canonical base
+Fact only when the values are equal. An explicit `source_current_fact_id` lineage edge does not yet
+exist and is recorded as `OPEN_LOW_PRIORITY`; this does not weaken the fail-closed binder gate.
+See the [promotion](reports/20260819-phase8-5-4-1-shadow-promotion.md),
+[preflight](reports/20260819-night-futures-live-readiness-preflight.md),
+[operating state](reports/20260819-phase8-5-4-1-operating-shadow-state.md), and
+[smoke](reports/20260819-phase8-5-4-1-operating-smoke.md) reports.
 
 On 2026-08-15 the owning desktop environment verified all four local-project tasks, retained their
 08:15/08:30/16:15/16:55 schedules, and migrated their exact prompts to v3.10 with
@@ -779,20 +803,18 @@ first.
 
 ## Next Steps
 
-1. Make a separate Phase 8.5.4 operating-promotion decision. This branch itself is not deployment
-   approval.
-2. After any approved promotion, wait for the next natural US/KR sessions and verify AI quality,
+1. Wait for the next natural US/KR sessions and verify AI quality,
    night-futures session/reference evidence, fallback context parity, Korean language, price/RR,
    full validator, runtime receipt, archive, and exactly-once behavior.
-3. Preserve operational counts KR 3/5 and US 3/5 and retain all natural/replay artifacts without
+2. Preserve operational counts KR 3/5 and US 3/5 and retain all natural/replay artifacts without
    counter edits, resends, or archive rewriting.
-4. Keep TSM/WRD identity `unknown`, fine-grained industry routes general where unproved, peer data
+3. Keep TSM/WRD identity `unknown`, fine-grained industry routes general where unproved, peer data
    unavailable where absent, and OCF/CAPEX/FCF gaps explicit.
-5. Continue exact-slot KRX 16:05, 08:05 and T+1 observations on its separate experimental branch.
+4. Continue exact-slot KRX 16:05, 08:05 and T+1 observations on its separate experimental branch.
    Do not merge or deploy until role evidence and Human Review pass.
-6. Keep Phase 8.3 closed as selective optional context unless materially new free-source, taxonomy,
+5. Keep Phase 8.3 closed as selective optional context unless materially new free-source, taxonomy,
    exact-group or natural-message evidence appears.
-7. If the post-repair natural review passes without a critical blocker, begin Cash Flow / Capital
+6. If the post-repair natural review passes without a critical blocker, begin Cash Flow / Capital
    Efficiency Enrichment design. If it fails, repair the new blocker first.
-8. Keep Production Assist disabled until natural full-message evidence passes direct human review
+7. Keep Production Assist disabled until natural full-message evidence passes direct human review
    and the user explicitly approves it.

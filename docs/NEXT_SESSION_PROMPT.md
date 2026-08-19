@@ -178,11 +178,16 @@ message quality passes. Night-futures values are suppressed as `UNAVAILABLE_BY_C
 required NIGHT/reference DAY pair and source lineage cannot be reconstructed. Fallback wording now
 uses actual rendered valuation context. HUT/WULF overlapping selected zones suppress RR rather than
 publishing 0.66x/0.42x. No source archive was changed and no Telegram, task, Pilot or DB mutation
-occurred. This is `CLOSED_RETROSPECTIVE_PENDING_NATURAL`, not deployment or live proof.
+occurred. Phase 8.5.4 is now promoted to operating shadow. This is
+`CLOSED_RETROSPECTIVE_PENDING_NATURAL`, not natural live proof.
 
-Default next task: decide separately whether Phase 8.5.4 should be promoted to operating shadow.
-After any approved promotion, inspect the **next natural US/KR packets** without manual task
-execution. For both markets verify, in order:
+The promotion preflight found the expected 2026-08-19 KRX rows pending. Both latest instrument
+states are unavailable fail-closed; the stale 2026-08-14 NIGHT -> 2026-08-13 DAY pair is valid for
+both matching 2026-09 contracts. Holiday-gap pairing is an availability follow-up, and explicit
+current-PBR history-to-base-Fact lineage is low-priority technical debt.
+
+Default next task: inspect the **next natural US/KR packets** without manual task execution. For both
+markets verify, in order:
 
 1. actual delivery mode;
 2. AI-assisted versus deterministic fallback;
@@ -210,9 +215,8 @@ Preserve the Phase 8.5 boundary: do not infer missing metrics, promote themes in
 achievements, force fine-grained taxonomy, create thresholds, or relax numeric, lineage, scope,
 renderer, receipt, fallback, or exactly-once validation.
 
-Do not merge main, deploy, run Scheduled Tasks manually, send Telegram, mutate the operating DB,
-assessment, archive, notification, delivery, or Pilot, or enable Production Assist without an
-explicit work order.
+Do not start new feature development, run Scheduled Tasks manually, send Telegram, mutate the
+operating DB, assessment, archive, notification, delivery, or Pilot, or enable Production Assist.
 
 Before completion run focused tests, full `pytest -q`, `ruff check .`, `git diff --check`, Knowledge
 checksum parity, Public Action 0.4.5, operationId 20/20 uniqueness, runtime isolation checks, push
