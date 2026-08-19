@@ -32,6 +32,20 @@ checkout. Read, in this order:
 20. `docs/reports/20260818-phase8-5-3-2-rxrx-valuation-label-preview.md`
 21. `docs/reports/20260818-phase8-5-3-2-valuation-label-audit.json`
 22. `docs/reports/20260818-phase8-5-3-2-shadow-promotion.md`
+23. `docs/BRANCH_DEPENDENCY.md`
+24. `docs/architecture/NIGHT_FUTURES_SESSION_BASIS.md`
+25. `docs/reports/20260819-run26-natural-live-root-cause.md`
+26. `docs/reports/20260819-night-futures-session-basis-audit.md`
+27. `docs/reports/20260819-night-futures-lineage-audit.json`
+28. `docs/reports/20260819-run26-ai-validation-repair.md`
+29. `docs/reports/20260819-run26-validation-delta.json`
+30. `docs/reports/20260819-fallback-valuation-context-parity.md`
+31. `docs/reports/20260819-run26-targeted-repair-preview.md`
+32. `docs/reports/20260819-phase8-5-4-validation.md`
+
+Phase 8.3.2A/finalization architecture, coverage reports and previews remain on the preserved
+`codex/phase-8-3-finalization` branch. Read them with `git show <branch>:<path>` when peer history is
+material; do not copy its implementation ancestry into an operating repair branch.
 
 Repository and immutable runtime state override stale conversation or document claims. Resolve the
 current commit from Git rather than copying a historical SHA.
@@ -82,6 +96,9 @@ Current core contracts:
 - runtime specificity `runtime-message-specificity-v1`
 - runtime gate `runtime-message-quality-v1`
 - receipt `runtime-message-quality-receipt-v2`
+- peer selection `peer-sector-valuation-v1`, group `verified-profile-peers-v2`
+- free current peer POC `free-source-current-peer-v1`
+- night futures `night-futures-session-basis-v1`
 - Pilot `ai-assisted-pilot-v3`, renderer v3
 - Public Action `0.4.5`, operationId 20/20 unique
 
@@ -97,6 +114,19 @@ Scheduled Tasks ACTIVE at 08:15/08:30/16:15/16:55 KST on the operating checkout.
 implementation commit `e166aaf6a4c13f9009a3885737d3b48e34c895d5` is included in main and the
 operating checkout; always re-resolve the final documentation SHA. Reconcile any later natural
 result instead of forcing these counts.
+
+Phase 8.3 is finalized on the experimental clean peer-only ancestry. Provider policy is `FREE_ONLY`;
+the paid path is `CLOSED_BY_POLICY`. The immutable 20-stock POC measured one user-visible `MEDIUM`
+state: 1/20 overall and 1/15 among economically meaningful subjects. KR is 0/7; US is 1/13. Broad
+runtime value is `LOW_ROI`; feature scope is `SELECTIVE_OPTIONAL_CONTEXT`, historical PIT and
+forward expansion are deferred, and operating integration is false. The TSLA sentence now calls
+the sample a same-automotive-classification baseline group and explicitly limits direct economic
+comparability while preserving all canonical values. Do not reopen Phase 8.3 without materially
+new free-source, taxonomy, exact-group or natural-message evidence.
+
+The Phase 8.3.2A branch starts from `codex/integration-phase-8-3-peer-only`, whose merge-base is the
+operating main. It contains no KRX provider/readiness implementation. The original Phase 8.3 branch
+does contain KRX Git ancestry; never promote it implicitly when KRX has not been approved.
 
 Phase 8.5.1 traced the failure to weekday-only KRX session classification. XKRX was closed on
 2026-08-17, so the 2026-08-14 chart was the latest completed session and should have remained fresh.
@@ -135,12 +165,46 @@ WULF legacy collision is closed by the same generic rule. Implementation
 `b3ad1ea82bdbd3fe003831d449b0dcaa7c6a2da2` passed exact-SHA Actions run `32126079970` and is
 promoted to operating shadow. Natural AI-assisted delivery remains PARTIAL.
 
-Default operating task: inspect the **next natural US/KR packets** for AI specificity, Korean language,
-intra-message dedup, dynamic-price parity, full-validator status, receipt, delivery/fallback,
-archive, exactly-once state, and human message quality. Do not run a Scheduled Task manually. KRX
-Open API is **APPROVED / NOT INTEGRATED**. Phase 8.2A may be developed and archive-validated on an
-experimental branch while live proof is pending, but must not be merged or deployed. Phase 8.3
-Peer/Sector Valuation follows. Do not combine operating and experimental scopes.
+Natural US packet `2026-08-19-us-run-26-cd80a8e4d373` is now the latest evidence. AI sent 0;
+deterministic fallback delivered 14/14 with no duplicate. AI validation rejected RXRX/WULF current
+PBR ownership and CORZ typed valuation occurrence errors. The market packet also promoted
+same-`BAS_DD` DAY/NIGHT comparisons as night changes, even though the KRX night trading date is set
+by the T+1 06:00 end. Fallback wording was safe enough to deliver but did not always match the
+valuation metrics actually shown.
+
+Phase 8.5.4 starts directly from operating main and excludes Phase 8.3/KRX experimental ancestry.
+Its immutable replay has zero binding, typed valuation and full-validator errors, and runtime
+message quality passes. Night-futures values are suppressed as `UNAVAILABLE_BY_CONTRACT` when the
+required NIGHT/reference DAY pair and source lineage cannot be reconstructed. Fallback wording now
+uses actual rendered valuation context. HUT/WULF overlapping selected zones suppress RR rather than
+publishing 0.66x/0.42x. No source archive was changed and no Telegram, task, Pilot or DB mutation
+occurred. This is `CLOSED_RETROSPECTIVE_PENDING_NATURAL`, not deployment or live proof.
+
+Default next task: decide separately whether Phase 8.5.4 should be promoted to operating shadow.
+After any approved promotion, inspect the **next natural US/KR packets** without manual task
+execution. For both markets verify, in order:
+
+1. actual delivery mode;
+2. AI-assisted versus deterministic fallback;
+3. full validator and runtime-quality status;
+4. actual Telegram message human quality;
+5. night-futures session/reference lineage and price/RR/confirmation lifecycle;
+6. KR supply prose;
+7. valuation wording;
+8. industry-specific reasoning;
+9. concrete Unknown and next check;
+10. duplicate/repetition regression;
+11. receipt, archive and exactly-once state.
+
+If a critical blocker appears, prioritize another targeted runtime repair. If the post-repair
+natural review passes, the next development candidate is Cash Flow / Capital Efficiency Enrichment
+covering OCF, CAPEX, FCF, ROIC, relevant ROE, inventory, working capital, cash conversion and
+segment margin. Do not begin that phase before promotion and natural proof.
+
+In parallel, inspect the latest KRX exact-slot evidence for 16:05, 08:05 and T+1. Historical
+capability and universe/publication contracts pass, but all three operational roles remain
+`NOT_YET_PROVEN` and operating integration remains false. KRX promotion is a separate evidence-based
+decision. Do not combine operating and experimental scopes.
 
 Preserve the Phase 8.5 boundary: do not infer missing metrics, promote themes into company
 achievements, force fine-grained taxonomy, create thresholds, or relax numeric, lineage, scope,

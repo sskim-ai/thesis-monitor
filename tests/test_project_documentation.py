@@ -17,6 +17,7 @@ DOCUMENTS = (
     ROOT / "docs" / "architecture" / "MONITORING_STATE_LIFECYCLE.md",
     ROOT / "docs" / "architecture" / "PEER_VALUATION.md",
     ROOT / "docs" / "architecture" / "NATURAL_LIVE_MESSAGE_HARDENING.md",
+    ROOT / "docs" / "architecture" / "NIGHT_FUTURES_SESSION_BASIS.md",
     ROOT / "docs" / "operations" / "AI_ASSISTED_PILOT.md",
     ROOT / "docs" / "knowledge" / "README.md",
 )
@@ -34,21 +35,15 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
 
     assert state["repository"] == "sskim-ai/thesis-monitor"
     assert state["branch"] == "main"
-    assert (
-        state["experimental_branch"]
-        == "codex/phase-8-5-3-2-rxrx-valuation-label-repair"
+    assert state["experimental_branch"] == (
+        "codex/phase-8-5-4-natural-live-targeted-repair"
     )
-    assert (
-        state["current_phase"]
-        == "phase_8_5_3_2_shadow_promoted_pending_natural_ai_delivery_proof"
+    assert state["current_phase"] == "natural_live_blocker_repair"
+    assert state["last_completed_phase"] == (
+        "phase_8_5_4_retrospective_repair_validation"
     )
-    assert (
-        state["last_completed_phase"]
-        == "phase_8_5_3_2_valuation_label_shadow_promotion"
-    )
-    assert (
-        state["next_default_phase"]
-        == "natural_us_kr_live_proof_with_phase_8_2a_experimental_development_only"
+    assert state["next_default_phase"] == (
+        "phase_8_5_4_promotion_decision_then_natural_us_kr_proof"
     )
     assert state["deployed_code_commit"] == (
         "b3ad1ea82bdbd3fe003831d449b0dcaa7c6a2da2"
@@ -60,7 +55,12 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
         == "LIVE_PATH_PASS"
     )
     assert state["persistent_gaps"]["natural_live_validation"] == "PARTIAL"
-    assert state["persistent_gaps"]["krx_open_api"] == "APPROVED_NOT_INTEGRATED"
+    assert state["persistent_gaps"]["krx_open_api"] == (
+        "APPROVED_EXPERIMENTAL_NOT_OPERATING_INTEGRATED"
+    )
+    assert state["persistent_gaps"]["night_futures_session_basis"] == (
+        "CLOSED_RETROSPECTIVE_PENDING_NATURAL"
+    )
     assert (
         state["persistent_gaps"]["fallback_price_lifecycle"]
         == "CLOSED_RETROSPECTIVE_AND_OPERATING_CODE_PROMOTED"
@@ -129,6 +129,7 @@ def test_architecture_guides_record_decisions_and_readme_navigation() -> None:
         ROOT / "docs" / "architecture" / "NUMERIC_PROVENANCE.md",
         ROOT / "docs" / "architecture" / "MONITORING_STATE_LIFECYCLE.md",
         ROOT / "docs" / "architecture" / "PEER_VALUATION.md",
+        ROOT / "docs" / "architecture" / "NIGHT_FUTURES_SESSION_BASIS.md",
         ROOT / "docs" / "operations" / "AI_ASSISTED_PILOT.md",
         ROOT / "docs" / "knowledge" / "README.md",
     )
@@ -149,6 +150,7 @@ def test_architecture_guides_record_decisions_and_readme_navigation() -> None:
         "docs/architecture/NUMERIC_PROVENANCE.md",
         "docs/architecture/MONITORING_STATE_LIFECYCLE.md",
         "docs/architecture/PEER_VALUATION.md",
+        "docs/architecture/NIGHT_FUTURES_SESSION_BASIS.md",
         "docs/operations/AI_ASSISTED_PILOT.md",
         "docs/operations/SCHEDULED_TASK_CONTRACTS.md",
         "docs/knowledge/README.md",

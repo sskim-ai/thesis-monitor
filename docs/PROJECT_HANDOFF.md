@@ -16,7 +16,7 @@ execution or an autonomous investment adviser.
 
 | Component | Contract |
 |---|---|
-| Branch | operating `main`; resolve exact SHA with Git; Phase 8.5.3.2 implementation `b3ad1ea82bdbd3fe003831d449b0dcaa7c6a2da2` is promoted |
+| Branch | operating `main` remains at `e925ee0...`; experimental `codex/phase-8-5-4-natural-live-targeted-repair` starts directly from that operating main and excludes peer/KRX experimental ancestry |
 | Official assessment | Deterministic `ThesisAssessment` |
 | AI mode | `shadow` |
 | Analysis policy | `daily-review-v3.10` |
@@ -40,6 +40,46 @@ execution or an autonomous investment adviser.
 | Current price context | `current-price-context-v1` |
 | Runtime specificity | `runtime-message-specificity-v1` |
 | Runtime quality | `runtime-message-quality-v1`, receipt `runtime-message-quality-receipt-v2` |
+| Night futures | `night-futures-session-basis-v1`; retrospective PASS, natural proof pending |
+
+## Phase 8.3 Final State
+
+The operating checkout remains unchanged for the next natural Phase 8.5.x live proof. Phase 8.3 is
+finalized as archive-only `SELECTIVE_OPTIONAL_CONTEXT` and excludes KRX implementation ancestry. Its
+clean lineage starts from
+`codex/integration-phase-8-3-peer-only`, which reconstructs the peer contract from operating main.
+The original Phase 8.3 branch still contains KRX Git ancestry but no required KRX runtime import;
+see [BRANCH_DEPENDENCY.md](BRANCH_DEPENDENCY.md).
+
+Peer provider policy is `FREE_ONLY`. Paid/institutional providers and commercial inquiries are
+`CLOSED_BY_POLICY`; earlier research remains reference history. Historical peer point-in-time data
+is deferred, and forward consensus was not pursued after the trailing value gate.
+
+The 2026-08-18 POC measured one `MEDIUM+` state among 20 active stocks: 5.0% raw and 6.67% among 15
+economically meaningful subjects. KR is 0/7. US is 1/13 overall and 1/8 meaningful. TSLA alone has
+nine exact automotive candidates and three positive/current PER issuers. Broad Technology, Media
+and semiconductor groups remain `LOW`; MU does not receive a memory comparison from generic
+semiconductor candidates. RXRX and HPC/SaaS/holding frameworks remain correctly suppressed or
+not meaningful. TSM/SKHY ADR basis remains unsafe.
+
+The original full Preview added one sentence inside TSLA's existing Valuation section, increased
+that message 8.34%, created no section, and left the other ten representative messages
+character-identical. The final wording calls the sample a same-automotive-classification `기초
+비교군`, retains the same canonical numbers, and explicitly says business-model and growth-
+expectation differences limit direct peer-premium interpretation. The final targeted replay is
+1,319 to 1,448 characters, or +9.78%; the other ten messages remain unchanged.
+
+The Phase 8.3 contract and selection/safety tooling pass, but 263 read-only requests produced one
+visible `MEDIUM` subject. Broad runtime value is therefore `LOW_ROI`; daily broad collection,
+provider expansion, forward consensus, historical PIT and coverage-driven taxonomy widening stop.
+The engine, validators, audit artifacts and clean peer-only branch remain available for naturally
+qualifying MEDIUM/HIGH contexts. This is not integrated, deployed or active operating behavior.
+
+The next state is `WAIT_FOR_NATURAL_US_KR_REVIEW`. Do not start a new feature before reviewing the
+next natural messages. A critical failure takes priority as a targeted repair; otherwise the default
+candidate is Cash Flow / Capital Efficiency Enrichment because OCF, CAPEX, FCF, ROIC, inventory,
+working capital, cash conversion and segment economics remain more persistent decision gaps than
+peer coverage.
 
 Resolve the deployed commit with `git rev-parse HEAD`; a file inside a commit cannot contain that
 commit's own final hash. The machine-readable state records `HEAD`, the promoted code SHA, and the
@@ -195,10 +235,12 @@ Registered thesis price rules remain immutable history. The shared deterministic
 RR/invalidation and chart state, then only a still-relevant registered lifecycle. It calculates
 nothing. A crossed confirmation is history, never a future trigger or automatically promoted support.
 
-Peer valuation is deterministic and fail-closed. The current repository can only use same-date active
-monitored assessments, explicitly labeled as a limited sample. At least three comparable peers are
-required, and the median is primary. The 2026-08-14 active universe had no qualifying peer metric, so
-no peer number was invented. See [PEER_VALUATION.md](architecture/PEER_VALUATION.md).
+Peer valuation is deterministic and fail-closed. Operating code only uses same-date active monitored
+assessments and still has no qualifying state. The free-source experimental path extends candidate
+discovery without changing operating monitoring state. At least three comparable independent
+issuers are required and the median is primary. Broad sector samples remain audit-only. See
+[PEER_VALUATION.md](architecture/PEER_VALUATION.md). The free-source POC architecture and reports
+remain on the preserved `codex/phase-8-3-finalization` experimental branch.
 
 ## Pilot Architecture
 
@@ -512,6 +554,42 @@ promotion. Telegram, Scheduled Task, Pilot, and Production Assist mutations were
 [Preview](reports/20260818-phase8-5-3-2-rxrx-valuation-label-preview.md), and
 [audit](reports/20260818-phase8-5-3-2-valuation-label-audit.json).
 
+## Phase 8.5.4 Natural Live Targeted Repair
+
+Natural US packet `2026-08-19-us-run-26-cd80a8e4d373` produced no AI send. The deterministic
+fallback delivered 14/14 messages with no duplicate and preserved the archive/receipt path. AI was
+rejected for RXRX/WULF current-PBR semantic ownership and CORZ typed valuation occurrence errors.
+This operational delivery is successful, but natural AI-assisted delivery and human/canonical
+quality remain `PARTIAL`.
+
+The market packet also exposed a canonical source-meaning error. KOSPI200 and KOSDAQ150 night
+changes were calculated from NIGHT and DAY rows with the same KRX `BAS_DD`. KRX assigns the
+overnight trading day by its T+1 06:00 end, so that same-date DAY close occurs later and is not the
+reference session. The required 2026-08-19 NIGHT row was unavailable and the exact original raw
+response was not archived. Retrospective output therefore suppresses both figures as
+`UNAVAILABLE_BY_CONTRACT`; the user's approximate observation is not hard-coded.
+
+`night-futures-session-basis-v1` now requires verified NIGHT identity, preceding DAY reference,
+contract/date coherence, both prices, source record identifiers and payload SHA. Unknown session,
+reference, contract, date or source evidence fails closed. Provider change fields are not trusted
+without verified comparison semantics.
+
+Visible current PBR now has one owner, `fields.price_to_book`; historical median and percentile
+retain their historical semantics. The CORZ earnings-quality phrase receives exact typed coverage
+without restoring unsafe earnings or book multiples. Fallback valuation caution is generated from
+the metrics actually rendered, closing the GOOGL/HUT/RXRX/WULF/CORZ parity controls. Overlapping
+selected support/resistance zones make RR unavailable; HUT 0.66x and WULF 0.42x are suppressed in
+archive-only replay without moving the zones.
+
+The repaired immutable replay has zero numeric-binding, typed-valuation and full-validator errors,
+and `runtime-message-quality-v1` passes. It sent no Telegram, ran no Scheduled Task, mutated no
+Pilot/DB/archive, and is not merged or deployed. See the [root-cause report](reports/20260819-run26-natural-live-root-cause.md),
+[night audit](reports/20260819-night-futures-session-basis-audit.md),
+[validation repair](reports/20260819-run26-ai-validation-repair.md),
+[fallback parity](reports/20260819-fallback-valuation-context-parity.md), and
+[archive-only Preview](reports/20260819-run26-targeted-repair-preview.md). Full test and safety
+results are in the [Phase 8.5.4 validation report](reports/20260819-phase8-5-4-validation.md).
+
 On 2026-08-15 the owning desktop environment verified all four local-project tasks, retained their
 08:15/08:30/16:15/16:55 schedules, and migrated their exact prompts to v3.10 with
 `security-identity-v2` and `financial-quality-taint-v2`. All four are ACTIVE,
@@ -655,14 +733,16 @@ unchanged. See [the Phase 7.2.9.2 readiness report](reports/20260817-phase7-2-9-
 
 - Massive US breadth is implemented in shadow, but exact 08:05 KST readiness over 3-5 normal
   sessions is not yet established.
-- KRX Open API is approved but not integrated; KR market breadth remains partial. The Kiwoom
+- KRX historical capability, universe and publication-state contracts pass experimentally, but
+  16:05, 08:05 and T+1 roles remain `NOT_YET_PROVEN`; operating integration is false. The Kiwoom
   Windows gateway is not configured.
 - KR market-wide investor flow is unavailable, and constituent-level sector participation remains
   incomplete.
 - Industry-specific causal reasoning contracts are implemented, but specialized structured routing
   covers 9/20 immutable active stocks; taxonomy and business-unit coverage remain partial.
-- There is no broad point-in-time peer valuation provider. Limited active-universe comparisons fail
-  closed unless at least three comparable peers pass all basis checks.
+- Peer provider policy is FREE_ONLY. Phase 8.3 is finalized at 1/20 active and 1/15 meaningful
+  coverage as SELECTIVE_OPTIONAL_CONTEXT. Broad runtime value is LOW_ROI; historical PIT and
+  forward expansion are deferred, and operating integration is false.
 - OCF extraction is partial; CAPEX aggregation and FCF remain open.
 - The persisted US count includes the 2026-08-16 operationally complete session whose human message
   quality review failed. Operational count and human approval remain separate; this packet is not
@@ -699,17 +779,20 @@ first.
 
 ## Next Steps
 
-1. Wait for the next natural US/KR sessions and verify AI quality, Korean language, intra-message
-   dedup, current price-context parity,
+1. Make a separate Phase 8.5.4 operating-promotion decision. This branch itself is not deployment
+   approval.
+2. After any approved promotion, wait for the next natural US/KR sessions and verify AI quality,
+   night-futures session/reference evidence, fallback context parity, Korean language, price/RR,
    full validator, runtime receipt, archive, and exactly-once behavior.
-2. Preserve operational counts KR 3/5 and US 3/5 and retain all natural/replay artifacts without
+3. Preserve operational counts KR 3/5 and US 3/5 and retain all natural/replay artifacts without
    counter edits, resends, or archive rewriting.
-3. Keep TSM/WRD identity `unknown`, fine-grained industry routes general where unproved, peer data
+4. Keep TSM/WRD identity `unknown`, fine-grained industry routes general where unproved, peer data
    unavailable where absent, and OCF/CAPEX/FCF gaps explicit.
-4. Develop Phase 8.2A KRX Open API Primary Market Breadth on an experimental branch only while the
-   live proof is pending. Do not merge or deploy it until the separate data/Human Review gates pass.
-   Phase 8.3 Peer/Sector Valuation follows unless a new blocker takes priority.
-5. Run 3-5 Massive weekday shadow captures at 08:05 KST and, after KRX activation, collect five
-   KRX/Kiwoom reconciliation sessions before metric-level fallback.
-6. Keep Production Assist disabled until natural full-message evidence passes direct human review
+5. Continue exact-slot KRX 16:05, 08:05 and T+1 observations on its separate experimental branch.
+   Do not merge or deploy until role evidence and Human Review pass.
+6. Keep Phase 8.3 closed as selective optional context unless materially new free-source, taxonomy,
+   exact-group or natural-message evidence appears.
+7. If the post-repair natural review passes without a critical blocker, begin Cash Flow / Capital
+   Efficiency Enrichment design. If it fails, repair the new blocker first.
+8. Keep Production Assist disabled until natural full-message evidence passes direct human review
    and the user explicitly approves it.
