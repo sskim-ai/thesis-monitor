@@ -146,6 +146,25 @@ def test_runtime_specificity_plan_uses_material_candidates_without_quota() -> No
     assert plan["decision_candidates"][0]["owner"] == "price_context"
     assert plan["decision_candidates"][0]["section"] == "price_positioning"
     assert plan["required_current_price_fact_ids"] == ["chart:structure:risk_reward:current_price"]
+    assert plan["business_earnings_policy"] == {
+        "owner": "business_earnings",
+        "business_fact_candidates": [],
+        "minimum_numeric_anchor_count": 0,
+        "valuation_numeric_filler_allowed": False,
+        "valuation_owned_semantics": [
+            "bvps",
+            "forward_pe",
+            "historical_pb_percentile",
+            "historical_pe_percentile",
+            "price_to_book",
+            "trailing_pe",
+            "ttm_eps",
+        ],
+        "missing_business_fact_policy": "use_industry_specific_unknown",
+        "generic_numeric_summary_scaffold": "prohibited_portfolio_template",
+    }
+    assert plan["risk_reward_delta_policy"]["decision_candidate_allowed"] is False
+    assert plan["risk_reward_delta_policy"]["standalone_previous_current_pair_allowed"] is False
     assert plan["security_reasoning_policy"] == {
         "owner": "security_identity",
         "identity_state": "verified_non_depositary",
@@ -245,3 +264,79 @@ def test_runtime_specificity_plan_fails_depositary_reasoning_closed(
     assert policy["depositary_ratio_reasoning_allowed"] is False
     assert policy["generic_basis_caution_allowed"] is generic_allowed
     assert policy["suppression_reason"] == suppression_reason
+
+
+def test_runtime_specificity_plan_keeps_business_facts_out_of_valuation_fillers() -> None:
+    stock = {
+        "knowledge_routing": {
+            "industry_key": "general",
+            "industry_routing": {"confidence": "medium"},
+        },
+        "deterministic_assessment": {"business_thesis_change": "no_material_change"},
+        "monitoring_state": {"delta": {}},
+        "state_grounding_requirements": {"price": []},
+        "fact_catalog": [
+            {
+                "fact_id": "earnings:2026-06-30",
+                "prose_eligible": True,
+                "fields": {
+                    "revenue": {"value": 100, "currency": "USD"},
+                    "operating_margin_pct": 18.5,
+                    "period": "2026-06-30",
+                },
+            },
+            {
+                "fact_id": "valuation:current",
+                "prose_eligible": True,
+                "fields": {"ttm_eps": 3.2, "bvps": 11.0},
+            },
+        ],
+    }
+
+    policy = build_runtime_specificity_plan(stock)["business_earnings_policy"]
+
+    assert policy["business_fact_candidates"] == [
+        {
+            "fact_id": "earnings:2026-06-30",
+            "eligible_fields": ["operating_margin_pct", "revenue"],
+        }
+    ]
+    assert policy["valuation_numeric_filler_allowed"] is False
+    assert policy["minimum_numeric_anchor_count"] == 0
+
+
+def test_runtime_specificity_plan_requires_material_rr_transition() -> None:
+    stock = {
+        "knowledge_routing": {
+            "industry_key": "general",
+            "industry_routing": {"confidence": "medium"},
+        },
+        "deterministic_assessment": {"business_thesis_change": "no_material_change"},
+        "monitoring_state": {
+            "delta": {
+                "chart_state_change": "WAIT_to_HOLD",
+                "confirmation_transition": "not_reached_to_crossed",
+                "rr_change": "deteriorated",
+                "support_change": "shifted_up",
+                "resistance_change": "unchanged",
+            }
+        },
+        "state_grounding_requirements": {"price": []},
+        "fact_catalog": [],
+    }
+
+    plan = build_runtime_specificity_plan(stock)
+    policy = plan["risk_reward_delta_policy"]
+
+    assert policy["decision_candidate_allowed"] is True
+    assert policy["standalone_previous_current_pair_allowed"] is False
+    assert policy["material_transition_reasons"] == [
+        "chart_state_transition",
+        "confirmation_lifecycle_transition",
+        "support_change",
+    ]
+    rr_candidate = next(
+        item for item in plan["decision_candidates"] if item["category"] == "risk_reward"
+    )
+    assert rr_candidate["owner"] == "price_context"
+    assert rr_candidate["metadata"]["standalone_previous_current_pair_allowed"] is False

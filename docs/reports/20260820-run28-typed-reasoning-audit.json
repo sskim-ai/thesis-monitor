@@ -1,0 +1,4183 @@
+{
+  "assessment_date": "2026-08-20",
+  "contract": "phase8-5-5-1-run28-replay-v1",
+  "immutable_delivery": {
+    "delivery_count": 14,
+    "delivery_mode": "deterministic_fallback",
+    "dispatched_at": "2026-08-20T08:40:04.751463+09:00",
+    "packet_id": "2026-08-20-us-run-28-9024def294e6",
+    "pending_count": 0,
+    "sent_count": 14,
+    "status": "sent"
+  },
+  "immutable_validation": {
+    "errors": [
+      "runtime_message_quality_gate_failed"
+    ],
+    "fallback_eligibility_preserved": true,
+    "packet_id": "2026-08-20-us-run-28-9024def294e6",
+    "recorded_at": "2026-08-20T08:40:04.751463+09:00",
+    "rejected_ai_sent": false,
+    "status": "quality_rejected"
+  },
+  "market": "us",
+  "message_length": {
+    "after_average": 1134.8461538461538,
+    "after_by_ticker": {
+      "CORZ": 1064,
+      "CRCL": 1161,
+      "GOOGL": 1080,
+      "HUT": 1034,
+      "IBM": 1153,
+      "MU": 1186,
+      "RXRX": 1115,
+      "SKHY": 1090,
+      "SNDK": 1142,
+      "TSLA": 1242,
+      "TSM": 1280,
+      "WRD": 1229,
+      "WULF": 977
+    },
+    "before_average": 1182.076923076923,
+    "before_by_ticker": {
+      "CORZ": 1146,
+      "CRCL": 1170,
+      "GOOGL": 1209,
+      "HUT": 1034,
+      "IBM": 1260,
+      "MU": 1221,
+      "RXRX": 1153,
+      "SKHY": 1090,
+      "SNDK": 1154,
+      "TSLA": 1303,
+      "TSM": 1358,
+      "WRD": 1219,
+      "WULF": 1050
+    },
+    "change_pct": -3.995574933298629
+  },
+  "numeric_binding": {
+    "auto_bound": 149,
+    "bindings": [
+      {
+        "canonical_label": "S&P500 대비 반도체 상대수익률",
+        "canonical_label_kind": "instrument",
+        "comparison_role": null,
+        "fact_id": "market:relative:SOXX:SPY",
+        "field_path": "fields.relative_return_pct",
+        "formatted_value": "-2.4%",
+        "logical_claim_id": "market_review:core_judgment.text:market:relative:SOXX:SPY:fields.relative_return_pct:m_soxx_core",
+        "postposition_family": null,
+        "ref_id": "m_soxx_core",
+        "resolved_postposition": null,
+        "role": "value",
+        "semantic_type": "sector_relative_return_pct",
+        "text_ref": "core_judgment.text",
+        "unit": "pct",
+        "usage": "S&P500 대비 반도체 상대수익률 -2.4%"
+      },
+      {
+        "canonical_label": "원/달러 환율 등락률",
+        "canonical_label_kind": "instrument",
+        "comparison_role": null,
+        "fact_id": "market:fx:USDKRW",
+        "field_path": "fields.change_pct",
+        "formatted_value": "-1%",
+        "logical_claim_id": "market_review:core_judgment.text:market:fx:USDKRW:fields.change_pct:m_fx_core",
+        "postposition_family": null,
+        "ref_id": "m_fx_core",
+        "resolved_postposition": null,
+        "role": "value",
+        "semantic_type": "fx_return_pct",
+        "text_ref": "core_judgment.text",
+        "unit": "pct",
+        "usage": "원/달러 환율 등락률 -1%"
+      },
+      {
+        "canonical_label": "S&P500 대비 Nasdaq 상대수익률",
+        "canonical_label_kind": "instrument",
+        "comparison_role": null,
+        "fact_id": "market:relative:QQQ:SPY",
+        "field_path": "fields.relative_return_pct",
+        "formatted_value": "-0.4%",
+        "logical_claim_id": "market_review:core_judgment.text:market:relative:QQQ:SPY:fields.relative_return_pct:m_qqq_core",
+        "postposition_family": null,
+        "ref_id": "m_qqq_core",
+        "resolved_postposition": null,
+        "role": "value",
+        "semantic_type": "growth_relative_return_pct",
+        "text_ref": "core_judgment.text",
+        "unit": "pct",
+        "usage": "S&P500 대비 Nasdaq 상대수익률 -0.4%"
+      },
+      {
+        "canonical_label": "WTI 등락률",
+        "canonical_label_kind": "instrument",
+        "comparison_role": null,
+        "fact_id": "market:oil:DCOILWTICO",
+        "field_path": "fields.return_pct",
+        "formatted_value": "+2%",
+        "logical_claim_id": "market_review:core_judgment.text:market:oil:DCOILWTICO:fields.return_pct:m_oil_core",
+        "postposition_family": null,
+        "ref_id": "m_oil_core",
+        "resolved_postposition": null,
+        "role": "value",
+        "semantic_type": "oil_return_pct",
+        "text_ref": "core_judgment.text",
+        "unit": "pct",
+        "usage": "WTI 등락률 +2%"
+      },
+      {
+        "canonical_label": "S&P500 대비 반도체 상대수익률",
+        "canonical_label_kind": "instrument",
+        "comparison_role": null,
+        "fact_id": "market:relative:SOXX:SPY",
+        "field_path": "fields.relative_return_pct",
+        "formatted_value": "-2.4%",
+        "logical_claim_id": "market_review:important_changes[0].text:market:relative:SOXX:SPY:fields.relative_return_pct:m_soxx_change",
+        "postposition_family": "은/는",
+        "ref_id": "m_soxx_change",
+        "resolved_postposition": "는",
+        "role": "value",
+        "semantic_type": "sector_relative_return_pct",
+        "text_ref": "important_changes[0].text",
+        "unit": "pct",
+        "usage": "S&P500 대비 반도체 상대수익률 -2.4%"
+      },
+      {
+        "canonical_label": "원/달러 환율 등락률",
+        "canonical_label_kind": "instrument",
+        "comparison_role": null,
+        "fact_id": "market:fx:USDKRW",
+        "field_path": "fields.change_pct",
+        "formatted_value": "-1%",
+        "logical_claim_id": "market_review:important_changes[1].text:market:fx:USDKRW:fields.change_pct:m_fx_change",
+        "postposition_family": "은/는",
+        "ref_id": "m_fx_change",
+        "resolved_postposition": "는",
+        "role": "value",
+        "semantic_type": "fx_return_pct",
+        "text_ref": "important_changes[1].text",
+        "unit": "pct",
+        "usage": "원/달러 환율 등락률 -1%"
+      },
+      {
+        "canonical_label": "S&P500 대비 Nasdaq 상대수익률",
+        "canonical_label_kind": "instrument",
+        "comparison_role": null,
+        "fact_id": "market:relative:QQQ:SPY",
+        "field_path": "fields.relative_return_pct",
+        "formatted_value": "-0.4%",
+        "logical_claim_id": "market_review:important_changes[2].text:market:relative:QQQ:SPY:fields.relative_return_pct:m_qqq_change",
+        "postposition_family": "은/는",
+        "ref_id": "m_qqq_change",
+        "resolved_postposition": "는",
+        "role": "value",
+        "semantic_type": "growth_relative_return_pct",
+        "text_ref": "important_changes[2].text",
+        "unit": "pct",
+        "usage": "S&P500 대비 Nasdaq 상대수익률 -0.4%"
+      },
+      {
+        "canonical_label": "WTI 등락률",
+        "canonical_label_kind": "instrument",
+        "comparison_role": null,
+        "fact_id": "market:oil:DCOILWTICO",
+        "field_path": "fields.return_pct",
+        "formatted_value": "+2%",
+        "logical_claim_id": "market_review:important_changes[3].text:market:oil:DCOILWTICO:fields.return_pct:m_oil_change",
+        "postposition_family": "은/는",
+        "ref_id": "m_oil_change",
+        "resolved_postposition": "는",
+        "role": "value",
+        "semantic_type": "oil_return_pct",
+        "text_ref": "important_changes[3].text",
+        "unit": "pct",
+        "usage": "WTI 등락률 +2%"
+      },
+      {
+        "canonical_label": "미국 10년물 실질금리 변동",
+        "canonical_label_kind": "instrument",
+        "comparison_role": null,
+        "fact_id": "market:real_yield:DFII10",
+        "field_path": "fields.change_bp",
+        "formatted_value": "-3bp",
+        "logical_claim_id": "market_review:market_context.text:market:real_yield:DFII10:fields.change_bp:m_real_context",
+        "postposition_family": null,
+        "ref_id": "m_real_context",
+        "resolved_postposition": null,
+        "role": "value",
+        "semantic_type": "real_yield_change_bp",
+        "text_ref": "market_context.text",
+        "unit": "bp",
+        "usage": "미국 10년물 실질금리 변동 -3bp"
+      },
+      {
+        "canonical_label": "VIX 등락률",
+        "canonical_label_kind": "instrument",
+        "comparison_role": null,
+        "fact_id": "market:volatility:VIXCLS",
+        "field_path": "fields.return_pct",
+        "formatted_value": "+4.3%",
+        "logical_claim_id": "market_review:market_context.text:market:volatility:VIXCLS:fields.return_pct:m_vix_context",
+        "postposition_family": null,
+        "ref_id": "m_vix_context",
+        "resolved_postposition": null,
+        "role": "value",
+        "semantic_type": "volatility_return_pct",
+        "text_ref": "market_context.text",
+        "unit": "pct",
+        "usage": "VIX 등락률 +4.3%"
+      },
+      {
+        "canonical_label": "현재가",
+        "canonical_label_kind": null,
+        "comparison_role": null,
+        "fact_id": "price:current",
+        "field_path": "fields.current_price",
+        "formatted_value": "$18.72",
+        "logical_claim_id": "CORZ:core_judgment.text:price:current:fields.current_price:corz_core_1",
+        "postposition_family": null,
+        "ref_id": "corz_core_1",
+        "resolved_postposition": null,
+        "role": "value",
+        "semantic_type": "share_price",
+        "text_ref": "core_judgment.text",
+        "unit": "USD",
+        "usage": "현재가 $18.72"
+      },
+      {
+        "canonical_label": "2026년 2분기 매출",
+        "canonical_label_kind": "period",
+        "comparison_role": null,
+        "fact_id": "earnings:2026-06-30",
+        "field_path": "fields.revenue.value",
+        "formatted_value": "$164.2M",
+        "logical_claim_id": "CORZ:core_judgment.text:earnings:2026-06-30:fields.revenue.value:corz_core_2",
+        "postposition_family": null,
+        "ref_id": "corz_core_2",
+        "resolved_postposition": null,
+        "role": "value",
+        "semantic_type": "revenue",
+        "text_ref": "core_judgment.text",
+        "unit": "USD",
+        "usage": "2026년 2분기 매출 $164.2M"
+      },
+      {
+        "canonical_label": "현재가 기준 차트 손익비",
+        "canonical_label_kind": null,
+        "comparison_role": null,
+        "fact_id": "chart:structure:risk_reward:current_price",
+        "field_path": "fields.ratio",
+        "formatted_value": "0.18배",
+        "logical_claim_id": "CORZ:core_judgment.text:chart:structure:risk_reward:current_price:fields.ratio:corz_core_3",
+        "postposition_family": null,
+        "ref_id": "corz_core_3",
+        "resolved_postposition": null,
+        "role": "value",
+        "semantic_type": "current_price_risk_reward_ratio",
+        "text_ref": "core_judgment.text",
+        "unit": "x",
+        "usage": "현재가 기준 차트 손익비 0.18배"
+      },
+      {
+        "canonical_label": "2026년 2분기 매출",
+        "canonical_label_kind": "period",
+        "comparison_role": null,
+        "fact_id": "earnings:2026-06-30",
+        "field_path": "fields.revenue.value",
+        "formatted_value": "$164.2M",
+        "logical_claim_id": "CORZ:business_earnings.text:earnings:2026-06-30:fields.revenue.value:corz_earn_1",
+        "postposition_family": null,
+        "ref_id": "corz_earn_1",
+        "resolved_postposition": null,
+        "role": "value",
+        "semantic_type": "revenue",
+        "text_ref": "business_earnings.text",
+        "unit": "USD",
+        "usage": "2026년 2분기 매출 $164.2M"
+      },
+      {
+        "canonical_label": "현재가",
+        "canonical_label_kind": null,
+        "comparison_role": null,
+        "fact_id": "price:current",
+        "field_path": "fields.current_price",
+        "formatted_value": "$18.72",
+        "logical_claim_id": "CORZ:price_positioning.text:price:current:fields.current_price:corz_price_1_current-price",
+        "postposition_family": null,
+        "ref_id": "corz_price_1_current-price",
+        "resolved_postposition": null,
+        "role": "value",
+        "semantic_type": "share_price",
+        "text_ref": "price_positioning.text",
+        "unit": "USD",
+        "usage": "현재가 $18.72"
+      },
+      {
+        "canonical_label": "동적 지지구간 하단",
+        "canonical_label_kind": null,
+        "comparison_role": null,
+        "fact_id": "chart:structure:nearest_supports:1",
+        "field_path": "fields.zone_low",
+        "formatted_value": "$18.2",
+        "logical_claim_id": "CORZ:price_positioning.text:chart:structure:nearest_supports:1:fields.zone_low:corz_price_2_zone-low",
+        "postposition_family": null,
+        "ref_id": "corz_price_2_zone-low",
+        "resolved_postposition": null,
+        "role": "lower",
+        "semantic_type": "support_zone_price",
+        "text_ref": "price_positioning.text",
+        "unit": "USD",
+        "usage": "동적 지지구간 하단 $18.2"
+      },
+      {
+        "canonical_label": "동적 지지구간 상단",
+        "canonical_label_kind": null,
+        "comparison_role": null,
+        "fact_id": "chart:structure:nearest_supports:1",
+        "field_path": "fields.zone_high",
+        "formatted_value": "$18.73",
+        "logical_claim_id": "CORZ:price_positioning.text:chart:structure:nearest_supports:1:fields.zone_high:corz_price_2_zone-high",
+        "postposition_family": null,
+        "ref_id": "corz_price_2_zone-high",
+        "resolved_postposition": null,
+        "role": "upper",
+        "semantic_type": "support_zone_price",
+        "text_ref": "price_positioning.text",
+        "unit": "USD",
+        "usage": "동적 지지구간 상단 $18.73"
+      },
+      {
+        "canonical_label": "동적 저항구간 하단",
+        "canonical_label_kind": null,
+        "comparison_role": null,
+        "fact_id": "chart:structure:nearest_resistance:1",
+        "field_path": "fields.zone_low",
+        "formatted_value": "$18.96",
+        "logical_claim_id": "CORZ:price_positioning.text:chart:structure:nearest_resistance:1:fields.zone_low:corz_price_3_zone-low",
+        "postposition_family": null,
+        "ref_id": "corz_price_3_zone-low",
+        "resolved_postposition": null,
+        "role": "lower",
+        "semantic_type": "resistance_zone_price",
+        "text_ref": "price_positioning.text",
+        "unit": "USD",
+        "usage": "동적 저항구간 하단 $18.96"
+      },
+      {
+        "canonical_label": "동적 저항구간 상단",
+        "canonical_label_kind": null,
+        "comparison_role": null,
+        "fact_id": "chart:structure:nearest_resistance:1",
+        "field_path": "fields.zone_high",
+        "formatted_value": "$19.9",
+        "logical_claim_id": "CORZ:price_positioning.text:chart:structure:nearest_resistance:1:fields.zone_high:corz_price_3_zone-high",
+        "postposition_family": null,
+        "ref_id": "corz_price_3_zone-high",
+        "resolved_postposition": null,
+        "role": "upper",
+        "semantic_type": "resistance_zone_price",
+        "text_ref": "price_positioning.text",
+        "unit": "USD",
+        "usage": "동적 저항구간 상단 $19.9"
+      },
+      {
+        "canonical_label": "현재가 기준 차트 손익비",
+        "canonical_label_kind": null,
+        "comparison_role": null,
+        "fact_id": "chart:structure:risk_reward:current_price",
+        "field_path": "fields.ratio",
+        "formatted_value": "0.18배",
+        "logical_claim_id": "CORZ:price_positioning.text:chart:structure:risk_reward:current_price:fields.ratio:corz_price_4_ratio",
+        "postposition_family": null,
+        "ref_id": "corz_price_4_ratio",
+        "resolved_postposition": null,
+        "role": "value",
+        "semantic_type": "current_price_risk_reward_ratio",
+        "text_ref": "price_positioning.text",
+        "unit": "x",
+        "usage": "현재가 기준 차트 손익비 0.18배"
+      },
+      {
+        "canonical_label": "현재가",
+        "canonical_label_kind": null,
+        "comparison_role": null,
+        "fact_id": "price:current",
+        "field_path": "fields.current_price",
+        "formatted_value": "$78.59",
+        "logical_claim_id": "CRCL:core_judgment.text:price:current:fields.current_price:crcl_core_1",
+        "postposition_family": null,
+        "ref_id": "crcl_core_1",
+        "resolved_postposition": null,
+        "role": "value",
+        "semantic_type": "share_price",
+        "text_ref": "core_judgment.text",
+        "unit": "USD",
+        "usage": "현재가 $78.59"
+      },
+      {
+        "canonical_label": "2026년 1분기 매출",
+        "canonical_label_kind": "period",
+        "comparison_role": null,
+        "fact_id": "earnings:2026-03-31",
+        "field_path": "fields.revenue.value",
+        "formatted_value": "$41.62M",
+        "logical_claim_id": "CRCL:core_judgment.text:earnings:2026-03-31:fields.revenue.value:crcl_core_2",
+        "postposition_family": null,
+        "ref_id": "crcl_core_2",
+        "resolved_postposition": null,
+        "role": "value",
+        "semantic_type": "revenue",
+        "text_ref": "core_judgment.text",
+        "unit": "USD",
+        "usage": "2026년 1분기 매출 $41.62M"
+      },
+      {
+        "canonical_label": "현재가 기준 차트 손익비",
+        "canonical_label_kind": null,
+        "comparison_role": null,
+        "fact_id": "chart:structure:risk_reward:current_price",
+        "field_path": "fields.ratio",
+        "formatted_value": "0.34배",
+        "logical_claim_id": "CRCL:core_judgment.text:chart:structure:risk_reward:current_price:fields.ratio:crcl_core_3",
+        "postposition_family": null,
+        "ref_id": "crcl_core_3",
+        "resolved_postposition": null,
+        "role": "value",
+        "semantic_type": "current_price_risk_reward_ratio",
+        "text_ref": "core_judgment.text",
+        "unit": "x",
+        "usage": "현재가 기준 차트 손익비 0.34배"
+      },
+      {
+        "canonical_label": "2026년 1분기 매출",
+        "canonical_label_kind": "period",
+        "comparison_role": null,
+        "fact_id": "earnings:2026-03-31",
+        "field_path": "fields.revenue.value",
+        "formatted_value": "$41.62M",
+        "logical_claim_id": "CRCL:business_earnings.text:earnings:2026-03-31:fields.revenue.value:crcl_earn_1",
+        "postposition_family": null,
+        "ref_id": "crcl_earn_1",
+        "resolved_postposition": null,
+        "role": "value",
+        "semantic_type": "revenue",
+        "text_ref": "business_earnings.text",
+        "unit": "USD",
+        "usage": "2026년 1분기 매출 $41.62M"
+      },
+      {
+        "canonical_label": "현재가",
+        "canonical_label_kind": null,
+        "comparison_role": null,
+        "fact_id": "price:current",
+        "field_path": "fields.current_price",
+        "formatted_value": "$78.59",
+        "logical_claim_id": "CRCL:price_positioning.text:price:current:fields.current_price:crcl_price_1_current-price",
+        "postposition_family": null,
+        "ref_id": "crcl_price_1_current-price",
+        "resolved_postposition": null,
+        "role": "value",
+        "semantic_type": "share_price",
+        "text_ref": "price_positioning.text",
+        "unit": "USD",
+        "usage": "현재가 $78.59"
+      },
+      {
+        "canonical_label": "동적 지지구간 하단",
+        "canonical_label_kind": null,
+        "comparison_role": null,
+        "fact_id": "chart:structure:nearest_supports:1",
+        "field_path": "fields.zone_low",
+        "formatted_value": "$71.1",
+        "logical_claim_id": "CRCL:price_positioning.text:chart:structure:nearest_supports:1:fields.zone_low:crcl_price_2_zone-low",
+        "postposition_family": null,
+        "ref_id": "crcl_price_2_zone-low",
+        "resolved_postposition": null,
+        "role": "lower",
+        "semantic_type": "support_zone_price",
+        "text_ref": "price_positioning.text",
+        "unit": "USD",
+        "usage": "동적 지지구간 하단 $71.1"
+      },
+      {
+        "canonical_label": "동적 지지구간 상단",
+        "canonical_label_kind": null,
+        "comparison_role": null,
+        "fact_id": "chart:structure:nearest_supports:1",
+        "field_path": "fields.zone_high",
+        "formatted_value": "$74.43",
+        "logical_claim_id": "CRCL:price_positioning.text:chart:structure:nearest_supports:1:fields.zone_high:crcl_price_2_zone-high",
+        "postposition_family": null,
+        "ref_id": "crcl_price_2_zone-high",
+        "resolved_postposition": null,
+        "role": "upper",
+        "semantic_type": "support_zone_price",
+        "text_ref": "price_positioning.text",
+        "unit": "USD",
+        "usage": "동적 지지구간 상단 $74.43"
+      },
+      {
+        "canonical_label": "동적 저항구간 하단",
+        "canonical_label_kind": null,
+        "comparison_role": null,
+        "fact_id": "chart:structure:nearest_resistance:1",
+        "field_path": "fields.zone_low",
+        "formatted_value": "$82.01",
+        "logical_claim_id": "CRCL:price_positioning.text:chart:structure:nearest_resistance:1:fields.zone_low:crcl_price_3_zone-low",
+        "postposition_family": null,
+        "ref_id": "crcl_price_3_zone-low",
+        "resolved_postposition": null,
+        "role": "lower",
+        "semantic_type": "resistance_zone_price",
+        "text_ref": "price_positioning.text",
+        "unit": "USD",
+        "usage": "동적 저항구간 하단 $82.01"
+      },
+      {
+        "canonical_label": "동적 저항구간 상단",
+        "canonical_label_kind": null,
+        "comparison_role": null,
+        "fact_id": "chart:structure:nearest_resistance:1",
+        "field_path": "fields.zone_high",
+        "formatted_value": "$86.53",
+        "logical_claim_id": "CRCL:price_positioning.text:chart:structure:nearest_resistance:1:fields.zone_high:crcl_price_3_zone-high",
+        "postposition_family": null,
+        "ref_id": "crcl_price_3_zone-high",
+        "resolved_postposition": null,
+        "role": "upper",
+        "semantic_type": "resistance_zone_price",
+        "text_ref": "price_positioning.text",
+        "unit": "USD",
+        "usage": "동적 저항구간 상단 $86.53"
+      },
+      {
+        "canonical_label": "현재가 기준 차트 손익비",
+        "canonical_label_kind": null,
+        "comparison_role": null,
+        "fact_id": "chart:structure:risk_reward:current_price",
+        "field_path": "fields.ratio",
+        "formatted_value": "0.34배",
+        "logical_claim_id": "CRCL:price_positioning.text:chart:structure:risk_reward:current_price:fields.ratio:crcl_price_4_ratio",
+        "postposition_family": null,
+        "ref_id": "crcl_price_4_ratio",
+        "resolved_postposition": null,
+        "role": "value",
+        "semantic_type": "current_price_risk_reward_ratio",
+        "text_ref": "price_positioning.text",
+        "unit": "x",
+        "usage": "현재가 기준 차트 손익비 0.34배"
+      },
+      {
+        "canonical_label": "이전 차트 손익비",
+        "canonical_label_kind": null,
+        "comparison_role": null,
+        "fact_id": "monitoring:risk_reward_transition",
+        "field_path": "fields.previous_ratio",
+        "formatted_value": "3.34배",
+        "logical_claim_id": "CRCL:supply_analysis.text:monitoring:risk_reward_transition:fields.previous_ratio:crcl_rr_prev",
+        "postposition_family": null,
+        "ref_id": "crcl_rr_prev",
+        "resolved_postposition": null,
+        "role": "value",
+        "semantic_type": "previous_risk_reward_ratio",
+        "text_ref": "supply_analysis.text",
+        "unit": "x",
+        "usage": "이전 차트 손익비 3.34배"
+      },
+      {
+        "canonical_label": "현재 차트 손익비",
+        "canonical_label_kind": null,
+        "comparison_role": null,
+        "fact_id": "monitoring:risk_reward_transition",
+        "field_path": "fields.current_ratio",
+        "formatted_value": "0.34배",
+        "logical_claim_id": "CRCL:supply_analysis.text:monitoring:risk_reward_transition:fields.current_ratio:crcl_rr_cur",
+        "postposition_family": null,
+        "ref_id": "crcl_rr_cur",
+        "resolved_postposition": null,
+        "role": "value",
+        "semantic_type": "current_risk_reward_ratio",
+        "text_ref": "supply_analysis.text",
+        "unit": "x",
+        "usage": "현재 차트 손익비 0.34배"
+      },
+      {
+        "canonical_label": "현재가",
+        "canonical_label_kind": null,
+        "comparison_role": null,
+        "fact_id": "price:current",
+        "field_path": "fields.current_price",
+        "formatted_value": "$344.72",
+        "logical_claim_id": "GOOGL:core_judgment.text:price:current:fields.current_price:googl_core_1",
+        "postposition_family": null,
+        "ref_id": "googl_core_1",
+        "resolved_postposition": null,
+        "role": "value",
+        "semantic_type": "share_price",
+        "text_ref": "core_judgment.text",
+        "unit": "USD",
+        "usage": "현재가 $344.72"
+      },
+      {
+        "canonical_label": "현재 PER",
+        "canonical_label_kind": null,
+        "comparison_role": null,
+        "fact_id": "valuation:current",
+        "field_path": "fields.trailing_pe",
+        "formatted_value": "12.36배",
+        "logical_claim_id": "GOOGL:core_judgment.text:valuation:current:fields.trailing_pe:googl_core_2",
+        "postposition_family": null,
+        "ref_id": "googl_core_2",
+        "resolved_postposition": null,
+        "role": "value",
+        "semantic_type": "trailing_pe",
+        "text_ref": "core_judgment.text",
+        "unit": "x",
+        "usage": "현재 PER 12.36배"
+      },
+      {
+        "canonical_label": "현재가 기준 차트 손익비",
+        "canonical_label_kind": null,
+        "comparison_role": null,
+        "fact_id": "chart:structure:risk_reward:current_price",
+        "field_path": "fields.ratio",
+        "formatted_value": "4.27배",
+        "logical_claim_id": "GOOGL:core_judgment.text:chart:structure:risk_reward:current_price:fields.ratio:googl_core_3",
+        "postposition_family": null,
+        "ref_id": "googl_core_3",
+        "resolved_postposition": null,
+        "role": "value",
+        "semantic_type": "current_price_risk_reward_ratio",
+        "text_ref": "core_judgment.text",
+        "unit": "x",
+        "usage": "현재가 기준 차트 손익비 4.27배"
+      },
+      {
+        "canonical_label": "현재가",
+        "canonical_label_kind": null,
+        "comparison_role": null,
+        "fact_id": "price:current",
+        "field_path": "fields.current_price",
+        "formatted_value": "$344.72",
+        "logical_claim_id": "GOOGL:price_positioning.text:price:current:fields.current_price:googl_price_1_current-price",
+        "postposition_family": null,
+        "ref_id": "googl_price_1_current-price",
+        "resolved_postposition": null,
+        "role": "value",
+        "semantic_type": "share_price",
+        "text_ref": "price_positioning.text",
+        "unit": "USD",
+        "usage": "현재가 $344.72"
+      },
+      {
+        "canonical_label": "동적 지지구간 하단",
+        "canonical_label_kind": null,
+        "comparison_role": null,
+        "fact_id": "chart:structure:nearest_supports:1",
+        "field_path": "fields.zone_low",
+        "formatted_value": "$343.65",
+        "logical_claim_id": "GOOGL:price_positioning.text:chart:structure:nearest_supports:1:fields.zone_low:googl_price_2_zone-low",
+        "postposition_family": null,
+        "ref_id": "googl_price_2_zone-low",
+        "resolved_postposition": null,
+        "role": "lower",
+        "semantic_type": "support_zone_price",
+        "text_ref": "price_positioning.text",
+        "unit": "USD",
+        "usage": "동적 지지구간 하단 $343.65"
+      },
+      {
+        "canonical_label": "동적 지지구간 상단",
+        "canonical_label_kind": null,
+        "comparison_role": null,
+        "fact_id": "chart:structure:nearest_supports:1",
+        "field_path": "fields.zone_high",
+        "formatted_value": "$353.79",
+        "logical_claim_id": "GOOGL:price_positioning.text:chart:structure:nearest_supports:1:fields.zone_high:googl_price_2_zone-high",
+        "postposition_family": null,
+        "ref_id": "googl_price_2_zone-high",
+        "resolved_postposition": null,
+        "role": "upper",
+        "semantic_type": "support_zone_price",
+        "text_ref": "price_positioning.text",
+        "unit": "USD",
+        "usage": "동적 지지구간 상단 $353.79"
+      },
+      {
+        "canonical_label": "동적 저항구간 하단",
+        "canonical_label_kind": null,
+        "comparison_role": null,
+        "fact_id": "chart:structure:nearest_resistance:1",
+        "field_path": "fields.zone_low",
+        "formatted_value": "$370.37",
+        "logical_claim_id": "GOOGL:price_positioning.text:chart:structure:nearest_resistance:1:fields.zone_low:googl_price_3_zone-low",
+        "postposition_family": null,
+        "ref_id": "googl_price_3_zone-low",
+        "resolved_postposition": null,
+        "role": "lower",
+        "semantic_type": "resistance_zone_price",
+        "text_ref": "price_positioning.text",
+        "unit": "USD",
+        "usage": "동적 저항구간 하단 $370.37"
+      },
+      {
+        "canonical_label": "동적 저항구간 상단",
+        "canonical_label_kind": null,
+        "comparison_role": null,
+        "fact_id": "chart:structure:nearest_resistance:1",
+        "field_path": "fields.zone_high",
+        "formatted_value": "$378.79",
+        "logical_claim_id": "GOOGL:price_positioning.text:chart:structure:nearest_resistance:1:fields.zone_high:googl_price_3_zone-high",
+        "postposition_family": null,
+        "ref_id": "googl_price_3_zone-high",
+        "resolved_postposition": null,
+        "role": "upper",
+        "semantic_type": "resistance_zone_price",
+        "text_ref": "price_positioning.text",
+        "unit": "USD",
+        "usage": "동적 저항구간 상단 $378.79"
+      },
+      {
+        "canonical_label": "현재가 기준 차트 손익비",
+        "canonical_label_kind": null,
+        "comparison_role": null,
+        "fact_id": "chart:structure:risk_reward:current_price",
+        "field_path": "fields.ratio",
+        "formatted_value": "4.27배",
+        "logical_claim_id": "GOOGL:price_positioning.text:chart:structure:risk_reward:current_price:fields.ratio:googl_price_4_ratio",
+        "postposition_family": null,
+        "ref_id": "googl_price_4_ratio",
+        "resolved_postposition": null,
+        "role": "value",
+        "semantic_type": "current_price_risk_reward_ratio",
+        "text_ref": "price_positioning.text",
+        "unit": "x",
+        "usage": "현재가 기준 차트 손익비 4.27배"
+      },
+      {
+        "canonical_label": "현재 PER",
+        "canonical_label_kind": null,
+        "comparison_role": null,
+        "fact_id": "valuation:current",
+        "field_path": "fields.trailing_pe",
+        "formatted_value": "12.36배",
+        "logical_claim_id": "GOOGL:valuation_analysis.text:valuation:current:fields.trailing_pe:googl_val_pe",
+        "postposition_family": null,
+        "ref_id": "googl_val_pe",
+        "resolved_postposition": null,
+        "role": "value",
+        "semantic_type": "trailing_pe",
+        "text_ref": "valuation_analysis.text",
+        "unit": "x",
+        "usage": "현재 PER 12.36배"
+      },
+      {
+        "canonical_label": "시장 예상 fPER",
+        "canonical_label_kind": "source",
+        "comparison_role": null,
+        "fact_id": "valuation:current",
+        "field_path": "fields.forward_pe",
+        "formatted_value": "19.29배",
+        "logical_claim_id": "GOOGL:valuation_analysis.text:valuation:current:fields.forward_pe:googl_val_fpe",
+        "postposition_family": null,
+        "ref_id": "googl_val_fpe",
+        "resolved_postposition": null,
+        "role": "value",
+        "semantic_type": "forward_pe",
+        "text_ref": "valuation_analysis.text",
+        "unit": "x",
+        "usage": "시장 예상 fPER 19.29배"
+      },
+      {
+        "canonical_label": "현재가",
+        "canonical_label_kind": null,
+        "comparison_role": null,
+        "fact_id": "price:current",
+        "field_path": "fields.current_price",
+        "formatted_value": "$82.08",
+        "logical_claim_id": "HUT:core_judgment.text:price:current:fields.current_price:hut_core_1",
+        "postposition_family": null,
+        "ref_id": "hut_core_1",
+        "resolved_postposition": null,
+        "role": "value",
+        "semantic_type": "share_price",
+        "text_ref": "core_judgment.text",
+        "unit": "USD",
+        "usage": "현재가 $82.08"
+      },
+      {
+        "canonical_label": "시장 예상 fPER",
+        "canonical_label_kind": "source",
+        "comparison_role": null,
+        "fact_id": "valuation:current",
+        "field_path": "fields.forward_pe",
+        "formatted_value": "139.12배",
+        "logical_claim_id": "HUT:core_judgment.text:valuation:current:fields.forward_pe:hut_core_2",
+        "postposition_family": null,
+        "ref_id": "hut_core_2",
+        "resolved_postposition": null,
+        "role": "value",
+        "semantic_type": "forward_pe",
+        "text_ref": "core_judgment.text",
+        "unit": "x",
+        "usage": "시장 예상 fPER 139.12배"
+      },
+      {
+        "canonical_label": "현재가",
+        "canonical_label_kind": null,
+        "comparison_role": null,
+        "fact_id": "price:current",
+        "field_path": "fields.current_price",
+        "formatted_value": "$82.08",
+        "logical_claim_id": "HUT:price_positioning.text:price:current:fields.current_price:hut_price_1_current-price",
+        "postposition_family": null,
+        "ref_id": "hut_price_1_current-price",
+        "resolved_postposition": null,
+        "role": "value",
+        "semantic_type": "share_price",
+        "text_ref": "price_positioning.text",
+        "unit": "USD",
+        "usage": "현재가 $82.08"
+      },
+      {
+        "canonical_label": "동적 지지구간 하단",
+        "canonical_label_kind": null,
+        "comparison_role": null,
+        "fact_id": "chart:structure:nearest_supports:1",
+        "field_path": "fields.zone_low",
+        "formatted_value": "$80.64",
+        "logical_claim_id": "HUT:price_positioning.text:chart:structure:nearest_supports:1:fields.zone_low:hut_price_2_zone-low",
+        "postposition_family": null,
+        "ref_id": "hut_price_2_zone-low",
+        "resolved_postposition": null,
+        "role": "lower",
+        "semantic_type": "support_zone_price",
+        "text_ref": "price_positioning.text",
+        "unit": "USD",
+        "usage": "동적 지지구간 하단 $80.64"
+      },
+      {
+        "canonical_label": "동적 지지구간 상단",
+        "canonical_label_kind": null,
+        "comparison_role": null,
+        "fact_id": "chart:structure:nearest_supports:1",
+        "field_path": "fields.zone_high",
+        "formatted_value": "$85.96",
+        "logical_claim_id": "HUT:price_positioning.text:chart:structure:nearest_supports:1:fields.zone_high:hut_price_2_zone-high",
+        "postposition_family": null,
+        "ref_id": "hut_price_2_zone-high",
+        "resolved_postposition": null,
+        "role": "upper",
+        "semantic_type": "support_zone_price",
+        "text_ref": "price_positioning.text",
+        "unit": "USD",
+        "usage": "동적 지지구간 상단 $85.96"
+      },
+      {
+        "canonical_label": "동적 저항구간 하단",
+        "canonical_label_kind": null,
+        "comparison_role": null,
+        "fact_id": "chart:structure:nearest_resistance:1",
+        "field_path": "fields.zone_low",
+        "formatted_value": "$84.11",
+        "logical_claim_id": "HUT:price_positioning.text:chart:structure:nearest_resistance:1:fields.zone_low:hut_price_3_zone-low",
+        "postposition_family": null,
+        "ref_id": "hut_price_3_zone-low",
+        "resolved_postposition": null,
+        "role": "lower",
+        "semantic_type": "resistance_zone_price",
+        "text_ref": "price_positioning.text",
+        "unit": "USD",
+        "usage": "동적 저항구간 하단 $84.11"
+      },
+      {
+        "canonical_label": "동적 저항구간 상단",
+        "canonical_label_kind": null,
+        "comparison_role": null,
+        "fact_id": "chart:structure:nearest_resistance:1",
+        "field_path": "fields.zone_high",
+        "formatted_value": "$89.67",
+        "logical_claim_id": "HUT:price_positioning.text:chart:structure:nearest_resistance:1:fields.zone_high:hut_price_3_zone-high",
+        "postposition_family": null,
+        "ref_id": "hut_price_3_zone-high",
+        "resolved_postposition": null,
+        "role": "upper",
+        "semantic_type": "resistance_zone_price",
+        "text_ref": "price_positioning.text",
+        "unit": "USD",
+        "usage": "동적 저항구간 상단 $89.67"
+      },
+      {
+        "canonical_label": "시장 예상 fPER",
+        "canonical_label_kind": "source",
+        "comparison_role": null,
+        "fact_id": "valuation:current",
+        "field_path": "fields.forward_pe",
+        "formatted_value": "139.12배",
+        "logical_claim_id": "HUT:valuation_analysis.text:valuation:current:fields.forward_pe:hut_val_fpe",
+        "postposition_family": null,
+        "ref_id": "hut_val_fpe",
+        "resolved_postposition": null,
+        "role": "value",
+        "semantic_type": "forward_pe",
+        "text_ref": "valuation_analysis.text",
+        "unit": "x",
+        "usage": "시장 예상 fPER 139.12배"
+      },
+      {
+        "canonical_label": "현재 PBR",
+        "canonical_label_kind": null,
+        "comparison_role": null,
+        "fact_id": "valuation:current",
+        "field_path": "fields.price_to_book",
+        "formatted_value": "6.69배",
+        "logical_claim_id": "HUT:valuation_analysis.text:valuation:current:fields.price_to_book:hut_val_pbr",
+        "postposition_family": null,
+        "ref_id": "hut_val_pbr",
+        "resolved_postposition": null,
+        "role": "value",
+        "semantic_type": "price_to_book",
+        "text_ref": "valuation_analysis.text",
+        "unit": "x",
+        "usage": "현재 PBR 6.69배"
+      },
+      {
+        "canonical_label": "현재가",
+        "canonical_label_kind": null,
+        "comparison_role": null,
+        "fact_id": "price:current",
+        "field_path": "fields.current_price",
+        "formatted_value": "$237.16",
+        "logical_claim_id": "IBM:core_judgment.text:price:current:fields.current_price:ibm_core_1",
+        "postposition_family": null,
+        "ref_id": "ibm_core_1",
+        "resolved_postposition": null,
+        "role": "value",
+        "semantic_type": "share_price",
+        "text_ref": "core_judgment.text",
+        "unit": "USD",
+        "usage": "현재가 $237.16"
+      },
+      {
+        "canonical_label": "2026년 2분기 매출",
+        "canonical_label_kind": "period",
+        "comparison_role": null,
+        "fact_id": "earnings:2026-06-30",
+        "field_path": "fields.revenue.value",
+        "formatted_value": "$17.16B",
+        "logical_claim_id": "IBM:core_judgment.text:earnings:2026-06-30:fields.revenue.value:ibm_core_2",
+        "postposition_family": null,
+        "ref_id": "ibm_core_2",
+        "resolved_postposition": null,
+        "role": "value",
+        "semantic_type": "revenue",
+        "text_ref": "core_judgment.text",
+        "unit": "USD",
+        "usage": "2026년 2분기 매출 $17.16B"
+      },
+      {
+        "canonical_label": "현재가 기준 차트 손익비",
+        "canonical_label_kind": null,
+        "comparison_role": null,
+        "fact_id": "chart:structure:risk_reward:current_price",
+        "field_path": "fields.ratio",
+        "formatted_value": "0.17배",
+        "logical_claim_id": "IBM:core_judgment.text:chart:structure:risk_reward:current_price:fields.ratio:ibm_core_3",
+        "postposition_family": null,
+        "ref_id": "ibm_core_3",
+        "resolved_postposition": null,
+        "role": "value",
+        "semantic_type": "current_price_risk_reward_ratio",
+        "text_ref": "core_judgment.text",
+        "unit": "x",
+        "usage": "현재가 기준 차트 손익비 0.17배"
+      },
+      {
+        "canonical_label": "2026년 2분기 매출",
+        "canonical_label_kind": "period",
+        "comparison_role": null,
+        "fact_id": "earnings:2026-06-30",
+        "field_path": "fields.revenue.value",
+        "formatted_value": "$17.16B",
+        "logical_claim_id": "IBM:business_earnings.text:earnings:2026-06-30:fields.revenue.value:ibm_earn_1",
+        "postposition_family": null,
+        "ref_id": "ibm_earn_1",
+        "resolved_postposition": null,
+        "role": "value",
+        "semantic_type": "revenue",
+        "text_ref": "business_earnings.text",
+        "unit": "USD",
+        "usage": "2026년 2분기 매출 $17.16B"
+      },
+      {
+        "canonical_label": "현재가",
+        "canonical_label_kind": null,
+        "comparison_role": null,
+        "fact_id": "price:current",
+        "field_path": "fields.current_price",
+        "formatted_value": "$237.16",
+        "logical_claim_id": "IBM:price_positioning.text:price:current:fields.current_price:ibm_price_1_current-price",
+        "postposition_family": null,
+        "ref_id": "ibm_price_1_current-price",
+        "resolved_postposition": null,
+        "role": "value",
+        "semantic_type": "share_price",
+        "text_ref": "price_positioning.text",
+        "unit": "USD",
+        "usage": "현재가 $237.16"
+      },
+      {
+        "canonical_label": "동적 지지구간 하단",
+        "canonical_label_kind": null,
+        "comparison_role": null,
+        "fact_id": "chart:structure:nearest_supports:1",
+        "field_path": "fields.zone_low",
+        "formatted_value": "$228.6",
+        "logical_claim_id": "IBM:price_positioning.text:chart:structure:nearest_supports:1:fields.zone_low:ibm_price_2_zone-low",
+        "postposition_family": null,
+        "ref_id": "ibm_price_2_zone-low",
+        "resolved_postposition": null,
+        "role": "lower",
+        "semantic_type": "support_zone_price",
+        "text_ref": "price_positioning.text",
+        "unit": "USD",
+        "usage": "동적 지지구간 하단 $228.6"
+      },
+      {
+        "canonical_label": "동적 지지구간 상단",
+        "canonical_label_kind": null,
+        "comparison_role": null,
+        "fact_id": "chart:structure:nearest_supports:1",
+        "field_path": "fields.zone_high",
+        "formatted_value": "$235.66",
+        "logical_claim_id": "IBM:price_positioning.text:chart:structure:nearest_supports:1:fields.zone_high:ibm_price_2_zone-high",
+        "postposition_family": null,
+        "ref_id": "ibm_price_2_zone-high",
+        "resolved_postposition": null,
+        "role": "upper",
+        "semantic_type": "support_zone_price",
+        "text_ref": "price_positioning.text",
+        "unit": "USD",
+        "usage": "동적 지지구간 상단 $235.66"
+      },
+      {
+        "canonical_label": "동적 저항구간 하단",
+        "canonical_label_kind": null,
+        "comparison_role": null,
+        "fact_id": "chart:structure:nearest_resistance:1",
+        "field_path": "fields.zone_low",
+        "formatted_value": "$239.37",
+        "logical_claim_id": "IBM:price_positioning.text:chart:structure:nearest_resistance:1:fields.zone_low:ibm_price_3_zone-low",
+        "postposition_family": null,
+        "ref_id": "ibm_price_3_zone-low",
+        "resolved_postposition": null,
+        "role": "lower",
+        "semantic_type": "resistance_zone_price",
+        "text_ref": "price_positioning.text",
+        "unit": "USD",
+        "usage": "동적 저항구간 하단 $239.37"
+      },
+      {
+        "canonical_label": "동적 저항구간 상단",
+        "canonical_label_kind": null,
+        "comparison_role": null,
+        "fact_id": "chart:structure:nearest_resistance:1",
+        "field_path": "fields.zone_high",
+        "formatted_value": "$244.23",
+        "logical_claim_id": "IBM:price_positioning.text:chart:structure:nearest_resistance:1:fields.zone_high:ibm_price_3_zone-high",
+        "postposition_family": null,
+        "ref_id": "ibm_price_3_zone-high",
+        "resolved_postposition": null,
+        "role": "upper",
+        "semantic_type": "resistance_zone_price",
+        "text_ref": "price_positioning.text",
+        "unit": "USD",
+        "usage": "동적 저항구간 상단 $244.23"
+      },
+      {
+        "canonical_label": "현재가 기준 차트 손익비",
+        "canonical_label_kind": null,
+        "comparison_role": null,
+        "fact_id": "chart:structure:risk_reward:current_price",
+        "field_path": "fields.ratio",
+        "formatted_value": "0.17배",
+        "logical_claim_id": "IBM:price_positioning.text:chart:structure:risk_reward:current_price:fields.ratio:ibm_price_4_ratio",
+        "postposition_family": null,
+        "ref_id": "ibm_price_4_ratio",
+        "resolved_postposition": null,
+        "role": "value",
+        "semantic_type": "current_price_risk_reward_ratio",
+        "text_ref": "price_positioning.text",
+        "unit": "x",
+        "usage": "현재가 기준 차트 손익비 0.17배"
+      },
+      {
+        "canonical_label": "현재 PER",
+        "canonical_label_kind": null,
+        "comparison_role": null,
+        "fact_id": "valuation:current",
+        "field_path": "fields.trailing_pe",
+        "formatted_value": "14.32배",
+        "logical_claim_id": "IBM:valuation_analysis.text:valuation:current:fields.trailing_pe:ibm_val_pe",
+        "postposition_family": null,
+        "ref_id": "ibm_val_pe",
+        "resolved_postposition": null,
+        "role": "value",
+        "semantic_type": "trailing_pe",
+        "text_ref": "valuation_analysis.text",
+        "unit": "x",
+        "usage": "현재 PER 14.32배"
+      },
+      {
+        "canonical_label": "시장 예상 fPER",
+        "canonical_label_kind": "source",
+        "comparison_role": null,
+        "fact_id": "valuation:current",
+        "field_path": "fields.forward_pe",
+        "formatted_value": "17.35배",
+        "logical_claim_id": "IBM:valuation_analysis.text:valuation:current:fields.forward_pe:ibm_val_fpe",
+        "postposition_family": null,
+        "ref_id": "ibm_val_fpe",
+        "resolved_postposition": null,
+        "role": "value",
+        "semantic_type": "forward_pe",
+        "text_ref": "valuation_analysis.text",
+        "unit": "x",
+        "usage": "시장 예상 fPER 17.35배"
+      },
+      {
+        "canonical_label": "현재가",
+        "canonical_label_kind": null,
+        "comparison_role": null,
+        "fact_id": "price:current",
+        "field_path": "fields.current_price",
+        "formatted_value": "$937.11",
+        "logical_claim_id": "MU:core_judgment.text:price:current:fields.current_price:mu_core_1",
+        "postposition_family": null,
+        "ref_id": "mu_core_1",
+        "resolved_postposition": null,
+        "role": "value",
+        "semantic_type": "share_price",
+        "text_ref": "core_judgment.text",
+        "unit": "USD",
+        "usage": "현재가 $937.11"
+      },
+      {
+        "canonical_label": "2026년 3분기 매출",
+        "canonical_label_kind": "period",
+        "comparison_role": null,
+        "fact_id": "earnings:2026-05-28",
+        "field_path": "fields.revenue.value",
+        "formatted_value": "$41.46B",
+        "logical_claim_id": "MU:core_judgment.text:earnings:2026-05-28:fields.revenue.value:mu_core_2",
+        "postposition_family": null,
+        "ref_id": "mu_core_2",
+        "resolved_postposition": null,
+        "role": "value",
+        "semantic_type": "revenue",
+        "text_ref": "core_judgment.text",
+        "unit": "USD",
+        "usage": "2026년 3분기 매출 $41.46B"
+      },
+      {
+        "canonical_label": "현재가 기준 차트 손익비",
+        "canonical_label_kind": null,
+        "comparison_role": null,
+        "fact_id": "chart:structure:risk_reward:current_price",
+        "field_path": "fields.ratio",
+        "formatted_value": "0.52배",
+        "logical_claim_id": "MU:core_judgment.text:chart:structure:risk_reward:current_price:fields.ratio:mu_core_3",
+        "postposition_family": null,
+        "ref_id": "mu_core_3",
+        "resolved_postposition": null,
+        "role": "value",
+        "semantic_type": "current_price_risk_reward_ratio",
+        "text_ref": "core_judgment.text",
+        "unit": "x",
+        "usage": "현재가 기준 차트 손익비 0.52배"
+      },
+      {
+        "canonical_label": "2026년 3분기 매출",
+        "canonical_label_kind": "period",
+        "comparison_role": null,
+        "fact_id": "earnings:2026-05-28",
+        "field_path": "fields.revenue.value",
+        "formatted_value": "$41.46B",
+        "logical_claim_id": "MU:business_earnings.text:earnings:2026-05-28:fields.revenue.value:mu_earn_1",
+        "postposition_family": null,
+        "ref_id": "mu_earn_1",
+        "resolved_postposition": null,
+        "role": "value",
+        "semantic_type": "revenue",
+        "text_ref": "business_earnings.text",
+        "unit": "USD",
+        "usage": "2026년 3분기 매출 $41.46B"
+      },
+      {
+        "canonical_label": "현재가",
+        "canonical_label_kind": null,
+        "comparison_role": null,
+        "fact_id": "price:current",
+        "field_path": "fields.current_price",
+        "formatted_value": "$937.11",
+        "logical_claim_id": "MU:price_positioning.text:price:current:fields.current_price:mu_price_1_current-price",
+        "postposition_family": null,
+        "ref_id": "mu_price_1_current-price",
+        "resolved_postposition": null,
+        "role": "value",
+        "semantic_type": "share_price",
+        "text_ref": "price_positioning.text",
+        "unit": "USD",
+        "usage": "현재가 $937.11"
+      },
+      {
+        "canonical_label": "동적 지지구간 하단",
+        "canonical_label_kind": null,
+        "comparison_role": null,
+        "fact_id": "chart:structure:nearest_supports:1",
+        "field_path": "fields.zone_low",
+        "formatted_value": "$868.39",
+        "logical_claim_id": "MU:price_positioning.text:chart:structure:nearest_supports:1:fields.zone_low:mu_price_2_zone-low",
+        "postposition_family": null,
+        "ref_id": "mu_price_2_zone-low",
+        "resolved_postposition": null,
+        "role": "lower",
+        "semantic_type": "support_zone_price",
+        "text_ref": "price_positioning.text",
+        "unit": "USD",
+        "usage": "동적 지지구간 하단 $868.39"
+      },
+      {
+        "canonical_label": "동적 지지구간 상단",
+        "canonical_label_kind": null,
+        "comparison_role": null,
+        "fact_id": "chart:structure:nearest_supports:1",
+        "field_path": "fields.zone_high",
+        "formatted_value": "$914.93",
+        "logical_claim_id": "MU:price_positioning.text:chart:structure:nearest_supports:1:fields.zone_high:mu_price_2_zone-high",
+        "postposition_family": null,
+        "ref_id": "mu_price_2_zone-high",
+        "resolved_postposition": null,
+        "role": "upper",
+        "semantic_type": "support_zone_price",
+        "text_ref": "price_positioning.text",
+        "unit": "USD",
+        "usage": "동적 지지구간 상단 $914.93"
+      },
+      {
+        "canonical_label": "동적 저항구간 하단",
+        "canonical_label_kind": null,
+        "comparison_role": null,
+        "fact_id": "chart:structure:nearest_resistance:1",
+        "field_path": "fields.zone_low",
+        "formatted_value": "$991.61",
+        "logical_claim_id": "MU:price_positioning.text:chart:structure:nearest_resistance:1:fields.zone_low:mu_price_3_zone-low",
+        "postposition_family": null,
+        "ref_id": "mu_price_3_zone-low",
+        "resolved_postposition": null,
+        "role": "lower",
+        "semantic_type": "resistance_zone_price",
+        "text_ref": "price_positioning.text",
+        "unit": "USD",
+        "usage": "동적 저항구간 하단 $991.61"
+      },
+      {
+        "canonical_label": "동적 저항구간 상단",
+        "canonical_label_kind": null,
+        "comparison_role": null,
+        "fact_id": "chart:structure:nearest_resistance:1",
+        "field_path": "fields.zone_high",
+        "formatted_value": "$1,031.93",
+        "logical_claim_id": "MU:price_positioning.text:chart:structure:nearest_resistance:1:fields.zone_high:mu_price_3_zone-high",
+        "postposition_family": null,
+        "ref_id": "mu_price_3_zone-high",
+        "resolved_postposition": null,
+        "role": "upper",
+        "semantic_type": "resistance_zone_price",
+        "text_ref": "price_positioning.text",
+        "unit": "USD",
+        "usage": "동적 저항구간 상단 $1,031.93"
+      },
+      {
+        "canonical_label": "현재가 기준 차트 손익비",
+        "canonical_label_kind": null,
+        "comparison_role": null,
+        "fact_id": "chart:structure:risk_reward:current_price",
+        "field_path": "fields.ratio",
+        "formatted_value": "0.52배",
+        "logical_claim_id": "MU:price_positioning.text:chart:structure:risk_reward:current_price:fields.ratio:mu_price_4_ratio",
+        "postposition_family": null,
+        "ref_id": "mu_price_4_ratio",
+        "resolved_postposition": null,
+        "role": "value",
+        "semantic_type": "current_price_risk_reward_ratio",
+        "text_ref": "price_positioning.text",
+        "unit": "x",
+        "usage": "현재가 기준 차트 손익비 0.52배"
+      },
+      {
+        "canonical_label": "현재 PER",
+        "canonical_label_kind": null,
+        "comparison_role": null,
+        "fact_id": "valuation:current",
+        "field_path": "fields.trailing_pe",
+        "formatted_value": "19.15배",
+        "logical_claim_id": "MU:valuation_analysis.text:valuation:current:fields.trailing_pe:mu_val_pe",
+        "postposition_family": null,
+        "ref_id": "mu_val_pe",
+        "resolved_postposition": null,
+        "role": "value",
+        "semantic_type": "trailing_pe",
+        "text_ref": "valuation_analysis.text",
+        "unit": "x",
+        "usage": "현재 PER 19.15배"
+      },
+      {
+        "canonical_label": "시장 예상 fPER",
+        "canonical_label_kind": "source",
+        "comparison_role": null,
+        "fact_id": "valuation:current",
+        "field_path": "fields.forward_pe",
+        "formatted_value": "5.87배",
+        "logical_claim_id": "MU:valuation_analysis.text:valuation:current:fields.forward_pe:mu_val_fpe",
+        "postposition_family": null,
+        "ref_id": "mu_val_fpe",
+        "resolved_postposition": null,
+        "role": "value",
+        "semantic_type": "forward_pe",
+        "text_ref": "valuation_analysis.text",
+        "unit": "x",
+        "usage": "시장 예상 fPER 5.87배"
+      },
+      {
+        "canonical_label": "이전 차트 손익비",
+        "canonical_label_kind": null,
+        "comparison_role": null,
+        "fact_id": "monitoring:risk_reward_transition",
+        "field_path": "fields.previous_ratio",
+        "formatted_value": "2.67배",
+        "logical_claim_id": "MU:supply_analysis.text:monitoring:risk_reward_transition:fields.previous_ratio:mu_rr_prev",
+        "postposition_family": null,
+        "ref_id": "mu_rr_prev",
+        "resolved_postposition": null,
+        "role": "value",
+        "semantic_type": "previous_risk_reward_ratio",
+        "text_ref": "supply_analysis.text",
+        "unit": "x",
+        "usage": "이전 차트 손익비 2.67배"
+      },
+      {
+        "canonical_label": "현재 차트 손익비",
+        "canonical_label_kind": null,
+        "comparison_role": null,
+        "fact_id": "monitoring:risk_reward_transition",
+        "field_path": "fields.current_ratio",
+        "formatted_value": "0.52배",
+        "logical_claim_id": "MU:supply_analysis.text:monitoring:risk_reward_transition:fields.current_ratio:mu_rr_cur",
+        "postposition_family": null,
+        "ref_id": "mu_rr_cur",
+        "resolved_postposition": null,
+        "role": "value",
+        "semantic_type": "current_risk_reward_ratio",
+        "text_ref": "supply_analysis.text",
+        "unit": "x",
+        "usage": "현재 차트 손익비 0.52배"
+      },
+      {
+        "canonical_label": "현재가",
+        "canonical_label_kind": null,
+        "comparison_role": null,
+        "fact_id": "price:current",
+        "field_path": "fields.current_price",
+        "formatted_value": "$3.5",
+        "logical_claim_id": "RXRX:core_judgment.text:price:current:fields.current_price:rxrx_core_1",
+        "postposition_family": null,
+        "ref_id": "rxrx_core_1",
+        "resolved_postposition": null,
+        "role": "value",
+        "semantic_type": "share_price",
+        "text_ref": "core_judgment.text",
+        "unit": "USD",
+        "usage": "현재가 $3.5"
+      },
+      {
+        "canonical_label": "2026년 2분기 매출",
+        "canonical_label_kind": "period",
+        "comparison_role": null,
+        "fact_id": "earnings:2026-06-30",
+        "field_path": "fields.revenue.value",
+        "formatted_value": "$7.67M",
+        "logical_claim_id": "RXRX:core_judgment.text:earnings:2026-06-30:fields.revenue.value:rxrx_core_2",
+        "postposition_family": null,
+        "ref_id": "rxrx_core_2",
+        "resolved_postposition": null,
+        "role": "value",
+        "semantic_type": "revenue",
+        "text_ref": "core_judgment.text",
+        "unit": "USD",
+        "usage": "2026년 2분기 매출 $7.67M"
+      },
+      {
+        "canonical_label": "현재가 기준 차트 손익비",
+        "canonical_label_kind": null,
+        "comparison_role": null,
+        "fact_id": "chart:structure:risk_reward:current_price",
+        "field_path": "fields.ratio",
+        "formatted_value": "0.26배",
+        "logical_claim_id": "RXRX:core_judgment.text:chart:structure:risk_reward:current_price:fields.ratio:rxrx_core_3",
+        "postposition_family": null,
+        "ref_id": "rxrx_core_3",
+        "resolved_postposition": null,
+        "role": "value",
+        "semantic_type": "current_price_risk_reward_ratio",
+        "text_ref": "core_judgment.text",
+        "unit": "x",
+        "usage": "현재가 기준 차트 손익비 0.26배"
+      },
+      {
+        "canonical_label": "2026년 2분기 매출",
+        "canonical_label_kind": "period",
+        "comparison_role": null,
+        "fact_id": "earnings:2026-06-30",
+        "field_path": "fields.revenue.value",
+        "formatted_value": "$7.67M",
+        "logical_claim_id": "RXRX:business_earnings.text:earnings:2026-06-30:fields.revenue.value:rxrx_earn_1",
+        "postposition_family": null,
+        "ref_id": "rxrx_earn_1",
+        "resolved_postposition": null,
+        "role": "value",
+        "semantic_type": "revenue",
+        "text_ref": "business_earnings.text",
+        "unit": "USD",
+        "usage": "2026년 2분기 매출 $7.67M"
+      },
+      {
+        "canonical_label": "현재가",
+        "canonical_label_kind": null,
+        "comparison_role": null,
+        "fact_id": "price:current",
+        "field_path": "fields.current_price",
+        "formatted_value": "$3.5",
+        "logical_claim_id": "RXRX:price_positioning.text:price:current:fields.current_price:rxrx_price_1_current-price",
+        "postposition_family": null,
+        "ref_id": "rxrx_price_1_current-price",
+        "resolved_postposition": null,
+        "role": "value",
+        "semantic_type": "share_price",
+        "text_ref": "price_positioning.text",
+        "unit": "USD",
+        "usage": "현재가 $3.5"
+      },
+      {
+        "canonical_label": "동적 지지구간 하단",
+        "canonical_label_kind": null,
+        "comparison_role": null,
+        "fact_id": "chart:structure:nearest_supports:1",
+        "field_path": "fields.zone_low",
+        "formatted_value": "$2.78",
+        "logical_claim_id": "RXRX:price_positioning.text:chart:structure:nearest_supports:1:fields.zone_low:rxrx_price_2_zone-low",
+        "postposition_family": null,
+        "ref_id": "rxrx_price_2_zone-low",
+        "resolved_postposition": null,
+        "role": "lower",
+        "semantic_type": "support_zone_price",
+        "text_ref": "price_positioning.text",
+        "unit": "USD",
+        "usage": "동적 지지구간 하단 $2.78"
+      },
+      {
+        "canonical_label": "동적 지지구간 상단",
+        "canonical_label_kind": null,
+        "comparison_role": null,
+        "fact_id": "chart:structure:nearest_supports:1",
+        "field_path": "fields.zone_high",
+        "formatted_value": "$2.92",
+        "logical_claim_id": "RXRX:price_positioning.text:chart:structure:nearest_supports:1:fields.zone_high:rxrx_price_2_zone-high",
+        "postposition_family": null,
+        "ref_id": "rxrx_price_2_zone-high",
+        "resolved_postposition": null,
+        "role": "upper",
+        "semantic_type": "support_zone_price",
+        "text_ref": "price_positioning.text",
+        "unit": "USD",
+        "usage": "동적 지지구간 상단 $2.92"
+      },
+      {
+        "canonical_label": "동적 저항구간 하단",
+        "canonical_label_kind": null,
+        "comparison_role": null,
+        "fact_id": "chart:structure:nearest_resistance:1",
+        "field_path": "fields.zone_low",
+        "formatted_value": "$3.71",
+        "logical_claim_id": "RXRX:price_positioning.text:chart:structure:nearest_resistance:1:fields.zone_low:rxrx_price_3_zone-low",
+        "postposition_family": null,
+        "ref_id": "rxrx_price_3_zone-low",
+        "resolved_postposition": null,
+        "role": "lower",
+        "semantic_type": "resistance_zone_price",
+        "text_ref": "price_positioning.text",
+        "unit": "USD",
+        "usage": "동적 저항구간 하단 $3.71"
+      },
+      {
+        "canonical_label": "동적 저항구간 상단",
+        "canonical_label_kind": null,
+        "comparison_role": null,
+        "fact_id": "chart:structure:nearest_resistance:1",
+        "field_path": "fields.zone_high",
+        "formatted_value": "$3.91",
+        "logical_claim_id": "RXRX:price_positioning.text:chart:structure:nearest_resistance:1:fields.zone_high:rxrx_price_3_zone-high",
+        "postposition_family": null,
+        "ref_id": "rxrx_price_3_zone-high",
+        "resolved_postposition": null,
+        "role": "upper",
+        "semantic_type": "resistance_zone_price",
+        "text_ref": "price_positioning.text",
+        "unit": "USD",
+        "usage": "동적 저항구간 상단 $3.91"
+      },
+      {
+        "canonical_label": "현재가 기준 차트 손익비",
+        "canonical_label_kind": null,
+        "comparison_role": null,
+        "fact_id": "chart:structure:risk_reward:current_price",
+        "field_path": "fields.ratio",
+        "formatted_value": "0.26배",
+        "logical_claim_id": "RXRX:price_positioning.text:chart:structure:risk_reward:current_price:fields.ratio:rxrx_price_4_ratio",
+        "postposition_family": null,
+        "ref_id": "rxrx_price_4_ratio",
+        "resolved_postposition": null,
+        "role": "value",
+        "semantic_type": "current_price_risk_reward_ratio",
+        "text_ref": "price_positioning.text",
+        "unit": "x",
+        "usage": "현재가 기준 차트 손익비 0.26배"
+      },
+      {
+        "canonical_label": "현재 PBR",
+        "canonical_label_kind": null,
+        "comparison_role": null,
+        "fact_id": "valuation:current",
+        "field_path": "fields.price_to_book",
+        "formatted_value": "2.04배",
+        "logical_claim_id": "RXRX:valuation_analysis.text:valuation:current:fields.price_to_book:rxrx_val_cur",
+        "postposition_family": null,
+        "ref_id": "rxrx_val_cur",
+        "resolved_postposition": null,
+        "role": "value",
+        "semantic_type": "price_to_book",
+        "text_ref": "valuation_analysis.text",
+        "unit": "x",
+        "usage": "현재 PBR 2.04배"
+      },
+      {
+        "canonical_label": "PBR 역사적 백분위",
+        "canonical_label_kind": null,
+        "comparison_role": "current_percentile",
+        "fact_id": "valuation:current",
+        "field_path": "fields.historical_pb_statistics.current_percentile",
+        "formatted_value": "19.5%",
+        "logical_claim_id": "RXRX:valuation_analysis.text:valuation:current:fields.historical_pb_statistics.current_percentile:rxrx_val_pct",
+        "postposition_family": null,
+        "ref_id": "rxrx_val_pct",
+        "resolved_postposition": null,
+        "role": "value",
+        "semantic_type": "historical_pb_percentile",
+        "text_ref": "valuation_analysis.text",
+        "unit": "pct",
+        "usage": "PBR 역사적 백분위 19.5%"
+      },
+      {
+        "canonical_label": "이전 차트 손익비",
+        "canonical_label_kind": null,
+        "comparison_role": null,
+        "fact_id": "monitoring:risk_reward_transition",
+        "field_path": "fields.previous_ratio",
+        "formatted_value": "1.59배",
+        "logical_claim_id": "RXRX:supply_analysis.text:monitoring:risk_reward_transition:fields.previous_ratio:rxrx_rr_prev",
+        "postposition_family": null,
+        "ref_id": "rxrx_rr_prev",
+        "resolved_postposition": null,
+        "role": "value",
+        "semantic_type": "previous_risk_reward_ratio",
+        "text_ref": "supply_analysis.text",
+        "unit": "x",
+        "usage": "이전 차트 손익비 1.59배"
+      },
+      {
+        "canonical_label": "현재 차트 손익비",
+        "canonical_label_kind": null,
+        "comparison_role": null,
+        "fact_id": "monitoring:risk_reward_transition",
+        "field_path": "fields.current_ratio",
+        "formatted_value": "0.26배",
+        "logical_claim_id": "RXRX:supply_analysis.text:monitoring:risk_reward_transition:fields.current_ratio:rxrx_rr_cur",
+        "postposition_family": null,
+        "ref_id": "rxrx_rr_cur",
+        "resolved_postposition": null,
+        "role": "value",
+        "semantic_type": "current_risk_reward_ratio",
+        "text_ref": "supply_analysis.text",
+        "unit": "x",
+        "usage": "현재 차트 손익비 0.26배"
+      },
+      {
+        "canonical_label": "현재가",
+        "canonical_label_kind": null,
+        "comparison_role": null,
+        "fact_id": "price:current",
+        "field_path": "fields.current_price",
+        "formatted_value": "$156.16",
+        "logical_claim_id": "SKHY:core_judgment.text:price:current:fields.current_price:skhy_core_1",
+        "postposition_family": null,
+        "ref_id": "skhy_core_1",
+        "resolved_postposition": null,
+        "role": "value",
+        "semantic_type": "share_price",
+        "text_ref": "core_judgment.text",
+        "unit": "USD",
+        "usage": "현재가 $156.16"
+      },
+      {
+        "canonical_label": "현재가",
+        "canonical_label_kind": null,
+        "comparison_role": null,
+        "fact_id": "price:current",
+        "field_path": "fields.current_price",
+        "formatted_value": "$156.16",
+        "logical_claim_id": "SKHY:price_positioning.text:price:current:fields.current_price:skhy_price_1_current-price",
+        "postposition_family": null,
+        "ref_id": "skhy_price_1_current-price",
+        "resolved_postposition": null,
+        "role": "value",
+        "semantic_type": "share_price",
+        "text_ref": "price_positioning.text",
+        "unit": "USD",
+        "usage": "현재가 $156.16"
+      },
+      {
+        "canonical_label": "현재가",
+        "canonical_label_kind": null,
+        "comparison_role": null,
+        "fact_id": "price:current",
+        "field_path": "fields.current_price",
+        "formatted_value": "$1,568.87",
+        "logical_claim_id": "SNDK:core_judgment.text:price:current:fields.current_price:sndk_core_1",
+        "postposition_family": null,
+        "ref_id": "sndk_core_1",
+        "resolved_postposition": null,
+        "role": "value",
+        "semantic_type": "share_price",
+        "text_ref": "core_judgment.text",
+        "unit": "USD",
+        "usage": "현재가 $1,568.87"
+      },
+      {
+        "canonical_label": "2026년 연간 매출",
+        "canonical_label_kind": "period",
+        "comparison_role": null,
+        "fact_id": "earnings:2026-07-03",
+        "field_path": "fields.revenue.value",
+        "formatted_value": "$20.25B",
+        "logical_claim_id": "SNDK:core_judgment.text:earnings:2026-07-03:fields.revenue.value:sndk_core_2",
+        "postposition_family": null,
+        "ref_id": "sndk_core_2",
+        "resolved_postposition": null,
+        "role": "value",
+        "semantic_type": "revenue",
+        "text_ref": "core_judgment.text",
+        "unit": "USD",
+        "usage": "2026년 연간 매출 $20.25B"
+      },
+      {
+        "canonical_label": "현재가 기준 차트 손익비",
+        "canonical_label_kind": null,
+        "comparison_role": null,
+        "fact_id": "chart:structure:risk_reward:current_price",
+        "field_path": "fields.ratio",
+        "formatted_value": "0.11배",
+        "logical_claim_id": "SNDK:core_judgment.text:chart:structure:risk_reward:current_price:fields.ratio:sndk_core_3",
+        "postposition_family": null,
+        "ref_id": "sndk_core_3",
+        "resolved_postposition": null,
+        "role": "value",
+        "semantic_type": "current_price_risk_reward_ratio",
+        "text_ref": "core_judgment.text",
+        "unit": "x",
+        "usage": "현재가 기준 차트 손익비 0.11배"
+      },
+      {
+        "canonical_label": "2026년 연간 매출",
+        "canonical_label_kind": "period",
+        "comparison_role": null,
+        "fact_id": "earnings:2026-07-03",
+        "field_path": "fields.revenue.value",
+        "formatted_value": "$20.25B",
+        "logical_claim_id": "SNDK:business_earnings.text:earnings:2026-07-03:fields.revenue.value:sndk_earn_1",
+        "postposition_family": null,
+        "ref_id": "sndk_earn_1",
+        "resolved_postposition": null,
+        "role": "value",
+        "semantic_type": "revenue",
+        "text_ref": "business_earnings.text",
+        "unit": "USD",
+        "usage": "2026년 연간 매출 $20.25B"
+      },
+      {
+        "canonical_label": "현재가",
+        "canonical_label_kind": null,
+        "comparison_role": null,
+        "fact_id": "price:current",
+        "field_path": "fields.current_price",
+        "formatted_value": "$1,568.87",
+        "logical_claim_id": "SNDK:price_positioning.text:price:current:fields.current_price:sndk_price_1_current-price",
+        "postposition_family": null,
+        "ref_id": "sndk_price_1_current-price",
+        "resolved_postposition": null,
+        "role": "value",
+        "semantic_type": "share_price",
+        "text_ref": "price_positioning.text",
+        "unit": "USD",
+        "usage": "현재가 $1,568.87"
+      },
+      {
+        "canonical_label": "동적 지지구간 하단",
+        "canonical_label_kind": null,
+        "comparison_role": null,
+        "fact_id": "chart:structure:nearest_supports:1",
+        "field_path": "fields.zone_low",
+        "formatted_value": "$950.35",
+        "logical_claim_id": "SNDK:price_positioning.text:chart:structure:nearest_supports:1:fields.zone_low:sndk_price_2_zone-low",
+        "postposition_family": null,
+        "ref_id": "sndk_price_2_zone-low",
+        "resolved_postposition": null,
+        "role": "lower",
+        "semantic_type": "support_zone_price",
+        "text_ref": "price_positioning.text",
+        "unit": "USD",
+        "usage": "동적 지지구간 하단 $950.35"
+      },
+      {
+        "canonical_label": "동적 지지구간 상단",
+        "canonical_label_kind": null,
+        "comparison_role": null,
+        "fact_id": "chart:structure:nearest_supports:1",
+        "field_path": "fields.zone_high",
+        "formatted_value": "$1,046.03",
+        "logical_claim_id": "SNDK:price_positioning.text:chart:structure:nearest_supports:1:fields.zone_high:sndk_price_2_zone-high",
+        "postposition_family": null,
+        "ref_id": "sndk_price_2_zone-high",
+        "resolved_postposition": null,
+        "role": "upper",
+        "semantic_type": "support_zone_price",
+        "text_ref": "price_positioning.text",
+        "unit": "USD",
+        "usage": "동적 지지구간 상단 $1,046.03"
+      },
+      {
+        "canonical_label": "동적 저항구간 하단",
+        "canonical_label_kind": null,
+        "comparison_role": null,
+        "fact_id": "chart:structure:nearest_resistance:1",
+        "field_path": "fields.zone_low",
+        "formatted_value": "$1,648.95",
+        "logical_claim_id": "SNDK:price_positioning.text:chart:structure:nearest_resistance:1:fields.zone_low:sndk_price_3_zone-low",
+        "postposition_family": null,
+        "ref_id": "sndk_price_3_zone-low",
+        "resolved_postposition": null,
+        "role": "lower",
+        "semantic_type": "resistance_zone_price",
+        "text_ref": "price_positioning.text",
+        "unit": "USD",
+        "usage": "동적 저항구간 하단 $1,648.95"
+      },
+      {
+        "canonical_label": "동적 저항구간 상단",
+        "canonical_label_kind": null,
+        "comparison_role": null,
+        "fact_id": "chart:structure:nearest_resistance:1",
+        "field_path": "fields.zone_high",
+        "formatted_value": "$1,743.79",
+        "logical_claim_id": "SNDK:price_positioning.text:chart:structure:nearest_resistance:1:fields.zone_high:sndk_price_3_zone-high",
+        "postposition_family": null,
+        "ref_id": "sndk_price_3_zone-high",
+        "resolved_postposition": null,
+        "role": "upper",
+        "semantic_type": "resistance_zone_price",
+        "text_ref": "price_positioning.text",
+        "unit": "USD",
+        "usage": "동적 저항구간 상단 $1,743.79"
+      },
+      {
+        "canonical_label": "현재가 기준 차트 손익비",
+        "canonical_label_kind": null,
+        "comparison_role": null,
+        "fact_id": "chart:structure:risk_reward:current_price",
+        "field_path": "fields.ratio",
+        "formatted_value": "0.11배",
+        "logical_claim_id": "SNDK:price_positioning.text:chart:structure:risk_reward:current_price:fields.ratio:sndk_price_4_ratio",
+        "postposition_family": null,
+        "ref_id": "sndk_price_4_ratio",
+        "resolved_postposition": null,
+        "role": "value",
+        "semantic_type": "current_price_risk_reward_ratio",
+        "text_ref": "price_positioning.text",
+        "unit": "x",
+        "usage": "현재가 기준 차트 손익비 0.11배"
+      },
+      {
+        "canonical_label": "이전 차트 손익비",
+        "canonical_label_kind": null,
+        "comparison_role": null,
+        "fact_id": "monitoring:risk_reward_transition",
+        "field_path": "fields.previous_ratio",
+        "formatted_value": "0.03배",
+        "logical_claim_id": "SNDK:supply_analysis.text:monitoring:risk_reward_transition:fields.previous_ratio:sndk_rr_prev",
+        "postposition_family": null,
+        "ref_id": "sndk_rr_prev",
+        "resolved_postposition": null,
+        "role": "value",
+        "semantic_type": "previous_risk_reward_ratio",
+        "text_ref": "supply_analysis.text",
+        "unit": "x",
+        "usage": "이전 차트 손익비 0.03배"
+      },
+      {
+        "canonical_label": "현재 차트 손익비",
+        "canonical_label_kind": null,
+        "comparison_role": null,
+        "fact_id": "monitoring:risk_reward_transition",
+        "field_path": "fields.current_ratio",
+        "formatted_value": "0.11배",
+        "logical_claim_id": "SNDK:supply_analysis.text:monitoring:risk_reward_transition:fields.current_ratio:sndk_rr_cur",
+        "postposition_family": null,
+        "ref_id": "sndk_rr_cur",
+        "resolved_postposition": null,
+        "role": "value",
+        "semantic_type": "current_risk_reward_ratio",
+        "text_ref": "supply_analysis.text",
+        "unit": "x",
+        "usage": "현재 차트 손익비 0.11배"
+      },
+      {
+        "canonical_label": "현재가",
+        "canonical_label_kind": null,
+        "comparison_role": null,
+        "fact_id": "price:current",
+        "field_path": "fields.current_price",
+        "formatted_value": "$351.12",
+        "logical_claim_id": "TSLA:core_judgment.text:price:current:fields.current_price:tsla_core_1",
+        "postposition_family": null,
+        "ref_id": "tsla_core_1",
+        "resolved_postposition": null,
+        "role": "value",
+        "semantic_type": "share_price",
+        "text_ref": "core_judgment.text",
+        "unit": "USD",
+        "usage": "현재가 $351.12"
+      },
+      {
+        "canonical_label": "TTM EPS",
+        "canonical_label_kind": null,
+        "comparison_role": null,
+        "fact_id": "valuation:current",
+        "field_path": "fields.ttm_eps",
+        "formatted_value": "$1.92",
+        "logical_claim_id": "TSLA:core_judgment.text:valuation:current:fields.ttm_eps:tsla_core_2",
+        "postposition_family": null,
+        "ref_id": "tsla_core_2",
+        "resolved_postposition": null,
+        "role": "value",
+        "semantic_type": "ttm_eps",
+        "text_ref": "core_judgment.text",
+        "unit": "USD",
+        "usage": "TTM EPS $1.92"
+      },
+      {
+        "canonical_label": "현재가 기준 차트 손익비",
+        "canonical_label_kind": null,
+        "comparison_role": null,
+        "fact_id": "chart:structure:risk_reward:current_price",
+        "field_path": "fields.ratio",
+        "formatted_value": "0.39배",
+        "logical_claim_id": "TSLA:core_judgment.text:chart:structure:risk_reward:current_price:fields.ratio:tsla_core_3",
+        "postposition_family": null,
+        "ref_id": "tsla_core_3",
+        "resolved_postposition": null,
+        "role": "value",
+        "semantic_type": "current_price_risk_reward_ratio",
+        "text_ref": "core_judgment.text",
+        "unit": "x",
+        "usage": "현재가 기준 차트 손익비 0.39배"
+      },
+      {
+        "canonical_label": "현재가",
+        "canonical_label_kind": null,
+        "comparison_role": null,
+        "fact_id": "price:current",
+        "field_path": "fields.current_price",
+        "formatted_value": "$351.12",
+        "logical_claim_id": "TSLA:price_positioning.text:price:current:fields.current_price:tsla_price_1_current-price",
+        "postposition_family": null,
+        "ref_id": "tsla_price_1_current-price",
+        "resolved_postposition": null,
+        "role": "value",
+        "semantic_type": "share_price",
+        "text_ref": "price_positioning.text",
+        "unit": "USD",
+        "usage": "현재가 $351.12"
+      },
+      {
+        "canonical_label": "동적 지지구간 하단",
+        "canonical_label_kind": null,
+        "comparison_role": null,
+        "fact_id": "chart:structure:nearest_supports:1",
+        "field_path": "fields.zone_low",
+        "formatted_value": "$334.71",
+        "logical_claim_id": "TSLA:price_positioning.text:chart:structure:nearest_supports:1:fields.zone_low:tsla_price_2_zone-low",
+        "postposition_family": null,
+        "ref_id": "tsla_price_2_zone-low",
+        "resolved_postposition": null,
+        "role": "lower",
+        "semantic_type": "support_zone_price",
+        "text_ref": "price_positioning.text",
+        "unit": "USD",
+        "usage": "동적 지지구간 하단 $334.71"
+      },
+      {
+        "canonical_label": "동적 지지구간 상단",
+        "canonical_label_kind": null,
+        "comparison_role": null,
+        "fact_id": "chart:structure:nearest_supports:1",
+        "field_path": "fields.zone_high",
+        "formatted_value": "$341.29",
+        "logical_claim_id": "TSLA:price_positioning.text:chart:structure:nearest_supports:1:fields.zone_high:tsla_price_2_zone-high",
+        "postposition_family": null,
+        "ref_id": "tsla_price_2_zone-high",
+        "resolved_postposition": null,
+        "role": "upper",
+        "semantic_type": "support_zone_price",
+        "text_ref": "price_positioning.text",
+        "unit": "USD",
+        "usage": "동적 지지구간 상단 $341.29"
+      },
+      {
+        "canonical_label": "동적 저항구간 하단",
+        "canonical_label_kind": null,
+        "comparison_role": null,
+        "fact_id": "chart:structure:nearest_resistance:1",
+        "field_path": "fields.zone_low",
+        "formatted_value": "$360.04",
+        "logical_claim_id": "TSLA:price_positioning.text:chart:structure:nearest_resistance:1:fields.zone_low:tsla_price_3_zone-low",
+        "postposition_family": null,
+        "ref_id": "tsla_price_3_zone-low",
+        "resolved_postposition": null,
+        "role": "lower",
+        "semantic_type": "resistance_zone_price",
+        "text_ref": "price_positioning.text",
+        "unit": "USD",
+        "usage": "동적 저항구간 하단 $360.04"
+      },
+      {
+        "canonical_label": "동적 저항구간 상단",
+        "canonical_label_kind": null,
+        "comparison_role": null,
+        "fact_id": "chart:structure:nearest_resistance:1",
+        "field_path": "fields.zone_high",
+        "formatted_value": "$372.58",
+        "logical_claim_id": "TSLA:price_positioning.text:chart:structure:nearest_resistance:1:fields.zone_high:tsla_price_3_zone-high",
+        "postposition_family": null,
+        "ref_id": "tsla_price_3_zone-high",
+        "resolved_postposition": null,
+        "role": "upper",
+        "semantic_type": "resistance_zone_price",
+        "text_ref": "price_positioning.text",
+        "unit": "USD",
+        "usage": "동적 저항구간 상단 $372.58"
+      },
+      {
+        "canonical_label": "현재가 기준 차트 손익비",
+        "canonical_label_kind": null,
+        "comparison_role": null,
+        "fact_id": "chart:structure:risk_reward:current_price",
+        "field_path": "fields.ratio",
+        "formatted_value": "0.39배",
+        "logical_claim_id": "TSLA:price_positioning.text:chart:structure:risk_reward:current_price:fields.ratio:tsla_price_4_ratio",
+        "postposition_family": null,
+        "ref_id": "tsla_price_4_ratio",
+        "resolved_postposition": null,
+        "role": "value",
+        "semantic_type": "current_price_risk_reward_ratio",
+        "text_ref": "price_positioning.text",
+        "unit": "x",
+        "usage": "현재가 기준 차트 손익비 0.39배"
+      },
+      {
+        "canonical_label": "현재 PER",
+        "canonical_label_kind": null,
+        "comparison_role": null,
+        "fact_id": "valuation:current",
+        "field_path": "fields.trailing_pe",
+        "formatted_value": "182.88배",
+        "logical_claim_id": "TSLA:valuation_analysis.text:valuation:current:fields.trailing_pe:tsla_val_pe",
+        "postposition_family": null,
+        "ref_id": "tsla_val_pe",
+        "resolved_postposition": null,
+        "role": "value",
+        "semantic_type": "trailing_pe",
+        "text_ref": "valuation_analysis.text",
+        "unit": "x",
+        "usage": "현재 PER 182.88배"
+      },
+      {
+        "canonical_label": "시장 예상 fPER",
+        "canonical_label_kind": "source",
+        "comparison_role": null,
+        "fact_id": "valuation:current",
+        "field_path": "fields.forward_pe",
+        "formatted_value": "145.9배",
+        "logical_claim_id": "TSLA:valuation_analysis.text:valuation:current:fields.forward_pe:tsla_val_fpe",
+        "postposition_family": null,
+        "ref_id": "tsla_val_fpe",
+        "resolved_postposition": null,
+        "role": "value",
+        "semantic_type": "forward_pe",
+        "text_ref": "valuation_analysis.text",
+        "unit": "x",
+        "usage": "시장 예상 fPER 145.9배"
+      },
+      {
+        "canonical_label": "PER 역사적 백분위",
+        "canonical_label_kind": null,
+        "comparison_role": "current_percentile",
+        "fact_id": "valuation:current",
+        "field_path": "fields.historical_pe_statistics.current_percentile",
+        "formatted_value": "96.9%",
+        "logical_claim_id": "TSLA:valuation_analysis.text:valuation:current:fields.historical_pe_statistics.current_percentile:tsla_val_hist",
+        "postposition_family": null,
+        "ref_id": "tsla_val_hist",
+        "resolved_postposition": null,
+        "role": "value",
+        "semantic_type": "historical_pe_percentile",
+        "text_ref": "valuation_analysis.text",
+        "unit": "pct",
+        "usage": "PER 역사적 백분위 96.9%"
+      },
+      {
+        "canonical_label": "이전 차트 손익비",
+        "canonical_label_kind": null,
+        "comparison_role": null,
+        "fact_id": "monitoring:risk_reward_transition",
+        "field_path": "fields.previous_ratio",
+        "formatted_value": "2.33배",
+        "logical_claim_id": "TSLA:supply_analysis.text:monitoring:risk_reward_transition:fields.previous_ratio:tsla_rr_prev",
+        "postposition_family": null,
+        "ref_id": "tsla_rr_prev",
+        "resolved_postposition": null,
+        "role": "value",
+        "semantic_type": "previous_risk_reward_ratio",
+        "text_ref": "supply_analysis.text",
+        "unit": "x",
+        "usage": "이전 차트 손익비 2.33배"
+      },
+      {
+        "canonical_label": "현재 차트 손익비",
+        "canonical_label_kind": null,
+        "comparison_role": null,
+        "fact_id": "monitoring:risk_reward_transition",
+        "field_path": "fields.current_ratio",
+        "formatted_value": "0.39배",
+        "logical_claim_id": "TSLA:supply_analysis.text:monitoring:risk_reward_transition:fields.current_ratio:tsla_rr_cur",
+        "postposition_family": null,
+        "ref_id": "tsla_rr_cur",
+        "resolved_postposition": null,
+        "role": "value",
+        "semantic_type": "current_risk_reward_ratio",
+        "text_ref": "supply_analysis.text",
+        "unit": "x",
+        "usage": "현재 차트 손익비 0.39배"
+      },
+      {
+        "canonical_label": "현재가",
+        "canonical_label_kind": null,
+        "comparison_role": null,
+        "fact_id": "price:current",
+        "field_path": "fields.current_price",
+        "formatted_value": "$412.09",
+        "logical_claim_id": "TSM:core_judgment.text:price:current:fields.current_price:tsm_core_1",
+        "postposition_family": null,
+        "ref_id": "tsm_core_1",
+        "resolved_postposition": null,
+        "role": "value",
+        "semantic_type": "share_price",
+        "text_ref": "core_judgment.text",
+        "unit": "USD",
+        "usage": "현재가 $412.09"
+      },
+      {
+        "canonical_label": "2026년 2분기 매출",
+        "canonical_label_kind": "period",
+        "comparison_role": null,
+        "fact_id": "earnings:2026-06-30",
+        "field_path": "fields.revenue.value",
+        "formatted_value": "NT$1.27T",
+        "logical_claim_id": "TSM:core_judgment.text:earnings:2026-06-30:fields.revenue.value:tsm_core_2",
+        "postposition_family": null,
+        "ref_id": "tsm_core_2",
+        "resolved_postposition": null,
+        "role": "value",
+        "semantic_type": "revenue",
+        "text_ref": "core_judgment.text",
+        "unit": "TWD",
+        "usage": "2026년 2분기 매출 NT$1.27T"
+      },
+      {
+        "canonical_label": "2026년 2분기 영업이익률",
+        "canonical_label_kind": "period",
+        "comparison_role": null,
+        "fact_id": "earnings:2026-06-30",
+        "field_path": "fields.operating_margin_pct",
+        "formatted_value": "60.3%",
+        "logical_claim_id": "TSM:core_judgment.text:earnings:2026-06-30:fields.operating_margin_pct:tsm_core_3",
+        "postposition_family": null,
+        "ref_id": "tsm_core_3",
+        "resolved_postposition": null,
+        "role": "value",
+        "semantic_type": "operating_margin",
+        "text_ref": "core_judgment.text",
+        "unit": "pct",
+        "usage": "2026년 2분기 영업이익률 60.3%"
+      },
+      {
+        "canonical_label": "2026년 2분기 매출",
+        "canonical_label_kind": "period",
+        "comparison_role": null,
+        "fact_id": "earnings:2026-06-30",
+        "field_path": "fields.revenue.value",
+        "formatted_value": "NT$1.27T",
+        "logical_claim_id": "TSM:business_earnings.text:earnings:2026-06-30:fields.revenue.value:tsm_earn_1",
+        "postposition_family": null,
+        "ref_id": "tsm_earn_1",
+        "resolved_postposition": null,
+        "role": "value",
+        "semantic_type": "revenue",
+        "text_ref": "business_earnings.text",
+        "unit": "TWD",
+        "usage": "2026년 2분기 매출 NT$1.27T"
+      },
+      {
+        "canonical_label": "2026년 2분기 영업이익",
+        "canonical_label_kind": "period",
+        "comparison_role": null,
+        "fact_id": "earnings:2026-06-30",
+        "field_path": "fields.operating_income.value",
+        "formatted_value": "NT$766.6B",
+        "logical_claim_id": "TSM:business_earnings.text:earnings:2026-06-30:fields.operating_income.value:tsm_earn_2",
+        "postposition_family": null,
+        "ref_id": "tsm_earn_2",
+        "resolved_postposition": null,
+        "role": "value",
+        "semantic_type": "operating_income",
+        "text_ref": "business_earnings.text",
+        "unit": "TWD",
+        "usage": "2026년 2분기 영업이익 NT$766.6B"
+      },
+      {
+        "canonical_label": "2026년 2분기 영업이익률",
+        "canonical_label_kind": "period",
+        "comparison_role": null,
+        "fact_id": "earnings:2026-06-30",
+        "field_path": "fields.operating_margin_pct",
+        "formatted_value": "60.3%",
+        "logical_claim_id": "TSM:business_earnings.text:earnings:2026-06-30:fields.operating_margin_pct:tsm_earn_3",
+        "postposition_family": null,
+        "ref_id": "tsm_earn_3",
+        "resolved_postposition": null,
+        "role": "value",
+        "semantic_type": "operating_margin",
+        "text_ref": "business_earnings.text",
+        "unit": "pct",
+        "usage": "2026년 2분기 영업이익률 60.3%"
+      },
+      {
+        "canonical_label": "현재가",
+        "canonical_label_kind": null,
+        "comparison_role": null,
+        "fact_id": "price:current",
+        "field_path": "fields.current_price",
+        "formatted_value": "$412.09",
+        "logical_claim_id": "TSM:price_positioning.text:price:current:fields.current_price:tsm_price_1_current-price",
+        "postposition_family": null,
+        "ref_id": "tsm_price_1_current-price",
+        "resolved_postposition": null,
+        "role": "value",
+        "semantic_type": "share_price",
+        "text_ref": "price_positioning.text",
+        "unit": "USD",
+        "usage": "현재가 $412.09"
+      },
+      {
+        "canonical_label": "동적 지지구간 하단",
+        "canonical_label_kind": null,
+        "comparison_role": null,
+        "fact_id": "chart:structure:nearest_supports:1",
+        "field_path": "fields.zone_low",
+        "formatted_value": "$380.77",
+        "logical_claim_id": "TSM:price_positioning.text:chart:structure:nearest_supports:1:fields.zone_low:tsm_price_2_zone-low",
+        "postposition_family": null,
+        "ref_id": "tsm_price_2_zone-low",
+        "resolved_postposition": null,
+        "role": "lower",
+        "semantic_type": "support_zone_price",
+        "text_ref": "price_positioning.text",
+        "unit": "USD",
+        "usage": "동적 지지구간 하단 $380.77"
+      },
+      {
+        "canonical_label": "동적 지지구간 상단",
+        "canonical_label_kind": null,
+        "comparison_role": null,
+        "fact_id": "chart:structure:nearest_supports:1",
+        "field_path": "fields.zone_high",
+        "formatted_value": "$390.31",
+        "logical_claim_id": "TSM:price_positioning.text:chart:structure:nearest_supports:1:fields.zone_high:tsm_price_2_zone-high",
+        "postposition_family": null,
+        "ref_id": "tsm_price_2_zone-high",
+        "resolved_postposition": null,
+        "role": "upper",
+        "semantic_type": "support_zone_price",
+        "text_ref": "price_positioning.text",
+        "unit": "USD",
+        "usage": "동적 지지구간 상단 $390.31"
+      },
+      {
+        "canonical_label": "동적 저항구간 하단",
+        "canonical_label_kind": null,
+        "comparison_role": null,
+        "fact_id": "chart:structure:nearest_resistance:1",
+        "field_path": "fields.zone_low",
+        "formatted_value": "$468.08",
+        "logical_claim_id": "TSM:price_positioning.text:chart:structure:nearest_resistance:1:fields.zone_low:tsm_price_3_zone-low",
+        "postposition_family": null,
+        "ref_id": "tsm_price_3_zone-low",
+        "resolved_postposition": null,
+        "role": "lower",
+        "semantic_type": "resistance_zone_price",
+        "text_ref": "price_positioning.text",
+        "unit": "USD",
+        "usage": "동적 저항구간 하단 $468.08"
+      },
+      {
+        "canonical_label": "동적 저항구간 상단",
+        "canonical_label_kind": null,
+        "comparison_role": null,
+        "fact_id": "chart:structure:nearest_resistance:1",
+        "field_path": "fields.zone_high",
+        "formatted_value": "$489.92",
+        "logical_claim_id": "TSM:price_positioning.text:chart:structure:nearest_resistance:1:fields.zone_high:tsm_price_3_zone-high",
+        "postposition_family": null,
+        "ref_id": "tsm_price_3_zone-high",
+        "resolved_postposition": null,
+        "role": "upper",
+        "semantic_type": "resistance_zone_price",
+        "text_ref": "price_positioning.text",
+        "unit": "USD",
+        "usage": "동적 저항구간 상단 $489.92"
+      },
+      {
+        "canonical_label": "현재가 기준 차트 손익비",
+        "canonical_label_kind": null,
+        "comparison_role": null,
+        "fact_id": "chart:structure:risk_reward:current_price",
+        "field_path": "fields.ratio",
+        "formatted_value": "1.46배",
+        "logical_claim_id": "TSM:price_positioning.text:chart:structure:risk_reward:current_price:fields.ratio:tsm_price_4_ratio",
+        "postposition_family": null,
+        "ref_id": "tsm_price_4_ratio",
+        "resolved_postposition": null,
+        "role": "value",
+        "semantic_type": "current_price_risk_reward_ratio",
+        "text_ref": "price_positioning.text",
+        "unit": "x",
+        "usage": "현재가 기준 차트 손익비 1.46배"
+      },
+      {
+        "canonical_label": "현재가",
+        "canonical_label_kind": null,
+        "comparison_role": null,
+        "fact_id": "price:current",
+        "field_path": "fields.current_price",
+        "formatted_value": "$6.07",
+        "logical_claim_id": "WRD:core_judgment.text:price:current:fields.current_price:wrd_core_1",
+        "postposition_family": null,
+        "ref_id": "wrd_core_1",
+        "resolved_postposition": null,
+        "role": "value",
+        "semantic_type": "share_price",
+        "text_ref": "core_judgment.text",
+        "unit": "USD",
+        "usage": "현재가 $6.07"
+      },
+      {
+        "canonical_label": "현재가 기준 차트 손익비",
+        "canonical_label_kind": null,
+        "comparison_role": null,
+        "fact_id": "chart:structure:risk_reward:current_price",
+        "field_path": "fields.ratio",
+        "formatted_value": "1.01배",
+        "logical_claim_id": "WRD:core_judgment.text:chart:structure:risk_reward:current_price:fields.ratio:wrd_core_2",
+        "postposition_family": null,
+        "ref_id": "wrd_core_2",
+        "resolved_postposition": null,
+        "role": "value",
+        "semantic_type": "current_price_risk_reward_ratio",
+        "text_ref": "core_judgment.text",
+        "unit": "x",
+        "usage": "현재가 기준 차트 손익비 1.01배"
+      },
+      {
+        "canonical_label": "현재가",
+        "canonical_label_kind": null,
+        "comparison_role": null,
+        "fact_id": "price:current",
+        "field_path": "fields.current_price",
+        "formatted_value": "$6.07",
+        "logical_claim_id": "WRD:price_positioning.text:price:current:fields.current_price:wrd_price_1_current-price",
+        "postposition_family": null,
+        "ref_id": "wrd_price_1_current-price",
+        "resolved_postposition": null,
+        "role": "value",
+        "semantic_type": "share_price",
+        "text_ref": "price_positioning.text",
+        "unit": "USD",
+        "usage": "현재가 $6.07"
+      },
+      {
+        "canonical_label": "동적 지지구간 하단",
+        "canonical_label_kind": null,
+        "comparison_role": null,
+        "fact_id": "chart:structure:nearest_supports:1",
+        "field_path": "fields.zone_low",
+        "formatted_value": "$5.91",
+        "logical_claim_id": "WRD:price_positioning.text:chart:structure:nearest_supports:1:fields.zone_low:wrd_price_2_zone-low",
+        "postposition_family": null,
+        "ref_id": "wrd_price_2_zone-low",
+        "resolved_postposition": null,
+        "role": "lower",
+        "semantic_type": "support_zone_price",
+        "text_ref": "price_positioning.text",
+        "unit": "USD",
+        "usage": "동적 지지구간 하단 $5.91"
+      },
+      {
+        "canonical_label": "동적 지지구간 상단",
+        "canonical_label_kind": null,
+        "comparison_role": null,
+        "fact_id": "chart:structure:nearest_supports:1",
+        "field_path": "fields.zone_high",
+        "formatted_value": "$6.15",
+        "logical_claim_id": "WRD:price_positioning.text:chart:structure:nearest_supports:1:fields.zone_high:wrd_price_2_zone-high",
+        "postposition_family": null,
+        "ref_id": "wrd_price_2_zone-high",
+        "resolved_postposition": null,
+        "role": "upper",
+        "semantic_type": "support_zone_price",
+        "text_ref": "price_positioning.text",
+        "unit": "USD",
+        "usage": "동적 지지구간 상단 $6.15"
+      },
+      {
+        "canonical_label": "동적 저항구간 하단",
+        "canonical_label_kind": null,
+        "comparison_role": null,
+        "fact_id": "chart:structure:nearest_resistance:1",
+        "field_path": "fields.zone_low",
+        "formatted_value": "$6.38",
+        "logical_claim_id": "WRD:price_positioning.text:chart:structure:nearest_resistance:1:fields.zone_low:wrd_price_3_zone-low",
+        "postposition_family": null,
+        "ref_id": "wrd_price_3_zone-low",
+        "resolved_postposition": null,
+        "role": "lower",
+        "semantic_type": "resistance_zone_price",
+        "text_ref": "price_positioning.text",
+        "unit": "USD",
+        "usage": "동적 저항구간 하단 $6.38"
+      },
+      {
+        "canonical_label": "동적 저항구간 상단",
+        "canonical_label_kind": null,
+        "comparison_role": null,
+        "fact_id": "chart:structure:nearest_resistance:1",
+        "field_path": "fields.zone_high",
+        "formatted_value": "$6.52",
+        "logical_claim_id": "WRD:price_positioning.text:chart:structure:nearest_resistance:1:fields.zone_high:wrd_price_3_zone-high",
+        "postposition_family": null,
+        "ref_id": "wrd_price_3_zone-high",
+        "resolved_postposition": null,
+        "role": "upper",
+        "semantic_type": "resistance_zone_price",
+        "text_ref": "price_positioning.text",
+        "unit": "USD",
+        "usage": "동적 저항구간 상단 $6.52"
+      },
+      {
+        "canonical_label": "현재가 기준 차트 손익비",
+        "canonical_label_kind": null,
+        "comparison_role": null,
+        "fact_id": "chart:structure:risk_reward:current_price",
+        "field_path": "fields.ratio",
+        "formatted_value": "1.01배",
+        "logical_claim_id": "WRD:price_positioning.text:chart:structure:risk_reward:current_price:fields.ratio:wrd_price_4_ratio",
+        "postposition_family": null,
+        "ref_id": "wrd_price_4_ratio",
+        "resolved_postposition": null,
+        "role": "value",
+        "semantic_type": "current_price_risk_reward_ratio",
+        "text_ref": "price_positioning.text",
+        "unit": "x",
+        "usage": "현재가 기준 차트 손익비 1.01배"
+      },
+      {
+        "canonical_label": "이전 차트 손익비",
+        "canonical_label_kind": null,
+        "comparison_role": null,
+        "fact_id": "monitoring:risk_reward_transition",
+        "field_path": "fields.previous_ratio",
+        "formatted_value": "2.45배",
+        "logical_claim_id": "WRD:supply_analysis.text:monitoring:risk_reward_transition:fields.previous_ratio:wrd_rr_prev",
+        "postposition_family": null,
+        "ref_id": "wrd_rr_prev",
+        "resolved_postposition": null,
+        "role": "value",
+        "semantic_type": "previous_risk_reward_ratio",
+        "text_ref": "supply_analysis.text",
+        "unit": "x",
+        "usage": "이전 차트 손익비 2.45배"
+      },
+      {
+        "canonical_label": "현재 차트 손익비",
+        "canonical_label_kind": null,
+        "comparison_role": null,
+        "fact_id": "monitoring:risk_reward_transition",
+        "field_path": "fields.current_ratio",
+        "formatted_value": "1.01배",
+        "logical_claim_id": "WRD:supply_analysis.text:monitoring:risk_reward_transition:fields.current_ratio:wrd_rr_cur",
+        "postposition_family": null,
+        "ref_id": "wrd_rr_cur",
+        "resolved_postposition": null,
+        "role": "value",
+        "semantic_type": "current_risk_reward_ratio",
+        "text_ref": "supply_analysis.text",
+        "unit": "x",
+        "usage": "현재 차트 손익비 1.01배"
+      },
+      {
+        "canonical_label": "현재가",
+        "canonical_label_kind": null,
+        "comparison_role": null,
+        "fact_id": "price:current",
+        "field_path": "fields.current_price",
+        "formatted_value": "$15.5",
+        "logical_claim_id": "WULF:core_judgment.text:price:current:fields.current_price:wulf_core_1",
+        "postposition_family": null,
+        "ref_id": "wulf_core_1",
+        "resolved_postposition": null,
+        "role": "value",
+        "semantic_type": "share_price",
+        "text_ref": "core_judgment.text",
+        "unit": "USD",
+        "usage": "현재가 $15.5"
+      },
+      {
+        "canonical_label": "현재가",
+        "canonical_label_kind": null,
+        "comparison_role": null,
+        "fact_id": "price:current",
+        "field_path": "fields.current_price",
+        "formatted_value": "$15.5",
+        "logical_claim_id": "WULF:price_positioning.text:price:current:fields.current_price:wulf_price_1_current-price",
+        "postposition_family": null,
+        "ref_id": "wulf_price_1_current-price",
+        "resolved_postposition": null,
+        "role": "value",
+        "semantic_type": "share_price",
+        "text_ref": "price_positioning.text",
+        "unit": "USD",
+        "usage": "현재가 $15.5"
+      },
+      {
+        "canonical_label": "동적 저항구간 하단",
+        "canonical_label_kind": null,
+        "comparison_role": null,
+        "fact_id": "chart:structure:nearest_resistance:1",
+        "field_path": "fields.zone_low",
+        "formatted_value": "$15.55",
+        "logical_claim_id": "WULF:price_positioning.text:chart:structure:nearest_resistance:1:fields.zone_low:wulf_price_3_zone-low",
+        "postposition_family": null,
+        "ref_id": "wulf_price_3_zone-low",
+        "resolved_postposition": null,
+        "role": "lower",
+        "semantic_type": "resistance_zone_price",
+        "text_ref": "price_positioning.text",
+        "unit": "USD",
+        "usage": "동적 저항구간 하단 $15.55"
+      },
+      {
+        "canonical_label": "동적 저항구간 상단",
+        "canonical_label_kind": null,
+        "comparison_role": null,
+        "fact_id": "chart:structure:nearest_resistance:1",
+        "field_path": "fields.zone_high",
+        "formatted_value": "$16.46",
+        "logical_claim_id": "WULF:price_positioning.text:chart:structure:nearest_resistance:1:fields.zone_high:wulf_price_3_zone-high",
+        "postposition_family": null,
+        "ref_id": "wulf_price_3_zone-high",
+        "resolved_postposition": null,
+        "role": "upper",
+        "semantic_type": "resistance_zone_price",
+        "text_ref": "price_positioning.text",
+        "unit": "USD",
+        "usage": "동적 저항구간 상단 $16.46"
+      },
+      {
+        "canonical_label": "현재 PBR",
+        "canonical_label_kind": null,
+        "comparison_role": null,
+        "fact_id": "valuation:current",
+        "field_path": "fields.price_to_book",
+        "formatted_value": "52.51배",
+        "logical_claim_id": "WULF:valuation_analysis.text:valuation:current:fields.price_to_book:wulf_val_cur",
+        "postposition_family": null,
+        "ref_id": "wulf_val_cur",
+        "resolved_postposition": null,
+        "role": "value",
+        "semantic_type": "price_to_book",
+        "text_ref": "valuation_analysis.text",
+        "unit": "x",
+        "usage": "현재 PBR 52.51배"
+      },
+      {
+        "canonical_label": "PBR 역사적 백분위",
+        "canonical_label_kind": null,
+        "comparison_role": "current_percentile",
+        "fact_id": "valuation:current",
+        "field_path": "fields.historical_pb_statistics.current_percentile",
+        "formatted_value": "100%",
+        "logical_claim_id": "WULF:valuation_analysis.text:valuation:current:fields.historical_pb_statistics.current_percentile:wulf_val_pct",
+        "postposition_family": null,
+        "ref_id": "wulf_val_pct",
+        "resolved_postposition": null,
+        "role": "value",
+        "semantic_type": "historical_pb_percentile",
+        "text_ref": "valuation_analysis.text",
+        "unit": "pct",
+        "usage": "PBR 역사적 백분위 100%"
+      },
+      {
+        "canonical_label": "현재 PBR",
+        "canonical_label_kind": null,
+        "comparison_role": null,
+        "fact_id": "valuation:current",
+        "field_path": "fields.price_to_book",
+        "formatted_value": "52.51배",
+        "logical_claim_id": "WULF:core_judgment.text:valuation:current:fields.price_to_book:wulf_core_2",
+        "postposition_family": null,
+        "ref_id": "wulf_core_2",
+        "resolved_postposition": null,
+        "role": "value",
+        "semantic_type": "price_to_book",
+        "text_ref": "core_judgment.text",
+        "unit": "x",
+        "usage": "현재 PBR 52.51배"
+      }
+    ],
+    "contract": "numeric-fact-ref-v1",
+    "errors": [],
+    "formatting_failures": 0,
+    "industry_reasoning": {
+      "accepted": 0,
+      "contract": "industry-specific-reasoning-v1",
+      "errors": [],
+      "references": []
+    },
+    "label_quality": {
+      "instrument_label_mismatch_count": 0,
+      "period_label_mismatch_count": 0,
+      "postposition_mismatch_count": 0,
+      "redundant_authored_label_count": 0,
+      "repeated_bound_label_count": 0,
+      "semantic_label_collision_count": 0,
+      "source_label_mismatch_count": 0,
+      "zone_role_mismatch_count": 0
+    },
+    "manual_legacy": 0,
+    "rejected": 0,
+    "removed_unsafe": 0,
+    "semantic_claims": {
+      "accepted": 0,
+      "contract": "semantic-scope-and-decision-hierarchy-v1",
+      "errors": [],
+      "references": []
+    },
+    "status": "passed",
+    "typed_valuation_interpretations": {
+      "accepted": 17,
+      "contract": "typed-valuation-interpretation-v2",
+      "errors": [],
+      "references": [
+        {
+          "basis_status": "unknown",
+          "comparison_numeric_ref_ids": [],
+          "direction": "unknown",
+          "economic_scope": "listed_security",
+          "exact_text_span": "후행 이익 배수의 주당 기준은 충분히 확인되지 않아 배수 간 관계 해석은 보류합니다.",
+          "fact_id": "security_basis:current",
+          "interpretation_type": "quality_unknown",
+          "metric": "earnings",
+          "normalized_span_sha256": "fc5c4b02c71aaadc218dbea929665dc059f760544c5ce3b685b9ae25a117b54d",
+          "ref_id": "crcl_val_quality",
+          "source_type": "canonical",
+          "text_ref": "valuation_analysis.text"
+        },
+        {
+          "basis_status": "verified",
+          "comparison_numeric_ref_ids": [
+            "googl_val_pe",
+            "googl_val_fpe"
+          ],
+          "direction": "high",
+          "economic_scope": "listed_security",
+          "exact_text_span": "현재 PER 12.36배; 시장 예상 fPER 19.29배; 후행·선행 이익 배수 관계에서 선행 배수는 더 높습니다. 이는 선행 이익 분모에 더 보수적인 기대가 있음을 시사합니다.",
+          "fact_id": "valuation:multiple_relation",
+          "interpretation_type": "trailing_forward_relation",
+          "metric": "earnings",
+          "normalized_span_sha256": "84618be27bd5ef9b394d9fc42b8723cdb2e9ad5e03e5c673da852464336d1612",
+          "ref_id": "googl_val_relation",
+          "source_type": "canonical",
+          "text_ref": "valuation_analysis.text"
+        },
+        {
+          "basis_status": "verified",
+          "comparison_numeric_ref_ids": [
+            "hut_val_fpe"
+          ],
+          "direction": "neutral",
+          "economic_scope": "listed_security",
+          "exact_text_span": "시장 예상 fPER 139.12배입니다.",
+          "fact_id": "valuation:consensus_forward_earnings",
+          "interpretation_type": "absolute",
+          "metric": "forward_pe",
+          "normalized_span_sha256": "e6d8ed9fc4cf3ac89c2eea8a6cd7e12058dd022c716dd5cf81cc183237690a46",
+          "ref_id": "hut_val_abs_fpe",
+          "source_type": "canonical",
+          "text_ref": "valuation_analysis.text"
+        },
+        {
+          "basis_status": "verified",
+          "comparison_numeric_ref_ids": [
+            "hut_val_pbr"
+          ],
+          "direction": "neutral",
+          "economic_scope": "listed_security",
+          "exact_text_span": "현재 PBR 6.69배입니다.",
+          "fact_id": "valuation:book",
+          "interpretation_type": "absolute",
+          "metric": "pbr",
+          "normalized_span_sha256": "bc058fdf4cf183deb7b0b3c68d3d0c89f7ce8d28cb505cab7ca4e328124406da",
+          "ref_id": "hut_val_abs_pbr",
+          "source_type": "canonical",
+          "text_ref": "valuation_analysis.text"
+        },
+        {
+          "basis_status": "verified",
+          "comparison_numeric_ref_ids": [
+            "ibm_val_pe",
+            "ibm_val_fpe"
+          ],
+          "direction": "high",
+          "economic_scope": "listed_security",
+          "exact_text_span": "현재 PER 14.32배; 시장 예상 fPER 17.35배; 후행·선행 이익 배수 관계에서 선행 배수는 더 높습니다. 이는 선행 이익 분모에 더 보수적인 기대가 있음을 시사합니다.",
+          "fact_id": "valuation:multiple_relation",
+          "interpretation_type": "trailing_forward_relation",
+          "metric": "earnings",
+          "normalized_span_sha256": "0da6648f120bf5c427937309641f2af395f48ea5adcba8525ce8f863e411e5bc",
+          "ref_id": "ibm_val_relation",
+          "source_type": "canonical",
+          "text_ref": "valuation_analysis.text"
+        },
+        {
+          "basis_status": "verified",
+          "comparison_numeric_ref_ids": [
+            "mu_val_pe",
+            "mu_val_fpe"
+          ],
+          "direction": "low",
+          "economic_scope": "listed_security",
+          "exact_text_span": "현재 PER 19.15배; 시장 예상 fPER 5.87배; 후행·선행 이익 배수 관계에서 선행 배수는 더 낮습니다. 이는 이익 확대 기대를 담지만 메모리 피크 이익과 공급 확대 위험은 별도 검증해야 합니다.",
+          "fact_id": "valuation:multiple_relation",
+          "interpretation_type": "trailing_forward_relation",
+          "metric": "earnings",
+          "normalized_span_sha256": "f544c84beb1b9ec20c493772a33605a7d1e7df5a16c38383b725d4e8ec9ca529",
+          "ref_id": "mu_val_relation",
+          "source_type": "canonical",
+          "text_ref": "valuation_analysis.text"
+        },
+        {
+          "basis_status": "verified",
+          "comparison_numeric_ref_ids": [
+            "rxrx_val_cur",
+            "rxrx_val_pct"
+          ],
+          "direction": "low",
+          "economic_scope": "listed_security",
+          "exact_text_span": "현재 PBR 2.04배; PBR 역사적 백분위 19.5%; 현재 PBR은 비교 가능한 과거 관측치 대부분보다 낮은 구간이지만, cash runway·희석·임상 성공확률을 대신하지 않습니다.",
+          "fact_id": "valuation:historical_pb",
+          "interpretation_type": "historical",
+          "metric": "pbr",
+          "normalized_span_sha256": "29c57c8bfb879770bedb022dab68028e80152bbc2985b2673937f979870c002a",
+          "ref_id": "rxrx_val_history",
+          "source_type": "canonical",
+          "text_ref": "valuation_analysis.text"
+        },
+        {
+          "basis_status": "unknown",
+          "comparison_numeric_ref_ids": [],
+          "direction": "unknown",
+          "economic_scope": "unknown",
+          "exact_text_span": "ADS identity는 검증됐지만 현재 증권의 주당 이익 분모가 확인되지 않아 PER 해석은 보류합니다.",
+          "fact_id": "security_basis:current",
+          "interpretation_type": "quality_unknown",
+          "metric": "earnings",
+          "normalized_span_sha256": "88b805d90e9ebd604800a15a42bfbeebaeccbae719fb9145f19564f5d232cc05",
+          "ref_id": "skhy_val_pe_unknown",
+          "source_type": "canonical",
+          "text_ref": "valuation_analysis.text"
+        },
+        {
+          "basis_status": "unknown",
+          "comparison_numeric_ref_ids": [],
+          "direction": "unknown",
+          "economic_scope": "unknown",
+          "exact_text_span": "현재 증권의 장부 주당 분모도 확인되지 않아 PBR 해석은 보류합니다.",
+          "fact_id": "security_basis:current",
+          "interpretation_type": "quality_unknown",
+          "metric": "book",
+          "normalized_span_sha256": "fddac23b1b0355a5c6e3be1a580d2e80e9bf69d42bc04e500c227f89d9f766d7",
+          "ref_id": "skhy_val_pb_unknown",
+          "source_type": "canonical",
+          "text_ref": "valuation_analysis.text"
+        },
+        {
+          "basis_status": "unknown",
+          "comparison_numeric_ref_ids": [],
+          "direction": "unknown",
+          "economic_scope": "listed_security",
+          "exact_text_span": "후행 이익 배수의 주당 기준은 충분히 확인되지 않아 배수 간 관계 해석은 보류합니다.",
+          "fact_id": "security_basis:current",
+          "interpretation_type": "quality_unknown",
+          "metric": "earnings",
+          "normalized_span_sha256": "fc5c4b02c71aaadc218dbea929665dc059f760544c5ce3b685b9ae25a117b54d",
+          "ref_id": "sndk_val_quality",
+          "source_type": "canonical",
+          "text_ref": "valuation_analysis.text"
+        },
+        {
+          "basis_status": "verified",
+          "comparison_numeric_ref_ids": [
+            "tsla_val_pe",
+            "tsla_val_fpe"
+          ],
+          "direction": "low",
+          "economic_scope": "listed_security",
+          "exact_text_span": "현재 PER 182.88배; 시장 예상 fPER 145.9배; 후행·선행 이익 배수 관계에서 선행 배수는 더 낮습니다. 이는 이익 확대 기대를 담지만 자동차 마진과 Robotaxi 실행이 부족하면 압축 위험이 남습니다.",
+          "fact_id": "valuation:multiple_relation",
+          "interpretation_type": "trailing_forward_relation",
+          "metric": "earnings",
+          "normalized_span_sha256": "7d66bd2c31432d551a3aa290d0fec5a3db95875ccb07a8b02cc6820114600804",
+          "ref_id": "tsla_val_relation",
+          "source_type": "canonical",
+          "text_ref": "valuation_analysis.text"
+        },
+        {
+          "basis_status": "verified",
+          "comparison_numeric_ref_ids": [
+            "tsla_val_hist"
+          ],
+          "direction": "high",
+          "economic_scope": "listed_security",
+          "exact_text_span": "PER 역사적 백분위 96.9%입니다. 이는 현재 PER이 비교 가능한 과거 관측치 대부분보다 높은 구간이라는 뜻입니다.",
+          "fact_id": "valuation:historical_pe",
+          "interpretation_type": "historical",
+          "metric": "pe",
+          "normalized_span_sha256": "e8476cb1ca52c42682424640eedce2ff49498fc43949aad76a6ef81e47380a9b",
+          "ref_id": "tsla_val_history",
+          "source_type": "canonical",
+          "text_ref": "valuation_analysis.text"
+        },
+        {
+          "basis_status": "unknown",
+          "comparison_numeric_ref_ids": [],
+          "direction": "unknown",
+          "economic_scope": "unknown",
+          "exact_text_span": "현재 미국 상장 증권의 identity와 주당 이익 분모가 확인되지 않아 PER 해석은 보류합니다.",
+          "fact_id": "security_identity:current",
+          "interpretation_type": "quality_unknown",
+          "metric": "earnings",
+          "normalized_span_sha256": "23318b36f683e5c1f6cd6b51ac522de66d57333c90cac5a209613cfb02ba3771",
+          "ref_id": "tsm_val_pe_unknown",
+          "source_type": "canonical",
+          "text_ref": "valuation_analysis.text"
+        },
+        {
+          "basis_status": "unknown",
+          "comparison_numeric_ref_ids": [],
+          "direction": "unknown",
+          "economic_scope": "unknown",
+          "exact_text_span": "현재 미국 상장 증권의 장부 주당 분모도 확인되지 않아 PBR 해석은 보류합니다.",
+          "fact_id": "security_basis:current",
+          "interpretation_type": "quality_unknown",
+          "metric": "book",
+          "normalized_span_sha256": "cf247a57d854a95ab021c3d8ba17642ca92a41eb6241d6735ea51e714dac669a",
+          "ref_id": "tsm_val_pb_unknown",
+          "source_type": "canonical",
+          "text_ref": "valuation_analysis.text"
+        },
+        {
+          "basis_status": "unknown",
+          "comparison_numeric_ref_ids": [],
+          "direction": "unknown",
+          "economic_scope": "unknown",
+          "exact_text_span": "현재 미국 상장 증권의 identity와 주당 이익 분모가 확인되지 않아 PER 해석은 보류합니다.",
+          "fact_id": "security_identity:current",
+          "interpretation_type": "quality_unknown",
+          "metric": "earnings",
+          "normalized_span_sha256": "23318b36f683e5c1f6cd6b51ac522de66d57333c90cac5a209613cfb02ba3771",
+          "ref_id": "wrd_val_pe_unknown",
+          "source_type": "canonical",
+          "text_ref": "valuation_analysis.text"
+        },
+        {
+          "basis_status": "unknown",
+          "comparison_numeric_ref_ids": [],
+          "direction": "unknown",
+          "economic_scope": "unknown",
+          "exact_text_span": "현재 미국 상장 증권의 장부 주당 분모도 확인되지 않아 PBR 해석은 보류합니다.",
+          "fact_id": "security_basis:current",
+          "interpretation_type": "quality_unknown",
+          "metric": "book",
+          "normalized_span_sha256": "cf247a57d854a95ab021c3d8ba17642ca92a41eb6241d6735ea51e714dac669a",
+          "ref_id": "wrd_val_pb_unknown",
+          "source_type": "canonical",
+          "text_ref": "valuation_analysis.text"
+        },
+        {
+          "basis_status": "verified",
+          "comparison_numeric_ref_ids": [
+            "wulf_val_cur",
+            "wulf_val_pct"
+          ],
+          "direction": "high",
+          "economic_scope": "listed_security",
+          "exact_text_span": "현재 PBR 52.51배; PBR 역사적 백분위 100%; 현재 PBR은 비교 가능한 과거 관측치 대부분보다 높은 구간이지만, 가동 전력·현금전환·희석 검증을 대신하지 않습니다.",
+          "fact_id": "valuation:historical_pb",
+          "interpretation_type": "historical",
+          "metric": "pbr",
+          "normalized_span_sha256": "0544af9cea0de756e2f4861503fffbc74870c2276d447b67ddd328dd9bb73aaa",
+          "ref_id": "wulf_val_history",
+          "source_type": "canonical",
+          "text_ref": "valuation_analysis.text"
+        }
+      ]
+    },
+    "valuation_contexts": {
+      "accepted": 0,
+      "contract": "valuation-context-wording-v1",
+      "errors": [],
+      "references": []
+    }
+  },
+  "packet_id": "2026-08-20-us-run-28-9024def294e6",
+  "policy": "daily-review-v3.10",
+  "receipt_verified": true,
+  "rendered_messages": [
+    {
+      "logical_identity": "2026-08-20-us-run-28-9024def294e6:MARKET:ai-replay",
+      "text": "🤖 AI 보조 미국시장 점검 · US Pilot 4/5\n\n🎯 오늘 시장 한 줄\nS&P500 대비 반도체 상대수익률 -2.4%; 원/달러 환율 등락률 -1%; S&P500 대비 Nasdaq 상대수익률 -0.4%; WTI 등락률 +2%. 반도체·성장주 상대 강도, 환율, 유가가 서로 다른 경로로 포트폴리오에 작용하는 환경이며, 최신 한국 야간선물은 확인되지 않아 개장 전 신호에서 제외합니다.\n\n📈 실제 변화\n• S&P500 대비 반도체 상대수익률 -2.4%는 반도체 가격 심리의 상대 약세를 보여주지만 실제 주문·마진 확인은 아닙니다.\n• 원/달러 환율 등락률 -1%는 국내 비용과 외국인 위험선호의 환율 경로를 재점검하게 하지만 개별 기업 수혜를 확정하지 않습니다.\n• S&P500 대비 Nasdaq 상대수익률 -0.4%는 성장주 주도력의 상대 약세이며 시장 breadth를 대신하지 않습니다.\n• WTI 등락률 +2%는 비용·물가 경로의 확인을 요구하지만 공급 충격을 확정하지는 않습니다.\n\n🌙 한국 개장 전 신호\n• 한국 야간선물은 최신 완료 세션 데이터를 확인하지 못해 오늘 개장 전 신호에서 제외했습니다.\n\n🧭 시장 구조\n미국 10년물 실질금리 변동 -3bp; VIX 등락률 +4.3%. 할인율 부담은 완화됐지만 위험지표는 상승했으며, breadth와 시장 전체 흐름이 없어 광범위한 위험선호로 확대 해석하지 않습니다.\n\n🔗 모니터링 종목에 미치는 영향\n• 자동차: 실질금리 하락은 장기 성장 옵션의 할인율 부담을 덜 수 있으나 자동차 실행력 확인은 아닙니다.\n• 바이오: 실질금리 하락은 바이오 옵션 가치의 할인율 경로에 우호적일 수 있지만 임상·runway 확인을 대신하지 않습니다.\n• 기타·일반: 변동성 상승은 고변동 성장·플랫폼 그룹의 가격 압력이며 회사별 현금흐름 증거가 필요합니다.\n• 반도체: 반도체 상대 약세는 업종 가격 맥락이며 실제 주문·마진·FCF 확인과 분리합니다.\n\n📌 다음 확인\n• 다음 기대인플레이션 관측이 유가 상승과 같은 방향으로 이어지는지 확인하면 비용·물가 경로 해석이 바뀔 수 있습니다.\n• 다음 실질금리와 신용스프레드 관측이 함께 높아지는지 확인하면 할인율과 자금조달 해석이 바뀔 수 있습니다.\n• 다음 반도체 상대강도 관측이 실제 회사 주문·마진 증거와 연결되는지 확인합니다.\n\n⚠️ 데이터 주의\n• 시장 breadth는 제공되지 않아 지수 움직임을 광범위한 참여로 해석할 수 없습니다.\n• 시장 전체 투자주체 흐름은 제공되지 않았습니다.\n• 최신 완료 세션의 한국 야간선물은 확인되지 않아 한국 개장 가격 맥락은 Unknown입니다.",
+      "ticker": "__DAILY_DIGEST__"
+    },
+    {
+      "logical_identity": "2026-08-20-us-run-28-9024def294e6:CORZ:ai-replay",
+      "text": "🤖 AI 보조 종목 점검 · US Pilot 4/5\n\n🏢 Core Scientific, Inc.(CORZ)\n투자 논리: 유지 · 오늘 중요한 신규 변화 없음\n구조적 위험: 보통\n시장 기대: 매우 높음\n\n🎯 핵심 판단\n사업 전환 방향은 유지되지만 계약 전력이 실제 가동·청구·현금흐름으로 바뀌는 속도가 높은 기대를 충족하는지가 핵심입니다. 판단을 묶는 숫자는 현재가 $18.72; 2026년 2분기 매출 $164.2M; 현재가 기준 차트 손익비 0.18배입니다.\n\n📈 사업·실적\n2026년 2분기 매출 $164.2M; 코로케이션 매출이 대규모 투자 이후 현금창출로 이어지는지를 확인해야 하며, 비교 성장률과 OCF·CAPEX·FCF가 안전하게 연결되지 않아 성장의 질은 미확인입니다.\n\n💰 가격·포지셔닝\n현재가 $18.72; 동적 지지구간 하단 $18.2; 동적 지지구간 상단 $18.73; 동적 저항구간 하단 $18.96; 동적 저항구간 상단 $19.9; 현재가 기준 차트 손익비 0.18배. 경고 기준 아래 상태가 이어졌고 근접 저항과 낮은 현재가 손익비 때문에 가격 구조는 WAIT입니다. 코로케이션 실행 증거는 별도로 확인합니다.\n• 신규 관찰자: 새 자금은 동적 지지 방어와 거래 참여 회복, 가동 전력의 매출 전환이 함께 확인될 때 가격 비대칭을 검토할 수 있습니다.\n• 보유자: 보유자는 현재 차트 검토 경계와 고객계약 취소·준공 실패·현금흐름 악화라는 사업 훼손 조건을 분리해야 합니다.\n\n📊 거래량·포지셔닝\n근접 저항과 약한 거래량의 제약이 큽니다; 코로케이션 가동 증거는 별도입니다.\n\n📐 Valuation\n가동 전력, 남은 투자, 부채와 희석이 주주가치로 전환되는지를 다음 공식 자료에서 함께 확인합니다.\n\n👁 핵심 감시\n• billing 전력의 가동 속도, 코로케이션 마진, 자본집약도와 희석의 균형을 지속 감시합니다.\n\n📌 다음 확인\n• 다음 공식 실적에서 billing 전력, 코로케이션 마진, OCF·CAPEX·FCF와 희석을 함께 확인합니다.\n\n⚠️ 미확인\n• 코로케이션 OCF·CAPEX·FCF와 완전희석 주식수의 동행이 없어 계약가치의 주주가치 전환은 아직 미확인입니다.",
+      "ticker": "CORZ"
+    },
+    {
+      "logical_identity": "2026-08-20-us-run-28-9024def294e6:CRCL:ai-replay",
+      "text": "🤖 AI 보조 종목 점검 · US Pilot 4/5\n\n🏢 Circle Internet Group(CRCL)\n투자 논리: 유지 · 오늘 중요한 신규 변화 없음\n구조적 위험: 높아진 상태\n시장 기대: 투기적 기대\n\n🎯 핵심 판단\nUSDC 성장 기대는 유지되지만 금리 민감한 준비금 수익을 비이자 플랫폼 수익이 대체하는지가 투기적 기대를 검증할 핵심입니다. 현재 기대를 점검할 숫자는 현재가 $78.59; 2026년 1분기 매출 $41.62M; 현재가 기준 차트 손익비 0.34배입니다.\n\n📈 사업·실적\n2026년 1분기 매출 $41.62M; 이 매출만으로 준비금 수익, 비이자 매출, 수익배분과 FCF의 질을 확정할 수 없습니다.\n\n💰 가격·포지셔닝\n현재가 $78.59; 동적 지지구간 하단 $71.1; 동적 지지구간 상단 $74.43; 동적 저항구간 하단 $82.01; 동적 저항구간 상단 $86.53; 현재가 기준 차트 손익비 0.34배. 확인 lifecycle은 돌파 실패에서 재돌파로 바뀌었고 거래량도 늘었지만 재시험 전이며 현재가 손익비는 낮아 WAIT입니다.\n• 신규 관찰자: 새 자금은 돌파 재시험과 거래량 회복뿐 아니라 USDC 점유율과 비이자 수익의 동시 개선이 확인돼야 가격 비대칭을 검토할 수 있습니다.\n• 보유자: 보유자는 현재 차트 경계와 USDC 정체 또는 준비금 수익 감소를 비이자 성장으로 상쇄하지 못하는 사업 위험을 분리해야 합니다.\n\n📊 거래량·포지셔닝\n이전 차트 손익비 3.34배에서 현재 차트 손익비 0.34배로 이동한 가운데, 재돌파와 거래량 증가는 확인됐지만 전일 대비 현재가 기준 가격 비대칭은 악화됐습니다. USDC 사업 기대의 확인으로 볼 수 없습니다.\n\n📐 Valuation\n검증된 선행 이익 기준과 장부 기준은 서로 독립적으로 볼 수 있지만, 후행 이익 배수의 주당 기준은 충분히 확인되지 않아 배수 간 관계 해석은 보류합니다. USDC 점유율, 비이자 수익과 FCF가 기대를 검증할 다음 증거입니다.\n\n👁 핵심 감시\n• USDC 점유율, 준비금 수익 의존도와 비이자 수익 전환을 지속 감시합니다.\n\n📌 다음 확인\n• 다음 공식 자료에서 USDC 유통량·점유율, 비이자 수익, 수익배분, adjusted EBITDA와 FCF를 확인합니다.\n\n⚠️ 미확인\n• USDC 점유율, 비이자 수익, 수익배분과 FCF의 동행이 미확인입니다.",
+      "ticker": "CRCL"
+    },
+    {
+      "logical_identity": "2026-08-20-us-run-28-9024def294e6:GOOGL:ai-replay",
+      "text": "🤖 AI 보조 종목 점검 · US Pilot 4/5\n\n🏢 Alphabet Inc. Class A(GOOGL)\n투자 논리: 유지 · 오늘 중요한 신규 변화 없음\n구조적 위험: 보통\n시장 기대: 높음\n\n🎯 핵심 판단\nSearch·Cloud 사업 논리는 유지되며 높은 AI 투자를 마진·FCF·ROIC로 회수하는지가 다음 핵심입니다. AI 투자 회수와 가격을 함께 볼 숫자는 현재가 $344.72; 현재 PER 12.36배; 현재가 기준 차트 손익비 4.27배입니다.\n\n📈 사업·실적\nSearch monetization, Cloud 성장·마진, CAPEX와 FCF의 변화는 제공된 실적만으로 확정할 수 없습니다.\n\n💰 가격·포지셔닝\n현재가 $344.72; 동적 지지구간 하단 $343.65; 동적 지지구간 상단 $353.79; 동적 저항구간 하단 $370.37; 동적 저항구간 상단 $378.79; 현재가 기준 차트 손익비 4.27배. HOLD는 보유자 가격 구조이며 새 자금의 진입 신호가 아닙니다. 동적 지지 방어와 AI 투자 회수 증거를 분리해 확인합니다.\n• 신규 관찰자: 새 자금은 동적 지지 회복과 Cloud 마진·FCF가 AI 투자를 흡수한다는 사실이 함께 확인될 때 가격 비대칭을 검토할 수 있습니다.\n• 보유자: 보유자는 현재 차트 경계와 Search 경쟁력 또는 Cloud 현금창출 훼손을 별개의 재평가 조건으로 둬야 합니다.\n\n📊 거래량·포지셔닝\n거래량은 최근 평균보다 약합니다; Search·Cloud 사업 변화의 증거는 아닙니다.\n\n📐 Valuation\n현재 PER 12.36배; 시장 예상 fPER 19.29배; 후행·선행 이익 배수 관계에서 선행 배수는 더 높습니다. 이는 선행 이익 분모에 더 보수적인 기대가 있음을 시사합니다.\n\n👁 핵심 감시\n• Search 방어력, Cloud 마진과 AI CAPEX의 FCF·ROIC 회수를 지속 감시합니다.\n\n📌 다음 확인\n• 다음 공식 실적에서 Cloud 성장·마진, Search monetization, CAPEX, FCF와 ROIC를 확인합니다.\n\n⚠️ 미확인\n• Cloud backlog와 AI CAPEX의 증분 ROIC가 없어 투자 회수 속도는 미확인입니다.",
+      "ticker": "GOOGL"
+    },
+    {
+      "logical_identity": "2026-08-20-us-run-28-9024def294e6:HUT:ai-replay",
+      "text": "🤖 AI 보조 종목 점검 · US Pilot 4/5\n\n🏢 Hut 8 Corp.(HUT)\n투자 논리: 유지 · 오늘 중요한 신규 변화 없음\n구조적 위험: 보통\n시장 기대: 매우 높음\n\n🎯 핵심 판단\nAI 데이터센터 계약 기대는 유지되지만 계약 규모보다 준공·가동·NOI와 프로젝트 자본효율의 실현이 핵심입니다. 프로젝트 실행을 평가할 숫자는 현재가 $82.08; 시장 예상 fPER 139.12배입니다.\n\n📈 사업·실적\n새로운 해석 가능한 실적 숫자가 없어 제한 없는 현금, 프로젝트 투자, OCF와 FCF의 변화를 확정할 수 없습니다.\n\n💰 가격·포지셔닝\n현재가 $82.08; 동적 지지구간 하단 $80.64; 동적 지지구간 상단 $85.96; 동적 저항구간 하단 $84.11; 동적 저항구간 상단 $89.67. 동적 지지와 저항이 겹쳐 현재가 기준 손익비는 확정할 수 없고 가격 구조는 WAIT입니다. 프로젝트 실행 실패를 자동으로 뜻하지 않습니다.\n• 신규 관찰자: 새 자금은 동적 지지 방어와 준공·가동·NOI의 실제 인식이 함께 나타날 때 가격 비대칭을 검토할 수 있습니다.\n• 보유자: 보유자는 차트 검토 경계와 준공 지연·프로젝트 자금조달 악화라는 사업 훼손을 분리해야 합니다.\n\n📊 거래량·포지셔닝\n거래량은 최근 평균보다 약하고 동적 지지·저항의 중첩으로 가격 비대칭을 확정할 수 없습니다. 준공·가동·NOI는 별도 공식 사실로 확인해야 합니다.\n\n📐 Valuation\n시장 예상 fPER 139.12배입니다. 현재 PBR 6.69배입니다. 계약 전력의 가동, NOI와 FCF가 두 배수를 투자 판단으로 연결할 다음 증거입니다.\n\n⚠️ 데이터 주의\n• 최신 정식 재무 반영이 지연돼 현재 Valuation 신뢰도를 낮춰 봅니다.\n\n👁 핵심 감시\n• 계약 전력의 준공·가동 속도와 프로젝트 자본효율을 지속 감시합니다.\n\n📌 다음 확인\n• 다음 공식 자료에서 계약 전력의 가동, NOI, 프로젝트 투자·부채·지분 투입과 FCF를 확인합니다.\n\n⚠️ 미확인\n• 제한 현금과 자유현금, 프로젝트별 투자와 모회사 지분 투입의 구분이 부족합니다.",
+      "ticker": "HUT"
+    },
+    {
+      "logical_identity": "2026-08-20-us-run-28-9024def294e6:IBM:ai-replay",
+      "text": "🤖 AI 보조 종목 점검 · US Pilot 4/5\n\n🏢 IBM(IBM)\n투자 논리: 유지 · 오늘 중요한 신규 변화 없음\n구조적 위험: 보통\n시장 기대: 균형\n\n🎯 핵심 판단\nSoftware·Red Hat 성장과 Consulting 둔화를 FCF로 상쇄하는지가 균형적 기대를 지키는 핵심입니다. 사업 균형과 가격 구조를 잇는 숫자는 현재가 $237.16; 2026년 2분기 매출 $17.16B; 현재가 기준 차트 손익비 0.17배입니다.\n\n📈 사업·실적\n2026년 2분기 매출 $17.16B; 이 실적은 Software·Consulting의 질과 FCF 개선을 함께 확인해야 의미가 커집니다.\n\n💰 가격·포지셔닝\n현재가 $237.16; 동적 지지구간 하단 $228.6; 동적 지지구간 상단 $235.66; 동적 저항구간 하단 $239.37; 동적 저항구간 상단 $244.23; 현재가 기준 차트 손익비 0.17배. 동적 지지 위에 있지만 근접 저항과 낮은 현재가 손익비 때문에 가격 구조는 WAIT입니다. Software·Consulting의 사업 판단은 별도입니다.\n• 신규 관찰자: 새 자금은 동적 지지 유지와 Software 성장, Consulting 안정, FCF 확인이 함께 나타날 때 가격 비대칭을 검토할 수 있습니다.\n• 보유자: 보유자는 현재 차트 구조와 Software 성장 둔화·FCF 약화라는 사업 재평가 조건을 분리해야 합니다.\n\n📊 거래량·포지셔닝\n거래량은 최근 평균보다 약합니다; Software·Consulting의 이익 지속성 판단과 분리합니다.\n\n📐 Valuation\n현재 PER 14.32배; 시장 예상 fPER 17.35배; 후행·선행 이익 배수 관계에서 선행 배수는 더 높습니다. 이는 선행 이익 분모에 더 보수적인 기대가 있음을 시사합니다.\n\n⚠️ 데이터 주의\n• 최신 정식 재무 반영이 지연돼 현재 Valuation 신뢰도를 낮춰 봅니다.\n\n👁 핵심 감시\n• Software·Red Hat 성장, Consulting 둔화와 부채·FCF 균형을 지속 감시합니다.\n\n📌 다음 확인\n• 다음 공식 실적에서 Software·Red Hat 성장, Consulting 매출, FCF, 부채와 ROIC를 확인합니다.\n\n⚠️ 미확인\n• AI 관련 매출의 수익성, Consulting backlog 전환과 증분 ROIC가 미확인입니다.",
+      "ticker": "IBM"
+    },
+    {
+      "logical_identity": "2026-08-20-us-run-28-9024def294e6:MU:ai-replay",
+      "text": "🤖 AI 보조 종목 점검 · US Pilot 4/5\n\n🏢 Micron Technology(MU)\n투자 논리: 유지 · 오늘 중요한 신규 변화 없음\n구조적 위험: 보통\n시장 기대: 매우 높음\n\n🎯 핵심 판단\n메모리 업사이클과 HBM 기대를 정당화하려면 ASP·출하·마진과 FCF가 함께 이어져야 합니다. 사이클 기대를 점검할 숫자는 현재가 $937.11; 2026년 3분기 매출 $41.46B; 현재가 기준 차트 손익비 0.52배입니다.\n\n📈 사업·실적\n2026년 3분기 매출 $41.46B; 이 실적은 DRAM·NAND ASP, HBM 믹스, CAPEX와 FCF를 함께 보지 않으면 사이클 이익의 질을 확정할 수 없습니다.\n\n💰 가격·포지셔닝\n현재가 $937.11; 동적 지지구간 하단 $868.39; 동적 지지구간 상단 $914.93; 동적 저항구간 하단 $991.61; 동적 저항구간 상단 $1,031.93; 현재가 기준 차트 손익비 0.52배. 확인 lifecycle은 돌파 실패에서 미도달로 정리됐고 현재가 손익비가 낮아 WAIT입니다. HBM 실적 확인은 별도입니다.\n• 신규 관찰자: 새 자금은 동적 지지 방어와 HBM 출하·ASP·마진의 추가 확인이 함께 있을 때 가격 비대칭을 검토할 수 있습니다.\n• 보유자: 보유자는 현재 차트 구조와 재고·ASP·CAPEX가 만드는 사이클 훼손을 별개의 재평가 조건으로 둬야 합니다.\n\n📊 거래량·포지셔닝\n이전 차트 손익비 2.67배에서 현재 차트 손익비 0.52배로 이동한 가운데, 전일 대비 현재가 기준 가격 비대칭은 악화됐고 거래량도 최근 평균보다 약합니다. HBM 수요와 메모리 마진은 별도 실적으로 확인해야 합니다.\n\n📐 Valuation\n현재 PER 19.15배; 시장 예상 fPER 5.87배; 후행·선행 이익 배수 관계에서 선행 배수는 더 낮습니다. 이는 이익 확대 기대를 담지만 메모리 피크 이익과 공급 확대 위험은 별도 검증해야 합니다.\n\n⚠️ 데이터 주의\n• fPER는 산출 기간이 명확하지 않아 참고 수준입니다.\n\n👁 핵심 감시\n• HBM 믹스, 메모리 ASP·재고와 공급 CAPEX 규율을 지속 감시합니다.\n\n📌 다음 확인\n• 다음 공식 실적에서 ASP·출하, HBM 믹스, gross margin, CAPEX, FCF와 순현금을 확인합니다.\n\n⚠️ 미확인\n• 재고, DRAM·NAND ASP, HBM 고객 믹스와 FCF의 동행이 미확인입니다.",
+      "ticker": "MU"
+    },
+    {
+      "logical_identity": "2026-08-20-us-run-28-9024def294e6:RXRX:ai-replay",
+      "text": "🤖 AI 보조 종목 점검 · US Pilot 4/5\n\n🏢 Recursion Pharmaceuticals(RXRX)\n투자 논리: 유지 · 오늘 중요한 신규 변화 없음\n구조적 위험: 높아진 상태\n시장 기대: 투기적 기대\n\n🎯 핵심 판단\n바이오 투자 논리는 유지되지만 매출보다 임상 성공확률, 파트너 milestone과 cash runway가 기업가치를 좌우합니다. 임상 옵션과 가격을 분리해 볼 숫자는 현재가 $3.5; 2026년 2분기 매출 $7.67M; 현재가 기준 차트 손익비 0.26배입니다.\n\n📈 사업·실적\n2026년 2분기 매출 $7.67M; 이 매출만으로 임상 진행·파트너 지급과 현금소진을 판단할 수 없습니다.\n\n💰 가격·포지셔닝\n현재가 $3.5; 동적 지지구간 하단 $2.78; 동적 지지구간 상단 $2.92; 동적 저항구간 하단 $3.71; 동적 저항구간 상단 $3.91; 현재가 기준 차트 손익비 0.26배. 확인 lifecycle은 미도달에서 돌파로 바뀌었고 거래량도 늘었지만 재시험 전이며 현재가 손익비가 낮아 WAIT입니다.\n• 신규 관찰자: 새 자금은 동적 지지보다 먼저 임상 데이터나 파트너 타깃 선택과 cash runway가 가격 위험을 보상하는지 확인해야 합니다.\n• 보유자: 보유자는 차트 검토 경계와 임상 실패·runway 단축·희석 확대라는 사업 훼손을 분리해야 합니다.\n\n📊 거래량·포지셔닝\n이전 차트 손익비 1.59배에서 현재 차트 손익비 0.26배로 이동한 가운데, 돌파와 거래량 증가는 확인됐지만 전일 대비 현재가 기준 가격 비대칭은 악화됐습니다. 임상 진척이나 runway 확인은 아닙니다.\n\n📐 Valuation\n현재 PBR 2.04배; PBR 역사적 백분위 19.5%; 현재 PBR은 비교 가능한 과거 관측치 대부분보다 낮은 구간이지만, cash runway·희석·임상 성공확률을 대신하지 않습니다.\n\n👁 핵심 감시\n• 임상 milestone, 파트너 의존도, cash runway와 희석 위험을 지속 감시합니다.\n\n📌 다음 확인\n• 다음 공식 자료에서 주요 임상 일정, 파트너 milestone, 현금소진, runway와 희석을 확인합니다.\n\n⚠️ 미확인\n• 후보별 성공확률, milestone 조건, 분기 현금소진과 희석 경로가 미확인입니다.",
+      "ticker": "RXRX"
+    },
+    {
+      "logical_identity": "2026-08-20-us-run-28-9024def294e6:SKHY:ai-replay",
+      "text": "🤖 AI 보조 종목 점검 · US Pilot 4/5\n\n🏢 SK hynix Inc. ADR(SKHY)\n투자 논리: 유지 · 오늘 중요한 신규 변화 없음\n구조적 위험: 높아진 상태\n시장 기대: 투기적 기대\n\n🎯 핵심 판단\nHBM·메모리 기대는 유지되지만 검증된 ADS identity와 별개로 현재 증권의 주당 이익·장부 분모가 아직 충분하지 않습니다. 가격 판단에 쓸 수 있는 확인 숫자는 현재가 $156.16입니다.\n\n📈 사업·실적\n재무 품질이 Unknown이고 현재 증권의 주당 이익·장부 기준이 부족해 실적·배수 수치는 결론에서 제외하며, ASP·마진·FCF도 확인되지 않았습니다.\n\n💰 가격·포지셔닝\n현재가 $156.16. 확인 lifecycle은 돌파 실패에서 미도달로 정리됐고 검증된 동적 지지·저항과 손익비는 없습니다. 가격 신호만으로 HBM 논리를 바꾸지 않습니다.\n• 신규 관찰자: 새 자금은 검증된 동적 지지와 현재 증권의 주당 기준, HBM 출하·마진·FCF가 함께 확인돼야 가격 비대칭을 검토할 수 있습니다.\n• 보유자: 보유자는 현재 가격 검토와 HBM 수요·ASP·현금흐름 훼손을 구분하고 주당 기준 공백을 별도 위험으로 관리해야 합니다.\n\n📊 거래량·포지셔닝\n확인 상태는 돌파 실패에서 미도달로 바뀌었고 거래량은 최근 평균보다 약합니다. 이는 HBM 실적 확인이 아닙니다.\n\n📐 Valuation\nADS identity는 검증됐지만 현재 증권의 주당 이익 분모가 확인되지 않아 PER 해석은 보류합니다. 현재 증권의 장부 주당 분모도 확인되지 않아 PBR 해석은 보류합니다.\n\n⚠️ 데이터 주의\n• 현재 거래 증권의 주당 기준을 확인하지 못해 자체 PER/PBR 계산을 보류했습니다.\n• 최근 해외 공시 재무표의 자동 검증이 끝나지 않아 Valuation을 보수적으로 봅니다.\n\n👁 핵심 감시\n• HBM 출하·믹스, 메모리 ASP와 현재 증권의 주당 기준 공백을 지속 감시합니다.\n\n📌 다음 확인\n• 다음 공식 자료에서 현재 증권의 주당 기준, HBM 출하, DRAM·NAND ASP, 마진, CAPEX와 FCF를 확인합니다.\n\n⚠️ 미확인\n• 현재 증권의 주당 이익·장부 분모, HBM 출하·ASP·FCF가 미확인입니다.",
+      "ticker": "SKHY"
+    },
+    {
+      "logical_identity": "2026-08-20-us-run-28-9024def294e6:SNDK:ai-replay",
+      "text": "🤖 AI 보조 종목 점검 · US Pilot 4/5\n\n🏢 SanDisk(SNDK)\n투자 논리: 유지 · 오늘 중요한 신규 변화 없음\n구조적 위험: 높아진 상태\n시장 기대: 투기적 기대\n\n🎯 핵심 판단\nNAND 사이클과 데이터센터 수요 기대는 유지되지만 공급 규율과 현금전환의 추가 증명이 필요합니다. 공급 규율과 가격을 확인할 숫자는 현재가 $1,568.87; 2026년 연간 매출 $20.25B; 현재가 기준 차트 손익비 0.11배입니다.\n\n📈 사업·실적\n2026년 연간 매출 $20.25B; 이 매출만으로 NAND ASP·데이터센터 매출·재고와 FCF의 동행을 확정할 수 없습니다.\n\n💰 가격·포지셔닝\n현재가 $1,568.87; 동적 지지구간 하단 $950.35; 동적 지지구간 상단 $1,046.03; 동적 저항구간 하단 $1,648.95; 동적 저항구간 상단 $1,743.79; 현재가 기준 차트 손익비 0.11배. 상향 확인 상태는 유지되지만 현재가 손익비가 낮아 가격 구조는 WAIT입니다. NAND 공급 규율은 별도 실적 대상입니다.\n• 신규 관찰자: 새 자금은 동적 지지 방어와 NAND ASP·데이터센터 매출·FCF 확인이 함께 나타날 때 가격 비대칭을 검토할 수 있습니다.\n• 보유자: 보유자는 확인 상태보다 현재 동적 지지와 NAND 가격·재고·FCF 훼손을 별도로 봐야 합니다.\n\n📊 거래량·포지셔닝\n이전 차트 손익비 0.03배에서 현재 차트 손익비 0.11배로 이동한 가운데, 전일 대비 현재가 기준 가격 비대칭은 개선됐지만 여전히 낮고 거래량도 최근 평균보다 약합니다. NAND 공급 규율과 현금전환은 별도 실적 대상입니다.\n\n📐 Valuation\n검증된 선행 이익 기준과 장부 기준은 서로 독립적으로 볼 수 있지만, 후행 이익 배수의 주당 기준은 충분히 확인되지 않아 배수 간 관계 해석은 보류합니다. NAND 공급 규율과 현금전환이 기대를 검증할 다음 증거입니다.\n\n👁 핵심 감시\n• NAND 공급 규율, 데이터센터 수요와 재고·현금전환을 지속 감시합니다.\n\n📌 다음 확인\n• 다음 공식 실적에서 NAND 가격, 데이터센터 매출, RPO 전환, gross margin, 재고와 FCF를 확인합니다.\n\n⚠️ 미확인\n• NAND ASP, 데이터센터 매출 전환, 재고와 OCF·CAPEX·FCF의 동행이 미확인입니다.",
+      "ticker": "SNDK"
+    },
+    {
+      "logical_identity": "2026-08-20-us-run-28-9024def294e6:TSLA:ai-replay",
+      "text": "🤖 AI 보조 종목 점검 · US Pilot 4/5\n\n🏢 Tesla, Inc.(TSLA)\n투자 논리: 유지 · 오늘 중요한 신규 변화 없음\n구조적 위험: 높아진 상태\n시장 기대: 투기적 기대\n\n🎯 핵심 판단\n자동차 사업과 장기 옵션 논리는 유지되지만 자동차 마진·FCF와 Robotaxi 단위경제성이 함께 증명돼야 합니다. 실행 기대와 가격을 함께 볼 숫자는 현재가 $351.12; TTM EPS $1.92; 현재가 기준 차트 손익비 0.39배입니다.\n\n📈 사업·실적\n자동차 가격·믹스, 영업마진, 재고, CAPEX와 FCF의 질을 확정할 수 없습니다.\n\n💰 가격·포지셔닝\n현재가 $351.12; 동적 지지구간 하단 $334.71; 동적 지지구간 상단 $341.29; 동적 저항구간 하단 $360.04; 동적 저항구간 상단 $372.58; 현재가 기준 차트 손익비 0.39배. 확인 lifecycle은 미도달에서 돌파로 바뀌었지만 재시험 전이고 현재가 손익비가 낮아 WAIT입니다. 자동차 마진·Robotaxi 실행은 별도입니다.\n• 신규 관찰자: 새 자금은 돌파 실패 뒤 동적 지지·저항의 재정렬과 자동차 마진·Robotaxi 단위경제성 확인이 필요합니다.\n• 보유자: 보유자는 차트 검토 경계와 자동차 마진·FCF 또는 Robotaxi 실행의 사업 훼손을 분리해야 합니다.\n\n📊 거래량·포지셔닝\n이전 차트 손익비 2.33배에서 현재 차트 손익비 0.39배로 이동한 가운데, 돌파는 확인됐지만 전일 대비 현재가 기준 가격 비대칭은 악화됐고 거래량도 최근 평균보다 약합니다. 자동차 마진과 Robotaxi 실행의 확인으로 확대할 수 없습니다.\n\n📐 Valuation\n현재 PER 182.88배; 시장 예상 fPER 145.9배; 후행·선행 이익 배수 관계에서 선행 배수는 더 낮습니다. 이는 이익 확대 기대를 담지만 자동차 마진과 Robotaxi 실행이 부족하면 압축 위험이 남습니다. PER 역사적 백분위 96.9%입니다. 이는 현재 PER이 비교 가능한 과거 관측치 대부분보다 높은 구간이라는 뜻입니다.\n\n⚠️ 기존 경고\n• 영업이익률 저하 확인\n• FCF 적자 확인\n\n👁 핵심 감시\n• 자동차 마진·재고, Robotaxi 단위경제성과 성장 CAPEX의 회수를 지속 감시합니다.\n\n📌 다음 확인\n• 다음 공식 실적에서 자동차 마진·재고, Robotaxi 이용률·단위경제성, CAPEX와 FCF를 확인합니다.\n\n⚠️ 미확인\n• Robotaxi 유료 운행의 차량당 매출·이익과 자동차 재고·FCF의 동행이 미확인입니다.",
+      "ticker": "TSLA"
+    },
+    {
+      "logical_identity": "2026-08-20-us-run-28-9024def294e6:TSM:ai-replay",
+      "text": "🤖 AI 보조 종목 점검 · US Pilot 4/5\n\n🏢 TSMC(TSM)\n투자 논리: 유지 · 오늘 중요한 신규 변화 없음\n구조적 위험: 보통\n시장 기대: 매우 높음\n\n🎯 핵심 판단\n첨단공정 수요와 실적 방향은 유지되지만 현재 미국 상장 증권의 identity와 주당 기준 공백은 별도 위험입니다. 실적 방향과 가격을 구분해 볼 숫자는 현재가 $412.09; 2026년 2분기 매출 NT$1.27T; 2026년 2분기 영업이익률 60.3%입니다.\n\n📈 사업·실적\n2026년 2분기 매출 NT$1.27T; 2026년 2분기 영업이익 NT$766.6B; 2026년 2분기 영업이익률 60.3%; TWD 기준의 잠정 매출·영업이익·마진은 확인되지만 OCF·CAPEX·FCF·재고·ROIC를 증명하지 않으며 미국 상장 증권 가격과 환산하지 않습니다.\n\n💰 가격·포지셔닝\n현재가 $412.09; 동적 지지구간 하단 $380.77; 동적 지지구간 상단 $390.31; 동적 저항구간 하단 $468.08; 동적 저항구간 상단 $489.92; 현재가 기준 차트 손익비 1.46배. 동적 지지 구간 안의 WAIT 상태가 이어졌습니다. 가격 구조와 첨단공정 수요 확인을 분리합니다.\n• 신규 관찰자: 새 자금은 가격 구조만으로 충분하지 않으며 현재 증권 identity 해결과 첨단공정 가동률·마진·FCF 확인이 함께 필요합니다.\n• 보유자: 보유자는 현재 차트의 비중관리 압력과 첨단공정 가동률·해외 팹 비용·FCF 훼손을 분리하고 identity 공백을 별도로 관리해야 합니다.\n\n📊 거래량·포지셔닝\n거래량은 최근 평균보다 약합니다; 첨단공정 수요와 마진은 별도 공식 실적으로 확인해야 합니다.\n\n📐 Valuation\n현재 미국 상장 증권의 identity와 주당 이익 분모가 확인되지 않아 PER 해석은 보류합니다. 현재 미국 상장 증권의 장부 주당 분모도 확인되지 않아 PBR 해석은 보류합니다.\n\n⚠️ 데이터 주의\n• 최신 정식 재무 반영이 지연돼 현재 Valuation 신뢰도를 낮춰 봅니다.\n• 최근 공식 잠정실적의 매출·영업이익은 반영했지만 주당 기준을 확인하지 못해 자체 PER 계산은 보류했습니다.\n\n👁 핵심 감시\n• 첨단공정 가동률·가격, 해외 CAPEX와 마진·FCF 회수를 지속 감시합니다.\n\n📌 다음 확인\n• 다음 공식 자료에서 현재 증권 identity, 첨단공정 가동률, wafer ASP, gross margin, CAPEX, FCF와 ROIC를 확인합니다.\n\n⚠️ 미확인\n• 현재 증권 identity와 주당 분모, OCF·CAPEX·FCF·재고·ROIC가 미확인입니다.",
+      "ticker": "TSM"
+    },
+    {
+      "logical_identity": "2026-08-20-us-run-28-9024def294e6:WRD:ai-replay",
+      "text": "🤖 AI 보조 종목 점검 · US Pilot 4/5\n\n🏢 WeRide(WRD)\n투자 논리: 유지 · 오늘 중요한 신규 변화 없음\n구조적 위험: 높아진 상태\n시장 기대: 투기적 기대\n\n🎯 핵심 판단\nRobotaxi 상용화 기대는 유지되지만 현재 미국 상장 증권의 identity와 주당 기준이 미확인이라 가격 구조와 사업 검증을 분리해야 합니다. 상용화 진척과 가격을 나눠 볼 숫자는 현재가 $6.07; 현재가 기준 차트 손익비 1.01배입니다.\n\n📈 사업·실적\nCNY 기준 실적의 주당 환산은 하지 않으며 유료 fleet, 차량당 이용률·매출, gross margin과 cash burn이 없어 단위경제성을 판단할 수 없습니다.\n\n💰 가격·포지셔닝\n현재가 $6.07; 동적 지지구간 하단 $5.91; 동적 지지구간 상단 $6.15; 동적 저항구간 하단 $6.38; 동적 저항구간 상단 $6.52; 현재가 기준 차트 손익비 1.01배. 동적 지지를 회복했고 가격 구조는 WAIT입니다. 유료 운행의 단위경제성은 별도 확인 조건입니다.\n• 신규 관찰자: 새 자금은 동적 지지 방어보다 유료 서비스 확대와 차량당 단위경제성, 현금소진 경로를 먼저 확인해야 합니다.\n• 보유자: 보유자는 현재 차트 경계와 규제·안전·fleet 이용률·현금소진이라는 사업 훼손을 분리해야 합니다.\n\n📊 거래량·포지셔닝\n이전 차트 손익비 2.45배에서 현재 차트 손익비 1.01배로 이동한 가운데, 동적 지지 회복에도 전일 대비 현재가 기준 가격 비대칭은 악화됐고 거래량은 최근 평균보다 약합니다. 상용화 진척의 확인은 아닙니다.\n\n📐 Valuation\n현재 미국 상장 증권의 identity와 주당 이익 분모가 확인되지 않아 PER 해석은 보류합니다. 현재 미국 상장 증권의 장부 주당 분모도 확인되지 않아 PBR 해석은 보류합니다.\n\n⚠️ 데이터 주의\n• 최신 정식 재무 반영이 지연돼 현재 Valuation 신뢰도를 낮춰 봅니다.\n• 현재 거래 증권의 주당 기준을 확인하지 못해 자체 PER/PBR 계산을 보류했습니다.\n\n👁 핵심 감시\n• 유료 운행 지역·fleet 이용률, 단위경제성과 cash burn을 지속 감시합니다.\n\n📌 다음 확인\n• 다음 공식 자료에서 유료 지역·fleet·이용률, Robotaxi 매출, gross margin, 영업손실과 cash burn을 확인합니다.\n\n⚠️ 미확인\n• depositary ratio 방향과 현재 증권의 주당 분모, 유료 fleet, 차량당 매출·이익이 미확인입니다.",
+      "ticker": "WRD"
+    },
+    {
+      "logical_identity": "2026-08-20-us-run-28-9024def294e6:WULF:ai-replay",
+      "text": "🤖 AI 보조 종목 점검 · US Pilot 4/5\n\n🏢 TeraWulf Inc.(WULF)\n투자 논리: 유지 · 오늘 중요한 신규 변화 없음\n구조적 위험: 높아진 상태\n시장 기대: 투기적 기대\n\n🎯 핵심 판단\nHPC 전환 기대를 정당화하려면 가동 전력·lease 매출·FCF가 빠르게 증명돼야 합니다. 전력 가동과 기대 수준을 점검할 숫자는 현재가 $15.5; 현재 PBR 52.51배입니다.\n\n📈 사업·실적\nHPC lease 매출, 가동 전력, EBITDA, OCF·CAPEX·FCF와 희석 변화를 확정할 수 없습니다.\n\n💰 가격·포지셔닝\n현재가 $15.5; 동적 저항구간 하단 $15.55; 동적 저항구간 상단 $16.46. 검증된 동적 지지와 차트 무효화가 없어 현재가 손익비는 확정할 수 없고, 근접 저항 아래 가격 구조는 WAIT입니다.\n• 신규 관찰자: 새 자금은 동적 지지 방어와 HPC lease 매출·가동 전력·현금전환이 함께 확인될 때 가격 비대칭을 검토할 수 있습니다.\n• 보유자: 보유자는 현재 차트 경계와 준공 지연·현금흐름 악화·희석 확대라는 사업 훼손을 분리해야 합니다.\n\n📊 거래량·포지셔닝\n거래량은 최근 평균보다 약하고 근접 저항이 남아 있습니다. 검증된 동적 지지가 없어 가격 비대칭은 확정할 수 없으며 HPC 가동과 현금전환은 별도입니다.\n\n📐 Valuation\n현재 PBR 52.51배; PBR 역사적 백분위 100%; 현재 PBR은 비교 가능한 과거 관측치 대부분보다 높은 구간이지만, 가동 전력·현금전환·희석 검증을 대신하지 않습니다.\n\n👁 핵심 감시\n• 가동 전력, HPC lease 매출, 확장 CAPEX와 희석의 균형을 지속 감시합니다.\n\n📌 다음 확인\n• 다음 공식 자료에서 가동·건설 전력, HPC lease 매출, EBITDA, OCF·CAPEX·FCF와 희석을 확인합니다.\n\n⚠️ 미확인\n• 가동·건설 전력, lease 매출, 남은 CAPEX, FCF와 완전희석 주식수의 동행이 미확인입니다.",
+      "ticker": "WULF"
+    }
+  ],
+  "repair_audit": {
+    "business": {
+      "CORZ": {
+        "removed_fact_ids": [],
+        "removed_refs": [],
+        "result": "business_facts_retained",
+        "retained_refs": [
+          "corz_earn_1"
+        ]
+      },
+      "CRCL": {
+        "removed_fact_ids": [],
+        "removed_refs": [],
+        "result": "business_facts_retained",
+        "retained_refs": [
+          "crcl_earn_1"
+        ]
+      },
+      "GOOGL": {
+        "removed_fact_ids": [
+          "valuation:current"
+        ],
+        "removed_refs": [
+          "googl_earn_1",
+          "googl_earn_2"
+        ],
+        "result": "specific_unknown_without_numeric_filler",
+        "retained_refs": []
+      },
+      "HUT": {
+        "removed_fact_ids": [],
+        "removed_refs": [],
+        "result": "specific_unknown_without_numeric_filler",
+        "retained_refs": []
+      },
+      "IBM": {
+        "removed_fact_ids": [
+          "valuation:current"
+        ],
+        "removed_refs": [
+          "ibm_earn_2"
+        ],
+        "result": "business_facts_retained",
+        "retained_refs": [
+          "ibm_earn_1"
+        ]
+      },
+      "MU": {
+        "removed_fact_ids": [
+          "valuation:current"
+        ],
+        "removed_refs": [
+          "mu_earn_2"
+        ],
+        "result": "business_facts_retained",
+        "retained_refs": [
+          "mu_earn_1"
+        ]
+      },
+      "RXRX": {
+        "removed_fact_ids": [
+          "valuation:current"
+        ],
+        "removed_refs": [
+          "rxrx_earn_2"
+        ],
+        "result": "business_facts_retained",
+        "retained_refs": [
+          "rxrx_earn_1"
+        ]
+      },
+      "SKHY": {
+        "removed_fact_ids": [],
+        "removed_refs": [],
+        "result": "specific_unknown_without_numeric_filler",
+        "retained_refs": []
+      },
+      "SNDK": {
+        "removed_fact_ids": [],
+        "removed_refs": [],
+        "result": "business_facts_retained",
+        "retained_refs": [
+          "sndk_earn_1"
+        ]
+      },
+      "TSLA": {
+        "removed_fact_ids": [
+          "valuation:current"
+        ],
+        "removed_refs": [
+          "tsla_earn_1",
+          "tsla_earn_2"
+        ],
+        "result": "specific_unknown_without_numeric_filler",
+        "retained_refs": []
+      },
+      "TSM": {
+        "removed_fact_ids": [],
+        "removed_refs": [],
+        "result": "business_facts_retained",
+        "retained_refs": [
+          "tsm_earn_1",
+          "tsm_earn_2",
+          "tsm_earn_3"
+        ]
+      },
+      "WRD": {
+        "removed_fact_ids": [],
+        "removed_refs": [],
+        "result": "specific_unknown_without_numeric_filler",
+        "retained_refs": []
+      },
+      "WULF": {
+        "removed_fact_ids": [
+          "valuation:current"
+        ],
+        "removed_refs": [
+          "wulf_earn_1",
+          "wulf_earn_2"
+        ],
+        "result": "specific_unknown_without_numeric_filler",
+        "retained_refs": []
+      }
+    },
+    "risk_reward": {
+      "CORZ": {
+        "material_transition_reasons": [],
+        "pair_present": true,
+        "pair_rendered": false,
+        "removed_refs": [
+          "corz_rr_cur",
+          "corz_rr_prev"
+        ],
+        "suppression_reason": "no_material_price_transition"
+      },
+      "CRCL": {
+        "material_transition_reasons": [
+          "confirmation_lifecycle_transition"
+        ],
+        "pair_present": true,
+        "pair_rendered": true,
+        "suppression_reason": null
+      },
+      "GOOGL": {
+        "material_transition_reasons": [],
+        "pair_present": true,
+        "pair_rendered": false,
+        "removed_refs": [
+          "googl_rr_cur",
+          "googl_rr_prev"
+        ],
+        "suppression_reason": "no_material_price_transition"
+      },
+      "HUT": {
+        "pair_present": false
+      },
+      "IBM": {
+        "material_transition_reasons": [],
+        "pair_present": true,
+        "pair_rendered": false,
+        "removed_refs": [
+          "ibm_rr_cur",
+          "ibm_rr_prev"
+        ],
+        "suppression_reason": "no_material_price_transition"
+      },
+      "MU": {
+        "material_transition_reasons": [
+          "chart_state_transition",
+          "confirmation_lifecycle_transition",
+          "resistance_change"
+        ],
+        "pair_present": true,
+        "pair_rendered": true,
+        "suppression_reason": null
+      },
+      "RXRX": {
+        "material_transition_reasons": [
+          "chart_state_transition",
+          "confirmation_lifecycle_transition"
+        ],
+        "pair_present": true,
+        "pair_rendered": true,
+        "suppression_reason": null
+      },
+      "SKHY": {
+        "pair_present": false
+      },
+      "SNDK": {
+        "material_transition_reasons": [
+          "chart_state_transition"
+        ],
+        "pair_present": true,
+        "pair_rendered": true,
+        "suppression_reason": null
+      },
+      "TSLA": {
+        "material_transition_reasons": [
+          "chart_state_transition",
+          "confirmation_lifecycle_transition",
+          "support_change"
+        ],
+        "pair_present": true,
+        "pair_rendered": true,
+        "suppression_reason": null
+      },
+      "TSM": {
+        "material_transition_reasons": [],
+        "pair_present": true,
+        "pair_rendered": false,
+        "removed_refs": [
+          "tsm_rr_cur",
+          "tsm_rr_prev"
+        ],
+        "suppression_reason": "no_material_price_transition"
+      },
+      "WRD": {
+        "material_transition_reasons": [
+          "resistance_change"
+        ],
+        "pair_present": true,
+        "pair_rendered": true,
+        "suppression_reason": null
+      },
+      "WULF": {
+        "pair_present": false
+      }
+    },
+    "valuation_pair": {
+      "CORZ": {
+        "joined": false
+      },
+      "CRCL": {
+        "joined": false
+      },
+      "GOOGL": {
+        "joined": true,
+        "relation_sentence_joined": true
+      },
+      "HUT": {
+        "joined": false
+      },
+      "IBM": {
+        "joined": true,
+        "relation_sentence_joined": true
+      },
+      "MU": {
+        "joined": true,
+        "relation_sentence_joined": true
+      },
+      "RXRX": {
+        "joined": true,
+        "relation_sentence_joined": true
+      },
+      "SKHY": {
+        "joined": false
+      },
+      "SNDK": {
+        "joined": false
+      },
+      "TSLA": {
+        "joined": true,
+        "relation_sentence_joined": true
+      },
+      "TSM": {
+        "joined": false
+      },
+      "WRD": {
+        "joined": false
+      },
+      "WULF": {
+        "joined": true,
+        "relation_sentence_joined": true
+      }
+    }
+  },
+  "replay_validation_errors": [],
+  "run27_regression": {
+    "generic_numeric_summary_repeat_count": 0,
+    "hard_checks_passed": true,
+    "receipt_verified": true,
+    "template_skeleton_repeat_count": 0,
+    "validation_errors": []
+  },
+  "runtime_quality_after": {
+    "contract": "relational-reasoning-quality-v2",
+    "deterministic_quality_gate_passed": true,
+    "duplicate_threshold": 3,
+    "final_rendered_language": {
+      "details": [],
+      "duplicate_canonical_label_count": 0,
+      "hard_checks_passed": true,
+      "incomplete_predicate_count": 0,
+      "internal_implementation_term_count": 0,
+      "korean_particle_error_count": 0,
+      "malformed_actor_flow_count": 0,
+      "price_particle_error_count": 0
+    },
+    "financial_period_error_count": 0,
+    "generic_methodology_families": [],
+    "generic_methodology_repeat_count": 0,
+    "generic_next_check_count": 0,
+    "generic_numeric_summary_families": [],
+    "generic_numeric_summary_repeat_count": 0,
+    "generic_unknown_count": 0,
+    "hard_checks_passed": true,
+    "human_quality_approval_required": true,
+    "identity_prose_mismatch_count": 0,
+    "kr_supply_numeric_coverage": [],
+    "max_substantive_repeat": 0,
+    "message_set_completeness": {
+      "expected_stock_count": 13,
+      "output_stock_count": 13,
+      "passed": true,
+      "rendered_message_count": 14
+    },
+    "numeric_fact_repetition": {
+      "hard_checks_passed": true,
+      "rows": [],
+      "same_fact_three_or_more_count": 0
+    },
+    "numeric_label_quality": {
+      "details": [],
+      "hard_checks_passed": true,
+      "instrument_label_mismatch_count": 0,
+      "period_label_mismatch_count": 0,
+      "postposition_mismatch_count": 0,
+      "redundant_authored_label_count": 0,
+      "repeated_bound_label_count": 0,
+      "source_label_mismatch_count": 0,
+      "zone_role_mismatch_count": 0
+    },
+    "numeric_ownership": {
+      "business_earnings_violation_count": 0,
+      "business_earnings_violations": [],
+      "contract": "numeric-summary-ownership-v1",
+      "hard_checks_passed": true
+    },
+    "observer_holder": [
+      {
+        "distinct": true,
+        "ticker": "CORZ"
+      },
+      {
+        "distinct": true,
+        "ticker": "CRCL"
+      },
+      {
+        "distinct": true,
+        "ticker": "GOOGL"
+      },
+      {
+        "distinct": true,
+        "ticker": "HUT"
+      },
+      {
+        "distinct": true,
+        "ticker": "IBM"
+      },
+      {
+        "distinct": true,
+        "ticker": "MU"
+      },
+      {
+        "distinct": true,
+        "ticker": "RXRX"
+      },
+      {
+        "distinct": true,
+        "ticker": "SKHY"
+      },
+      {
+        "distinct": true,
+        "ticker": "SNDK"
+      },
+      {
+        "distinct": true,
+        "ticker": "TSLA"
+      },
+      {
+        "distinct": true,
+        "ticker": "TSM"
+      },
+      {
+        "distinct": true,
+        "ticker": "WRD"
+      },
+      {
+        "distinct": true,
+        "ticker": "WULF"
+      }
+    ],
+    "observer_holder_distinct_count": 13,
+    "production_assist_evidence_eligible": false,
+    "rendered_heading_quality": {
+      "expected_heading": "📊 거래량·포지셔닝",
+      "message_indexes": [],
+      "mismatch_count": 0
+    },
+    "rendered_identity_prose_mismatch_count": 0,
+    "rendered_identity_prose_mismatches": [],
+    "repeated_sentences": [],
+    "section_numeric_grounding": {
+      "CORZ": {
+        "core": 3,
+        "earnings": 1,
+        "price": 6,
+        "supply": 0,
+        "valuation": 0
+      },
+      "CRCL": {
+        "core": 3,
+        "earnings": 1,
+        "price": 6,
+        "supply": 2,
+        "valuation": 0
+      },
+      "GOOGL": {
+        "core": 3,
+        "earnings": 0,
+        "price": 6,
+        "supply": 0,
+        "valuation": 2
+      },
+      "HUT": {
+        "core": 2,
+        "earnings": 0,
+        "price": 5,
+        "supply": 0,
+        "valuation": 2
+      },
+      "IBM": {
+        "core": 3,
+        "earnings": 1,
+        "price": 6,
+        "supply": 0,
+        "valuation": 2
+      },
+      "MU": {
+        "core": 3,
+        "earnings": 1,
+        "price": 6,
+        "supply": 2,
+        "valuation": 2
+      },
+      "RXRX": {
+        "core": 3,
+        "earnings": 1,
+        "price": 6,
+        "supply": 2,
+        "valuation": 2
+      },
+      "SKHY": {
+        "core": 1,
+        "earnings": 0,
+        "price": 1,
+        "supply": 0,
+        "valuation": 0
+      },
+      "SNDK": {
+        "core": 3,
+        "earnings": 1,
+        "price": 6,
+        "supply": 2,
+        "valuation": 0
+      },
+      "TSLA": {
+        "core": 3,
+        "earnings": 0,
+        "price": 6,
+        "supply": 2,
+        "valuation": 3
+      },
+      "TSM": {
+        "core": 3,
+        "earnings": 3,
+        "price": 6,
+        "supply": 0,
+        "valuation": 0
+      },
+      "WRD": {
+        "core": 2,
+        "earnings": 0,
+        "price": 6,
+        "supply": 2,
+        "valuation": 0
+      },
+      "WULF": {
+        "core": 2,
+        "earnings": 0,
+        "price": 3,
+        "supply": 0,
+        "valuation": 2
+      }
+    },
+    "stock_count": 13,
+    "stock_specific_next_check_count": 13,
+    "stock_specific_unknown_count": 13,
+    "substantive_repeated_sentence_count": 0,
+    "supply_grounding_error_count": 0,
+    "supply_routing": {
+      "generic_us_investor_flow_unknown_count": 0,
+      "generic_us_investor_flow_unknown_rows": [],
+      "generic_us_supply_count": 0,
+      "generic_us_supply_rows": [],
+      "substantive_repeated_supply_sentence_count": 0,
+      "us_kr_style_horizon_count": 0,
+      "us_kr_style_horizon_rows": []
+    },
+    "template_skeleton_contract": "typed-template-skeleton-v1",
+    "template_skeleton_exceptions": [
+      {
+        "owner": "price_context",
+        "reason": "canonical_zone_endpoint_contract",
+        "relation": "metric_set",
+        "section": "price_positioning",
+        "semantic_types": [
+          "current_price_risk_reward_ratio",
+          "resistance_zone_price",
+          "share_price",
+          "support_zone_price"
+        ],
+        "skeleton": "<numeric>; <numeric>; <numeric>; <numeric>; <numeric>; <numeric>.",
+        "stock_count": 10,
+        "tickers": [
+          "CORZ",
+          "CRCL",
+          "GOOGL",
+          "IBM",
+          "MU",
+          "RXRX",
+          "SNDK",
+          "TSLA",
+          "TSM",
+          "WRD"
+        ]
+      }
+    ],
+    "template_skeleton_repeat_count": 0,
+    "template_skeleton_repeats": [],
+    "unsupported_comparative_claim_count": 0,
+    "valuation_evidence_error_count": 0,
+    "watch_next_check_overlap": {
+      "exact_overlap_count": 0,
+      "hard_checks_passed": true,
+      "meaningless_overlap_count": 0,
+      "rows": [],
+      "semantic_overlap_count": 0,
+      "watch_role_violation_count": 0
+    }
+  },
+  "runtime_quality_after_summary": {
+    "generic_methodology_repeat_count": 0,
+    "generic_numeric_summary_repeat_count": 0,
+    "hard_checks_passed": true,
+    "numeric_ownership": {
+      "business_earnings_violation_count": 0,
+      "business_earnings_violations": [],
+      "contract": "numeric-summary-ownership-v1",
+      "hard_checks_passed": true
+    },
+    "observer_holder_distinct_count": 13,
+    "stock_specific_next_check_count": 13,
+    "stock_specific_unknown_count": 13,
+    "substantive_repeated_sentence_count": 0,
+    "template_skeleton_repeat_count": 0
+  },
+  "runtime_quality_before": {
+    "contract": "relational-reasoning-quality-v2",
+    "deterministic_quality_gate_passed": false,
+    "duplicate_threshold": 3,
+    "final_rendered_language": {
+      "details": [],
+      "duplicate_canonical_label_count": 0,
+      "hard_checks_passed": true,
+      "incomplete_predicate_count": 0,
+      "internal_implementation_term_count": 0,
+      "korean_particle_error_count": 0,
+      "malformed_actor_flow_count": 0,
+      "price_particle_error_count": 0
+    },
+    "financial_period_error_count": 0,
+    "generic_methodology_families": [],
+    "generic_methodology_repeat_count": 0,
+    "generic_next_check_count": 0,
+    "generic_numeric_summary_families": [
+      {
+        "family": "business_earnings_generic_numeric_summary",
+        "matches": [
+          {
+            "semantic_types": [
+              "revenue"
+            ],
+            "sentence": "현재 확인된 핵심 숫자는 2026년 2분기 매출 $164.2m입니다.",
+            "text_ref": "business_earnings.text",
+            "ticker": "CORZ"
+          },
+          {
+            "semantic_types": [
+              "revenue"
+            ],
+            "sentence": "현재 확인된 핵심 숫자는 2026년 1분기 매출 $41.62m입니다.",
+            "text_ref": "business_earnings.text",
+            "ticker": "CRCL"
+          },
+          {
+            "semantic_types": [
+              "bvps",
+              "ttm_eps"
+            ],
+            "sentence": "현재 확인된 핵심 숫자는 ttm eps $27.9; bvps $52.37입니다.",
+            "text_ref": "business_earnings.text",
+            "ticker": "GOOGL"
+          },
+          {
+            "semantic_types": [
+              "revenue",
+              "ttm_eps"
+            ],
+            "sentence": "현재 확인된 핵심 숫자는 2026년 2분기 매출 $17.16b; ttm eps $16.56입니다.",
+            "text_ref": "business_earnings.text",
+            "ticker": "IBM"
+          },
+          {
+            "semantic_types": [
+              "revenue",
+              "ttm_eps"
+            ],
+            "sentence": "현재 확인된 핵심 숫자는 2026년 3분기 매출 $41.46b; ttm eps $48.93입니다.",
+            "text_ref": "business_earnings.text",
+            "ticker": "MU"
+          },
+          {
+            "semantic_types": [
+              "revenue",
+              "ttm_eps"
+            ],
+            "sentence": "현재 확인된 핵심 숫자는 2026년 2분기 매출 $7.67m; ttm eps $-2.27입니다.",
+            "text_ref": "business_earnings.text",
+            "ticker": "RXRX"
+          },
+          {
+            "semantic_types": [
+              "revenue"
+            ],
+            "sentence": "현재 확인된 핵심 숫자는 2026년 연간 매출 $20.25b입니다.",
+            "text_ref": "business_earnings.text",
+            "ticker": "SNDK"
+          },
+          {
+            "semantic_types": [
+              "bvps",
+              "ttm_eps"
+            ],
+            "sentence": "현재 확인된 핵심 숫자는 ttm eps $1.92; bvps $21.99입니다.",
+            "text_ref": "business_earnings.text",
+            "ticker": "TSLA"
+          },
+          {
+            "semantic_types": [
+              "operating_income",
+              "operating_margin",
+              "revenue"
+            ],
+            "sentence": "현재 확인된 핵심 숫자는 2026년 2분기 매출 nt$1.27t; 2026년 2분기 영업이익 nt$766.6b; 2026년 2분기 영업이익률 60.3%입니다.",
+            "text_ref": "business_earnings.text",
+            "ticker": "TSM"
+          },
+          {
+            "semantic_types": [
+              "bvps",
+              "ttm_eps"
+            ],
+            "sentence": "현재 확인된 핵심 숫자는 ttm eps $-5.74; bvps $0.3입니다.",
+            "text_ref": "business_earnings.text",
+            "ticker": "WULF"
+          }
+        ],
+        "repeated": true,
+        "stock_count": 10,
+        "tickers": [
+          "CORZ",
+          "CRCL",
+          "GOOGL",
+          "IBM",
+          "MU",
+          "RXRX",
+          "SNDK",
+          "TSLA",
+          "TSM",
+          "WULF"
+        ]
+      }
+    ],
+    "generic_numeric_summary_repeat_count": 1,
+    "generic_unknown_count": 0,
+    "hard_checks_passed": false,
+    "human_quality_approval_required": true,
+    "identity_prose_mismatch_count": 0,
+    "kr_supply_numeric_coverage": [],
+    "max_substantive_repeat": 0,
+    "message_set_completeness": {
+      "expected_stock_count": 13,
+      "output_stock_count": 13,
+      "passed": true,
+      "rendered_message_count": 14
+    },
+    "numeric_fact_repetition": {
+      "hard_checks_passed": true,
+      "rows": [],
+      "same_fact_three_or_more_count": 0
+    },
+    "numeric_label_quality": {
+      "details": [],
+      "hard_checks_passed": true,
+      "instrument_label_mismatch_count": 0,
+      "period_label_mismatch_count": 0,
+      "postposition_mismatch_count": 0,
+      "redundant_authored_label_count": 0,
+      "repeated_bound_label_count": 0,
+      "source_label_mismatch_count": 0,
+      "zone_role_mismatch_count": 0
+    },
+    "numeric_ownership": {
+      "business_earnings_violation_count": 9,
+      "business_earnings_violations": [
+        {
+          "fact_id": "valuation:current",
+          "field_path": "fields.ttm_eps",
+          "reason": "valuation_denominator_used_as_business_filler",
+          "semantic_type": "ttm_eps",
+          "text_ref": "business_earnings.text",
+          "ticker": "GOOGL"
+        },
+        {
+          "fact_id": "valuation:current",
+          "field_path": "fields.bvps",
+          "reason": "valuation_owned_metric_used_as_business_filler",
+          "semantic_type": "bvps",
+          "text_ref": "business_earnings.text",
+          "ticker": "GOOGL"
+        },
+        {
+          "fact_id": "valuation:current",
+          "field_path": "fields.ttm_eps",
+          "reason": "valuation_denominator_used_as_business_filler",
+          "semantic_type": "ttm_eps",
+          "text_ref": "business_earnings.text",
+          "ticker": "IBM"
+        },
+        {
+          "fact_id": "valuation:current",
+          "field_path": "fields.ttm_eps",
+          "reason": "valuation_denominator_used_as_business_filler",
+          "semantic_type": "ttm_eps",
+          "text_ref": "business_earnings.text",
+          "ticker": "MU"
+        },
+        {
+          "fact_id": "valuation:current",
+          "field_path": "fields.ttm_eps",
+          "reason": "valuation_denominator_used_as_business_filler",
+          "semantic_type": "ttm_eps",
+          "text_ref": "business_earnings.text",
+          "ticker": "RXRX"
+        },
+        {
+          "fact_id": "valuation:current",
+          "field_path": "fields.ttm_eps",
+          "reason": "valuation_denominator_used_as_business_filler",
+          "semantic_type": "ttm_eps",
+          "text_ref": "business_earnings.text",
+          "ticker": "TSLA"
+        },
+        {
+          "fact_id": "valuation:current",
+          "field_path": "fields.bvps",
+          "reason": "valuation_owned_metric_used_as_business_filler",
+          "semantic_type": "bvps",
+          "text_ref": "business_earnings.text",
+          "ticker": "TSLA"
+        },
+        {
+          "fact_id": "valuation:current",
+          "field_path": "fields.ttm_eps",
+          "reason": "valuation_denominator_used_as_business_filler",
+          "semantic_type": "ttm_eps",
+          "text_ref": "business_earnings.text",
+          "ticker": "WULF"
+        },
+        {
+          "fact_id": "valuation:current",
+          "field_path": "fields.bvps",
+          "reason": "valuation_owned_metric_used_as_business_filler",
+          "semantic_type": "bvps",
+          "text_ref": "business_earnings.text",
+          "ticker": "WULF"
+        }
+      ],
+      "contract": "numeric-summary-ownership-v1",
+      "hard_checks_passed": false
+    },
+    "observer_holder": [
+      {
+        "distinct": true,
+        "ticker": "CORZ"
+      },
+      {
+        "distinct": true,
+        "ticker": "CRCL"
+      },
+      {
+        "distinct": true,
+        "ticker": "GOOGL"
+      },
+      {
+        "distinct": true,
+        "ticker": "HUT"
+      },
+      {
+        "distinct": true,
+        "ticker": "IBM"
+      },
+      {
+        "distinct": true,
+        "ticker": "MU"
+      },
+      {
+        "distinct": true,
+        "ticker": "RXRX"
+      },
+      {
+        "distinct": true,
+        "ticker": "SKHY"
+      },
+      {
+        "distinct": true,
+        "ticker": "SNDK"
+      },
+      {
+        "distinct": true,
+        "ticker": "TSLA"
+      },
+      {
+        "distinct": true,
+        "ticker": "TSM"
+      },
+      {
+        "distinct": true,
+        "ticker": "WRD"
+      },
+      {
+        "distinct": true,
+        "ticker": "WULF"
+      }
+    ],
+    "observer_holder_distinct_count": 13,
+    "production_assist_evidence_eligible": false,
+    "rendered_heading_quality": {
+      "expected_heading": "📊 거래량·포지셔닝",
+      "message_indexes": [],
+      "mismatch_count": 0
+    },
+    "rendered_identity_prose_mismatch_count": 0,
+    "rendered_identity_prose_mismatches": [],
+    "repeated_sentences": [],
+    "section_numeric_grounding": {
+      "CORZ": {
+        "core": 3,
+        "earnings": 1,
+        "price": 6,
+        "supply": 2,
+        "valuation": 0
+      },
+      "CRCL": {
+        "core": 3,
+        "earnings": 1,
+        "price": 6,
+        "supply": 2,
+        "valuation": 0
+      },
+      "GOOGL": {
+        "core": 3,
+        "earnings": 2,
+        "price": 6,
+        "supply": 2,
+        "valuation": 2
+      },
+      "HUT": {
+        "core": 2,
+        "earnings": 0,
+        "price": 5,
+        "supply": 0,
+        "valuation": 2
+      },
+      "IBM": {
+        "core": 3,
+        "earnings": 2,
+        "price": 6,
+        "supply": 2,
+        "valuation": 2
+      },
+      "MU": {
+        "core": 3,
+        "earnings": 2,
+        "price": 6,
+        "supply": 2,
+        "valuation": 2
+      },
+      "RXRX": {
+        "core": 3,
+        "earnings": 2,
+        "price": 6,
+        "supply": 2,
+        "valuation": 2
+      },
+      "SKHY": {
+        "core": 1,
+        "earnings": 0,
+        "price": 1,
+        "supply": 0,
+        "valuation": 0
+      },
+      "SNDK": {
+        "core": 3,
+        "earnings": 1,
+        "price": 6,
+        "supply": 2,
+        "valuation": 0
+      },
+      "TSLA": {
+        "core": 3,
+        "earnings": 2,
+        "price": 6,
+        "supply": 2,
+        "valuation": 3
+      },
+      "TSM": {
+        "core": 3,
+        "earnings": 3,
+        "price": 6,
+        "supply": 2,
+        "valuation": 0
+      },
+      "WRD": {
+        "core": 2,
+        "earnings": 0,
+        "price": 6,
+        "supply": 2,
+        "valuation": 0
+      },
+      "WULF": {
+        "core": 2,
+        "earnings": 2,
+        "price": 3,
+        "supply": 0,
+        "valuation": 2
+      }
+    },
+    "stock_count": 13,
+    "stock_specific_next_check_count": 13,
+    "stock_specific_unknown_count": 13,
+    "substantive_repeated_sentence_count": 0,
+    "supply_grounding_error_count": 0,
+    "supply_routing": {
+      "generic_us_investor_flow_unknown_count": 0,
+      "generic_us_investor_flow_unknown_rows": [],
+      "generic_us_supply_count": 0,
+      "generic_us_supply_rows": [],
+      "substantive_repeated_supply_sentence_count": 0,
+      "us_kr_style_horizon_count": 0,
+      "us_kr_style_horizon_rows": []
+    },
+    "template_skeleton_contract": "typed-template-skeleton-v1",
+    "template_skeleton_exceptions": [
+      {
+        "owner": "price_context",
+        "reason": "canonical_zone_endpoint_contract",
+        "relation": "metric_set",
+        "section": "price_positioning",
+        "semantic_types": [
+          "current_price_risk_reward_ratio",
+          "resistance_zone_price",
+          "share_price",
+          "support_zone_price"
+        ],
+        "skeleton": "<numeric>; <numeric>; <numeric>; <numeric>; <numeric>; <numeric>.",
+        "stock_count": 10,
+        "tickers": [
+          "CORZ",
+          "CRCL",
+          "GOOGL",
+          "IBM",
+          "MU",
+          "RXRX",
+          "SNDK",
+          "TSLA",
+          "TSM",
+          "WRD"
+        ]
+      }
+    ],
+    "template_skeleton_repeat_count": 5,
+    "template_skeleton_repeats": [
+      {
+        "owner": "price_context",
+        "relation": "previous_to_current",
+        "section": "supply_analysis",
+        "semantic_types": [
+          "current_risk_reward_ratio",
+          "previous_risk_reward_ratio"
+        ],
+        "skeleton": "<numeric>; <numeric>.",
+        "stock_count": 10,
+        "tickers": [
+          "CORZ",
+          "CRCL",
+          "GOOGL",
+          "IBM",
+          "MU",
+          "RXRX",
+          "SNDK",
+          "TSLA",
+          "TSM",
+          "WRD"
+        ],
+        "typed_skeleton": "supply_analysis|price_context|previous_to_current|<numeric>; <numeric>."
+      },
+      {
+        "owner": "valuation",
+        "relation": "metric_set",
+        "section": "valuation_analysis",
+        "semantic_types": [
+          "forward_pe",
+          "trailing_pe"
+        ],
+        "skeleton": "<numeric>; <numeric>.",
+        "stock_count": 4,
+        "tickers": [
+          "GOOGL",
+          "IBM",
+          "MU",
+          "TSLA"
+        ],
+        "typed_skeleton": "valuation_analysis|valuation|metric_set|<numeric>; <numeric>."
+      },
+      {
+        "owner": "business_earnings",
+        "relation": "metric_set",
+        "section": "business_earnings",
+        "semantic_types": [
+          "bvps",
+          "ttm_eps"
+        ],
+        "skeleton": "현재 확인된 핵심 숫자는 <numeric>; <numeric>입니다.",
+        "stock_count": 3,
+        "tickers": [
+          "GOOGL",
+          "TSLA",
+          "WULF"
+        ],
+        "typed_skeleton": "business_earnings|business_earnings|metric_set|현재 확인된 핵심 숫자는 <numeric>; <numeric>입니다."
+      },
+      {
+        "owner": "business_earnings",
+        "relation": "metric_set",
+        "section": "business_earnings",
+        "semantic_types": [
+          "revenue",
+          "ttm_eps"
+        ],
+        "skeleton": "현재 확인된 핵심 숫자는 <numeric>; <numeric>입니다.",
+        "stock_count": 3,
+        "tickers": [
+          "IBM",
+          "MU",
+          "RXRX"
+        ],
+        "typed_skeleton": "business_earnings|business_earnings|metric_set|현재 확인된 핵심 숫자는 <numeric>; <numeric>입니다."
+      },
+      {
+        "owner": "business_earnings",
+        "relation": "single_metric",
+        "section": "business_earnings",
+        "semantic_types": [
+          "revenue"
+        ],
+        "skeleton": "현재 확인된 핵심 숫자는 <numeric>입니다.",
+        "stock_count": 3,
+        "tickers": [
+          "CORZ",
+          "CRCL",
+          "SNDK"
+        ],
+        "typed_skeleton": "business_earnings|business_earnings|single_metric|현재 확인된 핵심 숫자는 <numeric>입니다."
+      }
+    ],
+    "unsupported_comparative_claim_count": 0,
+    "valuation_evidence_error_count": 0,
+    "watch_next_check_overlap": {
+      "exact_overlap_count": 0,
+      "hard_checks_passed": true,
+      "meaningless_overlap_count": 0,
+      "rows": [],
+      "semantic_overlap_count": 0,
+      "watch_role_violation_count": 0
+    }
+  },
+  "runtime_quality_before_summary": {
+    "generic_methodology_repeat_count": 0,
+    "generic_numeric_summary_repeat_count": 1,
+    "hard_checks_passed": false,
+    "numeric_ownership": {
+      "business_earnings_violation_count": 9,
+      "business_earnings_violations": [
+        {
+          "fact_id": "valuation:current",
+          "field_path": "fields.ttm_eps",
+          "reason": "valuation_denominator_used_as_business_filler",
+          "semantic_type": "ttm_eps",
+          "text_ref": "business_earnings.text",
+          "ticker": "GOOGL"
+        },
+        {
+          "fact_id": "valuation:current",
+          "field_path": "fields.bvps",
+          "reason": "valuation_owned_metric_used_as_business_filler",
+          "semantic_type": "bvps",
+          "text_ref": "business_earnings.text",
+          "ticker": "GOOGL"
+        },
+        {
+          "fact_id": "valuation:current",
+          "field_path": "fields.ttm_eps",
+          "reason": "valuation_denominator_used_as_business_filler",
+          "semantic_type": "ttm_eps",
+          "text_ref": "business_earnings.text",
+          "ticker": "IBM"
+        },
+        {
+          "fact_id": "valuation:current",
+          "field_path": "fields.ttm_eps",
+          "reason": "valuation_denominator_used_as_business_filler",
+          "semantic_type": "ttm_eps",
+          "text_ref": "business_earnings.text",
+          "ticker": "MU"
+        },
+        {
+          "fact_id": "valuation:current",
+          "field_path": "fields.ttm_eps",
+          "reason": "valuation_denominator_used_as_business_filler",
+          "semantic_type": "ttm_eps",
+          "text_ref": "business_earnings.text",
+          "ticker": "RXRX"
+        },
+        {
+          "fact_id": "valuation:current",
+          "field_path": "fields.ttm_eps",
+          "reason": "valuation_denominator_used_as_business_filler",
+          "semantic_type": "ttm_eps",
+          "text_ref": "business_earnings.text",
+          "ticker": "TSLA"
+        },
+        {
+          "fact_id": "valuation:current",
+          "field_path": "fields.bvps",
+          "reason": "valuation_owned_metric_used_as_business_filler",
+          "semantic_type": "bvps",
+          "text_ref": "business_earnings.text",
+          "ticker": "TSLA"
+        },
+        {
+          "fact_id": "valuation:current",
+          "field_path": "fields.ttm_eps",
+          "reason": "valuation_denominator_used_as_business_filler",
+          "semantic_type": "ttm_eps",
+          "text_ref": "business_earnings.text",
+          "ticker": "WULF"
+        },
+        {
+          "fact_id": "valuation:current",
+          "field_path": "fields.bvps",
+          "reason": "valuation_owned_metric_used_as_business_filler",
+          "semantic_type": "bvps",
+          "text_ref": "business_earnings.text",
+          "ticker": "WULF"
+        }
+      ],
+      "contract": "numeric-summary-ownership-v1",
+      "hard_checks_passed": false
+    },
+    "observer_holder_distinct_count": 13,
+    "stock_specific_next_check_count": 13,
+    "stock_specific_unknown_count": 13,
+    "substantive_repeated_sentence_count": 0,
+    "template_skeleton_repeat_count": 5
+  },
+  "schema": "4",
+  "source_sha256": {
+    "archived_bound_output": "f2283fe05b58b590c6bc84e4b8356b95a87f9788efc64f315de96168c3731180",
+    "archived_numeric_binding": "d9f26b517aa78f72c093ccea79386fa6a4bc2e71a3b8b78c7763ee245a729135",
+    "delivery_result": "4ea6e66d4aab0ae9553a366a6273ba6b2d8e760975e7cb50be1aca4880f07272",
+    "fallback_messages": "efc2b629e0f860ba9b09e971e71fddd0c565eb58d926f78232f088170e9fad45",
+    "packet": "03bed9b77e58e390dcb2de2790b61f3d8d86815ffd00b550420e5b1e072a9c5f",
+    "quality_receipt": "f76a509dc3a2b7f0cdfd11acbcbb1d69efef67616d4854800d1b94af96f37e34",
+    "raw_candidate": "51773d682aee9d7332cd4f99fe65963e7d385a7686963e8fc128fe079220b35e"
+  }
+}

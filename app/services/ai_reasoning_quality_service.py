@@ -78,6 +78,32 @@ _CHECK_WORDS = re.compile(
     r"(?:확인(?:합니다|되는지|할지|해야\s*합니다)?|점검(?:합니다)?|"
     r"검증(?:합니다|되는지)?|봅니다|판단합니다)"
 )
+_GENERIC_NUMERIC_SUMMARY = re.compile(
+    r"^(?:현재\s*)?(?:확인된|판단의)?\s*(?:핵심|중요|주요)\s*"
+    r"(?:숫자|수치|지표)(?:는|은)\b",
+    re.IGNORECASE,
+)
+
+_SECTION_OWNERS = {
+    "core_judgment": "decision_summary",
+    "business_earnings": "business_earnings",
+    "price_positioning": "price_context",
+    "supply_analysis": "positioning",
+    "valuation_analysis": "valuation",
+    "priority_watch": "industry_driver",
+    "next_checks": "next_check",
+    "unknowns": "unknown",
+}
+_RR_SEMANTICS = {"previous_risk_reward_ratio", "current_risk_reward_ratio"}
+_PBR_HISTORY_SEMANTICS = {"price_to_book", "historical_pb_percentile"}
+_VALUATION_ONLY_BUSINESS_SEMANTICS = {
+    "bvps",
+    "forward_pe",
+    "historical_pb_percentile",
+    "historical_pe_percentile",
+    "price_to_book",
+    "trailing_pe",
+}
 
 # Preferred Korean usage for canonical finance and industry abbreviations. Unknown Latin
 # words are not guessed because their spoken Korean ending is not deterministic.
@@ -143,19 +169,130 @@ def _sentences(value: str) -> list[str]:
 
 
 def _review_sentences(review: AIStockReview) -> list[str]:
-    values = [
-        review.core_judgment.text,
-        review.business_earnings.text,
-        review.price_positioning.text,
-        review.price_positioning.new_observer_view,
-        review.price_positioning.holder_view,
-        review.supply_analysis.text,
-        review.valuation_analysis.text,
-        *review.priority_watch,
-        *review.next_checks,
-        *review.unknowns,
+    return [sentence for _, sentence in _review_sentence_rows(review)]
+
+
+def _review_sentence_rows(review: AIStockReview) -> list[tuple[str, str]]:
+    values = {
+        "core_judgment.text": review.core_judgment.text,
+        "business_earnings.text": review.business_earnings.text,
+        "price_positioning.text": review.price_positioning.text,
+        "price_positioning.new_observer_view": (
+            review.price_positioning.new_observer_view
+        ),
+        "price_positioning.holder_view": review.price_positioning.holder_view,
+        "supply_analysis.text": review.supply_analysis.text,
+        "valuation_analysis.text": review.valuation_analysis.text,
+        **{
+            f"priority_watch[{index}]": value
+            for index, value in enumerate(review.priority_watch)
+        },
+        **{
+            f"next_checks[{index}]": value
+            for index, value in enumerate(review.next_checks)
+        },
+        **{
+            f"unknowns[{index}]": value
+            for index, value in enumerate(review.unknowns)
+        },
+    }
+    return [
+        (text_ref, sentence)
+        for text_ref, value in values.items()
+        for sentence in _sentences(value)
     ]
-    return [sentence for value in values for sentence in _sentences(value)]
+
+
+def _claims_for_sentence(
+    review: AIStockReview,
+    text_ref: str,
+    sentence: str,
+) -> list[object]:
+    return [
+        claim
+        for claim in review.numeric_claims
+        if claim.text_ref == text_ref
+        and normalize_decision_text(claim.usage) in sentence
+    ]
+
+
+def _semantic_relation(semantic_types: set[str]) -> str:
+    if _RR_SEMANTICS.issubset(semantic_types):
+        return "previous_to_current"
+    if _PBR_HISTORY_SEMANTICS.issubset(semantic_types):
+        return "current_to_historical_percentile"
+    if {"revenue", "operating_margin"}.issubset(semantic_types):
+        return "revenue_to_operating_margin"
+    if len(semantic_types) == 1:
+        return "single_metric"
+    if semantic_types:
+        return "metric_set"
+    return "no_numeric_relation"
+
+
+def _typed_template_identity(
+    review: AIStockReview,
+    text_ref: str,
+    sentence: str,
+    skeleton: str,
+) -> tuple[tuple[object, ...], dict[str, object]]:
+    claims = _claims_for_sentence(review, text_ref, sentence)
+    semantic_types = {str(claim.semantic_type) for claim in claims}
+    section = text_ref.split(".", 1)[0].split("[", 1)[0]
+    owner = _SECTION_OWNERS.get(section, "unknown")
+    if _RR_SEMANTICS.intersection(semantic_types):
+        owner = "price_context"
+    relation = _semantic_relation(semantic_types)
+    identity = (
+        section,
+        owner,
+        tuple(sorted(semantic_types)),
+        relation,
+        skeleton,
+    )
+    return identity, {
+        "section": section,
+        "owner": owner,
+        "semantic_types": sorted(semantic_types),
+        "relation": relation,
+        "skeleton": skeleton,
+    }
+
+
+def _business_numeric_ownership_report(
+    output: AIDailyReviewOutput,
+) -> dict[str, object]:
+    violations: list[dict[str, str]] = []
+    for review in output.stock_reviews:
+        for claim in review.numeric_claims:
+            if not claim.text_ref.startswith("business_earnings."):
+                continue
+            valuation_owned = claim.semantic_type in _VALUATION_ONLY_BUSINESS_SEMANTICS
+            valuation_denominator_eps = (
+                claim.semantic_type == "ttm_eps"
+                and claim.fact_id.startswith("valuation:")
+            )
+            if valuation_owned or valuation_denominator_eps:
+                violations.append(
+                    {
+                        "ticker": review.ticker,
+                        "text_ref": claim.text_ref,
+                        "fact_id": claim.fact_id,
+                        "field_path": claim.field_path,
+                        "semantic_type": claim.semantic_type,
+                        "reason": (
+                            "valuation_denominator_used_as_business_filler"
+                            if valuation_denominator_eps
+                            else "valuation_owned_metric_used_as_business_filler"
+                        ),
+                    }
+                )
+    return {
+        "contract": "numeric-summary-ownership-v1",
+        "business_earnings_violation_count": len(violations),
+        "business_earnings_violations": violations,
+        "hard_checks_passed": not violations,
+    }
 
 
 def _template_skeleton(
@@ -585,9 +722,13 @@ def relational_reasoning_quality_report(
     for review in output.stock_reviews:
         for sentence in set(_review_sentences(review)):
             sentence_tickers[sentence].add(review.ticker)
-    template_tickers: dict[str, set[str]] = defaultdict(set)
-    template_exception_reasons: dict[str, dict[str, str]] = defaultdict(dict)
+    template_tickers: dict[tuple[object, ...], set[str]] = defaultdict(set)
+    template_metadata: dict[tuple[object, ...], dict[str, object]] = {}
+    template_exception_reasons: dict[
+        tuple[object, ...], dict[str, str]
+    ] = defaultdict(dict)
     sentence_exception_reasons: dict[str, dict[str, str]] = defaultdict(dict)
+    generic_numeric_summary_matches: list[dict[str, object]] = []
     for review in output.stock_reviews:
         stock = packet_stocks.get(review.ticker, {})
         company_name = str(
@@ -596,13 +737,31 @@ def relational_reasoning_quality_report(
             or stock.get("company")
             or ""
         )
-        for sentence in set(_review_sentences(review)):
+        for text_ref, sentence in set(_review_sentence_rows(review)):
             skeleton = _template_skeleton(review, sentence, company_name)
-            template_tickers[skeleton].add(review.ticker)
+            typed_key, typed_metadata = _typed_template_identity(
+                review,
+                text_ref,
+                sentence,
+                skeleton,
+            )
+            template_tickers[typed_key].add(review.ticker)
+            template_metadata[typed_key] = typed_metadata
             reason = _structural_template_exception(sentence, skeleton)
             if reason is not None:
-                template_exception_reasons[skeleton][review.ticker] = reason
+                template_exception_reasons[typed_key][review.ticker] = reason
                 sentence_exception_reasons[sentence][review.ticker] = reason
+            if text_ref == "business_earnings.text" and _GENERIC_NUMERIC_SUMMARY.search(
+                sentence
+            ):
+                generic_numeric_summary_matches.append(
+                    {
+                        "ticker": review.ticker,
+                        "text_ref": text_ref,
+                        "sentence": sentence,
+                        "semantic_types": typed_metadata["semantic_types"],
+                    }
+                )
 
     common_safety = {normalize_decision_text(value) for value in _COMMON_SAFETY_SENTENCES}
     repeated = [
@@ -653,14 +812,22 @@ def relational_reasoning_quality_report(
     ]
     template_repeats = [
         {
-            "skeleton": skeleton,
+            **template_metadata[typed_key],
+            "typed_skeleton": "|".join(
+                [
+                    str(template_metadata[typed_key]["section"]),
+                    str(template_metadata[typed_key]["owner"]),
+                    str(template_metadata[typed_key]["relation"]),
+                    str(template_metadata[typed_key]["skeleton"]),
+                ]
+            ),
             "stock_count": len(tickers),
             "tickers": sorted(tickers),
         }
-        for skeleton, tickers in template_tickers.items()
+        for typed_key, tickers in template_tickers.items()
         if len(tickers) >= duplicate_threshold
-        and skeleton not in common_safety
-        and set(template_exception_reasons.get(skeleton, {})) != tickers
+        and str(template_metadata[typed_key]["skeleton"]) not in common_safety
+        and set(template_exception_reasons.get(typed_key, {})) != tickers
     ]
     template_repeats.sort(
         key=lambda item: (-int(item["stock_count"]), str(item["skeleton"]))
@@ -695,18 +862,40 @@ def relational_reasoning_quality_report(
     ]
     template_exceptions = [
         {
-            "skeleton": skeleton,
+            **template_metadata[typed_key],
             "stock_count": len(tickers),
             "tickers": sorted(tickers),
-            "reason": next(iter(template_exception_reasons[skeleton].values())),
+            "reason": next(iter(template_exception_reasons[typed_key].values())),
         }
-        for skeleton, tickers in template_tickers.items()
+        for typed_key, tickers in template_tickers.items()
         if len(tickers) >= duplicate_threshold
-        and set(template_exception_reasons.get(skeleton, {})) == tickers
+        and set(template_exception_reasons.get(typed_key, {})) == tickers
     ]
     template_exceptions.sort(
         key=lambda item: (-int(item["stock_count"]), str(item["skeleton"]))
     )
+    generic_numeric_summary_families = []
+    if generic_numeric_summary_matches:
+        tickers = sorted(
+            {
+                str(item["ticker"])
+                for item in generic_numeric_summary_matches
+            }
+        )
+        generic_numeric_summary_families.append(
+            {
+                "family": "business_earnings_generic_numeric_summary",
+                "stock_count": len(tickers),
+                "tickers": tickers,
+                "matches": generic_numeric_summary_matches,
+                "repeated": len(tickers) >= duplicate_threshold,
+            }
+        )
+    repeated_numeric_summary_families = [
+        item
+        for item in generic_numeric_summary_families
+        if item["repeated"] is True
+    ]
     supply_repeats = [
         item
         for item in substantive_repeats
@@ -855,6 +1044,7 @@ def relational_reasoning_quality_report(
     final_rendered_language = _final_rendered_language_report(rendered_values)
     watch_next_overlap = _watch_next_overlap_report(output)
     numeric_fact_repetition = _numeric_fact_repetition_report(output)
+    numeric_ownership = _business_numeric_ownership_report(output)
     heading_mismatches = [
         index
         for index, message in enumerate(rendered_values, start=1)
@@ -913,6 +1103,7 @@ def relational_reasoning_quality_report(
         and bool(numeric_label_quality["hard_checks_passed"])
         and not substantive_repeats
         and not template_repeats
+        and not repeated_numeric_summary_families
         and not repeated_methodology
         and not supply_repeats
         and not us_kr_horizon_rows
@@ -935,9 +1126,11 @@ def relational_reasoning_quality_report(
         and final_rendered_language["hard_checks_passed"] is True
         and watch_next_overlap["hard_checks_passed"] is True
         and numeric_fact_repetition["hard_checks_passed"] is True
+        and numeric_ownership["hard_checks_passed"] is True
     )
     return {
         "contract": "relational-reasoning-quality-v2",
+        "template_skeleton_contract": "typed-template-skeleton-v1",
         "duplicate_threshold": duplicate_threshold,
         "stock_count": len(output.stock_reviews),
         "repeated_sentences": repeated,
@@ -949,6 +1142,10 @@ def relational_reasoning_quality_report(
         "template_skeleton_repeats": template_repeats,
         "template_skeleton_repeat_count": len(template_repeats),
         "template_skeleton_exceptions": template_exceptions,
+        "generic_numeric_summary_families": generic_numeric_summary_families,
+        "generic_numeric_summary_repeat_count": len(
+            repeated_numeric_summary_families
+        ),
         "generic_methodology_families": methodology_rows,
         "generic_methodology_repeat_count": len(repeated_methodology),
         "observer_holder": observer_holder,
@@ -1002,6 +1199,7 @@ def relational_reasoning_quality_report(
         "final_rendered_language": final_rendered_language,
         "watch_next_check_overlap": watch_next_overlap,
         "numeric_fact_repetition": numeric_fact_repetition,
+        "numeric_ownership": numeric_ownership,
         "hard_checks_passed": hard_checks_passed,
         "deterministic_quality_gate_passed": hard_checks_passed,
         "production_assist_evidence_eligible": False,

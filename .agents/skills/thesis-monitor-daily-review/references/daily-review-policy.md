@@ -64,6 +64,20 @@ retain every eligible foreign/institution 1/5/20-day claim, but organize those c
 stock's actual horizon relationship instead of reusing one portfolio-wide numeric sentence
 skeleton.
 
+`business_earnings_policy` has no numeric quota. Use `earnings:*` revenue, operating income,
+margin, volume, utilization, or another explicitly listed business Fact when it is material. A
+`valuation:*` TTM EPS is a valuation denominator unless separate earnings-period evidence makes it
+an earnings driver, and BVPS remains valuation or balance-sheet context. Neither may fill a sparse
+business section. If no eligible business Fact exists, keep the section numeric-free and state the
+company-specific missing driver. Do not rotate synonyms around a portfolio-wide `현재 확인된 핵심
+숫자는` scaffold.
+
+`risk_reward_delta_policy` is also binding. A raw prior/current RR difference does not make the
+pair a daily message requirement. When the policy reports no material price transition, suppress
+the pair. When a canonical confirmation, chart-state, support/resistance, or RR-availability
+transition makes the relation decision-relevant, integrate it into that primary price transition
+rather than placing the same standalone `이전 RR; 현재 RR` tuple in every US supply section.
+
 When two relevant valuation facts exist, interpret their direction together. A modeled forward
 multiple above trailing can indicate a weaker modeled earnings denominator; a modeled forward
 multiple below trailing can indicate earnings expansion assumptions that may coexist with cycle-peak

@@ -3,7 +3,7 @@
 Contract: `runtime-reasoning-ownership-v1`  
 Specificity contract: `runtime-message-specificity-v2`  
 Status: retrospective PASS, natural proof pending  
-Date: 2026-08-19
+Date: 2026-08-20
 
 ## Purpose
 
@@ -71,10 +71,45 @@ Observer prose owns entry attractiveness, expectation, price context, and confir
 prose owns business thesis, earnings driver, kill condition, and fundamental deterioration. Exact
 RR numbers remain in price context; observer prose may state only the resulting entry meaning.
 
+## Business Numeric Ownership
+
+`numeric-summary-ownership-v1` removes the former earnings numeric quota. `business_earnings`
+prefers prose-eligible `earnings:*` revenue, gross/operating profit, margin, volume, ASP,
+utilization, or another verified operating metric. A `valuation:*` TTM EPS is a valuation
+denominator unless a separate earnings-period Fact establishes it as material earnings evidence.
+BVPS remains valuation or balance-sheet context. Neither metric may fill a sparse business section.
+
+The packet publishes `business_earnings_policy` with actual business Fact candidates, zero minimum
+numeric anchors, valuation-owned semantics, and a company-specific Unknown fallback. The quality
+gate independently rejects valuation-owned claims bound into `business_earnings`; prompt compliance
+is not the only safety boundary.
+
+## RR Delta Ownership
+
+An RR number changing is not itself a material message event. `risk_reward_delta_policy` promotes a
+candidate only when a canonical chart-state, confirmation-lifecycle, support/resistance, or RR-
+availability transition makes it decision-relevant. The default standalone previous/current tuple
+is prohibited. A permitted comparison is integrated with the primary price transition and remains
+owned by `price_context`; US `supply_analysis` is not a daily RR-dump section. No new RR threshold,
+formula, or chart-selection rule is introduced.
+
+## Typed Skeletons
+
+`typed-template-skeleton-v1` keys a repeated template by text structure plus section, owner,
+numeric semantic types, and comparison relation. It therefore separates a price-context
+`previous_risk_reward_ratio -> current_risk_reward_ratio` from a valuation
+`price_to_book -> historical_pb_percentile` even when both render as two semicolon-separated
+numbers. The same typed relation with the same prose structure across the existing threshold still
+fails.
+
+The detector also audits the portfolio-wide `현재 확인된 핵심 숫자는` family independently of
+numeric arity, so one-, two-, and three-number variants do not evade the repetition boundary.
+Canonical zone endpoint tuples retain their existing structural exception. There is no generic
+numeric-pair or semicolon allowlist.
+
 ## Validation Boundary
 
 Thresholds in `runtime-message-quality-v1` are unchanged. This contract reduces invalid candidates
 before prose and keeps the existing validator as the final fail-closed boundary. It does not rewrite
 validated prose in the renderer, infer missing Facts, create thresholds, alter RR calculations, or
 weaken fallback and exactly-once behavior.
-

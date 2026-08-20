@@ -267,6 +267,192 @@ def test_quality_audit_rejects_three_stock_numeric_template_skeleton() -> None:
     assert report["hard_checks_passed"] is False
 
 
+def test_quality_audit_groups_generic_numeric_summary_across_arities() -> None:
+    payload = _output().model_dump()
+    semantics = (
+        [("revenue", "매출 1억원")],
+        [("revenue", "매출 2억원"), ("operating_margin", "영업이익률 10%")],
+        [
+            ("revenue", "매출 3억원"),
+            ("operating_income", "영업이익 1억원"),
+            ("operating_margin", "영업이익률 20%"),
+        ],
+    )
+    for review, metrics in zip(payload["stock_reviews"], semantics, strict=True):
+        usages = "; ".join(usage for _, usage in metrics)
+        review["business_earnings"]["text"] = (
+            f"현재 확인된 핵심 숫자는 {usages}입니다. "
+            f"{review['ticker']} 사업 전환을 확인합니다."
+        )
+        review["numeric_claims"] = [
+            {
+                "fact_id": f"earnings:{review['ticker']}",
+                "field_path": f"fields.metric_{index}",
+                "value": float(index),
+                "unit": "amount",
+                "semantic_type": semantic,
+                "text_ref": "business_earnings.text",
+                "usage": usage,
+            }
+            for index, (semantic, usage) in enumerate(metrics, start=1)
+        ]
+
+    report = relational_reasoning_quality_report(
+        AIDailyReviewOutput.model_validate(payload)
+    )
+
+    assert report["generic_numeric_summary_repeat_count"] == 1
+    family = report["generic_numeric_summary_families"][0]
+    assert family["stock_count"] == 3
+    assert family["tickers"] == ["AAA", "BBB", "CCC"]
+    assert report["hard_checks_passed"] is False
+
+
+def test_typed_skeleton_does_not_merge_rr_and_pbr_relations() -> None:
+    payload = _output().model_dump()
+    for index, review in enumerate(payload["stock_reviews"], start=1):
+        review["core_judgment"]["text"] = f"{review['ticker']} 고유 결론입니다."
+        review["business_earnings"]["text"] = f"{review['ticker']} 실적 조건입니다."
+        review["priority_watch"] = [f"{review['ticker']} 감시"]
+        review["next_checks"] = [f"{review['ticker']} 다음 확인"]
+        review["unknowns"] = [f"{review['ticker']} 미확인"]
+        if index < 3:
+            review["supply_analysis"]["text"] = (
+                f"이전 차트 손익비 {index}배; 현재 차트 손익비 {index + 1}배."
+            )
+            review["numeric_claims"] = [
+                {
+                    "fact_id": f"rr:{review['ticker']}",
+                    "field_path": "fields.previous_ratio",
+                    "value": float(index),
+                    "unit": "x",
+                    "semantic_type": "previous_risk_reward_ratio",
+                    "text_ref": "supply_analysis.text",
+                    "usage": f"이전 차트 손익비 {index}배",
+                },
+                {
+                    "fact_id": f"rr:{review['ticker']}",
+                    "field_path": "fields.current_ratio",
+                    "value": float(index + 1),
+                    "unit": "x",
+                    "semantic_type": "current_risk_reward_ratio",
+                    "text_ref": "supply_analysis.text",
+                    "usage": f"현재 차트 손익비 {index + 1}배",
+                },
+            ]
+        else:
+            review["valuation_analysis"]["text"] = "현재 PBR 3배; PBR 역사적 백분위 90%."
+            review["numeric_claims"] = [
+                {
+                    "fact_id": "valuation:current",
+                    "field_path": "fields.price_to_book",
+                    "value": 3.0,
+                    "unit": "x",
+                    "semantic_type": "price_to_book",
+                    "text_ref": "valuation_analysis.text",
+                    "usage": "현재 PBR 3배",
+                },
+                {
+                    "fact_id": "valuation:current",
+                    "field_path": "fields.historical_pb_statistics.current_percentile",
+                    "value": 90.0,
+                    "unit": "percentile",
+                    "semantic_type": "historical_pb_percentile",
+                    "text_ref": "valuation_analysis.text",
+                    "usage": "PBR 역사적 백분위 90%",
+                },
+            ]
+
+    report = relational_reasoning_quality_report(
+        AIDailyReviewOutput.model_validate(payload)
+    )
+
+    numeric_pairs = [
+        item
+        for item in report["template_skeleton_repeats"]
+        if item["skeleton"] == "<numeric>; <numeric>."
+    ]
+    assert numeric_pairs == []
+
+
+def test_typed_skeleton_still_detects_same_rr_relation() -> None:
+    payload = _output().model_dump()
+    for index, review in enumerate(payload["stock_reviews"], start=1):
+        review["core_judgment"]["text"] = f"{review['ticker']} 고유 결론입니다."
+        review["business_earnings"]["text"] = f"{review['ticker']} 실적 조건입니다."
+        review["supply_analysis"]["text"] = (
+            f"이전 차트 손익비 {index}배; 현재 차트 손익비 {index + 1}배."
+        )
+        review["numeric_claims"] = [
+            {
+                "fact_id": f"rr:{review['ticker']}",
+                "field_path": "fields.previous_ratio",
+                "value": float(index),
+                "unit": "x",
+                "semantic_type": "previous_risk_reward_ratio",
+                "text_ref": "supply_analysis.text",
+                "usage": f"이전 차트 손익비 {index}배",
+            },
+            {
+                "fact_id": f"rr:{review['ticker']}",
+                "field_path": "fields.current_ratio",
+                "value": float(index + 1),
+                "unit": "x",
+                "semantic_type": "current_risk_reward_ratio",
+                "text_ref": "supply_analysis.text",
+                "usage": f"현재 차트 손익비 {index + 1}배",
+            },
+        ]
+
+    report = relational_reasoning_quality_report(
+        AIDailyReviewOutput.model_validate(payload)
+    )
+
+    rr_repeat = next(
+        item
+        for item in report["template_skeleton_repeats"]
+        if item["relation"] == "previous_to_current"
+    )
+    assert rr_repeat["owner"] == "price_context"
+    assert rr_repeat["stock_count"] == 3
+
+
+def test_business_numeric_ownership_rejects_valuation_fillers() -> None:
+    payload = _output().model_dump()
+    claims = (
+        ("valuation:current", "bvps", "BVPS 10달러"),
+        ("valuation:current", "ttm_eps", "TTM EPS 2달러"),
+        ("earnings:2026-06-30", "ttm_eps", "TTM EPS 3달러"),
+    )
+    for review, (fact_id, semantic, usage) in zip(
+        payload["stock_reviews"], claims, strict=True
+    ):
+        review["business_earnings"]["text"] = f"{usage}를 실적 맥락에서 확인합니다."
+        review["numeric_claims"] = [
+            {
+                "fact_id": fact_id,
+                "field_path": f"fields.{semantic}",
+                "value": 1.0,
+                "unit": "amount",
+                "semantic_type": semantic,
+                "text_ref": "business_earnings.text",
+                "usage": usage,
+            }
+        ]
+
+    report = relational_reasoning_quality_report(
+        AIDailyReviewOutput.model_validate(payload)
+    )
+
+    ownership = report["numeric_ownership"]
+    assert ownership["business_earnings_violation_count"] == 2
+    assert {item["ticker"] for item in ownership["business_earnings_violations"]} == {
+        "AAA",
+        "BBB",
+    }
+    assert ownership["hard_checks_passed"] is False
+
+
 def test_quality_audit_classifies_required_structural_templates() -> None:
     assert (
         _structural_template_exception(

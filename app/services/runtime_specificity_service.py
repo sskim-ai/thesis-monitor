@@ -8,6 +8,19 @@ from app.services.industry_reasoning_service import build_industry_reasoning_pla
 RUNTIME_SPECIFICITY_CONTRACT = "runtime-message-specificity-v2"
 RUNTIME_REASONING_OWNERSHIP_CONTRACT = "runtime-reasoning-ownership-v1"
 
+_BUSINESS_EARNINGS_FIELDS = {
+    "revenue",
+    "segment_revenue",
+    "gross_profit",
+    "gross_margin_pct",
+    "operating_income",
+    "operating_margin_pct",
+    "net_income",
+    "unit_volume",
+    "average_selling_price",
+    "capacity_utilization",
+}
+
 
 def _mapping(value: object) -> dict[str, object]:
     return dict(value) if isinstance(value, Mapping) else {}
@@ -69,8 +82,9 @@ def _candidate(
     section: str,
     specificity_key: str,
     fact_ids: list[str] | None = None,
+    metadata: dict[str, object] | None = None,
 ) -> dict[str, object]:
-    return {
+    candidate = {
         "category": category,
         "value": value,
         "base_tier": base_tier,
@@ -81,6 +95,87 @@ def _candidate(
         "specificity_key": specificity_key,
         "materiality": "decision_relevant",
         "fact_ids": fact_ids or [],
+    }
+    if metadata:
+        candidate["metadata"] = metadata
+    return candidate
+
+
+def _business_earnings_policy(stock: dict[str, object]) -> dict[str, object]:
+    business_facts: list[dict[str, object]] = []
+    for item in stock.get("fact_catalog", []):
+        if not isinstance(item, dict):
+            continue
+        fact_id = str(item.get("fact_id") or "")
+        if not fact_id.startswith("earnings:") or item.get("prose_eligible") is not True:
+            continue
+        fields = _mapping(item.get("fields"))
+        eligible_fields = sorted(_BUSINESS_EARNINGS_FIELDS.intersection(fields))
+        if eligible_fields:
+            business_facts.append(
+                {
+                    "fact_id": fact_id,
+                    "eligible_fields": eligible_fields,
+                }
+            )
+    return {
+        "owner": "business_earnings",
+        "business_fact_candidates": business_facts,
+        "minimum_numeric_anchor_count": 0,
+        "valuation_numeric_filler_allowed": False,
+        "valuation_owned_semantics": [
+            "bvps",
+            "forward_pe",
+            "historical_pb_percentile",
+            "historical_pe_percentile",
+            "price_to_book",
+            "trailing_pe",
+            "ttm_eps",
+        ],
+        "missing_business_fact_policy": "use_industry_specific_unknown",
+        "generic_numeric_summary_scaffold": "prohibited_portfolio_template",
+    }
+
+
+def _changed_transition(value: object) -> bool:
+    transition = str(value or "")
+    if "_to_" not in transition:
+        return False
+    previous, current = transition.split("_to_", 1)
+    return bool(previous and current and previous != current)
+
+
+def _risk_reward_delta_policy(delta: dict[str, object]) -> dict[str, object]:
+    rr_change = str(delta.get("rr_change") or "")
+    material_reasons: list[str] = []
+    if rr_change in {"became_available", "became_unavailable"}:
+        material_reasons.append("risk_reward_availability_transition")
+    if _changed_transition(delta.get("chart_state_change")):
+        material_reasons.append("chart_state_transition")
+    if _changed_transition(delta.get("confirmation_transition")):
+        material_reasons.append("confirmation_lifecycle_transition")
+    for field in ("support_change", "resistance_change"):
+        state = str(delta.get(field) or "")
+        if state not in {"", "unchanged", "unavailable"}:
+            material_reasons.append(field)
+    candidate_allowed = bool(material_reasons) and rr_change in {
+        "improved",
+        "deteriorated",
+        "became_available",
+        "became_unavailable",
+    }
+    return {
+        "owner": "price_context",
+        "change_state": rr_change or "unavailable",
+        "decision_candidate_allowed": candidate_allowed,
+        "material_transition_reasons": material_reasons,
+        "standalone_previous_current_pair_allowed": False,
+        "comparison_rendering": (
+            "integrate_with_primary_price_transition"
+            if candidate_allowed
+            else "suppress_non_material_delta"
+        ),
+        "suppression_reason": None if candidate_allowed else "no_material_price_transition",
     }
 
 
@@ -93,6 +188,8 @@ def build_runtime_specificity_plan(stock: dict[str, object]) -> dict[str, object
     routing = _mapping(stock.get("knowledge_routing"))
     framework_roles = _mapping(routing.get("framework_roles"))
     security_policy = _security_identity_policy(stock)
+    business_policy = _business_earnings_policy(stock)
+    rr_policy = _risk_reward_delta_policy(delta)
     candidates: list[dict[str, object]] = []
 
     business_change = str(deterministic.get("business_thesis_change") or "no_material_change")
@@ -125,7 +222,7 @@ def build_runtime_specificity_plan(stock: dict[str, object]) -> dict[str, object
             )
         )
     rr_change = str(delta.get("rr_change") or "")
-    if rr_change in {"improved", "deteriorated", "became_available", "became_unavailable"}:
+    if rr_policy["decision_candidate_allowed"]:
         candidates.append(
             _candidate(
                 category="risk_reward",
@@ -137,6 +234,12 @@ def build_runtime_specificity_plan(stock: dict[str, object]) -> dict[str, object
                 section="price_positioning",
                 specificity_key=f"price_rr:{rr_change}",
                 fact_ids=["monitoring:risk_reward_transition"],
+                metadata={
+                    "material_transition_reasons": rr_policy[
+                        "material_transition_reasons"
+                    ],
+                    "standalone_previous_current_pair_allowed": False,
+                },
             )
         )
     supply = str(delta.get("supply_transition") or "")
@@ -201,6 +304,8 @@ def build_runtime_specificity_plan(stock: dict[str, object]) -> dict[str, object
             "security_identity": list(framework_roles.get("security_identity", [])),
         },
         "security_reasoning_policy": security_policy,
+        "business_earnings_policy": business_policy,
+        "risk_reward_delta_policy": rr_policy,
         "suppressed_candidates": (
             []
             if security_policy["depositary_ratio_reasoning_allowed"]
