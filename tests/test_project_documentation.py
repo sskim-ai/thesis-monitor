@@ -20,6 +20,7 @@ DOCUMENTS = (
     ROOT / "docs" / "architecture" / "NIGHT_FUTURES_SESSION_BASIS.md",
     ROOT / "docs" / "architecture" / "RUNTIME_REASONING_OWNERSHIP.md",
     ROOT / "docs" / "architecture" / "CASH_FLOW_CAPITAL_EFFICIENCY.md",
+    ROOT / "docs" / "architecture" / "CASH_FLOW_SHADOW_CONSUMPTION.md",
     ROOT / "docs" / "operations" / "AI_ASSISTED_PILOT.md",
     ROOT / "docs" / "knowledge" / "README.md",
 )
@@ -38,14 +39,16 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     assert state["repository"] == "sskim-ai/thesis-monitor"
     assert state["branch"] == "main"
     assert state["experimental_branch"] == (
-        "codex/phase-9-0b-canonical-ocf-capex-fcf-core"
+        "codex/phase-9-0c-cash-flow-shadow-consumption"
     )
-    assert state["current_phase"] == "phase_9_0b_canonical_core_implemented_shadow"
+    assert state["current_phase"] == (
+        "phase_9_0c_cash_flow_shadow_consumption_closed_retrospective"
+    )
     assert state["last_completed_phase"] == (
-        "phase_9_0b_canonical_ocf_ppe_capex_fcf_core"
+        "phase_9_0c_cash_flow_shadow_consumption_earnings_quality"
     )
     assert state["next_default_phase"] == (
-        "phase_9_0c_cash_flow_shadow_consumption_earnings_quality"
+        "phase_9_0d_selective_cash_flow_runtime_shadow_canary"
     )
     assert state["deployed_code_commit"] == "HEAD"
     assert state["main_code_commit"] == "HEAD"
@@ -76,6 +79,9 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     assert state["contracts"]["cash_flow_capital_efficiency"] == (
         "cash-flow-capital-efficiency-v1"
     )
+    assert state["contracts"]["cash_flow_shadow_consumption"] == (
+        "cash-flow-shadow-consumption-v1"
+    )
     advancement = state["phase_advancement_rule_v1"]
     assert advancement["p0_open"] == []
     assert advancement["p1_open"] == []
@@ -84,6 +90,8 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     assert advancement["phase_9_0b_ready"] is True
     assert advancement["phase_9_0b_complete"] is True
     assert advancement["phase_9_0c_ready"] is True
+    assert advancement["phase_9_0c_complete"] is True
+    assert advancement["phase_9_0d_ready"] is True
     phase_90a = state["phase_9_0a_cash_flow_capital_efficiency"]
     assert phase_90a["status"] == "architecture_closed_ready_for_phase_9_0b"
     assert phase_90a["active_universe"] == 20
@@ -100,6 +108,15 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     assert phase_90b["phase_9_0c_ready"] is True
     assert phase_90b["runtime_behavior_changed"] is False
     assert phase_90b["user_visible_integration"] is False
+    phase_90c = state["phase_9_0c_cash_flow_shadow_consumption"]
+    assert phase_90c["status"] == "closed_retrospective_ready_for_phase_9_0d"
+    assert phase_90c["active_universe"] == 20
+    assert phase_90c["consumption_eligible"] == 12
+    assert phase_90c["shadow_used"] == 10
+    assert phase_90c["semantic_errors"] == 0
+    assert phase_90c["phase_9_0d_ready"] is True
+    assert phase_90c["runtime_behavior_changed"] is False
+    assert phase_90c["user_visible_integration"] is False
     assert state["persistent_gaps"]["krx_open_api"] == (
         "APPROVED_TELEMETRY_ONLY_OPERATING_USER_VISIBLE_NOT_INTEGRATED"
     )
@@ -183,6 +200,7 @@ def test_architecture_guides_record_decisions_and_readme_navigation() -> None:
         ROOT / "docs" / "architecture" / "PEER_VALUATION.md",
         ROOT / "docs" / "architecture" / "NIGHT_FUTURES_SESSION_BASIS.md",
         ROOT / "docs" / "architecture" / "CASH_FLOW_CAPITAL_EFFICIENCY.md",
+        ROOT / "docs" / "architecture" / "CASH_FLOW_SHADOW_CONSUMPTION.md",
         ROOT / "docs" / "operations" / "AI_ASSISTED_PILOT.md",
         ROOT / "docs" / "knowledge" / "README.md",
     )
@@ -204,6 +222,7 @@ def test_architecture_guides_record_decisions_and_readme_navigation() -> None:
         "docs/architecture/MONITORING_STATE_LIFECYCLE.md",
         "docs/architecture/PEER_VALUATION.md",
         "docs/architecture/CASH_FLOW_CAPITAL_EFFICIENCY.md",
+        "docs/architecture/CASH_FLOW_SHADOW_CONSUMPTION.md",
         "docs/architecture/NIGHT_FUTURES_SESSION_BASIS.md",
         "docs/operations/AI_ASSISTED_PILOT.md",
         "docs/operations/SCHEDULED_TASK_CONTRACTS.md",

@@ -16,7 +16,7 @@ execution or an autonomous investment adviser.
 
 | Component | Contract |
 |---|---|
-| Branch | `main` operating shadow includes Phase 8.5.5.2; evidence branch `codex/phase-8-5-5-2-kr-structured-field-repetition`; peer/KRX breadth ancestry excluded |
+| Branch | `main` operating shadow includes Phase 9.0B; evidence branch `codex/phase-9-0c-cash-flow-shadow-consumption`; peer/KRX breadth ancestry excluded |
 | Official assessment | Deterministic `ThesisAssessment` |
 | AI mode | `shadow` |
 | Analysis policy | `daily-review-v3.10` |
@@ -44,6 +44,8 @@ execution or an autonomous investment adviser.
 | Typed template skeleton | `typed-template-skeleton-v1` |
 | Runtime quality | `runtime-message-quality-v1`, receipt `runtime-message-quality-receipt-v2` |
 | Night futures | `night-futures-session-basis-v1` CLOSED retrospective; holiday-aware preceding DAY lookup operating shadow, natural proof pending |
+| Cash-flow canonical core | `cash-flow-capital-efficiency-v1`, selective internal Facts only |
+| Cash-flow consumption | `cash-flow-shadow-consumption-v1`, archive-only; user-visible disabled |
 
 ## Phase 8.3 Final State
 
@@ -840,6 +842,33 @@ internal shadow packet and archive preview before any later user-visible decisio
 proof and KRX exact-slot telemetry continue independently. See the
 [Phase 9.0B complete report bundle](reports/20260820-phase9-0b-complete-report-bundle.md).
 
+## Phase 9.0C Cash Flow Shadow Consumption
+
+Phase 9.0C consumes canonical cash-flow Facts only through an archive sidecar. It requires the
+official filing date to be on or before replay cutoff, compares the primary period with the latest
+formal and preliminary financial periods, and allows only same-type, same-duration, same-basis
+comparisons. It creates sign-aware relations rather than percentage growth or good/bad scores.
+
+Of 20 active subjects, 12 are consumption-eligible and 10 are materially rendered: nine full FCF
+and HUT as OCF-only. TSM and WRD remain formal-lagging-provisional context-only. Six KR
+non-financial subjects remain blocked on OpenDART period context, while Korean Re is not applicable
+for generic enterprise FCF. No old safe period substitutes for a newer blocked or preliminary
+period.
+
+The archive preview automatically binds all 10 exact cash-flow numbers to canonical Fact IDs.
+Manual, rejected, unresolved, semantic-error, future-fact, stale-as-current, management-FCF
+mislabel, unsupported valuation, and KR numeric-injection counts are zero. Eight of 17 generic
+cash-flow Unknowns resolve, eight remain valid, and one insurance Unknown is suppressed. Run-28
+before/after and run-29 negative control pass runtime quality, final language, and receipts; no
+candidate changes assessment or valuation state.
+
+Open P0 and P1 are zero. `PHASE_9_0D_READY = YES` with scope
+`SELECTIVE_CASH_FLOW_RUNTIME_SHADOW_CANARY`. Phase 9.0D may attach the same context to natural
+runtime only as a delivery-isolated canary. Telegram, fallback, Public Action 0.4.5, schema 4,
+Scheduled Task prompts, database assessments, CCC, and standard ROIC remain unchanged. See the
+[architecture](architecture/CASH_FLOW_SHADOW_CONSUMPTION.md) and
+[Phase 9.0C complete report bundle](reports/20260820-phase9-0c-complete-report-bundle.md).
+
 On 2026-08-15 the owning desktop environment verified all four local-project tasks, retained their
 08:15/08:30/16:15/16:55 schedules, and migrated their exact prompts to v3.10 with
 `security-identity-v2` and `financial-quality-taint-v2`. All four are ACTIVE,
@@ -996,8 +1025,9 @@ unchanged. See [the Phase 7.2.9.2 readiness report](reports/20260817-phase7-2-9-
 - Peer provider policy is FREE_ONLY. Phase 8.3 is finalized at 1/20 active and 1/15 meaningful
   coverage as SELECTIVE_OPTIONAL_CONTEXT. Broad runtime value is LOW_ROI; historical PIT and
   forward expansion are deferred, and operating integration is false.
-- Cash-flow architecture is closed. Selective official SEC OCF/PPE/FCF evidence exists; KR remains
-  partial on unresolved CF period context. CCC and standard ROIC are deferred.
+- Cash-flow architecture, canonical core, and archive consumption are closed. Selective official
+  SEC OCF/PPE/FCF evidence exists; KR remains partial on unresolved CF period context. CCC and
+  standard ROIC are deferred, and user-visible cash-flow remains disabled.
 - The persisted US count includes the 2026-08-16 operationally complete session whose human message
   quality review failed. Operational count and human approval remain separate; this packet is not
   Production Assist evidence.
@@ -1033,9 +1063,9 @@ first.
 
 ## Next Steps
 
-1. Start Phase 9.0C Cash Flow Shadow Consumption and Earnings-Quality Reasoning Integration for
-   the eligible subset. Preserve all canonical lineage gates and keep user-visible output disabled
-   until a separate integration decision.
+1. Start Phase 9.0D Selective Cash-Flow Runtime Shadow Canary for the qualified subset. Preserve
+   PIT, freshness, comparison and materiality gates; keep canary output delivery-isolated and
+   user-visible cash-flow disabled until a separate integration decision.
 2. In parallel, inspect the next natural US/KR sessions after Phase 8.5.5.2 and verify AI quality,
    structured supply, RR ownership, business numeric ownership, reasoning ownership, night-futures
    lineage, language, fallback, runtime receipt, archive, and exactly-once behavior.

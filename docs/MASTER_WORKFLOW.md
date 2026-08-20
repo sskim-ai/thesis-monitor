@@ -552,14 +552,35 @@ OpenDART period-context gap is `MEDIUM_COMPLEXITY_FOLLOWUP`, not a prerequisite 
 shadow consumption. See the
 [Phase 9.0B complete bundle](reports/20260820-phase9-0b-complete-report-bundle.md).
 
+## 21D. Phase 9.0C Cash-Flow Shadow Consumption
+
+Phase 9.0C adds `cash-flow-shadow-consumption-v1` as an archive-only consumer of the canonical
+core. It never recalculates OCF, PPE CAPEX, or FCF. A Fact must first pass source-date point-in-time
+eligibility, formal-period freshness, comparable-period compatibility, industry applicability, and
+deterministic materiality. No arbitrary day threshold, annualization, mixed-period comparison, or
+old-period substitution is permitted.
+
+The 20-subject audit finds 10 current formal contexts, two formal-lagging-provisional contexts,
+seven blocked, and one not applicable. Twelve are consumption-eligible, but materiality renders
+only nine full-FCF contexts and one OCF-only context. All 10 exact numbers bind automatically to
+Phase 9.0B Fact IDs; manual, rejected, unresolved, semantic-error, future-fact, stale-as-current,
+and KR numeric-injection counts are zero. Eight of 17 prior cash-flow Unknowns resolve, eight remain
+valid, and Korean Re's generic enterprise-FCF Unknown is suppressed as not applicable.
+
+Run-28 before/after and the run-29 KR negative control pass final language, runtime quality, and
+receipt verification without threshold changes. Human review classifies 8 material improvements,
+4 minor improvements, 8 no meaningful changes, and 0 degraded. Open P0 and P1 are zero.
+`PHASE_9_0D_READY = YES` with scope `SELECTIVE_CASH_FLOW_RUNTIME_SHADOW_CANARY`. Cash-flow remains
+absent from the production packet, prompt, fallback, Public Action, and Telegram. See the
+[Phase 9.0C complete bundle](reports/20260820-phase9-0c-complete-report-bundle.md).
+
 ## 22. Current Roadmap
 
-The current state is `PHASE_9_0B_CANONICAL_CORE_IMPLEMENTED_SHADOW` plus
+The current state is `PHASE_9_0C_CLOSED_RETROSPECTIVE` plus
 `NATURAL_AI_PROOF_CONTINUES_IN_PARALLEL`. Open P0 and P1 are zero. The next major task may begin
-Phase 9.0C Cash Flow Shadow Consumption and Earnings-Quality Reasoning Integration. This is not
-approval to expose cash-flow numbers in Telegram or fallback; 9.0C must first add an internal
-shadow packet, typed interpretation, validation, and archive preview before a separate
-user-visible integration decision.
+Phase 9.0D Selective Cash-Flow Runtime Shadow Canary. This is not approval to expose cash-flow
+numbers in Telegram or fallback; the natural canary must remain delivery-isolated before a
+separate user-visible readiness decision.
 
 In parallel, observe the next natural US/KR sessions for AI-assisted delivery, ownership,
 repetition, night-session integrity, fallback, language, receipt, archive, and exactly-once proof.
@@ -655,10 +676,10 @@ approval. Main merge and shadow deployment still do not authorize AI-assisted pr
 
 ## 27. Current Next Task
 
-Begin Phase 9.0C Cash Flow Shadow Consumption and Earnings-Quality Reasoning Integration for the
-11-subject eligible subset. Preserve canonical ownership and fail-closed subjects, keep exact
-cash-flow numbers out of user-visible output, and do not implement CCC or standard ROIC. In
-parallel, inspect natural US/KR AI results and KRX exact-slot evidence without manual execution.
+Begin Phase 9.0D Selective Cash-Flow Runtime Shadow Canary for the 9.0C-qualified contexts. Keep
+the canary completely separate from delivery, preserve PIT/freshness/materiality gates, and retain
+cash-flow user-visible output at zero. Do not implement CCC or standard ROIC. In parallel, inspect
+natural US/KR AI results and KRX exact-slot evidence without manual execution.
 
 ## 28. New Session Bootstrap Prompt
 
@@ -677,7 +698,9 @@ parallel, inspect natural US/KR AI results and KRX exact-slot evidence without m
 > retrospectively and is operating shadow. Phase 8.3 is finalized as selective optional context
 > and must not be reopened without new evidence. Phase 9.0A is architecture-closed and Phase 9.0B
 > implements the selective canonical OCF/PPE-CAPEX/FCF core with zero user-visible behavior diff.
-> `PHASE_9_0C_READY = YES`. Read
-> `docs/architecture/CASH_FLOW_CAPITAL_EFFICIENCY.md` and the one-file Phase 9.0B report bundle
-> before adding shadow consumption. Natural AI and KRX exact-slot evidence continue independently;
-> do not make either a false prerequisite for 9.0C, and stop for any newly observed P0.
+> Phase 9.0C closes archive-only PIT/freshness/materiality consumption with zero semantic errors and
+> zero user-visible behavior diff. `PHASE_9_0D_READY = YES`. Read
+> `docs/architecture/CASH_FLOW_SHADOW_CONSUMPTION.md` and the one-file Phase 9.0C report bundle
+> before adding the delivery-isolated runtime canary. Natural AI and KRX exact-slot evidence
+> continue independently; do not make either a false prerequisite for 9.0D, and stop for any newly
+> observed P0.

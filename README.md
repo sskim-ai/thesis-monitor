@@ -26,6 +26,7 @@ This project is a data collection and structuring system. It does not make buy, 
 - [Peer valuation](docs/architecture/PEER_VALUATION.md)
 - [Night-futures session basis](docs/architecture/NIGHT_FUTURES_SESSION_BASIS.md)
 - [Cash-flow and capital-efficiency evidence](docs/architecture/CASH_FLOW_CAPITAL_EFFICIENCY.md)
+- [Cash-flow shadow consumption](docs/architecture/CASH_FLOW_SHADOW_CONSUMPTION.md)
 - [Industry-specific reasoning](docs/architecture/INDUSTRY_SPECIFIC_REASONING.md)
 - [AI-assisted Pilot operations](docs/operations/AI_ASSISTED_PILOT.md)
 - [Scheduled task contracts](docs/operations/SCHEDULED_TASK_CONTRACTS.md)

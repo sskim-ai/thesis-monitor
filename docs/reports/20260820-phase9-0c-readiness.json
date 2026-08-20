@@ -1,0 +1,14 @@
+{
+  "cash_flow_user_visible": false,
+  "p0_open": [],
+  "p1_open": [],
+  "p2_backlog": [
+    "management_fcf_reconciliation",
+    "cash_flow_label_wording_polish",
+    "ccc_deferred",
+    "standard_roic_deferred"
+  ],
+  "phase_9_0d_ready": true,
+  "phase_9_0d_scope": "SELECTIVE_CASH_FLOW_RUNTIME_SHADOW_CANARY",
+  "production_assist": false
+}

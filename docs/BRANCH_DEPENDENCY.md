@@ -21,6 +21,7 @@ self-referential.
 | `codex/krx-exact-slot-telemetry-capture` | operating main `006a997789d3e5ebac85ef867ae31296d175056c` | KRX readiness metadata, append-only evidence and 08:05/16:05 LaunchAgent | telemetry only; no breadth/packet/DB/AI/delivery import | promoted | clean linear fast-forward through `18bc7c3...` |
 | `codex/phase-9-0a-cash-flow-capital-efficiency-architecture` | operating main `2c2aacf1df25a3d0483a14ecf19857ea9c1371b9` | cash-flow period/lineage contracts, read-only official-source coverage, tests and architecture reports | extends existing financial lineage; no runtime import, packet, DB, KRX breadth or peer dependency | promoted architecture-only | clean linear fast-forward after exact-SHA CI |
 | `codex/phase-9-0b-canonical-ocf-capex-fcf-core` | Phase 9.0A operating main `970ad2c3a1844e6dcbddbf47dff17d71170852d2` | official occurrence canonicalization, typed period derivation, deterministic PPE-only FCF, internal shadow audit | extends Phase 9.0A contract; no packet, prompt, public schema, renderer, DB, task, KRX breadth or peer dependency | eligible after exact-SHA CI | clean linear fast-forward only; user-visible behavior diff 0 |
+| `codex/phase-9-0c-cash-flow-shadow-consumption` | Phase 9.0B operating main `86fafbf66dc690aa1ba5b9e0089c9098f1d7a6ef` | PIT/freshness/comparison/materiality sidecar, archive-only reasoning and validators | consumes Phase 9.0B Facts; no production packet, prompt, public schema, renderer, DB, task, KRX breadth or peer dependency | eligible after exact-SHA CI | clean linear fast-forward only; user-visible behavior diff 0 |
 
 The Phase 8.3 original branch has a hidden Git ancestry dependency but no required KRX code,
 schema or runtime import. The clean branch resolves that promotion risk. Phase 8.3.2A starts from
@@ -72,3 +73,9 @@ and the archive-only evidence generator; production packet and API modules do no
 uses stored SEC/OpenDART evidence, performs no provider network call, and retains KRX breadth and
 peer experimental code outside its ancestry. Phase 9.0C must preserve this boundary until an
 explicit shadow-consumption contract is reviewed.
+
+Phase 9.0C starts from final Phase 9.0B operating main. Its consumer service is imported only by
+tests and the archive evidence generator. It reads canonical Facts and immutable replay artifacts,
+performs no provider network call, and does not enter production packet, prompt, API, fallback,
+renderer, task, database, or delivery imports. Phase 9.0D may add only a delivery-isolated runtime
+shadow canary unless a later explicit user-visible gate approves more.

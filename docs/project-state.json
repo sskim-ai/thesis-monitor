@@ -1,16 +1,16 @@
 {
   "repository": "sskim-ai/thesis-monitor",
   "branch": "main",
-  "experimental_branch": "codex/phase-9-0b-canonical-ocf-capex-fcf-core",
+  "experimental_branch": "codex/phase-9-0c-cash-flow-shadow-consumption",
   "current_commit": "HEAD",
   "current_commit_resolution": "git rev-parse HEAD",
-  "recorded_base_commit": "970ad2c3a1844e6dcbddbf47dff17d71170852d2",
-  "current_phase": "phase_9_0b_canonical_core_implemented_shadow",
-  "last_completed_phase": "phase_9_0b_canonical_ocf_ppe_capex_fcf_core",
-  "next_default_phase": "phase_9_0c_cash_flow_shadow_consumption_earnings_quality",
-  "next_candidate": "cash_flow_shadow_consumption_earnings_quality",
+  "recorded_base_commit": "86fafbf66dc690aa1ba5b9e0089c9098f1d7a6ef",
+  "current_phase": "phase_9_0c_cash_flow_shadow_consumption_closed_retrospective",
+  "last_completed_phase": "phase_9_0c_cash_flow_shadow_consumption_earnings_quality",
+  "next_default_phase": "phase_9_0d_selective_cash_flow_runtime_shadow_canary",
+  "next_candidate": "selective_cash_flow_runtime_shadow_canary",
   "alternative_next_phase": "targeted_runtime_repair_if_new_p0",
-  "latest_validation_report": "docs/reports/20260820-phase9-0b-complete-report-bundle.md",
+  "latest_validation_report": "docs/reports/20260820-phase9-0c-complete-report-bundle.md",
   "deployed_code_commit": "HEAD",
   "main_code_commit": "HEAD",
   "main_code_commit_resolution": "git rev-parse origin/main",
@@ -69,7 +69,8 @@
     "peer_group": "verified-profile-peers-v2",
     "free_source_peer": "free-source-current-peer-v1",
     "night_futures_session_basis": "night-futures-session-basis-v1",
-    "cash_flow_capital_efficiency": "cash-flow-capital-efficiency-v1"
+    "cash_flow_capital_efficiency": "cash-flow-capital-efficiency-v1",
+    "cash_flow_shadow_consumption": "cash-flow-shadow-consumption-v1"
   },
   "peer_valuation": {
     "contract": "pass",
@@ -449,6 +450,62 @@
     "report_bundle": "docs/reports/20260820-phase9-0b-complete-report-bundle.md",
     "next_state": "phase_9_0c_ready_natural_ai_and_krx_proof_parallel"
   },
+  "phase_9_0c_cash_flow_shadow_consumption": {
+    "status": "closed_retrospective_ready_for_phase_9_0d",
+    "branch": "codex/phase-9-0c-cash-flow-shadow-consumption",
+    "base": "86fafbf66dc690aa1ba5b9e0089c9098f1d7a6ef",
+    "implementation_commit": "HEAD",
+    "contract": "cash-flow-shadow-consumption-v1",
+    "active_universe": 20,
+    "consumption_eligible": 12,
+    "shadow_used": 10,
+    "full_fcf_context": 9,
+    "ocf_only_context": 1,
+    "freshness": {
+      "current_formal": 10,
+      "formal_lagging_provisional": 2,
+      "stale_formal": 0,
+      "formal_alignment_unavailable": 0,
+      "blocked": 7,
+      "not_applicable": 1
+    },
+    "safe_comparisons": 25,
+    "cash_flow_unknowns_before": 17,
+    "cash_flow_unknowns_resolved": 8,
+    "cash_flow_unknowns_still_valid": 8,
+    "cash_flow_unknowns_suppressed_not_applicable": 1,
+    "numeric_binding": {
+      "automatic": 10,
+      "manual": 0,
+      "rejected": 0,
+      "unresolved": 0
+    },
+    "semantic_errors": 0,
+    "future_fact_violations": 0,
+    "stale_as_current_violations": 0,
+    "kr_cash_flow_numeric_injection": 0,
+    "human_quality": {
+      "material_improvement": 8,
+      "minor_improvement": 4,
+      "no_meaningful_change": 8,
+      "degraded": 0
+    },
+    "run_28_shadow": "pass",
+    "run_29_negative_control": "pass",
+    "p0_open": [],
+    "p1_open": [],
+    "phase_9_0d_ready": true,
+    "phase_9_0d_scope": "SELECTIVE_CASH_FLOW_RUNTIME_SHADOW_CANARY",
+    "runtime_behavior_changed": false,
+    "user_visible_integration": false,
+    "database_manual_mutations": 0,
+    "telegram_sends": 0,
+    "scheduled_task_manual_runs": 0,
+    "pilot_mutations": 0,
+    "production_assist": false,
+    "report_bundle": "docs/reports/20260820-phase9-0c-complete-report-bundle.md",
+    "next_state": "phase_9_0d_ready_natural_ai_and_krx_proof_parallel"
+  },
   "krx_exact_slot_telemetry_capture": {
     "status": "operating_telemetry_only_pending_natural",
     "branch": "codex/krx-exact-slot-telemetry-capture",
@@ -507,6 +564,9 @@
     "phase_9_0b_uses_phase_9_0a_operating_main_only": true,
     "phase_9_0b_excludes_peer_and_krx_breadth_experimental_ancestry": true,
     "phase_9_0b_runtime_behavior_diff": 0,
+    "phase_9_0c_uses_phase_9_0b_operating_main_only": true,
+    "phase_9_0c_excludes_peer_and_krx_breadth_experimental_ancestry": true,
+    "phase_9_0c_runtime_behavior_diff": 0,
     "promotion_path_documented": true
   },
   "krx": {
@@ -545,6 +605,7 @@
     "operating_cash_flow": "CANONICAL_CORE_IMPLEMENTED_SELECTIVE_12_ELIGIBLE_7_PARTIAL_1_BLOCKED",
     "capex_aggregation": "CANONICAL_CORE_IMPLEMENTED_PPE_ONLY_11_ELIGIBLE_6_PARTIAL_2_BLOCKED_1_NOT_APPLICABLE",
     "free_cash_flow": "CANONICAL_CORE_IMPLEMENTED_SHADOW_SELECTIVE_11_ELIGIBLE_8_BLOCKED_1_NOT_APPLICABLE",
+    "cash_flow_shadow_consumption": "CLOSED_RETROSPECTIVE_READY_FOR_RUNTIME_SHADOW_CANARY",
     "cash_flow_user_visible_consumption": "NOT_ENABLED",
     "kr_opendart_cash_flow_period_context": "BLOCKED_FAIL_CLOSED_MEDIUM_COMPLEXITY_FOLLOWUP",
     "working_capital_days_ccc": "DEFERRED_NO_FULL_SAFE_CCC_COVERAGE",
@@ -567,7 +628,8 @@
     "human_approved_production_evidence": "INSUFFICIENT",
     "phase_9_0a_readiness": "ARCHITECTURE_CLOSED",
     "phase_9_0b_readiness": "COMPLETE_CANONICAL_CORE_IMPLEMENTED_SHADOW",
-    "phase_9_0c_readiness": "READY_CASH_FLOW_SHADOW_CONSUMPTION_EARNINGS_QUALITY"
+    "phase_9_0c_readiness": "COMPLETE_CLOSED_RETROSPECTIVE",
+    "phase_9_0d_readiness": "READY_SELECTIVE_CASH_FLOW_RUNTIME_SHADOW_CANARY"
   },
   "financial_currency_canonicalization": {
     "missing_or_blank": "unknown",
@@ -623,6 +685,9 @@
     "phase_9_0b_complete": true,
     "phase_9_0c_ready": true,
     "phase_9_0c_scope": "CASH_FLOW_SHADOW_CONSUMPTION_EARNINGS_QUALITY",
+    "phase_9_0c_complete": true,
+    "phase_9_0d_ready": true,
+    "phase_9_0d_scope": "SELECTIVE_CASH_FLOW_RUNTIME_SHADOW_CANARY",
     "blocking_reasons": [],
     "parallel_observation_tracks": [
       "next_natural_us_kr_ai_delivery",

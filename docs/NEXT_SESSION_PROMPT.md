@@ -12,25 +12,27 @@ Read, in order:
 2. `docs/MASTER_WORKFLOW.md`
 3. `docs/PROJECT_HANDOFF.md`
 4. `docs/architecture/CASH_FLOW_CAPITAL_EFFICIENCY.md`
-5. `docs/reports/20260820-phase9-0b-complete-report-bundle.md`
-6. `docs/reports/20260820-phase9-0b-canonical-facts.json`
-7. `docs/reports/20260820-phase9-0b-readiness.json`
-8. `docs/BRANCH_DEPENDENCY.md`
+5. `docs/architecture/CASH_FLOW_SHADOW_CONSUMPTION.md`
+6. `docs/reports/20260820-phase9-0c-complete-report-bundle.md`
+7. `docs/reports/20260820-phase9-0c-shadow-context.json`
+8. `docs/reports/20260820-phase9-0c-readiness.json`
+9. `docs/BRANCH_DEPENDENCY.md`
 
 Current major state:
 
 - Phase 9.0A: `ARCHITECTURE_CLOSED`
 - Phase 9.0B: `CANONICAL_CORE_IMPLEMENTED_SHADOW`
-- `PHASE_9_0C_READY = YES`
-- `PHASE_9_0C_SCOPE = CASH_FLOW_SHADOW_CONSUMPTION_EARNINGS_QUALITY`
+- Phase 9.0C: `CLOSED_RETROSPECTIVE`
+- `PHASE_9_0D_READY = YES`
+- `PHASE_9_0D_SCOPE = SELECTIVE_CASH_FLOW_RUNTIME_SHADOW_CANARY`
 - Natural AI-Assisted Delivery: `PARTIAL`, observed independently
 - KRX exact-slot telemetry: operating capture only, observed independently
 - Production Assist: `OFF`
 
-The next major task is Phase 9.0C Cash Flow Shadow Consumption and Earnings-Quality Reasoning
-Integration. Supply the canonical Facts only to an internal shadow packet, validator, and
-archive-only preview. Do not expose cash-flow numbers in Telegram, fallback, Public Action, or any
-other user-visible renderer until a later explicit integration gate.
+The next major task is Phase 9.0D Selective Cash-Flow Runtime Shadow Canary. Attach the validated
+sidecar only to a delivery-isolated natural runtime shadow path. Keep the actual AI candidate,
+fallback, Telegram, Public Action, schema, and user-visible renderer unchanged until a later
+explicit integration gate.
 
 Preserve these Phase 9.0B decisions:
 
@@ -50,11 +52,16 @@ Preserve these Phase 9.0B decisions:
 - Six KR non-financial subjects remain blocked on unresolved OpenDART cash-flow period context.
 - Insurance generic FCF is not applicable.
 - DSO, inventory days, DPO, CCC, and standard ROIC remain deferred.
+- Historical replay uses filing availability at the assessment cutoff, not canonicalization time.
+- Current formal, later-provisional, stale, blocked, and not-applicable states stay distinct.
+- TSM and WRD are later-provisional context-only; HUT is OCF-only; generic insurance FCF is N/A.
+- Exact numbers belong to business/earnings quality and bind only to Phase 9.0B Fact IDs.
+- Cash-flow evidence does not automatically change thesis status or valuation context.
 
 In parallel, review any newly completed natural US/KR packets for AI delivery, runtime quality,
 receipt, archive, exactly-once, night futures, and fallback. Let KRX 08:05/16:05 telemetry
 accumulate naturally. Do not run Scheduled Tasks, KRX capture, or Telegram manually.
 
-Apply Phase Advancement Rule v1: a new P0 pauses 9.0C for a targeted repair; material P1 receives a
+Apply Phase Advancement Rule v1: a new P0 pauses 9.0D for a targeted repair; material P1 receives a
 bounded repair; P2 remains backlog. Natural AI partial status, KR cash-flow coverage, or pending KRX
-publication evidence alone does not block selective Phase 9.0C shadow work.
+publication evidence alone does not block the selective Phase 9.0D canary.
