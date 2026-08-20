@@ -1,300 +1,54 @@
 # Next Session Prompt
 
-Use the text below to continue thesis-monitor in a new ChatGPT or Codex session.
-
----
-
-Repository: `sskim-ai/thesis-monitor`.
+Repository: `sskim-ai/thesis-monitor`
 
 First run `git fetch origin`, `git status`, `git rev-parse HEAD`, and
-`git rev-parse origin/main`. Compare the current experimental checkout with the clean operating
-checkout. Read, in this order:
+`git rev-parse origin/main`. Compare the development checkout with the clean operating checkout.
+Repository and immutable runtime evidence override stale conversation claims.
+
+Read, in order:
 
 1. `docs/project-state.json`
 2. `docs/MASTER_WORKFLOW.md`
 3. `docs/PROJECT_HANDOFF.md`
-4. `docs/NEXT_SESSION_PROMPT.md`
-5. `docs/reports/20260817-phase8-5-industry-reasoning-validation.md`
-6. `docs/reports/20260817-phase8-5-industry-reasoning-audit.md`
-7. `docs/reports/20260817-runtime-current-price-rr-repair-validation.md`
-8. `docs/reports/20260817-runtime-current-price-rr-run23-replay.md`
-9. `docs/reports/20260817-phase8-5-2-shadow-release-validation.md`
-10. `docs/reports/20260817-operating-shadow-state.md`
-11. `docs/reports/20260818-phase8-5-3-natural-live-message-root-cause.md`
-12. `docs/reports/20260818-phase8-5-3-natural-live-message-validation.md`
-13. `docs/reports/20260818-phase8-5-3-ai-natural-live-hardening-preview.md`
-14. `docs/reports/20260818-phase8-5-3-fallback-price-parity-preview.md`
-15. `docs/reports/20260818-phase8-5-3-1-language-dedup-validation.md`
-16. `docs/reports/20260818-phase8-5-3-1-language-dedup-preview.md`
-17. `docs/reports/20260818-phase8-5-3-1-language-dedup-audit.json`
-18. `docs/reports/20260818-phase8-5-3-1-shadow-promotion.md`
-19. `docs/reports/20260818-phase8-5-3-2-rxrx-valuation-label-validation.md`
-20. `docs/reports/20260818-phase8-5-3-2-rxrx-valuation-label-preview.md`
-21. `docs/reports/20260818-phase8-5-3-2-valuation-label-audit.json`
-22. `docs/reports/20260818-phase8-5-3-2-shadow-promotion.md`
-23. `docs/BRANCH_DEPENDENCY.md`
-24. `docs/architecture/NIGHT_FUTURES_SESSION_BASIS.md`
-25. `docs/reports/20260819-run26-natural-live-root-cause.md`
-26. `docs/reports/20260819-night-futures-session-basis-audit.md`
-27. `docs/reports/20260819-night-futures-lineage-audit.json`
-28. `docs/reports/20260819-run26-ai-validation-repair.md`
-29. `docs/reports/20260819-run26-validation-delta.json`
-30. `docs/reports/20260819-fallback-valuation-context-parity.md`
-31. `docs/reports/20260819-run26-targeted-repair-preview.md`
-32. `docs/reports/20260819-phase8-5-4-validation.md`
-33. `docs/reports/20260819-run27-natural-reasoning-root-cause.md`
-34. `docs/architecture/RUNTIME_REASONING_OWNERSHIP.md`
-35. `docs/reports/20260819-run27-repetition-audit.md`
-36. `docs/reports/20260819-run27-repaired-ai-preview.md`
-37. `docs/reports/20260819-phase8-5-5-validation.md`
-38. `docs/reports/20260820-run28-us-numeric-summary-root-cause.md`
-39. `docs/reports/20260820-run28-typed-repetition-audit.md`
-40. `docs/reports/20260820-run28-business-earnings-ownership-audit.md`
-41. `docs/reports/20260820-run28-repaired-ai-preview.md`
-42. `docs/reports/20260820-phase8-5-5-1-validation.md`
-43. `docs/reports/20260820-phase8-5-5-1-shadow-promotion.md`
-44. `docs/reports/20260820-run29-kr-structured-repetition-root-cause.md`
-45. `docs/reports/20260820-run29-structured-supply-tuple-audit.md`
-46. `docs/reports/20260820-run29-rr-cross-section-ownership-audit.md`
-47. `docs/reports/20260820-run29-industry-cash-conversion-specificity.md`
-48. `docs/reports/20260820-kr-valuation-basis-caution-audit.md`
-49. `docs/reports/20260820-run29-repaired-ai-preview.md`
-50. `docs/reports/20260820-phase8-5-5-2-validation.md`
-51. `docs/reports/20260820-phase-advancement-readiness.md`
-52. `docs/reports/20260820-phase8-5-5-2-shadow-promotion.md`
+4. `docs/architecture/CASH_FLOW_CAPITAL_EFFICIENCY.md`
+5. `docs/reports/20260820-phase9-0a-complete-report-bundle.md`
+6. `docs/reports/20260820-phase9-0a-coverage.json`
+7. `docs/reports/20260820-phase9-0a-readiness.json`
+8. `docs/BRANCH_DEPENDENCY.md`
 
-Phase 8.3.2A/finalization architecture, coverage reports and previews remain on the preserved
-`codex/phase-8-3-finalization` branch. Read them with `git show <branch>:<path>` when peer history is
-material; do not copy its implementation ancestry into an operating repair branch.
+Current major state:
 
-Repository and immutable runtime state override stale conversation or document claims. Resolve the
-current commit from Git rather than copying a historical SHA.
+- Phase 9.0A: `ARCHITECTURE_CLOSED`
+- `PHASE_9_0B_READY = YES`
+- `PHASE_9_0B_SCOPE = SELECTIVE_ELIGIBLE_SUBSET_OCF_CAPEX_FCF_CORE`
+- Natural AI-Assisted Delivery: `PARTIAL`, observed independently
+- KRX exact-slot telemetry: operating capture only, observed independently
+- Production Assist: `OFF`
 
-Current architecture is deterministic Facts plus Investment Knowledge v3 and Chart Knowledge v1,
-bounded Codex reasoning, numeric/semantic validation, adaptive schema-4 rendering, and a hash-bound
-runtime receipt. Phase 8.4.x is the completed message-intelligence foundation, and Phase 8.5 adds
-`industry-specific-reasoning-v1`:
+The next major task is Phase 9.0B Canonical OCF / PPE-CAPEX / FCF Core Implementation. Implement
+only the evidence-eligible subset and fail closed elsewhere. Do not expose cash-flow numbers in
+Telegram, the AI packet, fallback, or any user-visible renderer until a later explicit integration
+gate.
 
-- integrated full schema-4 messages;
-- delta-first and adaptive section selection;
-- company/listed-security valuation scope;
-- denied-Fact qualitative echo blocking;
-- decision-material delta hierarchy;
-- safe historical valuation retention;
-- `valuation-context-wording-v1` availability/use classes;
-- observer/holder, concrete Unknown, and current-value next-check foundations.
-- structured primary/secondary industry routing with confidence;
-- Fact-dependent causal and valuation-boundary references;
-- framework mismatch and unsupported causal-leap guardrails.
+Preserve these Phase 9.0A decisions:
 
-Phase 8.4.1 Work scores were Samsung 17, POSCO 16, Hyundai Glovis 18, Korean Re 16, and SK hynix 17,
-average 16.8/20. Phase 8.4.1.1 fixes the one remaining contradiction: visible own-history context can
-no longer coexist with current-only wording. The exact final Preview is archive-only and sent no
-Telegram.
+- OCF is exact net cash from operating activities; no EBITDA/earnings proxy.
+- Baseline CAPEX is positive-magnitude PPE cash outflow only.
+- Intangibles and capitalized software remain separate components.
+- Baseline FCF is OCF less PPE-only CAPEX under identical period, unit, entity, and statement basis.
+- Q2/Q3 QTD requires adjacent compatible YTD subtraction.
+- TTM requires prior FY plus current YTD less prior comparable YTD.
+- No annualization, CFS/OFS mixing, currency mixing, restatement mixing, or reverse engineering.
+- Foreign issuer-level margins may be eligible without ADR ratio; per-share/yield/EV arithmetic may
+  not.
+- Insurance generic FCF/CCC/ROIC is not applicable.
+- DSO/inventory days/DPO/CCC and standard ROIC are deferred from Phase 9.0B.
 
-The Phase 8.5 immutable active audit covers 20 stocks: nine have high-confidence specialized routes
-and eleven remain low-confidence general fallback. This is strong PARTIAL because current structured
-profiles do not prove finer routes for every company. Human-quality status remains pending Work
-review; Codex's archive-only KR assessment averages 17.0/20 and is not Production Assist evidence.
+In parallel, review any newly completed natural US/KR packets for AI delivery, runtime quality,
+receipt, archive, exactly-once, night futures, and fallback. Let KRX 08:05/16:05 telemetry accumulate
+naturally. Do not run Scheduled Tasks, KRX capture, or Telegram manually.
 
-Current core contracts:
-
-- policy `daily-review-v3.10`
-- output schema `4`
-- OHLCV `ohlcv-structure-v2`
-- security identity `security-identity-v2`
-- financial quality `financial-quality-taint-v2`
-- financial statement/amount basis v1
-- financial lineage `financial-lineage-v2`
-- typed valuation `typed-valuation-interpretation-v2`
-- market cross-section `market-cross-section-v1`
-- delta-first `delta-first-rendering-v1`
-- decision hierarchy `decision-material-delta-v1`
-- valuation context `valuation-context-wording-v1`
-- industry reasoning `industry-specific-reasoning-v1`
-- current price context `current-price-context-v1`
-- runtime specificity `runtime-message-specificity-v2`
-- runtime reasoning ownership `runtime-reasoning-ownership-v1`
-- business numeric ownership `numeric-summary-ownership-v1`
-- typed template skeleton `typed-template-skeleton-v1`
-- runtime gate `runtime-message-quality-v1`
-- receipt `runtime-message-quality-receipt-v2`
-- peer selection `peer-sector-valuation-v1`, group `verified-profile-peers-v2`
-- free current peer POC `free-source-current-peer-v1`
-- night futures `night-futures-session-basis-v1`
-- Pilot `ai-assisted-pilot-v3`, renderer v3
-- Public Action `0.4.5`, operationId 20/20 unique
-
-Knowledge checksums:
-
-- Investment v3:
-  `559ad45e4dd86cb0aec9bb09b51a5dc816bf323e8c2b4fd050cf28960a5a9d18`
-- Chart v1:
-  `beee64559831479168f1347c43d979391126926d73e2473ce837cefbf0ede19b`
-
-Runtime source of truth at handoff: KR 3/5 and US 3/5, AI mode shadow, Production Assist OFF, four
-Scheduled Tasks ACTIVE at 08:15/08:30/16:15/16:55 KST on the operating checkout. Phase 8.5.3.1
-implementation commit `e166aaf6a4c13f9009a3885737d3b48e34c895d5` is included in main and the
-operating checkout; always re-resolve the final documentation SHA. Reconcile any later natural
-result instead of forcing these counts.
-
-Phase 8.3 is finalized on the experimental clean peer-only ancestry. Provider policy is `FREE_ONLY`;
-the paid path is `CLOSED_BY_POLICY`. The immutable 20-stock POC measured one user-visible `MEDIUM`
-state: 1/20 overall and 1/15 among economically meaningful subjects. KR is 0/7; US is 1/13. Broad
-runtime value is `LOW_ROI`; feature scope is `SELECTIVE_OPTIONAL_CONTEXT`, historical PIT and
-forward expansion are deferred, and operating integration is false. The TSLA sentence now calls
-the sample a same-automotive-classification baseline group and explicitly limits direct economic
-comparability while preserving all canonical values. Do not reopen Phase 8.3 without materially
-new free-source, taxonomy, exact-group or natural-message evidence.
-
-The Phase 8.3.2A branch starts from `codex/integration-phase-8-3-peer-only`, whose merge-base is the
-operating main. It contains no KRX provider/readiness implementation. The original Phase 8.3 branch
-does contain KRX Git ancestry; never promote it implicitly when KRX has not been approved.
-
-Phase 8.5.1 traced the failure to weekday-only KRX session classification. XKRX was closed on
-2026-08-17, so the 2026-08-14 chart was the latest completed session and should have remained fresh.
-The exchange-calendar repair restores exact canonical RR Facts and numeric paths for all four
-affected stocks in read-only replay. Three unavailable controls remain unavailable by contract. The
-original eight RR missing-path errors become zero. The natural 2026-08-18 KR packet then carried
-complete paths for all four affected stocks with zero numeric/semantic hard errors, so Current-Price
-RR Runtime Path is `LIVE PATH PASS`.
-
-Phase 8.5.2 promoted the complete Phase 8.5.1 ancestry to `origin/main` and the clean operating
-checkout. Implementation SHA: `2cd78de4f87a1c875d8ee94d546bf6d4a48c8acf`; final operating main:
-`a8ebb02753e28795f36dbf72c9deb3520f75ed44`. Exact-main GitHub
-Actions run `32023730416` passed Test and Lint. The API was restarted and healthy; operating smoke
-tests passed 89/89. All four Scheduled Tasks still target the configured operating checkout, and
-no task was manually run. This is shadow deployment readiness, not Natural Live proof or Production
-Assist approval.
-
-Natural 2026-08-18 US packet `2026-08-18-us-run-24-487c07bde4e1` and KR packet
-`2026-08-18-kr-run-25-23b5e31dc20e` had zero numeric/semantic hard errors but failed the runtime
-message quality gate. Deterministic fallback delivered 14/14 US and 8/8 KR. Phase 8.5.3 immutable
-replay passes both full validators and the unchanged quality gate: literal/skeleton duplicates fall
-from US 3/7 and KR 5/7 to zero. Its fallback selector uses current dynamic support/resistance, RR,
-invalidation, chart state, and registered lifecycle; crossed confirmations rendered as future
-triggers fall from nine to zero. This code is now included in the Phase 8.5.3.1 operating promotion.
-
-Phase 8.5.3.1 fixes the remaining Preview language and within-stock repetition defects. US object-
-particle errors fall from six to zero, KR malformed supply phrases from two to zero, US watch/next
-meaningless overlap from 13 stocks to zero, and the same RR Fact appearing three or more times from
-six KR stocks to zero. Both immutable full validators, runtime quality, and final language pass.
-The full Phase 8.5.3/8.5.3.1 chain was fast-forwarded to operating shadow after exact-SHA Actions
-Test/Lint PASS; API health and 154 focused operating tests pass. Production Assist remains OFF.
-
-Phase 8.5.3.2 fixes the remaining RXRX valuation display collision. The current PBR, historical PBR
-median, and historical percentile now retain distinct comparison roles and labels; one additional
-WULF legacy collision is closed by the same generic rule. Implementation
-`b3ad1ea82bdbd3fe003831d449b0dcaa7c6a2da2` passed exact-SHA Actions run `32126079970` and is
-promoted to operating shadow. Natural AI-assisted delivery remains PARTIAL.
-
-Natural US packet `2026-08-19-us-run-26-cd80a8e4d373` is now the latest evidence. AI sent 0;
-deterministic fallback delivered 14/14 with no duplicate. AI validation rejected RXRX/WULF current
-PBR ownership and CORZ typed valuation occurrence errors. The market packet also promoted
-same-`BAS_DD` DAY/NIGHT comparisons as night changes, even though the KRX night trading date is set
-by the T+1 06:00 end. Fallback wording was safe enough to deliver but did not always match the
-valuation metrics actually shown.
-
-Phase 8.5.4 starts directly from operating main and excludes Phase 8.3/KRX experimental ancestry.
-Its immutable replay has zero binding, typed valuation and full-validator errors, and runtime
-message quality passes. Night-futures values are suppressed as `UNAVAILABLE_BY_CONTRACT` when the
-required NIGHT/reference DAY pair and source lineage cannot be reconstructed. Fallback wording now
-uses actual rendered valuation context. HUT/WULF overlapping selected zones suppress RR rather than
-publishing 0.66x/0.42x. No source archive was changed and no Telegram, task, Pilot or DB mutation
-occurred. Phase 8.5.4 is now promoted to operating shadow. This is
-`CLOSED_RETROSPECTIVE_PENDING_NATURAL`, not natural live proof.
-
-Phase 8.5.4.2 is now operating shadow. XKRX holiday traversal reconstructs the 2026-08-18 NIGHT ->
-2026-08-14 DAY same-contract pair for both KOSPI200 and KOSDAQ150, with backend-derived changes
-matching provider audit fields. The expected 2026-08-19 provider rows remain empty, so both pairs
-are stale and current exposure remains suppressed. This is retrospective calendar-lookup PASS, not
-natural proof. Explicit current-PBR history-to-base-Fact lineage remains low-priority technical debt.
-
-Natural KR packet `2026-08-19-kr-run-27-63a064e837ff` then delivered deterministic fallback 8/8;
-AI sent 0. Phase 8.5.5 closes its Korean Re depositary-regex false positive, separates
-`chart_risk_reward` into price-context ownership, and removes repeated generic candidates before
-prose. Immutable replay has 117 automatic numeric bindings, zero validator errors, zero substantive
-or skeleton repeats, and a verified PASS receipt. This remains retrospective evidence. Reasoning
-Ownership and Natural Repetition are `CLOSED_RETROSPECTIVE_PENDING_NATURAL`; Natural AI-Assisted
-Delivery remains `PARTIAL`.
-
-Natural US packet `2026-08-20-us-run-28-9024def294e6` then passed numeric, semantic and final-
-language validation but failed the unchanged runtime quality gate. AI sent 0 and deterministic
-fallback delivered 14/14. Phase 8.5.5.1 removes valuation-owned business fillers, suppresses the
-generic portfolio numeric-summary scaffold, makes RR deltas conditional on existing material chart
-transitions, and distinguishes typed RR and PBR relations without relaxing repetition policy.
-Immutable replay has 149 automatic bindings, zero validator errors, zero ownership/skeleton
-blockers and a verified PASS receipt; run-27 remains PASS. Implementation `c915d44` is operating
-shadow after exact-SHA Actions Test/Lint, API health and 291 smoke tests. This is retrospective
-evidence only. Natural AI-Assisted Delivery remains `PARTIAL`.
-
-Natural KR packet `2026-08-20-kr-run-29-6e8809e1e944` then passed numeric, semantic and final-
-language checks but failed runtime quality on KR structured/prose repetition. AI sent 0 and
-deterministic fallback delivered 8/8. Phase 8.5.5.2 preserves all eligible foreign/institution
-1/5/20-day values as `canonical-supply-flow-tuple-v1`, assigns exact current RR once to
-`price_positioning.text` through `numeric-primary-owner-v1`, and suppresses repeated generic
-financial-basis and inventory/CAPEX-to-FCF/ROIC candidates when company-specific Unknowns already
-own the decision question. Immutable replay has 112 automatic bindings, manual/rejected/unresolved
-0, full validator/language/runtime quality PASS, verified receipt, and run-28/run-27 PASS.
-
-The validated Phase 8.5.5.2 descendant is now operating shadow on `main`. API health and 497
-read-only operating smoke tests passed; all four natural AI-review tasks remain ACTIVE and unchanged,
-and KRX exact-slot telemetry remains telemetry-only. No manual task, Telegram, Pilot, DB, archive,
-or receipt mutation occurred during promotion.
-
-Reasoning Ownership, US Numeric Summary Ownership, and the prior typed-repetition behavior were
-exercised without recurrence in run-29 and are tracked as individual `LIVE_PASS` evidence. The new
-KR structured family remains `CLOSED_RETROSPECTIVE_PENDING_NATURAL`; aggregate Natural AI-Assisted
-Delivery remains `PARTIAL`.
-
-Phase Advancement Rule v1 is now authoritative. P0 correctness/safety blocks the roadmap; P1
-analysis-integrity issues require bounded repair and retrospective PASS; P2 quality/UX remains
-backlog. Open P0 is 0 and the run-29 targeted P1 is closed, so `PHASE_9_0A_READY = YES`. This does
-not implement Phase 9.0A. The next task may start Cash Flow / Capital Efficiency Evidence
-Architecture while natural US/KR and KRX publication observations continue in parallel. A new P0
-interrupts that architecture work for targeted repair.
-
-Default next major task: start a separate **Phase 9.0A Cash Flow / Capital Efficiency Evidence
-Architecture** work order. Limit it to provider coverage, financial lineage, OCF/CAPEX/FCF
-eligibility, working capital, inventory, receivables/payables, ROIC denominator, industry
-applicability, provisional-earnings limits, share-basis effects, and missing-data policy. Do not
-deploy a new user-visible cash-flow feature by default.
-
-In parallel, inspect the **next natural US/KR packets** without manual task execution. For both
-markets verify, in order:
-
-1. actual delivery mode;
-2. AI-assisted versus deterministic fallback;
-3. full validator, reasoning ownership, repetition, and runtime-quality status;
-4. actual Telegram message human quality;
-5. night-futures session/reference lineage and price/RR/confirmation lifecycle;
-6. KR supply prose;
-7. valuation wording;
-8. industry-specific reasoning;
-9. concrete Unknown and next check;
-10. duplicate/repetition regression;
-11. receipt, archive and exactly-once state.
-
-Classify a new blocker as P0/P1/P2. Pause Phase 9.0A for P0. Prioritize a bounded material P1 repair;
-minor isolated P1 may proceed in parallel. Keep P2 in backlog and do not let it block the major
-architecture phase.
-
-In parallel, inspect the latest KRX exact-slot evidence for 16:05, 08:05 and T+1. Historical
-capability and universe/publication contracts pass, but all three operational roles remain
-`NOT_YET_PROVEN` and user-visible operating integration remains false. The telemetry-only
-LaunchAgent is active at natural 08:05 and 16:05 slots; inspect its append-only JSONL and logs without
-manual execution. T+1 has no defined exact clock and must not inherit 08:05 evidence implicitly.
-KRX digest promotion remains a separate evidence-based decision.
-
-Preserve the Phase 8.5 boundary: do not infer missing metrics, promote themes into company
-achievements, force fine-grained taxonomy, create thresholds, or relax numeric, lineage, scope,
-renderer, receipt, fallback, or exactly-once validation.
-
-Do not start new feature development, run Scheduled Tasks manually, send Telegram, mutate the
-operating DB, assessment, archive, notification, delivery, or Pilot, or enable Production Assist.
-
-Before completion run focused tests, full `pytest -q`, `ruff check .`, `git diff --check`, Knowledge
-checksum parity, Public Action 0.4.5, operationId 20/20 uniqueness, runtime isolation checks, push
-without force, and GitHub Actions Test/Lint for the exact final commit.
-
----
+Apply Phase Advancement Rule v1: a new P0 pauses 9.0B for a targeted repair; material P1 receives a
+bounded repair; P2 remains backlog. Natural AI partial status or pending KRX publication evidence
+alone does not block Phase 9.0B.

@@ -1,0 +1,5575 @@
+{
+  "active_universe": [
+    {
+      "company_name": "SK하이닉스",
+      "financial_type": "non_financial",
+      "industry": "memory_semiconductor",
+      "issuer_type": "krx",
+      "latest_formal_period": "반기보고서 (2026.06)",
+      "market": "KR",
+      "metrics": {
+        "ap": {
+          "evidence": null,
+          "reason": "trade_ap_not_present_in_committed_recovery_audit",
+          "status": "BLOCKED"
+        },
+        "ar": {
+          "evidence": null,
+          "reason": "trade_ar_not_present_in_committed_recovery_audit",
+          "status": "BLOCKED"
+        },
+        "capex_intensity": {
+          "evidence": null,
+          "reason": "cash_flow_period_and_pair_eligibility_unresolved",
+          "status": "BLOCKED"
+        },
+        "capex_ppe": {
+          "evidence": {
+            "aggregation_eligible": 0,
+            "component_count": 0
+          },
+          "reason": "exact_ppe_components_exist_but_period_context_unresolved",
+          "status": "PARTIAL"
+        },
+        "cash_conversion": {
+          "evidence": null,
+          "reason": "cash_flow_period_and_pair_eligibility_unresolved",
+          "status": "BLOCKED"
+        },
+        "ccc": {
+          "evidence": null,
+          "reason": "safe_dso_inventory_days_dpo_not_available",
+          "status": "BLOCKED"
+        },
+        "cogs": {
+          "evidence": null,
+          "reason": "compatible_cogs_not_present_in_committed_recovery_audit",
+          "status": "BLOCKED"
+        },
+        "dpo": {
+          "evidence": null,
+          "reason": "purchases_and_average_trade_ap_not_available",
+          "status": "BLOCKED"
+        },
+        "dso": {
+          "evidence": null,
+          "reason": "average_trade_ar_not_available",
+          "status": "BLOCKED"
+        },
+        "fcf": {
+          "evidence": null,
+          "reason": "ocf_and_ppe_capex_period_eligibility_not_closed",
+          "status": "BLOCKED"
+        },
+        "fcf_margin": {
+          "evidence": null,
+          "reason": "cash_flow_period_and_pair_eligibility_unresolved",
+          "status": "BLOCKED"
+        },
+        "inventory": {
+          "evidence": {
+            "account_detail": "-",
+            "account_id": "ifrs-full_Inventories",
+            "account_name": "재고자산",
+            "amount": 17985706000000.0,
+            "amount_period_end": "2026-06-30",
+            "amount_period_start": "2026-06-30",
+            "amount_period_type": "point_in_time",
+            "amount_role": "current",
+            "amount_variant": "standalone",
+            "bsns_year": 2026,
+            "contract": "financial-lineage-v2",
+            "currency": "KRW",
+            "denial_reason": null,
+            "fs_div": "CFS",
+            "lineage_verified": true,
+            "logical_field": "inventory",
+            "quality_state": "verified_usable",
+            "rcept_no": "20260814003509",
+            "reprt_code": "11012",
+            "selected_for_canonical": true,
+            "sj_div": "BS",
+            "sj_nm": "재무상태표",
+            "source_column": "thstrm_amount",
+            "source_filing": "20260814003509",
+            "source_labels": {
+              "frmtrm_nm": "제 78 기말",
+              "thstrm_nm": "제 79 기 반기말"
+            },
+            "source_provider": "opendart",
+            "source_row_identity": "20260814003509:11012:2026:CFS:BS:ifrs-full_Inventories:재고자산:-:13:thstrm_amount",
+            "source_row_ordinal": "13",
+            "source_type": "formal",
+            "statement_basis": "consolidated",
+            "statement_basis_source": "source_row_fs_div",
+            "statement_basis_state": "verified_consolidated",
+            "statement_type": "BS"
+          },
+          "reason": "financial_lineage_v2_verified_point_in_time",
+          "status": "ELIGIBLE"
+        },
+        "inventory_days": {
+          "evidence": null,
+          "reason": "average_inventory_and_compatible_cogs_not_available",
+          "status": "BLOCKED"
+        },
+        "ocf": {
+          "evidence": null,
+          "reason": "structured_cash_flow_period_ambiguous",
+          "status": "PARTIAL"
+        },
+        "ocf_margin": {
+          "evidence": null,
+          "reason": "cash_flow_period_and_pair_eligibility_unresolved",
+          "status": "BLOCKED"
+        },
+        "revenue": {
+          "evidence": null,
+          "reason": "unresolved_prior_financial_quality_conflict",
+          "status": "BLOCKED"
+        },
+        "roic": {
+          "evidence": null,
+          "reason": "verified_excess_cash_policy_missing",
+          "status": "BLOCKED"
+        }
+      },
+      "primary_source": "OpenDART formal statement stored audit",
+      "security_type": "common_stock",
+      "source_payload_sha256": "20e94eff4f16d9b95e3e5e196c3c8f0b349a24b581b38c8d807cae802066b6b4",
+      "ticker": "000660"
+    },
+    {
+      "company_name": "코리안리",
+      "financial_type": "financial",
+      "industry": "insurance_reinsurance",
+      "issuer_type": "krx",
+      "latest_formal_period": "반기보고서 (2026.06)",
+      "market": "KR",
+      "metrics": {
+        "ap": {
+          "evidence": null,
+          "reason": "generic_metric_not_applicable_to_financial_industry",
+          "status": "NOT_APPLICABLE"
+        },
+        "ar": {
+          "evidence": null,
+          "reason": "generic_metric_not_applicable_to_financial_industry",
+          "status": "NOT_APPLICABLE"
+        },
+        "capex_intensity": {
+          "evidence": null,
+          "reason": "generic_metric_not_applicable_to_financial_industry",
+          "status": "NOT_APPLICABLE"
+        },
+        "capex_ppe": {
+          "evidence": null,
+          "reason": "generic_metric_not_applicable_to_financial_industry",
+          "status": "NOT_APPLICABLE"
+        },
+        "cash_conversion": {
+          "evidence": null,
+          "reason": "generic_metric_not_applicable_to_financial_industry",
+          "status": "NOT_APPLICABLE"
+        },
+        "ccc": {
+          "evidence": null,
+          "reason": "generic_metric_not_applicable_to_financial_industry",
+          "status": "NOT_APPLICABLE"
+        },
+        "cogs": {
+          "evidence": null,
+          "reason": "generic_metric_not_applicable_to_financial_industry",
+          "status": "NOT_APPLICABLE"
+        },
+        "dpo": {
+          "evidence": null,
+          "reason": "generic_metric_not_applicable_to_financial_industry",
+          "status": "NOT_APPLICABLE"
+        },
+        "dso": {
+          "evidence": null,
+          "reason": "generic_metric_not_applicable_to_financial_industry",
+          "status": "NOT_APPLICABLE"
+        },
+        "fcf": {
+          "evidence": null,
+          "reason": "generic_metric_not_applicable_to_financial_industry",
+          "status": "NOT_APPLICABLE"
+        },
+        "fcf_margin": {
+          "evidence": null,
+          "reason": "generic_metric_not_applicable_to_financial_industry",
+          "status": "NOT_APPLICABLE"
+        },
+        "inventory": {
+          "evidence": null,
+          "reason": "generic_metric_not_applicable_to_financial_industry",
+          "status": "NOT_APPLICABLE"
+        },
+        "inventory_days": {
+          "evidence": null,
+          "reason": "generic_metric_not_applicable_to_financial_industry",
+          "status": "NOT_APPLICABLE"
+        },
+        "ocf": {
+          "evidence": null,
+          "reason": "financial_industry_context_only",
+          "status": "PARTIAL"
+        },
+        "ocf_margin": {
+          "evidence": null,
+          "reason": "generic_metric_not_applicable_to_financial_industry",
+          "status": "NOT_APPLICABLE"
+        },
+        "revenue": {
+          "evidence": null,
+          "reason": "insurance_revenue_requires_industry_semantic",
+          "status": "PARTIAL"
+        },
+        "roic": {
+          "evidence": null,
+          "reason": "generic_metric_not_applicable_to_financial_industry",
+          "status": "NOT_APPLICABLE"
+        }
+      },
+      "primary_source": "OpenDART formal statement stored audit",
+      "security_type": "common_stock",
+      "source_payload_sha256": "20e94eff4f16d9b95e3e5e196c3c8f0b349a24b581b38c8d807cae802066b6b4",
+      "ticker": "003690"
+    },
+    {
+      "company_name": "POSCO홀딩스",
+      "financial_type": "non_financial",
+      "industry": "steel_materials",
+      "issuer_type": "krx",
+      "latest_formal_period": "반기보고서 (2026.06)",
+      "market": "KR",
+      "metrics": {
+        "ap": {
+          "evidence": null,
+          "reason": "trade_ap_not_present_in_committed_recovery_audit",
+          "status": "BLOCKED"
+        },
+        "ar": {
+          "evidence": null,
+          "reason": "trade_ar_not_present_in_committed_recovery_audit",
+          "status": "BLOCKED"
+        },
+        "capex_intensity": {
+          "evidence": null,
+          "reason": "cash_flow_period_and_pair_eligibility_unresolved",
+          "status": "BLOCKED"
+        },
+        "capex_ppe": {
+          "evidence": {
+            "aggregation_eligible": 0,
+            "component_count": 0
+          },
+          "reason": "exact_ppe_components_exist_but_period_context_unresolved",
+          "status": "PARTIAL"
+        },
+        "cash_conversion": {
+          "evidence": null,
+          "reason": "cash_flow_period_and_pair_eligibility_unresolved",
+          "status": "BLOCKED"
+        },
+        "ccc": {
+          "evidence": null,
+          "reason": "safe_dso_inventory_days_dpo_not_available",
+          "status": "BLOCKED"
+        },
+        "cogs": {
+          "evidence": null,
+          "reason": "compatible_cogs_not_present_in_committed_recovery_audit",
+          "status": "BLOCKED"
+        },
+        "dpo": {
+          "evidence": null,
+          "reason": "purchases_and_average_trade_ap_not_available",
+          "status": "BLOCKED"
+        },
+        "dso": {
+          "evidence": null,
+          "reason": "average_trade_ar_not_available",
+          "status": "BLOCKED"
+        },
+        "fcf": {
+          "evidence": null,
+          "reason": "ocf_and_ppe_capex_period_eligibility_not_closed",
+          "status": "BLOCKED"
+        },
+        "fcf_margin": {
+          "evidence": null,
+          "reason": "cash_flow_period_and_pair_eligibility_unresolved",
+          "status": "BLOCKED"
+        },
+        "inventory": {
+          "evidence": {
+            "account_detail": "-",
+            "account_id": "ifrs-full_Inventories",
+            "account_name": "재고자산",
+            "amount": 13967773790600.0,
+            "amount_period_end": "2026-06-30",
+            "amount_period_start": "2026-06-30",
+            "amount_period_type": "point_in_time",
+            "amount_role": "current",
+            "amount_variant": "standalone",
+            "bsns_year": 2026,
+            "contract": "financial-lineage-v2",
+            "currency": "KRW",
+            "denial_reason": null,
+            "fs_div": "CFS",
+            "lineage_verified": true,
+            "logical_field": "inventory",
+            "quality_state": "verified_usable",
+            "rcept_no": "20260814000957",
+            "reprt_code": "11012",
+            "selected_for_canonical": true,
+            "sj_div": "BS",
+            "sj_nm": "재무상태표",
+            "source_column": "thstrm_amount",
+            "source_filing": "20260814000957",
+            "source_labels": {
+              "frmtrm_nm": "제 58 기말",
+              "thstrm_nm": "제 59 기 반기말"
+            },
+            "source_provider": "opendart",
+            "source_row_identity": "20260814000957:11012:2026:CFS:BS:ifrs-full_Inventories:재고자산:-:12:thstrm_amount",
+            "source_row_ordinal": "12",
+            "source_type": "formal",
+            "statement_basis": "consolidated",
+            "statement_basis_source": "source_row_fs_div",
+            "statement_basis_state": "verified_consolidated",
+            "statement_type": "BS"
+          },
+          "reason": "financial_lineage_v2_verified_point_in_time",
+          "status": "ELIGIBLE"
+        },
+        "inventory_days": {
+          "evidence": null,
+          "reason": "average_inventory_and_compatible_cogs_not_available",
+          "status": "BLOCKED"
+        },
+        "ocf": {
+          "evidence": null,
+          "reason": "structured_cash_flow_period_ambiguous",
+          "status": "PARTIAL"
+        },
+        "ocf_margin": {
+          "evidence": null,
+          "reason": "cash_flow_period_and_pair_eligibility_unresolved",
+          "status": "BLOCKED"
+        },
+        "revenue": {
+          "evidence": {
+            "account_detail": "-",
+            "account_id": "ifrs-full_Revenue",
+            "account_name": "매출액",
+            "amount": 19258684353345.0,
+            "amount_period_end": "2026-06-30",
+            "amount_period_start": "2026-04-01",
+            "amount_period_type": "single_quarter",
+            "amount_role": "current",
+            "amount_variant": "standalone",
+            "bsns_year": 2026,
+            "contract": "financial-lineage-v2",
+            "currency": "KRW",
+            "denial_reason": null,
+            "fs_div": "CFS",
+            "lineage_verified": true,
+            "logical_field": "revenue",
+            "quality_state": "verified_usable",
+            "rcept_no": "20260814000957",
+            "reprt_code": "11012",
+            "selected_for_canonical": true,
+            "sj_div": "CIS",
+            "sj_nm": "포괄손익계산서",
+            "source_column": "thstrm_amount",
+            "source_filing": "20260814000957",
+            "source_labels": {
+              "frmtrm_q_nm": "제 58 기 반기",
+              "thstrm_nm": "제 59 기 반기"
+            },
+            "source_provider": "opendart",
+            "source_row_identity": "20260814000957:11012:2026:CFS:CIS:ifrs-full_Revenue:매출액:-:41:thstrm_amount",
+            "source_row_ordinal": "41",
+            "source_type": "formal",
+            "statement_basis": "consolidated",
+            "statement_basis_source": "source_row_fs_div",
+            "statement_basis_state": "verified_consolidated",
+            "statement_type": "CIS"
+          },
+          "reason": "financial_lineage_v2_verified",
+          "status": "ELIGIBLE"
+        },
+        "roic": {
+          "evidence": null,
+          "reason": "verified_excess_cash_policy_missing",
+          "status": "BLOCKED"
+        }
+      },
+      "primary_source": "OpenDART formal statement stored audit",
+      "security_type": "common_stock",
+      "source_payload_sha256": "20e94eff4f16d9b95e3e5e196c3c8f0b349a24b581b38c8d807cae802066b6b4",
+      "ticker": "005490"
+    },
+    {
+      "company_name": "삼성전자",
+      "financial_type": "non_financial",
+      "industry": "memory_semiconductor",
+      "issuer_type": "krx",
+      "latest_formal_period": "반기보고서 (2026.06)",
+      "market": "KR",
+      "metrics": {
+        "ap": {
+          "evidence": null,
+          "reason": "trade_ap_not_present_in_committed_recovery_audit",
+          "status": "BLOCKED"
+        },
+        "ar": {
+          "evidence": null,
+          "reason": "trade_ar_not_present_in_committed_recovery_audit",
+          "status": "BLOCKED"
+        },
+        "capex_intensity": {
+          "evidence": null,
+          "reason": "cash_flow_period_and_pair_eligibility_unresolved",
+          "status": "BLOCKED"
+        },
+        "capex_ppe": {
+          "evidence": {
+            "aggregation_eligible": 0,
+            "component_count": 0
+          },
+          "reason": "exact_ppe_components_exist_but_period_context_unresolved",
+          "status": "PARTIAL"
+        },
+        "cash_conversion": {
+          "evidence": null,
+          "reason": "cash_flow_period_and_pair_eligibility_unresolved",
+          "status": "BLOCKED"
+        },
+        "ccc": {
+          "evidence": null,
+          "reason": "safe_dso_inventory_days_dpo_not_available",
+          "status": "BLOCKED"
+        },
+        "cogs": {
+          "evidence": null,
+          "reason": "compatible_cogs_not_present_in_committed_recovery_audit",
+          "status": "BLOCKED"
+        },
+        "dpo": {
+          "evidence": null,
+          "reason": "purchases_and_average_trade_ap_not_available",
+          "status": "BLOCKED"
+        },
+        "dso": {
+          "evidence": null,
+          "reason": "average_trade_ar_not_available",
+          "status": "BLOCKED"
+        },
+        "fcf": {
+          "evidence": null,
+          "reason": "ocf_and_ppe_capex_period_eligibility_not_closed",
+          "status": "BLOCKED"
+        },
+        "fcf_margin": {
+          "evidence": null,
+          "reason": "cash_flow_period_and_pair_eligibility_unresolved",
+          "status": "BLOCKED"
+        },
+        "inventory": {
+          "evidence": {
+            "account_detail": "-",
+            "account_id": "ifrs-full_Inventories",
+            "account_name": "재고자산",
+            "amount": 71389118000000.0,
+            "amount_period_end": "2026-06-30",
+            "amount_period_start": "2026-06-30",
+            "amount_period_type": "point_in_time",
+            "amount_role": "current",
+            "amount_variant": "standalone",
+            "bsns_year": 2026,
+            "contract": "financial-lineage-v2",
+            "currency": "KRW",
+            "denial_reason": null,
+            "fs_div": "CFS",
+            "lineage_verified": true,
+            "logical_field": "inventory",
+            "quality_state": "verified_usable",
+            "rcept_no": "20260814003699",
+            "reprt_code": "11012",
+            "selected_for_canonical": true,
+            "sj_div": "BS",
+            "sj_nm": "재무상태표",
+            "source_column": "thstrm_amount",
+            "source_filing": "20260814003699",
+            "source_labels": {
+              "frmtrm_nm": "제 57 기말",
+              "thstrm_nm": "제 58 기 반기말"
+            },
+            "source_provider": "opendart",
+            "source_row_identity": "20260814003699:11012:2026:CFS:BS:ifrs-full_Inventories:재고자산:-:14:thstrm_amount",
+            "source_row_ordinal": "14",
+            "source_type": "formal",
+            "statement_basis": "consolidated",
+            "statement_basis_source": "source_row_fs_div",
+            "statement_basis_state": "verified_consolidated",
+            "statement_type": "BS"
+          },
+          "reason": "financial_lineage_v2_verified_point_in_time",
+          "status": "ELIGIBLE"
+        },
+        "inventory_days": {
+          "evidence": null,
+          "reason": "average_inventory_and_compatible_cogs_not_available",
+          "status": "BLOCKED"
+        },
+        "ocf": {
+          "evidence": null,
+          "reason": "structured_cash_flow_period_ambiguous",
+          "status": "PARTIAL"
+        },
+        "ocf_margin": {
+          "evidence": null,
+          "reason": "cash_flow_period_and_pair_eligibility_unresolved",
+          "status": "BLOCKED"
+        },
+        "revenue": {
+          "evidence": {
+            "account_detail": "-",
+            "account_id": "ifrs-full_Revenue",
+            "account_name": "매출액",
+            "amount": 171499470000000.0,
+            "amount_period_end": "2026-06-30",
+            "amount_period_start": "2026-04-01",
+            "amount_period_type": "single_quarter",
+            "amount_role": "current",
+            "amount_variant": "standalone",
+            "bsns_year": 2026,
+            "contract": "financial-lineage-v2",
+            "currency": "KRW",
+            "denial_reason": null,
+            "fs_div": "CFS",
+            "lineage_verified": true,
+            "logical_field": "revenue",
+            "quality_state": "verified_usable",
+            "rcept_no": "20260814003699",
+            "reprt_code": "11012",
+            "selected_for_canonical": true,
+            "sj_div": "IS",
+            "sj_nm": "손익계산서",
+            "source_column": "thstrm_amount",
+            "source_filing": "20260814003699",
+            "source_labels": {
+              "frmtrm_q_nm": "제 57 기 반기",
+              "thstrm_nm": "제 58 기 반기"
+            },
+            "source_provider": "opendart",
+            "source_row_identity": "20260814003699:11012:2026:CFS:IS:ifrs-full_Revenue:매출액:-:23:thstrm_amount",
+            "source_row_ordinal": "23",
+            "source_type": "formal",
+            "statement_basis": "consolidated",
+            "statement_basis_source": "source_row_fs_div",
+            "statement_basis_state": "verified_consolidated",
+            "statement_type": "IS"
+          },
+          "reason": "financial_lineage_v2_verified",
+          "status": "ELIGIBLE"
+        },
+        "roic": {
+          "evidence": null,
+          "reason": "verified_excess_cash_policy_missing",
+          "status": "BLOCKED"
+        }
+      },
+      "primary_source": "OpenDART formal statement stored audit",
+      "security_type": "Common Stock",
+      "source_payload_sha256": "20e94eff4f16d9b95e3e5e196c3c8f0b349a24b581b38c8d807cae802066b6b4",
+      "ticker": "005930"
+    },
+    {
+      "company_name": "LS일렉트릭",
+      "financial_type": "non_financial",
+      "industry": "industrial_epc",
+      "issuer_type": "krx",
+      "latest_formal_period": "반기보고서 (2026.06)",
+      "market": "KR",
+      "metrics": {
+        "ap": {
+          "evidence": null,
+          "reason": "trade_ap_not_present_in_committed_recovery_audit",
+          "status": "BLOCKED"
+        },
+        "ar": {
+          "evidence": null,
+          "reason": "trade_ar_not_present_in_committed_recovery_audit",
+          "status": "BLOCKED"
+        },
+        "capex_intensity": {
+          "evidence": null,
+          "reason": "cash_flow_period_and_pair_eligibility_unresolved",
+          "status": "BLOCKED"
+        },
+        "capex_ppe": {
+          "evidence": {
+            "aggregation_eligible": 0,
+            "component_count": 0
+          },
+          "reason": "exact_ppe_components_exist_but_period_context_unresolved",
+          "status": "PARTIAL"
+        },
+        "cash_conversion": {
+          "evidence": null,
+          "reason": "cash_flow_period_and_pair_eligibility_unresolved",
+          "status": "BLOCKED"
+        },
+        "ccc": {
+          "evidence": null,
+          "reason": "safe_dso_inventory_days_dpo_not_available",
+          "status": "BLOCKED"
+        },
+        "cogs": {
+          "evidence": null,
+          "reason": "compatible_cogs_not_present_in_committed_recovery_audit",
+          "status": "BLOCKED"
+        },
+        "dpo": {
+          "evidence": null,
+          "reason": "purchases_and_average_trade_ap_not_available",
+          "status": "BLOCKED"
+        },
+        "dso": {
+          "evidence": null,
+          "reason": "average_trade_ar_not_available",
+          "status": "BLOCKED"
+        },
+        "fcf": {
+          "evidence": null,
+          "reason": "ocf_and_ppe_capex_period_eligibility_not_closed",
+          "status": "BLOCKED"
+        },
+        "fcf_margin": {
+          "evidence": null,
+          "reason": "cash_flow_period_and_pair_eligibility_unresolved",
+          "status": "BLOCKED"
+        },
+        "inventory": {
+          "evidence": {
+            "account_detail": "-",
+            "account_id": "ifrs-full_Inventories",
+            "account_name": "재고자산",
+            "amount": 735001074850.0,
+            "amount_period_end": "2026-06-30",
+            "amount_period_start": "2026-06-30",
+            "amount_period_type": "point_in_time",
+            "amount_role": "current",
+            "amount_variant": "standalone",
+            "bsns_year": 2026,
+            "contract": "financial-lineage-v2",
+            "currency": "KRW",
+            "denial_reason": null,
+            "fs_div": "CFS",
+            "lineage_verified": true,
+            "logical_field": "inventory",
+            "quality_state": "verified_usable",
+            "rcept_no": "20260814003088",
+            "reprt_code": "11012",
+            "selected_for_canonical": true,
+            "sj_div": "BS",
+            "sj_nm": "재무상태표",
+            "source_column": "thstrm_amount",
+            "source_filing": "20260814003088",
+            "source_labels": {
+              "frmtrm_nm": "제 52 기말",
+              "thstrm_nm": "제 53 기 반기말"
+            },
+            "source_provider": "opendart",
+            "source_row_identity": "20260814003088:11012:2026:CFS:BS:ifrs-full_Inventories:재고자산:-:15:thstrm_amount",
+            "source_row_ordinal": "15",
+            "source_type": "formal",
+            "statement_basis": "consolidated",
+            "statement_basis_source": "source_row_fs_div",
+            "statement_basis_state": "verified_consolidated",
+            "statement_type": "BS"
+          },
+          "reason": "financial_lineage_v2_verified_point_in_time",
+          "status": "ELIGIBLE"
+        },
+        "inventory_days": {
+          "evidence": null,
+          "reason": "average_inventory_and_compatible_cogs_not_available",
+          "status": "BLOCKED"
+        },
+        "ocf": {
+          "evidence": null,
+          "reason": "structured_cash_flow_period_ambiguous",
+          "status": "PARTIAL"
+        },
+        "ocf_margin": {
+          "evidence": null,
+          "reason": "cash_flow_period_and_pair_eligibility_unresolved",
+          "status": "BLOCKED"
+        },
+        "revenue": {
+          "evidence": {
+            "account_detail": "-",
+            "account_id": "ifrs-full_Revenue",
+            "account_name": "매출",
+            "amount": 1576997715527.0,
+            "amount_period_end": "2026-06-30",
+            "amount_period_start": "2026-04-01",
+            "amount_period_type": "single_quarter",
+            "amount_role": "current",
+            "amount_variant": "standalone",
+            "bsns_year": 2026,
+            "contract": "financial-lineage-v2",
+            "currency": "KRW",
+            "denial_reason": null,
+            "fs_div": "CFS",
+            "lineage_verified": true,
+            "logical_field": "revenue",
+            "quality_state": "verified_usable",
+            "rcept_no": "20260814003088",
+            "reprt_code": "11012",
+            "selected_for_canonical": true,
+            "sj_div": "CIS",
+            "sj_nm": "포괄손익계산서",
+            "source_column": "thstrm_amount",
+            "source_filing": "20260814003088",
+            "source_labels": {
+              "frmtrm_q_nm": "제 52 기 반기",
+              "thstrm_nm": "제 53 기 반기"
+            },
+            "source_provider": "opendart",
+            "source_row_identity": "20260814003088:11012:2026:CFS:CIS:ifrs-full_Revenue:매출:-:38:thstrm_amount",
+            "source_row_ordinal": "38",
+            "source_type": "formal",
+            "statement_basis": "consolidated",
+            "statement_basis_source": "source_row_fs_div",
+            "statement_basis_state": "verified_consolidated",
+            "statement_type": "CIS"
+          },
+          "reason": "financial_lineage_v2_verified",
+          "status": "ELIGIBLE"
+        },
+        "roic": {
+          "evidence": null,
+          "reason": "verified_excess_cash_policy_missing",
+          "status": "BLOCKED"
+        }
+      },
+      "primary_source": "OpenDART formal statement stored audit",
+      "security_type": "common_stock",
+      "source_payload_sha256": "20e94eff4f16d9b95e3e5e196c3c8f0b349a24b581b38c8d807cae802066b6b4",
+      "ticker": "010120"
+    },
+    {
+      "company_name": "한화에어로스페이스",
+      "financial_type": "non_financial",
+      "industry": "aerospace_epc",
+      "issuer_type": "krx",
+      "latest_formal_period": "반기보고서 (2026.06)",
+      "market": "KR",
+      "metrics": {
+        "ap": {
+          "evidence": null,
+          "reason": "trade_ap_not_present_in_committed_recovery_audit",
+          "status": "BLOCKED"
+        },
+        "ar": {
+          "evidence": null,
+          "reason": "trade_ar_not_present_in_committed_recovery_audit",
+          "status": "BLOCKED"
+        },
+        "capex_intensity": {
+          "evidence": null,
+          "reason": "cash_flow_period_and_pair_eligibility_unresolved",
+          "status": "BLOCKED"
+        },
+        "capex_ppe": {
+          "evidence": {
+            "aggregation_eligible": 0,
+            "component_count": 0
+          },
+          "reason": "exact_ppe_components_exist_but_period_context_unresolved",
+          "status": "PARTIAL"
+        },
+        "cash_conversion": {
+          "evidence": null,
+          "reason": "cash_flow_period_and_pair_eligibility_unresolved",
+          "status": "BLOCKED"
+        },
+        "ccc": {
+          "evidence": null,
+          "reason": "safe_dso_inventory_days_dpo_not_available",
+          "status": "BLOCKED"
+        },
+        "cogs": {
+          "evidence": null,
+          "reason": "compatible_cogs_not_present_in_committed_recovery_audit",
+          "status": "BLOCKED"
+        },
+        "dpo": {
+          "evidence": null,
+          "reason": "purchases_and_average_trade_ap_not_available",
+          "status": "BLOCKED"
+        },
+        "dso": {
+          "evidence": null,
+          "reason": "average_trade_ar_not_available",
+          "status": "BLOCKED"
+        },
+        "fcf": {
+          "evidence": null,
+          "reason": "ocf_and_ppe_capex_period_eligibility_not_closed",
+          "status": "BLOCKED"
+        },
+        "fcf_margin": {
+          "evidence": null,
+          "reason": "cash_flow_period_and_pair_eligibility_unresolved",
+          "status": "BLOCKED"
+        },
+        "inventory": {
+          "evidence": {
+            "account_detail": "-",
+            "account_id": "ifrs-full_Inventories",
+            "account_name": "재고자산",
+            "amount": 7502229389000.0,
+            "amount_period_end": "2026-06-30",
+            "amount_period_start": "2026-06-30",
+            "amount_period_type": "point_in_time",
+            "amount_role": "current",
+            "amount_variant": "standalone",
+            "bsns_year": 2026,
+            "contract": "financial-lineage-v2",
+            "currency": "KRW",
+            "denial_reason": null,
+            "fs_div": "CFS",
+            "lineage_verified": true,
+            "logical_field": "inventory",
+            "quality_state": "verified_usable",
+            "rcept_no": "20260814003198",
+            "reprt_code": "11012",
+            "selected_for_canonical": true,
+            "sj_div": "BS",
+            "sj_nm": "재무상태표",
+            "source_column": "thstrm_amount",
+            "source_filing": "20260814003198",
+            "source_labels": {
+              "frmtrm_nm": "제 49 기말",
+              "thstrm_nm": "제 50 기 반기말"
+            },
+            "source_provider": "opendart",
+            "source_row_identity": "20260814003198:11012:2026:CFS:BS:ifrs-full_Inventories:재고자산:-:12:thstrm_amount",
+            "source_row_ordinal": "12",
+            "source_type": "formal",
+            "statement_basis": "consolidated",
+            "statement_basis_source": "source_row_fs_div",
+            "statement_basis_state": "verified_consolidated",
+            "statement_type": "BS"
+          },
+          "reason": "financial_lineage_v2_verified_point_in_time",
+          "status": "ELIGIBLE"
+        },
+        "inventory_days": {
+          "evidence": null,
+          "reason": "average_inventory_and_compatible_cogs_not_available",
+          "status": "BLOCKED"
+        },
+        "ocf": {
+          "evidence": null,
+          "reason": "structured_cash_flow_period_ambiguous",
+          "status": "PARTIAL"
+        },
+        "ocf_margin": {
+          "evidence": null,
+          "reason": "cash_flow_period_and_pair_eligibility_unresolved",
+          "status": "BLOCKED"
+        },
+        "revenue": {
+          "evidence": {
+            "account_detail": "-",
+            "account_id": "ifrs-full_Revenue",
+            "account_name": "매출",
+            "amount": 9292863597000.0,
+            "amount_period_end": "2026-06-30",
+            "amount_period_start": "2026-04-01",
+            "amount_period_type": "single_quarter",
+            "amount_role": "current",
+            "amount_variant": "standalone",
+            "bsns_year": 2026,
+            "contract": "financial-lineage-v2",
+            "currency": "KRW",
+            "denial_reason": null,
+            "fs_div": "CFS",
+            "lineage_verified": true,
+            "logical_field": "revenue",
+            "quality_state": "verified_usable",
+            "rcept_no": "20260814003198",
+            "reprt_code": "11012",
+            "selected_for_canonical": true,
+            "sj_div": "CIS",
+            "sj_nm": "포괄손익계산서",
+            "source_column": "thstrm_amount",
+            "source_filing": "20260814003198",
+            "source_labels": {
+              "frmtrm_q_nm": "제 49 기 반기",
+              "thstrm_nm": "제 50 기 반기"
+            },
+            "source_provider": "opendart",
+            "source_row_identity": "20260814003198:11012:2026:CFS:CIS:ifrs-full_Revenue:매출:-:38:thstrm_amount",
+            "source_row_ordinal": "38",
+            "source_type": "formal",
+            "statement_basis": "consolidated",
+            "statement_basis_source": "source_row_fs_div",
+            "statement_basis_state": "verified_consolidated",
+            "statement_type": "CIS"
+          },
+          "reason": "financial_lineage_v2_verified",
+          "status": "ELIGIBLE"
+        },
+        "roic": {
+          "evidence": null,
+          "reason": "verified_excess_cash_policy_missing",
+          "status": "BLOCKED"
+        }
+      },
+      "primary_source": "OpenDART formal statement stored audit",
+      "security_type": "common_stock",
+      "source_payload_sha256": "20e94eff4f16d9b95e3e5e196c3c8f0b349a24b581b38c8d807cae802066b6b4",
+      "ticker": "012450"
+    },
+    {
+      "company_name": "현대글로비스",
+      "financial_type": "non_financial",
+      "industry": "transport_logistics",
+      "issuer_type": "krx",
+      "latest_formal_period": "반기보고서 (2026.06)",
+      "market": "KR",
+      "metrics": {
+        "ap": {
+          "evidence": null,
+          "reason": "trade_ap_not_present_in_committed_recovery_audit",
+          "status": "BLOCKED"
+        },
+        "ar": {
+          "evidence": null,
+          "reason": "trade_ar_not_present_in_committed_recovery_audit",
+          "status": "BLOCKED"
+        },
+        "capex_intensity": {
+          "evidence": null,
+          "reason": "cash_flow_period_and_pair_eligibility_unresolved",
+          "status": "BLOCKED"
+        },
+        "capex_ppe": {
+          "evidence": {
+            "aggregation_eligible": 0,
+            "component_count": 0
+          },
+          "reason": "exact_ppe_components_exist_but_period_context_unresolved",
+          "status": "PARTIAL"
+        },
+        "cash_conversion": {
+          "evidence": null,
+          "reason": "cash_flow_period_and_pair_eligibility_unresolved",
+          "status": "BLOCKED"
+        },
+        "ccc": {
+          "evidence": null,
+          "reason": "safe_dso_inventory_days_dpo_not_available",
+          "status": "BLOCKED"
+        },
+        "cogs": {
+          "evidence": null,
+          "reason": "compatible_cogs_not_present_in_committed_recovery_audit",
+          "status": "BLOCKED"
+        },
+        "dpo": {
+          "evidence": null,
+          "reason": "purchases_and_average_trade_ap_not_available",
+          "status": "BLOCKED"
+        },
+        "dso": {
+          "evidence": null,
+          "reason": "average_trade_ar_not_available",
+          "status": "BLOCKED"
+        },
+        "fcf": {
+          "evidence": null,
+          "reason": "ocf_and_ppe_capex_period_eligibility_not_closed",
+          "status": "BLOCKED"
+        },
+        "fcf_margin": {
+          "evidence": null,
+          "reason": "cash_flow_period_and_pair_eligibility_unresolved",
+          "status": "BLOCKED"
+        },
+        "inventory": {
+          "evidence": {
+            "account_detail": "-",
+            "account_id": "ifrs-full_Inventories",
+            "account_name": "재고자산",
+            "amount": 1996640764562.0,
+            "amount_period_end": "2026-06-30",
+            "amount_period_start": "2026-06-30",
+            "amount_period_type": "point_in_time",
+            "amount_role": "current",
+            "amount_variant": "standalone",
+            "bsns_year": 2026,
+            "contract": "financial-lineage-v2",
+            "currency": "KRW",
+            "denial_reason": null,
+            "fs_div": "CFS",
+            "lineage_verified": true,
+            "logical_field": "inventory",
+            "quality_state": "verified_usable",
+            "rcept_no": "20260814002854",
+            "reprt_code": "11012",
+            "selected_for_canonical": true,
+            "sj_div": "BS",
+            "sj_nm": "재무상태표",
+            "source_column": "thstrm_amount",
+            "source_filing": "20260814002854",
+            "source_labels": {
+              "frmtrm_nm": "제 25 기말",
+              "thstrm_nm": "제 26 기 반기말"
+            },
+            "source_provider": "opendart",
+            "source_row_identity": "20260814002854:11012:2026:CFS:BS:ifrs-full_Inventories:재고자산:-:14:thstrm_amount",
+            "source_row_ordinal": "14",
+            "source_type": "formal",
+            "statement_basis": "consolidated",
+            "statement_basis_source": "source_row_fs_div",
+            "statement_basis_state": "verified_consolidated",
+            "statement_type": "BS"
+          },
+          "reason": "financial_lineage_v2_verified_point_in_time",
+          "status": "ELIGIBLE"
+        },
+        "inventory_days": {
+          "evidence": null,
+          "reason": "average_inventory_and_compatible_cogs_not_available",
+          "status": "BLOCKED"
+        },
+        "ocf": {
+          "evidence": null,
+          "reason": "structured_cash_flow_period_ambiguous",
+          "status": "PARTIAL"
+        },
+        "ocf_margin": {
+          "evidence": null,
+          "reason": "cash_flow_period_and_pair_eligibility_unresolved",
+          "status": "BLOCKED"
+        },
+        "revenue": {
+          "evidence": {
+            "account_detail": "-",
+            "account_id": "ifrs-full_Revenue",
+            "account_name": "매출액",
+            "amount": 8705366003397.0,
+            "amount_period_end": "2026-06-30",
+            "amount_period_start": "2026-04-01",
+            "amount_period_type": "single_quarter",
+            "amount_role": "current",
+            "amount_variant": "standalone",
+            "bsns_year": 2026,
+            "contract": "financial-lineage-v2",
+            "currency": "KRW",
+            "denial_reason": null,
+            "fs_div": "CFS",
+            "lineage_verified": true,
+            "logical_field": "revenue",
+            "quality_state": "verified_usable",
+            "rcept_no": "20260814002854",
+            "reprt_code": "11012",
+            "selected_for_canonical": true,
+            "sj_div": "IS",
+            "sj_nm": "손익계산서",
+            "source_column": "thstrm_amount",
+            "source_filing": "20260814002854",
+            "source_labels": {
+              "frmtrm_q_nm": "제 25 기 반기",
+              "thstrm_nm": "제 26 기 반기"
+            },
+            "source_provider": "opendart",
+            "source_row_identity": "20260814002854:11012:2026:CFS:IS:ifrs-full_Revenue:매출액:-:23:thstrm_amount",
+            "source_row_ordinal": "23",
+            "source_type": "formal",
+            "statement_basis": "consolidated",
+            "statement_basis_source": "source_row_fs_div",
+            "statement_basis_state": "verified_consolidated",
+            "statement_type": "IS"
+          },
+          "reason": "financial_lineage_v2_verified",
+          "status": "ELIGIBLE"
+        },
+        "roic": {
+          "evidence": null,
+          "reason": "verified_excess_cash_policy_missing",
+          "status": "BLOCKED"
+        }
+      },
+      "primary_source": "OpenDART formal statement stored audit",
+      "security_type": "common_stock",
+      "source_payload_sha256": "20e94eff4f16d9b95e3e5e196c3c8f0b349a24b581b38c8d807cae802066b6b4",
+      "ticker": "086280"
+    },
+    {
+      "company_name": "Core Scientific, Inc.",
+      "financial_type": "non_financial",
+      "industry": "hpc_data_center",
+      "issuer_level_boundary": "issuer_metrics_do_not_require_depositary_ratio",
+      "issuer_type": "domestic_us",
+      "latest_formal_period": "2026-06-30",
+      "market": "US_FOREIGN",
+      "metrics": {
+        "ap": {
+          "evidence": {
+            "accession": "0001839341-26-000014",
+            "end": "2026-06-30",
+            "filed": "2026-07-28",
+            "fiscal_period": "Q2",
+            "fiscal_year": 2026,
+            "form": "10-Q",
+            "frame": "CY2026Q2I",
+            "namespace": "us-gaap",
+            "semantic": "us-gaap:AccountsPayableCurrent",
+            "start": null,
+            "tag": "AccountsPayableCurrent",
+            "unit": "USD",
+            "value": 112374000
+          },
+          "reason": "broad_balance_not_proven_trade_only",
+          "status": "PARTIAL"
+        },
+        "ar": {
+          "evidence": {
+            "accession": "0001628280-25-023242",
+            "end": "2025-03-31",
+            "filed": "2025-05-07",
+            "fiscal_period": "Q1",
+            "fiscal_year": 2025,
+            "form": "10-Q",
+            "frame": null,
+            "namespace": "us-gaap",
+            "semantic": "us-gaap:AccountsReceivableNetCurrent",
+            "start": null,
+            "tag": "AccountsReceivableNetCurrent",
+            "unit": "USD",
+            "value": 1018000
+          },
+          "reason": "broad_balance_not_proven_trade_only",
+          "status": "PARTIAL"
+        },
+        "capex_intensity": {
+          "evidence": {
+            "capex": {
+              "accession": "0001839341-26-000014",
+              "end": "2026-06-30",
+              "filed": "2026-07-28",
+              "fiscal_period": "Q2",
+              "fiscal_year": 2026,
+              "form": "10-Q",
+              "frame": null,
+              "namespace": "us-gaap",
+              "semantic": "us-gaap:PaymentsToAcquirePropertyPlantAndEquipment",
+              "start": "2026-01-01",
+              "tag": "PaymentsToAcquirePropertyPlantAndEquipment",
+              "unit": "USD",
+              "value": 954244000
+            },
+            "revenue": {
+              "accession": "0001839341-26-000014",
+              "end": "2026-06-30",
+              "filed": "2026-07-28",
+              "fiscal_period": "Q2",
+              "fiscal_year": 2026,
+              "form": "10-Q",
+              "frame": null,
+              "namespace": "us-gaap",
+              "semantic": "us-gaap:Revenues",
+              "start": "2026-01-01",
+              "tag": "Revenues",
+              "unit": "USD",
+              "value": 279445000
+            }
+          },
+          "reason": "compatible_capex_revenue_pair",
+          "status": "ELIGIBLE"
+        },
+        "capex_ppe": {
+          "evidence": {
+            "accession": "0001839341-26-000014",
+            "end": "2026-06-30",
+            "filed": "2026-07-28",
+            "fiscal_period": "Q2",
+            "fiscal_year": 2026,
+            "form": "10-Q",
+            "frame": null,
+            "namespace": "us-gaap",
+            "semantic": "us-gaap:PaymentsToAcquirePropertyPlantAndEquipment",
+            "start": "2026-01-01",
+            "tag": "PaymentsToAcquirePropertyPlantAndEquipment",
+            "unit": "USD",
+            "value": 954244000
+          },
+          "reason": "official_ppe_cash_payment_exact_semantic",
+          "status": "ELIGIBLE"
+        },
+        "cash_conversion": {
+          "evidence": null,
+          "reason": "ocf_margin_available_as_typed_component",
+          "status": "ELIGIBLE"
+        },
+        "ccc": {
+          "evidence": null,
+          "reason": "all_safe_ccc_components_not_available",
+          "status": "BLOCKED"
+        },
+        "cogs": {
+          "evidence": {
+            "accession": "0001839341-26-000014",
+            "end": "2026-06-30",
+            "filed": "2026-07-28",
+            "fiscal_period": "Q2",
+            "fiscal_year": 2026,
+            "form": "10-Q",
+            "frame": null,
+            "namespace": "us-gaap",
+            "semantic": "us-gaap:CostOfRevenue",
+            "start": "2026-01-01",
+            "tag": "CostOfRevenue",
+            "unit": "USD",
+            "value": 179295000
+          },
+          "reason": "official_structured_filing_exact_semantic",
+          "status": "ELIGIBLE"
+        },
+        "dpo": {
+          "evidence": null,
+          "reason": "purchases_and_average_trade_ap_not_proven",
+          "status": "BLOCKED"
+        },
+        "dso": {
+          "evidence": null,
+          "reason": "average_trade_ar_not_proven",
+          "status": "BLOCKED"
+        },
+        "fcf": {
+          "evidence": {
+            "capex": {
+              "accession": "0001839341-26-000014",
+              "end": "2026-06-30",
+              "filed": "2026-07-28",
+              "fiscal_period": "Q2",
+              "fiscal_year": 2026,
+              "form": "10-Q",
+              "frame": null,
+              "namespace": "us-gaap",
+              "semantic": "us-gaap:PaymentsToAcquirePropertyPlantAndEquipment",
+              "start": "2026-01-01",
+              "tag": "PaymentsToAcquirePropertyPlantAndEquipment",
+              "unit": "USD",
+              "value": 954244000
+            },
+            "ocf": {
+              "accession": "0001839341-26-000014",
+              "end": "2026-06-30",
+              "filed": "2026-07-28",
+              "fiscal_period": "Q2",
+              "fiscal_year": 2026,
+              "form": "10-Q",
+              "frame": null,
+              "namespace": "us-gaap",
+              "semantic": "us-gaap:NetCashProvidedByUsedInOperatingActivities",
+              "start": "2026-01-01",
+              "tag": "NetCashProvidedByUsedInOperatingActivities",
+              "unit": "USD",
+              "value": 230949000
+            }
+          },
+          "reason": "same_accession_period_unit_ocf_minus_ppe_capex",
+          "status": "ELIGIBLE"
+        },
+        "fcf_margin": {
+          "evidence": {
+            "capex": {
+              "accession": "0001839341-26-000014",
+              "end": "2026-06-30",
+              "filed": "2026-07-28",
+              "fiscal_period": "Q2",
+              "fiscal_year": 2026,
+              "form": "10-Q",
+              "frame": null,
+              "namespace": "us-gaap",
+              "semantic": "us-gaap:PaymentsToAcquirePropertyPlantAndEquipment",
+              "start": "2026-01-01",
+              "tag": "PaymentsToAcquirePropertyPlantAndEquipment",
+              "unit": "USD",
+              "value": 954244000
+            },
+            "ocf": {
+              "accession": "0001839341-26-000014",
+              "end": "2026-06-30",
+              "filed": "2026-07-28",
+              "fiscal_period": "Q2",
+              "fiscal_year": 2026,
+              "form": "10-Q",
+              "frame": null,
+              "namespace": "us-gaap",
+              "semantic": "us-gaap:NetCashProvidedByUsedInOperatingActivities",
+              "start": "2026-01-01",
+              "tag": "NetCashProvidedByUsedInOperatingActivities",
+              "unit": "USD",
+              "value": 230949000
+            },
+            "revenue": {
+              "accession": "0001839341-26-000014",
+              "end": "2026-06-30",
+              "filed": "2026-07-28",
+              "fiscal_period": "Q2",
+              "fiscal_year": 2026,
+              "form": "10-Q",
+              "frame": null,
+              "namespace": "us-gaap",
+              "semantic": "us-gaap:Revenues",
+              "start": "2026-01-01",
+              "tag": "Revenues",
+              "unit": "USD",
+              "value": 279445000
+            }
+          },
+          "reason": "compatible_fcf_revenue_inputs",
+          "status": "ELIGIBLE"
+        },
+        "inventory": {
+          "evidence": null,
+          "reason": "inventory_occurrence_missing",
+          "status": "BLOCKED"
+        },
+        "inventory_days": {
+          "evidence": null,
+          "reason": "average_inventory_and_compatible_cogs_not_proven",
+          "status": "BLOCKED"
+        },
+        "ocf": {
+          "evidence": {
+            "accession": "0001839341-26-000014",
+            "end": "2026-06-30",
+            "filed": "2026-07-28",
+            "fiscal_period": "Q2",
+            "fiscal_year": 2026,
+            "form": "10-Q",
+            "frame": null,
+            "namespace": "us-gaap",
+            "semantic": "us-gaap:NetCashProvidedByUsedInOperatingActivities",
+            "start": "2026-01-01",
+            "tag": "NetCashProvidedByUsedInOperatingActivities",
+            "unit": "USD",
+            "value": 230949000
+          },
+          "reason": "official_structured_filing_exact_semantic",
+          "status": "ELIGIBLE"
+        },
+        "ocf_margin": {
+          "evidence": {
+            "ocf": {
+              "accession": "0001839341-26-000014",
+              "end": "2026-06-30",
+              "filed": "2026-07-28",
+              "fiscal_period": "Q2",
+              "fiscal_year": 2026,
+              "form": "10-Q",
+              "frame": null,
+              "namespace": "us-gaap",
+              "semantic": "us-gaap:NetCashProvidedByUsedInOperatingActivities",
+              "start": "2026-01-01",
+              "tag": "NetCashProvidedByUsedInOperatingActivities",
+              "unit": "USD",
+              "value": 230949000
+            },
+            "revenue": {
+              "accession": "0001839341-26-000014",
+              "end": "2026-06-30",
+              "filed": "2026-07-28",
+              "fiscal_period": "Q2",
+              "fiscal_year": 2026,
+              "form": "10-Q",
+              "frame": null,
+              "namespace": "us-gaap",
+              "semantic": "us-gaap:Revenues",
+              "start": "2026-01-01",
+              "tag": "Revenues",
+              "unit": "USD",
+              "value": 279445000
+            }
+          },
+          "reason": "compatible_ocf_revenue_pair",
+          "status": "ELIGIBLE"
+        },
+        "revenue": {
+          "evidence": {
+            "accession": "0001839341-26-000014",
+            "end": "2026-06-30",
+            "filed": "2026-07-28",
+            "fiscal_period": "Q2",
+            "fiscal_year": 2026,
+            "form": "10-Q",
+            "frame": null,
+            "namespace": "us-gaap",
+            "semantic": "us-gaap:Revenues",
+            "start": "2026-01-01",
+            "tag": "Revenues",
+            "unit": "USD",
+            "value": 279445000
+          },
+          "reason": "official_structured_filing_exact_semantic",
+          "status": "ELIGIBLE"
+        },
+        "roic": {
+          "evidence": null,
+          "reason": "verified_excess_cash_policy_missing",
+          "status": "BLOCKED"
+        }
+      },
+      "primary_source": "SEC companyfacts official XBRL",
+      "security_level_boundary": "per_share_yield_and_ev_metrics_require_verified_security_fx_basis",
+      "security_type": "common_stock",
+      "source_payload_sha256": "d49208f117d80434ea3b8074d7c17cb3002b3386d3da0b235cb77910844a54ca",
+      "ticker": "CORZ"
+    },
+    {
+      "company_name": "Circle Internet Group",
+      "financial_type": "non_financial",
+      "industry": "general_non_financial",
+      "issuer_level_boundary": "issuer_metrics_do_not_require_depositary_ratio",
+      "issuer_type": "domestic_us",
+      "latest_formal_period": "2026-06-30",
+      "market": "US_FOREIGN",
+      "metrics": {
+        "ap": {
+          "evidence": null,
+          "reason": "ap_occurrence_missing",
+          "status": "BLOCKED"
+        },
+        "ar": {
+          "evidence": {
+            "accession": "0001876042-26-000248",
+            "end": "2026-06-30",
+            "filed": "2026-08-05",
+            "fiscal_period": "Q2",
+            "fiscal_year": 2026,
+            "form": "10-Q",
+            "frame": "CY2026Q2I",
+            "namespace": "us-gaap",
+            "semantic": "us-gaap:AccountsReceivableNetCurrent",
+            "start": null,
+            "tag": "AccountsReceivableNetCurrent",
+            "unit": "USD",
+            "value": 105431000
+          },
+          "reason": "broad_balance_not_proven_trade_only",
+          "status": "PARTIAL"
+        },
+        "capex_intensity": {
+          "evidence": null,
+          "reason": "compatible_capex_revenue_pair_missing",
+          "status": "BLOCKED"
+        },
+        "capex_ppe": {
+          "evidence": {
+            "accession": "0001876042-26-000248",
+            "end": "2026-06-30",
+            "filed": "2026-08-05",
+            "fiscal_period": "Q2",
+            "fiscal_year": 2026,
+            "form": "10-Q",
+            "frame": null,
+            "namespace": "us-gaap",
+            "semantic": "us-gaap:PaymentsToAcquirePropertyPlantAndEquipment",
+            "start": "2026-01-01",
+            "tag": "PaymentsToAcquirePropertyPlantAndEquipment",
+            "unit": "USD",
+            "value": 10389000
+          },
+          "reason": "official_ppe_cash_payment_exact_semantic",
+          "status": "ELIGIBLE"
+        },
+        "cash_conversion": {
+          "evidence": null,
+          "reason": "safe_cash_conversion_component_missing",
+          "status": "BLOCKED"
+        },
+        "ccc": {
+          "evidence": null,
+          "reason": "all_safe_ccc_components_not_available",
+          "status": "BLOCKED"
+        },
+        "cogs": {
+          "evidence": null,
+          "reason": "compatible_cogs_missing",
+          "status": "BLOCKED"
+        },
+        "dpo": {
+          "evidence": null,
+          "reason": "purchases_and_average_trade_ap_not_proven",
+          "status": "BLOCKED"
+        },
+        "dso": {
+          "evidence": null,
+          "reason": "average_trade_ar_not_proven",
+          "status": "BLOCKED"
+        },
+        "fcf": {
+          "evidence": {
+            "capex": {
+              "accession": "0001876042-26-000248",
+              "end": "2026-06-30",
+              "filed": "2026-08-05",
+              "fiscal_period": "Q2",
+              "fiscal_year": 2026,
+              "form": "10-Q",
+              "frame": null,
+              "namespace": "us-gaap",
+              "semantic": "us-gaap:PaymentsToAcquirePropertyPlantAndEquipment",
+              "start": "2026-01-01",
+              "tag": "PaymentsToAcquirePropertyPlantAndEquipment",
+              "unit": "USD",
+              "value": 10389000
+            },
+            "ocf": {
+              "accession": "0001876042-26-000248",
+              "end": "2026-06-30",
+              "filed": "2026-08-05",
+              "fiscal_period": "Q2",
+              "fiscal_year": 2026,
+              "form": "10-Q",
+              "frame": null,
+              "namespace": "us-gaap",
+              "semantic": "us-gaap:NetCashProvidedByUsedInOperatingActivities",
+              "start": "2026-01-01",
+              "tag": "NetCashProvidedByUsedInOperatingActivities",
+              "unit": "USD",
+              "value": 538505000
+            }
+          },
+          "reason": "same_accession_period_unit_ocf_minus_ppe_capex",
+          "status": "ELIGIBLE"
+        },
+        "fcf_margin": {
+          "evidence": {
+            "capex": {
+              "accession": "0001876042-26-000248",
+              "end": "2026-06-30",
+              "filed": "2026-08-05",
+              "fiscal_period": "Q2",
+              "fiscal_year": 2026,
+              "form": "10-Q",
+              "frame": null,
+              "namespace": "us-gaap",
+              "semantic": "us-gaap:PaymentsToAcquirePropertyPlantAndEquipment",
+              "start": "2026-01-01",
+              "tag": "PaymentsToAcquirePropertyPlantAndEquipment",
+              "unit": "USD",
+              "value": 10389000
+            },
+            "ocf": {
+              "accession": "0001876042-26-000248",
+              "end": "2026-06-30",
+              "filed": "2026-08-05",
+              "fiscal_period": "Q2",
+              "fiscal_year": 2026,
+              "form": "10-Q",
+              "frame": null,
+              "namespace": "us-gaap",
+              "semantic": "us-gaap:NetCashProvidedByUsedInOperatingActivities",
+              "start": "2026-01-01",
+              "tag": "NetCashProvidedByUsedInOperatingActivities",
+              "unit": "USD",
+              "value": 538505000
+            },
+            "revenue": {
+              "accession": "0001876042-26-000248",
+              "end": "2026-06-30",
+              "filed": "2026-08-05",
+              "fiscal_period": "Q2",
+              "fiscal_year": 2026,
+              "form": "10-Q",
+              "frame": null,
+              "namespace": "us-gaap",
+              "semantic": "us-gaap:RevenueFromContractWithCustomerExcludingAssessedTax",
+              "start": "2026-01-01",
+              "tag": "RevenueFromContractWithCustomerExcludingAssessedTax",
+              "unit": "USD",
+              "value": 75207000
+            }
+          },
+          "reason": "compatible_fcf_revenue_inputs",
+          "status": "ELIGIBLE"
+        },
+        "inventory": {
+          "evidence": null,
+          "reason": "inventory_occurrence_missing",
+          "status": "BLOCKED"
+        },
+        "inventory_days": {
+          "evidence": null,
+          "reason": "average_inventory_and_compatible_cogs_not_proven",
+          "status": "BLOCKED"
+        },
+        "ocf": {
+          "evidence": {
+            "accession": "0001876042-26-000248",
+            "end": "2026-06-30",
+            "filed": "2026-08-05",
+            "fiscal_period": "Q2",
+            "fiscal_year": 2026,
+            "form": "10-Q",
+            "frame": null,
+            "namespace": "us-gaap",
+            "semantic": "us-gaap:NetCashProvidedByUsedInOperatingActivities",
+            "start": "2026-01-01",
+            "tag": "NetCashProvidedByUsedInOperatingActivities",
+            "unit": "USD",
+            "value": 538505000
+          },
+          "reason": "official_structured_filing_exact_semantic",
+          "status": "ELIGIBLE"
+        },
+        "ocf_margin": {
+          "evidence": null,
+          "reason": "compatible_ocf_revenue_pair_missing",
+          "status": "BLOCKED"
+        },
+        "revenue": {
+          "evidence": {
+            "accession": "0001876042-26-000248",
+            "end": "2026-06-30",
+            "filed": "2026-08-05",
+            "fiscal_period": "Q2",
+            "fiscal_year": 2026,
+            "form": "10-Q",
+            "frame": null,
+            "namespace": "us-gaap",
+            "semantic": "us-gaap:RevenueFromContractWithCustomerExcludingAssessedTax",
+            "start": "2026-01-01",
+            "tag": "RevenueFromContractWithCustomerExcludingAssessedTax",
+            "unit": "USD",
+            "value": 75207000
+          },
+          "reason": "official_structured_filing_exact_semantic",
+          "status": "ELIGIBLE"
+        },
+        "roic": {
+          "evidence": null,
+          "reason": "verified_excess_cash_policy_missing",
+          "status": "BLOCKED"
+        }
+      },
+      "primary_source": "SEC companyfacts official XBRL",
+      "security_level_boundary": "per_share_yield_and_ev_metrics_require_verified_security_fx_basis",
+      "security_type": "common_stock",
+      "source_payload_sha256": "f7139545b482a7b31520225bc155cb41241b82f004eb8fbca55f4ab66d1426af",
+      "ticker": "CRCL"
+    },
+    {
+      "company_name": "Alphabet Inc. Class A",
+      "financial_type": "non_financial",
+      "industry": "cloud_platform_software",
+      "issuer_level_boundary": "issuer_metrics_do_not_require_depositary_ratio",
+      "issuer_type": "domestic_us",
+      "latest_formal_period": "2026-06-30",
+      "market": "US_FOREIGN",
+      "metrics": {
+        "ap": {
+          "evidence": {
+            "accession": "0001652044-26-000071",
+            "end": "2026-06-30",
+            "filed": "2026-07-23",
+            "fiscal_period": "Q2",
+            "fiscal_year": 2026,
+            "form": "10-Q",
+            "frame": "CY2026Q2I",
+            "namespace": "us-gaap",
+            "semantic": "us-gaap:AccountsPayableCurrent",
+            "start": null,
+            "tag": "AccountsPayableCurrent",
+            "unit": "USD",
+            "value": 20258000000
+          },
+          "reason": "broad_balance_not_proven_trade_only",
+          "status": "PARTIAL"
+        },
+        "ar": {
+          "evidence": {
+            "accession": "0001652044-26-000071",
+            "end": "2026-06-30",
+            "filed": "2026-07-23",
+            "fiscal_period": "Q2",
+            "fiscal_year": 2026,
+            "form": "10-Q",
+            "frame": "CY2026Q2I",
+            "namespace": "us-gaap",
+            "semantic": "us-gaap:AccountsReceivableNetCurrent",
+            "start": null,
+            "tag": "AccountsReceivableNetCurrent",
+            "unit": "USD",
+            "value": 69175000000
+          },
+          "reason": "broad_balance_not_proven_trade_only",
+          "status": "PARTIAL"
+        },
+        "capex_intensity": {
+          "evidence": {
+            "capex": {
+              "accession": "0001652044-26-000071",
+              "end": "2026-06-30",
+              "filed": "2026-07-23",
+              "fiscal_period": "Q2",
+              "fiscal_year": 2026,
+              "form": "10-Q",
+              "frame": null,
+              "namespace": "us-gaap",
+              "semantic": "us-gaap:PaymentsToAcquirePropertyPlantAndEquipment",
+              "start": "2026-01-01",
+              "tag": "PaymentsToAcquirePropertyPlantAndEquipment",
+              "unit": "USD",
+              "value": 80598000000
+            },
+            "revenue": {
+              "accession": "0001652044-26-000071",
+              "end": "2026-06-30",
+              "filed": "2026-07-23",
+              "fiscal_period": "Q2",
+              "fiscal_year": 2026,
+              "form": "10-Q",
+              "frame": null,
+              "namespace": "us-gaap",
+              "semantic": "us-gaap:Revenues",
+              "start": "2026-01-01",
+              "tag": "Revenues",
+              "unit": "USD",
+              "value": 229692000000
+            }
+          },
+          "reason": "compatible_capex_revenue_pair",
+          "status": "ELIGIBLE"
+        },
+        "capex_ppe": {
+          "evidence": {
+            "accession": "0001652044-26-000071",
+            "end": "2026-06-30",
+            "filed": "2026-07-23",
+            "fiscal_period": "Q2",
+            "fiscal_year": 2026,
+            "form": "10-Q",
+            "frame": null,
+            "namespace": "us-gaap",
+            "semantic": "us-gaap:PaymentsToAcquirePropertyPlantAndEquipment",
+            "start": "2026-01-01",
+            "tag": "PaymentsToAcquirePropertyPlantAndEquipment",
+            "unit": "USD",
+            "value": 80598000000
+          },
+          "reason": "official_ppe_cash_payment_exact_semantic",
+          "status": "ELIGIBLE"
+        },
+        "cash_conversion": {
+          "evidence": null,
+          "reason": "ocf_margin_available_as_typed_component",
+          "status": "ELIGIBLE"
+        },
+        "ccc": {
+          "evidence": null,
+          "reason": "all_safe_ccc_components_not_available",
+          "status": "BLOCKED"
+        },
+        "cogs": {
+          "evidence": {
+            "accession": "0001652044-26-000071",
+            "end": "2026-06-30",
+            "filed": "2026-07-23",
+            "fiscal_period": "Q2",
+            "fiscal_year": 2026,
+            "form": "10-Q",
+            "frame": null,
+            "namespace": "us-gaap",
+            "semantic": "us-gaap:CostOfRevenue",
+            "start": "2026-01-01",
+            "tag": "CostOfRevenue",
+            "unit": "USD",
+            "value": 87214000000
+          },
+          "reason": "official_structured_filing_exact_semantic",
+          "status": "ELIGIBLE"
+        },
+        "dpo": {
+          "evidence": null,
+          "reason": "purchases_and_average_trade_ap_not_proven",
+          "status": "BLOCKED"
+        },
+        "dso": {
+          "evidence": null,
+          "reason": "average_trade_ar_not_proven",
+          "status": "BLOCKED"
+        },
+        "fcf": {
+          "evidence": {
+            "capex": {
+              "accession": "0001652044-26-000071",
+              "end": "2026-06-30",
+              "filed": "2026-07-23",
+              "fiscal_period": "Q2",
+              "fiscal_year": 2026,
+              "form": "10-Q",
+              "frame": null,
+              "namespace": "us-gaap",
+              "semantic": "us-gaap:PaymentsToAcquirePropertyPlantAndEquipment",
+              "start": "2026-01-01",
+              "tag": "PaymentsToAcquirePropertyPlantAndEquipment",
+              "unit": "USD",
+              "value": 80598000000
+            },
+            "ocf": {
+              "accession": "0001652044-26-000071",
+              "end": "2026-06-30",
+              "filed": "2026-07-23",
+              "fiscal_period": "Q2",
+              "fiscal_year": 2026,
+              "form": "10-Q",
+              "frame": null,
+              "namespace": "us-gaap",
+              "semantic": "us-gaap:NetCashProvidedByUsedInOperatingActivities",
+              "start": "2026-01-01",
+              "tag": "NetCashProvidedByUsedInOperatingActivities",
+              "unit": "USD",
+              "value": 84859000000
+            }
+          },
+          "reason": "same_accession_period_unit_ocf_minus_ppe_capex",
+          "status": "ELIGIBLE"
+        },
+        "fcf_margin": {
+          "evidence": {
+            "capex": {
+              "accession": "0001652044-26-000071",
+              "end": "2026-06-30",
+              "filed": "2026-07-23",
+              "fiscal_period": "Q2",
+              "fiscal_year": 2026,
+              "form": "10-Q",
+              "frame": null,
+              "namespace": "us-gaap",
+              "semantic": "us-gaap:PaymentsToAcquirePropertyPlantAndEquipment",
+              "start": "2026-01-01",
+              "tag": "PaymentsToAcquirePropertyPlantAndEquipment",
+              "unit": "USD",
+              "value": 80598000000
+            },
+            "ocf": {
+              "accession": "0001652044-26-000071",
+              "end": "2026-06-30",
+              "filed": "2026-07-23",
+              "fiscal_period": "Q2",
+              "fiscal_year": 2026,
+              "form": "10-Q",
+              "frame": null,
+              "namespace": "us-gaap",
+              "semantic": "us-gaap:NetCashProvidedByUsedInOperatingActivities",
+              "start": "2026-01-01",
+              "tag": "NetCashProvidedByUsedInOperatingActivities",
+              "unit": "USD",
+              "value": 84859000000
+            },
+            "revenue": {
+              "accession": "0001652044-26-000071",
+              "end": "2026-06-30",
+              "filed": "2026-07-23",
+              "fiscal_period": "Q2",
+              "fiscal_year": 2026,
+              "form": "10-Q",
+              "frame": null,
+              "namespace": "us-gaap",
+              "semantic": "us-gaap:Revenues",
+              "start": "2026-01-01",
+              "tag": "Revenues",
+              "unit": "USD",
+              "value": 229692000000
+            }
+          },
+          "reason": "compatible_fcf_revenue_inputs",
+          "status": "ELIGIBLE"
+        },
+        "inventory": {
+          "evidence": {
+            "accession": "0001652044-26-000071",
+            "end": "2026-06-30",
+            "filed": "2026-07-23",
+            "fiscal_period": "Q2",
+            "fiscal_year": 2026,
+            "form": "10-Q",
+            "frame": "CY2026Q2I",
+            "namespace": "us-gaap",
+            "semantic": "us-gaap:InventoryNet",
+            "start": null,
+            "tag": "InventoryNet",
+            "unit": "USD",
+            "value": 9991000000
+          },
+          "reason": "point_in_time_total_inventory",
+          "status": "ELIGIBLE"
+        },
+        "inventory_days": {
+          "evidence": null,
+          "reason": "average_inventory_and_compatible_cogs_not_proven",
+          "status": "BLOCKED"
+        },
+        "ocf": {
+          "evidence": {
+            "accession": "0001652044-26-000071",
+            "end": "2026-06-30",
+            "filed": "2026-07-23",
+            "fiscal_period": "Q2",
+            "fiscal_year": 2026,
+            "form": "10-Q",
+            "frame": null,
+            "namespace": "us-gaap",
+            "semantic": "us-gaap:NetCashProvidedByUsedInOperatingActivities",
+            "start": "2026-01-01",
+            "tag": "NetCashProvidedByUsedInOperatingActivities",
+            "unit": "USD",
+            "value": 84859000000
+          },
+          "reason": "official_structured_filing_exact_semantic",
+          "status": "ELIGIBLE"
+        },
+        "ocf_margin": {
+          "evidence": {
+            "ocf": {
+              "accession": "0001652044-26-000071",
+              "end": "2026-06-30",
+              "filed": "2026-07-23",
+              "fiscal_period": "Q2",
+              "fiscal_year": 2026,
+              "form": "10-Q",
+              "frame": null,
+              "namespace": "us-gaap",
+              "semantic": "us-gaap:NetCashProvidedByUsedInOperatingActivities",
+              "start": "2026-01-01",
+              "tag": "NetCashProvidedByUsedInOperatingActivities",
+              "unit": "USD",
+              "value": 84859000000
+            },
+            "revenue": {
+              "accession": "0001652044-26-000071",
+              "end": "2026-06-30",
+              "filed": "2026-07-23",
+              "fiscal_period": "Q2",
+              "fiscal_year": 2026,
+              "form": "10-Q",
+              "frame": null,
+              "namespace": "us-gaap",
+              "semantic": "us-gaap:Revenues",
+              "start": "2026-01-01",
+              "tag": "Revenues",
+              "unit": "USD",
+              "value": 229692000000
+            }
+          },
+          "reason": "compatible_ocf_revenue_pair",
+          "status": "ELIGIBLE"
+        },
+        "revenue": {
+          "evidence": {
+            "accession": "0001652044-26-000071",
+            "end": "2026-06-30",
+            "filed": "2026-07-23",
+            "fiscal_period": "Q2",
+            "fiscal_year": 2026,
+            "form": "10-Q",
+            "frame": null,
+            "namespace": "us-gaap",
+            "semantic": "us-gaap:Revenues",
+            "start": "2026-01-01",
+            "tag": "Revenues",
+            "unit": "USD",
+            "value": 229692000000
+          },
+          "reason": "official_structured_filing_exact_semantic",
+          "status": "ELIGIBLE"
+        },
+        "roic": {
+          "evidence": null,
+          "reason": "verified_excess_cash_policy_missing",
+          "status": "BLOCKED"
+        }
+      },
+      "primary_source": "SEC companyfacts official XBRL",
+      "security_level_boundary": "per_share_yield_and_ev_metrics_require_verified_security_fx_basis",
+      "security_type": "common_stock",
+      "source_payload_sha256": "a017f26ee88cb4a639d1c1ddb06d53b4afe22f0ac89cabec7cd67c88919fe1c5",
+      "ticker": "GOOGL"
+    },
+    {
+      "company_name": "Hut 8 Corp.",
+      "financial_type": "non_financial",
+      "industry": "hpc_data_center",
+      "issuer_level_boundary": "issuer_metrics_do_not_require_depositary_ratio",
+      "issuer_type": "domestic_us",
+      "latest_formal_period": "2026-06-30",
+      "market": "US_FOREIGN",
+      "metrics": {
+        "ap": {
+          "evidence": {
+            "accession": "0001104659-26-019392",
+            "end": "2025-12-31",
+            "filed": "2026-02-25",
+            "fiscal_period": "FY",
+            "fiscal_year": 2025,
+            "form": "10-K",
+            "frame": "CY2025Q4I",
+            "namespace": "us-gaap",
+            "semantic": "us-gaap:AccountsPayableCurrent",
+            "start": null,
+            "tag": "AccountsPayableCurrent",
+            "unit": "USD",
+            "value": 15756000
+          },
+          "reason": "broad_balance_not_proven_trade_only",
+          "status": "PARTIAL"
+        },
+        "ar": {
+          "evidence": {
+            "accession": "0001104659-26-090025",
+            "end": "2026-06-30",
+            "filed": "2026-08-04",
+            "fiscal_period": "Q2",
+            "fiscal_year": 2026,
+            "form": "10-Q",
+            "frame": "CY2026Q2I",
+            "namespace": "us-gaap",
+            "semantic": "us-gaap:AccountsReceivableNetCurrent",
+            "start": null,
+            "tag": "AccountsReceivableNetCurrent",
+            "unit": "USD",
+            "value": 11934000
+          },
+          "reason": "broad_balance_not_proven_trade_only",
+          "status": "PARTIAL"
+        },
+        "capex_intensity": {
+          "evidence": null,
+          "reason": "compatible_capex_revenue_pair_missing",
+          "status": "BLOCKED"
+        },
+        "capex_ppe": {
+          "evidence": null,
+          "reason": "exact_ppe_capex_occurrence_missing",
+          "status": "BLOCKED"
+        },
+        "cash_conversion": {
+          "evidence": null,
+          "reason": "ocf_margin_available_as_typed_component",
+          "status": "ELIGIBLE"
+        },
+        "ccc": {
+          "evidence": null,
+          "reason": "all_safe_ccc_components_not_available",
+          "status": "BLOCKED"
+        },
+        "cogs": {
+          "evidence": {
+            "accession": "0001104659-26-090025",
+            "end": "2026-06-30",
+            "filed": "2026-08-04",
+            "fiscal_period": "Q2",
+            "fiscal_year": 2026,
+            "form": "10-Q",
+            "frame": null,
+            "namespace": "us-gaap",
+            "semantic": "us-gaap:CostOfRevenue",
+            "start": "2026-01-01",
+            "tag": "CostOfRevenue",
+            "unit": "USD",
+            "value": 52439000
+          },
+          "reason": "official_structured_filing_exact_semantic",
+          "status": "ELIGIBLE"
+        },
+        "dpo": {
+          "evidence": null,
+          "reason": "purchases_and_average_trade_ap_not_proven",
+          "status": "BLOCKED"
+        },
+        "dso": {
+          "evidence": null,
+          "reason": "average_trade_ar_not_proven",
+          "status": "BLOCKED"
+        },
+        "fcf": {
+          "evidence": null,
+          "reason": "compatible_ocf_capex_pair_missing",
+          "status": "BLOCKED"
+        },
+        "fcf_margin": {
+          "evidence": null,
+          "reason": "compatible_fcf_revenue_inputs_missing",
+          "status": "BLOCKED"
+        },
+        "inventory": {
+          "evidence": null,
+          "reason": "inventory_occurrence_missing",
+          "status": "BLOCKED"
+        },
+        "inventory_days": {
+          "evidence": null,
+          "reason": "average_inventory_and_compatible_cogs_not_proven",
+          "status": "BLOCKED"
+        },
+        "ocf": {
+          "evidence": {
+            "accession": "0001104659-26-090025",
+            "end": "2026-06-30",
+            "filed": "2026-08-04",
+            "fiscal_period": "Q2",
+            "fiscal_year": 2026,
+            "form": "10-Q",
+            "frame": null,
+            "namespace": "us-gaap",
+            "semantic": "us-gaap:NetCashProvidedByUsedInOperatingActivities",
+            "start": "2026-01-01",
+            "tag": "NetCashProvidedByUsedInOperatingActivities",
+            "unit": "USD",
+            "value": -32845000
+          },
+          "reason": "official_structured_filing_exact_semantic",
+          "status": "ELIGIBLE"
+        },
+        "ocf_margin": {
+          "evidence": {
+            "ocf": {
+              "accession": "0001104659-26-090025",
+              "end": "2026-06-30",
+              "filed": "2026-08-04",
+              "fiscal_period": "Q2",
+              "fiscal_year": 2026,
+              "form": "10-Q",
+              "frame": null,
+              "namespace": "us-gaap",
+              "semantic": "us-gaap:NetCashProvidedByUsedInOperatingActivities",
+              "start": "2026-01-01",
+              "tag": "NetCashProvidedByUsedInOperatingActivities",
+              "unit": "USD",
+              "value": -32845000
+            },
+            "revenue": {
+              "accession": "0001104659-26-090025",
+              "end": "2026-06-30",
+              "filed": "2026-08-04",
+              "fiscal_period": "Q2",
+              "fiscal_year": 2026,
+              "form": "10-Q",
+              "frame": null,
+              "namespace": "us-gaap",
+              "semantic": "us-gaap:RevenueFromContractWithCustomerExcludingAssessedTax",
+              "start": "2026-01-01",
+              "tag": "RevenueFromContractWithCustomerExcludingAssessedTax",
+              "unit": "USD",
+              "value": 145949000
+            }
+          },
+          "reason": "compatible_ocf_revenue_pair",
+          "status": "ELIGIBLE"
+        },
+        "revenue": {
+          "evidence": {
+            "accession": "0001104659-26-090025",
+            "end": "2026-06-30",
+            "filed": "2026-08-04",
+            "fiscal_period": "Q2",
+            "fiscal_year": 2026,
+            "form": "10-Q",
+            "frame": null,
+            "namespace": "us-gaap",
+            "semantic": "us-gaap:RevenueFromContractWithCustomerExcludingAssessedTax",
+            "start": "2026-01-01",
+            "tag": "RevenueFromContractWithCustomerExcludingAssessedTax",
+            "unit": "USD",
+            "value": 145949000
+          },
+          "reason": "official_structured_filing_exact_semantic",
+          "status": "ELIGIBLE"
+        },
+        "roic": {
+          "evidence": null,
+          "reason": "verified_excess_cash_policy_missing",
+          "status": "BLOCKED"
+        }
+      },
+      "primary_source": "SEC companyfacts official XBRL",
+      "security_level_boundary": "per_share_yield_and_ev_metrics_require_verified_security_fx_basis",
+      "security_type": "common_stock",
+      "source_payload_sha256": "02fc736a90e3308a46fdc176b8fa7d22edfd3598f434a439e71b4f78a6ed53fe",
+      "ticker": "HUT"
+    },
+    {
+      "company_name": "IBM",
+      "financial_type": "non_financial",
+      "industry": "cloud_platform_software",
+      "issuer_level_boundary": "issuer_metrics_do_not_require_depositary_ratio",
+      "issuer_type": "domestic_us",
+      "latest_formal_period": "2026-06-30",
+      "market": "US_FOREIGN",
+      "metrics": {
+        "ap": {
+          "evidence": {
+            "accession": "0000051143-26-000078",
+            "end": "2026-06-30",
+            "filed": "2026-07-23",
+            "fiscal_period": "Q2",
+            "fiscal_year": 2026,
+            "form": "10-Q",
+            "frame": "CY2026Q2I",
+            "namespace": "us-gaap",
+            "semantic": "us-gaap:AccountsPayableCurrent",
+            "start": null,
+            "tag": "AccountsPayableCurrent",
+            "unit": "USD",
+            "value": 4395000000
+          },
+          "reason": "broad_balance_not_proven_trade_only",
+          "status": "PARTIAL"
+        },
+        "ar": {
+          "evidence": {
+            "accession": "0000051143-26-000078",
+            "end": "2026-06-30",
+            "filed": "2026-07-23",
+            "fiscal_period": "Q2",
+            "fiscal_year": 2026,
+            "form": "10-Q",
+            "frame": "CY2026Q2I",
+            "namespace": "us-gaap",
+            "semantic": "us-gaap:AccountsReceivableNetCurrent",
+            "start": null,
+            "tag": "AccountsReceivableNetCurrent",
+            "unit": "USD",
+            "value": 6044000000
+          },
+          "reason": "broad_balance_not_proven_trade_only",
+          "status": "PARTIAL"
+        },
+        "capex_intensity": {
+          "evidence": {
+            "capex": {
+              "accession": "0000051143-26-000078",
+              "end": "2026-06-30",
+              "filed": "2026-07-23",
+              "fiscal_period": "Q2",
+              "fiscal_year": 2026,
+              "form": "10-Q",
+              "frame": null,
+              "namespace": "us-gaap",
+              "semantic": "us-gaap:PaymentsToAcquirePropertyPlantAndEquipment",
+              "start": "2026-01-01",
+              "tag": "PaymentsToAcquirePropertyPlantAndEquipment",
+              "unit": "USD",
+              "value": 461000000
+            },
+            "revenue": {
+              "accession": "0000051143-26-000078",
+              "end": "2026-06-30",
+              "filed": "2026-07-23",
+              "fiscal_period": "Q2",
+              "fiscal_year": 2026,
+              "form": "10-Q",
+              "frame": null,
+              "namespace": "us-gaap",
+              "semantic": "us-gaap:Revenues",
+              "start": "2026-01-01",
+              "tag": "Revenues",
+              "unit": "USD",
+              "value": 33079000000
+            }
+          },
+          "reason": "compatible_capex_revenue_pair",
+          "status": "ELIGIBLE"
+        },
+        "capex_ppe": {
+          "evidence": {
+            "accession": "0000051143-26-000078",
+            "end": "2026-06-30",
+            "filed": "2026-07-23",
+            "fiscal_period": "Q2",
+            "fiscal_year": 2026,
+            "form": "10-Q",
+            "frame": null,
+            "namespace": "us-gaap",
+            "semantic": "us-gaap:PaymentsToAcquirePropertyPlantAndEquipment",
+            "start": "2026-01-01",
+            "tag": "PaymentsToAcquirePropertyPlantAndEquipment",
+            "unit": "USD",
+            "value": 461000000
+          },
+          "reason": "official_ppe_cash_payment_exact_semantic",
+          "status": "ELIGIBLE"
+        },
+        "cash_conversion": {
+          "evidence": null,
+          "reason": "ocf_margin_available_as_typed_component",
+          "status": "ELIGIBLE"
+        },
+        "ccc": {
+          "evidence": null,
+          "reason": "all_safe_ccc_components_not_available",
+          "status": "BLOCKED"
+        },
+        "cogs": {
+          "evidence": {
+            "accession": "0000051143-26-000078",
+            "end": "2026-06-30",
+            "filed": "2026-07-23",
+            "fiscal_period": "Q2",
+            "fiscal_year": 2026,
+            "form": "10-Q",
+            "frame": null,
+            "namespace": "us-gaap",
+            "semantic": "us-gaap:CostOfRevenue",
+            "start": "2026-01-01",
+            "tag": "CostOfRevenue",
+            "unit": "USD",
+            "value": 14222000000
+          },
+          "reason": "official_structured_filing_exact_semantic",
+          "status": "ELIGIBLE"
+        },
+        "dpo": {
+          "evidence": null,
+          "reason": "purchases_and_average_trade_ap_not_proven",
+          "status": "BLOCKED"
+        },
+        "dso": {
+          "evidence": null,
+          "reason": "average_trade_ar_not_proven",
+          "status": "BLOCKED"
+        },
+        "fcf": {
+          "evidence": {
+            "capex": {
+              "accession": "0000051143-26-000078",
+              "end": "2026-06-30",
+              "filed": "2026-07-23",
+              "fiscal_period": "Q2",
+              "fiscal_year": 2026,
+              "form": "10-Q",
+              "frame": null,
+              "namespace": "us-gaap",
+              "semantic": "us-gaap:PaymentsToAcquirePropertyPlantAndEquipment",
+              "start": "2026-01-01",
+              "tag": "PaymentsToAcquirePropertyPlantAndEquipment",
+              "unit": "USD",
+              "value": 461000000
+            },
+            "ocf": {
+              "accession": "0000051143-26-000078",
+              "end": "2026-06-30",
+              "filed": "2026-07-23",
+              "fiscal_period": "Q2",
+              "fiscal_year": 2026,
+              "form": "10-Q",
+              "frame": null,
+              "namespace": "us-gaap",
+              "semantic": "us-gaap:NetCashProvidedByUsedInOperatingActivities",
+              "start": "2026-01-01",
+              "tag": "NetCashProvidedByUsedInOperatingActivities",
+              "unit": "USD",
+              "value": 7766000000
+            }
+          },
+          "reason": "same_accession_period_unit_ocf_minus_ppe_capex",
+          "status": "ELIGIBLE"
+        },
+        "fcf_margin": {
+          "evidence": {
+            "capex": {
+              "accession": "0000051143-26-000078",
+              "end": "2026-06-30",
+              "filed": "2026-07-23",
+              "fiscal_period": "Q2",
+              "fiscal_year": 2026,
+              "form": "10-Q",
+              "frame": null,
+              "namespace": "us-gaap",
+              "semantic": "us-gaap:PaymentsToAcquirePropertyPlantAndEquipment",
+              "start": "2026-01-01",
+              "tag": "PaymentsToAcquirePropertyPlantAndEquipment",
+              "unit": "USD",
+              "value": 461000000
+            },
+            "ocf": {
+              "accession": "0000051143-26-000078",
+              "end": "2026-06-30",
+              "filed": "2026-07-23",
+              "fiscal_period": "Q2",
+              "fiscal_year": 2026,
+              "form": "10-Q",
+              "frame": null,
+              "namespace": "us-gaap",
+              "semantic": "us-gaap:NetCashProvidedByUsedInOperatingActivities",
+              "start": "2026-01-01",
+              "tag": "NetCashProvidedByUsedInOperatingActivities",
+              "unit": "USD",
+              "value": 7766000000
+            },
+            "revenue": {
+              "accession": "0000051143-26-000078",
+              "end": "2026-06-30",
+              "filed": "2026-07-23",
+              "fiscal_period": "Q2",
+              "fiscal_year": 2026,
+              "form": "10-Q",
+              "frame": null,
+              "namespace": "us-gaap",
+              "semantic": "us-gaap:Revenues",
+              "start": "2026-01-01",
+              "tag": "Revenues",
+              "unit": "USD",
+              "value": 33079000000
+            }
+          },
+          "reason": "compatible_fcf_revenue_inputs",
+          "status": "ELIGIBLE"
+        },
+        "inventory": {
+          "evidence": {
+            "accession": "0000051143-26-000078",
+            "end": "2026-06-30",
+            "filed": "2026-07-23",
+            "fiscal_period": "Q2",
+            "fiscal_year": 2026,
+            "form": "10-Q",
+            "frame": "CY2026Q2I",
+            "namespace": "us-gaap",
+            "semantic": "us-gaap:InventoryNet",
+            "start": null,
+            "tag": "InventoryNet",
+            "unit": "USD",
+            "value": 1746000000
+          },
+          "reason": "point_in_time_total_inventory",
+          "status": "ELIGIBLE"
+        },
+        "inventory_days": {
+          "evidence": null,
+          "reason": "average_inventory_and_compatible_cogs_not_proven",
+          "status": "BLOCKED"
+        },
+        "ocf": {
+          "evidence": {
+            "accession": "0000051143-26-000078",
+            "end": "2026-06-30",
+            "filed": "2026-07-23",
+            "fiscal_period": "Q2",
+            "fiscal_year": 2026,
+            "form": "10-Q",
+            "frame": null,
+            "namespace": "us-gaap",
+            "semantic": "us-gaap:NetCashProvidedByUsedInOperatingActivities",
+            "start": "2026-01-01",
+            "tag": "NetCashProvidedByUsedInOperatingActivities",
+            "unit": "USD",
+            "value": 7766000000
+          },
+          "reason": "official_structured_filing_exact_semantic",
+          "status": "ELIGIBLE"
+        },
+        "ocf_margin": {
+          "evidence": {
+            "ocf": {
+              "accession": "0000051143-26-000078",
+              "end": "2026-06-30",
+              "filed": "2026-07-23",
+              "fiscal_period": "Q2",
+              "fiscal_year": 2026,
+              "form": "10-Q",
+              "frame": null,
+              "namespace": "us-gaap",
+              "semantic": "us-gaap:NetCashProvidedByUsedInOperatingActivities",
+              "start": "2026-01-01",
+              "tag": "NetCashProvidedByUsedInOperatingActivities",
+              "unit": "USD",
+              "value": 7766000000
+            },
+            "revenue": {
+              "accession": "0000051143-26-000078",
+              "end": "2026-06-30",
+              "filed": "2026-07-23",
+              "fiscal_period": "Q2",
+              "fiscal_year": 2026,
+              "form": "10-Q",
+              "frame": null,
+              "namespace": "us-gaap",
+              "semantic": "us-gaap:Revenues",
+              "start": "2026-01-01",
+              "tag": "Revenues",
+              "unit": "USD",
+              "value": 33079000000
+            }
+          },
+          "reason": "compatible_ocf_revenue_pair",
+          "status": "ELIGIBLE"
+        },
+        "revenue": {
+          "evidence": {
+            "accession": "0000051143-26-000078",
+            "end": "2026-06-30",
+            "filed": "2026-07-23",
+            "fiscal_period": "Q2",
+            "fiscal_year": 2026,
+            "form": "10-Q",
+            "frame": null,
+            "namespace": "us-gaap",
+            "semantic": "us-gaap:Revenues",
+            "start": "2026-01-01",
+            "tag": "Revenues",
+            "unit": "USD",
+            "value": 33079000000
+          },
+          "reason": "official_structured_filing_exact_semantic",
+          "status": "ELIGIBLE"
+        },
+        "roic": {
+          "evidence": null,
+          "reason": "verified_excess_cash_policy_missing",
+          "status": "BLOCKED"
+        }
+      },
+      "primary_source": "SEC companyfacts official XBRL",
+      "security_level_boundary": "per_share_yield_and_ev_metrics_require_verified_security_fx_basis",
+      "security_type": "common_stock",
+      "source_payload_sha256": "1660477fa5713e5749c3038cf22b3c776414acfc6e1e721d1772c91101dc5e5c",
+      "ticker": "IBM"
+    },
+    {
+      "company_name": "Micron Technology",
+      "financial_type": "non_financial",
+      "industry": "memory_semiconductor",
+      "issuer_level_boundary": "issuer_metrics_do_not_require_depositary_ratio",
+      "issuer_type": "domestic_us",
+      "latest_formal_period": "2026-05-28",
+      "market": "US_FOREIGN",
+      "metrics": {
+        "ap": {
+          "evidence": null,
+          "reason": "ap_occurrence_missing",
+          "status": "BLOCKED"
+        },
+        "ar": {
+          "evidence": {
+            "accession": "0000723125-26-000015",
+            "end": "2026-05-28",
+            "filed": "2026-06-25",
+            "fiscal_period": "Q3",
+            "fiscal_year": 2026,
+            "form": "10-Q",
+            "frame": "CY2026Q2I",
+            "namespace": "us-gaap",
+            "semantic": "us-gaap:AccountsReceivableNetCurrent",
+            "start": null,
+            "tag": "AccountsReceivableNetCurrent",
+            "unit": "USD",
+            "value": 26894000000
+          },
+          "reason": "broad_balance_not_proven_trade_only",
+          "status": "PARTIAL"
+        },
+        "capex_intensity": {
+          "evidence": {
+            "capex": {
+              "accession": "0000723125-26-000015",
+              "end": "2026-05-28",
+              "filed": "2026-06-25",
+              "fiscal_period": "Q3",
+              "fiscal_year": 2026,
+              "form": "10-Q",
+              "frame": null,
+              "namespace": "us-gaap",
+              "semantic": "us-gaap:PaymentsToAcquirePropertyPlantAndEquipment",
+              "start": "2025-08-29",
+              "tag": "PaymentsToAcquirePropertyPlantAndEquipment",
+              "unit": "USD",
+              "value": 19602000000
+            },
+            "revenue": {
+              "accession": "0000723125-26-000015",
+              "end": "2026-05-28",
+              "filed": "2026-06-25",
+              "fiscal_period": "Q3",
+              "fiscal_year": 2026,
+              "form": "10-Q",
+              "frame": null,
+              "namespace": "us-gaap",
+              "semantic": "us-gaap:RevenueFromContractWithCustomerExcludingAssessedTax",
+              "start": "2025-08-29",
+              "tag": "RevenueFromContractWithCustomerExcludingAssessedTax",
+              "unit": "USD",
+              "value": 78959000000
+            }
+          },
+          "reason": "compatible_capex_revenue_pair",
+          "status": "ELIGIBLE"
+        },
+        "capex_ppe": {
+          "evidence": {
+            "accession": "0000723125-26-000015",
+            "end": "2026-05-28",
+            "filed": "2026-06-25",
+            "fiscal_period": "Q3",
+            "fiscal_year": 2026,
+            "form": "10-Q",
+            "frame": null,
+            "namespace": "us-gaap",
+            "semantic": "us-gaap:PaymentsToAcquirePropertyPlantAndEquipment",
+            "start": "2025-08-29",
+            "tag": "PaymentsToAcquirePropertyPlantAndEquipment",
+            "unit": "USD",
+            "value": 19602000000
+          },
+          "reason": "official_ppe_cash_payment_exact_semantic",
+          "status": "ELIGIBLE"
+        },
+        "cash_conversion": {
+          "evidence": null,
+          "reason": "ocf_margin_available_as_typed_component",
+          "status": "ELIGIBLE"
+        },
+        "ccc": {
+          "evidence": null,
+          "reason": "all_safe_ccc_components_not_available",
+          "status": "BLOCKED"
+        },
+        "cogs": {
+          "evidence": {
+            "accession": "0000723125-26-000015",
+            "end": "2026-05-28",
+            "filed": "2026-06-25",
+            "fiscal_period": "Q3",
+            "fiscal_year": 2026,
+            "form": "10-Q",
+            "frame": null,
+            "namespace": "us-gaap",
+            "semantic": "us-gaap:CostOfGoodsAndServicesSold",
+            "start": "2025-08-29",
+            "tag": "CostOfGoodsAndServicesSold",
+            "unit": "USD",
+            "value": 18502000000
+          },
+          "reason": "official_structured_filing_exact_semantic",
+          "status": "ELIGIBLE"
+        },
+        "dpo": {
+          "evidence": null,
+          "reason": "purchases_and_average_trade_ap_not_proven",
+          "status": "BLOCKED"
+        },
+        "dso": {
+          "evidence": null,
+          "reason": "average_trade_ar_not_proven",
+          "status": "BLOCKED"
+        },
+        "fcf": {
+          "evidence": {
+            "capex": {
+              "accession": "0000723125-26-000015",
+              "end": "2026-05-28",
+              "filed": "2026-06-25",
+              "fiscal_period": "Q3",
+              "fiscal_year": 2026,
+              "form": "10-Q",
+              "frame": null,
+              "namespace": "us-gaap",
+              "semantic": "us-gaap:PaymentsToAcquirePropertyPlantAndEquipment",
+              "start": "2025-08-29",
+              "tag": "PaymentsToAcquirePropertyPlantAndEquipment",
+              "unit": "USD",
+              "value": 19602000000
+            },
+            "ocf": {
+              "accession": "0000723125-26-000015",
+              "end": "2026-05-28",
+              "filed": "2026-06-25",
+              "fiscal_period": "Q3",
+              "fiscal_year": 2026,
+              "form": "10-Q",
+              "frame": null,
+              "namespace": "us-gaap",
+              "semantic": "us-gaap:NetCashProvidedByUsedInOperatingActivities",
+              "start": "2025-08-29",
+              "tag": "NetCashProvidedByUsedInOperatingActivities",
+              "unit": "USD",
+              "value": 45702000000
+            }
+          },
+          "reason": "same_accession_period_unit_ocf_minus_ppe_capex",
+          "status": "ELIGIBLE"
+        },
+        "fcf_margin": {
+          "evidence": {
+            "capex": {
+              "accession": "0000723125-26-000015",
+              "end": "2026-05-28",
+              "filed": "2026-06-25",
+              "fiscal_period": "Q3",
+              "fiscal_year": 2026,
+              "form": "10-Q",
+              "frame": null,
+              "namespace": "us-gaap",
+              "semantic": "us-gaap:PaymentsToAcquirePropertyPlantAndEquipment",
+              "start": "2025-08-29",
+              "tag": "PaymentsToAcquirePropertyPlantAndEquipment",
+              "unit": "USD",
+              "value": 19602000000
+            },
+            "ocf": {
+              "accession": "0000723125-26-000015",
+              "end": "2026-05-28",
+              "filed": "2026-06-25",
+              "fiscal_period": "Q3",
+              "fiscal_year": 2026,
+              "form": "10-Q",
+              "frame": null,
+              "namespace": "us-gaap",
+              "semantic": "us-gaap:NetCashProvidedByUsedInOperatingActivities",
+              "start": "2025-08-29",
+              "tag": "NetCashProvidedByUsedInOperatingActivities",
+              "unit": "USD",
+              "value": 45702000000
+            },
+            "revenue": {
+              "accession": "0000723125-26-000015",
+              "end": "2026-05-28",
+              "filed": "2026-06-25",
+              "fiscal_period": "Q3",
+              "fiscal_year": 2026,
+              "form": "10-Q",
+              "frame": null,
+              "namespace": "us-gaap",
+              "semantic": "us-gaap:RevenueFromContractWithCustomerExcludingAssessedTax",
+              "start": "2025-08-29",
+              "tag": "RevenueFromContractWithCustomerExcludingAssessedTax",
+              "unit": "USD",
+              "value": 78959000000
+            }
+          },
+          "reason": "compatible_fcf_revenue_inputs",
+          "status": "ELIGIBLE"
+        },
+        "inventory": {
+          "evidence": {
+            "accession": "0000723125-26-000015",
+            "end": "2026-05-28",
+            "filed": "2026-06-25",
+            "fiscal_period": "Q3",
+            "fiscal_year": 2026,
+            "form": "10-Q",
+            "frame": "CY2026Q2I",
+            "namespace": "us-gaap",
+            "semantic": "us-gaap:InventoryNet",
+            "start": null,
+            "tag": "InventoryNet",
+            "unit": "USD",
+            "value": 8567000000
+          },
+          "reason": "point_in_time_total_inventory",
+          "status": "ELIGIBLE"
+        },
+        "inventory_days": {
+          "evidence": null,
+          "reason": "average_inventory_and_compatible_cogs_not_proven",
+          "status": "BLOCKED"
+        },
+        "ocf": {
+          "evidence": {
+            "accession": "0000723125-26-000015",
+            "end": "2026-05-28",
+            "filed": "2026-06-25",
+            "fiscal_period": "Q3",
+            "fiscal_year": 2026,
+            "form": "10-Q",
+            "frame": null,
+            "namespace": "us-gaap",
+            "semantic": "us-gaap:NetCashProvidedByUsedInOperatingActivities",
+            "start": "2025-08-29",
+            "tag": "NetCashProvidedByUsedInOperatingActivities",
+            "unit": "USD",
+            "value": 45702000000
+          },
+          "reason": "official_structured_filing_exact_semantic",
+          "status": "ELIGIBLE"
+        },
+        "ocf_margin": {
+          "evidence": {
+            "ocf": {
+              "accession": "0000723125-26-000015",
+              "end": "2026-05-28",
+              "filed": "2026-06-25",
+              "fiscal_period": "Q3",
+              "fiscal_year": 2026,
+              "form": "10-Q",
+              "frame": null,
+              "namespace": "us-gaap",
+              "semantic": "us-gaap:NetCashProvidedByUsedInOperatingActivities",
+              "start": "2025-08-29",
+              "tag": "NetCashProvidedByUsedInOperatingActivities",
+              "unit": "USD",
+              "value": 45702000000
+            },
+            "revenue": {
+              "accession": "0000723125-26-000015",
+              "end": "2026-05-28",
+              "filed": "2026-06-25",
+              "fiscal_period": "Q3",
+              "fiscal_year": 2026,
+              "form": "10-Q",
+              "frame": null,
+              "namespace": "us-gaap",
+              "semantic": "us-gaap:RevenueFromContractWithCustomerExcludingAssessedTax",
+              "start": "2025-08-29",
+              "tag": "RevenueFromContractWithCustomerExcludingAssessedTax",
+              "unit": "USD",
+              "value": 78959000000
+            }
+          },
+          "reason": "compatible_ocf_revenue_pair",
+          "status": "ELIGIBLE"
+        },
+        "revenue": {
+          "evidence": {
+            "accession": "0000723125-26-000015",
+            "end": "2026-05-28",
+            "filed": "2026-06-25",
+            "fiscal_period": "Q3",
+            "fiscal_year": 2026,
+            "form": "10-Q",
+            "frame": null,
+            "namespace": "us-gaap",
+            "semantic": "us-gaap:RevenueFromContractWithCustomerExcludingAssessedTax",
+            "start": "2025-08-29",
+            "tag": "RevenueFromContractWithCustomerExcludingAssessedTax",
+            "unit": "USD",
+            "value": 78959000000
+          },
+          "reason": "official_structured_filing_exact_semantic",
+          "status": "ELIGIBLE"
+        },
+        "roic": {
+          "evidence": null,
+          "reason": "verified_excess_cash_policy_missing",
+          "status": "BLOCKED"
+        }
+      },
+      "primary_source": "SEC companyfacts official XBRL",
+      "security_level_boundary": "per_share_yield_and_ev_metrics_require_verified_security_fx_basis",
+      "security_type": "common_stock",
+      "source_payload_sha256": "a8b088c2111daef36536e53c81fef4c0f01220c64933e126a665b00a9257f882",
+      "ticker": "MU"
+    },
+    {
+      "company_name": "Recursion Pharmaceuticals",
+      "financial_type": "pre_profit_biotech",
+      "industry": "biotech",
+      "issuer_level_boundary": "issuer_metrics_do_not_require_depositary_ratio",
+      "issuer_type": "domestic_us",
+      "latest_formal_period": "2026-06-30",
+      "market": "US_FOREIGN",
+      "metrics": {
+        "ap": {
+          "evidence": {
+            "accession": "0001601830-26-000098",
+            "end": "2026-06-30",
+            "filed": "2026-08-05",
+            "fiscal_period": "Q2",
+            "fiscal_year": 2026,
+            "form": "10-Q",
+            "frame": "CY2026Q2I",
+            "namespace": "us-gaap",
+            "semantic": "us-gaap:AccountsPayableCurrent",
+            "start": null,
+            "tag": "AccountsPayableCurrent",
+            "unit": "USD",
+            "value": 12672000
+          },
+          "reason": "broad_balance_not_proven_trade_only",
+          "status": "PARTIAL"
+        },
+        "ar": {
+          "evidence": {
+            "accession": "0001601830-23-000010",
+            "end": "2022-12-31",
+            "filed": "2023-02-27",
+            "fiscal_period": "FY",
+            "fiscal_year": 2022,
+            "form": "10-K",
+            "frame": "CY2022Q4I",
+            "namespace": "us-gaap",
+            "semantic": "us-gaap:AccountsReceivableNetCurrent",
+            "start": null,
+            "tag": "AccountsReceivableNetCurrent",
+            "unit": "USD",
+            "value": 0
+          },
+          "reason": "broad_balance_not_proven_trade_only",
+          "status": "PARTIAL"
+        },
+        "capex_intensity": {
+          "evidence": {
+            "capex": {
+              "accession": "0001601830-26-000098",
+              "end": "2026-06-30",
+              "filed": "2026-08-05",
+              "fiscal_period": "Q2",
+              "fiscal_year": 2026,
+              "form": "10-Q",
+              "frame": null,
+              "namespace": "us-gaap",
+              "semantic": "us-gaap:PaymentsToAcquirePropertyPlantAndEquipment",
+              "start": "2026-01-01",
+              "tag": "PaymentsToAcquirePropertyPlantAndEquipment",
+              "unit": "USD",
+              "value": 302000
+            },
+            "revenue": {
+              "accession": "0001601830-26-000098",
+              "end": "2026-06-30",
+              "filed": "2026-08-05",
+              "fiscal_period": "Q2",
+              "fiscal_year": 2026,
+              "form": "10-Q",
+              "frame": null,
+              "namespace": "us-gaap",
+              "semantic": "us-gaap:RevenueFromContractWithCustomerExcludingAssessedTax",
+              "start": "2026-01-01",
+              "tag": "RevenueFromContractWithCustomerExcludingAssessedTax",
+              "unit": "USD",
+              "value": 14143000
+            }
+          },
+          "reason": "compatible_capex_revenue_pair",
+          "status": "ELIGIBLE"
+        },
+        "capex_ppe": {
+          "evidence": {
+            "accession": "0001601830-26-000098",
+            "end": "2026-06-30",
+            "filed": "2026-08-05",
+            "fiscal_period": "Q2",
+            "fiscal_year": 2026,
+            "form": "10-Q",
+            "frame": null,
+            "namespace": "us-gaap",
+            "semantic": "us-gaap:PaymentsToAcquirePropertyPlantAndEquipment",
+            "start": "2026-01-01",
+            "tag": "PaymentsToAcquirePropertyPlantAndEquipment",
+            "unit": "USD",
+            "value": 302000
+          },
+          "reason": "official_ppe_cash_payment_exact_semantic",
+          "status": "ELIGIBLE"
+        },
+        "cash_conversion": {
+          "evidence": null,
+          "reason": "ocf_margin_available_as_typed_component",
+          "status": "ELIGIBLE"
+        },
+        "ccc": {
+          "evidence": null,
+          "reason": "all_safe_ccc_components_not_available",
+          "status": "BLOCKED"
+        },
+        "cogs": {
+          "evidence": {
+            "accession": "0001601830-26-000098",
+            "end": "2026-06-30",
+            "filed": "2026-08-05",
+            "fiscal_period": "Q2",
+            "fiscal_year": 2026,
+            "form": "10-Q",
+            "frame": null,
+            "namespace": "us-gaap",
+            "semantic": "us-gaap:CostOfGoodsAndServicesSold",
+            "start": "2026-01-01",
+            "tag": "CostOfGoodsAndServicesSold",
+            "unit": "USD",
+            "value": 23981000
+          },
+          "reason": "official_structured_filing_exact_semantic",
+          "status": "ELIGIBLE"
+        },
+        "dpo": {
+          "evidence": null,
+          "reason": "purchases_and_average_trade_ap_not_proven",
+          "status": "BLOCKED"
+        },
+        "dso": {
+          "evidence": null,
+          "reason": "average_trade_ar_not_proven",
+          "status": "BLOCKED"
+        },
+        "fcf": {
+          "evidence": {
+            "capex": {
+              "accession": "0001601830-26-000098",
+              "end": "2026-06-30",
+              "filed": "2026-08-05",
+              "fiscal_period": "Q2",
+              "fiscal_year": 2026,
+              "form": "10-Q",
+              "frame": null,
+              "namespace": "us-gaap",
+              "semantic": "us-gaap:PaymentsToAcquirePropertyPlantAndEquipment",
+              "start": "2026-01-01",
+              "tag": "PaymentsToAcquirePropertyPlantAndEquipment",
+              "unit": "USD",
+              "value": 302000
+            },
+            "ocf": {
+              "accession": "0001601830-26-000098",
+              "end": "2026-06-30",
+              "filed": "2026-08-05",
+              "fiscal_period": "Q2",
+              "fiscal_year": 2026,
+              "form": "10-Q",
+              "frame": null,
+              "namespace": "us-gaap",
+              "semantic": "us-gaap:NetCashProvidedByUsedInOperatingActivities",
+              "start": "2026-01-01",
+              "tag": "NetCashProvidedByUsedInOperatingActivities",
+              "unit": "USD",
+              "value": -187048000
+            }
+          },
+          "reason": "same_accession_period_unit_ocf_minus_ppe_capex",
+          "status": "ELIGIBLE"
+        },
+        "fcf_margin": {
+          "evidence": {
+            "capex": {
+              "accession": "0001601830-26-000098",
+              "end": "2026-06-30",
+              "filed": "2026-08-05",
+              "fiscal_period": "Q2",
+              "fiscal_year": 2026,
+              "form": "10-Q",
+              "frame": null,
+              "namespace": "us-gaap",
+              "semantic": "us-gaap:PaymentsToAcquirePropertyPlantAndEquipment",
+              "start": "2026-01-01",
+              "tag": "PaymentsToAcquirePropertyPlantAndEquipment",
+              "unit": "USD",
+              "value": 302000
+            },
+            "ocf": {
+              "accession": "0001601830-26-000098",
+              "end": "2026-06-30",
+              "filed": "2026-08-05",
+              "fiscal_period": "Q2",
+              "fiscal_year": 2026,
+              "form": "10-Q",
+              "frame": null,
+              "namespace": "us-gaap",
+              "semantic": "us-gaap:NetCashProvidedByUsedInOperatingActivities",
+              "start": "2026-01-01",
+              "tag": "NetCashProvidedByUsedInOperatingActivities",
+              "unit": "USD",
+              "value": -187048000
+            },
+            "revenue": {
+              "accession": "0001601830-26-000098",
+              "end": "2026-06-30",
+              "filed": "2026-08-05",
+              "fiscal_period": "Q2",
+              "fiscal_year": 2026,
+              "form": "10-Q",
+              "frame": null,
+              "namespace": "us-gaap",
+              "semantic": "us-gaap:RevenueFromContractWithCustomerExcludingAssessedTax",
+              "start": "2026-01-01",
+              "tag": "RevenueFromContractWithCustomerExcludingAssessedTax",
+              "unit": "USD",
+              "value": 14143000
+            }
+          },
+          "reason": "compatible_fcf_revenue_inputs",
+          "status": "ELIGIBLE"
+        },
+        "inventory": {
+          "evidence": null,
+          "reason": "inventory_occurrence_missing",
+          "status": "BLOCKED"
+        },
+        "inventory_days": {
+          "evidence": null,
+          "reason": "average_inventory_and_compatible_cogs_not_proven",
+          "status": "BLOCKED"
+        },
+        "ocf": {
+          "evidence": {
+            "accession": "0001601830-26-000098",
+            "end": "2026-06-30",
+            "filed": "2026-08-05",
+            "fiscal_period": "Q2",
+            "fiscal_year": 2026,
+            "form": "10-Q",
+            "frame": null,
+            "namespace": "us-gaap",
+            "semantic": "us-gaap:NetCashProvidedByUsedInOperatingActivities",
+            "start": "2026-01-01",
+            "tag": "NetCashProvidedByUsedInOperatingActivities",
+            "unit": "USD",
+            "value": -187048000
+          },
+          "reason": "official_structured_filing_exact_semantic",
+          "status": "ELIGIBLE"
+        },
+        "ocf_margin": {
+          "evidence": {
+            "ocf": {
+              "accession": "0001601830-26-000098",
+              "end": "2026-06-30",
+              "filed": "2026-08-05",
+              "fiscal_period": "Q2",
+              "fiscal_year": 2026,
+              "form": "10-Q",
+              "frame": null,
+              "namespace": "us-gaap",
+              "semantic": "us-gaap:NetCashProvidedByUsedInOperatingActivities",
+              "start": "2026-01-01",
+              "tag": "NetCashProvidedByUsedInOperatingActivities",
+              "unit": "USD",
+              "value": -187048000
+            },
+            "revenue": {
+              "accession": "0001601830-26-000098",
+              "end": "2026-06-30",
+              "filed": "2026-08-05",
+              "fiscal_period": "Q2",
+              "fiscal_year": 2026,
+              "form": "10-Q",
+              "frame": null,
+              "namespace": "us-gaap",
+              "semantic": "us-gaap:RevenueFromContractWithCustomerExcludingAssessedTax",
+              "start": "2026-01-01",
+              "tag": "RevenueFromContractWithCustomerExcludingAssessedTax",
+              "unit": "USD",
+              "value": 14143000
+            }
+          },
+          "reason": "compatible_ocf_revenue_pair",
+          "status": "ELIGIBLE"
+        },
+        "revenue": {
+          "evidence": {
+            "accession": "0001601830-26-000098",
+            "end": "2026-06-30",
+            "filed": "2026-08-05",
+            "fiscal_period": "Q2",
+            "fiscal_year": 2026,
+            "form": "10-Q",
+            "frame": null,
+            "namespace": "us-gaap",
+            "semantic": "us-gaap:RevenueFromContractWithCustomerExcludingAssessedTax",
+            "start": "2026-01-01",
+            "tag": "RevenueFromContractWithCustomerExcludingAssessedTax",
+            "unit": "USD",
+            "value": 14143000
+          },
+          "reason": "official_structured_filing_exact_semantic",
+          "status": "ELIGIBLE"
+        },
+        "roic": {
+          "evidence": null,
+          "reason": "verified_excess_cash_policy_missing",
+          "status": "BLOCKED"
+        }
+      },
+      "primary_source": "SEC companyfacts official XBRL",
+      "security_level_boundary": "per_share_yield_and_ev_metrics_require_verified_security_fx_basis",
+      "security_type": "common_stock",
+      "source_payload_sha256": "238c834540b26747e7f8af5dc10e3b986fcfbc96383469c4a944c9a5b2844e04",
+      "ticker": "RXRX"
+    },
+    {
+      "company_name": "SK hynix Inc. ADR",
+      "financial_type": "non_financial",
+      "industry": "memory_semiconductor",
+      "issuer_level_boundary": "issuer_metrics_do_not_require_depositary_ratio",
+      "issuer_type": "adr",
+      "latest_formal_period": null,
+      "market": "US_FOREIGN",
+      "metrics": {
+        "ap": {
+          "evidence": null,
+          "reason": "ap_occurrence_missing",
+          "status": "BLOCKED"
+        },
+        "ar": {
+          "evidence": null,
+          "reason": "ar_occurrence_missing",
+          "status": "BLOCKED"
+        },
+        "capex_intensity": {
+          "evidence": null,
+          "reason": "compatible_capex_revenue_pair_missing",
+          "status": "BLOCKED"
+        },
+        "capex_ppe": {
+          "evidence": null,
+          "reason": "exact_ppe_capex_occurrence_missing",
+          "status": "BLOCKED"
+        },
+        "cash_conversion": {
+          "evidence": null,
+          "reason": "safe_cash_conversion_component_missing",
+          "status": "BLOCKED"
+        },
+        "ccc": {
+          "evidence": null,
+          "reason": "all_safe_ccc_components_not_available",
+          "status": "BLOCKED"
+        },
+        "cogs": {
+          "evidence": null,
+          "reason": "compatible_cogs_missing",
+          "status": "BLOCKED"
+        },
+        "dpo": {
+          "evidence": null,
+          "reason": "purchases_and_average_trade_ap_not_proven",
+          "status": "BLOCKED"
+        },
+        "dso": {
+          "evidence": null,
+          "reason": "average_trade_ar_not_proven",
+          "status": "BLOCKED"
+        },
+        "fcf": {
+          "evidence": null,
+          "reason": "compatible_ocf_capex_pair_missing",
+          "status": "BLOCKED"
+        },
+        "fcf_margin": {
+          "evidence": null,
+          "reason": "compatible_fcf_revenue_inputs_missing",
+          "status": "BLOCKED"
+        },
+        "inventory": {
+          "evidence": null,
+          "reason": "inventory_occurrence_missing",
+          "status": "BLOCKED"
+        },
+        "inventory_days": {
+          "evidence": null,
+          "reason": "average_inventory_and_compatible_cogs_not_proven",
+          "status": "BLOCKED"
+        },
+        "ocf": {
+          "evidence": null,
+          "reason": "exact_ocf_occurrence_missing",
+          "status": "BLOCKED"
+        },
+        "ocf_margin": {
+          "evidence": null,
+          "reason": "compatible_ocf_revenue_pair_missing",
+          "status": "BLOCKED"
+        },
+        "revenue": {
+          "evidence": null,
+          "reason": "exact_revenue_occurrence_missing",
+          "status": "BLOCKED"
+        },
+        "roic": {
+          "evidence": null,
+          "reason": "verified_excess_cash_policy_missing",
+          "status": "BLOCKED"
+        }
+      },
+      "primary_source": "SEC companyfacts official XBRL",
+      "security_level_boundary": "per_share_yield_and_ev_metrics_require_verified_security_fx_basis",
+      "security_type": "ads",
+      "source_payload_sha256": "b96b7a32e77b2743abdfd16eb6658798122088f3f679d23a5b256f4e26085bd1",
+      "ticker": "SKHY"
+    },
+    {
+      "company_name": "SanDisk",
+      "financial_type": "non_financial",
+      "industry": "memory_semiconductor",
+      "issuer_level_boundary": "issuer_metrics_do_not_require_depositary_ratio",
+      "issuer_type": "domestic_us",
+      "latest_formal_period": "2026-07-03",
+      "market": "US_FOREIGN",
+      "metrics": {
+        "ap": {
+          "evidence": null,
+          "reason": "ap_occurrence_missing",
+          "status": "BLOCKED"
+        },
+        "ar": {
+          "evidence": {
+            "accession": "0001628280-26-057406",
+            "end": "2026-07-03",
+            "filed": "2026-08-17",
+            "fiscal_period": "FY",
+            "fiscal_year": 2026,
+            "form": "10-K",
+            "frame": "CY2026Q2I",
+            "namespace": "us-gaap",
+            "semantic": "us-gaap:AccountsReceivableNetCurrent",
+            "start": null,
+            "tag": "AccountsReceivableNetCurrent",
+            "unit": "USD",
+            "value": 4708000000
+          },
+          "reason": "broad_balance_not_proven_trade_only",
+          "status": "PARTIAL"
+        },
+        "capex_intensity": {
+          "evidence": {
+            "capex": {
+              "accession": "0001628280-26-057406",
+              "end": "2026-07-03",
+              "filed": "2026-08-17",
+              "fiscal_period": "FY",
+              "fiscal_year": 2026,
+              "form": "10-K",
+              "frame": "CY2026",
+              "namespace": "us-gaap",
+              "semantic": "us-gaap:PaymentsToAcquirePropertyPlantAndEquipment",
+              "start": "2025-06-28",
+              "tag": "PaymentsToAcquirePropertyPlantAndEquipment",
+              "unit": "USD",
+              "value": 177000000
+            },
+            "revenue": {
+              "accession": "0001628280-26-057406",
+              "end": "2026-07-03",
+              "filed": "2026-08-17",
+              "fiscal_period": "FY",
+              "fiscal_year": 2026,
+              "form": "10-K",
+              "frame": "CY2026",
+              "namespace": "us-gaap",
+              "semantic": "us-gaap:RevenueFromContractWithCustomerExcludingAssessedTax",
+              "start": "2025-06-28",
+              "tag": "RevenueFromContractWithCustomerExcludingAssessedTax",
+              "unit": "USD",
+              "value": 20248000000
+            }
+          },
+          "reason": "compatible_capex_revenue_pair",
+          "status": "ELIGIBLE"
+        },
+        "capex_ppe": {
+          "evidence": {
+            "accession": "0001628280-26-057406",
+            "end": "2026-07-03",
+            "filed": "2026-08-17",
+            "fiscal_period": "FY",
+            "fiscal_year": 2026,
+            "form": "10-K",
+            "frame": "CY2026",
+            "namespace": "us-gaap",
+            "semantic": "us-gaap:PaymentsToAcquirePropertyPlantAndEquipment",
+            "start": "2025-06-28",
+            "tag": "PaymentsToAcquirePropertyPlantAndEquipment",
+            "unit": "USD",
+            "value": 177000000
+          },
+          "reason": "official_ppe_cash_payment_exact_semantic",
+          "status": "ELIGIBLE"
+        },
+        "cash_conversion": {
+          "evidence": null,
+          "reason": "ocf_margin_available_as_typed_component",
+          "status": "ELIGIBLE"
+        },
+        "ccc": {
+          "evidence": null,
+          "reason": "all_safe_ccc_components_not_available",
+          "status": "BLOCKED"
+        },
+        "cogs": {
+          "evidence": {
+            "accession": "0001628280-26-057406",
+            "end": "2026-07-03",
+            "filed": "2026-08-17",
+            "fiscal_period": "FY",
+            "fiscal_year": 2026,
+            "form": "10-K",
+            "frame": "CY2026",
+            "namespace": "us-gaap",
+            "semantic": "us-gaap:CostOfGoodsAndServicesSold",
+            "start": "2025-06-28",
+            "tag": "CostOfGoodsAndServicesSold",
+            "unit": "USD",
+            "value": 5776000000
+          },
+          "reason": "official_structured_filing_exact_semantic",
+          "status": "ELIGIBLE"
+        },
+        "dpo": {
+          "evidence": null,
+          "reason": "purchases_and_average_trade_ap_not_proven",
+          "status": "BLOCKED"
+        },
+        "dso": {
+          "evidence": null,
+          "reason": "average_trade_ar_not_proven",
+          "status": "BLOCKED"
+        },
+        "fcf": {
+          "evidence": {
+            "capex": {
+              "accession": "0001628280-26-057406",
+              "end": "2026-07-03",
+              "filed": "2026-08-17",
+              "fiscal_period": "FY",
+              "fiscal_year": 2026,
+              "form": "10-K",
+              "frame": "CY2026",
+              "namespace": "us-gaap",
+              "semantic": "us-gaap:PaymentsToAcquirePropertyPlantAndEquipment",
+              "start": "2025-06-28",
+              "tag": "PaymentsToAcquirePropertyPlantAndEquipment",
+              "unit": "USD",
+              "value": 177000000
+            },
+            "ocf": {
+              "accession": "0001628280-26-057406",
+              "end": "2026-07-03",
+              "filed": "2026-08-17",
+              "fiscal_period": "FY",
+              "fiscal_year": 2026,
+              "form": "10-K",
+              "frame": "CY2026",
+              "namespace": "us-gaap",
+              "semantic": "us-gaap:NetCashProvidedByUsedInOperatingActivities",
+              "start": "2025-06-28",
+              "tag": "NetCashProvidedByUsedInOperatingActivities",
+              "unit": "USD",
+              "value": 11671000000
+            }
+          },
+          "reason": "same_accession_period_unit_ocf_minus_ppe_capex",
+          "status": "ELIGIBLE"
+        },
+        "fcf_margin": {
+          "evidence": {
+            "capex": {
+              "accession": "0001628280-26-057406",
+              "end": "2026-07-03",
+              "filed": "2026-08-17",
+              "fiscal_period": "FY",
+              "fiscal_year": 2026,
+              "form": "10-K",
+              "frame": "CY2026",
+              "namespace": "us-gaap",
+              "semantic": "us-gaap:PaymentsToAcquirePropertyPlantAndEquipment",
+              "start": "2025-06-28",
+              "tag": "PaymentsToAcquirePropertyPlantAndEquipment",
+              "unit": "USD",
+              "value": 177000000
+            },
+            "ocf": {
+              "accession": "0001628280-26-057406",
+              "end": "2026-07-03",
+              "filed": "2026-08-17",
+              "fiscal_period": "FY",
+              "fiscal_year": 2026,
+              "form": "10-K",
+              "frame": "CY2026",
+              "namespace": "us-gaap",
+              "semantic": "us-gaap:NetCashProvidedByUsedInOperatingActivities",
+              "start": "2025-06-28",
+              "tag": "NetCashProvidedByUsedInOperatingActivities",
+              "unit": "USD",
+              "value": 11671000000
+            },
+            "revenue": {
+              "accession": "0001628280-26-057406",
+              "end": "2026-07-03",
+              "filed": "2026-08-17",
+              "fiscal_period": "FY",
+              "fiscal_year": 2026,
+              "form": "10-K",
+              "frame": "CY2026",
+              "namespace": "us-gaap",
+              "semantic": "us-gaap:RevenueFromContractWithCustomerExcludingAssessedTax",
+              "start": "2025-06-28",
+              "tag": "RevenueFromContractWithCustomerExcludingAssessedTax",
+              "unit": "USD",
+              "value": 20248000000
+            }
+          },
+          "reason": "compatible_fcf_revenue_inputs",
+          "status": "ELIGIBLE"
+        },
+        "inventory": {
+          "evidence": {
+            "accession": "0001628280-26-057406",
+            "end": "2026-07-03",
+            "filed": "2026-08-17",
+            "fiscal_period": "FY",
+            "fiscal_year": 2026,
+            "form": "10-K",
+            "frame": "CY2026Q2I",
+            "namespace": "us-gaap",
+            "semantic": "us-gaap:InventoryNet",
+            "start": null,
+            "tag": "InventoryNet",
+            "unit": "USD",
+            "value": 2698000000
+          },
+          "reason": "point_in_time_total_inventory",
+          "status": "ELIGIBLE"
+        },
+        "inventory_days": {
+          "evidence": null,
+          "reason": "average_inventory_and_compatible_cogs_not_proven",
+          "status": "BLOCKED"
+        },
+        "ocf": {
+          "evidence": {
+            "accession": "0001628280-26-057406",
+            "end": "2026-07-03",
+            "filed": "2026-08-17",
+            "fiscal_period": "FY",
+            "fiscal_year": 2026,
+            "form": "10-K",
+            "frame": "CY2026",
+            "namespace": "us-gaap",
+            "semantic": "us-gaap:NetCashProvidedByUsedInOperatingActivities",
+            "start": "2025-06-28",
+            "tag": "NetCashProvidedByUsedInOperatingActivities",
+            "unit": "USD",
+            "value": 11671000000
+          },
+          "reason": "official_structured_filing_exact_semantic",
+          "status": "ELIGIBLE"
+        },
+        "ocf_margin": {
+          "evidence": {
+            "ocf": {
+              "accession": "0001628280-26-057406",
+              "end": "2026-07-03",
+              "filed": "2026-08-17",
+              "fiscal_period": "FY",
+              "fiscal_year": 2026,
+              "form": "10-K",
+              "frame": "CY2026",
+              "namespace": "us-gaap",
+              "semantic": "us-gaap:NetCashProvidedByUsedInOperatingActivities",
+              "start": "2025-06-28",
+              "tag": "NetCashProvidedByUsedInOperatingActivities",
+              "unit": "USD",
+              "value": 11671000000
+            },
+            "revenue": {
+              "accession": "0001628280-26-057406",
+              "end": "2026-07-03",
+              "filed": "2026-08-17",
+              "fiscal_period": "FY",
+              "fiscal_year": 2026,
+              "form": "10-K",
+              "frame": "CY2026",
+              "namespace": "us-gaap",
+              "semantic": "us-gaap:RevenueFromContractWithCustomerExcludingAssessedTax",
+              "start": "2025-06-28",
+              "tag": "RevenueFromContractWithCustomerExcludingAssessedTax",
+              "unit": "USD",
+              "value": 20248000000
+            }
+          },
+          "reason": "compatible_ocf_revenue_pair",
+          "status": "ELIGIBLE"
+        },
+        "revenue": {
+          "evidence": {
+            "accession": "0001628280-26-057406",
+            "end": "2026-07-03",
+            "filed": "2026-08-17",
+            "fiscal_period": "FY",
+            "fiscal_year": 2026,
+            "form": "10-K",
+            "frame": "CY2026",
+            "namespace": "us-gaap",
+            "semantic": "us-gaap:RevenueFromContractWithCustomerExcludingAssessedTax",
+            "start": "2025-06-28",
+            "tag": "RevenueFromContractWithCustomerExcludingAssessedTax",
+            "unit": "USD",
+            "value": 20248000000
+          },
+          "reason": "official_structured_filing_exact_semantic",
+          "status": "ELIGIBLE"
+        },
+        "roic": {
+          "evidence": null,
+          "reason": "verified_excess_cash_policy_missing",
+          "status": "BLOCKED"
+        }
+      },
+      "primary_source": "SEC companyfacts official XBRL",
+      "security_level_boundary": "per_share_yield_and_ev_metrics_require_verified_security_fx_basis",
+      "security_type": "common_stock",
+      "source_payload_sha256": "14621de9b1f26289880cbc2f441aa0348da6ed1c3aedcd1a64b1cfaf520531bc",
+      "ticker": "SNDK"
+    },
+    {
+      "company_name": "Tesla, Inc.",
+      "financial_type": "non_financial",
+      "industry": "automotive",
+      "issuer_level_boundary": "issuer_metrics_do_not_require_depositary_ratio",
+      "issuer_type": "domestic_us",
+      "latest_formal_period": "2026-06-30",
+      "market": "US_FOREIGN",
+      "metrics": {
+        "ap": {
+          "evidence": {
+            "accession": "0001628280-26-049270",
+            "end": "2026-06-30",
+            "filed": "2026-07-23",
+            "fiscal_period": "Q2",
+            "fiscal_year": 2026,
+            "form": "10-Q",
+            "frame": "CY2026Q2I",
+            "namespace": "us-gaap",
+            "semantic": "us-gaap:AccountsPayableCurrent",
+            "start": null,
+            "tag": "AccountsPayableCurrent",
+            "unit": "USD",
+            "value": 15324000000
+          },
+          "reason": "broad_balance_not_proven_trade_only",
+          "status": "PARTIAL"
+        },
+        "ar": {
+          "evidence": {
+            "accession": "0001628280-26-049270",
+            "end": "2026-06-30",
+            "filed": "2026-07-23",
+            "fiscal_period": "Q2",
+            "fiscal_year": 2026,
+            "form": "10-Q",
+            "frame": "CY2026Q2I",
+            "namespace": "us-gaap",
+            "semantic": "us-gaap:AccountsReceivableNetCurrent",
+            "start": null,
+            "tag": "AccountsReceivableNetCurrent",
+            "unit": "USD",
+            "value": 4087000000
+          },
+          "reason": "broad_balance_not_proven_trade_only",
+          "status": "PARTIAL"
+        },
+        "capex_intensity": {
+          "evidence": {
+            "capex": {
+              "accession": "0001628280-26-049270",
+              "end": "2026-06-30",
+              "filed": "2026-07-23",
+              "fiscal_period": "Q2",
+              "fiscal_year": 2026,
+              "form": "10-Q",
+              "frame": null,
+              "namespace": "us-gaap",
+              "semantic": "us-gaap:PaymentsToAcquirePropertyPlantAndEquipment",
+              "start": "2026-01-01",
+              "tag": "PaymentsToAcquirePropertyPlantAndEquipment",
+              "unit": "USD",
+              "value": 8282000000
+            },
+            "revenue": {
+              "accession": "0001628280-26-049270",
+              "end": "2026-06-30",
+              "filed": "2026-07-23",
+              "fiscal_period": "Q2",
+              "fiscal_year": 2026,
+              "form": "10-Q",
+              "frame": null,
+              "namespace": "us-gaap",
+              "semantic": "us-gaap:RevenueFromContractWithCustomerExcludingAssessedTax",
+              "start": "2026-01-01",
+              "tag": "RevenueFromContractWithCustomerExcludingAssessedTax",
+              "unit": "USD",
+              "value": 50623000000
+            }
+          },
+          "reason": "compatible_capex_revenue_pair",
+          "status": "ELIGIBLE"
+        },
+        "capex_ppe": {
+          "evidence": {
+            "accession": "0001628280-26-049270",
+            "end": "2026-06-30",
+            "filed": "2026-07-23",
+            "fiscal_period": "Q2",
+            "fiscal_year": 2026,
+            "form": "10-Q",
+            "frame": null,
+            "namespace": "us-gaap",
+            "semantic": "us-gaap:PaymentsToAcquirePropertyPlantAndEquipment",
+            "start": "2026-01-01",
+            "tag": "PaymentsToAcquirePropertyPlantAndEquipment",
+            "unit": "USD",
+            "value": 8282000000
+          },
+          "reason": "official_ppe_cash_payment_exact_semantic",
+          "status": "ELIGIBLE"
+        },
+        "cash_conversion": {
+          "evidence": null,
+          "reason": "ocf_margin_available_as_typed_component",
+          "status": "ELIGIBLE"
+        },
+        "ccc": {
+          "evidence": null,
+          "reason": "all_safe_ccc_components_not_available",
+          "status": "BLOCKED"
+        },
+        "cogs": {
+          "evidence": {
+            "accession": "0001628280-26-049270",
+            "end": "2026-06-30",
+            "filed": "2026-07-23",
+            "fiscal_period": "Q2",
+            "fiscal_year": 2026,
+            "form": "10-Q",
+            "frame": null,
+            "namespace": "us-gaap",
+            "semantic": "us-gaap:CostOfRevenue",
+            "start": "2026-01-01",
+            "tag": "CostOfRevenue",
+            "unit": "USD",
+            "value": 41152000000
+          },
+          "reason": "official_structured_filing_exact_semantic",
+          "status": "ELIGIBLE"
+        },
+        "dpo": {
+          "evidence": null,
+          "reason": "purchases_and_average_trade_ap_not_proven",
+          "status": "BLOCKED"
+        },
+        "dso": {
+          "evidence": null,
+          "reason": "average_trade_ar_not_proven",
+          "status": "BLOCKED"
+        },
+        "fcf": {
+          "evidence": {
+            "capex": {
+              "accession": "0001628280-26-049270",
+              "end": "2026-06-30",
+              "filed": "2026-07-23",
+              "fiscal_period": "Q2",
+              "fiscal_year": 2026,
+              "form": "10-Q",
+              "frame": null,
+              "namespace": "us-gaap",
+              "semantic": "us-gaap:PaymentsToAcquirePropertyPlantAndEquipment",
+              "start": "2026-01-01",
+              "tag": "PaymentsToAcquirePropertyPlantAndEquipment",
+              "unit": "USD",
+              "value": 8282000000
+            },
+            "ocf": {
+              "accession": "0001628280-26-049270",
+              "end": "2026-06-30",
+              "filed": "2026-07-23",
+              "fiscal_period": "Q2",
+              "fiscal_year": 2026,
+              "form": "10-Q",
+              "frame": null,
+              "namespace": "us-gaap",
+              "semantic": "us-gaap:NetCashProvidedByUsedInOperatingActivities",
+              "start": "2026-01-01",
+              "tag": "NetCashProvidedByUsedInOperatingActivities",
+              "unit": "USD",
+              "value": 8634000000
+            }
+          },
+          "reason": "same_accession_period_unit_ocf_minus_ppe_capex",
+          "status": "ELIGIBLE"
+        },
+        "fcf_margin": {
+          "evidence": {
+            "capex": {
+              "accession": "0001628280-26-049270",
+              "end": "2026-06-30",
+              "filed": "2026-07-23",
+              "fiscal_period": "Q2",
+              "fiscal_year": 2026,
+              "form": "10-Q",
+              "frame": null,
+              "namespace": "us-gaap",
+              "semantic": "us-gaap:PaymentsToAcquirePropertyPlantAndEquipment",
+              "start": "2026-01-01",
+              "tag": "PaymentsToAcquirePropertyPlantAndEquipment",
+              "unit": "USD",
+              "value": 8282000000
+            },
+            "ocf": {
+              "accession": "0001628280-26-049270",
+              "end": "2026-06-30",
+              "filed": "2026-07-23",
+              "fiscal_period": "Q2",
+              "fiscal_year": 2026,
+              "form": "10-Q",
+              "frame": null,
+              "namespace": "us-gaap",
+              "semantic": "us-gaap:NetCashProvidedByUsedInOperatingActivities",
+              "start": "2026-01-01",
+              "tag": "NetCashProvidedByUsedInOperatingActivities",
+              "unit": "USD",
+              "value": 8634000000
+            },
+            "revenue": {
+              "accession": "0001628280-26-049270",
+              "end": "2026-06-30",
+              "filed": "2026-07-23",
+              "fiscal_period": "Q2",
+              "fiscal_year": 2026,
+              "form": "10-Q",
+              "frame": null,
+              "namespace": "us-gaap",
+              "semantic": "us-gaap:RevenueFromContractWithCustomerExcludingAssessedTax",
+              "start": "2026-01-01",
+              "tag": "RevenueFromContractWithCustomerExcludingAssessedTax",
+              "unit": "USD",
+              "value": 50623000000
+            }
+          },
+          "reason": "compatible_fcf_revenue_inputs",
+          "status": "ELIGIBLE"
+        },
+        "inventory": {
+          "evidence": {
+            "accession": "0001628280-26-049270",
+            "end": "2026-06-30",
+            "filed": "2026-07-23",
+            "fiscal_period": "Q2",
+            "fiscal_year": 2026,
+            "form": "10-Q",
+            "frame": "CY2026Q2I",
+            "namespace": "us-gaap",
+            "semantic": "us-gaap:InventoryNet",
+            "start": null,
+            "tag": "InventoryNet",
+            "unit": "USD",
+            "value": 13752000000
+          },
+          "reason": "point_in_time_total_inventory",
+          "status": "ELIGIBLE"
+        },
+        "inventory_days": {
+          "evidence": null,
+          "reason": "average_inventory_and_compatible_cogs_not_proven",
+          "status": "BLOCKED"
+        },
+        "ocf": {
+          "evidence": {
+            "accession": "0001628280-26-049270",
+            "end": "2026-06-30",
+            "filed": "2026-07-23",
+            "fiscal_period": "Q2",
+            "fiscal_year": 2026,
+            "form": "10-Q",
+            "frame": null,
+            "namespace": "us-gaap",
+            "semantic": "us-gaap:NetCashProvidedByUsedInOperatingActivities",
+            "start": "2026-01-01",
+            "tag": "NetCashProvidedByUsedInOperatingActivities",
+            "unit": "USD",
+            "value": 8634000000
+          },
+          "reason": "official_structured_filing_exact_semantic",
+          "status": "ELIGIBLE"
+        },
+        "ocf_margin": {
+          "evidence": {
+            "ocf": {
+              "accession": "0001628280-26-049270",
+              "end": "2026-06-30",
+              "filed": "2026-07-23",
+              "fiscal_period": "Q2",
+              "fiscal_year": 2026,
+              "form": "10-Q",
+              "frame": null,
+              "namespace": "us-gaap",
+              "semantic": "us-gaap:NetCashProvidedByUsedInOperatingActivities",
+              "start": "2026-01-01",
+              "tag": "NetCashProvidedByUsedInOperatingActivities",
+              "unit": "USD",
+              "value": 8634000000
+            },
+            "revenue": {
+              "accession": "0001628280-26-049270",
+              "end": "2026-06-30",
+              "filed": "2026-07-23",
+              "fiscal_period": "Q2",
+              "fiscal_year": 2026,
+              "form": "10-Q",
+              "frame": null,
+              "namespace": "us-gaap",
+              "semantic": "us-gaap:RevenueFromContractWithCustomerExcludingAssessedTax",
+              "start": "2026-01-01",
+              "tag": "RevenueFromContractWithCustomerExcludingAssessedTax",
+              "unit": "USD",
+              "value": 50623000000
+            }
+          },
+          "reason": "compatible_ocf_revenue_pair",
+          "status": "ELIGIBLE"
+        },
+        "revenue": {
+          "evidence": {
+            "accession": "0001628280-26-049270",
+            "end": "2026-06-30",
+            "filed": "2026-07-23",
+            "fiscal_period": "Q2",
+            "fiscal_year": 2026,
+            "form": "10-Q",
+            "frame": null,
+            "namespace": "us-gaap",
+            "semantic": "us-gaap:RevenueFromContractWithCustomerExcludingAssessedTax",
+            "start": "2026-01-01",
+            "tag": "RevenueFromContractWithCustomerExcludingAssessedTax",
+            "unit": "USD",
+            "value": 50623000000
+          },
+          "reason": "official_structured_filing_exact_semantic",
+          "status": "ELIGIBLE"
+        },
+        "roic": {
+          "evidence": null,
+          "reason": "verified_excess_cash_policy_missing",
+          "status": "BLOCKED"
+        }
+      },
+      "primary_source": "SEC companyfacts official XBRL",
+      "security_level_boundary": "per_share_yield_and_ev_metrics_require_verified_security_fx_basis",
+      "security_type": "common_stock",
+      "source_payload_sha256": "d0c2b9288d027a6d735039a6fe874a348b65a7fdbc6c133130666c777c885204",
+      "ticker": "TSLA"
+    },
+    {
+      "company_name": "TSMC",
+      "financial_type": "non_financial",
+      "industry": "memory_semiconductor",
+      "issuer_level_boundary": "issuer_metrics_do_not_require_depositary_ratio",
+      "issuer_type": "foreign_private_issuer",
+      "latest_formal_period": "2024-12-31",
+      "market": "US_FOREIGN",
+      "metrics": {
+        "ap": {
+          "evidence": null,
+          "reason": "ap_occurrence_missing",
+          "status": "BLOCKED"
+        },
+        "ar": {
+          "evidence": null,
+          "reason": "ar_occurrence_missing",
+          "status": "BLOCKED"
+        },
+        "capex_intensity": {
+          "evidence": {
+            "capex": {
+              "accession": "0001193125-25-083423",
+              "end": "2024-12-31",
+              "filed": "2025-04-17",
+              "fiscal_period": "FY",
+              "fiscal_year": 2024,
+              "form": "20-F",
+              "frame": "CY2024",
+              "namespace": "ifrs-full",
+              "semantic": "ifrs-full:PurchaseOfPropertyPlantAndEquipmentClassifiedAsInvestingActivities",
+              "start": "2024-01-01",
+              "tag": "PurchaseOfPropertyPlantAndEquipmentClassifiedAsInvestingActivities",
+              "unit": "TWD",
+              "value": 956006500000
+            },
+            "revenue": {
+              "accession": "0001193125-25-083423",
+              "end": "2024-12-31",
+              "filed": "2025-04-17",
+              "fiscal_period": "FY",
+              "fiscal_year": 2024,
+              "form": "20-F",
+              "frame": "CY2024",
+              "namespace": "ifrs-full",
+              "semantic": "ifrs-full:Revenue",
+              "start": "2024-01-01",
+              "tag": "Revenue",
+              "unit": "TWD",
+              "value": 2894307700000
+            }
+          },
+          "reason": "compatible_capex_revenue_pair",
+          "status": "ELIGIBLE"
+        },
+        "capex_ppe": {
+          "evidence": {
+            "accession": "0001193125-25-083423",
+            "end": "2024-12-31",
+            "filed": "2025-04-17",
+            "fiscal_period": "FY",
+            "fiscal_year": 2024,
+            "form": "20-F",
+            "frame": "CY2024",
+            "namespace": "ifrs-full",
+            "semantic": "ifrs-full:PurchaseOfPropertyPlantAndEquipmentClassifiedAsInvestingActivities",
+            "start": "2024-01-01",
+            "tag": "PurchaseOfPropertyPlantAndEquipmentClassifiedAsInvestingActivities",
+            "unit": "TWD",
+            "value": 956006500000
+          },
+          "reason": "official_ppe_cash_payment_exact_semantic",
+          "status": "ELIGIBLE"
+        },
+        "cash_conversion": {
+          "evidence": null,
+          "reason": "ocf_margin_available_as_typed_component",
+          "status": "ELIGIBLE"
+        },
+        "ccc": {
+          "evidence": null,
+          "reason": "all_safe_ccc_components_not_available",
+          "status": "BLOCKED"
+        },
+        "cogs": {
+          "evidence": {
+            "accession": "0001193125-25-083423",
+            "end": "2024-12-31",
+            "filed": "2025-04-17",
+            "fiscal_period": "FY",
+            "fiscal_year": 2024,
+            "form": "20-F",
+            "frame": "CY2024",
+            "namespace": "ifrs-full",
+            "semantic": "ifrs-full:CostOfSales",
+            "start": "2024-01-01",
+            "tag": "CostOfSales",
+            "unit": "TWD",
+            "value": 1269954100000
+          },
+          "reason": "official_structured_filing_exact_semantic",
+          "status": "ELIGIBLE"
+        },
+        "dpo": {
+          "evidence": null,
+          "reason": "purchases_and_average_trade_ap_not_proven",
+          "status": "BLOCKED"
+        },
+        "dso": {
+          "evidence": null,
+          "reason": "average_trade_ar_not_proven",
+          "status": "BLOCKED"
+        },
+        "fcf": {
+          "evidence": {
+            "capex": {
+              "accession": "0001193125-25-083423",
+              "end": "2024-12-31",
+              "filed": "2025-04-17",
+              "fiscal_period": "FY",
+              "fiscal_year": 2024,
+              "form": "20-F",
+              "frame": "CY2024",
+              "namespace": "ifrs-full",
+              "semantic": "ifrs-full:PurchaseOfPropertyPlantAndEquipmentClassifiedAsInvestingActivities",
+              "start": "2024-01-01",
+              "tag": "PurchaseOfPropertyPlantAndEquipmentClassifiedAsInvestingActivities",
+              "unit": "TWD",
+              "value": 956006500000
+            },
+            "ocf": {
+              "accession": "0001193125-25-083423",
+              "end": "2024-12-31",
+              "filed": "2025-04-17",
+              "fiscal_period": "FY",
+              "fiscal_year": 2024,
+              "form": "20-F",
+              "frame": "CY2024",
+              "namespace": "ifrs-full",
+              "semantic": "ifrs-full:CashFlowsFromUsedInOperatingActivities",
+              "start": "2024-01-01",
+              "tag": "CashFlowsFromUsedInOperatingActivities",
+              "unit": "TWD",
+              "value": 1826177100000
+            }
+          },
+          "reason": "same_accession_period_unit_ocf_minus_ppe_capex",
+          "status": "ELIGIBLE"
+        },
+        "fcf_margin": {
+          "evidence": {
+            "capex": {
+              "accession": "0001193125-25-083423",
+              "end": "2024-12-31",
+              "filed": "2025-04-17",
+              "fiscal_period": "FY",
+              "fiscal_year": 2024,
+              "form": "20-F",
+              "frame": "CY2024",
+              "namespace": "ifrs-full",
+              "semantic": "ifrs-full:PurchaseOfPropertyPlantAndEquipmentClassifiedAsInvestingActivities",
+              "start": "2024-01-01",
+              "tag": "PurchaseOfPropertyPlantAndEquipmentClassifiedAsInvestingActivities",
+              "unit": "TWD",
+              "value": 956006500000
+            },
+            "ocf": {
+              "accession": "0001193125-25-083423",
+              "end": "2024-12-31",
+              "filed": "2025-04-17",
+              "fiscal_period": "FY",
+              "fiscal_year": 2024,
+              "form": "20-F",
+              "frame": "CY2024",
+              "namespace": "ifrs-full",
+              "semantic": "ifrs-full:CashFlowsFromUsedInOperatingActivities",
+              "start": "2024-01-01",
+              "tag": "CashFlowsFromUsedInOperatingActivities",
+              "unit": "TWD",
+              "value": 1826177100000
+            },
+            "revenue": {
+              "accession": "0001193125-25-083423",
+              "end": "2024-12-31",
+              "filed": "2025-04-17",
+              "fiscal_period": "FY",
+              "fiscal_year": 2024,
+              "form": "20-F",
+              "frame": "CY2024",
+              "namespace": "ifrs-full",
+              "semantic": "ifrs-full:Revenue",
+              "start": "2024-01-01",
+              "tag": "Revenue",
+              "unit": "TWD",
+              "value": 2894307700000
+            }
+          },
+          "reason": "compatible_fcf_revenue_inputs",
+          "status": "ELIGIBLE"
+        },
+        "inventory": {
+          "evidence": {
+            "accession": "0001193125-25-083423",
+            "end": "2024-12-31",
+            "filed": "2025-04-17",
+            "fiscal_period": "FY",
+            "fiscal_year": 2024,
+            "form": "20-F",
+            "frame": "CY2024Q4I",
+            "namespace": "ifrs-full",
+            "semantic": "ifrs-full:Inventories",
+            "start": null,
+            "tag": "Inventories",
+            "unit": "TWD",
+            "value": 287868800000
+          },
+          "reason": "point_in_time_total_inventory",
+          "status": "ELIGIBLE"
+        },
+        "inventory_days": {
+          "evidence": null,
+          "reason": "average_inventory_and_compatible_cogs_not_proven",
+          "status": "BLOCKED"
+        },
+        "ocf": {
+          "evidence": {
+            "accession": "0001193125-25-083423",
+            "end": "2024-12-31",
+            "filed": "2025-04-17",
+            "fiscal_period": "FY",
+            "fiscal_year": 2024,
+            "form": "20-F",
+            "frame": "CY2024",
+            "namespace": "ifrs-full",
+            "semantic": "ifrs-full:CashFlowsFromUsedInOperatingActivities",
+            "start": "2024-01-01",
+            "tag": "CashFlowsFromUsedInOperatingActivities",
+            "unit": "TWD",
+            "value": 1826177100000
+          },
+          "reason": "official_structured_filing_exact_semantic",
+          "status": "ELIGIBLE"
+        },
+        "ocf_margin": {
+          "evidence": {
+            "ocf": {
+              "accession": "0001193125-25-083423",
+              "end": "2024-12-31",
+              "filed": "2025-04-17",
+              "fiscal_period": "FY",
+              "fiscal_year": 2024,
+              "form": "20-F",
+              "frame": "CY2024",
+              "namespace": "ifrs-full",
+              "semantic": "ifrs-full:CashFlowsFromUsedInOperatingActivities",
+              "start": "2024-01-01",
+              "tag": "CashFlowsFromUsedInOperatingActivities",
+              "unit": "TWD",
+              "value": 1826177100000
+            },
+            "revenue": {
+              "accession": "0001193125-25-083423",
+              "end": "2024-12-31",
+              "filed": "2025-04-17",
+              "fiscal_period": "FY",
+              "fiscal_year": 2024,
+              "form": "20-F",
+              "frame": "CY2024",
+              "namespace": "ifrs-full",
+              "semantic": "ifrs-full:Revenue",
+              "start": "2024-01-01",
+              "tag": "Revenue",
+              "unit": "TWD",
+              "value": 2894307700000
+            }
+          },
+          "reason": "compatible_ocf_revenue_pair",
+          "status": "ELIGIBLE"
+        },
+        "revenue": {
+          "evidence": {
+            "accession": "0001193125-25-083423",
+            "end": "2024-12-31",
+            "filed": "2025-04-17",
+            "fiscal_period": "FY",
+            "fiscal_year": 2024,
+            "form": "20-F",
+            "frame": "CY2024",
+            "namespace": "ifrs-full",
+            "semantic": "ifrs-full:Revenue",
+            "start": "2024-01-01",
+            "tag": "Revenue",
+            "unit": "TWD",
+            "value": 2894307700000
+          },
+          "reason": "official_structured_filing_exact_semantic",
+          "status": "ELIGIBLE"
+        },
+        "roic": {
+          "evidence": null,
+          "reason": "verified_excess_cash_policy_missing",
+          "status": "BLOCKED"
+        }
+      },
+      "primary_source": "SEC companyfacts official XBRL",
+      "security_level_boundary": "per_share_yield_and_ev_metrics_require_verified_security_fx_basis",
+      "security_type": "Depositary Receipt",
+      "source_payload_sha256": "d3ebb91e3ad78c9482e238c4db36df60b295a3b49ca137774706f4f5e526044a",
+      "ticker": "TSM"
+    },
+    {
+      "company_name": "WeRide",
+      "financial_type": "non_financial",
+      "industry": "general_non_financial",
+      "issuer_level_boundary": "issuer_metrics_do_not_require_depositary_ratio",
+      "issuer_type": "foreign_private_issuer",
+      "latest_formal_period": "2025-06-30",
+      "market": "US_FOREIGN",
+      "metrics": {
+        "ap": {
+          "evidence": {
+            "accession": "0001104659-25-101039",
+            "end": "2025-06-30",
+            "filed": "2025-10-21",
+            "fiscal_period": "Q2",
+            "fiscal_year": 2025,
+            "form": "6-K",
+            "frame": "CY2025Q2I",
+            "namespace": "ifrs-full",
+            "semantic": "ifrs-full:TradeAndOtherCurrentPayables",
+            "start": null,
+            "tag": "TradeAndOtherCurrentPayables",
+            "unit": "CNY",
+            "value": 47117000
+          },
+          "reason": "broad_balance_not_proven_trade_only",
+          "status": "PARTIAL"
+        },
+        "ar": {
+          "evidence": {
+            "accession": "0001104659-25-101039",
+            "end": "2025-06-30",
+            "filed": "2025-10-21",
+            "fiscal_period": "Q2",
+            "fiscal_year": 2025,
+            "form": "6-K",
+            "frame": "CY2025Q2I",
+            "namespace": "ifrs-full",
+            "semantic": "ifrs-full:TradeAndOtherCurrentReceivables",
+            "start": null,
+            "tag": "TradeAndOtherCurrentReceivables",
+            "unit": "CNY",
+            "value": 241372000
+          },
+          "reason": "broad_balance_not_proven_trade_only",
+          "status": "PARTIAL"
+        },
+        "capex_intensity": {
+          "evidence": {
+            "capex": {
+              "accession": "0001104659-25-101039",
+              "end": "2025-06-30",
+              "filed": "2025-10-21",
+              "fiscal_period": "Q2",
+              "fiscal_year": 2025,
+              "form": "6-K",
+              "frame": null,
+              "namespace": "ifrs-full",
+              "semantic": "ifrs-full:PurchaseOfPropertyPlantAndEquipmentClassifiedAsInvestingActivities",
+              "start": "2025-01-01",
+              "tag": "PurchaseOfPropertyPlantAndEquipmentClassifiedAsInvestingActivities",
+              "unit": "CNY",
+              "value": 134354000
+            },
+            "revenue": {
+              "accession": "0001104659-25-101039",
+              "end": "2025-06-30",
+              "filed": "2025-10-21",
+              "fiscal_period": "Q2",
+              "fiscal_year": 2025,
+              "form": "6-K",
+              "frame": null,
+              "namespace": "ifrs-full",
+              "semantic": "ifrs-full:Revenue",
+              "start": "2025-01-01",
+              "tag": "Revenue",
+              "unit": "CNY",
+              "value": 199615000
+            }
+          },
+          "reason": "compatible_capex_revenue_pair",
+          "status": "ELIGIBLE"
+        },
+        "capex_ppe": {
+          "evidence": {
+            "accession": "0001104659-25-101039",
+            "end": "2025-06-30",
+            "filed": "2025-10-21",
+            "fiscal_period": "Q2",
+            "fiscal_year": 2025,
+            "form": "6-K",
+            "frame": null,
+            "namespace": "ifrs-full",
+            "semantic": "ifrs-full:PurchaseOfPropertyPlantAndEquipmentClassifiedAsInvestingActivities",
+            "start": "2025-01-01",
+            "tag": "PurchaseOfPropertyPlantAndEquipmentClassifiedAsInvestingActivities",
+            "unit": "CNY",
+            "value": 134354000
+          },
+          "reason": "official_ppe_cash_payment_exact_semantic",
+          "status": "ELIGIBLE"
+        },
+        "cash_conversion": {
+          "evidence": null,
+          "reason": "ocf_margin_available_as_typed_component",
+          "status": "ELIGIBLE"
+        },
+        "ccc": {
+          "evidence": null,
+          "reason": "all_safe_ccc_components_not_available",
+          "status": "BLOCKED"
+        },
+        "cogs": {
+          "evidence": {
+            "accession": "0001104659-25-101039",
+            "end": "2025-06-30",
+            "filed": "2025-10-21",
+            "fiscal_period": "Q2",
+            "fiscal_year": 2025,
+            "form": "6-K",
+            "frame": null,
+            "namespace": "ifrs-full",
+            "semantic": "ifrs-full:CostOfSales",
+            "start": "2025-01-01",
+            "tag": "CostOfSales",
+            "unit": "CNY",
+            "value": 138556000
+          },
+          "reason": "official_structured_filing_exact_semantic",
+          "status": "ELIGIBLE"
+        },
+        "dpo": {
+          "evidence": null,
+          "reason": "purchases_and_average_trade_ap_not_proven",
+          "status": "BLOCKED"
+        },
+        "dso": {
+          "evidence": null,
+          "reason": "average_trade_ar_not_proven",
+          "status": "BLOCKED"
+        },
+        "fcf": {
+          "evidence": {
+            "capex": {
+              "accession": "0001104659-25-101039",
+              "end": "2025-06-30",
+              "filed": "2025-10-21",
+              "fiscal_period": "Q2",
+              "fiscal_year": 2025,
+              "form": "6-K",
+              "frame": null,
+              "namespace": "ifrs-full",
+              "semantic": "ifrs-full:PurchaseOfPropertyPlantAndEquipmentClassifiedAsInvestingActivities",
+              "start": "2025-01-01",
+              "tag": "PurchaseOfPropertyPlantAndEquipmentClassifiedAsInvestingActivities",
+              "unit": "CNY",
+              "value": 134354000
+            },
+            "ocf": {
+              "accession": "0001104659-25-101039",
+              "end": "2025-06-30",
+              "filed": "2025-10-21",
+              "fiscal_period": "Q2",
+              "fiscal_year": 2025,
+              "form": "6-K",
+              "frame": null,
+              "namespace": "ifrs-full",
+              "semantic": "ifrs-full:CashFlowsFromUsedInOperatingActivities",
+              "start": "2025-01-01",
+              "tag": "CashFlowsFromUsedInOperatingActivities",
+              "unit": "CNY",
+              "value": -663396000
+            }
+          },
+          "reason": "same_accession_period_unit_ocf_minus_ppe_capex",
+          "status": "ELIGIBLE"
+        },
+        "fcf_margin": {
+          "evidence": {
+            "capex": {
+              "accession": "0001104659-25-101039",
+              "end": "2025-06-30",
+              "filed": "2025-10-21",
+              "fiscal_period": "Q2",
+              "fiscal_year": 2025,
+              "form": "6-K",
+              "frame": null,
+              "namespace": "ifrs-full",
+              "semantic": "ifrs-full:PurchaseOfPropertyPlantAndEquipmentClassifiedAsInvestingActivities",
+              "start": "2025-01-01",
+              "tag": "PurchaseOfPropertyPlantAndEquipmentClassifiedAsInvestingActivities",
+              "unit": "CNY",
+              "value": 134354000
+            },
+            "ocf": {
+              "accession": "0001104659-25-101039",
+              "end": "2025-06-30",
+              "filed": "2025-10-21",
+              "fiscal_period": "Q2",
+              "fiscal_year": 2025,
+              "form": "6-K",
+              "frame": null,
+              "namespace": "ifrs-full",
+              "semantic": "ifrs-full:CashFlowsFromUsedInOperatingActivities",
+              "start": "2025-01-01",
+              "tag": "CashFlowsFromUsedInOperatingActivities",
+              "unit": "CNY",
+              "value": -663396000
+            },
+            "revenue": {
+              "accession": "0001104659-25-101039",
+              "end": "2025-06-30",
+              "filed": "2025-10-21",
+              "fiscal_period": "Q2",
+              "fiscal_year": 2025,
+              "form": "6-K",
+              "frame": null,
+              "namespace": "ifrs-full",
+              "semantic": "ifrs-full:Revenue",
+              "start": "2025-01-01",
+              "tag": "Revenue",
+              "unit": "CNY",
+              "value": 199615000
+            }
+          },
+          "reason": "compatible_fcf_revenue_inputs",
+          "status": "ELIGIBLE"
+        },
+        "inventory": {
+          "evidence": {
+            "accession": "0001104659-25-101039",
+            "end": "2025-06-30",
+            "filed": "2025-10-21",
+            "fiscal_period": "Q2",
+            "fiscal_year": 2025,
+            "form": "6-K",
+            "frame": "CY2025Q2I",
+            "namespace": "ifrs-full",
+            "semantic": "ifrs-full:Inventories",
+            "start": null,
+            "tag": "Inventories",
+            "unit": "CNY",
+            "value": 289929000
+          },
+          "reason": "point_in_time_total_inventory",
+          "status": "ELIGIBLE"
+        },
+        "inventory_days": {
+          "evidence": null,
+          "reason": "average_inventory_and_compatible_cogs_not_proven",
+          "status": "BLOCKED"
+        },
+        "ocf": {
+          "evidence": {
+            "accession": "0001104659-25-101039",
+            "end": "2025-06-30",
+            "filed": "2025-10-21",
+            "fiscal_period": "Q2",
+            "fiscal_year": 2025,
+            "form": "6-K",
+            "frame": null,
+            "namespace": "ifrs-full",
+            "semantic": "ifrs-full:CashFlowsFromUsedInOperatingActivities",
+            "start": "2025-01-01",
+            "tag": "CashFlowsFromUsedInOperatingActivities",
+            "unit": "CNY",
+            "value": -663396000
+          },
+          "reason": "official_structured_filing_exact_semantic",
+          "status": "ELIGIBLE"
+        },
+        "ocf_margin": {
+          "evidence": {
+            "ocf": {
+              "accession": "0001104659-25-101039",
+              "end": "2025-06-30",
+              "filed": "2025-10-21",
+              "fiscal_period": "Q2",
+              "fiscal_year": 2025,
+              "form": "6-K",
+              "frame": null,
+              "namespace": "ifrs-full",
+              "semantic": "ifrs-full:CashFlowsFromUsedInOperatingActivities",
+              "start": "2025-01-01",
+              "tag": "CashFlowsFromUsedInOperatingActivities",
+              "unit": "CNY",
+              "value": -663396000
+            },
+            "revenue": {
+              "accession": "0001104659-25-101039",
+              "end": "2025-06-30",
+              "filed": "2025-10-21",
+              "fiscal_period": "Q2",
+              "fiscal_year": 2025,
+              "form": "6-K",
+              "frame": null,
+              "namespace": "ifrs-full",
+              "semantic": "ifrs-full:Revenue",
+              "start": "2025-01-01",
+              "tag": "Revenue",
+              "unit": "CNY",
+              "value": 199615000
+            }
+          },
+          "reason": "compatible_ocf_revenue_pair",
+          "status": "ELIGIBLE"
+        },
+        "revenue": {
+          "evidence": {
+            "accession": "0001104659-25-101039",
+            "end": "2025-06-30",
+            "filed": "2025-10-21",
+            "fiscal_period": "Q2",
+            "fiscal_year": 2025,
+            "form": "6-K",
+            "frame": null,
+            "namespace": "ifrs-full",
+            "semantic": "ifrs-full:Revenue",
+            "start": "2025-01-01",
+            "tag": "Revenue",
+            "unit": "CNY",
+            "value": 199615000
+          },
+          "reason": "official_structured_filing_exact_semantic",
+          "status": "ELIGIBLE"
+        },
+        "roic": {
+          "evidence": null,
+          "reason": "verified_excess_cash_policy_missing",
+          "status": "BLOCKED"
+        }
+      },
+      "primary_source": "SEC companyfacts official XBRL",
+      "security_level_boundary": "per_share_yield_and_ev_metrics_require_verified_security_fx_basis",
+      "security_type": "Depositary Receipt",
+      "source_payload_sha256": "2cf7e0bef9a7362558625a1da0bdf60ecbc85674db8ae6bbc9c55106cb9d3582",
+      "ticker": "WRD"
+    },
+    {
+      "company_name": "TeraWulf Inc.",
+      "financial_type": "non_financial",
+      "industry": "hpc_data_center",
+      "issuer_level_boundary": "issuer_metrics_do_not_require_depositary_ratio",
+      "issuer_type": "domestic_us",
+      "latest_formal_period": "2026-06-30",
+      "market": "US_FOREIGN",
+      "metrics": {
+        "ap": {
+          "evidence": {
+            "accession": "0001083301-26-000166",
+            "end": "2026-06-30",
+            "filed": "2026-08-05",
+            "fiscal_period": "Q2",
+            "fiscal_year": 2026,
+            "form": "10-Q",
+            "frame": "CY2026Q2I",
+            "namespace": "us-gaap",
+            "semantic": "us-gaap:AccountsPayableCurrent",
+            "start": null,
+            "tag": "AccountsPayableCurrent",
+            "unit": "USD",
+            "value": 197812000
+          },
+          "reason": "broad_balance_not_proven_trade_only",
+          "status": "PARTIAL"
+        },
+        "ar": {
+          "evidence": {
+            "accession": "0001083301-26-000166",
+            "end": "2026-06-30",
+            "filed": "2026-08-05",
+            "fiscal_period": "Q2",
+            "fiscal_year": 2026,
+            "form": "10-Q",
+            "frame": "CY2026Q2I",
+            "namespace": "us-gaap",
+            "semantic": "us-gaap:AccountsReceivableNetCurrent",
+            "start": null,
+            "tag": "AccountsReceivableNetCurrent",
+            "unit": "USD",
+            "value": 13202000
+          },
+          "reason": "broad_balance_not_proven_trade_only",
+          "status": "PARTIAL"
+        },
+        "capex_intensity": {
+          "evidence": {
+            "capex": {
+              "accession": "0001083301-26-000166",
+              "end": "2026-06-30",
+              "filed": "2026-08-05",
+              "fiscal_period": "Q2",
+              "fiscal_year": 2026,
+              "form": "10-Q",
+              "frame": null,
+              "namespace": "us-gaap",
+              "semantic": "us-gaap:PaymentsToAcquirePropertyPlantAndEquipment",
+              "start": "2026-01-01",
+              "tag": "PaymentsToAcquirePropertyPlantAndEquipment",
+              "unit": "USD",
+              "value": 1378514000
+            },
+            "revenue": {
+              "accession": "0001083301-26-000166",
+              "end": "2026-06-30",
+              "filed": "2026-08-05",
+              "fiscal_period": "Q2",
+              "fiscal_year": 2026,
+              "form": "10-Q",
+              "frame": null,
+              "namespace": "us-gaap",
+              "semantic": "us-gaap:Revenues",
+              "start": "2026-01-01",
+              "tag": "Revenues",
+              "unit": "USD",
+              "value": 78779000
+            }
+          },
+          "reason": "compatible_capex_revenue_pair",
+          "status": "ELIGIBLE"
+        },
+        "capex_ppe": {
+          "evidence": {
+            "accession": "0001083301-26-000166",
+            "end": "2026-06-30",
+            "filed": "2026-08-05",
+            "fiscal_period": "Q2",
+            "fiscal_year": 2026,
+            "form": "10-Q",
+            "frame": null,
+            "namespace": "us-gaap",
+            "semantic": "us-gaap:PaymentsToAcquirePropertyPlantAndEquipment",
+            "start": "2026-01-01",
+            "tag": "PaymentsToAcquirePropertyPlantAndEquipment",
+            "unit": "USD",
+            "value": 1378514000
+          },
+          "reason": "official_ppe_cash_payment_exact_semantic",
+          "status": "ELIGIBLE"
+        },
+        "cash_conversion": {
+          "evidence": null,
+          "reason": "ocf_margin_available_as_typed_component",
+          "status": "ELIGIBLE"
+        },
+        "ccc": {
+          "evidence": null,
+          "reason": "all_safe_ccc_components_not_available",
+          "status": "BLOCKED"
+        },
+        "cogs": {
+          "evidence": {
+            "accession": "0001083301-26-000166",
+            "end": "2026-06-30",
+            "filed": "2026-08-05",
+            "fiscal_period": "Q2",
+            "fiscal_year": 2026,
+            "form": "10-Q",
+            "frame": null,
+            "namespace": "us-gaap",
+            "semantic": "us-gaap:CostOfGoodsAndServicesSold",
+            "start": "2026-01-01",
+            "tag": "CostOfGoodsAndServicesSold",
+            "unit": "USD",
+            "value": 14761000
+          },
+          "reason": "official_structured_filing_exact_semantic",
+          "status": "ELIGIBLE"
+        },
+        "dpo": {
+          "evidence": null,
+          "reason": "purchases_and_average_trade_ap_not_proven",
+          "status": "BLOCKED"
+        },
+        "dso": {
+          "evidence": null,
+          "reason": "average_trade_ar_not_proven",
+          "status": "BLOCKED"
+        },
+        "fcf": {
+          "evidence": {
+            "capex": {
+              "accession": "0001083301-26-000166",
+              "end": "2026-06-30",
+              "filed": "2026-08-05",
+              "fiscal_period": "Q2",
+              "fiscal_year": 2026,
+              "form": "10-Q",
+              "frame": null,
+              "namespace": "us-gaap",
+              "semantic": "us-gaap:PaymentsToAcquirePropertyPlantAndEquipment",
+              "start": "2026-01-01",
+              "tag": "PaymentsToAcquirePropertyPlantAndEquipment",
+              "unit": "USD",
+              "value": 1378514000
+            },
+            "ocf": {
+              "accession": "0001083301-26-000166",
+              "end": "2026-06-30",
+              "filed": "2026-08-05",
+              "fiscal_period": "Q2",
+              "fiscal_year": 2026,
+              "form": "10-Q",
+              "frame": null,
+              "namespace": "us-gaap",
+              "semantic": "us-gaap:NetCashProvidedByUsedInOperatingActivities",
+              "start": "2026-01-01",
+              "tag": "NetCashProvidedByUsedInOperatingActivities",
+              "unit": "USD",
+              "value": -154300000
+            }
+          },
+          "reason": "same_accession_period_unit_ocf_minus_ppe_capex",
+          "status": "ELIGIBLE"
+        },
+        "fcf_margin": {
+          "evidence": {
+            "capex": {
+              "accession": "0001083301-26-000166",
+              "end": "2026-06-30",
+              "filed": "2026-08-05",
+              "fiscal_period": "Q2",
+              "fiscal_year": 2026,
+              "form": "10-Q",
+              "frame": null,
+              "namespace": "us-gaap",
+              "semantic": "us-gaap:PaymentsToAcquirePropertyPlantAndEquipment",
+              "start": "2026-01-01",
+              "tag": "PaymentsToAcquirePropertyPlantAndEquipment",
+              "unit": "USD",
+              "value": 1378514000
+            },
+            "ocf": {
+              "accession": "0001083301-26-000166",
+              "end": "2026-06-30",
+              "filed": "2026-08-05",
+              "fiscal_period": "Q2",
+              "fiscal_year": 2026,
+              "form": "10-Q",
+              "frame": null,
+              "namespace": "us-gaap",
+              "semantic": "us-gaap:NetCashProvidedByUsedInOperatingActivities",
+              "start": "2026-01-01",
+              "tag": "NetCashProvidedByUsedInOperatingActivities",
+              "unit": "USD",
+              "value": -154300000
+            },
+            "revenue": {
+              "accession": "0001083301-26-000166",
+              "end": "2026-06-30",
+              "filed": "2026-08-05",
+              "fiscal_period": "Q2",
+              "fiscal_year": 2026,
+              "form": "10-Q",
+              "frame": null,
+              "namespace": "us-gaap",
+              "semantic": "us-gaap:Revenues",
+              "start": "2026-01-01",
+              "tag": "Revenues",
+              "unit": "USD",
+              "value": 78779000
+            }
+          },
+          "reason": "compatible_fcf_revenue_inputs",
+          "status": "ELIGIBLE"
+        },
+        "inventory": {
+          "evidence": {
+            "accession": "0001437749-21-026741",
+            "end": "2021-09-30",
+            "filed": "2021-11-15",
+            "fiscal_period": "Q3",
+            "fiscal_year": 2021,
+            "form": "10-Q",
+            "frame": "CY2021Q3I",
+            "namespace": "us-gaap",
+            "semantic": "us-gaap:InventoryNet",
+            "start": null,
+            "tag": "InventoryNet",
+            "unit": "USD",
+            "value": 1649517
+          },
+          "reason": "point_in_time_total_inventory",
+          "status": "ELIGIBLE"
+        },
+        "inventory_days": {
+          "evidence": null,
+          "reason": "average_inventory_and_compatible_cogs_not_proven",
+          "status": "BLOCKED"
+        },
+        "ocf": {
+          "evidence": {
+            "accession": "0001083301-26-000166",
+            "end": "2026-06-30",
+            "filed": "2026-08-05",
+            "fiscal_period": "Q2",
+            "fiscal_year": 2026,
+            "form": "10-Q",
+            "frame": null,
+            "namespace": "us-gaap",
+            "semantic": "us-gaap:NetCashProvidedByUsedInOperatingActivities",
+            "start": "2026-01-01",
+            "tag": "NetCashProvidedByUsedInOperatingActivities",
+            "unit": "USD",
+            "value": -154300000
+          },
+          "reason": "official_structured_filing_exact_semantic",
+          "status": "ELIGIBLE"
+        },
+        "ocf_margin": {
+          "evidence": {
+            "ocf": {
+              "accession": "0001083301-26-000166",
+              "end": "2026-06-30",
+              "filed": "2026-08-05",
+              "fiscal_period": "Q2",
+              "fiscal_year": 2026,
+              "form": "10-Q",
+              "frame": null,
+              "namespace": "us-gaap",
+              "semantic": "us-gaap:NetCashProvidedByUsedInOperatingActivities",
+              "start": "2026-01-01",
+              "tag": "NetCashProvidedByUsedInOperatingActivities",
+              "unit": "USD",
+              "value": -154300000
+            },
+            "revenue": {
+              "accession": "0001083301-26-000166",
+              "end": "2026-06-30",
+              "filed": "2026-08-05",
+              "fiscal_period": "Q2",
+              "fiscal_year": 2026,
+              "form": "10-Q",
+              "frame": null,
+              "namespace": "us-gaap",
+              "semantic": "us-gaap:Revenues",
+              "start": "2026-01-01",
+              "tag": "Revenues",
+              "unit": "USD",
+              "value": 78779000
+            }
+          },
+          "reason": "compatible_ocf_revenue_pair",
+          "status": "ELIGIBLE"
+        },
+        "revenue": {
+          "evidence": {
+            "accession": "0001083301-26-000166",
+            "end": "2026-06-30",
+            "filed": "2026-08-05",
+            "fiscal_period": "Q2",
+            "fiscal_year": 2026,
+            "form": "10-Q",
+            "frame": null,
+            "namespace": "us-gaap",
+            "semantic": "us-gaap:Revenues",
+            "start": "2026-01-01",
+            "tag": "Revenues",
+            "unit": "USD",
+            "value": 78779000
+          },
+          "reason": "official_structured_filing_exact_semantic",
+          "status": "ELIGIBLE"
+        },
+        "roic": {
+          "evidence": null,
+          "reason": "verified_excess_cash_policy_missing",
+          "status": "BLOCKED"
+        }
+      },
+      "primary_source": "SEC companyfacts official XBRL",
+      "security_level_boundary": "per_share_yield_and_ev_metrics_require_verified_security_fx_basis",
+      "security_type": "common_stock",
+      "source_payload_sha256": "e4c33383250ec8eb24ce40dfd103edd8d57afa0ee40b7f0b5155ab9db90bcbc9",
+      "ticker": "WULF"
+    }
+  ],
+  "as_of": "2026-08-20",
+  "contract": "cash-flow-capital-efficiency-v1",
+  "definition_decisions": {
+    "adr": "issuer-level ratios separable; security-level yield/per-share blocked without basis",
+    "baseline_fcf": "OCF minus positive-magnitude PPE-only cash outflow",
+    "capex_scope": "PPE-only baseline; intangibles and capitalized software separate",
+    "ccc": "DEFERRED",
+    "financial_industry": "generic corporate FCF/CCC/ROIC not applicable",
+    "qtd": "Q1 verified YTD or adjacent same-FY compatible YTD delta",
+    "roic": "DEFERRED_PENDING_VERIFIED_EXCESS_CASH_POLICY",
+    "ttm": "prior FY plus current YTD minus prior comparable YTD",
+    "working_capital": "raw inventory/trade AR/trade AP and comparable-date deltas first"
+  },
+  "generated_at": "2026-08-20T00:00:00+09:00",
+  "metric_counts": {
+    "ap": {
+      "BLOCKED": 11,
+      "ELIGIBLE": 0,
+      "NOT_APPLICABLE": 1,
+      "PARTIAL": 8
+    },
+    "ar": {
+      "BLOCKED": 8,
+      "ELIGIBLE": 0,
+      "NOT_APPLICABLE": 1,
+      "PARTIAL": 11
+    },
+    "capex_intensity": {
+      "BLOCKED": 9,
+      "ELIGIBLE": 10,
+      "NOT_APPLICABLE": 1,
+      "PARTIAL": 0
+    },
+    "capex_ppe": {
+      "BLOCKED": 2,
+      "ELIGIBLE": 11,
+      "NOT_APPLICABLE": 1,
+      "PARTIAL": 6
+    },
+    "cash_conversion": {
+      "BLOCKED": 8,
+      "ELIGIBLE": 11,
+      "NOT_APPLICABLE": 1,
+      "PARTIAL": 0
+    },
+    "ccc": {
+      "BLOCKED": 19,
+      "ELIGIBLE": 0,
+      "NOT_APPLICABLE": 1,
+      "PARTIAL": 0
+    },
+    "cogs": {
+      "BLOCKED": 8,
+      "ELIGIBLE": 11,
+      "NOT_APPLICABLE": 1,
+      "PARTIAL": 0
+    },
+    "dpo": {
+      "BLOCKED": 19,
+      "ELIGIBLE": 0,
+      "NOT_APPLICABLE": 1,
+      "PARTIAL": 0
+    },
+    "dso": {
+      "BLOCKED": 19,
+      "ELIGIBLE": 0,
+      "NOT_APPLICABLE": 1,
+      "PARTIAL": 0
+    },
+    "fcf": {
+      "BLOCKED": 8,
+      "ELIGIBLE": 11,
+      "NOT_APPLICABLE": 1,
+      "PARTIAL": 0
+    },
+    "fcf_margin": {
+      "BLOCKED": 8,
+      "ELIGIBLE": 11,
+      "NOT_APPLICABLE": 1,
+      "PARTIAL": 0
+    },
+    "inventory": {
+      "BLOCKED": 5,
+      "ELIGIBLE": 14,
+      "NOT_APPLICABLE": 1,
+      "PARTIAL": 0
+    },
+    "inventory_days": {
+      "BLOCKED": 19,
+      "ELIGIBLE": 0,
+      "NOT_APPLICABLE": 1,
+      "PARTIAL": 0
+    },
+    "ocf": {
+      "BLOCKED": 1,
+      "ELIGIBLE": 12,
+      "NOT_APPLICABLE": 0,
+      "PARTIAL": 7
+    },
+    "ocf_margin": {
+      "BLOCKED": 8,
+      "ELIGIBLE": 11,
+      "NOT_APPLICABLE": 1,
+      "PARTIAL": 0
+    },
+    "revenue": {
+      "BLOCKED": 2,
+      "ELIGIBLE": 17,
+      "NOT_APPLICABLE": 0,
+      "PARTIAL": 1
+    },
+    "roic": {
+      "BLOCKED": 19,
+      "ELIGIBLE": 0,
+      "NOT_APPLICABLE": 1,
+      "PARTIAL": 0
+    }
+  },
+  "mutations": {
+    "database": 0,
+    "pilot": 0,
+    "production_assist": 0,
+    "runtime_behavior": 0,
+    "scheduled_task_manual_runs": 0,
+    "telegram": 0
+  },
+  "provider_telemetry": {
+    "new_api_keys": 0,
+    "new_paid_sources": 0,
+    "opendart_stored": {
+      "live_requests": 0,
+      "provider_calls": 22,
+      "source_audit_sha256": "cc5c5eb49f7f723c3ae07fd2f6481cb9c47ac554735db895a0bfbeddaf4667cf",
+      "xbrl_cache_hits": 7
+    },
+    "sec_companyfacts": {
+      "acquisition_preexisting_cache_hits": 1,
+      "failures": [],
+      "generation_cache_hits": 13,
+      "network_requests": 12,
+      "network_successes": 12
+    }
+  },
+  "readiness": {
+    "p0_open": [],
+    "p1_open": [],
+    "p2_backlog": [
+      "management-defined FCF reconciliation breadth",
+      "typed average-balance coverage for DSO/inventory days/DPO/CCC",
+      "verified excess-cash policy for selective standard ROIC",
+      "future user-visible selection and wording"
+    ],
+    "phase_9_0b_ready": true,
+    "phase_9_0b_scope": "SELECTIVE_ELIGIBLE_SUBSET_OCF_CAPEX_FCF_CORE",
+    "production_assist": "OFF",
+    "runtime_behavior_diff": 0
+  },
+  "representative_lineage_proofs": [
+    {
+      "capex_ppe": {
+        "evidence": {
+          "aggregation_eligible": 0,
+          "component_count": 0
+        },
+        "reason": "exact_ppe_components_exist_but_period_context_unresolved",
+        "status": "PARTIAL"
+      },
+      "class": "KR non-financial industrial",
+      "company_name": "SK하이닉스",
+      "fcf": {
+        "evidence": null,
+        "reason": "ocf_and_ppe_capex_period_eligibility_not_closed",
+        "status": "BLOCKED"
+      },
+      "ocf": {
+        "evidence": null,
+        "reason": "structured_cash_flow_period_ambiguous",
+        "status": "PARTIAL"
+      },
+      "period": "반기보고서 (2026.06)",
+      "reasoning": "eligible only where period, unit, entity/basis, and exact semantic dependencies close; otherwise fail-closed",
+      "source": "OpenDART formal statement stored audit",
+      "ticker": "000660"
+    },
+    {
+      "capex_ppe": {
+        "evidence": {
+          "accession": "0001839341-26-000014",
+          "end": "2026-06-30",
+          "filed": "2026-07-28",
+          "fiscal_period": "Q2",
+          "fiscal_year": 2026,
+          "form": "10-Q",
+          "frame": null,
+          "namespace": "us-gaap",
+          "semantic": "us-gaap:PaymentsToAcquirePropertyPlantAndEquipment",
+          "start": "2026-01-01",
+          "tag": "PaymentsToAcquirePropertyPlantAndEquipment",
+          "unit": "USD",
+          "value": 954244000
+        },
+        "reason": "official_ppe_cash_payment_exact_semantic",
+        "status": "ELIGIBLE"
+      },
+      "class": "US domestic issuer",
+      "company_name": "Core Scientific, Inc.",
+      "fcf": {
+        "evidence": {
+          "capex": {
+            "accession": "0001839341-26-000014",
+            "end": "2026-06-30",
+            "filed": "2026-07-28",
+            "fiscal_period": "Q2",
+            "fiscal_year": 2026,
+            "form": "10-Q",
+            "frame": null,
+            "namespace": "us-gaap",
+            "semantic": "us-gaap:PaymentsToAcquirePropertyPlantAndEquipment",
+            "start": "2026-01-01",
+            "tag": "PaymentsToAcquirePropertyPlantAndEquipment",
+            "unit": "USD",
+            "value": 954244000
+          },
+          "ocf": {
+            "accession": "0001839341-26-000014",
+            "end": "2026-06-30",
+            "filed": "2026-07-28",
+            "fiscal_period": "Q2",
+            "fiscal_year": 2026,
+            "form": "10-Q",
+            "frame": null,
+            "namespace": "us-gaap",
+            "semantic": "us-gaap:NetCashProvidedByUsedInOperatingActivities",
+            "start": "2026-01-01",
+            "tag": "NetCashProvidedByUsedInOperatingActivities",
+            "unit": "USD",
+            "value": 230949000
+          }
+        },
+        "reason": "same_accession_period_unit_ocf_minus_ppe_capex",
+        "status": "ELIGIBLE"
+      },
+      "ocf": {
+        "evidence": {
+          "accession": "0001839341-26-000014",
+          "end": "2026-06-30",
+          "filed": "2026-07-28",
+          "fiscal_period": "Q2",
+          "fiscal_year": 2026,
+          "form": "10-Q",
+          "frame": null,
+          "namespace": "us-gaap",
+          "semantic": "us-gaap:NetCashProvidedByUsedInOperatingActivities",
+          "start": "2026-01-01",
+          "tag": "NetCashProvidedByUsedInOperatingActivities",
+          "unit": "USD",
+          "value": 230949000
+        },
+        "reason": "official_structured_filing_exact_semantic",
+        "status": "ELIGIBLE"
+      },
+      "period": "2026-06-30",
+      "reasoning": "eligible only where period, unit, entity/basis, and exact semantic dependencies close; otherwise fail-closed",
+      "source": "SEC companyfacts official XBRL",
+      "ticker": "CORZ"
+    },
+    {
+      "capex_ppe": {
+        "evidence": {
+          "accession": "0000723125-26-000015",
+          "end": "2026-05-28",
+          "filed": "2026-06-25",
+          "fiscal_period": "Q3",
+          "fiscal_year": 2026,
+          "form": "10-Q",
+          "frame": null,
+          "namespace": "us-gaap",
+          "semantic": "us-gaap:PaymentsToAcquirePropertyPlantAndEquipment",
+          "start": "2025-08-29",
+          "tag": "PaymentsToAcquirePropertyPlantAndEquipment",
+          "unit": "USD",
+          "value": 19602000000
+        },
+        "reason": "official_ppe_cash_payment_exact_semantic",
+        "status": "ELIGIBLE"
+      },
+      "class": "non-calendar fiscal issuer",
+      "company_name": "Micron Technology",
+      "fcf": {
+        "evidence": {
+          "capex": {
+            "accession": "0000723125-26-000015",
+            "end": "2026-05-28",
+            "filed": "2026-06-25",
+            "fiscal_period": "Q3",
+            "fiscal_year": 2026,
+            "form": "10-Q",
+            "frame": null,
+            "namespace": "us-gaap",
+            "semantic": "us-gaap:PaymentsToAcquirePropertyPlantAndEquipment",
+            "start": "2025-08-29",
+            "tag": "PaymentsToAcquirePropertyPlantAndEquipment",
+            "unit": "USD",
+            "value": 19602000000
+          },
+          "ocf": {
+            "accession": "0000723125-26-000015",
+            "end": "2026-05-28",
+            "filed": "2026-06-25",
+            "fiscal_period": "Q3",
+            "fiscal_year": 2026,
+            "form": "10-Q",
+            "frame": null,
+            "namespace": "us-gaap",
+            "semantic": "us-gaap:NetCashProvidedByUsedInOperatingActivities",
+            "start": "2025-08-29",
+            "tag": "NetCashProvidedByUsedInOperatingActivities",
+            "unit": "USD",
+            "value": 45702000000
+          }
+        },
+        "reason": "same_accession_period_unit_ocf_minus_ppe_capex",
+        "status": "ELIGIBLE"
+      },
+      "ocf": {
+        "evidence": {
+          "accession": "0000723125-26-000015",
+          "end": "2026-05-28",
+          "filed": "2026-06-25",
+          "fiscal_period": "Q3",
+          "fiscal_year": 2026,
+          "form": "10-Q",
+          "frame": null,
+          "namespace": "us-gaap",
+          "semantic": "us-gaap:NetCashProvidedByUsedInOperatingActivities",
+          "start": "2025-08-29",
+          "tag": "NetCashProvidedByUsedInOperatingActivities",
+          "unit": "USD",
+          "value": 45702000000
+        },
+        "reason": "official_structured_filing_exact_semantic",
+        "status": "ELIGIBLE"
+      },
+      "period": "2026-05-28",
+      "reasoning": "eligible only where period, unit, entity/basis, and exact semantic dependencies close; otherwise fail-closed",
+      "source": "SEC companyfacts official XBRL",
+      "ticker": "MU"
+    },
+    {
+      "capex_ppe": {
+        "evidence": {
+          "accession": "0001193125-25-083423",
+          "end": "2024-12-31",
+          "filed": "2025-04-17",
+          "fiscal_period": "FY",
+          "fiscal_year": 2024,
+          "form": "20-F",
+          "frame": "CY2024",
+          "namespace": "ifrs-full",
+          "semantic": "ifrs-full:PurchaseOfPropertyPlantAndEquipmentClassifiedAsInvestingActivities",
+          "start": "2024-01-01",
+          "tag": "PurchaseOfPropertyPlantAndEquipmentClassifiedAsInvestingActivities",
+          "unit": "TWD",
+          "value": 956006500000
+        },
+        "reason": "official_ppe_cash_payment_exact_semantic",
+        "status": "ELIGIBLE"
+      },
+      "class": "foreign issuer / ADR",
+      "company_name": "TSMC",
+      "fcf": {
+        "evidence": {
+          "capex": {
+            "accession": "0001193125-25-083423",
+            "end": "2024-12-31",
+            "filed": "2025-04-17",
+            "fiscal_period": "FY",
+            "fiscal_year": 2024,
+            "form": "20-F",
+            "frame": "CY2024",
+            "namespace": "ifrs-full",
+            "semantic": "ifrs-full:PurchaseOfPropertyPlantAndEquipmentClassifiedAsInvestingActivities",
+            "start": "2024-01-01",
+            "tag": "PurchaseOfPropertyPlantAndEquipmentClassifiedAsInvestingActivities",
+            "unit": "TWD",
+            "value": 956006500000
+          },
+          "ocf": {
+            "accession": "0001193125-25-083423",
+            "end": "2024-12-31",
+            "filed": "2025-04-17",
+            "fiscal_period": "FY",
+            "fiscal_year": 2024,
+            "form": "20-F",
+            "frame": "CY2024",
+            "namespace": "ifrs-full",
+            "semantic": "ifrs-full:CashFlowsFromUsedInOperatingActivities",
+            "start": "2024-01-01",
+            "tag": "CashFlowsFromUsedInOperatingActivities",
+            "unit": "TWD",
+            "value": 1826177100000
+          }
+        },
+        "reason": "same_accession_period_unit_ocf_minus_ppe_capex",
+        "status": "ELIGIBLE"
+      },
+      "ocf": {
+        "evidence": {
+          "accession": "0001193125-25-083423",
+          "end": "2024-12-31",
+          "filed": "2025-04-17",
+          "fiscal_period": "FY",
+          "fiscal_year": 2024,
+          "form": "20-F",
+          "frame": "CY2024",
+          "namespace": "ifrs-full",
+          "semantic": "ifrs-full:CashFlowsFromUsedInOperatingActivities",
+          "start": "2024-01-01",
+          "tag": "CashFlowsFromUsedInOperatingActivities",
+          "unit": "TWD",
+          "value": 1826177100000
+        },
+        "reason": "official_structured_filing_exact_semantic",
+        "status": "ELIGIBLE"
+      },
+      "period": "2024-12-31",
+      "reasoning": "eligible only where period, unit, entity/basis, and exact semantic dependencies close; otherwise fail-closed",
+      "source": "SEC companyfacts official XBRL",
+      "ticker": "TSM"
+    },
+    {
+      "capex_ppe": {
+        "evidence": {
+          "accession": "0001839341-26-000014",
+          "end": "2026-06-30",
+          "filed": "2026-07-28",
+          "fiscal_period": "Q2",
+          "fiscal_year": 2026,
+          "form": "10-Q",
+          "frame": null,
+          "namespace": "us-gaap",
+          "semantic": "us-gaap:PaymentsToAcquirePropertyPlantAndEquipment",
+          "start": "2026-01-01",
+          "tag": "PaymentsToAcquirePropertyPlantAndEquipment",
+          "unit": "USD",
+          "value": 954244000
+        },
+        "reason": "official_ppe_cash_payment_exact_semantic",
+        "status": "ELIGIBLE"
+      },
+      "class": "capex-heavy data-center",
+      "company_name": "Core Scientific, Inc.",
+      "fcf": {
+        "evidence": {
+          "capex": {
+            "accession": "0001839341-26-000014",
+            "end": "2026-06-30",
+            "filed": "2026-07-28",
+            "fiscal_period": "Q2",
+            "fiscal_year": 2026,
+            "form": "10-Q",
+            "frame": null,
+            "namespace": "us-gaap",
+            "semantic": "us-gaap:PaymentsToAcquirePropertyPlantAndEquipment",
+            "start": "2026-01-01",
+            "tag": "PaymentsToAcquirePropertyPlantAndEquipment",
+            "unit": "USD",
+            "value": 954244000
+          },
+          "ocf": {
+            "accession": "0001839341-26-000014",
+            "end": "2026-06-30",
+            "filed": "2026-07-28",
+            "fiscal_period": "Q2",
+            "fiscal_year": 2026,
+            "form": "10-Q",
+            "frame": null,
+            "namespace": "us-gaap",
+            "semantic": "us-gaap:NetCashProvidedByUsedInOperatingActivities",
+            "start": "2026-01-01",
+            "tag": "NetCashProvidedByUsedInOperatingActivities",
+            "unit": "USD",
+            "value": 230949000
+          }
+        },
+        "reason": "same_accession_period_unit_ocf_minus_ppe_capex",
+        "status": "ELIGIBLE"
+      },
+      "ocf": {
+        "evidence": {
+          "accession": "0001839341-26-000014",
+          "end": "2026-06-30",
+          "filed": "2026-07-28",
+          "fiscal_period": "Q2",
+          "fiscal_year": 2026,
+          "form": "10-Q",
+          "frame": null,
+          "namespace": "us-gaap",
+          "semantic": "us-gaap:NetCashProvidedByUsedInOperatingActivities",
+          "start": "2026-01-01",
+          "tag": "NetCashProvidedByUsedInOperatingActivities",
+          "unit": "USD",
+          "value": 230949000
+        },
+        "reason": "official_structured_filing_exact_semantic",
+        "status": "ELIGIBLE"
+      },
+      "period": "2026-06-30",
+      "reasoning": "eligible only where period, unit, entity/basis, and exact semantic dependencies close; otherwise fail-closed",
+      "source": "SEC companyfacts official XBRL",
+      "ticker": "CORZ"
+    },
+    {
+      "capex_ppe": {
+        "evidence": {
+          "accession": "0001601830-26-000098",
+          "end": "2026-06-30",
+          "filed": "2026-08-05",
+          "fiscal_period": "Q2",
+          "fiscal_year": 2026,
+          "form": "10-Q",
+          "frame": null,
+          "namespace": "us-gaap",
+          "semantic": "us-gaap:PaymentsToAcquirePropertyPlantAndEquipment",
+          "start": "2026-01-01",
+          "tag": "PaymentsToAcquirePropertyPlantAndEquipment",
+          "unit": "USD",
+          "value": 302000
+        },
+        "reason": "official_ppe_cash_payment_exact_semantic",
+        "status": "ELIGIBLE"
+      },
+      "class": "pre-profit biotech",
+      "company_name": "Recursion Pharmaceuticals",
+      "fcf": {
+        "evidence": {
+          "capex": {
+            "accession": "0001601830-26-000098",
+            "end": "2026-06-30",
+            "filed": "2026-08-05",
+            "fiscal_period": "Q2",
+            "fiscal_year": 2026,
+            "form": "10-Q",
+            "frame": null,
+            "namespace": "us-gaap",
+            "semantic": "us-gaap:PaymentsToAcquirePropertyPlantAndEquipment",
+            "start": "2026-01-01",
+            "tag": "PaymentsToAcquirePropertyPlantAndEquipment",
+            "unit": "USD",
+            "value": 302000
+          },
+          "ocf": {
+            "accession": "0001601830-26-000098",
+            "end": "2026-06-30",
+            "filed": "2026-08-05",
+            "fiscal_period": "Q2",
+            "fiscal_year": 2026,
+            "form": "10-Q",
+            "frame": null,
+            "namespace": "us-gaap",
+            "semantic": "us-gaap:NetCashProvidedByUsedInOperatingActivities",
+            "start": "2026-01-01",
+            "tag": "NetCashProvidedByUsedInOperatingActivities",
+            "unit": "USD",
+            "value": -187048000
+          }
+        },
+        "reason": "same_accession_period_unit_ocf_minus_ppe_capex",
+        "status": "ELIGIBLE"
+      },
+      "ocf": {
+        "evidence": {
+          "accession": "0001601830-26-000098",
+          "end": "2026-06-30",
+          "filed": "2026-08-05",
+          "fiscal_period": "Q2",
+          "fiscal_year": 2026,
+          "form": "10-Q",
+          "frame": null,
+          "namespace": "us-gaap",
+          "semantic": "us-gaap:NetCashProvidedByUsedInOperatingActivities",
+          "start": "2026-01-01",
+          "tag": "NetCashProvidedByUsedInOperatingActivities",
+          "unit": "USD",
+          "value": -187048000
+        },
+        "reason": "official_structured_filing_exact_semantic",
+        "status": "ELIGIBLE"
+      },
+      "period": "2026-06-30",
+      "reasoning": "eligible only where period, unit, entity/basis, and exact semantic dependencies close; otherwise fail-closed",
+      "source": "SEC companyfacts official XBRL",
+      "ticker": "RXRX"
+    },
+    {
+      "capex_ppe": {
+        "evidence": null,
+        "reason": "generic_metric_not_applicable_to_financial_industry",
+        "status": "NOT_APPLICABLE"
+      },
+      "class": "financial / insurance exclusion",
+      "company_name": "코리안리",
+      "fcf": {
+        "evidence": null,
+        "reason": "generic_metric_not_applicable_to_financial_industry",
+        "status": "NOT_APPLICABLE"
+      },
+      "ocf": {
+        "evidence": null,
+        "reason": "financial_industry_context_only",
+        "status": "PARTIAL"
+      },
+      "period": "반기보고서 (2026.06)",
+      "reasoning": "eligible only where period, unit, entity/basis, and exact semantic dependencies close; otherwise fail-closed",
+      "source": "OpenDART formal statement stored audit",
+      "ticker": "003690"
+    }
+  ],
+  "source_database": "/Users/sskim/Codex/thesis-monitor/data/thesis_monitor.sqlite3",
+  "source_database_sha256": "3ccd742604cf30535ec900a14811dca8fe18612b612dd9ed866fff8e314146df"
+}

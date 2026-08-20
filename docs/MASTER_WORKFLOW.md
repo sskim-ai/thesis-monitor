@@ -429,7 +429,8 @@ integration, Telegram, task, Pilot, DB, archive, or receipt behavior changed.
 | KRX exact-slot capture | OPERATING_TELEMETRY_ONLY_PENDING_NATURAL; 08:05/16:05 active, T+1 clock undefined |
 | KRX user-visible integration | NO |
 | Production Assist / AI mode | OFF / shadow |
-| Phase 9.0A readiness | YES; evidence architecture only, natural proof continues in parallel |
+| Phase 9.0A | ARCHITECTURE_CLOSED; runtime behavior change 0 |
+| Phase 9.0B readiness / scope | YES / SELECTIVE_ELIGIBLE_SUBSET_OCF_CAPEX_FCF_CORE |
 
 ## 21. Current Persistent Gaps
 
@@ -446,9 +447,11 @@ integration, Telegram, task, Pilot, DB, archive, or receipt behavior changed.
 | KRX exact-slot telemetry capture | CLOSED_CONFIGURATION_PENDING_NATURAL_0805_1605; T+1 slot undefined |
 | KR market-wide flow | UNSUPPORTED |
 | Massive 08:05 readiness | OPEN |
-| OCF | PARTIAL |
-| CAPEX aggregation | OPEN |
-| FCF | OPEN |
+| OCF | ARCHITECTURE_CLOSED; 12/20 evidence-eligible, 7 partial, 1 blocked |
+| PPE CAPEX | ARCHITECTURE_CLOSED; 11/20 evidence-eligible, 6 partial, 2 blocked, 1 N/A |
+| FCF | ARCHITECTURE_CLOSED_SELECTIVE; 11/20 evidence-eligible, 8 blocked, 1 N/A |
+| Working-capital days / CCC | DEFERRED; no full safe CCC coverage |
+| Standard ROIC | DEFERRED; verified excess-cash policy absent |
 | Natural live validation of Phase 8 code | PARTIAL |
 | Current-price RR packet/numeric path | LIVE PATH PASS |
 | AI natural-live message quality | PARTIAL: retrospective PASS, natural AI delivery pending |
@@ -493,15 +496,42 @@ parallel while Production Assist remains OFF. A new P0 interrupts Phase 9.0A wor
 repair; material P1 is bounded and prioritized, and P2 never interrupts it. KRX publication timing
 is a parallel evidence track and does not block Phase 9.0A.
 
+## 21B. Phase 9.0A Cash-Flow Evidence Architecture
+
+`cash-flow-capital-efficiency-v1` extends the financial-lineage, financial-quality, and
+security-identity contracts. Reported facts remain occurrence-bound and every derived metric
+requires input fact IDs. Flow periods are explicit `QTD`, `YTD`, `FY`, or `TTM`; balances are
+`POINT_IN_TIME`. Q2/Q3 QTD and TTM derivations require compatible issuer, fiscal calendar,
+semantic, currency/unit, entity scope, statement basis, and restatement policy. Annualization is
+forbidden.
+
+Backend baseline FCF is OCF minus positive-magnitude PPE-only cash outflow. Intangibles,
+capitalized software, acquisitions, securities purchases, and total investing cash flow are not
+silently included. Management-defined FCF remains separate. The active-universe audit classifies
+20 stocks from the operating database: 11 have a same-accession/period/unit official SEC OCF/PPE
+pair. Seven KR subjects retain exact OpenDART rows but remain partial because the existing XBRL
+audit could not prove a unique cash-flow period context. Korean Re is excluded from generic
+corporate FCF.
+
+Raw inventory/trade AR/trade AP and comparable-date deltas precede DSO/CCC. Broad receivable or
+payable totals are partial, and full CCC coverage is zero. Standard ROIC is deferred because no
+verified excess-cash policy exists; total cash is never silently treated as excess cash. Foreign
+issuer-level cash-flow margins can remain eligible without an ADR ratio, while per-share, yield,
+EV, FX, and depositary-basis arithmetic remains blocked until security-level basis is verified.
+
+Open P0 and P1 are zero. `PHASE_9_0B_READY = YES`; scope is
+`SELECTIVE_ELIGIBLE_SUBSET_OCF_CAPEX_FCF_CORE`. Phase 9.0B may implement canonical core facts only
+for eligible evidence and must fail closed elsewhere. Working-capital days/CCC and ROIC are later
+phases. The one-file human report is
+[the Phase 9.0A complete bundle](reports/20260820-phase9-0a-complete-report-bundle.md).
+
 ## 22. Current Roadmap
 
-The current state is `PHASE_9_0A_READY` plus `NATURAL_AI_PROOF_CONTINUES_IN_PARALLEL`. Open P0 is
-zero, the run-29 targeted P1 is retrospectively closed, run-29/run-28/run-27 and full CI pass, and
-operating safety remains intact. The next major task may begin Phase 9.0A Cash Flow / Capital
-Efficiency **Evidence Architecture**: provider coverage, financial lineage, OCF, CAPEX, FCF
-eligibility, working capital, inventory, receivables/payables, ROIC denominator, industry
-applicability and missing-data policy. This is not approval to expose or deploy new cash-flow
-numbers.
+The current state is `PHASE_9_0A_ARCHITECTURE_CLOSED` plus
+`NATURAL_AI_PROOF_CONTINUES_IN_PARALLEL`. Open P0 and P1 are zero. The next major task may begin
+Phase 9.0B Canonical OCF / PPE-CAPEX / FCF Core Implementation on the selective eligible subset.
+This is not approval to expose new cash-flow numbers before Phase 9.0B contracts, regression,
+review, and a separate operating decision pass.
 
 In parallel, observe the next natural US/KR sessions for AI-assisted delivery, ownership,
 repetition, night-session integrity, fallback, language, receipt, archive, and exactly-once proof.
@@ -597,13 +627,11 @@ approval. Main merge and shadow deployment still do not authorize AI-assisted pr
 
 ## 27. Current Next Task
 
-Wait for and inspect the next naturally generated US and KR results without manual task execution.
-Verify delivery mode, AI-assisted versus fallback,
-night-futures session/reference evidence, reasoning ownership, cross-ticker repetition, full
-validator/runtime quality, fallback valuation parity, price/RR/confirmation lifecycle, human
-quality, receipt, archive and exactly-once state. Only after
-that natural proof may Cash Flow / Capital Efficiency Enrichment start. Check KRX 16:05, 08:05 and
-T+1 evidence separately; do not reopen peer work without new evidence.
+Begin Phase 9.0B Canonical OCF / PPE-CAPEX / FCF Core Implementation for the evidence-eligible
+subset. Preserve the Phase 9.0A period, basis, currency, semantic, and occurrence-lineage gates;
+unsupported subjects remain unavailable. Do not implement CCC or standard ROIC in 9.0B, and do not
+add user-visible output until the separate runtime-integration gate is approved. In parallel,
+inspect natural US/KR AI results and KRX exact-slot evidence without manual execution.
 
 ## 28. New Session Bootstrap Prompt
 
@@ -619,8 +647,9 @@ T+1 evidence separately; do not reopen peer work without new evidence.
 > run-27 then delivered fallback 8/8 while AI was rejected; Phase 8.5.5 closes its reasoning-owner
 > blockers retrospectively. Natural US run-28 delivered fallback 14/14 after the unchanged runtime
 > gate rejected generic numeric-summary and RR-delta repetition; Phase 8.5.5.1 closes those blockers
-> retrospectively and is operating shadow. Wait for
-> the next natural proof. Phase 8.3
-> is finalized as selective optional context and must not be reopened without new evidence. Cash
-> Flow / Capital Efficiency remains pending behind natural proof. Evaluate
-> KRX exact-slot evidence separately. Report the recovered state before editing.
+> retrospectively and is operating shadow. Phase 8.3 is finalized as selective optional context
+> and must not be reopened without new evidence. Phase 9.0A is architecture-closed and
+> `PHASE_9_0B_READY = YES` for a selective OCF/PPE-CAPEX/FCF core. Read
+> `docs/architecture/CASH_FLOW_CAPITAL_EFFICIENCY.md` and the one-file Phase 9.0A report bundle
+> before implementing. Natural AI and KRX exact-slot evidence continue independently; do not make
+> either a false prerequisite for 9.0B, and stop for any newly observed P0.

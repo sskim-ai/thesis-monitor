@@ -772,6 +772,41 @@ execution. The KRX exact-slot LaunchAgent remains calendar-loaded for 08:05/16:0
 and user-visible integration disabled. See the
 [promotion report](reports/20260820-phase8-5-5-2-shadow-promotion.md).
 
+## Phase 9.0A Cash Flow / Capital Efficiency Evidence Architecture
+
+Phase 9.0A is architecture-closed under `cash-flow-capital-efficiency-v1`; user-visible runtime
+behavior changed by zero. The contract extends `financial-lineage-v2` rather than creating a second
+truth store. Every raw fact carries period, entity/statement basis, currency/unit, source
+occurrence, filing date, semantic mapping, source sign, and raw SHA. Every derived fact requires
+input fact IDs and a formula.
+
+The baseline backend FCF definition is OCF minus positive-magnitude PPE-only cash outflow.
+Intangibles and capitalized software stay separate; total investing cash flow, acquisitions, and
+securities purchases are excluded. Q2/Q3 standalone cash flow requires adjacent compatible YTD
+subtraction. TTM requires prior FY plus current YTD less prior comparable YTD under the issuer's
+fiscal calendar. No annualization, CFS/OFS mixing, currency mixing, or restatement mixing is
+allowed.
+
+The operating universe contains 20 active subjects, 7 KR and 13 US/foreign. Official SEC Company
+Facts produced 12 direct OCF and 11 same-accession/period/unit OCF/PPE pairs. Stored Phase 8.1.1
+OpenDART evidence retains exact CF tags for all seven KR subjects, but its unique period context is
+unresolved, so KR OCF/CAPEX remain partial and FCF remains blocked. Korean Re is not applicable for
+generic corporate FCF/CCC/ROIC. TSM demonstrates that issuer-level FCF can be eligible without an
+ADR ratio, while security-level FCF/share, yield, and EV arithmetic remain blocked without verified
+security and FX basis.
+
+Raw inventory/trade AR/trade AP and balance deltas are the next working-capital layer. DSO,
+inventory days, DPO, and CCC are deferred because safe average typed balances and purchases are not
+available across the audited set. Standard ROIC is deferred because no verified excess-cash policy
+exists; all cash is never treated as excess cash by default.
+
+Open P0 and P1 are zero. `PHASE_9_0B_READY = YES` with scope
+`SELECTIVE_ELIGIBLE_SUBSET_OCF_CAPEX_FCF_CORE`. The next major task is Phase 9.0B canonical core
+implementation for eligible evidence, fail-closed elsewhere. It is not approval for user-visible
+cash-flow output. Natural US/KR proof and KRX 08:05/16:05 telemetry continue in parallel. The
+single download/copy artifact is the
+[Phase 9.0A complete report bundle](reports/20260820-phase9-0a-complete-report-bundle.md).
+
 On 2026-08-15 the owning desktop environment verified all four local-project tasks, retained their
 08:15/08:30/16:15/16:55 schedules, and migrated their exact prompts to v3.10 with
 `security-identity-v2` and `financial-quality-taint-v2`. All four are ACTIVE,
@@ -928,7 +963,8 @@ unchanged. See [the Phase 7.2.9.2 readiness report](reports/20260817-phase7-2-9-
 - Peer provider policy is FREE_ONLY. Phase 8.3 is finalized at 1/20 active and 1/15 meaningful
   coverage as SELECTIVE_OPTIONAL_CONTEXT. Broad runtime value is LOW_ROI; historical PIT and
   forward expansion are deferred, and operating integration is false.
-- OCF extraction is partial; CAPEX aggregation and FCF remain open.
+- Cash-flow architecture is closed. Selective official SEC OCF/PPE/FCF evidence exists; KR remains
+  partial on unresolved CF period context. CCC and standard ROIC are deferred.
 - The persisted US count includes the 2026-08-16 operationally complete session whose human message
   quality review failed. Operational count and human approval remain separate; this packet is not
   Production Assist evidence.
@@ -964,22 +1000,23 @@ first.
 
 ## Next Steps
 
-1. Start a separate Phase 9.0A Cash Flow / Capital Efficiency Evidence Architecture task. Limit it
-   to provider coverage, lineage, eligibility, missing-data policy, and industry applicability; do
-   not expose new production cash-flow values by default.
+1. Start Phase 9.0B Canonical OCF / PPE-CAPEX / FCF Core Implementation for the selective
+   evidence-eligible subset. Preserve all Phase 9.0A fail-closed gates and keep user-visible output
+   disabled until a separate integration decision.
 2. In parallel, inspect the next natural US/KR sessions after Phase 8.5.5.2 and verify AI quality,
    structured supply, RR ownership, business numeric ownership, reasoning ownership, night-futures
    lineage, language, fallback, runtime receipt, archive, and exactly-once behavior.
 3. Preserve operational counts KR 3/5 and US 3/5 and retain all natural/replay artifacts without
    counter edits, resends, or archive rewriting.
-4. Keep TSM/WRD and unverified KRX identity/share bases `unknown`, fine-grained industry routes general where unproved, peer data
-   unavailable where absent, and OCF/CAPEX/FCF gaps explicit.
+4. Keep TSM/WRD and unverified KRX identity/share bases `unknown`, fine-grained industry routes
+   general where unproved, peer data unavailable where absent, and security-level cash-flow
+   valuation metrics blocked where share/FX basis is incomplete.
 5. Let `com.seungsoo.thesis-monitor.krx-publication-telemetry` capture natural 08:05 and 16:05 KRX
    observations. Do not run it manually, define T+1 by inference, or integrate breadth until role
    evidence and Human Review pass.
 6. Keep Phase 8.3 closed as selective optional context unless materially new free-source, taxonomy,
    exact-group or natural-message evidence appears.
-7. Apply Phase Advancement Rule v1 to new runtime findings: interrupt 9.0A for P0, bound material
+7. Apply Phase Advancement Rule v1 to new runtime findings: interrupt 9.0B for P0, bound material
    P1 repairs, and retain P2 as backlog.
 8. Keep Production Assist disabled until natural full-message evidence passes direct human review
    and the user explicitly approves it.

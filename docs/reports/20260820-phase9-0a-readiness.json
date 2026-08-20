@@ -1,0 +1,14 @@
+{
+  "p0_open": [],
+  "p1_open": [],
+  "p2_backlog": [
+    "management-defined FCF reconciliation breadth",
+    "typed average-balance coverage for DSO/inventory days/DPO/CCC",
+    "verified excess-cash policy for selective standard ROIC",
+    "future user-visible selection and wording"
+  ],
+  "phase_9_0b_ready": true,
+  "phase_9_0b_scope": "SELECTIVE_ELIGIBLE_SUBSET_OCF_CAPEX_FCF_CORE",
+  "production_assist": "OFF",
+  "runtime_behavior_diff": 0
+}

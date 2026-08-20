@@ -19,6 +19,7 @@ DOCUMENTS = (
     ROOT / "docs" / "architecture" / "NATURAL_LIVE_MESSAGE_HARDENING.md",
     ROOT / "docs" / "architecture" / "NIGHT_FUTURES_SESSION_BASIS.md",
     ROOT / "docs" / "architecture" / "RUNTIME_REASONING_OWNERSHIP.md",
+    ROOT / "docs" / "architecture" / "CASH_FLOW_CAPITAL_EFFICIENCY.md",
     ROOT / "docs" / "operations" / "AI_ASSISTED_PILOT.md",
     ROOT / "docs" / "knowledge" / "README.md",
 )
@@ -37,14 +38,14 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     assert state["repository"] == "sskim-ai/thesis-monitor"
     assert state["branch"] == "main"
     assert state["experimental_branch"] == (
-        "codex/krx-exact-slot-telemetry-capture"
+        "codex/phase-9-0a-cash-flow-capital-efficiency-architecture"
     )
-    assert state["current_phase"] == "phase_9_0a_ready"
+    assert state["current_phase"] == "phase_9_0a_architecture_closed"
     assert state["last_completed_phase"] == (
-        "phase_8_5_5_2_operating_shadow_promotion"
+        "phase_9_0a_cash_flow_capital_efficiency_evidence_architecture"
     )
     assert state["next_default_phase"] == (
-        "phase_9_0a_cash_flow_capital_efficiency_evidence_architecture"
+        "phase_9_0b_canonical_ocf_capex_fcf_core"
     )
     assert state["deployed_code_commit"] == "HEAD"
     assert state["main_code_commit"] == "HEAD"
@@ -72,10 +73,21 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     assert state["contracts"]["numeric_primary_owner"] == (
         "numeric-primary-owner-v1"
     )
+    assert state["contracts"]["cash_flow_capital_efficiency"] == (
+        "cash-flow-capital-efficiency-v1"
+    )
     advancement = state["phase_advancement_rule_v1"]
     assert advancement["p0_open"] == []
     assert advancement["p1_open"] == []
     assert advancement["phase_9_0a_ready"] is True
+    assert advancement["phase_9_0a_complete"] is True
+    assert advancement["phase_9_0b_ready"] is True
+    phase_90a = state["phase_9_0a_cash_flow_capital_efficiency"]
+    assert phase_90a["status"] == "architecture_closed_ready_for_phase_9_0b"
+    assert phase_90a["active_universe"] == 20
+    assert phase_90a["phase_9_0b_ready"] is True
+    assert phase_90a["runtime_behavior_changed"] is False
+    assert phase_90a["user_visible_integration"] is False
     assert state["persistent_gaps"]["krx_open_api"] == (
         "APPROVED_TELEMETRY_ONLY_OPERATING_USER_VISIBLE_NOT_INTEGRATED"
     )
@@ -158,6 +170,7 @@ def test_architecture_guides_record_decisions_and_readme_navigation() -> None:
         ROOT / "docs" / "architecture" / "MONITORING_STATE_LIFECYCLE.md",
         ROOT / "docs" / "architecture" / "PEER_VALUATION.md",
         ROOT / "docs" / "architecture" / "NIGHT_FUTURES_SESSION_BASIS.md",
+        ROOT / "docs" / "architecture" / "CASH_FLOW_CAPITAL_EFFICIENCY.md",
         ROOT / "docs" / "operations" / "AI_ASSISTED_PILOT.md",
         ROOT / "docs" / "knowledge" / "README.md",
     )
@@ -178,6 +191,7 @@ def test_architecture_guides_record_decisions_and_readme_navigation() -> None:
         "docs/architecture/NUMERIC_PROVENANCE.md",
         "docs/architecture/MONITORING_STATE_LIFECYCLE.md",
         "docs/architecture/PEER_VALUATION.md",
+        "docs/architecture/CASH_FLOW_CAPITAL_EFFICIENCY.md",
         "docs/architecture/NIGHT_FUTURES_SESSION_BASIS.md",
         "docs/operations/AI_ASSISTED_PILOT.md",
         "docs/operations/SCHEDULED_TASK_CONTRACTS.md",

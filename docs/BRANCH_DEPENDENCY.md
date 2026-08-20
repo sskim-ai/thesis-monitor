@@ -19,6 +19,7 @@ self-referential.
 | `codex/phase-8-5-5-1-us-numeric-summary-typed-repetition` | operating main `0402c1b19673d0ced6fcb1fef1cfcd1b1ef291fb` | run-28 business numeric ownership, typed skeleton and RR-delta repetition repair | existing operating AI policy/specificity/quality path only | promoted | clean linear fast-forward through `c915d44...` |
 | `codex/phase-8-5-5-2-kr-structured-field-repetition` | operating main `f1ff6ae5f855f34c20274ea6e9ed8d801d51ae18` | run-29 canonical supply tuple, current-RR owner and typed prose repetition repair | existing operating AI binding/quality path only | promoted | clean linear fast-forward through `be2fb8f...`; final docs resolve from Git |
 | `codex/krx-exact-slot-telemetry-capture` | operating main `006a997789d3e5ebac85ef867ae31296d175056c` | KRX readiness metadata, append-only evidence and 08:05/16:05 LaunchAgent | telemetry only; no breadth/packet/DB/AI/delivery import | promoted | clean linear fast-forward through `18bc7c3...` |
+| `codex/phase-9-0a-cash-flow-capital-efficiency-architecture` | operating main `2c2aacf1df25a3d0483a14ecf19857ea9c1371b9` | cash-flow period/lineage contracts, read-only official-source coverage, tests and architecture reports | extends existing financial lineage; no runtime import, packet, DB, KRX breadth or peer dependency | architecture-only promotion candidate | clean linear fast-forward after exact-SHA CI |
 
 The Phase 8.3 original branch has a hidden Git ancestry dependency but no required KRX code,
 schema or runtime import. The clean branch resolves that promotion risk. Phase 8.3.2A starts from
@@ -58,3 +59,9 @@ The exact-slot telemetry branch also starts from the latest operating main. It r
 Phase 8.2A readiness and append-only observation contracts, not the breadth engine or market-packet
 integration. Its dedicated LaunchAgent is operating evidence collection; it does not alter the four
 Codex AI-review Scheduled Tasks or any user-visible message path.
+
+Phase 9.0A likewise starts from the latest operating main and excludes the preserved Phase 8.3 and
+KRX breadth experimental ancestries. Its service module is a non-runtime eligibility contract, and
+its evidence generator is archive/read-only tooling. It changes no packet, prompt, renderer,
+provider scheduler, database schema, or delivery path. Phase 9.0B must start from the final promoted
+Phase 9.0A main and retain this separation.
