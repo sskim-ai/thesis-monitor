@@ -38,14 +38,14 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     assert state["repository"] == "sskim-ai/thesis-monitor"
     assert state["branch"] == "main"
     assert state["experimental_branch"] == (
-        "codex/phase-9-0a-cash-flow-capital-efficiency-architecture"
+        "codex/phase-9-0b-canonical-ocf-capex-fcf-core"
     )
-    assert state["current_phase"] == "phase_9_0a_architecture_closed"
+    assert state["current_phase"] == "phase_9_0b_canonical_core_implemented_shadow"
     assert state["last_completed_phase"] == (
-        "phase_9_0a_cash_flow_capital_efficiency_evidence_architecture"
+        "phase_9_0b_canonical_ocf_ppe_capex_fcf_core"
     )
     assert state["next_default_phase"] == (
-        "phase_9_0b_canonical_ocf_capex_fcf_core"
+        "phase_9_0c_cash_flow_shadow_consumption_earnings_quality"
     )
     assert state["deployed_code_commit"] == "HEAD"
     assert state["main_code_commit"] == "HEAD"
@@ -82,12 +82,24 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     assert advancement["phase_9_0a_ready"] is True
     assert advancement["phase_9_0a_complete"] is True
     assert advancement["phase_9_0b_ready"] is True
+    assert advancement["phase_9_0b_complete"] is True
+    assert advancement["phase_9_0c_ready"] is True
     phase_90a = state["phase_9_0a_cash_flow_capital_efficiency"]
     assert phase_90a["status"] == "architecture_closed_ready_for_phase_9_0b"
     assert phase_90a["active_universe"] == 20
     assert phase_90a["phase_9_0b_ready"] is True
     assert phase_90a["runtime_behavior_changed"] is False
     assert phase_90a["user_visible_integration"] is False
+    phase_90b = state["phase_9_0b_canonical_cash_flow_core"]
+    assert phase_90b["status"] == (
+        "canonical_core_implemented_shadow_ready_for_phase_9_0c"
+    )
+    assert phase_90b["active_universe"] == 20
+    assert phase_90b["derived_fcf_facts"] == 191
+    assert phase_90b["derived_fcf_complete_lineage_pct"] == 100
+    assert phase_90b["phase_9_0c_ready"] is True
+    assert phase_90b["runtime_behavior_changed"] is False
+    assert phase_90b["user_visible_integration"] is False
     assert state["persistent_gaps"]["krx_open_api"] == (
         "APPROVED_TELEMETRY_ONLY_OPERATING_USER_VISIBLE_NOT_INTEGRATED"
     )

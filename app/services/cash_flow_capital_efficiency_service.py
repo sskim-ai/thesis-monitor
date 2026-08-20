@@ -26,9 +26,15 @@ class EligibilityStatus(StrEnum):
     NOT_APPLICABLE = "NOT_APPLICABLE"
 
 
+class FactType(StrEnum):
+    REPORTED = "REPORTED"
+    DERIVED_PERIOD = "DERIVED_PERIOD"
+    DERIVED_METRIC = "DERIVED_METRIC"
+
+
 class Metric(StrEnum):
     OCF = "operating_cash_flow"
-    CAPEX = "capex_cash_outflow"
+    CAPEX = "ppe_capex_cash_outflow"
     FCF = "free_cash_flow_ppe"
     REVENUE = "revenue"
     NET_INCOME = "net_income"
@@ -105,13 +111,20 @@ class FinancialFact:
     source_occurrence_id: str
     raw_payload_sha256: str
     semantic_mapping: str
+    fact_type: FactType = FactType.REPORTED
+    source_document_type: str | None = None
+    source_semantic: str | None = None
     source_reported_value: Decimal | None = None
+    source_reported_unit: str | None = None
     source_sign: str | None = None
+    normalization_transform: str | None = None
     capex_scope: CapexScope | None = None
     derivation_formula: str | None = None
+    derivation_version: str | None = None
     input_fact_ids: tuple[str, ...] = ()
     quality: str = "REPORTED_VERIFIED"
     eligibility: EligibilityStatus = EligibilityStatus.ELIGIBLE
+    denial_reason: str | None = None
     cautions: tuple[str, ...] = ()
     restatement_policy_id: str | None = None
     as_of_date: date | None = None
@@ -136,6 +149,11 @@ def _derived_id(metric: Metric, formula: str, inputs: Iterable[FinancialFact]) -
     return f"cashflow:{hashlib.sha256(payload.encode()).hexdigest()[:24]}"
 
 
+def _combined_raw_sha(facts: Iterable[FinancialFact]) -> str:
+    payload = "|".join(item.raw_payload_sha256 for item in facts)
+    return hashlib.sha256(payload.encode()).hexdigest()
+
+
 def _common_compatibility(facts: Iterable[FinancialFact]) -> tuple[str, ...]:
     values = list(facts)
     if not values:
@@ -152,6 +170,8 @@ def _common_compatibility(facts: Iterable[FinancialFact]) -> tuple[str, ...]:
             reasons.append(f"{field_name}_mismatch")
     if any(item.eligibility != EligibilityStatus.ELIGIBLE for item in values):
         reasons.append("input_fact_not_eligible")
+    if any(item.quality not in {"REPORTED_VERIFIED", "DERIVED_SAFE"} for item in values):
+        reasons.append("input_fact_quality_tainted")
     return tuple(reasons)
 
 
@@ -197,9 +217,8 @@ def normalize_capex_cash_outflow(
                 if fact.source_reported_value is not None
                 else fact.value
             ),
-            semantic_mapping=(
-                f"{fact.semantic_mapping};normalization={transform}"
-            ),
+            source_reported_unit=fact.source_reported_unit or fact.unit,
+            normalization_transform=transform,
         ),
     )
 
@@ -218,7 +237,9 @@ def q1_ytd_as_qtd(fact: FinancialFact) -> EligibilityDecision:
             fact_id=_derived_id(fact.metric, formula, (fact,)),
             period=qtd_period,
             reported_or_derived="derived_period",
+            fact_type=FactType.DERIVED_PERIOD,
             derivation_formula=formula,
+            derivation_version=CONTRACT_VERSION,
             input_fact_ids=(fact.fact_id,),
             quality="DERIVED_SAFE",
         ),
@@ -232,6 +253,8 @@ def derive_qtd_from_ytd(
     reasons = list(_common_compatibility((current_ytd, prior_ytd)))
     if current_ytd.metric != prior_ytd.metric:
         reasons.append("metric_mismatch")
+    if current_ytd.semantic_mapping != prior_ytd.semantic_mapping:
+        reasons.append("semantic_mapping_mismatch")
     if any(
         item.period.period_type != PeriodType.YTD
         for item in (current_ytd, prior_ytd)
@@ -276,13 +299,16 @@ def derive_qtd_from_ytd(
             value=current_ytd.value - prior_ytd.value,
             period=period,
             reported_or_derived="derived_period",
+            fact_type=FactType.DERIVED_PERIOD,
             source_document_id=(
                 f"{current_ytd.source_document_id}+{prior_ytd.source_document_id}"
             ),
             source_occurrence_id=(
                 f"{current_ytd.source_occurrence_id}+{prior_ytd.source_occurrence_id}"
             ),
+            raw_payload_sha256=_combined_raw_sha((current_ytd, prior_ytd)),
             derivation_formula=formula,
+            derivation_version=CONTRACT_VERSION,
             input_fact_ids=(current_ytd.fact_id, prior_ytd.fact_id),
             quality="DERIVED_SAFE",
         ),
@@ -298,6 +324,8 @@ def derive_ttm(
     reasons = list(_common_compatibility(facts))
     if len({item.metric for item in facts}) != 1:
         reasons.append("metric_mismatch")
+    if len({item.semantic_mapping for item in facts}) != 1:
+        reasons.append("semantic_mapping_mismatch")
     if prior_fy.period.period_type != PeriodType.FY:
         reasons.append("prior_fy_required")
     if any(
@@ -313,6 +341,8 @@ def derive_ttm(
         reasons.append("ytd_quarter_mismatch")
     if current_ytd.period.duration_days != prior_comparable_ytd.period.duration_days:
         reasons.append("ytd_duration_mismatch")
+    if current_ytd.period.end <= prior_comparable_ytd.period.end:
+        reasons.append("current_ytd_not_after_prior_comparable")
     restatement_ids = {item.restatement_policy_id for item in facts}
     if None in restatement_ids or len(restatement_ids) != 1:
         reasons.append("restatement_compatibility_unverified")
@@ -335,9 +365,12 @@ def derive_ttm(
             value=prior_fy.value + current_ytd.value - prior_comparable_ytd.value,
             period=period,
             reported_or_derived="derived_period",
+            fact_type=FactType.DERIVED_PERIOD,
             source_document_id="+".join(item.source_document_id for item in facts),
             source_occurrence_id="+".join(item.source_occurrence_id for item in facts),
+            raw_payload_sha256=_combined_raw_sha(facts),
             derivation_formula=formula,
+            derivation_version=CONTRACT_VERSION,
             input_fact_ids=tuple(item.fact_id for item in facts),
             quality="DERIVED_SAFE",
         ),
@@ -354,6 +387,8 @@ def derive_fcf(ocf: FinancialFact, capex: FinancialFact) -> EligibilityDecision:
         reasons.append("baseline_fcf_requires_ppe_only_capex")
     if capex.value < 0:
         reasons.append("capex_must_be_positive_magnitude")
+    if ocf.source_document_id != capex.source_document_id:
+        reasons.append("source_document_mismatch")
     if reasons:
         return _blocked(*dict.fromkeys(reasons))
     formula = "OCF_MINUS_PPE_CAPEX_CASH_OUTFLOW"
@@ -365,15 +400,23 @@ def derive_fcf(ocf: FinancialFact, capex: FinancialFact) -> EligibilityDecision:
             metric=Metric.FCF,
             value=ocf.value - capex.value,
             reported_or_derived="derived",
+            fact_type=FactType.DERIVED_METRIC,
+            source_provider="canonical_derivation",
+            source_document_type="derived_metric",
             source_document_id=f"{ocf.source_document_id}+{capex.source_document_id}",
             source_occurrence_id=(
                 f"{ocf.source_occurrence_id}+{capex.source_occurrence_id}"
             ),
+            raw_payload_sha256=_combined_raw_sha((ocf, capex)),
             semantic_mapping="backend_fcf_ppe_only",
+            source_semantic=None,
             source_reported_value=None,
+            source_reported_unit=None,
             source_sign=None,
+            normalization_transform=None,
             capex_scope=CapexScope.PPE_ONLY,
             derivation_formula=formula,
+            derivation_version=CONTRACT_VERSION,
             input_fact_ids=(ocf.fact_id, capex.fact_id),
             quality="DERIVED_SAFE",
         ),

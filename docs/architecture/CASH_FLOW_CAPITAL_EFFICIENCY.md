@@ -8,7 +8,7 @@ Existing financial lineage safely covers earnings and selected balance-sheet fac
 
 ## Decision
 
-Extend the existing lineage contracts with an occurrence-bound cash-flow and capital-efficiency contract. Implement only deterministic eligibility and audit tooling in Phase 9.0A; do not connect it to production runtime or user-visible messages.
+Extend the existing lineage contracts with an occurrence-bound cash-flow and capital-efficiency contract. Phase 9.0A closes the evidence architecture; Phase 9.0B implements the selective OCF, PPE-CAPEX, and FCF canonical core as internal shadow evidence. Neither phase connects cash-flow facts to production packets or user-visible messages.
 
 ## Why
 
@@ -20,7 +20,7 @@ Rejected alternatives include annualizing interim cash flow, treating total inve
 
 ## Safety Constraint
 
-Missing or ambiguous dependencies produce `BLOCKED`, `PARTIAL`, or `NOT_APPLICABLE`. No reverse engineering, proxy substitution, cross-currency arithmetic, production packet mutation, renderer change, or user-visible integration is allowed in Phase 9.0A.
+Missing or ambiguous dependencies produce `BLOCKED`, `PARTIAL`, or `NOT_APPLICABLE`. No reverse engineering, proxy substitution, cross-currency arithmetic, production packet mutation, renderer change, or user-visible integration is allowed in Phase 9.0A or 9.0B.
 
 ## Ownership And Lineage
 
@@ -41,6 +41,31 @@ This contract extends `financial-lineage-v2`, `financial-quality-taint-v2`, and 
 - Intangibles and software remain separately typed components. They are never silently added to PPE CAPEX.
 - Backend baseline FCF is `OCF - PPE-only CAPEX cash outflow`, with same period, currency/unit, entity scope, and statement basis.
 - Company-reported non-GAAP FCF remains a separate management metric and never replaces backend-derived FCF.
+
+## Canonical Implementation
+
+Phase 9.0B implements three exact metrics: `operating_cash_flow`,
+`ppe_capex_cash_outflow`, and `free_cash_flow_ppe`. Official SEC Company Facts occurrences are
+accepted only through the reviewed semantic registry. Generic investing cash flow, acquisitions,
+securities purchases, intangibles, and broad productive-asset concepts are explicit denials.
+
+Reported Fact IDs include issuer, metric, period, entity/basis, currency, and source occurrence.
+Derived Fact IDs include their ordered input Fact IDs. `REPORTED`, `DERIVED_PERIOD`, and
+`DERIVED_METRIC` are distinct types. The latest filing is value/version authority; when a later
+filing republishes a comparative column with the later filing's `fy`, the economic fiscal context
+comes from the earliest official occurrence for the same semantic, start/end, and unit. No dates
+are guessed.
+
+Every FCF uses exactly two eligible Facts from the same period, currency/unit, entity scope,
+statement basis, and source-document chain. Input quality taint, source conflict, or missing
+metadata blocks derivation. The internal derivation window retains the latest fiscal year plus the
+two prior fiscal years needed for QTD/TTM construction; official source dates remain unchanged.
+
+The active-universe implementation reproduces the Phase 9.0A coverage with no status drift: OCF
+`12 eligible / 7 partial / 1 blocked`, PPE CAPEX `11 / 6 / 2 / 1 not applicable`, and FCF
+`11 eligible / 8 blocked / 1 not applicable`. Across the stored SEC evidence, all 191 derived FCF
+Facts have complete input lineage and exact Decimal arithmetic. KR OpenDART cash-flow rows remain
+unpromoted because period context is unresolved; generic insurance FCF remains not applicable.
 
 ## Working Capital
 
@@ -68,4 +93,4 @@ Issuer-level OCF, CAPEX, and margins may remain eligible for foreign issuers wit
 
 ## AI Consumption Boundary
 
-Architecture only in Phase 9.0A. Future AI input must keep facts separate from interpretation, remain delta-first, avoid automatic thesis changes, and expose missing data only when decision-relevant. No user-visible packet, prompt, fallback, or renderer changes are made here.
+Canonical shadow only through Phase 9.0B. Future AI input must keep facts separate from interpretation, remain delta-first, avoid automatic thesis changes, and expose missing data only when decision-relevant. No user-visible packet, prompt, fallback, Public Action, or renderer changes are made here.

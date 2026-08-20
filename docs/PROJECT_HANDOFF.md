@@ -807,6 +807,39 @@ cash-flow output. Natural US/KR proof and KRX 08:05/16:05 telemetry continue in 
 single download/copy artifact is the
 [Phase 9.0A complete report bundle](reports/20260820-phase9-0a-complete-report-bundle.md).
 
+## Phase 9.0B Canonical OCF / PPE-CAPEX / FCF Core
+
+Phase 9.0B implements `cash-flow-capital-efficiency-v1` as an internal canonical/shadow core. It
+does not change the daily packet, AI prompt, fallback, Telegram, Public Action 0.4.5, schema 4, or
+database. The implementation extends the existing Fact lineage instead of creating a cash-flow
+truth store.
+
+Only reviewed SEC semantics can produce `operating_cash_flow` or
+`ppe_capex_cash_outflow`. Generic investing outflow, acquisitions, securities, intangibles, and
+capitalized software do not enter baseline CAPEX. PPE cash payments normalize to positive outflow
+magnitude, and `free_cash_flow_ppe` is exact Decimal `OCF - PPE CAPEX`. Every FCF carries exactly
+two input Fact IDs and matching period, currency/unit, entity scope, statement basis, and
+source-document chain.
+
+Cash-flow `Q2`/`Q3` filing labels remain YTD. QTD uses strict adjacent YTD subtraction and TTM uses
+prior FY plus current YTD less prior comparable YTD. SEC comparative rows can carry the later
+filing's `fy`; the canonicalizer therefore preserves fiscal context from the earliest official
+occurrence for the same semantic/start/end/unit while selecting the latest filing value/version.
+No calendar-year guess or annualization is used.
+
+The 20-subject implementation reproduces Phase 9.0A exactly: OCF `12 eligible / 7 partial /
+1 blocked`, PPE CAPEX `11 eligible / 6 partial / 2 blocked / 1 N/A`, and FCF `11 eligible /
+8 blocked / 1 N/A`. The stored SEC audit contains 191 derived FCF Facts, all with complete lineage
+and exact arithmetic. HUT has OCF but no accepted PPE CAPEX; SKHY has no accepted SEC OCF/PPE
+semantic. Six KR non-financial subjects remain blocked on `period_context_unresolved`, and Korean
+Re generic FCF is not applicable. The KR gap is classified `MEDIUM_COMPLEXITY_FOLLOWUP`.
+
+Open P0 and P1 are zero. CCC and standard ROIC remain deferred. `PHASE_9_0C_READY = YES` with scope
+`CASH_FLOW_SHADOW_CONSUMPTION_EARNINGS_QUALITY`. Phase 9.0C may feed these Facts only into an
+internal shadow packet and archive preview before any later user-visible decision. Natural US/KR
+proof and KRX exact-slot telemetry continue independently. See the
+[Phase 9.0B complete report bundle](reports/20260820-phase9-0b-complete-report-bundle.md).
+
 On 2026-08-15 the owning desktop environment verified all four local-project tasks, retained their
 08:15/08:30/16:15/16:55 schedules, and migrated their exact prompts to v3.10 with
 `security-identity-v2` and `financial-quality-taint-v2`. All four are ACTIVE,
@@ -1000,9 +1033,9 @@ first.
 
 ## Next Steps
 
-1. Start Phase 9.0B Canonical OCF / PPE-CAPEX / FCF Core Implementation for the selective
-   evidence-eligible subset. Preserve all Phase 9.0A fail-closed gates and keep user-visible output
-   disabled until a separate integration decision.
+1. Start Phase 9.0C Cash Flow Shadow Consumption and Earnings-Quality Reasoning Integration for
+   the eligible subset. Preserve all canonical lineage gates and keep user-visible output disabled
+   until a separate integration decision.
 2. In parallel, inspect the next natural US/KR sessions after Phase 8.5.5.2 and verify AI quality,
    structured supply, RR ownership, business numeric ownership, reasoning ownership, night-futures
    lineage, language, fallback, runtime receipt, archive, and exactly-once behavior.
@@ -1016,7 +1049,7 @@ first.
    evidence and Human Review pass.
 6. Keep Phase 8.3 closed as selective optional context unless materially new free-source, taxonomy,
    exact-group or natural-message evidence appears.
-7. Apply Phase Advancement Rule v1 to new runtime findings: interrupt 9.0B for P0, bound material
+7. Apply Phase Advancement Rule v1 to new runtime findings: interrupt 9.0C for P0, bound material
    P1 repairs, and retain P2 as backlog.
 8. Keep Production Assist disabled until natural full-message evidence passes direct human review
    and the user explicitly approves it.

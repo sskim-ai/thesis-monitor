@@ -1,0 +1,16 @@
+{
+  "kr_opendart_period_recovery_classification": "MEDIUM_COMPLEXITY_FOLLOWUP",
+  "kr_opendart_period_recovery_priority": "MEDIUM",
+  "p0_open": [],
+  "p1_open": [],
+  "p2_backlog": [
+    "management_defined_fcf_reconciliation",
+    "user_visible_cash_flow_selection_and_wording",
+    "ccc_deferred",
+    "standard_roic_deferred"
+  ],
+  "phase_9_0c_ready": true,
+  "phase_9_0c_scope": "CASH_FLOW_SHADOW_CONSUMPTION_EARNINGS_QUALITY",
+  "production_assist": "OFF",
+  "runtime_behavior_diff": 0
+}

@@ -331,6 +331,39 @@ def test_fcf_is_ocf_less_same_basis_ppe_capex() -> None:
     assert decision.fact.input_fact_ids == ("ocf", "capex")
 
 
+def test_fcf_rejects_different_source_document_versions() -> None:
+    ocf = _fact(Metric.OCF, "200", fact_id="ocf")
+    capex = replace(
+        _fact(
+            Metric.CAPEX,
+            "70",
+            fact_id="capex",
+            capex_scope=CapexScope.PPE_ONLY,
+        ),
+        source_document_id="different-filing",
+    )
+
+    decision = derive_fcf(ocf, capex)
+
+    assert decision.status == EligibilityStatus.BLOCKED
+    assert "source_document_mismatch" in decision.reasons
+
+
+def test_fcf_rejects_quality_tainted_input() -> None:
+    ocf = replace(_fact(Metric.OCF, "200", fact_id="ocf"), quality="CONFLICT")
+    capex = _fact(
+        Metric.CAPEX,
+        "70",
+        fact_id="capex",
+        capex_scope=CapexScope.PPE_ONLY,
+    )
+
+    decision = derive_fcf(ocf, capex)
+
+    assert decision.status == EligibilityStatus.BLOCKED
+    assert "input_fact_quality_tainted" in decision.reasons
+
+
 def test_fcf_rejects_cfs_ocf_plus_ofs_capex() -> None:
     ocf = _fact(Metric.OCF, "200", statement_basis="CFS")
     capex = _fact(

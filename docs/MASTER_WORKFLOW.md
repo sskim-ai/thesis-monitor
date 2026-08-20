@@ -525,13 +525,41 @@ for eligible evidence and must fail closed elsewhere. Working-capital days/CCC a
 phases. The one-file human report is
 [the Phase 9.0A complete bundle](reports/20260820-phase9-0a-complete-report-bundle.md).
 
+## 21C. Phase 9.0B Canonical OCF / PPE-CAPEX / FCF Core
+
+Phase 9.0B implements the `cash-flow-capital-efficiency-v1` canonical core without importing it
+into any runtime packet or public schema. The exact official-filing registry maps only operating
+activities cash flow and reviewed PPE-payment concepts. Reported Facts retain accession,
+occurrence, filing version, source semantic, period, currency/unit, entity/basis, source sign, and
+raw SHA. PPE payments normalize to positive outflow magnitude only after semantic validation.
+
+Interim cash-flow occurrences remain YTD. Q1 QTD, adjacent-YTD QTD, and three-input TTM Facts are
+typed `DERIVED_PERIOD`; FCF is typed `DERIVED_METRIC` and always contains the OCF and PPE-CAPEX Fact
+IDs. SEC comparative rows use the earliest official occurrence's economic fiscal context and the
+latest filing's authoritative value, preventing a later comparative column from changing the
+underlying fiscal year. Annualization remains prohibited.
+
+Stored official evidence reproduces the Phase 9.0A universe counts with no drift: OCF
+`12 eligible / 7 partial / 1 blocked`, PPE CAPEX `11 eligible / 6 partial / 2 blocked / 1 N/A`, and
+FCF `11 eligible / 8 blocked / 1 N/A`. All 191 generated FCF Facts pass input-lineage and exact
+arithmetic reproduction. KR non-financial Facts remain fail-closed on unresolved OpenDART period
+context, Korean Re remains outside generic enterprise FCF, and issuer-level foreign cash flow is
+kept separate from security-level yield/per-share arithmetic.
+
+Open P0 and P1 are zero. `PHASE_9_0C_READY = YES`; scope is
+`CASH_FLOW_SHADOW_CONSUMPTION_EARNINGS_QUALITY`. CCC and standard ROIC remain deferred. The
+OpenDART period-context gap is `MEDIUM_COMPLEXITY_FOLLOWUP`, not a prerequisite for selective
+shadow consumption. See the
+[Phase 9.0B complete bundle](reports/20260820-phase9-0b-complete-report-bundle.md).
+
 ## 22. Current Roadmap
 
-The current state is `PHASE_9_0A_ARCHITECTURE_CLOSED` plus
+The current state is `PHASE_9_0B_CANONICAL_CORE_IMPLEMENTED_SHADOW` plus
 `NATURAL_AI_PROOF_CONTINUES_IN_PARALLEL`. Open P0 and P1 are zero. The next major task may begin
-Phase 9.0B Canonical OCF / PPE-CAPEX / FCF Core Implementation on the selective eligible subset.
-This is not approval to expose new cash-flow numbers before Phase 9.0B contracts, regression,
-review, and a separate operating decision pass.
+Phase 9.0C Cash Flow Shadow Consumption and Earnings-Quality Reasoning Integration. This is not
+approval to expose cash-flow numbers in Telegram or fallback; 9.0C must first add an internal
+shadow packet, typed interpretation, validation, and archive preview before a separate
+user-visible integration decision.
 
 In parallel, observe the next natural US/KR sessions for AI-assisted delivery, ownership,
 repetition, night-session integrity, fallback, language, receipt, archive, and exactly-once proof.
@@ -627,11 +655,10 @@ approval. Main merge and shadow deployment still do not authorize AI-assisted pr
 
 ## 27. Current Next Task
 
-Begin Phase 9.0B Canonical OCF / PPE-CAPEX / FCF Core Implementation for the evidence-eligible
-subset. Preserve the Phase 9.0A period, basis, currency, semantic, and occurrence-lineage gates;
-unsupported subjects remain unavailable. Do not implement CCC or standard ROIC in 9.0B, and do not
-add user-visible output until the separate runtime-integration gate is approved. In parallel,
-inspect natural US/KR AI results and KRX exact-slot evidence without manual execution.
+Begin Phase 9.0C Cash Flow Shadow Consumption and Earnings-Quality Reasoning Integration for the
+11-subject eligible subset. Preserve canonical ownership and fail-closed subjects, keep exact
+cash-flow numbers out of user-visible output, and do not implement CCC or standard ROIC. In
+parallel, inspect natural US/KR AI results and KRX exact-slot evidence without manual execution.
 
 ## 28. New Session Bootstrap Prompt
 
@@ -648,8 +675,9 @@ inspect natural US/KR AI results and KRX exact-slot evidence without manual exec
 > blockers retrospectively. Natural US run-28 delivered fallback 14/14 after the unchanged runtime
 > gate rejected generic numeric-summary and RR-delta repetition; Phase 8.5.5.1 closes those blockers
 > retrospectively and is operating shadow. Phase 8.3 is finalized as selective optional context
-> and must not be reopened without new evidence. Phase 9.0A is architecture-closed and
-> `PHASE_9_0B_READY = YES` for a selective OCF/PPE-CAPEX/FCF core. Read
-> `docs/architecture/CASH_FLOW_CAPITAL_EFFICIENCY.md` and the one-file Phase 9.0A report bundle
-> before implementing. Natural AI and KRX exact-slot evidence continue independently; do not make
-> either a false prerequisite for 9.0B, and stop for any newly observed P0.
+> and must not be reopened without new evidence. Phase 9.0A is architecture-closed and Phase 9.0B
+> implements the selective canonical OCF/PPE-CAPEX/FCF core with zero user-visible behavior diff.
+> `PHASE_9_0C_READY = YES`. Read
+> `docs/architecture/CASH_FLOW_CAPITAL_EFFICIENCY.md` and the one-file Phase 9.0B report bundle
+> before adding shadow consumption. Natural AI and KRX exact-slot evidence continue independently;
+> do not make either a false prerequisite for 9.0C, and stop for any newly observed P0.
