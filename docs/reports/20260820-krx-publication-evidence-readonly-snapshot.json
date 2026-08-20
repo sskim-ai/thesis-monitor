@@ -1,0 +1,282 @@
+{
+  "artifact_type": "krx_publication_evidence_read_only_snapshot",
+  "as_of": "2026-08-20T10:27:56+09:00",
+  "repository": "sskim-ai/thesis-monitor",
+  "main_sha": "006a997789d3e5ebac85ef867ae31296d175056c",
+  "operating_sha": "006a997789d3e5ebac85ef867ae31296d175056c",
+  "working_tree_before_snapshot": "clean",
+  "evidence_branch": "codex/phase-8-2a-krx-market-breadth",
+  "evidence_commit": "b94f709eb146655a6a2e35377073727aee7cd7ca",
+  "contracts": {
+    "market_cross_section": "market-cross-section-v1",
+    "market_breadth": "market-breadth-v1",
+    "universe": "krx-kospi-kosdaq-common-share-v1",
+    "publication_readiness": "krx-publication-readiness-v1",
+    "publication_telemetry": "krx-publication-telemetry-v1",
+    "provider_role": "krx-time-slot-provider-role-v1"
+  },
+  "clean_definition": {
+    "live_role": [
+      "observed in the contract-specific time slot on a normal session",
+      "provider response valid",
+      "target and provider business dates coherent",
+      "all four core endpoints complete with eligible current rows",
+      "no stale-date or parser/provider hard failure"
+    ],
+    "historical_role": [
+      "explicit historical request",
+      "all required endpoint dates match the requested session",
+      "common-share universe contract passes",
+      "breadth reproduces deterministically"
+    ]
+  },
+  "roles": {
+    "same_day_1605": {
+      "role": "SAME_DAY_CLOSE_PRIMARY",
+      "status": "NOT_YET_PROVEN",
+      "total_observations": 0,
+      "natural_observations": 0,
+      "clean_observations": 0,
+      "partial_observations": 0,
+      "zero_row_observations": 0,
+      "error_observations": 0,
+      "stale_observations": 0,
+      "consecutive_clean_observations": 0,
+      "required_clean_sessions": 5,
+      "latest_observation": null,
+      "latest_state": "MISSING_OBSERVATION",
+      "today_2026_08_20": "NOT_YET_OCCURRED",
+      "capture_readiness": "TELEMETRY_CAPTURE_GAP"
+    },
+    "next_morning_0805": {
+      "role": "NEXT_MORNING_PRIMARY",
+      "status": "NOT_YET_PROVEN",
+      "total_observations": 0,
+      "natural_observations": 0,
+      "clean_observations": 0,
+      "partial_observations": 0,
+      "zero_row_observations": 0,
+      "error_observations": 0,
+      "stale_observations": 0,
+      "consecutive_clean_observations": 0,
+      "required_clean_sessions": 5,
+      "latest_observation": null,
+      "latest_state": "MISSING_OBSERVATION",
+      "today_2026_08_20": "MISSING_OBSERVATION",
+      "capture_readiness": "TELEMETRY_CAPTURE_GAP"
+    },
+    "t_plus_1": {
+      "role": "T_PLUS_1_AUTHORITATIVE_RECONCILIATION",
+      "status": "NOT_YET_PROVEN",
+      "total_observations": 0,
+      "natural_observations": 0,
+      "clean_observations": 0,
+      "partial_observations": 0,
+      "zero_row_observations": 0,
+      "error_observations": 0,
+      "stale_observations": 0,
+      "consecutive_clean_observations": 0,
+      "required_clean_sessions": 3,
+      "latest_observation": null,
+      "latest_state": "MISSING_OBSERVATION",
+      "capture_readiness": "TELEMETRY_CAPTURE_GAP"
+    },
+    "historical": {
+      "role": "HISTORICAL_ONLY",
+      "status": "SUPPORTED",
+      "total_observations": 1,
+      "natural_observations": 0,
+      "clean_observations": 1,
+      "partial_observations": 0,
+      "zero_row_observations": 0,
+      "error_observations": 0,
+      "stale_observations": 0,
+      "consecutive_clean_observations": null,
+      "required_clean_sessions": 1,
+      "latest_validated_session": "2026-08-14",
+      "latest_state": "SUPPORTED_EXPLICIT_HISTORICAL"
+    }
+  },
+  "observations": [
+    {
+      "observation_date": "2026-08-18",
+      "observation_time_kst": "20:27:09",
+      "classification": "AD_HOC_DIAGNOSTIC",
+      "natural": false,
+      "requested_business_date": "2026-08-18",
+      "provider_business_date": null,
+      "http_status": [200, 200, 200, 200],
+      "core_endpoint_rows": [0, 0, 0, 0],
+      "eligible_rows": 0,
+      "publication_state": "MARKET_COMPLETED_PROVIDER_PENDING",
+      "clean": false,
+      "raw_payload_present": false,
+      "payload_sha256": null,
+      "source_artifact": "docs/reports/20260818-phase8-2a-1-audit.json"
+    },
+    {
+      "observation_date": "2026-08-18",
+      "observation_time_kst": "21:02:01",
+      "classification": "AD_HOC_DIAGNOSTIC",
+      "natural": false,
+      "requested_business_date": "2026-08-18",
+      "provider_business_date": null,
+      "http_status": [200, 200, 200, 200],
+      "core_endpoint_rows": [0, 0, 0, 0],
+      "eligible_rows": 0,
+      "publication_state": "MARKET_COMPLETED_PROVIDER_PENDING",
+      "clean": false,
+      "raw_payload_present": false,
+      "payload_sha256": null,
+      "source_artifact": "docs/reports/20260818-phase8-2a-2-publication-audit.json"
+    },
+    {
+      "observation_date": "2026-08-18",
+      "observation_time_kst": "21:06:36",
+      "classification": "AD_HOC_DIAGNOSTIC",
+      "natural": false,
+      "requested_business_date": "2026-08-18",
+      "provider_business_date": null,
+      "http_status": [200, 200, 200, 200],
+      "core_endpoint_rows": [0, 0, 0, 0],
+      "eligible_rows": 0,
+      "publication_state": "MARKET_COMPLETED_PROVIDER_PENDING",
+      "clean": false,
+      "raw_payload_present": false,
+      "payload_sha256": {
+        "sto/stk_bydd_trd": "82c0031bc13af348ac1e1304aca28f309632975110f2508534e93216791dfa90",
+        "sto/ksq_bydd_trd": "82c0031bc13af348ac1e1304aca28f309632975110f2508534e93216791dfa90",
+        "idx/kospi_dd_trd": "82c0031bc13af348ac1e1304aca28f309632975110f2508534e93216791dfa90",
+        "idx/kosdaq_dd_trd": "82c0031bc13af348ac1e1304aca28f309632975110f2508534e93216791dfa90"
+      },
+      "source_artifact": "docs/reports/20260818-phase8-2a-2-publication-audit.json"
+    },
+    {
+      "observation_date": "2026-08-18",
+      "observation_time_kst": null,
+      "classification": "HISTORICAL",
+      "natural": false,
+      "requested_business_date": "2026-08-14",
+      "provider_business_date": "2026-08-14",
+      "http_status": [200, 200, 200, 200, 200, 200],
+      "endpoint_rows": {
+        "sto/stk_bydd_trd": 942,
+        "sto/ksq_bydd_trd": 1821,
+        "sto/stk_isu_base_info": 942,
+        "sto/ksq_isu_base_info": 1821,
+        "idx/kospi_dd_trd": 51,
+        "idx/kosdaq_dd_trd": 40
+      },
+      "eligible_rows": 2532,
+      "publication_state": "SUPPORTED_EXPLICIT_HISTORICAL",
+      "clean": true,
+      "raw_payload_present": false,
+      "payload_sha256": {
+        "sto/stk_bydd_trd": "c362e026ffe0b0bd5842df179a064fdaa5eecb688bbc8008bd5820c23530a2bb",
+        "sto/ksq_bydd_trd": "891d8e277f2c974663d9047e89a41376d1412a6a9bb90aa67039aa8d2492461f",
+        "sto/stk_isu_base_info": "8aaa16a109c7479c7ebe72748d3a449ec1dd52c68498d700fcbe846f716584c6",
+        "sto/ksq_isu_base_info": "d9d8c3565bedf5ca7be7fafd2d2b0fcf68b248e666ad8f14771ba7cc85354726",
+        "idx/kospi_dd_trd": "433eaa38df63575f4267c9bafb5f05e9d5e326e47497fec60c04a2d71d319925",
+        "idx/kosdaq_dd_trd": "ed5aa8da8b0b1f507b0be943a8951749687f648003c646626b679bc1ff22a06b"
+      },
+      "source_artifact": "docs/reports/20260818-phase8-2a-krx-market-audit.json"
+    }
+  ],
+  "ad_hoc_diagnostic_summary": {
+    "observations": 3,
+    "clean": 0,
+    "zero_row": 3,
+    "provider_error": 0,
+    "stale": 0,
+    "latest_observation": "2026-08-18T21:06:36.928866+09:00",
+    "latest_state": "MARKET_COMPLETED_PROVIDER_PENDING",
+    "role_proof_credit": 0
+  },
+  "historical_capability": {
+    "historical_retrieval_supported": true,
+    "universe_contract_valid": true,
+    "aggregate_breadth_reproducible": true,
+    "validated_session": "2026-08-14",
+    "raw_daily_rows": 2763,
+    "eligible_common_shares": 2532,
+    "excluded_rows": 231,
+    "aggregate": {
+      "advance": 1441,
+      "decline": 898,
+      "unchanged": 193,
+      "advance_ratio": 0.5691153238546603,
+      "equal_weight_return_pct": 0.7764454976303318
+    },
+    "kospi": {
+      "eligible": 804,
+      "advance": 575,
+      "decline": 180,
+      "unchanged": 49
+    },
+    "kosdaq": {
+      "eligible": 1728,
+      "advance": 866,
+      "decline": 718,
+      "unchanged": 144
+    }
+  },
+  "publication_pattern": {
+    "supported_description": "Three development-time probes on 2026-08-18 remained HTTP 200 with zero rows through 21:06 KST.",
+    "first_non_empty_at": null,
+    "first_complete_at": null,
+    "observed_complete_by": null,
+    "provider_publication_timestamp": null,
+    "repeatability": "INSUFFICIENT_EVIDENCE",
+    "extrapolation_allowed": false
+  },
+  "telemetry_capture": {
+    "operating_publication_observer_present": false,
+    "operating_publication_schedule_present": false,
+    "experimental_local_observer_present_on_preserved_branch": true,
+    "experimental_observer_scheduled": false,
+    "kr_close_1605_job_is_role_proof": false,
+    "us_0805_job_is_role_proof": false,
+    "status": "TELEMETRY_CAPTURE_GAP"
+  },
+  "integration_readiness": {
+    "historical_capability": "SUPPORTED",
+    "publication_timing_reliability": "NOT_YET_PROVEN",
+    "operating_integration_readiness": "NOT_READY",
+    "krx_promotion_candidate": "DEFER",
+    "recommendation": "HISTORICAL_ONLY_AND_WAIT_FOR_MORE_EVIDENCE",
+    "operating_kr_market_digest_integration": false,
+    "market_wide_investor_flow": "UNSUPPORTED",
+    "sector_data": "PARTIAL_PRICE_PROXY_ONLY"
+  },
+  "blocking_unknowns": [
+    "same-day 16:05 completeness and repeatability",
+    "next-morning 08:05 completeness and repeatability",
+    "T+1 provider business-date coherence and completeness",
+    "first non-empty and first complete publication bounds",
+    "missing operating exact-slot telemetry capture mechanism"
+  ],
+  "next_natural_evidence": {
+    "today_1605": "PENDING_NATURAL_OBSERVATION_BUT_NOT_CONFIGURED_FOR_CAPTURE",
+    "required_action_in_this_snapshot": "NONE",
+    "future_separate_decision": "configure approved exact-slot telemetry before claiming natural role evidence"
+  },
+  "persistent_state_review": {
+    "current_docs_match_evidence": true,
+    "docs_only_status_correction_candidate": false
+  },
+  "snapshot_safety": {
+    "provider_calls": 0,
+    "code_changes": 0,
+    "krx_implementation_changes": 0,
+    "main_merge": 0,
+    "operating_deployment": 0,
+    "api_restart": 0,
+    "scheduled_task_executions": 0,
+    "scheduled_task_config_changes": 0,
+    "telegram_sends": 0,
+    "pilot_mutations": 0,
+    "database_mutations": 0,
+    "production_assist_changed": false,
+    "persistent_docs_changed": false
+  }
+}
