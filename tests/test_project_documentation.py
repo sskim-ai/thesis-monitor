@@ -36,10 +36,12 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
 
     assert state["repository"] == "sskim-ai/thesis-monitor"
     assert state["branch"] == "main"
-    assert state["experimental_branch"] == ("codex/phase-8-5-5-natural-reasoning-ownership-repair")
+    assert state["experimental_branch"] == (
+        "codex/phase-8-5-5-1-us-numeric-summary-typed-repetition"
+    )
     assert state["current_phase"] == "wait_for_next_natural_us_kr_proof"
     assert state["last_completed_phase"] == (
-        "phase_8_5_5_operating_shadow_promotion"
+        "phase_8_5_5_1_operating_shadow_promotion"
     )
     assert state["next_default_phase"] == "wait_for_next_natural_us_kr_proof"
     assert state["deployed_code_commit"] == "HEAD"
@@ -48,14 +50,22 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     assert state["persistent_gaps"]["current_price_rr_packet_numeric_path"] == "LIVE_PATH_PASS"
     assert state["persistent_gaps"]["natural_live_validation"] == "PARTIAL"
     assert state["persistent_gaps"]["reasoning_ownership"] == (
-        "CLOSED_RETROSPECTIVE_PENDING_NATURAL"
+        "LIVE_PASS_CANDIDATE_RUN28_NO_HARD_OWNERSHIP_ERROR"
     )
     assert state["contracts"]["runtime_specificity"] == ("runtime-message-specificity-v2")
     assert state["contracts"]["runtime_reasoning_ownership"] == ("runtime-reasoning-ownership-v1")
+    assert state["contracts"]["numeric_summary_ownership"] == (
+        "numeric-summary-ownership-v1"
+    )
+    assert state["contracts"]["typed_template_skeleton"] == (
+        "typed-template-skeleton-v1"
+    )
     assert state["persistent_gaps"]["krx_open_api"] == (
         "APPROVED_EXPERIMENTAL_NOT_OPERATING_INTEGRATED"
     )
-    assert state["persistent_gaps"]["night_futures_session_basis"] == ("CLOSED_RETROSPECTIVE")
+    assert state["persistent_gaps"]["night_futures_session_basis"] == (
+        "CLOSED_RETROSPECTIVE_LIVE_FAIL_CLOSED_RUN28"
+    )
     assert state["persistent_gaps"]["night_futures_preceding_day_calendar_lookup"] == (
         "CLOSED_RETROSPECTIVE_PENDING_NATURAL"
     )

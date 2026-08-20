@@ -1,14 +1,14 @@
 # Thesis Monitor Master Workflow
 
-Master Workflow: `v11`
-As of: `2026-08-19`
+Master Workflow: `v12`
+As of: `2026-08-20`
 Repository: `sskim-ai/thesis-monitor`
 Operating branch: `main`
-Latest evidence branch: `codex/phase-8-5-5-natural-reasoning-ownership-repair`
+Latest evidence branch: `codex/phase-8-5-5-1-us-numeric-summary-typed-repetition`
 Commit resolution: run `git rev-parse HEAD`; this document is part of that commit and must not
 hardcode a self-referential final SHA. Resolve `origin/main` and the clean operating checkout at
-session start. Phase 8.5.5 closes the run-27 reasoning-ownership and repetition blockers
-retrospectively and is now operating shadow. Natural US/KR proof remains pending,
+session start. Phase 8.5.5.1 closes the run-28 numeric-summary ownership and typed-repetition
+blockers retrospectively and is now operating shadow. Natural US/KR proof remains pending,
 and Natural AI-assisted delivery remains `PARTIAL`.
 KRX 8.2A.x and peer 8.3.x also remain experimental.
 
@@ -247,7 +247,7 @@ specialized routes and eleven correctly remain low-confidence `general`. The rea
 implemented, while specialized taxonomy coverage remains a strong PARTIAL gap.
 
 Phase 8.5.3 adds two bounded runtime contracts without redesigning schema 4. The
-`runtime-message-specificity-v1` plan selects each stock's decision point, company evidence,
+`runtime-message-specificity-v2` plan selects each stock's decision point, company evidence,
 industry driver, Unknown, and next confirmation before prose; methodology-only safety boilerplate is
 suppressed rather than paraphrased. The `current-price-context-v1` selector gives AI and deterministic
 fallback the same current price, dynamic support/resistance, current-price RR, chart invalidation,
@@ -319,6 +319,30 @@ references, has zero validator errors, reduces substantive/template repeats from
 passes the unchanged runtime-quality threshold and receipt verification. Average stock-message
 length falls 2.34%. This is retrospective proof only.
 
+Phase 8.5.5.1 reconstructs natural US packet `2026-08-20-us-run-28-9024def294e6`. Numeric,
+semantic and final-language validation passed, but the unchanged runtime quality gate rejected the
+AI candidate; AI sent 0 and deterministic fallback delivered 14/14 exactly once. The packet kept
+Phase 8.5.5 ownership, observer/holder, Unknown and next-check improvements, but a policy-level
+two-anchor quota copied valuation-source TTM EPS and BVPS into sparse `business_earnings` sections.
+The same portfolio scaffold began with `현재 확인된 핵심 숫자는`, while ten stocks repeated a
+standalone previous-RR/current-RR tuple.
+
+`numeric-summary-ownership-v1` removes the numeric quota, keeps real earnings revenue/income/margin
+Facts, rejects valuation-owned business fillers, and permits a specific Unknown when direct business
+evidence is absent. `typed-template-skeleton-v1` preserves section, owner, numeric semantics,
+comparison relation and text shape. It therefore separates RR previous-to-current from PBR
+current-to-historical-percentile without allowing genuine same-role template repetition. RR deltas
+render only when an existing chart-state, confirmation, structure or availability transition makes
+them decision-relevant; no RR threshold or formula changed.
+
+The immutable run-28 replay binds 149 numbers automatically with manual/rejected/unresolved 0,
+passes the full validator, final language, unchanged runtime gate and receipt, and reduces template
+skeletons 5 -> 0, generic numeric-summary families 1 -> 0 and business ownership violations 9 -> 0.
+Run-27 remains PASS. Average stock-message length falls 4.00%. Implementation `c915d44` passed
+GitHub Actions run `32319601429`, was fast-forwarded to main and operating, passed API health and
+291 operating smoke tests. This remains retrospective proof; Natural AI-Assisted Delivery is still
+`PARTIAL`.
+
 ## 20. Phase History
 
 | Phase | Result |
@@ -341,6 +365,7 @@ length falls 2.34%. This is retrospective proof only.
 | 8.5.4.1 | Phase 8.5.4 promoted to main and operating shadow; API/health/smoke PASS; latest night pair unavailable fail-closed; natural proof pending |
 | 8.5.4.2 | Holiday-aware XKRX preceding-DAY lookup PASS retrospectively and promoted to operating shadow; current provider row pending; natural proof pending |
 | 8.5.5 | Run-27 security/framework ownership and repetition repair PASS retrospectively and promoted to operating shadow; natural proof pending |
+| 8.5.5.1 | Run-28 business numeric ownership, typed skeleton and RR-delta repetition repair PASS retrospectively and promoted to operating shadow; natural proof pending |
 | 8.2A.x | KRX historical engine, universe and publication-state contracts PASS on experimental branch; slot timing/roles not yet proven; not deployed |
 | 8.3 | Peer selection/safety/statistics contract PASS; capability strong PARTIAL; original measured coverage 0/20 |
 | 8.3.1/8.3.1.1 | Paid provider research completed; clean peer-only branch prepared; production provider gate not passed |
@@ -362,6 +387,9 @@ length falls 2.34%. This is retrospective proof only.
 | Phase 8.5.5 reasoning ownership | CLOSED_RETROSPECTIVE_PENDING_NATURAL |
 | Phase 8.5.5 natural repetition | CLOSED_RETROSPECTIVE_PENDING_NATURAL |
 | Phase 8.5.5 operating state | OPERATING_SHADOW |
+| Phase 8.5.5.1 US numeric-summary ownership | CLOSED_RETROSPECTIVE_PENDING_NATURAL |
+| Phase 8.5.5.1 typed repetition | CLOSED_RETROSPECTIVE_PENDING_NATURAL |
+| Phase 8.5.5.1 operating state | OPERATING_SHADOW |
 | Phase 8.5.4.2 calendar repair / operating | PASS retrospective / OPERATING_SHADOW |
 | Night-futures session basis | CLOSED_RETROSPECTIVE |
 | Preceding DAY calendar lookup | CLOSED_RETROSPECTIVE_PENDING_NATURAL; current provider row pending |
@@ -394,6 +422,8 @@ length falls 2.34%. This is retrospective proof only.
 | AI natural-live message quality | PARTIAL: retrospective PASS, natural AI delivery pending |
 | Reasoning ownership | CLOSED_RETROSPECTIVE_PENDING_NATURAL |
 | Natural cross-ticker repetition | CLOSED_RETROSPECTIVE_PENDING_NATURAL |
+| US numeric-summary ownership | CLOSED_RETROSPECTIVE_PENDING_NATURAL |
+| Typed template repetition | CLOSED_RETROSPECTIVE_PENDING_NATURAL |
 | Fallback dynamic-price lifecycle | CLOSED: retrospective PASS and operating code promoted |
 | Night-futures session-basis integrity | CLOSED_RETROSPECTIVE |
 | Night-futures preceding DAY calendar lookup | CLOSED_RETROSPECTIVE_PENDING_NATURAL |
@@ -410,7 +440,7 @@ integrity, fallback/retry, exactly-once accounting, and valuation comparison-lab
 ## 22. Current Roadmap
 
 Operating blocker outranks new feature work. The current state is
-`WAIT_FOR_NEXT_NATURAL_US_KR_PROOF`: Phase 8.5.5 has retrospective PASS evidence and is the current
+`WAIT_FOR_NEXT_NATURAL_US_KR_PROOF`: Phase 8.5.5.1 has retrospective PASS evidence and is the current
 operating shadow baseline.
 Observe the next natural US/KR sessions
 for actual AI-assisted delivery, reasoning ownership, cross-ticker repetition, night-session
@@ -498,7 +528,9 @@ label. Immutable replay now renders `현재 PBR 1.82배`, `역사적 PBR 중앙�
 same-label/different-role collisions are zero. Exact implementation commit
 `b3ad1ea82bdbd3fe003831d449b0dcaa7c6a2da2` passed Actions run `32126079970`, was
 fast-forwarded to main and operating shadow, and passed API health plus 74 operating focused tests.
-Natural AI-assisted delivery is still pending.
+Natural AI-assisted delivery is still pending. Run-28 proved live fail-closed night-futures
+suppression when no completed current session pair was available; numeric NIGHT-to-preceding-DAY
+exposure remains pending natural evidence.
 
 ## 26. Production Assist Approval Rules
 
@@ -529,7 +561,9 @@ T+1 evidence separately; do not reopen peer work without new evidence.
 > fallback 14/14 while AI was rejected; Phase 8.5.4 closes its blockers retrospectively and Phase
 > 8.5.4.2 closes holiday-aware preceding-DAY lookup retrospectively in operating shadow. Natural KR
 > run-27 then delivered fallback 8/8 while AI was rejected; Phase 8.5.5 closes its reasoning-owner
-> and repetition blockers retrospectively. Wait for
+> blockers retrospectively. Natural US run-28 delivered fallback 14/14 after the unchanged runtime
+> gate rejected generic numeric-summary and RR-delta repetition; Phase 8.5.5.1 closes those blockers
+> retrospectively and is operating shadow. Wait for
 > the next natural proof. Phase 8.3
 > is finalized as selective optional context and must not be reopened without new evidence. Cash
 > Flow / Capital Efficiency remains pending behind natural proof. Evaluate

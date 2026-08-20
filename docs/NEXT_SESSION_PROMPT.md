@@ -47,6 +47,12 @@ checkout. Read, in this order:
 35. `docs/reports/20260819-run27-repetition-audit.md`
 36. `docs/reports/20260819-run27-repaired-ai-preview.md`
 37. `docs/reports/20260819-phase8-5-5-validation.md`
+38. `docs/reports/20260820-run28-us-numeric-summary-root-cause.md`
+39. `docs/reports/20260820-run28-typed-repetition-audit.md`
+40. `docs/reports/20260820-run28-business-earnings-ownership-audit.md`
+41. `docs/reports/20260820-run28-repaired-ai-preview.md`
+42. `docs/reports/20260820-phase8-5-5-1-validation.md`
+43. `docs/reports/20260820-phase8-5-5-1-shadow-promotion.md`
 
 Phase 8.3.2A/finalization architecture, coverage reports and previews remain on the preserved
 `codex/phase-8-3-finalization` branch. Read them with `git show <branch>:<path>` when peer history is
@@ -98,7 +104,10 @@ Current core contracts:
 - valuation context `valuation-context-wording-v1`
 - industry reasoning `industry-specific-reasoning-v1`
 - current price context `current-price-context-v1`
-- runtime specificity `runtime-message-specificity-v1`
+- runtime specificity `runtime-message-specificity-v2`
+- runtime reasoning ownership `runtime-reasoning-ownership-v1`
+- business numeric ownership `numeric-summary-ownership-v1`
+- typed template skeleton `typed-template-skeleton-v1`
 - runtime gate `runtime-message-quality-v1`
 - receipt `runtime-message-quality-receipt-v2`
 - peer selection `peer-sector-valuation-v1`, group `verified-profile-peers-v2`
@@ -200,7 +209,17 @@ or skeleton repeats, and a verified PASS receipt. This remains retrospective evi
 Ownership and Natural Repetition are `CLOSED_RETROSPECTIVE_PENDING_NATURAL`; Natural AI-Assisted
 Delivery remains `PARTIAL`.
 
-Default next task after Phase 8.5.5 operating promotion: inspect the **next natural US/KR packets**
+Natural US packet `2026-08-20-us-run-28-9024def294e6` then passed numeric, semantic and final-
+language validation but failed the unchanged runtime quality gate. AI sent 0 and deterministic
+fallback delivered 14/14. Phase 8.5.5.1 removes valuation-owned business fillers, suppresses the
+generic portfolio numeric-summary scaffold, makes RR deltas conditional on existing material chart
+transitions, and distinguishes typed RR and PBR relations without relaxing repetition policy.
+Immutable replay has 149 automatic bindings, zero validator errors, zero ownership/skeleton
+blockers and a verified PASS receipt; run-27 remains PASS. Implementation `c915d44` is operating
+shadow after exact-SHA Actions Test/Lint, API health and 291 smoke tests. This is retrospective
+evidence only. Natural AI-Assisted Delivery remains `PARTIAL`.
+
+Default next task after Phase 8.5.5.1 operating promotion: inspect the **next natural US/KR packets**
 without manual task execution. For both
 markets verify, in order:
 

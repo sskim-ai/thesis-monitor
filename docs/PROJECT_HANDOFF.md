@@ -16,7 +16,7 @@ execution or an autonomous investment adviser.
 
 | Component | Contract |
 |---|---|
-| Branch | Phase 8.5.5 is operating shadow from `codex/phase-8-5-5-natural-reasoning-ownership-repair`; peer/KRX experimental ancestry remains excluded |
+| Branch | Phase 8.5.5.1 is operating shadow from `codex/phase-8-5-5-1-us-numeric-summary-typed-repetition`; peer/KRX experimental ancestry remains excluded |
 | Official assessment | Deterministic `ThesisAssessment` |
 | AI mode | `shadow` |
 | Analysis policy | `daily-review-v3.10` |
@@ -40,6 +40,8 @@ execution or an autonomous investment adviser.
 | Current price context | `current-price-context-v1` |
 | Runtime specificity | `runtime-message-specificity-v2` |
 | Runtime reasoning ownership | `runtime-reasoning-ownership-v1` |
+| Business numeric ownership | `numeric-summary-ownership-v1` |
+| Typed template skeleton | `typed-template-skeleton-v1` |
 | Runtime quality | `runtime-message-quality-v1`, receipt `runtime-message-quality-receipt-v2` |
 | Night futures | `night-futures-session-basis-v1` CLOSED retrospective; holiday-aware preceding DAY lookup operating shadow, natural proof pending |
 
@@ -683,6 +685,47 @@ smoke tests. All four automations remain ACTIVE and unchanged. This is
 `CLOSED_RETROSPECTIVE_PENDING_NATURAL`, not a natural AI-assisted PASS. Wait for the next natural
 US/KR sessions. Cash Flow / Capital Efficiency remains pending.
 
+## Phase 8.5.5.1 US Numeric Summary Ownership Repair
+
+Natural US packet `2026-08-20-us-run-28-9024def294e6` passed numeric, semantic and final-language
+validation, but the unchanged runtime quality gate rejected the AI candidate. AI sent 0;
+deterministic fallback delivered 14/14 with pending 0. The fallback and exactly-once path remained
+safe. The natural market packet also suppressed night futures because no latest completed session
+pair was available, which is valid live fail-closed behavior rather than numeric exposure proof.
+
+The remaining blocker came from three connected paths. The Daily Review policy required two
+earnings anchors, so valuation-source TTM EPS and BVPS filled sparse `business_earnings` sections.
+Those sections shared the portfolio scaffold `현재 확인된 핵심 숫자는`. Separately, every numerical
+RR change was treated as material, producing ten standalone previous/current RR tuples. The old
+text-only normalizer then grouped those tuples with WULF's economically different current-PBR to
+historical-percentile relation.
+
+`numeric-summary-ownership-v1` removes the numeric quota and gives business detail only to direct
+earnings metrics; valuation-only denominators no longer fill the section, and a company-specific
+Unknown is valid when business evidence is absent. `typed-template-skeleton-v1` combines text shape
+with section, owner, numeric semantic type and comparison relation. Existing chart-transition flags,
+not a new threshold, decide whether an RR delta renders. Six material transitions were integrated
+with their price context and four non-material pairs were suppressed.
+
+The archive-only replay has 149 automatic bindings, manual/rejected/unresolved 0, validator errors
+0, and a verified PASS receipt. Template skeleton blockers fall 5 -> 0, generic numeric-summary
+families 1 -> 0 and business ownership violations 9 -> 0. Substantive and methodology repetition
+remain 0; observer/holder, specific next checks and specific Unknowns remain 13/13. Run-27 remains
+PASS and average stock-message length falls 4.00%.
+
+Implementation `c915d44e3080ad18c5a646932a51d77a4c15dc1a` passed Actions run `32319601429`
+Test/Lint, was fast-forwarded to main and operating, passed API health and 291 operating smoke tests.
+All four automations remain ACTIVE at 08:15/08:30/16:15/16:55 KST with no configuration change or
+manual run. See the [root cause](reports/20260820-run28-us-numeric-summary-root-cause.md),
+[typed audit](reports/20260820-run28-typed-repetition-audit.md),
+[ownership audit](reports/20260820-run28-business-earnings-ownership-audit.md),
+[archive-only Preview](reports/20260820-run28-repaired-ai-preview.md),
+[validation](reports/20260820-phase8-5-5-1-validation.md), and
+[promotion](reports/20260820-phase8-5-5-1-shadow-promotion.md).
+
+This is `CLOSED_RETROSPECTIVE_PENDING_NATURAL`, not a natural AI-assisted PASS. Natural
+AI-Assisted Delivery remains `PARTIAL`; Cash Flow / Capital Efficiency remains pending.
+
 On 2026-08-15 the owning desktop environment verified all four local-project tasks, retained their
 08:15/08:30/16:15/16:55 schedules, and migrated their exact prompts to v3.10 with
 `security-identity-v2` and `financial-quality-taint-v2`. All four are ACTIVE,
@@ -872,7 +915,8 @@ first.
 
 ## Next Steps
 
-1. Wait for the next natural US/KR sessions and verify AI quality, reasoning ownership, repetition,
+1. Wait for the next natural US/KR sessions after Phase 8.5.5.1 and verify AI quality, business
+   numeric ownership, typed repetition, reasoning ownership,
    night-futures session/reference evidence, fallback context parity, Korean language, price/RR,
    full validator, runtime receipt, archive, and exactly-once behavior.
 2. Preserve operational counts KR 3/5 and US 3/5 and retain all natural/replay artifacts without

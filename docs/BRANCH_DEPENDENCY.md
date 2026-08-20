@@ -1,11 +1,11 @@
 # Branch Dependency Manifest
 
-As of 2026-08-19. Resolve final SHAs from Git; documentation commits are intentionally not
+As of 2026-08-20. Resolve final SHAs from Git; documentation commits are intentionally not
 self-referential.
 
 | Branch | Base / merge-base | Unique scope | Code dependency | Operating eligible | Promotion path |
 |---|---|---|---|---|---|
-| `main` / operating | Phase 8.5.4.2 operating code through `7e7ab5acee2176bc8a452115da19ac6e14d312ab` plus later operating documentation | Phase 8.5.x operating shadow | none | current baseline | already operating |
+| `main` / operating | Phase 8.5.5.1 operating code through `c915d44e3080ad18c5a646932a51d77a4c15dc1a` plus later operating documentation | Phase 8.5.x operating shadow | none | current baseline | already operating |
 | `codex/phase-8-2a-krx-market-breadth` | main experimental ancestry | KRX breadth, universe and publication telemetry | KRX experimental | no | separate KRX decision |
 | `codex/phase-8-3-peer-sector-valuation` | KRX experimental final | original Phase 8.3 peer contract | Git ancestry includes KRX; peer code does not require KRX runtime symbols | no | promote after KRX or reconstruct cleanly |
 | `codex/integration-phase-8-3-peer-only` | latest main | two peer-only commits through `e17d992c4c5d40030294eff5a74504e88ab35911` | no KRX code/schema dependency | prepared, not approved | peer-only review branch |
@@ -16,6 +16,7 @@ self-referential.
 | `codex/phase-8-5-4-1-operating-shadow-promotion` | Phase 8.5.4 `3a6547e...` | live-readiness, promotion, operating smoke and persistent-state evidence | documentation only after validated code promotion | evidence branch | fast-forward documentation after exact-SHA CI |
 | `codex/phase-8-5-4-2-night-futures-calendar-repair` | operating main `c7581a9...` | holiday-aware preceding-DAY lookup | existing operating night-futures path only | promoted | fast-forwarded through `7e7ab5a...` |
 | `codex/phase-8-5-5-natural-reasoning-ownership-repair` | operating main `c6481d145ccc1583feaf6f6de7d005e774d56933` | run-27 security/framework ownership and repetition repair | existing operating AI packet/validator path only | promoted | clean linear fast-forward through `2ac9091...` |
+| `codex/phase-8-5-5-1-us-numeric-summary-typed-repetition` | operating main `0402c1b19673d0ced6fcb1fef1cfcd1b1ef291fb` | run-28 business numeric ownership, typed skeleton and RR-delta repetition repair | existing operating AI policy/specificity/quality path only | promoted | clean linear fast-forward through `c915d44...` |
 
 The Phase 8.3 original branch has a hidden Git ancestry dependency but no required KRX code,
 schema or runtime import. The clean branch resolves that promotion risk. Phase 8.3.2A starts from
@@ -41,3 +42,7 @@ Phase 8.2A market-breadth provider, readiness telemetry or peer experimental imp
 Phase 8.5.5 likewise starts from operating main. It changes only runtime specificity metadata,
 packet framework roles, security-language validation, Daily Review policy, tests and archive-only
 evidence. It imports no Phase 8.3 or Phase 8.2A experimental code and changes no KRX provider path.
+
+Phase 8.5.5.1 likewise starts from the latest operating main. It changes only the Daily Review
+policy, runtime specificity/quality ownership, tests and run-28 archive-only evidence. It imports no
+Phase 8.3 or Phase 8.2A experimental code and makes no KRX provider, schema or task change.
