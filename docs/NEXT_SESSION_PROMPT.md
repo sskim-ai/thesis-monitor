@@ -11,11 +11,11 @@ Read, in order:
 1. `docs/project-state.json`
 2. `docs/MASTER_WORKFLOW.md`
 3. `docs/PROJECT_HANDOFF.md`
-4. `docs/architecture/CASH_FLOW_CAPITAL_EFFICIENCY.md`
-5. `docs/architecture/CASH_FLOW_SHADOW_CONSUMPTION.md`
-6. `docs/reports/20260820-phase9-0c-complete-report-bundle.md`
-7. `docs/reports/20260820-phase9-0c-shadow-context.json`
-8. `docs/reports/20260820-phase9-0c-readiness.json`
+4. `docs/architecture/CASH_FLOW_RUNTIME_SHADOW_CANARY.md`
+5. `docs/reports/20260820-phase9-0d-complete-report-bundle.md`
+6. `docs/reports/20260820-phase9-0d-canary-readiness.md`
+7. `docs/architecture/CASH_FLOW_SHADOW_CONSUMPTION.md`
+8. `docs/reports/20260820-phase9-0c-shadow-context.json`
 9. `docs/BRANCH_DEPENDENCY.md`
 
 Current major state:
@@ -23,16 +23,22 @@ Current major state:
 - Phase 9.0A: `ARCHITECTURE_CLOSED`
 - Phase 9.0B: `CANONICAL_CORE_IMPLEMENTED_SHADOW`
 - Phase 9.0C: `CLOSED_RETROSPECTIVE`
-- `PHASE_9_0D_READY = YES`
-- `PHASE_9_0D_SCOPE = SELECTIVE_CASH_FLOW_RUNTIME_SHADOW_CANARY`
+- Phase 9.0D runtime plumbing: `IMPLEMENTED_PENDING_NATURAL`
+- `RUNTIME_CANARY_DEPLOYED = YES`
+- Natural US/KR canary: `NOT_OBSERVED / NOT_OBSERVED`
+- `PHASE_9_0E_READY = NO`
 - Natural AI-Assisted Delivery: `PARTIAL`, observed independently
 - KRX exact-slot telemetry: operating capture only, observed independently
 - Production Assist: `OFF`
 
-The next major task is Phase 9.0D Selective Cash-Flow Runtime Shadow Canary. Attach the validated
-sidecar only to a delivery-isolated natural runtime shadow path. Keep the actual AI candidate,
-fallback, Telegram, Public Action, schema, and user-visible renderer unchanged until a later
-explicit integration gate.
+The next task is a read-only review of the first natural Phase 9.0D US canary. Use the separately
+archived manifest, sidecar, raw/bound shadow output, semantic validation, runtime-quality receipt,
+canary receipt and production delivery result. Verify the Scheduled Task source, one logical canary
+identity, zero production influence, safe full-FCF and OCF-only use, lagging-formal suppression,
+and human value add. Do not count a manual replay as natural evidence.
+
+Keep the actual AI candidate, fallback, Telegram, Public Action, schema, and user-visible renderer
+unchanged until a later explicit integration gate.
 
 Preserve these Phase 9.0B decisions:
 
@@ -65,3 +71,7 @@ accumulate naturally. Do not run Scheduled Tasks, KRX capture, or Telegram manua
 Apply Phase Advancement Rule v1: a new P0 pauses 9.0D for a targeted repair; material P1 receives a
 bounded repair; P2 remains backlog. Natural AI partial status, KR cash-flow coverage, or pending KRX
 publication evidence alone does not block the selective Phase 9.0D canary.
+
+Set `PHASE_9_0E_READY = YES/NO` only after the required natural US behavior is actually observed.
+If no natural artifact exists, retain `NO` and `IMPLEMENTED_PENDING_NATURAL`; do not start Phase
+9.0E Selective Cash-Flow User-Visible Integration.

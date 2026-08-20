@@ -869,6 +869,25 @@ Scheduled Task prompts, database assessments, CCC, and standard ROIC remain unch
 [architecture](architecture/CASH_FLOW_SHADOW_CONSUMPTION.md) and
 [Phase 9.0C complete report bundle](reports/20260820-phase9-0c-complete-report-bundle.md).
 
+## Phase 9.0D Runtime Shadow Canary
+
+Phase 9.0D is implemented from immutable instruction commit
+`a24e4f2210f944fa7c43d8dbf8be1d1a8e652164`. The AI-review job launches a detached cash-flow
+canary only after a terminal production delivery result. The canary uses the exact natural packet,
+Phase 9.0B canonical Facts and Phase 9.0C consumption gates, then writes a separate immutable audit
+namespace. It has no Telegram sender, fallback selector, Public Action, assessment, warning, Pilot
+or DB mutation path.
+
+Production isolation, idempotency, generation/validator/archive failure, fallback and duplicate
+tests pass. Temporary run-28 and run-29 copies pass positive and KR-negative-control replays without
+rewriting original archives. They do not count as natural proof. Runtime plumbing is
+`IMPLEMENTED_PENDING_NATURAL`; the next expected US primary slot is 2026-08-21 08:15 KST.
+
+`PHASE_9_0E_READY = NO` until the first natural US canary artifact is reviewed. Cash-flow remains
+absent from production AI, Telegram, fallback and Public Action. CCC and standard ROIC stay
+deferred; KR OpenDART period recovery remains a medium follow-up. See the
+[Phase 9.0D complete report bundle](reports/20260820-phase9-0d-complete-report-bundle.md).
+
 On 2026-08-15 the owning desktop environment verified all four local-project tasks, retained their
 08:15/08:30/16:15/16:55 schedules, and migrated their exact prompts to v3.10 with
 `security-identity-v2` and `financial-quality-taint-v2`. All four are ACTIVE,
@@ -1063,9 +1082,9 @@ first.
 
 ## Next Steps
 
-1. Start Phase 9.0D Selective Cash-Flow Runtime Shadow Canary for the qualified subset. Preserve
-   PIT, freshness, comparison and materiality gates; keep canary output delivery-isolated and
-   user-visible cash-flow disabled until a separate integration decision.
+1. After the next natural US cycle, read the separate Phase 9.0D canary artifacts and verify task
+   source, production isolation, numeric/semantic/quality gates, value add and duplicate count.
+   Do not run a manual replay or start Phase 9.0E before that behavior evidence.
 2. In parallel, inspect the next natural US/KR sessions after Phase 8.5.5.2 and verify AI quality,
    structured supply, RR ownership, business numeric ownership, reasoning ownership, night-futures
    lineage, language, fallback, runtime receipt, archive, and exactly-once behavior.

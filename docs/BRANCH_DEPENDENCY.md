@@ -22,6 +22,7 @@ self-referential.
 | `codex/phase-9-0a-cash-flow-capital-efficiency-architecture` | operating main `2c2aacf1df25a3d0483a14ecf19857ea9c1371b9` | cash-flow period/lineage contracts, read-only official-source coverage, tests and architecture reports | extends existing financial lineage; no runtime import, packet, DB, KRX breadth or peer dependency | promoted architecture-only | clean linear fast-forward after exact-SHA CI |
 | `codex/phase-9-0b-canonical-ocf-capex-fcf-core` | Phase 9.0A operating main `970ad2c3a1844e6dcbddbf47dff17d71170852d2` | official occurrence canonicalization, typed period derivation, deterministic PPE-only FCF, internal shadow audit | extends Phase 9.0A contract; no packet, prompt, public schema, renderer, DB, task, KRX breadth or peer dependency | eligible after exact-SHA CI | clean linear fast-forward only; user-visible behavior diff 0 |
 | `codex/phase-9-0c-cash-flow-shadow-consumption` | Phase 9.0B operating main `86fafbf66dc690aa1ba5b9e0089c9098f1d7a6ef` | PIT/freshness/comparison/materiality sidecar, archive-only reasoning and validators | consumes Phase 9.0B Facts; no production packet, prompt, public schema, renderer, DB, task, KRX breadth or peer dependency | eligible after exact-SHA CI | clean linear fast-forward only; user-visible behavior diff 0 |
+| `codex/phase-9-0d-selective-cash-flow-runtime-shadow-canary` | exact instruction commit `a24e4f2210f944fa7c43d8dbf8be1d1a8e652164` | detached post-delivery cash-flow sidecar, canary validation, receipts and idempotent audit archive | consumes Phase 9.0B/9.0C contracts; no Telegram, Public Action, assessment, fallback, Pilot, KRX breadth or peer dependency | eligible after exact-SHA CI | clean linear fast-forward; natural proof remains pending |
 
 The Phase 8.3 original branch has a hidden Git ancestry dependency but no required KRX code,
 schema or runtime import. The clean branch resolves that promotion risk. Phase 8.3.2A starts from
@@ -79,3 +80,10 @@ tests and the archive evidence generator. It reads canonical Facts and immutable
 performs no provider network call, and does not enter production packet, prompt, API, fallback,
 renderer, task, database, or delivery imports. Phase 9.0D may add only a delivery-isolated runtime
 shadow canary unless a later explicit user-visible gate approves more.
+
+Phase 9.0D starts from its promoted, immutable work-instruction commit. The existing AI-review CLI
+imports only a best-effort detached launcher after a terminal production result; all cash-flow
+context, output, validation and receipts remain under a separate canary archive namespace. It does
+not import Telegram dispatch into the canary, alter the four task configurations, or change any
+production packet/output schema. Phase 9.0E remains blocked on behavior-based natural US canary
+evidence, not on KR coverage, CCC, ROIC, or overall AI-assisted delivery completeness.

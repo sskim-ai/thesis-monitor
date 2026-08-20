@@ -21,6 +21,7 @@ DOCUMENTS = (
     ROOT / "docs" / "architecture" / "RUNTIME_REASONING_OWNERSHIP.md",
     ROOT / "docs" / "architecture" / "CASH_FLOW_CAPITAL_EFFICIENCY.md",
     ROOT / "docs" / "architecture" / "CASH_FLOW_SHADOW_CONSUMPTION.md",
+    ROOT / "docs" / "architecture" / "CASH_FLOW_RUNTIME_SHADOW_CANARY.md",
     ROOT / "docs" / "operations" / "AI_ASSISTED_PILOT.md",
     ROOT / "docs" / "knowledge" / "README.md",
 )
@@ -39,17 +40,15 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     assert state["repository"] == "sskim-ai/thesis-monitor"
     assert state["branch"] == "main"
     assert state["experimental_branch"] == (
-        "codex/phase-9-0c-cash-flow-shadow-consumption"
+        "codex/phase-9-0d-selective-cash-flow-runtime-shadow-canary"
     )
     assert state["current_phase"] == (
-        "phase_9_0c_cash_flow_shadow_consumption_closed_retrospective"
+        "phase_9_0d_runtime_canary_deployed_pending_natural"
     )
     assert state["last_completed_phase"] == (
-        "phase_9_0c_cash_flow_shadow_consumption_earnings_quality"
+        "phase_9_0d_runtime_canary_implementation"
     )
-    assert state["next_default_phase"] == (
-        "phase_9_0d_selective_cash_flow_runtime_shadow_canary"
-    )
+    assert state["next_default_phase"] == "phase_9_0d_natural_canary_review"
     assert state["deployed_code_commit"] == "HEAD"
     assert state["main_code_commit"] == "HEAD"
     assert state["operating_code_commit"] == "HEAD"
@@ -82,6 +81,9 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     assert state["contracts"]["cash_flow_shadow_consumption"] == (
         "cash-flow-shadow-consumption-v1"
     )
+    assert state["contracts"]["cash_flow_runtime_shadow_canary"] == (
+        "cash-flow-runtime-shadow-canary-v1"
+    )
     advancement = state["phase_advancement_rule_v1"]
     assert advancement["p0_open"] == []
     assert advancement["p1_open"] == []
@@ -92,6 +94,9 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     assert advancement["phase_9_0c_ready"] is True
     assert advancement["phase_9_0c_complete"] is True
     assert advancement["phase_9_0d_ready"] is True
+    assert advancement["phase_9_0d_runtime_implementation_complete"] is True
+    assert advancement["phase_9_0d_natural_proof"] == "not_observed"
+    assert advancement["phase_9_0e_ready"] is False
     phase_90a = state["phase_9_0a_cash_flow_capital_efficiency"]
     assert phase_90a["status"] == "architecture_closed_ready_for_phase_9_0b"
     assert phase_90a["active_universe"] == 20
@@ -117,6 +122,15 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     assert phase_90c["phase_9_0d_ready"] is True
     assert phase_90c["runtime_behavior_changed"] is False
     assert phase_90c["user_visible_integration"] is False
+    phase_90d = state["phase_9_0d_cash_flow_runtime_shadow_canary"]
+    assert phase_90d["status"] == "runtime_canary_deployed_pending_natural"
+    assert phase_90d["work_instruction_commit"] == (
+        "a24e4f2210f944fa7c43d8dbf8be1d1a8e652164"
+    )
+    assert phase_90d["production_isolation"] == "passed"
+    assert phase_90d["natural_us_canary"] == "not_observed"
+    assert phase_90d["phase_9_0e_ready"] is False
+    assert phase_90d["user_visible_integration"] is False
     assert state["persistent_gaps"]["krx_open_api"] == (
         "APPROVED_TELEMETRY_ONLY_OPERATING_USER_VISIBLE_NOT_INTEGRATED"
     )
@@ -201,6 +215,7 @@ def test_architecture_guides_record_decisions_and_readme_navigation() -> None:
         ROOT / "docs" / "architecture" / "NIGHT_FUTURES_SESSION_BASIS.md",
         ROOT / "docs" / "architecture" / "CASH_FLOW_CAPITAL_EFFICIENCY.md",
         ROOT / "docs" / "architecture" / "CASH_FLOW_SHADOW_CONSUMPTION.md",
+        ROOT / "docs" / "architecture" / "CASH_FLOW_RUNTIME_SHADOW_CANARY.md",
         ROOT / "docs" / "operations" / "AI_ASSISTED_PILOT.md",
         ROOT / "docs" / "knowledge" / "README.md",
     )
@@ -223,6 +238,7 @@ def test_architecture_guides_record_decisions_and_readme_navigation() -> None:
         "docs/architecture/PEER_VALUATION.md",
         "docs/architecture/CASH_FLOW_CAPITAL_EFFICIENCY.md",
         "docs/architecture/CASH_FLOW_SHADOW_CONSUMPTION.md",
+        "docs/architecture/CASH_FLOW_RUNTIME_SHADOW_CANARY.md",
         "docs/architecture/NIGHT_FUTURES_SESSION_BASIS.md",
         "docs/operations/AI_ASSISTED_PILOT.md",
         "docs/operations/SCHEDULED_TASK_CONTRACTS.md",

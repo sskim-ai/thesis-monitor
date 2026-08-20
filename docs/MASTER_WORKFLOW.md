@@ -574,13 +574,33 @@ receipt verification without threshold changes. Human review classifies 8 materi
 absent from the production packet, prompt, fallback, Public Action, and Telegram. See the
 [Phase 9.0C complete bundle](reports/20260820-phase9-0c-complete-report-bundle.md).
 
+## 21E. Phase 9.0D Cash-Flow Runtime Shadow Canary
+
+Phase 9.0D implements `cash-flow-runtime-shadow-canary-v1` from immutable instruction commit
+`a24e4f2210f944fa7c43d8dbf8be1d1a8e652164`. A terminal production AI-assisted or deterministic
+fallback result launches a detached child only after `delivery-result.json` is final. The parent
+keeps its original result and exit path; canary generation, validation, quality or archive failure
+cannot alter Telegram, fallback, backup, receipt, exactly-once, Pilot or assessment behavior.
+
+The child uses the exact packet plus Phase 9.0B Facts and Phase 9.0C PIT/freshness/comparison,
+industry and materiality contracts. Its manifest, sidecar, shadow output, numeric/semantic
+validation, quality receipt and completion marker live in a separate create-once namespace.
+Identity combines packet, consumption contract and canary policy, so primary/backup/retry
+processing produces one logical proof. The production candidate is never enriched or overwritten.
+
+Temporary run-28 replay passes with 10 automatic bindings and zero semantic, quality or production-
+influence errors. The run-29 KR negative control passes with zero cash-flow injection. These are
+retrospective deployment checks, not natural proof. Runtime state is
+`RUNTIME_CANARY_DEPLOYED_PENDING_NATURAL`; user-visible cash flow remains disabled and
+`PHASE_9_0E_READY = NO` until the first natural US canary is reviewed. See the
+[Phase 9.0D complete bundle](reports/20260820-phase9-0d-complete-report-bundle.md).
+
 ## 22. Current Roadmap
 
-The current state is `PHASE_9_0C_CLOSED_RETROSPECTIVE` plus
+The current state is `PHASE_9_0D_RUNTIME_CANARY_DEPLOYED_PENDING_NATURAL` plus
 `NATURAL_AI_PROOF_CONTINUES_IN_PARALLEL`. Open P0 and P1 are zero. The next major task may begin
-Phase 9.0D Selective Cash-Flow Runtime Shadow Canary. This is not approval to expose cash-flow
-numbers in Telegram or fallback; the natural canary must remain delivery-isolated before a
-separate user-visible readiness decision.
+with a read-only review of the next natural US cash-flow canary. This is not approval to begin Phase
+9.0E or expose cash-flow numbers in Telegram or fallback.
 
 In parallel, observe the next natural US/KR sessions for AI-assisted delivery, ownership,
 repetition, night-session integrity, fallback, language, receipt, archive, and exactly-once proof.
