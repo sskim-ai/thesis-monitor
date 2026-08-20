@@ -157,7 +157,9 @@ Canonical amounts and Fact IDs are in `20260820-phase9-0b-canonical-facts.json`.
 
 - Branch: `codex/phase-9-0b-canonical-ocf-capex-fcf-core`
 - Base: `970ad2c3a1844e6dcbddbf47dff17d71170852d2`
-- Implementation SHA: resolved by `git rev-parse HEAD` after commit
+- Implementation SHA: `548dcbfb315ce1820d4950e0bf5e851f3fdcdafe`
+- Implementation Actions: run `32367677431`, Test/Lint PASS
+- Final documentation SHA: resolved by `git rev-parse HEAD`
 - Main/operating before promotion: `970ad2c3a1844e6dcbddbf47dff17d71170852d2`
 
 ## Canonical Evidence
@@ -200,13 +202,13 @@ Canonical amounts and Fact IDs are in `20260820-phase9-0b-canonical-facts.json`.
 - Manual Telegram / Scheduled Task / Pilot / DB / archive mutations: 0 / 0 / 0 / 0 / 0
 - Production Assist: OFF
 
-## Pending Exact-SHA Gate
+## Exact-SHA Gate
 
-Implementation and final documentation GitHub Actions Test/Lint must pass before main and operating fast-forward. No deployment occurs inside the 07:55-08:40 KST protection window.
+Implementation exact-SHA GitHub Actions Test/Lint passed. Final documentation GitHub Actions Test/Lint must also pass before main and operating fast-forward. No deployment occurs inside the 07:55-08:40 KST protection window.
 
 Local P0 open: 0. Local P1 open: 0.
 
-`PHASE_9_0C_READY = YES_CANDIDATE_PENDING_EXACT_SHA_CI`
+`PHASE_9_0C_READY = YES_PENDING_FINAL_DOCUMENTATION_SHA_CI`
 
 `PHASE_9_0C_SCOPE = CASH_FLOW_SHADOW_CONSUMPTION_EARNINGS_QUALITY`
 
