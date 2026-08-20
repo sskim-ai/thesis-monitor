@@ -282,6 +282,13 @@ Both `started_at` and `completed_at` must be at or after the market cutoff for a
 replace the scheduled production analysis. Telegram delivery retries resume persisted chunk progress
 without refreshing the completed assessment.
 
+The separate `ops/com.seungsoo.thesis-monitor.krx-publication-telemetry.plist` records read-only KRX
+publication metadata at the exact 08:05 and 16:05 KST slots. It writes sanitized append-only JSONL
+under `data/telemetry/krx/publication-readiness/` and has no market-packet, database, AI-review, or
+notification integration. Non-XKRX sessions and launches outside the scheduled minute stop before
+provider access. The observer is evidence collection only; it does not authorize KRX breadth in the
+operating digest.
+
 ### Codex Daily Review Shadow and Delivery Pilot
 
 `AI_REVIEW_MODE=shadow` adds an interpretation layer without changing the deterministic assessment.

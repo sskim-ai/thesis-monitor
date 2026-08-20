@@ -101,6 +101,22 @@ def preceding_exchange_session_date(
     return result if result < value else None
 
 
+def is_exchange_session_date(calendar_name: str, value: date) -> bool:
+    """Return exchange-calendar membership without a weekday fallback."""
+    try:
+        return bool(_exchange_calendar(calendar_name).is_session(value))
+    except (ValueError, IndexError, TypeError):
+        try:
+            calendar = exchange_calendar.get_calendar(
+                calendar_name,
+                start=value - timedelta(days=370),
+                end=value + timedelta(days=370),
+            )
+            return bool(calendar.is_session(value))
+        except (ValueError, IndexError, TypeError):
+            return False
+
+
 def us_market_session(as_of: datetime | None = None) -> MarketSessionState:
     current = as_of or datetime.now(timezone.utc)
     if current.tzinfo is None:
