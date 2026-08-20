@@ -16,7 +16,7 @@ execution or an autonomous investment adviser.
 
 | Component | Contract |
 |---|---|
-| Branch | Phase 8.5.5.1 is operating shadow from `codex/phase-8-5-5-1-us-numeric-summary-typed-repetition`; peer/KRX experimental ancestry remains excluded |
+| Branch | Phase 8.5.5.2 evidence branch `codex/phase-8-5-5-2-kr-structured-field-repetition`; operating promotion follows exact-SHA CI; peer/KRX breadth ancestry excluded |
 | Official assessment | Deterministic `ThesisAssessment` |
 | AI mode | `shadow` |
 | Analysis policy | `daily-review-v3.10` |
@@ -726,6 +726,46 @@ manual run. See the [root cause](reports/20260820-run28-us-numeric-summary-root-
 This is `CLOSED_RETROSPECTIVE_PENDING_NATURAL`, not a natural AI-assisted PASS. Natural
 AI-Assisted Delivery remains `PARTIAL`; Cash Flow / Capital Efficiency remains pending.
 
+## Phase 8.5.5.2 KR Structured Field Repair
+
+Natural KR packet `2026-08-20-kr-run-29-6e8809e1e944` passed numeric, semantic, and final-language
+checks but failed runtime quality. AI sent 0 and deterministic fallback delivered 8/8 with pending
+0. The immutable receipt identified canonical foreign/institution 1/5/20-day tuple shapes, exact
+current RR duplicated between core and price, one common financial-basis sentence, and one generic
+inventory/CAPEX-to-FCF/ROIC watch family.
+
+`canonical-supply-flow-tuple-v1` now distinguishes stable structured rows from optional analytical
+prose without hiding any eligible supply number. `numeric-primary-owner-v1` owns exact current RR in
+`price_positioning.text` once; candidate normalization removes only a standalone or safe numeric-
+list-tail secondary occurrence when one unambiguous price primary exists. Other forms remain
+fail-closed. Generic warning/watch candidates are suppressed while existing company-specific
+business prose, Unknowns, and next checks remain.
+
+The archive-only replay has 112 automatic numeric bindings, manual/rejected/unresolved/formatting
+failures 0, validator errors 0, runtime quality PASS, final language PASS, and verified receipt.
+Substantive repetition falls 2 -> 0 and blocker skeletons 4 -> 0 under the repaired typed audit;
+the three canonical supply tuple families are recorded as structural exceptions. Exact RR owner
+violations fall 4 -> 0. Run-28 and run-27 remain PASS, and average stock-message length falls 3.19%.
+
+LS ELECTRIC and Hanwha Aerospace remain fail-closed for share-basis-dependent valuation. Both have
+inferred local KRX/common-stock records, but canonical identity is still `unknown`/unverified,
+EPS security basis is unknown, and trailing PE/PBR basis is insufficient. No denominator was
+recalculated or marked verified.
+
+Phase Advancement Rule v1 classifies open safety/correctness as P0, bounded analysis-integrity
+repairs as P1, and non-material quality/UX as P2. P0 open is 0 and the run-29 targeted P1 is closed
+retrospectively with CI PASS, so `PHASE_9_0A_READY = YES`. This authorizes only a separate Phase 9.0A
+Cash Flow / Capital Efficiency evidence-architecture task. Natural AI proof and KRX exact-slot
+publication evidence continue in parallel; no Phase 9.0A implementation occurred here.
+
+See the [root cause](reports/20260820-run29-kr-structured-repetition-root-cause.md),
+[supply audit](reports/20260820-run29-structured-supply-tuple-audit.md),
+[RR audit](reports/20260820-run29-rr-cross-section-ownership-audit.md),
+[cash-conversion audit](reports/20260820-run29-industry-cash-conversion-specificity.md),
+[basis audit](reports/20260820-kr-valuation-basis-caution-audit.md),
+[archive-only Preview](reports/20260820-run29-repaired-ai-preview.md), and
+[validation](reports/20260820-phase8-5-5-2-validation.md).
+
 On 2026-08-15 the owning desktop environment verified all four local-project tasks, retained their
 08:15/08:30/16:15/16:55 schedules, and migrated their exact prompts to v3.10 with
 `security-identity-v2` and `financial-quality-taint-v2`. All four are ACTIVE,
@@ -857,6 +897,7 @@ unchanged. See [the Phase 7.2.9.2 readiness report](reports/20260817-phase7-2-9-
 - Runtime packet preflight: `app/services/runtime_packet_completeness_service.py`
 - Current price-context selector: `app/services/current_price_context_service.py`
 - Runtime specificity plan: `app/services/runtime_specificity_service.py`
+- Candidate ownership normalization: `app/services/runtime_reasoning_ownership_service.py`
 - Renderer and delivery: `app/services/ai_assisted_delivery_service.py`
 - Deterministic fallback assembly: `app/services/notification_service.py`
 - Industry routing and causal guardrails: `app/services/industry_reasoning_service.py`
@@ -917,20 +958,22 @@ first.
 
 ## Next Steps
 
-1. Wait for the next natural US/KR sessions after Phase 8.5.5.1 and verify AI quality, business
-   numeric ownership, typed repetition, reasoning ownership,
-   night-futures session/reference evidence, fallback context parity, Korean language, price/RR,
-   full validator, runtime receipt, archive, and exactly-once behavior.
-2. Preserve operational counts KR 3/5 and US 3/5 and retain all natural/replay artifacts without
+1. Start a separate Phase 9.0A Cash Flow / Capital Efficiency Evidence Architecture task. Limit it
+   to provider coverage, lineage, eligibility, missing-data policy, and industry applicability; do
+   not expose new production cash-flow values by default.
+2. In parallel, inspect the next natural US/KR sessions after Phase 8.5.5.2 and verify AI quality,
+   structured supply, RR ownership, business numeric ownership, reasoning ownership, night-futures
+   lineage, language, fallback, runtime receipt, archive, and exactly-once behavior.
+3. Preserve operational counts KR 3/5 and US 3/5 and retain all natural/replay artifacts without
    counter edits, resends, or archive rewriting.
-3. Keep TSM/WRD identity `unknown`, fine-grained industry routes general where unproved, peer data
+4. Keep TSM/WRD and unverified KRX identity/share bases `unknown`, fine-grained industry routes general where unproved, peer data
    unavailable where absent, and OCF/CAPEX/FCF gaps explicit.
-4. Let `com.seungsoo.thesis-monitor.krx-publication-telemetry` capture natural 08:05 and 16:05 KRX
+5. Let `com.seungsoo.thesis-monitor.krx-publication-telemetry` capture natural 08:05 and 16:05 KRX
    observations. Do not run it manually, define T+1 by inference, or integrate breadth until role
    evidence and Human Review pass.
-5. Keep Phase 8.3 closed as selective optional context unless materially new free-source, taxonomy,
+6. Keep Phase 8.3 closed as selective optional context unless materially new free-source, taxonomy,
    exact-group or natural-message evidence appears.
-6. If the post-repair natural review passes without a critical blocker, begin Cash Flow / Capital
-   Efficiency Enrichment design. If it fails, repair the new blocker first.
-7. Keep Production Assist disabled until natural full-message evidence passes direct human review
+7. Apply Phase Advancement Rule v1 to new runtime findings: interrupt 9.0A for P0, bound material
+   P1 repairs, and retain P2 as backlog.
+8. Keep Production Assist disabled until natural full-message evidence passes direct human review
    and the user explicitly approves it.

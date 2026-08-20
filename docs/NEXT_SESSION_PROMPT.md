@@ -219,8 +219,34 @@ blockers and a verified PASS receipt; run-27 remains PASS. Implementation `c915d
 shadow after exact-SHA Actions Test/Lint, API health and 291 smoke tests. This is retrospective
 evidence only. Natural AI-Assisted Delivery remains `PARTIAL`.
 
-Default next task after Phase 8.5.5.1 operating promotion: inspect the **next natural US/KR packets**
-without manual task execution. For both
+Natural KR packet `2026-08-20-kr-run-29-6e8809e1e944` then passed numeric, semantic and final-
+language checks but failed runtime quality on KR structured/prose repetition. AI sent 0 and
+deterministic fallback delivered 8/8. Phase 8.5.5.2 preserves all eligible foreign/institution
+1/5/20-day values as `canonical-supply-flow-tuple-v1`, assigns exact current RR once to
+`price_positioning.text` through `numeric-primary-owner-v1`, and suppresses repeated generic
+financial-basis and inventory/CAPEX-to-FCF/ROIC candidates when company-specific Unknowns already
+own the decision question. Immutable replay has 112 automatic bindings, manual/rejected/unresolved
+0, full validator/language/runtime quality PASS, verified receipt, and run-28/run-27 PASS.
+
+Reasoning Ownership, US Numeric Summary Ownership, and the prior typed-repetition behavior were
+exercised without recurrence in run-29 and are tracked as individual `LIVE_PASS` evidence. The new
+KR structured family remains `CLOSED_RETROSPECTIVE_PENDING_NATURAL`; aggregate Natural AI-Assisted
+Delivery remains `PARTIAL`.
+
+Phase Advancement Rule v1 is now authoritative. P0 correctness/safety blocks the roadmap; P1
+analysis-integrity issues require bounded repair and retrospective PASS; P2 quality/UX remains
+backlog. Open P0 is 0 and the run-29 targeted P1 is closed, so `PHASE_9_0A_READY = YES`. This does
+not implement Phase 9.0A. The next task may start Cash Flow / Capital Efficiency Evidence
+Architecture while natural US/KR and KRX publication observations continue in parallel. A new P0
+interrupts that architecture work for targeted repair.
+
+Default next major task: start a separate **Phase 9.0A Cash Flow / Capital Efficiency Evidence
+Architecture** work order. Limit it to provider coverage, financial lineage, OCF/CAPEX/FCF
+eligibility, working capital, inventory, receivables/payables, ROIC denominator, industry
+applicability, provisional-earnings limits, share-basis effects, and missing-data policy. Do not
+deploy a new user-visible cash-flow feature by default.
+
+In parallel, inspect the **next natural US/KR packets** without manual task execution. For both
 markets verify, in order:
 
 1. actual delivery mode;
@@ -235,10 +261,9 @@ markets verify, in order:
 10. duplicate/repetition regression;
 11. receipt, archive and exactly-once state.
 
-If a critical blocker appears, prioritize another targeted runtime repair. If the post-repair
-natural review passes, the next development candidate is Cash Flow / Capital Efficiency Enrichment
-covering OCF, CAPEX, FCF, ROIC, relevant ROE, inventory, working capital, cash conversion and
-segment margin. Do not begin that phase before promotion and natural proof.
+Classify a new blocker as P0/P1/P2. Pause Phase 9.0A for P0. Prioritize a bounded material P1 repair;
+minor isolated P1 may proceed in parallel. Keep P2 in backlog and do not let it block the major
+architecture phase.
 
 In parallel, inspect the latest KRX exact-slot evidence for 16:05, 08:05 and T+1. Historical
 capability and universe/publication contracts pass, but all three operational roles remain

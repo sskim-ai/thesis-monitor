@@ -1,15 +1,16 @@
 # Thesis Monitor Master Workflow
 
-Master Workflow: `v12`
+Master Workflow: `v13`
 As of: `2026-08-20`
 Repository: `sskim-ai/thesis-monitor`
 Operating branch: `main`
-Latest evidence branch: `codex/phase-8-5-5-1-us-numeric-summary-typed-repetition`
+Latest evidence branch: `codex/phase-8-5-5-2-kr-structured-field-repetition`
 Commit resolution: run `git rev-parse HEAD`; this document is part of that commit and must not
 hardcode a self-referential final SHA. Resolve `origin/main` and the clean operating checkout at
-session start. Phase 8.5.5.1 closes the run-28 numeric-summary ownership and typed-repetition
-blockers retrospectively and is now operating shadow. Natural US/KR proof remains pending,
-and Natural AI-assisted delivery remains `PARTIAL`.
+session start. Phase 8.5.5.2 closes the run-29 structured-supply, exact-RR ownership, and typed prose
+repetition blockers retrospectively. Natural US/KR proof remains in parallel and Natural
+AI-assisted delivery remains `PARTIAL`; that aggregate state alone does not block Phase 9.0A
+evidence-architecture work.
 KRX 8.2A.x and peer 8.3.x also remain experimental.
 
 ## 1. Project Mission
@@ -349,6 +350,22 @@ GitHub Actions run `32319601429`, was fast-forwarded to main and operating, pass
 291 operating smoke tests. This remains retrospective proof; Natural AI-Assisted Delivery is still
 `PARTIAL`.
 
+Phase 8.5.5.2 reconstructs natural KR packet `2026-08-20-kr-run-29-6e8809e1e944`. The final AI
+candidate passed numeric, semantic, and language checks but failed runtime quality on three
+independent prose families: canonical 1/5/20-day supply rows were treated as prose templates, exact
+current RR appeared in both core and price, and common financial-basis/cash-conversion cautions
+repeated across stocks. AI sent 0; deterministic fallback delivered 8/8 exactly once.
+
+`canonical-supply-flow-tuple-v1` preserves stable foreign/institution actor-horizon rows while
+continuing to check adjacent interpretation. `numeric-primary-owner-v1` assigns exact current RR to
+`price_positioning.text` once and removes only safely identifiable secondary occurrences before
+binding. Common financial caution and inventory/CAPEX-to-FCF/ROIC candidates are suppressed when
+company-specific Unknowns and next checks already own the decision question. The immutable replay
+binds 112 numbers automatically with manual/rejected/unresolved 0, passes validation, language,
+runtime quality and receipt verification, and retains run-28/run-27 PASS. Average stock-message
+length falls 3.19%. No threshold, RR formula, support/resistance, denominator, fallback, KRX user
+integration, Telegram, task, Pilot, DB, archive, or receipt behavior changed.
+
 ## 20. Phase History
 
 | Phase | Result |
@@ -372,6 +389,7 @@ GitHub Actions run `32319601429`, was fast-forwarded to main and operating, pass
 | 8.5.4.2 | Holiday-aware XKRX preceding-DAY lookup PASS retrospectively and promoted to operating shadow; current provider row pending; natural proof pending |
 | 8.5.5 | Run-27 security/framework ownership and repetition repair PASS retrospectively and promoted to operating shadow; natural proof pending |
 | 8.5.5.1 | Run-28 business numeric ownership, typed skeleton and RR-delta repetition repair PASS retrospectively and promoted to operating shadow; natural proof pending |
+| 8.5.5.2 | Run-29 canonical supply tuple, current-RR single owner and typed prose repetition repair PASS retrospectively; Phase Advancement Rule v1 applied |
 | 8.2A.x | KRX historical engine, universe and publication-state contracts PASS; exact 08:05/16:05 telemetry-only capture operating; user-visible integration 0; roles not yet proven |
 | 8.3 | Peer selection/safety/statistics contract PASS; capability strong PARTIAL; original measured coverage 0/20 |
 | 8.3.1/8.3.1.1 | Paid provider research completed; clean peer-only branch prepared; production provider gate not passed |
@@ -390,12 +408,14 @@ GitHub Actions run `32319601429`, was fast-forwarded to main and operating, pass
 | RXRX valuation label repair | CLOSED |
 | Fallback dynamic price | CLOSED |
 | Natural AI-Assisted Delivery | PARTIAL |
-| Phase 8.5.5 reasoning ownership | CLOSED_RETROSPECTIVE_PENDING_NATURAL |
-| Phase 8.5.5 natural repetition | CLOSED_RETROSPECTIVE_PENDING_NATURAL |
+| Phase 8.5.5 reasoning ownership | LIVE_PASS on run-29 exercised security/framework routes |
+| Phase 8.5.5 natural repetition | repaired families LIVE_PASS; run-29 independent KR family CLOSED_RETROSPECTIVE_PENDING_NATURAL |
 | Phase 8.5.5 operating state | OPERATING_SHADOW |
-| Phase 8.5.5.1 US numeric-summary ownership | CLOSED_RETROSPECTIVE_PENDING_NATURAL |
-| Phase 8.5.5.1 typed repetition | CLOSED_RETROSPECTIVE_PENDING_NATURAL |
+| Phase 8.5.5.1 US numeric-summary ownership | LIVE_PASS on run-29 exercised generic-summary/ownership audit |
+| Phase 8.5.5.1 typed repetition | LIVE_PASS on run-29; new KR tuple family handled separately |
 | Phase 8.5.5.1 operating state | OPERATING_SHADOW |
+| Phase 8.5.5.2 KR structured repetition | CLOSED_RETROSPECTIVE_PENDING_NATURAL |
+| Phase 8.5.5.2 supply / RR ownership | CLOSED_RETROSPECTIVE_PENDING_NATURAL |
 | Phase 8.5.4.2 calendar repair / operating | PASS retrospective / OPERATING_SHADOW |
 | Night-futures session basis | CLOSED_RETROSPECTIVE |
 | Preceding DAY calendar lookup | CLOSED_RETROSPECTIVE_PENDING_NATURAL; current provider row pending |
@@ -407,6 +427,7 @@ GitHub Actions run `32319601429`, was fast-forwarded to main and operating, pass
 | KRX exact-slot capture | OPERATING_TELEMETRY_ONLY_PENDING_NATURAL; 08:05/16:05 active, T+1 clock undefined |
 | KRX user-visible integration | NO |
 | Production Assist / AI mode | OFF / shadow |
+| Phase 9.0A readiness | YES; evidence architecture only, natural proof continues in parallel |
 
 ## 21. Current Persistent Gaps
 
@@ -429,10 +450,12 @@ GitHub Actions run `32319601429`, was fast-forwarded to main and operating, pass
 | Natural live validation of Phase 8 code | PARTIAL |
 | Current-price RR packet/numeric path | LIVE PATH PASS |
 | AI natural-live message quality | PARTIAL: retrospective PASS, natural AI delivery pending |
-| Reasoning ownership | CLOSED_RETROSPECTIVE_PENDING_NATURAL |
-| Natural cross-ticker repetition | CLOSED_RETROSPECTIVE_PENDING_NATURAL |
-| US numeric-summary ownership | CLOSED_RETROSPECTIVE_PENDING_NATURAL |
-| Typed template repetition | CLOSED_RETROSPECTIVE_PENDING_NATURAL |
+| Reasoning ownership | LIVE_PASS_RUN29 |
+| Natural cross-ticker repetition | PRIOR_FAMILIES_LIVE_PASS; KR_STRUCTURED_FAMILY_CLOSED_RETROSPECTIVE_PENDING_NATURAL |
+| US numeric-summary ownership | LIVE_PASS_RUN29 |
+| Typed template repetition | LIVE_PASS_RUN29; KR_STRUCTURED_EXTENSION_PENDING_NATURAL |
+| Canonical supply tuple ownership | CLOSED_RETROSPECTIVE_PENDING_NATURAL |
+| Canonical current-RR owner | CLOSED_RETROSPECTIVE_PENDING_NATURAL |
 | Fallback dynamic-price lifecycle | CLOSED: retrospective PASS and operating code promoted |
 | Night-futures session-basis integrity | CLOSED_RETROSPECTIVE |
 | Night-futures preceding DAY calendar lookup | CLOSED_RETROSPECTIVE_PENDING_NATURAL |
@@ -446,21 +469,42 @@ full messages, valuation scope, denied echo, decision-material delta, historical
 valuation-context wording, observer/holder foundation, Unknown/next-check foundation, receipt
 integrity, fallback/retry, exactly-once accounting, and valuation comparison-label collisions.
 
+## 21A. Phase Advancement Rule v1
+
+Every newly observed blocker is classified before it can affect the roadmap:
+
+- **P0 Safety/Correctness**: wrong or unproved visible data, identity/basis/session errors,
+  fabricated calculations, invalid canonical RR, receipt/archive/exactly-once failure, or duplicate
+  delivery. Any open P0 blocks Phase 9.0A.
+- **P1 Analysis Integrity**: ownership/framework/meaning errors or structural repetition severe
+  enough to make analysis generic or prevent valid output. A bounded targeted repair plus
+  retrospective replay and CI PASS closes the roadmap gate; every P1 does not require a separate
+  natural delivery before architecture work may continue.
+- **P2 Quality/UX**: non-material wording, labeling, ordering, length, qualitative RR polish, or
+  unavailable optional integrations. P2 remains backlog and cannot block a major phase.
+
+Aggregate Natural AI-Assisted Delivery and individual repair proof are separate. A repair may be
+marked `LIVE_PASS` only when its behavior was exercised in a natural packet and did not recur; an
+unexercised repair remains `NOT_OBSERVED`. A different new P1 family does not reopen an already
+exercised repair. Natural runtime observation and major evidence-architecture design may proceed in
+parallel while Production Assist remains OFF. A new P0 interrupts Phase 9.0A work for targeted
+repair; material P1 is bounded and prioritized, and P2 never interrupts it. KRX publication timing
+is a parallel evidence track and does not block Phase 9.0A.
+
 ## 22. Current Roadmap
 
-Operating blocker outranks new feature work. The current state is
-`WAIT_FOR_NEXT_NATURAL_US_KR_PROOF`: Phase 8.5.5.1 has retrospective PASS evidence and is the current
-operating shadow baseline.
-Observe the next natural US/KR sessions
-for actual AI-assisted delivery, reasoning ownership, cross-ticker repetition, night-session
-integrity, fallback parity, final language, receipt, archive and exactly-once proof. Phase 8.3
-remains closed as selective optional context.
+The current state is `PHASE_9_0A_READY` plus `NATURAL_AI_PROOF_CONTINUES_IN_PARALLEL`. Open P0 is
+zero, the run-29 targeted P1 is retrospectively closed, run-29/run-28/run-27 and full CI pass, and
+operating safety remains intact. The next major task may begin Phase 9.0A Cash Flow / Capital
+Efficiency **Evidence Architecture**: provider coverage, financial lineage, OCF, CAPEX, FCF
+eligibility, working capital, inventory, receivables/payables, ROIC denominator, industry
+applicability and missing-data policy. This is not approval to expose or deploy new cash-flow
+numbers.
 
-Cash Flow / Capital Efficiency Enrichment remains the next major candidate: OCF, CAPEX, FCF, ROIC,
-relevant ROE, inventory, working capital, cash conversion and segment margin. Do not start it until
-the next natural proof has no critical blocker. In parallel, let the dedicated telemetry-only
-LaunchAgent accumulate natural KRX 16:05 and 08:05 evidence. Do not manually run it, count ad-hoc
-queries, infer a T+1 slot, or integrate KRX breadth into the digest before the role gates close.
+In parallel, observe the next natural US/KR sessions for AI-assisted delivery, ownership,
+repetition, night-session integrity, fallback, language, receipt, archive, and exactly-once proof.
+Also let the telemetry-only LaunchAgent accumulate natural KRX 16:05 and 08:05 evidence. Do not run
+it manually, infer a T+1 slot, or integrate KRX breadth before the separate role gates close.
 
 ## 23. Codex Work Order Standard
 

@@ -39,18 +39,20 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     assert state["experimental_branch"] == (
         "codex/krx-exact-slot-telemetry-capture"
     )
-    assert state["current_phase"] == "wait_for_next_natural_us_kr_proof"
+    assert state["current_phase"] == "phase_9_0a_ready"
     assert state["last_completed_phase"] == (
-        "krx_exact_slot_telemetry_operating_promotion"
+        "phase_8_5_5_2_retrospective_repair"
     )
-    assert state["next_default_phase"] == "wait_for_next_natural_us_kr_proof"
+    assert state["next_default_phase"] == (
+        "phase_9_0a_cash_flow_capital_efficiency_evidence_architecture"
+    )
     assert state["deployed_code_commit"] == "HEAD"
     assert state["main_code_commit"] == "HEAD"
     assert state["operating_code_commit"] == "HEAD"
     assert state["persistent_gaps"]["current_price_rr_packet_numeric_path"] == "LIVE_PATH_PASS"
     assert state["persistent_gaps"]["natural_live_validation"] == "PARTIAL"
     assert state["persistent_gaps"]["reasoning_ownership"] == (
-        "LIVE_PASS_CANDIDATE_RUN28_NO_HARD_OWNERSHIP_ERROR"
+        "LIVE_PASS_RUN29"
     )
     assert state["contracts"]["runtime_specificity"] == ("runtime-message-specificity-v2")
     assert state["contracts"]["runtime_reasoning_ownership"] == ("runtime-reasoning-ownership-v1")
@@ -60,6 +62,16 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     assert state["contracts"]["typed_template_skeleton"] == (
         "typed-template-skeleton-v1"
     )
+    assert state["contracts"]["canonical_supply_flow_tuple"] == (
+        "canonical-supply-flow-tuple-v1"
+    )
+    assert state["contracts"]["numeric_primary_owner"] == (
+        "numeric-primary-owner-v1"
+    )
+    advancement = state["phase_advancement_rule_v1"]
+    assert advancement["p0_open"] == []
+    assert advancement["p1_open"] == []
+    assert advancement["phase_9_0a_ready"] is True
     assert state["persistent_gaps"]["krx_open_api"] == (
         "APPROVED_TELEMETRY_ONLY_OPERATING_USER_VISIBLE_NOT_INTEGRATED"
     )

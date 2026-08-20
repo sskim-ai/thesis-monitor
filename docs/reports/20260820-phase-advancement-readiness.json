@@ -1,0 +1,50 @@
+{
+  "as_of": "2026-08-20",
+  "contract": "phase-advancement-rule-v1",
+  "p0_open": [],
+  "p1_open": [],
+  "p1_closed_retrospective": [
+    "run29_kr_structured_supply_and_prose_repetition",
+    "run29_current_rr_cross_section_ownership",
+    "run29_generic_financial_caution_and_cash_conversion_repetition"
+  ],
+  "p2_backlog": [
+    "extreme_rr_qualitative_interpretation",
+    "fallback_legacy_prose_and_forward_pe_label_polish",
+    "explicit_current_pbr_history_lineage_reference",
+    "krx_breadth_integration_pending_publication_evidence",
+    "inferred_krx_identity_and_share_denominator_coverage"
+  ],
+  "natural_ai_assisted_delivery": "partial",
+  "phase_9_0a_ready": true,
+  "phase_9_0a_scope": "cash_flow_capital_efficiency_evidence_architecture",
+  "phase_9_0a_implementation_in_this_task": false,
+  "blocking_reasons": [],
+  "individual_natural_proof": {
+    "reasoning_ownership": "live_pass_run29",
+    "us_numeric_summary_ownership": "live_pass_run29_behavior_exercised_delivery_not_implied",
+    "typed_repetition_prior_family": "live_pass_run29",
+    "kr_structured_repetition": "closed_retrospective_pending_natural",
+    "night_futures_preceding_day_numeric_exposure": "pending_natural",
+    "krx_publication": "1605_recorded_provider_pending_0805_pending_user_visible_zero"
+  },
+  "validation": {
+    "run29": "pass",
+    "run28": "pass",
+    "run27": "pass",
+    "pytest": "1120_passed",
+    "ruff": "pass",
+    "diff_check": "pass",
+    "knowledge": "pass",
+    "public_action": "0.4.5",
+    "operation_id": "20_of_20_unique",
+    "implementation_sha": "9d105ffb56dd88ef1629cebdcee435522c6d234c",
+    "implementation_actions_run": 32353318455,
+    "implementation_actions": "test_lint_pass"
+  },
+  "parallel_observation_tracks": [
+    "next_natural_us_kr_ai_delivery",
+    "night_futures_preceding_day_numeric_exposure",
+    "krx_0805_1605_publication_telemetry"
+  ]
+}
