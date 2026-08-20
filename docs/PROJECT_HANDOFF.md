@@ -16,7 +16,7 @@ execution or an autonomous investment adviser.
 
 | Component | Contract |
 |---|---|
-| Branch | Phase 8.5.5.2 evidence branch `codex/phase-8-5-5-2-kr-structured-field-repetition`; operating promotion follows exact-SHA CI; peer/KRX breadth ancestry excluded |
+| Branch | `main` operating shadow includes Phase 8.5.5.2; evidence branch `codex/phase-8-5-5-2-kr-structured-field-repetition`; peer/KRX breadth ancestry excluded |
 | Official assessment | Deterministic `ThesisAssessment` |
 | AI mode | `shadow` |
 | Analysis policy | `daily-review-v3.10` |
@@ -764,7 +764,13 @@ See the [root cause](reports/20260820-run29-kr-structured-repetition-root-cause.
 [cash-conversion audit](reports/20260820-run29-industry-cash-conversion-specificity.md),
 [basis audit](reports/20260820-kr-valuation-basis-caution-audit.md),
 [archive-only Preview](reports/20260820-run29-repaired-ai-preview.md), and
-[validation](reports/20260820-phase8-5-5-2-validation.md).
+[validation](reports/20260820-phase8-5-5-2-validation.md). The clean linear descendant passed
+exact-SHA Actions Test/Lint, was fast-forwarded to `main` and the operating checkout, restarted on
+`127.0.0.1:8766`, returned `/health` PASS, and passed 497 read-only operating smoke tests. Four
+AI-review tasks remain ACTIVE at 08:15/08:30/16:15/16:55 with no configuration change or manual
+execution. The KRX exact-slot LaunchAgent remains calendar-loaded for 08:05/16:05 with last exit 0
+and user-visible integration disabled. See the
+[promotion report](reports/20260820-phase8-5-5-2-shadow-promotion.md).
 
 On 2026-08-15 the owning desktop environment verified all four local-project tasks, retained their
 08:15/08:30/16:15/16:55 schedules, and migrated their exact prompts to v3.10 with

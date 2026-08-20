@@ -8,7 +8,8 @@ Latest evidence branch: `codex/phase-8-5-5-2-kr-structured-field-repetition`
 Commit resolution: run `git rev-parse HEAD`; this document is part of that commit and must not
 hardcode a self-referential final SHA. Resolve `origin/main` and the clean operating checkout at
 session start. Phase 8.5.5.2 closes the run-29 structured-supply, exact-RR ownership, and typed prose
-repetition blockers retrospectively. Natural US/KR proof remains in parallel and Natural
+repetition blockers retrospectively and is now operating shadow after exact-SHA CI, API health, and
+497 read-only smoke tests. Natural US/KR proof remains in parallel and Natural
 AI-assisted delivery remains `PARTIAL`; that aggregate state alone does not block Phase 9.0A
 evidence-architecture work.
 KRX 8.2A.x and peer 8.3.x also remain experimental.
@@ -389,7 +390,7 @@ integration, Telegram, task, Pilot, DB, archive, or receipt behavior changed.
 | 8.5.4.2 | Holiday-aware XKRX preceding-DAY lookup PASS retrospectively and promoted to operating shadow; current provider row pending; natural proof pending |
 | 8.5.5 | Run-27 security/framework ownership and repetition repair PASS retrospectively and promoted to operating shadow; natural proof pending |
 | 8.5.5.1 | Run-28 business numeric ownership, typed skeleton and RR-delta repetition repair PASS retrospectively and promoted to operating shadow; natural proof pending |
-| 8.5.5.2 | Run-29 canonical supply tuple, current-RR single owner and typed prose repetition repair PASS retrospectively; Phase Advancement Rule v1 applied |
+| 8.5.5.2 | Run-29 canonical supply tuple, current-RR single owner and typed prose repetition repair PASS retrospectively; promoted to operating shadow; Phase Advancement Rule v1 applied |
 | 8.2A.x | KRX historical engine, universe and publication-state contracts PASS; exact 08:05/16:05 telemetry-only capture operating; user-visible integration 0; roles not yet proven |
 | 8.3 | Peer selection/safety/statistics contract PASS; capability strong PARTIAL; original measured coverage 0/20 |
 | 8.3.1/8.3.1.1 | Paid provider research completed; clean peer-only branch prepared; production provider gate not passed |
@@ -416,6 +417,7 @@ integration, Telegram, task, Pilot, DB, archive, or receipt behavior changed.
 | Phase 8.5.5.1 operating state | OPERATING_SHADOW |
 | Phase 8.5.5.2 KR structured repetition | CLOSED_RETROSPECTIVE_PENDING_NATURAL |
 | Phase 8.5.5.2 supply / RR ownership | CLOSED_RETROSPECTIVE_PENDING_NATURAL |
+| Phase 8.5.5.2 operating state | OPERATING_SHADOW |
 | Phase 8.5.4.2 calendar repair / operating | PASS retrospective / OPERATING_SHADOW |
 | Night-futures session basis | CLOSED_RETROSPECTIVE |
 | Preceding DAY calendar lookup | CLOSED_RETROSPECTIVE_PENDING_NATURAL; current provider row pending |

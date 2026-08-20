@@ -53,6 +53,15 @@ checkout. Read, in this order:
 41. `docs/reports/20260820-run28-repaired-ai-preview.md`
 42. `docs/reports/20260820-phase8-5-5-1-validation.md`
 43. `docs/reports/20260820-phase8-5-5-1-shadow-promotion.md`
+44. `docs/reports/20260820-run29-kr-structured-repetition-root-cause.md`
+45. `docs/reports/20260820-run29-structured-supply-tuple-audit.md`
+46. `docs/reports/20260820-run29-rr-cross-section-ownership-audit.md`
+47. `docs/reports/20260820-run29-industry-cash-conversion-specificity.md`
+48. `docs/reports/20260820-kr-valuation-basis-caution-audit.md`
+49. `docs/reports/20260820-run29-repaired-ai-preview.md`
+50. `docs/reports/20260820-phase8-5-5-2-validation.md`
+51. `docs/reports/20260820-phase-advancement-readiness.md`
+52. `docs/reports/20260820-phase8-5-5-2-shadow-promotion.md`
 
 Phase 8.3.2A/finalization architecture, coverage reports and previews remain on the preserved
 `codex/phase-8-3-finalization` branch. Read them with `git show <branch>:<path>` when peer history is
@@ -227,6 +236,11 @@ deterministic fallback delivered 8/8. Phase 8.5.5.2 preserves all eligible forei
 financial-basis and inventory/CAPEX-to-FCF/ROIC candidates when company-specific Unknowns already
 own the decision question. Immutable replay has 112 automatic bindings, manual/rejected/unresolved
 0, full validator/language/runtime quality PASS, verified receipt, and run-28/run-27 PASS.
+
+The validated Phase 8.5.5.2 descendant is now operating shadow on `main`. API health and 497
+read-only operating smoke tests passed; all four natural AI-review tasks remain ACTIVE and unchanged,
+and KRX exact-slot telemetry remains telemetry-only. No manual task, Telegram, Pilot, DB, archive,
+or receipt mutation occurred during promotion.
 
 Reasoning Ownership, US Numeric Summary Ownership, and the prior typed-repetition behavior were
 exercised without recurrence in run-29 and are tracked as individual `LIVE_PASS` evidence. The new

@@ -41,7 +41,7 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     )
     assert state["current_phase"] == "phase_9_0a_ready"
     assert state["last_completed_phase"] == (
-        "phase_8_5_5_2_retrospective_repair"
+        "phase_8_5_5_2_operating_shadow_promotion"
     )
     assert state["next_default_phase"] == (
         "phase_9_0a_cash_flow_capital_efficiency_evidence_architecture"
@@ -49,6 +49,10 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     assert state["deployed_code_commit"] == "HEAD"
     assert state["main_code_commit"] == "HEAD"
     assert state["operating_code_commit"] == "HEAD"
+    phase_8552 = state["phase_8_5_5_2_kr_structured_field_repetition"]
+    assert phase_8552["status"] == "operating_shadow_pending_natural_proof"
+    assert phase_8552["operating_shadow_promoted"] is True
+    assert phase_8552["operating_smoke"] == "497_passed"
     assert state["persistent_gaps"]["current_price_rr_packet_numeric_path"] == "LIVE_PATH_PASS"
     assert state["persistent_gaps"]["natural_live_validation"] == "PARTIAL"
     assert state["persistent_gaps"]["reasoning_ownership"] == (
