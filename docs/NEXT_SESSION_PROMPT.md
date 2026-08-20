@@ -242,8 +242,10 @@ segment margin. Do not begin that phase before promotion and natural proof.
 
 In parallel, inspect the latest KRX exact-slot evidence for 16:05, 08:05 and T+1. Historical
 capability and universe/publication contracts pass, but all three operational roles remain
-`NOT_YET_PROVEN` and operating integration remains false. KRX promotion is a separate evidence-based
-decision. Do not combine operating and experimental scopes.
+`NOT_YET_PROVEN` and user-visible operating integration remains false. The telemetry-only
+LaunchAgent is active at natural 08:05 and 16:05 slots; inspect its append-only JSONL and logs without
+manual execution. T+1 has no defined exact clock and must not inherit 08:05 evidence implicitly.
+KRX digest promotion remains a separate evidence-based decision.
 
 Preserve the Phase 8.5 boundary: do not infer missing metrics, promote themes into company
 achievements, force fine-grained taxonomy, create thresholds, or relax numeric, lineage, scope,

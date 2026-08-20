@@ -3,7 +3,8 @@
 Date: 2026-08-20 KST
 Branch: `codex/krx-exact-slot-telemetry-capture`
 Base: `006a997789d3e5ebac85ef867ae31296d175056c`
-Status: ENGINEERING PASS / PROMOTION PENDING EXACT-SHA CI
+Implementation: `18bc7c3e456c723b2d0359219c517e5eb02ee4e0`
+Status: ENGINEERING PASS / OPERATING TELEMETRY-ONLY PROMOTED
 
 ## Purpose
 
@@ -70,20 +71,20 @@ limit. Existing US/KR market LaunchAgents and four Codex AI-review Scheduled Tas
 No provider endpoint was called during development or validation; all provider fixtures used
 `httpx.MockTransport`.
 
-## Promotion Gate
+## Promotion Result
 
-Before natural capture starts:
+Natural capture was enabled only after:
 
-1. implementation and final exact-SHA GitHub Actions Test/Lint must pass;
-2. main must remain a clean linear ancestor;
-3. operating checkout must fast-forward cleanly;
-4. the new LaunchAgent must be copied and bootstrapped without `kickstart` or manual execution;
-5. `launchctl print` must show the 08:05/16:05 calendar triggers and no `RunAtLoad`;
-6. telemetry files must remain absent until the next natural slot.
+1. exact implementation SHA GitHub Actions Test/Lint passed in run `32323452853`;
+2. main remained the clean linear parent;
+3. origin/main and the operating checkout fast-forwarded cleanly;
+4. the LaunchAgent was copied and bootstrapped without `kickstart` or manual execution;
+5. `launchctl print` showed the 08:05/16:05 calendar triggers and no `RunAtLoad`;
+6. registration left launch count, provider calls, logs, and telemetry files at zero.
 
 ## Safety
 
-| Mutation | Count before promotion |
+| Mutation | Count through promotion |
 |---|---:|
 | Provider calls | 0 |
 | User-visible KRX integration | 0 |

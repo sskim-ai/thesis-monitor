@@ -172,6 +172,12 @@ is time-slot specific: same-day 16:05, next-morning 08:05 and T+1 reconciliation
 sector coverage is `PARTIAL_PRICE_PROXY_ONLY`, market-wide investor flow is `UNSUPPORTED`, and
 production integration is `NOT YET`.
 
+`krx-exact-slot-capture-v1` is now operating as telemetry only. A dedicated LaunchAgent records the
+four core endpoint statuses, row counts, provider dates and payload hashes at natural 08:05 and
+16:05 KST slots. It has no market-packet, DB, AI or notification integration. Wrong-minute,
+weekend and XKRX-holiday launches stop before provider access. The T+1 role has no defined exact
+clock in the current contract, so it is not inferred from 08:05 and remains unconfigured.
+
 The 2026-08-18 core four endpoints returned HTTP 200 with zero rows at 20:27, 21:02 and 21:06 KST.
 That is `MARKET_COMPLETED_PROVIDER_PENDING`; first non-empty, first complete and observed-complete-by
 were not observed. This evidence does not prove that KRX is a late or T+1 provider. Authority is
@@ -366,7 +372,7 @@ GitHub Actions run `32319601429`, was fast-forwarded to main and operating, pass
 | 8.5.4.2 | Holiday-aware XKRX preceding-DAY lookup PASS retrospectively and promoted to operating shadow; current provider row pending; natural proof pending |
 | 8.5.5 | Run-27 security/framework ownership and repetition repair PASS retrospectively and promoted to operating shadow; natural proof pending |
 | 8.5.5.1 | Run-28 business numeric ownership, typed skeleton and RR-delta repetition repair PASS retrospectively and promoted to operating shadow; natural proof pending |
-| 8.2A.x | KRX historical engine, universe and publication-state contracts PASS on experimental branch; slot timing/roles not yet proven; not deployed |
+| 8.2A.x | KRX historical engine, universe and publication-state contracts PASS; exact 08:05/16:05 telemetry-only capture operating; user-visible integration 0; roles not yet proven |
 | 8.3 | Peer selection/safety/statistics contract PASS; capability strong PARTIAL; original measured coverage 0/20 |
 | 8.3.1/8.3.1.1 | Paid provider research completed; clean peer-only branch prepared; production provider gate not passed |
 | 8.3.2A | Policy changed to FREE_ONLY; current free-source POC measured 1/20 and recommends selective optional context; not merged or deployed |
@@ -398,6 +404,8 @@ GitHub Actions run `32319601429`, was fast-forwarded to main and operating, pass
 | Phase 8.3 broad value / scope | LOW_ROI / SELECTIVE_OPTIONAL_CONTEXT |
 | KRX historical / universe / breadth | PASS / CLOSED / PASS |
 | KRX 16:05 / 08:05 / T+1 | NOT_YET_PROVEN / NOT_YET_PROVEN / NOT_YET_PROVEN |
+| KRX exact-slot capture | OPERATING_TELEMETRY_ONLY_PENDING_NATURAL; 08:05/16:05 active, T+1 clock undefined |
+| KRX user-visible integration | NO |
 | Production Assist / AI mode | OFF / shadow |
 
 ## 21. Current Persistent Gaps
@@ -412,6 +420,7 @@ GitHub Actions run `32319601429`, was fast-forwarded to main and operating, pass
 | Forward peer consensus | DEFERRED |
 | KR market breadth | historical PASS; current readiness PARTIAL; operating integration NO |
 | KRX 16:05 / 08:05 / T+1 roles | NOT_YET_PROVEN |
+| KRX exact-slot telemetry capture | CLOSED_CONFIGURATION_PENDING_NATURAL_0805_1605; T+1 slot undefined |
 | KR market-wide flow | UNSUPPORTED |
 | Massive 08:05 readiness | OPEN |
 | OCF | PARTIAL |
@@ -449,8 +458,9 @@ remains closed as selective optional context.
 
 Cash Flow / Capital Efficiency Enrichment remains the next major candidate: OCF, CAPEX, FCF, ROIC,
 relevant ROE, inventory, working capital, cash conversion and segment margin. Do not start it until
-the next natural proof has no critical blocker. In parallel,
-continue exact-slot KRX 16:05, 08:05 and T+1 observation without changing operating tasks.
+the next natural proof has no critical blocker. In parallel, let the dedicated telemetry-only
+LaunchAgent accumulate natural KRX 16:05 and 08:05 evidence. Do not manually run it, count ad-hoc
+queries, infer a T+1 slot, or integrate KRX breadth into the digest before the role gates close.
 
 ## 23. Codex Work Order Standard
 

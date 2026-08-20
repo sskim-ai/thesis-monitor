@@ -870,7 +870,9 @@ unchanged. See [the Phase 7.2.9.2 readiness report](reports/20260817-phase7-2-9-
 - Massive US breadth is implemented in shadow, but exact 08:05 KST readiness over 3-5 normal
   sessions is not yet established.
 - KRX historical capability, universe and publication-state contracts pass experimentally, but
-  16:05, 08:05 and T+1 roles remain `NOT_YET_PROVEN`; operating integration is false. The Kiwoom
+  16:05, 08:05 and T+1 roles remain `NOT_YET_PROVEN`; operating integration is false. A dedicated
+  telemetry-only LaunchAgent now captures natural 08:05 and 16:05 observations without feeding the
+  market digest. T+1 has no defined exact clock and is not double-counted from 08:05. The Kiwoom
   Windows gateway is not configured.
 - KR market-wide investor flow is unavailable, and constituent-level sector participation remains
   incomplete.
@@ -923,8 +925,9 @@ first.
    counter edits, resends, or archive rewriting.
 3. Keep TSM/WRD identity `unknown`, fine-grained industry routes general where unproved, peer data
    unavailable where absent, and OCF/CAPEX/FCF gaps explicit.
-4. Continue exact-slot KRX 16:05, 08:05 and T+1 observations on its separate experimental branch.
-   Do not merge or deploy until role evidence and Human Review pass.
+4. Let `com.seungsoo.thesis-monitor.krx-publication-telemetry` capture natural 08:05 and 16:05 KRX
+   observations. Do not run it manually, define T+1 by inference, or integrate breadth until role
+   evidence and Human Review pass.
 5. Keep Phase 8.3 closed as selective optional context unless materially new free-source, taxonomy,
    exact-group or natural-message evidence appears.
 6. If the post-repair natural review passes without a critical blocker, begin Cash Flow / Capital

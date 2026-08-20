@@ -37,11 +37,11 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     assert state["repository"] == "sskim-ai/thesis-monitor"
     assert state["branch"] == "main"
     assert state["experimental_branch"] == (
-        "codex/phase-8-5-5-1-us-numeric-summary-typed-repetition"
+        "codex/krx-exact-slot-telemetry-capture"
     )
     assert state["current_phase"] == "wait_for_next_natural_us_kr_proof"
     assert state["last_completed_phase"] == (
-        "phase_8_5_5_1_operating_shadow_promotion"
+        "krx_exact_slot_telemetry_operating_promotion"
     )
     assert state["next_default_phase"] == "wait_for_next_natural_us_kr_proof"
     assert state["deployed_code_commit"] == "HEAD"
@@ -61,8 +61,12 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
         "typed-template-skeleton-v1"
     )
     assert state["persistent_gaps"]["krx_open_api"] == (
-        "APPROVED_EXPERIMENTAL_NOT_OPERATING_INTEGRATED"
+        "APPROVED_TELEMETRY_ONLY_OPERATING_USER_VISIBLE_NOT_INTEGRATED"
     )
+    assert state["krx"]["exact_slot_capture"] == (
+        "operating_telemetry_only_pending_natural"
+    )
+    assert state["krx"]["user_visible_integration"] is False
     assert state["persistent_gaps"]["night_futures_session_basis"] == (
         "CLOSED_RETROSPECTIVE_LIVE_FAIL_CLOSED_RUN28"
     )
