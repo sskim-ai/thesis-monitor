@@ -574,6 +574,38 @@ def test_bound_numeric_copula_rejects_subject_particle_connective() -> None:
     assert any("numeric_fact_ref_raw_postposition" in error for error in invalid.errors)
 
 
+def test_bound_numeric_copula_suppresses_redundant_typed_postposition() -> None:
+    fact = _fact(
+        "chart:risk_reward",
+        "chart_risk_reward",
+        {"ratio": 2.08, "currency": "KRW"},
+    )
+
+    result = _bind_stock(
+        [fact],
+        "{{numeric:rr}}입니다.",
+        [
+            _ref(
+                "rr",
+                "chart:risk_reward",
+                "fields.ratio",
+                postposition="은/는",
+            )
+        ],
+    )
+
+    assert result.errors == ()
+    assert result.output["stock_reviews"][0]["core_judgment"]["text"] == (
+        "차트 손익비 2.08배입니다."
+    )
+    binding = result.report["bindings"][0]
+    assert binding["requested_postposition_family"] == "은/는"
+    assert binding["postposition_family"] is None
+    assert binding["postposition_suppressed_reason"] == (
+        "copula_already_supplies_predicate"
+    )
+
+
 @pytest.mark.parametrize(
     ("fact", "field_path", "authored_label"),
     [

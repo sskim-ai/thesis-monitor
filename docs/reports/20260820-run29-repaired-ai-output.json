@@ -1,0 +1,1859 @@
+{
+  "analysis_policy_version": "daily-review-v3.10",
+  "assessment_date": "2026-08-20",
+  "chart_knowledge_sha256": "beee64559831479168f1347c43d979391126926d73e2473ce837cefbf0ede19b",
+  "chart_knowledge_version": "1.0",
+  "claim_id": "7b4d3c02-502d-42fc-bce0-025f65912af8",
+  "knowledge_sha256": "559ad45e4dd86cb0aec9bb09b51a5dc816bf323e8c2b4fd050cf28960a5a9d18",
+  "knowledge_version": "3.0",
+  "market": "kr",
+  "market_review": {
+    "core_judgment": {
+      "fact_ids": [
+        "market:relative:SOXX:SPY",
+        "market:relative:QQQ:SPY",
+        "market:oil:DCOILWTICO",
+        "market:volatility:VIXCLS"
+      ],
+      "text": "S&P500 대비 반도체 상대수익률 -2.4%입니다. S&P500 대비 Nasdaq 상대수익률 -0.4%입니다. WTI 등락률 +2%입니다. VIX 등락률 +4.3%입니다. 반도체·성장주 주도력 약화와 에너지·변동성 상승이 함께 나타났지만, 한국 현물 지수·시장 폭·시장 전체 수급이 없어 광범위한 위험회피로 단정하지 않습니다."
+    },
+    "facts_used": [
+      "market:relative:SOXX:SPY",
+      "market:relative:QQQ:SPY",
+      "market:oil:DCOILWTICO",
+      "market:volatility:VIXCLS",
+      "market:real_yield:DFII10",
+      "market:fx:USDKRW",
+      "market:breakeven_inflation:T10YIE",
+      "market:credit_spread:BAMLH0A0HYM2"
+    ],
+    "frameworks_used": [
+      "fact_interpretation_unknown",
+      "market_expectations",
+      "macro_transmission",
+      "monitoring_data_quality"
+    ],
+    "important_changes": [
+      {
+        "fact_ids": [
+          "market:relative:SOXX:SPY"
+        ],
+        "text": "반도체가 대형주 대비 약해져 AI·메모리 기대의 단기 가격 신호가 둔화됐지만, 실제 주문·출하·마진 변화는 확인되지 않았습니다."
+      },
+      {
+        "fact_ids": [
+          "market:relative:QQQ:SPY"
+        ],
+        "text": "성장주가 대형주 대비 약해져 주도력이 둔화됐지만 개별 기업의 이익 추정 변화를 뜻하지는 않습니다."
+      },
+      {
+        "fact_ids": [
+          "market:oil:DCOILWTICO"
+        ],
+        "text": "유가 상승은 운송·소재의 비용 경로를 다시 점검하게 하지만 수요 회복인지 공급 충격인지는 확인되지 않았습니다."
+      },
+      {
+        "fact_ids": [
+          "market:volatility:VIXCLS"
+        ],
+        "text": "변동성 상승은 단기 위험회피 확대 맥락이지만 한국 종목의 사업 논리를 직접 바꾸지는 않습니다."
+      }
+    ],
+    "market_assumptions": {
+      "fact_ids": [
+        "market:relative:SOXX:SPY",
+        "market:fx:USDKRW",
+        "market:oil:DCOILWTICO"
+      ],
+      "text": "반도체 가격 약세를 국내 기업의 주문 감소로 보지 않으며, 원화와 유가 움직임도 기업별 환산·비용·헤지 경로가 확인될 때만 적용합니다."
+    },
+    "market_context": {
+      "fact_ids": [
+        "market:relative:SOXX:SPY",
+        "market:relative:QQQ:SPY",
+        "market:oil:DCOILWTICO",
+        "market:volatility:VIXCLS",
+        "market:real_yield:DFII10"
+      ],
+      "text": "반도체·성장주 상대 약세와 유가·변동성 상승, 실질금리 부담이 섞여 있습니다. 한국 현물 지수와 시장 폭이 없어 종목별 실적 확인과 가격 구조를 우선 볼 환경입니다."
+    },
+    "next_checks": [
+      {
+        "fact_ids": [
+          "market:breakeven_inflation:T10YIE"
+        ],
+        "text": "다음 미국 기대인플레이션 갱신이 유가의 물가 전이를 확인하는지 봅니다."
+      },
+      {
+        "fact_ids": [
+          "market:credit_spread:BAMLH0A0HYM2"
+        ],
+        "text": "다음 하이일드 신용스프레드 갱신이 금융여건 악화를 확인하는지 봅니다."
+      },
+      {
+        "fact_ids": [
+          "market:oil:DCOILWTICO"
+        ],
+        "text": "다음 WTI 갱신에서 비용 압력이 지속되는지 다시 확인합니다."
+      }
+    ],
+    "numeric_claims": [
+      {
+        "fact_id": "market:relative:SOXX:SPY",
+        "field_path": "fields.relative_return_pct",
+        "semantic_type": "sector_relative_return_pct",
+        "text_ref": "core_judgment.text",
+        "unit": "pct",
+        "usage": "S&P500 대비 반도체 상대수익률 -2.4%",
+        "value": -2.4153
+      },
+      {
+        "fact_id": "market:relative:QQQ:SPY",
+        "field_path": "fields.relative_return_pct",
+        "semantic_type": "growth_relative_return_pct",
+        "text_ref": "core_judgment.text",
+        "unit": "pct",
+        "usage": "S&P500 대비 Nasdaq 상대수익률 -0.4%",
+        "value": -0.4091
+      },
+      {
+        "fact_id": "market:oil:DCOILWTICO",
+        "field_path": "fields.return_pct",
+        "semantic_type": "oil_return_pct",
+        "text_ref": "core_judgment.text",
+        "unit": "pct",
+        "usage": "WTI 등락률 +2%",
+        "value": 2.0172
+      },
+      {
+        "fact_id": "market:volatility:VIXCLS",
+        "field_path": "fields.return_pct",
+        "semantic_type": "volatility_return_pct",
+        "text_ref": "core_judgment.text",
+        "unit": "pct",
+        "usage": "VIX 등락률 +4.3%",
+        "value": 4.2791
+      }
+    ],
+    "portfolio_transmission": [
+      {
+        "fact_ids": [
+          "market:relative:SOXX:SPY"
+        ],
+        "portfolio_group": "semiconductor",
+        "text": "반도체 상대 약세는 반도체 그룹의 위험선호 맥락이지만 실제 HBM 주문·마진 확인과 분리합니다."
+      },
+      {
+        "fact_ids": [
+          "market:oil:DCOILWTICO"
+        ],
+        "portfolio_group": "shipping",
+        "text": "유가 상승은 운송·물류 그룹에서 연료비가 운임 전가보다 빠를 때만 이익에 부정적으로 전달됩니다."
+      },
+      {
+        "fact_ids": [
+          "market:oil:DCOILWTICO"
+        ],
+        "portfolio_group": "steel_materials",
+        "text": "유가 상승은 철강·소재 그룹에서 에너지 비용과 글로벌 수요 회복 경로를 함께 확인해야 합니다."
+      },
+      {
+        "fact_ids": [
+          "market:volatility:VIXCLS"
+        ],
+        "portfolio_group": "general",
+        "text": "변동성 상승은 일반 그룹의 위험선호를 압박할 수 있지만 개별 기업의 수주·마진 변화와 분리합니다."
+      }
+    ],
+    "unknowns": [
+      "국내 시장 폭이 없어 상승·하락 종목의 확산 정도는 알 수 없습니다.",
+      "국내 시장 전체 투자주체 수급이 없어 광범위한 자금 흐름은 알 수 없습니다.",
+      "한국 현물 지수가 없어 미국 시장 신호는 전일 해외 맥락으로만 사용합니다."
+    ]
+  },
+  "packet_id": "2026-08-20-kr-run-29-6e8809e1e944",
+  "schema_version": "4",
+  "stock_reviews": [
+    {
+      "ai_thesis_assessment": "no_material_change",
+      "business_earnings": {
+        "fact_ids": [
+          "financial_quality:2026-06-30"
+        ],
+        "text": "손익 자료는 재무 품질 충돌로 금액과 성장률을 사용하지 않습니다. 재고·설비투자·영업현금흐름·잉여현금흐름이 확인되어야 HBM 수익성의 지속성을 판단할 수 있습니다."
+      },
+      "confidence": 0.82,
+      "core_judgment": {
+        "fact_ids": [
+          "price:current",
+          "chart:structure:risk_reward:current_price",
+          "monitoring:confirmation_transition",
+          "financial_quality:2026-06-30"
+        ],
+        "text": "HBM4 실행과 고부가 메모리 논리는 유지되지만 높은 기대를 넘을 새 사업 근거는 확인되지 않았습니다. 현재가 1,691,000원입니다. 기존 돌파 실패에서 확인 가격 상단을 넘어선 상태로 전환됐으므로 가격 안착과 HBM 수율·현금전환을 별도로 다시 확인해야 합니다. 손익 자료의 재무 품질 충돌 때문에 실적 금액은 판단에서 제외합니다."
+      },
+      "earnings_estimate_view": "unchanged",
+      "facts_used": [
+        "chart:structure:nearest_resistance:1",
+        "chart:structure:nearest_supports:1",
+        "chart:structure:risk_reward:current_price",
+        "financial_quality:2026-06-30",
+        "monitoring:confirmation_transition",
+        "positioning:2026-08-20",
+        "price:current",
+        "valuation:book",
+        "valuation:current",
+        "valuation:historical_pb"
+      ],
+      "frameworks_used": [
+        "fact_interpretation_unknown",
+        "initial_thesis",
+        "market_expectations",
+        "risk_kill_condition",
+        "multiple_expansion_compression",
+        "macro_transmission",
+        "valuation_basis_comparability",
+        "monitoring_data_quality",
+        "semiconductor_valuation",
+        "financial_calculation_safety",
+        "earnings_quality",
+        "price_ohlcv",
+        "holder_new_buyer",
+        "adr_share_basis",
+        "chart_principles",
+        "chart_holder_new_buyer",
+        "chart_multi_timeframe",
+        "chart_supply",
+        "chart_data_quality",
+        "chart_bollinger",
+        "chart_candle_volume",
+        "chart_rsi",
+        "chart_macd",
+        "chart_threshold_transition",
+        "chart_atr",
+        "chart_support_resistance",
+        "chart_major_swing",
+        "chart_fibonacci",
+        "chart_risk_reward",
+        "chart_invalidation",
+        "chart_state_machine"
+      ],
+      "next_checks": [
+        "다음 HBM4 출하·수율과 재고·설비투자 이후 현금흐름이 고마진의 지속성을 뒷받침하는지 확인합니다."
+      ],
+      "numeric_claims": [
+        {
+          "fact_id": "price:current",
+          "field_path": "fields.current_price",
+          "semantic_type": "share_price",
+          "text_ref": "price_positioning.text",
+          "unit": "KRW",
+          "usage": "현재가 1,691,000원",
+          "value": 1691000.0
+        },
+        {
+          "fact_id": "chart:structure:nearest_supports:1",
+          "field_path": "fields.zone_low",
+          "semantic_type": "support_zone_price",
+          "text_ref": "price_positioning.text",
+          "unit": "KRW",
+          "usage": "동적 지지구간 하단 1,190,321원",
+          "value": 1190320.540012
+        },
+        {
+          "fact_id": "chart:structure:nearest_supports:1",
+          "field_path": "fields.zone_high",
+          "semantic_type": "support_zone_price",
+          "text_ref": "price_positioning.text",
+          "unit": "KRW",
+          "usage": "동적 지지구간 상단 1,301,679원",
+          "value": 1301679.459988
+        },
+        {
+          "fact_id": "chart:structure:nearest_resistance:1",
+          "field_path": "fields.zone_low",
+          "semantic_type": "resistance_zone_price",
+          "text_ref": "price_positioning.text",
+          "unit": "KRW",
+          "usage": "동적 저항구간 하단 2,918,471원",
+          "value": 2918470.825014
+        },
+        {
+          "fact_id": "chart:structure:nearest_resistance:1",
+          "field_path": "fields.zone_high",
+          "semantic_type": "resistance_zone_price",
+          "text_ref": "price_positioning.text",
+          "unit": "KRW",
+          "usage": "동적 저항구간 상단 3,055,529원",
+          "value": 3055529.174986
+        },
+        {
+          "fact_id": "chart:structure:risk_reward:current_price",
+          "field_path": "fields.ratio",
+          "semantic_type": "current_price_risk_reward_ratio",
+          "text_ref": "price_positioning.text",
+          "unit": "x",
+          "usage": "현재가 기준 차트 손익비 2.08배",
+          "value": 2.082866
+        },
+        {
+          "fact_id": "positioning:2026-08-20",
+          "field_path": "fields.foreign_net_buy_qty",
+          "semantic_type": "foreign_net_buy_qty",
+          "text_ref": "supply_analysis.text",
+          "unit": "shares",
+          "usage": "외국인 당일 순매수 320,001주",
+          "value": 320001.0
+        },
+        {
+          "fact_id": "positioning:2026-08-20",
+          "field_path": "fields.institution_net_buy_qty",
+          "semantic_type": "institution_net_buy_qty",
+          "text_ref": "supply_analysis.text",
+          "unit": "shares",
+          "usage": "기관 당일 순매도 13,113주",
+          "value": -13113.0
+        },
+        {
+          "fact_id": "positioning:2026-08-20",
+          "field_path": "fields.foreign_net_buy_qty_5",
+          "semantic_type": "foreign_net_buy_qty_5d",
+          "text_ref": "supply_analysis.text",
+          "unit": "shares",
+          "usage": "외국인 5일 순매수 960,408주",
+          "value": 960408.0
+        },
+        {
+          "fact_id": "positioning:2026-08-20",
+          "field_path": "fields.institution_net_buy_qty_5",
+          "semantic_type": "institution_net_buy_qty_5d",
+          "text_ref": "supply_analysis.text",
+          "unit": "shares",
+          "usage": "기관 5일 순매도 574,060주",
+          "value": -574060.0
+        },
+        {
+          "fact_id": "positioning:2026-08-20",
+          "field_path": "fields.foreign_net_buy_qty_20",
+          "semantic_type": "foreign_net_buy_qty_20d",
+          "text_ref": "supply_analysis.text",
+          "unit": "shares",
+          "usage": "외국인 20일 순매도 2,283,511주",
+          "value": -2283511.0
+        },
+        {
+          "fact_id": "positioning:2026-08-20",
+          "field_path": "fields.institution_net_buy_qty_20",
+          "semantic_type": "institution_net_buy_qty_20d",
+          "text_ref": "supply_analysis.text",
+          "unit": "shares",
+          "usage": "기관 20일 순매수 192,757주",
+          "value": 192757.0
+        },
+        {
+          "fact_id": "valuation:current",
+          "field_path": "fields.price_to_book",
+          "semantic_type": "price_to_book",
+          "text_ref": "valuation_analysis.text",
+          "unit": "x",
+          "usage": "현재 PBR 4.58배",
+          "value": 4.5828
+        },
+        {
+          "fact_id": "valuation:current",
+          "field_path": "fields.historical_pb_statistics.current_percentile",
+          "semantic_type": "historical_pb_percentile",
+          "text_ref": "valuation_analysis.text",
+          "unit": "pct",
+          "usage": "PBR 역사적 백분위 87%",
+          "value": 87.0
+        },
+        {
+          "fact_id": "price:current",
+          "field_path": "fields.current_price",
+          "semantic_type": "share_price",
+          "text_ref": "core_judgment.text",
+          "unit": "KRW",
+          "usage": "현재가 1,691,000원",
+          "value": 1691000.0
+        }
+      ],
+      "price_positioning": {
+        "fact_ids": [
+          "chart:structure:nearest_resistance:1",
+          "chart:structure:nearest_supports:1",
+          "chart:structure:risk_reward:current_price",
+          "price:current",
+          "monitoring:confirmation_transition"
+        ],
+        "holder_view": "보유자는 확인 가격 상단 유지 여부와 별도로 HBM4 수율·재고·현금흐름의 사업 악화를 구분해 점검합니다.",
+        "new_observer_view": "신규 관찰자는 상단 돌파 뒤 가격 안착과 동적 지지 반응, HBM 수율·현금전환이 함께 확인될 때 새 자금의 가격·사실 비대칭을 다시 판단합니다.",
+        "text": "현재가 1,691,000원입니다. 가까운 동적 지지는 동적 지지구간 하단 1,190,321원부터 동적 지지구간 상단 1,301,679원까지이고, 가까운 동적 저항은 동적 저항구간 하단 2,918,471원부터 동적 저항구간 상단 3,055,529원까지입니다. 현재가 기준 차트 손익비 2.08배입니다. 기존 돌파 실패에서 확인 가격 상단을 넘어선 상태로 전환됐으며, 이는 가격 확인의 회복이지 자동 사업 논리 변화가 아닙니다."
+      },
+      "priority_watch": [
+        "HBM4 출하·수율·고객 장기계약"
+      ],
+      "supply_analysis": {
+        "fact_ids": [
+          "positioning:2026-08-20"
+        ],
+        "text": "외국인 당일 순매수 320,001주 기록했고, 기관 당일 순매도 13,113주 기록했습니다.\n외국인 5일 순매수 960,408주 기록했고, 기관 5일 순매도 574,060주 기록했습니다.\n외국인 20일 순매도 2,283,511주 기록했고, 기관 20일 순매수 192,757주 기록했습니다.\n외국인의 당일·5일 매수와 20일 매도, 기관의 단기 매도와 20일 매수가 엇갈리므로 HBM 실행 근거와 분리해 봅니다."
+      },
+      "thesis_version": 6,
+      "ticker": "000660",
+      "unknowns": [
+        "HBM4 고객별 출하·수율, 재고, 설비투자 이후 영업현금흐름·잉여현금흐름·자본수익률이 확인되지 않아 고마진의 반복 가능성을 판단할 수 없습니다."
+      ],
+      "valuation_analysis": {
+        "fact_ids": [
+          "valuation:book",
+          "valuation:historical_pb"
+        ],
+        "text": "상장주식 기준 회사 전체 장부가 배수는 현재 PBR 4.58배입니다. 회사 전체 PBR의 자체 역사 위치는 PBR 역사적 백분위 87%입니다. 이는 현재 PBR이 비교 가능한 과거 관측치 대부분보다 높은 구간이라는 뜻입니다. 이 배수는 HBM 실행과 재고·현금흐름의 확인과 함께 봐야 합니다. 같은 시점의 동종기업 비교값은 없어 회사 전체 현재 배수와 자체 역사 위치를 함께 봅니다."
+      },
+      "valuation_view": "neutral"
+    },
+    {
+      "ai_thesis_assessment": "no_material_change",
+      "business_earnings": {
+        "fact_ids": [
+          "earnings:2026-06-30"
+        ],
+        "text": "2026년 2분기 연결 기준 영업이익 1,750억원만 기간·연결 기준이 확인된 금액으로 표시합니다. 비교 가능한 매출·마진과 현금흐름이 없어 언더라이팅 수익성의 방향은 확정하지 않습니다."
+      },
+      "confidence": 0.79,
+      "core_judgment": {
+        "fact_ids": [
+          "price:current",
+          "chart:structure:nearest_supports:1",
+          "earnings:2026-06-30"
+        ],
+        "text": "재보험 언더라이팅과 자본관리 논리를 바꿀 새 근거는 확인되지 않았습니다. 현재가 14,620원입니다. 가까운 동적 지지는 동적 지지구간 하단 14,608원부터 동적 지지구간 상단 15,712원까지입니다. 최근 확인된 핵심 실적은 2026년 2분기 연결 기준 영업이익 1,750억원입니다. 이 가격과 단일 실적만으로 합산비율이나 자본적정성을 추정하지 않습니다."
+      },
+      "earnings_estimate_view": "unchanged",
+      "facts_used": [
+        "chart:structure:nearest_resistance:1",
+        "chart:structure:nearest_supports:1",
+        "earnings:2026-06-30",
+        "monitoring:confirmation_transition",
+        "positioning:2026-08-20",
+        "price:current",
+        "valuation:book",
+        "valuation:current",
+        "valuation:trailing_earnings"
+      ],
+      "frameworks_used": [
+        "fact_interpretation_unknown",
+        "initial_thesis",
+        "market_expectations",
+        "risk_kill_condition",
+        "multiple_expansion_compression",
+        "macro_transmission",
+        "valuation_basis_comparability",
+        "monitoring_data_quality",
+        "insurance_reinsurance_valuation",
+        "price_ohlcv",
+        "holder_new_buyer",
+        "adr_share_basis",
+        "chart_principles",
+        "chart_holder_new_buyer",
+        "chart_multi_timeframe",
+        "chart_supply",
+        "chart_data_quality",
+        "chart_bollinger",
+        "chart_candle_volume",
+        "chart_rsi",
+        "chart_macd",
+        "chart_threshold_transition",
+        "chart_atr",
+        "chart_support_resistance",
+        "chart_major_swing",
+        "chart_fibonacci",
+        "chart_state_machine"
+      ],
+      "next_checks": [
+        "다음 합산비율·자기자본이익률·자본적정성이 현재 장부가치 배수를 뒷받침하는지 확인합니다."
+      ],
+      "numeric_claims": [
+        {
+          "fact_id": "price:current",
+          "field_path": "fields.current_price",
+          "semantic_type": "share_price",
+          "text_ref": "price_positioning.text",
+          "unit": "KRW",
+          "usage": "현재가 14,620원",
+          "value": 14620.0
+        },
+        {
+          "fact_id": "chart:structure:nearest_supports:1",
+          "field_path": "fields.zone_low",
+          "semantic_type": "support_zone_price",
+          "text_ref": "price_positioning.text",
+          "unit": "KRW",
+          "usage": "동적 지지구간 하단 14,608원",
+          "value": 14608.445836
+        },
+        {
+          "fact_id": "chart:structure:nearest_supports:1",
+          "field_path": "fields.zone_high",
+          "semantic_type": "support_zone_price",
+          "text_ref": "price_positioning.text",
+          "unit": "KRW",
+          "usage": "동적 지지구간 상단 15,712원",
+          "value": 15711.554164
+        },
+        {
+          "fact_id": "positioning:2026-08-20",
+          "field_path": "fields.foreign_net_buy_qty",
+          "semantic_type": "foreign_net_buy_qty",
+          "text_ref": "supply_analysis.text",
+          "unit": "shares",
+          "usage": "외국인 당일 순매도 14,031주",
+          "value": -14031.0
+        },
+        {
+          "fact_id": "positioning:2026-08-20",
+          "field_path": "fields.institution_net_buy_qty",
+          "semantic_type": "institution_net_buy_qty",
+          "text_ref": "supply_analysis.text",
+          "unit": "shares",
+          "usage": "기관 당일 순매수 8,934주",
+          "value": 8934.0
+        },
+        {
+          "fact_id": "positioning:2026-08-20",
+          "field_path": "fields.foreign_net_buy_qty_5",
+          "semantic_type": "foreign_net_buy_qty_5d",
+          "text_ref": "supply_analysis.text",
+          "unit": "shares",
+          "usage": "외국인 5일 순매수 61,433주",
+          "value": 61433.0
+        },
+        {
+          "fact_id": "positioning:2026-08-20",
+          "field_path": "fields.institution_net_buy_qty_5",
+          "semantic_type": "institution_net_buy_qty_5d",
+          "text_ref": "supply_analysis.text",
+          "unit": "shares",
+          "usage": "기관 5일 순매도 27,173주",
+          "value": -27173.0
+        },
+        {
+          "fact_id": "positioning:2026-08-20",
+          "field_path": "fields.foreign_net_buy_qty_20",
+          "semantic_type": "foreign_net_buy_qty_20d",
+          "text_ref": "supply_analysis.text",
+          "unit": "shares",
+          "usage": "외국인 20일 순매수 974,617주",
+          "value": 974617.0
+        },
+        {
+          "fact_id": "positioning:2026-08-20",
+          "field_path": "fields.institution_net_buy_qty_20",
+          "semantic_type": "institution_net_buy_qty_20d",
+          "text_ref": "supply_analysis.text",
+          "unit": "shares",
+          "usage": "기관 20일 순매도 105,329주",
+          "value": -105329.0
+        },
+        {
+          "fact_id": "valuation:current",
+          "field_path": "fields.trailing_pe",
+          "semantic_type": "trailing_pe",
+          "text_ref": "valuation_analysis.text",
+          "unit": "x",
+          "usage": "현재 PER 6.06배",
+          "value": 6.0639
+        },
+        {
+          "fact_id": "valuation:current",
+          "field_path": "fields.price_to_book",
+          "semantic_type": "price_to_book",
+          "text_ref": "valuation_analysis.text",
+          "unit": "x",
+          "usage": "현재 PBR 0.64배",
+          "value": 0.6427
+        },
+        {
+          "fact_id": "price:current",
+          "field_path": "fields.current_price",
+          "semantic_type": "share_price",
+          "text_ref": "core_judgment.text",
+          "unit": "KRW",
+          "usage": "현재가 14,620원",
+          "value": 14620.0
+        },
+        {
+          "fact_id": "chart:structure:nearest_supports:1",
+          "field_path": "fields.zone_low",
+          "semantic_type": "support_zone_price",
+          "text_ref": "core_judgment.text",
+          "unit": "KRW",
+          "usage": "동적 지지구간 하단 14,608원",
+          "value": 14608.445836
+        },
+        {
+          "fact_id": "chart:structure:nearest_supports:1",
+          "field_path": "fields.zone_high",
+          "semantic_type": "support_zone_price",
+          "text_ref": "core_judgment.text",
+          "unit": "KRW",
+          "usage": "동적 지지구간 상단 15,712원",
+          "value": 15711.554164
+        },
+        {
+          "fact_id": "earnings:2026-06-30",
+          "field_path": "fields.operating_income.value",
+          "semantic_type": "operating_income",
+          "text_ref": "core_judgment.text",
+          "unit": "KRW",
+          "usage": "2026년 2분기 연결 기준 영업이익 1,750억원",
+          "value": 175045476922.0
+        },
+        {
+          "fact_id": "earnings:2026-06-30",
+          "field_path": "fields.operating_income.value",
+          "semantic_type": "operating_income",
+          "text_ref": "business_earnings.text",
+          "unit": "KRW",
+          "usage": "2026년 2분기 연결 기준 영업이익 1,750억원",
+          "value": 175045476922.0
+        },
+        {
+          "fact_id": "chart:structure:nearest_resistance:1",
+          "field_path": "fields.zone_low",
+          "semantic_type": "resistance_zone_price",
+          "text_ref": "price_positioning.text",
+          "unit": "KRW",
+          "usage": "동적 저항구간 하단 14,661원",
+          "value": 14661.163684
+        },
+        {
+          "fact_id": "chart:structure:nearest_resistance:1",
+          "field_path": "fields.zone_high",
+          "semantic_type": "resistance_zone_price",
+          "text_ref": "price_positioning.text",
+          "unit": "KRW",
+          "usage": "동적 저항구간 상단 15,179원",
+          "value": 15178.836316
+        }
+      ],
+      "price_positioning": {
+        "fact_ids": [
+          "chart:structure:nearest_supports:1",
+          "chart:structure:nearest_resistance:1",
+          "price:current",
+          "monitoring:confirmation_transition"
+        ],
+        "holder_view": "보유자는 확인 가격 상단 유지와 별도로 합산비율·자본적정성의 사업 악화를 구분해 점검합니다.",
+        "new_observer_view": "신규 관찰자는 겹친 가격 구간을 추격하기보다 동적 지지 반응과 합산비율·자기자본이익률 확인이 함께 나타날 때 새 자금의 비대칭을 판단합니다.",
+        "text": "현재가 14,620원입니다. 가까운 동적 지지는 동적 지지구간 하단 14,608원부터 동적 지지구간 상단 15,712원까지이고, 가까운 동적 저항은 동적 저항구간 하단 14,661원부터 동적 저항구간 상단 15,179원까지입니다. 기존 확인 가격 상단 유지 상태는 이어졌지만 두 동적 구간이 겹쳐 현재가 손익비는 확인되지 않습니다."
+      },
+      "priority_watch": [
+        "합산비율과 자기자본이익률",
+        "자본적정성과 자본환원"
+      ],
+      "supply_analysis": {
+        "fact_ids": [
+          "positioning:2026-08-20"
+        ],
+        "text": "외국인 당일 순매도 14,031주 기록했고, 기관 당일 순매수 8,934주 기록했습니다.\n외국인 5일 순매수 61,433주는 기록했고, 기관 5일 순매도 27,173주를 기록했습니다.\n외국인 20일 순매수 974,617주 기록했고, 기관 20일 순매도 105,329주 기록했습니다.\n당일에는 외국인과 기관이 반대였고 단기·중기 축에는 외국인 우위와 기관 매도가 이어져 재보험 수익성의 확인 근거와 분리합니다."
+      },
+      "thesis_version": 6,
+      "ticker": "003690",
+      "unknowns": [
+        "합산비율, 자기자본이익률, 자본적정성과 영업현금흐름이 확인되지 않아 현재 장부가치 배수의 질을 판단할 수 없습니다."
+      ],
+      "valuation_analysis": {
+        "fact_ids": [
+          "valuation:book",
+          "valuation:trailing_earnings"
+        ],
+        "text": "재보험사 전체의 이익 기준 값은 현재 PER 6.06배입니다. 재보험사 전체의 장부가 기준 값은 현재 PBR 0.64배입니다. 장부가 배수는 자기자본이익률과 자본적정성이 없어 현재 숫자만으로 가치평가 결론을 내리지 않습니다. 보험업 배수는 합산비율·자기자본이익률·자본적정성과 함께 봐야 합니다. 동종기업 비교값과 안전한 자체 역사 비교값이 없어 이번 평가는 회사 전체 현재 배수에 한정합니다."
+      },
+      "valuation_view": "neutral"
+    },
+    {
+      "ai_thesis_assessment": "no_material_change",
+      "business_earnings": {
+        "fact_ids": [
+          "financial_quality:2026-06-30"
+        ],
+        "text": "철강 스프레드·원재료비·가동률과 영업현금흐름이 확인되어야 사이클 이익의 질을 판단할 수 있습니다."
+      },
+      "confidence": 0.78,
+      "core_judgment": {
+        "fact_ids": [
+          "price:current",
+          "chart:structure:nearest_supports:1",
+          "financial_quality:2026-06-30"
+        ],
+        "text": "철강·소재 사이클 논리를 바꿀 새 사업 근거는 확인되지 않았습니다. 현재가 321,500원입니다. 가까운 동적 지지는 동적 지지구간 하단 317,097원부터 동적 지지구간 상단 327,403원까지입니다. 동적 지지와 저항이 겹쳐 현재가 손익비는 확인되지 않으며, 철강 스프레드·원재료비·가동률이 사업 판단의 우선 확인점입니다."
+      },
+      "earnings_estimate_view": "unchanged",
+      "facts_used": [
+        "chart:structure:nearest_resistance:1",
+        "chart:structure:nearest_supports:1",
+        "financial_quality:2026-06-30",
+        "positioning:2026-08-20",
+        "price:current",
+        "valuation:book",
+        "valuation:current",
+        "valuation:trailing_earnings"
+      ],
+      "frameworks_used": [
+        "fact_interpretation_unknown",
+        "initial_thesis",
+        "market_expectations",
+        "risk_kill_condition",
+        "multiple_expansion_compression",
+        "macro_transmission",
+        "valuation_basis_comparability",
+        "monitoring_data_quality",
+        "steel_materials_valuation",
+        "financial_calculation_safety",
+        "earnings_quality",
+        "price_ohlcv",
+        "holder_new_buyer",
+        "adr_share_basis",
+        "chart_principles",
+        "chart_holder_new_buyer",
+        "chart_multi_timeframe",
+        "chart_supply",
+        "chart_data_quality",
+        "chart_bollinger",
+        "chart_candle_volume",
+        "chart_rsi",
+        "chart_macd",
+        "chart_threshold_transition",
+        "chart_atr",
+        "chart_support_resistance",
+        "chart_box",
+        "chart_major_swing",
+        "chart_fibonacci",
+        "chart_invalidation",
+        "chart_state_machine"
+      ],
+      "next_checks": [
+        "다음 철강 가격·물량, 리튬 수익성, 재고와 잉여현금흐름이 회복 논리를 확인하는지 봅니다."
+      ],
+      "numeric_claims": [
+        {
+          "fact_id": "price:current",
+          "field_path": "fields.current_price",
+          "semantic_type": "share_price",
+          "text_ref": "price_positioning.text",
+          "unit": "KRW",
+          "usage": "현재가 321,500원",
+          "value": 321500.0
+        },
+        {
+          "fact_id": "chart:structure:nearest_supports:1",
+          "field_path": "fields.zone_low",
+          "semantic_type": "support_zone_price",
+          "text_ref": "price_positioning.text",
+          "unit": "KRW",
+          "usage": "동적 지지구간 하단 317,097원",
+          "value": 317097.370029
+        },
+        {
+          "fact_id": "chart:structure:nearest_supports:1",
+          "field_path": "fields.zone_high",
+          "semantic_type": "support_zone_price",
+          "text_ref": "price_positioning.text",
+          "unit": "KRW",
+          "usage": "동적 지지구간 상단 327,403원",
+          "value": 327402.629971
+        },
+        {
+          "fact_id": "chart:structure:nearest_resistance:1",
+          "field_path": "fields.zone_low",
+          "semantic_type": "resistance_zone_price",
+          "text_ref": "price_positioning.text",
+          "unit": "KRW",
+          "usage": "동적 저항구간 하단 325,327원",
+          "value": 325326.848524
+        },
+        {
+          "fact_id": "chart:structure:nearest_resistance:1",
+          "field_path": "fields.zone_high",
+          "semantic_type": "resistance_zone_price",
+          "text_ref": "price_positioning.text",
+          "unit": "KRW",
+          "usage": "동적 저항구간 상단 348,173원",
+          "value": 348173.151476
+        },
+        {
+          "fact_id": "positioning:2026-08-20",
+          "field_path": "fields.foreign_net_buy_qty",
+          "semantic_type": "foreign_net_buy_qty",
+          "text_ref": "supply_analysis.text",
+          "unit": "shares",
+          "usage": "외국인 당일 순매수 27,768주",
+          "value": 27768.0
+        },
+        {
+          "fact_id": "positioning:2026-08-20",
+          "field_path": "fields.institution_net_buy_qty",
+          "semantic_type": "institution_net_buy_qty",
+          "text_ref": "supply_analysis.text",
+          "unit": "shares",
+          "usage": "기관 당일 순매도 20,669주",
+          "value": -20669.0
+        },
+        {
+          "fact_id": "positioning:2026-08-20",
+          "field_path": "fields.foreign_net_buy_qty_5",
+          "semantic_type": "foreign_net_buy_qty_5d",
+          "text_ref": "supply_analysis.text",
+          "unit": "shares",
+          "usage": "외국인 5일 순매수 157,649주",
+          "value": 157649.0
+        },
+        {
+          "fact_id": "positioning:2026-08-20",
+          "field_path": "fields.institution_net_buy_qty_5",
+          "semantic_type": "institution_net_buy_qty_5d",
+          "text_ref": "supply_analysis.text",
+          "unit": "shares",
+          "usage": "기관 5일 순매도 232,561주",
+          "value": -232561.0
+        },
+        {
+          "fact_id": "positioning:2026-08-20",
+          "field_path": "fields.foreign_net_buy_qty_20",
+          "semantic_type": "foreign_net_buy_qty_20d",
+          "text_ref": "supply_analysis.text",
+          "unit": "shares",
+          "usage": "외국인 20일 순매수 225,934주",
+          "value": 225934.0
+        },
+        {
+          "fact_id": "positioning:2026-08-20",
+          "field_path": "fields.institution_net_buy_qty_20",
+          "semantic_type": "institution_net_buy_qty_20d",
+          "text_ref": "supply_analysis.text",
+          "unit": "shares",
+          "usage": "기관 20일 순매도 160,984주",
+          "value": -160984.0
+        },
+        {
+          "fact_id": "valuation:current",
+          "field_path": "fields.trailing_pe",
+          "semantic_type": "trailing_pe",
+          "text_ref": "valuation_analysis.text",
+          "unit": "x",
+          "usage": "현재 PER 18.04배",
+          "value": 18.0436
+        },
+        {
+          "fact_id": "valuation:current",
+          "field_path": "fields.price_to_book",
+          "semantic_type": "price_to_book",
+          "text_ref": "valuation_analysis.text",
+          "unit": "x",
+          "usage": "현재 PBR 0.42배",
+          "value": 0.4231
+        },
+        {
+          "fact_id": "price:current",
+          "field_path": "fields.current_price",
+          "semantic_type": "share_price",
+          "text_ref": "core_judgment.text",
+          "unit": "KRW",
+          "usage": "현재가 321,500원",
+          "value": 321500.0
+        },
+        {
+          "fact_id": "chart:structure:nearest_supports:1",
+          "field_path": "fields.zone_low",
+          "semantic_type": "support_zone_price",
+          "text_ref": "core_judgment.text",
+          "unit": "KRW",
+          "usage": "동적 지지구간 하단 317,097원",
+          "value": 317097.370029
+        },
+        {
+          "fact_id": "chart:structure:nearest_supports:1",
+          "field_path": "fields.zone_high",
+          "semantic_type": "support_zone_price",
+          "text_ref": "core_judgment.text",
+          "unit": "KRW",
+          "usage": "동적 지지구간 상단 327,403원",
+          "value": 327402.629971
+        }
+      ],
+      "price_positioning": {
+        "fact_ids": [
+          "chart:structure:nearest_resistance:1",
+          "chart:structure:nearest_supports:1",
+          "price:current"
+        ],
+        "holder_view": "보유자는 겹친 가격 구간의 재정렬과 별도로 스프레드·가동률·현금전환의 사업 악화를 구분해 점검합니다.",
+        "new_observer_view": "신규 관찰자는 겹친 지지·저항이 분리되고 철강 스프레드와 현금전환이 확인될 때 새 자금의 비대칭을 다시 판단합니다.",
+        "text": "현재가 321,500원입니다. 가까운 동적 지지는 동적 지지구간 하단 317,097원부터 동적 지지구간 상단 327,403원까지이고, 가까운 동적 저항은 동적 저항구간 하단 325,327원부터 동적 저항구간 상단 348,173원까지입니다. 두 구간이 겹쳐 현재가 손익비는 확인되지 않으며 가격 비대칭을 확정하지 않습니다."
+      },
+      "priority_watch": [
+        "철강 가격·물량과 소재 수익성"
+      ],
+      "supply_analysis": {
+        "fact_ids": [
+          "positioning:2026-08-20"
+        ],
+        "text": "외국인 당일 순매수 27,768주 기록했고, 기관 당일 순매도 20,669주 기록했습니다.\n외국인 5일 순매수 157,649주 기록했고, 기관 5일 순매도 232,561주 기록했습니다.\n외국인 20일 순매수 225,934주 기록했고, 기관 20일 순매도 160,984주 기록했습니다.\n외국인은 세 시간축에서 매수했지만 기관은 모두 매도해, 이 관계를 철강 스프레드와 현금전환의 사업 근거와 분리합니다."
+      },
+      "thesis_version": 4,
+      "ticker": "005490",
+      "unknowns": [
+        "철강 가격·물량, 리튬 사업 수익성, 재고와 설비투자 이후 영업현금흐름·잉여현금흐름·자본수익률이 확인되지 않아 사이클 회복의 질을 판단할 수 없습니다."
+      ],
+      "valuation_analysis": {
+        "fact_ids": [
+          "valuation:book",
+          "valuation:trailing_earnings"
+        ],
+        "text": "연결 회사 전체의 이익 기준 값은 현재 PER 18.04배입니다. 연결 회사 전체의 장부가 기준 값은 현재 PBR 0.42배입니다. 이익배수와 장부가 배수가 서로 다른 신호를 주므로 PBR 하나만으로 가치평가 결론을 내리지 않습니다. 철강·소재 배수는 정상화 이익과 현금전환의 지속성과 함께 봐야 합니다. 같은 시점의 동종기업 비교값은 없으며 이번 판단에는 회사 전체 현재 배수를 중심으로 봅니다."
+      },
+      "valuation_view": "neutral"
+    },
+    {
+      "ai_thesis_assessment": "no_material_change",
+      "business_earnings": {
+        "fact_ids": [
+          "financial_quality:2026-06-30"
+        ],
+        "text": "메모리 제품 믹스와 파운드리 수율, 설비투자 이후 영업현금흐름이 확인되어야 이익의 질을 판단할 수 있습니다."
+      },
+      "confidence": 0.81,
+      "core_judgment": {
+        "fact_ids": [
+          "price:current",
+          "chart:structure:risk_reward:current_price",
+          "monitoring:confirmation_transition"
+        ],
+        "text": "메모리·파운드리 실행 논리는 유지되지만 이를 바꿀 새 사업 근거는 확인되지 않았습니다. 현재가 271,000원입니다. 기존 돌파 실패에서 확인 가격 상단을 넘어선 상태로 전환됐으므로 가격 안착과 메모리 믹스·파운드리 수율·현금전환을 별도로 확인해야 합니다."
+      },
+      "earnings_estimate_view": "unchanged",
+      "facts_used": [
+        "chart:structure:nearest_resistance:1",
+        "chart:structure:nearest_supports:1",
+        "chart:structure:risk_reward:current_price",
+        "financial_quality:2026-06-30",
+        "monitoring:confirmation_transition",
+        "positioning:2026-08-20",
+        "price:current",
+        "valuation:book",
+        "valuation:current",
+        "valuation:historical_pb",
+        "valuation:trailing_earnings"
+      ],
+      "frameworks_used": [
+        "fact_interpretation_unknown",
+        "initial_thesis",
+        "market_expectations",
+        "risk_kill_condition",
+        "multiple_expansion_compression",
+        "macro_transmission",
+        "valuation_basis_comparability",
+        "monitoring_data_quality",
+        "financial_calculation_safety",
+        "earnings_quality",
+        "price_ohlcv",
+        "holder_new_buyer",
+        "adr_share_basis",
+        "chart_principles",
+        "chart_holder_new_buyer",
+        "chart_multi_timeframe",
+        "chart_supply",
+        "chart_data_quality",
+        "chart_bollinger",
+        "chart_candle_volume",
+        "chart_rsi",
+        "chart_macd",
+        "chart_threshold_transition",
+        "chart_atr",
+        "chart_support_resistance",
+        "chart_major_swing",
+        "chart_fibonacci",
+        "chart_risk_reward",
+        "chart_invalidation",
+        "chart_state_machine"
+      ],
+      "next_checks": [
+        "다음 HBM4 채택·수율, DS 정상화 마진과 잉여현금흐름이 높아진 기대를 넘어서는지 봅니다."
+      ],
+      "numeric_claims": [
+        {
+          "fact_id": "price:current",
+          "field_path": "fields.current_price",
+          "semantic_type": "share_price",
+          "text_ref": "price_positioning.text",
+          "unit": "KRW",
+          "usage": "현재가 271,000원",
+          "value": 271000.0
+        },
+        {
+          "fact_id": "chart:structure:nearest_supports:1",
+          "field_path": "fields.zone_low",
+          "semantic_type": "support_zone_price",
+          "text_ref": "price_positioning.text",
+          "unit": "KRW",
+          "usage": "동적 지지구간 하단 221,866원",
+          "value": 221865.993817
+        },
+        {
+          "fact_id": "chart:structure:nearest_supports:1",
+          "field_path": "fields.zone_high",
+          "semantic_type": "support_zone_price",
+          "text_ref": "price_positioning.text",
+          "unit": "KRW",
+          "usage": "동적 지지구간 상단 233,134원",
+          "value": 233134.006183
+        },
+        {
+          "fact_id": "chart:structure:nearest_resistance:1",
+          "field_path": "fields.zone_low",
+          "semantic_type": "resistance_zone_price",
+          "text_ref": "price_positioning.text",
+          "unit": "KRW",
+          "usage": "동적 저항구간 하단 364,899원",
+          "value": 364899.132223
+        },
+        {
+          "fact_id": "chart:structure:nearest_resistance:1",
+          "field_path": "fields.zone_high",
+          "semantic_type": "resistance_zone_price",
+          "text_ref": "price_positioning.text",
+          "unit": "KRW",
+          "usage": "동적 저항구간 상단 379,601원",
+          "value": 379600.867777
+        },
+        {
+          "fact_id": "chart:structure:risk_reward:current_price",
+          "field_path": "fields.ratio",
+          "semantic_type": "current_price_risk_reward_ratio",
+          "text_ref": "price_positioning.text",
+          "unit": "x",
+          "usage": "현재가 기준 차트 손익비 1.57배",
+          "value": 1.567417
+        },
+        {
+          "fact_id": "positioning:2026-08-20",
+          "field_path": "fields.foreign_net_buy_qty",
+          "semantic_type": "foreign_net_buy_qty",
+          "text_ref": "supply_analysis.text",
+          "unit": "shares",
+          "usage": "외국인 당일 순매수 4,246,809주",
+          "value": 4246809.0
+        },
+        {
+          "fact_id": "positioning:2026-08-20",
+          "field_path": "fields.institution_net_buy_qty",
+          "semantic_type": "institution_net_buy_qty",
+          "text_ref": "supply_analysis.text",
+          "unit": "shares",
+          "usage": "기관 당일 순매수 609,890주",
+          "value": 609890.0
+        },
+        {
+          "fact_id": "positioning:2026-08-20",
+          "field_path": "fields.foreign_net_buy_qty_5",
+          "semantic_type": "foreign_net_buy_qty_5d",
+          "text_ref": "supply_analysis.text",
+          "unit": "shares",
+          "usage": "외국인 5일 순매수 5,165,492주",
+          "value": 5165492.0
+        },
+        {
+          "fact_id": "positioning:2026-08-20",
+          "field_path": "fields.institution_net_buy_qty_5",
+          "semantic_type": "institution_net_buy_qty_5d",
+          "text_ref": "supply_analysis.text",
+          "unit": "shares",
+          "usage": "기관 5일 순매수 458,985주",
+          "value": 458985.0
+        },
+        {
+          "fact_id": "positioning:2026-08-20",
+          "field_path": "fields.foreign_net_buy_qty_20",
+          "semantic_type": "foreign_net_buy_qty_20d",
+          "text_ref": "supply_analysis.text",
+          "unit": "shares",
+          "usage": "외국인 20일 순매도 3,175,767주",
+          "value": -3175767.0
+        },
+        {
+          "fact_id": "positioning:2026-08-20",
+          "field_path": "fields.institution_net_buy_qty_20",
+          "semantic_type": "institution_net_buy_qty_20d",
+          "text_ref": "supply_analysis.text",
+          "unit": "shares",
+          "usage": "기관 20일 순매도 4,341,034주",
+          "value": -4341034.0
+        },
+        {
+          "fact_id": "valuation:current",
+          "field_path": "fields.trailing_pe",
+          "semantic_type": "trailing_pe",
+          "text_ref": "valuation_analysis.text",
+          "unit": "x",
+          "usage": "현재 PER 12.08배",
+          "value": 12.0756
+        },
+        {
+          "fact_id": "valuation:current",
+          "field_path": "fields.price_to_book",
+          "semantic_type": "price_to_book",
+          "text_ref": "valuation_analysis.text",
+          "unit": "x",
+          "usage": "현재 PBR 2.76배",
+          "value": 2.7645
+        },
+        {
+          "fact_id": "valuation:current",
+          "field_path": "fields.historical_pb_statistics.current_percentile",
+          "semantic_type": "historical_pb_percentile",
+          "text_ref": "valuation_analysis.text",
+          "unit": "pct",
+          "usage": "PBR 역사적 백분위 91.2%",
+          "value": 91.2
+        },
+        {
+          "fact_id": "price:current",
+          "field_path": "fields.current_price",
+          "semantic_type": "share_price",
+          "text_ref": "core_judgment.text",
+          "unit": "KRW",
+          "usage": "현재가 271,000원",
+          "value": 271000.0
+        }
+      ],
+      "price_positioning": {
+        "fact_ids": [
+          "chart:structure:nearest_resistance:1",
+          "chart:structure:nearest_supports:1",
+          "chart:structure:risk_reward:current_price",
+          "price:current",
+          "monitoring:confirmation_transition"
+        ],
+        "holder_view": "보유자는 현재 차트 검토 경계와 별도로 메모리 마진·파운드리 수율·현금전환의 사업 악화를 구분해 점검합니다.",
+        "new_observer_view": "신규 관찰자는 상단 돌파 뒤 가격 안착과 동적 지지 반응, 메모리 믹스·파운드리 수율 확인이 함께 나타날 때 새 자금의 비대칭을 판단합니다.",
+        "text": "현재가 271,000원입니다. 가까운 동적 지지는 동적 지지구간 하단 221,866원부터 동적 지지구간 상단 233,134원까지이고, 가까운 동적 저항은 동적 저항구간 하단 364,899원부터 동적 저항구간 상단 379,601원까지입니다. 현재가 기준 차트 손익비 1.57배입니다. 기존 돌파 실패에서 확인 가격 상단을 넘어선 상태로 전환됐으며 사업 논리 변화와는 분리합니다."
+      },
+      "priority_watch": [
+        "HBM4 채택·수율과 DS 마진"
+      ],
+      "supply_analysis": {
+        "fact_ids": [
+          "positioning:2026-08-20"
+        ],
+        "text": "외국인 당일 순매수 4,246,809주 기록했고, 기관 당일 순매수 609,890주 기록했습니다.\n외국인 5일 순매수 5,165,492주 기록했고, 기관 5일 순매수 458,985주 기록했습니다.\n외국인 20일 순매도 3,175,767주 기록했고, 기관 20일 순매도 4,341,034주 기록했습니다.\n외국인과 기관의 당일·5일 매수와 20일 매도가 대비되므로 단기 가격 회복을 메모리·파운드리 실행과 현금전환의 사업 근거로 바꾸지 않습니다."
+      },
+      "thesis_version": 5,
+      "ticker": "005930",
+      "unknowns": [
+        "HBM4 채택·수율, DS 정상화 마진, 재고와 설비투자 이후 영업현금흐름·잉여현금흐름·자본수익률이 확인되지 않아 높은 기대의 지속성을 판단할 수 없습니다."
+      ],
+      "valuation_analysis": {
+        "fact_ids": [
+          "valuation:book",
+          "valuation:historical_pb",
+          "valuation:trailing_earnings"
+        ],
+        "text": "회사 전체의 이익 기준 값은 현재 PER 12.08배입니다. 회사 전체의 장부가 기준 값은 현재 PBR 2.76배입니다. 회사 전체 PBR의 자체 역사 위치는 PBR 역사적 백분위 91.2%입니다. 이는 현재 PBR이 비교 가능한 과거 관측치 대부분보다 높은 구간이라는 뜻입니다. 현재 배수는 수익성과 현금전환의 지속성과 함께 봐야 합니다. 같은 시점의 동종기업 비교값은 없어 이번 평가는 회사 전체 현재 배수와 자체 역사 위치를 중심으로 봅니다."
+      },
+      "valuation_view": "neutral"
+    },
+    {
+      "ai_thesis_assessment": "no_material_change",
+      "business_earnings": {
+        "fact_ids": [
+          "financial_quality:2026-06-30"
+        ],
+        "text": "수주잔고의 매출·마진 전환과 매출채권·영업현금흐름이 확인되어야 전력 인프라 성장의 질을 판단할 수 있습니다."
+      },
+      "confidence": 0.72,
+      "core_judgment": {
+        "fact_ids": [
+          "price:current",
+          "chart:structure:risk_reward:current_price"
+        ],
+        "text": "전력 인프라 수요와 수주 전환 논리를 바꿀 새 사업 근거는 확인되지 않았습니다. 현재가 199,200원입니다. 현재 가격 구조는 수주가 매출·마진·현금으로 전환되는지에 대한 확인을 대체하지 않습니다."
+      },
+      "earnings_estimate_view": "unchanged",
+      "facts_used": [
+        "chart:structure:nearest_resistance:1",
+        "chart:structure:nearest_supports:1",
+        "chart:structure:risk_reward:current_price",
+        "financial_quality:2026-06-30",
+        "monitoring:confirmation_transition",
+        "positioning:2026-08-20",
+        "price:current",
+        "security_basis:current",
+        "security_identity:current"
+      ],
+      "frameworks_used": [
+        "fact_interpretation_unknown",
+        "initial_thesis",
+        "market_expectations",
+        "risk_kill_condition",
+        "multiple_expansion_compression",
+        "macro_transmission",
+        "valuation_basis_comparability",
+        "monitoring_data_quality",
+        "hyperscaler_capex_transmission",
+        "price_ohlcv",
+        "holder_new_buyer",
+        "adr_share_basis",
+        "chart_principles",
+        "chart_holder_new_buyer",
+        "chart_multi_timeframe",
+        "chart_supply",
+        "chart_data_quality",
+        "chart_bollinger",
+        "chart_candle_volume",
+        "chart_rsi",
+        "chart_macd",
+        "chart_threshold_transition",
+        "chart_atr",
+        "chart_support_resistance",
+        "chart_box",
+        "chart_major_swing",
+        "chart_fibonacci",
+        "chart_risk_reward",
+        "chart_invalidation",
+        "chart_state_machine"
+      ],
+      "next_checks": [
+        "다음 수주잔고 매출 전환, 프로젝트 마진과 영업현금흐름이 성장의 질을 확인하는지 봅니다."
+      ],
+      "numeric_claims": [
+        {
+          "fact_id": "price:current",
+          "field_path": "fields.current_price",
+          "semantic_type": "share_price",
+          "text_ref": "price_positioning.text",
+          "unit": "KRW",
+          "usage": "현재가 199,200원",
+          "value": 199200.0
+        },
+        {
+          "fact_id": "chart:structure:nearest_supports:1",
+          "field_path": "fields.zone_low",
+          "semantic_type": "support_zone_price",
+          "text_ref": "price_positioning.text",
+          "unit": "KRW",
+          "usage": "동적 지지구간 하단 170,811원",
+          "value": 170811.055573
+        },
+        {
+          "fact_id": "chart:structure:nearest_supports:1",
+          "field_path": "fields.zone_high",
+          "semantic_type": "support_zone_price",
+          "text_ref": "price_positioning.text",
+          "unit": "KRW",
+          "usage": "동적 지지구간 상단 182,189원",
+          "value": 182188.944427
+        },
+        {
+          "fact_id": "chart:structure:nearest_resistance:1",
+          "field_path": "fields.zone_low",
+          "semantic_type": "resistance_zone_price",
+          "text_ref": "price_positioning.text",
+          "unit": "KRW",
+          "usage": "동적 저항구간 하단 220,642원",
+          "value": 220642.124252
+        },
+        {
+          "fact_id": "chart:structure:nearest_resistance:1",
+          "field_path": "fields.zone_high",
+          "semantic_type": "resistance_zone_price",
+          "text_ref": "price_positioning.text",
+          "unit": "KRW",
+          "usage": "동적 저항구간 상단 231,358원",
+          "value": 231357.875748
+        },
+        {
+          "fact_id": "chart:structure:risk_reward:current_price",
+          "field_path": "fields.ratio",
+          "semantic_type": "current_price_risk_reward_ratio",
+          "text_ref": "price_positioning.text",
+          "unit": "x",
+          "usage": "현재가 기준 차트 손익비 0.59배",
+          "value": 0.587083
+        },
+        {
+          "fact_id": "positioning:2026-08-20",
+          "field_path": "fields.foreign_net_buy_qty",
+          "semantic_type": "foreign_net_buy_qty",
+          "text_ref": "supply_analysis.text",
+          "unit": "shares",
+          "usage": "외국인 당일 순매도 108,492주",
+          "value": -108492.0
+        },
+        {
+          "fact_id": "positioning:2026-08-20",
+          "field_path": "fields.institution_net_buy_qty",
+          "semantic_type": "institution_net_buy_qty",
+          "text_ref": "supply_analysis.text",
+          "unit": "shares",
+          "usage": "기관 당일 순매도 92,665주",
+          "value": -92665.0
+        },
+        {
+          "fact_id": "positioning:2026-08-20",
+          "field_path": "fields.foreign_net_buy_qty_5",
+          "semantic_type": "foreign_net_buy_qty_5d",
+          "text_ref": "supply_analysis.text",
+          "unit": "shares",
+          "usage": "외국인 5일 순매수 59,915주",
+          "value": 59915.0
+        },
+        {
+          "fact_id": "positioning:2026-08-20",
+          "field_path": "fields.institution_net_buy_qty_5",
+          "semantic_type": "institution_net_buy_qty_5d",
+          "text_ref": "supply_analysis.text",
+          "unit": "shares",
+          "usage": "기관 5일 순매도 277,737주",
+          "value": -277737.0
+        },
+        {
+          "fact_id": "positioning:2026-08-20",
+          "field_path": "fields.foreign_net_buy_qty_20",
+          "semantic_type": "foreign_net_buy_qty_20d",
+          "text_ref": "supply_analysis.text",
+          "unit": "shares",
+          "usage": "외국인 20일 순매수 369,596주",
+          "value": 369596.0
+        },
+        {
+          "fact_id": "positioning:2026-08-20",
+          "field_path": "fields.institution_net_buy_qty_20",
+          "semantic_type": "institution_net_buy_qty_20d",
+          "text_ref": "supply_analysis.text",
+          "unit": "shares",
+          "usage": "기관 20일 순매도 291,125주",
+          "value": -291125.0
+        },
+        {
+          "fact_id": "price:current",
+          "field_path": "fields.current_price",
+          "semantic_type": "share_price",
+          "text_ref": "core_judgment.text",
+          "unit": "KRW",
+          "usage": "현재가 199,200원",
+          "value": 199200.0
+        }
+      ],
+      "price_positioning": {
+        "fact_ids": [
+          "chart:structure:nearest_resistance:1",
+          "chart:structure:nearest_supports:1",
+          "chart:structure:risk_reward:current_price",
+          "price:current",
+          "monitoring:confirmation_transition"
+        ],
+        "holder_view": "보유자는 현재 차트 검토 경계와 별도로 수주 전환·프로젝트 마진·현금전환의 사업 악화를 구분해 점검합니다.",
+        "new_observer_view": "신규 관찰자는 동적 지지 반응과 수주 매출화·마진·현금전환이 함께 확인될 때 새 자금의 가격·사실 비대칭을 판단합니다.",
+        "text": "현재가 199,200원입니다. 가까운 동적 지지는 동적 지지구간 하단 170,811원부터 동적 지지구간 상단 182,189원까지이고, 가까운 동적 저항은 동적 저항구간 하단 220,642원부터 동적 저항구간 상단 231,358원까지입니다. 현재가 기준 차트 손익비 0.59배입니다. 등록 확인 가격은 설정되지 않은 상태여서 동적 지지·저항과 사업 확인을 함께 봅니다."
+      },
+      "priority_watch": [
+        "수주잔고의 매출·마진 전환",
+        "매출채권·OCF·ROIC"
+      ],
+      "supply_analysis": {
+        "fact_ids": [
+          "positioning:2026-08-20"
+        ],
+        "text": "외국인 당일 순매도 108,492주 기록했고, 기관 당일 순매도 92,665주 기록했습니다.\n외국인 5일 순매수 59,915주 기록했고, 기관 5일 순매도 277,737주 기록했습니다.\n외국인 20일 순매수 369,596주 기록했고, 기관 20일 순매도 291,125주 기록했습니다.\n당일에는 두 주체가 매도했고 단기·중기 축에는 외국인 매수와 기관 매도가 갈려 전력기기 수주·마진·현금전환과 분리해 해석합니다."
+      },
+      "thesis_version": 2,
+      "ticker": "010120",
+      "unknowns": [
+        "수주잔고의 매출 전환, 프로젝트 마진, 매출채권과 영업현금흐름·설비투자·자본수익률이 확인되지 않아 성장의 현금전환을 판단할 수 없습니다."
+      ],
+      "valuation_analysis": {
+        "fact_ids": [
+          "security_identity:current",
+          "security_basis:current"
+        ],
+        "text": "현재 거래 증권의 동일성 검증이 완료되지 않았습니다. 현재 거래 증권의 주식·통화 분모 기준이 확인되지 않아 PER·PBR 해석은 보류합니다. 가격·차트·수급과 독립적인 수주·마진·현금흐름이 확인될 때까지 가치평가 결론을 만들지 않습니다."
+      },
+      "valuation_view": "neutral"
+    },
+    {
+      "ai_thesis_assessment": "no_material_change",
+      "business_earnings": {
+        "fact_ids": [
+          "financial_quality:2026-06-30"
+        ],
+        "text": "손익 항목의 재무 품질과 금액별 기간·연결 기준이 확인되지 않아 금액과 성장률을 표시하지 않습니다. 수주 전환·방산 마진·영업현금흐름이 확인되어야 성장의 질을 판단할 수 있습니다."
+      },
+      "confidence": 0.69,
+      "core_judgment": {
+        "fact_ids": [
+          "price:current",
+          "chart:structure:risk_reward:current_price",
+          "financial_quality:2026-06-30"
+        ],
+        "text": "방산 수주와 해외 확장 논리를 바꿀 새 근거는 확인되지 않았습니다. 현재가 1,167,000원입니다. 등록 확인 가격은 설정되지 않았으며, 현재 가격 구조는 수주가 매출·마진·현금으로 전환되는지에 대한 확인을 대체하지 않습니다."
+      },
+      "earnings_estimate_view": "unchanged",
+      "facts_used": [
+        "chart:structure:nearest_resistance:1",
+        "chart:structure:nearest_supports:1",
+        "chart:structure:risk_reward:current_price",
+        "financial_quality:2026-06-30",
+        "monitoring:confirmation_transition",
+        "positioning:2026-08-20",
+        "price:current",
+        "security_basis:current",
+        "security_identity:current"
+      ],
+      "frameworks_used": [
+        "fact_interpretation_unknown",
+        "initial_thesis",
+        "market_expectations",
+        "risk_kill_condition",
+        "multiple_expansion_compression",
+        "macro_transmission",
+        "valuation_basis_comparability",
+        "monitoring_data_quality",
+        "price_ohlcv",
+        "holder_new_buyer",
+        "adr_share_basis",
+        "chart_principles",
+        "chart_holder_new_buyer",
+        "chart_multi_timeframe",
+        "chart_supply",
+        "chart_data_quality",
+        "chart_bollinger",
+        "chart_candle_volume",
+        "chart_rsi",
+        "chart_macd",
+        "chart_threshold_transition",
+        "chart_atr",
+        "chart_support_resistance",
+        "chart_major_swing",
+        "chart_fibonacci",
+        "chart_risk_reward",
+        "chart_invalidation",
+        "chart_state_machine"
+      ],
+      "next_checks": [
+        "다음 대형 수주의 매출·마진 전환과 영업현금흐름이 방산 성장의 질을 확인하는지 봅니다."
+      ],
+      "numeric_claims": [
+        {
+          "fact_id": "price:current",
+          "field_path": "fields.current_price",
+          "semantic_type": "share_price",
+          "text_ref": "price_positioning.text",
+          "unit": "KRW",
+          "usage": "현재가 1,167,000원",
+          "value": 1167000.0
+        },
+        {
+          "fact_id": "chart:structure:nearest_supports:1",
+          "field_path": "fields.zone_low",
+          "semantic_type": "support_zone_price",
+          "text_ref": "price_positioning.text",
+          "unit": "KRW",
+          "usage": "동적 지지구간 하단 1,024,139원",
+          "value": 1024139.20805
+        },
+        {
+          "fact_id": "chart:structure:nearest_supports:1",
+          "field_path": "fields.zone_high",
+          "semantic_type": "support_zone_price",
+          "text_ref": "price_positioning.text",
+          "unit": "KRW",
+          "usage": "동적 지지구간 상단 1,073,861원",
+          "value": 1073860.79195
+        },
+        {
+          "fact_id": "chart:structure:nearest_resistance:1",
+          "field_path": "fields.zone_low",
+          "semantic_type": "resistance_zone_price",
+          "text_ref": "price_positioning.text",
+          "unit": "KRW",
+          "usage": "동적 저항구간 하단 1,182,176원",
+          "value": 1182176.481186
+        },
+        {
+          "fact_id": "chart:structure:nearest_resistance:1",
+          "field_path": "fields.zone_high",
+          "semantic_type": "resistance_zone_price",
+          "text_ref": "price_positioning.text",
+          "unit": "KRW",
+          "usage": "동적 저항구간 상단 1,217,824원",
+          "value": 1217823.518814
+        },
+        {
+          "fact_id": "chart:structure:risk_reward:current_price",
+          "field_path": "fields.ratio",
+          "semantic_type": "current_price_risk_reward_ratio",
+          "text_ref": "price_positioning.text",
+          "unit": "x",
+          "usage": "현재가 기준 차트 손익비 0.08배",
+          "value": 0.083821
+        },
+        {
+          "fact_id": "positioning:2026-08-20",
+          "field_path": "fields.foreign_net_buy_qty",
+          "semantic_type": "foreign_net_buy_qty",
+          "text_ref": "supply_analysis.text",
+          "unit": "shares",
+          "usage": "외국인 당일 순매수 13,736주",
+          "value": 13736.0
+        },
+        {
+          "fact_id": "positioning:2026-08-20",
+          "field_path": "fields.institution_net_buy_qty",
+          "semantic_type": "institution_net_buy_qty",
+          "text_ref": "supply_analysis.text",
+          "unit": "shares",
+          "usage": "기관 당일 순매수 5,898주",
+          "value": 5898.0
+        },
+        {
+          "fact_id": "positioning:2026-08-20",
+          "field_path": "fields.foreign_net_buy_qty_5",
+          "semantic_type": "foreign_net_buy_qty_5d",
+          "text_ref": "supply_analysis.text",
+          "unit": "shares",
+          "usage": "외국인 5일 순매수 880주",
+          "value": 880.0
+        },
+        {
+          "fact_id": "positioning:2026-08-20",
+          "field_path": "fields.institution_net_buy_qty_5",
+          "semantic_type": "institution_net_buy_qty_5d",
+          "text_ref": "supply_analysis.text",
+          "unit": "shares",
+          "usage": "기관 5일 순매수 3,119주",
+          "value": 3119.0
+        },
+        {
+          "fact_id": "positioning:2026-08-20",
+          "field_path": "fields.foreign_net_buy_qty_20",
+          "semantic_type": "foreign_net_buy_qty_20d",
+          "text_ref": "supply_analysis.text",
+          "unit": "shares",
+          "usage": "외국인 20일 순매수 22,013주",
+          "value": 22013.0
+        },
+        {
+          "fact_id": "positioning:2026-08-20",
+          "field_path": "fields.institution_net_buy_qty_20",
+          "semantic_type": "institution_net_buy_qty_20d",
+          "text_ref": "supply_analysis.text",
+          "unit": "shares",
+          "usage": "기관 20일 순매수 66,631주",
+          "value": 66631.0
+        },
+        {
+          "fact_id": "price:current",
+          "field_path": "fields.current_price",
+          "semantic_type": "share_price",
+          "text_ref": "core_judgment.text",
+          "unit": "KRW",
+          "usage": "현재가 1,167,000원",
+          "value": 1167000.0
+        }
+      ],
+      "price_positioning": {
+        "fact_ids": [
+          "chart:structure:nearest_resistance:1",
+          "chart:structure:nearest_supports:1",
+          "chart:structure:risk_reward:current_price",
+          "price:current",
+          "monitoring:confirmation_transition"
+        ],
+        "holder_view": "보유자는 현재 차트 검토 경계와 별도로 수주 전환·방산 마진·현금전환의 사업 악화를 구분해 점검합니다.",
+        "new_observer_view": "신규 관찰자는 가까운 저항을 추격하기보다 동적 지지 반응과 수주 매출화·마진·현금전환이 함께 확인될 때 새 자금의 비대칭을 판단합니다.",
+        "text": "현재가 1,167,000원입니다. 가까운 동적 지지는 동적 지지구간 하단 1,024,139원부터 동적 지지구간 상단 1,073,861원까지이고, 가까운 동적 저항은 동적 저항구간 하단 1,182,176원부터 동적 저항구간 상단 1,217,824원까지입니다. 현재가 기준 차트 손익비 0.08배입니다. 등록 확인 가격이 없는 상태이므로 가격 돌파와 사업 실행을 별도로 확인해야 합니다."
+      },
+      "priority_watch": [
+        "대형 수주의 매출·마진 전환",
+        "계약자산·OCF·FCF"
+      ],
+      "supply_analysis": {
+        "fact_ids": [
+          "positioning:2026-08-20"
+        ],
+        "text": "외국인 당일 순매수 13,736주 기록했고, 기관 당일 순매수 5,898주 기록했습니다.\n외국인 5일 순매수 880주 기록했고, 기관 5일 순매수 3,119주 기록했습니다.\n외국인 20일 순매수 22,013주 기록했고, 기관 20일 순매수 66,631주 기록했습니다.\n외국인과 기관이 세 시간축 모두 매수했지만, 이 정렬만으로 방산 수주 전환과 현금전환을 확인하지 않습니다."
+      },
+      "thesis_version": 1,
+      "ticker": "012450",
+      "unknowns": [
+        "수주잔고의 매출 전환과 프로젝트 마진, 계약자산, 영업현금흐름·설비투자·잉여현금흐름이 확인되지 않아 방산 성장의 현금전환을 판단할 수 없습니다."
+      ],
+      "valuation_analysis": {
+        "fact_ids": [
+          "security_identity:current",
+          "security_basis:current"
+        ],
+        "text": "현재 거래 증권의 동일성 검증이 완료되지 않았습니다. 현재 거래 증권의 주식·통화 분모 기준이 확인되지 않아 PER·PBR 해석은 보류합니다. 가격·차트·수급과 독립적인 수주·마진·현금흐름이 확인될 때까지 가치평가 결론을 만들지 않습니다."
+      },
+      "valuation_view": "neutral"
+    },
+    {
+      "ai_thesis_assessment": "no_material_change",
+      "business_earnings": {
+        "fact_ids": [
+          "financial_quality:2026-06-30"
+        ],
+        "text": "재무 품질 자체는 사용 가능하지만 금액별 기간·연결 기준이 표시 조건을 충족하지 않아 손익 금액과 성장률을 표시하지 않습니다. 운임·물량·연료비 전가와 영업현금흐름·설비투자가 확인되어야 이익의 현금전환을 판단할 수 있습니다."
+      },
+      "confidence": 0.8,
+      "core_judgment": {
+        "fact_ids": [
+          "price:current",
+          "chart:structure:nearest_supports:1",
+          "monitoring:confirmation_transition"
+        ],
+        "text": "완성차 운송과 물류 성장 논리를 바꿀 새 근거는 확인되지 않았습니다. 현재가 199,800원입니다. 가까운 동적 지지는 동적 지지구간 하단 197,803원부터 동적 지지구간 상단 210,197원까지입니다. 확인 가격 재검증에서 돌파 실패로 전환됐고 동적 지지·저항이 겹쳐 현재가 손익비는 확인되지 않습니다."
+      },
+      "earnings_estimate_view": "unchanged",
+      "facts_used": [
+        "chart:structure:nearest_resistance:1",
+        "chart:structure:nearest_supports:1",
+        "financial_quality:2026-06-30",
+        "monitoring:confirmation_transition",
+        "positioning:2026-08-20",
+        "price:current",
+        "valuation:book",
+        "valuation:current",
+        "valuation:historical_pe",
+        "valuation:trailing_earnings"
+      ],
+      "frameworks_used": [
+        "fact_interpretation_unknown",
+        "initial_thesis",
+        "market_expectations",
+        "risk_kill_condition",
+        "multiple_expansion_compression",
+        "macro_transmission",
+        "valuation_basis_comparability",
+        "monitoring_data_quality",
+        "shipping_transport_valuation",
+        "financial_calculation_safety",
+        "earnings_quality",
+        "price_ohlcv",
+        "holder_new_buyer",
+        "adr_share_basis",
+        "chart_principles",
+        "chart_holder_new_buyer",
+        "chart_multi_timeframe",
+        "chart_supply",
+        "chart_data_quality",
+        "chart_bollinger",
+        "chart_candle_volume",
+        "chart_rsi",
+        "chart_macd",
+        "chart_threshold_transition",
+        "chart_atr",
+        "chart_support_resistance",
+        "chart_major_swing",
+        "chart_fibonacci",
+        "chart_invalidation",
+        "chart_state_machine"
+      ],
+      "next_checks": [
+        "다음 운임·물량·연료비 전가와 영업현금흐름이 물류 성장의 질을 확인하는지 봅니다."
+      ],
+      "numeric_claims": [
+        {
+          "fact_id": "price:current",
+          "field_path": "fields.current_price",
+          "semantic_type": "share_price",
+          "text_ref": "price_positioning.text",
+          "unit": "KRW",
+          "usage": "현재가 199,800원",
+          "value": 199800.0
+        },
+        {
+          "fact_id": "chart:structure:nearest_supports:1",
+          "field_path": "fields.zone_low",
+          "semantic_type": "support_zone_price",
+          "text_ref": "price_positioning.text",
+          "unit": "KRW",
+          "usage": "동적 지지구간 하단 197,803원",
+          "value": 197803.176135
+        },
+        {
+          "fact_id": "chart:structure:nearest_supports:1",
+          "field_path": "fields.zone_high",
+          "semantic_type": "support_zone_price",
+          "text_ref": "price_positioning.text",
+          "unit": "KRW",
+          "usage": "동적 지지구간 상단 210,197원",
+          "value": 210196.823865
+        },
+        {
+          "fact_id": "chart:structure:nearest_resistance:1",
+          "field_path": "fields.zone_low",
+          "semantic_type": "resistance_zone_price",
+          "text_ref": "price_positioning.text",
+          "unit": "KRW",
+          "usage": "동적 저항구간 하단 200,150원",
+          "value": 200150.042621
+        },
+        {
+          "fact_id": "chart:structure:nearest_resistance:1",
+          "field_path": "fields.zone_high",
+          "semantic_type": "resistance_zone_price",
+          "text_ref": "price_positioning.text",
+          "unit": "KRW",
+          "usage": "동적 저항구간 상단 208,350원",
+          "value": 208349.957379
+        },
+        {
+          "fact_id": "positioning:2026-08-20",
+          "field_path": "fields.foreign_net_buy_qty",
+          "semantic_type": "foreign_net_buy_qty",
+          "text_ref": "supply_analysis.text",
+          "unit": "shares",
+          "usage": "외국인 당일 순매도 8,124주",
+          "value": -8124.0
+        },
+        {
+          "fact_id": "positioning:2026-08-20",
+          "field_path": "fields.institution_net_buy_qty",
+          "semantic_type": "institution_net_buy_qty",
+          "text_ref": "supply_analysis.text",
+          "unit": "shares",
+          "usage": "기관 당일 순매도 27,866주",
+          "value": -27866.0
+        },
+        {
+          "fact_id": "positioning:2026-08-20",
+          "field_path": "fields.foreign_net_buy_qty_5",
+          "semantic_type": "foreign_net_buy_qty_5d",
+          "text_ref": "supply_analysis.text",
+          "unit": "shares",
+          "usage": "외국인 5일 순매수 55,807주",
+          "value": 55807.0
+        },
+        {
+          "fact_id": "positioning:2026-08-20",
+          "field_path": "fields.institution_net_buy_qty_5",
+          "semantic_type": "institution_net_buy_qty_5d",
+          "text_ref": "supply_analysis.text",
+          "unit": "shares",
+          "usage": "기관 5일 순매도 47,507주",
+          "value": -47507.0
+        },
+        {
+          "fact_id": "positioning:2026-08-20",
+          "field_path": "fields.foreign_net_buy_qty_20",
+          "semantic_type": "foreign_net_buy_qty_20d",
+          "text_ref": "supply_analysis.text",
+          "unit": "shares",
+          "usage": "외국인 20일 순매수 126,932주",
+          "value": 126932.0
+        },
+        {
+          "fact_id": "positioning:2026-08-20",
+          "field_path": "fields.institution_net_buy_qty_20",
+          "semantic_type": "institution_net_buy_qty_20d",
+          "text_ref": "supply_analysis.text",
+          "unit": "shares",
+          "usage": "기관 20일 순매수 158,024주",
+          "value": 158024.0
+        },
+        {
+          "fact_id": "valuation:current",
+          "field_path": "fields.trailing_pe",
+          "semantic_type": "trailing_pe",
+          "text_ref": "valuation_analysis.text",
+          "unit": "x",
+          "usage": "현재 PER 9.72배",
+          "value": 9.7236
+        },
+        {
+          "fact_id": "valuation:current",
+          "field_path": "fields.price_to_book",
+          "semantic_type": "price_to_book",
+          "text_ref": "valuation_analysis.text",
+          "unit": "x",
+          "usage": "현재 PBR 1.38배",
+          "value": 1.3758
+        },
+        {
+          "fact_id": "valuation:current",
+          "field_path": "fields.historical_pe_statistics.current_percentile",
+          "semantic_type": "historical_pe_percentile",
+          "text_ref": "valuation_analysis.text",
+          "unit": "pct",
+          "usage": "PER 역사적 백분위 88.1%",
+          "value": 88.1
+        },
+        {
+          "fact_id": "price:current",
+          "field_path": "fields.current_price",
+          "semantic_type": "share_price",
+          "text_ref": "core_judgment.text",
+          "unit": "KRW",
+          "usage": "현재가 199,800원",
+          "value": 199800.0
+        },
+        {
+          "fact_id": "chart:structure:nearest_supports:1",
+          "field_path": "fields.zone_low",
+          "semantic_type": "support_zone_price",
+          "text_ref": "core_judgment.text",
+          "unit": "KRW",
+          "usage": "동적 지지구간 하단 197,803원",
+          "value": 197803.176135
+        },
+        {
+          "fact_id": "chart:structure:nearest_supports:1",
+          "field_path": "fields.zone_high",
+          "semantic_type": "support_zone_price",
+          "text_ref": "core_judgment.text",
+          "unit": "KRW",
+          "usage": "동적 지지구간 상단 210,197원",
+          "value": 210196.823865
+        }
+      ],
+      "price_positioning": {
+        "fact_ids": [
+          "chart:structure:nearest_resistance:1",
+          "chart:structure:nearest_supports:1",
+          "price:current",
+          "monitoring:confirmation_transition"
+        ],
+        "holder_view": "보유자는 돌파 실패에 따른 차트 검토 경계와 별도로 운임·물량·마진·현금전환의 사업 악화를 구분해 점검합니다.",
+        "new_observer_view": "신규 관찰자는 돌파 실패 뒤 겹친 지지·저항이 분리되고 운임·물량·마진·현금전환이 확인될 때 새 자금의 비대칭을 다시 판단합니다.",
+        "text": "현재가 199,800원입니다. 가까운 동적 지지는 동적 지지구간 하단 197,803원부터 동적 지지구간 상단 210,197원까지이고, 가까운 동적 저항은 동적 저항구간 하단 200,150원부터 동적 저항구간 상단 208,350원까지입니다. 두 구간이 겹쳐 현재가 손익비는 확인되지 않습니다. 확인 가격 재검증에서 돌파 실패로 전환됐지만 이는 사업 논리 악화를 뜻하지 않습니다."
+      },
+      "priority_watch": [
+        "운임·물량과 연료비 전가",
+        "OCF·CAPEX·FCF"
+      ],
+      "supply_analysis": {
+        "fact_ids": [
+          "positioning:2026-08-20"
+        ],
+        "text": "외국인 당일 순매도 8,124주 기록했고, 기관 당일 순매도 27,866주 기록했습니다.\n외국인 5일 순매수 55,807주 기록했고, 기관 5일 순매도 47,507주 기록했습니다.\n외국인 20일 순매수 126,932주 기록했고, 기관 20일 순매수 158,024주 기록했습니다.\n당일에는 두 주체가 매도했고 단기 축은 방향이 갈렸으며 중기 축은 함께 매수해, 이 시간축 차이를 운임·물량·마진의 사업 근거와 분리합니다."
+      },
+      "thesis_version": 5,
+      "ticker": "086280",
+      "unknowns": [
+        "운임·물량, 연료비 전가, 영업현금흐름·설비투자·잉여현금흐름이 확인되지 않아 물류 성장의 현금전환을 판단할 수 없습니다."
+      ],
+      "valuation_analysis": {
+        "fact_ids": [
+          "valuation:book",
+          "valuation:historical_pe",
+          "valuation:trailing_earnings"
+        ],
+        "text": "상장회사 전체의 이익 기준 값은 현재 PER 9.72배입니다. 상장회사 전체의 장부가 기준 값은 현재 PBR 1.38배입니다. 회사 전체 PER의 자체 역사 위치는 PER 역사적 백분위 88.1%입니다. 이는 현재 PER이 비교 가능한 과거 관측치 대부분보다 높은 구간이라는 뜻입니다. 운송업 배수는 운임·물량보다 마진과 현금전환의 지속성과 함께 봐야 합니다. 동종기업의 같은 시점 비교값은 없어 회사 전체 현재 배수와 자체 역사 위치를 중심으로 판단합니다."
+      },
+      "valuation_view": "neutral"
+    }
+  ]
+}

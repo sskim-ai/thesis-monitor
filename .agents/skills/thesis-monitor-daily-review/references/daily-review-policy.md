@@ -60,9 +60,10 @@ neutral security-basis caution. Ratio prose additionally requires
 Give each selected candidate one owner, evidence type, decision role, section, and specificity key.
 When a generic candidate would recur across three or more stocks, suppress it unless each
 occurrence has different subject evidence and a different decision consequence. KR supply must
-retain every eligible foreign/institution 1/5/20-day claim, but organize those claims around the
-stock's actual horizon relationship instead of reusing one portfolio-wide numeric sentence
-skeleton.
+retain every eligible foreign/institution 1/5/20-day claim as the structured
+`canonical-supply-flow-tuple-v1` set. Stable actor/horizon rows are schema, not analytical prose.
+An additional interpretation is optional and remains repetition-checked; render it only when a
+verified accumulation, distribution, reversal, or horizon divergence adds decision information.
 
 `business_earnings_policy` has no numeric quota. Use `earnings:*` revenue, operating income,
 margin, volume, utilization, or another explicitly listed business Fact when it is material. A
@@ -76,7 +77,15 @@ company-specific missing driver. Do not rotate synonyms around a portfolio-wide 
 pair a daily message requirement. When the policy reports no material price transition, suppress
 the pair. When a canonical confirmation, chart-state, support/resistance, or RR-availability
 transition makes the relation decision-relevant, integrate it into that primary price transition
-rather than placing the same standalone `이전 RR; 현재 RR` tuple in every US supply section.
+rather than placing the same standalone `이전 RR; 현재 RR` tuple in every US supply section. The
+exact current-price RR has one primary occurrence in `price_positioning.text`; core, observer,
+holder, supply, and next-check prose may reuse only its supported meaning, never the exact value.
+
+Keep a common financial-lineage limitation in structured audit state unless it materially changes
+the user decision. Visible caution must name the exact missing amount period, statement basis,
+share denominator, or security identity instead of repeating one portfolio-wide sentence. A
+generic inventory/CAPEX-to-FCF/ROIC checklist is also suppressed unless the routed company has a
+specific asset, operating mechanism, Unknown, and decision consequence.
 
 When two relevant valuation facts exist, interpret their direction together. A modeled forward
 multiple above trailing can indicate a weaker modeled earnings denominator; a modeled forward
@@ -141,9 +150,9 @@ Use canonical `fact_catalog` objects only. Link every interpretation to `fact_id
 
 Every investment-related number starts as a draft `{{numeric:ref_id}}` placeholder plus `numeric_fact_refs` containing `ref_id`, `fact_id`, `field_path`, exact prose `text_ref`, the mandatory exact lower/upper role for zone endpoints, and an optional typed Korean `postposition` family (`은/는`, `이/가`, `을/를`, or `와/과`). The backend binds the canonical value, unit, semantic, period/source-aware label, endpoint role, approved formatter, typed postposition, user text, and final `numeric_claims`; the model does not transcribe the same number twice. A generated claim covers only its exact prose occurrence, and a number found elsewhere in the packet or another prose field is not interchangeable with the referenced semantic field. A raw Korean particle immediately after a placeholder is invalid.
 
-KR investor-flow language is actor-and-horizon exact. A directional statement for foreign or institutional flow at 1, 5, or 20 days requires that exact canonical claim in the same prose occurrence; another actor or horizon cannot substitute. US stock prose uses volume, relative volume, or an explicit US positioning fact and does not use generic `수급` language without such a contract. Every displayed KR financial amount and directly attached growth or margin claim carries a field-specific amount-period and statement-basis label derived from one uniquely matched source row. `CFS` is consolidated and `OFS` is separate; `IS`/`CIS`, filing type, a plain statement title, and report end date never substitute for single-quarter/cumulative status, consolidated/separate basis, or comparison-period identity. Historical, peer, expectation, and trailing/forward valuation judgments require an occurrence-bound typed draft interpretation reference, `exact_text_span`, and matching visible comparison claims. A trailing/forward relation is usable only when the backend relation fact verifies the same price, security, share, currency, denominator, and forward-period status. PBR/BVPS interpretation must pass `valuation-coherence-v1` on period, currency, share, and security basis.
+KR investor-flow language is actor-and-horizon exact. A directional statement for foreign or institutional flow at 1, 5, or 20 days requires that exact canonical claim in the same prose occurrence; another actor or horizon cannot substitute. The complete eligible six-value set is a structured tuple whose stable labels may repeat, while its optional interpretive sentence remains subject-specific and quality-checked. US stock prose uses volume, relative volume, or an explicit US positioning fact and does not use generic `수급` language without such a contract. Every displayed KR financial amount and directly attached growth or margin claim carries a field-specific amount-period and statement-basis label derived from one uniquely matched source row. `CFS` is consolidated and `OFS` is separate; `IS`/`CIS`, filing type, a plain statement title, and report end date never substitute for single-quarter/cumulative status, consolidated/separate basis, or comparison-period identity. Historical, peer, expectation, and trailing/forward valuation judgments require an occurrence-bound typed draft interpretation reference, `exact_text_span`, and matching visible comparison claims. A trailing/forward relation is usable only when the backend relation fact verifies the same price, security, share, currency, denominator, and forward-period status. PBR/BVPS interpretation must pass `valuation-coherence-v1` on period, currency, share, and security basis.
 
-Final message UX is also fail-closed. `priority_watch` contains ongoing thesis drivers or risks; `next_checks` contains the next filing, earnings release, or other time-bound confirmation that could change the judgment. An identical bullet, an event-oriented watch item, or a watch/next pair without distinct decision information is invalid. One exact numeric fact has one primary owner section and normally appears no more than twice in one stock message; three bindings of the same `fact_id` and `field_path` are excessive repetition. KR supply prose names the actor as subject and completes the horizon, direction, quantity, and predicate. Broken parallel fragments and mismatched Korean particles are invalid, while an empty watch or next-check section is allowed when it avoids semantic duplication.
+Final message UX is also fail-closed. `priority_watch` contains ongoing thesis drivers or risks; `next_checks` contains the next filing, earnings release, or other time-bound confirmation that could change the judgment. An identical bullet, an event-oriented watch item, or a watch/next pair without distinct decision information is invalid. One exact numeric fact has one primary owner section and normally appears no more than twice in one stock message; three bindings of the same `fact_id` and `field_path` are excessive repetition. The exact current-price RR is stricter: it appears once, in `price_positioning.text`. KR supply prose names the actor as subject and completes the horizon, direction, quantity, and predicate. Broken parallel fragments and mismatched Korean particles are invalid, while an empty watch or next-check section is allowed when it avoids semantic duplication.
 
 Risk/reward references are basis exact. Current-price and support-entry ratios use distinct semantics and canonical labels. A support-entry ratio is a conditional scenario at verified dynamic support and cannot describe present-price asymmetry; a basis-free risk/reward binding is invalid.
 

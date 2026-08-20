@@ -791,6 +791,10 @@ def generate(*, operating_root: Path, output_dir: Path) -> dict[str, object]:
                         "generic_numeric_summary_families"
                     ],
                     "ownership": after_quality["numeric_ownership"],
+                    "numeric_primary_ownership": after_quality[
+                        "numeric_primary_ownership"
+                    ],
+                    "final_language": after_quality["final_rendered_language"],
                     "substantive": after_quality["repeated_sentences"],
                 },
                 ensure_ascii=False,

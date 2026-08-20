@@ -95,7 +95,13 @@ _SECTION_OWNERS = {
     "unknowns": "unknown",
 }
 _RR_SEMANTICS = {"previous_risk_reward_ratio", "current_risk_reward_ratio"}
+_CURRENT_PRICE_RR_SEMANTIC = "current_price_risk_reward_ratio"
 _PBR_HISTORY_SEMANTICS = {"price_to_book", "historical_pb_percentile"}
+_CANONICAL_KR_SUPPLY_PAIRS = {
+    frozenset({"foreign_net_buy_qty", "institution_net_buy_qty"}): "1d",
+    frozenset({"foreign_net_buy_qty_5d", "institution_net_buy_qty_5d"}): "5d",
+    frozenset({"foreign_net_buy_qty_20d", "institution_net_buy_qty_20d"}): "20d",
+}
 _VALUATION_ONLY_BUSINESS_SEMANTICS = {
     "bvps",
     "forward_pe",
@@ -353,6 +359,20 @@ def _structural_template_exception(sentence: str, skeleton: str) -> str | None:
         return "chart_vs_thesis_invalidation_safety"
     if "가장 가까운 적격 저항" in sentence and "차트 손익비" in sentence:
         return "canonical_nearest_resistance_rr_contract"
+    return None
+
+
+def _typed_structural_template_exception(
+    metadata: dict[str, object],
+) -> str | None:
+    semantic_types = frozenset(str(value) for value in metadata["semantic_types"])
+    if (
+        metadata["section"] == "supply_analysis"
+        and metadata["owner"] == "positioning"
+        and metadata["relation"] == "metric_set"
+        and semantic_types in _CANONICAL_KR_SUPPLY_PAIRS
+    ):
+        return "canonical_supply_flow_tuple_v1"
     return None
 
 
@@ -625,6 +645,52 @@ def _numeric_fact_repetition_report(output: AIDailyReviewOutput) -> dict[str, ob
     }
 
 
+def _numeric_primary_ownership_report(
+    output: AIDailyReviewOutput,
+) -> dict[str, object]:
+    violations: list[dict[str, object]] = []
+    for review in output.stock_reviews:
+        claims = [
+            claim
+            for claim in review.numeric_claims
+            if claim.semantic_type == _CURRENT_PRICE_RR_SEMANTIC
+        ]
+        invalid = [
+            {
+                "text_ref": claim.text_ref,
+                "fact_id": claim.fact_id,
+                "field_path": claim.field_path,
+                "usage": claim.usage,
+            }
+            for claim in claims
+            if claim.text_ref != "price_positioning.text"
+        ]
+        if invalid or len(claims) > 1:
+            violations.append(
+                {
+                    "ticker": review.ticker,
+                    "semantic_type": _CURRENT_PRICE_RR_SEMANTIC,
+                    "primary_owner": "price_context",
+                    "primary_text_ref": "price_positioning.text",
+                    "occurrence_count": len(claims),
+                    "invalid_occurrences": invalid,
+                    "reason": (
+                        "current_rr_outside_primary_owner"
+                        if invalid
+                        else "current_rr_exact_value_repeated"
+                    ),
+                }
+            )
+    return {
+        "contract": "numeric-primary-owner-v1",
+        "current_rr_primary_owner": "price_context",
+        "current_rr_primary_text_ref": "price_positioning.text",
+        "current_rr_violation_count": len(violations),
+        "current_rr_violations": violations,
+        "hard_checks_passed": not violations,
+    }
+
+
 def _final_rendered_language_report(messages: Iterable[str]) -> dict[str, object]:
     details: list[dict[str, object]] = []
     counts = {
@@ -747,7 +813,9 @@ def relational_reasoning_quality_report(
             )
             template_tickers[typed_key].add(review.ticker)
             template_metadata[typed_key] = typed_metadata
-            reason = _structural_template_exception(sentence, skeleton)
+            reason = _typed_structural_template_exception(
+                typed_metadata
+            ) or _structural_template_exception(sentence, skeleton)
             if reason is not None:
                 template_exception_reasons[typed_key][review.ticker] = reason
                 sentence_exception_reasons[sentence][review.ticker] = reason
@@ -1045,6 +1113,7 @@ def relational_reasoning_quality_report(
     watch_next_overlap = _watch_next_overlap_report(output)
     numeric_fact_repetition = _numeric_fact_repetition_report(output)
     numeric_ownership = _business_numeric_ownership_report(output)
+    numeric_primary_ownership = _numeric_primary_ownership_report(output)
     heading_mismatches = [
         index
         for index, message in enumerate(rendered_values, start=1)
@@ -1127,6 +1196,7 @@ def relational_reasoning_quality_report(
         and watch_next_overlap["hard_checks_passed"] is True
         and numeric_fact_repetition["hard_checks_passed"] is True
         and numeric_ownership["hard_checks_passed"] is True
+        and numeric_primary_ownership["hard_checks_passed"] is True
     )
     return {
         "contract": "relational-reasoning-quality-v2",
@@ -1200,6 +1270,7 @@ def relational_reasoning_quality_report(
         "watch_next_check_overlap": watch_next_overlap,
         "numeric_fact_repetition": numeric_fact_repetition,
         "numeric_ownership": numeric_ownership,
+        "numeric_primary_ownership": numeric_primary_ownership,
         "hard_checks_passed": hard_checks_passed,
         "deterministic_quality_gate_passed": hard_checks_passed,
         "production_assist_evidence_eligible": False,

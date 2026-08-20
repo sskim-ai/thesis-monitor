@@ -37,6 +37,7 @@ _LABEL_SPACE = re.compile(r"\s+")
 _KOREAN_PARTICLE = r"(?:은|는|이|가|을|를|와|과)?"
 _ZONE_ROLE_PATH = re.compile(r"(?:^|\.)(?:zone|support_zone|box)_(low|high)$")
 _RAW_POSTPOSITION = re.compile(r"^(은|는|이|가|을|를|와|과)")
+_COPULA_SUFFIX = re.compile(r"^(?:입니다|이었습니다|였습니다)")
 _POSTPOSITION_FAMILIES = {
     "은/는": "은",
     "는/은": "은",
@@ -590,15 +591,19 @@ def _bind_review(
             )
             continue
         usage = f"{label} {display}"
+        postposition_suppressed = bool(
+            postposition and _COPULA_SUFFIX.match(raw_suffix)
+        )
+        effective_postposition = "" if postposition_suppressed else postposition
         selected_postposition = (
-            resolve_numeric_postposition(display, postposition)
-            if postposition
+            resolve_numeric_postposition(display, effective_postposition)
+            if effective_postposition
             else None
         )
-        if postposition and selected_postposition is None:
+        if effective_postposition and selected_postposition is None:
             errors.append(
                 f"{prefix}:numeric_fact_ref_postposition_resolution_failed:"
-                f"{ref_id}:{postposition}"
+                f"{ref_id}:{effective_postposition}"
             )
             continue
         bound_text = text.replace(
@@ -638,8 +643,14 @@ def _bind_review(
                 "comparison_role": source.get("comparison_role")
                 or valuation_comparison_role(field_path),
                 "formatted_value": display,
-                "postposition_family": postposition or None,
+                "postposition_family": effective_postposition or None,
+                "requested_postposition_family": postposition or None,
                 "resolved_postposition": selected_postposition,
+                "postposition_suppressed_reason": (
+                    "copula_already_supplies_predicate"
+                    if postposition_suppressed
+                    else None
+                ),
                 "usage": usage,
             }
         )

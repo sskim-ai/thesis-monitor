@@ -7,6 +7,8 @@ from app.services.industry_reasoning_service import build_industry_reasoning_pla
 
 RUNTIME_SPECIFICITY_CONTRACT = "runtime-message-specificity-v2"
 RUNTIME_REASONING_OWNERSHIP_CONTRACT = "runtime-reasoning-ownership-v1"
+CANONICAL_SUPPLY_FLOW_TUPLE_CONTRACT = "canonical-supply-flow-tuple-v1"
+NUMERIC_PRIMARY_OWNER_CONTRACT = "numeric-primary-owner-v1"
 
 _BUSINESS_EARNINGS_FIELDS = {
     "revenue",
@@ -179,6 +181,48 @@ def _risk_reward_delta_policy(delta: dict[str, object]) -> dict[str, object]:
     }
 
 
+def _structured_field_policy(stock: dict[str, object]) -> dict[str, object]:
+    supply_semantics = {
+        str(item.get("semantic_type") or "")
+        for item in stock.get("numeric_registry", [])
+        if isinstance(item, dict) and item.get("prose_allowed") is True
+    }
+    required_supply_semantics = {
+        "foreign_net_buy_qty",
+        "foreign_net_buy_qty_5d",
+        "foreign_net_buy_qty_20d",
+        "institution_net_buy_qty",
+        "institution_net_buy_qty_5d",
+        "institution_net_buy_qty_20d",
+    }
+    return {
+        "supply_flow": {
+            "contract": CANONICAL_SUPPLY_FLOW_TUPLE_CONTRACT,
+            "enabled": required_supply_semantics.issubset(supply_semantics),
+            "owner": "positioning",
+            "metric_family": "supply_flow",
+            "actors": ["foreign", "institution"],
+            "horizons": ["1d", "5d", "20d"],
+            "structured_tuple_repetition": "allowed",
+            "interpretive_prose_repetition": "quality_checked",
+            "missing_cell_policy": "specific_unknown",
+        }
+    }
+
+
+def _numeric_primary_owner_policy() -> dict[str, object]:
+    return {
+        "contract": NUMERIC_PRIMARY_OWNER_CONTRACT,
+        "current_price_risk_reward_ratio": {
+            "owner": "price_context",
+            "primary_text_ref": "price_positioning.text",
+            "exact_value_occurrence_limit": 1,
+            "secondary_sections": "meaning_only_without_exact_number",
+            "transition_exception": "canonical_material_transition_only",
+        },
+    }
+
+
 def build_runtime_specificity_plan(stock: dict[str, object]) -> dict[str, object]:
     """Expose verified stock-specific choices before prose generation."""
     monitoring = _mapping(stock.get("monitoring_state"))
@@ -306,6 +350,14 @@ def build_runtime_specificity_plan(stock: dict[str, object]) -> dict[str, object
         "security_reasoning_policy": security_policy,
         "business_earnings_policy": business_policy,
         "risk_reward_delta_policy": rr_policy,
+        "structured_field_policy": _structured_field_policy(stock),
+        "numeric_primary_owner_policy": _numeric_primary_owner_policy(),
+        "financial_caution_policy": {
+            "owner": "financial_lineage",
+            "generic_cross_ticker_sentence": "suppress",
+            "user_visible": "specific_decision_material_limitation_only",
+            "missing_denominator": "fail_closed",
+        },
         "suppressed_candidates": (
             []
             if security_policy["depositary_ratio_reasoning_allowed"]

@@ -71,6 +71,9 @@ from app.services.numeric_provenance_service import (
     canonical_numeric_label_mismatch,
     redundant_numeric_label_before,
 )
+from app.services.runtime_reasoning_ownership_service import (
+    apply_candidate_ownership_contracts,
+)
 from app.services.security_identity_service import (
     IDENTITY_CONFLICT,
     IDENTITY_UNKNOWN,
@@ -4855,7 +4858,8 @@ def validate_ai_review_output(
     packet: dict[str, object],
     output_value: object,
 ) -> tuple[AIDailyReviewOutput | None, list[str]]:
-    binding = bind_numeric_fact_references(packet, output_value)
+    normalized_output, _ = apply_candidate_ownership_contracts(packet, output_value)
+    binding = bind_numeric_fact_references(packet, normalized_output)
     typed_errors = list(
         _dict(binding.report.get("typed_valuation_interpretations")).get(
             "errors", []
@@ -5459,8 +5463,12 @@ def finalize_ai_review_output(
         return OutputValidationResult(
             status="rejected", packet_id=packet_id, errors=(type(exc).__name__,)
         )
-    binding = bind_numeric_fact_references(packet, candidate)
+    normalized_candidate, ownership_report = apply_candidate_ownership_contracts(
+        packet, candidate
+    )
+    binding = bind_numeric_fact_references(packet, normalized_candidate)
     binding_report = dict(binding.report)
+    binding_report["candidate_ownership"] = ownership_report
     typed_errors = list(
         _dict(binding_report.get("typed_valuation_interpretations")).get(
             "errors", []

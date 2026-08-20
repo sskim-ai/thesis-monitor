@@ -1,7 +1,10 @@
+import pytest
+
 from app.schemas.ai_review import AIDailyReviewOutput
 from app.services.ai_reasoning_quality_service import (
     _final_rendered_language_report,
     _structural_template_exception,
+    _typed_structural_template_exception,
     normalize_decision_text,
     relational_reasoning_quality_report,
     runtime_message_quality_receipt,
@@ -486,6 +489,147 @@ def test_quality_audit_classifies_required_structural_templates() -> None:
         )
         == "kr_actor_horizon_numeric_pair"
     )
+
+
+@pytest.mark.parametrize(
+    ("semantic_types", "expected"),
+    (
+        (
+            ["foreign_net_buy_qty", "institution_net_buy_qty"],
+            "canonical_supply_flow_tuple_v1",
+        ),
+        (
+            ["foreign_net_buy_qty_5d", "institution_net_buy_qty_5d"],
+            "canonical_supply_flow_tuple_v1",
+        ),
+        (
+            ["foreign_net_buy_qty_20d", "institution_net_buy_qty_20d"],
+            "canonical_supply_flow_tuple_v1",
+        ),
+        (["foreign_net_buy_qty", "current_price_risk_reward_ratio"], None),
+    ),
+)
+def test_typed_supply_tuple_exception_requires_exact_actor_horizon_pair(
+    semantic_types: list[str],
+    expected: str | None,
+) -> None:
+    assert (
+        _typed_structural_template_exception(
+            {
+                "section": "supply_analysis",
+                "owner": "positioning",
+                "relation": "metric_set",
+                "semantic_types": semantic_types,
+                "skeleton": "<numeric>, <numeric>.",
+            }
+        )
+        == expected
+    )
+
+
+def test_structured_supply_tuple_does_not_exempt_repeated_interpretive_prose() -> None:
+    payload = _output().model_dump()
+    payload["market"] = "kr"
+    for index, review in enumerate(payload["stock_reviews"], start=1):
+        review["core_judgment"]["text"] = f"{review['ticker']} 고유 판단입니다."
+        review["business_earnings"]["text"] = f"{review['ticker']} 실적 조건입니다."
+        review["supply_analysis"]["text"] = (
+            f"외국인 당일 순매수 {index}주, 기관 당일 순매도 {index + 1}주. "
+            "외국인과 기관의 방향을 추가 확인합니다."
+        )
+        review["priority_watch"] = [f"{review['ticker']} 감시"]
+        review["next_checks"] = [f"{review['ticker']} 다음 확인"]
+        review["unknowns"] = [f"{review['ticker']} 미확인"]
+        review["numeric_claims"] = [
+            {
+                "fact_id": f"positioning:{review['ticker']}",
+                "field_path": "fields.foreign_net_buy_qty",
+                "value": index,
+                "unit": "shares",
+                "semantic_type": "foreign_net_buy_qty",
+                "text_ref": "supply_analysis.text",
+                "usage": f"외국인 당일 순매수 {index}주",
+            },
+            {
+                "fact_id": f"positioning:{review['ticker']}",
+                "field_path": "fields.institution_net_buy_qty",
+                "value": -(index + 1),
+                "unit": "shares",
+                "semantic_type": "institution_net_buy_qty",
+                "text_ref": "supply_analysis.text",
+                "usage": f"기관 당일 순매도 {index + 1}주",
+            },
+        ]
+
+    report = relational_reasoning_quality_report(
+        AIDailyReviewOutput.model_validate(payload)
+    )
+
+    assert any(
+        item["reason"] == "canonical_supply_flow_tuple_v1"
+        for item in report["template_skeleton_exceptions"]
+    )
+    assert any(
+        item["sentence"] == "외국인과 기관의 방향을 추가 확인합니다."
+        and item["classification"] == "substantive"
+        for item in report["repeated_sentences"]
+    )
+    assert report["hard_checks_passed"] is False
+
+
+def test_current_rr_exact_value_has_one_price_context_owner() -> None:
+    payload = _output().model_dump()
+    review = payload["stock_reviews"][0]
+    review["price_positioning"]["text"] = "현재가 기준 차트 손익비 1.2배입니다."
+    review["numeric_claims"].append(
+        {
+            "fact_id": "chart:structure:risk_reward:current_price",
+            "field_path": "fields.ratio",
+            "value": 1.2,
+            "unit": "x",
+            "semantic_type": "current_price_risk_reward_ratio",
+            "text_ref": "price_positioning.text",
+            "usage": "현재가 기준 차트 손익비 1.2배",
+        }
+    )
+
+    report = relational_reasoning_quality_report(
+        AIDailyReviewOutput.model_validate(payload)
+    )
+
+    assert report["numeric_primary_ownership"]["current_rr_violation_count"] == 0
+
+
+def test_current_rr_exact_value_rejects_cross_section_duplicate() -> None:
+    payload = _output().model_dump()
+    review = payload["stock_reviews"][0]
+    review["core_judgment"]["text"] = "현재가 기준 차트 손익비 1.2배입니다."
+    review["price_positioning"]["text"] = "현재가 기준 차트 손익비 1.2배입니다."
+    rr_claim = {
+        "fact_id": "chart:structure:risk_reward:current_price",
+        "field_path": "fields.ratio",
+        "value": 1.2,
+        "unit": "x",
+        "semantic_type": "current_price_risk_reward_ratio",
+        "usage": "현재가 기준 차트 손익비 1.2배",
+    }
+    review["numeric_claims"].extend(
+        [
+            {**rr_claim, "text_ref": "core_judgment.text"},
+            {**rr_claim, "text_ref": "price_positioning.text"},
+        ]
+    )
+
+    report = relational_reasoning_quality_report(
+        AIDailyReviewOutput.model_validate(payload)
+    )
+
+    ownership = report["numeric_primary_ownership"]
+    assert ownership["current_rr_violation_count"] == 1
+    assert ownership["current_rr_violations"][0]["reason"] == (
+        "current_rr_outside_primary_owner"
+    )
+    assert report["hard_checks_passed"] is False
 
 
 def test_kr_supply_coverage_requires_numeric_claims_for_eligible_horizons() -> None:

@@ -340,3 +340,44 @@ def test_runtime_specificity_plan_requires_material_rr_transition() -> None:
     )
     assert rr_candidate["owner"] == "price_context"
     assert rr_candidate["metadata"]["standalone_previous_current_pair_allowed"] is False
+
+
+def test_runtime_specificity_plan_exposes_structured_supply_and_rr_owner_contracts() -> None:
+    supply_semantics = (
+        "foreign_net_buy_qty",
+        "foreign_net_buy_qty_5d",
+        "foreign_net_buy_qty_20d",
+        "institution_net_buy_qty",
+        "institution_net_buy_qty_5d",
+        "institution_net_buy_qty_20d",
+    )
+    stock = {
+        "knowledge_routing": {
+            "industry_key": "general",
+            "industry_routing": {"confidence": "medium"},
+        },
+        "deterministic_assessment": {"business_thesis_change": "no_material_change"},
+        "monitoring_state": {"delta": {}},
+        "state_grounding_requirements": {"price": []},
+        "fact_catalog": [],
+        "numeric_registry": [
+            {"semantic_type": semantic, "prose_allowed": True}
+            for semantic in supply_semantics
+        ],
+    }
+
+    plan = build_runtime_specificity_plan(stock)
+    supply = plan["structured_field_policy"]["supply_flow"]
+    rr = plan["numeric_primary_owner_policy"][
+        "current_price_risk_reward_ratio"
+    ]
+
+    assert supply["contract"] == "canonical-supply-flow-tuple-v1"
+    assert supply["enabled"] is True
+    assert supply["structured_tuple_repetition"] == "allowed"
+    assert supply["interpretive_prose_repetition"] == "quality_checked"
+    assert rr["primary_text_ref"] == "price_positioning.text"
+    assert rr["exact_value_occurrence_limit"] == 1
+    assert plan["financial_caution_policy"]["generic_cross_ticker_sentence"] == (
+        "suppress"
+    )

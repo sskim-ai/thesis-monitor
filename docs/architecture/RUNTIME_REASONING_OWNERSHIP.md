@@ -107,6 +107,30 @@ numeric arity, so one-, two-, and three-number variants do not evade the repetit
 Canonical zone endpoint tuples retain their existing structural exception. There is no generic
 numeric-pair or semicolon allowlist.
 
+## KR Structured Supply
+
+`canonical-supply-flow-tuple-v1` identifies the complete KR foreign/institution 1-day, 5-day, and
+20-day field set by owner, market, actor, horizon, and metric family. Stable tuple rows preserve all
+eligible numeric claims and may repeat their schema labels across stocks. The exception applies only
+to the exact actor/horizon pair; it does not exempt an adjacent interpretive sentence. Supply prose
+remains optional and must add a verified accumulation, distribution, reversal, or horizon-divergence
+relationship.
+
+## Current RR Primary Owner
+
+`numeric-primary-owner-v1` assigns the exact `current_price_risk_reward_ratio` one occurrence in
+`price_positioning.text`. Core, observer, holder, supply, and next-check sections may reuse only the
+supported price meaning. A canonical material transition may use previous/current values inside the
+primary price transition, but does not create another owner for the current exact value.
+
+## Financial Cautions And Cash Conversion
+
+Common financial-lineage limitations remain structured unless they materially affect the user
+decision. Visible caution names the exact missing amount period, statement basis, share denominator,
+or security identity. A generic inventory/CAPEX-to-FCF/ROIC checklist is suppressed unless it is
+grounded in a routed company asset or operating mechanism. Missing cash-flow Facts remain specific
+Unknowns; no value is inferred or calculated.
+
 ## Validation Boundary
 
 Thresholds in `runtime-message-quality-v1` are unchanged. This contract reduces invalid candidates
