@@ -19,9 +19,21 @@ from app.services.ai_assisted_delivery_service import (
     record_ai_validation_rejection,
     retry_pending_ai_assisted_deliveries,
 )
+from app.services.cash_flow_runtime_shadow_canary_service import (
+    launch_cash_flow_runtime_shadow_canary,
+)
 
 
 KST = ZoneInfo("Asia/Seoul")
+
+
+def _launch_terminal_canaries(values: list[dict[str, object]]) -> None:
+    for value in values:
+        try:
+            launch_cash_flow_runtime_shadow_canary(value)
+        except Exception:
+            # The canary is observational. Its failure must never change this job's exit path.
+            continue
 
 
 async def _main() -> None:
@@ -85,6 +97,7 @@ async def _main() -> None:
                 args.packet_id,
                 allow_duplicate=args.allow_duplicate,
             )
+        _launch_terminal_canaries([result.as_dict()])
         print(json.dumps(result.as_dict(), ensure_ascii=False))
         return
     if args.command == "fallback":
@@ -99,6 +112,7 @@ async def _main() -> None:
                     run_date=run_date,
                 )
                 results.extend(item.as_dict() for item in values)
+        _launch_terminal_canaries(results)
         print(json.dumps(results, ensure_ascii=False))
         return
     if args.command == "retry-delivery":
@@ -113,6 +127,7 @@ async def _main() -> None:
                     run_date=run_date,
                 )
                 results.extend(item.as_dict() for item in values)
+        _launch_terminal_canaries(results)
         print(json.dumps(results, ensure_ascii=False))
         return
     with Session(engine) as session:
@@ -134,6 +149,7 @@ async def _main() -> None:
     payload = dict(result.__dict__)
     if delivery is not None:
         payload["pilot_delivery"] = delivery.as_dict()
+        _launch_terminal_canaries([delivery.as_dict()])
     print(json.dumps(payload, ensure_ascii=False))
     if result.status == "rejected":
         raise SystemExit(1)

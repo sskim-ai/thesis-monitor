@@ -104,6 +104,7 @@ class Settings(BaseSettings):
     ai_review_pilot_target_success_days: int = 5
     ai_review_pilot_us_fallback_time: str = "08:40"
     ai_review_pilot_kr_fallback_time: str = "17:10"
+    cash_flow_runtime_shadow_canary_enabled: bool = True
 
     @model_validator(mode="after")
     def validate_ai_review_schedule(self) -> "Settings":

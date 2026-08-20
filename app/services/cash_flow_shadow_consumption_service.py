@@ -569,10 +569,16 @@ def _industry_driver(industry: str, source_text: str) -> str:
             return "software_services"
         return "cloud_platform"
     if industry == "hpc_data_center":
-        if "코로케이션" in source_text or "billing" in lowered:
+        if "코로케이션" in source_text or "colocation" in lowered:
             return "colocation_billing"
-        if "lease" in lowered or "가동 전력" in source_text:
+        if (
+            "hpc lease" in lowered
+            or "lease revenue" in lowered
+            or "가동 전력" in source_text
+        ):
             return "hpc_lease"
+        if "billing" in lowered:
+            return "colocation_billing"
         return "project_noi"
     if industry == "general_non_financial" and "usdc" in lowered:
         return "stablecoin_platform"
@@ -588,6 +594,22 @@ def _claim(fact: FinancialFact) -> ShadowNumericClaim:
         currency=fact.currency,
         unit=fact.unit,
     )
+
+
+def _alignment_subject(driver: str) -> str:
+    return {
+        "cloud_platform": "Cloud 성장·마진",
+        "software_services": "Software·Consulting 성장",
+        "colocation_billing": "코로케이션 가동·청구",
+        "hpc_lease": "HPC lease 가동·청구",
+        "project_noi": "계약 가동·NOI",
+        "memory_hbm": "HBM·메모리 ASP",
+        "memory_nand": "NAND 수요·ASP",
+        "semiconductor_foundry": "첨단공정 수요·마진",
+        "biotech": "임상·milestone",
+        "automotive": "자동차 마진·성장투자",
+        "stablecoin_platform": "준비금·비이자 수익",
+    }.get(driver, "사업 성과")
 
 
 def render_shadow_reasoning(
@@ -612,7 +634,10 @@ def render_shadow_reasoning(
             "프로젝트 자금조달을 함께 확인해야 합니다."
         )
         if context.earnings_alignment_state != EarningsAlignmentState.ALIGNED:
-            text += " 기존 손익 문맥과 기간이 달라 매출·마진 변화와 직접 연결하지 않습니다."
+            text += (
+                f" 기존 {_alignment_subject(driver)} 문맥과 기간이 달라 해당 성과 변화와 "
+                "직접 연결하지 않습니다."
+            )
         return ShadowReasoning(text, (ocf.fact_id,), (claim,))
     if fcf is None or ocf is None or capex is None:
         return None
@@ -691,7 +716,10 @@ def render_shadow_reasoning(
             f"사업 성과와 재투자 부담을 분리해 해석하며, {relation_note}"
         )
     if context.earnings_alignment_state != EarningsAlignmentState.ALIGNED:
-        text += " 기존 손익 문맥과 기간이 달라 매출·마진 변화와 직접 연결하지 않습니다."
+        text += (
+            f" 기존 {_alignment_subject(driver)} 문맥과 기간이 달라 해당 성과 변화와 "
+            "직접 연결하지 않습니다."
+        )
     return ShadowReasoning(
         text=text,
         fact_ids=(ocf.fact_id, capex.fact_id, fcf.fact_id),

@@ -387,6 +387,30 @@ def test_biotech_negative_fcf_is_cash_burn_without_runway_inference() -> None:
     assert validate_shadow_reasoning(context, by_id, reasoning) == ()
 
 
+def test_hpc_reasoning_separates_colocation_from_lease_economics() -> None:
+    context = _context(industry="hpc_data_center")
+    facts = {item.fact_id: item for item in _full_facts()}
+
+    colocation = render_shadow_reasoning(
+        context,
+        facts,
+        industry="hpc_data_center",
+        source_text="colocation gross margin과 billing MW를 확인합니다.",
+    )
+    lease = render_shadow_reasoning(
+        context,
+        facts,
+        industry="hpc_data_center",
+        source_text="HPC lease revenue와 가동 전력을 확인합니다.",
+    )
+
+    assert colocation is not None
+    assert lease is not None
+    assert "코로케이션 가동·청구" in colocation.text
+    assert "HPC lease 가동 전력·청구" in lease.text
+    assert colocation.text != lease.text
+
+
 def test_resolved_unknown_moves_to_industry_specific_remaining_question() -> None:
     context = _context()
 
