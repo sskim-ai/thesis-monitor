@@ -57,4 +57,7 @@ Open P0: 0. Open P1: 0.
 `PHASE_9_0B_SCOPE = SELECTIVE_ELIGIBLE_SUBSET_OCF_CAPEX_FCF_CORE`
 
 Exact implementation/final SHA and Actions results are resolved in the final promotion section of
-the complete report bundle after GitHub validation.
+the complete report bundle after GitHub validation. Implementation SHA
+`68a35c68cacd03a6f430abb6ff4d9b3e622449a6` passed Actions run `32361906260` Test/Lint and was
+fast-forwarded to main and the clean operating checkout. Final documentation uses `HEAD` with
+`git rev-parse origin/main` resolution and is promoted only after its own Test/Lint PASS.

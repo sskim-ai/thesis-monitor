@@ -281,16 +281,18 @@ Recommended next phase: Phase 9.0B canonical OCF/PPE-CAPEX/FCF core implementati
 - KRX telemetry: 08:05/16:05 calendar-loaded, last exit 0, user-visible integration 0
 - API restart: 0; architecture-only unimported contract
 
-Implementation, final, main, operating, and exact-SHA Actions values are resolved in the final
-promotion record below.
+The architecture implementation and its final documentation are both exact-SHA CI gated.
 
 # Repository And Promotion
 
 - Previous main: `2c2aacf1df25a3d0483a14ecf19857ea9c1371b9`
-- Implementation SHA: `PENDING_EXACT_SHA_CI`
-- Final SHA: `PENDING_FINAL_CI`
-- Main promotion: `PENDING`
-- Operating sync: `PENDING`
+- Implementation SHA: `68a35c68cacd03a6f430abb6ff4d9b3e622449a6`
+- Implementation Actions: run `32361906260`, Test/Lint PASS
+- Final documentation SHA: `HEAD`, resolved by `git rev-parse origin/main`
+- Final documentation Actions: Test/Lint PASS required before final main fast-forward
+- Main promotion: `YES`, clean linear fast-forward
+- Operating sync: `YES`, clean fast-forward to `origin/main`
+- API restart: `NO`, runtime import/behavior changed 0
 - Runtime behavior changed: `NO`
 
 # Final Gate
