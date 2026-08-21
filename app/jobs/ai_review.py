@@ -22,6 +22,9 @@ from app.services.ai_assisted_delivery_service import (
 from app.services.cash_flow_runtime_shadow_canary_service import (
     launch_cash_flow_runtime_shadow_canary,
 )
+from app.services.working_capital_runtime_shadow_canary_service import (
+    launch_working_capital_runtime_shadow_canary,
+)
 
 
 KST = ZoneInfo("Asia/Seoul")
@@ -29,11 +32,15 @@ KST = ZoneInfo("Asia/Seoul")
 
 def _launch_terminal_canaries(values: list[dict[str, object]]) -> None:
     for value in values:
-        try:
-            launch_cash_flow_runtime_shadow_canary(value)
-        except Exception:
-            # The canary is observational. Its failure must never change this job's exit path.
-            continue
+        for launcher in (
+            launch_cash_flow_runtime_shadow_canary,
+            launch_working_capital_runtime_shadow_canary,
+        ):
+            try:
+                launcher(value)
+            except Exception:
+                # Canary failures are observational and never change this job's exit path.
+                continue
 
 
 async def _main() -> None:
