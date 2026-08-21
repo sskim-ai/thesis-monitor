@@ -22,6 +22,7 @@ DOCUMENTS = (
     ROOT / "docs" / "architecture" / "CASH_FLOW_CAPITAL_EFFICIENCY.md",
     ROOT / "docs" / "architecture" / "CASH_FLOW_SHADOW_CONSUMPTION.md",
     ROOT / "docs" / "architecture" / "CASH_FLOW_RUNTIME_SHADOW_CANARY.md",
+    ROOT / "docs" / "architecture" / "CASH_FLOW_BASELINE_CONSISTENCY.md",
     ROOT / "docs" / "operations" / "AI_ASSISTED_PILOT.md",
     ROOT / "docs" / "knowledge" / "README.md",
 )
@@ -40,15 +41,17 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     assert state["repository"] == "sskim-ai/thesis-monitor"
     assert state["branch"] == "main"
     assert state["experimental_branch"] == (
-        "codex/phase-9-0d-selective-cash-flow-runtime-shadow-canary"
+        "codex/phase-9-0d-1-baseline-cash-flow-consistency-repair"
     )
     assert state["current_phase"] == (
-        "phase_9_0d_runtime_canary_deployed_pending_natural"
+        "phase_9_0d_1_baseline_cash_flow_consistency_closed"
     )
     assert state["last_completed_phase"] == (
-        "phase_9_0d_runtime_canary_implementation"
+        "phase_9_0d_1_baseline_cash_flow_consistency_repair"
     )
-    assert state["next_default_phase"] == "phase_9_0d_natural_canary_review"
+    assert state["next_default_phase"] == (
+        "phase_9_0e_selective_cash_flow_user_visible_integration"
+    )
     assert state["deployed_code_commit"] == "HEAD"
     assert state["main_code_commit"] == "HEAD"
     assert state["operating_code_commit"] == "HEAD"
@@ -84,6 +87,9 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     assert state["contracts"]["cash_flow_runtime_shadow_canary"] == (
         "cash-flow-runtime-shadow-canary-v1"
     )
+    assert state["contracts"]["baseline_cash_flow_claim_consistency"] == (
+        "baseline-cash-flow-claim-consistency-v1"
+    )
     advancement = state["phase_advancement_rule_v1"]
     assert advancement["p0_open"] == []
     assert advancement["p1_open"] == []
@@ -95,8 +101,9 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     assert advancement["phase_9_0c_complete"] is True
     assert advancement["phase_9_0d_ready"] is True
     assert advancement["phase_9_0d_runtime_implementation_complete"] is True
-    assert advancement["phase_9_0d_natural_proof"] == "not_observed"
-    assert advancement["phase_9_0e_ready"] is False
+    assert advancement["phase_9_0d_natural_proof"] == "live_pass_run30"
+    assert advancement["phase_9_0d_1_complete"] is True
+    assert advancement["phase_9_0e_ready"] is True
     phase_90a = state["phase_9_0a_cash_flow_capital_efficiency"]
     assert phase_90a["status"] == "architecture_closed_ready_for_phase_9_0b"
     assert phase_90a["active_universe"] == 20
@@ -123,14 +130,22 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     assert phase_90c["runtime_behavior_changed"] is False
     assert phase_90c["user_visible_integration"] is False
     phase_90d = state["phase_9_0d_cash_flow_runtime_shadow_canary"]
-    assert phase_90d["status"] == "runtime_canary_deployed_pending_natural"
+    assert phase_90d["status"] == "live_pass_selective_subset"
     assert phase_90d["work_instruction_commit"] == (
         "a24e4f2210f944fa7c43d8dbf8be1d1a8e652164"
     )
     assert phase_90d["production_isolation"] == "passed"
-    assert phase_90d["natural_us_canary"] == "not_observed"
-    assert phase_90d["phase_9_0e_ready"] is False
+    assert phase_90d["natural_us_canary"] == (
+        "complete_pass_run30_9_full_fcf_1_ocf_only_0_influence"
+    )
+    assert phase_90d["phase_9_0e_ready"] is True
     assert phase_90d["user_visible_integration"] is False
+    phase_90d1 = state["phase_9_0d_1_baseline_cash_flow_consistency"]
+    assert phase_90d1["status"] == "baseline_cash_flow_consistency_closed"
+    assert phase_90d1["root_cause_severity_before_repair"] == "P0"
+    assert phase_90d1["post_repair_cross_artifact_errors"] == 0
+    assert phase_90d1["phase_9_0e_ready"] is True
+    assert phase_90d1["cash_flow_user_visible"] is False
     assert state["persistent_gaps"]["krx_open_api"] == (
         "APPROVED_TELEMETRY_ONLY_OPERATING_USER_VISIBLE_NOT_INTEGRATED"
     )
@@ -216,6 +231,7 @@ def test_architecture_guides_record_decisions_and_readme_navigation() -> None:
         ROOT / "docs" / "architecture" / "CASH_FLOW_CAPITAL_EFFICIENCY.md",
         ROOT / "docs" / "architecture" / "CASH_FLOW_SHADOW_CONSUMPTION.md",
         ROOT / "docs" / "architecture" / "CASH_FLOW_RUNTIME_SHADOW_CANARY.md",
+        ROOT / "docs" / "architecture" / "CASH_FLOW_BASELINE_CONSISTENCY.md",
         ROOT / "docs" / "operations" / "AI_ASSISTED_PILOT.md",
         ROOT / "docs" / "knowledge" / "README.md",
     )

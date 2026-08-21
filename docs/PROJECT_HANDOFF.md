@@ -5,6 +5,25 @@ with [MASTER_WORKFLOW.md](MASTER_WORKFLOW.md), [project-state.json](project-stat
 [NEXT_SESSION_PROMPT.md](NEXT_SESSION_PROMPT.md) before changing runtime policy, Knowledge,
 validation, delivery, or Scheduled Tasks.
 
+## Current Authoritative Handoff — 2026-08-21
+
+Phase 9.0D has natural runtime proof. US run
+`2026-08-21-us-run-30-5a3b7c1c4390` delivered fallback `14/14` and natural canary
+`cf-canary-f5ce3f836df99c546cf6f696` completed with nine full-FCF contexts, one OCF-only context,
+two lagging-formal suppressions, one blocked subject, and zero production influence.
+
+Phase 9.0D.1 closes the one human-review blocker using
+`baseline-cash-flow-claim-consistency-v1`. TSLA saved thesis v5 had generic current `FCF 적자`
+prose and a prose-only backfilled warning with no financial Fact, period, or scope. The current
+packet/fallback now suppresses those clauses without changing stored history or adding `+$352M`.
+The canary audits packet and delivered qualitative claims against canonical context by section.
+
+Open P0 and material P1 are zero. `PHASE_9_0E_READY = YES` with scope
+`SELECTIVE_CURRENT_FORMAL_FULL_FCF_USER_VISIBLE_INTEGRATION`. Cash-flow user-visible integration is
+still disabled. Next work may implement only that selective rollout; KR period recovery, OCF-only
+broadening, management-FCF reconciliation, CCC, ROIC, KRX integration, and overall natural AI
+delivery remain separate tracks.
+
 ## Project Purpose
 
 Thesis Monitor maintains an investment thesis from verified backend facts. The deterministic engine
@@ -16,7 +35,7 @@ execution or an autonomous investment adviser.
 
 | Component | Contract |
 |---|---|
-| Branch | `main` operating shadow includes Phase 9.0B; evidence branch `codex/phase-9-0c-cash-flow-shadow-consumption`; peer/KRX breadth ancestry excluded |
+| Branch | `main` operating through Phase 9.0D; Phase 9.0D.1 repair branch is the next promotion candidate; peer/KRX breadth ancestry excluded |
 | Official assessment | Deterministic `ThesisAssessment` |
 | AI mode | `shadow` |
 | Analysis policy | `daily-review-v3.10` |
@@ -46,6 +65,8 @@ execution or an autonomous investment adviser.
 | Night futures | `night-futures-session-basis-v1` CLOSED retrospective; holiday-aware preceding DAY lookup operating shadow, natural proof pending |
 | Cash-flow canonical core | `cash-flow-capital-efficiency-v1`, selective internal Facts only |
 | Cash-flow consumption | `cash-flow-shadow-consumption-v1`, archive-only; user-visible disabled |
+| Cash-flow runtime canary | `cash-flow-runtime-shadow-canary-v1`, natural US LIVE PASS |
+| Baseline cash-flow consistency | `baseline-cash-flow-claim-consistency-v1`, retrospective closed |
 
 ## Phase 8.3 Final State
 

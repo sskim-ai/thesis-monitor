@@ -595,12 +595,42 @@ retrospective deployment checks, not natural proof. Runtime state is
 `PHASE_9_0E_READY = NO` until the first natural US canary is reviewed. See the
 [Phase 9.0D complete bundle](reports/20260820-phase9-0d-complete-report-bundle.md).
 
+## 21F. Phase 9.0D Natural Proof And Baseline Consistency
+
+Natural run `2026-08-21-us-run-30-5a3b7c1c4390` delivered deterministic fallback `14/14`
+exactly once, then launched canary `cf-canary-f5ce3f836df99c546cf6f696`. The canary completed with
+nine full-FCF subjects, one OCF-only subject, two formal-lagging-provisional suppressions, one
+blocked subject, 10 automatic numeric bindings, zero semantic/quality/PIT/lineage/arithmetic
+errors, and zero production influence. Phase 9.0D runtime behavior is therefore
+`LIVE_PASS_SELECTIVE_SUBSET`.
+
+Human cross-artifact review found that TSLA's saved version-5 `custom_gpt` thesis still asserted
+generic current `FCF 적자` and an implied turn-positive requirement. A prose-only warning backfill
+treated the thesis reference as confirmation, but no financial Fact, period, or scope supported the
+current claim. The same filing contains positive H1 YTD PPE-only FCF, negative Q2 QTD PPE-only FCF,
+and positive TTM PPE-only FCF; the legacy phrase cannot be assigned to any one of them. Its
+pre-repair severity is P0 because unsupported current financial state reached fallback.
+
+Phase 9.0D.1 adds `baseline-cash-flow-claim-consistency-v1`. AI packet and fallback paths suppress
+unsupported current-state prose without changing stored history or exposing canonical amounts.
+The detached canary now compares production qualitative claims and canonical current-formal
+context by rendered section. The 20-subject audit recognizes 21 occurrences: 13 consistent and 8
+suppressed occurrences of one TSLA root family. Repaired run-30 cross-artifact errors are zero;
+RXRX negative cash burn, WRD future watch ownership, HUT OCF-only, TSM/WRD lagging-formal, SKHY
+blocked, and insurance N/A controls remain intact.
+
+Open P0 and material P1 are zero. `PHASE_9_0E_READY = YES`; initial scope is
+`SELECTIVE_CURRENT_FORMAL_FULL_FCF_USER_VISIBLE_INTEGRATION`. User-visible cash-flow remains off
+until that separate phase. A second arbitrary natural run is not required for this bounded repair.
+
 ## 22. Current Roadmap
 
-The current state is `PHASE_9_0D_RUNTIME_CANARY_DEPLOYED_PENDING_NATURAL` plus
-`NATURAL_AI_PROOF_CONTINUES_IN_PARALLEL`. Open P0 and P1 are zero. The next major task may begin
-with a read-only review of the next natural US cash-flow canary. This is not approval to begin Phase
-9.0E or expose cash-flow numbers in Telegram or fallback.
+The current state is `PHASE_9_0D_LIVE_PASS_SELECTIVE_SUBSET`,
+`PHASE_9_0D_1_BASELINE_CASH_FLOW_CONSISTENCY_CLOSED`, and
+`NATURAL_AI_PROOF_CONTINUES_IN_PARALLEL`. Open P0 and material P1 are zero. The next major task is
+Phase 9.0E selective current-formal full-FCF user-visible integration. Readiness is not deployment:
+cash-flow numbers, sections, and reasoning remain absent from production until that task explicitly
+closes its own gates.
 
 In parallel, observe the next natural US/KR sessions for AI-assisted delivery, ownership,
 repetition, night-session integrity, fallback, language, receipt, archive, and exactly-once proof.
@@ -696,10 +726,11 @@ approval. Main merge and shadow deployment still do not authorize AI-assisted pr
 
 ## 27. Current Next Task
 
-Begin Phase 9.0D Selective Cash-Flow Runtime Shadow Canary for the 9.0C-qualified contexts. Keep
-the canary completely separate from delivery, preserve PIT/freshness/materiality gates, and retain
-cash-flow user-visible output at zero. Do not implement CCC or standard ROIC. In parallel, inspect
-natural US/KR AI results and KRX exact-slot evidence without manual execution.
+Begin Phase 9.0E Selective Cash-Flow User-Visible Integration with the dynamic current-formal
+full-FCF subset. Use business/earnings-quality numeric ownership and replacement-first prose; do
+not append a broad OCF/CAPEX/FCF dump. Exclude KR, formal-lagging-provisional numeric display,
+security-level FCF valuation, CCC, and standard ROIC. Natural AI and KRX observations continue in
+parallel without manual execution.
 
 ## 28. New Session Bootstrap Prompt
 

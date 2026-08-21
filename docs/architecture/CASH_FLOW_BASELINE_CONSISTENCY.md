@@ -14,6 +14,26 @@ to assert an unqualified current FCF sign without a financial Fact reference. Nu
 inside the canary could not catch that contradiction because production prose and shadow evidence
 were validated independently.
 
+## Why
+
+A canonical cash-flow pipeline is insufficient if unbound legacy prose can still reach a user-visible
+fallback and assert a different current state. The production baseline and detached shadow evidence
+must therefore share a structured consistency check while retaining their separate delivery paths.
+
+## Rejected Alternative
+
+We rejected replacing the unsupported TSLA sentence with the latest canonical amount. That would
+have introduced cash-flow numbers into production before the selective user-visible integration
+phase. We also rejected ticker-specific wording, mutation of stored thesis history, and treating a
+saved-thesis reference as financial Fact provenance.
+
+## Safety Constraint
+
+The repair may keep, qualify, or suppress recognized qualitative claims, but it cannot invent a
+period, scope, source occurrence, currency, or amount. It cannot mutate persisted thesis, assessment,
+warning, archive, task, or delivery state, and it cannot feed canonical cash-flow values into the
+production AI packet.
+
 ## Contract
 
 Each recognized baseline claim records:

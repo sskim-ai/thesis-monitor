@@ -28,6 +28,7 @@ This project is a data collection and structuring system. It does not make buy, 
 - [Cash-flow and capital-efficiency evidence](docs/architecture/CASH_FLOW_CAPITAL_EFFICIENCY.md)
 - [Cash-flow shadow consumption](docs/architecture/CASH_FLOW_SHADOW_CONSUMPTION.md)
 - [Cash-flow runtime shadow canary](docs/architecture/CASH_FLOW_RUNTIME_SHADOW_CANARY.md)
+- [Cash-flow baseline consistency](docs/architecture/CASH_FLOW_BASELINE_CONSISTENCY.md)
 - [Industry-specific reasoning](docs/architecture/INDUSTRY_SPECIFIC_REASONING.md)
 - [AI-assisted Pilot operations](docs/operations/AI_ASSISTED_PILOT.md)
 - [Scheduled task contracts](docs/operations/SCHEDULED_TASK_CONTRACTS.md)

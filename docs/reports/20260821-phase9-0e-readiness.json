@@ -1,0 +1,27 @@
+{
+  "as_of": "2026-08-21",
+  "baseline_consistency_contract": "baseline-cash-flow-claim-consistency-v1",
+  "blocking_reasons": [],
+  "cash_flow_user_visible": "NOT_ENABLED",
+  "implementation_commit": "d473b900304e931d5acf4c4b7d17069d6b67d026",
+  "implementation_github_actions_run": 32436660207,
+  "natural_ai_assisted_delivery": "PARTIAL",
+  "natural_canary": {
+    "canary_id": "cf-canary-f5ce3f836df99c546cf6f696",
+    "full_fcf": 9,
+    "ocf_only": 1,
+    "production_influence": 0,
+    "status": "COMPLETE_PASS"
+  },
+  "open_p0": [],
+  "open_p1": [],
+  "p2_backlog": [
+    "optional_management_defined_fcf_reconciliation",
+    "kr_opendart_period_context_recovery",
+    "cash_flow_label_and_placement_polish"
+  ],
+  "phase_9_0e_ready": true,
+  "phase_9_0e_scope": "SELECTIVE_CURRENT_FORMAL_FULL_FCF_USER_VISIBLE_INTEGRATION",
+  "post_repair_cross_artifact_errors": 0,
+  "work_instruction_commit": "20367c056e6d1da7db3edee37818210c070e1e7d"
+}

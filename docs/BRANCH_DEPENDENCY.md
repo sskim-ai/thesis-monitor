@@ -1,6 +1,6 @@
 # Branch Dependency Manifest
 
-As of 2026-08-20. Resolve final SHAs from Git; documentation commits are intentionally not
+As of 2026-08-21. Resolve final SHAs from Git; documentation commits are intentionally not
 self-referential.
 
 | Branch | Base / merge-base | Unique scope | Code dependency | Operating eligible | Promotion path |
@@ -23,6 +23,7 @@ self-referential.
 | `codex/phase-9-0b-canonical-ocf-capex-fcf-core` | Phase 9.0A operating main `970ad2c3a1844e6dcbddbf47dff17d71170852d2` | official occurrence canonicalization, typed period derivation, deterministic PPE-only FCF, internal shadow audit | extends Phase 9.0A contract; no packet, prompt, public schema, renderer, DB, task, KRX breadth or peer dependency | eligible after exact-SHA CI | clean linear fast-forward only; user-visible behavior diff 0 |
 | `codex/phase-9-0c-cash-flow-shadow-consumption` | Phase 9.0B operating main `86fafbf66dc690aa1ba5b9e0089c9098f1d7a6ef` | PIT/freshness/comparison/materiality sidecar, archive-only reasoning and validators | consumes Phase 9.0B Facts; no production packet, prompt, public schema, renderer, DB, task, KRX breadth or peer dependency | eligible after exact-SHA CI | clean linear fast-forward only; user-visible behavior diff 0 |
 | `codex/phase-9-0d-selective-cash-flow-runtime-shadow-canary` | exact instruction commit `a24e4f2210f944fa7c43d8dbf8be1d1a8e652164` | detached post-delivery cash-flow sidecar, canary validation, receipts and idempotent audit archive | consumes Phase 9.0B/9.0C contracts; no Telegram, Public Action, assessment, fallback, Pilot, KRX breadth or peer dependency | eligible after exact-SHA CI | clean linear fast-forward; natural proof remains pending |
+| `codex/phase-9-0d-1-baseline-cash-flow-consistency-repair` | exact instruction commit `20367c056e6d1da7db3edee37818210c070e1e7d` on Phase 9.0D main | qualitative FCF sign/period/scope/provenance contract, packet/fallback repair and cross-artifact canary audit | consumes Phase 9.0B Facts and 9.0D contexts; no canonical number injection, DB migration, task, KRX breadth or peer dependency | eligible after exact-SHA CI | clean linear fast-forward; one bounded user-visible prose correction |
 
 The Phase 8.3 original branch has a hidden Git ancestry dependency but no required KRX code,
 schema or runtime import. The clean branch resolves that promotion risk. Phase 8.3.2A starts from
@@ -85,5 +86,9 @@ Phase 9.0D starts from its promoted, immutable work-instruction commit. The exis
 imports only a best-effort detached launcher after a terminal production result; all cash-flow
 context, output, validation and receipts remain under a separate canary archive namespace. It does
 not import Telegram dispatch into the canary, alter the four task configurations, or change any
-production packet/output schema. Phase 9.0E remains blocked on behavior-based natural US canary
-evidence, not on KR coverage, CCC, ROIC, or overall AI-assisted delivery completeness.
+production packet/output schema. The natural run-30 canary closed the Phase 9.0D behavior proof.
+
+Phase 9.0D.1 starts from its docs-only instruction commit, preserves the canary's detached boundary,
+and sanitizes only unsupported qualitative baseline prose. It neither stores nor renders new
+canonical amounts. Phase 9.0E is ready for a separately instructed selective rollout and remains
+independent of KR coverage, CCC, ROIC, KRX breadth, and overall AI-assisted delivery completeness.
