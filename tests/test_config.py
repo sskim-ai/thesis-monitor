@@ -74,6 +74,21 @@ def test_known_ai_review_environment_settings_load(tmp_path: Path) -> None:
     assert settings.ai_review_claim_safety_margin_minutes == 5
 
 
+def test_cash_flow_user_visible_mode_defaults_off_and_accepts_runtime_value(
+    tmp_path: Path,
+) -> None:
+    assert Settings(_env_file=None).cash_flow_user_visible_mode == "OFF"
+    env_file = _write_env(
+        tmp_path / ".env",
+        ["CASH_FLOW_USER_VISIBLE_MODE=SELECTIVE_CURRENT_FORMAL_FULL_FCF"],
+    )
+
+    assert (
+        Settings(_env_file=env_file).cash_flow_user_visible_mode
+        == "SELECTIVE_CURRENT_FORMAL_FULL_FCF"
+    )
+
+
 def test_ai_review_backup_must_run_after_lease_and_safety_margin(tmp_path: Path) -> None:
     env_file = _write_env(
         tmp_path / ".env",

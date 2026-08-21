@@ -847,6 +847,66 @@ def repair_baseline_cash_flow_items(
     return list(dict.fromkeys(output)), tuple(decisions)
 
 
+def audit_shared_baseline_cash_flow_inputs(
+    ticker: str,
+    evidence: CanonicalCashFlowEvidence,
+    *,
+    core_thesis: str,
+    assessment_summary: str,
+    warning_groups: Mapping[str, Sequence[str]],
+    origin_version: str,
+    provenance_by_text: Mapping[str, Mapping[str, object]] | None = None,
+) -> tuple[CashFlowClaimDecision, ...]:
+    """Audit the same source fields for AI and fallback context identity."""
+    decisions: list[CashFlowClaimDecision] = []
+    for text_ref, section, value, origin_type in (
+        ("shared.core_thesis", "core_thesis", core_thesis, "saved_thesis"),
+        (
+            "shared.assessment_summary",
+            "assessment_summary",
+            assessment_summary,
+            "assessment",
+        ),
+    ):
+        decisions.extend(
+            repair_baseline_cash_flow_text(
+                ticker,
+                value,
+                evidence,
+                text_ref=text_ref,
+                section=section,
+                origin_type=origin_type,
+                origin_version=origin_version,
+            ).decisions
+        )
+    for section in sorted(warning_groups):
+        _items, item_decisions = repair_baseline_cash_flow_items(
+            ticker,
+            warning_groups[section],
+            evidence,
+            section=f"shared.{section}",
+            origin_type="assessment_warning",
+            origin_version=origin_version,
+            provenance_by_text=provenance_by_text,
+        )
+        decisions.extend(item_decisions)
+    return tuple(decisions)
+
+
+def baseline_suppressed_claim_ids(
+    decisions: Sequence[CashFlowClaimDecision],
+) -> tuple[str, ...]:
+    return tuple(
+        sorted(
+            {
+                item.claim.claim_id
+                for item in decisions
+                if item.render_action != RenderAction.KEEP
+            }
+        )
+    )
+
+
 def decision_to_dict(decision: CashFlowClaimDecision) -> dict[str, object]:
     value = asdict(decision)
     value["claim"]["metric_semantic"] = decision.claim.metric_semantic.value

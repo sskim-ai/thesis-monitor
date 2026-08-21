@@ -21,6 +21,7 @@ from app.services.cash_flow_capital_efficiency_service import (
 )
 from app.services.cash_flow_runtime_shadow_canary_service import (
     CanaryLaunchResult,
+    _production_user_visible_parity_audit,
     canary_identity,
     launch_cash_flow_runtime_shadow_canary,
     run_cash_flow_runtime_shadow_canary,
@@ -28,6 +29,7 @@ from app.services.cash_flow_runtime_shadow_canary_service import (
 from app.services.cash_flow_shadow_consumption_service import (
     ShadowNumericClaim,
     ShadowReasoning,
+    build_cash_flow_reasoning_context,
 )
 
 
@@ -226,6 +228,59 @@ def _runtime_inputs():
         "b" * 64,
         "c" * 64,
     )
+
+
+def test_user_visible_canary_parity_is_observational_and_exact() -> None:
+    facts = _full_facts("GOOGL")
+    by_id = {item.fact_id: item for item in facts}
+    context = build_cash_flow_reasoning_context(
+        ticker="GOOGL",
+        industry="cloud_platform_software",
+        financial_type="non_financial",
+        core_status="ELIGIBLE",
+        facts=facts,
+        cutoff=date(2026, 8, 21),
+        latest_formal_period=date(2026, 6, 30),
+        latest_operating_earnings_period=date(2026, 6, 30),
+        preferred_fcf_fact_id=facts[-1].fact_id,
+        materiality_signals=("AI CAPEX cash flow",),
+    )
+    selected = {
+        "rollout_mode": "SELECTIVE_CURRENT_FORMAL_FULL_FCF",
+        "user_visible_enabled": True,
+        "display_reason": "FIRST_SAFE_EXPOSURE",
+        "ocf_fact_ref": facts[0].fact_id,
+        "ppe_capex_fact_ref": facts[1].fact_id,
+        "fcf_fact_ref": facts[2].fact_id,
+        "primary_period": {"period_end": "2026-06-30"},
+        "financial_currency": "USD",
+        "suppressed_baseline_claim_ids": [],
+    }
+
+    passed = _production_user_visible_parity_audit(
+        {"GOOGL": {"cash_flow_user_visible": selected}},
+        {"GOOGL": context},
+        by_id,
+    )
+    failed = _production_user_visible_parity_audit(
+        {
+            "GOOGL": {
+                "cash_flow_user_visible": {
+                    **selected,
+                    "fcf_fact_ref": "wrong",
+                }
+            }
+        },
+        {"GOOGL": context},
+        by_id,
+    )
+
+    assert passed["status"] == "passed"
+    assert passed["production_delivery_influence"] == 0
+    assert failed["status"] == "failed"
+    assert failed["errors"] == [
+        {"ticker": "GOOGL", "error": "fcf_fact_id_mismatch"}
+    ]
 
 
 @pytest.fixture

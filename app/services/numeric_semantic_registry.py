@@ -51,6 +51,37 @@ def _spec(
 
 
 NUMERIC_SEMANTICS = {
+    "operating_cash_flow": _spec(
+        "operating_cash_flow",
+        ("KRW", "USD", "TWD", "JPY", "EUR"),
+        ("영업현금흐름", "OCF", "operating cash flow"),
+        (r"영업현금흐름", r"\bocf\b", r"operating cash flow"),
+        "currency_amount",
+    ),
+    "ppe_capex_cash_outflow": _spec(
+        "ppe_capex_cash_outflow",
+        ("KRW", "USD", "TWD", "JPY", "EUR"),
+        ("PPE 취득 현금지출", "PPE CAPEX", "PPE cash outflow"),
+        (
+            r"ppe\s*(?:취득\s*현금지출|capex|투자)",
+            r"ppe cash outflow",
+        ),
+        "currency_amount",
+    ),
+    "free_cash_flow_ppe": _spec(
+        "free_cash_flow_ppe",
+        ("KRW", "USD", "TWD", "JPY", "EUR"),
+        (
+            "PPE 투자 후 잉여현금흐름",
+            "잉여현금흐름(OCF-PPE CAPEX 기준)",
+            "PPE-only FCF",
+        ),
+        (
+            r"ppe\s*(?:투자\s*후|기준|[- ]?only).*?(?:잉여현금흐름|fcf)",
+            r"잉여현금흐름\s*\(\s*ocf\s*-\s*ppe\s*capex\s*기준\s*\)",
+        ),
+        "currency_amount",
+    ),
     "revenue": _spec(
         "revenue",
         ("KRW", "USD", "TWD", "JPY", "EUR"),
@@ -869,6 +900,24 @@ NUMERIC_SEMANTICS = {
 
 
 _FIELD_RULES = (
+    NumericFieldRule(
+        ("cash_flow_ocf",),
+        r"fields\.value",
+        "operating_cash_flow",
+        "currency",
+    ),
+    NumericFieldRule(
+        ("cash_flow_ppe_capex",),
+        r"fields\.value",
+        "ppe_capex_cash_outflow",
+        "currency",
+    ),
+    NumericFieldRule(
+        ("cash_flow_fcf_ppe",),
+        r"fields\.value",
+        "free_cash_flow_ppe",
+        "currency",
+    ),
     NumericFieldRule(("earnings",), r"fields\.revenue\.value", "revenue", "currency"),
     NumericFieldRule(
         ("earnings",),

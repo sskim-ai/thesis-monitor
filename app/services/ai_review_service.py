@@ -24,7 +24,12 @@ from app.models.financial import FinancialSnapshot
 from app.models.macro import MacroBriefing, ThesisMacroImpact
 from app.models.company import Company
 from app.models.security import SecurityMaster
-from app.models.thesis import InvestmentThesis, MonitorRun, ThesisAssessment
+from app.models.thesis import (
+    InvestmentThesis,
+    MonitorRun,
+    NotificationDelivery,
+    ThesisAssessment,
+)
 from app.models.watchlist import WatchlistItem
 from app.schemas.ai_review import AIDailyReviewOutput, AIStockReview
 from app.services.ai_reasoning_quality_service import normalize_decision_text
@@ -42,10 +47,19 @@ from app.services.canonical_fact_service import (
     canonical_event_fact,
 )
 from app.services.cash_flow_baseline_consistency_service import (
+    audit_shared_baseline_cash_flow_inputs,
+    baseline_suppressed_claim_ids,
     financial_period_context,
     load_canonical_cash_flow_evidence,
     repair_baseline_cash_flow_items,
     repair_baseline_cash_flow_text,
+)
+from app.services.cash_flow_user_visible_service import (
+    context_from_notification_payload,
+    fact_catalog_entries as cash_flow_fact_catalog_entries,
+    resolve_selected_unknowns,
+    safe_select_user_visible_cash_flow,
+    selection_to_dict as cash_flow_selection_to_dict,
 )
 from app.services.company_profile_service import (
     company_profile_coverage,
@@ -144,6 +158,7 @@ _STRUCTURAL_NUMBER_PATTERNS = (
     r"\b(?:미국\s*)?10\s*년물\b",
     r"\b(?:19|20)\d{2}[-./]\d{1,2}[-./]\d{1,2}\b",
     r"\b(?:19|20)\d{2}\s*년(?:\s*[1-4]\s*분기)?",
+    r"\b(?:19|20)\d{2}\s*회계연도(?:\s*[1-4]\s*분기)?",
     r"\bQ[1-4]\b|\b[1-4]Q\b",
     r"\b[1-3]\s*[~-]\s*[1-3]\s*개\b",
     r"\b(?:1|5|20|60)\s*일(?:간)?\b",
@@ -721,6 +736,26 @@ def _previous_assessment(
         )
         .order_by(ThesisAssessment.assessment_date.desc(), ThesisAssessment.id.desc())
     ).first()
+
+
+def _previous_cash_flow_user_visible_context(
+    session: Session,
+    assessment: ThesisAssessment,
+) -> dict[str, object]:
+    delivery = session.exec(
+        select(NotificationDelivery)
+        .where(
+            NotificationDelivery.ticker == assessment.ticker,
+            NotificationDelivery.assessment_date < assessment.assessment_date,
+            NotificationDelivery.channel == get_settings().notification_channel,
+            NotificationDelivery.status == "sent",
+        )
+        .order_by(
+            NotificationDelivery.assessment_date.desc(),
+            NotificationDelivery.id.desc(),
+        )
+    ).first()
+    return context_from_notification_payload(delivery.payload if delivery else None)
 
 
 def _assessment_mode(assessment: ThesisAssessment) -> str:
@@ -2683,7 +2718,7 @@ def _stock_packet(
         latest_formal_period=latest_formal_period,
         latest_preliminary_period=latest_preliminary_period,
     )
-    safe_core_thesis = repair_baseline_cash_flow_text(
+    core_thesis_repair = repair_baseline_cash_flow_text(
         assessment.ticker,
         thesis.core_thesis,
         cash_flow_evidence,
@@ -2691,29 +2726,36 @@ def _stock_packet(
         section="core_thesis",
         origin_type="saved_thesis",
         origin_version=f"thesis:{assessment.ticker}:v{assessment.thesis_version}",
-    ).text
+    )
+    safe_core_thesis = core_thesis_repair.text
+    raw_confirmed_warnings = _clean_texts(_list(assessment.confirmed_warnings))
+    raw_new_warnings = _clean_texts(_list(assessment.new_warnings))
+    raw_open_warnings = _clean_texts(_list(assessment.open_warnings))
+    raw_open_confirmed_warnings = _clean_texts(
+        _list(assessment.open_confirmed_warnings)
+    )
     warning_states = [
         item for item in _list(assessment.warning_states) if isinstance(item, dict)
     ]
     warning_state_by_text = {
         str(item.get("warning")): item for item in warning_states if item.get("warning")
     }
-    confirmed_warnings, _ = repair_baseline_cash_flow_items(
+    confirmed_warnings, _confirmed_warning_decisions = repair_baseline_cash_flow_items(
         assessment.ticker,
-        _clean_texts(_list(assessment.confirmed_warnings)),
+        raw_confirmed_warnings,
         cash_flow_evidence,
         section="confirmed_warnings",
         origin_type="assessment_warning",
         origin_version=str(assessment.assessment_date),
         provenance_by_text=warning_state_by_text,
     )
-    data_cautions, _ = repair_baseline_cash_flow_items(
+    data_cautions, _data_caution_decisions = repair_baseline_cash_flow_items(
         assessment.ticker,
         list(
             dict.fromkeys(
                 [
-                    *_clean_texts(_list(assessment.open_warnings)),
-                    *_clean_texts(_list(assessment.open_confirmed_warnings)),
+                    *raw_open_warnings,
+                    *raw_open_confirmed_warnings,
                 ]
             )
         ),
@@ -2722,6 +2764,32 @@ def _stock_packet(
         origin_type="assessment_warning",
         origin_version=str(assessment.assessment_date),
         provenance_by_text=warning_state_by_text,
+    )
+    summary_repair = repair_baseline_cash_flow_text(
+        assessment.ticker,
+        _clean_text(assessment.summary) or "",
+        cash_flow_evidence,
+        text_ref="deterministic_assessment.summary",
+        section="assessment_summary",
+        origin_type="assessment",
+        origin_version=str(assessment.assessment_date),
+    )
+    shared_baseline_decisions = audit_shared_baseline_cash_flow_inputs(
+        assessment.ticker,
+        cash_flow_evidence,
+        core_thesis=thesis.core_thesis,
+        assessment_summary=_clean_text(assessment.summary) or "",
+        warning_groups={
+            "confirmed_warnings": raw_confirmed_warnings,
+            "new_warnings": raw_new_warnings,
+            "open_confirmed_warnings": raw_open_confirmed_warnings,
+            "open_warnings": raw_open_warnings,
+        },
+        origin_version=str(assessment.assessment_date),
+        provenance_by_text=warning_state_by_text,
+    )
+    suppressed_baseline_claim_ids = baseline_suppressed_claim_ids(
+        shared_baseline_decisions
     )
     price = _price_payload(assessment)
     previous = _previous_assessment(session, assessment)
@@ -2865,15 +2933,7 @@ def _stock_packet(
             "risk_level": assessment.risk_level,
             "structural_risk_level": assessment.structural_risk_level,
             "market_expectation": current_expectation,
-            "summary": repair_baseline_cash_flow_text(
-                assessment.ticker,
-                _clean_text(assessment.summary) or "",
-                cash_flow_evidence,
-                text_ref="deterministic_assessment.summary",
-                section="assessment_summary",
-                origin_type="assessment",
-                origin_version=str(assessment.assessment_date),
-            ).text,
+            "summary": summary_repair.text,
             "confirmed_warnings": confirmed_warnings,
         },
         "evidence": evidence,
@@ -2905,6 +2965,47 @@ def _stock_packet(
             else None
         ),
     }
+    cash_flow_source_text = " ".join(
+        str(value)
+        for value in (
+            industry,
+            sector,
+            business_model,
+            revenue_sources,
+            safe_core_thesis,
+            json.dumps(_list(thesis.thesis_drivers), ensure_ascii=False),
+        )
+        if value
+    )
+    cash_flow_selection = safe_select_user_visible_cash_flow(
+        ticker=assessment.ticker,
+        cutoff=assessment.assessment_date,
+        latest_formal_period=latest_formal_period,
+        latest_preliminary_period=latest_preliminary_period,
+        existing_unknowns=stock["unknowns"],
+        materiality_signals=[
+            *(_clean_texts(_list(thesis.thesis_drivers))),
+            *(_clean_texts(_list(thesis.validation_metrics))),
+            *(_clean_texts(_list(assessment.persistent_watch_risks))),
+        ],
+        source_text=cash_flow_source_text,
+        suppressed_baseline_claim_ids=suppressed_baseline_claim_ids,
+        previous_user_visible_context=_previous_cash_flow_user_visible_context(
+            session,
+            assessment,
+        ),
+    )
+    stock["unknowns"] = list(
+        resolve_selected_unknowns(
+            stock["unknowns"],
+            cash_flow_selection,
+            industry=cash_flow_selection.industry,
+            source_text=cash_flow_source_text,
+        )
+    )
+    stock["cash_flow_user_visible"] = cash_flow_selection_to_dict(
+        cash_flow_selection
+    )
     facts = _fact_catalog(
         assessment,
         evidence,
@@ -2913,6 +3014,7 @@ def _stock_packet(
         chart,
         monitoring_state,
     )
+    facts.extend(cash_flow_fact_catalog_entries(cash_flow_selection))
     stock["fact_catalog"] = facts
     stock["numeric_registry"] = _numeric_registry(facts)
     stock["typed_valuation_interpretation_contract"] = (
@@ -4461,6 +4563,105 @@ def _market_supply_language_errors(
     return list(dict.fromkeys(errors))
 
 
+_CASH_FLOW_UNSUPPORTED_USER_METRIC = re.compile(
+    r"FCF\s*(?:yield|수익률|/\s*share|주당)|EV\s*/\s*FCF|P\s*/\s*FCF|"
+    r"\bROIC\b|투하자본수익률|\bCCC\b|현금전환주기|\bDSO\b|\bDPO\b|재고일수",
+    re.IGNORECASE,
+)
+_CASH_FLOW_UNAVAILABLE_CLAIM = re.compile(
+    r"(?=.*(?:OCF|FCF|CAPEX|영업현금흐름|잉여현금흐름|PPE\s*취득))"
+    r"(?=.*(?:없|미확인|확인되지|확인할\s*수\s*없|부족)).+",
+    re.IGNORECASE,
+)
+
+
+def _cash_flow_user_visible_errors(
+    review: AIStockReview,
+    stock: dict[str, object],
+) -> list[str]:
+    context = _dict(stock.get("cash_flow_user_visible"))
+    enabled = context.get("user_visible_enabled") is True
+    cash_fact_ids = {
+        str(item.get("fact_id"))
+        for item in stock.get("fact_catalog", [])
+        if isinstance(item, dict)
+        and str(item.get("fact_type") or "").startswith("cash_flow_")
+    }
+    used_cash_facts = set(review.facts_used).intersection(cash_fact_ids)
+    cash_claims = [
+        claim for claim in review.numeric_claims if claim.fact_id in cash_fact_ids
+    ]
+    rendered = _review_text(review)
+    errors: list[str] = []
+    if not enabled:
+        if used_cash_facts or cash_claims:
+            errors.append(f"{review.ticker}:suppressed_cash_flow_fact_used")
+        return errors
+    if _CASH_FLOW_UNSUPPORTED_USER_METRIC.search(rendered):
+        errors.append(f"{review.ticker}:unsupported_cash_flow_metric")
+    if context.get("rollout_mode") != "SELECTIVE_CURRENT_FORMAL_FULL_FCF":
+        errors.append(f"{review.ticker}:cash_flow_rollout_mode_mismatch")
+    if context.get("freshness_state") != "CURRENT_FORMAL":
+        errors.append(f"{review.ticker}:cash_flow_not_current_formal")
+    primary_fact_id = str(context.get("primary_fact_ref") or "")
+    if not primary_fact_id or primary_fact_id not in cash_fact_ids:
+        errors.append(f"{review.ticker}:cash_flow_primary_fact_missing")
+        return errors
+    if primary_fact_id not in review.facts_used:
+        errors.append(f"{review.ticker}:cash_flow_primary_fact_not_declared")
+    if primary_fact_id not in review.business_earnings.fact_ids:
+        errors.append(f"{review.ticker}:cash_flow_business_owner_fact_missing")
+    non_business_facts = {
+        fact_id
+        for item in (
+            review.core_judgment,
+            review.price_positioning,
+            review.supply_analysis,
+            review.valuation_analysis,
+        )
+        for fact_id in item.fact_ids
+        if fact_id in cash_fact_ids
+    }
+    if non_business_facts:
+        errors.append(
+            f"{review.ticker}:cash_flow_owner_mismatch:"
+            + ",".join(sorted(non_business_facts))
+        )
+    primary_claims = [claim for claim in cash_claims if claim.fact_id == primary_fact_id]
+    if len(primary_claims) != 1:
+        errors.append(f"{review.ticker}:cash_flow_primary_numeric_claim_count")
+    for claim in cash_claims:
+        if claim.text_ref != "business_earnings.text":
+            errors.append(f"{review.ticker}:cash_flow_numeric_owner_invalid")
+    business_text = review.business_earnings.text
+    if "PPE" not in business_text or not re.search(
+        r"잉여현금흐름|\bFCF\b", business_text, flags=re.IGNORECASE
+    ):
+        errors.append(f"{review.ticker}:cash_flow_ppe_scope_label_missing")
+    primary_period = _dict(context.get("primary_period"))
+    fiscal_year = str(primary_period.get("fiscal_year") or "")
+    period_type = str(primary_period.get("period_type") or "")
+    if fiscal_year and fiscal_year not in business_text:
+        errors.append(f"{review.ticker}:cash_flow_fiscal_period_label_missing")
+    if period_type == "YTD" and "누계" not in business_text:
+        errors.append(f"{review.ticker}:cash_flow_ytd_label_missing")
+    if period_type == "FY" and "연간" not in business_text:
+        errors.append(f"{review.ticker}:cash_flow_fy_label_missing")
+    if period_type == "QTD" and "분기 단독" not in business_text:
+        errors.append(f"{review.ticker}:cash_flow_qtd_label_missing")
+    if re.search(
+        r"회사(?:가|의)?\s*(?:보고(?:한)?|정의(?:한)?)?\s*FCF",
+        business_text,
+        flags=re.IGNORECASE,
+    ):
+        errors.append(f"{review.ticker}:management_fcf_mislabel")
+    if any(_CASH_FLOW_UNAVAILABLE_CLAIM.search(item) for item in review.unknowns):
+        errors.append(f"{review.ticker}:resolved_cash_flow_unknown_retained")
+    if re.search(r"FCF|잉여현금흐름", review.valuation_analysis.text, re.IGNORECASE):
+        errors.append(f"{review.ticker}:cash_flow_valuation_owner_misuse")
+    return list(dict.fromkeys(errors))
+
+
 def _validate_stock_review(
     review: AIStockReview,
     stock: dict[str, object],
@@ -4626,6 +4827,7 @@ def _validate_stock_review(
             stock.get("numeric_registry"),
         )
     )
+    errors.extend(_cash_flow_user_visible_errors(review, stock))
     grounding = _dict(stock.get("state_grounding_requirements"))
     price_fact_ids = set(review.price_positioning.fact_ids)
     price_claims = {

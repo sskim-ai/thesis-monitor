@@ -5,7 +5,7 @@ from dataclasses import dataclass, field, replace
 from datetime import date, timedelta
 from decimal import Decimal
 from enum import StrEnum
-from typing import Iterable
+from typing import Iterable, Mapping
 
 
 CONTRACT_VERSION = "cash-flow-capital-efficiency-v1"
@@ -128,6 +128,98 @@ class FinancialFact:
     cautions: tuple[str, ...] = ()
     restatement_policy_id: str | None = None
     as_of_date: date | None = None
+
+
+def financial_fact_from_mapping(row: Mapping[str, object]) -> FinancialFact:
+    """Restore a canonical cash-flow fact from an audited report row."""
+    capex_scope = row.get("capex_scope")
+    return FinancialFact(
+        fact_id=str(row["fact_id"]),
+        issuer_id=str(row["issuer_id"]),
+        metric=Metric(str(row["metric"])),
+        value=Decimal(str(row["value"])),
+        currency=str(row["currency"]),
+        unit=str(row["unit"]),
+        period=PeriodIdentity(
+            start=date.fromisoformat(str(row["period_start"])),
+            end=date.fromisoformat(str(row["period_end"])),
+            period_type=PeriodType(str(row["period_type"])),
+            fiscal_year=int(str(row["fiscal_year"])),
+            fiscal_quarter=(
+                int(str(row["fiscal_quarter"]))
+                if row.get("fiscal_quarter") is not None
+                else None
+            ),
+        ),
+        entity_scope=str(row["entity_scope"]),
+        statement_basis=str(row["statement_basis"]),
+        reported_or_derived=str(row["reported_or_derived"]),
+        source_provider=str(row["source_provider"]),
+        source_document_id=str(row["source_document_id"]),
+        filing_date=date.fromisoformat(str(row["filing_date"])),
+        source_occurrence_id=str(row["source_occurrence_id"]),
+        raw_payload_sha256=str(row["raw_payload_sha256"]),
+        semantic_mapping=str(row.get("semantic_mapping") or ""),
+        fact_type=FactType(str(row["fact_type"])),
+        source_document_type=(
+            str(row["source_document_type"])
+            if row.get("source_document_type") is not None
+            else None
+        ),
+        source_semantic=(
+            str(row["source_semantic"])
+            if row.get("source_semantic") is not None
+            else None
+        ),
+        source_reported_value=(
+            Decimal(str(row["source_reported_value"]))
+            if row.get("source_reported_value") is not None
+            else None
+        ),
+        source_reported_unit=(
+            str(row["source_reported_unit"])
+            if row.get("source_reported_unit") is not None
+            else None
+        ),
+        source_sign=(
+            str(row["source_sign"]) if row.get("source_sign") is not None else None
+        ),
+        normalization_transform=(
+            str(row["normalization_transform"])
+            if row.get("normalization_transform") is not None
+            else None
+        ),
+        capex_scope=CapexScope(str(capex_scope)) if capex_scope else None,
+        derivation_formula=(
+            str(row["derivation_formula"])
+            if row.get("derivation_formula") is not None
+            else None
+        ),
+        derivation_version=(
+            str(row["derivation_version"])
+            if row.get("derivation_version") is not None
+            else None
+        ),
+        input_fact_ids=tuple(str(item) for item in row.get("input_fact_ids") or ()),
+        quality=str(row.get("quality") or "REPORTED_VERIFIED"),
+        eligibility=EligibilityStatus(str(row.get("eligibility") or "ELIGIBLE")),
+        denial_reason=(
+            str(row["denial_reason"])
+            if row.get("denial_reason") is not None
+            else None
+        ),
+        cautions=tuple(str(item) for item in row.get("cautions") or ()),
+        restatement_policy_id=(
+            str(row["restatement_policy_id"])
+            if row.get("restatement_policy_id") is not None
+            else None
+        ),
+        as_of_date=(
+            date.fromisoformat(str(row["as_of_date"]))
+            if row.get("as_of_date") is not None
+            else None
+        ),
+    )
 
 
 @dataclass(frozen=True)

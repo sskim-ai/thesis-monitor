@@ -19,10 +19,18 @@ from app.services.analysis_report_service import (
     split_telegram_text,
 )
 from app.services.cash_flow_baseline_consistency_service import (
+    audit_shared_baseline_cash_flow_inputs,
+    baseline_suppressed_claim_ids,
     financial_period_context,
     load_canonical_cash_flow_evidence,
     repair_baseline_cash_flow_items,
     repair_baseline_cash_flow_text,
+)
+from app.services.cash_flow_user_visible_service import (
+    context_from_notification_payload,
+    resolve_selected_unknowns,
+    safe_select_user_visible_cash_flow,
+    selection_to_dict as cash_flow_selection_to_dict,
 )
 from app.services.canonical_fact_service import compact_krw_amount
 from app.services.current_price_context_service import (
@@ -506,6 +514,26 @@ def _delivery_payload(payload: str) -> dict[str, object]:
     if not isinstance(parsed, dict):
         raise ValueError("Notification payload must be a JSON object")
     return parsed
+
+
+def _previous_cash_flow_user_visible_context(
+    session: Session,
+    assessment: ThesisAssessment,
+) -> dict[str, object]:
+    delivery = session.exec(
+        select(NotificationDelivery)
+        .where(
+            NotificationDelivery.ticker == assessment.ticker,
+            NotificationDelivery.assessment_date < assessment.assessment_date,
+            NotificationDelivery.channel == _notification_channel(),
+            NotificationDelivery.status == "sent",
+        )
+        .order_by(
+            NotificationDelivery.assessment_date.desc(),
+            NotificationDelivery.id.desc(),
+        )
+    ).first()
+    return context_from_notification_payload(delivery.payload if delivery else None)
 
 
 def _telegram_source_sha256(payload: dict[str, object]) -> str:
@@ -1195,6 +1223,8 @@ def _assessment_report(
     assessment: ThesisAssessment,
     company_name: str,
     thesis: InvestmentThesis | None,
+    *,
+    previous_cash_flow_user_visible_context: dict[str, object] | None = None,
 ) -> tuple[str, dict[str, object]]:
     labels = {
         "strengthened": "강화",
@@ -1254,7 +1284,7 @@ def _assessment_report(
         if thesis
         else str(thesis_snapshot.get("base_thesis", "저장된 핵심 투자 논리가 없습니다."))
     )
-    core_thesis = repair_baseline_cash_flow_text(
+    core_thesis_repair = repair_baseline_cash_flow_text(
         assessment.ticker,
         stored_core_thesis,
         cash_flow_evidence,
@@ -1262,7 +1292,8 @@ def _assessment_report(
         section="core_thesis",
         origin_type="saved_thesis",
         origin_version=(f"thesis:{assessment.ticker}:v{assessment.thesis_version}"),
-    ).text
+    )
+    core_thesis = core_thesis_repair.text
     financial_quality = build_financial_quality_state(raw_valuation_snapshot)
     valuation_snapshot = sanitize_financial_snapshot_for_prose(
         raw_valuation_snapshot
@@ -1310,6 +1341,9 @@ def _assessment_report(
             valuation_snapshot,
             identity_state=identity_state,
         )
+    raw_confirmed_warnings = [
+        str(item).strip() for item in confirmed_warnings if str(item).strip()
+    ]
     new_warnings = [
         str(item)
         for item in _json_list_value(getattr(assessment, "new_warnings", "[]"))
@@ -1320,14 +1354,17 @@ def _assessment_report(
         for item in _json_list_value(getattr(assessment, "open_warnings", "[]"))
         if not _is_internal_fact(item)
     ]
+    raw_new_warnings = list(new_warnings)
+    raw_open_warnings = list(open_warnings)
+    raw_open_confirmed_warnings = [
+        str(item).strip()
+        for item in _json_list_value(
+            getattr(assessment, "open_confirmed_warnings", "[]")
+        )
+        if str(item).strip() and not _is_internal_fact(item)
+    ]
     open_confirmed_warnings = (
-        [
-            str(item)
-            for item in _json_list_value(
-                getattr(assessment, "open_confirmed_warnings", "[]")
-            )
-            if not _is_internal_fact(item)
-        ]
+        list(raw_open_confirmed_warnings)
         or open_warnings
     )
     warning_states_raw = _json_value(getattr(assessment, "warning_states", "[]"), [])
@@ -1339,6 +1376,23 @@ def _assessment_report(
     warning_state_by_text = {
         str(item.get("warning")): item for item in warning_states if item.get("warning")
     }
+    shared_baseline_decisions = audit_shared_baseline_cash_flow_inputs(
+        assessment.ticker,
+        cash_flow_evidence,
+        core_thesis=stored_core_thesis,
+        assessment_summary=str(assessment.summary or ""),
+        warning_groups={
+            "confirmed_warnings": raw_confirmed_warnings,
+            "new_warnings": raw_new_warnings,
+            "open_confirmed_warnings": raw_open_confirmed_warnings,
+            "open_warnings": raw_open_warnings,
+        },
+        origin_version=str(assessment.assessment_date),
+        provenance_by_text=warning_state_by_text,
+    )
+    suppressed_baseline_claim_ids = baseline_suppressed_claim_ids(
+        shared_baseline_decisions
+    )
     new_warnings, _ = repair_baseline_cash_flow_items(
         assessment.ticker,
         new_warnings,
@@ -1374,6 +1428,43 @@ def _assessment_report(
         origin_type="assessment_warning",
         origin_version=str(assessment.assessment_date),
         provenance_by_text=warning_state_by_text,
+    )
+    cash_flow_source_text = " ".join(
+        str(value)
+        for value in (
+            stored_core_thesis,
+            json.dumps(thesis_drivers, ensure_ascii=False),
+            json.dumps(validation_metrics, ensure_ascii=False),
+        )
+        if value
+    )
+    cash_flow_selection = safe_select_user_visible_cash_flow(
+        ticker=assessment.ticker,
+        cutoff=assessment.assessment_date,
+        latest_formal_period=latest_formal_period,
+        latest_preliminary_period=latest_preliminary_period,
+        existing_unknowns=[str(item) for item in unknowns],
+        materiality_signals=[
+            *[str(item) for item in thesis_drivers],
+            *[str(item) for item in validation_metrics],
+            *[
+                str(item)
+                for item in _json_list_value(
+                    getattr(assessment, "persistent_watch_risks", "[]")
+                )
+            ],
+        ],
+        source_text=cash_flow_source_text,
+        suppressed_baseline_claim_ids=suppressed_baseline_claim_ids,
+        previous_user_visible_context=previous_cash_flow_user_visible_context,
+    )
+    unknowns = list(
+        resolve_selected_unknowns(
+            [str(item) for item in unknowns],
+            cash_flow_selection,
+            industry=cash_flow_selection.industry,
+            source_text=cash_flow_source_text,
+        )
     )
 
     def _warnings_with_provenance(items: list[str], empty: str) -> str:
@@ -1524,6 +1615,8 @@ def _assessment_report(
         sections.append(f"📌 초기 근거\n{change_text}")
     elif business_change != "no_material_change" and change_text:
         sections.append(f"🔄 중요한 변화\n{change_text}")
+    if cash_flow_selection.rendered_text:
+        sections.append(f"📈 사업·실적\n{cash_flow_selection.rendered_text}")
     if new_warnings and not is_initial_baseline:
         sections.append("🚨 오늘 새 경고\n" + _bullet_text(new_warnings, ""))
     if prior_open_warnings:
@@ -1709,6 +1802,9 @@ def _assessment_report(
             "valuation_snapshot": valuation_snapshot,
             "valuation_context": valuation_context,
         },
+        "cash_flow_user_visible": cash_flow_selection_to_dict(
+            cash_flow_selection
+        ),
     }
     return fallback, context
 
@@ -1730,7 +1826,14 @@ def queue_notification(session: Session, assessment: ThesisAssessment) -> None:
         )
     ).first()
     company_name = watchlist_item.company_name if watchlist_item else assessment.ticker
-    text, _analysis_context = _assessment_report(assessment, company_name, thesis)
+    text, _analysis_context = _assessment_report(
+        assessment,
+        company_name,
+        thesis,
+        previous_cash_flow_user_visible_context=(
+            _previous_cash_flow_user_visible_context(session, assessment)
+        ),
+    )
     evidence = [item for item in _json_list_value(assessment.evidence) if isinstance(item, dict)]
     dedupe_keys = [
         str(item.get("url") or f"{item.get('date')}:{item.get('title')}") for item in evidence
@@ -1786,7 +1889,14 @@ def queue_daily_stock_notification(
         )
     ).first()
     company_name = watchlist_item.company_name if watchlist_item else assessment.ticker
-    text, analysis_context = _assessment_report(assessment, company_name, thesis)
+    text, analysis_context = _assessment_report(
+        assessment,
+        company_name,
+        thesis,
+        previous_cash_flow_user_visible_context=(
+            _previous_cash_flow_user_visible_context(session, assessment)
+        ),
+    )
     assessment_mode = _assessment_mode(assessment)
     payload_data: dict[str, object] = {
         "text": text,

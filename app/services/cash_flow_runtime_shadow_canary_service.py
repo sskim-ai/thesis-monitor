@@ -40,7 +40,9 @@ from app.services.cash_flow_capital_efficiency_service import (
 from app.services.cash_flow_shadow_consumption_service import (
     CONTRACT_VERSION as CONSUMPTION_CONTRACT_VERSION,
     CashFlowReasoningContext,
+    FreshnessState,
     ShadowReasoning,
+    UsageMode,
     build_cash_flow_reasoning_context,
     context_to_dict,
     reasoning_to_dict,
@@ -456,6 +458,107 @@ def _baseline_consistency_audit(
         "error_count": len(errors),
         "claims": rows,
         "errors": errors,
+    }
+
+
+def _production_user_visible_parity_audit(
+    packet_stocks: Mapping[str, Mapping[str, object]],
+    contexts: Mapping[str, CashFlowReasoningContext],
+    facts: Mapping[str, FinancialFact],
+) -> dict[str, object]:
+    rows: list[dict[str, object]] = []
+    errors: list[dict[str, str]] = []
+    modes: set[str] = set()
+    for ticker, context in contexts.items():
+        stock = packet_stocks.get(ticker, {})
+        selected = stock.get("cash_flow_user_visible")
+        if not isinstance(selected, dict):
+            continue
+        mode = str(selected.get("rollout_mode") or "OFF")
+        modes.add(mode)
+        actual_enabled = selected.get("user_visible_enabled") is True
+        expected_eligible = (
+            context.usage_mode == UsageMode.FULL_FCF_CONTEXT
+            and context.freshness_state == FreshnessState.CURRENT_FORMAL
+            and context.consumption_eligible
+            and context.shadow_used
+        )
+        no_delta = selected.get("display_reason") == "SUPPRESSED_NO_DELTA"
+        row_errors: list[str] = []
+        if mode == "SELECTIVE_CURRENT_FORMAL_FULL_FCF":
+            if expected_eligible != actual_enabled and not (
+                expected_eligible and no_delta and not actual_enabled
+            ):
+                row_errors.append("subject_selection_mismatch")
+            if actual_enabled:
+                if selected.get("fcf_fact_ref") != context.fcf_fact_id:
+                    row_errors.append("fcf_fact_id_mismatch")
+                if selected.get("ocf_fact_ref") != context.ocf_fact_id:
+                    row_errors.append("ocf_fact_id_mismatch")
+                if selected.get("ppe_capex_fact_ref") != context.capex_fact_id:
+                    row_errors.append("capex_fact_id_mismatch")
+                primary_period = selected.get("primary_period")
+                period_end = (
+                    str(primary_period.get("period_end") or "")
+                    if isinstance(primary_period, dict)
+                    else ""
+                )
+                expected_end = (
+                    context.primary_period.end.isoformat()
+                    if context.primary_period is not None
+                    else ""
+                )
+                if period_end != expected_end:
+                    row_errors.append("period_mismatch")
+                fcf = facts.get(context.fcf_fact_id or "")
+                capex = facts.get(context.capex_fact_id or "")
+                if fcf is None or selected.get("financial_currency") != fcf.currency:
+                    row_errors.append("currency_mismatch")
+                if capex is None or capex.capex_scope != CapexScope.PPE_ONLY:
+                    row_errors.append("capex_scope_mismatch")
+        elif actual_enabled:
+            row_errors.append("cash_flow_visible_while_mode_off")
+        for error in row_errors:
+            errors.append({"ticker": ticker, "error": error})
+        fcf = facts.get(context.fcf_fact_id or "")
+        rows.append(
+            {
+                "ticker": ticker,
+                "mode": mode,
+                "expected_eligible": expected_eligible,
+                "actual_enabled": actual_enabled,
+                "no_delta_suppression": no_delta,
+                "fcf_fact_id": context.fcf_fact_id,
+                "period_end": (
+                    context.primary_period.end.isoformat()
+                    if context.primary_period is not None
+                    else None
+                ),
+                "currency": fcf.currency if fcf else None,
+                "fcf_sign": (
+                    "negative"
+                    if fcf and fcf.value < 0
+                    else "positive"
+                    if fcf and fcf.value > 0
+                    else "zero"
+                    if fcf
+                    else None
+                ),
+                "suppressed_baseline_claim_ids": list(
+                    selected.get("suppressed_baseline_claim_ids") or []
+                ),
+                "errors": row_errors,
+            }
+        )
+    return {
+        "contract": "cash-flow-user-visible-canary-parity-v1",
+        "status": "passed" if not errors else "failed",
+        "observed_modes": sorted(modes),
+        "selected_count": sum(item["actual_enabled"] is True for item in rows),
+        "error_count": len(errors),
+        "errors": errors,
+        "subjects": rows,
+        "production_delivery_influence": 0,
     }
 
 
@@ -920,6 +1023,11 @@ def run_cash_flow_runtime_shadow_canary(
             archive=archive,
             delivery_mode=delivery_mode,
         )
+        production_user_visible_parity = _production_user_visible_parity_audit(
+            packet_stocks,
+            contexts,
+            facts_by_id,
+        )
         semantic_error_count += int(baseline_consistency["error_count"])
         semantic = {
             "status": "passed" if semantic_error_count == 0 else "rejected",
@@ -930,6 +1038,13 @@ def run_cash_flow_runtime_shadow_canary(
                 "status": baseline_consistency["status"],
                 "claim_count": baseline_consistency["claim_count"],
                 "error_count": baseline_consistency["error_count"],
+            },
+            "production_user_visible_parity": {
+                "contract": production_user_visible_parity["contract"],
+                "status": production_user_visible_parity["status"],
+                "selected_count": production_user_visible_parity["selected_count"],
+                "error_count": production_user_visible_parity["error_count"],
+                "production_delivery_influence": 0,
             },
             "prohibited_metrics_created": 0,
             "valuation_context_mutations": 0,
@@ -1012,6 +1127,7 @@ def run_cash_flow_runtime_shadow_canary(
             ("bound-shadow-output.json", bound_output),
             ("semantic-validation.json", semantic),
             ("baseline-consistency.json", baseline_consistency),
+            ("production-user-visible-parity.json", production_user_visible_parity),
             ("runtime-quality-receipt.json", quality),
         )
         archive_started = time.perf_counter()
@@ -1059,6 +1175,12 @@ def run_cash_flow_runtime_shadow_canary(
         receipt_payload["baseline_consistency_error_count"] = baseline_consistency[
             "error_count"
         ]
+        receipt_payload["production_user_visible_parity"] = {
+            "status": production_user_visible_parity["status"],
+            "selected_count": production_user_visible_parity["selected_count"],
+            "error_count": production_user_visible_parity["error_count"],
+            "production_delivery_influence": 0,
+        }
         receipt_payload["quality_error_count"] = len(quality["errors"])
         receipt_payload["latency_ms"] = {
             "input_load": load_latency_ms,

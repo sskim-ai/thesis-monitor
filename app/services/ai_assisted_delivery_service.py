@@ -262,6 +262,107 @@ def _pilot_metadata(payload: dict[str, object]) -> dict[str, object]:
     return dict(value) if isinstance(value, dict) else {}
 
 
+def _payload_cash_flow_context(payload: dict[str, object]) -> dict[str, object]:
+    analysis = payload.get("analysis_context")
+    if not isinstance(analysis, dict):
+        return {}
+    value = analysis.get("cash_flow_user_visible")
+    return dict(value) if isinstance(value, dict) else {}
+
+
+def _packet_cash_flow_context(
+    packet: dict[str, object], ticker: str
+) -> dict[str, object]:
+    for stock in packet.get("stocks", []):
+        if not isinstance(stock, dict) or str(stock.get("ticker")) != ticker:
+            continue
+        value = stock.get("cash_flow_user_visible")
+        return dict(value) if isinstance(value, dict) else {}
+    return {}
+
+
+def _cash_flow_delivery_metadata(
+    packet: dict[str, object], ticker: str, deterministic: dict[str, object]
+) -> dict[str, object]:
+    packet_context = _packet_cash_flow_context(packet, ticker)
+    fallback_context = _payload_cash_flow_context(deterministic)
+    if packet_context or fallback_context:
+        parity_fields = (
+            "cash_flow_user_visible_context_id",
+            "selection_state",
+            "selection_reason",
+            "display_reason",
+            "evidence_signature",
+            "primary_fact_ref",
+            "primary_period",
+            "financial_currency",
+            "freshness_state",
+            "suppressed_baseline_claim_ids",
+            "user_visible_enabled",
+        )
+        if any(packet_context.get(key) != fallback_context.get(key) for key in parity_fields):
+            raise ValueError(f"cash_flow_ai_fallback_context_mismatch:{ticker}")
+    source = packet_context or fallback_context
+    return {
+        "cash_flow_user_visible_mode": source.get("rollout_mode", "OFF"),
+        "cash_flow_user_visible_context_id": source.get(
+            "cash_flow_user_visible_context_id"
+        ),
+        "cash_flow_user_visible_enabled": source.get("user_visible_enabled") is True,
+        "cash_flow_fact_ids": [
+            source[key]
+            for key in ("ocf_fact_ref", "ppe_capex_fact_ref", "fcf_fact_ref")
+            if source.get(key)
+        ],
+        "cash_flow_suppressed_baseline_claim_ids": list(
+            source.get("suppressed_baseline_claim_ids") or []
+        ),
+    }
+
+
+def _cash_flow_run_metadata(packet: dict[str, object]) -> dict[str, object]:
+    contexts = [
+        item.get("cash_flow_user_visible")
+        for item in packet.get("stocks", [])
+        if isinstance(item, dict)
+        and isinstance(item.get("cash_flow_user_visible"), dict)
+    ]
+    selected = [
+        item
+        for item in contexts
+        if isinstance(item, dict) and item.get("user_visible_enabled") is True
+    ]
+    mode = str(contexts[0].get("rollout_mode") or "OFF") if contexts else "OFF"
+    return {
+        "cash_flow_user_visible_mode": mode,
+        "cash_flow_selected_count": len(selected),
+        "cash_flow_selected_tickers": [
+            str(item.get("ticker") or "")
+            for item in packet.get("stocks", [])
+            if isinstance(item, dict)
+            and isinstance(item.get("cash_flow_user_visible"), dict)
+            and item["cash_flow_user_visible"].get("user_visible_enabled") is True
+        ],
+        "cash_flow_context_ids": [
+            item["cash_flow_user_visible_context_id"]
+            for item in selected
+            if item.get("cash_flow_user_visible_context_id")
+        ],
+        "cash_flow_fact_ids_used": sorted(
+            {
+                str(item[key])
+                for item in selected
+                for key in ("ocf_fact_ref", "ppe_capex_fact_ref", "fcf_fact_ref")
+                if item.get(key)
+            }
+        ),
+        "cash_flow_suppressed_count": sum(
+            isinstance(item, dict) and item.get("user_visible_enabled") is not True
+            for item in contexts
+        ),
+    }
+
+
 def _archive_directory(packet: dict[str, object]) -> Path:
     run_date = date.fromisoformat(str(packet["assessment_date"]))
     return (
@@ -615,6 +716,9 @@ def hold_ai_assisted_pilot_session(
                 "fallback_eligible": True,
                 "held_at": now.isoformat(),
                 "deterministic_payload": deterministic,
+                **_cash_flow_delivery_metadata(
+                    packet, delivery.ticker, deterministic
+                ),
             }
             delivery.payload = json.dumps(payload, ensure_ascii=False)
             delivery.status = "pending"
@@ -1170,6 +1274,9 @@ async def deliver_validated_ai_review(
                 "deterministic_payload": deterministic,
                 "prepared_at": current.isoformat(),
                 "persisted_delivery_retry_count": 0,
+                **_cash_flow_delivery_metadata(
+                    packet, delivery.ticker, deterministic
+                ),
             }
             prepared_payloads.append((delivery, new_payload))
             if delivery.id is not None:
@@ -1180,6 +1287,9 @@ async def deliver_validated_ai_review(
                     "ticker": delivery.ticker,
                     "logical_identity": identity,
                     "text": text,
+                    "cash_flow_user_visible_context_id": _packet_cash_flow_context(
+                        packet, delivery.ticker
+                    ).get("cash_flow_user_visible_context_id"),
                 }
             )
         ticker_order = {
@@ -1404,6 +1514,7 @@ async def deliver_validated_ai_review(
                 "chart_knowledge_version": output.chart_knowledge_version,
                 "chart_knowledge_sha256": output.chart_knowledge_sha256,
                 "renderer_version": PILOT_RENDERER_VERSION,
+                **_cash_flow_run_metadata(packet),
             },
         )
         await dispatch_pending_notifications(
@@ -1447,6 +1558,7 @@ async def deliver_validated_ai_review(
                 "rendered_payload_set_sha256"
             ),
             "dispatched_at": current.isoformat() if complete else None,
+            **_cash_flow_run_metadata(packet),
         }
         _atomic_json(_archive_directory(packet) / "delivery-result.json", delivery_result)
         recorded_day = pilot_day
@@ -1707,6 +1819,7 @@ async def _retry_fallback_delivery(
             "sent_count": sent_count,
             "pending_count": pending_count,
             "dispatched_at": current.isoformat() if complete else None,
+            **_cash_flow_run_metadata(packet),
         },
     )
     _atomic_json(
@@ -1837,6 +1950,9 @@ async def dispatch_due_deterministic_fallbacks(
                         "delivery_id": delivery.id,
                         "ticker": delivery.ticker,
                         "text": str(fallback.get("text") or ""),
+                        "cash_flow_user_visible_context_id": metadata.get(
+                            "cash_flow_user_visible_context_id"
+                        ),
                     }
                 )
             session.commit()
@@ -1884,6 +2000,7 @@ async def dispatch_due_deterministic_fallbacks(
                     "sent_count": sent_count,
                     "pending_count": pending_count,
                     "dispatched_at": current.isoformat() if complete else None,
+                    **_cash_flow_run_metadata(packet),
                 },
             )
             results.append(
