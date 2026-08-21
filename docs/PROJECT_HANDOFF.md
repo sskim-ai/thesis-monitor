@@ -35,7 +35,7 @@ execution or an autonomous investment adviser.
 
 | Component | Contract |
 |---|---|
-| Branch | `main` operating through Phase 9.0D; Phase 9.0D.1 repair branch is the next promotion candidate; peer/KRX breadth ancestry excluded |
+| Branch | `main` operating through Phase 9.0D.1; Phase 9.0E is the next major task; peer/KRX breadth ancestry excluded |
 | Official assessment | Deterministic `ThesisAssessment` |
 | AI mode | `shadow` |
 | Analysis policy | `daily-review-v3.10` |
