@@ -26,6 +26,7 @@ DOCUMENTS = (
     ROOT / "docs" / "architecture" / "CASH_FLOW_USER_VISIBLE_INTEGRATION.md",
     ROOT / "docs" / "architecture" / "WORKING_CAPITAL_EVIDENCE.md",
     ROOT / "docs" / "architecture" / "WORKING_CAPITAL_SHADOW_CONSUMPTION.md",
+    ROOT / "docs" / "architecture" / "WORKING_CAPITAL_RUNTIME_SHADOW_CANARY.md",
     ROOT / "docs" / "operations" / "AI_ASSISTED_PILOT.md",
     ROOT / "docs" / "operations" / "CASH_FLOW_USER_VISIBLE_KILL_SWITCH.md",
     ROOT / "docs" / "knowledge" / "README.md",
@@ -45,16 +46,14 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     assert state["repository"] == "sskim-ai/thesis-monitor"
     assert state["branch"] == "main"
     assert state["experimental_branch"] == (
-        "codex/phase-9-1c-working-capital-shadow-consumption"
+        "codex/phase-9-1d-selective-working-capital-runtime-shadow-canary"
     )
-    assert state["current_phase"] == (
-        "phase_9_1c_closed_retrospective_promotion_deferred"
-    )
+    assert state["current_phase"] == "phase_9_1d_deployed_pending_natural"
     assert state["last_completed_phase"] == (
-        "phase_9_1c_working_capital_shadow_consumption"
+        "phase_9_1d_selective_working_capital_runtime_shadow_canary"
     )
     assert state["next_default_phase"] == (
-        "phase_9_1d_selective_working_capital_runtime_shadow_canary"
+        "phase_9_1e_architecture_natural_proof_parallel"
     )
     assert state["deployed_code_commit"] == "HEAD"
     assert state["main_code_commit"] == "HEAD"
@@ -103,6 +102,9 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     assert state["contracts"]["working_capital_shadow_consumption"] == (
         "working-capital-shadow-consumption-v1"
     )
+    assert state["contracts"]["working_capital_runtime_shadow_canary"] == (
+        "working-capital-runtime-shadow-canary-v1"
+    )
     advancement = state["phase_advancement_rule_v1"]
     assert advancement["p0_open"] == []
     assert advancement["p1_open"] == []
@@ -135,6 +137,11 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     assert advancement["phase_9_1d_scope"] == (
         "SELECTIVE_RUNTIME_SHADOW_CANARY_INVENTORY_EXACT_TRADE_AR"
     )
+    assert advancement["phase_9_1d_deployed"] is True
+    assert advancement["phase_9_1d_natural_proof"] == (
+        "inventory_and_exact_trade_ar_not_observed"
+    )
+    assert advancement["phase_9_1e_architecture_ready"] is True
     assert advancement["next_major_architecture_ready"] is True
     phase_90a = state["phase_9_0a_cash_flow_capital_efficiency"]
     assert phase_90a["status"] == "architecture_closed_ready_for_phase_9_0b"
@@ -191,9 +198,7 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     assert phase_90e["cash_flow_user_visible_rollout_ready"] is True
     assert phase_90e["next_major_architecture_ready"] is True
     phase_91a = state["phase_9_1a_working_capital_evidence_architecture"]
-    assert phase_91a["status"] == (
-        "architecture_closed_ready_for_phase_9_1b_promotion_deferred"
-    )
+    assert phase_91a["status"] == "architecture_closed_promoted"
     assert phase_91a["work_instruction_commit"] == (
         "eaaadb1ac4fb5c9a7d3486ecc8274708c285ff79"
     )
@@ -205,9 +210,7 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     assert phase_91a["runtime_user_visible_diff"] == 0
     assert phase_91a["phase_9_1b_ready"] is True
     phase_91b = state["phase_9_1b_canonical_working_capital_core"]
-    assert phase_91b["status"] == (
-        "implemented_shadow_ready_for_phase_9_1c_promotion_deferred"
-    )
+    assert phase_91b["status"] == "implemented_shadow_promoted"
     assert phase_91b["work_instruction_commit"] == (
         "0952bee040133aa49a4ba494ecae76163e9a9511"
     )
@@ -233,9 +236,7 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     assert phase_91b["runtime_user_visible_diff"] == 0
     assert phase_91b["phase_9_1c_ready"] is True
     phase_91c = state["phase_9_1c_working_capital_shadow_consumption"]
-    assert phase_91c["status"] == (
-        "shadow_consumption_closed_retrospective_pending_promotion"
-    )
+    assert phase_91c["status"] == "shadow_consumption_closed_retrospective_promoted"
     assert phase_91c["work_instruction_commit"] == (
         "613d91d74d3a91c43ed61f98a13a2ca57b7a90ae"
     )
@@ -255,6 +256,29 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     assert phase_91c["human_quality"]["degraded"] == 0
     assert phase_91c["runtime_user_visible_diff"] == 0
     assert phase_91c["phase_9_1d_ready"] is True
+    phase_91d = state["phase_9_1d_working_capital_runtime_shadow_canary"]
+    assert phase_91d["status"] == "deployed_pending_natural"
+    assert phase_91d["work_instruction_commit"] == (
+        "dc4e1cf14faa7cebf78eb8ba5a5e73b6369c991c"
+    )
+    assert phase_91d["implementation_commit"] == (
+        "5316113062782b09595a495ec9a903a4973f9df5"
+    )
+    assert phase_91d["allowed_metrics"] == [
+        "inventory",
+        "trade_accounts_receivable",
+    ]
+    assert phase_91d["retrospective_selected_relations"] == {
+        "inventory": 5,
+        "exact_trade_ar": 2,
+        "broad_ar": 0,
+        "exact_trade_ap": 0,
+        "broad_ap": 0,
+    }
+    assert phase_91d["production_influence"] == 0
+    assert phase_91d["inventory_natural_proof"] == "NOT_OBSERVED"
+    assert phase_91d["trade_ar_natural_proof"] == "NOT_OBSERVED"
+    assert phase_91d["phase_9_1e_architecture_ready"] is True
     assert state["persistent_gaps"]["krx_open_api"] == (
         "APPROVED_TELEMETRY_ONLY_OPERATING_USER_VISIBLE_NOT_INTEGRATED"
     )
@@ -343,6 +367,7 @@ def test_architecture_guides_record_decisions_and_readme_navigation() -> None:
         ROOT / "docs" / "architecture" / "CASH_FLOW_BASELINE_CONSISTENCY.md",
         ROOT / "docs" / "architecture" / "CASH_FLOW_USER_VISIBLE_INTEGRATION.md",
         ROOT / "docs" / "architecture" / "WORKING_CAPITAL_SHADOW_CONSUMPTION.md",
+        ROOT / "docs" / "architecture" / "WORKING_CAPITAL_RUNTIME_SHADOW_CANARY.md",
         ROOT / "docs" / "operations" / "AI_ASSISTED_PILOT.md",
         ROOT / "docs" / "knowledge" / "README.md",
     )
@@ -368,6 +393,7 @@ def test_architecture_guides_record_decisions_and_readme_navigation() -> None:
         "docs/architecture/CASH_FLOW_RUNTIME_SHADOW_CANARY.md",
         "docs/architecture/CASH_FLOW_USER_VISIBLE_INTEGRATION.md",
         "docs/architecture/WORKING_CAPITAL_SHADOW_CONSUMPTION.md",
+        "docs/architecture/WORKING_CAPITAL_RUNTIME_SHADOW_CANARY.md",
         "docs/architecture/NIGHT_FUTURES_SESSION_BASIS.md",
         "docs/operations/AI_ASSISTED_PILOT.md",
         "docs/operations/SCHEDULED_TASK_CONTRACTS.md",

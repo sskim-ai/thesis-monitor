@@ -1,0 +1,1921 @@
+{
+  "active_universe_count": 20,
+  "allowed_metrics": [
+    "inventory",
+    "trade_accounts_receivable"
+  ],
+  "assessment_mutation_count": 0,
+  "contract": "working-capital-runtime-shadow-canary-v1",
+  "fallback_change_count": 0,
+  "generated_at": "2026-08-21T00:00:00+00:00",
+  "natural_proof": {
+    "exact_trade_ar": "NOT_OBSERVED",
+    "inventory": "NOT_OBSERVED"
+  },
+  "numeric_binding": {
+    "automatic": 7,
+    "errors": [],
+    "manual": 0,
+    "rejected": 0,
+    "status": "passed",
+    "unresolved": 0
+  },
+  "phase_9_1d_deployment_candidate": true,
+  "phase_9_1e_architecture_ready": true,
+  "production_ai_input_change_count": 0,
+  "production_influence_count": 0,
+  "public_action_change_count": 0,
+  "quality": {
+    "contract": "working-capital-runtime-shadow-quality-v1",
+    "errors": [],
+    "status": "passed",
+    "threshold_changes": 0
+  },
+  "selected_count": 7,
+  "selected_metric_counts": {
+    "inventory": 5,
+    "trade_accounts_receivable": 2
+  },
+  "selector_parity_errors": [],
+  "semantic_errors": [],
+  "source_consumption": "docs/reports/20260821-phase9-1c-shadow-context.json",
+  "source_consumption_sha256": "608e00e8438e186da9dfef8f5c5eb73119024b862e1d57b463b0bcf7f6fd84a7",
+  "source_core": "docs/reports/20260821-phase9-1b-canonical-facts.json",
+  "source_core_sha256": "cc9a9d8e0cbd1faaae5fef13969869bf454ca3dfd796c88962e7f3a29e90d1c5",
+  "subjects": [
+    {
+      "context": {
+        "allowed_claims": [
+          "typed_relation",
+          "cautious_earnings_quality_context"
+        ],
+        "assessment_date": "2026-08-20",
+        "cash_flow_alignment_state": "NOT_PROVIDED",
+        "cash_flow_context_used": false,
+        "consumption_eligible": true,
+        "contract": "working-capital-shadow-consumption-v1",
+        "cutoff": "2026-08-20",
+        "freshness_state": "CURRENT_FORMAL",
+        "industry": "memory_semiconductor",
+        "industry_applicability": {
+          "ap": "SECONDARY",
+          "ap_vs_cogs": "SECONDARY",
+          "ar": "SECONDARY",
+          "ar_vs_revenue": "SECONDARY",
+          "inventory": "PRIMARY",
+          "inventory_vs_cogs": "PRIMARY",
+          "inventory_vs_revenue": "PRIMARY"
+        },
+        "latest_formal_balance_date": "2026-06-30",
+        "market": "KR",
+        "materiality_reason": "existing_working_capital_driver_or_unknown",
+        "metric_contexts": [
+          {
+            "current_fact_id": "working-capital-reported:b742cc7afdc66afa6d7e1135",
+            "metric": "inventory",
+            "semantic_label": "재고",
+            "status": "ELIGIBLE",
+            "yoy_fact_id": "working-capital-derived:76bafa4ff3bc5b672001b37f"
+          },
+          {
+            "current_fact_id": "working-capital-reported:571b33c8276be8bd6693510e",
+            "metric": "trade_accounts_receivable",
+            "semantic_label": "거래 매출채권",
+            "status": "ELIGIBLE",
+            "yoy_fact_id": "working-capital-derived:9af3236b3e8b4a25959cfa55"
+          }
+        ],
+        "packet_id": "2026-08-20-kr-run-29-6e8809e1e944",
+        "pit_state": "PASS",
+        "point_in_time_exclusions": [],
+        "prohibited_claims": [
+          "future_fact_used",
+          "stale_as_current",
+          "broad_trade_semantic_mislabel",
+          "contract_asset_as_trade_ar",
+          "accrued_liability_as_trade_ap",
+          "unsupported_causal_claim",
+          "dso_inventory_days_dpo_ccc",
+          "automatic_thesis_warning_or_valuation_change"
+        ],
+        "remaining_unknowns": [],
+        "resolved_unknowns": [
+          {
+            "original": "HBM4 고객별 출하·수율, 재고, 설비투자 이후 영업현금흐름·잉여현금흐름·자본수익률이 확인되지 않아 고마진의 반복 가능성을 판단할 수 없습니다.",
+            "replacement": null,
+            "state": "RESOLVED_EXACT"
+          }
+        ],
+        "selected_fact_refs": [
+          "working-capital-reported:b742cc7afdc66afa6d7e1135",
+          "working-capital-reported:3d542b94d368f70add0d6170",
+          "working-capital-reported:e82f96805a456becf97cc6f2",
+          "working-capital-reported:7fe8e5e809b98ce4701caf99",
+          "working-capital-derived:76bafa4ff3bc5b672001b37f",
+          "working-capital-derived:06d86117c3f4ba6209336c5c"
+        ],
+        "selected_relations": [
+          {
+            "applicability": "PRIMARY",
+            "balance_metric": "inventory",
+            "balance_scope": "total",
+            "balance_semantic": "ifrs-full:Inventories",
+            "direction": "LOWER",
+            "family": "inventory_vs_cogs",
+            "flow_metric": "cost_of_goods_sold",
+            "flow_semantic": "ifrs-full:CostOfSales",
+            "gap_percentage_points": "-2.06191700664683180124383042",
+            "input_fact_ids": [
+              "working-capital-reported:b742cc7afdc66afa6d7e1135",
+              "working-capital-reported:3d542b94d368f70add0d6170",
+              "working-capital-reported:e82f96805a456becf97cc6f2",
+              "working-capital-reported:7fe8e5e809b98ce4701caf99",
+              "working-capital-derived:76bafa4ff3bc5b672001b37f",
+              "working-capital-derived:06d86117c3f4ba6209336c5c"
+            ],
+            "relation_id": "working-capital-relation:38a9a0707d38e538ccdb2e7e"
+          }
+        ],
+        "semantic_labels": [
+          "재고",
+          "cost_of_goods_sold"
+        ],
+        "shadow_used": true,
+        "specificity_key": "memory_hbm",
+        "status": "READY",
+        "suppression_reasons": [],
+        "ticker": "000660",
+        "usage_mode": "INVENTORY_RELATION"
+      },
+      "industry": "memory_semiconductor",
+      "market": "KR",
+      "reasoning": {
+        "fact_ids": [
+          "working-capital-reported:b742cc7afdc66afa6d7e1135",
+          "working-capital-reported:3d542b94d368f70add0d6170",
+          "working-capital-reported:e82f96805a456becf97cc6f2",
+          "working-capital-reported:7fe8e5e809b98ce4701caf99",
+          "working-capital-derived:76bafa4ff3bc5b672001b37f",
+          "working-capital-derived:06d86117c3f4ba6209336c5c"
+        ],
+        "numeric_claims": [
+          {
+            "display": "2.1%p",
+            "input_fact_ids": [
+              "working-capital-reported:b742cc7afdc66afa6d7e1135",
+              "working-capital-reported:3d542b94d368f70add0d6170",
+              "working-capital-reported:e82f96805a456becf97cc6f2",
+              "working-capital-reported:7fe8e5e809b98ce4701caf99",
+              "working-capital-derived:76bafa4ff3bc5b672001b37f",
+              "working-capital-derived:06d86117c3f4ba6209336c5c"
+            ],
+            "owner": "business_earnings",
+            "relation_id": "working-capital-relation:38a9a0707d38e538ccdb2e7e",
+            "semantic_type": "inventory_vs_cogs",
+            "text_ref": "business_earnings.text",
+            "value": "-2.06191700664683180124383042"
+          }
+        ],
+        "relation_ids": [
+          "working-capital-relation:38a9a0707d38e538ccdb2e7e"
+        ],
+        "text": "재고 증가율은 매출원가 증가율보다 2.1%p 밑돌았습니다. 재고 정상화와 양립하지만 ASP·HBM 수요 개선을 확정하지 않습니다."
+      },
+      "retrospective_selected_relation": "working-capital-relation:38a9a0707d38e538ccdb2e7e",
+      "runtime_selected_metric": "inventory",
+      "runtime_selected_relation": "working-capital-relation:38a9a0707d38e538ccdb2e7e",
+      "selector_parity": true,
+      "ticker": "000660",
+      "validation_errors": []
+    },
+    {
+      "context": {
+        "allowed_claims": [],
+        "assessment_date": "2026-08-20",
+        "cash_flow_alignment_state": "NOT_APPLICABLE",
+        "cash_flow_context_used": false,
+        "consumption_eligible": false,
+        "contract": "working-capital-shadow-consumption-v1",
+        "cutoff": "2026-08-20",
+        "freshness_state": "NOT_APPLICABLE",
+        "industry": "insurance_reinsurance",
+        "industry_applicability": {
+          "ap": "NOT_APPLICABLE",
+          "ap_vs_cogs": "NOT_APPLICABLE",
+          "ar": "NOT_APPLICABLE",
+          "ar_vs_revenue": "NOT_APPLICABLE",
+          "inventory": "NOT_APPLICABLE",
+          "inventory_vs_cogs": "NOT_APPLICABLE",
+          "inventory_vs_revenue": "NOT_APPLICABLE"
+        },
+        "latest_formal_balance_date": null,
+        "market": "KR",
+        "materiality_reason": null,
+        "metric_contexts": [],
+        "packet_id": "2026-08-20-kr-run-29-6e8809e1e944",
+        "pit_state": "PASS",
+        "point_in_time_exclusions": [],
+        "prohibited_claims": [
+          "future_fact_used",
+          "stale_as_current",
+          "broad_trade_semantic_mislabel",
+          "contract_asset_as_trade_ar",
+          "accrued_liability_as_trade_ap",
+          "unsupported_causal_claim",
+          "dso_inventory_days_dpo_ccc",
+          "automatic_thesis_warning_or_valuation_change"
+        ],
+        "remaining_unknowns": [
+          "합산비율, 자기자본이익률, 자본적정성과 영업현금흐름이 확인되지 않아 현재 장부가치 배수의 질을 판단할 수 없습니다."
+        ],
+        "resolved_unknowns": [],
+        "selected_fact_refs": [],
+        "selected_relations": [],
+        "semantic_labels": [],
+        "shadow_used": false,
+        "specificity_key": "insurance_reinsurance",
+        "status": "NOT_APPLICABLE",
+        "suppression_reasons": [
+          "generic_working_capital_not_applicable"
+        ],
+        "ticker": "003690",
+        "usage_mode": "NOT_APPLICABLE"
+      },
+      "industry": "insurance_reinsurance",
+      "market": "KR",
+      "reasoning": null,
+      "retrospective_selected_relation": null,
+      "runtime_selected_metric": null,
+      "runtime_selected_relation": null,
+      "selector_parity": true,
+      "ticker": "003690",
+      "validation_errors": []
+    },
+    {
+      "context": {
+        "allowed_claims": [
+          "typed_relation",
+          "cautious_earnings_quality_context"
+        ],
+        "assessment_date": "2026-08-20",
+        "cash_flow_alignment_state": "NOT_PROVIDED",
+        "cash_flow_context_used": false,
+        "consumption_eligible": true,
+        "contract": "working-capital-shadow-consumption-v1",
+        "cutoff": "2026-08-20",
+        "freshness_state": "CURRENT_FORMAL",
+        "industry": "steel_materials",
+        "industry_applicability": {
+          "ap": "SECONDARY",
+          "ap_vs_cogs": "SECONDARY",
+          "ar": "PRIMARY",
+          "ar_vs_revenue": "PRIMARY",
+          "inventory": "PRIMARY",
+          "inventory_vs_cogs": "PRIMARY",
+          "inventory_vs_revenue": "PRIMARY"
+        },
+        "latest_formal_balance_date": "2026-06-30",
+        "market": "KR",
+        "materiality_reason": "existing_working_capital_driver_or_unknown",
+        "metric_contexts": [
+          {
+            "current_fact_id": "working-capital-reported:8eb93ea161575e8239c3b49a",
+            "metric": "inventory",
+            "semantic_label": "재고",
+            "status": "ELIGIBLE",
+            "yoy_fact_id": "working-capital-derived:c443106cc507b5d6c464f833"
+          },
+          {
+            "current_fact_id": "working-capital-reported:1e9f1bc2df7865e6895cf815",
+            "metric": "trade_accounts_receivable",
+            "semantic_label": "거래 매출채권",
+            "status": "ELIGIBLE",
+            "yoy_fact_id": "working-capital-derived:e560d6f16a679a98c25f5967"
+          }
+        ],
+        "packet_id": "2026-08-20-kr-run-29-6e8809e1e944",
+        "pit_state": "PASS",
+        "point_in_time_exclusions": [],
+        "prohibited_claims": [
+          "future_fact_used",
+          "stale_as_current",
+          "broad_trade_semantic_mislabel",
+          "contract_asset_as_trade_ar",
+          "accrued_liability_as_trade_ap",
+          "unsupported_causal_claim",
+          "dso_inventory_days_dpo_ccc",
+          "automatic_thesis_warning_or_valuation_change"
+        ],
+        "remaining_unknowns": [],
+        "resolved_unknowns": [
+          {
+            "original": "철강 가격·물량, 리튬 사업 수익성, 재고와 설비투자 이후 영업현금흐름·잉여현금흐름·자본수익률이 확인되지 않아 사이클 회복의 질을 판단할 수 없습니다.",
+            "replacement": null,
+            "state": "RESOLVED_EXACT"
+          }
+        ],
+        "selected_fact_refs": [
+          "working-capital-reported:8eb93ea161575e8239c3b49a",
+          "working-capital-reported:57f4cb34ba90e597a438ef41",
+          "working-capital-reported:e49769235bd25c78c4d0413d",
+          "working-capital-reported:cda0eade6f371725e4dda70a",
+          "working-capital-derived:c443106cc507b5d6c464f833",
+          "working-capital-derived:9e40436bfef8c3e37e8ba6aa"
+        ],
+        "selected_relations": [
+          {
+            "applicability": "PRIMARY",
+            "balance_metric": "inventory",
+            "balance_scope": "total",
+            "balance_semantic": "ifrs-full:Inventories",
+            "direction": "GREATER",
+            "family": "inventory_vs_revenue",
+            "flow_metric": "revenue",
+            "flow_semantic": "ifrs-full:Revenue",
+            "gap_percentage_points": "7.087812183384325807684667239",
+            "input_fact_ids": [
+              "working-capital-reported:8eb93ea161575e8239c3b49a",
+              "working-capital-reported:57f4cb34ba90e597a438ef41",
+              "working-capital-reported:e49769235bd25c78c4d0413d",
+              "working-capital-reported:cda0eade6f371725e4dda70a",
+              "working-capital-derived:c443106cc507b5d6c464f833",
+              "working-capital-derived:9e40436bfef8c3e37e8ba6aa"
+            ],
+            "relation_id": "working-capital-relation:ab1a9a616bcd8d6023b2db06"
+          }
+        ],
+        "semantic_labels": [
+          "재고",
+          "revenue"
+        ],
+        "shadow_used": true,
+        "specificity_key": "steel_spread",
+        "status": "READY",
+        "suppression_reasons": [],
+        "ticker": "005490",
+        "usage_mode": "INVENTORY_RELATION"
+      },
+      "industry": "steel_materials",
+      "market": "KR",
+      "reasoning": {
+        "fact_ids": [
+          "working-capital-reported:8eb93ea161575e8239c3b49a",
+          "working-capital-reported:57f4cb34ba90e597a438ef41",
+          "working-capital-reported:e49769235bd25c78c4d0413d",
+          "working-capital-reported:cda0eade6f371725e4dda70a",
+          "working-capital-derived:c443106cc507b5d6c464f833",
+          "working-capital-derived:9e40436bfef8c3e37e8ba6aa"
+        ],
+        "numeric_claims": [
+          {
+            "display": "7.1%p",
+            "input_fact_ids": [
+              "working-capital-reported:8eb93ea161575e8239c3b49a",
+              "working-capital-reported:57f4cb34ba90e597a438ef41",
+              "working-capital-reported:e49769235bd25c78c4d0413d",
+              "working-capital-reported:cda0eade6f371725e4dda70a",
+              "working-capital-derived:c443106cc507b5d6c464f833",
+              "working-capital-derived:9e40436bfef8c3e37e8ba6aa"
+            ],
+            "owner": "business_earnings",
+            "relation_id": "working-capital-relation:ab1a9a616bcd8d6023b2db06",
+            "semantic_type": "inventory_vs_revenue",
+            "text_ref": "business_earnings.text",
+            "value": "7.087812183384325807684667239"
+          }
+        ],
+        "relation_ids": [
+          "working-capital-relation:ab1a9a616bcd8d6023b2db06"
+        ],
+        "text": "재고 증가율은 매출 증가율보다 7.1%p 앞섰습니다. 재고 전환은 철강 스프레드·원재료·물량과 함께 확인하며 사이클 방향을 확정하지 않습니다."
+      },
+      "retrospective_selected_relation": "working-capital-relation:ab1a9a616bcd8d6023b2db06",
+      "runtime_selected_metric": "inventory",
+      "runtime_selected_relation": "working-capital-relation:ab1a9a616bcd8d6023b2db06",
+      "selector_parity": true,
+      "ticker": "005490",
+      "validation_errors": []
+    },
+    {
+      "context": {
+        "allowed_claims": [
+          "typed_relation",
+          "cautious_earnings_quality_context"
+        ],
+        "assessment_date": "2026-08-20",
+        "cash_flow_alignment_state": "NOT_PROVIDED",
+        "cash_flow_context_used": false,
+        "consumption_eligible": true,
+        "contract": "working-capital-shadow-consumption-v1",
+        "cutoff": "2026-08-20",
+        "freshness_state": "CURRENT_FORMAL",
+        "industry": "memory_semiconductor",
+        "industry_applicability": {
+          "ap": "SECONDARY",
+          "ap_vs_cogs": "SECONDARY",
+          "ar": "SECONDARY",
+          "ar_vs_revenue": "SECONDARY",
+          "inventory": "PRIMARY",
+          "inventory_vs_cogs": "PRIMARY",
+          "inventory_vs_revenue": "PRIMARY"
+        },
+        "latest_formal_balance_date": "2026-06-30",
+        "market": "KR",
+        "materiality_reason": "existing_working_capital_driver_or_unknown",
+        "metric_contexts": [
+          {
+            "current_fact_id": "working-capital-reported:a2f1219fd2a751859537f817",
+            "metric": "inventory",
+            "semantic_label": "재고",
+            "status": "ELIGIBLE",
+            "yoy_fact_id": "working-capital-derived:cabc0285c12ba1e945788d0e"
+          },
+          {
+            "current_fact_id": "working-capital-reported:19934d8070888368763c8a15",
+            "metric": "trade_accounts_receivable",
+            "semantic_label": "거래 매출채권",
+            "status": "ELIGIBLE",
+            "yoy_fact_id": "working-capital-derived:b1187aba256982983b5fe084"
+          }
+        ],
+        "packet_id": "2026-08-20-kr-run-29-6e8809e1e944",
+        "pit_state": "PASS",
+        "point_in_time_exclusions": [],
+        "prohibited_claims": [
+          "future_fact_used",
+          "stale_as_current",
+          "broad_trade_semantic_mislabel",
+          "contract_asset_as_trade_ar",
+          "accrued_liability_as_trade_ap",
+          "unsupported_causal_claim",
+          "dso_inventory_days_dpo_ccc",
+          "automatic_thesis_warning_or_valuation_change"
+        ],
+        "remaining_unknowns": [],
+        "resolved_unknowns": [
+          {
+            "original": "HBM4 채택·수율, DS 정상화 마진, 재고와 설비투자 이후 영업현금흐름·잉여현금흐름·자본수익률이 확인되지 않아 높은 기대의 지속성을 판단할 수 없습니다.",
+            "replacement": null,
+            "state": "RESOLVED_EXACT"
+          }
+        ],
+        "selected_fact_refs": [
+          "working-capital-reported:a2f1219fd2a751859537f817",
+          "working-capital-reported:ee70a0ad53bfc98289edae27",
+          "working-capital-reported:3a7d30e63279040add6dd0ee",
+          "working-capital-reported:77acb257b2ddead3be5ede82",
+          "working-capital-derived:cabc0285c12ba1e945788d0e",
+          "working-capital-derived:0e7a663e3ca101307dfb04cb"
+        ],
+        "selected_relations": [
+          {
+            "applicability": "PRIMARY",
+            "balance_metric": "inventory",
+            "balance_scope": "total",
+            "balance_semantic": "ifrs-full:Inventories",
+            "direction": "GREATER",
+            "family": "inventory_vs_cogs",
+            "flow_metric": "cost_of_goods_sold",
+            "flow_semantic": "ifrs-full:CostOfSales",
+            "gap_percentage_points": "35.79975884967539121726114215",
+            "input_fact_ids": [
+              "working-capital-reported:a2f1219fd2a751859537f817",
+              "working-capital-reported:ee70a0ad53bfc98289edae27",
+              "working-capital-reported:3a7d30e63279040add6dd0ee",
+              "working-capital-reported:77acb257b2ddead3be5ede82",
+              "working-capital-derived:cabc0285c12ba1e945788d0e",
+              "working-capital-derived:0e7a663e3ca101307dfb04cb"
+            ],
+            "relation_id": "working-capital-relation:4b43f129a5c3b9dbca52fa29"
+          }
+        ],
+        "semantic_labels": [
+          "재고",
+          "cost_of_goods_sold"
+        ],
+        "shadow_used": true,
+        "specificity_key": "memory_foundry",
+        "status": "READY",
+        "suppression_reasons": [],
+        "ticker": "005930",
+        "usage_mode": "INVENTORY_RELATION"
+      },
+      "industry": "memory_semiconductor",
+      "market": "KR",
+      "reasoning": {
+        "fact_ids": [
+          "working-capital-reported:a2f1219fd2a751859537f817",
+          "working-capital-reported:ee70a0ad53bfc98289edae27",
+          "working-capital-reported:3a7d30e63279040add6dd0ee",
+          "working-capital-reported:77acb257b2ddead3be5ede82",
+          "working-capital-derived:cabc0285c12ba1e945788d0e",
+          "working-capital-derived:0e7a663e3ca101307dfb04cb"
+        ],
+        "numeric_claims": [
+          {
+            "display": "35.8%p",
+            "input_fact_ids": [
+              "working-capital-reported:a2f1219fd2a751859537f817",
+              "working-capital-reported:ee70a0ad53bfc98289edae27",
+              "working-capital-reported:3a7d30e63279040add6dd0ee",
+              "working-capital-reported:77acb257b2ddead3be5ede82",
+              "working-capital-derived:cabc0285c12ba1e945788d0e",
+              "working-capital-derived:0e7a663e3ca101307dfb04cb"
+            ],
+            "owner": "business_earnings",
+            "relation_id": "working-capital-relation:4b43f129a5c3b9dbca52fa29",
+            "semantic_type": "inventory_vs_cogs",
+            "text_ref": "business_earnings.text",
+            "value": "35.79975884967539121726114215"
+          }
+        ],
+        "relation_ids": [
+          "working-capital-relation:4b43f129a5c3b9dbca52fa29"
+        ],
+        "text": "재고 증가율은 매출원가 증가율보다 35.8%p 앞섰습니다. 재고 전환은 메모리 믹스·파운드리 수율도 함께 점검해야 하며, 이 관계만으로 공급과잉을 확정하지 않습니다."
+      },
+      "retrospective_selected_relation": "working-capital-relation:4b43f129a5c3b9dbca52fa29",
+      "runtime_selected_metric": "inventory",
+      "runtime_selected_relation": "working-capital-relation:4b43f129a5c3b9dbca52fa29",
+      "selector_parity": true,
+      "ticker": "005930",
+      "validation_errors": []
+    },
+    {
+      "context": {
+        "allowed_claims": [
+          "typed_relation",
+          "cautious_earnings_quality_context"
+        ],
+        "assessment_date": "2026-08-20",
+        "cash_flow_alignment_state": "NOT_PROVIDED",
+        "cash_flow_context_used": false,
+        "consumption_eligible": true,
+        "contract": "working-capital-shadow-consumption-v1",
+        "cutoff": "2026-08-20",
+        "freshness_state": "CURRENT_FORMAL",
+        "industry": "industrial_epc",
+        "industry_applicability": {
+          "ap": "SECONDARY",
+          "ap_vs_cogs": "SECONDARY",
+          "ar": "PRIMARY",
+          "ar_vs_revenue": "PRIMARY",
+          "inventory": "PRIMARY",
+          "inventory_vs_cogs": "SECONDARY",
+          "inventory_vs_revenue": "SECONDARY"
+        },
+        "latest_formal_balance_date": "2026-06-30",
+        "market": "KR",
+        "materiality_reason": "existing_working_capital_driver_or_unknown",
+        "metric_contexts": [
+          {
+            "current_fact_id": "working-capital-reported:ac2ef61f877592343b10ad71",
+            "metric": "inventory",
+            "semantic_label": "재고",
+            "status": "ELIGIBLE",
+            "yoy_fact_id": "working-capital-derived:d4c1762ebe218ca03efd9f23"
+          },
+          {
+            "current_fact_id": "working-capital-reported:0cd45408893367196160301a",
+            "metric": "trade_accounts_receivable",
+            "semantic_label": "거래 매출채권",
+            "status": "ELIGIBLE",
+            "yoy_fact_id": "working-capital-derived:0f53b0afa3154a56b1417cf7"
+          }
+        ],
+        "packet_id": "2026-08-20-kr-run-29-6e8809e1e944",
+        "pit_state": "PASS",
+        "point_in_time_exclusions": [],
+        "prohibited_claims": [
+          "future_fact_used",
+          "stale_as_current",
+          "broad_trade_semantic_mislabel",
+          "contract_asset_as_trade_ar",
+          "accrued_liability_as_trade_ap",
+          "unsupported_causal_claim",
+          "dso_inventory_days_dpo_ccc",
+          "automatic_thesis_warning_or_valuation_change"
+        ],
+        "remaining_unknowns": [],
+        "resolved_unknowns": [
+          {
+            "original": "수주잔고의 매출 전환, 프로젝트 마진, 매출채권과 영업현금흐름·설비투자·자본수익률이 확인되지 않아 성장의 현금전환을 판단할 수 없습니다.",
+            "replacement": null,
+            "state": "RESOLVED_EXACT"
+          }
+        ],
+        "selected_fact_refs": [
+          "working-capital-reported:0cd45408893367196160301a",
+          "working-capital-reported:9d6de542db82d59958e908cf",
+          "working-capital-reported:75ee9a29975801e1317d3bbf",
+          "working-capital-reported:b9f80a39500f69e76ad0f973",
+          "working-capital-derived:0f53b0afa3154a56b1417cf7",
+          "working-capital-derived:3cf1c981e451d7699f83072c"
+        ],
+        "selected_relations": [
+          {
+            "applicability": "PRIMARY",
+            "balance_metric": "trade_accounts_receivable",
+            "balance_scope": "current",
+            "balance_semantic": "ifrs-full:CurrentTradeReceivables",
+            "direction": "GREATER",
+            "family": "trade_ar_vs_revenue",
+            "flow_metric": "revenue",
+            "flow_semantic": "ifrs-full:Revenue",
+            "gap_percentage_points": "18.04201846856173170179342913",
+            "input_fact_ids": [
+              "working-capital-reported:0cd45408893367196160301a",
+              "working-capital-reported:9d6de542db82d59958e908cf",
+              "working-capital-reported:75ee9a29975801e1317d3bbf",
+              "working-capital-reported:b9f80a39500f69e76ad0f973",
+              "working-capital-derived:0f53b0afa3154a56b1417cf7",
+              "working-capital-derived:3cf1c981e451d7699f83072c"
+            ],
+            "relation_id": "working-capital-relation:a5738ab8e08c0df9cf325f58"
+          }
+        ],
+        "semantic_labels": [
+          "거래 매출채권",
+          "revenue"
+        ],
+        "shadow_used": true,
+        "specificity_key": "order_conversion",
+        "status": "READY",
+        "suppression_reasons": [],
+        "ticker": "010120",
+        "usage_mode": "TRADE_AR_RELATION"
+      },
+      "industry": "industrial_epc",
+      "market": "KR",
+      "reasoning": {
+        "fact_ids": [
+          "working-capital-reported:0cd45408893367196160301a",
+          "working-capital-reported:9d6de542db82d59958e908cf",
+          "working-capital-reported:75ee9a29975801e1317d3bbf",
+          "working-capital-reported:b9f80a39500f69e76ad0f973",
+          "working-capital-derived:0f53b0afa3154a56b1417cf7",
+          "working-capital-derived:3cf1c981e451d7699f83072c"
+        ],
+        "numeric_claims": [
+          {
+            "display": "18.0%p",
+            "input_fact_ids": [
+              "working-capital-reported:0cd45408893367196160301a",
+              "working-capital-reported:9d6de542db82d59958e908cf",
+              "working-capital-reported:75ee9a29975801e1317d3bbf",
+              "working-capital-reported:b9f80a39500f69e76ad0f973",
+              "working-capital-derived:0f53b0afa3154a56b1417cf7",
+              "working-capital-derived:3cf1c981e451d7699f83072c"
+            ],
+            "owner": "business_earnings",
+            "relation_id": "working-capital-relation:a5738ab8e08c0df9cf325f58",
+            "semantic_type": "trade_ar_vs_revenue",
+            "text_ref": "business_earnings.text",
+            "value": "18.04201846856173170179342913"
+          }
+        ],
+        "relation_ids": [
+          "working-capital-relation:a5738ab8e08c0df9cf325f58"
+        ],
+        "text": "거래 매출채권 증가율은 매출 증가율보다 18.0%p 앞섰습니다. 수주 매출의 회수 전환을 점검할 단서이지만 고객 지급 지연을 확정하지 않습니다."
+      },
+      "retrospective_selected_relation": "working-capital-relation:a5738ab8e08c0df9cf325f58",
+      "runtime_selected_metric": "trade_accounts_receivable",
+      "runtime_selected_relation": "working-capital-relation:a5738ab8e08c0df9cf325f58",
+      "selector_parity": true,
+      "ticker": "010120",
+      "validation_errors": []
+    },
+    {
+      "context": {
+        "allowed_claims": [],
+        "assessment_date": "2026-08-20",
+        "cash_flow_alignment_state": "NOT_PROVIDED",
+        "cash_flow_context_used": false,
+        "consumption_eligible": false,
+        "contract": "working-capital-shadow-consumption-v1",
+        "cutoff": "2026-08-20",
+        "freshness_state": "BLOCKED",
+        "industry": "aerospace_epc",
+        "industry_applicability": {
+          "ap": "SECONDARY",
+          "ap_vs_cogs": "CONTEXT_ONLY",
+          "ar": "SECONDARY",
+          "ar_vs_revenue": "SECONDARY",
+          "inventory": "SECONDARY",
+          "inventory_vs_cogs": "CONTEXT_ONLY",
+          "inventory_vs_revenue": "SECONDARY"
+        },
+        "latest_formal_balance_date": "2026-06-30",
+        "market": "KR",
+        "materiality_reason": null,
+        "metric_contexts": [
+          {
+            "current_fact_id": "working-capital-reported:2b9475e4313020e1d43e4d3d",
+            "metric": "inventory",
+            "semantic_label": "재고",
+            "status": "ELIGIBLE",
+            "yoy_fact_id": "working-capital-derived:202450830ef87dcccdc5504b"
+          }
+        ],
+        "packet_id": "2026-08-20-kr-run-29-6e8809e1e944",
+        "pit_state": "PASS",
+        "point_in_time_exclusions": [],
+        "prohibited_claims": [
+          "future_fact_used",
+          "stale_as_current",
+          "broad_trade_semantic_mislabel",
+          "contract_asset_as_trade_ar",
+          "accrued_liability_as_trade_ap",
+          "unsupported_causal_claim",
+          "dso_inventory_days_dpo_ccc",
+          "automatic_thesis_warning_or_valuation_change"
+        ],
+        "remaining_unknowns": [
+          "수주잔고의 매출 전환과 프로젝트 마진, 계약자산, 영업현금흐름·설비투자·잉여현금흐름이 확인되지 않아 방산 성장의 현금전환을 판단할 수 없습니다."
+        ],
+        "resolved_unknowns": [],
+        "selected_fact_refs": [],
+        "selected_relations": [],
+        "semantic_labels": [],
+        "shadow_used": false,
+        "specificity_key": "aerospace_epc",
+        "status": "SUPPRESSED",
+        "suppression_reasons": [
+          "no_material_current_relation",
+          "working_capital_context_blocked"
+        ],
+        "ticker": "012450",
+        "usage_mode": "SUPPRESSED"
+      },
+      "industry": "aerospace_epc",
+      "market": "KR",
+      "reasoning": null,
+      "retrospective_selected_relation": null,
+      "runtime_selected_metric": null,
+      "runtime_selected_relation": null,
+      "selector_parity": true,
+      "ticker": "012450",
+      "validation_errors": []
+    },
+    {
+      "context": {
+        "allowed_claims": [
+          "typed_relation",
+          "cautious_earnings_quality_context"
+        ],
+        "assessment_date": "2026-08-20",
+        "cash_flow_alignment_state": "NOT_PROVIDED",
+        "cash_flow_context_used": false,
+        "consumption_eligible": true,
+        "contract": "working-capital-shadow-consumption-v1",
+        "cutoff": "2026-08-20",
+        "freshness_state": "CURRENT_FORMAL",
+        "industry": "transport_logistics",
+        "industry_applicability": {
+          "ap": "SECONDARY",
+          "ap_vs_cogs": "SECONDARY",
+          "ar": "PRIMARY",
+          "ar_vs_revenue": "PRIMARY",
+          "inventory": "CONTEXT_ONLY",
+          "inventory_vs_cogs": "CONTEXT_ONLY",
+          "inventory_vs_revenue": "CONTEXT_ONLY"
+        },
+        "latest_formal_balance_date": "2026-06-30",
+        "market": "KR",
+        "materiality_reason": "industry_primary_relation",
+        "metric_contexts": [
+          {
+            "current_fact_id": "working-capital-reported:36ef2c093e800c32ba932e36",
+            "metric": "inventory",
+            "semantic_label": "재고",
+            "status": "ELIGIBLE",
+            "yoy_fact_id": "working-capital-derived:4225364bff8ff50155a7fd22"
+          },
+          {
+            "current_fact_id": "working-capital-reported:900e9e3033c6a8bd1aacd3f8",
+            "metric": "trade_accounts_receivable",
+            "semantic_label": "거래 매출채권",
+            "status": "ELIGIBLE",
+            "yoy_fact_id": "working-capital-derived:be6d1ddf0fdc982ba3080152"
+          }
+        ],
+        "packet_id": "2026-08-20-kr-run-29-6e8809e1e944",
+        "pit_state": "PASS",
+        "point_in_time_exclusions": [],
+        "prohibited_claims": [
+          "future_fact_used",
+          "stale_as_current",
+          "broad_trade_semantic_mislabel",
+          "contract_asset_as_trade_ar",
+          "accrued_liability_as_trade_ap",
+          "unsupported_causal_claim",
+          "dso_inventory_days_dpo_ccc",
+          "automatic_thesis_warning_or_valuation_change"
+        ],
+        "remaining_unknowns": [
+          "운임·물량, 연료비 전가, 영업현금흐름·설비투자·잉여현금흐름이 확인되지 않아 물류 성장의 현금전환을 판단할 수 없습니다."
+        ],
+        "resolved_unknowns": [],
+        "selected_fact_refs": [
+          "working-capital-reported:900e9e3033c6a8bd1aacd3f8",
+          "working-capital-reported:aff5cfc8b8ee66a0822be21a",
+          "working-capital-reported:ecbfa454db2627eaca1e46bc",
+          "working-capital-reported:2c681c49e1dc8a6f75e48a02",
+          "working-capital-derived:be6d1ddf0fdc982ba3080152",
+          "working-capital-derived:f9a7adac985f10c0b109edb5"
+        ],
+        "selected_relations": [
+          {
+            "applicability": "PRIMARY",
+            "balance_metric": "trade_accounts_receivable",
+            "balance_scope": "current",
+            "balance_semantic": "ifrs-full:CurrentTradeReceivables",
+            "direction": "GREATER",
+            "family": "trade_ar_vs_revenue",
+            "flow_metric": "revenue",
+            "flow_semantic": "ifrs-full:Revenue",
+            "gap_percentage_points": "40.02970793023621348854280332",
+            "input_fact_ids": [
+              "working-capital-reported:900e9e3033c6a8bd1aacd3f8",
+              "working-capital-reported:aff5cfc8b8ee66a0822be21a",
+              "working-capital-reported:ecbfa454db2627eaca1e46bc",
+              "working-capital-reported:2c681c49e1dc8a6f75e48a02",
+              "working-capital-derived:be6d1ddf0fdc982ba3080152",
+              "working-capital-derived:f9a7adac985f10c0b109edb5"
+            ],
+            "relation_id": "working-capital-relation:46274e42924b8bbcc39b36be"
+          }
+        ],
+        "semantic_labels": [
+          "거래 매출채권",
+          "revenue"
+        ],
+        "shadow_used": true,
+        "specificity_key": "freight_collection",
+        "status": "READY",
+        "suppression_reasons": [],
+        "ticker": "086280",
+        "usage_mode": "TRADE_AR_RELATION"
+      },
+      "industry": "transport_logistics",
+      "market": "KR",
+      "reasoning": {
+        "fact_ids": [
+          "working-capital-reported:900e9e3033c6a8bd1aacd3f8",
+          "working-capital-reported:aff5cfc8b8ee66a0822be21a",
+          "working-capital-reported:ecbfa454db2627eaca1e46bc",
+          "working-capital-reported:2c681c49e1dc8a6f75e48a02",
+          "working-capital-derived:be6d1ddf0fdc982ba3080152",
+          "working-capital-derived:f9a7adac985f10c0b109edb5"
+        ],
+        "numeric_claims": [
+          {
+            "display": "40.0%p",
+            "input_fact_ids": [
+              "working-capital-reported:900e9e3033c6a8bd1aacd3f8",
+              "working-capital-reported:aff5cfc8b8ee66a0822be21a",
+              "working-capital-reported:ecbfa454db2627eaca1e46bc",
+              "working-capital-reported:2c681c49e1dc8a6f75e48a02",
+              "working-capital-derived:be6d1ddf0fdc982ba3080152",
+              "working-capital-derived:f9a7adac985f10c0b109edb5"
+            ],
+            "owner": "business_earnings",
+            "relation_id": "working-capital-relation:46274e42924b8bbcc39b36be",
+            "semantic_type": "trade_ar_vs_revenue",
+            "text_ref": "business_earnings.text",
+            "value": "40.02970793023621348854280332"
+          }
+        ],
+        "relation_ids": [
+          "working-capital-relation:46274e42924b8bbcc39b36be"
+        ],
+        "text": "거래 매출채권 증가율은 매출 증가율보다 40.0%p 앞섰습니다. 운송 매출의 회수 전환을 점검할 단서이지만 고객 지급 지연을 확정하지 않습니다."
+      },
+      "retrospective_selected_relation": "working-capital-relation:46274e42924b8bbcc39b36be",
+      "runtime_selected_metric": "trade_accounts_receivable",
+      "runtime_selected_relation": "working-capital-relation:46274e42924b8bbcc39b36be",
+      "selector_parity": true,
+      "ticker": "086280",
+      "validation_errors": []
+    },
+    {
+      "context": {
+        "allowed_claims": [],
+        "assessment_date": "2026-08-21",
+        "cash_flow_alignment_state": "NOT_PROVIDED",
+        "cash_flow_context_used": false,
+        "consumption_eligible": false,
+        "contract": "working-capital-shadow-consumption-v1",
+        "cutoff": "2026-08-21",
+        "freshness_state": "BLOCKED",
+        "industry": "hpc_data_center",
+        "industry_applicability": {
+          "ap": "SECONDARY",
+          "ap_vs_cogs": "CONTEXT_ONLY",
+          "ar": "SECONDARY",
+          "ar_vs_revenue": "SECONDARY",
+          "inventory": "CONTEXT_ONLY",
+          "inventory_vs_cogs": "CONTEXT_ONLY",
+          "inventory_vs_revenue": "CONTEXT_ONLY"
+        },
+        "latest_formal_balance_date": "2026-06-30",
+        "market": "US_FOREIGN",
+        "materiality_reason": null,
+        "metric_contexts": [],
+        "packet_id": "2026-08-21-us-run-30-5a3b7c1c4390",
+        "pit_state": "PASS",
+        "point_in_time_exclusions": [],
+        "prohibited_claims": [
+          "future_fact_used",
+          "stale_as_current",
+          "broad_trade_semantic_mislabel",
+          "contract_asset_as_trade_ar",
+          "accrued_liability_as_trade_ap",
+          "unsupported_causal_claim",
+          "dso_inventory_days_dpo_ccc",
+          "automatic_thesis_warning_or_valuation_change"
+        ],
+        "remaining_unknowns": [],
+        "resolved_unknowns": [],
+        "selected_fact_refs": [],
+        "selected_relations": [],
+        "semantic_labels": [],
+        "shadow_used": false,
+        "specificity_key": "billing_conversion",
+        "status": "SUPPRESSED",
+        "suppression_reasons": [
+          "no_material_current_relation",
+          "working_capital_context_blocked"
+        ],
+        "ticker": "CORZ",
+        "usage_mode": "SUPPRESSED"
+      },
+      "industry": "hpc_data_center",
+      "market": "US_FOREIGN",
+      "reasoning": null,
+      "retrospective_selected_relation": null,
+      "runtime_selected_metric": null,
+      "runtime_selected_relation": null,
+      "selector_parity": true,
+      "ticker": "CORZ",
+      "validation_errors": []
+    },
+    {
+      "context": {
+        "allowed_claims": [],
+        "assessment_date": "2026-08-21",
+        "cash_flow_alignment_state": "NOT_PROVIDED",
+        "cash_flow_context_used": false,
+        "consumption_eligible": false,
+        "contract": "working-capital-shadow-consumption-v1",
+        "cutoff": "2026-08-21",
+        "freshness_state": "BLOCKED",
+        "industry": "special_financial_like",
+        "industry_applicability": {
+          "ap": "CONTEXT_ONLY",
+          "ap_vs_cogs": "CONTEXT_ONLY",
+          "ar": "CONTEXT_ONLY",
+          "ar_vs_revenue": "CONTEXT_ONLY",
+          "inventory": "CONTEXT_ONLY",
+          "inventory_vs_cogs": "CONTEXT_ONLY",
+          "inventory_vs_revenue": "CONTEXT_ONLY"
+        },
+        "latest_formal_balance_date": "2026-06-30",
+        "market": "US_FOREIGN",
+        "materiality_reason": null,
+        "metric_contexts": [],
+        "packet_id": "2026-08-21-us-run-30-5a3b7c1c4390",
+        "pit_state": "PASS",
+        "point_in_time_exclusions": [],
+        "prohibited_claims": [
+          "future_fact_used",
+          "stale_as_current",
+          "broad_trade_semantic_mislabel",
+          "contract_asset_as_trade_ar",
+          "accrued_liability_as_trade_ap",
+          "unsupported_causal_claim",
+          "dso_inventory_days_dpo_ccc",
+          "automatic_thesis_warning_or_valuation_change"
+        ],
+        "remaining_unknowns": [],
+        "resolved_unknowns": [],
+        "selected_fact_refs": [],
+        "selected_relations": [],
+        "semantic_labels": [],
+        "shadow_used": false,
+        "specificity_key": "special_financial_like",
+        "status": "SUPPRESSED",
+        "suppression_reasons": [
+          "no_material_current_relation",
+          "working_capital_context_blocked"
+        ],
+        "ticker": "CRCL",
+        "usage_mode": "SUPPRESSED"
+      },
+      "industry": "special_financial_like",
+      "market": "US_FOREIGN",
+      "reasoning": null,
+      "retrospective_selected_relation": null,
+      "runtime_selected_metric": null,
+      "runtime_selected_relation": null,
+      "selector_parity": true,
+      "ticker": "CRCL",
+      "validation_errors": []
+    },
+    {
+      "context": {
+        "allowed_claims": [],
+        "assessment_date": "2026-08-21",
+        "cash_flow_alignment_state": "NOT_PROVIDED",
+        "cash_flow_context_used": false,
+        "consumption_eligible": false,
+        "contract": "working-capital-shadow-consumption-v1",
+        "cutoff": "2026-08-21",
+        "freshness_state": "BLOCKED",
+        "industry": "cloud_platform_software",
+        "industry_applicability": {
+          "ap": "CONTEXT_ONLY",
+          "ap_vs_cogs": "CONTEXT_ONLY",
+          "ar": "SECONDARY",
+          "ar_vs_revenue": "SECONDARY",
+          "inventory": "CONTEXT_ONLY",
+          "inventory_vs_cogs": "CONTEXT_ONLY",
+          "inventory_vs_revenue": "CONTEXT_ONLY"
+        },
+        "latest_formal_balance_date": "2026-06-30",
+        "market": "US_FOREIGN",
+        "materiality_reason": null,
+        "metric_contexts": [],
+        "packet_id": "2026-08-21-us-run-30-5a3b7c1c4390",
+        "pit_state": "PASS",
+        "point_in_time_exclusions": [],
+        "prohibited_claims": [
+          "future_fact_used",
+          "stale_as_current",
+          "broad_trade_semantic_mislabel",
+          "contract_asset_as_trade_ar",
+          "accrued_liability_as_trade_ap",
+          "unsupported_causal_claim",
+          "dso_inventory_days_dpo_ccc",
+          "automatic_thesis_warning_or_valuation_change"
+        ],
+        "remaining_unknowns": [],
+        "resolved_unknowns": [],
+        "selected_fact_refs": [],
+        "selected_relations": [],
+        "semantic_labels": [],
+        "shadow_used": false,
+        "specificity_key": "cloud_software_collection",
+        "status": "SUPPRESSED",
+        "suppression_reasons": [
+          "no_material_current_relation",
+          "working_capital_context_blocked"
+        ],
+        "ticker": "GOOGL",
+        "usage_mode": "SUPPRESSED"
+      },
+      "industry": "cloud_platform_software",
+      "market": "US_FOREIGN",
+      "reasoning": null,
+      "retrospective_selected_relation": null,
+      "runtime_selected_metric": null,
+      "runtime_selected_relation": null,
+      "selector_parity": true,
+      "ticker": "GOOGL",
+      "validation_errors": []
+    },
+    {
+      "context": {
+        "allowed_claims": [],
+        "assessment_date": "2026-08-21",
+        "cash_flow_alignment_state": "NOT_PROVIDED",
+        "cash_flow_context_used": false,
+        "consumption_eligible": false,
+        "contract": "working-capital-shadow-consumption-v1",
+        "cutoff": "2026-08-21",
+        "freshness_state": "BLOCKED",
+        "industry": "hpc_data_center",
+        "industry_applicability": {
+          "ap": "SECONDARY",
+          "ap_vs_cogs": "CONTEXT_ONLY",
+          "ar": "SECONDARY",
+          "ar_vs_revenue": "SECONDARY",
+          "inventory": "CONTEXT_ONLY",
+          "inventory_vs_cogs": "CONTEXT_ONLY",
+          "inventory_vs_revenue": "CONTEXT_ONLY"
+        },
+        "latest_formal_balance_date": "2026-06-30",
+        "market": "US_FOREIGN",
+        "materiality_reason": null,
+        "metric_contexts": [],
+        "packet_id": "2026-08-21-us-run-30-5a3b7c1c4390",
+        "pit_state": "PASS",
+        "point_in_time_exclusions": [],
+        "prohibited_claims": [
+          "future_fact_used",
+          "stale_as_current",
+          "broad_trade_semantic_mislabel",
+          "contract_asset_as_trade_ar",
+          "accrued_liability_as_trade_ap",
+          "unsupported_causal_claim",
+          "dso_inventory_days_dpo_ccc",
+          "automatic_thesis_warning_or_valuation_change"
+        ],
+        "remaining_unknowns": [],
+        "resolved_unknowns": [],
+        "selected_fact_refs": [],
+        "selected_relations": [],
+        "semantic_labels": [],
+        "shadow_used": false,
+        "specificity_key": "billing_conversion",
+        "status": "SUPPRESSED",
+        "suppression_reasons": [
+          "no_material_current_relation",
+          "working_capital_context_blocked"
+        ],
+        "ticker": "HUT",
+        "usage_mode": "SUPPRESSED"
+      },
+      "industry": "hpc_data_center",
+      "market": "US_FOREIGN",
+      "reasoning": null,
+      "retrospective_selected_relation": null,
+      "runtime_selected_metric": null,
+      "runtime_selected_relation": null,
+      "selector_parity": true,
+      "ticker": "HUT",
+      "validation_errors": []
+    },
+    {
+      "context": {
+        "allowed_claims": [],
+        "assessment_date": "2026-08-21",
+        "cash_flow_alignment_state": "NOT_PROVIDED",
+        "cash_flow_context_used": false,
+        "consumption_eligible": false,
+        "contract": "working-capital-shadow-consumption-v1",
+        "cutoff": "2026-08-21",
+        "freshness_state": "BLOCKED",
+        "industry": "cloud_platform_software",
+        "industry_applicability": {
+          "ap": "CONTEXT_ONLY",
+          "ap_vs_cogs": "CONTEXT_ONLY",
+          "ar": "SECONDARY",
+          "ar_vs_revenue": "SECONDARY",
+          "inventory": "CONTEXT_ONLY",
+          "inventory_vs_cogs": "CONTEXT_ONLY",
+          "inventory_vs_revenue": "CONTEXT_ONLY"
+        },
+        "latest_formal_balance_date": "2026-06-30",
+        "market": "US_FOREIGN",
+        "materiality_reason": null,
+        "metric_contexts": [
+          {
+            "current_fact_id": "working-capital-reported:061b9f01d5b66dbbfccd4bd6",
+            "metric": "inventory",
+            "semantic_label": "재고",
+            "status": "ELIGIBLE",
+            "yoy_fact_id": "working-capital-derived:71d32559e514722f24d69745"
+          }
+        ],
+        "packet_id": "2026-08-21-us-run-30-5a3b7c1c4390",
+        "pit_state": "PASS",
+        "point_in_time_exclusions": [],
+        "prohibited_claims": [
+          "future_fact_used",
+          "stale_as_current",
+          "broad_trade_semantic_mislabel",
+          "contract_asset_as_trade_ar",
+          "accrued_liability_as_trade_ap",
+          "unsupported_causal_claim",
+          "dso_inventory_days_dpo_ccc",
+          "automatic_thesis_warning_or_valuation_change"
+        ],
+        "remaining_unknowns": [],
+        "resolved_unknowns": [],
+        "selected_fact_refs": [],
+        "selected_relations": [],
+        "semantic_labels": [],
+        "shadow_used": false,
+        "specificity_key": "cloud_software_collection",
+        "status": "SUPPRESSED",
+        "suppression_reasons": [
+          "no_material_current_relation",
+          "working_capital_context_blocked"
+        ],
+        "ticker": "IBM",
+        "usage_mode": "SUPPRESSED"
+      },
+      "industry": "cloud_platform_software",
+      "market": "US_FOREIGN",
+      "reasoning": null,
+      "retrospective_selected_relation": null,
+      "runtime_selected_metric": null,
+      "runtime_selected_relation": null,
+      "selector_parity": true,
+      "ticker": "IBM",
+      "validation_errors": []
+    },
+    {
+      "context": {
+        "allowed_claims": [
+          "typed_relation",
+          "cautious_earnings_quality_context"
+        ],
+        "assessment_date": "2026-08-21",
+        "cash_flow_alignment_state": "NOT_PROVIDED",
+        "cash_flow_context_used": false,
+        "consumption_eligible": true,
+        "contract": "working-capital-shadow-consumption-v1",
+        "cutoff": "2026-08-21",
+        "freshness_state": "CURRENT_FORMAL",
+        "industry": "memory_semiconductor",
+        "industry_applicability": {
+          "ap": "SECONDARY",
+          "ap_vs_cogs": "SECONDARY",
+          "ar": "SECONDARY",
+          "ar_vs_revenue": "SECONDARY",
+          "inventory": "PRIMARY",
+          "inventory_vs_cogs": "PRIMARY",
+          "inventory_vs_revenue": "PRIMARY"
+        },
+        "latest_formal_balance_date": "2026-05-28",
+        "market": "US_FOREIGN",
+        "materiality_reason": "existing_working_capital_driver_or_unknown",
+        "metric_contexts": [
+          {
+            "current_fact_id": "working-capital-reported:2a5dd10bfd88a91b65bcc777",
+            "metric": "inventory",
+            "semantic_label": "재고",
+            "status": "ELIGIBLE",
+            "yoy_fact_id": "working-capital-derived:50745dd0f6eb60120c37579e"
+          }
+        ],
+        "packet_id": "2026-08-21-us-run-30-5a3b7c1c4390",
+        "pit_state": "PASS",
+        "point_in_time_exclusions": [],
+        "prohibited_claims": [
+          "future_fact_used",
+          "stale_as_current",
+          "broad_trade_semantic_mislabel",
+          "contract_asset_as_trade_ar",
+          "accrued_liability_as_trade_ap",
+          "unsupported_causal_claim",
+          "dso_inventory_days_dpo_ccc",
+          "automatic_thesis_warning_or_valuation_change"
+        ],
+        "remaining_unknowns": [],
+        "resolved_unknowns": [],
+        "selected_fact_refs": [
+          "working-capital-reported:2a5dd10bfd88a91b65bcc777",
+          "working-capital-reported:00d1a7bd62280782e2efae65",
+          "working-capital-reported:d7dc274bbdea5cd2c57c0a62",
+          "working-capital-reported:076714324caa61d396cf62d0",
+          "working-capital-derived:50745dd0f6eb60120c37579e",
+          "working-capital-derived:9b1463bee52b77a325a1ba6e"
+        ],
+        "selected_relations": [
+          {
+            "applicability": "PRIMARY",
+            "balance_metric": "inventory",
+            "balance_scope": "total",
+            "balance_semantic": "us-gaap:InventoryNet",
+            "direction": "LOWER",
+            "family": "inventory_vs_cogs",
+            "flow_metric": "cost_of_goods_sold",
+            "flow_semantic": "us-gaap:CostOfGoodsAndServicesSold",
+            "gap_percentage_points": "-15.73390774080174779327076002",
+            "input_fact_ids": [
+              "working-capital-reported:2a5dd10bfd88a91b65bcc777",
+              "working-capital-reported:00d1a7bd62280782e2efae65",
+              "working-capital-reported:d7dc274bbdea5cd2c57c0a62",
+              "working-capital-reported:076714324caa61d396cf62d0",
+              "working-capital-derived:50745dd0f6eb60120c37579e",
+              "working-capital-derived:9b1463bee52b77a325a1ba6e"
+            ],
+            "relation_id": "working-capital-relation:dbdfd04e725e83528d8fdd31"
+          }
+        ],
+        "semantic_labels": [
+          "재고",
+          "cost_of_goods_sold"
+        ],
+        "shadow_used": true,
+        "specificity_key": "memory_nand",
+        "status": "READY",
+        "suppression_reasons": [],
+        "ticker": "MU",
+        "usage_mode": "INVENTORY_RELATION"
+      },
+      "industry": "memory_semiconductor",
+      "market": "US_FOREIGN",
+      "reasoning": {
+        "fact_ids": [
+          "working-capital-reported:2a5dd10bfd88a91b65bcc777",
+          "working-capital-reported:00d1a7bd62280782e2efae65",
+          "working-capital-reported:d7dc274bbdea5cd2c57c0a62",
+          "working-capital-reported:076714324caa61d396cf62d0",
+          "working-capital-derived:50745dd0f6eb60120c37579e",
+          "working-capital-derived:9b1463bee52b77a325a1ba6e"
+        ],
+        "numeric_claims": [
+          {
+            "display": "15.7%p",
+            "input_fact_ids": [
+              "working-capital-reported:2a5dd10bfd88a91b65bcc777",
+              "working-capital-reported:00d1a7bd62280782e2efae65",
+              "working-capital-reported:d7dc274bbdea5cd2c57c0a62",
+              "working-capital-reported:076714324caa61d396cf62d0",
+              "working-capital-derived:50745dd0f6eb60120c37579e",
+              "working-capital-derived:9b1463bee52b77a325a1ba6e"
+            ],
+            "owner": "business_earnings",
+            "relation_id": "working-capital-relation:dbdfd04e725e83528d8fdd31",
+            "semantic_type": "inventory_vs_cogs",
+            "text_ref": "business_earnings.text",
+            "value": "-15.73390774080174779327076002"
+          }
+        ],
+        "relation_ids": [
+          "working-capital-relation:dbdfd04e725e83528d8fdd31"
+        ],
+        "text": "재고 증가율은 매출원가 증가율보다 15.7%p 밑돌았습니다. 재고 정상화와 양립하지만 NAND ASP·SSD 수요 개선을 확정하지 않습니다."
+      },
+      "retrospective_selected_relation": "working-capital-relation:dbdfd04e725e83528d8fdd31",
+      "runtime_selected_metric": "inventory",
+      "runtime_selected_relation": "working-capital-relation:dbdfd04e725e83528d8fdd31",
+      "selector_parity": true,
+      "ticker": "MU",
+      "validation_errors": []
+    },
+    {
+      "context": {
+        "allowed_claims": [],
+        "assessment_date": "2026-08-21",
+        "cash_flow_alignment_state": "NOT_PROVIDED",
+        "cash_flow_context_used": false,
+        "consumption_eligible": false,
+        "contract": "working-capital-shadow-consumption-v1",
+        "cutoff": "2026-08-21",
+        "freshness_state": "BLOCKED",
+        "industry": "biotech",
+        "industry_applicability": {
+          "ap": "CONTEXT_ONLY",
+          "ap_vs_cogs": "NOT_APPLICABLE",
+          "ar": "CONTEXT_ONLY",
+          "ar_vs_revenue": "NOT_APPLICABLE",
+          "inventory": "CONTEXT_ONLY",
+          "inventory_vs_cogs": "NOT_APPLICABLE",
+          "inventory_vs_revenue": "NOT_APPLICABLE"
+        },
+        "latest_formal_balance_date": "2026-06-30",
+        "market": "US_FOREIGN",
+        "materiality_reason": null,
+        "metric_contexts": [],
+        "packet_id": "2026-08-21-us-run-30-5a3b7c1c4390",
+        "pit_state": "PASS",
+        "point_in_time_exclusions": [],
+        "prohibited_claims": [
+          "future_fact_used",
+          "stale_as_current",
+          "broad_trade_semantic_mislabel",
+          "contract_asset_as_trade_ar",
+          "accrued_liability_as_trade_ap",
+          "unsupported_causal_claim",
+          "dso_inventory_days_dpo_ccc",
+          "automatic_thesis_warning_or_valuation_change"
+        ],
+        "remaining_unknowns": [],
+        "resolved_unknowns": [],
+        "selected_fact_refs": [],
+        "selected_relations": [],
+        "semantic_labels": [],
+        "shadow_used": false,
+        "specificity_key": "biotech",
+        "status": "SUPPRESSED",
+        "suppression_reasons": [
+          "no_material_current_relation",
+          "working_capital_context_blocked"
+        ],
+        "ticker": "RXRX",
+        "usage_mode": "SUPPRESSED"
+      },
+      "industry": "biotech",
+      "market": "US_FOREIGN",
+      "reasoning": null,
+      "retrospective_selected_relation": null,
+      "runtime_selected_metric": null,
+      "runtime_selected_relation": null,
+      "selector_parity": true,
+      "ticker": "RXRX",
+      "validation_errors": []
+    },
+    {
+      "context": {
+        "allowed_claims": [],
+        "assessment_date": "2026-08-21",
+        "cash_flow_alignment_state": "NOT_PROVIDED",
+        "cash_flow_context_used": false,
+        "consumption_eligible": false,
+        "contract": "working-capital-shadow-consumption-v1",
+        "cutoff": "2026-08-21",
+        "freshness_state": "BLOCKED",
+        "industry": "memory_semiconductor",
+        "industry_applicability": {
+          "ap": "SECONDARY",
+          "ap_vs_cogs": "SECONDARY",
+          "ar": "SECONDARY",
+          "ar_vs_revenue": "SECONDARY",
+          "inventory": "PRIMARY",
+          "inventory_vs_cogs": "PRIMARY",
+          "inventory_vs_revenue": "PRIMARY"
+        },
+        "latest_formal_balance_date": null,
+        "market": "US_FOREIGN",
+        "materiality_reason": null,
+        "metric_contexts": [],
+        "packet_id": "2026-08-21-us-run-30-5a3b7c1c4390",
+        "pit_state": "PASS",
+        "point_in_time_exclusions": [],
+        "prohibited_claims": [
+          "future_fact_used",
+          "stale_as_current",
+          "broad_trade_semantic_mislabel",
+          "contract_asset_as_trade_ar",
+          "accrued_liability_as_trade_ap",
+          "unsupported_causal_claim",
+          "dso_inventory_days_dpo_ccc",
+          "automatic_thesis_warning_or_valuation_change"
+        ],
+        "remaining_unknowns": [],
+        "resolved_unknowns": [],
+        "selected_fact_refs": [],
+        "selected_relations": [],
+        "semantic_labels": [],
+        "shadow_used": false,
+        "specificity_key": "memory_nand",
+        "status": "SUPPRESSED",
+        "suppression_reasons": [
+          "no_material_current_relation",
+          "working_capital_context_blocked"
+        ],
+        "ticker": "SKHY",
+        "usage_mode": "SUPPRESSED"
+      },
+      "industry": "memory_semiconductor",
+      "market": "US_FOREIGN",
+      "reasoning": null,
+      "retrospective_selected_relation": null,
+      "runtime_selected_metric": null,
+      "runtime_selected_relation": null,
+      "selector_parity": true,
+      "ticker": "SKHY",
+      "validation_errors": []
+    },
+    {
+      "context": {
+        "allowed_claims": [],
+        "assessment_date": "2026-08-21",
+        "cash_flow_alignment_state": "NOT_PROVIDED",
+        "cash_flow_context_used": false,
+        "consumption_eligible": false,
+        "contract": "working-capital-shadow-consumption-v1",
+        "cutoff": "2026-08-21",
+        "freshness_state": "BLOCKED",
+        "industry": "memory_semiconductor",
+        "industry_applicability": {
+          "ap": "SECONDARY",
+          "ap_vs_cogs": "SECONDARY",
+          "ar": "SECONDARY",
+          "ar_vs_revenue": "SECONDARY",
+          "inventory": "PRIMARY",
+          "inventory_vs_cogs": "PRIMARY",
+          "inventory_vs_revenue": "PRIMARY"
+        },
+        "latest_formal_balance_date": "2026-07-03",
+        "market": "US_FOREIGN",
+        "materiality_reason": null,
+        "metric_contexts": [],
+        "packet_id": "2026-08-21-us-run-30-5a3b7c1c4390",
+        "pit_state": "PASS",
+        "point_in_time_exclusions": [],
+        "prohibited_claims": [
+          "future_fact_used",
+          "stale_as_current",
+          "broad_trade_semantic_mislabel",
+          "contract_asset_as_trade_ar",
+          "accrued_liability_as_trade_ap",
+          "unsupported_causal_claim",
+          "dso_inventory_days_dpo_ccc",
+          "automatic_thesis_warning_or_valuation_change"
+        ],
+        "remaining_unknowns": [],
+        "resolved_unknowns": [],
+        "selected_fact_refs": [],
+        "selected_relations": [],
+        "semantic_labels": [],
+        "shadow_used": false,
+        "specificity_key": "memory_nand",
+        "status": "SUPPRESSED",
+        "suppression_reasons": [
+          "no_material_current_relation",
+          "working_capital_context_blocked"
+        ],
+        "ticker": "SNDK",
+        "usage_mode": "SUPPRESSED"
+      },
+      "industry": "memory_semiconductor",
+      "market": "US_FOREIGN",
+      "reasoning": null,
+      "retrospective_selected_relation": null,
+      "runtime_selected_metric": null,
+      "runtime_selected_relation": null,
+      "selector_parity": true,
+      "ticker": "SNDK",
+      "validation_errors": []
+    },
+    {
+      "context": {
+        "allowed_claims": [
+          "typed_relation",
+          "cautious_earnings_quality_context"
+        ],
+        "assessment_date": "2026-08-21",
+        "cash_flow_alignment_state": "NOT_PROVIDED",
+        "cash_flow_context_used": false,
+        "consumption_eligible": true,
+        "contract": "working-capital-shadow-consumption-v1",
+        "cutoff": "2026-08-21",
+        "freshness_state": "CURRENT_FORMAL",
+        "industry": "automotive",
+        "industry_applicability": {
+          "ap": "SECONDARY",
+          "ap_vs_cogs": "SECONDARY",
+          "ar": "SECONDARY",
+          "ar_vs_revenue": "SECONDARY",
+          "inventory": "PRIMARY",
+          "inventory_vs_cogs": "PRIMARY",
+          "inventory_vs_revenue": "PRIMARY"
+        },
+        "latest_formal_balance_date": "2026-06-30",
+        "market": "US_FOREIGN",
+        "materiality_reason": "industry_primary_relation",
+        "metric_contexts": [
+          {
+            "current_fact_id": "working-capital-reported:73fe4f1d304b6cadfde50b24",
+            "metric": "inventory",
+            "semantic_label": "재고",
+            "status": "ELIGIBLE",
+            "yoy_fact_id": "working-capital-derived:278cf0f9df9a28a8c5d28258"
+          }
+        ],
+        "packet_id": "2026-08-21-us-run-30-5a3b7c1c4390",
+        "pit_state": "PASS",
+        "point_in_time_exclusions": [],
+        "prohibited_claims": [
+          "future_fact_used",
+          "stale_as_current",
+          "broad_trade_semantic_mislabel",
+          "contract_asset_as_trade_ar",
+          "accrued_liability_as_trade_ap",
+          "unsupported_causal_claim",
+          "dso_inventory_days_dpo_ccc",
+          "automatic_thesis_warning_or_valuation_change"
+        ],
+        "remaining_unknowns": [],
+        "resolved_unknowns": [],
+        "selected_fact_refs": [
+          "working-capital-reported:73fe4f1d304b6cadfde50b24",
+          "working-capital-reported:5986216e8dc1e64113c1efd6",
+          "working-capital-reported:0ca5b1287df9208349d139b7",
+          "working-capital-reported:450f903e4792967c35cb82ba",
+          "working-capital-derived:278cf0f9df9a28a8c5d28258",
+          "working-capital-derived:e15492a3fff9dff0ab3c7273"
+        ],
+        "selected_relations": [
+          {
+            "applicability": "PRIMARY",
+            "balance_metric": "inventory",
+            "balance_scope": "total",
+            "balance_semantic": "us-gaap:InventoryNet",
+            "direction": "LOWER",
+            "family": "inventory_vs_revenue",
+            "flow_metric": "revenue",
+            "flow_semantic": "us-gaap:RevenueFromContractWithCustomerExcludingAssessedTax",
+            "gap_percentage_points": "-26.63218129057952197001737570",
+            "input_fact_ids": [
+              "working-capital-reported:73fe4f1d304b6cadfde50b24",
+              "working-capital-reported:5986216e8dc1e64113c1efd6",
+              "working-capital-reported:0ca5b1287df9208349d139b7",
+              "working-capital-reported:450f903e4792967c35cb82ba",
+              "working-capital-derived:278cf0f9df9a28a8c5d28258",
+              "working-capital-derived:e15492a3fff9dff0ab3c7273"
+            ],
+            "relation_id": "working-capital-relation:36181e61768dfd580d9ede01"
+          }
+        ],
+        "semantic_labels": [
+          "재고",
+          "revenue"
+        ],
+        "shadow_used": true,
+        "specificity_key": "vehicle_delivery",
+        "status": "READY",
+        "suppression_reasons": [],
+        "ticker": "TSLA",
+        "usage_mode": "INVENTORY_RELATION"
+      },
+      "industry": "automotive",
+      "market": "US_FOREIGN",
+      "reasoning": {
+        "fact_ids": [
+          "working-capital-reported:73fe4f1d304b6cadfde50b24",
+          "working-capital-reported:5986216e8dc1e64113c1efd6",
+          "working-capital-reported:0ca5b1287df9208349d139b7",
+          "working-capital-reported:450f903e4792967c35cb82ba",
+          "working-capital-derived:278cf0f9df9a28a8c5d28258",
+          "working-capital-derived:e15492a3fff9dff0ab3c7273"
+        ],
+        "numeric_claims": [
+          {
+            "display": "26.6%p",
+            "input_fact_ids": [
+              "working-capital-reported:73fe4f1d304b6cadfde50b24",
+              "working-capital-reported:5986216e8dc1e64113c1efd6",
+              "working-capital-reported:0ca5b1287df9208349d139b7",
+              "working-capital-reported:450f903e4792967c35cb82ba",
+              "working-capital-derived:278cf0f9df9a28a8c5d28258",
+              "working-capital-derived:e15492a3fff9dff0ab3c7273"
+            ],
+            "owner": "business_earnings",
+            "relation_id": "working-capital-relation:36181e61768dfd580d9ede01",
+            "semantic_type": "inventory_vs_revenue",
+            "text_ref": "business_earnings.text",
+            "value": "-26.63218129057952197001737570"
+          }
+        ],
+        "relation_ids": [
+          "working-capital-relation:36181e61768dfd580d9ede01"
+        ],
+        "text": "재고 증가율은 매출 증가율보다 26.6%p 밑돌았습니다. 재고 전환은 인도량·인센티브·제품 믹스와 함께 확인하며 수요 방향을 확정하지 않습니다."
+      },
+      "retrospective_selected_relation": "working-capital-relation:36181e61768dfd580d9ede01",
+      "runtime_selected_metric": "inventory",
+      "runtime_selected_relation": "working-capital-relation:36181e61768dfd580d9ede01",
+      "selector_parity": true,
+      "ticker": "TSLA",
+      "validation_errors": []
+    },
+    {
+      "context": {
+        "allowed_claims": [],
+        "assessment_date": "2026-08-21",
+        "cash_flow_alignment_state": "NOT_PROVIDED",
+        "cash_flow_context_used": false,
+        "consumption_eligible": true,
+        "contract": "working-capital-shadow-consumption-v1",
+        "cutoff": "2026-08-21",
+        "freshness_state": "FORMAL_LAGGING_PROVISIONAL",
+        "industry": "memory_semiconductor",
+        "industry_applicability": {
+          "ap": "SECONDARY",
+          "ap_vs_cogs": "SECONDARY",
+          "ar": "SECONDARY",
+          "ar_vs_revenue": "SECONDARY",
+          "inventory": "PRIMARY",
+          "inventory_vs_cogs": "PRIMARY",
+          "inventory_vs_revenue": "PRIMARY"
+        },
+        "latest_formal_balance_date": "2024-12-31",
+        "market": "US_FOREIGN",
+        "materiality_reason": "industry_primary_relation",
+        "metric_contexts": [
+          {
+            "current_fact_id": "working-capital-reported:9d0e87e9dd05c663bd0cf8dc",
+            "metric": "inventory",
+            "semantic_label": "재고",
+            "status": "ELIGIBLE",
+            "yoy_fact_id": "working-capital-derived:ae2ba0ba7f1653af2802c81b"
+          },
+          {
+            "current_fact_id": "working-capital-reported:f45352209836619ff1049bee",
+            "metric": "trade_accounts_receivable",
+            "semantic_label": "거래 매출채권",
+            "status": "ELIGIBLE",
+            "yoy_fact_id": "working-capital-derived:fa48565f8ff0695b952c5e98"
+          }
+        ],
+        "packet_id": "2026-08-21-us-run-30-5a3b7c1c4390",
+        "pit_state": "PASS",
+        "point_in_time_exclusions": [],
+        "prohibited_claims": [
+          "future_fact_used",
+          "stale_as_current",
+          "broad_trade_semantic_mislabel",
+          "contract_asset_as_trade_ar",
+          "accrued_liability_as_trade_ap",
+          "unsupported_causal_claim",
+          "dso_inventory_days_dpo_ccc",
+          "automatic_thesis_warning_or_valuation_change"
+        ],
+        "remaining_unknowns": [],
+        "resolved_unknowns": [],
+        "selected_fact_refs": [
+          "working-capital-reported:9d0e87e9dd05c663bd0cf8dc",
+          "working-capital-reported:a7d54ee1be1baf56ff9ba8a6",
+          "working-capital-reported:590165e6e608e662bb062917",
+          "working-capital-reported:80776a2d200718ddcee1dc6e",
+          "working-capital-derived:ae2ba0ba7f1653af2802c81b",
+          "working-capital-derived:1a7c66d8d8932a8cdd3ba299"
+        ],
+        "selected_relations": [
+          {
+            "applicability": "PRIMARY",
+            "balance_metric": "inventory",
+            "balance_scope": "total",
+            "balance_semantic": "ifrs-full:Inventories",
+            "direction": "LOWER",
+            "family": "inventory_vs_cogs",
+            "flow_metric": "cost_of_goods_sold",
+            "flow_semantic": "ifrs-full:CostOfSales",
+            "gap_percentage_points": "-13.09857709414420494538503414",
+            "input_fact_ids": [
+              "working-capital-reported:9d0e87e9dd05c663bd0cf8dc",
+              "working-capital-reported:a7d54ee1be1baf56ff9ba8a6",
+              "working-capital-reported:590165e6e608e662bb062917",
+              "working-capital-reported:80776a2d200718ddcee1dc6e",
+              "working-capital-derived:ae2ba0ba7f1653af2802c81b",
+              "working-capital-derived:1a7c66d8d8932a8cdd3ba299"
+            ],
+            "relation_id": "working-capital-relation:d91d3ba923be232bf99652a4"
+          }
+        ],
+        "semantic_labels": [
+          "재고",
+          "cost_of_goods_sold"
+        ],
+        "shadow_used": false,
+        "specificity_key": "memory_hbm",
+        "status": "CONTEXT_ONLY",
+        "suppression_reasons": [
+          "newer_provisional_period_not_balance_aligned"
+        ],
+        "ticker": "TSM",
+        "usage_mode": "CONTEXT_ONLY"
+      },
+      "industry": "memory_semiconductor",
+      "market": "US_FOREIGN",
+      "reasoning": null,
+      "retrospective_selected_relation": null,
+      "runtime_selected_metric": null,
+      "runtime_selected_relation": null,
+      "selector_parity": true,
+      "ticker": "TSM",
+      "validation_errors": []
+    },
+    {
+      "context": {
+        "allowed_claims": [],
+        "assessment_date": "2026-08-21",
+        "cash_flow_alignment_state": "NOT_PROVIDED",
+        "cash_flow_context_used": false,
+        "consumption_eligible": false,
+        "contract": "working-capital-shadow-consumption-v1",
+        "cutoff": "2026-08-21",
+        "freshness_state": "BLOCKED",
+        "industry": "general_non_financial",
+        "industry_applicability": {
+          "ap": "SECONDARY",
+          "ap_vs_cogs": "SECONDARY",
+          "ar": "SECONDARY",
+          "ar_vs_revenue": "SECONDARY",
+          "inventory": "SECONDARY",
+          "inventory_vs_cogs": "SECONDARY",
+          "inventory_vs_revenue": "SECONDARY"
+        },
+        "latest_formal_balance_date": "2025-06-30",
+        "market": "US_FOREIGN",
+        "materiality_reason": null,
+        "metric_contexts": [],
+        "packet_id": "2026-08-21-us-run-30-5a3b7c1c4390",
+        "pit_state": "PASS",
+        "point_in_time_exclusions": [],
+        "prohibited_claims": [
+          "future_fact_used",
+          "stale_as_current",
+          "broad_trade_semantic_mislabel",
+          "contract_asset_as_trade_ar",
+          "accrued_liability_as_trade_ap",
+          "unsupported_causal_claim",
+          "dso_inventory_days_dpo_ccc",
+          "automatic_thesis_warning_or_valuation_change"
+        ],
+        "remaining_unknowns": [],
+        "resolved_unknowns": [],
+        "selected_fact_refs": [],
+        "selected_relations": [],
+        "semantic_labels": [],
+        "shadow_used": false,
+        "specificity_key": "general_non_financial",
+        "status": "SUPPRESSED",
+        "suppression_reasons": [
+          "no_material_current_relation",
+          "working_capital_context_blocked"
+        ],
+        "ticker": "WRD",
+        "usage_mode": "SUPPRESSED"
+      },
+      "industry": "general_non_financial",
+      "market": "US_FOREIGN",
+      "reasoning": null,
+      "retrospective_selected_relation": null,
+      "runtime_selected_metric": null,
+      "runtime_selected_relation": null,
+      "selector_parity": true,
+      "ticker": "WRD",
+      "validation_errors": []
+    },
+    {
+      "context": {
+        "allowed_claims": [],
+        "assessment_date": "2026-08-21",
+        "cash_flow_alignment_state": "NOT_PROVIDED",
+        "cash_flow_context_used": false,
+        "consumption_eligible": false,
+        "contract": "working-capital-shadow-consumption-v1",
+        "cutoff": "2026-08-21",
+        "freshness_state": "BLOCKED",
+        "industry": "hpc_data_center",
+        "industry_applicability": {
+          "ap": "SECONDARY",
+          "ap_vs_cogs": "CONTEXT_ONLY",
+          "ar": "SECONDARY",
+          "ar_vs_revenue": "SECONDARY",
+          "inventory": "CONTEXT_ONLY",
+          "inventory_vs_cogs": "CONTEXT_ONLY",
+          "inventory_vs_revenue": "CONTEXT_ONLY"
+        },
+        "latest_formal_balance_date": "2026-06-30",
+        "market": "US_FOREIGN",
+        "materiality_reason": null,
+        "metric_contexts": [
+          {
+            "current_fact_id": "working-capital-reported:fa51536ad9caa7b0f62a0968",
+            "metric": "inventory",
+            "semantic_label": "재고",
+            "status": "ELIGIBLE",
+            "yoy_fact_id": "working-capital-derived:8c7203c19df3a31a250bddca"
+          }
+        ],
+        "packet_id": "2026-08-21-us-run-30-5a3b7c1c4390",
+        "pit_state": "PASS_WITH_EXCLUSIONS",
+        "point_in_time_exclusions": [
+          {
+            "reason": "relation_not_latest_formal_balance",
+            "relation_id": "working-capital-relation:258cebf54891e5d63a0203fa"
+          },
+          {
+            "reason": "relation_not_latest_formal_balance",
+            "relation_id": "working-capital-relation:56032c227785d440ce7de5bc"
+          }
+        ],
+        "prohibited_claims": [
+          "future_fact_used",
+          "stale_as_current",
+          "broad_trade_semantic_mislabel",
+          "contract_asset_as_trade_ar",
+          "accrued_liability_as_trade_ap",
+          "unsupported_causal_claim",
+          "dso_inventory_days_dpo_ccc",
+          "automatic_thesis_warning_or_valuation_change"
+        ],
+        "remaining_unknowns": [],
+        "resolved_unknowns": [],
+        "selected_fact_refs": [],
+        "selected_relations": [],
+        "semantic_labels": [],
+        "shadow_used": false,
+        "specificity_key": "billing_conversion",
+        "status": "SUPPRESSED",
+        "suppression_reasons": [
+          "no_material_current_relation",
+          "working_capital_context_blocked"
+        ],
+        "ticker": "WULF",
+        "usage_mode": "SUPPRESSED"
+      },
+      "industry": "hpc_data_center",
+      "market": "US_FOREIGN",
+      "reasoning": null,
+      "retrospective_selected_relation": null,
+      "runtime_selected_metric": null,
+      "runtime_selected_relation": null,
+      "selector_parity": true,
+      "ticker": "WULF",
+      "validation_errors": []
+    }
+  ],
+  "telegram_change_count": 0,
+  "warning_mutation_count": 0
+}
