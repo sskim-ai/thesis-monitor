@@ -9,6 +9,14 @@ readiness JSON. Also read `docs/architecture/NIGHT_FUTURES_PUBLICATION_TELEMETRY
 night-futures telemetry complete report/readiness JSON. Repository and immutable runtime evidence
 override conversation summaries.
 
+The KR investor-flow reconciliation repair is complete after immutable instruction commit
+`e9d7c73cf6f25b2423b55a6899465e86441316d1`; implementation
+`47fc87e2a9189556a7206065fdb759f3603ce497` passed Actions run `32480802390`. Preserve
+`kr-investor-flow-participants-v1` and `kr-investor-flow-reconciliation-v1`: top-level foreign,
+institution, individual, other corporation, and domestic foreign reconcile separately, while
+institution subclasses remain diagnostics only. Do not derive residual participants or restore
+unsafe absorber attribution. Natural confirmation remains parallel.
+
 Current state after clean Phase 9.1D promotion:
 
 - Phase 9.1A architecture: COMPLETE and promoted

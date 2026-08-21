@@ -4,7 +4,7 @@ Master Workflow: `v15`
 As of: `2026-08-21`
 Repository: `sskim-ai/thesis-monitor`
 Operating branch: `main`
-Latest evidence branch: `codex/phase-9-1c-working-capital-shadow-consumption`
+Latest evidence branch: `codex/kr-investor-flow-reconciliation-attribution-repair`
 Commit resolution: run `git rev-parse HEAD`; this document is part of that commit and must not
 hardcode a self-referential final SHA. Resolve `origin/main` and the clean operating checkout at
 session start. Phase 9.1A defines `working-capital-evidence-v1`; Phase 9.1B implements its canonical
@@ -797,6 +797,24 @@ schema, or DB behavior changes.
 Implementation is complete with 61 focused and 1,337 full tests. Natural publication evidence is
 still pending, so `P1_TELEMETRY_GAP = REPAIR_DEPLOYED_PENDING_NATURAL`,
 `DEADLINE_VERDICT = DEADLINE_UNPROVEN`, and `FAIL_CLOSED_SAFETY = PASS`.
+
+## 23B. KR Investor-Flow Reconciliation Repair
+
+Run-31 exposed a correctness gap between the visible foreign/institution/individual tuple and a
+prose attribution that treated those three participants as exhaustive. The official/free provider
+also reports other corporations and domestic foreigners as top-level participants; institution
+subclasses are diagnostics that sum to the institution total and must never be added again.
+
+`kr-investor-flow-participants-v1` and `kr-investor-flow-reconciliation-v1` preserve the public
+three-participant tuple while carrying complete internal 1d/5d/20d reconciliation, explicit signal
+basis, omitted-participant materiality, and fail-closed attribution safety. No residual category is
+derived. AI and fallback share this state, and unsafe absorber/leader prose is rejected. The run-31
+audit closes 21/21 windows and reduces unsupported attribution from two to zero. Public Action
+`0.4.5`, schema 4, supply scoring, task settings, Pilot, and production-assist state are unchanged.
+
+Instruction `e9d7c73cf6f25b2423b55a6899465e86441316d1` precedes implementation
+`47fc87e2a9189556a7206065fdb759f3603ce497`; Actions run `32480802390` passes Test/Lint. The
+bounded repair is `PASS` with open P0/P1 zero. Natural confirmation continues independently.
 
 ## 24. Codex Work Order Standard
 

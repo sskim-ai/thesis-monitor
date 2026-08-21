@@ -698,6 +698,10 @@ _SUPPLY_SIGNAL_LABELS = {
     "distribution": "분산/매도 우위",
     "retail_chasing_warning": "개인 추격매수 주의",
     "institutional_distribution_warning": "기관 매도/분산 주의",
+    "foreign_exit_broad_absorption": "외국인 순매도·흡수 주체 분산",
+    "participant_attribution_unavailable": "전체 주체 귀속 확인 필요",
+    "mixed_window_flow": "5일·20일 흐름 혼재",
+    "material_other_participant_flow": "기타 투자주체 영향 큼",
 }
 
 
@@ -719,8 +723,9 @@ def _supply_report(price_context: dict[str, object]) -> str | None:
             f"개인 {_supply_quantity(supply.get(f'individual_net_buy_qty{suffix}'))}"
         )
 
+    scope_label = "(주요 3주체)" if supply.get("omitted_participant_materiality") else ""
     lines = [
-        f"📊 수급 · {date_label}",
+        f"📊 수급{scope_label} · {date_label}",
         flow_line("당일", ""),
         flow_line("5일", "_5"),
         flow_line("20일", "_20"),
@@ -741,10 +746,17 @@ def _supply_report(price_context: dict[str, object]) -> str | None:
         if isinstance(score, (int, float)):
             summary.append(f"수급 점수: {float(score):g}")
         quality = _SUPPLY_QUALITY_LABELS.get(str(supply.get("quality") or ""))
-        if quality:
+        if quality and (
+            supply.get("attribution_safe")
+            or str(supply.get("quality") or "")
+            in {"distribution", "mixed", "neutral", "unknown", "unavailable"}
+        ):
             summary.append(quality)
         signal = _SUPPLY_SIGNAL_LABELS.get(str(supply.get("primary_signal") or ""))
         if signal:
+            basis = str(supply.get("signal_basis_window") or "")
+            if basis in {"5d", "20d"}:
+                signal = f"{basis.removesuffix('d')}일 기준 {signal}"
             summary.append(signal)
         if summary:
             lines.append(" · ".join(dict.fromkeys(summary)))

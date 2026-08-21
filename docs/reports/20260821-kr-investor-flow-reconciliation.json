@@ -1,0 +1,2301 @@
+{
+  "assessment_date": "2026-08-21",
+  "contract": "kr-investor-flow-reconciliation-v1",
+  "packet_id": "2026-08-21-kr-run-31-27d43ced72a0",
+  "packet_market": "kr",
+  "participant_contract": "kr-investor-flow-participants-v1",
+  "provider_calls": {
+    "ohlcv_analyst": {
+      "cache_hits": "provider_managed_not_observed",
+      "failures": 0,
+      "requests": 7,
+      "successes": 7
+    }
+  },
+  "source_policy": "bounded_read_only_active_packet_universe",
+  "stocks": [
+    {
+      "attribution_confidence": "qualified",
+      "attribution_safe": false,
+      "canonical_primary_signal": "mixed_window_flow",
+      "company_name": "SK하이닉스",
+      "diagnostic_subcomponents": {
+        "1d": {
+          "bank": 34,
+          "financial_investment": -61623,
+          "government": 0,
+          "insurance": 4432,
+          "investment_trust": 56459,
+          "other_finance": 981,
+          "pension_fund": 40731,
+          "private_fund": 25244
+        },
+        "20d": {
+          "bank": -1009,
+          "financial_investment": -873147,
+          "government": 0,
+          "insurance": 239384,
+          "investment_trust": -57881,
+          "other_finance": 2352,
+          "pension_fund": 874368,
+          "private_fund": 222983
+        },
+        "5d": {
+          "bank": -118,
+          "financial_investment": -1135262,
+          "government": 0,
+          "insurance": 18282,
+          "investment_trust": 125434,
+          "other_finance": -1200,
+          "pension_fund": 115263,
+          "private_fund": 210589
+        }
+      },
+      "displayed_three_preservation": {
+        "foreign_1d": {
+          "packet": 6365,
+          "preserved": true,
+          "source": 6365
+        },
+        "foreign_20d": {
+          "packet": -2971200,
+          "preserved": true,
+          "source": -2971200
+        },
+        "foreign_5d": {
+          "packet": 312747,
+          "preserved": true,
+          "source": 312747
+        },
+        "individual_1d": {
+          "packet": -720118,
+          "preserved": true,
+          "source": -720118
+        },
+        "individual_20d": {
+          "packet": 1291745,
+          "preserved": true,
+          "source": 1291745
+        },
+        "individual_5d": {
+          "packet": -926294,
+          "preserved": true,
+          "source": -926294
+        },
+        "institution_1d": {
+          "packet": 66258,
+          "preserved": true,
+          "source": 66258
+        },
+        "institution_20d": {
+          "packet": 407050,
+          "preserved": true,
+          "source": 407050
+        },
+        "institution_5d": {
+          "packet": -667012,
+          "preserved": true,
+          "source": -667012
+        }
+      },
+      "implementation_numeric_transform": "identity",
+      "institution_subclass_difference": {
+        "1d": 0,
+        "20d": 0,
+        "5d": 0
+      },
+      "omitted_participant_materiality": true,
+      "packet_vs_later_source_equal": true,
+      "participant_taxonomy": [
+        {
+          "aggregation_role": "top_level",
+          "canonical_label": "외국인",
+          "display_role": "displayed",
+          "participant_id": "foreign",
+          "provider_field": "foreign_net_buy_qty",
+          "provider_label": "외국인투자자",
+          "source_ref": "ohlcv_analyst.investor_flow.foreign_net_buy_qty"
+        },
+        {
+          "aggregation_role": "top_level",
+          "canonical_label": "기관",
+          "display_role": "displayed",
+          "participant_id": "institution",
+          "provider_field": "institution_net_buy_qty",
+          "provider_label": "기관계",
+          "source_ref": "ohlcv_analyst.investor_flow.institution_net_buy_qty"
+        },
+        {
+          "aggregation_role": "top_level",
+          "canonical_label": "개인",
+          "display_role": "displayed",
+          "participant_id": "individual",
+          "provider_field": "individual_net_buy_qty",
+          "provider_label": "개인투자자",
+          "source_ref": "ohlcv_analyst.investor_flow.individual_net_buy_qty"
+        },
+        {
+          "aggregation_role": "top_level",
+          "canonical_label": "기타법인",
+          "display_role": "omitted",
+          "participant_id": "other_corporation",
+          "provider_field": "other_corp_net_buy_qty",
+          "provider_label": "기타법인",
+          "source_ref": "ohlcv_analyst.investor_flow.other_corp_net_buy_qty"
+        },
+        {
+          "aggregation_role": "top_level",
+          "canonical_label": "내외국인",
+          "display_role": "omitted",
+          "participant_id": "domestic_foreign",
+          "provider_field": "domestic_foreign_net_buy_qty",
+          "provider_label": "내외국인",
+          "source_ref": "ohlcv_analyst.investor_flow.domestic_foreign_net_buy_qty"
+        },
+        {
+          "aggregation_role": "institution_subclass",
+          "canonical_label": "금융투자",
+          "display_role": "diagnostic",
+          "participant_id": "financial_investment",
+          "provider_field": "financial_investment_net_buy_qty",
+          "provider_label": "금융투자",
+          "source_ref": "ohlcv_analyst.investor_flow.financial_investment_net_buy_qty"
+        },
+        {
+          "aggregation_role": "institution_subclass",
+          "canonical_label": "보험",
+          "display_role": "diagnostic",
+          "participant_id": "insurance",
+          "provider_field": "insurance_net_buy_qty",
+          "provider_label": "보험",
+          "source_ref": "ohlcv_analyst.investor_flow.insurance_net_buy_qty"
+        },
+        {
+          "aggregation_role": "institution_subclass",
+          "canonical_label": "투신",
+          "display_role": "diagnostic",
+          "participant_id": "investment_trust",
+          "provider_field": "investment_trust_net_buy_qty",
+          "provider_label": "투신",
+          "source_ref": "ohlcv_analyst.investor_flow.investment_trust_net_buy_qty"
+        },
+        {
+          "aggregation_role": "institution_subclass",
+          "canonical_label": "기타금융",
+          "display_role": "diagnostic",
+          "participant_id": "other_finance",
+          "provider_field": "other_finance_net_buy_qty",
+          "provider_label": "기타금융",
+          "source_ref": "ohlcv_analyst.investor_flow.other_finance_net_buy_qty"
+        },
+        {
+          "aggregation_role": "institution_subclass",
+          "canonical_label": "은행",
+          "display_role": "diagnostic",
+          "participant_id": "bank",
+          "provider_field": "bank_net_buy_qty",
+          "provider_label": "은행",
+          "source_ref": "ohlcv_analyst.investor_flow.bank_net_buy_qty"
+        },
+        {
+          "aggregation_role": "institution_subclass",
+          "canonical_label": "연기금 등",
+          "display_role": "diagnostic",
+          "participant_id": "pension_fund",
+          "provider_field": "pension_fund_net_buy_qty",
+          "provider_label": "연기금 등",
+          "source_ref": "ohlcv_analyst.investor_flow.pension_fund_net_buy_qty"
+        },
+        {
+          "aggregation_role": "institution_subclass",
+          "canonical_label": "사모펀드",
+          "display_role": "diagnostic",
+          "participant_id": "private_fund",
+          "provider_field": "private_fund_net_buy_qty",
+          "provider_label": "사모펀드",
+          "source_ref": "ohlcv_analyst.investor_flow.private_fund_net_buy_qty"
+        },
+        {
+          "aggregation_role": "institution_subclass",
+          "canonical_label": "국가",
+          "display_role": "diagnostic",
+          "participant_id": "government",
+          "provider_field": "government_net_buy_qty",
+          "provider_label": "국가",
+          "source_ref": "ohlcv_analyst.investor_flow.government_net_buy_qty"
+        }
+      ],
+      "provider": "kiwoom",
+      "provider_generated_at": "2026-08-21T21:04:57.153526+09:00",
+      "provider_primary_signal": "foreign_exit_institution_retail_absorption",
+      "signal_basis_window": "mixed",
+      "source_occurrence_drift": false,
+      "status": "audited",
+      "ticker": "000660",
+      "unsupported_attribution_after": false,
+      "unsupported_attribution_before": true,
+      "windows": {
+        "1d": {
+          "all_participant_net": 0,
+          "as_of_date": "2026-08-21",
+          "attribution_safe": false,
+          "constituent_count": 1,
+          "display_coverage_ratio": 0.550156,
+          "displayed_net": -647495,
+          "displayed_participants": [
+            "foreign",
+            "institution",
+            "individual"
+          ],
+          "material_omitted_flow": true,
+          "missing_participants": [],
+          "omitted_net": 647495,
+          "omitted_participants": [
+            "other_corporation",
+            "domestic_foreign"
+          ],
+          "participant_flows": {
+            "domestic_foreign": -351,
+            "foreign": 6365,
+            "individual": -720118,
+            "institution": 66258,
+            "other_corporation": 647846
+          },
+          "provider_total": null,
+          "reconciliation_difference": null,
+          "reconciliation_status": "complete_without_provider_total",
+          "signal": "material_other_participant_flow",
+          "signal_participants": [],
+          "window": "1d"
+        },
+        "20d": {
+          "all_participant_net": 0,
+          "as_of_date": "2026-08-21",
+          "attribution_safe": false,
+          "constituent_count": 20,
+          "display_coverage_ratio": 0.785877,
+          "displayed_net": -1272405,
+          "displayed_participants": [
+            "foreign",
+            "institution",
+            "individual"
+          ],
+          "material_omitted_flow": true,
+          "missing_participants": [],
+          "omitted_net": 1272405,
+          "omitted_participants": [
+            "other_corporation",
+            "domestic_foreign"
+          ],
+          "participant_flows": {
+            "domestic_foreign": 7482,
+            "foreign": -2971200,
+            "individual": 1291745,
+            "institution": 407050,
+            "other_corporation": 1264923
+          },
+          "provider_total": null,
+          "reconciliation_difference": null,
+          "reconciliation_status": "complete_without_provider_total",
+          "signal": "foreign_exit_broad_absorption",
+          "signal_participants": [
+            "foreign"
+          ],
+          "window": "20d"
+        },
+        "5d": {
+          "all_participant_net": 0,
+          "as_of_date": "2026-08-21",
+          "attribution_safe": false,
+          "constituent_count": 5,
+          "display_coverage_ratio": 0.596645,
+          "displayed_net": -1280559,
+          "displayed_participants": [
+            "foreign",
+            "institution",
+            "individual"
+          ],
+          "material_omitted_flow": true,
+          "missing_participants": [],
+          "omitted_net": 1280559,
+          "omitted_participants": [
+            "other_corporation",
+            "domestic_foreign"
+          ],
+          "participant_flows": {
+            "domestic_foreign": -4004,
+            "foreign": 312747,
+            "individual": -926294,
+            "institution": -667012,
+            "other_corporation": 1284563
+          },
+          "provider_total": null,
+          "reconciliation_difference": null,
+          "reconciliation_status": "complete_without_provider_total",
+          "signal": "material_other_participant_flow",
+          "signal_participants": [],
+          "window": "5d"
+        }
+      }
+    },
+    {
+      "attribution_confidence": "qualified",
+      "attribution_safe": false,
+      "canonical_primary_signal": "material_other_participant_flow",
+      "company_name": "코리안리",
+      "diagnostic_subcomponents": {
+        "1d": {
+          "bank": -122,
+          "financial_investment": 38710,
+          "government": 0,
+          "insurance": -966,
+          "investment_trust": -43397,
+          "other_finance": 0,
+          "pension_fund": -455,
+          "private_fund": -654
+        },
+        "20d": {
+          "bank": -2712,
+          "financial_investment": 232645,
+          "government": 0,
+          "insurance": -122309,
+          "investment_trust": -269910,
+          "other_finance": -8175,
+          "pension_fund": 79621,
+          "private_fund": -28519
+        },
+        "5d": {
+          "bank": -49,
+          "financial_investment": 92556,
+          "government": 0,
+          "insurance": -1487,
+          "investment_trust": -82887,
+          "other_finance": -4209,
+          "pension_fund": -40073,
+          "private_fund": 10437
+        }
+      },
+      "displayed_three_preservation": {
+        "foreign_1d": {
+          "packet": 47733,
+          "preserved": true,
+          "source": 47733
+        },
+        "foreign_20d": {
+          "packet": 998103,
+          "preserved": true,
+          "source": 998103
+        },
+        "foreign_5d": {
+          "packet": 45667,
+          "preserved": true,
+          "source": 45667
+        },
+        "individual_1d": {
+          "packet": -13878,
+          "preserved": true,
+          "source": -13878
+        },
+        "individual_20d": {
+          "packet": -545320,
+          "preserved": true,
+          "source": -545320
+        },
+        "individual_5d": {
+          "packet": 12458,
+          "preserved": true,
+          "source": 12458
+        },
+        "institution_1d": {
+          "packet": -6884,
+          "preserved": true,
+          "source": -6884
+        },
+        "institution_20d": {
+          "packet": -119359,
+          "preserved": true,
+          "source": -119359
+        },
+        "institution_5d": {
+          "packet": -25712,
+          "preserved": true,
+          "source": -25712
+        }
+      },
+      "implementation_numeric_transform": "identity",
+      "institution_subclass_difference": {
+        "1d": 0,
+        "20d": 0,
+        "5d": 0
+      },
+      "omitted_participant_materiality": true,
+      "packet_vs_later_source_equal": true,
+      "participant_taxonomy": [
+        {
+          "aggregation_role": "top_level",
+          "canonical_label": "외국인",
+          "display_role": "displayed",
+          "participant_id": "foreign",
+          "provider_field": "foreign_net_buy_qty",
+          "provider_label": "외국인투자자",
+          "source_ref": "ohlcv_analyst.investor_flow.foreign_net_buy_qty"
+        },
+        {
+          "aggregation_role": "top_level",
+          "canonical_label": "기관",
+          "display_role": "displayed",
+          "participant_id": "institution",
+          "provider_field": "institution_net_buy_qty",
+          "provider_label": "기관계",
+          "source_ref": "ohlcv_analyst.investor_flow.institution_net_buy_qty"
+        },
+        {
+          "aggregation_role": "top_level",
+          "canonical_label": "개인",
+          "display_role": "displayed",
+          "participant_id": "individual",
+          "provider_field": "individual_net_buy_qty",
+          "provider_label": "개인투자자",
+          "source_ref": "ohlcv_analyst.investor_flow.individual_net_buy_qty"
+        },
+        {
+          "aggregation_role": "top_level",
+          "canonical_label": "기타법인",
+          "display_role": "omitted",
+          "participant_id": "other_corporation",
+          "provider_field": "other_corp_net_buy_qty",
+          "provider_label": "기타법인",
+          "source_ref": "ohlcv_analyst.investor_flow.other_corp_net_buy_qty"
+        },
+        {
+          "aggregation_role": "top_level",
+          "canonical_label": "내외국인",
+          "display_role": "omitted",
+          "participant_id": "domestic_foreign",
+          "provider_field": "domestic_foreign_net_buy_qty",
+          "provider_label": "내외국인",
+          "source_ref": "ohlcv_analyst.investor_flow.domestic_foreign_net_buy_qty"
+        },
+        {
+          "aggregation_role": "institution_subclass",
+          "canonical_label": "금융투자",
+          "display_role": "diagnostic",
+          "participant_id": "financial_investment",
+          "provider_field": "financial_investment_net_buy_qty",
+          "provider_label": "금융투자",
+          "source_ref": "ohlcv_analyst.investor_flow.financial_investment_net_buy_qty"
+        },
+        {
+          "aggregation_role": "institution_subclass",
+          "canonical_label": "보험",
+          "display_role": "diagnostic",
+          "participant_id": "insurance",
+          "provider_field": "insurance_net_buy_qty",
+          "provider_label": "보험",
+          "source_ref": "ohlcv_analyst.investor_flow.insurance_net_buy_qty"
+        },
+        {
+          "aggregation_role": "institution_subclass",
+          "canonical_label": "투신",
+          "display_role": "diagnostic",
+          "participant_id": "investment_trust",
+          "provider_field": "investment_trust_net_buy_qty",
+          "provider_label": "투신",
+          "source_ref": "ohlcv_analyst.investor_flow.investment_trust_net_buy_qty"
+        },
+        {
+          "aggregation_role": "institution_subclass",
+          "canonical_label": "기타금융",
+          "display_role": "diagnostic",
+          "participant_id": "other_finance",
+          "provider_field": "other_finance_net_buy_qty",
+          "provider_label": "기타금융",
+          "source_ref": "ohlcv_analyst.investor_flow.other_finance_net_buy_qty"
+        },
+        {
+          "aggregation_role": "institution_subclass",
+          "canonical_label": "은행",
+          "display_role": "diagnostic",
+          "participant_id": "bank",
+          "provider_field": "bank_net_buy_qty",
+          "provider_label": "은행",
+          "source_ref": "ohlcv_analyst.investor_flow.bank_net_buy_qty"
+        },
+        {
+          "aggregation_role": "institution_subclass",
+          "canonical_label": "연기금 등",
+          "display_role": "diagnostic",
+          "participant_id": "pension_fund",
+          "provider_field": "pension_fund_net_buy_qty",
+          "provider_label": "연기금 등",
+          "source_ref": "ohlcv_analyst.investor_flow.pension_fund_net_buy_qty"
+        },
+        {
+          "aggregation_role": "institution_subclass",
+          "canonical_label": "사모펀드",
+          "display_role": "diagnostic",
+          "participant_id": "private_fund",
+          "provider_field": "private_fund_net_buy_qty",
+          "provider_label": "사모펀드",
+          "source_ref": "ohlcv_analyst.investor_flow.private_fund_net_buy_qty"
+        },
+        {
+          "aggregation_role": "institution_subclass",
+          "canonical_label": "국가",
+          "display_role": "diagnostic",
+          "participant_id": "government",
+          "provider_field": "government_net_buy_qty",
+          "provider_label": "국가",
+          "source_ref": "ohlcv_analyst.investor_flow.government_net_buy_qty"
+        }
+      ],
+      "provider": "kiwoom",
+      "provider_generated_at": "2026-08-21T21:04:58.181655+09:00",
+      "provider_primary_signal": "foreign_led",
+      "signal_basis_window": "20d",
+      "source_occurrence_drift": false,
+      "status": "audited",
+      "ticker": "003690",
+      "unsupported_attribution_after": false,
+      "unsupported_attribution_before": false,
+      "windows": {
+        "1d": {
+          "all_participant_net": 0,
+          "as_of_date": "2026-08-21",
+          "attribution_safe": false,
+          "constituent_count": 1,
+          "display_coverage_ratio": 0.717481,
+          "displayed_net": 26971,
+          "displayed_participants": [
+            "foreign",
+            "institution",
+            "individual"
+          ],
+          "material_omitted_flow": true,
+          "missing_participants": [],
+          "omitted_net": -26971,
+          "omitted_participants": [
+            "other_corporation",
+            "domestic_foreign"
+          ],
+          "participant_flows": {
+            "domestic_foreign": -30,
+            "foreign": 47733,
+            "individual": -13878,
+            "institution": -6884,
+            "other_corporation": -26941
+          },
+          "provider_total": null,
+          "reconciliation_difference": null,
+          "reconciliation_status": "complete_without_provider_total",
+          "signal": "material_other_participant_flow",
+          "signal_participants": [],
+          "window": "1d"
+        },
+        "20d": {
+          "all_participant_net": 0,
+          "as_of_date": "2026-08-21",
+          "attribution_safe": false,
+          "constituent_count": 20,
+          "display_coverage_ratio": 0.832971,
+          "displayed_net": 333424,
+          "displayed_participants": [
+            "foreign",
+            "institution",
+            "individual"
+          ],
+          "material_omitted_flow": true,
+          "missing_participants": [],
+          "omitted_net": -333424,
+          "omitted_participants": [
+            "other_corporation",
+            "domestic_foreign"
+          ],
+          "participant_flows": {
+            "domestic_foreign": -2220,
+            "foreign": 998103,
+            "individual": -545320,
+            "institution": -119359,
+            "other_corporation": -331204
+          },
+          "provider_total": null,
+          "reconciliation_difference": null,
+          "reconciliation_status": "complete_without_provider_total",
+          "signal": "material_other_participant_flow",
+          "signal_participants": [],
+          "window": "20d"
+        },
+        "5d": {
+          "all_participant_net": 0,
+          "as_of_date": "2026-08-21",
+          "attribution_safe": false,
+          "constituent_count": 5,
+          "display_coverage_ratio": 0.701283,
+          "displayed_net": 32413,
+          "displayed_participants": [
+            "foreign",
+            "institution",
+            "individual"
+          ],
+          "material_omitted_flow": true,
+          "missing_participants": [],
+          "omitted_net": -32413,
+          "omitted_participants": [
+            "other_corporation",
+            "domestic_foreign"
+          ],
+          "participant_flows": {
+            "domestic_foreign": 1649,
+            "foreign": 45667,
+            "individual": 12458,
+            "institution": -25712,
+            "other_corporation": -34062
+          },
+          "provider_total": null,
+          "reconciliation_difference": null,
+          "reconciliation_status": "complete_without_provider_total",
+          "signal": "material_other_participant_flow",
+          "signal_participants": [],
+          "window": "5d"
+        }
+      }
+    },
+    {
+      "attribution_confidence": "qualified",
+      "attribution_safe": false,
+      "canonical_primary_signal": "foreign_reentry",
+      "company_name": "POSCO홀딩스",
+      "diagnostic_subcomponents": {
+        "1d": {
+          "bank": -4,
+          "financial_investment": -12327,
+          "government": 0,
+          "insurance": -5681,
+          "investment_trust": -23333,
+          "other_finance": -12,
+          "pension_fund": 18415,
+          "private_fund": -8363
+        },
+        "20d": {
+          "bank": 176,
+          "financial_investment": 169969,
+          "government": 0,
+          "insurance": -45843,
+          "investment_trust": -66752,
+          "other_finance": -3891,
+          "pension_fund": -245515,
+          "private_fund": -42012
+        },
+        "5d": {
+          "bank": -2981,
+          "financial_investment": -4939,
+          "government": 0,
+          "insurance": -4891,
+          "investment_trust": -2812,
+          "other_finance": -3500,
+          "pension_fund": -57725,
+          "private_fund": -22643
+        }
+      },
+      "displayed_three_preservation": {
+        "foreign_1d": {
+          "packet": -18451,
+          "preserved": true,
+          "source": -18451
+        },
+        "foreign_20d": {
+          "packet": 179179,
+          "preserved": true,
+          "source": 179179
+        },
+        "foreign_5d": {
+          "packet": 51134,
+          "preserved": true,
+          "source": 51134
+        },
+        "individual_1d": {
+          "packet": 49173,
+          "preserved": true,
+          "source": 49173
+        },
+        "individual_20d": {
+          "packet": 74587,
+          "preserved": true,
+          "source": 74587
+        },
+        "individual_5d": {
+          "packet": 49107,
+          "preserved": true,
+          "source": 49107
+        },
+        "institution_1d": {
+          "packet": -31305,
+          "preserved": true,
+          "source": -31305
+        },
+        "institution_20d": {
+          "packet": -233868,
+          "preserved": true,
+          "source": -233868
+        },
+        "institution_5d": {
+          "packet": -99491,
+          "preserved": true,
+          "source": -99491
+        }
+      },
+      "implementation_numeric_transform": "identity",
+      "institution_subclass_difference": {
+        "1d": 0,
+        "20d": 0,
+        "5d": 0
+      },
+      "omitted_participant_materiality": true,
+      "packet_vs_later_source_equal": true,
+      "participant_taxonomy": [
+        {
+          "aggregation_role": "top_level",
+          "canonical_label": "외국인",
+          "display_role": "displayed",
+          "participant_id": "foreign",
+          "provider_field": "foreign_net_buy_qty",
+          "provider_label": "외국인투자자",
+          "source_ref": "ohlcv_analyst.investor_flow.foreign_net_buy_qty"
+        },
+        {
+          "aggregation_role": "top_level",
+          "canonical_label": "기관",
+          "display_role": "displayed",
+          "participant_id": "institution",
+          "provider_field": "institution_net_buy_qty",
+          "provider_label": "기관계",
+          "source_ref": "ohlcv_analyst.investor_flow.institution_net_buy_qty"
+        },
+        {
+          "aggregation_role": "top_level",
+          "canonical_label": "개인",
+          "display_role": "displayed",
+          "participant_id": "individual",
+          "provider_field": "individual_net_buy_qty",
+          "provider_label": "개인투자자",
+          "source_ref": "ohlcv_analyst.investor_flow.individual_net_buy_qty"
+        },
+        {
+          "aggregation_role": "top_level",
+          "canonical_label": "기타법인",
+          "display_role": "omitted",
+          "participant_id": "other_corporation",
+          "provider_field": "other_corp_net_buy_qty",
+          "provider_label": "기타법인",
+          "source_ref": "ohlcv_analyst.investor_flow.other_corp_net_buy_qty"
+        },
+        {
+          "aggregation_role": "top_level",
+          "canonical_label": "내외국인",
+          "display_role": "omitted",
+          "participant_id": "domestic_foreign",
+          "provider_field": "domestic_foreign_net_buy_qty",
+          "provider_label": "내외국인",
+          "source_ref": "ohlcv_analyst.investor_flow.domestic_foreign_net_buy_qty"
+        },
+        {
+          "aggregation_role": "institution_subclass",
+          "canonical_label": "금융투자",
+          "display_role": "diagnostic",
+          "participant_id": "financial_investment",
+          "provider_field": "financial_investment_net_buy_qty",
+          "provider_label": "금융투자",
+          "source_ref": "ohlcv_analyst.investor_flow.financial_investment_net_buy_qty"
+        },
+        {
+          "aggregation_role": "institution_subclass",
+          "canonical_label": "보험",
+          "display_role": "diagnostic",
+          "participant_id": "insurance",
+          "provider_field": "insurance_net_buy_qty",
+          "provider_label": "보험",
+          "source_ref": "ohlcv_analyst.investor_flow.insurance_net_buy_qty"
+        },
+        {
+          "aggregation_role": "institution_subclass",
+          "canonical_label": "투신",
+          "display_role": "diagnostic",
+          "participant_id": "investment_trust",
+          "provider_field": "investment_trust_net_buy_qty",
+          "provider_label": "투신",
+          "source_ref": "ohlcv_analyst.investor_flow.investment_trust_net_buy_qty"
+        },
+        {
+          "aggregation_role": "institution_subclass",
+          "canonical_label": "기타금융",
+          "display_role": "diagnostic",
+          "participant_id": "other_finance",
+          "provider_field": "other_finance_net_buy_qty",
+          "provider_label": "기타금융",
+          "source_ref": "ohlcv_analyst.investor_flow.other_finance_net_buy_qty"
+        },
+        {
+          "aggregation_role": "institution_subclass",
+          "canonical_label": "은행",
+          "display_role": "diagnostic",
+          "participant_id": "bank",
+          "provider_field": "bank_net_buy_qty",
+          "provider_label": "은행",
+          "source_ref": "ohlcv_analyst.investor_flow.bank_net_buy_qty"
+        },
+        {
+          "aggregation_role": "institution_subclass",
+          "canonical_label": "연기금 등",
+          "display_role": "diagnostic",
+          "participant_id": "pension_fund",
+          "provider_field": "pension_fund_net_buy_qty",
+          "provider_label": "연기금 등",
+          "source_ref": "ohlcv_analyst.investor_flow.pension_fund_net_buy_qty"
+        },
+        {
+          "aggregation_role": "institution_subclass",
+          "canonical_label": "사모펀드",
+          "display_role": "diagnostic",
+          "participant_id": "private_fund",
+          "provider_field": "private_fund_net_buy_qty",
+          "provider_label": "사모펀드",
+          "source_ref": "ohlcv_analyst.investor_flow.private_fund_net_buy_qty"
+        },
+        {
+          "aggregation_role": "institution_subclass",
+          "canonical_label": "국가",
+          "display_role": "diagnostic",
+          "participant_id": "government",
+          "provider_field": "government_net_buy_qty",
+          "provider_label": "국가",
+          "source_ref": "ohlcv_analyst.investor_flow.government_net_buy_qty"
+        }
+      ],
+      "provider": "kiwoom",
+      "provider_generated_at": "2026-08-21T21:04:58.958513+09:00",
+      "provider_primary_signal": "foreign_reentry",
+      "signal_basis_window": "20d",
+      "source_occurrence_drift": false,
+      "status": "audited",
+      "ticker": "005490",
+      "unsupported_attribution_after": false,
+      "unsupported_attribution_before": false,
+      "windows": {
+        "1d": {
+          "all_participant_net": 0,
+          "as_of_date": "2026-08-21",
+          "attribution_safe": false,
+          "constituent_count": 1,
+          "display_coverage_ratio": 0.975901,
+          "displayed_net": -583,
+          "displayed_participants": [
+            "foreign",
+            "institution",
+            "individual"
+          ],
+          "material_omitted_flow": true,
+          "missing_participants": [],
+          "omitted_net": 583,
+          "omitted_participants": [
+            "other_corporation",
+            "domestic_foreign"
+          ],
+          "participant_flows": {
+            "domestic_foreign": 1513,
+            "foreign": -18451,
+            "individual": 49173,
+            "institution": -31305,
+            "other_corporation": -930
+          },
+          "provider_total": null,
+          "reconciliation_difference": null,
+          "reconciliation_status": "complete_without_provider_total",
+          "signal": "foreign_exit_broad_absorption",
+          "signal_participants": [
+            "foreign"
+          ],
+          "window": "1d"
+        },
+        "20d": {
+          "all_participant_net": 0,
+          "as_of_date": "2026-08-21",
+          "attribution_safe": false,
+          "constituent_count": 20,
+          "display_coverage_ratio": 0.956528,
+          "displayed_net": 19898,
+          "displayed_participants": [
+            "foreign",
+            "institution",
+            "individual"
+          ],
+          "material_omitted_flow": true,
+          "missing_participants": [],
+          "omitted_net": -19898,
+          "omitted_participants": [
+            "other_corporation",
+            "domestic_foreign"
+          ],
+          "participant_flows": {
+            "domestic_foreign": 1132,
+            "foreign": 179179,
+            "individual": 74587,
+            "institution": -233868,
+            "other_corporation": -21030
+          },
+          "provider_total": null,
+          "reconciliation_difference": null,
+          "reconciliation_status": "complete_without_provider_total",
+          "signal": "material_other_participant_flow",
+          "signal_participants": [],
+          "window": "20d"
+        },
+        "5d": {
+          "all_participant_net": 0,
+          "as_of_date": "2026-08-21",
+          "attribution_safe": false,
+          "constituent_count": 5,
+          "display_coverage_ratio": 0.986984,
+          "displayed_net": 750,
+          "displayed_participants": [
+            "foreign",
+            "institution",
+            "individual"
+          ],
+          "material_omitted_flow": true,
+          "missing_participants": [],
+          "omitted_net": -750,
+          "omitted_participants": [
+            "other_corporation",
+            "domestic_foreign"
+          ],
+          "participant_flows": {
+            "domestic_foreign": 942,
+            "foreign": 51134,
+            "individual": 49107,
+            "institution": -99491,
+            "other_corporation": -1692
+          },
+          "provider_total": null,
+          "reconciliation_difference": null,
+          "reconciliation_status": "complete_without_provider_total",
+          "signal": "material_other_participant_flow",
+          "signal_participants": [],
+          "window": "5d"
+        }
+      }
+    },
+    {
+      "attribution_confidence": "qualified",
+      "attribution_safe": false,
+      "canonical_primary_signal": "mixed_window_flow",
+      "company_name": "삼성전자",
+      "diagnostic_subcomponents": {
+        "1d": {
+          "bank": -9140,
+          "financial_investment": 1158604,
+          "government": 0,
+          "insurance": -103685,
+          "investment_trust": -316277,
+          "other_finance": -1652,
+          "pension_fund": 222775,
+          "private_fund": 356027
+        },
+        "20d": {
+          "bank": -13135,
+          "financial_investment": -1980276,
+          "government": 0,
+          "insurance": -295319,
+          "investment_trust": -2592244,
+          "other_finance": -14353,
+          "pension_fund": -1107045,
+          "private_fund": 3078565
+        },
+        "5d": {
+          "bank": -3736,
+          "financial_investment": -3807355,
+          "government": 0,
+          "insurance": -218598,
+          "investment_trust": -430666,
+          "other_finance": -32960,
+          "pension_fund": 93920,
+          "private_fund": 610251
+        }
+      },
+      "displayed_three_preservation": {
+        "foreign_1d": {
+          "packet": 1595450,
+          "preserved": true,
+          "source": 1595450
+        },
+        "foreign_20d": {
+          "packet": -2891738,
+          "preserved": true,
+          "source": -2891738
+        },
+        "foreign_5d": {
+          "packet": 7132882,
+          "preserved": true,
+          "source": 7132882
+        },
+        "individual_1d": {
+          "packet": -2671261,
+          "preserved": false,
+          "source": -2671260
+        },
+        "individual_20d": {
+          "packet": 5142126,
+          "preserved": false,
+          "source": 5142127
+        },
+        "individual_5d": {
+          "packet": -3254572,
+          "preserved": false,
+          "source": -3254571
+        },
+        "institution_1d": {
+          "packet": 1306652,
+          "preserved": true,
+          "source": 1306652
+        },
+        "institution_20d": {
+          "packet": -2923807,
+          "preserved": true,
+          "source": -2923807
+        },
+        "institution_5d": {
+          "packet": -3789144,
+          "preserved": true,
+          "source": -3789144
+        }
+      },
+      "implementation_numeric_transform": "identity",
+      "institution_subclass_difference": {
+        "1d": 0,
+        "20d": 0,
+        "5d": 0
+      },
+      "omitted_participant_materiality": true,
+      "packet_vs_later_source_equal": false,
+      "participant_taxonomy": [
+        {
+          "aggregation_role": "top_level",
+          "canonical_label": "외국인",
+          "display_role": "displayed",
+          "participant_id": "foreign",
+          "provider_field": "foreign_net_buy_qty",
+          "provider_label": "외국인투자자",
+          "source_ref": "ohlcv_analyst.investor_flow.foreign_net_buy_qty"
+        },
+        {
+          "aggregation_role": "top_level",
+          "canonical_label": "기관",
+          "display_role": "displayed",
+          "participant_id": "institution",
+          "provider_field": "institution_net_buy_qty",
+          "provider_label": "기관계",
+          "source_ref": "ohlcv_analyst.investor_flow.institution_net_buy_qty"
+        },
+        {
+          "aggregation_role": "top_level",
+          "canonical_label": "개인",
+          "display_role": "displayed",
+          "participant_id": "individual",
+          "provider_field": "individual_net_buy_qty",
+          "provider_label": "개인투자자",
+          "source_ref": "ohlcv_analyst.investor_flow.individual_net_buy_qty"
+        },
+        {
+          "aggregation_role": "top_level",
+          "canonical_label": "기타법인",
+          "display_role": "omitted",
+          "participant_id": "other_corporation",
+          "provider_field": "other_corp_net_buy_qty",
+          "provider_label": "기타법인",
+          "source_ref": "ohlcv_analyst.investor_flow.other_corp_net_buy_qty"
+        },
+        {
+          "aggregation_role": "top_level",
+          "canonical_label": "내외국인",
+          "display_role": "omitted",
+          "participant_id": "domestic_foreign",
+          "provider_field": "domestic_foreign_net_buy_qty",
+          "provider_label": "내외국인",
+          "source_ref": "ohlcv_analyst.investor_flow.domestic_foreign_net_buy_qty"
+        },
+        {
+          "aggregation_role": "institution_subclass",
+          "canonical_label": "금융투자",
+          "display_role": "diagnostic",
+          "participant_id": "financial_investment",
+          "provider_field": "financial_investment_net_buy_qty",
+          "provider_label": "금융투자",
+          "source_ref": "ohlcv_analyst.investor_flow.financial_investment_net_buy_qty"
+        },
+        {
+          "aggregation_role": "institution_subclass",
+          "canonical_label": "보험",
+          "display_role": "diagnostic",
+          "participant_id": "insurance",
+          "provider_field": "insurance_net_buy_qty",
+          "provider_label": "보험",
+          "source_ref": "ohlcv_analyst.investor_flow.insurance_net_buy_qty"
+        },
+        {
+          "aggregation_role": "institution_subclass",
+          "canonical_label": "투신",
+          "display_role": "diagnostic",
+          "participant_id": "investment_trust",
+          "provider_field": "investment_trust_net_buy_qty",
+          "provider_label": "투신",
+          "source_ref": "ohlcv_analyst.investor_flow.investment_trust_net_buy_qty"
+        },
+        {
+          "aggregation_role": "institution_subclass",
+          "canonical_label": "기타금융",
+          "display_role": "diagnostic",
+          "participant_id": "other_finance",
+          "provider_field": "other_finance_net_buy_qty",
+          "provider_label": "기타금융",
+          "source_ref": "ohlcv_analyst.investor_flow.other_finance_net_buy_qty"
+        },
+        {
+          "aggregation_role": "institution_subclass",
+          "canonical_label": "은행",
+          "display_role": "diagnostic",
+          "participant_id": "bank",
+          "provider_field": "bank_net_buy_qty",
+          "provider_label": "은행",
+          "source_ref": "ohlcv_analyst.investor_flow.bank_net_buy_qty"
+        },
+        {
+          "aggregation_role": "institution_subclass",
+          "canonical_label": "연기금 등",
+          "display_role": "diagnostic",
+          "participant_id": "pension_fund",
+          "provider_field": "pension_fund_net_buy_qty",
+          "provider_label": "연기금 등",
+          "source_ref": "ohlcv_analyst.investor_flow.pension_fund_net_buy_qty"
+        },
+        {
+          "aggregation_role": "institution_subclass",
+          "canonical_label": "사모펀드",
+          "display_role": "diagnostic",
+          "participant_id": "private_fund",
+          "provider_field": "private_fund_net_buy_qty",
+          "provider_label": "사모펀드",
+          "source_ref": "ohlcv_analyst.investor_flow.private_fund_net_buy_qty"
+        },
+        {
+          "aggregation_role": "institution_subclass",
+          "canonical_label": "국가",
+          "display_role": "diagnostic",
+          "participant_id": "government",
+          "provider_field": "government_net_buy_qty",
+          "provider_label": "국가",
+          "source_ref": "ohlcv_analyst.investor_flow.government_net_buy_qty"
+        }
+      ],
+      "provider": "kiwoom",
+      "provider_generated_at": "2026-08-21T21:04:59.647018+09:00",
+      "provider_primary_signal": "foreign_exit_retail_absorption",
+      "signal_basis_window": "mixed",
+      "source_occurrence_drift": true,
+      "status": "audited",
+      "ticker": "005930",
+      "unsupported_attribution_after": false,
+      "unsupported_attribution_before": true,
+      "windows": {
+        "1d": {
+          "all_participant_net": 0,
+          "as_of_date": "2026-08-21",
+          "attribution_safe": false,
+          "constituent_count": 1,
+          "display_coverage_ratio": 0.960228,
+          "displayed_net": 230842,
+          "displayed_participants": [
+            "foreign",
+            "institution",
+            "individual"
+          ],
+          "material_omitted_flow": true,
+          "missing_participants": [],
+          "omitted_net": -230842,
+          "omitted_participants": [
+            "other_corporation",
+            "domestic_foreign"
+          ],
+          "participant_flows": {
+            "domestic_foreign": -28101,
+            "foreign": 1595450,
+            "individual": -2671260,
+            "institution": 1306652,
+            "other_corporation": -202741
+          },
+          "provider_total": null,
+          "reconciliation_difference": null,
+          "reconciliation_status": "complete_without_provider_total",
+          "signal": "material_other_participant_flow",
+          "signal_participants": [],
+          "window": "1d"
+        },
+        "20d": {
+          "all_participant_net": 0,
+          "as_of_date": "2026-08-21",
+          "attribution_safe": false,
+          "constituent_count": 20,
+          "display_coverage_ratio": 0.942102,
+          "displayed_net": -673418,
+          "displayed_participants": [
+            "foreign",
+            "institution",
+            "individual"
+          ],
+          "material_omitted_flow": true,
+          "missing_participants": [],
+          "omitted_net": 673418,
+          "omitted_participants": [
+            "other_corporation",
+            "domestic_foreign"
+          ],
+          "participant_flows": {
+            "domestic_foreign": 7442,
+            "foreign": -2891738,
+            "individual": 5142127,
+            "institution": -2923807,
+            "other_corporation": 665976
+          },
+          "provider_total": null,
+          "reconciliation_difference": null,
+          "reconciliation_status": "complete_without_provider_total",
+          "signal": "foreign_exit_broad_absorption",
+          "signal_participants": [
+            "foreign"
+          ],
+          "window": "20d"
+        },
+        "5d": {
+          "all_participant_net": 0,
+          "as_of_date": "2026-08-21",
+          "attribution_safe": false,
+          "constituent_count": 5,
+          "display_coverage_ratio": 0.99375,
+          "displayed_net": 89167,
+          "displayed_participants": [
+            "foreign",
+            "institution",
+            "individual"
+          ],
+          "material_omitted_flow": true,
+          "missing_participants": [],
+          "omitted_net": -89167,
+          "omitted_participants": [
+            "other_corporation",
+            "domestic_foreign"
+          ],
+          "participant_flows": {
+            "domestic_foreign": -30148,
+            "foreign": 7132882,
+            "individual": -3254571,
+            "institution": -3789144,
+            "other_corporation": -59019
+          },
+          "provider_total": null,
+          "reconciliation_difference": null,
+          "reconciliation_status": "complete_without_provider_total",
+          "signal": "material_other_participant_flow",
+          "signal_participants": [],
+          "window": "5d"
+        }
+      }
+    },
+    {
+      "attribution_confidence": "qualified",
+      "attribution_safe": false,
+      "canonical_primary_signal": "material_other_participant_flow",
+      "company_name": "LS일렉트릭",
+      "diagnostic_subcomponents": {
+        "1d": {
+          "bank": 0,
+          "financial_investment": -48718,
+          "government": 0,
+          "insurance": -2282,
+          "investment_trust": -36874,
+          "other_finance": -38,
+          "pension_fund": -28532,
+          "private_fund": -6632
+        },
+        "20d": {
+          "bank": -18386,
+          "financial_investment": 69765,
+          "government": 0,
+          "insurance": -4788,
+          "investment_trust": -224602,
+          "other_finance": -3743,
+          "pension_fund": -301658,
+          "private_fund": -57358
+        },
+        "5d": {
+          "bank": -1882,
+          "financial_investment": -108700,
+          "government": 0,
+          "insurance": -13356,
+          "investment_trust": -131358,
+          "other_finance": -2114,
+          "pension_fund": -142413,
+          "private_fund": -72317
+        }
+      },
+      "displayed_three_preservation": {
+        "foreign_1d": {
+          "packet": -174236,
+          "preserved": true,
+          "source": -174236
+        },
+        "foreign_20d": {
+          "packet": 119533,
+          "preserved": true,
+          "source": 119533
+        },
+        "foreign_5d": {
+          "packet": -108380,
+          "preserved": true,
+          "source": -108380
+        },
+        "individual_1d": {
+          "packet": 298809,
+          "preserved": true,
+          "source": 298809
+        },
+        "individual_20d": {
+          "packet": 435793,
+          "preserved": true,
+          "source": 435793
+        },
+        "individual_5d": {
+          "packet": 581463,
+          "preserved": true,
+          "source": 581463
+        },
+        "institution_1d": {
+          "packet": -123076,
+          "preserved": true,
+          "source": -123076
+        },
+        "institution_20d": {
+          "packet": -540770,
+          "preserved": true,
+          "source": -540770
+        },
+        "institution_5d": {
+          "packet": -472140,
+          "preserved": true,
+          "source": -472140
+        }
+      },
+      "implementation_numeric_transform": "identity",
+      "institution_subclass_difference": {
+        "1d": 0,
+        "20d": 0,
+        "5d": 0
+      },
+      "omitted_participant_materiality": true,
+      "packet_vs_later_source_equal": true,
+      "participant_taxonomy": [
+        {
+          "aggregation_role": "top_level",
+          "canonical_label": "외국인",
+          "display_role": "displayed",
+          "participant_id": "foreign",
+          "provider_field": "foreign_net_buy_qty",
+          "provider_label": "외국인투자자",
+          "source_ref": "ohlcv_analyst.investor_flow.foreign_net_buy_qty"
+        },
+        {
+          "aggregation_role": "top_level",
+          "canonical_label": "기관",
+          "display_role": "displayed",
+          "participant_id": "institution",
+          "provider_field": "institution_net_buy_qty",
+          "provider_label": "기관계",
+          "source_ref": "ohlcv_analyst.investor_flow.institution_net_buy_qty"
+        },
+        {
+          "aggregation_role": "top_level",
+          "canonical_label": "개인",
+          "display_role": "displayed",
+          "participant_id": "individual",
+          "provider_field": "individual_net_buy_qty",
+          "provider_label": "개인투자자",
+          "source_ref": "ohlcv_analyst.investor_flow.individual_net_buy_qty"
+        },
+        {
+          "aggregation_role": "top_level",
+          "canonical_label": "기타법인",
+          "display_role": "omitted",
+          "participant_id": "other_corporation",
+          "provider_field": "other_corp_net_buy_qty",
+          "provider_label": "기타법인",
+          "source_ref": "ohlcv_analyst.investor_flow.other_corp_net_buy_qty"
+        },
+        {
+          "aggregation_role": "top_level",
+          "canonical_label": "내외국인",
+          "display_role": "omitted",
+          "participant_id": "domestic_foreign",
+          "provider_field": "domestic_foreign_net_buy_qty",
+          "provider_label": "내외국인",
+          "source_ref": "ohlcv_analyst.investor_flow.domestic_foreign_net_buy_qty"
+        },
+        {
+          "aggregation_role": "institution_subclass",
+          "canonical_label": "금융투자",
+          "display_role": "diagnostic",
+          "participant_id": "financial_investment",
+          "provider_field": "financial_investment_net_buy_qty",
+          "provider_label": "금융투자",
+          "source_ref": "ohlcv_analyst.investor_flow.financial_investment_net_buy_qty"
+        },
+        {
+          "aggregation_role": "institution_subclass",
+          "canonical_label": "보험",
+          "display_role": "diagnostic",
+          "participant_id": "insurance",
+          "provider_field": "insurance_net_buy_qty",
+          "provider_label": "보험",
+          "source_ref": "ohlcv_analyst.investor_flow.insurance_net_buy_qty"
+        },
+        {
+          "aggregation_role": "institution_subclass",
+          "canonical_label": "투신",
+          "display_role": "diagnostic",
+          "participant_id": "investment_trust",
+          "provider_field": "investment_trust_net_buy_qty",
+          "provider_label": "투신",
+          "source_ref": "ohlcv_analyst.investor_flow.investment_trust_net_buy_qty"
+        },
+        {
+          "aggregation_role": "institution_subclass",
+          "canonical_label": "기타금융",
+          "display_role": "diagnostic",
+          "participant_id": "other_finance",
+          "provider_field": "other_finance_net_buy_qty",
+          "provider_label": "기타금융",
+          "source_ref": "ohlcv_analyst.investor_flow.other_finance_net_buy_qty"
+        },
+        {
+          "aggregation_role": "institution_subclass",
+          "canonical_label": "은행",
+          "display_role": "diagnostic",
+          "participant_id": "bank",
+          "provider_field": "bank_net_buy_qty",
+          "provider_label": "은행",
+          "source_ref": "ohlcv_analyst.investor_flow.bank_net_buy_qty"
+        },
+        {
+          "aggregation_role": "institution_subclass",
+          "canonical_label": "연기금 등",
+          "display_role": "diagnostic",
+          "participant_id": "pension_fund",
+          "provider_field": "pension_fund_net_buy_qty",
+          "provider_label": "연기금 등",
+          "source_ref": "ohlcv_analyst.investor_flow.pension_fund_net_buy_qty"
+        },
+        {
+          "aggregation_role": "institution_subclass",
+          "canonical_label": "사모펀드",
+          "display_role": "diagnostic",
+          "participant_id": "private_fund",
+          "provider_field": "private_fund_net_buy_qty",
+          "provider_label": "사모펀드",
+          "source_ref": "ohlcv_analyst.investor_flow.private_fund_net_buy_qty"
+        },
+        {
+          "aggregation_role": "institution_subclass",
+          "canonical_label": "국가",
+          "display_role": "diagnostic",
+          "participant_id": "government",
+          "provider_field": "government_net_buy_qty",
+          "provider_label": "국가",
+          "source_ref": "ohlcv_analyst.investor_flow.government_net_buy_qty"
+        }
+      ],
+      "provider": "kiwoom",
+      "provider_generated_at": "2026-08-21T21:05:00.442515+09:00",
+      "provider_primary_signal": "foreign_led",
+      "signal_basis_window": "20d",
+      "source_occurrence_drift": false,
+      "status": "audited",
+      "ticker": "010120",
+      "unsupported_attribution_after": false,
+      "unsupported_attribution_before": false,
+      "windows": {
+        "1d": {
+          "all_participant_net": 0,
+          "as_of_date": "2026-08-21",
+          "attribution_safe": false,
+          "constituent_count": 1,
+          "display_coverage_ratio": 0.996182,
+          "displayed_net": 1497,
+          "displayed_participants": [
+            "foreign",
+            "institution",
+            "individual"
+          ],
+          "material_omitted_flow": true,
+          "missing_participants": [],
+          "omitted_net": -1497,
+          "omitted_participants": [
+            "other_corporation",
+            "domestic_foreign"
+          ],
+          "participant_flows": {
+            "domestic_foreign": 394,
+            "foreign": -174236,
+            "individual": 298809,
+            "institution": -123076,
+            "other_corporation": -1891
+          },
+          "provider_total": null,
+          "reconciliation_difference": null,
+          "reconciliation_status": "complete_without_provider_total",
+          "signal": "foreign_exit_broad_absorption",
+          "signal_participants": [
+            "foreign"
+          ],
+          "window": "1d"
+        },
+        "20d": {
+          "all_participant_net": 0,
+          "as_of_date": "2026-08-21",
+          "attribution_safe": false,
+          "constituent_count": 20,
+          "display_coverage_ratio": 0.986603,
+          "displayed_net": 14556,
+          "displayed_participants": [
+            "foreign",
+            "institution",
+            "individual"
+          ],
+          "material_omitted_flow": true,
+          "missing_participants": [],
+          "omitted_net": -14556,
+          "omitted_participants": [
+            "other_corporation",
+            "domestic_foreign"
+          ],
+          "participant_flows": {
+            "domestic_foreign": 164,
+            "foreign": 119533,
+            "individual": 435793,
+            "institution": -540770,
+            "other_corporation": -14720
+          },
+          "provider_total": null,
+          "reconciliation_difference": null,
+          "reconciliation_status": "complete_without_provider_total",
+          "signal": "material_other_participant_flow",
+          "signal_participants": [],
+          "window": "20d"
+        },
+        "5d": {
+          "all_participant_net": 0,
+          "as_of_date": "2026-08-21",
+          "attribution_safe": false,
+          "constituent_count": 5,
+          "display_coverage_ratio": 0.996816,
+          "displayed_net": 943,
+          "displayed_participants": [
+            "foreign",
+            "institution",
+            "individual"
+          ],
+          "material_omitted_flow": true,
+          "missing_participants": [],
+          "omitted_net": -943,
+          "omitted_participants": [
+            "other_corporation",
+            "domestic_foreign"
+          ],
+          "participant_flows": {
+            "domestic_foreign": 1384,
+            "foreign": -108380,
+            "individual": 581463,
+            "institution": -472140,
+            "other_corporation": -2327
+          },
+          "provider_total": null,
+          "reconciliation_difference": null,
+          "reconciliation_status": "complete_without_provider_total",
+          "signal": "foreign_exit_broad_absorption",
+          "signal_participants": [
+            "foreign"
+          ],
+          "window": "5d"
+        }
+      }
+    },
+    {
+      "attribution_confidence": "qualified",
+      "attribution_safe": false,
+      "canonical_primary_signal": "mixed_window_flow",
+      "company_name": "한화에어로스페이스",
+      "diagnostic_subcomponents": {
+        "1d": {
+          "bank": 1,
+          "financial_investment": -1954,
+          "government": 0,
+          "insurance": -676,
+          "investment_trust": -10743,
+          "other_finance": -6,
+          "pension_fund": -16224,
+          "private_fund": -5447
+        },
+        "20d": {
+          "bank": -26,
+          "financial_investment": -142485,
+          "government": 0,
+          "insurance": 24442,
+          "investment_trust": 75031,
+          "other_finance": 950,
+          "pension_fund": 72439,
+          "private_fund": 14817
+        },
+        "5d": {
+          "bank": -31,
+          "financial_investment": -13900,
+          "government": 0,
+          "insurance": 9888,
+          "investment_trust": 3553,
+          "other_finance": 84,
+          "pension_fund": -6102,
+          "private_fund": -11350
+        }
+      },
+      "displayed_three_preservation": {
+        "foreign_1d": {
+          "packet": 24250,
+          "preserved": true,
+          "source": 24250
+        },
+        "foreign_20d": {
+          "packet": 21648,
+          "preserved": true,
+          "source": 21648
+        },
+        "foreign_5d": {
+          "packet": -1093,
+          "preserved": true,
+          "source": -1093
+        },
+        "individual_1d": {
+          "packet": 9855,
+          "preserved": false,
+          "source": 10045
+        },
+        "individual_20d": {
+          "packet": -67371,
+          "preserved": false,
+          "source": -67181
+        },
+        "individual_5d": {
+          "packet": 19120,
+          "preserved": false,
+          "source": 19310
+        },
+        "institution_1d": {
+          "packet": -34859,
+          "preserved": false,
+          "source": -35049
+        },
+        "institution_20d": {
+          "packet": 45358,
+          "preserved": false,
+          "source": 45168
+        },
+        "institution_5d": {
+          "packet": -17668,
+          "preserved": false,
+          "source": -17858
+        }
+      },
+      "implementation_numeric_transform": "identity",
+      "institution_subclass_difference": {
+        "1d": 0,
+        "20d": 0,
+        "5d": 0
+      },
+      "omitted_participant_materiality": true,
+      "packet_vs_later_source_equal": false,
+      "participant_taxonomy": [
+        {
+          "aggregation_role": "top_level",
+          "canonical_label": "외국인",
+          "display_role": "displayed",
+          "participant_id": "foreign",
+          "provider_field": "foreign_net_buy_qty",
+          "provider_label": "외국인투자자",
+          "source_ref": "ohlcv_analyst.investor_flow.foreign_net_buy_qty"
+        },
+        {
+          "aggregation_role": "top_level",
+          "canonical_label": "기관",
+          "display_role": "displayed",
+          "participant_id": "institution",
+          "provider_field": "institution_net_buy_qty",
+          "provider_label": "기관계",
+          "source_ref": "ohlcv_analyst.investor_flow.institution_net_buy_qty"
+        },
+        {
+          "aggregation_role": "top_level",
+          "canonical_label": "개인",
+          "display_role": "displayed",
+          "participant_id": "individual",
+          "provider_field": "individual_net_buy_qty",
+          "provider_label": "개인투자자",
+          "source_ref": "ohlcv_analyst.investor_flow.individual_net_buy_qty"
+        },
+        {
+          "aggregation_role": "top_level",
+          "canonical_label": "기타법인",
+          "display_role": "omitted",
+          "participant_id": "other_corporation",
+          "provider_field": "other_corp_net_buy_qty",
+          "provider_label": "기타법인",
+          "source_ref": "ohlcv_analyst.investor_flow.other_corp_net_buy_qty"
+        },
+        {
+          "aggregation_role": "top_level",
+          "canonical_label": "내외국인",
+          "display_role": "omitted",
+          "participant_id": "domestic_foreign",
+          "provider_field": "domestic_foreign_net_buy_qty",
+          "provider_label": "내외국인",
+          "source_ref": "ohlcv_analyst.investor_flow.domestic_foreign_net_buy_qty"
+        },
+        {
+          "aggregation_role": "institution_subclass",
+          "canonical_label": "금융투자",
+          "display_role": "diagnostic",
+          "participant_id": "financial_investment",
+          "provider_field": "financial_investment_net_buy_qty",
+          "provider_label": "금융투자",
+          "source_ref": "ohlcv_analyst.investor_flow.financial_investment_net_buy_qty"
+        },
+        {
+          "aggregation_role": "institution_subclass",
+          "canonical_label": "보험",
+          "display_role": "diagnostic",
+          "participant_id": "insurance",
+          "provider_field": "insurance_net_buy_qty",
+          "provider_label": "보험",
+          "source_ref": "ohlcv_analyst.investor_flow.insurance_net_buy_qty"
+        },
+        {
+          "aggregation_role": "institution_subclass",
+          "canonical_label": "투신",
+          "display_role": "diagnostic",
+          "participant_id": "investment_trust",
+          "provider_field": "investment_trust_net_buy_qty",
+          "provider_label": "투신",
+          "source_ref": "ohlcv_analyst.investor_flow.investment_trust_net_buy_qty"
+        },
+        {
+          "aggregation_role": "institution_subclass",
+          "canonical_label": "기타금융",
+          "display_role": "diagnostic",
+          "participant_id": "other_finance",
+          "provider_field": "other_finance_net_buy_qty",
+          "provider_label": "기타금융",
+          "source_ref": "ohlcv_analyst.investor_flow.other_finance_net_buy_qty"
+        },
+        {
+          "aggregation_role": "institution_subclass",
+          "canonical_label": "은행",
+          "display_role": "diagnostic",
+          "participant_id": "bank",
+          "provider_field": "bank_net_buy_qty",
+          "provider_label": "은행",
+          "source_ref": "ohlcv_analyst.investor_flow.bank_net_buy_qty"
+        },
+        {
+          "aggregation_role": "institution_subclass",
+          "canonical_label": "연기금 등",
+          "display_role": "diagnostic",
+          "participant_id": "pension_fund",
+          "provider_field": "pension_fund_net_buy_qty",
+          "provider_label": "연기금 등",
+          "source_ref": "ohlcv_analyst.investor_flow.pension_fund_net_buy_qty"
+        },
+        {
+          "aggregation_role": "institution_subclass",
+          "canonical_label": "사모펀드",
+          "display_role": "diagnostic",
+          "participant_id": "private_fund",
+          "provider_field": "private_fund_net_buy_qty",
+          "provider_label": "사모펀드",
+          "source_ref": "ohlcv_analyst.investor_flow.private_fund_net_buy_qty"
+        },
+        {
+          "aggregation_role": "institution_subclass",
+          "canonical_label": "국가",
+          "display_role": "diagnostic",
+          "participant_id": "government",
+          "provider_field": "government_net_buy_qty",
+          "provider_label": "국가",
+          "source_ref": "ohlcv_analyst.investor_flow.government_net_buy_qty"
+        }
+      ],
+      "provider": "kiwoom",
+      "provider_generated_at": "2026-08-21T21:05:01.563859+09:00",
+      "provider_primary_signal": "strong_joint",
+      "signal_basis_window": "mixed",
+      "source_occurrence_drift": true,
+      "status": "audited",
+      "ticker": "012450",
+      "unsupported_attribution_after": false,
+      "unsupported_attribution_before": false,
+      "windows": {
+        "1d": {
+          "all_participant_net": 0,
+          "as_of_date": "2026-08-21",
+          "attribution_safe": false,
+          "constituent_count": 1,
+          "display_coverage_ratio": 0.989244,
+          "displayed_net": -754,
+          "displayed_participants": [
+            "foreign",
+            "institution",
+            "individual"
+          ],
+          "material_omitted_flow": true,
+          "missing_participants": [],
+          "omitted_net": 754,
+          "omitted_participants": [
+            "other_corporation",
+            "domestic_foreign"
+          ],
+          "participant_flows": {
+            "domestic_foreign": 224,
+            "foreign": 24250,
+            "individual": 10045,
+            "institution": -35049,
+            "other_corporation": 530
+          },
+          "provider_total": null,
+          "reconciliation_difference": null,
+          "reconciliation_status": "complete_without_provider_total",
+          "signal": "material_other_participant_flow",
+          "signal_participants": [],
+          "window": "1d"
+        },
+        "20d": {
+          "all_participant_net": 0,
+          "as_of_date": "2026-08-21",
+          "attribution_safe": false,
+          "constituent_count": 20,
+          "display_coverage_ratio": 0.996527,
+          "displayed_net": -365,
+          "displayed_participants": [
+            "foreign",
+            "institution",
+            "individual"
+          ],
+          "material_omitted_flow": true,
+          "missing_participants": [],
+          "omitted_net": 365,
+          "omitted_participants": [
+            "other_corporation",
+            "domestic_foreign"
+          ],
+          "participant_flows": {
+            "domestic_foreign": 416,
+            "foreign": 21648,
+            "individual": -67181,
+            "institution": 45168,
+            "other_corporation": -51
+          },
+          "provider_total": null,
+          "reconciliation_difference": null,
+          "reconciliation_status": "complete_without_provider_total",
+          "signal": "material_other_participant_flow",
+          "signal_participants": [],
+          "window": "20d"
+        },
+        "5d": {
+          "all_participant_net": 0,
+          "as_of_date": "2026-08-21",
+          "attribution_safe": false,
+          "constituent_count": 5,
+          "display_coverage_ratio": 0.975399,
+          "displayed_net": 359,
+          "displayed_participants": [
+            "foreign",
+            "institution",
+            "individual"
+          ],
+          "material_omitted_flow": true,
+          "missing_participants": [],
+          "omitted_net": -359,
+          "omitted_participants": [
+            "other_corporation",
+            "domestic_foreign"
+          ],
+          "participant_flows": {
+            "domestic_foreign": 303,
+            "foreign": -1093,
+            "individual": 19310,
+            "institution": -17858,
+            "other_corporation": -662
+          },
+          "provider_total": null,
+          "reconciliation_difference": null,
+          "reconciliation_status": "complete_without_provider_total",
+          "signal": "foreign_exit_broad_absorption",
+          "signal_participants": [
+            "foreign"
+          ],
+          "window": "5d"
+        }
+      }
+    },
+    {
+      "attribution_confidence": "qualified",
+      "attribution_safe": false,
+      "canonical_primary_signal": "mixed_window_flow",
+      "company_name": "현대글로비스",
+      "diagnostic_subcomponents": {
+        "1d": {
+          "bank": 0,
+          "financial_investment": 6944,
+          "government": 0,
+          "insurance": -338,
+          "investment_trust": 0,
+          "other_finance": -9,
+          "pension_fund": -14898,
+          "private_fund": -35
+        },
+        "20d": {
+          "bank": -877,
+          "financial_investment": 27221,
+          "government": 0,
+          "insurance": -1960,
+          "investment_trust": 2046,
+          "other_finance": 642,
+          "pension_fund": 109588,
+          "private_fund": -35
+        },
+        "5d": {
+          "bank": 30,
+          "financial_investment": 3131,
+          "government": 0,
+          "insurance": 959,
+          "investment_trust": 11674,
+          "other_finance": -410,
+          "pension_fund": -32764,
+          "private_fund": -1058
+        }
+      },
+      "displayed_three_preservation": {
+        "foreign_1d": {
+          "packet": 11752,
+          "preserved": true,
+          "source": 11752
+        },
+        "foreign_20d": {
+          "packet": 123283,
+          "preserved": true,
+          "source": 123283
+        },
+        "foreign_5d": {
+          "packet": 10099,
+          "preserved": true,
+          "source": 10099
+        },
+        "individual_1d": {
+          "packet": 912,
+          "preserved": true,
+          "source": 912
+        },
+        "individual_20d": {
+          "packet": -246099,
+          "preserved": true,
+          "source": -246099
+        },
+        "individual_5d": {
+          "packet": 12697,
+          "preserved": true,
+          "source": 12697
+        },
+        "institution_1d": {
+          "packet": -8336,
+          "preserved": true,
+          "source": -8336
+        },
+        "institution_20d": {
+          "packet": 136625,
+          "preserved": true,
+          "source": 136625
+        },
+        "institution_5d": {
+          "packet": -18438,
+          "preserved": true,
+          "source": -18438
+        }
+      },
+      "implementation_numeric_transform": "identity",
+      "institution_subclass_difference": {
+        "1d": 0,
+        "20d": 0,
+        "5d": 0
+      },
+      "omitted_participant_materiality": true,
+      "packet_vs_later_source_equal": true,
+      "participant_taxonomy": [
+        {
+          "aggregation_role": "top_level",
+          "canonical_label": "외국인",
+          "display_role": "displayed",
+          "participant_id": "foreign",
+          "provider_field": "foreign_net_buy_qty",
+          "provider_label": "외국인투자자",
+          "source_ref": "ohlcv_analyst.investor_flow.foreign_net_buy_qty"
+        },
+        {
+          "aggregation_role": "top_level",
+          "canonical_label": "기관",
+          "display_role": "displayed",
+          "participant_id": "institution",
+          "provider_field": "institution_net_buy_qty",
+          "provider_label": "기관계",
+          "source_ref": "ohlcv_analyst.investor_flow.institution_net_buy_qty"
+        },
+        {
+          "aggregation_role": "top_level",
+          "canonical_label": "개인",
+          "display_role": "displayed",
+          "participant_id": "individual",
+          "provider_field": "individual_net_buy_qty",
+          "provider_label": "개인투자자",
+          "source_ref": "ohlcv_analyst.investor_flow.individual_net_buy_qty"
+        },
+        {
+          "aggregation_role": "top_level",
+          "canonical_label": "기타법인",
+          "display_role": "omitted",
+          "participant_id": "other_corporation",
+          "provider_field": "other_corp_net_buy_qty",
+          "provider_label": "기타법인",
+          "source_ref": "ohlcv_analyst.investor_flow.other_corp_net_buy_qty"
+        },
+        {
+          "aggregation_role": "top_level",
+          "canonical_label": "내외국인",
+          "display_role": "omitted",
+          "participant_id": "domestic_foreign",
+          "provider_field": "domestic_foreign_net_buy_qty",
+          "provider_label": "내외국인",
+          "source_ref": "ohlcv_analyst.investor_flow.domestic_foreign_net_buy_qty"
+        },
+        {
+          "aggregation_role": "institution_subclass",
+          "canonical_label": "금융투자",
+          "display_role": "diagnostic",
+          "participant_id": "financial_investment",
+          "provider_field": "financial_investment_net_buy_qty",
+          "provider_label": "금융투자",
+          "source_ref": "ohlcv_analyst.investor_flow.financial_investment_net_buy_qty"
+        },
+        {
+          "aggregation_role": "institution_subclass",
+          "canonical_label": "보험",
+          "display_role": "diagnostic",
+          "participant_id": "insurance",
+          "provider_field": "insurance_net_buy_qty",
+          "provider_label": "보험",
+          "source_ref": "ohlcv_analyst.investor_flow.insurance_net_buy_qty"
+        },
+        {
+          "aggregation_role": "institution_subclass",
+          "canonical_label": "투신",
+          "display_role": "diagnostic",
+          "participant_id": "investment_trust",
+          "provider_field": "investment_trust_net_buy_qty",
+          "provider_label": "투신",
+          "source_ref": "ohlcv_analyst.investor_flow.investment_trust_net_buy_qty"
+        },
+        {
+          "aggregation_role": "institution_subclass",
+          "canonical_label": "기타금융",
+          "display_role": "diagnostic",
+          "participant_id": "other_finance",
+          "provider_field": "other_finance_net_buy_qty",
+          "provider_label": "기타금융",
+          "source_ref": "ohlcv_analyst.investor_flow.other_finance_net_buy_qty"
+        },
+        {
+          "aggregation_role": "institution_subclass",
+          "canonical_label": "은행",
+          "display_role": "diagnostic",
+          "participant_id": "bank",
+          "provider_field": "bank_net_buy_qty",
+          "provider_label": "은행",
+          "source_ref": "ohlcv_analyst.investor_flow.bank_net_buy_qty"
+        },
+        {
+          "aggregation_role": "institution_subclass",
+          "canonical_label": "연기금 등",
+          "display_role": "diagnostic",
+          "participant_id": "pension_fund",
+          "provider_field": "pension_fund_net_buy_qty",
+          "provider_label": "연기금 등",
+          "source_ref": "ohlcv_analyst.investor_flow.pension_fund_net_buy_qty"
+        },
+        {
+          "aggregation_role": "institution_subclass",
+          "canonical_label": "사모펀드",
+          "display_role": "diagnostic",
+          "participant_id": "private_fund",
+          "provider_field": "private_fund_net_buy_qty",
+          "provider_label": "사모펀드",
+          "source_ref": "ohlcv_analyst.investor_flow.private_fund_net_buy_qty"
+        },
+        {
+          "aggregation_role": "institution_subclass",
+          "canonical_label": "국가",
+          "display_role": "diagnostic",
+          "participant_id": "government",
+          "provider_field": "government_net_buy_qty",
+          "provider_label": "국가",
+          "source_ref": "ohlcv_analyst.investor_flow.government_net_buy_qty"
+        }
+      ],
+      "provider": "kiwoom",
+      "provider_generated_at": "2026-08-21T21:05:02.501996+09:00",
+      "provider_primary_signal": "strong_joint",
+      "signal_basis_window": "mixed",
+      "source_occurrence_drift": false,
+      "status": "audited",
+      "ticker": "086280",
+      "unsupported_attribution_after": false,
+      "unsupported_attribution_before": false,
+      "windows": {
+        "1d": {
+          "all_participant_net": 0,
+          "as_of_date": "2026-08-21",
+          "attribution_safe": false,
+          "constituent_count": 1,
+          "display_coverage_ratio": 0.829122,
+          "displayed_net": 4328,
+          "displayed_participants": [
+            "foreign",
+            "institution",
+            "individual"
+          ],
+          "material_omitted_flow": true,
+          "missing_participants": [],
+          "omitted_net": -4328,
+          "omitted_participants": [
+            "other_corporation",
+            "domestic_foreign"
+          ],
+          "participant_flows": {
+            "domestic_foreign": -3,
+            "foreign": 11752,
+            "individual": 912,
+            "institution": -8336,
+            "other_corporation": -4325
+          },
+          "provider_total": null,
+          "reconciliation_difference": null,
+          "reconciliation_status": "complete_without_provider_total",
+          "signal": "material_other_participant_flow",
+          "signal_participants": [],
+          "window": "1d"
+        },
+        "20d": {
+          "all_participant_net": 0,
+          "as_of_date": "2026-08-21",
+          "attribution_safe": false,
+          "constituent_count": 20,
+          "display_coverage_ratio": 0.973435,
+          "displayed_net": 13809,
+          "displayed_participants": [
+            "foreign",
+            "institution",
+            "individual"
+          ],
+          "material_omitted_flow": true,
+          "missing_participants": [],
+          "omitted_net": -13809,
+          "omitted_participants": [
+            "other_corporation",
+            "domestic_foreign"
+          ],
+          "participant_flows": {
+            "domestic_foreign": -1987,
+            "foreign": 123283,
+            "individual": -246099,
+            "institution": 136625,
+            "other_corporation": -11822
+          },
+          "provider_total": null,
+          "reconciliation_difference": null,
+          "reconciliation_status": "complete_without_provider_total",
+          "signal": "material_other_participant_flow",
+          "signal_participants": [],
+          "window": "20d"
+        },
+        "5d": {
+          "all_participant_net": 0,
+          "as_of_date": "2026-08-21",
+          "attribution_safe": false,
+          "constituent_count": 5,
+          "display_coverage_ratio": 0.904413,
+          "displayed_net": 4358,
+          "displayed_participants": [
+            "foreign",
+            "institution",
+            "individual"
+          ],
+          "material_omitted_flow": true,
+          "missing_participants": [],
+          "omitted_net": -4358,
+          "omitted_participants": [
+            "other_corporation",
+            "domestic_foreign"
+          ],
+          "participant_flows": {
+            "domestic_foreign": -86,
+            "foreign": 10099,
+            "individual": 12697,
+            "institution": -18438,
+            "other_corporation": -4272
+          },
+          "provider_total": null,
+          "reconciliation_difference": null,
+          "reconciliation_status": "complete_without_provider_total",
+          "signal": "material_other_participant_flow",
+          "signal_participants": [],
+          "window": "5d"
+        }
+      }
+    }
+  ],
+  "summary": {
+    "audited": 7,
+    "complete_windows": 21,
+    "implementation_numeric_identity": true,
+    "later_source_occurrence_drift_tickers": [
+      "005930",
+      "012450"
+    ],
+    "material_omitted_windows": 21,
+    "provider_errors": 0,
+    "sk_hynix_packet_vs_source_equal": true,
+    "stable_source_occurrence_tickers": 5,
+    "ticker_count": 7,
+    "unsupported_attribution_after": 0,
+    "unsupported_attribution_before": 2,
+    "window_count": 21
+  }
+}

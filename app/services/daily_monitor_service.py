@@ -24,6 +24,7 @@ from app.services.notification_service import (
 )
 from app.services.ohlcv_client import OhlcvClient
 from app.services.issue_identity_audit_service import IssueIdentityAuditService
+from app.services.kr_investor_flow_service import serialize_price_context_with_reconciliation
 from app.services.thesis_evaluation_service import evaluate_thesis, recent_events_for_assessment
 from app.services.valuation_snapshot_service import ValuationSnapshotService
 from app.services.warning_backfill_service import backfill_confirmed_warning_states
@@ -516,7 +517,7 @@ async def run_daily_monitor(
                     new_buyer_price_view=result.new_buyer_price_view,
                     holder_price_view=result.holder_price_view,
                     evidence=json.dumps(result.evidence, ensure_ascii=False),
-                    price_context=price_context.model_dump_json(),
+                    price_context=serialize_price_context_with_reconciliation(price_context),
                     valuation_snapshot=result.valuation_snapshot.model_dump_json(),
                     valuation_context=json.dumps(valuation_context, ensure_ascii=False),
                     thesis_snapshot=json.dumps(thesis_snapshot, ensure_ascii=False),
@@ -573,7 +574,9 @@ async def run_daily_monitor(
                 assessment.new_buyer_price_view = result.new_buyer_price_view
                 assessment.holder_price_view = result.holder_price_view
                 assessment.evidence = json.dumps(result.evidence, ensure_ascii=False)
-                assessment.price_context = price_context.model_dump_json()
+                assessment.price_context = serialize_price_context_with_reconciliation(
+                    price_context
+                )
                 assessment.valuation_snapshot = result.valuation_snapshot.model_dump_json()
                 assessment.valuation_context = json.dumps(
                     valuation_context, ensure_ascii=False

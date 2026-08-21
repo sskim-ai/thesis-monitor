@@ -190,6 +190,12 @@ async def test_latest_daily_bar_maps_investor_supply_without_using_weekly_summar
         "foreign_net_buy_qty_20": -8_108_432,
         "institution_net_buy_qty_20": -11_716_549,
         "individual_net_buy_qty_20": 18_403_424,
+        "other_corp_net_buy_qty": 0,
+        "other_corp_net_buy_qty_5": 0,
+        "other_corp_net_buy_qty_20": 0,
+        "domestic_foreign_net_buy_qty": 0,
+        "domestic_foreign_net_buy_qty_5": 0,
+        "domestic_foreign_net_buy_qty_20": 0,
         "foreign_holding_qty": 2_724_356_859,
         "foreign_holding_ratio": 46.60,
         "indicators": {
@@ -231,6 +237,10 @@ async def test_latest_daily_bar_maps_investor_supply_without_using_weekly_summar
     assert context.supply.score == 29
     assert context.supply.quality == "distribution"
     assert context.supply.primary_signal == "foreign_exit_retail_absorption"
+    reconciliation = context.supply.reconciliation_payload()
+    assert reconciliation["provider_primary_signal"] == "foreign_exit_retail_absorption"
+    assert reconciliation["signal_basis_window"] == "20d"
+    assert reconciliation["attribution_safe"] is True
     assert context.supply.validation_status == "validated"
 
 
@@ -502,6 +512,9 @@ async def test_nested_ohlcv_supply_contract_is_mapped_from_latest_daily_bar() ->
     assert context.supply.foreign_holding_qty == 2_724_356_859
     assert context.supply.score == 29
     assert context.supply.quality == "distribution"
-    assert context.supply.primary_signal == "foreign_exit_retail_absorption"
+    assert context.supply.primary_signal == "unavailable"
+    reconciliation = context.supply.reconciliation_payload()
+    assert reconciliation["provider_primary_signal"] == "foreign_exit_retail_absorption"
+    assert reconciliation["attribution_safe"] is False
     assert context.supply.foreign_flow_direction_20 == "distribution"
     assert context.supply.signals == ["foreign_exit_retail_absorption"]
