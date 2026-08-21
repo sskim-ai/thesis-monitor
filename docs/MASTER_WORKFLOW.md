@@ -1,16 +1,18 @@
 # Thesis Monitor Master Workflow
 
-Master Workflow: `v14`
+Master Workflow: `v15`
 As of: `2026-08-21`
 Repository: `sskim-ai/thesis-monitor`
 Operating branch: `main`
-Latest evidence branch: `codex/phase-9-1a-working-capital-evidence-architecture`
+Latest evidence branch: `codex/phase-9-1c-working-capital-shadow-consumption`
 Commit resolution: run `git rev-parse HEAD`; this document is part of that commit and must not
 hardcode a self-referential final SHA. Resolve `origin/main` and the clean operating checkout at
-session start. Phase 9.1A closes the `working-capital-evidence-v1` architecture on a pushed branch
-with exact-SHA CI and zero runtime/user-visible behavior diff. Inventory and separate trade/broad
-AR/AP semantics, prior-year fiscal-quarter comparability, PIT availability, and revenue/COGS
-alignment are defined for a selective 9.1B implementation. Promotion is
+session start. Phase 9.1A defines `working-capital-evidence-v1`; Phase 9.1B implements its canonical
+Facts and typed relations; Phase 9.1C closes archive-only shadow consumption under
+`working-capital-shadow-consumption-v1`. The 20-subject replay selects only seven current-formal,
+material relations: Inventory for five subjects and exact Trade AR for two. PIT, freshness,
+trade/broad semantics, numeric binding, causal guard, Unknown resolution, and shadow quality pass
+with zero P0/material P1 and zero runtime/user-visible diff. Promotion is
 `PROMOTION_DEFERRED_FOR_KR_NATURAL_WINDOW`; main/operating remain on Phase 9.0E. Natural US/KR proof
 remains parallel and Natural AI-assisted delivery remains `PARTIAL`.
 KRX 8.2A.x and peer 8.3.x also remain experimental.
@@ -707,13 +709,39 @@ Implementation SHA `a35c615a77b44b37739d4f6a73aa9f0f290ba831` passed Actions run
 `32450301567` Test/Lint plus 1,301 full local tests. Final documentation resolves from Git so the
 committed artifact does not attempt to contain its own SHA.
 
+## 21J. Phase 9.1C Working-Capital Shadow Consumption
+
+Phase 9.1C starts from Phase 9.1B final SHA `2ea8c43c6ec5ef986c23ea15ea707b5e93a720f6`
+and immutable instruction commit `613d91d74d3a91c43ed61f98a13a2ca57b7a90ae`. The
+`working-capital-shadow-consumption-v1` sidecar consumes canonical 9.1B relations without
+recomputing balances, growth, or gaps.
+
+Every selected relation requires all six canonical input Facts to be available at the immutable
+packet cutoff and to match the latest validated formal balance date. Phase 9.0C freshness evidence
+keeps TSM formal-lagging-provisional and suppresses it from current reasoning. Insurance is N/A;
+biotech, special financial-like, cloud/software, HPC, broad AR/AP, and AP relations are not forced
+into prose when their incremental value is weak.
+
+The replay selects seven relations: five Inventory and two exact Trade AR. Each message owns at most
+one percentage-point relation in `business_earnings`; automatic binding is 7/7, manual/rejected/
+unresolved and relation arithmetic errors are zero. Exact Trade and Broad semantics remain distinct;
+contract assets and accrued liabilities do not leak; unsupported causal claims, DSO, Inventory
+Days, DPO, CCC, thesis/valuation/warning mutation, and Unknown contradictions are zero. Human review
+classifies seven material improvements, thirteen no-change subjects, and zero degraded subjects.
+
+`PHASE_9_1D_READY = YES` with scope
+`SELECTIVE_RUNTIME_SHADOW_CANARY_INVENTORY_EXACT_TRADE_AR`. Working-capital user-visible output
+remains disabled, Phase 9.0E remains `SELECTIVE_CURRENT_FORMAL_FULL_FCF`, and promotion remains
+deferred for the separate KR natural-window review.
+
 ## 22. Current Roadmap
 
-The development state is `PHASE_9_1B_IMPLEMENTED_PROMOTION_DEFERRED`; the operating state is
+The development state is `PHASE_9_1C_CLOSED_RETROSPECTIVE_PENDING_PROMOTION`; the operating state is
 still `PHASE_9_0E_DEPLOYED_SELECTIVE_PENDING_NATURAL`. Open P0 and material P1 are zero.
-`PHASE_9_1C_READY = YES`; the recommended next phase is archive/shadow-only working-capital
-consumption and earnings-quality reasoning. KR OpenDART cash-flow period recovery remains a medium
-follow-up rather than a blocker, and advanced working-capital day ratios remain deferred.
+`PHASE_9_1D_READY = YES`; the recommended next phase is a runtime-delivery-independent canary for
+current-formal Inventory and exact Trade AR only. Broad AR/AP, AP relations, low-value industries,
+and all advanced working-capital day ratios remain excluded or deferred. KR OpenDART cash-flow
+period recovery remains a medium follow-up rather than a blocker.
 
 In parallel, observe the next natural US/KR sessions for AI-assisted delivery, ownership,
 repetition, night-session integrity, fallback, language, receipt, archive, and exactly-once proof.
@@ -810,11 +838,11 @@ approval. Main merge and shadow deployment still do not authorize AI-assisted pr
 ## 27. Current Next Task
 
 Review the next natural US user-visible cash-flow delivery without manual execution. In parallel,
-Phase 9.1C may consume the implemented working-capital Facts only in archive/shadow reasoning after
-a separate work instruction. Do not implement DSO, Inventory Days, DPO, CCC, ROIC, user-visible
-working-capital output, or KR cash-flow period recovery without separate authorization. Promote the
-full Phase 9.1A -> 9.1B chain only after the separate KR natural-window review confirms no relevant
-P0.
+Phase 9.1D may attach the evidence-supported Inventory/exact-Trade-AR sidecar to a delivery-isolated
+runtime shadow canary after a separate work instruction. Do not implement DSO, Inventory Days, DPO,
+CCC, ROIC, user-visible working-capital output, or KR cash-flow period recovery without separate
+authorization. Promote the full Phase 9.1A -> 9.1B -> 9.1C chain only after the separate KR
+natural-window review confirms no relevant P0.
 
 ## 28. New Session Bootstrap Prompt
 

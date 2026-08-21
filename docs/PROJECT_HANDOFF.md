@@ -7,28 +7,33 @@ validation, delivery, or Scheduled Tasks.
 
 ## Current Authoritative Handoff — 2026-08-21
 
-Phase 9.1B is implemented on `codex/phase-9-1b-canonical-working-capital-core` as a linear descendant
-of Phase 9.1A final SHA `d4a4daf08ff5f68bc1072cc065e69ca5de5da145` and immutable work-instruction
-commit `0952bee040133aa49a4ba494ecae76163e9a9511`. The contract remains
-`working-capital-evidence-v1`; derivation version is
-`working-capital-evidence-v1:canonical-core-v1`.
-
-Implementation SHA `a35c615a77b44b37739d4f6a73aa9f0f290ba831` passed Actions run
-`32450301567` Test/Lint, 1,301 full tests, Ruff, deterministic evidence, and all local safety gates.
+Phase 9.1C is closed retrospectively on
+`codex/phase-9-1c-working-capital-shadow-consumption` as a linear descendant of Phase 9.1B final SHA
+`2ea8c43c6ec5ef986c23ea15ea707b5e93a720f6` and immutable work-instruction commit
+`613d91d74d3a91c43ed61f98a13a2ca57b7a90ae`. Phase 9.1B remains
+`working-capital-evidence-v1:canonical-core-v1`; Phase 9.1C adds the archive-only
+`working-capital-shadow-consumption-v1` contract.
 
 Inventory is total-inventory only. Exact trade and separate broad AR/AP remain distinct through raw
 Fact, delta/YoY Fact, and structured relation identity. Prior-year comparison requires the same
 issuer fiscal quarter and exact semantic, scope, currency/unit, entity, basis, and source version.
-The 20-subject implementation matches all Phase 9.1A metric coverage with zero newly blocked items:
+The 20-subject canonical implementation matches all Phase 9.1A metric coverage with zero newly blocked items:
 160 selected reported Facts feed 44 delta, 44 balance YoY, 31 flow YoY Facts, and 53 eligible
 relations. Arithmetic, provenance, and idempotency errors are zero.
 
+The 9.1C immutable replay consumes seven current-formal relations: five Inventory and two exact
+Trade AR. Automatic relation binding is 7/7; semantic, PIT/freshness, causal, arithmetic, repetition,
+Unknown contradiction, and degraded-quality counts are zero. TSM is
+`FORMAL_LAGGING_PROVISIONAL`; Korean Re remains N/A. Broad AR/AP and AP relations are excluded from
+the initial canary because they did not add enough daily analytical value.
+
 DSO, Inventory Days, DPO, CCC, and standard ROIC remain deferred. Open P0/material P1 are zero;
-`PHASE_9_1C_READY = YES` with `WORKING_CAPITAL_SHADOW_CONSUMPTION_EARNINGS_QUALITY`.
+`PHASE_9_1D_READY = YES` with
+`SELECTIVE_RUNTIME_SHADOW_CANARY_INVENTORY_EXACT_TRADE_AR`.
 
 Main and operating remain at `33c2f8be376b2cbb2961ecf9dc3c873715e0a034` with Phase 9.0E mode
 `SELECTIVE_CURRENT_FORMAL_FULL_FCF`; API health passes and the four AI tasks plus KRX telemetry are
-unchanged. Phase 9.1A/9.1B user-visible diff is zero. Promotion is
+unchanged. Phase 9.1A/9.1B/9.1C user-visible diff is zero. Promotion is
 `PROMOTION_DEFERRED_FOR_KR_NATURAL_WINDOW`; no Telegram, task, Pilot, DB, or archive mutation occurred.
 
 ## Project Purpose
@@ -75,7 +80,8 @@ execution or an autonomous investment adviser.
 | Cash-flow runtime canary | `cash-flow-runtime-shadow-canary-v1`, natural US LIVE PASS |
 | Baseline cash-flow consistency | `baseline-cash-flow-claim-consistency-v1`, retrospective closed |
 | Cash-flow kill switch | `CASH_FLOW_USER_VISIBLE_MODE`; invalid/default OFF |
-| Working-capital evidence | `working-capital-evidence-v1`; 9.1B canonical core implemented shadow, 9.1C ready |
+| Working-capital evidence | `working-capital-evidence-v1`; 9.1B canonical core implemented shadow |
+| Working-capital consumption | `working-capital-shadow-consumption-v1`; retrospective PASS, 9.1D selective canary ready |
 
 ## Phase 8.3 Final State
 
@@ -945,11 +951,21 @@ relations cover AR/revenue 14, inventory/revenue 11, inventory/COGS 11, and AP/C
 non-calendar fiscal handling, TSM proves issuer-level foreign evidence, six KR non-financials prove
 same-period CFS balance comparability, and Korean Re remains excluded.
 
-The 9.1B core must preserve trade versus broad identity, source balance/net-gross scope, source
-availability, and the prior-fiscal-year same-quarter compatibility gate. It may implement raw Facts,
-absolute delta, YoY growth, and the four audited cross-growth relations for eligible subjects only.
-It must not add DSO, Inventory Days, DPO, CCC, AI consumption, or user-visible rendering. Promotion
-of 9.1A remains deferred until the separate KR natural-window review.
+Phase 9.1B implements that core with 160 selected reported Facts, 44 balance deltas, 44 balance YoY,
+31 flow YoY Facts, and 53 eligible typed relations. All derived Facts and relations retain exact
+input IDs; arithmetic, provenance, idempotency, and 9.1A coverage-regression errors are zero.
+
+Phase 9.1C consumes the core only in archive shadow. PIT and latest-formal gates leave seven current
+material contexts: Inventory for `000660`, `005490`, `005930`, `MU`, and `TSLA`; exact Trade AR for
+`010120` and `086280`. TSM is context-only because the formal balance lags newer provisional
+earnings. Insurance is N/A. Broad AR/AP, AP relations, and low-value industry contexts are omitted
+from the proposed 9.1D canary.
+
+The proposed next scope is
+`SELECTIVE_RUNTIME_SHADOW_CANARY_INVENTORY_EXACT_TRADE_AR`. It must remain delivery-independent and
+cannot expose working-capital prose to Telegram without a later explicit decision. DSO, Inventory
+Days, DPO, CCC, user-visible rendering, status mutation, and causality remain prohibited. Promotion
+of the full 9.1A -> 9.1B -> 9.1C chain remains deferred until the separate KR natural-window review.
 
 On 2026-08-15 the owning desktop environment verified all four local-project tasks, retained their
 08:15/08:30/16:15/16:55 schedules, and migrated their exact prompts to v3.10 with
@@ -1163,8 +1179,10 @@ first.
    exact-group or natural-message evidence appears.
 7. Apply Phase Advancement Rule v1 to new runtime findings: disable Phase 9.0E for P0, bound material
    P1 repairs, and retain P2 as backlog.
-8. Phase 9.1A architecture is closed. After the separate KR natural-window review, promote it if no
-   relevant P0 exists, then begin Phase 9.1B selective Inventory/AR/AP canonical core. Keep DSO,
-   Inventory Days, DPO, CCC, and standard ROIC deferred.
+8. Phase 9.1A architecture, 9.1B canonical core, and 9.1C archive consumption are closed on one
+   dependent branch chain. After the separate KR natural-window review, promote the chain if no
+   relevant P0 exists. A separately instructed 9.1D may canary only current-formal Inventory and
+   exact Trade AR relations. Keep broad/AP initial canary use, DSO, Inventory Days, DPO, CCC, and
+   standard ROIC deferred.
 9. Keep Production Assist disabled until natural full-message evidence passes direct human review
    and the user explicitly approves it.

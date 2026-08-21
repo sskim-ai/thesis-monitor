@@ -1,0 +1,46 @@
+{
+  "advanced_ratios": {
+    "ccc": "DEFER",
+    "dpo": "DEFER",
+    "dso": "DEFER",
+    "inventory_days": "DEFER"
+  },
+  "excluded_industries": [
+    "insurance_reinsurance",
+    "biotech",
+    "special_financial_like",
+    "hpc_data_center",
+    "cloud_platform_software"
+  ],
+  "excluded_metric_families": [
+    "broad_ar_vs_revenue",
+    "trade_ap_vs_cogs",
+    "broad_ap_vs_cogs"
+  ],
+  "included_industries": [
+    "automotive",
+    "industrial_epc",
+    "memory_semiconductor",
+    "steel_materials",
+    "transport_logistics"
+  ],
+  "included_metric_families": [
+    "inventory_vs_cogs",
+    "inventory_vs_revenue",
+    "trade_ar_vs_revenue"
+  ],
+  "p0_open": [],
+  "p1_open": [],
+  "p2_backlog": [
+    "prior-quarter working-capital relation lifecycle",
+    "inventory component decomposition",
+    "contract-assets separate evidence family",
+    "AP relation value-add remains excluded from initial canary"
+  ],
+  "phase_9_0e_mode": "SELECTIVE_CURRENT_FORMAL_FULL_FCF",
+  "phase_9_1d_ready": true,
+  "phase_9_1d_scope": "SELECTIVE_RUNTIME_SHADOW_CANARY_INVENTORY_EXACT_TRADE_AR",
+  "promotion": "PROMOTION_DEFERRED_FOR_KR_NATURAL_WINDOW",
+  "runtime_user_visible_diff": 0,
+  "working_capital_user_visible": "NOT_ENABLED"
+}

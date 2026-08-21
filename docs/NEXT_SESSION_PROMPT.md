@@ -11,24 +11,26 @@ Read, in order:
 1. `docs/project-state.json`
 2. `docs/MASTER_WORKFLOW.md`
 3. `docs/PROJECT_HANDOFF.md`
-4. `docs/architecture/WORKING_CAPITAL_EVIDENCE.md`
-5. `docs/reports/20260821-phase9-1b-complete-report.md`
-6. `docs/reports/20260821-phase9-1b-readiness.md`
-7. `docs/reports/20260821-phase9-1b-canonical-facts.json`
-8. `docs/BRANCH_DEPENDENCY.md`
+4. `docs/architecture/WORKING_CAPITAL_SHADOW_CONSUMPTION.md`
+5. `docs/reports/20260821-phase9-1c-complete-report.md`
+6. `docs/reports/20260821-phase9-1c-readiness.md`
+7. `docs/reports/20260821-phase9-1c-shadow-context.json`
+8. `docs/reports/20260821-phase9-1b-canonical-facts.json`
+9. `docs/BRANCH_DEPENDENCY.md`
 
 Current development state:
 
 - Phase 9.1A: `COMPLETE_PENDING_PROMOTION`
-- Phase 9.1B: `IMPLEMENTED_PENDING_PROMOTION`
+- Phase 9.1B: `COMPLETE_PENDING_PROMOTION`
+- Phase 9.1C: `SHADOW_CONSUMPTION_CLOSED_RETROSPECTIVE_PENDING_PROMOTION`
 - Contract: `working-capital-evidence-v1`
 - Derivation: `working-capital-evidence-v1:canonical-core-v1`
-- 9.1B work-instruction commit: `0952bee040133aa49a4ba494ecae76163e9a9511`
-- Implementation commit: `a35c615a77b44b37739d4f6a73aa9f0f290ba831`
-- Implementation Actions run `32450301567`: Test/Lint PASS
+- Consumption contract: `working-capital-shadow-consumption-v1`
+- 9.1C work-instruction commit: `613d91d74d3a91c43ed61f98a13a2ca57b7a90ae`
+- Implementation/final commit and Actions: resolve from Git and the final validation report
 - Final documentation commit: resolve from Git and exact-SHA Actions
-- `PHASE_9_1C_READY = YES`
-- `PHASE_9_1C_SCOPE = WORKING_CAPITAL_SHADOW_CONSUMPTION_EARNINGS_QUALITY`
+- `PHASE_9_1D_READY = YES`
+- `PHASE_9_1D_SCOPE = SELECTIVE_RUNTIME_SHADOW_CANARY_INVENTORY_EXACT_TRADE_AR`
 - Promotion: `PROMOTION_DEFERRED_FOR_KR_NATURAL_WINDOW`
 - Runtime/user-visible behavior diff: `0`
 - Open P0/material P1: `0 / 0`
@@ -52,9 +54,15 @@ Implementation coverage is unchanged from Phase 9.1A. The audit contains 160 sel
 Facts, 44 delta, 44 balance YoY, 31 flow YoY Facts, and 53 eligible structured relations with zero
 arithmetic, provenance, idempotency, or coverage-regression errors.
 
-The next default phase is archive/shadow-only working-capital consumption and earnings-quality
-reasoning. Keep DSO, Inventory Days, DPO, CCC, standard ROIC, user-visible AI/Telegram consumption,
-Public Action/schema, fallback rendering, assessment mutation, KR cash-flow period recovery, KRX
-breadth, and peer integration out unless a separate instruction explicitly authorizes them. The
-next natural US cash-flow proof and KRX telemetry continue in parallel under Phase Advancement Rule
-v1.
+Phase 9.1C selects seven current-formal, material relations from that store: five Inventory and two
+exact Trade AR. TSM is formal-lagging-provisional; insurance is N/A. Automatic binding is 7/7 and
+PIT, semantic, causal, arithmetic, Unknown, repetition, and human-quality degradation errors are
+zero. Broad AR/AP and AP relations are excluded from the initial canary on observed value-add.
+
+The next default phase is a delivery-isolated runtime shadow canary for only the approved Inventory
+and exact Trade AR scope. Do not expose working-capital text to actual AI/Telegram, change Public
+Action/schema/fallback, mutate assessments, add DSO/Inventory Days/DPO/CCC/ROIC, recover KR
+cash-flow periods, or integrate KRX breadth/peers unless a separate instruction explicitly
+authorizes it. First consume the separate KR natural review before promoting 9.1A -> 9.1B -> 9.1C.
+The next natural US cash-flow proof and KRX telemetry continue in parallel under Phase Advancement
+Rule v1.

@@ -1,0 +1,2942 @@
+{
+  "active_universe_count": 20,
+  "cash_flow_cross_links": {
+    "causal_claims": 0,
+    "compatible": 3,
+    "period_mismatch_suppressed": 0,
+    "selected": 2
+  },
+  "contract": "working-capital-shadow-consumption-v1",
+  "freshness_counts": {
+    "BLOCKED": 11,
+    "CURRENT_FORMAL": 7,
+    "FORMAL_LAGGING_PROVISIONAL": 1,
+    "NOT_APPLICABLE": 1
+  },
+  "generated_at": "2026-08-21T15:40:00+09:00",
+  "human_quality": {
+    "MATERIAL_IMPROVEMENT": 7,
+    "NO_MEANINGFUL_CHANGE": 13
+  },
+  "market_counts": {
+    "KR": 7,
+    "US_FOREIGN": 13
+  },
+  "message_length": {
+    "after_average": 1165.2,
+    "average_delta": 32.1,
+    "before_average": 1133.1
+  },
+  "metric_coverage": {
+    "accounts_payable_broad": {
+      "blocked": 8,
+      "consumed": 0,
+      "eligible": 10,
+      "not_applicable": 1,
+      "partial": 1,
+      "suppressed_eligible": 10
+    },
+    "accounts_receivable_broad": {
+      "blocked": 7,
+      "consumed": 0,
+      "eligible": 9,
+      "not_applicable": 1,
+      "partial": 3,
+      "suppressed_eligible": 9
+    },
+    "inventory": {
+      "blocked": 5,
+      "consumed": 5,
+      "eligible": 11,
+      "not_applicable": 1,
+      "partial": 3,
+      "suppressed_eligible": 6
+    },
+    "trade_accounts_payable": {
+      "blocked": 10,
+      "consumed": 0,
+      "eligible": 8,
+      "not_applicable": 1,
+      "partial": 1,
+      "suppressed_eligible": 8
+    },
+    "trade_accounts_receivable": {
+      "blocked": 12,
+      "consumed": 2,
+      "eligible": 6,
+      "not_applicable": 1,
+      "partial": 1,
+      "suppressed_eligible": 4
+    }
+  },
+  "mutations": {
+    "archive_rewrite": 0,
+    "database": 0,
+    "fallback": 0,
+    "feature_mode": 0,
+    "pilot": 0,
+    "public_action": 0,
+    "receipt_rewrite": 0,
+    "runtime": 0,
+    "scheduled_task": 0,
+    "telegram": 0,
+    "user_visible": 0
+  },
+  "numeric_binding": {
+    "automatic": 7,
+    "manual": 0,
+    "rejected": 0,
+    "relation_arithmetic_errors": 0,
+    "unresolved": 0
+  },
+  "packets": {
+    "KR": "2026-08-20-kr-run-29-6e8809e1e944",
+    "US": "2026-08-21-us-run-30-5a3b7c1c4390"
+  },
+  "provider_telemetry": {
+    "new_paid_providers": 0,
+    "opendart_live_requests": 0,
+    "phase9_1b_stored_evidence_reused": true,
+    "sec_live_requests": 0
+  },
+  "quality_receipt": {
+    "contract": "working-capital-shadow-quality-receipt-v1",
+    "exact_repeated_reasoning": [],
+    "internal_language_tickers": [],
+    "semantic_errors": [],
+    "status": "PASS",
+    "template_skeleton_repeats": [],
+    "threshold_changes": 0
+  },
+  "readiness": {
+    "advanced_ratios": {
+      "ccc": "DEFER",
+      "dpo": "DEFER",
+      "dso": "DEFER",
+      "inventory_days": "DEFER"
+    },
+    "excluded_industries": [
+      "insurance_reinsurance",
+      "biotech",
+      "special_financial_like",
+      "hpc_data_center",
+      "cloud_platform_software"
+    ],
+    "excluded_metric_families": [
+      "broad_ar_vs_revenue",
+      "trade_ap_vs_cogs",
+      "broad_ap_vs_cogs"
+    ],
+    "included_industries": [
+      "automotive",
+      "industrial_epc",
+      "memory_semiconductor",
+      "steel_materials",
+      "transport_logistics"
+    ],
+    "included_metric_families": [
+      "inventory_vs_cogs",
+      "inventory_vs_revenue",
+      "trade_ar_vs_revenue"
+    ],
+    "p0_open": [],
+    "p1_open": [],
+    "p2_backlog": [
+      "prior-quarter working-capital relation lifecycle",
+      "inventory component decomposition",
+      "contract-assets separate evidence family",
+      "AP relation value-add remains excluded from initial canary"
+    ],
+    "phase_9_0e_mode": "SELECTIVE_CURRENT_FORMAL_FULL_FCF",
+    "phase_9_1d_ready": true,
+    "phase_9_1d_scope": "SELECTIVE_RUNTIME_SHADOW_CANARY_INVENTORY_EXACT_TRADE_AR",
+    "promotion": "PROMOTION_DEFERRED_FOR_KR_NATURAL_WINDOW",
+    "runtime_user_visible_diff": 0,
+    "working_capital_user_visible": "NOT_ENABLED"
+  },
+  "relation_coverage": {
+    "broad_ap_vs_cogs": {
+      "eligible": 9,
+      "selected": 0,
+      "semantic_scope": "broad",
+      "suppressed": 9,
+      "value_add": {}
+    },
+    "broad_ar_vs_revenue": {
+      "eligible": 8,
+      "selected": 0,
+      "semantic_scope": "broad",
+      "suppressed": 8,
+      "value_add": {}
+    },
+    "inventory_vs_cogs": {
+      "eligible": 11,
+      "selected": 3,
+      "semantic_scope": "total_inventory",
+      "suppressed": 8,
+      "value_add": {
+        "MATERIAL_IMPROVEMENT": 3
+      }
+    },
+    "inventory_vs_revenue": {
+      "eligible": 11,
+      "selected": 2,
+      "semantic_scope": "total_inventory",
+      "suppressed": 9,
+      "value_add": {
+        "MATERIAL_IMPROVEMENT": 2
+      }
+    },
+    "trade_ap_vs_cogs": {
+      "eligible": 8,
+      "selected": 0,
+      "semantic_scope": "exact_trade",
+      "suppressed": 8,
+      "value_add": {}
+    },
+    "trade_ar_vs_revenue": {
+      "eligible": 6,
+      "selected": 2,
+      "semantic_scope": "exact_trade",
+      "suppressed": 4,
+      "value_add": {
+        "MATERIAL_IMPROVEMENT": 2
+      }
+    }
+  },
+  "source_core": "docs/reports/20260821-phase9-1b-canonical-facts.json",
+  "source_core_sha256": "cc9a9d8e0cbd1faaae5fef13969869bf454ca3dfd796c88962e7f3a29e90d1c5",
+  "subjects": [
+    {
+      "after_text": "🤖 AI 보조 종목 점검 · KR Pilot 4/5\n\n🏢 SK하이닉스(000660)\n투자 논리: 유지 · 오늘 중요한 신규 변화 없음\n구조적 위험: 높아진 상태\n시장 기대: 매우 높음\n\n🎯 핵심 판단\nHBM4 실행과 고부가 메모리 논리는 유지되지만 높은 기대를 넘을 새 사업 근거는 확인되지 않았습니다. 현재가 1,691,000원입니다. 기존 돌파 실패에서 확인 가격 상단을 넘어선 상태로 전환됐으므로 가격 안착과 HBM 수율·현금전환을 별도로 다시 확인해야 합니다. 손익 자료의 재무 품질 충돌 때문에 실적 금액은 판단에서 제외합니다.\n\n📈 사업·실적\n손익 자료는 재무 품질 충돌로 금액과 성장률을 사용하지 않습니다. 재고·설비투자·영업현금흐름·잉여현금흐름이 확인되어야 HBM 수익성의 지속성을 판단할 수 있습니다.\n\n💰 가격·포지셔닝\n현재가 1,691,000원입니다. 가까운 동적 지지는 동적 지지구간 하단 1,190,321원부터 동적 지지구간 상단 1,301,679원까지이고, 가까운 동적 저항은 동적 저항구간 하단 2,918,471원부터 동적 저항구간 상단 3,055,529원까지입니다. 현재가 기준 차트 손익비 2.08배입니다. 기존 돌파 실패에서 확인 가격 상단을 넘어선 상태로 전환됐으며, 이는 가격 확인의 회복이지 자동 사업 논리 변화가 아닙니다.\n• 신규 관찰자: 신규 관찰자는 상단 돌파 뒤 가격 안착과 동적 지지 반응, HBM 수율·현금전환이 함께 확인될 때 새 자금의 가격·사실 비대칭을 다시 판단합니다.\n• 보유자: 보유자는 확인 가격 상단 유지 여부와 별도로 HBM4 수율·재고·현금흐름의 사업 악화를 구분해 점검합니다.\n\n📊 수급\n외국인 당일 순매수 320,001주 기록했고, 기관 당일 순매도 13,113주 기록했습니다.\n외국인 5일 순매수 960,408주 기록했고, 기관 5일 순매도 574,060주 기록했습니다.\n외국인 20일 순매도 2,283,511주 기록했고, 기관 20일 순매수 192,757주 기록했습니다.\n외국인의 당일·5일 매수와 20일 매도, 기관의 단기 매도와 20일 매수가 엇갈리므로 HBM 실행 근거와 분리해 봅니다.\n\n📐 Valuation\n상장주식 기준 회사 전체 장부가 배수는 현재 PBR 4.58배입니다. 회사 전체 PBR의 자체 역사 위치는 PBR 역사적 백분위 87%입니다. 이는 현재 PBR이 비교 가능한 과거 관측치 대부분보다 높은 구간이라는 뜻입니다. 이 배수는 HBM 실행과 재고·현금흐름의 확인과 함께 봐야 합니다. 같은 시점의 동종기업 비교값은 없어 회사 전체 현재 배수와 자체 역사 위치를 함께 봅니다.\n\n⚠️ 기존 경고\n• 유상증자에 따른 희석·자본조달 경제적 영향\n\n⚠️ 데이터 주의\n• 최신 잠정실적의 수익성 관계에 중대한 검증 경고가 있어 매출·이익과 이익 기반 배수의 정량 해석을 보류합니다.\n\n📊 운전자본·이익의 질\n재고 증가율은 매출원가 증가율보다 2.1%p 밑돌았습니다. 재고 정상화와 양립하지만 ASP·HBM 수요 개선을 확정하지 않습니다.\n\n👁 핵심 감시\n• HBM4 출하·수율·고객 장기계약\n\n📌 다음 확인\n• 다음 HBM4 출하·수율과 재고·설비투자 이후 현금흐름이 고마진의 지속성을 뒷받침하는지 확인합니다.\n\n⚠️ 미확인\n• 재고 변화의 원인과 ASP·HBM 믹스가 현금전환에 미치는 영향은 아직 확인되지 않았습니다.",
+      "before_text": "🤖 AI 보조 종목 점검 · KR Pilot 4/5\n\n🏢 SK하이닉스(000660)\n투자 논리: 유지 · 오늘 중요한 신규 변화 없음\n구조적 위험: 높아진 상태\n시장 기대: 매우 높음\n\n🎯 핵심 판단\nHBM4 실행과 고부가 메모리 논리는 유지되지만 높은 기대를 넘을 새 사업 근거는 확인되지 않았습니다. 현재가 1,691,000원입니다. 기존 돌파 실패에서 확인 가격 상단을 넘어선 상태로 전환됐으므로 가격 안착과 HBM 수율·현금전환을 별도로 다시 확인해야 합니다. 손익 자료의 재무 품질 충돌 때문에 실적 금액은 판단에서 제외합니다.\n\n📈 사업·실적\n손익 자료는 재무 품질 충돌로 금액과 성장률을 사용하지 않습니다. 재고·설비투자·영업현금흐름·잉여현금흐름이 확인되어야 HBM 수익성의 지속성을 판단할 수 있습니다.\n\n💰 가격·포지셔닝\n현재가 1,691,000원입니다. 가까운 동적 지지는 동적 지지구간 하단 1,190,321원부터 동적 지지구간 상단 1,301,679원까지이고, 가까운 동적 저항은 동적 저항구간 하단 2,918,471원부터 동적 저항구간 상단 3,055,529원까지입니다. 현재가 기준 차트 손익비 2.08배입니다. 기존 돌파 실패에서 확인 가격 상단을 넘어선 상태로 전환됐으며, 이는 가격 확인의 회복이지 자동 사업 논리 변화가 아닙니다.\n• 신규 관찰자: 신규 관찰자는 상단 돌파 뒤 가격 안착과 동적 지지 반응, HBM 수율·현금전환이 함께 확인될 때 새 자금의 가격·사실 비대칭을 다시 판단합니다.\n• 보유자: 보유자는 확인 가격 상단 유지 여부와 별도로 HBM4 수율·재고·현금흐름의 사업 악화를 구분해 점검합니다.\n\n📊 수급\n외국인 당일 순매수 320,001주 기록했고, 기관 당일 순매도 13,113주 기록했습니다.\n외국인 5일 순매수 960,408주 기록했고, 기관 5일 순매도 574,060주 기록했습니다.\n외국인 20일 순매도 2,283,511주 기록했고, 기관 20일 순매수 192,757주 기록했습니다.\n외국인의 당일·5일 매수와 20일 매도, 기관의 단기 매도와 20일 매수가 엇갈리므로 HBM 실행 근거와 분리해 봅니다.\n\n📐 Valuation\n상장주식 기준 회사 전체 장부가 배수는 현재 PBR 4.58배입니다. 회사 전체 PBR의 자체 역사 위치는 PBR 역사적 백분위 87%입니다. 이는 현재 PBR이 비교 가능한 과거 관측치 대부분보다 높은 구간이라는 뜻입니다. 이 배수는 HBM 실행과 재고·현금흐름의 확인과 함께 봐야 합니다. 같은 시점의 동종기업 비교값은 없어 회사 전체 현재 배수와 자체 역사 위치를 함께 봅니다.\n\n⚠️ 기존 경고\n• 유상증자에 따른 희석·자본조달 경제적 영향\n\n⚠️ 데이터 주의\n• 최신 잠정실적의 수익성 관계에 중대한 검증 경고가 있어 매출·이익과 이익 기반 배수의 정량 해석을 보류합니다.\n\n👁 핵심 감시\n• HBM4 출하·수율·고객 장기계약\n\n📌 다음 확인\n• 다음 HBM4 출하·수율과 재고·설비투자 이후 현금흐름이 고마진의 지속성을 뒷받침하는지 확인합니다.\n\n⚠️ 미확인\n• HBM4 고객별 출하·수율, 재고, 설비투자 이후 영업현금흐름·잉여현금흐름·자본수익률이 확인되지 않아 고마진의 반복 가능성을 판단할 수 없습니다.",
+      "company_name": "SK하이닉스",
+      "context": {
+        "allowed_claims": [
+          "typed_relation",
+          "cautious_earnings_quality_context"
+        ],
+        "assessment_date": "2026-08-20",
+        "cash_flow_alignment_state": "NOT_PROVIDED",
+        "cash_flow_context_used": false,
+        "consumption_eligible": true,
+        "contract": "working-capital-shadow-consumption-v1",
+        "cutoff": "2026-08-20",
+        "freshness_state": "CURRENT_FORMAL",
+        "industry": "memory_semiconductor",
+        "industry_applicability": {
+          "ap": "SECONDARY",
+          "ap_vs_cogs": "SECONDARY",
+          "ar": "SECONDARY",
+          "ar_vs_revenue": "SECONDARY",
+          "inventory": "PRIMARY",
+          "inventory_vs_cogs": "PRIMARY",
+          "inventory_vs_revenue": "PRIMARY"
+        },
+        "latest_formal_balance_date": "2026-06-30",
+        "market": "KR",
+        "materiality_reason": "existing_working_capital_driver_or_unknown",
+        "metric_contexts": [
+          {
+            "current_fact_id": null,
+            "metric": "accounts_payable_broad",
+            "semantic_label": "광의 매입채무",
+            "status": "BLOCKED",
+            "yoy_fact_id": null
+          },
+          {
+            "current_fact_id": null,
+            "metric": "accounts_receivable_broad",
+            "semantic_label": "광의 매출채권",
+            "status": "BLOCKED",
+            "yoy_fact_id": null
+          },
+          {
+            "current_fact_id": "working-capital-reported:b742cc7afdc66afa6d7e1135",
+            "metric": "inventory",
+            "semantic_label": "재고",
+            "status": "ELIGIBLE",
+            "yoy_fact_id": "working-capital-derived:76bafa4ff3bc5b672001b37f"
+          },
+          {
+            "current_fact_id": "working-capital-reported:5cdd9d8080be595cb03ef6eb",
+            "metric": "trade_accounts_payable",
+            "semantic_label": "거래 매입채무",
+            "status": "ELIGIBLE",
+            "yoy_fact_id": "working-capital-derived:fbb7a4485144ff7a15be3b5f"
+          },
+          {
+            "current_fact_id": "working-capital-reported:571b33c8276be8bd6693510e",
+            "metric": "trade_accounts_receivable",
+            "semantic_label": "거래 매출채권",
+            "status": "ELIGIBLE",
+            "yoy_fact_id": "working-capital-derived:9af3236b3e8b4a25959cfa55"
+          }
+        ],
+        "packet_id": "2026-08-20-kr-run-29-6e8809e1e944",
+        "pit_state": "PASS",
+        "point_in_time_exclusions": [],
+        "prohibited_claims": [
+          "future_fact_used",
+          "stale_as_current",
+          "broad_trade_semantic_mislabel",
+          "contract_asset_as_trade_ar",
+          "accrued_liability_as_trade_ap",
+          "unsupported_causal_claim",
+          "dso_inventory_days_dpo_ccc",
+          "automatic_thesis_warning_or_valuation_change"
+        ],
+        "remaining_unknowns": [],
+        "resolved_unknowns": [
+          {
+            "original": "HBM4 고객별 출하·수율, 재고, 설비투자 이후 영업현금흐름·잉여현금흐름·자본수익률이 확인되지 않아 고마진의 반복 가능성을 판단할 수 없습니다.",
+            "replacement": null,
+            "state": "RESOLVED_EXACT"
+          }
+        ],
+        "selected_fact_refs": [
+          "working-capital-reported:b742cc7afdc66afa6d7e1135",
+          "working-capital-reported:3d542b94d368f70add0d6170",
+          "working-capital-reported:e82f96805a456becf97cc6f2",
+          "working-capital-reported:7fe8e5e809b98ce4701caf99",
+          "working-capital-derived:76bafa4ff3bc5b672001b37f",
+          "working-capital-derived:06d86117c3f4ba6209336c5c"
+        ],
+        "selected_relations": [
+          {
+            "applicability": "PRIMARY",
+            "balance_metric": "inventory",
+            "balance_scope": "total",
+            "balance_semantic": "ifrs-full:Inventories",
+            "direction": "LOWER",
+            "family": "inventory_vs_cogs",
+            "flow_metric": "cost_of_goods_sold",
+            "flow_semantic": "ifrs-full:CostOfSales",
+            "gap_percentage_points": "-2.06191700664683180124383042",
+            "input_fact_ids": [
+              "working-capital-reported:b742cc7afdc66afa6d7e1135",
+              "working-capital-reported:3d542b94d368f70add0d6170",
+              "working-capital-reported:e82f96805a456becf97cc6f2",
+              "working-capital-reported:7fe8e5e809b98ce4701caf99",
+              "working-capital-derived:76bafa4ff3bc5b672001b37f",
+              "working-capital-derived:06d86117c3f4ba6209336c5c"
+            ],
+            "relation_id": "working-capital-relation:38a9a0707d38e538ccdb2e7e"
+          }
+        ],
+        "semantic_labels": [
+          "재고",
+          "cost_of_goods_sold"
+        ],
+        "shadow_used": true,
+        "specificity_key": "memory_hbm",
+        "status": "READY",
+        "suppression_reasons": [],
+        "ticker": "000660",
+        "usage_mode": "INVENTORY_RELATION"
+      },
+      "financial_type": "non_financial",
+      "human_quality": "MATERIAL_IMPROVEMENT",
+      "industry": "memory_semiconductor",
+      "market": "KR",
+      "message_length_after": 1630,
+      "message_length_before": 1573,
+      "message_length_delta": 57,
+      "persistence_mutation": 0,
+      "reasoning": {
+        "fact_ids": [
+          "working-capital-reported:b742cc7afdc66afa6d7e1135",
+          "working-capital-reported:3d542b94d368f70add0d6170",
+          "working-capital-reported:e82f96805a456becf97cc6f2",
+          "working-capital-reported:7fe8e5e809b98ce4701caf99",
+          "working-capital-derived:76bafa4ff3bc5b672001b37f",
+          "working-capital-derived:06d86117c3f4ba6209336c5c"
+        ],
+        "numeric_claims": [
+          {
+            "display": "2.1%p",
+            "input_fact_ids": [
+              "working-capital-reported:b742cc7afdc66afa6d7e1135",
+              "working-capital-reported:3d542b94d368f70add0d6170",
+              "working-capital-reported:e82f96805a456becf97cc6f2",
+              "working-capital-reported:7fe8e5e809b98ce4701caf99",
+              "working-capital-derived:76bafa4ff3bc5b672001b37f",
+              "working-capital-derived:06d86117c3f4ba6209336c5c"
+            ],
+            "owner": "business_earnings",
+            "relation_id": "working-capital-relation:38a9a0707d38e538ccdb2e7e",
+            "semantic_type": "inventory_vs_cogs",
+            "text_ref": "business_earnings.text",
+            "value": "-2.06191700664683180124383042"
+          }
+        ],
+        "relation_ids": [
+          "working-capital-relation:38a9a0707d38e538ccdb2e7e"
+        ],
+        "text": "재고 증가율은 매출원가 증가율보다 2.1%p 밑돌았습니다. 재고 정상화와 양립하지만 ASP·HBM 수요 개선을 확정하지 않습니다."
+      },
+      "status_delta_candidate": false,
+      "ticker": "000660",
+      "unknown_audit": {
+        "after": [
+          "재고 변화의 원인과 ASP·HBM 믹스가 현금전환에 미치는 영향은 아직 확인되지 않았습니다."
+        ],
+        "before": [
+          "HBM4 고객별 출하·수율, 재고, 설비투자 이후 영업현금흐름·잉여현금흐름·자본수익률이 확인되지 않아 고마진의 반복 가능성을 판단할 수 없습니다."
+        ],
+        "contradiction": false
+      },
+      "validation_errors": []
+    },
+    {
+      "after_text": "🤖 AI 보조 종목 점검 · KR Pilot 4/5\n\n🏢 코리안리(003690)\n투자 논리: 유지 · 오늘 중요한 신규 변화 없음\n구조적 위험: 보통\n시장 기대: 균형\n\n🎯 핵심 판단\n재보험 언더라이팅과 자본관리 논리를 바꿀 새 근거는 확인되지 않았습니다. 현재가 14,620원입니다. 가까운 동적 지지는 동적 지지구간 하단 14,608원부터 동적 지지구간 상단 15,712원까지입니다. 최근 확인된 핵심 실적은 2026년 2분기 연결 기준 영업이익 1,750억원입니다. 이 가격과 단일 실적만으로 합산비율이나 자본적정성을 추정하지 않습니다.\n\n📈 사업·실적\n2026년 2분기 연결 기준 영업이익 1,750억원만 기간·연결 기준이 확인된 금액으로 표시합니다. 비교 가능한 매출·마진과 현금흐름이 없어 언더라이팅 수익성의 방향은 확정하지 않습니다.\n\n💰 가격·포지셔닝\n현재가 14,620원입니다. 가까운 동적 지지는 동적 지지구간 하단 14,608원부터 동적 지지구간 상단 15,712원까지이고, 가까운 동적 저항은 동적 저항구간 하단 14,661원부터 동적 저항구간 상단 15,179원까지입니다. 기존 확인 가격 상단 유지 상태는 이어졌지만 두 동적 구간이 겹쳐 현재가 손익비는 확인되지 않습니다.\n• 신규 관찰자: 신규 관찰자는 겹친 가격 구간을 추격하기보다 동적 지지 반응과 합산비율·자기자본이익률 확인이 함께 나타날 때 새 자금의 비대칭을 판단합니다.\n• 보유자: 보유자는 확인 가격 상단 유지와 별도로 합산비율·자본적정성의 사업 악화를 구분해 점검합니다.\n\n📊 수급\n외국인 당일 순매도 14,031주 기록했고, 기관 당일 순매수 8,934주 기록했습니다.\n외국인 5일 순매수 61,433주는 기록했고, 기관 5일 순매도 27,173주를 기록했습니다.\n외국인 20일 순매수 974,617주 기록했고, 기관 20일 순매도 105,329주 기록했습니다.\n당일에는 외국인과 기관이 반대였고 단기·중기 축에는 외국인 우위와 기관 매도가 이어져 재보험 수익성의 확인 근거와 분리합니다.\n\n📐 Valuation\n재보험사 전체의 이익 기준 값은 현재 PER 6.06배입니다. 재보험사 전체의 장부가 기준 값은 현재 PBR 0.64배입니다. 장부가 배수는 자기자본이익률과 자본적정성이 없어 현재 숫자만으로 가치평가 결론을 내리지 않습니다. 보험업 배수는 합산비율·자기자본이익률·자본적정성과 함께 봐야 합니다. 동종기업 비교값과 안전한 자체 역사 비교값이 없어 이번 평가는 회사 전체 현재 배수에 한정합니다.\n\n👁 핵심 감시\n• 합산비율과 자기자본이익률\n• 자본적정성과 자본환원\n\n📌 다음 확인\n• 다음 합산비율·자기자본이익률·자본적정성이 현재 장부가치 배수를 뒷받침하는지 확인합니다.\n\n⚠️ 미확인\n• 합산비율, 자기자본이익률, 자본적정성과 영업현금흐름이 확인되지 않아 현재 장부가치 배수의 질을 판단할 수 없습니다.",
+      "before_text": "🤖 AI 보조 종목 점검 · KR Pilot 4/5\n\n🏢 코리안리(003690)\n투자 논리: 유지 · 오늘 중요한 신규 변화 없음\n구조적 위험: 보통\n시장 기대: 균형\n\n🎯 핵심 판단\n재보험 언더라이팅과 자본관리 논리를 바꿀 새 근거는 확인되지 않았습니다. 현재가 14,620원입니다. 가까운 동적 지지는 동적 지지구간 하단 14,608원부터 동적 지지구간 상단 15,712원까지입니다. 최근 확인된 핵심 실적은 2026년 2분기 연결 기준 영업이익 1,750억원입니다. 이 가격과 단일 실적만으로 합산비율이나 자본적정성을 추정하지 않습니다.\n\n📈 사업·실적\n2026년 2분기 연결 기준 영업이익 1,750억원만 기간·연결 기준이 확인된 금액으로 표시합니다. 비교 가능한 매출·마진과 현금흐름이 없어 언더라이팅 수익성의 방향은 확정하지 않습니다.\n\n💰 가격·포지셔닝\n현재가 14,620원입니다. 가까운 동적 지지는 동적 지지구간 하단 14,608원부터 동적 지지구간 상단 15,712원까지이고, 가까운 동적 저항은 동적 저항구간 하단 14,661원부터 동적 저항구간 상단 15,179원까지입니다. 기존 확인 가격 상단 유지 상태는 이어졌지만 두 동적 구간이 겹쳐 현재가 손익비는 확인되지 않습니다.\n• 신규 관찰자: 신규 관찰자는 겹친 가격 구간을 추격하기보다 동적 지지 반응과 합산비율·자기자본이익률 확인이 함께 나타날 때 새 자금의 비대칭을 판단합니다.\n• 보유자: 보유자는 확인 가격 상단 유지와 별도로 합산비율·자본적정성의 사업 악화를 구분해 점검합니다.\n\n📊 수급\n외국인 당일 순매도 14,031주 기록했고, 기관 당일 순매수 8,934주 기록했습니다.\n외국인 5일 순매수 61,433주는 기록했고, 기관 5일 순매도 27,173주를 기록했습니다.\n외국인 20일 순매수 974,617주 기록했고, 기관 20일 순매도 105,329주 기록했습니다.\n당일에는 외국인과 기관이 반대였고 단기·중기 축에는 외국인 우위와 기관 매도가 이어져 재보험 수익성의 확인 근거와 분리합니다.\n\n📐 Valuation\n재보험사 전체의 이익 기준 값은 현재 PER 6.06배입니다. 재보험사 전체의 장부가 기준 값은 현재 PBR 0.64배입니다. 장부가 배수는 자기자본이익률과 자본적정성이 없어 현재 숫자만으로 가치평가 결론을 내리지 않습니다. 보험업 배수는 합산비율·자기자본이익률·자본적정성과 함께 봐야 합니다. 동종기업 비교값과 안전한 자체 역사 비교값이 없어 이번 평가는 회사 전체 현재 배수에 한정합니다.\n\n👁 핵심 감시\n• 합산비율과 자기자본이익률\n• 자본적정성과 자본환원\n\n📌 다음 확인\n• 다음 합산비율·자기자본이익률·자본적정성이 현재 장부가치 배수를 뒷받침하는지 확인합니다.\n\n⚠️ 미확인\n• 합산비율, 자기자본이익률, 자본적정성과 영업현금흐름이 확인되지 않아 현재 장부가치 배수의 질을 판단할 수 없습니다.",
+      "company_name": "코리안리",
+      "context": {
+        "allowed_claims": [],
+        "assessment_date": "2026-08-20",
+        "cash_flow_alignment_state": "NOT_APPLICABLE",
+        "cash_flow_context_used": false,
+        "consumption_eligible": false,
+        "contract": "working-capital-shadow-consumption-v1",
+        "cutoff": "2026-08-20",
+        "freshness_state": "NOT_APPLICABLE",
+        "industry": "insurance_reinsurance",
+        "industry_applicability": {
+          "ap": "NOT_APPLICABLE",
+          "ap_vs_cogs": "NOT_APPLICABLE",
+          "ar": "NOT_APPLICABLE",
+          "ar_vs_revenue": "NOT_APPLICABLE",
+          "inventory": "NOT_APPLICABLE",
+          "inventory_vs_cogs": "NOT_APPLICABLE",
+          "inventory_vs_revenue": "NOT_APPLICABLE"
+        },
+        "latest_formal_balance_date": null,
+        "market": "KR",
+        "materiality_reason": null,
+        "metric_contexts": [
+          {
+            "current_fact_id": null,
+            "metric": "accounts_payable_broad",
+            "semantic_label": "광의 매입채무",
+            "status": "NOT_APPLICABLE",
+            "yoy_fact_id": null
+          },
+          {
+            "current_fact_id": null,
+            "metric": "accounts_receivable_broad",
+            "semantic_label": "광의 매출채권",
+            "status": "NOT_APPLICABLE",
+            "yoy_fact_id": null
+          },
+          {
+            "current_fact_id": null,
+            "metric": "inventory",
+            "semantic_label": "재고",
+            "status": "NOT_APPLICABLE",
+            "yoy_fact_id": null
+          },
+          {
+            "current_fact_id": null,
+            "metric": "trade_accounts_payable",
+            "semantic_label": "거래 매입채무",
+            "status": "NOT_APPLICABLE",
+            "yoy_fact_id": null
+          },
+          {
+            "current_fact_id": null,
+            "metric": "trade_accounts_receivable",
+            "semantic_label": "거래 매출채권",
+            "status": "NOT_APPLICABLE",
+            "yoy_fact_id": null
+          }
+        ],
+        "packet_id": "2026-08-20-kr-run-29-6e8809e1e944",
+        "pit_state": "PASS",
+        "point_in_time_exclusions": [],
+        "prohibited_claims": [
+          "future_fact_used",
+          "stale_as_current",
+          "broad_trade_semantic_mislabel",
+          "contract_asset_as_trade_ar",
+          "accrued_liability_as_trade_ap",
+          "unsupported_causal_claim",
+          "dso_inventory_days_dpo_ccc",
+          "automatic_thesis_warning_or_valuation_change"
+        ],
+        "remaining_unknowns": [
+          "합산비율, 자기자본이익률, 자본적정성과 영업현금흐름이 확인되지 않아 현재 장부가치 배수의 질을 판단할 수 없습니다."
+        ],
+        "resolved_unknowns": [],
+        "selected_fact_refs": [],
+        "selected_relations": [],
+        "semantic_labels": [],
+        "shadow_used": false,
+        "specificity_key": "insurance_reinsurance",
+        "status": "NOT_APPLICABLE",
+        "suppression_reasons": [
+          "generic_working_capital_not_applicable"
+        ],
+        "ticker": "003690",
+        "usage_mode": "NOT_APPLICABLE"
+      },
+      "financial_type": "financial",
+      "human_quality": "NO_MEANINGFUL_CHANGE",
+      "industry": "insurance_reinsurance",
+      "market": "KR",
+      "message_length_after": 1404,
+      "message_length_before": 1404,
+      "message_length_delta": 0,
+      "persistence_mutation": 0,
+      "reasoning": null,
+      "status_delta_candidate": false,
+      "ticker": "003690",
+      "unknown_audit": {
+        "after": [
+          "합산비율, 자기자본이익률, 자본적정성과 영업현금흐름이 확인되지 않아 현재 장부가치 배수의 질을 판단할 수 없습니다."
+        ],
+        "before": [
+          "합산비율, 자기자본이익률, 자본적정성과 영업현금흐름이 확인되지 않아 현재 장부가치 배수의 질을 판단할 수 없습니다."
+        ],
+        "contradiction": false
+      },
+      "validation_errors": []
+    },
+    {
+      "after_text": "🤖 AI 보조 종목 점검 · KR Pilot 4/5\n\n🏢 POSCO홀딩스(005490)\n투자 논리: 유지 · 오늘 중요한 신규 변화 없음\n구조적 위험: 높아진 상태\n시장 기대: 균형\n\n🎯 핵심 판단\n철강·소재 사이클 논리를 바꿀 새 사업 근거는 확인되지 않았습니다. 현재가 321,500원입니다. 가까운 동적 지지는 동적 지지구간 하단 317,097원부터 동적 지지구간 상단 327,403원까지입니다. 동적 지지와 저항이 겹쳐 현재가 손익비는 확인되지 않으며, 철강 스프레드·원재료비·가동률이 사업 판단의 우선 확인점입니다.\n\n📈 사업·실적\n철강 스프레드·원재료비·가동률과 영업현금흐름이 확인되어야 사이클 이익의 질을 판단할 수 있습니다.\n\n💰 가격·포지셔닝\n현재가 321,500원입니다. 가까운 동적 지지는 동적 지지구간 하단 317,097원부터 동적 지지구간 상단 327,403원까지이고, 가까운 동적 저항은 동적 저항구간 하단 325,327원부터 동적 저항구간 상단 348,173원까지입니다. 두 구간이 겹쳐 현재가 손익비는 확인되지 않으며 가격 비대칭을 확정하지 않습니다.\n• 신규 관찰자: 신규 관찰자는 겹친 지지·저항이 분리되고 철강 스프레드와 현금전환이 확인될 때 새 자금의 비대칭을 다시 판단합니다.\n• 보유자: 보유자는 겹친 가격 구간의 재정렬과 별도로 스프레드·가동률·현금전환의 사업 악화를 구분해 점검합니다.\n\n📊 수급\n외국인 당일 순매수 27,768주 기록했고, 기관 당일 순매도 20,669주 기록했습니다.\n외국인 5일 순매수 157,649주 기록했고, 기관 5일 순매도 232,561주 기록했습니다.\n외국인 20일 순매수 225,934주 기록했고, 기관 20일 순매도 160,984주 기록했습니다.\n외국인은 세 시간축에서 매수했지만 기관은 모두 매도해, 이 관계를 철강 스프레드와 현금전환의 사업 근거와 분리합니다.\n\n📐 Valuation\n연결 회사 전체의 이익 기준 값은 현재 PER 18.04배입니다. 연결 회사 전체의 장부가 기준 값은 현재 PBR 0.42배입니다. 이익배수와 장부가 배수가 서로 다른 신호를 주므로 PBR 하나만으로 가치평가 결론을 내리지 않습니다. 철강·소재 배수는 정상화 이익과 현금전환의 지속성과 함께 봐야 합니다. 같은 시점의 동종기업 비교값은 없으며 이번 판단에는 회사 전체 현재 배수를 중심으로 봅니다.\n\n⚠️ 기존 경고\n• 신주인수권의 잠재 희석 영향\n\n📊 운전자본·이익의 질\n재고 증가율은 매출 증가율보다 7.1%p 앞섰습니다. 재고 전환은 철강 스프레드·원재료·물량과 함께 확인하며 사이클 방향을 확정하지 않습니다.\n\n👁 핵심 감시\n• 철강 가격·물량과 소재 수익성\n\n📌 다음 확인\n• 다음 철강 가격·물량, 리튬 수익성, 재고와 잉여현금흐름이 회복 논리를 확인하는지 봅니다.\n\n⚠️ 미확인\n• 재고 변화의 원인과 철강 스프레드·물량이 현금전환에 미치는 영향은 아직 확인되지 않았습니다.",
+      "before_text": "🤖 AI 보조 종목 점검 · KR Pilot 4/5\n\n🏢 POSCO홀딩스(005490)\n투자 논리: 유지 · 오늘 중요한 신규 변화 없음\n구조적 위험: 높아진 상태\n시장 기대: 균형\n\n🎯 핵심 판단\n철강·소재 사이클 논리를 바꿀 새 사업 근거는 확인되지 않았습니다. 현재가 321,500원입니다. 가까운 동적 지지는 동적 지지구간 하단 317,097원부터 동적 지지구간 상단 327,403원까지입니다. 동적 지지와 저항이 겹쳐 현재가 손익비는 확인되지 않으며, 철강 스프레드·원재료비·가동률이 사업 판단의 우선 확인점입니다.\n\n📈 사업·실적\n철강 스프레드·원재료비·가동률과 영업현금흐름이 확인되어야 사이클 이익의 질을 판단할 수 있습니다.\n\n💰 가격·포지셔닝\n현재가 321,500원입니다. 가까운 동적 지지는 동적 지지구간 하단 317,097원부터 동적 지지구간 상단 327,403원까지이고, 가까운 동적 저항은 동적 저항구간 하단 325,327원부터 동적 저항구간 상단 348,173원까지입니다. 두 구간이 겹쳐 현재가 손익비는 확인되지 않으며 가격 비대칭을 확정하지 않습니다.\n• 신규 관찰자: 신규 관찰자는 겹친 지지·저항이 분리되고 철강 스프레드와 현금전환이 확인될 때 새 자금의 비대칭을 다시 판단합니다.\n• 보유자: 보유자는 겹친 가격 구간의 재정렬과 별도로 스프레드·가동률·현금전환의 사업 악화를 구분해 점검합니다.\n\n📊 수급\n외국인 당일 순매수 27,768주 기록했고, 기관 당일 순매도 20,669주 기록했습니다.\n외국인 5일 순매수 157,649주 기록했고, 기관 5일 순매도 232,561주 기록했습니다.\n외국인 20일 순매수 225,934주 기록했고, 기관 20일 순매도 160,984주 기록했습니다.\n외국인은 세 시간축에서 매수했지만 기관은 모두 매도해, 이 관계를 철강 스프레드와 현금전환의 사업 근거와 분리합니다.\n\n📐 Valuation\n연결 회사 전체의 이익 기준 값은 현재 PER 18.04배입니다. 연결 회사 전체의 장부가 기준 값은 현재 PBR 0.42배입니다. 이익배수와 장부가 배수가 서로 다른 신호를 주므로 PBR 하나만으로 가치평가 결론을 내리지 않습니다. 철강·소재 배수는 정상화 이익과 현금전환의 지속성과 함께 봐야 합니다. 같은 시점의 동종기업 비교값은 없으며 이번 판단에는 회사 전체 현재 배수를 중심으로 봅니다.\n\n⚠️ 기존 경고\n• 신주인수권의 잠재 희석 영향\n\n👁 핵심 감시\n• 철강 가격·물량과 소재 수익성\n\n📌 다음 확인\n• 다음 철강 가격·물량, 리튬 수익성, 재고와 잉여현금흐름이 회복 논리를 확인하는지 봅니다.\n\n⚠️ 미확인\n• 철강 가격·물량, 리튬 사업 수익성, 재고와 설비투자 이후 영업현금흐름·잉여현금흐름·자본수익률이 확인되지 않아 사이클 회복의 질을 판단할 수 없습니다.",
+      "company_name": "POSCO홀딩스",
+      "context": {
+        "allowed_claims": [
+          "typed_relation",
+          "cautious_earnings_quality_context"
+        ],
+        "assessment_date": "2026-08-20",
+        "cash_flow_alignment_state": "NOT_PROVIDED",
+        "cash_flow_context_used": false,
+        "consumption_eligible": true,
+        "contract": "working-capital-shadow-consumption-v1",
+        "cutoff": "2026-08-20",
+        "freshness_state": "CURRENT_FORMAL",
+        "industry": "steel_materials",
+        "industry_applicability": {
+          "ap": "SECONDARY",
+          "ap_vs_cogs": "SECONDARY",
+          "ar": "PRIMARY",
+          "ar_vs_revenue": "PRIMARY",
+          "inventory": "PRIMARY",
+          "inventory_vs_cogs": "PRIMARY",
+          "inventory_vs_revenue": "PRIMARY"
+        },
+        "latest_formal_balance_date": "2026-06-30",
+        "market": "KR",
+        "materiality_reason": "existing_working_capital_driver_or_unknown",
+        "metric_contexts": [
+          {
+            "current_fact_id": null,
+            "metric": "accounts_payable_broad",
+            "semantic_label": "광의 매입채무",
+            "status": "BLOCKED",
+            "yoy_fact_id": null
+          },
+          {
+            "current_fact_id": null,
+            "metric": "accounts_receivable_broad",
+            "semantic_label": "광의 매출채권",
+            "status": "BLOCKED",
+            "yoy_fact_id": null
+          },
+          {
+            "current_fact_id": "working-capital-reported:8eb93ea161575e8239c3b49a",
+            "metric": "inventory",
+            "semantic_label": "재고",
+            "status": "ELIGIBLE",
+            "yoy_fact_id": "working-capital-derived:c443106cc507b5d6c464f833"
+          },
+          {
+            "current_fact_id": "working-capital-reported:e01cea4904be4d5900cb2688",
+            "metric": "trade_accounts_payable",
+            "semantic_label": "거래 매입채무",
+            "status": "ELIGIBLE",
+            "yoy_fact_id": "working-capital-derived:03b5be8a8b772a3b22279879"
+          },
+          {
+            "current_fact_id": "working-capital-reported:1e9f1bc2df7865e6895cf815",
+            "metric": "trade_accounts_receivable",
+            "semantic_label": "거래 매출채권",
+            "status": "ELIGIBLE",
+            "yoy_fact_id": "working-capital-derived:e560d6f16a679a98c25f5967"
+          }
+        ],
+        "packet_id": "2026-08-20-kr-run-29-6e8809e1e944",
+        "pit_state": "PASS",
+        "point_in_time_exclusions": [],
+        "prohibited_claims": [
+          "future_fact_used",
+          "stale_as_current",
+          "broad_trade_semantic_mislabel",
+          "contract_asset_as_trade_ar",
+          "accrued_liability_as_trade_ap",
+          "unsupported_causal_claim",
+          "dso_inventory_days_dpo_ccc",
+          "automatic_thesis_warning_or_valuation_change"
+        ],
+        "remaining_unknowns": [],
+        "resolved_unknowns": [
+          {
+            "original": "철강 가격·물량, 리튬 사업 수익성, 재고와 설비투자 이후 영업현금흐름·잉여현금흐름·자본수익률이 확인되지 않아 사이클 회복의 질을 판단할 수 없습니다.",
+            "replacement": null,
+            "state": "RESOLVED_EXACT"
+          }
+        ],
+        "selected_fact_refs": [
+          "working-capital-reported:8eb93ea161575e8239c3b49a",
+          "working-capital-reported:57f4cb34ba90e597a438ef41",
+          "working-capital-reported:e49769235bd25c78c4d0413d",
+          "working-capital-reported:cda0eade6f371725e4dda70a",
+          "working-capital-derived:c443106cc507b5d6c464f833",
+          "working-capital-derived:9e40436bfef8c3e37e8ba6aa"
+        ],
+        "selected_relations": [
+          {
+            "applicability": "PRIMARY",
+            "balance_metric": "inventory",
+            "balance_scope": "total",
+            "balance_semantic": "ifrs-full:Inventories",
+            "direction": "GREATER",
+            "family": "inventory_vs_revenue",
+            "flow_metric": "revenue",
+            "flow_semantic": "ifrs-full:Revenue",
+            "gap_percentage_points": "7.087812183384325807684667239",
+            "input_fact_ids": [
+              "working-capital-reported:8eb93ea161575e8239c3b49a",
+              "working-capital-reported:57f4cb34ba90e597a438ef41",
+              "working-capital-reported:e49769235bd25c78c4d0413d",
+              "working-capital-reported:cda0eade6f371725e4dda70a",
+              "working-capital-derived:c443106cc507b5d6c464f833",
+              "working-capital-derived:9e40436bfef8c3e37e8ba6aa"
+            ],
+            "relation_id": "working-capital-relation:ab1a9a616bcd8d6023b2db06"
+          }
+        ],
+        "semantic_labels": [
+          "재고",
+          "revenue"
+        ],
+        "shadow_used": true,
+        "specificity_key": "steel_spread",
+        "status": "READY",
+        "suppression_reasons": [],
+        "ticker": "005490",
+        "usage_mode": "INVENTORY_RELATION"
+      },
+      "financial_type": "non_financial",
+      "human_quality": "MATERIAL_IMPROVEMENT",
+      "industry": "steel_materials",
+      "market": "KR",
+      "message_length_after": 1428,
+      "message_length_before": 1367,
+      "message_length_delta": 61,
+      "persistence_mutation": 0,
+      "reasoning": {
+        "fact_ids": [
+          "working-capital-reported:8eb93ea161575e8239c3b49a",
+          "working-capital-reported:57f4cb34ba90e597a438ef41",
+          "working-capital-reported:e49769235bd25c78c4d0413d",
+          "working-capital-reported:cda0eade6f371725e4dda70a",
+          "working-capital-derived:c443106cc507b5d6c464f833",
+          "working-capital-derived:9e40436bfef8c3e37e8ba6aa"
+        ],
+        "numeric_claims": [
+          {
+            "display": "7.1%p",
+            "input_fact_ids": [
+              "working-capital-reported:8eb93ea161575e8239c3b49a",
+              "working-capital-reported:57f4cb34ba90e597a438ef41",
+              "working-capital-reported:e49769235bd25c78c4d0413d",
+              "working-capital-reported:cda0eade6f371725e4dda70a",
+              "working-capital-derived:c443106cc507b5d6c464f833",
+              "working-capital-derived:9e40436bfef8c3e37e8ba6aa"
+            ],
+            "owner": "business_earnings",
+            "relation_id": "working-capital-relation:ab1a9a616bcd8d6023b2db06",
+            "semantic_type": "inventory_vs_revenue",
+            "text_ref": "business_earnings.text",
+            "value": "7.087812183384325807684667239"
+          }
+        ],
+        "relation_ids": [
+          "working-capital-relation:ab1a9a616bcd8d6023b2db06"
+        ],
+        "text": "재고 증가율은 매출 증가율보다 7.1%p 앞섰습니다. 재고 전환은 철강 스프레드·원재료·물량과 함께 확인하며 사이클 방향을 확정하지 않습니다."
+      },
+      "status_delta_candidate": false,
+      "ticker": "005490",
+      "unknown_audit": {
+        "after": [
+          "재고 변화의 원인과 철강 스프레드·물량이 현금전환에 미치는 영향은 아직 확인되지 않았습니다."
+        ],
+        "before": [
+          "철강 가격·물량, 리튬 사업 수익성, 재고와 설비투자 이후 영업현금흐름·잉여현금흐름·자본수익률이 확인되지 않아 사이클 회복의 질을 판단할 수 없습니다."
+        ],
+        "contradiction": false
+      },
+      "validation_errors": []
+    },
+    {
+      "after_text": "🤖 AI 보조 종목 점검 · KR Pilot 4/5\n\n🏢 삼성전자(005930)\n투자 논리: 유지 · 오늘 중요한 신규 변화 없음\n구조적 위험: 보통\n시장 기대: 매우 높음\n\n🎯 핵심 판단\n메모리·파운드리 실행 논리는 유지되지만 이를 바꿀 새 사업 근거는 확인되지 않았습니다. 현재가 271,000원입니다. 기존 돌파 실패에서 확인 가격 상단을 넘어선 상태로 전환됐으므로 가격 안착과 메모리 믹스·파운드리 수율·현금전환을 별도로 확인해야 합니다.\n\n📈 사업·실적\n메모리 제품 믹스와 파운드리 수율, 설비투자 이후 영업현금흐름이 확인되어야 이익의 질을 판단할 수 있습니다.\n\n💰 가격·포지셔닝\n현재가 271,000원입니다. 가까운 동적 지지는 동적 지지구간 하단 221,866원부터 동적 지지구간 상단 233,134원까지이고, 가까운 동적 저항은 동적 저항구간 하단 364,899원부터 동적 저항구간 상단 379,601원까지입니다. 현재가 기준 차트 손익비 1.57배입니다. 기존 돌파 실패에서 확인 가격 상단을 넘어선 상태로 전환됐으며 사업 논리 변화와는 분리합니다.\n• 신규 관찰자: 신규 관찰자는 상단 돌파 뒤 가격 안착과 동적 지지 반응, 메모리 믹스·파운드리 수율 확인이 함께 나타날 때 새 자금의 비대칭을 판단합니다.\n• 보유자: 보유자는 현재 차트 검토 경계와 별도로 메모리 마진·파운드리 수율·현금전환의 사업 악화를 구분해 점검합니다.\n\n📊 수급\n외국인 당일 순매수 4,246,809주 기록했고, 기관 당일 순매수 609,890주 기록했습니다.\n외국인 5일 순매수 5,165,492주 기록했고, 기관 5일 순매수 458,985주 기록했습니다.\n외국인 20일 순매도 3,175,767주 기록했고, 기관 20일 순매도 4,341,034주 기록했습니다.\n외국인과 기관의 당일·5일 매수와 20일 매도가 대비되므로 단기 가격 회복을 메모리·파운드리 실행과 현금전환의 사업 근거로 바꾸지 않습니다.\n\n📐 Valuation\n회사 전체의 이익 기준 값은 현재 PER 12.08배입니다. 회사 전체의 장부가 기준 값은 현재 PBR 2.76배입니다. 회사 전체 PBR의 자체 역사 위치는 PBR 역사적 백분위 91.2%입니다. 이는 현재 PBR이 비교 가능한 과거 관측치 대부분보다 높은 구간이라는 뜻입니다. 현재 배수는 수익성과 현금전환의 지속성과 함께 봐야 합니다. 같은 시점의 동종기업 비교값은 없어 이번 평가는 회사 전체 현재 배수와 자체 역사 위치를 중심으로 봅니다.\n\n📊 운전자본·이익의 질\n재고 증가율은 매출원가 증가율보다 35.8%p 앞섰습니다. 재고 전환은 메모리 믹스·파운드리 수율도 함께 점검해야 하며, 이 관계만으로 공급과잉을 확정하지 않습니다.\n\n👁 핵심 감시\n• HBM4 채택·수율과 DS 마진\n\n📌 다음 확인\n• 다음 HBM4 채택·수율, DS 정상화 마진과 잉여현금흐름이 높아진 기대를 넘어서는지 봅니다.\n\n⚠️ 미확인\n• 재고 변화의 원인과 메모리 믹스·파운드리 수율이 현금전환에 미치는 영향은 아직 확인되지 않았습니다.",
+      "before_text": "🤖 AI 보조 종목 점검 · KR Pilot 4/5\n\n🏢 삼성전자(005930)\n투자 논리: 유지 · 오늘 중요한 신규 변화 없음\n구조적 위험: 보통\n시장 기대: 매우 높음\n\n🎯 핵심 판단\n메모리·파운드리 실행 논리는 유지되지만 이를 바꿀 새 사업 근거는 확인되지 않았습니다. 현재가 271,000원입니다. 기존 돌파 실패에서 확인 가격 상단을 넘어선 상태로 전환됐으므로 가격 안착과 메모리 믹스·파운드리 수율·현금전환을 별도로 확인해야 합니다.\n\n📈 사업·실적\n메모리 제품 믹스와 파운드리 수율, 설비투자 이후 영업현금흐름이 확인되어야 이익의 질을 판단할 수 있습니다.\n\n💰 가격·포지셔닝\n현재가 271,000원입니다. 가까운 동적 지지는 동적 지지구간 하단 221,866원부터 동적 지지구간 상단 233,134원까지이고, 가까운 동적 저항은 동적 저항구간 하단 364,899원부터 동적 저항구간 상단 379,601원까지입니다. 현재가 기준 차트 손익비 1.57배입니다. 기존 돌파 실패에서 확인 가격 상단을 넘어선 상태로 전환됐으며 사업 논리 변화와는 분리합니다.\n• 신규 관찰자: 신규 관찰자는 상단 돌파 뒤 가격 안착과 동적 지지 반응, 메모리 믹스·파운드리 수율 확인이 함께 나타날 때 새 자금의 비대칭을 판단합니다.\n• 보유자: 보유자는 현재 차트 검토 경계와 별도로 메모리 마진·파운드리 수율·현금전환의 사업 악화를 구분해 점검합니다.\n\n📊 수급\n외국인 당일 순매수 4,246,809주 기록했고, 기관 당일 순매수 609,890주 기록했습니다.\n외국인 5일 순매수 5,165,492주 기록했고, 기관 5일 순매수 458,985주 기록했습니다.\n외국인 20일 순매도 3,175,767주 기록했고, 기관 20일 순매도 4,341,034주 기록했습니다.\n외국인과 기관의 당일·5일 매수와 20일 매도가 대비되므로 단기 가격 회복을 메모리·파운드리 실행과 현금전환의 사업 근거로 바꾸지 않습니다.\n\n📐 Valuation\n회사 전체의 이익 기준 값은 현재 PER 12.08배입니다. 회사 전체의 장부가 기준 값은 현재 PBR 2.76배입니다. 회사 전체 PBR의 자체 역사 위치는 PBR 역사적 백분위 91.2%입니다. 이는 현재 PBR이 비교 가능한 과거 관측치 대부분보다 높은 구간이라는 뜻입니다. 현재 배수는 수익성과 현금전환의 지속성과 함께 봐야 합니다. 같은 시점의 동종기업 비교값은 없어 이번 평가는 회사 전체 현재 배수와 자체 역사 위치를 중심으로 봅니다.\n\n👁 핵심 감시\n• HBM4 채택·수율과 DS 마진\n\n📌 다음 확인\n• 다음 HBM4 채택·수율, DS 정상화 마진과 잉여현금흐름이 높아진 기대를 넘어서는지 봅니다.\n\n⚠️ 미확인\n• HBM4 채택·수율, DS 정상화 마진, 재고와 설비투자 이후 영업현금흐름·잉여현금흐름·자본수익률이 확인되지 않아 높은 기대의 지속성을 판단할 수 없습니다.",
+      "company_name": "삼성전자",
+      "context": {
+        "allowed_claims": [
+          "typed_relation",
+          "cautious_earnings_quality_context"
+        ],
+        "assessment_date": "2026-08-20",
+        "cash_flow_alignment_state": "NOT_PROVIDED",
+        "cash_flow_context_used": false,
+        "consumption_eligible": true,
+        "contract": "working-capital-shadow-consumption-v1",
+        "cutoff": "2026-08-20",
+        "freshness_state": "CURRENT_FORMAL",
+        "industry": "memory_semiconductor",
+        "industry_applicability": {
+          "ap": "SECONDARY",
+          "ap_vs_cogs": "SECONDARY",
+          "ar": "SECONDARY",
+          "ar_vs_revenue": "SECONDARY",
+          "inventory": "PRIMARY",
+          "inventory_vs_cogs": "PRIMARY",
+          "inventory_vs_revenue": "PRIMARY"
+        },
+        "latest_formal_balance_date": "2026-06-30",
+        "market": "KR",
+        "materiality_reason": "existing_working_capital_driver_or_unknown",
+        "metric_contexts": [
+          {
+            "current_fact_id": null,
+            "metric": "accounts_payable_broad",
+            "semantic_label": "광의 매입채무",
+            "status": "BLOCKED",
+            "yoy_fact_id": null
+          },
+          {
+            "current_fact_id": null,
+            "metric": "accounts_receivable_broad",
+            "semantic_label": "광의 매출채권",
+            "status": "BLOCKED",
+            "yoy_fact_id": null
+          },
+          {
+            "current_fact_id": "working-capital-reported:a2f1219fd2a751859537f817",
+            "metric": "inventory",
+            "semantic_label": "재고",
+            "status": "ELIGIBLE",
+            "yoy_fact_id": "working-capital-derived:cabc0285c12ba1e945788d0e"
+          },
+          {
+            "current_fact_id": "working-capital-reported:2060b35dc0939b154a118df5",
+            "metric": "trade_accounts_payable",
+            "semantic_label": "거래 매입채무",
+            "status": "ELIGIBLE",
+            "yoy_fact_id": "working-capital-derived:c5fc66aca6163f2c11332624"
+          },
+          {
+            "current_fact_id": "working-capital-reported:19934d8070888368763c8a15",
+            "metric": "trade_accounts_receivable",
+            "semantic_label": "거래 매출채권",
+            "status": "ELIGIBLE",
+            "yoy_fact_id": "working-capital-derived:b1187aba256982983b5fe084"
+          }
+        ],
+        "packet_id": "2026-08-20-kr-run-29-6e8809e1e944",
+        "pit_state": "PASS",
+        "point_in_time_exclusions": [],
+        "prohibited_claims": [
+          "future_fact_used",
+          "stale_as_current",
+          "broad_trade_semantic_mislabel",
+          "contract_asset_as_trade_ar",
+          "accrued_liability_as_trade_ap",
+          "unsupported_causal_claim",
+          "dso_inventory_days_dpo_ccc",
+          "automatic_thesis_warning_or_valuation_change"
+        ],
+        "remaining_unknowns": [],
+        "resolved_unknowns": [
+          {
+            "original": "HBM4 채택·수율, DS 정상화 마진, 재고와 설비투자 이후 영업현금흐름·잉여현금흐름·자본수익률이 확인되지 않아 높은 기대의 지속성을 판단할 수 없습니다.",
+            "replacement": null,
+            "state": "RESOLVED_EXACT"
+          }
+        ],
+        "selected_fact_refs": [
+          "working-capital-reported:a2f1219fd2a751859537f817",
+          "working-capital-reported:ee70a0ad53bfc98289edae27",
+          "working-capital-reported:3a7d30e63279040add6dd0ee",
+          "working-capital-reported:77acb257b2ddead3be5ede82",
+          "working-capital-derived:cabc0285c12ba1e945788d0e",
+          "working-capital-derived:0e7a663e3ca101307dfb04cb"
+        ],
+        "selected_relations": [
+          {
+            "applicability": "PRIMARY",
+            "balance_metric": "inventory",
+            "balance_scope": "total",
+            "balance_semantic": "ifrs-full:Inventories",
+            "direction": "GREATER",
+            "family": "inventory_vs_cogs",
+            "flow_metric": "cost_of_goods_sold",
+            "flow_semantic": "ifrs-full:CostOfSales",
+            "gap_percentage_points": "35.79975884967539121726114215",
+            "input_fact_ids": [
+              "working-capital-reported:a2f1219fd2a751859537f817",
+              "working-capital-reported:ee70a0ad53bfc98289edae27",
+              "working-capital-reported:3a7d30e63279040add6dd0ee",
+              "working-capital-reported:77acb257b2ddead3be5ede82",
+              "working-capital-derived:cabc0285c12ba1e945788d0e",
+              "working-capital-derived:0e7a663e3ca101307dfb04cb"
+            ],
+            "relation_id": "working-capital-relation:4b43f129a5c3b9dbca52fa29"
+          }
+        ],
+        "semantic_labels": [
+          "재고",
+          "cost_of_goods_sold"
+        ],
+        "shadow_used": true,
+        "specificity_key": "memory_foundry",
+        "status": "READY",
+        "suppression_reasons": [],
+        "ticker": "005930",
+        "usage_mode": "INVENTORY_RELATION"
+      },
+      "financial_type": "non_financial",
+      "human_quality": "MATERIAL_IMPROVEMENT",
+      "industry": "memory_semiconductor",
+      "market": "KR",
+      "message_length_after": 1482,
+      "message_length_before": 1407,
+      "message_length_delta": 75,
+      "persistence_mutation": 0,
+      "reasoning": {
+        "fact_ids": [
+          "working-capital-reported:a2f1219fd2a751859537f817",
+          "working-capital-reported:ee70a0ad53bfc98289edae27",
+          "working-capital-reported:3a7d30e63279040add6dd0ee",
+          "working-capital-reported:77acb257b2ddead3be5ede82",
+          "working-capital-derived:cabc0285c12ba1e945788d0e",
+          "working-capital-derived:0e7a663e3ca101307dfb04cb"
+        ],
+        "numeric_claims": [
+          {
+            "display": "35.8%p",
+            "input_fact_ids": [
+              "working-capital-reported:a2f1219fd2a751859537f817",
+              "working-capital-reported:ee70a0ad53bfc98289edae27",
+              "working-capital-reported:3a7d30e63279040add6dd0ee",
+              "working-capital-reported:77acb257b2ddead3be5ede82",
+              "working-capital-derived:cabc0285c12ba1e945788d0e",
+              "working-capital-derived:0e7a663e3ca101307dfb04cb"
+            ],
+            "owner": "business_earnings",
+            "relation_id": "working-capital-relation:4b43f129a5c3b9dbca52fa29",
+            "semantic_type": "inventory_vs_cogs",
+            "text_ref": "business_earnings.text",
+            "value": "35.79975884967539121726114215"
+          }
+        ],
+        "relation_ids": [
+          "working-capital-relation:4b43f129a5c3b9dbca52fa29"
+        ],
+        "text": "재고 증가율은 매출원가 증가율보다 35.8%p 앞섰습니다. 재고 전환은 메모리 믹스·파운드리 수율도 함께 점검해야 하며, 이 관계만으로 공급과잉을 확정하지 않습니다."
+      },
+      "status_delta_candidate": false,
+      "ticker": "005930",
+      "unknown_audit": {
+        "after": [
+          "재고 변화의 원인과 메모리 믹스·파운드리 수율이 현금전환에 미치는 영향은 아직 확인되지 않았습니다."
+        ],
+        "before": [
+          "HBM4 채택·수율, DS 정상화 마진, 재고와 설비투자 이후 영업현금흐름·잉여현금흐름·자본수익률이 확인되지 않아 높은 기대의 지속성을 판단할 수 없습니다."
+        ],
+        "contradiction": false
+      },
+      "validation_errors": []
+    },
+    {
+      "after_text": "🤖 AI 보조 종목 점검 · KR Pilot 4/5\n\n🏢 LS일렉트릭(010120)\n투자 논리: 유지 · 오늘 중요한 신규 변화 없음\n구조적 위험: 보통\n시장 기대: 높음\n\n🎯 핵심 판단\n전력 인프라 수요와 수주 전환 논리를 바꿀 새 사업 근거는 확인되지 않았습니다. 현재가 199,200원입니다. 현재 가격 구조는 수주가 매출·마진·현금으로 전환되는지에 대한 확인을 대체하지 않습니다.\n\n📈 사업·실적\n수주잔고의 매출·마진 전환과 매출채권·영업현금흐름이 확인되어야 전력 인프라 성장의 질을 판단할 수 있습니다.\n\n💰 가격·포지셔닝\n현재가 199,200원입니다. 가까운 동적 지지는 동적 지지구간 하단 170,811원부터 동적 지지구간 상단 182,189원까지이고, 가까운 동적 저항은 동적 저항구간 하단 220,642원부터 동적 저항구간 상단 231,358원까지입니다. 현재가 기준 차트 손익비 0.59배입니다. 등록 확인 가격은 설정되지 않은 상태여서 동적 지지·저항과 사업 확인을 함께 봅니다.\n• 신규 관찰자: 신규 관찰자는 동적 지지 반응과 수주 매출화·마진·현금전환이 함께 확인될 때 새 자금의 가격·사실 비대칭을 판단합니다.\n• 보유자: 보유자는 현재 차트 검토 경계와 별도로 수주 전환·프로젝트 마진·현금전환의 사업 악화를 구분해 점검합니다.\n\n📊 수급\n외국인 당일 순매도 108,492주 기록했고, 기관 당일 순매도 92,665주 기록했습니다.\n외국인 5일 순매수 59,915주 기록했고, 기관 5일 순매도 277,737주 기록했습니다.\n외국인 20일 순매수 369,596주 기록했고, 기관 20일 순매도 291,125주 기록했습니다.\n당일에는 두 주체가 매도했고 단기·중기 축에는 외국인 매수와 기관 매도가 갈려 전력기기 수주·마진·현금전환과 분리해 해석합니다.\n\n📐 Valuation\n현재 거래 증권의 동일성 검증이 완료되지 않았습니다. 현재 거래 증권의 주식·통화 분모 기준이 확인되지 않아 PER·PBR 해석은 보류합니다. 가격·차트·수급과 독립적인 수주·마진·현금흐름이 확인될 때까지 가치평가 결론을 만들지 않습니다.\n\n📊 운전자본·이익의 질\n거래 매출채권 증가율은 매출 증가율보다 18.0%p 앞섰습니다. 수주 매출의 회수 전환을 점검할 단서이지만 고객 지급 지연을 확정하지 않습니다.\n\n👁 핵심 감시\n• 수주잔고의 매출·마진 전환\n• 매출채권·OCF·ROIC\n\n📌 다음 확인\n• 다음 수주잔고 매출 전환, 프로젝트 마진과 영업현금흐름이 성장의 질을 확인하는지 봅니다.\n\n⚠️ 미확인\n• 거래 매출채권 변화의 원인과 수주 매출의 실제 회수 전환은 아직 확인되지 않았습니다.",
+      "before_text": "🤖 AI 보조 종목 점검 · KR Pilot 4/5\n\n🏢 LS일렉트릭(010120)\n투자 논리: 유지 · 오늘 중요한 신규 변화 없음\n구조적 위험: 보통\n시장 기대: 높음\n\n🎯 핵심 판단\n전력 인프라 수요와 수주 전환 논리를 바꿀 새 사업 근거는 확인되지 않았습니다. 현재가 199,200원입니다. 현재 가격 구조는 수주가 매출·마진·현금으로 전환되는지에 대한 확인을 대체하지 않습니다.\n\n📈 사업·실적\n수주잔고의 매출·마진 전환과 매출채권·영업현금흐름이 확인되어야 전력 인프라 성장의 질을 판단할 수 있습니다.\n\n💰 가격·포지셔닝\n현재가 199,200원입니다. 가까운 동적 지지는 동적 지지구간 하단 170,811원부터 동적 지지구간 상단 182,189원까지이고, 가까운 동적 저항은 동적 저항구간 하단 220,642원부터 동적 저항구간 상단 231,358원까지입니다. 현재가 기준 차트 손익비 0.59배입니다. 등록 확인 가격은 설정되지 않은 상태여서 동적 지지·저항과 사업 확인을 함께 봅니다.\n• 신규 관찰자: 신규 관찰자는 동적 지지 반응과 수주 매출화·마진·현금전환이 함께 확인될 때 새 자금의 가격·사실 비대칭을 판단합니다.\n• 보유자: 보유자는 현재 차트 검토 경계와 별도로 수주 전환·프로젝트 마진·현금전환의 사업 악화를 구분해 점검합니다.\n\n📊 수급\n외국인 당일 순매도 108,492주 기록했고, 기관 당일 순매도 92,665주 기록했습니다.\n외국인 5일 순매수 59,915주 기록했고, 기관 5일 순매도 277,737주 기록했습니다.\n외국인 20일 순매수 369,596주 기록했고, 기관 20일 순매도 291,125주 기록했습니다.\n당일에는 두 주체가 매도했고 단기·중기 축에는 외국인 매수와 기관 매도가 갈려 전력기기 수주·마진·현금전환과 분리해 해석합니다.\n\n📐 Valuation\n현재 거래 증권의 동일성 검증이 완료되지 않았습니다. 현재 거래 증권의 주식·통화 분모 기준이 확인되지 않아 PER·PBR 해석은 보류합니다. 가격·차트·수급과 독립적인 수주·마진·현금흐름이 확인될 때까지 가치평가 결론을 만들지 않습니다.\n\n👁 핵심 감시\n• 수주잔고의 매출·마진 전환\n• 매출채권·OCF·ROIC\n\n📌 다음 확인\n• 다음 수주잔고 매출 전환, 프로젝트 마진과 영업현금흐름이 성장의 질을 확인하는지 봅니다.\n\n⚠️ 미확인\n• 수주잔고의 매출 전환, 프로젝트 마진, 매출채권과 영업현금흐름·설비투자·자본수익률이 확인되지 않아 성장의 현금전환을 판단할 수 없습니다.",
+      "company_name": "LS일렉트릭",
+      "context": {
+        "allowed_claims": [
+          "typed_relation",
+          "cautious_earnings_quality_context"
+        ],
+        "assessment_date": "2026-08-20",
+        "cash_flow_alignment_state": "NOT_PROVIDED",
+        "cash_flow_context_used": false,
+        "consumption_eligible": true,
+        "contract": "working-capital-shadow-consumption-v1",
+        "cutoff": "2026-08-20",
+        "freshness_state": "CURRENT_FORMAL",
+        "industry": "industrial_epc",
+        "industry_applicability": {
+          "ap": "SECONDARY",
+          "ap_vs_cogs": "SECONDARY",
+          "ar": "PRIMARY",
+          "ar_vs_revenue": "PRIMARY",
+          "inventory": "PRIMARY",
+          "inventory_vs_cogs": "SECONDARY",
+          "inventory_vs_revenue": "SECONDARY"
+        },
+        "latest_formal_balance_date": "2026-06-30",
+        "market": "KR",
+        "materiality_reason": "existing_working_capital_driver_or_unknown",
+        "metric_contexts": [
+          {
+            "current_fact_id": null,
+            "metric": "accounts_payable_broad",
+            "semantic_label": "광의 매입채무",
+            "status": "BLOCKED",
+            "yoy_fact_id": null
+          },
+          {
+            "current_fact_id": null,
+            "metric": "accounts_receivable_broad",
+            "semantic_label": "광의 매출채권",
+            "status": "BLOCKED",
+            "yoy_fact_id": null
+          },
+          {
+            "current_fact_id": "working-capital-reported:ac2ef61f877592343b10ad71",
+            "metric": "inventory",
+            "semantic_label": "재고",
+            "status": "ELIGIBLE",
+            "yoy_fact_id": "working-capital-derived:d4c1762ebe218ca03efd9f23"
+          },
+          {
+            "current_fact_id": "working-capital-reported:aff1376110d717d70eeaa7e1",
+            "metric": "trade_accounts_payable",
+            "semantic_label": "거래 매입채무",
+            "status": "ELIGIBLE",
+            "yoy_fact_id": "working-capital-derived:684a29ae236374ee1faaa518"
+          },
+          {
+            "current_fact_id": "working-capital-reported:0cd45408893367196160301a",
+            "metric": "trade_accounts_receivable",
+            "semantic_label": "거래 매출채권",
+            "status": "ELIGIBLE",
+            "yoy_fact_id": "working-capital-derived:0f53b0afa3154a56b1417cf7"
+          }
+        ],
+        "packet_id": "2026-08-20-kr-run-29-6e8809e1e944",
+        "pit_state": "PASS",
+        "point_in_time_exclusions": [],
+        "prohibited_claims": [
+          "future_fact_used",
+          "stale_as_current",
+          "broad_trade_semantic_mislabel",
+          "contract_asset_as_trade_ar",
+          "accrued_liability_as_trade_ap",
+          "unsupported_causal_claim",
+          "dso_inventory_days_dpo_ccc",
+          "automatic_thesis_warning_or_valuation_change"
+        ],
+        "remaining_unknowns": [],
+        "resolved_unknowns": [
+          {
+            "original": "수주잔고의 매출 전환, 프로젝트 마진, 매출채권과 영업현금흐름·설비투자·자본수익률이 확인되지 않아 성장의 현금전환을 판단할 수 없습니다.",
+            "replacement": null,
+            "state": "RESOLVED_EXACT"
+          }
+        ],
+        "selected_fact_refs": [
+          "working-capital-reported:0cd45408893367196160301a",
+          "working-capital-reported:9d6de542db82d59958e908cf",
+          "working-capital-reported:75ee9a29975801e1317d3bbf",
+          "working-capital-reported:b9f80a39500f69e76ad0f973",
+          "working-capital-derived:0f53b0afa3154a56b1417cf7",
+          "working-capital-derived:3cf1c981e451d7699f83072c"
+        ],
+        "selected_relations": [
+          {
+            "applicability": "PRIMARY",
+            "balance_metric": "trade_accounts_receivable",
+            "balance_scope": "current",
+            "balance_semantic": "ifrs-full:CurrentTradeReceivables",
+            "direction": "GREATER",
+            "family": "trade_ar_vs_revenue",
+            "flow_metric": "revenue",
+            "flow_semantic": "ifrs-full:Revenue",
+            "gap_percentage_points": "18.04201846856173170179342913",
+            "input_fact_ids": [
+              "working-capital-reported:0cd45408893367196160301a",
+              "working-capital-reported:9d6de542db82d59958e908cf",
+              "working-capital-reported:75ee9a29975801e1317d3bbf",
+              "working-capital-reported:b9f80a39500f69e76ad0f973",
+              "working-capital-derived:0f53b0afa3154a56b1417cf7",
+              "working-capital-derived:3cf1c981e451d7699f83072c"
+            ],
+            "relation_id": "working-capital-relation:a5738ab8e08c0df9cf325f58"
+          }
+        ],
+        "semantic_labels": [
+          "거래 매출채권",
+          "revenue"
+        ],
+        "shadow_used": true,
+        "specificity_key": "order_conversion",
+        "status": "READY",
+        "suppression_reasons": [],
+        "ticker": "010120",
+        "usage_mode": "TRADE_AR_RELATION"
+      },
+      "financial_type": "non_financial",
+      "human_quality": "MATERIAL_IMPROVEMENT",
+      "industry": "industrial_epc",
+      "market": "KR",
+      "message_length_after": 1287,
+      "message_length_before": 1221,
+      "message_length_delta": 66,
+      "persistence_mutation": 0,
+      "reasoning": {
+        "fact_ids": [
+          "working-capital-reported:0cd45408893367196160301a",
+          "working-capital-reported:9d6de542db82d59958e908cf",
+          "working-capital-reported:75ee9a29975801e1317d3bbf",
+          "working-capital-reported:b9f80a39500f69e76ad0f973",
+          "working-capital-derived:0f53b0afa3154a56b1417cf7",
+          "working-capital-derived:3cf1c981e451d7699f83072c"
+        ],
+        "numeric_claims": [
+          {
+            "display": "18.0%p",
+            "input_fact_ids": [
+              "working-capital-reported:0cd45408893367196160301a",
+              "working-capital-reported:9d6de542db82d59958e908cf",
+              "working-capital-reported:75ee9a29975801e1317d3bbf",
+              "working-capital-reported:b9f80a39500f69e76ad0f973",
+              "working-capital-derived:0f53b0afa3154a56b1417cf7",
+              "working-capital-derived:3cf1c981e451d7699f83072c"
+            ],
+            "owner": "business_earnings",
+            "relation_id": "working-capital-relation:a5738ab8e08c0df9cf325f58",
+            "semantic_type": "trade_ar_vs_revenue",
+            "text_ref": "business_earnings.text",
+            "value": "18.04201846856173170179342913"
+          }
+        ],
+        "relation_ids": [
+          "working-capital-relation:a5738ab8e08c0df9cf325f58"
+        ],
+        "text": "거래 매출채권 증가율은 매출 증가율보다 18.0%p 앞섰습니다. 수주 매출의 회수 전환을 점검할 단서이지만 고객 지급 지연을 확정하지 않습니다."
+      },
+      "status_delta_candidate": false,
+      "ticker": "010120",
+      "unknown_audit": {
+        "after": [
+          "거래 매출채권 변화의 원인과 수주 매출의 실제 회수 전환은 아직 확인되지 않았습니다."
+        ],
+        "before": [
+          "수주잔고의 매출 전환, 프로젝트 마진, 매출채권과 영업현금흐름·설비투자·자본수익률이 확인되지 않아 성장의 현금전환을 판단할 수 없습니다."
+        ],
+        "contradiction": false
+      },
+      "validation_errors": []
+    },
+    {
+      "after_text": "🤖 AI 보조 종목 점검 · KR Pilot 4/5\n\n🏢 한화에어로스페이스(012450)\n투자 논리: 유지 · 오늘 중요한 신규 변화 없음\n구조적 위험: 보통\n시장 기대: 높음\n\n🎯 핵심 판단\n방산 수주와 해외 확장 논리를 바꿀 새 근거는 확인되지 않았습니다. 현재가 1,167,000원입니다. 등록 확인 가격은 설정되지 않았으며, 현재 가격 구조는 수주가 매출·마진·현금으로 전환되는지에 대한 확인을 대체하지 않습니다.\n\n📈 사업·실적\n손익 항목의 재무 품질과 금액별 기간·연결 기준이 확인되지 않아 금액과 성장률을 표시하지 않습니다. 수주 전환·방산 마진·영업현금흐름이 확인되어야 성장의 질을 판단할 수 있습니다.\n\n💰 가격·포지셔닝\n현재가 1,167,000원입니다. 가까운 동적 지지는 동적 지지구간 하단 1,024,139원부터 동적 지지구간 상단 1,073,861원까지이고, 가까운 동적 저항은 동적 저항구간 하단 1,182,176원부터 동적 저항구간 상단 1,217,824원까지입니다. 현재가 기준 차트 손익비 0.08배입니다. 등록 확인 가격이 없는 상태이므로 가격 돌파와 사업 실행을 별도로 확인해야 합니다.\n• 신규 관찰자: 신규 관찰자는 가까운 저항을 추격하기보다 동적 지지 반응과 수주 매출화·마진·현금전환이 함께 확인될 때 새 자금의 비대칭을 판단합니다.\n• 보유자: 보유자는 현재 차트 검토 경계와 별도로 수주 전환·방산 마진·현금전환의 사업 악화를 구분해 점검합니다.\n\n📊 수급\n외국인 당일 순매수 13,736주 기록했고, 기관 당일 순매수 5,898주 기록했습니다.\n외국인 5일 순매수 880주 기록했고, 기관 5일 순매수 3,119주 기록했습니다.\n외국인 20일 순매수 22,013주 기록했고, 기관 20일 순매수 66,631주 기록했습니다.\n외국인과 기관이 세 시간축 모두 매수했지만, 이 정렬만으로 방산 수주 전환과 현금전환을 확인하지 않습니다.\n\n📐 Valuation\n현재 거래 증권의 동일성 검증이 완료되지 않았습니다. 현재 거래 증권의 주식·통화 분모 기준이 확인되지 않아 PER·PBR 해석은 보류합니다. 가격·차트·수급과 독립적인 수주·마진·현금흐름이 확인될 때까지 가치평가 결론을 만들지 않습니다.\n\n👁 핵심 감시\n• 대형 수주의 매출·마진 전환\n• 계약자산·OCF·FCF\n\n📌 다음 확인\n• 다음 대형 수주의 매출·마진 전환과 영업현금흐름이 방산 성장의 질을 확인하는지 봅니다.\n\n⚠️ 미확인\n• 수주잔고의 매출 전환과 프로젝트 마진, 계약자산, 영업현금흐름·설비투자·잉여현금흐름이 확인되지 않아 방산 성장의 현금전환을 판단할 수 없습니다.",
+      "before_text": "🤖 AI 보조 종목 점검 · KR Pilot 4/5\n\n🏢 한화에어로스페이스(012450)\n투자 논리: 유지 · 오늘 중요한 신규 변화 없음\n구조적 위험: 보통\n시장 기대: 높음\n\n🎯 핵심 판단\n방산 수주와 해외 확장 논리를 바꿀 새 근거는 확인되지 않았습니다. 현재가 1,167,000원입니다. 등록 확인 가격은 설정되지 않았으며, 현재 가격 구조는 수주가 매출·마진·현금으로 전환되는지에 대한 확인을 대체하지 않습니다.\n\n📈 사업·실적\n손익 항목의 재무 품질과 금액별 기간·연결 기준이 확인되지 않아 금액과 성장률을 표시하지 않습니다. 수주 전환·방산 마진·영업현금흐름이 확인되어야 성장의 질을 판단할 수 있습니다.\n\n💰 가격·포지셔닝\n현재가 1,167,000원입니다. 가까운 동적 지지는 동적 지지구간 하단 1,024,139원부터 동적 지지구간 상단 1,073,861원까지이고, 가까운 동적 저항은 동적 저항구간 하단 1,182,176원부터 동적 저항구간 상단 1,217,824원까지입니다. 현재가 기준 차트 손익비 0.08배입니다. 등록 확인 가격이 없는 상태이므로 가격 돌파와 사업 실행을 별도로 확인해야 합니다.\n• 신규 관찰자: 신규 관찰자는 가까운 저항을 추격하기보다 동적 지지 반응과 수주 매출화·마진·현금전환이 함께 확인될 때 새 자금의 비대칭을 판단합니다.\n• 보유자: 보유자는 현재 차트 검토 경계와 별도로 수주 전환·방산 마진·현금전환의 사업 악화를 구분해 점검합니다.\n\n📊 수급\n외국인 당일 순매수 13,736주 기록했고, 기관 당일 순매수 5,898주 기록했습니다.\n외국인 5일 순매수 880주 기록했고, 기관 5일 순매수 3,119주 기록했습니다.\n외국인 20일 순매수 22,013주 기록했고, 기관 20일 순매수 66,631주 기록했습니다.\n외국인과 기관이 세 시간축 모두 매수했지만, 이 정렬만으로 방산 수주 전환과 현금전환을 확인하지 않습니다.\n\n📐 Valuation\n현재 거래 증권의 동일성 검증이 완료되지 않았습니다. 현재 거래 증권의 주식·통화 분모 기준이 확인되지 않아 PER·PBR 해석은 보류합니다. 가격·차트·수급과 독립적인 수주·마진·현금흐름이 확인될 때까지 가치평가 결론을 만들지 않습니다.\n\n👁 핵심 감시\n• 대형 수주의 매출·마진 전환\n• 계약자산·OCF·FCF\n\n📌 다음 확인\n• 다음 대형 수주의 매출·마진 전환과 영업현금흐름이 방산 성장의 질을 확인하는지 봅니다.\n\n⚠️ 미확인\n• 수주잔고의 매출 전환과 프로젝트 마진, 계약자산, 영업현금흐름·설비투자·잉여현금흐름이 확인되지 않아 방산 성장의 현금전환을 판단할 수 없습니다.",
+      "company_name": "한화에어로스페이스",
+      "context": {
+        "allowed_claims": [],
+        "assessment_date": "2026-08-20",
+        "cash_flow_alignment_state": "NOT_PROVIDED",
+        "cash_flow_context_used": false,
+        "consumption_eligible": false,
+        "contract": "working-capital-shadow-consumption-v1",
+        "cutoff": "2026-08-20",
+        "freshness_state": "BLOCKED",
+        "industry": "aerospace_epc",
+        "industry_applicability": {
+          "ap": "SECONDARY",
+          "ap_vs_cogs": "CONTEXT_ONLY",
+          "ar": "SECONDARY",
+          "ar_vs_revenue": "SECONDARY",
+          "inventory": "SECONDARY",
+          "inventory_vs_cogs": "CONTEXT_ONLY",
+          "inventory_vs_revenue": "SECONDARY"
+        },
+        "latest_formal_balance_date": "2026-06-30",
+        "market": "KR",
+        "materiality_reason": null,
+        "metric_contexts": [
+          {
+            "current_fact_id": "working-capital-reported:94fa12ba5f3c4b6c5f436d91",
+            "metric": "accounts_payable_broad",
+            "semantic_label": "광의 매입채무",
+            "status": "ELIGIBLE",
+            "yoy_fact_id": "working-capital-derived:b5bb66e4c851f82d8dcab7bd"
+          },
+          {
+            "current_fact_id": "working-capital-reported:0ad7badb66f70001bad73a33",
+            "metric": "accounts_receivable_broad",
+            "semantic_label": "광의 매출채권",
+            "status": "ELIGIBLE",
+            "yoy_fact_id": "working-capital-derived:8b2ca8377780c238e6a1f177"
+          },
+          {
+            "current_fact_id": "working-capital-reported:2b9475e4313020e1d43e4d3d",
+            "metric": "inventory",
+            "semantic_label": "재고",
+            "status": "ELIGIBLE",
+            "yoy_fact_id": "working-capital-derived:202450830ef87dcccdc5504b"
+          },
+          {
+            "current_fact_id": null,
+            "metric": "trade_accounts_payable",
+            "semantic_label": "거래 매입채무",
+            "status": "BLOCKED",
+            "yoy_fact_id": null
+          },
+          {
+            "current_fact_id": null,
+            "metric": "trade_accounts_receivable",
+            "semantic_label": "거래 매출채권",
+            "status": "BLOCKED",
+            "yoy_fact_id": null
+          }
+        ],
+        "packet_id": "2026-08-20-kr-run-29-6e8809e1e944",
+        "pit_state": "PASS",
+        "point_in_time_exclusions": [],
+        "prohibited_claims": [
+          "future_fact_used",
+          "stale_as_current",
+          "broad_trade_semantic_mislabel",
+          "contract_asset_as_trade_ar",
+          "accrued_liability_as_trade_ap",
+          "unsupported_causal_claim",
+          "dso_inventory_days_dpo_ccc",
+          "automatic_thesis_warning_or_valuation_change"
+        ],
+        "remaining_unknowns": [
+          "수주잔고의 매출 전환과 프로젝트 마진, 계약자산, 영업현금흐름·설비투자·잉여현금흐름이 확인되지 않아 방산 성장의 현금전환을 판단할 수 없습니다."
+        ],
+        "resolved_unknowns": [],
+        "selected_fact_refs": [],
+        "selected_relations": [],
+        "semantic_labels": [],
+        "shadow_used": false,
+        "specificity_key": "aerospace_epc",
+        "status": "SUPPRESSED",
+        "suppression_reasons": [
+          "no_material_current_relation",
+          "working_capital_context_blocked"
+        ],
+        "ticker": "012450",
+        "usage_mode": "SUPPRESSED"
+      },
+      "financial_type": "non_financial",
+      "human_quality": "NO_MEANINGFUL_CHANGE",
+      "industry": "aerospace_epc",
+      "market": "KR",
+      "message_length_after": 1278,
+      "message_length_before": 1278,
+      "message_length_delta": 0,
+      "persistence_mutation": 0,
+      "reasoning": null,
+      "status_delta_candidate": false,
+      "ticker": "012450",
+      "unknown_audit": {
+        "after": [
+          "수주잔고의 매출 전환과 프로젝트 마진, 계약자산, 영업현금흐름·설비투자·잉여현금흐름이 확인되지 않아 방산 성장의 현금전환을 판단할 수 없습니다."
+        ],
+        "before": [
+          "수주잔고의 매출 전환과 프로젝트 마진, 계약자산, 영업현금흐름·설비투자·잉여현금흐름이 확인되지 않아 방산 성장의 현금전환을 판단할 수 없습니다."
+        ],
+        "contradiction": false
+      },
+      "validation_errors": []
+    },
+    {
+      "after_text": "🤖 AI 보조 종목 점검 · KR Pilot 4/5\n\n🏢 현대글로비스(086280)\n투자 논리: 유지 · 오늘 중요한 신규 변화 없음\n구조적 위험: 보통\n시장 기대: 높음\n\n🎯 핵심 판단\n완성차 운송과 물류 성장 논리를 바꿀 새 근거는 확인되지 않았습니다. 현재가 199,800원입니다. 가까운 동적 지지는 동적 지지구간 하단 197,803원부터 동적 지지구간 상단 210,197원까지입니다. 확인 가격 재검증에서 돌파 실패로 전환됐고 동적 지지·저항이 겹쳐 현재가 손익비는 확인되지 않습니다.\n\n📈 사업·실적\n재무 품질 자체는 사용 가능하지만 금액별 기간·연결 기준이 표시 조건을 충족하지 않아 손익 금액과 성장률을 표시하지 않습니다. 운임·물량·연료비 전가와 영업현금흐름·설비투자가 확인되어야 이익의 현금전환을 판단할 수 있습니다.\n\n💰 가격·포지셔닝\n현재가 199,800원입니다. 가까운 동적 지지는 동적 지지구간 하단 197,803원부터 동적 지지구간 상단 210,197원까지이고, 가까운 동적 저항은 동적 저항구간 하단 200,150원부터 동적 저항구간 상단 208,350원까지입니다. 두 구간이 겹쳐 현재가 손익비는 확인되지 않습니다. 확인 가격 재검증에서 돌파 실패로 전환됐지만 이는 사업 논리 악화를 뜻하지 않습니다.\n• 신규 관찰자: 신규 관찰자는 돌파 실패 뒤 겹친 지지·저항이 분리되고 운임·물량·마진·현금전환이 확인될 때 새 자금의 비대칭을 다시 판단합니다.\n• 보유자: 보유자는 돌파 실패에 따른 차트 검토 경계와 별도로 운임·물량·마진·현금전환의 사업 악화를 구분해 점검합니다.\n\n📊 수급\n외국인 당일 순매도 8,124주 기록했고, 기관 당일 순매도 27,866주 기록했습니다.\n외국인 5일 순매수 55,807주 기록했고, 기관 5일 순매도 47,507주 기록했습니다.\n외국인 20일 순매수 126,932주 기록했고, 기관 20일 순매수 158,024주 기록했습니다.\n당일에는 두 주체가 매도했고 단기 축은 방향이 갈렸으며 중기 축은 함께 매수해, 이 시간축 차이를 운임·물량·마진의 사업 근거와 분리합니다.\n\n📐 Valuation\n상장회사 전체의 이익 기준 값은 현재 PER 9.72배입니다. 상장회사 전체의 장부가 기준 값은 현재 PBR 1.38배입니다. 회사 전체 PER의 자체 역사 위치는 PER 역사적 백분위 88.1%입니다. 이는 현재 PER이 비교 가능한 과거 관측치 대부분보다 높은 구간이라는 뜻입니다. 운송업 배수는 운임·물량보다 마진과 현금전환의 지속성과 함께 봐야 합니다. 동종기업의 같은 시점 비교값은 없어 회사 전체 현재 배수와 자체 역사 위치를 중심으로 판단합니다.\n\n📊 운전자본·이익의 질\n거래 매출채권 증가율은 매출 증가율보다 40.0%p 앞섰습니다. 운송 매출의 회수 전환을 점검할 단서이지만 고객 지급 지연을 확정하지 않습니다.\n\n👁 핵심 감시\n• 운임·물량과 연료비 전가\n• OCF·CAPEX·FCF\n\n📌 다음 확인\n• 다음 운임·물량·연료비 전가와 영업현금흐름이 물류 성장의 질을 확인하는지 봅니다.\n\n⚠️ 미확인\n• 운임·물량, 연료비 전가, 영업현금흐름·설비투자·잉여현금흐름이 확인되지 않아 물류 성장의 현금전환을 판단할 수 없습니다.",
+      "before_text": "🤖 AI 보조 종목 점검 · KR Pilot 4/5\n\n🏢 현대글로비스(086280)\n투자 논리: 유지 · 오늘 중요한 신규 변화 없음\n구조적 위험: 보통\n시장 기대: 높음\n\n🎯 핵심 판단\n완성차 운송과 물류 성장 논리를 바꿀 새 근거는 확인되지 않았습니다. 현재가 199,800원입니다. 가까운 동적 지지는 동적 지지구간 하단 197,803원부터 동적 지지구간 상단 210,197원까지입니다. 확인 가격 재검증에서 돌파 실패로 전환됐고 동적 지지·저항이 겹쳐 현재가 손익비는 확인되지 않습니다.\n\n📈 사업·실적\n재무 품질 자체는 사용 가능하지만 금액별 기간·연결 기준이 표시 조건을 충족하지 않아 손익 금액과 성장률을 표시하지 않습니다. 운임·물량·연료비 전가와 영업현금흐름·설비투자가 확인되어야 이익의 현금전환을 판단할 수 있습니다.\n\n💰 가격·포지셔닝\n현재가 199,800원입니다. 가까운 동적 지지는 동적 지지구간 하단 197,803원부터 동적 지지구간 상단 210,197원까지이고, 가까운 동적 저항은 동적 저항구간 하단 200,150원부터 동적 저항구간 상단 208,350원까지입니다. 두 구간이 겹쳐 현재가 손익비는 확인되지 않습니다. 확인 가격 재검증에서 돌파 실패로 전환됐지만 이는 사업 논리 악화를 뜻하지 않습니다.\n• 신규 관찰자: 신규 관찰자는 돌파 실패 뒤 겹친 지지·저항이 분리되고 운임·물량·마진·현금전환이 확인될 때 새 자금의 비대칭을 다시 판단합니다.\n• 보유자: 보유자는 돌파 실패에 따른 차트 검토 경계와 별도로 운임·물량·마진·현금전환의 사업 악화를 구분해 점검합니다.\n\n📊 수급\n외국인 당일 순매도 8,124주 기록했고, 기관 당일 순매도 27,866주 기록했습니다.\n외국인 5일 순매수 55,807주 기록했고, 기관 5일 순매도 47,507주 기록했습니다.\n외국인 20일 순매수 126,932주 기록했고, 기관 20일 순매수 158,024주 기록했습니다.\n당일에는 두 주체가 매도했고 단기 축은 방향이 갈렸으며 중기 축은 함께 매수해, 이 시간축 차이를 운임·물량·마진의 사업 근거와 분리합니다.\n\n📐 Valuation\n상장회사 전체의 이익 기준 값은 현재 PER 9.72배입니다. 상장회사 전체의 장부가 기준 값은 현재 PBR 1.38배입니다. 회사 전체 PER의 자체 역사 위치는 PER 역사적 백분위 88.1%입니다. 이는 현재 PER이 비교 가능한 과거 관측치 대부분보다 높은 구간이라는 뜻입니다. 운송업 배수는 운임·물량보다 마진과 현금전환의 지속성과 함께 봐야 합니다. 동종기업의 같은 시점 비교값은 없어 회사 전체 현재 배수와 자체 역사 위치를 중심으로 판단합니다.\n\n👁 핵심 감시\n• 운임·물량과 연료비 전가\n• OCF·CAPEX·FCF\n\n📌 다음 확인\n• 다음 운임·물량·연료비 전가와 영업현금흐름이 물류 성장의 질을 확인하는지 봅니다.\n\n⚠️ 미확인\n• 운임·물량, 연료비 전가, 영업현금흐름·설비투자·잉여현금흐름이 확인되지 않아 물류 성장의 현금전환을 판단할 수 없습니다.",
+      "company_name": "현대글로비스",
+      "context": {
+        "allowed_claims": [
+          "typed_relation",
+          "cautious_earnings_quality_context"
+        ],
+        "assessment_date": "2026-08-20",
+        "cash_flow_alignment_state": "NOT_PROVIDED",
+        "cash_flow_context_used": false,
+        "consumption_eligible": true,
+        "contract": "working-capital-shadow-consumption-v1",
+        "cutoff": "2026-08-20",
+        "freshness_state": "CURRENT_FORMAL",
+        "industry": "transport_logistics",
+        "industry_applicability": {
+          "ap": "SECONDARY",
+          "ap_vs_cogs": "SECONDARY",
+          "ar": "PRIMARY",
+          "ar_vs_revenue": "PRIMARY",
+          "inventory": "CONTEXT_ONLY",
+          "inventory_vs_cogs": "CONTEXT_ONLY",
+          "inventory_vs_revenue": "CONTEXT_ONLY"
+        },
+        "latest_formal_balance_date": "2026-06-30",
+        "market": "KR",
+        "materiality_reason": "industry_primary_relation",
+        "metric_contexts": [
+          {
+            "current_fact_id": null,
+            "metric": "accounts_payable_broad",
+            "semantic_label": "광의 매입채무",
+            "status": "BLOCKED",
+            "yoy_fact_id": null
+          },
+          {
+            "current_fact_id": null,
+            "metric": "accounts_receivable_broad",
+            "semantic_label": "광의 매출채권",
+            "status": "BLOCKED",
+            "yoy_fact_id": null
+          },
+          {
+            "current_fact_id": "working-capital-reported:36ef2c093e800c32ba932e36",
+            "metric": "inventory",
+            "semantic_label": "재고",
+            "status": "ELIGIBLE",
+            "yoy_fact_id": "working-capital-derived:4225364bff8ff50155a7fd22"
+          },
+          {
+            "current_fact_id": "working-capital-reported:dcdb4f99fc212cec1c53b01d",
+            "metric": "trade_accounts_payable",
+            "semantic_label": "거래 매입채무",
+            "status": "ELIGIBLE",
+            "yoy_fact_id": "working-capital-derived:ad04c352db4f6622ab7d8325"
+          },
+          {
+            "current_fact_id": "working-capital-reported:900e9e3033c6a8bd1aacd3f8",
+            "metric": "trade_accounts_receivable",
+            "semantic_label": "거래 매출채권",
+            "status": "ELIGIBLE",
+            "yoy_fact_id": "working-capital-derived:be6d1ddf0fdc982ba3080152"
+          }
+        ],
+        "packet_id": "2026-08-20-kr-run-29-6e8809e1e944",
+        "pit_state": "PASS",
+        "point_in_time_exclusions": [],
+        "prohibited_claims": [
+          "future_fact_used",
+          "stale_as_current",
+          "broad_trade_semantic_mislabel",
+          "contract_asset_as_trade_ar",
+          "accrued_liability_as_trade_ap",
+          "unsupported_causal_claim",
+          "dso_inventory_days_dpo_ccc",
+          "automatic_thesis_warning_or_valuation_change"
+        ],
+        "remaining_unknowns": [
+          "운임·물량, 연료비 전가, 영업현금흐름·설비투자·잉여현금흐름이 확인되지 않아 물류 성장의 현금전환을 판단할 수 없습니다."
+        ],
+        "resolved_unknowns": [],
+        "selected_fact_refs": [
+          "working-capital-reported:900e9e3033c6a8bd1aacd3f8",
+          "working-capital-reported:aff5cfc8b8ee66a0822be21a",
+          "working-capital-reported:ecbfa454db2627eaca1e46bc",
+          "working-capital-reported:2c681c49e1dc8a6f75e48a02",
+          "working-capital-derived:be6d1ddf0fdc982ba3080152",
+          "working-capital-derived:f9a7adac985f10c0b109edb5"
+        ],
+        "selected_relations": [
+          {
+            "applicability": "PRIMARY",
+            "balance_metric": "trade_accounts_receivable",
+            "balance_scope": "current",
+            "balance_semantic": "ifrs-full:CurrentTradeReceivables",
+            "direction": "GREATER",
+            "family": "trade_ar_vs_revenue",
+            "flow_metric": "revenue",
+            "flow_semantic": "ifrs-full:Revenue",
+            "gap_percentage_points": "40.02970793023621348854280332",
+            "input_fact_ids": [
+              "working-capital-reported:900e9e3033c6a8bd1aacd3f8",
+              "working-capital-reported:aff5cfc8b8ee66a0822be21a",
+              "working-capital-reported:ecbfa454db2627eaca1e46bc",
+              "working-capital-reported:2c681c49e1dc8a6f75e48a02",
+              "working-capital-derived:be6d1ddf0fdc982ba3080152",
+              "working-capital-derived:f9a7adac985f10c0b109edb5"
+            ],
+            "relation_id": "working-capital-relation:46274e42924b8bbcc39b36be"
+          }
+        ],
+        "semantic_labels": [
+          "거래 매출채권",
+          "revenue"
+        ],
+        "shadow_used": true,
+        "specificity_key": "freight_collection",
+        "status": "READY",
+        "suppression_reasons": [],
+        "ticker": "086280",
+        "usage_mode": "TRADE_AR_RELATION"
+      },
+      "financial_type": "non_financial",
+      "human_quality": "MATERIAL_IMPROVEMENT",
+      "industry": "transport_logistics",
+      "market": "KR",
+      "message_length_after": 1567,
+      "message_length_before": 1472,
+      "message_length_delta": 95,
+      "persistence_mutation": 0,
+      "reasoning": {
+        "fact_ids": [
+          "working-capital-reported:900e9e3033c6a8bd1aacd3f8",
+          "working-capital-reported:aff5cfc8b8ee66a0822be21a",
+          "working-capital-reported:ecbfa454db2627eaca1e46bc",
+          "working-capital-reported:2c681c49e1dc8a6f75e48a02",
+          "working-capital-derived:be6d1ddf0fdc982ba3080152",
+          "working-capital-derived:f9a7adac985f10c0b109edb5"
+        ],
+        "numeric_claims": [
+          {
+            "display": "40.0%p",
+            "input_fact_ids": [
+              "working-capital-reported:900e9e3033c6a8bd1aacd3f8",
+              "working-capital-reported:aff5cfc8b8ee66a0822be21a",
+              "working-capital-reported:ecbfa454db2627eaca1e46bc",
+              "working-capital-reported:2c681c49e1dc8a6f75e48a02",
+              "working-capital-derived:be6d1ddf0fdc982ba3080152",
+              "working-capital-derived:f9a7adac985f10c0b109edb5"
+            ],
+            "owner": "business_earnings",
+            "relation_id": "working-capital-relation:46274e42924b8bbcc39b36be",
+            "semantic_type": "trade_ar_vs_revenue",
+            "text_ref": "business_earnings.text",
+            "value": "40.02970793023621348854280332"
+          }
+        ],
+        "relation_ids": [
+          "working-capital-relation:46274e42924b8bbcc39b36be"
+        ],
+        "text": "거래 매출채권 증가율은 매출 증가율보다 40.0%p 앞섰습니다. 운송 매출의 회수 전환을 점검할 단서이지만 고객 지급 지연을 확정하지 않습니다."
+      },
+      "status_delta_candidate": false,
+      "ticker": "086280",
+      "unknown_audit": {
+        "after": [
+          "운임·물량, 연료비 전가, 영업현금흐름·설비투자·잉여현금흐름이 확인되지 않아 물류 성장의 현금전환을 판단할 수 없습니다."
+        ],
+        "before": [
+          "운임·물량, 연료비 전가, 영업현금흐름·설비투자·잉여현금흐름이 확인되지 않아 물류 성장의 현금전환을 판단할 수 없습니다."
+        ],
+        "contradiction": false
+      },
+      "validation_errors": []
+    },
+    {
+      "after_text": "🏢 Core Scientific, Inc.(CORZ)\n\n투자 논리: 유지 · 오늘 중요한 신규 변화 없음\n\n구조적 위험: 보통\n\n시장 기대: 매우 높음\n\n🎯 핵심\nCore Scientific은 비트코인 채굴 중심 사업에서 AI/HPC 데이터센터 코로케이션 중심으로 전환 중이며, 2026년 2분기 매출의 약 83%가 colocation에서 발생하고 colocation gross margin이 약 59%까지 올라온 점이 핵심 근거다. 이미 437MW가 billing 중이고 총 leased customer power가 약 1.1GW, 잠재 계약가치가 240억달러 이상으로 확대되어 세 종목 중 '계약→가동→청구→매출' 전환이 가장 많이 증명됐다.\n\n📈 사업·실적\n2026 회계연도 상반기 누계 build-out 단계의 PPE 투자 후 잉여현금흐름은 $-723.29M입니다. 전년 비교기간보다 음수 폭이 커졌고 build-out 재투자는 가동·청구 전환과 자금조달을 함께 봅니다.\n\n👁 핵심 감시\n• 가동 지연 또는 계약 변경\n• CAPEX·부채 증가 대비 매출 전환 지연\n• 대규모 희석과 내부통제 문제 지속\n\n💰 가격\n현재가: $18.39 · 2026-08-20 미국장 종가\n현재 구조: 가격 구조상 추가 확인 대기\n신규 관찰자:\n• 동적 지지: $18.20~$18.73\n• 동적 저항: $18.96~$19.90\n• 현재가 기준 차트 손익비: 0.57배\n보유자:\n• 차트 무효화 가격: $17.39\n• 동적 지지 유지 여부: $18.20~$18.73\n가격 규칙 이력:\n• 등록 확인선 $22.40은 아직 도달하지 않았습니다.\n\n📐 Valuation\nPER: N/M\nfPER: N/M\n과거 대비:\nPBR 중앙값 0.5배\n현재 Valuation: 판단 자료 부족\n오늘 Valuation 변화: 판단 자료 부족\n검증 가능한 현재 배수가 없어 Valuation 해석을 보류합니다.\n\n📌 다음 확인\n• colocation 매출 성장률과 gross margin\n• billing MW와 leased MW의 분기별 증가\n• 1.1GW 계약용량의 준공·가동 일정 준수 여부",
+      "before_text": "🏢 Core Scientific, Inc.(CORZ)\n\n투자 논리: 유지 · 오늘 중요한 신규 변화 없음\n\n구조적 위험: 보통\n\n시장 기대: 매우 높음\n\n🎯 핵심\nCore Scientific은 비트코인 채굴 중심 사업에서 AI/HPC 데이터센터 코로케이션 중심으로 전환 중이며, 2026년 2분기 매출의 약 83%가 colocation에서 발생하고 colocation gross margin이 약 59%까지 올라온 점이 핵심 근거다. 이미 437MW가 billing 중이고 총 leased customer power가 약 1.1GW, 잠재 계약가치가 240억달러 이상으로 확대되어 세 종목 중 '계약→가동→청구→매출' 전환이 가장 많이 증명됐다.\n\n📈 사업·실적\n2026 회계연도 상반기 누계 build-out 단계의 PPE 투자 후 잉여현금흐름은 $-723.29M입니다. 전년 비교기간보다 음수 폭이 커졌고 build-out 재투자는 가동·청구 전환과 자금조달을 함께 봅니다.\n\n👁 핵심 감시\n• 가동 지연 또는 계약 변경\n• CAPEX·부채 증가 대비 매출 전환 지연\n• 대규모 희석과 내부통제 문제 지속\n\n💰 가격\n현재가: $18.39 · 2026-08-20 미국장 종가\n현재 구조: 가격 구조상 추가 확인 대기\n신규 관찰자:\n• 동적 지지: $18.20~$18.73\n• 동적 저항: $18.96~$19.90\n• 현재가 기준 차트 손익비: 0.57배\n보유자:\n• 차트 무효화 가격: $17.39\n• 동적 지지 유지 여부: $18.20~$18.73\n가격 규칙 이력:\n• 등록 확인선 $22.40은 아직 도달하지 않았습니다.\n\n📐 Valuation\nPER: N/M\nfPER: N/M\n과거 대비:\nPBR 중앙값 0.5배\n현재 Valuation: 판단 자료 부족\n오늘 Valuation 변화: 판단 자료 부족\n검증 가능한 현재 배수가 없어 Valuation 해석을 보류합니다.\n\n📌 다음 확인\n• colocation 매출 성장률과 gross margin\n• billing MW와 leased MW의 분기별 증가\n• 1.1GW 계약용량의 준공·가동 일정 준수 여부",
+      "company_name": "Core Scientific, Inc.",
+      "context": {
+        "allowed_claims": [],
+        "assessment_date": "2026-08-21",
+        "cash_flow_alignment_state": "NOT_PROVIDED",
+        "cash_flow_context_used": false,
+        "consumption_eligible": false,
+        "contract": "working-capital-shadow-consumption-v1",
+        "cutoff": "2026-08-21",
+        "freshness_state": "BLOCKED",
+        "industry": "hpc_data_center",
+        "industry_applicability": {
+          "ap": "SECONDARY",
+          "ap_vs_cogs": "CONTEXT_ONLY",
+          "ar": "SECONDARY",
+          "ar_vs_revenue": "SECONDARY",
+          "inventory": "CONTEXT_ONLY",
+          "inventory_vs_cogs": "CONTEXT_ONLY",
+          "inventory_vs_revenue": "CONTEXT_ONLY"
+        },
+        "latest_formal_balance_date": "2026-06-30",
+        "market": "US_FOREIGN",
+        "materiality_reason": null,
+        "metric_contexts": [
+          {
+            "current_fact_id": "working-capital-reported:89ad2ae4ab64bca3f0e873f0",
+            "metric": "accounts_payable_broad",
+            "semantic_label": "광의 매입채무",
+            "status": "ELIGIBLE",
+            "yoy_fact_id": "working-capital-derived:4674ccb4077d742e9280934a"
+          },
+          {
+            "current_fact_id": "working-capital-reported:89da109262e582429a35247c",
+            "metric": "accounts_receivable_broad",
+            "semantic_label": "광의 매출채권",
+            "status": "ELIGIBLE",
+            "yoy_fact_id": "working-capital-derived:c2f2a073b22b424f2b2d1d59"
+          },
+          {
+            "current_fact_id": null,
+            "metric": "inventory",
+            "semantic_label": "재고",
+            "status": "BLOCKED",
+            "yoy_fact_id": null
+          },
+          {
+            "current_fact_id": "working-capital-reported:8dc169b7e6ce8cd4365fd04e",
+            "metric": "trade_accounts_payable",
+            "semantic_label": "거래 매입채무",
+            "status": "PARTIAL",
+            "yoy_fact_id": null
+          },
+          {
+            "current_fact_id": null,
+            "metric": "trade_accounts_receivable",
+            "semantic_label": "거래 매출채권",
+            "status": "BLOCKED",
+            "yoy_fact_id": null
+          }
+        ],
+        "packet_id": "2026-08-21-us-run-30-5a3b7c1c4390",
+        "pit_state": "PASS_WITH_EXCLUSIONS",
+        "point_in_time_exclusions": [
+          {
+            "reason": "relation_not_latest_formal_balance",
+            "relation_id": "working-capital-relation:2042e08a6f1ef9ae53c96805"
+          }
+        ],
+        "prohibited_claims": [
+          "future_fact_used",
+          "stale_as_current",
+          "broad_trade_semantic_mislabel",
+          "contract_asset_as_trade_ar",
+          "accrued_liability_as_trade_ap",
+          "unsupported_causal_claim",
+          "dso_inventory_days_dpo_ccc",
+          "automatic_thesis_warning_or_valuation_change"
+        ],
+        "remaining_unknowns": [],
+        "resolved_unknowns": [],
+        "selected_fact_refs": [],
+        "selected_relations": [],
+        "semantic_labels": [],
+        "shadow_used": false,
+        "specificity_key": "billing_conversion",
+        "status": "SUPPRESSED",
+        "suppression_reasons": [
+          "no_material_current_relation",
+          "working_capital_context_blocked"
+        ],
+        "ticker": "CORZ",
+        "usage_mode": "SUPPRESSED"
+      },
+      "financial_type": "non_financial",
+      "human_quality": "NO_MEANINGFUL_CHANGE",
+      "industry": "hpc_data_center",
+      "market": "US_FOREIGN",
+      "message_length_after": 1041,
+      "message_length_before": 1041,
+      "message_length_delta": 0,
+      "persistence_mutation": 0,
+      "reasoning": null,
+      "status_delta_candidate": false,
+      "ticker": "CORZ",
+      "unknown_audit": {
+        "after": [],
+        "before": [],
+        "contradiction": false
+      },
+      "validation_errors": []
+    },
+    {
+      "after_text": "🏢 Circle Internet Group(CRCL)\n\n투자 논리: 유지 · 오늘 중요한 신규 변화 없음\n\n구조적 위험: 높아진 상태\n\n시장 기대: 투기적 기대\n\n🎯 핵심\nUSDC 유통량과 온체인 사용 증가가 장기 성장의 핵심이지만, reserve income 의존도를 낮추고 비이자성 플랫폼·결제 수익이 반복 가능한 이익으로 전환되는지가 재평가의 핵심이다. 금리 하락 시 reserve yield가 낮아져도 USDC 성장과 비이자 수익 확대가 adjusted EBITDA와 FCF를 방어할 수 있어야 한다.\n\n📈 사업·실적\n2026 회계연도 상반기 누계 준비금·플랫폼 사업의 PPE 투자 후 잉여현금흐름은 $528.12M입니다. 전년 비교기간보다 늘었고 준비금 수익과 비이자 플랫폼 수익의 현금전환을 함께 봅니다.\n\n👁 핵심 감시\n• USDC 점유율 둔화\n• reserve yield 하락과 수익배분 부담으로 정상화 이익 하락\n• 현재 금리 수익을 구조적 이익으로 오인할 위험\n\n💰 가격\n현재가: $83.66 · 2026-08-20 미국장 종가\n현재 구조: 가격 구조상 추가 확인 대기\n신규 관찰자:\n• 동적 지지: $82.01~$86.53\n• 가까운 유효 저항이 없어 현재가 기준 차트 손익비는 계산하지 않습니다.\n보유자:\n• 차트 무효화 가격: $79.35\n• 동적 지지 유지 여부: $82.01~$86.53\n가격 규칙 이력:\n• 기존 $72.70 확인선은 이미 돌파한 상태입니다.\n\n📐 Valuation\nPBR = 현재가 ÷ BVPS = $83.66 ÷ $12.85 = 6.5배\n과거 대비:\nPBR 중앙값 5.3배\n현재 Valuation: 판단 자료 부족\n오늘 Valuation 변화: 판단 자료 부족\n검증된 현재 PBR과 과거 장부가 배수 분포를 함께 확인하며, 이익 기반 배수는 사용하지 않습니다.\n\n📌 다음 확인\n• USDC 유통량과 점유율\n• 온체인 거래량\n• 비이자성 매출 비중",
+      "before_text": "🏢 Circle Internet Group(CRCL)\n\n투자 논리: 유지 · 오늘 중요한 신규 변화 없음\n\n구조적 위험: 높아진 상태\n\n시장 기대: 투기적 기대\n\n🎯 핵심\nUSDC 유통량과 온체인 사용 증가가 장기 성장의 핵심이지만, reserve income 의존도를 낮추고 비이자성 플랫폼·결제 수익이 반복 가능한 이익으로 전환되는지가 재평가의 핵심이다. 금리 하락 시 reserve yield가 낮아져도 USDC 성장과 비이자 수익 확대가 adjusted EBITDA와 FCF를 방어할 수 있어야 한다.\n\n📈 사업·실적\n2026 회계연도 상반기 누계 준비금·플랫폼 사업의 PPE 투자 후 잉여현금흐름은 $528.12M입니다. 전년 비교기간보다 늘었고 준비금 수익과 비이자 플랫폼 수익의 현금전환을 함께 봅니다.\n\n👁 핵심 감시\n• USDC 점유율 둔화\n• reserve yield 하락과 수익배분 부담으로 정상화 이익 하락\n• 현재 금리 수익을 구조적 이익으로 오인할 위험\n\n💰 가격\n현재가: $83.66 · 2026-08-20 미국장 종가\n현재 구조: 가격 구조상 추가 확인 대기\n신규 관찰자:\n• 동적 지지: $82.01~$86.53\n• 가까운 유효 저항이 없어 현재가 기준 차트 손익비는 계산하지 않습니다.\n보유자:\n• 차트 무효화 가격: $79.35\n• 동적 지지 유지 여부: $82.01~$86.53\n가격 규칙 이력:\n• 기존 $72.70 확인선은 이미 돌파한 상태입니다.\n\n📐 Valuation\nPBR = 현재가 ÷ BVPS = $83.66 ÷ $12.85 = 6.5배\n과거 대비:\nPBR 중앙값 5.3배\n현재 Valuation: 판단 자료 부족\n오늘 Valuation 변화: 판단 자료 부족\n검증된 현재 PBR과 과거 장부가 배수 분포를 함께 확인하며, 이익 기반 배수는 사용하지 않습니다.\n\n📌 다음 확인\n• USDC 유통량과 점유율\n• 온체인 거래량\n• 비이자성 매출 비중",
+      "company_name": "Circle Internet Group",
+      "context": {
+        "allowed_claims": [],
+        "assessment_date": "2026-08-21",
+        "cash_flow_alignment_state": "NOT_PROVIDED",
+        "cash_flow_context_used": false,
+        "consumption_eligible": false,
+        "contract": "working-capital-shadow-consumption-v1",
+        "cutoff": "2026-08-21",
+        "freshness_state": "BLOCKED",
+        "industry": "special_financial_like",
+        "industry_applicability": {
+          "ap": "CONTEXT_ONLY",
+          "ap_vs_cogs": "CONTEXT_ONLY",
+          "ar": "CONTEXT_ONLY",
+          "ar_vs_revenue": "CONTEXT_ONLY",
+          "inventory": "CONTEXT_ONLY",
+          "inventory_vs_cogs": "CONTEXT_ONLY",
+          "inventory_vs_revenue": "CONTEXT_ONLY"
+        },
+        "latest_formal_balance_date": "2026-06-30",
+        "market": "US_FOREIGN",
+        "materiality_reason": null,
+        "metric_contexts": [
+          {
+            "current_fact_id": "working-capital-reported:bdd236f03292003051f509ff",
+            "metric": "accounts_payable_broad",
+            "semantic_label": "광의 매입채무",
+            "status": "ELIGIBLE",
+            "yoy_fact_id": "working-capital-derived:62a9a0cdeca648cde81b705b"
+          },
+          {
+            "current_fact_id": "working-capital-reported:fd621c535e46abc088ccf521",
+            "metric": "accounts_receivable_broad",
+            "semantic_label": "광의 매출채권",
+            "status": "ELIGIBLE",
+            "yoy_fact_id": "working-capital-derived:d9b8e0e079e784e27bcce5f4"
+          },
+          {
+            "current_fact_id": null,
+            "metric": "inventory",
+            "semantic_label": "재고",
+            "status": "BLOCKED",
+            "yoy_fact_id": null
+          },
+          {
+            "current_fact_id": null,
+            "metric": "trade_accounts_payable",
+            "semantic_label": "거래 매입채무",
+            "status": "BLOCKED",
+            "yoy_fact_id": null
+          },
+          {
+            "current_fact_id": null,
+            "metric": "trade_accounts_receivable",
+            "semantic_label": "거래 매출채권",
+            "status": "BLOCKED",
+            "yoy_fact_id": null
+          }
+        ],
+        "packet_id": "2026-08-21-us-run-30-5a3b7c1c4390",
+        "pit_state": "PASS",
+        "point_in_time_exclusions": [],
+        "prohibited_claims": [
+          "future_fact_used",
+          "stale_as_current",
+          "broad_trade_semantic_mislabel",
+          "contract_asset_as_trade_ar",
+          "accrued_liability_as_trade_ap",
+          "unsupported_causal_claim",
+          "dso_inventory_days_dpo_ccc",
+          "automatic_thesis_warning_or_valuation_change"
+        ],
+        "remaining_unknowns": [],
+        "resolved_unknowns": [],
+        "selected_fact_refs": [],
+        "selected_relations": [],
+        "semantic_labels": [],
+        "shadow_used": false,
+        "specificity_key": "special_financial_like",
+        "status": "SUPPRESSED",
+        "suppression_reasons": [
+          "no_material_current_relation",
+          "working_capital_context_blocked"
+        ],
+        "ticker": "CRCL",
+        "usage_mode": "SUPPRESSED"
+      },
+      "financial_type": "non_financial",
+      "human_quality": "NO_MEANINGFUL_CHANGE",
+      "industry": "special_financial_like",
+      "market": "US_FOREIGN",
+      "message_length_after": 948,
+      "message_length_before": 948,
+      "message_length_delta": 0,
+      "persistence_mutation": 0,
+      "reasoning": null,
+      "status_delta_candidate": false,
+      "ticker": "CRCL",
+      "unknown_audit": {
+        "after": [],
+        "before": [],
+        "contradiction": false
+      },
+      "validation_errors": []
+    },
+    {
+      "after_text": "🏢 Alphabet Inc. Class A(GOOGL)\n\n투자 논리: 유지 · 오늘 중요한 신규 변화 없음\n\n구조적 위험: 보통\n\n시장 기대: 높음\n\n🎯 핵심\nSearch 광고의 견조한 성장과 Google Cloud의 고성장·마진 개선, AI 수요 확대가 이익 성장을 지지한다. 다만 대규모 AI CAPEX로 FCF 변동성이 커질 수 있어 Cloud 성장·backlog 확대와 CAPEX 대비 ROIC·FCF 회복이 핵심이다.\n\n📈 사업·실적\n2026 회계연도 상반기 누계 AI·Cloud 확장의 PPE 투자 후 잉여현금흐름은 $4.26B입니다. 전년 비교기간보다 줄었고 AI·Cloud 투자 회수는 Cloud 성장·마진과 함께 봅니다.\n\n👁 핵심 감시\n• Search 수익화 약화\n• CAPEX 증가가 FCF와 ROIC를 장기간 훼손\n• AI 투자비와 감가상각 시차\n\n💰 가격\n현재가: $340.67 · 2026-08-20 미국장 종가\n현재 구조: 가격 구조상 추가 확인 대기\n신규 관찰자:\n• 동적 지지: $312.37~$321.88\n• 동적 저항: $343.65~$353.79\n• 현재가 기준 차트 손익비: 0.09배\n보유자:\n• 차트 무효화 가격: $307.56\n• 동적 지지 유지 여부: $312.37~$321.88\n가격 규칙 이력:\n• 등록 확인선 $375은 아직 도달하지 않았습니다.\n\n📐 Valuation\nPER = 현재가 ÷ TTM EPS = $340.67 ÷ $27.90 = 12.2배\nPBR = 현재가 ÷ BVPS = $340.67 ÷ $52.37 = 6.5배\n과거 대비:\nPER 중앙값 16.1배 · 12백분위 · PBR 중앙값 6.7배 · 46백분위\n현재 Valuation: 다소 할인\n해석: 현재 배수를 그 시점에 공개된 재무정보로 재구성한 역사적 분포와 비교했습니다.\n오늘 Valuation 변화: 판단 자료 부족\n검증된 현재 PER/PBR과 과거 배수 분포를 함께 확인합니다.\n\n📌 다음 확인\n• Cloud 성장률과 backlog\n• Cloud 영업이익률\n• Search monetization",
+      "before_text": "🏢 Alphabet Inc. Class A(GOOGL)\n\n투자 논리: 유지 · 오늘 중요한 신규 변화 없음\n\n구조적 위험: 보통\n\n시장 기대: 높음\n\n🎯 핵심\nSearch 광고의 견조한 성장과 Google Cloud의 고성장·마진 개선, AI 수요 확대가 이익 성장을 지지한다. 다만 대규모 AI CAPEX로 FCF 변동성이 커질 수 있어 Cloud 성장·backlog 확대와 CAPEX 대비 ROIC·FCF 회복이 핵심이다.\n\n📈 사업·실적\n2026 회계연도 상반기 누계 AI·Cloud 확장의 PPE 투자 후 잉여현금흐름은 $4.26B입니다. 전년 비교기간보다 줄었고 AI·Cloud 투자 회수는 Cloud 성장·마진과 함께 봅니다.\n\n👁 핵심 감시\n• Search 수익화 약화\n• CAPEX 증가가 FCF와 ROIC를 장기간 훼손\n• AI 투자비와 감가상각 시차\n\n💰 가격\n현재가: $340.67 · 2026-08-20 미국장 종가\n현재 구조: 가격 구조상 추가 확인 대기\n신규 관찰자:\n• 동적 지지: $312.37~$321.88\n• 동적 저항: $343.65~$353.79\n• 현재가 기준 차트 손익비: 0.09배\n보유자:\n• 차트 무효화 가격: $307.56\n• 동적 지지 유지 여부: $312.37~$321.88\n가격 규칙 이력:\n• 등록 확인선 $375은 아직 도달하지 않았습니다.\n\n📐 Valuation\nPER = 현재가 ÷ TTM EPS = $340.67 ÷ $27.90 = 12.2배\nPBR = 현재가 ÷ BVPS = $340.67 ÷ $52.37 = 6.5배\n과거 대비:\nPER 중앙값 16.1배 · 12백분위 · PBR 중앙값 6.7배 · 46백분위\n현재 Valuation: 다소 할인\n해석: 현재 배수를 그 시점에 공개된 재무정보로 재구성한 역사적 분포와 비교했습니다.\n오늘 Valuation 변화: 판단 자료 부족\n검증된 현재 PER/PBR과 과거 배수 분포를 함께 확인합니다.\n\n📌 다음 확인\n• Cloud 성장률과 backlog\n• Cloud 영업이익률\n• Search monetization",
+      "company_name": "Alphabet Inc. Class A",
+      "context": {
+        "allowed_claims": [],
+        "assessment_date": "2026-08-21",
+        "cash_flow_alignment_state": "NOT_PROVIDED",
+        "cash_flow_context_used": false,
+        "consumption_eligible": false,
+        "contract": "working-capital-shadow-consumption-v1",
+        "cutoff": "2026-08-21",
+        "freshness_state": "BLOCKED",
+        "industry": "cloud_platform_software",
+        "industry_applicability": {
+          "ap": "CONTEXT_ONLY",
+          "ap_vs_cogs": "CONTEXT_ONLY",
+          "ar": "SECONDARY",
+          "ar_vs_revenue": "SECONDARY",
+          "inventory": "CONTEXT_ONLY",
+          "inventory_vs_cogs": "CONTEXT_ONLY",
+          "inventory_vs_revenue": "CONTEXT_ONLY"
+        },
+        "latest_formal_balance_date": "2026-06-30",
+        "market": "US_FOREIGN",
+        "materiality_reason": null,
+        "metric_contexts": [
+          {
+            "current_fact_id": "working-capital-reported:50b0bb0f17239316b5cafe3c",
+            "metric": "accounts_payable_broad",
+            "semantic_label": "광의 매입채무",
+            "status": "ELIGIBLE",
+            "yoy_fact_id": "working-capital-derived:0d872ec36da6b71fdc6992f1"
+          },
+          {
+            "current_fact_id": "working-capital-reported:173c00a08ebaaa117ff3753e",
+            "metric": "accounts_receivable_broad",
+            "semantic_label": "광의 매출채권",
+            "status": "ELIGIBLE",
+            "yoy_fact_id": "working-capital-derived:4a4dd3ecc18f0af7ed0b92b2"
+          },
+          {
+            "current_fact_id": "working-capital-reported:10efeacfd1aa1a89b44f766c",
+            "metric": "inventory",
+            "semantic_label": "재고",
+            "status": "PARTIAL",
+            "yoy_fact_id": null
+          },
+          {
+            "current_fact_id": null,
+            "metric": "trade_accounts_payable",
+            "semantic_label": "거래 매입채무",
+            "status": "BLOCKED",
+            "yoy_fact_id": null
+          },
+          {
+            "current_fact_id": null,
+            "metric": "trade_accounts_receivable",
+            "semantic_label": "거래 매출채권",
+            "status": "BLOCKED",
+            "yoy_fact_id": null
+          }
+        ],
+        "packet_id": "2026-08-21-us-run-30-5a3b7c1c4390",
+        "pit_state": "PASS",
+        "point_in_time_exclusions": [],
+        "prohibited_claims": [
+          "future_fact_used",
+          "stale_as_current",
+          "broad_trade_semantic_mislabel",
+          "contract_asset_as_trade_ar",
+          "accrued_liability_as_trade_ap",
+          "unsupported_causal_claim",
+          "dso_inventory_days_dpo_ccc",
+          "automatic_thesis_warning_or_valuation_change"
+        ],
+        "remaining_unknowns": [],
+        "resolved_unknowns": [],
+        "selected_fact_refs": [],
+        "selected_relations": [],
+        "semantic_labels": [],
+        "shadow_used": false,
+        "specificity_key": "cloud_software_collection",
+        "status": "SUPPRESSED",
+        "suppression_reasons": [
+          "no_material_current_relation",
+          "working_capital_context_blocked"
+        ],
+        "ticker": "GOOGL",
+        "usage_mode": "SUPPRESSED"
+      },
+      "financial_type": "non_financial",
+      "human_quality": "NO_MEANINGFUL_CHANGE",
+      "industry": "cloud_platform_software",
+      "market": "US_FOREIGN",
+      "message_length_after": 1020,
+      "message_length_before": 1020,
+      "message_length_delta": 0,
+      "persistence_mutation": 0,
+      "reasoning": null,
+      "status_delta_candidate": false,
+      "ticker": "GOOGL",
+      "unknown_audit": {
+        "after": [],
+        "before": [],
+        "contradiction": false
+      },
+      "validation_errors": []
+    },
+    {
+      "after_text": "🏢 Hut 8 Corp.(HUT)\n\n투자 논리: 유지 · 오늘 중요한 신규 변화 없음\n\n구조적 위험: 보통\n\n시장 기대: 매우 높음\n\n🎯 핵심\nHut 8은 비트코인 채굴·전력 인프라 자산에서 AI/HPC 데이터센터 인프라 사업으로 확장 중이며, 2026년 8월 기준 약 949MW 계약 IT 용량, 약 266억달러 base-term 계약가치, 연간 NOI 17.5억달러 이상 기대와 investment-grade 상대방 기반의 장기 계약이 핵심 가치 근거다. 장기 기업가치 옵션은 매우 크지만 현재 손익은 여전히 Compute/채굴 비중이 높고, 대형 계약이 실제 준공·가동·NOI로 전환되는 실행 리스크가 크다.\n\n👁 핵심 감시\n• 준공 지연·전력 인입 문제\n• NOI 하향 조정\n• 과도한 모회사 자본투입 또는 희석\n\n💰 가격\n현재가: $88.65 · 2026-08-20 미국장 종가\n현재 구조: 가격 구조상 추가 확인 대기\n신규 관찰자:\n• 동적 지지: $84.11~$89.67\n• 동적 저항: $101.61~$106.89\n• 현재가 기준 차트 손익비: 1.4배\n보유자:\n• 차트 무효화 가격: $79.40\n• 동적 지지 유지 여부: $84.11~$89.67\n가격 규칙 이력:\n• 등록 확인선 $97은 아직 도달하지 않았습니다.\n\n📐 Valuation\nPER: N/M\nPBR = 현재가 ÷ BVPS = $88.65 ÷ $12.26 = 7.2배\nfPER = 현재가 ÷ 시장 예상 EPS = $88.65 ÷ $0.59 = 150.3배\n과거 대비:\nPER 중앙값 5.6배 · PBR 중앙값 3.6배 · 75백분위\n현재 Valuation: 판단 자료 부족\n오늘 Valuation 변화: 판단 자료 부족\n검증된 현재 PBR과 예상 이익 배수를 사용하며, 사용할 수 없는 trailing PER은 제외합니다.\n\n⚠️ 데이터 주의\n• 최신 정식 재무 반영이 지연돼 현재 Valuation 신뢰도를 낮춰 봅니다.\n\n📌 다음 확인\n• 계약 949MW의 준공·가동 일정과 실제 billing/NOI 발생\n• 평균 연간 NOI 17.5억달러 이상 기대치의 실현 여부\n• 프로젝트별 CAPEX·project financing·모회사 equity 투입 규모",
+      "before_text": "🏢 Hut 8 Corp.(HUT)\n\n투자 논리: 유지 · 오늘 중요한 신규 변화 없음\n\n구조적 위험: 보통\n\n시장 기대: 매우 높음\n\n🎯 핵심\nHut 8은 비트코인 채굴·전력 인프라 자산에서 AI/HPC 데이터센터 인프라 사업으로 확장 중이며, 2026년 8월 기준 약 949MW 계약 IT 용량, 약 266억달러 base-term 계약가치, 연간 NOI 17.5억달러 이상 기대와 investment-grade 상대방 기반의 장기 계약이 핵심 가치 근거다. 장기 기업가치 옵션은 매우 크지만 현재 손익은 여전히 Compute/채굴 비중이 높고, 대형 계약이 실제 준공·가동·NOI로 전환되는 실행 리스크가 크다.\n\n👁 핵심 감시\n• 준공 지연·전력 인입 문제\n• NOI 하향 조정\n• 과도한 모회사 자본투입 또는 희석\n\n💰 가격\n현재가: $88.65 · 2026-08-20 미국장 종가\n현재 구조: 가격 구조상 추가 확인 대기\n신규 관찰자:\n• 동적 지지: $84.11~$89.67\n• 동적 저항: $101.61~$106.89\n• 현재가 기준 차트 손익비: 1.4배\n보유자:\n• 차트 무효화 가격: $79.40\n• 동적 지지 유지 여부: $84.11~$89.67\n가격 규칙 이력:\n• 등록 확인선 $97은 아직 도달하지 않았습니다.\n\n📐 Valuation\nPER: N/M\nPBR = 현재가 ÷ BVPS = $88.65 ÷ $12.26 = 7.2배\nfPER = 현재가 ÷ 시장 예상 EPS = $88.65 ÷ $0.59 = 150.3배\n과거 대비:\nPER 중앙값 5.6배 · PBR 중앙값 3.6배 · 75백분위\n현재 Valuation: 판단 자료 부족\n오늘 Valuation 변화: 판단 자료 부족\n검증된 현재 PBR과 예상 이익 배수를 사용하며, 사용할 수 없는 trailing PER은 제외합니다.\n\n⚠️ 데이터 주의\n• 최신 정식 재무 반영이 지연돼 현재 Valuation 신뢰도를 낮춰 봅니다.\n\n📌 다음 확인\n• 계약 949MW의 준공·가동 일정과 실제 billing/NOI 발생\n• 평균 연간 NOI 17.5억달러 이상 기대치의 실현 여부\n• 프로젝트별 CAPEX·project financing·모회사 equity 투입 규모",
+      "company_name": "Hut 8 Corp.",
+      "context": {
+        "allowed_claims": [],
+        "assessment_date": "2026-08-21",
+        "cash_flow_alignment_state": "NOT_PROVIDED",
+        "cash_flow_context_used": false,
+        "consumption_eligible": false,
+        "contract": "working-capital-shadow-consumption-v1",
+        "cutoff": "2026-08-21",
+        "freshness_state": "BLOCKED",
+        "industry": "hpc_data_center",
+        "industry_applicability": {
+          "ap": "SECONDARY",
+          "ap_vs_cogs": "CONTEXT_ONLY",
+          "ar": "SECONDARY",
+          "ar_vs_revenue": "SECONDARY",
+          "inventory": "CONTEXT_ONLY",
+          "inventory_vs_cogs": "CONTEXT_ONLY",
+          "inventory_vs_revenue": "CONTEXT_ONLY"
+        },
+        "latest_formal_balance_date": "2026-06-30",
+        "market": "US_FOREIGN",
+        "materiality_reason": null,
+        "metric_contexts": [
+          {
+            "current_fact_id": "working-capital-reported:5a29ffa1ce10b31f2310b7b6",
+            "metric": "accounts_payable_broad",
+            "semantic_label": "광의 매입채무",
+            "status": "ELIGIBLE",
+            "yoy_fact_id": "working-capital-derived:084664ec85f31b80003119e1"
+          },
+          {
+            "current_fact_id": "working-capital-reported:1fc7281521db963a2bacf42a",
+            "metric": "accounts_receivable_broad",
+            "semantic_label": "광의 매출채권",
+            "status": "ELIGIBLE",
+            "yoy_fact_id": "working-capital-derived:5c9842aecbe959222af0c9f6"
+          },
+          {
+            "current_fact_id": null,
+            "metric": "inventory",
+            "semantic_label": "재고",
+            "status": "BLOCKED",
+            "yoy_fact_id": null
+          },
+          {
+            "current_fact_id": null,
+            "metric": "trade_accounts_payable",
+            "semantic_label": "거래 매입채무",
+            "status": "BLOCKED",
+            "yoy_fact_id": null
+          },
+          {
+            "current_fact_id": null,
+            "metric": "trade_accounts_receivable",
+            "semantic_label": "거래 매출채권",
+            "status": "BLOCKED",
+            "yoy_fact_id": null
+          }
+        ],
+        "packet_id": "2026-08-21-us-run-30-5a3b7c1c4390",
+        "pit_state": "PASS",
+        "point_in_time_exclusions": [],
+        "prohibited_claims": [
+          "future_fact_used",
+          "stale_as_current",
+          "broad_trade_semantic_mislabel",
+          "contract_asset_as_trade_ar",
+          "accrued_liability_as_trade_ap",
+          "unsupported_causal_claim",
+          "dso_inventory_days_dpo_ccc",
+          "automatic_thesis_warning_or_valuation_change"
+        ],
+        "remaining_unknowns": [],
+        "resolved_unknowns": [],
+        "selected_fact_refs": [],
+        "selected_relations": [],
+        "semantic_labels": [],
+        "shadow_used": false,
+        "specificity_key": "billing_conversion",
+        "status": "SUPPRESSED",
+        "suppression_reasons": [
+          "no_material_current_relation",
+          "working_capital_context_blocked"
+        ],
+        "ticker": "HUT",
+        "usage_mode": "SUPPRESSED"
+      },
+      "financial_type": "non_financial",
+      "human_quality": "NO_MEANINGFUL_CHANGE",
+      "industry": "hpc_data_center",
+      "market": "US_FOREIGN",
+      "message_length_after": 1085,
+      "message_length_before": 1085,
+      "message_length_delta": 0,
+      "persistence_mutation": 0,
+      "reasoning": null,
+      "status_delta_candidate": false,
+      "ticker": "HUT",
+      "unknown_audit": {
+        "after": [],
+        "before": [],
+        "contradiction": false
+      },
+      "validation_errors": []
+    },
+    {
+      "after_text": "🏢 IBM(IBM)\n\n투자 논리: 유지 · 오늘 중요한 신규 변화 없음\n\n구조적 위험: 보통\n\n시장 기대: 균형\n\n🎯 핵심\nSoftware·Red Hat·AI 관련 성장과 반복매출 확대가 중기 성장을 지지하지만, 회사 전체 매출 성장과 FCF 가속은 아직 충분히 증명되지 않았다. Consulting 회복과 Software 성장률, FCF 증가가 핵심이며 차트상 223~230달러 지지와 250달러 안착, 258~260달러 돌파를 가격 확인 신호로 본다.\n\n📈 사업·실적\n2026 회계연도 상반기 누계 Software·Consulting 사업의 PPE 투자 후 잉여현금흐름은 $7.3B입니다. 전년 비교기간보다 늘었고 Software·Consulting 전환과 인수자금 부담을 함께 봅니다.\n\n👁 핵심 감시\n• Software 성장 둔화\n• Consulting 부진과 FCF 정체\n• 인수 관련 무형자산과 조정이익 의존\n\n💰 가격\n현재가: $233.69 · 2026-08-20 미국장 종가\n현재 구조: 가격 구조상 추가 확인 대기\n신규 관찰자:\n• 동적 지지: $228.60~$235.66\n• 동적 저항: $239.37~$244.23\n• 현재가 기준 차트 손익비: 0.62배\n보유자:\n• 차트 무효화 가격: $224.46\n• 동적 지지 유지 여부: $228.60~$235.66\n가격 규칙 이력:\n• 등록 확인선 $250은 아직 도달하지 않았습니다.\n\n📐 Valuation\nPER = 현재가 ÷ TTM EPS = $233.69 ÷ $16.56 = 14.1배\nPBR = 현재가 ÷ BVPS = $233.69 ÷ $36.14 = 6.5배\nfPER: 17.4배\nfPBR = 현재가 ÷ 내부 FY1 추정 BVPS = $233.69 ÷ $34.28 = 6.8배\n※ 내부 모델 추정치이며 시장 컨센서스가 아닙니다.\n과거 대비:\nPER 중앙값 15.3배 · 41백분위 · PBR 중앙값 6.5배 · 49백분위\n현재 Valuation: 중립 범위\n해석: 현재 배수를 그 시점에 공개된 재무정보로 재구성한 역사적 분포와 비교했습니다.\n\n⚠️ 데이터 주의\n• 최신 정식 재무 반영이 지연돼 현재 Valuation 신뢰도를 낮춰 봅니다.\n\n📌 다음 확인\n• Software 성장률\n• Red Hat 성장률\n• Consulting backlog와 매출",
+      "before_text": "🏢 IBM(IBM)\n\n투자 논리: 유지 · 오늘 중요한 신규 변화 없음\n\n구조적 위험: 보통\n\n시장 기대: 균형\n\n🎯 핵심\nSoftware·Red Hat·AI 관련 성장과 반복매출 확대가 중기 성장을 지지하지만, 회사 전체 매출 성장과 FCF 가속은 아직 충분히 증명되지 않았다. Consulting 회복과 Software 성장률, FCF 증가가 핵심이며 차트상 223~230달러 지지와 250달러 안착, 258~260달러 돌파를 가격 확인 신호로 본다.\n\n📈 사업·실적\n2026 회계연도 상반기 누계 Software·Consulting 사업의 PPE 투자 후 잉여현금흐름은 $7.3B입니다. 전년 비교기간보다 늘었고 Software·Consulting 전환과 인수자금 부담을 함께 봅니다.\n\n👁 핵심 감시\n• Software 성장 둔화\n• Consulting 부진과 FCF 정체\n• 인수 관련 무형자산과 조정이익 의존\n\n💰 가격\n현재가: $233.69 · 2026-08-20 미국장 종가\n현재 구조: 가격 구조상 추가 확인 대기\n신규 관찰자:\n• 동적 지지: $228.60~$235.66\n• 동적 저항: $239.37~$244.23\n• 현재가 기준 차트 손익비: 0.62배\n보유자:\n• 차트 무효화 가격: $224.46\n• 동적 지지 유지 여부: $228.60~$235.66\n가격 규칙 이력:\n• 등록 확인선 $250은 아직 도달하지 않았습니다.\n\n📐 Valuation\nPER = 현재가 ÷ TTM EPS = $233.69 ÷ $16.56 = 14.1배\nPBR = 현재가 ÷ BVPS = $233.69 ÷ $36.14 = 6.5배\nfPER: 17.4배\nfPBR = 현재가 ÷ 내부 FY1 추정 BVPS = $233.69 ÷ $34.28 = 6.8배\n※ 내부 모델 추정치이며 시장 컨센서스가 아닙니다.\n과거 대비:\nPER 중앙값 15.3배 · 41백분위 · PBR 중앙값 6.5배 · 49백분위\n현재 Valuation: 중립 범위\n해석: 현재 배수를 그 시점에 공개된 재무정보로 재구성한 역사적 분포와 비교했습니다.\n\n⚠️ 데이터 주의\n• 최신 정식 재무 반영이 지연돼 현재 Valuation 신뢰도를 낮춰 봅니다.\n\n📌 다음 확인\n• Software 성장률\n• Red Hat 성장률\n• Consulting backlog와 매출",
+      "company_name": "IBM",
+      "context": {
+        "allowed_claims": [],
+        "assessment_date": "2026-08-21",
+        "cash_flow_alignment_state": "NOT_PROVIDED",
+        "cash_flow_context_used": false,
+        "consumption_eligible": false,
+        "contract": "working-capital-shadow-consumption-v1",
+        "cutoff": "2026-08-21",
+        "freshness_state": "BLOCKED",
+        "industry": "cloud_platform_software",
+        "industry_applicability": {
+          "ap": "CONTEXT_ONLY",
+          "ap_vs_cogs": "CONTEXT_ONLY",
+          "ar": "SECONDARY",
+          "ar_vs_revenue": "SECONDARY",
+          "inventory": "CONTEXT_ONLY",
+          "inventory_vs_cogs": "CONTEXT_ONLY",
+          "inventory_vs_revenue": "CONTEXT_ONLY"
+        },
+        "latest_formal_balance_date": "2026-06-30",
+        "market": "US_FOREIGN",
+        "materiality_reason": null,
+        "metric_contexts": [
+          {
+            "current_fact_id": "working-capital-reported:c1440ba9d6cc097ba6692495",
+            "metric": "accounts_payable_broad",
+            "semantic_label": "광의 매입채무",
+            "status": "ELIGIBLE",
+            "yoy_fact_id": "working-capital-derived:8b9a9dd0c8543f49bcc7073e"
+          },
+          {
+            "current_fact_id": "working-capital-reported:2defbdc609e262868155cb1b",
+            "metric": "accounts_receivable_broad",
+            "semantic_label": "광의 매출채권",
+            "status": "ELIGIBLE",
+            "yoy_fact_id": "working-capital-derived:8cb623d947fe2bf2012019c0"
+          },
+          {
+            "current_fact_id": "working-capital-reported:061b9f01d5b66dbbfccd4bd6",
+            "metric": "inventory",
+            "semantic_label": "재고",
+            "status": "ELIGIBLE",
+            "yoy_fact_id": "working-capital-derived:71d32559e514722f24d69745"
+          },
+          {
+            "current_fact_id": null,
+            "metric": "trade_accounts_payable",
+            "semantic_label": "거래 매입채무",
+            "status": "BLOCKED",
+            "yoy_fact_id": null
+          },
+          {
+            "current_fact_id": null,
+            "metric": "trade_accounts_receivable",
+            "semantic_label": "거래 매출채권",
+            "status": "BLOCKED",
+            "yoy_fact_id": null
+          }
+        ],
+        "packet_id": "2026-08-21-us-run-30-5a3b7c1c4390",
+        "pit_state": "PASS",
+        "point_in_time_exclusions": [],
+        "prohibited_claims": [
+          "future_fact_used",
+          "stale_as_current",
+          "broad_trade_semantic_mislabel",
+          "contract_asset_as_trade_ar",
+          "accrued_liability_as_trade_ap",
+          "unsupported_causal_claim",
+          "dso_inventory_days_dpo_ccc",
+          "automatic_thesis_warning_or_valuation_change"
+        ],
+        "remaining_unknowns": [],
+        "resolved_unknowns": [],
+        "selected_fact_refs": [],
+        "selected_relations": [],
+        "semantic_labels": [],
+        "shadow_used": false,
+        "specificity_key": "cloud_software_collection",
+        "status": "SUPPRESSED",
+        "suppression_reasons": [
+          "no_material_current_relation",
+          "working_capital_context_blocked"
+        ],
+        "ticker": "IBM",
+        "usage_mode": "SUPPRESSED"
+      },
+      "financial_type": "non_financial",
+      "human_quality": "NO_MEANINGFUL_CHANGE",
+      "industry": "cloud_platform_software",
+      "market": "US_FOREIGN",
+      "message_length_after": 1135,
+      "message_length_before": 1135,
+      "message_length_delta": 0,
+      "persistence_mutation": 0,
+      "reasoning": null,
+      "status_delta_candidate": false,
+      "ticker": "IBM",
+      "unknown_audit": {
+        "after": [],
+        "before": [],
+        "contradiction": false
+      },
+      "validation_errors": []
+    },
+    {
+      "after_text": "🏢 Micron Technology(MU)\n\n투자 논리: 유지 · 오늘 중요한 신규 변화 없음\n\n구조적 위험: 보통\n\n시장 기대: 매우 높음\n\n🎯 핵심\nAI 서버·HBM·고부가 DRAM 수요가 Micron의 가격·믹스와 수익성을 구조적으로 끌어올리고 있으며, 장기 고객계약(SCA/RPO)과 대규모 FCF가 과거 메모리 사이클보다 높은 이익 가시성을 제공하는지가 핵심 투자 논리다. 2026-08-12 OHLCV 기준 MU는 월봉·주봉의 장기 상승 레짐이 유지되는 가운데 주봉 MACD와 주요 OSC가 플러스이고, 일봉 MACD histogram도 빠르게 개선되어 SKHY보다 중기 추세 구조가 안정적이다.\n\n📈 사업·실적\n2026 회계연도 3분기 누계 메모리 증설의 PPE 투자 후 잉여현금흐름은 $26.1B입니다. 전년 비교기간보다 늘었고 ASP·제품 믹스·재고 사이클과 설비투자 시점을 함께 봅니다.\n\n📊 운전자본·이익의 질\n재고 증가율은 매출원가 증가율보다 15.7%p 밑돌았습니다. 재고 정상화와 양립하지만 NAND ASP·SSD 수요 개선을 확정하지 않습니다. 같은 정식 기간의 현금흐름 문맥을 보완하지만 현금흐름 변동의 원인으로 단정하지 않습니다.\n\n👁 핵심 감시\n• 메모리 ASP 상승률 조기 둔화 또는 가격 하락\n• gross margin이 peak 수준에서 예상보다 빠르게 압축\n• CAPEX 급증으로 FCF가 크게 감소\n\n💰 가격\n현재가: $974.33 · 2026-08-20 미국장 종가\n현재 구조: 가격 구조상 추가 확인 대기\n신규 관찰자:\n• 동적 지지: $868.39~$914.93\n• 동적 저항: $991.61~$1,031.93\n• 현재가 기준 차트 손익비: 0.12배\n보유자:\n• 차트 무효화 가격: $833.67\n• 동적 지지 유지 여부: $868.39~$914.93\n가격 규칙 이력:\n• 기존 $950 확인선은 이번에 돌파했습니다.\n\n📐 Valuation\nPER = 현재가 ÷ TTM EPS = $974.33 ÷ $48.93 = 19.9배\nPBR = 현재가 ÷ BVPS = $974.33 ÷ $89.22 = 10.9배\nfPER: 5.9배\nfPBR = 현재가 ÷ 내부 FY1 추정 BVPS = $974.33 ÷ $163.09 = 6.0배\n※ 내부 모델 추정치이며 시장 컨센서스가 아닙니다.\n과거 대비:\nPER 중앙값 16.8배 · 72백분위 · PBR 중앙값 2.2배 · 96백분위\n현재 Valuation: 부담 구간\n해석: 사이클 기업은 낮은 trailing PER를 할인 근거로 쓰지 않고 PBR과 정상화 이익을 우선했습니다.\n\n⚠️ 데이터 주의\n• fPER는 산출 기간이 명확하지 않아 참고 수준입니다.\n\n📌 다음 확인\n• 분기 매출·gross margin·operating margin과 DRAM/NAND ASP 방향\n• HBM4 출하·고객 qualification 및 HBM4E 상용화 진행\n• Strategic Customer Agreement·RPO·고객 예치금 규모와 실제 매출 전환",
+      "before_text": "🏢 Micron Technology(MU)\n\n투자 논리: 유지 · 오늘 중요한 신규 변화 없음\n\n구조적 위험: 보통\n\n시장 기대: 매우 높음\n\n🎯 핵심\nAI 서버·HBM·고부가 DRAM 수요가 Micron의 가격·믹스와 수익성을 구조적으로 끌어올리고 있으며, 장기 고객계약(SCA/RPO)과 대규모 FCF가 과거 메모리 사이클보다 높은 이익 가시성을 제공하는지가 핵심 투자 논리다. 2026-08-12 OHLCV 기준 MU는 월봉·주봉의 장기 상승 레짐이 유지되는 가운데 주봉 MACD와 주요 OSC가 플러스이고, 일봉 MACD histogram도 빠르게 개선되어 SKHY보다 중기 추세 구조가 안정적이다.\n\n📈 사업·실적\n2026 회계연도 3분기 누계 메모리 증설의 PPE 투자 후 잉여현금흐름은 $26.1B입니다. 전년 비교기간보다 늘었고 ASP·제품 믹스·재고 사이클과 설비투자 시점을 함께 봅니다.\n\n👁 핵심 감시\n• 메모리 ASP 상승률 조기 둔화 또는 가격 하락\n• gross margin이 peak 수준에서 예상보다 빠르게 압축\n• CAPEX 급증으로 FCF가 크게 감소\n\n💰 가격\n현재가: $974.33 · 2026-08-20 미국장 종가\n현재 구조: 가격 구조상 추가 확인 대기\n신규 관찰자:\n• 동적 지지: $868.39~$914.93\n• 동적 저항: $991.61~$1,031.93\n• 현재가 기준 차트 손익비: 0.12배\n보유자:\n• 차트 무효화 가격: $833.67\n• 동적 지지 유지 여부: $868.39~$914.93\n가격 규칙 이력:\n• 기존 $950 확인선은 이번에 돌파했습니다.\n\n📐 Valuation\nPER = 현재가 ÷ TTM EPS = $974.33 ÷ $48.93 = 19.9배\nPBR = 현재가 ÷ BVPS = $974.33 ÷ $89.22 = 10.9배\nfPER: 5.9배\nfPBR = 현재가 ÷ 내부 FY1 추정 BVPS = $974.33 ÷ $163.09 = 6.0배\n※ 내부 모델 추정치이며 시장 컨센서스가 아닙니다.\n과거 대비:\nPER 중앙값 16.8배 · 72백분위 · PBR 중앙값 2.2배 · 96백분위\n현재 Valuation: 부담 구간\n해석: 사이클 기업은 낮은 trailing PER를 할인 근거로 쓰지 않고 PBR과 정상화 이익을 우선했습니다.\n\n⚠️ 데이터 주의\n• fPER는 산출 기간이 명확하지 않아 참고 수준입니다.\n\n📌 다음 확인\n• 분기 매출·gross margin·operating margin과 DRAM/NAND ASP 방향\n• HBM4 출하·고객 qualification 및 HBM4E 상용화 진행\n• Strategic Customer Agreement·RPO·고객 예치금 규모와 실제 매출 전환",
+      "company_name": "Micron Technology",
+      "context": {
+        "allowed_claims": [
+          "typed_relation",
+          "cautious_earnings_quality_context"
+        ],
+        "assessment_date": "2026-08-21",
+        "cash_flow_alignment_state": "COMPATIBLE_FORMAL_PERIOD",
+        "cash_flow_context_used": true,
+        "consumption_eligible": true,
+        "contract": "working-capital-shadow-consumption-v1",
+        "cutoff": "2026-08-21",
+        "freshness_state": "CURRENT_FORMAL",
+        "industry": "memory_semiconductor",
+        "industry_applicability": {
+          "ap": "SECONDARY",
+          "ap_vs_cogs": "SECONDARY",
+          "ar": "SECONDARY",
+          "ar_vs_revenue": "SECONDARY",
+          "inventory": "PRIMARY",
+          "inventory_vs_cogs": "PRIMARY",
+          "inventory_vs_revenue": "PRIMARY"
+        },
+        "latest_formal_balance_date": "2026-05-28",
+        "market": "US_FOREIGN",
+        "materiality_reason": "existing_working_capital_driver_or_unknown",
+        "metric_contexts": [
+          {
+            "current_fact_id": "working-capital-reported:b5c635bc3a1f657724c5a978",
+            "metric": "accounts_payable_broad",
+            "semantic_label": "광의 매입채무",
+            "status": "ELIGIBLE",
+            "yoy_fact_id": "working-capital-derived:8fa2cdb12084ef0ca49d4a2e"
+          },
+          {
+            "current_fact_id": "working-capital-reported:a1c67cf47841ec129b94d097",
+            "metric": "accounts_receivable_broad",
+            "semantic_label": "광의 매출채권",
+            "status": "ELIGIBLE",
+            "yoy_fact_id": "working-capital-derived:db9f0af142560c82d88fc53a"
+          },
+          {
+            "current_fact_id": "working-capital-reported:2a5dd10bfd88a91b65bcc777",
+            "metric": "inventory",
+            "semantic_label": "재고",
+            "status": "ELIGIBLE",
+            "yoy_fact_id": "working-capital-derived:50745dd0f6eb60120c37579e"
+          },
+          {
+            "current_fact_id": "working-capital-reported:5a2f80f757cddd5ecb8c6df2",
+            "metric": "trade_accounts_payable",
+            "semantic_label": "거래 매입채무",
+            "status": "ELIGIBLE",
+            "yoy_fact_id": "working-capital-derived:d5a938f4edbed9268fc05c75"
+          },
+          {
+            "current_fact_id": null,
+            "metric": "trade_accounts_receivable",
+            "semantic_label": "거래 매출채권",
+            "status": "BLOCKED",
+            "yoy_fact_id": null
+          }
+        ],
+        "packet_id": "2026-08-21-us-run-30-5a3b7c1c4390",
+        "pit_state": "PASS",
+        "point_in_time_exclusions": [],
+        "prohibited_claims": [
+          "future_fact_used",
+          "stale_as_current",
+          "broad_trade_semantic_mislabel",
+          "contract_asset_as_trade_ar",
+          "accrued_liability_as_trade_ap",
+          "unsupported_causal_claim",
+          "dso_inventory_days_dpo_ccc",
+          "automatic_thesis_warning_or_valuation_change"
+        ],
+        "remaining_unknowns": [],
+        "resolved_unknowns": [],
+        "selected_fact_refs": [
+          "working-capital-reported:2a5dd10bfd88a91b65bcc777",
+          "working-capital-reported:00d1a7bd62280782e2efae65",
+          "working-capital-reported:d7dc274bbdea5cd2c57c0a62",
+          "working-capital-reported:076714324caa61d396cf62d0",
+          "working-capital-derived:50745dd0f6eb60120c37579e",
+          "working-capital-derived:9b1463bee52b77a325a1ba6e"
+        ],
+        "selected_relations": [
+          {
+            "applicability": "PRIMARY",
+            "balance_metric": "inventory",
+            "balance_scope": "total",
+            "balance_semantic": "us-gaap:InventoryNet",
+            "direction": "LOWER",
+            "family": "inventory_vs_cogs",
+            "flow_metric": "cost_of_goods_sold",
+            "flow_semantic": "us-gaap:CostOfGoodsAndServicesSold",
+            "gap_percentage_points": "-15.73390774080174779327076002",
+            "input_fact_ids": [
+              "working-capital-reported:2a5dd10bfd88a91b65bcc777",
+              "working-capital-reported:00d1a7bd62280782e2efae65",
+              "working-capital-reported:d7dc274bbdea5cd2c57c0a62",
+              "working-capital-reported:076714324caa61d396cf62d0",
+              "working-capital-derived:50745dd0f6eb60120c37579e",
+              "working-capital-derived:9b1463bee52b77a325a1ba6e"
+            ],
+            "relation_id": "working-capital-relation:dbdfd04e725e83528d8fdd31"
+          }
+        ],
+        "semantic_labels": [
+          "재고",
+          "cost_of_goods_sold"
+        ],
+        "shadow_used": true,
+        "specificity_key": "memory_nand",
+        "status": "READY",
+        "suppression_reasons": [],
+        "ticker": "MU",
+        "usage_mode": "INVENTORY_RELATION"
+      },
+      "financial_type": "non_financial",
+      "human_quality": "MATERIAL_IMPROVEMENT",
+      "industry": "memory_semiconductor",
+      "market": "US_FOREIGN",
+      "message_length_after": 1472,
+      "message_length_before": 1329,
+      "message_length_delta": 143,
+      "persistence_mutation": 0,
+      "reasoning": {
+        "fact_ids": [
+          "working-capital-reported:2a5dd10bfd88a91b65bcc777",
+          "working-capital-reported:00d1a7bd62280782e2efae65",
+          "working-capital-reported:d7dc274bbdea5cd2c57c0a62",
+          "working-capital-reported:076714324caa61d396cf62d0",
+          "working-capital-derived:50745dd0f6eb60120c37579e",
+          "working-capital-derived:9b1463bee52b77a325a1ba6e"
+        ],
+        "numeric_claims": [
+          {
+            "display": "15.7%p",
+            "input_fact_ids": [
+              "working-capital-reported:2a5dd10bfd88a91b65bcc777",
+              "working-capital-reported:00d1a7bd62280782e2efae65",
+              "working-capital-reported:d7dc274bbdea5cd2c57c0a62",
+              "working-capital-reported:076714324caa61d396cf62d0",
+              "working-capital-derived:50745dd0f6eb60120c37579e",
+              "working-capital-derived:9b1463bee52b77a325a1ba6e"
+            ],
+            "owner": "business_earnings",
+            "relation_id": "working-capital-relation:dbdfd04e725e83528d8fdd31",
+            "semantic_type": "inventory_vs_cogs",
+            "text_ref": "business_earnings.text",
+            "value": "-15.73390774080174779327076002"
+          }
+        ],
+        "relation_ids": [
+          "working-capital-relation:dbdfd04e725e83528d8fdd31"
+        ],
+        "text": "재고 증가율은 매출원가 증가율보다 15.7%p 밑돌았습니다. 재고 정상화와 양립하지만 NAND ASP·SSD 수요 개선을 확정하지 않습니다. 같은 정식 기간의 현금흐름 문맥을 보완하지만 현금흐름 변동의 원인으로 단정하지 않습니다."
+      },
+      "status_delta_candidate": false,
+      "ticker": "MU",
+      "unknown_audit": {
+        "after": [],
+        "before": [],
+        "contradiction": false
+      },
+      "validation_errors": []
+    },
+    {
+      "after_text": "🏢 Recursion Pharmaceuticals(RXRX)\n\n투자 논리: 유지 · 오늘 중요한 신규 변화 없음\n\n구조적 위험: 높아진 상태\n\n시장 기대: 투기적 기대\n\n🎯 핵심\nAI 기반 신약발굴 플랫폼이 실제 파트너 타깃 선택과 임상 후보 진전으로 이어지는지가 핵심이다. 최근 Genentech 공동연구 타깃 선택과 임상 진전은 초기 강화 신호지만, 높은 현금소진과 임상 실패·희석 위험이 크다.\n\n📈 사업·실적\n2026 회계연도 상반기 누계 연구개발 단계의 PPE 투자 후 잉여현금흐름은 $-187.35M입니다. 전년 비교기간보다 음수 폭이 줄었고 현금소진 근거로만 쓰며 보유현금 근거 없이 runway를 계산하지 않습니다.\n\n👁 핵심 감시\n• 임상 실패 또는 일정 지연\n• 현금소진과 희석이 예상 상회\n• 초기 파이프라인의 높은 실패확률\n\n💰 가격\n현재가: $3.34 · 2026-08-20 미국장 종가\n현재 구조: 가격 구조상 추가 확인 대기\n신규 관찰자:\n• 동적 지지: $2.78~$2.92\n• 동적 저항: $3.71~$3.91\n• 현재가 기준 차트 손익비: 0.57배\n보유자:\n• 차트 무효화 가격: $2.69\n• 동적 지지 유지 여부: $2.78~$2.92\n가격 규칙 이력:\n• 기존 $3.36 확인선 돌파 뒤 다시 이탈했습니다.\n\n📐 Valuation\nPER: N/M\nPBR = 현재가 ÷ BVPS = $3.34 ÷ $1.71 = 1.9배\nfPER: N/M\n과거 대비:\nPBR 중앙값 3.3배 · 16백분위\n현재 Valuation: 판단 자료 부족\n오늘 Valuation 변화: 판단 자료 부족\n검증된 현재 PBR과 과거 장부가 배수 분포를 함께 확인하며, 이익 기반 배수는 사용하지 않습니다.\n\n📌 다음 확인\n• 주요 임상 일정과 데이터\n• 파트너 타깃 선택\n• milestone·파트너 매출",
+      "before_text": "🏢 Recursion Pharmaceuticals(RXRX)\n\n투자 논리: 유지 · 오늘 중요한 신규 변화 없음\n\n구조적 위험: 높아진 상태\n\n시장 기대: 투기적 기대\n\n🎯 핵심\nAI 기반 신약발굴 플랫폼이 실제 파트너 타깃 선택과 임상 후보 진전으로 이어지는지가 핵심이다. 최근 Genentech 공동연구 타깃 선택과 임상 진전은 초기 강화 신호지만, 높은 현금소진과 임상 실패·희석 위험이 크다.\n\n📈 사업·실적\n2026 회계연도 상반기 누계 연구개발 단계의 PPE 투자 후 잉여현금흐름은 $-187.35M입니다. 전년 비교기간보다 음수 폭이 줄었고 현금소진 근거로만 쓰며 보유현금 근거 없이 runway를 계산하지 않습니다.\n\n👁 핵심 감시\n• 임상 실패 또는 일정 지연\n• 현금소진과 희석이 예상 상회\n• 초기 파이프라인의 높은 실패확률\n\n💰 가격\n현재가: $3.34 · 2026-08-20 미국장 종가\n현재 구조: 가격 구조상 추가 확인 대기\n신규 관찰자:\n• 동적 지지: $2.78~$2.92\n• 동적 저항: $3.71~$3.91\n• 현재가 기준 차트 손익비: 0.57배\n보유자:\n• 차트 무효화 가격: $2.69\n• 동적 지지 유지 여부: $2.78~$2.92\n가격 규칙 이력:\n• 기존 $3.36 확인선 돌파 뒤 다시 이탈했습니다.\n\n📐 Valuation\nPER: N/M\nPBR = 현재가 ÷ BVPS = $3.34 ÷ $1.71 = 1.9배\nfPER: N/M\n과거 대비:\nPBR 중앙값 3.3배 · 16백분위\n현재 Valuation: 판단 자료 부족\n오늘 Valuation 변화: 판단 자료 부족\n검증된 현재 PBR과 과거 장부가 배수 분포를 함께 확인하며, 이익 기반 배수는 사용하지 않습니다.\n\n📌 다음 확인\n• 주요 임상 일정과 데이터\n• 파트너 타깃 선택\n• milestone·파트너 매출",
+      "company_name": "Recursion Pharmaceuticals",
+      "context": {
+        "allowed_claims": [],
+        "assessment_date": "2026-08-21",
+        "cash_flow_alignment_state": "NOT_PROVIDED",
+        "cash_flow_context_used": false,
+        "consumption_eligible": false,
+        "contract": "working-capital-shadow-consumption-v1",
+        "cutoff": "2026-08-21",
+        "freshness_state": "BLOCKED",
+        "industry": "biotech",
+        "industry_applicability": {
+          "ap": "CONTEXT_ONLY",
+          "ap_vs_cogs": "NOT_APPLICABLE",
+          "ar": "CONTEXT_ONLY",
+          "ar_vs_revenue": "NOT_APPLICABLE",
+          "inventory": "CONTEXT_ONLY",
+          "inventory_vs_cogs": "NOT_APPLICABLE",
+          "inventory_vs_revenue": "NOT_APPLICABLE"
+        },
+        "latest_formal_balance_date": "2026-06-30",
+        "market": "US_FOREIGN",
+        "materiality_reason": null,
+        "metric_contexts": [
+          {
+            "current_fact_id": "working-capital-reported:441c0c58aaeba638409c7223",
+            "metric": "accounts_payable_broad",
+            "semantic_label": "광의 매입채무",
+            "status": "ELIGIBLE",
+            "yoy_fact_id": "working-capital-derived:fb16ca55fec08284031db55d"
+          },
+          {
+            "current_fact_id": "working-capital-reported:7be64dd72baabcb3fb132ff6",
+            "metric": "accounts_receivable_broad",
+            "semantic_label": "광의 매출채권",
+            "status": "PARTIAL",
+            "yoy_fact_id": null
+          },
+          {
+            "current_fact_id": null,
+            "metric": "inventory",
+            "semantic_label": "재고",
+            "status": "BLOCKED",
+            "yoy_fact_id": null
+          },
+          {
+            "current_fact_id": null,
+            "metric": "trade_accounts_payable",
+            "semantic_label": "거래 매입채무",
+            "status": "BLOCKED",
+            "yoy_fact_id": null
+          },
+          {
+            "current_fact_id": null,
+            "metric": "trade_accounts_receivable",
+            "semantic_label": "거래 매출채권",
+            "status": "BLOCKED",
+            "yoy_fact_id": null
+          }
+        ],
+        "packet_id": "2026-08-21-us-run-30-5a3b7c1c4390",
+        "pit_state": "PASS",
+        "point_in_time_exclusions": [],
+        "prohibited_claims": [
+          "future_fact_used",
+          "stale_as_current",
+          "broad_trade_semantic_mislabel",
+          "contract_asset_as_trade_ar",
+          "accrued_liability_as_trade_ap",
+          "unsupported_causal_claim",
+          "dso_inventory_days_dpo_ccc",
+          "automatic_thesis_warning_or_valuation_change"
+        ],
+        "remaining_unknowns": [],
+        "resolved_unknowns": [],
+        "selected_fact_refs": [],
+        "selected_relations": [],
+        "semantic_labels": [],
+        "shadow_used": false,
+        "specificity_key": "biotech",
+        "status": "SUPPRESSED",
+        "suppression_reasons": [
+          "no_material_current_relation",
+          "working_capital_context_blocked"
+        ],
+        "ticker": "RXRX",
+        "usage_mode": "SUPPRESSED"
+      },
+      "financial_type": "pre_profit_biotech",
+      "human_quality": "NO_MEANINGFUL_CHANGE",
+      "industry": "biotech",
+      "market": "US_FOREIGN",
+      "message_length_after": 902,
+      "message_length_before": 902,
+      "message_length_delta": 0,
+      "persistence_mutation": 0,
+      "reasoning": null,
+      "status_delta_candidate": false,
+      "ticker": "RXRX",
+      "unknown_audit": {
+        "after": [],
+        "before": [],
+        "contradiction": false
+      },
+      "validation_errors": []
+    },
+    {
+      "after_text": "🏢 SK hynix Inc. ADR(SKHY)\n\n투자 논리: 유지 · 오늘 중요한 신규 변화 없음\n\n구조적 위험: 높아진 상태\n\n시장 기대: 투기적 기대\n\n🎯 핵심\nSK hynix의 기업가치는 HBM4/HBM4E 중심의 AI 메모리 기술·공급 리더십, 장기 고객계약, DRAM/NAND 동반 업황 개선으로 지지된다. 다만 SKHY는 1 ADR=한국 보통주 0.1주 구조에서 미국 내 희소성 프리미엄이 본주 대비 크게 형성될 수 있어, 기초기업 펀더멘털과 ADR 자체의 가격·괴리 리스크를 반드시 분리해 본다.\n\n👁 핵심 감시\n• HBM4 출하 또는 고객 인증 지연\n• DRAM/NAND 가격 조기 하락\n• hyperscaler AI CAPEX 둔화\n\n💰 가격\n현재가: $163.08 · 2026-08-20 미국장 종가\n현재 구조: 가격 구조상 추가 확인 대기\n신규 관찰자:\n• 가까운 유효 저항이 없어 현재가 기준 차트 손익비는 계산하지 않습니다.\n보유자:\n• 유효한 동적 지지와 차트 무효화 가격이 없어 현재 가격 관리 기준은 제공하지 않습니다.\n가격 규칙 이력:\n• 기존 $163 확인선은 이번에 돌파했습니다.\n\n📐 Valuation\n현재 Valuation: 판단 자료 부족\n오늘 Valuation 변화: 판단 자료 부족\n예탁증권 identity는 확인됐지만 current-security denominator·share·currency basis를 확인하지 못해 배수 해석을 보류합니다.\n\n⚠️ 데이터 주의\n• 현재 거래 증권의 주당 기준을 확인하지 못해 자체 PER/PBR 계산을 보류했습니다.\n• 최근 해외 공시 재무표의 자동 검증이 끝나지 않아 Valuation을 보수적으로 봅니다.\n\n📌 다음 확인\n• HBM4/HBM4E 출하량·매출 비중과 주요 고객 채택\n• DRAM/NAND ASP 방향과 영업이익률\n• 영업현금흐름·FCF·CAPEX 및 순현금 추이",
+      "before_text": "🏢 SK hynix Inc. ADR(SKHY)\n\n투자 논리: 유지 · 오늘 중요한 신규 변화 없음\n\n구조적 위험: 높아진 상태\n\n시장 기대: 투기적 기대\n\n🎯 핵심\nSK hynix의 기업가치는 HBM4/HBM4E 중심의 AI 메모리 기술·공급 리더십, 장기 고객계약, DRAM/NAND 동반 업황 개선으로 지지된다. 다만 SKHY는 1 ADR=한국 보통주 0.1주 구조에서 미국 내 희소성 프리미엄이 본주 대비 크게 형성될 수 있어, 기초기업 펀더멘털과 ADR 자체의 가격·괴리 리스크를 반드시 분리해 본다.\n\n👁 핵심 감시\n• HBM4 출하 또는 고객 인증 지연\n• DRAM/NAND 가격 조기 하락\n• hyperscaler AI CAPEX 둔화\n\n💰 가격\n현재가: $163.08 · 2026-08-20 미국장 종가\n현재 구조: 가격 구조상 추가 확인 대기\n신규 관찰자:\n• 가까운 유효 저항이 없어 현재가 기준 차트 손익비는 계산하지 않습니다.\n보유자:\n• 유효한 동적 지지와 차트 무효화 가격이 없어 현재 가격 관리 기준은 제공하지 않습니다.\n가격 규칙 이력:\n• 기존 $163 확인선은 이번에 돌파했습니다.\n\n📐 Valuation\n현재 Valuation: 판단 자료 부족\n오늘 Valuation 변화: 판단 자료 부족\n예탁증권 identity는 확인됐지만 current-security denominator·share·currency basis를 확인하지 못해 배수 해석을 보류합니다.\n\n⚠️ 데이터 주의\n• 현재 거래 증권의 주당 기준을 확인하지 못해 자체 PER/PBR 계산을 보류했습니다.\n• 최근 해외 공시 재무표의 자동 검증이 끝나지 않아 Valuation을 보수적으로 봅니다.\n\n📌 다음 확인\n• HBM4/HBM4E 출하량·매출 비중과 주요 고객 채택\n• DRAM/NAND ASP 방향과 영업이익률\n• 영업현금흐름·FCF·CAPEX 및 순현금 추이",
+      "company_name": "SK hynix Inc. ADR",
+      "context": {
+        "allowed_claims": [],
+        "assessment_date": "2026-08-21",
+        "cash_flow_alignment_state": "NOT_PROVIDED",
+        "cash_flow_context_used": false,
+        "consumption_eligible": false,
+        "contract": "working-capital-shadow-consumption-v1",
+        "cutoff": "2026-08-21",
+        "freshness_state": "BLOCKED",
+        "industry": "memory_semiconductor",
+        "industry_applicability": {
+          "ap": "SECONDARY",
+          "ap_vs_cogs": "SECONDARY",
+          "ar": "SECONDARY",
+          "ar_vs_revenue": "SECONDARY",
+          "inventory": "PRIMARY",
+          "inventory_vs_cogs": "PRIMARY",
+          "inventory_vs_revenue": "PRIMARY"
+        },
+        "latest_formal_balance_date": null,
+        "market": "US_FOREIGN",
+        "materiality_reason": null,
+        "metric_contexts": [
+          {
+            "current_fact_id": null,
+            "metric": "accounts_payable_broad",
+            "semantic_label": "광의 매입채무",
+            "status": "BLOCKED",
+            "yoy_fact_id": null
+          },
+          {
+            "current_fact_id": null,
+            "metric": "accounts_receivable_broad",
+            "semantic_label": "광의 매출채권",
+            "status": "BLOCKED",
+            "yoy_fact_id": null
+          },
+          {
+            "current_fact_id": null,
+            "metric": "inventory",
+            "semantic_label": "재고",
+            "status": "BLOCKED",
+            "yoy_fact_id": null
+          },
+          {
+            "current_fact_id": null,
+            "metric": "trade_accounts_payable",
+            "semantic_label": "거래 매입채무",
+            "status": "BLOCKED",
+            "yoy_fact_id": null
+          },
+          {
+            "current_fact_id": null,
+            "metric": "trade_accounts_receivable",
+            "semantic_label": "거래 매출채권",
+            "status": "BLOCKED",
+            "yoy_fact_id": null
+          }
+        ],
+        "packet_id": "2026-08-21-us-run-30-5a3b7c1c4390",
+        "pit_state": "PASS",
+        "point_in_time_exclusions": [],
+        "prohibited_claims": [
+          "future_fact_used",
+          "stale_as_current",
+          "broad_trade_semantic_mislabel",
+          "contract_asset_as_trade_ar",
+          "accrued_liability_as_trade_ap",
+          "unsupported_causal_claim",
+          "dso_inventory_days_dpo_ccc",
+          "automatic_thesis_warning_or_valuation_change"
+        ],
+        "remaining_unknowns": [],
+        "resolved_unknowns": [],
+        "selected_fact_refs": [],
+        "selected_relations": [],
+        "semantic_labels": [],
+        "shadow_used": false,
+        "specificity_key": "memory_nand",
+        "status": "SUPPRESSED",
+        "suppression_reasons": [
+          "no_material_current_relation",
+          "working_capital_context_blocked"
+        ],
+        "ticker": "SKHY",
+        "usage_mode": "SUPPRESSED"
+      },
+      "financial_type": "non_financial",
+      "human_quality": "NO_MEANINGFUL_CHANGE",
+      "industry": "memory_semiconductor",
+      "market": "US_FOREIGN",
+      "message_length_after": 932,
+      "message_length_before": 932,
+      "message_length_delta": 0,
+      "persistence_mutation": 0,
+      "reasoning": null,
+      "status_delta_candidate": false,
+      "ticker": "SKHY",
+      "unknown_audit": {
+        "after": [],
+        "before": [],
+        "contradiction": false
+      },
+      "validation_errors": []
+    },
+    {
+      "after_text": "🏢 SanDisk(SNDK)\n\n투자 논리: 유지 · 오늘 중요한 신규 변화 없음\n\n구조적 위험: 높아진 상태\n\n시장 기대: 투기적 기대\n\n🎯 핵심\nAI inference와 데이터센터 SSD/NAND 수요, 장기 고객 계약과 높은 RPO가 강한 매출·마진·FCF를 지지한다. 다만 최근 초고마진의 상당 부분이 NAND 가격 상승에 의존할 가능성이 있어 가격 사이클과 계약의 실제 매출 전환을 확인해야 한다.\n\n📈 사업·실적\n2026 회계연도 연간 메모리 증설의 PPE 투자 후 잉여현금흐름은 $11.49B입니다. ASP·제품 믹스·재고 사이클과 설비투자 시점을 함께 봅니다.\n\n👁 핵심 감시\n• NAND 가격 반전\n• RPO 전환 지연 또는 재고 증가\n• 가격 상승기 마진을 영구화할 위험\n\n💰 가격\n현재가: $1,600.62 · 2026-08-20 미국장 종가\n현재 구조: 가격 구조상 추가 확인 대기\n신규 관찰자:\n• 동적 지지: $950.35~$1,046.03\n• 동적 저항: $1,648.95~$1,743.79\n• 현재가 기준 차트 손익비: 0.07배\n보유자:\n• 차트 무효화 가격: $868.86\n• 동적 지지 유지 여부: $950.35~$1,046.03\n가격 규칙 이력:\n• 기존 $1,310 확인선은 이미 돌파한 상태입니다.\n\n📐 Valuation\nPBR = 현재가 ÷ BVPS = $1,600.62 ÷ $107.78 = 14.9배\n과거 대비:\nPER 중앙값 19.9배 · PBR 중앙값 9.7배 · 67백분위\n현재 Valuation: 판단 자료 부족\n오늘 Valuation 변화: 판단 자료 부족\n검증된 현재 PBR과 과거 장부가 배수 분포를 함께 확인하며, 이익 기반 배수는 사용하지 않습니다.\n\n📌 다음 확인\n• NAND 가격\n• 데이터센터 매출\n• RPO 매출 전환",
+      "before_text": "🏢 SanDisk(SNDK)\n\n투자 논리: 유지 · 오늘 중요한 신규 변화 없음\n\n구조적 위험: 높아진 상태\n\n시장 기대: 투기적 기대\n\n🎯 핵심\nAI inference와 데이터센터 SSD/NAND 수요, 장기 고객 계약과 높은 RPO가 강한 매출·마진·FCF를 지지한다. 다만 최근 초고마진의 상당 부분이 NAND 가격 상승에 의존할 가능성이 있어 가격 사이클과 계약의 실제 매출 전환을 확인해야 한다.\n\n📈 사업·실적\n2026 회계연도 연간 메모리 증설의 PPE 투자 후 잉여현금흐름은 $11.49B입니다. ASP·제품 믹스·재고 사이클과 설비투자 시점을 함께 봅니다.\n\n👁 핵심 감시\n• NAND 가격 반전\n• RPO 전환 지연 또는 재고 증가\n• 가격 상승기 마진을 영구화할 위험\n\n💰 가격\n현재가: $1,600.62 · 2026-08-20 미국장 종가\n현재 구조: 가격 구조상 추가 확인 대기\n신규 관찰자:\n• 동적 지지: $950.35~$1,046.03\n• 동적 저항: $1,648.95~$1,743.79\n• 현재가 기준 차트 손익비: 0.07배\n보유자:\n• 차트 무효화 가격: $868.86\n• 동적 지지 유지 여부: $950.35~$1,046.03\n가격 규칙 이력:\n• 기존 $1,310 확인선은 이미 돌파한 상태입니다.\n\n📐 Valuation\nPBR = 현재가 ÷ BVPS = $1,600.62 ÷ $107.78 = 14.9배\n과거 대비:\nPER 중앙값 19.9배 · PBR 중앙값 9.7배 · 67백분위\n현재 Valuation: 판단 자료 부족\n오늘 Valuation 변화: 판단 자료 부족\n검증된 현재 PBR과 과거 장부가 배수 분포를 함께 확인하며, 이익 기반 배수는 사용하지 않습니다.\n\n📌 다음 확인\n• NAND 가격\n• 데이터센터 매출\n• RPO 매출 전환",
+      "company_name": "SanDisk",
+      "context": {
+        "allowed_claims": [],
+        "assessment_date": "2026-08-21",
+        "cash_flow_alignment_state": "NOT_PROVIDED",
+        "cash_flow_context_used": false,
+        "consumption_eligible": false,
+        "contract": "working-capital-shadow-consumption-v1",
+        "cutoff": "2026-08-21",
+        "freshness_state": "BLOCKED",
+        "industry": "memory_semiconductor",
+        "industry_applicability": {
+          "ap": "SECONDARY",
+          "ap_vs_cogs": "SECONDARY",
+          "ar": "SECONDARY",
+          "ar_vs_revenue": "SECONDARY",
+          "inventory": "PRIMARY",
+          "inventory_vs_cogs": "PRIMARY",
+          "inventory_vs_revenue": "PRIMARY"
+        },
+        "latest_formal_balance_date": "2026-07-03",
+        "market": "US_FOREIGN",
+        "materiality_reason": null,
+        "metric_contexts": [
+          {
+            "current_fact_id": null,
+            "metric": "accounts_payable_broad",
+            "semantic_label": "광의 매입채무",
+            "status": "BLOCKED",
+            "yoy_fact_id": null
+          },
+          {
+            "current_fact_id": "working-capital-reported:1ec91a7f80595587a101559c",
+            "metric": "accounts_receivable_broad",
+            "semantic_label": "광의 매출채권",
+            "status": "PARTIAL",
+            "yoy_fact_id": null
+          },
+          {
+            "current_fact_id": "working-capital-reported:0e9f8383cd4458ea5fcde151",
+            "metric": "inventory",
+            "semantic_label": "재고",
+            "status": "PARTIAL",
+            "yoy_fact_id": null
+          },
+          {
+            "current_fact_id": null,
+            "metric": "trade_accounts_payable",
+            "semantic_label": "거래 매입채무",
+            "status": "BLOCKED",
+            "yoy_fact_id": null
+          },
+          {
+            "current_fact_id": null,
+            "metric": "trade_accounts_receivable",
+            "semantic_label": "거래 매출채권",
+            "status": "BLOCKED",
+            "yoy_fact_id": null
+          }
+        ],
+        "packet_id": "2026-08-21-us-run-30-5a3b7c1c4390",
+        "pit_state": "PASS",
+        "point_in_time_exclusions": [],
+        "prohibited_claims": [
+          "future_fact_used",
+          "stale_as_current",
+          "broad_trade_semantic_mislabel",
+          "contract_asset_as_trade_ar",
+          "accrued_liability_as_trade_ap",
+          "unsupported_causal_claim",
+          "dso_inventory_days_dpo_ccc",
+          "automatic_thesis_warning_or_valuation_change"
+        ],
+        "remaining_unknowns": [],
+        "resolved_unknowns": [],
+        "selected_fact_refs": [],
+        "selected_relations": [],
+        "semantic_labels": [],
+        "shadow_used": false,
+        "specificity_key": "memory_nand",
+        "status": "SUPPRESSED",
+        "suppression_reasons": [
+          "no_material_current_relation",
+          "working_capital_context_blocked"
+        ],
+        "ticker": "SNDK",
+        "usage_mode": "SUPPRESSED"
+      },
+      "financial_type": "non_financial",
+      "human_quality": "NO_MEANINGFUL_CHANGE",
+      "industry": "memory_semiconductor",
+      "market": "US_FOREIGN",
+      "message_length_after": 886,
+      "message_length_before": 886,
+      "message_length_delta": 0,
+      "persistence_mutation": 0,
+      "reasoning": null,
+      "status_delta_candidate": false,
+      "ticker": "SNDK",
+      "unknown_audit": {
+        "after": [],
+        "before": [],
+        "contradiction": false
+      },
+      "validation_errors": []
+    },
+    {
+      "after_text": "🏢 Tesla, Inc.(TSLA)\n\n투자 논리: 유지 · 오늘 중요한 신규 변화 없음\n\n구조적 위험: 높아진 상태\n\n시장 기대: 투기적 기대\n\n🎯 핵심\nRobotaxi/FSD/AI의 고마진 수익화가 장기 기업가치의 핵심이다. 현재는 매출·인도 회복에도 영업이익률 저하로 투자 논리에 초기 균열이 있으며, 향후 자동차·서비스 마진 회복, Robotaxi 경제성이 증명되어야 한다.\n\n📈 사업·실적\n2026 회계연도 상반기 누계 자동차 성장투자의 PPE 투자 후 잉여현금흐름은 $352M입니다. 전년 비교기간보다 줄었고 자동차 마진과 성장투자 회수를 함께 봅니다.\n\n⚠️ 기존 경고\n• 영업이익률 저하 확인\n\n📊 운전자본·이익의 질\n재고 증가율은 매출 증가율보다 26.6%p 밑돌았습니다. 재고 전환은 인도량·인센티브·제품 믹스와 함께 확인하며 수요 방향을 확정하지 않습니다. 같은 정식 기간의 현금흐름 문맥을 보완하지만 현금흐름 변동의 원인으로 단정하지 않습니다.\n\n👁 핵심 감시\n• Robotaxi 규제·상용화 지연\n• 자동차 마진과 FCF 부진 장기화\n• 먼 미래 현금흐름에 대한 과도한 종단가치\n\n💰 가격\n현재가: $345.13 · 2026-08-20 미국장 종가\n현재 구조: 가격 구조상 추가 확인 대기\n신규 관찰자:\n• 동적 지지: $334.72~$341.28\n• 동적 저항: $360.04~$372.58\n• 현재가 기준 차트 손익비: 0.87배\n보유자:\n• 차트 무효화 가격: $328.08\n• 동적 지지 유지 여부: $334.72~$341.28\n가격 규칙 이력:\n• 기존 $342 확인선은 이미 돌파한 상태입니다.\n\n📐 Valuation\nPER = 현재가 ÷ TTM EPS = $345.13 ÷ $1.92 = 179.8배\nPBR = 현재가 ÷ BVPS = $345.13 ÷ $21.99 = 15.7배\n과거 대비:\nPER 중앙값 68.3배 · 96백분위 · PBR 중앙값 16.5배 · 46백분위\n현재 Valuation: 판단 자료 부족\n오늘 Valuation 변화: 판단 자료 부족\n검증된 현재 PER/PBR과 과거 배수 분포를 함께 확인합니다.\n\n📌 다음 확인\n• Robotaxi 유료 운행과 단위경제성\n• FSD 구독자와 매출\n• 자동차 영업이익률",
+      "before_text": "🏢 Tesla, Inc.(TSLA)\n\n투자 논리: 유지 · 오늘 중요한 신규 변화 없음\n\n구조적 위험: 높아진 상태\n\n시장 기대: 투기적 기대\n\n🎯 핵심\nRobotaxi/FSD/AI의 고마진 수익화가 장기 기업가치의 핵심이다. 현재는 매출·인도 회복에도 영업이익률 저하로 투자 논리에 초기 균열이 있으며, 향후 자동차·서비스 마진 회복, Robotaxi 경제성이 증명되어야 한다.\n\n📈 사업·실적\n2026 회계연도 상반기 누계 자동차 성장투자의 PPE 투자 후 잉여현금흐름은 $352M입니다. 전년 비교기간보다 줄었고 자동차 마진과 성장투자 회수를 함께 봅니다.\n\n⚠️ 기존 경고\n• 영업이익률 저하 확인\n\n👁 핵심 감시\n• Robotaxi 규제·상용화 지연\n• 자동차 마진과 FCF 부진 장기화\n• 먼 미래 현금흐름에 대한 과도한 종단가치\n\n💰 가격\n현재가: $345.13 · 2026-08-20 미국장 종가\n현재 구조: 가격 구조상 추가 확인 대기\n신규 관찰자:\n• 동적 지지: $334.72~$341.28\n• 동적 저항: $360.04~$372.58\n• 현재가 기준 차트 손익비: 0.87배\n보유자:\n• 차트 무효화 가격: $328.08\n• 동적 지지 유지 여부: $334.72~$341.28\n가격 규칙 이력:\n• 기존 $342 확인선은 이미 돌파한 상태입니다.\n\n📐 Valuation\nPER = 현재가 ÷ TTM EPS = $345.13 ÷ $1.92 = 179.8배\nPBR = 현재가 ÷ BVPS = $345.13 ÷ $21.99 = 15.7배\n과거 대비:\nPER 중앙값 68.3배 · 96백분위 · PBR 중앙값 16.5배 · 46백분위\n현재 Valuation: 판단 자료 부족\n오늘 Valuation 변화: 판단 자료 부족\n검증된 현재 PER/PBR과 과거 배수 분포를 함께 확인합니다.\n\n📌 다음 확인\n• Robotaxi 유료 운행과 단위경제성\n• FSD 구독자와 매출\n• 자동차 영업이익률",
+      "company_name": "Tesla, Inc.",
+      "context": {
+        "allowed_claims": [
+          "typed_relation",
+          "cautious_earnings_quality_context"
+        ],
+        "assessment_date": "2026-08-21",
+        "cash_flow_alignment_state": "COMPATIBLE_FORMAL_PERIOD",
+        "cash_flow_context_used": true,
+        "consumption_eligible": true,
+        "contract": "working-capital-shadow-consumption-v1",
+        "cutoff": "2026-08-21",
+        "freshness_state": "CURRENT_FORMAL",
+        "industry": "automotive",
+        "industry_applicability": {
+          "ap": "SECONDARY",
+          "ap_vs_cogs": "SECONDARY",
+          "ar": "SECONDARY",
+          "ar_vs_revenue": "SECONDARY",
+          "inventory": "PRIMARY",
+          "inventory_vs_cogs": "PRIMARY",
+          "inventory_vs_revenue": "PRIMARY"
+        },
+        "latest_formal_balance_date": "2026-06-30",
+        "market": "US_FOREIGN",
+        "materiality_reason": "industry_primary_relation",
+        "metric_contexts": [
+          {
+            "current_fact_id": "working-capital-reported:638b93c78734634f3c9fdc34",
+            "metric": "accounts_payable_broad",
+            "semantic_label": "광의 매입채무",
+            "status": "ELIGIBLE",
+            "yoy_fact_id": "working-capital-derived:d4828c108778ee5b44885e0c"
+          },
+          {
+            "current_fact_id": "working-capital-reported:d89d50ac26454aae57780826",
+            "metric": "accounts_receivable_broad",
+            "semantic_label": "광의 매출채권",
+            "status": "ELIGIBLE",
+            "yoy_fact_id": "working-capital-derived:db9691479900887192f1ece7"
+          },
+          {
+            "current_fact_id": "working-capital-reported:73fe4f1d304b6cadfde50b24",
+            "metric": "inventory",
+            "semantic_label": "재고",
+            "status": "ELIGIBLE",
+            "yoy_fact_id": "working-capital-derived:278cf0f9df9a28a8c5d28258"
+          },
+          {
+            "current_fact_id": null,
+            "metric": "trade_accounts_payable",
+            "semantic_label": "거래 매입채무",
+            "status": "BLOCKED",
+            "yoy_fact_id": null
+          },
+          {
+            "current_fact_id": null,
+            "metric": "trade_accounts_receivable",
+            "semantic_label": "거래 매출채권",
+            "status": "BLOCKED",
+            "yoy_fact_id": null
+          }
+        ],
+        "packet_id": "2026-08-21-us-run-30-5a3b7c1c4390",
+        "pit_state": "PASS",
+        "point_in_time_exclusions": [],
+        "prohibited_claims": [
+          "future_fact_used",
+          "stale_as_current",
+          "broad_trade_semantic_mislabel",
+          "contract_asset_as_trade_ar",
+          "accrued_liability_as_trade_ap",
+          "unsupported_causal_claim",
+          "dso_inventory_days_dpo_ccc",
+          "automatic_thesis_warning_or_valuation_change"
+        ],
+        "remaining_unknowns": [],
+        "resolved_unknowns": [],
+        "selected_fact_refs": [
+          "working-capital-reported:73fe4f1d304b6cadfde50b24",
+          "working-capital-reported:5986216e8dc1e64113c1efd6",
+          "working-capital-reported:0ca5b1287df9208349d139b7",
+          "working-capital-reported:450f903e4792967c35cb82ba",
+          "working-capital-derived:278cf0f9df9a28a8c5d28258",
+          "working-capital-derived:e15492a3fff9dff0ab3c7273"
+        ],
+        "selected_relations": [
+          {
+            "applicability": "PRIMARY",
+            "balance_metric": "inventory",
+            "balance_scope": "total",
+            "balance_semantic": "us-gaap:InventoryNet",
+            "direction": "LOWER",
+            "family": "inventory_vs_revenue",
+            "flow_metric": "revenue",
+            "flow_semantic": "us-gaap:RevenueFromContractWithCustomerExcludingAssessedTax",
+            "gap_percentage_points": "-26.63218129057952197001737570",
+            "input_fact_ids": [
+              "working-capital-reported:73fe4f1d304b6cadfde50b24",
+              "working-capital-reported:5986216e8dc1e64113c1efd6",
+              "working-capital-reported:0ca5b1287df9208349d139b7",
+              "working-capital-reported:450f903e4792967c35cb82ba",
+              "working-capital-derived:278cf0f9df9a28a8c5d28258",
+              "working-capital-derived:e15492a3fff9dff0ab3c7273"
+            ],
+            "relation_id": "working-capital-relation:36181e61768dfd580d9ede01"
+          }
+        ],
+        "semantic_labels": [
+          "재고",
+          "revenue"
+        ],
+        "shadow_used": true,
+        "specificity_key": "vehicle_delivery",
+        "status": "READY",
+        "suppression_reasons": [],
+        "ticker": "TSLA",
+        "usage_mode": "INVENTORY_RELATION"
+      },
+      "financial_type": "non_financial",
+      "human_quality": "MATERIAL_IMPROVEMENT",
+      "industry": "automotive",
+      "market": "US_FOREIGN",
+      "message_length_after": 1099,
+      "message_length_before": 954,
+      "message_length_delta": 145,
+      "persistence_mutation": 0,
+      "reasoning": {
+        "fact_ids": [
+          "working-capital-reported:73fe4f1d304b6cadfde50b24",
+          "working-capital-reported:5986216e8dc1e64113c1efd6",
+          "working-capital-reported:0ca5b1287df9208349d139b7",
+          "working-capital-reported:450f903e4792967c35cb82ba",
+          "working-capital-derived:278cf0f9df9a28a8c5d28258",
+          "working-capital-derived:e15492a3fff9dff0ab3c7273"
+        ],
+        "numeric_claims": [
+          {
+            "display": "26.6%p",
+            "input_fact_ids": [
+              "working-capital-reported:73fe4f1d304b6cadfde50b24",
+              "working-capital-reported:5986216e8dc1e64113c1efd6",
+              "working-capital-reported:0ca5b1287df9208349d139b7",
+              "working-capital-reported:450f903e4792967c35cb82ba",
+              "working-capital-derived:278cf0f9df9a28a8c5d28258",
+              "working-capital-derived:e15492a3fff9dff0ab3c7273"
+            ],
+            "owner": "business_earnings",
+            "relation_id": "working-capital-relation:36181e61768dfd580d9ede01",
+            "semantic_type": "inventory_vs_revenue",
+            "text_ref": "business_earnings.text",
+            "value": "-26.63218129057952197001737570"
+          }
+        ],
+        "relation_ids": [
+          "working-capital-relation:36181e61768dfd580d9ede01"
+        ],
+        "text": "재고 증가율은 매출 증가율보다 26.6%p 밑돌았습니다. 재고 전환은 인도량·인센티브·제품 믹스와 함께 확인하며 수요 방향을 확정하지 않습니다. 같은 정식 기간의 현금흐름 문맥을 보완하지만 현금흐름 변동의 원인으로 단정하지 않습니다."
+      },
+      "status_delta_candidate": false,
+      "ticker": "TSLA",
+      "unknown_audit": {
+        "after": [],
+        "before": [],
+        "contradiction": false
+      },
+      "validation_errors": []
+    },
+    {
+      "after_text": "🏢 TSMC(TSM)\n\n투자 논리: 유지 · 오늘 중요한 신규 변화 없음\n\n구조적 위험: 보통\n\n시장 기대: 매우 높음\n\n🎯 핵심\nAI/HPC 수요와 첨단공정 지배력, 높은 가동률과 가격결정력이 높은 gross margin과 현금창출을 지지한다. 핵심 변수는 hyperscaler CAPEX 지속성, 첨단공정 가동률, 해외 팹 비용에 따른 마진 희석이다.\n\n👁 핵심 감시\n• hyperscaler CAPEX 둔화\n• 해외 팹 비용과 감가상각으로 마진 하락\n• 지정학 할인\n\n💰 가격\n현재가: $416 · 2026-08-20 미국장 종가\n현재 구조: 가격 구조상 추가 확인 대기\n신규 관찰자:\n• 동적 지지: $380.77~$390.31\n• 동적 저항: $432.30~$439.78\n• 현재가 기준 차트 손익비: 0.39배\n보유자:\n• 차트 무효화 가격: $373.79\n• 동적 지지 유지 여부: $380.77~$390.31\n가격 규칙 이력:\n• 등록 확인선 $432은 아직 도달하지 않았습니다.\n\n📐 Valuation\n※ 최근 분기 잠정실적의 매출·영업이익을 반영했습니다.\n현재 Valuation: 판단 자료 부족\n오늘 Valuation 변화: 판단 자료 부족\n증권 유형과 주당 기준의 일치 여부를 확인하지 못해 배수 해석을 보류합니다.\n\n⚠️ 데이터 주의\n• 최신 정식 재무 반영이 지연돼 현재 Valuation 신뢰도를 낮춰 봅니다.\n• 최근 공식 잠정실적의 매출·영업이익은 반영했지만 주당 기준을 확인하지 못해 자체 PER 계산은 보류했습니다.\n\n📌 다음 확인\n• hyperscaler CAPEX\n• 첨단공정 가동률\n• wafer ASP",
+      "before_text": "🏢 TSMC(TSM)\n\n투자 논리: 유지 · 오늘 중요한 신규 변화 없음\n\n구조적 위험: 보통\n\n시장 기대: 매우 높음\n\n🎯 핵심\nAI/HPC 수요와 첨단공정 지배력, 높은 가동률과 가격결정력이 높은 gross margin과 현금창출을 지지한다. 핵심 변수는 hyperscaler CAPEX 지속성, 첨단공정 가동률, 해외 팹 비용에 따른 마진 희석이다.\n\n👁 핵심 감시\n• hyperscaler CAPEX 둔화\n• 해외 팹 비용과 감가상각으로 마진 하락\n• 지정학 할인\n\n💰 가격\n현재가: $416 · 2026-08-20 미국장 종가\n현재 구조: 가격 구조상 추가 확인 대기\n신규 관찰자:\n• 동적 지지: $380.77~$390.31\n• 동적 저항: $432.30~$439.78\n• 현재가 기준 차트 손익비: 0.39배\n보유자:\n• 차트 무효화 가격: $373.79\n• 동적 지지 유지 여부: $380.77~$390.31\n가격 규칙 이력:\n• 등록 확인선 $432은 아직 도달하지 않았습니다.\n\n📐 Valuation\n※ 최근 분기 잠정실적의 매출·영업이익을 반영했습니다.\n현재 Valuation: 판단 자료 부족\n오늘 Valuation 변화: 판단 자료 부족\n증권 유형과 주당 기준의 일치 여부를 확인하지 못해 배수 해석을 보류합니다.\n\n⚠️ 데이터 주의\n• 최신 정식 재무 반영이 지연돼 현재 Valuation 신뢰도를 낮춰 봅니다.\n• 최근 공식 잠정실적의 매출·영업이익은 반영했지만 주당 기준을 확인하지 못해 자체 PER 계산은 보류했습니다.\n\n📌 다음 확인\n• hyperscaler CAPEX\n• 첨단공정 가동률\n• wafer ASP",
+      "company_name": "TSMC",
+      "context": {
+        "allowed_claims": [],
+        "assessment_date": "2026-08-21",
+        "cash_flow_alignment_state": "COMPATIBLE_FORMAL_PERIOD",
+        "cash_flow_context_used": false,
+        "consumption_eligible": true,
+        "contract": "working-capital-shadow-consumption-v1",
+        "cutoff": "2026-08-21",
+        "freshness_state": "FORMAL_LAGGING_PROVISIONAL",
+        "industry": "memory_semiconductor",
+        "industry_applicability": {
+          "ap": "SECONDARY",
+          "ap_vs_cogs": "SECONDARY",
+          "ar": "SECONDARY",
+          "ar_vs_revenue": "SECONDARY",
+          "inventory": "PRIMARY",
+          "inventory_vs_cogs": "PRIMARY",
+          "inventory_vs_revenue": "PRIMARY"
+        },
+        "latest_formal_balance_date": "2024-12-31",
+        "market": "US_FOREIGN",
+        "materiality_reason": "industry_primary_relation",
+        "metric_contexts": [
+          {
+            "current_fact_id": null,
+            "metric": "accounts_payable_broad",
+            "semantic_label": "광의 매입채무",
+            "status": "BLOCKED",
+            "yoy_fact_id": null
+          },
+          {
+            "current_fact_id": null,
+            "metric": "accounts_receivable_broad",
+            "semantic_label": "광의 매출채권",
+            "status": "BLOCKED",
+            "yoy_fact_id": null
+          },
+          {
+            "current_fact_id": "working-capital-reported:9d0e87e9dd05c663bd0cf8dc",
+            "metric": "inventory",
+            "semantic_label": "재고",
+            "status": "ELIGIBLE",
+            "yoy_fact_id": "working-capital-derived:ae2ba0ba7f1653af2802c81b"
+          },
+          {
+            "current_fact_id": "working-capital-reported:e4b698c742417053be0047c3",
+            "metric": "trade_accounts_payable",
+            "semantic_label": "거래 매입채무",
+            "status": "ELIGIBLE",
+            "yoy_fact_id": "working-capital-derived:fea1f85d096c8acdf10398d7"
+          },
+          {
+            "current_fact_id": "working-capital-reported:f45352209836619ff1049bee",
+            "metric": "trade_accounts_receivable",
+            "semantic_label": "거래 매출채권",
+            "status": "ELIGIBLE",
+            "yoy_fact_id": "working-capital-derived:fa48565f8ff0695b952c5e98"
+          }
+        ],
+        "packet_id": "2026-08-21-us-run-30-5a3b7c1c4390",
+        "pit_state": "PASS",
+        "point_in_time_exclusions": [],
+        "prohibited_claims": [
+          "future_fact_used",
+          "stale_as_current",
+          "broad_trade_semantic_mislabel",
+          "contract_asset_as_trade_ar",
+          "accrued_liability_as_trade_ap",
+          "unsupported_causal_claim",
+          "dso_inventory_days_dpo_ccc",
+          "automatic_thesis_warning_or_valuation_change"
+        ],
+        "remaining_unknowns": [],
+        "resolved_unknowns": [],
+        "selected_fact_refs": [
+          "working-capital-reported:9d0e87e9dd05c663bd0cf8dc",
+          "working-capital-reported:a7d54ee1be1baf56ff9ba8a6",
+          "working-capital-reported:590165e6e608e662bb062917",
+          "working-capital-reported:80776a2d200718ddcee1dc6e",
+          "working-capital-derived:ae2ba0ba7f1653af2802c81b",
+          "working-capital-derived:1a7c66d8d8932a8cdd3ba299"
+        ],
+        "selected_relations": [
+          {
+            "applicability": "PRIMARY",
+            "balance_metric": "inventory",
+            "balance_scope": "total",
+            "balance_semantic": "ifrs-full:Inventories",
+            "direction": "LOWER",
+            "family": "inventory_vs_cogs",
+            "flow_metric": "cost_of_goods_sold",
+            "flow_semantic": "ifrs-full:CostOfSales",
+            "gap_percentage_points": "-13.09857709414420494538503414",
+            "input_fact_ids": [
+              "working-capital-reported:9d0e87e9dd05c663bd0cf8dc",
+              "working-capital-reported:a7d54ee1be1baf56ff9ba8a6",
+              "working-capital-reported:590165e6e608e662bb062917",
+              "working-capital-reported:80776a2d200718ddcee1dc6e",
+              "working-capital-derived:ae2ba0ba7f1653af2802c81b",
+              "working-capital-derived:1a7c66d8d8932a8cdd3ba299"
+            ],
+            "relation_id": "working-capital-relation:d91d3ba923be232bf99652a4"
+          }
+        ],
+        "semantic_labels": [
+          "재고",
+          "cost_of_goods_sold"
+        ],
+        "shadow_used": false,
+        "specificity_key": "memory_hbm",
+        "status": "CONTEXT_ONLY",
+        "suppression_reasons": [
+          "newer_provisional_period_not_balance_aligned"
+        ],
+        "ticker": "TSM",
+        "usage_mode": "CONTEXT_ONLY"
+      },
+      "financial_type": "non_financial",
+      "human_quality": "NO_MEANINGFUL_CHANGE",
+      "industry": "memory_semiconductor",
+      "market": "US_FOREIGN",
+      "message_length_after": 807,
+      "message_length_before": 807,
+      "message_length_delta": 0,
+      "persistence_mutation": 0,
+      "reasoning": null,
+      "status_delta_candidate": false,
+      "ticker": "TSM",
+      "unknown_audit": {
+        "after": [],
+        "before": [],
+        "contradiction": false
+      },
+      "validation_errors": []
+    },
+    {
+      "after_text": "🏢 WeRide(WRD)\n\n투자 논리: 유지 · 오늘 중요한 신규 변화 없음\n\n구조적 위험: 높아진 상태\n\n시장 기대: 투기적 기대\n\n🎯 핵심\nRobotaxi 기술과 규제 승인, fleet 확대가 실제 유료 이용률과 매출 성장으로 이어지고 있으나 아직 operating loss가 크다. 핵심은 Robotaxi revenue·fleet utilization·gross margin·operating loss 축소와 현금소진이다.\n\n👁 핵심 감시\n• 승인·상용화 지연\n• fleet 확대에도 손실과 현금소진 증가\n• 초기 매출의 낮은 품질\n\n💰 가격\n현재가: $6.07 · 2026-08-20 미국장 종가\n현재 구조: 가격 구조상 추가 확인 대기\n신규 관찰자:\n• 동적 지지: $5.91~$6.15\n• 동적 저항: $6.38~$6.52\n• 현재가 기준 차트 손익비: 1.03배\n보유자:\n• 차트 무효화 가격: $5.76\n• 동적 지지 유지 여부: $5.91~$6.15\n가격 규칙 이력:\n• 등록 확인선 $6.68은 아직 도달하지 않았습니다.\n\n📐 Valuation\nPER: N/M\nfPER: N/M\n현재 Valuation: 판단 자료 부족\n오늘 Valuation 변화: 판단 자료 부족\n증권 유형과 주당 기준의 일치 여부를 확인하지 못해 배수 해석을 보류합니다.\n\n⚠️ 데이터 주의\n• 최신 정식 재무 반영이 지연돼 현재 Valuation 신뢰도를 낮춰 봅니다.\n• 현재 거래 증권의 주당 기준을 확인하지 못해 자체 PER/PBR 계산을 보류했습니다.\n\n📌 다음 확인\n• 유료 서비스 지역\n• fleet 규모\n• 차량당 이용률",
+      "before_text": "🏢 WeRide(WRD)\n\n투자 논리: 유지 · 오늘 중요한 신규 변화 없음\n\n구조적 위험: 높아진 상태\n\n시장 기대: 투기적 기대\n\n🎯 핵심\nRobotaxi 기술과 규제 승인, fleet 확대가 실제 유료 이용률과 매출 성장으로 이어지고 있으나 아직 operating loss가 크다. 핵심은 Robotaxi revenue·fleet utilization·gross margin·operating loss 축소와 현금소진이다.\n\n👁 핵심 감시\n• 승인·상용화 지연\n• fleet 확대에도 손실과 현금소진 증가\n• 초기 매출의 낮은 품질\n\n💰 가격\n현재가: $6.07 · 2026-08-20 미국장 종가\n현재 구조: 가격 구조상 추가 확인 대기\n신규 관찰자:\n• 동적 지지: $5.91~$6.15\n• 동적 저항: $6.38~$6.52\n• 현재가 기준 차트 손익비: 1.03배\n보유자:\n• 차트 무효화 가격: $5.76\n• 동적 지지 유지 여부: $5.91~$6.15\n가격 규칙 이력:\n• 등록 확인선 $6.68은 아직 도달하지 않았습니다.\n\n📐 Valuation\nPER: N/M\nfPER: N/M\n현재 Valuation: 판단 자료 부족\n오늘 Valuation 변화: 판단 자료 부족\n증권 유형과 주당 기준의 일치 여부를 확인하지 못해 배수 해석을 보류합니다.\n\n⚠️ 데이터 주의\n• 최신 정식 재무 반영이 지연돼 현재 Valuation 신뢰도를 낮춰 봅니다.\n• 현재 거래 증권의 주당 기준을 확인하지 못해 자체 PER/PBR 계산을 보류했습니다.\n\n📌 다음 확인\n• 유료 서비스 지역\n• fleet 규모\n• 차량당 이용률",
+      "company_name": "WeRide",
+      "context": {
+        "allowed_claims": [],
+        "assessment_date": "2026-08-21",
+        "cash_flow_alignment_state": "NOT_PROVIDED",
+        "cash_flow_context_used": false,
+        "consumption_eligible": false,
+        "contract": "working-capital-shadow-consumption-v1",
+        "cutoff": "2026-08-21",
+        "freshness_state": "BLOCKED",
+        "industry": "general_non_financial",
+        "industry_applicability": {
+          "ap": "SECONDARY",
+          "ap_vs_cogs": "SECONDARY",
+          "ar": "SECONDARY",
+          "ar_vs_revenue": "SECONDARY",
+          "inventory": "SECONDARY",
+          "inventory_vs_cogs": "SECONDARY",
+          "inventory_vs_revenue": "SECONDARY"
+        },
+        "latest_formal_balance_date": "2025-06-30",
+        "market": "US_FOREIGN",
+        "materiality_reason": null,
+        "metric_contexts": [
+          {
+            "current_fact_id": "working-capital-reported:d07e772b2bf7769fd845ab5b",
+            "metric": "accounts_payable_broad",
+            "semantic_label": "광의 매입채무",
+            "status": "PARTIAL",
+            "yoy_fact_id": null
+          },
+          {
+            "current_fact_id": "working-capital-reported:574a81e53ea45ed39b563ae2",
+            "metric": "accounts_receivable_broad",
+            "semantic_label": "광의 매출채권",
+            "status": "PARTIAL",
+            "yoy_fact_id": null
+          },
+          {
+            "current_fact_id": "working-capital-reported:b5717df3c408def374a64c7d",
+            "metric": "inventory",
+            "semantic_label": "재고",
+            "status": "PARTIAL",
+            "yoy_fact_id": null
+          },
+          {
+            "current_fact_id": null,
+            "metric": "trade_accounts_payable",
+            "semantic_label": "거래 매입채무",
+            "status": "BLOCKED",
+            "yoy_fact_id": null
+          },
+          {
+            "current_fact_id": "working-capital-reported:8e2e41370395b508232424f6",
+            "metric": "trade_accounts_receivable",
+            "semantic_label": "거래 매출채권",
+            "status": "PARTIAL",
+            "yoy_fact_id": null
+          }
+        ],
+        "packet_id": "2026-08-21-us-run-30-5a3b7c1c4390",
+        "pit_state": "PASS",
+        "point_in_time_exclusions": [],
+        "prohibited_claims": [
+          "future_fact_used",
+          "stale_as_current",
+          "broad_trade_semantic_mislabel",
+          "contract_asset_as_trade_ar",
+          "accrued_liability_as_trade_ap",
+          "unsupported_causal_claim",
+          "dso_inventory_days_dpo_ccc",
+          "automatic_thesis_warning_or_valuation_change"
+        ],
+        "remaining_unknowns": [],
+        "resolved_unknowns": [],
+        "selected_fact_refs": [],
+        "selected_relations": [],
+        "semantic_labels": [],
+        "shadow_used": false,
+        "specificity_key": "general_non_financial",
+        "status": "SUPPRESSED",
+        "suppression_reasons": [
+          "no_material_current_relation",
+          "working_capital_context_blocked"
+        ],
+        "ticker": "WRD",
+        "usage_mode": "SUPPRESSED"
+      },
+      "financial_type": "non_financial",
+      "human_quality": "NO_MEANINGFUL_CHANGE",
+      "industry": "general_non_financial",
+      "market": "US_FOREIGN",
+      "message_length_after": 797,
+      "message_length_before": 797,
+      "message_length_delta": 0,
+      "persistence_mutation": 0,
+      "reasoning": null,
+      "status_delta_candidate": false,
+      "ticker": "WRD",
+      "unknown_audit": {
+        "after": [],
+        "before": [],
+        "contradiction": false
+      },
+      "validation_errors": []
+    },
+    {
+      "after_text": "🏢 TeraWulf Inc.(WULF)\n\n투자 논리: 유지 · 오늘 중요한 신규 변화 없음\n\n구조적 위험: 높아진 상태\n\n시장 기대: 투기적 기대\n\n🎯 핵심\nTeraWulf는 비트코인 채굴 사업에서 AI/HPC 데이터센터 임대사업으로 빠르게 전환 중이며, 2026년 2분기 매출의 약 71%가 HPC lease revenue에서 발생하고 102MW가 가동된 상태에서 추가 336MW를 건설 중인 점이 핵심 근거다. Anthropic 관련 약 401MW, 20년, 초기 계약가치 약 190억달러의 장기 계약은 큰 성장 옵션이지만, 현재 Adjusted EBITDA 적자, 대규모 CAPEX, 높은 주식보상과 2026년 신규 주식발행 등으로 주주가치 전환은 아직 증명이 필요하다.\n\n📈 사업·실적\n2026 회계연도 상반기 누계 build-out 단계의 PPE 투자 후 잉여현금흐름은 $-1.53B입니다. 전년 비교기간보다 음수 폭이 커졌고 build-out 재투자는 가동·청구 전환과 자금조달을 함께 봅니다.\n\n👁 핵심 감시\n• 준공 지연·고객 인도 차질\n• Adjusted EBITDA 적자 장기화\n• 대규모 추가 증자·주식보상·부채 증가\n\n💰 가격\n현재가: $16.45 · 2026-08-20 미국장 종가\n현재 구조: 가격 구조상 추가 확인 대기\n신규 관찰자:\n• 동적 지지: $16.00~$17.09\n• 동적 저항: $17.32~$18.12\n• 현재가 기준 차트 손익비: 0.7배\n보유자:\n• 차트 무효화 가격: $15.20\n• 동적 지지 유지 여부: $16.00~$17.09\n가격 규칙 이력:\n• 등록 확인선 $18.40은 아직 도달하지 않았습니다.\n\n📐 Valuation\nPER: N/M\nPBR = 현재가 ÷ BVPS = $16.45 ÷ $0.30 = 55.7배\n과거 대비:\nPBR 중앙값 3.2배 · 100백분위\n현재 Valuation: 판단 자료 부족\n오늘 Valuation 변화: 판단 자료 부족\n검증된 현재 PBR과 과거 장부가 배수 분포를 함께 확인하며, 이익 기반 배수는 사용하지 않습니다.\n\n📌 다음 확인\n• HPC lease revenue 성장률과 전체 매출 내 비중\n• 가동 MW·건설 MW·준공 일정\n• Adjusted EBITDA의 흑자 전환 여부",
+      "before_text": "🏢 TeraWulf Inc.(WULF)\n\n투자 논리: 유지 · 오늘 중요한 신규 변화 없음\n\n구조적 위험: 높아진 상태\n\n시장 기대: 투기적 기대\n\n🎯 핵심\nTeraWulf는 비트코인 채굴 사업에서 AI/HPC 데이터센터 임대사업으로 빠르게 전환 중이며, 2026년 2분기 매출의 약 71%가 HPC lease revenue에서 발생하고 102MW가 가동된 상태에서 추가 336MW를 건설 중인 점이 핵심 근거다. Anthropic 관련 약 401MW, 20년, 초기 계약가치 약 190억달러의 장기 계약은 큰 성장 옵션이지만, 현재 Adjusted EBITDA 적자, 대규모 CAPEX, 높은 주식보상과 2026년 신규 주식발행 등으로 주주가치 전환은 아직 증명이 필요하다.\n\n📈 사업·실적\n2026 회계연도 상반기 누계 build-out 단계의 PPE 투자 후 잉여현금흐름은 $-1.53B입니다. 전년 비교기간보다 음수 폭이 커졌고 build-out 재투자는 가동·청구 전환과 자금조달을 함께 봅니다.\n\n👁 핵심 감시\n• 준공 지연·고객 인도 차질\n• Adjusted EBITDA 적자 장기화\n• 대규모 추가 증자·주식보상·부채 증가\n\n💰 가격\n현재가: $16.45 · 2026-08-20 미국장 종가\n현재 구조: 가격 구조상 추가 확인 대기\n신규 관찰자:\n• 동적 지지: $16.00~$17.09\n• 동적 저항: $17.32~$18.12\n• 현재가 기준 차트 손익비: 0.7배\n보유자:\n• 차트 무효화 가격: $15.20\n• 동적 지지 유지 여부: $16.00~$17.09\n가격 규칙 이력:\n• 등록 확인선 $18.40은 아직 도달하지 않았습니다.\n\n📐 Valuation\nPER: N/M\nPBR = 현재가 ÷ BVPS = $16.45 ÷ $0.30 = 55.7배\n과거 대비:\nPBR 중앙값 3.2배 · 100백분위\n현재 Valuation: 판단 자료 부족\n오늘 Valuation 변화: 판단 자료 부족\n검증된 현재 PBR과 과거 장부가 배수 분포를 함께 확인하며, 이익 기반 배수는 사용하지 않습니다.\n\n📌 다음 확인\n• HPC lease revenue 성장률과 전체 매출 내 비중\n• 가동 MW·건설 MW·준공 일정\n• Adjusted EBITDA의 흑자 전환 여부",
+      "company_name": "TeraWulf Inc.",
+      "context": {
+        "allowed_claims": [],
+        "assessment_date": "2026-08-21",
+        "cash_flow_alignment_state": "NOT_PROVIDED",
+        "cash_flow_context_used": false,
+        "consumption_eligible": false,
+        "contract": "working-capital-shadow-consumption-v1",
+        "cutoff": "2026-08-21",
+        "freshness_state": "BLOCKED",
+        "industry": "hpc_data_center",
+        "industry_applicability": {
+          "ap": "SECONDARY",
+          "ap_vs_cogs": "CONTEXT_ONLY",
+          "ar": "SECONDARY",
+          "ar_vs_revenue": "SECONDARY",
+          "inventory": "CONTEXT_ONLY",
+          "inventory_vs_cogs": "CONTEXT_ONLY",
+          "inventory_vs_revenue": "CONTEXT_ONLY"
+        },
+        "latest_formal_balance_date": "2026-06-30",
+        "market": "US_FOREIGN",
+        "materiality_reason": null,
+        "metric_contexts": [
+          {
+            "current_fact_id": "working-capital-reported:694ba31958fd1a144f8657dd",
+            "metric": "accounts_payable_broad",
+            "semantic_label": "광의 매입채무",
+            "status": "ELIGIBLE",
+            "yoy_fact_id": "working-capital-derived:875bca18dd2178568e7b0cbb"
+          },
+          {
+            "current_fact_id": "working-capital-reported:61ca5c1150707c7674bf7456",
+            "metric": "accounts_receivable_broad",
+            "semantic_label": "광의 매출채권",
+            "status": "ELIGIBLE",
+            "yoy_fact_id": "working-capital-derived:bff9ac5b687c0d92d509d7d4"
+          },
+          {
+            "current_fact_id": "working-capital-reported:fa51536ad9caa7b0f62a0968",
+            "metric": "inventory",
+            "semantic_label": "재고",
+            "status": "ELIGIBLE",
+            "yoy_fact_id": "working-capital-derived:8c7203c19df3a31a250bddca"
+          },
+          {
+            "current_fact_id": "working-capital-reported:96c802e41a4c0f9699107a07",
+            "metric": "trade_accounts_payable",
+            "semantic_label": "거래 매입채무",
+            "status": "ELIGIBLE",
+            "yoy_fact_id": "working-capital-derived:2666aeef32ed84fa5b64d09f"
+          },
+          {
+            "current_fact_id": null,
+            "metric": "trade_accounts_receivable",
+            "semantic_label": "거래 매출채권",
+            "status": "BLOCKED",
+            "yoy_fact_id": null
+          }
+        ],
+        "packet_id": "2026-08-21-us-run-30-5a3b7c1c4390",
+        "pit_state": "PASS_WITH_EXCLUSIONS",
+        "point_in_time_exclusions": [
+          {
+            "reason": "relation_not_latest_formal_balance",
+            "relation_id": "working-capital-relation:258cebf54891e5d63a0203fa"
+          },
+          {
+            "reason": "relation_not_latest_formal_balance",
+            "relation_id": "working-capital-relation:56032c227785d440ce7de5bc"
+          },
+          {
+            "reason": "relation_not_latest_formal_balance",
+            "relation_id": "working-capital-relation:fcd8b65ee4385872d76cdc3c"
+          }
+        ],
+        "prohibited_claims": [
+          "future_fact_used",
+          "stale_as_current",
+          "broad_trade_semantic_mislabel",
+          "contract_asset_as_trade_ar",
+          "accrued_liability_as_trade_ap",
+          "unsupported_causal_claim",
+          "dso_inventory_days_dpo_ccc",
+          "automatic_thesis_warning_or_valuation_change"
+        ],
+        "remaining_unknowns": [],
+        "resolved_unknowns": [],
+        "selected_fact_refs": [],
+        "selected_relations": [],
+        "semantic_labels": [],
+        "shadow_used": false,
+        "specificity_key": "billing_conversion",
+        "status": "SUPPRESSED",
+        "suppression_reasons": [
+          "no_material_current_relation",
+          "working_capital_context_blocked"
+        ],
+        "ticker": "WULF",
+        "usage_mode": "SUPPRESSED"
+      },
+      "financial_type": "non_financial",
+      "human_quality": "NO_MEANINGFUL_CHANGE",
+      "industry": "hpc_data_center",
+      "market": "US_FOREIGN",
+      "message_length_after": 1104,
+      "message_length_before": 1104,
+      "message_length_delta": 0,
+      "persistence_mutation": 0,
+      "reasoning": null,
+      "status_delta_candidate": false,
+      "ticker": "WULF",
+      "unknown_audit": {
+        "after": [],
+        "before": [],
+        "contradiction": false
+      },
+      "validation_errors": []
+    }
+  ],
+  "unknown_resolution": {
+    "before": 4,
+    "contradictions": 0,
+    "states": {
+      "RESOLVED_EXACT": 4
+    }
+  },
+  "usage_counts": {
+    "INVENTORY_RELATION": 5,
+    "TRADE_AR_RELATION": 2
+  },
+  "validation_errors": []
+}
