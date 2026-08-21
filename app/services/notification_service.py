@@ -18,6 +18,12 @@ from app.services.analysis_report_service import (
     InvestmentNarrativeGenerator,
     split_telegram_text,
 )
+from app.services.cash_flow_baseline_consistency_service import (
+    financial_period_context,
+    load_canonical_cash_flow_evidence,
+    repair_baseline_cash_flow_items,
+    repair_baseline_cash_flow_text,
+)
 from app.services.canonical_fact_service import compact_krw_amount
 from app.services.current_price_context_service import (
     fallback_price_context_errors,
@@ -1234,6 +1240,29 @@ def _assessment_report(
     raw_valuation_snapshot = _json_value(
         getattr(assessment, "valuation_snapshot", "{}"), {}
     )
+    latest_formal_period, latest_preliminary_period = financial_period_context(
+        raw_valuation_snapshot
+    )
+    cash_flow_evidence = load_canonical_cash_flow_evidence(
+        assessment.ticker,
+        cutoff=assessment.assessment_date,
+        latest_formal_period=latest_formal_period,
+        latest_preliminary_period=latest_preliminary_period,
+    )
+    stored_core_thesis = (
+        thesis.core_thesis
+        if thesis
+        else str(thesis_snapshot.get("base_thesis", "저장된 핵심 투자 논리가 없습니다."))
+    )
+    core_thesis = repair_baseline_cash_flow_text(
+        assessment.ticker,
+        stored_core_thesis,
+        cash_flow_evidence,
+        text_ref="thesis.core_thesis",
+        section="core_thesis",
+        origin_type="saved_thesis",
+        origin_version=(f"thesis:{assessment.ticker}:v{assessment.thesis_version}"),
+    ).text
     financial_quality = build_financial_quality_state(raw_valuation_snapshot)
     valuation_snapshot = sanitize_financial_snapshot_for_prose(
         raw_valuation_snapshot
@@ -1310,6 +1339,42 @@ def _assessment_report(
     warning_state_by_text = {
         str(item.get("warning")): item for item in warning_states if item.get("warning")
     }
+    new_warnings, _ = repair_baseline_cash_flow_items(
+        assessment.ticker,
+        new_warnings,
+        cash_flow_evidence,
+        section="new_warnings",
+        origin_type="assessment_warning",
+        origin_version=str(assessment.assessment_date),
+        provenance_by_text=warning_state_by_text,
+    )
+    open_warnings, _ = repair_baseline_cash_flow_items(
+        assessment.ticker,
+        open_warnings,
+        cash_flow_evidence,
+        section="open_warnings",
+        origin_type="assessment_warning",
+        origin_version=str(assessment.assessment_date),
+        provenance_by_text=warning_state_by_text,
+    )
+    open_confirmed_warnings, _ = repair_baseline_cash_flow_items(
+        assessment.ticker,
+        open_confirmed_warnings,
+        cash_flow_evidence,
+        section="open_confirmed_warnings",
+        origin_type="assessment_warning",
+        origin_version=str(assessment.assessment_date),
+        provenance_by_text=warning_state_by_text,
+    )
+    confirmed_warnings, _ = repair_baseline_cash_flow_items(
+        assessment.ticker,
+        [str(item) for item in confirmed_warnings],
+        cash_flow_evidence,
+        section="confirmed_warnings",
+        origin_type="assessment_warning",
+        origin_version=str(assessment.assessment_date),
+        provenance_by_text=warning_state_by_text,
+    )
 
     def _warnings_with_provenance(items: list[str], empty: str) -> str:
         if not items:
@@ -1349,11 +1414,6 @@ def _assessment_report(
         change_text = "\n".join(f"• {item}" for item in user_facts)
     elif business_change == "no_material_change":
         change_text = "• 오늘 투자 논리를 바꿀 신규 확정 사실은 확인되지 않았습니다."
-    core_thesis = (
-        thesis.core_thesis
-        if thesis
-        else str(thesis_snapshot.get("base_thesis", "저장된 핵심 투자 논리가 없습니다."))
-    )
     expectation_level = str(market_expectations.get("level", "unknown"))
     valuation_impact = str(valuation_context.get("summary", "Valuation 영향 판단 자료가 없습니다."))
     impact_label = {

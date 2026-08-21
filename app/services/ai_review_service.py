@@ -41,6 +41,12 @@ from app.services.canonical_fact_service import (
     canonical_capital_action_fact,
     canonical_event_fact,
 )
+from app.services.cash_flow_baseline_consistency_service import (
+    financial_period_context,
+    load_canonical_cash_flow_evidence,
+    repair_baseline_cash_flow_items,
+    repair_baseline_cash_flow_text,
+)
 from app.services.company_profile_service import (
     company_profile_coverage,
     read_profile_provenance,
@@ -2667,6 +2673,56 @@ def _stock_packet(
     )
     evidence = _material_evidence(assessment)
     valuation = _valuation_payload(session, assessment)
+    raw_valuation_snapshot = _dict(assessment.valuation_snapshot)
+    latest_formal_period, latest_preliminary_period = financial_period_context(
+        raw_valuation_snapshot
+    )
+    cash_flow_evidence = load_canonical_cash_flow_evidence(
+        assessment.ticker,
+        cutoff=assessment.assessment_date,
+        latest_formal_period=latest_formal_period,
+        latest_preliminary_period=latest_preliminary_period,
+    )
+    safe_core_thesis = repair_baseline_cash_flow_text(
+        assessment.ticker,
+        thesis.core_thesis,
+        cash_flow_evidence,
+        text_ref="thesis.core_thesis",
+        section="core_thesis",
+        origin_type="saved_thesis",
+        origin_version=f"thesis:{assessment.ticker}:v{assessment.thesis_version}",
+    ).text
+    warning_states = [
+        item for item in _list(assessment.warning_states) if isinstance(item, dict)
+    ]
+    warning_state_by_text = {
+        str(item.get("warning")): item for item in warning_states if item.get("warning")
+    }
+    confirmed_warnings, _ = repair_baseline_cash_flow_items(
+        assessment.ticker,
+        _clean_texts(_list(assessment.confirmed_warnings)),
+        cash_flow_evidence,
+        section="confirmed_warnings",
+        origin_type="assessment_warning",
+        origin_version=str(assessment.assessment_date),
+        provenance_by_text=warning_state_by_text,
+    )
+    data_cautions, _ = repair_baseline_cash_flow_items(
+        assessment.ticker,
+        list(
+            dict.fromkeys(
+                [
+                    *_clean_texts(_list(assessment.open_warnings)),
+                    *_clean_texts(_list(assessment.open_confirmed_warnings)),
+                ]
+            )
+        ),
+        cash_flow_evidence,
+        section="data_cautions",
+        origin_type="assessment_warning",
+        origin_version=str(assessment.assessment_date),
+        provenance_by_text=warning_state_by_text,
+    )
     price = _price_payload(assessment)
     previous = _previous_assessment(session, assessment)
     chart = _chart_payload(assessment, thesis, previous)
@@ -2678,7 +2734,7 @@ def _stock_packet(
         filter(
             None,
             (
-                thesis.core_thesis,
+                safe_core_thesis,
                 json.dumps(_dict(thesis.valuation_framework), ensure_ascii=False),
                 json.dumps(_list(thesis.thesis_drivers), ensure_ascii=False),
             ),
@@ -2787,7 +2843,7 @@ def _stock_packet(
         "thesis_version": assessment.thesis_version,
         "assessment_mode": _assessment_mode(assessment),
         "thesis": {
-            "core_thesis": thesis.core_thesis,
+            "core_thesis": safe_core_thesis,
             "time_horizon": thesis.time_horizon,
             "thesis_drivers": _public_value(_list(thesis.thesis_drivers)),
             "validation_metrics": _public_value(_list(thesis.validation_metrics)),
@@ -2809,8 +2865,16 @@ def _stock_packet(
             "risk_level": assessment.risk_level,
             "structural_risk_level": assessment.structural_risk_level,
             "market_expectation": current_expectation,
-            "summary": _clean_text(assessment.summary) or "",
-            "confirmed_warnings": _clean_texts(_list(assessment.confirmed_warnings)),
+            "summary": repair_baseline_cash_flow_text(
+                assessment.ticker,
+                _clean_text(assessment.summary) or "",
+                cash_flow_evidence,
+                text_ref="deterministic_assessment.summary",
+                section="assessment_summary",
+                origin_type="assessment",
+                origin_version=str(assessment.assessment_date),
+            ).text,
+            "confirmed_warnings": confirmed_warnings,
         },
         "evidence": evidence,
         "valuation": valuation,
@@ -2818,15 +2882,7 @@ def _stock_packet(
         "chart_context": chart,
         "monitoring_state": monitoring_state,
         "unknowns": _clean_texts(_list(assessment.unknowns)),
-        "data_cautions": list(
-            dict.fromkeys(
-                [
-                    *_clean_texts(_list(assessment.open_warnings)),
-                    *_clean_texts(_list(assessment.open_confirmed_warnings)),
-                    *price.get("cautions", []),
-                ]
-            )
-        ),
+        "data_cautions": list(dict.fromkeys([*data_cautions, *price.get("cautions", [])])),
         "previous_assessment": (
             {
                 "assessment_date": previous.assessment_date.isoformat(),
@@ -2835,7 +2891,15 @@ def _stock_packet(
                 ),
                 "earnings_estimate_impact": previous.earnings_estimate_impact,
                 "valuation_change": previous.valuation_change,
-                "summary": _clean_text(previous.summary) or "",
+                "summary": repair_baseline_cash_flow_text(
+                    assessment.ticker,
+                    _clean_text(previous.summary) or "",
+                    cash_flow_evidence,
+                    text_ref="previous_assessment.summary",
+                    section="assessment_summary",
+                    origin_type="assessment_history",
+                    origin_version=str(previous.assessment_date),
+                ).text,
             }
             if previous is not None
             else None

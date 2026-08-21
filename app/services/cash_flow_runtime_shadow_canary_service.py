@@ -20,6 +20,14 @@ from pathlib import Path
 from typing import Callable, Iterable, Iterator, Mapping, Sequence
 
 from app.config import get_settings
+from app.services.cash_flow_baseline_consistency_service import (
+    CONTRACT_VERSION as BASELINE_CONSISTENCY_CONTRACT_VERSION,
+    consistency_error,
+    decision_to_dict,
+    evidence_from_shadow_context,
+    repair_baseline_cash_flow_text,
+    rendered_message_cash_flow_sections,
+)
 from app.services.cash_flow_capital_efficiency_service import (
     CapexScope,
     EligibilityStatus,
@@ -348,6 +356,107 @@ def _packet_sha(packet_path: Path) -> str:
 def _production_candidate_identity(archive: Path) -> str | None:
     candidate = archive / "ai-review.json"
     return _file_sha256(candidate) if candidate.exists() else None
+
+
+def _production_message_texts(
+    archive: Path,
+    delivery_mode: str,
+) -> dict[str, str]:
+    candidates = (
+        ("ai-assisted-messages.json",)
+        if delivery_mode == "ai_assisted"
+        else ("fallback-messages.json", "deterministic-messages.json")
+    )
+    for filename in candidates:
+        path = archive / filename
+        if not path.exists():
+            continue
+        value = _read_json(path)
+        output: dict[str, str] = {}
+        for item in value.get("messages") or ():
+            if not isinstance(item, dict) or not item.get("ticker"):
+                continue
+            payload = item.get("payload")
+            text = (
+                payload.get("text")
+                if isinstance(payload, dict)
+                else item.get("text")
+            )
+            if isinstance(text, str):
+                output[str(item["ticker"])] = text
+        if output:
+            return output
+    return {}
+
+
+def _baseline_consistency_audit(
+    packet_stocks: Mapping[str, Mapping[str, object]],
+    contexts: Mapping[str, CashFlowReasoningContext],
+    facts: Mapping[str, FinancialFact],
+    *,
+    archive: Path,
+    delivery_mode: str,
+) -> dict[str, object]:
+    production_texts = _production_message_texts(archive, delivery_mode)
+    rows: list[dict[str, object]] = []
+    errors: list[dict[str, str]] = []
+    for ticker, context in contexts.items():
+        stock = packet_stocks.get(ticker, {})
+        thesis = stock.get("thesis") if isinstance(stock, dict) else None
+        sources: list[tuple[str, str, str]] = []
+        if isinstance(thesis, dict) and isinstance(thesis.get("core_thesis"), str):
+            sources.append(
+                (
+                    "packet.thesis.core_thesis",
+                    "core_thesis",
+                    str(thesis["core_thesis"]),
+                )
+            )
+        production_text = production_texts.get(ticker)
+        if production_text:
+            sources.extend(
+                (
+                    f"production_delivery.{heading}",
+                    section,
+                    value,
+                )
+                for heading, section, value in rendered_message_cash_flow_sections(
+                    production_text
+                )
+            )
+        evidence = evidence_from_shadow_context(context, facts)
+        for text_ref, section, value in sources:
+            repair = repair_baseline_cash_flow_text(
+                ticker,
+                value,
+                evidence,
+                text_ref=text_ref,
+                section=section,
+                origin_type=(
+                    "production_delivery" if section == "production_delivery" else "packet"
+                ),
+            )
+            for decision in repair.decisions:
+                row = decision_to_dict(decision)
+                rows.append(row)
+                error = consistency_error(decision)
+                if error:
+                    errors.append(
+                        {
+                            "ticker": ticker,
+                            "text_ref": text_ref,
+                            "error": error,
+                            "claim_id": decision.claim.claim_id,
+                        }
+                    )
+    return {
+        "contract": BASELINE_CONSISTENCY_CONTRACT_VERSION,
+        "status": "passed" if not errors else "rejected",
+        "claim_count": len(rows),
+        "error_count": len(errors),
+        "claims": rows,
+        "errors": errors,
+    }
 
 
 def _load_runtime_inputs(
@@ -804,10 +913,24 @@ def run_cash_flow_runtime_shadow_canary(
                     "audit": unknown_audit,
                 }
             )
+        baseline_consistency = _baseline_consistency_audit(
+            packet_stocks,
+            contexts,
+            facts_by_id,
+            archive=archive,
+            delivery_mode=delivery_mode,
+        )
+        semantic_error_count += int(baseline_consistency["error_count"])
         semantic = {
             "status": "passed" if semantic_error_count == 0 else "rejected",
             "error_count": semantic_error_count,
             "subjects": semantic_rows,
+            "baseline_cash_flow_consistency": {
+                "contract": baseline_consistency["contract"],
+                "status": baseline_consistency["status"],
+                "claim_count": baseline_consistency["claim_count"],
+                "error_count": baseline_consistency["error_count"],
+            },
             "prohibited_metrics_created": 0,
             "valuation_context_mutations": 0,
             "thesis_status_mutations": 0,
@@ -859,6 +982,7 @@ def run_cash_flow_runtime_shadow_canary(
             "contract": CONSUMPTION_CONTRACT_VERSION,
             "canonical_facts_sha256": canonical_facts_sha,
             "architecture_evidence_sha256": architecture_sha,
+            "baseline_consistency_contract": BASELINE_CONSISTENCY_CONTRACT_VERSION,
             "subjects": contexts_payload,
         }
         bound_output = {
@@ -887,6 +1011,7 @@ def run_cash_flow_runtime_shadow_canary(
             ("raw-shadow-output.json", raw_output),
             ("bound-shadow-output.json", bound_output),
             ("semantic-validation.json", semantic),
+            ("baseline-consistency.json", baseline_consistency),
             ("runtime-quality-receipt.json", quality),
         )
         archive_started = time.perf_counter()
@@ -931,6 +1056,9 @@ def run_cash_flow_runtime_shadow_canary(
             for key in ("automatic", "manual", "rejected", "unresolved")
         }
         receipt_payload["semantic_error_count"] = semantic_error_count
+        receipt_payload["baseline_consistency_error_count"] = baseline_consistency[
+            "error_count"
+        ]
         receipt_payload["quality_error_count"] = len(quality["errors"])
         receipt_payload["latency_ms"] = {
             "input_load": load_latency_ms,

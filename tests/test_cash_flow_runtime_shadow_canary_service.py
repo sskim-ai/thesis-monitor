@@ -436,6 +436,51 @@ def test_semantic_validator_failure_is_canary_only(canary_environment) -> None:
     assert receipt["production_influence_count"] == 0
 
 
+def test_baseline_cash_flow_conflict_fails_cross_artifact_canary(
+    canary_environment,
+) -> None:
+    _data_root, archive, packet_path, delivery_path = canary_environment
+    packet = json.loads(packet_path.read_text(encoding="utf-8"))
+    packet["stocks"][0]["thesis"] = {
+        "core_thesis": "현재 FCF 적자가 이어져 FCF 흑자 전환이 필요합니다."
+    }
+    packet_path.write_text(json.dumps(packet), encoding="utf-8")
+    (archive / "ai-assisted-messages.json").write_text(
+        json.dumps(
+            {
+                "messages": [
+                    {
+                        "ticker": "GOOGL",
+                        "payload": {
+                            "text": "현재 FCF 적자가 이어져 FCF 흑자 전환이 필요합니다."
+                        },
+                    }
+                ]
+            }
+        ),
+        encoding="utf-8",
+    )
+
+    result = run_cash_flow_runtime_shadow_canary(
+        PACKET_ID,
+        delivery_mode="ai_assisted",
+        expected_delivery_sha256=_sha(delivery_path),
+        now=NOW,
+    )
+
+    assert result.status == "SEMANTIC_VALIDATION_FAILED"
+    attempt = _receipt_path(archive).parent
+    audit = json.loads((attempt / "baseline-consistency.json").read_text())
+    assert audit["status"] == "rejected"
+    assert audit["error_count"] == 4
+    assert {
+        item["error"] for item in audit["errors"]
+    } == {"baseline_cash_flow_unsupported_claim"}
+    receipt = json.loads(_receipt_path(archive).read_text())
+    assert receipt["baseline_consistency_error_count"] == 4
+    assert receipt["production_influence_count"] == 0
+
+
 def test_archive_failure_cannot_escape_to_production(
     canary_environment, monkeypatch: pytest.MonkeyPatch
 ) -> None:

@@ -335,6 +335,51 @@ def test_us_report_omits_supply_section() -> None:
     assert "📊 수급" not in _message_for_assessment(assessment)
 
 
+def test_fallback_suppresses_unqualified_current_fcf_conflict_without_number() -> None:
+    assessment = _compact_assessment(
+        ticker="TSLA",
+        assessment_date=date(2026, 8, 21),
+        thesis_version=5,
+        open_warnings='["영업이익률 저하 확인", "FCF 적자 확인"]',
+        open_confirmed_warnings='["영업이익률 저하 확인", "FCF 적자 확인"]',
+        warning_states=json.dumps(
+            [
+                {
+                    "warning": "FCF 적자 확인",
+                    "source": "saved_thesis",
+                    "source_provider": "saved_thesis",
+                    "source_event_ids": ["thesis:TSLA:v5"],
+                    "provenance_status": "backfilled_saved_thesis",
+                }
+            ],
+            ensure_ascii=False,
+        ),
+        thesis_snapshot=json.dumps(
+            {
+                "base_thesis": (
+                    "Robotaxi/FSD/AI의 수익화가 핵심이다. 현재는 영업이익률 저하와 "
+                    "FCF 적자로 초기 균열이 있으며, Robotaxi 경제성, FCF 흑자 "
+                    "전환이 증명되어야 한다."
+                )
+            },
+            ensure_ascii=False,
+        ),
+    )
+    snapshot = json.loads(assessment.valuation_snapshot)
+    snapshot["latest_full_financial_period"] = "2026-06-30"
+    assessment.valuation_snapshot = json.dumps(snapshot, ensure_ascii=False)
+
+    message = _message_for_assessment(assessment)
+
+    assert "FCF 적자" not in message
+    assert "FCF 흑자 전환" not in message
+    assert "$352" not in message
+    assert "\n• 확인" not in message
+    assert "영업이익률 저하로 초기 균열" in message
+    assert "Robotaxi 경제성이 증명되어야 한다" in message
+    assert "• 영업이익률 저하 확인" in message
+
+
 def test_fallback_price_block_uses_dynamic_context_before_registered_rules() -> None:
     assessment = _compact_assessment()
     price_context = json.loads(assessment.price_context)

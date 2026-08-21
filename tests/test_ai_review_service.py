@@ -4,6 +4,7 @@ import json
 import threading
 from concurrent.futures import ThreadPoolExecutor
 from datetime import UTC, date, datetime, timedelta
+from decimal import Decimal
 from pathlib import Path
 
 import pytest
@@ -5605,6 +5606,93 @@ def test_structured_subtype_dominance_and_ambiguous_fallback() -> None:
         "confidence": "low",
         "evidence": [],
     }
+
+
+def test_packet_suppresses_unqualified_cash_flow_state_conflicting_with_canonical(
+    monkeypatch,
+    tmp_path: Path,
+) -> None:
+    from app.services.cash_flow_baseline_consistency_service import (
+        CanonicalCashFlowEvidence,
+        CanonicalMetricEvidence,
+        ClaimScope,
+        ClaimState,
+    )
+
+    _settings(monkeypatch, tmp_path)
+    evidence = CanonicalCashFlowEvidence(
+        ticker="PACKETUS",
+        freshness_state="CURRENT_FORMAL",
+        fcf=CanonicalMetricEvidence(
+            fact_id="cashflow:packetus:fcf",
+            metric="free_cash_flow_ppe",
+            value=Decimal("352000000"),
+            sign=ClaimState.POSITIVE,
+            period_start=date(2026, 1, 1),
+            period_end=date(2026, 6, 30),
+            period_type="YTD",
+            fiscal_year=2026,
+            fiscal_quarter=2,
+            scope=ClaimScope.BACKEND_PPE_ONLY,
+            entity_scope="issuer_level",
+            currency="USD",
+            unit="USD",
+            filing_date=date(2026, 7, 23),
+        ),
+        ocf=None,
+    )
+    monkeypatch.setattr(
+        ai_review_service,
+        "load_canonical_cash_flow_evidence",
+        lambda *_args, **_kwargs: evidence,
+    )
+    with Session(_engine()) as session:
+        _seed(session)
+        thesis = session.exec(
+            select(InvestmentThesis).where(InvestmentThesis.ticker == "PACKETUS")
+        ).first()
+        assert thesis is not None
+        thesis.core_thesis = (
+            "Robotaxi/FSD/AI의 고마진 수익화가 장기 기업가치의 핵심이다. "
+            "현재는 매출·인도 회복에도 영업이익률 저하와 FCF 적자로 투자 논리에 "
+            "초기 균열이 있으며, 향후 자동차·서비스 마진 회복, Robotaxi 경제성, "
+            "FCF 흑자 전환이 증명되어야 한다."
+        )
+        assessment = session.exec(
+            select(ThesisAssessment).where(
+                ThesisAssessment.ticker == "PACKETUS",
+                ThesisAssessment.assessment_date == RUN_DATE,
+            )
+        ).first()
+        assert assessment is not None
+        assessment.confirmed_warnings = json.dumps(["FCF 적자 확인"])
+        assessment.open_warnings = json.dumps(["FCF 적자 확인"])
+        assessment.warning_states = json.dumps(
+            [
+                {
+                    "warning": "FCF 적자 확인",
+                    "source_provider": "saved_thesis",
+                    "provenance_status": "backfilled_saved_thesis",
+                    "source_event_ids": ["thesis:PACKETUS:v2"],
+                }
+            ]
+        )
+        session.add(thesis)
+        session.add(assessment)
+        session.commit()
+
+        packet = build_ai_review_packet(session, RUN_DATE, "us")
+
+    assert packet is not None
+    stock = packet["stocks"][0]
+    core = stock["thesis"]["core_thesis"]
+    assert "FCF 적자" not in core
+    assert "FCF 흑자 전환" not in core
+    assert "영업이익률 저하로 투자 논리에 초기 균열" in core
+    assert "Robotaxi 경제성이 증명되어야 한다" in core
+    assert stock["deterministic_assessment"]["confirmed_warnings"] == []
+    assert "FCF 적자 확인" not in stock["data_cautions"]
+    assert "$352" not in json.dumps(stock, ensure_ascii=False)
 
 
 def test_incompatible_industry_framework_is_rejected(
