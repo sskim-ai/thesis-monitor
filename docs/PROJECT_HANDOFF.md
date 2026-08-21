@@ -7,6 +7,23 @@ validation, delivery, or Scheduled Tasks.
 
 ## Current Authoritative Handoff — 2026-08-21
 
+Phase 9.1E working-capital user-visible pre-integration is complete on immutable instruction commit
+`99f7e86f3ae40cc86a4865ef70dc89abf79d5a37` and implementation commit
+`a4f8570130d1fd33f802d391c6a196d1c5579278`. The branch explicitly reconciles Track A main before
+implementation. Contracts are `working-capital-user-visible-v1` and
+`working-capital-user-visible-enable-gate-v1`.
+
+The 20-subject preview retains seven Phase 9.1D candidates and selects five lower-noise future
+sentences: Inventory 3 and exact Trade AR 2. MU and TSLA Inventory are suppressed by compatible
+cash-flow priority with no incremental Unknown resolution. Binding is 5 automatic and zero
+manual/rejected/unresolved; selector, parity, semantic, causal, Unknown, and degraded-quality errors
+are zero. Production AI/fallback/Telegram/Public Action/snapshot/DB/warnings are unchanged.
+
+`WORKING_CAPITAL_USER_VISIBLE_MODE=OFF`. Inventory and exact Trade AR natural proof both remain
+`NOT_OBSERVED`; each enablement decision is `NO_PENDING_NATURAL`. Do not treat preview evidence as
+natural proof. The next valid change is a small family-specific enablement-only instruction after a
+natural Phase 9.1D `LIVE_PASS`.
+
 The KR investor-flow reconciliation repair is complete on instruction commit
 `e9d7c73cf6f25b2423b55a6899465e86441316d1` and implementation commit
 `47fc87e2a9189556a7206065fdb759f3603ce497`; Actions run `32480802390` passes Test/Lint. Run-31
@@ -117,6 +134,7 @@ execution or an autonomous investment adviser.
 | Cash-flow kill switch | `CASH_FLOW_USER_VISIBLE_MODE`; invalid/default OFF |
 | Working-capital evidence | `working-capital-evidence-v1`; 9.1B canonical core implemented shadow |
 | Working-capital consumption | `working-capital-shadow-consumption-v1`; retrospective PASS, 9.1D selective canary ready |
+| Working-capital user-visible pre-integration | `working-capital-user-visible-v1` plus family enable gate; feature OFF pending natural proof |
 
 ## Phase 8.3 Final State
 

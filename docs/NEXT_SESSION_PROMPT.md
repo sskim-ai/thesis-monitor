@@ -5,9 +5,18 @@ Repository: `sskim-ai/thesis-monitor`
 First fetch and compare `origin/main`, the development checkout, and the clean operating checkout.
 Read `docs/project-state.json`, `docs/MASTER_WORKFLOW.md`, `docs/PROJECT_HANDOFF.md`,
 `docs/architecture/WORKING_CAPITAL_RUNTIME_SHADOW_CANARY.md`, and the Phase 9.1D complete report and
-readiness JSON. Also read `docs/architecture/NIGHT_FUTURES_PUBLICATION_TELEMETRY.md` and the
+readiness JSON. Read `docs/architecture/WORKING_CAPITAL_USER_VISIBLE_PREINTEGRATION.md` and the
+Phase 9.1E readiness JSON. Also read `docs/architecture/NIGHT_FUTURES_PUBLICATION_TELEMETRY.md` and the
 night-futures telemetry complete report/readiness JSON. Repository and immutable runtime evidence
 override conversation summaries.
+
+Phase 9.1E pre-integration is complete after instruction commit
+`99f7e86f3ae40cc86a4865ef70dc89abf79d5a37` and implementation commit
+`a4f8570130d1fd33f802d391c6a196d1c5579278`. `WORKING_CAPITAL_USER_VISIBLE_MODE` remains `OFF`.
+Inventory and exact Trade AR natural proof remain independently `NOT_OBSERVED`; their enablement
+states are `NO_PENDING_NATURAL`. Do not enable either family, manufacture proof, or rerun a task.
+After a natural Phase 9.1D receipt gives one family `LIVE_PASS`, prepare only a small enablement-only
+instruction for that proven family and retain all Phase 9.1E guards.
 
 The KR investor-flow reconciliation repair is complete after immutable instruction commit
 `e9d7c73cf6f25b2423b55a6899465e86441316d1`; implementation
@@ -37,8 +46,8 @@ Observe the next natural US and KR canary archives without manually running a Sc
 sending Telegram. Classify each metric family independently. An empty eligible set is
 `NOT_OBSERVED`, not failure. Any P0 stays isolated from production and receives a bounded repair.
 
-Phase 9.1E architecture may proceed in parallel, but no working-capital family may become
-user-visible before its intended natural mechanism proof. Keep broad AR/AP, exact AP, DSO,
+Phase 9.1E architecture is complete, but no working-capital family may become user-visible before
+its intended natural mechanism proof. Keep broad AR/AP, exact AP, DSO,
 Inventory Days, DPO, CCC, standard ROIC, KR cash-flow period recovery, KRX breadth integration,
 Pilot mutation, and Production Assist outside scope unless separately instructed.
 

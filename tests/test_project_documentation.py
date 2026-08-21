@@ -28,9 +28,11 @@ DOCUMENTS = (
     ROOT / "docs" / "architecture" / "WORKING_CAPITAL_EVIDENCE.md",
     ROOT / "docs" / "architecture" / "WORKING_CAPITAL_SHADOW_CONSUMPTION.md",
     ROOT / "docs" / "architecture" / "WORKING_CAPITAL_RUNTIME_SHADOW_CANARY.md",
+    ROOT / "docs" / "architecture" / "WORKING_CAPITAL_USER_VISIBLE_PREINTEGRATION.md",
     ROOT / "docs" / "architecture" / "KR_INVESTOR_FLOW_RECONCILIATION.md",
     ROOT / "docs" / "operations" / "AI_ASSISTED_PILOT.md",
     ROOT / "docs" / "operations" / "CASH_FLOW_USER_VISIBLE_KILL_SWITCH.md",
+    ROOT / "docs" / "operations" / "WORKING_CAPITAL_USER_VISIBLE_KILL_SWITCH.md",
     ROOT / "docs" / "knowledge" / "README.md",
 )
 INVESTMENT_SHA = "559ad45e4dd86cb0aec9bb09b51a5dc816bf323e8c2b4fd050cf28960a5a9d18"
@@ -48,15 +50,13 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     assert state["repository"] == "sskim-ai/thesis-monitor"
     assert state["branch"] == "main"
     assert state["experimental_branch"] == (
-        "codex/kr-investor-flow-reconciliation-attribution-repair"
+        "codex/phase-9-1e-working-capital-user-visible-preintegration"
     )
-    assert state["current_phase"] == "kr_investor_flow_reconciliation_repair_complete"
+    assert state["current_phase"] == "phase_9_1e_preintegration_complete_pending_natural"
     assert state["last_completed_phase"] == (
-        "kr_investor_flow_reconciliation_attribution_repair"
+        "phase_9_1e_working_capital_user_visible_preintegration"
     )
-    assert state["next_default_phase"] == (
-        "phase_9_1e_architecture_natural_proof_parallel"
-    )
+    assert state["next_default_phase"] == ("phase_9_1d_natural_metric_family_review")
     assert state["deployed_code_commit"] == "HEAD"
     assert state["main_code_commit"] == "HEAD"
     assert state["operating_code_commit"] == "HEAD"
@@ -66,52 +66,38 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     assert phase_8552["operating_smoke"] == "497_passed"
     assert state["persistent_gaps"]["current_price_rr_packet_numeric_path"] == "LIVE_PATH_PASS"
     assert state["persistent_gaps"]["natural_live_validation"] == "PARTIAL"
-    assert state["persistent_gaps"]["reasoning_ownership"] == (
-        "LIVE_PASS_RUN29"
-    )
+    assert state["persistent_gaps"]["reasoning_ownership"] == ("LIVE_PASS_RUN29")
     assert state["contracts"]["runtime_specificity"] == ("runtime-message-specificity-v2")
     assert state["contracts"]["runtime_reasoning_ownership"] == ("runtime-reasoning-ownership-v1")
-    assert state["contracts"]["numeric_summary_ownership"] == (
-        "numeric-summary-ownership-v1"
-    )
-    assert state["contracts"]["typed_template_skeleton"] == (
-        "typed-template-skeleton-v1"
-    )
-    assert state["contracts"]["canonical_supply_flow_tuple"] == (
-        "canonical-supply-flow-tuple-v1"
-    )
+    assert state["contracts"]["numeric_summary_ownership"] == ("numeric-summary-ownership-v1")
+    assert state["contracts"]["typed_template_skeleton"] == ("typed-template-skeleton-v1")
+    assert state["contracts"]["canonical_supply_flow_tuple"] == ("canonical-supply-flow-tuple-v1")
     assert state["contracts"]["kr_investor_flow_participants"] == (
         "kr-investor-flow-participants-v1"
     )
     assert state["contracts"]["kr_investor_flow_reconciliation"] == (
         "kr-investor-flow-reconciliation-v1"
     )
-    assert state["contracts"]["numeric_primary_owner"] == (
-        "numeric-primary-owner-v1"
-    )
-    assert state["contracts"]["cash_flow_capital_efficiency"] == (
-        "cash-flow-capital-efficiency-v1"
-    )
-    assert state["contracts"]["cash_flow_shadow_consumption"] == (
-        "cash-flow-shadow-consumption-v1"
-    )
+    assert state["contracts"]["numeric_primary_owner"] == ("numeric-primary-owner-v1")
+    assert state["contracts"]["cash_flow_capital_efficiency"] == ("cash-flow-capital-efficiency-v1")
+    assert state["contracts"]["cash_flow_shadow_consumption"] == ("cash-flow-shadow-consumption-v1")
     assert state["contracts"]["cash_flow_runtime_shadow_canary"] == (
         "cash-flow-runtime-shadow-canary-v1"
     )
     assert state["contracts"]["baseline_cash_flow_claim_consistency"] == (
         "baseline-cash-flow-claim-consistency-v1"
     )
-    assert state["contracts"]["cash_flow_user_visible"] == (
-        "cash-flow-user-visible-v1"
-    )
-    assert state["contracts"]["working_capital_evidence"] == (
-        "working-capital-evidence-v1"
-    )
+    assert state["contracts"]["cash_flow_user_visible"] == ("cash-flow-user-visible-v1")
+    assert state["contracts"]["working_capital_evidence"] == ("working-capital-evidence-v1")
     assert state["contracts"]["working_capital_shadow_consumption"] == (
         "working-capital-shadow-consumption-v1"
     )
     assert state["contracts"]["working_capital_runtime_shadow_canary"] == (
         "working-capital-runtime-shadow-canary-v1"
+    )
+    assert state["contracts"]["working_capital_user_visible"] == ("working-capital-user-visible-v1")
+    assert state["contracts"]["working_capital_user_visible_enable_gate"] == (
+        "working-capital-user-visible-enable-gate-v1"
     )
     assert state["contracts"]["night_futures_attempt_archive"] == (
         "night-futures-attempt-archive-v1"
@@ -138,9 +124,7 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     assert advancement["phase_9_0e_natural_proof"] == "pending_next_natural_us"
     assert advancement["phase_9_1a_complete"] is True
     assert advancement["phase_9_1b_ready"] is True
-    assert advancement["phase_9_1b_scope"] == (
-        "SELECTIVE_INVENTORY_AR_AP_CANONICAL_CORE"
-    )
+    assert advancement["phase_9_1b_scope"] == ("SELECTIVE_INVENTORY_AR_AP_CANONICAL_CORE")
     assert advancement["phase_9_1b_complete"] is True
     assert advancement["phase_9_1c_ready"] is True
     assert advancement["phase_9_1c_scope"] == (
@@ -152,11 +136,13 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
         "SELECTIVE_RUNTIME_SHADOW_CANARY_INVENTORY_EXACT_TRADE_AR"
     )
     assert advancement["phase_9_1d_deployed"] is True
-    assert advancement["phase_9_1d_natural_proof"] == (
-        "inventory_and_exact_trade_ar_not_observed"
-    )
+    assert advancement["phase_9_1d_natural_proof"] == ("inventory_and_exact_trade_ar_not_observed")
     assert advancement["phase_9_1e_architecture_ready"] is True
-    assert advancement["next_major_architecture_ready"] is True
+    assert advancement["phase_9_1e_preintegration_complete"] is True
+    assert advancement["phase_9_1e_user_visible_mode"] == "OFF"
+    assert advancement["phase_9_1e_inventory_enablement"] == ("NO_PENDING_NATURAL")
+    assert advancement["phase_9_1e_trade_ar_enablement"] == ("NO_PENDING_NATURAL")
+    assert advancement["next_major_architecture_ready"] is False
     phase_90a = state["phase_9_0a_cash_flow_capital_efficiency"]
     assert phase_90a["status"] == "architecture_closed_ready_for_phase_9_0b"
     assert phase_90a["active_universe"] == 20
@@ -164,9 +150,7 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     assert phase_90a["runtime_behavior_changed"] is False
     assert phase_90a["user_visible_integration"] is False
     phase_90b = state["phase_9_0b_canonical_cash_flow_core"]
-    assert phase_90b["status"] == (
-        "canonical_core_implemented_shadow_ready_for_phase_9_0c"
-    )
+    assert phase_90b["status"] == ("canonical_core_implemented_shadow_ready_for_phase_9_0c")
     assert phase_90b["active_universe"] == 20
     assert phase_90b["derived_fcf_facts"] == 191
     assert phase_90b["derived_fcf_complete_lineage_pct"] == 100
@@ -184,9 +168,7 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     assert phase_90c["user_visible_integration"] is False
     phase_90d = state["phase_9_0d_cash_flow_runtime_shadow_canary"]
     assert phase_90d["status"] == "live_pass_selective_subset"
-    assert phase_90d["work_instruction_commit"] == (
-        "a24e4f2210f944fa7c43d8dbf8be1d1a8e652164"
-    )
+    assert phase_90d["work_instruction_commit"] == ("a24e4f2210f944fa7c43d8dbf8be1d1a8e652164")
     assert phase_90d["production_isolation"] == "passed"
     assert phase_90d["natural_us_canary"] == (
         "complete_pass_run30_9_full_fcf_1_ocf_only_0_influence"
@@ -201,40 +183,26 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     assert phase_90d1["cash_flow_user_visible"] is False
     phase_90e = state["phase_9_0e_cash_flow_user_visible_integration"]
     assert phase_90e["status"] == "deployed_selective_pending_natural"
-    assert phase_90e["work_instruction_commit"] == (
-        "309f5f1756d39d5972c5d4b48faaeab4862d8077"
-    )
-    assert phase_90e["implementation_commit"] == (
-        "cf3194981124de2a6f85fbe81b145ef06e1db08d"
-    )
+    assert phase_90e["work_instruction_commit"] == ("309f5f1756d39d5972c5d4b48faaeab4862d8077")
+    assert phase_90e["implementation_commit"] == ("cf3194981124de2a6f85fbe81b145ef06e1db08d")
     assert phase_90e["preview_selected"] == 9
     assert phase_90e["ai_fallback_parity_errors"] == 0
     assert phase_90e["cash_flow_user_visible_rollout_ready"] is True
     assert phase_90e["next_major_architecture_ready"] is True
     phase_91a = state["phase_9_1a_working_capital_evidence_architecture"]
     assert phase_91a["status"] == "architecture_closed_promoted"
-    assert phase_91a["work_instruction_commit"] == (
-        "eaaadb1ac4fb5c9a7d3486ecc8274708c285ff79"
-    )
-    assert phase_91a["implementation_commit"] == (
-        "0d3b42715fc8964fe053d72e0ecc979fb78b14cc"
-    )
+    assert phase_91a["work_instruction_commit"] == ("eaaadb1ac4fb5c9a7d3486ecc8274708c285ff79")
+    assert phase_91a["implementation_commit"] == ("0d3b42715fc8964fe053d72e0ecc979fb78b14cc")
     assert phase_91a["active_universe"] == 20
     assert phase_91a["metric_coverage"]["inventory"]["eligible"] == 11
     assert phase_91a["runtime_user_visible_diff"] == 0
     assert phase_91a["phase_9_1b_ready"] is True
     phase_91b = state["phase_9_1b_canonical_working_capital_core"]
     assert phase_91b["status"] == "implemented_shadow_promoted"
-    assert phase_91b["work_instruction_commit"] == (
-        "0952bee040133aa49a4ba494ecae76163e9a9511"
-    )
-    assert phase_91b["implementation_commit"] == (
-        "a35c615a77b44b37739d4f6a73aa9f0f290ba831"
-    )
+    assert phase_91b["work_instruction_commit"] == ("0952bee040133aa49a4ba494ecae76163e9a9511")
+    assert phase_91b["implementation_commit"] == ("a35c615a77b44b37739d4f6a73aa9f0f290ba831")
     assert phase_91b["implementation_github_actions_run"] == 32450301567
-    assert phase_91b["implementation_github_actions_status"] == (
-        "passed_test_and_lint"
-    )
+    assert phase_91b["implementation_github_actions_status"] == ("passed_test_and_lint")
     assert phase_91b["active_universe"] == 20
     assert phase_91b["canonical_fact_counts"] == {
         "reported_selected": 160,
@@ -251,9 +219,7 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     assert phase_91b["phase_9_1c_ready"] is True
     phase_91c = state["phase_9_1c_working_capital_shadow_consumption"]
     assert phase_91c["status"] == "shadow_consumption_closed_retrospective_promoted"
-    assert phase_91c["work_instruction_commit"] == (
-        "613d91d74d3a91c43ed61f98a13a2ca57b7a90ae"
-    )
+    assert phase_91c["work_instruction_commit"] == ("613d91d74d3a91c43ed61f98a13a2ca57b7a90ae")
     assert phase_91c["active_universe"] == 20
     assert phase_91c["selected_relations"] == {
         "inventory": 5,
@@ -272,12 +238,8 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     assert phase_91c["phase_9_1d_ready"] is True
     phase_91d = state["phase_9_1d_working_capital_runtime_shadow_canary"]
     assert phase_91d["status"] == "deployed_pending_natural"
-    assert phase_91d["work_instruction_commit"] == (
-        "dc4e1cf14faa7cebf78eb8ba5a5e73b6369c991c"
-    )
-    assert phase_91d["implementation_commit"] == (
-        "5316113062782b09595a495ec9a903a4973f9df5"
-    )
+    assert phase_91d["work_instruction_commit"] == ("dc4e1cf14faa7cebf78eb8ba5a5e73b6369c991c")
+    assert phase_91d["implementation_commit"] == ("5316113062782b09595a495ec9a903a4973f9df5")
     assert phase_91d["allowed_metrics"] == [
         "inventory",
         "trade_accounts_receivable",
@@ -293,14 +255,25 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     assert phase_91d["inventory_natural_proof"] == "NOT_OBSERVED"
     assert phase_91d["trade_ar_natural_proof"] == "NOT_OBSERVED"
     assert phase_91d["phase_9_1e_architecture_ready"] is True
+    phase_91e = state["phase_9_1e_working_capital_user_visible_preintegration"]
+    assert phase_91e["status"] == "preintegration_complete_pending_natural"
+    assert phase_91e["work_instruction_commit"] == ("99f7e86f3ae40cc86a4865ef70dc89abf79d5a37")
+    assert phase_91e["implementation_commit"] == ("a4f8570130d1fd33f802d391c6a196d1c5579278")
+    assert phase_91e["preview_selected_relations"] == {
+        "inventory": 3,
+        "exact_trade_ar": 2,
+        "broad_ar": 0,
+        "ap": 0,
+    }
+    assert phase_91e["inventory_natural_proof"] == "NOT_OBSERVED"
+    assert phase_91e["trade_ar_natural_proof"] == "NOT_OBSERVED"
+    assert phase_91e["working_capital_user_visible_mode"] == "OFF"
+    assert phase_91e["runtime_user_visible_diff"] == 0
+    assert phase_91e["phase_9_1e_preintegration_ready"] is True
     investor_flow = state["kr_investor_flow_reconciliation_repair"]
     assert investor_flow["status"] == "complete_pending_natural_confirmation"
-    assert investor_flow["work_instruction_commit"] == (
-        "e9d7c73cf6f25b2423b55a6899465e86441316d1"
-    )
-    assert investor_flow["implementation_commit"] == (
-        "47fc87e2a9189556a7206065fdb759f3603ce497"
-    )
+    assert investor_flow["work_instruction_commit"] == ("e9d7c73cf6f25b2423b55a6899465e86441316d1")
+    assert investor_flow["implementation_commit"] == ("47fc87e2a9189556a7206065fdb759f3603ce497")
     assert investor_flow["complete_windows"] == 21
     assert investor_flow["unsupported_attribution_before_after"] == [2, 0]
     assert investor_flow["public_schema_diff"] == 0
@@ -308,12 +281,8 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     assert investor_flow["p1_open"] == []
     night_telemetry = state["night_futures_publication_telemetry_repair"]
     assert night_telemetry["status"] == "repair_deployed_pending_natural"
-    assert night_telemetry["instruction_commit"] == (
-        "b7cf6a2f413e309bb637e524aeb7c1436e4c5b1b"
-    )
-    assert night_telemetry["implementation_commit"] == (
-        "d54f1102c02c9ff1c6a8ddd18fc40d1aea059caf"
-    )
+    assert night_telemetry["instruction_commit"] == ("b7cf6a2f413e309bb637e524aeb7c1436e4c5b1b")
+    assert night_telemetry["implementation_commit"] == ("d54f1102c02c9ff1c6a8ddd18fc40d1aea059caf")
     assert night_telemetry["observer_slots_kst"] == ["08:45", "09:15"]
     assert night_telemetry["deadline_verdict"] == "DEADLINE_UNPROVEN"
     assert night_telemetry["fail_closed_safety"] == "PASS"
@@ -321,9 +290,7 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     assert state["persistent_gaps"]["krx_open_api"] == (
         "APPROVED_TELEMETRY_ONLY_OPERATING_USER_VISIBLE_NOT_INTEGRATED"
     )
-    assert state["krx"]["exact_slot_capture"] == (
-        "operating_telemetry_only_pending_natural"
-    )
+    assert state["krx"]["exact_slot_capture"] == ("operating_telemetry_only_pending_natural")
     assert state["krx"]["user_visible_integration"] is False
     assert state["persistent_gaps"]["night_futures_session_basis"] == (
         "CLOSED_RETROSPECTIVE_LIVE_FAIL_CLOSED_RUN28"
@@ -411,6 +378,7 @@ def test_architecture_guides_record_decisions_and_readme_navigation() -> None:
         ROOT / "docs" / "architecture" / "CASH_FLOW_USER_VISIBLE_INTEGRATION.md",
         ROOT / "docs" / "architecture" / "WORKING_CAPITAL_SHADOW_CONSUMPTION.md",
         ROOT / "docs" / "architecture" / "WORKING_CAPITAL_RUNTIME_SHADOW_CANARY.md",
+        ROOT / "docs" / "architecture" / "WORKING_CAPITAL_USER_VISIBLE_PREINTEGRATION.md",
         ROOT / "docs" / "operations" / "AI_ASSISTED_PILOT.md",
         ROOT / "docs" / "knowledge" / "README.md",
     )
@@ -437,6 +405,7 @@ def test_architecture_guides_record_decisions_and_readme_navigation() -> None:
         "docs/architecture/CASH_FLOW_USER_VISIBLE_INTEGRATION.md",
         "docs/architecture/WORKING_CAPITAL_SHADOW_CONSUMPTION.md",
         "docs/architecture/WORKING_CAPITAL_RUNTIME_SHADOW_CANARY.md",
+        "docs/architecture/WORKING_CAPITAL_USER_VISIBLE_PREINTEGRATION.md",
         "docs/architecture/NIGHT_FUTURES_SESSION_BASIS.md",
         "docs/architecture/NIGHT_FUTURES_PUBLICATION_TELEMETRY.md",
         "docs/operations/AI_ASSISTED_PILOT.md",

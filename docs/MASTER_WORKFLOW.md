@@ -816,6 +816,28 @@ Instruction `e9d7c73cf6f25b2423b55a6899465e86441316d1` precedes implementation
 `47fc87e2a9189556a7206065fdb759f3603ce497`; Actions run `32480802390` passes Test/Lint. The
 bounded repair is `PASS` with open P0/P1 zero. Natural confirmation continues independently.
 
+## 23C. Phase 9.1E Working-Capital User-Visible Pre-Integration
+
+Phase 9.1E starts from immutable instruction commit
+`99f7e86f3ae40cc86a4865ef70dc89abf79d5a37` and explicitly reconciles the independently promoted
+KR investor-flow main before implementation. It adds `working-capital-user-visible-v1` and
+`working-capital-user-visible-enable-gate-v1` as preview-only contracts.
+
+The future modes are OFF, selective Inventory, selective exact Trade AR, and their combination.
+Missing/invalid config resolves OFF, and a mode request cannot bypass family-specific natural proof.
+Inventory and exact Trade AR remain `NOT_OBSERVED`, so effective operating mode is OFF. A clean
+preview is explicitly `PREVIEW_ONLY_NOT_ENABLEMENT_EVIDENCE`.
+
+The 20-subject audit preserves all seven Phase 9.1D candidates and selects five lower-noise future
+previews: three Inventory and two exact Trade AR. MU and TSLA are suppressed only because compatible
+Phase 9.0E cash-flow context already owns the point and the relation resolves no additional Unknown.
+Broad AR and AP selection, parity errors, semantic/causal errors, numeric binding errors, and
+production/user-visible diffs are zero. Exact numbers remain owned by `business_earnings`.
+
+`PHASE_9_1E_PREINTEGRATION_READY = YES`. Inventory and exact Trade AR enablement each remain
+`NO_PENDING_NATURAL`. After a family reaches natural `LIVE_PASS`, use a small enablement-only
+instruction for that family; no new broad architecture phase is required.
+
 ## 24. Codex Work Order Standard
 
 Every work order starts with exact repo/runtime preflight, states base/branch/scope/non-scope,
@@ -906,9 +928,10 @@ approval. Main merge and shadow deployment still do not authorize AI-assisted pr
 ## 28. Current Next Task
 
 Observe the first natural US/KR working-capital canary receipts without manual execution and classify
-Inventory and exact Trade AR independently. In parallel, Phase 9.1E architecture may define the
-future user-visible gate without enabling it. Do not implement DSO, Inventory Days, DPO, CCC, ROIC,
-broad/AP working-capital output, or KR cash-flow period recovery without separate authorization.
+Inventory and exact Trade AR independently. Phase 9.1E pre-integration is complete with the feature
+OFF. A later small enablement-only instruction may activate only a family with `LIVE_PASS`. Do not
+implement DSO, Inventory Days, DPO, CCC, ROIC, broad/AP working-capital output, or KR cash-flow
+period recovery without separate authorization.
 
 ## 29. New Session Bootstrap Prompt
 

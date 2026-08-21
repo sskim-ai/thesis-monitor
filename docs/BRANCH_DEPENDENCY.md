@@ -31,6 +31,7 @@ self-referential.
 | `codex/phase-9-1d-selective-working-capital-runtime-shadow-canary` | exact instruction commit `dc4e1cf14faa7cebf78eb8ba5a5e73b6369c991c` on promoted Phase 9.1C main `d0dc76a2446ee5ef9188d1b06dcb241df004c143` | detached post-delivery total-Inventory/exact-Trade-AR selector, validation and immutable receipt | reuses Phase 9.1B/9.1C contracts; no production AI/Telegram/fallback/Public Action/DB/task state mutation | deployment pending exact-SHA CI | clean linear fast-forward; natural metric-family proof remains separate |
 | `codex/night-futures-publication-telemetry-repair` | preserved instruction `b7cf6a2...`, explicit latest-main merge `e7b2add...` after Phase 9.1D | natural production-attempt archive plus detached bounded 08:45/09:15 publication observer | reuses the existing provider/parser/session-basis path; no market-summary, AI, fallback, Telegram, Public Action or DB dependency | telemetry-only promotion eligible | merge latest main preserved both independent instruction histories; natural deadline proof remains pending |
 | `codex/kr-investor-flow-reconciliation-attribution-repair` | exact instruction `e9d7c73...` on operating main `af89324...` | complete KR top-level participant reconciliation, explicit signal basis, shared AI/fallback attribution safety | existing OHLCV supply path only; no score formula, Public Action schema, task, Pilot, DB, KRX breadth or peer dependency | promoted after exact-SHA CI | clean linear fast-forward; natural confirmation remains parallel |
+| `codex/phase-9-1e-working-capital-user-visible-preintegration` | exact instruction `99f7e86...`; explicit merge `ee78eb7...` of Track A main `7c0e440...` | family-level natural-proof gate, OFF-by-default modes, Inventory/exact-Trade-AR preview, cash-flow redundancy, parity and kill switch | consumes only committed 9.0E/9.1D evidence; no production AI/fallback/Telegram/Public Action/snapshot/DB/task import | promotion eligible with feature OFF and exact-SHA CI | preserve instruction and Track A histories; future enablement requires a small family-specific instruction after `LIVE_PASS` |
 
 The Phase 8.3 original branch has a hidden Git ancestry dependency but no required KRX code,
 schema or runtime import. The clean branch resolves that promotion risk. Phase 8.3.2A starts from
@@ -128,3 +129,9 @@ Its only production-path change is a best-effort copy of provider diagnostics af
 scheduled natural call. The detached observer has an independent LaunchAgent and cannot write the
 market summary, AI archive, delivery receipt, Telegram, or DB. The production deadline and session
 basis remain unchanged; a future natural evidence review, not this merge, owns any policy decision.
+
+Phase 9.1E preserves its own instruction commit and explicitly merges the independently promoted KR
+investor-flow Track A before implementation. Its new service is imported only by tests and the
+archive generator; the inert config field defaults to OFF. Inventory and exact Trade AR gates remain
+`NOT_OBSERVED`, so mode preflight forces OFF. Promotion does not authorize user-visible working-
+capital output and does not couple the future family proof to investor-flow natural confirmation.

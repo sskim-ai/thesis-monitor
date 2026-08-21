@@ -1,16 +1,16 @@
 {
   "repository": "sskim-ai/thesis-monitor",
   "branch": "main",
-  "experimental_branch": "codex/kr-investor-flow-reconciliation-attribution-repair",
+  "experimental_branch": "codex/phase-9-1e-working-capital-user-visible-preintegration",
   "current_commit": "HEAD",
   "current_commit_resolution": "git rev-parse HEAD",
-  "recorded_base_commit": "af89324ad865a7f1cf6fdc5599db335629649cca",
-  "current_phase": "kr_investor_flow_reconciliation_repair_complete",
-  "last_completed_phase": "kr_investor_flow_reconciliation_attribution_repair",
-  "next_default_phase": "phase_9_1e_architecture_natural_proof_parallel",
-  "next_candidate": "working_capital_user_visible_architecture_after_metric_family_natural_proof",
+  "recorded_base_commit": "7c0e440f56b05f7367f3cabb647c9310bf1f6d48",
+  "current_phase": "phase_9_1e_preintegration_complete_pending_natural",
+  "last_completed_phase": "phase_9_1e_working_capital_user_visible_preintegration",
+  "next_default_phase": "phase_9_1d_natural_metric_family_review",
+  "next_candidate": "small_metric_family_enablement_only_after_live_pass",
   "alternative_next_phase": "targeted_runtime_repair_if_new_p0",
-  "latest_validation_report": "docs/reports/20260821-kr-investor-flow-validation.md",
+  "latest_validation_report": "docs/reports/20260821-phase9-1e-readiness.md",
   "deployed_code_commit": "HEAD",
   "main_code_commit": "HEAD",
   "main_code_commit_resolution": "git rev-parse origin/main",
@@ -79,6 +79,8 @@
     "working_capital_evidence": "working-capital-evidence-v1",
     "working_capital_shadow_consumption": "working-capital-shadow-consumption-v1",
     "working_capital_runtime_shadow_canary": "working-capital-runtime-shadow-canary-v1",
+    "working_capital_user_visible": "working-capital-user-visible-v1",
+    "working_capital_user_visible_enable_gate": "working-capital-user-visible-enable-gate-v1",
     "night_futures_attempt_archive": "night-futures-attempt-archive-v1",
     "night_futures_publication_telemetry": "night-futures-publication-telemetry-v1"
   },
@@ -722,7 +724,7 @@
       "ccc": "DEFER",
       "roic": "DEFER"
     },
-    "working_capital_user_visible": "NOT_ENABLED",
+    "working_capital_user_visible": "PREINTEGRATION_COMPLETE_OFF_PENDING_METRIC_FAMILY_NATURAL_PROOF",
     "runtime_user_visible_diff": 0,
     "phase_9_0e_mode_unchanged": "SELECTIVE_CURRENT_FORMAL_FULL_FCF",
     "promotion": "PROMOTED_IN_PHASE_9_1_CHAIN",
@@ -821,6 +823,62 @@
     "p1_open": [],
     "phase_9_1e_architecture_ready": true,
     "report": "docs/reports/20260821-phase9-1d-complete-report.md"
+  },
+  "phase_9_1e_working_capital_user_visible_preintegration": {
+    "status": "preintegration_complete_pending_natural",
+    "branch": "codex/phase-9-1e-working-capital-user-visible-preintegration",
+    "base": "7c0e440f56b05f7367f3cabb647c9310bf1f6d48",
+    "work_instruction_commit": "99f7e86f3ae40cc86a4865ef70dc89abf79d5a37",
+    "latest_main_reconciliation_commit": "ee78eb7f7eefd0ad2e7421528dd9518b04168e4f",
+    "implementation_commit": "a4f8570130d1fd33f802d391c6a196d1c5579278",
+    "implementation_github_actions_run": 32482789236,
+    "implementation_github_actions_status": "passed_test_and_lint",
+    "contracts": [
+      "working-capital-user-visible-v1",
+      "working-capital-user-visible-enable-gate-v1"
+    ],
+    "active_universe": 20,
+    "canary_candidates": {
+      "inventory": 5,
+      "exact_trade_ar": 2
+    },
+    "preview_selected_relations": {
+      "inventory": 3,
+      "exact_trade_ar": 2,
+      "broad_ar": 0,
+      "ap": 0
+    },
+    "cash_flow_redundancy_suppressions": ["MU", "TSLA"],
+    "numeric_binding": {
+      "automatic": 5,
+      "manual": 0,
+      "rejected": 0,
+      "unresolved": 0
+    },
+    "ai_fallback_parity_errors": 0,
+    "semantic_causal_errors": 0,
+    "unknown_contradictions": 0,
+    "human_quality": {
+      "material_improvement": 4,
+      "minor_improvement": 1,
+      "no_meaningful_change": 15,
+      "degraded": 0
+    },
+    "inventory_natural_proof": "NOT_OBSERVED",
+    "trade_ar_natural_proof": "NOT_OBSERVED",
+    "inventory_enablement_ready": "NO_PENDING_NATURAL",
+    "trade_ar_enablement_ready": "NO_PENDING_NATURAL",
+    "working_capital_user_visible_mode": "OFF",
+    "runtime_user_visible_diff": 0,
+    "manual_scheduled_task_runs": 0,
+    "telegram_sends": 0,
+    "pilot_mutations": 0,
+    "database_mutations": 0,
+    "production_assist": false,
+    "p0_open": [],
+    "p1_open": [],
+    "phase_9_1e_preintegration_ready": true,
+    "report": "docs/reports/20260821-phase9-1e-readiness.md"
   },
   "kr_investor_flow_reconciliation_repair": {
     "status": "complete_pending_natural_confirmation",
@@ -1039,7 +1097,10 @@
     "phase_9_1b_readiness": "COMPLETE_PROMOTED",
     "phase_9_1c_readiness": "COMPLETE_RETROSPECTIVE_PROMOTED",
     "phase_9_1d_readiness": "DEPLOYED_PENDING_NATURAL",
-    "next_major_architecture_readiness": "YES_PHASE_9_1E_ARCHITECTURE_NATURAL_PROOF_PARALLEL"
+    "phase_9_1e_readiness": "PREINTEGRATION_COMPLETE_FEATURE_OFF",
+    "inventory_user_visible_enablement": "NO_PENDING_NATURAL",
+    "trade_ar_user_visible_enablement": "NO_PENDING_NATURAL",
+    "next_major_architecture_readiness": "COMPLETE_WAIT_FOR_SMALL_ENABLEMENT_ONLY_AFTER_LIVE_PASS"
   },
   "financial_currency_canonicalization": {
     "missing_or_blank": "unknown",
@@ -1128,7 +1189,12 @@
     "phase_9_1d_deployed": true,
     "phase_9_1d_natural_proof": "inventory_and_exact_trade_ar_not_observed",
     "phase_9_1e_architecture_ready": true,
-    "next_major_architecture_ready": true,
+    "phase_9_1e_preintegration_complete": true,
+    "phase_9_1e_user_visible_mode": "OFF",
+    "phase_9_1e_inventory_enablement": "NO_PENDING_NATURAL",
+    "phase_9_1e_trade_ar_enablement": "NO_PENDING_NATURAL",
+    "next_major_architecture_ready": false,
+    "next_change": "small_metric_family_enablement_only_after_live_pass",
     "blocking_reasons": [],
     "parallel_observation_tracks": [
       "next_natural_us_kr_ai_delivery",
