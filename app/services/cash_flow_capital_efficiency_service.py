@@ -43,8 +43,10 @@ class Metric(StrEnum):
     TAX_EXPENSE = "tax_expense"
     INVENTORY = "inventory"
     TRADE_AR = "trade_accounts_receivable"
+    BROAD_AR = "accounts_receivable_broad"
     TOTAL_AR = "total_accounts_receivable"
     TRADE_AP = "trade_accounts_payable"
+    BROAD_AP = "accounts_payable_broad"
     TOTAL_AP = "total_accounts_payable"
     COGS = "cost_of_goods_sold"
     PURCHASES = "purchases"
@@ -128,6 +130,9 @@ class FinancialFact:
     cautions: tuple[str, ...] = ()
     restatement_policy_id: str | None = None
     as_of_date: date | None = None
+    source_available_at: date | None = None
+    balance_scope: str | None = None
+    net_gross_scope: str | None = None
 
 
 def financial_fact_from_mapping(row: Mapping[str, object]) -> FinancialFact:
@@ -217,6 +222,21 @@ def financial_fact_from_mapping(row: Mapping[str, object]) -> FinancialFact:
         as_of_date=(
             date.fromisoformat(str(row["as_of_date"]))
             if row.get("as_of_date") is not None
+            else None
+        ),
+        source_available_at=(
+            date.fromisoformat(str(row["source_available_at"]))
+            if row.get("source_available_at") is not None
+            else None
+        ),
+        balance_scope=(
+            str(row["balance_scope"])
+            if row.get("balance_scope") is not None
+            else None
+        ),
+        net_gross_scope=(
+            str(row["net_gross_scope"])
+            if row.get("net_gross_scope") is not None
             else None
         ),
     )

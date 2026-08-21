@@ -1,0 +1,13 @@
+{
+  "p0_open": [],
+  "p1_open": [],
+  "p2_backlog": [
+    "prior-quarter balance relations",
+    "inventory component decomposition",
+    "management-specific contract-asset extension",
+    "DSO/Inventory Days/DPO/CCC prerequisites"
+  ],
+  "phase_9_1b_ready": true,
+  "phase_9_1b_scope": "SELECTIVE_INVENTORY_AR_AP_CANONICAL_CORE",
+  "runtime_user_visible_diff": 0
+}
