@@ -19,6 +19,9 @@ from app.models.thesis import NotificationDelivery, ThesisAssessment
 from app.models.watchlist import WatchlistItem
 from app.services.market_session import market_scope_for_security
 from app.services.night_futures import NIGHT_FUTURES_SERIES, summarize_night_futures
+from app.services.night_futures_publication_telemetry_service import (
+    record_attempt_best_effort,
+)
 from app.services.ai_review_service import try_write_ai_review_packet
 from app.services.ai_assisted_delivery_service import (
     ai_assisted_pilot_active,
@@ -372,9 +375,13 @@ async def run_morning_night_futures_gate(
     metadata["retry_count"] = retry_count + 1
     metadata["last_error"] = None
     rows: list[dict[str, object]] = []
+    selected_provider = provider or KrxNightFuturesProvider()
+    telemetry_started_at = datetime.now(tz=KST)
+    telemetry_result = None
+    telemetry_error = None
     try:
-        selected_provider = provider or KrxNightFuturesProvider()
         result = await selected_provider.collect(current_as_of)
+        telemetry_result = result
         metadata["provider_warnings"] = list(result.warnings)
         for observation in result.observations:
             row, _ = persist_observation(
@@ -395,8 +402,20 @@ async def run_morning_night_futures_gate(
                 serialized["quality_status"] = "stale"
             rows.append(serialized)
     except Exception as exc:  # noqa: BLE001
+        telemetry_error = type(exc).__name__
         metadata["last_error"] = type(exc).__name__
         metadata["provider_warnings"] = [f"provider_error:{type(exc).__name__}"]
+    if provider is None:
+        record_attempt_best_effort(
+            market_date=run_date,
+            started_at=telemetry_started_at,
+            ended_at=datetime.now(tz=KST),
+            role=f"production_gate_attempt_{retry_count + 1}",
+            production_or_observer="production",
+            expected_session=expected_session,
+            result=telemetry_result,
+            error=telemetry_error,
+        )
     _replace_night_observations(session, run_date, rows)
 
     briefing = _briefing(session, run_date)

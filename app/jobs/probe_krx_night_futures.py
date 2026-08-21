@@ -86,7 +86,24 @@ class KrxProbeDateStatus(BaseModel):
     query_date: date
     row_count: int = 0
     verified_products: list[str] = Field(default_factory=list)
+    http_status: int | None = None
+    returned_business_dates: list[date] = Field(default_factory=list)
+    returned_night_business_dates: list[date] = Field(default_factory=list)
+    raw_payload_sha256: str | None = None
     result: str
+
+
+class KrxProbeProductStatus(BaseModel):
+    product: str
+    expected_night_bas_dd: date | None = None
+    returned_night_bas_dd: date | None = None
+    matched_day_bas_dd: date | None = None
+    contract_code: str | None = None
+    maturity: str | None = None
+    row_state: str
+    readiness: str
+    rejection_reason: str | None = None
+    provider_change_crosscheck_status: str = "NOT_OBSERVED"
 
 
 class KrxNightFuturesProbeResult(BaseModel):
@@ -103,6 +120,13 @@ class KrxNightFuturesProbeResult(BaseModel):
     night_session_usable: bool = False
     observations: list[KrxNightFutureObservation] = Field(default_factory=list)
     date_statuses: list[KrxProbeDateStatus] = Field(default_factory=list)
+    returned_business_dates: list[date] = Field(default_factory=list)
+    returned_night_session_dates: list[date] = Field(default_factory=list)
+    product_statuses: list[KrxProbeProductStatus] = Field(default_factory=list)
+    parsed_row_count: int = 0
+    parser_status: str = "NOT_OBSERVED"
+    canonicalization_status: str = "NOT_OBSERVED"
+    provider_change_crosscheck_status: str = "NOT_OBSERVED"
     expected_latest_session_date: date | None = None
     session_freshness: str = "unverified"
     warnings: list[str] = Field(default_factory=list)
@@ -120,6 +144,17 @@ class KrxNightFuturesProbeResult(BaseModel):
             "expected_latest_session_date": self.expected_latest_session_date,
             "session_freshness": self.session_freshness,
             "date_statuses": [item.model_dump(mode="json") for item in self.date_statuses],
+            "returned_business_dates": self.returned_business_dates,
+            "returned_night_session_dates": self.returned_night_session_dates,
+            "product_statuses": [
+                item.model_dump(mode="json") for item in self.product_statuses
+            ],
+            "parsed_row_count": self.parsed_row_count,
+            "parser_status": self.parser_status,
+            "canonicalization_status": self.canonicalization_status,
+            "provider_change_crosscheck_status": (
+                self.provider_change_crosscheck_status
+            ),
             "products": [item.model_dump(mode="json") for item in self.observations],
             "reason": self.reason,
             "warnings": self.warnings,
@@ -282,6 +317,16 @@ def parse_krx_futures_payloads(
         reason=None if raw_rows else "empty_response",
     )
     parsed = [row for item in raw_rows if (row := _parse_row(item)) is not None]
+    result.parsed_row_count = len(parsed)
+    result.parser_status = (
+        "PASS" if parsed or not raw_rows else "PARSER_ERROR"
+    )
+    result.returned_business_dates = sorted(
+        {row.business_date for row in parsed}
+    )
+    result.returned_night_session_dates = sorted(
+        {row.business_date for row in parsed if row.session == "night"}
+    )
     night_dates = sorted(
         {row.business_date for row in parsed if row.session == "night"},
         reverse=True,
@@ -379,10 +424,149 @@ def parse_krx_futures_payloads(
             result.source_date = session_date
             result.observations = observations
             result.night_session_usable = True
+            result.canonicalization_status = "PASS"
+            result.provider_change_crosscheck_status = "PASS"
             result.reason = None
             return result
     if parsed:
+        result.canonicalization_status = "BLOCKED"
+        result.provider_change_crosscheck_status = (
+            "FAILED"
+            if any("provider change conflicts" in item for item in result.warnings)
+            else "NOT_OBSERVED"
+        )
         result.reason = "night_reference_session_or_contract_identity_not_verifiable"
+    return result
+
+
+def _product_statuses(
+    payloads: dict[date, object],
+    expected_session: date | None,
+    result: KrxNightFuturesProbeResult,
+) -> list[KrxProbeProductStatus]:
+    parsed = [
+        row
+        for payload in payloads.values()
+        for item in _rows(payload)
+        if (row := _parse_row(item)) is not None
+    ]
+    reference_date = (
+        preceding_exchange_session_date("XKRX", expected_session)
+        if expected_session
+        else None
+    )
+    ready = {item.product: item for item in result.observations}
+    statuses: list[KrxProbeProductStatus] = []
+    for product in TARGET_PRODUCTS:
+        nights = [
+            row for row in parsed if row.product == product and row.session == "night"
+        ]
+        expected_rows = [
+            row for row in nights if row.business_date == expected_session
+        ]
+        latest = max(nights, key=lambda item: item.business_date, default=None)
+        observation = ready.get(product)
+        if observation is not None and observation.session_date == expected_session:
+            statuses.append(
+                KrxProbeProductStatus(
+                    product=product,
+                    expected_night_bas_dd=expected_session,
+                    returned_night_bas_dd=observation.session_date,
+                    matched_day_bas_dd=observation.reference_date,
+                    contract_code=observation.contract_code,
+                    maturity=observation.maturity,
+                    row_state="EXPECTED_SESSION_PRESENT",
+                    readiness="READY",
+                    provider_change_crosscheck_status=(
+                        "PASS"
+                        if observation.provider_change_match is not False
+                        else "FAILED"
+                    ),
+                )
+            )
+            continue
+        if not expected_rows:
+            statuses.append(
+                KrxProbeProductStatus(
+                    product=product,
+                    expected_night_bas_dd=expected_session,
+                    returned_night_bas_dd=(latest.business_date if latest else None),
+                    contract_code=(latest.contract_code if latest else None),
+                    maturity=(latest.maturity if latest else None),
+                    row_state=(
+                        "STALE_PRIOR_SESSION_PRESENT" if latest else "NO_NIGHT_ROW"
+                    ),
+                    readiness="NOT_READY",
+                    rejection_reason=(
+                        "expected_session_absent"
+                        if latest
+                        else "night_rows_absent"
+                    ),
+                )
+            )
+            continue
+        selected = expected_rows[0]
+        matching_day = [
+            row
+            for row in parsed
+            if row.product == product
+            and row.session == "regular"
+            and row.business_date == reference_date
+            and row.contract_code == selected.contract_code
+            and row.maturity == selected.maturity
+        ]
+        other_day_contracts = [
+            row
+            for row in parsed
+            if row.product == product
+            and row.session == "regular"
+            and row.business_date == reference_date
+        ]
+        conflict = bool(
+            matching_day
+            and selected.provider_change_point is not None
+            and not math.isclose(
+                selected.provider_change_point,
+                selected.close - matching_day[0].close,
+                rel_tol=0,
+                abs_tol=1e-8,
+            )
+        )
+        statuses.append(
+            KrxProbeProductStatus(
+                product=product,
+                expected_night_bas_dd=expected_session,
+                returned_night_bas_dd=selected.business_date,
+                matched_day_bas_dd=(matching_day[0].business_date if matching_day else None),
+                contract_code=selected.contract_code,
+                maturity=selected.maturity,
+                row_state="EXPECTED_SESSION_PRESENT",
+                readiness="NOT_READY",
+                rejection_reason=(
+                    "provider_change_conflict"
+                    if conflict
+                    else (
+                        "contract_or_maturity_mismatch"
+                        if other_day_contracts
+                        else "matching_preceding_day_contract_unavailable"
+                    )
+                ),
+                provider_change_crosscheck_status=(
+                    "FAILED" if conflict else "NOT_OBSERVED"
+                ),
+            )
+        )
+    return statuses
+
+
+def _attach_fetch_telemetry(
+    result: KrxNightFuturesProbeResult,
+    *,
+    payloads: dict[date, object],
+    expected_session: date | None,
+) -> KrxNightFuturesProbeResult:
+    result.expected_latest_session_date = expected_session
+    result.product_statuses = _product_statuses(payloads, expected_session, result)
     return result
 
 
@@ -416,10 +600,14 @@ async def fetch_live_probe(
     api_key = api_key if api_key is not None else get_settings().krx_open_api_key
     fetched_at = datetime.now(timezone.utc)
     if not api_key:
-        return KrxNightFuturesProbeResult(
+        return _attach_fetch_telemetry(
+            KrxNightFuturesProbeResult(
             status="not_configured",
             fetched_at=fetched_at,
             reason="KRX_OPEN_API_KEY is not configured",
+            ),
+            payloads={},
+            expected_session=expected_latest_completed_krx_session(run_date),
         )
     queried_dates: list[date] = []
     skipped_warnings: list[str] = []
@@ -446,8 +634,15 @@ async def fetch_live_probe(
                 payload = response.json()
             except (httpx.HTTPError, ValueError, TypeError) as exc:
                 last_fetch_error = f"krx_fetch_failed:{type(exc).__name__}"
+                response = getattr(exc, "response", None)
                 date_statuses.append(
-                    KrxProbeDateStatus(query_date=target_date, result="fetch_error")
+                    KrxProbeDateStatus(
+                        query_date=target_date,
+                        http_status=(
+                            response.status_code if response is not None else None
+                        ),
+                        result="fetch_error",
+                    )
                 )
                 skipped_warnings.append(
                     f"{target_date}: fetch failed ({type(exc).__name__})"
@@ -456,11 +651,27 @@ async def fetch_live_probe(
             successful_response_count += 1
             payloads[target_date] = payload
             payload_shas[target_date] = hashlib.sha256(response.content).hexdigest()
-            row_count = len(_rows(payload))
+            raw_rows = _rows(payload)
+            row_count = len(raw_rows)
+            parsed_rows = [
+                row for item in raw_rows if (row := _parse_row(item)) is not None
+            ]
             date_statuses.append(
                 KrxProbeDateStatus(
                     query_date=target_date,
                     row_count=row_count,
+                    http_status=response.status_code,
+                    returned_business_dates=sorted(
+                        {row.business_date for row in parsed_rows}
+                    ),
+                    returned_night_business_dates=sorted(
+                        {
+                            row.business_date
+                            for row in parsed_rows
+                            if row.session == "night"
+                        }
+                    ),
+                    raw_payload_sha256=payload_shas[target_date],
                     result="rows_without_verified_pair" if row_count else "empty",
                 )
             )
@@ -504,7 +715,11 @@ async def fetch_live_probe(
                         "session evidence"
                     )
                 result.warnings = skipped_warnings + result.warnings
-                return result
+                return _attach_fetch_telemetry(
+                    result,
+                    payloads=payloads,
+                    expected_session=calendar_expected_date,
+                )
             if row_count:
                 skipped_warnings.append(
                     f"{target_date}: rows present but no verified NIGHT/preceding-DAY pair"
@@ -521,23 +736,35 @@ async def fetch_live_probe(
         aggregate.date_statuses = date_statuses
         aggregate.reason = "no_recent_verified_night_reference_pair"
         aggregate.warnings = skipped_warnings + aggregate.warnings
-        return aggregate
+        return _attach_fetch_telemetry(
+            aggregate,
+            payloads=payloads,
+            expected_session=calendar_expected_date,
+        )
     if successful_response_count == 0 and last_fetch_error is not None:
-        return KrxNightFuturesProbeResult(
+        return _attach_fetch_telemetry(
+            KrxNightFuturesProbeResult(
+                status="unavailable",
+                fetched_at=fetched_at,
+                queried_dates=queried_dates,
+                date_statuses=date_statuses,
+                reason=last_fetch_error,
+                warnings=skipped_warnings,
+            ),
+            payloads=payloads,
+            expected_session=calendar_expected_date,
+        )
+    return _attach_fetch_telemetry(
+        KrxNightFuturesProbeResult(
             status="unavailable",
             fetched_at=fetched_at,
             queried_dates=queried_dates,
             date_statuses=date_statuses,
-            reason=last_fetch_error,
+            reason="no_recent_business_date_data",
             warnings=skipped_warnings,
-        )
-    return KrxNightFuturesProbeResult(
-        status="unavailable",
-        fetched_at=fetched_at,
-        queried_dates=queried_dates,
-        date_statuses=date_statuses,
-        reason="no_recent_business_date_data",
-        warnings=skipped_warnings,
+        ),
+        payloads=payloads,
+        expected_session=calendar_expected_date,
     )
 
 

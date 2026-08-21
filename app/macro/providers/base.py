@@ -52,6 +52,7 @@ class MacroProviderResult:
     observations: list[CollectedObservation] = field(default_factory=list)
     events: list[CollectedEvent] = field(default_factory=list)
     warnings: list[str] = field(default_factory=list)
+    telemetry: dict[str, object] = field(default_factory=dict)
 
 
 class MacroProvider(Protocol):

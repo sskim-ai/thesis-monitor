@@ -25,6 +25,7 @@ class KrxNightFuturesProvider:
             return MacroProviderResult(
                 provider=self.name,
                 warnings=[probe.reason or "night_session_unavailable"],
+                telemetry=probe.compact_summary(),
             )
         observations: list[CollectedObservation] = []
         for item in probe.observations:
@@ -97,4 +98,5 @@ class KrxNightFuturesProvider:
             provider=self.name,
             observations=observations,
             warnings=(probe.warnings if probe.session_freshness != "fresh" else []),
+            telemetry=probe.compact_summary(),
         )
