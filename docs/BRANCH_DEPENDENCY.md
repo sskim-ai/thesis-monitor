@@ -26,6 +26,7 @@ self-referential.
 | `codex/phase-9-0d-1-baseline-cash-flow-consistency-repair` | exact instruction commit `20367c056e6d1da7db3edee37818210c070e1e7d` on Phase 9.0D main | qualitative FCF sign/period/scope/provenance contract, packet/fallback repair and cross-artifact canary audit | consumes Phase 9.0B Facts and 9.0D contexts; no canonical number injection, DB migration, task, KRX breadth or peer dependency | promoted | clean linear fast-forward; one bounded user-visible prose correction; final SHA resolves from Git |
 | `codex/phase-9-0e-selective-cash-flow-user-visible-integration` | exact instruction commit `309f5f1756d39d5972c5d4b48faaeab4862d8077` on Phase 9.0D.1 main | dynamic current-formal full-FCF selector, shared AI/fallback context, numeric/semantic validation, delta-first rendering and kill switch | consumes Phase 9.0B-9.0D.1 contracts; excludes KR, OCF-only, CCC/ROIC, KRX breadth, peer, DB and task changes | promoted and selectively enabled pending natural | clean linear fast-forward through `cf3194981124de2a6f85fbe81b145ef06e1db08d`; final docs resolve from Git |
 | `codex/phase-9-1a-working-capital-evidence-architecture` | exact instruction commit `eaaadb1ac4fb5c9a7d3486ecc8274708c285ff79` on Phase 9.0E main `33c2f8be...` | point-in-time Inventory, separate trade/broad AR/AP, comparable-period and revenue/COGS relation architecture | extends canonical financial Fact metadata; audit/tests only, no packet, AI, fallback, Public Action, DB, task, KRX breadth or peer integration | branch CI passed; promotion deferred | promote only after separate KR natural-window review; implementation `0d3b42715fc8964fe053d72e0ecc979fb78b14cc` |
+| `codex/phase-9-1b-canonical-working-capital-core` | exact instruction commit `0952bee040133aa49a4ba494ecae76163e9a9511` on Phase 9.1A final `d4a4daf08ff5f68bc1072cc065e69ca5de5da145` | canonical Inventory/trade-broad AR/AP delta/YoY Facts, structured Revenue/COGS relations and audit-only snapshot | consumes Phase 9.1A Facts; no packet, AI, fallback, Public Action, DB, task, KRX breadth or peer integration | pending exact-SHA CI; promotion deferred | preserve full 9.1A -> instruction -> 9.1B linear chain until separate KR natural review |
 
 The Phase 8.3 original branch has a hidden Git ancestry dependency but no required KRX code,
 schema or runtime import. The clean branch resolves that promotion risk. Phase 8.3.2A starts from
@@ -107,3 +108,8 @@ selector, fallback, Public Action, database, task, and delivery imports are unch
 uses stored SEC evidence plus a bounded official OpenDART CFS audit cache. Promotion is deferred for
 the KR natural window and must not be combined with an unreviewed natural P0. Phase 9.1B must retain
 the exact trade-versus-broad semantics and selective fail-closed scope.
+
+Phase 9.1B starts from its immutable instruction commit on the final Phase 9.1A branch rather than
+main, because 9.1B consumes the unpromoted 9.1A Fact metadata and source mappings. Its core service
+is imported only by tests and the read-only evidence generator. Promotion must preserve the full
+linear dependency chain and remains deferred until the separate KR natural review is consumed.

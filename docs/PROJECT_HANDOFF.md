@@ -7,21 +7,25 @@ validation, delivery, or Scheduled Tasks.
 
 ## Current Authoritative Handoff — 2026-08-21
 
-Phase 9.1A is architecture-closed on
-`codex/phase-9-1a-working-capital-evidence-architecture`, based on immutable instruction commit
-`eaaadb1ac4fb5c9a7d3486ecc8274708c285ff79`. Implementation SHA
-`0d3b42715fc8964fe053d72e0ecc979fb78b14cc` passed Actions run `32447178183`, 1,288 full tests,
-Ruff, and deterministic evidence generation. The contract is `working-capital-evidence-v1`.
+Phase 9.1B is implemented on `codex/phase-9-1b-canonical-working-capital-core` as a linear descendant
+of Phase 9.1A final SHA `d4a4daf08ff5f68bc1072cc065e69ca5de5da145` and immutable work-instruction
+commit `0952bee040133aa49a4ba494ecae76163e9a9511`. The contract remains
+`working-capital-evidence-v1`; derivation version is
+`working-capital-evidence-v1:canonical-core-v1`.
 
-Inventory is total-inventory only. Exact trade and separate broad AR/AP remain distinct, with source
-scope preserved. Prior-year comparison requires the same issuer fiscal quarter and exact semantic,
-currency/unit, entity, basis, and authoritative source version. DSO, Inventory Days, DPO, and CCC
-remain deferred. Open P0/material P1 are zero; `PHASE_9_1B_READY = YES` with
-`SELECTIVE_INVENTORY_AR_AP_CANONICAL_CORE`.
+Inventory is total-inventory only. Exact trade and separate broad AR/AP remain distinct through raw
+Fact, delta/YoY Fact, and structured relation identity. Prior-year comparison requires the same
+issuer fiscal quarter and exact semantic, scope, currency/unit, entity, basis, and source version.
+The 20-subject implementation matches all Phase 9.1A metric coverage with zero newly blocked items:
+160 selected reported Facts feed 44 delta, 44 balance YoY, 31 flow YoY Facts, and 53 eligible
+relations. Arithmetic, provenance, and idempotency errors are zero.
 
-Main and operating remain clean at `33c2f8be376b2cbb2961ecf9dc3c873715e0a034` with Phase 9.0E mode
+DSO, Inventory Days, DPO, CCC, and standard ROIC remain deferred. Open P0/material P1 are zero;
+`PHASE_9_1C_READY = YES` with `WORKING_CAPITAL_SHADOW_CONSUMPTION_EARNINGS_QUALITY`.
+
+Main and operating remain at `33c2f8be376b2cbb2961ecf9dc3c873715e0a034` with Phase 9.0E mode
 `SELECTIVE_CURRENT_FORMAL_FULL_FCF`; API health passes and the four AI tasks plus KRX telemetry are
-unchanged. Phase 9.1A user-visible diff is zero. Promotion is
+unchanged. Phase 9.1A/9.1B user-visible diff is zero. Promotion is
 `PROMOTION_DEFERRED_FOR_KR_NATURAL_WINDOW`; no Telegram, task, Pilot, DB, or archive mutation occurred.
 
 ## Project Purpose
@@ -68,7 +72,7 @@ execution or an autonomous investment adviser.
 | Cash-flow runtime canary | `cash-flow-runtime-shadow-canary-v1`, natural US LIVE PASS |
 | Baseline cash-flow consistency | `baseline-cash-flow-claim-consistency-v1`, retrospective closed |
 | Cash-flow kill switch | `CASH_FLOW_USER_VISIBLE_MODE`; invalid/default OFF |
-| Working-capital evidence | `working-capital-evidence-v1`; architecture closed, 9.1B selective core ready |
+| Working-capital evidence | `working-capital-evidence-v1`; 9.1B canonical core implemented shadow, 9.1C ready |
 
 ## Phase 8.3 Final State
 

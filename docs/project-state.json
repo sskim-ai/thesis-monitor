@@ -1,16 +1,16 @@
 {
   "repository": "sskim-ai/thesis-monitor",
   "branch": "main",
-  "experimental_branch": "codex/phase-9-1a-working-capital-evidence-architecture",
+  "experimental_branch": "codex/phase-9-1b-canonical-working-capital-core",
   "current_commit": "HEAD",
   "current_commit_resolution": "git rev-parse HEAD",
-  "recorded_base_commit": "eaaadb1ac4fb5c9a7d3486ecc8274708c285ff79",
-  "current_phase": "phase_9_1a_architecture_closed_promotion_deferred",
-  "last_completed_phase": "phase_9_1a_working_capital_evidence_architecture",
-  "next_default_phase": "phase_9_1b_canonical_working_capital_core",
-  "next_candidate": "selective_inventory_ar_ap_canonical_core",
+  "recorded_base_commit": "0952bee040133aa49a4ba494ecae76163e9a9511",
+  "current_phase": "phase_9_1b_implemented_promotion_deferred",
+  "last_completed_phase": "phase_9_1b_canonical_working_capital_core",
+  "next_default_phase": "phase_9_1c_working_capital_shadow_consumption",
+  "next_candidate": "working_capital_shadow_consumption_earnings_quality",
   "alternative_next_phase": "targeted_runtime_repair_if_new_p0",
-  "latest_validation_report": "docs/reports/20260821-phase9-1a-complete-report.md",
+  "latest_validation_report": "docs/reports/20260821-phase9-1b-validation.md",
   "deployed_code_commit": "HEAD",
   "main_code_commit": "HEAD",
   "main_code_commit_resolution": "git rev-parse origin/main",
@@ -670,6 +670,60 @@
     "phase_9_1b_scope": "SELECTIVE_INVENTORY_AR_AP_CANONICAL_CORE",
     "report": "docs/reports/20260821-phase9-1a-complete-report.md"
   },
+  "phase_9_1b_canonical_working_capital_core": {
+    "status": "implemented_shadow_ready_for_phase_9_1c_promotion_deferred",
+    "branch": "codex/phase-9-1b-canonical-working-capital-core",
+    "base": "d4a4daf08ff5f68bc1072cc065e69ca5de5da145",
+    "work_instruction_commit": "0952bee040133aa49a4ba494ecae76163e9a9511",
+    "implementation_commit": "HEAD",
+    "contract": "working-capital-evidence-v1",
+    "derivation_version": "working-capital-evidence-v1:canonical-core-v1",
+    "active_universe": 20,
+    "markets": {"kr": 7, "us_foreign": 13},
+    "metric_coverage": {
+      "inventory": {"eligible": 11, "partial": 3, "blocked": 5, "not_applicable": 1},
+      "trade_ar": {"eligible": 6, "partial": 1, "blocked": 12, "not_applicable": 1},
+      "broad_ar": {"eligible": 9, "partial": 3, "blocked": 7, "not_applicable": 1},
+      "trade_ap": {"eligible": 8, "partial": 1, "blocked": 10, "not_applicable": 1},
+      "broad_ap": {"eligible": 10, "partial": 1, "blocked": 8, "not_applicable": 1}
+    },
+    "canonical_fact_counts": {
+      "reported_selected": 160,
+      "balance_delta": 44,
+      "balance_yoy": 44,
+      "flow_yoy": 31,
+      "eligible_relations": 53
+    },
+    "relation_families": [
+      "trade_ar_vs_revenue",
+      "broad_ar_vs_revenue",
+      "inventory_vs_revenue",
+      "inventory_vs_cogs",
+      "trade_ap_vs_cogs",
+      "broad_ap_vs_cogs"
+    ],
+    "coverage_newly_blocked": 0,
+    "arithmetic_errors": 0,
+    "provenance_errors": 0,
+    "idempotency_errors": 0,
+    "provider_calls": {"sec_live": 0, "opendart_live": 0, "new_paid": 0},
+    "advanced_ratios": {
+      "dso": "DEFER",
+      "inventory_days": "DEFER",
+      "dpo": "DEFER",
+      "ccc": "DEFER",
+      "roic": "DEFER"
+    },
+    "working_capital_user_visible": "NOT_ENABLED",
+    "runtime_user_visible_diff": 0,
+    "phase_9_0e_mode_unchanged": "SELECTIVE_CURRENT_FORMAL_FULL_FCF",
+    "promotion": "PROMOTION_DEFERRED_FOR_KR_NATURAL_WINDOW",
+    "p0_open": [],
+    "p1_open": [],
+    "phase_9_1c_ready": true,
+    "phase_9_1c_scope": "WORKING_CAPITAL_SHADOW_CONSUMPTION_EARNINGS_QUALITY",
+    "report": "docs/reports/20260821-phase9-1b-complete-report.md"
+  },
   "krx_exact_slot_telemetry_capture": {
     "status": "operating_telemetry_only_pending_natural",
     "branch": "codex/krx-exact-slot-telemetry-capture",
@@ -743,6 +797,10 @@
     "phase_9_1a_excludes_peer_and_krx_breadth_experimental_ancestry": true,
     "phase_9_1a_runtime_user_visible_diff": 0,
     "phase_9_1a_promotion_deferred_for_kr_natural_window": true,
+    "phase_9_1b_uses_instruction_commit_base": true,
+    "phase_9_1b_depends_on_phase_9_1a_final": true,
+    "phase_9_1b_runtime_user_visible_diff": 0,
+    "phase_9_1b_promotion_deferred_for_kr_natural_window": true,
     "promotion_path_documented": true
   },
   "krx": {
@@ -810,9 +868,10 @@
     "phase_9_0d_readiness": "LIVE_PASS_SELECTIVE_SUBSET",
     "phase_9_0d_1_readiness": "BASELINE_CASH_FLOW_CONSISTENCY_CLOSED",
     "phase_9_0e_readiness": "DEPLOYED_SELECTIVE_PENDING_NATURAL",
-    "working_capital_evidence": "ARCHITECTURE_CLOSED_READY_FOR_PHASE_9_1B",
+    "working_capital_evidence": "CANONICAL_CORE_IMPLEMENTED_SHADOW_READY_FOR_PHASE_9_1C",
     "phase_9_1a_readiness": "COMPLETE_BRANCH_CI_PASS_PROMOTION_DEFERRED_FOR_KR_NATURAL_WINDOW",
-    "next_major_architecture_readiness": "YES_PHASE_9_1B_SELECTIVE_INVENTORY_AR_AP_CANONICAL_CORE"
+    "phase_9_1b_readiness": "IMPLEMENTED_PENDING_EXACT_SHA_CI_PROMOTION_DEFERRED_FOR_KR_NATURAL_WINDOW",
+    "next_major_architecture_readiness": "YES_PHASE_9_1C_WORKING_CAPITAL_SHADOW_CONSUMPTION_EARNINGS_QUALITY"
   },
   "financial_currency_canonicalization": {
     "missing_or_blank": "unknown",
@@ -890,12 +949,16 @@
     "phase_9_1a_promotion": "deferred_for_kr_natural_window",
     "phase_9_1b_ready": true,
     "phase_9_1b_scope": "SELECTIVE_INVENTORY_AR_AP_CANONICAL_CORE",
+    "phase_9_1b_complete": true,
+    "phase_9_1b_promotion": "deferred_for_kr_natural_window",
+    "phase_9_1c_ready": true,
+    "phase_9_1c_scope": "WORKING_CAPITAL_SHADOW_CONSUMPTION_EARNINGS_QUALITY",
     "next_major_architecture_ready": true,
     "blocking_reasons": [],
     "parallel_observation_tracks": [
       "next_natural_us_kr_ai_delivery",
       "phase_9_0e_next_natural_us_user_visible_validation",
-      "phase_9_1b_canonical_working_capital_core",
+      "phase_9_1c_working_capital_shadow_consumption",
       "night_futures_preceding_day_numeric_exposure",
       "krx_0805_1605_publication_telemetry"
     ]

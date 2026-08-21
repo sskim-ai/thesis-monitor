@@ -1,0 +1,37 @@
+{
+  "advanced_ratios": {
+    "ccc": "DEFER",
+    "dpo": "DEFER",
+    "dso": "DEFER",
+    "inventory_days": "DEFER",
+    "roic": "DEFER"
+  },
+  "p0_open": [],
+  "p1_open": [],
+  "p2_backlog": [
+    "prior-quarter working-capital lifecycle",
+    "inventory component decomposition",
+    "contract-assets separate evidence family",
+    "management-specific working-capital reconciliation"
+  ],
+  "phase_9_1c_metric_families": [
+    "inventory",
+    "trade_ar",
+    "broad_ar",
+    "trade_ap",
+    "broad_ap"
+  ],
+  "phase_9_1c_ready": true,
+  "phase_9_1c_relation_families": [
+    "trade_ar_vs_revenue",
+    "broad_ar_vs_revenue",
+    "inventory_vs_revenue",
+    "inventory_vs_cogs",
+    "trade_ap_vs_cogs",
+    "broad_ap_vs_cogs"
+  ],
+  "phase_9_1c_scope": "WORKING_CAPITAL_SHADOW_CONSUMPTION_EARNINGS_QUALITY",
+  "promotion": "PROMOTION_DEFERRED_FOR_KR_NATURAL_WINDOW",
+  "runtime_user_visible_diff": 0,
+  "working_capital_user_visible": "NOT_ENABLED"
+}

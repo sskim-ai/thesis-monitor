@@ -1,0 +1,1627 @@
+{
+  "active_universe_count": 20,
+  "architecture_decisions": {
+    "absolute_delta": "CURRENT_MINUS_PRIOR_YEAR_SAME_FISCAL_QUARTER",
+    "industry_applicability_separate_from_eligibility": true,
+    "kr_cash_flow_period_gap_independent": true,
+    "raw_metrics": [
+      "inventory",
+      "trade_accounts_receivable",
+      "accounts_receivable_broad",
+      "trade_accounts_payable",
+      "accounts_payable_broad"
+    ],
+    "relation_type": "STRUCTURED_YOY_GROWTH_COMPARISON",
+    "trade_broad_semantics": "SEPARATE",
+    "user_visible_consumption": "NOT_ENABLED",
+    "yoy_growth": "CURRENT_MINUS_PRIOR_DIVIDED_BY_POSITIVE_PRIOR_TIMES_100"
+  },
+  "contract": "working-capital-evidence-v1",
+  "coverage_drift": {
+    "metric_classification_counts": {
+      "UNCHANGED": 100
+    },
+    "newly_blocked": [],
+    "recovered": [],
+    "relation_classification_counts": {
+      "UNCHANGED": 80
+    },
+    "rows": [
+      {
+        "after": "ELIGIBLE",
+        "before": "ELIGIBLE",
+        "classification": "UNCHANGED",
+        "family": "inventory",
+        "kind": "metric",
+        "ticker": "000660"
+      },
+      {
+        "after": "ELIGIBLE",
+        "before": "ELIGIBLE",
+        "classification": "UNCHANGED",
+        "family": "trade_ar",
+        "kind": "metric",
+        "ticker": "000660"
+      },
+      {
+        "after": "BLOCKED",
+        "before": "BLOCKED",
+        "classification": "UNCHANGED",
+        "family": "broad_ar",
+        "kind": "metric",
+        "ticker": "000660"
+      },
+      {
+        "after": "ELIGIBLE",
+        "before": "ELIGIBLE",
+        "classification": "UNCHANGED",
+        "family": "trade_ap",
+        "kind": "metric",
+        "ticker": "000660"
+      },
+      {
+        "after": "BLOCKED",
+        "before": "BLOCKED",
+        "classification": "UNCHANGED",
+        "family": "broad_ap",
+        "kind": "metric",
+        "ticker": "000660"
+      },
+      {
+        "after": "ELIGIBLE",
+        "before": "ELIGIBLE",
+        "classification": "UNCHANGED",
+        "family": "ar_vs_revenue",
+        "kind": "relation",
+        "ticker": "000660"
+      },
+      {
+        "after": "ELIGIBLE",
+        "before": "ELIGIBLE",
+        "classification": "UNCHANGED",
+        "family": "inventory_vs_revenue",
+        "kind": "relation",
+        "ticker": "000660"
+      },
+      {
+        "after": "ELIGIBLE",
+        "before": "ELIGIBLE",
+        "classification": "UNCHANGED",
+        "family": "inventory_vs_cogs",
+        "kind": "relation",
+        "ticker": "000660"
+      },
+      {
+        "after": "ELIGIBLE",
+        "before": "ELIGIBLE",
+        "classification": "UNCHANGED",
+        "family": "ap_vs_cogs",
+        "kind": "relation",
+        "ticker": "000660"
+      },
+      {
+        "after": "NOT_APPLICABLE",
+        "before": "NOT_APPLICABLE",
+        "classification": "UNCHANGED",
+        "family": "inventory",
+        "kind": "metric",
+        "ticker": "003690"
+      },
+      {
+        "after": "NOT_APPLICABLE",
+        "before": "NOT_APPLICABLE",
+        "classification": "UNCHANGED",
+        "family": "trade_ar",
+        "kind": "metric",
+        "ticker": "003690"
+      },
+      {
+        "after": "NOT_APPLICABLE",
+        "before": "NOT_APPLICABLE",
+        "classification": "UNCHANGED",
+        "family": "broad_ar",
+        "kind": "metric",
+        "ticker": "003690"
+      },
+      {
+        "after": "NOT_APPLICABLE",
+        "before": "NOT_APPLICABLE",
+        "classification": "UNCHANGED",
+        "family": "trade_ap",
+        "kind": "metric",
+        "ticker": "003690"
+      },
+      {
+        "after": "NOT_APPLICABLE",
+        "before": "NOT_APPLICABLE",
+        "classification": "UNCHANGED",
+        "family": "broad_ap",
+        "kind": "metric",
+        "ticker": "003690"
+      },
+      {
+        "after": "NOT_APPLICABLE",
+        "before": "NOT_APPLICABLE",
+        "classification": "UNCHANGED",
+        "family": "ar_vs_revenue",
+        "kind": "relation",
+        "ticker": "003690"
+      },
+      {
+        "after": "NOT_APPLICABLE",
+        "before": "NOT_APPLICABLE",
+        "classification": "UNCHANGED",
+        "family": "inventory_vs_revenue",
+        "kind": "relation",
+        "ticker": "003690"
+      },
+      {
+        "after": "NOT_APPLICABLE",
+        "before": "NOT_APPLICABLE",
+        "classification": "UNCHANGED",
+        "family": "inventory_vs_cogs",
+        "kind": "relation",
+        "ticker": "003690"
+      },
+      {
+        "after": "NOT_APPLICABLE",
+        "before": "NOT_APPLICABLE",
+        "classification": "UNCHANGED",
+        "family": "ap_vs_cogs",
+        "kind": "relation",
+        "ticker": "003690"
+      },
+      {
+        "after": "ELIGIBLE",
+        "before": "ELIGIBLE",
+        "classification": "UNCHANGED",
+        "family": "inventory",
+        "kind": "metric",
+        "ticker": "005490"
+      },
+      {
+        "after": "ELIGIBLE",
+        "before": "ELIGIBLE",
+        "classification": "UNCHANGED",
+        "family": "trade_ar",
+        "kind": "metric",
+        "ticker": "005490"
+      },
+      {
+        "after": "BLOCKED",
+        "before": "BLOCKED",
+        "classification": "UNCHANGED",
+        "family": "broad_ar",
+        "kind": "metric",
+        "ticker": "005490"
+      },
+      {
+        "after": "ELIGIBLE",
+        "before": "ELIGIBLE",
+        "classification": "UNCHANGED",
+        "family": "trade_ap",
+        "kind": "metric",
+        "ticker": "005490"
+      },
+      {
+        "after": "BLOCKED",
+        "before": "BLOCKED",
+        "classification": "UNCHANGED",
+        "family": "broad_ap",
+        "kind": "metric",
+        "ticker": "005490"
+      },
+      {
+        "after": "ELIGIBLE",
+        "before": "ELIGIBLE",
+        "classification": "UNCHANGED",
+        "family": "ar_vs_revenue",
+        "kind": "relation",
+        "ticker": "005490"
+      },
+      {
+        "after": "ELIGIBLE",
+        "before": "ELIGIBLE",
+        "classification": "UNCHANGED",
+        "family": "inventory_vs_revenue",
+        "kind": "relation",
+        "ticker": "005490"
+      },
+      {
+        "after": "ELIGIBLE",
+        "before": "ELIGIBLE",
+        "classification": "UNCHANGED",
+        "family": "inventory_vs_cogs",
+        "kind": "relation",
+        "ticker": "005490"
+      },
+      {
+        "after": "ELIGIBLE",
+        "before": "ELIGIBLE",
+        "classification": "UNCHANGED",
+        "family": "ap_vs_cogs",
+        "kind": "relation",
+        "ticker": "005490"
+      },
+      {
+        "after": "ELIGIBLE",
+        "before": "ELIGIBLE",
+        "classification": "UNCHANGED",
+        "family": "inventory",
+        "kind": "metric",
+        "ticker": "005930"
+      },
+      {
+        "after": "ELIGIBLE",
+        "before": "ELIGIBLE",
+        "classification": "UNCHANGED",
+        "family": "trade_ar",
+        "kind": "metric",
+        "ticker": "005930"
+      },
+      {
+        "after": "BLOCKED",
+        "before": "BLOCKED",
+        "classification": "UNCHANGED",
+        "family": "broad_ar",
+        "kind": "metric",
+        "ticker": "005930"
+      },
+      {
+        "after": "ELIGIBLE",
+        "before": "ELIGIBLE",
+        "classification": "UNCHANGED",
+        "family": "trade_ap",
+        "kind": "metric",
+        "ticker": "005930"
+      },
+      {
+        "after": "BLOCKED",
+        "before": "BLOCKED",
+        "classification": "UNCHANGED",
+        "family": "broad_ap",
+        "kind": "metric",
+        "ticker": "005930"
+      },
+      {
+        "after": "ELIGIBLE",
+        "before": "ELIGIBLE",
+        "classification": "UNCHANGED",
+        "family": "ar_vs_revenue",
+        "kind": "relation",
+        "ticker": "005930"
+      },
+      {
+        "after": "ELIGIBLE",
+        "before": "ELIGIBLE",
+        "classification": "UNCHANGED",
+        "family": "inventory_vs_revenue",
+        "kind": "relation",
+        "ticker": "005930"
+      },
+      {
+        "after": "ELIGIBLE",
+        "before": "ELIGIBLE",
+        "classification": "UNCHANGED",
+        "family": "inventory_vs_cogs",
+        "kind": "relation",
+        "ticker": "005930"
+      },
+      {
+        "after": "ELIGIBLE",
+        "before": "ELIGIBLE",
+        "classification": "UNCHANGED",
+        "family": "ap_vs_cogs",
+        "kind": "relation",
+        "ticker": "005930"
+      },
+      {
+        "after": "ELIGIBLE",
+        "before": "ELIGIBLE",
+        "classification": "UNCHANGED",
+        "family": "inventory",
+        "kind": "metric",
+        "ticker": "010120"
+      },
+      {
+        "after": "ELIGIBLE",
+        "before": "ELIGIBLE",
+        "classification": "UNCHANGED",
+        "family": "trade_ar",
+        "kind": "metric",
+        "ticker": "010120"
+      },
+      {
+        "after": "BLOCKED",
+        "before": "BLOCKED",
+        "classification": "UNCHANGED",
+        "family": "broad_ar",
+        "kind": "metric",
+        "ticker": "010120"
+      },
+      {
+        "after": "ELIGIBLE",
+        "before": "ELIGIBLE",
+        "classification": "UNCHANGED",
+        "family": "trade_ap",
+        "kind": "metric",
+        "ticker": "010120"
+      },
+      {
+        "after": "BLOCKED",
+        "before": "BLOCKED",
+        "classification": "UNCHANGED",
+        "family": "broad_ap",
+        "kind": "metric",
+        "ticker": "010120"
+      },
+      {
+        "after": "ELIGIBLE",
+        "before": "ELIGIBLE",
+        "classification": "UNCHANGED",
+        "family": "ar_vs_revenue",
+        "kind": "relation",
+        "ticker": "010120"
+      },
+      {
+        "after": "ELIGIBLE",
+        "before": "ELIGIBLE",
+        "classification": "UNCHANGED",
+        "family": "inventory_vs_revenue",
+        "kind": "relation",
+        "ticker": "010120"
+      },
+      {
+        "after": "ELIGIBLE",
+        "before": "ELIGIBLE",
+        "classification": "UNCHANGED",
+        "family": "inventory_vs_cogs",
+        "kind": "relation",
+        "ticker": "010120"
+      },
+      {
+        "after": "ELIGIBLE",
+        "before": "ELIGIBLE",
+        "classification": "UNCHANGED",
+        "family": "ap_vs_cogs",
+        "kind": "relation",
+        "ticker": "010120"
+      },
+      {
+        "after": "ELIGIBLE",
+        "before": "ELIGIBLE",
+        "classification": "UNCHANGED",
+        "family": "inventory",
+        "kind": "metric",
+        "ticker": "012450"
+      },
+      {
+        "after": "BLOCKED",
+        "before": "BLOCKED",
+        "classification": "UNCHANGED",
+        "family": "trade_ar",
+        "kind": "metric",
+        "ticker": "012450"
+      },
+      {
+        "after": "ELIGIBLE",
+        "before": "ELIGIBLE",
+        "classification": "UNCHANGED",
+        "family": "broad_ar",
+        "kind": "metric",
+        "ticker": "012450"
+      },
+      {
+        "after": "BLOCKED",
+        "before": "BLOCKED",
+        "classification": "UNCHANGED",
+        "family": "trade_ap",
+        "kind": "metric",
+        "ticker": "012450"
+      },
+      {
+        "after": "ELIGIBLE",
+        "before": "ELIGIBLE",
+        "classification": "UNCHANGED",
+        "family": "broad_ap",
+        "kind": "metric",
+        "ticker": "012450"
+      },
+      {
+        "after": "ELIGIBLE",
+        "before": "ELIGIBLE",
+        "classification": "UNCHANGED",
+        "family": "ar_vs_revenue",
+        "kind": "relation",
+        "ticker": "012450"
+      },
+      {
+        "after": "ELIGIBLE",
+        "before": "ELIGIBLE",
+        "classification": "UNCHANGED",
+        "family": "inventory_vs_revenue",
+        "kind": "relation",
+        "ticker": "012450"
+      },
+      {
+        "after": "ELIGIBLE",
+        "before": "ELIGIBLE",
+        "classification": "UNCHANGED",
+        "family": "inventory_vs_cogs",
+        "kind": "relation",
+        "ticker": "012450"
+      },
+      {
+        "after": "ELIGIBLE",
+        "before": "ELIGIBLE",
+        "classification": "UNCHANGED",
+        "family": "ap_vs_cogs",
+        "kind": "relation",
+        "ticker": "012450"
+      },
+      {
+        "after": "ELIGIBLE",
+        "before": "ELIGIBLE",
+        "classification": "UNCHANGED",
+        "family": "inventory",
+        "kind": "metric",
+        "ticker": "086280"
+      },
+      {
+        "after": "ELIGIBLE",
+        "before": "ELIGIBLE",
+        "classification": "UNCHANGED",
+        "family": "trade_ar",
+        "kind": "metric",
+        "ticker": "086280"
+      },
+      {
+        "after": "BLOCKED",
+        "before": "BLOCKED",
+        "classification": "UNCHANGED",
+        "family": "broad_ar",
+        "kind": "metric",
+        "ticker": "086280"
+      },
+      {
+        "after": "ELIGIBLE",
+        "before": "ELIGIBLE",
+        "classification": "UNCHANGED",
+        "family": "trade_ap",
+        "kind": "metric",
+        "ticker": "086280"
+      },
+      {
+        "after": "BLOCKED",
+        "before": "BLOCKED",
+        "classification": "UNCHANGED",
+        "family": "broad_ap",
+        "kind": "metric",
+        "ticker": "086280"
+      },
+      {
+        "after": "ELIGIBLE",
+        "before": "ELIGIBLE",
+        "classification": "UNCHANGED",
+        "family": "ar_vs_revenue",
+        "kind": "relation",
+        "ticker": "086280"
+      },
+      {
+        "after": "ELIGIBLE",
+        "before": "ELIGIBLE",
+        "classification": "UNCHANGED",
+        "family": "inventory_vs_revenue",
+        "kind": "relation",
+        "ticker": "086280"
+      },
+      {
+        "after": "ELIGIBLE",
+        "before": "ELIGIBLE",
+        "classification": "UNCHANGED",
+        "family": "inventory_vs_cogs",
+        "kind": "relation",
+        "ticker": "086280"
+      },
+      {
+        "after": "ELIGIBLE",
+        "before": "ELIGIBLE",
+        "classification": "UNCHANGED",
+        "family": "ap_vs_cogs",
+        "kind": "relation",
+        "ticker": "086280"
+      },
+      {
+        "after": "BLOCKED",
+        "before": "BLOCKED",
+        "classification": "UNCHANGED",
+        "family": "inventory",
+        "kind": "metric",
+        "ticker": "CORZ"
+      },
+      {
+        "after": "BLOCKED",
+        "before": "BLOCKED",
+        "classification": "UNCHANGED",
+        "family": "trade_ar",
+        "kind": "metric",
+        "ticker": "CORZ"
+      },
+      {
+        "after": "ELIGIBLE",
+        "before": "ELIGIBLE",
+        "classification": "UNCHANGED",
+        "family": "broad_ar",
+        "kind": "metric",
+        "ticker": "CORZ"
+      },
+      {
+        "after": "PARTIAL",
+        "before": "PARTIAL",
+        "classification": "UNCHANGED",
+        "family": "trade_ap",
+        "kind": "metric",
+        "ticker": "CORZ"
+      },
+      {
+        "after": "ELIGIBLE",
+        "before": "ELIGIBLE",
+        "classification": "UNCHANGED",
+        "family": "broad_ap",
+        "kind": "metric",
+        "ticker": "CORZ"
+      },
+      {
+        "after": "ELIGIBLE",
+        "before": "ELIGIBLE",
+        "classification": "UNCHANGED",
+        "family": "ar_vs_revenue",
+        "kind": "relation",
+        "ticker": "CORZ"
+      },
+      {
+        "after": "BLOCKED",
+        "before": "BLOCKED",
+        "classification": "UNCHANGED",
+        "family": "inventory_vs_revenue",
+        "kind": "relation",
+        "ticker": "CORZ"
+      },
+      {
+        "after": "BLOCKED",
+        "before": "BLOCKED",
+        "classification": "UNCHANGED",
+        "family": "inventory_vs_cogs",
+        "kind": "relation",
+        "ticker": "CORZ"
+      },
+      {
+        "after": "BLOCKED",
+        "before": "BLOCKED",
+        "classification": "UNCHANGED",
+        "family": "ap_vs_cogs",
+        "kind": "relation",
+        "ticker": "CORZ"
+      },
+      {
+        "after": "BLOCKED",
+        "before": "BLOCKED",
+        "classification": "UNCHANGED",
+        "family": "inventory",
+        "kind": "metric",
+        "ticker": "CRCL"
+      },
+      {
+        "after": "BLOCKED",
+        "before": "BLOCKED",
+        "classification": "UNCHANGED",
+        "family": "trade_ar",
+        "kind": "metric",
+        "ticker": "CRCL"
+      },
+      {
+        "after": "ELIGIBLE",
+        "before": "ELIGIBLE",
+        "classification": "UNCHANGED",
+        "family": "broad_ar",
+        "kind": "metric",
+        "ticker": "CRCL"
+      },
+      {
+        "after": "BLOCKED",
+        "before": "BLOCKED",
+        "classification": "UNCHANGED",
+        "family": "trade_ap",
+        "kind": "metric",
+        "ticker": "CRCL"
+      },
+      {
+        "after": "ELIGIBLE",
+        "before": "ELIGIBLE",
+        "classification": "UNCHANGED",
+        "family": "broad_ap",
+        "kind": "metric",
+        "ticker": "CRCL"
+      },
+      {
+        "after": "ELIGIBLE",
+        "before": "ELIGIBLE",
+        "classification": "UNCHANGED",
+        "family": "ar_vs_revenue",
+        "kind": "relation",
+        "ticker": "CRCL"
+      },
+      {
+        "after": "BLOCKED",
+        "before": "BLOCKED",
+        "classification": "UNCHANGED",
+        "family": "inventory_vs_revenue",
+        "kind": "relation",
+        "ticker": "CRCL"
+      },
+      {
+        "after": "BLOCKED",
+        "before": "BLOCKED",
+        "classification": "UNCHANGED",
+        "family": "inventory_vs_cogs",
+        "kind": "relation",
+        "ticker": "CRCL"
+      },
+      {
+        "after": "BLOCKED",
+        "before": "BLOCKED",
+        "classification": "UNCHANGED",
+        "family": "ap_vs_cogs",
+        "kind": "relation",
+        "ticker": "CRCL"
+      },
+      {
+        "after": "PARTIAL",
+        "before": "PARTIAL",
+        "classification": "UNCHANGED",
+        "family": "inventory",
+        "kind": "metric",
+        "ticker": "GOOGL"
+      },
+      {
+        "after": "BLOCKED",
+        "before": "BLOCKED",
+        "classification": "UNCHANGED",
+        "family": "trade_ar",
+        "kind": "metric",
+        "ticker": "GOOGL"
+      },
+      {
+        "after": "ELIGIBLE",
+        "before": "ELIGIBLE",
+        "classification": "UNCHANGED",
+        "family": "broad_ar",
+        "kind": "metric",
+        "ticker": "GOOGL"
+      },
+      {
+        "after": "BLOCKED",
+        "before": "BLOCKED",
+        "classification": "UNCHANGED",
+        "family": "trade_ap",
+        "kind": "metric",
+        "ticker": "GOOGL"
+      },
+      {
+        "after": "ELIGIBLE",
+        "before": "ELIGIBLE",
+        "classification": "UNCHANGED",
+        "family": "broad_ap",
+        "kind": "metric",
+        "ticker": "GOOGL"
+      },
+      {
+        "after": "ELIGIBLE",
+        "before": "ELIGIBLE",
+        "classification": "UNCHANGED",
+        "family": "ar_vs_revenue",
+        "kind": "relation",
+        "ticker": "GOOGL"
+      },
+      {
+        "after": "BLOCKED",
+        "before": "BLOCKED",
+        "classification": "UNCHANGED",
+        "family": "inventory_vs_revenue",
+        "kind": "relation",
+        "ticker": "GOOGL"
+      },
+      {
+        "after": "BLOCKED",
+        "before": "BLOCKED",
+        "classification": "UNCHANGED",
+        "family": "inventory_vs_cogs",
+        "kind": "relation",
+        "ticker": "GOOGL"
+      },
+      {
+        "after": "ELIGIBLE",
+        "before": "ELIGIBLE",
+        "classification": "UNCHANGED",
+        "family": "ap_vs_cogs",
+        "kind": "relation",
+        "ticker": "GOOGL"
+      },
+      {
+        "after": "BLOCKED",
+        "before": "BLOCKED",
+        "classification": "UNCHANGED",
+        "family": "inventory",
+        "kind": "metric",
+        "ticker": "HUT"
+      },
+      {
+        "after": "BLOCKED",
+        "before": "BLOCKED",
+        "classification": "UNCHANGED",
+        "family": "trade_ar",
+        "kind": "metric",
+        "ticker": "HUT"
+      },
+      {
+        "after": "ELIGIBLE",
+        "before": "ELIGIBLE",
+        "classification": "UNCHANGED",
+        "family": "broad_ar",
+        "kind": "metric",
+        "ticker": "HUT"
+      },
+      {
+        "after": "BLOCKED",
+        "before": "BLOCKED",
+        "classification": "UNCHANGED",
+        "family": "trade_ap",
+        "kind": "metric",
+        "ticker": "HUT"
+      },
+      {
+        "after": "ELIGIBLE",
+        "before": "ELIGIBLE",
+        "classification": "UNCHANGED",
+        "family": "broad_ap",
+        "kind": "metric",
+        "ticker": "HUT"
+      },
+      {
+        "after": "ELIGIBLE",
+        "before": "ELIGIBLE",
+        "classification": "UNCHANGED",
+        "family": "ar_vs_revenue",
+        "kind": "relation",
+        "ticker": "HUT"
+      },
+      {
+        "after": "BLOCKED",
+        "before": "BLOCKED",
+        "classification": "UNCHANGED",
+        "family": "inventory_vs_revenue",
+        "kind": "relation",
+        "ticker": "HUT"
+      },
+      {
+        "after": "BLOCKED",
+        "before": "BLOCKED",
+        "classification": "UNCHANGED",
+        "family": "inventory_vs_cogs",
+        "kind": "relation",
+        "ticker": "HUT"
+      },
+      {
+        "after": "ELIGIBLE",
+        "before": "ELIGIBLE",
+        "classification": "UNCHANGED",
+        "family": "ap_vs_cogs",
+        "kind": "relation",
+        "ticker": "HUT"
+      },
+      {
+        "after": "ELIGIBLE",
+        "before": "ELIGIBLE",
+        "classification": "UNCHANGED",
+        "family": "inventory",
+        "kind": "metric",
+        "ticker": "IBM"
+      },
+      {
+        "after": "BLOCKED",
+        "before": "BLOCKED",
+        "classification": "UNCHANGED",
+        "family": "trade_ar",
+        "kind": "metric",
+        "ticker": "IBM"
+      },
+      {
+        "after": "ELIGIBLE",
+        "before": "ELIGIBLE",
+        "classification": "UNCHANGED",
+        "family": "broad_ar",
+        "kind": "metric",
+        "ticker": "IBM"
+      },
+      {
+        "after": "BLOCKED",
+        "before": "BLOCKED",
+        "classification": "UNCHANGED",
+        "family": "trade_ap",
+        "kind": "metric",
+        "ticker": "IBM"
+      },
+      {
+        "after": "ELIGIBLE",
+        "before": "ELIGIBLE",
+        "classification": "UNCHANGED",
+        "family": "broad_ap",
+        "kind": "metric",
+        "ticker": "IBM"
+      },
+      {
+        "after": "ELIGIBLE",
+        "before": "ELIGIBLE",
+        "classification": "UNCHANGED",
+        "family": "ar_vs_revenue",
+        "kind": "relation",
+        "ticker": "IBM"
+      },
+      {
+        "after": "ELIGIBLE",
+        "before": "ELIGIBLE",
+        "classification": "UNCHANGED",
+        "family": "inventory_vs_revenue",
+        "kind": "relation",
+        "ticker": "IBM"
+      },
+      {
+        "after": "ELIGIBLE",
+        "before": "ELIGIBLE",
+        "classification": "UNCHANGED",
+        "family": "inventory_vs_cogs",
+        "kind": "relation",
+        "ticker": "IBM"
+      },
+      {
+        "after": "ELIGIBLE",
+        "before": "ELIGIBLE",
+        "classification": "UNCHANGED",
+        "family": "ap_vs_cogs",
+        "kind": "relation",
+        "ticker": "IBM"
+      },
+      {
+        "after": "ELIGIBLE",
+        "before": "ELIGIBLE",
+        "classification": "UNCHANGED",
+        "family": "inventory",
+        "kind": "metric",
+        "ticker": "MU"
+      },
+      {
+        "after": "BLOCKED",
+        "before": "BLOCKED",
+        "classification": "UNCHANGED",
+        "family": "trade_ar",
+        "kind": "metric",
+        "ticker": "MU"
+      },
+      {
+        "after": "ELIGIBLE",
+        "before": "ELIGIBLE",
+        "classification": "UNCHANGED",
+        "family": "broad_ar",
+        "kind": "metric",
+        "ticker": "MU"
+      },
+      {
+        "after": "ELIGIBLE",
+        "before": "ELIGIBLE",
+        "classification": "UNCHANGED",
+        "family": "trade_ap",
+        "kind": "metric",
+        "ticker": "MU"
+      },
+      {
+        "after": "ELIGIBLE",
+        "before": "ELIGIBLE",
+        "classification": "UNCHANGED",
+        "family": "broad_ap",
+        "kind": "metric",
+        "ticker": "MU"
+      },
+      {
+        "after": "ELIGIBLE",
+        "before": "ELIGIBLE",
+        "classification": "UNCHANGED",
+        "family": "ar_vs_revenue",
+        "kind": "relation",
+        "ticker": "MU"
+      },
+      {
+        "after": "ELIGIBLE",
+        "before": "ELIGIBLE",
+        "classification": "UNCHANGED",
+        "family": "inventory_vs_revenue",
+        "kind": "relation",
+        "ticker": "MU"
+      },
+      {
+        "after": "ELIGIBLE",
+        "before": "ELIGIBLE",
+        "classification": "UNCHANGED",
+        "family": "inventory_vs_cogs",
+        "kind": "relation",
+        "ticker": "MU"
+      },
+      {
+        "after": "ELIGIBLE",
+        "before": "ELIGIBLE",
+        "classification": "UNCHANGED",
+        "family": "ap_vs_cogs",
+        "kind": "relation",
+        "ticker": "MU"
+      },
+      {
+        "after": "BLOCKED",
+        "before": "BLOCKED",
+        "classification": "UNCHANGED",
+        "family": "inventory",
+        "kind": "metric",
+        "ticker": "RXRX"
+      },
+      {
+        "after": "BLOCKED",
+        "before": "BLOCKED",
+        "classification": "UNCHANGED",
+        "family": "trade_ar",
+        "kind": "metric",
+        "ticker": "RXRX"
+      },
+      {
+        "after": "PARTIAL",
+        "before": "PARTIAL",
+        "classification": "UNCHANGED",
+        "family": "broad_ar",
+        "kind": "metric",
+        "ticker": "RXRX"
+      },
+      {
+        "after": "BLOCKED",
+        "before": "BLOCKED",
+        "classification": "UNCHANGED",
+        "family": "trade_ap",
+        "kind": "metric",
+        "ticker": "RXRX"
+      },
+      {
+        "after": "ELIGIBLE",
+        "before": "ELIGIBLE",
+        "classification": "UNCHANGED",
+        "family": "broad_ap",
+        "kind": "metric",
+        "ticker": "RXRX"
+      },
+      {
+        "after": "BLOCKED",
+        "before": "BLOCKED",
+        "classification": "UNCHANGED",
+        "family": "ar_vs_revenue",
+        "kind": "relation",
+        "ticker": "RXRX"
+      },
+      {
+        "after": "BLOCKED",
+        "before": "BLOCKED",
+        "classification": "UNCHANGED",
+        "family": "inventory_vs_revenue",
+        "kind": "relation",
+        "ticker": "RXRX"
+      },
+      {
+        "after": "BLOCKED",
+        "before": "BLOCKED",
+        "classification": "UNCHANGED",
+        "family": "inventory_vs_cogs",
+        "kind": "relation",
+        "ticker": "RXRX"
+      },
+      {
+        "after": "ELIGIBLE",
+        "before": "ELIGIBLE",
+        "classification": "UNCHANGED",
+        "family": "ap_vs_cogs",
+        "kind": "relation",
+        "ticker": "RXRX"
+      },
+      {
+        "after": "BLOCKED",
+        "before": "BLOCKED",
+        "classification": "UNCHANGED",
+        "family": "inventory",
+        "kind": "metric",
+        "ticker": "SKHY"
+      },
+      {
+        "after": "BLOCKED",
+        "before": "BLOCKED",
+        "classification": "UNCHANGED",
+        "family": "trade_ar",
+        "kind": "metric",
+        "ticker": "SKHY"
+      },
+      {
+        "after": "BLOCKED",
+        "before": "BLOCKED",
+        "classification": "UNCHANGED",
+        "family": "broad_ar",
+        "kind": "metric",
+        "ticker": "SKHY"
+      },
+      {
+        "after": "BLOCKED",
+        "before": "BLOCKED",
+        "classification": "UNCHANGED",
+        "family": "trade_ap",
+        "kind": "metric",
+        "ticker": "SKHY"
+      },
+      {
+        "after": "BLOCKED",
+        "before": "BLOCKED",
+        "classification": "UNCHANGED",
+        "family": "broad_ap",
+        "kind": "metric",
+        "ticker": "SKHY"
+      },
+      {
+        "after": "BLOCKED",
+        "before": "BLOCKED",
+        "classification": "UNCHANGED",
+        "family": "ar_vs_revenue",
+        "kind": "relation",
+        "ticker": "SKHY"
+      },
+      {
+        "after": "BLOCKED",
+        "before": "BLOCKED",
+        "classification": "UNCHANGED",
+        "family": "inventory_vs_revenue",
+        "kind": "relation",
+        "ticker": "SKHY"
+      },
+      {
+        "after": "BLOCKED",
+        "before": "BLOCKED",
+        "classification": "UNCHANGED",
+        "family": "inventory_vs_cogs",
+        "kind": "relation",
+        "ticker": "SKHY"
+      },
+      {
+        "after": "BLOCKED",
+        "before": "BLOCKED",
+        "classification": "UNCHANGED",
+        "family": "ap_vs_cogs",
+        "kind": "relation",
+        "ticker": "SKHY"
+      },
+      {
+        "after": "PARTIAL",
+        "before": "PARTIAL",
+        "classification": "UNCHANGED",
+        "family": "inventory",
+        "kind": "metric",
+        "ticker": "SNDK"
+      },
+      {
+        "after": "BLOCKED",
+        "before": "BLOCKED",
+        "classification": "UNCHANGED",
+        "family": "trade_ar",
+        "kind": "metric",
+        "ticker": "SNDK"
+      },
+      {
+        "after": "PARTIAL",
+        "before": "PARTIAL",
+        "classification": "UNCHANGED",
+        "family": "broad_ar",
+        "kind": "metric",
+        "ticker": "SNDK"
+      },
+      {
+        "after": "BLOCKED",
+        "before": "BLOCKED",
+        "classification": "UNCHANGED",
+        "family": "trade_ap",
+        "kind": "metric",
+        "ticker": "SNDK"
+      },
+      {
+        "after": "BLOCKED",
+        "before": "BLOCKED",
+        "classification": "UNCHANGED",
+        "family": "broad_ap",
+        "kind": "metric",
+        "ticker": "SNDK"
+      },
+      {
+        "after": "BLOCKED",
+        "before": "BLOCKED",
+        "classification": "UNCHANGED",
+        "family": "ar_vs_revenue",
+        "kind": "relation",
+        "ticker": "SNDK"
+      },
+      {
+        "after": "BLOCKED",
+        "before": "BLOCKED",
+        "classification": "UNCHANGED",
+        "family": "inventory_vs_revenue",
+        "kind": "relation",
+        "ticker": "SNDK"
+      },
+      {
+        "after": "BLOCKED",
+        "before": "BLOCKED",
+        "classification": "UNCHANGED",
+        "family": "inventory_vs_cogs",
+        "kind": "relation",
+        "ticker": "SNDK"
+      },
+      {
+        "after": "BLOCKED",
+        "before": "BLOCKED",
+        "classification": "UNCHANGED",
+        "family": "ap_vs_cogs",
+        "kind": "relation",
+        "ticker": "SNDK"
+      },
+      {
+        "after": "ELIGIBLE",
+        "before": "ELIGIBLE",
+        "classification": "UNCHANGED",
+        "family": "inventory",
+        "kind": "metric",
+        "ticker": "TSLA"
+      },
+      {
+        "after": "BLOCKED",
+        "before": "BLOCKED",
+        "classification": "UNCHANGED",
+        "family": "trade_ar",
+        "kind": "metric",
+        "ticker": "TSLA"
+      },
+      {
+        "after": "ELIGIBLE",
+        "before": "ELIGIBLE",
+        "classification": "UNCHANGED",
+        "family": "broad_ar",
+        "kind": "metric",
+        "ticker": "TSLA"
+      },
+      {
+        "after": "BLOCKED",
+        "before": "BLOCKED",
+        "classification": "UNCHANGED",
+        "family": "trade_ap",
+        "kind": "metric",
+        "ticker": "TSLA"
+      },
+      {
+        "after": "ELIGIBLE",
+        "before": "ELIGIBLE",
+        "classification": "UNCHANGED",
+        "family": "broad_ap",
+        "kind": "metric",
+        "ticker": "TSLA"
+      },
+      {
+        "after": "ELIGIBLE",
+        "before": "ELIGIBLE",
+        "classification": "UNCHANGED",
+        "family": "ar_vs_revenue",
+        "kind": "relation",
+        "ticker": "TSLA"
+      },
+      {
+        "after": "ELIGIBLE",
+        "before": "ELIGIBLE",
+        "classification": "UNCHANGED",
+        "family": "inventory_vs_revenue",
+        "kind": "relation",
+        "ticker": "TSLA"
+      },
+      {
+        "after": "ELIGIBLE",
+        "before": "ELIGIBLE",
+        "classification": "UNCHANGED",
+        "family": "inventory_vs_cogs",
+        "kind": "relation",
+        "ticker": "TSLA"
+      },
+      {
+        "after": "ELIGIBLE",
+        "before": "ELIGIBLE",
+        "classification": "UNCHANGED",
+        "family": "ap_vs_cogs",
+        "kind": "relation",
+        "ticker": "TSLA"
+      },
+      {
+        "after": "ELIGIBLE",
+        "before": "ELIGIBLE",
+        "classification": "UNCHANGED",
+        "family": "inventory",
+        "kind": "metric",
+        "ticker": "TSM"
+      },
+      {
+        "after": "ELIGIBLE",
+        "before": "ELIGIBLE",
+        "classification": "UNCHANGED",
+        "family": "trade_ar",
+        "kind": "metric",
+        "ticker": "TSM"
+      },
+      {
+        "after": "BLOCKED",
+        "before": "BLOCKED",
+        "classification": "UNCHANGED",
+        "family": "broad_ar",
+        "kind": "metric",
+        "ticker": "TSM"
+      },
+      {
+        "after": "ELIGIBLE",
+        "before": "ELIGIBLE",
+        "classification": "UNCHANGED",
+        "family": "trade_ap",
+        "kind": "metric",
+        "ticker": "TSM"
+      },
+      {
+        "after": "BLOCKED",
+        "before": "BLOCKED",
+        "classification": "UNCHANGED",
+        "family": "broad_ap",
+        "kind": "metric",
+        "ticker": "TSM"
+      },
+      {
+        "after": "ELIGIBLE",
+        "before": "ELIGIBLE",
+        "classification": "UNCHANGED",
+        "family": "ar_vs_revenue",
+        "kind": "relation",
+        "ticker": "TSM"
+      },
+      {
+        "after": "ELIGIBLE",
+        "before": "ELIGIBLE",
+        "classification": "UNCHANGED",
+        "family": "inventory_vs_revenue",
+        "kind": "relation",
+        "ticker": "TSM"
+      },
+      {
+        "after": "ELIGIBLE",
+        "before": "ELIGIBLE",
+        "classification": "UNCHANGED",
+        "family": "inventory_vs_cogs",
+        "kind": "relation",
+        "ticker": "TSM"
+      },
+      {
+        "after": "ELIGIBLE",
+        "before": "ELIGIBLE",
+        "classification": "UNCHANGED",
+        "family": "ap_vs_cogs",
+        "kind": "relation",
+        "ticker": "TSM"
+      },
+      {
+        "after": "PARTIAL",
+        "before": "PARTIAL",
+        "classification": "UNCHANGED",
+        "family": "inventory",
+        "kind": "metric",
+        "ticker": "WRD"
+      },
+      {
+        "after": "PARTIAL",
+        "before": "PARTIAL",
+        "classification": "UNCHANGED",
+        "family": "trade_ar",
+        "kind": "metric",
+        "ticker": "WRD"
+      },
+      {
+        "after": "PARTIAL",
+        "before": "PARTIAL",
+        "classification": "UNCHANGED",
+        "family": "broad_ar",
+        "kind": "metric",
+        "ticker": "WRD"
+      },
+      {
+        "after": "BLOCKED",
+        "before": "BLOCKED",
+        "classification": "UNCHANGED",
+        "family": "trade_ap",
+        "kind": "metric",
+        "ticker": "WRD"
+      },
+      {
+        "after": "PARTIAL",
+        "before": "PARTIAL",
+        "classification": "UNCHANGED",
+        "family": "broad_ap",
+        "kind": "metric",
+        "ticker": "WRD"
+      },
+      {
+        "after": "BLOCKED",
+        "before": "BLOCKED",
+        "classification": "UNCHANGED",
+        "family": "ar_vs_revenue",
+        "kind": "relation",
+        "ticker": "WRD"
+      },
+      {
+        "after": "BLOCKED",
+        "before": "BLOCKED",
+        "classification": "UNCHANGED",
+        "family": "inventory_vs_revenue",
+        "kind": "relation",
+        "ticker": "WRD"
+      },
+      {
+        "after": "BLOCKED",
+        "before": "BLOCKED",
+        "classification": "UNCHANGED",
+        "family": "inventory_vs_cogs",
+        "kind": "relation",
+        "ticker": "WRD"
+      },
+      {
+        "after": "BLOCKED",
+        "before": "BLOCKED",
+        "classification": "UNCHANGED",
+        "family": "ap_vs_cogs",
+        "kind": "relation",
+        "ticker": "WRD"
+      },
+      {
+        "after": "ELIGIBLE",
+        "before": "ELIGIBLE",
+        "classification": "UNCHANGED",
+        "family": "inventory",
+        "kind": "metric",
+        "ticker": "WULF"
+      },
+      {
+        "after": "BLOCKED",
+        "before": "BLOCKED",
+        "classification": "UNCHANGED",
+        "family": "trade_ar",
+        "kind": "metric",
+        "ticker": "WULF"
+      },
+      {
+        "after": "ELIGIBLE",
+        "before": "ELIGIBLE",
+        "classification": "UNCHANGED",
+        "family": "broad_ar",
+        "kind": "metric",
+        "ticker": "WULF"
+      },
+      {
+        "after": "ELIGIBLE",
+        "before": "ELIGIBLE",
+        "classification": "UNCHANGED",
+        "family": "trade_ap",
+        "kind": "metric",
+        "ticker": "WULF"
+      },
+      {
+        "after": "ELIGIBLE",
+        "before": "ELIGIBLE",
+        "classification": "UNCHANGED",
+        "family": "broad_ap",
+        "kind": "metric",
+        "ticker": "WULF"
+      },
+      {
+        "after": "BLOCKED",
+        "before": "BLOCKED",
+        "classification": "UNCHANGED",
+        "family": "ar_vs_revenue",
+        "kind": "relation",
+        "ticker": "WULF"
+      },
+      {
+        "after": "ELIGIBLE",
+        "before": "ELIGIBLE",
+        "classification": "UNCHANGED",
+        "family": "inventory_vs_revenue",
+        "kind": "relation",
+        "ticker": "WULF"
+      },
+      {
+        "after": "ELIGIBLE",
+        "before": "ELIGIBLE",
+        "classification": "UNCHANGED",
+        "family": "inventory_vs_cogs",
+        "kind": "relation",
+        "ticker": "WULF"
+      },
+      {
+        "after": "ELIGIBLE",
+        "before": "ELIGIBLE",
+        "classification": "UNCHANGED",
+        "family": "ap_vs_cogs",
+        "kind": "relation",
+        "ticker": "WULF"
+      }
+    ],
+    "semantic_reclassified": []
+  },
+  "derivation_version": "working-capital-evidence-v1:canonical-core-v1",
+  "lineage_audit": {
+    "all_errors": [],
+    "arithmetic_complete": true,
+    "arithmetic_errors": [],
+    "counts": {
+      "derived_facts": 119,
+      "eligible_relations": 53,
+      "financial_flow_yoy_growth": 31,
+      "reported_raw_facts": 160,
+      "working_capital_balance_delta": 44,
+      "working_capital_balance_yoy_growth": 44
+    },
+    "derived_input_lineage_complete": true,
+    "eligible_relation_lineage_complete": true,
+    "idempotency_errors": [],
+    "idempotent": true,
+    "provenance_errors": [],
+    "source_occurrence_complete": true
+  },
+  "market_counts": {
+    "KR": 7,
+    "US_FOREIGN": 13
+  },
+  "metric_counts": {
+    "broad_ap": {
+      "BLOCKED": 8,
+      "ELIGIBLE": 10,
+      "NOT_APPLICABLE": 1,
+      "PARTIAL": 1
+    },
+    "broad_ar": {
+      "BLOCKED": 7,
+      "ELIGIBLE": 9,
+      "NOT_APPLICABLE": 1,
+      "PARTIAL": 3
+    },
+    "inventory": {
+      "BLOCKED": 5,
+      "ELIGIBLE": 11,
+      "NOT_APPLICABLE": 1,
+      "PARTIAL": 3
+    },
+    "trade_ap": {
+      "BLOCKED": 10,
+      "ELIGIBLE": 8,
+      "NOT_APPLICABLE": 1,
+      "PARTIAL": 1
+    },
+    "trade_ar": {
+      "BLOCKED": 12,
+      "ELIGIBLE": 6,
+      "NOT_APPLICABLE": 1,
+      "PARTIAL": 1
+    }
+  },
+  "mutations": {
+    "database": 0,
+    "fallback": 0,
+    "pilot": 0,
+    "public_action": 0,
+    "runtime": 0,
+    "scheduled_task": 0,
+    "telegram": 0,
+    "user_visible": 0
+  },
+  "provider_telemetry": {
+    "new_paid_providers": 0,
+    "opendart": {
+      "failures": 0,
+      "live_requests": 0,
+      "stored_cache_hits": 12
+    },
+    "sec_companyfacts": {
+      "failures": 0,
+      "live_requests": 0,
+      "stored_cache_hits": 13
+    }
+  },
+  "readiness": {
+    "advanced_ratios": {
+      "ccc": "DEFER",
+      "dpo": "DEFER",
+      "dso": "DEFER",
+      "inventory_days": "DEFER",
+      "roic": "DEFER"
+    },
+    "p0_open": [],
+    "p1_open": [],
+    "p2_backlog": [
+      "prior-quarter working-capital lifecycle",
+      "inventory component decomposition",
+      "contract-assets separate evidence family",
+      "management-specific working-capital reconciliation"
+    ],
+    "phase_9_1c_metric_families": [
+      "inventory",
+      "trade_ar",
+      "broad_ar",
+      "trade_ap",
+      "broad_ap"
+    ],
+    "phase_9_1c_ready": true,
+    "phase_9_1c_relation_families": [
+      "trade_ar_vs_revenue",
+      "broad_ar_vs_revenue",
+      "inventory_vs_revenue",
+      "inventory_vs_cogs",
+      "trade_ap_vs_cogs",
+      "broad_ap_vs_cogs"
+    ],
+    "phase_9_1c_scope": "WORKING_CAPITAL_SHADOW_CONSUMPTION_EARNINGS_QUALITY",
+    "promotion": "PROMOTION_DEFERRED_FOR_KR_NATURAL_WINDOW",
+    "runtime_user_visible_diff": 0,
+    "working_capital_user_visible": "NOT_ENABLED"
+  },
+  "relation_counts": {
+    "broad_ap_vs_cogs": {
+      "BLOCKED": 10,
+      "ELIGIBLE": 9,
+      "NOT_APPLICABLE": 1,
+      "PARTIAL": 0
+    },
+    "broad_ar_vs_revenue": {
+      "BLOCKED": 11,
+      "ELIGIBLE": 8,
+      "NOT_APPLICABLE": 1,
+      "PARTIAL": 0
+    },
+    "inventory_vs_cogs": {
+      "BLOCKED": 8,
+      "ELIGIBLE": 11,
+      "NOT_APPLICABLE": 1,
+      "PARTIAL": 0
+    },
+    "inventory_vs_revenue": {
+      "BLOCKED": 8,
+      "ELIGIBLE": 11,
+      "NOT_APPLICABLE": 1,
+      "PARTIAL": 0
+    },
+    "trade_ap_vs_cogs": {
+      "BLOCKED": 11,
+      "ELIGIBLE": 8,
+      "NOT_APPLICABLE": 1,
+      "PARTIAL": 0
+    },
+    "trade_ar_vs_revenue": {
+      "BLOCKED": 13,
+      "ELIGIBLE": 6,
+      "NOT_APPLICABLE": 1,
+      "PARTIAL": 0
+    }
+  }
+}

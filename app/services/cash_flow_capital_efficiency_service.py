@@ -58,6 +58,8 @@ class Metric(StrEnum):
     CAPEX_INTENSITY = "capex_intensity_ppe"
     OCF_TO_NET_INCOME = "operating_cash_flow_to_net_income"
     BALANCE_DELTA = "working_capital_balance_delta"
+    BALANCE_YOY_GROWTH = "working_capital_balance_yoy_growth"
+    FLOW_YOY_GROWTH = "financial_flow_yoy_growth"
     DSO = "days_sales_outstanding"
     INVENTORY_DAYS = "inventory_days"
     DPO = "days_payables_outstanding"

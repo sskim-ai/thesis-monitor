@@ -44,16 +44,16 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     assert state["repository"] == "sskim-ai/thesis-monitor"
     assert state["branch"] == "main"
     assert state["experimental_branch"] == (
-        "codex/phase-9-1a-working-capital-evidence-architecture"
+        "codex/phase-9-1b-canonical-working-capital-core"
     )
     assert state["current_phase"] == (
-        "phase_9_1a_architecture_closed_promotion_deferred"
+        "phase_9_1b_implemented_promotion_deferred"
     )
     assert state["last_completed_phase"] == (
-        "phase_9_1a_working_capital_evidence_architecture"
+        "phase_9_1b_canonical_working_capital_core"
     )
     assert state["next_default_phase"] == (
-        "phase_9_1b_canonical_working_capital_core"
+        "phase_9_1c_working_capital_shadow_consumption"
     )
     assert state["deployed_code_commit"] == "HEAD"
     assert state["main_code_commit"] == "HEAD"
@@ -120,6 +120,11 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     assert advancement["phase_9_1b_ready"] is True
     assert advancement["phase_9_1b_scope"] == (
         "SELECTIVE_INVENTORY_AR_AP_CANONICAL_CORE"
+    )
+    assert advancement["phase_9_1b_complete"] is True
+    assert advancement["phase_9_1c_ready"] is True
+    assert advancement["phase_9_1c_scope"] == (
+        "WORKING_CAPITAL_SHADOW_CONSUMPTION_EARNINGS_QUALITY"
     )
     assert advancement["next_major_architecture_ready"] is True
     phase_90a = state["phase_9_0a_cash_flow_capital_efficiency"]
@@ -190,6 +195,27 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     assert phase_91a["metric_coverage"]["inventory"]["eligible"] == 11
     assert phase_91a["runtime_user_visible_diff"] == 0
     assert phase_91a["phase_9_1b_ready"] is True
+    phase_91b = state["phase_9_1b_canonical_working_capital_core"]
+    assert phase_91b["status"] == (
+        "implemented_shadow_ready_for_phase_9_1c_promotion_deferred"
+    )
+    assert phase_91b["work_instruction_commit"] == (
+        "0952bee040133aa49a4ba494ecae76163e9a9511"
+    )
+    assert phase_91b["active_universe"] == 20
+    assert phase_91b["canonical_fact_counts"] == {
+        "reported_selected": 160,
+        "balance_delta": 44,
+        "balance_yoy": 44,
+        "flow_yoy": 31,
+        "eligible_relations": 53,
+    }
+    assert phase_91b["coverage_newly_blocked"] == 0
+    assert phase_91b["arithmetic_errors"] == 0
+    assert phase_91b["provenance_errors"] == 0
+    assert phase_91b["idempotency_errors"] == 0
+    assert phase_91b["runtime_user_visible_diff"] == 0
+    assert phase_91b["phase_9_1c_ready"] is True
     assert state["persistent_gaps"]["krx_open_api"] == (
         "APPROVED_TELEMETRY_ONLY_OPERATING_USER_VISIBLE_NOT_INTEGRATED"
     )

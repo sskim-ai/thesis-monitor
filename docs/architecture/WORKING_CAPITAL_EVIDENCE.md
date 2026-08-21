@@ -36,4 +36,23 @@ Every Fact retains filing/source availability. Historical replay requires `sourc
 
 Inventory is primary for memory, automotive, and steel/materials; AR is primary for industrial/project and transport subjects where semantics are safe. Contract assets are not trade AR. Accrued liabilities are not trade AP. Insurance/reinsurance is `NOT_APPLICABLE`; biotech and special financial-like platforms remain context-only unless business-specific evidence supports more.
 
-No DSO, Inventory Days, DPO, CCC, AI packet, fallback, Public Action, snapshot, thesis-state, warning, or user-visible behavior is implemented in Phase 9.1A.
+No DSO, Inventory Days, DPO, CCC, AI packet, fallback, Public Action, thesis-state, warning, or user-visible behavior is implemented in Phase 9.1A.
+
+## Phase 9.1B Canonical Core
+
+Phase 9.1B implements the approved selective core without changing the source adapters or creating a parallel truth store. `working_capital_core_service` consumes the Phase 9.1A `FinancialFact` stream after `source_available_at <= as_of_date` filtering and produces an audit-only per-issuer snapshot.
+
+The canonical raw families remain `inventory`, `trade_accounts_receivable`, `accounts_receivable_broad`, `trade_accounts_payable`, and `accounts_payable_broad`. Each metric independently selects its latest safe current Fact and exact prior-year same-fiscal-quarter comparable. A missing metric never blocks another metric.
+
+Safe pairs produce two deterministic `DERIVED_METRIC` Facts:
+
+- `working_capital_balance_delta = current - prior` in the reported currency/unit.
+- `working_capital_balance_yoy_growth = (current - prior) / prior * 100` as a dimensionless percent, only when prior is positive.
+
+Compatible Revenue/COGS pairs produce `financial_flow_yoy_growth` Facts. Structured `YOY_GROWTH_COMPARISON` relations then retain the balance metric and exact semantic/scope, flow metric and semantic, four raw Fact IDs, both canonical YoY Fact IDs, direction, percentage-point gap, formula, derivation version, eligibility, and cautions. Trade and broad AR/AP therefore cannot collapse in relation identity.
+
+The derivation version is `working-capital-evidence-v1:canonical-core-v1`. Repeated input processing yields the same Fact and relation IDs. Hard-tainted, unavailable, future, mismatched, non-comparable, or non-positive-denominator inputs fail closed. Restatement policy and source availability propagate to every derived Fact.
+
+The 20-subject implementation reproduces the Phase 9.1A metric coverage with zero newly blocked families. It audits 160 selected reported Facts, 44 delta Facts, 44 balance YoY Facts, 31 flow YoY Facts, and 53 fully lined structured relations with zero arithmetic, provenance, or idempotency errors. Korean Re remains `NOT_APPLICABLE`; KR non-financial balance-sheet evidence remains independent of the unresolved OpenDART cash-flow duration context.
+
+The canonical snapshot is used only by tests and `scripts/phase9_1b_evidence.py`. It is not imported into production packets, AI context, Telegram, fallback, Public Action, schema 4, assessment state, warning lifecycle, or database storage. DSO, Inventory Days, DPO, CCC, standard ROIC, contract assets, inventory component aggregation, accrued-liability decomposition, and prior-quarter lifecycle remain deferred.

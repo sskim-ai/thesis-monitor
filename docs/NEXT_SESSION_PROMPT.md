@@ -12,20 +12,21 @@ Read, in order:
 2. `docs/MASTER_WORKFLOW.md`
 3. `docs/PROJECT_HANDOFF.md`
 4. `docs/architecture/WORKING_CAPITAL_EVIDENCE.md`
-5. `docs/reports/20260821-phase9-1a-complete-report.md`
-6. `docs/reports/20260821-phase9-1a-readiness.md`
-7. `docs/reports/20260821-phase9-1a-coverage.json`
+5. `docs/reports/20260821-phase9-1b-complete-report.md`
+6. `docs/reports/20260821-phase9-1b-readiness.md`
+7. `docs/reports/20260821-phase9-1b-canonical-facts.json`
 8. `docs/BRANCH_DEPENDENCY.md`
 
 Current development state:
 
-- Phase 9.1A: `ARCHITECTURE_CLOSED_READY_FOR_PHASE_9_1B`
+- Phase 9.1A: `COMPLETE_PENDING_PROMOTION`
+- Phase 9.1B: `IMPLEMENTED_PENDING_PROMOTION`
 - Contract: `working-capital-evidence-v1`
-- Work-instruction commit: `eaaadb1ac4fb5c9a7d3486ecc8274708c285ff79`
-- Implementation commit: `0d3b42715fc8964fe053d72e0ecc979fb78b14cc`
-- Actions run `32447178183`: Test/Lint PASS
-- `PHASE_9_1B_READY = YES`
-- `PHASE_9_1B_SCOPE = SELECTIVE_INVENTORY_AR_AP_CANONICAL_CORE`
+- Derivation: `working-capital-evidence-v1:canonical-core-v1`
+- 9.1B work-instruction commit: `0952bee040133aa49a4ba494ecae76163e9a9511`
+- Implementation/final commit: resolve from Git and exact-SHA Actions
+- `PHASE_9_1C_READY = YES`
+- `PHASE_9_1C_SCOPE = WORKING_CAPITAL_SHADOW_CONSUMPTION_EARNINGS_QUALITY`
 - Promotion: `PROMOTION_DEFERRED_FOR_KR_NATURAL_WINDOW`
 - Runtime/user-visible behavior diff: `0`
 - Open P0/material P1: `0 / 0`
@@ -35,17 +36,23 @@ with mode `SELECTIVE_CURRENT_FORMAL_FULL_FCF`. Before promoting 9.1A, inspect th
 review after the protected window. Do not promote across a newly observed P0. Do not run a task or
 send Telegram manually.
 
-Phase 9.1B may implement only the evidence-supported canonical core:
+Phase 9.1B implements the evidence-supported canonical core:
 
 - total Inventory, without silent component aggregation;
 - exact trade AR/AP and separate broad AR/AP, never collapsed;
 - source balance scope and issuer-reported net/gross scope;
 - same-fiscal-quarter prior-year point-in-time comparables;
-- deterministic absolute delta and YoY growth;
-- selective AR/revenue, Inventory/revenue, Inventory/COGS, and AP/COGS relations;
+- deterministic canonical absolute delta and balance/flow YoY Facts;
+- six trade/broad-preserving AR/revenue, Inventory/revenue, Inventory/COGS, and AP/COGS relations;
 - explicit fail-closed states for missing or incompatible evidence.
 
-Keep DSO, Inventory Days, DPO, CCC, standard ROIC, AI/Telegram consumption, Public Action/schema,
-fallback rendering, assessment mutation, KR cash-flow period recovery, KRX breadth, and peer
-integration out of Phase 9.1B. The next natural US cash-flow proof and KRX telemetry continue in
-parallel under Phase Advancement Rule v1.
+Implementation coverage is unchanged from Phase 9.1A. The audit contains 160 selected reported
+Facts, 44 delta, 44 balance YoY, 31 flow YoY Facts, and 53 eligible structured relations with zero
+arithmetic, provenance, idempotency, or coverage-regression errors.
+
+The next default phase is archive/shadow-only working-capital consumption and earnings-quality
+reasoning. Keep DSO, Inventory Days, DPO, CCC, standard ROIC, user-visible AI/Telegram consumption,
+Public Action/schema, fallback rendering, assessment mutation, KR cash-flow period recovery, KRX
+breadth, and peer integration out unless a separate instruction explicitly authorizes them. The
+next natural US cash-flow proof and KRX telemetry continue in parallel under Phase Advancement Rule
+v1.

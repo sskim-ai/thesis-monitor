@@ -676,13 +676,40 @@ and material P1 are zero. `PHASE_9_1B_READY = YES`; scope is
 `SELECTIVE_INVENTORY_AR_AP_CANONICAL_CORE`. Main/operating promotion is deferred until the separate
 KR natural-window review, not because of an architecture blocker.
 
+## 21I. Phase 9.1B Canonical Working-Capital Core
+
+Phase 9.1B starts from Phase 9.1A final SHA `d4a4daf08ff5f68bc1072cc065e69ca5de5da145`
+and immutable instruction commit `0952bee040133aa49a4ba494ecae76163e9a9511`. It preserves the
+`working-capital-evidence-v1` raw registry and adds derivation version
+`working-capital-evidence-v1:canonical-core-v1`.
+
+The core consumes only PIT-visible Phase 9.1A Facts. Each of Inventory, exact trade AR, separate
+broad AR, exact trade AP, and separate broad AP independently selects an exact prior-year
+same-fiscal-quarter comparable. Safe pairs emit canonical Decimal delta and YoY Facts; compatible
+Revenue/COGS pairs emit flow YoY Facts. Six structured relation families preserve the exact balance
+metric/semantic/scope, flow semantic, four raw input IDs, two YoY Fact IDs, direction, gap, formula,
+version, eligibility, and cautions. The canonical layer emits no quality verdict or causality.
+
+The 20-subject audit exactly reproduces Phase 9.1A metric coverage with zero newly blocked items. It
+contains 160 selected reported Facts, 44 delta, 44 balance YoY, 31 flow YoY Facts, and 53 eligible
+relations. Arithmetic, provenance, and idempotency errors are zero. Insurance remains N/A and KR
+non-financial balance-sheet support remains independent of the OpenDART cash-flow duration gap.
+
+The service is imported only by tests and the read-only evidence generator. User-visible runtime,
+AI packet, Telegram, fallback, Public Action 0.4.5, schema 4, DB, task, Pilot, and warning behavior
+change by zero. DSO, Inventory Days, DPO, CCC, ROIC, contract assets, inventory components, accrued
+liabilities, and prior-quarter lifecycle remain deferred. Open P0/material P1 are zero, so
+`PHASE_9_1C_READY = YES`; scope is
+`WORKING_CAPITAL_SHADOW_CONSUMPTION_EARNINGS_QUALITY`. Promotion remains deferred for the separate
+KR natural-window review.
+
 ## 22. Current Roadmap
 
-The development state is `PHASE_9_1A_ARCHITECTURE_CLOSED_PROMOTION_DEFERRED`; the operating state is
+The development state is `PHASE_9_1B_IMPLEMENTED_PROMOTION_DEFERRED`; the operating state is
 still `PHASE_9_0E_DEPLOYED_SELECTIVE_PENDING_NATURAL`. Open P0 and material P1 are zero.
-`PHASE_9_1B_READY = YES`; the recommended next implementation is the selective Inventory/AR/AP
-canonical core. KR OpenDART cash-flow period recovery remains a medium follow-up rather than a
-blocker, and advanced working-capital day ratios remain deferred.
+`PHASE_9_1C_READY = YES`; the recommended next phase is archive/shadow-only working-capital
+consumption and earnings-quality reasoning. KR OpenDART cash-flow period recovery remains a medium
+follow-up rather than a blocker, and advanced working-capital day ratios remain deferred.
 
 In parallel, observe the next natural US/KR sessions for AI-assisted delivery, ownership,
 repetition, night-session integrity, fallback, language, receipt, archive, and exactly-once proof.
@@ -779,11 +806,11 @@ approval. Main merge and shadow deployment still do not authorize AI-assisted pr
 ## 27. Current Next Task
 
 Review the next natural US user-visible cash-flow delivery without manual execution. In parallel,
-Phase 9.1B may implement a selective canonical core for total Inventory and separate trade/broad
-AR/AP Facts, prior-year comparable deltas, YoY growth, and the four approved cross-growth relations.
-Do not implement DSO, Inventory Days, DPO, CCC, ROIC, broaden user-visible cash flow, or recover KR
-cash-flow periods inside that task without a separate instruction. Promote Phase 9.1A only after the
-separate KR natural-window review confirms no relevant P0.
+Phase 9.1C may consume the implemented working-capital Facts only in archive/shadow reasoning after
+a separate work instruction. Do not implement DSO, Inventory Days, DPO, CCC, ROIC, user-visible
+working-capital output, or KR cash-flow period recovery without separate authorization. Promote the
+full Phase 9.1A -> 9.1B chain only after the separate KR natural-window review confirms no relevant
+P0.
 
 ## 28. New Session Bootstrap Prompt
 
