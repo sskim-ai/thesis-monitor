@@ -18,6 +18,10 @@ from app.schemas.thesis import (
     PricePeriodSummary,
 )
 from app.services.market_session import market_session_for_ticker
+from app.services.kr_investor_flow_service import (
+    build_investor_flow_reconciliation,
+    serialized_reconciliation_payload,
+)
 from app.services.ohlcv_structure_service import analyze_chart_structure
 from app.services.provider_telemetry_service import ProviderTelemetryService
 
@@ -56,6 +60,8 @@ _SUPPLY_NUMERIC_FIELDS = (
     "foreign_net_buy_qty_20",
     "institution_net_buy_qty_20",
     "individual_net_buy_qty_20",
+    "other_corp_net_buy_qty",
+    "domestic_foreign_net_buy_qty",
     "foreign_holding_qty",
     "foreign_holding_ratio",
     "supply_score",
@@ -147,7 +153,12 @@ def _investor_supply_context(bars: Sequence[dict[str, object]]) -> InvestorSuppl
     divergence = text("supply_divergence_type")
     if divergence:
         signals.append(f"divergence:{divergence}")
-    return InvestorSupplyContext(
+    provider_primary_signal = text("supply_primary_signal")
+    reconciliation = build_investor_flow_reconciliation(
+        bars,
+        provider_primary_signal=provider_primary_signal,
+    )
+    supply = InvestorSupplyContext(
         available=True,
         as_of_date=bar_date.isoformat(),
         foreign_net_buy_qty=quantity("foreign_net_buy_qty"),
@@ -164,7 +175,7 @@ def _investor_supply_context(bars: Sequence[dict[str, object]]) -> InvestorSuppl
         score=_number(values.get("supply_score")),
         quality=text("supply_quality"),
         quality_detail=text("supply_quality_detail"),
-        primary_signal=text("supply_primary_signal"),
+        primary_signal=str(reconciliation.get("primary_signal") or "unavailable"),
         foreign_flow_direction_20=text("supply_foreign_flow_direction_20"),
         institution_flow_direction_20=text("supply_institution_flow_direction_20"),
         individual_flow_direction_20=text("supply_individual_flow_direction_20"),
@@ -175,6 +186,10 @@ def _investor_supply_context(bars: Sequence[dict[str, object]]) -> InvestorSuppl
         investor_20d_diff_ratio=_number(values.get("investor_net_buy_20_diff_ratio")),
         signals=list(dict.fromkeys(signals)),
     )
+    internal = serialized_reconciliation_payload(reconciliation)
+    internal["provider_primary_signal"] = provider_primary_signal
+    supply.set_reconciliation_payload(internal)
+    return supply
 
 
 def _summarize_bars(requested_count: int, bars: Sequence[dict[str, object]]) -> PricePeriodSummary:

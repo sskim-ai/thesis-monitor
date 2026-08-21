@@ -1325,6 +1325,16 @@ def _price_payload(assessment: ThesisAssessment) -> dict[str, object]:
         "foreign_holding_ratio",
         "quality",
         "primary_signal",
+        "provider_primary_signal",
+        "signal_basis_window",
+        "signal_participants",
+        "attribution_safe",
+        "attribution_confidence",
+        "omitted_participant_materiality",
+        "display_scope",
+        "participant_contract",
+        "reconciliation_contract",
+        "reconciliations",
         "confidence",
         "validation_status",
     )
@@ -4029,6 +4039,11 @@ _KR_SUPPLY_DIRECTION = re.compile(
     r"(?P<direction>순매수|순매도|매수\s*우위|매도\s*우위|매수|매도)",
     re.IGNORECASE,
 )
+_KR_SUPPLY_ATTRIBUTION = re.compile(
+    r"(?:(?:기관(?:과|·|/)?개인)|기관|개인|외국인)"
+    r"(?:(?:이|가|은|는).{0,16}|\s{0,2})(?:흡수|상쇄|주도)",
+    re.IGNORECASE,
+)
 _FINANCIAL_PERIOD_USAGE = re.compile(
     r"\b20\d{2}년\s*(?:[1-4]분기|상반기\s*누적|3분기\s*누적|연간)\b"
 )
@@ -4099,10 +4114,15 @@ def _kr_supply_grounding_errors(
     ticker: str,
     market: AIReviewMarket | None,
     review: AIStockReview,
+    stock: dict[str, object] | None = None,
 ) -> list[str]:
     if market != "kr":
         return []
     errors: list[str] = []
+    price_and_positioning = _dict((stock or {}).get("price_and_positioning"))
+    supply = _dict(price_and_positioning.get("supply"))
+    attribution_safe = supply.get("attribution_safe") is True
+    signal_basis = str(supply.get("signal_basis_window") or "")
     actor_semantics = {
         "외국인": {
             "1d": "foreign_net_buy_qty",
@@ -4117,6 +4137,16 @@ def _kr_supply_grounding_errors(
     }
     for text_ref, text in _prose_fields(review).items():
         for sentence in re.split(r"(?<=[.!?])\s+|\n+", text):
+            if _KR_SUPPLY_ATTRIBUTION.search(sentence):
+                if not attribution_safe or signal_basis == "mixed":
+                    errors.append(f"{ticker}:kr_supply_attribution_unsafe:{text_ref}")
+                elif signal_basis in {"5d", "20d"} and not re.search(
+                    rf"\b{signal_basis.removesuffix('d')}\s*일(?:간)?\b",
+                    sentence,
+                ):
+                    errors.append(
+                        f"{ticker}:kr_supply_attribution_window_missing:{text_ref}:{signal_basis}"
+                    )
             if not _KR_SUPPLY_DIRECTION.search(sentence):
                 continue
             claims = _claims_in_sentence(review, text_ref, sentence)
@@ -4747,7 +4777,7 @@ def _validate_stock_review(
     errors.extend(
         _market_supply_language_errors(review.ticker, market, stock, review)
     )
-    errors.extend(_kr_supply_grounding_errors(review.ticker, market, review))
+    errors.extend(_kr_supply_grounding_errors(review.ticker, market, review, stock))
     errors.extend(_financial_period_language_errors(review.ticker, review))
     errors.extend(_valuation_interpretation_evidence_errors(review.ticker, review))
     identity_blocks_valuation = bool(

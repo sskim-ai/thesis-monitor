@@ -1,7 +1,7 @@
 from datetime import date, datetime
 from enum import StrEnum
 
-from pydantic import BaseModel, ConfigDict, Field, model_validator
+from pydantic import BaseModel, ConfigDict, Field, PrivateAttr, model_validator
 
 
 class AssessmentStatus(StrEnum):
@@ -284,6 +284,8 @@ class PriceDecisionContext(BaseModel):
 
 
 class InvestorSupplyContext(BaseModel):
+    _reconciliation_payload: dict[str, object] = PrivateAttr(default_factory=dict)
+
     available: bool = False
     as_of_date: str | None = None
     foreign_net_buy_qty: int | None = None
@@ -310,6 +312,12 @@ class InvestorSupplyContext(BaseModel):
     investor_20d_validation_status: str | None = None
     investor_20d_diff_ratio: float | None = None
     signals: list[str] = Field(default_factory=list)
+
+    def set_reconciliation_payload(self, payload: dict[str, object]) -> None:
+        self._reconciliation_payload = payload
+
+    def reconciliation_payload(self) -> dict[str, object]:
+        return dict(self._reconciliation_payload)
 
 
 class ChartCandleContext(BaseModel):
