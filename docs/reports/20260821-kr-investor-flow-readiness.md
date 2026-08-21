@@ -28,3 +28,7 @@ KR_INVESTOR_FLOW_RECONCILIATION_REPAIR = PASS
 OPEN_P0 = 0
 OPEN_P1 = 0
 ```
+
+Implementation commit `47fc87e2a9189556a7206065fdb759f3603ce497` passed GitHub Actions run
+`32480802390` Test/Lint plus 1,347 full local tests. Promotion requires only a clean linear main
+update and operating parity; no natural proof is needed to close this bounded correctness repair.

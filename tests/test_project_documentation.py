@@ -28,6 +28,7 @@ DOCUMENTS = (
     ROOT / "docs" / "architecture" / "WORKING_CAPITAL_EVIDENCE.md",
     ROOT / "docs" / "architecture" / "WORKING_CAPITAL_SHADOW_CONSUMPTION.md",
     ROOT / "docs" / "architecture" / "WORKING_CAPITAL_RUNTIME_SHADOW_CANARY.md",
+    ROOT / "docs" / "architecture" / "KR_INVESTOR_FLOW_RECONCILIATION.md",
     ROOT / "docs" / "operations" / "AI_ASSISTED_PILOT.md",
     ROOT / "docs" / "operations" / "CASH_FLOW_USER_VISIBLE_KILL_SWITCH.md",
     ROOT / "docs" / "knowledge" / "README.md",
@@ -47,11 +48,11 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     assert state["repository"] == "sskim-ai/thesis-monitor"
     assert state["branch"] == "main"
     assert state["experimental_branch"] == (
-        "codex/night-futures-publication-telemetry-repair"
+        "codex/kr-investor-flow-reconciliation-attribution-repair"
     )
-    assert state["current_phase"] == "phase_9_1d_deployed_pending_natural"
+    assert state["current_phase"] == "kr_investor_flow_reconciliation_repair_complete"
     assert state["last_completed_phase"] == (
-        "phase_9_1d_selective_working_capital_runtime_shadow_canary"
+        "kr_investor_flow_reconciliation_attribution_repair"
     )
     assert state["next_default_phase"] == (
         "phase_9_1e_architecture_natural_proof_parallel"
@@ -78,6 +79,12 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     )
     assert state["contracts"]["canonical_supply_flow_tuple"] == (
         "canonical-supply-flow-tuple-v1"
+    )
+    assert state["contracts"]["kr_investor_flow_participants"] == (
+        "kr-investor-flow-participants-v1"
+    )
+    assert state["contracts"]["kr_investor_flow_reconciliation"] == (
+        "kr-investor-flow-reconciliation-v1"
     )
     assert state["contracts"]["numeric_primary_owner"] == (
         "numeric-primary-owner-v1"
@@ -286,6 +293,19 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     assert phase_91d["inventory_natural_proof"] == "NOT_OBSERVED"
     assert phase_91d["trade_ar_natural_proof"] == "NOT_OBSERVED"
     assert phase_91d["phase_9_1e_architecture_ready"] is True
+    investor_flow = state["kr_investor_flow_reconciliation_repair"]
+    assert investor_flow["status"] == "complete_pending_natural_confirmation"
+    assert investor_flow["work_instruction_commit"] == (
+        "e9d7c73cf6f25b2423b55a6899465e86441316d1"
+    )
+    assert investor_flow["implementation_commit"] == (
+        "47fc87e2a9189556a7206065fdb759f3603ce497"
+    )
+    assert investor_flow["complete_windows"] == 21
+    assert investor_flow["unsupported_attribution_before_after"] == [2, 0]
+    assert investor_flow["public_schema_diff"] == 0
+    assert investor_flow["p0_open"] == []
+    assert investor_flow["p1_open"] == []
     night_telemetry = state["night_futures_publication_telemetry_repair"]
     assert night_telemetry["status"] == "repair_deployed_pending_natural"
     assert night_telemetry["instruction_commit"] == (

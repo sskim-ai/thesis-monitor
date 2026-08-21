@@ -7,6 +7,17 @@ validation, delivery, or Scheduled Tasks.
 
 ## Current Authoritative Handoff — 2026-08-21
 
+The KR investor-flow reconciliation repair is complete on instruction commit
+`e9d7c73cf6f25b2423b55a6899465e86441316d1` and implementation commit
+`47fc87e2a9189556a7206065fdb759f3603ce497`; Actions run `32480802390` passes Test/Lint. Run-31
+packet `2026-08-21-kr-run-31-27d43ced72a0` proved that the visible foreign/institution/individual
+tuple omitted material other-corporation and domestic-foreign flows. The repair keeps that public
+tuple stable, reconciles all provider top-level participants internally, prevents institution
+subclass double counting, records the 1d/5d/20d basis, and rejects unsafe absorber/leader prose.
+Unsupported attribution falls from two to zero across 21/21 complete windows. Public Action
+`0.4.5`, schema 4, supply scoring, task settings, Pilot, DB, and Production Assist are unchanged.
+Natural confirmation remains pending and does not block Phase 9.1E architecture.
+
 The independent night-futures publication telemetry P1 repair is implemented after explicitly
 reconciling the preserved instruction branch with Phase 9.1D main. Instruction SHA is
 `b7cf6a2f413e309bb637e524aeb7c1436e4c5b1b`; implementation SHA is
