@@ -1090,6 +1090,25 @@ the full validator, and the runtime final-message gate with 8 and 14 logical pay
 quality remains `pending_work_human_review`; production main and the operating checkout are
 unchanged. See [the Phase 7.2.9.2 readiness report](reports/20260817-phase7-2-9-2-readiness.md).
 
+## Phase 9.1D Handoff
+
+- Contract: `working-capital-runtime-shadow-canary-v1`
+- Instruction commit: `dc4e1cf14faa7cebf78eb8ba5a5e73b6369c991c`
+- Implementation commit: `5316113062782b09595a495ec9a903a4973f9df5`
+- Scope: total Inventory and exact Trade AR only, dynamically selected
+- Retrospective parity: 5 Inventory + 2 exact Trade AR, relation drift 0
+- Binding: 7 automatic, 0 manual/rejected/unresolved
+- Production influence and user-visible diff: 0
+- Runtime state: `DEPLOYED_PENDING_NATURAL`
+- Inventory natural proof: `NOT_OBSERVED`
+- exact Trade AR natural proof: `NOT_OBSERVED`
+- Phase 9.1E architecture readiness: YES, natural proof continues in parallel
+
+The canary is dispatched independently from the cash-flow canary after a terminal delivery receipt.
+It combines packet financial-period context with the static canonical report so a newer formal
+period suppresses an older relation. Empty opportunities produce a terminal suppressed receipt;
+validation failures remain isolated and retryable under one logical canary ID.
+
 ## Source Map
 
 - Packet, claim, validation, grounding: `app/services/ai_review_service.py`
@@ -1100,6 +1119,7 @@ unchanged. See [the Phase 7.2.9.2 readiness report](reports/20260817-phase7-2-9-
 - Monitoring state and peer context: `app/services/monitoring_state_service.py`
 - Exchange-session eligibility: `app/services/market_session.py`
 - Runtime packet preflight: `app/services/runtime_packet_completeness_service.py`
+- Working-capital runtime canary: `app/services/working_capital_runtime_shadow_canary_service.py`
 - Current price-context selector: `app/services/current_price_context_service.py`
 - Runtime specificity plan: `app/services/runtime_specificity_service.py`
 - Candidate ownership normalization: `app/services/runtime_reasoning_ownership_service.py`
@@ -1130,6 +1150,9 @@ unchanged. See [the Phase 7.2.9.2 readiness report](reports/20260817-phase7-2-9-
 - Cash-flow architecture, canonical core, archive consumption, natural canary, baseline consistency,
   and selective initial rollout are closed. User-visible natural proof is pending. KR remains
   partial on unresolved CF period context; CCC and standard ROIC are deferred.
+- Working-capital architecture, canonical core, and archive consumption are promoted. The detached
+  Inventory/exact-Trade-AR runtime canary is deployed pending natural proof. Broad AR/AP, exact AP,
+  DSO, Inventory Days, DPO, CCC, and user-visible working-capital remain disabled or deferred.
 - The persisted US count includes the 2026-08-16 operationally complete session whose human message
   quality review failed. Operational count and human approval remain separate; this packet is not
   Production Assist evidence.
@@ -1183,10 +1206,9 @@ first.
    exact-group or natural-message evidence appears.
 7. Apply Phase Advancement Rule v1 to new runtime findings: disable Phase 9.0E for P0, bound material
    P1 repairs, and retain P2 as backlog.
-8. Phase 9.1A architecture, 9.1B canonical core, and 9.1C archive consumption are closed on one
-   dependent branch chain. After the separate KR natural-window review, promote the chain if no
-   relevant P0 exists. A separately instructed 9.1D may canary only current-formal Inventory and
-   exact Trade AR relations. Keep broad/AP initial canary use, DSO, Inventory Days, DPO, CCC, and
-   standard ROIC deferred.
+8. Phase 9.1A architecture, 9.1B canonical core, and 9.1C archive consumption are promoted. Phase
+   9.1D canaries only current-formal total Inventory and exact Trade AR after terminal delivery.
+   Observe each family naturally and keep broad/AP use, DSO, Inventory Days, DPO, CCC, standard
+   ROIC, and working-capital user-visible output disabled.
 9. Keep Production Assist disabled until natural full-message evidence passes direct human review
    and the user explicitly approves it.

@@ -1,16 +1,16 @@
 {
   "repository": "sskim-ai/thesis-monitor",
   "branch": "main",
-  "experimental_branch": "codex/phase-9-1c-working-capital-shadow-consumption",
+  "experimental_branch": "codex/phase-9-1d-selective-working-capital-runtime-shadow-canary",
   "current_commit": "HEAD",
   "current_commit_resolution": "git rev-parse HEAD",
-  "recorded_base_commit": "613d91d74d3a91c43ed61f98a13a2ca57b7a90ae",
-  "current_phase": "phase_9_1c_closed_retrospective_promotion_deferred",
-  "last_completed_phase": "phase_9_1c_working_capital_shadow_consumption",
-  "next_default_phase": "phase_9_1d_selective_working_capital_runtime_shadow_canary",
-  "next_candidate": "selective_runtime_shadow_canary_inventory_exact_trade_ar",
+  "recorded_base_commit": "d0dc76a2446ee5ef9188d1b06dcb241df004c143",
+  "current_phase": "phase_9_1d_deployed_pending_natural",
+  "last_completed_phase": "phase_9_1d_selective_working_capital_runtime_shadow_canary",
+  "next_default_phase": "phase_9_1e_architecture_natural_proof_parallel",
+  "next_candidate": "working_capital_user_visible_architecture_after_metric_family_natural_proof",
   "alternative_next_phase": "targeted_runtime_repair_if_new_p0",
-  "latest_validation_report": "docs/reports/20260821-phase9-1c-validation.md",
+  "latest_validation_report": "docs/reports/20260821-phase9-1d-validation.md",
   "deployed_code_commit": "HEAD",
   "main_code_commit": "HEAD",
   "main_code_commit_resolution": "git rev-parse origin/main",
@@ -75,7 +75,8 @@
     "baseline_cash_flow_claim_consistency": "baseline-cash-flow-claim-consistency-v1",
     "cash_flow_user_visible": "cash-flow-user-visible-v1",
     "working_capital_evidence": "working-capital-evidence-v1",
-    "working_capital_shadow_consumption": "working-capital-shadow-consumption-v1"
+    "working_capital_shadow_consumption": "working-capital-shadow-consumption-v1",
+    "working_capital_runtime_shadow_canary": "working-capital-runtime-shadow-canary-v1"
   },
   "peer_valuation": {
     "contract": "pass",
@@ -619,7 +620,7 @@
     "report": "docs/reports/20260821-phase9-0e-complete-report.md"
   },
   "phase_9_1a_working_capital_evidence_architecture": {
-    "status": "architecture_closed_ready_for_phase_9_1b_promotion_deferred",
+    "status": "architecture_closed_promoted",
     "branch": "codex/phase-9-1a-working-capital-evidence-architecture",
     "base": "33c2f8be376b2cbb2961ecf9dc3c873715e0a034",
     "work_instruction_commit": "eaaadb1ac4fb5c9a7d3486ecc8274708c285ff79",
@@ -664,7 +665,7 @@
     "full_pytest": "1288_passed_1_warning",
     "runtime_user_visible_diff": 0,
     "phase_9_0e_mode_unchanged": "SELECTIVE_CURRENT_FORMAL_FULL_FCF",
-    "promotion": "PROMOTION_DEFERRED_FOR_KR_NATURAL_WINDOW",
+    "promotion": "PROMOTED_IN_PHASE_9_1_CHAIN",
     "p0_open": [],
     "p1_open": [],
     "phase_9_1b_ready": true,
@@ -672,7 +673,7 @@
     "report": "docs/reports/20260821-phase9-1a-complete-report.md"
   },
   "phase_9_1b_canonical_working_capital_core": {
-    "status": "implemented_shadow_ready_for_phase_9_1c_promotion_deferred",
+    "status": "implemented_shadow_promoted",
     "branch": "codex/phase-9-1b-canonical-working-capital-core",
     "base": "d4a4daf08ff5f68bc1072cc065e69ca5de5da145",
     "work_instruction_commit": "0952bee040133aa49a4ba494ecae76163e9a9511",
@@ -720,7 +721,7 @@
     "working_capital_user_visible": "NOT_ENABLED",
     "runtime_user_visible_diff": 0,
     "phase_9_0e_mode_unchanged": "SELECTIVE_CURRENT_FORMAL_FULL_FCF",
-    "promotion": "PROMOTION_DEFERRED_FOR_KR_NATURAL_WINDOW",
+    "promotion": "PROMOTED_IN_PHASE_9_1_CHAIN",
     "p0_open": [],
     "p1_open": [],
     "phase_9_1c_ready": true,
@@ -728,7 +729,7 @@
     "report": "docs/reports/20260821-phase9-1b-complete-report.md"
   },
   "phase_9_1c_working_capital_shadow_consumption": {
-    "status": "shadow_consumption_closed_retrospective_pending_promotion",
+    "status": "shadow_consumption_closed_retrospective_promoted",
     "branch": "codex/phase-9-1c-working-capital-shadow-consumption",
     "base": "2ea8c43c6ec5ef986c23ea15ea707b5e93a720f6",
     "work_instruction_commit": "613d91d74d3a91c43ed61f98a13a2ca57b7a90ae",
@@ -770,7 +771,7 @@
     "working_capital_user_visible": "NOT_ENABLED",
     "runtime_user_visible_diff": 0,
     "phase_9_0e_mode_unchanged": "SELECTIVE_CURRENT_FORMAL_FULL_FCF",
-    "promotion": "PROMOTION_DEFERRED_FOR_KR_NATURAL_WINDOW",
+    "promotion": "PROMOTED_MAIN_OPERATING_D0DC76A2446EE5EF9188D1B06DCB241DF004C143",
     "advanced_ratios": {
       "dso": "DEFER",
       "inventory_days": "DEFER",
@@ -782,6 +783,40 @@
     "phase_9_1d_ready": true,
     "phase_9_1d_scope": "SELECTIVE_RUNTIME_SHADOW_CANARY_INVENTORY_EXACT_TRADE_AR",
     "report": "docs/reports/20260821-phase9-1c-complete-report.md"
+  },
+  "phase_9_1d_working_capital_runtime_shadow_canary": {
+    "status": "deployed_pending_natural",
+    "branch": "codex/phase-9-1d-selective-working-capital-runtime-shadow-canary",
+    "base": "d0dc76a2446ee5ef9188d1b06dcb241df004c143",
+    "work_instruction_commit": "dc4e1cf14faa7cebf78eb8ba5a5e73b6369c991c",
+    "implementation_commit": "5316113062782b09595a495ec9a903a4973f9df5",
+    "contract": "working-capital-runtime-shadow-canary-v1",
+    "active_universe": 20,
+    "allowed_metrics": ["inventory", "trade_accounts_receivable"],
+    "retrospective_selected_relations": {
+      "inventory": 5,
+      "exact_trade_ar": 2,
+      "broad_ar": 0,
+      "exact_trade_ap": 0,
+      "broad_ap": 0
+    },
+    "numeric_binding": {
+      "automatic": 7,
+      "manual": 0,
+      "rejected": 0,
+      "unresolved": 0
+    },
+    "selector_parity_errors": 0,
+    "semantic_causal_errors": 0,
+    "runtime_quality": "PASS",
+    "production_influence": 0,
+    "working_capital_user_visible": "NOT_ENABLED",
+    "inventory_natural_proof": "NOT_OBSERVED",
+    "trade_ar_natural_proof": "NOT_OBSERVED",
+    "p0_open": [],
+    "p1_open": [],
+    "phase_9_1e_architecture_ready": true,
+    "report": "docs/reports/20260821-phase9-1d-complete-report.md"
   },
   "krx_exact_slot_telemetry_capture": {
     "status": "operating_telemetry_only_pending_natural",
@@ -928,12 +963,14 @@
     "phase_9_0d_1_readiness": "BASELINE_CASH_FLOW_CONSISTENCY_CLOSED",
     "phase_9_0e_readiness": "DEPLOYED_SELECTIVE_PENDING_NATURAL",
     "working_capital_evidence": "CANONICAL_CORE_IMPLEMENTED_SHADOW",
-    "working_capital_shadow_consumption": "CLOSED_RETROSPECTIVE_READY_FOR_SELECTIVE_PHASE_9_1D_CANARY",
+    "working_capital_shadow_consumption": "CLOSED_RETROSPECTIVE_PROMOTED",
+    "working_capital_runtime_shadow_canary": "DEPLOYED_PENDING_NATURAL_INVENTORY_EXACT_TRADE_AR",
     "working_capital_user_visible": "NOT_ENABLED",
-    "phase_9_1a_readiness": "COMPLETE_BRANCH_CI_PASS_PROMOTION_DEFERRED_FOR_KR_NATURAL_WINDOW",
-    "phase_9_1b_readiness": "COMPLETE_BRANCH_CI_PASS_PROMOTION_DEFERRED_FOR_KR_NATURAL_WINDOW",
-    "phase_9_1c_readiness": "COMPLETE_RETROSPECTIVE_PASS_PROMOTION_DEFERRED_FOR_KR_NATURAL_WINDOW",
-    "next_major_architecture_readiness": "YES_PHASE_9_1D_SELECTIVE_RUNTIME_SHADOW_CANARY_INVENTORY_EXACT_TRADE_AR"
+    "phase_9_1a_readiness": "COMPLETE_PROMOTED",
+    "phase_9_1b_readiness": "COMPLETE_PROMOTED",
+    "phase_9_1c_readiness": "COMPLETE_RETROSPECTIVE_PROMOTED",
+    "phase_9_1d_readiness": "DEPLOYED_PENDING_NATURAL",
+    "next_major_architecture_readiness": "YES_PHASE_9_1E_ARCHITECTURE_NATURAL_PROOF_PARALLEL"
   },
   "financial_currency_canonicalization": {
     "missing_or_blank": "unknown",
@@ -1008,23 +1045,26 @@
     "phase_9_0e_natural_proof": "pending_next_natural_us",
     "phase_9_1a_complete": true,
     "phase_9_1a_contract": "working-capital-evidence-v1",
-    "phase_9_1a_promotion": "deferred_for_kr_natural_window",
+    "phase_9_1a_promotion": "promoted_in_phase_9_1_chain",
     "phase_9_1b_ready": true,
     "phase_9_1b_scope": "SELECTIVE_INVENTORY_AR_AP_CANONICAL_CORE",
     "phase_9_1b_complete": true,
-    "phase_9_1b_promotion": "deferred_for_kr_natural_window",
+    "phase_9_1b_promotion": "promoted_in_phase_9_1_chain",
     "phase_9_1c_ready": true,
     "phase_9_1c_scope": "WORKING_CAPITAL_SHADOW_CONSUMPTION_EARNINGS_QUALITY",
     "phase_9_1c_complete": true,
-    "phase_9_1c_promotion": "deferred_for_kr_natural_window",
+    "phase_9_1c_promotion": "promoted_main_operating_d0dc76a2446ee5ef9188d1b06dcb241df004c143",
     "phase_9_1d_ready": true,
     "phase_9_1d_scope": "SELECTIVE_RUNTIME_SHADOW_CANARY_INVENTORY_EXACT_TRADE_AR",
+    "phase_9_1d_deployed": true,
+    "phase_9_1d_natural_proof": "inventory_and_exact_trade_ar_not_observed",
+    "phase_9_1e_architecture_ready": true,
     "next_major_architecture_ready": true,
     "blocking_reasons": [],
     "parallel_observation_tracks": [
       "next_natural_us_kr_ai_delivery",
       "phase_9_0e_next_natural_us_user_visible_validation",
-      "phase_9_1d_selective_working_capital_runtime_shadow_canary",
+    "phase_9_1d_inventory_exact_trade_ar_natural_proof",
       "night_futures_preceding_day_numeric_exposure",
       "krx_0805_1605_publication_telemetry"
     ]

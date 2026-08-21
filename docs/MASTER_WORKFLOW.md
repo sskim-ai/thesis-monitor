@@ -739,21 +739,44 @@ Implementation SHA `aba64e85c34db620416ea9ee5cae36c0fe6b31d0` passed Actions run
 evidence; an initial CI-only local-SQLite dependency was removed before this passing implementation
 SHA was accepted.
 
-## 22. Current Roadmap
+## 22. Phase 9.1D Working-Capital Runtime Shadow Canary
 
-The development state is `PHASE_9_1C_CLOSED_RETROSPECTIVE_PENDING_PROMOTION`; the operating state is
-still `PHASE_9_0E_DEPLOYED_SELECTIVE_PENDING_NATURAL`. Open P0 and material P1 are zero.
-`PHASE_9_1D_READY = YES`; the recommended next phase is a runtime-delivery-independent canary for
-current-formal Inventory and exact Trade AR only. Broad AR/AP, AP relations, low-value industries,
-and all advanced working-capital day ratios remain excluded or deferred. KR OpenDART cash-flow
-period recovery remains a medium follow-up rather than a blocker.
+Phase 9.1A architecture, 9.1B canonical core, and 9.1C archive consumption are promoted through
+main `d0dc76a2446ee5ef9188d1b06dcb241df004c143`. Phase 9.1D adds
+`working-capital-runtime-shadow-canary-v1` after terminal production delivery. Its detached archive
+is independent from production and from the cash-flow canary.
+
+The runtime scope is total Inventory and exact Trade AR only. The canary filters the canonical
+snapshot before reusing the Phase 9.1C PIT, latest-formal/provisional freshness, industry,
+materiality, one-insight, Unknown-resolution, renderer, and semantic/causal validator. Broad AR,
+all AP, inventory components, DSO, Inventory Days, DPO, and CCC are excluded. A newer formal period
+known by the production packet suppresses the older canonical relation instead of substituting it
+as current.
+
+The 20-subject parity replay selects the same five Inventory and two exact Trade AR relations with
+zero relation drift. Numeric binding is 7 automatic and zero manual/rejected/unresolved; semantic,
+causal, quality, and production-influence errors are zero. Implementation SHA
+`5316113062782b09595a495ec9a903a4973f9df5` passes 1,330 local tests. Natural proof remains separate:
+Inventory and exact Trade AR start at `NOT_OBSERVED`, while the canary state is
+`DEPLOYED_PENDING_NATURAL` after clean promotion.
+
+`PHASE_9_1E_ARCHITECTURE_READY = YES`. This is not user-visible enablement. Each metric family needs
+its own natural proof before a future user-visible decision.
+
+## 23. Current Roadmap
+
+The development state is `PHASE_9_1D_DEPLOYED_PENDING_NATURAL`. Open P0 and material P1 are zero.
+Phase 9.1E architecture may proceed in parallel with natural canary observation, but working-capital
+user-visible output remains disabled. Broad AR/AP, AP relations, low-value industries, and all
+advanced working-capital day ratios remain excluded or deferred. KR OpenDART cash-flow period
+recovery remains a medium follow-up rather than a blocker.
 
 In parallel, observe the next natural US/KR sessions for AI-assisted delivery, ownership,
 repetition, night-session integrity, fallback, language, receipt, archive, and exactly-once proof.
 Also let the telemetry-only LaunchAgent accumulate natural KRX 16:05 and 08:05 evidence. Do not run
 it manually, infer a T+1 slot, or integrate KRX breadth before the separate role gates close.
 
-## 23. Codex Work Order Standard
+## 24. Codex Work Order Standard
 
 Every work order starts with exact repo/runtime preflight, states base/branch/scope/non-scope,
 classifies root cause, defines deterministic contracts, adds positive and negative fixtures,
@@ -761,7 +784,7 @@ generates exact artifacts, runs focused and full validation, audits side effects
 commits, pushes without force, and verifies Actions for the exact final SHA. Never merge, deploy,
 run Scheduled Tasks, send Telegram, or mutate Pilot unless explicitly authorized.
 
-## 24. Human Review Standard
+## 25. Human Review Standard
 
 Engineering PASS is not human-quality PASS. Review full final-renderer output for today relevance,
 quantitative grounding, comparison, investment meaning, industry fit, delta-first quality,
@@ -769,7 +792,7 @@ observer/holder distinction, Unknown, next check, and readability. A wrong numbe
 claim, scope error, denied echo, industry mismatch, fabricated threshold, or contradiction is HOLD
 regardless of score.
 
-## 25. Pilot / Delivery / Receipt
+## 26. Pilot / Delivery / Receipt
 
 Pilot is `ai-assisted-pilot-v3`, renderer v3, policy `daily-review-v3.10`, schema 4. Persisted state is
 KR 3/5 and US 3/5. `runtime-message-quality-receipt-v2` binds packet, validated output, rendered set,
@@ -833,23 +856,21 @@ Natural AI-assisted delivery is still pending. Run-28 proved live fail-closed ni
 suppression when no completed current session pair was available; numeric NIGHT-to-preceding-DAY
 exposure remains pending natural evidence.
 
-## 26. Production Assist Approval Rules
+## 27. Production Assist Approval Rules
 
 Production Assist remains OFF. Five operational Pilot successes are not enough. Approval requires
 exact-commit CI, full regression, direct human review of natural full messages, zero critical safety
 issues, current persistent docs, correct receipts and exactly-once behavior, and explicit user
 approval. Main merge and shadow deployment still do not authorize AI-assisted production delivery.
 
-## 27. Current Next Task
+## 28. Current Next Task
 
-Review the next natural US user-visible cash-flow delivery without manual execution. In parallel,
-Phase 9.1D may attach the evidence-supported Inventory/exact-Trade-AR sidecar to a delivery-isolated
-runtime shadow canary after a separate work instruction. Do not implement DSO, Inventory Days, DPO,
-CCC, ROIC, user-visible working-capital output, or KR cash-flow period recovery without separate
-authorization. Promote the full Phase 9.1A -> 9.1B -> 9.1C chain only after the separate KR
-natural-window review confirms no relevant P0.
+Observe the first natural US/KR working-capital canary receipts without manual execution and classify
+Inventory and exact Trade AR independently. In parallel, Phase 9.1E architecture may define the
+future user-visible gate without enabling it. Do not implement DSO, Inventory Days, DPO, CCC, ROIC,
+broad/AP working-capital output, or KR cash-flow period recovery without separate authorization.
 
-## 28. New Session Bootstrap Prompt
+## 29. New Session Bootstrap Prompt
 
 > First fetch and compare `origin/main`, the current experimental branch, and the operating
 > checkout. Read `docs/project-state.json`, `docs/PROJECT_HANDOFF.md`,
