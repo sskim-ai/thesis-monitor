@@ -1,0 +1,82 @@
+{
+  "phase": "9.1A",
+  "status": "ARCHITECTURE_CLOSED_READY_FOR_PHASE_9_1B",
+  "repository": "sskim-ai/thesis-monitor",
+  "branch": "codex/phase-9-1a-working-capital-evidence-architecture",
+  "base": "33c2f8be376b2cbb2961ecf9dc3c873715e0a034",
+  "work_instruction_commit": "eaaadb1ac4fb5c9a7d3486ecc8274708c285ff79",
+  "implementation_commit": "0d3b42715fc8964fe053d72e0ecc979fb78b14cc",
+  "final_branch_sha_resolution": "git rev-parse HEAD",
+  "main_operating_sha": "33c2f8be376b2cbb2961ecf9dc3c873715e0a034",
+  "promotion": "PROMOTION_DEFERRED_FOR_KR_NATURAL_WINDOW",
+  "contract": "working-capital-evidence-v1",
+  "active_universe": {"total": 20, "kr": 7, "us_foreign": 13},
+  "providers": {
+    "sec_companyfacts": {"stored_cache_hits": 13, "live_requests": 0, "failures": 0},
+    "opendart": {"bounded_official_requests": 12, "successes": 12, "failures": 0, "generation_cache_hits": 12},
+    "new_paid_providers": 0
+  },
+  "metric_coverage": {
+    "inventory": {"eligible": 11, "partial": 3, "blocked": 5, "not_applicable": 1},
+    "trade_ar": {"eligible": 6, "partial": 1, "blocked": 12, "not_applicable": 1},
+    "broad_ar": {"eligible": 9, "partial": 3, "blocked": 7, "not_applicable": 1},
+    "trade_ap": {"eligible": 8, "partial": 1, "blocked": 10, "not_applicable": 1},
+    "broad_ap": {"eligible": 10, "partial": 1, "blocked": 8, "not_applicable": 1}
+  },
+  "relation_coverage": {
+    "ar_vs_revenue": {"eligible": 14, "blocked": 5, "not_applicable": 1},
+    "inventory_vs_revenue": {"eligible": 11, "blocked": 8, "not_applicable": 1},
+    "inventory_vs_cogs": {"eligible": 11, "blocked": 8, "not_applicable": 1},
+    "ap_vs_cogs": {"eligible": 14, "blocked": 5, "not_applicable": 1}
+  },
+  "architecture_decisions": {
+    "inventory": "TOTAL_ONLY_NO_COMPONENT_AGGREGATION",
+    "ar": "TRADE_PLUS_SEPARATE_BROAD",
+    "ap": "TRADE_PLUS_SEPARATE_BROAD",
+    "balance_scope": "SOURCE_SCOPE_PRESERVED_NO_AUTOMATIC_SUMMATION",
+    "comparable": "PRIOR_FISCAL_YEAR_SAME_FISCAL_QUARTER_EXACT_COMPATIBILITY",
+    "revenue": "SAME_COMPATIBLE_PERIOD_YTD_PREFERRED_Q2_Q3",
+    "cogs": "SELECTIVE_EXACT_SEMANTIC"
+  },
+  "advanced_ratio_readiness": {
+    "dso": "DEFER",
+    "inventory_days": "DEFER",
+    "dpo": "DEFER",
+    "ccc": "DEFER"
+  },
+  "validation": {
+    "focused": "61_passed",
+    "broader_regression": "206_passed",
+    "full_pytest": "1288_passed_1_warning",
+    "deterministic_generator": "PASS_IDENTICAL_SHA256",
+    "ruff": "PASS",
+    "diff_check": "PASS",
+    "knowledge": "PASS",
+    "chart_knowledge": "PASS",
+    "public_action": "0.4.5",
+    "operation_ids": "20/20_unique",
+    "schema": 4,
+    "github_actions_run": 32447178183,
+    "github_actions": "PASS_TEST_AND_LINT"
+  },
+  "safety": {
+    "runtime_user_visible_diff": 0,
+    "phase_9_0e_mode": "SELECTIVE_CURRENT_FORMAL_FULL_FCF",
+    "telegram_manual": 0,
+    "scheduled_task_manual": 0,
+    "pilot_mutations": 0,
+    "database_mutations": 0,
+    "archive_rewrites": 0,
+    "production_assist": false
+  },
+  "p0_open": [],
+  "p1_open": [],
+  "p2_backlog": [
+    "prior-quarter balance relations",
+    "inventory component decomposition",
+    "management-specific contract-asset extension",
+    "DSO/Inventory Days/DPO/CCC prerequisites"
+  ],
+  "phase_9_1b_ready": true,
+  "phase_9_1b_scope": "SELECTIVE_INVENTORY_AR_AP_CANONICAL_CORE"
+}

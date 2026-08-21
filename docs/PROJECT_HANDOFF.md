@@ -7,17 +7,22 @@ validation, delivery, or Scheduled Tasks.
 
 ## Current Authoritative Handoff — 2026-08-21
 
-Phase 9.0E is deployed as `SELECTIVE_CURRENT_FORMAL_FULL_FCF` from instruction commit
-`309f5f1756d39d5972c5d4b48faaeab4862d8077` and implementation SHA
-`cf3194981124de2a6f85fbe81b145ef06e1db08d`. Run-30 preview selects nine current-formal full-FCF
-subjects with automatic binding `9/9`, AI/fallback parity PASS, runtime quality PASS, and no KR
-leakage. HUT remains OCF-only; SKHY blocked; TSM/WRD lagging formal; Korean Re not applicable.
+Phase 9.1A is architecture-closed on
+`codex/phase-9-1a-working-capital-evidence-architecture`, based on immutable instruction commit
+`eaaadb1ac4fb5c9a7d3486ecc8274708c285ff79`. Implementation SHA
+`0d3b42715fc8964fe053d72e0ecc979fb78b14cc` passed Actions run `32447178183`, 1,288 full tests,
+Ruff, and deterministic evidence generation. The contract is `working-capital-evidence-v1`.
 
-Main and operating are synced, API health passes, mode was enabled at 2026-08-21 12:31:47 KST,
-four AI tasks and KRX telemetry remain unchanged, and no manual delivery/task was executed. The
-state is `DEPLOYED_SELECTIVE_PENDING_NATURAL`; the next natural US run is the first user-visible
-proof. Open P0/material P1 are zero and `NEXT_MAJOR_ARCHITECTURE_READY = YES` for a Working Capital
-Canonical Core candidate in parallel.
+Inventory is total-inventory only. Exact trade and separate broad AR/AP remain distinct, with source
+scope preserved. Prior-year comparison requires the same issuer fiscal quarter and exact semantic,
+currency/unit, entity, basis, and authoritative source version. DSO, Inventory Days, DPO, and CCC
+remain deferred. Open P0/material P1 are zero; `PHASE_9_1B_READY = YES` with
+`SELECTIVE_INVENTORY_AR_AP_CANONICAL_CORE`.
+
+Main and operating remain clean at `33c2f8be376b2cbb2961ecf9dc3c873715e0a034` with Phase 9.0E mode
+`SELECTIVE_CURRENT_FORMAL_FULL_FCF`; API health passes and the four AI tasks plus KRX telemetry are
+unchanged. Phase 9.1A user-visible diff is zero. Promotion is
+`PROMOTION_DEFERRED_FOR_KR_NATURAL_WINDOW`; no Telegram, task, Pilot, DB, or archive mutation occurred.
 
 ## Project Purpose
 
@@ -63,6 +68,7 @@ execution or an autonomous investment adviser.
 | Cash-flow runtime canary | `cash-flow-runtime-shadow-canary-v1`, natural US LIVE PASS |
 | Baseline cash-flow consistency | `baseline-cash-flow-claim-consistency-v1`, retrospective closed |
 | Cash-flow kill switch | `CASH_FLOW_USER_VISIBLE_MODE`; invalid/default OFF |
+| Working-capital evidence | `working-capital-evidence-v1`; architecture closed, 9.1B selective core ready |
 
 ## Phase 8.3 Final State
 
@@ -918,6 +924,26 @@ The feature is enabled but not naturally proven. Use
 Do not manually run the US task or send Telegram. The complete report is
 [Phase 9.0E complete report](reports/20260821-phase9-0e-complete-report.md).
 
+## Phase 9.1A Working-Capital Evidence Architecture
+
+Phase 9.1A adds the read-only `working-capital-evidence-v1` architecture and deterministic audit
+generator. It consumes official SEC Company Facts stored evidence and a bounded OpenDART CFS cache,
+then emits point-in-time Inventory, exact trade AR/AP, separate broad AR/AP, revenue, COGS,
+prior-year comparable pairs, and typed cross-growth relations. It does not enter runtime imports or
+create user-visible facts.
+
+Coverage across 20 active subjects is selective: total Inventory 11 eligible, exact trade AR 6,
+broad AR 9, exact trade AP 8, and broad AP 10; one insurance subject is not applicable. Safe
+relations cover AR/revenue 14, inventory/revenue 11, inventory/COGS 11, and AP/COGS 14. MU proves
+non-calendar fiscal handling, TSM proves issuer-level foreign evidence, six KR non-financials prove
+same-period CFS balance comparability, and Korean Re remains excluded.
+
+The 9.1B core must preserve trade versus broad identity, source balance/net-gross scope, source
+availability, and the prior-fiscal-year same-quarter compatibility gate. It may implement raw Facts,
+absolute delta, YoY growth, and the four audited cross-growth relations for eligible subjects only.
+It must not add DSO, Inventory Days, DPO, CCC, AI consumption, or user-visible rendering. Promotion
+of 9.1A remains deferred until the separate KR natural-window review.
+
 On 2026-08-15 the owning desktop environment verified all four local-project tasks, retained their
 08:15/08:30/16:15/16:55 schedules, and migrated their exact prompts to v3.10 with
 `security-identity-v2` and `financial-quality-taint-v2`. All four are ACTIVE,
@@ -1130,7 +1156,8 @@ first.
    exact-group or natural-message evidence appears.
 7. Apply Phase Advancement Rule v1 to new runtime findings: disable Phase 9.0E for P0, bound material
    P1 repairs, and retain P2 as backlog.
-8. Working Capital Canonical Core architecture may proceed in parallel; keep CCC and standard ROIC
-   deferred and keep broad cash-flow expansion behind natural proof.
+8. Phase 9.1A architecture is closed. After the separate KR natural-window review, promote it if no
+   relevant P0 exists, then begin Phase 9.1B selective Inventory/AR/AP canonical core. Keep DSO,
+   Inventory Days, DPO, CCC, and standard ROIC deferred.
 9. Keep Production Assist disabled until natural full-message evidence passes direct human review
    and the user explicitly approves it.

@@ -1,17 +1,18 @@
 # Thesis Monitor Master Workflow
 
-Master Workflow: `v13`
-As of: `2026-08-20`
+Master Workflow: `v14`
+As of: `2026-08-21`
 Repository: `sskim-ai/thesis-monitor`
 Operating branch: `main`
-Latest evidence branch: `codex/phase-8-5-5-2-kr-structured-field-repetition`
+Latest evidence branch: `codex/phase-9-1a-working-capital-evidence-architecture`
 Commit resolution: run `git rev-parse HEAD`; this document is part of that commit and must not
 hardcode a self-referential final SHA. Resolve `origin/main` and the clean operating checkout at
-session start. Phase 8.5.5.2 closes the run-29 structured-supply, exact-RR ownership, and typed prose
-repetition blockers retrospectively and is now operating shadow after exact-SHA CI, API health, and
-497 read-only smoke tests. Natural US/KR proof remains in parallel and Natural
-AI-assisted delivery remains `PARTIAL`; that aggregate state alone does not block Phase 9.0A
-evidence-architecture work.
+session start. Phase 9.1A closes the `working-capital-evidence-v1` architecture on a pushed branch
+with exact-SHA CI and zero runtime/user-visible behavior diff. Inventory and separate trade/broad
+AR/AP semantics, prior-year fiscal-quarter comparability, PIT availability, and revenue/COGS
+alignment are defined for a selective 9.1B implementation. Promotion is
+`PROMOTION_DEFERRED_FOR_KR_NATURAL_WINDOW`; main/operating remain on Phase 9.0E. Natural US/KR proof
+remains parallel and Natural AI-assisted delivery remains `PARTIAL`.
 KRX 8.2A.x and peer 8.3.x also remain experimental.
 
 ## 1. Project Mission
@@ -648,12 +649,40 @@ proof; it can trigger the documented OFF kill switch if a P0 appears. Open P0/ma
 so Working Capital Canonical Core architecture may proceed in parallel. Broader cash-flow exposure
 still waits for natural proof.
 
+## 21H. Phase 9.1A Working-Capital Evidence Architecture
+
+Phase 9.1A implements the architecture-only `working-capital-evidence-v1` contract from immutable
+instruction commit `eaaadb1ac4fb5c9a7d3486ecc8274708c285ff79`. It extends existing canonical
+financial Facts with source availability, balance scope, and net/gross scope while remaining outside
+all production packet, prompt, renderer, fallback, Public Action, database, task, and delivery paths.
+
+Inventory means total inventory only. Exact trade AR/AP and broader AR/AP remain distinct metrics;
+current/noncurrent and issuer-reported net/gross scope are preserved without summation or renaming.
+The primary comparable is the same issuer fiscal quarter in the prior fiscal year with exact
+semantic, currency/unit, entity, statement basis, and source-version compatibility. Revenue and COGS
+relations use compatible filing periods, with YTD preferred for Q2/Q3. DSO, Inventory Days, DPO, and
+CCC remain deferred.
+
+The 20-subject audit records Inventory `11 eligible / 3 partial / 5 blocked / 1 N/A`; trade AR
+`6 / 1 / 12 / 1`; broad AR `9 / 3 / 7 / 1`; trade AP `8 / 1 / 10 / 1`; and broad AP
+`10 / 1 / 8 / 1`. Eligible cross-growth relations are AR/revenue 14, inventory/revenue 11,
+inventory/COGS 11, and AP/COGS 14. KR non-financial CFS balance-sheet evidence is independently safe
+despite the separate cash-flow period-context gap; Korean Re remains not applicable for generic
+industrial working capital.
+
+Implementation SHA `0d3b42715fc8964fe053d72e0ecc979fb78b14cc` passes Actions run
+`32447178183`, 1,288 full tests, Ruff, deterministic generator hashes, and all safety checks. Open P0
+and material P1 are zero. `PHASE_9_1B_READY = YES`; scope is
+`SELECTIVE_INVENTORY_AR_AP_CANONICAL_CORE`. Main/operating promotion is deferred until the separate
+KR natural-window review, not because of an architecture blocker.
+
 ## 22. Current Roadmap
 
-The current state is `PHASE_9_0E_DEPLOYED_SELECTIVE_PENDING_NATURAL` and
-`NATURAL_AI_PROOF_CONTINUES_IN_PARALLEL`. Open P0 and material P1 are zero.
-`NEXT_MAJOR_ARCHITECTURE_READY = YES`; the recommended architecture candidate is Working Capital
-Canonical Core. KR OpenDART period recovery remains a medium follow-up rather than a blocker.
+The development state is `PHASE_9_1A_ARCHITECTURE_CLOSED_PROMOTION_DEFERRED`; the operating state is
+still `PHASE_9_0E_DEPLOYED_SELECTIVE_PENDING_NATURAL`. Open P0 and material P1 are zero.
+`PHASE_9_1B_READY = YES`; the recommended next implementation is the selective Inventory/AR/AP
+canonical core. KR OpenDART cash-flow period recovery remains a medium follow-up rather than a
+blocker, and advanced working-capital day ratios remain deferred.
 
 In parallel, observe the next natural US/KR sessions for AI-assisted delivery, ownership,
 repetition, night-session integrity, fallback, language, receipt, archive, and exactly-once proof.
@@ -750,9 +779,11 @@ approval. Main merge and shadow deployment still do not authorize AI-assisted pr
 ## 27. Current Next Task
 
 Review the next natural US user-visible cash-flow delivery without manual execution. In parallel,
-architecture work may begin on a Working Capital Canonical Core for inventory and typed trade
-AR/AP balances and comparable deltas. Do not implement CCC/ROIC, broaden user-visible cash flow,
-or recover KR periods inside that task without a separate instruction.
+Phase 9.1B may implement a selective canonical core for total Inventory and separate trade/broad
+AR/AP Facts, prior-year comparable deltas, YoY growth, and the four approved cross-growth relations.
+Do not implement DSO, Inventory Days, DPO, CCC, ROIC, broaden user-visible cash flow, or recover KR
+cash-flow periods inside that task without a separate instruction. Promote Phase 9.1A only after the
+separate KR natural-window review confirms no relevant P0.
 
 ## 28. New Session Bootstrap Prompt
 

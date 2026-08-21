@@ -24,6 +24,7 @@ DOCUMENTS = (
     ROOT / "docs" / "architecture" / "CASH_FLOW_RUNTIME_SHADOW_CANARY.md",
     ROOT / "docs" / "architecture" / "CASH_FLOW_BASELINE_CONSISTENCY.md",
     ROOT / "docs" / "architecture" / "CASH_FLOW_USER_VISIBLE_INTEGRATION.md",
+    ROOT / "docs" / "architecture" / "WORKING_CAPITAL_EVIDENCE.md",
     ROOT / "docs" / "operations" / "AI_ASSISTED_PILOT.md",
     ROOT / "docs" / "operations" / "CASH_FLOW_USER_VISIBLE_KILL_SWITCH.md",
     ROOT / "docs" / "knowledge" / "README.md",
@@ -43,16 +44,16 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     assert state["repository"] == "sskim-ai/thesis-monitor"
     assert state["branch"] == "main"
     assert state["experimental_branch"] == (
-        "codex/phase-9-0e-selective-cash-flow-user-visible-integration"
+        "codex/phase-9-1a-working-capital-evidence-architecture"
     )
     assert state["current_phase"] == (
-        "phase_9_0e_deployed_selective_pending_natural"
+        "phase_9_1a_architecture_closed_promotion_deferred"
     )
     assert state["last_completed_phase"] == (
-        "phase_9_0e_selective_cash_flow_user_visible_integration"
+        "phase_9_1a_working_capital_evidence_architecture"
     )
     assert state["next_default_phase"] == (
-        "working_capital_canonical_core_architecture"
+        "phase_9_1b_canonical_working_capital_core"
     )
     assert state["deployed_code_commit"] == "HEAD"
     assert state["main_code_commit"] == "HEAD"
@@ -95,6 +96,9 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     assert state["contracts"]["cash_flow_user_visible"] == (
         "cash-flow-user-visible-v1"
     )
+    assert state["contracts"]["working_capital_evidence"] == (
+        "working-capital-evidence-v1"
+    )
     advancement = state["phase_advancement_rule_v1"]
     assert advancement["p0_open"] == []
     assert advancement["p1_open"] == []
@@ -112,6 +116,11 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     assert advancement["phase_9_0e_implementation_complete"] is True
     assert advancement["phase_9_0e_operating_enabled"] is True
     assert advancement["phase_9_0e_natural_proof"] == "pending_next_natural_us"
+    assert advancement["phase_9_1a_complete"] is True
+    assert advancement["phase_9_1b_ready"] is True
+    assert advancement["phase_9_1b_scope"] == (
+        "SELECTIVE_INVENTORY_AR_AP_CANONICAL_CORE"
+    )
     assert advancement["next_major_architecture_ready"] is True
     phase_90a = state["phase_9_0a_cash_flow_capital_efficiency"]
     assert phase_90a["status"] == "architecture_closed_ready_for_phase_9_0b"
@@ -167,6 +176,20 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     assert phase_90e["ai_fallback_parity_errors"] == 0
     assert phase_90e["cash_flow_user_visible_rollout_ready"] is True
     assert phase_90e["next_major_architecture_ready"] is True
+    phase_91a = state["phase_9_1a_working_capital_evidence_architecture"]
+    assert phase_91a["status"] == (
+        "architecture_closed_ready_for_phase_9_1b_promotion_deferred"
+    )
+    assert phase_91a["work_instruction_commit"] == (
+        "eaaadb1ac4fb5c9a7d3486ecc8274708c285ff79"
+    )
+    assert phase_91a["implementation_commit"] == (
+        "0d3b42715fc8964fe053d72e0ecc979fb78b14cc"
+    )
+    assert phase_91a["active_universe"] == 20
+    assert phase_91a["metric_coverage"]["inventory"]["eligible"] == 11
+    assert phase_91a["runtime_user_visible_diff"] == 0
+    assert phase_91a["phase_9_1b_ready"] is True
     assert state["persistent_gaps"]["krx_open_api"] == (
         "APPROVED_TELEMETRY_ONLY_OPERATING_USER_VISIBLE_NOT_INTEGRATED"
     )

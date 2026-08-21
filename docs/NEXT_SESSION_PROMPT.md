@@ -11,47 +11,41 @@ Read, in order:
 1. `docs/project-state.json`
 2. `docs/MASTER_WORKFLOW.md`
 3. `docs/PROJECT_HANDOFF.md`
-4. `docs/architecture/CASH_FLOW_USER_VISIBLE_INTEGRATION.md`
-5. `docs/operations/CASH_FLOW_USER_VISIBLE_KILL_SWITCH.md`
-6. `docs/reports/20260821-phase9-0e-complete-report.md`
-7. `docs/reports/20260821-phase9-0e-operating-promotion.md`
+4. `docs/architecture/WORKING_CAPITAL_EVIDENCE.md`
+5. `docs/reports/20260821-phase9-1a-complete-report.md`
+6. `docs/reports/20260821-phase9-1a-readiness.md`
+7. `docs/reports/20260821-phase9-1a-coverage.json`
 8. `docs/BRANCH_DEPENDENCY.md`
 
-Current state:
+Current development state:
 
-- Phase 9.0A: `ARCHITECTURE_CLOSED`
-- Phase 9.0B: `CANONICAL_CORE_IMPLEMENTED_SHADOW`
-- Phase 9.0C: `CLOSED_RETROSPECTIVE`
-- Phase 9.0D: `LIVE_PASS_SELECTIVE_SUBSET`
-- Phase 9.0D.1: `BASELINE_CASH_FLOW_CONSISTENCY_CLOSED`
-- Phase 9.0E: `DEPLOYED_SELECTIVE_PENDING_NATURAL`
-- Cash Flow User Visible: `ENABLED_SELECTIVE_PENDING_NATURAL`
-- Mode: `SELECTIVE_CURRENT_FORMAL_FULL_FCF`
-- `CASH_FLOW_USER_VISIBLE_ROLLOUT_READY = YES`
-- `NEXT_MAJOR_ARCHITECTURE_READY = YES`
-- Natural AI-Assisted Delivery: `PARTIAL`, tracked independently
-- KR OpenDART period recovery: `MEDIUM_FOLLOWUP`
-- CCC / standard ROIC: `DEFERRED / DEFERRED`
-- Production Assist: `OFF`
+- Phase 9.1A: `ARCHITECTURE_CLOSED_READY_FOR_PHASE_9_1B`
+- Contract: `working-capital-evidence-v1`
+- Work-instruction commit: `eaaadb1ac4fb5c9a7d3486ecc8274708c285ff79`
+- Implementation commit: `0d3b42715fc8964fe053d72e0ecc979fb78b14cc`
+- Actions run `32447178183`: Test/Lint PASS
+- `PHASE_9_1B_READY = YES`
+- `PHASE_9_1B_SCOPE = SELECTIVE_INVENTORY_AR_AP_CANONICAL_CORE`
+- Promotion: `PROMOTION_DEFERRED_FOR_KR_NATURAL_WINDOW`
+- Runtime/user-visible behavior diff: `0`
+- Open P0/material P1: `0 / 0`
 
-Phase 9.0E was implemented from instruction commit
-`309f5f1756d39d5972c5d4b48faaeab4862d8077`. Implementation SHA
-`cf3194981124de2a6f85fbe81b145ef06e1db08d` passed GitHub Actions run `32443322364` and was
-fast-forwarded to main/operating. API health and 396 operating focused tests passed. The four AI
-tasks remain ACTIVE at 08:15, 08:30, 16:15, and 16:55 KST; KRX telemetry remains at 08:05/16:05.
-No task or Telegram was run manually.
+Operating remains on Phase 9.0E main SHA `33c2f8be376b2cbb2961ecf9dc3c873715e0a034`
+with mode `SELECTIVE_CURRENT_FORMAL_FULL_FCF`. Before promoting 9.1A, inspect the separate KR natural
+review after the protected window. Do not promote across a newly observed P0. Do not run a task or
+send Telegram manually.
 
-Run-30 preview selects CORZ, CRCL, GOOGL, IBM, MU, RXRX, SNDK, TSLA, and WULF. HUT remains
-OCF-only; SKHY blocked; TSM/WRD formal-lagging-provisional. Run-29 KR injection is zero. All nine AI
-cash-flow claims bind automatically; AI/fallback parity and runtime quality pass.
+Phase 9.1B may implement only the evidence-supported canonical core:
 
-The next natural US run is the first user-visible proof. Review actual selected subjects, exact
-Fact IDs, period/PPE scope, AI/fallback path, baseline suppression, Unknown resolution, message
-length/repetition, canary parity, exactly-once delivery, and whether the OFF kill switch is needed.
-Do not run a task or send Telegram manually. A Phase 9.0E P0 requires immediate OFF and a bounded
-repair; P2 does not stop architecture work.
+- total Inventory, without silent component aggregation;
+- exact trade AR/AP and separate broad AR/AP, never collapsed;
+- source balance scope and issuer-reported net/gross scope;
+- same-fiscal-quarter prior-year point-in-time comparables;
+- deterministic absolute delta and YoY growth;
+- selective AR/revenue, Inventory/revenue, Inventory/COGS, and AP/COGS relations;
+- explicit fail-closed states for missing or incompatible evidence.
 
-In parallel, the recommended next architecture candidate is Working Capital Canonical Core:
-inventory and typed trade AR/AP point-in-time Facts plus comparable balance deltas. Do not implement
-CCC, standard ROIC, broad cash-flow rollout, or KR period recovery inside that task without a
-separate work instruction.
+Keep DSO, Inventory Days, DPO, CCC, standard ROIC, AI/Telegram consumption, Public Action/schema,
+fallback rendering, assessment mutation, KR cash-flow period recovery, KRX breadth, and peer
+integration out of Phase 9.1B. The next natural US cash-flow proof and KRX telemetry continue in
+parallel under Phase Advancement Rule v1.
