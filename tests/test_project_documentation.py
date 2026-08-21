@@ -202,6 +202,13 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     assert phase_91b["work_instruction_commit"] == (
         "0952bee040133aa49a4ba494ecae76163e9a9511"
     )
+    assert phase_91b["implementation_commit"] == (
+        "a35c615a77b44b37739d4f6a73aa9f0f290ba831"
+    )
+    assert phase_91b["implementation_github_actions_run"] == 32450301567
+    assert phase_91b["implementation_github_actions_status"] == (
+        "passed_test_and_lint"
+    )
     assert phase_91b["active_universe"] == 20
     assert phase_91b["canonical_fact_counts"] == {
         "reported_selected": 160,

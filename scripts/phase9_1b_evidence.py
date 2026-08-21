@@ -657,7 +657,7 @@ These are sanitized audit-only snapshots. Source occurrence IDs and canonical Fa
 - Public Action `0.4.5`; operationId `20/20 unique`; schema `4` unchanged.
 - Runtime-import audit: core service is imported only by tests and the read-only evidence generator.
 - User-visible behavior diff: `0`.
-- Implementation exact-SHA Actions: pending implementation commit.
+- Implementation exact SHA `a35c615a77b44b37739d4f6a73aa9f0f290ba831`; Actions run `32450301567`: Test PASS, Lint PASS.
 - Final exact-SHA Actions: pending final documentation commit.
 """
     readiness_report = f"""# Phase 9.1B Readiness
@@ -676,6 +676,13 @@ Promotion state: `{readiness['promotion']}`. The dependent branch remains intact
 
 ## Repository
 
+- Branch: `codex/phase-9-1b-canonical-working-capital-core`
+- Phase 9.1A dependency/base: `d4a4daf08ff5f68bc1072cc065e69ca5de5da145`
+- Work-instruction commit: `0952bee040133aa49a4ba494ecae76163e9a9511`
+- Implementation commit: `a35c615a77b44b37739d4f6a73aa9f0f290ba831`
+- Final branch commit: resolve `git rev-parse HEAD`
+- Previous/final main and operating: `33c2f8be376b2cbb2961ecf9dc3c873715e0a034` (promotion deferred)
+- Push: branch pushed without force
 - Contract: `{CONTRACT_VERSION}`
 - Derivation: `{DERIVATION_VERSION}`
 - Active universe: `{payload['active_universe_count']}` (`KR {payload['market_counts'].get('KR', 0)}`, `US/foreign {payload['market_counts'].get('US_FOREIGN', 0)}`)
@@ -708,7 +715,8 @@ Promotion state: `{readiness['promotion']}`. The dependent branch remains intact
 - Full pytest: `1301 passed, 1 existing third-party warning`
 - Deterministic evidence: PASS
 - Ruff / diff / Knowledge / Chart / Public Action / operationId: PASS
-- Exact-SHA Actions: pending implementation and final commits
+- Implementation exact-SHA Actions run `32450301567`: Test/Lint PASS
+- Final exact-SHA Actions: pending final documentation commit
 
 ## Deferred
 

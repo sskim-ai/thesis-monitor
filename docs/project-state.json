@@ -675,7 +675,9 @@
     "branch": "codex/phase-9-1b-canonical-working-capital-core",
     "base": "d4a4daf08ff5f68bc1072cc065e69ca5de5da145",
     "work_instruction_commit": "0952bee040133aa49a4ba494ecae76163e9a9511",
-    "implementation_commit": "HEAD",
+    "implementation_commit": "a35c615a77b44b37739d4f6a73aa9f0f290ba831",
+    "implementation_github_actions_run": 32450301567,
+    "implementation_github_actions_status": "passed_test_and_lint",
     "contract": "working-capital-evidence-v1",
     "derivation_version": "working-capital-evidence-v1:canonical-core-v1",
     "active_universe": 20,
@@ -870,7 +872,7 @@
     "phase_9_0e_readiness": "DEPLOYED_SELECTIVE_PENDING_NATURAL",
     "working_capital_evidence": "CANONICAL_CORE_IMPLEMENTED_SHADOW_READY_FOR_PHASE_9_1C",
     "phase_9_1a_readiness": "COMPLETE_BRANCH_CI_PASS_PROMOTION_DEFERRED_FOR_KR_NATURAL_WINDOW",
-    "phase_9_1b_readiness": "IMPLEMENTED_PENDING_EXACT_SHA_CI_PROMOTION_DEFERRED_FOR_KR_NATURAL_WINDOW",
+    "phase_9_1b_readiness": "COMPLETE_BRANCH_CI_PASS_PROMOTION_DEFERRED_FOR_KR_NATURAL_WINDOW",
     "next_major_architecture_readiness": "YES_PHASE_9_1C_WORKING_CAPITAL_SHADOW_CONSUMPTION_EARNINGS_QUALITY"
   },
   "financial_currency_canonicalization": {

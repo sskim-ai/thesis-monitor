@@ -13,6 +13,9 @@ commit `0952bee040133aa49a4ba494ecae76163e9a9511`. The contract remains
 `working-capital-evidence-v1`; derivation version is
 `working-capital-evidence-v1:canonical-core-v1`.
 
+Implementation SHA `a35c615a77b44b37739d4f6a73aa9f0f290ba831` passed Actions run
+`32450301567` Test/Lint, 1,301 full tests, Ruff, deterministic evidence, and all local safety gates.
+
 Inventory is total-inventory only. Exact trade and separate broad AR/AP remain distinct through raw
 Fact, delta/YoY Fact, and structured relation identity. Prior-year comparison requires the same
 issuer fiscal quarter and exact semantic, scope, currency/unit, entity, basis, and source version.

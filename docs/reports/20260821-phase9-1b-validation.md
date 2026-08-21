@@ -11,5 +11,5 @@
 - Public Action `0.4.5`; operationId `20/20 unique`; schema `4` unchanged.
 - Runtime-import audit: core service is imported only by tests and the read-only evidence generator.
 - User-visible behavior diff: `0`.
-- Implementation exact-SHA Actions: pending implementation commit.
+- Implementation exact SHA `a35c615a77b44b37739d4f6a73aa9f0f290ba831`; Actions run `32450301567`: Test PASS, Lint PASS.
 - Final exact-SHA Actions: pending final documentation commit.

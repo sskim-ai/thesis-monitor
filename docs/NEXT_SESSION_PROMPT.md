@@ -24,7 +24,9 @@ Current development state:
 - Contract: `working-capital-evidence-v1`
 - Derivation: `working-capital-evidence-v1:canonical-core-v1`
 - 9.1B work-instruction commit: `0952bee040133aa49a4ba494ecae76163e9a9511`
-- Implementation/final commit: resolve from Git and exact-SHA Actions
+- Implementation commit: `a35c615a77b44b37739d4f6a73aa9f0f290ba831`
+- Implementation Actions run `32450301567`: Test/Lint PASS
+- Final documentation commit: resolve from Git and exact-SHA Actions
 - `PHASE_9_1C_READY = YES`
 - `PHASE_9_1C_SCOPE = WORKING_CAPITAL_SHADOW_CONSUMPTION_EARNINGS_QUALITY`
 - Promotion: `PROMOTION_DEFERRED_FOR_KR_NATURAL_WINDOW`
