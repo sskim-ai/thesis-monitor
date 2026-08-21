@@ -2,11 +2,9 @@ from __future__ import annotations
 
 # ruff: noqa: E402, E501
 
-import argparse
 import hashlib
 import json
 import re
-import sqlite3
 import sys
 from collections import Counter, defaultdict
 from datetime import date
@@ -157,27 +155,6 @@ def _snapshot(record: Mapping[str, Any]) -> WorkingCapitalCoreSnapshot:
         denial_reasons=tuple(record.get("denial_reasons") or ()),
         cautions=tuple(record.get("cautions") or ()),
     )
-
-
-def _preliminary_periods(database: Path, cutoff: date) -> dict[str, date]:
-    connection = sqlite3.connect(f"file:{database}?mode=ro", uri=True)
-    try:
-        rows = connection.execute(
-            """
-            SELECT ticker, MAX(financial_period_end)
-              FROM financialsnapshot
-             WHERE snapshot_type = 'preliminary_earnings'
-               AND financial_period_end IS NOT NULL
-               AND COALESCE(filing_date, reported_date) <= ?
-               AND period_mapping_validation_failed = 0
-               AND financial_statement_basis_warning = 0
-             GROUP BY ticker
-            """,
-            (cutoff.isoformat(),),
-        ).fetchall()
-    finally:
-        connection.close()
-    return {ticker: date.fromisoformat(period) for ticker, period in rows if period}
 
 
 def _us_baselines(path: Path) -> tuple[dict[str, str], dict[str, date]]:
@@ -476,7 +453,6 @@ def _relation_coverage(
 
 def generate(
     *,
-    database: Path,
     core_path: Path = CORE_PATH,
     us_baseline_path: Path = US_BASELINE_PATH,
     kr_baseline_path: Path = KR_BASELINE_PATH,
@@ -491,8 +467,6 @@ def generate(
         if row.get("context", {}).get("freshness_state")
         == "FORMAL_LAGGING_PROVISIONAL"
     }
-    prelim_us = _preliminary_periods(database, date(2026, 8, 21))
-    prelim_kr = _preliminary_periods(database, date(2026, 8, 20))
     rows: list[dict[str, Any]] = []
     for source in core["active_universe"]:
         ticker = str(source["ticker"])
@@ -509,7 +483,7 @@ def generate(
                 baseline=baseline,
                 cutoff=cutoff,
                 packet_id=KR_PACKET_ID if is_kr else US_PACKET_ID,
-                latest_provisional=(prelim_kr if is_kr else prelim_us).get(ticker),
+                latest_provisional=None,
                 formal_lagging_provisional=ticker in lagging_tickers,
                 cash_flow_period=cash_flow_periods.get(ticker),
             )
@@ -1024,14 +998,7 @@ def write_outputs(payload: dict[str, Any]) -> None:
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(
-        description="Generate Phase 9.1C archive-only working-capital shadow evidence"
-    )
-    parser.add_argument(
-        "--database", type=Path, default=ROOT / "data" / "thesis_monitor.sqlite3"
-    )
-    args = parser.parse_args()
-    payload = generate(database=args.database.resolve())
+    payload = generate()
     write_outputs(payload)
     print(
         json.dumps(

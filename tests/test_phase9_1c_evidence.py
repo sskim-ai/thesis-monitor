@@ -1,16 +1,12 @@
 from __future__ import annotations
 
 import json
-from pathlib import Path
 
 from scripts.phase9_1c_shadow_consumption import generate
 
 
-ROOT = Path(__file__).resolve().parents[1]
-
-
 def _payload() -> dict[str, object]:
-    return generate(database=ROOT / "data" / "thesis_monitor.sqlite3")
+    return generate()
 
 
 def test_phase9_1c_generation_is_deterministic() -> None:
