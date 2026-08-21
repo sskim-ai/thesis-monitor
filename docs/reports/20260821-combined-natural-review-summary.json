@@ -1,0 +1,99 @@
+{
+  "review_date": "2026-08-21",
+  "instruction": {
+    "version": "2.0",
+    "path": "docs/work-instructions/20260821-kr-natural-review-phase9-1-promotion-gate-and-night-futures.md",
+    "commit": "65c311a8e49bd1a7d46df92c89e1aa378fc9f21b",
+    "prior_instruction_superseded": false
+  },
+  "kr": {
+    "packet_id": "2026-08-21-kr-run-31-27d43ced72a0",
+    "delivery_mode": "deterministic_fallback",
+    "initial_semantic_validation": "FAIL_THEN_BOUNDED_CORRECTION",
+    "final_semantic_validation": "PASS",
+    "numeric_binding": {
+      "status": "PASS",
+      "automatic": 123,
+      "manual": 0,
+      "rejected": 0,
+      "unresolved": 0
+    },
+    "final_language": "PASS",
+    "runtime_quality": "FAIL_TYPED_PROSE_SKELETONS_ONLY",
+    "sent": 8,
+    "expected": 8,
+    "pending": 0,
+    "failed": 0,
+    "duplicates": 0,
+    "exactly_once": "PASS",
+    "p0": 0,
+    "p1": 0,
+    "p2": 1
+  },
+  "phase_9_0e_kr": {
+    "mode": "SELECTIVE_CURRENT_FORMAL_FULL_FCF",
+    "selected_count": 0,
+    "injection_count": 0,
+    "leakage_count": 0,
+    "result": "PASS"
+  },
+  "krx_1605": {
+    "observation_id": "NOT_EMITTED_BY_V1",
+    "identity": "target=2026-08-21,slot=SAME_DAY_CLOSE_1605,line=1",
+    "scheduled_at": "2026-08-21T16:05:00+09:00",
+    "observed_at": "2026-08-21T16:05:05.019274+09:00",
+    "http_status": [200, 200, 200, 200],
+    "provider_dates": [],
+    "row_counts": {
+      "stock_main": 0,
+      "stock_kosdaq": 0,
+      "index_kospi": 0,
+      "index_kosdaq": 0
+    },
+    "readiness": "MARKET_COMPLETED_PROVIDER_PENDING",
+    "capture_plumbing": "PASS",
+    "promotable": false
+  },
+  "night_futures": {
+    "morning_packet_id": "2026-08-21-us-run-30-5a3b7c1c4390",
+    "expected_session_recorded": "2026-08-21",
+    "expected_session_verified": true,
+    "first_attempt_at": "2026-08-21T08:06:30.294808+09:00",
+    "last_attempt_at": "2026-08-21T08:20:05.452305+09:00",
+    "retry_count": 4,
+    "ready_products": 0,
+    "first_later_natural_availability": "UNKNOWN",
+    "root_cause": [
+      "EXPECTED_NO_LATEST_SESSION",
+      "TELEMETRY_CAPTURE_GAP",
+      "UNKNOWN_INSUFFICIENT_EVIDENCE"
+    ],
+    "deadline_verdict": "DEADLINE_UNPROVEN",
+    "latest_availability": "UNAVAILABLE_AT_DEADLINE",
+    "fail_closed_safety": "PASS",
+    "stale_internal_item_risk": "LOW",
+    "p0": 0,
+    "p1": 1,
+    "p2": 1
+  },
+  "severity": {
+    "p0_open": 0,
+    "p1_open": 1,
+    "p1_affecting_phase_9_1_promotion": 0,
+    "p2_open": 3
+  },
+  "phase_9_1": {
+    "a_final": "d4a4daf08ff5f68bc1072cc065e69ca5de5da145",
+    "b_final": "2ea8c43c6ec5ef986c23ea15ea707b5e93a720f6",
+    "c_final": "d0dc76a2446ee5ef9188d1b06dcb241df004c143",
+    "ancestry": "PASS",
+    "ci": "PASS",
+    "runtime_user_visible_diff": 0,
+    "promotion_ready": true,
+    "promotion_performed": true,
+    "final_main": "d0dc76a2446ee5ef9188d1b06dcb241df004c143",
+    "operating": "d0dc76a2446ee5ef9188d1b06dcb241df004c143",
+    "health": "PASS"
+  },
+  "final_decision": "PHASE_9_1_CHAIN_PROMOTION_READY = YES"
+}

@@ -1,0 +1,157 @@
+{
+  "review_date": "2026-08-21",
+  "timezone": "Asia/Seoul",
+  "morning_packet_id": "2026-08-21-us-run-30-5a3b7c1c4390",
+  "first_attempt_at": "2026-08-21T08:06:30.294808+09:00",
+  "last_attempt_at": "2026-08-21T08:20:05.452305+09:00",
+  "retry_count": 4,
+  "attempts": [
+    {
+      "attempt": 1,
+      "scheduler_start": "2026-08-21T08:05:04.589+09:00",
+      "timestamp": "2026-08-21T08:06:30.294808+09:00",
+      "scheduler_inactive": "2026-08-21T08:06:31.735+09:00",
+      "expected_session": "2026-08-21",
+      "provider_http": "UNKNOWN_NOT_RETAINED",
+      "provider_result": "NO_READY_PRODUCTS",
+      "returned_session_dates": null,
+      "rows": null,
+      "candidate_products": null,
+      "ready_products": [],
+      "error": null,
+      "raw_ref": null,
+      "raw_sha": null,
+      "classification": "EXPECTED_SESSION_UNAVAILABLE"
+    },
+    {
+      "attempt": 2,
+      "scheduler_start": "2026-08-21T08:10:05.483+09:00",
+      "timestamp": null,
+      "timestamp_state": "QUERY_TIMESTAMP_NOT_RETAINED",
+      "scheduler_inactive": "2026-08-21T08:10:10.762+09:00",
+      "expected_session": "2026-08-21",
+      "provider_http": "UNKNOWN_NOT_RETAINED",
+      "provider_result": "NO_READY_PRODUCTS",
+      "returned_session_dates": null,
+      "rows": null,
+      "candidate_products": null,
+      "ready_products": [],
+      "error": null,
+      "raw_ref": null,
+      "raw_sha": null,
+      "classification": "EXPECTED_SESSION_UNAVAILABLE"
+    },
+    {
+      "attempt": 3,
+      "scheduler_start": "2026-08-21T08:15:02.463+09:00",
+      "timestamp": null,
+      "timestamp_state": "QUERY_TIMESTAMP_NOT_RETAINED",
+      "scheduler_inactive": "2026-08-21T08:15:06.109+09:00",
+      "expected_session": "2026-08-21",
+      "provider_http": "UNKNOWN_NOT_RETAINED",
+      "provider_result": "NO_READY_PRODUCTS",
+      "returned_session_dates": null,
+      "rows": null,
+      "candidate_products": null,
+      "ready_products": [],
+      "error": null,
+      "raw_ref": null,
+      "raw_sha": null,
+      "classification": "EXPECTED_SESSION_UNAVAILABLE"
+    },
+    {
+      "attempt": 4,
+      "scheduler_start": "2026-08-21T08:20:04.688+09:00",
+      "timestamp": "2026-08-21T08:20:05.452305+09:00",
+      "scheduler_inactive": "2026-08-21T08:20:09.663+09:00",
+      "expected_session": "2026-08-21",
+      "provider_http": "UNKNOWN_NOT_RETAINED",
+      "provider_result": "EXPECTED_DATE_EMPTY_OLDER_DATES_PRESENT",
+      "returned_session_dates": [
+        "2026-08-20",
+        "2026-08-19"
+      ],
+      "rows_by_date": {
+        "2026-08-21": 0,
+        "2026-08-20": 385,
+        "2026-08-19": 385
+      },
+      "candidate_products": 2,
+      "ready_products": [],
+      "error": null,
+      "raw_ref": "stored provider response/cache metadata; per-attempt raw response was not archived",
+      "raw_sha": null,
+      "classification": "LATEST_EXPECTED_SESSION_UNAVAILABLE_STALE_PAIR_SUPPRESSED"
+    }
+  ],
+  "expected_session_recorded": "2026-08-21",
+  "expected_session_verified": true,
+  "session_basis_verdict": "NIGHT BAS_DD is the overnight session end date; 2026-08-21 means 2026-08-20 18:00 through 2026-08-21 06:00 and pairs with XKRX DAY 2026-08-20",
+  "final_provider_dates": [
+    {
+      "date": "2026-08-21",
+      "row_count": 0,
+      "classification": "EXPECTED_EMPTY"
+    },
+    {
+      "date": "2026-08-20",
+      "row_count": 385,
+      "classification": "VERIFIED_KOSPI200_AND_KOSDAQ150_STALE_RELATIVE_TO_EXPECTATION"
+    },
+    {
+      "date": "2026-08-19",
+      "row_count": 385,
+      "classification": "ROWS_WITHOUT_CURRENT_EXPECTED_PAIR"
+    }
+  ],
+  "stale_prior_pairs": [
+    {
+      "product": "KOSPI200",
+      "night_session": "2026-08-20",
+      "reference_day": "2026-08-19",
+      "contract_code": "A0169000",
+      "expiry": "2026-09",
+      "night_value": 1040.35,
+      "day_value": 1016.25,
+      "change_point": 24.1,
+      "change_pct": 2.37146371,
+      "provider_change_match": true,
+      "night_source_sha256": "deec12e278599752379a792518e313df6678c11bc8b9c4cab9d63de99cafc753",
+      "reference_source_sha256": "98488c8819932b8b330f366c0ef8c9a5d8e54556e97b701a00a47e5375f89ae1",
+      "user_visible": false
+    },
+    {
+      "product": "KOSDAQ150",
+      "night_session": "2026-08-20",
+      "reference_day": "2026-08-19",
+      "contract_code": "A0669000",
+      "expiry": "2026-09",
+      "night_value": 1460.1,
+      "day_value": 1433.0,
+      "change_point": 27.1,
+      "change_pct": 1.89113747,
+      "provider_change_match": true,
+      "night_source_sha256": "deec12e278599752379a792518e313df6678c11bc8b9c4cab9d63de99cafc753",
+      "reference_source_sha256": "98488c8819932b8b330f366c0ef8c9a5d8e54556e97b701a00a47e5375f89ae1",
+      "user_visible": false
+    }
+  ],
+  "first_later_natural_availability": {
+    "timestamp": null,
+    "session": "2026-08-21",
+    "raw_ref": null,
+    "confidence": "UNKNOWN",
+    "verdict": "FIRST_PROVIDER_AVAILABILITY_TIME_UNKNOWN"
+  },
+  "root_cause": [
+    "EXPECTED_NO_LATEST_SESSION",
+    "TELEMETRY_CAPTURE_GAP",
+    "UNKNOWN_INSUFFICIENT_EVIDENCE"
+  ],
+  "deadline_verdict": "DEADLINE_UNPROVEN",
+  "latest_availability": "UNAVAILABLE_AT_DEADLINE",
+  "fail_closed_safety": "PASS",
+  "stale_internal_item_risk": "LOW",
+  "user_visible_summary_suppressed": true,
+  "manual_provider_calls_for_review": 0
+}
