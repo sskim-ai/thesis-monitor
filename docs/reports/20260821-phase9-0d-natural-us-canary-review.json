@@ -1,0 +1,268 @@
+{
+  "report": "phase9-0d-natural-us-canary-review-v1",
+  "reviewed_at_kst": "2026-08-21T09:23:48+09:00",
+  "work_instruction": {
+    "path": "docs/work-instructions/20260821-phase-9-0d-natural-us-canary-review.md",
+    "version": "1.0",
+    "sha256": "b9355f051912f84afb3dd0b426940a1bef80ac9b16e08286222a2a7c61314a99",
+    "commit": "509d5b4dde275784f77aee6764d6bd3d3c65cc3a"
+  },
+  "repository": {
+    "review_branch": "codex/20260821-us-natural-canary-review",
+    "base": "3d6cfab1d881c336ff64c66466d12068aa51d1e4",
+    "origin_main": "3d6cfab1d881c336ff64c66466d12068aa51d1e4",
+    "operating_head": "3d6cfab1d881c336ff64c66466d12068aa51d1e4",
+    "main_changes": 0,
+    "operating_changes": 0,
+    "runtime_code_changes": 0
+  },
+  "natural_us_run": {
+    "packet_id": "2026-08-21-us-run-30-5a3b7c1c4390",
+    "assessment_date": "2026-08-21",
+    "market": "us",
+    "policy": "daily-review-v3.10",
+    "output_schema": "4",
+    "source_monitor_run_id": "30",
+    "source_monitor_status": "success",
+    "source_monitor_tickers": 13,
+    "packet_generated_at": "2026-08-20T23:20:05.452305+00:00",
+    "packet_generated_at_kst": "2026-08-21T08:20:05.452305+09:00",
+    "packet_source": "natural_launchd_daily_monitor",
+    "primary_schedule_kst": "08:15",
+    "backup_schedule_kst": "08:30",
+    "claim_owner_attribution": "not_preserved_after_claim_cleanup",
+    "late_claim_ids": [
+      "cc86b0d2-806d-4519-9ef3-274229470386",
+      "5c8d5ce3-048a-47eb-a8db-931cbb566c6a"
+    ]
+  },
+  "production": {
+    "ai_candidate_generated": true,
+    "ai_candidate_before_deadline": false,
+    "first_candidate_validation": {
+      "status": "rejected",
+      "numeric_auto_bound": 131,
+      "numeric_manual": 0,
+      "numeric_rejected": 0,
+      "formatting_failures": 0,
+      "errors": [
+        "GOOGL:financial_quality_denied_fact_used:earnings:2026-06-30",
+        "TSM:risk_reward_comparison_direction_mismatch:price_positioning.text",
+        "WULF:financial_quality_denied_fact_used:earnings:2026-06-30"
+      ]
+    },
+    "late_result": "stale_claim_output",
+    "runtime_quality_reached_for_delivery": false,
+    "delivery_mode": "deterministic_fallback",
+    "status": "sent",
+    "expected": 14,
+    "sent": 14,
+    "pending": 0,
+    "failed": 0,
+    "duplicate": 0,
+    "delivery_attempts_per_message": 1,
+    "delivery_result_recorded_at_kst": "2026-08-21T08:40:05.221464+09:00",
+    "last_message_sent_at_utc": "2026-08-20T23:40:20.687794",
+    "receipt_evidence": "notificationdelivery ids 214-227, all sent, attempt_count=1",
+    "exactly_once": true,
+    "natural_ai_assisted_delivery": "PARTIAL"
+  },
+  "canary": {
+    "canary_id": "cf-canary-f5ce3f836df99c546cf6f696",
+    "attempt_id": "attempt-20260820T234020904657Z-816a3625",
+    "shadow_candidate_id": "cf-shadow-a45b45e49cf7d3f1a8c06785",
+    "canary_policy": "cash-flow-runtime-shadow-canary-v1",
+    "cash_flow_contract": "cash-flow-shadow-consumption-v1",
+    "invocation_source": "natural_launchd_deterministic_fallback_terminal",
+    "status": "COMPLETE_PASS",
+    "reason": "all_shadow_gates_passed",
+    "started_at": "2026-08-20T23:40:20.904657+00:00",
+    "completed_at": "2026-08-20T23:40:20.949026+00:00",
+    "total_latency_ms": 20.408,
+    "production_influence_count": 0,
+    "telegram_delivery_count": 0,
+    "assessment_persistence_count": 0,
+    "warning_lifecycle_mutation_count": 0
+  },
+  "coverage": {
+    "monitored_subjects": 13,
+    "canonical_eligible": 12,
+    "consumption_eligible": 12,
+    "actually_consumed": 10,
+    "full_fcf_consumed": 9,
+    "ocf_only_consumed": 1,
+    "capex_only_consumed": 0,
+    "formal_lagging_provisional_context_only": 2,
+    "stale_suppressed": 0,
+    "blocked": 1,
+    "not_applicable": 0,
+    "full_fcf_tickers": ["CORZ", "CRCL", "GOOGL", "IBM", "MU", "RXRX", "SNDK", "TSLA", "WULF"],
+    "ocf_only_tickers": ["HUT"],
+    "formal_lagging_provisional_tickers": ["TSM", "WRD"],
+    "blocked_tickers": ["SKHY"]
+  },
+  "cash_flow_safety": {
+    "full_fcf_lineage_checked": 9,
+    "lineage_errors": 0,
+    "arithmetic_errors": 0,
+    "period_errors": 0,
+    "currency_unit_errors": 0,
+    "entity_basis_errors": 0,
+    "occurrence_errors": 0,
+    "pit_consumed": 10,
+    "pit_valid": 10,
+    "future_fact_errors": 0,
+    "ai_side_fcf_arithmetic": 0,
+    "ocf_only_behavior": "OBSERVED_PASS",
+    "freshness_suppression": "OBSERVED_PASS",
+    "blocked_suppression": "OBSERVED_PASS"
+  },
+  "numeric_binding": {
+    "automatic": 10,
+    "manual": 0,
+    "rejected": 0,
+    "unresolved": 0,
+    "formatting_failures": 0
+  },
+  "semantic_validation": {
+    "canary_local_status": "passed",
+    "canary_local_errors": 0,
+    "prohibited_metrics_created": 0,
+    "valuation_context_mutations": 0,
+    "thesis_status_mutations": 0,
+    "cross_artifact_errors": [
+      {
+        "ticker": "TSLA",
+        "type": "baseline_current_fcf_sign_conflicts_with_current_formal_fcf",
+        "production_text": "현재는 매출·인도 회복에도 영업이익률 저하와 FCF 적자로 투자 논리에 초기 균열이 있으며",
+        "canary_text": "2026 회계연도 상반기 누계 PPE 재투자 후 잉여현금흐름은 $352M로 양수입니다.",
+        "canonical_fact_id": "cashflow:68666c261434dab50ab88a8d",
+        "severity": "P1"
+      }
+    ]
+  },
+  "runtime_quality": {
+    "canary_status": "passed",
+    "errors": 0,
+    "thresholds_relaxed": false,
+    "rendered_subjects": 10,
+    "substantive_repetition": 0,
+    "template_repetition": 0,
+    "numeric_tuple_dumps": 0
+  },
+  "unknown_resolution": {
+    "automated_before": 1,
+    "automated_resolved": 1,
+    "automated_still_valid": 0,
+    "automated_suppressed_not_applicable": 0,
+    "automated_contradictory_retained": 0,
+    "human_cross_artifact_contradictory_retained": 1,
+    "human_cross_artifact_wrongly_suppressed": 0,
+    "resolved_tickers": ["SNDK"],
+    "missed_conflict_tickers": ["TSLA"]
+  },
+  "value_add": {
+    "MATERIAL_IMPROVEMENT": ["CORZ", "GOOGL", "MU", "RXRX", "SNDK", "WULF"],
+    "MINOR_IMPROVEMENT": ["CRCL", "HUT", "IBM"],
+    "NO_MEANINGFUL_CHANGE": [],
+    "DEGRADED": ["TSLA"]
+  },
+  "message_length": {
+    "production_fallback_messages": 14,
+    "production_fallback_chars": 12986,
+    "production_average_chars": 927.57,
+    "shadow_rendered_subjects": 10,
+    "shadow_sidecar_chars": 1537,
+    "shadow_average_chars": 153.7,
+    "cash_flow_numeric_claims": 10,
+    "hypothetical_additive_portfolio_delta_pct": 11.84,
+    "actual_user_visible_delta": 0
+  },
+  "night_futures": {
+    "expected_session": "2026-08-21",
+    "available_products": 0,
+    "user_visible_numeric_exposure": 0,
+    "stale_substitution": 0,
+    "same_date_later_day_misbinding": 0,
+    "result": "SUPPRESSED_UNAVAILABLE_PASS"
+  },
+  "krx_0805": {
+    "observation_exists": true,
+    "role": "publication_telemetry_only",
+    "target_xkrx_business_date": "2026-08-20",
+    "provider_dates": ["2026-08-20"],
+    "http_statuses": [200, 200, 200, 200],
+    "row_counts": {
+      "sto/stk_bydd_trd": 942,
+      "sto/ksq_bydd_trd": 1821,
+      "idx/kospi_dd_trd": 51,
+      "idx/kosdaq_dd_trd": 40
+    },
+    "readiness": "PROVIDER_COMPLETE",
+    "current_snapshot_promotable": true,
+    "role_proof_eligible": true,
+    "scheduler_last_exit": 0,
+    "user_visible_integration": false
+  },
+  "natural_behavior_matrix": {
+    "runtime_canary_plumbing": "OBSERVED_PASS",
+    "production_isolation": "OBSERVED_PASS",
+    "full_fcf_consumption": "OBSERVED_PASS",
+    "ocf_only_consumption": "OBSERVED_PASS",
+    "freshness_suppression": "OBSERVED_PASS",
+    "blocked_stale_suppression": "OBSERVED_PASS",
+    "numeric_provenance": "OBSERVED_PASS",
+    "canary_local_semantic_validation": "OBSERVED_PASS",
+    "runtime_quality": "OBSERVED_PASS",
+    "unknown_resolution_cross_artifact": "OBSERVED_FAIL",
+    "kr_negative_control": "NOT_OBSERVED"
+  },
+  "severity": {
+    "p0_open": [],
+    "p1_open": [
+      "TSLA production fallback current FCF-deficit prose conflicts with current-formal positive PPE-only FCF and is not detected by the cross-artifact Unknown-resolution gate"
+    ],
+    "p2_backlog": [
+      "natural production AI candidate missed the deterministic fallback deadline",
+      "primary versus backup claim owner is not retained after claim cleanup",
+      "future integration should replace existing cash-flow prose instead of adding the full 11.84 percent sidecar payload",
+      "optional management-defined FCF reconciliation",
+      "KR natural negative control remains unobserved"
+    ]
+  },
+  "production_safety": {
+    "telegram_content_influence": 0,
+    "telegram_count_influence": 0,
+    "fallback_eligibility_influence": 0,
+    "exit_code_influence": 0,
+    "backup_trigger_influence": 0,
+    "production_receipt_influence": 0,
+    "exactly_once_influence": 0,
+    "pilot_influence": 0,
+    "assessment_warning_persistence_influence": 0,
+    "canary_candidate_sent": 0,
+    "production_assist": false
+  },
+  "phase_gate": {
+    "phase_9_0e_ready": false,
+    "decision": "NO",
+    "reason": "A material P1 cross-artifact sign contradiction remains for TSLA despite a valid natural full-FCF canary path.",
+    "bounded_repair": "Extend the cash-flow Unknown-resolution/semantic gate to compare baseline current FCF sign, period and scope with current-formal canonical facts; suppress or relabel conflicting baseline prose and cover run-30 TSLA as an immutable fixture.",
+    "canary_disable_required": false
+  },
+  "mutations": {
+    "manual_us_run": 0,
+    "manual_telegram": 0,
+    "provider_recreation_calls": 0,
+    "manual_krx_calls": 0,
+    "pilot": 0,
+    "database": 0,
+    "assessment": 0,
+    "warning": 0,
+    "archive_rewrite": 0,
+    "production_code": 0,
+    "scheduler": 0,
+    "public_action": 0,
+    "phase_9_0e_implementation": 0
+  }
+}
