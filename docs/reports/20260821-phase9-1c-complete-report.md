@@ -7,8 +7,11 @@
 - Instruction commit: `613d91d74d3a91c43ed61f98a13a2ca57b7a90ae`
 - Dependency base: `2ea8c43c6ec5ef986c23ea15ea707b5e93a720f6`
 - Branch: `codex/phase-9-1c-working-capital-shadow-consumption`
-- Implementation/final branch: pending exact-SHA commits
+- Implementation commit: `aba64e85c34db620416ea9ee5cae36c0fe6b31d0`
+- Final branch commit: resolve `git rev-parse HEAD`
+- Push: branch pushed without force
 - Main/operating: `33c2f8be376b2cbb2961ecf9dc3c873715e0a034`
+- Operating worktree: clean; API `/health`: PASS; restart: `0`
 - Promotion: `PROMOTION_DEFERRED_FOR_KR_NATURAL_WINDOW`
 - Runtime/user-visible working-capital diff: `0`
 
@@ -101,6 +104,7 @@
 - Cash-flow cross-link causal claims: `0`
 - Thesis/valuation/warning persistence: `0`
 - Telegram/manual task/Pilot/DB/archive/receipt/force-push mutations: `0`
+- Four AI tasks / KRX 08:05 and 16:05 telemetry schedules changed: `0`
 - Production Assist: `OFF`
 - Phase 9.0E mode changed: `NO`
 
@@ -128,7 +132,13 @@
 
 ## Validation
 
-Focused and evidence validation: PASS. Full exact-SHA validation and Actions are recorded in the final validation update.
+- Focused: `27 passed`
+- Full pytest: `1324 passed, 1 existing third-party warning`
+- Deterministic evidence: PASS
+- Ruff / diff / JSON / Knowledge / Chart / Public Action / operationId / schema: PASS
+- Implementation exact-SHA Actions run `32454469417`: Test/Lint PASS
+- Initial CI-only SQLite dependency: removed; no DB is required by the archive generator
+- Final branch exact-SHA Actions: pending final documentation commit
 
 ## Natural KR Gate
 

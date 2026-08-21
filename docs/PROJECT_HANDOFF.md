@@ -31,6 +31,10 @@ DSO, Inventory Days, DPO, CCC, and standard ROIC remain deferred. Open P0/materi
 `PHASE_9_1D_READY = YES` with
 `SELECTIVE_RUNTIME_SHADOW_CANARY_INVENTORY_EXACT_TRADE_AR`.
 
+Implementation SHA `aba64e85c34db620416ea9ee5cae36c0fe6b31d0` passed GitHub Actions run
+`32454469417` Test/Lint and 1,324 local tests. The evidence generator is archive-only and has no
+runtime database dependency.
+
 Main and operating remain at `33c2f8be376b2cbb2961ecf9dc3c873715e0a034` with Phase 9.0E mode
 `SELECTIVE_CURRENT_FORMAL_FULL_FCF`; API health passes and the four AI tasks plus KRX telemetry are
 unchanged. Phase 9.1A/9.1B/9.1C user-visible diff is zero. Promotion is

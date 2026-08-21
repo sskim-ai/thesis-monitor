@@ -4,6 +4,8 @@ Open P0: `0`. Open P1: `0`.
 
 Selected current-formal relations preserve canonical lineage, PIT, freshness, semantic scope, numeric ownership, and cautious industry interpretation. No broad/trade mislabel, causal overclaim, advanced-ratio leakage, status mutation, or user-visible behavior change remains.
 
+Local validation is `1324 passed`; implementation SHA `aba64e85c34db620416ea9ee5cae36c0fe6b31d0` passed GitHub Actions run `32454469417` Test/Lint.
+
 Promotion remains `PROMOTION_DEFERRED_FOR_KR_NATURAL_WINDOW` until the separate KR natural review is consumed. This does not block the architecture readiness decision.
 
 `PHASE_9_1D_READY = YES`

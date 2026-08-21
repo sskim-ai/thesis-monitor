@@ -27,7 +27,7 @@ Current development state:
 - Derivation: `working-capital-evidence-v1:canonical-core-v1`
 - Consumption contract: `working-capital-shadow-consumption-v1`
 - 9.1C work-instruction commit: `613d91d74d3a91c43ed61f98a13a2ca57b7a90ae`
-- Implementation/final commit and Actions: resolve from Git and the final validation report
+- Implementation commit: `aba64e85c34db620416ea9ee5cae36c0fe6b31d0`; Actions run `32454469417` Test/Lint PASS
 - Final documentation commit: resolve from Git and exact-SHA Actions
 - `PHASE_9_1D_READY = YES`
 - `PHASE_9_1D_SCOPE = SELECTIVE_RUNTIME_SHADOW_CANARY_INVENTORY_EXACT_TRADE_AR`

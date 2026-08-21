@@ -734,6 +734,11 @@ classifies seven material improvements, thirteen no-change subjects, and zero de
 remains disabled, Phase 9.0E remains `SELECTIVE_CURRENT_FORMAL_FULL_FCF`, and promotion remains
 deferred for the separate KR natural-window review.
 
+Implementation SHA `aba64e85c34db620416ea9ee5cae36c0fe6b31d0` passed Actions run
+`32454469417` Test/Lint plus 1,324 full local tests. The archive generator depends only on committed
+evidence; an initial CI-only local-SQLite dependency was removed before this passing implementation
+SHA was accepted.
+
 ## 22. Current Roadmap
 
 The development state is `PHASE_9_1C_CLOSED_RETROSPECTIVE_PENDING_PROMOTION`; the operating state is

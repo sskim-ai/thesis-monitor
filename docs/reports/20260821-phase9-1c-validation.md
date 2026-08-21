@@ -1,6 +1,6 @@
 # Phase 9.1C Validation
 
-- Focused sidecar/validator tests: PASS
+- Focused sidecar/validator/evidence/documentation tests: `27 passed`
 - PIT/freshness negative controls: PASS
 - Trade/broad semantic controls: PASS
 - Causal guard and advanced-ratio rejection: PASS
@@ -10,5 +10,13 @@
 - Shadow quality receipt: `PASS`
 - Exact reasoning repeats: `0`
 - Template skeleton repeats: `0`
-- Full pytest / Ruff / diff / Knowledge / Action / CI: pending exact-SHA validation
+- Full pytest: `1324 passed, 1 existing third-party deprecation warning`
+- Deterministic generator: shadow context, readiness, complete report, and architecture SHA-256 values were identical after rerun
+- Ruff / `git diff --check` / JSON: PASS
+- Investment Knowledge v3 / Chart Knowledge v1 checksum parity: PASS
+- Public Action `0.4.5`; operationId `20/20 unique`; schema `4` unchanged
+- Runtime-import audit: the sidecar is imported only by tests and the archive-only evidence generator
+- Implementation exact SHA `aba64e85c34db620416ea9ee5cae36c0fe6b31d0`; Actions run `32454469417`: Test PASS, Lint PASS
+- Initial Actions run `32454158790` exposed a local-SQLite dependency in the archive generator; commit `aba64e85c34db620416ea9ee5cae36c0fe6b31d0` removed it and retained immutable Phase 9.0C freshness evidence
+- Final branch exact-SHA Actions: pending final documentation commit
 - Runtime/user-visible diff: `0`
