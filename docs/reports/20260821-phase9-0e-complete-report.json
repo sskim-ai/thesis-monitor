@@ -1,0 +1,58 @@
+{
+  "phase": "9.0E",
+  "status": "DEPLOYED_SELECTIVE_PENDING_NATURAL",
+  "instruction": {
+    "version": "1.0",
+    "commit": "309f5f1756d39d5972c5d4b48faaeab4862d8077",
+    "zip_sha256": "a87e7f892eb299d134eed866c6f7b9ad8efbebaf987dbda495f001e91c7f7bf6",
+    "content_sha256": "6b570a387e212d1e600c22a769755b748082204392a318f1fd55a37a18afad6f"
+  },
+  "implementation": {
+    "sha": "cf3194981124de2a6f85fbe81b145ef06e1db08d",
+    "github_actions_run": 32443322364,
+    "github_actions": "PASS_TEST_LINT",
+    "contract": "cash-flow-user-visible-v1"
+  },
+  "rollout": {
+    "mode": "SELECTIVE_CURRENT_FORMAL_FULL_FCF",
+    "activation_time_kst": "2026-08-21T12:31:47+09:00",
+    "natural_proof": "PENDING_NEXT_NATURAL_US",
+    "kill_switch": "PASS"
+  },
+  "preview": {
+    "packet_id": "2026-08-21-us-run-30-5a3b7c1c4390",
+    "subjects": 13,
+    "selected": 9,
+    "selected_tickers": ["CORZ", "CRCL", "GOOGL", "IBM", "MU", "RXRX", "SNDK", "TSLA", "WULF"],
+    "suppressed": 4,
+    "numeric_binding": {"automatic": 9, "manual": 0, "rejected": 0, "unresolved": 0},
+    "parity_errors": 0,
+    "semantic_errors": 0,
+    "quality_errors": 0,
+    "kr_injection": 0,
+    "off_injection": 0
+  },
+  "validation": {
+    "focused_tests": 396,
+    "full_pytest": 1264,
+    "operating_smoke": 396,
+    "ruff": "PASS",
+    "diff_check": "PASS",
+    "public_action": "0.4.5",
+    "output_schema": 4,
+    "operation_ids": "20/20"
+  },
+  "safety": {
+    "p0_open": [],
+    "p1_open": [],
+    "manual_telegram": 0,
+    "manual_scheduled_task": 0,
+    "pilot_mutations": 0,
+    "database_mutations": 0,
+    "archive_rewrites": 0,
+    "production_assist": false
+  },
+  "cash_flow_user_visible_rollout_ready": true,
+  "next_major_architecture_ready": true,
+  "next_major_architecture_candidate": "WORKING_CAPITAL_CANONICAL_CORE"
+}

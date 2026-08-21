@@ -96,3 +96,11 @@ Issuer-level OCF, CAPEX, and margins may remain eligible for foreign issuers wit
 Phase 9.0C implements `cash-flow-shadow-consumption-v1` for archive-only interpretation. It checks source availability at replay cutoff, formal-period freshness, strict comparable periods, industry applicability, and materiality before rendering. Exact numbers bind only to Phase 9.0B Fact IDs under `business_earnings`; resolved cash-flow Unknowns are suppressed or replaced with the next evidence gap. Stale and later-provisional cases remain context-only, and unsupported yield/per-share/ROIC/CCC claims fail validation.
 
 The 20-subject replay yields 12 consumption-eligible contexts and 10 material uses: nine full FCF and one OCF-only. TSM and WRD are formal-lagging-provisional context-only, six KR non-financial subjects remain blocked, and Korean Re is not applicable. Production packet, prompt, fallback, Public Action, renderer, Telegram, and database behavior remain unchanged.
+
+## Selective User-Visible Boundary
+
+Phase 9.0E adds `cash-flow-user-visible-v1` without changing the canonical formulas. The first
+rollout accepts only US/foreign SEC current-formal full-FCF contexts and renders one PPE-only FCF
+number under business/earnings ownership. OCF-only, KR, insurance generic FCF, lagging or stale
+periods, security-level FCF valuation, CCC, and standard ROIC remain excluded. The operating mode
+is kill-switchable and defaults/fails safe to OFF. Natural user-visible proof is pending.

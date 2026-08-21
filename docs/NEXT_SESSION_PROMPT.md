@@ -11,12 +11,11 @@ Read, in order:
 1. `docs/project-state.json`
 2. `docs/MASTER_WORKFLOW.md`
 3. `docs/PROJECT_HANDOFF.md`
-4. `docs/architecture/CASH_FLOW_BASELINE_CONSISTENCY.md`
-5. `docs/reports/20260821-phase9-0d-1-validation.md`
-6. `docs/reports/20260821-phase9-0d-1-cross-artifact-consistency-audit.md`
-7. `docs/reports/20260821-phase9-0e-readiness.md`
-8. `docs/architecture/CASH_FLOW_RUNTIME_SHADOW_CANARY.md`
-9. `docs/BRANCH_DEPENDENCY.md`
+4. `docs/architecture/CASH_FLOW_USER_VISIBLE_INTEGRATION.md`
+5. `docs/operations/CASH_FLOW_USER_VISIBLE_KILL_SWITCH.md`
+6. `docs/reports/20260821-phase9-0e-complete-report.md`
+7. `docs/reports/20260821-phase9-0e-operating-promotion.md`
+8. `docs/BRANCH_DEPENDENCY.md`
 
 Current state:
 
@@ -25,33 +24,34 @@ Current state:
 - Phase 9.0C: `CLOSED_RETROSPECTIVE`
 - Phase 9.0D: `LIVE_PASS_SELECTIVE_SUBSET`
 - Phase 9.0D.1: `BASELINE_CASH_FLOW_CONSISTENCY_CLOSED`
-- `PHASE_9_0E_READY = YES`
-- Phase 9.0E scope: `SELECTIVE_CURRENT_FORMAL_FULL_FCF_USER_VISIBLE_INTEGRATION`
-- Cash-flow user-visible integration: `NOT_ENABLED`
+- Phase 9.0E: `DEPLOYED_SELECTIVE_PENDING_NATURAL`
+- Cash Flow User Visible: `ENABLED_SELECTIVE_PENDING_NATURAL`
+- Mode: `SELECTIVE_CURRENT_FORMAL_FULL_FCF`
+- `CASH_FLOW_USER_VISIBLE_ROLLOUT_READY = YES`
+- `NEXT_MAJOR_ARCHITECTURE_READY = YES`
 - Natural AI-Assisted Delivery: `PARTIAL`, tracked independently
 - KR OpenDART period recovery: `MEDIUM_FOLLOWUP`
 - CCC / standard ROIC: `DEFERRED / DEFERRED`
 - Production Assist: `OFF`
 
-Natural US run `2026-08-21-us-run-30-5a3b7c1c4390` delivered fallback `14/14` and produced canary
-`cf-canary-f5ce3f836df99c546cf6f696`, which passed nine full-FCF, one OCF-only, two
-formal-lagging-provisional, and one blocked paths with zero production influence. Do not demand a
-second arbitrary natural run for Phase 9.0D.1.
+Phase 9.0E was implemented from instruction commit
+`309f5f1756d39d5972c5d4b48faaeab4862d8077`. Implementation SHA
+`cf3194981124de2a6f85fbe81b145ef06e1db08d` passed GitHub Actions run `32443322364` and was
+fast-forwarded to main/operating. API health and 396 operating focused tests passed. The four AI
+tasks remain ACTIVE at 08:15, 08:30, 16:15, and 16:55 KST; KRX telemetry remains at 08:05/16:05.
+No task or Telegram was run manually.
 
-Phase 9.0D.1 found TSLA's saved version-5 generic `FCF 적자` prose had no financial Fact, period,
-or scope. The system now suppresses that current-state clause and its prose-only backfilled warning
-in packet/fallback rendering, and the detached canary validates production qualitative claims
-against canonical context. Stored history remains unchanged and no canonical number is injected.
+Run-30 preview selects CORZ, CRCL, GOOGL, IBM, MU, RXRX, SNDK, TSLA, and WULF. HUT remains
+OCF-only; SKHY blocked; TSM/WRD formal-lagging-provisional. Run-29 KR injection is zero. All nine AI
+cash-flow claims bind automatically; AI/fallback parity and runtime quality pass.
 
-The next major task may begin Phase 9.0E. Keep the first rollout narrow:
+The next natural US run is the first user-visible proof. Review actual selected subjects, exact
+Fact IDs, period/PPE scope, AI/fallback path, baseline suppression, Unknown resolution, message
+length/repetition, canary parity, exactly-once delivery, and whether the OFF kill switch is needed.
+Do not run a task or send Telegram manually. A Phase 9.0E P0 requires immediate OFF and a bounded
+repair; P2 does not stop architecture work.
 
-- current-formal full-FCF contexts only;
-- dynamic eligibility, no ticker allowlist;
-- business/earnings-quality exact numeric ownership;
-- replace resolved or contradictory prose instead of append-only duplication;
-- KR and formal-lagging-provisional numeric display excluded;
-- no FCF yield/share/EV, CCC, ROIC, DB mutation, task change, or Production Assist.
-
-Natural AI delivery and KRX telemetry continue in parallel. Apply Phase Advancement Rule v1: a new
-P0 pauses implementation for targeted repair, material P1 receives a bounded repair, and P2 remains
-backlog. Do not manually run Scheduled Tasks, Telegram, KRX capture, or Pilot.
+In parallel, the recommended next architecture candidate is Working Capital Canonical Core:
+inventory and typed trade AR/AP point-in-time Facts plus comparable balance deltas. Do not implement
+CCC, standard ROIC, broad cash-flow rollout, or KR period recovery inside that task without a
+separate work instruction.

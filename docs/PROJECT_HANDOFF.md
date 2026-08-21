@@ -7,22 +7,17 @@ validation, delivery, or Scheduled Tasks.
 
 ## Current Authoritative Handoff — 2026-08-21
 
-Phase 9.0D has natural runtime proof. US run
-`2026-08-21-us-run-30-5a3b7c1c4390` delivered fallback `14/14` and natural canary
-`cf-canary-f5ce3f836df99c546cf6f696` completed with nine full-FCF contexts, one OCF-only context,
-two lagging-formal suppressions, one blocked subject, and zero production influence.
+Phase 9.0E is deployed as `SELECTIVE_CURRENT_FORMAL_FULL_FCF` from instruction commit
+`309f5f1756d39d5972c5d4b48faaeab4862d8077` and implementation SHA
+`cf3194981124de2a6f85fbe81b145ef06e1db08d`. Run-30 preview selects nine current-formal full-FCF
+subjects with automatic binding `9/9`, AI/fallback parity PASS, runtime quality PASS, and no KR
+leakage. HUT remains OCF-only; SKHY blocked; TSM/WRD lagging formal; Korean Re not applicable.
 
-Phase 9.0D.1 closes the one human-review blocker using
-`baseline-cash-flow-claim-consistency-v1`. TSLA saved thesis v5 had generic current `FCF 적자`
-prose and a prose-only backfilled warning with no financial Fact, period, or scope. The current
-packet/fallback now suppresses those clauses without changing stored history or adding `+$352M`.
-The canary audits packet and delivered qualitative claims against canonical context by section.
-
-Open P0 and material P1 are zero. `PHASE_9_0E_READY = YES` with scope
-`SELECTIVE_CURRENT_FORMAL_FULL_FCF_USER_VISIBLE_INTEGRATION`. Cash-flow user-visible integration is
-still disabled. Next work may implement only that selective rollout; KR period recovery, OCF-only
-broadening, management-FCF reconciliation, CCC, ROIC, KRX integration, and overall natural AI
-delivery remain separate tracks.
+Main and operating are synced, API health passes, mode was enabled at 2026-08-21 12:31:47 KST,
+four AI tasks and KRX telemetry remain unchanged, and no manual delivery/task was executed. The
+state is `DEPLOYED_SELECTIVE_PENDING_NATURAL`; the next natural US run is the first user-visible
+proof. Open P0/material P1 are zero and `NEXT_MAJOR_ARCHITECTURE_READY = YES` for a Working Capital
+Canonical Core candidate in parallel.
 
 ## Project Purpose
 
@@ -35,7 +30,7 @@ execution or an autonomous investment adviser.
 
 | Component | Contract |
 |---|---|
-| Branch | `main` operating through Phase 9.0D.1; Phase 9.0E is the next major task; peer/KRX breadth ancestry excluded |
+| Branch | `main` operating through Phase 9.0E selective enablement; peer/KRX breadth ancestry excluded |
 | Official assessment | Deterministic `ThesisAssessment` |
 | AI mode | `shadow` |
 | Analysis policy | `daily-review-v3.10` |
@@ -64,9 +59,10 @@ execution or an autonomous investment adviser.
 | Runtime quality | `runtime-message-quality-v1`, receipt `runtime-message-quality-receipt-v2` |
 | Night futures | `night-futures-session-basis-v1` CLOSED retrospective; holiday-aware preceding DAY lookup operating shadow, natural proof pending |
 | Cash-flow canonical core | `cash-flow-capital-efficiency-v1`, selective internal Facts only |
-| Cash-flow consumption | `cash-flow-shadow-consumption-v1`, archive-only; user-visible disabled |
+| Cash-flow consumption | `cash-flow-shadow-consumption-v1` plus `cash-flow-user-visible-v1`; selective pending natural proof |
 | Cash-flow runtime canary | `cash-flow-runtime-shadow-canary-v1`, natural US LIVE PASS |
 | Baseline cash-flow consistency | `baseline-cash-flow-claim-consistency-v1`, retrospective closed |
+| Cash-flow kill switch | `CASH_FLOW_USER_VISIBLE_MODE`; invalid/default OFF |
 
 ## Phase 8.3 Final State
 
@@ -900,14 +896,27 @@ namespace. It has no Telegram sender, fallback selector, Public Action, assessme
 or DB mutation path.
 
 Production isolation, idempotency, generation/validator/archive failure, fallback and duplicate
-tests pass. Temporary run-28 and run-29 copies pass positive and KR-negative-control replays without
-rewriting original archives. They do not count as natural proof. Runtime plumbing is
-`IMPLEMENTED_PENDING_NATURAL`; the next expected US primary slot is 2026-08-21 08:15 KST.
-
-`PHASE_9_0E_READY = NO` until the first natural US canary artifact is reviewed. Cash-flow remains
-absent from production AI, Telegram, fallback and Public Action. CCC and standard ROIC stay
-deferred; KR OpenDART period recovery remains a medium follow-up. See the
+tests pass. Natural run-30 completed the canary with nine full-FCF, one OCF-only, two
+formal-lagging-provisional and one blocked contexts, 10 automatic bindings, and zero production
+influence. Runtime canary state is `LIVE_PASS_SELECTIVE_SUBSET`. See the
 [Phase 9.0D complete report bundle](reports/20260820-phase9-0d-complete-report-bundle.md).
+
+## Phase 9.0D.1 Baseline Consistency And Phase 9.0E Rollout
+
+Phase 9.0D.1 suppresses unsupported current cash-flow baseline prose before enrichment. Phase 9.0E
+then constructs one selected context for both AI and fallback and exposes one fiscal-period-labeled
+PPE-only FCF number under business/earnings ownership. A different context, period, currency,
+Fact ID, or baseline suppression identity fails before delivery.
+
+The initial rollout is US/foreign SEC current-formal full FCF only. On run-30, CORZ, CRCL, GOOGL,
+IBM, MU, RXRX, SNDK, TSLA, and WULF are selected. SNDK resolves one Unknown and TSLA suppresses
+four legacy claim occurrences before canonical exposure. First-exposure fallback length increases
+by 114.33 characters on average; identical later evidence is delta-suppressed.
+
+The feature is enabled but not naturally proven. Use
+[the kill-switch procedure](operations/CASH_FLOW_USER_VISIBLE_KILL_SWITCH.md) for a Phase 9.0E P0.
+Do not manually run the US task or send Telegram. The complete report is
+[Phase 9.0E complete report](reports/20260821-phase9-0e-complete-report.md).
 
 On 2026-08-15 the owning desktop environment verified all four local-project tasks, retained their
 08:15/08:30/16:15/16:55 schedules, and migrated their exact prompts to v3.10 with
@@ -1065,9 +1074,9 @@ unchanged. See [the Phase 7.2.9.2 readiness report](reports/20260817-phase7-2-9-
 - Peer provider policy is FREE_ONLY. Phase 8.3 is finalized at 1/20 active and 1/15 meaningful
   coverage as SELECTIVE_OPTIONAL_CONTEXT. Broad runtime value is LOW_ROI; historical PIT and
   forward expansion are deferred, and operating integration is false.
-- Cash-flow architecture, canonical core, and archive consumption are closed. Selective official
-  SEC OCF/PPE/FCF evidence exists; KR remains partial on unresolved CF period context. CCC and
-  standard ROIC are deferred, and user-visible cash-flow remains disabled.
+- Cash-flow architecture, canonical core, archive consumption, natural canary, baseline consistency,
+  and selective initial rollout are closed. User-visible natural proof is pending. KR remains
+  partial on unresolved CF period context; CCC and standard ROIC are deferred.
 - The persisted US count includes the 2026-08-16 operationally complete session whose human message
   quality review failed. Operational count and human approval remain separate; this packet is not
   Production Assist evidence.
@@ -1103,9 +1112,9 @@ first.
 
 ## Next Steps
 
-1. After the next natural US cycle, read the separate Phase 9.0D canary artifacts and verify task
-   source, production isolation, numeric/semantic/quality gates, value add and duplicate count.
-   Do not run a manual replay or start Phase 9.0E before that behavior evidence.
+1. After the next natural US cycle, review the selected Phase 9.0E cash-flow subjects, exact Facts,
+   period/scope, AI/fallback path, message quality, Unknown resolution, canary parity, and delivery
+   integrity. Do not run it manually.
 2. In parallel, inspect the next natural US/KR sessions after Phase 8.5.5.2 and verify AI quality,
    structured supply, RR ownership, business numeric ownership, reasoning ownership, night-futures
    lineage, language, fallback, runtime receipt, archive, and exactly-once behavior.
@@ -1119,7 +1128,9 @@ first.
    evidence and Human Review pass.
 6. Keep Phase 8.3 closed as selective optional context unless materially new free-source, taxonomy,
    exact-group or natural-message evidence appears.
-7. Apply Phase Advancement Rule v1 to new runtime findings: interrupt 9.0C for P0, bound material
+7. Apply Phase Advancement Rule v1 to new runtime findings: disable Phase 9.0E for P0, bound material
    P1 repairs, and retain P2 as backlog.
-8. Keep Production Assist disabled until natural full-message evidence passes direct human review
+8. Working Capital Canonical Core architecture may proceed in parallel; keep CCC and standard ROIC
+   deferred and keep broad cash-flow expansion behind natural proof.
+9. Keep Production Assist disabled until natural full-message evidence passes direct human review
    and the user explicitly approves it.

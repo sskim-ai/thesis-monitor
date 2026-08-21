@@ -1,0 +1,540 @@
+{
+  "contract": "phase9-0e-sanitized-full-preview-v1",
+  "source_packet_id": "2026-08-21-us-run-30-5a3b7c1c4390",
+  "rollout_mode": "SELECTIVE_CURRENT_FORMAL_FULL_FCF",
+  "feature_off": {
+    "selected_count": 0,
+    "subject_count": 13,
+    "ai_fallback_parity": "PASS",
+    "suppression_reason_counts": {
+      "rollout_mode_off": 13
+    }
+  },
+  "selected_count": 9,
+  "selected_tickers": [
+    "CORZ",
+    "CRCL",
+    "GOOGL",
+    "IBM",
+    "MU",
+    "RXRX",
+    "SNDK",
+    "TSLA",
+    "WULF"
+  ],
+  "ai_fallback_parity": "PASS",
+  "selected_message_average_length_delta": 114.33,
+  "subjects": [
+    {
+      "ticker": "CORZ",
+      "company_name": "Core Scientific, Inc.",
+      "industry": "hpc_data_center",
+      "selection_state": "SELECTED",
+      "selection_reason": "existing_cash_flow_driver",
+      "context_id": "cf-visible-5a15006d395d5f4da5723f10",
+      "primary_period": {
+        "period_start": "2026-01-01",
+        "period_end": "2026-06-30",
+        "period_type": "YTD",
+        "fiscal_year": 2026,
+        "fiscal_quarter": 2
+      },
+      "financial_currency": "USD",
+      "primary_fact_ref": "cashflow:1b8f3742f33dd3b66f8f7673",
+      "suppressed_baseline_claim_ids": [],
+      "resolved_unknown_ids": [],
+      "before_text": "🏢 Core Scientific, Inc.(CORZ)\n\n투자 논리: 유지 · 오늘 중요한 신규 변화 없음\n\n구조적 위험: 보통\n\n시장 기대: 매우 높음\n\n🎯 핵심\nCore Scientific은 비트코인 채굴 중심 사업에서 AI/HPC 데이터센터 코로케이션 중심으로 전환 중이며, 2026년 2분기 매출의 약 83%가 colocation에서 발생하고 colocation gross margin이 약 59%까지 올라온 점이 핵심 근거다. 이미 437MW가 billing 중이고 총 leased customer power가 약 1.1GW, 잠재 계약가치가 240억달러 이상으로 확대되어 세 종목 중 '계약→가동→청구→매출' 전환이 가장 많이 증명됐다.\n\n👁 핵심 감시\n• 가동 지연 또는 계약 변경\n• CAPEX·부채 증가 대비 매출 전환 지연\n• 대규모 희석과 내부통제 문제 지속\n\n💰 가격\n현재가: $18.39 · 2026-08-20 미국장 종가\n현재 구조: 가격 구조상 추가 확인 대기\n신규 관찰자:\n• 동적 지지: $18.20~$18.73\n• 동적 저항: $18.96~$19.90\n• 현재가 기준 차트 손익비: 0.57배\n보유자:\n• 차트 무효화 가격: $17.39\n• 동적 지지 유지 여부: $18.20~$18.73\n가격 규칙 이력:\n• 등록 확인선 $22.40은 아직 도달하지 않았습니다.\n\n📐 Valuation\nPER: N/M\nfPER: N/M\n과거 대비:\nPBR 중앙값 0.5배\n현재 Valuation: 판단 자료 부족\n오늘 Valuation 변화: 판단 자료 부족\n검증 가능한 현재 배수가 없어 Valuation 해석을 보류합니다.\n\n📌 다음 확인\n• colocation 매출 성장률과 gross margin\n• billing MW와 leased MW의 분기별 증가\n• 1.1GW 계약용량의 준공·가동 일정 준수 여부",
+      "after_text": "🏢 Core Scientific, Inc.(CORZ)\n\n투자 논리: 유지 · 오늘 중요한 신규 변화 없음\n\n구조적 위험: 보통\n\n시장 기대: 매우 높음\n\n🎯 핵심\nCore Scientific은 비트코인 채굴 중심 사업에서 AI/HPC 데이터센터 코로케이션 중심으로 전환 중이며, 2026년 2분기 매출의 약 83%가 colocation에서 발생하고 colocation gross margin이 약 59%까지 올라온 점이 핵심 근거다. 이미 437MW가 billing 중이고 총 leased customer power가 약 1.1GW, 잠재 계약가치가 240억달러 이상으로 확대되어 세 종목 중 '계약→가동→청구→매출' 전환이 가장 많이 증명됐다.\n\n📈 사업·실적\n2026 회계연도 상반기 누계 build-out 단계의 PPE 투자 후 잉여현금흐름은 $-723.29M입니다. 전년 비교기간보다 음수 폭이 커졌고 build-out 재투자는 가동·청구 전환과 자금조달을 함께 봅니다.\n\n👁 핵심 감시\n• 가동 지연 또는 계약 변경\n• CAPEX·부채 증가 대비 매출 전환 지연\n• 대규모 희석과 내부통제 문제 지속\n\n💰 가격\n현재가: $18.39 · 2026-08-20 미국장 종가\n현재 구조: 가격 구조상 추가 확인 대기\n신규 관찰자:\n• 동적 지지: $18.20~$18.73\n• 동적 저항: $18.96~$19.90\n• 현재가 기준 차트 손익비: 0.57배\n보유자:\n• 차트 무효화 가격: $17.39\n• 동적 지지 유지 여부: $18.20~$18.73\n가격 규칙 이력:\n• 등록 확인선 $22.40은 아직 도달하지 않았습니다.\n\n📐 Valuation\nPER: N/M\nfPER: N/M\n과거 대비:\nPBR 중앙값 0.5배\n현재 Valuation: 판단 자료 부족\n오늘 Valuation 변화: 판단 자료 부족\n검증 가능한 현재 배수가 없어 Valuation 해석을 보류합니다.\n\n📌 다음 확인\n• colocation 매출 성장률과 gross margin\n• billing MW와 leased MW의 분기별 증가\n• 1.1GW 계약용량의 준공·가동 일정 준수 여부",
+      "cash_flow_user_visible_text": "2026 회계연도 상반기 누계 build-out 단계의 PPE 투자 후 잉여현금흐름은 $-723.29M입니다. 전년 비교기간보다 음수 폭이 커졌고 build-out 재투자는 가동·청구 전환과 자금조달을 함께 봅니다."
+    },
+    {
+      "ticker": "CRCL",
+      "company_name": "Circle Internet Group",
+      "industry": "general_non_financial",
+      "selection_state": "SELECTED",
+      "selection_reason": "existing_cash_flow_driver",
+      "context_id": "cf-visible-2b8960edf1cd08d7ca39788e",
+      "primary_period": {
+        "period_start": "2026-01-01",
+        "period_end": "2026-06-30",
+        "period_type": "YTD",
+        "fiscal_year": 2026,
+        "fiscal_quarter": 2
+      },
+      "financial_currency": "USD",
+      "primary_fact_ref": "cashflow:402041c63553616360d17391",
+      "suppressed_baseline_claim_ids": [],
+      "resolved_unknown_ids": [],
+      "before_text": "🏢 Circle Internet Group(CRCL)\n\n투자 논리: 유지 · 오늘 중요한 신규 변화 없음\n\n구조적 위험: 높아진 상태\n\n시장 기대: 투기적 기대\n\n🎯 핵심\nUSDC 유통량과 온체인 사용 증가가 장기 성장의 핵심이지만, reserve income 의존도를 낮추고 비이자성 플랫폼·결제 수익이 반복 가능한 이익으로 전환되는지가 재평가의 핵심이다. 금리 하락 시 reserve yield가 낮아져도 USDC 성장과 비이자 수익 확대가 adjusted EBITDA와 FCF를 방어할 수 있어야 한다.\n\n👁 핵심 감시\n• USDC 점유율 둔화\n• reserve yield 하락과 수익배분 부담으로 정상화 이익 하락\n• 현재 금리 수익을 구조적 이익으로 오인할 위험\n\n💰 가격\n현재가: $83.66 · 2026-08-20 미국장 종가\n현재 구조: 가격 구조상 추가 확인 대기\n신규 관찰자:\n• 동적 지지: $82.01~$86.53\n• 가까운 유효 저항이 없어 현재가 기준 차트 손익비는 계산하지 않습니다.\n보유자:\n• 차트 무효화 가격: $79.35\n• 동적 지지 유지 여부: $82.01~$86.53\n가격 규칙 이력:\n• 기존 $72.70 확인선은 이미 돌파한 상태입니다.\n\n📐 Valuation\nPBR = 현재가 ÷ BVPS = $83.66 ÷ $12.85 = 6.5배\n과거 대비:\nPBR 중앙값 5.3배\n현재 Valuation: 판단 자료 부족\n오늘 Valuation 변화: 판단 자료 부족\n검증된 현재 PBR과 과거 장부가 배수 분포를 함께 확인하며, 이익 기반 배수는 사용하지 않습니다.\n\n📌 다음 확인\n• USDC 유통량과 점유율\n• 온체인 거래량\n• 비이자성 매출 비중",
+      "after_text": "🏢 Circle Internet Group(CRCL)\n\n투자 논리: 유지 · 오늘 중요한 신규 변화 없음\n\n구조적 위험: 높아진 상태\n\n시장 기대: 투기적 기대\n\n🎯 핵심\nUSDC 유통량과 온체인 사용 증가가 장기 성장의 핵심이지만, reserve income 의존도를 낮추고 비이자성 플랫폼·결제 수익이 반복 가능한 이익으로 전환되는지가 재평가의 핵심이다. 금리 하락 시 reserve yield가 낮아져도 USDC 성장과 비이자 수익 확대가 adjusted EBITDA와 FCF를 방어할 수 있어야 한다.\n\n📈 사업·실적\n2026 회계연도 상반기 누계 준비금·플랫폼 사업의 PPE 투자 후 잉여현금흐름은 $528.12M입니다. 전년 비교기간보다 늘었고 준비금 수익과 비이자 플랫폼 수익의 현금전환을 함께 봅니다.\n\n👁 핵심 감시\n• USDC 점유율 둔화\n• reserve yield 하락과 수익배분 부담으로 정상화 이익 하락\n• 현재 금리 수익을 구조적 이익으로 오인할 위험\n\n💰 가격\n현재가: $83.66 · 2026-08-20 미국장 종가\n현재 구조: 가격 구조상 추가 확인 대기\n신규 관찰자:\n• 동적 지지: $82.01~$86.53\n• 가까운 유효 저항이 없어 현재가 기준 차트 손익비는 계산하지 않습니다.\n보유자:\n• 차트 무효화 가격: $79.35\n• 동적 지지 유지 여부: $82.01~$86.53\n가격 규칙 이력:\n• 기존 $72.70 확인선은 이미 돌파한 상태입니다.\n\n📐 Valuation\nPBR = 현재가 ÷ BVPS = $83.66 ÷ $12.85 = 6.5배\n과거 대비:\nPBR 중앙값 5.3배\n현재 Valuation: 판단 자료 부족\n오늘 Valuation 변화: 판단 자료 부족\n검증된 현재 PBR과 과거 장부가 배수 분포를 함께 확인하며, 이익 기반 배수는 사용하지 않습니다.\n\n📌 다음 확인\n• USDC 유통량과 점유율\n• 온체인 거래량\n• 비이자성 매출 비중",
+      "cash_flow_user_visible_text": "2026 회계연도 상반기 누계 준비금·플랫폼 사업의 PPE 투자 후 잉여현금흐름은 $528.12M입니다. 전년 비교기간보다 늘었고 준비금 수익과 비이자 플랫폼 수익의 현금전환을 함께 봅니다."
+    },
+    {
+      "ticker": "GOOGL",
+      "company_name": "Alphabet Inc. Class A",
+      "industry": "cloud_platform_software",
+      "selection_state": "SELECTED",
+      "selection_reason": "existing_cash_flow_driver",
+      "context_id": "cf-visible-ff8f5aa957b09eb3dc2d0b20",
+      "primary_period": {
+        "period_start": "2026-01-01",
+        "period_end": "2026-06-30",
+        "period_type": "YTD",
+        "fiscal_year": 2026,
+        "fiscal_quarter": 2
+      },
+      "financial_currency": "USD",
+      "primary_fact_ref": "cashflow:ddb47708bf7d36a4c0b0c7d2",
+      "suppressed_baseline_claim_ids": [],
+      "resolved_unknown_ids": [],
+      "before_text": "🏢 Alphabet Inc. Class A(GOOGL)\n\n투자 논리: 유지 · 오늘 중요한 신규 변화 없음\n\n구조적 위험: 보통\n\n시장 기대: 높음\n\n🎯 핵심\nSearch 광고의 견조한 성장과 Google Cloud의 고성장·마진 개선, AI 수요 확대가 이익 성장을 지지한다. 다만 대규모 AI CAPEX로 FCF 변동성이 커질 수 있어 Cloud 성장·backlog 확대와 CAPEX 대비 ROIC·FCF 회복이 핵심이다.\n\n👁 핵심 감시\n• Search 수익화 약화\n• CAPEX 증가가 FCF와 ROIC를 장기간 훼손\n• AI 투자비와 감가상각 시차\n\n💰 가격\n현재가: $340.67 · 2026-08-20 미국장 종가\n현재 구조: 가격 구조상 추가 확인 대기\n신규 관찰자:\n• 동적 지지: $312.37~$321.88\n• 동적 저항: $343.65~$353.79\n• 현재가 기준 차트 손익비: 0.09배\n보유자:\n• 차트 무효화 가격: $307.56\n• 동적 지지 유지 여부: $312.37~$321.88\n가격 규칙 이력:\n• 등록 확인선 $375은 아직 도달하지 않았습니다.\n\n📐 Valuation\nPER = 현재가 ÷ TTM EPS = $340.67 ÷ $27.90 = 12.2배\nPBR = 현재가 ÷ BVPS = $340.67 ÷ $52.37 = 6.5배\n과거 대비:\nPER 중앙값 16.1배 · 12백분위 · PBR 중앙값 6.7배 · 46백분위\n현재 Valuation: 다소 할인\n해석: 현재 배수를 그 시점에 공개된 재무정보로 재구성한 역사적 분포와 비교했습니다.\n오늘 Valuation 변화: 판단 자료 부족\n검증된 현재 PER/PBR과 과거 배수 분포를 함께 확인합니다.\n\n📌 다음 확인\n• Cloud 성장률과 backlog\n• Cloud 영업이익률\n• Search monetization",
+      "after_text": "🏢 Alphabet Inc. Class A(GOOGL)\n\n투자 논리: 유지 · 오늘 중요한 신규 변화 없음\n\n구조적 위험: 보통\n\n시장 기대: 높음\n\n🎯 핵심\nSearch 광고의 견조한 성장과 Google Cloud의 고성장·마진 개선, AI 수요 확대가 이익 성장을 지지한다. 다만 대규모 AI CAPEX로 FCF 변동성이 커질 수 있어 Cloud 성장·backlog 확대와 CAPEX 대비 ROIC·FCF 회복이 핵심이다.\n\n📈 사업·실적\n2026 회계연도 상반기 누계 AI·Cloud 확장의 PPE 투자 후 잉여현금흐름은 $4.26B입니다. 전년 비교기간보다 줄었고 AI·Cloud 투자 회수는 Cloud 성장·마진과 함께 봅니다.\n\n👁 핵심 감시\n• Search 수익화 약화\n• CAPEX 증가가 FCF와 ROIC를 장기간 훼손\n• AI 투자비와 감가상각 시차\n\n💰 가격\n현재가: $340.67 · 2026-08-20 미국장 종가\n현재 구조: 가격 구조상 추가 확인 대기\n신규 관찰자:\n• 동적 지지: $312.37~$321.88\n• 동적 저항: $343.65~$353.79\n• 현재가 기준 차트 손익비: 0.09배\n보유자:\n• 차트 무효화 가격: $307.56\n• 동적 지지 유지 여부: $312.37~$321.88\n가격 규칙 이력:\n• 등록 확인선 $375은 아직 도달하지 않았습니다.\n\n📐 Valuation\nPER = 현재가 ÷ TTM EPS = $340.67 ÷ $27.90 = 12.2배\nPBR = 현재가 ÷ BVPS = $340.67 ÷ $52.37 = 6.5배\n과거 대비:\nPER 중앙값 16.1배 · 12백분위 · PBR 중앙값 6.7배 · 46백분위\n현재 Valuation: 다소 할인\n해석: 현재 배수를 그 시점에 공개된 재무정보로 재구성한 역사적 분포와 비교했습니다.\n오늘 Valuation 변화: 판단 자료 부족\n검증된 현재 PER/PBR과 과거 배수 분포를 함께 확인합니다.\n\n📌 다음 확인\n• Cloud 성장률과 backlog\n• Cloud 영업이익률\n• Search monetization",
+      "cash_flow_user_visible_text": "2026 회계연도 상반기 누계 AI·Cloud 확장의 PPE 투자 후 잉여현금흐름은 $4.26B입니다. 전년 비교기간보다 줄었고 AI·Cloud 투자 회수는 Cloud 성장·마진과 함께 봅니다."
+    },
+    {
+      "ticker": "HUT",
+      "company_name": "Hut 8 Corp.",
+      "industry": "hpc_data_center",
+      "selection_state": "SUPPRESSED",
+      "selection_reason": "ocf_only_user_visible_excluded",
+      "context_id": null,
+      "primary_period": {
+        "period_start": "2026-01-01",
+        "period_end": "2026-06-30",
+        "period_type": "YTD",
+        "fiscal_year": 2026,
+        "fiscal_quarter": 2
+      },
+      "financial_currency": null,
+      "primary_fact_ref": null,
+      "suppressed_baseline_claim_ids": [],
+      "resolved_unknown_ids": [],
+      "before_text": "🏢 Hut 8 Corp.(HUT)\n\n투자 논리: 유지 · 오늘 중요한 신규 변화 없음\n\n구조적 위험: 보통\n\n시장 기대: 매우 높음\n\n🎯 핵심\nHut 8은 비트코인 채굴·전력 인프라 자산에서 AI/HPC 데이터센터 인프라 사업으로 확장 중이며, 2026년 8월 기준 약 949MW 계약 IT 용량, 약 266억달러 base-term 계약가치, 연간 NOI 17.5억달러 이상 기대와 investment-grade 상대방 기반의 장기 계약이 핵심 가치 근거다. 장기 기업가치 옵션은 매우 크지만 현재 손익은 여전히 Compute/채굴 비중이 높고, 대형 계약이 실제 준공·가동·NOI로 전환되는 실행 리스크가 크다.\n\n👁 핵심 감시\n• 준공 지연·전력 인입 문제\n• NOI 하향 조정\n• 과도한 모회사 자본투입 또는 희석\n\n💰 가격\n현재가: $88.65 · 2026-08-20 미국장 종가\n현재 구조: 가격 구조상 추가 확인 대기\n신규 관찰자:\n• 동적 지지: $84.11~$89.67\n• 동적 저항: $101.61~$106.89\n• 현재가 기준 차트 손익비: 1.4배\n보유자:\n• 차트 무효화 가격: $79.40\n• 동적 지지 유지 여부: $84.11~$89.67\n가격 규칙 이력:\n• 등록 확인선 $97은 아직 도달하지 않았습니다.\n\n📐 Valuation\nPER: N/M\nPBR = 현재가 ÷ BVPS = $88.65 ÷ $12.26 = 7.2배\nfPER = 현재가 ÷ 시장 예상 EPS = $88.65 ÷ $0.59 = 150.3배\n과거 대비:\nPER 중앙값 5.6배 · PBR 중앙값 3.6배 · 75백분위\n현재 Valuation: 판단 자료 부족\n오늘 Valuation 변화: 판단 자료 부족\n검증된 현재 PBR과 예상 이익 배수를 사용하며, 사용할 수 없는 trailing PER은 제외합니다.\n\n⚠️ 데이터 주의\n• 최신 정식 재무 반영이 지연돼 현재 Valuation 신뢰도를 낮춰 봅니다.\n\n📌 다음 확인\n• 계약 949MW의 준공·가동 일정과 실제 billing/NOI 발생\n• 평균 연간 NOI 17.5억달러 이상 기대치의 실현 여부\n• 프로젝트별 CAPEX·project financing·모회사 equity 투입 규모",
+      "after_text": "🏢 Hut 8 Corp.(HUT)\n\n투자 논리: 유지 · 오늘 중요한 신규 변화 없음\n\n구조적 위험: 보통\n\n시장 기대: 매우 높음\n\n🎯 핵심\nHut 8은 비트코인 채굴·전력 인프라 자산에서 AI/HPC 데이터센터 인프라 사업으로 확장 중이며, 2026년 8월 기준 약 949MW 계약 IT 용량, 약 266억달러 base-term 계약가치, 연간 NOI 17.5억달러 이상 기대와 investment-grade 상대방 기반의 장기 계약이 핵심 가치 근거다. 장기 기업가치 옵션은 매우 크지만 현재 손익은 여전히 Compute/채굴 비중이 높고, 대형 계약이 실제 준공·가동·NOI로 전환되는 실행 리스크가 크다.\n\n👁 핵심 감시\n• 준공 지연·전력 인입 문제\n• NOI 하향 조정\n• 과도한 모회사 자본투입 또는 희석\n\n💰 가격\n현재가: $88.65 · 2026-08-20 미국장 종가\n현재 구조: 가격 구조상 추가 확인 대기\n신규 관찰자:\n• 동적 지지: $84.11~$89.67\n• 동적 저항: $101.61~$106.89\n• 현재가 기준 차트 손익비: 1.4배\n보유자:\n• 차트 무효화 가격: $79.40\n• 동적 지지 유지 여부: $84.11~$89.67\n가격 규칙 이력:\n• 등록 확인선 $97은 아직 도달하지 않았습니다.\n\n📐 Valuation\nPER: N/M\nPBR = 현재가 ÷ BVPS = $88.65 ÷ $12.26 = 7.2배\nfPER = 현재가 ÷ 시장 예상 EPS = $88.65 ÷ $0.59 = 150.3배\n과거 대비:\nPER 중앙값 5.6배 · PBR 중앙값 3.6배 · 75백분위\n현재 Valuation: 판단 자료 부족\n오늘 Valuation 변화: 판단 자료 부족\n검증된 현재 PBR과 예상 이익 배수를 사용하며, 사용할 수 없는 trailing PER은 제외합니다.\n\n⚠️ 데이터 주의\n• 최신 정식 재무 반영이 지연돼 현재 Valuation 신뢰도를 낮춰 봅니다.\n\n📌 다음 확인\n• 계약 949MW의 준공·가동 일정과 실제 billing/NOI 발생\n• 평균 연간 NOI 17.5억달러 이상 기대치의 실현 여부\n• 프로젝트별 CAPEX·project financing·모회사 equity 투입 규모",
+      "cash_flow_user_visible_text": null
+    },
+    {
+      "ticker": "IBM",
+      "company_name": "IBM",
+      "industry": "cloud_platform_software",
+      "selection_state": "SELECTED",
+      "selection_reason": "existing_cash_flow_driver",
+      "context_id": "cf-visible-9470f30e203c89653449b38c",
+      "primary_period": {
+        "period_start": "2026-01-01",
+        "period_end": "2026-06-30",
+        "period_type": "YTD",
+        "fiscal_year": 2026,
+        "fiscal_quarter": 2
+      },
+      "financial_currency": "USD",
+      "primary_fact_ref": "cashflow:a158304539a9269c66f6d2cb",
+      "suppressed_baseline_claim_ids": [],
+      "resolved_unknown_ids": [],
+      "before_text": "🏢 IBM(IBM)\n\n투자 논리: 유지 · 오늘 중요한 신규 변화 없음\n\n구조적 위험: 보통\n\n시장 기대: 균형\n\n🎯 핵심\nSoftware·Red Hat·AI 관련 성장과 반복매출 확대가 중기 성장을 지지하지만, 회사 전체 매출 성장과 FCF 가속은 아직 충분히 증명되지 않았다. Consulting 회복과 Software 성장률, FCF 증가가 핵심이며 차트상 223~230달러 지지와 250달러 안착, 258~260달러 돌파를 가격 확인 신호로 본다.\n\n👁 핵심 감시\n• Software 성장 둔화\n• Consulting 부진과 FCF 정체\n• 인수 관련 무형자산과 조정이익 의존\n\n💰 가격\n현재가: $233.69 · 2026-08-20 미국장 종가\n현재 구조: 가격 구조상 추가 확인 대기\n신규 관찰자:\n• 동적 지지: $228.60~$235.66\n• 동적 저항: $239.37~$244.23\n• 현재가 기준 차트 손익비: 0.62배\n보유자:\n• 차트 무효화 가격: $224.46\n• 동적 지지 유지 여부: $228.60~$235.66\n가격 규칙 이력:\n• 등록 확인선 $250은 아직 도달하지 않았습니다.\n\n📐 Valuation\nPER = 현재가 ÷ TTM EPS = $233.69 ÷ $16.56 = 14.1배\nPBR = 현재가 ÷ BVPS = $233.69 ÷ $36.14 = 6.5배\nfPER: 17.4배\nfPBR = 현재가 ÷ 내부 FY1 추정 BVPS = $233.69 ÷ $34.28 = 6.8배\n※ 내부 모델 추정치이며 시장 컨센서스가 아닙니다.\n과거 대비:\nPER 중앙값 15.3배 · 41백분위 · PBR 중앙값 6.5배 · 49백분위\n현재 Valuation: 중립 범위\n해석: 현재 배수를 그 시점에 공개된 재무정보로 재구성한 역사적 분포와 비교했습니다.\n\n⚠️ 데이터 주의\n• 최신 정식 재무 반영이 지연돼 현재 Valuation 신뢰도를 낮춰 봅니다.\n\n📌 다음 확인\n• Software 성장률\n• Red Hat 성장률\n• Consulting backlog와 매출",
+      "after_text": "🏢 IBM(IBM)\n\n투자 논리: 유지 · 오늘 중요한 신규 변화 없음\n\n구조적 위험: 보통\n\n시장 기대: 균형\n\n🎯 핵심\nSoftware·Red Hat·AI 관련 성장과 반복매출 확대가 중기 성장을 지지하지만, 회사 전체 매출 성장과 FCF 가속은 아직 충분히 증명되지 않았다. Consulting 회복과 Software 성장률, FCF 증가가 핵심이며 차트상 223~230달러 지지와 250달러 안착, 258~260달러 돌파를 가격 확인 신호로 본다.\n\n📈 사업·실적\n2026 회계연도 상반기 누계 Software·Consulting 사업의 PPE 투자 후 잉여현금흐름은 $7.3B입니다. 전년 비교기간보다 늘었고 Software·Consulting 전환과 인수자금 부담을 함께 봅니다.\n\n👁 핵심 감시\n• Software 성장 둔화\n• Consulting 부진과 FCF 정체\n• 인수 관련 무형자산과 조정이익 의존\n\n💰 가격\n현재가: $233.69 · 2026-08-20 미국장 종가\n현재 구조: 가격 구조상 추가 확인 대기\n신규 관찰자:\n• 동적 지지: $228.60~$235.66\n• 동적 저항: $239.37~$244.23\n• 현재가 기준 차트 손익비: 0.62배\n보유자:\n• 차트 무효화 가격: $224.46\n• 동적 지지 유지 여부: $228.60~$235.66\n가격 규칙 이력:\n• 등록 확인선 $250은 아직 도달하지 않았습니다.\n\n📐 Valuation\nPER = 현재가 ÷ TTM EPS = $233.69 ÷ $16.56 = 14.1배\nPBR = 현재가 ÷ BVPS = $233.69 ÷ $36.14 = 6.5배\nfPER: 17.4배\nfPBR = 현재가 ÷ 내부 FY1 추정 BVPS = $233.69 ÷ $34.28 = 6.8배\n※ 내부 모델 추정치이며 시장 컨센서스가 아닙니다.\n과거 대비:\nPER 중앙값 15.3배 · 41백분위 · PBR 중앙값 6.5배 · 49백분위\n현재 Valuation: 중립 범위\n해석: 현재 배수를 그 시점에 공개된 재무정보로 재구성한 역사적 분포와 비교했습니다.\n\n⚠️ 데이터 주의\n• 최신 정식 재무 반영이 지연돼 현재 Valuation 신뢰도를 낮춰 봅니다.\n\n📌 다음 확인\n• Software 성장률\n• Red Hat 성장률\n• Consulting backlog와 매출",
+      "cash_flow_user_visible_text": "2026 회계연도 상반기 누계 Software·Consulting 사업의 PPE 투자 후 잉여현금흐름은 $7.3B입니다. 전년 비교기간보다 늘었고 Software·Consulting 전환과 인수자금 부담을 함께 봅니다."
+    },
+    {
+      "ticker": "MU",
+      "company_name": "Micron Technology",
+      "industry": "memory_semiconductor",
+      "selection_state": "SELECTED",
+      "selection_reason": "existing_cash_flow_driver",
+      "context_id": "cf-visible-3c5b12f7d52fec6986398e4b",
+      "primary_period": {
+        "period_start": "2025-08-29",
+        "period_end": "2026-05-28",
+        "period_type": "YTD",
+        "fiscal_year": 2026,
+        "fiscal_quarter": 3
+      },
+      "financial_currency": "USD",
+      "primary_fact_ref": "cashflow:96e9c3b873f3678d4dec0ff3",
+      "suppressed_baseline_claim_ids": [],
+      "resolved_unknown_ids": [],
+      "before_text": "🏢 Micron Technology(MU)\n\n투자 논리: 유지 · 오늘 중요한 신규 변화 없음\n\n구조적 위험: 보통\n\n시장 기대: 매우 높음\n\n🎯 핵심\nAI 서버·HBM·고부가 DRAM 수요가 Micron의 가격·믹스와 수익성을 구조적으로 끌어올리고 있으며, 장기 고객계약(SCA/RPO)과 대규모 FCF가 과거 메모리 사이클보다 높은 이익 가시성을 제공하는지가 핵심 투자 논리다. 2026-08-12 OHLCV 기준 MU는 월봉·주봉의 장기 상승 레짐이 유지되는 가운데 주봉 MACD와 주요 OSC가 플러스이고, 일봉 MACD histogram도 빠르게 개선되어 SKHY보다 중기 추세 구조가 안정적이다.\n\n👁 핵심 감시\n• 메모리 ASP 상승률 조기 둔화 또는 가격 하락\n• gross margin이 peak 수준에서 예상보다 빠르게 압축\n• CAPEX 급증으로 FCF가 크게 감소\n\n💰 가격\n현재가: $974.33 · 2026-08-20 미국장 종가\n현재 구조: 가격 구조상 추가 확인 대기\n신규 관찰자:\n• 동적 지지: $868.39~$914.93\n• 동적 저항: $991.61~$1,031.93\n• 현재가 기준 차트 손익비: 0.12배\n보유자:\n• 차트 무효화 가격: $833.67\n• 동적 지지 유지 여부: $868.39~$914.93\n가격 규칙 이력:\n• 기존 $950 확인선은 이번에 돌파했습니다.\n\n📐 Valuation\nPER = 현재가 ÷ TTM EPS = $974.33 ÷ $48.93 = 19.9배\nPBR = 현재가 ÷ BVPS = $974.33 ÷ $89.22 = 10.9배\nfPER: 5.9배\nfPBR = 현재가 ÷ 내부 FY1 추정 BVPS = $974.33 ÷ $163.09 = 6.0배\n※ 내부 모델 추정치이며 시장 컨센서스가 아닙니다.\n과거 대비:\nPER 중앙값 16.8배 · 72백분위 · PBR 중앙값 2.2배 · 96백분위\n현재 Valuation: 부담 구간\n해석: 사이클 기업은 낮은 trailing PER를 할인 근거로 쓰지 않고 PBR과 정상화 이익을 우선했습니다.\n\n⚠️ 데이터 주의\n• fPER는 산출 기간이 명확하지 않아 참고 수준입니다.\n\n📌 다음 확인\n• 분기 매출·gross margin·operating margin과 DRAM/NAND ASP 방향\n• HBM4 출하·고객 qualification 및 HBM4E 상용화 진행\n• Strategic Customer Agreement·RPO·고객 예치금 규모와 실제 매출 전환",
+      "after_text": "🏢 Micron Technology(MU)\n\n투자 논리: 유지 · 오늘 중요한 신규 변화 없음\n\n구조적 위험: 보통\n\n시장 기대: 매우 높음\n\n🎯 핵심\nAI 서버·HBM·고부가 DRAM 수요가 Micron의 가격·믹스와 수익성을 구조적으로 끌어올리고 있으며, 장기 고객계약(SCA/RPO)과 대규모 FCF가 과거 메모리 사이클보다 높은 이익 가시성을 제공하는지가 핵심 투자 논리다. 2026-08-12 OHLCV 기준 MU는 월봉·주봉의 장기 상승 레짐이 유지되는 가운데 주봉 MACD와 주요 OSC가 플러스이고, 일봉 MACD histogram도 빠르게 개선되어 SKHY보다 중기 추세 구조가 안정적이다.\n\n📈 사업·실적\n2026 회계연도 3분기 누계 메모리 증설의 PPE 투자 후 잉여현금흐름은 $26.1B입니다. 전년 비교기간보다 늘었고 ASP·제품 믹스·재고 사이클과 설비투자 시점을 함께 봅니다.\n\n👁 핵심 감시\n• 메모리 ASP 상승률 조기 둔화 또는 가격 하락\n• gross margin이 peak 수준에서 예상보다 빠르게 압축\n• CAPEX 급증으로 FCF가 크게 감소\n\n💰 가격\n현재가: $974.33 · 2026-08-20 미국장 종가\n현재 구조: 가격 구조상 추가 확인 대기\n신규 관찰자:\n• 동적 지지: $868.39~$914.93\n• 동적 저항: $991.61~$1,031.93\n• 현재가 기준 차트 손익비: 0.12배\n보유자:\n• 차트 무효화 가격: $833.67\n• 동적 지지 유지 여부: $868.39~$914.93\n가격 규칙 이력:\n• 기존 $950 확인선은 이번에 돌파했습니다.\n\n📐 Valuation\nPER = 현재가 ÷ TTM EPS = $974.33 ÷ $48.93 = 19.9배\nPBR = 현재가 ÷ BVPS = $974.33 ÷ $89.22 = 10.9배\nfPER: 5.9배\nfPBR = 현재가 ÷ 내부 FY1 추정 BVPS = $974.33 ÷ $163.09 = 6.0배\n※ 내부 모델 추정치이며 시장 컨센서스가 아닙니다.\n과거 대비:\nPER 중앙값 16.8배 · 72백분위 · PBR 중앙값 2.2배 · 96백분위\n현재 Valuation: 부담 구간\n해석: 사이클 기업은 낮은 trailing PER를 할인 근거로 쓰지 않고 PBR과 정상화 이익을 우선했습니다.\n\n⚠️ 데이터 주의\n• fPER는 산출 기간이 명확하지 않아 참고 수준입니다.\n\n📌 다음 확인\n• 분기 매출·gross margin·operating margin과 DRAM/NAND ASP 방향\n• HBM4 출하·고객 qualification 및 HBM4E 상용화 진행\n• Strategic Customer Agreement·RPO·고객 예치금 규모와 실제 매출 전환",
+      "cash_flow_user_visible_text": "2026 회계연도 3분기 누계 메모리 증설의 PPE 투자 후 잉여현금흐름은 $26.1B입니다. 전년 비교기간보다 늘었고 ASP·제품 믹스·재고 사이클과 설비투자 시점을 함께 봅니다."
+    },
+    {
+      "ticker": "RXRX",
+      "company_name": "Recursion Pharmaceuticals",
+      "industry": "biotech",
+      "selection_state": "SELECTED",
+      "selection_reason": "existing_cash_flow_driver",
+      "context_id": "cf-visible-5e048de3ef608b2fbec80fa3",
+      "primary_period": {
+        "period_start": "2026-01-01",
+        "period_end": "2026-06-30",
+        "period_type": "YTD",
+        "fiscal_year": 2026,
+        "fiscal_quarter": 2
+      },
+      "financial_currency": "USD",
+      "primary_fact_ref": "cashflow:498c289d4304c0822d861ec3",
+      "suppressed_baseline_claim_ids": [],
+      "resolved_unknown_ids": [],
+      "before_text": "🏢 Recursion Pharmaceuticals(RXRX)\n\n투자 논리: 유지 · 오늘 중요한 신규 변화 없음\n\n구조적 위험: 높아진 상태\n\n시장 기대: 투기적 기대\n\n🎯 핵심\nAI 기반 신약발굴 플랫폼이 실제 파트너 타깃 선택과 임상 후보 진전으로 이어지는지가 핵심이다. 최근 Genentech 공동연구 타깃 선택과 임상 진전은 초기 강화 신호지만, 높은 현금소진과 임상 실패·희석 위험이 크다.\n\n👁 핵심 감시\n• 임상 실패 또는 일정 지연\n• 현금소진과 희석이 예상 상회\n• 초기 파이프라인의 높은 실패확률\n\n💰 가격\n현재가: $3.34 · 2026-08-20 미국장 종가\n현재 구조: 가격 구조상 추가 확인 대기\n신규 관찰자:\n• 동적 지지: $2.78~$2.92\n• 동적 저항: $3.71~$3.91\n• 현재가 기준 차트 손익비: 0.57배\n보유자:\n• 차트 무효화 가격: $2.69\n• 동적 지지 유지 여부: $2.78~$2.92\n가격 규칙 이력:\n• 기존 $3.36 확인선 돌파 뒤 다시 이탈했습니다.\n\n📐 Valuation\nPER: N/M\nPBR = 현재가 ÷ BVPS = $3.34 ÷ $1.71 = 1.9배\nfPER: N/M\n과거 대비:\nPBR 중앙값 3.3배 · 16백분위\n현재 Valuation: 판단 자료 부족\n오늘 Valuation 변화: 판단 자료 부족\n검증된 현재 PBR과 과거 장부가 배수 분포를 함께 확인하며, 이익 기반 배수는 사용하지 않습니다.\n\n📌 다음 확인\n• 주요 임상 일정과 데이터\n• 파트너 타깃 선택\n• milestone·파트너 매출",
+      "after_text": "🏢 Recursion Pharmaceuticals(RXRX)\n\n투자 논리: 유지 · 오늘 중요한 신규 변화 없음\n\n구조적 위험: 높아진 상태\n\n시장 기대: 투기적 기대\n\n🎯 핵심\nAI 기반 신약발굴 플랫폼이 실제 파트너 타깃 선택과 임상 후보 진전으로 이어지는지가 핵심이다. 최근 Genentech 공동연구 타깃 선택과 임상 진전은 초기 강화 신호지만, 높은 현금소진과 임상 실패·희석 위험이 크다.\n\n📈 사업·실적\n2026 회계연도 상반기 누계 연구개발 단계의 PPE 투자 후 잉여현금흐름은 $-187.35M입니다. 전년 비교기간보다 음수 폭이 줄었고 현금소진 근거로만 쓰며 보유현금 근거 없이 runway를 계산하지 않습니다.\n\n👁 핵심 감시\n• 임상 실패 또는 일정 지연\n• 현금소진과 희석이 예상 상회\n• 초기 파이프라인의 높은 실패확률\n\n💰 가격\n현재가: $3.34 · 2026-08-20 미국장 종가\n현재 구조: 가격 구조상 추가 확인 대기\n신규 관찰자:\n• 동적 지지: $2.78~$2.92\n• 동적 저항: $3.71~$3.91\n• 현재가 기준 차트 손익비: 0.57배\n보유자:\n• 차트 무효화 가격: $2.69\n• 동적 지지 유지 여부: $2.78~$2.92\n가격 규칙 이력:\n• 기존 $3.36 확인선 돌파 뒤 다시 이탈했습니다.\n\n📐 Valuation\nPER: N/M\nPBR = 현재가 ÷ BVPS = $3.34 ÷ $1.71 = 1.9배\nfPER: N/M\n과거 대비:\nPBR 중앙값 3.3배 · 16백분위\n현재 Valuation: 판단 자료 부족\n오늘 Valuation 변화: 판단 자료 부족\n검증된 현재 PBR과 과거 장부가 배수 분포를 함께 확인하며, 이익 기반 배수는 사용하지 않습니다.\n\n📌 다음 확인\n• 주요 임상 일정과 데이터\n• 파트너 타깃 선택\n• milestone·파트너 매출",
+      "cash_flow_user_visible_text": "2026 회계연도 상반기 누계 연구개발 단계의 PPE 투자 후 잉여현금흐름은 $-187.35M입니다. 전년 비교기간보다 음수 폭이 줄었고 현금소진 근거로만 쓰며 보유현금 근거 없이 runway를 계산하지 않습니다."
+    },
+    {
+      "ticker": "SKHY",
+      "company_name": "SK hynix Inc. ADR",
+      "industry": "memory_semiconductor",
+      "selection_state": "SUPPRESSED",
+      "selection_reason": "canonical_cash_flow_fact_unavailable",
+      "context_id": null,
+      "primary_period": null,
+      "financial_currency": null,
+      "primary_fact_ref": null,
+      "suppressed_baseline_claim_ids": [],
+      "resolved_unknown_ids": [],
+      "before_text": "🏢 SK hynix Inc. ADR(SKHY)\n\n투자 논리: 유지 · 오늘 중요한 신규 변화 없음\n\n구조적 위험: 높아진 상태\n\n시장 기대: 투기적 기대\n\n🎯 핵심\nSK hynix의 기업가치는 HBM4/HBM4E 중심의 AI 메모리 기술·공급 리더십, 장기 고객계약, DRAM/NAND 동반 업황 개선으로 지지된다. 다만 SKHY는 1 ADR=한국 보통주 0.1주 구조에서 미국 내 희소성 프리미엄이 본주 대비 크게 형성될 수 있어, 기초기업 펀더멘털과 ADR 자체의 가격·괴리 리스크를 반드시 분리해 본다.\n\n👁 핵심 감시\n• HBM4 출하 또는 고객 인증 지연\n• DRAM/NAND 가격 조기 하락\n• hyperscaler AI CAPEX 둔화\n\n💰 가격\n현재가: $163.08 · 2026-08-20 미국장 종가\n현재 구조: 가격 구조상 추가 확인 대기\n신규 관찰자:\n• 가까운 유효 저항이 없어 현재가 기준 차트 손익비는 계산하지 않습니다.\n보유자:\n• 유효한 동적 지지와 차트 무효화 가격이 없어 현재 가격 관리 기준은 제공하지 않습니다.\n가격 규칙 이력:\n• 기존 $163 확인선은 이번에 돌파했습니다.\n\n📐 Valuation\n현재 Valuation: 판단 자료 부족\n오늘 Valuation 변화: 판단 자료 부족\n예탁증권 identity는 확인됐지만 current-security denominator·share·currency basis를 확인하지 못해 배수 해석을 보류합니다.\n\n⚠️ 데이터 주의\n• 현재 거래 증권의 주당 기준을 확인하지 못해 자체 PER/PBR 계산을 보류했습니다.\n• 최근 해외 공시 재무표의 자동 검증이 끝나지 않아 Valuation을 보수적으로 봅니다.\n\n📌 다음 확인\n• HBM4/HBM4E 출하량·매출 비중과 주요 고객 채택\n• DRAM/NAND ASP 방향과 영업이익률\n• 영업현금흐름·FCF·CAPEX 및 순현금 추이",
+      "after_text": "🏢 SK hynix Inc. ADR(SKHY)\n\n투자 논리: 유지 · 오늘 중요한 신규 변화 없음\n\n구조적 위험: 높아진 상태\n\n시장 기대: 투기적 기대\n\n🎯 핵심\nSK hynix의 기업가치는 HBM4/HBM4E 중심의 AI 메모리 기술·공급 리더십, 장기 고객계약, DRAM/NAND 동반 업황 개선으로 지지된다. 다만 SKHY는 1 ADR=한국 보통주 0.1주 구조에서 미국 내 희소성 프리미엄이 본주 대비 크게 형성될 수 있어, 기초기업 펀더멘털과 ADR 자체의 가격·괴리 리스크를 반드시 분리해 본다.\n\n👁 핵심 감시\n• HBM4 출하 또는 고객 인증 지연\n• DRAM/NAND 가격 조기 하락\n• hyperscaler AI CAPEX 둔화\n\n💰 가격\n현재가: $163.08 · 2026-08-20 미국장 종가\n현재 구조: 가격 구조상 추가 확인 대기\n신규 관찰자:\n• 가까운 유효 저항이 없어 현재가 기준 차트 손익비는 계산하지 않습니다.\n보유자:\n• 유효한 동적 지지와 차트 무효화 가격이 없어 현재 가격 관리 기준은 제공하지 않습니다.\n가격 규칙 이력:\n• 기존 $163 확인선은 이번에 돌파했습니다.\n\n📐 Valuation\n현재 Valuation: 판단 자료 부족\n오늘 Valuation 변화: 판단 자료 부족\n예탁증권 identity는 확인됐지만 current-security denominator·share·currency basis를 확인하지 못해 배수 해석을 보류합니다.\n\n⚠️ 데이터 주의\n• 현재 거래 증권의 주당 기준을 확인하지 못해 자체 PER/PBR 계산을 보류했습니다.\n• 최근 해외 공시 재무표의 자동 검증이 끝나지 않아 Valuation을 보수적으로 봅니다.\n\n📌 다음 확인\n• HBM4/HBM4E 출하량·매출 비중과 주요 고객 채택\n• DRAM/NAND ASP 방향과 영업이익률\n• 영업현금흐름·FCF·CAPEX 및 순현금 추이",
+      "cash_flow_user_visible_text": null
+    },
+    {
+      "ticker": "SNDK",
+      "company_name": "SanDisk",
+      "industry": "memory_semiconductor",
+      "selection_state": "SELECTED",
+      "selection_reason": "existing_cash_flow_unknown",
+      "context_id": "cf-visible-837a3bf06acd7cf26c38db34",
+      "primary_period": {
+        "period_start": "2025-06-28",
+        "period_end": "2026-07-03",
+        "period_type": "FY",
+        "fiscal_year": 2026,
+        "fiscal_quarter": 4
+      },
+      "financial_currency": "USD",
+      "primary_fact_ref": "cashflow:1b8db0b46c63ae9369231151",
+      "suppressed_baseline_claim_ids": [],
+      "resolved_unknown_ids": [
+        "cash-flow-unknown:9d420fa99a8b15d459a6"
+      ],
+      "before_text": "🏢 SanDisk(SNDK)\n\n투자 논리: 유지 · 오늘 중요한 신규 변화 없음\n\n구조적 위험: 높아진 상태\n\n시장 기대: 투기적 기대\n\n🎯 핵심\nAI inference와 데이터센터 SSD/NAND 수요, 장기 고객 계약과 높은 RPO가 강한 매출·마진·FCF를 지지한다. 다만 최근 초고마진의 상당 부분이 NAND 가격 상승에 의존할 가능성이 있어 가격 사이클과 계약의 실제 매출 전환을 확인해야 한다.\n\n👁 핵심 감시\n• NAND 가격 반전\n• RPO 전환 지연 또는 재고 증가\n• 가격 상승기 마진을 영구화할 위험\n\n💰 가격\n현재가: $1,600.62 · 2026-08-20 미국장 종가\n현재 구조: 가격 구조상 추가 확인 대기\n신규 관찰자:\n• 동적 지지: $950.35~$1,046.03\n• 동적 저항: $1,648.95~$1,743.79\n• 현재가 기준 차트 손익비: 0.07배\n보유자:\n• 차트 무효화 가격: $868.86\n• 동적 지지 유지 여부: $950.35~$1,046.03\n가격 규칙 이력:\n• 기존 $1,310 확인선은 이미 돌파한 상태입니다.\n\n📐 Valuation\nPBR = 현재가 ÷ BVPS = $1,600.62 ÷ $107.78 = 14.9배\n과거 대비:\nPER 중앙값 19.9배 · PBR 중앙값 9.7배 · 67백분위\n현재 Valuation: 판단 자료 부족\n오늘 Valuation 변화: 판단 자료 부족\n검증된 현재 PBR과 과거 장부가 배수 분포를 함께 확인하며, 이익 기반 배수는 사용하지 않습니다.\n\n📌 다음 확인\n• NAND 가격\n• 데이터센터 매출\n• RPO 매출 전환",
+      "after_text": "🏢 SanDisk(SNDK)\n\n투자 논리: 유지 · 오늘 중요한 신규 변화 없음\n\n구조적 위험: 높아진 상태\n\n시장 기대: 투기적 기대\n\n🎯 핵심\nAI inference와 데이터센터 SSD/NAND 수요, 장기 고객 계약과 높은 RPO가 강한 매출·마진·FCF를 지지한다. 다만 최근 초고마진의 상당 부분이 NAND 가격 상승에 의존할 가능성이 있어 가격 사이클과 계약의 실제 매출 전환을 확인해야 한다.\n\n📈 사업·실적\n2026 회계연도 연간 메모리 증설의 PPE 투자 후 잉여현금흐름은 $11.49B입니다. ASP·제품 믹스·재고 사이클과 설비투자 시점을 함께 봅니다.\n\n👁 핵심 감시\n• NAND 가격 반전\n• RPO 전환 지연 또는 재고 증가\n• 가격 상승기 마진을 영구화할 위험\n\n💰 가격\n현재가: $1,600.62 · 2026-08-20 미국장 종가\n현재 구조: 가격 구조상 추가 확인 대기\n신규 관찰자:\n• 동적 지지: $950.35~$1,046.03\n• 동적 저항: $1,648.95~$1,743.79\n• 현재가 기준 차트 손익비: 0.07배\n보유자:\n• 차트 무효화 가격: $868.86\n• 동적 지지 유지 여부: $950.35~$1,046.03\n가격 규칙 이력:\n• 기존 $1,310 확인선은 이미 돌파한 상태입니다.\n\n📐 Valuation\nPBR = 현재가 ÷ BVPS = $1,600.62 ÷ $107.78 = 14.9배\n과거 대비:\nPER 중앙값 19.9배 · PBR 중앙값 9.7배 · 67백분위\n현재 Valuation: 판단 자료 부족\n오늘 Valuation 변화: 판단 자료 부족\n검증된 현재 PBR과 과거 장부가 배수 분포를 함께 확인하며, 이익 기반 배수는 사용하지 않습니다.\n\n📌 다음 확인\n• NAND 가격\n• 데이터센터 매출\n• RPO 매출 전환",
+      "cash_flow_user_visible_text": "2026 회계연도 연간 메모리 증설의 PPE 투자 후 잉여현금흐름은 $11.49B입니다. ASP·제품 믹스·재고 사이클과 설비투자 시점을 함께 봅니다."
+    },
+    {
+      "ticker": "TSLA",
+      "company_name": "Tesla, Inc.",
+      "industry": "automotive",
+      "selection_state": "SELECTED",
+      "selection_reason": "existing_cash_flow_driver",
+      "context_id": "cf-visible-635f92b114431790e8ed87e8",
+      "primary_period": {
+        "period_start": "2026-01-01",
+        "period_end": "2026-06-30",
+        "period_type": "YTD",
+        "fiscal_year": 2026,
+        "fiscal_quarter": 2
+      },
+      "financial_currency": "USD",
+      "primary_fact_ref": "cashflow:68666c261434dab50ab88a8d",
+      "suppressed_baseline_claim_ids": [
+        "baseline-cashflow:233c85e24e1c258e682d2065",
+        "baseline-cashflow:4865f8167f622fe8d3e4ead9",
+        "baseline-cashflow:8a6b87e561e249352f1223ec",
+        "baseline-cashflow:fac5b6684a39135c9e272b07"
+      ],
+      "resolved_unknown_ids": [],
+      "before_text": "🏢 Tesla, Inc.(TSLA)\n\n투자 논리: 유지 · 오늘 중요한 신규 변화 없음\n\n구조적 위험: 높아진 상태\n\n시장 기대: 투기적 기대\n\n🎯 핵심\nRobotaxi/FSD/AI의 고마진 수익화가 장기 기업가치의 핵심이다. 현재는 매출·인도 회복에도 영업이익률 저하와 FCF 적자로 투자 논리에 초기 균열이 있으며, 향후 자동차·서비스 마진 회복, Robotaxi 경제성, FCF 흑자 전환이 증명되어야 한다.\n\n⚠️ 기존 경고\n• 영업이익률 저하 확인\n• FCF 적자 확인\n\n👁 핵심 감시\n• Robotaxi 규제·상용화 지연\n• 자동차 마진과 FCF 부진 장기화\n• 먼 미래 현금흐름에 대한 과도한 종단가치\n\n💰 가격\n현재가: $345.13 · 2026-08-20 미국장 종가\n현재 구조: 가격 구조상 추가 확인 대기\n신규 관찰자:\n• 동적 지지: $334.72~$341.28\n• 동적 저항: $360.04~$372.58\n• 현재가 기준 차트 손익비: 0.87배\n보유자:\n• 차트 무효화 가격: $328.08\n• 동적 지지 유지 여부: $334.72~$341.28\n가격 규칙 이력:\n• 기존 $342 확인선은 이미 돌파한 상태입니다.\n\n📐 Valuation\nPER = 현재가 ÷ TTM EPS = $345.13 ÷ $1.92 = 179.8배\nPBR = 현재가 ÷ BVPS = $345.13 ÷ $21.99 = 15.7배\n과거 대비:\nPER 중앙값 68.3배 · 96백분위 · PBR 중앙값 16.5배 · 46백분위\n현재 Valuation: 판단 자료 부족\n오늘 Valuation 변화: 판단 자료 부족\n검증된 현재 PER/PBR과 과거 배수 분포를 함께 확인합니다.\n\n📌 다음 확인\n• Robotaxi 유료 운행과 단위경제성\n• FSD 구독자와 매출\n• 자동차 영업이익률",
+      "after_text": "🏢 Tesla, Inc.(TSLA)\n\n투자 논리: 유지 · 오늘 중요한 신규 변화 없음\n\n구조적 위험: 높아진 상태\n\n시장 기대: 투기적 기대\n\n🎯 핵심\nRobotaxi/FSD/AI의 고마진 수익화가 장기 기업가치의 핵심이다. 현재는 매출·인도 회복에도 영업이익률 저하로 투자 논리에 초기 균열이 있으며, 향후 자동차·서비스 마진 회복, Robotaxi 경제성이 증명되어야 한다.\n\n📈 사업·실적\n2026 회계연도 상반기 누계 자동차 성장투자의 PPE 투자 후 잉여현금흐름은 $352M입니다. 전년 비교기간보다 줄었고 자동차 마진과 성장투자 회수를 함께 봅니다.\n\n⚠️ 기존 경고\n• 영업이익률 저하 확인\n\n👁 핵심 감시\n• Robotaxi 규제·상용화 지연\n• 자동차 마진과 FCF 부진 장기화\n• 먼 미래 현금흐름에 대한 과도한 종단가치\n\n💰 가격\n현재가: $345.13 · 2026-08-20 미국장 종가\n현재 구조: 가격 구조상 추가 확인 대기\n신규 관찰자:\n• 동적 지지: $334.72~$341.28\n• 동적 저항: $360.04~$372.58\n• 현재가 기준 차트 손익비: 0.87배\n보유자:\n• 차트 무효화 가격: $328.08\n• 동적 지지 유지 여부: $334.72~$341.28\n가격 규칙 이력:\n• 기존 $342 확인선은 이미 돌파한 상태입니다.\n\n📐 Valuation\nPER = 현재가 ÷ TTM EPS = $345.13 ÷ $1.92 = 179.8배\nPBR = 현재가 ÷ BVPS = $345.13 ÷ $21.99 = 15.7배\n과거 대비:\nPER 중앙값 68.3배 · 96백분위 · PBR 중앙값 16.5배 · 46백분위\n현재 Valuation: 판단 자료 부족\n오늘 Valuation 변화: 판단 자료 부족\n검증된 현재 PER/PBR과 과거 배수 분포를 함께 확인합니다.\n\n📌 다음 확인\n• Robotaxi 유료 운행과 단위경제성\n• FSD 구독자와 매출\n• 자동차 영업이익률",
+      "cash_flow_user_visible_text": "2026 회계연도 상반기 누계 자동차 성장투자의 PPE 투자 후 잉여현금흐름은 $352M입니다. 전년 비교기간보다 줄었고 자동차 마진과 성장투자 회수를 함께 봅니다."
+    },
+    {
+      "ticker": "TSM",
+      "company_name": "TSMC",
+      "industry": "memory_semiconductor",
+      "selection_state": "SUPPRESSED",
+      "selection_reason": "newer_provisional_period_not_cash_flow_aligned",
+      "context_id": null,
+      "primary_period": {
+        "period_start": "2024-01-01",
+        "period_end": "2024-12-31",
+        "period_type": "FY",
+        "fiscal_year": 2024,
+        "fiscal_quarter": 4
+      },
+      "financial_currency": null,
+      "primary_fact_ref": null,
+      "suppressed_baseline_claim_ids": [],
+      "resolved_unknown_ids": [],
+      "before_text": "🏢 TSMC(TSM)\n\n투자 논리: 유지 · 오늘 중요한 신규 변화 없음\n\n구조적 위험: 보통\n\n시장 기대: 매우 높음\n\n🎯 핵심\nAI/HPC 수요와 첨단공정 지배력, 높은 가동률과 가격결정력이 높은 gross margin과 현금창출을 지지한다. 핵심 변수는 hyperscaler CAPEX 지속성, 첨단공정 가동률, 해외 팹 비용에 따른 마진 희석이다.\n\n👁 핵심 감시\n• hyperscaler CAPEX 둔화\n• 해외 팹 비용과 감가상각으로 마진 하락\n• 지정학 할인\n\n💰 가격\n현재가: $416 · 2026-08-20 미국장 종가\n현재 구조: 가격 구조상 추가 확인 대기\n신규 관찰자:\n• 동적 지지: $380.77~$390.31\n• 동적 저항: $432.30~$439.78\n• 현재가 기준 차트 손익비: 0.39배\n보유자:\n• 차트 무효화 가격: $373.79\n• 동적 지지 유지 여부: $380.77~$390.31\n가격 규칙 이력:\n• 등록 확인선 $432은 아직 도달하지 않았습니다.\n\n📐 Valuation\n※ 최근 분기 잠정실적의 매출·영업이익을 반영했습니다.\n현재 Valuation: 판단 자료 부족\n오늘 Valuation 변화: 판단 자료 부족\n증권 유형과 주당 기준의 일치 여부를 확인하지 못해 배수 해석을 보류합니다.\n\n⚠️ 데이터 주의\n• 최신 정식 재무 반영이 지연돼 현재 Valuation 신뢰도를 낮춰 봅니다.\n• 최근 공식 잠정실적의 매출·영업이익은 반영했지만 주당 기준을 확인하지 못해 자체 PER 계산은 보류했습니다.\n\n📌 다음 확인\n• hyperscaler CAPEX\n• 첨단공정 가동률\n• wafer ASP",
+      "after_text": "🏢 TSMC(TSM)\n\n투자 논리: 유지 · 오늘 중요한 신규 변화 없음\n\n구조적 위험: 보통\n\n시장 기대: 매우 높음\n\n🎯 핵심\nAI/HPC 수요와 첨단공정 지배력, 높은 가동률과 가격결정력이 높은 gross margin과 현금창출을 지지한다. 핵심 변수는 hyperscaler CAPEX 지속성, 첨단공정 가동률, 해외 팹 비용에 따른 마진 희석이다.\n\n👁 핵심 감시\n• hyperscaler CAPEX 둔화\n• 해외 팹 비용과 감가상각으로 마진 하락\n• 지정학 할인\n\n💰 가격\n현재가: $416 · 2026-08-20 미국장 종가\n현재 구조: 가격 구조상 추가 확인 대기\n신규 관찰자:\n• 동적 지지: $380.77~$390.31\n• 동적 저항: $432.30~$439.78\n• 현재가 기준 차트 손익비: 0.39배\n보유자:\n• 차트 무효화 가격: $373.79\n• 동적 지지 유지 여부: $380.77~$390.31\n가격 규칙 이력:\n• 등록 확인선 $432은 아직 도달하지 않았습니다.\n\n📐 Valuation\n※ 최근 분기 잠정실적의 매출·영업이익을 반영했습니다.\n현재 Valuation: 판단 자료 부족\n오늘 Valuation 변화: 판단 자료 부족\n증권 유형과 주당 기준의 일치 여부를 확인하지 못해 배수 해석을 보류합니다.\n\n⚠️ 데이터 주의\n• 최신 정식 재무 반영이 지연돼 현재 Valuation 신뢰도를 낮춰 봅니다.\n• 최근 공식 잠정실적의 매출·영업이익은 반영했지만 주당 기준을 확인하지 못해 자체 PER 계산은 보류했습니다.\n\n📌 다음 확인\n• hyperscaler CAPEX\n• 첨단공정 가동률\n• wafer ASP",
+      "cash_flow_user_visible_text": null
+    },
+    {
+      "ticker": "WRD",
+      "company_name": "WeRide",
+      "industry": "general_non_financial",
+      "selection_state": "SUPPRESSED",
+      "selection_reason": "newer_provisional_period_not_cash_flow_aligned",
+      "context_id": null,
+      "primary_period": {
+        "period_start": "2025-01-01",
+        "period_end": "2025-06-30",
+        "period_type": "YTD",
+        "fiscal_year": 2025,
+        "fiscal_quarter": 2
+      },
+      "financial_currency": null,
+      "primary_fact_ref": null,
+      "suppressed_baseline_claim_ids": [],
+      "resolved_unknown_ids": [],
+      "before_text": "🏢 WeRide(WRD)\n\n투자 논리: 유지 · 오늘 중요한 신규 변화 없음\n\n구조적 위험: 높아진 상태\n\n시장 기대: 투기적 기대\n\n🎯 핵심\nRobotaxi 기술과 규제 승인, fleet 확대가 실제 유료 이용률과 매출 성장으로 이어지고 있으나 아직 operating loss가 크다. 핵심은 Robotaxi revenue·fleet utilization·gross margin·operating loss 축소와 현금소진이다.\n\n👁 핵심 감시\n• 승인·상용화 지연\n• fleet 확대에도 손실과 현금소진 증가\n• 초기 매출의 낮은 품질\n\n💰 가격\n현재가: $6.07 · 2026-08-20 미국장 종가\n현재 구조: 가격 구조상 추가 확인 대기\n신규 관찰자:\n• 동적 지지: $5.91~$6.15\n• 동적 저항: $6.38~$6.52\n• 현재가 기준 차트 손익비: 1.03배\n보유자:\n• 차트 무효화 가격: $5.76\n• 동적 지지 유지 여부: $5.91~$6.15\n가격 규칙 이력:\n• 등록 확인선 $6.68은 아직 도달하지 않았습니다.\n\n📐 Valuation\nPER: N/M\nfPER: N/M\n현재 Valuation: 판단 자료 부족\n오늘 Valuation 변화: 판단 자료 부족\n증권 유형과 주당 기준의 일치 여부를 확인하지 못해 배수 해석을 보류합니다.\n\n⚠️ 데이터 주의\n• 최신 정식 재무 반영이 지연돼 현재 Valuation 신뢰도를 낮춰 봅니다.\n• 현재 거래 증권의 주당 기준을 확인하지 못해 자체 PER/PBR 계산을 보류했습니다.\n\n📌 다음 확인\n• 유료 서비스 지역\n• fleet 규모\n• 차량당 이용률",
+      "after_text": "🏢 WeRide(WRD)\n\n투자 논리: 유지 · 오늘 중요한 신규 변화 없음\n\n구조적 위험: 높아진 상태\n\n시장 기대: 투기적 기대\n\n🎯 핵심\nRobotaxi 기술과 규제 승인, fleet 확대가 실제 유료 이용률과 매출 성장으로 이어지고 있으나 아직 operating loss가 크다. 핵심은 Robotaxi revenue·fleet utilization·gross margin·operating loss 축소와 현금소진이다.\n\n👁 핵심 감시\n• 승인·상용화 지연\n• fleet 확대에도 손실과 현금소진 증가\n• 초기 매출의 낮은 품질\n\n💰 가격\n현재가: $6.07 · 2026-08-20 미국장 종가\n현재 구조: 가격 구조상 추가 확인 대기\n신규 관찰자:\n• 동적 지지: $5.91~$6.15\n• 동적 저항: $6.38~$6.52\n• 현재가 기준 차트 손익비: 1.03배\n보유자:\n• 차트 무효화 가격: $5.76\n• 동적 지지 유지 여부: $5.91~$6.15\n가격 규칙 이력:\n• 등록 확인선 $6.68은 아직 도달하지 않았습니다.\n\n📐 Valuation\nPER: N/M\nfPER: N/M\n현재 Valuation: 판단 자료 부족\n오늘 Valuation 변화: 판단 자료 부족\n증권 유형과 주당 기준의 일치 여부를 확인하지 못해 배수 해석을 보류합니다.\n\n⚠️ 데이터 주의\n• 최신 정식 재무 반영이 지연돼 현재 Valuation 신뢰도를 낮춰 봅니다.\n• 현재 거래 증권의 주당 기준을 확인하지 못해 자체 PER/PBR 계산을 보류했습니다.\n\n📌 다음 확인\n• 유료 서비스 지역\n• fleet 규모\n• 차량당 이용률",
+      "cash_flow_user_visible_text": null
+    },
+    {
+      "ticker": "WULF",
+      "company_name": "TeraWulf Inc.",
+      "industry": "hpc_data_center",
+      "selection_state": "SELECTED",
+      "selection_reason": "existing_cash_flow_driver",
+      "context_id": "cf-visible-6704740e6a488541f55e11b6",
+      "primary_period": {
+        "period_start": "2026-01-01",
+        "period_end": "2026-06-30",
+        "period_type": "YTD",
+        "fiscal_year": 2026,
+        "fiscal_quarter": 2
+      },
+      "financial_currency": "USD",
+      "primary_fact_ref": "cashflow:6fd003ea029e4d7b03f681f3",
+      "suppressed_baseline_claim_ids": [],
+      "resolved_unknown_ids": [],
+      "before_text": "🏢 TeraWulf Inc.(WULF)\n\n투자 논리: 유지 · 오늘 중요한 신규 변화 없음\n\n구조적 위험: 높아진 상태\n\n시장 기대: 투기적 기대\n\n🎯 핵심\nTeraWulf는 비트코인 채굴 사업에서 AI/HPC 데이터센터 임대사업으로 빠르게 전환 중이며, 2026년 2분기 매출의 약 71%가 HPC lease revenue에서 발생하고 102MW가 가동된 상태에서 추가 336MW를 건설 중인 점이 핵심 근거다. Anthropic 관련 약 401MW, 20년, 초기 계약가치 약 190억달러의 장기 계약은 큰 성장 옵션이지만, 현재 Adjusted EBITDA 적자, 대규모 CAPEX, 높은 주식보상과 2026년 신규 주식발행 등으로 주주가치 전환은 아직 증명이 필요하다.\n\n👁 핵심 감시\n• 준공 지연·고객 인도 차질\n• Adjusted EBITDA 적자 장기화\n• 대규모 추가 증자·주식보상·부채 증가\n\n💰 가격\n현재가: $16.45 · 2026-08-20 미국장 종가\n현재 구조: 가격 구조상 추가 확인 대기\n신규 관찰자:\n• 동적 지지: $16.00~$17.09\n• 동적 저항: $17.32~$18.12\n• 현재가 기준 차트 손익비: 0.7배\n보유자:\n• 차트 무효화 가격: $15.20\n• 동적 지지 유지 여부: $16.00~$17.09\n가격 규칙 이력:\n• 등록 확인선 $18.40은 아직 도달하지 않았습니다.\n\n📐 Valuation\nPER: N/M\nPBR = 현재가 ÷ BVPS = $16.45 ÷ $0.30 = 55.7배\n과거 대비:\nPBR 중앙값 3.2배 · 100백분위\n현재 Valuation: 판단 자료 부족\n오늘 Valuation 변화: 판단 자료 부족\n검증된 현재 PBR과 과거 장부가 배수 분포를 함께 확인하며, 이익 기반 배수는 사용하지 않습니다.\n\n📌 다음 확인\n• HPC lease revenue 성장률과 전체 매출 내 비중\n• 가동 MW·건설 MW·준공 일정\n• Adjusted EBITDA의 흑자 전환 여부",
+      "after_text": "🏢 TeraWulf Inc.(WULF)\n\n투자 논리: 유지 · 오늘 중요한 신규 변화 없음\n\n구조적 위험: 높아진 상태\n\n시장 기대: 투기적 기대\n\n🎯 핵심\nTeraWulf는 비트코인 채굴 사업에서 AI/HPC 데이터센터 임대사업으로 빠르게 전환 중이며, 2026년 2분기 매출의 약 71%가 HPC lease revenue에서 발생하고 102MW가 가동된 상태에서 추가 336MW를 건설 중인 점이 핵심 근거다. Anthropic 관련 약 401MW, 20년, 초기 계약가치 약 190억달러의 장기 계약은 큰 성장 옵션이지만, 현재 Adjusted EBITDA 적자, 대규모 CAPEX, 높은 주식보상과 2026년 신규 주식발행 등으로 주주가치 전환은 아직 증명이 필요하다.\n\n📈 사업·실적\n2026 회계연도 상반기 누계 build-out 단계의 PPE 투자 후 잉여현금흐름은 $-1.53B입니다. 전년 비교기간보다 음수 폭이 커졌고 build-out 재투자는 가동·청구 전환과 자금조달을 함께 봅니다.\n\n👁 핵심 감시\n• 준공 지연·고객 인도 차질\n• Adjusted EBITDA 적자 장기화\n• 대규모 추가 증자·주식보상·부채 증가\n\n💰 가격\n현재가: $16.45 · 2026-08-20 미국장 종가\n현재 구조: 가격 구조상 추가 확인 대기\n신규 관찰자:\n• 동적 지지: $16.00~$17.09\n• 동적 저항: $17.32~$18.12\n• 현재가 기준 차트 손익비: 0.7배\n보유자:\n• 차트 무효화 가격: $15.20\n• 동적 지지 유지 여부: $16.00~$17.09\n가격 규칙 이력:\n• 등록 확인선 $18.40은 아직 도달하지 않았습니다.\n\n📐 Valuation\nPER: N/M\nPBR = 현재가 ÷ BVPS = $16.45 ÷ $0.30 = 55.7배\n과거 대비:\nPBR 중앙값 3.2배 · 100백분위\n현재 Valuation: 판단 자료 부족\n오늘 Valuation 변화: 판단 자료 부족\n검증된 현재 PBR과 과거 장부가 배수 분포를 함께 확인하며, 이익 기반 배수는 사용하지 않습니다.\n\n📌 다음 확인\n• HPC lease revenue 성장률과 전체 매출 내 비중\n• 가동 MW·건설 MW·준공 일정\n• Adjusted EBITDA의 흑자 전환 여부",
+      "cash_flow_user_visible_text": "2026 회계연도 상반기 누계 build-out 단계의 PPE 투자 후 잉여현금흐름은 $-1.53B입니다. 전년 비교기간보다 음수 폭이 커졌고 build-out 재투자는 가동·청구 전환과 자금조달을 함께 봅니다."
+    }
+  ],
+  "ai_preview": {
+    "status": "PASS",
+    "error_count": 0,
+    "errors": [],
+    "automatic_cash_flow_binding": 9,
+    "manual_cash_flow_binding": 0,
+    "rejected_cash_flow_binding": 0,
+    "unresolved_cash_flow_binding": 0,
+    "runtime_quality_status": "passed",
+    "runtime_quality_errors": [],
+    "previews": [
+      {
+        "ticker": "CORZ",
+        "primary_fact_id": "cashflow:1b8f3742f33dd3b66f8f7673",
+        "business_earnings_before": "2026년 2분기 매출 $164.2M입니다.",
+        "business_earnings_after": "2026년 2분기 매출 $164.2M입니다. 2026 회계연도 상반기 누계 build-out 단계의 PPE 투자 후 잉여현금흐름은 $-723.29M입니다. 전년 비교기간보다 음수 폭이 커졌고 build-out 재투자는 가동·청구 전환과 자금조달을 함께 봅니다.",
+        "numeric_claim": {
+          "fact_id": "cashflow:1b8f3742f33dd3b66f8f7673",
+          "field_path": "fields.value",
+          "value": -723295000,
+          "unit": "USD",
+          "semantic_type": "free_cash_flow_ppe",
+          "text_ref": "business_earnings.text",
+          "usage": "PPE 투자 후 잉여현금흐름은 $-723.29M"
+        }
+      },
+      {
+        "ticker": "CRCL",
+        "primary_fact_id": "cashflow:402041c63553616360d17391",
+        "business_earnings_before": "2026년 1분기 매출 $41.62M입니다.",
+        "business_earnings_after": "2026년 1분기 매출 $41.62M입니다. 2026 회계연도 상반기 누계 준비금·플랫폼 사업의 PPE 투자 후 잉여현금흐름은 $528.12M입니다. 전년 비교기간보다 늘었고 준비금 수익과 비이자 플랫폼 수익의 현금전환을 함께 봅니다.",
+        "numeric_claim": {
+          "fact_id": "cashflow:402041c63553616360d17391",
+          "field_path": "fields.value",
+          "value": 528116000,
+          "unit": "USD",
+          "semantic_type": "free_cash_flow_ppe",
+          "text_ref": "business_earnings.text",
+          "usage": "PPE 투자 후 잉여현금흐름은 $528.12M"
+        }
+      },
+      {
+        "ticker": "GOOGL",
+        "primary_fact_id": "cashflow:ddb47708bf7d36a4c0b0c7d2",
+        "business_earnings_before": "",
+        "business_earnings_after": "2026 회계연도 상반기 누계 AI·Cloud 확장의 PPE 투자 후 잉여현금흐름은 $4.26B입니다. 전년 비교기간보다 줄었고 AI·Cloud 투자 회수는 Cloud 성장·마진과 함께 봅니다.",
+        "numeric_claim": {
+          "fact_id": "cashflow:ddb47708bf7d36a4c0b0c7d2",
+          "field_path": "fields.value",
+          "value": 4261000000,
+          "unit": "USD",
+          "semantic_type": "free_cash_flow_ppe",
+          "text_ref": "business_earnings.text",
+          "usage": "PPE 투자 후 잉여현금흐름은 $4.26B"
+        }
+      },
+      {
+        "ticker": "IBM",
+        "primary_fact_id": "cashflow:a158304539a9269c66f6d2cb",
+        "business_earnings_before": "2026년 2분기 매출 $17.16B입니다. Software·Red Hat 성장과 Consulting 안정이 FCF 개선으로 이어지는지를 함께 확인해야 합니다.",
+        "business_earnings_after": "2026년 2분기 매출 $17.16B입니다. Software·Red Hat 성장과 Consulting 안정이 FCF 개선으로 이어지는지를 함께 확인해야 합니다. 2026 회계연도 상반기 누계 Software·Consulting 사업의 PPE 투자 후 잉여현금흐름은 $7.3B입니다. 전년 비교기간보다 늘었고 Software·Consulting 전환과 인수자금 부담을 함께 봅니다.",
+        "numeric_claim": {
+          "fact_id": "cashflow:a158304539a9269c66f6d2cb",
+          "field_path": "fields.value",
+          "value": 7305000000,
+          "unit": "USD",
+          "semantic_type": "free_cash_flow_ppe",
+          "text_ref": "business_earnings.text",
+          "usage": "PPE 투자 후 잉여현금흐름은 $7.3B"
+        }
+      },
+      {
+        "ticker": "MU",
+        "primary_fact_id": "cashflow:96e9c3b873f3678d4dec0ff3",
+        "business_earnings_before": "2026년 3분기 매출 $41.46B입니다.",
+        "business_earnings_after": "2026년 3분기 매출 $41.46B입니다. 2026 회계연도 3분기 누계 메모리 증설의 PPE 투자 후 잉여현금흐름은 $26.1B입니다. 전년 비교기간보다 늘었고 ASP·제품 믹스·재고 사이클과 설비투자 시점을 함께 봅니다.",
+        "numeric_claim": {
+          "fact_id": "cashflow:96e9c3b873f3678d4dec0ff3",
+          "field_path": "fields.value",
+          "value": 26100000000,
+          "unit": "USD",
+          "semantic_type": "free_cash_flow_ppe",
+          "text_ref": "business_earnings.text",
+          "usage": "PPE 투자 후 잉여현금흐름은 $26.1B"
+        }
+      },
+      {
+        "ticker": "RXRX",
+        "primary_fact_id": "cashflow:498c289d4304c0822d861ec3",
+        "business_earnings_before": "2026년 2분기 매출 $7.67M입니다. 임상 진행, 파트너 지급과 분기 현금소진이 없어 바이오 옵션의 질과 runway를 판단할 수 없습니다.",
+        "business_earnings_after": "2026년 2분기 매출 $7.67M입니다. 임상 진행, 파트너 지급과 분기 현금소진이 없어 바이오 옵션의 질과 runway를 판단할 수 없습니다. 2026 회계연도 상반기 누계 연구개발 단계의 PPE 투자 후 잉여현금흐름은 $-187.35M입니다. 전년 비교기간보다 음수 폭이 줄었고 현금소진 근거로만 쓰며 보유현금 근거 없이 runway를 계산하지 않습니다.",
+        "numeric_claim": {
+          "fact_id": "cashflow:498c289d4304c0822d861ec3",
+          "field_path": "fields.value",
+          "value": -187350000,
+          "unit": "USD",
+          "semantic_type": "free_cash_flow_ppe",
+          "text_ref": "business_earnings.text",
+          "usage": "PPE 투자 후 잉여현금흐름은 $-187.35M"
+        }
+      },
+      {
+        "ticker": "SNDK",
+        "primary_fact_id": "cashflow:1b8db0b46c63ae9369231151",
+        "business_earnings_before": "2026년 연간 매출 $20.25B입니다.",
+        "business_earnings_after": "2026년 연간 매출 $20.25B입니다. 2026 회계연도 연간 메모리 증설의 PPE 투자 후 잉여현금흐름은 $11.49B입니다. ASP·제품 믹스·재고 사이클과 설비투자 시점을 함께 봅니다.",
+        "numeric_claim": {
+          "fact_id": "cashflow:1b8db0b46c63ae9369231151",
+          "field_path": "fields.value",
+          "value": 11494000000,
+          "unit": "USD",
+          "semantic_type": "free_cash_flow_ppe",
+          "text_ref": "business_earnings.text",
+          "usage": "PPE 투자 후 잉여현금흐름은 $11.49B"
+        }
+      },
+      {
+        "ticker": "TSLA",
+        "primary_fact_id": "cashflow:68666c261434dab50ab88a8d",
+        "business_earnings_before": "",
+        "business_earnings_after": "2026 회계연도 상반기 누계 자동차 성장투자의 PPE 투자 후 잉여현금흐름은 $352M입니다. 전년 비교기간보다 줄었고 자동차 마진과 성장투자 회수를 함께 봅니다.",
+        "numeric_claim": {
+          "fact_id": "cashflow:68666c261434dab50ab88a8d",
+          "field_path": "fields.value",
+          "value": 352000000,
+          "unit": "USD",
+          "semantic_type": "free_cash_flow_ppe",
+          "text_ref": "business_earnings.text",
+          "usage": "PPE 투자 후 잉여현금흐름은 $352M"
+        }
+      },
+      {
+        "ticker": "WULF",
+        "primary_fact_id": "cashflow:6fd003ea029e4d7b03f681f3",
+        "business_earnings_before": "",
+        "business_earnings_after": "2026 회계연도 상반기 누계 build-out 단계의 PPE 투자 후 잉여현금흐름은 $-1.53B입니다. 전년 비교기간보다 음수 폭이 커졌고 build-out 재투자는 가동·청구 전환과 자금조달을 함께 봅니다.",
+        "numeric_claim": {
+          "fact_id": "cashflow:6fd003ea029e4d7b03f681f3",
+          "field_path": "fields.value",
+          "value": -1532814000,
+          "unit": "USD",
+          "semantic_type": "free_cash_flow_ppe",
+          "text_ref": "business_earnings.text",
+          "usage": "PPE 투자 후 잉여현금흐름은 $-1.53B"
+        }
+      }
+    ],
+    "rendered_messages": [
+      {
+        "ticker": "__DAILY_DIGEST__",
+        "logical_identity": "preview:__DAILY_DIGEST__",
+        "text": "🤖 AI 보조 미국시장 점검 · US Pilot 1/1\n\n🎯 오늘 시장 한 줄\nS&P500 대비 반도체 상대수익률 +1.4%; 미국 10년물 실질금리 변동 -6bp; 미국 10년물 금리 변동 -6bp; VIX 등락률 -6%. 반도체 상대 강도와 할인율·변동성 신호는 함께 우호적으로 움직였지만, 실제 기업 주문·마진·현금흐름의 확인은 아닙니다.\n\n📈 실제 변화\n• S&P500 대비 반도체 상대수익률 +1.4%는 반도체 가격 심리의 상대 강도를 보여주지만 실제 주문이나 마진을 확정하지 않습니다.\n• 미국 10년물 실질금리 변동 -6bp는 장기 성장 옵션의 할인율 부담을 덜 수 있으나 기업별 실행 증거를 대신하지 않습니다.\n• 미국 10년물 금리 변동 -6bp는 장기 자산의 할인율 경로에는 우호적이지만 수요 회복을 뜻하지는 않습니다.\n• VIX 등락률 -6%는 단기 위험회피 완화를 가리키지만 시장 breadth가 없어 광범위한 위험선호로 단정하지 않습니다.\n\n🌙 한국 개장 전 신호\n• 한국 야간선물은 최신 완료 세션 데이터를 확인하지 못해 오늘 개장 전 신호에서 제외했습니다.\n\n🧭 시장 구조\n실질금리와 신용비용은 완화 방향이고 변동성도 낮아졌습니다. 다만 breadth와 시장 전체 투자주체 흐름이 없어 참여 확산 여부는 Unknown입니다.\n\n🔗 모니터링 종목에 미치는 영향\n• 자동차: 실질금리 하락은 장기 자동차·플랫폼 옵션의 할인율 부담을 덜 수 있지만 자동차 마진과 실행력 확인은 아닙니다.\n• 바이오: 실질금리 하락은 바이오 옵션 가치의 할인율 경로에 우호적일 수 있으나 임상과 현금 runway를 대신하지 않습니다.\n• 기타·일반: 변동성 완화는 고변동 성장·플랫폼 종목의 가격 여건을 돕지만 각 회사의 현금전환 증거가 필요합니다.\n• 반도체: 반도체 상대 강도는 업종 가격 맥락이며 실제 주문·제품 믹스·마진·FCF 확인과 분리합니다.\n\n📌 다음 확인\n• 다음 기대인플레이션 관측이 금리 완화와 같은 방향을 유지하는지 확인하면 할인율 해석이 바뀔 수 있습니다.\n• 다음 신용스프레드 관측이 계속 완화되는지 확인하면 자금조달 환경 판단이 바뀔 수 있습니다.\n• 다음 반도체 상대강도 관측이 회사별 주문·마진 증거와 연결되는지 확인합니다.\n\n⚠️ 데이터 주의\n• 시장 breadth는 제공되지 않아 지수 움직임을 광범위한 참여로 해석할 수 없습니다.\n• 시장 전체 투자주체 흐름은 제공되지 않았습니다.\n• 최신 완료 세션의 한국 야간선물은 확인되지 않아 한국 개장 가격 맥락은 Unknown입니다."
+      },
+      {
+        "ticker": "CORZ",
+        "logical_identity": "preview:CORZ",
+        "text": "🤖 AI 보조 종목 점검 · US Pilot 1/1\n\n🏢 Core Scientific, Inc.(CORZ)\n투자 논리: 유지 · 오늘 중요한 신규 변화 없음\n구조적 위험: 보통\n시장 기대: 매우 높음\n\n🎯 핵심 판단\n코로케이션 전환 방향은 유지되지만 계약 전력이 실제 가동·청구·현금흐름으로 바뀌는 속도가 높은 기대를 충족하는지가 핵심입니다.\n\n📈 사업·실적\n2026년 2분기 매출 $164.2M입니다. 2026 회계연도 상반기 누계 build-out 단계의 PPE 투자 후 잉여현금흐름은 $-723.29M입니다. 전년 비교기간보다 음수 폭이 커졌고 build-out 재투자는 가동·청구 전환과 자금조달을 함께 봅니다.\n\n💰 가격·포지셔닝\n현재가 $18.39; 동적 지지구간 하단 $18.2; 동적 지지구간 상단 $18.73; 동적 저항구간 하단 $18.96; 동적 저항구간 상단 $19.9; 현재가 기준 차트 손익비 0.57배. 경고 기준 아래 상태가 이어졌고 근접 저항과 불리한 현재 가격 구조 때문에 WAIT입니다. 코로케이션 실행 증거는 별도로 확인합니다.\n• 신규 관찰자: 새 자금은 동적 지지 방어와 거래 참여 회복, 가동 전력의 매출 전환이 함께 확인될 때 가격 비대칭을 검토할 수 있습니다.\n• 보유자: 보유자는 현재 차트 검토 경계와 고객계약 취소·준공 실패·현금흐름 악화라는 사업 훼손 조건을 분리해야 합니다.\n\n📊 거래량·포지셔닝\n거래량 확인은 최근 평균에 미치지 못해 코로케이션 가동 전환을 가격이 확인했다고 보기 어렵습니다.\n\n📐 Valuation\n코로케이션 사업의 기존 valuation 기준을 유지하고 cash-flow 수치만으로 판단을 바꾸지 않습니다.\n\n👁 핵심 감시\n• billing 전력의 가동 속도, 코로케이션 마진, 자본집약도와 희석의 균형을 지속 감시합니다."
+      },
+      {
+        "ticker": "CRCL",
+        "logical_identity": "preview:CRCL",
+        "text": "🤖 AI 보조 종목 점검 · US Pilot 1/1\n\n🏢 Circle Internet Group(CRCL)\n투자 논리: 유지 · 오늘 중요한 신규 변화 없음\n구조적 위험: 높아진 상태\n시장 기대: 투기적 기대\n\n🎯 핵심 판단\nUSDC 성장 기대는 유지되지만 준비금 수익 의존도를 비이자 플랫폼 수익이 얼마나 빠르게 낮추는지가 핵심입니다.\n\n📈 사업·실적\n2026년 1분기 매출 $41.62M입니다. 2026 회계연도 상반기 누계 준비금·플랫폼 사업의 PPE 투자 후 잉여현금흐름은 $528.12M입니다. 전년 비교기간보다 늘었고 준비금 수익과 비이자 플랫폼 수익의 현금전환을 함께 봅니다.\n\n💰 가격·포지셔닝\n현재가 $83.66; 동적 지지구간 하단 $82.01; 동적 지지구간 상단 $86.53. 상향 확인 뒤 가격은 그 기준을 유지하고 있지만 검증된 동적 저항이 없어 현재가 손익비는 확정할 수 없습니다. 거래 참여가 약해 가격 구조는 WAIT입니다.\n• 신규 관찰자: 새 자금은 돌파 재시험과 거래량 회복뿐 아니라 USDC 점유율과 비이자 수익의 동시 개선이 확인돼야 가격 비대칭을 검토할 수 있습니다.\n• 보유자: 보유자는 현재 차트 경계와 USDC 정체 또는 준비금 수익 감소를 비이자 성장으로 상쇄하지 못하는 사업 위험을 분리해야 합니다.\n\n📊 거래량·포지셔닝\n확인 가격 위를 유지하지만 거래량은 최근 평균에 미치지 못해 USDC 사업 기대의 확증으로 볼 수 없습니다.\n\n📐 Valuation\nUSDC 사업의 기존 valuation 기준을 유지하고 cash-flow 수치만으로 판단을 바꾸지 않습니다.\n\n👁 핵심 감시\n• USDC 점유율, 준비금 수익 의존도와 비이자 수익 전환을 지속 감시합니다."
+      },
+      {
+        "ticker": "GOOGL",
+        "logical_identity": "preview:GOOGL",
+        "text": "🤖 AI 보조 종목 점검 · US Pilot 1/1\n\n🏢 Alphabet Inc. Class A(GOOGL)\n투자 논리: 유지 · 오늘 중요한 신규 변화 없음\n구조적 위험: 보통\n시장 기대: 높음\n\n🎯 핵심 판단\nSearch·Cloud 사업 논리는 유지되며 AI 투자를 마진·FCF·ROIC로 회수하는지가 다음 핵심입니다. 현재가 $340.67 현재 PER 12.21배.\n\n📈 사업·실적\n2026 회계연도 상반기 누계 AI·Cloud 확장의 PPE 투자 후 잉여현금흐름은 $4.26B입니다. 전년 비교기간보다 줄었고 AI·Cloud 투자 회수는 Cloud 성장·마진과 함께 봅니다.\n\n💰 가격·포지셔닝\n현재가 $340.67; 동적 지지구간 하단 $312.37; 동적 지지구간 상단 $321.88; 동적 저항구간 하단 $343.65; 동적 저항구간 상단 $353.79; 현재가 기준 차트 손익비 0.09배. 등록 지지를 하회한 뒤 근접 동적 저항이 형성됐습니다. 이전 차트 손익비 4.27배; 현재 차트 손익비 0.09배로 바뀌어 현재 가격 비대칭은 악화됐고 가격 구조는 WAIT입니다.\n• 신규 관찰자: 새 자금은 동적 지지 회복과 Cloud 마진·FCF가 AI 투자를 흡수한다는 사실이 함께 확인될 때 가격 비대칭을 검토할 수 있습니다.\n• 보유자: 보유자는 현재 차트 경계와 Search 경쟁력 또는 Cloud 현금창출 훼손을 별개의 재평가 조건으로 둬야 합니다.\n\n📊 거래량·포지셔닝\n등록 지지 하회 뒤 거래량도 최근 평균에 못 미쳐 Search·Cloud 사업 변화의 증거로 확대할 수 없습니다.\n\n📐 Valuation\nSearch·Cloud 사업의 기존 valuation 기준을 유지하고 cash-flow 수치만으로 판단을 바꾸지 않습니다."
+      },
+      {
+        "ticker": "HUT",
+        "logical_identity": "preview:HUT",
+        "text": "🤖 AI 보조 종목 점검 · US Pilot 1/1\n\n🏢 Hut 8 Corp.(HUT)\n투자 논리: 유지 · 오늘 중요한 신규 변화 없음\n구조적 위험: 보통\n시장 기대: 매우 높음\n\n🎯 핵심 판단\nAI 데이터센터 계약 기대는 유지되지만 계약 규모보다 준공·가동·NOI와 프로젝트 자본효율의 실현이 핵심입니다. 현재가 $88.65 시장 예상 fPER 150.25배.\n\n📈 사업·실적\n새로 해석 가능한 사업 실적 숫자가 없어 제한 없는 현금, 프로젝트 투자, OCF와 FCF의 변화를 확정할 수 없습니다.\n\n💰 가격·포지셔닝\n현재가 $88.65; 동적 지지구간 하단 $84.11; 동적 지지구간 상단 $89.67; 동적 저항구간 하단 $101.61; 동적 저항구간 상단 $106.89; 현재가 기준 차트 손익비 1.4배. 등록 경고 아래에서 동적 지지 안으로 들어왔고 지지·저항이 함께 확인돼 현재가 손익비를 평가할 수 있게 됐습니다. 프로젝트 실행 확인과 분리합니다.\n• 신규 관찰자: 새 자금은 동적 지지 방어와 준공·가동·NOI의 실제 인식이 함께 나타날 때 가격 비대칭을 검토할 수 있습니다.\n• 보유자: 보유자는 차트 검토 경계와 준공 지연·프로젝트 자금조달 악화라는 사업 훼손을 분리해야 합니다.\n\n📊 거래량·포지셔닝\n동적 지지 진입에도 거래량은 최근 평균보다 약해 준공·가동·NOI 확인과 분리해야 합니다.\n\n📐 Valuation\nAI 사업의 기존 valuation 기준을 유지하고 cash-flow 수치만으로 판단을 바꾸지 않습니다.\n\n⚠️ 데이터 주의\n• 최신 정식 재무 반영이 지연돼 현재 Valuation 신뢰도를 낮춰 봅니다.\n\n👁 핵심 감시\n• 계약 전력의 준공·가동 속도와 프로젝트 자본효율을 지속 감시합니다.\n\n📌 다음 확인\n• 다음 공식 자료에서 계약 전력의 가동, NOI, 프로젝트 투자·부채·지분 투입과 FCF를 확인합니다.\n\n⚠️ 미확인\n• 제한 현금과 자유현금, 프로젝트별 투자와 모회사 지분 투입의 구분이 부족합니다."
+      },
+      {
+        "ticker": "IBM",
+        "logical_identity": "preview:IBM",
+        "text": "🤖 AI 보조 종목 점검 · US Pilot 1/1\n\n🏢 IBM(IBM)\n투자 논리: 유지 · 오늘 중요한 신규 변화 없음\n구조적 위험: 보통\n시장 기대: 균형\n\n🎯 핵심 판단\nSoftware·Red Hat 성장과 Consulting 둔화를 FCF로 상쇄하는지가 균형적 기대를 지키는 핵심입니다.\n\n📈 사업·실적\n2026년 2분기 매출 $17.16B입니다. Software·Red Hat 성장과 Consulting 안정이 FCF 개선으로 이어지는지를 함께 확인해야 합니다. 2026 회계연도 상반기 누계 Software·Consulting 사업의 PPE 투자 후 잉여현금흐름은 $7.3B입니다. 전년 비교기간보다 늘었고 Software·Consulting 전환과 인수자금 부담을 함께 봅니다.\n\n💰 가격·포지셔닝\n현재가 $233.69; 동적 지지구간 하단 $228.6; 동적 지지구간 상단 $235.66; 동적 저항구간 하단 $239.37; 동적 저항구간 상단 $244.23; 현재가 기준 차트 손익비 0.62배. 등록 지지와 확인 가격 사이에 있으나 근접 저항 때문에 가격 구조는 WAIT입니다. Software·Consulting의 사업 판단은 별도입니다.\n• 신규 관찰자: 새 자금은 동적 지지 유지와 Software 성장, Consulting 안정, FCF 확인이 함께 나타날 때 가격 비대칭을 검토할 수 있습니다.\n• 보유자: 보유자는 현재 차트 구조와 Software 성장 둔화·FCF 약화라는 사업 재평가 조건을 분리해야 합니다.\n\n📊 거래량·포지셔닝\n근접 저항 아래에서 거래량은 최근 평균보다 약하며 Software·Consulting의 이익 지속성 판단과 분리합니다.\n\n📐 Valuation\nSoftware·Red 사업의 기존 valuation 기준을 유지하고 cash-flow 수치만으로 판단을 바꾸지 않습니다.\n\n⚠️ 데이터 주의\n• 최신 정식 재무 반영이 지연돼 현재 Valuation 신뢰도를 낮춰 봅니다.\n\n⚠️ 미확인\n• AI 관련 매출의 수익성, Consulting backlog 전환과 증분 ROIC가 미확인입니다."
+      },
+      {
+        "ticker": "MU",
+        "logical_identity": "preview:MU",
+        "text": "🤖 AI 보조 종목 점검 · US Pilot 1/1\n\n🏢 Micron Technology(MU)\n투자 논리: 유지 · 오늘 중요한 신규 변화 없음\n구조적 위험: 보통\n시장 기대: 매우 높음\n\n🎯 핵심 판단\n메모리 업사이클과 HBM 기대를 정당화하려면 ASP·출하·마진과 FCF가 함께 이어져야 합니다.\n\n📈 사업·실적\n2026년 3분기 매출 $41.46B입니다. 2026 회계연도 3분기 누계 메모리 증설의 PPE 투자 후 잉여현금흐름은 $26.1B입니다. 전년 비교기간보다 늘었고 ASP·제품 믹스·재고 사이클과 설비투자 시점을 함께 봅니다.\n\n💰 가격·포지셔닝\n현재가 $974.33; 동적 지지구간 하단 $868.39; 동적 지지구간 상단 $914.93; 동적 저항구간 하단 $991.61; 동적 저항구간 상단 $1,031.93; 현재가 기준 차트 손익비 0.12배. 상향 확인 가격을 넘어섰지만 재시험 전이고 근접 저항 때문에 가격 구조는 WAIT입니다. HBM 실적 확인은 별도입니다.\n• 신규 관찰자: 새 자금은 동적 지지 방어와 HBM 출하·ASP·마진의 추가 확인이 함께 있을 때 가격 비대칭을 검토할 수 있습니다.\n• 보유자: 보유자는 현재 차트 구조와 재고·ASP·CAPEX가 만드는 사이클 훼손을 별개의 재평가 조건으로 둬야 합니다.\n\n📊 거래량·포지셔닝\n확인 가격 돌파에도 거래량은 최근 평균보다 약해 HBM 수요와 메모리 마진의 확인으로 볼 수 없습니다.\n\n📐 Valuation\n메모리 사업의 기존 valuation 기준을 유지하고 cash-flow 수치만으로 판단을 바꾸지 않습니다.\n\n⚠️ 데이터 주의\n• fPER는 산출 기간이 명확하지 않아 참고 수준입니다."
+      },
+      {
+        "ticker": "RXRX",
+        "logical_identity": "preview:RXRX",
+        "text": "🤖 AI 보조 종목 점검 · US Pilot 1/1\n\n🏢 Recursion Pharmaceuticals(RXRX)\n투자 논리: 유지 · 오늘 중요한 신규 변화 없음\n구조적 위험: 높아진 상태\n시장 기대: 투기적 기대\n\n🎯 핵심 판단\n바이오 투자 논리는 유지되지만 임상 성공확률, 파트너 milestone과 cash runway가 기업가치를 좌우합니다.\n\n📈 사업·실적\n2026년 2분기 매출 $7.67M입니다. 임상 진행, 파트너 지급과 분기 현금소진이 없어 바이오 옵션의 질과 runway를 판단할 수 없습니다. 2026 회계연도 상반기 누계 연구개발 단계의 PPE 투자 후 잉여현금흐름은 $-187.35M입니다. 전년 비교기간보다 음수 폭이 줄었고 현금소진 근거로만 쓰며 보유현금 근거 없이 runway를 계산하지 않습니다.\n\n💰 가격·포지셔닝\n현재가 $3.34; 동적 지지구간 하단 $2.78; 동적 지지구간 상단 $2.92; 동적 저항구간 하단 $3.71; 동적 저항구간 상단 $3.91; 현재가 기준 차트 손익비 0.57배. 상향 확인 뒤 재시험에 실패해 다시 확인 가격 아래로 내려왔습니다. 가격 구조는 WAIT이며 임상 진척이나 runway 변화로 확대 해석하지 않습니다.\n• 신규 관찰자: 새 자금은 동적 지지보다 먼저 임상 데이터나 파트너 타깃 선택과 cash runway가 가격 위험을 보상하는지 확인해야 합니다.\n• 보유자: 보유자는 차트 검토 경계와 임상 실패·runway 단축·희석 확대라는 사업 훼손을 분리해야 합니다.\n\n📊 거래량·포지셔닝\n확인 가격 재시험 실패와 약한 거래량은 임상 진척이나 runway 확인이 아니라 가격 경계입니다.\n\n📐 Valuation\n바이오 사업의 기존 valuation 기준을 유지하고 cash-flow 수치만으로 판단을 바꾸지 않습니다.\n\n👁 핵심 감시\n• 임상 milestone, 파트너 의존도, cash runway와 희석 위험을 지속 감시합니다.\n\n📌 다음 확인\n• 다음 공식 자료에서 주요 임상 일정, 파트너 milestone, 현금소진, runway와 희석을 확인합니다.\n\n⚠️ 미확인\n• 후보별 성공확률, milestone 조건, 분기 현금소진과 희석 경로가 미확인입니다."
+      },
+      {
+        "ticker": "SKHY",
+        "logical_identity": "preview:SKHY",
+        "text": "🤖 AI 보조 종목 점검 · US Pilot 1/1\n\n🏢 SK hynix Inc. ADR(SKHY)\n투자 논리: 유지 · 오늘 중요한 신규 변화 없음\n구조적 위험: 높아진 상태\n시장 기대: 투기적 기대\n\n🎯 핵심 판단\nHBM·메모리 기대는 유지되지만 검증된 ADS identity와 별개로 현재 증권의 주당 이익·장부 분모가 충분하지 않습니다. 가격 판단에 확인 가능한 숫자는 현재가 $163.08입니다.\n\n📈 사업·실적\n재무 품질이 Unknown이고 현재 증권의 주당 이익·장부 기준이 부족해 실적·배수 수치는 제외합니다. HBM 출하·ASP·마진·FCF도 미확인입니다.\n\n💰 가격·포지셔닝\n현재가 $163.08. 상향 확인 가격을 넘어섰지만 재시험 전이고 검증된 동적 지지·저항과 손익비는 없습니다. 가격 신호만으로 HBM 논리를 바꾸지 않습니다.\n• 신규 관찰자: 새 자금은 검증된 동적 지지와 현재 증권의 주당 기준, HBM 출하·마진·FCF가 함께 확인돼야 가격 비대칭을 검토할 수 있습니다.\n• 보유자: 보유자는 현재 가격 검토와 HBM 수요·ASP·현금흐름 훼손을 구분하고 주당 기준 공백을 별도 위험으로 관리해야 합니다.\n\n📊 거래량·포지셔닝\n확인 가격을 넘어섰지만 거래량은 최근 평균보다 약해 HBM 실적 확인이 아닙니다.\n\n📐 Valuation\nHBM·메모리 사업의 기존 valuation 기준을 유지하고 cash-flow 수치만으로 판단을 바꾸지 않습니다.\n\n⚠️ 데이터 주의\n• 현재 거래 증권의 주당 기준을 확인하지 못해 자체 PER/PBR 계산을 보류했습니다.\n• 최근 해외 공시 재무표의 자동 검증이 끝나지 않아 Valuation을 보수적으로 봅니다.\n\n👁 핵심 감시\n• HBM 출하·믹스, 메모리 ASP와 현재 증권의 주당 기준 공백을 지속 감시합니다.\n\n📌 다음 확인\n• 다음 공식 자료에서 현재 증권의 주당 기준, HBM 출하, DRAM·NAND ASP, 마진, CAPEX와 FCF를 확인합니다.\n\n⚠️ 미확인\n• 현재 증권의 주당 이익·장부 분모, HBM 출하·ASP·FCF가 미확인입니다."
+      },
+      {
+        "ticker": "SNDK",
+        "logical_identity": "preview:SNDK",
+        "text": "🤖 AI 보조 종목 점검 · US Pilot 1/1\n\n🏢 SanDisk(SNDK)\n투자 논리: 유지 · 오늘 중요한 신규 변화 없음\n구조적 위험: 높아진 상태\n시장 기대: 투기적 기대\n\n🎯 핵심 판단\nSanDisk의 사업 전환과 수익성 근거를 계속 확인합니다.\n\n📈 사업·실적\n2026년 연간 매출 $20.25B입니다. 2026 회계연도 연간 메모리 증설의 PPE 투자 후 잉여현금흐름은 $11.49B입니다. ASP·제품 믹스·재고 사이클과 설비투자 시점을 함께 봅니다.\n\n💰 가격·포지셔닝\n현재가 $1,600.62; 동적 지지구간 하단 $950.35; 동적 지지구간 상단 $1,046.03; 동적 저항구간 하단 $1,648.95; 동적 저항구간 상단 $1,743.79; 현재가 기준 차트 손익비 0.07배. 상향 확인 상태는 배경으로 유지되지만 근접 저항 대비 현재 가격 비대칭이 불리해 WAIT입니다. NAND 공급 규율은 별도 실적 대상입니다.\n• 신규 관찰자: 새 자금은 동적 지지 방어와 NAND ASP·데이터센터 매출·FCF 확인이 함께 나타날 때 가격 비대칭을 검토할 수 있습니다.\n• 보유자: 보유자는 확인 상태보다 현재 동적 지지와 NAND 가격·재고·FCF 훼손을 별도로 봐야 합니다.\n\n📊 거래량·포지셔닝\n확인 가격 위를 유지하지만 거래량은 최근 평균보다 약해 NAND 공급 규율과 현금전환을 증명하지 않습니다.\n\n📐 Valuation\nSanDisk의 사업의 기존 valuation 기준을 유지하고 cash-flow 수치만으로 판단을 바꾸지 않습니다."
+      },
+      {
+        "ticker": "TSLA",
+        "logical_identity": "preview:TSLA",
+        "text": "🤖 AI 보조 종목 점검 · US Pilot 1/1\n\n🏢 Tesla, Inc.(TSLA)\n투자 논리: 유지 · 오늘 중요한 신규 변화 없음\n구조적 위험: 높아진 상태\n시장 기대: 투기적 기대\n\n🎯 핵심 판단\n자동차 사업과 장기 옵션 논리는 유지되지만 자동차 마진·FCF와 Robotaxi 단위경제성이 함께 증명돼야 합니다. 현재가 $345.13 TTM EPS $1.92.\n\n📈 사업·실적\n2026 회계연도 상반기 누계 자동차 성장투자의 PPE 투자 후 잉여현금흐름은 $352M입니다. 전년 비교기간보다 줄었고 자동차 마진과 성장투자 회수를 함께 봅니다.\n\n💰 가격·포지셔닝\n현재가 $345.13; 동적 지지구간 하단 $334.72; 동적 지지구간 상단 $341.28; 동적 저항구간 하단 $360.04; 동적 저항구간 상단 $372.58; 현재가 기준 차트 손익비 0.87배. 상향 확인 뒤 그 기준을 유지하고 있지만 거래 참여는 약하고 가격 구조는 WAIT입니다. 자동차 마진·Robotaxi 실행은 별도입니다.\n• 신규 관찰자: 새 자금은 돌파 실패 뒤 동적 지지·저항의 재정렬과 자동차 마진·Robotaxi 단위경제성 확인이 필요합니다.\n• 보유자: 보유자는 차트 검토 경계와 자동차 마진·FCF 또는 Robotaxi 실행의 사업 훼손을 분리해야 합니다.\n\n📊 거래량·포지셔닝\n확인 가격 위를 유지하지만 거래량은 최근 평균보다 약해 자동차 마진과 Robotaxi 실행의 확인으로 확대할 수 없습니다.\n\n📐 Valuation\n자동차 사업의 기존 valuation 기준을 유지하고 cash-flow 수치만으로 판단을 바꾸지 않습니다.\n\n⚠️ 기존 경고\n• 영업이익률 저하 확인"
+      },
+      {
+        "ticker": "TSM",
+        "logical_identity": "preview:TSM",
+        "text": "🤖 AI 보조 종목 점검 · US Pilot 1/1\n\n🏢 TSMC(TSM)\n투자 논리: 유지 · 오늘 중요한 신규 변화 없음\n구조적 위험: 보통\n시장 기대: 매우 높음\n\n🎯 핵심 판단\n첨단공정 수요와 실적 방향은 유지되지만 현재 미국 상장 증권의 identity와 주당 기준 공백은 별도 위험입니다.\n\n📈 사업·실적\n2026년 2분기 매출 NT$1.27T 2026년 2분기 영업이익 NT$766.6B 2026년 2분기 영업이익률 60.3%입니다. TWD 기준 잠정 실적은 확인되지만 OCF·CAPEX·FCF·재고·ROIC를 증명하지 않으며 미국 상장 증권 가격과 환산하지 않습니다.\n\n💰 가격·포지셔닝\n현재가 $416; 동적 지지구간 하단 $380.77; 동적 지지구간 상단 $390.31; 동적 저항구간 하단 $432.3; 동적 저항구간 상단 $439.78; 현재가 기준 차트 손익비 0.39배. 등록 지지를 다시 회복했지만 근접 저항과 현재 가격 구조는 새 자금에 불리합니다. 가격 구조는 WAIT이며 첨단공정 수요 확인과 분리합니다.\n• 신규 관찰자: 새 자금은 가격 구조만으로 충분하지 않으며 현재 증권 identity 해결과 첨단공정 가동률·마진·FCF 확인이 함께 필요합니다.\n• 보유자: 보유자는 현재 차트의 비중관리 압력과 첨단공정 가동률·해외 팹 비용·FCF 훼손을 분리하고 identity 공백을 별도로 관리해야 합니다.\n\n📊 거래량·포지셔닝\n등록 지지를 회복했지만 거래량은 최근 평균보다 약해 첨단공정 수요와 마진은 공식 실적으로 확인해야 합니다.\n\n📐 Valuation\n첨단공정 사업의 기존 valuation 기준을 유지하고 cash-flow 수치만으로 판단을 바꾸지 않습니다.\n\n⚠️ 데이터 주의\n• 최신 정식 재무 반영이 지연돼 현재 Valuation 신뢰도를 낮춰 봅니다.\n• 최근 공식 잠정실적의 매출·영업이익은 반영했지만 주당 기준을 확인하지 못해 자체 PER 계산은 보류했습니다.\n\n👁 핵심 감시\n• 첨단공정 가동률·가격, 해외 CAPEX와 마진·FCF 회수를 지속 감시합니다.\n\n📌 다음 확인\n• 다음 공식 자료에서 현재 증권 identity, 첨단공정 가동률, wafer ASP, gross margin, CAPEX, FCF와 ROIC를 확인합니다.\n\n⚠️ 미확인\n• 현재 증권 identity와 주당 분모, OCF·CAPEX·FCF·재고·ROIC가 미확인입니다."
+      },
+      {
+        "ticker": "WRD",
+        "logical_identity": "preview:WRD",
+        "text": "🤖 AI 보조 종목 점검 · US Pilot 1/1\n\n🏢 WeRide(WRD)\n투자 논리: 유지 · 오늘 중요한 신규 변화 없음\n구조적 위험: 높아진 상태\n시장 기대: 투기적 기대\n\n🎯 핵심 판단\nRobotaxi 상용화 기대는 유지되지만 현재 미국 상장 증권의 identity와 주당 기준이 미확인이라 가격 구조와 사업 검증을 분리해야 합니다. 확인 가능한 가격 숫자는 현재가 $6.07입니다.\n\n📈 사업·실적\nCNY 기준 실적을 현재 증권의 주당 값으로 환산하지 않습니다. 유료 fleet, 차량당 이용률·매출, gross margin과 cash burn이 없어 단위경제성을 판단할 수 없습니다.\n\n💰 가격·포지셔닝\n현재가 $6.07; 동적 지지구간 하단 $5.91; 동적 지지구간 상단 $6.15; 동적 저항구간 하단 $6.38; 동적 저항구간 상단 $6.52; 현재가 기준 차트 손익비 1.03배. 등록 지지와 확인 가격 사이에서 가격 구조는 WAIT입니다. 현재 가격 비대칭은 조건부이며 유료 운행의 단위경제성은 별도 확인 조건입니다.\n• 신규 관찰자: 새 자금은 동적 지지 방어보다 유료 서비스 확대와 차량당 단위경제성, 현금소진 경로를 먼저 확인해야 합니다.\n• 보유자: 보유자는 현재 차트 경계와 규제·안전·fleet 이용률·현금소진이라는 사업 훼손을 분리해야 합니다.\n\n📊 거래량·포지셔닝\n등록 지지와 확인 가격 사이에서 거래량은 최근 평균보다 약하며 상용화 진척의 확인은 아닙니다.\n\n📐 Valuation\nRobotaxi 사업의 기존 valuation 기준을 유지하고 cash-flow 수치만으로 판단을 바꾸지 않습니다.\n\n⚠️ 데이터 주의\n• 최신 정식 재무 반영이 지연돼 현재 Valuation 신뢰도를 낮춰 봅니다.\n• 현재 거래 증권의 주당 기준을 확인하지 못해 자체 PER/PBR 계산을 보류했습니다.\n\n👁 핵심 감시\n• 유료 운행 지역·fleet 이용률, 단위경제성과 cash burn을 지속 감시합니다.\n\n📌 다음 확인\n• 다음 공식 자료에서 유료 지역·fleet·이용률, Robotaxi 매출, gross margin, 영업손실과 cash burn을 확인합니다.\n\n⚠️ 미확인\n• depositary ratio 방향과 현재 증권의 주당 분모, 유료 fleet, 차량당 매출·이익이 미확인입니다."
+      },
+      {
+        "ticker": "WULF",
+        "logical_identity": "preview:WULF",
+        "text": "🤖 AI 보조 종목 점검 · US Pilot 1/1\n\n🏢 TeraWulf Inc.(WULF)\n투자 논리: 유지 · 오늘 중요한 신규 변화 없음\n구조적 위험: 높아진 상태\n시장 기대: 투기적 기대\n\n🎯 핵심 판단\nHPC 전환 기대를 정당화하려면 가동 전력·lease 매출·FCF가 빠르게 증명돼야 합니다. 현재가 $16.45 현재 PBR 55.73배.\n\n📈 사업·실적\n2026 회계연도 상반기 누계 build-out 단계의 PPE 투자 후 잉여현금흐름은 $-1.53B입니다. 전년 비교기간보다 음수 폭이 커졌고 build-out 재투자는 가동·청구 전환과 자금조달을 함께 봅니다.\n\n💰 가격·포지셔닝\n현재가 $16.45; 동적 지지구간 하단 $16; 동적 지지구간 상단 $17.09; 동적 저항구간 하단 $17.32; 동적 저항구간 상단 $18.12; 현재가 기준 차트 손익비 0.7배. 등록 경고 아래에서 동적 지지 안으로 들어왔고 지지·저항이 모두 확인돼 현재가 손익비를 평가할 수 있게 됐습니다. HPC 가동과 현금전환은 별도입니다.\n• 신규 관찰자: 새 자금은 동적 지지 방어와 HPC lease 매출·가동 전력·현금전환이 함께 확인될 때 가격 비대칭을 검토할 수 있습니다.\n• 보유자: 보유자는 현재 차트 경계와 준공 지연·현금흐름 악화·희석 확대라는 사업 훼손을 분리해야 합니다.\n\n📊 거래량·포지셔닝\n동적 지지 진입에도 거래량은 최근 평균보다 약해 HPC 가동과 현금전환을 확인했다고 볼 수 없습니다.\n\n📐 Valuation\nHPC 사업의 기존 valuation 기준을 유지하고 cash-flow 수치만으로 판단을 바꾸지 않습니다."
+      }
+    ]
+  },
+  "original_archive_rewrites": 0,
+  "delivery_count": 0,
+  "manual_tasks": 0,
+  "database_mutations": 0
+}

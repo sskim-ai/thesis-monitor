@@ -623,14 +623,37 @@ Open P0 and material P1 are zero. `PHASE_9_0E_READY = YES`; initial scope is
 `SELECTIVE_CURRENT_FORMAL_FULL_FCF_USER_VISIBLE_INTEGRATION`. User-visible cash-flow remains off
 until that separate phase. A second arbitrary natural run is not required for this bounded repair.
 
+## 21G. Phase 9.0E Selective User-Visible Cash Flow
+
+Phase 9.0E implements `cash-flow-user-visible-v1` from immutable instruction commit
+`309f5f1756d39d5972c5d4b48faaeab4862d8077`. The selector exposes at most one PPE-only FCF number
+under `business_earnings` when a US/foreign SEC subject is PIT-safe, current formal, full-FCF,
+industry-applicable, material, lineage-complete, and baseline-consistent. There is no ticker
+allowlist or numeric threshold. OCF-only, KR, insurance generic FCF, lagging-provisional, stale,
+blocked, management-FCF, security-level valuation, CCC, and ROIC remain excluded.
+
+Run-30 archive preview selects 9 of 13 subjects. All nine numbers bind automatically to canonical
+FCF Fact IDs; AI/fallback parity, semantic validation, final language, and runtime quality pass with
+zero repeated cash-flow sentence/skeleton blockers. HUT is OCF-only, SKHY is blocked, and TSM/WRD
+lag formal provisional periods. Run-29 injects zero KR cash-flow numbers. OFF injects zero and any
+invalid mode fails safe to OFF.
+
+Implementation SHA `cf3194981124de2a6f85fbe81b145ef06e1db08d` passed Actions run
+`32443322364`, was fast-forwarded to main/operating, and was enabled at 2026-08-21 12:31:47 KST
+after OFF health verification. API health and 396 operating focused tests pass; four AI tasks and
+KRX telemetry schedules are unchanged. No task or Telegram was run manually.
+
+State is `DEPLOYED_SELECTIVE_PENDING_NATURAL`. The next natural US run is the first user-visible
+proof; it can trigger the documented OFF kill switch if a P0 appears. Open P0/material P1 are zero,
+so Working Capital Canonical Core architecture may proceed in parallel. Broader cash-flow exposure
+still waits for natural proof.
+
 ## 22. Current Roadmap
 
-The current state is `PHASE_9_0D_LIVE_PASS_SELECTIVE_SUBSET`,
-`PHASE_9_0D_1_BASELINE_CASH_FLOW_CONSISTENCY_CLOSED`, and
-`NATURAL_AI_PROOF_CONTINUES_IN_PARALLEL`. Open P0 and material P1 are zero. The next major task is
-Phase 9.0E selective current-formal full-FCF user-visible integration. Readiness is not deployment:
-cash-flow numbers, sections, and reasoning remain absent from production until that task explicitly
-closes its own gates.
+The current state is `PHASE_9_0E_DEPLOYED_SELECTIVE_PENDING_NATURAL` and
+`NATURAL_AI_PROOF_CONTINUES_IN_PARALLEL`. Open P0 and material P1 are zero.
+`NEXT_MAJOR_ARCHITECTURE_READY = YES`; the recommended architecture candidate is Working Capital
+Canonical Core. KR OpenDART period recovery remains a medium follow-up rather than a blocker.
 
 In parallel, observe the next natural US/KR sessions for AI-assisted delivery, ownership,
 repetition, night-session integrity, fallback, language, receipt, archive, and exactly-once proof.
@@ -726,11 +749,10 @@ approval. Main merge and shadow deployment still do not authorize AI-assisted pr
 
 ## 27. Current Next Task
 
-Begin Phase 9.0E Selective Cash-Flow User-Visible Integration with the dynamic current-formal
-full-FCF subset. Use business/earnings-quality numeric ownership and replacement-first prose; do
-not append a broad OCF/CAPEX/FCF dump. Exclude KR, formal-lagging-provisional numeric display,
-security-level FCF valuation, CCC, and standard ROIC. Natural AI and KRX observations continue in
-parallel without manual execution.
+Review the next natural US user-visible cash-flow delivery without manual execution. In parallel,
+architecture work may begin on a Working Capital Canonical Core for inventory and typed trade
+AR/AP balances and comparable deltas. Do not implement CCC/ROIC, broaden user-visible cash flow,
+or recover KR periods inside that task without a separate instruction.
 
 ## 28. New Session Bootstrap Prompt
 

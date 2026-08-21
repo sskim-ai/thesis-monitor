@@ -24,6 +24,7 @@ self-referential.
 | `codex/phase-9-0c-cash-flow-shadow-consumption` | Phase 9.0B operating main `86fafbf66dc690aa1ba5b9e0089c9098f1d7a6ef` | PIT/freshness/comparison/materiality sidecar, archive-only reasoning and validators | consumes Phase 9.0B Facts; no production packet, prompt, public schema, renderer, DB, task, KRX breadth or peer dependency | eligible after exact-SHA CI | clean linear fast-forward only; user-visible behavior diff 0 |
 | `codex/phase-9-0d-selective-cash-flow-runtime-shadow-canary` | exact instruction commit `a24e4f2210f944fa7c43d8dbf8be1d1a8e652164` | detached post-delivery cash-flow sidecar, canary validation, receipts and idempotent audit archive | consumes Phase 9.0B/9.0C contracts; no Telegram, Public Action, assessment, fallback, Pilot, KRX breadth or peer dependency | promoted; natural LIVE PASS | clean linear fast-forward; run-30 proof complete |
 | `codex/phase-9-0d-1-baseline-cash-flow-consistency-repair` | exact instruction commit `20367c056e6d1da7db3edee37818210c070e1e7d` on Phase 9.0D main | qualitative FCF sign/period/scope/provenance contract, packet/fallback repair and cross-artifact canary audit | consumes Phase 9.0B Facts and 9.0D contexts; no canonical number injection, DB migration, task, KRX breadth or peer dependency | promoted | clean linear fast-forward; one bounded user-visible prose correction; final SHA resolves from Git |
+| `codex/phase-9-0e-selective-cash-flow-user-visible-integration` | exact instruction commit `309f5f1756d39d5972c5d4b48faaeab4862d8077` on Phase 9.0D.1 main | dynamic current-formal full-FCF selector, shared AI/fallback context, numeric/semantic validation, delta-first rendering and kill switch | consumes Phase 9.0B-9.0D.1 contracts; excludes KR, OCF-only, CCC/ROIC, KRX breadth, peer, DB and task changes | promoted and selectively enabled pending natural | clean linear fast-forward through `cf3194981124de2a6f85fbe81b145ef06e1db08d`; final docs resolve from Git |
 
 The Phase 8.3 original branch has a hidden Git ancestry dependency but no required KRX code,
 schema or runtime import. The clean branch resolves that promotion risk. Phase 8.3.2A starts from
@@ -92,3 +93,9 @@ Phase 9.0D.1 starts from its docs-only instruction commit, preserves the canary'
 and sanitizes only unsupported qualitative baseline prose. It neither stores nor renders new
 canonical amounts. Phase 9.0E is ready for a separately instructed selective rollout and remains
 independent of KR coverage, CCC, ROIC, KRX breadth, and overall AI-assisted delivery completeness.
+
+Phase 9.0E starts from its immutable instruction commit and reuses the canonical/core/consumption/
+canary/baseline chain. It changes the production packet and fallback only when the operating mode is
+SELECTIVE and every dynamic gate passes. The operating config is external to Git and can return to
+OFF without reverting code. Natural proof remains pending; Working Capital Canonical Core
+architecture may proceed independently while broad user-visible expansion waits.
