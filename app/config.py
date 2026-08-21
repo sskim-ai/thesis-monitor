@@ -107,6 +107,7 @@ class Settings(BaseSettings):
     cash_flow_runtime_shadow_canary_enabled: bool = True
     working_capital_runtime_shadow_canary_enabled: bool = True
     cash_flow_user_visible_mode: str = "OFF"
+    working_capital_user_visible_mode: str = "OFF"
 
     @model_validator(mode="after")
     def validate_ai_review_schedule(self) -> "Settings":
