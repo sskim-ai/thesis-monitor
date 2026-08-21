@@ -29,6 +29,7 @@ self-referential.
 | `codex/phase-9-1b-canonical-working-capital-core` | exact instruction commit `0952bee040133aa49a4ba494ecae76163e9a9511` on Phase 9.1A final `d4a4daf08ff5f68bc1072cc065e69ca5de5da145` | canonical Inventory/trade-broad AR/AP delta/YoY Facts, structured Revenue/COGS relations and audit-only snapshot | consumes Phase 9.1A Facts; no packet, AI, fallback, Public Action, DB, task, KRX breadth or peer integration | promoted in Phase 9.1 chain | full 9.1A -> instruction -> 9.1B lineage preserved |
 | `codex/phase-9-1c-working-capital-shadow-consumption` | exact instruction commit `613d91d74d3a91c43ed61f98a13a2ca57b7a90ae` on Phase 9.1B final `2ea8c43c6ec5ef986c23ea15ea707b5e93a720f6` | PIT/freshness/materiality sidecar, exact trade/broad semantic guard, cautious industry reasoning, Unknown resolution and archive-only before/after audit | consumes only Phase 9.1B canonical Facts/relations; no production packet, AI, Telegram, fallback, Public Action, DB, task, KRX breadth or peer integration | promoted as main `d0dc76a...` | full Phase 9.1 dependency chain preserved; 9.1D canaries Inventory + exact Trade AR only |
 | `codex/phase-9-1d-selective-working-capital-runtime-shadow-canary` | exact instruction commit `dc4e1cf14faa7cebf78eb8ba5a5e73b6369c991c` on promoted Phase 9.1C main `d0dc76a2446ee5ef9188d1b06dcb241df004c143` | detached post-delivery total-Inventory/exact-Trade-AR selector, validation and immutable receipt | reuses Phase 9.1B/9.1C contracts; no production AI/Telegram/fallback/Public Action/DB/task state mutation | deployment pending exact-SHA CI | clean linear fast-forward; natural metric-family proof remains separate |
+| `codex/night-futures-publication-telemetry-repair` | preserved instruction `b7cf6a2...`, explicit latest-main merge `e7b2add...` after Phase 9.1D | natural production-attempt archive plus detached bounded 08:45/09:15 publication observer | reuses the existing provider/parser/session-basis path; no market-summary, AI, fallback, Telegram, Public Action or DB dependency | telemetry-only promotion eligible | merge latest main preserved both independent instruction histories; natural deadline proof remains pending |
 
 The Phase 8.3 original branch has a hidden Git ancestry dependency but no required KRX code,
 schema or runtime import. The clean branch resolves that promotion risk. Phase 8.3.2A starts from
@@ -120,3 +121,9 @@ Phase 9.1D starts from the promoted Phase 9.1A -> 9.1B -> 9.1C main. The product
 imports only a best-effort detached launcher after terminal delivery; the canary consumes no output
 from the independent cash-flow canary. The parallel night-futures telemetry branch preserves its own
 instruction commit and must merge latest main explicitly if Phase 9.1D lands first.
+
+The night-futures telemetry branch did merge latest Phase 9.1D main explicitly before implementation.
+Its only production-path change is a best-effort copy of provider diagnostics after the already
+scheduled natural call. The detached observer has an independent LaunchAgent and cannot write the
+market summary, AI archive, delivery receipt, Telegram, or DB. The production deadline and session
+basis remain unchanged; a future natural evidence review, not this merge, owns any policy decision.

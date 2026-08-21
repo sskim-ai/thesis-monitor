@@ -25,6 +25,7 @@ This project is a data collection and structuring system. It does not make buy, 
 - [Monitoring state lifecycle](docs/architecture/MONITORING_STATE_LIFECYCLE.md)
 - [Peer valuation](docs/architecture/PEER_VALUATION.md)
 - [Night-futures session basis](docs/architecture/NIGHT_FUTURES_SESSION_BASIS.md)
+- [Night-futures publication telemetry](docs/architecture/NIGHT_FUTURES_PUBLICATION_TELEMETRY.md)
 - [Cash-flow and capital-efficiency evidence](docs/architecture/CASH_FLOW_CAPITAL_EFFICIENCY.md)
 - [Cash-flow shadow consumption](docs/architecture/CASH_FLOW_SHADOW_CONSUMPTION.md)
 - [Cash-flow runtime shadow canary](docs/architecture/CASH_FLOW_RUNTIME_SHADOW_CANARY.md)

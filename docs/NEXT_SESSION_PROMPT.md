@@ -5,7 +5,9 @@ Repository: `sskim-ai/thesis-monitor`
 First fetch and compare `origin/main`, the development checkout, and the clean operating checkout.
 Read `docs/project-state.json`, `docs/MASTER_WORKFLOW.md`, `docs/PROJECT_HANDOFF.md`,
 `docs/architecture/WORKING_CAPITAL_RUNTIME_SHADOW_CANARY.md`, and the Phase 9.1D complete report and
-readiness JSON. Repository and immutable runtime evidence override conversation summaries.
+readiness JSON. Also read `docs/architecture/NIGHT_FUTURES_PUBLICATION_TELEMETRY.md` and the
+night-futures telemetry complete report/readiness JSON. Repository and immutable runtime evidence
+override conversation summaries.
 
 Current state after clean Phase 9.1D promotion:
 
@@ -32,6 +34,11 @@ user-visible before its intended natural mechanism proof. Keep broad AR/AP, exac
 Inventory Days, DPO, CCC, standard ROIC, KR cash-flow period recovery, KRX breadth integration,
 Pilot mutation, and Production Assist outside scope unless separately instructed.
 
-The independent night-futures publication telemetry repair may land on main before or after this
-phase. If it is still pending, reconcile its preserved instruction branch onto latest main without
-rewriting its instruction commit.
+The independent night-futures publication telemetry repair is deployed with instruction commit
+`b7cf6a2f413e309bb637e524aeb7c1436e4c5b1b`, implementation commit
+`d54f1102c02c9ff1c6a8ddd18fc40d1aea059caf`, and contracts
+`night-futures-attempt-archive-v1` / `night-futures-publication-telemetry-v1`. Production attempts
+remain 08:05/10/15/20; the detached observer is 08:45/09:15. Do not run either manually. After a
+natural horizon, inspect stored evidence only. Until multi-day evidence supports otherwise,
+`P1_TELEMETRY_GAP=REPAIR_DEPLOYED_PENDING_NATURAL` and
+`DEADLINE_VERDICT=DEADLINE_UNPROVEN`.

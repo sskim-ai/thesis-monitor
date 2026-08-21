@@ -18,6 +18,7 @@ DOCUMENTS = (
     ROOT / "docs" / "architecture" / "PEER_VALUATION.md",
     ROOT / "docs" / "architecture" / "NATURAL_LIVE_MESSAGE_HARDENING.md",
     ROOT / "docs" / "architecture" / "NIGHT_FUTURES_SESSION_BASIS.md",
+    ROOT / "docs" / "architecture" / "NIGHT_FUTURES_PUBLICATION_TELEMETRY.md",
     ROOT / "docs" / "architecture" / "RUNTIME_REASONING_OWNERSHIP.md",
     ROOT / "docs" / "architecture" / "CASH_FLOW_CAPITAL_EFFICIENCY.md",
     ROOT / "docs" / "architecture" / "CASH_FLOW_SHADOW_CONSUMPTION.md",
@@ -46,7 +47,7 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     assert state["repository"] == "sskim-ai/thesis-monitor"
     assert state["branch"] == "main"
     assert state["experimental_branch"] == (
-        "codex/phase-9-1d-selective-working-capital-runtime-shadow-canary"
+        "codex/night-futures-publication-telemetry-repair"
     )
     assert state["current_phase"] == "phase_9_1d_deployed_pending_natural"
     assert state["last_completed_phase"] == (
@@ -104,6 +105,12 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     )
     assert state["contracts"]["working_capital_runtime_shadow_canary"] == (
         "working-capital-runtime-shadow-canary-v1"
+    )
+    assert state["contracts"]["night_futures_attempt_archive"] == (
+        "night-futures-attempt-archive-v1"
+    )
+    assert state["contracts"]["night_futures_publication_telemetry"] == (
+        "night-futures-publication-telemetry-v1"
     )
     advancement = state["phase_advancement_rule_v1"]
     assert advancement["p0_open"] == []
@@ -279,6 +286,18 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     assert phase_91d["inventory_natural_proof"] == "NOT_OBSERVED"
     assert phase_91d["trade_ar_natural_proof"] == "NOT_OBSERVED"
     assert phase_91d["phase_9_1e_architecture_ready"] is True
+    night_telemetry = state["night_futures_publication_telemetry_repair"]
+    assert night_telemetry["status"] == "repair_deployed_pending_natural"
+    assert night_telemetry["instruction_commit"] == (
+        "b7cf6a2f413e309bb637e524aeb7c1436e4c5b1b"
+    )
+    assert night_telemetry["implementation_commit"] == (
+        "d54f1102c02c9ff1c6a8ddd18fc40d1aea059caf"
+    )
+    assert night_telemetry["observer_slots_kst"] == ["08:45", "09:15"]
+    assert night_telemetry["deadline_verdict"] == "DEADLINE_UNPROVEN"
+    assert night_telemetry["fail_closed_safety"] == "PASS"
+    assert night_telemetry["user_visible_behavior_diff"] == 0
     assert state["persistent_gaps"]["krx_open_api"] == (
         "APPROVED_TELEMETRY_ONLY_OPERATING_USER_VISIBLE_NOT_INTEGRATED"
     )
@@ -291,6 +310,9 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     )
     assert state["persistent_gaps"]["night_futures_preceding_day_calendar_lookup"] == (
         "CLOSED_RETROSPECTIVE_PENDING_NATURAL"
+    )
+    assert state["persistent_gaps"]["night_futures_publication_attempt_telemetry"] == (
+        "REPAIR_DEPLOYED_PENDING_NATURAL_DEADLINE_UNPROVEN"
     )
     assert (
         state["persistent_gaps"]["fallback_price_lifecycle"]
@@ -361,6 +383,7 @@ def test_architecture_guides_record_decisions_and_readme_navigation() -> None:
         ROOT / "docs" / "architecture" / "MONITORING_STATE_LIFECYCLE.md",
         ROOT / "docs" / "architecture" / "PEER_VALUATION.md",
         ROOT / "docs" / "architecture" / "NIGHT_FUTURES_SESSION_BASIS.md",
+        ROOT / "docs" / "architecture" / "NIGHT_FUTURES_PUBLICATION_TELEMETRY.md",
         ROOT / "docs" / "architecture" / "CASH_FLOW_CAPITAL_EFFICIENCY.md",
         ROOT / "docs" / "architecture" / "CASH_FLOW_SHADOW_CONSUMPTION.md",
         ROOT / "docs" / "architecture" / "CASH_FLOW_RUNTIME_SHADOW_CANARY.md",
@@ -395,6 +418,7 @@ def test_architecture_guides_record_decisions_and_readme_navigation() -> None:
         "docs/architecture/WORKING_CAPITAL_SHADOW_CONSUMPTION.md",
         "docs/architecture/WORKING_CAPITAL_RUNTIME_SHADOW_CANARY.md",
         "docs/architecture/NIGHT_FUTURES_SESSION_BASIS.md",
+        "docs/architecture/NIGHT_FUTURES_PUBLICATION_TELEMETRY.md",
         "docs/operations/AI_ASSISTED_PILOT.md",
         "docs/operations/SCHEDULED_TASK_CONTRACTS.md",
         "docs/knowledge/README.md",

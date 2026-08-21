@@ -776,6 +776,28 @@ repetition, night-session integrity, fallback, language, receipt, archive, and e
 Also let the telemetry-only LaunchAgent accumulate natural KRX 16:05 and 08:05 evidence. Do not run
 it manually, infer a T+1 slot, or integrate KRX breadth before the separate role gates close.
 
+## 23A. Night-Futures Publication Telemetry Repair
+
+The independent repair starts from instruction commit
+`b7cf6a2f413e309bb637e524aeb7c1436e4c5b1b`, then explicitly merges the Phase 9.1D main before
+implementation. It adds `night-futures-attempt-archive-v1` and
+`night-futures-publication-telemetry-v1` without changing `night-futures-session-basis-v1`.
+
+Each existing 08:05/10/15/20 production attempt now archives the expected NIGHT and preceding XKRX
+DAY, every returned `BAS_DD`, HTTP/row/SHA evidence, parser/canonicalization/cross-check state, and
+independent KOSPI200/KOSDAQ150 rejection/readiness. Telemetry writes are atomic, idempotent, and
+best-effort. The 08:30 backup remains query-free.
+
+A detached LaunchAgent observes only at 08:45 and 09:15, after the production/fallback lifecycle.
+It uses the same provider and pairing path, stops after readiness, and can write only telemetry.
+Readiness is expressed as an observed interval, never an exact inferred publication time. No
+production deadline, provider request, market summary, AI, fallback, Telegram, Public Action,
+schema, or DB behavior changes.
+
+Implementation is complete with 61 focused and 1,337 full tests. Natural publication evidence is
+still pending, so `P1_TELEMETRY_GAP = REPAIR_DEPLOYED_PENDING_NATURAL`,
+`DEADLINE_VERDICT = DEADLINE_UNPROVEN`, and `FAIL_CLOSED_SAFETY = PASS`.
+
 ## 24. Codex Work Order Standard
 
 Every work order starts with exact repo/runtime preflight, states base/branch/scope/non-scope,

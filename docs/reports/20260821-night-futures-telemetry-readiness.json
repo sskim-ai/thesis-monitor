@@ -1,0 +1,31 @@
+{
+  "contract_versions": [
+    "night-futures-attempt-archive-v1",
+    "night-futures-publication-telemetry-v1"
+  ],
+  "deadline_verdict": "DEADLINE_UNPROVEN",
+  "fail_closed_safety": "PASS",
+  "focused_tests": 61,
+  "full_tests": 1337,
+  "implementation_commit": "d54f1102c02c9ff1c6a8ddd18fc40d1aea059caf",
+  "implementation_github_actions_run": 32469373051,
+  "implementation_github_actions_status": "passed_test_and_lint",
+  "implementation_p0_open": [],
+  "implementation_p1_open": [],
+  "instruction_commit": "b7cf6a2f413e309bb637e524aeb7c1436e4c5b1b",
+  "live_provider_calls_during_repair": 0,
+  "manual_operations": {
+    "database_mutations": 0,
+    "pilot_mutations": 0,
+    "scheduled_tasks": 0,
+    "telegram": 0
+  },
+  "night_futures_telemetry_repair_deployed": true,
+  "observer_slots_kst": ["08:45", "09:15"],
+  "p1_telemetry_gap": "REPAIR_DEPLOYED_PENDING_NATURAL",
+  "production_assist": false,
+  "production_deadline_kst": "08:20",
+  "production_schedule_changed": false,
+  "session_basis_changed": false,
+  "user_visible_behavior_diff": 0
+}

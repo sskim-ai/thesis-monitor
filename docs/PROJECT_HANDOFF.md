@@ -7,6 +7,26 @@ validation, delivery, or Scheduled Tasks.
 
 ## Current Authoritative Handoff — 2026-08-21
 
+The independent night-futures publication telemetry P1 repair is implemented after explicitly
+reconciling the preserved instruction branch with Phase 9.1D main. Instruction SHA is
+`b7cf6a2f413e309bb637e524aeb7c1436e4c5b1b`; implementation SHA is
+`d54f1102c02c9ff1c6a8ddd18fc40d1aea059caf`. The contracts are
+`night-futures-attempt-archive-v1` and `night-futures-publication-telemetry-v1`.
+
+Natural production attempts at 08:05/10/15/20 now archive complete returned NIGHT-date inventory
+and per-product rejection/readiness through an isolated best-effort writer. A detached observer runs
+at 08:45 and 09:15, stops after readiness, and has no production/DB/Telegram dependency. The 08:20
+deadline, session basis, stale suppression, US primary/backup/fallback, and all user-visible outputs
+are unchanged. Full validation is 1,337 passed; live provider calls and manual operations were zero.
+
+The repair is deployed for observation, not policy change:
+`P1_TELEMETRY_GAP = REPAIR_DEPLOYED_PENDING_NATURAL`,
+`DEADLINE_VERDICT = DEADLINE_UNPROVEN`, and `FAIL_CLOSED_SAFETY = PASS`. Do not run the observer or
+production task manually. Review natural stored evidence with the read-only script after the normal
+09:15 horizon. Phase 9.1D natural metric-family proof and Phase 9.1E architecture remain parallel.
+
+### Prior Phase 9.1C/9.1D Context
+
 Phase 9.1C is closed retrospectively on
 `codex/phase-9-1c-working-capital-shadow-consumption` as a linear descendant of Phase 9.1B final SHA
 `2ea8c43c6ec5ef986c23ea15ea707b5e93a720f6` and immutable work-instruction commit
