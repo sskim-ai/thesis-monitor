@@ -61,6 +61,13 @@ from app.services.cash_flow_user_visible_service import (
     safe_select_user_visible_cash_flow,
     selection_to_dict as cash_flow_selection_to_dict,
 )
+from app.services.working_capital_user_visible_preintegration_service import (
+    context_from_notification_payload as working_capital_context_from_notification_payload,
+    context_to_dict as working_capital_context_to_dict,
+    fact_catalog_entries as working_capital_fact_catalog_entries,
+    resolve_selected_inventory_unknowns,
+    safe_select_user_visible_inventory,
+)
 from app.services.company_profile_service import (
     company_profile_coverage,
     read_profile_provenance,
@@ -756,6 +763,28 @@ def _previous_cash_flow_user_visible_context(
         )
     ).first()
     return context_from_notification_payload(delivery.payload if delivery else None)
+
+
+def _previous_working_capital_user_visible_context(
+    session: Session,
+    assessment: ThesisAssessment,
+) -> dict[str, object]:
+    delivery = session.exec(
+        select(NotificationDelivery)
+        .where(
+            NotificationDelivery.ticker == assessment.ticker,
+            NotificationDelivery.assessment_date < assessment.assessment_date,
+            NotificationDelivery.channel == get_settings().notification_channel,
+            NotificationDelivery.status == "sent",
+        )
+        .order_by(
+            NotificationDelivery.assessment_date.desc(),
+            NotificationDelivery.id.desc(),
+        )
+    ).first()
+    return working_capital_context_from_notification_payload(
+        delivery.payload if delivery else None
+    )
 
 
 def _assessment_mode(assessment: ThesisAssessment) -> str:
@@ -3016,6 +3045,37 @@ def _stock_packet(
     stock["cash_flow_user_visible"] = cash_flow_selection_to_dict(
         cash_flow_selection
     )
+    cash_flow_period_end = (
+        cash_flow_selection.reasoning_context.primary_period.end
+        if cash_flow_selection.reasoning_context
+        and cash_flow_selection.reasoning_context.primary_period
+        else None
+    )
+    working_capital_context = safe_select_user_visible_inventory(
+        ticker=assessment.ticker,
+        market="kr" if assessment.ticker.isdigit() else "us",
+        packet_id=f"pending:{assessment.assessment_date}:{assessment.ticker}",
+        assessment_date=assessment.assessment_date,
+        industry="",
+        monitoring_text=cash_flow_source_text,
+        existing_unknowns=stock["unknowns"],
+        latest_formal_balance_date=latest_formal_period,
+        latest_provisional_period_end=latest_preliminary_period,
+        cash_flow_context_id=cash_flow_selection.context_id,
+        cash_flow_period_end=cash_flow_period_end,
+        previous_user_visible_context=(
+            _previous_working_capital_user_visible_context(session, assessment)
+        ),
+    )
+    stock["unknowns"] = list(
+        resolve_selected_inventory_unknowns(
+            stock["unknowns"], working_capital_context
+        )
+    )
+    if working_capital_context is not None:
+        stock["working_capital_user_visible"] = working_capital_context_to_dict(
+            working_capital_context
+        )
     facts = _fact_catalog(
         assessment,
         evidence,
@@ -3025,6 +3085,7 @@ def _stock_packet(
         monitoring_state,
     )
     facts.extend(cash_flow_fact_catalog_entries(cash_flow_selection))
+    facts.extend(working_capital_fact_catalog_entries(working_capital_context))
     stock["fact_catalog"] = facts
     stock["numeric_registry"] = _numeric_registry(facts)
     stock["typed_valuation_interpretation_contract"] = (
@@ -3304,6 +3365,10 @@ def build_ai_review_packet(
     canonical = json.dumps(body, ensure_ascii=False, sort_keys=True, default=str)
     digest = hashlib.sha256(canonical.encode("utf-8")).hexdigest()[:12]
     packet_id = f"{run_date.isoformat()}-{market}-run-{run.id}-{digest}"
+    for stock in stocks:
+        context = stock.get("working_capital_user_visible")
+        if isinstance(context, dict):
+            context["packet_id"] = packet_id
     return {
         **body,
         "packet_id": packet_id,
@@ -4705,6 +4770,93 @@ def _cash_flow_user_visible_errors(
     return list(dict.fromkeys(errors))
 
 
+_WORKING_CAPITAL_UNSUPPORTED_USER_METRIC = re.compile(
+    r"\b(?:DSO|DPO|CCC)\b|재고일수|Inventory\s*Days|"
+    r"수요\s*(?:붕괴|부진)(?:가|이)?\s*확정|"
+    r"공급과잉(?:이)?\s*확정|채널\s*스터핑|초과\s*재고(?:가|이)?\s*확정",
+    re.IGNORECASE,
+)
+
+
+def _working_capital_user_visible_errors(
+    review: AIStockReview,
+    stock: dict[str, object],
+) -> list[str]:
+    context = _dict(stock.get("working_capital_user_visible"))
+    enabled = context.get("user_visible_enabled") is True
+    relation_fact_ids = {
+        str(item.get("fact_id"))
+        for item in stock.get("fact_catalog", [])
+        if isinstance(item, dict)
+        and item.get("fact_type") == "working_capital_inventory_relation"
+    }
+    lineage_fact_ids = {
+        str(item.get("fact_id"))
+        for item in stock.get("fact_catalog", [])
+        if isinstance(item, dict)
+        and item.get("fact_type") == "working_capital_lineage_input"
+    }
+    working_capital_fact_ids = relation_fact_ids | lineage_fact_ids
+    used = set(review.facts_used).intersection(working_capital_fact_ids)
+    claims = [
+        claim for claim in review.numeric_claims if claim.fact_id in relation_fact_ids
+    ]
+    errors: list[str] = []
+    if not enabled:
+        if used or claims:
+            errors.append(f"{review.ticker}:suppressed_working_capital_fact_used")
+        return errors
+    if context.get("feature_mode") != "SELECTIVE_INVENTORY":
+        errors.append(f"{review.ticker}:working_capital_rollout_mode_mismatch")
+    if context.get("metric_family") != "inventory":
+        errors.append(f"{review.ticker}:non_inventory_working_capital_leak")
+    if context.get("semantic_scope") != "exact_total_inventory":
+        errors.append(f"{review.ticker}:inventory_scope_not_exact_total")
+    if context.get("currentness") != "CURRENT_FORMAL":
+        errors.append(f"{review.ticker}:inventory_not_current_formal")
+    relation_id = str(context.get("relation_id") or "")
+    if not relation_id or relation_id not in relation_fact_ids:
+        errors.append(f"{review.ticker}:inventory_relation_fact_missing")
+        return errors
+    if relation_id not in review.facts_used:
+        errors.append(f"{review.ticker}:inventory_relation_not_declared")
+    if relation_id not in review.business_earnings.fact_ids:
+        errors.append(f"{review.ticker}:inventory_business_owner_fact_missing")
+    non_business_facts = {
+        fact_id
+        for item in (
+            review.core_judgment,
+            review.price_positioning,
+            review.supply_analysis,
+            review.valuation_analysis,
+        )
+        for fact_id in item.fact_ids
+        if fact_id in working_capital_fact_ids
+    }
+    if non_business_facts:
+        errors.append(
+            f"{review.ticker}:working_capital_owner_mismatch:"
+            + ",".join(sorted(non_business_facts))
+        )
+    if len(claims) != 1:
+        errors.append(f"{review.ticker}:inventory_primary_numeric_claim_count")
+    for claim in claims:
+        if claim.text_ref != "business_earnings.text":
+            errors.append(f"{review.ticker}:inventory_numeric_owner_invalid")
+    business_text = review.business_earnings.text
+    if "재고" not in business_text:
+        errors.append(f"{review.ticker}:inventory_label_missing")
+    if _WORKING_CAPITAL_UNSUPPORTED_USER_METRIC.search(business_text):
+        errors.append(f"{review.ticker}:working_capital_causal_or_ratio_overclaim")
+    display_value = str(context.get("display_value") or "")
+    if display_value and business_text.count(display_value) != 1:
+        errors.append(f"{review.ticker}:inventory_numeric_ownership_count")
+    resolved_unknowns = {str(item) for item in context.get("resolved_unknowns") or ()}
+    if resolved_unknowns.intersection(review.unknowns):
+        errors.append(f"{review.ticker}:resolved_inventory_unknown_retained")
+    return list(dict.fromkeys(errors))
+
+
 def _validate_stock_review(
     review: AIStockReview,
     stock: dict[str, object],
@@ -4871,6 +5023,7 @@ def _validate_stock_review(
         )
     )
     errors.extend(_cash_flow_user_visible_errors(review, stock))
+    errors.extend(_working_capital_user_visible_errors(review, stock))
     grounding = _dict(stock.get("state_grounding_requirements"))
     price_fact_ids = set(review.price_positioning.fact_ids)
     price_claims = {

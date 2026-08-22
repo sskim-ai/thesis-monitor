@@ -1,0 +1,160 @@
+{
+  "phase": "9.1E.1",
+  "contract": "inventory-only-user-visible-enablement-v1",
+  "instruction": {
+    "path": "docs/work-instructions/20260822-phase-9-1e-1-inventory-only-user-visible-enablement.md",
+    "version": "1.0",
+    "commit": "880e7a9834439971f53b8a7bc0712d0ece26854d"
+  },
+  "canonical_core_state": "COMPLETE",
+  "shadow_consumption_state": "CLOSED_RETROSPECTIVE",
+  "runtime_canary_state": "LIVE_PASS",
+  "natural_proofs": {
+    "inventory": {
+      "metric_family": "inventory",
+      "state": "LIVE_PASS",
+      "packet_id": "2026-08-22-us-run-32-dde10ec6c9eb",
+      "receipt_id": "wc-receipt-b27e0c026493f8c0f2bdc655",
+      "fact_ids": [
+        "working-capital-derived:278cf0f9df9a28a8c5d28258",
+        "working-capital-derived:50745dd0f6eb60120c37579e",
+        "working-capital-derived:9b1463bee52b77a325a1ba6e",
+        "working-capital-derived:e15492a3fff9dff0ab3c7273",
+        "working-capital-reported:00d1a7bd62280782e2efae65",
+        "working-capital-reported:076714324caa61d396cf62d0",
+        "working-capital-reported:0ca5b1287df9208349d139b7",
+        "working-capital-reported:2a5dd10bfd88a91b65bcc777",
+        "working-capital-reported:450f903e4792967c35cb82ba",
+        "working-capital-reported:5986216e8dc1e64113c1efd6",
+        "working-capital-reported:73fe4f1d304b6cadfde50b24",
+        "working-capital-reported:d7dc274bbdea5cd2c57c0a62"
+      ],
+      "relation_ids": [
+        "working-capital-relation:36181e61768dfd580d9ede01",
+        "working-capital-relation:dbdfd04e725e83528d8fdd31"
+      ],
+      "pit_safe": true,
+      "semantic_safe": true,
+      "causal_safe": true,
+      "numeric_binding_safe": true,
+      "production_influence_count": 0,
+      "evidence_ref": "docs/reports/20260822-phase9-1e-1-natural-proof-evidence.json",
+      "verified_live_pass": true
+    },
+    "trade_accounts_receivable": {
+      "metric_family": "trade_accounts_receivable",
+      "state": "NOT_OBSERVED",
+      "packet_id": null,
+      "receipt_id": null,
+      "fact_ids": [],
+      "relation_ids": [],
+      "pit_safe": false,
+      "semantic_safe": false,
+      "causal_safe": false,
+      "numeric_binding_safe": false,
+      "production_influence_count": 0,
+      "evidence_ref": null,
+      "verified_live_pass": false
+    }
+  },
+  "gates": {
+    "inventory": {
+      "contract": "working-capital-user-visible-enable-gate-v1",
+      "gate_id": "wc-enable-gate-6222020f71b5142cbfe3c1bb",
+      "metric_family": "inventory",
+      "natural_proof_state": "LIVE_PASS",
+      "canonical_core_state": "COMPLETE",
+      "shadow_consumption_state": "CLOSED_RETROSPECTIVE",
+      "runtime_canary_state": "LIVE_PASS",
+      "open_p0": [],
+      "open_material_p1": [],
+      "semantic_validation_state": "PASS",
+      "causal_guard_state": "PASS",
+      "numeric_binding_state": "PASS",
+      "ai_fallback_parity_state": "PASS",
+      "eligible_for_enablement": true,
+      "blocking_reasons": [],
+      "evidence_ref": "docs/reports/20260822-phase9-1e-1-natural-proof-evidence.json"
+    },
+    "trade_accounts_receivable": {
+      "contract": "working-capital-user-visible-enable-gate-v1",
+      "gate_id": "wc-enable-gate-eceb8407f0c851f2ccf7b87c",
+      "metric_family": "trade_accounts_receivable",
+      "natural_proof_state": "NOT_OBSERVED",
+      "canonical_core_state": "COMPLETE",
+      "shadow_consumption_state": "CLOSED_RETROSPECTIVE",
+      "runtime_canary_state": "LIVE_PASS",
+      "open_p0": [],
+      "open_material_p1": [],
+      "semantic_validation_state": "PASS",
+      "causal_guard_state": "PASS",
+      "numeric_binding_state": "PASS",
+      "ai_fallback_parity_state": "PASS",
+      "eligible_for_enablement": false,
+      "blocking_reasons": [
+        "natural_proof_not_observed"
+      ],
+      "evidence_ref": null
+    }
+  },
+  "preflight": {
+    "inventory": {
+      "accepted": true,
+      "effective_mode": "SELECTIVE_INVENTORY",
+      "blocking_reasons": []
+    },
+    "trade_ar": {
+      "accepted": false,
+      "effective_mode": "OFF",
+      "blocking_reasons": [
+        "inventory_only_rollout_policy"
+      ]
+    },
+    "combined": {
+      "accepted": false,
+      "effective_mode": "OFF",
+      "blocking_reasons": [
+        "inventory_only_rollout_policy"
+      ]
+    }
+  },
+  "validation": {
+    "semantic": "PASS",
+    "causal": "PASS",
+    "numeric": "PASS",
+    "ai_fallback_parity": "PASS",
+    "runtime_quality": "PASS",
+    "feature_off_regression": "PASS",
+    "kill_switch": "PASS"
+  },
+  "preview": {
+    "active_universe": 20,
+    "inventory_candidates": 5,
+    "inventory_selected": 3,
+    "inventory_suppressed": 2,
+    "trade_ar_selected": 0,
+    "broad_ar_selected": 0,
+    "ap_selected": 0,
+    "ai_fallback_mismatch": 0,
+    "numeric_binding": {
+      "automatic": 3,
+      "manual": 0,
+      "rejected": 0,
+      "unresolved": 0
+    },
+    "human_quality": {
+      "MINOR_IMPROVEMENT": 3,
+      "NO_MEANINGFUL_CHANGE": 2
+    }
+  },
+  "open_p0": [],
+  "open_material_p1": [],
+  "p2_backlog": [
+    "exact_trade_ar_natural_proof_pending"
+  ],
+  "inventory_only_rollout_ready": true,
+  "working_capital_user_visible_mode_at_promotion": "OFF",
+  "inventory_user_visible": "IMPLEMENTED_READY_TO_ENABLE",
+  "trade_ar_user_visible": "OFF_PENDING_NATURAL_PROOF",
+  "next_action": "ACTIVATE_SELECTIVE_INVENTORY_AFTER_OPERATING_PREFLIGHT"
+}

@@ -32,6 +32,13 @@ from app.services.cash_flow_user_visible_service import (
     safe_select_user_visible_cash_flow,
     selection_to_dict as cash_flow_selection_to_dict,
 )
+from app.services.working_capital_user_visible_preintegration_service import (
+    context_from_notification_payload as working_capital_context_from_notification_payload,
+    context_to_dict as working_capital_context_to_dict,
+    render_preview as render_working_capital_user_visible,
+    resolve_selected_inventory_unknowns,
+    safe_select_user_visible_inventory,
+)
 from app.services.canonical_fact_service import compact_krw_amount
 from app.services.current_price_context_service import (
     fallback_price_context_errors,
@@ -534,6 +541,28 @@ def _previous_cash_flow_user_visible_context(
         )
     ).first()
     return context_from_notification_payload(delivery.payload if delivery else None)
+
+
+def _previous_working_capital_user_visible_context(
+    session: Session,
+    assessment: ThesisAssessment,
+) -> dict[str, object]:
+    delivery = session.exec(
+        select(NotificationDelivery)
+        .where(
+            NotificationDelivery.ticker == assessment.ticker,
+            NotificationDelivery.assessment_date < assessment.assessment_date,
+            NotificationDelivery.channel == _notification_channel(),
+            NotificationDelivery.status == "sent",
+        )
+        .order_by(
+            NotificationDelivery.assessment_date.desc(),
+            NotificationDelivery.id.desc(),
+        )
+    ).first()
+    return working_capital_context_from_notification_payload(
+        delivery.payload if delivery else None
+    )
 
 
 def _telegram_source_sha256(payload: dict[str, object]) -> str:
@@ -1237,6 +1266,7 @@ def _assessment_report(
     thesis: InvestmentThesis | None,
     *,
     previous_cash_flow_user_visible_context: dict[str, object] | None = None,
+    previous_working_capital_user_visible_context: dict[str, object] | None = None,
 ) -> tuple[str, dict[str, object]]:
     labels = {
         "strengthened": "강화",
@@ -1478,6 +1508,39 @@ def _assessment_report(
             source_text=cash_flow_source_text,
         )
     )
+    cash_flow_period_end = (
+        cash_flow_selection.reasoning_context.primary_period.end
+        if cash_flow_selection.reasoning_context
+        and cash_flow_selection.reasoning_context.primary_period
+        else None
+    )
+    working_capital_context = safe_select_user_visible_inventory(
+        ticker=assessment.ticker,
+        market="kr" if assessment.ticker.isdigit() else "us",
+        packet_id=f"pending:{assessment.assessment_date}:{assessment.ticker}",
+        assessment_date=assessment.assessment_date,
+        industry="",
+        monitoring_text=cash_flow_source_text,
+        existing_unknowns=[str(item) for item in unknowns],
+        latest_formal_balance_date=latest_formal_period,
+        latest_provisional_period_end=latest_preliminary_period,
+        cash_flow_context_id=cash_flow_selection.context_id,
+        cash_flow_period_end=cash_flow_period_end,
+        previous_user_visible_context=(
+            previous_working_capital_user_visible_context
+        ),
+    )
+    unknowns = list(
+        resolve_selected_inventory_unknowns(unknowns, working_capital_context)
+    )
+    working_capital_text = (
+        render_working_capital_user_visible(
+            working_capital_context,
+            channel="fallback",
+        ).text
+        if working_capital_context is not None
+        else None
+    )
 
     def _warnings_with_provenance(items: list[str], empty: str) -> str:
         if not items:
@@ -1627,8 +1690,13 @@ def _assessment_report(
         sections.append(f"📌 초기 근거\n{change_text}")
     elif business_change != "no_material_change" and change_text:
         sections.append(f"🔄 중요한 변화\n{change_text}")
-    if cash_flow_selection.rendered_text:
-        sections.append(f"📈 사업·실적\n{cash_flow_selection.rendered_text}")
+    business_earnings_lines = [
+        item
+        for item in (cash_flow_selection.rendered_text, working_capital_text)
+        if item
+    ]
+    if business_earnings_lines:
+        sections.append(f"📈 사업·실적\n{' '.join(business_earnings_lines)}")
     if new_warnings and not is_initial_baseline:
         sections.append("🚨 오늘 새 경고\n" + _bullet_text(new_warnings, ""))
     if prior_open_warnings:
@@ -1817,6 +1885,15 @@ def _assessment_report(
         "cash_flow_user_visible": cash_flow_selection_to_dict(
             cash_flow_selection
         ),
+        **(
+            {
+                "working_capital_user_visible": working_capital_context_to_dict(
+                    working_capital_context
+                )
+            }
+            if working_capital_context is not None
+            else {}
+        ),
     }
     return fallback, context
 
@@ -1844,6 +1921,9 @@ def queue_notification(session: Session, assessment: ThesisAssessment) -> None:
         thesis,
         previous_cash_flow_user_visible_context=(
             _previous_cash_flow_user_visible_context(session, assessment)
+        ),
+        previous_working_capital_user_visible_context=(
+            _previous_working_capital_user_visible_context(session, assessment)
         ),
     )
     evidence = [item for item in _json_list_value(assessment.evidence) if isinstance(item, dict)]
@@ -1907,6 +1987,9 @@ def queue_daily_stock_notification(
         thesis,
         previous_cash_flow_user_visible_context=(
             _previous_cash_flow_user_visible_context(session, assessment)
+        ),
+        previous_working_capital_user_visible_context=(
+            _previous_working_capital_user_visible_context(session, assessment)
         ),
     )
     assessment_mode = _assessment_mode(assessment)

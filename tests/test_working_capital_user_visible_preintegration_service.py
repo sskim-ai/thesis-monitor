@@ -1,12 +1,14 @@
 from __future__ import annotations
 
 import json
+from datetime import date
 from pathlib import Path
 
 import pytest
 
 from app.services.working_capital_user_visible_preintegration_service import (
     ENABLE_GATE_VERSION,
+    ENABLED_EVIDENCE_STATE,
     PREVIEW_EVIDENCE_STATE,
     EnablementGate,
     NaturalProofEvidence,
@@ -22,6 +24,7 @@ from app.services.working_capital_user_visible_preintegration_service import (
     preview_parity_errors,
     render_preview,
     resolve_user_visible_mode,
+    safe_select_user_visible_inventory,
     validate_preview,
 )
 from scripts.phase9_1e_preintegration_evidence import build_evidence
@@ -148,7 +151,7 @@ def test_inventory_live_pass_can_enable_without_trade_ar() -> None:
     assert combined.effective_mode == WorkingCapitalUserVisibleMode.OFF
 
 
-def test_both_live_pass_can_clear_combined_preflight() -> None:
+def test_inventory_only_rollout_rejects_combined_even_when_both_proofs_pass() -> None:
     gates = {
         family: _gate(family, NaturalProofState.LIVE_PASS) for family in WorkingCapitalMetricFamily
     }
@@ -158,10 +161,9 @@ def test_both_live_pass_can_clear_combined_preflight() -> None:
         gates,
     )
 
-    assert result.accepted is True
-    assert result.effective_mode == (
-        WorkingCapitalUserVisibleMode.SELECTIVE_INVENTORY_AND_EXACT_TRADE_AR
-    )
+    assert result.accepted is False
+    assert result.effective_mode == WorkingCapitalUserVisibleMode.OFF
+    assert result.blocking_reasons == ("inventory_only_rollout_policy",)
 
 
 def test_natural_fail_and_open_p0_block_enablement() -> None:
@@ -310,6 +312,8 @@ def test_feature_off_is_kill_switch_even_after_live_pass(phase_91d) -> None:
 
     assert preview is not None and preview.user_visible_enabled is False
     assert enabled is not None and enabled.user_visible_enabled is True
+    assert enabled.evidence_state == ENABLED_EVIDENCE_STATE
+    assert validate_preview(enabled, render_preview(enabled, channel="fallback")) == ()
 
 
 def test_ai_fallback_preview_parity_and_numeric_owner(phase_91d) -> None:
@@ -414,7 +418,7 @@ def test_actual_preview_selector_parity_and_feature_off_counts(phase_91d) -> Non
     assert all(item.feature_mode == WorkingCapitalUserVisibleMode.OFF for item in contexts)
 
 
-def test_preintegration_service_is_not_imported_by_production_paths() -> None:
+def test_user_visible_service_is_imported_only_by_intended_production_paths() -> None:
     production_paths = (
         ROOT / "app/services/ai_review_service.py",
         ROOT / "app/services/notification_service.py",
@@ -422,7 +426,109 @@ def test_preintegration_service_is_not_imported_by_production_paths() -> None:
     )
     token = "working_capital_user_visible_preintegration_service"
 
-    assert all(token not in path.read_text(encoding="utf-8") for path in production_paths)
+    assert token in production_paths[0].read_text(encoding="utf-8")
+    assert token in production_paths[1].read_text(encoding="utf-8")
+    assert token not in production_paths[2].read_text(encoding="utf-8")
+
+
+def test_runtime_inventory_selection_is_dynamic_and_trade_ar_stays_off(
+    phase_91d,
+) -> None:
+    inventory_gate = _gate(
+        WorkingCapitalMetricFamily.INVENTORY,
+        NaturalProofState.LIVE_PASS,
+    )
+    trade_ar_gate = _gate(WorkingCapitalMetricFamily.EXACT_TRADE_AR)
+    source = _subject(phase_91d, "005930")["context"]
+    unknowns = tuple(
+        item["original"]
+        for item in source["resolved_unknowns"]
+        if item.get("state") == "RESOLVED_EXACT"
+    )
+    gates = {
+        WorkingCapitalMetricFamily.INVENTORY: inventory_gate,
+        WorkingCapitalMetricFamily.EXACT_TRADE_AR: trade_ar_gate,
+    }
+    selected = safe_select_user_visible_inventory(
+        ticker="005930",
+        market="kr",
+        packet_id="packet-runtime",
+        assessment_date=date(2026, 8, 22),
+        industry="memory_semiconductor",
+        monitoring_text="메모리 ASP HBM 재고",
+        existing_unknowns=unknowns,
+        latest_formal_balance_date=date(2026, 6, 30),
+        latest_provisional_period_end=None,
+        cash_flow_context_id=None,
+        cash_flow_period_end=None,
+        rollout_mode="SELECTIVE_INVENTORY",
+        gates=gates,
+    )
+    trade_ar_request = safe_select_user_visible_inventory(
+        ticker="010120",
+        market="kr",
+        packet_id="packet-runtime",
+        assessment_date=date(2026, 8, 22),
+        industry="industrial_epc",
+        monitoring_text="매출채권 회수",
+        existing_unknowns=("거래 매출채권 추이를 확인하지 못했습니다.",),
+        latest_formal_balance_date=date(2026, 6, 30),
+        latest_provisional_period_end=None,
+        cash_flow_context_id=None,
+        cash_flow_period_end=None,
+        rollout_mode="SELECTIVE_EXACT_TRADE_AR",
+        gates=gates,
+    )
+
+    assert selected is not None
+    assert selected.metric_family == WorkingCapitalMetricFamily.INVENTORY
+    assert selected.semantic_scope == "exact_total_inventory"
+    assert selected.user_visible_enabled is True
+    assert trade_ar_request is None
+
+
+def test_ai_fallback_parity_is_mandatory_in_enablement_gate() -> None:
+    gate = _gate(
+        WorkingCapitalMetricFamily.INVENTORY,
+        NaturalProofState.LIVE_PASS,
+        ai_fallback_parity_state="FAIL",
+    )
+
+    assert gate.eligible_for_enablement is False
+    assert gate.blocking_reasons == ("ai_fallback_parity_not_passed",)
+
+
+def test_runtime_inventory_does_not_stack_with_incompatible_cash_flow(
+    phase_91d,
+) -> None:
+    gate = _gate(
+        WorkingCapitalMetricFamily.INVENTORY,
+        NaturalProofState.LIVE_PASS,
+    )
+    source = _subject(phase_91d, "000660")["context"]
+    unknowns = tuple(
+        item["original"]
+        for item in source["resolved_unknowns"]
+        if item.get("state") == "RESOLVED_EXACT"
+    )
+
+    selected = safe_select_user_visible_inventory(
+        ticker="000660",
+        market="kr",
+        packet_id="packet-runtime",
+        assessment_date=date(2026, 8, 22),
+        industry="memory_semiconductor",
+        monitoring_text="메모리 ASP HBM 재고",
+        existing_unknowns=unknowns,
+        latest_formal_balance_date=date(2026, 6, 30),
+        latest_provisional_period_end=None,
+        cash_flow_context_id="cf-visible-incompatible",
+        cash_flow_period_end=date(2026, 3, 31),
+        rollout_mode="SELECTIVE_INVENTORY",
+        gates={WorkingCapitalMetricFamily.INVENTORY: gate},
+    )
+
+    assert selected is None
 
 
 def test_archive_evidence_is_deterministic_and_ready() -> None:

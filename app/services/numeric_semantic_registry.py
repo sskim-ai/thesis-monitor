@@ -51,6 +51,16 @@ def _spec(
 
 
 NUMERIC_SEMANTICS = {
+    "inventory_growth_gap_pct_point": _spec(
+        "inventory_growth_gap_pct_point",
+        ("pct_point",),
+        ("재고 증가율 격차", "Inventory growth gap"),
+        (
+            r"재고\s*증가율.*(?:매출|매출원가)\s*증가율.*(?:앞섰|밑돌)",
+            r"inventory growth.*(?:revenue|cogs).*gap",
+        ),
+        "percentage_point",
+    ),
     "operating_cash_flow": _spec(
         "operating_cash_flow",
         ("KRW", "USD", "TWD", "JPY", "EUR"),
@@ -901,6 +911,12 @@ NUMERIC_SEMANTICS = {
 
 _FIELD_RULES = (
     NumericFieldRule(
+        ("working_capital_inventory_relation",),
+        r"fields\.gap_percentage_points_abs",
+        "inventory_growth_gap_pct_point",
+        "pct_point",
+    ),
+    NumericFieldRule(
         ("cash_flow_ocf",),
         r"fields\.value",
         "operating_cash_flow",
@@ -1713,6 +1729,8 @@ def canonical_display_value(
         if formatter == "signed_percentage" and value > 0:
             rendered = f"+{rendered}"
         return f"{rendered}%"
+    if unit == "pct_point":
+        return f"{_fixed_number(value, 1)}%p"
     if unit == "bp":
         rendered = _fixed_number(value, 1)
         if formatter == "signed_basis_points" and value > 0:

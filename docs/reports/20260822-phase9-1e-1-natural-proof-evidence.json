@@ -1,0 +1,275 @@
+{
+  "contract": "working-capital-natural-proof-evidence-v1",
+  "source": {
+    "receipt_sha256": "172a4e626408d333bcee7bd7d9b80d8b68133763d4fe5efc19fb3f410d2bdff0",
+    "sidecar_sha256": "9d6d830192b19ec5a96146584e852eabbc5df248c01b3af1d3ce41790614f60e",
+    "natural_report": "docs/reports/20260822-phase9-1d-natural-runtime-proof.md",
+    "natural_report_sha256": "255785ecd9baac1767277a3c2a9375856c44b007a1022ec0810c5313999b0fd9"
+  },
+  "receipt": {
+    "contract": "working-capital-runtime-shadow-canary-v1",
+    "packet_id": "2026-08-22-us-run-32-dde10ec6c9eb",
+    "canary_id": "wc-canary-e16eaeeece1f21f9d42e8d27",
+    "attempt_id": "attempt-20260821T234020368501Z-f33fad65",
+    "status": "COMPLETE_PASS",
+    "reason": "all_shadow_gates_passed",
+    "production_delivery_sha256": "e88e6ef439acfee7dafb9c7e768e241ef7bba894ae4439cfe1855b5728ae6089",
+    "production_influence_count": 0,
+    "telegram_delivery_count": 0,
+    "assessment_mutation_count": 0,
+    "warning_mutation_count": 0,
+    "started_at": "2026-08-21T23:40:20.368501+00:00",
+    "completed_at": "2026-08-21T23:40:20.451777+00:00",
+    "market": "us",
+    "assessment_date": "2026-08-22",
+    "eligible_subject_count": 3,
+    "selected_subject_count": 2,
+    "selected_subjects": [
+      "MU",
+      "TSLA"
+    ],
+    "selected_metric_families": {
+      "MU": "inventory",
+      "TSLA": "inventory"
+    },
+    "selected_relation_ids": {
+      "MU": [
+        "working-capital-relation:dbdfd04e725e83528d8fdd31"
+      ],
+      "TSLA": [
+        "working-capital-relation:36181e61768dfd580d9ede01"
+      ]
+    },
+    "selected_fact_ids": {
+      "MU": [
+        "working-capital-reported:2a5dd10bfd88a91b65bcc777",
+        "working-capital-reported:00d1a7bd62280782e2efae65",
+        "working-capital-reported:d7dc274bbdea5cd2c57c0a62",
+        "working-capital-reported:076714324caa61d396cf62d0",
+        "working-capital-derived:50745dd0f6eb60120c37579e",
+        "working-capital-derived:9b1463bee52b77a325a1ba6e"
+      ],
+      "TSLA": [
+        "working-capital-reported:73fe4f1d304b6cadfde50b24",
+        "working-capital-reported:5986216e8dc1e64113c1efd6",
+        "working-capital-reported:0ca5b1287df9208349d139b7",
+        "working-capital-reported:450f903e4792967c35cb82ba",
+        "working-capital-derived:278cf0f9df9a28a8c5d28258",
+        "working-capital-derived:e15492a3fff9dff0ab3c7273"
+      ]
+    },
+    "numeric_binding": {
+      "automatic": 2,
+      "manual": 0,
+      "rejected": 0,
+      "unresolved": 0
+    },
+    "semantic_error_count": 0,
+    "quality_error_count": 0,
+    "cash_flow_cross_link_count": 2,
+    "production_ai_input_change_count": 0,
+    "production_fallback_change_count": 0,
+    "public_action_change_count": 0,
+    "public_snapshot_change_count": 0,
+    "latency_ms": {
+      "build": 53.371,
+      "validation": 0.098,
+      "total": 55.423
+    },
+    "receipt_id": "wc-receipt-b27e0c026493f8c0f2bdc655"
+  },
+  "selected_subject_contexts": {
+    "MU": {
+      "contract": "working-capital-shadow-consumption-v1",
+      "ticker": "MU",
+      "market": "us",
+      "packet_id": "2026-08-22-us-run-32-dde10ec6c9eb",
+      "assessment_date": "2026-08-22",
+      "cutoff": "2026-08-22",
+      "status": "READY",
+      "usage_mode": "INVENTORY_RELATION",
+      "latest_formal_balance_date": "2026-05-28",
+      "freshness_state": "CURRENT_FORMAL",
+      "pit_state": "PASS",
+      "industry": "memory_semiconductor",
+      "specificity_key": "memory_nand",
+      "industry_applicability": {
+        "ap": "SECONDARY",
+        "ap_vs_cogs": "SECONDARY",
+        "ar": "SECONDARY",
+        "ar_vs_revenue": "SECONDARY",
+        "inventory": "PRIMARY",
+        "inventory_vs_cogs": "PRIMARY",
+        "inventory_vs_revenue": "PRIMARY"
+      },
+      "materiality_reason": "existing_working_capital_driver_or_unknown",
+      "metric_contexts": [
+        {
+          "metric": "inventory",
+          "status": "ELIGIBLE",
+          "current_fact_id": "working-capital-reported:2a5dd10bfd88a91b65bcc777",
+          "yoy_fact_id": "working-capital-derived:50745dd0f6eb60120c37579e",
+          "semantic_label": "재고"
+        }
+      ],
+      "selected_relations": [
+        {
+          "relation_id": "working-capital-relation:dbdfd04e725e83528d8fdd31",
+          "family": "inventory_vs_cogs",
+          "direction": "LOWER",
+          "balance_metric": "inventory",
+          "balance_semantic": "us-gaap:InventoryNet",
+          "balance_scope": "total",
+          "flow_metric": "cost_of_goods_sold",
+          "flow_semantic": "us-gaap:CostOfGoodsAndServicesSold",
+          "gap_percentage_points": "-15.73390774080174779327076002",
+          "input_fact_ids": [
+            "working-capital-reported:2a5dd10bfd88a91b65bcc777",
+            "working-capital-reported:00d1a7bd62280782e2efae65",
+            "working-capital-reported:d7dc274bbdea5cd2c57c0a62",
+            "working-capital-reported:076714324caa61d396cf62d0",
+            "working-capital-derived:50745dd0f6eb60120c37579e",
+            "working-capital-derived:9b1463bee52b77a325a1ba6e"
+          ],
+          "applicability": "PRIMARY"
+        }
+      ],
+      "selected_fact_refs": [
+        "working-capital-reported:2a5dd10bfd88a91b65bcc777",
+        "working-capital-reported:00d1a7bd62280782e2efae65",
+        "working-capital-reported:d7dc274bbdea5cd2c57c0a62",
+        "working-capital-reported:076714324caa61d396cf62d0",
+        "working-capital-derived:50745dd0f6eb60120c37579e",
+        "working-capital-derived:9b1463bee52b77a325a1ba6e"
+      ],
+      "semantic_labels": [
+        "재고",
+        "cost_of_goods_sold"
+      ],
+      "allowed_claims": [
+        "typed_relation",
+        "cautious_earnings_quality_context"
+      ],
+      "prohibited_claims": [
+        "future_fact_used",
+        "stale_as_current",
+        "broad_trade_semantic_mislabel",
+        "contract_asset_as_trade_ar",
+        "accrued_liability_as_trade_ap",
+        "unsupported_causal_claim",
+        "dso_inventory_days_dpo_ccc",
+        "automatic_thesis_warning_or_valuation_change"
+      ],
+      "resolved_unknowns": [],
+      "remaining_unknowns": [
+        "미확인 보도가 있으나 원문 근거와 투자 영향이 확인되지 않아 투자 논리에는 반영하지 않았습니다.",
+        "Customer names are not confirmed unless disclosed in the source text",
+        "Order size is unknown",
+        "Revenue impact is unknown",
+        "Margin impact is unknown"
+      ],
+      "suppression_reasons": [],
+      "point_in_time_exclusions": [],
+      "cash_flow_alignment_state": "COMPATIBLE_FORMAL_PERIOD",
+      "cash_flow_context_used": true,
+      "consumption_eligible": true,
+      "shadow_used": true
+    },
+    "TSLA": {
+      "contract": "working-capital-shadow-consumption-v1",
+      "ticker": "TSLA",
+      "market": "us",
+      "packet_id": "2026-08-22-us-run-32-dde10ec6c9eb",
+      "assessment_date": "2026-08-22",
+      "cutoff": "2026-08-22",
+      "status": "READY",
+      "usage_mode": "INVENTORY_RELATION",
+      "latest_formal_balance_date": "2026-06-30",
+      "freshness_state": "CURRENT_FORMAL",
+      "pit_state": "PASS",
+      "industry": "automotive",
+      "specificity_key": "vehicle_delivery",
+      "industry_applicability": {
+        "ap": "SECONDARY",
+        "ap_vs_cogs": "SECONDARY",
+        "ar": "SECONDARY",
+        "ar_vs_revenue": "SECONDARY",
+        "inventory": "PRIMARY",
+        "inventory_vs_cogs": "PRIMARY",
+        "inventory_vs_revenue": "PRIMARY"
+      },
+      "materiality_reason": "existing_working_capital_driver_or_unknown",
+      "metric_contexts": [
+        {
+          "metric": "inventory",
+          "status": "ELIGIBLE",
+          "current_fact_id": "working-capital-reported:73fe4f1d304b6cadfde50b24",
+          "yoy_fact_id": "working-capital-derived:278cf0f9df9a28a8c5d28258",
+          "semantic_label": "재고"
+        }
+      ],
+      "selected_relations": [
+        {
+          "relation_id": "working-capital-relation:36181e61768dfd580d9ede01",
+          "family": "inventory_vs_revenue",
+          "direction": "LOWER",
+          "balance_metric": "inventory",
+          "balance_semantic": "us-gaap:InventoryNet",
+          "balance_scope": "total",
+          "flow_metric": "revenue",
+          "flow_semantic": "us-gaap:RevenueFromContractWithCustomerExcludingAssessedTax",
+          "gap_percentage_points": "-26.63218129057952197001737570",
+          "input_fact_ids": [
+            "working-capital-reported:73fe4f1d304b6cadfde50b24",
+            "working-capital-reported:5986216e8dc1e64113c1efd6",
+            "working-capital-reported:0ca5b1287df9208349d139b7",
+            "working-capital-reported:450f903e4792967c35cb82ba",
+            "working-capital-derived:278cf0f9df9a28a8c5d28258",
+            "working-capital-derived:e15492a3fff9dff0ab3c7273"
+          ],
+          "applicability": "PRIMARY"
+        }
+      ],
+      "selected_fact_refs": [
+        "working-capital-reported:73fe4f1d304b6cadfde50b24",
+        "working-capital-reported:5986216e8dc1e64113c1efd6",
+        "working-capital-reported:0ca5b1287df9208349d139b7",
+        "working-capital-reported:450f903e4792967c35cb82ba",
+        "working-capital-derived:278cf0f9df9a28a8c5d28258",
+        "working-capital-derived:e15492a3fff9dff0ab3c7273"
+      ],
+      "semantic_labels": [
+        "재고",
+        "revenue"
+      ],
+      "allowed_claims": [
+        "typed_relation",
+        "cautious_earnings_quality_context"
+      ],
+      "prohibited_claims": [
+        "future_fact_used",
+        "stale_as_current",
+        "broad_trade_semantic_mislabel",
+        "contract_asset_as_trade_ar",
+        "accrued_liability_as_trade_ap",
+        "unsupported_causal_claim",
+        "dso_inventory_days_dpo_ccc",
+        "automatic_thesis_warning_or_valuation_change"
+      ],
+      "resolved_unknowns": [],
+      "remaining_unknowns": [
+        "미확인 보도가 있으나 원문 근거와 투자 영향이 확인되지 않아 투자 논리에는 반영하지 않았습니다.",
+        "Customer names are not confirmed unless disclosed in the source text",
+        "Order size is unknown",
+        "Revenue impact is unknown",
+        "Margin impact is unknown"
+      ],
+      "suppression_reasons": [],
+      "point_in_time_exclusions": [],
+      "cash_flow_alignment_state": "COMPATIBLE_FORMAL_PERIOD",
+      "cash_flow_context_used": true,
+      "consumption_eligible": true,
+      "shadow_used": true
+    }
+  }
+}

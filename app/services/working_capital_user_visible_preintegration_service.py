@@ -4,15 +4,28 @@ import hashlib
 import json
 import re
 from dataclasses import asdict, dataclass
+from datetime import date
 from enum import StrEnum
+from pathlib import Path
 from typing import Mapping, Sequence
 
 from app.config import get_settings
+from app.services.working_capital_runtime_evidence_service import (
+    load_working_capital_snapshot,
+)
+from app.services.working_capital_shadow_consumption_service import (
+    build_working_capital_reasoning_context,
+    context_to_dict as reasoning_context_to_dict,
+    reasoning_to_dict,
+    render_working_capital_reasoning,
+)
 
 
 CONTRACT_VERSION = "working-capital-user-visible-v1"
 ENABLE_GATE_VERSION = "working-capital-user-visible-enable-gate-v1"
 PREVIEW_EVIDENCE_STATE = "PREVIEW_ONLY_NOT_ENABLEMENT_EVIDENCE"
+ENABLED_EVIDENCE_STATE = "NATURAL_PROOF_GATED_USER_VISIBLE"
+ENABLEMENT_READINESS_REPORT = "20260822-phase9-1e-1-readiness.json"
 
 
 class WorkingCapitalMetricFamily(StrEnum):
@@ -81,6 +94,7 @@ class EnablementGate:
     semantic_validation_state: str
     causal_guard_state: str
     numeric_binding_state: str
+    ai_fallback_parity_state: str
     eligible_for_enablement: bool
     blocking_reasons: tuple[str, ...]
     evidence_ref: str | None
@@ -304,6 +318,7 @@ def build_enablement_gate(
     semantic_validation_state: str = "PASS",
     causal_guard_state: str = "PASS",
     numeric_binding_state: str = "PASS",
+    ai_fallback_parity_state: str = "PASS",
 ) -> EnablementGate:
     blockers: list[str] = []
     if proof.state == NaturalProofState.NOT_OBSERVED:
@@ -328,6 +343,8 @@ def build_enablement_gate(
         blockers.append("causal_guard_not_passed")
     if numeric_binding_state != "PASS":
         blockers.append("numeric_binding_not_passed")
+    if ai_fallback_parity_state != "PASS":
+        blockers.append("ai_fallback_parity_not_passed")
     identity = {
         "contract": ENABLE_GATE_VERSION,
         "metric_family": metric_family.value,
@@ -339,6 +356,7 @@ def build_enablement_gate(
             "semantic": semantic_validation_state,
             "causal": causal_guard_state,
             "numeric": numeric_binding_state,
+            "ai_fallback_parity": ai_fallback_parity_state,
         },
         "open_p0": sorted(open_p0),
         "open_material_p1": sorted(open_material_p1),
@@ -356,6 +374,7 @@ def build_enablement_gate(
         semantic_validation_state=semantic_validation_state,
         causal_guard_state=causal_guard_state,
         numeric_binding_state=numeric_binding_state,
+        ai_fallback_parity_state=ai_fallback_parity_state,
         eligible_for_enablement=not blockers,
         blocking_reasons=tuple(blockers),
         evidence_ref=proof.evidence_ref,
@@ -369,6 +388,14 @@ def preflight_enablement_mode(
     mode = resolve_user_visible_mode(requested)
     if mode == WorkingCapitalUserVisibleMode.OFF:
         return ModePreflight(mode, mode, True, (), ())
+    if mode != WorkingCapitalUserVisibleMode.SELECTIVE_INVENTORY:
+        return ModePreflight(
+            requested_mode=mode,
+            effective_mode=WorkingCapitalUserVisibleMode.OFF,
+            accepted=False,
+            blocking_reasons=("inventory_only_rollout_policy",),
+            gate_refs=(),
+        )
     blockers: list[str] = []
     gate_refs: list[str] = []
     for family in metric_families_for_mode(mode):
@@ -505,7 +532,7 @@ def build_preview_context(
     )
     return WorkingCapitalUserVisibleContext(
         contract=CONTRACT_VERSION,
-        evidence_state=PREVIEW_EVIDENCE_STATE,
+        evidence_state=(ENABLED_EVIDENCE_STATE if enabled else PREVIEW_EVIDENCE_STATE),
         working_capital_user_visible_context_id=_identity("wc-visible", identity),
         ticker=ticker,
         packet_id=str(context.get("packet_id") or ""),
@@ -644,10 +671,16 @@ def validate_preview(
         errors.append("fact_lineage_mismatch")
     if rendering.numeric_owner != "business_earnings":
         errors.append("numeric_owner_invalid")
-    if context.evidence_state != PREVIEW_EVIDENCE_STATE:
-        errors.append("preview_evidence_marker_missing")
-    if context.user_visible_enabled or rendering.user_visible_enabled:
-        errors.append("feature_off_user_visible_leak")
+    if context.user_visible_enabled:
+        if context.evidence_state != ENABLED_EVIDENCE_STATE:
+            errors.append("enabled_evidence_marker_missing")
+        if not rendering.user_visible_enabled:
+            errors.append("enabled_rendering_state_mismatch")
+    else:
+        if context.evidence_state != PREVIEW_EVIDENCE_STATE:
+            errors.append("preview_evidence_marker_missing")
+        if rendering.user_visible_enabled:
+            errors.append("feature_off_user_visible_leak")
     if not context.preview_selected:
         if rendering.text is not None:
             errors.append("suppressed_context_rendered")
@@ -707,3 +740,276 @@ def rendering_to_dict(rendering: PreviewRendering) -> dict[str, object]:
 
 def gate_to_dict(gate: EnablementGate) -> dict[str, object]:
     return asdict(gate)
+
+
+def _repository_root() -> Path:
+    return Path(__file__).resolve().parents[2]
+
+
+def _read_json(path: Path) -> dict[str, object]:
+    value = json.loads(path.read_text(encoding="utf-8"))
+    if not isinstance(value, dict):
+        raise ValueError(f"Expected JSON object: {path}")
+    return value
+
+
+def enablement_gates_from_report(
+    path: Path | None = None,
+) -> dict[WorkingCapitalMetricFamily, EnablementGate]:
+    report_path = path or (
+        _repository_root() / "docs" / "reports" / ENABLEMENT_READINESS_REPORT
+    )
+    if not report_path.exists():
+        return {}
+    payload = _read_json(report_path)
+    proof_rows = payload.get("natural_proofs")
+    if not isinstance(proof_rows, dict):
+        return {}
+    gates: dict[WorkingCapitalMetricFamily, EnablementGate] = {}
+    for family in WorkingCapitalMetricFamily:
+        row = proof_rows.get(family.value)
+        if not isinstance(row, dict):
+            continue
+        try:
+            state = NaturalProofState(str(row.get("state") or "NOT_OBSERVED"))
+        except ValueError:
+            state = NaturalProofState.LIVE_FAIL
+        proof = NaturalProofEvidence(
+            metric_family=family,
+            state=state,
+            packet_id=str(row.get("packet_id") or "") or None,
+            receipt_id=str(row.get("receipt_id") or "") or None,
+            fact_ids=tuple(str(item) for item in row.get("fact_ids") or ()),
+            relation_ids=tuple(str(item) for item in row.get("relation_ids") or ()),
+            pit_safe=row.get("pit_safe") is True,
+            semantic_safe=row.get("semantic_safe") is True,
+            causal_safe=row.get("causal_safe") is True,
+            numeric_binding_safe=row.get("numeric_binding_safe") is True,
+            production_influence_count=int(row.get("production_influence_count") or 0),
+            evidence_ref=str(row.get("evidence_ref") or "") or None,
+        )
+        validation = payload.get("validation")
+        validation = validation if isinstance(validation, dict) else {}
+        gates[family] = build_enablement_gate(
+            family,
+            proof,
+            canonical_core_state=str(payload.get("canonical_core_state") or "UNKNOWN"),
+            shadow_consumption_state=str(
+                payload.get("shadow_consumption_state") or "UNKNOWN"
+            ),
+            runtime_canary_state=str(payload.get("runtime_canary_state") or "UNKNOWN"),
+            open_p0=tuple(str(item) for item in payload.get("open_p0") or ()),
+            open_material_p1=tuple(
+                str(item) for item in payload.get("open_material_p1") or ()
+            ),
+            semantic_validation_state=str(
+                validation.get("semantic") or "UNKNOWN"
+            ),
+            causal_guard_state=str(validation.get("causal") or "UNKNOWN"),
+            numeric_binding_state=str(validation.get("numeric") or "UNKNOWN"),
+            ai_fallback_parity_state=str(
+                validation.get("ai_fallback_parity") or "UNKNOWN"
+            ),
+        )
+    return gates
+
+
+def context_from_notification_payload(payload: object) -> dict[str, object]:
+    value = payload
+    if isinstance(value, str):
+        try:
+            value = json.loads(value)
+        except json.JSONDecodeError:
+            return {}
+    if not isinstance(value, dict):
+        return {}
+    candidates: list[object] = [value]
+    deterministic = value.get("deterministic_payload")
+    if isinstance(deterministic, dict):
+        candidates.append(deterministic)
+    for candidate in candidates:
+        if not isinstance(candidate, dict):
+            continue
+        analysis = candidate.get("analysis_context")
+        if not isinstance(analysis, dict):
+            continue
+        context = analysis.get("working_capital_user_visible")
+        if isinstance(context, dict):
+            return dict(context)
+    return {}
+
+
+def select_user_visible_inventory(
+    *,
+    ticker: str,
+    market: str,
+    packet_id: str,
+    assessment_date: date,
+    industry: str,
+    monitoring_text: str,
+    existing_unknowns: Sequence[str],
+    latest_formal_balance_date: date | None,
+    latest_provisional_period_end: date | None,
+    cash_flow_context_id: str | None,
+    cash_flow_period_end: date | None,
+    rollout_mode: object | None = None,
+    gates: Mapping[WorkingCapitalMetricFamily, EnablementGate] | None = None,
+    canonical_report_path: Path | None = None,
+    previous_user_visible_context: Mapping[str, object] | None = None,
+) -> WorkingCapitalUserVisibleContext | None:
+    mode = resolve_user_visible_mode(rollout_mode)
+    active_gates = dict(gates or enablement_gates_from_report())
+    preflight = preflight_enablement_mode(mode, active_gates)
+    if not preflight.accepted or preflight.effective_mode != mode or mode == WorkingCapitalUserVisibleMode.OFF:
+        return None
+    loaded = load_working_capital_snapshot(
+        ticker,
+        as_of=assessment_date,
+        report_path=canonical_report_path,
+    )
+    if loaded is None:
+        return None
+    snapshot, record = loaded
+    latest_formal = max(
+        (
+            item
+            for item in (
+                snapshot.latest_safe_working_capital_date,
+                latest_formal_balance_date,
+            )
+            if item is not None
+        ),
+        default=None,
+    )
+    reasoning_context = build_working_capital_reasoning_context(
+        snapshot,
+        ticker=ticker,
+        market=market,
+        packet_id=packet_id,
+        assessment_date=assessment_date,
+        cutoff=assessment_date,
+        industry=industry or str(record.get("industry") or ""),
+        monitoring_text=monitoring_text,
+        existing_unknowns=existing_unknowns,
+        latest_formal_balance_date=latest_formal,
+        latest_provisional_period_end=latest_provisional_period_end,
+        cash_flow_period_end=cash_flow_period_end,
+    )
+    reasoning = render_working_capital_reasoning(reasoning_context)
+    if reasoning is None or reasoning_context.selected_relation is None:
+        return None
+    family = WorkingCapitalMetricFamily(
+        reasoning_context.selected_relation.balance_metric.value
+    )
+    if family != WorkingCapitalMetricFamily.INVENTORY:
+        return None
+    subject = {
+        "ticker": ticker,
+        "industry": industry or str(record.get("industry") or ""),
+        "runtime_selected_metric": family.value,
+        "selector_parity": True,
+        "context": reasoning_context_to_dict(reasoning_context),
+        "reasoning": reasoning_to_dict(reasoning),
+    }
+    gate = active_gates.get(family)
+    if gate is None:
+        return None
+    selected = build_preview_context(
+        subject,
+        gate,
+        preview_target_mode=WorkingCapitalUserVisibleMode.SELECTIVE_INVENTORY,
+        feature_mode=mode,
+        cash_flow_context_id=cash_flow_context_id,
+        cash_flow_period_end=(cash_flow_period_end.isoformat() if cash_flow_period_end else None),
+    )
+    if selected is None or not selected.user_visible_enabled:
+        return None
+    if (
+        cash_flow_context_id
+        and selected.cash_flow_alignment_state != "COMPATIBLE_PERIOD_END"
+    ):
+        return None
+    previous_id = str(
+        (previous_user_visible_context or {}).get(
+            "working_capital_user_visible_context_id"
+        )
+        or ""
+    )
+    if previous_id and previous_id == selected.working_capital_user_visible_context_id:
+        return None
+    previous_relation = str(
+        (previous_user_visible_context or {}).get("relation_id") or ""
+    )
+    previous_facts = tuple(
+        str(item)
+        for item in (previous_user_visible_context or {}).get("selected_fact_ids") or ()
+    )
+    if (
+        (previous_user_visible_context or {}).get("user_visible_enabled") is True
+        and previous_relation == selected.relation_id
+        and previous_facts == selected.selected_fact_ids
+    ):
+        return None
+    return selected
+
+
+def safe_select_user_visible_inventory(**kwargs: object) -> WorkingCapitalUserVisibleContext | None:
+    try:
+        return select_user_visible_inventory(**kwargs)
+    except Exception:  # noqa: BLE001
+        return None
+
+
+def resolve_selected_inventory_unknowns(
+    unknowns: Sequence[str],
+    context: WorkingCapitalUserVisibleContext | None,
+) -> tuple[str, ...]:
+    if context is None or not context.user_visible_enabled:
+        return tuple(unknowns)
+    resolved = set(context.resolved_unknowns)
+    return tuple(item for item in unknowns if item not in resolved)
+
+
+def fact_catalog_entries(
+    context: WorkingCapitalUserVisibleContext | None,
+) -> list[dict[str, object]]:
+    if context is None or not context.user_visible_enabled:
+        return []
+    return [
+        {
+            "fact_id": context.relation_id,
+            "fact_type": "working_capital_inventory_relation",
+            "as_of_date": context.balance_date,
+            "source": "canonical_working_capital_relation",
+            "fields": {
+                "gap_percentage_points_abs": abs(float(context.gap_percentage_points)),
+                "direction": context.direction,
+                "relation_family": context.relation_family,
+                "balance_date": context.balance_date,
+                "semantic_scope": context.semantic_scope,
+                "input_fact_ids": list(context.selected_fact_ids),
+                "working_capital_user_visible_context_id": (
+                    context.working_capital_user_visible_context_id
+                ),
+            },
+            "prose_eligible": True,
+            "interpretation_eligible": True,
+            "numeric_registry_eligible": True,
+        },
+        *(
+            {
+                "fact_id": fact_id,
+                "fact_type": "working_capital_lineage_input",
+                "as_of_date": context.balance_date,
+                "source": "canonical_working_capital_fact",
+                "fields": {
+                    "relation_id": context.relation_id,
+                    "semantic_scope": context.semantic_scope,
+                },
+                "prose_eligible": False,
+                "interpretation_eligible": False,
+                "numeric_registry_eligible": False,
+            }
+            for fact_id in context.selected_fact_ids
+        ),
+    ]

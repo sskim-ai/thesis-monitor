@@ -281,6 +281,62 @@ def _packet_cash_flow_context(
     return {}
 
 
+def _payload_working_capital_context(payload: dict[str, object]) -> dict[str, object]:
+    analysis = payload.get("analysis_context")
+    if not isinstance(analysis, dict):
+        return {}
+    value = analysis.get("working_capital_user_visible")
+    return dict(value) if isinstance(value, dict) else {}
+
+
+def _packet_working_capital_context(
+    packet: dict[str, object], ticker: str
+) -> dict[str, object]:
+    for stock in packet.get("stocks", []):
+        if not isinstance(stock, dict) or str(stock.get("ticker")) != ticker:
+            continue
+        value = stock.get("working_capital_user_visible")
+        return dict(value) if isinstance(value, dict) else {}
+    return {}
+
+
+def _working_capital_delivery_metadata(
+    packet: dict[str, object], ticker: str, deterministic: dict[str, object]
+) -> dict[str, object]:
+    packet_context = _packet_working_capital_context(packet, ticker)
+    fallback_context = _payload_working_capital_context(deterministic)
+    if packet_context or fallback_context:
+        parity_fields = (
+            "working_capital_user_visible_context_id",
+            "metric_family",
+            "semantic_scope",
+            "balance_date",
+            "relation_id",
+            "relation_family",
+            "direction",
+            "display_value",
+            "selected_fact_ids",
+            "resolved_unknowns",
+            "suppression_reasons",
+            "user_visible_enabled",
+        )
+        if any(packet_context.get(key) != fallback_context.get(key) for key in parity_fields):
+            raise ValueError(f"working_capital_ai_fallback_context_mismatch:{ticker}")
+    source = packet_context or fallback_context
+    return {
+        "working_capital_user_visible_mode": source.get("feature_mode", "OFF"),
+        "working_capital_user_visible_context_id": source.get(
+            "working_capital_user_visible_context_id"
+        ),
+        "working_capital_user_visible_enabled": (
+            source.get("user_visible_enabled") is True
+        ),
+        "working_capital_fact_ids": list(source.get("selected_fact_ids") or []),
+        "working_capital_relation_id": source.get("relation_id"),
+        "working_capital_metric_family": source.get("metric_family"),
+    }
+
+
 def _cash_flow_delivery_metadata(
     packet: dict[str, object], ticker: str, deterministic: dict[str, object]
 ) -> dict[str, object]:
@@ -359,6 +415,40 @@ def _cash_flow_run_metadata(packet: dict[str, object]) -> dict[str, object]:
         "cash_flow_suppressed_count": sum(
             isinstance(item, dict) and item.get("user_visible_enabled") is not True
             for item in contexts
+        ),
+    }
+
+
+def _working_capital_run_metadata(packet: dict[str, object]) -> dict[str, object]:
+    contexts = [
+        item.get("working_capital_user_visible")
+        for item in packet.get("stocks", [])
+        if isinstance(item, dict)
+        and isinstance(item.get("working_capital_user_visible"), dict)
+    ]
+    selected = [
+        item
+        for item in contexts
+        if isinstance(item, dict) and item.get("user_visible_enabled") is True
+    ]
+    mode = str(selected[0].get("feature_mode") or "OFF") if selected else "OFF"
+    return {
+        "working_capital_user_visible_mode": mode,
+        "working_capital_selected_count": len(selected),
+        "working_capital_context_ids": [
+            item["working_capital_user_visible_context_id"]
+            for item in selected
+            if item.get("working_capital_user_visible_context_id")
+        ],
+        "working_capital_fact_ids": sorted(
+            {
+                str(fact_id)
+                for item in selected
+                for fact_id in item.get("selected_fact_ids") or ()
+            }
+        ),
+        "working_capital_metric_families": sorted(
+            {str(item.get("metric_family")) for item in selected}
         ),
     }
 
@@ -717,6 +807,9 @@ def hold_ai_assisted_pilot_session(
                 "held_at": now.isoformat(),
                 "deterministic_payload": deterministic,
                 **_cash_flow_delivery_metadata(
+                    packet, delivery.ticker, deterministic
+                ),
+                **_working_capital_delivery_metadata(
                     packet, delivery.ticker, deterministic
                 ),
             }
@@ -1290,6 +1383,11 @@ async def deliver_validated_ai_review(
                     "cash_flow_user_visible_context_id": _packet_cash_flow_context(
                         packet, delivery.ticker
                     ).get("cash_flow_user_visible_context_id"),
+                    "working_capital_user_visible_context_id": (
+                        _packet_working_capital_context(packet, delivery.ticker).get(
+                            "working_capital_user_visible_context_id"
+                        )
+                    ),
                 }
             )
         ticker_order = {
@@ -1515,6 +1613,7 @@ async def deliver_validated_ai_review(
                 "chart_knowledge_sha256": output.chart_knowledge_sha256,
                 "renderer_version": PILOT_RENDERER_VERSION,
                 **_cash_flow_run_metadata(packet),
+                **_working_capital_run_metadata(packet),
             },
         )
         await dispatch_pending_notifications(
@@ -1559,6 +1658,7 @@ async def deliver_validated_ai_review(
             ),
             "dispatched_at": current.isoformat() if complete else None,
             **_cash_flow_run_metadata(packet),
+            **_working_capital_run_metadata(packet),
         }
         _atomic_json(_archive_directory(packet) / "delivery-result.json", delivery_result)
         recorded_day = pilot_day
@@ -1820,6 +1920,7 @@ async def _retry_fallback_delivery(
             "pending_count": pending_count,
             "dispatched_at": current.isoformat() if complete else None,
             **_cash_flow_run_metadata(packet),
+            **_working_capital_run_metadata(packet),
         },
     )
     _atomic_json(
@@ -1953,6 +2054,9 @@ async def dispatch_due_deterministic_fallbacks(
                         "cash_flow_user_visible_context_id": metadata.get(
                             "cash_flow_user_visible_context_id"
                         ),
+                        "working_capital_user_visible_context_id": metadata.get(
+                            "working_capital_user_visible_context_id"
+                        ),
                     }
                 )
             session.commit()
@@ -2001,6 +2105,7 @@ async def dispatch_due_deterministic_fallbacks(
                     "pending_count": pending_count,
                     "dispatched_at": current.isoformat() if complete else None,
                     **_cash_flow_run_metadata(packet),
+                    **_working_capital_run_metadata(packet),
                 },
             )
             results.append(
