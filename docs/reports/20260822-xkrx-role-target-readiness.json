@@ -1,0 +1,22 @@
+{
+  "deadline_verdict": "DEADLINE_UNPROVEN",
+  "implementation_actions_run": 32544635210,
+  "implementation_actions_status": "PASS",
+  "implementation_sha": "6da46cc779ff5385a2cf99fb689840f00e695e36",
+  "instruction_sha": "932df17e137e029ea53fc2f01adc30a440141894",
+  "krx_0805_role_target_repair": "DEPLOYED_PENDING_NATURAL",
+  "manual_operations": {
+    "db": 0,
+    "pilot": 0,
+    "provider_recreation": 0,
+    "scheduled_task": 0,
+    "telegram": 0
+  },
+  "night_observer_role_target_repair": "DEPLOYED_PENDING_NATURAL",
+  "open_material_p1": [],
+  "open_p0": [],
+  "production_assist": "OFF",
+  "schedule_changes": 0,
+  "status": "PASS",
+  "user_visible_diff": 0
+}
