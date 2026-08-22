@@ -1,0 +1,470 @@
+{
+  "archive_rewrite": 0,
+  "changes": [
+    {
+      "change": "canonical_period_and_industry_cash_flow_seed",
+      "ticker": "CORZ"
+    },
+    {
+      "change": "remove_unavailable_price_fact_id",
+      "fact_ids": [
+        "chart:structure:risk_reward:current_price"
+      ],
+      "section": "price_positioning",
+      "ticker": "CORZ"
+    },
+    {
+      "change": "fold_numeric_evidence_into_decision_sentence",
+      "section": "core_judgment",
+      "ticker": "CORZ"
+    },
+    {
+      "change": "canonical_period_and_industry_cash_flow_seed",
+      "ticker": "CRCL"
+    },
+    {
+      "change": "fold_numeric_evidence_into_decision_sentence",
+      "section": "core_judgment",
+      "ticker": "CRCL"
+    },
+    {
+      "change": "canonical_period_and_industry_cash_flow_seed",
+      "ticker": "GOOGL"
+    },
+    {
+      "change": "fold_numeric_evidence_into_decision_sentence",
+      "section": "core_judgment",
+      "ticker": "GOOGL"
+    },
+    {
+      "change": "fold_numeric_evidence_into_decision_sentence",
+      "section": "valuation_analysis",
+      "ticker": "GOOGL"
+    },
+    {
+      "change": "remove_unavailable_price_fact_id",
+      "fact_ids": [
+        "chart:structure:risk_reward:current_price"
+      ],
+      "section": "price_positioning",
+      "ticker": "HUT"
+    },
+    {
+      "change": "fold_numeric_evidence_into_decision_sentence",
+      "section": "core_judgment",
+      "ticker": "HUT"
+    },
+    {
+      "change": "canonical_period_and_industry_cash_flow_seed",
+      "ticker": "IBM"
+    },
+    {
+      "change": "fold_numeric_evidence_into_decision_sentence",
+      "section": "core_judgment",
+      "ticker": "IBM"
+    },
+    {
+      "change": "fold_numeric_evidence_into_decision_sentence",
+      "section": "valuation_analysis",
+      "ticker": "IBM"
+    },
+    {
+      "change": "canonical_period_and_industry_cash_flow_seed",
+      "ticker": "MU"
+    },
+    {
+      "change": "fold_numeric_evidence_into_decision_sentence",
+      "section": "core_judgment",
+      "ticker": "MU"
+    },
+    {
+      "change": "fold_numeric_evidence_into_decision_sentence",
+      "section": "valuation_analysis",
+      "ticker": "MU"
+    },
+    {
+      "change": "canonical_period_and_industry_cash_flow_seed",
+      "ticker": "RXRX"
+    },
+    {
+      "change": "fold_numeric_evidence_into_decision_sentence",
+      "section": "core_judgment",
+      "ticker": "RXRX"
+    },
+    {
+      "change": "fold_numeric_evidence_into_decision_sentence",
+      "section": "valuation_analysis",
+      "ticker": "RXRX"
+    },
+    {
+      "change": "canonical_period_and_industry_cash_flow_seed",
+      "ticker": "SNDK"
+    },
+    {
+      "change": "fold_numeric_evidence_into_decision_sentence",
+      "section": "core_judgment",
+      "ticker": "SNDK"
+    },
+    {
+      "change": "canonical_period_and_industry_cash_flow_seed",
+      "ticker": "TSLA"
+    },
+    {
+      "change": "fold_numeric_evidence_into_decision_sentence",
+      "section": "core_judgment",
+      "ticker": "TSLA"
+    },
+    {
+      "change": "fold_numeric_evidence_into_decision_sentence",
+      "section": "core_judgment",
+      "ticker": "TSM"
+    },
+    {
+      "change": "canonical_period_and_industry_cash_flow_seed",
+      "ticker": "WULF"
+    },
+    {
+      "change": "remove_unavailable_price_fact_id",
+      "fact_ids": [
+        "chart:structure:risk_reward:current_price"
+      ],
+      "section": "price_positioning",
+      "ticker": "WULF"
+    },
+    {
+      "change": "fold_numeric_evidence_into_decision_sentence",
+      "section": "core_judgment",
+      "ticker": "WULF"
+    },
+    {
+      "change": "fold_numeric_evidence_into_decision_sentence",
+      "section": "valuation_analysis",
+      "ticker": "WULF"
+    }
+  ],
+  "message_count": 14,
+  "numeric_claims_unchanged": true,
+  "original_candidate_schema_valid": true,
+  "original_error_count": 21,
+  "original_errors": [
+    "CORZ:interpretation_unknown_fact_ids:chart:structure:risk_reward:current_price",
+    "CORZ:cash_flow_fiscal_period_label_missing",
+    "CORZ:cash_flow_ytd_label_missing",
+    "CRCL:cash_flow_fiscal_period_label_missing",
+    "CRCL:cash_flow_ytd_label_missing",
+    "GOOGL:cash_flow_fiscal_period_label_missing",
+    "GOOGL:cash_flow_ytd_label_missing",
+    "HUT:interpretation_unknown_fact_ids:chart:structure:risk_reward:current_price",
+    "IBM:cash_flow_fiscal_period_label_missing",
+    "IBM:cash_flow_ytd_label_missing",
+    "MU:cash_flow_fiscal_period_label_missing",
+    "MU:cash_flow_ytd_label_missing",
+    "RXRX:cash_flow_fiscal_period_label_missing",
+    "RXRX:cash_flow_ytd_label_missing",
+    "SNDK:cash_flow_fiscal_period_label_missing",
+    "SNDK:cash_flow_fy_label_missing",
+    "TSLA:cash_flow_fiscal_period_label_missing",
+    "TSLA:cash_flow_ytd_label_missing",
+    "WULF:interpretation_unknown_fact_ids:chart:structure:risk_reward:current_price",
+    "WULF:cash_flow_fiscal_period_label_missing",
+    "WULF:cash_flow_ytd_label_missing"
+  ],
+  "packet_id": "2026-08-22-us-run-32-dde10ec6c9eb",
+  "production_delivery": 0,
+  "quality_checks": {
+    "contract": "relational-reasoning-quality-v2",
+    "deterministic_quality_gate_passed": true,
+    "duplicate_threshold": 3,
+    "final_rendered_language": {
+      "details": [],
+      "duplicate_canonical_label_count": 0,
+      "hard_checks_passed": true,
+      "incomplete_predicate_count": 0,
+      "internal_implementation_term_count": 0,
+      "korean_particle_error_count": 0,
+      "malformed_actor_flow_count": 0,
+      "price_particle_error_count": 0
+    },
+    "financial_period_error_count": 0,
+    "generic_methodology_families": [],
+    "generic_methodology_repeat_count": 0,
+    "generic_next_check_count": 0,
+    "generic_numeric_summary_families": [],
+    "generic_numeric_summary_repeat_count": 0,
+    "generic_unknown_count": 0,
+    "hard_checks_passed": true,
+    "human_quality_approval_required": true,
+    "identity_prose_mismatch_count": 0,
+    "kr_supply_numeric_coverage": [],
+    "max_substantive_repeat": 0,
+    "message_set_completeness": {
+      "expected_stock_count": 13,
+      "output_stock_count": 13,
+      "passed": true,
+      "rendered_message_count": 14
+    },
+    "numeric_fact_repetition": {
+      "hard_checks_passed": true,
+      "rows": [],
+      "same_fact_three_or_more_count": 0
+    },
+    "numeric_label_quality": {
+      "details": [],
+      "hard_checks_passed": true,
+      "instrument_label_mismatch_count": 0,
+      "period_label_mismatch_count": 0,
+      "postposition_mismatch_count": 0,
+      "redundant_authored_label_count": 0,
+      "repeated_bound_label_count": 0,
+      "source_label_mismatch_count": 0,
+      "zone_role_mismatch_count": 0
+    },
+    "numeric_ownership": {
+      "business_earnings_violation_count": 0,
+      "business_earnings_violations": [],
+      "contract": "numeric-summary-ownership-v1",
+      "hard_checks_passed": true
+    },
+    "numeric_primary_ownership": {
+      "contract": "numeric-primary-owner-v1",
+      "current_rr_primary_owner": "price_context",
+      "current_rr_primary_text_ref": "price_positioning.text",
+      "current_rr_violation_count": 0,
+      "current_rr_violations": [],
+      "hard_checks_passed": true
+    },
+    "observer_holder": [
+      {
+        "distinct": true,
+        "ticker": "CORZ"
+      },
+      {
+        "distinct": true,
+        "ticker": "CRCL"
+      },
+      {
+        "distinct": true,
+        "ticker": "GOOGL"
+      },
+      {
+        "distinct": true,
+        "ticker": "HUT"
+      },
+      {
+        "distinct": true,
+        "ticker": "IBM"
+      },
+      {
+        "distinct": true,
+        "ticker": "MU"
+      },
+      {
+        "distinct": true,
+        "ticker": "RXRX"
+      },
+      {
+        "distinct": true,
+        "ticker": "SKHY"
+      },
+      {
+        "distinct": true,
+        "ticker": "SNDK"
+      },
+      {
+        "distinct": true,
+        "ticker": "TSLA"
+      },
+      {
+        "distinct": true,
+        "ticker": "TSM"
+      },
+      {
+        "distinct": true,
+        "ticker": "WRD"
+      },
+      {
+        "distinct": true,
+        "ticker": "WULF"
+      }
+    ],
+    "observer_holder_distinct_count": 13,
+    "production_assist_evidence_eligible": false,
+    "rendered_heading_quality": {
+      "expected_heading": "📊 거래량·포지셔닝",
+      "message_indexes": [],
+      "mismatch_count": 0
+    },
+    "rendered_identity_prose_mismatch_count": 0,
+    "rendered_identity_prose_mismatches": [],
+    "repeated_sentences": [],
+    "section_numeric_grounding": {
+      "CORZ": {
+        "core": 2,
+        "earnings": 1,
+        "price": 5,
+        "supply": 0,
+        "valuation": 0
+      },
+      "CRCL": {
+        "core": 2,
+        "earnings": 1,
+        "price": 3,
+        "supply": 0,
+        "valuation": 0
+      },
+      "GOOGL": {
+        "core": 2,
+        "earnings": 1,
+        "price": 8,
+        "supply": 0,
+        "valuation": 2
+      },
+      "HUT": {
+        "core": 2,
+        "earnings": 0,
+        "price": 5,
+        "supply": 0,
+        "valuation": 2
+      },
+      "IBM": {
+        "core": 2,
+        "earnings": 1,
+        "price": 6,
+        "supply": 0,
+        "valuation": 2
+      },
+      "MU": {
+        "core": 2,
+        "earnings": 1,
+        "price": 6,
+        "supply": 0,
+        "valuation": 2
+      },
+      "RXRX": {
+        "core": 2,
+        "earnings": 1,
+        "price": 6,
+        "supply": 0,
+        "valuation": 2
+      },
+      "SKHY": {
+        "core": 1,
+        "earnings": 0,
+        "price": 1,
+        "supply": 0,
+        "valuation": 0
+      },
+      "SNDK": {
+        "core": 2,
+        "earnings": 1,
+        "price": 6,
+        "supply": 0,
+        "valuation": 0
+      },
+      "TSLA": {
+        "core": 2,
+        "earnings": 1,
+        "price": 6,
+        "supply": 0,
+        "valuation": 3
+      },
+      "TSM": {
+        "core": 3,
+        "earnings": 3,
+        "price": 8,
+        "supply": 0,
+        "valuation": 0
+      },
+      "WRD": {
+        "core": 1,
+        "earnings": 0,
+        "price": 6,
+        "supply": 0,
+        "valuation": 0
+      },
+      "WULF": {
+        "core": 2,
+        "earnings": 1,
+        "price": 5,
+        "supply": 0,
+        "valuation": 2
+      }
+    },
+    "stock_count": 13,
+    "stock_specific_next_check_count": 13,
+    "stock_specific_unknown_count": 13,
+    "substantive_repeated_sentence_count": 0,
+    "supply_grounding_error_count": 0,
+    "supply_routing": {
+      "generic_us_investor_flow_unknown_count": 0,
+      "generic_us_investor_flow_unknown_rows": [],
+      "generic_us_supply_count": 0,
+      "generic_us_supply_rows": [],
+      "substantive_repeated_supply_sentence_count": 0,
+      "us_kr_style_horizon_count": 0,
+      "us_kr_style_horizon_rows": []
+    },
+    "template_skeleton_contract": "typed-template-skeleton-v1",
+    "template_skeleton_exceptions": [
+      {
+        "owner": "price_context",
+        "reason": "canonical_zone_endpoint_contract",
+        "relation": "metric_set",
+        "section": "price_positioning",
+        "semantic_types": [
+          "current_price_risk_reward_ratio",
+          "resistance_zone_price",
+          "share_price",
+          "support_zone_price"
+        ],
+        "skeleton": "<numeric>; <numeric>; <numeric>; <numeric>; <numeric>; <numeric>.",
+        "stock_count": 8,
+        "tickers": [
+          "GOOGL",
+          "IBM",
+          "MU",
+          "RXRX",
+          "SNDK",
+          "TSLA",
+          "TSM",
+          "WRD"
+        ]
+      },
+      {
+        "owner": "price_context",
+        "reason": "canonical_zone_endpoint_contract",
+        "relation": "metric_set",
+        "section": "price_positioning",
+        "semantic_types": [
+          "resistance_zone_price",
+          "share_price",
+          "support_zone_price"
+        ],
+        "skeleton": "<numeric>; <numeric>; <numeric>; <numeric>; <numeric>.",
+        "stock_count": 3,
+        "tickers": [
+          "CORZ",
+          "HUT",
+          "WULF"
+        ]
+      }
+    ],
+    "template_skeleton_repeat_count": 0,
+    "template_skeleton_repeats": [],
+    "unsupported_comparative_claim_count": 0,
+    "valuation_evidence_error_count": 0,
+    "watch_next_check_overlap": {
+      "exact_overlap_count": 0,
+      "hard_checks_passed": true,
+      "meaningless_overlap_count": 0,
+      "rows": [],
+      "semantic_overlap_count": 0,
+      "watch_role_violation_count": 0
+    }
+  },
+  "quality_errors": [],
+  "quality_status": "passed",
+  "repaired_candidate_schema_valid": true,
+  "repaired_error_count": 0,
+  "repaired_errors": []
+}

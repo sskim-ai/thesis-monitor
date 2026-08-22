@@ -4669,6 +4669,9 @@ def _cash_flow_user_visible_errors(
     ):
         errors.append(f"{review.ticker}:cash_flow_ppe_scope_label_missing")
     primary_period = _dict(context.get("primary_period"))
+    required_period_label = str(context.get("required_period_label") or "")
+    if required_period_label and required_period_label not in business_text:
+        errors.append(f"{review.ticker}:cash_flow_required_period_label_missing")
     fiscal_year = str(primary_period.get("fiscal_year") or "")
     period_type = str(primary_period.get("period_type") or "")
     if fiscal_year and fiscal_year not in business_text:
@@ -4679,6 +4682,16 @@ def _cash_flow_user_visible_errors(
         errors.append(f"{review.ticker}:cash_flow_fy_label_missing")
     if period_type == "QTD" and "분기 단독" not in business_text:
         errors.append(f"{review.ticker}:cash_flow_qtd_label_missing")
+    if re.search(r"연율화|연환산|annuali[sz]", business_text, re.IGNORECASE):
+        errors.append(f"{review.ticker}:cash_flow_period_annualization_forbidden")
+    if period_type == "YTD" and re.search(
+        r"분기\s*단독|단일\s*분기|standalone\s+quarter",
+        business_text,
+        re.IGNORECASE,
+    ):
+        errors.append(f"{review.ticker}:cash_flow_period_type_mislabel")
+    if period_type in {"FY", "QTD"} and "누계" in business_text:
+        errors.append(f"{review.ticker}:cash_flow_period_type_mislabel")
     if re.search(
         r"회사(?:가|의)?\s*(?:보고(?:한)?|정의(?:한)?)?\s*FCF",
         business_text,

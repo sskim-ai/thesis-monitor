@@ -35,6 +35,24 @@ def _context() -> dict[str, object]:
             "fiscal_year": 2026,
             "fiscal_quarter": 2,
         },
+        "period_identity_contract": "cash-flow-period-identity-v1",
+        "required_period_label": "2026 회계연도 상반기 누계",
+        "duration_basis": "fiscal_year_to_date_cumulative",
+        "is_ytd": True,
+        "is_fy": False,
+        "allowed_period_claims": {
+            "fiscal_year": 2026,
+            "fiscal_quarter": 2,
+            "period_type": "YTD",
+            "period_end": "2026-06-30",
+            "canonical_label": "2026 회계연도 상반기 누계",
+        },
+        "forbidden_period_claims": [
+            "annualized",
+            "calendar_period_inference",
+            "standalone_quarter",
+        ],
+        "fcf_scope": "OCF - PPE CAPEX",
         "financial_currency": "USD",
         "freshness_state": "CURRENT_FORMAL",
         "suppressed_baseline_claim_ids": ["claim-1"],
@@ -103,6 +121,58 @@ def _review() -> AIStockReview:
 
 def test_ai_cash_flow_owner_period_scope_and_unknown_contract_passes() -> None:
     assert _cash_flow_user_visible_errors(_review(), _stock()) == []
+
+
+def test_ai_cash_flow_requires_exact_fiscal_ytd_label() -> None:
+    review = _review()
+    review.business_earnings.text = (
+        "2026년 2분기 PPE 투자 후 잉여현금흐름은 $600M입니다."
+    )
+
+    errors = _cash_flow_user_visible_errors(review, _stock())
+
+    assert "TEST:cash_flow_required_period_label_missing" in errors
+    assert "TEST:cash_flow_ytd_label_missing" in errors
+
+
+def test_ai_cash_flow_fy_cannot_be_shortened_to_quarter() -> None:
+    stock = _stock()
+    stock["cash_flow_user_visible"] = {
+        **_context(),
+        "primary_period": {
+            "period_start": "2025-06-28",
+            "period_end": "2026-07-03",
+            "period_type": "FY",
+            "fiscal_year": 2026,
+            "fiscal_quarter": 4,
+        },
+        "required_period_label": "2026 회계연도 연간",
+        "duration_basis": "full_fiscal_year",
+        "is_ytd": False,
+        "is_fy": True,
+    }
+    review = _review()
+    review.business_earnings.text = (
+        "2026 회계연도 4분기 PPE 투자 후 잉여현금흐름은 $600M입니다."
+    )
+
+    errors = _cash_flow_user_visible_errors(review, stock)
+
+    assert "TEST:cash_flow_required_period_label_missing" in errors
+    assert "TEST:cash_flow_fy_label_missing" in errors
+
+
+def test_ai_cash_flow_rejects_ytd_as_standalone_or_annualized() -> None:
+    review = _review()
+    review.business_earnings.text = (
+        "2026 회계연도 상반기 누계 분기 단독 PPE 투자 후 잉여현금흐름은 "
+        "$600M이며 연율화합니다."
+    )
+
+    errors = _cash_flow_user_visible_errors(review, _stock())
+
+    assert "TEST:cash_flow_period_type_mislabel" in errors
+    assert "TEST:cash_flow_period_annualization_forbidden" in errors
 
 
 def test_ai_cash_flow_wrong_owner_and_resolved_unknown_are_rejected() -> None:

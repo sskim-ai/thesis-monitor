@@ -1,0 +1,29 @@
+{
+  "ai_natural_proof": "PENDING",
+  "archive_rewrite_count": 0,
+  "fallback_factual_parity": "PASS",
+  "implementation_actions_run": 32544624710,
+  "implementation_actions_status": "PASS",
+  "implementation_sha": "ecf88b961f45ddaa62d0ca227628f70d50f3aa9d",
+  "instruction_sha": "0534a1d7333fce126fda9dba06185a3ad4c58396",
+  "manual_operations": {
+    "db": 0,
+    "pilot": 0,
+    "scheduled_task": 0,
+    "telegram": 0
+  },
+  "open_material_p1": [],
+  "open_p0": [],
+  "packet_id": "2026-08-22-us-run-32-dde10ec6c9eb",
+  "production_assist": "OFF",
+  "replay": {
+    "after_hard_errors": 0,
+    "before_hard_errors": 21,
+    "final_language": "PASS",
+    "numeric_claims_unchanged": true,
+    "runtime_quality": "PASS",
+    "semantic_validation": "PASS"
+  },
+  "status": "PASS",
+  "working_capital_user_visible": "OFF"
+}

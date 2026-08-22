@@ -1,0 +1,2365 @@
+{
+  "analysis_policy_version": "daily-review-v3.10",
+  "assessment_date": "2026-08-22",
+  "chart_knowledge_sha256": "beee64559831479168f1347c43d979391126926d73e2473ce837cefbf0ede19b",
+  "chart_knowledge_version": "1.0",
+  "claim_id": "c9e25d2f-8b36-4679-af92-64467a40b916",
+  "knowledge_sha256": "559ad45e4dd86cb0aec9bb09b51a5dc816bf323e8c2b4fd050cf28960a5a9d18",
+  "knowledge_version": "3.0",
+  "market": "us",
+  "market_review": {
+    "core_judgment": {
+      "fact_ids": [
+        "market:relative:SOXX:SPY",
+        "market:volatility:VIXCLS",
+        "market:oil:DCOILWTICO"
+      ],
+      "text": "{{numeric:m_soxx_core}}; {{numeric:m_vix_core}}; {{numeric:m_oil_core}}. 반도체 상대 약세와 위험회피·유가 상승이 겹쳤지만, 시장 breadth가 없어 광범위한 위험회피로 단정할 수 없고 회사별 주문·마진·현금흐름은 별도 확인이 필요합니다."
+    },
+    "facts_used": [
+      "market:relative:SOXX:SPY",
+      "market:volatility:VIXCLS",
+      "market:oil:DCOILWTICO",
+      "market:nominal_yield:DGS10",
+      "market:breakeven_inflation:T10YIE",
+      "market:credit_spread:BAMLH0A0HYM2"
+    ],
+    "frameworks_used": [
+      "fact_interpretation_unknown",
+      "market_expectations",
+      "macro_transmission",
+      "monitoring_data_quality"
+    ],
+    "important_changes": [
+      {
+        "fact_ids": [
+          "market:relative:SOXX:SPY"
+        ],
+        "text": "{{numeric:m_soxx_change}} 반도체 가격 심리의 상대 강도를 보여주지만 실제 주문이나 마진을 확정하지 않습니다."
+      },
+      {
+        "fact_ids": [
+          "market:volatility:VIXCLS"
+        ],
+        "text": "{{numeric:m_vix_change}} 단기 위험회피 확대를 가리키지만 breadth 부재로 참여 범위를 확정할 수 없습니다."
+      },
+      {
+        "fact_ids": [
+          "market:oil:DCOILWTICO"
+        ],
+        "text": "{{numeric:m_oil_change}} 물가와 비용 경로를 자극할 수 있으나 수요 회복인지 공급 충격인지는 아직 확인되지 않았습니다."
+      }
+    ],
+    "market_assumptions": {
+      "fact_ids": [
+        "market:breakeven_inflation:T10YIE",
+        "market:nominal_yield:DGS10",
+        "market:relative:SOXX:SPY"
+      ],
+      "text": "연착륙과 점진적 디스인플레이션, AI 인프라 수요 가정은 유지합니다. 오늘의 금리·유가·반도체 가격 신호가 공식 성장·물가 자료와 실제 주문·이익으로 이어지는지는 별도 확인이 필요합니다."
+    },
+    "market_context": {
+      "fact_ids": [
+        "market:nominal_yield:DGS10",
+        "market:credit_spread:BAMLH0A0HYM2",
+        "market:volatility:VIXCLS",
+        "market:oil:DCOILWTICO"
+      ],
+      "text": "명목금리와 신용스프레드가 높아지고 변동성·유가도 상승해 할인율과 비용 환경은 다소 불리합니다. 다만 breadth와 시장 전체 투자주체 흐름이 없어 참여 범위는 Unknown입니다."
+    },
+    "next_checks": [
+      {
+        "fact_ids": [
+          "market:breakeven_inflation:T10YIE"
+        ],
+        "text": "다음 기대인플레이션 관측이 유가와 금리 상승을 따라가는지 확인하면 할인율 해석이 바뀔 수 있습니다."
+      },
+      {
+        "fact_ids": [
+          "market:credit_spread:BAMLH0A0HYM2"
+        ],
+        "text": "다음 신용스프레드 관측이 추가 확대되는지 확인하면 자금조달 환경 판단이 바뀔 수 있습니다."
+      },
+      {
+        "fact_ids": [
+          "market:relative:SOXX:SPY"
+        ],
+        "text": "다음 반도체 상대강도 관측이 회복되는지, 회사별 주문·마진 증거와 연결되는지 확인합니다."
+      }
+    ],
+    "numeric_claims": [],
+    "numeric_fact_refs": [
+      {
+        "fact_id": "market:relative:SOXX:SPY",
+        "field_path": "fields.relative_return_pct",
+        "ref_id": "m_soxx_core",
+        "text_ref": "core_judgment.text"
+      },
+      {
+        "fact_id": "market:volatility:VIXCLS",
+        "field_path": "fields.return_pct",
+        "ref_id": "m_vix_core",
+        "text_ref": "core_judgment.text"
+      },
+      {
+        "fact_id": "market:oil:DCOILWTICO",
+        "field_path": "fields.return_pct",
+        "ref_id": "m_oil_core",
+        "text_ref": "core_judgment.text"
+      },
+      {
+        "fact_id": "market:relative:SOXX:SPY",
+        "field_path": "fields.relative_return_pct",
+        "postposition": "은/는",
+        "ref_id": "m_soxx_change",
+        "text_ref": "important_changes[0].text"
+      },
+      {
+        "fact_id": "market:volatility:VIXCLS",
+        "field_path": "fields.return_pct",
+        "postposition": "은/는",
+        "ref_id": "m_vix_change",
+        "text_ref": "important_changes[1].text"
+      },
+      {
+        "fact_id": "market:oil:DCOILWTICO",
+        "field_path": "fields.return_pct",
+        "postposition": "은/는",
+        "ref_id": "m_oil_change",
+        "text_ref": "important_changes[2].text"
+      }
+    ],
+    "portfolio_transmission": [
+      {
+        "fact_ids": [
+          "market:volatility:VIXCLS"
+        ],
+        "portfolio_group": "automotive",
+        "text": "변동성 확대는 자동차·플랫폼 장기 옵션의 가격 부담을 키울 수 있지만 자동차 마진과 실행력 변화는 아닙니다."
+      },
+      {
+        "fact_ids": [
+          "market:volatility:VIXCLS"
+        ],
+        "portfolio_group": "biotech",
+        "text": "변동성 확대는 바이오 옵션 가격에 부담일 수 있으나 임상 진척과 현금 runway를 대신하지 않습니다."
+      },
+      {
+        "fact_ids": [
+          "market:volatility:VIXCLS"
+        ],
+        "portfolio_group": "general",
+        "text": "변동성 확대는 고변동 성장·플랫폼 종목의 가격 부담을 키울 수 있지만 각 회사의 현금전환 증거와 분리합니다."
+      },
+      {
+        "fact_ids": [
+          "market:relative:SOXX:SPY"
+        ],
+        "portfolio_group": "semiconductor",
+        "text": "반도체 상대 약세는 업종 가격 맥락이며 실제 주문·제품 믹스·마진·FCF 확인과 분리합니다."
+      }
+    ],
+    "unknowns": [
+      "시장 breadth는 제공되지 않아 지수 움직임을 광범위한 참여로 해석할 수 없습니다.",
+      "시장 전체 투자주체 흐름은 제공되지 않았습니다.",
+      "최신 완료 세션의 한국 야간선물은 확인되지 않아 한국 개장 가격 맥락은 Unknown입니다."
+    ]
+  },
+  "packet_id": "2026-08-22-us-run-32-dde10ec6c9eb",
+  "schema_version": "4",
+  "stock_reviews": [
+    {
+      "ai_thesis_assessment": "no_material_change",
+      "business_earnings": {
+        "fact_ids": [
+          "cashflow:1b8f3742f33dd3b66f8f7673"
+        ],
+        "text": "2026 회계연도 상반기 누계 build-out 단계 기준 {{numeric:corz_cf_primary}}입니다. 전년 비교기간보다 음수 폭이 커졌으며, build-out 재투자는 billing 전력의 가동·청구 전환과 자금조달을 함께 봐야 합니다."
+      },
+      "confidence": 0.74,
+      "core_judgment": {
+        "fact_ids": [
+          "price:current",
+          "earnings:2026-06-30"
+        ],
+        "text": "코로케이션 전환 방향은 유지되지만 계약 전력이 실제 가동·청구·현금흐름으로 바뀌는 속도가 높은 기대를 충족하는지가 핵심입니다: {{numeric:corz_core_1}}; {{numeric:corz_core_2}}."
+      },
+      "earnings_estimate_view": "unchanged",
+      "facts_used": [
+        "price:current",
+        "earnings:2026-06-30",
+        "financial_quality:2026-06-30",
+        "chart:structure:nearest_supports:1",
+        "chart:structure:nearest_resistance:1",
+        "chart:structure:state",
+        "chart:price_transition",
+        "monitoring:confirmation_transition",
+        "valuation:trailing_earnings",
+        "valuation:book_value",
+        "valuation:book_quality",
+        "cashflow:1b8f3742f33dd3b66f8f7673"
+      ],
+      "frameworks_used": [
+        "fact_interpretation_unknown",
+        "market_expectations",
+        "risk_kill_condition",
+        "valuation_basis_comparability",
+        "monitoring_data_quality",
+        "price_ohlcv",
+        "holder_new_buyer",
+        "chart_support_resistance",
+        "chart_state_machine",
+        "hyperscaler_capex_transmission",
+        "financial_calculation_safety",
+        "earnings_quality"
+      ],
+      "next_checks": [
+        "다음 공식 실적에서 billing 전력, 코로케이션 마진, 현금 전환, 증설 투자와 희석을 함께 확인합니다."
+      ],
+      "numeric_claims": [],
+      "numeric_fact_refs": [
+        {
+          "fact_id": "price:current",
+          "field_path": "fields.current_price",
+          "ref_id": "corz_core_1",
+          "text_ref": "core_judgment.text"
+        },
+        {
+          "fact_id": "earnings:2026-06-30",
+          "field_path": "fields.revenue.value",
+          "ref_id": "corz_core_2",
+          "text_ref": "core_judgment.text"
+        },
+        {
+          "fact_id": "cashflow:1b8f3742f33dd3b66f8f7673",
+          "field_path": "fields.value",
+          "ref_id": "corz_cf_primary",
+          "text_ref": "business_earnings.text"
+        },
+        {
+          "fact_id": "price:current",
+          "field_path": "fields.current_price",
+          "ref_id": "corz_price_1_current-price",
+          "text_ref": "price_positioning.text"
+        },
+        {
+          "fact_id": "chart:structure:nearest_supports:1",
+          "field_path": "fields.zone_low",
+          "ref_id": "corz_price_2_zone-low",
+          "role": "lower",
+          "text_ref": "price_positioning.text"
+        },
+        {
+          "fact_id": "chart:structure:nearest_supports:1",
+          "field_path": "fields.zone_high",
+          "ref_id": "corz_price_2_zone-high",
+          "role": "upper",
+          "text_ref": "price_positioning.text"
+        },
+        {
+          "fact_id": "chart:structure:nearest_resistance:1",
+          "field_path": "fields.zone_low",
+          "ref_id": "corz_price_3_zone-low",
+          "role": "lower",
+          "text_ref": "price_positioning.text"
+        },
+        {
+          "fact_id": "chart:structure:nearest_resistance:1",
+          "field_path": "fields.zone_high",
+          "ref_id": "corz_price_3_zone-high",
+          "role": "upper",
+          "text_ref": "price_positioning.text"
+        }
+      ],
+      "price_positioning": {
+        "fact_ids": [
+          "price:current",
+          "chart:structure:nearest_supports:1",
+          "chart:structure:nearest_resistance:1",
+          "chart:structure:state",
+          "chart:price_transition",
+          "monitoring:confirmation_transition"
+        ],
+        "holder_view": "보유자는 현재 차트 검토 경계와 고객계약 취소·준공 실패·현금흐름 악화라는 사업 훼손 조건을 분리해야 합니다.",
+        "new_observer_view": "새 자금은 동적 지지 방어와 거래 참여 회복, 가동 전력의 매출 전환이 함께 확인될 때 가격 비대칭을 검토할 수 있습니다.",
+        "text": "{{numeric:corz_price_1_current-price}}; {{numeric:corz_price_2_zone-low}}; {{numeric:corz_price_2_zone-high}}; {{numeric:corz_price_3_zone-low}}; {{numeric:corz_price_3_zone-high}}. 등록 재점검 기준 아래에서 동적 지지와 저항이 겹쳐 현재가 손익비는 산출되지 않으며 신규 접근은 대기 구조입니다. 코로케이션 실행 증거는 별도로 확인합니다."
+      },
+      "priority_watch": [
+        "billing 전력의 가동 속도, 코로케이션 마진, 자본집약도와 희석의 균형을 지속 감시합니다."
+      ],
+      "supply_analysis": {
+        "fact_ids": [
+          "chart:price_transition",
+          "chart:structure:state"
+        ],
+        "text": "거래량 확인은 최근 평균에 미치지 못해 코로케이션 가동 전환을 가격이 확인했다고 보기 어렵습니다."
+      },
+      "thesis_version": 1,
+      "ticker": "CORZ",
+      "unknowns": [
+        "billing 전력 가동률과 코로케이션 마진, 완전희석 주식수의 동행은 미확인입니다."
+      ],
+      "valuation_analysis": {
+        "fact_ids": [
+          "valuation:trailing_earnings",
+          "valuation:book_value",
+          "valuation:book_quality"
+        ],
+        "text": "가동 전력, 남은 투자, 부채와 희석이 주주가치로 전환되는지를 다음 공식 자료에서 함께 확인합니다."
+      },
+      "valuation_interpretation_refs": [],
+      "valuation_view": "neutral"
+    },
+    {
+      "ai_thesis_assessment": "no_material_change",
+      "business_earnings": {
+        "fact_ids": [
+          "cashflow:402041c63553616360d17391"
+        ],
+        "text": "2026 회계연도 상반기 누계 준비금·플랫폼 사업 기준 {{numeric:crcl_cf_primary}}입니다. 전년 비교기간보다 늘었으며, 준비금 수익과 비이자 플랫폼 수익의 현금 전환을 함께 봐야 합니다."
+      },
+      "confidence": 0.68,
+      "core_judgment": {
+        "fact_ids": [
+          "price:current",
+          "earnings:2026-03-31"
+        ],
+        "text": "USDC 성장 기대는 유지되지만 준비금 수익 의존도를 비이자 플랫폼 수익이 얼마나 빠르게 낮추는지가 핵심입니다: {{numeric:crcl_core_1}}; {{numeric:crcl_core_2}}."
+      },
+      "earnings_estimate_view": "unchanged",
+      "facts_used": [
+        "price:current",
+        "earnings:2026-03-31",
+        "financial_quality:2026-03-31",
+        "chart:structure:nearest_supports:1",
+        "chart:structure:state",
+        "chart:price_transition",
+        "monitoring:confirmation_transition",
+        "valuation:consensus_forward_earnings",
+        "valuation:book",
+        "security_basis:current",
+        "cashflow:402041c63553616360d17391"
+      ],
+      "frameworks_used": [
+        "fact_interpretation_unknown",
+        "market_expectations",
+        "risk_kill_condition",
+        "valuation_basis_comparability",
+        "monitoring_data_quality",
+        "price_ohlcv",
+        "holder_new_buyer",
+        "chart_support_resistance",
+        "chart_state_machine",
+        "financial_calculation_safety",
+        "earnings_quality"
+      ],
+      "next_checks": [
+        "다음 공식 자료에서 USDC 유통량·점유율, 비이자 수익, 수익배분과 현금 전환을 확인합니다."
+      ],
+      "numeric_claims": [],
+      "numeric_fact_refs": [
+        {
+          "fact_id": "price:current",
+          "field_path": "fields.current_price",
+          "ref_id": "crcl_core_1",
+          "text_ref": "core_judgment.text"
+        },
+        {
+          "fact_id": "earnings:2026-03-31",
+          "field_path": "fields.revenue.value",
+          "ref_id": "crcl_core_2",
+          "text_ref": "core_judgment.text"
+        },
+        {
+          "fact_id": "cashflow:402041c63553616360d17391",
+          "field_path": "fields.value",
+          "ref_id": "crcl_cf_primary",
+          "text_ref": "business_earnings.text"
+        },
+        {
+          "fact_id": "price:current",
+          "field_path": "fields.current_price",
+          "ref_id": "crcl_price_1_current-price",
+          "text_ref": "price_positioning.text"
+        },
+        {
+          "fact_id": "chart:structure:nearest_supports:1",
+          "field_path": "fields.zone_low",
+          "ref_id": "crcl_price_2_zone-low",
+          "role": "lower",
+          "text_ref": "price_positioning.text"
+        },
+        {
+          "fact_id": "chart:structure:nearest_supports:1",
+          "field_path": "fields.zone_high",
+          "ref_id": "crcl_price_2_zone-high",
+          "role": "upper",
+          "text_ref": "price_positioning.text"
+        }
+      ],
+      "price_positioning": {
+        "fact_ids": [
+          "price:current",
+          "chart:structure:nearest_supports:1",
+          "chart:structure:state",
+          "chart:price_transition",
+          "monitoring:confirmation_transition"
+        ],
+        "holder_view": "보유자는 현재 차트 경계와 USDC 정체 또는 준비금 수익 감소를 비이자 성장으로 상쇄하지 못하는 사업 위험을 분리해야 합니다.",
+        "new_observer_view": "새 자금은 돌파 재시험과 거래량 회복뿐 아니라 USDC 점유율과 비이자 수익의 동시 개선이 확인돼야 가격 비대칭을 검토할 수 있습니다.",
+        "text": "{{numeric:crcl_price_1_current-price}}; {{numeric:crcl_price_2_zone-low}}; {{numeric:crcl_price_2_zone-high}}. 상향 확인 뒤 가격은 그 기준을 유지하고 있지만 검증된 동적 저항이 없어 현재가 손익비는 확정할 수 없고 신규 접근은 대기 구조입니다."
+      },
+      "priority_watch": [
+        "USDC 점유율, 준비금 수익 의존도와 비이자 수익 전환을 지속 감시합니다."
+      ],
+      "supply_analysis": {
+        "fact_ids": [
+          "chart:price_transition",
+          "chart:structure:state"
+        ],
+        "text": "확인 가격 위를 유지하고 거래량도 최근 평균을 웃돌았지만, 이것만으로 USDC 점유율과 비이자 수익 개선을 확정할 수 없습니다."
+      },
+      "thesis_version": 4,
+      "ticker": "CRCL",
+      "unknowns": [
+        "USDC 점유율, 비이자 플랫폼 수익과 수익배분의 동행은 미확인입니다."
+      ],
+      "valuation_analysis": {
+        "fact_ids": [
+          "valuation:consensus_forward_earnings",
+          "valuation:book",
+          "security_basis:current"
+        ],
+        "text": "검증된 선행 이익 기준과 장부 기준은 서로 독립적으로 볼 수 있지만, 후행 이익 배수의 주당 기준은 충분히 확인되지 않아 배수 간 관계 해석은 보류합니다. USDC 점유율과 비이자 수익의 현금 전환이 기대를 검증할 다음 증거입니다."
+      },
+      "valuation_interpretation_refs": [
+        {
+          "basis_status": "unknown",
+          "comparison_numeric_ref_ids": [],
+          "direction": "unknown",
+          "economic_scope": "listed_security",
+          "exact_text_span": "후행 이익 배수의 주당 기준은 충분히 확인되지 않아 배수 간 관계 해석은 보류합니다.",
+          "fact_id": "security_basis:current",
+          "interpretation_type": "quality_unknown",
+          "metric": "earnings",
+          "ref_id": "crcl_val_quality",
+          "source_type": "canonical",
+          "text_ref": "valuation_analysis.text"
+        }
+      ],
+      "valuation_view": "expansion"
+    },
+    {
+      "ai_thesis_assessment": "no_material_change",
+      "business_earnings": {
+        "fact_ids": [
+          "cashflow:ddb47708bf7d36a4c0b0c7d2"
+        ],
+        "text": "2026 회계연도 상반기 누계 AI·Cloud 확장 기준 {{numeric:googl_cf_primary}}입니다. 전년 비교기간보다 줄었으며, AI·Cloud 투자 회수는 Cloud 성장·마진과 함께 봐야 합니다."
+      },
+      "confidence": 0.74,
+      "core_judgment": {
+        "fact_ids": [
+          "price:current",
+          "valuation:current"
+        ],
+        "text": "Search·Cloud 사업 논리는 유지되며 AI 투자를 마진·현금 전환·투자수익성으로 회수하는지가 다음 핵심입니다: {{numeric:googl_core_1}}; {{numeric:googl_core_2}}."
+      },
+      "earnings_estimate_view": "unchanged",
+      "facts_used": [
+        "price:current",
+        "valuation:current",
+        "financial_quality:2026-06-30",
+        "chart:structure:nearest_supports:1",
+        "chart:structure:nearest_resistance:1",
+        "chart:structure:risk_reward:current_price",
+        "monitoring:risk_reward_transition",
+        "chart:structure:state",
+        "chart:price_transition",
+        "monitoring:confirmation_transition",
+        "valuation:multiple_relation",
+        "cashflow:ddb47708bf7d36a4c0b0c7d2"
+      ],
+      "frameworks_used": [
+        "fact_interpretation_unknown",
+        "market_expectations",
+        "risk_kill_condition",
+        "valuation_basis_comparability",
+        "monitoring_data_quality",
+        "price_ohlcv",
+        "holder_new_buyer",
+        "chart_support_resistance",
+        "chart_state_machine"
+      ],
+      "next_checks": [
+        "다음 공식 실적에서 Cloud 성장·마진, Search monetization, 투자, 현금 전환과 투자수익성을 확인합니다."
+      ],
+      "numeric_claims": [],
+      "numeric_fact_refs": [
+        {
+          "fact_id": "price:current",
+          "field_path": "fields.current_price",
+          "ref_id": "googl_core_1",
+          "text_ref": "core_judgment.text"
+        },
+        {
+          "fact_id": "valuation:current",
+          "field_path": "fields.trailing_pe",
+          "ref_id": "googl_core_2",
+          "text_ref": "core_judgment.text"
+        },
+        {
+          "fact_id": "cashflow:ddb47708bf7d36a4c0b0c7d2",
+          "field_path": "fields.value",
+          "ref_id": "googl_cf_primary",
+          "text_ref": "business_earnings.text"
+        },
+        {
+          "fact_id": "price:current",
+          "field_path": "fields.current_price",
+          "ref_id": "googl_price_1_current-price",
+          "text_ref": "price_positioning.text"
+        },
+        {
+          "fact_id": "chart:structure:nearest_supports:1",
+          "field_path": "fields.zone_low",
+          "ref_id": "googl_price_2_zone-low",
+          "role": "lower",
+          "text_ref": "price_positioning.text"
+        },
+        {
+          "fact_id": "chart:structure:nearest_supports:1",
+          "field_path": "fields.zone_high",
+          "ref_id": "googl_price_2_zone-high",
+          "role": "upper",
+          "text_ref": "price_positioning.text"
+        },
+        {
+          "fact_id": "chart:structure:nearest_resistance:1",
+          "field_path": "fields.zone_low",
+          "ref_id": "googl_price_3_zone-low",
+          "role": "lower",
+          "text_ref": "price_positioning.text"
+        },
+        {
+          "fact_id": "chart:structure:nearest_resistance:1",
+          "field_path": "fields.zone_high",
+          "ref_id": "googl_price_3_zone-high",
+          "role": "upper",
+          "text_ref": "price_positioning.text"
+        },
+        {
+          "fact_id": "chart:structure:risk_reward:current_price",
+          "field_path": "fields.ratio",
+          "ref_id": "googl_price_4_ratio",
+          "text_ref": "price_positioning.text"
+        },
+        {
+          "fact_id": "valuation:current",
+          "field_path": "fields.trailing_pe",
+          "ref_id": "googl_val_pe",
+          "text_ref": "valuation_analysis.text"
+        },
+        {
+          "fact_id": "valuation:current",
+          "field_path": "fields.forward_pe",
+          "ref_id": "googl_val_fpe",
+          "text_ref": "valuation_analysis.text"
+        },
+        {
+          "fact_id": "monitoring:risk_reward_transition",
+          "field_path": "fields.previous_ratio",
+          "ref_id": "googl_rr_prev",
+          "text_ref": "price_positioning.text"
+        },
+        {
+          "fact_id": "monitoring:risk_reward_transition",
+          "field_path": "fields.current_ratio",
+          "postposition": "이/가",
+          "ref_id": "googl_rr_cur",
+          "text_ref": "price_positioning.text"
+        }
+      ],
+      "price_positioning": {
+        "fact_ids": [
+          "price:current",
+          "chart:structure:nearest_supports:1",
+          "chart:structure:nearest_resistance:1",
+          "chart:structure:risk_reward:current_price",
+          "monitoring:risk_reward_transition",
+          "chart:structure:state",
+          "chart:price_transition",
+          "monitoring:confirmation_transition"
+        ],
+        "holder_view": "보유자는 현재 차트 경계와 Search 경쟁력 또는 Cloud 현금창출 훼손을 별개의 재평가 조건으로 둬야 합니다.",
+        "new_observer_view": "새 자금은 동적 지지 회복과 Cloud 마진·현금 전환이 AI 투자를 흡수한다는 사실이 함께 확인될 때 가격 비대칭을 검토할 수 있습니다.",
+        "text": "{{numeric:googl_price_1_current-price}}; {{numeric:googl_price_2_zone-low}}; {{numeric:googl_price_2_zone-high}}; {{numeric:googl_price_3_zone-low}}; {{numeric:googl_price_3_zone-high}}; {{numeric:googl_price_4_ratio}}. 등록 지지 아래에 있지만 동적 지지와 저항의 재정렬로 {{numeric:googl_rr_prev}}; {{numeric:googl_rr_cur}} 되어 가격 비대칭은 개선됐고 보유자 관점의 유지 구조입니다."
+      },
+      "priority_watch": [
+        "Search 방어력, Cloud 마진과 AI 투자의 현금 전환·투자수익성 회수를 지속 감시합니다."
+      ],
+      "supply_analysis": {
+        "fact_ids": [
+          "chart:price_transition",
+          "chart:structure:state"
+        ],
+        "text": "등록 지지 아래에서 거래량도 최근 평균에 못 미쳐 Search·Cloud 사업 변화의 증거로 확대할 수 없습니다."
+      },
+      "thesis_version": 3,
+      "ticker": "GOOGL",
+      "unknowns": [
+        "Cloud backlog와 AI 투자 회수의 증분 수익성은 미확인입니다."
+      ],
+      "valuation_analysis": {
+        "fact_ids": [
+          "valuation:current",
+          "valuation:multiple_relation"
+        ],
+        "text": "후행·선행 이익 배수 관계에서 선행 배수는 더 높습니다: {{numeric:googl_val_pe}}; {{numeric:googl_val_fpe}}. 이는 선행 이익 분모에 더 보수적인 기대가 있음을 시사합니다."
+      },
+      "valuation_interpretation_refs": [
+        {
+          "basis_status": "verified",
+          "comparison_numeric_ref_ids": [
+            "googl_val_pe",
+            "googl_val_fpe"
+          ],
+          "direction": "high",
+          "economic_scope": "listed_security",
+          "exact_text_span": "후행·선행 이익 배수 관계에서 선행 배수는 더 높습니다: {{numeric:googl_val_pe}}; {{numeric:googl_val_fpe}}. 이는 선행 이익 분모에 더 보수적인 기대가 있음을 시사합니다.",
+          "fact_id": "valuation:multiple_relation",
+          "interpretation_type": "trailing_forward_relation",
+          "metric": "earnings",
+          "ref_id": "googl_val_relation",
+          "source_type": "canonical",
+          "text_ref": "valuation_analysis.text"
+        }
+      ],
+      "valuation_view": "expansion"
+    },
+    {
+      "ai_thesis_assessment": "no_material_change",
+      "business_earnings": {
+        "fact_ids": [
+          "financial_quality:2026-03-31"
+        ],
+        "text": "새로 해석 가능한 사업 실적 숫자가 없어 제한 없는 현금, 프로젝트 투자, OCF와 FCF의 변화를 확정할 수 없습니다."
+      },
+      "confidence": 0.74,
+      "core_judgment": {
+        "fact_ids": [
+          "price:current",
+          "valuation:current"
+        ],
+        "text": "AI 데이터센터 계약 기대는 유지되지만 계약 규모보다 준공·가동·NOI와 프로젝트 자본효율의 실현이 핵심입니다: {{numeric:hut_core_1}}; {{numeric:hut_core_2}}."
+      },
+      "earnings_estimate_view": "unchanged",
+      "facts_used": [
+        "price:current",
+        "valuation:current",
+        "financial_quality:2026-03-31",
+        "chart:structure:nearest_supports:1",
+        "chart:structure:nearest_resistance:1",
+        "chart:structure:state",
+        "chart:price_transition",
+        "monitoring:confirmation_transition",
+        "valuation:consensus_forward_earnings",
+        "valuation:book"
+      ],
+      "frameworks_used": [
+        "fact_interpretation_unknown",
+        "market_expectations",
+        "risk_kill_condition",
+        "valuation_basis_comparability",
+        "monitoring_data_quality",
+        "price_ohlcv",
+        "holder_new_buyer",
+        "chart_support_resistance",
+        "chart_state_machine",
+        "hyperscaler_capex_transmission"
+      ],
+      "next_checks": [
+        "다음 공식 자료에서 계약 전력의 가동, NOI, 프로젝트 투자·부채·지분 투입과 FCF를 확인합니다."
+      ],
+      "numeric_claims": [],
+      "numeric_fact_refs": [
+        {
+          "fact_id": "price:current",
+          "field_path": "fields.current_price",
+          "ref_id": "hut_core_1",
+          "text_ref": "core_judgment.text"
+        },
+        {
+          "fact_id": "valuation:current",
+          "field_path": "fields.forward_pe",
+          "ref_id": "hut_core_2",
+          "text_ref": "core_judgment.text"
+        },
+        {
+          "fact_id": "price:current",
+          "field_path": "fields.current_price",
+          "ref_id": "hut_price_1_current-price",
+          "text_ref": "price_positioning.text"
+        },
+        {
+          "fact_id": "chart:structure:nearest_supports:1",
+          "field_path": "fields.zone_low",
+          "ref_id": "hut_price_2_zone-low",
+          "role": "lower",
+          "text_ref": "price_positioning.text"
+        },
+        {
+          "fact_id": "chart:structure:nearest_supports:1",
+          "field_path": "fields.zone_high",
+          "ref_id": "hut_price_2_zone-high",
+          "role": "upper",
+          "text_ref": "price_positioning.text"
+        },
+        {
+          "fact_id": "chart:structure:nearest_resistance:1",
+          "field_path": "fields.zone_low",
+          "ref_id": "hut_price_3_zone-low",
+          "role": "lower",
+          "text_ref": "price_positioning.text"
+        },
+        {
+          "fact_id": "chart:structure:nearest_resistance:1",
+          "field_path": "fields.zone_high",
+          "ref_id": "hut_price_3_zone-high",
+          "role": "upper",
+          "text_ref": "price_positioning.text"
+        },
+        {
+          "fact_id": "valuation:current",
+          "field_path": "fields.forward_pe",
+          "ref_id": "hut_val_fpe",
+          "text_ref": "valuation_analysis.text"
+        },
+        {
+          "fact_id": "valuation:current",
+          "field_path": "fields.price_to_book",
+          "ref_id": "hut_val_pbr",
+          "text_ref": "valuation_analysis.text"
+        }
+      ],
+      "price_positioning": {
+        "fact_ids": [
+          "price:current",
+          "chart:structure:nearest_supports:1",
+          "chart:structure:nearest_resistance:1",
+          "chart:structure:state",
+          "chart:price_transition",
+          "monitoring:confirmation_transition"
+        ],
+        "holder_view": "보유자는 차트 검토 경계와 준공 지연·프로젝트 자금조달 악화라는 사업 훼손을 분리해야 합니다.",
+        "new_observer_view": "새 자금은 동적 지지 방어와 준공·가동·NOI의 실제 인식이 함께 나타날 때 가격 비대칭을 검토할 수 있습니다.",
+        "text": "{{numeric:hut_price_1_current-price}}; {{numeric:hut_price_2_zone-low}}; {{numeric:hut_price_2_zone-high}}; {{numeric:hut_price_3_zone-low}}; {{numeric:hut_price_3_zone-high}}. 등록 재점검 기준 아래로 내려왔고 동적 지지와 저항이 겹쳐 현재가 손익비는 산출되지 않으며 신규 접근은 대기 구조입니다. 프로젝트 실행 확인과 분리합니다."
+      },
+      "priority_watch": [
+        "계약 전력의 준공·가동 속도와 프로젝트 자본효율을 지속 감시합니다."
+      ],
+      "supply_analysis": {
+        "fact_ids": [
+          "chart:price_transition",
+          "chart:structure:state"
+        ],
+        "text": "등록 재점검 기준 이탈과 평균을 웃돈 거래량은 가격 경계의 강도를 높이지만 준공·가동·NOI의 사업 확인과는 분리해야 합니다."
+      },
+      "thesis_version": 1,
+      "ticker": "HUT",
+      "unknowns": [
+        "제한 현금과 자유현금, 프로젝트별 투자와 모회사 지분 투입의 구분이 부족합니다."
+      ],
+      "valuation_analysis": {
+        "fact_ids": [
+          "valuation:current",
+          "valuation:consensus_forward_earnings",
+          "valuation:book"
+        ],
+        "text": "{{numeric:hut_val_fpe}}입니다. {{numeric:hut_val_pbr}}입니다. 계약 전력의 가동, NOI와 FCF가 두 배수를 투자 판단으로 연결할 다음 증거입니다."
+      },
+      "valuation_interpretation_refs": [
+        {
+          "basis_status": "verified",
+          "comparison_numeric_ref_ids": [
+            "hut_val_fpe"
+          ],
+          "direction": "neutral",
+          "economic_scope": "listed_security",
+          "exact_text_span": "{{numeric:hut_val_fpe}}입니다.",
+          "fact_id": "valuation:consensus_forward_earnings",
+          "interpretation_type": "absolute",
+          "metric": "forward_pe",
+          "ref_id": "hut_val_abs_fpe",
+          "source_type": "canonical",
+          "text_ref": "valuation_analysis.text"
+        },
+        {
+          "basis_status": "verified",
+          "comparison_numeric_ref_ids": [
+            "hut_val_pbr"
+          ],
+          "direction": "neutral",
+          "economic_scope": "listed_security",
+          "exact_text_span": "{{numeric:hut_val_pbr}}입니다.",
+          "fact_id": "valuation:book",
+          "interpretation_type": "absolute",
+          "metric": "pbr",
+          "ref_id": "hut_val_abs_pbr",
+          "source_type": "canonical",
+          "text_ref": "valuation_analysis.text"
+        }
+      ],
+      "valuation_view": "neutral"
+    },
+    {
+      "ai_thesis_assessment": "no_material_change",
+      "business_earnings": {
+        "fact_ids": [
+          "cashflow:a158304539a9269c66f6d2cb"
+        ],
+        "text": "2026 회계연도 상반기 누계 Software·Consulting 사업 기준 {{numeric:ibm_cf_primary}}입니다. 전년 비교기간보다 늘었으며, Software·Consulting 전환과 인수자금 부담을 함께 봐야 합니다."
+      },
+      "confidence": 0.74,
+      "core_judgment": {
+        "fact_ids": [
+          "price:current",
+          "earnings:2026-06-30"
+        ],
+        "text": "Software·Red Hat 성장과 Consulting 둔화의 균형이 현금 전환으로 이어지는지가 현재 기대를 지키는 핵심입니다: {{numeric:ibm_core_1}}; {{numeric:ibm_core_2}}."
+      },
+      "earnings_estimate_view": "unchanged",
+      "facts_used": [
+        "price:current",
+        "earnings:2026-06-30",
+        "financial_quality:2026-06-30",
+        "chart:structure:nearest_supports:1",
+        "chart:structure:nearest_resistance:1",
+        "chart:structure:risk_reward:current_price",
+        "chart:structure:state",
+        "chart:price_transition",
+        "monitoring:confirmation_transition",
+        "valuation:current",
+        "valuation:multiple_relation",
+        "cashflow:a158304539a9269c66f6d2cb"
+      ],
+      "frameworks_used": [
+        "fact_interpretation_unknown",
+        "market_expectations",
+        "risk_kill_condition",
+        "valuation_basis_comparability",
+        "monitoring_data_quality",
+        "price_ohlcv",
+        "holder_new_buyer",
+        "chart_support_resistance",
+        "chart_state_machine",
+        "financial_calculation_safety",
+        "earnings_quality"
+      ],
+      "next_checks": [
+        "다음 공식 실적에서 Software·Red Hat 성장, Consulting 매출·마진, 현금 전환과 부채를 확인합니다."
+      ],
+      "numeric_claims": [],
+      "numeric_fact_refs": [
+        {
+          "fact_id": "price:current",
+          "field_path": "fields.current_price",
+          "ref_id": "ibm_core_1",
+          "text_ref": "core_judgment.text"
+        },
+        {
+          "fact_id": "earnings:2026-06-30",
+          "field_path": "fields.revenue.value",
+          "ref_id": "ibm_core_2",
+          "text_ref": "core_judgment.text"
+        },
+        {
+          "fact_id": "cashflow:a158304539a9269c66f6d2cb",
+          "field_path": "fields.value",
+          "ref_id": "ibm_cf_primary",
+          "text_ref": "business_earnings.text"
+        },
+        {
+          "fact_id": "price:current",
+          "field_path": "fields.current_price",
+          "ref_id": "ibm_price_1_current-price",
+          "text_ref": "price_positioning.text"
+        },
+        {
+          "fact_id": "chart:structure:nearest_supports:1",
+          "field_path": "fields.zone_low",
+          "ref_id": "ibm_price_2_zone-low",
+          "role": "lower",
+          "text_ref": "price_positioning.text"
+        },
+        {
+          "fact_id": "chart:structure:nearest_supports:1",
+          "field_path": "fields.zone_high",
+          "ref_id": "ibm_price_2_zone-high",
+          "role": "upper",
+          "text_ref": "price_positioning.text"
+        },
+        {
+          "fact_id": "chart:structure:nearest_resistance:1",
+          "field_path": "fields.zone_low",
+          "ref_id": "ibm_price_3_zone-low",
+          "role": "lower",
+          "text_ref": "price_positioning.text"
+        },
+        {
+          "fact_id": "chart:structure:nearest_resistance:1",
+          "field_path": "fields.zone_high",
+          "ref_id": "ibm_price_3_zone-high",
+          "role": "upper",
+          "text_ref": "price_positioning.text"
+        },
+        {
+          "fact_id": "chart:structure:risk_reward:current_price",
+          "field_path": "fields.ratio",
+          "ref_id": "ibm_price_4_ratio",
+          "text_ref": "price_positioning.text"
+        },
+        {
+          "fact_id": "valuation:current",
+          "field_path": "fields.trailing_pe",
+          "ref_id": "ibm_val_pe",
+          "text_ref": "valuation_analysis.text"
+        },
+        {
+          "fact_id": "valuation:current",
+          "field_path": "fields.forward_pe",
+          "ref_id": "ibm_val_fpe",
+          "text_ref": "valuation_analysis.text"
+        }
+      ],
+      "price_positioning": {
+        "fact_ids": [
+          "price:current",
+          "chart:structure:nearest_supports:1",
+          "chart:structure:nearest_resistance:1",
+          "chart:structure:risk_reward:current_price",
+          "chart:structure:state",
+          "chart:price_transition",
+          "monitoring:confirmation_transition"
+        ],
+        "holder_view": "보유자는 현재 차트 구조와 Software 성장 둔화·현금 전환 약화라는 사업 재평가 조건을 분리해야 합니다.",
+        "new_observer_view": "새 자금은 동적 지지 유지와 Software 성장, Consulting 안정, 현금 전환 확인이 함께 나타날 때 가격 비대칭을 검토할 수 있습니다.",
+        "text": "{{numeric:ibm_price_1_current-price}}; {{numeric:ibm_price_2_zone-low}}; {{numeric:ibm_price_2_zone-high}}; {{numeric:ibm_price_3_zone-low}}; {{numeric:ibm_price_3_zone-high}}; {{numeric:ibm_price_4_ratio}}. 등록 지지와 확인 가격 사이에 있으나 근접 저항 때문에 신규 접근은 대기 구조입니다. Software·Consulting의 사업 판단은 별도입니다."
+      },
+      "priority_watch": [
+        "Software·Red Hat 성장, Consulting 둔화와 부채·현금 전환 균형을 지속 감시합니다."
+      ],
+      "supply_analysis": {
+        "fact_ids": [
+          "chart:price_transition",
+          "chart:structure:state"
+        ],
+        "text": "근접 저항 아래에서 거래량은 최근 평균보다 약하며 Software·Consulting의 이익 지속성 판단과 분리합니다."
+      },
+      "thesis_version": 3,
+      "ticker": "IBM",
+      "unknowns": [
+        "AI 관련 매출의 수익성, Consulting backlog 전환과 증분 투자수익성이 미확인입니다."
+      ],
+      "valuation_analysis": {
+        "fact_ids": [
+          "valuation:current",
+          "valuation:multiple_relation"
+        ],
+        "text": "후행·선행 이익 배수 관계에서 선행 배수는 더 높습니다: {{numeric:ibm_val_pe}}; {{numeric:ibm_val_fpe}}. 이는 선행 이익 분모에 더 보수적인 기대가 있음을 시사합니다."
+      },
+      "valuation_interpretation_refs": [
+        {
+          "basis_status": "verified",
+          "comparison_numeric_ref_ids": [
+            "ibm_val_pe",
+            "ibm_val_fpe"
+          ],
+          "direction": "high",
+          "economic_scope": "listed_security",
+          "exact_text_span": "후행·선행 이익 배수 관계에서 선행 배수는 더 높습니다: {{numeric:ibm_val_pe}}; {{numeric:ibm_val_fpe}}. 이는 선행 이익 분모에 더 보수적인 기대가 있음을 시사합니다.",
+          "fact_id": "valuation:multiple_relation",
+          "interpretation_type": "trailing_forward_relation",
+          "metric": "earnings",
+          "ref_id": "ibm_val_relation",
+          "source_type": "canonical",
+          "text_ref": "valuation_analysis.text"
+        }
+      ],
+      "valuation_view": "neutral"
+    },
+    {
+      "ai_thesis_assessment": "no_material_change",
+      "business_earnings": {
+        "fact_ids": [
+          "cashflow:96e9c3b873f3678d4dec0ff3"
+        ],
+        "text": "2026 회계연도 3분기 누계 메모리 증설 기준 {{numeric:mu_cf_primary}}입니다. 전년 비교기간보다 늘었으며, ASP·HBM 믹스·재고 사이클과 설비투자 시점을 함께 봐야 합니다."
+      },
+      "confidence": 0.74,
+      "core_judgment": {
+        "fact_ids": [
+          "price:current",
+          "earnings:2026-05-28"
+        ],
+        "text": "메모리 업사이클과 HBM 기대를 정당화하려면 ASP·출하·마진과 현금 전환이 함께 이어져야 합니다: {{numeric:mu_core_1}}; {{numeric:mu_core_2}}."
+      },
+      "earnings_estimate_view": "unchanged",
+      "facts_used": [
+        "price:current",
+        "earnings:2026-05-28",
+        "financial_quality:2026-05-28",
+        "chart:structure:nearest_supports:1",
+        "chart:structure:nearest_resistance:1",
+        "chart:structure:risk_reward:current_price",
+        "chart:structure:state",
+        "chart:price_transition",
+        "monitoring:confirmation_transition",
+        "valuation:current",
+        "valuation:multiple_relation",
+        "cashflow:96e9c3b873f3678d4dec0ff3"
+      ],
+      "frameworks_used": [
+        "fact_interpretation_unknown",
+        "market_expectations",
+        "risk_kill_condition",
+        "valuation_basis_comparability",
+        "monitoring_data_quality",
+        "price_ohlcv",
+        "holder_new_buyer",
+        "chart_support_resistance",
+        "chart_state_machine",
+        "semiconductor_valuation",
+        "financial_calculation_safety",
+        "earnings_quality"
+      ],
+      "next_checks": [
+        "다음 공식 실적에서 ASP·출하, HBM 믹스, gross margin, 투자와 현금 전환을 확인합니다."
+      ],
+      "numeric_claims": [],
+      "numeric_fact_refs": [
+        {
+          "fact_id": "price:current",
+          "field_path": "fields.current_price",
+          "ref_id": "mu_core_1",
+          "text_ref": "core_judgment.text"
+        },
+        {
+          "fact_id": "earnings:2026-05-28",
+          "field_path": "fields.revenue.value",
+          "ref_id": "mu_core_2",
+          "text_ref": "core_judgment.text"
+        },
+        {
+          "fact_id": "cashflow:96e9c3b873f3678d4dec0ff3",
+          "field_path": "fields.value",
+          "ref_id": "mu_cf_primary",
+          "text_ref": "business_earnings.text"
+        },
+        {
+          "fact_id": "price:current",
+          "field_path": "fields.current_price",
+          "ref_id": "mu_price_1_current-price",
+          "text_ref": "price_positioning.text"
+        },
+        {
+          "fact_id": "chart:structure:nearest_supports:1",
+          "field_path": "fields.zone_low",
+          "ref_id": "mu_price_2_zone-low",
+          "role": "lower",
+          "text_ref": "price_positioning.text"
+        },
+        {
+          "fact_id": "chart:structure:nearest_supports:1",
+          "field_path": "fields.zone_high",
+          "ref_id": "mu_price_2_zone-high",
+          "role": "upper",
+          "text_ref": "price_positioning.text"
+        },
+        {
+          "fact_id": "chart:structure:nearest_resistance:1",
+          "field_path": "fields.zone_low",
+          "ref_id": "mu_price_3_zone-low",
+          "role": "lower",
+          "text_ref": "price_positioning.text"
+        },
+        {
+          "fact_id": "chart:structure:nearest_resistance:1",
+          "field_path": "fields.zone_high",
+          "ref_id": "mu_price_3_zone-high",
+          "role": "upper",
+          "text_ref": "price_positioning.text"
+        },
+        {
+          "fact_id": "chart:structure:risk_reward:current_price",
+          "field_path": "fields.ratio",
+          "ref_id": "mu_price_4_ratio",
+          "text_ref": "price_positioning.text"
+        },
+        {
+          "fact_id": "valuation:current",
+          "field_path": "fields.trailing_pe",
+          "ref_id": "mu_val_pe",
+          "text_ref": "valuation_analysis.text"
+        },
+        {
+          "fact_id": "valuation:current",
+          "field_path": "fields.forward_pe",
+          "ref_id": "mu_val_fpe",
+          "text_ref": "valuation_analysis.text"
+        }
+      ],
+      "price_positioning": {
+        "fact_ids": [
+          "price:current",
+          "chart:structure:nearest_supports:1",
+          "chart:structure:nearest_resistance:1",
+          "chart:structure:risk_reward:current_price",
+          "chart:structure:state",
+          "chart:price_transition",
+          "monitoring:confirmation_transition"
+        ],
+        "holder_view": "보유자는 현재 차트 구조와 재고·ASP·공급 투자가 만드는 사이클 훼손을 별개의 재평가 조건으로 둬야 합니다.",
+        "new_observer_view": "새 자금은 동적 지지 방어와 HBM 출하·ASP·마진의 추가 확인이 함께 있을 때 가격 비대칭을 검토할 수 있습니다.",
+        "text": "{{numeric:mu_price_1_current-price}}; {{numeric:mu_price_2_zone-low}}; {{numeric:mu_price_2_zone-high}}; {{numeric:mu_price_3_zone-low}}; {{numeric:mu_price_3_zone-high}}; {{numeric:mu_price_4_ratio}}. 상향 확인 가격 위를 유지하고 현재 가격 비대칭이 조건부로 확보돼 보유자 관점의 유지 구조입니다. HBM 실적 확인은 별도입니다."
+      },
+      "priority_watch": [
+        "HBM 믹스, 메모리 ASP·재고와 공급 투자 규율을 지속 감시합니다."
+      ],
+      "supply_analysis": {
+        "fact_ids": [
+          "chart:price_transition",
+          "chart:structure:state"
+        ],
+        "text": "확인 가격 위를 유지하지만 거래량은 최근 평균보다 약해 HBM 수요와 메모리 마진의 확인으로 볼 수 없습니다."
+      },
+      "thesis_version": 5,
+      "ticker": "MU",
+      "unknowns": [
+        "재고, DRAM·NAND ASP와 HBM 고객 믹스의 동행은 미확인입니다."
+      ],
+      "valuation_analysis": {
+        "fact_ids": [
+          "valuation:current",
+          "valuation:multiple_relation"
+        ],
+        "text": "후행·선행 이익 배수 관계에서 선행 배수는 더 낮습니다: {{numeric:mu_val_pe}}; {{numeric:mu_val_fpe}}. 이는 이익 확대 기대를 담지만 메모리 피크 이익과 공급 확대 위험은 별도 검증해야 합니다."
+      },
+      "valuation_interpretation_refs": [
+        {
+          "basis_status": "verified",
+          "comparison_numeric_ref_ids": [
+            "mu_val_pe",
+            "mu_val_fpe"
+          ],
+          "direction": "low",
+          "economic_scope": "listed_security",
+          "exact_text_span": "후행·선행 이익 배수 관계에서 선행 배수는 더 낮습니다: {{numeric:mu_val_pe}}; {{numeric:mu_val_fpe}}. 이는 이익 확대 기대를 담지만 메모리 피크 이익과 공급 확대 위험은 별도 검증해야 합니다.",
+          "fact_id": "valuation:multiple_relation",
+          "interpretation_type": "trailing_forward_relation",
+          "metric": "earnings",
+          "ref_id": "mu_val_relation",
+          "source_type": "canonical",
+          "text_ref": "valuation_analysis.text"
+        }
+      ],
+      "valuation_view": "neutral"
+    },
+    {
+      "ai_thesis_assessment": "no_material_change",
+      "business_earnings": {
+        "fact_ids": [
+          "cashflow:498c289d4304c0822d861ec3"
+        ],
+        "text": "2026 회계연도 상반기 누계 연구개발 단계 기준 {{numeric:rxrx_cf_primary}}입니다. 전년 비교기간보다 음수 폭이 줄었으며, 현금소진 근거로만 쓰고 보유현금 근거 없이 runway를 계산하지 않습니다."
+      },
+      "confidence": 0.68,
+      "core_judgment": {
+        "fact_ids": [
+          "price:current",
+          "earnings:2026-06-30"
+        ],
+        "text": "바이오 투자 논리는 유지되지만 임상 성공확률, 파트너 milestone과 cash runway가 기업가치를 좌우합니다: {{numeric:rxrx_core_1}}; {{numeric:rxrx_core_2}}."
+      },
+      "earnings_estimate_view": "unchanged",
+      "facts_used": [
+        "price:current",
+        "earnings:2026-06-30",
+        "financial_quality:2026-06-30",
+        "chart:structure:nearest_supports:1",
+        "chart:structure:nearest_resistance:1",
+        "chart:structure:risk_reward:current_price",
+        "chart:structure:state",
+        "chart:price_transition",
+        "monitoring:confirmation_transition",
+        "valuation:current",
+        "valuation:historical_pb",
+        "cashflow:498c289d4304c0822d861ec3"
+      ],
+      "frameworks_used": [
+        "fact_interpretation_unknown",
+        "market_expectations",
+        "risk_kill_condition",
+        "valuation_basis_comparability",
+        "monitoring_data_quality",
+        "price_ohlcv",
+        "holder_new_buyer",
+        "chart_support_resistance",
+        "chart_state_machine",
+        "biotech_valuation",
+        "financial_calculation_safety",
+        "earnings_quality"
+      ],
+      "next_checks": [
+        "다음 공식 자료에서 주요 임상 일정, 파트너 milestone, 현금소진, runway와 희석을 확인합니다."
+      ],
+      "numeric_claims": [],
+      "numeric_fact_refs": [
+        {
+          "fact_id": "price:current",
+          "field_path": "fields.current_price",
+          "ref_id": "rxrx_core_1",
+          "text_ref": "core_judgment.text"
+        },
+        {
+          "fact_id": "earnings:2026-06-30",
+          "field_path": "fields.revenue.value",
+          "ref_id": "rxrx_core_2",
+          "text_ref": "core_judgment.text"
+        },
+        {
+          "fact_id": "cashflow:498c289d4304c0822d861ec3",
+          "field_path": "fields.value",
+          "ref_id": "rxrx_cf_primary",
+          "text_ref": "business_earnings.text"
+        },
+        {
+          "fact_id": "price:current",
+          "field_path": "fields.current_price",
+          "ref_id": "rxrx_price_1_current-price",
+          "text_ref": "price_positioning.text"
+        },
+        {
+          "fact_id": "chart:structure:nearest_supports:1",
+          "field_path": "fields.zone_low",
+          "ref_id": "rxrx_price_2_zone-low",
+          "role": "lower",
+          "text_ref": "price_positioning.text"
+        },
+        {
+          "fact_id": "chart:structure:nearest_supports:1",
+          "field_path": "fields.zone_high",
+          "ref_id": "rxrx_price_2_zone-high",
+          "role": "upper",
+          "text_ref": "price_positioning.text"
+        },
+        {
+          "fact_id": "chart:structure:nearest_resistance:1",
+          "field_path": "fields.zone_low",
+          "ref_id": "rxrx_price_3_zone-low",
+          "role": "lower",
+          "text_ref": "price_positioning.text"
+        },
+        {
+          "fact_id": "chart:structure:nearest_resistance:1",
+          "field_path": "fields.zone_high",
+          "ref_id": "rxrx_price_3_zone-high",
+          "role": "upper",
+          "text_ref": "price_positioning.text"
+        },
+        {
+          "fact_id": "chart:structure:risk_reward:current_price",
+          "field_path": "fields.ratio",
+          "ref_id": "rxrx_price_4_ratio",
+          "text_ref": "price_positioning.text"
+        },
+        {
+          "fact_id": "valuation:current",
+          "field_path": "fields.price_to_book",
+          "ref_id": "rxrx_val_cur",
+          "text_ref": "valuation_analysis.text"
+        },
+        {
+          "fact_id": "valuation:current",
+          "field_path": "fields.historical_pb_statistics.current_percentile",
+          "ref_id": "rxrx_val_pct",
+          "text_ref": "valuation_analysis.text"
+        }
+      ],
+      "price_positioning": {
+        "fact_ids": [
+          "price:current",
+          "chart:structure:nearest_supports:1",
+          "chart:structure:nearest_resistance:1",
+          "chart:structure:risk_reward:current_price",
+          "chart:structure:state",
+          "chart:price_transition",
+          "monitoring:confirmation_transition"
+        ],
+        "holder_view": "보유자는 차트 검토 경계와 임상 실패·runway 단축·희석 확대라는 사업 훼손을 분리해야 합니다.",
+        "new_observer_view": "새 자금은 동적 지지보다 먼저 임상 데이터나 파트너 타깃 선택과 cash runway가 가격 위험을 보상하는지 확인해야 합니다.",
+        "text": "{{numeric:rxrx_price_1_current-price}}; {{numeric:rxrx_price_2_zone-low}}; {{numeric:rxrx_price_2_zone-high}}; {{numeric:rxrx_price_3_zone-low}}; {{numeric:rxrx_price_3_zone-high}}; {{numeric:rxrx_price_4_ratio}}. 이전 실패 돌파 상태에서 다시 상향 확인 가격을 넘었지만 재시험 전이고 현재 가격 비대칭이 불리해 신규 접근은 대기 구조입니다. 임상 진척이나 runway 변화로 확대 해석하지 않습니다."
+      },
+      "priority_watch": [
+        "임상 milestone, 파트너 의존도, cash runway와 희석 위험을 지속 감시합니다."
+      ],
+      "supply_analysis": {
+        "fact_ids": [
+          "chart:price_transition",
+          "chart:structure:state"
+        ],
+        "text": "상향 확인 가격 돌파에도 거래량은 최근 평균보다 약해 임상 진척이나 runway 확인이 아니라 가격 경계입니다."
+      },
+      "thesis_version": 3,
+      "ticker": "RXRX",
+      "unknowns": [
+        "임상 성공확률, 파트너 milestone 조건과 자금 소진 속도는 미확인입니다."
+      ],
+      "valuation_analysis": {
+        "fact_ids": [
+          "valuation:current",
+          "valuation:historical_pb"
+        ],
+        "text": "현재 PBR은 비교 가능한 과거 관측치 대부분보다 낮은 구간이지만, cash runway·희석·임상 성공확률을 대신하지 않습니다: {{numeric:rxrx_val_cur}}; {{numeric:rxrx_val_pct}}."
+      },
+      "valuation_interpretation_refs": [
+        {
+          "basis_status": "verified",
+          "comparison_numeric_ref_ids": [
+            "rxrx_val_cur",
+            "rxrx_val_pct"
+          ],
+          "direction": "low",
+          "economic_scope": "listed_security",
+          "exact_text_span": "현재 PBR은 비교 가능한 과거 관측치 대부분보다 낮은 구간이지만, cash runway·희석·임상 성공확률을 대신하지 않습니다: {{numeric:rxrx_val_cur}}; {{numeric:rxrx_val_pct}}.",
+          "fact_id": "valuation:historical_pb",
+          "interpretation_type": "historical",
+          "metric": "pbr",
+          "ref_id": "rxrx_val_history",
+          "source_type": "canonical",
+          "text_ref": "valuation_analysis.text"
+        }
+      ],
+      "valuation_view": "expansion"
+    },
+    {
+      "ai_thesis_assessment": "no_material_change",
+      "business_earnings": {
+        "fact_ids": [
+          "financial_quality:latest",
+          "security_basis:current"
+        ],
+        "text": "재무 품질이 Unknown이고 현재 증권의 주당 이익·장부 기준이 부족해 실적·배수 수치는 제외합니다. HBM 출하·ASP·마진·FCF도 미확인입니다."
+      },
+      "confidence": 0.64,
+      "core_judgment": {
+        "fact_ids": [
+          "price:current"
+        ],
+        "text": "HBM·메모리 기대는 유지되지만 검증된 ADS identity와 별개로 현재 증권의 주당 이익·장부 분모가 충분하지 않습니다. 가격 판단에 확인 가능한 숫자는 {{numeric:skhy_core_1}}입니다."
+      },
+      "earnings_estimate_view": "unchanged",
+      "facts_used": [
+        "price:current",
+        "financial_quality:latest",
+        "security_basis:current",
+        "chart:structure:state",
+        "chart:price_transition",
+        "monitoring:confirmation_transition",
+        "security_identity:current"
+      ],
+      "frameworks_used": [
+        "fact_interpretation_unknown",
+        "market_expectations",
+        "risk_kill_condition",
+        "valuation_basis_comparability",
+        "monitoring_data_quality",
+        "price_ohlcv",
+        "holder_new_buyer",
+        "chart_support_resistance",
+        "chart_state_machine",
+        "semiconductor_valuation"
+      ],
+      "next_checks": [
+        "다음 공식 자료에서 현재 증권의 주당 기준, HBM 출하, DRAM·NAND ASP, 마진, CAPEX와 FCF를 확인합니다."
+      ],
+      "numeric_claims": [],
+      "numeric_fact_refs": [
+        {
+          "fact_id": "price:current",
+          "field_path": "fields.current_price",
+          "ref_id": "skhy_core_1",
+          "text_ref": "core_judgment.text"
+        },
+        {
+          "fact_id": "price:current",
+          "field_path": "fields.current_price",
+          "ref_id": "skhy_price_1_current-price",
+          "text_ref": "price_positioning.text"
+        }
+      ],
+      "price_positioning": {
+        "fact_ids": [
+          "price:current",
+          "chart:structure:state",
+          "chart:price_transition",
+          "monitoring:confirmation_transition"
+        ],
+        "holder_view": "보유자는 현재 가격 검토와 HBM 수요·ASP·현금흐름 훼손을 구분하고 주당 기준 공백을 별도 위험으로 관리해야 합니다.",
+        "new_observer_view": "새 자금은 검증된 동적 지지와 현재 증권의 주당 기준, HBM 출하·마진·FCF가 함께 확인돼야 가격 비대칭을 검토할 수 있습니다.",
+        "text": "{{numeric:skhy_price_1_current-price}}. 상향 확인 가격을 넘어선 뒤 그 기준을 유지하지만 검증된 동적 지지·저항과 손익비는 없습니다. 가격 신호만으로 HBM 논리를 바꾸지 않습니다."
+      },
+      "priority_watch": [
+        "HBM 출하·믹스, 메모리 ASP와 현재 증권의 주당 기준 공백을 지속 감시합니다."
+      ],
+      "supply_analysis": {
+        "fact_ids": [
+          "chart:price_transition",
+          "chart:structure:state"
+        ],
+        "text": "확인 가격을 넘어섰지만 거래량은 최근 평균보다 약해 HBM 실적 확인이 아닙니다."
+      },
+      "thesis_version": 2,
+      "ticker": "SKHY",
+      "unknowns": [
+        "현재 증권의 주당 이익·장부 분모, HBM 출하·ASP·FCF가 미확인입니다."
+      ],
+      "valuation_analysis": {
+        "fact_ids": [
+          "security_identity:current",
+          "security_basis:current"
+        ],
+        "text": "ADS identity는 검증됐지만 현재 증권의 주당 이익 분모가 확인되지 않아 PER 해석은 보류합니다. 현재 증권의 장부 주당 분모도 확인되지 않아 PBR 해석은 보류합니다."
+      },
+      "valuation_interpretation_refs": [
+        {
+          "basis_status": "unknown",
+          "comparison_numeric_ref_ids": [],
+          "direction": "unknown",
+          "economic_scope": "unknown",
+          "exact_text_span": "ADS identity는 검증됐지만 현재 증권의 주당 이익 분모가 확인되지 않아 PER 해석은 보류합니다.",
+          "fact_id": "security_basis:current",
+          "interpretation_type": "quality_unknown",
+          "metric": "earnings",
+          "ref_id": "skhy_val_pe_unknown",
+          "source_type": "canonical",
+          "text_ref": "valuation_analysis.text"
+        },
+        {
+          "basis_status": "unknown",
+          "comparison_numeric_ref_ids": [],
+          "direction": "unknown",
+          "economic_scope": "unknown",
+          "exact_text_span": "현재 증권의 장부 주당 분모도 확인되지 않아 PBR 해석은 보류합니다.",
+          "fact_id": "security_basis:current",
+          "interpretation_type": "quality_unknown",
+          "metric": "book",
+          "ref_id": "skhy_val_pb_unknown",
+          "source_type": "canonical",
+          "text_ref": "valuation_analysis.text"
+        }
+      ],
+      "valuation_view": "neutral"
+    },
+    {
+      "ai_thesis_assessment": "no_material_change",
+      "business_earnings": {
+        "fact_ids": [
+          "cashflow:1b8db0b46c63ae9369231151"
+        ],
+        "text": "2026 회계연도 연간 메모리 증설 기준 {{numeric:sndk_cf_primary}}입니다. NAND ASP·제품 믹스·재고 사이클과 설비투자 시점을 함께 봐야 합니다."
+      },
+      "confidence": 0.68,
+      "core_judgment": {
+        "fact_ids": [
+          "price:current",
+          "earnings:2026-07-03"
+        ],
+        "text": "NAND 사이클과 데이터센터 수요 기대는 유지되지만 공급 규율과 현금전환의 추가 증명이 필요합니다: {{numeric:sndk_core_1}}; {{numeric:sndk_core_2}}."
+      },
+      "earnings_estimate_view": "unchanged",
+      "facts_used": [
+        "price:current",
+        "earnings:2026-07-03",
+        "financial_quality:2026-07-03",
+        "chart:structure:nearest_supports:1",
+        "chart:structure:nearest_resistance:1",
+        "chart:structure:risk_reward:current_price",
+        "chart:structure:state",
+        "chart:price_transition",
+        "monitoring:confirmation_transition",
+        "valuation:consensus_forward_earnings",
+        "valuation:book",
+        "security_basis:current",
+        "cashflow:1b8db0b46c63ae9369231151"
+      ],
+      "frameworks_used": [
+        "fact_interpretation_unknown",
+        "market_expectations",
+        "risk_kill_condition",
+        "valuation_basis_comparability",
+        "monitoring_data_quality",
+        "price_ohlcv",
+        "holder_new_buyer",
+        "chart_support_resistance",
+        "chart_state_machine",
+        "hyperscaler_capex_transmission"
+      ],
+      "next_checks": [
+        "다음 공식 실적에서 NAND 가격, 데이터센터 매출, RPO 전환, gross margin, 재고와 현금 전환을 확인합니다."
+      ],
+      "numeric_claims": [],
+      "numeric_fact_refs": [
+        {
+          "fact_id": "price:current",
+          "field_path": "fields.current_price",
+          "ref_id": "sndk_core_1",
+          "text_ref": "core_judgment.text"
+        },
+        {
+          "fact_id": "earnings:2026-07-03",
+          "field_path": "fields.revenue.value",
+          "ref_id": "sndk_core_2",
+          "text_ref": "core_judgment.text"
+        },
+        {
+          "fact_id": "cashflow:1b8db0b46c63ae9369231151",
+          "field_path": "fields.value",
+          "ref_id": "sndk_cf_primary",
+          "text_ref": "business_earnings.text"
+        },
+        {
+          "fact_id": "price:current",
+          "field_path": "fields.current_price",
+          "ref_id": "sndk_price_1_current-price",
+          "text_ref": "price_positioning.text"
+        },
+        {
+          "fact_id": "chart:structure:nearest_supports:1",
+          "field_path": "fields.zone_low",
+          "ref_id": "sndk_price_2_zone-low",
+          "role": "lower",
+          "text_ref": "price_positioning.text"
+        },
+        {
+          "fact_id": "chart:structure:nearest_supports:1",
+          "field_path": "fields.zone_high",
+          "ref_id": "sndk_price_2_zone-high",
+          "role": "upper",
+          "text_ref": "price_positioning.text"
+        },
+        {
+          "fact_id": "chart:structure:nearest_resistance:1",
+          "field_path": "fields.zone_low",
+          "ref_id": "sndk_price_3_zone-low",
+          "role": "lower",
+          "text_ref": "price_positioning.text"
+        },
+        {
+          "fact_id": "chart:structure:nearest_resistance:1",
+          "field_path": "fields.zone_high",
+          "ref_id": "sndk_price_3_zone-high",
+          "role": "upper",
+          "text_ref": "price_positioning.text"
+        },
+        {
+          "fact_id": "chart:structure:risk_reward:current_price",
+          "field_path": "fields.ratio",
+          "ref_id": "sndk_price_4_ratio",
+          "text_ref": "price_positioning.text"
+        }
+      ],
+      "price_positioning": {
+        "fact_ids": [
+          "price:current",
+          "chart:structure:nearest_supports:1",
+          "chart:structure:nearest_resistance:1",
+          "chart:structure:risk_reward:current_price",
+          "chart:structure:state",
+          "chart:price_transition",
+          "monitoring:confirmation_transition"
+        ],
+        "holder_view": "보유자는 확인 상태보다 현재 동적 지지와 NAND 가격·재고·현금 전환 훼손을 별도로 봐야 합니다.",
+        "new_observer_view": "새 자금은 동적 지지 방어와 NAND ASP·데이터센터 매출·현금 전환 확인이 함께 나타날 때 가격 비대칭을 검토할 수 있습니다.",
+        "text": "{{numeric:sndk_price_1_current-price}}; {{numeric:sndk_price_2_zone-low}}; {{numeric:sndk_price_2_zone-high}}; {{numeric:sndk_price_3_zone-low}}; {{numeric:sndk_price_3_zone-high}}; {{numeric:sndk_price_4_ratio}}. 상향 확인 상태는 배경으로 유지되지만 근접 저항 대비 현재 가격 비대칭이 불리해 신규 접근은 대기 구조입니다. NAND 공급 규율은 별도 실적 대상입니다."
+      },
+      "priority_watch": [
+        "NAND 공급 규율, 데이터센터 수요와 재고·현금전환을 지속 감시합니다."
+      ],
+      "supply_analysis": {
+        "fact_ids": [
+          "chart:price_transition",
+          "chart:structure:state"
+        ],
+        "text": "확인 가격 위를 유지하지만 거래량은 최근 평균보다 약해 NAND 공급 규율과 현금전환을 증명하지 않습니다."
+      },
+      "thesis_version": 3,
+      "ticker": "SNDK",
+      "unknowns": [
+        "NAND ASP, 데이터센터 매출 전환과 재고의 동행은 미확인입니다."
+      ],
+      "valuation_analysis": {
+        "fact_ids": [
+          "valuation:consensus_forward_earnings",
+          "valuation:book",
+          "security_basis:current"
+        ],
+        "text": "검증된 선행 이익 기준과 장부 기준은 서로 독립적으로 볼 수 있지만, 후행 이익 배수의 주당 기준은 충분히 확인되지 않아 배수 간 관계 해석은 보류합니다. NAND 공급 규율과 현금전환이 기대를 검증할 다음 증거입니다."
+      },
+      "valuation_interpretation_refs": [
+        {
+          "basis_status": "unknown",
+          "comparison_numeric_ref_ids": [],
+          "direction": "unknown",
+          "economic_scope": "listed_security",
+          "exact_text_span": "후행 이익 배수의 주당 기준은 충분히 확인되지 않아 배수 간 관계 해석은 보류합니다.",
+          "fact_id": "security_basis:current",
+          "interpretation_type": "quality_unknown",
+          "metric": "earnings",
+          "ref_id": "sndk_val_quality",
+          "source_type": "canonical",
+          "text_ref": "valuation_analysis.text"
+        }
+      ],
+      "valuation_view": "expansion"
+    },
+    {
+      "ai_thesis_assessment": "no_material_change",
+      "business_earnings": {
+        "fact_ids": [
+          "cashflow:68666c261434dab50ab88a8d"
+        ],
+        "text": "2026 회계연도 상반기 누계 자동차 성장투자 기준 {{numeric:tsla_cf_primary}}입니다. 전년 비교기간보다 줄었으며, 자동차 마진과 성장투자 회수를 함께 봐야 합니다."
+      },
+      "confidence": 0.68,
+      "core_judgment": {
+        "fact_ids": [
+          "price:current",
+          "valuation:current"
+        ],
+        "text": "자동차 사업과 장기 옵션 논리는 유지되지만 자동차 마진·현금 전환과 Robotaxi 단위경제성이 함께 증명돼야 합니다: {{numeric:tsla_core_1}}; {{numeric:tsla_core_2}}."
+      },
+      "earnings_estimate_view": "unchanged",
+      "facts_used": [
+        "price:current",
+        "valuation:current",
+        "financial_quality:2026-06-30",
+        "chart:structure:nearest_supports:1",
+        "chart:structure:nearest_resistance:1",
+        "chart:structure:risk_reward:current_price",
+        "chart:structure:state",
+        "chart:price_transition",
+        "monitoring:confirmation_transition",
+        "valuation:multiple_relation",
+        "valuation:historical_pe",
+        "cashflow:68666c261434dab50ab88a8d"
+      ],
+      "frameworks_used": [
+        "fact_interpretation_unknown",
+        "market_expectations",
+        "risk_kill_condition",
+        "valuation_basis_comparability",
+        "monitoring_data_quality",
+        "price_ohlcv",
+        "holder_new_buyer",
+        "chart_support_resistance",
+        "chart_state_machine",
+        "automotive_valuation",
+        "consumer_valuation",
+        "financial_calculation_safety",
+        "earnings_quality"
+      ],
+      "next_checks": [
+        "다음 공식 실적에서 자동차 마진·재고, Robotaxi 이용률·단위경제성, 투자와 현금 전환을 확인합니다."
+      ],
+      "numeric_claims": [],
+      "numeric_fact_refs": [
+        {
+          "fact_id": "price:current",
+          "field_path": "fields.current_price",
+          "ref_id": "tsla_core_1",
+          "text_ref": "core_judgment.text"
+        },
+        {
+          "fact_id": "valuation:current",
+          "field_path": "fields.ttm_eps",
+          "ref_id": "tsla_core_2",
+          "text_ref": "core_judgment.text"
+        },
+        {
+          "fact_id": "cashflow:68666c261434dab50ab88a8d",
+          "field_path": "fields.value",
+          "ref_id": "tsla_cf_primary",
+          "text_ref": "business_earnings.text"
+        },
+        {
+          "fact_id": "price:current",
+          "field_path": "fields.current_price",
+          "ref_id": "tsla_price_1_current-price",
+          "text_ref": "price_positioning.text"
+        },
+        {
+          "fact_id": "chart:structure:nearest_supports:1",
+          "field_path": "fields.zone_low",
+          "ref_id": "tsla_price_2_zone-low",
+          "role": "lower",
+          "text_ref": "price_positioning.text"
+        },
+        {
+          "fact_id": "chart:structure:nearest_supports:1",
+          "field_path": "fields.zone_high",
+          "ref_id": "tsla_price_2_zone-high",
+          "role": "upper",
+          "text_ref": "price_positioning.text"
+        },
+        {
+          "fact_id": "chart:structure:nearest_resistance:1",
+          "field_path": "fields.zone_low",
+          "ref_id": "tsla_price_3_zone-low",
+          "role": "lower",
+          "text_ref": "price_positioning.text"
+        },
+        {
+          "fact_id": "chart:structure:nearest_resistance:1",
+          "field_path": "fields.zone_high",
+          "ref_id": "tsla_price_3_zone-high",
+          "role": "upper",
+          "text_ref": "price_positioning.text"
+        },
+        {
+          "fact_id": "chart:structure:risk_reward:current_price",
+          "field_path": "fields.ratio",
+          "ref_id": "tsla_price_4_ratio",
+          "text_ref": "price_positioning.text"
+        },
+        {
+          "fact_id": "valuation:current",
+          "field_path": "fields.trailing_pe",
+          "ref_id": "tsla_val_pe",
+          "text_ref": "valuation_analysis.text"
+        },
+        {
+          "fact_id": "valuation:current",
+          "field_path": "fields.forward_pe",
+          "ref_id": "tsla_val_fpe",
+          "text_ref": "valuation_analysis.text"
+        },
+        {
+          "fact_id": "valuation:current",
+          "field_path": "fields.historical_pe_statistics.current_percentile",
+          "ref_id": "tsla_val_hist",
+          "text_ref": "valuation_analysis.text"
+        }
+      ],
+      "price_positioning": {
+        "fact_ids": [
+          "price:current",
+          "chart:structure:nearest_supports:1",
+          "chart:structure:nearest_resistance:1",
+          "chart:structure:risk_reward:current_price",
+          "chart:structure:state",
+          "chart:price_transition",
+          "monitoring:confirmation_transition"
+        ],
+        "holder_view": "보유자는 차트 검토 경계와 자동차 마진·현금 전환 또는 Robotaxi 실행의 사업 훼손을 분리해야 합니다.",
+        "new_observer_view": "새 자금은 상향 확인 유지와 동적 지지 재시험, 자동차 마진·Robotaxi 단위경제성 확인이 함께 필요합니다.",
+        "text": "{{numeric:tsla_price_1_current-price}}; {{numeric:tsla_price_2_zone-low}}; {{numeric:tsla_price_2_zone-high}}; {{numeric:tsla_price_3_zone-low}}; {{numeric:tsla_price_3_zone-high}}; {{numeric:tsla_price_4_ratio}}. 상향 확인 가격 위를 유지하고 거래량 확인도 동반돼 확인형 가격 구조입니다. 자동차 마진·Robotaxi 실행은 별도입니다."
+      },
+      "priority_watch": [
+        "자동차 마진·재고, Robotaxi 단위경제성과 성장 투자 회수를 지속 감시합니다."
+      ],
+      "supply_analysis": {
+        "fact_ids": [
+          "chart:price_transition",
+          "chart:structure:state"
+        ],
+        "text": "확인 가격 위 유지와 평균을 웃돈 거래량은 가격 구조를 지지하지만 자동차 마진과 Robotaxi 실행의 확인으로 확대할 수 없습니다."
+      },
+      "thesis_version": 5,
+      "ticker": "TSLA",
+      "unknowns": [
+        "Robotaxi 유료 운행의 차량당 매출·이익과 자동차 재고의 동행은 미확인입니다."
+      ],
+      "valuation_analysis": {
+        "fact_ids": [
+          "valuation:current",
+          "valuation:multiple_relation",
+          "valuation:historical_pe"
+        ],
+        "text": "{{numeric:tsla_val_pe}}; {{numeric:tsla_val_fpe}}. 후행·선행 이익 배수 관계에서 선행 배수는 더 낮습니다. 이는 이익 확대 기대를 담지만 자동차 마진과 Robotaxi 실행이 부족하면 압축 위험이 남습니다. {{numeric:tsla_val_hist}}입니다. 이는 현재 PER이 비교 가능한 과거 관측치 대부분보다 높은 구간이라는 뜻입니다."
+      },
+      "valuation_interpretation_refs": [
+        {
+          "basis_status": "verified",
+          "comparison_numeric_ref_ids": [
+            "tsla_val_pe",
+            "tsla_val_fpe"
+          ],
+          "direction": "low",
+          "economic_scope": "listed_security",
+          "exact_text_span": "{{numeric:tsla_val_pe}}; {{numeric:tsla_val_fpe}}. 후행·선행 이익 배수 관계에서 선행 배수는 더 낮습니다. 이는 이익 확대 기대를 담지만 자동차 마진과 Robotaxi 실행이 부족하면 압축 위험이 남습니다.",
+          "fact_id": "valuation:multiple_relation",
+          "interpretation_type": "trailing_forward_relation",
+          "metric": "earnings",
+          "ref_id": "tsla_val_relation",
+          "source_type": "canonical",
+          "text_ref": "valuation_analysis.text"
+        },
+        {
+          "basis_status": "verified",
+          "comparison_numeric_ref_ids": [
+            "tsla_val_hist"
+          ],
+          "direction": "high",
+          "economic_scope": "listed_security",
+          "exact_text_span": "{{numeric:tsla_val_hist}}입니다. 이는 현재 PER이 비교 가능한 과거 관측치 대부분보다 높은 구간이라는 뜻입니다.",
+          "fact_id": "valuation:historical_pe",
+          "interpretation_type": "historical",
+          "metric": "pe",
+          "ref_id": "tsla_val_history",
+          "source_type": "canonical",
+          "text_ref": "valuation_analysis.text"
+        }
+      ],
+      "valuation_view": "expansion"
+    },
+    {
+      "ai_thesis_assessment": "no_material_change",
+      "business_earnings": {
+        "fact_ids": [
+          "earnings:2026-06-30",
+          "financial_quality:2026-06-30"
+        ],
+        "text": "{{numeric:tsm_earn_1}}; {{numeric:tsm_earn_2}}; {{numeric:tsm_earn_3}}입니다. TWD 기준 잠정 실적은 확인되지만 OCF·CAPEX·FCF·재고·ROIC를 증명하지 않으며 미국 상장 증권 가격과 환산하지 않습니다."
+      },
+      "confidence": 0.64,
+      "core_judgment": {
+        "fact_ids": [
+          "price:current",
+          "earnings:2026-06-30"
+        ],
+        "text": "첨단공정 수요와 실적 방향은 유지되지만 현재 미국 상장 증권의 identity와 주당 기준 공백은 별도 위험입니다: {{numeric:tsm_core_1}}; {{numeric:tsm_core_2}}; {{numeric:tsm_core_3}}."
+      },
+      "earnings_estimate_view": "unchanged",
+      "facts_used": [
+        "price:current",
+        "earnings:2026-06-30",
+        "financial_quality:2026-06-30",
+        "chart:structure:nearest_supports:1",
+        "chart:structure:nearest_resistance:1",
+        "chart:structure:risk_reward:current_price",
+        "monitoring:risk_reward_transition",
+        "chart:structure:state",
+        "chart:price_transition",
+        "monitoring:confirmation_transition",
+        "security_identity:current",
+        "security_basis:current",
+        "valuation:book_quality"
+      ],
+      "frameworks_used": [
+        "fact_interpretation_unknown",
+        "market_expectations",
+        "risk_kill_condition",
+        "valuation_basis_comparability",
+        "monitoring_data_quality",
+        "price_ohlcv",
+        "holder_new_buyer",
+        "chart_support_resistance",
+        "chart_state_machine",
+        "semiconductor_valuation",
+        "hyperscaler_capex_transmission",
+        "financial_calculation_safety",
+        "earnings_quality"
+      ],
+      "next_checks": [
+        "다음 공식 자료에서 현재 증권 identity, 첨단공정 가동률, wafer ASP, gross margin, CAPEX, FCF와 ROIC를 확인합니다."
+      ],
+      "numeric_claims": [],
+      "numeric_fact_refs": [
+        {
+          "fact_id": "price:current",
+          "field_path": "fields.current_price",
+          "ref_id": "tsm_core_1",
+          "text_ref": "core_judgment.text"
+        },
+        {
+          "fact_id": "earnings:2026-06-30",
+          "field_path": "fields.revenue.value",
+          "ref_id": "tsm_core_2",
+          "text_ref": "core_judgment.text"
+        },
+        {
+          "fact_id": "earnings:2026-06-30",
+          "field_path": "fields.operating_margin_pct",
+          "ref_id": "tsm_core_3",
+          "text_ref": "core_judgment.text"
+        },
+        {
+          "fact_id": "earnings:2026-06-30",
+          "field_path": "fields.revenue.value",
+          "ref_id": "tsm_earn_1",
+          "text_ref": "business_earnings.text"
+        },
+        {
+          "fact_id": "earnings:2026-06-30",
+          "field_path": "fields.operating_income.value",
+          "ref_id": "tsm_earn_2",
+          "text_ref": "business_earnings.text"
+        },
+        {
+          "fact_id": "earnings:2026-06-30",
+          "field_path": "fields.operating_margin_pct",
+          "ref_id": "tsm_earn_3",
+          "text_ref": "business_earnings.text"
+        },
+        {
+          "fact_id": "price:current",
+          "field_path": "fields.current_price",
+          "ref_id": "tsm_price_1_current-price",
+          "text_ref": "price_positioning.text"
+        },
+        {
+          "fact_id": "chart:structure:nearest_supports:1",
+          "field_path": "fields.zone_low",
+          "ref_id": "tsm_price_2_zone-low",
+          "role": "lower",
+          "text_ref": "price_positioning.text"
+        },
+        {
+          "fact_id": "chart:structure:nearest_supports:1",
+          "field_path": "fields.zone_high",
+          "ref_id": "tsm_price_2_zone-high",
+          "role": "upper",
+          "text_ref": "price_positioning.text"
+        },
+        {
+          "fact_id": "chart:structure:nearest_resistance:1",
+          "field_path": "fields.zone_low",
+          "ref_id": "tsm_price_3_zone-low",
+          "role": "lower",
+          "text_ref": "price_positioning.text"
+        },
+        {
+          "fact_id": "chart:structure:nearest_resistance:1",
+          "field_path": "fields.zone_high",
+          "ref_id": "tsm_price_3_zone-high",
+          "role": "upper",
+          "text_ref": "price_positioning.text"
+        },
+        {
+          "fact_id": "chart:structure:risk_reward:current_price",
+          "field_path": "fields.ratio",
+          "ref_id": "tsm_price_4_ratio",
+          "text_ref": "price_positioning.text"
+        },
+        {
+          "fact_id": "monitoring:risk_reward_transition",
+          "field_path": "fields.previous_ratio",
+          "ref_id": "tsm_rr_prev",
+          "text_ref": "price_positioning.text"
+        },
+        {
+          "fact_id": "monitoring:risk_reward_transition",
+          "field_path": "fields.current_ratio",
+          "ref_id": "tsm_rr_cur",
+          "text_ref": "price_positioning.text"
+        }
+      ],
+      "price_positioning": {
+        "fact_ids": [
+          "price:current",
+          "chart:structure:nearest_supports:1",
+          "chart:structure:nearest_resistance:1",
+          "chart:structure:risk_reward:current_price",
+          "monitoring:risk_reward_transition",
+          "chart:structure:state",
+          "chart:price_transition",
+          "monitoring:confirmation_transition"
+        ],
+        "holder_view": "보유자는 현재 차트의 비중관리 압력과 첨단공정 가동률·해외 팹 비용·FCF 훼손을 분리하고 identity 공백을 별도로 관리해야 합니다.",
+        "new_observer_view": "새 자금은 가격 구조만으로 충분하지 않으며 현재 증권 identity 해결과 첨단공정 가동률·마진·FCF 확인이 함께 필요합니다.",
+        "text": "{{numeric:tsm_price_1_current-price}}; {{numeric:tsm_price_2_zone-low}}; {{numeric:tsm_price_2_zone-high}}; {{numeric:tsm_price_3_zone-low}}; {{numeric:tsm_price_3_zone-high}}; {{numeric:tsm_price_4_ratio}}. 등록 지지와 확인 가격 사이에서 {{numeric:tsm_rr_prev}}; {{numeric:tsm_rr_cur}}로 바뀌어 현재 가격 비대칭은 악화됐습니다. 신규 접근은 대기 구조이며 첨단공정 수요 확인과 분리합니다."
+      },
+      "priority_watch": [
+        "첨단공정 가동률·가격, 해외 CAPEX와 마진·FCF 회수를 지속 감시합니다."
+      ],
+      "supply_analysis": {
+        "fact_ids": [
+          "chart:price_transition",
+          "chart:structure:state"
+        ],
+        "text": "등록 지지와 확인 가격 사이에서 거래량은 최근 평균보다 약해 첨단공정 수요와 마진은 공식 실적으로 확인해야 합니다."
+      },
+      "thesis_version": 3,
+      "ticker": "TSM",
+      "unknowns": [
+        "현재 증권 identity와 주당 분모, OCF·CAPEX·FCF·재고·ROIC가 미확인입니다."
+      ],
+      "valuation_analysis": {
+        "fact_ids": [
+          "security_identity:current",
+          "security_basis:current",
+          "valuation:book_quality"
+        ],
+        "text": "현재 미국 상장 증권의 identity와 주당 이익 분모가 확인되지 않아 PER 해석은 보류합니다. 현재 미국 상장 증권의 장부 주당 분모도 확인되지 않아 PBR 해석은 보류합니다."
+      },
+      "valuation_interpretation_refs": [
+        {
+          "basis_status": "unknown",
+          "comparison_numeric_ref_ids": [],
+          "direction": "unknown",
+          "economic_scope": "unknown",
+          "exact_text_span": "현재 미국 상장 증권의 identity와 주당 이익 분모가 확인되지 않아 PER 해석은 보류합니다.",
+          "fact_id": "security_identity:current",
+          "interpretation_type": "quality_unknown",
+          "metric": "earnings",
+          "ref_id": "tsm_val_pe_unknown",
+          "source_type": "canonical",
+          "text_ref": "valuation_analysis.text"
+        },
+        {
+          "basis_status": "unknown",
+          "comparison_numeric_ref_ids": [],
+          "direction": "unknown",
+          "economic_scope": "unknown",
+          "exact_text_span": "현재 미국 상장 증권의 장부 주당 분모도 확인되지 않아 PBR 해석은 보류합니다.",
+          "fact_id": "security_basis:current",
+          "interpretation_type": "quality_unknown",
+          "metric": "book",
+          "ref_id": "tsm_val_pb_unknown",
+          "source_type": "canonical",
+          "text_ref": "valuation_analysis.text"
+        }
+      ],
+      "valuation_view": "expansion"
+    },
+    {
+      "ai_thesis_assessment": "no_material_change",
+      "business_earnings": {
+        "fact_ids": [
+          "financial_quality:2024-12-31",
+          "security_basis:current"
+        ],
+        "text": "CNY 기준 실적을 현재 증권의 주당 값으로 환산하지 않습니다. 유료 fleet, 차량당 이용률·매출, gross margin과 cash burn이 없어 단위경제성을 판단할 수 없습니다."
+      },
+      "confidence": 0.64,
+      "core_judgment": {
+        "fact_ids": [
+          "price:current"
+        ],
+        "text": "Robotaxi 상용화 기대는 유지되지만 현재 미국 상장 증권의 identity와 주당 기준이 미확인이라 가격 구조와 사업 검증을 분리해야 합니다. 확인 가능한 가격 숫자는 {{numeric:wrd_core_1}}입니다."
+      },
+      "earnings_estimate_view": "unchanged",
+      "facts_used": [
+        "price:current",
+        "financial_quality:2024-12-31",
+        "security_basis:current",
+        "chart:structure:nearest_supports:1",
+        "chart:structure:nearest_resistance:1",
+        "chart:structure:risk_reward:current_price",
+        "chart:structure:state",
+        "chart:price_transition",
+        "monitoring:confirmation_transition",
+        "security_identity:current",
+        "valuation:book_quality"
+      ],
+      "frameworks_used": [
+        "fact_interpretation_unknown",
+        "market_expectations",
+        "risk_kill_condition",
+        "valuation_basis_comparability",
+        "monitoring_data_quality",
+        "price_ohlcv",
+        "holder_new_buyer",
+        "chart_support_resistance",
+        "chart_state_machine",
+        "financial_calculation_safety",
+        "earnings_quality"
+      ],
+      "next_checks": [
+        "다음 공식 자료에서 유료 지역·fleet·이용률, Robotaxi 매출, gross margin, 영업손실과 cash burn을 확인합니다."
+      ],
+      "numeric_claims": [],
+      "numeric_fact_refs": [
+        {
+          "fact_id": "price:current",
+          "field_path": "fields.current_price",
+          "ref_id": "wrd_core_1",
+          "text_ref": "core_judgment.text"
+        },
+        {
+          "fact_id": "price:current",
+          "field_path": "fields.current_price",
+          "ref_id": "wrd_price_1_current-price",
+          "text_ref": "price_positioning.text"
+        },
+        {
+          "fact_id": "chart:structure:nearest_supports:1",
+          "field_path": "fields.zone_low",
+          "ref_id": "wrd_price_2_zone-low",
+          "role": "lower",
+          "text_ref": "price_positioning.text"
+        },
+        {
+          "fact_id": "chart:structure:nearest_supports:1",
+          "field_path": "fields.zone_high",
+          "ref_id": "wrd_price_2_zone-high",
+          "role": "upper",
+          "text_ref": "price_positioning.text"
+        },
+        {
+          "fact_id": "chart:structure:nearest_resistance:1",
+          "field_path": "fields.zone_low",
+          "ref_id": "wrd_price_3_zone-low",
+          "role": "lower",
+          "text_ref": "price_positioning.text"
+        },
+        {
+          "fact_id": "chart:structure:nearest_resistance:1",
+          "field_path": "fields.zone_high",
+          "ref_id": "wrd_price_3_zone-high",
+          "role": "upper",
+          "text_ref": "price_positioning.text"
+        },
+        {
+          "fact_id": "chart:structure:risk_reward:current_price",
+          "field_path": "fields.ratio",
+          "ref_id": "wrd_price_4_ratio",
+          "text_ref": "price_positioning.text"
+        }
+      ],
+      "price_positioning": {
+        "fact_ids": [
+          "price:current",
+          "chart:structure:nearest_supports:1",
+          "chart:structure:nearest_resistance:1",
+          "chart:structure:risk_reward:current_price",
+          "chart:structure:state",
+          "chart:price_transition",
+          "monitoring:confirmation_transition"
+        ],
+        "holder_view": "보유자는 현재 차트 경계와 규제·안전·fleet 이용률·현금소진이라는 사업 훼손을 분리해야 합니다.",
+        "new_observer_view": "새 자금은 동적 지지 방어보다 유료 서비스 확대와 차량당 단위경제성, 현금소진 경로를 먼저 확인해야 합니다.",
+        "text": "{{numeric:wrd_price_1_current-price}}; {{numeric:wrd_price_2_zone-low}}; {{numeric:wrd_price_2_zone-high}}; {{numeric:wrd_price_3_zone-low}}; {{numeric:wrd_price_3_zone-high}}; {{numeric:wrd_price_4_ratio}}. 등록 지지와 확인 가격 사이에서 신규 접근은 대기 구조입니다. 현재 가격 비대칭은 조건부이며 유료 운행의 단위경제성은 별도 확인 조건입니다."
+      },
+      "priority_watch": [
+        "유료 운행 지역·fleet 이용률, 단위경제성과 cash burn을 지속 감시합니다."
+      ],
+      "supply_analysis": {
+        "fact_ids": [
+          "chart:price_transition",
+          "chart:structure:state"
+        ],
+        "text": "등록 지지와 확인 가격 사이에서 거래량은 최근 평균보다 약하며 상용화 진척의 확인은 아닙니다."
+      },
+      "thesis_version": 3,
+      "ticker": "WRD",
+      "unknowns": [
+        "depositary ratio 방향과 현재 증권의 주당 분모, 유료 fleet, 차량당 매출·이익이 미확인입니다."
+      ],
+      "valuation_analysis": {
+        "fact_ids": [
+          "security_identity:current",
+          "security_basis:current",
+          "valuation:book_quality"
+        ],
+        "text": "현재 미국 상장 증권의 identity와 주당 이익 분모가 확인되지 않아 PER 해석은 보류합니다. 현재 미국 상장 증권의 장부 주당 분모도 확인되지 않아 PBR 해석은 보류합니다."
+      },
+      "valuation_interpretation_refs": [
+        {
+          "basis_status": "unknown",
+          "comparison_numeric_ref_ids": [],
+          "direction": "unknown",
+          "economic_scope": "unknown",
+          "exact_text_span": "현재 미국 상장 증권의 identity와 주당 이익 분모가 확인되지 않아 PER 해석은 보류합니다.",
+          "fact_id": "security_identity:current",
+          "interpretation_type": "quality_unknown",
+          "metric": "earnings",
+          "ref_id": "wrd_val_pe_unknown",
+          "source_type": "canonical",
+          "text_ref": "valuation_analysis.text"
+        },
+        {
+          "basis_status": "unknown",
+          "comparison_numeric_ref_ids": [],
+          "direction": "unknown",
+          "economic_scope": "unknown",
+          "exact_text_span": "현재 미국 상장 증권의 장부 주당 분모도 확인되지 않아 PBR 해석은 보류합니다.",
+          "fact_id": "security_basis:current",
+          "interpretation_type": "quality_unknown",
+          "metric": "book",
+          "ref_id": "wrd_val_pb_unknown",
+          "source_type": "canonical",
+          "text_ref": "valuation_analysis.text"
+        }
+      ],
+      "valuation_view": "expansion"
+    },
+    {
+      "ai_thesis_assessment": "no_material_change",
+      "business_earnings": {
+        "fact_ids": [
+          "cashflow:6fd003ea029e4d7b03f681f3"
+        ],
+        "text": "2026 회계연도 상반기 누계 build-out 단계 기준 {{numeric:wulf_cf_primary}}입니다. 전년 비교기간보다 음수 폭이 커졌으며, build-out 재투자는 가동·청구 전환과 자금조달을 함께 봐야 합니다."
+      },
+      "confidence": 0.68,
+      "core_judgment": {
+        "fact_ids": [
+          "price:current",
+          "valuation:current"
+        ],
+        "text": "HPC 전환 기대를 정당화하려면 가동 전력·lease 매출·현금 전환이 빠르게 증명돼야 합니다: {{numeric:wulf_core_1}}; {{numeric:wulf_core_2}}."
+      },
+      "earnings_estimate_view": "unchanged",
+      "facts_used": [
+        "price:current",
+        "valuation:current",
+        "financial_quality:2026-06-30",
+        "chart:structure:nearest_supports:1",
+        "chart:structure:nearest_resistance:1",
+        "chart:structure:state",
+        "chart:price_transition",
+        "monitoring:confirmation_transition",
+        "valuation:historical_pb",
+        "cashflow:6fd003ea029e4d7b03f681f3"
+      ],
+      "frameworks_used": [
+        "fact_interpretation_unknown",
+        "market_expectations",
+        "risk_kill_condition",
+        "valuation_basis_comparability",
+        "monitoring_data_quality",
+        "price_ohlcv",
+        "holder_new_buyer",
+        "chart_support_resistance",
+        "chart_state_machine",
+        "hyperscaler_capex_transmission"
+      ],
+      "next_checks": [
+        "다음 공식 자료에서 가동·건설 전력, HPC lease 매출, EBITDA, 현금 전환, 투자와 희석을 확인합니다."
+      ],
+      "numeric_claims": [],
+      "numeric_fact_refs": [
+        {
+          "fact_id": "price:current",
+          "field_path": "fields.current_price",
+          "ref_id": "wulf_core_1",
+          "text_ref": "core_judgment.text"
+        },
+        {
+          "fact_id": "price:current",
+          "field_path": "fields.current_price",
+          "ref_id": "wulf_price_1_current-price",
+          "text_ref": "price_positioning.text"
+        },
+        {
+          "fact_id": "chart:structure:nearest_resistance:1",
+          "field_path": "fields.zone_low",
+          "ref_id": "wulf_price_3_zone-low",
+          "role": "lower",
+          "text_ref": "price_positioning.text"
+        },
+        {
+          "fact_id": "chart:structure:nearest_resistance:1",
+          "field_path": "fields.zone_high",
+          "ref_id": "wulf_price_3_zone-high",
+          "role": "upper",
+          "text_ref": "price_positioning.text"
+        },
+        {
+          "fact_id": "valuation:current",
+          "field_path": "fields.price_to_book",
+          "ref_id": "wulf_val_cur",
+          "text_ref": "valuation_analysis.text"
+        },
+        {
+          "fact_id": "valuation:current",
+          "field_path": "fields.historical_pb_statistics.current_percentile",
+          "ref_id": "wulf_val_pct",
+          "text_ref": "valuation_analysis.text"
+        },
+        {
+          "fact_id": "valuation:current",
+          "field_path": "fields.price_to_book",
+          "ref_id": "wulf_core_2",
+          "text_ref": "core_judgment.text"
+        },
+        {
+          "fact_id": "cashflow:6fd003ea029e4d7b03f681f3",
+          "field_path": "fields.value",
+          "ref_id": "wulf_cf_primary",
+          "text_ref": "business_earnings.text"
+        },
+        {
+          "fact_id": "chart:structure:nearest_supports:1",
+          "field_path": "fields.zone_low",
+          "ref_id": "wulf_price_2_zone-low",
+          "role": "lower",
+          "text_ref": "price_positioning.text"
+        },
+        {
+          "fact_id": "chart:structure:nearest_supports:1",
+          "field_path": "fields.zone_high",
+          "ref_id": "wulf_price_2_zone-high",
+          "role": "upper",
+          "text_ref": "price_positioning.text"
+        }
+      ],
+      "price_positioning": {
+        "fact_ids": [
+          "price:current",
+          "chart:structure:nearest_supports:1",
+          "chart:structure:nearest_resistance:1",
+          "chart:structure:state",
+          "chart:price_transition",
+          "monitoring:confirmation_transition"
+        ],
+        "holder_view": "보유자는 현재 차트 경계와 준공 지연·현금흐름 악화·희석 확대라는 사업 훼손을 분리해야 합니다.",
+        "new_observer_view": "새 자금은 동적 지지 방어와 HPC lease 매출·가동 전력·현금전환이 함께 확인될 때 가격 비대칭을 검토할 수 있습니다.",
+        "text": "{{numeric:wulf_price_1_current-price}}; {{numeric:wulf_price_2_zone-low}}; {{numeric:wulf_price_2_zone-high}}; {{numeric:wulf_price_3_zone-low}}; {{numeric:wulf_price_3_zone-high}}. 등록 경고 아래로 내려왔고 동적 지지와 저항이 겹쳐 현재가 손익비는 산출되지 않으며 신규 접근은 대기 구조입니다. HPC 가동과 현금전환은 별도입니다."
+      },
+      "priority_watch": [
+        "가동 전력, HPC lease 매출, 확장 투자와 희석의 균형을 지속 감시합니다."
+      ],
+      "supply_analysis": {
+        "fact_ids": [
+          "chart:price_transition",
+          "chart:structure:state"
+        ],
+        "text": "동적 지지 진입에도 거래량은 최근 평균보다 약해 HPC 가동과 현금전환을 확인했다고 볼 수 없습니다."
+      },
+      "thesis_version": 1,
+      "ticker": "WULF",
+      "unknowns": [
+        "가동·건설 전력, lease 매출, 남은 투자와 완전희석 주식수의 동행은 미확인입니다."
+      ],
+      "valuation_analysis": {
+        "fact_ids": [
+          "valuation:current",
+          "valuation:historical_pb"
+        ],
+        "text": "현재 PBR은 비교 가능한 과거 관측치 대부분보다 높은 구간이지만, 가동 전력·현금전환·희석 검증을 대신하지 않습니다: {{numeric:wulf_val_cur}}; {{numeric:wulf_val_pct}}."
+      },
+      "valuation_interpretation_refs": [
+        {
+          "basis_status": "verified",
+          "comparison_numeric_ref_ids": [
+            "wulf_val_cur",
+            "wulf_val_pct"
+          ],
+          "direction": "high",
+          "economic_scope": "listed_security",
+          "exact_text_span": "현재 PBR은 비교 가능한 과거 관측치 대부분보다 높은 구간이지만, 가동 전력·현금전환·희석 검증을 대신하지 않습니다: {{numeric:wulf_val_cur}}; {{numeric:wulf_val_pct}}.",
+          "fact_id": "valuation:historical_pb",
+          "interpretation_type": "historical",
+          "metric": "pbr",
+          "ref_id": "wulf_val_history",
+          "source_type": "canonical",
+          "text_ref": "valuation_analysis.text"
+        }
+      ],
+      "valuation_view": "neutral"
+    }
+  ]
+}

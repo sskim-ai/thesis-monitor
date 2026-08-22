@@ -119,10 +119,11 @@ def test_runtime_specificity_plan_uses_material_candidates_without_quota() -> No
         "monitoring_state": _price_context()["monitoring_state"],
         "state_grounding_requirements": {
             "price": [
-                {
-                    "fact_id": "chart:structure:risk_reward:current_price",
-                    "field_paths": ["fields.ratio"],
-                }
+                    {
+                        "fact_id": "chart:structure:risk_reward:current_price",
+                        "field_paths": ["fields.ratio"],
+                        "reason": "current_price_risk_reward",
+                    }
             ]
         },
         "fact_catalog": [
@@ -134,7 +135,13 @@ def test_runtime_specificity_plan_uses_material_candidates_without_quota() -> No
                 "fact_id": "security_basis:current",
                 "fields": {"depositary_ratio_state": "not_applicable"},
             },
+            {
+                "fact_id": "chart:structure:risk_reward:current_price",
+                "fact_type": "chart_risk_reward_current_price",
+                "fields": {"ratio": 0.535306},
+            },
         ],
+        "current_price_context": select_current_price_context(_price_context()),
     }
 
     plan = build_runtime_specificity_plan(stock)
@@ -146,6 +153,10 @@ def test_runtime_specificity_plan_uses_material_candidates_without_quota() -> No
     assert plan["decision_candidates"][0]["owner"] == "price_context"
     assert plan["decision_candidates"][0]["section"] == "price_positioning"
     assert plan["required_current_price_fact_ids"] == ["chart:structure:risk_reward:current_price"]
+    assert plan["price_fact_ownership"]["current_rr_fact_id"] == (
+        "chart:structure:risk_reward:current_price"
+    )
+    assert plan["price_fact_ownership"]["unavailable_fact_ids"] == []
     assert plan["business_earnings_policy"] == {
         "owner": "business_earnings",
         "business_fact_candidates": [],
@@ -179,6 +190,65 @@ def test_runtime_specificity_plan_uses_material_candidates_without_quota() -> No
             "category": "depositary_ratio",
             "reason": "security_identity_not_depositary",
         }
+    ]
+
+
+def test_runtime_specificity_excludes_unavailable_rr_fact_from_price_ownership() -> None:
+    stock = {
+        "knowledge_routing": {
+            "industry_routing": {"confidence": "low"},
+            "framework_roles": {},
+        },
+        "deterministic_assessment": {"business_thesis_change": "no_material_change"},
+        "monitoring_state": _price_context(rr_available=False)["monitoring_state"],
+        "state_grounding_requirements": {
+            "price": [
+                {
+                    "fact_id": "price:current",
+                    "field_paths": ["fields.current_price"],
+                    "reason": "current_price",
+                },
+                {
+                    "fact_id": "chart:structure:nearest_supports:1",
+                    "field_paths": ["fields.zone_low", "fields.zone_high"],
+                    "reason": "active_support",
+                },
+                {
+                    "fact_id": "chart:structure:nearest_resistance:1",
+                    "field_paths": ["fields.zone_low", "fields.zone_high"],
+                    "reason": "active_resistance",
+                },
+            ]
+        },
+        "fact_catalog": [
+            {"fact_id": "price:current", "fact_type": "price"},
+            {
+                "fact_id": "chart:structure:nearest_supports:1",
+                "fact_type": "chart_support_zone",
+            },
+            {
+                "fact_id": "chart:structure:nearest_resistance:1",
+                "fact_type": "chart_resistance_zone",
+            },
+        ],
+        "current_price_context": select_current_price_context(
+            _price_context(rr_available=False)
+        ),
+    }
+
+    ownership = build_runtime_specificity_plan(stock)["price_fact_ownership"]
+
+    assert ownership["current_price_fact_id"] == "price:current"
+    assert ownership["support_context_id"] == "chart:structure:nearest_supports:1"
+    assert ownership["resistance_context_id"] == (
+        "chart:structure:nearest_resistance:1"
+    )
+    assert ownership["current_rr_fact_id"] is None
+    assert ownership["unavailable_fact_ids"] == [
+        "chart:structure:risk_reward:current_price"
+    ]
+    assert "chart:structure:risk_reward:current_price" not in ownership[
+        "allowed_fact_ids"
     ]
 
 

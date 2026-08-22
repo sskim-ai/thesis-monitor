@@ -4,9 +4,11 @@ import json
 from datetime import date
 from pathlib import Path
 
+from app.services.cash_flow_capital_efficiency_service import PeriodIdentity, PeriodType
 from app.services.cash_flow_user_visible_service import (
     CashFlowRolloutMode,
     SelectionState,
+    cash_flow_period_claim_contract,
     context_from_notification_payload,
     fact_catalog_entries,
     resolve_rollout_mode,
@@ -353,6 +355,25 @@ def test_selected_unknowns_and_numeric_registry_use_canonical_fact_ids(tmp_path:
     assert all(item["registered"] and item["prose_allowed"] for item in registry)
 
 
+def test_selected_ytd_context_exposes_canonical_ai_period_claim_contract(
+    tmp_path: Path,
+) -> None:
+    selected = _select(_report(tmp_path / "facts.json"))
+
+    payload = selection_to_dict(selected)
+
+    assert payload["period_identity_contract"] == "cash-flow-period-identity-v1"
+    assert payload["required_period_label"] == "2026 회계연도 상반기 누계"
+    assert payload["duration_basis"] == "fiscal_year_to_date_cumulative"
+    assert payload["is_ytd"] is True
+    assert payload["is_fy"] is False
+    assert payload["fcf_scope"] == "OCF - PPE CAPEX"
+    assert payload["primary_period"]["canonical_label"] == (
+        "2026 회계연도 상반기 누계"
+    )
+    assert "standalone_quarter" in payload["forbidden_period_claims"]
+
+
 def test_fy_and_non_calendar_period_labels_preserve_issuer_fiscal_identity(
     tmp_path: Path,
 ) -> None:
@@ -374,6 +395,46 @@ def test_fy_and_non_calendar_period_labels_preserve_issuer_fiscal_identity(
     assert selected.user_visible_enabled is True
     assert "2025 회계연도 연간" in str(selected.rendered_text)
     assert "2025년 4분기" not in str(selected.rendered_text)
+    payload = selection_to_dict(selected)
+    assert payload["required_period_label"] == "2025 회계연도 연간"
+    assert payload["duration_basis"] == "full_fiscal_year"
+    assert payload["is_fy"] is True
+    assert "year_to_date" in payload["forbidden_period_claims"]
+
+
+def test_fiscal_q3_ytd_and_qtd_contracts_remain_distinct(tmp_path: Path) -> None:
+    ytd_report = _report(tmp_path / "ytd.json")
+    ytd_payload = json.loads(ytd_report.read_text(encoding="utf-8"))
+    for fact in ytd_payload["canonical_facts"]:
+        fact.update(
+            {
+                "period_start": "2025-08-29",
+                "period_end": "2026-05-28",
+                "period_type": "YTD",
+                "fiscal_year": 2026,
+                "fiscal_quarter": 3,
+            }
+        )
+    ytd_report.write_text(json.dumps(ytd_payload), encoding="utf-8")
+    ytd = selection_to_dict(
+        _select(ytd_report, latest_formal_period=date(2026, 5, 28))
+    )
+
+    qtd = cash_flow_period_claim_contract(
+        PeriodIdentity(
+            start=date(2026, 3, 1),
+            end=date(2026, 5, 28),
+            period_type=PeriodType.QTD,
+            fiscal_year=2026,
+            fiscal_quarter=3,
+        )
+    )
+
+    assert ytd["required_period_label"] == "2026 회계연도 3분기 누계"
+    assert ytd["duration_basis"] == "fiscal_year_to_date_cumulative"
+    assert qtd is not None
+    assert qtd["required_period_label"] == "2026 회계연도 3분기 단독"
+    assert qtd["duration_basis"] == "standalone_fiscal_quarter"
 
 
 def test_negative_currency_amount_uses_canonical_formatter(tmp_path: Path) -> None:
