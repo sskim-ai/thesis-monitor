@@ -19,6 +19,22 @@
 - Instruction version: `2.0`
 - Instruction commit: `2244b8fdb80e9a925a96d9c55f80026cd873442a`
 
+## Execution Reconciliation
+
+- Review started: `2026-08-22 17:10 KST`
+- Stage A lifecycle observation completed: `2026-08-22 17:23 KST`
+- Requested instruction object: `2244b8fdb80e9a925a96d9c55f80026cd873442a`
+- Requested instruction resolution: `INVALID_OBJECT`; it is not present in the local repository or
+  fetched review-branch history.
+- Resolved committed instruction: `2244b8f6083356527b576343d86a2a1ab60415ec`
+- Resolution basis: the named path exists at the clean `origin/main` docs-only commit with subject
+  `Document scheduled weekend safety review`; the review branch is descended from that commit and
+  already carried this registration report.
+- Instruction version used: `2.0`
+- Initial report push state: `PENDING`
+- Recurring-task cleanup state: `PENDING_AFTER_INITIAL_REPORT_PUSH`
+- Cleanup time: `PENDING`
+
 ## Safety And Cleanup
 
 The task prompt preserves every Stage A prohibition: no manual production/observer execution, no

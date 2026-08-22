@@ -1,0 +1,125 @@
+{
+  "schema_version": "weekend-safety-review-v1",
+  "review_state": "COMPLETE",
+  "scheduled_review": "FAIL",
+  "reviewed_at_kst": "2026-08-22T17:23:00+09:00",
+  "instruction": {
+    "version": "2.0",
+    "requested_sha": "2244b8fdb80e9a925a96d9c55f80026cd873442a",
+    "requested_sha_resolution": "INVALID_OBJECT",
+    "resolved_sha": "2244b8f6083356527b576343d86a2a1ab60415ec",
+    "path": "docs/work-instructions/20260822-1710-scheduled-weekend-safety-and-next-natural-inventory-proof-review.md"
+  },
+  "operating": {
+    "head": "2244b8f6083356527b576343d86a2a1ab60415ec",
+    "origin_main": "2244b8f6083356527b576343d86a2a1ab60415ec",
+    "clean": true,
+    "delta_from_intended": "docs_only",
+    "api_health": "PASS",
+    "production_assist": "OFF",
+    "ai_mode": "shadow",
+    "working_capital_user_visible_mode": "SELECTIVE_INVENTORY",
+    "inventory_user_visible_state": "ENABLED_PENDING_NATURAL",
+    "trade_ar_user_visible_state": "OFF_PENDING_NATURAL_PROOF",
+    "phase_9_0e_mode": "SELECTIVE_CURRENT_FORMAL_FULL_FCF",
+    "phase_9_1d_canary": "LIVE_PASS"
+  },
+  "schedules_kst": {
+    "us_primary": "08:15",
+    "us_backup": "08:30",
+    "kr_primary": "16:15",
+    "kr_backup": "16:55",
+    "krx": ["08:05", "16:05"],
+    "night_futures": ["08:45", "09:15"],
+    "kr_upstream_launcher": ["16:05", "16:20", "16:50"],
+    "kr_retry": ["16:22", "16:25", "16:30"],
+    "fallback": "17:10"
+  },
+  "gates": {
+    "krx_1605_role_target": "PASS",
+    "kr_primary_weekend_behavior": "PASS",
+    "kr_backup_weekend_behavior": "PASS",
+    "upstream_kr_weekend_noop": "FAIL",
+    "unexpected_telegram": 0,
+    "unexpected_sent_stock_bundle": 0,
+    "unexpected_pending_telegram_rows": 7,
+    "duplicate_delivery": 0,
+    "manual_delivery": 0,
+    "review_db_mutation": 0,
+    "natural_db_mutation": "OBSERVED",
+    "pilot_mutation": 0
+  },
+  "krx_1605": {
+    "scheduled_for_kst": "2026-08-22T16:05:00+09:00",
+    "observed_at_kst": "2026-08-22T16:05:03.629494+09:00",
+    "role": "krx_same_day_publication",
+    "wall_clock_date": "2026-08-22",
+    "role_target_resolver_output": "no_valid_role_target",
+    "target_kind": null,
+    "target_date": null,
+    "target_session": null,
+    "observation_eligible": false,
+    "skip_reason": "no_valid_role_target",
+    "provider_calls": 0,
+    "result": "SKIPPED",
+    "duplicate_observation_count": 0,
+    "telemetry_writes": 0,
+    "scheduler_exit": 0
+  },
+  "kr_primary_1615": {
+    "recorded_at_kst": "2026-08-22T16:17:28+09:00",
+    "packet_created": false,
+    "claim_assigned": false,
+    "ai_invoked": false,
+    "telegram_invoked": false,
+    "receipt_created": false,
+    "terminal_classification": "SAFE_TERMINAL_NO_PACKET",
+    "skip_reason": "no_eligible_unclaimed_packet"
+  },
+  "kr_backup_1655": {
+    "recorded_at_kst": "2026-08-22T16:55:59+09:00",
+    "packet_created": false,
+    "claim_assigned": false,
+    "ai_invoked": false,
+    "telegram_invoked": false,
+    "receipt_created": false,
+    "terminal_classification": "SAFE_TERMINAL_NO_PACKET",
+    "skip_reason": "no_eligible_unclaimed_packet"
+  },
+  "upstream_finding": {
+    "monitor_run_id": 33,
+    "run_type": "daily_kr",
+    "started_at_kst": "2026-08-22T16:05:29.256485+09:00",
+    "completed_at_kst": "2026-08-22T16:06:09.541518+09:00",
+    "ticker_count": 7,
+    "success_count": 7,
+    "expected_packet_id": "2026-08-22-kr-run-33-c2491c2e78ad",
+    "packet_artifact_count": 0,
+    "missing_packet_traceback_count": 3,
+    "launcher_last_exit": 1,
+    "pending_notification_rows": 7,
+    "sent_notification_rows": 0,
+    "fallback_status": "no_held_session",
+    "fallback_sent_count": 0
+  },
+  "inventory": {
+    "inventory_user_visible_saturday": "NOT_OBSERVED",
+    "inventory_user_visible_state": "ENABLED_PENDING_NATURAL",
+    "trade_ar_user_visible_state": "OFF_PENDING_NATURAL_PROOF",
+    "kr_investor_flow_natural": "NOT_OBSERVED_IN_NEW_NATURAL_MESSAGE",
+    "stage_b_executed": false,
+    "stage_b_reason": "NO_LEGITIMATE_ELIGIBLE_NATURAL_PRODUCTION_PACKET"
+  },
+  "severity": {
+    "open_p0": 0,
+    "open_material_p1": 1,
+    "p2_backlog": 2,
+    "next_natural_action": "BOUNDED_REPAIR_REQUIRED"
+  },
+  "cleanup": {
+    "initial_report_push": "PENDING",
+    "automation_id": "20260822-1710-weekend-safety-review",
+    "state": "PENDING_AFTER_INITIAL_REPORT_PUSH",
+    "cleanup_time_kst": null
+  }
+}
