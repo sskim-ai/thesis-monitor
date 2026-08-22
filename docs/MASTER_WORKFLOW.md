@@ -855,8 +855,9 @@ DB state. AI and fallback share exact packet/context/relation/Fact/date/scope/di
 The 20-subject replay finds five Inventory candidates, selects KR `000660`, `005490`, and `005930`,
 and suppresses MU/TSLA because current cash-flow context already owns the point. Trade AR, broad AR
 and AP selected counts are zero. Feature-OFF packet/fallback output is byte-identical to prior main.
-`INVENTORY_ONLY_ROLLOUT_READY=YES`; activation remains a separate operating step followed by
-natural user-visible proof. Exact Trade AR cannot be enabled in this phase.
+`INVENTORY_ONLY_ROLLOUT_READY=YES`. Main/operating promotion and activation completed safely at
+12:16 KST with mode `SELECTIVE_INVENTORY`; Inventory is `ENABLED_PENDING_NATURAL`. Exact Trade AR
+cannot be enabled in this phase.
 
 ## 24. Codex Work Order Standard
 
@@ -947,9 +948,9 @@ approval. Main merge and shadow deployment still do not authorize AI-assisted pr
 
 ## 28. Current Next Task
 
-Complete Phase 9.1E.1 operating preflight and activate only `SELECTIVE_INVENTORY` when exact-SHA CI,
-health, scheduler, 9.0E and 9.1D checks pass. Then wait for the next naturally delivered selected
-Inventory message; do not run a task or send Telegram manually. Keep exact Trade AR OFF and do not
+Wait for the next naturally delivered selected Inventory message and review its Fact/relation/date,
+AI/fallback path, exactly-once receipt and quality; do not run a task or send Telegram manually.
+Keep exact Trade AR OFF and do not
 implement DSO, Inventory Days, DPO, CCC, ROIC, broad/AP output, or KR cash-flow period recovery
 without separate authorization.
 

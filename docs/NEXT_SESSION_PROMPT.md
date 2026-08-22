@@ -14,8 +14,8 @@ override conversation summaries.
 Phase 9.1E.1 follows instruction commit `880e7a9834439971f53b8a7bc0712d0ece26854d` and explicit
 morning-evidence merge `018af42`. Inventory natural proof is `LIVE_PASS_RUN32`; exact Trade AR is
 `NOT_OBSERVED`. The Inventory-only implementation and preflight pass with open P0/material P1 zero.
-Before operating activation `WORKING_CAPITAL_USER_VISIBLE_MODE` remains `OFF`. The only permitted
-activation is `SELECTIVE_INVENTORY`; Trade AR and combined modes must remain OFF.
+Operating activation completed safely with `WORKING_CAPITAL_USER_VISIBLE_MODE=SELECTIVE_INVENTORY`.
+Inventory is `ENABLED_PENDING_NATURAL`; Trade AR and combined modes remain OFF.
 
 The KR investor-flow reconciliation repair is complete after immutable instruction commit
 `e9d7c73cf6f25b2423b55a6899465e86441316d1`; implementation
@@ -37,14 +37,13 @@ Current state after clean Phase 9.1D promotion:
 - approved scope: total Inventory and exact Trade AR only
 - Inventory natural proof: `LIVE_PASS_RUN32`
 - exact Trade AR natural proof: `NOT_OBSERVED`
-- working-capital user-visible output: Inventory implemented, operating activation pending
+- working-capital user-visible output: Inventory enabled pending natural proof
 - `PHASE_9_1E_ARCHITECTURE_READY = YES`
 - open P0/P1: 0/0
 
-After exact-SHA CI and operating preflight, activate only `SELECTIVE_INVENTORY` without manually
-running a Scheduled Task or sending Telegram. Then observe the next natural user-visible Inventory
-selection. An empty eligible set is `NOT_OBSERVED`, not failure. Any P0 turns the mode OFF and gets a
-bounded repair with immutable evidence preserved.
+Observe the next natural user-visible Inventory selection without manually running a Scheduled Task
+or sending Telegram. An empty eligible set is `NOT_OBSERVED`, not failure. Any P0 turns the mode OFF
+and gets a bounded repair with immutable evidence preserved.
 
 Phase 9.1E architecture is complete, but no working-capital family may become user-visible before
 its intended natural mechanism proof. Keep broad AR/AP, exact AP, DSO,

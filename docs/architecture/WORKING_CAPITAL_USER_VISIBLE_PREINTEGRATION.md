@@ -153,3 +153,7 @@ After activation the state is `ENABLED_PENDING_NATURAL`, not live pass. The firs
 message that actually selects Inventory must verify lineage, balance date, semantics, causal guard,
 AI/fallback path, numeric ownership, cash-flow coexistence, exactly-once delivery and message
 quality. A P0 sets the mode back to `OFF` while preserving immutable evidence.
+
+The operating mode was safely activated as `SELECTIVE_INVENTORY` on 2026-08-22 at 12:16 KST after
+exact-SHA CI, main/operating parity, health and scheduler checks. Inventory is
+`ENABLED_PENDING_NATURAL`; exact Trade AR remains `OFF_PENDING_NATURAL_PROOF`.

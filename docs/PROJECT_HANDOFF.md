@@ -19,10 +19,10 @@ Inventory `%p` relation to `business_earnings`. The 20-subject replay selects `0
 and `005930`; MU and TSLA are suppressed by compatible Phase 9.0E cash-flow context. AI/fallback,
 numeric, semantic, causal, quality and kill-switch checks pass with open P0/material P1 zero.
 
-Before operating activation, `WORKING_CAPITAL_USER_VISIBLE_MODE=OFF`, Inventory is
-`IMPLEMENTED_READY_TO_ENABLE`, and Trade AR is `OFF_PENDING_NATURAL_PROOF`. Activate only
-`SELECTIVE_INVENTORY` after exact-SHA CI, main/operating parity, health and scheduler checks. Never
-mark user-visible Inventory live pass until an actual natural delivered message selects it.
+Operating activation completed at 12:16 KST after exact-SHA CI, main/operating parity, health and
+scheduler checks. `WORKING_CAPITAL_USER_VISIBLE_MODE=SELECTIVE_INVENTORY`, Inventory is
+`ENABLED_PENDING_NATURAL`, and Trade AR is `OFF_PENDING_NATURAL_PROOF`. Never mark user-visible
+Inventory live pass until an actual natural delivered message selects it.
 
 Phase 9.1E working-capital user-visible pre-integration is complete on immutable instruction commit
 `99f7e86f3ae40cc86a4865ef70dc89abf79d5a37` and implementation commit

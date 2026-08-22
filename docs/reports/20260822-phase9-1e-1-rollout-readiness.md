@@ -24,11 +24,10 @@ result, not a ticker allowlist.
 
 `INVENTORY_ONLY_ROLLOUT_READY = YES`
 
-Before operating activation the repository mode remains `OFF` and Inventory state is
-`IMPLEMENTED_READY_TO_ENABLE`. Safe activation may set `SELECTIVE_INVENTORY`; the next naturally
-delivered selected message then becomes the user-visible proof. It must not be marked live pass in
-advance.
+Operating activation completed at 12:16 KST after exact-SHA CI, main/operating parity, health,
+schedule and preflight checks. Effective mode is `SELECTIVE_INVENTORY`; Inventory state is
+`ENABLED_PENDING_NATURAL`. The next naturally delivered selected message becomes the user-visible
+proof. It is not marked live pass in advance.
 
 Trade AR remains `OFF_PENDING_NATURAL_PROOF`. Next action after safe activation is
 `WAIT_FOR_INVENTORY_USER_VISIBLE_NATURAL`.
-

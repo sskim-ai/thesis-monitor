@@ -154,7 +154,23 @@
   ],
   "inventory_only_rollout_ready": true,
   "working_capital_user_visible_mode_at_promotion": "OFF",
-  "inventory_user_visible": "IMPLEMENTED_READY_TO_ENABLE",
+  "inventory_user_visible": "ENABLED_PENDING_NATURAL",
   "trade_ar_user_visible": "OFF_PENDING_NATURAL_PROOF",
-  "next_action": "ACTIVATE_SELECTIVE_INVENTORY_AFTER_OPERATING_PREFLIGHT"
+  "operating_activation": {
+    "activated_at_kst": "2026-08-22T12:16:00+09:00",
+    "main_and_operating_sha": "e4711a533a853ebbbc783f5a6b0d6363518d6bbb",
+    "configured_mode": "SELECTIVE_INVENTORY",
+    "effective_mode": "SELECTIVE_INVENTORY",
+    "inventory_preflight": "PASS",
+    "trade_ar_preflight": "REJECTED_OFF",
+    "api_health": "PASS",
+    "operating_smoke": "65_PASSED",
+    "cash_flow_mode": "SELECTIVE_CURRENT_FORMAL_FULL_FCF",
+    "ai_mode": "shadow",
+    "manual_telegram": 0,
+    "manual_task": 0,
+    "pilot_mutation": 0,
+    "database_mutation": 0
+  },
+  "next_action": "WAIT_FOR_INVENTORY_USER_VISIBLE_NATURAL"
 }

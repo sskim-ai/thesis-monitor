@@ -52,11 +52,15 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     assert state["experimental_branch"] == (
         "codex/phase-9-1e-1-inventory-only-user-visible-enablement"
     )
-    assert state["current_phase"] == "phase_9_1e_1_implemented_ready_to_enable"
-    assert state["last_completed_phase"] == (
-        "phase_9_1e_1_inventory_only_user_visible_implementation"
+    assert state["current_phase"] == (
+        "phase_9_1e_1_deployed_inventory_only_pending_natural"
     )
-    assert state["next_default_phase"] == ("phase_9_1e_1_operating_activation")
+    assert state["last_completed_phase"] == (
+        "phase_9_1e_1_inventory_only_user_visible_enablement"
+    )
+    assert state["next_default_phase"] == (
+        "phase_9_1e_1_inventory_user_visible_natural_review"
+    )
     assert state["deployed_code_commit"] == "HEAD"
     assert state["main_code_commit"] == "HEAD"
     assert state["operating_code_commit"] == "HEAD"
@@ -146,9 +150,10 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     assert advancement["phase_9_1e_trade_ar_enablement"] == ("NO_PENDING_NATURAL")
     assert advancement["phase_9_1e_1_implementation_complete"] is True
     assert advancement["phase_9_1e_1_inventory_only_rollout_ready"] is True
-    assert advancement["phase_9_1e_1_operating_enabled"] is False
+    assert advancement["phase_9_1e_1_operating_enabled"] is True
+    assert advancement["phase_9_1e_1_user_visible_mode"] == "SELECTIVE_INVENTORY"
     assert advancement["phase_9_1e_1_inventory_user_visible"] == (
-        "IMPLEMENTED_READY_TO_ENABLE"
+        "ENABLED_PENDING_NATURAL"
     )
     assert advancement["phase_9_1e_1_trade_ar_user_visible"] == (
         "OFF_PENDING_NATURAL_PROOF"
@@ -282,7 +287,7 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     assert phase_91e["runtime_user_visible_diff"] == 0
     assert phase_91e["phase_9_1e_preintegration_ready"] is True
     phase_91e1 = state["phase_9_1e_1_inventory_only_user_visible_enablement"]
-    assert phase_91e1["status"] == "implemented_ready_to_enable"
+    assert phase_91e1["status"] == "deployed_inventory_only_pending_natural"
     assert phase_91e1["work_instruction_commit"] == (
         "880e7a9834439971f53b8a7bc0712d0ece26854d"
     )
@@ -292,9 +297,11 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     assert phase_91e1["trade_ar_selected"] == 0
     assert phase_91e1["ai_fallback_parity_errors"] == 0
     assert phase_91e1["inventory_only_rollout_ready"] is True
-    assert phase_91e1["working_capital_user_visible_mode"] == "OFF"
-    assert phase_91e1["inventory_user_visible"] == "IMPLEMENTED_READY_TO_ENABLE"
+    assert phase_91e1["working_capital_user_visible_mode"] == "SELECTIVE_INVENTORY"
+    assert phase_91e1["inventory_user_visible"] == "ENABLED_PENDING_NATURAL"
     assert phase_91e1["trade_ar_user_visible"] == "OFF_PENDING_NATURAL_PROOF"
+    assert phase_91e1["operating_health"] == "PASS"
+    assert phase_91e1["operating_smoke"] == "65_PASSED"
     investor_flow = state["kr_investor_flow_reconciliation_repair"]
     assert investor_flow["status"] == "complete_pending_natural_confirmation"
     assert investor_flow["work_instruction_commit"] == ("e9d7c73cf6f25b2423b55a6899465e86441316d1")

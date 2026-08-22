@@ -16,6 +16,9 @@ Phase 9.1E leaves the setting absent or explicitly `OFF`. Phase 9.1E.1 may set
 `SELECTIVE_INVENTORY` only after its Inventory-only preflight passes. Exact Trade AR and combined
 modes remain blocked until a separate natural proof and enablement decision.
 
+Current operating mode: `SELECTIVE_INVENTORY`, activated 2026-08-22 at 12:16 KST. The rollback
+target remains `OFF`.
+
 ## Disable Procedure
 
 1. Set `WORKING_CAPITAL_USER_VISIBLE_MODE=OFF` in the operating environment.
