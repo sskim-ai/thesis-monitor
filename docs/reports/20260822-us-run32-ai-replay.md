@@ -18,5 +18,8 @@ completeness, and observer/holder distinction all pass. Substantive repeats,
 generic numeric summaries, generic methodology, generic Unknowns, and typed
 template blockers are zero.
 
-Archive rewrite: 0. Production delivery: 0.
+Average rendered length moved from 1,087.14 to 1,107.07 characters per message,
+a bounded increase of 19.93 characters caused by explicit fiscal identity and
+company-specific predicates rather than numeric dumping.
 
+Archive rewrite: 0. Production delivery: 0.
