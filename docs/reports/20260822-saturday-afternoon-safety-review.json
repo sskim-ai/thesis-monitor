@@ -117,9 +117,13 @@
     "next_natural_action": "BOUNDED_REPAIR_REQUIRED"
   },
   "cleanup": {
-    "initial_report_push": "PENDING",
+    "initial_report_push": "PUSHED",
+    "initial_report_commit": "8e43b8718a881d48a1f8671ad292c7ce196b093f",
     "automation_id": "20260822-1710-weekend-safety-review",
-    "state": "PENDING_AFTER_INITIAL_REPORT_PUSH",
-    "cleanup_time_kst": null
+    "state": "PAUSED",
+    "persisted_status_verified": true,
+    "cleanup_time_kst": "2026-08-22T17:26:39+09:00",
+    "mechanism": "LOCAL_PERSISTED_STATUS_FALLBACK_AFTER_AUTOMATION_MANAGER_TIMEOUT",
+    "production_automations_changed": 0
   }
 }

@@ -19,8 +19,8 @@ OPEN_P0 = 0
 OPEN_MATERIAL_P1 = 1
 
 ZIP = 20260822-1710-weekend-safety-review-bundle.zip
-ZIP_SHA256 = PENDING_BUNDLE_CREATION
-REPORT_COMMIT = PENDING
+ZIP_SHA256 = RETURNED_WITH_COMPLETION_RESPONSE
+REPORT_COMMIT = RETURNED_WITH_COMPLETION_RESPONSE
 ```
 
 The KRX role-target resolver safely avoided a Saturday provider call. Both scheduled Codex KR
@@ -32,4 +32,5 @@ was never written. This is one bounded P1; no P0 delivery occurred.
 Stage B was not run. Inventory remains enabled pending its first eligible natural packet, and exact
 Trade AR remains off pending natural proof.
 
-Recurring review automation cleanup: `PENDING_AFTER_INITIAL_REPORT_PUSH`.
+Recurring review automation cleanup: `PAUSED` at `2026-08-22 17:26:39 KST`; persisted scheduler
+status verified after the initial report push.

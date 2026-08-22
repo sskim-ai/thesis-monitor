@@ -186,9 +186,13 @@ duplicate delivery occurred.
 
 ## Cleanup
 
-- Initial Stage A report push: `PENDING`.
-- Recurring review automation cleanup: `PENDING_AFTER_INITIAL_REPORT_PUSH`.
-- Cleanup time: `PENDING`.
+- Initial Stage A report push: `PUSHED`, commit
+  `8e43b8718a881d48a1f8671ad292c7ce196b093f`.
+- Recurring review automation cleanup: `PAUSED`; persisted scheduler status verified.
+- Cleanup time: `2026-08-22 17:26:39 KST`.
+- The supported automation manager was attempted three times but did not return. The scoped local
+  fallback changed only the named review automation's persisted status from `ACTIVE` to `PAUSED`;
+  no production automation was touched.
 
 ## Evidence Boundary
 

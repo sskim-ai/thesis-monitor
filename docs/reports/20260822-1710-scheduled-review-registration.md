@@ -31,9 +31,14 @@
   `Document scheduled weekend safety review`; the review branch is descended from that commit and
   already carried this registration report.
 - Instruction version used: `2.0`
-- Initial report push state: `PENDING`
-- Recurring-task cleanup state: `PENDING_AFTER_INITIAL_REPORT_PUSH`
-- Cleanup time: `PENDING`
+- Initial report push state: `PUSHED` at report commit
+  `8e43b8718a881d48a1f8671ad292c7ce196b093f`
+- Recurring-task cleanup state: `PAUSED`; persisted scheduler status verified and no future active
+  recurring run remains.
+- Cleanup time: `2026-08-22 17:26:39 KST`
+- Cleanup mechanism: the supported automation manager was attempted three times but did not return;
+  the narrow local scheduler fallback changed only this automation's persisted status from `ACTIVE`
+  to `PAUSED`. Prompt, cadence, project, and all production automations were unchanged.
 
 ## Safety And Cleanup
 

@@ -38,7 +38,7 @@ included in the bundle.
 ## Bundle Integrity
 
 - ZIP path: `20260822-1710-weekend-safety-review-bundle.zip`
-- ZIP SHA-256: `PENDING_BUNDLE_CREATION`
-- Initial report commit: `PENDING`
-- Final cleanup report commit: `PENDING`
-- Recurring automation cleanup: `PENDING_AFTER_INITIAL_REPORT_PUSH`
+- ZIP SHA-256: computed after final ZIP creation and returned with the completion response.
+- Initial report commit: `8e43b8718a881d48a1f8671ad292c7ce196b093f`
+- Final cleanup report commit: returned with the completion response.
+- Recurring automation cleanup: `PAUSED` at `2026-08-22 17:26:39 KST`; persisted status verified.
