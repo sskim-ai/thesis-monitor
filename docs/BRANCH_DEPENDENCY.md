@@ -1,6 +1,6 @@
 # Branch Dependency Manifest
 
-As of 2026-08-21. Resolve final SHAs from Git; documentation commits are intentionally not
+As of 2026-08-22. Resolve final SHAs from Git; documentation commits are intentionally not
 self-referential.
 
 | Branch | Base / merge-base | Unique scope | Code dependency | Operating eligible | Promotion path |
@@ -33,6 +33,7 @@ self-referential.
 | `codex/kr-investor-flow-reconciliation-attribution-repair` | exact instruction `e9d7c73...` on operating main `af89324...` | complete KR top-level participant reconciliation, explicit signal basis, shared AI/fallback attribution safety | existing OHLCV supply path only; no score formula, Public Action schema, task, Pilot, DB, KRX breadth or peer dependency | promoted after exact-SHA CI | clean linear fast-forward; natural confirmation remains parallel |
 | `codex/phase-9-1e-working-capital-user-visible-preintegration` | exact instruction `99f7e86...`; explicit merge `ee78eb7...` of Track A main `7c0e440...` | family-level natural-proof gate, OFF-by-default modes, Inventory/exact-Trade-AR preview, cash-flow redundancy, parity and kill switch | consumes only committed 9.0E/9.1D evidence; no production AI/fallback/Telegram/Public Action/snapshot/DB/task import | promotion eligible with feature OFF and exact-SHA CI | preserve instruction and Track A histories; future enablement requires a small family-specific instruction after `LIVE_PASS` |
 | `codex/phase-9-1e-1-inventory-only-user-visible-enablement` | exact instruction `880e7a9...` on main `fb44510...`; explicit merge `018af42` of run-32 natural evidence | selective total-Inventory context in production AI/fallback with exact parity, typed `%p` binding, OFF kill switch and delivery metadata | reuses 9.1E contract; Trade AR/broad AR/AP/advanced ratios remain blocked; no ticker allowlist or state mutation | promoted and activated Inventory-only; natural user-visible proof pending | Inventory `LIVE_PASS_RUN32`; exact Trade AR `NOT_OBSERVED`; preserve both histories |
+| `codex/kr-non-trading-day-producer-guard-orphan-reconciliation` | exact instruction `2125562...` on operating main `2244b8f...` | shared XKRX producer-role guard, packet-bound delivery-intent ordering, and exact run-33 orphan reconciliation tooling | existing KR producer, packet hold, and notification-delivery paths only; no Inventory/Trade-AR, cash-flow, investor-flow, night-futures, KRX breadth, Public Action, schema, or task-schedule change | promotion eligible after exact-SHA CI; natural weekend/holiday proof remains pending | implementation `c26c935...`; clean linear fast-forward and operating restart required |
 
 The Phase 8.3 original branch has a hidden Git ancestry dependency but no required KRX code,
 schema or runtime import. The clean branch resolves that promotion risk. Phase 8.3.2A starts from
@@ -133,6 +134,14 @@ basis remain unchanged; a future natural evidence review, not this merge, owns a
 
 Phase 9.1E preserves its own instruction commit and explicitly merges the independently promoted KR
 investor-flow Track A before implementation. Its new service is imported only by tests and the
-archive generator; the inert config field defaults to OFF. Inventory and exact Trade AR gates remain
-`NOT_OBSERVED`, so mode preflight forces OFF. Promotion does not authorize user-visible working-
-capital output and does not couple the future family proof to investor-flow natural confirmation.
+archive generator; the config field defaults to OFF. The later Phase 9.1E.1 enablement proved the
+Inventory mechanism and activated only selective Inventory, while exact Trade AR remains
+`NOT_OBSERVED` and OFF. Neither family proof is coupled to investor-flow natural confirmation.
+
+The KR non-trading-day producer repair starts from its immutable docs-only instruction commit on the
+latest operating main. It reuses the XKRX role-target resolver before any KR provider/run/delivery
+state and requires a persisted identity-matching packet before queue/hold eligibility. Its bounded
+maintenance command reconciles only the exact run/date/packet/count identity and is not a general
+notification editor. The run-33 mutation is limited to seven stock rows plus one digest row; all
+remain unsent with null `sent_at`. Natural weekend/holiday proof remains parallel to the Inventory
+user-visible observation.

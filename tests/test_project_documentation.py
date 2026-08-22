@@ -30,6 +30,7 @@ DOCUMENTS = (
     ROOT / "docs" / "architecture" / "WORKING_CAPITAL_RUNTIME_SHADOW_CANARY.md",
     ROOT / "docs" / "architecture" / "WORKING_CAPITAL_USER_VISIBLE_PREINTEGRATION.md",
     ROOT / "docs" / "architecture" / "KR_INVESTOR_FLOW_RECONCILIATION.md",
+    ROOT / "docs" / "architecture" / "KR_PRODUCER_SESSION_AND_DELIVERY_INTEGRITY.md",
     ROOT / "docs" / "operations" / "AI_ASSISTED_PILOT.md",
     ROOT / "docs" / "operations" / "CASH_FLOW_USER_VISIBLE_KILL_SWITCH.md",
     ROOT / "docs" / "operations" / "WORKING_CAPITAL_USER_VISIBLE_KILL_SWITCH.md",
@@ -50,13 +51,13 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     assert state["repository"] == "sskim-ai/thesis-monitor"
     assert state["branch"] == "main"
     assert state["experimental_branch"] == (
-        "codex/phase-9-1e-1-inventory-only-user-visible-enablement"
+        "codex/kr-non-trading-day-producer-guard-orphan-reconciliation"
     )
     assert state["current_phase"] == (
-        "phase_9_1e_1_deployed_inventory_only_pending_natural"
+        "kr_non_trading_day_producer_repair_deployed_pending_natural"
     )
     assert state["last_completed_phase"] == (
-        "phase_9_1e_1_inventory_only_user_visible_enablement"
+        "kr_non_trading_day_producer_guard_orphan_reconciliation"
     )
     assert state["next_default_phase"] == (
         "phase_9_1e_1_inventory_user_visible_natural_review"
@@ -81,6 +82,13 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     )
     assert state["contracts"]["kr_investor_flow_reconciliation"] == (
         "kr-investor-flow-reconciliation-v1"
+    )
+    assert state["contracts"]["xkrx_role_target"] == "xkrx-role-target-v1"
+    assert state["contracts"]["packet_bound_delivery_intent"] == (
+        "packet-bound-delivery-intent-v1"
+    )
+    assert state["contracts"]["kr_orphan_delivery_reconciliation"] == (
+        "kr-orphan-delivery-reconciliation-v1"
     )
     assert state["contracts"]["numeric_primary_owner"] == ("numeric-primary-owner-v1")
     assert state["contracts"]["cash_flow_capital_efficiency"] == ("cash-flow-capital-efficiency-v1")
@@ -159,6 +167,17 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
         "OFF_PENDING_NATURAL_PROOF"
     )
     assert advancement["next_major_architecture_ready"] is False
+    producer_repair = state["kr_non_trading_day_producer_repair"]
+    assert producer_repair["status"] == "deployed_pending_natural"
+    assert producer_repair["source_run_id"] == 33
+    assert producer_repair["source_packet_artifacts"] == 0
+    assert producer_repair["stage_a_reported_stock_rows"] == 7
+    assert producer_repair["companion_digest_rows"] == 1
+    assert producer_repair["reconciled_rows"] == 8
+    assert producer_repair["sent_rows"] == 0
+    assert producer_repair["sent_at_set"] == 0
+    assert producer_repair["p0_open"] == []
+    assert producer_repair["p1_open"] == []
     phase_90a = state["phase_9_0a_cash_flow_capital_efficiency"]
     assert phase_90a["status"] == "architecture_closed_ready_for_phase_9_0b"
     assert phase_90a["active_universe"] == 20

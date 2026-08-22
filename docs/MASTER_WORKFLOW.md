@@ -859,6 +859,31 @@ and AP selected counts are zero. Feature-OFF packet/fallback output is byte-iden
 12:16 KST with mode `SELECTIVE_INVENTORY`; Inventory is `ENABLED_PENDING_NATURAL`. Exact Trade AR
 cannot be enabled in this phase.
 
+## 23E. KR Non-Trading-Day Producer And Delivery Integrity
+
+The 2026-08-22 Saturday Stage A review found that downstream KRX and Codex reviewers safely no-op'd,
+but the independent KR producer still ran seven companies, called providers, and created delivery
+state before failing on an absent packet. Direct evidence lock corrected the report count: there
+were seven stock rows plus one KR digest marker, all unsent and packet-unbound.
+
+Instruction commit `2125562a863d858ee1ab62675c31c7c13be33506` precedes implementation
+`c26c9359b134df0a4cd697fd97e7616cc508e885`. The producer now resolves the shared
+`xkrx-role-target-v1` role `kr_daily_production` before any stateful work. Active-pilot KR analysis
+queues nothing until an immutable packet file exists; queued rows use
+`packet-bound-delivery-intent-v1` and remain non-deliverable until held. Retry/fallback selection
+requires matching packet ID, market and assessment date.
+
+The controlled `kr-orphan-delivery-reconciliation-v1` command terminalized the exact eight incident
+rows as existing status `failed` with reason `non_trading_day_orphan_no_packet`. Sent rows,
+`sent_at`, deletion, payload mutation, Telegram, provider recreation and ad hoc SQL were all zero.
+Implementation Actions run `32565412721` and the 1,406-test full suite pass.
+
+`KR_PRODUCER_REPAIR_READY = YES`; open P0/material P1 are zero. Deployment state is
+`DEPLOYED_PENDING_NATURAL`. A later natural weekend/holiday must prove analysis/provider/packet/
+notification/Telegram counts all zero; no manual run is proof. Inventory remains
+`ENABLED_PENDING_NATURAL`, exact Trade AR remains OFF, and the next action remains the first
+eligible Inventory packet review.
+
 ## 24. Codex Work Order Standard
 
 Every work order starts with exact repo/runtime preflight, states base/branch/scope/non-scope,
@@ -950,7 +975,8 @@ approval. Main merge and shadow deployment still do not authorize AI-assisted pr
 
 Wait for the next naturally delivered selected Inventory message and review its Fact/relation/date,
 AI/fallback path, exactly-once receipt and quality; do not run a task or send Telegram manually.
-Keep exact Trade AR OFF and do not
+In parallel, let the next natural weekend/holiday verify the deployed KR producer safe no-op; do
+not manufacture that evidence. Keep exact Trade AR OFF and do not
 implement DSO, Inventory Days, DPO, CCC, ROIC, broad/AP output, or KR cash-flow period recovery
 without separate authorization.
 

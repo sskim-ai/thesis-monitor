@@ -1,0 +1,42 @@
+{
+  "contract": "kr-producer-repair-readiness-v1",
+  "instruction_commit": "2125562a863d858ee1ab62675c31c7c13be33506",
+  "implementation_commit": "c26c9359b134df0a4cd697fd97e7616cc508e885",
+  "kr_non_trading_day_producer_guard": "PASS",
+  "kr_packet_delivery_integrity": "PASS",
+  "kr_pending_semantics_audit": "PASS",
+  "kr_orphan_delivery_reconciliation": "PASS",
+  "incident": {
+    "monitor_run_id": 33,
+    "packet_id": "2026-08-22-kr-run-33-c2491c2e78ad",
+    "stock_rows": 7,
+    "digest_rows": 1,
+    "reconciled_rows": 8,
+    "sent_rows": 0,
+    "sent_at_set": 0,
+    "packet_artifacts": 0,
+    "terminal_status": "failed",
+    "reason": "non_trading_day_orphan_no_packet"
+  },
+  "validation": {
+    "focused_tests": "50_passed",
+    "full_pytest": "1406_passed",
+    "ruff": "PASS",
+    "diff_check": "PASS",
+    "github_actions_run": 32565412721,
+    "github_actions": "PASS_TEST_LINT"
+  },
+  "open_p0": [],
+  "open_material_p1": [],
+  "p2_backlog": [
+    "first natural non-trading-day producer proof",
+    "first eligible Inventory user-visible natural packet",
+    "exact Trade AR natural proof"
+  ],
+  "kr_producer_repair_ready": true,
+  "kr_non_trading_day_producer_repair": "DEPLOYED_PENDING_NATURAL",
+  "kr_non_trading_day_natural_proof": "PENDING",
+  "inventory_user_visible": "ENABLED_PENDING_NATURAL",
+  "trade_ar_user_visible": "OFF_PENDING_NATURAL_PROOF",
+  "production_assist": false
+}

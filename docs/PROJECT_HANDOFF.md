@@ -1175,6 +1175,24 @@ It combines packet financial-period context with the static canonical report so 
 period suppresses an older relation. Empty opportunities produce a terminal suppressed receipt;
 validation failures remain isolated and retryable under one logical canary ID.
 
+## KR Producer Integrity Handoff
+
+- Instruction commit: `2125562a863d858ee1ab62675c31c7c13be33506`
+- Implementation commit: `c26c9359b134df0a4cd697fd97e7616cc508e885`
+- Contracts: `xkrx-role-target-v1`, `packet-bound-delivery-intent-v1`,
+  `kr-orphan-delivery-reconciliation-v1`
+- Trigger: Saturday `daily_kr` run 33; expected packet
+  `2026-08-22-kr-run-33-c2491c2e78ad` was never persisted
+- Root cause: no producer session guard, notifications before packet, and packet-ID-only hold entry
+- Guard: `kr_daily_production` before KR-close/provider/run state
+- Delivery order: analysis without queue, persisted packet, provisional packet-bound intent, hold
+- Pending semantics: raw DB pending is distinct from deliverable and held-session pending
+- Reconciliation: stock 7 plus digest 1 changed to existing `failed` state; reason
+  `non_trading_day_orphan_no_packet`; sent/deleted/`sent_at` counts zero
+- Tests: 50 focused and 1,406 full PASS; Actions run `32565412721` PASS
+- State: `DEPLOYED_PENDING_NATURAL`; next natural weekend/holiday proof is pending
+- Inventory: `ENABLED_PENDING_NATURAL`; exact Trade AR remains OFF
+
 ## Source Map
 
 - Packet, claim, validation, grounding: `app/services/ai_review_service.py`
@@ -1190,6 +1208,8 @@ validation failures remain isolated and retryable under one logical canary ID.
 - Runtime specificity plan: `app/services/runtime_specificity_service.py`
 - Candidate ownership normalization: `app/services/runtime_reasoning_ownership_service.py`
 - Renderer and delivery: `app/services/ai_assisted_delivery_service.py`
+- KR producer entry: `app/jobs/monitor_daily.py`
+- Delivery-intent reconciliation: `app/services/notification_delivery_integrity_service.py`
 - Deterministic fallback assembly: `app/services/notification_service.py`
 - Industry routing and causal guardrails: `app/services/industry_reasoning_service.py`
 - Skill: `.agents/skills/thesis-monitor-daily-review/SKILL.md`
@@ -1217,8 +1237,13 @@ validation failures remain isolated and retryable under one logical canary ID.
   and selective initial rollout are closed. User-visible natural proof is pending. KR remains
   partial on unresolved CF period context; CCC and standard ROIC are deferred.
 - Working-capital architecture, canonical core, and archive consumption are promoted. The detached
-  Inventory/exact-Trade-AR runtime canary is deployed pending natural proof. Broad AR/AP, exact AP,
-  DSO, Inventory Days, DPO, CCC, and user-visible working-capital remain disabled or deferred.
+  Inventory/exact-Trade-AR runtime canary is deployed. Selective Inventory is enabled pending its
+  first natural user-visible proof; exact Trade AR, broad AR/AP, exact AP, DSO, Inventory Days,
+  DPO, and CCC remain disabled or deferred.
+- The KR non-trading-day producer repair is deployed pending natural weekend/holiday proof. Its
+  deterministic guard, packet-bound delivery-intent ordering, and exact run-33 reconciliation are
+  closed; a future non-trading session must show zero provider calls, runs, rows, packets, and
+  notifications. This proof runs in parallel and does not supersede the Inventory next action.
 - The persisted US count includes the 2026-08-16 operationally complete session whose human message
   quality review failed. Operational count and human approval remain separate; this packet is not
   Production Assist evidence.
@@ -1274,7 +1299,10 @@ first.
    P1 repairs, and retain P2 as backlog.
 8. Phase 9.1A architecture, 9.1B canonical core, and 9.1C archive consumption are promoted. Phase
    9.1D canaries only current-formal total Inventory and exact Trade AR after terminal delivery.
-   Observe each family naturally and keep broad/AP use, DSO, Inventory Days, DPO, CCC, standard
-   ROIC, and working-capital user-visible output disabled.
+   Observe enabled Inventory naturally and keep exact Trade AR, broad/AP use, DSO, Inventory Days,
+   DPO, CCC, and standard ROIC disabled.
 9. Keep Production Assist disabled until natural full-message evidence passes direct human review
    and the user explicitly approves it.
+10. On the next natural KR weekend or holiday, inspect the producer artifacts read-only and confirm
+    zero provider calls, monitor runs, notification rows, packets, and sends. Do not trigger a
+    manual production run; continue waiting for the first eligible Inventory packet in parallel.

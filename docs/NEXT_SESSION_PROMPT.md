@@ -11,6 +11,17 @@ Phase 9.1E readiness JSON, and all Phase 9.1E.1 rollout reports/JSON. Also read
 night-futures telemetry complete report/readiness JSON. Repository and immutable runtime evidence
 override conversation summaries.
 
+Also read `docs/architecture/KR_PRODUCER_SESSION_AND_DELIVERY_INTEGRITY.md` and the bundled
+2026-08-22 KR producer repair reports. The repair follows docs-only instruction commit
+`2125562a863d858ee1ab62675c31c7c13be33506` and implementation commit
+`c26c9359b134df0a4cd697fd97e7616cc508e885`. Run 33 produced no immutable packet but left eight raw
+pending rows: seven stocks plus one digest. The exact reconciler terminalized only those rows as
+`failed` with reason `non_trading_day_orphan_no_packet`; it did not send, delete, set `sent_at`, or
+change payloads. `kr_daily_production` now resolves the shared XKRX role target before providers,
+run state, or delivery state, and packet-bound delivery intents are created only after a real packet
+file exists. State is `DEPLOYED_PENDING_NATURAL`; inspect the next weekend/holiday naturally and
+read-only. Do not run KR production manually.
+
 Phase 9.1E.1 follows instruction commit `880e7a9834439971f53b8a7bc0712d0ece26854d` and explicit
 morning-evidence merge `018af42`. Inventory natural proof is `LIVE_PASS_RUN32`; exact Trade AR is
 `NOT_OBSERVED`. The Inventory-only implementation and preflight pass with open P0/material P1 zero.
@@ -44,6 +55,9 @@ Current state after clean Phase 9.1D promotion:
 Observe the next natural user-visible Inventory selection without manually running a Scheduled Task
 or sending Telegram. An empty eligible set is `NOT_OBSERVED`, not failure. Any P0 turns the mode OFF
 and gets a bounded repair with immutable evidence preserved.
+
+The next major action remains the first eligible Inventory packet. The independent KR producer
+weekend/holiday proof continues in parallel and does not block that observation.
 
 Phase 9.1E architecture is complete, but no working-capital family may become user-visible before
 its intended natural mechanism proof. Keep broad AR/AP, exact AP, DSO,
