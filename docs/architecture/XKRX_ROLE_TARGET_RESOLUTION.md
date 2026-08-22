@@ -29,4 +29,3 @@ natural slot.
 Structured reasons include `no_valid_role_target`, `target_not_completed`,
 `target_already_observed`, and `target_already_terminal`. Existing readiness,
 session pairing, provider, deadline, and schedules are unchanged.
-

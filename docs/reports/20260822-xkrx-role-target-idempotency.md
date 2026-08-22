@@ -13,4 +13,3 @@ slot.
 Tests prove repeated invocation, process-restart timing, terminal suppression,
 pending retry, and Saturday-to-Sunday deduplication. Duplicate logical provider
 observations: 0 in covered cases.
-

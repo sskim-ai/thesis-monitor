@@ -11,4 +11,3 @@ precheck ordering at a natural weekend timestamp.
 
 The repair introduces `xkrx-role-target-v1`, removes the universal wall-clock
 gate, and retains the verified night-session basis and KRX readiness contracts.
-

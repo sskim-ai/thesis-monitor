@@ -11,4 +11,3 @@ unchanged.
 
 Provider-call bound: zero for outside-slot, no-target, duplicate, or terminal;
 the existing endpoint count only for an eligible unresolved target.
-

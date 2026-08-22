@@ -13,4 +13,3 @@ This diff changes target resolution and pre-provider idempotency only.
 
 Manual task/provider recreation/Telegram/DB/Pilot operations: 0. Production
 Assist remains OFF.
-

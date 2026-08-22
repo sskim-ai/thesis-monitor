@@ -11,4 +11,3 @@ allows 09:15; the horizon result then suppresses later dates for the same target
 
 Provider-call bound: zero for invalid, duplicate, or terminal target; one per
 eligible observer slot otherwise. No observer was manually run.
-

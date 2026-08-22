@@ -16,4 +16,3 @@ No manual observer or provider reconstruction is permitted. Until that evidence:
 `KRX_0805_ROLE_TARGET_REPAIR = DEPLOYED_PENDING_NATURAL`
 
 `DEADLINE_VERDICT = DEADLINE_UNPROVEN`
-
