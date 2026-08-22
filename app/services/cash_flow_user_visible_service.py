@@ -17,6 +17,7 @@ from app.services.cash_flow_capital_efficiency_service import (
     EligibilityStatus,
     FinancialFact,
     Metric,
+    PeriodIdentity,
     financial_fact_from_mapping,
 )
 from app.services.cash_flow_shadow_consumption_service import (
@@ -35,6 +36,7 @@ from app.services.numeric_semantic_registry import (
 
 
 CONTRACT_VERSION = "cash-flow-user-visible-v1"
+CASH_FLOW_PERIOD_IDENTITY_CONTRACT = "cash-flow-period-identity-v1"
 CANONICAL_FACTS_REPORT = "20260820-phase9-0b-canonical-facts.json"
 FORMAL_PERIOD_REPORT = "20260820-phase9-0a-coverage.json"
 
@@ -714,6 +716,43 @@ def _numeric_value(value: Decimal) -> int | float:
     return int(value) if value == value.to_integral_value() else float(value)
 
 
+def cash_flow_period_claim_contract(
+    period: PeriodIdentity | None,
+) -> dict[str, object] | None:
+    if period is None:
+        return None
+    period_type = period.period_type.value
+    duration_basis = {
+        "YTD": "fiscal_year_to_date_cumulative",
+        "FY": "full_fiscal_year",
+        "QTD": "standalone_fiscal_quarter",
+        "TTM": "trailing_twelve_months",
+    }[period_type]
+    label = period_label(period)
+    forbidden = ["annualized", "calendar_period_inference"]
+    if period_type == "YTD":
+        forbidden.append("standalone_quarter")
+    elif period_type == "FY":
+        forbidden.append("year_to_date")
+    elif period_type == "QTD":
+        forbidden.append("year_to_date")
+    return {
+        "contract": CASH_FLOW_PERIOD_IDENTITY_CONTRACT,
+        "required_period_label": label,
+        "duration_basis": duration_basis,
+        "is_ytd": period_type == "YTD",
+        "is_fy": period_type == "FY",
+        "allowed_period_claims": {
+            "fiscal_year": period.fiscal_year,
+            "fiscal_quarter": period.fiscal_quarter,
+            "period_type": period_type,
+            "period_end": period.end.isoformat(),
+            "canonical_label": label,
+        },
+        "forbidden_period_claims": forbidden,
+    }
+
+
 def fact_catalog_entries(
     selection: UserVisibleCashFlowSelection,
 ) -> list[dict[str, object]]:
@@ -760,6 +799,9 @@ def selection_to_dict(
     selection: UserVisibleCashFlowSelection,
 ) -> dict[str, object]:
     context = selection.reasoning_context
+    period_contract = cash_flow_period_claim_contract(
+        context.primary_period if context else None
+    )
     fcf = next(
         (item for item in selection.facts if item.fact_id == selection.primary_fact_id),
         None,
@@ -785,10 +827,32 @@ def selection_to_dict(
                 "period_type": context.primary_period.period_type.value,
                 "fiscal_year": context.primary_period.fiscal_year,
                 "fiscal_quarter": context.primary_period.fiscal_quarter,
+                "canonical_label": period_contract["required_period_label"],
+                "duration_basis": period_contract["duration_basis"],
+                "is_ytd": period_contract["is_ytd"],
+                "is_fy": period_contract["is_fy"],
             }
-            if context and context.primary_period
+            if context and context.primary_period and period_contract
             else None
         ),
+        "period_identity_contract": (
+            period_contract["contract"] if period_contract else None
+        ),
+        "required_period_label": (
+            period_contract["required_period_label"] if period_contract else None
+        ),
+        "duration_basis": (
+            period_contract["duration_basis"] if period_contract else None
+        ),
+        "is_ytd": period_contract["is_ytd"] if period_contract else False,
+        "is_fy": period_contract["is_fy"] if period_contract else False,
+        "allowed_period_claims": (
+            period_contract["allowed_period_claims"] if period_contract else {}
+        ),
+        "forbidden_period_claims": (
+            period_contract["forbidden_period_claims"] if period_contract else []
+        ),
+        "fcf_scope": "OCF - PPE CAPEX" if fcf else None,
         "filing_date": (
             context.primary_filing_date.isoformat()
             if context and context.primary_filing_date

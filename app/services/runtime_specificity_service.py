@@ -28,6 +28,75 @@ def _mapping(value: object) -> dict[str, object]:
     return dict(value) if isinstance(value, Mapping) else {}
 
 
+def _price_fact_ownership(stock: dict[str, object]) -> dict[str, object]:
+    catalog = [
+        item for item in stock.get("fact_catalog", []) if isinstance(item, dict)
+    ]
+    valid_ids = {
+        str(item.get("fact_id")) for item in catalog if item.get("fact_id")
+    }
+    requirements = [
+        item
+        for item in _mapping(stock.get("state_grounding_requirements")).get(
+            "price", []
+        )
+        if isinstance(item, dict)
+    ]
+    by_reason = {
+        str(item.get("reason")): str(item.get("fact_id"))
+        for item in requirements
+        if item.get("reason") and str(item.get("fact_id")) in valid_ids
+    }
+    allowed = {
+        str(item.get("fact_id"))
+        for item in catalog
+        if item.get("fact_id")
+        and (
+            str(item.get("fact_type") or "").startswith("chart_")
+            or str(item.get("fact_type") or "").startswith("monitoring_")
+            or item.get("fact_type") == "price"
+        )
+    }
+    current_context = _mapping(stock.get("current_price_context"))
+    current_rr = _mapping(current_context.get("current_price_risk_reward"))
+    rr_fact_id = by_reason.get("current_price_risk_reward")
+    canonical_rr_id = "chart:structure:risk_reward:current_price"
+    unavailable = (
+        [canonical_rr_id]
+        if current_rr.get("available") is False and canonical_rr_id not in valid_ids
+        else []
+    )
+    return {
+        "owner": "price_context",
+        "primary_text_ref": "price_positioning.text",
+        "current_price_fact_id": by_reason.get("current_price"),
+        "support_context_id": by_reason.get("active_support"),
+        "resistance_context_id": by_reason.get("active_resistance"),
+        "current_rr_fact_id": rr_fact_id,
+        "rr_transition_fact_id": (
+            "monitoring:risk_reward_transition"
+            if "monitoring:risk_reward_transition" in valid_ids
+            else None
+        ),
+        "invalidation_fact_id": next(
+            (
+                str(item.get("fact_id"))
+                for item in catalog
+                if item.get("fact_type") == "chart_invalidation"
+            ),
+            None,
+        ),
+        "confirmation_state_id": (
+            "monitoring:confirmation_transition"
+            if "monitoring:confirmation_transition" in valid_ids
+            else None
+        ),
+        "allowed_fact_ids": sorted(allowed),
+        "unavailable_fact_ids": unavailable,
+        "declaration_policy": "exact_fact_catalog_subset_only",
+    }
+
+
 def _security_identity_policy(stock: dict[str, object]) -> dict[str, object]:
     identity_fact = next(
         (
@@ -350,6 +419,7 @@ def build_runtime_specificity_plan(stock: dict[str, object]) -> dict[str, object
         "security_reasoning_policy": security_policy,
         "business_earnings_policy": business_policy,
         "risk_reward_delta_policy": rr_policy,
+        "price_fact_ownership": _price_fact_ownership(stock),
         "structured_field_policy": _structured_field_policy(stock),
         "numeric_primary_owner_policy": _numeric_primary_owner_policy(),
         "financial_caution_policy": {
