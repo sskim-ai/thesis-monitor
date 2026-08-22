@@ -6,6 +6,7 @@ import pytest
 
 from app.schemas.ai_review import AIStockReview
 from app.services.ai_assisted_delivery_service import (
+    _align_working_capital_packet_id,
     _working_capital_delivery_metadata,
     _working_capital_run_metadata,
 )
@@ -173,6 +174,28 @@ def test_ai_fallback_inventory_context_mismatch_is_hard_failure() -> None:
             "TEST",
             {"analysis_context": {"working_capital_user_visible": fallback}},
         )
+
+
+def test_fallback_context_packet_id_is_aligned_before_exact_parity() -> None:
+    deterministic = {
+        "analysis_context": {"working_capital_user_visible": _context()}
+    }
+    deterministic["analysis_context"]["working_capital_user_visible"][
+        "packet_id"
+    ] = "pending:2026-08-22:TEST"
+
+    _align_working_capital_packet_id(deterministic, "packet-test")
+
+    assert (
+        deterministic["analysis_context"]["working_capital_user_visible"][
+            "packet_id"
+        ]
+        == "packet-test"
+    )
+    packet = {
+        "stocks": [{"ticker": "TEST", "working_capital_user_visible": _context()}]
+    }
+    _working_capital_delivery_metadata(packet, "TEST", deterministic)
 
 
 def test_inventory_growth_gap_has_typed_numeric_registry_entry() -> None:

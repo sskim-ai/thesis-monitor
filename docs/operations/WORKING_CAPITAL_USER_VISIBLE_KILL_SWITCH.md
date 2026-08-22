@@ -12,8 +12,9 @@ Supported values are `OFF`, `SELECTIVE_INVENTORY`, `SELECTIVE_EXACT_TRADE_AR`, a
 `SELECTIVE_INVENTORY_AND_EXACT_TRADE_AR`. Missing, blank, misspelled, or unknown values fail closed
 to `OFF`.
 
-Phase 9.1E leaves the setting absent or explicitly `OFF`. The resolved operating state must be
-`OFF`.
+Phase 9.1E leaves the setting absent or explicitly `OFF`. Phase 9.1E.1 may set
+`SELECTIVE_INVENTORY` only after its Inventory-only preflight passes. Exact Trade AR and combined
+modes remain blocked until a separate natural proof and enablement decision.
 
 ## Disable Procedure
 
@@ -33,7 +34,8 @@ every requested metric family. The preflight must verify the Phase 9.1D packet/r
 Fact and relation lineage, PIT/currentness, semantic/causal/numeric PASS, zero production influence,
 and no open P0/material P1. A failed or incomplete gate forces the effective mode back to `OFF`.
 
-Inventory and exact Trade AR are independently enableable. A combined mode requires both gates.
+Inventory and exact Trade AR have independent evidence gates. The current rollout policy permits
+only Inventory; Trade AR and combined modes fail closed even if requested.
 
 ## Isolation
 
@@ -44,5 +46,5 @@ Turning this feature OFF does not disable:
 - Phase 9.1D detached runtime canary;
 - Phase 9.0E selective cash-flow output.
 
-It disables only future working-capital production enrichment. Phase 9.1E performs no enablement,
-manual task, manual Telegram, Pilot mutation, DB mutation, or warning mutation.
+It disables only future working-capital production enrichment. Rollout and rollback perform no
+manual task, manual Telegram, Pilot mutation, DB mutation, archive rewrite, or warning mutation.

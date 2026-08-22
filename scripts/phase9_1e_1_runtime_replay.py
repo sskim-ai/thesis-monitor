@@ -13,6 +13,7 @@ from app.database import engine
 from app.models.thesis import InvestmentThesis, ThesisAssessment
 from app.models.watchlist import WatchlistItem
 from app.services.ai_assisted_delivery_service import (
+    _align_working_capital_packet_id,
     _working_capital_delivery_metadata,
 )
 from app.services.ai_review_service import build_ai_review_packet
@@ -116,6 +117,10 @@ def build_replay() -> dict[str, object]:
             ticker = str(stock["ticker"])
             before = before_fallback[ticker]
             after = after_fallback[ticker]
+            _align_working_capital_packet_id(
+                after,
+                str(after_packet["packet_id"]),
+            )
             metadata = _working_capital_delivery_metadata(
                 after_packet,
                 ticker,

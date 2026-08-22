@@ -1,20 +1,19 @@
 # Thesis Monitor Master Workflow
 
-Master Workflow: `v15`
-As of: `2026-08-21`
+Master Workflow: `v16`
+As of: `2026-08-22`
 Repository: `sskim-ai/thesis-monitor`
 Operating branch: `main`
-Latest evidence branch: `codex/kr-investor-flow-reconciliation-attribution-repair`
+Latest evidence branch: `codex/phase-9-1e-1-inventory-only-user-visible-enablement`
 Commit resolution: run `git rev-parse HEAD`; this document is part of that commit and must not
 hardcode a self-referential final SHA. Resolve `origin/main` and the clean operating checkout at
-session start. Phase 9.1A defines `working-capital-evidence-v1`; Phase 9.1B implements its canonical
-Facts and typed relations; Phase 9.1C closes archive-only shadow consumption under
-`working-capital-shadow-consumption-v1`. The 20-subject replay selects only seven current-formal,
-material relations: Inventory for five subjects and exact Trade AR for two. PIT, freshness,
-trade/broad semantics, numeric binding, causal guard, Unknown resolution, and shadow quality pass
-with zero P0/material P1 and zero runtime/user-visible diff. Promotion is
-`PROMOTION_DEFERRED_FOR_KR_NATURAL_WINDOW`; main/operating remain on Phase 9.0E. Natural US/KR proof
-remains parallel and Natural AI-assisted delivery remains `PARTIAL`.
+session start. Phase 9.1A defines `working-capital-evidence-v1`; Phase 9.1B implements canonical
+Facts and typed relations; Phase 9.1C closes archive-only consumption; Phase 9.1D observes detached
+natural canaries; Phase 9.1E defines the user-visible family gate. Natural run-32 established total
+Inventory `LIVE_PASS` with zero production influence while exact Trade AR remains `NOT_OBSERVED`.
+Phase 9.1E.1 implements only the Inventory path, reuses the existing contract, preserves strict
+AI/fallback parity and leaves Trade AR/broad AR/AP/advanced ratios blocked. Open P0/material P1 are
+zero. Natural AI-assisted delivery remains `PARTIAL` independently.
 KRX 8.2A.x and peer 8.3.x also remain experimental.
 
 ## 1. Project Mission
@@ -838,6 +837,27 @@ production/user-visible diffs are zero. Exact numbers remain owned by `business_
 `NO_PENDING_NATURAL`. After a family reaches natural `LIVE_PASS`, use a small enablement-only
 instruction for that family; no new broad architecture phase is required.
 
+## 23D. Phase 9.1E.1 Inventory-Only User-Visible Enablement
+
+Immutable instruction commit `880e7a9834439971f53b8a7bc0712d0ece26854d` precedes the explicit
+morning-evidence merge and implementation. Run-32 packet
+`2026-08-22-us-run-32-dde10ec6c9eb` selected MU and TSLA total Inventory in the detached 9.1D
+canary. Numeric binding was automatic 2/2, semantic and quality errors were zero, and production
+influence was zero. This independently upgrades Inventory to `LIVE_PASS`; TSM exact Trade AR was
+not selected and remains `NOT_OBSERVED`.
+
+Phase 9.1E.1 reuses `working-capital-user-visible-v1` and permits only
+`SELECTIVE_INVENTORY`. The selector is contract-driven, current-formal and PIT-safe, uses total
+Inventory only, applies industry materiality and Phase 9.0E cash-flow redundancy, and places one
+typed `%p` relation in `business_earnings`. It does not mutate thesis, warning, valuation, Pilot or
+DB state. AI and fallback share exact packet/context/relation/Fact/date/scope/direction identity.
+
+The 20-subject replay finds five Inventory candidates, selects KR `000660`, `005490`, and `005930`,
+and suppresses MU/TSLA because current cash-flow context already owns the point. Trade AR, broad AR
+and AP selected counts are zero. Feature-OFF packet/fallback output is byte-identical to prior main.
+`INVENTORY_ONLY_ROLLOUT_READY=YES`; activation remains a separate operating step followed by
+natural user-visible proof. Exact Trade AR cannot be enabled in this phase.
+
 ## 24. Codex Work Order Standard
 
 Every work order starts with exact repo/runtime preflight, states base/branch/scope/non-scope,
@@ -927,11 +947,11 @@ approval. Main merge and shadow deployment still do not authorize AI-assisted pr
 
 ## 28. Current Next Task
 
-Observe the first natural US/KR working-capital canary receipts without manual execution and classify
-Inventory and exact Trade AR independently. Phase 9.1E pre-integration is complete with the feature
-OFF. A later small enablement-only instruction may activate only a family with `LIVE_PASS`. Do not
-implement DSO, Inventory Days, DPO, CCC, ROIC, broad/AP working-capital output, or KR cash-flow
-period recovery without separate authorization.
+Complete Phase 9.1E.1 operating preflight and activate only `SELECTIVE_INVENTORY` when exact-SHA CI,
+health, scheduler, 9.0E and 9.1D checks pass. Then wait for the next naturally delivered selected
+Inventory message; do not run a task or send Telegram manually. Keep exact Trade AR OFF and do not
+implement DSO, Inventory Days, DPO, CCC, ROIC, broad/AP output, or KR cash-flow period recovery
+without separate authorization.
 
 ## 29. New Session Bootstrap Prompt
 

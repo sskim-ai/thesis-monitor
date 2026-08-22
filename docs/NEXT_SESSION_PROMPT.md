@@ -5,18 +5,17 @@ Repository: `sskim-ai/thesis-monitor`
 First fetch and compare `origin/main`, the development checkout, and the clean operating checkout.
 Read `docs/project-state.json`, `docs/MASTER_WORKFLOW.md`, `docs/PROJECT_HANDOFF.md`,
 `docs/architecture/WORKING_CAPITAL_RUNTIME_SHADOW_CANARY.md`, and the Phase 9.1D complete report and
-readiness JSON. Read `docs/architecture/WORKING_CAPITAL_USER_VISIBLE_PREINTEGRATION.md` and the
-Phase 9.1E readiness JSON. Also read `docs/architecture/NIGHT_FUTURES_PUBLICATION_TELEMETRY.md` and the
+readiness JSON. Read `docs/architecture/WORKING_CAPITAL_USER_VISIBLE_PREINTEGRATION.md`, the
+Phase 9.1E readiness JSON, and all Phase 9.1E.1 rollout reports/JSON. Also read
+`docs/architecture/NIGHT_FUTURES_PUBLICATION_TELEMETRY.md` and the
 night-futures telemetry complete report/readiness JSON. Repository and immutable runtime evidence
 override conversation summaries.
 
-Phase 9.1E pre-integration is complete after instruction commit
-`99f7e86f3ae40cc86a4865ef70dc89abf79d5a37` and implementation commit
-`a4f8570130d1fd33f802d391c6a196d1c5579278`. `WORKING_CAPITAL_USER_VISIBLE_MODE` remains `OFF`.
-Inventory and exact Trade AR natural proof remain independently `NOT_OBSERVED`; their enablement
-states are `NO_PENDING_NATURAL`. Do not enable either family, manufacture proof, or rerun a task.
-After a natural Phase 9.1D receipt gives one family `LIVE_PASS`, prepare only a small enablement-only
-instruction for that proven family and retain all Phase 9.1E guards.
+Phase 9.1E.1 follows instruction commit `880e7a9834439971f53b8a7bc0712d0ece26854d` and explicit
+morning-evidence merge `018af42`. Inventory natural proof is `LIVE_PASS_RUN32`; exact Trade AR is
+`NOT_OBSERVED`. The Inventory-only implementation and preflight pass with open P0/material P1 zero.
+Before operating activation `WORKING_CAPITAL_USER_VISIBLE_MODE` remains `OFF`. The only permitted
+activation is `SELECTIVE_INVENTORY`; Trade AR and combined modes must remain OFF.
 
 The KR investor-flow reconciliation repair is complete after immutable instruction commit
 `e9d7c73cf6f25b2423b55a6899465e86441316d1`; implementation
@@ -34,17 +33,18 @@ Current state after clean Phase 9.1D promotion:
 - Phase 9.1D contract: `working-capital-runtime-shadow-canary-v1`
 - instruction commit: `dc4e1cf14faa7cebf78eb8ba5a5e73b6369c991c`
 - implementation commit: `5316113062782b09595a495ec9a903a4973f9df5`
-- canary state: `DEPLOYED_PENDING_NATURAL`
+- canary state: `INVENTORY_LIVE_PASS_TRADE_AR_NOT_OBSERVED`
 - approved scope: total Inventory and exact Trade AR only
-- Inventory natural proof: `NOT_OBSERVED`
+- Inventory natural proof: `LIVE_PASS_RUN32`
 - exact Trade AR natural proof: `NOT_OBSERVED`
-- working-capital user-visible output: NOT ENABLED
+- working-capital user-visible output: Inventory implemented, operating activation pending
 - `PHASE_9_1E_ARCHITECTURE_READY = YES`
 - open P0/P1: 0/0
 
-Observe the next natural US and KR canary archives without manually running a Scheduled Task or
-sending Telegram. Classify each metric family independently. An empty eligible set is
-`NOT_OBSERVED`, not failure. Any P0 stays isolated from production and receives a bounded repair.
+After exact-SHA CI and operating preflight, activate only `SELECTIVE_INVENTORY` without manually
+running a Scheduled Task or sending Telegram. Then observe the next natural user-visible Inventory
+selection. An empty eligible set is `NOT_OBSERVED`, not failure. Any P0 turns the mode OFF and gets a
+bounded repair with immutable evidence preserved.
 
 Phase 9.1E architecture is complete, but no working-capital family may become user-visible before
 its intended natural mechanism proof. Keep broad AR/AP, exact AP, DSO,

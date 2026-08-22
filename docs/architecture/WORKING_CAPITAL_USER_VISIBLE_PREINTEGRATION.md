@@ -130,3 +130,26 @@ operator path that can bypass natural proof.
 The operating mode remains `OFF`. Production AI, fallback, Telegram, Public Action, snapshot,
 assessment DB, warning lifecycle, Scheduled Tasks, and Production Assist are unchanged. Preview
 artifacts cannot be used as enablement evidence.
+
+## Phase 9.1E.1 Inventory-Only Enablement
+
+The natural run-32 canary established `INVENTORY_NATURAL_PROOF=LIVE_PASS`: MU and TSLA selected
+total Inventory with complete Fact/relation lineage, automatic numeric binding, zero semantic or
+quality errors, and zero production influence. Exact Trade AR existed in context for TSM but was not
+selected, so `TRADE_AR_NATURAL_PROOF=NOT_OBSERVED`.
+
+Phase 9.1E.1 therefore permits only `SELECTIVE_INVENTORY`. Trade AR and combined modes are hard
+rejected by the preflight and resolve to `OFF`. The production selector remains contract-driven:
+current-formal, PIT-safe, total Inventory, materiality-selected, non-redundant with Phase 9.0E cash
+flow, and owned by `business_earnings`. It renders one typed `%p` relation at most. AI and fallback
+must share the exact packet/context/relation/Fact/date/scope/direction identity.
+
+Operating activation follows implementation CI, OFF-mode regression, main/operating promotion,
+health and schedule checks. The kill switch is the same configuration key set to `OFF`; disabling
+user-visible Inventory does not disable canonical evidence, shadow consumption, the detached
+canary, or cash flow.
+
+After activation the state is `ENABLED_PENDING_NATURAL`, not live pass. The first natural delivered
+message that actually selects Inventory must verify lineage, balance date, semantics, causal guard,
+AI/fallback path, numeric ownership, cash-flow coexistence, exactly-once delivery and message
+quality. A P0 sets the mode back to `OFF` while preserving immutable evidence.

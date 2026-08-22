@@ -5,7 +5,24 @@ with [MASTER_WORKFLOW.md](MASTER_WORKFLOW.md), [project-state.json](project-stat
 [NEXT_SESSION_PROMPT.md](NEXT_SESSION_PROMPT.md) before changing runtime policy, Knowledge,
 validation, delivery, or Scheduled Tasks.
 
-## Current Authoritative Handoff — 2026-08-21
+## Current Authoritative Handoff — 2026-08-22
+
+Phase 9.1E.1 Inventory-only enablement is implemented on immutable instruction commit
+`880e7a9834439971f53b8a7bc0712d0ece26854d`, explicit morning-evidence merge `018af42`, and initial
+implementation commit `85ab01130f34650edca6a0bcba5c5ae52db4edf0`. Run-32 packet
+`2026-08-22-us-run-32-dde10ec6c9eb` proves total Inventory `LIVE_PASS`; exact Trade AR remains
+`NOT_OBSERVED`.
+
+The implementation reuses `working-capital-user-visible-v1`, enforces Inventory-only preflight,
+adds current-formal/PIT/materiality/cash-flow-redundancy selection to AI and fallback, and binds one
+Inventory `%p` relation to `business_earnings`. The 20-subject replay selects `000660`, `005490`,
+and `005930`; MU and TSLA are suppressed by compatible Phase 9.0E cash-flow context. AI/fallback,
+numeric, semantic, causal, quality and kill-switch checks pass with open P0/material P1 zero.
+
+Before operating activation, `WORKING_CAPITAL_USER_VISIBLE_MODE=OFF`, Inventory is
+`IMPLEMENTED_READY_TO_ENABLE`, and Trade AR is `OFF_PENDING_NATURAL_PROOF`. Activate only
+`SELECTIVE_INVENTORY` after exact-SHA CI, main/operating parity, health and scheduler checks. Never
+mark user-visible Inventory live pass until an actual natural delivered message selects it.
 
 Phase 9.1E working-capital user-visible pre-integration is complete on immutable instruction commit
 `99f7e86f3ae40cc86a4865ef70dc89abf79d5a37` and implementation commit
@@ -134,7 +151,7 @@ execution or an autonomous investment adviser.
 | Cash-flow kill switch | `CASH_FLOW_USER_VISIBLE_MODE`; invalid/default OFF |
 | Working-capital evidence | `working-capital-evidence-v1`; 9.1B canonical core implemented shadow |
 | Working-capital consumption | `working-capital-shadow-consumption-v1`; retrospective PASS, 9.1D selective canary ready |
-| Working-capital user-visible pre-integration | `working-capital-user-visible-v1` plus family enable gate; feature OFF pending natural proof |
+| Working-capital user-visible | `working-capital-user-visible-v1`; Inventory implemented/ready, exact Trade AR OFF pending proof |
 
 ## Phase 8.3 Final State
 

@@ -289,6 +289,17 @@ def _payload_working_capital_context(payload: dict[str, object]) -> dict[str, ob
     return dict(value) if isinstance(value, dict) else {}
 
 
+def _align_working_capital_packet_id(
+    payload: dict[str, object], packet_id: str
+) -> None:
+    analysis = payload.get("analysis_context")
+    if not isinstance(analysis, dict):
+        return
+    context = analysis.get("working_capital_user_visible")
+    if isinstance(context, dict):
+        context["packet_id"] = packet_id
+
+
 def _packet_working_capital_context(
     packet: dict[str, object], ticker: str
 ) -> dict[str, object]:
@@ -308,6 +319,7 @@ def _working_capital_delivery_metadata(
     if packet_context or fallback_context:
         parity_fields = (
             "working_capital_user_visible_context_id",
+            "packet_id",
             "metric_family",
             "semantic_scope",
             "balance_date",
@@ -795,6 +807,7 @@ def hold_ai_assisted_pilot_session(
             ):
                 continue
             deterministic = _clean_deterministic_payload(payload)
+            _align_working_capital_packet_id(deterministic, packet_id)
             payload[AI_ASSISTED_PILOT_METADATA_KEY] = {
                 "pilot_mode": PILOT_MODE,
                 "pilot_version": PILOT_VERSION,
