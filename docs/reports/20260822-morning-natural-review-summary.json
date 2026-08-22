@@ -1,0 +1,90 @@
+{
+  "contract": "morning-natural-evidence-review-v1",
+  "review_date": "2026-08-22",
+  "evidence_cutoff_kst": "2026-08-22T09:30:00+09:00",
+  "instruction": {
+    "version": "1.0",
+    "path": "docs/work-instructions/20260822-morning-natural-evidence-extraction-and-gates.md",
+    "commit": "378b5051119f6d489c58f87a910f9f292b1c1993"
+  },
+  "repository": {
+    "main_sha": "f5a956930c1fbc4cbc6c6dc053a1cf2e428d4000",
+    "operating_sha": "f5a956930c1fbc4cbc6c6dc053a1cf2e428d4000",
+    "operating_clean": true,
+    "api_health": "PASS",
+    "production_assist": false,
+    "ai_review_mode": "shadow",
+    "cash_flow_mode": "SELECTIVE_CURRENT_FORMAL_FULL_FCF",
+    "working_capital_user_visible_mode": "OFF",
+    "public_action": "0.4.5",
+    "output_schema": 4
+  },
+  "us_natural": {
+    "packet_id": "2026-08-22-us-run-32-dde10ec6c9eb",
+    "generated_at_kst": "2026-08-22T08:20:04.753708+09:00",
+    "delivery_mode": "deterministic_fallback",
+    "terminal_at_kst": "2026-08-22T08:40:04.711679+09:00",
+    "expected_messages": 14,
+    "sent": 14,
+    "pending": 0,
+    "failed": 0,
+    "duplicate": 0,
+    "ai_candidate_attempts": 4,
+    "ai_candidate_passes": 0,
+    "exactly_once": "PASS"
+  },
+  "phase_9_0e": {
+    "natural_state": "LIVE_PASS_SELECTIVE_SUBSET",
+    "selected": 9,
+    "suppressed": 4,
+    "rendered_fcf": 9,
+    "wrong_value_or_scope": 0,
+    "degraded": 0
+  },
+  "phase_9_1d": {
+    "canary_id": "wc-canary-e16eaeeece1f21f9d42e8d27",
+    "status": "COMPLETE_PASS",
+    "selected_subjects": ["MU", "TSLA"],
+    "selected_metric_families": {"MU": "inventory", "TSLA": "inventory"},
+    "inventory_natural_proof": "LIVE_PASS",
+    "trade_ar_natural_proof": "NOT_OBSERVED",
+    "production_influence": 0
+  },
+  "night_futures": {
+    "expected_session_basis": "PASS",
+    "production_attempts": 4,
+    "ready_attempts": 0,
+    "observers_scheduled": 2,
+    "observers_recorded": 0,
+    "observer_skip_reason": "not_normal_xkrx_session",
+    "telemetry_gap": "FAIL",
+    "deadline_verdict": "DEADLINE_UNPROVEN",
+    "fail_closed_safety": "PASS",
+    "stale_internal_item_risk": "LOW"
+  },
+  "krx_0805": {
+    "status": "SKIPPED",
+    "reason": "not_normal_xkrx_session",
+    "provider_calls": 0,
+    "capture_plumbing": "FAIL",
+    "publication_pattern": "UNCHANGED"
+  },
+  "gates": {
+    "inventory_user_visible_enablement_ready": "NO_OTHER_BLOCKER",
+    "trade_ar_user_visible_enablement_ready": "NO_PENDING_NATURAL",
+    "phase_9_1e_next_action": "BOUNDED_REPAIR_REQUIRED",
+    "open_p0": 0,
+    "open_material_p1": 3,
+    "p2_backlog": 3
+  },
+  "safety": {
+    "manual_task_runs": 0,
+    "manual_provider_queries": 0,
+    "manual_telegram": 0,
+    "pilot_mutations": 0,
+    "database_mutations": 0,
+    "archive_rewrites": 0,
+    "feature_mode_changes": 0,
+    "production_assist": false
+  }
+}

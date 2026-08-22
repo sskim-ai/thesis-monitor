@@ -1,0 +1,99 @@
+{
+  "contract": "night-futures-natural-publication-proof-v1",
+  "review_date": "2026-08-22",
+  "observation_group_id": "night-futures-1c775a1f7ca2a407",
+  "expected_session_basis": "PASS",
+  "expected_night_bas_dd": "2026-08-22",
+  "expected_preceding_day_bas_dd": "2026-08-21",
+  "attempts": [
+    {
+      "attempt_id": "attempt-390a46b8bc41a52c4694",
+      "role": "production_gate_attempt_1",
+      "start_kst": "2026-08-22T08:06:27.233361+09:00",
+      "end_kst": "2026-08-22T08:06:28.813617+09:00",
+      "http_statuses": [200],
+      "returned_dates": ["2026-08-20", "2026-08-21"],
+      "raw_row_count": 770,
+      "parsed_row_count": 16,
+      "candidate_count": 0,
+      "ready_count": 0,
+      "terminal": "STALE_PRIOR_SESSION_PRESENT",
+      "artifact_sha256": "d586f3e9cfa612219da952ec1640080c067ecd1598dc94fd28f4bae75fd15ea6"
+    },
+    {
+      "attempt_id": "attempt-dca39139aa257d218c59",
+      "role": "production_gate_attempt_2",
+      "start_kst": "2026-08-22T08:10:07.326356+09:00",
+      "end_kst": "2026-08-22T08:10:08.978186+09:00",
+      "http_statuses": [200],
+      "returned_dates": ["2026-08-20", "2026-08-21"],
+      "raw_row_count": 770,
+      "parsed_row_count": 16,
+      "candidate_count": 0,
+      "ready_count": 0,
+      "terminal": "STALE_PRIOR_SESSION_PRESENT",
+      "artifact_sha256": "6bc9898338d77f2257a3ad52f416fcf629e0e5d1ccb59b812d679bc3ca66a177"
+    },
+    {
+      "attempt_id": "attempt-4e576cd231781d7e5181",
+      "role": "production_gate_attempt_3",
+      "start_kst": "2026-08-22T08:15:04.830757+09:00",
+      "end_kst": "2026-08-22T08:15:06.344744+09:00",
+      "http_statuses": [200],
+      "returned_dates": ["2026-08-20", "2026-08-21"],
+      "raw_row_count": 770,
+      "parsed_row_count": 16,
+      "candidate_count": 0,
+      "ready_count": 0,
+      "terminal": "STALE_PRIOR_SESSION_PRESENT",
+      "artifact_sha256": "c48b2981a71bf7a48d362a85dfebb652cb11bbb2e301a2e3836173a9132dbf3c"
+    },
+    {
+      "attempt_id": "attempt-a53b5e1e3e193cedf14e",
+      "role": "production_gate_attempt_4",
+      "start_kst": "2026-08-22T08:20:05.775919+09:00",
+      "end_kst": "2026-08-22T08:20:07.019554+09:00",
+      "http_statuses": [200],
+      "returned_dates": ["2026-08-20", "2026-08-21"],
+      "raw_row_count": 770,
+      "parsed_row_count": 16,
+      "candidate_count": 0,
+      "ready_count": 0,
+      "terminal": "STALE_PRIOR_SESSION_PRESENT",
+      "artifact_sha256": "f78bb3a5c11752296c61e2f4dcca3f69a5a0c6fcf91f14f1f8e989b2bf1f226b"
+    }
+  ],
+  "products": [
+    {
+      "product": "KOSPI200",
+      "contract": "A0169000",
+      "maturity": "2026-09",
+      "returned_night_bas_dd": "2026-08-21",
+      "readiness": "NOT_READY",
+      "rejection_reason": "expected_session_absent",
+      "first_observed_availability": "UNKNOWN_WITHIN_HORIZON"
+    },
+    {
+      "product": "KOSDAQ150",
+      "contract": "A0669000",
+      "maturity": "2026-09",
+      "returned_night_bas_dd": "2026-08-21",
+      "readiness": "NOT_READY",
+      "rejection_reason": "expected_session_absent",
+      "first_observed_availability": "UNKNOWN_WITHIN_HORIZON"
+    }
+  ],
+  "raw_refs": [
+    {"query_date": "2026-08-22", "http_status": 200, "row_count": 0, "sha256": "82c0031bc13af348ac1e1304aca28f309632975110f2508534e93216791dfa90"},
+    {"query_date": "2026-08-21", "http_status": 200, "row_count": 385, "sha256": "02309f14af0c16ded688aedf1db645f009ff96efec270e9e065be6461ee32093"},
+    {"query_date": "2026-08-20", "http_status": 200, "row_count": 385, "sha256": "deec12e278599752379a792518e313df6678c11bc8b9c4cab9d63de99cafc753"}
+  ],
+  "observers": [
+    {"slot": "08:45", "actual_kst": "2026-08-22T08:45:05+09:00", "status": "SKIPPED", "reason": "not_normal_xkrx_session", "provider_calls": 0, "production_effect": 0},
+    {"slot": "09:15", "actual_kst": "2026-08-22T09:15:06+09:00", "status": "SKIPPED", "reason": "not_normal_xkrx_session", "provider_calls": 0, "production_effect": 0}
+  ],
+  "night_futures_telemetry_gap": "FAIL",
+  "deadline_verdict": "DEADLINE_UNPROVEN",
+  "fail_closed_safety": "PASS",
+  "stale_internal_item_risk": "LOW"
+}
