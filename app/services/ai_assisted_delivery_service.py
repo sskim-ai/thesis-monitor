@@ -25,6 +25,7 @@ from app.services.ai_reasoning_quality_service import (
 from app.services.ai_review_service import quantitative_grounding_report
 from app.services.notification_service import (
     AI_ASSISTED_PILOT_METADATA_KEY,
+    PACKET_BOUND_DELIVERY_INTENT_CONTRACT,
     TELEGRAM_DELIVERY_METADATA_KEY,
     TelegramNotifier,
     dispatch_pending_notifications,
@@ -776,7 +777,15 @@ def hold_ai_assisted_pilot_session(
     *,
     held_at: datetime | None = None,
 ) -> PilotDeliveryResult:
-    packet = _read_json(_packet_path(packet_id))
+    packet_path = _packet_path(packet_id)
+    if not packet_path.is_file():
+        return PilotDeliveryResult(
+            status="packet_missing",
+            market="unknown",
+            packet_id=packet_id,
+            reason="packet_binding_missing",
+        )
+    packet = _read_json(packet_path)
     market = str(packet["market"])
     if market not in PILOT_MARKERS or not ai_assisted_pilot_active(market):
         return PilotDeliveryResult(status="not_active", market=market, packet_id=packet_id)
@@ -812,6 +821,7 @@ def hold_ai_assisted_pilot_session(
                 "pilot_mode": PILOT_MODE,
                 "pilot_version": PILOT_VERSION,
                 "renderer_version": PILOT_RENDERER_VERSION,
+                "delivery_intent_contract": PACKET_BOUND_DELIVERY_INTENT_CONTRACT,
                 "packet_id": packet_id,
                 "market": market,
                 "assessment_date": packet["assessment_date"],
@@ -1738,18 +1748,28 @@ def _pending_pilot_packets(
         packet_id = str(metadata.get("packet_id") or "")
         if not packet_id:
             continue
+        packet_path = _packet_path(packet_id)
+        if not packet_path.is_file():
+            continue
+        try:
+            packet = _read_json(packet_path)
+        except (OSError, ValueError, json.JSONDecodeError):
+            continue
+        if (
+            str(packet.get("packet_id") or "") != packet_id
+            or str(packet.get("market") or "") != market
+            or str(packet.get("assessment_date") or "") != run_date.isoformat()
+        ):
+            continue
         retryable = delivery.status == "pending" and state in {
             "held",
             "ai_assisted_pending",
             "fallback_pending",
         }
         if state == "ai_assisted_sent":
-            packet_path = _packet_path(packet_id)
-            if packet_path.exists():
-                packet = _read_json(packet_path)
-                retryable = not _ai_archive_complete(packet) or packet_id not in (
-                    _market_successes(_pilot_state(), market)
-                )
+            retryable = not _ai_archive_complete(packet) or packet_id not in (
+                _market_successes(_pilot_state(), market)
+            )
         if retryable and packet_id not in values:
             values.append(packet_id)
     return values

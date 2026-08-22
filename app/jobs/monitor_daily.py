@@ -3,6 +3,7 @@ import asyncio
 import json
 from dataclasses import dataclass
 from datetime import date, datetime, time, timezone
+from pathlib import Path
 from zoneinfo import ZoneInfo
 
 from sqlmodel import Session, select
@@ -12,7 +13,10 @@ from app.macro.service import run_macro_monitor
 from app.macro.kr_close import run_kr_close_market_briefing
 from app.models.macro import MacroBriefing
 from app.models.thesis import MonitorRun
-from app.services.daily_monitor_service import run_daily_monitor
+from app.services.daily_monitor_service import (
+    queue_daily_monitor_notifications,
+    run_daily_monitor,
+)
 from app.services.ai_review_service import try_write_ai_review_packet
 from app.services.ai_assisted_delivery_service import (
     ai_assisted_pilot_active,
@@ -22,6 +26,10 @@ from app.services.market_session import MarketScope
 from app.services.morning_gate import (
     initialize_morning_gate,
     run_morning_night_futures_gate,
+)
+from app.services.xkrx_role_target_service import (
+    XkrxRoleTarget,
+    resolve_xkrx_role_target,
 )
 
 
@@ -35,6 +43,44 @@ class AnalysisDecision:
     action: str
     refresh: bool
     run_status: str
+
+
+def _producer_target_payload(target: XkrxRoleTarget) -> dict[str, object]:
+    return {
+        "contract": "xkrx-role-target-v1",
+        "role": target.role,
+        "observed_at_kst": target.observed_at_kst.isoformat(),
+        "target_kind": target.target_kind,
+        "target_session_date": (
+            target.target_session_date.isoformat()
+            if target.target_session_date is not None
+            else None
+        ),
+        "target_xkrx_business_date": (
+            target.target_xkrx_business_date.isoformat()
+            if target.target_xkrx_business_date is not None
+            else None
+        ),
+        "target_completed": target.target_completed,
+        "production_eligible": target.observation_eligible,
+        "skip_reason": target.skip_reason,
+        "calendar_evidence": target.calendar_evidence,
+    }
+
+
+def _kr_production_target(
+    run_date: date,
+    observed_at: datetime,
+) -> tuple[XkrxRoleTarget | None, str | None]:
+    try:
+        target = resolve_xkrx_role_target(observed_at, "kr_daily_production")
+    except Exception:  # noqa: BLE001
+        return None, "target_resolver_unavailable"
+    if not target.observation_eligible:
+        return target, target.skip_reason or "no_valid_role_target"
+    if target.target_xkrx_business_date != run_date:
+        return target, "target_run_date_mismatch"
+    return target, None
 
 
 def _requeue_cutoff(run_date: date, market_scope: str) -> datetime:
@@ -148,6 +194,33 @@ async def _run_market_job(
     as_of: datetime | None = None,
 ) -> dict[str, object]:
     current_as_of = as_of
+    producer_target: XkrxRoleTarget | None = None
+    if market_scope == "kr":
+        producer_target, skip_reason = _kr_production_target(
+            run_date,
+            current_as_of or datetime.now(KST),
+        )
+        if skip_reason is not None:
+            return {
+                "market_scope": market_scope,
+                "producer_role_target": (
+                    _producer_target_payload(producer_target)
+                    if producer_target is not None
+                    else {
+                        "contract": "xkrx-role-target-v1",
+                        "role": "kr_daily_production",
+                        "production_eligible": False,
+                        "skip_reason": skip_reason,
+                    }
+                ),
+                "analysis_action": "safe_noop",
+                "analysis_run_status": "not_started",
+                "delivery_action": "safe_noop",
+                "skip_reason": skip_reason,
+                "macro": None,
+                "kr_close_market": None,
+                "theses": None,
+            }
     cutoff = _requeue_cutoff(run_date, market_scope)
     decision = _analysis_decision(session, run_date, cutoff, market_scope)
     kr_close_result: dict[str, object] | None = None
@@ -214,6 +287,8 @@ async def _run_market_job(
     )
     if market_scope == "us" or pilot_active:
         daily_kwargs["dispatch_notifications"] = False
+    if market_scope == "kr" and pilot_active:
+        daily_kwargs["queue_notifications"] = False
     result = await run_daily_monitor(session, **daily_kwargs)
     pilot_hold: dict[str, object] | None = None
     if market_scope == "kr" and result.status in {"success", "already_completed"}:
@@ -223,12 +298,37 @@ async def _run_market_job(
             "kr",
             generated_at=current_as_of or datetime.now(KST),
         )
-        if pilot_active and packet_result.packet_id:
+        packet_persisted = bool(
+            packet_result.status in {"created", "already_exists"}
+            and packet_result.packet_id
+            and packet_result.path
+            and Path(packet_result.path).is_file()
+        )
+        if pilot_active and packet_persisted:
+            queue_daily_monitor_notifications(
+                session,
+                run_date,
+                market_scope,
+                requeue_sent_before=(
+                    cutoff if decision.refresh else None
+                ),
+                packet_id=packet_result.packet_id,
+            )
             pilot_hold = hold_ai_assisted_pilot_session(
                 session,
                 packet_result.packet_id,
                 held_at=current_as_of or datetime.now(KST),
             ).as_dict()
+        elif pilot_active:
+            pilot_hold = {
+                "status": "packet_not_ready",
+                "market": market_scope,
+                "packet_id": packet_result.packet_id,
+                "reason": packet_result.reason or packet_result.status,
+                "delivery_count": 0,
+                "sent_count": 0,
+                "pending_count": 0,
+            }
     gate_result: dict[str, object] | None = None
     if market_scope == "us" and result.status not in {
         "failed",
@@ -254,9 +354,18 @@ async def _run_market_job(
     if gate_result is not None:
         delivery_action = str(gate_result["dispatch_action"])
     elif pilot_hold is not None:
-        delivery_action = "held_for_ai_review"
+        delivery_action = (
+            "held_for_ai_review"
+            if pilot_hold.get("status") == "held"
+            else "packet_not_ready"
+        )
     return {
         "market_scope": market_scope,
+        "producer_role_target": (
+            _producer_target_payload(producer_target)
+            if producer_target is not None
+            else None
+        ),
         "production_cutoff": cutoff.isoformat(),
         "analysis_action": decision.action,
         "analysis_run_status": result.status,

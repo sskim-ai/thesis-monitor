@@ -18,6 +18,8 @@ from app.services.market_session import MarketScope, market_scope_for_security
 from app.services.monitoring_state_service import persist_monitoring_states
 from app.services.monitoring_service import assessment_to_read
 from app.services.notification_service import (
+    AI_ASSISTED_PILOT_METADATA_KEY,
+    PACKET_BOUND_DELIVERY_INTENT_CONTRACT,
     dispatch_pending_notifications,
     queue_daily_digest_notification,
     queue_daily_stock_notification,
@@ -66,6 +68,8 @@ def _queue_scoped_notifications(
     assessments: list[ThesisAssessment],
     market_scope: MarketScope,
     requeue_sent_before: datetime | None,
+    *,
+    packet_id: str | None = None,
 ) -> set[int]:
     deliveries = [
         queue_daily_digest_notification(
@@ -83,8 +87,60 @@ def _queue_scoped_notifications(
         )
         for assessment in assessments
     )
+    if packet_id is not None:
+        for delivery in deliveries:
+            if delivery is None or delivery.status != "pending":
+                continue
+            payload = json.loads(delivery.payload)
+            if not isinstance(payload, dict):
+                raise ValueError("Notification payload must be a JSON object")
+            payload[AI_ASSISTED_PILOT_METADATA_KEY] = {
+                "delivery_intent_contract": PACKET_BOUND_DELIVERY_INTENT_CONTRACT,
+                "packet_id": packet_id,
+                "market": market_scope,
+                "assessment_date": run_date.isoformat(),
+                "state": "packet_bound_pending_hold",
+                "fallback_eligible": False,
+            }
+            delivery.payload = json.dumps(payload, ensure_ascii=False)
+            session.add(delivery)
     session.commit()
     return {delivery.id for delivery in deliveries if delivery is not None and delivery.id is not None}
+
+
+def queue_daily_monitor_notifications(
+    session: Session,
+    run_date: date,
+    market_scope: MarketScope,
+    *,
+    requeue_sent_before: datetime | None = None,
+    packet_id: str | None = None,
+) -> set[int]:
+    """Queue one scoped run, optionally bound to a persisted AI-review packet."""
+    scoped_tickers = {
+        item.ticker
+        for item in _watchlist_for_scope(session, market_scope, active_only=False)
+    }
+    assessments = (
+        list(
+            session.exec(
+                select(ThesisAssessment).where(
+                    ThesisAssessment.assessment_date == run_date,
+                    ThesisAssessment.ticker.in_(scoped_tickers),
+                )
+            ).all()
+        )
+        if scoped_tickers
+        else []
+    )
+    return _queue_scoped_notifications(
+        session,
+        run_date,
+        assessments,
+        market_scope,
+        requeue_sent_before,
+        packet_id=packet_id,
+    )
 
 
 def _latest_thesis(session: Session, ticker: str) -> InvestmentThesis | None:

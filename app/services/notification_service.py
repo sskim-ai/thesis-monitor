@@ -145,6 +145,7 @@ TELEGRAM_DELIVERY_METADATA_KEY = "_telegram_delivery"
 STOCK_NOTIFICATION_METADATA_KEY = "_stock_notification"
 MORNING_GATE_METADATA_KEY = "_morning_gate"
 AI_ASSISTED_PILOT_METADATA_KEY = "_ai_assisted_pilot"
+PACKET_BOUND_DELIVERY_INTENT_CONTRACT = "packet-bound-delivery-intent-v1"
 
 
 def _json_value(value: str, fallback: object) -> object:

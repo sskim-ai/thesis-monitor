@@ -15,6 +15,7 @@ from app.services.market_session import (
 XKRX_ROLE_TARGET_CONTRACT = "xkrx-role-target-v1"
 KST = ZoneInfo("Asia/Seoul")
 XkrxRole = Literal[
+    "kr_daily_production",
     "night_futures_production",
     "night_futures_post_deadline_observer",
     "krx_next_morning_publication",

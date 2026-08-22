@@ -145,6 +145,26 @@ class EmptyValuationService:
         )
 
 
+def _allow_synthetic_kr_production(monkeypatch, run_date: date) -> None:
+    def resolve(observed_at, role):
+        return SimpleNamespace(
+            role=role,
+            observed_at_kst=observed_at,
+            target_kind="XKRX_SESSION_DATE",
+            target_session_date=run_date,
+            target_xkrx_business_date=run_date,
+            target_completed=True,
+            observation_eligible=True,
+            skip_reason=None,
+            calendar_evidence={"synthetic_test_target": True},
+        )
+
+    monkeypatch.setattr(
+        "app.jobs.monitor_daily.resolve_xkrx_role_target",
+        resolve,
+    )
+
+
 def test_market_scope_classification_uses_exchange_then_numeric_fallback() -> None:
     assert market_scope_for_security("005930", "KRX") == "kr"
     assert market_scope_for_security("GOOGL", "NASDAQ") == "us"
@@ -525,6 +545,7 @@ async def test_us_primary_starts_at_0805_without_dispatching(
 @pytest.mark.anyio
 async def test_kr_pilot_holds_deterministic_delivery_after_packet_creation(
     monkeypatch,
+    tmp_path: Path,
 ) -> None:
     daily_calls: list[dict[str, object]] = []
     held: list[tuple[str, datetime]] = []
@@ -536,11 +557,22 @@ async def test_kr_pilot_holds_deterministic_delivery_after_packet_creation(
             model_dump=lambda mode: {"status": "success"},
         )
 
+    packet_path = tmp_path / "kr-packet.json"
+    packet_path.write_text("{}", encoding="utf-8")
     monkeypatch.setattr("app.jobs.monitor_daily.ai_assisted_pilot_active", lambda market: True)
     monkeypatch.setattr("app.jobs.monitor_daily.run_daily_monitor", record_daily)
     monkeypatch.setattr(
         "app.jobs.monitor_daily.try_write_ai_review_packet",
-        lambda *args, **kwargs: SimpleNamespace(packet_id="kr-packet"),
+        lambda *args, **kwargs: SimpleNamespace(
+            status="created",
+            packet_id="kr-packet",
+            path=str(packet_path),
+            reason=None,
+        ),
+    )
+    monkeypatch.setattr(
+        "app.jobs.monitor_daily.queue_daily_monitor_notifications",
+        lambda *args, **kwargs: {1},
     )
     monkeypatch.setattr(
         "app.jobs.monitor_daily.hold_ai_assisted_pilot_session",
@@ -553,6 +585,7 @@ async def test_kr_pilot_holds_deterministic_delivery_after_packet_creation(
         lambda *args, **kwargs: None,
     )
     run_date = date(2040, 8, 14)
+    _allow_synthetic_kr_production(monkeypatch, run_date)
     as_of = datetime(2040, 8, 14, 16, 5, tzinfo=KST)
     isolated_engine = create_engine(
         "sqlite://",
@@ -564,6 +597,7 @@ async def test_kr_pilot_holds_deterministic_delivery_after_packet_creation(
         result = await _run_market_job(session, run_date, "kr", as_of=as_of)
 
     assert daily_calls[0]["dispatch_notifications"] is False
+    assert daily_calls[0]["queue_notifications"] is False
     assert held == [("kr-packet", as_of)]
     assert result["delivery_action"] == "held_for_ai_review"
 
@@ -617,6 +651,8 @@ async def test_market_job_reuses_successful_analysis_for_delivery_retry(
         "app.jobs.monitor_daily.run_morning_night_futures_gate",
         record_gate,
     )
+    if market_scope == "kr":
+        _allow_synthetic_kr_production(monkeypatch, run_date)
     with Session(isolated_engine) as session:
         run = MonitorRun(
             run_date=run_date,
@@ -689,12 +725,21 @@ async def test_kr_market_job_embeds_close_briefing_without_separate_delivery(
         "app.jobs.monitor_daily.run_kr_close_market_briefing", record_close
     )
     monkeypatch.setattr("app.jobs.monitor_daily.run_daily_monitor", record_daily)
+
+    def record_packet(_session, packet_date, market, **_kwargs):
+        ai_packet_calls.append((packet_date, market))
+        return SimpleNamespace(
+            status="not_ready",
+            packet_id=None,
+            path=None,
+            reason="fixture_not_ready",
+        )
+
     monkeypatch.setattr(
         "app.jobs.monitor_daily.try_write_ai_review_packet",
-        lambda _session, packet_date, market, **_kwargs: ai_packet_calls.append(
-            (packet_date, market)
-        ),
+        record_packet,
     )
+    _allow_synthetic_kr_production(monkeypatch, run_date)
     with Session(isolated_engine) as session:
         output = await _run_market_job(session, run_date, "kr")
 
@@ -920,6 +965,8 @@ async def test_post_cutoff_retry_reuses_assessment_and_dispatches_only_pending_d
             "app.services.notification_service._notifier_for_channel",
             lambda channel: retry_notifier,
         )
+        if market_scope == "kr":
+            _allow_synthetic_kr_production(monkeypatch, run_date)
 
         output = await _run_market_job(
             session,
