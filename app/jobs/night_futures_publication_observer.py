@@ -9,13 +9,17 @@ from zoneinfo import ZoneInfo
 from app.jobs.probe_krx_night_futures import expected_latest_completed_krx_session
 from app.macro.providers.base import MacroProvider
 from app.macro.providers.krx import KrxNightFuturesProvider
-from app.services.market_session import is_exchange_session_date
 from app.services.night_futures_publication_telemetry_service import (
     DEFAULT_OBSERVER_HORIZON,
     default_telemetry_directory,
     load_group_attempts,
+    load_target_attempts,
     observation_group_id,
     record_attempt_best_effort,
+)
+from app.services.xkrx_role_target_service import (
+    XKRX_ROLE_TARGET_CONTRACT,
+    resolve_xkrx_role_target,
 )
 
 
@@ -50,17 +54,45 @@ async def run_night_futures_publication_observer(
             "provider_calls": 0,
             "production_effect": 0,
         }
-    if not is_exchange_session_date("XKRX", current.date()):
+    target = resolve_xkrx_role_target(
+        current,
+        "night_futures_post_deadline_observer",
+        night_session_resolver=expected_latest_completed_krx_session,
+    )
+    if not target.observation_eligible or target.target_session_date is None:
         return {
             "status": "SKIPPED",
-            "reason": "not_normal_xkrx_session",
+            "reason": target.skip_reason or "no_valid_role_target",
+            "role_target_contract": XKRX_ROLE_TARGET_CONTRACT,
             "provider_calls": 0,
             "production_effect": 0,
         }
 
-    expected = expected_latest_completed_krx_session(current.date())
+    expected = target.target_session_date
     group_id = observation_group_id(current.date(), expected)
     directory = telemetry_directory or default_telemetry_directory()
+    target_attempts = load_target_attempts(directory, expected, current.date())
+    exact_role = f"observer_{role}"
+    if any(
+        item.terminal_classification == "EXPECTED_SESSION_PRESENT_READY"
+        or item.role == "observer_horizon_0915"
+        for item in target_attempts
+    ):
+        return {
+            "status": "SKIPPED",
+            "reason": "target_already_terminal",
+            "role_target_contract": XKRX_ROLE_TARGET_CONTRACT,
+            "provider_calls": 0,
+            "production_effect": 0,
+        }
+    if any(item.role == exact_role for item in target_attempts):
+        return {
+            "status": "SKIPPED",
+            "reason": "target_already_observed",
+            "role_target_contract": XKRX_ROLE_TARGET_CONTRACT,
+            "provider_calls": 0,
+            "production_effect": 0,
+        }
     prior = load_group_attempts(directory, current.date(), group_id)
     if any(
         item.terminal_classification == "EXPECTED_SESSION_PRESENT_READY"
@@ -68,7 +100,8 @@ async def run_night_futures_publication_observer(
     ):
         return {
             "status": "SKIPPED",
-            "reason": "expected_pair_already_ready",
+            "reason": "target_already_terminal",
+            "role_target_contract": XKRX_ROLE_TARGET_CONTRACT,
             "provider_calls": 0,
             "production_effect": 0,
         }
@@ -97,6 +130,7 @@ async def run_night_futures_publication_observer(
     return {
         "status": archive["status"],
         "role": role,
+        "role_target_contract": XKRX_ROLE_TARGET_CONTRACT,
         "expected_night_bas_dd": expected.isoformat() if expected else None,
         "classification": archive.get("classification"),
         "terminal_state": archive.get("terminal_state"),

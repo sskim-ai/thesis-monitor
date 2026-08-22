@@ -17,10 +17,11 @@ from app.services.krx_publication_service import (
     KrxCaptureOrigin,
     KrxObservationTimeSlot,
     append_krx_publication_observation,
+    load_krx_publication_records,
 )
-from app.services.market_session import (
-    is_exchange_session_date,
-    preceding_exchange_session_date,
+from app.services.xkrx_role_target_service import (
+    XKRX_ROLE_TARGET_CONTRACT,
+    resolve_xkrx_role_target,
 )
 
 
@@ -45,27 +46,27 @@ def exact_slot_capture_request(
     current = as_of.astimezone(KST)
     if (current.hour, current.minute) not in {(8, 5), (16, 5)}:
         return None, "outside_exact_slot"
-    if not is_exchange_session_date("XKRX", current.date()):
-        return None, "not_normal_xkrx_session"
-
     scheduled_for = current.replace(second=0, microsecond=0)
     if (current.hour, current.minute) == (16, 5):
+        target = resolve_xkrx_role_target(current, "krx_same_day_publication")
+        if not target.observation_eligible or target.target_session_date is None:
+            return None, target.skip_reason or "no_valid_role_target"
         return (
             KrxExactSlotCaptureRequest(
                 time_slot="SAME_DAY_CLOSE_1605",
-                target_session=current.date(),
+                target_session=target.target_session_date,
                 scheduled_for=scheduled_for,
             ),
             "scheduled",
         )
 
-    previous = preceding_exchange_session_date("XKRX", current.date())
-    if previous is None:
-        return None, "preceding_xkrx_session_unavailable"
+    target = resolve_xkrx_role_target(current, "krx_next_morning_publication")
+    if not target.observation_eligible or target.target_session_date is None:
+        return None, target.skip_reason or "no_valid_role_target"
     return (
         KrxExactSlotCaptureRequest(
             time_slot="NEXT_MORNING_0805",
-            target_session=previous,
+            target_session=target.target_session_date,
             scheduled_for=scheduled_for,
         ),
         "scheduled",
@@ -87,6 +88,38 @@ async def run_exact_slot_capture(
             "status": "SKIPPED",
             "reason": decision,
             "observed_at": current.isoformat(),
+            "provider_calls": 0,
+            "telemetry_writes": 0,
+            "user_visible_integration": False,
+        }
+
+    records = load_krx_publication_records(
+        telemetry_directory / f"{request.target_session.isoformat()}.jsonl"
+    )
+    if any(
+        item.time_slot == request.time_slot
+        and item.scheduled_for == request.scheduled_for
+        for item in records
+    ):
+        return {
+            "capture_contract_version": KRX_EXACT_SLOT_CAPTURE_VERSION,
+            "role_target_contract": XKRX_ROLE_TARGET_CONTRACT,
+            "status": "SKIPPED",
+            "reason": "target_already_observed",
+            "time_slot": request.time_slot,
+            "target_session": request.target_session.isoformat(),
+            "provider_calls": 0,
+            "telemetry_writes": 0,
+            "user_visible_integration": False,
+        }
+    if any(item.observation.status == "PROVIDER_COMPLETE" for item in records):
+        return {
+            "capture_contract_version": KRX_EXACT_SLOT_CAPTURE_VERSION,
+            "role_target_contract": XKRX_ROLE_TARGET_CONTRACT,
+            "status": "SKIPPED",
+            "reason": "target_already_terminal",
+            "time_slot": request.time_slot,
+            "target_session": request.target_session.isoformat(),
             "provider_calls": 0,
             "telemetry_writes": 0,
             "user_visible_integration": False,
@@ -120,6 +153,7 @@ async def run_exact_slot_capture(
     )
     return {
         "capture_contract_version": KRX_EXACT_SLOT_CAPTURE_VERSION,
+        "role_target_contract": XKRX_ROLE_TARGET_CONTRACT,
         "status": "RECORDED",
         "capture_origin": capture_origin,
         "time_slot": request.time_slot,

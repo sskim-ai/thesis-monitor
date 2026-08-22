@@ -28,6 +28,14 @@ def _at(hour: int, minute: int) -> datetime:
     return datetime(2026, 8, 21, hour, minute, tzinfo=KST)
 
 
+def _at_date(day: int, hour: int, minute: int) -> datetime:
+    return datetime(2026, 8, day, hour, minute, tzinfo=KST)
+
+
+def _at_date_second(day: int, hour: int, minute: int, second: int) -> datetime:
+    return datetime(2026, 8, day, hour, minute, second, tzinfo=KST)
+
+
 def _product(
     name: str,
     *,
@@ -304,7 +312,7 @@ async def test_observer_stops_after_ready_and_never_writes_production(
     assert first["terminal_state"] == "READY_SHORTLY_AFTER_DEADLINE"
     assert first["production_market_summary_writes"] == 0
     assert first["telegram_writes"] == 0
-    assert second["reason"] == "expected_pair_already_ready"
+    assert second["reason"] == "target_already_terminal"
     assert provider.calls == 1
 
 
@@ -328,6 +336,81 @@ async def test_horizon_records_unknown_without_continuous_polling(
 
     assert first["terminal_state"] is None
     assert horizon["terminal_state"] == "NOT_READY_WITHIN_OBSERVER_HORIZON"
+    assert provider.calls == 2
+
+
+@pytest.mark.anyio
+async def test_saturday_observer_reaches_role_target_and_same_slot_is_idempotent(
+    tmp_path: Path,
+) -> None:
+    provider = _Provider(_result(_telemetry(row_count=0, night_dates=())))
+    observed_at = _at_date(22, 8, 45)
+
+    first = await run_night_futures_publication_observer(
+        as_of=observed_at,
+        provider=provider,
+        telemetry_directory=tmp_path,
+    )
+    second = await run_night_futures_publication_observer(
+        as_of=observed_at,
+        provider=provider,
+        telemetry_directory=tmp_path,
+    )
+
+    assert first["status"] == "RECORDED"
+    assert first["expected_night_bas_dd"] == "2026-08-22"
+    assert second["reason"] == "target_already_observed"
+    assert provider.calls == 1
+
+
+@pytest.mark.anyio
+async def test_same_role_target_restart_with_later_seconds_is_idempotent(
+    tmp_path: Path,
+) -> None:
+    provider = _Provider(_result(_telemetry(row_count=0, night_dates=())))
+
+    first = await run_night_futures_publication_observer(
+        as_of=_at_date_second(22, 8, 45, 1),
+        provider=provider,
+        telemetry_directory=tmp_path,
+    )
+    second = await run_night_futures_publication_observer(
+        as_of=_at_date_second(22, 8, 45, 49),
+        provider=provider,
+        telemetry_directory=tmp_path,
+    )
+
+    assert first["status"] == "RECORDED"
+    assert second["status"] == "SKIPPED"
+    assert second["reason"] == "target_already_observed"
+    assert second["provider_calls"] == 0
+    assert provider.calls == 1
+
+
+@pytest.mark.anyio
+async def test_sunday_skips_same_target_after_saturday_horizon_terminal(
+    tmp_path: Path,
+) -> None:
+    provider = _Provider(_result(_telemetry(row_count=0, night_dates=())))
+
+    await run_night_futures_publication_observer(
+        as_of=_at_date(22, 8, 45),
+        provider=provider,
+        telemetry_directory=tmp_path,
+    )
+    saturday_horizon = await run_night_futures_publication_observer(
+        as_of=_at_date(22, 9, 15),
+        provider=provider,
+        telemetry_directory=tmp_path,
+    )
+    sunday = await run_night_futures_publication_observer(
+        as_of=_at_date(23, 8, 45),
+        provider=provider,
+        telemetry_directory=tmp_path,
+    )
+
+    assert saturday_horizon["terminal_state"] == "NOT_READY_WITHIN_OBSERVER_HORIZON"
+    assert sunday["reason"] == "target_already_terminal"
     assert provider.calls == 2
 
 

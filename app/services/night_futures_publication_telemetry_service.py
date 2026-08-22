@@ -3,7 +3,7 @@ from __future__ import annotations
 import hashlib
 import json
 import os
-from datetime import date, datetime, time
+from datetime import date, datetime, time, timedelta
 from pathlib import Path
 from typing import Literal
 from zoneinfo import ZoneInfo
@@ -385,6 +385,23 @@ def load_group_attempts(
         NightFuturesAttemptRecord.model_validate_json(path.read_text(encoding="utf-8"))
         for path in attempts.glob("*.json")
     ]
+    return sorted(records, key=lambda item: (item.timestamp_end, item.attempt_id))
+
+
+def load_target_attempts(
+    directory: Path,
+    expected_session: date,
+    through_date: date,
+) -> list[NightFuturesAttemptRecord]:
+    """Load attempts for one NIGHT target across later wall-clock roles."""
+    if through_date < expected_session:
+        return []
+    records: list[NightFuturesAttemptRecord] = []
+    span = min((through_date - expected_session).days, 14)
+    for offset in range(span + 1):
+        market_date = expected_session + timedelta(days=offset)
+        group_id = observation_group_id(market_date, expected_session)
+        records.extend(load_group_attempts(directory, market_date, group_id))
     return sorted(records, key=lambda item: (item.timestamp_end, item.attempt_id))
 
 
