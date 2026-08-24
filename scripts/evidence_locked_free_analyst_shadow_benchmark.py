@@ -5,6 +5,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import re
 import sys
 import zipfile
 from collections import Counter
@@ -460,11 +461,29 @@ def _safety_totals(rows: list[dict[str, Any]]) -> Counter[str]:
     return totals
 
 
+def _cross_message_duplicate_claims(
+    rows: list[dict[str, Any]],
+    support_key: str,
+) -> int:
+    normalized = Counter(
+        re.sub(r"[.!?]+$", "", str(support["final_sentence"]).strip()).casefold()
+        for row in rows
+        for support in row[support_key]
+    )
+    return sum(count - 1 for count in normalized.values() if count > 1)
+
+
 def _report_safety(
     rows: list[dict[str, Any]],
     controls: dict[str, int],
 ) -> str:
     totals = _safety_totals(rows)
+    direct_duplicates = _cross_message_duplicate_claims(
+        rows, "direct_sentence_supports"
+    )
+    hybrid_duplicates = _cross_message_duplicate_claims(
+        rows, "hybrid_sentence_supports"
+    )
     return f"""# Evidence-Locked Free Analyst Safety Parity
 
 | Accepted-output check | Direct | Hybrid |
@@ -477,6 +496,7 @@ def _report_safety(
 | Hidden arithmetic | `{totals['hidden_arithmetic']}` | `{totals['hybrid_hidden_arithmetic']}` |
 | External knowledge | `{totals['external_knowledge']}` | `{totals['hybrid_external_knowledge']}` |
 | Unsupported synthesis | `{totals['unsupported_synthesis']}` | `{totals['hybrid_unsupported_synthesis']}` |
+| Cross-message exact claim repetition | `{direct_duplicates}` | `{hybrid_duplicates}` |
 
 Negative controls rejected hidden arithmetic `{controls['hidden_arithmetic_rejections']}`, external
 knowledge `{controls['external_knowledge_rejections']}`, unsupported causality
@@ -597,6 +617,7 @@ def _readiness_payload(
         and material > len(eligible) / 2
         and sum(row["direct_characters"] for row in rows)
         < sum(row["current_ai_characters"] for row in rows)
+        and _cross_message_duplicate_claims(rows, "hybrid_sentence_supports") == 0
     )
     shadow = fact_boundary and value_add and validation_state == "PASS"
     renderer_choice = (
@@ -644,6 +665,12 @@ def _readiness_payload(
         "causal_error": totals["unsupported_causality"],
         "temporal_error": totals["temporal_violations"],
         "trade_ar_leak": totals["trade_ar_leak"],
+        "cross_message_duplicate_claims_direct": _cross_message_duplicate_claims(
+            rows, "direct_sentence_supports"
+        ),
+        "cross_message_duplicate_claims_hybrid": _cross_message_duplicate_claims(
+            rows, "hybrid_sentence_supports"
+        ),
         "negative_controls": controls,
         "human_quality_counts": dict(Counter(row["human_quality"] for row in rows)),
         "per_variant_preference": {

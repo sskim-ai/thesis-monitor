@@ -382,8 +382,10 @@ def _positioning_item(
         text = "기간별 주체 방향이 엇갈린 수급은 전술적 배경일 뿐, 중기 사업 판단의 근거로는 부족합니다."
     elif "사업 변화의 증거" in relation or "실적 변화" in relation:
         text = "현재 가격·거래 흐름은 사업 변화의 확인보다 전술적 배경으로만 해석해야 합니다."
-    elif "대리 지표" in relation or "증거로 쓰지" in relation:
-        text = "주체별 매매 흐름은 사업 실행을 확인하는 대리 지표가 될 수 없습니다."
+    elif "대리 지표" in relation:
+        text = "기관 유입은 장기 수주 실행을 확인하는 대리 지표가 될 수 없습니다."
+    elif "증거로 쓰지" in relation:
+        text = "외국인·기관의 엇갈린 흐름은 수주 전환을 확인하는 근거가 아닙니다."
     elif "구조적 매수세" in relation:
         text = "단기와 누적 주체가 다른 수급은 구조적 매수세로 단정하기 어렵습니다."
     elif "사업 기대의 확인" in relation:
@@ -553,9 +555,14 @@ def build_free_analyst_analysis(
                 direction=Direction.CHALLENGES,
             )
             top.append(primary)
+            positive_text = (
+                "ASP나 제품 믹스 변화가 재고 관계에 영향을 준 결과일 가능성은 남아 있습니다."
+                if "DS" in business
+                else "철강 물량과 원재료 가격 변화가 재고 관계에 영향을 준 결과일 가능성은 남아 있습니다."
+            )
             positive = _item(
                 item_id=f"{identifier}-inventory-scale-alternative",
-                text="사업 규모 변화와 함께 나타난 재고 움직임일 가능성은 남아 있습니다.",
+                text=positive_text,
                 support_type=SupportType.ALTERNATIVE_INTERPRETATION,
                 evidence_refs=business_refs,
                 materiality_reason="keeps a non-deterioration explanation open",
