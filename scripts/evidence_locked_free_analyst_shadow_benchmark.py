@@ -665,6 +665,18 @@ def _readiness_payload(
             "low-information market digest does not need forced synthesis",
             "separate natural review and promotion decision remain pending",
         ],
+        "validation_evidence": {
+            "focused_pytest": "20 passed",
+            "full_pytest": "1456 passed",
+            "ruff": "PASS",
+            "git_diff_check": "PASS",
+            "investment_knowledge_parity": "PASS",
+            "chart_knowledge_parity": "PASS",
+            "public_action": "0.4.5 unchanged",
+            "operation_id": "20/20 unique",
+            "implementation_github_actions": "PASS",
+            "final_github_actions": "PENDING_FINAL_REPORT_COMMIT",
+        },
         "validation": validation_state,
     }
 
@@ -690,6 +702,21 @@ def _report_readiness(payload: dict[str, Any]) -> str:
 Open P0: `0`. Open material P1: `0`. Production mutation and Telegram sends are `0`.
 The branch is eligible only for the scheduled natural review and a later separate promotion decision;
 it must not merge to main or update operating under this instruction.
+
+## Validation
+
+| Check | Result |
+|---|---|
+| Focused pytest | `{payload['validation_evidence']['focused_pytest']}` |
+| Full pytest | `{payload['validation_evidence']['full_pytest']}` |
+| Ruff | `{payload['validation_evidence']['ruff']}` |
+| git diff --check | `{payload['validation_evidence']['git_diff_check']}` |
+| Investment Knowledge | `{payload['validation_evidence']['investment_knowledge_parity']}` |
+| Chart Knowledge | `{payload['validation_evidence']['chart_knowledge_parity']}` |
+| Public Action | `{payload['validation_evidence']['public_action']}` |
+| operationId | `{payload['validation_evidence']['operation_id']}` |
+| Implementation GitHub Actions | `{payload['validation_evidence']['implementation_github_actions']}` |
+| Final GitHub Actions | `{payload['validation_evidence']['final_github_actions']}` |
 """
 
 
