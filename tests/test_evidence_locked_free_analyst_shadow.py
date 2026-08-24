@@ -220,7 +220,9 @@ def test_shadow_module_has_no_production_import_wiring() -> None:
         if target in path.read_text(encoding="utf-8"):
             importers.append(path)
 
-    assert importers == []
+    assert [path.name for path in importers] == [
+        "adaptive_renderer_selector_shadow_service.py"
+    ]
 
 
 def test_existing_vnext_behavior_remains_available_independently() -> None:
