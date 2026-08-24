@@ -1,0 +1,30 @@
+{
+  "ai_analyst_promotion_ready": "YES_PENDING_NATURAL",
+  "ai_analyst_safety_parity": "PASS",
+  "ai_analyst_value_add": "PASS",
+  "ai_analyst_vnext_shadow": "PASS",
+  "benchmark_kr_messages": 8,
+  "benchmark_us_messages": 4,
+  "benchmark_us_packets": 3,
+  "blocking_benchmarks": [],
+  "contract": "ai-analyst-vnext-shadow-v1",
+  "duplicate_next_check_unknown_after": 0,
+  "duplicate_next_check_unknown_before": 7,
+  "fact_mismatch": 0,
+  "implementation_sha": "7d488b4d959fcbe325ea901f4ac030fc0ba87908",
+  "instruction_version": "1.0",
+  "open_material_p1": [],
+  "open_p0": [],
+  "p2_backlog": [
+    "compression tuning for low-information messages",
+    "optional blind comparison harness"
+  ],
+  "production_mutation": 0,
+  "production_promotion": "BLOCKED_UNTIL_20260825_NATURAL_REVIEW",
+  "telegram_send": 0,
+  "temporal_violations": 0,
+  "trade_ar_leak": 0,
+  "unsupported_causality": 0,
+  "unsupported_numeric_claims": 0,
+  "validation": "PASS"
+}
