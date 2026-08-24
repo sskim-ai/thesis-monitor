@@ -363,6 +363,7 @@ def _important_changes(
             value
             for value in observations.values()
             if isinstance(value.get("temporal"), dict)
+            and value["temporal"].get("temporal_role")
         ]
         has_current = (
             any(
