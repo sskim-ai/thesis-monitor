@@ -1,0 +1,107 @@
+{
+  "schema_version": 1,
+  "review": {
+    "scheduled_review": "FAIL",
+    "review_state": "COMPLETE",
+    "scheduled_for": "2026-08-24T17:10:00+09:00",
+    "terminal_cutoff": "2026-08-24T17:25:00+09:00",
+    "registration_error": "No handler registered for tool: codex_app.automation_update",
+    "cleanup_state": "NO_TASK_CREATED_NO_NEXT_RUN"
+  },
+  "repository": {
+    "branch": "codex/20260824-1710-kr-natural-multi-proof-review",
+    "instruction_commit": "7b78f9974c1bf09e384ea393c902d3b3a160f491",
+    "operating_commit": "7b78f9974c1bf09e384ea393c902d3b3a160f491",
+    "origin_main_commit": "7b78f9974c1bf09e384ea393c902d3b3a160f491",
+    "api_health": "PASS",
+    "production_assist": false,
+    "working_capital_mode": "SELECTIVE_INVENTORY",
+    "trade_ar_user_visible": false,
+    "cash_flow_mode": "SELECTIVE_CURRENT_FORMAL_FULL_FCF"
+  },
+  "production": {
+    "gate": "FAIL",
+    "monitor_run_id": 36,
+    "packet_id": "2026-08-24-kr-run-36-b82af21dfde3",
+    "packet_persisted": false,
+    "packet_denial_reason": "shadow_cohort_activation_gate_failed",
+    "analysis_success": 7,
+    "analysis_failure": 0,
+    "expected_messages": 8,
+    "sent_messages": 0,
+    "pending_messages": 0,
+    "failed_delivery_rows": 0,
+    "duplicate_messages": 0,
+    "receipt": null,
+    "exactly_once": "FAIL"
+  },
+  "producer_integrity": {
+    "gate": "FAIL",
+    "role_target": "LIVE_PASS",
+    "new_orphan_rows": 0,
+    "deliverable_without_packet": 0,
+    "primary": "no_pending_packet",
+    "backup": "no_pending_packet",
+    "fallback": "no_held_session"
+  },
+  "inventory": {
+    "gate": "NOT_OBSERVED",
+    "selected": 0,
+    "kill_switch_required": false
+  },
+  "trade_ar": {
+    "gate": "NOT_OBSERVED",
+    "new_exact_trade_ar": 0,
+    "broad_ar": 0,
+    "ap": 0,
+    "enablement_candidate": "NO_OTHER_BLOCKER"
+  },
+  "investor_flow": {
+    "gate": "NOT_OBSERVED",
+    "delivered_messages_reviewed": 0,
+    "unsupported_attribution_delivered": 0
+  },
+  "macro_temporal": {
+    "gate": "NOT_OBSERVED",
+    "metrics_used_in_sent_digest": 0,
+    "false_current_claims_delivered": 0
+  },
+  "krx_1605": {
+    "role_target_gate": "LIVE_PASS",
+    "target_session": "2026-08-24",
+    "publication_readiness": "MARKET_COMPLETED_PROVIDER_PENDING",
+    "http_200_endpoints": 4,
+    "eligible_rows": 0,
+    "current_snapshot_promotable": false,
+    "duplicates": 0
+  },
+  "localization": {
+    "gap": "MATERIAL",
+    "architecture_ready": false,
+    "reason": "no sent KR digest available for content measurement"
+  },
+  "severity": {
+    "open_p0": [],
+    "open_material_p1": [
+      "normal-trading-day producer completed analysis but failed immutable packet creation and all KR delivery"
+    ],
+    "p2_backlog": [
+      "scheduled-review automation bridge unavailable",
+      "Inventory natural proof not observed",
+      "Trade AR natural proof not observed",
+      "investor-flow natural proof not observed",
+      "macro temporal natural proof not observed",
+      "KRX publication pending at 16:05",
+      "localization content measurement pending"
+    ]
+  },
+  "safety": {
+    "review_provider_calls": 0,
+    "manual_production_tasks": 0,
+    "manual_telegram": 0,
+    "pilot_mutations": 0,
+    "database_mutations": 0,
+    "archive_rewrites": 0
+  },
+  "next_action": "KR_PRODUCTION_BOUNDED_REPAIR"
+}
