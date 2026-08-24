@@ -69,6 +69,19 @@ def _exchange_session_dates(calendar_name: str, value: date) -> tuple[bool, date
         return value.weekday() < 5, _previous_weekday(value)
 
 
+def _exchange_session_close(
+    calendar_name: str,
+    value: date,
+    timezone_name: ZoneInfo,
+) -> datetime | None:
+    try:
+        calendar = _exchange_calendar(calendar_name)
+        session = calendar.date_to_session(value)
+        return calendar.session_close(session).to_pydatetime().astimezone(timezone_name)
+    except (ValueError, IndexError, TypeError):
+        return None
+
+
 def preceding_exchange_session_date(
     calendar_name: str,
     value: date,
@@ -133,11 +146,15 @@ def us_market_session(as_of: datetime | None = None) -> MarketSessionState:
         )
 
     clock = eastern.time().replace(tzinfo=None)
+    actual_close = _exchange_session_close("XNYS", eastern.date(), NEW_YORK)
+    regular_session_completed = (
+        eastern >= actual_close if actual_close is not None else clock >= time(16, 0)
+    )
     if clock < time(4, 0):
         session = "closed"
     elif clock < time(9, 30):
         session = "pre_market"
-    elif clock < time(16, 0):
+    elif not regular_session_completed and clock < time(16, 0):
         session = "open"
     elif clock < time(20, 0):
         session = "after_hours"
@@ -149,7 +166,7 @@ def us_market_session(as_of: datetime | None = None) -> MarketSessionState:
         market_date=eastern.date(),
         latest_completed_regular_session_date=(
             eastern.date()
-            if session in {"after_hours", "closed"} and clock >= time(16, 0)
+            if regular_session_completed
             else previous_session
         ),
         timezone_name=NEW_YORK.key,

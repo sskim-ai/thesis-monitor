@@ -31,7 +31,7 @@ from app.models.thesis import (
     ThesisAssessment,
 )
 from app.models.watchlist import WatchlistItem
-from app.schemas.ai_review import AIDailyReviewOutput, AIStockReview
+from app.schemas.ai_review import AIDailyReviewOutput, AIMarketReview, AIStockReview
 from app.services.ai_reasoning_quality_service import normalize_decision_text
 from app.services.industry_reasoning_service import (
     INDUSTRY_REASONING_CONTRACT,
@@ -3213,6 +3213,9 @@ def _market_packet(
                 }
             )
     macro_theses = _public_value(_list(briefing.macro_theses)) if briefing else []
+    temporal_eligibility = _dict(
+        briefing_market.get("temporal_eligibility")
+    )
     return {
         "session": {
             "market": market,
@@ -3231,6 +3234,13 @@ def _market_packet(
         },
         "important_changes": _clean_texts(digest.macro.key_changes),
         "key_change_fact_ids": intelligence["key_change_fact_ids"],
+        "macro_temporal_eligibility": _public_value(temporal_eligibility),
+        "has_current_macro_observation": digest.macro.has_current_observation,
+        "current_observation_fact_ids": intelligence["current_observation_fact_ids"],
+        "prior_market_session_fact_ids": intelligence[
+            "prior_market_session_fact_ids"
+        ],
+        "reference_fact_ids": intelligence["reference_fact_ids"],
         "required_market_fact_ids": night_fact_ids if market == "us" else [],
         "integrated_view": _clean_texts(digest.macro.integrated_view),
         "market_assumptions": _clean_texts(digest.macro.market_assumptions),
@@ -5104,6 +5114,53 @@ def _current_thesis_version(session: Session, ticker: str) -> int | None:
     return thesis.version if thesis is not None else None
 
 
+def _macro_temporal_semantic_errors(
+    market_context: dict[str, object],
+    market_review: AIMarketReview,
+) -> list[str]:
+    temporal = market_context.get("macro_temporal_eligibility", {})
+    if not isinstance(temporal, dict) or not temporal.get("contract"):
+        return []
+    fact_roles = {
+        str(fact.get("fact_id")): str(fields.get("temporal_role") or "UNAVAILABLE")
+        for fact in market_context.get("fact_catalog", [])
+        if isinstance(fact, dict)
+        and isinstance((fields := fact.get("fields")), dict)
+        and fact.get("fact_id")
+    }
+    errors: list[str] = []
+    for index, item in enumerate(market_review.important_changes):
+        roles = {fact_roles.get(fact_id, "UNAVAILABLE") for fact_id in item.fact_ids}
+        if roles & {"REFERENCE_LAGGING", "STALE_FOR_DAILY_SIGNAL", "UNAVAILABLE"}:
+            errors.append(
+                f"market_review:temporal_reference_used_as_important_change:{index}"
+            )
+        if "PRIOR_MARKET_SESSION" in roles and not re.search(
+            r"(?:직전|전일|이전|거래일|기준)", item.text
+        ):
+            errors.append(
+                f"market_review:prior_session_without_explicit_label:{index}"
+            )
+    current_language = re.compile(
+        r"(?:오늘|현재|간밤|이번\s*(?:거래일|장|세션)).{0,24}"
+        r"(?:움직|상승|하락|확대|축소|커졌|완화|강화|약화)"
+    )
+    temporal_items = (
+        market_review.core_judgment,
+        *market_review.important_changes,
+        market_review.market_context,
+        market_review.market_assumptions,
+        *market_review.portfolio_transmission,
+    )
+    for index, item in enumerate(temporal_items):
+        roles = {fact_roles.get(fact_id, "UNAVAILABLE") for fact_id in item.fact_ids}
+        if roles and "CURRENT_OBSERVATION" not in roles and current_language.search(
+            item.text
+        ):
+            errors.append(f"market_review:stale_or_prior_as_current:{index}")
+    return errors
+
+
 def _validate_bound_ai_review_output(
     session: Session,
     packet: dict[str, object],
@@ -5216,6 +5273,13 @@ def _validate_bound_ai_review_output(
         errors.append(
             "market_review:night_futures_change_missing:"
             + ",".join(missing_required_changes)
+        )
+    if isinstance(market_context, dict):
+        errors.extend(
+            _macro_temporal_semantic_errors(
+                market_context,
+                output.market_review,
+            )
         )
     market_text = "\n".join(_prose_fields(output.market_review).values())
     if _INTERNAL_TEXT.search(market_text):

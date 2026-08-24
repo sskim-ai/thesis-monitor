@@ -38,10 +38,10 @@ def render_daily_digest(
     lines.extend(
         [
         "",
-        "🎯 오늘 한 줄",
+        f"🎯 {macro.one_line_heading}",
         macro.one_line,
         "",
-        "📈 중요한 변화",
+        f"📈 {macro.changes_heading}",
         *_bullet_lines(macro.key_changes[:3], "임계치를 넘은 핵심 시장 변화가 없습니다."),
         ]
     )
@@ -53,7 +53,9 @@ def render_daily_digest(
         lines.extend([f"• {label}: {explanation}"])
     lines.extend(["", "💡 투자적 의미", *macro.integrated_view])
     changed_assumptions = [
-        item for item in macro.market_assumptions if "오늘 신호: 중립" not in item
+        item
+        for item in macro.market_assumptions
+        if "오늘 신호: 중립" not in item and "현재 신호: 중립" not in item
     ]
     lines.extend(["", "🔄 시장 가정"])
     lines.extend(changed_assumptions or ["• 나머지 시장 가정의 구조적 변화 없음"])

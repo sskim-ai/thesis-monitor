@@ -11,6 +11,7 @@ from app.macro.providers.registry import macro_provider_statuses, macro_provider
 from app.macro.regime import assess_macro_regime
 from app.macro.shocks import assess_macro_shocks
 from app.macro.storage import collect_macro_data
+from app.macro.temporal import build_session_temporal_context
 from app.macro.theses import update_macro_theses
 from app.models.macro import MacroBriefing
 from app.schemas.macro import MacroBriefingRead, MacroMonitorResponse
@@ -73,10 +74,22 @@ async def run_macro_monitor(
             for item in macro_provider_statuses()
             if item.enabled and not item.configured
         )
-    assess_macro_shocks(session, run_date)
+    temporal_context = build_session_temporal_context(
+        session,
+        briefing_date=run_date,
+        as_of=as_of,
+    )
+    eligible_series = {
+        str(item) for item in temporal_context.get("current_series", [])
+    }
+    daily_axes = {
+        str(key): int(value)
+        for key, value in dict(temporal_context.get("daily_axes", {})).items()
+    }
+    assess_macro_shocks(session, run_date, eligible_series)
     regime = assess_macro_regime(session, run_date, as_of=as_of)
-    theses = update_macro_theses(session, regime)
-    impacts = assess_thesis_macro_impacts(session, run_date)
+    theses = update_macro_theses(session, regime, daily_axes)
+    impacts = assess_thesis_macro_impacts(session, run_date, eligible_series)
     briefing = build_macro_briefing(
         session,
         briefing_date=run_date,
@@ -85,6 +98,7 @@ async def run_macro_monitor(
         theses=theses,
         impacts=impacts,
         provider_warnings=warnings,
+        temporal_context=temporal_context,
     )
     briefing.status = "partial" if warnings else "ready"
     session.add(briefing)

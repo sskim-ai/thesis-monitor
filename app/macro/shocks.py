@@ -68,9 +68,12 @@ def _upsert(
 def assess_macro_shocks(
     session: Session,
     assessment_date: date,
+    daily_eligible_series: set[str] | None = None,
 ) -> list[MacroShockAssessment]:
     rows: list[MacroShockAssessment] = []
     for series_code, (positive_type, threshold, change_field) in SERIES_SHOCKS.items():
+        if daily_eligible_series is not None and series_code not in daily_eligible_series:
+            continue
         observation = _latest(session, series_code)
         if observation is None or observation.quality_status != "fresh":
             continue

@@ -193,6 +193,7 @@ def _factor_signal(
     session: Session,
     factor: str,
     assessment_date: date,
+    daily_eligible_series: set[str] | None = None,
 ) -> tuple[int, int, dict[str, object]] | None:
     if factor == "hyperscaler_capex":
         events = session.exec(
@@ -229,6 +230,8 @@ def _factor_signal(
 
     series_code = FACTOR_SERIES.get(factor)
     if series_code is None:
+        return None
+    if daily_eligible_series is not None and series_code not in daily_eligible_series:
         return None
     observation = _latest_observation(session, series_code)
     if observation is None or observation.quality_status not in USABLE_QUALITY:
@@ -283,6 +286,7 @@ def _materiality(factor: str, evidence: dict[str, object]) -> str:
 def assess_thesis_macro_impacts(
     session: Session,
     assessment_date: date,
+    daily_eligible_series: set[str] | None = None,
 ) -> list[ThesisMacroImpact]:
     migrate_macro_exposure_channels(session)
     watchlist = session.exec(
@@ -304,7 +308,12 @@ def assess_thesis_macro_impacts(
         earnings_contributions: dict[str, float] = {}
         for exposure in exposures:
             factor = str(exposure.get("factor", ""))
-            result = _factor_signal(session, factor, assessment_date)
+            result = _factor_signal(
+                session,
+                factor,
+                assessment_date,
+                daily_eligible_series,
+            )
             if result is None:
                 continue
             factor_signal, magnitude, item_evidence = result

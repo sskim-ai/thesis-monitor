@@ -56,48 +56,57 @@ IMPACT_DISPLAY = {
 def _thesis_daily_signal(
     thesis_key: str,
     regime: MacroRegimeAssessment,
+    daily_axes: dict[str, int] | None = None,
 ) -> tuple[int, str]:
+    axes = daily_axes or {
+        "growth_momentum": regime.growth_momentum,
+        "inflation_pressure": regime.inflation_pressure,
+        "financial_conditions": regime.financial_conditions,
+        "earnings_momentum": regime.earnings_momentum,
+    }
+    growth = axes.get("growth_momentum", 0)
+    inflation = axes.get("inflation_pressure", 0)
+    financial = axes.get("financial_conditions", 0)
+    earnings = axes.get("earnings_momentum", 0)
     if thesis_key == "us_soft_landing_disinflation":
         if (
-            regime.growth_momentum >= 1
-            and regime.inflation_pressure <= 0
+            growth >= 1
+            and inflation <= 0
         ) or (
-            regime.growth_momentum >= 0
-            and regime.inflation_pressure <= -1
+            growth >= 0
+            and inflation <= -1
         ):
             signal = 1
-        elif regime.growth_momentum <= -1 or regime.inflation_pressure >= 1:
+        elif growth <= -1 or inflation >= 1:
             signal = -1
         else:
             signal = 0
         rationale = (
-            f"성장 {regime.growth_momentum:+d}, 물가 {regime.inflation_pressure:+d}: "
+            f"성장 {growth:+d}, 물가 {inflation:+d}: "
             "성장 급락과 물가 재가속이 함께 나타나는지 점검했습니다."
         )
     elif thesis_key == "fed_policy_path":
-        signal = int(regime.financial_conditions >= 1) - int(
-            regime.financial_conditions <= -1
-        )
+        signal = int(financial >= 1) - int(financial <= -1)
         rationale = (
-            f"금융여건 {regime.financial_conditions:+d}: 실질금리와 신용스프레드가 "
+            f"금융여건 {financial:+d}: 실질금리와 신용스프레드가 "
             "구조적 재긴축을 가리키는지 점검했습니다."
         )
     elif thesis_key == "ai_capex_cycle":
-        signal = regime.earnings_momentum
+        signal = earnings
         rationale = (
-            f"이익 모멘텀 {regime.earnings_momentum:+d}: 반도체 가격 반응을 "
+            f"이익 모멘텀 {earnings:+d}: 반도체 가격 반응을 "
             "AI CAPEX·이익 기대의 단기 대용치로 사용했습니다."
         )
     elif thesis_key == "china_korea_export_cycle":
-        signal = regime.growth_momentum
+        signal = growth
         rationale = (
-            f"성장 모멘텀 {regime.growth_momentum:+d}: 소형주·반도체 위험선호를 "
+            f"성장 모멘텀 {growth:+d}: 소형주·반도체 위험선호를 "
             "수출 경기의 단기 대용치로 사용했습니다."
         )
     else:
-        signal = -1 if regime.inflation_pressure >= 2 else 0
+        signal = -1 if inflation >= 2 else 0
         rationale = (
-            f"물가 압력 {regime.inflation_pressure:+d}: 유가·기대인플레이션이 "
+            f"물가 압력 {inflation:+d}: 유가·기대인플레이션이 "
             "지속적 공급 충격 수준인지 점검했습니다."
         )
     return signal, rationale
@@ -134,7 +143,10 @@ def _format_move(row: MacroObservation) -> str:
     return f"{label} {row.value:g}"
 
 
-def market_observation_to_dict(item: MacroObservation) -> dict[str, object]:
+def market_observation_to_dict(
+    item: MacroObservation,
+    temporal_decision: dict[str, object] | None = None,
+) -> dict[str, object]:
     value: dict[str, object] = {
         "series_code": item.series_code,
         "category": item.category,
@@ -147,9 +159,12 @@ def market_observation_to_dict(item: MacroObservation) -> dict[str, object]:
         "retrieved_at": item.retrieved_at,
         "market_session": item.market_session,
         "provider": item.provider,
+        "frequency": item.frequency,
         "quality_status": item.quality_status,
         "source_url": item.source_url,
     }
+    if temporal_decision:
+        value["temporal"] = temporal_decision
     if item.category == "kr_night_futures":
         raw = _json(item.raw_payload, {})
         raw = raw if isinstance(raw, dict) else {}
@@ -192,8 +207,14 @@ def build_macro_briefing(
     theses: list[MacroThesis],
     impacts: list[ThesisMacroImpact],
     provider_warnings: list[str],
+    temporal_context: dict[str, object] | None = None,
 ) -> MacroBriefing:
     observations = _latest_observations(session)
+    temporal_context = temporal_context or {}
+    decisions = temporal_context.get("decisions", {})
+    decisions = decisions if isinstance(decisions, dict) else {}
+    daily_axes = temporal_context.get("daily_axes", {})
+    daily_axes = daily_axes if isinstance(daily_axes, dict) else {}
     market_items = [_format_move(item) for item in observations]
     calendar = session.exec(
         select(MacroEvent)
@@ -218,7 +239,11 @@ def build_macro_briefing(
     ]
     thesis_items = []
     for item in theses:
-        daily_signal, signal_rationale = _thesis_daily_signal(item.thesis_key, regime)
+        daily_signal, signal_rationale = _thesis_daily_signal(
+            item.thesis_key,
+            regime,
+            {str(key): int(value) for key, value in daily_axes.items()},
+        )
         thesis_items.append(
             {
             "thesis_key": item.thesis_key,
@@ -294,7 +319,16 @@ def build_macro_briefing(
         "market_summary": json.dumps(
             {
                 "items": market_items,
-                "observations": [market_observation_to_dict(item) for item in observations],
+                "observations": [
+                    market_observation_to_dict(
+                        item,
+                        decisions.get(item.series_code)
+                        if isinstance(decisions.get(item.series_code), dict)
+                        else None,
+                    )
+                    for item in observations
+                ],
+                "temporal_eligibility": temporal_context,
             },
             ensure_ascii=False,
             default=str,

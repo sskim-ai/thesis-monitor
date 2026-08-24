@@ -99,8 +99,19 @@ def ensure_default_macro_theses(session: Session) -> list[MacroThesis]:
 def update_macro_theses(
     session: Session,
     regime: MacroRegimeAssessment,
+    daily_axes: dict[str, int] | None = None,
 ) -> list[MacroThesis]:
     theses = ensure_default_macro_theses(session)
+    axes = daily_axes or {
+        "growth_momentum": regime.growth_momentum,
+        "inflation_pressure": regime.inflation_pressure,
+        "financial_conditions": regime.financial_conditions,
+        "earnings_momentum": regime.earnings_momentum,
+    }
+    growth = axes.get("growth_momentum", 0)
+    inflation = axes.get("inflation_pressure", 0)
+    financial = axes.get("financial_conditions", 0)
+    earnings = axes.get("earnings_momentum", 0)
     now = datetime.now(timezone.utc)
     reviewed_at = datetime.combine(regime.assessment_date, time.min, tzinfo=timezone.utc)
     for thesis in theses:
@@ -111,47 +122,45 @@ def update_macro_theses(
         )
         if thesis.thesis_key == "us_soft_landing_disinflation":
             if (
-                regime.growth_momentum >= 1
-                and regime.inflation_pressure <= 0
+                growth >= 1
+                and inflation <= 0
             ) or (
-                regime.growth_momentum >= 0
-                and regime.inflation_pressure <= -1
+                growth >= 0
+                and inflation <= -1
             ):
                 delta = 1
-            elif regime.growth_momentum <= -1 or regime.inflation_pressure >= 1:
+            elif growth <= -1 or inflation >= 1:
                 delta = -1
             else:
                 delta = 0
         elif thesis.thesis_key == "fed_policy_path":
-            delta = int(regime.financial_conditions >= 1) - int(
-                regime.financial_conditions <= -1
-            )
+            delta = int(financial >= 1) - int(financial <= -1)
         elif thesis.thesis_key == "ai_capex_cycle":
-            delta = regime.earnings_momentum
+            delta = earnings
         elif thesis.thesis_key == "china_korea_export_cycle":
-            delta = regime.growth_momentum
+            delta = growth
         else:
-            delta = -1 if regime.inflation_pressure >= 2 else 0
+            delta = -1 if inflation >= 2 else 0
         today_signal = "positive" if delta > 0 else "negative" if delta < 0 else "neutral"
         rationale = {
             "us_soft_landing_disinflation": (
-                f"성장 {regime.growth_momentum:+d}, 물가 {regime.inflation_pressure:+d}. "
-                "당일 신호이며 공식 성장·물가 데이터의 지속 확인 전에는 상태를 바꾸지 않습니다."
+                f"성장 {growth:+d}, 물가 {inflation:+d}. "
+                "현재 일일 신호 자격을 통과한 관측만 사용하며 지속 확인 전에는 상태를 바꾸지 않습니다."
             ),
             "fed_policy_path": (
-                f"금융여건 {regime.financial_conditions:+d}. 당일 금리·스프레드 움직임은 "
-                "정책경로의 영구 변화가 아니라 오늘 신호로 분리합니다."
+                f"금융여건 {financial:+d}. 자격을 통과한 금리·스프레드 움직임은 "
+                "정책경로의 영구 변화가 아닌 일일 신호로 분리합니다."
             ),
             "ai_capex_cycle": (
-                f"반도체 가격 기반 단기 신호 {regime.earnings_momentum:+d}. 실제 CAPEX, 주문, "
+                f"반도체 가격 기반 단기 신호 {earnings:+d}. 실제 CAPEX, 주문, "
                 "HBM 출하 또는 이익 추정치 변화가 확인되지 않으면 시장 가정은 유지합니다."
             ),
             "china_korea_export_cycle": (
-                f"가격 기반 성장 신호 {regime.growth_momentum:+d}. 공식 수출·생산 데이터의 "
+                f"가격 기반 성장 신호 {growth:+d}. 공식 수출·생산 데이터의 "
                 "반복 확인 전에는 시장 가정 상태를 바꾸지 않습니다."
             ),
             "oil_supply_shock": (
-                f"물가·유가 기반 당일 신호 {regime.inflation_pressure:+d}. 재고·생산 자료로 "
+                f"물가·유가 기반 현재 신호 {inflation:+d}. 재고·생산 자료로 "
                 "공급 충격의 지속성이 확인돼야 상태를 변경합니다."
             ),
         }[thesis.thesis_key]

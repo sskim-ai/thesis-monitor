@@ -401,3 +401,14 @@ def test_macro_impacts_separate_overall_and_valuation_channels() -> None:
         assert vix_only["raw_move"] == -12.5
         assert vix_only["materiality"] == "high"
         assert vix_only["eligible_for_valuation_context"] is False
+
+        gated = assess_thesis_macro_impacts(
+            session,
+            date(2048, 1, 6),
+            daily_eligible_series=set(),
+        )
+        gated_by_ticker = {item.ticker: item for item in gated}
+        assert gated_by_ticker["CHANNEL2048"].direction == "neutral"
+        assert gated_by_ticker["CHANNEL2048"].earnings_effect == "neutral"
+        assert gated_by_ticker["CHANNEL2048"].valuation_effect == "neutral"
+        assert json.loads(gated_by_ticker["CHANNEL2048"].evidence) == []

@@ -2554,11 +2554,16 @@ def _macro_report(briefing: MacroBriefing) -> tuple[str, dict[str, object]]:
     quality_text = "\n".join(quality_lines) or "• 특이사항 없음"
     night_futures_text = _night_futures_section(market)
     night_futures_block = f"\n\n{night_futures_text}" if night_futures_text else ""
+    change_heading = (
+        "오늘 가장 중요한 변화"
+        if macro.changes_heading == "중요한 변화"
+        else macro.changes_heading
+    )
     fallback = (
         f"🌍 시장환경 점검 · {briefing.briefing_date}\n"
         f"⚠️ {macro.regime_label} 국면 · 판단 신뢰도 {macro.confidence:.0%}\n\n"
-        f"🎯 오늘 한 줄\n{macro.one_line}\n\n"
-        f"📈 오늘 가장 중요한 변화\n"
+        f"🎯 {macro.one_line_heading}\n{macro.one_line}\n\n"
+        f"📈 {change_heading}\n"
         f"{change_text or '• 임계치를 넘은 핵심 시장 변화가 없습니다.'}"
         f"{night_futures_block}\n\n"
         f"🧭 현재 시장 상황\n{axis_text}\n\n"

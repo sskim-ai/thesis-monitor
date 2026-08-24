@@ -981,10 +981,18 @@ def _render_ai_market_message(
     cautions = _first_block(blocks, "⚠️ 데이터 주의")
     sections = [
         f"🤖 AI 보조 {title} · {market_label} Pilot {pilot_day}/{target_days}",
-        f"🎯 오늘 시장 한 줄\n{review.core_judgment.text.strip()}",
+        (
+            f"🎯 {'현재 시장 한 줄' if not market_context.get('has_current_macro_observation', True) else '오늘 시장 한 줄'}"
+            f"\n{review.core_judgment.text.strip()}"
+        ),
     ]
     if changes:
-        sections.append(f"📈 실제 변화\n{changes}")
+        heading = (
+            "직전 거래일 맥락"
+            if not market_context.get("has_current_macro_observation", True)
+            else "실제 변화"
+        )
+        sections.append(f"📈 {heading}\n{changes}")
     if market == "us":
         rendered_night_changes = _bullets(
             [item.text.strip() for item in night_changes if item.text.strip()]

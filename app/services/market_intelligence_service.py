@@ -110,6 +110,31 @@ def _observation_fact(
         "quality": str(item.get("quality_status") or "fresh"),
         "observed_at": str(item.get("observed_at") or run_date),
     }
+    temporal = item.get("temporal")
+    if isinstance(temporal, dict):
+        fields.update(
+            {
+                "temporal_contract": "macro-digest-temporal-eligibility-v1",
+                "temporal_role": str(
+                    temporal.get("temporal_role") or "REFERENCE_LAGGING"
+                ),
+                "today_signal_eligible": bool(
+                    temporal.get("today_signal_eligible", False)
+                ),
+                "important_change_eligible": bool(
+                    temporal.get("important_change_eligible", False)
+                ),
+                "temporal_reason": str(temporal.get("reason") or ""),
+            }
+        )
+    else:
+        fields.update(
+            {
+                "temporal_role": "CURRENT_OBSERVATION",
+                "today_signal_eligible": True,
+                "important_change_eligible": True,
+            }
+        )
     if item.get("market_session"):
         fields["market_session"] = str(item["market_session"])
 
@@ -176,6 +201,16 @@ def _relative_fact(
     benchmark_return = _number(benchmark_fields, "return_pct")
     if subject_return is None or benchmark_return is None:
         return None
+    same_temporal_role = subject_fields.get("temporal_role") == benchmark_fields.get(
+        "temporal_role"
+    )
+    same_date = subject_fact.get("as_of_date") == benchmark_fact.get("as_of_date")
+    today_eligible = bool(
+        same_temporal_role
+        and same_date
+        and subject_fields.get("today_signal_eligible") is True
+        and benchmark_fields.get("today_signal_eligible") is True
+    )
     fact_type = (
         "market_sector_relative"
         if subject_fact.get("fact_type") == "market_sector"
@@ -193,6 +228,18 @@ def _relative_fact(
             "benchmark_label": benchmark_fields["label"],
             "relative_return_pct": subject_return - benchmark_return,
             "source_fact_ids": [subject_fact["fact_id"], benchmark_fact["fact_id"]],
+            "temporal_role": (
+                subject_fields.get("temporal_role")
+                if same_temporal_role and same_date
+                else "REFERENCE_LAGGING"
+            ),
+            "today_signal_eligible": today_eligible,
+            "important_change_eligible": bool(
+                same_temporal_role
+                and same_date
+                and subject_fields.get("important_change_eligible") is True
+                and benchmark_fields.get("important_change_eligible") is True
+            ),
         },
     }
 
@@ -282,6 +329,8 @@ def _selected_change_fact_ids(
         fact = by_id.get(fact_id)
         if fact is None or not isinstance(fact.get("fields"), dict):
             continue
+        if fact["fields"].get("today_signal_eligible") is not True:
+            continue
         value = _number(fact["fields"], field)
         threshold = _SELECTION_THRESHOLDS.get((series, field))
         if value is None or threshold is None or abs(value) < threshold:
@@ -311,7 +360,9 @@ def _portfolio_transmission(
     fact_ids_by_series = {
         str(fields["series_code"]): str(fact["fact_id"])
         for fact in facts
-        if isinstance((fields := fact.get("fields")), dict) and fields.get("series_code")
+        if isinstance((fields := fact.get("fields")), dict)
+        and fields.get("series_code")
+        and fields.get("today_signal_eligible") is True
     }
     fact_ids = {str(fact["fact_id"]) for fact in facts}
     stock_groups = {str(stock["ticker"]): _group_key(stock) for stock in stocks}
@@ -362,7 +413,17 @@ def _portfolio_transmission(
             )
 
     sector_relative = "market:relative:SOXX:SPY"
-    if sector_relative in fact_ids:
+    sector_relative_fact = next(
+        (item for item in facts if item.get("fact_id") == sector_relative),
+        None,
+    )
+    sector_relative_fields = (
+        sector_relative_fact.get("fields")
+        if isinstance(sector_relative_fact, dict)
+        and isinstance(sector_relative_fact.get("fields"), dict)
+        else {}
+    )
+    if sector_relative in fact_ids and sector_relative_fields.get("today_signal_eligible") is True:
         for ticker, group in stock_groups.items():
             if group not in {"semiconductor", "memory"}:
                 continue
@@ -594,9 +655,31 @@ def build_market_intelligence(
     groups, transmissions, stock_transmissions = _portfolio_transmission(
         stocks, impacts, facts
     )
+    current_fact_ids = sorted(
+        str(item["fact_id"])
+        for item in facts
+        if isinstance(item.get("fields"), dict)
+        and item["fields"].get("today_signal_eligible") is True
+    )
+    prior_fact_ids = sorted(
+        str(item["fact_id"])
+        for item in facts
+        if isinstance(item.get("fields"), dict)
+        and item["fields"].get("temporal_role") == "PRIOR_MARKET_SESSION"
+    )
+    reference_fact_ids = sorted(
+        str(item["fact_id"])
+        for item in facts
+        if isinstance(item.get("fields"), dict)
+        and item["fields"].get("temporal_role")
+        in {"REFERENCE_LAGGING", "STALE_FOR_DAILY_SIGNAL", "UNAVAILABLE"}
+    )
     return {
         "fact_catalog": facts,
         "key_change_fact_ids": _selected_change_fact_ids(facts),
+        "current_observation_fact_ids": current_fact_ids,
+        "prior_market_session_fact_ids": prior_fact_ids,
+        "reference_fact_ids": reference_fact_ids,
         "coverage": coverage,
         "portfolio_exposure_groups": groups,
         "transmission_candidates": transmissions,

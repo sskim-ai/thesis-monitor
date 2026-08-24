@@ -94,6 +94,10 @@ class MacroInterpretation:
     market_assumptions: list[str]
     market_session: str = "unknown"
     assessment_state: str = "final"
+    one_line_heading: str = "오늘 한 줄"
+    changes_heading: str = "중요한 변화"
+    temporal_contract: str | None = None
+    has_current_observation: bool = True
 
 
 @dataclass(frozen=True)
@@ -196,6 +200,35 @@ def _usable(item: dict[str, object] | None) -> bool:
     return bool(item and str(item.get("quality_status", "fresh")) in USABLE_QUALITY)
 
 
+def _temporal_role(item: dict[str, object] | None) -> str:
+    if not item:
+        return "UNAVAILABLE"
+    temporal = item.get("temporal")
+    if isinstance(temporal, dict) and temporal.get("temporal_role"):
+        return str(temporal["temporal_role"])
+    return "CURRENT_OBSERVATION"
+
+
+def _change_eligible(item: dict[str, object] | None) -> bool:
+    return _usable(item) and _temporal_role(item) in {
+        "CURRENT_OBSERVATION",
+        "PRIOR_MARKET_SESSION",
+    }
+
+
+def _prior_prefix(item: dict[str, object] | None) -> str:
+    if _temporal_role(item) != "PRIOR_MARKET_SESSION":
+        return ""
+    observed = str((item or {}).get("observed_at") or "")[:10]
+    if observed:
+        try:
+            month_day = date.fromisoformat(observed).strftime("%-m/%-d")
+        except ValueError:
+            month_day = observed
+        return f"직전 거래일({month_day}) "
+    return "직전 거래일 "
+
+
 def _number(item: dict[str, object] | None, key: str) -> float | None:
     if not _usable(item):
         return None
@@ -215,14 +248,26 @@ def _direction(value: float, positive: str, negative: str) -> str:
 def _important_changes(
     observations: dict[str, dict[str, object]],
 ) -> list[str]:
-    spy = _number(observations.get("SPY"), "change_pct")
-    qqq = _number(observations.get("QQQ"), "change_pct")
-    soxx = _number(observations.get("SOXX"), "change_pct")
-    nominal = _bp(observations.get("DGS10"))
-    real = _bp(observations.get("DFII10"))
-    vix = _number(observations.get("VIXCLS"), "change_pct")
-    usdkrw = _number(observations.get("USDKRW"), "change_pct")
-    oil = _number(observations.get("DCOILWTICO"), "change_pct")
+    def item(code: str) -> dict[str, object] | None:
+        value = observations.get(code)
+        return value if _change_eligible(value) else None
+
+    spy_item = item("SPY")
+    qqq_item = item("QQQ")
+    soxx_item = item("SOXX")
+    spy = _number(spy_item, "change_pct")
+    qqq = _number(qqq_item, "change_pct")
+    soxx = _number(soxx_item, "change_pct")
+    nominal_item = item("DGS10")
+    real_item = item("DFII10")
+    vix_item = item("VIXCLS")
+    usdkrw_item = item("USDKRW")
+    oil_item = item("DCOILWTICO")
+    nominal = _bp(nominal_item)
+    real = _bp(real_item)
+    vix = _number(vix_item, "change_pct")
+    usdkrw = _number(usdkrw_item, "change_pct")
+    oil = _number(oil_item, "change_pct")
     candidates: list[tuple[float, bool, str]] = []
 
     if spy is not None:
@@ -230,27 +275,39 @@ def _important_changes(
             (
                 abs(spy) / SIGNIFICANCE.sp500_pct,
                 abs(spy) >= SIGNIFICANCE.sp500_pct,
-                f"S&P500이 {spy:+.1f}% 움직여 시장 전반의 위험선호가 "
+                f"{_prior_prefix(spy_item)}S&P500이 {spy:+.1f}% 움직여 시장 전반의 위험선호가 "
                 f"{_direction(spy, '개선됐습니다.', '약해졌습니다.')}",
             )
         )
-    if spy is not None and qqq is not None:
+    if (
+        spy is not None
+        and qqq is not None
+        and _temporal_role(spy_item) == _temporal_role(qqq_item)
+        and str((spy_item or {}).get("observed_at"))[:10]
+        == str((qqq_item or {}).get("observed_at"))[:10]
+    ):
         gap = qqq - spy
         candidates.append(
             (
                 abs(gap) / SIGNIFICANCE.nasdaq_relative_pp,
                 abs(gap) >= SIGNIFICANCE.nasdaq_relative_pp,
-                f"Nasdaq이 S&P500을 {abs(gap):.1f}%p "
+                f"{_prior_prefix(qqq_item)}Nasdaq이 S&P500을 {abs(gap):.1f}%p "
                 f"{_direction(gap, '웃돌아 성장주 상대강도가 확인됐습니다.', '밑돌아 성장주 주도력이 약했습니다.')}",
             )
         )
-    if spy is not None and soxx is not None:
+    if (
+        spy is not None
+        and soxx is not None
+        and _temporal_role(spy_item) == _temporal_role(soxx_item)
+        and str((spy_item or {}).get("observed_at"))[:10]
+        == str((soxx_item or {}).get("observed_at"))[:10]
+    ):
         gap = soxx - spy
         candidates.append(
             (
                 abs(gap) / SIGNIFICANCE.soxx_relative_pp,
                 abs(gap) >= SIGNIFICANCE.soxx_relative_pp,
-                f"반도체가 S&P500을 {abs(gap):.1f}%p "
+                f"{_prior_prefix(soxx_item)}반도체가 S&P500을 {abs(gap):.1f}%p "
                 f"{_direction(gap, '웃돌았습니다.', '밑돌았습니다.')} "
                 "가격 반응은 수요 심리 신호일 뿐, 실제 AI CAPEX 투자 논리 변화는 주문과 실적으로 확인해야 합니다.",
             )
@@ -260,7 +317,7 @@ def _important_changes(
             (
                 abs(nominal) / SIGNIFICANCE.us10y_bp,
                 abs(nominal) >= SIGNIFICANCE.us10y_bp,
-                f"미국 10년물 금리가 {nominal:+.0f}bp 움직여 "
+                f"{_prior_prefix(nominal_item)}미국 10년물 금리가 {nominal:+.0f}bp 움직여 "
                 f"{_direction(nominal, '장기 자산 할인율에 부담을 더했습니다.', '장기 자산 할인율 부담을 낮췄습니다.')}",
             )
         )
@@ -269,7 +326,7 @@ def _important_changes(
             (
                 abs(real) / SIGNIFICANCE.real_yield_bp,
                 abs(real) >= SIGNIFICANCE.real_yield_bp,
-                f"미국 실질금리가 {real:+.0f}bp 움직였습니다. "
+                f"{_prior_prefix(real_item)}미국 실질금리가 {real:+.0f}bp 움직였습니다. "
                 f"{_direction(real, '기업 수요와 별개로 성장주 멀티플에는 부정적입니다.', '성장주 멀티플에는 우호적입니다.')}",
             )
         )
@@ -278,7 +335,7 @@ def _important_changes(
             (
                 abs(vix) / SIGNIFICANCE.vix_pct,
                 abs(vix) >= SIGNIFICANCE.vix_pct,
-                f"VIX가 {vix:+.1f}% 움직여 단기 위험회피가 "
+                f"{_prior_prefix(vix_item)}VIX가 {vix:+.1f}% 움직여 단기 위험회피가 "
                 f"{_direction(vix, '커졌습니다.', '완화됐습니다.')}",
             )
         )
@@ -287,7 +344,7 @@ def _important_changes(
             (
                 abs(usdkrw) / SIGNIFICANCE.usdkrw_pct,
                 abs(usdkrw) >= SIGNIFICANCE.usdkrw_pct,
-                f"원/달러 환율이 {usdkrw:+.1f}% 움직여 국내 수입비용과 외국인 수급의 환율 경로를 점검해야 합니다.",
+                f"{_prior_prefix(usdkrw_item)}원/달러 환율이 {usdkrw:+.1f}% 움직여 국내 수입비용과 외국인 수급의 환율 경로를 점검해야 합니다.",
             )
         )
     if oil is not None:
@@ -295,7 +352,7 @@ def _important_changes(
             (
                 abs(oil) / SIGNIFICANCE.wti_pct,
                 abs(oil) >= SIGNIFICANCE.wti_pct,
-                f"WTI가 {oil:+.1f}% 움직여 물가와 운송·에너지 업종의 비용·가격 경로에 영향을 줬습니다.",
+                f"{_prior_prefix(oil_item)}WTI가 {oil:+.1f}% 움직여 물가와 운송·에너지 업종의 비용·가격 경로에 영향을 줬습니다.",
             )
         )
 
@@ -309,18 +366,22 @@ def _important_changes(
 
 
 def _axis_explanations(
-    regime: dict[str, object], observations: dict[str, dict[str, object]]
+    regime: dict[str, object],
+    observations: dict[str, dict[str, object]],
+    temporal: dict[str, object] | None = None,
 ) -> list[tuple[str, str]]:
     def score(key: str) -> int:
         value = regime.get(key, 0)
         return int(value) if isinstance(value, (int, float)) else 0
 
-    growth = score("growth_momentum")
-    inflation = score("inflation_pressure")
-    liquidity = score("liquidity_condition")
-    financial = score("financial_conditions")
-    risk = score("risk_appetite")
-    earnings = score("earnings_momentum")
+    axes = temporal.get("daily_axes", {}) if temporal else regime
+    axes = axes if isinstance(axes, dict) else regime
+    growth = int(axes.get("growth_momentum", 0) or 0)
+    inflation = int(axes.get("inflation_pressure", 0) or 0)
+    liquidity = int(axes.get("liquidity_condition", 0) or 0)
+    financial = int(axes.get("financial_conditions", 0) or 0)
+    risk = int(axes.get("risk_appetite", 0) or 0)
+    earnings = int(axes.get("earnings_momentum", 0) or 0)
 
     growth_text = (
         "소형주와 경기민감 가격 신호가 함께 개선됐지만 실제 경기지표 개선이 확인된 것은 아닙니다."
@@ -381,10 +442,22 @@ def _axis_explanations(
 def _macro_interpretation(briefing: MacroBriefing) -> MacroInterpretation:
     regime = _dict(briefing.regime_summary)
     observations = _observation_map(briefing)
-    risk = int(regime.get("risk_appetite", 0) or 0)
-    financial = int(regime.get("financial_conditions", 0) or 0)
-    growth = int(regime.get("growth_momentum", 0) or 0)
-    if risk > 0 and financial < 0:
+    market = _dict(briefing.market_summary)
+    temporal = market.get("temporal_eligibility")
+    temporal = temporal if isinstance(temporal, dict) else {}
+    has_contract = bool(temporal.get("contract"))
+    has_current = bool(temporal.get("has_current_observation", True))
+    axes = temporal.get("daily_axes", {}) if has_contract else regime
+    axes = axes if isinstance(axes, dict) else regime
+    risk = int(axes.get("risk_appetite", 0) or 0)
+    financial = int(axes.get("financial_conditions", 0) or 0)
+    growth = int(axes.get("growth_momentum", 0) or 0)
+    if has_contract and not has_current:
+        one_line = (
+            "새로 확인된 일일 거시 관측이 없어 기존 시장환경은 참고로 유지하고, "
+            "직전 거래일과 후행 지표를 오늘 변화로 재사용하지 않습니다."
+        )
+    elif risk > 0 and financial < 0:
         one_line = "위험선호는 개선됐지만 금리·신용 여건은 성장주 Valuation에 부담인 혼합 시장입니다."
     elif risk > 0:
         one_line = "위험자산 선호가 개선됐으며 실적 근거가 있는 종목에 상대적으로 우호적인 시장입니다."
@@ -419,12 +492,17 @@ def _macro_interpretation(briefing: MacroBriefing) -> MacroInterpretation:
             "weakening": "약화",
             "structural_break": "구조적 재검토",
         }.get(status, status)
-        signal_value = str(item.get("today_signal", "neutral"))
+        signal_value = (
+            str(item.get("today_signal", "neutral"))
+            if not has_contract or has_current
+            else "neutral"
+        )
         signal = 1 if signal_value == "positive" else -1 if signal_value == "negative" else 0
         signal_strength = str(item.get("today_signal_strength", "none"))
         key = str(item.get("thesis_key", ""))
         if key == "fed_policy_path":
-            real_bp = _bp(observations.get("DFII10"))
+            real_item = observations.get("DFII10")
+            real_bp = _bp(real_item) if _temporal_role(real_item) == "CURRENT_OBSERVATION" else None
             reason = (
                 f"실질금리 {real_bp:+.0f}bp가 할인율에 부담"
                 if real_bp is not None and real_bp > 0
@@ -455,7 +533,8 @@ def _macro_interpretation(briefing: MacroBriefing) -> MacroInterpretation:
                 else "한국 수출과 중국 실물지표를 바꿀 신규 확정 근거 없음"
             )
         elif key == "oil_supply_shock":
-            oil = _number(observations.get("DCOILWTICO"), "change_pct")
+            oil_item = observations.get("DCOILWTICO")
+            oil = _number(oil_item, "change_pct") if _temporal_role(oil_item) == "CURRENT_OBSERVATION" else None
             reason = (
                 f"WTI {oil:+.1f}%이나 공급충격 확정 수준은 아님"
                 if oil is not None
@@ -474,7 +553,7 @@ def _macro_interpretation(briefing: MacroBriefing) -> MacroInterpretation:
         assumptions.append(
             f"{item.get('title', '시장 가정')}\n"
             f"→ 상태: {status_label}\n"
-            f"→ 오늘 신호: {signal_label}\n"
+            f"→ 현재 신호: {signal_label}\n"
             f"→ 이유: {reason}"
         )
 
@@ -489,11 +568,19 @@ def _macro_interpretation(briefing: MacroBriefing) -> MacroInterpretation:
         confidence=float(regime.get("confidence", 0) or 0),
         one_line=one_line,
         key_changes=_important_changes(observations),
-        axis_explanations=_axis_explanations(regime, observations),
+        axis_explanations=_axis_explanations(regime, observations, temporal),
         integrated_view=integrated,
         market_assumptions=assumptions,
         market_session=getattr(briefing, "market_session", "unknown"),
         assessment_state=getattr(briefing, "assessment_state", "final"),
+        one_line_heading="현재 한 줄" if has_contract and not has_current else "오늘 한 줄",
+        changes_heading=(
+            "직전 거래일 맥락"
+            if has_contract and not has_current
+            else "중요한 변화"
+        ),
+        temporal_contract=str(temporal.get("contract")) if has_contract else None,
+        has_current_observation=has_current,
     )
 
 
