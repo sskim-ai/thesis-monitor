@@ -359,9 +359,18 @@ def _important_changes(
     candidates.sort(key=lambda item: (-item[0], item[2]))
     selected = [text for _score, significant, text in candidates if significant][:4]
     if len(selected) == 1:
-        has_current = any(
-            _temporal_role(value) == "CURRENT_OBSERVATION"
+        temporal_items = [
+            value
             for value in observations.values()
+            if isinstance(value.get("temporal"), dict)
+        ]
+        has_current = (
+            any(
+                _temporal_role(value) == "CURRENT_OBSERVATION"
+                for value in temporal_items
+            )
+            if temporal_items
+            else True
         )
         selected.append(
             "그 외 주가지수·변동성에서는 투자 판단을 바꿀 정도의 큰 변화가 없었습니다."
