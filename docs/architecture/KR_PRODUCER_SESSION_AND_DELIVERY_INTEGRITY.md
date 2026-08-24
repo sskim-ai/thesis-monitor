@@ -43,7 +43,7 @@ with packet ID, market, assessment date, contract version, and provisional state
 `packet_bound_pending_hold`. This provisional state is non-deliverable. The hold step promotes it
 to `held`; retry and fallback selection require an identity-matching packet file.
 
-If packet persistence fails or the cohort is not ready:
+If a production persistence condition fails:
 
 ```text
 analysis evidence = preserved
@@ -52,6 +52,11 @@ new delivery intent = 0
 Telegram = 0
 result = packet_not_ready
 ```
+
+Shadow readiness is separate under `shadow-cohort-readiness-v1`. When production is safe but the
+shadow cohort is not ready, the immutable packet still persists, delivery intents are bound and
+held, AI claimability remains false, and deterministic fallback remains reachable. The packet
+records the shadow suppression reason with production influence `none`.
 
 A process failure after provisional intent creation remains safe: the packet already exists, the
 intent is not selected for delivery, and the next producer attempt can idempotently queue and hold

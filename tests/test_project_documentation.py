@@ -31,6 +31,7 @@ DOCUMENTS = (
     ROOT / "docs" / "architecture" / "WORKING_CAPITAL_USER_VISIBLE_PREINTEGRATION.md",
     ROOT / "docs" / "architecture" / "KR_INVESTOR_FLOW_RECONCILIATION.md",
     ROOT / "docs" / "architecture" / "KR_PRODUCER_SESSION_AND_DELIVERY_INTEGRITY.md",
+    ROOT / "docs" / "architecture" / "KR_PRODUCTION_PACKET_AND_SHADOW_GATE_SEPARATION.md",
     ROOT / "docs" / "architecture" / "MACRO_DIGEST_TEMPORAL_ELIGIBILITY.md",
     ROOT / "docs" / "operations" / "AI_ASSISTED_PILOT.md",
     ROOT / "docs" / "operations" / "CASH_FLOW_USER_VISIBLE_KILL_SWITCH.md",
@@ -52,16 +53,16 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     assert state["repository"] == "sskim-ai/thesis-monitor"
     assert state["branch"] == "main"
     assert state["experimental_branch"] == (
-        "codex/macro-digest-temporal-wiring-audit-repair"
+        "codex/kr-shadow-cohort-activation-gate-packet-persistence-repair"
     )
     assert state["current_phase"] == (
-        "macro_digest_temporal_repair_deployed_pending_natural"
+        "kr_shadow_gate_packet_repair_deployed_pending_natural"
     )
     assert state["last_completed_phase"] == (
-        "macro_digest_temporal_wiring_audit_and_conditional_repair"
+        "kr_shadow_cohort_activation_gate_packet_persistence_repair"
     )
     assert state["next_default_phase"] == (
-        "natural_macro_temporal_and_inventory_review"
+        "natural_kr_packet_persistence_review"
     )
     assert state["deployed_code_commit"] == "HEAD"
     assert state["main_code_commit"] == "HEAD"
@@ -87,6 +88,12 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     assert state["contracts"]["xkrx_role_target"] == "xkrx-role-target-v1"
     assert state["contracts"]["packet_bound_delivery_intent"] == (
         "packet-bound-delivery-intent-v1"
+    )
+    assert state["contracts"]["kr_production_packet_persistence"] == (
+        "kr-production-packet-persistence-v1"
+    )
+    assert state["contracts"]["shadow_cohort_readiness"] == (
+        "shadow-cohort-readiness-v1"
     )
     assert state["contracts"]["kr_orphan_delivery_reconciliation"] == (
         "kr-orphan-delivery-reconciliation-v1"
@@ -194,6 +201,24 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     assert macro_temporal["false_today_claims_after"] == 0
     assert macro_temporal["open_p0"] == 0
     assert macro_temporal["open_material_p1"] == 0
+    shadow_gate = state["kr_shadow_gate_packet_repair"]
+    assert shadow_gate["status"] == "deployed_pending_natural"
+    assert shadow_gate["root_cause_branch"] == "C"
+    assert shadow_gate["instruction_commit"] == (
+        "7da8d8866a9b7aafc8c010424cdbc4192de46cbb"
+    )
+    assert shadow_gate["implementation_commit"] == (
+        "64086c4af7735dcbe2fd3f5093f4167952a280e0"
+    )
+    assert shadow_gate["source_run_id"] == 36
+    assert shadow_gate["source_analysis"] == "7_of_7"
+    assert shadow_gate["replay_packet_count"] == 1
+    assert shadow_gate["replay_delivery_intents"] == 8
+    assert shadow_gate["replay_fallback_eligible"] == 8
+    assert shadow_gate["replay_duplicate_packets"] == 0
+    assert shadow_gate["replay_duplicate_intents"] == 0
+    assert shadow_gate["p0_open"] == []
+    assert shadow_gate["p1_open"] == []
     phase_90a = state["phase_9_0a_cash_flow_capital_efficiency"]
     assert phase_90a["status"] == "architecture_closed_ready_for_phase_9_0b"
     assert phase_90a["active_universe"] == 20

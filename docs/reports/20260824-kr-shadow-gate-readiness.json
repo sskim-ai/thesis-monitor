@@ -1,0 +1,53 @@
+{
+  "schema_version": "1",
+  "assessment_date": "2026-08-24",
+  "root_cause_branch": "C",
+  "instruction_commit": "7da8d8866a9b7aafc8c010424cdbc4192de46cbb",
+  "implementation_commit": "64086c4af7735dcbe2fd3f5093f4167952a280e0",
+  "github_actions": {
+    "instruction_run": 32709664393,
+    "instruction_status": "passed_test_and_lint",
+    "implementation_run": 32711595707,
+    "implementation_status": "passed_test_and_lint"
+  },
+  "contracts": {
+    "production_packet_persistence": "kr-production-packet-persistence-v1",
+    "shadow_cohort_readiness": "shadow-cohort-readiness-v1",
+    "delivery_intent": "packet-bound-delivery-intent-v1"
+  },
+  "triggering_run": {
+    "run_id": 36,
+    "natural_packet_id": "2026-08-24-kr-run-36-b82af21dfde3",
+    "analysis": "7_of_7",
+    "packet_persisted_before": false,
+    "delivery_intents_before": 0,
+    "sent_before": 0
+  },
+  "replay": {
+    "packet_id": "2026-08-24-kr-run-36-4a057f187da2",
+    "packet_count": 1,
+    "delivery_intent_count": 8,
+    "fallback_eligible_count": 8,
+    "shadow_eligible": false,
+    "unsupported_shadow_numeric_paths": 210,
+    "duplicate_packets": 0,
+    "duplicate_intents": 0,
+    "telegram_sent": 0
+  },
+  "validation": {
+    "focused_gate_tests": 19,
+    "relevant_regression_tests": 385,
+    "full_pytest": 1428,
+    "ruff": "pass",
+    "diff_check": "pass"
+  },
+  "open_p0": [],
+  "open_material_p1": [],
+  "p2_backlog": [
+    "optional audit-only investor-flow numeric registry coverage for future shadow comparison"
+  ],
+  "kr_shadow_gate_packet_repair_ready": true,
+  "post_promotion_state": "DEPLOYED_PENDING_NATURAL",
+  "kr_production_natural": "PENDING",
+  "production_assist": false
+}

@@ -1,6 +1,6 @@
 # Branch Dependency Manifest
 
-As of 2026-08-22. Resolve final SHAs from Git; documentation commits are intentionally not
+As of 2026-08-24. Resolve final SHAs from Git; documentation commits are intentionally not
 self-referential.
 
 | Branch | Base / merge-base | Unique scope | Code dependency | Operating eligible | Promotion path |
@@ -34,6 +34,7 @@ self-referential.
 | `codex/phase-9-1e-working-capital-user-visible-preintegration` | exact instruction `99f7e86...`; explicit merge `ee78eb7...` of Track A main `7c0e440...` | family-level natural-proof gate, OFF-by-default modes, Inventory/exact-Trade-AR preview, cash-flow redundancy, parity and kill switch | consumes only committed 9.0E/9.1D evidence; no production AI/fallback/Telegram/Public Action/snapshot/DB/task import | promotion eligible with feature OFF and exact-SHA CI | preserve instruction and Track A histories; future enablement requires a small family-specific instruction after `LIVE_PASS` |
 | `codex/phase-9-1e-1-inventory-only-user-visible-enablement` | exact instruction `880e7a9...` on main `fb44510...`; explicit merge `018af42` of run-32 natural evidence | selective total-Inventory context in production AI/fallback with exact parity, typed `%p` binding, OFF kill switch and delivery metadata | reuses 9.1E contract; Trade AR/broad AR/AP/advanced ratios remain blocked; no ticker allowlist or state mutation | promoted and activated Inventory-only; natural user-visible proof pending | Inventory `LIVE_PASS_RUN32`; exact Trade AR `NOT_OBSERVED`; preserve both histories |
 | `codex/kr-non-trading-day-producer-guard-orphan-reconciliation` | exact instruction `2125562...` on operating main `2244b8f...` | shared XKRX producer-role guard, packet-bound delivery-intent ordering, and exact run-33 orphan reconciliation tooling | existing KR producer, packet hold, and notification-delivery paths only; no Inventory/Trade-AR, cash-flow, investor-flow, night-futures, KRX breadth, Public Action, schema, or task-schedule change | promotion eligible after exact-SHA CI; natural weekend/holiday proof remains pending | implementation `c26c935...`; clean linear fast-forward and operating restart required |
+| `codex/kr-shadow-cohort-activation-gate-packet-persistence-repair` | exact instruction `7da8d88...` on operating main `7b78f99...` | production packet persistence and Shadow readiness separation for natural KR run 36 | existing AI packet/producer/fallback path only; Inventory mode, Trade AR, macro temporal, investor-flow, Public Action, schema, task schedule and DB unchanged | promotion eligible after exact-SHA CI; natural KR proof pending | implementation `64086c4...`; clean linear fast-forward and operating restart required |
 
 The Phase 8.3 original branch has a hidden Git ancestry dependency but no required KRX code,
 schema or runtime import. The clean branch resolves that promotion risk. Phase 8.3.2A starts from
@@ -153,3 +154,9 @@ rendering, AI market context, validation, calendar-aware US early-close handling
 read-only replay evidence. It adds no provider, DB migration, KRX breadth ancestry, night-futures
 policy, cash-flow/working-capital mode, task schedule, or production operation. Natural proof is a
 parallel observation after deployment.
+
+The KR Shadow gate packet repair starts from its exact docs-only instruction commit on the latest
+operating main. It preserves the v3.2 numeric/profile gate as AI claimability, adds a separate
+production persistence contract, and keeps packet-bound ordering. It changes no public output,
+feature selector, provider, DB schema, task schedule, or Production Assist state. Its retrospective
+run-36 replay is no-send evidence only; the next natural eligible KR run owns live proof.

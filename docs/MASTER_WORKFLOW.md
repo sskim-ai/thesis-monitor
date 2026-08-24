@@ -1,10 +1,10 @@
 # Thesis Monitor Master Workflow
 
-Master Workflow: `v16`
-As of: `2026-08-22`
+Master Workflow: `v17`
+As of: `2026-08-24`
 Repository: `sskim-ai/thesis-monitor`
 Operating branch: `main`
-Latest evidence branch: `codex/phase-9-1e-1-inventory-only-user-visible-enablement`
+Latest evidence branch: `codex/kr-shadow-cohort-activation-gate-packet-persistence-repair`
 Commit resolution: run `git rev-parse HEAD`; this document is part of that commit and must not
 hardcode a self-referential final SHA. Resolve `origin/main` and the clean operating checkout at
 session start. Phase 9.1A defines `working-capital-evidence-v1`; Phase 9.1B implements canonical
@@ -906,6 +906,28 @@ Assist. State is `DEPLOYED_PENDING_NATURAL`; replay is not live proof. Observe t
 digest read-only and confirm temporal roles, wording, ticker transmission, receipt, and exactly-once
 delivery without a manual task or Telegram send.
 
+## 23G. KR Production Packet / Shadow Gate Separation
+
+Natural KR run 36 on 2026-08-24 completed seven of seven assessments on a valid XKRX production
+target, but the historical Shadow activation guard denied packet persistence because 210 internal
+investor-flow reconciliation numeric paths were not AI prose-registered. This was Branch C: the
+profile/numeric gate legitimately protected AI Shadow claims, but had become incorrectly coupled to
+the immutable production packet required by deterministic fallback.
+
+Instruction commit `7da8d8866a9b7aafc8c010424cdbc4192de46cbb` precedes implementation
+`64086c4af7735dcbe2fd3f5093f4167952a280e0`. `kr-production-packet-persistence-v1` now admits only
+a supported target, complete successful analysis, schema-valid packet, available fallback, and zero
+explicit production hard errors. `shadow-cohort-readiness-v1` separately owns profile/numeric AI
+claimability and records suppression or exceptions with production influence `none`.
+
+The repaired no-send replay persists one packet, binds digest plus seven stock intents, holds all
+eight for fallback, and remains idempotent with zero duplicate packet/intent. AI remains suppressed
+while the numeric gate is false. Inventory remains `SELECTIVE_INVENTORY`, Trade AR remains OFF,
+macro temporal and investor-flow behavior are unchanged, and Production Assist remains OFF.
+
+State is `DEPLOYED_PENDING_NATURAL`, not live pass. Wait for the first natural eligible KR packet to
+prove persistence, eight-message AI/fallback delivery, exactly-once behavior, and zero orphans.
+
 ## 24. Codex Work Order Standard
 
 Every work order starts with exact repo/runtime preflight, states base/branch/scope/non-scope,
@@ -995,10 +1017,11 @@ approval. Main merge and shadow deployment still do not authorize AI-assisted pr
 
 ## 28. Current Next Task
 
-Wait for the next naturally delivered selected Inventory message and review its Fact/relation/date,
-AI/fallback path, exactly-once receipt and quality; do not run a task or send Telegram manually.
-In parallel, let the next natural weekend/holiday verify the deployed KR producer safe no-op; do
-not manufacture that evidence. Keep exact Trade AR OFF and do not
+Wait for the first natural eligible KR production packet and verify one persisted packet, eight
+packet-bound intents, AI or fallback delivery, exactly-once receipt, and zero duplicates/orphans;
+do not run a task or send Telegram manually. In parallel, continue the selected Inventory,
+macro-temporal, night-futures, investor-flow, and weekend/holiday observations without manufacturing
+evidence. Keep exact Trade AR OFF and do not
 implement DSO, Inventory Days, DPO, CCC, ROIC, broad/AP output, or KR cash-flow period recovery
 without separate authorization.
 

@@ -2,6 +2,19 @@
 
 Repository: `sskim-ai/thesis-monitor`
 
+Latest bounded repair: natural KR run 36 exposed `ROOT_CAUSE_BRANCH = C`. The historical
+company-profile/numeric-semantic Shadow gate correctly blocks unsupported AI claims but incorrectly
+blocked the production packet needed by deterministic fallback. Read
+`docs/architecture/KR_PRODUCTION_PACKET_AND_SHADOW_GATE_SEPARATION.md` and the bundled 2026-08-24
+reports. Instruction commit is `7da8d8866a9b7aafc8c010424cdbc4192de46cbb`; implementation commit
+is `64086c4af7735dcbe2fd3f5093f4167952a280e0`. State is `DEPLOYED_PENDING_NATURAL` with P0/P1 0/0.
+
+At the next natural eligible KR close, inspect read-only evidence for one immutable packet, digest
+plus seven packet-bound intents, AI or fallback delivery, exactly-once receipt, and zero duplicates
+or orphans. Do not run KR production manually or send Telegram. `shadow-cohort-readiness-v1` may
+remain false while `kr-production-packet-persistence-v1` passes; that is expected and AI must remain
+unclaimable until its own gate passes.
+
 Latest bounded repair: `macro-digest-temporal-eligibility-v1` follows instruction commit
 `951558c0ec79f84b739eff1cbafd2870eb6f3fba` and implementation commit
 `68a6c39a098380d8a22de5b4d784c730818e9b04`. Branch B was confirmed: source freshness existed but

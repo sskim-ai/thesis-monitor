@@ -5,7 +5,28 @@ with [MASTER_WORKFLOW.md](MASTER_WORKFLOW.md), [project-state.json](project-stat
 [NEXT_SESSION_PROMPT.md](NEXT_SESSION_PROMPT.md) before changing runtime policy, Knowledge,
 validation, delivery, or Scheduled Tasks.
 
-## Current Authoritative Handoff — 2026-08-22
+## Current Authoritative Handoff — 2026-08-24
+
+### 2026-08-24 KR Shadow Gate Packet Persistence Repair
+
+Instruction commit `7da8d8866a9b7aafc8c010424cdbc4192de46cbb` precedes implementation
+`64086c4af7735dcbe2fd3f5093f4167952a280e0`. `ROOT_CAUSE_BRANCH = C`: the v3.2-era company-profile
+and numeric-semantic gate correctly protected AI Shadow claims, but incorrectly denied the immutable
+packet required by deterministic fallback. Natural run 36 completed 7/7 on a valid XKRX target; 210
+new investor-flow reconciliation audit paths made Shadow ineligible, then packet, intents, and sends
+were all zero.
+
+The new `kr-production-packet-persistence-v1` contract blocks only incomplete/invalid production,
+fallback unavailability, explicit P0/hard errors, and persistence failure.
+`shadow-cohort-readiness-v1` keeps unsupported AI claims fail-closed and records its own suppression
+or exception with production influence `none`. Production packet identity excludes transient shadow
+state. The read-only `/tmp` replay persists one packet, binds and holds eight unique intents, keeps
+AI unclaimable, and leaves deterministic fallback reachable with zero Telegram sends.
+
+Open P0/material P1 are 0/0. State is `DEPLOYED_PENDING_NATURAL`; replay is not LIVE PASS. Wait for
+the first natural eligible KR packet. Inventory remains `SELECTIVE_INVENTORY` and enabled pending
+natural; exact Trade AR and Production Assist remain OFF. Do not manually run KR production,
+recreate providers, mutate DB/Pilot, or rewrite the original run.
 
 ### 2026-08-24 Macro Digest Temporal Repair
 
