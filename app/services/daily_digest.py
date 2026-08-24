@@ -359,8 +359,14 @@ def _important_changes(
     candidates.sort(key=lambda item: (-item[0], item[2]))
     selected = [text for _score, significant, text in candidates if significant][:4]
     if len(selected) == 1:
+        has_current = any(
+            _temporal_role(value) == "CURRENT_OBSERVATION"
+            for value in observations.values()
+        )
         selected.append(
             "그 외 주가지수·변동성에서는 투자 판단을 바꿀 정도의 큰 변화가 없었습니다."
+            if has_current
+            else "직전 거래일의 그 외 주가지수에서는 투자 판단을 바꿀 정도의 큰 변화가 없었습니다."
         )
     return selected
 
@@ -454,8 +460,8 @@ def _macro_interpretation(briefing: MacroBriefing) -> MacroInterpretation:
     growth = int(axes.get("growth_momentum", 0) or 0)
     if has_contract and not has_current:
         one_line = (
-            "새로 확인된 일일 거시 관측이 없어 기존 시장환경은 참고로 유지하고, "
-            "직전 거래일과 후행 지표를 오늘 변화로 재사용하지 않습니다."
+            "미국 현물시장의 새 거래 세션과 새 일일 거시 관측이 없어, "
+            "기존 시장환경을 바꿀 추가 신호는 없습니다."
         )
     elif risk > 0 and financial < 0:
         one_line = "위험선호는 개선됐지만 금리·신용 여건은 성장주 Valuation에 부담인 혼합 시장입니다."

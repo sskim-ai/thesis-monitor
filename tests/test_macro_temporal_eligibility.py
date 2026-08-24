@@ -126,7 +126,7 @@ def test_weekend_repeated_observations_are_not_today_signals() -> None:
     macro = interpret_macro_briefing(_briefing(current, context))
     assert macro.one_line_heading == "현재 한 줄"
     assert macro.changes_heading == "직전 거래일 맥락"
-    assert "새로 확인된 일일 거시 관측이 없어" in macro.one_line
+    assert "새 일일 거시 관측이 없어" in macro.one_line
     assert all("VIX" not in item for item in macro.key_changes)
     assert all("원/달러" not in item for item in macro.key_changes)
     assert macro.key_changes
