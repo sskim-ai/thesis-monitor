@@ -2,6 +2,14 @@
 
 Repository: `sskim-ai/thesis-monitor`
 
+Latest bounded repair: `macro-digest-temporal-eligibility-v1` follows instruction commit
+`951558c0ec79f84b739eff1cbafd2870eb6f3fba` and implementation commit
+`68a6c39a098380d8a22de5b4d784c730818e9b04`. Branch B was confirmed: source freshness existed but
+daily-current eligibility did not. Immutable run-35 replay is PASS and the normal 8/22 replay
+preserves valid current signals. State is `DEPLOYED_PENDING_NATURAL`; inspect the next natural US
+digest read-only for current/prior/reference role parity, no false today wording, ticker-impact
+gating, receipts, and exactly-once delivery. Do not manually run the task or send Telegram.
+
 First fetch and compare `origin/main`, the development checkout, and the clean operating checkout.
 Read `docs/project-state.json`, `docs/MASTER_WORKFLOW.md`, `docs/PROJECT_HANDOFF.md`,
 `docs/architecture/WORKING_CAPITAL_RUNTIME_SHADOW_CANARY.md`, and the Phase 9.1D complete report and

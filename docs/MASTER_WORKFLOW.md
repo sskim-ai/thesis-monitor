@@ -884,6 +884,28 @@ notification/Telegram counts all zero; no manual run is proof. Inventory remains
 `ENABLED_PENDING_NATURAL`, exact Trade AR remains OFF, and the next action remains the first
 eligible Inventory packet review.
 
+## 23F. Macro Digest Temporal Eligibility
+
+The 2026-08-24 US fallback exposed a Branch B wiring gap: exact observation dates, provider
+freshness, and market-session state existed, but downstream digest logic treated source `fresh` as
+equivalent to a new daily signal. `macro-digest-temporal-eligibility-v1` now separates current
+observations, prior market sessions, reference-lagging observations, stale daily evidence, and
+unavailable evidence without a new DB truth store or universal day threshold.
+
+The immutable run-35 replay has zero current observations: 8/21 equity returns are explicit prior
+session context, while unchanged FRED/WTI/VIX and the ECOS collection-date USD/KRW item cannot
+create important changes, thesis daily signals, shocks, or ticker impacts. The long-term mixed
+regime remains valid background. The 8/22 normal after-close replay preserves real current price,
+rate, and volatility signals; holiday, mixed-timing, closed-session release, revision, and early-
+close fixtures pass. AI and fallback share one contract and the semantic validator rejects false
+current wording.
+
+The repair changes no provider, DB schema, Public Action, output schema, task schedule, night-
+futures logic, KRX integration, Inventory/Trade-AR mode, valuation, price/RR, Pilot, or Production
+Assist. State is `DEPLOYED_PENDING_NATURAL`; replay is not live proof. Observe the next natural US
+digest read-only and confirm temporal roles, wording, ticker transmission, receipt, and exactly-once
+delivery without a manual task or Telegram send.
+
 ## 24. Codex Work Order Standard
 
 Every work order starts with exact repo/runtime preflight, states base/branch/scope/non-scope,

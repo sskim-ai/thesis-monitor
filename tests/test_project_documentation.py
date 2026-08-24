@@ -31,6 +31,7 @@ DOCUMENTS = (
     ROOT / "docs" / "architecture" / "WORKING_CAPITAL_USER_VISIBLE_PREINTEGRATION.md",
     ROOT / "docs" / "architecture" / "KR_INVESTOR_FLOW_RECONCILIATION.md",
     ROOT / "docs" / "architecture" / "KR_PRODUCER_SESSION_AND_DELIVERY_INTEGRITY.md",
+    ROOT / "docs" / "architecture" / "MACRO_DIGEST_TEMPORAL_ELIGIBILITY.md",
     ROOT / "docs" / "operations" / "AI_ASSISTED_PILOT.md",
     ROOT / "docs" / "operations" / "CASH_FLOW_USER_VISIBLE_KILL_SWITCH.md",
     ROOT / "docs" / "operations" / "WORKING_CAPITAL_USER_VISIBLE_KILL_SWITCH.md",
@@ -51,16 +52,16 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     assert state["repository"] == "sskim-ai/thesis-monitor"
     assert state["branch"] == "main"
     assert state["experimental_branch"] == (
-        "codex/kr-non-trading-day-producer-guard-orphan-reconciliation"
+        "codex/macro-digest-temporal-wiring-audit-repair"
     )
     assert state["current_phase"] == (
-        "kr_non_trading_day_producer_repair_deployed_pending_natural"
+        "macro_digest_temporal_repair_deployed_pending_natural"
     )
     assert state["last_completed_phase"] == (
-        "kr_non_trading_day_producer_guard_orphan_reconciliation"
+        "macro_digest_temporal_wiring_audit_and_conditional_repair"
     )
     assert state["next_default_phase"] == (
-        "phase_9_1e_1_inventory_user_visible_natural_review"
+        "natural_macro_temporal_and_inventory_review"
     )
     assert state["deployed_code_commit"] == "HEAD"
     assert state["main_code_commit"] == "HEAD"
@@ -116,6 +117,9 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     )
     assert state["contracts"]["night_futures_publication_telemetry"] == (
         "night-futures-publication-telemetry-v1"
+    )
+    assert state["contracts"]["macro_digest_temporal_eligibility"] == (
+        "macro-digest-temporal-eligibility-v1"
     )
     advancement = state["phase_advancement_rule_v1"]
     assert advancement["p0_open"] == []
@@ -178,6 +182,18 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     assert producer_repair["sent_at_set"] == 0
     assert producer_repair["p0_open"] == []
     assert producer_repair["p1_open"] == []
+    macro_temporal = state["macro_digest_temporal_repair"]
+    assert macro_temporal["status"] == "deployed_pending_natural"
+    assert macro_temporal["root_cause_branch"] == "B"
+    assert macro_temporal["instruction_commit"] == (
+        "951558c0ec79f84b739eff1cbafd2870eb6f3fba"
+    )
+    assert macro_temporal["implementation_commit"] == (
+        "68a6c39a098380d8a22de5b4d784c730818e9b04"
+    )
+    assert macro_temporal["false_today_claims_after"] == 0
+    assert macro_temporal["open_p0"] == 0
+    assert macro_temporal["open_material_p1"] == 0
     phase_90a = state["phase_9_0a_cash_flow_capital_efficiency"]
     assert phase_90a["status"] == "architecture_closed_ready_for_phase_9_0b"
     assert phase_90a["active_universe"] == 20

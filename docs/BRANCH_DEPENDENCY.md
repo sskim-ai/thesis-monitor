@@ -145,3 +145,11 @@ maintenance command reconciles only the exact run/date/packet/count identity and
 notification editor. The run-33 mutation is limited to seven stock rows plus one digest row; all
 remain unsent with null `sent_at`. Natural weekend/holiday proof remains parallel to the Inventory
 user-visible observation.
+
+The macro digest temporal repair starts from docs-only instruction commit
+`951558c0ec79f84b739eff1cbafd2870eb6f3fba` on the latest operating main. It adds a derived
+eligibility sidecar to existing macro observations and changes only daily-signal consumers,
+rendering, AI market context, validation, calendar-aware US early-close handling, tests, and
+read-only replay evidence. It adds no provider, DB migration, KRX breadth ancestry, night-futures
+policy, cash-flow/working-capital mode, task schedule, or production operation. Natural proof is a
+parallel observation after deployment.

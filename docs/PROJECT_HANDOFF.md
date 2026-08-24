@@ -7,6 +7,26 @@ validation, delivery, or Scheduled Tasks.
 
 ## Current Authoritative Handoff — 2026-08-22
 
+### 2026-08-24 Macro Digest Temporal Repair
+
+Instruction commit `951558c0ec79f84b739eff1cbafd2870eb6f3fba` precedes implementation
+`68a6c39a098380d8a22de5b4d784c730818e9b04`. The architecture trace confirmed Branch B:
+observation dates, provider freshness, and market-session state existed, but no role distinguished a
+new daily observation from prior-session/reference evidence.
+
+`macro-digest-temporal-eligibility-v1` is now shared by thesis daily signals, shocks, ticker impacts,
+the deterministic digest, market intelligence, AI context, rendering, and semantic validation. In
+immutable run-35, SPY/QQQ/IWM/SOXX become explicit 8/21 prior-session context; unchanged FRED,
+WTI, VIX and collection-date USD/KRW references cannot create a current signal. The mixed regime is
+preserved. A normal 8/22 after-close replay and weekend/holiday/mixed/revision/early-close fixtures
+preserve genuinely new observations.
+
+Open P0/material P1 are 0/0 and state is `DEPLOYED_PENDING_NATURAL`, not live pass. Do not recreate
+the 8/24 provider state, rerun production, send Telegram, or rewrite the archive. Review the next
+natural US digest read-only. Inventory remains enabled pending its separate natural evidence; Trade
+AR and Production Assist remain OFF; night-futures and KR producer natural proofs continue in
+parallel.
+
 Phase 9.1E.1 Inventory-only enablement is implemented on immutable instruction commit
 `880e7a9834439971f53b8a7bc0712d0ece26854d`, explicit morning-evidence merge `018af42`, and initial
 implementation commit `85ab01130f34650edca6a0bcba5c5ae52db4edf0`. Run-32 packet
