@@ -1,0 +1,44 @@
+{
+  "schema_version": "1",
+  "rehearsal_id": "2026-08-24-kr-live-rehearsal-193419",
+  "run_type": "MANUAL_LIVE_REHEARSAL_NO_DELIVERY",
+  "cutoff_kst": "2026-08-24T19:34:19+09:00",
+  "instruction_commit": "91d4e113670e9d350c5ce88c16f42499f2ebed39",
+  "previous_main": "96825de767f8ff25b59ab4451df305df5dd873cc",
+  "packet_id": "2026-08-24-kr-run-36-51d4359299cd",
+  "packet_sha256": "c1f0b08d88bc708635edd03e0e8f47a25439839b3174a41414ba57266f44d58d",
+  "analysis": {"ticker_count": 7, "success": 7, "failure": 0},
+  "provider_calls": {"success": 49, "failure": 0, "skip": 21, "cache_hit": 0},
+  "packet_count": 1,
+  "dry_run_intent_count": 8,
+  "duplicate_intents": 0,
+  "orphan_intents": 0,
+  "telegram_send": 0,
+  "scheduled_task_run": 0,
+  "production_db_mutation": 0,
+  "ai_candidate": "fail_not_generated_shadow_gate",
+  "fallback_bundle": "fail_macro_temporal_p0",
+  "inventory_user_visible_rehearsal": "FAIL",
+  "inventory_selected_count": 3,
+  "trade_ar_user_visible_enrichment": 0,
+  "kr_investor_flow_rehearsal": "PASS",
+  "macro_temporal_rehearsal": "FAIL",
+  "kr_packet_delivery_dry_run": "PASS",
+  "kr_production_repaired_live_rehearsal": "FAIL",
+  "kr_fresh_live_rehearsal_ready": false,
+  "open_p0": [
+    "legacy morning macro briefing without temporal contract fails open as current"
+  ],
+  "open_material_p1": [],
+  "p2_backlog": [
+    "audit-only investor-flow numeric registry coverage",
+    "Inventory AI/fallback parity not observed while AI is suppressed"
+  ],
+  "natural_proofs_still_pending": [
+    "KR production scheduler and actual terminal receipt",
+    "Telegram exactly-once delivery",
+    "Inventory selected natural message",
+    "investor-flow natural wording",
+    "macro temporal natural behavior"
+  ]
+}
