@@ -24,7 +24,15 @@ def _briefing(observations: list[dict[str, object]]) -> MacroBriefing:
         briefing_type="morning",
         as_of=datetime(2026, 8, 13, 0, 0, tzinfo=UTC),
         headline="fixture",
-        market_summary=json.dumps({"observations": observations}),
+        market_summary=json.dumps(
+            {
+                "observations": observations,
+                "temporal_eligibility": {
+                    "contract": "macro-digest-temporal-eligibility-v1",
+                    "has_current_observation": True,
+                },
+            }
+        ),
         regime_summary="{}",
         today_calendar="[]",
         macro_theses="[]",
@@ -53,6 +61,12 @@ def _observation(
         "change_pct": change_pct,
         "observed_at": "2026-08-12 00:00:00",
         "quality_status": quality,
+        "temporal": {
+            "temporal_role": "CURRENT_OBSERVATION",
+            "today_signal_eligible": True,
+            "important_change_eligible": True,
+            "reason": "explicit_current_fixture",
+        },
     }
 
 

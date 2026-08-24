@@ -373,7 +373,7 @@ def test_us_digest_renders_both_fresh_night_futures_between_sections() -> None:
     assert "🌙 한국 야간선물 · 08/12 새벽 종료 · 08/09 주간장 대비" in report
     assert "KOSPI200 최근월물 1,002.50 · -32.80pt (-3.17%)" in report
     assert "KOSDAQ150 최근월물 1,482.40 · +4.10pt (+0.28%)" in report
-    assert report.index("📈 중요한 변화") < report.index("🌙 한국 야간선물")
+    assert report.index("📈 직전 거래일 맥락") < report.index("🌙 한국 야간선물")
     assert report.index("🌙 한국 야간선물") < report.index("🧭 현재 시장 상황")
 
 

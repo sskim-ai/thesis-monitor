@@ -6,7 +6,9 @@ from app.macro.temporal import (
     PRIOR_MARKET_SESSION,
     REFERENCE_LAGGING,
     STALE_FOR_DAILY_SIGNAL,
+    UNAVAILABLE,
     build_temporal_context,
+    rehydrate_legacy_market_summary,
 )
 from app.models.macro import MacroBriefing
 from app.schemas.ai_review import AIMarketReview
@@ -92,6 +94,51 @@ def _briefing(
         kakao_text="unused",
         status="ready",
         dedupe_key="macro-temporal-test",
+    )
+
+
+def _legacy_briefing(
+    summary: dict[str, object],
+    *,
+    briefing_date: date,
+    as_of: datetime,
+    key: str,
+) -> MacroBriefing:
+    return MacroBriefing(
+        briefing_date=briefing_date,
+        briefing_type="morning",
+        as_of=as_of,
+        headline="legacy",
+        market_summary=json.dumps(summary),
+        regime_summary=json.dumps(
+            {
+                "label": "mixed",
+                "confidence": 0.8,
+                "growth_momentum": -1,
+                "inflation_pressure": 1,
+                "liquidity_condition": 0,
+                "financial_conditions": -1,
+                "risk_appetite": -2,
+                "earnings_momentum": -1,
+            }
+        ),
+        macro_theses=json.dumps(
+            [
+                {
+                    "thesis_key": "oil_supply_shock",
+                    "title": "유가와 공급충격",
+                    "status": "intact",
+                    "today_signal": "negative",
+                    "today_signal_strength": "weak",
+                }
+            ]
+        ),
+        today_calendar="[]",
+        ticker_impacts="[]",
+        data_quality="[]",
+        kakao_text="unused",
+        status="ready",
+        dedupe_key=key,
     )
 
 
@@ -257,6 +304,102 @@ def test_same_period_official_revision_is_current() -> None:
         as_of=datetime(2026, 8, 23, 23, 5, tzinfo=timezone.utc),
     )
     assert context["decisions"]["DGS10"]["temporal_role"] == CURRENT_OBSERVATION
+
+
+def test_legacy_missing_temporal_metadata_rehydrates_without_mutation() -> None:
+    current = _summary(
+        _row("SPY", "2026-08-21T20:00:00+00:00", change_pct=-1.0),
+        _row("VIXCLS", "2026-08-20T00:00:00+00:00", change_pct=7.5),
+    )
+    previous = _summary(
+        _row("SPY", "2026-08-21T20:00:00+00:00", change_pct=-1.0),
+        _row("VIXCLS", "2026-08-20T00:00:00+00:00", change_pct=7.5),
+    )
+    original = json.loads(json.dumps(current))
+
+    view = rehydrate_legacy_market_summary(
+        current,
+        previous,
+        as_of=datetime(2026, 8, 23, 23, 5, tzinfo=timezone.utc),
+        previous_cutoff=datetime(2026, 8, 22, 23, 5, tzinfo=timezone.utc),
+    )
+
+    decisions = view["temporal_eligibility"]["decisions"]
+    assert decisions["SPY"]["temporal_role"] == PRIOR_MARKET_SESSION
+    assert decisions["VIXCLS"]["temporal_role"] == REFERENCE_LAGGING
+    assert view["temporal_eligibility"]["compatibility_contract"] == (
+        "macro-temporal-legacy-rehydration-v1"
+    )
+    assert current == original
+
+
+def test_legacy_new_release_requires_observation_and_retrieval_after_cutoff() -> None:
+    release = _row(
+        "DGS10",
+        "2026-08-24T00:00:00+00:00",
+        change_value=-0.07,
+    )
+    release["retrieved_at"] = "2026-08-24T13:00:00+00:00"
+    view = rehydrate_legacy_market_summary(
+        _summary(release),
+        {},
+        as_of=datetime(2026, 8, 24, 14, 0, tzinfo=timezone.utc),
+        previous_cutoff=datetime(2026, 8, 23, 23, 5, tzinfo=timezone.utc),
+    )
+    assert view["temporal_eligibility"]["decisions"]["DGS10"][
+        "temporal_role"
+    ] == CURRENT_OBSERVATION
+
+
+def test_legacy_insufficient_identity_never_defaults_current() -> None:
+    missing = _row("VIXCLS", "", change_pct=7.5)
+    view = rehydrate_legacy_market_summary(
+        _summary(missing),
+        {},
+        as_of=datetime(2026, 8, 23, 23, 5, tzinfo=timezone.utc),
+    )
+    decision = view["temporal_eligibility"]["decisions"]["VIXCLS"]
+    assert decision["temporal_role"] == UNAVAILABLE
+    assert decision["today_signal_eligible"] is False
+
+
+def test_legacy_daily_digest_and_market_intelligence_share_temporal_view() -> None:
+    current = _summary(
+        _row("SPY", "2026-08-21T20:00:00+00:00", change_pct=-1.2),
+        _row("VIXCLS", "2026-08-20T00:00:00+00:00", change_pct=7.5),
+    )
+    previous = _summary(
+        _row("SPY", "2026-08-21T20:00:00+00:00", change_pct=-1.2),
+        _row("VIXCLS", "2026-08-20T00:00:00+00:00", change_pct=7.5),
+    )
+    previous_briefing = _legacy_briefing(
+        previous,
+        briefing_date=date(2026, 8, 23),
+        as_of=datetime(2026, 8, 22, 23, 5, tzinfo=timezone.utc),
+        key="legacy-previous",
+    )
+    current_briefing = _legacy_briefing(
+        current,
+        briefing_date=date(2026, 8, 24),
+        as_of=datetime(2026, 8, 23, 23, 5, tzinfo=timezone.utc),
+        key="legacy-current",
+    )
+
+    macro = interpret_macro_briefing(current_briefing, previous_briefing)
+    intelligence = build_market_intelligence(
+        current_briefing,
+        date(2026, 8, 24),
+        [],
+        [],
+        market="kr",
+        previous_briefing=previous_briefing,
+    )
+
+    assert macro.has_current_observation is False
+    assert all("VIX" not in item for item in macro.key_changes)
+    assert intelligence["current_observation_fact_ids"] == []
+    assert "market:index:SPY" in intelligence["prior_market_session_fact_ids"]
+    assert "market:volatility:VIXCLS" in intelligence["reference_fact_ids"]
 
 
 def _market_review(change_text: str, fact_id: str) -> AIMarketReview:

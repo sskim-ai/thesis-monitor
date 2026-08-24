@@ -909,7 +909,80 @@ NUMERIC_SEMANTICS = {
 }
 
 
+_INVESTOR_FLOW_WINDOWS = ("1d", "5d", "20d")
+_INVESTOR_FLOW_PARTICIPANTS = (
+    "foreign",
+    "institution",
+    "individual",
+    "other_corporation",
+    "domestic_foreign",
+)
+_INVESTOR_FLOW_RECONCILIATION_RULES: list[NumericFieldRule] = []
+
+for _window in _INVESTOR_FLOW_WINDOWS:
+    for _participant in _INVESTOR_FLOW_PARTICIPANTS:
+        _semantic_type = (
+            f"investor_flow_{_participant}_net_buy_qty_{_window}_audit"
+        )
+        NUMERIC_SEMANTICS[_semantic_type] = _spec(
+            _semantic_type,
+            ("shares",),
+            (),
+            (),
+            "signed_shares",
+            prose_allowed=False,
+        )
+        _INVESTOR_FLOW_RECONCILIATION_RULES.append(
+            NumericFieldRule(
+                ("positioning",),
+                rf"fields\.reconciliations\.{_window}\.participant_flows\.{_participant}",
+                _semantic_type,
+                "shares",
+            )
+        )
+    for _field in ("displayed_net", "omitted_net", "all_participant_net"):
+        _semantic_type = f"investor_flow_{_field}_qty_{_window}_audit"
+        NUMERIC_SEMANTICS[_semantic_type] = _spec(
+            _semantic_type,
+            ("shares",),
+            (),
+            (),
+            "signed_shares",
+            prose_allowed=False,
+        )
+        _INVESTOR_FLOW_RECONCILIATION_RULES.append(
+            NumericFieldRule(
+                ("positioning",),
+                rf"fields\.reconciliations\.{_window}\.{_field}",
+                _semantic_type,
+                "shares",
+            )
+        )
+    for _field, _unit in (
+        ("constituent_count", "count"),
+        ("display_coverage_ratio", "number"),
+    ):
+        _semantic_type = f"investor_flow_{_field}_{_window}_audit"
+        NUMERIC_SEMANTICS[_semantic_type] = _spec(
+            _semantic_type,
+            (_unit,),
+            (),
+            (),
+            "integer" if _unit == "count" else "decimal",
+            prose_allowed=False,
+        )
+        _INVESTOR_FLOW_RECONCILIATION_RULES.append(
+            NumericFieldRule(
+                ("positioning",),
+                rf"fields\.reconciliations\.{_window}\.{_field}",
+                _semantic_type,
+                _unit,
+            )
+        )
+
+
 _FIELD_RULES = (
+    *_INVESTOR_FLOW_RECONCILIATION_RULES,
     NumericFieldRule(
         ("working_capital_inventory_relation",),
         r"fields\.gap_percentage_points_abs",
@@ -1804,6 +1877,54 @@ def approved_display_variants(
     return list(dict.fromkeys(variants))
 
 
+def _registry_contract_metadata(
+    fact_type: str,
+    field_path: str,
+    fact_id: str,
+    *,
+    registered: bool,
+    prose_allowed: bool,
+) -> dict[str, object]:
+    if not registered:
+        return {
+            "registry_class": "UNSUPPORTED_BLOCKING",
+            "canonical_fact_or_relation_ref": fact_id,
+            "audit_only": False,
+            "allowed_sections": [],
+        }
+    reconciliation = re.fullmatch(
+        r"fields\.reconciliations\.(1d|5d|20d)\."
+        r"(?:(?:participant_flows\.([a-z_]+))|([a-z_]+))",
+        field_path,
+    )
+    if fact_type == "positioning" and reconciliation is not None:
+        return {
+            "registry_class": "REGISTERED_INTERNAL_DERIVED",
+            "canonical_fact_or_relation_ref": fact_id,
+            "owner": "positioning",
+            "window": reconciliation.group(1),
+            "participant": reconciliation.group(2),
+            "audit_only": True,
+            "allowed_sections": [],
+        }
+    registry_class = (
+        "REGISTERED_PROSE_ELIGIBLE"
+        if registered and prose_allowed
+        else "REGISTERED_AUDIT_ONLY"
+    )
+    metadata: dict[str, object] = {
+        "registry_class": registry_class,
+        "canonical_fact_or_relation_ref": fact_id,
+        "audit_only": registered and not prose_allowed,
+        "allowed_sections": [],
+    }
+    if fact_type == "positioning":
+        metadata["owner"] = "positioning"
+        if prose_allowed:
+            metadata["allowed_sections"] = ["supply_analysis"]
+    return metadata
+
+
 def build_numeric_registry(
     facts: list[dict[str, object]],
 ) -> list[dict[str, object]]:
@@ -1915,6 +2036,13 @@ def build_numeric_registry(
                             canonical_display_value(spec, float(value), unit)
                             if spec is not None and prose_allowed
                             else None
+                        ),
+                        **_registry_contract_metadata(
+                            fact_type,
+                            path,
+                            fact_id,
+                            registered=registered,
+                            prose_allowed=prose_allowed,
                         ),
                     }
                 )

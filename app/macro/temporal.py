@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+from copy import deepcopy
 from dataclasses import asdict, dataclass
 from datetime import date, datetime, timezone
 
@@ -11,6 +12,7 @@ from app.services.market_session import us_market_session
 
 
 TEMPORAL_CONTRACT = "macro-digest-temporal-eligibility-v1"
+LEGACY_TEMPORAL_CONTRACT = "macro-temporal-legacy-rehydration-v1"
 
 CURRENT_OBSERVATION = "CURRENT_OBSERVATION"
 PRIOR_MARKET_SESSION = "PRIOR_MARKET_SESSION"
@@ -86,6 +88,15 @@ def _observation_map(value: object) -> dict[str, dict[str, object]]:
     }
 
 
+def _market_summary(value: object) -> dict[str, object]:
+    if isinstance(value, str):
+        try:
+            value = json.loads(value)
+        except json.JSONDecodeError:
+            return {}
+    return deepcopy(value) if isinstance(value, dict) else {}
+
+
 def classify_observation(
     item: dict[str, object],
     previous_item: dict[str, object] | None,
@@ -106,13 +117,19 @@ def classify_observation(
         and quality == "revised"
         and item.get("value") != previous_item.get("value")
     )
-    changed = bool(observed and (previous is None or observed > previous or revised_value))
+    changed = bool(
+        observed and (previous is None or observed > previous or revised_value)
+    )
     session = us_market_session(as_of)
 
     if quality not in USABLE_QUALITY or observed is None:
         role = STALE_FOR_DAILY_SIGNAL if observed is not None else UNAVAILABLE
         basis = "quality_or_identity_gate"
-        reason = "provider_quality_not_usable" if observed is not None else "observation_date_missing"
+        reason = (
+            "provider_quality_not_usable"
+            if observed is not None
+            else "observation_date_missing"
+        )
     elif code in REFERENCE_ONLY_SERIES:
         role = REFERENCE_LAGGING
         basis = "reference_only_source_occurrence"
@@ -159,7 +176,96 @@ def classify_observation(
         market_session=market_session,
         new_since_previous_briefing=changed,
         today_signal_eligible=role == CURRENT_OBSERVATION,
-        important_change_eligible=role in {CURRENT_OBSERVATION, PRIOR_MARKET_SESSION},
+        important_change_eligible=role in {
+            CURRENT_OBSERVATION,
+            PRIOR_MARKET_SESSION,
+        },
+        prior_context_eligible=role == PRIOR_MARKET_SESSION,
+        regime_state_eligible=quality in USABLE_QUALITY,
+        reason=reason,
+    )
+
+
+def _classify_legacy_observation(
+    item: dict[str, object],
+    previous_item: dict[str, object] | None,
+    *,
+    as_of: datetime,
+    previous_cutoff: datetime | None,
+) -> TemporalDecision:
+    if previous_item is not None:
+        return classify_observation(item, previous_item, as_of=as_of)
+
+    code = str(item.get("series_code") or "")
+    observed = _date_value(item.get("observed_at"))
+    quality = str(item.get("quality_status") or "fresh")
+    frequency = str(item.get("frequency")) if item.get("frequency") else None
+    market_session = (
+        str(item.get("market_session")) if item.get("market_session") else None
+    )
+    session = us_market_session(as_of)
+
+    if quality not in USABLE_QUALITY or observed is None:
+        role = STALE_FOR_DAILY_SIGNAL if observed is not None else UNAVAILABLE
+        basis = "legacy_quality_or_identity_gate"
+        reason = (
+            "provider_quality_not_usable"
+            if observed is not None
+            else "observation_date_missing"
+        )
+    elif code in REFERENCE_ONLY_SERIES:
+        role = REFERENCE_LAGGING
+        basis = "legacy_reference_only_source_occurrence"
+        reason = "source_occurrence_date_not_verified_for_daily_delta"
+    elif code in SESSION_BOUND_SERIES:
+        basis = "legacy_XNYS_completed_regular_session"
+        completed = session.latest_completed_regular_session_date
+        if observed > completed:
+            role = UNAVAILABLE
+            reason = "observation_after_latest_completed_session"
+        elif observed < completed:
+            role = STALE_FOR_DAILY_SIGNAL
+            reason = "older_than_latest_completed_session"
+        else:
+            role = PRIOR_MARKET_SESSION
+            reason = "legacy_session_occurrence_without_prior_identity_fail_closed"
+    elif code in RELEASE_BOUND_SERIES:
+        retrieved = _date_value(item.get("retrieved_at"))
+        cutoff_date = previous_cutoff.date() if previous_cutoff is not None else None
+        proven_new = bool(
+            cutoff_date is not None
+            and observed > cutoff_date
+            and retrieved is not None
+            and retrieved > cutoff_date
+        )
+        if proven_new:
+            role = CURRENT_OBSERVATION
+            basis = "legacy_official_release_occurrence"
+            reason = "new_observation_and_retrieval_after_previous_briefing_cutoff"
+        else:
+            role = REFERENCE_LAGGING
+            basis = "legacy_release_identity_fail_closed"
+            reason = "new_release_since_previous_briefing_not_proven"
+    else:
+        role = REFERENCE_LAGGING
+        basis = "legacy_unknown_cadence_fail_closed"
+        reason = "series_cadence_not_registered"
+
+    return TemporalDecision(
+        series_code=code,
+        temporal_role=role,
+        cadence_basis=basis,
+        observation_date=observed.isoformat() if observed else None,
+        prior_observation_date=None,
+        quality_status=quality,
+        frequency=frequency,
+        market_session=market_session,
+        new_since_previous_briefing=role == CURRENT_OBSERVATION,
+        today_signal_eligible=role == CURRENT_OBSERVATION,
+        important_change_eligible=role in {
+            CURRENT_OBSERVATION,
+            PRIOR_MARKET_SESSION,
+        },
         prior_context_eligible=role == PRIOR_MARKET_SESSION,
         regime_state_eligible=quality in USABLE_QUALITY,
         reason=reason,
@@ -234,6 +340,15 @@ def build_temporal_context(
         for code, item in current.items()
         if code in SUPPORTED_SERIES
     }
+    return _temporal_context(current, decisions, as_of=as_of)
+
+
+def _temporal_context(
+    current: dict[str, dict[str, object]],
+    decisions: dict[str, TemporalDecision],
+    *,
+    as_of: datetime,
+) -> dict[str, object]:
     session = us_market_session(as_of)
     current_series = sorted(
         code for code, decision in decisions.items() if decision.today_signal_eligible
@@ -267,6 +382,72 @@ def build_temporal_context(
         "has_current_observation": bool(current_series),
         "daily_axes": _daily_axes(current, decisions),
     }
+
+
+def rehydrate_legacy_market_summary(
+    current_market_summary: object,
+    previous_market_summary: object = None,
+    *,
+    as_of: datetime,
+    previous_cutoff: datetime | None = None,
+) -> dict[str, object]:
+    """Return a temporalized view without mutating persisted briefing evidence."""
+    if as_of.tzinfo is None:
+        as_of = as_of.replace(tzinfo=timezone.utc)
+    if previous_cutoff is not None and previous_cutoff.tzinfo is None:
+        previous_cutoff = previous_cutoff.replace(tzinfo=timezone.utc)
+
+    summary = _market_summary(current_market_summary)
+    observations = summary.get("observations")
+    temporal = summary.get("temporal_eligibility")
+    if (
+        isinstance(observations, list)
+        and isinstance(temporal, dict)
+        and temporal.get("contract") == TEMPORAL_CONTRACT
+        and all(
+            not isinstance(item, dict)
+            or str(item.get("series_code") or "") not in SUPPORTED_SERIES
+            or (
+                isinstance(item.get("temporal"), dict)
+                and item["temporal"].get("temporal_role")
+            )
+            for item in observations
+        )
+    ):
+        return summary
+
+    current = _observation_map(summary)
+    previous = _observation_map(previous_market_summary)
+    decisions = {
+        code: _classify_legacy_observation(
+            item,
+            previous.get(code),
+            as_of=as_of,
+            previous_cutoff=previous_cutoff,
+        )
+        for code, item in current.items()
+        if code in SUPPORTED_SERIES
+    }
+    context = _temporal_context(current, decisions, as_of=as_of)
+    context.update(
+        {
+            "compatibility_contract": LEGACY_TEMPORAL_CONTRACT,
+            "source_temporal_metadata": "missing_or_incomplete",
+            "persisted_source_mutated": False,
+        }
+    )
+    if isinstance(observations, list):
+        temporalized = []
+        for raw_item in observations:
+            item = deepcopy(raw_item)
+            if isinstance(item, dict):
+                decision = decisions.get(str(item.get("series_code") or ""))
+                if decision is not None:
+                    item["temporal"] = asdict(decision)
+            temporalized.append(item)
+        summary["observations"] = temporalized
+    summary["temporal_eligibility"] = context
+    return summary
 
 
 def build_session_temporal_context(

@@ -50,6 +50,11 @@ Non-blocking shadow conditions are profile cohort incompleteness, unregistered A
 shadow validator unavailability, timeout, and exception. There is no separate canary activation
 condition in packet persistence; detached canaries remain post-terminal and best effort.
 
+Numeric registry completeness is part of AI/shadow claim readiness only. Exact registered
+reconciliation fields may be retained as non-prose audit evidence; unknown numeric paths keep the
+AI path fail-closed. Neither condition prevents a safe immutable production packet from being
+persisted or its deterministic fallback intents from being created.
+
 ## Feature Isolation
 
 `SELECTIVE_INVENTORY` remains unchanged and may contribute already-approved packet context. Exact

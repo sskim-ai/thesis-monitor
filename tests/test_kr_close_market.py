@@ -698,7 +698,7 @@ def test_morning_report_renders_verified_night_futures_as_context() -> None:
     assert "🌙 한국 야간선물 · 08/11 새벽 종료 · 08/10 주간장 대비" in message
     assert "KOSPI200 최근월물 974.95 · -14.85pt (-1.50%)" in message
     assert "KOSDAQ150 최근월물 1,489.00 · +3.70pt (+0.25%)" in message
-    assert message.index("📈 오늘 가장 중요한 변화") < message.index("🌙 한국 야간선물")
+    assert message.index("📈 직전 거래일 맥락") < message.index("🌙 한국 야간선물")
 
 
 def test_morning_report_excludes_stale_night_futures_with_compact_caution() -> None:

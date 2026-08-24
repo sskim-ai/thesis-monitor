@@ -3,10 +3,11 @@ from __future__ import annotations
 import json
 import re
 from dataclasses import dataclass, field
-from datetime import date, timedelta
+from datetime import date, datetime, timedelta, timezone
 
 from sqlmodel import Session, select
 
+from app.macro.temporal import rehydrate_legacy_market_summary
 from app.models.event import Event
 from app.models.macro import MacroBriefing, MacroEvent, ThesisMacroImpact
 from app.models.security import SecurityMaster
@@ -184,8 +185,44 @@ def _watchlist_market_scope(session: Session, item: WatchlistItem) -> str:
     )
 
 
-def _observation_map(briefing: MacroBriefing) -> dict[str, dict[str, object]]:
-    market = _dict(briefing.market_summary)
+def _briefing_as_of(briefing: MacroBriefing) -> datetime:
+    for raw_value in (
+        getattr(briefing, "as_of", None),
+        getattr(briefing, "created_at", None),
+        getattr(briefing, "briefing_date", None),
+    ):
+        value: datetime | None = None
+        if isinstance(raw_value, datetime):
+            value = raw_value
+        elif isinstance(raw_value, date):
+            value = datetime.combine(raw_value, datetime.min.time())
+        elif raw_value:
+            try:
+                value = datetime.fromisoformat(str(raw_value).replace("Z", "+00:00"))
+            except ValueError:
+                continue
+        if value is not None:
+            return value if value.tzinfo is not None else value.replace(tzinfo=timezone.utc)
+    raise ValueError("macro briefing is missing a usable as-of identity")
+
+
+def _temporal_market_summary(
+    briefing: MacroBriefing,
+    previous_briefing: MacroBriefing | None = None,
+) -> dict[str, object]:
+    return rehydrate_legacy_market_summary(
+        briefing.market_summary,
+        previous_briefing.market_summary if previous_briefing is not None else None,
+        as_of=_briefing_as_of(briefing),
+        previous_cutoff=(
+            _briefing_as_of(previous_briefing)
+            if previous_briefing is not None
+            else None
+        ),
+    )
+
+
+def _observation_map(market: dict[str, object]) -> dict[str, dict[str, object]]:
     values = market.get("observations", [])
     if not isinstance(values, list):
         return {}
@@ -455,10 +492,13 @@ def _axis_explanations(
     ]
 
 
-def _macro_interpretation(briefing: MacroBriefing) -> MacroInterpretation:
+def _macro_interpretation(
+    briefing: MacroBriefing,
+    previous_briefing: MacroBriefing | None = None,
+) -> MacroInterpretation:
     regime = _dict(briefing.regime_summary)
-    observations = _observation_map(briefing)
-    market = _dict(briefing.market_summary)
+    market = _temporal_market_summary(briefing, previous_briefing)
+    observations = _observation_map(market)
     temporal = market.get("temporal_eligibility")
     temporal = temporal if isinstance(temporal, dict) else {}
     has_contract = bool(temporal.get("contract"))
@@ -600,8 +640,11 @@ def _macro_interpretation(briefing: MacroBriefing) -> MacroInterpretation:
     )
 
 
-def interpret_macro_briefing(briefing: MacroBriefing) -> MacroInterpretation:
-    return _macro_interpretation(briefing)
+def interpret_macro_briefing(
+    briefing: MacroBriefing,
+    previous_briefing: MacroBriefing | None = None,
+) -> MacroInterpretation:
+    return _macro_interpretation(briefing, previous_briefing)
 
 
 def _unavailable_macro() -> MacroInterpretation:
@@ -946,6 +989,14 @@ def build_daily_digest(
         )
         .order_by(MacroBriefing.created_at.desc())
     ).first()
+    previous_briefing = session.exec(
+        select(MacroBriefing)
+        .where(
+            MacroBriefing.briefing_date < run_date,
+            MacroBriefing.briefing_type == "morning",
+        )
+        .order_by(MacroBriefing.briefing_date.desc(), MacroBriefing.created_at.desc())
+    ).first()
     kr_close_briefing = None
     if market_scope == "kr":
         kr_close_briefing = session.exec(
@@ -965,7 +1016,11 @@ def build_daily_digest(
     return DailyDigest(
         digest_date=run_date,
         market_scope=market_scope,
-        macro=_macro_interpretation(briefing) if briefing is not None else _unavailable_macro(),
+        macro=(
+            _macro_interpretation(briefing, previous_briefing)
+            if briefing is not None
+            else _unavailable_macro()
+        ),
         portfolio=portfolio,
         schedule=_schedule(session, run_date, market_scope),
         data_quality=_data_quality(

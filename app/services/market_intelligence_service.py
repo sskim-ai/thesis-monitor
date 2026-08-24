@@ -1,10 +1,10 @@
 from __future__ import annotations
 
-import json
 from collections import defaultdict
-from datetime import date
+from datetime import date, datetime, timezone
 from typing import Iterable
 
+from app.macro.temporal import rehydrate_legacy_market_summary
 from app.models.macro import MacroBriefing
 from app.services.market_cross_section_service import MarketCrossSection
 
@@ -66,18 +66,47 @@ _GROUP_LABELS = {
 }
 
 
-def _json_object(value: str) -> dict[str, object]:
-    try:
-        parsed = json.loads(value)
-    except (json.JSONDecodeError, TypeError):
-        return {}
-    return parsed if isinstance(parsed, dict) else {}
+def _briefing_as_of(briefing: MacroBriefing) -> datetime:
+    for raw_value in (
+        getattr(briefing, "as_of", None),
+        getattr(briefing, "created_at", None),
+        getattr(briefing, "briefing_date", None),
+    ):
+        value: datetime | None = None
+        if isinstance(raw_value, datetime):
+            value = raw_value
+        elif isinstance(raw_value, date):
+            value = datetime.combine(raw_value, datetime.min.time())
+        elif raw_value:
+            try:
+                value = datetime.fromisoformat(str(raw_value).replace("Z", "+00:00"))
+            except ValueError:
+                continue
+        if value is not None:
+            return value if value.tzinfo is not None else value.replace(tzinfo=timezone.utc)
+    raise ValueError("macro briefing is missing a usable as-of identity")
 
 
-def _observations(briefing: MacroBriefing | None) -> dict[str, dict[str, object]]:
+def _market_summary_view(
+    briefing: MacroBriefing | None,
+    previous_briefing: MacroBriefing | None,
+) -> dict[str, object]:
     if briefing is None:
         return {}
-    values = _json_object(briefing.market_summary).get("observations", [])
+    return rehydrate_legacy_market_summary(
+        briefing.market_summary,
+        previous_briefing.market_summary if previous_briefing is not None else None,
+        as_of=_briefing_as_of(briefing),
+        previous_cutoff=(
+            _briefing_as_of(previous_briefing)
+            if previous_briefing is not None
+            else None
+        ),
+    )
+
+
+def _observations(market_summary: dict[str, object]) -> dict[str, dict[str, object]]:
+    values = market_summary.get("observations", [])
     if not isinstance(values, list):
         return {}
     return {
@@ -484,8 +513,10 @@ def build_market_intelligence(
     *,
     market: str,
     cross_section: MarketCrossSection | None = None,
+    previous_briefing: MacroBriefing | None = None,
 ) -> dict[str, object]:
-    observations = _observations(briefing)
+    market_summary = _market_summary_view(briefing, previous_briefing)
+    observations = _observations(market_summary)
     facts_by_series = {
         code: _observation_fact(code, item, run_date)
         for code, item in observations.items()
@@ -675,6 +706,9 @@ def build_market_intelligence(
         in {"REFERENCE_LAGGING", "STALE_FOR_DAILY_SIGNAL", "UNAVAILABLE"}
     )
     return {
+        "macro_temporal_eligibility": market_summary.get(
+            "temporal_eligibility", {}
+        ),
         "fact_catalog": facts,
         "key_change_fact_ids": _selected_change_fact_ids(facts),
         "current_observation_fact_ids": current_fact_ids,

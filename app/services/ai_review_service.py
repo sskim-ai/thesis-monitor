@@ -3265,6 +3265,14 @@ def _market_packet(
             MacroBriefing.briefing_type == "morning",
         )
     ).first()
+    previous_briefing = session.exec(
+        select(MacroBriefing)
+        .where(
+            MacroBriefing.briefing_date < run_date,
+            MacroBriefing.briefing_type == "morning",
+        )
+        .order_by(MacroBriefing.briefing_date.desc(), MacroBriefing.created_at.desc())
+    ).first()
     tickers = [str(stock["ticker"]) for stock in stocks]
     impact_rows = (
         session.exec(
@@ -3290,6 +3298,7 @@ def _market_packet(
             for impact in impact_rows
         ],
         market=market,
+        previous_briefing=previous_briefing,
     )
     market_facts = list(intelligence["fact_catalog"])
     night_futures = [asdict(item) for item in digest.night_futures.items]
@@ -3360,10 +3369,18 @@ def _market_packet(
                     "fields": _public_value(item),
                 }
             )
+    temporal_eligibility = _dict(intelligence.get("macro_temporal_eligibility"))
     macro_theses = _public_value(_list(briefing.macro_theses)) if briefing else []
-    temporal_eligibility = _dict(
-        briefing_market.get("temporal_eligibility")
-    )
+    if (
+        temporal_eligibility.get("contract")
+        and temporal_eligibility.get("has_current_observation") is not True
+    ):
+        for item in macro_theses:
+            if not isinstance(item, dict):
+                continue
+            item["today_signal"] = "neutral"
+            item["today_signal_strength"] = "none"
+            item["current_signal_eligible"] = False
     return {
         "session": {
             "market": market,
@@ -5292,10 +5309,18 @@ def _macro_temporal_semantic_errors(
         if isinstance(fact, dict)
         and isinstance((fields := fact.get("fields")), dict)
         and fact.get("fact_id")
+        and (
+            fields.get("temporal_role")
+            or fact.get("source")
+            in {
+                "verified_macro_briefing",
+                "deterministic_market_relative_performance",
+            }
+        )
     }
     errors: list[str] = []
     for index, item in enumerate(market_review.important_changes):
-        roles = {fact_roles.get(fact_id, "UNAVAILABLE") for fact_id in item.fact_ids}
+        roles = {fact_roles[fact_id] for fact_id in item.fact_ids if fact_id in fact_roles}
         if roles & {"REFERENCE_LAGGING", "STALE_FOR_DAILY_SIGNAL", "UNAVAILABLE"}:
             errors.append(
                 f"market_review:temporal_reference_used_as_important_change:{index}"
@@ -5318,7 +5343,7 @@ def _macro_temporal_semantic_errors(
         *market_review.portfolio_transmission,
     )
     for index, item in enumerate(temporal_items):
-        roles = {fact_roles.get(fact_id, "UNAVAILABLE") for fact_id in item.fact_ids}
+        roles = {fact_roles[fact_id] for fact_id in item.fact_ids if fact_id in fact_roles}
         if roles and "CURRENT_OBSERVATION" not in roles and current_language.search(
             item.text
         ):

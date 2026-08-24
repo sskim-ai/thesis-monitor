@@ -61,6 +61,25 @@ AI market context receives the same temporal contract, current/prior/reference F
 and current-only `key_change_fact_ids` and transmission candidates. Numeric facts remain available
 for properly labeled background context; their temporal role is not erased.
 
+## Legacy Compatibility
+
+`macro-temporal-legacy-rehydration-v1` is a non-destructive compatibility view for persisted
+briefings created before the temporal contract was stored. It derives roles from the existing
+observation identity, cadence, market calendar, briefing cutoff, and the previous briefing when one
+exists. The source briefing is deep-copied and never rewritten.
+
+- A session-bound item matching the latest completed XNYS session is
+  `PRIOR_MARKET_SESSION` when prior identity is unavailable; it is never defaulted current.
+- A release-bound item becomes `CURRENT_OBSERVATION` only when both its observation and retrieval
+  dates prove publication after the previous briefing cutoff.
+- Reference-only and unknown-cadence items remain `REFERENCE_LAGGING`.
+- Missing observation identity is `UNAVAILABLE`; older session data is
+  `STALE_FOR_DAILY_SIGNAL`.
+
+Daily digest, deterministic fallback, market intelligence, macro thesis sanitation, and AI semantic
+validation consume this same derived view. Persisted legacy evidence and new-contract briefings keep
+their original identities.
+
 ## Validation
 
 The AI semantic gate rejects:
