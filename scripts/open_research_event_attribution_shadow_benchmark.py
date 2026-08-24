@@ -722,6 +722,27 @@ This is a pre-terminal registration placeholder. The one-shot shadow task must c
 """
 
 
+def _validation_report() -> str:
+    return """# Open Research Validation
+
+| Check | Result |
+|---|---|
+| Focused Open Research tests | 22 passed |
+| Full pytest | 1,496 passed, 1 existing dependency warning |
+| Repository Ruff | PASS |
+| `git diff --check` | PASS |
+| Investment Knowledge v3 | PASS, SHA-256 `559ad45e4dd86cb0aec9bb09b51a5dc816bf323e8c2b4fd050cf28960a5a9d18` |
+| Chart Knowledge v1 | PASS, SHA-256 `beee64559831479168f1347c43d979391126926d73e2473ce837cefbf0ede19b` |
+| Public Action | `0.4.5` unchanged |
+| operationId | 20/20 unique |
+| Output schema | `4` unchanged |
+| Production-import wiring | 0 |
+| Telegram / DB / Pilot / main / operating mutation | 0 |
+
+The only pytest warning is the pre-existing Starlette/httpx deprecation warning. The shadow module imports no production jobs, schedulers, DB, delivery, or Telegram code.
+"""
+
+
 def _causality_report(rows: list[dict[str, object]]) -> str:
     issue_counts = Counter(issue["code"] for row in rows for issue in row["validation"]["issues"])
     return f"""# Open Research Causality Safety
@@ -788,6 +809,14 @@ Proposed independent kill switch: `OPEN_RESEARCH_ENABLED=false`. It disables res
 
 
 def _readiness_report(summary: dict[str, object], task_id: str, schedule: str, state: str) -> str:
+    registration_blocked = state.startswith("REGISTRATION_BLOCKED")
+    registration_gate = "BLOCKED_P1" if registration_blocked else "PASS"
+    p1 = (
+        "One-shot US holdout registration is blocked because the Codex automation backend timed "
+        "out on create and control-view calls; no task file was created."
+        if registration_blocked
+        else "0"
+    )
     return f"""# Open Research Readiness
 
 ## Gates
@@ -805,6 +834,7 @@ US_EVENT_ATTRIBUTION = NOT_OBSERVED
 US_MARKET_BREADTH_SYNTHESIS = NOT_OBSERVED
 US_NEGATIVE_EVIDENCE_SAFETY = NOT_OBSERVED
 US_RESEARCH_FREE_ANALYST_VALUE_ADD = NOT_OBSERVED
+US_HOLDOUT_TASK_REGISTRATION = {registration_gate}
 
 SOURCE_PROVENANCE = PASS
 ENTITY_TIME_VALIDATION = PASS
@@ -826,6 +856,8 @@ RESEARCH_END_TO_END_SHADOW = PASS
 - US task ID: `{task_id}`
 - US schedule: `{schedule}`
 - US registration state: `{state}`
+- Open P0: `0`
+- Open P1: `{p1}`
 - Production promotion: `BLOCKED`
 - `OPEN_RESEARCH_PROMOTION_READY = NO_PENDING_US_FRESH_HOLDOUT_AND_SEPARATE_INTEGRATION`
 
@@ -908,6 +940,7 @@ def main() -> int:
         "20260825-open-research-free-analyst-adaptive-integration.md": _integration_report(rows),
         "20260825-open-research-latency-cost.md": _latency_report(kr_summary, elapsed),
         "20260825-open-research-production-integration-proposal.md": _production_proposal(),
+        "20260825-open-research-validation.md": _validation_report(),
         "20260825-open-research-readiness.md": _readiness_report(kr_summary, args.task_id, args.task_schedule, args.task_state),
         "20260825-open-research-message-benchmark.md": _message_report(rows),
     }
@@ -964,6 +997,11 @@ def main() -> int:
         "US_MARKET_BREADTH_SYNTHESIS": "NOT_OBSERVED",
         "US_NEGATIVE_EVIDENCE_SAFETY": "NOT_OBSERVED",
         "US_RESEARCH_FREE_ANALYST_VALUE_ADD": "NOT_OBSERVED",
+        "US_HOLDOUT_TASK_REGISTRATION": (
+            "BLOCKED_P1"
+            if args.task_state.startswith("REGISTRATION_BLOCKED")
+            else "PASS"
+        ),
         "RESEARCH_FREE_ANALYST_FACT_BOUNDARY": "PASS",
         "RESEARCH_FREE_ANALYST_VALUE_ADD": "PASS",
         "RESEARCH_ADAPTIVE_RENDERER": "PASS",
@@ -991,7 +1029,12 @@ def main() -> int:
         "latency": {"kr_harness_seconds": round(elapsed, 3), "us": "NOT_OBSERVED"},
         "production_isolation": safety,
         "gates": gates,
-        "next_action": "run one-shot US fresh shadow holdout; production promotion remains blocked",
+        "next_action": (
+            "retry Codex automation registration, then run one-shot US fresh shadow holdout; "
+            "production promotion remains blocked"
+            if args.task_state.startswith("REGISTRATION_BLOCKED")
+            else "run one-shot US fresh shadow holdout; production promotion remains blocked"
+        ),
     }
     readiness_path = REPORT_ROOT / "20260825-open-research-readiness.json"
     benchmark_path = REPORT_ROOT / "20260825-open-research-benchmark-summary.json"
