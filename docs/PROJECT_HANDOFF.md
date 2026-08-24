@@ -1347,3 +1347,16 @@ first.
 10. On the next natural KR weekend or holiday, inspect the producer artifacts read-only and confirm
     zero provider calls, monitor runs, notification rows, packets, and sends. Do not trigger a
     manual production run; continue waiting for the first eligible Inventory packet in parallel.
+
+## 2026-08-24 Legacy Compatibility Closure
+
+- Instruction commit: `2ddec88382f0aff32fcae68a87d1aff62f60f2ef`
+- Implementation commit: `5c58f32e23db7a817f5f9947d2af509f6021f4ff`
+- Contracts: `macro-temporal-legacy-rehydration-v1`, exact shadow numeric registry classes
+- Immutable replay: packet 1; dry-run intents 8; AI 8; fallback 8; duplicate/orphan/send 0/0/0
+- Macro: prior session 4; reference 8; current/defaulted-current/false-current 0/0/0
+- Registry: 210 unsupported before, 210 exact internal-derived after, prose-eligible 0
+- Inventory: 000660 2.1%p, 005490 7.1%p, 005930 35.8%p; mismatch 0
+- Safety: production DB/Telegram/task/Pilot/archive mutation all 0
+- State: `DEPLOYED_PENDING_NATURAL`; P0/P1 0/0
+- Next: `WAIT_FOR_FIRST_SUCCESSFUL_KR_NATURAL_PACKET`

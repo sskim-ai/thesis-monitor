@@ -1048,3 +1048,18 @@ without separate authorization.
 > before adding the delivery-isolated runtime canary. Natural AI and KRX exact-slot evidence
 > continue independently; do not make either a false prerequisite for 9.0D, and stop for any newly
 > observed P0.
+
+## 30. Legacy Macro And Shadow Registry Closure
+
+The 2026-08-24 19:34 KR rehearsal exposed two independent compatibility gaps. Legacy macro
+briefings without temporal metadata were fail-opened as current, while 210 exact investor-flow
+reconciliation numerics were unknown to the shadow registry. `macro-temporal-legacy-rehydration-v1`
+now derives a non-mutating, fail-closed view for legacy evidence and all relevant consumers share
+it. The numeric registry now classifies the exact 30 reconciliation paths per KR stock as internal
+derived, non-prose evidence; unknown paths still fail closed and production packet persistence
+remains independent.
+
+Immutable replay produces one packet, eight held intents, a validated eight-message AI bundle, and
+a complete eight-message fallback with zero duplicates, orphans, sends, false-current claims, or
+Inventory parity mismatches. This closes retrospective code readiness only. The next action remains
+the first natural eligible KR packet; no task or Telegram send may be manufactured for proof.

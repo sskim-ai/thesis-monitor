@@ -2,6 +2,14 @@
 
 Repository: `sskim-ai/thesis-monitor`
 
+Latest bounded closure follows instruction commit
+`2ddec88382f0aff32fcae68a87d1aff62f60f2ef` and implementation commit
+`5c58f32e23db7a817f5f9947d2af509f6021f4ff`. The immutable 19:34 KR replay passes legacy macro
+rehydration, exact shadow numeric registry, AI/fallback, Inventory, investor-flow, temporal, and
+delivery-isolation gates. State is `DEPLOYED_PENDING_NATURAL`, not natural PASS. Wait for the first
+successful natural eligible KR packet and inspect it read-only; do not run a task or send Telegram.
+Exact Trade AR remains `OFF_PENDING_NATURAL_PROOF` and Production Assist remains OFF.
+
 Latest bounded repair: natural KR run 36 exposed `ROOT_CAUSE_BRANCH = C`. The historical
 company-profile/numeric-semantic Shadow gate correctly blocks unsupported AI claims but incorrectly
 blocked the production packet needed by deterministic fallback. Read

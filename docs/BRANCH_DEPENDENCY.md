@@ -160,3 +160,10 @@ operating main. It preserves the v3.2 numeric/profile gate as AI claimability, a
 production persistence contract, and keeps packet-bound ordering. It changes no public output,
 feature selector, provider, DB schema, task schedule, or Production Assist state. Its retrospective
 run-36 replay is no-send evidence only; the next natural eligible KR run owns live proof.
+
+The legacy macro/shadow registry closure starts from docs-only instruction commit
+`2ddec88382f0aff32fcae68a87d1aff62f60f2ef`, a linear descendant of the KR Shadow packet repair.
+It adds a non-destructive compatibility view for legacy macro briefings and exact non-prose
+registrations for investor-flow reconciliation numerics. It changes no provider, schema, task,
+feature mode, packet-persistence contract, or Production Assist setting. The 19:34 replay is
+isolated no-send evidence; natural KR proof remains pending.
