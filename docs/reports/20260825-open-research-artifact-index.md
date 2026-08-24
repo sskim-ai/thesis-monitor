@@ -1,0 +1,36 @@
+# Open Research Artifact Index
+
+| Artifact | SHA-256 |
+|---|---|
+| artifacts/shadow/open-research/kr-20260824/event-attribution.json | ccc0d8d45f546880f017eec082a157e91c79734f4b46317daf5891a7c49e5d71 |
+| artifacts/shadow/open-research/kr-20260824/research-sidecars.json | 4e92ab9791c61a36257cdfc972b7fa3033a1a3eba06bf911de6571f6a9dd1f95 |
+| artifacts/shadow/open-research/kr-20260824/shadow-messages.json | 76819a40189de32645632165f125c93f46cf73d4c0553007170757f5fdfa4a32 |
+| artifacts/shadow/open-research/kr-20260824/source-lock.json | 56d7016b88b5fba70d9a6d36e83ff4ba1a8f3fd47a81f3cc11c1c2e742e85824 |
+| artifacts/shadow/open-research/kr-20260824/validation.json | ca7ed8e7f0bba23523a051440d6aaa736bd676fc442c3ae32fa47e987fc5a594 |
+| docs/reports/20260825-event-attribution-contract.md | aa2071248165e12b310c162823ff7898fb9b426683e48288043ee459693b65b6 |
+| docs/reports/20260825-kr-20260824-event-attribution.md | 47dcc91f92cfd35f426c13da80fc424e6a89dde07de873ee65f1e52ff2438b42 |
+| docs/reports/20260825-kr-20260824-research-evidence.md | cc37316d62f7d7e67b35285bb1a85992a7b277c8b497d9b348a81635128d38eb |
+| docs/reports/20260825-kr-20260824-research-message-benchmark.md | f542cd7834773a2304285d702ac24d602ad42db8bd078251aec4857eab4e7ea0 |
+| docs/reports/20260825-kr-20260824-research-search-log.md | 11dc409b02ff82851e8f467d14bcaae2afa6d56d310dcdb6032f4477e2a222ea |
+| docs/reports/20260825-kr-20260824-research-value-add.md | 1e3937a193874160d7cbdea25482766013d70f957d284c5575c78fc21d7558cb |
+| docs/reports/20260825-negative-evidence-contract.md | 756fcf74da8a3b7bb85fc8e17dd527b313828ab0af9a81b053137d01c22be0b9 |
+| docs/reports/20260825-open-research-architecture.md | da3ea95bc4e1219e4c649252122bfb4df55af87fddbb66647b6214834087873d |
+| docs/reports/20260825-open-research-benchmark-summary.json | c94934b55290da23dbc06fd9876c293863d01ce2c641b75479a382884cbee316 |
+| docs/reports/20260825-open-research-causality-safety.md | 9342d53570cf79446d7551e6c00e304f0c6bea4c8044f53eafb7083b80822af3 |
+| docs/reports/20260825-open-research-free-analyst-adaptive-integration.md | e8bfe57eac9d9c2968cd9a7674a0b3de2e36f4dd8de4e2c15515f5f71b498500 |
+| docs/reports/20260825-open-research-kr-us-comparison.md | 9398cab634df0437a93a5787cbbd37a94132a4801489f19ede0cd9e948b4f93f |
+| docs/reports/20260825-open-research-latency-cost.md | dee5c98fec53c34033537df4e21f81cfcb82050352a1e0b3bfe7ff8f07285682 |
+| docs/reports/20260825-open-research-message-benchmark.md | be1099b05c26ffc3165eb170c947a432ef9eb0ebdd21a449e254bddb5f5cedda |
+| docs/reports/20260825-open-research-production-integration-proposal.md | d0896c28f5b8980c142f141f7e79b57f4d89b1a21bda7adc93c13caf4ea48a82 |
+| docs/reports/20260825-open-research-readiness.json | c7b50671e4fcf047e5f07adaac689cb1a2a72f50255fb389bcb54315c4c0c613 |
+| docs/reports/20260825-open-research-readiness.md | 8ae22292fbf08f17abc0e4baf17cec37713761d7eb4d1f7e21f9a718dc26f343 |
+| docs/reports/20260825-open-research-source-policy.md | d0db21eaac949e0d0c8d5beed8923375f2e1f61bb2d8f2cd33f7632887db219e |
+| docs/reports/20260825-open-research-validation.md | 691728b25054663503a731350cdba888fbceb7507e3e4df30cec19c594746a2a |
+| docs/reports/20260825-us-fresh-event-attribution.md | 00889651ec401113ff3b8ae53e0818206e7d84c4204d0af603a49af3acdbf1e6 |
+| docs/reports/20260825-us-fresh-research-evidence.md | 7ea5a7254094a01c8954f9e366a134b588a28efd49d77e71ae76435fc06f8793 |
+| docs/reports/20260825-us-fresh-research-holdout-gates.md | 338f01f305f2684059694b32ae38c4986da5b21b48f9ecab0533d9f38e2afc2d |
+| docs/reports/20260825-us-fresh-research-holdout-registration.md | 555281dea99c85f837d5fb2b2632f3eb5c8024be349b2a7008b0f99ba22ce050 |
+| docs/reports/20260825-us-fresh-research-message-bundle.md | c9a9d7c93b15f087ec6a6bda65dce39abc25c12919740569a4ad02fa0ac00966 |
+| docs/reports/20260825-us-fresh-research-search-log.md | f08595c2163558d353bc6f4d18597129152ee8fa316ad698be87be93c33aca6b |
+| docs/reports/20260825-us-fresh-research-value-add.md | aefc891ff63188744ac06d87638c509a60774831bb508d84a130055828ed6be7 |
+| docs/work-instructions/20260825-open-research-event-attribution-kr-us-shadow-and-us-holdout.md | 303241279a56aa9e2582ea32278ab837171c7c4be773fd36c1be51b6f0f5f3ab |

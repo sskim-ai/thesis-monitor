@@ -1,0 +1,163 @@
+{
+  "000660": [
+    {
+      "attribution_id": "a-000660",
+      "company_specific_findings": [
+        "e-samsung-official-plan",
+        "e-samsung-sk-policy-comparison",
+        "e-security-returns"
+      ],
+      "event_attribution_version": "open-research-event-attribution-shadow-v1",
+      "macro_findings": [
+        "e-us-prior-context"
+      ],
+      "market_breadth_findings": [
+        "e-cross-market-divergence"
+      ],
+      "negative_evidence": [
+        "e-hbm-negative-scope"
+      ],
+      "next_confirmation_events": [
+        "e-nvidia-upcoming"
+      ],
+      "observed_move": {
+        "close_return": "-3.41%",
+        "intraday_shape": null,
+        "market": "KR",
+        "move_completed_at": "2026-08-24T15:30:00+09:00",
+        "security": "SK hynix",
+        "session": "2026-08-24 KR regular",
+        "ticker": "000660"
+      },
+      "positioning_findings": [
+        "e-market-close-breadth-flow"
+      ],
+      "primary_hypothesis": "h-000660-sector",
+      "rejected_or_weak_hypotheses": [
+        "h-000660-company",
+        "h-000660-market"
+      ],
+      "secondary_hypotheses": [
+        "h-000660-company",
+        "h-000660-positioning",
+        "h-000660-macro",
+        "h-000660-market"
+      ],
+      "sector_findings": [
+        "e-samsung-sk-policy-comparison",
+        "e-security-returns",
+        "e-sk-sector-risk"
+      ],
+      "unknowns": [
+        "시장 전체 순매도는 금액이고 패킷의 종목별 수급은 주식 수라서 삼성전자·SK하이닉스의 정확한 금액 집중도는 계산하지 않았습니다."
+      ]
+    }
+  ],
+  "005930": [
+    {
+      "attribution_id": "a-005930",
+      "company_specific_findings": [
+        "e-samsung-official-plan",
+        "e-samsung-reported-disappointment",
+        "e-samsung-sk-policy-comparison",
+        "e-security-returns"
+      ],
+      "event_attribution_version": "open-research-event-attribution-shadow-v1",
+      "macro_findings": [
+        "e-us-prior-context"
+      ],
+      "market_breadth_findings": [
+        "e-cross-market-divergence"
+      ],
+      "negative_evidence": [
+        "e-hbm-negative-scope"
+      ],
+      "next_confirmation_events": [
+        "e-nvidia-upcoming"
+      ],
+      "observed_move": {
+        "close_return": "-8.70%",
+        "intraday_shape": null,
+        "market": "KR",
+        "move_completed_at": "2026-08-24T15:30:00+09:00",
+        "security": "Samsung Electronics",
+        "session": "2026-08-24 KR regular",
+        "ticker": "005930"
+      },
+      "positioning_findings": [
+        "e-market-close-breadth-flow"
+      ],
+      "primary_hypothesis": "h-005930-company",
+      "rejected_or_weak_hypotheses": [
+        "h-005930-market"
+      ],
+      "secondary_hypotheses": [
+        "h-005930-sector",
+        "h-005930-positioning",
+        "h-005930-macro",
+        "h-005930-market"
+      ],
+      "sector_findings": [
+        "e-samsung-sk-policy-comparison",
+        "e-security-returns"
+      ],
+      "unknowns": [
+        "시장 전체 순매도는 금액이고 패킷의 종목별 수급은 주식 수라서 삼성전자·SK하이닉스의 정확한 금액 집중도는 계산하지 않았습니다."
+      ]
+    }
+  ],
+  "__DAILY_DIGEST_KR__": [
+    {
+      "attribution_id": "a-__daily_digest_kr__",
+      "company_specific_findings": [
+        "e-samsung-official-plan",
+        "e-samsung-reported-disappointment",
+        "e-samsung-sk-policy-comparison",
+        "e-security-returns"
+      ],
+      "event_attribution_version": "open-research-event-attribution-shadow-v1",
+      "macro_findings": [
+        "e-us-prior-context"
+      ],
+      "market_breadth_findings": [
+        "e-cross-market-divergence"
+      ],
+      "negative_evidence": [
+        "e-hbm-negative-scope"
+      ],
+      "next_confirmation_events": [
+        "e-nvidia-upcoming"
+      ],
+      "observed_move": {
+        "close_return": "-3.12%",
+        "intraday_shape": null,
+        "market": "KR",
+        "move_completed_at": "2026-08-24T15:30:00+09:00",
+        "security": "KOSPI",
+        "session": "2026-08-24 KR regular",
+        "ticker": null
+      },
+      "positioning_findings": [
+        "e-market-close-breadth-flow"
+      ],
+      "primary_hypothesis": "h-__daily_digest_kr__-company",
+      "rejected_or_weak_hypotheses": [
+        "h-__daily_digest_kr__-market"
+      ],
+      "secondary_hypotheses": [
+        "h-__daily_digest_kr__-sector",
+        "h-__daily_digest_kr__-positioning",
+        "h-__daily_digest_kr__-macro",
+        "h-__daily_digest_kr__-market"
+      ],
+      "sector_findings": [
+        "e-samsung-sk-policy-comparison",
+        "e-security-returns",
+        "e-sk-sector-risk"
+      ],
+      "unknowns": [
+        "시장 전체 순매도는 금액이고 패킷의 종목별 수급은 주식 수라서 삼성전자·SK하이닉스의 정확한 금액 집중도는 계산하지 않았습니다."
+      ]
+    }
+  ]
+}

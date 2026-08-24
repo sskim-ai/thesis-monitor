@@ -1,0 +1,41 @@
+{
+  "gates": {
+    "KR_EVENT_ATTRIBUTION": "PASS",
+    "KR_MARKET_BREADTH_SYNTHESIS": "PASS",
+    "KR_NEGATIVE_EVIDENCE_SAFETY": "PASS",
+    "KR_OPEN_RESEARCH_BENCHMARK": "PASS",
+    "KR_RESEARCH_FREE_ANALYST_VALUE_ADD": "PASS",
+    "OPEN_RESEARCH_PROMOTION_READY": "NO_PENDING_US_FRESH_HOLDOUT_AND_SEPARATE_INTEGRATION",
+    "OPEN_RESEARCH_SHADOW": "PASS",
+    "RESEARCH_ADAPTIVE_RENDERER": "PASS",
+    "RESEARCH_END_TO_END_SHADOW": "PASS",
+    "RESEARCH_FREE_ANALYST_FACT_BOUNDARY": "PASS",
+    "RESEARCH_FREE_ANALYST_VALUE_ADD": "PASS",
+    "RESEARCH_MATERIAL_INFORMATION_LOSS": 0,
+    "US_EVENT_ATTRIBUTION": "NOT_OBSERVED",
+    "US_FRESH_RESEARCH_HOLDOUT": "NOT_OBSERVED",
+    "US_HOLDOUT_TASK_REGISTRATION": "BLOCKED_P1",
+    "US_MARKET_BREADTH_SYNTHESIS": "NOT_OBSERVED",
+    "US_NEGATIVE_EVIDENCE_SAFETY": "NOT_OBSERVED",
+    "US_RESEARCH_FREE_ANALYST_VALUE_ADD": "NOT_OBSERVED"
+  },
+  "safety": {
+    "causal_attribution_safety": "PASS",
+    "entity_time_validation": "PASS",
+    "event_attribution_fact_boundary": "PASS",
+    "external_unsourced_facts": 0,
+    "hidden_arithmetic": 0,
+    "main_promotion": 0,
+    "negative_evidence_safety": "PASS",
+    "production_mutation": 0,
+    "production_task_run": 0,
+    "source_provenance": "PASS",
+    "telegram_send": 0
+  },
+  "task": {
+    "registration_state": "REGISTRATION_BLOCKED_AUTOMATION_TOOL_TIMEOUT",
+    "result": "NOT_OBSERVED",
+    "schedule": "2026-08-25 09:50 KST",
+    "task_id": "NOT_CREATED"
+  }
+}

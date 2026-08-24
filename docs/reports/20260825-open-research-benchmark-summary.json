@@ -1,0 +1,129 @@
+{
+  "adaptive_renderer": {
+    "DIRECT_ANALYST": 3,
+    "EXISTING_NO_RESEARCH": 5
+  },
+  "attribution": {
+    "000660": {
+      "scope": "sector",
+      "strength": "MODERATE"
+    },
+    "005930": {
+      "scope": "company",
+      "strength": "MODERATE"
+    },
+    "__DAILY_DIGEST_KR__": {
+      "scope": "company",
+      "strength": "MODERATE"
+    }
+  },
+  "free_analyst": {
+    "claim_provenance": "100%",
+    "value_add": "PASS"
+  },
+  "gates": {
+    "KR_EVENT_ATTRIBUTION": "PASS",
+    "KR_MARKET_BREADTH_SYNTHESIS": "PASS",
+    "KR_NEGATIVE_EVIDENCE_SAFETY": "PASS",
+    "KR_OPEN_RESEARCH_BENCHMARK": "PASS",
+    "KR_RESEARCH_FREE_ANALYST_VALUE_ADD": "PASS",
+    "OPEN_RESEARCH_PROMOTION_READY": "NO_PENDING_US_FRESH_HOLDOUT_AND_SEPARATE_INTEGRATION",
+    "OPEN_RESEARCH_SHADOW": "PASS",
+    "RESEARCH_ADAPTIVE_RENDERER": "PASS",
+    "RESEARCH_END_TO_END_SHADOW": "PASS",
+    "RESEARCH_FREE_ANALYST_FACT_BOUNDARY": "PASS",
+    "RESEARCH_FREE_ANALYST_VALUE_ADD": "PASS",
+    "RESEARCH_MATERIAL_INFORMATION_LOSS": 0,
+    "US_EVENT_ATTRIBUTION": "NOT_OBSERVED",
+    "US_FRESH_RESEARCH_HOLDOUT": "NOT_OBSERVED",
+    "US_HOLDOUT_TASK_REGISTRATION": "BLOCKED_P1",
+    "US_MARKET_BREADTH_SYNTHESIS": "NOT_OBSERVED",
+    "US_NEGATIVE_EVIDENCE_SAFETY": "NOT_OBSERVED",
+    "US_RESEARCH_FREE_ANALYST_VALUE_ADD": "NOT_OBSERVED"
+  },
+  "hypothesis_counts": {
+    "company": 2,
+    "sector": 1
+  },
+  "implementation_sha": "f149b81466cd9e84704ac9a5ecdfa543c9358782",
+  "instruction": "docs/work-instructions/20260825-open-research-event-attribution-kr-us-shadow-and-us-holdout.md",
+  "instruction_commit": "f5542544cbdb6487b7c340ad94c21cd524607f90",
+  "kr_benchmark": {
+    "claims": 20,
+    "comparison": "MATERIAL_MATCH",
+    "criteria": {
+      "breadth_relations": true,
+      "fact_interpretation_separated": true,
+      "flow_concentration_not_fabricated": true,
+      "negative_evidence_bounded": true,
+      "official_samsung_event": true,
+      "samsung_company_primary": true,
+      "sk_sector_primary": true
+    },
+    "evidence": 32,
+    "hypotheses": 15,
+    "material_messages": 3,
+    "no_material_value_messages": 5,
+    "production_mutation": 0,
+    "queries": 15,
+    "source_families": 8,
+    "sources": 9
+  },
+  "latency": {
+    "kr_harness_seconds": 0.33,
+    "us": "NOT_OBSERVED"
+  },
+  "negative_evidence": {
+    "claims": 3,
+    "universal_absence_claims": 0
+  },
+  "next_action": "retry Codex automation registration, then run one-shot US fresh shadow holdout; production promotion remains blocked",
+  "production_isolation": {
+    "causal_attribution_safety": "PASS",
+    "entity_time_validation": "PASS",
+    "event_attribution_fact_boundary": "PASS",
+    "external_unsourced_facts": 0,
+    "hidden_arithmetic": 0,
+    "main_promotion": 0,
+    "negative_evidence_safety": "PASS",
+    "production_mutation": 0,
+    "production_task_run": 0,
+    "source_provenance": "PASS",
+    "telegram_send": 0
+  },
+  "query_counts": {
+    "global-macro": 3,
+    "hbm-negative": 3,
+    "joint-market": 3,
+    "samsung": 3,
+    "skhynix": 3
+  },
+  "repository": "sskim-ai/thesis-monitor",
+  "research_architecture": "open-research-event-attribution-shadow-v1",
+  "safety": {
+    "causal_attribution_safety": "PASS",
+    "entity_time_validation": "PASS",
+    "event_attribution_fact_boundary": "PASS",
+    "external_unsourced_facts": 0,
+    "hidden_arithmetic": 0,
+    "main_promotion": 0,
+    "negative_evidence_safety": "PASS",
+    "production_mutation": 0,
+    "production_task_run": 0,
+    "source_provenance": "PASS",
+    "telegram_send": 0
+  },
+  "source_counts": {
+    "independent_families": 8,
+    "selected": 9,
+    "tier_1": 2,
+    "tier_2": 7
+  },
+  "source_policy": "FREE_ONLY",
+  "us_holdout": {
+    "registration_state": "REGISTRATION_BLOCKED_AUTOMATION_TOOL_TIMEOUT",
+    "result": "NOT_OBSERVED",
+    "schedule": "2026-08-25 09:50 KST",
+    "task_id": "NOT_CREATED"
+  }
+}
