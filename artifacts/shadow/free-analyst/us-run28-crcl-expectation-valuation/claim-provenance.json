@@ -1,0 +1,92 @@
+{
+  "benchmark_id": "us-run28-crcl-expectation-valuation",
+  "direct": [
+    {
+      "analysis_item_id": "us-run28-crcl-expectation-valuation-platform-quality-gap",
+      "evidence_refs": [
+        "evidence:metadata:05",
+        "evidence:core:01",
+        "evidence:business:01",
+        "evidence:next_check:01"
+      ],
+      "final_sentence": "단일 매출 근거만으로는 준비금 수익을 비이자 수익이 대체하는지와 FCF의 질을 확인할 수 없습니다.",
+      "support_type": "THESIS_LINKAGE"
+    },
+    {
+      "analysis_item_id": "us-run28-crcl-expectation-valuation-thesis-implication",
+      "evidence_refs": [
+        "evidence:metadata:05",
+        "evidence:core:01",
+        "evidence:business:01",
+        "evidence:next_check:01"
+      ],
+      "final_sentence": "따라서 현재 매출은 성장의 한 단면이지만, 수익원 전환과 FCF가 함께 확인되기 전에는 기대 검증이 끝나지 않습니다.",
+      "support_type": "THESIS_LINKAGE"
+    },
+    {
+      "analysis_item_id": "us-run28-crcl-expectation-valuation-expectation",
+      "evidence_refs": [
+        "evidence:metadata:05",
+        "evidence:core:01",
+        "evidence:next_check:01"
+      ],
+      "final_sentence": "투기적 기대를 정당화하려면 단일 매출보다 수익원 전환과 현금흐름의 질이 확인돼야 합니다.",
+      "support_type": "EXPECTATION_VALUATION_LINK"
+    },
+    {
+      "analysis_item_id": "us-run28-crcl-expectation-valuation-positioning",
+      "evidence_refs": [
+        "evidence:supply:01"
+      ],
+      "final_sentence": "가격·거래 확인은 사업 기대가 실적으로 전환됐다는 증거가 아닙니다.",
+      "support_type": "POSITIONING_SYNTHESIS"
+    },
+    {
+      "analysis_item_id": "next-check",
+      "evidence_refs": [
+        "evidence:core:01",
+        "evidence:next_check:01"
+      ],
+      "final_sentence": "다음 공식 자료에서 USDC 유통량·점유율, 비이자 수익, 수익배분, adjusted EBITDA와 FCF를 확인합니다.",
+      "support_type": "UNCERTAINTY_BOUNDARY"
+    }
+  ],
+  "hybrid": [
+    {
+      "analysis_item_id": "us-run28-crcl-expectation-valuation-platform-quality-gap",
+      "evidence_refs": [
+        "evidence:metadata:05",
+        "evidence:core:01",
+        "evidence:business:01",
+        "evidence:next_check:01"
+      ],
+      "final_sentence": "단일 매출 근거만으로는 준비금 수익을 비이자 수익이 대체하는지와 FCF의 질을 확인할 수 없습니다.",
+      "support_type": "THESIS_LINKAGE"
+    },
+    {
+      "analysis_item_id": "us-run28-crcl-expectation-valuation-expectation",
+      "evidence_refs": [
+        "evidence:metadata:05",
+        "evidence:core:01",
+        "evidence:next_check:01"
+      ],
+      "final_sentence": "투기적 기대를 정당화하려면 단일 매출보다 수익원 전환과 현금흐름의 질이 확인돼야 합니다.",
+      "support_type": "EXPECTATION_VALUATION_LINK"
+    },
+    {
+      "analysis_item_id": "next-check",
+      "evidence_refs": [
+        "evidence:core:01",
+        "evidence:next_check:01"
+      ],
+      "final_sentence": "다음 공식 자료에서 USDC 유통량·점유율, 비이자 수익, 수익배분, adjusted EBITDA와 FCF를 확인합니다.",
+      "support_type": "UNCERTAINTY_BOUNDARY"
+    }
+  ],
+  "packet_id": "2026-08-20-us-run-28-9024def294e6",
+  "ticker": "CRCL",
+  "validation": {
+    "issues": [],
+    "status": "PASS"
+  }
+}

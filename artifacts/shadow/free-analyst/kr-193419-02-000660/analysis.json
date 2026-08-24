@@ -1,0 +1,219 @@
+{
+  "alternative_interpretations": [
+    {
+      "current_balance": "mixed",
+      "evidence_refs": [
+        "evidence:business:01"
+      ],
+      "item_id": "kr-193419-02-000660-inventory-alternatives",
+      "negative_interpretation": {
+        "boundary": "수요 방향은 추가 영업 근거가 필요합니다.",
+        "confidence_label": "medium",
+        "direction": "mixed",
+        "evidence_refs": [
+          "evidence:business:01"
+        ],
+        "item_id": "kr-193419-02-000660-inventory-boundary",
+        "materiality_reason": "preserves the price and mix alternative",
+        "rule_id": "inventory_alternatives",
+        "support_type": "ALTERNATIVE_INTERPRETATION",
+        "text": "다만 ASP와 제품 믹스의 영향이 남아 있어 이 관계만으로 최종 수요 개선을 단정하기 어렵습니다."
+      },
+      "positive_interpretation": {
+        "boundary": "이 관계만으로 수요 개선을 확정할 수 없습니다.",
+        "confidence_label": "medium",
+        "direction": "supports",
+        "evidence_refs": [
+          "evidence:business:01"
+        ],
+        "item_id": "kr-193419-02-000660-inventory-balance",
+        "materiality_reason": "tests the stored inventory pressure driver",
+        "rule_id": "inventory_not_outpacing_scale",
+        "support_type": "BOUNDED_INFERENCE",
+        "text": "현재 자료에서는 재고가 원가 규모보다 더 빠르게 쌓인다는 신호가 뚜렷하지 않습니다."
+      },
+      "unresolved_reason": "ASP, product mix, and demand are not separated by the relation."
+    }
+  ],
+  "analysis_version": "evidence-locked-free-analyst-shadow-v1",
+  "benchmark_id": "kr-193419-02-000660",
+  "evidence_catalog": [
+    {
+      "ref": "evidence:metadata:01",
+      "section_key": "metadata",
+      "text": "🤖 AI 보조 종목 점검 · KR Pilot 1/1"
+    },
+    {
+      "ref": "evidence:metadata:02",
+      "section_key": "metadata",
+      "text": "🏢 SK하이닉스(000660)"
+    },
+    {
+      "ref": "evidence:metadata:03",
+      "section_key": "metadata",
+      "text": "투자 논리: 유지 · 오늘 중요한 신규 변화 없음"
+    },
+    {
+      "ref": "evidence:metadata:04",
+      "section_key": "metadata",
+      "text": "구조적 위험: 높아진 상태"
+    },
+    {
+      "ref": "evidence:metadata:05",
+      "section_key": "metadata",
+      "text": "시장 기대: 매우 높음"
+    },
+    {
+      "ref": "evidence:core:01",
+      "section_key": "core",
+      "text": "HBM 실행과 메모리 수익성의 지속 여부가 핵심이며, 하루 수급만으로 사업 판단을 바꾸지 않습니다."
+    },
+    {
+      "ref": "evidence:business:01",
+      "section_key": "business",
+      "text": "메모리 재고 점검에서 재고 증가율은 매출원가 증가율보다 2.1%p 밑돌았습니다. ASP와 제품 믹스를 함께 확인해야 합니다."
+    },
+    {
+      "ref": "evidence:price:01",
+      "section_key": "price",
+      "text": "가격 구조는 현재가 1,671,000원, 동적 지지구간 하단 1,190,321원, 동적 지지구간 상단 1,301,679원, 동적 저항구간 하단 2,918,471원, 동적 저항구간 상단 3,055,529원, 현재가 기준 차트 손익비 2.21배 기준으로 대응을 구분합니다.\n• 신규 관찰자: 상단 확인 여유와 현재 손익비가 함께 유지되는지 본 뒤 신규 진입을 판단합니다.\n• 보유자: 메모리 변동성을 감안해 동적 지지와 무효화 가격의 순서를 점검합니다."
+    },
+    {
+      "ref": "evidence:supply:01",
+      "section_key": "supply",
+      "text": "외국인 당일 순매도 915,072주 · 기관 당일 순매도 173,328주. 외국인 5일 순매도 1,352,525주 · 기관 5일 순매도 505,481주. 외국인 20일 순매도 2,907,478주 · 기관 20일 순매수 717,603주. 외국인·기관·개인의 기간별 방향이 엇갈려 중기 사업 근거로 승격하지 않습니다."
+    },
+    {
+      "ref": "evidence:valuation:01",
+      "section_key": "valuation",
+      "text": "주당 기준이 확인된 장부가 근거와 정상화 수익성을 분리해 봅니다."
+    },
+    {
+      "ref": "evidence:risk:01",
+      "section_key": "risk",
+      "text": "• 유상증자에 따른 희석·자본조달 경제적 영향"
+    },
+    {
+      "ref": "evidence:risk:02",
+      "section_key": "risk",
+      "text": "• 최신 잠정실적의 수익성 관계에 중대한 검증 경고가 있어 매출·이익과 이익 기반 배수의 정량 해석을 보류합니다."
+    },
+    {
+      "ref": "evidence:next_check:01",
+      "section_key": "next_check",
+      "text": "• HBM 출하와 수율의 지속성이 다음 핵심 확인 사항입니다."
+    },
+    {
+      "ref": "evidence:unknown:01",
+      "section_key": "unknown",
+      "text": "• HBM 출하와 수율의 지속성이 다음 핵심 확인 사항입니다."
+    }
+  ],
+  "expectation_valuation_interaction": [
+    {
+      "boundary": "기대 수준은 확인 문턱을 바꾸지만 투자 상태를 자동 변경하지 않습니다.",
+      "confidence_label": "medium",
+      "direction": "neutral",
+      "evidence_refs": [
+        "evidence:metadata:05",
+        "evidence:core:01",
+        "evidence:next_check:01"
+      ],
+      "item_id": "kr-193419-02-000660-expectation",
+      "materiality_reason": "expectation level changes the evidence threshold",
+      "rule_id": "expectation_verification_threshold",
+      "support_type": "EXPECTATION_VALUATION_LINK",
+      "text": "매우 높은 기대를 정당화하려면 재고 관계 하나보다 핵심 실행과 수익성의 지속 확인이 더 중요합니다."
+    }
+  ],
+  "message_plan": {
+    "omission_reasons": [
+      "exact numeric tuples remain in structured evidence and are not repeated",
+      "low-materiality blocks are omitted from concise prose"
+    ],
+    "omitted_blocks": [
+      "raw_numeric_tuple",
+      "unselected_price_detail"
+    ],
+    "primary_conclusion": "kr-193419-02-000660-inventory-balance",
+    "selected_blocks": [
+      "judgment",
+      "evidence",
+      "next_check",
+      "balance",
+      "expectation"
+    ]
+  },
+  "next_checks": [
+    {
+      "check": "HBM 출하와 수율의 지속성이 다음 핵심 확인 사항입니다.",
+      "evidence_refs": [
+        "evidence:core:01",
+        "evidence:next_check:01"
+      ],
+      "linked_thesis_driver": "current core judgment",
+      "linked_unknown": "HBM 출하와 수율의 지속성이 다음 핵심 확인 사항입니다."
+    }
+  ],
+  "positioning_synthesis": [
+    {
+      "boundary": "수급만으로 투자 논리나 사업 상태를 바꾸지 않습니다.",
+      "confidence_label": "high",
+      "direction": "neutral",
+      "evidence_refs": [
+        "evidence:supply:01"
+      ],
+      "item_id": "kr-193419-02-000660-positioning",
+      "materiality_reason": "separates tactical flow from fundamental evidence",
+      "rule_id": "positioning_fundamental_boundary",
+      "support_type": "POSITIONING_SYNTHESIS",
+      "text": "기간별 주체 방향이 엇갈린 수급은 전술적 배경일 뿐, 중기 사업 판단의 근거로는 부족합니다."
+    }
+  ],
+  "preamble": "🤖 AI 보조 종목 점검 · KR Pilot 1/1\n\n🏢 SK하이닉스(000660)\n투자 논리: 유지 · 오늘 중요한 신규 변화 없음\n구조적 위험: 높아진 상태\n시장 기대: 매우 높음",
+  "thesis_implications": [
+    {
+      "boundary": "저장된 투자 상태는 변경하지 않습니다.",
+      "confidence_label": "medium",
+      "direction": "neutral",
+      "evidence_refs": [
+        "evidence:metadata:05",
+        "evidence:core:01",
+        "evidence:business:01",
+        "evidence:next_check:01"
+      ],
+      "item_id": "kr-193419-02-000660-thesis-implication",
+      "materiality_reason": "states what the evidence changes and does not change",
+      "rule_id": "inventory_not_outpacing_scale",
+      "support_type": "THESIS_LINKAGE",
+      "text": "이 재고 관계는 현재 투자 논리를 약화시키지는 않지만, HBM 실행과 수익성의 지속 확인을 대체하지 못합니다."
+    }
+  ],
+  "top_findings": [
+    {
+      "boundary": "이 관계만으로 수요 개선을 확정할 수 없습니다.",
+      "confidence_label": "medium",
+      "direction": "supports",
+      "evidence_refs": [
+        "evidence:business:01"
+      ],
+      "item_id": "kr-193419-02-000660-inventory-balance",
+      "materiality_reason": "tests the stored inventory pressure driver",
+      "rule_id": "inventory_not_outpacing_scale",
+      "support_type": "BOUNDED_INFERENCE",
+      "text": "현재 자료에서는 재고가 원가 규모보다 더 빠르게 쌓인다는 신호가 뚜렷하지 않습니다."
+    }
+  ],
+  "unknowns": [
+    {
+      "evidence_needed": "HBM 출하와 수율의 지속성이 다음 핵심 확인 사항입니다.",
+      "evidence_refs": [
+        "evidence:core:01",
+        "evidence:next_check:01",
+        "evidence:unknown:01"
+      ],
+      "unresolved_question": "HBM 출하와 수율의 지속성이 다음 핵심 확인 사항입니다.",
+      "why_it_matters": "stored investment logic의 다음 확인 조건과 연결됩니다."
+    }
+  ]
+}

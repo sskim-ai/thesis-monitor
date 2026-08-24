@@ -1,0 +1,92 @@
+{
+  "benchmark_id": "us-run32-googl",
+  "direct": [
+    {
+      "analysis_item_id": "us-run32-googl-cloud-fcf",
+      "evidence_refs": [
+        "evidence:metadata:05",
+        "evidence:core:01",
+        "evidence:business:01",
+        "evidence:next_check:01"
+      ],
+      "final_sentence": "전년보다 줄어든 PPE 투자 후 FCF는 AI 투자 회수 확인의 중요성을 높이지만, 그 자체로 투자 실패를 뜻하지는 않습니다.",
+      "support_type": "BOUNDED_INFERENCE"
+    },
+    {
+      "analysis_item_id": "us-run32-googl-thesis-implication",
+      "evidence_refs": [
+        "evidence:metadata:05",
+        "evidence:core:01",
+        "evidence:business:01",
+        "evidence:next_check:01"
+      ],
+      "final_sentence": "따라서 AI 투자 부담은 Cloud 성장·마진과 현금 전환이 함께 확인될 때 투자 논리의 검증 근거가 됩니다.",
+      "support_type": "THESIS_LINKAGE"
+    },
+    {
+      "analysis_item_id": "us-run32-googl-expectation",
+      "evidence_refs": [
+        "evidence:metadata:05",
+        "evidence:core:01",
+        "evidence:next_check:01"
+      ],
+      "final_sentence": "높은 기대를 정당화하려면 AI 투자 확대가 Cloud 성장·마진과 현금 회수로 이어지는 확인이 필요합니다.",
+      "support_type": "EXPECTATION_VALUATION_LINK"
+    },
+    {
+      "analysis_item_id": "us-run32-googl-positioning",
+      "evidence_refs": [
+        "evidence:supply:01"
+      ],
+      "final_sentence": "현재 가격·거래 흐름은 사업 변화의 확인보다 전술적 배경으로만 해석해야 합니다.",
+      "support_type": "POSITIONING_SYNTHESIS"
+    },
+    {
+      "analysis_item_id": "next-check",
+      "evidence_refs": [
+        "evidence:core:01",
+        "evidence:next_check:01"
+      ],
+      "final_sentence": "다음 공식 실적에서 Cloud 성장·마진, Search monetization, 투자, 현금 전환과 투자수익성을 확인합니다.",
+      "support_type": "UNCERTAINTY_BOUNDARY"
+    }
+  ],
+  "hybrid": [
+    {
+      "analysis_item_id": "us-run32-googl-cloud-fcf",
+      "evidence_refs": [
+        "evidence:metadata:05",
+        "evidence:core:01",
+        "evidence:business:01",
+        "evidence:next_check:01"
+      ],
+      "final_sentence": "전년보다 줄어든 PPE 투자 후 FCF는 AI 투자 회수 확인의 중요성을 높이지만, 그 자체로 투자 실패를 뜻하지는 않습니다.",
+      "support_type": "BOUNDED_INFERENCE"
+    },
+    {
+      "analysis_item_id": "us-run32-googl-expectation",
+      "evidence_refs": [
+        "evidence:metadata:05",
+        "evidence:core:01",
+        "evidence:next_check:01"
+      ],
+      "final_sentence": "높은 기대를 정당화하려면 AI 투자 확대가 Cloud 성장·마진과 현금 회수로 이어지는 확인이 필요합니다.",
+      "support_type": "EXPECTATION_VALUATION_LINK"
+    },
+    {
+      "analysis_item_id": "next-check",
+      "evidence_refs": [
+        "evidence:core:01",
+        "evidence:next_check:01"
+      ],
+      "final_sentence": "다음 공식 실적에서 Cloud 성장·마진, Search monetization, 투자, 현금 전환과 투자수익성을 확인합니다.",
+      "support_type": "UNCERTAINTY_BOUNDARY"
+    }
+  ],
+  "packet_id": "2026-08-22-us-run-32-dde10ec6c9eb",
+  "ticker": "GOOGL",
+  "validation": {
+    "issues": [],
+    "status": "PASS"
+  }
+}

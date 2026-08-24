@@ -1,0 +1,47 @@
+{
+  "benchmark_id": "kr-193419-01-__DAILY_DIGEST_KR__",
+  "direct": [
+    {
+      "analysis_item_id": "kr-193419-01-daily-digest-kr-temporal-boundary",
+      "evidence_refs": [
+        "evidence:core:01",
+        "evidence:risk:01"
+      ],
+      "final_sentence": "오늘은 방향성 예측보다 새 관측이 없다는 시점 경계를 지키는 것이 판단의 핵심입니다.",
+      "support_type": "BOUNDED_INFERENCE"
+    },
+    {
+      "analysis_item_id": "next-check",
+      "evidence_refs": [
+        "evidence:core:01"
+      ],
+      "final_sentence": "다음 공식 관측 전까지 오늘의 거시 방향은 확정하지 않습니다.",
+      "support_type": "UNCERTAINTY_BOUNDARY"
+    }
+  ],
+  "hybrid": [
+    {
+      "analysis_item_id": "kr-193419-01-daily-digest-kr-temporal-boundary",
+      "evidence_refs": [
+        "evidence:core:01",
+        "evidence:risk:01"
+      ],
+      "final_sentence": "오늘은 방향성 예측보다 새 관측이 없다는 시점 경계를 지키는 것이 판단의 핵심입니다.",
+      "support_type": "BOUNDED_INFERENCE"
+    },
+    {
+      "analysis_item_id": "next-check",
+      "evidence_refs": [
+        "evidence:core:01"
+      ],
+      "final_sentence": "다음 공식 관측 전까지 오늘의 거시 방향은 확정하지 않습니다.",
+      "support_type": "UNCERTAINTY_BOUNDARY"
+    }
+  ],
+  "packet_id": "2026-08-24-kr-run-36-e4ac1c029c06",
+  "ticker": "__DAILY_DIGEST_KR__",
+  "validation": {
+    "issues": [],
+    "status": "PASS"
+  }
+}

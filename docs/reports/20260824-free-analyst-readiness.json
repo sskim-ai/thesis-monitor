@@ -1,0 +1,79 @@
+{
+  "benchmark_count": 12,
+  "benchmark_kr_messages": 8,
+  "benchmark_us_messages": 4,
+  "benchmark_us_packets": 3,
+  "causal_error": 0,
+  "contract": "evidence-locked-free-analyst-shadow-v1",
+  "cross_message_duplicate_claims_direct": 0,
+  "cross_message_duplicate_claims_hybrid": 0,
+  "current_ai_avg_chars": 863.5,
+  "fact_mismatch": 0,
+  "free_analyst_chars": 383.0,
+  "gates": {
+    "FREE_ANALYST_FACT_BOUNDARY": "PASS",
+    "FREE_ANALYST_NOVEL_SYNTHESIS": "PASS",
+    "FREE_ANALYST_PROMOTION_READY": "YES_PENDING_NATURAL_AND_SEPARATE_PROMOTION",
+    "FREE_ANALYST_RENDERER_CHOICE": "VNEXT_HYBRID",
+    "FREE_ANALYST_SHADOW": "PASS",
+    "FREE_ANALYST_VALUE_ADD": "PASS",
+    "FREE_ANALYST_VS_VNEXT": "BETTER"
+  },
+  "human_quality_counts": {
+    "MATERIAL_IMPROVEMENT": 11,
+    "NO_MEANINGFUL_CHANGE": 1
+  },
+  "hybrid_chars": 270.92,
+  "implementation_sha": "cccfb26e36b468eb0043aabf07eb9315f41b075d",
+  "instruction_commit": "235b1914f965c2a194f939981aac24774e2f0969",
+  "instruction_version": "1.0",
+  "negative_controls": {
+    "external_knowledge_rejections": 1,
+    "hidden_arithmetic_rejections": 1,
+    "stronger_than_evidence_rejections": 1,
+    "temporal_leakage_rejections": 1,
+    "trade_ar_leak_rejections": 1,
+    "unsupported_causality_rejections": 1
+  },
+  "novel_supported_synthesis_count": 42,
+  "numeric_error": 0,
+  "open_material_p1": [],
+  "open_p0": [],
+  "p2_backlog": [
+    "direct renderer is more verbose than the selected hybrid",
+    "low-information market digest does not need forced synthesis",
+    "separate natural review and promotion decision remain pending"
+  ],
+  "per_variant_preference": {
+    "best_analytical_reasoning": {
+      "FREE_ANALYST_DIRECT": 11,
+      "VNEXT_AI": 1
+    },
+    "best_final_telegram_message": {
+      "FREE_ANALYST_DIRECT": 3,
+      "FREE_ANALYST_VNEXT_HYBRID": 8,
+      "VNEXT_AI": 1
+    }
+  },
+  "production_mutation": 0,
+  "production_promotion": "BLOCKED",
+  "synthesis_eligible_messages": 11,
+  "telegram_send": 0,
+  "temporal_error": 0,
+  "trade_ar_leak": 0,
+  "unsupported_synthesis_count": 0,
+  "validation": "PASS",
+  "validation_evidence": {
+    "chart_knowledge_parity": "PASS",
+    "final_github_actions": "PENDING_FINAL_REPORT_COMMIT",
+    "focused_pytest": "20 passed",
+    "full_pytest": "1456 passed",
+    "git_diff_check": "PASS",
+    "implementation_github_actions": "PASS",
+    "investment_knowledge_parity": "PASS",
+    "operation_id": "20/20 unique",
+    "public_action": "0.4.5 unchanged",
+    "ruff": "PASS"
+  },
+  "vnext_chars": 574.5
+}

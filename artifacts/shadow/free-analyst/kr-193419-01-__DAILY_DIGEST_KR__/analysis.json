@@ -1,0 +1,76 @@
+{
+  "alternative_interpretations": [],
+  "analysis_version": "evidence-locked-free-analyst-shadow-v1",
+  "benchmark_id": "kr-193419-01-__DAILY_DIGEST_KR__",
+  "evidence_catalog": [
+    {
+      "ref": "evidence:metadata:01",
+      "section_key": "metadata",
+      "text": "🤖 AI 보조 한국시장 마감 · KR Pilot 1/1"
+    },
+    {
+      "ref": "evidence:core:01",
+      "section_key": "core",
+      "text": "새로운 당일 거시 관측이 없어 직전 세션과 지연 공표 자료를 현재 신호로 승격하지 않습니다."
+    },
+    {
+      "ref": "evidence:market_context:01",
+      "section_key": "market_context",
+      "text": "직전 완료된 미국 정규장에서는 S&P500 등락률 +0.4%였지만 오늘의 신규 관측은 아닙니다."
+    },
+    {
+      "ref": "evidence:risk:01",
+      "section_key": "risk",
+      "text": "• 다음 공식 관측 전까지 오늘의 거시 방향은 확정하지 않습니다."
+    }
+  ],
+  "expectation_valuation_interaction": [],
+  "message_plan": {
+    "omission_reasons": [
+      "exact numeric tuples remain in structured evidence and are not repeated",
+      "low-materiality blocks are omitted from concise prose"
+    ],
+    "omitted_blocks": [
+      "raw_numeric_tuple",
+      "unselected_price_detail",
+      "positioning",
+      "expectation_valuation",
+      "alternative_interpretation"
+    ],
+    "primary_conclusion": "kr-193419-01-daily-digest-kr-temporal-boundary",
+    "selected_blocks": [
+      "judgment",
+      "risk"
+    ]
+  },
+  "next_checks": [
+    {
+      "check": "다음 공식 관측 전까지 오늘의 거시 방향은 확정하지 않습니다.",
+      "evidence_refs": [
+        "evidence:core:01"
+      ],
+      "linked_thesis_driver": "current core judgment",
+      "linked_unknown": "다음 공식 관측 전까지 오늘의 거시 방향은 확정하지 않습니다."
+    }
+  ],
+  "positioning_synthesis": [],
+  "preamble": "🤖 AI 보조 한국시장 마감 · KR Pilot 1/1",
+  "thesis_implications": [],
+  "top_findings": [
+    {
+      "boundary": "직전 세션 자료는 배경일 뿐 오늘의 신규 관측이 아닙니다.",
+      "confidence_label": "high",
+      "direction": "neutral",
+      "evidence_refs": [
+        "evidence:core:01",
+        "evidence:risk:01"
+      ],
+      "item_id": "kr-193419-01-daily-digest-kr-temporal-boundary",
+      "materiality_reason": "prevents lagging context from becoming a current signal",
+      "rule_id": "temporal_evidence_boundary",
+      "support_type": "BOUNDED_INFERENCE",
+      "text": "오늘은 방향성 예측보다 새 관측이 없다는 시점 경계를 지키는 것이 판단의 핵심입니다."
+    }
+  ],
+  "unknowns": []
+}

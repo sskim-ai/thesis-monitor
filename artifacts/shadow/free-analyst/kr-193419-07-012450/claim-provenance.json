@@ -1,0 +1,92 @@
+{
+  "benchmark_id": "kr-193419-07-012450",
+  "direct": [
+    {
+      "analysis_item_id": "kr-193419-07-012450-contract-cash-gap",
+      "evidence_refs": [
+        "evidence:metadata:05",
+        "evidence:core:01",
+        "evidence:business:01",
+        "evidence:next_check:01"
+      ],
+      "final_sentence": "사업 규모만으로 수주가 현금으로 전환됐다고 볼 수 없어, 인도 일정과 운전자본 회수 조건의 확인이 필요합니다.",
+      "support_type": "THESIS_LINKAGE"
+    },
+    {
+      "analysis_item_id": "kr-193419-07-012450-thesis-implication",
+      "evidence_refs": [
+        "evidence:metadata:05",
+        "evidence:core:01",
+        "evidence:business:01",
+        "evidence:next_check:01"
+      ],
+      "final_sentence": "따라서 수주잔고의 사업 규모와 실제 인도·회수는 분리해 확인해야 합니다.",
+      "support_type": "THESIS_LINKAGE"
+    },
+    {
+      "analysis_item_id": "kr-193419-07-012450-expectation",
+      "evidence_refs": [
+        "evidence:metadata:05",
+        "evidence:core:01",
+        "evidence:next_check:01"
+      ],
+      "final_sentence": "높은 기대를 추가로 정당화하려면 수주잔고보다 인도와 운전자본 회수의 확인이 필요합니다.",
+      "support_type": "EXPECTATION_VALUATION_LINK"
+    },
+    {
+      "analysis_item_id": "kr-193419-07-012450-positioning",
+      "evidence_refs": [
+        "evidence:supply:01"
+      ],
+      "final_sentence": "기관 유입은 장기 수주 실행을 확인하는 대리 지표가 될 수 없습니다.",
+      "support_type": "POSITIONING_SYNTHESIS"
+    },
+    {
+      "analysis_item_id": "next-check",
+      "evidence_refs": [
+        "evidence:core:01",
+        "evidence:next_check:01"
+      ],
+      "final_sentence": "대형 수주의 인도 일정과 운전자본 회수 조건이 남아 있습니다.",
+      "support_type": "UNCERTAINTY_BOUNDARY"
+    }
+  ],
+  "hybrid": [
+    {
+      "analysis_item_id": "kr-193419-07-012450-contract-cash-gap",
+      "evidence_refs": [
+        "evidence:metadata:05",
+        "evidence:core:01",
+        "evidence:business:01",
+        "evidence:next_check:01"
+      ],
+      "final_sentence": "사업 규모만으로 수주가 현금으로 전환됐다고 볼 수 없어, 인도 일정과 운전자본 회수 조건의 확인이 필요합니다.",
+      "support_type": "THESIS_LINKAGE"
+    },
+    {
+      "analysis_item_id": "kr-193419-07-012450-expectation",
+      "evidence_refs": [
+        "evidence:metadata:05",
+        "evidence:core:01",
+        "evidence:next_check:01"
+      ],
+      "final_sentence": "높은 기대를 추가로 정당화하려면 수주잔고보다 인도와 운전자본 회수의 확인이 필요합니다.",
+      "support_type": "EXPECTATION_VALUATION_LINK"
+    },
+    {
+      "analysis_item_id": "next-check",
+      "evidence_refs": [
+        "evidence:core:01",
+        "evidence:next_check:01"
+      ],
+      "final_sentence": "대형 수주의 인도 일정과 운전자본 회수 조건이 남아 있습니다.",
+      "support_type": "UNCERTAINTY_BOUNDARY"
+    }
+  ],
+  "packet_id": "2026-08-24-kr-run-36-e4ac1c029c06",
+  "ticker": "012450",
+  "validation": {
+    "issues": [],
+    "status": "PASS"
+  }
+}
