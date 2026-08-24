@@ -1,0 +1,74 @@
+{
+  "benchmark_id": "kr-193419-04-005490",
+  "delivery_performed": false,
+  "final_delivery_mode": "ADAPTIVE_SHADOW_WOULD_SEND",
+  "packet_id": "2026-08-24-kr-run-36-e4ac1c029c06",
+  "safety": {
+    "contract": "adaptive-renderer-selector-shadow-v1",
+    "external_knowledge": 0,
+    "fact_mismatch": 0,
+    "hidden_arithmetic": 0,
+    "material_dropped_elements": [],
+    "material_information_loss": 0,
+    "selected_renderer": "DIRECT_ANALYST",
+    "status": "PASS",
+    "temporal_violations": 0,
+    "trade_ar_leak": 0,
+    "unsupported_causality": 0,
+    "unsupported_numeric_claims": [],
+    "unsupported_synthesis": 0,
+    "validation": {
+      "issues": [],
+      "status": "PASS"
+    }
+  },
+  "selected_renderer": "DIRECT_ANALYST",
+  "sentence_supports": [
+    {
+      "analysis_item_id": "kr-193419-04-005490-inventory-pressure",
+      "evidence_refs": [
+        "evidence:business:01"
+      ],
+      "final_sentence": "재고가 매출보다 빠르게 늘어난 관계는 재고 부담 점검의 우선순위가 높아졌음을 시사합니다.",
+      "support_type": "BOUNDED_INFERENCE"
+    },
+    {
+      "analysis_item_id": "kr-193419-04-005490-thesis-implication",
+      "evidence_refs": [
+        "evidence:metadata:05",
+        "evidence:core:01",
+        "evidence:business:01",
+        "evidence:next_check:01"
+      ],
+      "final_sentence": "따라서 재고 관계는 철강 스프레드와 소재 현금 회수의 확인 필요성을 높이지만, 사이클 악화를 확정하지는 않습니다.",
+      "support_type": "THESIS_LINKAGE"
+    },
+    {
+      "analysis_item_id": "kr-193419-04-005490-inventory-scale-alternative",
+      "evidence_refs": [
+        "evidence:business:01"
+      ],
+      "final_sentence": "철강 물량과 원재료 가격 변화가 재고 관계에 영향을 준 결과일 가능성은 남아 있습니다.",
+      "support_type": "ALTERNATIVE_INTERPRETATION"
+    },
+    {
+      "analysis_item_id": "kr-193419-04-005490-inventory-risk-alternative",
+      "evidence_refs": [
+        "evidence:business:01"
+      ],
+      "final_sentence": "반대로 재고가 매출보다 빠르게 늘어난 점은 운전자본 부담 가능성을 열어 둡니다.",
+      "support_type": "ALTERNATIVE_INTERPRETATION"
+    },
+    {
+      "analysis_item_id": "next-check",
+      "evidence_refs": [
+        "evidence:core:01",
+        "evidence:next_check:01"
+      ],
+      "final_sentence": "철강 스프레드와 리튬 사업의 현금 회수 속도가 남은 질문입니다.",
+      "support_type": "UNCERTAINTY_BOUNDARY"
+    }
+  ],
+  "text": "🤖 AI 보조 종목 점검 · KR Pilot 1/1\n\n🏢 POSCO홀딩스(005490)\n투자 논리: 유지 · 오늘 중요한 신규 변화 없음\n구조적 위험: 높아진 상태\n시장 기대: 균형\n\n🎯 판단\n재고가 매출보다 빠르게 늘어난 관계는 재고 부담 점검의 우선순위가 높아졌음을 시사합니다.\n\n🔎 핵심 근거\n따라서 재고 관계는 철강 스프레드와 소재 현금 회수의 확인 필요성을 높이지만, 사이클 악화를 확정하지는 않습니다.\n\n⚖️ 해석의 균형\n철강 물량과 원재료 가격 변화가 재고 관계에 영향을 준 결과일 가능성은 남아 있습니다.\n반대로 재고가 매출보다 빠르게 늘어난 점은 운전자본 부담 가능성을 열어 둡니다.\n\n📌 다음 확인\n• 철강 스프레드와 리튬 사업의 현금 회수 속도가 남은 질문입니다.",
+  "ticker": "005490"
+}

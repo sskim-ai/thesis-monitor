@@ -1,0 +1,60 @@
+{
+  "benchmark_id": "kr-193419-06-010120",
+  "delivery_performed": false,
+  "final_delivery_mode": "ADAPTIVE_SHADOW_WOULD_SEND",
+  "packet_id": "2026-08-24-kr-run-36-e4ac1c029c06",
+  "safety": {
+    "contract": "adaptive-renderer-selector-shadow-v1",
+    "external_knowledge": 0,
+    "fact_mismatch": 0,
+    "hidden_arithmetic": 0,
+    "material_dropped_elements": [],
+    "material_information_loss": 0,
+    "selected_renderer": "CONCISE_HYBRID",
+    "status": "PASS",
+    "temporal_violations": 0,
+    "trade_ar_leak": 0,
+    "unsupported_causality": 0,
+    "unsupported_numeric_claims": [],
+    "unsupported_synthesis": 0,
+    "validation": {
+      "issues": [],
+      "status": "PASS"
+    }
+  },
+  "selected_renderer": "CONCISE_HYBRID",
+  "sentence_supports": [
+    {
+      "analysis_item_id": "kr-193419-06-010120-order-cash-gap",
+      "evidence_refs": [
+        "evidence:metadata:05",
+        "evidence:core:01",
+        "evidence:business:01",
+        "evidence:next_check:01"
+      ],
+      "final_sentence": "수주가 매출로 전환된 근거만으로 현금 회수까지 확인된 것은 아니어서, 다음 판단에는 정식 회수 근거가 필요합니다.",
+      "support_type": "THESIS_LINKAGE"
+    },
+    {
+      "analysis_item_id": "kr-193419-06-010120-expectation",
+      "evidence_refs": [
+        "evidence:metadata:05",
+        "evidence:core:01",
+        "evidence:next_check:01"
+      ],
+      "final_sentence": "높은 기대를 추가로 정당화하려면 수주 규모보다 현금 회수까지 이어지는 근거가 필요합니다.",
+      "support_type": "EXPECTATION_VALUATION_LINK"
+    },
+    {
+      "analysis_item_id": "next-check",
+      "evidence_refs": [
+        "evidence:core:01",
+        "evidence:next_check:01"
+      ],
+      "final_sentence": "수주잔고의 매출 전환과 현금 회수 근거가 다음 점검 대상입니다.",
+      "support_type": "UNCERTAINTY_BOUNDARY"
+    }
+  ],
+  "text": "🤖 AI 보조 종목 점검 · KR Pilot 1/1\n\n🏢 LS일렉트릭(010120)\n투자 논리: 유지 · 오늘 중요한 신규 변화 없음\n구조적 위험: 보통\n시장 기대: 높음\n\n🎯 판단\n수주가 매출로 전환된 근거만으로 현금 회수까지 확인된 것은 아니어서, 다음 판단에는 정식 회수 근거가 필요합니다.\n\n🔎 왜 중요한가\n높은 기대를 추가로 정당화하려면 수주 규모보다 현금 회수까지 이어지는 근거가 필요합니다.\n\n📌 다음 확인\n• 수주잔고의 매출 전환과 현금 회수 근거가 다음 점검 대상입니다.",
+  "ticker": "010120"
+}

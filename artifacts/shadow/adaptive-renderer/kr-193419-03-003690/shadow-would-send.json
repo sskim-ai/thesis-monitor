@@ -1,0 +1,61 @@
+{
+  "benchmark_id": "kr-193419-03-003690",
+  "delivery_performed": false,
+  "final_delivery_mode": "ADAPTIVE_SHADOW_WOULD_SEND",
+  "packet_id": "2026-08-24-kr-run-36-e4ac1c029c06",
+  "safety": {
+    "contract": "adaptive-renderer-selector-shadow-v1",
+    "external_knowledge": 0,
+    "fact_mismatch": 0,
+    "hidden_arithmetic": 0,
+    "material_dropped_elements": [],
+    "material_information_loss": 0,
+    "selected_renderer": "CONCISE_HYBRID",
+    "status": "PASS",
+    "temporal_violations": 0,
+    "trade_ar_leak": 0,
+    "unsupported_causality": 0,
+    "unsupported_numeric_claims": [],
+    "unsupported_synthesis": 0,
+    "validation": {
+      "issues": [],
+      "status": "PASS"
+    }
+  },
+  "selected_renderer": "CONCISE_HYBRID",
+  "sentence_supports": [
+    {
+      "analysis_item_id": "kr-193419-03-003690-insurance-applicability",
+      "evidence_refs": [
+        "evidence:metadata:05",
+        "evidence:core:01",
+        "evidence:business:01",
+        "evidence:next_check:01"
+      ],
+      "final_sentence": "현재 판단을 가르는 것은 일반기업 FCF가 아니라 보험영업의 지속성과 자본 여력입니다.",
+      "support_type": "THESIS_LINKAGE"
+    },
+    {
+      "analysis_item_id": "kr-193419-03-003690-thesis-implication",
+      "evidence_refs": [
+        "evidence:metadata:05",
+        "evidence:core:01",
+        "evidence:business:01",
+        "evidence:next_check:01"
+      ],
+      "final_sentence": "따라서 보험영업과 자본 여력이 확인되기 전에는 새로운 방향 전환도 성립하지 않습니다.",
+      "support_type": "THESIS_LINKAGE"
+    },
+    {
+      "analysis_item_id": "next-check",
+      "evidence_refs": [
+        "evidence:core:01",
+        "evidence:next_check:01"
+      ],
+      "final_sentence": "보험영업의 지속성과 자본 여력 확인이 남아 있습니다.",
+      "support_type": "UNCERTAINTY_BOUNDARY"
+    }
+  ],
+  "text": "🤖 AI 보조 종목 점검 · KR Pilot 1/1\n\n🏢 코리안리(003690)\n투자 논리: 유지 · 오늘 중요한 신규 변화 없음\n구조적 위험: 보통\n시장 기대: 균형\n\n🎯 판단\n현재 판단을 가르는 것은 일반기업 FCF가 아니라 보험영업의 지속성과 자본 여력입니다.\n\n🔎 왜 중요한가\n따라서 보험영업과 자본 여력이 확인되기 전에는 새로운 방향 전환도 성립하지 않습니다.\n\n📌 다음 확인\n• 보험영업의 지속성과 자본 여력 확인이 남아 있습니다.",
+  "ticker": "003690"
+}

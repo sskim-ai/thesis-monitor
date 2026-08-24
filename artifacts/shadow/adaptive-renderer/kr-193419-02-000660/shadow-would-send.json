@@ -1,0 +1,76 @@
+{
+  "benchmark_id": "kr-193419-02-000660",
+  "delivery_performed": false,
+  "final_delivery_mode": "ADAPTIVE_SHADOW_WOULD_SEND",
+  "packet_id": "2026-08-24-kr-run-36-e4ac1c029c06",
+  "safety": {
+    "contract": "adaptive-renderer-selector-shadow-v1",
+    "external_knowledge": 0,
+    "fact_mismatch": 0,
+    "hidden_arithmetic": 0,
+    "material_dropped_elements": [],
+    "material_information_loss": 0,
+    "selected_renderer": "DIRECT_ANALYST",
+    "status": "PASS",
+    "temporal_violations": 0,
+    "trade_ar_leak": 0,
+    "unsupported_causality": 0,
+    "unsupported_numeric_claims": [],
+    "unsupported_synthesis": 0,
+    "validation": {
+      "issues": [],
+      "status": "PASS"
+    }
+  },
+  "selected_renderer": "DIRECT_ANALYST",
+  "sentence_supports": [
+    {
+      "analysis_item_id": "kr-193419-02-000660-inventory-balance",
+      "evidence_refs": [
+        "evidence:business:01"
+      ],
+      "final_sentence": "현재 자료에서는 재고가 원가 규모보다 더 빠르게 쌓인다는 신호가 뚜렷하지 않습니다.",
+      "support_type": "BOUNDED_INFERENCE"
+    },
+    {
+      "analysis_item_id": "kr-193419-02-000660-thesis-implication",
+      "evidence_refs": [
+        "evidence:metadata:05",
+        "evidence:core:01",
+        "evidence:business:01",
+        "evidence:next_check:01"
+      ],
+      "final_sentence": "이 재고 관계는 현재 투자 논리를 약화시키지는 않지만, HBM 실행과 수익성의 지속 확인을 대체하지 못합니다.",
+      "support_type": "THESIS_LINKAGE"
+    },
+    {
+      "analysis_item_id": "kr-193419-02-000660-inventory-boundary",
+      "evidence_refs": [
+        "evidence:business:01"
+      ],
+      "final_sentence": "다만 ASP와 제품 믹스의 영향이 남아 있어 이 관계만으로 최종 수요 개선을 단정하기 어렵습니다.",
+      "support_type": "ALTERNATIVE_INTERPRETATION"
+    },
+    {
+      "analysis_item_id": "kr-193419-02-000660-expectation",
+      "evidence_refs": [
+        "evidence:metadata:05",
+        "evidence:core:01",
+        "evidence:next_check:01"
+      ],
+      "final_sentence": "매우 높은 기대를 정당화하려면 재고 관계 하나보다 핵심 실행과 수익성의 지속 확인이 더 중요합니다.",
+      "support_type": "EXPECTATION_VALUATION_LINK"
+    },
+    {
+      "analysis_item_id": "next-check",
+      "evidence_refs": [
+        "evidence:core:01",
+        "evidence:next_check:01"
+      ],
+      "final_sentence": "HBM 출하와 수율의 지속성이 다음 핵심 확인 사항입니다.",
+      "support_type": "UNCERTAINTY_BOUNDARY"
+    }
+  ],
+  "text": "🤖 AI 보조 종목 점검 · KR Pilot 1/1\n\n🏢 SK하이닉스(000660)\n투자 논리: 유지 · 오늘 중요한 신규 변화 없음\n구조적 위험: 높아진 상태\n시장 기대: 매우 높음\n\n🎯 판단\n현재 자료에서는 재고가 원가 규모보다 더 빠르게 쌓인다는 신호가 뚜렷하지 않습니다.\n\n🔎 핵심 근거\n이 재고 관계는 현재 투자 논리를 약화시키지는 않지만, HBM 실행과 수익성의 지속 확인을 대체하지 못합니다.\n\n⚖️ 해석의 균형\n다만 ASP와 제품 믹스의 영향이 남아 있어 이 관계만으로 최종 수요 개선을 단정하기 어렵습니다.\n\n💰 기대·Valuation\n매우 높은 기대를 정당화하려면 재고 관계 하나보다 핵심 실행과 수익성의 지속 확인이 더 중요합니다.\n\n📌 다음 확인\n• HBM 출하와 수율의 지속성이 다음 핵심 확인 사항입니다.",
+  "ticker": "000660"
+}

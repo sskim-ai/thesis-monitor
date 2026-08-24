@@ -1,0 +1,25 @@
+{
+  "benchmark_id": "kr-193419-01-__DAILY_DIGEST_KR__",
+  "delivery_performed": false,
+  "final_delivery_mode": "ADAPTIVE_SHADOW_WOULD_SEND",
+  "packet_id": "2026-08-24-kr-run-36-e4ac1c029c06",
+  "safety": {
+    "contract": "adaptive-renderer-selector-shadow-v1",
+    "external_knowledge": 0,
+    "fact_mismatch": 0,
+    "hidden_arithmetic": 0,
+    "material_dropped_elements": [],
+    "material_information_loss": 0,
+    "selected_renderer": "MINIMAL_VNEXT",
+    "status": "PASS",
+    "temporal_violations": 0,
+    "trade_ar_leak": 0,
+    "unsupported_causality": 0,
+    "unsupported_numeric_claims": [],
+    "unsupported_synthesis": 0
+  },
+  "selected_renderer": "MINIMAL_VNEXT",
+  "sentence_supports": [],
+  "text": "🤖 AI 보조 한국시장 마감 · KR Pilot 1/1\n\n🎯 오늘 판단\n새로운 당일 거시 관측이 없어 직전 세션과 지연 공표 자료를 현재 신호로 승격하지 않습니다.\n\n⚠️ 리스크/경고\n• 다음 공식 관측 전까지 오늘의 거시 방향은 확정하지 않습니다.",
+  "ticker": "__DAILY_DIGEST_KR__"
+}

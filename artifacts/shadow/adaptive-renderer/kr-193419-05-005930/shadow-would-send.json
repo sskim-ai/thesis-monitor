@@ -1,0 +1,84 @@
+{
+  "benchmark_id": "kr-193419-05-005930",
+  "delivery_performed": false,
+  "final_delivery_mode": "ADAPTIVE_SHADOW_WOULD_SEND",
+  "packet_id": "2026-08-24-kr-run-36-e4ac1c029c06",
+  "safety": {
+    "contract": "adaptive-renderer-selector-shadow-v1",
+    "external_knowledge": 0,
+    "fact_mismatch": 0,
+    "hidden_arithmetic": 0,
+    "material_dropped_elements": [],
+    "material_information_loss": 0,
+    "selected_renderer": "DIRECT_ANALYST",
+    "status": "PASS",
+    "temporal_violations": 0,
+    "trade_ar_leak": 0,
+    "unsupported_causality": 0,
+    "unsupported_numeric_claims": [],
+    "unsupported_synthesis": 0,
+    "validation": {
+      "issues": [],
+      "status": "PASS"
+    }
+  },
+  "selected_renderer": "DIRECT_ANALYST",
+  "sentence_supports": [
+    {
+      "analysis_item_id": "kr-193419-05-005930-inventory-pressure",
+      "evidence_refs": [
+        "evidence:business:01"
+      ],
+      "final_sentence": "재고가 원가보다 빠르게 늘어난 관계는 재고 부담 점검의 우선순위가 높아졌음을 시사합니다.",
+      "support_type": "BOUNDED_INFERENCE"
+    },
+    {
+      "analysis_item_id": "kr-193419-05-005930-thesis-implication",
+      "evidence_refs": [
+        "evidence:metadata:05",
+        "evidence:core:01",
+        "evidence:business:01",
+        "evidence:next_check:01"
+      ],
+      "final_sentence": "따라서 DS 재고 부담 가능성은 열려 있으며, HBM 채택과 마진의 다음 확인 전에는 구조적 개선을 확정하기 어렵습니다.",
+      "support_type": "THESIS_LINKAGE"
+    },
+    {
+      "analysis_item_id": "kr-193419-05-005930-inventory-scale-alternative",
+      "evidence_refs": [
+        "evidence:business:01"
+      ],
+      "final_sentence": "ASP나 제품 믹스 변화가 재고 관계에 영향을 준 결과일 가능성은 남아 있습니다.",
+      "support_type": "ALTERNATIVE_INTERPRETATION"
+    },
+    {
+      "analysis_item_id": "kr-193419-05-005930-inventory-risk-alternative",
+      "evidence_refs": [
+        "evidence:business:01"
+      ],
+      "final_sentence": "반대로 재고가 원가보다 빠르게 늘어난 점은 운전자본 부담 가능성을 열어 둡니다.",
+      "support_type": "ALTERNATIVE_INTERPRETATION"
+    },
+    {
+      "analysis_item_id": "kr-193419-05-005930-expectation",
+      "evidence_refs": [
+        "evidence:metadata:05",
+        "evidence:core:01",
+        "evidence:next_check:01"
+      ],
+      "final_sentence": "높은 기대 아래에서는 재고 부담 가능성을 해소할 실적 근거가 추가로 확인돼야 합니다.",
+      "support_type": "EXPECTATION_VALUATION_LINK"
+    },
+    {
+      "analysis_item_id": "next-check",
+      "evidence_refs": [
+        "evidence:core:01",
+        "evidence:next_check:01"
+      ],
+      "final_sentence": "HBM 고객 채택과 DS 마진의 지속 여부가 아직 핵심 변수입니다.",
+      "support_type": "UNCERTAINTY_BOUNDARY"
+    }
+  ],
+  "text": "🤖 AI 보조 종목 점검 · KR Pilot 1/1\n\n🏢 삼성전자(005930)\n투자 논리: 유지 · 오늘 중요한 신규 변화 없음\n구조적 위험: 보통\n시장 기대: 매우 높음\n\n🎯 판단\n재고가 원가보다 빠르게 늘어난 관계는 재고 부담 점검의 우선순위가 높아졌음을 시사합니다.\n\n🔎 핵심 근거\n따라서 DS 재고 부담 가능성은 열려 있으며, HBM 채택과 마진의 다음 확인 전에는 구조적 개선을 확정하기 어렵습니다.\n\n⚖️ 해석의 균형\nASP나 제품 믹스 변화가 재고 관계에 영향을 준 결과일 가능성은 남아 있습니다.\n반대로 재고가 원가보다 빠르게 늘어난 점은 운전자본 부담 가능성을 열어 둡니다.\n\n💰 기대·Valuation\n높은 기대 아래에서는 재고 부담 가능성을 해소할 실적 근거가 추가로 확인돼야 합니다.\n\n📌 다음 확인\n• HBM 고객 채택과 DS 마진의 지속 여부가 아직 핵심 변수입니다.",
+  "ticker": "005930"
+}

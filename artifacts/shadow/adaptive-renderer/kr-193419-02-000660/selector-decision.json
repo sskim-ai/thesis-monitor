@@ -1,0 +1,86 @@
+{
+  "benchmark_id": "kr-193419-02-000660",
+  "contract": "adaptive-renderer-selector-shadow-v1",
+  "direct_required_reasons": [
+    "material_alternative_interpretation",
+    "hybrid_would_drop_material_boundary"
+  ],
+  "disallowed_renderers": [
+    "CONCISE_HYBRID",
+    "MINIMAL_VNEXT"
+  ],
+  "eligible_renderers": [
+    "DIRECT_ANALYST"
+  ],
+  "expected_information_loss": [
+    "positioning_synthesis"
+  ],
+  "information_audits": [
+    {
+      "dropped_elements": [
+        "positioning_synthesis"
+      ],
+      "material_dropped_elements": [],
+      "renderer": "DIRECT_ANALYST",
+      "retained_elements": [
+        "primary_conclusion",
+        "thesis_linkage",
+        "alternative_interpretation",
+        "uncertainty_boundary",
+        "expectation_valuation",
+        "next_check"
+      ]
+    },
+    {
+      "dropped_elements": [
+        "alternative_interpretation",
+        "positioning_synthesis"
+      ],
+      "material_dropped_elements": [
+        "alternative_interpretation"
+      ],
+      "renderer": "CONCISE_HYBRID",
+      "retained_elements": [
+        "primary_conclusion",
+        "thesis_linkage",
+        "uncertainty_boundary",
+        "expectation_valuation",
+        "next_check"
+      ]
+    },
+    {
+      "dropped_elements": [
+        "primary_conclusion",
+        "thesis_linkage",
+        "alternative_interpretation",
+        "uncertainty_boundary",
+        "expectation_valuation",
+        "positioning_synthesis"
+      ],
+      "material_dropped_elements": [
+        "primary_conclusion",
+        "thesis_linkage",
+        "alternative_interpretation",
+        "uncertainty_boundary",
+        "expectation_valuation"
+      ],
+      "renderer": "MINIMAL_VNEXT",
+      "retained_elements": [
+        "next_check"
+      ]
+    }
+  ],
+  "minimal_forbidden_reasons": [
+    "meaningful_thesis_linkage",
+    "material_ambiguity",
+    "expectation_verification_threshold",
+    "cross_horizon_positioning_context",
+    "novel_supported_synthesis"
+  ],
+  "selected_renderer": "DIRECT_ANALYST",
+  "selection_reasons": [
+    "direct_required_to_preserve_analysis_balance",
+    "material_alternative_interpretation",
+    "hybrid_would_drop_material_boundary"
+  ]
+}

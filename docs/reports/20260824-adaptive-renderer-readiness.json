@@ -1,0 +1,96 @@
+{
+  "acceptable_alternative_count": 0,
+  "analytical_density": {
+    "analytical_points": 42,
+    "duplicate_caveats": 0,
+    "novel_supported_synthesis_count": 29,
+    "numeric_recitation_lines": 19,
+    "repeated_fact_lines": 11
+  },
+  "avg_chars": {
+    "adaptive_selected": 309.5,
+    "current_ai": 863.5,
+    "free_analyst_direct": 383.0,
+    "free_analyst_hybrid": 270.92,
+    "vnext_ai": 574.5
+  },
+  "benchmark_count": 12,
+  "benchmark_kr_messages": 8,
+  "benchmark_us_messages": 4,
+  "contract": "adaptive-renderer-selector-shadow-v1",
+  "end_to_end": {
+    "completed": 12,
+    "manual_assembly": 0,
+    "status": "PASS"
+  },
+  "exact_match_count": 12,
+  "gates": {
+    "ADAPTIVE_RENDERER_HUMAN_ALIGNMENT": "PASS",
+    "ADAPTIVE_RENDERER_INFORMATION_PRESERVATION": "PASS",
+    "ADAPTIVE_RENDERER_PROMOTION_READY": "YES_PENDING_20260825_NATURAL_AND_SEPARATE_PROMOTION",
+    "ADAPTIVE_RENDERER_SAFETY_PARITY": "PASS",
+    "ADAPTIVE_RENDERER_SELECTOR": "PASS",
+    "ADAPTIVE_RENDERER_VALUE_ADD": "PASS",
+    "FREE_ANALYST_END_TO_END_SHADOW": "PASS"
+  },
+  "human_preference_counts": {
+    "CONCISE_HYBRID": 8,
+    "DIRECT_ANALYST": 3,
+    "MINIMAL_VNEXT": 1
+  },
+  "implementation_sha": "14e93584d8256f425d66f4b88602224606e0ec99",
+  "information_loss": {
+    "material_dropped_elements": 0,
+    "selected_non_material_dropped_elements": 11
+  },
+  "instruction_commit": "8c7fbf1822cd392a73d33634a65dafe4e605e2a3",
+  "instruction_version": "1.0",
+  "material_mismatch_count": 0,
+  "negative_controls": {
+    "external_knowledge_rejections": 1,
+    "hidden_arithmetic_rejections": 1,
+    "stronger_than_evidence_rejections": 1,
+    "temporal_leakage_rejections": 1,
+    "trade_ar_leak_rejections": 1,
+    "unsupported_causality_rejections": 1
+  },
+  "open_material_p1": [],
+  "open_p0": [],
+  "p2_backlog": [
+    "2026-08-25 natural review remains pending",
+    "production integration requires a separate work instruction"
+  ],
+  "production_mutation": 0,
+  "production_promotion": "BLOCKED",
+  "renderer_counts": {
+    "CONCISE_HYBRID": 8,
+    "DIRECT_ANALYST": 3,
+    "MINIMAL_VNEXT": 1
+  },
+  "safety": {
+    "external_knowledge_accepted": 0,
+    "fact_mismatch": 0,
+    "hidden_arithmetic_accepted": 0,
+    "material_information_loss": 0,
+    "temporal_violations": 0,
+    "trade_ar_leak": 0,
+    "unsupported_causality": 0,
+    "unsupported_numeric_claims": 0
+  },
+  "schedule_change": 0,
+  "telegram_send": 0,
+  "validation": "PASS",
+  "validation_evidence": {
+    "chart_knowledge_parity": "PASS",
+    "final_github_actions": "PENDING_FINAL_REPORT_COMMIT",
+    "focused_pytest": "31 passed",
+    "full_pytest": "PASS",
+    "git_diff_check": "PASS",
+    "implementation_github_actions": "PASS",
+    "investment_knowledge_parity": "PASS",
+    "operation_id": "20/20 unique",
+    "public_action": "0.4.5 unchanged",
+    "ruff": "PASS",
+    "schema": "unchanged"
+  }
+}

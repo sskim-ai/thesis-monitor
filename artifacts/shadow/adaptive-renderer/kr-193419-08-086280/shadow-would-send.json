@@ -1,0 +1,60 @@
+{
+  "benchmark_id": "kr-193419-08-086280",
+  "delivery_performed": false,
+  "final_delivery_mode": "ADAPTIVE_SHADOW_WOULD_SEND",
+  "packet_id": "2026-08-24-kr-run-36-e4ac1c029c06",
+  "safety": {
+    "contract": "adaptive-renderer-selector-shadow-v1",
+    "external_knowledge": 0,
+    "fact_mismatch": 0,
+    "hidden_arithmetic": 0,
+    "material_dropped_elements": [],
+    "material_information_loss": 0,
+    "selected_renderer": "CONCISE_HYBRID",
+    "status": "PASS",
+    "temporal_violations": 0,
+    "trade_ar_leak": 0,
+    "unsupported_causality": 0,
+    "unsupported_numeric_claims": [],
+    "unsupported_synthesis": 0,
+    "validation": {
+      "issues": [],
+      "status": "PASS"
+    }
+  },
+  "selected_renderer": "CONCISE_HYBRID",
+  "sentence_supports": [
+    {
+      "analysis_item_id": "kr-193419-08-086280-fleet-cash-gap",
+      "evidence_refs": [
+        "evidence:metadata:05",
+        "evidence:core:01",
+        "evidence:business:01",
+        "evidence:next_check:01"
+      ],
+      "final_sentence": "현재 사업 흐름과 선대 투자의 현금 전환은 별도 문제이므로, 운임·물량과 자산 효율이 함께 확인돼야 합니다.",
+      "support_type": "THESIS_LINKAGE"
+    },
+    {
+      "analysis_item_id": "kr-193419-08-086280-expectation",
+      "evidence_refs": [
+        "evidence:metadata:05",
+        "evidence:core:01",
+        "evidence:next_check:01"
+      ],
+      "final_sentence": "높은 기대를 추가로 정당화하려면 물류 흐름과 자산 투자 회수가 함께 확인돼야 합니다.",
+      "support_type": "EXPECTATION_VALUATION_LINK"
+    },
+    {
+      "analysis_item_id": "next-check",
+      "evidence_refs": [
+        "evidence:core:01",
+        "evidence:next_check:01"
+      ],
+      "final_sentence": "운임과 물량, 자산 투자 효율의 동행 여부가 남아 있습니다.",
+      "support_type": "UNCERTAINTY_BOUNDARY"
+    }
+  ],
+  "text": "🤖 AI 보조 종목 점검 · KR Pilot 1/1\n\n🏢 현대글로비스(086280)\n투자 논리: 유지 · 오늘 중요한 신규 변화 없음\n구조적 위험: 보통\n시장 기대: 높음\n\n🎯 판단\n현재 사업 흐름과 선대 투자의 현금 전환은 별도 문제이므로, 운임·물량과 자산 효율이 함께 확인돼야 합니다.\n\n🔎 왜 중요한가\n높은 기대를 추가로 정당화하려면 물류 흐름과 자산 투자 회수가 함께 확인돼야 합니다.\n\n📌 다음 확인\n• 운임과 물량, 자산 투자 효율의 동행 여부가 남아 있습니다.",
+  "ticker": "086280"
+}

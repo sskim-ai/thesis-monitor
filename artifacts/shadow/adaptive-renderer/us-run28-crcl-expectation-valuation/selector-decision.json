@@ -1,0 +1,75 @@
+{
+  "benchmark_id": "us-run28-crcl-expectation-valuation",
+  "contract": "adaptive-renderer-selector-shadow-v1",
+  "direct_required_reasons": [],
+  "disallowed_renderers": [
+    "MINIMAL_VNEXT"
+  ],
+  "eligible_renderers": [
+    "DIRECT_ANALYST",
+    "CONCISE_HYBRID"
+  ],
+  "expected_information_loss": [
+    "positioning_synthesis"
+  ],
+  "information_audits": [
+    {
+      "dropped_elements": [],
+      "material_dropped_elements": [],
+      "renderer": "DIRECT_ANALYST",
+      "retained_elements": [
+        "primary_conclusion",
+        "thesis_linkage",
+        "uncertainty_boundary",
+        "expectation_valuation",
+        "positioning_synthesis",
+        "next_check"
+      ]
+    },
+    {
+      "dropped_elements": [
+        "positioning_synthesis"
+      ],
+      "material_dropped_elements": [],
+      "renderer": "CONCISE_HYBRID",
+      "retained_elements": [
+        "primary_conclusion",
+        "thesis_linkage",
+        "uncertainty_boundary",
+        "expectation_valuation",
+        "next_check"
+      ]
+    },
+    {
+      "dropped_elements": [
+        "primary_conclusion",
+        "thesis_linkage",
+        "uncertainty_boundary",
+        "expectation_valuation",
+        "positioning_synthesis"
+      ],
+      "material_dropped_elements": [
+        "primary_conclusion",
+        "thesis_linkage",
+        "uncertainty_boundary",
+        "expectation_valuation"
+      ],
+      "renderer": "MINIMAL_VNEXT",
+      "retained_elements": [
+        "next_check"
+      ]
+    }
+  ],
+  "minimal_forbidden_reasons": [
+    "meaningful_thesis_linkage",
+    "expectation_verification_threshold",
+    "cross_horizon_positioning_context",
+    "novel_supported_synthesis"
+  ],
+  "selected_renderer": "CONCISE_HYBRID",
+  "selection_reasons": [
+    "single_clear_primary_conclusion",
+    "material_boundary_preserved_in_concise_form",
+    "clear_next_check"
+  ]
+}

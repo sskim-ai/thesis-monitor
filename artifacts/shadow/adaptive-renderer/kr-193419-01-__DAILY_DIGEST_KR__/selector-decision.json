@@ -1,0 +1,50 @@
+{
+  "benchmark_id": "kr-193419-01-__DAILY_DIGEST_KR__",
+  "contract": "adaptive-renderer-selector-shadow-v1",
+  "direct_required_reasons": [],
+  "disallowed_renderers": [],
+  "eligible_renderers": [
+    "DIRECT_ANALYST",
+    "CONCISE_HYBRID",
+    "MINIMAL_VNEXT"
+  ],
+  "expected_information_loss": [],
+  "information_audits": [
+    {
+      "dropped_elements": [],
+      "material_dropped_elements": [],
+      "renderer": "DIRECT_ANALYST",
+      "retained_elements": [
+        "primary_conclusion",
+        "uncertainty_boundary",
+        "next_check"
+      ]
+    },
+    {
+      "dropped_elements": [],
+      "material_dropped_elements": [],
+      "renderer": "CONCISE_HYBRID",
+      "retained_elements": [
+        "primary_conclusion",
+        "uncertainty_boundary",
+        "next_check"
+      ]
+    },
+    {
+      "dropped_elements": [],
+      "material_dropped_elements": [],
+      "renderer": "MINIMAL_VNEXT",
+      "retained_elements": [
+        "primary_conclusion",
+        "uncertainty_boundary",
+        "next_check"
+      ]
+    }
+  ],
+  "minimal_forbidden_reasons": [],
+  "selected_renderer": "MINIMAL_VNEXT",
+  "selection_reasons": [
+    "reference_only_temporal_state",
+    "no_material_synthesis_beyond_safe_source_boundary"
+  ]
+}
