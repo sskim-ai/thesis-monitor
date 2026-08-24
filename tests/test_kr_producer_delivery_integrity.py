@@ -206,7 +206,7 @@ async def test_packet_persists_before_bound_delivery_and_hold(
             status="created",
             packet_id=PACKET_ID,
             path=str(packet_path),
-            reason=None,
+            reason="shadow_cohort_not_active",
         )
 
     def queue_bound(*args, **kwargs):
@@ -336,7 +336,7 @@ def test_packet_bound_intent_is_provisional_until_hold(
     }
 
 
-def test_valid_packet_bound_pending_is_deliverable(
+def test_shadow_suppressed_packet_bound_pending_remains_fallback_deliverable(
     monkeypatch,
     tmp_path: Path,
 ) -> None:
@@ -354,7 +354,18 @@ def test_valid_packet_bound_pending_is_deliverable(
                 "packet_id": packet_id,
                 "market": "kr",
                 "assessment_date": run_date.isoformat(),
-                "ready_for_ai": True,
+                "ready_for_ai": False,
+                "shadow_cohort": {
+                    "eligible": False,
+                    "suppression_reasons": [
+                        "shadow_numeric_semantic_gate_not_ready"
+                    ],
+                    "production_influence": "none",
+                },
+                "production_packet_persistence": {
+                    "eligible": True,
+                    "shadow_readiness_influence": "none",
+                },
             }
         ),
         encoding="utf-8",

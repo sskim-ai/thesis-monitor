@@ -31,6 +31,8 @@ from app.services.ai_review_service import (
     finalize_ai_review_output,
     investment_framework_routing,
     knowledge_manifest,
+    production_packet_persistence_decision,
+    try_write_ai_review_packet,
     validate_ai_review_output,
     write_ai_review_packet,
 )
@@ -723,6 +725,10 @@ def test_kr_packet_is_ready_after_successful_close_and_contains_verified_fx(
 
     assert result.status == "created"
     assert packet["market"] == "kr"
+    assert packet["production_packet_persistence"]["contract_version"] == (
+        "kr-production-packet-persistence-v1"
+    )
+    assert packet["production_packet_persistence"]["eligible"] is True
     assert packet["source_monitor_run"]["status"] == "success"
     assert packet["market_context"]["fx"] == [
         {
@@ -5385,7 +5391,7 @@ def test_representative_packet_numeric_registry_has_explicit_coverage(
     assert {item["semantic_type"] for item in denied} == {"share_denominator"}
 
 
-def test_v32_packet_waits_for_profile_and_numeric_activation_gates(
+def test_shadow_ineligible_packet_persists_but_remains_unclaimable(
     monkeypatch,
     tmp_path: Path,
 ) -> None:
@@ -5395,14 +5401,249 @@ def test_v32_packet_waits_for_profile_and_numeric_activation_gates(
     with Session(_engine()) as session:
         _seed(session)
         packet = build_ai_review_packet(session, RUN_DATE, "us")
-        blocked = write_ai_review_packet(session, RUN_DATE, "us")
+        persisted = write_ai_review_packet(session, RUN_DATE, "us")
+        claim = claim_next_ai_review_packet(
+            "us",
+            owner="shadow-ineligible",
+            now=datetime(2026, 8, 14, 0, 10, tzinfo=UTC),
+        )
 
     assert packet is not None
     assert packet["ready_for_ai"] is False
     assert packet["shadow_cohort"]["profile_gate"]["ready"] is False
     assert packet["shadow_cohort"]["numeric_semantic_gate"]["ready"] is True
-    assert blocked.status == "not_ready"
-    assert blocked.reason == "shadow_cohort_activation_gate_failed"
+    assert packet["production_packet_persistence"]["eligible"] is True
+    assert persisted.status == "created"
+    assert persisted.reason == "shadow_cohort_not_active"
+    assert persisted.path is not None and Path(persisted.path).is_file()
+    assert claim.status == "no_pending_packet"
+
+
+def test_numeric_shadow_failure_preserves_production_packet(
+    monkeypatch,
+    tmp_path: Path,
+) -> None:
+    _settings(monkeypatch, tmp_path)
+    monkeypatch.setattr(
+        ai_review_service,
+        "numeric_registry_coverage",
+        lambda registries: {
+            "entry_count": 1,
+            "registered_count": 0,
+            "prose_allowed_count": 0,
+            "prose_denied_count": 1,
+            "unsupported": ["positioning:test:fields.reconciliations.1d.displayed_net"],
+            "ready": False,
+        },
+    )
+    with Session(_engine()) as session:
+        _seed(session)
+        result = write_ai_review_packet(session, RUN_DATE, "us")
+        packet = json.loads(Path(result.path).read_text(encoding="utf-8"))
+
+    assert result.status == "created"
+    assert result.reason == "shadow_cohort_not_active"
+    assert packet["ready_for_ai"] is False
+    assert packet["shadow_cohort"]["suppression_reasons"] == [
+        "shadow_numeric_semantic_gate_not_ready"
+    ]
+    assert packet["production_packet_persistence"]["eligible"] is True
+
+
+@pytest.mark.parametrize("error", [TimeoutError("timeout"), RuntimeError("failure")])
+def test_shadow_readiness_exception_is_recorded_without_blocking_production(
+    monkeypatch,
+    tmp_path: Path,
+    error: Exception,
+) -> None:
+    _settings(monkeypatch, tmp_path)
+
+    def fail(*args, **kwargs):
+        raise error
+
+    monkeypatch.setattr(ai_review_service, "company_profile_coverage", fail)
+    with Session(_engine()) as session:
+        _seed(session)
+        result = write_ai_review_packet(session, RUN_DATE, "us")
+        packet = json.loads(Path(result.path).read_text(encoding="utf-8"))
+
+    assert result.status == "created"
+    assert result.reason == "shadow_cohort_not_active"
+    assert packet["ready_for_ai"] is False
+    assert packet["shadow_cohort"]["errors"] == [
+        f"profile_gate:{type(error).__name__}"
+    ]
+    assert "shadow_readiness_evaluation_failed" in packet["shadow_cohort"][
+        "suppression_reasons"
+    ]
+    assert packet["production_packet_persistence"]["eligible"] is True
+
+
+def test_shadow_readiness_transition_does_not_change_production_packet_identity(
+    monkeypatch,
+    tmp_path: Path,
+) -> None:
+    _settings(monkeypatch, tmp_path)
+    (tmp_path / "company_profile_provenance" / "PACKETUS.json").unlink()
+    with Session(_engine()) as session:
+        _seed(session)
+        first = build_ai_review_packet(session, RUN_DATE, "us")
+        assert first is not None
+        monkeypatch.setattr(
+            ai_review_service,
+            "company_profile_coverage",
+            lambda session, data_dir: {
+                "active_total": 1,
+                "complete_count": 1,
+                "missing_count": 0,
+                "unavailable_count": 0,
+                "ready": True,
+            },
+        )
+        second = build_ai_review_packet(session, RUN_DATE, "us")
+
+    assert second is not None
+    assert first["ready_for_ai"] is False
+    assert second["ready_for_ai"] is True
+    assert first["packet_id"] == second["packet_id"]
+
+
+@pytest.mark.parametrize(
+    ("mutation", "reason"),
+    [
+        (lambda packet: packet.update(market="xkrx"), "invalid_production_target"),
+        (lambda packet: packet.update(schema_version="unsupported"), "packet_schema_invalid"),
+        (
+            lambda packet: packet["production_safety"].update(
+                deterministic_fallback_available=False
+            ),
+            "deterministic_fallback_unavailable",
+        ),
+        (
+            lambda packet: packet["production_safety"].update(
+                hard_errors=["numeric_provenance_invalid"]
+            ),
+            "production_safety_gate_failed",
+        ),
+        (
+            lambda packet: packet["production_safety"].update(
+                hard_errors=["explicit_production_p0"]
+            ),
+            "production_safety_gate_failed",
+        ),
+    ],
+)
+def test_production_packet_safety_conditions_remain_blocking(
+    monkeypatch,
+    tmp_path: Path,
+    mutation,
+    reason: str,
+) -> None:
+    _settings(monkeypatch, tmp_path)
+    with Session(_engine()) as session:
+        _seed(session)
+        packet = build_ai_review_packet(session, RUN_DATE, "us")
+        assert packet is not None
+        mutation(packet)
+        decision = production_packet_persistence_decision(packet)
+        monkeypatch.setattr(
+            ai_review_service,
+            "build_ai_review_packet",
+            lambda *args, **kwargs: packet,
+        )
+        result = write_ai_review_packet(session, RUN_DATE, "us")
+
+    assert decision["eligible"] is False
+    assert decision["denial_reason"] == reason
+    assert result.status == "not_ready"
+    assert result.reason == reason
+    assert list((tmp_path / "ai_review" / "inbox").glob("*.json")) == []
+
+
+def test_packet_write_failure_does_not_create_partial_packet(
+    monkeypatch,
+    tmp_path: Path,
+) -> None:
+    _settings(monkeypatch, tmp_path)
+
+    def fail_write(*args, **kwargs):
+        raise OSError("write failed")
+
+    monkeypatch.setattr(ai_review_service, "_atomic_json", fail_write)
+    with Session(_engine()) as session:
+        _seed(session)
+        result = try_write_ai_review_packet(session, RUN_DATE, "us")
+
+    assert result.status == "failed"
+    assert result.reason == "OSError"
+    assert list((tmp_path / "ai_review" / "inbox").glob("*.json")) == []
+
+
+def test_inventory_selected_context_does_not_block_packet_or_enable_trade_ar(
+    monkeypatch,
+    tmp_path: Path,
+) -> None:
+    _settings(monkeypatch, tmp_path)
+    selected = object()
+    monkeypatch.setattr(
+        ai_review_service,
+        "safe_select_user_visible_inventory",
+        lambda **kwargs: selected,
+    )
+    monkeypatch.setattr(
+        ai_review_service,
+        "resolve_selected_inventory_unknowns",
+        lambda unknowns, context: tuple(unknowns),
+    )
+    monkeypatch.setattr(
+        ai_review_service,
+        "working_capital_context_to_dict",
+        lambda context: {
+            "contract_version": "working-capital-user-visible-v1",
+            "context_id": "inventory-context",
+            "metric_family": "inventory",
+            "selected_fact_ids": [],
+            "packet_id": "pending",
+        },
+    )
+    monkeypatch.setattr(
+        ai_review_service,
+        "working_capital_fact_catalog_entries",
+        lambda context: [],
+    )
+    with Session(_engine()) as session:
+        _seed(session)
+        result = write_ai_review_packet(session, RUN_DATE, "us")
+        packet = json.loads(Path(result.path).read_text(encoding="utf-8"))
+
+    context = packet["stocks"][0]["working_capital_user_visible"]
+    assert result.status == "created"
+    assert context["metric_family"] == "inventory"
+    assert context["packet_id"] == packet["packet_id"]
+    assert "trade_accounts_receivable" not in json.dumps(packet)
+
+
+def test_inventory_mode_without_selected_context_still_persists_packet(
+    monkeypatch,
+    tmp_path: Path,
+) -> None:
+    _settings(monkeypatch, tmp_path)
+    settings = ai_review_service.get_settings().model_copy(
+        update={"working_capital_user_visible_mode": "SELECTIVE_INVENTORY"}
+    )
+    monkeypatch.setattr(ai_review_service, "get_settings", lambda: settings)
+    monkeypatch.setattr(
+        "app.services.working_capital_user_visible_preintegration_service.get_settings",
+        lambda: settings,
+    )
+    with Session(_engine()) as session:
+        _seed(session)
+        result = write_ai_review_packet(session, RUN_DATE, "us")
+        packet = json.loads(Path(result.path).read_text(encoding="utf-8"))
+
+    assert result.status == "created"
+    assert "working_capital_user_visible" not in packet["stocks"][0]
+    assert packet["production_packet_persistence"]["eligible"] is True
 
 
 def test_v35_packet_records_structure_v2_shadow_cohort_metadata(
@@ -5419,8 +5660,12 @@ def test_v35_packet_records_structure_v2_shadow_cohort_metadata(
     assert packet["structure_algorithm_version"] == "ohlcv-structure-v2"
     assert packet["ready_for_ai"] is True
     assert packet["shadow_cohort"] == {
+        "contract_version": "shadow-cohort-readiness-v1",
         "policy_version": "daily-review-v3.10",
         "eligible": True,
+        "suppression_reasons": [],
+        "errors": [],
+        "production_influence": "none",
         "profile_gate": {
             "active_total": 1,
             "complete_count": 1,
@@ -5436,6 +5681,20 @@ def test_v35_packet_records_structure_v2_shadow_cohort_metadata(
             "unsupported": [],
             "ready": True,
         },
+    }
+    assert packet["production_packet_persistence"] == {
+        "contract_version": "production-packet-persistence-v1",
+        "eligible": True,
+        "conditions": {
+            "supported_market": True,
+            "packet_schema_valid": True,
+            "analysis_complete": True,
+            "deterministic_fallback_available": True,
+            "hard_safety_conflict_free": True,
+        },
+        "hard_errors": [],
+        "denial_reason": None,
+        "shadow_readiness_influence": "none",
     }
 
 

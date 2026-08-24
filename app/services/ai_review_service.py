@@ -130,6 +130,9 @@ logger = logging.getLogger(__name__)
 PACKET_SCHEMA_VERSION = "1"
 OUTPUT_SCHEMA_VERSION = "4"
 ANALYSIS_POLICY_VERSION = "daily-review-v3.10"
+KR_PRODUCTION_PACKET_PERSISTENCE_CONTRACT = "kr-production-packet-persistence-v1"
+PRODUCTION_PACKET_PERSISTENCE_CONTRACT = "production-packet-persistence-v1"
+SHADOW_COHORT_READINESS_CONTRACT = "shadow-cohort-readiness-v1"
 AIReviewMarket = Literal["us", "kr"]
 
 _INTERNAL_TEXT = re.compile(
@@ -205,6 +208,151 @@ class OutputValidationResult:
     output_path: str | None = None
     comparison_path: str | None = None
     errors: tuple[str, ...] = ()
+
+
+def _shadow_gate_error_state(
+    gate: Literal["profile", "numeric_semantic"],
+    exc: Exception,
+) -> dict[str, object]:
+    if gate == "profile":
+        return {
+            "active_total": 0,
+            "complete_count": 0,
+            "missing_count": 0,
+            "unavailable_count": 0,
+            "ready": False,
+            "error": type(exc).__name__,
+        }
+    return {
+        "entry_count": 0,
+        "registered_count": 0,
+        "prose_allowed_count": 0,
+        "prose_denied_count": 0,
+        "unsupported": [],
+        "ready": False,
+        "error": type(exc).__name__,
+    }
+
+
+def _shadow_cohort_readiness(
+    session: Session,
+    registries: list[list[dict[str, object]]],
+) -> dict[str, object]:
+    errors: list[str] = []
+    try:
+        profile_gate = company_profile_coverage(session, get_settings().data_dir)
+    except Exception as exc:  # noqa: BLE001
+        profile_gate = _shadow_gate_error_state("profile", exc)
+        errors.append(f"profile_gate:{type(exc).__name__}")
+    try:
+        numeric_gate = numeric_registry_coverage(registries)
+    except Exception as exc:  # noqa: BLE001
+        numeric_gate = _shadow_gate_error_state("numeric_semantic", exc)
+        errors.append(f"numeric_semantic_gate:{type(exc).__name__}")
+    suppression_reasons = []
+    if profile_gate.get("ready") is not True:
+        suppression_reasons.append("shadow_profile_gate_not_ready")
+    if numeric_gate.get("ready") is not True:
+        suppression_reasons.append("shadow_numeric_semantic_gate_not_ready")
+    if errors:
+        suppression_reasons.append("shadow_readiness_evaluation_failed")
+    eligible = not suppression_reasons
+    return {
+        "contract_version": SHADOW_COHORT_READINESS_CONTRACT,
+        "policy_version": ANALYSIS_POLICY_VERSION,
+        "eligible": eligible,
+        "suppression_reasons": suppression_reasons,
+        "errors": errors,
+        "production_influence": "none",
+        "profile_gate": {
+            key: profile_gate[key]
+            for key in (
+                "active_total",
+                "complete_count",
+                "missing_count",
+                "unavailable_count",
+                "ready",
+                "error",
+            )
+            if key in profile_gate
+        },
+        "numeric_semantic_gate": numeric_gate,
+    }
+
+
+def production_packet_persistence_decision(
+    packet: dict[str, object],
+) -> dict[str, object]:
+    source_run = _dict(packet.get("source_monitor_run"))
+    stocks = packet.get("stocks")
+    safety = _dict(packet.get("production_safety"))
+    hard_errors = [
+        str(item)
+        for item in _list(safety.get("hard_errors"))
+        if str(item).strip()
+    ]
+    success_count = source_run.get("success_count")
+    ticker_count = source_run.get("ticker_count")
+    failure_count = source_run.get("failure_count")
+    conditions = {
+        "supported_market": packet.get("market") in {"us", "kr"},
+        "packet_schema_valid": (
+            packet.get("schema_version") == PACKET_SCHEMA_VERSION
+            and packet.get("output_schema_version") == OUTPUT_SCHEMA_VERSION
+            and bool(packet.get("packet_id"))
+            and bool(packet.get("assessment_date"))
+            and isinstance(packet.get("market_context"), dict)
+            and isinstance(stocks, list)
+        ),
+        "analysis_complete": (
+            source_run.get("status") == "success"
+            and isinstance(success_count, int)
+            and isinstance(ticker_count, int)
+            and isinstance(failure_count, int)
+            and success_count > 0
+            and success_count == ticker_count
+            and failure_count == 0
+            and isinstance(stocks, list)
+            and len(stocks) == success_count
+        ),
+        "deterministic_fallback_available": (
+            safety.get("deterministic_fallback_available") is True
+        ),
+        "hard_safety_conflict_free": not hard_errors,
+    }
+    eligible = all(conditions.values())
+    denial_reason = None
+    if not conditions["supported_market"]:
+        denial_reason = "invalid_production_target"
+    elif not conditions["packet_schema_valid"]:
+        denial_reason = "packet_schema_invalid"
+    elif not conditions["analysis_complete"]:
+        denial_reason = "successful_complete_run_required"
+    elif not conditions["deterministic_fallback_available"]:
+        denial_reason = "deterministic_fallback_unavailable"
+    elif not conditions["hard_safety_conflict_free"]:
+        denial_reason = "production_safety_gate_failed"
+    contract = (
+        KR_PRODUCTION_PACKET_PERSISTENCE_CONTRACT
+        if packet.get("market") == "kr"
+        else PRODUCTION_PACKET_PERSISTENCE_CONTRACT
+    )
+    return {
+        "contract_version": contract,
+        "eligible": eligible,
+        "conditions": conditions,
+        "hard_errors": hard_errors,
+        "denial_reason": denial_reason,
+        "shadow_readiness_influence": "none",
+    }
+
+
+def _production_packet_identity_body(packet: dict[str, object]) -> dict[str, object]:
+    return {
+        key: value
+        for key, value in packet.items()
+        if key not in {"production_safety", "ready_for_ai", "shadow_cohort"}
+    }
 
 
 _CORE_FRAMEWORKS = (
@@ -3328,14 +3476,14 @@ def build_ai_review_packet(
             if fact_id in market_facts_by_id
         )
         stock["numeric_registry"] = _numeric_registry(stock["fact_catalog"])
-    profile_gate = company_profile_coverage(session, get_settings().data_dir)
-    numeric_gate = numeric_registry_coverage(
+    shadow_cohort = _shadow_cohort_readiness(
+        session,
         [
             market_context["numeric_registry"],
             *(stock["numeric_registry"] for stock in stocks),
-        ]
+        ],
     )
-    cohort_ready = bool(profile_gate["ready"] and numeric_gate["ready"])
+    cohort_ready = shadow_cohort["eligible"] is True
     body = {
         "schema_version": PACKET_SCHEMA_VERSION,
         "output_schema_version": OUTPUT_SCHEMA_VERSION,
@@ -3355,35 +3503,34 @@ def build_ai_review_packet(
         },
         "market_context": market_context,
         "stocks": stocks,
-        "shadow_cohort": {
-            "policy_version": ANALYSIS_POLICY_VERSION,
-            "eligible": cohort_ready,
-            "profile_gate": {
-                key: profile_gate[key]
-                for key in (
-                    "active_total",
-                    "complete_count",
-                    "missing_count",
-                    "unavailable_count",
-                    "ready",
-                )
-            },
-            "numeric_semantic_gate": numeric_gate,
+        "shadow_cohort": shadow_cohort,
+        "production_safety": {
+            "deterministic_fallback_available": True,
+            "hard_errors": [],
         },
         "ready_for_ai": cohort_ready,
     }
-    canonical = json.dumps(body, ensure_ascii=False, sort_keys=True, default=str)
+    canonical = json.dumps(
+        _production_packet_identity_body(body),
+        ensure_ascii=False,
+        sort_keys=True,
+        default=str,
+    )
     digest = hashlib.sha256(canonical.encode("utf-8")).hexdigest()[:12]
     packet_id = f"{run_date.isoformat()}-{market}-run-{run.id}-{digest}"
     for stock in stocks:
         context = stock.get("working_capital_user_visible")
         if isinstance(context, dict):
             context["packet_id"] = packet_id
-    return {
+    packet = {
         **body,
         "packet_id": packet_id,
         "generated_at": (generated_at or datetime.now(UTC)).astimezone(UTC).isoformat(),
     }
+    packet["production_packet_persistence"] = (
+        production_packet_persistence_decision(packet)
+    )
+    return packet
 
 
 def write_ai_review_packet(
@@ -3398,21 +3545,39 @@ def write_ai_review_packet(
     packet = build_ai_review_packet(session, run_date, market, generated_at=generated_at)
     if packet is None:
         return PacketWriteResult(status="not_ready", reason="successful_complete_run_required")
-    if packet.get("ready_for_ai") is not True:
+    production_decision = production_packet_persistence_decision(packet)
+    if production_decision["eligible"] is not True:
         return PacketWriteResult(
             status="not_ready",
             packet_id=str(packet.get("packet_id") or "") or None,
-            reason="shadow_cohort_activation_gate_failed",
+            reason=str(production_decision.get("denial_reason") or "")
+            or "production_safety_gate_failed",
         )
+    packet["production_packet_persistence"] = production_decision
+    shadow_reason = (
+        None
+        if packet.get("ready_for_ai") is True
+        else "shadow_cohort_not_active"
+    )
     ensure_ai_review_layout()
     packet_id = str(packet["packet_id"])
     path = _directory("inbox") / f"{packet_id}.json"
     if path.exists():
         return PacketWriteResult(
-            status="already_exists", packet_id=packet_id, path=str(path), created=False
+            status="already_exists",
+            packet_id=packet_id,
+            path=str(path),
+            created=False,
+            reason=shadow_reason,
         )
     _atomic_json(path, packet)
-    return PacketWriteResult(status="created", packet_id=packet_id, path=str(path), created=True)
+    return PacketWriteResult(
+        status="created",
+        packet_id=packet_id,
+        path=str(path),
+        created=True,
+        reason=shadow_reason,
+    )
 
 
 def try_write_ai_review_packet(
