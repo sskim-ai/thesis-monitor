@@ -1,6 +1,6 @@
 # Rehearsal 19:34 Post-Repair Message Bundle
 
-> REHEARSAL REPLAY - NOT SENT
+> REHEARSAL REPLAY — NOT SENT
 
 - Rehearsal: `2026-08-24-kr-live-rehearsal-193419`
 - Validated AI messages: 8
@@ -701,4 +701,4 @@ The selected bundle is the validated AI candidate above, in the same exact order
 
 Order: `__DAILY_DIGEST_KR__`, `000660`, `003690`, `005490`, `005930`, `010120`, `012450`, `086280`.
 
-> REHEARSAL REPLAY - NOT SENT
+> REHEARSAL REPLAY — NOT SENT
