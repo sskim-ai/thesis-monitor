@@ -195,7 +195,9 @@ is blocked. No invented tolerance, silent substitution, or partial-page promotio
         "20260825-kiwoom-market-flow-concentration.md",
         f"""# Kiwoom Market Flow Concentration
 
-`KR_MARKET_FLOW_CONCENTRATION = PASS (KOSDAQ_ONLY)`
+`KR_MARKET_FLOW_CONCENTRATION = PASS`
+
+Scope: `KOSDAQ_ONLY`; KOSPI remains blocked.
 
 {_table(
     ["Market", "Actor", "Direction", "Top N", "Ratio", "Formula"],
@@ -258,13 +260,14 @@ Degraded messages: 0.
             "KR_INDEX_BREADTH": "PASS",
             "KR_SECTOR_SIZE_CONTEXT": "PASS",
             "KR_MARKET_WIDE_INVESTOR_FLOW": "PASS",
-            "KR_MARKET_FLOW_CONCENTRATION": "PASS_KOSDAQ_ONLY",
+            "KR_MARKET_FLOW_CONCENTRATION": "PASS",
             "KIWOOM_KRX_RECONCILIATION": "NOT_OBSERVED",
             "KR_KIWOOM_ENRICHED_REPLAY": "PASS",
             "KR_KIWOOM_MESSAGE_VALUE_ADD": "PASS",
             "KIWOOM_KR_MARKET_CONTEXT": "PARTIAL",
             "PRODUCTION_READY": "YES",
         },
+        "kr_market_flow_concentration_scope": "KOSDAQ_ONLY",
         "safety": {
             "fact_mismatch": 0,
             "unit_conflict": 0,

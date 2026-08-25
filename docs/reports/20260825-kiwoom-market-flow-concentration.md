@@ -1,6 +1,8 @@
 # Kiwoom Market Flow Concentration
 
-`KR_MARKET_FLOW_CONCENTRATION = PASS (KOSDAQ_ONLY)`
+`KR_MARKET_FLOW_CONCENTRATION = PASS`
+
+Scope: `KOSDAQ_ONLY`; KOSPI remains blocked.
 
 | Market | Actor | Direction | Top N | Ratio | Formula |
 | --- | --- | --- | --- | --- | --- |
