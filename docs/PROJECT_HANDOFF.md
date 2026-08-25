@@ -1476,3 +1476,20 @@ KR natural canary, Inventory, macro, KRX telemetry, and weekend/holiday proofs c
 At the next natural eligible KR close, inspect the persisted structured sidecar, selected 1/2/3
 canary messages, fallback, receipt, duplicates/orphans, and provider-failure fallback behavior.
 Do not run production manually. Keep KOSPI concentration suppressed until reconciliation is closed.
+
+## 2026-08-26 KR/US Bounded Quality Handoff
+
+The exact instruction is commit `8cf5226ca0c5ae5553fb06b24399462ea3cf6088`; code implementation
+is `f2326c39485e600bca2cee15747deeb8465c5c8a`. Read the bounded-quality readiness, exact
+before/after, KR utilization, US specificity, safety-parity, and canary reports first.
+
+KR run-38 replay is 8/8. Its market digest now uses P1 local structure for judgment and P2 local
+flow for interpretation and next check. US run-37 replay is 14/14; generic shared synthesis is
+`8 -> 0`, cross-industry generic repetition is `4 -> 0`, and missing supported discriminators are
+`4 -> 0`. TSM is owned by the semiconductor-foundry framework, while CORZ/HUT/WULF retain supported
+data-center distinctions and CRCL remains the positive control. All hard safety errors are zero.
+
+Do not manually run KR/US production or Telegram. Keep full mode OFF, canary limits 1/2/3, Open
+Research integration 0, Trade AR OFF, and Production Assist OFF. Observe natural delivery
+read-only. Unless that observation reveals a new P0/P1, the next major engineering scope is the
+Open Research production connector and selective event attribution.

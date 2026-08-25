@@ -45,6 +45,8 @@ DOCUMENTS = (
     ROOT / "docs" / "architecture" / "FREE_ANALYST_PRODUCTION_INTEGRATION.md",
     ROOT / "docs" / "architecture" / "ADAPTIVE_RENDERER_PRODUCTION.md",
     ROOT / "docs" / "architecture" / "FREE_ANALYST_CANARY_POLICY.md",
+    ROOT / "docs" / "architecture" / "FREE_ANALYST_MESSAGE_QUALITY.md",
+    ROOT / "docs" / "architecture" / "KR_MARKET_DIGEST_QUALITY.md",
     ROOT / "docs" / "operations" / "AI_ASSISTED_PILOT.md",
     ROOT / "docs" / "operations" / "CASH_FLOW_USER_VISIBLE_KILL_SWITCH.md",
     ROOT / "docs" / "operations" / "WORKING_CAPITAL_USER_VISIBLE_KILL_SWITCH.md",
@@ -65,20 +67,21 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     assert state["repository"] == "sskim-ai/thesis-monitor"
     assert state["branch"] == "main"
     assert state["experimental_branch"] == (
-        "codex/20260826-kr-postdeploy-live-rehearsal-us-exchange-breadth-v1"
+        "codex/kr-digest-us-entity-synthesis-bounded-repair"
     )
     assert state["current_phase"] == (
-        "us_exchange_breadth_safe_partial_pending_natural"
+        "kr_us_bounded_quality_repair_closed_pending_natural"
     )
     assert state["last_completed_phase"] == (
-        "kr_postdeploy_rehearsal_us_exchange_breadth_v1"
+        "kr_market_digest_us_entity_specific_synthesis_bounded_repair"
     )
     assert state["next_default_phase"] == (
-        "natural_kr_and_exact_session_us_breadth_review"
+        "open_research_production_connector_selective_event_attribution"
     )
-    assert state["deployed_code_commit"] == "HEAD"
-    assert state["main_code_commit"] == "HEAD"
-    assert state["operating_code_commit"] == "HEAD"
+    implementation_commit = "f2326c39485e600bca2cee15747deeb8465c5c8a"
+    assert state["deployed_code_commit"] == implementation_commit
+    assert state["main_code_commit"] == implementation_commit
+    assert state["operating_code_commit"] == implementation_commit
     phase_8552 = state["phase_8_5_5_2_kr_structured_field_repetition"]
     assert phase_8552["status"] == "operating_shadow_pending_natural_proof"
     assert phase_8552["operating_shadow_promoted"] is True
@@ -165,6 +168,34 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     assert state["contracts"]["macro_digest_temporal_eligibility"] == (
         "macro-digest-temporal-eligibility-v1"
     )
+    assert state["contracts"]["kr_market_digest_quality"] == (
+        "kr-market-digest-quality-v1"
+    )
+    assert state["contracts"]["entity_specific_synthesis"] == (
+        "entity-specific-synthesis-v1"
+    )
+    assert state["contracts"]["cross_message_synthesis_specificity"] == (
+        "cross-message-synthesis-specificity-v1"
+    )
+    bounded_quality = state[
+        "kr_market_digest_us_entity_specific_synthesis_bounded_repair"
+    ]
+    assert bounded_quality["instruction_commit"] == (
+        "8cf5226ca0c5ae5553fb06b24399462ea3cf6088"
+    )
+    assert bounded_quality["implementation_commit"] == implementation_commit
+    assert bounded_quality["kr_domestic_context_rich"] is True
+    assert bounded_quality["kr_market_digest_local_first"] == "pass"
+    assert bounded_quality["kr_replay"] == "pass_8_of_8"
+    assert bounded_quality["us_entity_specific_synthesis"] == "pass"
+    assert bounded_quality["us_cross_industry_generic_repetition_before_after"] == [
+        4,
+        0,
+    ]
+    assert bounded_quality["us_replay"] == "pass_14_of_14"
+    assert bounded_quality["hard_safety_errors"] == 0
+    assert bounded_quality["open_p0"] == []
+    assert bounded_quality["open_material_p1"] == []
     advancement = state["phase_advancement_rule_v1"]
     assert advancement["p0_open"] == []
     assert advancement["p1_open"] == []
@@ -483,8 +514,7 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
         state["persistent_gaps"]["fallback_price_lifecycle"]
         == "CLOSED_RETROSPECTIVE_AND_OPERATING_CODE_PROMOTED"
     )
-    assert state["current_commit"] == "HEAD"
-    assert state["current_commit_resolution"] == "git rev-parse HEAD"
+    assert state["current_commit"] == implementation_commit
     assert state["ai_review_mode"] == "shadow"
     assert state["ai_policy_version"] == "daily-review-v3.10"
     assert state["output_schema_version"] == 4

@@ -1186,3 +1186,26 @@ State is safe `PARTIAL` and production-ready with P0/material P1 at 0/0. Full Fr
 OFF, canary limits remain 1/2/3, Open Research integration remains zero, Trade AR and Production
 Assist remain OFF. The next action is read-only natural KR proof plus the first US packet whose
 exact completed-session Nasdaq row is published; do not manufacture either observation.
+
+## 37. KR Digest Priority And US Entity-Specific Synthesis
+
+Instruction commit `8cf5226ca0c5ae5553fb06b24399462ea3cf6088` and implementation commit
+`f2326c39485e600bca2cee15747deeb8465c5c8a` close the final bounded message-quality repair before
+Open Research connector work.
+
+`kr-market-digest-quality-v1` keeps a rich completed-session KR context local-first through
+judgment, interpretation, and next check. Richness requires KOSPI/KOSDAQ indices, reconciled scoped
+breadth for both, and at least one of market flow, size/style, or sector evidence. Global context is
+retained only for material contradiction. KOSPI concentration remains blocked; safe KOSDAQ
+concentration is optional rather than mandatory.
+
+`entity-specific-synthesis-v1` and `cross-message-synthesis-specificity-v1` require supported
+drivers without ticker sentence hard-coding. Shared structure is allowed inside a real industry
+cohort; generic cross-industry reuse with available specific support is canary-ineligible per
+message. Immutable KR/US replays pass 8/8 and 14/14, cross-industry generic repetition is `4 -> 0`,
+and all hard safety counts are zero.
+
+Keep Free Analyst full mode OFF, canary `1/2/3`, Open Research production integration `0`, Trade AR
+OFF, and Production Assist OFF. Natural proof continues read-only and independently. With no new
+P0/P1, stop message-polishing iterations and continue to the Open Research production connector
+and selective event-attribution integration.

@@ -2,6 +2,28 @@
 
 Repository: `sskim-ai/thesis-monitor`
 
+Latest authoritative bounded repair follows instruction commit
+`8cf5226ca0c5ae5553fb06b24399462ea3cf6088` and implementation commit
+`f2326c39485e600bca2cee15747deeb8465c5c8a`. Read
+`docs/reports/20260826-kr-us-bounded-quality-readiness.md`, the exact before/after report, KR
+evidence-utilization audit, US specificity audit, safety parity, and canary simulation first.
+
+Immutable KR run-38 and US run-37 replays pass 8/8 and 14/14 with all hard safety errors at zero.
+The KR digest is local-first across judgment, interpretation, and next check. US cross-industry
+generic repetition is zero, supported discriminators are present, and same-industry overlap remains
+allowed when thesis-linked.
+
+Observe the next natural KR/US deliveries read-only; do not manually execute a task or send
+Telegram. Keep full mode OFF, canary 1/2/3, Open Research production integration 0, Trade AR OFF,
+and Production Assist OFF. Natural proof is parallel and does not block the next major engineering
+task. If no new P0/P1 appears, continue with the Open Research production connector and selective
+event-attribution integration. Stop further message-polishing loops unless immutable evidence
+shows a bounded P0/P1.
+
+---
+
+Historical context follows.
+
 Latest bounded integration follows exact instruction commit
 `d7a01015617b3fbfb16f4194d1d02c41004a4197`, implementation
 `0e2fc6548e4eadc53df6acbdae8f92b397bd6522`, and report commit
