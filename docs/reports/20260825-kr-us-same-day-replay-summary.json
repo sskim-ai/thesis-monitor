@@ -1,0 +1,1546 @@
+{
+  "adaptive_renderer": {
+    "kr": "PASS",
+    "us": "PASS"
+  },
+  "canary_simulation": {
+    "kr_selected": 3,
+    "limits": {
+      "market": 1,
+      "stock": 2,
+      "total": 3
+    },
+    "us_selected": 3
+  },
+  "code_correctness": "PASS",
+  "cross_market_schema": {
+    "market_specific_reasoning_fork": 0,
+    "status": "PASS"
+  },
+  "data_gaps": {
+    "kr_domestic": "INSUFFICIENT",
+    "us_breadth": "UNKNOWN",
+    "us_participant_flow": "UNSUPPORTED"
+  },
+  "evidence_classes": [
+    "IMMUTABLE_NATURAL_EVIDENCE",
+    "CURRENT_CODE_REPLAY"
+  ],
+  "free_analyst": {
+    "kr": "PASS",
+    "us": "PASS"
+  },
+  "immutable_evidence": {
+    "kr": {
+      "candidate": {
+        "path": "data/ai_review/rejected/2026-08-25-kr-run-38-6cd8c5d5091b--daily-review-v3.10--559ad45e4dd8.json.1787644841",
+        "sha256": "43a6ef4a7ce8fca137d8c0483e08a6557d0ea23b512d03cfc4dab3ee4f563330"
+      },
+      "delivery": {
+        "path": "data/ai_review/pilot/history/2026/08/2026-08-25-kr-run-38-6cd8c5d5091b/delivery-result.json",
+        "sha256": "8663b9a16793be3f15722d33df4c087e8145ab2b959f6b4c61b08a508ea2752d"
+      },
+      "deterministic": {
+        "path": "data/ai_review/pilot/history/2026/08/2026-08-25-kr-run-38-6cd8c5d5091b/deterministic-messages.json",
+        "sha256": "1ba6d2e4277b83976aef6b4980b1a10d4bd3b61f53024d58eeb80e6fad397d2f"
+      },
+      "fallback": {
+        "path": "data/ai_review/pilot/history/2026/08/2026-08-25-kr-run-38-6cd8c5d5091b/fallback-messages.json",
+        "sha256": "e0ff03e079c2cdf10d8f963f3eb02786105d552f1b86c288a1159d0fe3aba760"
+      },
+      "packet": {
+        "path": "data/ai_review/inbox/2026-08-25-kr-run-38-6cd8c5d5091b.json",
+        "sha256": "ef456b24b036fcc1b6926489c5e8058eed8a70f570f5df1d49e9c93fe35f487d"
+      }
+    },
+    "us": {
+      "candidate": {
+        "path": "data/ai_review/rejected/2026-08-25-us-run-37-7e04812311c2--daily-review-v3.10--559ad45e4dd8.json.1787614844",
+        "sha256": "55cb4d413ba4dc558f7da6403d6657a3e6506555c914205f027709b07258a32b"
+      },
+      "delivery": {
+        "path": "data/ai_review/pilot/history/2026/08/2026-08-25-us-run-37-7e04812311c2/delivery-result.json",
+        "sha256": "1fb8f18a2bc94a122cffdc73544d5ec95ef940350ccc3b328fb013c4da58977d"
+      },
+      "deterministic": {
+        "path": "data/ai_review/pilot/history/2026/08/2026-08-25-us-run-37-7e04812311c2/deterministic-messages.json",
+        "sha256": "36bb51224f04e8cc041bb9aa495c5a32e2d363a76f1ab7a3e1e2bda5b4fbeb09"
+      },
+      "fallback": {
+        "path": "data/ai_review/pilot/history/2026/08/2026-08-25-us-run-37-7e04812311c2/fallback-messages.json",
+        "sha256": "6e8671d578d302b37093201c0adb8f5377db24beeba9da533fa47e81a41125a3"
+      },
+      "packet": {
+        "path": "data/ai_review/inbox/2026-08-25-us-run-37-7e04812311c2.json",
+        "sha256": "17e14c4c7fd04017574f60057176c8e0560b0351ec9f3c865ba5dd543ae7e6cc"
+      }
+    }
+  },
+  "kr": {
+    "adapter": {
+      "as_of": "2026-08-25T07:06:11.582752Z",
+      "assessment_date": "2026-08-25",
+      "breadth": {
+        "advancers": null,
+        "availability": "UNKNOWN",
+        "breadth_ratio": null,
+        "decliners": null,
+        "eligible_count": null,
+        "source_refs": [],
+        "unchanged": null
+      },
+      "concentration": [],
+      "contract_version": "market-context-adapter-v1",
+      "cutoff": "2026-08-25T07:06:11.582752Z",
+      "data_gaps": [
+        "breadth_unavailable",
+        "coverage:breadth:not_provided_by_backend",
+        "coverage:local_market_indices:kr_local_index_not_provided_by_backend",
+        "coverage:market_flows:not_provided_by_backend",
+        "local_indices_unavailable",
+        "market_flow_unavailable",
+        "sector_context_unavailable",
+        "size_context_unavailable"
+      ],
+      "deterministic_relations": [],
+      "indices": [],
+      "market": "KR",
+      "market_flows": [],
+      "sectors": [],
+      "session_context": {
+        "assessment_state": "final",
+        "latest_completed_regular_session_date": "2026-08-25",
+        "market_calendar_ref": "existing_market_session_service",
+        "market_date": "2026-08-25",
+        "provider_publication_state": "UNKNOWN",
+        "role": "after_hours",
+        "timezone": "Asia/Seoul"
+      },
+      "session_date": "2026-08-25",
+      "size_context": []
+    },
+    "artifacts": {
+      "candidate": {
+        "path": "data/ai_review/rejected/2026-08-25-kr-run-38-6cd8c5d5091b--daily-review-v3.10--559ad45e4dd8.json.1787644841",
+        "sha256": "43a6ef4a7ce8fca137d8c0483e08a6557d0ea23b512d03cfc4dab3ee4f563330"
+      },
+      "delivery": {
+        "path": "data/ai_review/pilot/history/2026/08/2026-08-25-kr-run-38-6cd8c5d5091b/delivery-result.json",
+        "sha256": "8663b9a16793be3f15722d33df4c087e8145ab2b959f6b4c61b08a508ea2752d"
+      },
+      "deterministic": {
+        "path": "data/ai_review/pilot/history/2026/08/2026-08-25-kr-run-38-6cd8c5d5091b/deterministic-messages.json",
+        "sha256": "1ba6d2e4277b83976aef6b4980b1a10d4bd3b61f53024d58eeb80e6fad397d2f"
+      },
+      "fallback": {
+        "path": "data/ai_review/pilot/history/2026/08/2026-08-25-kr-run-38-6cd8c5d5091b/fallback-messages.json",
+        "sha256": "e0ff03e079c2cdf10d8f963f3eb02786105d552f1b86c288a1159d0fe3aba760"
+      },
+      "packet": {
+        "path": "data/ai_review/inbox/2026-08-25-kr-run-38-6cd8c5d5091b.json",
+        "sha256": "ef456b24b036fcc1b6926489c5e8058eed8a70f570f5df1d49e9c93fe35f487d"
+      }
+    },
+    "assessment_date": "2026-08-25",
+    "delivery": {
+      "cash_flow_context_ids": [],
+      "cash_flow_fact_ids_used": [],
+      "cash_flow_selected_count": 0,
+      "cash_flow_selected_tickers": [],
+      "cash_flow_suppressed_count": 7,
+      "cash_flow_user_visible_mode": "SELECTIVE_CURRENT_FORMAL_FULL_FCF",
+      "delivery_count": 8,
+      "delivery_mode": "deterministic_fallback",
+      "dispatched_at": "2026-08-25T17:10:06.149938+09:00",
+      "packet_id": "2026-08-25-kr-run-38-6cd8c5d5091b",
+      "pending_count": 0,
+      "sent_count": 8,
+      "status": "sent",
+      "working_capital_context_ids": [
+        "wc-visible-8f7b1b1f2fa2150a006a96c2",
+        "wc-visible-01e5d201dad2daff7a2beea4",
+        "wc-visible-eca82f51687c7790f9dce5c0",
+        "wc-visible-4c02afd1355f4ee06c1d1ef6"
+      ],
+      "working_capital_fact_ids": [
+        "working-capital-derived:06d86117c3f4ba6209336c5c",
+        "working-capital-derived:0e7a663e3ca101307dfb04cb",
+        "working-capital-derived:202450830ef87dcccdc5504b",
+        "working-capital-derived:76bafa4ff3bc5b672001b37f",
+        "working-capital-derived:96889525987e78d2a8282fa1",
+        "working-capital-derived:9e40436bfef8c3e37e8ba6aa",
+        "working-capital-derived:c443106cc507b5d6c464f833",
+        "working-capital-derived:cabc0285c12ba1e945788d0e",
+        "working-capital-reported:2b9475e4313020e1d43e4d3d",
+        "working-capital-reported:3a7d30e63279040add6dd0ee",
+        "working-capital-reported:3d542b94d368f70add0d6170",
+        "working-capital-reported:57f4cb34ba90e597a438ef41",
+        "working-capital-reported:684f98bae49e240e7190042b",
+        "working-capital-reported:76cdc2c19635b30ca3832d76",
+        "working-capital-reported:77acb257b2ddead3be5ede82",
+        "working-capital-reported:7fe8e5e809b98ce4701caf99",
+        "working-capital-reported:87773f2a21f767de6b5884b7",
+        "working-capital-reported:8eb93ea161575e8239c3b49a",
+        "working-capital-reported:a2f1219fd2a751859537f817",
+        "working-capital-reported:b742cc7afdc66afa6d7e1135",
+        "working-capital-reported:cda0eade6f371725e4dda70a",
+        "working-capital-reported:e49769235bd25c78c4d0413d",
+        "working-capital-reported:e82f96805a456becf97cc6f2",
+        "working-capital-reported:ee70a0ad53bfc98289edae27"
+      ],
+      "working_capital_metric_families": [
+        "inventory"
+      ],
+      "working_capital_selected_count": 4,
+      "working_capital_user_visible_mode": "SELECTIVE_INVENTORY"
+    },
+    "generated_at": "2026-08-25T07:06:11.582752+00:00",
+    "messages": [
+      {
+        "actual_chars": 1153,
+        "eligible": true,
+        "errors": [],
+        "hard_validation": "PASS",
+        "message_key": "market:2026-08-25-kr-run-38-6cd8c5d5091b",
+        "quality": "MATERIAL_IMPROVEMENT",
+        "renderer": "CONCISE_HYBRID",
+        "replay_chars": 141,
+        "safety": {
+          "external_unsourced_facts": 0,
+          "fact_mismatch": 0,
+          "hidden_arithmetic": 0,
+          "material_information_loss": 0,
+          "temporal_violations": 0,
+          "trade_ar_leak": 0,
+          "unsupported_causality": 0,
+          "unsupported_numeric": 0
+        },
+        "selection_reasons": [
+          "single_clear_primary_conclusion",
+          "material_boundary_preserved_in_concise_form",
+          "clear_next_check"
+        ],
+        "ticker": "__DAILY_DIGEST_KR__"
+      },
+      {
+        "actual_chars": 1198,
+        "eligible": true,
+        "errors": [],
+        "hard_validation": "PASS",
+        "message_key": "stock:000660",
+        "quality": "MATERIAL_IMPROVEMENT",
+        "renderer": "CONCISE_HYBRID",
+        "replay_chars": 465,
+        "safety": {
+          "external_unsourced_facts": 0,
+          "fact_mismatch": 0,
+          "hidden_arithmetic": 0,
+          "material_information_loss": 0,
+          "temporal_violations": 0,
+          "trade_ar_leak": 0,
+          "unsupported_causality": 0,
+          "unsupported_numeric": 0
+        },
+        "selection_reasons": [
+          "single_clear_primary_conclusion",
+          "material_boundary_preserved_in_concise_form",
+          "clear_next_check"
+        ],
+        "ticker": "000660"
+      },
+      {
+        "actual_chars": 1167,
+        "eligible": true,
+        "errors": [],
+        "hard_validation": "PASS",
+        "message_key": "stock:003690",
+        "quality": "MATERIAL_IMPROVEMENT",
+        "renderer": "CONCISE_HYBRID",
+        "replay_chars": 440,
+        "safety": {
+          "external_unsourced_facts": 0,
+          "fact_mismatch": 0,
+          "hidden_arithmetic": 0,
+          "material_information_loss": 0,
+          "temporal_violations": 0,
+          "trade_ar_leak": 0,
+          "unsupported_causality": 0,
+          "unsupported_numeric": 0
+        },
+        "selection_reasons": [
+          "single_clear_primary_conclusion",
+          "material_boundary_preserved_in_concise_form",
+          "clear_next_check"
+        ],
+        "ticker": "003690"
+      },
+      {
+        "actual_chars": 1199,
+        "eligible": true,
+        "errors": [],
+        "hard_validation": "PASS",
+        "message_key": "stock:005490",
+        "quality": "MATERIAL_IMPROVEMENT",
+        "renderer": "DIRECT_ANALYST",
+        "replay_chars": 568,
+        "safety": {
+          "external_unsourced_facts": 0,
+          "fact_mismatch": 0,
+          "hidden_arithmetic": 0,
+          "material_information_loss": 0,
+          "temporal_violations": 0,
+          "trade_ar_leak": 0,
+          "unsupported_causality": 0,
+          "unsupported_numeric": 0
+        },
+        "selection_reasons": [
+          "direct_required_to_preserve_analysis_balance",
+          "material_alternative_interpretation",
+          "hybrid_would_drop_material_boundary"
+        ],
+        "ticker": "005490"
+      },
+      {
+        "actual_chars": 1168,
+        "eligible": true,
+        "errors": [],
+        "hard_validation": "PASS",
+        "message_key": "stock:005930",
+        "quality": "MATERIAL_IMPROVEMENT",
+        "renderer": "CONCISE_HYBRID",
+        "replay_chars": 472,
+        "safety": {
+          "external_unsourced_facts": 0,
+          "fact_mismatch": 0,
+          "hidden_arithmetic": 0,
+          "material_information_loss": 0,
+          "temporal_violations": 0,
+          "trade_ar_leak": 0,
+          "unsupported_causality": 0,
+          "unsupported_numeric": 0
+        },
+        "selection_reasons": [
+          "single_clear_primary_conclusion",
+          "material_boundary_preserved_in_concise_form",
+          "clear_next_check"
+        ],
+        "ticker": "005930"
+      },
+      {
+        "actual_chars": 1003,
+        "eligible": true,
+        "errors": [],
+        "hard_validation": "PASS",
+        "message_key": "stock:010120",
+        "quality": "MATERIAL_IMPROVEMENT",
+        "renderer": "CONCISE_HYBRID",
+        "replay_chars": 448,
+        "safety": {
+          "external_unsourced_facts": 0,
+          "fact_mismatch": 0,
+          "hidden_arithmetic": 0,
+          "material_information_loss": 0,
+          "temporal_violations": 0,
+          "trade_ar_leak": 0,
+          "unsupported_causality": 0,
+          "unsupported_numeric": 0
+        },
+        "selection_reasons": [
+          "single_clear_primary_conclusion",
+          "material_boundary_preserved_in_concise_form",
+          "clear_next_check"
+        ],
+        "ticker": "010120"
+      },
+      {
+        "actual_chars": 1071,
+        "eligible": true,
+        "errors": [],
+        "hard_validation": "PASS",
+        "message_key": "stock:012450",
+        "quality": "MATERIAL_IMPROVEMENT",
+        "renderer": "DIRECT_ANALYST",
+        "replay_chars": 593,
+        "safety": {
+          "external_unsourced_facts": 0,
+          "fact_mismatch": 0,
+          "hidden_arithmetic": 0,
+          "material_information_loss": 0,
+          "temporal_violations": 0,
+          "trade_ar_leak": 0,
+          "unsupported_causality": 0,
+          "unsupported_numeric": 0
+        },
+        "selection_reasons": [
+          "direct_required_to_preserve_analysis_balance",
+          "material_alternative_interpretation",
+          "hybrid_would_drop_material_boundary"
+        ],
+        "ticker": "012450"
+      },
+      {
+        "actual_chars": 1177,
+        "eligible": true,
+        "errors": [],
+        "hard_validation": "PASS",
+        "message_key": "stock:086280",
+        "quality": "MATERIAL_IMPROVEMENT",
+        "renderer": "CONCISE_HYBRID",
+        "replay_chars": 446,
+        "safety": {
+          "external_unsourced_facts": 0,
+          "fact_mismatch": 0,
+          "hidden_arithmetic": 0,
+          "material_information_loss": 0,
+          "temporal_violations": 0,
+          "trade_ar_leak": 0,
+          "unsupported_causality": 0,
+          "unsupported_numeric": 0
+        },
+        "selection_reasons": [
+          "single_clear_primary_conclusion",
+          "material_boundary_preserved_in_concise_form",
+          "clear_next_check"
+        ],
+        "ticker": "086280"
+      }
+    ],
+    "packet_id": "2026-08-25-kr-run-38-6cd8c5d5091b",
+    "packet_sha256": "ef456b24b036fcc1b6926489c5e8058eed8a70f570f5df1d49e9c93fe35f487d",
+    "runtime_quality": {
+      "check_results": {
+        "contract": "relational-reasoning-quality-v2",
+        "deterministic_quality_gate_passed": true,
+        "duplicate_threshold": 3,
+        "final_rendered_language": {
+          "details": [],
+          "duplicate_canonical_label_count": 0,
+          "hard_checks_passed": true,
+          "incomplete_predicate_count": 0,
+          "internal_implementation_term_count": 0,
+          "korean_particle_error_count": 0,
+          "malformed_actor_flow_count": 0,
+          "price_particle_error_count": 0
+        },
+        "financial_period_error_count": 0,
+        "generic_methodology_families": [],
+        "generic_methodology_repeat_count": 0,
+        "generic_next_check_count": 0,
+        "generic_numeric_summary_families": [],
+        "generic_numeric_summary_repeat_count": 0,
+        "generic_unknown_count": 0,
+        "hard_checks_passed": true,
+        "human_quality_approval_required": true,
+        "identity_prose_mismatch_count": 0,
+        "kr_supply_numeric_coverage": [
+          {
+            "claimed_semantics": [
+              "foreign_net_buy_qty",
+              "foreign_net_buy_qty_20d",
+              "foreign_net_buy_qty_5d",
+              "institution_net_buy_qty",
+              "institution_net_buy_qty_20d",
+              "institution_net_buy_qty_5d"
+            ],
+            "eligible_semantics": [
+              "foreign_net_buy_qty",
+              "foreign_net_buy_qty_20d",
+              "foreign_net_buy_qty_5d",
+              "institution_net_buy_qty",
+              "institution_net_buy_qty_20d",
+              "institution_net_buy_qty_5d"
+            ],
+            "missing_semantics": [],
+            "numeric_horizon_coverage_passed": true,
+            "ticker": "000660"
+          },
+          {
+            "claimed_semantics": [
+              "foreign_net_buy_qty",
+              "foreign_net_buy_qty_20d",
+              "foreign_net_buy_qty_5d",
+              "institution_net_buy_qty",
+              "institution_net_buy_qty_20d",
+              "institution_net_buy_qty_5d"
+            ],
+            "eligible_semantics": [
+              "foreign_net_buy_qty",
+              "foreign_net_buy_qty_20d",
+              "foreign_net_buy_qty_5d",
+              "institution_net_buy_qty",
+              "institution_net_buy_qty_20d",
+              "institution_net_buy_qty_5d"
+            ],
+            "missing_semantics": [],
+            "numeric_horizon_coverage_passed": true,
+            "ticker": "012450"
+          }
+        ],
+        "max_substantive_repeat": 0,
+        "message_set_completeness": {
+          "expected_stock_count": 2,
+          "output_stock_count": 2,
+          "passed": true,
+          "rendered_message_count": 3
+        },
+        "numeric_fact_repetition": {
+          "hard_checks_passed": true,
+          "rows": [],
+          "same_fact_three_or_more_count": 0
+        },
+        "numeric_label_quality": {
+          "details": [],
+          "hard_checks_passed": true,
+          "instrument_label_mismatch_count": 0,
+          "period_label_mismatch_count": 0,
+          "postposition_mismatch_count": 0,
+          "redundant_authored_label_count": 0,
+          "repeated_bound_label_count": 0,
+          "source_label_mismatch_count": 0,
+          "zone_role_mismatch_count": 0
+        },
+        "numeric_ownership": {
+          "business_earnings_violation_count": 0,
+          "business_earnings_violations": [],
+          "contract": "numeric-summary-ownership-v1",
+          "hard_checks_passed": true
+        },
+        "numeric_primary_ownership": {
+          "contract": "numeric-primary-owner-v1",
+          "current_rr_primary_owner": "price_context",
+          "current_rr_primary_text_ref": "price_positioning.text",
+          "current_rr_violation_count": 0,
+          "current_rr_violations": [],
+          "hard_checks_passed": true
+        },
+        "observer_holder": [
+          {
+            "distinct": true,
+            "ticker": "000660"
+          },
+          {
+            "distinct": true,
+            "ticker": "012450"
+          }
+        ],
+        "observer_holder_distinct_count": 2,
+        "production_assist_evidence_eligible": false,
+        "rendered_heading_quality": {
+          "expected_heading": "📊 수급",
+          "message_indexes": [],
+          "mismatch_count": 0
+        },
+        "rendered_identity_prose_mismatch_count": 0,
+        "rendered_identity_prose_mismatches": [],
+        "repeated_sentences": [],
+        "section_numeric_grounding": {
+          "000660": {
+            "core": 2,
+            "earnings": 1,
+            "price": 6,
+            "supply": 6,
+            "valuation": 2
+          },
+          "012450": {
+            "core": 2,
+            "earnings": 1,
+            "price": 6,
+            "supply": 6,
+            "valuation": 0
+          }
+        },
+        "stock_count": 2,
+        "stock_specific_next_check_count": 4,
+        "stock_specific_unknown_count": 4,
+        "substantive_repeated_sentence_count": 0,
+        "supply_grounding_error_count": 0,
+        "supply_routing": {
+          "generic_us_investor_flow_unknown_count": 0,
+          "generic_us_investor_flow_unknown_rows": [],
+          "generic_us_supply_count": 0,
+          "generic_us_supply_rows": [],
+          "substantive_repeated_supply_sentence_count": 0,
+          "us_kr_style_horizon_count": 0,
+          "us_kr_style_horizon_rows": []
+        },
+        "template_skeleton_contract": "typed-template-skeleton-v1",
+        "template_skeleton_exceptions": [],
+        "template_skeleton_repeat_count": 0,
+        "template_skeleton_repeats": [],
+        "unsupported_comparative_claim_count": 0,
+        "valuation_evidence_error_count": 0,
+        "watch_next_check_overlap": {
+          "exact_overlap_count": 0,
+          "hard_checks_passed": true,
+          "meaningless_overlap_count": 0,
+          "rows": [],
+          "semantic_overlap_count": 0,
+          "watch_role_violation_count": 0
+        }
+      },
+      "checked_at": "2026-08-25T07:06:11.582752+00:00",
+      "contract": "runtime-message-quality-receipt-v2",
+      "errors": [],
+      "expected_stock_tickers": [
+        "000660",
+        "012450"
+      ],
+      "gate_version": "runtime-message-quality-v1",
+      "message_count": 3,
+      "packet_id": "2026-08-25-kr-run-38-6cd8c5d5091b",
+      "packet_sha256": "fc16c46346733f964874982b87668414939a22b4f195ae4dca0c87753273bf51",
+      "policy_version": "daily-review-v3.10",
+      "receipt_schema_version": "2",
+      "rendered_payload_set_sha256": "f2eb251e08b010bce84ad77e48ff4887aa92e6dc8341bb7135f091e58e1a4846",
+      "schema_version": "4",
+      "status": "passed",
+      "validated_output_sha256": "b7d32ae1c021fce64d1e5e007058c9016a7bc428ea9cb527f593d93be4925d61"
+    },
+    "safety_totals": {
+      "external_unsourced_facts": 0,
+      "fact_mismatch": 0,
+      "hidden_arithmetic": 0,
+      "material_information_loss": 0,
+      "temporal_violations": 0,
+      "trade_ar_leak": 0,
+      "unsupported_causality": 0,
+      "unsupported_numeric": 0
+    },
+    "selection": {
+      "contract": "common-ai-core-v1",
+      "market_selected": 1,
+      "policy_version": "free-analyst-adaptive-canary-v1",
+      "rows": [
+        {
+          "canary_candidate": true,
+          "canary_selected": true,
+          "final_simulated_delivery_mode": "free_analyst_adaptive_canary",
+          "message_key": "market:2026-08-25-kr-run-38-6cd8c5d5091b",
+          "selection_reason": "validated_material_candidate_within_canary_limits"
+        },
+        {
+          "canary_candidate": true,
+          "canary_selected": true,
+          "final_simulated_delivery_mode": "free_analyst_adaptive_canary",
+          "message_key": "stock:000660",
+          "selection_reason": "validated_material_candidate_within_canary_limits"
+        },
+        {
+          "canary_candidate": true,
+          "canary_selected": false,
+          "final_simulated_delivery_mode": "current_ai_existing",
+          "message_key": "stock:003690",
+          "selection_reason": "eligible_not_selected_within_canary_limits"
+        },
+        {
+          "canary_candidate": true,
+          "canary_selected": false,
+          "final_simulated_delivery_mode": "current_ai_existing",
+          "message_key": "stock:005490",
+          "selection_reason": "eligible_not_selected_within_canary_limits"
+        },
+        {
+          "canary_candidate": true,
+          "canary_selected": false,
+          "final_simulated_delivery_mode": "current_ai_existing",
+          "message_key": "stock:005930",
+          "selection_reason": "eligible_not_selected_within_canary_limits"
+        },
+        {
+          "canary_candidate": true,
+          "canary_selected": false,
+          "final_simulated_delivery_mode": "current_ai_existing",
+          "message_key": "stock:010120",
+          "selection_reason": "eligible_not_selected_within_canary_limits"
+        },
+        {
+          "canary_candidate": true,
+          "canary_selected": true,
+          "final_simulated_delivery_mode": "free_analyst_adaptive_canary",
+          "message_key": "stock:012450",
+          "selection_reason": "validated_material_candidate_within_canary_limits"
+        },
+        {
+          "canary_candidate": true,
+          "canary_selected": false,
+          "final_simulated_delivery_mode": "current_ai_existing",
+          "message_key": "stock:086280",
+          "selection_reason": "eligible_not_selected_within_canary_limits"
+        }
+      ],
+      "selected_keys": [
+        "market:2026-08-25-kr-run-38-6cd8c5d5091b",
+        "stock:012450",
+        "stock:000660"
+      ],
+      "stock_selected": 2,
+      "total_selected": 3
+    },
+    "validation_errors": []
+  },
+  "manual_production_task": 0,
+  "market_adapter": {
+    "contract": "market-context-adapter-v1",
+    "cross_market": "PARTIAL",
+    "kr": "PARTIAL",
+    "us": "PARTIAL"
+  },
+  "natural_proof": "DEPLOYED_PENDING_NATURAL",
+  "next_action": "WAIT_FOR_US_STRUCTURED_ADAPTER_NATURAL_CANARY",
+  "open_material_p1": 0,
+  "open_p0": 0,
+  "open_research_production_integration": 0,
+  "p2_backlog": [
+    "kr_domestic_structured_acquisition",
+    "us_breadth_equal_weight",
+    "us_participant_flow_unsupported",
+    "full_cohort_synthesis_repetition"
+  ],
+  "production_mutation": 0,
+  "repository": {
+    "base": "c7816cabf2898f18883f59286be818932b4a26c1",
+    "branch": "codex/20260825-kr-us-same-day-adapter-replay",
+    "instruction_commit": "6d9cced766257a110f2093b940f57ce82419e35f",
+    "runtime_code_changed": false
+  },
+  "safety": {
+    "external_unsourced_facts": 0,
+    "fact_mismatch": 0,
+    "hidden_arithmetic": 0,
+    "market_context_default_zero": 0,
+    "market_context_unit_conflict": 0,
+    "material_information_loss": 0,
+    "temporal_violations": 0,
+    "trade_ar_leak": 0,
+    "unsupported_causality": 0,
+    "unsupported_numeric": 0
+  },
+  "supplemental": {
+    "performed": false,
+    "provider_calls": 0,
+    "required": false
+  },
+  "telegram_send": 0,
+  "us": {
+    "adapter": {
+      "as_of": "2026-08-24T23:20:05.519296Z",
+      "assessment_date": "2026-08-25",
+      "breadth": {
+        "advancers": null,
+        "availability": "UNKNOWN",
+        "breadth_ratio": null,
+        "decliners": null,
+        "eligible_count": null,
+        "source_refs": [],
+        "unchanged": null
+      },
+      "concentration": [],
+      "contract_version": "market-context-adapter-v1",
+      "cutoff": "2026-08-24T23:20:05.519296Z",
+      "data_gaps": [
+        "breadth_unavailable",
+        "coverage:breadth:not_provided_by_backend",
+        "coverage:market_flows:not_provided_by_backend",
+        "size_context_unavailable",
+        "us_participant_flow_not_supported"
+      ],
+      "deterministic_relations": [
+        {
+          "as_of_date": "2026-08-24",
+          "formula": "subject_return_pct - benchmark_return_pct",
+          "input_refs": [
+            "market:index:QQQ",
+            "market:index:SPY"
+          ],
+          "limitations": [],
+          "metric": "relative_return",
+          "result": -0.7041999999999999,
+          "scope": "US",
+          "unit": "pct_point"
+        },
+        {
+          "as_of_date": "2026-08-24",
+          "formula": "subject_return_pct - benchmark_return_pct",
+          "input_refs": [
+            "market:sector:SOXX",
+            "market:index:SPY"
+          ],
+          "limitations": [],
+          "metric": "relative_return",
+          "result": -2.3733,
+          "scope": "US",
+          "unit": "pct_point"
+        }
+      ],
+      "indices": [
+        {
+          "as_of_date": "2026-08-24",
+          "basis": "local_market_proxy",
+          "close": null,
+          "name": "Russell 2000",
+          "return_pct": -0.6634,
+          "source_ref": "market:index:IWM",
+          "symbol": "IWM"
+        },
+        {
+          "as_of_date": "2026-08-24",
+          "basis": "local_market_proxy",
+          "close": null,
+          "name": "Nasdaq",
+          "return_pct": -0.998,
+          "source_ref": "market:index:QQQ",
+          "symbol": "QQQ"
+        },
+        {
+          "as_of_date": "2026-08-24",
+          "basis": "local_market_proxy",
+          "close": null,
+          "name": "S&P500",
+          "return_pct": -0.2938,
+          "source_ref": "market:index:SPY",
+          "symbol": "SPY"
+        }
+      ],
+      "market": "US",
+      "market_flows": [],
+      "sectors": [
+        {
+          "basis": "sector_price_proxy",
+          "name": "반도체",
+          "return_pct": -2.6671,
+          "source_ref": "market:sector:SOXX"
+        }
+      ],
+      "session_context": {
+        "assessment_state": "final",
+        "latest_completed_regular_session_date": "2026-08-24",
+        "market_calendar_ref": "existing_market_session_service",
+        "market_date": "2026-08-24",
+        "provider_publication_state": "UNKNOWN",
+        "role": "after_hours",
+        "timezone": "America/New_York"
+      },
+      "session_date": "2026-08-24",
+      "size_context": []
+    },
+    "artifacts": {
+      "candidate": {
+        "path": "data/ai_review/rejected/2026-08-25-us-run-37-7e04812311c2--daily-review-v3.10--559ad45e4dd8.json.1787614844",
+        "sha256": "55cb4d413ba4dc558f7da6403d6657a3e6506555c914205f027709b07258a32b"
+      },
+      "delivery": {
+        "path": "data/ai_review/pilot/history/2026/08/2026-08-25-us-run-37-7e04812311c2/delivery-result.json",
+        "sha256": "1fb8f18a2bc94a122cffdc73544d5ec95ef940350ccc3b328fb013c4da58977d"
+      },
+      "deterministic": {
+        "path": "data/ai_review/pilot/history/2026/08/2026-08-25-us-run-37-7e04812311c2/deterministic-messages.json",
+        "sha256": "36bb51224f04e8cc041bb9aa495c5a32e2d363a76f1ab7a3e1e2bda5b4fbeb09"
+      },
+      "fallback": {
+        "path": "data/ai_review/pilot/history/2026/08/2026-08-25-us-run-37-7e04812311c2/fallback-messages.json",
+        "sha256": "6e8671d578d302b37093201c0adb8f5377db24beeba9da533fa47e81a41125a3"
+      },
+      "packet": {
+        "path": "data/ai_review/inbox/2026-08-25-us-run-37-7e04812311c2.json",
+        "sha256": "17e14c4c7fd04017574f60057176c8e0560b0351ec9f3c865ba5dd543ae7e6cc"
+      }
+    },
+    "assessment_date": "2026-08-25",
+    "delivery": {
+      "cash_flow_context_ids": [],
+      "cash_flow_fact_ids_used": [],
+      "cash_flow_selected_count": 0,
+      "cash_flow_selected_tickers": [],
+      "cash_flow_suppressed_count": 13,
+      "cash_flow_user_visible_mode": "SELECTIVE_CURRENT_FORMAL_FULL_FCF",
+      "delivery_count": 14,
+      "delivery_mode": "deterministic_fallback",
+      "dispatched_at": "2026-08-25T08:40:06.225227+09:00",
+      "packet_id": "2026-08-25-us-run-37-7e04812311c2",
+      "pending_count": 0,
+      "sent_count": 14,
+      "status": "sent",
+      "working_capital_context_ids": [
+        "wc-visible-751bfe9a98f85e530e1d4a21",
+        "wc-visible-760462535f2541f89fda7334"
+      ],
+      "working_capital_fact_ids": [
+        "working-capital-derived:278cf0f9df9a28a8c5d28258",
+        "working-capital-derived:50745dd0f6eb60120c37579e",
+        "working-capital-derived:9b1463bee52b77a325a1ba6e",
+        "working-capital-derived:e15492a3fff9dff0ab3c7273",
+        "working-capital-reported:00d1a7bd62280782e2efae65",
+        "working-capital-reported:076714324caa61d396cf62d0",
+        "working-capital-reported:0ca5b1287df9208349d139b7",
+        "working-capital-reported:2a5dd10bfd88a91b65bcc777",
+        "working-capital-reported:450f903e4792967c35cb82ba",
+        "working-capital-reported:5986216e8dc1e64113c1efd6",
+        "working-capital-reported:73fe4f1d304b6cadfde50b24",
+        "working-capital-reported:d7dc274bbdea5cd2c57c0a62"
+      ],
+      "working_capital_metric_families": [
+        "inventory"
+      ],
+      "working_capital_selected_count": 2,
+      "working_capital_user_visible_mode": "SELECTIVE_INVENTORY"
+    },
+    "generated_at": "2026-08-24T23:20:05.519296+00:00",
+    "messages": [
+      {
+        "actual_chars": 1144,
+        "eligible": true,
+        "errors": [],
+        "hard_validation": "PASS",
+        "message_key": "market:2026-08-25-us-run-37-7e04812311c2",
+        "quality": "MATERIAL_IMPROVEMENT",
+        "renderer": "CONCISE_HYBRID",
+        "replay_chars": 155,
+        "safety": {
+          "external_unsourced_facts": 0,
+          "fact_mismatch": 0,
+          "hidden_arithmetic": 0,
+          "material_information_loss": 0,
+          "temporal_violations": 0,
+          "trade_ar_leak": 0,
+          "unsupported_causality": 0,
+          "unsupported_numeric": 0
+        },
+        "selection_reasons": [
+          "single_clear_primary_conclusion",
+          "material_boundary_preserved_in_concise_form",
+          "clear_next_check"
+        ],
+        "ticker": "__DAILY_DIGEST__"
+      },
+      {
+        "actual_chars": 911,
+        "eligible": true,
+        "errors": [],
+        "hard_validation": "PASS",
+        "message_key": "stock:CORZ",
+        "quality": "MATERIAL_IMPROVEMENT",
+        "renderer": "CONCISE_HYBRID",
+        "replay_chars": 371,
+        "safety": {
+          "external_unsourced_facts": 0,
+          "fact_mismatch": 0,
+          "hidden_arithmetic": 0,
+          "material_information_loss": 0,
+          "temporal_violations": 0,
+          "trade_ar_leak": 0,
+          "unsupported_causality": 0,
+          "unsupported_numeric": 0
+        },
+        "selection_reasons": [
+          "single_clear_primary_conclusion",
+          "material_boundary_preserved_in_concise_form",
+          "clear_next_check"
+        ],
+        "ticker": "CORZ"
+      },
+      {
+        "actual_chars": 832,
+        "eligible": true,
+        "errors": [],
+        "hard_validation": "PASS",
+        "message_key": "stock:CRCL",
+        "quality": "MATERIAL_IMPROVEMENT",
+        "renderer": "CONCISE_HYBRID",
+        "replay_chars": 371,
+        "safety": {
+          "external_unsourced_facts": 0,
+          "fact_mismatch": 0,
+          "hidden_arithmetic": 0,
+          "material_information_loss": 0,
+          "temporal_violations": 0,
+          "trade_ar_leak": 0,
+          "unsupported_causality": 0,
+          "unsupported_numeric": 0
+        },
+        "selection_reasons": [
+          "single_clear_primary_conclusion",
+          "material_boundary_preserved_in_concise_form",
+          "clear_next_check"
+        ],
+        "ticker": "CRCL"
+      },
+      {
+        "actual_chars": 902,
+        "eligible": true,
+        "errors": [],
+        "hard_validation": "PASS",
+        "message_key": "stock:GOOGL",
+        "quality": "MATERIAL_IMPROVEMENT",
+        "renderer": "CONCISE_HYBRID",
+        "replay_chars": 396,
+        "safety": {
+          "external_unsourced_facts": 0,
+          "fact_mismatch": 0,
+          "hidden_arithmetic": 0,
+          "material_information_loss": 0,
+          "temporal_violations": 0,
+          "trade_ar_leak": 0,
+          "unsupported_causality": 0,
+          "unsupported_numeric": 0
+        },
+        "selection_reasons": [
+          "single_clear_primary_conclusion",
+          "material_boundary_preserved_in_concise_form",
+          "clear_next_check"
+        ],
+        "ticker": "GOOGL"
+      },
+      {
+        "actual_chars": 1084,
+        "eligible": true,
+        "errors": [],
+        "hard_validation": "PASS",
+        "message_key": "stock:HUT",
+        "quality": "MATERIAL_IMPROVEMENT",
+        "renderer": "CONCISE_HYBRID",
+        "replay_chars": 351,
+        "safety": {
+          "external_unsourced_facts": 0,
+          "fact_mismatch": 0,
+          "hidden_arithmetic": 0,
+          "material_information_loss": 0,
+          "temporal_violations": 0,
+          "trade_ar_leak": 0,
+          "unsupported_causality": 0,
+          "unsupported_numeric": 0
+        },
+        "selection_reasons": [
+          "single_clear_primary_conclusion",
+          "material_boundary_preserved_in_concise_form",
+          "clear_next_check"
+        ],
+        "ticker": "HUT"
+      },
+      {
+        "actual_chars": 1003,
+        "eligible": true,
+        "errors": [],
+        "hard_validation": "PASS",
+        "message_key": "stock:IBM",
+        "quality": "MATERIAL_IMPROVEMENT",
+        "renderer": "CONCISE_HYBRID",
+        "replay_chars": 375,
+        "safety": {
+          "external_unsourced_facts": 0,
+          "fact_mismatch": 0,
+          "hidden_arithmetic": 0,
+          "material_information_loss": 0,
+          "temporal_violations": 0,
+          "trade_ar_leak": 0,
+          "unsupported_causality": 0,
+          "unsupported_numeric": 0
+        },
+        "selection_reasons": [
+          "single_clear_primary_conclusion",
+          "material_boundary_preserved_in_concise_form",
+          "clear_next_check"
+        ],
+        "ticker": "IBM"
+      },
+      {
+        "actual_chars": 1311,
+        "eligible": true,
+        "errors": [],
+        "hard_validation": "PASS",
+        "message_key": "stock:MU",
+        "quality": "MATERIAL_IMPROVEMENT",
+        "renderer": "CONCISE_HYBRID",
+        "replay_chars": 374,
+        "safety": {
+          "external_unsourced_facts": 0,
+          "fact_mismatch": 0,
+          "hidden_arithmetic": 0,
+          "material_information_loss": 0,
+          "temporal_violations": 0,
+          "trade_ar_leak": 0,
+          "unsupported_causality": 0,
+          "unsupported_numeric": 0
+        },
+        "selection_reasons": [
+          "single_clear_primary_conclusion",
+          "material_boundary_preserved_in_concise_form",
+          "clear_next_check"
+        ],
+        "ticker": "MU"
+      },
+      {
+        "actual_chars": 773,
+        "eligible": true,
+        "errors": [],
+        "hard_validation": "PASS",
+        "message_key": "stock:RXRX",
+        "quality": "MATERIAL_IMPROVEMENT",
+        "renderer": "CONCISE_HYBRID",
+        "replay_chars": 370,
+        "safety": {
+          "external_unsourced_facts": 0,
+          "fact_mismatch": 0,
+          "hidden_arithmetic": 0,
+          "material_information_loss": 0,
+          "temporal_violations": 0,
+          "trade_ar_leak": 0,
+          "unsupported_causality": 0,
+          "unsupported_numeric": 0
+        },
+        "selection_reasons": [
+          "single_clear_primary_conclusion",
+          "material_boundary_preserved_in_concise_form",
+          "clear_next_check"
+        ],
+        "ticker": "RXRX"
+      },
+      {
+        "actual_chars": 883,
+        "eligible": true,
+        "errors": [],
+        "hard_validation": "PASS",
+        "message_key": "stock:SKHY",
+        "quality": "MATERIAL_IMPROVEMENT",
+        "renderer": "CONCISE_HYBRID",
+        "replay_chars": 378,
+        "safety": {
+          "external_unsourced_facts": 0,
+          "fact_mismatch": 0,
+          "hidden_arithmetic": 0,
+          "material_information_loss": 0,
+          "temporal_violations": 0,
+          "trade_ar_leak": 0,
+          "unsupported_causality": 0,
+          "unsupported_numeric": 0
+        },
+        "selection_reasons": [
+          "single_clear_primary_conclusion",
+          "material_boundary_preserved_in_concise_form",
+          "clear_next_check"
+        ],
+        "ticker": "SKHY"
+      },
+      {
+        "actual_chars": 792,
+        "eligible": true,
+        "errors": [],
+        "hard_validation": "PASS",
+        "message_key": "stock:SNDK",
+        "quality": "MATERIAL_IMPROVEMENT",
+        "renderer": "CONCISE_HYBRID",
+        "replay_chars": 357,
+        "safety": {
+          "external_unsourced_facts": 0,
+          "fact_mismatch": 0,
+          "hidden_arithmetic": 0,
+          "material_information_loss": 0,
+          "temporal_violations": 0,
+          "trade_ar_leak": 0,
+          "unsupported_causality": 0,
+          "unsupported_numeric": 0
+        },
+        "selection_reasons": [
+          "single_clear_primary_conclusion",
+          "material_boundary_preserved_in_concise_form",
+          "clear_next_check"
+        ],
+        "ticker": "SNDK"
+      },
+      {
+        "actual_chars": 935,
+        "eligible": true,
+        "errors": [],
+        "hard_validation": "PASS",
+        "message_key": "stock:TSLA",
+        "quality": "MATERIAL_IMPROVEMENT",
+        "renderer": "CONCISE_HYBRID",
+        "replay_chars": 361,
+        "safety": {
+          "external_unsourced_facts": 0,
+          "fact_mismatch": 0,
+          "hidden_arithmetic": 0,
+          "material_information_loss": 0,
+          "temporal_violations": 0,
+          "trade_ar_leak": 0,
+          "unsupported_causality": 0,
+          "unsupported_numeric": 0
+        },
+        "selection_reasons": [
+          "single_clear_primary_conclusion",
+          "material_boundary_preserved_in_concise_form",
+          "clear_next_check"
+        ],
+        "ticker": "TSLA"
+      },
+      {
+        "actual_chars": 810,
+        "eligible": true,
+        "errors": [],
+        "hard_validation": "PASS",
+        "message_key": "stock:TSM",
+        "quality": "MATERIAL_IMPROVEMENT",
+        "renderer": "CONCISE_HYBRID",
+        "replay_chars": 374,
+        "safety": {
+          "external_unsourced_facts": 0,
+          "fact_mismatch": 0,
+          "hidden_arithmetic": 0,
+          "material_information_loss": 0,
+          "temporal_violations": 0,
+          "trade_ar_leak": 0,
+          "unsupported_causality": 0,
+          "unsupported_numeric": 0
+        },
+        "selection_reasons": [
+          "single_clear_primary_conclusion",
+          "material_boundary_preserved_in_concise_form",
+          "clear_next_check"
+        ],
+        "ticker": "TSM"
+      },
+      {
+        "actual_chars": 797,
+        "eligible": true,
+        "errors": [],
+        "hard_validation": "PASS",
+        "message_key": "stock:WRD",
+        "quality": "MATERIAL_IMPROVEMENT",
+        "renderer": "CONCISE_HYBRID",
+        "replay_chars": 370,
+        "safety": {
+          "external_unsourced_facts": 0,
+          "fact_mismatch": 0,
+          "hidden_arithmetic": 0,
+          "material_information_loss": 0,
+          "temporal_violations": 0,
+          "trade_ar_leak": 0,
+          "unsupported_causality": 0,
+          "unsupported_numeric": 0
+        },
+        "selection_reasons": [
+          "single_clear_primary_conclusion",
+          "material_boundary_preserved_in_concise_form",
+          "clear_next_check"
+        ],
+        "ticker": "WRD"
+      },
+      {
+        "actual_chars": 975,
+        "eligible": true,
+        "errors": [],
+        "hard_validation": "PASS",
+        "message_key": "stock:WULF",
+        "quality": "MATERIAL_IMPROVEMENT",
+        "renderer": "CONCISE_HYBRID",
+        "replay_chars": 362,
+        "safety": {
+          "external_unsourced_facts": 0,
+          "fact_mismatch": 0,
+          "hidden_arithmetic": 0,
+          "material_information_loss": 0,
+          "temporal_violations": 0,
+          "trade_ar_leak": 0,
+          "unsupported_causality": 0,
+          "unsupported_numeric": 0
+        },
+        "selection_reasons": [
+          "single_clear_primary_conclusion",
+          "material_boundary_preserved_in_concise_form",
+          "clear_next_check"
+        ],
+        "ticker": "WULF"
+      }
+    ],
+    "packet_id": "2026-08-25-us-run-37-7e04812311c2",
+    "packet_sha256": "17e14c4c7fd04017574f60057176c8e0560b0351ec9f3c865ba5dd543ae7e6cc",
+    "runtime_quality": {
+      "check_results": {
+        "contract": "relational-reasoning-quality-v2",
+        "deterministic_quality_gate_passed": true,
+        "duplicate_threshold": 3,
+        "final_rendered_language": {
+          "details": [],
+          "duplicate_canonical_label_count": 0,
+          "hard_checks_passed": true,
+          "incomplete_predicate_count": 0,
+          "internal_implementation_term_count": 0,
+          "korean_particle_error_count": 0,
+          "malformed_actor_flow_count": 0,
+          "price_particle_error_count": 0
+        },
+        "financial_period_error_count": 0,
+        "generic_methodology_families": [],
+        "generic_methodology_repeat_count": 0,
+        "generic_next_check_count": 0,
+        "generic_numeric_summary_families": [],
+        "generic_numeric_summary_repeat_count": 0,
+        "generic_unknown_count": 0,
+        "hard_checks_passed": true,
+        "human_quality_approval_required": true,
+        "identity_prose_mismatch_count": 0,
+        "kr_supply_numeric_coverage": [],
+        "max_substantive_repeat": 0,
+        "message_set_completeness": {
+          "expected_stock_count": 2,
+          "output_stock_count": 2,
+          "passed": true,
+          "rendered_message_count": 3
+        },
+        "numeric_fact_repetition": {
+          "hard_checks_passed": true,
+          "rows": [],
+          "same_fact_three_or_more_count": 0
+        },
+        "numeric_label_quality": {
+          "details": [],
+          "hard_checks_passed": true,
+          "instrument_label_mismatch_count": 0,
+          "period_label_mismatch_count": 0,
+          "postposition_mismatch_count": 0,
+          "redundant_authored_label_count": 0,
+          "repeated_bound_label_count": 0,
+          "source_label_mismatch_count": 0,
+          "zone_role_mismatch_count": 0
+        },
+        "numeric_ownership": {
+          "business_earnings_violation_count": 0,
+          "business_earnings_violations": [],
+          "contract": "numeric-summary-ownership-v1",
+          "hard_checks_passed": true
+        },
+        "numeric_primary_ownership": {
+          "contract": "numeric-primary-owner-v1",
+          "current_rr_primary_owner": "price_context",
+          "current_rr_primary_text_ref": "price_positioning.text",
+          "current_rr_violation_count": 0,
+          "current_rr_violations": [],
+          "hard_checks_passed": true
+        },
+        "observer_holder": [
+          {
+            "distinct": true,
+            "ticker": "CORZ"
+          },
+          {
+            "distinct": true,
+            "ticker": "CRCL"
+          }
+        ],
+        "observer_holder_distinct_count": 2,
+        "production_assist_evidence_eligible": false,
+        "rendered_heading_quality": {
+          "expected_heading": "📊 거래량·포지셔닝",
+          "message_indexes": [],
+          "mismatch_count": 0
+        },
+        "rendered_identity_prose_mismatch_count": 0,
+        "rendered_identity_prose_mismatches": [],
+        "repeated_sentences": [],
+        "section_numeric_grounding": {
+          "CORZ": {
+            "core": 2,
+            "earnings": 1,
+            "price": 6,
+            "supply": 1,
+            "valuation": 0
+          },
+          "CRCL": {
+            "core": 2,
+            "earnings": 1,
+            "price": 3,
+            "supply": 1,
+            "valuation": 0
+          }
+        },
+        "stock_count": 2,
+        "stock_specific_next_check_count": 2,
+        "stock_specific_unknown_count": 2,
+        "substantive_repeated_sentence_count": 0,
+        "supply_grounding_error_count": 0,
+        "supply_routing": {
+          "generic_us_investor_flow_unknown_count": 0,
+          "generic_us_investor_flow_unknown_rows": [],
+          "generic_us_supply_count": 0,
+          "generic_us_supply_rows": [],
+          "substantive_repeated_supply_sentence_count": 0,
+          "us_kr_style_horizon_count": 0,
+          "us_kr_style_horizon_rows": []
+        },
+        "template_skeleton_contract": "typed-template-skeleton-v1",
+        "template_skeleton_exceptions": [],
+        "template_skeleton_repeat_count": 0,
+        "template_skeleton_repeats": [],
+        "unsupported_comparative_claim_count": 0,
+        "valuation_evidence_error_count": 0,
+        "watch_next_check_overlap": {
+          "exact_overlap_count": 0,
+          "hard_checks_passed": true,
+          "meaningless_overlap_count": 0,
+          "rows": [],
+          "semantic_overlap_count": 0,
+          "watch_role_violation_count": 0
+        }
+      },
+      "checked_at": "2026-08-24T23:20:05.519296+00:00",
+      "contract": "runtime-message-quality-receipt-v2",
+      "errors": [],
+      "expected_stock_tickers": [
+        "CORZ",
+        "CRCL"
+      ],
+      "gate_version": "runtime-message-quality-v1",
+      "message_count": 3,
+      "packet_id": "2026-08-25-us-run-37-7e04812311c2",
+      "packet_sha256": "eb1d0617979069fb8d1e920e129bbb68cf874e736483714252982432cb8b7b26",
+      "policy_version": "daily-review-v3.10",
+      "receipt_schema_version": "2",
+      "rendered_payload_set_sha256": "d758afd3c4afcb87193886334f1954b8c100ca4f0dbfcf85ae8c8c131e523d89",
+      "schema_version": "4",
+      "status": "passed",
+      "validated_output_sha256": "2cfe753b2d1c9f9354014e227d36af23612bf2966197901ba52ff91c42cd26a5"
+    },
+    "safety_totals": {
+      "external_unsourced_facts": 0,
+      "fact_mismatch": 0,
+      "hidden_arithmetic": 0,
+      "material_information_loss": 0,
+      "temporal_violations": 0,
+      "trade_ar_leak": 0,
+      "unsupported_causality": 0,
+      "unsupported_numeric": 0
+    },
+    "selection": {
+      "contract": "common-ai-core-v1",
+      "market_selected": 1,
+      "policy_version": "free-analyst-adaptive-canary-v1",
+      "rows": [
+        {
+          "canary_candidate": true,
+          "canary_selected": true,
+          "final_simulated_delivery_mode": "free_analyst_adaptive_canary",
+          "message_key": "market:2026-08-25-us-run-37-7e04812311c2",
+          "selection_reason": "validated_material_candidate_within_canary_limits"
+        },
+        {
+          "canary_candidate": true,
+          "canary_selected": true,
+          "final_simulated_delivery_mode": "free_analyst_adaptive_canary",
+          "message_key": "stock:CORZ",
+          "selection_reason": "validated_material_candidate_within_canary_limits"
+        },
+        {
+          "canary_candidate": true,
+          "canary_selected": true,
+          "final_simulated_delivery_mode": "free_analyst_adaptive_canary",
+          "message_key": "stock:CRCL",
+          "selection_reason": "validated_material_candidate_within_canary_limits"
+        },
+        {
+          "canary_candidate": true,
+          "canary_selected": false,
+          "final_simulated_delivery_mode": "current_ai_existing",
+          "message_key": "stock:GOOGL",
+          "selection_reason": "eligible_not_selected_within_canary_limits"
+        },
+        {
+          "canary_candidate": true,
+          "canary_selected": false,
+          "final_simulated_delivery_mode": "current_ai_existing",
+          "message_key": "stock:HUT",
+          "selection_reason": "eligible_not_selected_within_canary_limits"
+        },
+        {
+          "canary_candidate": true,
+          "canary_selected": false,
+          "final_simulated_delivery_mode": "current_ai_existing",
+          "message_key": "stock:IBM",
+          "selection_reason": "eligible_not_selected_within_canary_limits"
+        },
+        {
+          "canary_candidate": true,
+          "canary_selected": false,
+          "final_simulated_delivery_mode": "current_ai_existing",
+          "message_key": "stock:MU",
+          "selection_reason": "eligible_not_selected_within_canary_limits"
+        },
+        {
+          "canary_candidate": true,
+          "canary_selected": false,
+          "final_simulated_delivery_mode": "current_ai_existing",
+          "message_key": "stock:RXRX",
+          "selection_reason": "eligible_not_selected_within_canary_limits"
+        },
+        {
+          "canary_candidate": true,
+          "canary_selected": false,
+          "final_simulated_delivery_mode": "current_ai_existing",
+          "message_key": "stock:SKHY",
+          "selection_reason": "eligible_not_selected_within_canary_limits"
+        },
+        {
+          "canary_candidate": true,
+          "canary_selected": false,
+          "final_simulated_delivery_mode": "current_ai_existing",
+          "message_key": "stock:SNDK",
+          "selection_reason": "eligible_not_selected_within_canary_limits"
+        },
+        {
+          "canary_candidate": true,
+          "canary_selected": false,
+          "final_simulated_delivery_mode": "current_ai_existing",
+          "message_key": "stock:TSLA",
+          "selection_reason": "eligible_not_selected_within_canary_limits"
+        },
+        {
+          "canary_candidate": true,
+          "canary_selected": false,
+          "final_simulated_delivery_mode": "current_ai_existing",
+          "message_key": "stock:TSM",
+          "selection_reason": "eligible_not_selected_within_canary_limits"
+        },
+        {
+          "canary_candidate": true,
+          "canary_selected": false,
+          "final_simulated_delivery_mode": "current_ai_existing",
+          "message_key": "stock:WRD",
+          "selection_reason": "eligible_not_selected_within_canary_limits"
+        },
+        {
+          "canary_candidate": true,
+          "canary_selected": false,
+          "final_simulated_delivery_mode": "current_ai_existing",
+          "message_key": "stock:WULF",
+          "selection_reason": "eligible_not_selected_within_canary_limits"
+        }
+      ],
+      "selected_keys": [
+        "market:2026-08-25-us-run-37-7e04812311c2",
+        "stock:CORZ",
+        "stock:CRCL"
+      ],
+      "stock_selected": 2,
+      "total_selected": 3
+    },
+    "validation_errors": []
+  },
+  "validation": {
+    "chart_knowledge": "PASS",
+    "diff_check": "PASS",
+    "documentation_tests": "4 passed",
+    "existing_main_actions": "32833551337 PASS",
+    "focused_tests": "306 passed",
+    "full_pytest": "1537 passed",
+    "health_action_tests": "9 passed",
+    "investment_knowledge": "PASS",
+    "operation_ids": "20/20 unique",
+    "public_action": "0.4.5",
+    "ruff": "PASS",
+    "runtime_code_diff": 0,
+    "schema": "4"
+  },
+  "valuation_repair": {
+    "kr_after_errors": 0,
+    "kr_before_errors": 2,
+    "status": "PASS"
+  }
+}
