@@ -1,0 +1,91 @@
+{
+  "canary_simulation": {
+    "kr_selected": [
+      "market:2026-08-25-kr-run-38-6cd8c5d5091b",
+      "stock:012450",
+      "stock:000660"
+    ],
+    "ownership_errors": 0,
+    "status": "PASS",
+    "us_selected": [
+      "market:2026-08-25-us-run-37-7e04812311c2",
+      "stock:CORZ",
+      "stock:CRCL"
+    ]
+  },
+  "cross_market_audit": {
+    "messages": 22,
+    "mismatches": {
+      "entity_owner_mismatch": 0,
+      "expectation_owner_mismatch": 0,
+      "fact_ref_owner_mismatch": 0,
+      "industry_context_mismatch": 0,
+      "market_owner_mismatch": 0,
+      "packet_owner_mismatch": 0,
+      "relation_owner_mismatch": 0,
+      "support_ref_owner_mismatch": 0,
+      "thesis_driver_owner_mismatch": 0,
+      "ticker_owner_mismatch": 0
+    },
+    "status": "PASS"
+  },
+  "kr_replay": {
+    "eligible": 8,
+    "messages": 8,
+    "status": "PASS"
+  },
+  "natural_proof": "PENDING",
+  "next_action": "WAIT_FOR_NEXT_ELIGIBLE_NATURAL_CANARY",
+  "open_material_p1": 0,
+  "open_p0": 0,
+  "ownership_contract": "free-analyst-semantic-ownership-v1",
+  "p2_backlog": [
+    "generic_safe_synthesis_repetition",
+    "natural_canary_proof_pending"
+  ],
+  "promotion": "READY",
+  "repository": {
+    "base_sha": "c7816cabf2898f18883f59286be818932b4a26c1",
+    "branch": "codex/free-analyst-semantic-ownership-guard-repair",
+    "implementation_sha": "183ab582b2f464184f82bacf1a2082d05dd3f2ed",
+    "instruction_commit": "348afc23c8d4618a87925da15ed181367b231b99"
+  },
+  "root_cause": {
+    "branches": [
+      "E",
+      "J"
+    ],
+    "status": "CLOSED_RETROSPECTIVE"
+  },
+  "runtime_quality": {
+    "kr": "PASS",
+    "us": "PASS"
+  },
+  "safety": {
+    "external_unsourced_facts": 0,
+    "fact_mismatch": 0,
+    "hidden_arithmetic": 0,
+    "material_information_loss": 0,
+    "temporal_violations": 0,
+    "trade_ar_leak": 0,
+    "unsupported_causality": 0,
+    "unsupported_numeric": 0
+  },
+  "us_replay": {
+    "eligible": 14,
+    "messages": 14,
+    "status": "PASS"
+  },
+  "validation": {
+    "chart_knowledge": "PASS",
+    "diff_check": "PASS",
+    "focused": "75 passed",
+    "full_pytest": "1549 passed, 1 warning",
+    "implementation_actions": "32839087640 PASS",
+    "knowledge": "PASS",
+    "operation_ids": "20/20 unique",
+    "public_action": "0.4.5",
+    "ruff": "PASS",
+    "schema": "4"
+  }
+}
