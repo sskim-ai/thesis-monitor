@@ -1,0 +1,112 @@
+{
+  "adaptive_renderer_pass": 14,
+  "candidate_sha256": "55cb4d413ba4dc558f7da6403d6657a3e6506555c914205f027709b07258a32b",
+  "directional_claims": [
+    {
+      "fact_id": "working-capital-relation:dbdfd04e725e83528d8fdd31",
+      "field_path": "fields.gap_percentage_points_signed",
+      "semantic_type": "inventory_growth_signed_gap_pct_point",
+      "text_ref": "business_earnings.text",
+      "ticker": "MU",
+      "unit": "pct_point",
+      "usage": "15.7%p",
+      "value": -15.733907740801747
+    },
+    {
+      "fact_id": "working-capital-relation:36181e61768dfd580d9ede01",
+      "field_path": "fields.gap_percentage_points_signed",
+      "semantic_type": "inventory_growth_signed_gap_pct_point",
+      "text_ref": "business_earnings.text",
+      "ticker": "TSLA",
+      "unit": "pct_point",
+      "usage": "26.6%p",
+      "value": -26.63218129057952
+    }
+  ],
+  "directional_ref_upgrades": [
+    {
+      "fact_id": "working-capital-relation:dbdfd04e725e83528d8fdd31",
+      "from": "fields.gap_percentage_points_abs",
+      "ref_id": "inventory_gap",
+      "ticker": "MU",
+      "to": "fields.gap_percentage_points_signed"
+    },
+    {
+      "fact_id": "working-capital-relation:36181e61768dfd580d9ede01",
+      "from": "fields.gap_percentage_points_abs",
+      "ref_id": "inventory_gap",
+      "ticker": "TSLA",
+      "to": "fields.gap_percentage_points_signed"
+    }
+  ],
+  "free_analyst_fallback": 0,
+  "free_analyst_validated": 14,
+  "gates": {
+    "ADAPTIVE_RENDERER_US_14_MESSAGE_REPLAY": "PASS",
+    "COMBINED_US_MORNING_REPLAY": "PASS",
+    "FREE_ANALYST_ADAPTIVE_PRODUCTION_CANDIDATE": "YES_PENDING_SEPARATE_INTEGRATION",
+    "FREE_ANALYST_US_14_MESSAGE_REPLAY": "PASS",
+    "FREE_ANALYST_US_NATURAL_ADAPTER": "PASS_SHADOW",
+    "OPEN_RESEARCH_PRODUCTION_CANDIDATE": "YES_PENDING_SEPARATE_SELECTIVE_INTEGRATION",
+    "OPEN_RESEARCH_SIDECAR_PRESERVATION": "PASS",
+    "US_AI_COMPATIBILITY_REPLAY": "PASS",
+    "US_AI_DIRECTIONAL_RELATION_REPAIR": "PASS"
+  },
+  "human_quality": {
+    "MATERIAL_IMPROVEMENT": 4,
+    "NO_MEANINGFUL_CHANGE": 10,
+    "WORSE": 0
+  },
+  "instruction_commit": "a496f79fe694bc97f0f74db1a4150b84aae2642a",
+  "messages": 14,
+  "next_action": "FREE_ANALYST_ADAPTIVE_PRODUCTION_INTEGRATION",
+  "open_material_p1": [],
+  "open_p0": [],
+  "open_research_sidecar_pass": 14,
+  "p2_backlog": [
+    "immutable AI prose retains repeated price-context sentences",
+    "immutable AI prose retains 12 current-price Korean particle errors"
+  ],
+  "packet_id": "2026-08-25-us-run-37-7e04812311c2",
+  "packet_sha256": "17e14c4c7fd04017574f60057176c8e0560b0351ec9f3c865ba5dd543ae7e6cc",
+  "post_repair_hard_errors": 0,
+  "pre_repair_errors": [
+    "MU:numeric_usage_semantic_mismatch:working-capital-relation:dbdfd04e725e83528d8fdd31:fields.gap_percentage_points_abs",
+    "MU:numbers_without_provenance:business_earnings.text:15.7",
+    "TSLA:numeric_usage_semantic_mismatch:working-capital-relation:36181e61768dfd580d9ede01:fields.gap_percentage_points_abs",
+    "TSLA:numbers_without_provenance:business_earnings.text:26.6"
+  ],
+  "pre_repair_hard_errors": 4,
+  "production_mutation_from_replay": 0,
+  "provider_calls": 0,
+  "runtime_quality_only": {
+    "classification": "P2_NOT_CAUSED_BY_DIRECTIONAL_BINDING_REPAIR",
+    "price_particle_error_count": 12,
+    "status": "failed",
+    "substantive_repeated_sentence_count": 5
+  },
+  "safety": {
+    "external_knowledge": 0,
+    "fact_mismatch": 0,
+    "hidden_arithmetic": 0,
+    "material_information_loss": 0,
+    "temporal_violations": 0,
+    "trade_ar_leak": 0,
+    "unsupported_causality": 0,
+    "unsupported_numeric": 0
+  },
+  "telegram_send": 0,
+  "track_a": {
+    "base": "2e3e37cc75867d56a69211bbe93a3675cd87acd1",
+    "final_main": "f7d2552185ff2ff6d932337e7555ce02f87fa613",
+    "implementation": "f7d2552185ff2ff6d932337e7555ce02f87fa613",
+    "operating": "f7d2552185ff2ff6d932337e7555ce02f87fa613"
+  },
+  "track_b": {
+    "base": "6db5d760b1b0b24ff224d4be3c89315233b8af0b",
+    "final": "e43a280",
+    "implementation": "2123cd0",
+    "production_promotion": 0
+  },
+  "unresolved_evidence_refs": 0
+}
