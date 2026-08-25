@@ -1,0 +1,43 @@
+{
+  "contract": "us-exchange-breadth-production-readiness-v1",
+  "instruction_commit": "d7a01015617b3fbfb16f4194d1d02c41004a4197",
+  "implementation_commit": "0e2fc653aa3333e584224043324e4c9fe0ec4cfa",
+  "report_commit": "PENDING_REPORT_COMMIT",
+  "gates": {
+    "NASDAQ_OFFICIAL_BREADTH_CONTRACT": "PASS",
+    "NASDAQ_BREADTH": "PARTIAL",
+    "NYSE_BREADTH_SOURCE": "UNAVAILABLE",
+    "NYSE_BREADTH": "UNAVAILABLE",
+    "US_EXCHANGE_BREADTH": "PARTIAL",
+    "US_EXCHANGE_BREADTH_VALUE_ADD": "PASS",
+    "US_BREADTH_RUN37_REPLAY": "PASS",
+    "US_BREADTH_MESSAGE_VALIDATION": "PASS",
+    "US_BREADTH_CANARY_SIMULATION": "PASS",
+    "US_EXCHANGE_BREADTH_PRODUCTION_READY": "YES"
+  },
+  "target_packet": "2026-08-25-us-run-37-7e04812311c2",
+  "target_completed_session": "2026-08-24",
+  "target_publication_state": "PUBLICATION_PENDING",
+  "target_denial_reason": "exact_session_not_published",
+  "published_holdout_session": "2026-08-20",
+  "safety": {
+    "FACT_MISMATCH": 0,
+    "UNSUPPORTED_NUMERIC": 0,
+    "SESSION_DATE_CONFLICT": 0,
+    "BREADTH_SCOPE_MISLABEL": 0,
+    "INTRADAY_PROMOTED_AS_FINAL": 0,
+    "UNIVERSE_PARTIAL_PROMOTED": 0,
+    "DEFAULT_ZERO": 0,
+    "HIDDEN_ARITHMETIC": 0,
+    "UNSUPPORTED_CAUSALITY": 0,
+    "SEMANTIC_OWNERSHIP_ERRORS": 0,
+    "MATERIAL_INFORMATION_LOSS": 0,
+    "TRADE_AR_LEAK": 0
+  },
+  "open_p0": [],
+  "open_material_p1": [],
+  "p2_backlog": [
+    "Nasdaq official YTD publication lag requires next exact-session natural proof.",
+    "NYSE official/free breadth remains unavailable."
+  ]
+}

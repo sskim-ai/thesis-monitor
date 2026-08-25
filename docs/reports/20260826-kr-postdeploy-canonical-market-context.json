@@ -1,0 +1,329 @@
+{
+  "as_of": "2026-08-26T00:18:27.395753+09:00",
+  "assessment_date": "2026-08-25",
+  "breadth": {
+    "advancers": 1833,
+    "availability": "AVAILABLE",
+    "breadth_ratio": 0.7259405940594059,
+    "decliners": 692,
+    "eligible_count": 2633,
+    "source_refs": [
+      "cross-section:KIWOOM_REST:breadth"
+    ],
+    "unchanged": 108
+  },
+  "breadth_by_scope": [
+    {
+      "breadth": {
+        "advancers": 647,
+        "availability": "AVAILABLE",
+        "breadth_ratio": 0.7411225658648339,
+        "decliners": 226,
+        "eligible_count": 907,
+        "source_refs": [
+          "cross-section:KIWOOM_REST:breadth:KOSPI"
+        ],
+        "unchanged": 34
+      },
+      "scope": "KOSPI"
+    },
+    {
+      "breadth": {
+        "advancers": 1186,
+        "availability": "AVAILABLE",
+        "breadth_ratio": 0.7179176755447942,
+        "decliners": 466,
+        "eligible_count": 1726,
+        "source_refs": [
+          "cross-section:KIWOOM_REST:breadth:KOSDAQ"
+        ],
+        "unchanged": 74
+      },
+      "scope": "KOSDAQ"
+    }
+  ],
+  "concentration": [
+    {
+      "as_of_date": "2026-08-25",
+      "formula": "top_n_same_direction_abs / all_same_direction_abs",
+      "input_refs": [
+        "kiwoom:ka10066:KOSDAQ:all-pages:5b8028006c495a53804fa457c6e752ba5b5b03912be320b75f9922f98a48ec46",
+        "kiwoom:ka10066:KOSDAQ:036930:foreign",
+        "kiwoom:ka10066:KOSDAQ:403870:foreign",
+        "kiwoom:ka10066:KOSDAQ:222800:foreign",
+        "kiwoom:ka10066:KOSDAQ:240810:foreign",
+        "kiwoom:ka10066:KOSDAQ:080220:foreign"
+      ],
+      "limitations": [
+        "Concentration is descriptive and does not establish causality."
+      ],
+      "metric": "market_flow_same_direction_top_n_concentration",
+      "result": 0.2139273736231911,
+      "scope": "KOSDAQ:foreign",
+      "unit": "ratio"
+    },
+    {
+      "as_of_date": "2026-08-25",
+      "formula": "top_n_same_direction_abs / all_same_direction_abs",
+      "input_refs": [
+        "kiwoom:ka10066:KOSDAQ:all-pages:5b8028006c495a53804fa457c6e752ba5b5b03912be320b75f9922f98a48ec46",
+        "kiwoom:ka10066:KOSDAQ:403870:institution",
+        "kiwoom:ka10066:KOSDAQ:222800:institution",
+        "kiwoom:ka10066:KOSDAQ:067310:institution",
+        "kiwoom:ka10066:KOSDAQ:356860:institution",
+        "kiwoom:ka10066:KOSDAQ:257720:institution"
+      ],
+      "limitations": [
+        "Concentration is descriptive and does not establish causality."
+      ],
+      "metric": "market_flow_same_direction_top_n_concentration",
+      "result": 0.37818657509606735,
+      "scope": "KOSDAQ:institution",
+      "unit": "ratio"
+    },
+    {
+      "as_of_date": "2026-08-25",
+      "formula": "top_n_same_direction_abs / all_same_direction_abs",
+      "input_refs": [
+        "kiwoom:ka10066:KOSDAQ:all-pages:5b8028006c495a53804fa457c6e752ba5b5b03912be320b75f9922f98a48ec46",
+        "kiwoom:ka10066:KOSDAQ:403870:retail",
+        "kiwoom:ka10066:KOSDAQ:222800:retail",
+        "kiwoom:ka10066:KOSDAQ:036930:retail",
+        "kiwoom:ka10066:KOSDAQ:257720:retail",
+        "kiwoom:ka10066:KOSDAQ:067310:retail"
+      ],
+      "limitations": [
+        "Concentration is descriptive and does not establish causality."
+      ],
+      "metric": "market_flow_same_direction_top_n_concentration",
+      "result": 0.3072963585834484,
+      "scope": "KOSDAQ:retail",
+      "unit": "ratio"
+    }
+  ],
+  "contract_version": "market-context-adapter-v1",
+  "cutoff": "2026-08-26T00:18:27.395753+09:00",
+  "data_gaps": [],
+  "deterministic_relations": [
+    {
+      "as_of_date": "2026-08-25",
+      "formula": "advancers / (advancers + decliners)",
+      "input_refs": [
+        "cross-section:KIWOOM_REST:breadth"
+      ],
+      "limitations": [],
+      "metric": "advance_decline_participation_ratio",
+      "result": 0.7259405940594059,
+      "scope": "KR",
+      "unit": "ratio"
+    }
+  ],
+  "indices": [
+    {
+      "as_of_date": "2026-08-25",
+      "basis": "official_or_provider_index",
+      "close": 6742.74,
+      "name": "종합(KOSPI)",
+      "return_pct": 0.68,
+      "source_ref": "kiwoom:ka20001:KOSPI:2026-08-25",
+      "symbol": "KOSPI"
+    },
+    {
+      "as_of_date": "2026-08-25",
+      "basis": "official_or_provider_index",
+      "close": 827.15,
+      "name": "종합(KOSDAQ)",
+      "return_pct": 1.7,
+      "source_ref": "kiwoom:ka20001:KOSDAQ:2026-08-25",
+      "symbol": "KOSDAQ"
+    }
+  ],
+  "market": "KR",
+  "market_flows": [
+    {
+      "as_of_date": "2026-08-25",
+      "net_flow": -4000100000000.0,
+      "participant": "foreign",
+      "scope": "KOSPI",
+      "source_ref": "kiwoom:ka10051:KOSPI:foreign:2026-08-25",
+      "unit": "KRW"
+    },
+    {
+      "as_of_date": "2026-08-25",
+      "net_flow": 1252100000000.0,
+      "participant": "institution",
+      "scope": "KOSPI",
+      "source_ref": "kiwoom:ka10051:KOSPI:institution:2026-08-25",
+      "unit": "KRW"
+    },
+    {
+      "as_of_date": "2026-08-25",
+      "net_flow": 1158500000000.0,
+      "participant": "retail",
+      "scope": "KOSPI",
+      "source_ref": "kiwoom:ka10051:KOSPI:retail:2026-08-25",
+      "unit": "KRW"
+    },
+    {
+      "as_of_date": "2026-08-25",
+      "net_flow": 136100000000.0,
+      "participant": "foreign",
+      "scope": "KOSDAQ",
+      "source_ref": "kiwoom:ka10051:KOSDAQ:foreign:2026-08-25",
+      "unit": "KRW"
+    },
+    {
+      "as_of_date": "2026-08-25",
+      "net_flow": 21100000000.0,
+      "participant": "institution",
+      "scope": "KOSDAQ",
+      "source_ref": "kiwoom:ka10051:KOSDAQ:institution:2026-08-25",
+      "unit": "KRW"
+    },
+    {
+      "as_of_date": "2026-08-25",
+      "net_flow": -147200000000.0,
+      "participant": "retail",
+      "scope": "KOSDAQ",
+      "source_ref": "kiwoom:ka10051:KOSDAQ:retail:2026-08-25",
+      "unit": "KRW"
+    }
+  ],
+  "official_event_sources": [
+    "KRX",
+    "OpenDART",
+    "company_ir",
+    "regulator"
+  ],
+  "sectors": [
+    {
+      "basis": "actual_sector_breadth",
+      "name": "건설",
+      "return_pct": 8.73,
+      "source_ref": "kiwoom:ka20003:KOSPI:018:2026-08-25"
+    },
+    {
+      "basis": "actual_sector_breadth",
+      "name": "기계/장비",
+      "return_pct": 6.74,
+      "source_ref": "kiwoom:ka20003:KOSPI:012:2026-08-25"
+    },
+    {
+      "basis": "actual_sector_breadth",
+      "name": "기계/장비",
+      "return_pct": 4.64,
+      "source_ref": "kiwoom:ka20003:KOSDAQ:123:2026-08-25"
+    },
+    {
+      "basis": "actual_sector_breadth",
+      "name": "비금속",
+      "return_pct": 4.34,
+      "source_ref": "kiwoom:ka20003:KOSDAQ:121:2026-08-25"
+    },
+    {
+      "basis": "actual_sector_breadth",
+      "name": "금속",
+      "return_pct": 3.88,
+      "source_ref": "kiwoom:ka20003:KOSDAQ:122:2026-08-25"
+    },
+    {
+      "basis": "actual_sector_breadth",
+      "name": "유통",
+      "return_pct": 3.63,
+      "source_ref": "kiwoom:ka20003:KOSDAQ:108:2026-08-25"
+    },
+    {
+      "basis": "actual_sector_breadth",
+      "name": "전기/가스",
+      "return_pct": 3.26,
+      "source_ref": "kiwoom:ka20003:KOSPI:017:2026-08-25"
+    },
+    {
+      "basis": "actual_sector_breadth",
+      "name": "종이/목재",
+      "return_pct": 3.26,
+      "source_ref": "kiwoom:ka20003:KOSPI:007:2026-08-25"
+    },
+    {
+      "basis": "actual_sector_breadth",
+      "name": "일반서비스",
+      "return_pct": -1.52,
+      "source_ref": "kiwoom:ka20003:KOSDAQ:103:2026-08-25"
+    },
+    {
+      "basis": "actual_sector_breadth",
+      "name": "F-KOSDAQ150인버스",
+      "return_pct": -1.45,
+      "source_ref": "kiwoom:ka20003:KOSDAQ:165:2026-08-25"
+    },
+    {
+      "basis": "actual_sector_breadth",
+      "name": "통신",
+      "return_pct": -1.4,
+      "source_ref": "kiwoom:ka20003:KOSPI:020:2026-08-25"
+    },
+    {
+      "basis": "actual_sector_breadth",
+      "name": "제약",
+      "return_pct": -0.89,
+      "source_ref": "kiwoom:ka20003:KOSPI:009:2026-08-25"
+    },
+    {
+      "basis": "actual_sector_breadth",
+      "name": "변동성지수",
+      "return_pct": -0.83,
+      "source_ref": "kiwoom:ka20003:KOSPI:603:2026-08-25"
+    },
+    {
+      "basis": "actual_sector_breadth",
+      "name": "금융",
+      "return_pct": -0.76,
+      "source_ref": "kiwoom:ka20003:KOSDAQ:111:2026-08-25"
+    },
+    {
+      "basis": "actual_sector_breadth",
+      "name": "오락/문화",
+      "return_pct": -0.66,
+      "source_ref": "kiwoom:ka20003:KOSPI:030:2026-08-25"
+    },
+    {
+      "basis": "actual_sector_breadth",
+      "name": "IT 서비스",
+      "return_pct": -0.54,
+      "source_ref": "kiwoom:ka20003:KOSPI:029:2026-08-25"
+    }
+  ],
+  "session_context": {
+    "assessment_state": "final",
+    "latest_completed_regular_session_date": "2026-08-25",
+    "market_calendar_ref": "existing_market_session_service",
+    "market_date": "2026-08-26",
+    "provider_publication_state": "PROVIDER_COMPLETE",
+    "role": "pre_market",
+    "timezone": "Asia/Seoul"
+  },
+  "session_date": "2026-08-25",
+  "size_context": [
+    {
+      "as_of_date": "2026-08-25",
+      "basis": "official_size_index",
+      "name": "대형주",
+      "return_pct": 0.62,
+      "source_ref": "kiwoom:ka20003:KOSPI:002:2026-08-25"
+    },
+    {
+      "as_of_date": "2026-08-25",
+      "basis": "official_size_index",
+      "name": "중형주",
+      "return_pct": 1.37,
+      "source_ref": "kiwoom:ka20003:KOSPI:003:2026-08-25"
+    },
+    {
+      "as_of_date": "2026-08-25",
+      "basis": "official_size_index",
+      "name": "소형주",
+      "return_pct": 1.54,
+      "source_ref": "kiwoom:ka20003:KOSPI:004:2026-08-25"
+    }
+  ]
+}

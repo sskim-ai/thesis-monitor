@@ -1,0 +1,196 @@
+{
+  "contract": "us-exchange-breadth-v1-audit",
+  "source": {
+    "provider": "NASDAQ_TRADER_YTD",
+    "scope": "NASDAQ_LISTED_ISSUES",
+    "url": "https://www.nasdaqtrader.com/dynamic/dailyfiles/daily2026.csv",
+    "payload_sha256": "144e90c0f869f4f09858fbd3b7af831ffe660f2ae3614e5dceb85ae772837e23",
+    "last_modified": "2026-08-25T14:30:04+00:00",
+    "etag": "\"56ef8a389e34dd1:0\""
+  },
+  "run37": {
+    "contract_version": "nasdaq-official-exchange-breadth-v1",
+    "target_session": "2026-08-24",
+    "latest_available_session": "2026-08-20",
+    "latest_completed_session": "2026-08-24",
+    "publication_state": "PUBLICATION_PENDING",
+    "observation": null,
+    "denial_reason": "exact_session_not_published",
+    "source_url": "https://www.nasdaqtrader.com/dynamic/dailyfiles/daily2026.csv",
+    "retrieved_at": "2026-08-26T00:19:45.900526+09:00",
+    "source_last_modified": "2026-08-25T14:30:04Z",
+    "source_etag": "\"56ef8a389e34dd1:0\"",
+    "source_payload_sha256": "144e90c0f869f4f09858fbd3b7af831ffe660f2ae3614e5dceb85ae772837e23",
+    "invalid_breadth_sessions": [
+      "2026-03-09"
+    ]
+  },
+  "published_holdout_2026_08_20": {
+    "result": {
+      "contract_version": "nasdaq-official-exchange-breadth-v1",
+      "target_session": "2026-08-20",
+      "latest_available_session": "2026-08-20",
+      "latest_completed_session": "2026-08-24",
+      "publication_state": "AVAILABLE_CURRENT",
+      "observation": {
+        "contract_version": "nasdaq-official-exchange-breadth-v1",
+        "source_scope": "NASDAQ_LISTED_ISSUES",
+        "session_date": "2026-08-20",
+        "advances": 1761,
+        "declines": 3252,
+        "unchanged": 266,
+        "participation_denominator": 5279,
+        "eligible_issue_count": null,
+        "net_advances": -1491,
+        "advance_share": 0.3335859064216708,
+        "decline_share": 0.6160257624550104,
+        "advance_decline_ratio": 0.5415129151291513,
+        "source_url": "https://www.nasdaqtrader.com/dynamic/dailyfiles/daily2026.csv",
+        "retrieved_at": "2026-08-26T00:19:45.900526+09:00",
+        "source_last_modified": "2026-08-25T14:30:04Z",
+        "source_etag": "\"56ef8a389e34dd1:0\"",
+        "source_payload_sha256": "144e90c0f869f4f09858fbd3b7af831ffe660f2ae3614e5dceb85ae772837e23",
+        "publication_state": "AVAILABLE_CURRENT"
+      },
+      "denial_reason": null,
+      "source_url": "https://www.nasdaqtrader.com/dynamic/dailyfiles/daily2026.csv",
+      "retrieved_at": "2026-08-26T00:19:45.900526+09:00",
+      "source_last_modified": "2026-08-25T14:30:04Z",
+      "source_etag": "\"56ef8a389e34dd1:0\"",
+      "source_payload_sha256": "144e90c0f869f4f09858fbd3b7af831ffe660f2ae3614e5dceb85ae772837e23",
+      "invalid_breadth_sessions": [
+        "2026-03-09"
+      ]
+    },
+    "common_adapter_context": {
+      "contract_version": "market-context-adapter-v1",
+      "market": "US",
+      "assessment_date": "2026-08-26",
+      "session_date": "2026-08-20",
+      "as_of": "2026-08-26T00:19:45.900526+09:00",
+      "cutoff": "2026-08-26T00:19:45.900526+09:00",
+      "indices": [],
+      "breadth": {
+        "availability": "AVAILABLE",
+        "advancers": 1761,
+        "decliners": 3252,
+        "unchanged": 266,
+        "eligible_count": 5279,
+        "breadth_ratio": 0.35128665469778575,
+        "source_refs": [
+          "cross-section:NASDAQ_TRADER_YTD:breadth"
+        ]
+      },
+      "breadth_by_scope": [
+        {
+          "scope": "NASDAQ_LISTED_ISSUES",
+          "breadth": {
+            "availability": "AVAILABLE",
+            "advancers": 1761,
+            "decliners": 3252,
+            "unchanged": 266,
+            "eligible_count": 5279,
+            "breadth_ratio": 0.35128665469778575,
+            "source_refs": [
+              "cross-section:NASDAQ_TRADER_YTD:breadth:NASDAQ_LISTED_ISSUES"
+            ]
+          }
+        }
+      ],
+      "size_context": [],
+      "sectors": [],
+      "market_flows": [],
+      "concentration": [],
+      "deterministic_relations": [
+        {
+          "metric": "advance_decline_participation_ratio",
+          "formula": "advancers / (advancers + decliners)",
+          "input_refs": [
+            "cross-section:NASDAQ_TRADER_YTD:breadth"
+          ],
+          "result": 0.35128665469778575,
+          "unit": "ratio",
+          "scope": "US",
+          "as_of_date": "2026-08-20",
+          "limitations": []
+        },
+        {
+          "metric": "net_advances",
+          "formula": "advancers - decliners",
+          "input_refs": [
+            "cross-section:NASDAQ_TRADER_YTD:breadth"
+          ],
+          "result": -1491.0,
+          "unit": "issues",
+          "scope": "NASDAQ_LISTED_ISSUES",
+          "as_of_date": "2026-08-20",
+          "limitations": []
+        },
+        {
+          "metric": "advance_share",
+          "formula": "advancers / (advancers + decliners + unchanged)",
+          "input_refs": [
+            "cross-section:NASDAQ_TRADER_YTD:breadth"
+          ],
+          "result": 0.3335859064216708,
+          "unit": "ratio",
+          "scope": "NASDAQ_LISTED_ISSUES",
+          "as_of_date": "2026-08-20",
+          "limitations": []
+        },
+        {
+          "metric": "decline_share",
+          "formula": "decliners / (advancers + decliners + unchanged)",
+          "input_refs": [
+            "cross-section:NASDAQ_TRADER_YTD:breadth"
+          ],
+          "result": 0.6160257624550104,
+          "unit": "ratio",
+          "scope": "NASDAQ_LISTED_ISSUES",
+          "as_of_date": "2026-08-20",
+          "limitations": []
+        },
+        {
+          "metric": "advance_decline_ratio",
+          "formula": "advancers / decliners",
+          "input_refs": [
+            "cross-section:NASDAQ_TRADER_YTD:breadth"
+          ],
+          "result": 0.5415129151291513,
+          "unit": "ratio",
+          "scope": "NASDAQ_LISTED_ISSUES",
+          "as_of_date": "2026-08-20",
+          "limitations": []
+        }
+      ],
+      "session_context": {
+        "role": "regular",
+        "assessment_state": "provisional",
+        "market_date": "2026-08-25",
+        "latest_completed_regular_session_date": "2026-08-24",
+        "timezone": "America/New_York",
+        "market_calendar_ref": "existing_market_session_service",
+        "provider_publication_state": "PROVIDER_COMPLETE"
+      },
+      "official_event_sources": [
+        "SEC",
+        "company_ir",
+        "Federal_Reserve",
+        "US_Treasury",
+        "BLS",
+        "BEA",
+        "exchange_or_regulator"
+      ],
+      "data_gaps": [
+        "local_indices_unavailable",
+        "sector_context_unavailable",
+        "size_context_unavailable",
+        "us_participant_flow_not_supported"
+      ]
+    }
+  },
+  "nyse": {
+    "status": "UNAVAILABLE",
+    "reason": "No free official structured breadth source passed the v1 audit."
+  }
+}
