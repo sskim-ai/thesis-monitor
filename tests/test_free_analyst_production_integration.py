@@ -198,6 +198,8 @@ def test_candidate_provenance_contains_required_audit_fields() -> None:
     assert provenance["free_analyst_generated"] is True
     assert provenance["free_analyst_validation"] == "PASS"
     assert provenance["hard_validation"] == "PASS"
+    assert provenance["semantic_ownership_validation"] == "PASS"
+    assert not any(provenance["semantic_ownership_mismatches"].values())
     assert provenance["canary_selected"] is True
 
 

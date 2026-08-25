@@ -6,13 +6,13 @@ Current state:
 
 ```text
 PRODUCTION_ASSIST_CONTROL_PLANE=B
-COMMON_AI_CORE_V1=INTEGRATED_READY_NOT_ARMED
-FREE_ANALYST_ADAPTIVE_CANARY=READY_NOT_ARMED
+COMMON_AI_CORE_V1=INTEGRATED
+FREE_ANALYST_ADAPTIVE_CANARY=ARMED_LIMITED
 ```
 
 Production Assist remains off as a governance state. The existing Pilot gate is already enabled and
-can select current validated AI output, so it does not prohibit this bounded canary. This task does
-not change that Pilot setting, and the independent Free Analyst kill switch remains off/current.
+can select current validated AI output, so it does not prohibit this bounded canary. This repair does
+not change that Pilot setting. Full Free Analyst mode remains off; only the bounded `1/2/3` canary is armed.
 
 ## Eligibility
 
@@ -21,12 +21,16 @@ A message is eligible only when:
 - natural-packet adaptation passes
 - Free Analyst structured analysis validates
 - every support reference resolves
+- semantic owner identity matches the current entity, ticker, market, and packet
+- industry concepts, thesis drivers, relations, and expectation level resolve to current-message refs
 - Adaptive selection and rendering pass
 - material information loss is zero
 - numeric, semantic, temporal, language, relation, and causality checks pass
 - Trade AR is absent
 - no Open Research dependency exists
 - packet and receipt ownership are unambiguous
+
+Semantic ownership is a hard eligibility gate shared by canary and any future full mode. A non-zero ownership mismatch rejects only that message and selects its deterministic fallback.
 
 ## Limits
 

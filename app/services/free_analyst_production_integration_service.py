@@ -141,6 +141,16 @@ def _hard_safety_errors(result: AdaptiveRendererResult) -> tuple[str, ...]:
         "hidden_arithmetic",
         "external_knowledge",
         "material_information_loss",
+        "entity_owner_mismatch",
+        "ticker_owner_mismatch",
+        "market_owner_mismatch",
+        "packet_owner_mismatch",
+        "support_ref_owner_mismatch",
+        "industry_context_mismatch",
+        "thesis_driver_owner_mismatch",
+        "fact_ref_owner_mismatch",
+        "relation_owner_mismatch",
+        "expectation_owner_mismatch",
     )
     for key in count_keys:
         if int(safety.get(key) or 0):
@@ -228,6 +238,8 @@ def build_production_candidate(
             adapter.normalized_text,
             benchmark_id=message_key,
             deterministic_reference=deterministic_text,
+            market=market,
+            packet_owner=message_key,
         )
     except (LookupError, RuntimeError, TypeError, ValueError) as exc:
         return ProductionCandidate(
@@ -423,6 +435,29 @@ def candidate_provenance(
     selection: CanarySelection,
 ) -> dict[str, object]:
     row = selection.row_for(candidate.message_key)
+    ownership_keys = (
+        "entity_owner_mismatch",
+        "ticker_owner_mismatch",
+        "market_owner_mismatch",
+        "packet_owner_mismatch",
+        "support_ref_owner_mismatch",
+        "industry_context_mismatch",
+        "thesis_driver_owner_mismatch",
+        "fact_ref_owner_mismatch",
+        "relation_owner_mismatch",
+        "expectation_owner_mismatch",
+    )
+    ownership_counts = {
+        key: int(candidate.result.safety.get(key) or 0) if candidate.result is not None else 0
+        for key in ownership_keys
+    }
+    semantic_ownership_validation = (
+        "PASS"
+        if candidate.result is not None
+        and candidate.result.synthesis_validation.get("status") == "PASS"
+        and not any(ownership_counts.values())
+        else "FAIL"
+    )
     return {
         "analysis_mode": CommonAIAnalysisMode.FREE_ANALYST_ADAPTIVE_CANARY,
         "free_analyst_generated": candidate.result is not None,
@@ -434,6 +469,8 @@ def candidate_provenance(
         "selected_renderer": candidate.selected_renderer,
         "renderer_selection_reasons": list(candidate.renderer_selection_reasons),
         "hard_validation": candidate.hard_validation,
+        "semantic_ownership_validation": semantic_ownership_validation,
+        "semantic_ownership_mismatches": ownership_counts,
         "fallback_reason": (None if row.canary_selected else row.selection_reason),
         "final_delivery_mode": row.final_simulated_delivery_mode,
         "canary_candidate": row.canary_candidate,

@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import re
 from collections import Counter
-from dataclasses import asdict, dataclass
+from dataclasses import asdict, dataclass, replace
 from enum import StrEnum
 
 from app.services.free_analyst_message_service import (
@@ -15,6 +15,7 @@ from app.services.free_analyst_message_service import (
 
 
 CONTRACT_VERSION = "evidence-locked-free-analyst-v1"
+SEMANTIC_OWNERSHIP_CONTRACT_VERSION = "free-analyst-semantic-ownership-v1"
 
 
 class SupportType(StrEnum):
@@ -67,11 +68,53 @@ class CurrentBalance(StrEnum):
     UNRESOLVED = "unresolved"
 
 
+class SemanticConceptFamily(StrEnum):
+    MEMORY_HBM = "memory_hbm"
+    MEMORY_ASP = "memory_asp"
+    MEMORY_PRODUCT_MIX = "memory_product_mix"
+    OPERATING_PRODUCT_MIX = "operating_product_mix"
+    DEFENSE_BACKLOG = "defense_backlog"
+    DEFENSE_DELIVERY = "defense_delivery"
+    DEFENSE_PROJECT_MARGIN = "defense_project_margin"
+    INSURANCE_UNDERWRITING = "insurance_underwriting"
+    LOGISTICS_FREIGHT = "logistics_freight"
+    CLOUD_AI_CAPEX = "cloud_ai_capex"
+    HPC_EXECUTION = "hpc_execution"
+
+
+@dataclass(frozen=True)
+class SemanticOwnerIdentity:
+    entity_owner: str
+    ticker_owner: str
+    market_owner: str
+    packet_owner: str
+
+
+@dataclass(frozen=True)
+class ClaimOwnership:
+    contract: str
+    entity_owner: str
+    ticker_owner: str
+    market_owner: str
+    packet_owner: str
+    industry_context_owner: str
+    thesis_driver_refs: tuple[str, ...]
+    fact_refs: tuple[str, ...]
+    relation_refs: tuple[str, ...]
+    expectation_refs: tuple[str, ...]
+    valuation_refs: tuple[str, ...]
+    unknown_refs: tuple[str, ...]
+    concept_families: tuple[SemanticConceptFamily, ...]
+    expectation_level: str
+
+
 @dataclass(frozen=True)
 class EvidenceAtom:
     ref: str
     section_key: str
     text: str
+    owner: SemanticOwnerIdentity
+    concept_families: tuple[SemanticConceptFamily, ...]
 
 
 @dataclass(frozen=True)
@@ -85,6 +128,7 @@ class AnalysisItem:
     rule_id: InferenceRule | None = None
     direction: Direction = Direction.NEUTRAL
     boundary: str = ""
+    ownership: ClaimOwnership | None = None
 
 
 @dataclass(frozen=True)
@@ -103,6 +147,7 @@ class UnknownItem:
     why_it_matters: str
     evidence_needed: str
     evidence_refs: tuple[str, ...]
+    ownership: ClaimOwnership | None = None
 
 
 @dataclass(frozen=True)
@@ -111,6 +156,7 @@ class NextCheck:
     linked_thesis_driver: str
     linked_unknown: str
     evidence_refs: tuple[str, ...]
+    ownership: ClaimOwnership | None = None
 
 
 @dataclass(frozen=True)
@@ -125,6 +171,8 @@ class MessagePlan:
 class FreeAnalystAnalysis:
     analysis_version: str
     benchmark_id: str
+    semantic_owner: SemanticOwnerIdentity
+    industry_context_owner: str
     preamble: str
     evidence_catalog: tuple[EvidenceAtom, ...]
     top_findings: tuple[AnalysisItem, ...]
@@ -246,20 +294,186 @@ _ALLOWED_ANALYTIC_TOKENS = {
     "USDC",
 }
 
+_ENTITY_LINE = re.compile(r"^🏢\s*(?P<entity>.+?)\((?P<ticker>[^()]+)\)\s*$", re.MULTILINE)
+
+
+def _semantic_owner(
+    current_ai_text: str,
+    *,
+    benchmark_id: str,
+    market: str | None,
+    packet_owner: str | None,
+) -> SemanticOwnerIdentity:
+    matched = _ENTITY_LINE.search(current_ai_text)
+    entity = matched.group("entity").strip() if matched else "market"
+    ticker = matched.group("ticker").strip() if matched else ""
+    inferred_market = market
+    if inferred_market is None:
+        preamble = parse_rendered_message(current_ai_text).preamble
+        if re.search(r"(?:\bKR\b|한국|국내)", preamble, re.IGNORECASE):
+            inferred_market = "kr"
+        elif re.search(r"(?:\bUS\b|미국)", preamble, re.IGNORECASE):
+            inferred_market = "us"
+        else:
+            inferred_market = "unknown"
+    return SemanticOwnerIdentity(
+        entity_owner=entity,
+        ticker_owner=ticker,
+        market_owner=inferred_market,
+        packet_owner=packet_owner or benchmark_id,
+    )
+
+
+def _industry_context_owner(text: str) -> str:
+    checks = (
+        ("memory", r"(?:HBM|DRAM|NAND|메모리)"),
+        ("defense", r"(?:지상방산|방산|K9|천무)"),
+        ("steel_materials", r"(?:철강|스프레드|원재료)"),
+        ("insurance", r"(?:보험영업|재보험|합산비율|combined ratio|CSM)"),
+        ("logistics", r"(?:물류|선대|운임|freight)"),
+        ("cloud_platform", r"(?:AI·Cloud|Cloud 성장|클라우드 마진)"),
+        ("hpc_data_center", r"(?:HPC lease|가동·매출|energized capacity)"),
+    )
+    for owner, pattern in checks:
+        if re.search(pattern, text, re.IGNORECASE):
+            return owner
+    return "general"
+
+
+def _concept_families(
+    text: str,
+    *,
+    industry_context_owner: str,
+) -> tuple[SemanticConceptFamily, ...]:
+    concepts: list[SemanticConceptFamily] = []
+
+    def add(concept: SemanticConceptFamily, pattern: str) -> None:
+        if re.search(pattern, text, re.IGNORECASE):
+            concepts.append(concept)
+
+    add(SemanticConceptFamily.MEMORY_HBM, r"(?<![A-Z0-9])HBM(?![A-Z0-9])")
+    add(SemanticConceptFamily.MEMORY_ASP, r"(?<![A-Z0-9])ASP(?![A-Z0-9])")
+    if re.search(r"(?:제품\s*믹스|product\s+mix)", text, re.IGNORECASE):
+        concepts.append(
+            SemanticConceptFamily.MEMORY_PRODUCT_MIX
+            if industry_context_owner == "memory"
+            else SemanticConceptFamily.OPERATING_PRODUCT_MIX
+        )
+    if industry_context_owner == "defense":
+        add(SemanticConceptFamily.DEFENSE_BACKLOG, r"(?:수주잔고|대형\s*수주)")
+        add(SemanticConceptFamily.DEFENSE_DELIVERY, r"(?:인도|납품)")
+        add(SemanticConceptFamily.DEFENSE_PROJECT_MARGIN, r"(?:방산.*마진|지상방산.*수익성)")
+    add(SemanticConceptFamily.INSURANCE_UNDERWRITING, r"(?:보험영업|합산비율|combined ratio|CSM)")
+    add(SemanticConceptFamily.LOGISTICS_FREIGHT, r"(?:선대|운임|freight)")
+    add(SemanticConceptFamily.CLOUD_AI_CAPEX, r"(?:AI.*Cloud|Cloud.*(?:CAPEX|투자)|AI\s*투자)")
+    add(SemanticConceptFamily.HPC_EXECUTION, r"(?:HPC|가동.*매출.*현금전환)")
+    return tuple(dict.fromkeys(concepts))
+
+
+def _expectation_level(catalog: tuple[EvidenceAtom, ...]) -> str:
+    text = _source_text(catalog, _expectation_ref(catalog))
+    if not text:
+        return "unknown"
+    return text.split(":", 1)[-1].strip()
+
+
+def _claim_ownership(
+    *,
+    owner: SemanticOwnerIdentity,
+    industry_context_owner: str,
+    evidence_refs: tuple[str, ...],
+    catalog: tuple[EvidenceAtom, ...],
+    text: str,
+) -> ClaimOwnership:
+    by_ref = {atom.ref: atom for atom in catalog}
+
+    def refs_for(*section_keys: str) -> tuple[str, ...]:
+        wanted = set(section_keys)
+        return tuple(
+            ref for ref in evidence_refs if ref in by_ref and by_ref[ref].section_key in wanted
+        )
+
+    return ClaimOwnership(
+        contract=SEMANTIC_OWNERSHIP_CONTRACT_VERSION,
+        entity_owner=owner.entity_owner,
+        ticker_owner=owner.ticker_owner,
+        market_owner=owner.market_owner,
+        packet_owner=owner.packet_owner,
+        industry_context_owner=industry_context_owner,
+        thesis_driver_refs=refs_for("core", "next_check"),
+        fact_refs=refs_for("business"),
+        relation_refs=refs_for("business", "supply"),
+        expectation_refs=tuple(
+            ref
+            for ref in refs_for("metadata")
+            if by_ref[ref].text.startswith("시장 기대:")
+        ),
+        valuation_refs=refs_for("valuation"),
+        unknown_refs=refs_for("unknown", "next_check"),
+        concept_families=_concept_families(
+            text,
+            industry_context_owner=industry_context_owner,
+        ),
+        expectation_level=_expectation_level(catalog),
+    )
+
+
+def _bind_item_ownership(
+    item: AnalysisItem,
+    *,
+    owner: SemanticOwnerIdentity,
+    industry_context_owner: str,
+    catalog: tuple[EvidenceAtom, ...],
+) -> AnalysisItem:
+    return replace(
+        item,
+        ownership=_claim_ownership(
+            owner=owner,
+            industry_context_owner=industry_context_owner,
+            evidence_refs=item.evidence_refs,
+            catalog=catalog,
+            text=item.text,
+        ),
+    )
+
 
 def _safe_id(value: str) -> str:
     normalized = re.sub(r"[^a-zA-Z0-9]+", "-", value).strip("-").lower()
     return normalized or "benchmark"
 
 
-def build_evidence_catalog(current_ai_text: str) -> tuple[EvidenceAtom, ...]:
+def build_evidence_catalog(
+    current_ai_text: str,
+    *,
+    owner: SemanticOwnerIdentity | None = None,
+    benchmark_id: str = "analysis",
+    market: str | None = None,
+    packet_owner: str | None = None,
+) -> tuple[EvidenceAtom, ...]:
     parsed = parse_rendered_message(current_ai_text)
+    resolved_owner = owner or _semantic_owner(
+        current_ai_text,
+        benchmark_id=benchmark_id,
+        market=market,
+        packet_owner=packet_owner,
+    )
+    industry_owner = (
+        "market_global" if not resolved_owner.ticker_owner else _industry_context_owner(current_ai_text)
+    )
     prefix = "evidence"
     atoms: list[EvidenceAtom] = []
     metadata_index = 0
     for line in _content_lines(parsed.preamble):
         metadata_index += 1
-        atoms.append(EvidenceAtom(f"{prefix}:metadata:{metadata_index:02d}", "metadata", line))
+        atoms.append(
+            EvidenceAtom(
+                f"{prefix}:metadata:{metadata_index:02d}",
+                "metadata",
+                line,
+                resolved_owner,
+                _concept_families(line, industry_context_owner=industry_owner),
+            )
+        )
     section_counts: Counter[str] = Counter()
     for section in parsed.sections:
         section_counts[section.key] += 1
@@ -268,6 +482,8 @@ def build_evidence_catalog(current_ai_text: str) -> tuple[EvidenceAtom, ...]:
                 f"{prefix}:{section.key}:{section_counts[section.key]:02d}",
                 section.key,
                 section.body,
+                resolved_owner,
+                _concept_families(section.body, industry_context_owner=industry_owner),
             )
         )
     return tuple(atoms)
@@ -398,6 +614,7 @@ def _expectation_item(
     current_ai_text: str,
     catalog: tuple[EvidenceAtom, ...],
     category: str,
+    industry_context_owner: str,
 ) -> AnalysisItem | None:
     expectation = _expectation_ref(catalog)
     if not expectation:
@@ -405,21 +622,34 @@ def _expectation_item(
     expectation_text = _source_text(catalog, expectation)
     if "균형" in expectation_text:
         return None
+    if "매우 높" in expectation_text:
+        level = "매우 높은 기대"
+    elif "높" in expectation_text:
+        level = "높은 기대"
+    elif "투기" in expectation_text:
+        level = "투기적 기대"
+    else:
+        return None
+    inventory_focus = {
+        "memory": "HBM 실행과 수익성의 지속 확인",
+        "defense": "수주잔고의 인도와 방산 수익성의 지속 확인",
+        "steel_materials": "철강 스프레드와 운전자본 회수의 확인",
+    }.get(industry_context_owner, "핵심 사업 실행과 수익성의 지속 확인")
     phrases = {
-        "inventory_low": "매우 높은 기대를 정당화하려면 재고 관계 하나보다 핵심 실행과 수익성의 지속 확인이 더 중요합니다.",
-        "inventory_high": "높은 기대 아래에서는 재고 부담 가능성을 해소할 실적 근거가 추가로 확인돼야 합니다.",
-        "order_cash": "높은 기대를 추가로 정당화하려면 수주 규모보다 현금 회수까지 이어지는 근거가 필요합니다.",
-        "contract_cash": "높은 기대를 추가로 정당화하려면 수주잔고보다 인도와 운전자본 회수의 확인이 필요합니다.",
-        "fleet_cash": "높은 기대를 추가로 정당화하려면 물류 흐름과 자산 투자 회수가 함께 확인돼야 합니다.",
-        "hpc": "투기적 기대를 정당화하려면 가격 반등보다 가동·매출·현금전환의 연결이 먼저 확인돼야 합니다.",
-        "platform": "투기적 기대를 정당화하려면 단일 매출보다 수익원 전환과 현금흐름의 질이 확인돼야 합니다.",
-        "cloud_fcf": "높은 기대를 정당화하려면 AI 투자 확대가 Cloud 성장·마진과 현금 회수로 이어지는 확인이 필요합니다.",
-        "memory_fcf": "매우 높은 기대를 정당화하려면 확대된 현금흐름이 메모리 사이클 전반에서 지속되는지 확인해야 합니다.",
+        "inventory_low": f"{level}를 정당화하려면 재고 관계 하나보다 {inventory_focus}이 더 중요합니다.",
+        "inventory_high": f"{level} 아래에서는 재고 부담 가능성을 해소할 실적 근거가 추가로 확인돼야 합니다.",
+        "order_cash": f"{level}를 추가로 정당화하려면 수주 규모보다 현금 회수까지 이어지는 근거가 필요합니다.",
+        "contract_cash": f"{level}를 추가로 정당화하려면 수주잔고보다 인도와 운전자본 회수의 확인이 필요합니다.",
+        "fleet_cash": f"{level}를 추가로 정당화하려면 물류 흐름과 자산 투자 회수가 함께 확인돼야 합니다.",
+        "hpc": f"{level}를 정당화하려면 가격 반등보다 가동·매출·현금전환의 연결이 먼저 확인돼야 합니다.",
+        "platform": f"{level}를 정당화하려면 단일 매출보다 수익원 전환과 현금흐름의 질이 확인돼야 합니다.",
+        "cloud_fcf": f"{level}를 정당화하려면 AI 투자 확대가 Cloud 성장·마진과 현금 회수로 이어지는 확인이 필요합니다.",
+        "memory_fcf": f"{level}를 정당화하려면 확대된 현금흐름이 메모리 사이클 전반에서 지속되는지 확인해야 합니다.",
     }
     text = phrases.get(category)
     if text is None:
         return None
-    refs = (*expectation, *_refs(catalog, "core", "next_check"))
+    refs = (*expectation, *_refs(catalog, "core", "business", "next_check"))
     return _item(
         item_id=f"{identifier}-expectation",
         text=text,
@@ -431,13 +661,27 @@ def _expectation_item(
     )
 
 
-def _thesis_implication_text(category: str, business: str) -> str:
+def _thesis_implication_text(
+    category: str,
+    business: str,
+    *,
+    industry_context_owner: str,
+) -> str:
     if category == "inventory_low":
-        return "이 재고 관계는 현재 투자 논리를 약화시키지는 않지만, HBM 실행과 수익성의 지속 확인을 대체하지 못합니다."
-    if category == "inventory_high" and "DS" in business:
-        return "따라서 DS 재고 부담 가능성은 열려 있으며, HBM 채택과 마진의 다음 확인 전에는 구조적 개선을 확정하기 어렵습니다."
+        focus = {
+            "memory": "HBM 실행과 수익성의 지속 확인",
+            "defense": "지상방산 수주잔고의 인도와 수익성 지속 확인",
+            "steel_materials": "철강 스프레드와 소재 현금 회수의 확인",
+        }.get(industry_context_owner, "핵심 사업 실행과 수익성의 지속 확인")
+        return f"이 재고 관계는 현재 투자 논리를 약화시키지는 않지만, {focus}을 대체하지 못합니다."
+    if category == "inventory_high" and industry_context_owner == "memory":
+        return "따라서 메모리 재고 부담 가능성은 열려 있으며, HBM 채택과 마진의 다음 확인 전에는 구조적 개선을 확정하기 어렵습니다."
     if category == "inventory_high":
-        return "따라서 재고 관계는 철강 스프레드와 소재 현금 회수의 확인 필요성을 높이지만, 사이클 악화를 확정하지는 않습니다."
+        if industry_context_owner == "steel_materials":
+            return "따라서 재고 관계는 철강 스프레드와 소재 현금 회수의 확인 필요성을 높이지만, 사이클 악화를 확정하지는 않습니다."
+        if industry_context_owner == "defense":
+            return "따라서 재고 관계는 방산 인도와 운전자본 회수의 확인 필요성을 높이지만, 사업 악화를 확정하지는 않습니다."
+        return "따라서 재고 관계는 운전자본 전환의 확인 필요성을 높이지만, 사업 악화를 확정하지는 않습니다."
     if category == "insurance":
         return "따라서 보험영업과 자본 여력이 확인되기 전에는 새로운 방향 전환도 성립하지 않습니다."
     if category == "order_cash":
@@ -461,9 +705,20 @@ def build_free_analyst_analysis(
     current_ai_text: str,
     *,
     benchmark_id: str = "analysis",
+    market: str | None = None,
+    packet_owner: str | None = None,
 ) -> FreeAnalystAnalysis:
     parsed = parse_rendered_message(current_ai_text)
-    catalog = build_evidence_catalog(current_ai_text)
+    semantic_owner = _semantic_owner(
+        current_ai_text,
+        benchmark_id=benchmark_id,
+        market=market,
+        packet_owner=packet_owner,
+    )
+    industry_context_owner = (
+        "market_global" if parsed.is_market_digest else _industry_context_owner(current_ai_text)
+    )
+    catalog = build_evidence_catalog(current_ai_text, owner=semantic_owner)
     identifier = _safe_id(benchmark_id)
     core_refs = _refs(catalog, "core")
     business_refs = _refs(catalog, "business")
@@ -473,6 +728,9 @@ def build_free_analyst_analysis(
     )
     business = _first_body(current_ai_text, "business")
     core = _first_body(current_ai_text, "core")
+    supported_concepts = {
+        concept for atom in catalog for concept in atom.concept_families
+    }
     next_checks = _next_check(current_ai_text, catalog)
     top: list[AnalysisItem] = []
     thesis: list[AnalysisItem] = []
@@ -509,12 +767,30 @@ def build_free_analyst_analysis(
             )
             top.append(primary)
             positive = primary
+            if industry_context_owner == "memory" and {
+                SemanticConceptFamily.MEMORY_ASP,
+                SemanticConceptFamily.MEMORY_PRODUCT_MIX,
+            }.issubset(supported_concepts):
+                negative_text = "다만 ASP와 제품 믹스의 영향이 남아 있어 이 관계만으로 최종 수요 개선을 단정하기 어렵습니다."
+                unresolved_reason = "ASP, product mix, and demand are not separated by the relation."
+            elif industry_context_owner == "memory":
+                negative_text = "다만 재고와 매출의 상대 변화만으로 출하 시점과 수익성 개선을 단정하기 어렵습니다."
+                unresolved_reason = "shipment timing, profitability, and demand are not separated."
+            elif industry_context_owner == "defense":
+                negative_text = "다만 인도 시점과 계약별 매출 인식의 영향이 남아 있어 이 관계만으로 방산 수요의 현금 전환을 단정하기 어렵습니다."
+                unresolved_reason = "delivery timing, revenue recognition, and cash conversion are not separated."
+            elif industry_context_owner == "steel_materials":
+                negative_text = "다만 원재료 가격과 철강 스프레드의 영향이 남아 있어 이 관계만으로 수요 개선을 단정하기 어렵습니다."
+                unresolved_reason = "raw-material prices, spread, and demand are not separated."
+            else:
+                negative_text = "다만 가격과 물량의 영향이 분리되지 않아 이 관계만으로 최종 수요 개선을 단정하기 어렵습니다."
+                unresolved_reason = "price, volume, and demand are not separated by the relation."
             negative = _item(
                 item_id=f"{identifier}-inventory-boundary",
-                text="다만 ASP와 제품 믹스의 영향이 남아 있어 이 관계만으로 최종 수요 개선을 단정하기 어렵습니다.",
+                text=negative_text,
                 support_type=SupportType.ALTERNATIVE_INTERPRETATION,
-                evidence_refs=business_refs,
-                materiality_reason="preserves the price and mix alternative",
+                evidence_refs=common_refs,
+                materiality_reason="preserves the current entity's operating alternative",
                 rule_id=InferenceRule.INVENTORY_ALTERNATIVES,
                 boundary="수요 방향은 추가 영업 근거가 필요합니다.",
                 direction=Direction.MIXED,
@@ -526,7 +802,7 @@ def build_free_analyst_analysis(
                     negative_interpretation=negative,
                     evidence_refs=business_refs,
                     current_balance=CurrentBalance.MIXED,
-                    unresolved_reason="ASP, product mix, and demand are not separated by the relation.",
+                    unresolved_reason=unresolved_reason,
                 )
             )
         elif "재고 증가율" in business and "앞섰습니다" in business:
@@ -543,16 +819,19 @@ def build_free_analyst_analysis(
                 direction=Direction.CHALLENGES,
             )
             top.append(primary)
-            positive_text = (
-                "ASP나 제품 믹스 변화가 재고 관계에 영향을 준 결과일 가능성은 남아 있습니다."
-                if "DS" in business
-                else "철강 물량과 원재료 가격 변화가 재고 관계에 영향을 준 결과일 가능성은 남아 있습니다."
-            )
+            if industry_context_owner == "memory":
+                positive_text = "ASP나 제품 믹스 변화가 재고 관계에 영향을 준 결과일 가능성은 남아 있습니다."
+            elif industry_context_owner == "steel_materials":
+                positive_text = "철강 물량과 원재료 가격 변화가 재고 관계에 영향을 준 결과일 가능성은 남아 있습니다."
+            elif industry_context_owner == "defense":
+                positive_text = "인도 일정과 계약별 매출 인식이 재고 관계에 영향을 준 결과일 가능성은 남아 있습니다."
+            else:
+                positive_text = "가격이나 물량 변화가 재고 관계에 영향을 준 결과일 가능성은 남아 있습니다."
             positive = _item(
                 item_id=f"{identifier}-inventory-scale-alternative",
                 text=positive_text,
                 support_type=SupportType.ALTERNATIVE_INTERPRETATION,
-                evidence_refs=business_refs,
+                evidence_refs=common_refs,
                 materiality_reason="keeps a non-deterioration explanation open",
                 rule_id=InferenceRule.INVENTORY_ALTERNATIVES,
                 boundary="상대 증가율만으로 원인을 식별할 수 없습니다.",
@@ -705,7 +984,11 @@ def build_free_analyst_analysis(
         thesis.append(
             _item(
                 item_id=f"{identifier}-thesis-implication",
-                text=_thesis_implication_text(category, business),
+                text=_thesis_implication_text(
+                    category,
+                    business,
+                    industry_context_owner=industry_context_owner,
+                ),
                 support_type=SupportType.THESIS_LINKAGE,
                 evidence_refs=common_refs,
                 materiality_reason="states what the evidence changes and does not change",
@@ -723,6 +1006,7 @@ def build_free_analyst_analysis(
             current_ai_text=current_ai_text,
             catalog=catalog,
             category=category,
+            industry_context_owner=industry_context_owner,
         )
         if expectation_item is not None:
             expectation.append(expectation_item)
@@ -743,9 +1027,92 @@ def build_free_analyst_analysis(
     if not alternatives:
         omitted.append("alternative_interpretation")
 
+    top = [
+        _bind_item_ownership(
+            item,
+            owner=semantic_owner,
+            industry_context_owner=industry_context_owner,
+            catalog=catalog,
+        )
+        for item in top
+    ]
+    thesis = [
+        _bind_item_ownership(
+            item,
+            owner=semantic_owner,
+            industry_context_owner=industry_context_owner,
+            catalog=catalog,
+        )
+        for item in thesis
+    ]
+    alternatives = [
+        replace(
+            row,
+            positive_interpretation=_bind_item_ownership(
+                row.positive_interpretation,
+                owner=semantic_owner,
+                industry_context_owner=industry_context_owner,
+                catalog=catalog,
+            ),
+            negative_interpretation=_bind_item_ownership(
+                row.negative_interpretation,
+                owner=semantic_owner,
+                industry_context_owner=industry_context_owner,
+                catalog=catalog,
+            ),
+        )
+        for row in alternatives
+    ]
+    expectation = [
+        _bind_item_ownership(
+            item,
+            owner=semantic_owner,
+            industry_context_owner=industry_context_owner,
+            catalog=catalog,
+        )
+        for item in expectation
+    ]
+    positioning_rows = tuple(
+        _bind_item_ownership(
+            item,
+            owner=semantic_owner,
+            industry_context_owner=industry_context_owner,
+            catalog=catalog,
+        )
+        for item in positioning_rows
+    )
+    unknowns = tuple(
+        replace(
+            row,
+            ownership=_claim_ownership(
+                owner=semantic_owner,
+                industry_context_owner=industry_context_owner,
+                evidence_refs=row.evidence_refs,
+                catalog=catalog,
+                text=row.unresolved_question,
+            ),
+        )
+        for row in _unknowns(current_ai_text, catalog)
+    )
+    next_checks = tuple(
+        replace(
+            row,
+            ownership=_claim_ownership(
+                owner=semantic_owner,
+                industry_context_owner=industry_context_owner,
+                evidence_refs=row.evidence_refs,
+                catalog=catalog,
+                text=row.check,
+            ),
+        )
+        for row in next_checks
+    )
+
     return FreeAnalystAnalysis(
         analysis_version=CONTRACT_VERSION,
         benchmark_id=benchmark_id,
+        semantic_owner=semantic_owner,
+        industry_context_owner=industry_context_owner,
         preamble=parsed.preamble,
         evidence_catalog=catalog,
         top_findings=tuple(top),
@@ -753,7 +1120,7 @@ def build_free_analyst_analysis(
         alternative_interpretations=tuple(alternatives),
         expectation_valuation_interaction=tuple(expectation),
         positioning_synthesis=positioning_rows,
-        unknowns=_unknowns(current_ai_text, catalog),
+        unknowns=unknowns,
         next_checks=next_checks,
         message_plan=MessagePlan(
             primary_conclusion=top[0].item_id,
@@ -772,6 +1139,101 @@ def _rule_sections(
     catalog: dict[str, EvidenceAtom],
 ) -> frozenset[str]:
     return frozenset(catalog[ref].section_key for ref in item.evidence_refs if ref in catalog)
+
+
+def _owner_mismatch_codes(
+    ownership: ClaimOwnership,
+    expected: SemanticOwnerIdentity,
+) -> tuple[str, ...]:
+    checks = (
+        ("entity_owner_mismatch", ownership.entity_owner, expected.entity_owner),
+        ("ticker_owner_mismatch", ownership.ticker_owner, expected.ticker_owner),
+        ("market_owner_mismatch", ownership.market_owner, expected.market_owner),
+        ("packet_owner_mismatch", ownership.packet_owner, expected.packet_owner),
+    )
+    return tuple(code for code, actual, wanted in checks if actual != wanted)
+
+
+def _validate_claim_ownership(
+    *,
+    item_id: str,
+    text: str,
+    evidence_refs: tuple[str, ...],
+    ownership: ClaimOwnership | None,
+    analysis: FreeAnalystAnalysis,
+    catalog: dict[str, EvidenceAtom],
+) -> list[ValidationIssue]:
+    if ownership is None:
+        return [ValidationIssue("semantic_ownership_missing", item_id, text)]
+    issues = [
+        ValidationIssue(code, item_id, text)
+        for code in _owner_mismatch_codes(ownership, analysis.semantic_owner)
+    ]
+    if ownership.industry_context_owner != analysis.industry_context_owner:
+        issues.append(
+            ValidationIssue(
+                "industry_context_owner_mismatch",
+                item_id,
+                f"claim={ownership.industry_context_owner} current={analysis.industry_context_owner}",
+            )
+        )
+    for ref in evidence_refs:
+        atom = catalog.get(ref)
+        if atom is not None and atom.owner != analysis.semantic_owner:
+            issues.append(ValidationIssue("support_ref_owner_mismatch", item_id, ref))
+
+    role_refs = (
+        ("thesis_driver_owner_mismatch", ownership.thesis_driver_refs),
+        ("fact_ref_owner_mismatch", ownership.fact_refs),
+        ("relation_owner_mismatch", ownership.relation_refs),
+        ("expectation_owner_mismatch", ownership.expectation_refs),
+        ("valuation_owner_mismatch", ownership.valuation_refs),
+        ("unknown_owner_mismatch", ownership.unknown_refs),
+    )
+    for code, refs in role_refs:
+        for ref in refs:
+            atom = catalog.get(ref)
+            if ref not in evidence_refs or atom is None or atom.owner != analysis.semantic_owner:
+                issues.append(ValidationIssue(code, item_id, ref))
+
+    declared = set(ownership.concept_families)
+    detected = set(
+        _concept_families(text, industry_context_owner=analysis.industry_context_owner)
+    )
+    if detected != declared:
+        issues.append(
+            ValidationIssue(
+                "semantic_concept_declaration_mismatch",
+                item_id,
+                f"declared={sorted(declared)} detected={sorted(detected)}",
+            )
+        )
+    supported = {
+        concept
+        for ref in evidence_refs
+        if ref in catalog
+        for concept in catalog[ref].concept_families
+    }
+    unsupported = declared - supported
+    if unsupported:
+        issues.append(
+            ValidationIssue(
+                "industry_concept_ownership_mismatch",
+                item_id,
+                ", ".join(sorted(concept.value for concept in unsupported)),
+            )
+        )
+
+    expectation_source = "\n".join(
+        catalog[ref].text for ref in ownership.expectation_refs if ref in catalog
+    )
+    if "매우 높은 기대" in text and "매우 높" not in expectation_source:
+        issues.append(ValidationIssue("expectation_level_mismatch", item_id, text))
+    elif "높은 기대" in text and not re.search(r"(?:매우\s*)?높", expectation_source):
+        issues.append(ValidationIssue("expectation_level_mismatch", item_id, text))
+    elif "투기적 기대" in text and "투기" not in expectation_source:
+        issues.append(ValidationIssue("expectation_level_mismatch", item_id, text))
+    return issues
 
 
 def validate_free_analyst_analysis(
@@ -793,6 +1255,16 @@ def validate_free_analyst_analysis(
                 )
             )
             continue
+        issues.extend(
+            _validate_claim_ownership(
+                item_id=item.item_id,
+                text=item.text,
+                evidence_refs=item.evidence_refs,
+                ownership=item.ownership,
+                analysis=analysis,
+                catalog=catalog,
+            )
+        )
         source = _source_text(analysis.evidence_catalog, item.evidence_refs)
         if item.support_type in {SupportType.DIRECT_FACT, SupportType.DIRECT_RELATION}:
             if item.text not in source:
@@ -866,6 +1338,18 @@ def validate_free_analyst_analysis(
             issues.append(ValidationIssue("temporal_leakage", item.item_id, item.text))
 
     for row in (*analysis.unknowns, *analysis.next_checks):
+        row_id = "unknown" if isinstance(row, UnknownItem) else "next-check"
+        row_text = row.unresolved_question if isinstance(row, UnknownItem) else row.check
+        issues.extend(
+            _validate_claim_ownership(
+                item_id=row_id,
+                text=row_text,
+                evidence_refs=row.evidence_refs,
+                ownership=row.ownership,
+                analysis=analysis,
+                catalog=catalog,
+            )
+        )
         for ref in row.evidence_refs:
             if ref not in catalog:
                 issues.append(
@@ -1000,6 +1484,23 @@ def rendered_safety_report(
         "trade_ar_leak": len(trade_ar_leaks),
         "hidden_arithmetic": issue_counts["hidden_arithmetic_or_numeric_synthesis"],
         "external_knowledge": issue_counts["external_knowledge_claim"],
+        "entity_owner_mismatch": issue_counts["entity_owner_mismatch"],
+        "ticker_owner_mismatch": issue_counts["ticker_owner_mismatch"],
+        "market_owner_mismatch": issue_counts["market_owner_mismatch"],
+        "packet_owner_mismatch": issue_counts["packet_owner_mismatch"],
+        "support_ref_owner_mismatch": issue_counts["support_ref_owner_mismatch"],
+        "industry_context_mismatch": (
+            issue_counts["industry_context_owner_mismatch"]
+            + issue_counts["industry_concept_ownership_mismatch"]
+            + issue_counts["semantic_concept_declaration_mismatch"]
+        ),
+        "thesis_driver_owner_mismatch": issue_counts["thesis_driver_owner_mismatch"],
+        "fact_ref_owner_mismatch": issue_counts["fact_ref_owner_mismatch"],
+        "relation_owner_mismatch": issue_counts["relation_owner_mismatch"],
+        "expectation_owner_mismatch": (
+            issue_counts["expectation_owner_mismatch"]
+            + issue_counts["expectation_level_mismatch"]
+        ),
         "unsupported_synthesis": len(validation.issues),
         "validation": validation.to_dict(),
     }

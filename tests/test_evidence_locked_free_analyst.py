@@ -6,7 +6,10 @@ from pathlib import Path
 from app.services.free_analyst_message_service import build_minimal_vnext_message
 from app.services.evidence_locked_free_analyst_service import (
     CONTRACT_VERSION,
+    SEMANTIC_OWNERSHIP_CONTRACT_VERSION,
     Direction,
+    SemanticConceptFamily,
+    SemanticOwnerIdentity,
     SupportType,
     build_free_analyst_analysis,
     novel_synthesis_report,
@@ -65,6 +68,27 @@ MARKET_MESSAGE = """🤖 AI 보조 한국시장 마감 · KR Pilot 1/1
 """
 
 
+DEFENSE_MESSAGE = """🤖 AI 보조 종목 점검 · KR Pilot 1/1
+
+🏢 Example Defense(DEF)
+투자 논리: 유지 · 오늘 중요한 신규 변화 없음
+구조적 위험: 보통
+시장 기대: 높음
+
+🎯 핵심 판단
+지상방산 수주잔고의 인도와 수익성 지속 여부가 핵심입니다.
+
+📈 사업·실적
+재고 증가율은 매출 증가율보다 27.1%p 밑돌았습니다. 운전자본 전환을 점검하되 원인을 단정하지 않습니다.
+
+📊 수급
+기간별 흐름은 방산 수주잔고의 인도 전환을 확인하지 못합니다.
+
+📌 다음 확인
+• 지상방산 수주잔고의 인도와 방산 수익성을 확인합니다.
+"""
+
+
 def _analysis():
     return build_free_analyst_analysis(INVENTORY_MESSAGE, benchmark_id="inventory")
 
@@ -94,6 +118,187 @@ def test_structured_analysis_contract_and_support_types() -> None:
         SupportType.POSITIONING_SYNTHESIS,
     }
     assert validate_free_analyst_analysis(analysis).status == "PASS"
+
+
+def test_claims_capture_current_entity_market_packet_and_typed_refs() -> None:
+    analysis = build_free_analyst_analysis(
+        DEFENSE_MESSAGE,
+        benchmark_id="packet:kr:defense",
+        market="kr",
+        packet_owner="2026-08-25-kr-run",
+    )
+
+    assert analysis.semantic_owner == SemanticOwnerIdentity(
+        entity_owner="Example Defense",
+        ticker_owner="DEF",
+        market_owner="kr",
+        packet_owner="2026-08-25-kr-run",
+    )
+    assert analysis.industry_context_owner == "defense"
+    for item in analysis.analysis_items():
+        assert item.ownership is not None
+        assert item.ownership.contract == SEMANTIC_OWNERSHIP_CONTRACT_VERSION
+        assert item.ownership.entity_owner == "Example Defense"
+        assert item.ownership.ticker_owner == "DEF"
+        assert item.ownership.market_owner == "kr"
+        assert item.ownership.packet_owner == "2026-08-25-kr-run"
+
+
+def test_defense_inventory_synthesis_uses_current_thesis_not_memory_template() -> None:
+    analysis = build_free_analyst_analysis(DEFENSE_MESSAGE, benchmark_id="defense", market="kr")
+    rendered = render_free_analyst_direct(analysis)
+
+    assert validate_free_analyst_analysis(analysis).status == "PASS"
+    assert "수주잔고" in rendered.text
+    assert "인도" in rendered.text
+    assert "HBM" not in rendered.text
+    assert "ASP" not in rendered.text
+    assert "제품 믹스" not in rendered.text
+    assert "매우 높은 기대" not in rendered.text
+    assert "높은 기대" in rendered.text
+
+
+def test_memory_concepts_remain_allowed_when_current_source_owns_them() -> None:
+    analysis = _analysis()
+    rendered = render_free_analyst_direct(analysis)
+
+    assert validate_free_analyst_analysis(analysis).status == "PASS"
+    assert "HBM" in rendered.text
+    assert "ASP" in rendered.text
+    assert "제품 믹스" in rendered.text
+
+
+def test_memory_concept_in_defense_claim_is_rejected_by_typed_provenance() -> None:
+    analysis = build_free_analyst_analysis(DEFENSE_MESSAGE, benchmark_id="defense-leak")
+    item = analysis.thesis_implications[0]
+    assert item.ownership is not None
+    leaked = replace(
+        item,
+        text="이 관계는 현재 판단을 약화시키지 않지만 HBM 실행을 확인해야 합니다.",
+        ownership=replace(
+            item.ownership,
+            concept_families=(SemanticConceptFamily.MEMORY_HBM,),
+        ),
+    )
+    result = validate_free_analyst_analysis(
+        replace(analysis, thesis_implications=(leaked,))
+    )
+
+    assert result.status == "FAIL"
+    assert "industry_concept_ownership_mismatch" in {issue.code for issue in result.issues}
+
+
+def test_insurance_concept_in_semiconductor_claim_is_rejected() -> None:
+    analysis = _analysis()
+    item = analysis.thesis_implications[0]
+    assert item.ownership is not None
+    leaked = replace(
+        item,
+        text="현재 판단을 유지하되 합산비율을 추가로 확인해야 합니다.",
+        ownership=replace(
+            item.ownership,
+            concept_families=(SemanticConceptFamily.INSURANCE_UNDERWRITING,),
+        ),
+    )
+    result = validate_free_analyst_analysis(
+        replace(analysis, thesis_implications=(leaked,))
+    )
+
+    assert result.status == "FAIL"
+    assert "industry_concept_ownership_mismatch" in {issue.code for issue in result.issues}
+
+
+def test_defense_concept_in_logistics_claim_is_rejected() -> None:
+    message = DEFENSE_MESSAGE.replace("Example Defense(DEF)", "Example Logistics(LOG)")
+    message = message.replace("지상방산 수주잔고의 인도", "선대 투자와 운임 흐름")
+    message = message.replace("방산 수익성", "물류 수익성")
+    message = message.replace("방산 수요", "물류 수요")
+    analysis = build_free_analyst_analysis(message, benchmark_id="logistics")
+    item = analysis.thesis_implications[0]
+    assert item.ownership is not None
+    leaked = replace(
+        item,
+        text="현재 판단을 유지하되 방산 수주잔고의 인도를 확인해야 합니다.",
+        ownership=replace(
+            item.ownership,
+            concept_families=(
+                SemanticConceptFamily.DEFENSE_BACKLOG,
+                SemanticConceptFamily.DEFENSE_DELIVERY,
+            ),
+        ),
+    )
+    result = validate_free_analyst_analysis(
+        replace(analysis, thesis_implications=(leaked,))
+    )
+
+    assert result.status == "FAIL"
+    assert "industry_concept_ownership_mismatch" in {issue.code for issue in result.issues}
+
+
+def test_wrong_expectation_level_is_rejected_against_current_entity_ref() -> None:
+    analysis = build_free_analyst_analysis(DEFENSE_MESSAGE, benchmark_id="expectation-leak")
+    item = analysis.expectation_valuation_interaction[0]
+    leaked = replace(item, text=item.text.replace("높은 기대", "매우 높은 기대"))
+    result = validate_free_analyst_analysis(
+        replace(analysis, expectation_valuation_interaction=(leaked,))
+    )
+
+    assert result.status == "FAIL"
+    assert "expectation_level_mismatch" in {issue.code for issue in result.issues}
+
+
+def test_cross_ticker_thesis_ref_owner_is_rejected() -> None:
+    analysis = build_free_analyst_analysis(DEFENSE_MESSAGE, benchmark_id="cross-owner")
+    core_ref = analysis.thesis_implications[0].ownership.thesis_driver_refs[0]
+    foreign_owner = replace(
+        analysis.semantic_owner,
+        entity_owner="Other Company",
+        ticker_owner="OTHER",
+    )
+    catalog = tuple(
+        replace(atom, owner=foreign_owner) if atom.ref == core_ref else atom
+        for atom in analysis.evidence_catalog
+    )
+    result = validate_free_analyst_analysis(replace(analysis, evidence_catalog=catalog))
+
+    assert result.status == "FAIL"
+    codes = {issue.code for issue in result.issues}
+    assert "support_ref_owner_mismatch" in codes
+    assert "thesis_driver_owner_mismatch" in codes
+
+
+def test_cross_industry_product_mix_is_allowed_only_with_current_source_support() -> None:
+    message = DEFENSE_MESSAGE.replace(
+        "운전자본 전환을 점검하되 원인을 단정하지 않습니다.",
+        "방산 제품 믹스와 운전자본 전환을 점검하되 원인을 단정하지 않습니다.",
+    )
+    analysis = build_free_analyst_analysis(message, benchmark_id="defense-mix")
+    item = analysis.top_findings[0]
+    assert item.ownership is not None
+    supported = replace(
+        item,
+        text="현재 자료에서는 방산 제품 믹스와 재고 관계를 함께 확인할 필요가 있습니다.",
+        ownership=replace(
+            item.ownership,
+            concept_families=(SemanticConceptFamily.OPERATING_PRODUCT_MIX,),
+        ),
+    )
+
+    assert validate_free_analyst_analysis(
+        replace(analysis, top_findings=(supported,))
+    ).status == "PASS"
+
+
+def test_renderer_state_is_isolated_between_memory_and_defense_messages() -> None:
+    memory = render_free_analyst_direct(_analysis()).text
+    defense = render_free_analyst_direct(
+        build_free_analyst_analysis(DEFENSE_MESSAGE, benchmark_id="second-message")
+    ).text
+
+    assert "HBM" in memory
+    assert "HBM" not in defense
+    assert "ASP" not in defense
+    assert "수주잔고" in defense
 
 
 def test_evidence_ref_integrity_is_fail_closed() -> None:

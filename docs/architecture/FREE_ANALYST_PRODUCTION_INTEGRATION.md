@@ -30,6 +30,8 @@ POSITIONING_SYNTHESIS
 
 Every item also carries evidence references. A generic `AI_SUPPORTED` state is not valid.
 
+Every claim additionally carries `free-analyst-semantic-ownership-v1`: current entity, ticker, market, packet, industry context, typed role references, concept families, and expectation level. Syntactically valid evidence refs are insufficient when their semantic owner or concept provenance differs from the current message.
+
 ## Packet Adapter
 
 `free-analyst-natural-packet-adapter-v1` normalizes only known production headings. It fingerprints non-heading content before and after normalization, creates deterministic production-to-common evidence reference mappings, and rejects content mutation or reference collisions.
@@ -54,6 +56,20 @@ Each candidate records:
 - fallback reason
 - canary candidacy and selection
 - final delivery mode
+
+The execution order is:
+
+```text
+natural packet adapter
+→ current-message owner resolution
+→ evidence-locked synthesis
+→ semantic ownership validation
+→ Adaptive Renderer
+→ existing hard validation
+→ canary eligibility or per-message deterministic fallback
+```
+
+Entity, ticker, market, packet, support-ref, industry, thesis-driver, fact, relation, and expectation mismatch counts are explicit hard-safety fields. Any non-zero count makes the candidate ineligible in canary and future full modes.
 
 The candidate builder has no persistence, provider, delivery, or network side effects.
 

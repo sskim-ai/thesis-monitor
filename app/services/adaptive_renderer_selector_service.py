@@ -391,6 +391,16 @@ def adaptive_renderer_safety_report(
             "hidden_arithmetic": 0,
             "external_knowledge": 0,
             "unsupported_synthesis": 0,
+            "entity_owner_mismatch": 0,
+            "ticker_owner_mismatch": 0,
+            "market_owner_mismatch": 0,
+            "packet_owner_mismatch": 0,
+            "support_ref_owner_mismatch": 0,
+            "industry_context_mismatch": 0,
+            "thesis_driver_owner_mismatch": 0,
+            "fact_ref_owner_mismatch": 0,
+            "relation_owner_mismatch": 0,
+            "expectation_owner_mismatch": 0,
         }
     else:
         safety = rendered_safety_report(current_ai_text, analysis, rendered)
@@ -438,6 +448,16 @@ def _fallback_result(
             "hidden_arithmetic": 0,
             "external_knowledge": 0,
             "material_information_loss": 0,
+            "entity_owner_mismatch": 0,
+            "ticker_owner_mismatch": 0,
+            "market_owner_mismatch": 0,
+            "packet_owner_mismatch": 0,
+            "support_ref_owner_mismatch": 0,
+            "industry_context_mismatch": 0,
+            "thesis_driver_owner_mismatch": 0,
+            "fact_ref_owner_mismatch": 0,
+            "relation_owner_mismatch": 0,
+            "expectation_owner_mismatch": 0,
         },
     )
 
@@ -447,12 +467,17 @@ def run_adaptive_renderer(
     *,
     benchmark_id: str,
     deterministic_reference: str = "",
+    market: str | None = None,
+    packet_owner: str | None = None,
     analysis_override: FreeAnalystAnalysis | None = None,
     selector: Selector = select_adaptive_renderer,
     renderer: Renderer = render_adaptive_candidate,
 ) -> AdaptiveRendererResult:
     analysis = analysis_override or build_free_analyst_analysis(
-        current_ai_text, benchmark_id=benchmark_id
+        current_ai_text,
+        benchmark_id=benchmark_id,
+        market=market,
+        packet_owner=packet_owner,
     )
     validation = validate_free_analyst_analysis(analysis).to_dict()
     if validation["status"] != "PASS":
