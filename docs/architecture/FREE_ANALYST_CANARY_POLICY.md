@@ -5,12 +5,14 @@
 Current state:
 
 ```text
-PRODUCTION_ASSIST_CONTROL_PLANE=A
+PRODUCTION_ASSIST_CONTROL_PLANE=B
 COMMON_AI_CORE_V1=INTEGRATED_READY_NOT_ARMED
 FREE_ANALYST_ADAPTIVE_CANARY=READY_NOT_ARMED
 ```
 
-Production Assist remains off. This task does not flip either the authoritative pilot gate or the independent Free Analyst kill switch.
+Production Assist remains off as a governance state. The existing Pilot gate is already enabled and
+can select current validated AI output, so it does not prohibit this bounded canary. This task does
+not change that Pilot setting, and the independent Free Analyst kill switch remains off/current.
 
 ## Eligibility
 

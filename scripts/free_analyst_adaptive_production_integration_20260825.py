@@ -412,11 +412,11 @@ def report_set(
 {common}
 ## Classification
 
-`PRODUCTION_ASSIST_CONTROL_PLANE = A`
+`PRODUCTION_ASSIST_CONTROL_PLANE = B`
 
-`AI_REVIEW_MODE=shadow` permits immutable packet generation and validation. User-visible AI selection is independently blocked by `AI_REVIEW_PILOT_ENABLED=false` at `deliver_validated_ai_review()` before output preparation or dispatch. The new kill switch also defaults to `FREE_ANALYST_ADAPTIVE_ENABLED=false` and mode `current`.
+The operating configuration has `AI_REVIEW_MODE=shadow` and `AI_REVIEW_PILOT_ENABLED=true`; the existing Pilot can therefore select already-validated current AI output. Production Assist remains a separate governance approval state and does not itself prohibit the bounded canary. The new independent kill switch still defaults to `FREE_ANALYST_ADAPTIVE_ENABLED=false` and mode `current`.
 
-No gate was bypassed or flipped. Integration may be promoted, but limited canary remains `READY_NOT_ARMED`.
+No gate was bypassed or flipped. Integration may be promoted, but the limited canary remains `READY_NOT_ARMED` until its independent flag and canary mode are explicitly enabled.
 """
     reports["20260825-free-analyst-production-port-manifest.md"] = f"""# Free Analyst Production Port Manifest
 
@@ -548,7 +548,7 @@ The known price P2 is `NOT_REPRODUCED_IN_NEW_PATH`. Two broad Free Analyst synth
 - `PRODUCTION_FALLBACK_PARITY = PASS`
 - `PRODUCTION_DELIVERY_INTEGRITY = PASS`
 - `OPEN_RESEARCH_PRODUCTION_INTEGRATION = 0`
-- `PRODUCTION_ASSIST_CONTROL_PLANE = A`
+- `PRODUCTION_ASSIST_CONTROL_PLANE = B`
 - `FREE_ANALYST_ADAPTIVE_CANARY = READY_NOT_ARMED`
 
 ## Replay
@@ -585,7 +585,7 @@ def main() -> None:
         "repository": "sskim-ai/thesis-monitor",
         "instruction_commit": INSTRUCTION_COMMIT,
         "base_sha": BASE_SHA,
-        "control_plane": "A",
+        "control_plane": "B",
         "integration": "PASS",
         "us_replay": f"{sum(bool(row['eligible']) for row in us_rows)}/{len(us_rows)}",
         "kr_replay": f"{sum(bool(row['eligible']) for row in kr_rows)}/{len(kr_rows)}",

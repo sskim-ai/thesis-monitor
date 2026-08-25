@@ -17,7 +17,7 @@
 - `PRODUCTION_FALLBACK_PARITY = PASS`
 - `PRODUCTION_DELIVERY_INTEGRITY = PASS`
 - `OPEN_RESEARCH_PRODUCTION_INTEGRATION = 0`
-- `PRODUCTION_ASSIST_CONTROL_PLANE = A`
+- `PRODUCTION_ASSIST_CONTROL_PLANE = B`
 - `FREE_ANALYST_ADAPTIVE_CANARY = READY_NOT_ARMED`
 
 ## Replay
@@ -42,5 +42,4 @@
 - `NEXT_ACTION = EXPLICIT_CANARY_ENABLEMENT_DECISION`
 
 The broad cohort remains disabled. The limited market-plus-two-stock canary is technically ready,
-but the authoritative Production Assist pilot gate prevents user-visible delivery until a separate
-explicit enablement decision.
+but its independent flag remains OFF/current until a separate explicit enablement decision.

@@ -7,7 +7,7 @@
     "simulated_selected": 3,
     "state": "READY_NOT_ARMED"
   },
-  "control_plane": "A",
+  "control_plane": "B",
   "current_runtime_quality": {
     "check_results": {
       "contract": "relational-reasoning-quality-v2",

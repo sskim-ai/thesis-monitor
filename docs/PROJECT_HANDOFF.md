@@ -14,9 +14,10 @@ Instruction commit `3df40de53cf35ff5c47d662e0a14fbf9e30be3f7` precedes implement
 passes Test and Lint. The minimum production-relevant Free Analyst, evidence-lock adapter, and
 Adaptive Renderer chain is integrated. Open Research and Event Attribution are not integrated.
 
-The control plane is type A. `ai_review_mode=shadow` permits generation and validation, while the
-existing `ai_review_pilot_enabled=false` gate remains authoritative for user-visible delivery. The
-new feature defaults to OFF/current and independently requires the pilot gate. US run-37 replays
+The control plane is type B. `ai_review_mode=shadow` and the operating
+`ai_review_pilot_enabled=true` allow the existing Pilot to select validated current AI output;
+Production Assist remains a separate governance approval state. The new feature defaults to
+OFF/current and independently requires both its own switch and the existing Pilot gate. US run-37 replays
 14/14, the fixed KR negative-control replay passes 8/8, and every hard safety count is zero. A
 simulated one-market plus two-stock canary passes scoped runtime quality. The full cohort remains
 disabled due to two generic synthesis-repetition P2s.

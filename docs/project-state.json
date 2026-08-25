@@ -2213,7 +2213,8 @@
       "adaptive-renderer-selector-v1",
       "runtime-message-quality-receipt-v2"
     ],
-    "production_assist_control_plane": "A",
+    "production_assist_control_plane": "B",
+    "existing_ai_review_pilot_enabled": true,
     "us_run37_free_analyst": "14/14",
     "us_run37_adaptive": "14/14",
     "kr_replay": "8/8",

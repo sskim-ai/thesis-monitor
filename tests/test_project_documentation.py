@@ -225,7 +225,8 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     assert shadow_gate["p1_open"] == []
     common_ai_core = state["common_ai_core_v1"]
     assert common_ai_core["status"] == "integrated_ready_not_armed"
-    assert common_ai_core["production_assist_control_plane"] == "A"
+    assert common_ai_core["production_assist_control_plane"] == "B"
+    assert common_ai_core["existing_ai_review_pilot_enabled"] is True
     assert common_ai_core["us_run37_free_analyst"] == "14/14"
     assert common_ai_core["us_run37_adaptive"] == "14/14"
     assert common_ai_core["kr_replay"] == "8/8"

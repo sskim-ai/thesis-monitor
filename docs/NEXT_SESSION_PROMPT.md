@@ -8,7 +8,7 @@ Common AI Core v1 is integrated but not armed. Read
 `docs/architecture/ADAPTIVE_RENDERER_PRODUCTION.md`, and
 `docs/reports/20260825-common-ai-core-v1-readiness.md`. Instruction commit is
 `3df40de53cf35ff5c47d662e0a14fbf9e30be3f7`; implementation commit is
-`4bcf117fa36d9a74c45e6f9c2626e38e07e52bd3`. Production Assist control plane A was confirmed,
+`4bcf117fa36d9a74c45e6f9c2626e38e07e52bd3`. Production Assist control plane B was confirmed,
 US run-37 passes 14/14, KR replay passes 8/8, and the limited three-message canary simulation passes
 scoped runtime quality with zero hard safety errors. Production Assist and the new feature remain
 OFF. The next action is an explicit limited-canary enablement decision; full mode is not authorized.

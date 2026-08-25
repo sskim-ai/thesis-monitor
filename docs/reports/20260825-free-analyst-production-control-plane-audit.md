@@ -9,8 +9,8 @@
 
 ## Classification
 
-`PRODUCTION_ASSIST_CONTROL_PLANE = A`
+`PRODUCTION_ASSIST_CONTROL_PLANE = B`
 
-`AI_REVIEW_MODE=shadow` permits immutable packet generation and validation. User-visible AI selection is independently blocked by `AI_REVIEW_PILOT_ENABLED=false` at `deliver_validated_ai_review()` before output preparation or dispatch. The new kill switch also defaults to `FREE_ANALYST_ADAPTIVE_ENABLED=false` and mode `current`.
+The operating configuration has `AI_REVIEW_MODE=shadow` and `AI_REVIEW_PILOT_ENABLED=true`; the existing Pilot can therefore select already-validated current AI output. Production Assist remains a separate governance approval state and does not itself prohibit the bounded canary. The new independent kill switch still defaults to `FREE_ANALYST_ADAPTIVE_ENABLED=false` and mode `current`.
 
-No gate was bypassed or flipped. Integration may be promoted, but limited canary remains `READY_NOT_ARMED`.
+No gate was bypassed or flipped. Integration may be promoted, but the limited canary remains `READY_NOT_ARMED` until its independent flag and canary mode are explicitly enabled.

@@ -1071,9 +1071,10 @@ Renderer are now integrated behind `free-analyst-adaptive-production-v1`. Work s
 immutable instruction commit `3df40de53cf35ff5c47d662e0a14fbf9e30be3f7`; implementation commit
 `4bcf117fa36d9a74c45e6f9c2626e38e07e52bd3` passed Actions run `32803786800` Test/Lint.
 
-The authoritative Production Assist control plane is type A: shadow generation may run while the
-existing pilot gate remains the final user-visible delivery authority. Free Analyst Adaptive is
-default OFF/current and cannot bypass that gate. The bounded canary is at most one market message
+The authoritative Production Assist control plane is type B: Production Assist is a governance
+approval state, while the existing Pilot gate is already enabled for validated current AI output.
+Free Analyst Adaptive is independently default OFF/current and cannot bypass the Pilot delivery
+gate. The bounded canary is at most one market message
 and two stock messages. Immutable US run-37 passes 14/14 and KR replay passes 8/8 with all hard
 safety counts at zero; the three-message canary simulation passes scoped runtime quality. Full
 cohort rollout remains disabled because two generic synthesis sentences form a broad-cohort P2.

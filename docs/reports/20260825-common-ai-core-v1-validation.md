@@ -33,7 +33,7 @@
 - Open P0: `0`
 - Open material P1: `0`
 - Broad full-cohort generic repetition: `P2`, full mode remains disabled
-- Production Assist control plane: `A`
+- Production Assist control plane: `B`
 - Production Assist: `OFF`
 - `FREE_ANALYST_ADAPTIVE_CANARY = READY_NOT_ARMED`
 - `COMMON_AI_CORE_V1 = INTEGRATED_READY_NOT_ARMED`
