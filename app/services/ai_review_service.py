@@ -91,6 +91,7 @@ from app.services.financial_amount_period_service import (
 )
 from app.services.market_session import market_scope_for_security
 from app.services.market_intelligence_service import build_market_intelligence
+from app.services.market_context_adapter_service import market_context_adapter
 from app.services.night_futures import NIGHT_FUTURES_SERIES
 from app.services.official_security_identity_service import (
     load_official_identity_provenance,
@@ -353,11 +354,19 @@ def production_packet_persistence_decision(
 
 
 def _production_packet_identity_body(packet: dict[str, object]) -> dict[str, object]:
-    return {
+    body = {
         key: value
         for key, value in packet.items()
         if key not in {"production_safety", "ready_for_ai", "shadow_cohort"}
     }
+    market_context = body.get("market_context")
+    if isinstance(market_context, dict):
+        body["market_context"] = {
+            key: value
+            for key, value in market_context.items()
+            if key != "adapter_context"
+        }
+    return body
 
 
 _CORE_FRAMEWORKS = (
@@ -3470,8 +3479,24 @@ def build_ai_review_packet(
         return None
     knowledge = knowledge_manifest()
     chart_knowledge = chart_knowledge_manifest()
+    packet_generated_at = (generated_at or datetime.now(UTC)).astimezone(UTC)
     market_context = _market_packet(session, run_date, market, stocks)
     stock_transmissions = market_context.pop("_stock_transmissions", {})
+    adapter_context = market_context_adapter(market).normalize(
+        assessment_date=run_date,
+        as_of=packet_generated_at,
+        cutoff=packet_generated_at,
+        fact_catalog=[
+            item
+            for item in market_context.get("fact_catalog", [])
+            if isinstance(item, dict)
+        ],
+        coverage=_dict(market_context.get("coverage")),
+    )
+    market_context["adapter_context"] = adapter_context.model_dump(
+        mode="json",
+        exclude={"official_event_sources"},
+    )
     market_facts_by_id = {
         str(fact["fact_id"]): fact
         for fact in market_context["fact_catalog"]
@@ -3547,7 +3572,7 @@ def build_ai_review_packet(
     packet = {
         **body,
         "packet_id": packet_id,
-        "generated_at": (generated_at or datetime.now(UTC)).astimezone(UTC).isoformat(),
+        "generated_at": packet_generated_at.isoformat(),
     }
     packet["production_packet_persistence"] = (
         production_packet_persistence_decision(packet)

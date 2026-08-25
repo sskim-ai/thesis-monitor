@@ -671,6 +671,12 @@ def test_packet_is_immutable_version_isolated_and_sanitized(monkeypatch, tmp_pat
     manifest = knowledge_manifest()
     assert packet["knowledge"]["version"] == manifest["version"]
     assert packet["knowledge"]["sha256"] == manifest["sha256"]
+    adapter_context = packet["market_context"]["adapter_context"]
+    assert adapter_context["contract_version"] == "market-context-adapter-v1"
+    assert adapter_context["market"] == "US"
+    assert datetime.fromisoformat(
+        adapter_context["as_of"].replace("Z", "+00:00")
+    ) == datetime.fromisoformat(packet["generated_at"])
     assert packet["stocks"][0]["previous_assessment"]["assessment_date"] == "2026-08-13"
     assert packet["stocks"][0]["valuation"]["historical_comparison_withheld"] is True
     assert "historical_pe_statistics" not in packet["stocks"][0]["valuation"]
