@@ -2,7 +2,17 @@
 
 Repository: `sskim-ai/thesis-monitor`
 
-Common AI Core v1 is integrated but not armed. Read
+Free Analyst Adaptive limited canary is armed under instruction commit
+`73802b8849f674698bfdb3bfd7f3d0df89c236b2`. Runtime state is enabled with mode
+`free_analyst_adaptive_canary` and limits market `1`, stocks `2`, total `3`; full mode and Open
+Research remain OFF. Production Assist governance and the existing Pilot are unchanged. State is
+`COMMON_AI_CORE_V1=INTEGRATED_CANARY_PENDING_NATURAL` with KR/US both `NOT_OBSERVED` at activation.
+Do not manually run KR or US production. After the first eligible KR run, inspect the immutable
+packet, per-slot selector metadata, exact delivered text, receipts, duplicates/orphans, and hard
+safety counts. Disable only the canary immediately for a delivered P0; otherwise keep the same
+limits for the next eligible US run.
+
+The prior Common AI Core v1 integration baseline is documented in
 `docs/architecture/COMMON_AI_CORE_V1.md`,
 `docs/architecture/FREE_ANALYST_PRODUCTION_INTEGRATION.md`,
 `docs/architecture/ADAPTIVE_RENDERER_PRODUCTION.md`, and
@@ -11,8 +21,10 @@ Common AI Core v1 is integrated but not armed. Read
 `4bcf117fa36d9a74c45e6f9c2626e38e07e52bd3`. Production Assist control plane B was confirmed,
 US run-37 passes 14/14, KR replay passes 8/8, and the limited three-message canary simulation passes
 scoped runtime quality with zero hard safety errors. Production Assist and the new feature remain
-OFF. The next action is an explicit limited-canary enablement decision; full mode is not authorized.
-Open Research/Event Attribution remain separate. Do not manually run Scheduled Tasks or Telegram.
+OFF in that historical baseline, and its next action was an explicit limited-canary enablement
+decision; full mode was not authorized.
+Open Research/Event Attribution remain separate. This prior `READY_NOT_ARMED` state is superseded
+by the explicitly armed limited canary above. Do not manually run Scheduled Tasks or Telegram.
 
 Latest bounded closure follows instruction commit
 `2ddec88382f0aff32fcae68a87d1aff62f60f2ef` and implementation commit

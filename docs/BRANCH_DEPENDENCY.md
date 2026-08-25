@@ -177,3 +177,10 @@ Attribution are explicitly excluded. The integration depends on the existing AI 
 runtime quality, numeric/semantic/temporal validators, and Production Assist pilot gate. It adds no
 dependency on Phase 9.0E, Inventory/Trade AR, KRX breadth, macro temporal, or provider work. The
 limited canary remains `READY_NOT_ARMED`; full cohort rollout is not a descendant authorization.
+
+The explicit limited-canary branch starts from main `cd0fb79a6925d75029debb24f00d1a4c7495aa75`
+and its immutable instruction commit `73802b8849f674698bfdb3bfd7f3d0df89c236b2`. It changes no
+production code. Runtime activation uses the existing independent Settings switch and preserves
+Branch-B Pilot semantics, deterministic fallback, receipts, schemas, schedules, Inventory,
+cash-flow, and all research exclusions. Natural KR proof must precede US completion, but neither is
+manufactured or required for the enablement commit itself.

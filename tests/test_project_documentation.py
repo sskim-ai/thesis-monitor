@@ -57,16 +57,16 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     assert state["repository"] == "sskim-ai/thesis-monitor"
     assert state["branch"] == "main"
     assert state["experimental_branch"] == (
-        "codex/free-analyst-adaptive-production-integration"
+        "codex/free-analyst-adaptive-explicit-canary"
     )
     assert state["current_phase"] == (
-        "common_ai_core_v1_integrated_ready_not_armed"
+        "common_ai_core_v1_canary_enabled_pending_natural"
     )
     assert state["last_completed_phase"] == (
         "free_analyst_adaptive_production_integration"
     )
     assert state["next_default_phase"] == (
-        "explicit_free_analyst_limited_canary_enablement_decision"
+        "free_analyst_kr_natural_canary_review"
     )
     assert state["deployed_code_commit"] == "HEAD"
     assert state["main_code_commit"] == "HEAD"
@@ -224,7 +224,7 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     assert shadow_gate["p0_open"] == []
     assert shadow_gate["p1_open"] == []
     common_ai_core = state["common_ai_core_v1"]
-    assert common_ai_core["status"] == "integrated_ready_not_armed"
+    assert common_ai_core["status"] == "integrated_canary_pending_natural"
     assert common_ai_core["production_assist_control_plane"] == "B"
     assert common_ai_core["existing_ai_review_pilot_enabled"] is True
     assert common_ai_core["us_run37_free_analyst"] == "14/14"
@@ -233,8 +233,16 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     assert common_ai_core["canary_simulated_selected"] == 3
     assert common_ai_core["canary_runtime_quality"] == "passed"
     assert common_ai_core["production_assist"] is False
-    assert common_ai_core["free_analyst_adaptive_enabled"] is False
-    assert common_ai_core["free_analyst_adaptive_canary"] == "ready_not_armed"
+    assert common_ai_core["free_analyst_adaptive_enabled"] is True
+    assert common_ai_core["free_analyst_adaptive_mode"] == (
+        "free_analyst_adaptive_canary"
+    )
+    assert common_ai_core["free_analyst_adaptive_canary"] == (
+        "enabled_pending_natural"
+    )
+    assert common_ai_core["free_analyst_adaptive_full"] == "off"
+    assert common_ai_core["kr_canary_natural"] == "not_observed"
+    assert common_ai_core["us_canary_natural"] == "not_observed"
     assert common_ai_core["open_research_production_integration"] == 0
     assert common_ai_core["open_p0"] == []
     assert common_ai_core["open_material_p1"] == []

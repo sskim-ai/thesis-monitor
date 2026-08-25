@@ -7,25 +7,37 @@ validation, delivery, or Scheduled Tasks.
 
 ## Current Authoritative Handoff — 2026-08-25
 
-### Common AI Core v1 Integrated, Ready Not Armed
+### Free Analyst Adaptive Limited Canary Armed
+
+Instruction commit `73802b8849f674698bfdb3bfd7f3d0df89c236b2` explicitly authorizes the
+already-integrated limited canary. The immutable simulation passes with market `1`, stocks `2`,
+total `3`, scoped runtime quality PASS, and all hard safety counts zero. Operating Settings are now
+`FREE_ANALYST_ADAPTIVE_ENABLED=true` and mode `free_analyst_adaptive_canary`; full mode is OFF.
+
+Production Assist governance remains OFF and the existing Pilot remains enabled unchanged. Open
+Research/Event Attribution and exact Trade AR remain outside scope; Inventory and cash-flow modes
+are unchanged. State is `INTEGRATED_CANARY_PENDING_NATURAL`. At 12:44 KST neither post-activation
+KR nor US natural run existed. Wait for the first eligible KR run without manual execution, audit
+every slot and receipt read-only, and disable only the canary on a delivered hard incident.
+
+### Prior Common AI Core v1 Integration Baseline
 
 Instruction commit `3df40de53cf35ff5c47d662e0a14fbf9e30be3f7` precedes implementation commit
 `4bcf117fa36d9a74c45e6f9c2626e38e07e52bd3`; exact implementation Actions run `32803786800`
 passes Test and Lint. The minimum production-relevant Free Analyst, evidence-lock adapter, and
 Adaptive Renderer chain is integrated. Open Research and Event Attribution are not integrated.
 
-The control plane is type B. `ai_review_mode=shadow` and the operating
-`ai_review_pilot_enabled=true` allow the existing Pilot to select validated current AI output;
+Before the explicit activation above, the control plane was type B. `ai_review_mode=shadow` and the
+operating `ai_review_pilot_enabled=true` allowed the existing Pilot to select validated current AI output;
 Production Assist remains a separate governance approval state. The new feature defaults to
-OFF/current and independently requires both its own switch and the existing Pilot gate. US run-37 replays
+OFF/current and independently required both its own switch and the existing Pilot gate. US run-37 replays
 14/14, the fixed KR negative-control replay passes 8/8, and every hard safety count is zero. A
 simulated one-market plus two-stock canary passes scoped runtime quality. The full cohort remains
 disabled due to two generic synthesis-repetition P2s.
 
-Open P0/material P1 are 0/0. `COMMON_AI_CORE_V1=INTEGRATED_READY_NOT_ARMED`; Production Assist is
-OFF. The next change requires an explicit limited-canary enablement instruction. Do not infer
-authorization from code promotion, do not set full mode, and do not manually run a task or send a
-message.
+Open P0/material P1 were 0/0 and the integration state was
+`COMMON_AI_CORE_V1=INTEGRATED_READY_NOT_ARMED`. That state is superseded by the explicitly armed
+limited canary above; full mode is still not authorized.
 
 ### 2026-08-24 KR Shadow Gate Packet Persistence Repair
 

@@ -1083,3 +1083,18 @@ Open Research and Event Attribution production integration are zero.
 State is `COMMON_AI_CORE_V1=INTEGRATED_READY_NOT_ARMED`, open P0/material P1 are 0/0, Production
 Assist remains OFF, and the next action is a separate explicit canary enablement decision. Natural
 runtime evidence, KR packet proof, Inventory observation, and telemetry continue independently.
+
+## 32. Common AI Core v1 Limited Canary Enablement
+
+The explicit canary instruction is fixed at
+`73802b8849f674698bfdb3bfd7f3d0df89c236b2`. Preflight reran the immutable selector and selected
+one market plus two stock messages with scoped runtime quality PASS and zero hard safety errors.
+The operating Settings now use `FREE_ANALYST_ADAPTIVE_ENABLED=true` and
+`FREE_ANALYST_ADAPTIVE_MODE=free_analyst_adaptive_canary`, with hard maxima `1/2/3`.
+
+Production Assist governance remains OFF, the existing Pilot remains enabled and unchanged, and
+full Free Analyst mode remains OFF. Open Research/Event Attribution, exact Trade AR, Inventory,
+cash-flow, schedules, Public Action, schema, DB, and fallback were unchanged. State is
+`COMMON_AI_CORE_V1=INTEGRATED_CANARY_PENDING_NATURAL`. Do not run production manually; inspect the
+first eligible KR natural packet, then the next eligible US packet. Any delivered P0 disables only
+the new canary through its independent kill switch.

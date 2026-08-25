@@ -1,0 +1,45 @@
+{
+  "repository": "sskim-ai/thesis-monitor",
+  "instruction_version": "1.0",
+  "instruction_commit": "73802b8849f674698bfdb3bfd7f3d0df89c236b2",
+  "base_sha": "cd0fb79a6925d75029debb24f00d1a4c7495aa75",
+  "production_assist_control_plane": "B",
+  "production_assist_governance": "off",
+  "pilot": "enabled_unchanged",
+  "canary_enablement": "pass",
+  "free_analyst_adaptive_canary": "enabled_pending_natural",
+  "free_analyst_adaptive_full": "off",
+  "limits": {
+    "market": 1,
+    "stock": 2,
+    "total": 3
+  },
+  "simulation": {
+    "candidate_eligible": 14,
+    "candidate_total": 14,
+    "selected_market": 1,
+    "selected_stock": 2,
+    "selected_total": 3,
+    "runtime_quality": "pass",
+    "hard_safety_errors": 0
+  },
+  "natural": {
+    "kr": "not_observed",
+    "us": "not_observed",
+    "cross_market": "pending_natural",
+    "exactly_once": "not_observed",
+    "receipt_integrity": "not_observed"
+  },
+  "open_research_production_integration": 0,
+  "manual_telegram": 0,
+  "manual_scheduled_task_executions": 0,
+  "database_mutations": 0,
+  "schedule_changes": 0,
+  "open_p0": [],
+  "open_material_p1": [],
+  "p2_backlog": [
+    "broad_cohort_generic_synthesis_repetition_2_full_mode_off"
+  ],
+  "common_ai_core_v1": "integrated_canary_pending_natural",
+  "next_action": "wait_for_kr_free_analyst_natural_canary"
+}
