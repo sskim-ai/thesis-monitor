@@ -69,6 +69,11 @@ def test_known_ai_review_environment_settings_load(tmp_path: Path) -> None:
     settings = Settings(_env_file=env_file)
 
     assert settings.ai_review_mode == "shadow"
+    assert settings.free_analyst_adaptive_enabled is False
+    assert settings.free_analyst_adaptive_mode == "current"
+    assert settings.free_analyst_adaptive_canary_max_market == 1
+    assert settings.free_analyst_adaptive_canary_max_stock == 2
+    assert settings.free_analyst_adaptive_canary_max_total == 3
     assert settings.ai_review_claim_lease_minutes == 30
     assert settings.ai_review_backup_delay_minutes == 40
     assert settings.ai_review_claim_safety_margin_minutes == 5

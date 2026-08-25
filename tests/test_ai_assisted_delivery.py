@@ -80,9 +80,7 @@ def _settings(monkeypatch, tmp_path: Path):
             "ai_review_pilot_kr_fallback_time": "17:10",
         }
     )
-    monkeypatch.setattr(
-        "app.services.ai_assisted_delivery_service.get_settings", lambda: settings
-    )
+    monkeypatch.setattr("app.services.ai_assisted_delivery_service.get_settings", lambda: settings)
     monkeypatch.setattr("app.services.notification_service.get_settings", lambda: settings)
     return settings
 
@@ -156,15 +154,24 @@ def _output() -> dict[str, object]:
                 "valuation_view": "neutral",
                 "facts_used": [],
                 "frameworks_used": ["market_expectations"],
-                "core_judgment": {"text": "공식 상태를 바꿀 확정 근거는 아직 부족합니다.", "fact_ids": []},
-                "business_earnings": {"text": "추가 약화 여부는 다음 실적에서 확인해야 합니다.", "fact_ids": []},
+                "core_judgment": {
+                    "text": "공식 상태를 바꿀 확정 근거는 아직 부족합니다.",
+                    "fact_ids": [],
+                },
+                "business_earnings": {
+                    "text": "추가 약화 여부는 다음 실적에서 확인해야 합니다.",
+                    "fact_ids": [],
+                },
                 "price_positioning": {
                     "text": "현재 가격 신호는 사업 논리와 분리합니다.",
                     "new_observer_view": "기업의 질과 진입 가격을 나누어 봅니다.",
                     "holder_view": "가격 확인 조건을 계속 추적합니다.",
-                    "fact_ids": []
+                    "fact_ids": [],
                 },
-                "supply_analysis": {"text": "수급만으로 공식 상태를 바꾸지 않습니다.", "fact_ids": []},
+                "supply_analysis": {
+                    "text": "수급만으로 공식 상태를 바꾸지 않습니다.",
+                    "fact_ids": [],
+                },
                 "valuation_analysis": {"text": "Valuation은 별도 판단 층위입니다.", "fact_ids": []},
                 "numeric_claims": [],
                 "unknowns": ["다음 분기 마진은 미확인입니다."],
@@ -297,12 +304,8 @@ async def test_ai_pass_sends_only_one_ai_assisted_set(monkeypatch, tmp_path: Pat
         _seed_deliveries(session)
         held = hold_ai_assisted_pilot_session(session, PACKET_ID)
         await dispatch_pending_notifications(session, notifier=notifier)
-        result = await deliver_validated_ai_review(
-            session, PACKET_ID, notifier=notifier
-        )
-        duplicate = await deliver_validated_ai_review(
-            session, PACKET_ID, notifier=notifier
-        )
+        result = await deliver_validated_ai_review(session, PACKET_ID, notifier=notifier)
+        duplicate = await deliver_validated_ai_review(session, PACKET_ID, notifier=notifier)
         deliveries = session.exec(select(NotificationDelivery)).all()
 
     assert held.status == "held"
@@ -329,9 +332,7 @@ async def test_ai_pass_sends_only_one_ai_assisted_set(monkeypatch, tmp_path: Pat
     assert "chart_state" not in stock_text
     assert "claim_id" not in stock_text
     assert "numeric_claims" not in stock_text
-    market_message = next(
-        item for item in notifier.payloads if item["type"].endswith("market")
-    )
+    market_message = next(item for item in notifier.payloads if item["type"].endswith("market"))
     market_text = str(market_message["text"])
     assert "🎯 오늘 시장 한 줄" in market_text
     assert "🧭 시장 구조" in market_text
@@ -363,6 +364,44 @@ async def test_ai_pass_sends_only_one_ai_assisted_set(monkeypatch, tmp_path: Pat
     )
     assert len(json.loads((archive / "deterministic-messages.json").read_text())["messages"]) == 2
     assert len(json.loads((archive / "ai-assisted-messages.json").read_text())["messages"]) == 2
+
+
+@pytest.mark.anyio
+async def test_free_analyst_canary_preserves_one_final_message_per_slot(
+    monkeypatch, tmp_path: Path
+) -> None:
+    _settings(monkeypatch, tmp_path)
+    monkeypatch.setattr(delivery_service, "free_analyst_adaptive_canary_armed", lambda: True)
+    _write_artifacts(tmp_path)
+    notifier = RecordingNotifier()
+    with Session(_engine()) as session:
+        _seed_deliveries(session)
+        hold_ai_assisted_pilot_session(session, PACKET_ID)
+        result = await deliver_validated_ai_review(session, PACKET_ID, notifier=notifier)
+        deliveries = session.exec(select(NotificationDelivery)).all()
+
+    assert result.status == "sent"
+    assert len(notifier.payloads) == 2
+    assert len(deliveries) == 2
+    assert all(item.status == "sent" for item in deliveries)
+    archive = tmp_path / "ai_review" / "pilot" / "history" / "2026" / "08" / PACKET_ID
+    selection = json.loads(
+        (archive / "free-analyst-canary-selection.json").read_text(encoding="utf-8")
+    )
+    assert 1 <= selection["total_selected"] <= 3
+    assert selection["market_selected"] <= 1
+    assert selection["stock_selected"] <= 2
+    assert len(selection["rows"]) == 2
+    for delivery in deliveries:
+        payload = json.loads(delivery.payload)
+        metadata = payload[AI_ASSISTED_PILOT_METADATA_KEY]["common_ai_core"]
+        assert metadata["analysis_mode"] == "free_analyst_adaptive_canary"
+        assert metadata["hard_validation"] in {"PASS", "FAIL"}
+        assert metadata["final_delivery_mode"] in {
+            "free_analyst_adaptive_canary",
+            "deterministic_fallback",
+            "current_ai_existing",
+        }
 
 
 @pytest.mark.anyio
@@ -420,9 +459,7 @@ async def test_ai_pilot_count_waits_for_archive_completion_and_recovers_without_
     assert duplicate[-1].status == "no_pending_ai_delivery"
     state = json.loads(state_path.read_text())
     assert state["markets"]["kr"]["successful_packet_ids"] == [PACKET_ID]
-    assert state["markets"]["kr"]["successful_assessment_dates"] == [
-        RUN_DATE.isoformat()
-    ]
+    assert state["markets"]["kr"]["successful_assessment_dates"] == [RUN_DATE.isoformat()]
     archive = tmp_path / "ai_review" / "pilot" / "history" / "2026" / "08" / PACKET_ID
     assert (archive / "archive-complete.json").exists()
     retry = json.loads((archive / "delivery-retry-state.json").read_text())
@@ -446,15 +483,7 @@ async def test_legacy_completed_archive_remains_complete_without_quality_receipt
         hold_ai_assisted_pilot_session(session, PACKET_ID)
         await deliver_validated_ai_review(session, PACKET_ID, notifier=sent)
 
-        archive = (
-            tmp_path
-            / "ai_review"
-            / "pilot"
-            / "history"
-            / "2026"
-            / "08"
-            / PACKET_ID
-        )
+        archive = tmp_path / "ai_review" / "pilot" / "history" / "2026" / "08" / PACKET_ID
         delivery_path = archive / "delivery-result.json"
         delivery = json.loads(delivery_path.read_text())
         delivery.pop("message_quality_receipt_sha256", None)
@@ -564,9 +593,7 @@ async def test_old_policy_output_is_not_eligible_for_pilot_v2_delivery(
     with Session(_engine()) as session:
         _seed_deliveries(session)
         hold_ai_assisted_pilot_session(session, PACKET_ID)
-        result = await deliver_validated_ai_review(
-            session, PACKET_ID, notifier=notifier
-        )
+        result = await deliver_validated_ai_review(session, PACKET_ID, notifier=notifier)
 
     assert result.status == "not_ready"
     assert notifier.payloads == []
@@ -594,14 +621,14 @@ async def test_fallback_sends_only_deterministic_and_late_ai_is_archive_only(
         (outbox / f"{PACKET_ID}--daily-review-v3.7--knowledge.json").write_text(
             json.dumps(_output(), ensure_ascii=False), encoding="utf-8"
         )
-        late = await deliver_validated_ai_review(
-            session, PACKET_ID, notifier=late_notifier
-        )
+        late = await deliver_validated_ai_review(session, PACKET_ID, notifier=late_notifier)
 
     assert results[-1].delivery_mode == "deterministic_fallback"
     assert results[-1].status == "sent"
     assert len(fallback_notifier.payloads) == 2
-    assert all(not str(item["type"]).startswith("ai_assisted") for item in fallback_notifier.payloads)
+    assert all(
+        not str(item["type"]).startswith("ai_assisted") for item in fallback_notifier.payloads
+    )
     assert late.status == "archive_only"
     assert late_notifier.payloads == []
 
@@ -776,9 +803,7 @@ async def test_ai_delivery_failure_retries_ai_without_deterministic_mix(
             now=datetime(2026, 8, 14, 17, 10, tzinfo=KST),
             notifier=recovered,
         )
-        second = await deliver_validated_ai_review(
-            session, PACKET_ID, notifier=recovered
-        )
+        second = await deliver_validated_ai_review(session, PACKET_ID, notifier=recovered)
 
     assert first.status == "pending"
     assert fallback[-1].status == "sent"
@@ -869,9 +894,7 @@ async def test_runtime_quality_gate_rejects_ai_and_preserves_single_fallback(
     output_path = next((tmp_path / "ai_review" / "outbox").glob("*.json"))
     output = json.loads(output_path.read_text(encoding="utf-8"))
     stock = output["stock_reviews"][0]
-    stock["price_positioning"]["holder_view"] = stock["price_positioning"][
-        "new_observer_view"
-    ]
+    stock["price_positioning"]["holder_view"] = stock["price_positioning"]["new_observer_view"]
     output_path.write_text(json.dumps(output, ensure_ascii=False), encoding="utf-8")
     ai_notifier = RecordingNotifier()
     fallback_notifier = RecordingNotifier()
@@ -879,9 +902,7 @@ async def test_runtime_quality_gate_rejects_ai_and_preserves_single_fallback(
     with Session(_engine()) as session:
         _seed_deliveries(session)
         hold_ai_assisted_pilot_session(session, PACKET_ID)
-        rejected = await deliver_validated_ai_review(
-            session, PACKET_ID, notifier=ai_notifier
-        )
+        rejected = await deliver_validated_ai_review(session, PACKET_ID, notifier=ai_notifier)
         fallback = await dispatch_due_deterministic_fallbacks(
             session,
             market="kr",
@@ -894,9 +915,7 @@ async def test_runtime_quality_gate_rejects_ai_and_preserves_single_fallback(
     assert ai_notifier.payloads == []
     assert fallback[-1].status == "sent"
     assert len(fallback_notifier.payloads) == 2
-    state = json.loads(
-        (tmp_path / "ai_review" / "pilot" / "state-v3.json").read_text()
-    )
+    state = json.loads((tmp_path / "ai_review" / "pilot" / "state-v3.json").read_text())
     assert state["markets"]["kr"]["successful_packet_ids"] == []
 
 
@@ -922,9 +941,7 @@ async def test_persisted_retry_rejects_payload_tampering_against_quality_receipt
         delivery.payload = json.dumps(payload, ensure_ascii=False)
         session.add(delivery)
         session.commit()
-        retry = await deliver_validated_ai_review(
-            session, PACKET_ID, notifier=retry_notifier
-        )
+        retry = await deliver_validated_ai_review(session, PACKET_ID, notifier=retry_notifier)
 
     assert first.status == "pending"
     assert retry.status == "quality_receipt_invalid"
@@ -978,14 +995,10 @@ async def test_receipt_integrity_failure_holds_ai_and_preserves_one_fallback_set
             receipt_path.unlink()
         elif tamper_mode == "one_delivery_sha":
             delivery = session.exec(
-                select(NotificationDelivery).where(
-                    NotificationDelivery.ticker == "PILOT"
-                )
+                select(NotificationDelivery).where(NotificationDelivery.ticker == "PILOT")
             ).one()
             payload = json.loads(delivery.payload)
-            payload[AI_ASSISTED_PILOT_METADATA_KEY][
-                "message_quality_receipt_sha256"
-            ] = "0" * 64
+            payload[AI_ASSISTED_PILOT_METADATA_KEY]["message_quality_receipt_sha256"] = "0" * 64
             delivery.payload = json.dumps(payload, ensure_ascii=False)
             session.add(delivery)
             session.commit()
@@ -1011,13 +1024,9 @@ async def test_receipt_integrity_failure_holds_ai_and_preserves_one_fallback_set
                 receipt["gate_version"] = "runtime-message-quality-v0"
             elif tamper_mode == "checked_at":
                 receipt["checked_at"] = ""
-            receipt_path.write_text(
-                json.dumps(receipt, ensure_ascii=False), encoding="utf-8"
-            )
+            receipt_path.write_text(json.dumps(receipt, ensure_ascii=False), encoding="utf-8")
 
-        retry = await deliver_validated_ai_review(
-            session, PACKET_ID, notifier=retry_notifier
-        )
+        retry = await deliver_validated_ai_review(session, PACKET_ID, notifier=retry_notifier)
         fallback = await dispatch_due_deterministic_fallbacks(
             session,
             market="kr",
@@ -1031,9 +1040,7 @@ async def test_receipt_integrity_failure_holds_ai_and_preserves_one_fallback_set
     assert retry_notifier.payloads == []
     assert fallback[-1].delivery_mode == "deterministic_fallback"
     assert len(fallback_notifier.payloads) == 2
-    state = json.loads(
-        (tmp_path / "ai_review" / "pilot" / "state-v3.json").read_text()
-    )
+    state = json.loads((tmp_path / "ai_review" / "pilot" / "state-v3.json").read_text())
     assert state["markets"]["kr"]["successful_packet_ids"] == []
     if tamper_mode == "missing":
         assert not receipt_path.exists()
@@ -1058,9 +1065,7 @@ async def test_validated_output_tamper_is_rejected_before_retry_send(
         output["stock_reviews"][0]["unknowns"][0] += " 변조"
         output_path.write_text(json.dumps(output, ensure_ascii=False), encoding="utf-8")
 
-        retry = await deliver_validated_ai_review(
-            session, PACKET_ID, notifier=retry_notifier
-        )
+        retry = await deliver_validated_ai_review(session, PACKET_ID, notifier=retry_notifier)
 
     assert first.status == "pending"
     assert retry.status == "quality_receipt_invalid"
@@ -1081,9 +1086,7 @@ async def test_post_partial_delivery_receipt_failure_stops_without_false_full_fa
     with Session(_engine()) as session:
         _seed_deliveries(session)
         hold_ai_assisted_pilot_session(session, PACKET_ID)
-        first = await deliver_validated_ai_review(
-            session, PACKET_ID, notifier=partial
-        )
+        first = await deliver_validated_ai_review(session, PACKET_ID, notifier=partial)
         receipt_path = (
             tmp_path
             / "ai_review"
@@ -1098,9 +1101,7 @@ async def test_post_partial_delivery_receipt_failure_stops_without_false_full_fa
         receipt["check_results"]["stock_count"] = 999
         receipt_path.write_text(json.dumps(receipt, ensure_ascii=False), encoding="utf-8")
 
-        retry = await deliver_validated_ai_review(
-            session, PACKET_ID, notifier=retry_notifier
-        )
+        retry = await deliver_validated_ai_review(session, PACKET_ID, notifier=retry_notifier)
         fallback = await dispatch_due_deterministic_fallbacks(
             session,
             market="kr",
@@ -1139,9 +1140,7 @@ async def test_post_partial_delivery_receipt_failure_stops_without_false_full_fa
     assert not state_path.exists()
 
 
-def test_pilot_v3_stops_market_after_five_successful_packets(
-    monkeypatch, tmp_path: Path
-) -> None:
+def test_pilot_v3_stops_market_after_five_successful_packets(monkeypatch, tmp_path: Path) -> None:
     _settings(monkeypatch, tmp_path)
     state = {
         "schema_version": "1",
@@ -1184,9 +1183,7 @@ def test_us_market_renderer_v3_integrates_night_futures_without_duplication() ->
         review,
         market_context={
             "required_market_fact_ids": ["market:night_futures:1"],
-            "portfolio_exposure_groups": [
-                {"group_key": "semiconductor", "label": "반도체"}
-            ]
+            "portfolio_exposure_groups": [{"group_key": "semiconductor", "label": "반도체"}],
         },
         market="us",
         pilot_day=1,
@@ -1237,9 +1234,7 @@ async def test_hold_is_scoped_and_internal_metadata_is_not_sent(
     assert AI_ASSISTED_PILOT_METADATA_KEY not in str(notifier.payloads[0]["text"])
 
 
-def test_monitor_retry_does_not_overwrite_pilot_owned_digest(
-    monkeypatch, tmp_path: Path
-) -> None:
+def test_monitor_retry_does_not_overwrite_pilot_owned_digest(monkeypatch, tmp_path: Path) -> None:
     _settings(monkeypatch, tmp_path)
     _write_artifacts(tmp_path)
     monkeypatch.setattr(
@@ -1253,9 +1248,7 @@ def test_monitor_retry_does_not_overwrite_pilot_owned_digest(
         _seed_deliveries(session)
         hold_ai_assisted_pilot_session(session, PACKET_ID)
         before = session.exec(
-            select(NotificationDelivery).where(
-                NotificationDelivery.ticker == "__DAILY_DIGEST_KR__"
-            )
+            select(NotificationDelivery).where(NotificationDelivery.ticker == "__DAILY_DIGEST_KR__")
         ).one()
         held_payload = before.payload
         queue_daily_digest_notification(session, RUN_DATE, market_scope="kr")

@@ -946,3 +946,30 @@ def test_runtime_quality_receipt_binds_packet_output_and_rendered_payload() -> N
     assert not verify_runtime_message_quality_receipt(
         naive_checked_at, packet, output, messages
     )
+
+    scoped_tickers = {review.ticker for review in output.stock_reviews[:2]}
+    scoped_output = output.model_copy(
+        update={"stock_reviews": output.stock_reviews[:2]}
+    )
+    scoped_messages = messages[:3]
+    scoped_receipt = runtime_message_quality_receipt(
+        packet,
+        scoped_output,
+        scoped_messages,
+        expected_stock_tickers=scoped_tickers,
+    )
+    assert scoped_receipt["status"] == "passed"
+    assert verify_runtime_message_quality_receipt(
+        scoped_receipt,
+        packet,
+        scoped_output,
+        scoped_messages,
+        expected_stock_tickers=scoped_tickers,
+    )
+    assert not verify_runtime_message_quality_receipt(
+        scoped_receipt,
+        packet,
+        scoped_output,
+        scoped_messages,
+        expected_stock_tickers={output.stock_reviews[0].ticker},
+    )

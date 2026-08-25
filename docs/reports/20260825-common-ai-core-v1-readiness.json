@@ -1,0 +1,1263 @@
+{
+  "adaptive_renderer": "PASS",
+  "base_sha": "f7d2552185ff2ff6d932337e7555ce02f87fa613",
+  "canary": {
+    "max_per_run": 3,
+    "runtime_quality": "PASSED",
+    "simulated_selected": 3,
+    "state": "READY_NOT_ARMED"
+  },
+  "control_plane": "A",
+  "current_runtime_quality": {
+    "check_results": {
+      "contract": "relational-reasoning-quality-v2",
+      "deterministic_quality_gate_passed": false,
+      "duplicate_threshold": 3,
+      "final_rendered_language": {
+        "details": [
+          {
+            "issue": "price_particle_error",
+            "matches": [
+              "현재가 $17.27와"
+            ],
+            "message_index": 2
+          },
+          {
+            "issue": "price_particle_error",
+            "matches": [
+              "현재가 $87.72와"
+            ],
+            "message_index": 3
+          },
+          {
+            "issue": "price_particle_error",
+            "matches": [
+              "현재가 $348.06와"
+            ],
+            "message_index": 4
+          },
+          {
+            "issue": "price_particle_error",
+            "matches": [
+              "현재가 $79.56와"
+            ],
+            "message_index": 5
+          },
+          {
+            "issue": "price_particle_error",
+            "matches": [
+              "현재가 $231.04와"
+            ],
+            "message_index": 6
+          },
+          {
+            "issue": "price_particle_error",
+            "matches": [
+              "현재가 $910.43와"
+            ],
+            "message_index": 7
+          },
+          {
+            "issue": "price_particle_error",
+            "matches": [
+              "현재가 $3.25와"
+            ],
+            "message_index": 8
+          },
+          {
+            "issue": "price_particle_error",
+            "matches": [
+              "현재가 $155.37와"
+            ],
+            "message_index": 9
+          },
+          {
+            "issue": "price_particle_error",
+            "matches": [
+              "현재가 $1,493.12와"
+            ],
+            "message_index": 10
+          },
+          {
+            "issue": "price_particle_error",
+            "matches": [
+              "현재가 $348.95와"
+            ],
+            "message_index": 11
+          },
+          {
+            "issue": "price_particle_error",
+            "matches": [
+              "현재가 $5.97와"
+            ],
+            "message_index": 13
+          },
+          {
+            "issue": "price_particle_error",
+            "matches": [
+              "현재가 $15.48와"
+            ],
+            "message_index": 14
+          }
+        ],
+        "duplicate_canonical_label_count": 0,
+        "hard_checks_passed": false,
+        "incomplete_predicate_count": 0,
+        "internal_implementation_term_count": 0,
+        "korean_particle_error_count": 0,
+        "malformed_actor_flow_count": 0,
+        "price_particle_error_count": 12
+      },
+      "financial_period_error_count": 0,
+      "generic_methodology_families": [],
+      "generic_methodology_repeat_count": 0,
+      "generic_next_check_count": 0,
+      "generic_numeric_summary_families": [],
+      "generic_numeric_summary_repeat_count": 0,
+      "generic_unknown_count": 0,
+      "hard_checks_passed": false,
+      "human_quality_approval_required": true,
+      "identity_prose_mismatch_count": 0,
+      "kr_supply_numeric_coverage": [],
+      "max_substantive_repeat": 12,
+      "message_set_completeness": {
+        "expected_stock_count": 13,
+        "output_stock_count": 13,
+        "passed": true,
+        "rendered_message_count": 14
+      },
+      "numeric_fact_repetition": {
+        "hard_checks_passed": true,
+        "rows": [],
+        "same_fact_three_or_more_count": 0
+      },
+      "numeric_label_quality": {
+        "details": [],
+        "hard_checks_passed": true,
+        "instrument_label_mismatch_count": 0,
+        "period_label_mismatch_count": 0,
+        "postposition_mismatch_count": 0,
+        "redundant_authored_label_count": 0,
+        "repeated_bound_label_count": 0,
+        "source_label_mismatch_count": 0,
+        "zone_role_mismatch_count": 0
+      },
+      "numeric_ownership": {
+        "business_earnings_violation_count": 0,
+        "business_earnings_violations": [],
+        "contract": "numeric-summary-ownership-v1",
+        "hard_checks_passed": true
+      },
+      "numeric_primary_ownership": {
+        "contract": "numeric-primary-owner-v1",
+        "current_rr_primary_owner": "price_context",
+        "current_rr_primary_text_ref": "price_positioning.text",
+        "current_rr_violation_count": 0,
+        "current_rr_violations": [],
+        "hard_checks_passed": true
+      },
+      "observer_holder": [
+        {
+          "distinct": true,
+          "ticker": "CORZ"
+        },
+        {
+          "distinct": true,
+          "ticker": "CRCL"
+        },
+        {
+          "distinct": true,
+          "ticker": "GOOGL"
+        },
+        {
+          "distinct": true,
+          "ticker": "HUT"
+        },
+        {
+          "distinct": true,
+          "ticker": "IBM"
+        },
+        {
+          "distinct": true,
+          "ticker": "MU"
+        },
+        {
+          "distinct": true,
+          "ticker": "RXRX"
+        },
+        {
+          "distinct": true,
+          "ticker": "SKHY"
+        },
+        {
+          "distinct": true,
+          "ticker": "SNDK"
+        },
+        {
+          "distinct": true,
+          "ticker": "TSLA"
+        },
+        {
+          "distinct": true,
+          "ticker": "TSM"
+        },
+        {
+          "distinct": true,
+          "ticker": "WRD"
+        },
+        {
+          "distinct": true,
+          "ticker": "WULF"
+        }
+      ],
+      "observer_holder_distinct_count": 13,
+      "production_assist_evidence_eligible": false,
+      "rendered_heading_quality": {
+        "expected_heading": "📊 거래량·포지셔닝",
+        "message_indexes": [],
+        "mismatch_count": 0
+      },
+      "rendered_identity_prose_mismatch_count": 0,
+      "rendered_identity_prose_mismatches": [],
+      "repeated_sentences": [
+        {
+          "classification": "substantive",
+          "sentence": "가격 구조는 신규 자금의 대기 맥락이며 매도 명령은 아닙니다.",
+          "stock_count": 12,
+          "tickers": [
+            "CORZ",
+            "CRCL",
+            "HUT",
+            "IBM",
+            "MU",
+            "RXRX",
+            "SKHY",
+            "SNDK",
+            "TSLA",
+            "TSM",
+            "WRD",
+            "WULF"
+          ]
+        },
+        {
+          "classification": "substantive",
+          "sentence": "이는 현재 가격에서 가장 가까운 검증 저항과 차트 무효화 경계를 함께 반영한 가격 비대칭입니다.",
+          "stock_count": 10,
+          "tickers": [
+            "CORZ",
+            "GOOGL",
+            "HUT",
+            "IBM",
+            "MU",
+            "RXRX",
+            "SNDK",
+            "TSLA",
+            "TSM",
+            "WRD"
+          ]
+        },
+        {
+          "classification": "substantive",
+          "sentence": "등록 확인선은 아직 도달 전 상태가 이어집니다.",
+          "stock_count": 7,
+          "tickers": [
+            "CORZ",
+            "GOOGL",
+            "HUT",
+            "IBM",
+            "TSM",
+            "WRD",
+            "WULF"
+          ]
+        },
+        {
+          "classification": "substantive",
+          "sentence": "등록 확인선 위 유지 상태가 이어집니다.",
+          "stock_count": 3,
+          "tickers": [
+            "CRCL",
+            "SNDK",
+            "TSLA"
+          ]
+        },
+        {
+          "classification": "substantive",
+          "sentence": "등록 확인선 위 유지에서 돌파 실패로 전환했습니다.",
+          "stock_count": 3,
+          "tickers": [
+            "MU",
+            "RXRX",
+            "SKHY"
+          ]
+        }
+      ],
+      "section_numeric_grounding": {
+        "CORZ": {
+          "core": 2,
+          "earnings": 1,
+          "price": 6,
+          "supply": 1,
+          "valuation": 0
+        },
+        "CRCL": {
+          "core": 2,
+          "earnings": 1,
+          "price": 3,
+          "supply": 1,
+          "valuation": 0
+        },
+        "GOOGL": {
+          "core": 1,
+          "earnings": 0,
+          "price": 6,
+          "supply": 1,
+          "valuation": 0
+        },
+        "HUT": {
+          "core": 1,
+          "earnings": 0,
+          "price": 6,
+          "supply": 1,
+          "valuation": 0
+        },
+        "IBM": {
+          "core": 2,
+          "earnings": 1,
+          "price": 6,
+          "supply": 1,
+          "valuation": 0
+        },
+        "MU": {
+          "core": 2,
+          "earnings": 2,
+          "price": 6,
+          "supply": 1,
+          "valuation": 0
+        },
+        "RXRX": {
+          "core": 2,
+          "earnings": 1,
+          "price": 6,
+          "supply": 1,
+          "valuation": 0
+        },
+        "SKHY": {
+          "core": 2,
+          "earnings": 0,
+          "price": 1,
+          "supply": 1,
+          "valuation": 0
+        },
+        "SNDK": {
+          "core": 2,
+          "earnings": 1,
+          "price": 6,
+          "supply": 1,
+          "valuation": 0
+        },
+        "TSLA": {
+          "core": 1,
+          "earnings": 1,
+          "price": 6,
+          "supply": 1,
+          "valuation": 0
+        },
+        "TSM": {
+          "core": 3,
+          "earnings": 3,
+          "price": 6,
+          "supply": 1,
+          "valuation": 0
+        },
+        "WRD": {
+          "core": 2,
+          "earnings": 0,
+          "price": 6,
+          "supply": 1,
+          "valuation": 0
+        },
+        "WULF": {
+          "core": 1,
+          "earnings": 0,
+          "price": 3,
+          "supply": 1,
+          "valuation": 0
+        }
+      },
+      "stock_count": 13,
+      "stock_specific_next_check_count": 13,
+      "stock_specific_unknown_count": 13,
+      "substantive_repeated_sentence_count": 5,
+      "supply_grounding_error_count": 0,
+      "supply_routing": {
+        "generic_us_investor_flow_unknown_count": 0,
+        "generic_us_investor_flow_unknown_rows": [],
+        "generic_us_supply_count": 0,
+        "generic_us_supply_rows": [],
+        "substantive_repeated_supply_sentence_count": 0,
+        "us_kr_style_horizon_count": 0,
+        "us_kr_style_horizon_rows": []
+      },
+      "template_skeleton_contract": "typed-template-skeleton-v1",
+      "template_skeleton_exceptions": [
+        {
+          "owner": "price_context",
+          "reason": "canonical_zone_endpoint_contract",
+          "relation": "metric_set",
+          "section": "price_positioning",
+          "semantic_types": [
+            "resistance_zone_price",
+            "support_zone_price"
+          ],
+          "skeleton": "<numeric>~<numeric>, <numeric>~<numeric>입니다.",
+          "stock_count": 10,
+          "tickers": [
+            "CORZ",
+            "GOOGL",
+            "HUT",
+            "IBM",
+            "MU",
+            "RXRX",
+            "SNDK",
+            "TSLA",
+            "TSM",
+            "WRD"
+          ]
+        }
+      ],
+      "template_skeleton_repeat_count": 8,
+      "template_skeleton_repeats": [
+        {
+          "owner": "price_context",
+          "relation": "single_metric",
+          "section": "price_positioning",
+          "semantic_types": [
+            "share_price"
+          ],
+          "skeleton": "가격 기준: <numeric>.",
+          "stock_count": 13,
+          "tickers": [
+            "CORZ",
+            "CRCL",
+            "GOOGL",
+            "HUT",
+            "IBM",
+            "MU",
+            "RXRX",
+            "SKHY",
+            "SNDK",
+            "TSLA",
+            "TSM",
+            "WRD",
+            "WULF"
+          ],
+          "typed_skeleton": "price_positioning|price_context|single_metric|가격 기준: <numeric>."
+        },
+        {
+          "owner": "price_context",
+          "relation": "no_numeric_relation",
+          "section": "price_positioning",
+          "semantic_types": [],
+          "skeleton": "가격 구조는 신규 자금의 대기 맥락이며 매도 명령은 아닙니다.",
+          "stock_count": 12,
+          "tickers": [
+            "CORZ",
+            "CRCL",
+            "HUT",
+            "IBM",
+            "MU",
+            "RXRX",
+            "SKHY",
+            "SNDK",
+            "TSLA",
+            "TSM",
+            "WRD",
+            "WULF"
+          ],
+          "typed_skeleton": "price_positioning|price_context|no_numeric_relation|가격 구조는 신규 자금의 대기 맥락이며 매도 명령은 아닙니다."
+        },
+        {
+          "owner": "price_context",
+          "relation": "single_metric",
+          "section": "price_positioning",
+          "semantic_types": [
+            "current_price_risk_reward_ratio"
+          ],
+          "skeleton": "<numeric>.",
+          "stock_count": 10,
+          "tickers": [
+            "CORZ",
+            "GOOGL",
+            "HUT",
+            "IBM",
+            "MU",
+            "RXRX",
+            "SNDK",
+            "TSLA",
+            "TSM",
+            "WRD"
+          ],
+          "typed_skeleton": "price_positioning|price_context|single_metric|<numeric>."
+        },
+        {
+          "owner": "price_context",
+          "relation": "no_numeric_relation",
+          "section": "price_positioning",
+          "semantic_types": [],
+          "skeleton": "이는 현재 가격에서 가장 가까운 검증 저항과 차트 무효화 경계를 함께 반영한 가격 비대칭입니다.",
+          "stock_count": 10,
+          "tickers": [
+            "CORZ",
+            "GOOGL",
+            "HUT",
+            "IBM",
+            "MU",
+            "RXRX",
+            "SNDK",
+            "TSLA",
+            "TSM",
+            "WRD"
+          ],
+          "typed_skeleton": "price_positioning|price_context|no_numeric_relation|이는 현재 가격에서 가장 가까운 검증 저항과 차트 무효화 경계를 함께 반영한 가격 비대칭입니다."
+        },
+        {
+          "owner": "price_context",
+          "relation": "no_numeric_relation",
+          "section": "price_positioning",
+          "semantic_types": [],
+          "skeleton": "등록 확인선은 아직 도달 전 상태가 이어집니다.",
+          "stock_count": 7,
+          "tickers": [
+            "CORZ",
+            "GOOGL",
+            "HUT",
+            "IBM",
+            "TSM",
+            "WRD",
+            "WULF"
+          ],
+          "typed_skeleton": "price_positioning|price_context|no_numeric_relation|등록 확인선은 아직 도달 전 상태가 이어집니다."
+        },
+        {
+          "owner": "business_earnings",
+          "relation": "single_metric",
+          "section": "business_earnings",
+          "semantic_types": [
+            "revenue"
+          ],
+          "skeleton": "<numeric>를 확인했습니다.",
+          "stock_count": 6,
+          "tickers": [
+            "CORZ",
+            "CRCL",
+            "IBM",
+            "MU",
+            "RXRX",
+            "SNDK"
+          ],
+          "typed_skeleton": "business_earnings|business_earnings|single_metric|<numeric>를 확인했습니다."
+        },
+        {
+          "owner": "price_context",
+          "relation": "no_numeric_relation",
+          "section": "price_positioning",
+          "semantic_types": [],
+          "skeleton": "등록 확인선 위 유지 상태가 이어집니다.",
+          "stock_count": 3,
+          "tickers": [
+            "CRCL",
+            "SNDK",
+            "TSLA"
+          ],
+          "typed_skeleton": "price_positioning|price_context|no_numeric_relation|등록 확인선 위 유지 상태가 이어집니다."
+        },
+        {
+          "owner": "price_context",
+          "relation": "no_numeric_relation",
+          "section": "price_positioning",
+          "semantic_types": [],
+          "skeleton": "등록 확인선 위 유지에서 돌파 실패로 전환했습니다.",
+          "stock_count": 3,
+          "tickers": [
+            "MU",
+            "RXRX",
+            "SKHY"
+          ],
+          "typed_skeleton": "price_positioning|price_context|no_numeric_relation|등록 확인선 위 유지에서 돌파 실패로 전환했습니다."
+        }
+      ],
+      "unsupported_comparative_claim_count": 0,
+      "valuation_evidence_error_count": 0,
+      "watch_next_check_overlap": {
+        "exact_overlap_count": 0,
+        "hard_checks_passed": true,
+        "meaningless_overlap_count": 0,
+        "rows": [],
+        "semantic_overlap_count": 0,
+        "watch_role_violation_count": 0
+      }
+    },
+    "checked_at": "2026-08-25T00:00:00+00:00",
+    "contract": "runtime-message-quality-receipt-v2",
+    "errors": [
+      "runtime_message_quality_gate_failed"
+    ],
+    "expected_stock_tickers": null,
+    "gate_version": "runtime-message-quality-v1",
+    "message_count": 14,
+    "packet_id": "2026-08-25-us-run-37-7e04812311c2",
+    "packet_sha256": "6d592e494de2de3e18cb215757af9d4f885435142048a8c83feb52baa82cc971",
+    "policy_version": "daily-review-v3.10",
+    "receipt_schema_version": "2",
+    "rendered_payload_set_sha256": "c622c3e8a2e0c92a870b26ed80769592d1db28cf3bc9bf2c0e8a71915782e72e",
+    "schema_version": "4",
+    "status": "failed",
+    "validated_output_sha256": "9f15e409557128072b7ac2a25ec0c74b0d89242a64991ff6227413a006ec89a9"
+  },
+  "delivery_integrity": "PASS",
+  "fallback": "PASS",
+  "free_analyst": "PASS",
+  "gates": {
+    "ADAPTIVE_RENDERER_PRODUCTION": "PASS",
+    "FREE_ANALYST_ADAPTIVE_PRODUCTION_INTEGRATION": "PASS",
+    "FREE_ANALYST_PRODUCTION_FACT_BOUNDARY": "PASS",
+    "PRODUCTION_DELIVERY_INTEGRITY": "PASS",
+    "PRODUCTION_FALLBACK_PARITY": "PASS"
+  },
+  "hard_validation": "PASS",
+  "instruction_commit": "3df40de53cf35ff5c47d662e0a14fbf9e30be3f7",
+  "integration": "PASS",
+  "kr_replay": "8/8",
+  "new_runtime_quality": {
+    "check_results": {
+      "contract": "relational-reasoning-quality-v2",
+      "deterministic_quality_gate_passed": false,
+      "duplicate_threshold": 3,
+      "final_rendered_language": {
+        "details": [],
+        "duplicate_canonical_label_count": 0,
+        "hard_checks_passed": true,
+        "incomplete_predicate_count": 0,
+        "internal_implementation_term_count": 0,
+        "korean_particle_error_count": 0,
+        "malformed_actor_flow_count": 0,
+        "price_particle_error_count": 0
+      },
+      "financial_period_error_count": 0,
+      "generic_methodology_families": [],
+      "generic_methodology_repeat_count": 0,
+      "generic_next_check_count": 0,
+      "generic_numeric_summary_families": [],
+      "generic_numeric_summary_repeat_count": 0,
+      "generic_unknown_count": 0,
+      "hard_checks_passed": false,
+      "human_quality_approval_required": true,
+      "identity_prose_mismatch_count": 0,
+      "kr_supply_numeric_coverage": [],
+      "max_substantive_repeat": 12,
+      "message_set_completeness": {
+        "expected_stock_count": 13,
+        "output_stock_count": 13,
+        "passed": true,
+        "rendered_message_count": 14
+      },
+      "numeric_fact_repetition": {
+        "hard_checks_passed": true,
+        "rows": [],
+        "same_fact_three_or_more_count": 0
+      },
+      "numeric_label_quality": {
+        "details": [],
+        "hard_checks_passed": true,
+        "instrument_label_mismatch_count": 0,
+        "period_label_mismatch_count": 0,
+        "postposition_mismatch_count": 0,
+        "redundant_authored_label_count": 0,
+        "repeated_bound_label_count": 0,
+        "source_label_mismatch_count": 0,
+        "zone_role_mismatch_count": 0
+      },
+      "numeric_ownership": {
+        "business_earnings_violation_count": 0,
+        "business_earnings_violations": [],
+        "contract": "numeric-summary-ownership-v1",
+        "hard_checks_passed": true
+      },
+      "numeric_primary_ownership": {
+        "contract": "numeric-primary-owner-v1",
+        "current_rr_primary_owner": "price_context",
+        "current_rr_primary_text_ref": "price_positioning.text",
+        "current_rr_violation_count": 0,
+        "current_rr_violations": [],
+        "hard_checks_passed": true
+      },
+      "observer_holder": [
+        {
+          "distinct": true,
+          "ticker": "CORZ"
+        },
+        {
+          "distinct": true,
+          "ticker": "CRCL"
+        },
+        {
+          "distinct": true,
+          "ticker": "GOOGL"
+        },
+        {
+          "distinct": true,
+          "ticker": "HUT"
+        },
+        {
+          "distinct": true,
+          "ticker": "IBM"
+        },
+        {
+          "distinct": true,
+          "ticker": "MU"
+        },
+        {
+          "distinct": true,
+          "ticker": "RXRX"
+        },
+        {
+          "distinct": true,
+          "ticker": "SKHY"
+        },
+        {
+          "distinct": true,
+          "ticker": "SNDK"
+        },
+        {
+          "distinct": true,
+          "ticker": "TSLA"
+        },
+        {
+          "distinct": true,
+          "ticker": "TSM"
+        },
+        {
+          "distinct": true,
+          "ticker": "WRD"
+        },
+        {
+          "distinct": true,
+          "ticker": "WULF"
+        }
+      ],
+      "observer_holder_distinct_count": 13,
+      "production_assist_evidence_eligible": false,
+      "rendered_heading_quality": {
+        "expected_heading": "📊 거래량·포지셔닝",
+        "message_indexes": [],
+        "mismatch_count": 0
+      },
+      "rendered_identity_prose_mismatch_count": 0,
+      "rendered_identity_prose_mismatches": [],
+      "repeated_sentences": [
+        {
+          "classification": "substantive",
+          "sentence": "가격 구조는 신규 자금의 대기 맥락이며 매도 명령은 아닙니다.",
+          "stock_count": 12,
+          "tickers": [
+            "CORZ",
+            "CRCL",
+            "HUT",
+            "IBM",
+            "MU",
+            "RXRX",
+            "SKHY",
+            "SNDK",
+            "TSLA",
+            "TSM",
+            "WRD",
+            "WULF"
+          ]
+        },
+        {
+          "classification": "substantive",
+          "sentence": "이는 현재 가격에서 가장 가까운 검증 저항과 차트 무효화 경계를 함께 반영한 가격 비대칭입니다.",
+          "stock_count": 10,
+          "tickers": [
+            "CORZ",
+            "GOOGL",
+            "HUT",
+            "IBM",
+            "MU",
+            "RXRX",
+            "SNDK",
+            "TSLA",
+            "TSM",
+            "WRD"
+          ]
+        },
+        {
+          "classification": "substantive",
+          "sentence": "등록 확인선은 아직 도달 전 상태가 이어집니다.",
+          "stock_count": 7,
+          "tickers": [
+            "CORZ",
+            "GOOGL",
+            "HUT",
+            "IBM",
+            "TSM",
+            "WRD",
+            "WULF"
+          ]
+        },
+        {
+          "classification": "substantive",
+          "sentence": "등록 확인선 위 유지 상태가 이어집니다.",
+          "stock_count": 3,
+          "tickers": [
+            "CRCL",
+            "SNDK",
+            "TSLA"
+          ]
+        },
+        {
+          "classification": "substantive",
+          "sentence": "등록 확인선 위 유지에서 돌파 실패로 전환했습니다.",
+          "stock_count": 3,
+          "tickers": [
+            "MU",
+            "RXRX",
+            "SKHY"
+          ]
+        }
+      ],
+      "section_numeric_grounding": {
+        "CORZ": {
+          "core": 2,
+          "earnings": 1,
+          "price": 6,
+          "supply": 1,
+          "valuation": 0
+        },
+        "CRCL": {
+          "core": 2,
+          "earnings": 1,
+          "price": 3,
+          "supply": 1,
+          "valuation": 0
+        },
+        "GOOGL": {
+          "core": 1,
+          "earnings": 0,
+          "price": 6,
+          "supply": 1,
+          "valuation": 0
+        },
+        "HUT": {
+          "core": 1,
+          "earnings": 0,
+          "price": 6,
+          "supply": 1,
+          "valuation": 0
+        },
+        "IBM": {
+          "core": 2,
+          "earnings": 1,
+          "price": 6,
+          "supply": 1,
+          "valuation": 0
+        },
+        "MU": {
+          "core": 2,
+          "earnings": 2,
+          "price": 6,
+          "supply": 1,
+          "valuation": 0
+        },
+        "RXRX": {
+          "core": 2,
+          "earnings": 1,
+          "price": 6,
+          "supply": 1,
+          "valuation": 0
+        },
+        "SKHY": {
+          "core": 2,
+          "earnings": 0,
+          "price": 1,
+          "supply": 1,
+          "valuation": 0
+        },
+        "SNDK": {
+          "core": 2,
+          "earnings": 1,
+          "price": 6,
+          "supply": 1,
+          "valuation": 0
+        },
+        "TSLA": {
+          "core": 1,
+          "earnings": 1,
+          "price": 6,
+          "supply": 1,
+          "valuation": 0
+        },
+        "TSM": {
+          "core": 3,
+          "earnings": 3,
+          "price": 6,
+          "supply": 1,
+          "valuation": 0
+        },
+        "WRD": {
+          "core": 2,
+          "earnings": 0,
+          "price": 6,
+          "supply": 1,
+          "valuation": 0
+        },
+        "WULF": {
+          "core": 1,
+          "earnings": 0,
+          "price": 3,
+          "supply": 1,
+          "valuation": 0
+        }
+      },
+      "stock_count": 13,
+      "stock_specific_next_check_count": 13,
+      "stock_specific_unknown_count": 13,
+      "substantive_repeated_sentence_count": 5,
+      "supply_grounding_error_count": 0,
+      "supply_routing": {
+        "generic_us_investor_flow_unknown_count": 0,
+        "generic_us_investor_flow_unknown_rows": [],
+        "generic_us_supply_count": 0,
+        "generic_us_supply_rows": [],
+        "substantive_repeated_supply_sentence_count": 0,
+        "us_kr_style_horizon_count": 0,
+        "us_kr_style_horizon_rows": []
+      },
+      "template_skeleton_contract": "typed-template-skeleton-v1",
+      "template_skeleton_exceptions": [
+        {
+          "owner": "price_context",
+          "reason": "canonical_zone_endpoint_contract",
+          "relation": "metric_set",
+          "section": "price_positioning",
+          "semantic_types": [
+            "resistance_zone_price",
+            "support_zone_price"
+          ],
+          "skeleton": "<numeric>~<numeric>, <numeric>~<numeric>입니다.",
+          "stock_count": 10,
+          "tickers": [
+            "CORZ",
+            "GOOGL",
+            "HUT",
+            "IBM",
+            "MU",
+            "RXRX",
+            "SNDK",
+            "TSLA",
+            "TSM",
+            "WRD"
+          ]
+        }
+      ],
+      "template_skeleton_repeat_count": 8,
+      "template_skeleton_repeats": [
+        {
+          "owner": "price_context",
+          "relation": "single_metric",
+          "section": "price_positioning",
+          "semantic_types": [
+            "share_price"
+          ],
+          "skeleton": "가격 기준: <numeric>.",
+          "stock_count": 13,
+          "tickers": [
+            "CORZ",
+            "CRCL",
+            "GOOGL",
+            "HUT",
+            "IBM",
+            "MU",
+            "RXRX",
+            "SKHY",
+            "SNDK",
+            "TSLA",
+            "TSM",
+            "WRD",
+            "WULF"
+          ],
+          "typed_skeleton": "price_positioning|price_context|single_metric|가격 기준: <numeric>."
+        },
+        {
+          "owner": "price_context",
+          "relation": "no_numeric_relation",
+          "section": "price_positioning",
+          "semantic_types": [],
+          "skeleton": "가격 구조는 신규 자금의 대기 맥락이며 매도 명령은 아닙니다.",
+          "stock_count": 12,
+          "tickers": [
+            "CORZ",
+            "CRCL",
+            "HUT",
+            "IBM",
+            "MU",
+            "RXRX",
+            "SKHY",
+            "SNDK",
+            "TSLA",
+            "TSM",
+            "WRD",
+            "WULF"
+          ],
+          "typed_skeleton": "price_positioning|price_context|no_numeric_relation|가격 구조는 신규 자금의 대기 맥락이며 매도 명령은 아닙니다."
+        },
+        {
+          "owner": "price_context",
+          "relation": "single_metric",
+          "section": "price_positioning",
+          "semantic_types": [
+            "current_price_risk_reward_ratio"
+          ],
+          "skeleton": "<numeric>.",
+          "stock_count": 10,
+          "tickers": [
+            "CORZ",
+            "GOOGL",
+            "HUT",
+            "IBM",
+            "MU",
+            "RXRX",
+            "SNDK",
+            "TSLA",
+            "TSM",
+            "WRD"
+          ],
+          "typed_skeleton": "price_positioning|price_context|single_metric|<numeric>."
+        },
+        {
+          "owner": "price_context",
+          "relation": "no_numeric_relation",
+          "section": "price_positioning",
+          "semantic_types": [],
+          "skeleton": "이는 현재 가격에서 가장 가까운 검증 저항과 차트 무효화 경계를 함께 반영한 가격 비대칭입니다.",
+          "stock_count": 10,
+          "tickers": [
+            "CORZ",
+            "GOOGL",
+            "HUT",
+            "IBM",
+            "MU",
+            "RXRX",
+            "SNDK",
+            "TSLA",
+            "TSM",
+            "WRD"
+          ],
+          "typed_skeleton": "price_positioning|price_context|no_numeric_relation|이는 현재 가격에서 가장 가까운 검증 저항과 차트 무효화 경계를 함께 반영한 가격 비대칭입니다."
+        },
+        {
+          "owner": "price_context",
+          "relation": "no_numeric_relation",
+          "section": "price_positioning",
+          "semantic_types": [],
+          "skeleton": "등록 확인선은 아직 도달 전 상태가 이어집니다.",
+          "stock_count": 7,
+          "tickers": [
+            "CORZ",
+            "GOOGL",
+            "HUT",
+            "IBM",
+            "TSM",
+            "WRD",
+            "WULF"
+          ],
+          "typed_skeleton": "price_positioning|price_context|no_numeric_relation|등록 확인선은 아직 도달 전 상태가 이어집니다."
+        },
+        {
+          "owner": "business_earnings",
+          "relation": "single_metric",
+          "section": "business_earnings",
+          "semantic_types": [
+            "revenue"
+          ],
+          "skeleton": "<numeric>를 확인했습니다.",
+          "stock_count": 6,
+          "tickers": [
+            "CORZ",
+            "CRCL",
+            "IBM",
+            "MU",
+            "RXRX",
+            "SNDK"
+          ],
+          "typed_skeleton": "business_earnings|business_earnings|single_metric|<numeric>를 확인했습니다."
+        },
+        {
+          "owner": "price_context",
+          "relation": "no_numeric_relation",
+          "section": "price_positioning",
+          "semantic_types": [],
+          "skeleton": "등록 확인선 위 유지 상태가 이어집니다.",
+          "stock_count": 3,
+          "tickers": [
+            "CRCL",
+            "SNDK",
+            "TSLA"
+          ],
+          "typed_skeleton": "price_positioning|price_context|no_numeric_relation|등록 확인선 위 유지 상태가 이어집니다."
+        },
+        {
+          "owner": "price_context",
+          "relation": "no_numeric_relation",
+          "section": "price_positioning",
+          "semantic_types": [],
+          "skeleton": "등록 확인선 위 유지에서 돌파 실패로 전환했습니다.",
+          "stock_count": 3,
+          "tickers": [
+            "MU",
+            "RXRX",
+            "SKHY"
+          ],
+          "typed_skeleton": "price_positioning|price_context|no_numeric_relation|등록 확인선 위 유지에서 돌파 실패로 전환했습니다."
+        }
+      ],
+      "unsupported_comparative_claim_count": 0,
+      "valuation_evidence_error_count": 0,
+      "watch_next_check_overlap": {
+        "exact_overlap_count": 0,
+        "hard_checks_passed": true,
+        "meaningless_overlap_count": 0,
+        "rows": [],
+        "semantic_overlap_count": 0,
+        "watch_role_violation_count": 0
+      }
+    },
+    "checked_at": "2026-08-25T00:00:00+00:00",
+    "contract": "runtime-message-quality-receipt-v2",
+    "errors": [
+      "runtime_message_quality_gate_failed"
+    ],
+    "expected_stock_tickers": null,
+    "gate_version": "runtime-message-quality-v1",
+    "message_count": 14,
+    "packet_id": "2026-08-25-us-run-37-7e04812311c2",
+    "packet_sha256": "6d592e494de2de3e18cb215757af9d4f885435142048a8c83feb52baa82cc971",
+    "policy_version": "daily-review-v3.10",
+    "receipt_schema_version": "2",
+    "rendered_payload_set_sha256": "a7e40b4c5afd0ed8818a47e7c38159128c39da6c8a26d4bff5be1f2175c0fd91",
+    "schema_version": "4",
+    "status": "failed",
+    "validated_output_sha256": "9f15e409557128072b7ac2a25ec0c74b0d89242a64991ff6227413a006ec89a9"
+  },
+  "next_action": "EXPLICIT_CANARY_ENABLEMENT_DECISION",
+  "open_research_excluded": true,
+  "production_isolation": "PASS",
+  "rendered_repetition": {
+    "repeated_price_sentence_count": 0,
+    "repeated_price_sentences": [],
+    "repeated_sentence_count": 5,
+    "repeated_sentences": [
+      {
+        "sentence": "투자 논리: 유지 · 오늘 중요한 신규 변화 없음",
+        "stock_count": 13,
+        "tickers": [
+          "CORZ",
+          "CRCL",
+          "GOOGL",
+          "HUT",
+          "IBM",
+          "MU",
+          "RXRX",
+          "SKHY",
+          "SNDK",
+          "TSLA",
+          "TSM",
+          "WRD",
+          "WULF"
+        ]
+      },
+      {
+        "sentence": "현재 근거는 핵심 사업 조건의 존재를 보여도 투자 논리의 다음 확인까지 닫지는 못합니다.",
+        "stock_count": 13,
+        "tickers": [
+          "CORZ",
+          "CRCL",
+          "GOOGL",
+          "HUT",
+          "IBM",
+          "MU",
+          "RXRX",
+          "SKHY",
+          "SNDK",
+          "TSLA",
+          "TSM",
+          "WRD",
+          "WULF"
+        ]
+      },
+      {
+        "sentence": "현재 근거는 핵심 사업 조건을 보여도 투자 논리의 다음 확인까지 닫지는 못합니다.",
+        "stock_count": 13,
+        "tickers": [
+          "CORZ",
+          "CRCL",
+          "GOOGL",
+          "HUT",
+          "IBM",
+          "MU",
+          "RXRX",
+          "SKHY",
+          "SNDK",
+          "TSLA",
+          "TSM",
+          "WRD",
+          "WULF"
+        ]
+      },
+      {
+        "sentence": "구조적 위험: 높아진 상태",
+        "stock_count": 7,
+        "tickers": [
+          "CRCL",
+          "RXRX",
+          "SKHY",
+          "SNDK",
+          "TSLA",
+          "WRD",
+          "WULF"
+        ]
+      },
+      {
+        "sentence": "시장 기대: 투기적 기대",
+        "stock_count": 7,
+        "tickers": [
+          "CRCL",
+          "RXRX",
+          "SKHY",
+          "SNDK",
+          "TSLA",
+          "WRD",
+          "WULF"
+        ]
+      }
+    ]
+  },
+  "repository": "sskim-ai/thesis-monitor",
+  "runtime_quality": "FAILED",
+  "safety": {
+    "external_unsourced_facts": 0,
+    "fact_mismatch": 0,
+    "hidden_arithmetic": 0,
+    "material_information_loss": 0,
+    "temporal_violations": 0,
+    "trade_ar_leak": 0,
+    "unsupported_causality": 0,
+    "unsupported_numeric": 0
+  },
+  "source_sha256": {
+    "kr_bundle": "d3457241d53aac3267b63116546586aa72d1bf529c1328ea24a90764dd9509f4",
+    "us_candidate": "55cb4d413ba4dc558f7da6403d6657a3e6506555c914205f027709b07258a32b",
+    "us_packet": "17e14c4c7fd04017574f60057176c8e0560b0351ec9f3c865ba5dd543ae7e6cc"
+  },
+  "us_replay": "14/14"
+}

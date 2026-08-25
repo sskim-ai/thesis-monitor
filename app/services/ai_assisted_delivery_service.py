@@ -8,6 +8,7 @@ import os
 from contextlib import contextmanager
 from dataclasses import asdict, dataclass
 from datetime import date, datetime, time
+from itertools import combinations
 from pathlib import Path
 from typing import Iterator, Literal
 from zoneinfo import ZoneInfo
@@ -18,6 +19,15 @@ from app.config import get_settings
 from app.models.thesis import NotificationDelivery
 from app.schemas.ai_review import AIDailyReviewOutput, AIMarketReview, AIStockReview
 from app.services.delta_first_rendering_service import DeltaFirstRenderPlan
+from app.services.free_analyst_production_integration_service import (
+    ProductionCandidate,
+    build_production_candidate,
+    candidate_provenance,
+    fail_closed_canary_selection,
+    free_analyst_adaptive_canary_armed,
+    restrict_canary_selection,
+    select_limited_canary,
+)
 from app.services.ai_reasoning_quality_service import (
     runtime_message_quality_receipt,
     verify_runtime_message_quality_receipt,
@@ -189,27 +199,17 @@ def _output_path(packet: dict[str, object]) -> Path | None:
         "packet_id": packet_id,
         "schema_version": str(packet.get("output_schema_version") or "4"),
         "analysis_policy_version": str(packet.get("analysis_policy_version") or ""),
-        "knowledge_version": str(
-            knowledge.get("version") if isinstance(knowledge, dict) else ""
-        ),
-        "knowledge_sha256": str(
-            knowledge.get("sha256") if isinstance(knowledge, dict) else ""
-        ),
+        "knowledge_version": str(knowledge.get("version") if isinstance(knowledge, dict) else ""),
+        "knowledge_sha256": str(knowledge.get("sha256") if isinstance(knowledge, dict) else ""),
         "chart_knowledge_version": str(
-            chart_knowledge.get("version")
-            if isinstance(chart_knowledge, dict)
-            else ""
+            chart_knowledge.get("version") if isinstance(chart_knowledge, dict) else ""
         ),
         "chart_knowledge_sha256": str(
-            chart_knowledge.get("sha256")
-            if isinstance(chart_knowledge, dict)
-            else ""
+            chart_knowledge.get("sha256") if isinstance(chart_knowledge, dict) else ""
         ),
     }
     candidates = sorted(
-        (Path(get_settings().data_dir) / "ai_review" / "outbox").glob(
-            f"{packet_id}--*.json"
-        ),
+        (Path(get_settings().data_dir) / "ai_review" / "outbox").glob(f"{packet_id}--*.json"),
         reverse=True,
     )
     for candidate in candidates:
@@ -271,9 +271,7 @@ def _payload_cash_flow_context(payload: dict[str, object]) -> dict[str, object]:
     return dict(value) if isinstance(value, dict) else {}
 
 
-def _packet_cash_flow_context(
-    packet: dict[str, object], ticker: str
-) -> dict[str, object]:
+def _packet_cash_flow_context(packet: dict[str, object], ticker: str) -> dict[str, object]:
     for stock in packet.get("stocks", []):
         if not isinstance(stock, dict) or str(stock.get("ticker")) != ticker:
             continue
@@ -290,9 +288,7 @@ def _payload_working_capital_context(payload: dict[str, object]) -> dict[str, ob
     return dict(value) if isinstance(value, dict) else {}
 
 
-def _align_working_capital_packet_id(
-    payload: dict[str, object], packet_id: str
-) -> None:
+def _align_working_capital_packet_id(payload: dict[str, object], packet_id: str) -> None:
     analysis = payload.get("analysis_context")
     if not isinstance(analysis, dict):
         return
@@ -301,9 +297,7 @@ def _align_working_capital_packet_id(
         context["packet_id"] = packet_id
 
 
-def _packet_working_capital_context(
-    packet: dict[str, object], ticker: str
-) -> dict[str, object]:
+def _packet_working_capital_context(packet: dict[str, object], ticker: str) -> dict[str, object]:
     for stock in packet.get("stocks", []):
         if not isinstance(stock, dict) or str(stock.get("ticker")) != ticker:
             continue
@@ -341,9 +335,7 @@ def _working_capital_delivery_metadata(
         "working_capital_user_visible_context_id": source.get(
             "working_capital_user_visible_context_id"
         ),
-        "working_capital_user_visible_enabled": (
-            source.get("user_visible_enabled") is True
-        ),
+        "working_capital_user_visible_enabled": (source.get("user_visible_enabled") is True),
         "working_capital_fact_ids": list(source.get("selected_fact_ids") or []),
         "working_capital_relation_id": source.get("relation_id"),
         "working_capital_metric_family": source.get("metric_family"),
@@ -374,9 +366,7 @@ def _cash_flow_delivery_metadata(
     source = packet_context or fallback_context
     return {
         "cash_flow_user_visible_mode": source.get("rollout_mode", "OFF"),
-        "cash_flow_user_visible_context_id": source.get(
-            "cash_flow_user_visible_context_id"
-        ),
+        "cash_flow_user_visible_context_id": source.get("cash_flow_user_visible_context_id"),
         "cash_flow_user_visible_enabled": source.get("user_visible_enabled") is True,
         "cash_flow_fact_ids": [
             source[key]
@@ -393,8 +383,7 @@ def _cash_flow_run_metadata(packet: dict[str, object]) -> dict[str, object]:
     contexts = [
         item.get("cash_flow_user_visible")
         for item in packet.get("stocks", [])
-        if isinstance(item, dict)
-        and isinstance(item.get("cash_flow_user_visible"), dict)
+        if isinstance(item, dict) and isinstance(item.get("cash_flow_user_visible"), dict)
     ]
     selected = [
         item
@@ -436,8 +425,7 @@ def _working_capital_run_metadata(packet: dict[str, object]) -> dict[str, object
     contexts = [
         item.get("working_capital_user_visible")
         for item in packet.get("stocks", [])
-        if isinstance(item, dict)
-        and isinstance(item.get("working_capital_user_visible"), dict)
+        if isinstance(item, dict) and isinstance(item.get("working_capital_user_visible"), dict)
     ]
     selected = [
         item
@@ -454,11 +442,7 @@ def _working_capital_run_metadata(packet: dict[str, object]) -> dict[str, object
             if item.get("working_capital_user_visible_context_id")
         ],
         "working_capital_fact_ids": sorted(
-            {
-                str(fact_id)
-                for item in selected
-                for fact_id in item.get("selected_fact_ids") or ()
-            }
+            {str(fact_id) for item in selected for fact_id in item.get("selected_fact_ids") or ()}
         ),
         "working_capital_metric_families": sorted(
             {str(item.get("metric_family")) for item in selected}
@@ -469,11 +453,7 @@ def _working_capital_run_metadata(packet: dict[str, object]) -> dict[str, object
 def _archive_directory(packet: dict[str, object]) -> Path:
     run_date = date.fromisoformat(str(packet["assessment_date"]))
     return (
-        _pilot_root()
-        / "history"
-        / f"{run_date:%Y}"
-        / f"{run_date:%m}"
-        / str(packet["packet_id"])
+        _pilot_root() / "history" / f"{run_date:%Y}" / f"{run_date:%m}" / str(packet["packet_id"])
     )
 
 
@@ -512,8 +492,7 @@ def _verified_ai_archive_artifacts(packet: dict[str, object]) -> list[dict[str, 
         delivery.get("delivery_mode") != "ai_assisted"
         or delivery.get("status") != "sent"
         or int(delivery.get("pending_count") or 0) != 0
-        or int(delivery.get("sent_count") or 0)
-        != int(delivery.get("delivery_count") or 0)
+        or int(delivery.get("sent_count") or 0) != int(delivery.get("delivery_count") or 0)
     ):
         raise ValueError("AI delivery archive is not complete")
     validation = _read_json(archive_dir / "validation-result.json")
@@ -522,21 +501,36 @@ def _verified_ai_archive_artifacts(packet: dict[str, object]) -> list[dict[str, 
     receipt = _read_json(archive_dir / "message-quality-receipt.json")
     receipt_sha256 = _file_sha256(archive_dir / "message-quality-receipt.json")
     output = AIDailyReviewOutput.model_validate(_read_json(archive_dir / "ai-review.json"))
-    archived_messages = _read_json(archive_dir / "ai-assisted-messages.json").get(
-        "messages"
-    )
+    archived_messages = _read_json(archive_dir / "ai-assisted-messages.json").get("messages")
+    expected_scope = receipt.get("expected_stock_tickers")
+    if isinstance(expected_scope, list):
+        scope = {str(ticker) for ticker in expected_scope}
+        output = output.model_copy(
+            update={
+                "stock_reviews": [
+                    review for review in output.stock_reviews if review.ticker in scope
+                ]
+            }
+        )
+        if isinstance(archived_messages, list):
+            archived_messages = [
+                item
+                for item in archived_messages
+                if isinstance(item, dict)
+                and isinstance(item.get("common_ai_core"), dict)
+                and item["common_ai_core"].get("canary_selected") is True
+            ]
     if not isinstance(archived_messages, list) or not verify_runtime_message_quality_receipt(
         receipt,
         _read_json(archive_dir / "packet.json"),
         output,
         [item for item in archived_messages if isinstance(item, dict)],
+        expected_stock_tickers=(scope if isinstance(expected_scope, list) else None),
     ):
         raise ValueError("AI message quality receipt does not match archived payload")
-    if (
-        delivery.get("message_quality_receipt_sha256") != receipt_sha256
-        or delivery.get("rendered_payload_set_sha256")
-        != receipt.get("rendered_payload_set_sha256")
-    ):
+    if delivery.get("message_quality_receipt_sha256") != receipt_sha256 or delivery.get(
+        "rendered_payload_set_sha256"
+    ) != receipt.get("rendered_payload_set_sha256"):
         raise ValueError("AI delivery archive receipt integrity mismatch")
     return artifacts
 
@@ -623,8 +617,7 @@ def _ai_archive_complete(packet: dict[str, object]) -> bool:
         marker = _read_json(marker_path)
         artifacts = (
             _verified_ai_archive_artifacts(packet)
-            if marker.get("archive_contract_version")
-            == AI_ARCHIVE_CONTRACT_VERSION
+            if marker.get("archive_contract_version") == AI_ARCHIVE_CONTRACT_VERSION
             else _verified_legacy_archive_artifacts(packet, marker)
         )
     except (OSError, ValueError, json.JSONDecodeError):
@@ -665,12 +658,8 @@ def _persisted_quality_integrity_errors(
         }:
             continue
         matched += 1
-        metadata_receipt_sha = str(
-            metadata.get("message_quality_receipt_sha256") or ""
-        )
-        metadata_rendered_sha = str(
-            metadata.get("rendered_payload_set_sha256") or ""
-        )
+        metadata_receipt_sha = str(metadata.get("message_quality_receipt_sha256") or "")
+        metadata_rendered_sha = str(metadata.get("rendered_payload_set_sha256") or "")
         receipt_shas.add(metadata_receipt_sha)
         rendered_shas.add(metadata_rendered_sha)
         if metadata_receipt_sha != actual_receipt_sha:
@@ -712,14 +701,10 @@ def _hold_quality_integrity_rejection(
         if delivery.status == "sent" or metadata.get("state") == "ai_assisted_sent":
             sent_count += 1
     partial_delivery = sent_count > 0
-    integrity_state = (
-        "post_partial_delivery_rejected" if partial_delivery else "rejected"
-    )
+    integrity_state = "post_partial_delivery_rejected" if partial_delivery else "rejected"
     for delivery, payload in matched_deliveries:
         metadata = _pilot_metadata(payload)
-        already_sent = (
-            delivery.status == "sent" or metadata.get("state") == "ai_assisted_sent"
-        )
+        already_sent = delivery.status == "sent" or metadata.get("state") == "ai_assisted_sent"
         if partial_delivery:
             if not already_sent:
                 metadata["state"] = "partial_integrity_rejected"
@@ -810,10 +795,7 @@ def hold_ai_assisted_pilot_session(
                     held_ids.append(delivery.id)
                 continue
             telegram = payload.get(TELEGRAM_DELIVERY_METADATA_KEY)
-            if (
-                isinstance(telegram, dict)
-                and int(telegram.get("next_chunk_index") or 0) > 0
-            ):
+            if isinstance(telegram, dict) and int(telegram.get("next_chunk_index") or 0) > 0:
                 continue
             deterministic = _clean_deterministic_payload(payload)
             _align_working_capital_packet_id(deterministic, packet_id)
@@ -829,12 +811,8 @@ def hold_ai_assisted_pilot_session(
                 "fallback_eligible": True,
                 "held_at": now.isoformat(),
                 "deterministic_payload": deterministic,
-                **_cash_flow_delivery_metadata(
-                    packet, delivery.ticker, deterministic
-                ),
-                **_working_capital_delivery_metadata(
-                    packet, delivery.ticker, deterministic
-                ),
+                **_cash_flow_delivery_metadata(packet, delivery.ticker, deterministic),
+                **_working_capital_delivery_metadata(packet, delivery.ticker, deterministic),
             }
             delivery.payload = json.dumps(payload, ensure_ascii=False)
             delivery.status = "pending"
@@ -884,10 +862,7 @@ def record_ai_validation_rejection(
             if not isinstance(payload, dict):
                 continue
             metadata = _pilot_metadata(payload)
-            if (
-                metadata.get("packet_id") != packet_id
-                or metadata.get("state") != "held"
-            ):
+            if metadata.get("packet_id") != packet_id or metadata.get("state") != "held":
                 continue
             metadata["fallback_eligible"] = True
             metadata["ai_validation_state"] = "rejected"
@@ -950,9 +925,7 @@ def _render_ai_market_message(
         str(item) for item in market_context.get("required_market_fact_ids", [])
     }
     night_changes = [
-        item
-        for item in review.important_changes
-        if set(item.fact_ids) & required_market_fact_ids
+        item for item in review.important_changes if set(item.fact_ids) & required_market_fact_ids
     ]
     changes = _bullets(
         [
@@ -968,15 +941,12 @@ def _render_ai_market_message(
     }
     transmissions = _bullets(
         [
-            f"{group_labels.get(item.portfolio_group, item.portfolio_group)}: "
-            f"{item.text.strip()}"
+            f"{group_labels.get(item.portfolio_group, item.portfolio_group)}: {item.text.strip()}"
             for item in review.portfolio_transmission
             if item.text.strip()
         ]
     )
-    next_checks = _bullets(
-        [item.text.strip() for item in review.next_checks if item.text.strip()]
-    )
+    next_checks = _bullets([item.text.strip() for item in review.next_checks if item.text.strip()])
     blocks = _deterministic_blocks(deterministic_text)
     cautions = _first_block(blocks, "⚠️ 데이터 주의")
     sections = [
@@ -1014,18 +984,11 @@ def _render_ai_market_message(
     if next_checks:
         sections.append(f"📌 다음 확인\n{next_checks}")
     fallback_caution = (
-        "• 일부 시장 데이터의 최신성이 부족해 "
-        "관련 판단 강도를 낮춥니다."
-        if cautions
-        else ""
+        "• 일부 시장 데이터의 최신성이 부족해 관련 판단 강도를 낮춥니다." if cautions else ""
     )
-    caution_parts = (
-        [unknowns] if unknowns else ([fallback_caution] if fallback_caution else [])
-    )
+    caution_parts = [unknowns] if unknowns else ([fallback_caution] if fallback_caution else [])
     if caution_parts:
-        normalized_cautions = [
-            part.removeprefix("⚠️ 데이터 주의\n") for part in caution_parts
-        ]
+        normalized_cautions = [part.removeprefix("⚠️ 데이터 주의\n") for part in caution_parts]
         caution_text = "\n".join(normalized_cautions)
         sections.append(f"⚠️ 데이터 주의\n{caution_text}")
     return "\n\n".join(sections)
@@ -1045,11 +1008,7 @@ def _render_ai_stock_message(
     blocks = _deterministic_blocks(deterministic_text)
     company = blocks[0] if blocks else f"🏢 {review.ticker}"
     official = _first_block(blocks, "투자 논리:") or "투자 논리: 확인 필요"
-    fixed_context = [
-        block
-        for block in blocks
-        if block.startswith(("구조적 위험:", "시장 기대:"))
-    ]
+    fixed_context = [block for block in blocks if block.startswith(("구조적 위험:", "시장 기대:"))]
     deterministic_details = [
         block
         for block in blocks
@@ -1101,18 +1060,10 @@ def _render_ai_stock_message(
         "valuation": standard_sections[6],
         "warnings": "\n\n".join(deterministic_details),
         "priority_watch": (
-            f"👁 핵심 감시\n{_bullets(review.priority_watch)}"
-            if review.priority_watch
-            else ""
+            f"👁 핵심 감시\n{_bullets(review.priority_watch)}" if review.priority_watch else ""
         ),
-        "next": (
-            f"📌 다음 확인\n{_bullets(review.next_checks)}"
-            if review.next_checks
-            else ""
-        ),
-        "unknown": (
-            f"⚠️ 미확인\n{_bullets(review.unknowns)}" if review.unknowns else ""
-        ),
+        "next": (f"📌 다음 확인\n{_bullets(review.next_checks)}" if review.next_checks else ""),
+        "unknown": (f"⚠️ 미확인\n{_bullets(review.unknowns)}" if review.unknowns else ""),
     }
     sections = [
         header,
@@ -1192,9 +1143,13 @@ async def deliver_validated_ai_review(
     output_path = _output_path(packet)
     if output_path is None:
         return PilotDeliveryResult(
-            status="not_ready", market=market, packet_id=packet_id, reason="validated_output_missing"
+            status="not_ready",
+            market=market,
+            packet_id=packet_id,
+            reason="validated_output_missing",
         )
     output = AIDailyReviewOutput.model_validate(_read_json(output_path))
+    adaptive_canary_active = free_analyst_adaptive_canary_armed()
     current = (now or datetime.now(KST)).astimezone(KST)
     target_days = get_settings().ai_review_pilot_target_success_days
     pilot_day = min(_pilot_day(market), target_days)
@@ -1219,10 +1174,8 @@ async def deliver_validated_ai_review(
     if isinstance(night_audit, dict):
         products = night_audit.get("products", [])
         used_fact_ids = set(output.market_review.facts_used)
-        claimed_fact_ids = {
-            item.fact_id for item in output.market_review.numeric_claims
-        }
-        for product in (products if isinstance(products, list) else []):
+        claimed_fact_ids = {item.fact_id for item in output.market_review.numeric_claims}
+        for product in products if isinstance(products, list) else []:
             if not isinstance(product, dict):
                 continue
             fact_id = str(product.get("fact_id") or "")
@@ -1231,10 +1184,7 @@ async def deliver_validated_ai_review(
             product["rendered_in_telegram"] = False
     _atomic_json(
         archive_dir / "portfolio-transmission.json",
-        [
-            item.model_dump(mode="json")
-            for item in output.market_review.portfolio_transmission
-        ],
+        [item.model_dump(mode="json") for item in output.market_review.portfolio_transmission],
     )
     _atomic_json(
         archive_dir / "chart-context.json",
@@ -1274,9 +1224,7 @@ async def deliver_validated_ai_review(
     )
     comparison_name = output_path.name.replace(".json", ".comparison.json")
     comparison_candidates = list(
-        (Path(get_settings().data_dir) / "ai_review" / "history").glob(
-            f"*/*/{comparison_name}"
-        )
+        (Path(get_settings().data_dir) / "ai_review" / "history").glob(f"*/*/{comparison_name}")
     )
     if comparison_candidates:
         _atomic_json(
@@ -1302,9 +1250,7 @@ async def deliver_validated_ai_review(
                         _pilot_metadata(payload).get("quality_integrity_state")
                         == "post_partial_delivery_rejected"
                         for delivery in deliveries
-                        if isinstance(
-                            (payload := json.loads(delivery.payload)), dict
-                        )
+                        if isinstance((payload := json.loads(delivery.payload)), dict)
                     )
                     else "held"
                 ),
@@ -1313,9 +1259,13 @@ async def deliver_validated_ai_review(
             )
         prepared_ids: set[int] = set()
         prepared_payloads: list[tuple[NotificationDelivery, dict[str, object]]] = []
+        adaptive_candidates: list[ProductionCandidate] = []
         reused_persisted_payload = False
         deterministic_messages: list[dict[str, object]] = []
         final_messages: list[dict[str, object]] = []
+        quality_output = output
+        quality_messages: list[dict[str, object]] | None = None
+        quality_scope_tickers: set[str] | None = None
         for delivery in deliveries:
             payload = json.loads(delivery.payload)
             if not isinstance(payload, dict):
@@ -1334,9 +1284,10 @@ async def deliver_validated_ai_review(
             )
             if state in {"fallback_pending", "fallback_sent"}:
                 continue
-            if state in {"ai_assisted_pending", "ai_assisted_sent"} and metadata.get(
-                "packet_id"
-            ) == packet_id:
+            if (
+                state in {"ai_assisted_pending", "ai_assisted_sent"}
+                and metadata.get("packet_id") == packet_id
+            ):
                 reused_persisted_payload = True
                 if delivery.id is not None:
                     prepared_ids.add(delivery.id)
@@ -1345,6 +1296,8 @@ async def deliver_validated_ai_review(
                         "delivery_id": delivery.id,
                         "ticker": delivery.ticker,
                         "logical_identity": metadata.get("delivery_identity"),
+                        "common_ai_core_message_key": metadata.get("common_ai_core_message_key"),
+                        "common_ai_core": metadata.get("common_ai_core"),
                         "text": str(payload.get("text") or ""),
                     }
                 )
@@ -1367,6 +1320,7 @@ async def deliver_validated_ai_review(
                 )
                 identity = f"{PILOT_VERSION}:{packet_id}:market"
                 message_type = "ai_assisted_pilot_market"
+                common_ai_message_key = f"market:{packet_id}"
             else:
                 review = reviews.get(delivery.ticker)
                 if review is None:
@@ -1380,6 +1334,17 @@ async def deliver_validated_ai_review(
                 )
                 identity = f"{PILOT_VERSION}:{packet_id}:stock:{delivery.ticker}"
                 message_type = "ai_assisted_pilot_stock"
+                common_ai_message_key = f"stock:{delivery.ticker}"
+            if adaptive_canary_active:
+                adaptive_candidates.append(
+                    build_production_candidate(
+                        text,
+                        deterministic_text=deterministic_text,
+                        message_key=common_ai_message_key,
+                        market=market,
+                        is_market_digest=delivery.ticker == PILOT_MARKERS[market],
+                    )
+                )
             new_payload = copy.deepcopy(deterministic)
             new_payload["text"] = text
             new_payload["type"] = message_type
@@ -1395,12 +1360,11 @@ async def deliver_validated_ai_review(
                 "state": "ai_assisted_pending",
                 "fallback_eligible": False,
                 "delivery_identity": identity,
+                "common_ai_core_message_key": common_ai_message_key,
                 "deterministic_payload": deterministic,
                 "prepared_at": current.isoformat(),
                 "persisted_delivery_retry_count": 0,
-                **_cash_flow_delivery_metadata(
-                    packet, delivery.ticker, deterministic
-                ),
+                **_cash_flow_delivery_metadata(packet, delivery.ticker, deterministic),
             }
             prepared_payloads.append((delivery, new_payload))
             if delivery.id is not None:
@@ -1410,6 +1374,7 @@ async def deliver_validated_ai_review(
                     "delivery_id": delivery.id,
                     "ticker": delivery.ticker,
                     "logical_identity": identity,
+                    "common_ai_core_message_key": common_ai_message_key,
                     "text": text,
                     "cash_flow_user_visible_context_id": _packet_cash_flow_context(
                         packet, delivery.ticker
@@ -1431,6 +1396,170 @@ async def deliver_validated_ai_review(
                 else ticker_order.get(str(item.get("ticker") or ""), 10_000)
             )
         )
+        canary_selection = None
+        if adaptive_canary_active and adaptive_candidates and not reused_persisted_payload:
+            settings = get_settings()
+            canary_selection = select_limited_canary(
+                adaptive_candidates,
+                max_market=settings.free_analyst_adaptive_canary_max_market,
+                max_stock=settings.free_analyst_adaptive_canary_max_stock,
+                max_total=settings.free_analyst_adaptive_canary_max_total,
+            )
+            candidates_by_key = {
+                candidate.message_key: candidate for candidate in adaptive_candidates
+            }
+            selected_keys = list(canary_selection.selected_keys)
+            market_key = next(
+                (
+                    candidate.message_key
+                    for candidate in adaptive_candidates
+                    if candidate.is_market_digest
+                ),
+                None,
+            )
+            runtime_safe_keys: tuple[str, ...] = ()
+            runtime_quality_found = False
+            for subset_size in range(len(selected_keys), -1, -1):
+                found = False
+                for subset in combinations(selected_keys, subset_size):
+                    if not subset or market_key not in subset:
+                        continue
+                    selected_set = set(subset)
+                    trial_messages = [
+                        {
+                            **item,
+                            "text": candidates_by_key[
+                                str(item.get("common_ai_core_message_key") or "")
+                            ].candidate_text,
+                        }
+                        for item in final_messages
+                        if str(item.get("common_ai_core_message_key") or "") in selected_set
+                    ]
+                    selected_stock_tickers = {
+                        str(item.get("ticker") or "")
+                        for item in trial_messages
+                        if item.get("ticker") != PILOT_MARKERS[market]
+                    }
+                    trial_output = output.model_copy(
+                        update={
+                            "stock_reviews": [
+                                review
+                                for review in output.stock_reviews
+                                if review.ticker in selected_stock_tickers
+                            ]
+                        }
+                    )
+                    trial_receipt = runtime_message_quality_receipt(
+                        packet,
+                        trial_output,
+                        trial_messages,
+                        expected_stock_tickers=selected_stock_tickers,
+                        checked_at=current,
+                    )
+                    if verify_runtime_message_quality_receipt(
+                        trial_receipt,
+                        packet,
+                        trial_output,
+                        trial_messages,
+                        expected_stock_tickers=selected_stock_tickers,
+                    ):
+                        runtime_safe_keys = tuple(subset)
+                        runtime_quality_found = True
+                        found = True
+                        break
+                if found:
+                    break
+            if runtime_quality_found:
+                canary_selection = restrict_canary_selection(
+                    canary_selection,
+                    runtime_safe_keys,
+                )
+            else:
+                canary_selection = fail_closed_canary_selection(canary_selection)
+            for delivery, new_payload in prepared_payloads:
+                metadata = _pilot_metadata(new_payload)
+                key = str(metadata.get("common_ai_core_message_key") or "")
+                candidate = candidates_by_key[key]
+                provenance = candidate_provenance(candidate, canary_selection)
+                row = canary_selection.row_for(key)
+                if row.canary_selected:
+                    new_payload["text"] = candidate.candidate_text
+                    new_payload["type"] = (
+                        "free_analyst_adaptive_canary_market"
+                        if candidate.is_market_digest
+                        else "free_analyst_adaptive_canary_stock"
+                    )
+                elif row.final_simulated_delivery_mode == "deterministic_fallback":
+                    deterministic_payload = copy.deepcopy(metadata["deterministic_payload"])
+                    new_payload.clear()
+                    new_payload.update(deterministic_payload)
+                metadata["common_ai_core"] = provenance
+                new_payload[AI_ASSISTED_PILOT_METADATA_KEY] = metadata
+            for item in final_messages:
+                key = str(item.get("common_ai_core_message_key") or "")
+                candidate = candidates_by_key[key]
+                row = canary_selection.row_for(key)
+                item["text"] = (
+                    candidate.candidate_text
+                    if row.canary_selected
+                    else (
+                        candidate.deterministic_text
+                        if row.final_simulated_delivery_mode == "deterministic_fallback"
+                        else candidate.source_text
+                    )
+                )
+                item["common_ai_core"] = candidate_provenance(candidate, canary_selection)
+            if canary_selection.total_selected:
+                selected_set = set(canary_selection.selected_keys)
+                quality_messages = [
+                    item
+                    for item in final_messages
+                    if str(item.get("common_ai_core_message_key") or "") in selected_set
+                ]
+                selected_stock_tickers = {
+                    str(item.get("ticker") or "")
+                    for item in quality_messages
+                    if item.get("ticker") != PILOT_MARKERS[market]
+                }
+                quality_output = output.model_copy(
+                    update={
+                        "stock_reviews": [
+                            review
+                            for review in output.stock_reviews
+                            if review.ticker in selected_stock_tickers
+                        ]
+                    }
+                )
+                quality_scope_tickers = selected_stock_tickers
+            _atomic_json(
+                archive_dir / "free-analyst-canary-selection.json",
+                {
+                    **canary_selection.to_dict(),
+                    "candidates": [row.to_dict() for row in adaptive_candidates],
+                },
+            )
+        elif adaptive_canary_active and reused_persisted_payload:
+            quality_messages = [
+                item
+                for item in final_messages
+                if isinstance(item.get("common_ai_core"), dict)
+                and item["common_ai_core"].get("canary_selected") is True
+            ]
+            selected_stock_tickers = {
+                str(item.get("ticker") or "")
+                for item in quality_messages
+                if item.get("ticker") != PILOT_MARKERS[market]
+            }
+            quality_output = output.model_copy(
+                update={
+                    "stock_reviews": [
+                        review
+                        for review in output.stock_reviews
+                        if review.ticker in selected_stock_tickers
+                    ]
+                }
+            )
+            quality_scope_tickers = selected_stock_tickers
         deterministic_archive = archive_dir / "deterministic-messages.json"
         if deterministic_messages or not deterministic_archive.exists():
             _archive_messages(
@@ -1468,8 +1597,9 @@ async def deliver_validated_ai_review(
             receipt_valid = verify_runtime_message_quality_receipt(
                 receipt,
                 packet,
-                output,
-                final_messages,
+                quality_output,
+                quality_messages or final_messages,
+                expected_stock_tickers=quality_scope_tickers,
             )
             integrity_errors = _persisted_quality_integrity_errors(
                 deliveries,
@@ -1481,15 +1611,17 @@ async def deliver_validated_ai_review(
         else:
             receipt = runtime_message_quality_receipt(
                 packet,
-                output,
-                final_messages,
+                quality_output,
+                quality_messages or final_messages,
+                expected_stock_tickers=quality_scope_tickers,
                 checked_at=current,
             )
             receipt_valid = verify_runtime_message_quality_receipt(
                 receipt,
                 packet,
-                output,
-                final_messages,
+                quality_output,
+                quality_messages or final_messages,
+                expected_stock_tickers=quality_scope_tickers,
             )
             _atomic_json(receipt_path, receipt)
         if reused_persisted_payload and not receipt_valid:
@@ -1509,11 +1641,7 @@ async def deliver_validated_ai_review(
                 status="quality_receipt_invalid",
                 market=market,
                 packet_id=packet_id,
-                delivery_mode=(
-                    "partial_integrity"
-                    if rejection["partial_delivery"]
-                    else "held"
-                ),
+                delivery_mode=("partial_integrity" if rejection["partial_delivery"] else "held"),
                 sent_count=int(rejection["sent_count"]),
                 pending_count=int(rejection["held_count"]),
                 reason=reason,
@@ -1532,9 +1660,7 @@ async def deliver_validated_ai_review(
                 metadata["state"] = "held"
                 metadata["fallback_eligible"] = True
                 metadata["ai_validation_state"] = "quality_rejected"
-                metadata["message_quality_receipt_sha256"] = _file_sha256(
-                    receipt_path
-                )
+                metadata["message_quality_receipt_sha256"] = _file_sha256(receipt_path)
                 payload[AI_ASSISTED_PILOT_METADATA_KEY] = metadata
                 delivery.payload = json.dumps(payload, ensure_ascii=False)
                 session.add(delivery)
@@ -1567,9 +1693,7 @@ async def deliver_validated_ai_review(
         for delivery, new_payload in prepared_payloads:
             metadata = _pilot_metadata(new_payload)
             metadata["message_quality_receipt_sha256"] = receipt_sha256
-            metadata["rendered_payload_set_sha256"] = receipt.get(
-                "rendered_payload_set_sha256"
-            )
+            metadata["rendered_payload_set_sha256"] = receipt.get("rendered_payload_set_sha256")
             new_payload[AI_ASSISTED_PILOT_METADATA_KEY] = metadata
             delivery.payload = json.dumps(new_payload, ensure_ascii=False)
             delivery.status = "pending"
@@ -1596,11 +1720,7 @@ async def deliver_validated_ai_review(
                 status="quality_receipt_invalid",
                 market=market,
                 packet_id=packet_id,
-                delivery_mode=(
-                    "partial_integrity"
-                    if rejection["partial_delivery"]
-                    else "held"
-                ),
+                delivery_mode=("partial_integrity" if rejection["partial_delivery"] else "held"),
                 sent_count=int(rejection["sent_count"]),
                 pending_count=int(rejection["held_count"]),
                 reason="persisted_quality_metadata_mismatch",
@@ -1618,7 +1738,7 @@ async def deliver_validated_ai_review(
                 "",
             )
             products = night_audit.get("products", [])
-            for product in (products if isinstance(products, list) else []):
+            for product in products if isinstance(products, list) else []:
                 if not isinstance(product, dict):
                     continue
                 fact_id = str(product.get("fact_id") or "")
@@ -1666,9 +1786,7 @@ async def deliver_validated_ai_review(
                 metadata = _pilot_metadata(payload)
                 if metadata.get("packet_id") == packet_id:
                     metadata["state"] = (
-                        "ai_assisted_sent"
-                        if delivery.status == "sent"
-                        else "ai_assisted_pending"
+                        "ai_assisted_sent" if delivery.status == "sent" else "ai_assisted_pending"
                     )
                     payload[AI_ASSISTED_PILOT_METADATA_KEY] = metadata
                     delivery.payload = json.dumps(payload, ensure_ascii=False)
@@ -1684,9 +1802,7 @@ async def deliver_validated_ai_review(
             "pending_count": pending_count,
             "pilot_day": pilot_day,
             "message_quality_receipt_sha256": receipt_sha256,
-            "rendered_payload_set_sha256": receipt.get(
-                "rendered_payload_set_sha256"
-            ),
+            "rendered_payload_set_sha256": receipt.get("rendered_payload_set_sha256"),
             "dispatched_at": current.isoformat() if complete else None,
             **_cash_flow_run_metadata(packet),
             **_working_capital_run_metadata(packet),
@@ -1934,9 +2050,7 @@ async def _retry_fallback_delivery(
         payload = json.loads(delivery.payload)
         if isinstance(payload, dict):
             metadata = _pilot_metadata(payload)
-            metadata["state"] = (
-                "fallback_sent" if delivery.status == "sent" else "fallback_pending"
-            )
+            metadata["state"] = "fallback_sent" if delivery.status == "sent" else "fallback_pending"
             payload[AI_ASSISTED_PILOT_METADATA_KEY] = metadata
             delivery.payload = json.dumps(payload, ensure_ascii=False)
             session.add(delivery)
@@ -2015,8 +2129,7 @@ async def dispatch_due_deterministic_fallbacks(
         metadata = _pilot_metadata(payload) if isinstance(payload, dict) else {}
         if (
             metadata.get("market") == market
-            and metadata.get("quality_integrity_state")
-            == "post_partial_delivery_rejected"
+            and metadata.get("quality_integrity_state") == "post_partial_delivery_rejected"
             and metadata.get("packet_id")
         ):
             partial_packet_ids.add(str(metadata["packet_id"]))

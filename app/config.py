@@ -104,6 +104,13 @@ class Settings(BaseSettings):
     ai_review_pilot_target_success_days: int = 5
     ai_review_pilot_us_fallback_time: str = "08:40"
     ai_review_pilot_kr_fallback_time: str = "17:10"
+    free_analyst_adaptive_enabled: bool = False
+    free_analyst_adaptive_mode: Literal[
+        "current", "free_analyst_adaptive_canary", "free_analyst_adaptive"
+    ] = "current"
+    free_analyst_adaptive_canary_max_market: int = 1
+    free_analyst_adaptive_canary_max_stock: int = 2
+    free_analyst_adaptive_canary_max_total: int = 3
     cash_flow_runtime_shadow_canary_enabled: bool = True
     working_capital_runtime_shadow_canary_enabled: bool = True
     cash_flow_user_visible_mode: str = "OFF"
@@ -112,12 +119,15 @@ class Settings(BaseSettings):
     @model_validator(mode="after")
     def validate_ai_review_schedule(self) -> "Settings":
         if self.ai_review_backup_delay_minutes <= (
-            self.ai_review_claim_lease_minutes
-            + self.ai_review_claim_safety_margin_minutes
+            self.ai_review_claim_lease_minutes + self.ai_review_claim_safety_margin_minutes
         ):
-            raise ValueError(
-                "AI review backup delay must exceed claim lease plus safety margin"
-            )
+            raise ValueError("AI review backup delay must exceed claim lease plus safety margin")
+        if not 0 <= self.free_analyst_adaptive_canary_max_market <= 1:
+            raise ValueError("Free Analyst canary market limit must be 0 or 1")
+        if not 0 <= self.free_analyst_adaptive_canary_max_stock <= 2:
+            raise ValueError("Free Analyst canary stock limit must be between 0 and 2")
+        if not 0 <= self.free_analyst_adaptive_canary_max_total <= 3:
+            raise ValueError("Free Analyst canary total limit must be between 0 and 3")
         return self
 
     model_config = SettingsConfigDict(

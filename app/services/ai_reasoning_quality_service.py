@@ -67,9 +67,7 @@ _MALFORMED_ACTOR_FLOW = re.compile(
     r"[-+]?\d[\d,]*(?:\.\d+)?주(?:은|는|이|가|을|를)"
     r"(?=$|\s*[,.;!?])"
 )
-_INCOMPLETE_PARTICLE_PREDICATE = re.compile(
-    r"(?:은|는|이|가|을|를|와|과)\s*[.!?](?:\s|$)"
-)
+_INCOMPLETE_PARTICLE_PREDICATE = re.compile(r"(?:은|는|이|가|을|를|와|과)\s*[.!?](?:\s|$)")
 _EVENT_ORIENTED_CHECK = re.compile(
     r"(?:다음|향후|차기|공식\s*(?:실적|공시|자료|발표)|"
     r"실적\s*(?:발표|공시)|공시에서|발표에서)"
@@ -183,29 +181,16 @@ def _review_sentence_rows(review: AIStockReview) -> list[tuple[str, str]]:
         "core_judgment.text": review.core_judgment.text,
         "business_earnings.text": review.business_earnings.text,
         "price_positioning.text": review.price_positioning.text,
-        "price_positioning.new_observer_view": (
-            review.price_positioning.new_observer_view
-        ),
+        "price_positioning.new_observer_view": (review.price_positioning.new_observer_view),
         "price_positioning.holder_view": review.price_positioning.holder_view,
         "supply_analysis.text": review.supply_analysis.text,
         "valuation_analysis.text": review.valuation_analysis.text,
-        **{
-            f"priority_watch[{index}]": value
-            for index, value in enumerate(review.priority_watch)
-        },
-        **{
-            f"next_checks[{index}]": value
-            for index, value in enumerate(review.next_checks)
-        },
-        **{
-            f"unknowns[{index}]": value
-            for index, value in enumerate(review.unknowns)
-        },
+        **{f"priority_watch[{index}]": value for index, value in enumerate(review.priority_watch)},
+        **{f"next_checks[{index}]": value for index, value in enumerate(review.next_checks)},
+        **{f"unknowns[{index}]": value for index, value in enumerate(review.unknowns)},
     }
     return [
-        (text_ref, sentence)
-        for text_ref, value in values.items()
-        for sentence in _sentences(value)
+        (text_ref, sentence) for text_ref, value in values.items() for sentence in _sentences(value)
     ]
 
 
@@ -217,8 +202,7 @@ def _claims_for_sentence(
     return [
         claim
         for claim in review.numeric_claims
-        if claim.text_ref == text_ref
-        and normalize_decision_text(claim.usage) in sentence
+        if claim.text_ref == text_ref and normalize_decision_text(claim.usage) in sentence
     ]
 
 
@@ -275,8 +259,7 @@ def _business_numeric_ownership_report(
                 continue
             valuation_owned = claim.semantic_type in _VALUATION_ONLY_BUSINESS_SEMANTICS
             valuation_denominator_eps = (
-                claim.semantic_type == "ttm_eps"
-                and claim.fact_id.startswith("valuation:")
+                claim.semantic_type == "ttm_eps" and claim.fact_id.startswith("valuation:")
             )
             if valuation_owned or valuation_denominator_eps:
                 violations.append(
@@ -334,26 +317,15 @@ def _structural_template_exception(sentence: str, skeleton: str) -> str | None:
         return "typed_neutral_absolute_valuation_statement"
     if sentence.startswith("현재가 ") and skeleton == "<numeric> 수준입니다.":
         return "canonical_current_price_statement"
-    if (
-        "동적 지지구간 하단" in sentence
-        and "동적 지지구간 상단" in sentence
-    ) or (
-        "동적 저항구간 하단" in sentence
-        and "동적 저항구간 상단" in sentence
+    if ("동적 지지구간 하단" in sentence and "동적 지지구간 상단" in sentence) or (
+        "동적 저항구간 하단" in sentence and "동적 저항구간 상단" in sentence
     ):
         return "canonical_zone_endpoint_contract"
     if "현재의 주 지지선이 아니라 등록 당시 전환 기준" in sentence:
         return "registered_rule_not_dynamic_support_safety"
-    if all(
-        marker in sentence
-        for marker in ("당일 외국인", "기관", "최근 흐름", "중기 누적")
-    ):
+    if all(marker in sentence for marker in ("당일 외국인", "기관", "최근 흐름", "중기 누적")):
         return "kr_six_horizon_numeric_supply_contract"
-    if (
-        "외국인" in sentence
-        and "기관" in sentence
-        and skeleton == "<numeric>, <numeric>."
-    ):
+    if "외국인" in sentence and "기관" in sentence and skeleton == "<numeric>, <numeric>.":
         return "kr_actor_horizon_numeric_pair"
     if "차트 무효화 가격" in sentence and "사업 논리 무효화가 아니다" in sentence:
         return "chart_vs_thesis_invalidation_safety"
@@ -385,9 +357,7 @@ def _claim_section_counts(review: AIStockReview) -> dict[str, int]:
         "valuation": "valuation_analysis.",
     }
     return {
-        section: sum(
-            claim.text_ref.startswith(prefix) for claim in review.numeric_claims
-        )
+        section: sum(claim.text_ref.startswith(prefix) for claim in review.numeric_claims)
         for section, prefix in prefixes.items()
     }
 
@@ -413,24 +383,17 @@ def _numeric_label_quality_report(
     binding_errors: Iterable[str],
 ) -> dict[str, object]:
     details: list[dict[str, str]] = []
-    redundant = sum(
-        "numeric_fact_ref_redundant_authored_label" in item
-        for item in binding_errors
-    )
+    redundant = sum("numeric_fact_ref_redundant_authored_label" in item for item in binding_errors)
     repeated = 0
     source_mismatch = 0
     instrument_mismatch = 0
     period_mismatch = 0
     zone_role_mismatch = sum("zone_role_mismatch" in item for item in binding_errors)
-    postposition_mismatch = sum(
-        "postposition_mismatch" in item for item in binding_errors
-    )
+    postposition_mismatch = sum("postposition_mismatch" in item for item in binding_errors)
     if packet is not None:
         market_context = packet.get("market_context")
         market_registry = (
-            market_context.get("numeric_registry", [])
-            if isinstance(market_context, dict)
-            else []
+            market_context.get("numeric_registry", []) if isinstance(market_context, dict) else []
         )
         stock_packets = {
             str(item.get("ticker") or ""): item
@@ -449,17 +412,19 @@ def _numeric_label_quality_report(
             for review in output.stock_reviews
         )
         for scope, review, registry_value in reviews:
-            registry = {
-                (str(item.get("fact_id")), str(item.get("field_path"))): item
-                for item in registry_value
-                if isinstance(item, dict)
-            } if isinstance(registry_value, list) else {}
+            registry = (
+                {
+                    (str(item.get("fact_id")), str(item.get("field_path"))): item
+                    for item in registry_value
+                    if isinstance(item, dict)
+                }
+                if isinstance(registry_value, list)
+                else {}
+            )
             for claim in review.get("numeric_claims", []):
                 if not isinstance(claim, dict):
                     continue
-                source = registry.get(
-                    (str(claim.get("fact_id")), str(claim.get("field_path")))
-                )
+                source = registry.get((str(claim.get("fact_id")), str(claim.get("field_path"))))
                 if source is None:
                     continue
                 usage = str(claim.get("usage") or "")
@@ -485,10 +450,14 @@ def _numeric_label_quality_report(
                     )
                 text = _text_at_ref(review, text_ref)
                 start = text.find(usage) if text is not None else -1
-                if text is not None and start >= 0 and redundant_numeric_label_before(
-                    text,
-                    start,
-                    source,
+                if (
+                    text is not None
+                    and start >= 0
+                    and redundant_numeric_label_before(
+                        text,
+                        start,
+                        source,
+                    )
                 ):
                     redundant += 1
                     repeated += 1
@@ -583,8 +552,8 @@ def _watch_next_overlap_report(output: AIDailyReviewOutput) -> dict[str, object]
                     )
                 )
                 role_violation = watch_event_oriented
-                meaningless_overlap = exact or role_violation or (
-                    semantic_same and not next_event_oriented
+                meaningless_overlap = (
+                    exact or role_violation or (semantic_same and not next_event_oriented)
                 )
                 if meaningless_overlap or semantic_same:
                     rows.append(
@@ -606,9 +575,7 @@ def _watch_next_overlap_report(output: AIDailyReviewOutput) -> dict[str, object]
         "rows": rows,
         "exact_overlap_count": sum(bool(item["exact"]) for item in rows),
         "semantic_overlap_count": sum(bool(item["semantic_same"]) for item in rows),
-        "watch_role_violation_count": sum(
-            bool(item["watch_event_oriented"]) for item in rows
-        ),
+        "watch_role_violation_count": sum(bool(item["watch_event_oriented"]) for item in rows),
         "meaningless_overlap_count": len(failures),
         "hard_checks_passed": not failures,
     }
@@ -712,9 +679,7 @@ def _final_rendered_language_report(messages: Iterable[str]) -> dict[str, object
             if not matches:
                 continue
             counts[f"{issue}_count"] += len(matches)
-            details.append(
-                {"message_index": index, "issue": issue, "matches": matches}
-            )
+            details.append({"message_index": index, "issue": issue, "matches": matches})
         particle_matches = []
         for match in _KOREAN_PARTICLE.finditer(message):
             term = match.group("term")
@@ -738,9 +703,7 @@ def _final_rendered_language_report(messages: Iterable[str]) -> dict[str, object
                     "matches": particle_matches,
                 }
             )
-        malformed_actor_flow = [
-            match.group(0) for match in _MALFORMED_ACTOR_FLOW.finditer(message)
-        ]
+        malformed_actor_flow = [match.group(0) for match in _MALFORMED_ACTOR_FLOW.finditer(message)]
         if malformed_actor_flow:
             counts["malformed_actor_flow_count"] += len(malformed_actor_flow)
             details.append(
@@ -751,8 +714,7 @@ def _final_rendered_language_report(messages: Iterable[str]) -> dict[str, object
                 }
             )
         incomplete_predicates = [
-            match.group(0)
-            for match in _INCOMPLETE_PARTICLE_PREDICATE.finditer(message)
+            match.group(0) for match in _INCOMPLETE_PARTICLE_PREDICATE.finditer(message)
         ]
         if incomplete_predicates:
             counts["incomplete_predicate_count"] += len(incomplete_predicates)
@@ -778,6 +740,7 @@ def relational_reasoning_quality_report(
     binding_errors: Iterable[str] = (),
     validation_errors: Iterable[str] = (),
     rendered_messages: Iterable[str] = (),
+    expected_stock_tickers: Iterable[str] | None = None,
 ) -> dict[str, object]:
     packet_stocks = {
         str(item.get("ticker") or ""): item
@@ -790,18 +753,13 @@ def relational_reasoning_quality_report(
             sentence_tickers[sentence].add(review.ticker)
     template_tickers: dict[tuple[object, ...], set[str]] = defaultdict(set)
     template_metadata: dict[tuple[object, ...], dict[str, object]] = {}
-    template_exception_reasons: dict[
-        tuple[object, ...], dict[str, str]
-    ] = defaultdict(dict)
+    template_exception_reasons: dict[tuple[object, ...], dict[str, str]] = defaultdict(dict)
     sentence_exception_reasons: dict[str, dict[str, str]] = defaultdict(dict)
     generic_numeric_summary_matches: list[dict[str, object]] = []
     for review in output.stock_reviews:
         stock = packet_stocks.get(review.ticker, {})
         company_name = str(
-            stock.get("company_name")
-            or stock.get("name")
-            or stock.get("company")
-            or ""
+            stock.get("company_name") or stock.get("name") or stock.get("company") or ""
         )
         for text_ref, sentence in set(_review_sentence_rows(review)):
             skeleton = _template_skeleton(review, sentence, company_name)
@@ -819,9 +777,7 @@ def relational_reasoning_quality_report(
             if reason is not None:
                 template_exception_reasons[typed_key][review.ticker] = reason
                 sentence_exception_reasons[sentence][review.ticker] = reason
-            if text_ref == "business_earnings.text" and _GENERIC_NUMERIC_SUMMARY.search(
-                sentence
-            ):
+            if text_ref == "business_earnings.text" and _GENERIC_NUMERIC_SUMMARY.search(sentence):
                 generic_numeric_summary_matches.append(
                     {
                         "ticker": review.ticker,
@@ -865,9 +821,7 @@ def relational_reasoning_quality_report(
     observer_holder = [
         {
             "ticker": review.ticker,
-            "distinct": normalize_decision_text(
-                review.price_positioning.new_observer_view
-            )
+            "distinct": normalize_decision_text(review.price_positioning.new_observer_view)
             != normalize_decision_text(review.price_positioning.holder_view),
         }
         for review in output.stock_reviews
@@ -875,9 +829,7 @@ def relational_reasoning_quality_report(
     section_grounding = {
         review.ticker: _claim_section_counts(review) for review in output.stock_reviews
     }
-    substantive_repeats = [
-        item for item in repeated if item["classification"] == "substantive"
-    ]
+    substantive_repeats = [item for item in repeated if item["classification"] == "substantive"]
     template_repeats = [
         {
             **template_metadata[typed_key],
@@ -897,20 +849,14 @@ def relational_reasoning_quality_report(
         and str(template_metadata[typed_key]["skeleton"]) not in common_safety
         and set(template_exception_reasons.get(typed_key, {})) != tickers
     ]
-    template_repeats.sort(
-        key=lambda item: (-int(item["stock_count"]), str(item["skeleton"]))
-    )
+    template_repeats.sort(key=lambda item: (-int(item["stock_count"]), str(item["skeleton"])))
     methodology_rows: list[dict[str, object]] = []
     for family, pattern in _GENERIC_METHODOLOGY_FAMILIES.items():
         matches = [
             {
                 "ticker": review.ticker,
                 "sentences": sorted(
-                    {
-                        sentence
-                        for sentence in _review_sentences(review)
-                        if pattern.search(sentence)
-                    }
+                    {sentence for sentence in _review_sentences(review) if pattern.search(sentence)}
                 ),
             }
             for review in output.stock_reviews
@@ -925,9 +871,7 @@ def relational_reasoning_quality_report(
                     "repeated": len(matches) >= duplicate_threshold,
                 }
             )
-    repeated_methodology = [
-        item for item in methodology_rows if item["repeated"] is True
-    ]
+    repeated_methodology = [item for item in methodology_rows if item["repeated"] is True]
     template_exceptions = [
         {
             **template_metadata[typed_key],
@@ -939,17 +883,10 @@ def relational_reasoning_quality_report(
         if len(tickers) >= duplicate_threshold
         and set(template_exception_reasons.get(typed_key, {})) == tickers
     ]
-    template_exceptions.sort(
-        key=lambda item: (-int(item["stock_count"]), str(item["skeleton"]))
-    )
+    template_exceptions.sort(key=lambda item: (-int(item["stock_count"]), str(item["skeleton"])))
     generic_numeric_summary_families = []
     if generic_numeric_summary_matches:
-        tickers = sorted(
-            {
-                str(item["ticker"])
-                for item in generic_numeric_summary_matches
-            }
-        )
+        tickers = sorted({str(item["ticker"]) for item in generic_numeric_summary_matches})
         generic_numeric_summary_families.append(
             {
                 "family": "business_earnings_generic_numeric_summary",
@@ -960,9 +897,7 @@ def relational_reasoning_quality_report(
             }
         )
     repeated_numeric_summary_families = [
-        item
-        for item in generic_numeric_summary_families
-        if item["repeated"] is True
+        item for item in generic_numeric_summary_families if item["repeated"] is True
     ]
     supply_repeats = [
         item
@@ -1008,9 +943,7 @@ def relational_reasoning_quality_report(
                 "core_judgment.text": review.core_judgment.text,
                 "business_earnings.text": review.business_earnings.text,
                 "price_positioning.text": review.price_positioning.text,
-                "price_positioning.new_observer_view": (
-                    review.price_positioning.new_observer_view
-                ),
+                "price_positioning.new_observer_view": (review.price_positioning.new_observer_view),
                 "price_positioning.holder_view": review.price_positioning.holder_view,
                 "supply_analysis.text": review.supply_analysis.text,
                 "valuation_analysis.text": review.valuation_analysis.text,
@@ -1018,14 +951,8 @@ def relational_reasoning_quality_report(
                     f"priority_watch[{index}]": text
                     for index, text in enumerate(review.priority_watch)
                 },
-                **{
-                    f"next_checks[{index}]": text
-                    for index, text in enumerate(review.next_checks)
-                },
-                **{
-                    f"unknowns[{index}]": text
-                    for index, text in enumerate(review.unknowns)
-                },
+                **{f"next_checks[{index}]": text for index, text in enumerate(review.next_checks)},
+                **{f"unknowns[{index}]": text for index, text in enumerate(review.unknowns)},
             }.items()
             if _US_GENERIC_SUPPLY.search(text)
         ]
@@ -1151,7 +1078,9 @@ def relational_reasoning_quality_report(
                 rendered_identity_mismatches.append(
                     {"ticker": review.ticker, "identity_state": state, "issue": issue}
                 )
-    expected_tickers = set(packet_stocks)
+    expected_tickers = (
+        set(expected_stock_tickers) if expected_stock_tickers is not None else set(packet_stocks)
+    )
     output_tickers = {review.ticker for review in output.stock_reviews}
     completeness_passed = (
         packet is None
@@ -1180,10 +1109,7 @@ def relational_reasoning_quality_report(
         and len(generic_us_investor_unknown_rows) < duplicate_threshold
         and generic_next_check_count == 0
         and generic_unknown_count == 0
-        and all(
-            bool(item["numeric_horizon_coverage_passed"])
-            for item in supply_numeric_coverage
-        )
+        and all(bool(item["numeric_horizon_coverage_passed"]) for item in supply_numeric_coverage)
         and identity_prose_mismatch_count == 0
         and unsupported_comparative_count == 0
         and supply_grounding_error_count == 0
@@ -1213,15 +1139,11 @@ def relational_reasoning_quality_report(
         "template_skeleton_repeat_count": len(template_repeats),
         "template_skeleton_exceptions": template_exceptions,
         "generic_numeric_summary_families": generic_numeric_summary_families,
-        "generic_numeric_summary_repeat_count": len(
-            repeated_numeric_summary_families
-        ),
+        "generic_numeric_summary_repeat_count": len(repeated_numeric_summary_families),
         "generic_methodology_families": methodology_rows,
         "generic_methodology_repeat_count": len(repeated_methodology),
         "observer_holder": observer_holder,
-        "observer_holder_distinct_count": sum(
-            bool(item["distinct"]) for item in observer_holder
-        ),
+        "observer_holder_distinct_count": sum(bool(item["distinct"]) for item in observer_holder),
         "section_numeric_grounding": section_grounding,
         "stock_specific_next_check_count": sum(
             count for count in next_check_counts.values() if count < duplicate_threshold
@@ -1234,14 +1156,10 @@ def relational_reasoning_quality_report(
         "supply_routing": {
             "substantive_repeated_supply_sentence_count": len(supply_repeats),
             "us_kr_style_horizon_count": len(us_kr_horizon_rows),
-            "generic_us_investor_flow_unknown_count": len(
-                generic_us_investor_unknown_rows
-            ),
+            "generic_us_investor_flow_unknown_count": len(generic_us_investor_unknown_rows),
             "generic_us_supply_count": len(generic_us_supply_rows),
             "us_kr_style_horizon_rows": us_kr_horizon_rows,
-            "generic_us_investor_flow_unknown_rows": (
-                generic_us_investor_unknown_rows
-            ),
+            "generic_us_investor_flow_unknown_rows": (generic_us_investor_unknown_rows),
             "generic_us_supply_rows": generic_us_supply_rows,
         },
         "numeric_label_quality": numeric_label_quality,
@@ -1263,9 +1181,7 @@ def relational_reasoning_quality_report(
             "message_indexes": heading_mismatches,
         },
         "rendered_identity_prose_mismatches": rendered_identity_mismatches,
-        "rendered_identity_prose_mismatch_count": len(
-            rendered_identity_mismatches
-        ),
+        "rendered_identity_prose_mismatch_count": len(rendered_identity_mismatches),
         "final_rendered_language": final_rendered_language,
         "watch_next_check_overlap": watch_next_overlap,
         "numeric_fact_repetition": numeric_fact_repetition,
@@ -1296,6 +1212,7 @@ def runtime_message_quality_receipt(
     *,
     binding_errors: Iterable[str] = (),
     validation_errors: Iterable[str] = (),
+    expected_stock_tickers: Iterable[str] | None = None,
     checked_at: datetime | None = None,
 ) -> dict[str, object]:
     messages = [
@@ -1314,6 +1231,7 @@ def runtime_message_quality_receipt(
         binding_errors=binding_error_values,
         validation_errors=validation_error_values,
         rendered_messages=[item["text"] for item in messages],
+        expected_stock_tickers=expected_stock_tickers,
     )
     status = (
         "passed"
@@ -1337,6 +1255,9 @@ def runtime_message_quality_receipt(
         "validated_output_sha256": _canonical_sha256(output.model_dump(mode="json")),
         "rendered_payload_set_sha256": _canonical_sha256(messages),
         "message_count": len(messages),
+        "expected_stock_tickers": (
+            sorted(set(expected_stock_tickers)) if expected_stock_tickers is not None else None
+        ),
         "check_results": quality,
         "errors": errors,
         "status": status,
@@ -1349,6 +1270,8 @@ def verify_runtime_message_quality_receipt(
     packet: dict[str, object],
     output: AIDailyReviewOutput,
     rendered_messages: Iterable[dict[str, object]],
+    *,
+    expected_stock_tickers: Iterable[str] | None = None,
 ) -> bool:
     messages = [
         {
@@ -1382,6 +1305,8 @@ def verify_runtime_message_quality_receipt(
         == _canonical_sha256(output.model_dump(mode="json"))
         and receipt.get("rendered_payload_set_sha256") == _canonical_sha256(messages)
         and int(receipt.get("message_count") or 0) == len(messages)
+        and receipt.get("expected_stock_tickers")
+        == (sorted(set(expected_stock_tickers)) if expected_stock_tickers is not None else None)
         and isinstance(quality, dict)
         and quality.get("contract") == "relational-reasoning-quality-v2"
         and quality.get("hard_checks_passed") is True
