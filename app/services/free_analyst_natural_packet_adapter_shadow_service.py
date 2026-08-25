@@ -201,4 +201,3 @@ def validate_natural_packet_adapter_result(
     ):
         errors.append("production_evidence_ref_collision")
     return tuple(dict.fromkeys(errors))
-
