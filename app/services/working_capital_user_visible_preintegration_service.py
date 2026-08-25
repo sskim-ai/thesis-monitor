@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import copy
 import hashlib
 import json
 import re
@@ -22,6 +23,9 @@ from app.services.working_capital_shadow_consumption_service import (
 
 
 CONTRACT_VERSION = "working-capital-user-visible-v1"
+RELATION_SEMANTICS_CONTRACT = "working-capital-relation-semantics-v1"
+SIGNED_GAP_FIELD = "fields.gap_percentage_points_signed"
+ABSOLUTE_GAP_FIELD = "fields.gap_percentage_points_abs"
 ENABLE_GATE_VERSION = "working-capital-user-visible-enable-gate-v1"
 PREVIEW_EVIDENCE_STATE = "PREVIEW_ONLY_NOT_ENABLEMENT_EVIDENCE"
 ENABLED_EVIDENCE_STATE = "NATURAL_PROOF_GATED_USER_VISIBLE"
@@ -982,9 +986,20 @@ def fact_catalog_entries(
             "as_of_date": context.balance_date,
             "source": "canonical_working_capital_relation",
             "fields": {
+                "relation_semantics_contract": RELATION_SEMANTICS_CONTRACT,
+                "gap_percentage_points_signed": float(
+                    context.gap_percentage_points
+                ),
                 "gap_percentage_points_abs": abs(float(context.gap_percentage_points)),
                 "direction": context.direction,
                 "relation_family": context.relation_family,
+                "lhs_semantic": "inventory_growth",
+                "rhs_semantic": (
+                    "cogs_growth"
+                    if context.relation_family == "inventory_vs_cogs"
+                    else "revenue_growth"
+                ),
+                "comparison_basis": "year_over_year_growth_rate_percentage_points",
                 "balance_date": context.balance_date,
                 "semantic_scope": context.semantic_scope,
                 "input_fact_ids": list(context.selected_fact_ids),
@@ -1013,3 +1028,173 @@ def fact_catalog_entries(
             for fact_id in context.selected_fact_ids
         ),
     ]
+
+
+def _direction_matches_value(direction: str, value: float) -> bool:
+    if value < 0:
+        return direction == "LOWER"
+    if value > 0:
+        return direction == "GREATER"
+    return direction == "EQUAL"
+
+
+def ensure_relation_semantics(packet: Mapping[str, object]) -> dict[str, object]:
+    """Add typed signed relation fields to legacy in-memory packets only."""
+    upgraded = copy.deepcopy(dict(packet))
+    stocks = upgraded.get("stocks")
+    if not isinstance(stocks, list):
+        return upgraded
+    for stock in stocks:
+        if not isinstance(stock, dict):
+            continue
+        context = stock.get("working_capital_user_visible")
+        facts = stock.get("fact_catalog")
+        if not isinstance(context, Mapping) or not isinstance(facts, list):
+            continue
+        relation_id = str(context.get("relation_id") or "")
+        relation_family = str(context.get("relation_family") or "")
+        direction = str(context.get("direction") or "")
+        if relation_family not in {"inventory_vs_cogs", "inventory_vs_revenue"}:
+            continue
+        try:
+            signed_gap = float(context["gap_percentage_points"])
+        except (KeyError, TypeError, ValueError):
+            continue
+        if not _direction_matches_value(direction, signed_gap):
+            continue
+        changed = False
+        for fact in facts:
+            if not isinstance(fact, dict) or str(fact.get("fact_id") or "") != relation_id:
+                continue
+            if fact.get("fact_type") != "working_capital_inventory_relation":
+                continue
+            fields = fact.get("fields")
+            if not isinstance(fields, dict):
+                continue
+            try:
+                absolute_gap = float(fields["gap_percentage_points_abs"])
+            except (KeyError, TypeError, ValueError):
+                continue
+            if abs(abs(signed_gap) - absolute_gap) > 1e-9:
+                continue
+            fields.update(
+                {
+                    "relation_semantics_contract": RELATION_SEMANTICS_CONTRACT,
+                    "gap_percentage_points_signed": signed_gap,
+                    "direction": direction,
+                    "relation_family": relation_family,
+                    "lhs_semantic": "inventory_growth",
+                    "rhs_semantic": (
+                        "cogs_growth"
+                        if relation_family == "inventory_vs_cogs"
+                        else "revenue_growth"
+                    ),
+                    "comparison_basis": (
+                        "year_over_year_growth_rate_percentage_points"
+                    ),
+                }
+            )
+            changed = True
+            break
+        if changed:
+            from app.services.numeric_semantic_registry import build_numeric_registry
+
+            stock["numeric_registry"] = build_numeric_registry(facts)
+    return upgraded
+
+
+_LOWER_WORDING = re.compile(r"밑돌|낮(?:았|은|다)|하회|\b(?:lower|below|trails?)\b", re.I)
+_HIGHER_WORDING = re.compile(r"앞섰|높(?:았|은|다)|상회|\b(?:higher|above|exceeds?)\b", re.I)
+
+
+def _directional_text_matches_context(
+    text: str,
+    context: Mapping[str, object],
+) -> bool:
+    family = str(context.get("relation_family") or "")
+    direction = str(context.get("direction") or "")
+    lowered = text.lower()
+    if "재고" not in text and "inventory" not in lowered:
+        return False
+    if family == "inventory_vs_cogs":
+        comparator_matches = "매출원가" in text or bool(re.search(r"\bcogs?\b", lowered))
+    elif family == "inventory_vs_revenue":
+        comparator_matches = (
+            ("매출" in text and "매출원가" not in text)
+            or bool(re.search(r"\brevenue\b", lowered))
+        )
+    else:
+        return False
+    lower = bool(_LOWER_WORDING.search(text))
+    higher = bool(_HIGHER_WORDING.search(text))
+    return bool(
+        comparator_matches
+        and ((direction == "LOWER" and lower and not higher)
+             or (direction == "GREATER" and higher and not lower))
+    )
+
+
+def normalize_directional_numeric_refs(
+    packet: Mapping[str, object],
+    output_value: object,
+) -> tuple[object, dict[str, object]]:
+    """Retarget an unambiguous legacy abs ref to the typed signed relation."""
+    if not isinstance(output_value, Mapping):
+        return output_value, {"contract": RELATION_SEMANTICS_CONTRACT, "upgrades": []}
+    output = copy.deepcopy(dict(output_value))
+    stocks = {
+        str(item.get("ticker") or ""): item
+        for item in packet.get("stocks", [])
+        if isinstance(item, Mapping)
+    }
+    upgrades: list[dict[str, object]] = []
+    for review in output.get("stock_reviews", []):
+        if not isinstance(review, dict):
+            continue
+        ticker = str(review.get("ticker") or "")
+        stock = stocks.get(ticker)
+        if not isinstance(stock, Mapping):
+            continue
+        context = stock.get("working_capital_user_visible")
+        refs = review.get("numeric_fact_refs")
+        business = review.get("business_earnings")
+        text = business.get("text") if isinstance(business, Mapping) else None
+        if not isinstance(context, Mapping) or not isinstance(refs, list) or not isinstance(text, str):
+            continue
+        relation_id = str(context.get("relation_id") or "")
+        signed_available = any(
+            isinstance(item, Mapping)
+            and str(item.get("fact_id") or "") == relation_id
+            and item.get("field_path") == SIGNED_GAP_FIELD
+            and item.get("prose_allowed") is True
+            for item in stock.get("numeric_registry", [])
+        )
+        if not signed_available or not _directional_text_matches_context(text, context):
+            continue
+        for ref in refs:
+            if not isinstance(ref, dict):
+                continue
+            if (
+                str(ref.get("fact_id") or "") != relation_id
+                or ref.get("field_path") != ABSOLUTE_GAP_FIELD
+                or ref.get("text_ref") != "business_earnings.text"
+            ):
+                continue
+            placeholder = f"{{{{numeric:{ref.get('ref_id')}}}}}"
+            if text.count(placeholder) != 1:
+                continue
+            ref["field_path"] = SIGNED_GAP_FIELD
+            upgrades.append(
+                {
+                    "ticker": ticker,
+                    "ref_id": ref.get("ref_id"),
+                    "fact_id": relation_id,
+                    "from": ABSOLUTE_GAP_FIELD,
+                    "to": SIGNED_GAP_FIELD,
+                }
+            )
+    return output, {
+        "contract": RELATION_SEMANTICS_CONTRACT,
+        "status": "applied" if upgrades else "no_change",
+        "upgrades": upgrades,
+    }

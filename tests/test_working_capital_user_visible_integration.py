@@ -11,7 +11,14 @@ from app.services.ai_assisted_delivery_service import (
     _working_capital_run_metadata,
 )
 from app.services.ai_review_service import _working_capital_user_visible_errors
-from app.services.numeric_semantic_registry import build_numeric_registry
+from app.services.numeric_semantic_registry import (
+    build_numeric_registry,
+    usage_direction_matches,
+    usage_relation_matches,
+)
+from app.services.working_capital_user_visible_preintegration_service import (
+    normalize_directional_numeric_refs,
+)
 
 
 RELATION_ID = "working-capital-relation:test-inventory"
@@ -35,6 +42,7 @@ def _context() -> dict[str, object]:
         "relation_id": RELATION_ID,
         "relation_family": "inventory_vs_cogs",
         "direction": "LOWER",
+        "gap_percentage_points": "-15.7339",
         "display_value": "15.7%p",
         "selected_fact_ids": FACT_IDS,
         "resolved_unknowns": ["재고 추이는 확인되지 않았습니다."],
@@ -44,13 +52,22 @@ def _context() -> dict[str, object]:
 
 
 def _stock() -> dict[str, object]:
-    return {
+    stock = {
         "working_capital_user_visible": _context(),
         "fact_catalog": [
             {
                 "fact_id": RELATION_ID,
                 "fact_type": "working_capital_inventory_relation",
-                "fields": {"gap_percentage_points_abs": 15.7339},
+                "fields": {
+                    "relation_semantics_contract": "working-capital-relation-semantics-v1",
+                    "gap_percentage_points_signed": -15.7339,
+                    "gap_percentage_points_abs": 15.7339,
+                    "direction": "LOWER",
+                    "relation_family": "inventory_vs_cogs",
+                    "lhs_semantic": "inventory_growth",
+                    "rhs_semantic": "cogs_growth",
+                    "comparison_basis": "year_over_year_growth_rate_percentage_points",
+                },
             },
             *(
                 {
@@ -61,6 +78,8 @@ def _stock() -> dict[str, object]:
             ),
         ],
     }
+    stock["numeric_registry"] = build_numeric_registry(stock["fact_catalog"])
+    return stock
 
 
 def _review() -> AIStockReview:
@@ -95,10 +114,10 @@ def _review() -> AIStockReview:
             "numeric_claims": [
                 {
                     "fact_id": RELATION_ID,
-                    "field_path": "fields.gap_percentage_points_abs",
-                    "value": 15.7339,
+                    "field_path": "fields.gap_percentage_points_signed",
+                    "value": -15.7339,
                     "unit": "pct_point",
-                    "semantic_type": "inventory_growth_gap_pct_point",
+                    "semantic_type": "inventory_growth_signed_gap_pct_point",
                     "text_ref": "business_earnings.text",
                     "usage": "15.7%p",
                 }
@@ -200,8 +219,147 @@ def test_fallback_context_packet_id_is_aligned_before_exact_parity() -> None:
 
 def test_inventory_growth_gap_has_typed_numeric_registry_entry() -> None:
     registry = build_numeric_registry(_stock()["fact_catalog"])
-    relation = next(item for item in registry if item["fact_id"] == RELATION_ID)
+    signed = next(
+        item
+        for item in registry
+        if item["fact_id"] == RELATION_ID
+        and item["field_path"] == "fields.gap_percentage_points_signed"
+    )
+    absolute = next(
+        item
+        for item in registry
+        if item["fact_id"] == RELATION_ID
+        and item["field_path"] == "fields.gap_percentage_points_abs"
+    )
 
-    assert relation["semantic_type"] == "inventory_growth_gap_pct_point"
-    assert relation["unit"] == "pct_point"
-    assert relation["canonical_display_value"] == "15.7%p"
+    assert signed["semantic_type"] == "inventory_growth_signed_gap_pct_point"
+    assert signed["unit"] == "pct_point"
+    assert signed["canonical_display_value"] == "15.7%p"
+    assert signed["relation_direction"] == "LOWER"
+    assert signed["rhs_semantic"] == "cogs_growth"
+    assert absolute["semantic_type"] == "inventory_growth_absolute_gap_pct_point"
+
+
+def test_directional_gap_requires_signed_value_sign_and_comparator() -> None:
+    signed = next(
+        item
+        for item in _stock()["numeric_registry"]
+        if item["field_path"] == "fields.gap_percentage_points_signed"
+    )
+    lower = "재고 증가율은 매출원가 증가율을 15.7%p 밑돌았습니다."
+    higher = "재고 증가율은 매출원가 증가율을 15.7%p 앞섰습니다."
+    wrong_comparator = "재고 증가율은 매출 증가율을 15.7%p 밑돌았습니다."
+
+    assert usage_direction_matches(
+        "inventory_growth_signed_gap_pct_point", -15.7339, lower, signed
+    )
+    assert not usage_direction_matches(
+        "inventory_growth_signed_gap_pct_point", -15.7339, higher, signed
+    )
+    assert usage_relation_matches(
+        "inventory_growth_signed_gap_pct_point", lower, signed
+    )
+    assert not usage_relation_matches(
+        "inventory_growth_signed_gap_pct_point", wrong_comparator, signed
+    )
+
+
+def test_positive_signed_gap_requires_higher_wording() -> None:
+    source = {
+        **next(
+            item
+            for item in _stock()["numeric_registry"]
+            if item["field_path"] == "fields.gap_percentage_points_signed"
+        ),
+        "relation_direction": "GREATER",
+    }
+    assert usage_direction_matches(
+        "inventory_growth_signed_gap_pct_point",
+        12.3,
+        "재고 증가율은 매출원가 증가율을 12.3%p 앞섰습니다.",
+        source,
+    )
+    assert not usage_direction_matches(
+        "inventory_growth_signed_gap_pct_point",
+        12.3,
+        "재고 증가율은 매출원가 증가율을 12.3%p 밑돌았습니다.",
+        source,
+    )
+
+
+def test_absolute_gap_cannot_validate_directional_wording() -> None:
+    assert not usage_direction_matches(
+        "inventory_growth_absolute_gap_pct_point",
+        15.7339,
+        "재고 증가율은 매출원가 증가율을 15.7%p 밑돌았습니다.",
+    )
+
+
+def test_legacy_abs_ref_is_upgraded_only_for_exact_directional_relation() -> None:
+    packet = {"stocks": [{"ticker": "TEST", **_stock()}]}
+    output = {
+        "stock_reviews": [
+            {
+                "ticker": "TEST",
+                "business_earnings": {
+                    "text": "재고 증가율은 매출원가 증가율을 {{numeric:gap}} 밑돌았습니다."
+                },
+                "numeric_fact_refs": [
+                    {
+                        "ref_id": "gap",
+                        "fact_id": RELATION_ID,
+                        "field_path": "fields.gap_percentage_points_abs",
+                        "text_ref": "business_earnings.text",
+                    }
+                ],
+            }
+        ]
+    }
+
+    normalized, report = normalize_directional_numeric_refs(packet, output)
+
+    assert report["status"] == "applied"
+    assert normalized["stock_reviews"][0]["numeric_fact_refs"][0][
+        "field_path"
+    ] == "fields.gap_percentage_points_signed"
+    assert output["stock_reviews"][0]["numeric_fact_refs"][0][
+        "field_path"
+    ] == "fields.gap_percentage_points_abs"
+
+
+@pytest.mark.parametrize(
+    ("fact_id", "text"),
+    [
+        (RELATION_ID, "재고 증가율은 매출 증가율을 {{numeric:gap}} 밑돌았습니다."),
+        ("working-capital-relation:wrong", "재고 증가율은 매출원가 증가율을 {{numeric:gap}} 밑돌았습니다."),
+        (RELATION_ID, "재고 증가율은 매출원가 증가율을 {{numeric:gap}} 앞섰습니다."),
+    ],
+)
+def test_legacy_abs_ref_wrong_comparator_relation_or_direction_is_not_upgraded(
+    fact_id: str,
+    text: str,
+) -> None:
+    packet = {"stocks": [{"ticker": "TEST", **_stock()}]}
+    output = {
+        "stock_reviews": [
+            {
+                "ticker": "TEST",
+                "business_earnings": {"text": text},
+                "numeric_fact_refs": [
+                    {
+                        "ref_id": "gap",
+                        "fact_id": fact_id,
+                        "field_path": "fields.gap_percentage_points_abs",
+                        "text_ref": "business_earnings.text",
+                    }
+                ],
+            }
+        ]
+    }
+
+    normalized, report = normalize_directional_numeric_refs(packet, output)
+
+    assert report["status"] == "no_change"
+    assert normalized["stock_reviews"][0]["numeric_fact_refs"][0][
+        "field_path"
+    ] == "fields.gap_percentage_points_abs"

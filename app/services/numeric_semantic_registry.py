@@ -51,13 +51,23 @@ def _spec(
 
 
 NUMERIC_SEMANTICS = {
-    "inventory_growth_gap_pct_point": _spec(
-        "inventory_growth_gap_pct_point",
+    "inventory_growth_signed_gap_pct_point": _spec(
+        "inventory_growth_signed_gap_pct_point",
         ("pct_point",),
-        ("재고 증가율 격차", "Inventory growth gap"),
+        ("재고 증가율 방향 격차", "Directional inventory growth gap"),
         (
             r"재고\s*증가율.*(?:매출|매출원가)\s*증가율.*(?:앞섰|밑돌)",
-            r"inventory growth.*(?:revenue|cogs).*gap",
+            r"inventory growth.*(?:revenue|cogs).*(?:higher|lower|above|below|trails?|exceeds?)",
+        ),
+        "directional_percentage_point",
+    ),
+    "inventory_growth_absolute_gap_pct_point": _spec(
+        "inventory_growth_absolute_gap_pct_point",
+        ("pct_point",),
+        ("재고 증가율 절대 격차", "Absolute inventory growth gap"),
+        (
+            r"재고\s*증가율.*(?:절대\s*)?(?:차이|격차)",
+            r"absolute inventory growth gap|inventory growth.*difference",
         ),
         "percentage_point",
     ),
@@ -985,8 +995,14 @@ _FIELD_RULES = (
     *_INVESTOR_FLOW_RECONCILIATION_RULES,
     NumericFieldRule(
         ("working_capital_inventory_relation",),
+        r"fields\.gap_percentage_points_signed",
+        "inventory_growth_signed_gap_pct_point",
+        "pct_point",
+    ),
+    NumericFieldRule(
+        ("working_capital_inventory_relation",),
         r"fields\.gap_percentage_points_abs",
-        "inventory_growth_gap_pct_point",
+        "inventory_growth_absolute_gap_pct_point",
         "pct_point",
     ),
     NumericFieldRule(
@@ -1736,9 +1752,43 @@ def usage_matches_semantic(semantic_type: str, usage: str) -> bool:
     return any(re.search(pattern, lowered) for pattern in spec.usage_patterns)
 
 
-def usage_direction_matches(semantic_type: str, value: float, usage: str) -> bool:
+_WORKING_CAPITAL_LOWER = re.compile(
+    r"밑돌|낮(?:았|은|다)|하회|\b(?:lower|below|trails?)\b",
+    re.IGNORECASE,
+)
+_WORKING_CAPITAL_HIGHER = re.compile(
+    r"앞섰|높(?:았|은|다)|상회|\b(?:higher|above|exceeds?)\b",
+    re.IGNORECASE,
+)
+
+
+def usage_direction_matches(
+    semantic_type: str,
+    value: float,
+    usage: str,
+    source: dict[str, object] | None = None,
+) -> bool:
     spec = semantic_spec(semantic_type)
-    if spec is None or spec.formatter != "signed_shares":
+    if spec is None:
+        return False
+    if semantic_type == "inventory_growth_absolute_gap_pct_point":
+        return not (
+            _WORKING_CAPITAL_LOWER.search(usage)
+            or _WORKING_CAPITAL_HIGHER.search(usage)
+        )
+    if semantic_type == "inventory_growth_signed_gap_pct_point":
+        lower = bool(_WORKING_CAPITAL_LOWER.search(usage))
+        higher = bool(_WORKING_CAPITAL_HIGHER.search(usage))
+        direction = str((source or {}).get("relation_direction") or "")
+        expected = "LOWER" if value < 0 else "GREATER" if value > 0 else "EQUAL"
+        if direction and direction != expected:
+            return False
+        if expected == "LOWER":
+            return lower and not higher
+        if expected == "GREATER":
+            return higher and not lower
+        return not lower and not higher
+    if spec.formatter != "signed_shares":
         return True
     lowered = usage.lower()
     sell = "순매도" in usage or "net sell" in lowered
@@ -1748,6 +1798,37 @@ def usage_direction_matches(semantic_type: str, value: float, usage: str) -> boo
     if value > 0:
         return buy and not sell
     return True
+
+
+def usage_relation_matches(
+    semantic_type: str,
+    usage: str,
+    source: dict[str, object],
+) -> bool:
+    if semantic_type not in {
+        "inventory_growth_signed_gap_pct_point",
+        "inventory_growth_absolute_gap_pct_point",
+    }:
+        return True
+    lowered = usage.lower()
+    if "재고" not in usage and "inventory" not in lowered:
+        return False
+    if source.get("relation_semantics_contract") != "working-capital-relation-semantics-v1":
+        return False
+    if source.get("lhs_semantic") != "inventory_growth":
+        return False
+    if source.get("comparison_basis") != "year_over_year_growth_rate_percentage_points":
+        return False
+    family = str(source.get("relation_family") or "")
+    rhs = str(source.get("rhs_semantic") or "")
+    if family == "inventory_vs_cogs" and rhs == "cogs_growth":
+        return "매출원가" in usage or bool(re.search(r"\bcogs?\b", lowered))
+    if family == "inventory_vs_revenue" and rhs == "revenue_growth":
+        return (
+            ("매출" in usage and "매출원가" not in usage)
+            or bool(re.search(r"\brevenue\b", lowered))
+        )
+    return False
 
 
 def _plain_number(value: float) -> str:
@@ -1803,7 +1884,8 @@ def canonical_display_value(
             rendered = f"+{rendered}"
         return f"{rendered}%"
     if unit == "pct_point":
-        return f"{_fixed_number(value, 1)}%p"
+        displayed = abs(value) if formatter == "directional_percentage_point" else value
+        return f"{_fixed_number(displayed, 1)}%p"
     if unit == "bp":
         rendered = _fixed_number(value, 1)
         if formatter == "signed_basis_points" and value > 0:
@@ -1853,6 +1935,10 @@ def approved_display_variants(
         variants.append(f"{value:,.0f}주")
         if spec.formatter == "signed_shares":
             variants.append(f"{abs(value):,.0f}주")
+    elif unit == "pct_point":
+        variants.append(f"{_plain_number(value)}%p")
+        if spec.formatter == "directional_percentage_point":
+            variants.append(f"{_plain_number(abs(value))}%p")
     elif unit == "x":
         variants.append(f"{_plain_number(value)}배")
         for digits in (1, 2, 4):
@@ -1923,6 +2009,25 @@ def _registry_contract_metadata(
         if prose_allowed:
             metadata["allowed_sections"] = ["supply_analysis"]
     return metadata
+
+
+def _relation_semantic_metadata(
+    fact_type: str,
+    fields: dict[str, object],
+) -> dict[str, object]:
+    if fact_type != "working_capital_inventory_relation":
+        return {}
+    return {
+        "relation_semantics_contract": fields.get("relation_semantics_contract"),
+        "relation_direction": fields.get("direction"),
+        "relation_family": fields.get("relation_family"),
+        "lhs_semantic": fields.get("lhs_semantic"),
+        "rhs_semantic": fields.get("rhs_semantic"),
+        "comparison_basis": fields.get("comparison_basis"),
+        "relation_balance_date": fields.get("balance_date"),
+        "relation_semantic_scope": fields.get("semantic_scope"),
+        "relation_input_fact_ids": list(fields.get("input_fact_ids") or []),
+    }
 
 
 def build_numeric_registry(
@@ -2044,6 +2149,7 @@ def build_numeric_registry(
                             registered=registered,
                             prose_allowed=prose_allowed,
                         ),
+                        **_relation_semantic_metadata(fact_type, fields),
                     }
                 )
 

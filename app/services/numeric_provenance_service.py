@@ -590,7 +590,8 @@ def _bind_review(
                 f"{ref_id}:{text_ref}:{semantic_type}"
             )
             continue
-        usage = f"{label} {display}"
+        inline_value_only = spec.formatter == "directional_percentage_point"
+        usage = display if inline_value_only else f"{label} {display}"
         postposition_suppressed = bool(
             postposition and _COPULA_SUFFIX.match(raw_suffix)
         )
@@ -640,6 +641,7 @@ def _bind_review(
                 "role": role,
                 "canonical_label": label,
                 "canonical_label_kind": source.get("canonical_label_kind"),
+                "inline_value_only": inline_value_only,
                 "comparison_role": source.get("comparison_role")
                 or valuation_comparison_role(field_path),
                 "formatted_value": display,

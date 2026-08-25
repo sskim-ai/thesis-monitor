@@ -62,9 +62,12 @@ from app.services.cash_flow_user_visible_service import (
     selection_to_dict as cash_flow_selection_to_dict,
 )
 from app.services.working_capital_user_visible_preintegration_service import (
+    SIGNED_GAP_FIELD,
     context_from_notification_payload as working_capital_context_from_notification_payload,
     context_to_dict as working_capital_context_to_dict,
+    ensure_relation_semantics,
     fact_catalog_entries as working_capital_fact_catalog_entries,
+    normalize_directional_numeric_refs,
     resolve_selected_inventory_unknowns,
     safe_select_user_visible_inventory,
 )
@@ -115,6 +118,7 @@ from app.services.numeric_semantic_registry import (
     numeric_registry_coverage,
     usage_direction_matches,
     usage_matches_semantic,
+    usage_relation_matches,
 )
 from app.services.ohlcv_structure_service import ALGORITHM_VERSION
 from app.services.runtime_specificity_service import build_runtime_specificity_plan
@@ -3910,6 +3914,10 @@ def _validate_numeric_claims(
         if source is None:
             errors.append(f"{prefix}:numeric_provenance_not_found:{claim.fact_id}:{claim.field_path}")
             continue
+        target = prose.get(claim.text_ref)
+        if target is None:
+            errors.append(f"{prefix}:numeric_text_ref_not_found:{claim.text_ref}")
+            continue
         claim_is_valid = True
         expected = float(source["value"])
         expected_unit = str(source["unit"])
@@ -3950,7 +3958,12 @@ def _validate_numeric_claims(
         if not _usage_unit_matches(expected_unit, claim.usage):
             errors.append(f"{prefix}:numeric_usage_unit_mismatch:{claim.fact_id}:{claim.field_path}")
             claim_is_valid = False
-        if not _usage_semantic_matches(expected_semantic, claim.usage):
+        relation_semantic = expected_semantic in {
+            "inventory_growth_signed_gap_pct_point",
+            "inventory_growth_absolute_gap_pct_point",
+        }
+        semantic_usage = target if relation_semantic else claim.usage
+        if not _usage_semantic_matches(expected_semantic, semantic_usage):
             errors.append(f"{prefix}:numeric_usage_semantic_mismatch:{claim.fact_id}:{claim.field_path}")
             claim_is_valid = False
         if label_mismatch := canonical_numeric_label_mismatch(source, claim.usage):
@@ -3959,9 +3972,20 @@ def _validate_numeric_claims(
                 f"{claim.fact_id}:{claim.field_path}:{claim.text_ref}"
             )
             claim_is_valid = False
-        if not usage_direction_matches(expected_semantic, expected, claim.usage):
+        if not usage_direction_matches(
+            expected_semantic,
+            expected,
+            semantic_usage,
+            source,
+        ):
             errors.append(
                 f"{prefix}:numeric_usage_direction_mismatch:"
+                f"{claim.fact_id}:{claim.field_path}"
+            )
+            claim_is_valid = False
+        if not usage_relation_matches(expected_semantic, semantic_usage, source):
+            errors.append(
+                f"{prefix}:numeric_usage_relation_mismatch:"
                 f"{claim.fact_id}:{claim.field_path}"
             )
             claim_is_valid = False
@@ -3982,10 +4006,6 @@ def _validate_numeric_claims(
                 f"{prefix}:numeric_usage_value_mismatch:{claim.fact_id}:{claim.field_path}"
             )
             claim_is_valid = False
-        target = prose.get(claim.text_ref)
-        if target is None:
-            errors.append(f"{prefix}:numeric_text_ref_not_found:{claim.text_ref}")
-            continue
         usage = _normalized_prose(claim.usage)
         spans = _usage_spans(target, usage)
         if not spans:
@@ -4993,6 +5013,11 @@ def _working_capital_user_visible_errors(
     claims = [
         claim for claim in review.numeric_claims if claim.fact_id in relation_fact_ids
     ]
+    relation_registry = {
+        (str(item.get("fact_id") or ""), str(item.get("field_path") or "")): item
+        for item in stock.get("numeric_registry", [])
+        if isinstance(item, dict) and str(item.get("fact_id") or "") in relation_fact_ids
+    }
     errors: list[str] = []
     if not enabled:
         if used or claims:
@@ -5035,6 +5060,26 @@ def _working_capital_user_visible_errors(
     for claim in claims:
         if claim.text_ref != "business_earnings.text":
             errors.append(f"{review.ticker}:inventory_numeric_owner_invalid")
+        if claim.field_path != SIGNED_GAP_FIELD:
+            errors.append(f"{review.ticker}:inventory_directional_relation_not_signed")
+            continue
+        source = relation_registry.get((claim.fact_id, claim.field_path))
+        if source is None:
+            errors.append(f"{review.ticker}:inventory_signed_relation_source_missing")
+            continue
+        if not usage_direction_matches(
+            claim.semantic_type,
+            float(claim.value),
+            review.business_earnings.text,
+            source,
+        ):
+            errors.append(f"{review.ticker}:inventory_direction_wording_mismatch")
+        if not usage_relation_matches(
+            claim.semantic_type,
+            review.business_earnings.text,
+            source,
+        ):
+            errors.append(f"{review.ticker}:inventory_comparator_mismatch")
     business_text = review.business_earnings.text
     if "재고" not in business_text:
         errors.append(f"{review.ticker}:inventory_label_missing")
@@ -5574,7 +5619,11 @@ def validate_ai_review_output(
     packet: dict[str, object],
     output_value: object,
 ) -> tuple[AIDailyReviewOutput | None, list[str]]:
-    normalized_output, _ = apply_candidate_ownership_contracts(packet, output_value)
+    packet = ensure_relation_semantics(packet)
+    directional_output, _ = normalize_directional_numeric_refs(packet, output_value)
+    normalized_output, _ = apply_candidate_ownership_contracts(
+        packet, directional_output
+    )
     binding = bind_numeric_fact_references(packet, normalized_output)
     typed_errors = list(
         _dict(binding.report.get("typed_valuation_interpretations")).get(
@@ -6179,12 +6228,17 @@ def finalize_ai_review_output(
         return OutputValidationResult(
             status="rejected", packet_id=packet_id, errors=(type(exc).__name__,)
         )
-    normalized_candidate, ownership_report = apply_candidate_ownership_contracts(
+    packet = ensure_relation_semantics(packet)
+    directional_candidate, relation_report = normalize_directional_numeric_refs(
         packet, candidate
+    )
+    normalized_candidate, ownership_report = apply_candidate_ownership_contracts(
+        packet, directional_candidate
     )
     binding = bind_numeric_fact_references(packet, normalized_candidate)
     binding_report = dict(binding.report)
     binding_report["candidate_ownership"] = ownership_report
+    binding_report["working_capital_relation_semantics"] = relation_report
     typed_errors = list(
         _dict(binding_report.get("typed_valuation_interpretations")).get(
             "errors", []
