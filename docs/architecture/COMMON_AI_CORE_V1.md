@@ -54,3 +54,15 @@ The public Action remains `0.4.5`, output schema remains `4`, and no public endp
 Canary evaluation is per message. At most one market message and two stock messages may be selected in a run. A scoped runtime-quality receipt evaluates only AI-selected canary messages; non-selected production messages retain their existing ownership. Receipt scope changes completeness identity only. Numeric, semantic, temporal, language, repetition, and causality thresholds are unchanged.
 
 Packet identity, delivery rows, receipt hashes, retry behavior, and exactly-once semantics remain owned by the existing AI-assisted delivery service.
+
+## Market Context Input
+
+`market-context-adapter-v1` supplies one common typed input shape for KR and US verified market
+Facts. Market-specific acquisition and semantics remain in their adapters; the Free Analyst and
+Adaptive Renderer do not fork by provider. Partial breadth, flow, sector, or size coverage remains
+Unknown and cannot block deterministic fallback.
+
+The adapter sidecar is a deterministic view of packet-owned Facts. It does not become a new truth
+store, does not alter packet identity, and does not expose internal source hints in the AI packet.
+Open Research remains outside the production dependency graph because no qualifying production
+research connector is available.

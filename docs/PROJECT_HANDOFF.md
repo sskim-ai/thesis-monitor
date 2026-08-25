@@ -1331,6 +1331,27 @@ validation failures remain isolated and retryable under one logical canary ID.
 Never fill data gaps with model knowledge. Add a deterministic fact, semantic contract, and tests
 first.
 
+## Common Market Adapter Handoff
+
+- Instruction commit: `c058839c5e63a08c096bd6a9a1b2139290d17eb0`
+- Stage A repair: `b39c2ea38a8d5d3466889a9da394df05ad95701a`, replay PASS
+- Adapter implementation: `7a210efe101547c1981b934fbf3dc867bc3e6426`
+- Contract: `market-context-adapter-v1`
+- KR run-38: `PARTIAL`; local index/breadth/sector/size/market flow Unknown
+- US run-37: `PARTIAL`; SPY/QQQ/IWM, SOXX, two verified relative relations; breadth/flow Unknown
+- Common Fact/unit/temporal gates: PASS, conflicts/errors `0/0`
+- Research seeds: shadow configuration only
+- Production research connector: `NOT_AVAILABLE`
+- Open Research live canary/integration: `BLOCKED_CONNECTOR / 0`
+- Structured adapter: `DEPLOYED_PENDING_NATURAL` after exact-SHA promotion
+- Public Action/schema/fallback/canary limits: unchanged at `0.4.5 / 4 / unchanged / 1-2-3`
+- Open P0/material P1: `0/0`
+
+Inspect the next naturally scheduled US packet and delivered artifacts read-only. Confirm sidecar
+presence, partial-field fallback, canary counts, hard safety, duplicates/orphans, and exactly-once
+receipt integrity. Do not create the three dated 2026-08-26 natural reports until that run exists.
+KR natural canary, Inventory, macro, KRX telemetry, and weekend/holiday proofs continue in parallel.
+
 ## Milestones
 
 1. Initial baseline and daily-delta isolation.

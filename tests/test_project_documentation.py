@@ -34,6 +34,11 @@ DOCUMENTS = (
     ROOT / "docs" / "architecture" / "KR_PRODUCTION_PACKET_AND_SHADOW_GATE_SEPARATION.md",
     ROOT / "docs" / "architecture" / "MACRO_DIGEST_TEMPORAL_ELIGIBILITY.md",
     ROOT / "docs" / "architecture" / "COMMON_AI_CORE_V1.md",
+    ROOT / "docs" / "architecture" / "MARKET_CONTEXT_ADAPTER.md",
+    ROOT / "docs" / "architecture" / "KR_MARKET_CONTEXT_ADAPTER.md",
+    ROOT / "docs" / "architecture" / "US_MARKET_CONTEXT_ADAPTER.md",
+    ROOT / "docs" / "architecture" / "MARKET_RESEARCH_SEED_ADAPTERS.md",
+    ROOT / "docs" / "architecture" / "PRODUCTION_RESEARCH_CONNECTOR_BOUNDARY.md",
     ROOT / "docs" / "architecture" / "FREE_ANALYST_PRODUCTION_INTEGRATION.md",
     ROOT / "docs" / "architecture" / "ADAPTIVE_RENDERER_PRODUCTION.md",
     ROOT / "docs" / "architecture" / "FREE_ANALYST_CANARY_POLICY.md",
@@ -56,17 +61,15 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
 
     assert state["repository"] == "sskim-ai/thesis-monitor"
     assert state["branch"] == "main"
-    assert state["experimental_branch"] == (
-        "codex/free-analyst-adaptive-explicit-canary"
-    )
+    assert state["experimental_branch"] == "codex/kr-us-market-adapters"
     assert state["current_phase"] == (
-        "common_ai_core_v1_canary_enabled_pending_natural"
+        "common_market_adapter_v1_production_pending_natural"
     )
     assert state["last_completed_phase"] == (
-        "free_analyst_adaptive_production_integration"
+        "kr_valuation_numeric_ref_repair_and_market_adapter_implementation"
     )
     assert state["next_default_phase"] == (
-        "free_analyst_kr_natural_canary_review"
+        "us_structured_market_adapter_natural_canary_review"
     )
     assert state["deployed_code_commit"] == "HEAD"
     assert state["main_code_commit"] == "HEAD"
@@ -83,6 +86,15 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     assert state["contracts"]["numeric_summary_ownership"] == ("numeric-summary-ownership-v1")
     assert state["contracts"]["typed_template_skeleton"] == ("typed-template-skeleton-v1")
     assert state["contracts"]["canonical_supply_flow_tuple"] == ("canonical-supply-flow-tuple-v1")
+    assert state["contracts"]["market_context_adapter"] == (
+        "market-context-adapter-v1"
+    )
+    assert state["contracts"]["market_research_seed_adapter"] == (
+        "market-research-seed-adapter-v1"
+    )
+    assert state["contracts"]["production_research_connector_boundary"] == (
+        "production-research-connector-boundary-v1"
+    )
     assert state["contracts"]["kr_investor_flow_participants"] == (
         "kr-investor-flow-participants-v1"
     )
@@ -246,6 +258,23 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     assert common_ai_core["open_research_production_integration"] == 0
     assert common_ai_core["open_p0"] == []
     assert common_ai_core["open_material_p1"] == []
+    market_adapter = state["common_market_adapter_v1"]
+    assert market_adapter["status"] == "production_pending_natural"
+    assert market_adapter["common_contract"] == "PASS"
+    assert market_adapter["kr_adapter"] == "PARTIAL"
+    assert market_adapter["us_adapter"] == "PARTIAL"
+    assert market_adapter["fact_boundary"] == "PASS"
+    assert market_adapter["hidden_arithmetic"] == 0
+    assert market_adapter["unit_conflicts"] == 0
+    assert market_adapter["temporal_errors"] == 0
+    assert market_adapter["production_research_connector"] == "NOT_AVAILABLE"
+    assert market_adapter["open_research_live_canary"] == "BLOCKED_CONNECTOR"
+    assert market_adapter["open_research_production_integration"] == 0
+    assert market_adapter["structured_adapter_production"] == (
+        "DEPLOYED_PENDING_NATURAL"
+    )
+    assert market_adapter["open_p0"] == []
+    assert market_adapter["open_material_p1"] == []
     phase_90a = state["phase_9_0a_cash_flow_capital_efficiency"]
     assert phase_90a["status"] == "architecture_closed_ready_for_phase_9_0b"
     assert phase_90a["active_universe"] == 20

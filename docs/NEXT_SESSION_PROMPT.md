@@ -2,6 +2,21 @@
 
 Repository: `sskim-ai/thesis-monitor`
 
+The common KR/US structured market adapter follows instruction commit
+`c058839c5e63a08c096bd6a9a1b2139290d17eb0` and implementation commit
+`7a210efe101547c1981b934fbf3dc867bc3e6426`. `market-context-adapter-v1` passes its common Fact,
+unit, temporal, and deterministic-provenance gates. Immutable KR run-38 and US run-37 classify both
+adapters as safe `PARTIAL`: KR has no local structured index/breadth/market-flow evidence; US has
+SPY/QQQ/IWM, SOXX, and two verified relative relations but no breadth or participant flow. Missing
+remains Unknown.
+
+After exact-SHA promotion, inspect the next naturally scheduled 2026-08-26 US run read-only for the
+structured sidecar, existing `1/2/3` Free Analyst canary limit, fallback, hard validation, receipt,
+duplicates, orphans, and exactly-once delivery. Do not manually run a task or send Telegram.
+`PRODUCTION_RESEARCH_CONNECTOR=NOT_AVAILABLE`, so Open Research remains
+`BLOCKED_CONNECTOR` with production integration `0`. KR natural proof and other operating evidence
+tracks continue independently.
+
 Free Analyst Adaptive limited canary is armed under instruction commit
 `73802b8849f674698bfdb3bfd7f3d0df89c236b2`. Runtime state is enabled with mode
 `free_analyst_adaptive_canary` and limits market `1`, stocks `2`, total `3`; full mode and Open

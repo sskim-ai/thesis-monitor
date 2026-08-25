@@ -1098,3 +1098,23 @@ cash-flow, schedules, Public Action, schema, DB, and fallback were unchanged. St
 `COMMON_AI_CORE_V1=INTEGRATED_CANARY_PENDING_NATURAL`. Do not run production manually; inspect the
 first eligible KR natural packet, then the next eligible US packet. Any delivered P0 disables only
 the new canary through its independent kill switch.
+
+## 33. Common KR/US Market Adapter v1
+
+Work instruction `c058839c5e63a08c096bd6a9a1b2139290d17eb0` first closed the run-38 KR
+valuation numeric-ref blocker on a separate track. The adapter implementation commit
+`7a210efe101547c1981b934fbf3dc867bc3e6426` then added `market-context-adapter-v1`,
+market-specific KR/US normalization, research seed hints, and an explicit production research
+connector boundary.
+
+The common contract, Fact boundary, schema parity, unit gates, temporal gates, and deterministic
+relation provenance pass. KR and US are both safe `PARTIAL`: KR run-38 has no local structured
+index/breadth/market-flow evidence, while US run-37 has SPY/QQQ/IWM, SOXX, and two verified
+relative relations but no breadth or participant flow. Missing remains Unknown. Neither replay
+receives provider recollection or a fabricated value.
+
+The structured adapter sidecar is production-pending-natural and does not change Public Action,
+output schema, fallback, Telegram shape, canary limits, or packet identity. A production Open
+Research connector is `NOT_AVAILABLE`, so `OPEN_RESEARCH_LIVE_CANARY=BLOCKED_CONNECTOR` and runtime
+research integration remains zero. The next action is the naturally scheduled 2026-08-26 US
+structured-adapter canary review; do not run a task or send Telegram manually.

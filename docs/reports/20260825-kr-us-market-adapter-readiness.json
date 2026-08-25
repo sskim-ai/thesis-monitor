@@ -1,0 +1,74 @@
+{
+  "repository": {
+    "branch": "codex/kr-us-market-adapters",
+    "base": "5e0a480b6bec2797c958574349984401dda85939",
+    "implementation": "7a210efe101547c1981b934fbf3dc867bc3e6426",
+    "instruction_commit": "c058839c5e63a08c096bd6a9a1b2139290d17eb0"
+  },
+  "kr_valuation_repair": {
+    "status": "PASS",
+    "replay": "PASS"
+  },
+  "common_adapter": {
+    "contract": "market-context-adapter-v1",
+    "status": "PASS",
+    "fact_boundary": "PASS",
+    "reasoning_schema_common": "PASS",
+    "hidden_arithmetic": 0,
+    "unit_conflicts": 0,
+    "temporal_errors": 0
+  },
+  "kr_adapter": {
+    "status": "PARTIAL",
+    "value_add": "NO_MATERIAL_VALUE",
+    "local_indices": 0,
+    "breadth": "UNKNOWN",
+    "market_flows": 0
+  },
+  "us_adapter": {
+    "status": "PARTIAL",
+    "value_add": "NO_MATERIAL_VALUE",
+    "indices": 3,
+    "sector_proxies": 1,
+    "deterministic_relations": 2,
+    "breadth": "UNKNOWN",
+    "market_flows": 0
+  },
+  "research_seed_adapters": "PASS",
+  "production_research_connector": "NOT_AVAILABLE",
+  "structured_production_readiness": "DEPLOYED_PENDING_NATURAL",
+  "research_live_readiness": "BLOCKED_CONNECTOR",
+  "validation": {
+    "focused_tests": "202_PASSED",
+    "full_pytest": "1537_PASSED_1_WARNING",
+    "ruff": "PASS",
+    "diff_check": "PASS",
+    "implementation_actions_run": 32832505782,
+    "implementation_actions": "PASS_TEST_AND_LINT",
+    "public_action": "0.4.5",
+    "operation_ids": "20/20_UNIQUE",
+    "output_schema": 4
+  },
+  "canary": {
+    "structured_us": "READY_PENDING_US_NATURAL",
+    "open_research": "BLOCKED_CONNECTOR",
+    "market_limit": 1,
+    "stock_limit": 2,
+    "total_limit": 3,
+    "research_enhanced_limit": 0
+  },
+  "safety": {
+    "public_action": "0.4.5",
+    "output_schema": 4,
+    "provider_calls": 0,
+    "manual_telegram": 0,
+    "manual_tasks": 0,
+    "pilot_mutations": 0,
+    "database_mutations": 0,
+    "archive_rewrites": 0,
+    "production_assist": false,
+    "open_p0": 0,
+    "open_material_p1": 0
+  },
+  "next_action": "WAIT_FOR_US_STRUCTURED_ADAPTER_NATURAL_CANARY"
+}
