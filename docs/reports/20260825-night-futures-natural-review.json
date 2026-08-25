@@ -1,0 +1,660 @@
+{
+  "attempts": [
+    {
+      "attempt_id": "attempt-83f51b20e2637576bd14",
+      "backup_path_provider_attempted": false,
+      "backup_path_reason": "backup AI path does not query night-futures provider",
+      "candidate_product_count": 0,
+      "canonicalization_status": "PASS",
+      "contract_version": "night-futures-attempt-archive-v1",
+      "error": null,
+      "expected_night_bas_dd": "2026-08-25",
+      "expected_preceding_day_bas_dd": "2026-08-24",
+      "market_date": "2026-08-25",
+      "market_packet_id": null,
+      "observation_group_id": "night-futures-7d6ca67d7c47fb20",
+      "parsed_row_count": 16,
+      "parser_status": "PASS",
+      "per_product": [
+        {
+          "contract": "A0169000",
+          "expected_night_bas_dd": "2026-08-25",
+          "instrument": "KOSPI200",
+          "matched_day_bas_dd": null,
+          "maturity": "2026-09",
+          "product": "KOSPI200",
+          "provider_change_crosscheck_status": "NOT_OBSERVED",
+          "readiness": "NOT_READY",
+          "rejection_reason": "expected_session_absent",
+          "returned_night_bas_dd": "2026-08-24",
+          "row_state": "STALE_PRIOR_SESSION_PRESENT"
+        },
+        {
+          "contract": "A0669000",
+          "expected_night_bas_dd": "2026-08-25",
+          "instrument": "KOSDAQ150",
+          "matched_day_bas_dd": null,
+          "maturity": "2026-09",
+          "product": "KOSDAQ150",
+          "provider_change_crosscheck_status": "NOT_OBSERVED",
+          "readiness": "NOT_READY",
+          "rejection_reason": "expected_session_absent",
+          "returned_night_bas_dd": "2026-08-24",
+          "row_state": "STALE_PRIOR_SESSION_PRESENT"
+        }
+      ],
+      "production_or_observer": "production",
+      "production_state_mutation": false,
+      "provider_business_dates_returned": [
+        "2026-08-21",
+        "2026-08-24"
+      ],
+      "provider_change_crosscheck_status": "PASS",
+      "provider_http_statuses": [
+        200
+      ],
+      "provider_night_business_dates_returned": [
+        "2026-08-21",
+        "2026-08-24"
+      ],
+      "publication_contract_version": "night-futures-publication-telemetry-v1",
+      "raw_refs": [
+        {
+          "http_status": 200,
+          "query_date": "2026-08-25",
+          "raw_payload_sha256": "82c0031bc13af348ac1e1304aca28f309632975110f2508534e93216791dfa90",
+          "row_count": 0,
+          "service": "fut_bydd_trd"
+        },
+        {
+          "http_status": 200,
+          "query_date": "2026-08-24",
+          "raw_payload_sha256": "ae694bdcd2e03d1f74183a12c853e7876ba9e2622f9786934698e153a8e708af",
+          "row_count": 385,
+          "service": "fut_bydd_trd"
+        },
+        {
+          "http_status": 200,
+          "query_date": "2026-08-23",
+          "raw_payload_sha256": "82c0031bc13af348ac1e1304aca28f309632975110f2508534e93216791dfa90",
+          "row_count": 0,
+          "service": "fut_bydd_trd"
+        },
+        {
+          "http_status": 200,
+          "query_date": "2026-08-22",
+          "raw_payload_sha256": "82c0031bc13af348ac1e1304aca28f309632975110f2508534e93216791dfa90",
+          "row_count": 0,
+          "service": "fut_bydd_trd"
+        },
+        {
+          "http_status": 200,
+          "query_date": "2026-08-21",
+          "raw_payload_sha256": "02309f14af0c16ded688aedf1db645f009ff96efec270e9e065be6461ee32093",
+          "row_count": 385,
+          "service": "fut_bydd_trd"
+        }
+      ],
+      "raw_row_count": 770,
+      "raw_sha256": "eee6631cd3389d75d78419a0dbcd5593cb2d8129d8ced4633beb079eb81f59bc",
+      "ready_product_count": 0,
+      "role": "production_gate_attempt_1",
+      "run_id": "daily_us:2026-08-25",
+      "terminal_classification": "STALE_PRIOR_SESSION_PRESENT",
+      "timestamp_end": "2026-08-25T08:06:31.661724+09:00",
+      "timestamp_start": "2026-08-25T08:06:30.050656+09:00",
+      "user_visible_integration": false,
+      "xkrx_calendar_basis": "preceding-eligible-XKRX-DAY-v1"
+    },
+    {
+      "attempt_id": "attempt-29a49a1d6da85e471af5",
+      "backup_path_provider_attempted": false,
+      "backup_path_reason": "backup AI path does not query night-futures provider",
+      "candidate_product_count": 0,
+      "canonicalization_status": "PASS",
+      "contract_version": "night-futures-attempt-archive-v1",
+      "error": null,
+      "expected_night_bas_dd": "2026-08-25",
+      "expected_preceding_day_bas_dd": "2026-08-24",
+      "market_date": "2026-08-25",
+      "market_packet_id": null,
+      "observation_group_id": "night-futures-7d6ca67d7c47fb20",
+      "parsed_row_count": 16,
+      "parser_status": "PASS",
+      "per_product": [
+        {
+          "contract": "A0169000",
+          "expected_night_bas_dd": "2026-08-25",
+          "instrument": "KOSPI200",
+          "matched_day_bas_dd": null,
+          "maturity": "2026-09",
+          "product": "KOSPI200",
+          "provider_change_crosscheck_status": "NOT_OBSERVED",
+          "readiness": "NOT_READY",
+          "rejection_reason": "expected_session_absent",
+          "returned_night_bas_dd": "2026-08-24",
+          "row_state": "STALE_PRIOR_SESSION_PRESENT"
+        },
+        {
+          "contract": "A0669000",
+          "expected_night_bas_dd": "2026-08-25",
+          "instrument": "KOSDAQ150",
+          "matched_day_bas_dd": null,
+          "maturity": "2026-09",
+          "product": "KOSDAQ150",
+          "provider_change_crosscheck_status": "NOT_OBSERVED",
+          "readiness": "NOT_READY",
+          "rejection_reason": "expected_session_absent",
+          "returned_night_bas_dd": "2026-08-24",
+          "row_state": "STALE_PRIOR_SESSION_PRESENT"
+        }
+      ],
+      "production_or_observer": "production",
+      "production_state_mutation": false,
+      "provider_business_dates_returned": [
+        "2026-08-21",
+        "2026-08-24"
+      ],
+      "provider_change_crosscheck_status": "PASS",
+      "provider_http_statuses": [
+        200
+      ],
+      "provider_night_business_dates_returned": [
+        "2026-08-21",
+        "2026-08-24"
+      ],
+      "publication_contract_version": "night-futures-publication-telemetry-v1",
+      "raw_refs": [
+        {
+          "http_status": 200,
+          "query_date": "2026-08-25",
+          "raw_payload_sha256": "82c0031bc13af348ac1e1304aca28f309632975110f2508534e93216791dfa90",
+          "row_count": 0,
+          "service": "fut_bydd_trd"
+        },
+        {
+          "http_status": 200,
+          "query_date": "2026-08-24",
+          "raw_payload_sha256": "ae694bdcd2e03d1f74183a12c853e7876ba9e2622f9786934698e153a8e708af",
+          "row_count": 385,
+          "service": "fut_bydd_trd"
+        },
+        {
+          "http_status": 200,
+          "query_date": "2026-08-23",
+          "raw_payload_sha256": "82c0031bc13af348ac1e1304aca28f309632975110f2508534e93216791dfa90",
+          "row_count": 0,
+          "service": "fut_bydd_trd"
+        },
+        {
+          "http_status": 200,
+          "query_date": "2026-08-22",
+          "raw_payload_sha256": "82c0031bc13af348ac1e1304aca28f309632975110f2508534e93216791dfa90",
+          "row_count": 0,
+          "service": "fut_bydd_trd"
+        },
+        {
+          "http_status": 200,
+          "query_date": "2026-08-21",
+          "raw_payload_sha256": "02309f14af0c16ded688aedf1db645f009ff96efec270e9e065be6461ee32093",
+          "row_count": 385,
+          "service": "fut_bydd_trd"
+        }
+      ],
+      "raw_row_count": 770,
+      "raw_sha256": "eee6631cd3389d75d78419a0dbcd5593cb2d8129d8ced4633beb079eb81f59bc",
+      "ready_product_count": 0,
+      "role": "production_gate_attempt_2",
+      "run_id": "daily_us:2026-08-25",
+      "terminal_classification": "STALE_PRIOR_SESSION_PRESENT",
+      "timestamp_end": "2026-08-25T08:10:09.043314+09:00",
+      "timestamp_start": "2026-08-25T08:10:05.583824+09:00",
+      "user_visible_integration": false,
+      "xkrx_calendar_basis": "preceding-eligible-XKRX-DAY-v1"
+    },
+    {
+      "attempt_id": "attempt-598f079e1966a7b991ef",
+      "backup_path_provider_attempted": false,
+      "backup_path_reason": "backup AI path does not query night-futures provider",
+      "candidate_product_count": 0,
+      "canonicalization_status": "PASS",
+      "contract_version": "night-futures-attempt-archive-v1",
+      "error": null,
+      "expected_night_bas_dd": "2026-08-25",
+      "expected_preceding_day_bas_dd": "2026-08-24",
+      "market_date": "2026-08-25",
+      "market_packet_id": null,
+      "observation_group_id": "night-futures-7d6ca67d7c47fb20",
+      "parsed_row_count": 16,
+      "parser_status": "PASS",
+      "per_product": [
+        {
+          "contract": "A0169000",
+          "expected_night_bas_dd": "2026-08-25",
+          "instrument": "KOSPI200",
+          "matched_day_bas_dd": null,
+          "maturity": "2026-09",
+          "product": "KOSPI200",
+          "provider_change_crosscheck_status": "NOT_OBSERVED",
+          "readiness": "NOT_READY",
+          "rejection_reason": "expected_session_absent",
+          "returned_night_bas_dd": "2026-08-24",
+          "row_state": "STALE_PRIOR_SESSION_PRESENT"
+        },
+        {
+          "contract": "A0669000",
+          "expected_night_bas_dd": "2026-08-25",
+          "instrument": "KOSDAQ150",
+          "matched_day_bas_dd": null,
+          "maturity": "2026-09",
+          "product": "KOSDAQ150",
+          "provider_change_crosscheck_status": "NOT_OBSERVED",
+          "readiness": "NOT_READY",
+          "rejection_reason": "expected_session_absent",
+          "returned_night_bas_dd": "2026-08-24",
+          "row_state": "STALE_PRIOR_SESSION_PRESENT"
+        }
+      ],
+      "production_or_observer": "production",
+      "production_state_mutation": false,
+      "provider_business_dates_returned": [
+        "2026-08-21",
+        "2026-08-24"
+      ],
+      "provider_change_crosscheck_status": "PASS",
+      "provider_http_statuses": [
+        200
+      ],
+      "provider_night_business_dates_returned": [
+        "2026-08-21",
+        "2026-08-24"
+      ],
+      "publication_contract_version": "night-futures-publication-telemetry-v1",
+      "raw_refs": [
+        {
+          "http_status": 200,
+          "query_date": "2026-08-25",
+          "raw_payload_sha256": "82c0031bc13af348ac1e1304aca28f309632975110f2508534e93216791dfa90",
+          "row_count": 0,
+          "service": "fut_bydd_trd"
+        },
+        {
+          "http_status": 200,
+          "query_date": "2026-08-24",
+          "raw_payload_sha256": "ae694bdcd2e03d1f74183a12c853e7876ba9e2622f9786934698e153a8e708af",
+          "row_count": 385,
+          "service": "fut_bydd_trd"
+        },
+        {
+          "http_status": 200,
+          "query_date": "2026-08-23",
+          "raw_payload_sha256": "82c0031bc13af348ac1e1304aca28f309632975110f2508534e93216791dfa90",
+          "row_count": 0,
+          "service": "fut_bydd_trd"
+        },
+        {
+          "http_status": 200,
+          "query_date": "2026-08-22",
+          "raw_payload_sha256": "82c0031bc13af348ac1e1304aca28f309632975110f2508534e93216791dfa90",
+          "row_count": 0,
+          "service": "fut_bydd_trd"
+        },
+        {
+          "http_status": 200,
+          "query_date": "2026-08-21",
+          "raw_payload_sha256": "02309f14af0c16ded688aedf1db645f009ff96efec270e9e065be6461ee32093",
+          "row_count": 385,
+          "service": "fut_bydd_trd"
+        }
+      ],
+      "raw_row_count": 770,
+      "raw_sha256": "eee6631cd3389d75d78419a0dbcd5593cb2d8129d8ced4633beb079eb81f59bc",
+      "ready_product_count": 0,
+      "role": "production_gate_attempt_3",
+      "run_id": "daily_us:2026-08-25",
+      "terminal_classification": "STALE_PRIOR_SESSION_PRESENT",
+      "timestamp_end": "2026-08-25T08:15:08.873163+09:00",
+      "timestamp_start": "2026-08-25T08:15:07.102535+09:00",
+      "user_visible_integration": false,
+      "xkrx_calendar_basis": "preceding-eligible-XKRX-DAY-v1"
+    },
+    {
+      "attempt_id": "attempt-9ece7f5f4fe4304403ec",
+      "backup_path_provider_attempted": false,
+      "backup_path_reason": "backup AI path does not query night-futures provider",
+      "candidate_product_count": 0,
+      "canonicalization_status": "PASS",
+      "contract_version": "night-futures-attempt-archive-v1",
+      "error": null,
+      "expected_night_bas_dd": "2026-08-25",
+      "expected_preceding_day_bas_dd": "2026-08-24",
+      "market_date": "2026-08-25",
+      "market_packet_id": null,
+      "observation_group_id": "night-futures-7d6ca67d7c47fb20",
+      "parsed_row_count": 16,
+      "parser_status": "PASS",
+      "per_product": [
+        {
+          "contract": "A0169000",
+          "expected_night_bas_dd": "2026-08-25",
+          "instrument": "KOSPI200",
+          "matched_day_bas_dd": null,
+          "maturity": "2026-09",
+          "product": "KOSPI200",
+          "provider_change_crosscheck_status": "NOT_OBSERVED",
+          "readiness": "NOT_READY",
+          "rejection_reason": "expected_session_absent",
+          "returned_night_bas_dd": "2026-08-24",
+          "row_state": "STALE_PRIOR_SESSION_PRESENT"
+        },
+        {
+          "contract": "A0669000",
+          "expected_night_bas_dd": "2026-08-25",
+          "instrument": "KOSDAQ150",
+          "matched_day_bas_dd": null,
+          "maturity": "2026-09",
+          "product": "KOSDAQ150",
+          "provider_change_crosscheck_status": "NOT_OBSERVED",
+          "readiness": "NOT_READY",
+          "rejection_reason": "expected_session_absent",
+          "returned_night_bas_dd": "2026-08-24",
+          "row_state": "STALE_PRIOR_SESSION_PRESENT"
+        }
+      ],
+      "production_or_observer": "production",
+      "production_state_mutation": false,
+      "provider_business_dates_returned": [
+        "2026-08-21",
+        "2026-08-24"
+      ],
+      "provider_change_crosscheck_status": "PASS",
+      "provider_http_statuses": [
+        200
+      ],
+      "provider_night_business_dates_returned": [
+        "2026-08-21",
+        "2026-08-24"
+      ],
+      "publication_contract_version": "night-futures-publication-telemetry-v1",
+      "raw_refs": [
+        {
+          "http_status": 200,
+          "query_date": "2026-08-25",
+          "raw_payload_sha256": "82c0031bc13af348ac1e1304aca28f309632975110f2508534e93216791dfa90",
+          "row_count": 0,
+          "service": "fut_bydd_trd"
+        },
+        {
+          "http_status": 200,
+          "query_date": "2026-08-24",
+          "raw_payload_sha256": "ae694bdcd2e03d1f74183a12c853e7876ba9e2622f9786934698e153a8e708af",
+          "row_count": 385,
+          "service": "fut_bydd_trd"
+        },
+        {
+          "http_status": 200,
+          "query_date": "2026-08-23",
+          "raw_payload_sha256": "82c0031bc13af348ac1e1304aca28f309632975110f2508534e93216791dfa90",
+          "row_count": 0,
+          "service": "fut_bydd_trd"
+        },
+        {
+          "http_status": 200,
+          "query_date": "2026-08-22",
+          "raw_payload_sha256": "82c0031bc13af348ac1e1304aca28f309632975110f2508534e93216791dfa90",
+          "row_count": 0,
+          "service": "fut_bydd_trd"
+        },
+        {
+          "http_status": 200,
+          "query_date": "2026-08-21",
+          "raw_payload_sha256": "02309f14af0c16ded688aedf1db645f009ff96efec270e9e065be6461ee32093",
+          "row_count": 385,
+          "service": "fut_bydd_trd"
+        }
+      ],
+      "raw_row_count": 770,
+      "raw_sha256": "eee6631cd3389d75d78419a0dbcd5593cb2d8129d8ced4633beb079eb81f59bc",
+      "ready_product_count": 0,
+      "role": "production_gate_attempt_4",
+      "run_id": "daily_us:2026-08-25",
+      "terminal_classification": "STALE_PRIOR_SESSION_PRESENT",
+      "timestamp_end": "2026-08-25T08:20:08.693535+09:00",
+      "timestamp_start": "2026-08-25T08:20:06.543338+09:00",
+      "user_visible_integration": false,
+      "xkrx_calendar_basis": "preceding-eligible-XKRX-DAY-v1"
+    },
+    {
+      "attempt_id": "attempt-f31c6bf4e873cb882e4a",
+      "backup_path_provider_attempted": false,
+      "backup_path_reason": "backup AI path does not query night-futures provider",
+      "candidate_product_count": 0,
+      "canonicalization_status": "PASS",
+      "contract_version": "night-futures-attempt-archive-v1",
+      "error": null,
+      "expected_night_bas_dd": "2026-08-25",
+      "expected_preceding_day_bas_dd": "2026-08-24",
+      "market_date": "2026-08-25",
+      "market_packet_id": null,
+      "observation_group_id": "night-futures-7d6ca67d7c47fb20",
+      "parsed_row_count": 16,
+      "parser_status": "PASS",
+      "per_product": [
+        {
+          "contract": "A0169000",
+          "expected_night_bas_dd": "2026-08-25",
+          "instrument": "KOSPI200",
+          "matched_day_bas_dd": null,
+          "maturity": "2026-09",
+          "product": "KOSPI200",
+          "provider_change_crosscheck_status": "NOT_OBSERVED",
+          "readiness": "NOT_READY",
+          "rejection_reason": "expected_session_absent",
+          "returned_night_bas_dd": "2026-08-24",
+          "row_state": "STALE_PRIOR_SESSION_PRESENT"
+        },
+        {
+          "contract": "A0669000",
+          "expected_night_bas_dd": "2026-08-25",
+          "instrument": "KOSDAQ150",
+          "matched_day_bas_dd": null,
+          "maturity": "2026-09",
+          "product": "KOSDAQ150",
+          "provider_change_crosscheck_status": "NOT_OBSERVED",
+          "readiness": "NOT_READY",
+          "rejection_reason": "expected_session_absent",
+          "returned_night_bas_dd": "2026-08-24",
+          "row_state": "STALE_PRIOR_SESSION_PRESENT"
+        }
+      ],
+      "production_or_observer": "observer",
+      "production_state_mutation": false,
+      "provider_business_dates_returned": [
+        "2026-08-21",
+        "2026-08-24"
+      ],
+      "provider_change_crosscheck_status": "PASS",
+      "provider_http_statuses": [
+        200
+      ],
+      "provider_night_business_dates_returned": [
+        "2026-08-21",
+        "2026-08-24"
+      ],
+      "publication_contract_version": "night-futures-publication-telemetry-v1",
+      "raw_refs": [
+        {
+          "http_status": 200,
+          "query_date": "2026-08-25",
+          "raw_payload_sha256": "82c0031bc13af348ac1e1304aca28f309632975110f2508534e93216791dfa90",
+          "row_count": 0,
+          "service": "fut_bydd_trd"
+        },
+        {
+          "http_status": 200,
+          "query_date": "2026-08-24",
+          "raw_payload_sha256": "ae694bdcd2e03d1f74183a12c853e7876ba9e2622f9786934698e153a8e708af",
+          "row_count": 385,
+          "service": "fut_bydd_trd"
+        },
+        {
+          "http_status": 200,
+          "query_date": "2026-08-23",
+          "raw_payload_sha256": "82c0031bc13af348ac1e1304aca28f309632975110f2508534e93216791dfa90",
+          "row_count": 0,
+          "service": "fut_bydd_trd"
+        },
+        {
+          "http_status": 200,
+          "query_date": "2026-08-22",
+          "raw_payload_sha256": "82c0031bc13af348ac1e1304aca28f309632975110f2508534e93216791dfa90",
+          "row_count": 0,
+          "service": "fut_bydd_trd"
+        },
+        {
+          "http_status": 200,
+          "query_date": "2026-08-21",
+          "raw_payload_sha256": "02309f14af0c16ded688aedf1db645f009ff96efec270e9e065be6461ee32093",
+          "row_count": 385,
+          "service": "fut_bydd_trd"
+        }
+      ],
+      "raw_row_count": 770,
+      "raw_sha256": "eee6631cd3389d75d78419a0dbcd5593cb2d8129d8ced4633beb079eb81f59bc",
+      "ready_product_count": 0,
+      "role": "observer_post_deadline_0845",
+      "run_id": "daily_us:2026-08-25",
+      "terminal_classification": "STALE_PRIOR_SESSION_PRESENT",
+      "timestamp_end": "2026-08-25T08:45:07.537844+09:00",
+      "timestamp_start": "2026-08-25T08:45:06.073682+09:00",
+      "user_visible_integration": false,
+      "xkrx_calendar_basis": "preceding-eligible-XKRX-DAY-v1"
+    },
+    {
+      "attempt_id": "attempt-fcfffa85cdb9d780d8c9",
+      "backup_path_provider_attempted": false,
+      "backup_path_reason": "backup AI path does not query night-futures provider",
+      "candidate_product_count": 0,
+      "canonicalization_status": "PASS",
+      "contract_version": "night-futures-attempt-archive-v1",
+      "error": null,
+      "expected_night_bas_dd": "2026-08-25",
+      "expected_preceding_day_bas_dd": "2026-08-24",
+      "market_date": "2026-08-25",
+      "market_packet_id": null,
+      "observation_group_id": "night-futures-7d6ca67d7c47fb20",
+      "parsed_row_count": 16,
+      "parser_status": "PASS",
+      "per_product": [
+        {
+          "contract": "A0169000",
+          "expected_night_bas_dd": "2026-08-25",
+          "instrument": "KOSPI200",
+          "matched_day_bas_dd": null,
+          "maturity": "2026-09",
+          "product": "KOSPI200",
+          "provider_change_crosscheck_status": "NOT_OBSERVED",
+          "readiness": "NOT_READY",
+          "rejection_reason": "expected_session_absent",
+          "returned_night_bas_dd": "2026-08-24",
+          "row_state": "STALE_PRIOR_SESSION_PRESENT"
+        },
+        {
+          "contract": "A0669000",
+          "expected_night_bas_dd": "2026-08-25",
+          "instrument": "KOSDAQ150",
+          "matched_day_bas_dd": null,
+          "maturity": "2026-09",
+          "product": "KOSDAQ150",
+          "provider_change_crosscheck_status": "NOT_OBSERVED",
+          "readiness": "NOT_READY",
+          "rejection_reason": "expected_session_absent",
+          "returned_night_bas_dd": "2026-08-24",
+          "row_state": "STALE_PRIOR_SESSION_PRESENT"
+        }
+      ],
+      "production_or_observer": "observer",
+      "production_state_mutation": false,
+      "provider_business_dates_returned": [
+        "2026-08-21",
+        "2026-08-24"
+      ],
+      "provider_change_crosscheck_status": "PASS",
+      "provider_http_statuses": [
+        200
+      ],
+      "provider_night_business_dates_returned": [
+        "2026-08-21",
+        "2026-08-24"
+      ],
+      "publication_contract_version": "night-futures-publication-telemetry-v1",
+      "raw_refs": [
+        {
+          "http_status": 200,
+          "query_date": "2026-08-25",
+          "raw_payload_sha256": "82c0031bc13af348ac1e1304aca28f309632975110f2508534e93216791dfa90",
+          "row_count": 0,
+          "service": "fut_bydd_trd"
+        },
+        {
+          "http_status": 200,
+          "query_date": "2026-08-24",
+          "raw_payload_sha256": "ae694bdcd2e03d1f74183a12c853e7876ba9e2622f9786934698e153a8e708af",
+          "row_count": 385,
+          "service": "fut_bydd_trd"
+        },
+        {
+          "http_status": 200,
+          "query_date": "2026-08-23",
+          "raw_payload_sha256": "82c0031bc13af348ac1e1304aca28f309632975110f2508534e93216791dfa90",
+          "row_count": 0,
+          "service": "fut_bydd_trd"
+        },
+        {
+          "http_status": 200,
+          "query_date": "2026-08-22",
+          "raw_payload_sha256": "82c0031bc13af348ac1e1304aca28f309632975110f2508534e93216791dfa90",
+          "row_count": 0,
+          "service": "fut_bydd_trd"
+        },
+        {
+          "http_status": 200,
+          "query_date": "2026-08-21",
+          "raw_payload_sha256": "02309f14af0c16ded688aedf1db645f009ff96efec270e9e065be6461ee32093",
+          "row_count": 385,
+          "service": "fut_bydd_trd"
+        }
+      ],
+      "raw_row_count": 770,
+      "raw_sha256": "eee6631cd3389d75d78419a0dbcd5593cb2d8129d8ced4633beb079eb81f59bc",
+      "ready_product_count": 0,
+      "role": "observer_horizon_0915",
+      "run_id": "daily_us:2026-08-25",
+      "terminal_classification": "STALE_PRIOR_SESSION_PRESENT",
+      "timestamp_end": "2026-08-25T09:15:05.886465+09:00",
+      "timestamp_start": "2026-08-25T09:15:03.585706+09:00",
+      "user_visible_integration": false,
+      "xkrx_calendar_basis": "preceding-eligible-XKRX-DAY-v1"
+    }
+  ],
+  "deadline_verdict": "DEADLINE_UNPROVEN",
+  "fail_closed_safety": "PASS",
+  "gate": "LIVE_EVIDENCE_CAPTURE_PASS",
+  "terminal_receipt": {
+    "availability_interval": null,
+    "contract_version": "night-futures-publication-telemetry-v1",
+    "deadline_verdict": "DEADLINE_UNPROVEN",
+    "first_observed_products": [],
+    "first_observed_ready_at": null,
+    "first_provider_availability_time": "UNKNOWN_WITHIN_HORIZON",
+    "market_date": "2026-08-25",
+    "observation_group_id": "night-futures-7d6ca67d7c47fb20",
+    "previous_observation_at": "2026-08-25T09:15:05.886465+09:00",
+    "previous_observation_state": "STALE_PRIOR_SESSION_PRESENT",
+    "raw_refs": [],
+    "raw_sha256": null,
+    "target_expected_session": "2026-08-25",
+    "terminal_state": "NOT_READY_WITHIN_OBSERVER_HORIZON",
+    "user_visible_integration": false
+  }
+}

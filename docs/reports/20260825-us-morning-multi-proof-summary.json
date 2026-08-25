@@ -1,0 +1,108 @@
+{
+  "adaptive_renderer_tip": "5e30b17bf1fa10acb5483bfb6961b2a6d6fc8a86",
+  "delivery_sha256": "1fb8f18a2bc94a122cffdc73544d5ec95ef940350ccc3b328fb013c4da58977d",
+  "gates": {
+    "CAUSAL_ATTRIBUTION_SAFETY": "PASS",
+    "DEADLINE_VERDICT": "DEADLINE_UNPROVEN",
+    "ENTITY_TIME_VALIDATION": "PASS",
+    "EVENT_ATTRIBUTION_FACT_BOUNDARY": "PASS",
+    "FAIL_CLOSED_SAFETY": "PASS",
+    "FREE_ANALYST_ADAPTIVE_PRODUCTION_CANDIDATE": "NO",
+    "INVENTORY_USER_VISIBLE_NATURAL": "LIVE_PASS",
+    "KRX_0805_PUBLICATION_READINESS": "PROVIDER_COMPLETE",
+    "KRX_0805_ROLE_TARGET_NATURAL": "LIVE_PASS",
+    "MACRO_TEMPORAL_NATURAL": "LIVE_PASS",
+    "NEGATIVE_EVIDENCE_SAFETY": "PASS",
+    "NEXT_ACTION": "US_AI_BOUNDED_REPAIR",
+    "NIGHT_FUTURES_TELEMETRY_GAP": "LIVE_EVIDENCE_CAPTURE_PASS",
+    "OPEN_MATERIAL_P1": 2,
+    "OPEN_P0": 0,
+    "OPEN_RESEARCH_PRODUCTION_CANDIDATE": "NO",
+    "P2_BACKLOG": 6,
+    "PHASE_9_0E_NATURAL_REGRESSION": "NOT_OBSERVED",
+    "PRODUCTION_CORE_NATURAL_READY": "YES",
+    "RESEARCH_ADAPTIVE_RENDERER": "FAIL",
+    "RESEARCH_END_TO_END_SHADOW": "FAIL",
+    "RESEARCH_FREE_ANALYST_FACT_BOUNDARY": "FAIL",
+    "RESEARCH_MATERIAL_INFORMATION_LOSS": 0,
+    "REVIEW_STATE": "COMPLETE",
+    "SOURCE_PROVENANCE": "PASS",
+    "TRADE_AR_ENABLEMENT_CANDIDATE": "NO_PENDING_NATURAL",
+    "TRADE_AR_NATURAL_PROOF": "NOT_OBSERVED",
+    "US_AI_COMPATIBILITY_NATURAL": "FAIL",
+    "US_EVENT_ATTRIBUTION": "PASS",
+    "US_FRESH_RESEARCH_HOLDOUT": "FAIL",
+    "US_PRODUCTION_NATURAL": "LIVE_PASS",
+    "US_RESEARCH_FREE_ANALYST_VALUE_ADD": "FAIL"
+  },
+  "instruction_commit": "4988317ed8ca07c4193b0050f2896e14b5d1a3a4",
+  "main_promotion": 0,
+  "open_research_tip": "6db5d760b1b0b24ff224d4be3c89315233b8af0b",
+  "p0": [],
+  "p1": [
+    {
+      "affected": [
+        "MU",
+        "TSLA"
+      ],
+      "errors": [
+        "MU:numeric_usage_semantic_mismatch:working-capital-relation:dbdfd04e725e83528d8fdd31:fields.gap_percentage_points_abs",
+        "MU:numbers_without_provenance:business_earnings.text:15.7",
+        "TSLA:numeric_usage_semantic_mismatch:working-capital-relation:36181e61768dfd580d9ede01:fields.gap_percentage_points_abs",
+        "TSLA:numbers_without_provenance:business_earnings.text:26.6"
+      ],
+      "id": "us-ai-inventory-relation-semantic-binding",
+      "next_action": "US_AI_BOUNDED_REPAIR"
+    },
+    {
+      "affected": [
+        "__DAILY_DIGEST__",
+        "13 monitored US stocks"
+      ],
+      "id": "us-free-analyst-natural-format-adapter",
+      "next_action": "OPEN_RESEARCH_US_ADAPTER_REPAIR",
+      "research_sidecar_validation": "14/14 PASS",
+      "result": "14/14 free analyst validation fallback"
+    }
+  ],
+  "p2": [
+    "deterministic_fallback_template_density",
+    "trade_ar_natural_proof_pending",
+    "cash_flow_selected_natural_context_not_observed",
+    "night_futures_deadline_unproven",
+    "open_research_automation_registration_timeout_not_fixed",
+    "optional_research_query_latency_tuning"
+  ],
+  "packet_id": "2026-08-25-us-run-37-7e04812311c2",
+  "packet_sha256": "17e14c4c7fd04017574f60057176c8e0560b0351ec9f3c865ba5dd543ae7e6cc",
+  "production_main": "2e3e37cc75867d56a69211bbe93a3675cd87acd1",
+  "production_mutation": 0,
+  "research": {
+    "all_research_sidecars_pass": true,
+    "all_validators_pass": false,
+    "contract": "open-research-event-attribution-shadow-v1",
+    "duplicate_source_family_count": 0,
+    "estimated_token_usage": "not_available",
+    "free_analyst_fallback_count": 14,
+    "free_analyst_pass_count": 0,
+    "high_quality_news_count": 1,
+    "market_session": "2026-08-24 US regular",
+    "messages": 14,
+    "model_calls": 0,
+    "no_material_value_messages": 10,
+    "primary_source_count": 7,
+    "production_mutation": 0,
+    "query_count": 16,
+    "research_cutoff_kst": "2026-08-25T09:41:00+09:00",
+    "research_shadow_pass_count": 14,
+    "research_validation_pass_count": 14,
+    "researched_messages": 4,
+    "selected_free_analyst_fallback_count": 4,
+    "shadow_execution_ms": 24.758,
+    "source_count": 10,
+    "source_family_count": 10,
+    "telegram_send": 0,
+    "web_research_elapsed_minutes": 23
+  },
+  "telegram_send_from_review": 0
+}
