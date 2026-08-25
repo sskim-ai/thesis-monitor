@@ -16,13 +16,33 @@ facts or hard-coded conclusions.
 - Provider publication distinguishes complete, market-complete/provider-pending, and Unknown.
   Missing post-close rows are not interpreted as zero.
 
+## Kiwoom Extension
+
+`kiwoom-kr-market-context-v1` supplies a validated `MarketCrossSection` to the existing adapter.
+The adapter does not know Kiwoom TR shapes; it consumes normalized index, breadth, sector/size,
+market-flow, and deterministic concentration records. Direct cross-section records take priority
+over duplicate generated Facts by logical identity.
+
+The runtime boundary is:
+
+```text
+official Kiwoom REST TR
+-> secret-safe client
+-> Kiwoom normalizer and reconciliation
+-> structured-market-context-v1 persistence
+-> existing market-context-adapter-v1
+-> existing packet and reasoning paths
+```
+
+The integration is best effort. An unavailable token, incomplete page chain, invalid session,
+unknown unit, duplicate normalized security, or semantic mismatch cannot block packet creation.
+Missing remains Unknown and is never converted to zero.
+
 ## Current Coverage
 
-The immutable 2026-08-25 KR run-38 packet contains no local index, breadth, size/sector, or
-market-wide flow Facts. The adapter therefore returns an empty local context with explicit gaps.
-Overnight US proxy Facts remain in the existing macro context and are not relabeled as KR local
-market structure.
+The 2026-08-25 completed-session probe validates KOSPI/KOSDAQ index, scoped breadth, KOSPI size,
+63 non-composite sector/size rows, and six market-wide participant-flow facts. KOSDAQ flow
+concentration is eligible; KOSPI concentration is blocked by aggregate-versus-stock reconciliation.
 
-Status: `PARTIAL`. This is fail-closed and does not block deterministic delivery. KRX publication
-telemetry remains an independent observation track.
-
+Status: `PARTIAL`, safe for selective production integration. KRX publication telemetry remains
+independent and is not overwritten by Kiwoom state.

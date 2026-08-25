@@ -36,6 +36,9 @@ DOCUMENTS = (
     ROOT / "docs" / "architecture" / "COMMON_AI_CORE_V1.md",
     ROOT / "docs" / "architecture" / "MARKET_CONTEXT_ADAPTER.md",
     ROOT / "docs" / "architecture" / "KR_MARKET_CONTEXT_ADAPTER.md",
+    ROOT / "docs" / "architecture" / "KIWOOM_KR_MARKET_CONTEXT.md",
+    ROOT / "docs" / "architecture" / "KR_MARKET_FLOW_RECONCILIATION.md",
+    ROOT / "docs" / "architecture" / "KR_MARKET_BREADTH.md",
     ROOT / "docs" / "architecture" / "US_MARKET_CONTEXT_ADAPTER.md",
     ROOT / "docs" / "architecture" / "MARKET_RESEARCH_SEED_ADAPTERS.md",
     ROOT / "docs" / "architecture" / "PRODUCTION_RESEARCH_CONNECTOR_BOUNDARY.md",
@@ -61,18 +64,10 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
 
     assert state["repository"] == "sskim-ai/thesis-monitor"
     assert state["branch"] == "main"
-    assert state["experimental_branch"] == (
-        "codex/kr-us-structured-data-first-quality-v2"
-    )
-    assert state["current_phase"] == (
-        "structured_data_quality_v2_pending_natural"
-    )
-    assert state["last_completed_phase"] == (
-        "kr_us_structured_data_acquisition_first_and_message_quality_v2"
-    )
-    assert state["next_default_phase"] == (
-        "us_structured_quality_v2_natural_canary_review"
-    )
+    assert state["experimental_branch"] == "codex/kiwoom-kr-market-context-v1"
+    assert state["current_phase"] == "kiwoom_kr_market_context_pending_natural"
+    assert state["last_completed_phase"] == "kiwoom_kr_market_context_integration"
+    assert state["next_default_phase"] == "kr_kiwoom_natural_canary_review"
     assert state["deployed_code_commit"] == "HEAD"
     assert state["main_code_commit"] == "HEAD"
     assert state["operating_code_commit"] == "HEAD"
@@ -93,6 +88,15 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     )
     assert state["contracts"]["structured_market_context"] == (
         "structured-market-context-v1"
+    )
+    assert state["contracts"]["kiwoom_kr_market_context"] == (
+        "kiwoom-kr-market-context-v1"
+    )
+    assert state["contracts"]["kr_market_flow_reconciliation"] == (
+        "kr-market-flow-reconciliation-v1"
+    )
+    assert state["contracts"]["kr_market_flow_concentration"] == (
+        "kr-market-flow-concentration-v1"
     )
     assert state["contracts"]["message_quality_v2"] == "message-quality-v2"
     assert state["contracts"]["market_research_seed_adapter"] == (

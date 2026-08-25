@@ -1141,3 +1141,25 @@ automatically with zero hard-safety errors. KR structured-context value-add is
 gates pass. Promotion keeps missing data Unknown, Production Assist OFF, Open Research integration
 at zero, and full Free Analyst mode OFF. The next proof is the naturally scheduled US structured
 quality-v2 canary, followed by KR when a complete publication exists; never manufacture either run.
+
+## 35. Kiwoom KR Market Context v1
+
+Instruction commit `f45c6c9d47253c0ad8cad9affcf0eb54be188117` adds an official Kiwoom REST
+integration on the existing `market-cross-section-v1`, `structured-market-context-v1`, and
+`market-context-adapter-v1` chain. Implementation commit
+`32178dc5b2cd4a5fd38af51514b4ac5d12d1cbd0` validates KOSPI/KOSDAQ index and breadth,
+KOSPI size, sector context, and six market-wide foreign/institution/retail flow Facts for the
+completed 2026-08-25 session.
+
+`ka10051` aggregate amounts normalize at KRW 100 million per source unit and fully paginated
+`ka10066` stock amounts at KRW 1 million per source unit. KOSDAQ reconciliation is within the
+aggregate representational unit and supports provenance-bound descriptive concentration. KOSPI
+reconciliation remains `UNRESOLVED_BASIS_OR_TAXONOMY`, so KOSPI concentration is blocked while its
+validated aggregate direction remains available.
+
+Immutable run-38 replay passes 8/8 with 123 existing automatic bindings, zero new exact numeric
+prose claims, zero semantic hard errors, and a material market-digest improvement. The production
+adapter is safe `PARTIAL`: collection failure cannot block packet creation, KRX telemetry remains
+independent, full mode remains OFF, canary remains 1/2/3, Open Research production remains zero,
+and Production Assist remains OFF. The next action is the first naturally scheduled eligible KR
+proof; no manual task or Telegram send may manufacture it.

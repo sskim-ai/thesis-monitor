@@ -185,3 +185,11 @@ production code. Runtime activation uses the existing independent Settings switc
 Branch-B Pilot semantics, deterministic fallback, receipts, schemas, schedules, Inventory,
 cash-flow, and all research exclusions. Natural KR proof must precede US completion, but neither is
 manufactured or required for the enablement commit itself.
+
+The Kiwoom KR market-context branch starts from immutable instruction commit
+`f45c6c9d47253c0ad8cad9affcf0eb54be188117`, whose parent is the exact structured-data-quality-v2
+main. It extends only the existing market cross-section, structured context, adapter, and KR packet
+acquisition boundary. It does not import Open Research, alter canary limits, change Public Action or
+schema 4, modify schedules, or add a trading/account surface. KRX telemetry remains an independent
+parallel provider track. Production activation is environment-only and fail-closed; natural proof
+must not be manufactured.

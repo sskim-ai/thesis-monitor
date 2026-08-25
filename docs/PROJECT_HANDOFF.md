@@ -1319,8 +1319,9 @@ validation failures remain isolated and retryable under one logical canary ID.
   telemetry-only LaunchAgent now captures natural 08:05 and 16:05 observations without feeding the
   market digest. T+1 has no defined exact clock and is not double-counted from 08:05. The Kiwoom
   Windows gateway is not configured.
-- KR market-wide investor flow is unavailable, and constituent-level sector participation remains
-  incomplete.
+- KR market-wide foreign/institution/retail flow, KOSPI/KOSDAQ breadth, KOSPI size, and sector
+  context are implemented through official Kiwoom REST evidence. KOSPI stock-sum concentration is
+  still blocked by basis/taxonomy reconciliation; same-day complete KRX cross-check is pending.
 - Industry-specific causal reasoning contracts are implemented, but specialized structured routing
   covers 9/20 immutable active stocks; taxonomy and business-unit coverage remain partial.
 - Peer provider policy is FREE_ONLY. Phase 8.3 is finalized at 1/20 active and 1/15 meaningful
@@ -1433,3 +1434,25 @@ KR natural canary, Inventory, macro, KRX telemetry, and weekend/holiday proofs c
 - Safety: production DB/Telegram/task/Pilot/archive mutation all 0
 - State: `DEPLOYED_PENDING_NATURAL`; P0/P1 0/0
 - Next: `WAIT_FOR_FIRST_SUCCESSFUL_KR_NATURAL_PACKET`
+
+## 2026-08-25 Kiwoom KR Market Context Handoff
+
+- Instruction commit: `f45c6c9d47253c0ad8cad9affcf0eb54be188117`
+- Implementation commit: `32178dc5b2cd4a5fd38af51514b4ac5d12d1cbd0`
+- Contracts: `kiwoom-kr-market-context-v1`, `kr-market-flow-reconciliation-v1`,
+  `kr-market-flow-concentration-v1`
+- Exact TRs: `ka20001`, `ka20003`, `ka20009`, `ka10051`, `ka10066`
+- Session proof: completed 2026-08-25 KST, index/history/composite identity matched
+- Breadth: KOSPI 647/226/34; KOSDAQ 1186/466/74
+- Market flow: both markets and all three primary participants PASS in KRW integrated basis
+- Pagination: KOSPI 14 pages/1316 rows; KOSDAQ 19 pages/1824 rows; complete; duplicates 0
+- Concentration: KOSDAQ PASS; KOSPI blocked by unresolved basis/taxonomy
+- Run-38 enriched replay: 8/8; hard safety 0; market digest material improvement
+- Runtime: best effort before KR packet persistence; packet continues on provider failure
+- KRX: independent telemetry; same-day reconciliation `NOT_OBSERVED`
+- State: `PARTIAL`, `PRODUCTION_READY=YES`, pending natural proof
+- Safety: no Telegram, manual task, Pilot, DB, archive rewrite, or Production Assist change
+
+At the next natural eligible KR close, inspect the persisted structured sidecar, selected 1/2/3
+canary messages, fallback, receipt, duplicates/orphans, and provider-failure fallback behavior.
+Do not run production manually. Keep KOSPI concentration suppressed until reconciliation is closed.

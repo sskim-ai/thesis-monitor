@@ -2,6 +2,22 @@
 
 Repository: `sskim-ai/thesis-monitor`
 
+Latest bounded integration follows instruction commit
+`f45c6c9d47253c0ad8cad9affcf0eb54be188117` and implementation commit
+`32178dc5b2cd4a5fd38af51514b4ac5d12d1cbd0`. Read
+`docs/architecture/KIWOOM_KR_MARKET_CONTEXT.md`,
+`docs/architecture/KR_MARKET_FLOW_RECONCILIATION.md`, and the Kiwoom artifact index/readiness
+reports first. Official Kiwoom completed-session evidence now supplies KOSPI/KOSDAQ index and
+breadth, KOSPI size, sector rows, and market-wide participant flow through the existing structured
+adapter. KOSDAQ concentration is eligible; KOSPI concentration remains blocked. State is safe
+`PARTIAL`, production-ready, and pending natural proof.
+
+Do not manually run KR production or send Telegram. Inspect the next naturally eligible KR packet
+read-only for Kiwoom collection status, packet sidecar, 1/2/3 canary selection, fallback, runtime
+receipt, duplicates/orphans, and exactly-once delivery. If Kiwoom is unavailable, the normal packet
+must still complete. KRX telemetry remains independent, full mode and Open Research remain OFF,
+and Production Assist remains OFF.
+
 Latest authoritative work follows instruction commit
 `e04403c76abfd8d2f74ca91d438fccc54b479bad` and implementation commit
 `1a6d2f411e7fa9ef414197a3fa5711b336a0d3e7`. Read the structured-data-quality-v2 readiness,
