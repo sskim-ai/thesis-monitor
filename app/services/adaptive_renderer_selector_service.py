@@ -491,6 +491,7 @@ def run_adaptive_renderer(
     deterministic_reference: str = "",
     market: str | None = None,
     packet_owner: str | None = None,
+    market_context: object = None,
     analysis_override: FreeAnalystAnalysis | None = None,
     selector: Selector = select_adaptive_renderer,
     renderer: Renderer = render_adaptive_candidate,
@@ -501,6 +502,7 @@ def run_adaptive_renderer(
         market=market,
         packet_owner=packet_owner,
         supporting_reference_text=deterministic_reference,
+        market_context=market_context,
     )
     validation = validate_free_analyst_analysis(analysis).to_dict()
     if validation["status"] != "PASS":

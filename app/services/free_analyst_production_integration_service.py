@@ -16,9 +16,12 @@ from app.services.free_analyst_natural_packet_adapter_service import (
     validate_natural_packet_adapter_result,
 )
 from app.services.free_analyst_message_service import (
+    cross_message_synthesis_specificity_report,
+    entity_specific_synthesis_report,
     message_quality_v2_report,
     parse_rendered_message,
 )
+from app.services.kr_market_digest_quality_service import build_kr_market_digest_plan
 
 
 CONTRACT_VERSION = "common-ai-core-v1"
@@ -99,6 +102,7 @@ class CanarySelection:
     market_selected: int
     stock_selected: int
     total_selected: int
+    specificity_audit: dict[str, object]
 
     def row_for(self, message_key: str) -> CanarySelectionRow:
         return next(row for row in self.rows if row.message_key == message_key)
@@ -210,6 +214,7 @@ def build_production_candidate(
     market: str,
     packet_owner: str | None = None,
     is_market_digest: bool = False,
+    market_context: object = None,
 ) -> ProductionCandidate:
     """Build one fail-closed candidate without delivery or persistence side effects."""
     try:
@@ -256,6 +261,7 @@ def build_production_candidate(
             deterministic_reference=deterministic_text,
             market=market,
             packet_owner=packet_owner or message_key,
+            market_context=market_context,
         )
     except (LookupError, RuntimeError, TypeError, ValueError) as exc:
         return ProductionCandidate(
@@ -282,6 +288,39 @@ def build_production_candidate(
         result.final_text,
         deterministic_reference=deterministic_text,
     )
+    if is_market_digest and market.lower() == "kr":
+        kr_plan = build_kr_market_digest_plan(
+            market_context,
+            available_text=f"{source_text}\n\n{deterministic_text}",
+        )
+        quality_v2["kr_market_digest"] = {
+            **kr_plan.to_dict(),
+            "local_first": (
+                "PASS"
+                if not kr_plan.richness.status
+                or all(
+                    claim is not None
+                    and claim.priority.value.startswith(("P1_", "P2_"))
+                    for claim in (
+                        kr_plan.judgment,
+                        kr_plan.interpretation,
+                        kr_plan.next_check,
+                    )
+                )
+                else "FAIL"
+            ),
+        }
+    if not is_market_digest:
+        specificity = entity_specific_synthesis_report(
+            result.final_text,
+            support_text=f"{source_text}\n\n{deterministic_text}",
+            selected_renderer=(
+                result.decision.selected_renderer if result.decision is not None else None
+            ),
+        )
+        quality_v2["entity_specific_synthesis"] = specificity
+        if specificity["status"] != "PASS":
+            quality_v2["status"] = "FAIL"
     errors = list(_hard_safety_errors(result))
     if quality_v2["status"] != "PASS":
         errors.append("message_quality_v2_failed")
@@ -325,12 +364,41 @@ def select_limited_canary(
     if min(max_market, max_stock, max_total) < 0:
         raise ValueError("canary limits must be non-negative")
     rows = list(candidates)
+    specificity_audit = cross_message_synthesis_specificity_report(
+        {
+            "message_key": row.message_key,
+            "industry_owner": (
+                row.result.analysis.industry_context_owner if row.result is not None else "general"
+            ),
+            "text": row.candidate_text,
+            "specific_support_available": bool(
+                ((row.quality_v2 or {}).get("entity_specific_synthesis") or {}).get(
+                    "specific_support_available"
+                )
+            ),
+            "supported_discriminators": (
+                ((row.quality_v2 or {}).get("entity_specific_synthesis") or {}).get(
+                    "supported_discriminators"
+                )
+                or []
+            ),
+        }
+        for row in rows
+        if not row.is_market_digest
+    )
+    batch_rejected = set(specificity_audit["rejected_message_keys"])
     eligible_market = sorted(
         (row for row in rows if row.eligible and row.is_market_digest),
         key=_candidate_rank,
     )
     eligible_stock = sorted(
-        (row for row in rows if row.eligible and not row.is_market_digest),
+        (
+            row
+            for row in rows
+            if row.eligible
+            and not row.is_market_digest
+            and row.message_key not in batch_rejected
+        ),
         key=_candidate_rank,
     )
     selected: list[ProductionCandidate] = eligible_market[: min(max_market, max_total)]
@@ -362,8 +430,12 @@ def select_limited_canary(
         if is_selected:
             reason = "validated_material_candidate_within_canary_limits"
             mode = "free_analyst_adaptive_canary"
-        elif not candidate.eligible:
-            reason = "candidate_failed_fail_closed_gate"
+        elif not candidate.eligible or candidate.message_key in batch_rejected:
+            reason = (
+                "cross_industry_generic_repetition_fail_closed"
+                if candidate.message_key in batch_rejected
+                else "candidate_failed_fail_closed_gate"
+            )
             mode = "deterministic_fallback"
         else:
             reason = "eligible_not_selected_within_canary_limits"
@@ -371,7 +443,9 @@ def select_limited_canary(
         audit_rows.append(
             CanarySelectionRow(
                 message_key=candidate.message_key,
-                canary_candidate=candidate.eligible,
+                canary_candidate=(
+                    candidate.eligible and candidate.message_key not in batch_rejected
+                ),
                 canary_selected=is_selected,
                 selection_reason=reason,
                 final_simulated_delivery_mode=mode,
@@ -385,6 +459,7 @@ def select_limited_canary(
         market_selected=sum(row.is_market_digest for row in selected),
         stock_selected=sum(not row.is_market_digest for row in selected),
         total_selected=len(selected),
+        specificity_audit=specificity_audit,
     )
 
 
@@ -427,6 +502,7 @@ def restrict_canary_selection(
         market_selected=market_selected,
         stock_selected=len(selected) - market_selected,
         total_selected=len(selected),
+        specificity_audit=selection.specificity_audit,
     )
 
 
@@ -452,6 +528,7 @@ def fail_closed_canary_selection(
         market_selected=0,
         stock_selected=0,
         total_selected=0,
+        specificity_audit=selection.specificity_audit,
     )
 
 

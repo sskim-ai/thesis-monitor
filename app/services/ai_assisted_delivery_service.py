@@ -1344,6 +1344,11 @@ async def deliver_validated_ai_review(
                         market=market,
                         packet_owner=packet_id,
                         is_market_digest=delivery.ticker == PILOT_MARKERS[market],
+                        market_context=(
+                            packet.get("market_context")
+                            if delivery.ticker == PILOT_MARKERS[market]
+                            else None
+                        ),
                     )
                 )
             new_payload = copy.deepcopy(deterministic)

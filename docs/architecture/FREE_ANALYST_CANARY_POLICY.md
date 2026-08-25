@@ -1,5 +1,16 @@
 # Free Analyst Canary Policy
 
+## Entity-Specific Eligibility
+
+In addition to hard validation, semantic ownership, and runtime message quality, stock candidates
+must pass `entity-specific-synthesis-v1`. Batch selection applies
+`cross-message-synthesis-specificity-v1` before ranking candidates. Cross-industry generic leakage
+falls back per message; it does not fail the whole packet. A legitimate Minimal candidate remains
+eligible when no specific supported synthesis is available.
+
+The fixed limits remain market `<= 1`, stock `<= 2`, total `<= 3`. This quality gate does not expand
+the canary or enable full mode.
+
 ## State
 
 Current state:

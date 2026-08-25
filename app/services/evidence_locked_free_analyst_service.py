@@ -12,6 +12,10 @@ from app.services.free_analyst_message_service import (
     numeric_tokens,
     parse_rendered_message,
 )
+from app.services.kr_market_digest_quality_service import (
+    KrMarketDigestPlan,
+    build_kr_market_digest_plan,
+)
 
 
 CONTRACT_VERSION = "evidence-locked-free-analyst-v1"
@@ -80,6 +84,8 @@ class SemanticConceptFamily(StrEnum):
     LOGISTICS_FREIGHT = "logistics_freight"
     CLOUD_AI_CAPEX = "cloud_ai_capex"
     HPC_EXECUTION = "hpc_execution"
+    FOUNDRY_ADVANCED_NODE = "foundry_advanced_node"
+    FOUNDRY_WAFER_ASP = "foundry_wafer_asp"
 
 
 @dataclass(frozen=True)
@@ -330,6 +336,10 @@ def _semantic_owner(
 
 def _industry_context_owner(text: str) -> str:
     checks = (
+        (
+            "semiconductor_foundry",
+            r"(?:첨단공정|선단공정|wafer\s*ASP|파운드리|foundry|해외\s*팹)",
+        ),
         ("memory", r"(?:HBM|DRAM|NAND|메모리)"),
         ("defense", r"(?:지상방산|방산|K9|천무)"),
         ("steel_materials", r"(?:철강|스프레드|원재료)"),
@@ -374,6 +384,11 @@ def _concept_families(
     add(SemanticConceptFamily.LOGISTICS_FREIGHT, r"(?:선대|운임|freight)")
     add(SemanticConceptFamily.CLOUD_AI_CAPEX, r"(?:AI.*Cloud|Cloud.*(?:CAPEX|투자)|AI\s*투자)")
     add(SemanticConceptFamily.HPC_EXECUTION, r"(?:HPC|가동.*매출.*현금전환)")
+    add(
+        SemanticConceptFamily.FOUNDRY_ADVANCED_NODE,
+        r"(?:첨단공정|선단공정|파운드리|foundry|해외\s*팹)",
+    )
+    add(SemanticConceptFamily.FOUNDRY_WAFER_ASP, r"(?:wafer\s*ASP)")
     return tuple(dict.fromkeys(concepts))
 
 
@@ -754,6 +769,7 @@ def build_free_analyst_analysis(
     market: str | None = None,
     packet_owner: str | None = None,
     supporting_reference_text: str = "",
+    market_context: object = None,
 ) -> FreeAnalystAnalysis:
     parsed = parse_rendered_message(current_ai_text)
     semantic_owner = _semantic_owner(
@@ -779,8 +795,21 @@ def build_free_analyst_analysis(
     analysis_source = "\n\n".join(
         value for value in (current_ai_text.strip(), supporting_reference) if value
     )
+    industry_source = "\n\n".join(
+        value
+        for value in (
+            _first_body(current_ai_text, "core"),
+            _first_body(current_ai_text, "business"),
+            _first_body(supporting_reference, "core"),
+            _first_body(supporting_reference, "business"),
+            _first_body(supporting_reference, "next_check"),
+        )
+        if value
+    )
     industry_context_owner = (
-        "market_global" if parsed.is_market_digest else _industry_context_owner(analysis_source)
+        "market_global"
+        if parsed.is_market_digest
+        else _industry_context_owner(industry_source or analysis_source)
     )
     catalog = build_evidence_catalog(current_ai_text, owner=semantic_owner)
     if supporting_reference:
@@ -792,6 +821,28 @@ def build_free_analyst_analysis(
                 prefix="supporting",
             ),
         )
+    kr_digest_plan: KrMarketDigestPlan | None = None
+    kr_claim_refs: dict[str, str] = {}
+    if parsed.is_market_digest and str(market or "").lower() == "kr":
+        kr_digest_plan = build_kr_market_digest_plan(
+            market_context,
+            available_text=analysis_source,
+        )
+        if kr_digest_plan.richness.status:
+            context_atoms: list[EvidenceAtom] = []
+            for claim in kr_digest_plan.claims():
+                ref = f"market-context:{claim.priority.value}:{claim.role}"
+                kr_claim_refs[claim.role] = ref
+                context_atoms.append(
+                    EvidenceAtom(
+                        ref=ref,
+                        section_key="market_context",
+                        text=claim.text,
+                        owner=semantic_owner,
+                        concept_families=(),
+                    )
+                )
+            catalog = (*catalog, *context_atoms)
     identifier = _safe_id(benchmark_id)
     core_refs = _refs(catalog, "core")
     business_refs = _refs(catalog, "business")
@@ -824,69 +875,110 @@ def build_free_analyst_analysis(
         and "재고 증가율" in business
         and ("밑돌았습니다" in business or "앞섰습니다" in business)
     )
+    entity_specific_lead = bool(
+        str(market or "").lower() == "us" and specific_source
+    )
 
     if parsed.is_market_digest:
-        current_change = _first_content_sentence(
-            supporting_reference,
-            "important_changes",
-        )
-        if str(market or "").lower() == "kr" and not re.search(
-            r"(?:KOSPI|KOSDAQ|코스피|코스닥)",
-            supporting_reference,
-            re.IGNORECASE,
-        ):
-            current_change = ""
-        if current_change and not _REFERENCE_LAG.search(current_change):
+        if kr_digest_plan is not None and kr_digest_plan.richness.status:
+            assert kr_digest_plan.judgment is not None
+            assert kr_digest_plan.interpretation is not None
+            assert kr_digest_plan.next_check is not None
             top.append(
                 _item(
-                    item_id=f"{identifier}-current-market-change",
-                    text=current_change,
-                    support_type=SupportType.DIRECT_FACT,
-                    evidence_refs=_supporting_refs(catalog, "important_changes"),
-                    materiality_reason="leads with the strongest current market observation",
+                    item_id=f"{identifier}-kr-local-judgment",
+                    text=kr_digest_plan.judgment.text,
+                    support_type=SupportType.DIRECT_RELATION,
+                    evidence_refs=(kr_claim_refs["judgment"],),
+                    materiality_reason="keeps rich current KR structure in the primary judgment",
                     rule_id=None,
                     boundary="",
                     confidence=ConfidenceLabel.HIGH,
                 )
             )
-            market_meaning = _first_content_sentence(
-                supporting_reference,
-                "market_meaning",
-            )
-            if str(market or "").lower() == "kr" and re.search(
-                r"(?:공표\s*대기|PUBLICATION_PENDING)",
-                current_change,
-                re.IGNORECASE,
-            ):
-                market_meaning = ""
-            if market_meaning:
-                thesis.append(
-                    _item(
-                        item_id=f"{identifier}-market-meaning",
-                        text=market_meaning,
-                        support_type=SupportType.DIRECT_FACT,
-                        evidence_refs=_supporting_refs(catalog, "market_meaning"),
-                        materiality_reason="preserves the deterministic market interpretation",
-                        rule_id=None,
-                        boundary="",
-                    )
+            thesis.append(
+                _item(
+                    item_id=f"{identifier}-kr-local-interpretation",
+                    text=kr_digest_plan.interpretation.text,
+                    support_type=SupportType.DIRECT_RELATION,
+                    evidence_refs=(kr_claim_refs["interpretation"],),
+                    materiality_reason="interprets current local flow or structure before global context",
+                    rule_id=None,
+                    boundary="",
+                    confidence=ConfidenceLabel.HIGH,
                 )
+            )
+            next_checks = (
+                NextCheck(
+                    check=kr_digest_plan.next_check.text,
+                    linked_thesis_driver="current KR local market structure",
+                    linked_unknown=kr_digest_plan.next_check.text,
+                    evidence_refs=(kr_claim_refs["next_check"],),
+                ),
+            )
             selected = ("judgment", "evidence", "next_check")
         else:
-            item = _item(
-                item_id=f"{identifier}-temporal-boundary",
-                text="오늘은 방향성 예측보다 새 관측이 없다는 시점 경계를 지키는 것이 판단의 핵심입니다.",
-                support_type=SupportType.BOUNDED_INFERENCE,
-                evidence_refs=_refs(catalog, "core", "risk"),
-                materiality_reason="prevents lagging context from becoming a current signal",
-                rule_id=InferenceRule.TEMPORAL_EVIDENCE_BOUNDARY,
-                boundary="직전 세션 자료는 배경일 뿐 오늘의 신규 관측이 아닙니다.",
-                confidence=ConfidenceLabel.HIGH,
+            current_change = _first_content_sentence(
+                supporting_reference,
+                "important_changes",
             )
-            top.append(item)
-            selected = ("judgment", "risk")
+            if str(market or "").lower() == "kr" and not re.search(
+                r"(?:KOSPI|KOSDAQ|코스피|코스닥)",
+                supporting_reference,
+                re.IGNORECASE,
+            ):
+                current_change = ""
+            if current_change and not _REFERENCE_LAG.search(current_change):
+                top.append(
+                    _item(
+                        item_id=f"{identifier}-current-market-change",
+                        text=current_change,
+                        support_type=SupportType.DIRECT_FACT,
+                        evidence_refs=_supporting_refs(catalog, "important_changes"),
+                        materiality_reason="leads with the strongest current market observation",
+                        rule_id=None,
+                        boundary="",
+                        confidence=ConfidenceLabel.HIGH,
+                    )
+                )
+                market_meaning = _first_content_sentence(
+                    supporting_reference,
+                    "market_meaning",
+                )
+                if str(market or "").lower() == "kr" and re.search(
+                    r"(?:공표\s*대기|PUBLICATION_PENDING)",
+                    current_change,
+                    re.IGNORECASE,
+                ):
+                    market_meaning = ""
+                if market_meaning:
+                    thesis.append(
+                        _item(
+                            item_id=f"{identifier}-market-meaning",
+                            text=market_meaning,
+                            support_type=SupportType.DIRECT_FACT,
+                            evidence_refs=_supporting_refs(catalog, "market_meaning"),
+                            materiality_reason="preserves the deterministic market interpretation",
+                            rule_id=None,
+                            boundary="",
+                        )
+                    )
+                selected = ("judgment", "evidence", "next_check")
+            else:
+                item = _item(
+                    item_id=f"{identifier}-temporal-boundary",
+                    text="오늘은 방향성 예측보다 새 관측이 없다는 시점 경계를 지키는 것이 판단의 핵심입니다.",
+                    support_type=SupportType.BOUNDED_INFERENCE,
+                    evidence_refs=_refs(catalog, "core", "risk"),
+                    materiality_reason="prevents lagging context from becoming a current signal",
+                    rule_id=InferenceRule.TEMPORAL_EVIDENCE_BOUNDARY,
+                    boundary="직전 세션 자료는 배경일 뿐 오늘의 신규 관측이 아닙니다.",
+                    confidence=ConfidenceLabel.HIGH,
+                )
+                top.append(item)
+                selected = ("judgment", "risk")
     else:
-        if inventory_is_auxiliary:
+        if inventory_is_auxiliary and not entity_specific_lead:
             top.append(
                 _item(
                     item_id=f"{identifier}-source-thesis",
@@ -1155,6 +1247,22 @@ def build_free_analyst_analysis(
                         direction=Direction.NEUTRAL,
                     )
                 )
+
+        if entity_specific_lead and category != "source_thesis":
+            category_findings = tuple(top)
+            top = [
+                _item(
+                    item_id=f"{identifier}-source-thesis",
+                    text=specific_source,
+                    support_type=SupportType.DIRECT_FACT,
+                    evidence_refs=_supporting_refs(catalog, "core"),
+                    materiality_reason="leads with the current entity-specific stored thesis",
+                    rule_id=None,
+                    boundary="",
+                    direction=Direction.NEUTRAL,
+                )
+            ]
+            thesis = [*category_findings, *thesis]
 
         primary = top[0]
         if category != "source_thesis":

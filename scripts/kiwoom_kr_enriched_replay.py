@@ -179,6 +179,7 @@ def build_replay(
             market="kr",
             packet_owner=str(packet["packet_id"]),
             is_market_digest=bool(row["is_market_digest"]),
+            market_context=(normalized_context if bool(row["is_market_digest"]) else None),
         )
         candidates.append(candidate)
         safety = candidate.result.safety if candidate.result else {}

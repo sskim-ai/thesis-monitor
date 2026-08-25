@@ -20,6 +20,12 @@ class ValueAddType(StrEnum):
     UNKNOWN_RESOLUTION_FRAMING = "unknown_resolution_framing"
 
 
+class SynthesisSpecificityClass(StrEnum):
+    GENERIC_SHARED = "GENERIC_SHARED"
+    ENTITY_SPECIFIC_SHARED_STRUCTURE = "ENTITY_SPECIFIC_SHARED_STRUCTURE"
+    ENTITY_SPECIFIC_UNIQUE = "ENTITY_SPECIFIC_UNIQUE"
+
+
 @dataclass(frozen=True)
 class MessageSection:
     heading: str
@@ -92,6 +98,197 @@ _GENERIC_SYNTHESIS = re.compile(
     r"현재 근거는 핵심 사업 조건(?:의 존재)?(?:을|를)? 보여도?\s*"
     r"투자 논리의 다음 확인까지 닫지는 못합니다"
 )
+
+_ENTITY_FEATURES: tuple[tuple[str, re.Pattern[str]], ...] = (
+    (
+        "foundry_advanced_node",
+        re.compile(r"(?:첨단공정|선단공정|파운드리|foundry|해외\s*팹)", re.IGNORECASE),
+    ),
+    ("foundry_wafer_asp", re.compile(r"wafer\s*ASP", re.IGNORECASE)),
+    ("memory_hbm", re.compile(r"(?<![A-Z0-9])HBM\w*", re.IGNORECASE)),
+    (
+        "memory_asp",
+        re.compile(
+            r"(?:(?:메모리|DRAM|NAND|HBM).{0,20}\bASP\b|"
+            r"\bASP\b.{0,20}(?:메모리|DRAM|NAND|HBM))",
+            re.IGNORECASE,
+        ),
+    ),
+    ("memory_inventory", re.compile(r"(?:메모리\s*재고|DRAM|NAND)", re.IGNORECASE)),
+    (
+        "hpc_billing_capacity",
+        re.compile(
+            r"(?:billing(?:\s*(?:MW|전력))?|leased(?:\s*(?:MW|customer power))?|"
+            r"energized(?:\s*capacity)?|가동\s*MW|가동·청구|준공·가동|계약\s*IT\s*용량)",
+            re.IGNORECASE,
+        ),
+    ),
+    (
+        "hpc_colocation_economics",
+        re.compile(r"(?:colocation|코로케이션|임대매출|임대마진|lease revenue|NOI)", re.IGNORECASE),
+    ),
+    (
+        "hpc_transition",
+        re.compile(r"(?:AI/HPC\s*데이터센터|HPC\s*(?:사업|계약|실행)|채굴.*HPC)", re.IGNORECASE),
+    ),
+    (
+        "stablecoin_reserve_income",
+        re.compile(r"(?:USDC|reserve\s*(?:income|yield)|준비금\s*수익)", re.IGNORECASE),
+    ),
+    (
+        "stablecoin_non_interest_revenue",
+        re.compile(r"(?:비이자(?:성)?\s*(?:플랫폼|매출|수익)|플랫폼·결제\s*수익)", re.IGNORECASE),
+    ),
+    (
+        "cloud_capex_conversion",
+        re.compile(r"(?:AI·Cloud|Cloud\s*(?:성장|마진)|AI\s*투자.*현금)", re.IGNORECASE),
+    ),
+    (
+        "biotech_cash_burn",
+        re.compile(r"(?:cash\s*burn|현금\s*소진|임상|파이프라인|runway)", re.IGNORECASE),
+    ),
+    (
+        "automotive_margin_investment",
+        re.compile(r"(?:자동차\s*마진|auto\s*margin|차량\s*인도|Robotaxi)", re.IGNORECASE),
+    ),
+    (
+        "defense_delivery_margin",
+        re.compile(r"(?:수주잔고.*인도|K9|천무|지상방산|방산\s*수익성)", re.IGNORECASE),
+    ),
+    (
+        "software_services_economics",
+        re.compile(r"(?:software|consulting|소프트웨어|컨설팅|반복\s*매출)", re.IGNORECASE),
+    ),
+)
+
+
+def entity_specific_features(text: str) -> tuple[str, ...]:
+    return tuple(name for name, pattern in _ENTITY_FEATURES if pattern.search(text))
+
+
+def _claim_bearing_text(text: str) -> str:
+    parsed = parse_rendered_message(text)
+    return "\n".join(
+        section.body
+        for section in parsed.sections
+        if section.key in {"core", "business", "next_check", "watch"}
+    )
+
+
+def entity_specific_synthesis_report(
+    text: str,
+    *,
+    support_text: str,
+    selected_renderer: str | None,
+) -> dict[str, object]:
+    supported = entity_specific_features(_claim_bearing_text(support_text))
+    rendered = entity_specific_features(_claim_bearing_text(text))
+    covered = tuple(feature for feature in supported if feature in rendered)
+    minimal = str(selected_renderer or "") == "MINIMAL_VNEXT"
+    passed = bool(not supported or covered or minimal)
+    return {
+        "contract": "entity-specific-synthesis-v1",
+        "status": "PASS" if passed else "FAIL",
+        "specific_support_available": bool(supported),
+        "supported_discriminators": list(supported),
+        "rendered_discriminators": list(rendered),
+        "covered_discriminators": list(covered),
+        "legitimate_minimal": bool(minimal and not covered),
+        "denial_reason": None if passed else "entity_specific_discriminator_missing",
+    }
+
+
+def _semantic_claim_signature(text: str) -> str:
+    value = _normalize_item(text)
+    for _name, pattern in _ENTITY_FEATURES:
+        value = pattern.sub("<driver>", value)
+    value = re.sub(r"(?:매우\s*높은|높은|투기적)\s*기대", "<expectation>", value)
+    return re.sub(r"\s+", " ", value).strip()
+
+
+def cross_message_synthesis_specificity_report(
+    messages: Iterable[dict[str, object]],
+) -> dict[str, object]:
+    claims: list[dict[str, object]] = []
+    for message in messages:
+        text = str(message.get("text") or "")
+        parsed = parse_rendered_message(text)
+        explicit_supported = message.get("supported_discriminators")
+        supported_features = (
+            {str(item) for item in explicit_supported}
+            if isinstance(explicit_supported, (list, tuple, set))
+            else None
+        )
+        for section in parsed.sections:
+            if section.key not in {"core", "business"}:
+                continue
+            for sentence in _sentences(section.body):
+                features = entity_specific_features(sentence)
+                covered_features = tuple(
+                    feature
+                    for feature in features
+                    if supported_features is None or feature in supported_features
+                )
+                claims.append(
+                    {
+                        "message_key": str(message.get("message_key") or ""),
+                        "industry_owner": str(message.get("industry_owner") or "general"),
+                        "sentence": sentence,
+                        "signature": _semantic_claim_signature(sentence),
+                        "features": list(features),
+                        "covered_features": list(covered_features),
+                        "specific_support_available": bool(
+                            message.get("specific_support_available")
+                        ),
+                    }
+                )
+    by_signature: dict[str, list[dict[str, object]]] = {}
+    for claim in claims:
+        by_signature.setdefault(str(claim["signature"]), []).append(claim)
+
+    violations: set[str] = set()
+    same_industry_overlap = 0
+    generic_shared = 0
+    shared_structure = 0
+    unique = 0
+    for signature_claims in by_signature.values():
+        keys = {str(item["message_key"]) for item in signature_claims}
+        industries = {str(item["industry_owner"]) for item in signature_claims}
+        shared = len(keys) > 1
+        has_supported_features = all(
+            bool(item["covered_features"]) for item in signature_claims
+        )
+        if shared and has_supported_features and len(industries) == 1:
+            classification = SynthesisSpecificityClass.ENTITY_SPECIFIC_SHARED_STRUCTURE
+            shared_structure += len(signature_claims)
+            same_industry_overlap += 1
+        elif shared and not has_supported_features:
+            classification = SynthesisSpecificityClass.GENERIC_SHARED
+            generic_shared += len(signature_claims)
+            if len(industries) > 1:
+                violations.update(
+                    str(item["message_key"])
+                    for item in signature_claims
+                    if item["specific_support_available"]
+                    and not item["covered_features"]
+                )
+        else:
+            classification = SynthesisSpecificityClass.ENTITY_SPECIFIC_UNIQUE
+            unique += len(signature_claims)
+        for claim in signature_claims:
+            claim["classification"] = classification.value
+    return {
+        "contract": "cross-message-synthesis-specificity-v1",
+        "status": "PASS" if not violations else "FAIL",
+        "claim_bearing_synthesis_lines": len(claims),
+        "generic_shared_lines": generic_shared,
+        "entity_specific_shared_structure_lines": shared_structure,
+        "entity_specific_unique_lines": unique,
+        "cross_industry_generic_repetition_count": len(violations),
+        "same_industry_acceptable_overlap_count": same_industry_overlap,
+        "rejected_message_keys": sorted(violations),
+        "claims": claims,
+    }
 
 
 def _section_key(heading: str) -> str:
