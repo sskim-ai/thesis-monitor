@@ -4,7 +4,7 @@ import json
 import os
 from collections import Counter
 from dataclasses import asdict, dataclass
-from datetime import date, datetime, time
+from datetime import date, datetime
 from pathlib import Path
 from typing import Literal
 from zoneinfo import ZoneInfo
@@ -27,6 +27,7 @@ from app.services.market_cross_section_service import (
     MarketScopedBreadth,
     MarketSectorFact,
 )
+from app.services.market_session import korea_market_session
 from app.services.structured_market_context_service import (
     StructuredMarketContextEnvelope,
     load_structured_market_context,
@@ -389,7 +390,8 @@ class KiwoomKrMarketContextService:
         code: str,
     ) -> None:
         observed_kst = observed_at.astimezone(KST)
-        if observed_kst.date() != session_date or observed_kst.time() < time(15, 30):
+        session_state = korea_market_session(observed_kst)
+        if session_state.latest_completed_regular_session_date != session_date:
             raise ValueError("current-only Kiwoom TR is outside the completed target session")
         history_rows = history.get("inds_cur_prc_daly_rept")
         matching_history = [

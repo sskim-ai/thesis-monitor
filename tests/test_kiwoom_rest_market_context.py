@@ -325,6 +325,17 @@ def test_session_identity_rejects_current_only_data_on_later_date() -> None:
         )
 
 
+def test_session_identity_accepts_latest_completed_session_after_midnight() -> None:
+    collection = asyncio.run(
+        _service([]).collect(
+            session_date=SESSION_DATE,
+            observed_at=datetime(2026, 8, 26, 0, 15, tzinfo=KST),
+        )
+    )
+
+    assert collection.cross_section.session_date == SESSION_DATE
+
+
 def test_client_error_does_not_expose_access_token(caplog: pytest.LogCaptureFixture) -> None:
     def handler(request: httpx.Request) -> httpx.Response:
         if request.url.path == "/oauth2/token":
