@@ -29,6 +29,14 @@ class Settings(BaseSettings):
     kiwoom_gateway_url: str | None = None
     kiwoom_gateway_api_key: str | None = None
     kiwoom_gateway_timeout_seconds: float = 15.0
+    kiwoom_app_key: str | None = None
+    kiwoom_secret_key: str | None = None
+    kiwoom_rest_base_url: str = "https://api.kiwoom.com"
+    kiwoom_rest_timeout_seconds: float = 30.0
+    kiwoom_rest_request_interval_seconds: float = 0.2
+    kiwoom_rest_max_retries: int = 3
+    kiwoom_rest_max_pages: int = 50
+    kiwoom_kr_market_context_enabled: bool = False
     alpha_vantage_cache_hours: int = 24
     alpha_vantage_request_budget: int = 30
     alpha_vantage_consensus_discrepancy_pct: float = 20.0

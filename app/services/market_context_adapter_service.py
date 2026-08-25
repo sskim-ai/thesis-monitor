@@ -255,7 +255,10 @@ class MarketContextAdapter:
             cross_section=cross_section,
         )
         sectors = self.get_sector_context(eligible_facts, cross_section=cross_section)
-        size_context = self.get_size_context(eligible_facts)
+        size_context = self.get_size_context(
+            eligible_facts,
+            cross_section=cross_section,
+        )
         market_flows = self.get_market_flow_context(
             eligible_facts,
             cross_section=cross_section,
@@ -351,8 +354,27 @@ class MarketContextAdapter:
     def get_size_context(
         self,
         fact_catalog: list[dict[str, object]],
+        *,
+        cross_section: MarketCrossSection | None = None,
     ) -> list[AdapterSizeContext]:
         values: list[AdapterSizeContext] = []
+        if self.market == "KR" and cross_section is not None:
+            values.extend(
+                AdapterSizeContext(
+                    name=item.sector,
+                    return_pct=item.return_pct,
+                    basis="official_size_index",
+                    as_of_date=cross_section.session_date,
+                    source_ref=(
+                        item.source_ref
+                        or f"cross-section:size:{item.market_scope}:{item.sector_code}"
+                    ),
+                )
+                for item in cross_section.sectors
+                if item.market_scope == "KOSPI"
+                and item.sector_code in {"002", "003", "004"}
+            )
+            return values
         if self.market != "US":
             return values
         for fact in _facts(fact_catalog, "market_style"):
@@ -391,7 +413,7 @@ class MarketContextAdapter:
                     return_pct=item.return_pct,
                     basis="official_or_provider_index",
                     as_of_date=cross_section.session_date,
-                    source_ref=f"cross-section:{item.symbol}",
+                    source_ref=item.source_ref or f"cross-section:{item.symbol}",
                 )
                 for item in cross_section.indices
             )
@@ -419,7 +441,10 @@ class MarketContextAdapter:
                     source_ref=str(fact.get("fact_id") or ""),
                 )
             )
-        return list({(item.symbol, item.source_ref): item for item in values}.values())
+        unique: dict[str, AdapterIndex] = {}
+        for item in values:
+            unique.setdefault(item.symbol, item)
+        return list(unique.values())
 
     def get_breadth_context(
         self,
@@ -512,9 +537,16 @@ class MarketContextAdapter:
                     name=item.sector,
                     return_pct=item.return_pct,
                     basis=item.metric_role,
-                    source_ref=f"cross-section:sector:{item.taxonomy}:{item.sector}",
+                    source_ref=(
+                        item.source_ref
+                        or f"cross-section:sector:{item.taxonomy}:{item.sector}"
+                    ),
                 )
                 for item in cross_section.sectors
+                if not (
+                    item.market_scope == "KOSPI"
+                    and item.sector_code in {"002", "003", "004"}
+                )
             )
         if self.market == "US":
             for fact in _facts(fact_catalog, "market_sector"):
@@ -547,7 +579,10 @@ class MarketContextAdapter:
                 unit=item.currency,
                 scope=item.market,
                 as_of_date=cross_section.session_date,
-                source_ref=f"cross-section:flow:{item.actor}",
+                source_ref=(
+                    item.source_ref
+                    or f"cross-section:flow:{item.market}:{item.actor}"
+                ),
             )
             for item in raw
         ]
@@ -565,12 +600,19 @@ class MarketContextAdapter:
                     participant=actor,
                     net_flow=amount,
                     unit=currency,
-                    scope="KR_MARKET",
+                    scope=str(fields.get("market_scope") or "KR_MARKET"),
                     as_of_date=_fact_date(fact),
-                    source_ref=str(fact.get("fact_id") or ""),
+                    source_ref=str(
+                        fields.get("source_ref") or fact.get("fact_id") or ""
+                    ),
                 )
             )
-        return values
+        return list(
+            {
+                (item.participant, item.scope, item.source_ref): item
+                for item in values
+            }.values()
+        )
 
     def get_deterministic_relations(
         self,
@@ -638,6 +680,31 @@ class MarketContextAdapter:
         if cross_section is None:
             return []
         value = cross_section.concentration
+        flow_relations = value.get("relations")
+        if isinstance(flow_relations, list):
+            relations: list[DeterministicMarketRelation] = []
+            for raw in flow_relations:
+                if not isinstance(raw, dict):
+                    continue
+                result = _number(raw.get("ratio"))
+                input_refs = raw.get("input_refs")
+                if result is None or not isinstance(input_refs, list) or not input_refs:
+                    continue
+                relations.append(
+                    DeterministicMarketRelation(
+                        metric="market_flow_same_direction_top_n_concentration",
+                        formula=str(raw.get("formula") or ""),
+                        input_refs=[str(item) for item in input_refs],
+                        result=result,
+                        unit="ratio",
+                        scope=f"{raw.get('market')}:{raw.get('actor')}",
+                        as_of_date=cross_section.session_date,
+                        limitations=[
+                            "Concentration is descriptive and does not establish causality."
+                        ],
+                    )
+                )
+            return relations
         result = _number(value.get("concentration_gap_pct"))
         proxy = _number(value.get("proxy_return_pct"))
         equal_weight = _number(value.get("equal_weight_return_pct"))

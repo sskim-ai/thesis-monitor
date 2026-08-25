@@ -1,0 +1,1010 @@
+{
+  "archive_path": "data/market-context/kiwoom/raw/2026-08-25/44665b1b28dc8998066f12a58e01e5b29e6a812cfd208f9658617aba2b377818.json",
+  "audit": {
+    "blocked_concentration_markets": {
+      "KOSPI": [
+        "UNRESOLVED_BASIS_OR_TAXONOMY"
+      ]
+    },
+    "concentration": [
+      {
+        "actor": "foreign",
+        "denominator_krw": 321123000000,
+        "direction": "net_buy",
+        "formula": "top_n_same_direction_abs / all_same_direction_abs",
+        "input_refs": [
+          "kiwoom:ka10066:KOSDAQ:all-pages:5b8028006c495a53804fa457c6e752ba5b5b03912be320b75f9922f98a48ec46",
+          "kiwoom:ka10066:KOSDAQ:036930:foreign",
+          "kiwoom:ka10066:KOSDAQ:403870:foreign",
+          "kiwoom:ka10066:KOSDAQ:222800:foreign",
+          "kiwoom:ka10066:KOSDAQ:240810:foreign",
+          "kiwoom:ka10066:KOSDAQ:080220:foreign"
+        ],
+        "market": "KOSDAQ",
+        "numerator_krw": 68697000000,
+        "ratio": 0.2139273736231911,
+        "top_n": 5,
+        "unit": "KRW"
+      },
+      {
+        "actor": "institution",
+        "denominator_krw": 183465000000,
+        "direction": "net_buy",
+        "formula": "top_n_same_direction_abs / all_same_direction_abs",
+        "input_refs": [
+          "kiwoom:ka10066:KOSDAQ:all-pages:5b8028006c495a53804fa457c6e752ba5b5b03912be320b75f9922f98a48ec46",
+          "kiwoom:ka10066:KOSDAQ:403870:institution",
+          "kiwoom:ka10066:KOSDAQ:222800:institution",
+          "kiwoom:ka10066:KOSDAQ:067310:institution",
+          "kiwoom:ka10066:KOSDAQ:356860:institution",
+          "kiwoom:ka10066:KOSDAQ:257720:institution"
+        ],
+        "market": "KOSDAQ",
+        "numerator_krw": 69384000000,
+        "ratio": 0.37818657509606735,
+        "top_n": 5,
+        "unit": "KRW"
+      },
+      {
+        "actor": "retail",
+        "denominator_krw": 391853000000,
+        "direction": "net_sell",
+        "formula": "top_n_same_direction_abs / all_same_direction_abs",
+        "input_refs": [
+          "kiwoom:ka10066:KOSDAQ:all-pages:5b8028006c495a53804fa457c6e752ba5b5b03912be320b75f9922f98a48ec46",
+          "kiwoom:ka10066:KOSDAQ:403870:retail",
+          "kiwoom:ka10066:KOSDAQ:222800:retail",
+          "kiwoom:ka10066:KOSDAQ:036930:retail",
+          "kiwoom:ka10066:KOSDAQ:257720:retail",
+          "kiwoom:ka10066:KOSDAQ:067310:retail"
+        ],
+        "market": "KOSDAQ",
+        "numerator_krw": 120415000000,
+        "ratio": 0.3072963585834484,
+        "top_n": 5,
+        "unit": "KRW"
+      }
+    ],
+    "contract_version": "kiwoom-kr-market-context-v1",
+    "observed_at": "2026-08-25T23:15:38.856491+09:00",
+    "pagination": {
+      "KOSDAQ": {
+        "combined_sha256": "5b8028006c495a53804fa457c6e752ba5b5b03912be320b75f9922f98a48ec46",
+        "complete": true,
+        "duplicate_identities": [],
+        "pages": 19,
+        "rows": 1824
+      },
+      "KOSPI": {
+        "combined_sha256": "bc30ece8e04d2162d4343f53fae3e0e98e9818d2fe6becb5ab5f50653ab04fe2",
+        "complete": true,
+        "duplicate_identities": [],
+        "pages": 14,
+        "rows": 1316
+      }
+    },
+    "provider_calls": {
+      "failures": 0,
+      "requests": 42,
+      "retries": 0,
+      "successes": 42
+    },
+    "reconciliation": [
+      {
+        "actor": "foreign",
+        "aggregate_amount_krw": -4000100000000,
+        "aggregate_ref": "kiwoom:ka10051:KOSPI:foreign:2026-08-25",
+        "classification": "UNRESOLVED_BASIS_OR_TAXONOMY",
+        "difference_krw": 174000000,
+        "market": "KOSPI",
+        "paginated_amount_krw": -4000274000000,
+        "paginated_ref": "kiwoom:ka10066:KOSPI:all-pages:bc30ece8e04d2162d4343f53fae3e0e98e9818d2fe6becb5ab5f50653ab04fe2"
+      },
+      {
+        "actor": "institution",
+        "aggregate_amount_krw": 1252100000000,
+        "aggregate_ref": "kiwoom:ka10051:KOSPI:institution:2026-08-25",
+        "classification": "UNRESOLVED_BASIS_OR_TAXONOMY",
+        "difference_krw": -3745000000,
+        "market": "KOSPI",
+        "paginated_amount_krw": 1255845000000,
+        "paginated_ref": "kiwoom:ka10066:KOSPI:all-pages:bc30ece8e04d2162d4343f53fae3e0e98e9818d2fe6becb5ab5f50653ab04fe2"
+      },
+      {
+        "actor": "retail",
+        "aggregate_amount_krw": 1158500000000,
+        "aggregate_ref": "kiwoom:ka10051:KOSPI:retail:2026-08-25",
+        "classification": "UNRESOLVED_BASIS_OR_TAXONOMY",
+        "difference_krw": 3495000000,
+        "market": "KOSPI",
+        "paginated_amount_krw": 1155005000000,
+        "paginated_ref": "kiwoom:ka10066:KOSPI:all-pages:bc30ece8e04d2162d4343f53fae3e0e98e9818d2fe6becb5ab5f50653ab04fe2"
+      },
+      {
+        "actor": "foreign",
+        "aggregate_amount_krw": 136100000000,
+        "aggregate_ref": "kiwoom:ka10051:KOSDAQ:foreign:2026-08-25",
+        "classification": "WITHIN_AGGREGATE_RESOLUTION",
+        "difference_krw": 2000000,
+        "market": "KOSDAQ",
+        "paginated_amount_krw": 136098000000,
+        "paginated_ref": "kiwoom:ka10066:KOSDAQ:all-pages:5b8028006c495a53804fa457c6e752ba5b5b03912be320b75f9922f98a48ec46"
+      },
+      {
+        "actor": "institution",
+        "aggregate_amount_krw": 21100000000,
+        "aggregate_ref": "kiwoom:ka10051:KOSDAQ:institution:2026-08-25",
+        "classification": "WITHIN_AGGREGATE_RESOLUTION",
+        "difference_krw": -58000000,
+        "market": "KOSDAQ",
+        "paginated_amount_krw": 21158000000,
+        "paginated_ref": "kiwoom:ka10066:KOSDAQ:all-pages:5b8028006c495a53804fa457c6e752ba5b5b03912be320b75f9922f98a48ec46"
+      },
+      {
+        "actor": "retail",
+        "aggregate_amount_krw": -147200000000,
+        "aggregate_ref": "kiwoom:ka10051:KOSDAQ:retail:2026-08-25",
+        "classification": "WITHIN_AGGREGATE_RESOLUTION",
+        "difference_krw": 23000000,
+        "market": "KOSDAQ",
+        "paginated_amount_krw": -147223000000,
+        "paginated_ref": "kiwoom:ka10066:KOSDAQ:all-pages:5b8028006c495a53804fa457c6e752ba5b5b03912be320b75f9922f98a48ec46"
+      }
+    ],
+    "session_date": "2026-08-25",
+    "session_identity": {
+      "KOSDAQ": "ka20001_ka20003_matched_ka20009_target_date",
+      "KOSPI": "ka20001_ka20003_matched_ka20009_target_date"
+    },
+    "unit_contract": {
+      "ka10051": {
+        "request_amount_mode": "0",
+        "scale_krw": 100000000,
+        "source_unit": "100M_KRW"
+      },
+      "ka10066": {
+        "request_amount_mode": "1",
+        "scale_krw": 1000000,
+        "source_unit": "1M_KRW"
+      },
+      "verification": "2026-08-25_cross_tr_empirical_reconciliation"
+    },
+    "warnings": [
+      "concentration_blocked:KOSPI:UNRESOLVED_BASIS_OR_TAXONOMY"
+    ]
+  },
+  "bottom_sectors": [
+    {
+      "advance_count": 81,
+      "advance_ratio": 0.6090225563909775,
+      "decline_count": 52,
+      "limit_down_count": 0,
+      "limit_up_count": 2,
+      "listed_count": 144,
+      "market_scope": "KOSDAQ",
+      "metric_role": "actual_sector_breadth",
+      "relative_return_pct": null,
+      "return_pct": -1.52,
+      "sector": "일반서비스",
+      "sector_code": "103",
+      "source_ref": "kiwoom:ka20003:KOSDAQ:103:2026-08-25",
+      "taxonomy": "kiwoom-sector-index-v1",
+      "unchanged_count": 0
+    },
+    {
+      "advance_count": 0,
+      "advance_ratio": null,
+      "decline_count": 0,
+      "limit_down_count": 0,
+      "limit_up_count": 0,
+      "listed_count": 0,
+      "market_scope": "KOSDAQ",
+      "metric_role": "actual_sector_breadth",
+      "relative_return_pct": null,
+      "return_pct": -1.45,
+      "sector": "F-KOSDAQ150인버스",
+      "sector_code": "165",
+      "source_ref": "kiwoom:ka20003:KOSDAQ:165:2026-08-25",
+      "taxonomy": "kiwoom-sector-index-v1",
+      "unchanged_count": 0
+    },
+    {
+      "advance_count": 3,
+      "advance_ratio": 0.75,
+      "decline_count": 1,
+      "limit_down_count": 0,
+      "limit_up_count": 0,
+      "listed_count": 5,
+      "market_scope": "KOSPI",
+      "metric_role": "actual_sector_breadth",
+      "relative_return_pct": null,
+      "return_pct": -1.4,
+      "sector": "통신",
+      "sector_code": "020",
+      "source_ref": "kiwoom:ka20003:KOSPI:020:2026-08-25",
+      "taxonomy": "kiwoom-sector-index-v1",
+      "unchanged_count": 0
+    },
+    {
+      "advance_count": 24,
+      "advance_ratio": 0.47058823529411764,
+      "decline_count": 27,
+      "limit_down_count": 0,
+      "limit_up_count": 0,
+      "listed_count": 56,
+      "market_scope": "KOSPI",
+      "metric_role": "actual_sector_breadth",
+      "relative_return_pct": null,
+      "return_pct": -0.89,
+      "sector": "제약",
+      "sector_code": "009",
+      "source_ref": "kiwoom:ka20003:KOSPI:009:2026-08-25",
+      "taxonomy": "kiwoom-sector-index-v1",
+      "unchanged_count": 4
+    },
+    {
+      "advance_count": 0,
+      "advance_ratio": null,
+      "decline_count": 0,
+      "limit_down_count": 0,
+      "limit_up_count": 0,
+      "listed_count": 0,
+      "market_scope": "KOSPI",
+      "metric_role": "actual_sector_breadth",
+      "relative_return_pct": null,
+      "return_pct": -0.83,
+      "sector": "변동성지수",
+      "sector_code": "603",
+      "source_ref": "kiwoom:ka20003:KOSPI:603:2026-08-25",
+      "taxonomy": "kiwoom-sector-index-v1",
+      "unchanged_count": 0
+    },
+    {
+      "advance_count": 67,
+      "advance_ratio": 0.8072289156626506,
+      "decline_count": 16,
+      "limit_down_count": 0,
+      "limit_up_count": 0,
+      "listed_count": 106,
+      "market_scope": "KOSDAQ",
+      "metric_role": "actual_sector_breadth",
+      "relative_return_pct": null,
+      "return_pct": -0.76,
+      "sector": "금융",
+      "sector_code": "111",
+      "source_ref": "kiwoom:ka20003:KOSDAQ:111:2026-08-25",
+      "taxonomy": "kiwoom-sector-index-v1",
+      "unchanged_count": 17
+    },
+    {
+      "advance_count": 8,
+      "advance_ratio": 0.6666666666666666,
+      "decline_count": 4,
+      "limit_down_count": 0,
+      "limit_up_count": 0,
+      "listed_count": 13,
+      "market_scope": "KOSPI",
+      "metric_role": "actual_sector_breadth",
+      "relative_return_pct": null,
+      "return_pct": -0.66,
+      "sector": "오락/문화",
+      "sector_code": "030",
+      "source_ref": "kiwoom:ka20003:KOSPI:030:2026-08-25",
+      "taxonomy": "kiwoom-sector-index-v1",
+      "unchanged_count": 0
+    },
+    {
+      "advance_count": 13,
+      "advance_ratio": 0.52,
+      "decline_count": 12,
+      "limit_down_count": 0,
+      "limit_up_count": 0,
+      "listed_count": 25,
+      "market_scope": "KOSPI",
+      "metric_role": "actual_sector_breadth",
+      "relative_return_pct": null,
+      "return_pct": -0.54,
+      "sector": "IT 서비스",
+      "sector_code": "029",
+      "source_ref": "kiwoom:ka20003:KOSPI:029:2026-08-25",
+      "taxonomy": "kiwoom-sector-index-v1",
+      "unchanged_count": 0
+    }
+  ],
+  "breadth": {
+    "ad_ratio": 2.648843930635838,
+    "advance_count": 1833,
+    "advance_ratio": 0.7259405940594059,
+    "decline_count": 692,
+    "eligible_count": 2633,
+    "equal_weight_return_pct": null,
+    "limit_down_count": 1,
+    "limit_up_count": 6,
+    "listed_count": 2768,
+    "median_return_pct": null,
+    "negative_return_pct": 26.28180782377516,
+    "positive_return_pct": 69.61640714014432,
+    "total_trading_value": null,
+    "total_trading_volume": null,
+    "unchanged_count": 108
+  },
+  "breadth_by_scope": [
+    {
+      "breadth": {
+        "ad_ratio": 2.8628318584070795,
+        "advance_count": 647,
+        "advance_ratio": 0.7411225658648339,
+        "decline_count": 226,
+        "eligible_count": 907,
+        "equal_weight_return_pct": null,
+        "limit_down_count": 1,
+        "limit_up_count": 2,
+        "listed_count": 944,
+        "median_return_pct": null,
+        "negative_return_pct": 24.91730981256891,
+        "positive_return_pct": 71.33406835722161,
+        "total_trading_value": null,
+        "total_trading_volume": null,
+        "unchanged_count": 34
+      },
+      "scope": "KOSPI"
+    },
+    {
+      "breadth": {
+        "ad_ratio": 2.5450643776824036,
+        "advance_count": 1186,
+        "advance_ratio": 0.7179176755447942,
+        "decline_count": 466,
+        "eligible_count": 1726,
+        "equal_weight_return_pct": null,
+        "limit_down_count": 0,
+        "limit_up_count": 4,
+        "listed_count": 1824,
+        "median_return_pct": null,
+        "negative_return_pct": 26.998841251448436,
+        "positive_return_pct": 68.71378910776362,
+        "total_trading_value": null,
+        "total_trading_volume": null,
+        "unchanged_count": 74
+      },
+      "scope": "KOSDAQ"
+    }
+  ],
+  "contract_version": "kiwoom-kr-market-context-evidence-v1",
+  "indices": [
+    {
+      "close": 6742.74,
+      "label": "종합(KOSPI)",
+      "return_pct": 0.68,
+      "source_ref": "kiwoom:ka20001:KOSPI:2026-08-25",
+      "symbol": "KOSPI",
+      "trading_value": null,
+      "volume": null
+    },
+    {
+      "close": 827.15,
+      "label": "종합(KOSDAQ)",
+      "return_pct": 1.7,
+      "source_ref": "kiwoom:ka20001:KOSDAQ:2026-08-25",
+      "symbol": "KOSDAQ",
+      "trading_value": null,
+      "volume": null
+    }
+  ],
+  "market_flows": [
+    {
+      "actor": "foreign",
+      "currency": "KRW",
+      "exchange_basis": "KRX_NXT_INTEGRATED",
+      "market": "KOSPI",
+      "net_buy_amount": -4000100000000.0,
+      "source_ref": "kiwoom:ka10051:KOSPI:foreign:2026-08-25",
+      "source_unit": "100M_KRW",
+      "source_unit_scale_krw": 100000000
+    },
+    {
+      "actor": "institution",
+      "currency": "KRW",
+      "exchange_basis": "KRX_NXT_INTEGRATED",
+      "market": "KOSPI",
+      "net_buy_amount": 1252100000000.0,
+      "source_ref": "kiwoom:ka10051:KOSPI:institution:2026-08-25",
+      "source_unit": "100M_KRW",
+      "source_unit_scale_krw": 100000000
+    },
+    {
+      "actor": "retail",
+      "currency": "KRW",
+      "exchange_basis": "KRX_NXT_INTEGRATED",
+      "market": "KOSPI",
+      "net_buy_amount": 1158500000000.0,
+      "source_ref": "kiwoom:ka10051:KOSPI:retail:2026-08-25",
+      "source_unit": "100M_KRW",
+      "source_unit_scale_krw": 100000000
+    },
+    {
+      "actor": "foreign",
+      "currency": "KRW",
+      "exchange_basis": "KRX_NXT_INTEGRATED",
+      "market": "KOSDAQ",
+      "net_buy_amount": 136100000000.0,
+      "source_ref": "kiwoom:ka10051:KOSDAQ:foreign:2026-08-25",
+      "source_unit": "100M_KRW",
+      "source_unit_scale_krw": 100000000
+    },
+    {
+      "actor": "institution",
+      "currency": "KRW",
+      "exchange_basis": "KRX_NXT_INTEGRATED",
+      "market": "KOSDAQ",
+      "net_buy_amount": 21100000000.0,
+      "source_ref": "kiwoom:ka10051:KOSDAQ:institution:2026-08-25",
+      "source_unit": "100M_KRW",
+      "source_unit_scale_krw": 100000000
+    },
+    {
+      "actor": "retail",
+      "currency": "KRW",
+      "exchange_basis": "KRX_NXT_INTEGRATED",
+      "market": "KOSDAQ",
+      "net_buy_amount": -147200000000.0,
+      "source_ref": "kiwoom:ka10051:KOSDAQ:retail:2026-08-25",
+      "source_unit": "100M_KRW",
+      "source_unit_scale_krw": 100000000
+    }
+  ],
+  "observed_at": "2026-08-25T23:15:38.856491+09:00",
+  "quality": {
+    "calculation_version": "market-breadth-v1",
+    "coverage": "full",
+    "eligible_count": 2633,
+    "excluded_count": 135,
+    "exclusion_reason_counts": {},
+    "freshness": "fresh",
+    "provider": "KIWOOM_REST",
+    "provider_role": "official_primary_supplemental",
+    "raw_count": 2768,
+    "trading_value_semantics": "unknown",
+    "universe_version": "kiwoom-integrated-market-v1",
+    "volume_semantics": "unknown",
+    "warnings": [
+      "concentration_blocked:KOSPI:UNRESOLVED_BASIS_OR_TAXONOMY"
+    ]
+  },
+  "sector_count": 63,
+  "session_date": "2026-08-25",
+  "size_context": [
+    {
+      "advance_count": 70,
+      "advance_ratio": 0.7216494845360825,
+      "decline_count": 27,
+      "limit_down_count": 0,
+      "limit_up_count": 0,
+      "listed_count": 100,
+      "market_scope": "KOSPI",
+      "metric_role": "actual_sector_breadth",
+      "relative_return_pct": null,
+      "return_pct": 0.62,
+      "sector": "대형주",
+      "sector_code": "002",
+      "source_ref": "kiwoom:ka20003:KOSPI:002:2026-08-25",
+      "taxonomy": "kiwoom-sector-index-v1",
+      "unchanged_count": 3
+    },
+    {
+      "advance_count": 128,
+      "advance_ratio": 0.6772486772486772,
+      "decline_count": 61,
+      "limit_down_count": 0,
+      "limit_up_count": 0,
+      "listed_count": 198,
+      "market_scope": "KOSPI",
+      "metric_role": "actual_sector_breadth",
+      "relative_return_pct": null,
+      "return_pct": 1.37,
+      "sector": "중형주",
+      "sector_code": "003",
+      "source_ref": "kiwoom:ka20003:KOSPI:003:2026-08-25",
+      "taxonomy": "kiwoom-sector-index-v1",
+      "unchanged_count": 6
+    },
+    {
+      "advance_count": 380,
+      "advance_ratio": 0.7900207900207901,
+      "decline_count": 101,
+      "limit_down_count": 0,
+      "limit_up_count": 2,
+      "listed_count": 529,
+      "market_scope": "KOSPI",
+      "metric_role": "actual_sector_breadth",
+      "relative_return_pct": null,
+      "return_pct": 1.54,
+      "sector": "소형주",
+      "sector_code": "004",
+      "source_ref": "kiwoom:ka20003:KOSPI:004:2026-08-25",
+      "taxonomy": "kiwoom-sector-index-v1",
+      "unchanged_count": 17
+    }
+  ],
+  "source_payload_sha256": "44665b1b28dc8998066f12a58e01e5b29e6a812cfd208f9658617aba2b377818",
+  "top_sectors": [
+    {
+      "advance_count": 28,
+      "advance_ratio": 0.875,
+      "decline_count": 4,
+      "limit_down_count": 0,
+      "limit_up_count": 0,
+      "listed_count": 37,
+      "market_scope": "KOSPI",
+      "metric_role": "actual_sector_breadth",
+      "relative_return_pct": null,
+      "return_pct": 8.73,
+      "sector": "건설",
+      "sector_code": "018",
+      "source_ref": "kiwoom:ka20003:KOSPI:018:2026-08-25",
+      "taxonomy": "kiwoom-sector-index-v1",
+      "unchanged_count": 0
+    },
+    {
+      "advance_count": 25,
+      "advance_ratio": 0.9259259259259259,
+      "decline_count": 2,
+      "limit_down_count": 0,
+      "limit_up_count": 0,
+      "listed_count": 33,
+      "market_scope": "KOSPI",
+      "metric_role": "actual_sector_breadth",
+      "relative_return_pct": null,
+      "return_pct": 6.74,
+      "sector": "기계/장비",
+      "sector_code": "012",
+      "source_ref": "kiwoom:ka20003:KOSPI:012:2026-08-25",
+      "taxonomy": "kiwoom-sector-index-v1",
+      "unchanged_count": 2
+    },
+    {
+      "advance_count": 147,
+      "advance_ratio": 0.8352272727272727,
+      "decline_count": 29,
+      "limit_down_count": 0,
+      "limit_up_count": 0,
+      "listed_count": 183,
+      "market_scope": "KOSDAQ",
+      "metric_role": "actual_sector_breadth",
+      "relative_return_pct": null,
+      "return_pct": 4.64,
+      "sector": "기계/장비",
+      "sector_code": "123",
+      "source_ref": "kiwoom:ka20003:KOSDAQ:123:2026-08-25",
+      "taxonomy": "kiwoom-sector-index-v1",
+      "unchanged_count": 3
+    },
+    {
+      "advance_count": 11,
+      "advance_ratio": 0.7857142857142857,
+      "decline_count": 3,
+      "limit_down_count": 0,
+      "limit_up_count": 0,
+      "listed_count": 15,
+      "market_scope": "KOSDAQ",
+      "metric_role": "actual_sector_breadth",
+      "relative_return_pct": null,
+      "return_pct": 4.34,
+      "sector": "비금속",
+      "sector_code": "121",
+      "source_ref": "kiwoom:ka20003:KOSDAQ:121:2026-08-25",
+      "taxonomy": "kiwoom-sector-index-v1",
+      "unchanged_count": 0
+    },
+    {
+      "advance_count": 55,
+      "advance_ratio": 0.7746478873239436,
+      "decline_count": 16,
+      "limit_down_count": 0,
+      "limit_up_count": 0,
+      "listed_count": 76,
+      "market_scope": "KOSDAQ",
+      "metric_role": "actual_sector_breadth",
+      "relative_return_pct": null,
+      "return_pct": 3.88,
+      "sector": "금속",
+      "sector_code": "122",
+      "source_ref": "kiwoom:ka20003:KOSDAQ:122:2026-08-25",
+      "taxonomy": "kiwoom-sector-index-v1",
+      "unchanged_count": 2
+    },
+    {
+      "advance_count": 65,
+      "advance_ratio": 0.7386363636363636,
+      "decline_count": 23,
+      "limit_down_count": 0,
+      "limit_up_count": 0,
+      "listed_count": 101,
+      "market_scope": "KOSDAQ",
+      "metric_role": "actual_sector_breadth",
+      "relative_return_pct": null,
+      "return_pct": 3.63,
+      "sector": "유통",
+      "sector_code": "108",
+      "source_ref": "kiwoom:ka20003:KOSDAQ:108:2026-08-25",
+      "taxonomy": "kiwoom-sector-index-v1",
+      "unchanged_count": 7
+    },
+    {
+      "advance_count": 10,
+      "advance_ratio": 1.0,
+      "decline_count": 0,
+      "limit_down_count": 0,
+      "limit_up_count": 0,
+      "listed_count": 10,
+      "market_scope": "KOSPI",
+      "metric_role": "actual_sector_breadth",
+      "relative_return_pct": null,
+      "return_pct": 3.26,
+      "sector": "전기/가스",
+      "sector_code": "017",
+      "source_ref": "kiwoom:ka20003:KOSPI:017:2026-08-25",
+      "taxonomy": "kiwoom-sector-index-v1",
+      "unchanged_count": 0
+    },
+    {
+      "advance_count": 14,
+      "advance_ratio": 0.8235294117647058,
+      "decline_count": 3,
+      "limit_down_count": 0,
+      "limit_up_count": 1,
+      "listed_count": 19,
+      "market_scope": "KOSPI",
+      "metric_role": "actual_sector_breadth",
+      "relative_return_pct": null,
+      "return_pct": 3.26,
+      "sector": "종이/목재",
+      "sector_code": "007",
+      "source_ref": "kiwoom:ka20003:KOSPI:007:2026-08-25",
+      "taxonomy": "kiwoom-sector-index-v1",
+      "unchanged_count": 1
+    }
+  ],
+  "top_stock_flows": {
+    "KOSDAQ": {
+      "foreign": {
+        "top_buy": [
+          {
+            "amount_krw": 17045000000,
+            "name": "주성엔지니어링",
+            "ticker": "036930"
+          },
+          {
+            "amount_krw": 15387000000,
+            "name": "HPSP",
+            "ticker": "403870"
+          },
+          {
+            "amount_krw": 13099000000,
+            "name": "심텍",
+            "ticker": "222800"
+          },
+          {
+            "amount_krw": 12408000000,
+            "name": "원익IPS",
+            "ticker": "240810"
+          },
+          {
+            "amount_krw": 10758000000,
+            "name": "제주반도체",
+            "ticker": "080220"
+          }
+        ],
+        "top_sell": [
+          {
+            "amount_krw": -12195000000,
+            "name": "알테오젠",
+            "ticker": "196170"
+          },
+          {
+            "amount_krw": -11188000000,
+            "name": "에스피지",
+            "ticker": "058610"
+          },
+          {
+            "amount_krw": -10665000000,
+            "name": "에코프로",
+            "ticker": "086520"
+          },
+          {
+            "amount_krw": -6601000000,
+            "name": "로보티즈",
+            "ticker": "108490"
+          },
+          {
+            "amount_krw": -6297000000,
+            "name": "에코프로비엠",
+            "ticker": "247540"
+          }
+        ]
+      },
+      "institution": {
+        "top_buy": [
+          {
+            "amount_krw": 20704000000,
+            "name": "HPSP",
+            "ticker": "403870"
+          },
+          {
+            "amount_krw": 18824000000,
+            "name": "심텍",
+            "ticker": "222800"
+          },
+          {
+            "amount_krw": 12373000000,
+            "name": "하나마이크론",
+            "ticker": "067310"
+          },
+          {
+            "amount_krw": 9115000000,
+            "name": "티엘비",
+            "ticker": "356860"
+          },
+          {
+            "amount_krw": 8368000000,
+            "name": "실리콘투",
+            "ticker": "257720"
+          }
+        ],
+        "top_sell": [
+          {
+            "amount_krw": -22606000000,
+            "name": "알테오젠",
+            "ticker": "196170"
+          },
+          {
+            "amount_krw": -8150000000,
+            "name": "해치텍",
+            "ticker": "0155E0"
+          },
+          {
+            "amount_krw": -8063000000,
+            "name": "에코프로비엠",
+            "ticker": "247540"
+          },
+          {
+            "amount_krw": -7852000000,
+            "name": "기가비스",
+            "ticker": "420770"
+          },
+          {
+            "amount_krw": -7657000000,
+            "name": "에이비엘바이오",
+            "ticker": "298380"
+          }
+        ]
+      },
+      "retail": {
+        "top_buy": [
+          {
+            "amount_krw": 34421000000,
+            "name": "알테오젠",
+            "ticker": "196170"
+          },
+          {
+            "amount_krw": 17133000000,
+            "name": "해치텍",
+            "ticker": "0155E0"
+          },
+          {
+            "amount_krw": 15797000000,
+            "name": "에코프로",
+            "ticker": "086520"
+          },
+          {
+            "amount_krw": 14303000000,
+            "name": "에코프로비엠",
+            "ticker": "247540"
+          },
+          {
+            "amount_krw": 13120000000,
+            "name": "에스피지",
+            "ticker": "058610"
+          }
+        ],
+        "top_sell": [
+          {
+            "amount_krw": -35739000000,
+            "name": "HPSP",
+            "ticker": "403870"
+          },
+          {
+            "amount_krw": -30879000000,
+            "name": "심텍",
+            "ticker": "222800"
+          },
+          {
+            "amount_krw": -23582000000,
+            "name": "주성엔지니어링",
+            "ticker": "036930"
+          },
+          {
+            "amount_krw": -18726000000,
+            "name": "실리콘투",
+            "ticker": "257720"
+          },
+          {
+            "amount_krw": -11489000000,
+            "name": "하나마이크론",
+            "ticker": "067310"
+          }
+        ]
+      }
+    },
+    "KOSPI": {
+      "foreign": {
+        "top_buy": [
+          {
+            "amount_krw": 87709000000,
+            "name": "삼성전기",
+            "ticker": "009150"
+          },
+          {
+            "amount_krw": 32901000000,
+            "name": "HD현대중공업",
+            "ticker": "329180"
+          },
+          {
+            "amount_krw": 20838000000,
+            "name": "LIG디펜스앤에어로스페이스",
+            "ticker": "079550"
+          },
+          {
+            "amount_krw": 18437000000,
+            "name": "SK",
+            "ticker": "034730"
+          },
+          {
+            "amount_krw": 18362000000,
+            "name": "한미반도체",
+            "ticker": "042700"
+          }
+        ],
+        "top_sell": [
+          {
+            "amount_krw": -2185870000000,
+            "name": "SK하이닉스",
+            "ticker": "000660"
+          },
+          {
+            "amount_krw": -1299687000000,
+            "name": "삼성전자",
+            "ticker": "005930"
+          },
+          {
+            "amount_krw": -324031000000,
+            "name": "삼성전자우",
+            "ticker": "005935"
+          },
+          {
+            "amount_krw": -89643000000,
+            "name": "SK스퀘어",
+            "ticker": "402340"
+          },
+          {
+            "amount_krw": -73017000000,
+            "name": "현대차",
+            "ticker": "005380"
+          }
+        ]
+      },
+      "institution": {
+        "top_buy": [
+          {
+            "amount_krw": 331427000000,
+            "name": "SK하이닉스",
+            "ticker": "000660"
+          },
+          {
+            "amount_krw": 137873000000,
+            "name": "삼성전자",
+            "ticker": "005930"
+          },
+          {
+            "amount_krw": 100408000000,
+            "name": "두산에너빌리티",
+            "ticker": "034020"
+          },
+          {
+            "amount_krw": 65562000000,
+            "name": "현대건설",
+            "ticker": "000720"
+          },
+          {
+            "amount_krw": 45427000000,
+            "name": "한미약품",
+            "ticker": "128940"
+          }
+        ],
+        "top_sell": [
+          {
+            "amount_krw": -22399000000,
+            "name": "현대차",
+            "ticker": "005380"
+          },
+          {
+            "amount_krw": -20476000000,
+            "name": "삼성물산",
+            "ticker": "028260"
+          },
+          {
+            "amount_krw": -18269000000,
+            "name": "LIG디펜스앤에어로스페이스",
+            "ticker": "079550"
+          },
+          {
+            "amount_krw": -13361000000,
+            "name": "SK",
+            "ticker": "034730"
+          },
+          {
+            "amount_krw": -12778000000,
+            "name": "삼성생명",
+            "ticker": "032830"
+          }
+        ]
+      },
+      "retail": {
+        "top_buy": [
+          {
+            "amount_krw": 802218000000,
+            "name": "SK하이닉스",
+            "ticker": "000660"
+          },
+          {
+            "amount_krw": 662026000000,
+            "name": "삼성전자",
+            "ticker": "005930"
+          },
+          {
+            "amount_krw": 256553000000,
+            "name": "삼성전자우",
+            "ticker": "005935"
+          },
+          {
+            "amount_krw": 95961000000,
+            "name": "현대차",
+            "ticker": "005380"
+          },
+          {
+            "amount_krw": 87606000000,
+            "name": "SK스퀘어",
+            "ticker": "402340"
+          }
+        ],
+        "top_sell": [
+          {
+            "amount_krw": -114206000000,
+            "name": "두산에너빌리티",
+            "ticker": "034020"
+          },
+          {
+            "amount_krw": -82245000000,
+            "name": "삼성전기",
+            "ticker": "009150"
+          },
+          {
+            "amount_krw": -61641000000,
+            "name": "현대건설",
+            "ticker": "000720"
+          },
+          {
+            "amount_krw": -48158000000,
+            "name": "에이피알",
+            "ticker": "278470"
+          },
+          {
+            "amount_krw": -32977000000,
+            "name": "현대글로비스",
+            "ticker": "086280"
+          }
+        ]
+      }
+    }
+  }
+}

@@ -700,6 +700,26 @@ def build_market_intelligence(
                     },
                 }
             )
+        flow_concentration = cross_section.concentration.get("relations")
+        if isinstance(flow_concentration, list):
+            for relation in flow_concentration:
+                if not isinstance(relation, dict):
+                    continue
+                market_scope = str(relation.get("market") or "")
+                actor = str(relation.get("actor") or "")
+                if not market_scope or not actor:
+                    continue
+                cross_section_facts.append(
+                    {
+                        "fact_id": (
+                            f"market:flow-concentration:{market_scope}:{actor}"
+                        ),
+                        "fact_type": "market_flow_concentration",
+                        "as_of_date": run_date.isoformat(),
+                        "source": cross_section.quality.provider,
+                        "fields": relation,
+                    }
+                )
         for sector in cross_section.sectors:
             cross_section_facts.append(
                 {
@@ -720,7 +740,7 @@ def build_market_intelligence(
         for flow in cross_section.market_flows:
             cross_section_facts.append(
                 {
-                    "fact_id": f"market:flow:{market}:{flow.actor}",
+                    "fact_id": f"market:flow:{market}:{flow.market}:{flow.actor}",
                     "fact_type": "market_flow",
                     "as_of_date": run_date.isoformat(),
                     "source": cross_section.quality.provider,
@@ -728,6 +748,9 @@ def build_market_intelligence(
                         "actor": flow.actor,
                         "net_buy_amount": flow.net_buy_amount,
                         "currency": flow.currency,
+                        "market_scope": flow.market,
+                        "exchange_basis": flow.exchange_basis,
+                        "source_ref": flow.source_ref,
                     },
                 }
             )

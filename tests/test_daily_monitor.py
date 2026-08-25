@@ -603,6 +603,59 @@ async def test_kr_pilot_holds_deterministic_delivery_after_packet_creation(
 
 
 @pytest.mark.anyio
+async def test_kr_packet_continues_when_kiwoom_collection_fails(monkeypatch) -> None:
+    packet_calls: list[tuple[date, str]] = []
+
+    async def record_daily(*args, **kwargs):
+        return SimpleNamespace(
+            status="success",
+            model_dump=lambda mode: {"status": "success"},
+        )
+
+    async def fail_kiwoom(*args, **kwargs):
+        raise RuntimeError("provider unavailable")
+
+    def record_packet(session, run_date, market, **kwargs):
+        packet_calls.append((run_date, market))
+        return SimpleNamespace(
+            status="created",
+            packet_id="kr-packet",
+            path=None,
+            reason=None,
+        )
+
+    monkeypatch.setattr("app.jobs.monitor_daily.ai_assisted_pilot_active", lambda market: False)
+    monkeypatch.setattr("app.jobs.monitor_daily.run_daily_monitor", record_daily)
+    monkeypatch.setattr(
+        "app.jobs.monitor_daily.collect_and_persist_kiwoom_market_context",
+        fail_kiwoom,
+    )
+    monkeypatch.setattr("app.jobs.monitor_daily.try_write_ai_review_packet", record_packet)
+    monkeypatch.setattr(
+        "app.jobs.monitor_daily.run_kr_close_market_briefing",
+        lambda *args, **kwargs: None,
+    )
+    run_date = date(2040, 8, 14)
+    _allow_synthetic_kr_production(monkeypatch, run_date)
+    as_of = datetime(2040, 8, 14, 16, 5, tzinfo=KST)
+    isolated_engine = create_engine(
+        "sqlite://",
+        connect_args={"check_same_thread": False},
+        poolclass=StaticPool,
+    )
+    SQLModel.metadata.create_all(isolated_engine)
+    with Session(isolated_engine) as session:
+        result = await _run_market_job(session, run_date, "kr", as_of=as_of)
+
+    assert packet_calls == [(run_date, "kr")]
+    assert result["kiwoom_market_context"] == {
+        "status": "UNAVAILABLE",
+        "packet_continues": True,
+        "reason": "RuntimeError",
+    }
+
+
+@pytest.mark.anyio
 @pytest.mark.parametrize(
     ("market_scope", "run_type", "completed_at", "ticker_count"),
     [

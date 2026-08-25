@@ -56,6 +56,7 @@ class MarketIndexFact(BaseModel):
     return_pct: float | None = None
     volume: float | None = None
     trading_value: float | None = None
+    source_ref: str | None = None
 
 
 class MarketSectorFact(BaseModel):
@@ -65,6 +66,15 @@ class MarketSectorFact(BaseModel):
     return_pct: float | None = None
     advance_ratio: float | None = None
     relative_return_pct: float | None = None
+    sector_code: str | None = None
+    market_scope: str | None = None
+    listed_count: int | None = None
+    advance_count: int | None = None
+    decline_count: int | None = None
+    unchanged_count: int | None = None
+    limit_up_count: int | None = None
+    limit_down_count: int | None = None
+    source_ref: str | None = None
 
 
 class MarketFlowFact(BaseModel):
@@ -72,6 +82,10 @@ class MarketFlowFact(BaseModel):
     net_buy_amount: float
     currency: str
     market: str
+    exchange_basis: str | None = None
+    source_unit: str | None = None
+    source_unit_scale_krw: int | None = None
+    source_ref: str | None = None
 
 
 class MarketBreadth(BaseModel):
@@ -87,6 +101,9 @@ class MarketBreadth(BaseModel):
     negative_return_pct: float | None
     total_trading_volume: float | None
     total_trading_value: float | None
+    listed_count: int | None = None
+    limit_up_count: int | None = None
+    limit_down_count: int | None = None
 
     @model_validator(mode="after")
     def validate_counts(self) -> "MarketBreadth":

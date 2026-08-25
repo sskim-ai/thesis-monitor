@@ -18,6 +18,9 @@ from app.services.daily_monitor_service import (
     run_daily_monitor,
 )
 from app.services.ai_review_service import try_write_ai_review_packet
+from app.services.kiwoom_kr_market_context_service import (
+    collect_and_persist_kiwoom_market_context,
+)
 from app.services.ai_assisted_delivery_service import (
     ai_assisted_pilot_active,
     hold_ai_assisted_pilot_session,
@@ -291,12 +294,25 @@ async def _run_market_job(
         daily_kwargs["queue_notifications"] = False
     result = await run_daily_monitor(session, **daily_kwargs)
     pilot_hold: dict[str, object] | None = None
+    kiwoom_market_context: dict[str, object] | None = None
     if market_scope == "kr" and result.status in {"success", "already_completed"}:
+        acquisition_time = current_as_of or datetime.now(KST)
+        try:
+            kiwoom_market_context = await collect_and_persist_kiwoom_market_context(
+                session_date=run_date,
+                observed_at=acquisition_time,
+            )
+        except Exception as exc:  # noqa: BLE001 - packet delivery must fail open.
+            kiwoom_market_context = {
+                "status": "UNAVAILABLE",
+                "packet_continues": True,
+                "reason": type(exc).__name__,
+            }
         packet_result = try_write_ai_review_packet(
             session,
             run_date,
             "kr",
-            generated_at=current_as_of or datetime.now(KST),
+            generated_at=acquisition_time,
         )
         packet_persisted = bool(
             packet_result.status in {"created", "already_exists"}
@@ -374,6 +390,7 @@ async def _run_market_job(
         "ai_assisted_pilot": pilot_hold,
         "macro": macro_result,
         "kr_close_market": kr_close_result,
+        "kiwoom_market_context": kiwoom_market_context,
         "theses": result.model_dump(mode="json"),
     }
 
