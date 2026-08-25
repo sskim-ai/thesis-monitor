@@ -410,10 +410,18 @@ NUMERIC_SEMANTICS = {
     "sector_return_pct": _spec(
         "sector_return_pct",
         ("pct",),
-        ("반도체 업종 등락률", "SOXX 등락률"),
-        (r"(?:반도체|soxx).*(?:등락|수익|상승|하락)",),
+        ("반도체 업종 등락률", "SOXX 등락률", "섹터 ETF 등락률"),
+        (r"(?:반도체|soxx|xl[a-z]{1,2}|섹터).*(?:등락|수익|상승|하락)",),
         "signed_percentage",
         scope="both",
+    ),
+    "style_return_pct": _spec(
+        "style_return_pct",
+        ("pct",),
+        ("S&P500 동일가중 등락률", "RSP 등락률"),
+        (r"(?:s&p\s*500\s*동일가중|rsp).*(?:등락|수익|상승|하락)",),
+        "signed_percentage",
+        scope="market",
     ),
     "growth_relative_return_pct": _spec(
         "growth_relative_return_pct",
@@ -430,6 +438,16 @@ NUMERIC_SEMANTICS = {
         (r"(?:반도체.*상대수익률|s&p\s*500.*대비.*반도체|반도체.*웃돌|반도체.*밑돌)",),
         "signed_percentage",
         scope="both",
+    ),
+    "style_relative_return_pct": _spec(
+        "style_relative_return_pct",
+        ("pct",),
+        ("S&P500 대비 동일가중 상대수익률", "RSP 상대수익률"),
+        (
+            r"(?:s&p\s*500.*대비.*동일가중|rsp.*상대수익률|동일가중.*(?:웃돌|밑돌))",
+        ),
+        "signed_percentage",
+        scope="market",
     ),
     "market_index_close": _spec(
         "market_index_close", ("index",), ("시장 지수 종가", "index close"),
@@ -1365,6 +1383,9 @@ _FIELD_RULES = (
         ("market_sector",), r"fields\.return_pct", "sector_return_pct", "pct"
     ),
     NumericFieldRule(
+        ("market_style",), r"fields\.return_pct", "style_return_pct", "pct"
+    ),
+    NumericFieldRule(
         ("market_growth_relative",),
         r"fields\.relative_return_pct",
         "growth_relative_return_pct",
@@ -1374,6 +1395,12 @@ _FIELD_RULES = (
         ("market_sector_relative",),
         r"fields\.relative_return_pct",
         "sector_relative_return_pct",
+        "pct",
+    ),
+    NumericFieldRule(
+        ("market_style_relative",),
+        r"fields\.relative_return_pct",
+        "style_relative_return_pct",
         "pct",
     ),
     NumericFieldRule(("market_cross_section_index",), r"fields\.close", "market_index_close", "index"),
@@ -1529,6 +1556,7 @@ _INDEX_SERIES_LABELS = {
 }
 _RELATIVE_SERIES_LABELS = {
     **_INDEX_SERIES_LABELS,
+    "RSP": "S&P500 동일가중",
     "SOXX": "반도체",
 }
 _NIGHT_FUTURES_LABELS = {
@@ -1581,8 +1609,10 @@ _FINANCIAL_PERIOD_LABEL_SEMANTICS = {
 _INSTRUMENT_LABEL_SEMANTICS = {
     "index_return_pct",
     "sector_return_pct",
+    "style_return_pct",
     "growth_relative_return_pct",
     "sector_relative_return_pct",
+    "style_relative_return_pct",
     "futures_close",
     "futures_point_change",
     "futures_return_pct",
@@ -1669,7 +1699,17 @@ def _source_aware_label(
         series = str(fields.get("series_code") or "")
         if series == "SOXX":
             return "반도체 업종 등락률"
-    if semantic_type in {"growth_relative_return_pct", "sector_relative_return_pct"}:
+        if series:
+            return f"{series} 업종 등락률"
+    if semantic_type == "style_return_pct":
+        series = str(fields.get("series_code") or "")
+        if series == "RSP":
+            return "S&P500 동일가중 등락률"
+    if semantic_type in {
+        "growth_relative_return_pct",
+        "sector_relative_return_pct",
+        "style_relative_return_pct",
+    }:
         subject = _RELATIVE_SERIES_LABELS.get(str(fields.get("subject") or ""))
         benchmark = _RELATIVE_SERIES_LABELS.get(
             str(fields.get("benchmark") or "")

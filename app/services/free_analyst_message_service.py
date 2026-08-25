@@ -8,6 +8,7 @@ from typing import Iterable
 
 
 CONTRACT_VERSION = "free-analyst-message-v1"
+MESSAGE_QUALITY_V2_CONTRACT = "message-quality-v2"
 PROMPT_OBJECTIVES = ("select", "connect", "synthesize", "omit", "explain_boundary")
 
 
@@ -87,14 +88,31 @@ _EXACT_TRADE_AR = re.compile(
     r"(?:\bTrade\s*AR\b|\btrade receivables?\b|매출채권\s*(?:증가율|금액|잔액))",
     re.IGNORECASE,
 )
+_GENERIC_SYNTHESIS = re.compile(
+    r"현재 근거는 핵심 사업 조건(?:의 존재)?(?:을|를)? 보여도?\s*"
+    r"투자 논리의 다음 확인까지 닫지는 못합니다"
+)
 
 
 def _section_key(heading: str) -> str:
-    if "핵심 판단" in heading or "오늘 판단" in heading or "현재 시장 한 줄" in heading:
+    if (
+        "핵심 판단" in heading
+        or "오늘 판단" in heading
+        or "현재 시장 한 줄" in heading
+        or heading.strip() == "🎯 핵심"
+        or heading.strip() == "🎯 판단"
+    ):
         return "core"
     if "오늘 한 줄" in heading:
         return "core"
-    if "사업" in heading or "실적" in heading or "왜 중요한가" in heading:
+    if (
+        "사업" in heading
+        or "실적" in heading
+        or "왜 중요한가" in heading
+        or "핵심 근거" in heading
+        or "해석의 균형" in heading
+        or heading.strip() == "⚖️ 경계"
+    ):
         return "business"
     if "가격" in heading:
         return "price"
@@ -223,6 +241,95 @@ def duplicate_next_check_unknown_count(text: str) -> int:
         any(value == other or value in other or other in value for other in next_values)
         for value in unknown_values
     )
+
+
+def duplicate_substantive_section_claims(text: str) -> list[dict[str, str]]:
+    parsed = parse_rendered_message(text)
+    rows = [
+        (section_index, section.key, sentence)
+        for section_index, section in enumerate(parsed.sections)
+        if section.key
+        in {
+            "core",
+            "business",
+            "price",
+            "supply",
+            "valuation",
+            "market_context",
+            "market_meaning",
+        }
+        for sentence in _sentences(section.body)
+    ]
+    duplicates: list[dict[str, str]] = []
+    for index, (left_index, left_key, left_sentence) in enumerate(rows):
+        left = _normalize_item(left_sentence)
+        if not left:
+            continue
+        for right_index, right_key, right_sentence in rows[index + 1 :]:
+            if left_index == right_index:
+                continue
+            right = _normalize_item(right_sentence)
+            same_generic_family = bool(
+                _GENERIC_SYNTHESIS.search(left_sentence)
+                and _GENERIC_SYNTHESIS.search(right_sentence)
+            )
+            if right and (
+                same_generic_family or left == right or left in right or right in left
+            ):
+                duplicates.append(
+                    {
+                        "left_section": left_key,
+                        "right_section": right_key,
+                        "claim": left_sentence,
+                    }
+                )
+    return duplicates
+
+
+def message_quality_v2_report(
+    text: str,
+    *,
+    deterministic_reference: str = "",
+) -> dict[str, object]:
+    parsed = parse_rendered_message(text)
+    deterministic = parse_rendered_message(deterministic_reference)
+    deterministic_core = "\n".join(
+        section.body for section in deterministic.sections if section.key == "core"
+    )
+    specific_thesis_available = bool(
+        deterministic_core.strip() and not _GENERIC_SYNTHESIS.search(deterministic_core)
+    )
+    generic_lines = [
+        line
+        for line in _content_lines(text)
+        if _GENERIC_SYNTHESIS.search(line)
+    ]
+    core_text = "\n".join(
+        section.body for section in parsed.sections if section.key == "core"
+    )
+    thesis_first = bool(core_text.strip()) and not (
+        specific_thesis_available and _GENERIC_SYNTHESIS.search(core_text)
+    )
+    duplicates = duplicate_substantive_section_claims(text)
+    passed = (
+        thesis_first
+        and not duplicates
+        and not (specific_thesis_available and generic_lines)
+    )
+    return {
+        "contract": MESSAGE_QUALITY_V2_CONTRACT,
+        "status": "PASS" if passed else "FAIL",
+        "specific_thesis_linkage_available": specific_thesis_available,
+        "thesis_first_prioritization": "PASS" if thesis_first else "FAIL",
+        "generic_synthesis_lines": generic_lines,
+        "generic_synthesis_repetition": (
+            "PASS"
+            if not (specific_thesis_available and generic_lines)
+            else "FAIL"
+        ),
+        "duplicate_substantive_section_claim_count": len(duplicates),
+        "duplicate_substantive_section_claims": duplicates,
+    }
 
 
 def _least_numeric_sentence(body: str, *, prefer_last: bool = True) -> str:

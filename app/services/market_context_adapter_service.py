@@ -47,6 +47,11 @@ class AdapterBreadth(BaseModel):
         return self
 
 
+class AdapterScopedBreadth(BaseModel):
+    scope: str
+    breadth: AdapterBreadth
+
+
 class AdapterSector(BaseModel):
     name: str
     return_pct: float | None = None
@@ -92,6 +97,8 @@ class AdapterSessionContext(BaseModel):
     provider_publication_state: Literal[
         "PROVIDER_COMPLETE",
         "MARKET_COMPLETED_PROVIDER_PENDING",
+        "PROVIDER_PARTIAL",
+        "UNAVAILABLE",
         "UNKNOWN",
     ] = "UNKNOWN"
 
@@ -107,6 +114,7 @@ class NormalizedMarketContext(BaseModel):
     cutoff: datetime
     indices: list[AdapterIndex] = Field(default_factory=list)
     breadth: AdapterBreadth
+    breadth_by_scope: list[AdapterScopedBreadth] = Field(default_factory=list)
     size_context: list[AdapterSizeContext] = Field(default_factory=list)
     sectors: list[AdapterSector] = Field(default_factory=list)
     market_flows: list[AdapterMarketFlow] = Field(default_factory=list)
@@ -243,8 +251,11 @@ class MarketContextAdapter:
             eligible_facts,
             cross_section=cross_section,
         )
+        breadth_by_scope = self.get_scoped_breadth_context(
+            cross_section=cross_section,
+        )
         sectors = self.get_sector_context(eligible_facts, cross_section=cross_section)
-        size_context: list[AdapterSizeContext] = []
+        size_context = self.get_size_context(eligible_facts)
         market_flows = self.get_market_flow_context(
             eligible_facts,
             cross_section=cross_section,
@@ -288,6 +299,7 @@ class MarketContextAdapter:
             cutoff=cutoff,
             indices=indices,
             breadth=breadth,
+            breadth_by_scope=breadth_by_scope,
             size_context=size_context,
             sectors=sectors,
             market_flows=market_flows,
@@ -301,6 +313,67 @@ class MarketContextAdapter:
             official_event_sources=list(self.official_event_sources),
             data_gaps=sorted(set(gaps)),
         )
+
+    def get_scoped_breadth_context(
+        self,
+        *,
+        cross_section: MarketCrossSection | None,
+    ) -> list[AdapterScopedBreadth]:
+        if cross_section is None:
+            return []
+        values: list[AdapterScopedBreadth] = []
+        for item in cross_section.breadth_by_scope:
+            breadth = item.breadth
+            ratio = (
+                breadth.advance_count
+                / (breadth.advance_count + breadth.decline_count)
+                if breadth.advance_count + breadth.decline_count
+                else None
+            )
+            values.append(
+                AdapterScopedBreadth(
+                    scope=item.scope,
+                    breadth=AdapterBreadth(
+                        availability="AVAILABLE",
+                        advancers=breadth.advance_count,
+                        decliners=breadth.decline_count,
+                        unchanged=breadth.unchanged_count,
+                        eligible_count=breadth.eligible_count,
+                        breadth_ratio=ratio,
+                        source_refs=[
+                            f"cross-section:{cross_section.quality.provider}:breadth:{item.scope}"
+                        ],
+                    ),
+                )
+            )
+        return values
+
+    def get_size_context(
+        self,
+        fact_catalog: list[dict[str, object]],
+    ) -> list[AdapterSizeContext]:
+        values: list[AdapterSizeContext] = []
+        if self.market != "US":
+            return values
+        for fact in _facts(fact_catalog, "market_style"):
+            fields = _fields(fact)
+            symbol = str(fields.get("series_code") or "")
+            if symbol not in {"IWM", "RSP"}:
+                continue
+            values.append(
+                AdapterSizeContext(
+                    name=str(fields.get("label") or symbol),
+                    return_pct=_number(fields.get("return_pct")),
+                    basis=(
+                        "equal_weight_price_proxy"
+                        if symbol == "RSP"
+                        else "small_cap_price_proxy"
+                    ),
+                    as_of_date=_fact_date(fact),
+                    source_ref=str(fact.get("fact_id") or ""),
+                )
+            )
+        return values
 
     def get_index_context(
         self,
@@ -515,6 +588,7 @@ class MarketContextAdapter:
             fact_catalog,
             "market_growth_relative",
             "market_sector_relative",
+            "market_style_relative",
         ):
             fields = _fields(fact)
             result = _number(fields.get("relative_return_pct"))

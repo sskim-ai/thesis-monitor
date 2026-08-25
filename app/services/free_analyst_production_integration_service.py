@@ -15,7 +15,10 @@ from app.services.free_analyst_natural_packet_adapter_service import (
     normalize_natural_packet_message,
     validate_natural_packet_adapter_result,
 )
-from app.services.free_analyst_message_service import parse_rendered_message
+from app.services.free_analyst_message_service import (
+    message_quality_v2_report,
+    parse_rendered_message,
+)
 
 
 CONTRACT_VERSION = "common-ai-core-v1"
@@ -38,6 +41,7 @@ class ProductionCandidate:
     deterministic_text: str
     adapter: NaturalPacketAdapterResult | None
     result: AdaptiveRendererResult | None
+    quality_v2: dict[str, object] | None
     eligible: bool
     hard_validation: str
     errors: tuple[str, ...]
@@ -68,6 +72,7 @@ class ProductionCandidate:
             "is_market_digest": self.is_market_digest,
             "adapter": self.adapter.to_dict() if self.adapter else None,
             "result": self.result.to_dict() if self.result else None,
+            "quality_v2": self.quality_v2,
             "eligible": self.eligible,
             "hard_validation": self.hard_validation,
             "errors": list(self.errors),
@@ -170,8 +175,6 @@ def _preserve_required_stock_sections(
     if is_market_digest or result.rendered is None:
         return result
     expected_heading = "📊 거래량·포지셔닝" if market == "us" else "📊 수급"
-    if expected_heading in result.final_text:
-        return result
     supply = next(
         (
             section
@@ -182,8 +185,18 @@ def _preserve_required_stock_sections(
     )
     if supply is None:
         return result
-    if "📊 포지셔닝" in result.final_text and supply.body in result.final_text:
-        text = result.final_text.replace("📊 포지셔닝", expected_heading, 1)
+    rendered_supply = next(
+        (
+            section
+            for section in parse_rendered_message(result.final_text).sections
+            if section.key == "supply"
+        ),
+        None,
+    )
+    if rendered_supply is not None:
+        rendered_block = f"{rendered_supply.heading}\n{rendered_supply.body}"
+        required_block = f"{expected_heading}\n{supply.body}"
+        text = result.final_text.replace(rendered_block, required_block, 1)
     else:
         text = f"{result.final_text.rstrip()}\n\n{expected_heading}\n{supply.body}"
     return replace(result, rendered=replace(result.rendered, text=text), final_text=text)
@@ -215,6 +228,7 @@ def build_production_candidate(
             deterministic_text=deterministic_text,
             adapter=None,
             result=None,
+            quality_v2=None,
             eligible=False,
             hard_validation="FAIL",
             errors=(f"natural_packet_adapter_error:{type(exc).__name__}",),
@@ -230,6 +244,7 @@ def build_production_candidate(
             deterministic_text=deterministic_text,
             adapter=adapter,
             result=None,
+            quality_v2=None,
             eligible=False,
             hard_validation="FAIL",
             errors=adapter_errors,
@@ -252,6 +267,7 @@ def build_production_candidate(
             deterministic_text=deterministic_text,
             adapter=adapter,
             result=None,
+            quality_v2=None,
             eligible=False,
             hard_validation="FAIL",
             errors=(f"adaptive_renderer_error:{type(exc).__name__}",),
@@ -262,7 +278,14 @@ def build_production_candidate(
         market=market,
         is_market_digest=is_market_digest,
     )
-    errors = _hard_safety_errors(result)
+    quality_v2 = message_quality_v2_report(
+        result.final_text,
+        deterministic_reference=deterministic_text,
+    )
+    errors = list(_hard_safety_errors(result))
+    if quality_v2["status"] != "PASS":
+        errors.append("message_quality_v2_failed")
+    error_tuple = tuple(dict.fromkeys(errors))
     return ProductionCandidate(
         contract=CONTRACT_VERSION,
         message_key=message_key,
@@ -272,9 +295,10 @@ def build_production_candidate(
         deterministic_text=deterministic_text,
         adapter=adapter,
         result=result,
-        eligible=not errors,
-        hard_validation="PASS" if not errors else "FAIL",
-        errors=errors,
+        quality_v2=quality_v2,
+        eligible=not error_tuple,
+        hard_validation="PASS" if not error_tuple else "FAIL",
+        errors=error_tuple,
     )
 
 

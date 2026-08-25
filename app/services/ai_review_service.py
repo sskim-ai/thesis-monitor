@@ -124,6 +124,10 @@ from app.services.numeric_semantic_registry import (
 )
 from app.services.ohlcv_structure_service import ALGORITHM_VERSION
 from app.services.runtime_specificity_service import build_runtime_specificity_plan
+from app.services.structured_market_context_service import (
+    load_current_cross_section,
+    load_structured_market_context,
+)
 from app.services.valuation_snapshot_service import (
     _earnings_quarters,
     _latest_balance,
@@ -3271,6 +3275,8 @@ def _market_packet(
     run_date: date,
     market: AIReviewMarket,
     stocks: list[dict[str, object]],
+    *,
+    generated_at: datetime,
 ) -> dict[str, object]:
     digest = build_daily_digest(session, run_date, market_scope=market)
     briefing = session.exec(
@@ -3298,6 +3304,29 @@ def _market_packet(
         if tickers
         else []
     )
+    structured_publication_state = "UNKNOWN"
+    try:
+        envelope = load_structured_market_context(
+            market,
+            run_date,
+            cutoff=generated_at,
+        )
+        cross_section = load_current_cross_section(
+            market,
+            run_date,
+            cutoff=generated_at,
+        )
+    except (OSError, TypeError, ValueError):
+        envelope = None
+        cross_section = None
+    if envelope is not None:
+        structured_publication_state = {
+            "AVAILABLE_CURRENT": "PROVIDER_COMPLETE",
+            "PUBLICATION_PENDING": "MARKET_COMPLETED_PROVIDER_PENDING",
+            "PARTIAL": "PROVIDER_PARTIAL",
+            "AVAILABLE_PRIOR_SESSION": "UNAVAILABLE",
+            "UNAVAILABLE": "UNAVAILABLE",
+        }[envelope.publication_state]
     intelligence = build_market_intelligence(
         briefing,
         run_date,
@@ -3312,6 +3341,7 @@ def _market_packet(
             for impact in impact_rows
         ],
         market=market,
+        cross_section=cross_section,
         previous_briefing=previous_briefing,
     )
     market_facts = list(intelligence["fact_catalog"])
@@ -3440,6 +3470,8 @@ def _market_packet(
             "knowledge_index": "references/knowledge-index.md",
         },
         "_stock_transmissions": intelligence["stock_transmissions"],
+        "_cross_section": cross_section,
+        "_structured_publication_state": structured_publication_state,
     }
 
 
@@ -3480,8 +3512,19 @@ def build_ai_review_packet(
     knowledge = knowledge_manifest()
     chart_knowledge = chart_knowledge_manifest()
     packet_generated_at = (generated_at or datetime.now(UTC)).astimezone(UTC)
-    market_context = _market_packet(session, run_date, market, stocks)
+    market_context = _market_packet(
+        session,
+        run_date,
+        market,
+        stocks,
+        generated_at=packet_generated_at,
+    )
     stock_transmissions = market_context.pop("_stock_transmissions", {})
+    cross_section = market_context.pop("_cross_section", None)
+    structured_publication_state = market_context.pop(
+        "_structured_publication_state",
+        "UNKNOWN",
+    )
     adapter_context = market_context_adapter(market).normalize(
         assessment_date=run_date,
         as_of=packet_generated_at,
@@ -3492,6 +3535,8 @@ def build_ai_review_packet(
             if isinstance(item, dict)
         ],
         coverage=_dict(market_context.get("coverage")),
+        cross_section=cross_section,
+        provider_publication_state=structured_publication_state,
     )
     market_context["adapter_context"] = adapter_context.model_dump(
         mode="json",

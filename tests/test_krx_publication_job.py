@@ -222,6 +222,8 @@ def test_natural_exact_slot_writes_sanitized_append_only_record(tmp_path: Path) 
     assert result["status"] == "RECORDED"
     assert result["user_visible_integration"] is False
     assert result["credential_exposure"] == 0
+    assert result["structured_snapshot_status"] == "PERSISTED_PUBLICATION_PENDING"
+    assert (tmp_path / "structured-market-context" / "kr" / "2026-08-20.json").exists()
     assert provider.calls == [date(2026, 8, 20)]
     assert len(records) == 1
     assert records[0].capture_origin == "launchd_calendar"

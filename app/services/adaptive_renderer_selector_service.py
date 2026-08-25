@@ -377,6 +377,8 @@ def adaptive_renderer_safety_report(
     analysis: FreeAnalystAnalysis,
     decision: SelectorDecision,
     rendered: RenderedFreeAnalyst,
+    *,
+    supporting_reference_text: str = "",
 ) -> dict[str, object]:
     audit = decision.audit_for(decision.selected_renderer)
     if decision.selected_renderer == AdaptiveRenderer.MINIMAL_VNEXT:
@@ -403,7 +405,12 @@ def adaptive_renderer_safety_report(
             "expectation_owner_mismatch": 0,
         }
     else:
-        safety = rendered_safety_report(current_ai_text, analysis, rendered)
+        evidence_source = "\n\n".join(
+            value
+            for value in (current_ai_text.strip(), supporting_reference_text.strip())
+            if value
+        )
+        safety = rendered_safety_report(evidence_source, analysis, rendered)
     material_loss = len(audit.material_dropped_elements)
     status = "PASS" if safety["status"] == "PASS" and material_loss == 0 else "FAIL"
     return {
@@ -493,6 +500,7 @@ def run_adaptive_renderer(
         benchmark_id=benchmark_id,
         market=market,
         packet_owner=packet_owner,
+        supporting_reference_text=deterministic_reference,
     )
     validation = validate_free_analyst_analysis(analysis).to_dict()
     if validation["status"] != "PASS":
@@ -516,7 +524,13 @@ def run_adaptive_renderer(
             reason="selector_failed",
         )
     rendered = renderer(current_ai_text, analysis, decision.selected_renderer)
-    safety = adaptive_renderer_safety_report(current_ai_text, analysis, decision, rendered)
+    safety = adaptive_renderer_safety_report(
+        current_ai_text,
+        analysis,
+        decision,
+        rendered,
+        supporting_reference_text=deterministic_reference,
+    )
     if safety["status"] != "PASS":
         return _fallback_result(
             benchmark_id=benchmark_id,

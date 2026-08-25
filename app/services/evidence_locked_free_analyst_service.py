@@ -282,6 +282,10 @@ _CAUSAL_OVERREACH = re.compile(
     r"재고\s*증가로\s*인해\s*매출|외국인.*(?:투자 논리|사업).*(?:약화|훼손))"
 )
 _STRONG_CAUSE = re.compile(r"(?:원인이다|때문이다|확정한다|증명한다)")
+_REFERENCE_LAG = re.compile(
+    r"(?:직전|이전 세션|reference|지연 공표|오늘의 신규 관측은 아닙니다)",
+    re.IGNORECASE,
+)
 _EXTERNAL_TOKEN = re.compile(r"\b[A-Z][A-Z0-9-]{2,}\b")
 _ALLOWED_ANALYTIC_TOKENS = {
     "AI",
@@ -332,7 +336,10 @@ def _industry_context_owner(text: str) -> str:
         ("insurance", r"(?:보험영업|재보험|합산비율|combined ratio|CSM)"),
         ("logistics", r"(?:물류|선대|운임|freight)"),
         ("cloud_platform", r"(?:AI·Cloud|Cloud 성장|클라우드 마진)"),
-        ("hpc_data_center", r"(?:HPC lease|가동·매출|energized capacity)"),
+        (
+            "hpc_data_center",
+            r"(?:HPC|colocation|코로케이션|billing|leased customer power|가동·매출|energized capacity)",
+        ),
     )
     for owner, pattern in checks:
         if re.search(pattern, text, re.IGNORECASE):
@@ -449,6 +456,7 @@ def build_evidence_catalog(
     benchmark_id: str = "analysis",
     market: str | None = None,
     packet_owner: str | None = None,
+    prefix: str = "evidence",
 ) -> tuple[EvidenceAtom, ...]:
     parsed = parse_rendered_message(current_ai_text)
     resolved_owner = owner or _semantic_owner(
@@ -460,7 +468,6 @@ def build_evidence_catalog(
     industry_owner = (
         "market_global" if not resolved_owner.ticker_owner else _industry_context_owner(current_ai_text)
     )
-    prefix = "evidence"
     atoms: list[EvidenceAtom] = []
     metadata_index = 0
     for line in _content_lines(parsed.preamble):
@@ -502,6 +509,45 @@ def _source_text(catalog: tuple[EvidenceAtom, ...], refs: tuple[str, ...]) -> st
 def _first_body(current_ai_text: str, key: str) -> str:
     rows = _sections(parse_rendered_message(current_ai_text), key)
     return rows[0].body if rows else ""
+
+
+def _supporting_refs(
+    catalog: tuple[EvidenceAtom, ...],
+    *section_keys: str,
+) -> tuple[str, ...]:
+    wanted = set(section_keys)
+    return tuple(
+        atom.ref
+        for atom in catalog
+        if atom.ref.startswith("supporting:") and atom.section_key in wanted
+    )
+
+
+def _first_content_sentence(text: str, key: str) -> str:
+    body = _first_body(text, key)
+    for line in _content_lines(body):
+        cleaned = _clean_bullet(line)
+        if cleaned:
+            return cleaned
+    return ""
+
+
+def _best_specific_core_sentence(text: str) -> str:
+    body = _first_body(text, "core")
+    candidates = [sentence.strip() for sentence in _sentences(body) if sentence.strip()]
+    generic = re.compile(
+        r"(?:현재 근거는 핵심 사업 조건|투자 논리의 다음 확인까지 닫지는 못)"
+    )
+    specific = [sentence for sentence in candidates if not generic.search(sentence)]
+    if not specific:
+        return ""
+    return min(
+        specific,
+        key=lambda sentence: (
+            len(numeric_tokens(sentence)),
+            len(sentence),
+        ),
+    )
 
 
 def _expectation_ref(catalog: tuple[EvidenceAtom, ...]) -> tuple[str, ...]:
@@ -707,6 +753,7 @@ def build_free_analyst_analysis(
     benchmark_id: str = "analysis",
     market: str | None = None,
     packet_owner: str | None = None,
+    supporting_reference_text: str = "",
 ) -> FreeAnalystAnalysis:
     parsed = parse_rendered_message(current_ai_text)
     semantic_owner = _semantic_owner(
@@ -715,10 +762,36 @@ def build_free_analyst_analysis(
         market=market,
         packet_owner=packet_owner,
     )
+    supporting_reference = supporting_reference_text.strip()
+    if supporting_reference:
+        supporting_owner = _semantic_owner(
+            supporting_reference,
+            benchmark_id=benchmark_id,
+            market=market,
+            packet_owner=packet_owner,
+        )
+        if (
+            semantic_owner.ticker_owner
+            and supporting_owner.ticker_owner
+            and semantic_owner.ticker_owner != supporting_owner.ticker_owner
+        ):
+            raise ValueError("supporting reference ticker owner mismatch")
+    analysis_source = "\n\n".join(
+        value for value in (current_ai_text.strip(), supporting_reference) if value
+    )
     industry_context_owner = (
-        "market_global" if parsed.is_market_digest else _industry_context_owner(current_ai_text)
+        "market_global" if parsed.is_market_digest else _industry_context_owner(analysis_source)
     )
     catalog = build_evidence_catalog(current_ai_text, owner=semantic_owner)
+    if supporting_reference:
+        catalog = (
+            *catalog,
+            *build_evidence_catalog(
+                supporting_reference,
+                owner=semantic_owner,
+                prefix="supporting",
+            ),
+        )
     identifier = _safe_id(benchmark_id)
     core_refs = _refs(catalog, "core")
     business_refs = _refs(catalog, "business")
@@ -726,32 +799,108 @@ def build_free_analyst_analysis(
     common_refs = tuple(
         dict.fromkeys((*_expectation_ref(catalog), *core_refs, *business_refs, *next_refs))
     )
-    business = _first_body(current_ai_text, "business")
+    business = _first_body(current_ai_text, "business") or _first_body(
+        supporting_reference,
+        "business",
+    )
     core = _first_body(current_ai_text, "core")
     supported_concepts = {
         concept for atom in catalog for concept in atom.concept_families
     }
-    next_checks = _next_check(current_ai_text, catalog)
+    next_check_source = (
+        current_ai_text
+        if _first_body(current_ai_text, "next_check")
+        else supporting_reference
+    )
+    next_checks = _next_check(next_check_source, catalog)
     top: list[AnalysisItem] = []
     thesis: list[AnalysisItem] = []
     alternatives: list[AlternativeInterpretation] = []
     expectation: list[AnalysisItem] = []
     category = "generic"
+    specific_source = _best_specific_core_sentence(supporting_reference)
+    inventory_is_auxiliary = bool(
+        specific_source
+        and "재고 증가율" in business
+        and ("밑돌았습니다" in business or "앞섰습니다" in business)
+    )
 
     if parsed.is_market_digest:
-        item = _item(
-            item_id=f"{identifier}-temporal-boundary",
-            text="오늘은 방향성 예측보다 새 관측이 없다는 시점 경계를 지키는 것이 판단의 핵심입니다.",
-            support_type=SupportType.BOUNDED_INFERENCE,
-            evidence_refs=_refs(catalog, "core", "risk"),
-            materiality_reason="prevents lagging context from becoming a current signal",
-            rule_id=InferenceRule.TEMPORAL_EVIDENCE_BOUNDARY,
-            boundary="직전 세션 자료는 배경일 뿐 오늘의 신규 관측이 아닙니다.",
-            confidence=ConfidenceLabel.HIGH,
+        current_change = _first_content_sentence(
+            supporting_reference,
+            "important_changes",
         )
-        top.append(item)
-        selected = ("judgment", "risk")
+        if str(market or "").lower() == "kr" and not re.search(
+            r"(?:KOSPI|KOSDAQ|코스피|코스닥)",
+            supporting_reference,
+            re.IGNORECASE,
+        ):
+            current_change = ""
+        if current_change and not _REFERENCE_LAG.search(current_change):
+            top.append(
+                _item(
+                    item_id=f"{identifier}-current-market-change",
+                    text=current_change,
+                    support_type=SupportType.DIRECT_FACT,
+                    evidence_refs=_supporting_refs(catalog, "important_changes"),
+                    materiality_reason="leads with the strongest current market observation",
+                    rule_id=None,
+                    boundary="",
+                    confidence=ConfidenceLabel.HIGH,
+                )
+            )
+            market_meaning = _first_content_sentence(
+                supporting_reference,
+                "market_meaning",
+            )
+            if str(market or "").lower() == "kr" and re.search(
+                r"(?:공표\s*대기|PUBLICATION_PENDING)",
+                current_change,
+                re.IGNORECASE,
+            ):
+                market_meaning = ""
+            if market_meaning:
+                thesis.append(
+                    _item(
+                        item_id=f"{identifier}-market-meaning",
+                        text=market_meaning,
+                        support_type=SupportType.DIRECT_FACT,
+                        evidence_refs=_supporting_refs(catalog, "market_meaning"),
+                        materiality_reason="preserves the deterministic market interpretation",
+                        rule_id=None,
+                        boundary="",
+                    )
+                )
+            selected = ("judgment", "evidence", "next_check")
+        else:
+            item = _item(
+                item_id=f"{identifier}-temporal-boundary",
+                text="오늘은 방향성 예측보다 새 관측이 없다는 시점 경계를 지키는 것이 판단의 핵심입니다.",
+                support_type=SupportType.BOUNDED_INFERENCE,
+                evidence_refs=_refs(catalog, "core", "risk"),
+                materiality_reason="prevents lagging context from becoming a current signal",
+                rule_id=InferenceRule.TEMPORAL_EVIDENCE_BOUNDARY,
+                boundary="직전 세션 자료는 배경일 뿐 오늘의 신규 관측이 아닙니다.",
+                confidence=ConfidenceLabel.HIGH,
+            )
+            top.append(item)
+            selected = ("judgment", "risk")
     else:
+        if inventory_is_auxiliary:
+            top.append(
+                _item(
+                    item_id=f"{identifier}-source-thesis",
+                    text=specific_source,
+                    support_type=SupportType.DIRECT_FACT,
+                    evidence_refs=_supporting_refs(catalog, "core"),
+                    materiality_reason=(
+                        "leads with the stored entity-specific thesis before inventory"
+                    ),
+                    rule_id=None,
+                    boundary="",
+                    direction=Direction.NEUTRAL,
+                )
+            )
         if "재고 증가율" in business and "밑돌았습니다" in business:
             category = "inventory_low"
             scale = "원가 규모" if "매출원가" in business else "매출 규모"
@@ -765,7 +914,10 @@ def build_free_analyst_analysis(
                 boundary="이 관계만으로 수요 개선을 확정할 수 없습니다.",
                 direction=Direction.SUPPORTS,
             )
-            top.append(primary)
+            if inventory_is_auxiliary:
+                thesis.append(primary)
+            else:
+                top.append(primary)
             positive = primary
             if industry_context_owner == "memory" and {
                 SemanticConceptFamily.MEMORY_ASP,
@@ -818,7 +970,10 @@ def build_free_analyst_analysis(
                 boundary="가격, 물량, 제품 믹스가 분리되지 않아 원인은 확정할 수 없습니다.",
                 direction=Direction.CHALLENGES,
             )
-            top.append(primary)
+            if inventory_is_auxiliary:
+                thesis.append(primary)
+            else:
+                top.append(primary)
             if industry_context_owner == "memory":
                 positive_text = "ASP나 제품 믹스 변화가 재고 관계에 영향을 준 결과일 가능성은 남아 있습니다."
             elif industry_context_owner == "steel_materials":
@@ -910,7 +1065,11 @@ def build_free_analyst_analysis(
                     boundary="투자 회수율은 현재 근거로 계산하지 않습니다.",
                 )
             )
-        elif "HPC lease" in current_ai_text and "확정할 수 없습니다" in business:
+        elif industry_context_owner == "hpc_data_center" and re.search(
+            r"(?:HPC|colocation|코로케이션|billing|leased customer power)",
+            analysis_source,
+            re.IGNORECASE,
+        ):
             category = "hpc"
             top.append(
                 _item(
@@ -924,7 +1083,9 @@ def build_free_analyst_analysis(
                     direction=Direction.MIXED,
                 )
             )
-        elif "USDC" in current_ai_text and "확정할 수 없습니다" in business:
+        elif "USDC" in analysis_source and re.search(
+            r"(?:reserve|준비금|비이자)", analysis_source, re.IGNORECASE
+        ):
             category = "platform"
             top.append(
                 _item(
@@ -967,40 +1128,56 @@ def build_free_analyst_analysis(
                 )
             )
         else:
-            top.append(
+            if specific_source:
+                category = "source_thesis"
+                top.append(
+                    _item(
+                        item_id=f"{identifier}-source-thesis",
+                        text=specific_source,
+                        support_type=SupportType.DIRECT_FACT,
+                        evidence_refs=_supporting_refs(catalog, "core"),
+                        materiality_reason="uses the stored entity-specific thesis before auxiliary evidence",
+                        rule_id=None,
+                        boundary="",
+                        direction=Direction.NEUTRAL,
+                    )
+                )
+            else:
+                top.append(
+                    _item(
+                        item_id=f"{identifier}-evidence-gap",
+                        text="현재 근거는 핵심 사업 조건의 존재를 보여도 투자 논리의 다음 확인까지 닫지는 못합니다.",
+                        support_type=SupportType.BOUNDED_INFERENCE,
+                        evidence_refs=common_refs,
+                        materiality_reason="keeps the analysis tied to the next unresolved driver",
+                        rule_id=InferenceRule.UNKNOWN_TO_NEXT_EVIDENCE,
+                        boundary="새 사실이나 원인은 추가하지 않습니다.",
+                        direction=Direction.NEUTRAL,
+                    )
+                )
+
+        primary = top[0]
+        if category != "source_thesis":
+            thesis.append(
                 _item(
-                    item_id=f"{identifier}-evidence-gap",
-                    text="현재 근거는 핵심 사업 조건의 존재를 보여도 투자 논리의 다음 확인까지 닫지는 못합니다.",
-                    support_type=SupportType.BOUNDED_INFERENCE,
+                    item_id=f"{identifier}-thesis-implication",
+                    text=_thesis_implication_text(
+                        category,
+                        business,
+                        industry_context_owner=industry_context_owner,
+                    ),
+                    support_type=SupportType.THESIS_LINKAGE,
                     evidence_refs=common_refs,
-                    materiality_reason="keeps the analysis tied to the next unresolved driver",
-                    rule_id=InferenceRule.UNKNOWN_TO_NEXT_EVIDENCE,
-                    boundary="새 사실이나 원인은 추가하지 않습니다.",
+                    materiality_reason="states what the evidence changes and does not change",
+                    rule_id=(
+                        primary.rule_id
+                        if primary.rule_id in _RULE_REQUIRED_SECTIONS
+                        else InferenceRule.UNKNOWN_TO_NEXT_EVIDENCE
+                    ),
+                    boundary="저장된 투자 상태는 변경하지 않습니다.",
                     direction=Direction.NEUTRAL,
                 )
             )
-
-        primary = top[0]
-        thesis.append(
-            _item(
-                item_id=f"{identifier}-thesis-implication",
-                text=_thesis_implication_text(
-                    category,
-                    business,
-                    industry_context_owner=industry_context_owner,
-                ),
-                support_type=SupportType.THESIS_LINKAGE,
-                evidence_refs=common_refs,
-                materiality_reason="states what the evidence changes and does not change",
-                rule_id=(
-                    primary.rule_id
-                    if primary.rule_id in _RULE_REQUIRED_SECTIONS
-                    else InferenceRule.UNKNOWN_TO_NEXT_EVIDENCE
-                ),
-                boundary="저장된 투자 상태는 변경하지 않습니다.",
-                direction=Direction.NEUTRAL,
-            )
-        )
         expectation_item = _expectation_item(
             identifier=identifier,
             current_ai_text=current_ai_text,
@@ -1409,7 +1586,11 @@ def render_free_analyst_direct(analysis: FreeAnalystAnalysis) -> RenderedFreeAna
     if analysis.alternative_interpretations:
         row = analysis.alternative_interpretations[0]
         balance_items = [row.negative_interpretation]
-        if row.positive_interpretation.item_id != analysis.message_plan.primary_conclusion:
+        already_rendered = {
+            analysis.message_plan.primary_conclusion,
+            *(item.item_id for item in analysis.thesis_implications[:1]),
+        }
+        if row.positive_interpretation.item_id not in already_rendered:
             balance_items.insert(0, row.positive_interpretation)
         blocks.append(
             (

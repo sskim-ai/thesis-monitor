@@ -8,6 +8,8 @@ from datetime import date, datetime, timezone
 from pathlib import Path
 from zoneinfo import ZoneInfo
 
+import httpx
+
 from app.providers.krx_publication_provider import (
     CORE_READINESS_ENDPOINTS,
     KrxPublicationProvider,
@@ -18,6 +20,10 @@ from app.services.krx_publication_service import (
     KrxObservationTimeSlot,
     append_krx_publication_observation,
     load_krx_publication_records,
+)
+from app.services.structured_market_context_service import (
+    StructuredMarketContextEnvelope,
+    persist_structured_market_context,
 )
 from app.services.xkrx_role_target_service import (
     XKRX_ROLE_TARGET_CONTRACT,
@@ -78,6 +84,7 @@ async def run_exact_slot_capture(
     as_of: datetime | None = None,
     capture_origin: KrxCaptureOrigin = "manual",
     telemetry_directory: Path = DEFAULT_TELEMETRY_DIRECTORY,
+    structured_context_directory: Path | None = None,
     provider: KrxPublicationProvider | None = None,
 ) -> dict[str, object]:
     current = as_of or datetime.now(timezone.utc)
@@ -151,6 +158,75 @@ async def run_exact_slot_capture(
         scheduled_for=request.scheduled_for,
         normal_session=True,
     )
+    structured_snapshot_status = "NOT_REQUESTED"
+    structured_snapshot_path: str | None = None
+    structured_snapshot_error: str | None = None
+    structured_directory = structured_context_directory
+    if structured_directory is None and telemetry_directory != DEFAULT_TELEMETRY_DIRECTORY:
+        structured_directory = telemetry_directory / "structured-market-context"
+    provider_calls = len(CORE_READINESS_ENDPOINTS)
+    if observation.status == "PROVIDER_COMPLETE":
+        provider_calls += len(CORE_READINESS_ENDPOINTS)
+        try:
+            section = await publication_provider.collect_market_cross_section(
+                target_session=request.target_session,
+                observed_at=current,
+            )
+            path = persist_structured_market_context(
+                StructuredMarketContextEnvelope(
+                    market="KR",
+                    session_date=request.target_session,
+                    retrieved_at=current,
+                    provider=section.quality.provider,
+                    publication_state="AVAILABLE_CURRENT",
+                    source_refs=list(CORE_READINESS_ENDPOINTS),
+                    source_payload_sha256=section.source_payload_sha256,
+                    cross_section=section,
+                    data_gaps=["market_wide_investor_flow_unavailable"],
+                ),
+                directory=structured_directory,
+            )
+            structured_snapshot_status = "PERSISTED"
+            structured_snapshot_path = str(path)
+        except (
+            AttributeError,
+            httpx.HTTPError,
+            RuntimeError,
+            TypeError,
+            ValueError,
+        ) as exc:
+            structured_snapshot_status = "FAILED_CLOSED"
+            structured_snapshot_error = type(exc).__name__
+    elif observation.status in {
+        "MARKET_COMPLETED_PROVIDER_PENDING",
+        "PROVIDER_PARTIAL",
+        "PROVIDER_ERROR",
+    }:
+        publication_state = {
+            "MARKET_COMPLETED_PROVIDER_PENDING": "PUBLICATION_PENDING",
+            "PROVIDER_PARTIAL": "PARTIAL",
+            "PROVIDER_ERROR": "UNAVAILABLE",
+        }[observation.status]
+        try:
+            path = persist_structured_market_context(
+                StructuredMarketContextEnvelope(
+                    market="KR",
+                    session_date=request.target_session,
+                    retrieved_at=current,
+                    provider="KRX_OPEN_API",
+                    publication_state=publication_state,
+                    source_refs=list(CORE_READINESS_ENDPOINTS),
+                    data_gaps=[
+                        f"krx_publication:{observation.status.casefold()}"
+                    ],
+                ),
+                directory=structured_directory,
+            )
+            structured_snapshot_status = f"PERSISTED_{publication_state}"
+            structured_snapshot_path = str(path)
+        except (OSError, TypeError, ValueError) as exc:
+            structured_snapshot_status = "FAILED_CLOSED"
+            structured_snapshot_error = type(exc).__name__
     return {
         "capture_contract_version": KRX_EXACT_SLOT_CAPTURE_VERSION,
         "role_target_contract": XKRX_ROLE_TARGET_CONTRACT,
@@ -168,8 +244,11 @@ async def run_exact_slot_capture(
             item.endpoint: item.payload_sha256 for item in observation.endpoints
         },
         "timeline_observations": len(timeline.observations),
-        "provider_calls": len(CORE_READINESS_ENDPOINTS),
+        "provider_calls": provider_calls,
         "telemetry_writes": 1,
+        "structured_snapshot_status": structured_snapshot_status,
+        "structured_snapshot_path": structured_snapshot_path,
+        "structured_snapshot_error": structured_snapshot_error,
         "user_visible_integration": False,
         "credential_exposure": 0,
     }

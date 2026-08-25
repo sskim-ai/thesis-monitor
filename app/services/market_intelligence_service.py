@@ -15,7 +15,19 @@ _SERIES = {
     "SPY": ("indices", "market_index", "S&P500"),
     "QQQ": ("indices", "market_index", "Nasdaq"),
     "IWM": ("indices", "market_index", "Russell 2000"),
+    "RSP": ("style_size", "market_style", "S&P500 동일가중"),
     "SOXX": ("sectors", "market_sector", "반도체"),
+    "XLB": ("sectors", "market_sector", "소재"),
+    "XLC": ("sectors", "market_sector", "커뮤니케이션 서비스"),
+    "XLE": ("sectors", "market_sector", "에너지"),
+    "XLF": ("sectors", "market_sector", "금융"),
+    "XLI": ("sectors", "market_sector", "산업재"),
+    "XLK": ("sectors", "market_sector", "정보기술"),
+    "XLP": ("sectors", "market_sector", "필수소비재"),
+    "XLRE": ("sectors", "market_sector", "부동산"),
+    "XLU": ("sectors", "market_sector", "유틸리티"),
+    "XLV": ("sectors", "market_sector", "헬스케어"),
+    "XLY": ("sectors", "market_sector", "경기소비재"),
     "DGS10": ("rates", "market_nominal_yield", "미국 10년물 금리"),
     "DFII10": ("rates", "market_real_yield", "미국 10년물 실질금리"),
     "T10YIE": ("rates", "market_breakeven_inflation", "미국 기대인플레이션"),
@@ -28,7 +40,21 @@ _SERIES = {
 
 _EXPECTED_SERIES = {
     "indices": {"SPY", "QQQ", "IWM"},
-    "sectors": {"SOXX"},
+    "style_size": {"RSP"},
+    "sectors": {
+        "SOXX",
+        "XLB",
+        "XLC",
+        "XLE",
+        "XLF",
+        "XLI",
+        "XLK",
+        "XLP",
+        "XLRE",
+        "XLU",
+        "XLV",
+        "XLY",
+    },
     "rates": {"DGS10", "DFII10", "T10YIE"},
     "credit": {"BAMLH0A0HYM2"},
     "liquidity": {"DTWEXBGS"},
@@ -170,7 +196,7 @@ def _observation_fact(
     value = _number(item, "value")
     change_pct = _number(item, "change_pct")
     change_value = _number(item, "change_value")
-    if fact_type in {"market_index", "market_sector"}:
+    if fact_type in {"market_index", "market_sector", "market_style"}:
         if change_pct is not None:
             fields["return_pct"] = change_pct
     elif fact_type in {
@@ -240,11 +266,12 @@ def _relative_fact(
         and subject_fields.get("today_signal_eligible") is True
         and benchmark_fields.get("today_signal_eligible") is True
     )
-    fact_type = (
-        "market_sector_relative"
-        if subject_fact.get("fact_type") == "market_sector"
-        else "market_growth_relative"
-    )
+    if subject_fact.get("fact_type") == "market_sector":
+        fact_type = "market_sector_relative"
+    elif subject_fact.get("fact_type") == "market_style":
+        fact_type = "market_style_relative"
+    else:
+        fact_type = "market_growth_relative"
     return {
         "fact_id": f"market:relative:{subject}:{benchmark}",
         "fact_type": fact_type,
@@ -296,14 +323,10 @@ def _coverage(
             "available_series": sorted(present),
             "missing_series": sorted(expected - present),
         }
-    if coverage["sectors"]["status"] == "available":
-        coverage["sectors"].update(
-            status="partial",
-            reason="single_sector_proxy_only",
-        )
     if market == "kr":
         coverage["indices"]["role"] = "overnight_cross_asset_context"
         coverage["sectors"]["role"] = "overnight_cross_asset_context"
+        coverage["style_size"]["role"] = "overnight_cross_asset_context"
         coverage["local_market_indices"] = {
             "status": "unavailable",
             "reason": "kr_local_index_not_provided_by_backend",
@@ -314,6 +337,7 @@ def _coverage(
     else:
         coverage["indices"]["role"] = "local_market_proxy"
         coverage["sectors"]["role"] = "local_sector_proxy"
+        coverage["style_size"]["role"] = "local_style_proxy"
         coverage["local_market_indices"] = {
             "status": coverage["indices"]["status"],
             "available_series": coverage["indices"]["available_series"],
@@ -524,7 +548,7 @@ def build_market_intelligence(
         and str(item.get("quality_status") or "fresh") in USABLE_QUALITY
     }
     facts = list(facts_by_series.values())
-    for subject in ("QQQ", "SOXX"):
+    for subject in ("QQQ", "SOXX", "RSP"):
         relative = _relative_fact(subject, "SPY", facts_by_series)
         if relative is not None:
             facts.append(relative)
@@ -586,6 +610,56 @@ def build_market_intelligence(
                     },
                 ]
             )
+            for scoped in cross_section.breadth_by_scope:
+                scoped_breadth = scoped.breadth
+                cross_section_facts.extend(
+                    [
+                        {
+                            "fact_id": (
+                                f"market:breadth:{market}:{scoped.scope}:counts"
+                            ),
+                            "fact_type": "market_breadth_counts",
+                            "as_of_date": run_date.isoformat(),
+                            "source": cross_section.quality.provider,
+                            "fields": {
+                                "market_scope": scoped.scope,
+                                "eligible_count": scoped_breadth.eligible_count,
+                                "advance_count": scoped_breadth.advance_count,
+                                "decline_count": scoped_breadth.decline_count,
+                                "unchanged_count": scoped_breadth.unchanged_count,
+                            },
+                        },
+                        {
+                            "fact_id": (
+                                f"market:breadth:{market}:{scoped.scope}:returns"
+                            ),
+                            "fact_type": "market_breadth_returns",
+                            "as_of_date": run_date.isoformat(),
+                            "source": cross_section.quality.provider,
+                            "fields": {
+                                "market_scope": scoped.scope,
+                                "advance_ratio_pct": (
+                                    scoped_breadth.advance_ratio * 100
+                                    if scoped_breadth.advance_ratio is not None
+                                    else None
+                                ),
+                                "ad_ratio": scoped_breadth.ad_ratio,
+                                "median_return_pct": (
+                                    scoped_breadth.median_return_pct
+                                ),
+                                "equal_weight_return_pct": (
+                                    scoped_breadth.equal_weight_return_pct
+                                ),
+                                "positive_return_pct": (
+                                    scoped_breadth.positive_return_pct
+                                ),
+                                "negative_return_pct": (
+                                    scoped_breadth.negative_return_pct
+                                ),
+                            },
+                        },
+                    ]
+                )
             safe_volume = (
                 breadth.total_trading_volume
                 if cross_section.quality.volume_semantics == "raw_reported_shares"

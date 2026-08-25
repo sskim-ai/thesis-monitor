@@ -97,6 +97,17 @@ class MarketBreadth(BaseModel):
         return self
 
 
+class MarketScopedBreadth(BaseModel):
+    scope: str
+    breadth: MarketBreadth
+
+    @model_validator(mode="after")
+    def validate_scope(self) -> "MarketScopedBreadth":
+        if not self.scope.strip():
+            raise ValueError("market breadth scope is required")
+        return self
+
+
 class MarketCrossSectionQuality(BaseModel):
     provider: str
     provider_role: str
@@ -129,6 +140,7 @@ class MarketCrossSection(BaseModel):
     as_of: datetime
     indices: list[MarketIndexFact] = Field(default_factory=list)
     breadth: MarketBreadth | None = None
+    breadth_by_scope: list[MarketScopedBreadth] = Field(default_factory=list)
     concentration: dict[str, object] = Field(default_factory=dict)
     sectors: list[MarketSectorFact] = Field(default_factory=list)
     market_flows: list[MarketFlowFact] = Field(default_factory=list)
@@ -144,6 +156,15 @@ class MarketCrossSection(BaseModel):
                 raise ValueError("unavailable coverage cannot publish breadth")
             if self.breadth.eligible_count != self.quality.eligible_count:
                 raise ValueError("quality and breadth eligible counts differ")
+        scopes = [item.scope for item in self.breadth_by_scope]
+        if len(scopes) != len(set(scopes)):
+            raise ValueError("market breadth scopes must be unique")
+        if self.market == "US" and any(scope != "US_BROAD" for scope in scopes):
+            raise ValueError("US cross-section cannot publish KR market breadth scopes")
+        if self.market == "KR" and any(
+            scope not in {"KOSPI", "KOSDAQ"} for scope in scopes
+        ):
+            raise ValueError("KR cross-section breadth scope is invalid")
         return self
 
 
