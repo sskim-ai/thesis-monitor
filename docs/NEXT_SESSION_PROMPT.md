@@ -2,6 +2,20 @@
 
 Repository: `sskim-ai/thesis-monitor`
 
+Latest authoritative work follows instruction commit
+`e04403c76abfd8d2f74ca91d438fccc54b479bad` and implementation commit
+`1a6d2f411e7fa9ef414197a3fa5711b336a0d3e7`. Read the structured-data-quality-v2 readiness,
+artifact index, exact benchmark, and data-gap inventory first. KR/US structured acquisition is safe
+`PARTIAL`; KR exact publication remained pending and had no material context value, while US RSP
+and 11-sector context passed value-add. Quality v2 passes both markets with generic synthesis
+`36 -> 0`, substantive duplicates `18 -> 0`, and `245/245` automatic numeric bindings.
+
+Wait for the next naturally scheduled US structured quality-v2 canary, then the next eligible KR
+run. Inspect packet-bound context, selected `1/2/3` canary messages, fallback, runtime-quality
+receipt, duplicates/orphans, and exactly-once delivery read-only. Do not run a task or Telegram
+manually. Keep full mode OFF, Production Assist OFF, Open Research production integration at zero,
+and all unavailable breadth/flow fields Unknown.
+
 The common KR/US structured market adapter follows instruction commit
 `c058839c5e63a08c096bd6a9a1b2139290d17eb0` and implementation commit
 `7a210efe101547c1981b934fbf3dc867bc3e6426`. `market-context-adapter-v1` passes its common Fact,

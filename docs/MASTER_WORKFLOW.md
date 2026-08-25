@@ -1118,3 +1118,26 @@ output schema, fallback, Telegram shape, canary limits, or packet identity. A pr
 Research connector is `NOT_AVAILABLE`, so `OPEN_RESEARCH_LIVE_CANARY=BLOCKED_CONNECTOR` and runtime
 research integration remains zero. The next action is the naturally scheduled 2026-08-26 US
 structured-adapter canary review; do not run a task or send Telegram manually.
+
+## 34. Structured Data Acquisition First And Message Quality v2
+
+Instruction commit `e04403c76abfd8d2f74ca91d438fccc54b479bad` supersedes the earlier
+message-only bounded repair. Implementation commit `1a6d2f411e7fa9ef414197a3fa5711b336a0d3e7`
+adds `structured-market-context-v1`, exact publication/session/freshness provenance, fail-closed KR
+cross-section capture, and a broader free US style/sector context. It also adds `message-quality-v2`
+without changing the existing `1/2/3` canary limits or enabling full mode.
+
+KR acquisition is safe `PARTIAL`: the exact 2026-08-25 KRX slot returned HTTP success but no rows,
+so the packet records publication pending and exposes no invented index, breadth, or market-flow
+number. The prior-session capability probe confirms KOSPI/KOSDAQ stock and index coverage, but its
+numbers are not substituted for the current session. US acquisition is safe `PARTIAL`: RSP and all
+11 sector SPDRs provide current structured style/sector evidence, while exchange breadth and
+participant flow remain unavailable.
+
+Immutable run-37/run-38 replays pass `14/14` and `8/8`. Generic synthesis lines fall from `36` to
+`0`, duplicate substantive messages from `18` to `0`, and all `245` numeric claims bind
+automatically with zero hard-safety errors. KR structured-context value-add is
+`NO_MATERIAL_VALUE` for the pending publication; US value-add is `PASS`. Both message-quality v2
+gates pass. Promotion keeps missing data Unknown, Production Assist OFF, Open Research integration
+at zero, and full Free Analyst mode OFF. The next proof is the naturally scheduled US structured
+quality-v2 canary, followed by KR when a complete publication exists; never manufacture either run.

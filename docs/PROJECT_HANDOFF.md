@@ -7,6 +7,26 @@ validation, delivery, or Scheduled Tasks.
 
 ## Current Authoritative Handoff — 2026-08-25
 
+### Structured Data Acquisition First And Message Quality v2
+
+The exact instruction commit is `e04403c76abfd8d2f74ca91d438fccc54b479bad`; implementation is
+`1a6d2f411e7fa9ef414197a3fa5711b336a0d3e7`. `structured-market-context-v1` keeps exact market,
+session, retrieval, publication, source, hash, and data-gap identity. Missing/current-publication
+data never defaults to zero or borrows a prior session.
+
+KR and US acquisition are both safe `PARTIAL`. The 2026-08-25 exact KRX slot is
+`MARKET_COMPLETED_PROVIDER_PENDING`, so KR receives no current breadth, index, or market-flow
+number and its structured value-add is `NO_MATERIAL_VALUE`. US receives RSP plus the 11 sector
+SPDRs; current style/sector context adds material evidence while exchange breadth and participant
+flow stay Unknown. US structured value-add is `PASS`.
+
+Quality-v2 archive replays pass KR `8/8` and US `14/14`; generic synthesis is `36 -> 0`, duplicate
+substantive messages are `18 -> 0`, all `245` numeric claims bind automatically, and all hard safety
+counts are zero. The `1/2/3` Free Analyst canary remains enabled pending natural proof, full mode is
+OFF, Production Assist is OFF, and Open Research production integration remains zero. Review the
+next naturally scheduled US run read-only, then KR when complete KRX publication evidence exists.
+Do not manually execute a task or send Telegram.
+
 ### Free Analyst Adaptive Limited Canary Armed
 
 Instruction commit `73802b8849f674698bfdb3bfd7f3d0df89c236b2` explicitly authorizes the

@@ -61,15 +61,17 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
 
     assert state["repository"] == "sskim-ai/thesis-monitor"
     assert state["branch"] == "main"
-    assert state["experimental_branch"] == "codex/kr-us-market-adapters"
+    assert state["experimental_branch"] == (
+        "codex/kr-us-structured-data-first-quality-v2"
+    )
     assert state["current_phase"] == (
-        "common_market_adapter_v1_production_pending_natural"
+        "structured_data_quality_v2_pending_natural"
     )
     assert state["last_completed_phase"] == (
-        "kr_valuation_numeric_ref_repair_and_market_adapter_implementation"
+        "kr_us_structured_data_acquisition_first_and_message_quality_v2"
     )
     assert state["next_default_phase"] == (
-        "us_structured_market_adapter_natural_canary_review"
+        "us_structured_quality_v2_natural_canary_review"
     )
     assert state["deployed_code_commit"] == "HEAD"
     assert state["main_code_commit"] == "HEAD"
@@ -89,6 +91,10 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     assert state["contracts"]["market_context_adapter"] == (
         "market-context-adapter-v1"
     )
+    assert state["contracts"]["structured_market_context"] == (
+        "structured-market-context-v1"
+    )
+    assert state["contracts"]["message_quality_v2"] == "message-quality-v2"
     assert state["contracts"]["market_research_seed_adapter"] == (
         "market-research-seed-adapter-v1"
     )
@@ -258,8 +264,17 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     assert common_ai_core["open_research_production_integration"] == 0
     assert common_ai_core["open_p0"] == []
     assert common_ai_core["open_material_p1"] == []
+    structured_quality = state["structured_data_quality_v2"]
+    assert structured_quality["kr_structured_acquisition"] == "PARTIAL"
+    assert structured_quality["us_structured_acquisition"] == "PARTIAL"
+    assert structured_quality["kr_structured_context_value_add"] == (
+        "NO_MATERIAL_VALUE"
+    )
+    assert structured_quality["us_structured_context_value_add"] == "PASS"
+    assert structured_quality["common_message_quality_v2"] == "PASS"
+    assert structured_quality["production_ready"] == "YES"
     market_adapter = state["common_market_adapter_v1"]
-    assert market_adapter["status"] == "production_pending_natural"
+    assert market_adapter["status"] == "structured_quality_v2_pending_natural"
     assert market_adapter["common_contract"] == "PASS"
     assert market_adapter["kr_adapter"] == "PARTIAL"
     assert market_adapter["us_adapter"] == "PARTIAL"

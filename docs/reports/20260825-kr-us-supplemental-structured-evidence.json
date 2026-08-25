@@ -1,0 +1,126 @@
+{
+  "contract": "supplemental-structured-market-evidence-v1",
+  "evidence_class": "SUPPLEMENTAL_STRUCTURED_EVIDENCE",
+  "immutable_packet_mutated": false,
+  "kr_target_session_readiness": {
+    "market": "KR",
+    "target_session": "2026-08-25",
+    "observed_at_utc": "2026-08-25T12:27:41.246670Z",
+    "provider": "KRX_OPEN_API",
+    "status": "MARKET_COMPLETED_PROVIDER_PENDING",
+    "endpoint_count": 4,
+    "http_200_count": 4,
+    "row_count": 0,
+    "empty_payload_sha256": "not_persisted_from_read_only_probe",
+    "indices": "PUBLICATION_PENDING",
+    "breadth": "PUBLICATION_PENDING",
+    "market_flows": "UNAVAILABLE",
+    "interpretation": "Missing publication rows are not zero market activity. No KR index, breadth, or market-flow facts are supplied to the target-session replay."
+  },
+  "kr_prior_session_capability": {
+    "market": "KR",
+    "target_session": "2026-08-24",
+    "provider": "KRX_OPEN_API",
+    "status": "AVAILABLE_PRIOR_SESSION",
+    "kospi_stock_rows": 942,
+    "kosdaq_stock_rows": 1823,
+    "kospi_index_rows": 51,
+    "kosdaq_index_rows": 40,
+    "kospi_stock_payload_sha256_prefix": "2879eb",
+    "kosdaq_stock_payload_sha256_prefix": "8c19fa",
+    "kospi_index_payload_sha256_prefix": "30ad0e",
+    "kosdaq_index_payload_sha256_prefix": "5bc3a8",
+    "full_payload_sha256_state": "not_persisted_from_read_only_probe",
+    "use_in_target_session_replay": false
+  },
+  "us_source": {
+    "market": "US",
+    "provider": "existing_local_ohlcv_analyst",
+    "source_class": "existing_structured_free_source",
+    "target_session": "2026-08-24",
+    "comparison_session": "2026-08-21",
+    "retrieval_date_kst": "2026-08-25",
+    "provider_calls": 24,
+    "provider_successes": 24,
+    "provider_failures_after_connection": 0,
+    "excluded_rows": [
+      "2026-08-25 partial/current-session rows"
+    ],
+    "breadth": "UNAVAILABLE",
+    "participant_flow": "UNAVAILABLE_NOT_SUPPORTED"
+  },
+  "us_etf_bars": {
+    "RSP": [
+      {"date": "2026-08-21", "close": 221.67},
+      {"date": "2026-08-24", "close": 221.93}
+    ],
+    "XLB": [
+      {"date": "2026-08-21", "close": 53.54},
+      {"date": "2026-08-24", "close": 53.58}
+    ],
+    "XLC": [
+      {"date": "2026-08-21", "close": 111.4},
+      {"date": "2026-08-24", "close": 112.32}
+    ],
+    "XLE": [
+      {"date": "2026-08-21", "close": 63.64},
+      {"date": "2026-08-24", "close": 63.11}
+    ],
+    "XLF": [
+      {"date": "2026-08-21", "close": 57.48},
+      {"date": "2026-08-24", "close": 58.22}
+    ],
+    "XLI": [
+      {"date": "2026-08-21", "close": 180.25},
+      {"date": "2026-08-24", "close": 179.0}
+    ],
+    "XLK": [
+      {"date": "2026-08-21", "close": 183.31},
+      {"date": "2026-08-24", "close": 180.05}
+    ],
+    "XLP": [
+      {"date": "2026-08-21", "close": 85.99},
+      {"date": "2026-08-24", "close": 87.45}
+    ],
+    "XLRE": [
+      {"date": "2026-08-21", "close": 45.08},
+      {"date": "2026-08-24", "close": 45.33}
+    ],
+    "XLU": [
+      {"date": "2026-08-21", "close": 42.77},
+      {"date": "2026-08-24", "close": 43.22}
+    ],
+    "XLV": [
+      {"date": "2026-08-21", "close": 174.62},
+      {"date": "2026-08-24", "close": 174.7}
+    ],
+    "XLY": [
+      {"date": "2026-08-21", "close": 118.02},
+      {"date": "2026-08-24", "close": 118.3}
+    ]
+  },
+  "provider_call_audit": {
+    "krx_open_api": {
+      "requests": 8,
+      "successes": 8,
+      "failures": 0,
+      "target_session_rows": 0,
+      "prior_session_rows": 2856
+    },
+    "existing_local_ohlcv_analyst": {
+      "requests": 24,
+      "successes": 24,
+      "failures": 0,
+      "cache_hits": "provider_internal_not_exposed"
+    },
+    "massive": {
+      "requests": 0,
+      "reason": "not configured"
+    },
+    "kiwoom": {
+      "requests": 0,
+      "reason": "not configured"
+    }
+  },
+  "new_paid_source_count": 0
+}
