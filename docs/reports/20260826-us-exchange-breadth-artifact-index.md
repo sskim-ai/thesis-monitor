@@ -20,3 +20,4 @@
 - `20260826-us-exchange-breadth-canary-simulation.md`
 - `20260826-us-exchange-breadth-production-readiness.md`
 - `20260826-us-exchange-breadth-production-readiness.json`
+- `20260826-kr-live-rehearsal-us-breadth-v1-completion.md`

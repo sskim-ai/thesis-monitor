@@ -1163,3 +1163,26 @@ adapter is safe `PARTIAL`: collection failure cannot block packet creation, KRX 
 independent, full mode remains OFF, canary remains 1/2/3, Open Research production remains zero,
 and Production Assist remains OFF. The next action is the first naturally scheduled eligible KR
 proof; no manual task or Telegram send may manufacture it.
+
+## 36. KR Post-Deployment Rehearsal And US Exchange Breadth v1
+
+Instruction commit `d7a01015617b3fbfb16f4194d1d02c41004a4197` fixes the exact work bundle before
+execution. The KR rehearsal independently recollected the completed 2026-08-25 session through the
+deployed Kiwoom path. A bounded session guard repair now compares the target with the
+calendar-derived latest completed regular session, allowing valid post-midnight recollection while
+still rejecting older/current incomplete sessions. All 42 calls succeeded, the source SHA exactly
+matched prior stable evidence, and immutable run-38 passed 8/8 with a 1/2/3 canary simulation and
+all hard safety counts at zero.
+
+US breadth extends the existing common market adapter with official NasdaqTrader year-to-date
+advances, declines, and unchanged counts under exact scope `NASDAQ_LISTED_ISSUES`. Derived net,
+shares, and A/D relations preserve source scope and provenance. Provider failure is supplemental
+and fail-open. The run-37 target session is 2026-08-24, but the retrieved official file is published
+only through 2026-08-20; run-37 therefore remains 14/14 with breadth suppressed and no historical
+substitution. The published 2026-08-20 row proves parser, arithmetic, adapter, and classification
+value separately. NYSE remains unavailable rather than derived from a partial universe.
+
+State is safe `PARTIAL` and production-ready with P0/material P1 at 0/0. Full Free Analyst remains
+OFF, canary limits remain 1/2/3, Open Research integration remains zero, Trade AR and Production
+Assist remain OFF. The next action is read-only natural KR proof plus the first US packet whose
+exact completed-session Nasdaq row is published; do not manufacture either observation.

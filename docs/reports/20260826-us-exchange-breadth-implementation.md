@@ -1,6 +1,6 @@
 # US Exchange Breadth Implementation
 
-Implementation SHA: `0e2fc653aa3333e584224043324e4c9fe0ec4cfa`.
+Implementation SHA: `0e2fc6548e4eadc53df6acbdae8f92b397bd6522`.
 
 - Official parser/provider: `app/providers/nasdaq_trader_breadth_provider.py`
 - Fail-open persistence service: `app/services/us_exchange_breadth_service.py`

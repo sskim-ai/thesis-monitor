@@ -7,6 +7,26 @@ validation, delivery, or Scheduled Tasks.
 
 ## Current Authoritative Handoff — 2026-08-25
 
+### 2026-08-26 KR Rehearsal And US Exchange Breadth
+
+The exact instruction commit is `d7a01015617b3fbfb16f4194d1d02c41004a4197`; implementation is
+`0e2fc6548e4eadc53df6acbdae8f92b397bd6522`, with evidence commit
+`3b1fef7050dbed7eea535ba57e614c104d82e4de`. KR completed-session recollection passed 42/42,
+matched source SHA `44665b1b...` exactly, and replayed run-38 at 8/8 with no safety error. The
+post-midnight session guard now accepts only the calendar-derived latest completed regular session.
+
+Official Nasdaq breadth is integrated as a supplemental fail-open source with exact scope
+`NASDAQ_LISTED_ISSUES`. Run-37 resolves to completed session 2026-08-24, but the official YTD file
+retrieved on 2026-08-26 is published only through 2026-08-20. Therefore run-37 breadth is
+`PUBLICATION_PENDING`, injection is zero, and all 14 existing messages remain safe. A separate
+published 2026-08-20 holdout proves the contract and broad-vs-concentrated context value without
+being back-projected. NYSE official/free breadth remains unavailable.
+
+State is `US_EXCHANGE_BREADTH=PARTIAL`, production-ready, with open P0/material P1 0/0. Keep full
+mode OFF, canary 1/2/3, Open Research integration 0, Trade AR OFF, and Production Assist OFF. Wait
+for natural KR proof and a natural US exact-session publication; do not run a task or Telegram
+manually.
+
 ### Structured Data Acquisition First And Message Quality v2
 
 The exact instruction commit is `e04403c76abfd8d2f74ca91d438fccc54b479bad`; implementation is

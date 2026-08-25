@@ -438,6 +438,8 @@ issuer thesis depends directly on exchange breadth.
         "contract": "us-exchange-breadth-production-readiness-v1",
         "instruction_commit": "d7a01015617b3fbfb16f4194d1d02c41004a4197",
         "implementation_commit": implementation_sha,
+        "implementation_github_actions_run": 32867988586,
+        "implementation_github_actions_status": "passed_test_and_lint",
         "report_commit": report_commit,
         "gates": {
             "NASDAQ_OFFICIAL_BREADTH_CONTRACT": "PASS",
@@ -518,6 +520,7 @@ still requires a natural exact-session canary; no manual run or message is used 
         "20260826-us-exchange-breadth-canary-simulation.md",
         "20260826-us-exchange-breadth-production-readiness.md",
         "20260826-us-exchange-breadth-production-readiness.json",
+        "20260826-kr-live-rehearsal-us-breadth-v1-completion.md",
     ]
     _write(
         "20260826-us-exchange-breadth-artifact-index.md",

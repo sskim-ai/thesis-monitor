@@ -64,10 +64,18 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
 
     assert state["repository"] == "sskim-ai/thesis-monitor"
     assert state["branch"] == "main"
-    assert state["experimental_branch"] == "codex/kiwoom-kr-market-context-v1"
-    assert state["current_phase"] == "kiwoom_kr_market_context_pending_natural"
-    assert state["last_completed_phase"] == "kiwoom_kr_market_context_integration"
-    assert state["next_default_phase"] == "kr_kiwoom_natural_canary_review"
+    assert state["experimental_branch"] == (
+        "codex/20260826-kr-postdeploy-live-rehearsal-us-exchange-breadth-v1"
+    )
+    assert state["current_phase"] == (
+        "us_exchange_breadth_safe_partial_pending_natural"
+    )
+    assert state["last_completed_phase"] == (
+        "kr_postdeploy_rehearsal_us_exchange_breadth_v1"
+    )
+    assert state["next_default_phase"] == (
+        "natural_kr_and_exact_session_us_breadth_review"
+    )
     assert state["deployed_code_commit"] == "HEAD"
     assert state["main_code_commit"] == "HEAD"
     assert state["operating_code_commit"] == "HEAD"
@@ -88,6 +96,9 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     )
     assert state["contracts"]["structured_market_context"] == (
         "structured-market-context-v1"
+    )
+    assert state["contracts"]["nasdaq_official_exchange_breadth"] == (
+        "nasdaq-official-exchange-breadth-v1"
     )
     assert state["contracts"]["kiwoom_kr_market_context"] == (
         "kiwoom-kr-market-context-v1"

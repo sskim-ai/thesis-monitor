@@ -2,6 +2,21 @@
 
 Repository: `sskim-ai/thesis-monitor`
 
+Latest bounded integration follows exact instruction commit
+`d7a01015617b3fbfb16f4194d1d02c41004a4197`, implementation
+`0e2fc6548e4eadc53df6acbdae8f92b397bd6522`, and report commit
+`3b1fef7050dbed7eea535ba57e614c104d82e4de`. Read the 20260826 KR post-deployment reports and US
+exchange-breadth artifact index/readiness first. KR 2026-08-25 recollection is a stable 42/42 PASS
+and run-38 replay is 8/8. Official Nasdaq breadth is integrated under exact
+`NASDAQ_LISTED_ISSUES` scope, but run-37's 2026-08-24 target row was not yet published; no older row
+was substituted. NYSE remains unavailable.
+
+Inspect the next natural KR packet and the first natural US packet with a published exact-session
+Nasdaq row read-only. Confirm source/session/scope, sidecar presence, 1/2/3 selection, existing
+RSP/sector/index/rate preservation, receipts, duplicates/orphans, and provider fail-open behavior.
+Do not manually execute a task or send Telegram. Keep full mode OFF, Open Research integration 0,
+Trade AR OFF, and Production Assist OFF.
+
 Latest bounded integration follows instruction commit
 `f45c6c9d47253c0ad8cad9affcf0eb54be188117` and implementation commit
 `32178dc5b2cd4a5fd38af51514b4ac5d12d1cbd0`. Read
