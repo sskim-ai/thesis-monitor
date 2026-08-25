@@ -128,6 +128,7 @@ from app.services.structured_market_context_service import (
     load_current_cross_section,
     load_structured_market_context,
 )
+from app.services.market_session import us_market_session
 from app.services.valuation_snapshot_service import (
     _earnings_quarters,
     _latest_balance,
@@ -3305,15 +3306,20 @@ def _market_packet(
         else []
     )
     structured_publication_state = "UNKNOWN"
+    structured_session_date = (
+        us_market_session(generated_at).latest_completed_regular_session_date
+        if market == "us"
+        else run_date
+    )
     try:
         envelope = load_structured_market_context(
             market,
-            run_date,
+            structured_session_date,
             cutoff=generated_at,
         )
         cross_section = load_current_cross_section(
             market,
-            run_date,
+            structured_session_date,
             cutoff=generated_at,
         )
     except (OSError, TypeError, ValueError):

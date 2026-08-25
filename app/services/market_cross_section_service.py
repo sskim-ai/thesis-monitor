@@ -176,7 +176,9 @@ class MarketCrossSection(BaseModel):
         scopes = [item.scope for item in self.breadth_by_scope]
         if len(scopes) != len(set(scopes)):
             raise ValueError("market breadth scopes must be unique")
-        if self.market == "US" and any(scope != "US_BROAD" for scope in scopes):
+        if self.market == "US" and any(
+            scope not in {"US_BROAD", "NASDAQ_LISTED_ISSUES"} for scope in scopes
+        ):
             raise ValueError("US cross-section cannot publish KR market breadth scopes")
         if self.market == "KR" and any(
             scope not in {"KOSPI", "KOSDAQ"} for scope in scopes

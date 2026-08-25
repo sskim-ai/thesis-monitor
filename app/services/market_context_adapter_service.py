@@ -474,6 +474,57 @@ class MarketContextAdapter:
                         as_of_date=cross_section.session_date,
                     )
                 )
+            if self.market == "US":
+                denominator = breadth.eligible_count
+                relations.extend(
+                    [
+                        DeterministicMarketRelation(
+                            metric="net_advances",
+                            formula="advancers - decliners",
+                            input_refs=[ref],
+                            result=float(
+                                breadth.advance_count - breadth.decline_count
+                            ),
+                            unit="issues",
+                            scope="NASDAQ_LISTED_ISSUES",
+                            as_of_date=cross_section.session_date,
+                        ),
+                        DeterministicMarketRelation(
+                            metric="advance_share",
+                            formula=(
+                                "advancers / (advancers + decliners + unchanged)"
+                            ),
+                            input_refs=[ref],
+                            result=breadth.advance_count / denominator,
+                            unit="ratio",
+                            scope="NASDAQ_LISTED_ISSUES",
+                            as_of_date=cross_section.session_date,
+                        ),
+                        DeterministicMarketRelation(
+                            metric="decline_share",
+                            formula=(
+                                "decliners / (advancers + decliners + unchanged)"
+                            ),
+                            input_refs=[ref],
+                            result=breadth.decline_count / denominator,
+                            unit="ratio",
+                            scope="NASDAQ_LISTED_ISSUES",
+                            as_of_date=cross_section.session_date,
+                        ),
+                    ]
+                )
+                if breadth.decline_count:
+                    relations.append(
+                        DeterministicMarketRelation(
+                            metric="advance_decline_ratio",
+                            formula="advancers / decliners",
+                            input_refs=[ref],
+                            result=breadth.advance_count / breadth.decline_count,
+                            unit="ratio",
+                            scope="NASDAQ_LISTED_ISSUES",
+                            as_of_date=cross_section.session_date,
+                        )
+                    )
             return (
                 AdapterBreadth(
                     availability="AVAILABLE",

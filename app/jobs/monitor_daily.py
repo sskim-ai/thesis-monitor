@@ -26,6 +26,7 @@ from app.services.ai_assisted_delivery_service import (
     hold_ai_assisted_pilot_session,
 )
 from app.services.market_session import MarketScope
+from app.services.market_session import us_market_session
 from app.services.morning_gate import (
     initialize_morning_gate,
     run_morning_night_futures_gate,
@@ -33,6 +34,9 @@ from app.services.morning_gate import (
 from app.services.xkrx_role_target_service import (
     XkrxRoleTarget,
     resolve_xkrx_role_target,
+)
+from app.services.us_exchange_breadth_service import (
+    collect_and_persist_us_exchange_breadth,
 )
 
 
@@ -295,6 +299,23 @@ async def _run_market_job(
     result = await run_daily_monitor(session, **daily_kwargs)
     pilot_hold: dict[str, object] | None = None
     kiwoom_market_context: dict[str, object] | None = None
+    us_exchange_breadth: dict[str, object] | None = None
+    if market_scope == "us" and result.status in {"success", "already_completed"}:
+        acquisition_time = current_as_of or datetime.now(KST)
+        target_session = us_market_session(
+            acquisition_time
+        ).latest_completed_regular_session_date
+        try:
+            us_exchange_breadth = await collect_and_persist_us_exchange_breadth(
+                session_date=target_session,
+                observed_at=acquisition_time,
+            )
+        except Exception as exc:  # noqa: BLE001 - packet delivery must fail open.
+            us_exchange_breadth = {
+                "status": "UNAVAILABLE",
+                "packet_continues": True,
+                "reason": type(exc).__name__,
+            }
     if market_scope == "kr" and result.status in {"success", "already_completed"}:
         acquisition_time = current_as_of or datetime.now(KST)
         try:
@@ -391,6 +412,7 @@ async def _run_market_job(
         "macro": macro_result,
         "kr_close_market": kr_close_result,
         "kiwoom_market_context": kiwoom_market_context,
+        "us_exchange_breadth": us_exchange_breadth,
         "theses": result.model_dump(mode="json"),
     }
 

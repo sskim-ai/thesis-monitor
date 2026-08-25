@@ -37,6 +37,9 @@ class Settings(BaseSettings):
     kiwoom_rest_max_retries: int = 3
     kiwoom_rest_max_pages: int = 50
     kiwoom_kr_market_context_enabled: bool = False
+    nasdaq_us_exchange_breadth_enabled: bool = False
+    nasdaq_trader_base_url: str = "https://www.nasdaqtrader.com"
+    nasdaq_trader_timeout_seconds: float = 20.0
     alpha_vantage_cache_hours: int = 24
     alpha_vantage_request_budget: int = 30
     alpha_vantage_consensus_discrepancy_pct: float = 20.0
