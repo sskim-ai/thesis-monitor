@@ -507,6 +507,9 @@ async def test_us_primary_starts_at_0805_without_dispatching(
                 },
         )
 
+    async def fail_breadth(*args, **kwargs):
+        raise RuntimeError("official breadth unavailable")
+
     monkeypatch.setattr("app.jobs.monitor_daily.run_macro_monitor", record_macro)
     monkeypatch.setattr("app.jobs.monitor_daily.run_daily_monitor", record_daily)
     monkeypatch.setattr(
@@ -516,6 +519,10 @@ async def test_us_primary_starts_at_0805_without_dispatching(
     monkeypatch.setattr(
         "app.jobs.monitor_daily.run_morning_night_futures_gate",
         record_gate,
+    )
+    monkeypatch.setattr(
+        "app.jobs.monitor_daily.collect_and_persist_us_exchange_breadth",
+        fail_breadth,
     )
     run_date = date(2040, 8, 14)
     as_of = datetime(2040, 8, 14, 8, 5, tzinfo=KST)
@@ -540,6 +547,11 @@ async def test_us_primary_starts_at_0805_without_dispatching(
         }
     ]
     assert gate_calls == [as_of]
+    assert result["us_exchange_breadth"] == {
+        "status": "UNAVAILABLE",
+        "packet_continues": True,
+        "reason": "RuntimeError",
+    }
 
 
 @pytest.mark.anyio

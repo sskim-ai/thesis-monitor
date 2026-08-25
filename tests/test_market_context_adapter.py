@@ -347,6 +347,11 @@ def test_cross_section_concentration_requires_exact_arithmetic() -> None:
     )
 
     assert value.breadth.availability == "AVAILABLE"
+    relation_scopes = {
+        item.metric: item.scope for item in value.deterministic_relations
+    }
+    assert relation_scopes["net_advances"] == "US_BROAD"
+    assert relation_scopes["advance_share"] == "US_BROAD"
     assert value.concentration[0].result == pytest.approx(0.8)
     assert value.concentration[0].scope == "US"
     section.concentration["concentration_gap_pct"] = 0.9

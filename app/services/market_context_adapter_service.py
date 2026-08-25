@@ -476,6 +476,14 @@ class MarketContextAdapter:
                 )
             if self.market == "US":
                 denominator = breadth.eligible_count
+                relation_scope = next(
+                    (
+                        item.scope
+                        for item in cross_section.breadth_by_scope
+                        if item.breadth == breadth
+                    ),
+                    "US_BROAD",
+                )
                 relations.extend(
                     [
                         DeterministicMarketRelation(
@@ -486,7 +494,7 @@ class MarketContextAdapter:
                                 breadth.advance_count - breadth.decline_count
                             ),
                             unit="issues",
-                            scope="NASDAQ_LISTED_ISSUES",
+                            scope=relation_scope,
                             as_of_date=cross_section.session_date,
                         ),
                         DeterministicMarketRelation(
@@ -497,7 +505,7 @@ class MarketContextAdapter:
                             input_refs=[ref],
                             result=breadth.advance_count / denominator,
                             unit="ratio",
-                            scope="NASDAQ_LISTED_ISSUES",
+                            scope=relation_scope,
                             as_of_date=cross_section.session_date,
                         ),
                         DeterministicMarketRelation(
@@ -508,7 +516,7 @@ class MarketContextAdapter:
                             input_refs=[ref],
                             result=breadth.decline_count / denominator,
                             unit="ratio",
-                            scope="NASDAQ_LISTED_ISSUES",
+                            scope=relation_scope,
                             as_of_date=cross_section.session_date,
                         ),
                     ]
@@ -521,7 +529,7 @@ class MarketContextAdapter:
                             input_refs=[ref],
                             result=breadth.advance_count / breadth.decline_count,
                             unit="ratio",
-                            scope="NASDAQ_LISTED_ISSUES",
+                            scope=relation_scope,
                             as_of_date=cross_section.session_date,
                         )
                     )
