@@ -218,6 +218,29 @@ def test_invalid_free_analyst_object_falls_back_without_free_message() -> None:
     assert result.rendered is None
     assert result.fallback_reason == "free_analyst_validation_failed"
     assert result.final_delivery_mode == "DETERMINISTIC_FALLBACK"
+
+
+def test_ownership_failure_is_visible_in_fallback_safety_counts() -> None:
+    analysis = _analysis(INVENTORY_MESSAGE, "invalid-owner")
+    item = analysis.top_findings[0]
+    assert item.ownership is not None
+    invalid = replace(
+        analysis,
+        top_findings=(
+            replace(
+                item,
+                ownership=replace(item.ownership, entity_owner="Other Company"),
+            ),
+        ),
+    )
+    result = run_adaptive_renderer(
+        INVENTORY_MESSAGE,
+        benchmark_id="invalid-owner",
+        analysis_override=invalid,
+    )
+
+    assert result.status == "FALLBACK"
+    assert result.safety["entity_owner_mismatch"] == 1
     assert result.final_text == INVENTORY_MESSAGE
 
 

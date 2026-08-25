@@ -1342,6 +1342,7 @@ async def deliver_validated_ai_review(
                         deterministic_text=deterministic_text,
                         message_key=common_ai_message_key,
                         market=market,
+                        packet_owner=packet_id,
                         is_market_digest=delivery.ticker == PILOT_MARKERS[market],
                     )
                 )

@@ -426,6 +426,12 @@ def _fallback_result(
     reason: str,
 ) -> AdaptiveRendererResult:
     text = deterministic_reference or current_ai_text
+    issue_counts: dict[str, int] = {}
+    for issue in validation.get("issues", []):
+        if not isinstance(issue, dict):
+            continue
+        code = str(issue.get("code") or "")
+        issue_counts[code] = issue_counts.get(code, 0) + 1
     return AdaptiveRendererResult(
         contract=CONTRACT_VERSION,
         benchmark_id=benchmark_id,
@@ -448,16 +454,25 @@ def _fallback_result(
             "hidden_arithmetic": 0,
             "external_knowledge": 0,
             "material_information_loss": 0,
-            "entity_owner_mismatch": 0,
-            "ticker_owner_mismatch": 0,
-            "market_owner_mismatch": 0,
-            "packet_owner_mismatch": 0,
-            "support_ref_owner_mismatch": 0,
-            "industry_context_mismatch": 0,
-            "thesis_driver_owner_mismatch": 0,
-            "fact_ref_owner_mismatch": 0,
-            "relation_owner_mismatch": 0,
-            "expectation_owner_mismatch": 0,
+            "entity_owner_mismatch": issue_counts.get("entity_owner_mismatch", 0),
+            "ticker_owner_mismatch": issue_counts.get("ticker_owner_mismatch", 0),
+            "market_owner_mismatch": issue_counts.get("market_owner_mismatch", 0),
+            "packet_owner_mismatch": issue_counts.get("packet_owner_mismatch", 0),
+            "support_ref_owner_mismatch": issue_counts.get("support_ref_owner_mismatch", 0),
+            "industry_context_mismatch": (
+                issue_counts.get("industry_context_owner_mismatch", 0)
+                + issue_counts.get("industry_concept_ownership_mismatch", 0)
+                + issue_counts.get("semantic_concept_declaration_mismatch", 0)
+            ),
+            "thesis_driver_owner_mismatch": issue_counts.get(
+                "thesis_driver_owner_mismatch", 0
+            ),
+            "fact_ref_owner_mismatch": issue_counts.get("fact_ref_owner_mismatch", 0),
+            "relation_owner_mismatch": issue_counts.get("relation_owner_mismatch", 0),
+            "expectation_owner_mismatch": (
+                issue_counts.get("expectation_owner_mismatch", 0)
+                + issue_counts.get("expectation_level_mismatch", 0)
+            ),
         },
     )
 

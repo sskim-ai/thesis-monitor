@@ -195,6 +195,7 @@ def build_production_candidate(
     deterministic_text: str,
     message_key: str,
     market: str,
+    packet_owner: str | None = None,
     is_market_digest: bool = False,
 ) -> ProductionCandidate:
     """Build one fail-closed candidate without delivery or persistence side effects."""
@@ -239,7 +240,7 @@ def build_production_candidate(
             benchmark_id=message_key,
             deterministic_reference=deterministic_text,
             market=market,
-            packet_owner=message_key,
+            packet_owner=packet_owner or message_key,
         )
     except (LookupError, RuntimeError, TypeError, ValueError) as exc:
         return ProductionCandidate(

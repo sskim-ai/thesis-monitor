@@ -148,6 +148,19 @@ def test_kr_and_us_use_the_same_production_candidate_contract() -> None:
     assert us.hard_validation == kr.hard_validation == "PASS"
 
 
+def test_production_candidate_preserves_explicit_packet_owner() -> None:
+    candidate = build_production_candidate(
+        STOCK_MESSAGE,
+        deterministic_text="fallback",
+        message_key="stock:MEM",
+        market="us",
+        packet_owner="2026-08-25-us-run-37",
+    )
+
+    assert candidate.result is not None
+    assert candidate.result.analysis.semantic_owner.packet_owner == "2026-08-25-us-run-37"
+
+
 def test_invalid_candidate_fails_closed_to_its_deterministic_message() -> None:
     candidate = build_production_candidate(
         STOCK_MESSAGE,
