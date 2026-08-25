@@ -626,6 +626,12 @@
   },
   "hard_validation": "PASS",
   "instruction_commit": "3df40de53cf35ff5c47d662e0a14fbf9e30be3f7",
+  "implementation_commit": "4bcf117fa36d9a74c45e6f9c2626e38e07e52bd3",
+  "implementation_github_actions": {
+    "run_id": 32803786800,
+    "test": "PASS",
+    "lint": "PASS"
+  },
   "integration": "PASS",
   "kr_replay": "8/8",
   "new_runtime_quality": {
@@ -1150,6 +1156,13 @@
     "validated_output_sha256": "9f15e409557128072b7ac2a25ec0c74b0d89242a64991ff6227413a006ec89a9"
   },
   "next_action": "EXPLICIT_CANARY_ENABLEMENT_DECISION",
+  "common_ai_core_v1": "INTEGRATED_READY_NOT_ARMED",
+  "production_assist_final": "OFF",
+  "open_p0": [],
+  "open_material_p1": [],
+  "p2_backlog": [
+    "broad_free_analyst_generic_synthesis_repetition"
+  ],
   "open_research_excluded": true,
   "production_isolation": "PASS",
   "rendered_repetition": {

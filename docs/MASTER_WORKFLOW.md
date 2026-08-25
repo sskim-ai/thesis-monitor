@@ -1063,3 +1063,22 @@ Immutable replay produces one packet, eight held intents, a validated eight-mess
 a complete eight-message fallback with zero duplicates, orphans, sends, false-current claims, or
 Inventory parity mismatches. This closes retrospective code readiness only. The next action remains
 the first natural eligible KR packet; no task or Telegram send may be manufactured for proof.
+
+## 31. Common AI Core v1 Production Integration
+
+The Free Analyst structured analysis, natural packet adapter, evidence-lock validator, and Adaptive
+Renderer are now integrated behind `free-analyst-adaptive-production-v1`. Work started from the
+immutable instruction commit `3df40de53cf35ff5c47d662e0a14fbf9e30be3f7`; implementation commit
+`4bcf117fa36d9a74c45e6f9c2626e38e07e52bd3` passed Actions run `32803786800` Test/Lint.
+
+The authoritative Production Assist control plane is type A: shadow generation may run while the
+existing pilot gate remains the final user-visible delivery authority. Free Analyst Adaptive is
+default OFF/current and cannot bypass that gate. The bounded canary is at most one market message
+and two stock messages. Immutable US run-37 passes 14/14 and KR replay passes 8/8 with all hard
+safety counts at zero; the three-message canary simulation passes scoped runtime quality. Full
+cohort rollout remains disabled because two generic synthesis sentences form a broad-cohort P2.
+Open Research and Event Attribution production integration are zero.
+
+State is `COMMON_AI_CORE_V1=INTEGRATED_READY_NOT_ARMED`, open P0/material P1 are 0/0, Production
+Assist remains OFF, and the next action is a separate explicit canary enablement decision. Natural
+runtime evidence, KR packet proof, Inventory observation, and telemetry continue independently.

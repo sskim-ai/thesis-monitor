@@ -3,8 +3,9 @@
 | Artifact | SHA-256 |
 | --- | --- |
 | 20260825-adaptive-renderer-production-replay.md | 066cb6e42b1d1bc5c5a391aefc50fa48dd22c21e23c77bb9f5422405c0473f0c |
-| 20260825-common-ai-core-v1-readiness.json | 76156694b9d410712c5d3b0bf58fa521ca4aed8e36fe8ce51f22254440bca976 |
-| 20260825-common-ai-core-v1-readiness.md | b7d6a5dd47e330016235ff7e64904b8a791cec51b38e91c22e3c3a876a998afc |
+| 20260825-common-ai-core-v1-readiness.json | b8a96e3a30fdb5e0b3706a1a60c4954879ce66cec75ace3f6841d12f7906acbe |
+| 20260825-common-ai-core-v1-readiness.md | 927b5731344ed43661ab2e46a0fdad90e3fa64ea1074a846be7bdced8204cc9a |
+| 20260825-common-ai-core-v1-validation.md | fe7b32aba2eedf2c83277a1990c0668cedc755538e1b2c31ec44fa16491113fe |
 | 20260825-free-analyst-canary-selection-simulation.md | 65565df294eb12e704fedde77a411ca8d46618c5b1237497db8347a2247d1a3d |
 | 20260825-free-analyst-production-control-plane-audit.md | 2e7193d3fe310087023791109feae10e94e2c548e461ffff3bc15a834578b50b |
 | 20260825-free-analyst-production-delivery-integrity.md | 3129feede90100a597c039e27e2989e68bcea7692d445bc3f09959f4856c6ddd |

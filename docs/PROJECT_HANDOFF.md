@@ -5,7 +5,26 @@ with [MASTER_WORKFLOW.md](MASTER_WORKFLOW.md), [project-state.json](project-stat
 [NEXT_SESSION_PROMPT.md](NEXT_SESSION_PROMPT.md) before changing runtime policy, Knowledge,
 validation, delivery, or Scheduled Tasks.
 
-## Current Authoritative Handoff — 2026-08-24
+## Current Authoritative Handoff — 2026-08-25
+
+### Common AI Core v1 Integrated, Ready Not Armed
+
+Instruction commit `3df40de53cf35ff5c47d662e0a14fbf9e30be3f7` precedes implementation commit
+`4bcf117fa36d9a74c45e6f9c2626e38e07e52bd3`; exact implementation Actions run `32803786800`
+passes Test and Lint. The minimum production-relevant Free Analyst, evidence-lock adapter, and
+Adaptive Renderer chain is integrated. Open Research and Event Attribution are not integrated.
+
+The control plane is type A. `ai_review_mode=shadow` permits generation and validation, while the
+existing `ai_review_pilot_enabled=false` gate remains authoritative for user-visible delivery. The
+new feature defaults to OFF/current and independently requires the pilot gate. US run-37 replays
+14/14, the fixed KR negative-control replay passes 8/8, and every hard safety count is zero. A
+simulated one-market plus two-stock canary passes scoped runtime quality. The full cohort remains
+disabled due to two generic synthesis-repetition P2s.
+
+Open P0/material P1 are 0/0. `COMMON_AI_CORE_V1=INTEGRATED_READY_NOT_ARMED`; Production Assist is
+OFF. The next change requires an explicit limited-canary enablement instruction. Do not infer
+authorization from code promotion, do not set full mode, and do not manually run a task or send a
+message.
 
 ### 2026-08-24 KR Shadow Gate Packet Persistence Repair
 

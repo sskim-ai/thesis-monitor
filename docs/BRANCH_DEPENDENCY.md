@@ -167,3 +167,13 @@ It adds a non-destructive compatibility view for legacy macro briefings and exac
 registrations for investor-flow reconciliation numerics. It changes no provider, schema, task,
 feature mode, packet-persistence contract, or Production Assist setting. The 19:34 replay is
 isolated no-send evidence; natural KR proof remains pending.
+
+Common AI Core v1 production integration starts from immutable instruction commit
+`3df40de53cf35ff5c47d662e0a14fbf9e30be3f7` on base
+`f7d2552185ff2ff6d932337e7555ce02f87fa613`; implementation commit is
+`4bcf117fa36d9a74c45e6f9c2626e38e07e52bd3`. It ports only the minimum Free Analyst, evidence-lock
+adapter, and Adaptive Renderer units from their audited shadow branches. Open Research and Event
+Attribution are explicitly excluded. The integration depends on the existing AI delivery receipt,
+runtime quality, numeric/semantic/temporal validators, and Production Assist pilot gate. It adds no
+dependency on Phase 9.0E, Inventory/Trade AR, KRX breadth, macro temporal, or provider work. The
+limited canary remains `READY_NOT_ARMED`; full cohort rollout is not a descendant authorization.

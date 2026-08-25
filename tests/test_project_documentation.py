@@ -33,6 +33,10 @@ DOCUMENTS = (
     ROOT / "docs" / "architecture" / "KR_PRODUCER_SESSION_AND_DELIVERY_INTEGRITY.md",
     ROOT / "docs" / "architecture" / "KR_PRODUCTION_PACKET_AND_SHADOW_GATE_SEPARATION.md",
     ROOT / "docs" / "architecture" / "MACRO_DIGEST_TEMPORAL_ELIGIBILITY.md",
+    ROOT / "docs" / "architecture" / "COMMON_AI_CORE_V1.md",
+    ROOT / "docs" / "architecture" / "FREE_ANALYST_PRODUCTION_INTEGRATION.md",
+    ROOT / "docs" / "architecture" / "ADAPTIVE_RENDERER_PRODUCTION.md",
+    ROOT / "docs" / "architecture" / "FREE_ANALYST_CANARY_POLICY.md",
     ROOT / "docs" / "operations" / "AI_ASSISTED_PILOT.md",
     ROOT / "docs" / "operations" / "CASH_FLOW_USER_VISIBLE_KILL_SWITCH.md",
     ROOT / "docs" / "operations" / "WORKING_CAPITAL_USER_VISIBLE_KILL_SWITCH.md",
@@ -53,16 +57,16 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     assert state["repository"] == "sskim-ai/thesis-monitor"
     assert state["branch"] == "main"
     assert state["experimental_branch"] == (
-        "codex/kr-shadow-cohort-activation-gate-packet-persistence-repair"
+        "codex/free-analyst-adaptive-production-integration"
     )
     assert state["current_phase"] == (
-        "kr_shadow_gate_packet_repair_deployed_pending_natural"
+        "common_ai_core_v1_integrated_ready_not_armed"
     )
     assert state["last_completed_phase"] == (
-        "kr_shadow_cohort_activation_gate_packet_persistence_repair"
+        "free_analyst_adaptive_production_integration"
     )
     assert state["next_default_phase"] == (
-        "natural_kr_packet_persistence_review"
+        "explicit_free_analyst_limited_canary_enablement_decision"
     )
     assert state["deployed_code_commit"] == "HEAD"
     assert state["main_code_commit"] == "HEAD"
@@ -219,6 +223,20 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     assert shadow_gate["replay_duplicate_intents"] == 0
     assert shadow_gate["p0_open"] == []
     assert shadow_gate["p1_open"] == []
+    common_ai_core = state["common_ai_core_v1"]
+    assert common_ai_core["status"] == "integrated_ready_not_armed"
+    assert common_ai_core["production_assist_control_plane"] == "A"
+    assert common_ai_core["us_run37_free_analyst"] == "14/14"
+    assert common_ai_core["us_run37_adaptive"] == "14/14"
+    assert common_ai_core["kr_replay"] == "8/8"
+    assert common_ai_core["canary_simulated_selected"] == 3
+    assert common_ai_core["canary_runtime_quality"] == "passed"
+    assert common_ai_core["production_assist"] is False
+    assert common_ai_core["free_analyst_adaptive_enabled"] is False
+    assert common_ai_core["free_analyst_adaptive_canary"] == "ready_not_armed"
+    assert common_ai_core["open_research_production_integration"] == 0
+    assert common_ai_core["open_p0"] == []
+    assert common_ai_core["open_material_p1"] == []
     phase_90a = state["phase_9_0a_cash_flow_capital_efficiency"]
     assert phase_90a["status"] == "architecture_closed_ready_for_phase_9_0b"
     assert phase_90a["active_universe"] == 20

@@ -2,6 +2,18 @@
 
 Repository: `sskim-ai/thesis-monitor`
 
+Common AI Core v1 is integrated but not armed. Read
+`docs/architecture/COMMON_AI_CORE_V1.md`,
+`docs/architecture/FREE_ANALYST_PRODUCTION_INTEGRATION.md`,
+`docs/architecture/ADAPTIVE_RENDERER_PRODUCTION.md`, and
+`docs/reports/20260825-common-ai-core-v1-readiness.md`. Instruction commit is
+`3df40de53cf35ff5c47d662e0a14fbf9e30be3f7`; implementation commit is
+`4bcf117fa36d9a74c45e6f9c2626e38e07e52bd3`. Production Assist control plane A was confirmed,
+US run-37 passes 14/14, KR replay passes 8/8, and the limited three-message canary simulation passes
+scoped runtime quality with zero hard safety errors. Production Assist and the new feature remain
+OFF. The next action is an explicit limited-canary enablement decision; full mode is not authorized.
+Open Research/Event Attribution remain separate. Do not manually run Scheduled Tasks or Telegram.
+
 Latest bounded closure follows instruction commit
 `2ddec88382f0aff32fcae68a87d1aff62f60f2ef` and implementation commit
 `5c58f32e23db7a817f5f9947d2af509f6021f4ff`. The immutable 19:34 KR replay passes legacy macro
