@@ -13,6 +13,7 @@ from app.services.industry_reasoning_service import (
 )
 from app.services.numeric_semantic_registry import (
     canonical_display_value,
+    numeric_declaration_fact_ids,
     semantic_spec,
     valuation_comparison_label,
     valuation_comparison_role,
@@ -441,6 +442,7 @@ def _bind_review(
     *,
     prefix: str,
     allowed_scopes: set[str],
+    fact_catalog_value: object = None,
 ) -> tuple[list[str], list[dict[str, object]], dict[str, int]]:
     errors: list[str] = []
     bindings: list[dict[str, object]] = []
@@ -545,7 +547,35 @@ def _bind_review(
                 f"{ref_id}:{text_ref}:{role}"
             )
             continue
-        if fact_id not in facts_used:
+        declaration_fact_ids = {fact_id}
+        aliases = source.get("declaration_fact_ids")
+        if isinstance(aliases, list):
+            declaration_fact_ids.update(
+                str(value) for value in aliases if str(value)
+            )
+        fact_catalog = (
+            [item for item in fact_catalog_value if isinstance(item, dict)]
+            if isinstance(fact_catalog_value, list)
+            else []
+        )
+        source_fact = next(
+            (
+                item
+                for item in fact_catalog
+                if str(item.get("fact_id") or "") == fact_id
+            ),
+            None,
+        )
+        if source_fact is not None:
+            declaration_fact_ids.update(
+                numeric_declaration_fact_ids(
+                    fact_catalog,
+                    source_fact=source_fact,
+                    path=field_path,
+                    value=source.get("value"),
+                )
+            )
+        if facts_used.isdisjoint(declaration_fact_ids):
             errors.append(f"{prefix}:numeric_fact_ref_fact_not_declared:{ref_id}:{fact_id}")
             continue
         if source.get("registered") is not True or source.get("prose_allowed") is not True:
@@ -1162,10 +1192,13 @@ def bind_numeric_fact_references(
             stock = packet_stocks.get(ticker)
             stock_errors, stock_bindings, stock_counts = _bind_review(
                 review,
-                stock.get("numeric_registry") if isinstance(stock, dict) else None,
-                prefix=ticker,
-                allowed_scopes={"stock", "both"},
-            )
+            stock.get("numeric_registry") if isinstance(stock, dict) else None,
+            prefix=ticker,
+            allowed_scopes={"stock", "both"},
+            fact_catalog_value=(
+                stock.get("fact_catalog") if isinstance(stock, dict) else None
+            ),
+        )
             errors.extend(stock_errors)
             bindings.extend(stock_bindings)
             if isinstance(stock, dict):

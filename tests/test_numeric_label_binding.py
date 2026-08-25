@@ -398,6 +398,168 @@ def test_same_label_with_different_valuation_roles_fails_closed() -> None:
     assert result.report["label_quality"]["semantic_label_collision_count"] == 1
 
 
+def test_safe_typed_valuation_facts_declare_parent_numeric_sources() -> None:
+    facts = [
+        {
+            **_fact(
+                "valuation:current",
+                "valuation",
+                {
+                    "price_to_book": 4.5475,
+                    "historical_pb_statistics": {"current_percentile": 86.3},
+                },
+            ),
+            "interpretation_eligible": False,
+        },
+        {
+            **_fact(
+                "valuation:book",
+                "valuation_interpretation",
+                {"price_to_book": 4.5475},
+            ),
+            "interpretation_eligible": True,
+            "numeric_registry_eligible": False,
+        },
+        {
+            **_fact(
+                "valuation:historical_pb",
+                "valuation_interpretation",
+                {"historical_pb_statistics": {"current_percentile": 86.3}},
+            ),
+            "interpretation_eligible": True,
+            "numeric_registry_eligible": False,
+        },
+    ]
+    packet = {
+        "stocks": [
+            {
+                "ticker": "000660",
+                "numeric_registry": build_numeric_registry(facts),
+                "fact_catalog": facts,
+            }
+        ]
+    }
+    output = {
+        "stock_reviews": [
+            {
+                "ticker": "000660",
+                "facts_used": ["valuation:book", "valuation:historical_pb"],
+                "core_judgment": {
+                    "text": "{{numeric:pbr}}; {{numeric:history}}"
+                },
+                "numeric_claims": [],
+                "numeric_fact_refs": [
+                    _ref("pbr", "valuation:current", "fields.price_to_book"),
+                    _ref(
+                        "history",
+                        "valuation:current",
+                        "fields.historical_pb_statistics.current_percentile",
+                    ),
+                ],
+            }
+        ]
+    }
+
+    result = bind_numeric_fact_references(packet, output)
+
+    assert result.errors == ()
+    assert result.output["stock_reviews"][0]["core_judgment"]["text"] == (
+        "현재 PBR 4.55배; PBR 역사적 백분위 86.3%"
+    )
+
+
+def test_historical_declaration_cannot_own_current_pbr() -> None:
+    facts = [
+        _fact("valuation:current", "valuation", {"price_to_book": 4.5475}),
+        {
+            **_fact(
+                "valuation:historical_pb",
+                "valuation_interpretation",
+                {"historical_pb_statistics": {"current_percentile": 86.3}},
+            ),
+            "interpretation_eligible": True,
+            "numeric_registry_eligible": False,
+        },
+    ]
+    packet = {
+        "stocks": [
+            {"ticker": "GENERIC", "numeric_registry": build_numeric_registry(facts)}
+        ]
+    }
+    output = {
+        "stock_reviews": [
+            {
+                "ticker": "GENERIC",
+                "facts_used": ["valuation:historical_pb"],
+                "core_judgment": {"text": "{{numeric:pbr}}"},
+                "numeric_claims": [],
+                "numeric_fact_refs": [
+                    _ref("pbr", "valuation:current", "fields.price_to_book")
+                ],
+            }
+        ]
+    }
+
+    result = bind_numeric_fact_references(packet, output)
+
+    assert any(
+        "numeric_fact_ref_fact_not_declared:pbr:valuation:current" in error
+        for error in result.errors
+    )
+
+
+def test_unsafe_pbr_basis_remains_blocked_with_typed_declaration() -> None:
+    current = {
+        **_fact("valuation:current", "valuation", {"price_to_book": 4.5475}),
+        "field_quality": {
+            "fields.price_to_book": {
+                "state": "denied",
+                "prose_eligible": False,
+                "denial_reason": "security_basis_unverified",
+            }
+        },
+    }
+    typed = {
+        **_fact(
+            "valuation:book",
+            "valuation_interpretation",
+            {"price_to_book": 4.5475},
+        ),
+        "interpretation_eligible": True,
+        "numeric_registry_eligible": False,
+    }
+    facts = [current, typed]
+    packet = {
+        "stocks": [
+            {
+                "ticker": "GENERIC",
+                "numeric_registry": build_numeric_registry(facts),
+                "fact_catalog": facts,
+            }
+        ]
+    }
+    output = {
+        "stock_reviews": [
+            {
+                "ticker": "GENERIC",
+                "facts_used": ["valuation:book"],
+                "core_judgment": {"text": "{{numeric:pbr}}"},
+                "numeric_claims": [],
+                "numeric_fact_refs": [
+                    _ref("pbr", "valuation:current", "fields.price_to_book")
+                ],
+            }
+        ]
+    }
+
+    result = bind_numeric_fact_references(packet, output)
+
+    assert any(
+        "numeric_fact_ref_semantic_not_supported" in error
+        for error in result.errors
+    )
+
+
 @pytest.mark.parametrize(
     ("field_path", "role", "expected_role"),
     [

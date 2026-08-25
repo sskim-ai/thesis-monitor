@@ -115,6 +115,7 @@ from app.services.security_identity_service import (
 from app.services.numeric_semantic_registry import (
     NUMERIC_SEMANTICS,
     build_numeric_registry,
+    numeric_declaration_fact_ids,
     numeric_registry_coverage,
     usage_direction_matches,
     usage_matches_semantic,
@@ -3893,6 +3894,7 @@ def _validate_numeric_claims(
     prefix: str,
     review: object,
     registry_value: object,
+    fact_catalog_value: object = None,
 ) -> list[str]:
     errors: list[str] = []
     registry = {
@@ -3902,6 +3904,11 @@ def _validate_numeric_claims(
     } if isinstance(registry_value, list) else {}
     claims = getattr(review, "numeric_claims", [])
     facts_used = set(getattr(review, "facts_used", []))
+    fact_catalog = (
+        [item for item in fact_catalog_value if isinstance(item, dict)]
+        if isinstance(fact_catalog_value, list)
+        else []
+    )
     prose = {
         path: _normalized_prose(text)
         for path, text in _prose_fields(review).items()
@@ -3940,7 +3947,30 @@ def _validate_numeric_claims(
                 f"{claim.fact_id}:{claim.field_path}:{expected_scope}"
             )
             claim_is_valid = False
-        if claim.fact_id not in facts_used:
+        declaration_fact_ids = {claim.fact_id}
+        aliases = source.get("declaration_fact_ids")
+        if isinstance(aliases, list):
+            declaration_fact_ids.update(
+                str(value) for value in aliases if str(value)
+            )
+        source_fact = next(
+            (
+                item
+                for item in fact_catalog
+                if str(item.get("fact_id") or "") == claim.fact_id
+            ),
+            None,
+        )
+        if source_fact is not None:
+            declaration_fact_ids.update(
+                numeric_declaration_fact_ids(
+                    fact_catalog,
+                    source_fact=source_fact,
+                    path=claim.field_path,
+                    value=source.get("value"),
+                )
+            )
+        if facts_used.isdisjoint(declaration_fact_ids):
             errors.append(f"{prefix}:numeric_fact_not_declared:{claim.fact_id}")
             claim_is_valid = False
         if claim.unit != expected_unit:
@@ -5257,6 +5287,7 @@ def _validate_stock_review(
             review.ticker,
             review,
             stock.get("numeric_registry"),
+            stock.get("fact_catalog"),
         )
     )
     errors.extend(_cash_flow_user_visible_errors(review, stock))
@@ -5581,6 +5612,9 @@ def _validate_bound_ai_review_output(
             "market_review",
             output.market_review,
             market_context.get("numeric_registry")
+            if isinstance(market_context, dict)
+            else None,
+            market_context.get("fact_catalog")
             if isinstance(market_context, dict)
             else None,
         )

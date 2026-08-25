@@ -2030,6 +2030,45 @@ def _relation_semantic_metadata(
     }
 
 
+def numeric_declaration_fact_ids(
+    facts: list[dict[str, object]],
+    *,
+    source_fact: dict[str, object],
+    path: str,
+    value: object,
+) -> list[str]:
+    """Return exact typed valuation facts that may declare a parent numeric source."""
+    if (
+        source_fact.get("fact_type") != "valuation"
+        or not isinstance(value, (int, float))
+        or isinstance(value, bool)
+    ):
+        return []
+    parts = path.split(".")[1:]
+    aliases: list[str] = []
+    for candidate in facts:
+        if (
+            candidate.get("fact_type") != "valuation_interpretation"
+            or candidate.get("interpretation_eligible") is not True
+        ):
+            continue
+        candidate_value: object = candidate.get("fields")
+        for part in parts:
+            if not isinstance(candidate_value, dict) or part not in candidate_value:
+                candidate_value = None
+                break
+            candidate_value = candidate_value[part]
+        if (
+            isinstance(candidate_value, (int, float))
+            and not isinstance(candidate_value, bool)
+            and float(candidate_value) == float(value)
+        ):
+            candidate_id = str(candidate.get("fact_id") or "")
+            if candidate_id:
+                aliases.append(candidate_id)
+    return sorted(set(aliases))
+
+
 def build_numeric_registry(
     facts: list[dict[str, object]],
 ) -> list[dict[str, object]]:
@@ -2068,6 +2107,12 @@ def build_numeric_registry(
                     walk(item, f"{path}.{index}")
             elif isinstance(value, (int, float)) and not isinstance(value, bool):
                 spec, unit = resolve_numeric_semantic(fact_type, path, fields)
+                declaration_aliases = numeric_declaration_fact_ids(
+                    facts,
+                    source_fact=fact,
+                    path=path,
+                    value=value,
+                )
                 registered = spec is not None
                 canonical_label = (
                     _source_aware_label(spec.semantic_type, fields, path)
@@ -2141,6 +2186,9 @@ def build_numeric_registry(
                             canonical_display_value(spec, float(value), unit)
                             if spec is not None and prose_allowed
                             else None
+                        ),
+                        "declaration_fact_ids": sorted(
+                            {fact_id, *declaration_aliases}
                         ),
                         **_registry_contract_metadata(
                             fact_type,
