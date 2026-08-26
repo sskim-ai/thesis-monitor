@@ -54,14 +54,28 @@ class AdapterScopedBreadth(BaseModel):
 
 class AdapterSector(BaseModel):
     name: str
+    level: float | None = None
     return_pct: float | None = None
+    state: Literal[
+        "CURRENT_DIRECTIONAL",
+        "CURRENT_LEVEL_ONLY",
+        "PUBLICATION_PENDING",
+        "SOURCE_UNAVAILABLE",
+    ]
     basis: Literal["actual_sector_breadth", "sector_price_proxy"]
     source_ref: str
 
 
 class AdapterSizeContext(BaseModel):
     name: str
+    level: float | None = None
     return_pct: float | None = None
+    state: Literal[
+        "CURRENT_DIRECTIONAL",
+        "CURRENT_LEVEL_ONLY",
+        "PUBLICATION_PENDING",
+        "SOURCE_UNAVAILABLE",
+    ]
     basis: str
     as_of_date: date
     source_ref: str
@@ -163,6 +177,22 @@ def _fact_date(fact: dict[str, object]) -> date | None:
         return date.fromisoformat(str(fact.get("as_of_date") or "")[:10])
     except ValueError:
         return None
+
+
+def _structured_state(fields: dict[str, object]) -> str:
+    state = str(fields.get("structured_state") or "")
+    if state in {
+        "CURRENT_DIRECTIONAL",
+        "CURRENT_LEVEL_ONLY",
+        "PUBLICATION_PENDING",
+        "SOURCE_UNAVAILABLE",
+    }:
+        return state
+    if _number(fields.get("return_pct")) is not None:
+        return "CURRENT_DIRECTIONAL"
+    if _number(fields.get("level")) is not None:
+        return "CURRENT_LEVEL_ONLY"
+    return "SOURCE_UNAVAILABLE"
 
 
 def _point_in_time_facts(
@@ -362,7 +392,9 @@ class MarketContextAdapter:
             values.extend(
                 AdapterSizeContext(
                     name=item.sector,
+                    level=None,
                     return_pct=item.return_pct,
+                    state="CURRENT_DIRECTIONAL",
                     basis="official_size_index",
                     as_of_date=cross_section.session_date,
                     source_ref=(
@@ -385,7 +417,9 @@ class MarketContextAdapter:
             values.append(
                 AdapterSizeContext(
                     name=str(fields.get("label") or symbol),
+                    level=_number(fields.get("level")),
                     return_pct=_number(fields.get("return_pct")),
+                    state=_structured_state(fields),
                     basis=(
                         "equal_weight_price_proxy"
                         if symbol == "RSP"
@@ -594,7 +628,9 @@ class MarketContextAdapter:
             values.extend(
                 AdapterSector(
                     name=item.sector,
+                    level=None,
                     return_pct=item.return_pct,
+                    state="CURRENT_DIRECTIONAL",
                     basis=item.metric_role,
                     source_ref=(
                         item.source_ref
@@ -613,12 +649,18 @@ class MarketContextAdapter:
                 values.append(
                     AdapterSector(
                         name=str(fields.get("label") or fields.get("series_code") or ""),
+                        level=_number(fields.get("level")),
                         return_pct=_number(fields.get("return_pct")),
+                        state=_structured_state(fields),
                         basis="sector_price_proxy",
                         source_ref=str(fact.get("fact_id") or ""),
                     )
                 )
-        return [item for item in values if item.name]
+        return [
+            item
+            for item in values
+            if item.name and item.state != "SOURCE_UNAVAILABLE"
+        ]
 
     def get_market_flow_context(
         self,

@@ -415,12 +415,28 @@ NUMERIC_SEMANTICS = {
         "signed_percentage",
         scope="both",
     ),
+    "sector_proxy_level": _spec(
+        "sector_proxy_level",
+        ("index",),
+        ("섹터 ETF 수준", "sector proxy level"),
+        (r"(?:soxx|xl[a-z]{1,2}|섹터).*(?:수준|종가|level|close)",),
+        "index",
+        scope="market",
+    ),
     "style_return_pct": _spec(
         "style_return_pct",
         ("pct",),
         ("S&P500 동일가중 등락률", "RSP 등락률"),
         (r"(?:s&p\s*500\s*동일가중|rsp).*(?:등락|수익|상승|하락)",),
         "signed_percentage",
+        scope="market",
+    ),
+    "style_proxy_level": _spec(
+        "style_proxy_level",
+        ("index",),
+        ("S&P500 동일가중 수준", "RSP level"),
+        (r"(?:s&p\s*500\s*동일가중|rsp).*(?:수준|종가|level|close)",),
+        "index",
         scope="market",
     ),
     "growth_relative_return_pct": _spec(
@@ -1383,7 +1399,13 @@ _FIELD_RULES = (
         ("market_sector",), r"fields\.return_pct", "sector_return_pct", "pct"
     ),
     NumericFieldRule(
+        ("market_sector",), r"fields\.level", "sector_proxy_level", "index"
+    ),
+    NumericFieldRule(
         ("market_style",), r"fields\.return_pct", "style_return_pct", "pct"
+    ),
+    NumericFieldRule(
+        ("market_style",), r"fields\.level", "style_proxy_level", "index"
     ),
     NumericFieldRule(
         ("market_growth_relative",),
@@ -1609,7 +1631,9 @@ _FINANCIAL_PERIOD_LABEL_SEMANTICS = {
 _INSTRUMENT_LABEL_SEMANTICS = {
     "index_return_pct",
     "sector_return_pct",
+    "sector_proxy_level",
     "style_return_pct",
+    "style_proxy_level",
     "growth_relative_return_pct",
     "sector_relative_return_pct",
     "style_relative_return_pct",
@@ -1701,10 +1725,18 @@ def _source_aware_label(
             return "반도체 업종 등락률"
         if series:
             return f"{series} 업종 등락률"
+    if semantic_type == "sector_proxy_level":
+        series = str(fields.get("series_code") or "")
+        if series:
+            return f"{series} 수준"
     if semantic_type == "style_return_pct":
         series = str(fields.get("series_code") or "")
         if series == "RSP":
             return "S&P500 동일가중 등락률"
+    if semantic_type == "style_proxy_level":
+        series = str(fields.get("series_code") or "")
+        if series == "RSP":
+            return "S&P500 동일가중 수준"
     if semantic_type in {
         "growth_relative_return_pct",
         "sector_relative_return_pct",

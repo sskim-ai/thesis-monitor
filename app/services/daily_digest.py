@@ -43,7 +43,19 @@ SERIES_LABELS = {
     "SPY": "S&P500",
     "QQQ": "Nasdaq",
     "IWM": "Russell 2000",
+    "RSP": "S&P500 동일가중",
     "SOXX": "반도체",
+    "XLB": "소재",
+    "XLC": "커뮤니케이션 서비스",
+    "XLE": "에너지",
+    "XLF": "금융",
+    "XLI": "산업재",
+    "XLK": "정보기술",
+    "XLP": "필수소비재",
+    "XLRE": "부동산",
+    "XLU": "유틸리티",
+    "XLV": "헬스케어",
+    "XLY": "경기소비재",
     "DGS10": "미국 10년물 금리",
     "DFII10": "미국 10년물 실질금리",
     "T10YIE": "미국 기대인플레이션",
@@ -266,6 +278,26 @@ def _prior_prefix(item: dict[str, object] | None) -> str:
     return "직전 거래일 "
 
 
+def _temporal_prefix(item: dict[str, object] | None) -> str:
+    prior = _prior_prefix(item)
+    if prior:
+        return prior
+    temporal = (item or {}).get("temporal")
+    if not isinstance(temporal, dict):
+        return ""
+    if (
+        temporal.get("temporal_role") != "CURRENT_OBSERVATION"
+        or temporal.get("cadence_basis") != "official_release_occurrence"
+    ):
+        return ""
+    observed = str((item or {}).get("observed_at") or "")[:10]
+    try:
+        month_day = date.fromisoformat(observed).strftime("%-m/%-d")
+    except ValueError:
+        month_day = observed
+    return f"공식 관측({month_day}) " if month_day else "공식 관측 "
+
+
 def _number(item: dict[str, object] | None, key: str) -> float | None:
     if not _usable(item):
         return None
@@ -284,6 +316,8 @@ def _direction(value: float, positive: str, negative: str) -> str:
 
 def _important_changes(
     observations: dict[str, dict[str, object]],
+    *,
+    market_scope: MarketScope = "all",
 ) -> list[str]:
     def item(code: str) -> dict[str, object] | None:
         value = observations.get(code)
@@ -305,6 +339,10 @@ def _important_changes(
     vix = _number(vix_item, "change_pct")
     usdkrw = _number(usdkrw_item, "change_pct")
     oil = _number(oil_item, "change_pct")
+    xle_item = item("XLE") if market_scope in {"all", "us"} else None
+    xlf_item = item("XLF") if market_scope in {"all", "us"} else None
+    xle = _number(xle_item, "change_pct")
+    xlf = _number(xlf_item, "change_pct")
     candidates: list[tuple[float, bool, str]] = []
 
     if spy is not None:
@@ -312,7 +350,7 @@ def _important_changes(
             (
                 abs(spy) / SIGNIFICANCE.sp500_pct,
                 abs(spy) >= SIGNIFICANCE.sp500_pct,
-                f"{_prior_prefix(spy_item)}S&P500이 {spy:+.1f}% 움직여 시장 전반의 위험선호가 "
+                f"{_temporal_prefix(spy_item)}S&P500이 {spy:+.1f}% 움직여 시장 전반의 위험선호가 "
                 f"{_direction(spy, '개선됐습니다.', '약해졌습니다.')}",
             )
         )
@@ -328,7 +366,7 @@ def _important_changes(
             (
                 abs(gap) / SIGNIFICANCE.nasdaq_relative_pp,
                 abs(gap) >= SIGNIFICANCE.nasdaq_relative_pp,
-                f"{_prior_prefix(qqq_item)}Nasdaq이 S&P500을 {abs(gap):.1f}%p "
+                f"{_temporal_prefix(qqq_item)}Nasdaq이 S&P500을 {abs(gap):.1f}%p "
                 f"{_direction(gap, '웃돌아 성장주 상대강도가 확인됐습니다.', '밑돌아 성장주 주도력이 약했습니다.')}",
             )
         )
@@ -344,7 +382,7 @@ def _important_changes(
             (
                 abs(gap) / SIGNIFICANCE.soxx_relative_pp,
                 abs(gap) >= SIGNIFICANCE.soxx_relative_pp,
-                f"{_prior_prefix(soxx_item)}반도체가 S&P500을 {abs(gap):.1f}%p "
+                f"{_temporal_prefix(soxx_item)}반도체가 S&P500을 {abs(gap):.1f}%p "
                 f"{_direction(gap, '웃돌았습니다.', '밑돌았습니다.')} "
                 "가격 반응은 수요 심리 신호일 뿐, 실제 AI CAPEX 투자 논리 변화는 주문과 실적으로 확인해야 합니다.",
             )
@@ -354,7 +392,7 @@ def _important_changes(
             (
                 abs(nominal) / SIGNIFICANCE.us10y_bp,
                 abs(nominal) >= SIGNIFICANCE.us10y_bp,
-                f"{_prior_prefix(nominal_item)}미국 10년물 금리가 {nominal:+.0f}bp 움직여 "
+                f"{_temporal_prefix(nominal_item)}미국 10년물 금리가 {nominal:+.0f}bp 움직여 "
                 f"{_direction(nominal, '장기 자산 할인율에 부담을 더했습니다.', '장기 자산 할인율 부담을 낮췄습니다.')}",
             )
         )
@@ -363,7 +401,7 @@ def _important_changes(
             (
                 abs(real) / SIGNIFICANCE.real_yield_bp,
                 abs(real) >= SIGNIFICANCE.real_yield_bp,
-                f"{_prior_prefix(real_item)}미국 실질금리가 {real:+.0f}bp 움직였습니다. "
+                f"{_temporal_prefix(real_item)}미국 실질금리가 {real:+.0f}bp 움직였습니다. "
                 f"{_direction(real, '기업 수요와 별개로 성장주 멀티플에는 부정적입니다.', '성장주 멀티플에는 우호적입니다.')}",
             )
         )
@@ -372,7 +410,7 @@ def _important_changes(
             (
                 abs(vix) / SIGNIFICANCE.vix_pct,
                 abs(vix) >= SIGNIFICANCE.vix_pct,
-                f"{_prior_prefix(vix_item)}VIX가 {vix:+.1f}% 움직여 단기 위험회피가 "
+                f"{_temporal_prefix(vix_item)}VIX가 {vix:+.1f}% 움직여 단기 위험회피가 "
                 f"{_direction(vix, '커졌습니다.', '완화됐습니다.')}",
             )
         )
@@ -381,7 +419,7 @@ def _important_changes(
             (
                 abs(usdkrw) / SIGNIFICANCE.usdkrw_pct,
                 abs(usdkrw) >= SIGNIFICANCE.usdkrw_pct,
-                f"{_prior_prefix(usdkrw_item)}원/달러 환율이 {usdkrw:+.1f}% 움직여 국내 수입비용과 외국인 수급의 환율 경로를 점검해야 합니다.",
+                f"{_temporal_prefix(usdkrw_item)}원/달러 환율이 {usdkrw:+.1f}% 움직여 국내 수입비용과 외국인 수급의 환율 경로를 점검해야 합니다.",
             )
         )
     if oil is not None:
@@ -389,7 +427,23 @@ def _important_changes(
             (
                 abs(oil) / SIGNIFICANCE.wti_pct,
                 abs(oil) >= SIGNIFICANCE.wti_pct,
-                f"{_prior_prefix(oil_item)}WTI가 {oil:+.1f}% 움직여 물가와 운송·에너지 업종의 비용·가격 경로에 영향을 줬습니다.",
+                f"{_temporal_prefix(oil_item)}WTI가 {oil:+.1f}% 움직여 물가와 운송·에너지 업종의 비용·가격 경로에 영향을 줬습니다.",
+            )
+        )
+    if (
+        xle is not None
+        and xlf is not None
+        and xle * xlf < 0
+        and _temporal_role(xle_item) == _temporal_role(xlf_item)
+        and str((xle_item or {}).get("observed_at"))[:10]
+        == str((xlf_item or {}).get("observed_at"))[:10]
+    ):
+        candidates.append(
+            (
+                max(abs(xle), abs(xlf)),
+                True,
+                f"{_temporal_prefix(xle_item)}에너지 {xle:+.1f}%, 금융 {xlf:+.1f}%로 "
+                "업종 방향이 갈려 지수 흐름을 광범위 위험선호로 확대 해석하지 않습니다.",
             )
         )
 
@@ -495,6 +549,8 @@ def _axis_explanations(
 def _macro_interpretation(
     briefing: MacroBriefing,
     previous_briefing: MacroBriefing | None = None,
+    *,
+    market_scope: MarketScope = "all",
 ) -> MacroInterpretation:
     regime = _dict(briefing.regime_summary)
     market = _temporal_market_summary(briefing, previous_briefing)
@@ -623,7 +679,7 @@ def _macro_interpretation(
         }.get(str(regime.get("label", "mixed")), str(regime.get("label", "혼합"))),
         confidence=float(regime.get("confidence", 0) or 0),
         one_line=one_line,
-        key_changes=_important_changes(observations),
+        key_changes=_important_changes(observations, market_scope=market_scope),
         axis_explanations=_axis_explanations(regime, observations, temporal),
         integrated_view=integrated,
         market_assumptions=assumptions,
@@ -1017,7 +1073,11 @@ def build_daily_digest(
         digest_date=run_date,
         market_scope=market_scope,
         macro=(
-            _macro_interpretation(briefing, previous_briefing)
+            _macro_interpretation(
+                briefing,
+                previous_briefing,
+                market_scope=market_scope,
+            )
             if briefing is not None
             else _unavailable_macro()
         ),

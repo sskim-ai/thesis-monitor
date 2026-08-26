@@ -20,7 +20,24 @@ REFERENCE_LAGGING = "REFERENCE_LAGGING"
 STALE_FOR_DAILY_SIGNAL = "STALE_FOR_DAILY_SIGNAL"
 UNAVAILABLE = "UNAVAILABLE"
 
-SESSION_BOUND_SERIES = {"SPY", "QQQ", "IWM", "SOXX"}
+SESSION_BOUND_SERIES = {
+    "SPY",
+    "QQQ",
+    "IWM",
+    "RSP",
+    "SOXX",
+    "XLB",
+    "XLC",
+    "XLE",
+    "XLF",
+    "XLI",
+    "XLK",
+    "XLP",
+    "XLRE",
+    "XLU",
+    "XLV",
+    "XLY",
+}
 RELEASE_BOUND_SERIES = {
     "DGS10",
     "DFII10",
@@ -50,7 +67,30 @@ class TemporalDecision:
     important_change_eligible: bool
     prior_context_eligible: bool
     regime_state_eligible: bool
+    structured_state: str
     reason: str
+
+
+def _has_directional_change(item: dict[str, object]) -> bool:
+    return any(
+        isinstance(item.get(field), (int, float))
+        and not isinstance(item.get(field), bool)
+        for field in ("change_pct", "change_value")
+    )
+
+
+def _structured_state(
+    item: dict[str, object],
+    *,
+    role: str,
+) -> str:
+    if role in {REFERENCE_LAGGING, STALE_FOR_DAILY_SIGNAL, UNAVAILABLE}:
+        return "SOURCE_UNAVAILABLE"
+    return (
+        "CURRENT_DIRECTIONAL"
+        if _has_directional_change(item)
+        else "CURRENT_LEVEL_ONLY"
+    )
 
 
 def _date_value(value: object) -> date | None:
@@ -165,6 +205,7 @@ def classify_observation(
         basis = "unknown_cadence_fail_closed"
         reason = "series_cadence_not_registered"
 
+    directional = _has_directional_change(item)
     return TemporalDecision(
         series_code=code,
         temporal_role=role,
@@ -175,13 +216,12 @@ def classify_observation(
         frequency=frequency,
         market_session=market_session,
         new_since_previous_briefing=changed,
-        today_signal_eligible=role == CURRENT_OBSERVATION,
-        important_change_eligible=role in {
-            CURRENT_OBSERVATION,
-            PRIOR_MARKET_SESSION,
-        },
+        today_signal_eligible=role == CURRENT_OBSERVATION and directional,
+        important_change_eligible=directional
+        and role in {CURRENT_OBSERVATION, PRIOR_MARKET_SESSION},
         prior_context_eligible=role == PRIOR_MARKET_SESSION,
         regime_state_eligible=quality in USABLE_QUALITY,
+        structured_state=_structured_state(item, role=role),
         reason=reason,
     )
 
@@ -251,6 +291,7 @@ def _classify_legacy_observation(
         basis = "legacy_unknown_cadence_fail_closed"
         reason = "series_cadence_not_registered"
 
+    directional = _has_directional_change(item)
     return TemporalDecision(
         series_code=code,
         temporal_role=role,
@@ -261,13 +302,12 @@ def _classify_legacy_observation(
         frequency=frequency,
         market_session=market_session,
         new_since_previous_briefing=role == CURRENT_OBSERVATION,
-        today_signal_eligible=role == CURRENT_OBSERVATION,
-        important_change_eligible=role in {
-            CURRENT_OBSERVATION,
-            PRIOR_MARKET_SESSION,
-        },
+        today_signal_eligible=role == CURRENT_OBSERVATION and directional,
+        important_change_eligible=directional
+        and role in {CURRENT_OBSERVATION, PRIOR_MARKET_SESSION},
         prior_context_eligible=role == PRIOR_MARKET_SESSION,
         regime_state_eligible=quality in USABLE_QUALITY,
+        structured_state=_structured_state(item, role=role),
         reason=reason,
     )
 
@@ -353,6 +393,11 @@ def _temporal_context(
     current_series = sorted(
         code for code, decision in decisions.items() if decision.today_signal_eligible
     )
+    level_only_series = sorted(
+        code
+        for code, decision in decisions.items()
+        if decision.structured_state == "CURRENT_LEVEL_ONLY"
+    )
     prior_series = sorted(
         code for code, decision in decisions.items() if decision.prior_context_eligible
     )
@@ -376,6 +421,7 @@ def _temporal_context(
         ),
         "decisions": {code: asdict(value) for code, value in decisions.items()},
         "current_series": current_series,
+        "current_level_only_series": level_only_series,
         "prior_market_session_series": prior_series,
         "reference_series": reference_series,
         "suppressed_series": suppressed_series,

@@ -3708,6 +3708,20 @@ def _read_json(path: Path) -> dict[str, object]:
     return value
 
 
+def _packet_target_session(packet: dict[str, object]) -> date | None:
+    market_context = _dict(packet.get("market_context"))
+    adapter_context = _dict(market_context.get("adapter_context"))
+    session_context = _dict(adapter_context.get("session_context"))
+    value = (
+        session_context.get("latest_completed_regular_session_date")
+        or adapter_context.get("session_date")
+    )
+    try:
+        return date.fromisoformat(str(value or "")[:10])
+    except ValueError:
+        return None
+
+
 def claim_next_ai_review_packet(
     market: AIReviewMarket,
     *,
@@ -3728,6 +3742,11 @@ def claim_next_ai_review_packet(
         minutes=lease_minutes
         if lease_minutes is not None
         else settings.ai_review_claim_lease_minutes
+    )
+    expected_us_session = (
+        us_market_session(current).latest_completed_regular_session_date
+        if market == "us"
+        else None
     )
     candidates: dict[tuple[str, str, str], tuple[datetime, Path, dict[str, object]]] = {}
     for packet_path in _directory("inbox").glob("*.json"):
@@ -3751,6 +3770,11 @@ def claim_next_ai_review_packet(
                 else ""
             )
             if not knowledge_sha:
+                continue
+            if (
+                expected_us_session is not None
+                and _packet_target_session(packet) != expected_us_session
+            ):
                 continue
         except (KeyError, ValueError, json.JSONDecodeError):
             continue
@@ -3796,6 +3820,11 @@ def claim_next_ai_review_packet(
                 "packet_id": packet_id,
                 "claim_id": claim_id,
                 "market": market,
+                "target_session": (
+                    expected_us_session.isoformat()
+                    if expected_us_session is not None
+                    else None
+                ),
                 "analysis_policy_version": policy,
                 "knowledge_sha256": knowledge_sha,
                 "chart_knowledge_sha256": str(
@@ -3819,7 +3848,14 @@ def claim_next_ai_review_packet(
             temp_output_path=str(temp_path),
             final_output_path=str(final_path),
         )
-    return ClaimResult(status="no_pending_packet", reason="no_eligible_unclaimed_packet")
+    return ClaimResult(
+        status="no_pending_packet",
+        reason=(
+            "wait_current_packet"
+            if expected_us_session is not None
+            else "no_eligible_unclaimed_packet"
+        ),
+    )
 
 
 def _review_text(review: AIStockReview) -> str:

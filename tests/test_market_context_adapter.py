@@ -158,6 +158,45 @@ def test_us_adapter_normalizes_indices_sector_and_provenance_relations() -> None
     assert "us_participant_flow_not_supported" in value.data_gaps
 
 
+def test_us_adapter_preserves_level_only_rsp_without_direction_leak() -> None:
+    facts = [
+        _fact(
+            "market:style:RSP",
+            "market_style",
+            {
+                "series_code": "RSP",
+                "label": "S&P500 동일가중",
+                "level": 221.77,
+                "structured_state": "CURRENT_LEVEL_ONLY",
+            },
+        ),
+        _fact(
+            "market:sector:XLE",
+            "market_sector",
+            {
+                "series_code": "XLE",
+                "label": "에너지",
+                "level": 85.0,
+                "return_pct": -1.6638,
+                "structured_state": "CURRENT_DIRECTIONAL",
+            },
+        ),
+    ]
+
+    value = UsMarketContextAdapter().normalize(
+        assessment_date=ASSESSMENT,
+        as_of=CUTOFF,
+        cutoff=CUTOFF,
+        fact_catalog=facts,
+    )
+
+    assert value.size_context[0].state == "CURRENT_LEVEL_ONLY"
+    assert value.size_context[0].level == 221.77
+    assert value.size_context[0].return_pct is None
+    assert value.sectors[0].state == "CURRENT_DIRECTIONAL"
+    assert value.sectors[0].return_pct == -1.6638
+
+
 def test_relative_relation_requires_inputs_same_date_and_exact_arithmetic() -> None:
     facts = [
         _fact(

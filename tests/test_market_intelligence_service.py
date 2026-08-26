@@ -168,6 +168,43 @@ def test_us_indices_are_local_proxies_but_breadth_remains_unknown() -> None:
     assert result["coverage"]["breadth"]["status"] == "unavailable"
 
 
+def test_rsp_level_only_and_directional_sector_states_reach_fact_catalog() -> None:
+    observations = [
+        {
+            **_observation("RSP", "style", 221.77, 0.0),
+            "change_pct": None,
+            "temporal": {
+                "temporal_role": "CURRENT_OBSERVATION",
+                "today_signal_eligible": False,
+                "important_change_eligible": False,
+                "structured_state": "CURRENT_LEVEL_ONLY",
+                "reason": "current_level_without_direction",
+            },
+        },
+        _observation("XLE", "sector", 85.0, -1.6638),
+        _observation("XLF", "sector", 52.0, 0.1546),
+    ]
+    result = build_market_intelligence(
+        _briefing(observations), RUN_DATE, _stocks(), [], market="us"
+    )
+    facts = {item["fact_id"]: item for item in result["fact_catalog"]}
+
+    rsp = facts["market:style:RSP"]["fields"]
+    assert rsp["level"] == 221.77
+    assert rsp["structured_state"] == "CURRENT_LEVEL_ONLY"
+    assert "return_pct" not in rsp
+    assert "market:relative:RSP:SPY" not in facts
+    assert facts["market:sector:XLE"]["fields"]["structured_state"] == (
+        "CURRENT_DIRECTIONAL"
+    )
+    assert facts["market:relative:XLE:XLF"]["fields"]["relative_return_pct"] == (
+        -1.6638 - 0.1546
+    )
+    assert numeric_registry_coverage([build_numeric_registry(result["fact_catalog"])])[
+        "ready"
+    ] is True
+
+
 def test_verified_fresh_cross_section_adds_breadth_facts_without_thesis_mutation() -> None:
     section = MarketCrossSection(
         market="US",

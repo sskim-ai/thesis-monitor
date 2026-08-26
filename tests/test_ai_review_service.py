@@ -1009,6 +1009,64 @@ def test_new_packet_version_supersedes_older_run_snapshot_for_claiming(
     assert backup.status == "no_pending_packet"
 
 
+def test_us_claim_waits_for_current_target_session_and_never_claims_stale(
+    monkeypatch,
+    tmp_path: Path,
+) -> None:
+    _settings(monkeypatch, tmp_path)
+    with Session(_engine()) as session:
+        _seed(session)
+        stale_result = write_ai_review_packet(
+            session,
+            RUN_DATE,
+            "us",
+            generated_at=datetime(2026, 8, 14, 0, 0, tzinfo=UTC),
+        )
+        stale_packet = json.loads(Path(stale_result.path).read_text(encoding="utf-8"))
+        stale_packet["market_context"]["adapter_context"]["session_context"][
+            "latest_completed_regular_session_date"
+        ] = "2026-08-12"
+        Path(stale_result.path).write_text(
+            json.dumps(stale_packet, ensure_ascii=False),
+            encoding="utf-8",
+        )
+
+        waiting = claim_next_ai_review_packet(
+            "us",
+            owner="primary",
+            now=datetime(2026, 8, 14, 0, 10, tzinfo=UTC),
+        )
+
+        assessment = session.exec(
+            select(ThesisAssessment).where(ThesisAssessment.assessment_date == RUN_DATE)
+        ).one()
+        assessment.summary = "Current target-session packet."
+        session.add(assessment)
+        session.commit()
+        current_result = write_ai_review_packet(
+            session,
+            RUN_DATE,
+            "us",
+            generated_at=datetime(2026, 8, 14, 0, 11, tzinfo=UTC),
+        )
+        claimed = claim_next_ai_review_packet(
+            "us",
+            owner="backup",
+            now=datetime(2026, 8, 14, 0, 12, tzinfo=UTC),
+        )
+
+    assert waiting.status == "no_pending_packet"
+    assert waiting.reason == "wait_current_packet"
+    assert list((tmp_path / "ai_review" / "claims").glob("*.json")) == [
+        Path(claimed.claim_path)
+    ]
+    assert current_result.packet_id != stale_result.packet_id
+    assert claimed.status == "claimed"
+    assert claimed.packet_id == current_result.packet_id
+    claim_payload = json.loads(Path(claimed.claim_path).read_text(encoding="utf-8"))
+    assert claim_payload["target_session"] == "2026-08-13"
+
+
 def test_output_guardrails_reject_mismatch_hallucination_and_bad_basis(
     monkeypatch,
     tmp_path: Path,

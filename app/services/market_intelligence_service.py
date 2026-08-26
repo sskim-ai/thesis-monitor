@@ -159,6 +159,9 @@ def _observation_fact(
     run_date: date,
 ) -> dict[str, object]:
     _category, fact_type, label = _SERIES[series_code]
+    value = _number(item, "value")
+    change_pct = _number(item, "change_pct")
+    change_value = _number(item, "change_value")
     fields: dict[str, object] = {
         "series_code": series_code,
         "label": label,
@@ -180,6 +183,14 @@ def _observation_fact(
                     temporal.get("important_change_eligible", False)
                 ),
                 "temporal_reason": str(temporal.get("reason") or ""),
+                "structured_state": str(
+                    temporal.get("structured_state")
+                    or (
+                        "CURRENT_DIRECTIONAL"
+                        if change_pct is not None or change_value is not None
+                        else "CURRENT_LEVEL_ONLY"
+                    )
+                ),
             }
         )
     else:
@@ -188,15 +199,19 @@ def _observation_fact(
                 "temporal_role": "CURRENT_OBSERVATION",
                 "today_signal_eligible": True,
                 "important_change_eligible": True,
+                "structured_state": (
+                    "CURRENT_DIRECTIONAL"
+                    if change_pct is not None or change_value is not None
+                    else "CURRENT_LEVEL_ONLY"
+                ),
             }
         )
     if item.get("market_session"):
         fields["market_session"] = str(item["market_session"])
 
-    value = _number(item, "value")
-    change_pct = _number(item, "change_pct")
-    change_value = _number(item, "change_value")
     if fact_type in {"market_index", "market_sector", "market_style"}:
+        if value is not None and fact_type in {"market_sector", "market_style"}:
+            fields["level"] = value
         if change_pct is not None:
             fields["return_pct"] = change_pct
     elif fact_type in {
@@ -548,8 +563,13 @@ def build_market_intelligence(
         and str(item.get("quality_status") or "fresh") in USABLE_QUALITY
     }
     facts = list(facts_by_series.values())
-    for subject in ("QQQ", "SOXX", "RSP"):
-        relative = _relative_fact(subject, "SPY", facts_by_series)
+    for subject, benchmark in (
+        ("QQQ", "SPY"),
+        ("SOXX", "SPY"),
+        ("RSP", "SPY"),
+        ("XLE", "XLF"),
+    ):
+        relative = _relative_fact(subject, benchmark, facts_by_series)
         if relative is not None:
             facts.append(relative)
     cross_section_facts: list[dict[str, object]] = []

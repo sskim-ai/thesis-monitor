@@ -218,6 +218,59 @@ def test_normal_after_close_session_marks_new_prices_current() -> None:
     assert context["daily_axes"]["risk_appetite"] == 2
 
 
+def test_current_rsp_level_without_return_stays_level_only() -> None:
+    current = _summary(_row("RSP", "2026-08-24T20:00:00+00:00"))
+    context = build_temporal_context(
+        current,
+        {},
+        as_of=datetime(2026, 8, 25, 1, 0, tzinfo=timezone.utc),
+    )
+
+    decision = context["decisions"]["RSP"]
+    assert decision["temporal_role"] == CURRENT_OBSERVATION
+    assert decision["structured_state"] == "CURRENT_LEVEL_ONLY"
+    assert decision["today_signal_eligible"] is False
+    assert decision["important_change_eligible"] is False
+    assert context["current_series"] == []
+    assert context["current_level_only_series"] == ["RSP"]
+
+
+def test_release_observation_change_renders_source_date_not_today() -> None:
+    current = _summary(
+        _row("DGS10", "2026-08-24T00:00:00+00:00", change_value=0.06),
+    )
+    previous = _summary(
+        _row("DGS10", "2026-08-21T00:00:00+00:00", change_value=0.01),
+    )
+    context = build_temporal_context(
+        current,
+        previous,
+        as_of=datetime(2026, 8, 25, 23, 5, tzinfo=timezone.utc),
+    )
+    macro = interpret_macro_briefing(_briefing(current, context))
+
+    assert any(item.startswith("공식 관측(8/24)") for item in macro.key_changes)
+    assert all("오늘 미국 10년물" not in item for item in macro.key_changes)
+
+
+def test_us_sector_dispersion_uses_only_directional_same_session_facts() -> None:
+    current = _summary(
+        _row("XLE", "2026-08-24T20:00:00+00:00", change_pct=-1.6638),
+        _row("XLF", "2026-08-24T20:00:00+00:00", change_pct=0.1546),
+        _row("RSP", "2026-08-24T20:00:00+00:00"),
+    )
+    context = build_temporal_context(
+        current,
+        {},
+        as_of=datetime(2026, 8, 25, 1, 0, tzinfo=timezone.utc),
+    )
+    briefing = _briefing(current, context)
+    macro = interpret_macro_briefing(briefing)
+
+    assert any("에너지 -1.7%, 금융 +0.2%" in item for item in macro.key_changes)
+    assert all("RSP" not in item and "동일가중" not in item for item in macro.key_changes)
+
+
 def test_old_session_and_bad_quality_fail_closed() -> None:
     current = _summary(
         _row("SPY", "2026-08-20T20:00:00+00:00", change_pct=2.0),
@@ -230,6 +283,25 @@ def test_old_session_and_bad_quality_fail_closed() -> None:
     )
     assert context["decisions"]["SPY"]["temporal_role"] == STALE_FOR_DAILY_SIGNAL
     assert context["decisions"]["DGS10"]["temporal_role"] == STALE_FOR_DAILY_SIGNAL
+
+
+def test_lagging_release_is_source_unavailable_for_current_structured_context() -> None:
+    current = _summary(
+        _row("DCOILWTICO", "2026-08-18T00:00:00+00:00", change_pct=2.0),
+    )
+    previous = _summary(
+        _row("DCOILWTICO", "2026-08-18T00:00:00+00:00", change_pct=2.0),
+    )
+    context = build_temporal_context(
+        current,
+        previous,
+        as_of=datetime(2026, 8, 25, 23, 5, tzinfo=timezone.utc),
+    )
+
+    decision = context["decisions"]["DCOILWTICO"]
+    assert decision["temporal_role"] == REFERENCE_LAGGING
+    assert decision["structured_state"] == "SOURCE_UNAVAILABLE"
+    assert decision["today_signal_eligible"] is False
 
 
 def test_market_intelligence_selects_only_current_change_facts() -> None:
