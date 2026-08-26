@@ -1611,3 +1611,22 @@ State is `INTEGRATED_READY_NOT_ARMED`; P0/material P1 are `0/0`; user-visible di
 feature-local task is `BOUNDED_PRICE_STRUCTURE_V3_SR_AND_FAMILY_SELECTIVE_ENABLEMENT`. Preserve
 current grouping/Fib tolerances, SK hynix stable confluence, TSLA Fib suppression, task schedules,
 Public Action, assessments, and Production Assist until separately instructed.
+
+## 2026-08-26 Price Structure v3 Current-Data Validation Handoff
+
+The exact instruction is commit `688c17280a10e91214d4bd9888522fdc6f9bc0c5`; the archive-only
+validator implementation is `ef586c3816ff76417d2620636975d054935533d4`. Read
+`docs/reports/20260826-v3-current-data-enablement-readiness.json`, the exact candidate-message JSON,
+session audit, review table, controls, and safety parity before changing this feature.
+
+The validation uses the active 20-subject universe and target sessions KR `2026-08-26` / US
+`2026-08-25`. Fresh collection exposed incomplete US `2026-08-26` stubs; all 13 are excluded and
+none enters a pivot, wave, current price, or message. Eligibility is KR `6/1/0/0` and US
+`4/9/0/0` for eligible/SR-only/omit/blocked. Human quality is material 16, minor four, worse zero;
+all mandatory controls and all hard safety counters pass.
+
+This is still `INTEGRATED_READY_NOT_ARMED`. Production recommendation is `ENABLE_SELECTIVELY`, and
+the next separately instructed action is
+`BOUNDED_PRICE_STRUCTURE_V3_SR_AND_FAMILY_SELECTIVE_ENABLEMENT`. Do not reuse an incomplete US bar,
+reintroduce exact overlapping ranges, widen Fib/SR tolerance, or mutate business text, runtime
+routing, Telegram, tasks, assessments, Public Action, or Production Assist.

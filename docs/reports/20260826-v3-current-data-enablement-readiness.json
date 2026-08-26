@@ -1,0 +1,100 @@
+{
+  "contract": "price-structure-v3-current-data-enablement-readiness-v1",
+  "controls": {
+    "000660": "PASS",
+    "003690": "PASS",
+    "010120": "PASS",
+    "012450": "PASS",
+    "HUT": "PASS",
+    "MU": "PASS",
+    "SKHY": "PASS",
+    "SNDK": "PASS",
+    "TSLA": "PASS",
+    "TSM": "PASS"
+  },
+  "eligibility_counts": {
+    "KR": {
+      "ELIGIBLE": 6,
+      "ELIGIBLE_SR_ONLY": 1
+    },
+    "US": {
+      "ELIGIBLE": 4,
+      "ELIGIBLE_SR_ONLY": 9
+    }
+  },
+  "gates": {
+    "completed_session_safety": "PASS",
+    "cross_timeframe_relevance_current_data": "PASS",
+    "current_data_collection": "PASS",
+    "deterministic_sr_current_data": "PASS",
+    "exact_candidate_message_generation": "PASS",
+    "family_stable_fib_current_data": "PASS",
+    "fib_sr_confluence_current_data": "PASS",
+    "full_universe_message_count": 20,
+    "message_numeric_density": "PASS",
+    "nearest_major_current_data": "PASS",
+    "next_action": "BOUNDED_PRICE_STRUCTURE_V3_SR_AND_FAMILY_SELECTIVE_ENABLEMENT",
+    "no_wave_sr_current_data": "PASS",
+    "ohlcv_1200_600_300": "PARTIAL",
+    "preenablement_current_data_validation": "PASS",
+    "production_enablement_recommendation": "ENABLE_SELECTIVELY",
+    "redundant_zone_repetition": "PASS",
+    "target_session_kr": "2026-08-26",
+    "target_session_us": "2026-08-25"
+  },
+  "implementation_sha": "ef586c3816ff76417d2620636975d054935533d4",
+  "instruction_commit": "688c17280a10e91214d4bd9888522fdc6f9bc0c5",
+  "quality_counts": {
+    "MATERIAL_IMPROVEMENT": 16,
+    "MINOR_IMPROVEMENT": 4
+  },
+  "readiness": {
+    "open_material_p1": [],
+    "open_p0": [],
+    "p2_backlog": [
+      "short_history_monthly_sr_may_remain_unavailable",
+      "genuine_breakout_may_have_no_historical_resistance",
+      "minor_price_label_wording_polish"
+    ],
+    "production_enablement_ready": true
+  },
+  "safety": {
+    "ai_calculated_technical_price": 0,
+    "ai_selected_authoritative_sr": 0,
+    "business_text_changed_by_price_structure": 0,
+    "business_thesis_mutation_from_technicals": 0,
+    "corporate_action_basis_conflict": 0,
+    "currency_mismatch": 0,
+    "current_runtime_visible_diff": 0,
+    "db_mutation": 0,
+    "fabricated_sr_fill": 0,
+    "fallback_timeframe_relabel": 0,
+    "fib_confluence_tolerance_widening": 0,
+    "fibonacci_as_certain_reversal": 0,
+    "lookahead_leak": 0,
+    "manual_task": 0,
+    "mixed_session_price_structure": 0,
+    "numbers_without_provenance": 0,
+    "official_assessment_mutation": 0,
+    "partial_bar_used_for_pivot_confirmation": 0,
+    "partial_daily_bar_used_as_complete": 0,
+    "provisional_wave_as_confirmed": 0,
+    "remote_zone_promoted_as_nearest": 0,
+    "security_basis_conflict": 0,
+    "telegram_send": 0,
+    "unregistered_price_structure_numeric": 0,
+    "unstable_fib_family_user_visible_eligible": 0,
+    "unstable_fib_source_in_confluence": 0,
+    "unsupported_stop_price": 0,
+    "unsupported_target_price": 0,
+    "wrong_session_data": 0
+  },
+  "test_dataset_id": "v3-current-dataset:252d923f98173a1f2638",
+  "test_render_id": "v3-current-render:f6152bc2c61ced3eeffa",
+  "test_run_id": "v3-current-run:ff97be1d62a9810dc315",
+  "universe": {
+    "kr": 7,
+    "total": 20,
+    "us_foreign": 13
+  }
+}

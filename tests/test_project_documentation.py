@@ -98,18 +98,18 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     assert state["repository"] == "sskim-ai/thesis-monitor"
     assert state["branch"] == "main"
     assert state["experimental_branch"] == (
-        "codex/price-structure-v3-sr-completeness-proximity-repair"
+        "codex/price-structure-v3-current-data-shadow-message-validation"
     )
     assert state["current_phase"] == (
-        "price_structure_v3_sr_completeness_integrated_ready_not_armed"
+        "price_structure_v3_current_data_validated_ready_not_armed"
     )
     assert state["last_completed_phase"] == (
-        "price_structure_v3_sr_completeness_proximity_repair"
+        "price_structure_v3_current_data_shadow_message_validation"
     )
     assert state["next_default_phase"] == (
         "bounded_price_structure_v3_sr_and_family_selective_enablement"
     )
-    implementation_commit = "176f3e73eb097fac99f4038a8987b610954804cc"
+    implementation_commit = "ef586c3816ff76417d2620636975d054935533d4"
     preenablement_commit = "84f8f549bc8fa0338309a84b23b2738f2e357646"
     prior_price_structure_commit = "631e82f202b6f081866ef83c8b67b2138a8b51d8"
     prior_fibonacci_commit = "0dfef76bba606f018893d6e68e7beaf410aa7438"
@@ -134,6 +134,15 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     assert state["contracts"]["sr_proximity_relevance_gate"] == (
         "sr-proximity-relevance-gate-v1"
     )
+    assert state["contracts"]["price_structure_v3_current_data_shadow_validation"] == (
+        "price-structure-v3-current-data-shadow-validation-v1"
+    )
+    current_data = state["price_structure_v3_current_data_shadow_message_validation"]
+    assert current_data["status"] == "validated_ready_not_armed"
+    assert current_data["target_sessions"] == {"kr": "2026-08-26", "us": "2026-08-25"}
+    assert current_data["mandatory_controls"] == "10/10_PASS"
+    assert current_data["current_runtime_visible_diff"] == 0
+    assert current_data["production_enabled"] is False
     assert state["contracts"]["market_context_adapter"] == (
         "market-context-adapter-v1"
     )
@@ -464,7 +473,9 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     assert sr_completeness["instruction_commit"] == (
         "7267ca1d3e518d39986941bfda1d6447560db344"
     )
-    assert sr_completeness["implementation_commit"] == implementation_commit
+    assert sr_completeness["implementation_commit"] == (
+        "176f3e73eb097fac99f4038a8987b610954804cc"
+    )
     assert sr_completeness["contracts"] == {
         "base_layer": "deterministic-sr-base-layer-v1",
         "proximity_relevance": "sr-proximity-relevance-gate-v1",

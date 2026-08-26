@@ -1376,3 +1376,25 @@ selective production-enablement readiness is YES with open P0/material P1 `0/0`.
 only `BOUNDED_PRICE_STRUCTURE_V3_SR_AND_FAMILY_SELECTIVE_ENABLEMENT`. Production imports, current
 messages, Telegram, tasks, Public Action, assessment state, price rules, tolerances, and Production
 Assist remain unchanged.
+
+### 40.5 Current-Data End-to-End Shadow Message Validation
+
+Exact instruction commit `688c17280a10e91214d4bd9888522fdc6f9bc0c5` precedes the archive-only
+validator implementation `ef586c3816ff76417d2620636975d054935533d4`. The active 20-subject
+universe was recollected read-only from the official free Kiwoom path. The completed-session gate
+uses KR `2026-08-26` and US `2026-08-25`; all 13 incomplete US `2026-08-26` daily stubs are
+excluded before analysis, and current weekly/monthly partial context is rebuilt only from completed
+daily observations.
+
+The exact candidate archive contains 20 baseline/candidate messages and numeric bindings for every
+new technical range. KR eligibility is `6 ELIGIBLE / 1 ELIGIBLE_SR_ONLY`; US/foreign is
+`4 ELIGIBLE / 9 ELIGIBLE_SR_ONLY`; omit and blocked counts are zero. Human review classifies 16
+material improvements, four minor improvements, no added-value regressions zero, and worse zero.
+All 10 mandatory controls pass. Wrong-session data, mixed-session structure, look-ahead, partial-bar
+pivot confirmation, remote-nearest promotion, fabricated fill, unstable Fib exposure, unregistered
+technical numbers, business-text change, and runtime-visible change are all zero.
+
+`PREENABLEMENT_CURRENT_DATA_VALIDATION=PASS` and the recommendation is `ENABLE_SELECTIVELY`, but
+this validation does not arm production. The only authorized next feature-local action remains
+`BOUNDED_PRICE_STRUCTURE_V3_SR_AND_FAMILY_SELECTIVE_ENABLEMENT`; Telegram, tasks, Public Action,
+assessments, price rules, Production Assist, and current runtime imports remain unchanged.

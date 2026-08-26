@@ -272,3 +272,17 @@ Do not enable implicitly. The next separately instructed feature-local action is
 `BOUNDED_PRICE_STRUCTURE_V3_SR_AND_FAMILY_SELECTIVE_ENABLEMENT`. It must preserve SR-first ordering,
 remote-zone suppression, exact timeframe provenance, existing tolerances, and unstable-Fib
 exclusion. Natural monitoring and all other parallel tracks remain independent.
+
+The final pre-enablement current-data validation follows instruction commit
+`688c17280a10e91214d4bd9888522fdc6f9bc0c5` and validator implementation
+`ef586c3816ff76417d2620636975d054935533d4`. Start with
+`docs/reports/20260826-v3-current-data-enablement-readiness.json` and
+`docs/reports/20260826-v3-current-data-exact-candidate-messages.json`. The active 20-subject exact
+message replay passed all 10 controls, numeric/provenance safety, and human review with no blocked,
+omitted, or worse candidates. KR target session is `2026-08-26`; US target session is `2026-08-25`.
+
+Do not arm production from this handoff. The next task, only when separately instructed, is
+`BOUNDED_PRICE_STRUCTURE_V3_SR_AND_FAMILY_SELECTIVE_ENABLEMENT`. It must retain the completed-session
+gate that rejected all 13 incomplete US `2026-08-26` stubs, use the per-subject ELIGIBLE versus
+ELIGIBLE_SR_ONLY result, preserve existing holder invalidation and price-rule history, and leave
+business text and all non-price-structure surfaces unchanged.

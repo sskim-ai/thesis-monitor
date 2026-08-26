@@ -267,3 +267,13 @@ evidence generator. A later enablement must descend from this closure and preser
 SR-first ownership, nearest/major separation, active cross-zone relevance, typed fallback
 provenance, and family-stable Fib-only confluence. It has no dependency on natural monitoring,
 Open Research, KRX telemetry, cash flow, working capital, tasks, or Production Assist.
+
+The v3 current-data shadow-message validation starts from exact instruction commit
+`688c17280a10e91214d4bd9888522fdc6f9bc0c5`, whose parent is the SR-completeness final main
+`68e927b5eaf2a10dadd5faafa26de9c18b67170f`. Validator implementation
+`ef586c3816ff76417d2620636975d054935533d4` adds only an archive/read-only evidence generator and
+focused tests. It does not enter a production import path. A later selective enablement must
+descend from this validation, preserve KR `2026-08-26` / US `2026-08-25` completed-session gating,
+admit only ELIGIBLE or ELIGIBLE_SR_ONLY subjects, and retain all numeric/provenance and business-text
+parity gates. It has no dependency on natural monitoring, Open Research, KRX telemetry, cash flow,
+working capital, tasks, or Production Assist.

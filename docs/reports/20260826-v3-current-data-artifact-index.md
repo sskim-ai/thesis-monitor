@@ -1,0 +1,21 @@
+# Price Structure v3 Current-Data Artifact Index
+
+| Artifact | SHA-256 | Bytes |
+| --- | --- | --- |
+| docs/work-instructions/20260826-price-structure-v3-current-data-end-to-end-shadow-message-validation.md | 0349d2afc1cb47d83408906d4e744a065a61f77893880778d2278b22f99cee14 | 23263 |
+| docs/reports/20260826-v3-current-data-validation-evidence.json | 19b54aab8321af1d12f0def2047ffd6e7019d50845228593266df57118cf993c | 2769997 |
+| docs/reports/20260826-v3-current-data-exact-candidate-messages.json | e9b2e19cc2cae838c55dfd474de3ec274243fcd12cada3f8dffa047f8ba11e3c | 127018 |
+| docs/reports/20260826-v3-current-data-enablement-readiness.json | 12f36a0cd02425e7e8ac00a306eef0dc7f15f09a38b672378161980c1d2da9ce | 3209 |
+| docs/reports/20260826-v3-current-data-confluence-audit.md | ac2b346f869f44049e6f4e3353a6d01e732ac6eb009798c0772285d859fa0a65 | 2300 |
+| docs/reports/20260826-v3-current-data-control-stocks.md | ea415ebe9060f8451d40a83b97ac459af760326b4596c5460fb810501b701719 | 1536 |
+| docs/reports/20260826-v3-current-data-enablement-readiness.md | 8844b82c192a69cdfbedf0d6da3048a72071cd76aa2c3b90c7a616f83125c22f | 1750 |
+| docs/reports/20260826-v3-current-data-full-universe.md | 748c87a520d5452466fd6a7f6ec7b0ed5aab661a4b9999796f987196da16b5ab | 2975 |
+| docs/reports/20260826-v3-current-data-message-diff.md | b474615a796ce5718e9fa8688d8913271cb970d60999c56332a5d5528a5b4030 | 1300 |
+| docs/reports/20260826-v3-current-data-message-generation.md | 56880ad8ee0f9bf779afaeb9a414c9e60f4c385262bbfa3a90fa89c1157f0a7a | 5165 |
+| docs/reports/20260826-v3-current-data-message-quality.md | 3e05dcaf1d1d5792c829ed7d5d7d17d8fd63b98500bb8ea5d5c36a300c80576a | 1950 |
+| docs/reports/20260826-v3-current-data-message-review-table.md | 51943d21491270fbef9693fabb06d5dd68984ca93120e4478954a3408c8167cc | 5711 |
+| docs/reports/20260826-v3-current-data-ohlcv-coverage.md | 2c5cad48d5a77b863c631b0bb1b2050c4b549230f9dcbba68787137e20e2ab30 | 5997 |
+| docs/reports/20260826-v3-current-data-safety-parity.md | 9010b4d72ade39cd4878d811d847ec9e3b26d9dc7677ed2dfc011ccac64befa4 | 1502 |
+| docs/reports/20260826-v3-current-data-session-audit.md | 77980ec0900315ae81e4ca3aab2e71ef83a6c1aefc6479faa860c044cd014a4c | 1886 |
+| docs/reports/20260826-v3-current-data-sr-audit.md | 3931481cb171c5da9275f85d7c12dc5887ff6b4d0b28b0aa66fe0020d7691af6 | 7109 |
+| docs/reports/20260826-v3-current-data-wave-fib-audit.md | 58a1ab9a9fdb6a67a1df706f008a8e1cbe1cc40408e2508a653531aeee320d8a | 1389 |
