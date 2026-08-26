@@ -286,3 +286,12 @@ The v3 renderer-integration micro-repair starts from exact instruction commit
 documents, and focused tests. Production modules do not import the renderer. A later enablement
 must preserve complete material Fib ranges, explicit current/stored ownership, stale-technical
 suppression, source registries, and the unchanged eligibility cohort.
+
+The v3 legacy-detector false-positive repair starts from exact instruction commit
+`97b65fc1d258339563b54961a83acd997867e11e`, whose parent is renderer-integration final main
+`a4c6713649137180e0b37a4eb42ae6b35f07423c`. Implementation commit
+`3685aa991589ca0e7cc560104d4ebf8289e3f91d` changes only the shadow renderer detector, archive
+evidence generator, architecture, and focused tests. A later selective enablement must descend from
+this closure and preserve protected structural fields, complete token boundaries, sentence-level
+MU suppression, existing SR/Fib numerics, current/stored ownership, and the unchanged eligibility
+cohort. Production imports and runtime behavior remain unchanged.

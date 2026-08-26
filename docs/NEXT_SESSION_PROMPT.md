@@ -3,19 +3,20 @@
 Repository: `sskim-ai/thesis-monitor`
 
 Latest authoritative renderer work follows exact instruction commit
-`2ac7eaaede9cb8d9047173bbec5f2bd99c665573` and implementation commit
-`4246efb4f8afa3516402d1df7864967c177ac6e7`. Read
-`docs/reports/20260826-v3-renderer-readiness.md` and JSON, then the Fib confluence,
-current-vs-stored price-rule, legacy technical prose, exact-control, full-universe, exact-diff,
+`97b65fc1d258339563b54961a83acd997867e11e` and implementation commit
+`3685aa991589ca0e7cc560104d4ebf8289e3f91d`. Read
+`docs/reports/20260826-v3-legacy-detector-readiness.md` and JSON, then the RXRX regression,
+token-boundary, protected-structural-field, nontechnical-suppression, full-universe, exact-diff,
 message-quality, safety, and artifact-index reports.
 
-The current-data renderer preserves material Fib extensions, labels current v3 SR and stored
-monitoring rules as separate owners, and suppresses stale parallel technical prose. SK hynix,
-SNDK, MU, TSM, TSLA, and `012450` controls pass; eligibility remains KR `6+1` and US/foreign
-`4+9`; quality is `16 material / 4 minor / 0 worse`; all hard counters are zero.
-`PRICE_STRUCTURE_V3_RENDERER_INTEGRATION=INTEGRATED_READY_NOT_ARMED` and production enablement
-readiness is YES with P0/material P1 `0/0`. Do not activate from this prompt. The next separately
-instructed task is `BOUNDED_PRICE_STRUCTURE_V3_SR_AND_FAMILY_SELECTIVE_ENABLEMENT`.
+The final detector repair restores the RXRX company header by protecting structural fields and
+requiring complete technical-token boundaries. All 20 entity headers/names/tickers and headings
+pass, ordinary-word false matches are zero, and MU still suppresses exactly one stale technical
+sentence. Prior Fib range, current/stored ownership, eligibility, business, and provenance results
+remain unchanged. `PRICE_STRUCTURE_V3_LEGACY_DETECTOR_REPAIR=INTEGRATED_READY_NOT_ARMED` and
+production-enablement readiness is YES with P0/material P1 `0/0`. Do not activate from this prompt.
+The next separately instructed task is
+`BOUNDED_PRICE_STRUCTURE_V3_SR_AND_FAMILY_SELECTIVE_ENABLEMENT`.
 
 ---
 

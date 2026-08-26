@@ -1419,3 +1419,21 @@ counters are zero. Human review remains 16 material improvements, four minor imp
 zero worse. `PRICE_STRUCTURE_V3_RENDERER_INTEGRATION=INTEGRATED_READY_NOT_ARMED` and
 `PRODUCTION_ENABLEMENT_READY=YES`; only the separately instructed
 `BOUNDED_PRICE_STRUCTURE_V3_SR_AND_FAMILY_SELECTIVE_ENABLEMENT` may arm production.
+
+### 40.7 Legacy Technical Detector False-Positive Micro-Repair
+
+Exact instruction commit `97b65fc1d258339563b54961a83acd997867e11e` precedes implementation
+commit `3685aa991589ca0e7cc560104d4ebf8289e3f91d`. The
+`legacy-technical-token-detection-v1` contract replaces whole-message substring scanning with
+semantic-field classification, complete indicator-token boundaries, existing freshness checks,
+and sentence-level suppression. Company identity, status lines, and section headings are protected
+before lexical matching.
+
+The immutable 20-subject replay restores `🏢 Recursion Pharmaceuticals(RXRX)` and changes no other
+prior-renderer message text. Ordinary words produce zero technical matches, while RSI/MACD/OHLCV
+with Korean postpositions remain valid. MU still removes exactly one stale 2026-08-12 technical
+sentence and retains its business thesis.
+
+All entity, structure, nontechnical-suppression, SR/Fib, eligibility, provenance, temporal, and
+runtime-isolation counters are zero. State remains `INTEGRATED_READY_NOT_ARMED` with
+`PRODUCTION_ENABLEMENT_READY=YES`; a separate bounded selective-enablement task is still required.

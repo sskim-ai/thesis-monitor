@@ -1650,3 +1650,21 @@ the next separately instructed action is
 `BOUNDED_PRICE_STRUCTURE_V3_SR_AND_FAMILY_SELECTIVE_ENABLEMENT`. Do not reuse an incomplete US bar,
 reintroduce exact overlapping ranges, widen Fib/SR tolerance, or mutate business text, runtime
 routing, Telegram, tasks, assessments, Public Action, or Production Assist.
+
+## 2026-08-26 Price Structure v3 Legacy Detector Handoff
+
+The exact instruction is commit `97b65fc1d258339563b54961a83acd997867e11e`; implementation is
+`3685aa991589ca0e7cc560104d4ebf8289e3f91d`. Read the legacy-detector readiness JSON, RXRX exact
+regression, protected-field audit, token-boundary policy, nontechnical-suppression audit, and exact
+candidate-message JSON first.
+
+The prior detector matched `rsi` inside `Recursion` because it scanned every line with an
+unbounded case-insensitive substring regex. Detection is now semantic-field first and
+token-boundary aware. All 20 headers, names, tickers, and headings survive; RXRX restores only its
+header; MU still suppresses its one stale OHLCV/MACD sentence. SR/Fib, stored rules, eligibility,
+business facts, provenance, and runtime output are unchanged.
+
+State is `INTEGRATED_READY_NOT_ARMED`; P0/material P1 are `0/0`; selective production-enablement
+readiness is YES. Do not enable implicitly. The next feature-local action remains
+`BOUNDED_PRICE_STRUCTURE_V3_SR_AND_FAMILY_SELECTIVE_ENABLEMENT`, with Production Assist OFF and no
+manual task or Telegram operation.

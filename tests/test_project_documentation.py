@@ -102,18 +102,18 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     assert state["repository"] == "sskim-ai/thesis-monitor"
     assert state["branch"] == "main"
     assert state["experimental_branch"] == (
-        "codex/price-structure-v3-renderer-integration-micro-repair"
+        "codex/price-structure-v3-legacy-detector-false-positive-repair"
     )
     assert state["current_phase"] == (
-        "price_structure_v3_renderer_integrated_ready_not_armed"
+        "price_structure_v3_legacy_detector_integrated_ready_not_armed"
     )
     assert state["last_completed_phase"] == (
-        "price_structure_v3_renderer_integration_micro_repair"
+        "price_structure_v3_legacy_detector_false_positive_micro_repair"
     )
     assert state["next_default_phase"] == (
         "bounded_price_structure_v3_sr_and_family_selective_enablement"
     )
-    implementation_commit = "4246efb4f8afa3516402d1df7864967c177ac6e7"
+    implementation_commit = "3685aa991589ca0e7cc560104d4ebf8289e3f91d"
     preenablement_commit = "84f8f549bc8fa0338309a84b23b2738f2e357646"
     prior_price_structure_commit = "631e82f202b6f081866ef83c8b67b2138a8b51d8"
     prior_fibonacci_commit = "0dfef76bba606f018893d6e68e7beaf410aa7438"
@@ -144,6 +144,9 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     assert state["contracts"]["price_structure_v3_renderer_ownership"] == (
         "price-structure-v3-renderer-ownership-v1"
     )
+    assert state["contracts"]["legacy_technical_token_detection"] == (
+        "legacy-technical-token-detection-v1"
+    )
     current_data = state["price_structure_v3_current_data_shadow_message_validation"]
     assert current_data["status"] == "validated_ready_not_armed"
     assert current_data["target_sessions"] == {"kr": "2026-08-26", "us": "2026-08-25"}
@@ -152,7 +155,9 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     assert current_data["production_enabled"] is False
     renderer = state["price_structure_v3_renderer_integration_micro_repair"]
     assert renderer["status"] == "integrated_ready_not_armed"
-    assert renderer["implementation_commit"] == implementation_commit
+    assert renderer["implementation_commit"] == (
+        "4246efb4f8afa3516402d1df7864967c177ac6e7"
+    )
     assert renderer["target_sessions"] == {"kr": "2026-08-26", "us": "2026-08-25"}
     assert renderer["fib_confluence_render_equivalence"] == "PASS"
     assert renderer["current_sr_stored_rule_separation"] == "PASS"
@@ -161,6 +166,20 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     assert renderer["numbers_without_provenance"] == 0
     assert renderer["production_enablement_ready"] == "YES"
     assert renderer["production_enabled"] is False
+    detector = state["price_structure_v3_legacy_detector_false_positive_micro_repair"]
+    assert detector["status"] == "integrated_ready_not_armed"
+    assert detector["implementation_commit"] == implementation_commit
+    assert detector["target_sessions"] == {"kr": "2026-08-26", "us": "2026-08-25"}
+    assert detector["rxrx_header_false_positive_root_cause"] == "PASS"
+    assert detector["legacy_technical_token_policy"] == "PASS"
+    assert detector["semantic_field_scoped_detection"] == "PASS"
+    assert detector["protected_structural_fields"] == "PASS"
+    assert detector["rxrx_false_rsi_match"] == 0
+    assert detector["company_header_changed_by_legacy_suppression"] == 0
+    assert detector["substring_only_technical_match"] == 0
+    assert detector["nontechnical_prose_suppressed"] == 0
+    assert detector["production_enablement_ready"] == "YES"
+    assert detector["production_enabled"] is False
     assert state["contracts"]["market_context_adapter"] == (
         "market-context-adapter-v1"
     )
