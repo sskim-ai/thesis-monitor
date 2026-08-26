@@ -1,0 +1,5897 @@
+{
+  "engine": {
+    "name": "universal_ohlcv_structure_elliott_engine",
+    "version": "1.0.0",
+    "assume_last_incomplete": true,
+    "anchor_mode": "auto",
+    "cycle_lookback_years": 8.0
+  },
+  "identity": {
+    "symbol": "SK하이닉스",
+    "code": "660",
+    "name": "SK하이닉스",
+    "market": "KR",
+    "sector": "반도체"
+  },
+  "selected_anchor": {
+    "idx": 256,
+    "date": "2023-01-02",
+    "kind": "low",
+    "price": 73100.0,
+    "confirmed": true,
+    "atr14": 15650.0,
+    "source_tf": "monthly"
+  },
+  "selected_impulse": {
+    "score": 14.627522,
+    "status": "W4_CANDIDATE_W5_UNCONFIRMED",
+    "degree": "primary_monthly_candidate",
+    "wave0": {
+      "idx": 256,
+      "date": "2023-01-02",
+      "kind": "low",
+      "price": 73100.0,
+      "confirmed": true,
+      "atr14": 15650.0,
+      "source_tf": "monthly"
+    },
+    "wave1": {
+      "idx": 274,
+      "date": "2024-07-01",
+      "kind": "high",
+      "price": 248500.0,
+      "confirmed": true,
+      "atr14": 27221.428571428572,
+      "source_tf": "monthly"
+    },
+    "wave2": {
+      "idx": 276,
+      "date": "2024-09-02",
+      "kind": "low",
+      "price": 144700.0,
+      "confirmed": true,
+      "atr14": 31585.714285714286,
+      "source_tf": "monthly"
+    },
+    "wave3": {
+      "idx": 297,
+      "date": "2026-06-01",
+      "kind": "high",
+      "price": 2987000.0,
+      "confirmed": false,
+      "atr14": 316500.0,
+      "source_tf": "monthly"
+    },
+    "wave4": {
+      "idx": 298,
+      "date": "2026-07-01",
+      "kind": "low",
+      "price": 1246000.0,
+      "confirmed": false,
+      "atr14": 419357.14285714284,
+      "source_tf": "monthly"
+    },
+    "wave5": null,
+    "metrics": {
+      "wave1_length": 175400.0,
+      "wave2_retracement": 0.5917901938426454,
+      "wave3_length": 2842300.0,
+      "wave3_vs_wave1_extension": 16.204675028506273,
+      "wave4_retracement_of_wave3": 0.6125321042817437,
+      "wave3_extended": true,
+      "wave3_strongly_extended": true
+    },
+    "hard_rules": {
+      "wave2_above_wave0": true,
+      "wave3_above_wave1": true,
+      "wave4_above_wave1_high": true,
+      "wave3_not_shortest": null
+    },
+    "fib": {
+      "wave1_retracement_prices": {
+        "0.236": 207105.6,
+        "0.382": 181497.2,
+        "0.500": 160800.0,
+        "0.618": 140102.8,
+        "0.786": 110635.6
+      },
+      "wave3_retracement_prices": {
+        "0.236": 2316217.2,
+        "0.382": 1901241.4,
+        "0.500": 1565850.0,
+        "0.618": 1230458.6,
+        "0.786": 752952.1999999997
+      },
+      "primary_cycle_retracement_prices": {
+        "0.236": 2299319.6,
+        "0.382": 1873890.2,
+        "0.500": 1530050.0,
+        "0.618": 1186209.8,
+        "0.786": 696674.6000000001
+      },
+      "current_rebound_prices": {
+        "0.236": 1656876.0,
+        "0.382": 1911062.0,
+        "0.500": 2116500.0,
+        "0.618": 2321938.0,
+        "0.786": 2614426.0
+      },
+      "wave5_projection_raw": [
+        {
+          "method": "W4 + W1*0.618",
+          "price": 1354397.2,
+          "family": "wave1_multiple"
+        },
+        {
+          "method": "W4 + W1*1.0",
+          "price": 1421400.0,
+          "family": "wave1_multiple"
+        },
+        {
+          "method": "W4 + W1*1.618",
+          "price": 1529797.2,
+          "family": "wave1_multiple"
+        },
+        {
+          "method": "W4 + W1*2.618",
+          "price": 1705197.2,
+          "family": "wave1_multiple"
+        },
+        {
+          "method": "W4 + W3*0.382",
+          "price": 2331758.6,
+          "family": "wave3_multiple"
+        },
+        {
+          "method": "W4 + W3*0.5",
+          "price": 2667150.0,
+          "family": "wave3_multiple"
+        },
+        {
+          "method": "W4 + (W0->W3)*0.5",
+          "price": 2702950.0,
+          "family": "span03_multiple"
+        },
+        {
+          "method": "W4 + W3*0.618",
+          "price": 3002541.4,
+          "family": "wave3_multiple"
+        },
+        {
+          "method": "W4 + (W0->W3)*0.618",
+          "price": 3046790.2,
+          "family": "span03_multiple"
+        },
+        {
+          "method": "W4 + W3*1.0",
+          "price": 4088300.0,
+          "family": "wave3_multiple"
+        },
+        {
+          "method": "W4 + (W0->W3)*1.0",
+          "price": 4159900.0,
+          "family": "span03_multiple"
+        }
+      ],
+      "wave5_projection_clusters": [
+        {
+          "low": 2667150.0,
+          "high": 2702950.0,
+          "center": 2685050.0,
+          "methods": [
+            "W4 + W3*0.5",
+            "W4 + (W0->W3)*0.5"
+          ],
+          "method_count": 2
+        },
+        {
+          "low": 3002541.4,
+          "high": 3046790.2,
+          "center": 3024665.8,
+          "methods": [
+            "W4 + W3*0.618",
+            "W4 + (W0->W3)*0.618"
+          ],
+          "method_count": 2
+        },
+        {
+          "low": 4088300.0,
+          "high": 4159900.0,
+          "center": 4124100.0,
+          "methods": [
+            "W4 + W3*1.0",
+            "W4 + (W0->W3)*1.0"
+          ],
+          "method_count": 2
+        },
+        {
+          "low": 1354397.2,
+          "high": 1354397.2,
+          "center": 1354397.2,
+          "methods": [
+            "W4 + W1*0.618"
+          ],
+          "method_count": 1
+        },
+        {
+          "low": 1421400.0,
+          "high": 1421400.0,
+          "center": 1421400.0,
+          "methods": [
+            "W4 + W1*1.0"
+          ],
+          "method_count": 1
+        },
+        {
+          "low": 1529797.2,
+          "high": 1529797.2,
+          "center": 1529797.2,
+          "methods": [
+            "W4 + W1*1.618"
+          ],
+          "method_count": 1
+        },
+        {
+          "low": 1705197.2,
+          "high": 1705197.2,
+          "center": 1705197.2,
+          "methods": [
+            "W4 + W1*2.618"
+          ],
+          "method_count": 1
+        },
+        {
+          "low": 2331758.6,
+          "high": 2331758.6,
+          "center": 2331758.6,
+          "methods": [
+            "W4 + W3*0.382"
+          ],
+          "method_count": 1
+        }
+      ]
+    },
+    "weekly_confirmation": {
+      "wave1": {
+        "weekly_date": "2024-07-08",
+        "weekly_price": 248500.0,
+        "weekly_confirmed": true,
+        "day_distance": 7,
+        "price_distance_pct": 0.0
+      },
+      "wave2": {
+        "weekly_date": "2024-09-19",
+        "weekly_price": 144700.0,
+        "weekly_confirmed": true,
+        "day_distance": 17,
+        "price_distance_pct": 0.0
+      },
+      "wave3": {
+        "weekly_date": "2026-06-22",
+        "weekly_price": 2987000.0,
+        "weekly_confirmed": true,
+        "day_distance": 21,
+        "price_distance_pct": 0.0
+      },
+      "wave4": {
+        "weekly_date": "2026-07-27",
+        "weekly_price": 1246000.0,
+        "weekly_confirmed": true,
+        "day_distance": 26,
+        "price_distance_pct": 0.0
+      }
+    },
+    "reasons": [
+      "W2 retracement=0.592",
+      "W4 retracement=0.613",
+      "W3/W1 extension=16.205",
+      "W3 classified as strongly extended",
+      "wave3 volume expansion 1.45",
+      "wave3 MACD histogram positive",
+      "wave3 price expanded through short/mid Bollinger upper",
+      "wave4 high-volume reaction 1.71"
+    ]
+  },
+  "user_anchor_hypotheses": [],
+  "auto_anchor_candidates": [
+    {
+      "anchor": {
+        "idx": 256,
+        "date": "2023-01-02",
+        "kind": "low",
+        "price": 73100.0,
+        "confirmed": true,
+        "atr14": 15650.0,
+        "source_tf": "monthly"
+      },
+      "anchor_score": 16.179541,
+      "base_quality_bonus": 1.0,
+      "recency_bonus": 0.55201916495551,
+      "best_impulse": {
+        "score": 14.627522,
+        "status": "W4_CANDIDATE_W5_UNCONFIRMED",
+        "degree": "primary_monthly_candidate",
+        "wave0": {
+          "idx": 256,
+          "date": "2023-01-02",
+          "kind": "low",
+          "price": 73100.0,
+          "confirmed": true,
+          "atr14": 15650.0,
+          "source_tf": "monthly"
+        },
+        "wave1": {
+          "idx": 274,
+          "date": "2024-07-01",
+          "kind": "high",
+          "price": 248500.0,
+          "confirmed": true,
+          "atr14": 27221.428571428572,
+          "source_tf": "monthly"
+        },
+        "wave2": {
+          "idx": 276,
+          "date": "2024-09-02",
+          "kind": "low",
+          "price": 144700.0,
+          "confirmed": true,
+          "atr14": 31585.714285714286,
+          "source_tf": "monthly"
+        },
+        "wave3": {
+          "idx": 297,
+          "date": "2026-06-01",
+          "kind": "high",
+          "price": 2987000.0,
+          "confirmed": false,
+          "atr14": 316500.0,
+          "source_tf": "monthly"
+        },
+        "wave4": {
+          "idx": 298,
+          "date": "2026-07-01",
+          "kind": "low",
+          "price": 1246000.0,
+          "confirmed": false,
+          "atr14": 419357.14285714284,
+          "source_tf": "monthly"
+        },
+        "wave5": null,
+        "metrics": {
+          "wave1_length": 175400.0,
+          "wave2_retracement": 0.5917901938426454,
+          "wave3_length": 2842300.0,
+          "wave3_vs_wave1_extension": 16.204675028506273,
+          "wave4_retracement_of_wave3": 0.6125321042817437,
+          "wave3_extended": true,
+          "wave3_strongly_extended": true
+        },
+        "hard_rules": {
+          "wave2_above_wave0": true,
+          "wave3_above_wave1": true,
+          "wave4_above_wave1_high": true,
+          "wave3_not_shortest": null
+        },
+        "fib": {
+          "wave1_retracement_prices": {
+            "0.236": 207105.6,
+            "0.382": 181497.2,
+            "0.500": 160800.0,
+            "0.618": 140102.8,
+            "0.786": 110635.6
+          },
+          "wave3_retracement_prices": {
+            "0.236": 2316217.2,
+            "0.382": 1901241.4,
+            "0.500": 1565850.0,
+            "0.618": 1230458.6,
+            "0.786": 752952.1999999997
+          },
+          "primary_cycle_retracement_prices": {
+            "0.236": 2299319.6,
+            "0.382": 1873890.2,
+            "0.500": 1530050.0,
+            "0.618": 1186209.8,
+            "0.786": 696674.6000000001
+          },
+          "current_rebound_prices": {
+            "0.236": 1656876.0,
+            "0.382": 1911062.0,
+            "0.500": 2116500.0,
+            "0.618": 2321938.0,
+            "0.786": 2614426.0
+          },
+          "wave5_projection_raw": [
+            {
+              "method": "W4 + W1*0.618",
+              "price": 1354397.2,
+              "family": "wave1_multiple"
+            },
+            {
+              "method": "W4 + W1*1.0",
+              "price": 1421400.0,
+              "family": "wave1_multiple"
+            },
+            {
+              "method": "W4 + W1*1.618",
+              "price": 1529797.2,
+              "family": "wave1_multiple"
+            },
+            {
+              "method": "W4 + W1*2.618",
+              "price": 1705197.2,
+              "family": "wave1_multiple"
+            },
+            {
+              "method": "W4 + W3*0.382",
+              "price": 2331758.6,
+              "family": "wave3_multiple"
+            },
+            {
+              "method": "W4 + W3*0.5",
+              "price": 2667150.0,
+              "family": "wave3_multiple"
+            },
+            {
+              "method": "W4 + (W0->W3)*0.5",
+              "price": 2702950.0,
+              "family": "span03_multiple"
+            },
+            {
+              "method": "W4 + W3*0.618",
+              "price": 3002541.4,
+              "family": "wave3_multiple"
+            },
+            {
+              "method": "W4 + (W0->W3)*0.618",
+              "price": 3046790.2,
+              "family": "span03_multiple"
+            },
+            {
+              "method": "W4 + W3*1.0",
+              "price": 4088300.0,
+              "family": "wave3_multiple"
+            },
+            {
+              "method": "W4 + (W0->W3)*1.0",
+              "price": 4159900.0,
+              "family": "span03_multiple"
+            }
+          ],
+          "wave5_projection_clusters": [
+            {
+              "low": 2667150.0,
+              "high": 2702950.0,
+              "center": 2685050.0,
+              "methods": [
+                "W4 + W3*0.5",
+                "W4 + (W0->W3)*0.5"
+              ],
+              "method_count": 2
+            },
+            {
+              "low": 3002541.4,
+              "high": 3046790.2,
+              "center": 3024665.8,
+              "methods": [
+                "W4 + W3*0.618",
+                "W4 + (W0->W3)*0.618"
+              ],
+              "method_count": 2
+            },
+            {
+              "low": 4088300.0,
+              "high": 4159900.0,
+              "center": 4124100.0,
+              "methods": [
+                "W4 + W3*1.0",
+                "W4 + (W0->W3)*1.0"
+              ],
+              "method_count": 2
+            },
+            {
+              "low": 1354397.2,
+              "high": 1354397.2,
+              "center": 1354397.2,
+              "methods": [
+                "W4 + W1*0.618"
+              ],
+              "method_count": 1
+            },
+            {
+              "low": 1421400.0,
+              "high": 1421400.0,
+              "center": 1421400.0,
+              "methods": [
+                "W4 + W1*1.0"
+              ],
+              "method_count": 1
+            },
+            {
+              "low": 1529797.2,
+              "high": 1529797.2,
+              "center": 1529797.2,
+              "methods": [
+                "W4 + W1*1.618"
+              ],
+              "method_count": 1
+            },
+            {
+              "low": 1705197.2,
+              "high": 1705197.2,
+              "center": 1705197.2,
+              "methods": [
+                "W4 + W1*2.618"
+              ],
+              "method_count": 1
+            },
+            {
+              "low": 2331758.6,
+              "high": 2331758.6,
+              "center": 2331758.6,
+              "methods": [
+                "W4 + W3*0.382"
+              ],
+              "method_count": 1
+            }
+          ]
+        },
+        "weekly_confirmation": {
+          "wave1": {
+            "weekly_date": "2024-07-08",
+            "weekly_price": 248500.0,
+            "weekly_confirmed": true,
+            "day_distance": 7,
+            "price_distance_pct": 0.0
+          },
+          "wave2": {
+            "weekly_date": "2024-09-19",
+            "weekly_price": 144700.0,
+            "weekly_confirmed": true,
+            "day_distance": 17,
+            "price_distance_pct": 0.0
+          },
+          "wave3": {
+            "weekly_date": "2026-06-22",
+            "weekly_price": 2987000.0,
+            "weekly_confirmed": true,
+            "day_distance": 21,
+            "price_distance_pct": 0.0
+          },
+          "wave4": {
+            "weekly_date": "2026-07-27",
+            "weekly_price": 1246000.0,
+            "weekly_confirmed": true,
+            "day_distance": 26,
+            "price_distance_pct": 0.0
+          }
+        },
+        "reasons": [
+          "W2 retracement=0.592",
+          "W4 retracement=0.613",
+          "W3/W1 extension=16.205",
+          "W3 classified as strongly extended",
+          "wave3 volume expansion 1.45",
+          "wave3 MACD histogram positive",
+          "wave3 price expanded through short/mid Bollinger upper",
+          "wave4 high-volume reaction 1.71"
+        ]
+      }
+    },
+    {
+      "anchor": {
+        "idx": 252,
+        "date": "2022-09-01",
+        "kind": "low",
+        "price": 80400.0,
+        "confirmed": true,
+        "atr14": 16407.14285714286,
+        "source_tf": "monthly"
+      },
+      "anchor_score": 15.09761,
+      "base_quality_bonus": 0.0,
+      "recency_bonus": 0.5099247091033539,
+      "best_impulse": {
+        "score": 14.587685,
+        "status": "W4_CANDIDATE_W5_UNCONFIRMED",
+        "degree": "primary_monthly_candidate",
+        "wave0": {
+          "idx": 252,
+          "date": "2022-09-01",
+          "kind": "low",
+          "price": 80400.0,
+          "confirmed": true,
+          "atr14": 16407.14285714286,
+          "source_tf": "monthly"
+        },
+        "wave1": {
+          "idx": 274,
+          "date": "2024-07-01",
+          "kind": "high",
+          "price": 248500.0,
+          "confirmed": true,
+          "atr14": 27221.428571428572,
+          "source_tf": "monthly"
+        },
+        "wave2": {
+          "idx": 276,
+          "date": "2024-09-02",
+          "kind": "low",
+          "price": 144700.0,
+          "confirmed": true,
+          "atr14": 31585.714285714286,
+          "source_tf": "monthly"
+        },
+        "wave3": {
+          "idx": 297,
+          "date": "2026-06-01",
+          "kind": "high",
+          "price": 2987000.0,
+          "confirmed": false,
+          "atr14": 316500.0,
+          "source_tf": "monthly"
+        },
+        "wave4": {
+          "idx": 298,
+          "date": "2026-07-01",
+          "kind": "low",
+          "price": 1246000.0,
+          "confirmed": false,
+          "atr14": 419357.14285714284,
+          "source_tf": "monthly"
+        },
+        "wave5": null,
+        "metrics": {
+          "wave1_length": 168100.0,
+          "wave2_retracement": 0.6174895895300416,
+          "wave3_length": 2842300.0,
+          "wave3_vs_wave1_extension": 16.90838786436645,
+          "wave4_retracement_of_wave3": 0.6125321042817437,
+          "wave3_extended": true,
+          "wave3_strongly_extended": true
+        },
+        "hard_rules": {
+          "wave2_above_wave0": true,
+          "wave3_above_wave1": true,
+          "wave4_above_wave1_high": true,
+          "wave3_not_shortest": null
+        },
+        "fib": {
+          "wave1_retracement_prices": {
+            "0.236": 208828.4,
+            "0.382": 184285.8,
+            "0.500": 164450.0,
+            "0.618": 144614.2,
+            "0.786": 116373.4
+          },
+          "wave3_retracement_prices": {
+            "0.236": 2316217.2,
+            "0.382": 1901241.4,
+            "0.500": 1565850.0,
+            "0.618": 1230458.6,
+            "0.786": 752952.1999999997
+          },
+          "primary_cycle_retracement_prices": {
+            "0.236": 2301042.4,
+            "0.382": 1876678.8,
+            "0.500": 1533700.0,
+            "0.618": 1190721.2,
+            "0.786": 702412.3999999999
+          },
+          "current_rebound_prices": {
+            "0.236": 1656876.0,
+            "0.382": 1911062.0,
+            "0.500": 2116500.0,
+            "0.618": 2321938.0,
+            "0.786": 2614426.0
+          },
+          "wave5_projection_raw": [
+            {
+              "method": "W4 + W1*0.618",
+              "price": 1349885.8,
+              "family": "wave1_multiple"
+            },
+            {
+              "method": "W4 + W1*1.0",
+              "price": 1414100.0,
+              "family": "wave1_multiple"
+            },
+            {
+              "method": "W4 + W1*1.618",
+              "price": 1517985.8,
+              "family": "wave1_multiple"
+            },
+            {
+              "method": "W4 + W1*2.618",
+              "price": 1686085.8,
+              "family": "wave1_multiple"
+            },
+            {
+              "method": "W4 + W3*0.382",
+              "price": 2331758.6,
+              "family": "wave3_multiple"
+            },
+            {
+              "method": "W4 + W3*0.5",
+              "price": 2667150.0,
+              "family": "wave3_multiple"
+            },
+            {
+              "method": "W4 + (W0->W3)*0.5",
+              "price": 2699300.0,
+              "family": "span03_multiple"
+            },
+            {
+              "method": "W4 + W3*0.618",
+              "price": 3002541.4,
+              "family": "wave3_multiple"
+            },
+            {
+              "method": "W4 + (W0->W3)*0.618",
+              "price": 3042278.8,
+              "family": "span03_multiple"
+            },
+            {
+              "method": "W4 + W3*1.0",
+              "price": 4088300.0,
+              "family": "wave3_multiple"
+            },
+            {
+              "method": "W4 + (W0->W3)*1.0",
+              "price": 4152600.0,
+              "family": "span03_multiple"
+            }
+          ],
+          "wave5_projection_clusters": [
+            {
+              "low": 2667150.0,
+              "high": 2699300.0,
+              "center": 2683225.0,
+              "methods": [
+                "W4 + W3*0.5",
+                "W4 + (W0->W3)*0.5"
+              ],
+              "method_count": 2
+            },
+            {
+              "low": 3002541.4,
+              "high": 3042278.8,
+              "center": 3022410.0999999996,
+              "methods": [
+                "W4 + W3*0.618",
+                "W4 + (W0->W3)*0.618"
+              ],
+              "method_count": 2
+            },
+            {
+              "low": 4088300.0,
+              "high": 4152600.0,
+              "center": 4120450.0,
+              "methods": [
+                "W4 + W3*1.0",
+                "W4 + (W0->W3)*1.0"
+              ],
+              "method_count": 2
+            },
+            {
+              "low": 1349885.8,
+              "high": 1349885.8,
+              "center": 1349885.8,
+              "methods": [
+                "W4 + W1*0.618"
+              ],
+              "method_count": 1
+            },
+            {
+              "low": 1414100.0,
+              "high": 1414100.0,
+              "center": 1414100.0,
+              "methods": [
+                "W4 + W1*1.0"
+              ],
+              "method_count": 1
+            },
+            {
+              "low": 1517985.8,
+              "high": 1517985.8,
+              "center": 1517985.8,
+              "methods": [
+                "W4 + W1*1.618"
+              ],
+              "method_count": 1
+            },
+            {
+              "low": 1686085.8,
+              "high": 1686085.8,
+              "center": 1686085.8,
+              "methods": [
+                "W4 + W1*2.618"
+              ],
+              "method_count": 1
+            },
+            {
+              "low": 2331758.6,
+              "high": 2331758.6,
+              "center": 2331758.6,
+              "methods": [
+                "W4 + W3*0.382"
+              ],
+              "method_count": 1
+            }
+          ]
+        },
+        "weekly_confirmation": {
+          "wave1": {
+            "weekly_date": "2024-07-08",
+            "weekly_price": 248500.0,
+            "weekly_confirmed": true,
+            "day_distance": 7,
+            "price_distance_pct": 0.0
+          },
+          "wave2": {
+            "weekly_date": "2024-09-19",
+            "weekly_price": 144700.0,
+            "weekly_confirmed": true,
+            "day_distance": 17,
+            "price_distance_pct": 0.0
+          },
+          "wave3": {
+            "weekly_date": "2026-06-22",
+            "weekly_price": 2987000.0,
+            "weekly_confirmed": true,
+            "day_distance": 21,
+            "price_distance_pct": 0.0
+          },
+          "wave4": {
+            "weekly_date": "2026-07-27",
+            "weekly_price": 1246000.0,
+            "weekly_confirmed": true,
+            "day_distance": 26,
+            "price_distance_pct": 0.0
+          }
+        },
+        "reasons": [
+          "W2 retracement=0.617",
+          "W4 retracement=0.613",
+          "W3/W1 extension=16.908",
+          "W3 classified as strongly extended",
+          "wave3 volume expansion 1.45",
+          "wave3 MACD histogram positive",
+          "wave3 price expanded through short/mid Bollinger upper",
+          "wave4 high-volume reaction 1.71"
+        ]
+      }
+    },
+    {
+      "anchor": {
+        "idx": 227,
+        "date": "2020-08-03",
+        "kind": "low",
+        "price": 71300.0,
+        "confirmed": true,
+        "atr14": 12000.0,
+        "source_tf": "monthly"
+      },
+      "anchor_score": 14.917784,
+      "base_quality_bonus": 0.0,
+      "recency_bonus": 0.2501711156741958,
+      "best_impulse": {
+        "score": 14.667613,
+        "status": "W4_CANDIDATE_W5_UNCONFIRMED",
+        "degree": "primary_monthly_candidate",
+        "wave0": {
+          "idx": 227,
+          "date": "2020-08-03",
+          "kind": "low",
+          "price": 71300.0,
+          "confirmed": true,
+          "atr14": 12000.0,
+          "source_tf": "monthly"
+        },
+        "wave1": {
+          "idx": 274,
+          "date": "2024-07-01",
+          "kind": "high",
+          "price": 248500.0,
+          "confirmed": true,
+          "atr14": 27221.428571428572,
+          "source_tf": "monthly"
+        },
+        "wave2": {
+          "idx": 276,
+          "date": "2024-09-02",
+          "kind": "low",
+          "price": 144700.0,
+          "confirmed": true,
+          "atr14": 31585.714285714286,
+          "source_tf": "monthly"
+        },
+        "wave3": {
+          "idx": 297,
+          "date": "2026-06-01",
+          "kind": "high",
+          "price": 2987000.0,
+          "confirmed": false,
+          "atr14": 316500.0,
+          "source_tf": "monthly"
+        },
+        "wave4": {
+          "idx": 298,
+          "date": "2026-07-01",
+          "kind": "low",
+          "price": 1246000.0,
+          "confirmed": false,
+          "atr14": 419357.14285714284,
+          "source_tf": "monthly"
+        },
+        "wave5": null,
+        "metrics": {
+          "wave1_length": 177200.0,
+          "wave2_retracement": 0.5857787810383747,
+          "wave3_length": 2842300.0,
+          "wave3_vs_wave1_extension": 16.040067720090292,
+          "wave4_retracement_of_wave3": 0.6125321042817437,
+          "wave3_extended": true,
+          "wave3_strongly_extended": true
+        },
+        "hard_rules": {
+          "wave2_above_wave0": true,
+          "wave3_above_wave1": true,
+          "wave4_above_wave1_high": true,
+          "wave3_not_shortest": null
+        },
+        "fib": {
+          "wave1_retracement_prices": {
+            "0.236": 206680.8,
+            "0.382": 180809.6,
+            "0.500": 159900.0,
+            "0.618": 138990.4,
+            "0.786": 109220.79999999999
+          },
+          "wave3_retracement_prices": {
+            "0.236": 2316217.2,
+            "0.382": 1901241.4,
+            "0.500": 1565850.0,
+            "0.618": 1230458.6,
+            "0.786": 752952.1999999997
+          },
+          "primary_cycle_retracement_prices": {
+            "0.236": 2298894.8,
+            "0.382": 1873202.6,
+            "0.500": 1529150.0,
+            "0.618": 1185097.4,
+            "0.786": 695259.7999999998
+          },
+          "current_rebound_prices": {
+            "0.236": 1656876.0,
+            "0.382": 1911062.0,
+            "0.500": 2116500.0,
+            "0.618": 2321938.0,
+            "0.786": 2614426.0
+          },
+          "wave5_projection_raw": [
+            {
+              "method": "W4 + W1*0.618",
+              "price": 1355509.6,
+              "family": "wave1_multiple"
+            },
+            {
+              "method": "W4 + W1*1.0",
+              "price": 1423200.0,
+              "family": "wave1_multiple"
+            },
+            {
+              "method": "W4 + W1*1.618",
+              "price": 1532709.6,
+              "family": "wave1_multiple"
+            },
+            {
+              "method": "W4 + W1*2.618",
+              "price": 1709909.6,
+              "family": "wave1_multiple"
+            },
+            {
+              "method": "W4 + W3*0.382",
+              "price": 2331758.6,
+              "family": "wave3_multiple"
+            },
+            {
+              "method": "W4 + W3*0.5",
+              "price": 2667150.0,
+              "family": "wave3_multiple"
+            },
+            {
+              "method": "W4 + (W0->W3)*0.5",
+              "price": 2703850.0,
+              "family": "span03_multiple"
+            },
+            {
+              "method": "W4 + W3*0.618",
+              "price": 3002541.4,
+              "family": "wave3_multiple"
+            },
+            {
+              "method": "W4 + (W0->W3)*0.618",
+              "price": 3047902.6,
+              "family": "span03_multiple"
+            },
+            {
+              "method": "W4 + W3*1.0",
+              "price": 4088300.0,
+              "family": "wave3_multiple"
+            },
+            {
+              "method": "W4 + (W0->W3)*1.0",
+              "price": 4161700.0,
+              "family": "span03_multiple"
+            }
+          ],
+          "wave5_projection_clusters": [
+            {
+              "low": 2667150.0,
+              "high": 2703850.0,
+              "center": 2685500.0,
+              "methods": [
+                "W4 + W3*0.5",
+                "W4 + (W0->W3)*0.5"
+              ],
+              "method_count": 2
+            },
+            {
+              "low": 3002541.4,
+              "high": 3047902.6,
+              "center": 3025222.0,
+              "methods": [
+                "W4 + W3*0.618",
+                "W4 + (W0->W3)*0.618"
+              ],
+              "method_count": 2
+            },
+            {
+              "low": 4088300.0,
+              "high": 4161700.0,
+              "center": 4125000.0,
+              "methods": [
+                "W4 + W3*1.0",
+                "W4 + (W0->W3)*1.0"
+              ],
+              "method_count": 2
+            },
+            {
+              "low": 1355509.6,
+              "high": 1355509.6,
+              "center": 1355509.6,
+              "methods": [
+                "W4 + W1*0.618"
+              ],
+              "method_count": 1
+            },
+            {
+              "low": 1423200.0,
+              "high": 1423200.0,
+              "center": 1423200.0,
+              "methods": [
+                "W4 + W1*1.0"
+              ],
+              "method_count": 1
+            },
+            {
+              "low": 1532709.6,
+              "high": 1532709.6,
+              "center": 1532709.6,
+              "methods": [
+                "W4 + W1*1.618"
+              ],
+              "method_count": 1
+            },
+            {
+              "low": 1709909.6,
+              "high": 1709909.6,
+              "center": 1709909.6,
+              "methods": [
+                "W4 + W1*2.618"
+              ],
+              "method_count": 1
+            },
+            {
+              "low": 2331758.6,
+              "high": 2331758.6,
+              "center": 2331758.6,
+              "methods": [
+                "W4 + W3*0.382"
+              ],
+              "method_count": 1
+            }
+          ]
+        },
+        "weekly_confirmation": {
+          "wave1": {
+            "weekly_date": "2024-07-08",
+            "weekly_price": 248500.0,
+            "weekly_confirmed": true,
+            "day_distance": 7,
+            "price_distance_pct": 0.0
+          },
+          "wave2": {
+            "weekly_date": "2024-09-19",
+            "weekly_price": 144700.0,
+            "weekly_confirmed": true,
+            "day_distance": 17,
+            "price_distance_pct": 0.0
+          },
+          "wave3": {
+            "weekly_date": "2026-06-22",
+            "weekly_price": 2987000.0,
+            "weekly_confirmed": true,
+            "day_distance": 21,
+            "price_distance_pct": 0.0
+          },
+          "wave4": {
+            "weekly_date": "2026-07-27",
+            "weekly_price": 1246000.0,
+            "weekly_confirmed": true,
+            "day_distance": 26,
+            "price_distance_pct": 0.0
+          }
+        },
+        "reasons": [
+          "W2 retracement=0.586",
+          "W4 retracement=0.613",
+          "W3/W1 extension=16.040",
+          "W3 classified as strongly extended",
+          "wave3 volume expansion 1.45",
+          "wave3 MACD histogram positive",
+          "wave3 price expanded through short/mid Bollinger upper",
+          "wave4 high-volume reaction 1.71"
+        ]
+      }
+    },
+    {
+      "anchor": {
+        "idx": 222,
+        "date": "2020-03-02",
+        "kind": "low",
+        "price": 65800.0,
+        "confirmed": true,
+        "atr14": 12678.57142857143,
+        "source_tf": "monthly"
+      },
+      "anchor_score": 14.90639,
+      "base_quality_bonus": 0.0,
+      "recency_bonus": 0.19746748802190284,
+      "best_impulse": {
+        "score": 14.708923,
+        "status": "W4_CANDIDATE_W5_UNCONFIRMED",
+        "degree": "primary_monthly_candidate",
+        "wave0": {
+          "idx": 222,
+          "date": "2020-03-02",
+          "kind": "low",
+          "price": 65800.0,
+          "confirmed": true,
+          "atr14": 12678.57142857143,
+          "source_tf": "monthly"
+        },
+        "wave1": {
+          "idx": 274,
+          "date": "2024-07-01",
+          "kind": "high",
+          "price": 248500.0,
+          "confirmed": true,
+          "atr14": 27221.428571428572,
+          "source_tf": "monthly"
+        },
+        "wave2": {
+          "idx": 276,
+          "date": "2024-09-02",
+          "kind": "low",
+          "price": 144700.0,
+          "confirmed": true,
+          "atr14": 31585.714285714286,
+          "source_tf": "monthly"
+        },
+        "wave3": {
+          "idx": 297,
+          "date": "2026-06-01",
+          "kind": "high",
+          "price": 2987000.0,
+          "confirmed": false,
+          "atr14": 316500.0,
+          "source_tf": "monthly"
+        },
+        "wave4": {
+          "idx": 298,
+          "date": "2026-07-01",
+          "kind": "low",
+          "price": 1246000.0,
+          "confirmed": false,
+          "atr14": 419357.14285714284,
+          "source_tf": "monthly"
+        },
+        "wave5": null,
+        "metrics": {
+          "wave1_length": 182700.0,
+          "wave2_retracement": 0.5681444991789819,
+          "wave3_length": 2842300.0,
+          "wave3_vs_wave1_extension": 15.55719759168035,
+          "wave4_retracement_of_wave3": 0.6125321042817437,
+          "wave3_extended": true,
+          "wave3_strongly_extended": true
+        },
+        "hard_rules": {
+          "wave2_above_wave0": true,
+          "wave3_above_wave1": true,
+          "wave4_above_wave1_high": true,
+          "wave3_not_shortest": null
+        },
+        "fib": {
+          "wave1_retracement_prices": {
+            "0.236": 205382.8,
+            "0.382": 178708.6,
+            "0.500": 157150.0,
+            "0.618": 135591.4,
+            "0.786": 104897.79999999999
+          },
+          "wave3_retracement_prices": {
+            "0.236": 2316217.2,
+            "0.382": 1901241.4,
+            "0.500": 1565850.0,
+            "0.618": 1230458.6,
+            "0.786": 752952.1999999997
+          },
+          "primary_cycle_retracement_prices": {
+            "0.236": 2297596.8,
+            "0.382": 1871101.6,
+            "0.500": 1526400.0,
+            "0.618": 1181698.4,
+            "0.786": 690936.7999999998
+          },
+          "current_rebound_prices": {
+            "0.236": 1656876.0,
+            "0.382": 1911062.0,
+            "0.500": 2116500.0,
+            "0.618": 2321938.0,
+            "0.786": 2614426.0
+          },
+          "wave5_projection_raw": [
+            {
+              "method": "W4 + W1*0.618",
+              "price": 1358908.6,
+              "family": "wave1_multiple"
+            },
+            {
+              "method": "W4 + W1*1.0",
+              "price": 1428700.0,
+              "family": "wave1_multiple"
+            },
+            {
+              "method": "W4 + W1*1.618",
+              "price": 1541608.6,
+              "family": "wave1_multiple"
+            },
+            {
+              "method": "W4 + W1*2.618",
+              "price": 1724308.6,
+              "family": "wave1_multiple"
+            },
+            {
+              "method": "W4 + W3*0.382",
+              "price": 2331758.6,
+              "family": "wave3_multiple"
+            },
+            {
+              "method": "W4 + W3*0.5",
+              "price": 2667150.0,
+              "family": "wave3_multiple"
+            },
+            {
+              "method": "W4 + (W0->W3)*0.5",
+              "price": 2706600.0,
+              "family": "span03_multiple"
+            },
+            {
+              "method": "W4 + W3*0.618",
+              "price": 3002541.4,
+              "family": "wave3_multiple"
+            },
+            {
+              "method": "W4 + (W0->W3)*0.618",
+              "price": 3051301.6,
+              "family": "span03_multiple"
+            },
+            {
+              "method": "W4 + W3*1.0",
+              "price": 4088300.0,
+              "family": "wave3_multiple"
+            },
+            {
+              "method": "W4 + (W0->W3)*1.0",
+              "price": 4167200.0,
+              "family": "span03_multiple"
+            }
+          ],
+          "wave5_projection_clusters": [
+            {
+              "low": 2667150.0,
+              "high": 2706600.0,
+              "center": 2686875.0,
+              "methods": [
+                "W4 + W3*0.5",
+                "W4 + (W0->W3)*0.5"
+              ],
+              "method_count": 2
+            },
+            {
+              "low": 3002541.4,
+              "high": 3051301.6,
+              "center": 3026921.5,
+              "methods": [
+                "W4 + W3*0.618",
+                "W4 + (W0->W3)*0.618"
+              ],
+              "method_count": 2
+            },
+            {
+              "low": 4088300.0,
+              "high": 4167200.0,
+              "center": 4127750.0,
+              "methods": [
+                "W4 + W3*1.0",
+                "W4 + (W0->W3)*1.0"
+              ],
+              "method_count": 2
+            },
+            {
+              "low": 1358908.6,
+              "high": 1358908.6,
+              "center": 1358908.6,
+              "methods": [
+                "W4 + W1*0.618"
+              ],
+              "method_count": 1
+            },
+            {
+              "low": 1428700.0,
+              "high": 1428700.0,
+              "center": 1428700.0,
+              "methods": [
+                "W4 + W1*1.0"
+              ],
+              "method_count": 1
+            },
+            {
+              "low": 1541608.6,
+              "high": 1541608.6,
+              "center": 1541608.6,
+              "methods": [
+                "W4 + W1*1.618"
+              ],
+              "method_count": 1
+            },
+            {
+              "low": 1724308.6,
+              "high": 1724308.6,
+              "center": 1724308.6,
+              "methods": [
+                "W4 + W1*2.618"
+              ],
+              "method_count": 1
+            },
+            {
+              "low": 2331758.6,
+              "high": 2331758.6,
+              "center": 2331758.6,
+              "methods": [
+                "W4 + W3*0.382"
+              ],
+              "method_count": 1
+            }
+          ]
+        },
+        "weekly_confirmation": {
+          "wave1": {
+            "weekly_date": "2024-07-08",
+            "weekly_price": 248500.0,
+            "weekly_confirmed": true,
+            "day_distance": 7,
+            "price_distance_pct": 0.0
+          },
+          "wave2": {
+            "weekly_date": "2024-09-19",
+            "weekly_price": 144700.0,
+            "weekly_confirmed": true,
+            "day_distance": 17,
+            "price_distance_pct": 0.0
+          },
+          "wave3": {
+            "weekly_date": "2026-06-22",
+            "weekly_price": 2987000.0,
+            "weekly_confirmed": true,
+            "day_distance": 21,
+            "price_distance_pct": 0.0
+          },
+          "wave4": {
+            "weekly_date": "2026-07-27",
+            "weekly_price": 1246000.0,
+            "weekly_confirmed": true,
+            "day_distance": 26,
+            "price_distance_pct": 0.0
+          }
+        },
+        "reasons": [
+          "W2 retracement=0.568",
+          "W4 retracement=0.613",
+          "W3/W1 extension=15.557",
+          "W3 classified as strongly extended",
+          "wave3 volume expansion 1.45",
+          "wave3 MACD histogram positive",
+          "wave3 price expanded through short/mid Bollinger upper",
+          "wave4 high-volume reaction 1.71"
+        ]
+      }
+    },
+    {
+      "anchor": {
+        "idx": 213,
+        "date": "2019-06-03",
+        "kind": "low",
+        "price": 62400.0,
+        "confirmed": true,
+        "atr14": 12242.857142857143,
+        "source_tf": "monthly"
+      },
+      "anchor_score": 14.842552,
+      "base_quality_bonus": 0.0,
+      "recency_bonus": 0.1040383299110198,
+      "best_impulse": {
+        "score": 14.738514,
+        "status": "W4_CANDIDATE_W5_UNCONFIRMED",
+        "degree": "primary_monthly_candidate",
+        "wave0": {
+          "idx": 213,
+          "date": "2019-06-03",
+          "kind": "low",
+          "price": 62400.0,
+          "confirmed": true,
+          "atr14": 12242.857142857143,
+          "source_tf": "monthly"
+        },
+        "wave1": {
+          "idx": 274,
+          "date": "2024-07-01",
+          "kind": "high",
+          "price": 248500.0,
+          "confirmed": true,
+          "atr14": 27221.428571428572,
+          "source_tf": "monthly"
+        },
+        "wave2": {
+          "idx": 276,
+          "date": "2024-09-02",
+          "kind": "low",
+          "price": 144700.0,
+          "confirmed": true,
+          "atr14": 31585.714285714286,
+          "source_tf": "monthly"
+        },
+        "wave3": {
+          "idx": 297,
+          "date": "2026-06-01",
+          "kind": "high",
+          "price": 2987000.0,
+          "confirmed": false,
+          "atr14": 316500.0,
+          "source_tf": "monthly"
+        },
+        "wave4": {
+          "idx": 298,
+          "date": "2026-07-01",
+          "kind": "low",
+          "price": 1246000.0,
+          "confirmed": false,
+          "atr14": 419357.14285714284,
+          "source_tf": "monthly"
+        },
+        "wave5": null,
+        "metrics": {
+          "wave1_length": 186100.0,
+          "wave2_retracement": 0.5577646426652337,
+          "wave3_length": 2842300.0,
+          "wave3_vs_wave1_extension": 15.272971520687802,
+          "wave4_retracement_of_wave3": 0.6125321042817437,
+          "wave3_extended": true,
+          "wave3_strongly_extended": true
+        },
+        "hard_rules": {
+          "wave2_above_wave0": true,
+          "wave3_above_wave1": true,
+          "wave4_above_wave1_high": true,
+          "wave3_not_shortest": null
+        },
+        "fib": {
+          "wave1_retracement_prices": {
+            "0.236": 204580.4,
+            "0.382": 177409.8,
+            "0.500": 155450.0,
+            "0.618": 133490.2,
+            "0.786": 102225.4
+          },
+          "wave3_retracement_prices": {
+            "0.236": 2316217.2,
+            "0.382": 1901241.4,
+            "0.500": 1565850.0,
+            "0.618": 1230458.6,
+            "0.786": 752952.1999999997
+          },
+          "primary_cycle_retracement_prices": {
+            "0.236": 2296794.4,
+            "0.382": 1869802.8,
+            "0.500": 1524700.0,
+            "0.618": 1179597.2,
+            "0.786": 688264.3999999999
+          },
+          "current_rebound_prices": {
+            "0.236": 1656876.0,
+            "0.382": 1911062.0,
+            "0.500": 2116500.0,
+            "0.618": 2321938.0,
+            "0.786": 2614426.0
+          },
+          "wave5_projection_raw": [
+            {
+              "method": "W4 + W1*0.618",
+              "price": 1361009.8,
+              "family": "wave1_multiple"
+            },
+            {
+              "method": "W4 + W1*1.0",
+              "price": 1432100.0,
+              "family": "wave1_multiple"
+            },
+            {
+              "method": "W4 + W1*1.618",
+              "price": 1547109.8,
+              "family": "wave1_multiple"
+            },
+            {
+              "method": "W4 + W1*2.618",
+              "price": 1733209.8,
+              "family": "wave1_multiple"
+            },
+            {
+              "method": "W4 + W3*0.382",
+              "price": 2331758.6,
+              "family": "wave3_multiple"
+            },
+            {
+              "method": "W4 + W3*0.5",
+              "price": 2667150.0,
+              "family": "wave3_multiple"
+            },
+            {
+              "method": "W4 + (W0->W3)*0.5",
+              "price": 2708300.0,
+              "family": "span03_multiple"
+            },
+            {
+              "method": "W4 + W3*0.618",
+              "price": 3002541.4,
+              "family": "wave3_multiple"
+            },
+            {
+              "method": "W4 + (W0->W3)*0.618",
+              "price": 3053402.8,
+              "family": "span03_multiple"
+            },
+            {
+              "method": "W4 + W3*1.0",
+              "price": 4088300.0,
+              "family": "wave3_multiple"
+            },
+            {
+              "method": "W4 + (W0->W3)*1.0",
+              "price": 4170600.0,
+              "family": "span03_multiple"
+            }
+          ],
+          "wave5_projection_clusters": [
+            {
+              "low": 2667150.0,
+              "high": 2708300.0,
+              "center": 2687725.0,
+              "methods": [
+                "W4 + W3*0.5",
+                "W4 + (W0->W3)*0.5"
+              ],
+              "method_count": 2
+            },
+            {
+              "low": 3002541.4,
+              "high": 3053402.8,
+              "center": 3027972.0999999996,
+              "methods": [
+                "W4 + W3*0.618",
+                "W4 + (W0->W3)*0.618"
+              ],
+              "method_count": 2
+            },
+            {
+              "low": 4088300.0,
+              "high": 4170600.0,
+              "center": 4129450.0,
+              "methods": [
+                "W4 + W3*1.0",
+                "W4 + (W0->W3)*1.0"
+              ],
+              "method_count": 2
+            },
+            {
+              "low": 1361009.8,
+              "high": 1361009.8,
+              "center": 1361009.8,
+              "methods": [
+                "W4 + W1*0.618"
+              ],
+              "method_count": 1
+            },
+            {
+              "low": 1432100.0,
+              "high": 1432100.0,
+              "center": 1432100.0,
+              "methods": [
+                "W4 + W1*1.0"
+              ],
+              "method_count": 1
+            },
+            {
+              "low": 1547109.8,
+              "high": 1547109.8,
+              "center": 1547109.8,
+              "methods": [
+                "W4 + W1*1.618"
+              ],
+              "method_count": 1
+            },
+            {
+              "low": 1733209.8,
+              "high": 1733209.8,
+              "center": 1733209.8,
+              "methods": [
+                "W4 + W1*2.618"
+              ],
+              "method_count": 1
+            },
+            {
+              "low": 2331758.6,
+              "high": 2331758.6,
+              "center": 2331758.6,
+              "methods": [
+                "W4 + W3*0.382"
+              ],
+              "method_count": 1
+            }
+          ]
+        },
+        "weekly_confirmation": {
+          "wave1": {
+            "weekly_date": "2024-07-08",
+            "weekly_price": 248500.0,
+            "weekly_confirmed": true,
+            "day_distance": 7,
+            "price_distance_pct": 0.0
+          },
+          "wave2": {
+            "weekly_date": "2024-09-19",
+            "weekly_price": 144700.0,
+            "weekly_confirmed": true,
+            "day_distance": 17,
+            "price_distance_pct": 0.0
+          },
+          "wave3": {
+            "weekly_date": "2026-06-22",
+            "weekly_price": 2987000.0,
+            "weekly_confirmed": true,
+            "day_distance": 21,
+            "price_distance_pct": 0.0
+          },
+          "wave4": {
+            "weekly_date": "2026-07-27",
+            "weekly_price": 1246000.0,
+            "weekly_confirmed": true,
+            "day_distance": 26,
+            "price_distance_pct": 0.0
+          }
+        },
+        "reasons": [
+          "W2 retracement=0.558",
+          "W4 retracement=0.613",
+          "W3/W1 extension=15.273",
+          "W3 classified as strongly extended",
+          "wave3 volume expansion 1.45",
+          "wave3 MACD histogram positive",
+          "wave3 price expanded through short/mid Bollinger upper",
+          "wave4 high-volume reaction 1.71"
+        ]
+      }
+    }
+  ],
+  "zones": {
+    "daily": {
+      "timeframe": "daily",
+      "current_price": 1717000.0,
+      "pivots": [
+        {
+          "idx": 607,
+          "date": "2025-06-17",
+          "kind": "high",
+          "price": 260000.0,
+          "confirmed": true,
+          "atr14": 9303.57142857143,
+          "source_tf": "daily"
+        },
+        {
+          "idx": 614,
+          "date": "2025-06-26",
+          "kind": "high",
+          "price": 298500.0,
+          "confirmed": true,
+          "atr14": 11410.714285714286,
+          "source_tf": "daily"
+        },
+        {
+          "idx": 621,
+          "date": "2025-07-07",
+          "kind": "low",
+          "price": 264500.0,
+          "confirmed": true,
+          "atr14": 11464.285714285714,
+          "source_tf": "daily"
+        },
+        {
+          "idx": 625,
+          "date": "2025-07-11",
+          "kind": "high",
+          "price": 306500.0,
+          "confirmed": true,
+          "atr14": 12392.857142857143,
+          "source_tf": "daily"
+        },
+        {
+          "idx": 634,
+          "date": "2025-07-24",
+          "kind": "high",
+          "price": 279000.0,
+          "confirmed": true,
+          "atr14": 11071.42857142857,
+          "source_tf": "daily"
+        },
+        {
+          "idx": 637,
+          "date": "2025-07-29",
+          "kind": "low",
+          "price": 254500.0,
+          "confirmed": true,
+          "atr14": 10857.142857142857,
+          "source_tf": "daily"
+        },
+        {
+          "idx": 639,
+          "date": "2025-07-31",
+          "kind": "high",
+          "price": 274000.0,
+          "confirmed": true,
+          "atr14": 9821.42857142857,
+          "source_tf": "daily"
+        },
+        {
+          "idx": 644,
+          "date": "2025-08-07",
+          "kind": "low",
+          "price": 250000.0,
+          "confirmed": true,
+          "atr14": 8750.0,
+          "source_tf": "daily"
+        },
+        {
+          "idx": 648,
+          "date": "2025-08-13",
+          "kind": "high",
+          "price": 279000.0,
+          "confirmed": true,
+          "atr14": 9428.57142857143,
+          "source_tf": "daily"
+        },
+        {
+          "idx": 653,
+          "date": "2025-08-21",
+          "kind": "low",
+          "price": 245000.0,
+          "confirmed": true,
+          "atr14": 9750.0,
+          "source_tf": "daily"
+        },
+        {
+          "idx": 658,
+          "date": "2025-08-28",
+          "kind": "low",
+          "price": 253000.0,
+          "confirmed": true,
+          "atr14": 9500.0,
+          "source_tf": "daily"
+        },
+        {
+          "idx": 659,
+          "date": "2025-08-29",
+          "kind": "high",
+          "price": 270000.0,
+          "confirmed": true,
+          "atr14": 9035.714285714286,
+          "source_tf": "daily"
+        },
+        {
+          "idx": 677,
+          "date": "2025-09-24",
+          "kind": "high",
+          "price": 364000.0,
+          "confirmed": true,
+          "atr14": 14839.285714285714,
+          "source_tf": "daily"
+        },
+        {
+          "idx": 679,
+          "date": "2025-09-26",
+          "kind": "low",
+          "price": 333000.0,
+          "confirmed": true,
+          "atr14": 16125.0,
+          "source_tf": "daily"
+        },
+        {
+          "idx": 684,
+          "date": "2025-10-10",
+          "kind": "high",
+          "price": 439250.0,
+          "confirmed": true,
+          "atr14": 19535.714285714286,
+          "source_tf": "daily"
+        },
+        {
+          "idx": 700,
+          "date": "2025-11-03",
+          "kind": "high",
+          "price": 624000.0,
+          "confirmed": true,
+          "atr14": 28000.0,
+          "source_tf": "daily"
+        },
+        {
+          "idx": 702,
+          "date": "2025-11-05",
+          "kind": "low",
+          "price": 532000.0,
+          "confirmed": true,
+          "atr14": 30892.85714285714,
+          "source_tf": "daily"
+        },
+        {
+          "idx": 706,
+          "date": "2025-11-11",
+          "kind": "high",
+          "price": 646000.0,
+          "confirmed": true,
+          "atr14": 34928.57142857143,
+          "source_tf": "daily"
+        },
+        {
+          "idx": 717,
+          "date": "2025-11-26",
+          "kind": "low",
+          "price": 501000.0,
+          "confirmed": true,
+          "atr14": 34214.28571428572,
+          "source_tf": "daily"
+        },
+        {
+          "idx": 721,
+          "date": "2025-12-02",
+          "kind": "high",
+          "price": 559000.0,
+          "confirmed": true,
+          "atr14": 31714.285714285714,
+          "source_tf": "daily"
+        },
+        {
+          "idx": 724,
+          "date": "2025-12-05",
+          "kind": "low",
+          "price": 527000.0,
+          "confirmed": true,
+          "atr14": 27500.0,
+          "source_tf": "daily"
+        },
+        {
+          "idx": 727,
+          "date": "2025-12-10",
+          "kind": "high",
+          "price": 593000.0,
+          "confirmed": true,
+          "atr14": 26928.571428571428,
+          "source_tf": "daily"
+        },
+        {
+          "idx": 732,
+          "date": "2025-12-17",
+          "kind": "low",
+          "price": 525000.0,
+          "confirmed": true,
+          "atr14": 24000.0,
+          "source_tf": "daily"
+        },
+        {
+          "idx": 745,
+          "date": "2026-01-08",
+          "kind": "high",
+          "price": 788000.0,
+          "confirmed": true,
+          "atr14": 29857.14285714286,
+          "source_tf": "daily"
+        },
+        {
+          "idx": 748,
+          "date": "2026-01-13",
+          "kind": "low",
+          "price": 724000.0,
+          "confirmed": true,
+          "atr14": 30428.571428571428,
+          "source_tf": "daily"
+        },
+        {
+          "idx": 752,
+          "date": "2026-01-19",
+          "kind": "high",
+          "price": 774000.0,
+          "confirmed": true,
+          "atr14": 31500.0,
+          "source_tf": "daily"
+        },
+        {
+          "idx": 754,
+          "date": "2026-01-21",
+          "kind": "low",
+          "price": 728000.0,
+          "confirmed": true,
+          "atr14": 30714.285714285714,
+          "source_tf": "daily"
+        },
+        {
+          "idx": 758,
+          "date": "2026-01-27",
+          "kind": "low",
+          "price": 733000.0,
+          "confirmed": true,
+          "atr14": 31857.14285714286,
+          "source_tf": "daily"
+        },
+        {
+          "idx": 761,
+          "date": "2026-01-30",
+          "kind": "high",
+          "price": 931000.0,
+          "confirmed": true,
+          "atr14": 37857.142857142855,
+          "source_tf": "daily"
+        },
+        {
+          "idx": 766,
+          "date": "2026-02-06",
+          "kind": "low",
+          "price": 791000.0,
+          "confirmed": true,
+          "atr14": 51142.857142857145,
+          "source_tf": "daily"
+        },
+        {
+          "idx": 768,
+          "date": "2026-02-10",
+          "kind": "high",
+          "price": 905000.0,
+          "confirmed": true,
+          "atr14": 53571.42857142857,
+          "source_tf": "daily"
+        },
+        {
+          "idx": 777,
+          "date": "2026-02-26",
+          "kind": "high",
+          "price": 1099000.0,
+          "confirmed": true,
+          "atr14": 45785.71428571428,
+          "source_tf": "daily"
+        },
+        {
+          "idx": 783,
+          "date": "2026-03-09",
+          "kind": "low",
+          "price": 808000.0,
+          "confirmed": true,
+          "atr14": 69642.85714285714,
+          "source_tf": "daily"
+        },
+        {
+          "idx": 785,
+          "date": "2026-03-11",
+          "kind": "high",
+          "price": 985000.0,
+          "confirmed": true,
+          "atr14": 76928.57142857143,
+          "source_tf": "daily"
+        },
+        {
+          "idx": 787,
+          "date": "2026-03-13",
+          "kind": "low",
+          "price": 884000.0,
+          "confirmed": true,
+          "atr14": 75071.42857142857,
+          "source_tf": "daily"
+        },
+        {
+          "idx": 790,
+          "date": "2026-03-18",
+          "kind": "high",
+          "price": 1060000.0,
+          "confirmed": true,
+          "atr14": 79642.85714285714,
+          "source_tf": "daily"
+        },
+        {
+          "idx": 793,
+          "date": "2026-03-23",
+          "kind": "low",
+          "price": 927000.0,
+          "confirmed": true,
+          "atr14": 72714.28571428571,
+          "source_tf": "daily"
+        },
+        {
+          "idx": 795,
+          "date": "2026-03-25",
+          "kind": "high",
+          "price": 1042000.0,
+          "confirmed": true,
+          "atr14": 63142.857142857145,
+          "source_tf": "daily"
+        },
+        {
+          "idx": 799,
+          "date": "2026-03-31",
+          "kind": "low",
+          "price": 806000.0,
+          "confirmed": true,
+          "atr14": 56857.142857142855,
+          "source_tf": "daily"
+        },
+        {
+          "idx": 805,
+          "date": "2026-04-08",
+          "kind": "high",
+          "price": 1056000.0,
+          "confirmed": true,
+          "atr14": 66821.42857142857,
+          "source_tf": "daily"
+        },
+        {
+          "idx": 830,
+          "date": "2026-05-15",
+          "kind": "high",
+          "price": 1995000.0,
+          "confirmed": true,
+          "atr14": 120000.0,
+          "source_tf": "daily"
+        },
+        {
+          "idx": 833,
+          "date": "2026-05-20",
+          "kind": "low",
+          "price": 1690000.0,
+          "confirmed": true,
+          "atr14": 132428.57142857142,
+          "source_tf": "daily"
+        },
+        {
+          "idx": 841,
+          "date": "2026-06-02",
+          "kind": "high",
+          "price": 2407000.0,
+          "confirmed": true,
+          "atr14": 144357.14285714287,
+          "source_tf": "daily"
+        },
+        {
+          "idx": 844,
+          "date": "2026-06-08",
+          "kind": "low",
+          "price": 1855000.0,
+          "confirmed": true,
+          "atr14": 149428.57142857142,
+          "source_tf": "daily"
+        },
+        {
+          "idx": 856,
+          "date": "2026-06-24",
+          "kind": "low",
+          "price": 2453000.0,
+          "confirmed": true,
+          "atr14": 225785.7142857143,
+          "source_tf": "daily"
+        },
+        {
+          "idx": 857,
+          "date": "2026-06-25",
+          "kind": "high",
+          "price": 2987000.0,
+          "confirmed": true,
+          "atr14": 238571.42857142858,
+          "source_tf": "daily"
+        },
+        {
+          "idx": 863,
+          "date": "2026-07-03",
+          "kind": "low",
+          "price": 2045000.0,
+          "confirmed": true,
+          "atr14": 264214.28571428574,
+          "source_tf": "daily"
+        },
+        {
+          "idx": 870,
+          "date": "2026-07-14",
+          "kind": "low",
+          "price": 1678000.0,
+          "confirmed": true,
+          "atr14": 268000.0,
+          "source_tf": "daily"
+        },
+        {
+          "idx": 874,
+          "date": "2026-07-21",
+          "kind": "low",
+          "price": 1732000.0,
+          "confirmed": true,
+          "atr14": 249214.2857142857,
+          "source_tf": "daily"
+        },
+        {
+          "idx": 875,
+          "date": "2026-07-22",
+          "kind": "high",
+          "price": 2006000.0,
+          "confirmed": true,
+          "atr14": 246000.0,
+          "source_tf": "daily"
+        },
+        {
+          "idx": 880,
+          "date": "2026-07-29",
+          "kind": "low",
+          "price": 1246000.0,
+          "confirmed": true,
+          "atr14": 212785.7142857143,
+          "source_tf": "daily"
+        },
+        {
+          "idx": 882,
+          "date": "2026-07-31",
+          "kind": "high",
+          "price": 1718000.0,
+          "confirmed": true,
+          "atr14": 229571.42857142858,
+          "source_tf": "daily"
+        },
+        {
+          "idx": 889,
+          "date": "2026-08-11",
+          "kind": "low",
+          "price": 1373000.0,
+          "confirmed": true,
+          "atr14": 180357.14285714287,
+          "source_tf": "daily"
+        },
+        {
+          "idx": 893,
+          "date": "2026-08-18",
+          "kind": "high",
+          "price": 1792000.0,
+          "confirmed": true,
+          "atr14": 169285.7142857143,
+          "source_tf": "daily"
+        },
+        {
+          "idx": 894,
+          "date": "2026-08-19",
+          "kind": "low",
+          "price": 1486000.0,
+          "confirmed": true,
+          "atr14": 155214.2857142857,
+          "source_tf": "daily"
+        },
+        {
+          "idx": 897,
+          "date": "2026-08-24",
+          "kind": "high",
+          "price": 1792000.0,
+          "confirmed": false,
+          "atr14": 135357.14285714287,
+          "source_tf": "daily"
+        },
+        {
+          "idx": 898,
+          "date": "2026-08-25",
+          "kind": "low",
+          "price": 1557000.0,
+          "confirmed": false,
+          "atr14": 134142.85714285713,
+          "source_tf": "daily"
+        }
+      ],
+      "zones_all": [
+        {
+          "low": 110635.6,
+          "high": 110635.6,
+          "center": 110635.6,
+          "role": "SUPPORT",
+          "score": 1.4,
+          "sources": [
+            {
+              "kind": "fibonacci",
+              "name": "wave1_retracement_prices",
+              "level": "0.786",
+              "price": 110635.6,
+              "timeframe": "daily"
+            }
+          ],
+          "reaction_count": 0,
+          "width_pct": 0.0
+        },
+        {
+          "low": 140102.8,
+          "high": 140102.8,
+          "center": 140102.8,
+          "role": "SUPPORT",
+          "score": 1.4,
+          "sources": [
+            {
+              "kind": "fibonacci",
+              "name": "wave1_retracement_prices",
+              "level": "0.618",
+              "price": 140102.8,
+              "timeframe": "daily"
+            }
+          ],
+          "reaction_count": 0,
+          "width_pct": 0.0
+        },
+        {
+          "low": 160800.0,
+          "high": 160800.0,
+          "center": 160800.0,
+          "role": "SUPPORT",
+          "score": 1.4,
+          "sources": [
+            {
+              "kind": "fibonacci",
+              "name": "wave1_retracement_prices",
+              "level": "0.500",
+              "price": 160800.0,
+              "timeframe": "daily"
+            }
+          ],
+          "reaction_count": 0,
+          "width_pct": 0.0
+        },
+        {
+          "low": 181497.2,
+          "high": 181497.2,
+          "center": 181497.2,
+          "role": "SUPPORT",
+          "score": 1.4,
+          "sources": [
+            {
+              "kind": "fibonacci",
+              "name": "wave1_retracement_prices",
+              "level": "0.382",
+              "price": 181497.2,
+              "timeframe": "daily"
+            }
+          ],
+          "reaction_count": 0,
+          "width_pct": 0.0
+        },
+        {
+          "low": 207105.6,
+          "high": 207105.6,
+          "center": 207105.6,
+          "role": "SUPPORT",
+          "score": 1.4,
+          "sources": [
+            {
+              "kind": "fibonacci",
+              "name": "wave1_retracement_prices",
+              "level": "0.236",
+              "price": 207105.6,
+              "timeframe": "daily"
+            }
+          ],
+          "reaction_count": 0,
+          "width_pct": 0.0
+        },
+        {
+          "low": 244025.0,
+          "high": 245975.0,
+          "center": 245000.0,
+          "role": "SUPPORT",
+          "score": 1.15,
+          "sources": [
+            {
+              "kind": "pivot_low",
+              "date": "2025-08-21",
+              "price": 245000.0,
+              "confirmed": true,
+              "timeframe": "daily"
+            }
+          ],
+          "reaction_count": 1,
+          "width_pct": 0.007959183673469388
+        },
+        {
+          "low": 249050.0,
+          "high": 255450.0,
+          "center": 253000.0,
+          "role": "SUPPORT",
+          "score": 2.8499999999999996,
+          "sources": [
+            {
+              "kind": "pivot_low",
+              "date": "2025-08-07",
+              "price": 250000.0,
+              "confirmed": true,
+              "timeframe": "daily"
+            },
+            {
+              "kind": "pivot_low",
+              "date": "2025-08-28",
+              "price": 253000.0,
+              "confirmed": true,
+              "timeframe": "daily"
+            },
+            {
+              "kind": "pivot_low",
+              "date": "2025-07-29",
+              "price": 254500.0,
+              "confirmed": true,
+              "timeframe": "daily"
+            }
+          ],
+          "reaction_count": 3,
+          "width_pct": 0.025296442687747035
+        },
+        {
+          "low": 259069.64285714287,
+          "high": 260930.35714285713,
+          "center": 260000.0,
+          "role": "SUPPORT",
+          "score": 1.15,
+          "sources": [
+            {
+              "kind": "pivot_high",
+              "date": "2025-06-17",
+              "price": 260000.0,
+              "confirmed": true,
+              "timeframe": "daily"
+            }
+          ],
+          "reaction_count": 1,
+          "width_pct": 0.00715659340659331
+        },
+        {
+          "low": 263353.5714285714,
+          "high": 265646.4285714286,
+          "center": 264500.0,
+          "role": "SUPPORT",
+          "score": 1.15,
+          "sources": [
+            {
+              "kind": "pivot_low",
+              "date": "2025-07-07",
+              "price": 264500.0,
+              "confirmed": true,
+              "timeframe": "daily"
+            }
+          ],
+          "reaction_count": 1,
+          "width_pct": 0.00866864704293822
+        },
+        {
+          "low": 269057.14285714284,
+          "high": 274942.85714285716,
+          "center": 272000.0,
+          "role": "SUPPORT",
+          "score": 2.0,
+          "sources": [
+            {
+              "kind": "pivot_high",
+              "date": "2025-08-29",
+              "price": 270000.0,
+              "confirmed": true,
+              "timeframe": "daily"
+            },
+            {
+              "kind": "pivot_high",
+              "date": "2025-07-31",
+              "price": 274000.0,
+              "confirmed": true,
+              "timeframe": "daily"
+            }
+          ],
+          "reaction_count": 2,
+          "width_pct": 0.021638655462184995
+        },
+        {
+          "low": 277975.0,
+          "high": 280025.0,
+          "center": 279000.0,
+          "role": "SUPPORT",
+          "score": 2.0,
+          "sources": [
+            {
+              "kind": "pivot_high",
+              "date": "2025-07-24",
+              "price": 279000.0,
+              "confirmed": true,
+              "timeframe": "daily"
+            },
+            {
+              "kind": "pivot_high",
+              "date": "2025-08-13",
+              "price": 279000.0,
+              "confirmed": true,
+              "timeframe": "daily"
+            }
+          ],
+          "reaction_count": 2,
+          "width_pct": 0.007347670250896057
+        },
+        {
+          "low": 297358.9285714286,
+          "high": 299641.0714285714,
+          "center": 298500.0,
+          "role": "SUPPORT",
+          "score": 1.15,
+          "sources": [
+            {
+              "kind": "pivot_high",
+              "date": "2025-06-26",
+              "price": 298500.0,
+              "confirmed": true,
+              "timeframe": "daily"
+            }
+          ],
+          "reaction_count": 1,
+          "width_pct": 0.007645369705671158
+        },
+        {
+          "low": 305260.71428571426,
+          "high": 307739.28571428574,
+          "center": 306500.0,
+          "role": "SUPPORT",
+          "score": 1.15,
+          "sources": [
+            {
+              "kind": "pivot_high",
+              "date": "2025-07-11",
+              "price": 306500.0,
+              "confirmed": true,
+              "timeframe": "daily"
+            }
+          ],
+          "reaction_count": 1,
+          "width_pct": 0.008086693078536634
+        },
+        {
+          "low": 331387.5,
+          "high": 334612.5,
+          "center": 333000.0,
+          "role": "SUPPORT",
+          "score": 1.15,
+          "sources": [
+            {
+              "kind": "pivot_low",
+              "date": "2025-09-26",
+              "price": 333000.0,
+              "confirmed": true,
+              "timeframe": "daily"
+            }
+          ],
+          "reaction_count": 1,
+          "width_pct": 0.009684684684684685
+        },
+        {
+          "low": 362516.0714285714,
+          "high": 365483.9285714286,
+          "center": 364000.0,
+          "role": "SUPPORT",
+          "score": 1.15,
+          "sources": [
+            {
+              "kind": "pivot_high",
+              "date": "2025-09-24",
+              "price": 364000.0,
+              "confirmed": true,
+              "timeframe": "daily"
+            }
+          ],
+          "reaction_count": 1,
+          "width_pct": 0.008153453689168021
+        },
+        {
+          "low": 437296.4285714286,
+          "high": 441203.5714285714,
+          "center": 439250.0,
+          "role": "SUPPORT",
+          "score": 1.15,
+          "sources": [
+            {
+              "kind": "pivot_high",
+              "date": "2025-10-10",
+              "price": 439250.0,
+              "confirmed": true,
+              "timeframe": "daily"
+            }
+          ],
+          "reaction_count": 1,
+          "width_pct": 0.008895032116432193
+        },
+        {
+          "low": 497578.5714285714,
+          "high": 504421.4285714286,
+          "center": 501000.0,
+          "role": "SUPPORT",
+          "score": 1.15,
+          "sources": [
+            {
+              "kind": "pivot_low",
+              "date": "2025-11-26",
+              "price": 501000.0,
+              "confirmed": true,
+              "timeframe": "daily"
+            }
+          ],
+          "reaction_count": 1,
+          "width_pct": 0.013658397490732853
+        },
+        {
+          "low": 522250.0,
+          "high": 534750.0,
+          "center": 527000.0,
+          "role": "SUPPORT",
+          "score": 2.8499999999999996,
+          "sources": [
+            {
+              "kind": "pivot_low",
+              "date": "2025-12-17",
+              "price": 525000.0,
+              "confirmed": true,
+              "timeframe": "daily"
+            },
+            {
+              "kind": "pivot_low",
+              "date": "2025-12-05",
+              "price": 527000.0,
+              "confirmed": true,
+              "timeframe": "daily"
+            },
+            {
+              "kind": "pivot_low",
+              "date": "2025-11-05",
+              "price": 532000.0,
+              "confirmed": true,
+              "timeframe": "daily"
+            }
+          ],
+          "reaction_count": 3,
+          "width_pct": 0.023719165085388995
+        },
+        {
+          "low": 555828.5714285715,
+          "high": 562171.4285714285,
+          "center": 559000.0,
+          "role": "SUPPORT",
+          "score": 1.15,
+          "sources": [
+            {
+              "kind": "pivot_high",
+              "date": "2025-12-02",
+              "price": 559000.0,
+              "confirmed": true,
+              "timeframe": "daily"
+            }
+          ],
+          "reaction_count": 1,
+          "width_pct": 0.0113467927421414
+        },
+        {
+          "low": 590307.1428571428,
+          "high": 595692.8571428572,
+          "center": 593000.0,
+          "role": "SUPPORT",
+          "score": 1.15,
+          "sources": [
+            {
+              "kind": "pivot_high",
+              "date": "2025-12-10",
+              "price": 593000.0,
+              "confirmed": true,
+              "timeframe": "daily"
+            }
+          ],
+          "reaction_count": 1,
+          "width_pct": 0.009082148879788058
+        },
+        {
+          "low": 621200.0,
+          "high": 626800.0,
+          "center": 624000.0,
+          "role": "SUPPORT",
+          "score": 1.15,
+          "sources": [
+            {
+              "kind": "pivot_high",
+              "date": "2025-11-03",
+              "price": 624000.0,
+              "confirmed": true,
+              "timeframe": "daily"
+            }
+          ],
+          "reaction_count": 1,
+          "width_pct": 0.008974358974358974
+        },
+        {
+          "low": 642507.1428571428,
+          "high": 649492.8571428572,
+          "center": 646000.0,
+          "role": "SUPPORT",
+          "score": 1.15,
+          "sources": [
+            {
+              "kind": "pivot_high",
+              "date": "2025-11-11",
+              "price": 646000.0,
+              "confirmed": true,
+              "timeframe": "daily"
+            }
+          ],
+          "reaction_count": 1,
+          "width_pct": 0.010813799203892135
+        },
+        {
+          "low": 696674.6000000001,
+          "high": 696674.6000000001,
+          "center": 696674.6000000001,
+          "role": "SUPPORT",
+          "score": 1.4,
+          "sources": [
+            {
+              "kind": "fibonacci",
+              "name": "primary_cycle_retracement_prices",
+              "level": "0.786",
+              "price": 696674.6000000001,
+              "timeframe": "daily"
+            }
+          ],
+          "reaction_count": 0,
+          "width_pct": 0.0
+        },
+        {
+          "low": 720928.5714285715,
+          "high": 736071.4285714285,
+          "center": 728000.0,
+          "role": "SUPPORT",
+          "score": 2.8499999999999996,
+          "sources": [
+            {
+              "kind": "pivot_low",
+              "date": "2026-01-13",
+              "price": 724000.0,
+              "confirmed": true,
+              "timeframe": "daily"
+            },
+            {
+              "kind": "pivot_low",
+              "date": "2026-01-21",
+              "price": 728000.0,
+              "confirmed": true,
+              "timeframe": "daily"
+            },
+            {
+              "kind": "pivot_low",
+              "date": "2026-01-27",
+              "price": 733000.0,
+              "confirmed": true,
+              "timeframe": "daily"
+            }
+          ],
+          "reaction_count": 3,
+          "width_pct": 0.02080062794348495
+        },
+        {
+          "low": 752952.1999999997,
+          "high": 752952.1999999997,
+          "center": 752952.1999999997,
+          "role": "SUPPORT",
+          "score": 1.4,
+          "sources": [
+            {
+              "kind": "fibonacci",
+              "name": "wave3_retracement_prices",
+              "level": "0.786",
+              "price": 752952.1999999997,
+              "timeframe": "daily"
+            }
+          ],
+          "reaction_count": 0,
+          "width_pct": 0.0
+        },
+        {
+          "low": 770932.1428571428,
+          "high": 791067.8571428572,
+          "center": 781000.0,
+          "role": "SUPPORT",
+          "score": 2.0,
+          "sources": [
+            {
+              "kind": "pivot_high",
+              "date": "2026-01-19",
+              "price": 774000.0,
+              "confirmed": true,
+              "timeframe": "daily"
+            },
+            {
+              "kind": "pivot_high",
+              "date": "2026-01-08",
+              "price": 788000.0,
+              "confirmed": true,
+              "timeframe": "daily"
+            }
+          ],
+          "reaction_count": 2,
+          "width_pct": 0.025781964514358924
+        },
+        {
+          "low": 785314.2857142857,
+          "high": 813685.7142857143,
+          "center": 806000.0,
+          "role": "SUPPORT",
+          "score": 2.8499999999999996,
+          "sources": [
+            {
+              "kind": "pivot_low",
+              "date": "2026-02-06",
+              "price": 791000.0,
+              "confirmed": true,
+              "timeframe": "daily"
+            },
+            {
+              "kind": "pivot_low",
+              "date": "2026-03-31",
+              "price": 806000.0,
+              "confirmed": true,
+              "timeframe": "daily"
+            },
+            {
+              "kind": "pivot_low",
+              "date": "2026-03-09",
+              "price": 808000.0,
+              "confirmed": true,
+              "timeframe": "daily"
+            }
+          ],
+          "reaction_count": 3,
+          "width_pct": 0.03520028358738044
+        },
+        {
+          "low": 876492.8571428572,
+          "high": 891507.1428571428,
+          "center": 884000.0,
+          "role": "SUPPORT",
+          "score": 1.15,
+          "sources": [
+            {
+              "kind": "pivot_low",
+              "date": "2026-03-13",
+              "price": 884000.0,
+              "confirmed": true,
+              "timeframe": "daily"
+            }
+          ],
+          "reaction_count": 1,
+          "width_pct": 0.016984486102133125
+        },
+        {
+          "low": 899642.8571428572,
+          "high": 910357.1428571428,
+          "center": 905000.0,
+          "role": "SUPPORT",
+          "score": 1.15,
+          "sources": [
+            {
+              "kind": "pivot_high",
+              "date": "2026-02-10",
+              "price": 905000.0,
+              "confirmed": true,
+              "timeframe": "daily"
+            }
+          ],
+          "reaction_count": 1,
+          "width_pct": 0.011838989739542189
+        },
+        {
+          "low": 919728.5714285715,
+          "high": 934785.7142857143,
+          "center": 929000.0,
+          "role": "SUPPORT",
+          "score": 3.3,
+          "sources": [
+            {
+              "kind": "pivot_low",
+              "date": "2026-03-23",
+              "price": 927000.0,
+              "confirmed": true,
+              "timeframe": "daily"
+            },
+            {
+              "kind": "pivot_high",
+              "date": "2026-01-30",
+              "price": 931000.0,
+              "confirmed": true,
+              "timeframe": "daily"
+            }
+          ],
+          "reaction_count": 2,
+          "width_pct": 0.016207904044287236
+        },
+        {
+          "low": 977307.1428571428,
+          "high": 992692.8571428572,
+          "center": 985000.0,
+          "role": "SUPPORT",
+          "score": 1.15,
+          "sources": [
+            {
+              "kind": "pivot_high",
+              "date": "2026-03-11",
+              "price": 985000.0,
+              "confirmed": true,
+              "timeframe": "daily"
+            }
+          ],
+          "reaction_count": 1,
+          "width_pct": 0.015620014503263268
+        },
+        {
+          "low": 1035317.8571428572,
+          "high": 1066682.142857143,
+          "center": 1056000.0,
+          "role": "SUPPORT",
+          "score": 2.8499999999999996,
+          "sources": [
+            {
+              "kind": "pivot_high",
+              "date": "2026-03-25",
+              "price": 1042000.0,
+              "confirmed": true,
+              "timeframe": "daily"
+            },
+            {
+              "kind": "pivot_high",
+              "date": "2026-04-08",
+              "price": 1056000.0,
+              "confirmed": true,
+              "timeframe": "daily"
+            },
+            {
+              "kind": "pivot_high",
+              "date": "2026-03-18",
+              "price": 1060000.0,
+              "confirmed": true,
+              "timeframe": "daily"
+            }
+          ],
+          "reaction_count": 3,
+          "width_pct": 0.029701028138528218
+        },
+        {
+          "low": 1094421.4285714286,
+          "high": 1103578.5714285714,
+          "center": 1099000.0,
+          "role": "SUPPORT",
+          "score": 1.15,
+          "sources": [
+            {
+              "kind": "pivot_high",
+              "date": "2026-02-26",
+              "price": 1099000.0,
+              "confirmed": true,
+              "timeframe": "daily"
+            }
+          ],
+          "reaction_count": 1,
+          "width_pct": 0.008332250097491105
+        },
+        {
+          "low": 1186209.8,
+          "high": 1186209.8,
+          "center": 1186209.8,
+          "role": "SUPPORT",
+          "score": 1.4,
+          "sources": [
+            {
+              "kind": "fibonacci",
+              "name": "primary_cycle_retracement_prices",
+              "level": "0.618",
+              "price": 1186209.8,
+              "timeframe": "daily"
+            }
+          ],
+          "reaction_count": 0,
+          "width_pct": 0.0
+        },
+        {
+          "low": 1230458.6,
+          "high": 1258460.0,
+          "center": 1238229.3,
+          "role": "SUPPORT",
+          "score": 3.55,
+          "sources": [
+            {
+              "kind": "fibonacci",
+              "name": "wave3_retracement_prices",
+              "level": "0.618",
+              "price": 1230458.6,
+              "timeframe": "daily"
+            },
+            {
+              "kind": "pivot_low",
+              "date": "2026-07-29",
+              "price": 1246000.0,
+              "confirmed": true,
+              "timeframe": "daily"
+            }
+          ],
+          "reaction_count": 1,
+          "width_pct": 0.022614066716075857
+        },
+        {
+          "low": 1359270.0,
+          "high": 1386730.0,
+          "center": 1373000.0,
+          "role": "SUPPORT",
+          "score": 1.15,
+          "sources": [
+            {
+              "kind": "pivot_low",
+              "date": "2026-08-11",
+              "price": 1373000.0,
+              "confirmed": true,
+              "timeframe": "daily"
+            }
+          ],
+          "reaction_count": 1,
+          "width_pct": 0.02
+        },
+        {
+          "low": 1530050.0,
+          "high": 1530050.0,
+          "center": 1530050.0,
+          "role": "SUPPORT",
+          "score": 1.4,
+          "sources": [
+            {
+              "kind": "fibonacci",
+              "name": "primary_cycle_retracement_prices",
+              "level": "0.500",
+              "price": 1530050.0,
+              "timeframe": "daily"
+            }
+          ],
+          "reaction_count": 0,
+          "width_pct": 0.0
+        },
+        {
+          "low": 1565850.0,
+          "high": 1565850.0,
+          "center": 1565850.0,
+          "role": "SUPPORT",
+          "score": 1.4,
+          "sources": [
+            {
+              "kind": "fibonacci",
+              "name": "wave3_retracement_prices",
+              "level": "0.500",
+              "price": 1565850.0,
+              "timeframe": "daily"
+            }
+          ],
+          "reaction_count": 0,
+          "width_pct": 0.0
+        },
+        {
+          "low": 1656876.0,
+          "high": 1656876.0,
+          "center": 1656876.0,
+          "role": "SUPPORT",
+          "score": 1.4,
+          "sources": [
+            {
+              "kind": "fibonacci",
+              "name": "current_rebound_prices",
+              "level": "0.236",
+              "price": 1656876.0,
+              "timeframe": "daily"
+            }
+          ],
+          "reaction_count": 0,
+          "width_pct": 0.0
+        },
+        {
+          "low": 1661100.0,
+          "high": 1748900.0,
+          "center": 1690000.0,
+          "role": "CURRENT_ZONE",
+          "score": 2.8499999999999996,
+          "sources": [
+            {
+              "kind": "pivot_low",
+              "date": "2026-07-14",
+              "price": 1678000.0,
+              "confirmed": true,
+              "timeframe": "daily"
+            },
+            {
+              "kind": "pivot_low",
+              "date": "2026-05-20",
+              "price": 1690000.0,
+              "confirmed": true,
+              "timeframe": "daily"
+            },
+            {
+              "kind": "pivot_low",
+              "date": "2026-07-21",
+              "price": 1732000.0,
+              "confirmed": true,
+              "timeframe": "daily"
+            }
+          ],
+          "reaction_count": 3,
+          "width_pct": 0.05195266272189349
+        },
+        {
+          "low": 1840057.142857143,
+          "high": 1873890.2,
+          "center": 1864445.1,
+          "role": "RESISTANCE",
+          "score": 3.55,
+          "sources": [
+            {
+              "kind": "pivot_low",
+              "date": "2026-06-08",
+              "price": 1855000.0,
+              "confirmed": true,
+              "timeframe": "daily"
+            },
+            {
+              "kind": "fibonacci",
+              "name": "primary_cycle_retracement_prices",
+              "level": "0.382",
+              "price": 1873890.2,
+              "timeframe": "daily"
+            }
+          ],
+          "reaction_count": 1,
+          "width_pct": 0.018146448582936014
+        },
+        {
+          "low": 1901241.4,
+          "high": 1911062.0,
+          "center": 1906151.7,
+          "role": "RESISTANCE",
+          "score": 2.8,
+          "sources": [
+            {
+              "kind": "fibonacci",
+              "name": "wave3_retracement_prices",
+              "level": "0.382",
+              "price": 1901241.4,
+              "timeframe": "daily"
+            },
+            {
+              "kind": "fibonacci",
+              "name": "current_rebound_prices",
+              "level": "0.382",
+              "price": 1911062.0,
+              "timeframe": "daily"
+            }
+          ],
+          "reaction_count": 0,
+          "width_pct": 0.005152055841096012
+        },
+        {
+          "low": 1976700.0,
+          "high": 2024300.0,
+          "center": 2000500.0,
+          "role": "RESISTANCE",
+          "score": 2.0,
+          "sources": [
+            {
+              "kind": "pivot_high",
+              "date": "2026-05-15",
+              "price": 1995000.0,
+              "confirmed": true,
+              "timeframe": "daily"
+            },
+            {
+              "kind": "pivot_high",
+              "date": "2026-07-22",
+              "price": 2006000.0,
+              "confirmed": true,
+              "timeframe": "daily"
+            }
+          ],
+          "reaction_count": 2,
+          "width_pct": 0.023794051487128216
+        },
+        {
+          "low": 2024550.0,
+          "high": 2065450.0,
+          "center": 2047368.0175774496,
+          "role": "RESISTANCE",
+          "score": 3.3499999999999996,
+          "sources": [
+            {
+              "kind": "pivot_low",
+              "date": "2026-07-03",
+              "price": 2045000.0,
+              "confirmed": true,
+              "timeframe": "daily"
+            },
+            {
+              "kind": "bollinger_upper",
+              "name": "24m",
+              "column": "BB_288_1.541_UPPER",
+              "price": 2049736.0351548991,
+              "timeframe": "daily"
+            }
+          ],
+          "reaction_count": 1,
+          "width_pct": 0.019976867690057486
+        },
+        {
+          "low": 2116500.0,
+          "high": 2125373.766380405,
+          "center": 2120936.8831902025,
+          "role": "RESISTANCE",
+          "score": 3.5999999999999996,
+          "sources": [
+            {
+              "kind": "fibonacci",
+              "name": "current_rebound_prices",
+              "level": "0.500",
+              "price": 2116500.0,
+              "timeframe": "daily"
+            },
+            {
+              "kind": "bollinger_upper",
+              "name": "3m",
+              "column": "BB_36_1.541_UPPER",
+              "price": 2125373.766380405,
+              "timeframe": "daily"
+            }
+          ],
+          "reaction_count": 0,
+          "width_pct": 0.004183889888820075
+        },
+        {
+          "low": 2299319.6,
+          "high": 2321938.0,
+          "center": 2316217.2,
+          "role": "RESISTANCE",
+          "score": 4.199999999999999,
+          "sources": [
+            {
+              "kind": "fibonacci",
+              "name": "primary_cycle_retracement_prices",
+              "level": "0.236",
+              "price": 2299319.6,
+              "timeframe": "daily"
+            },
+            {
+              "kind": "fibonacci",
+              "name": "wave3_retracement_prices",
+              "level": "0.236",
+              "price": 2316217.2,
+              "timeframe": "daily"
+            },
+            {
+              "kind": "fibonacci",
+              "name": "current_rebound_prices",
+              "level": "0.618",
+              "price": 2321938.0,
+              "timeframe": "daily"
+            }
+          ],
+          "reaction_count": 0,
+          "width_pct": 0.009765232725151987
+        },
+        {
+          "low": 2392564.285714286,
+          "high": 2475578.5714285714,
+          "center": 2429562.21369905,
+          "role": "RESISTANCE",
+          "score": 4.5,
+          "sources": [
+            {
+              "kind": "pivot_high",
+              "date": "2026-06-02",
+              "price": 2407000.0,
+              "confirmed": true,
+              "timeframe": "daily"
+            },
+            {
+              "kind": "bollinger_upper",
+              "name": "12m",
+              "column": "BB_144_1.541_UPPER",
+              "price": 2429562.21369905,
+              "timeframe": "daily"
+            },
+            {
+              "kind": "pivot_low",
+              "date": "2026-06-24",
+              "price": 2453000.0,
+              "confirmed": true,
+              "timeframe": "daily"
+            }
+          ],
+          "reaction_count": 2,
+          "width_pct": 0.034168413241781034
+        },
+        {
+          "low": 2614426.0,
+          "high": 2614426.0,
+          "center": 2614426.0,
+          "role": "RESISTANCE",
+          "score": 1.4,
+          "sources": [
+            {
+              "kind": "fibonacci",
+              "name": "current_rebound_prices",
+              "level": "0.786",
+              "price": 2614426.0,
+              "timeframe": "daily"
+            }
+          ],
+          "reaction_count": 0,
+          "width_pct": 0.0
+        },
+        {
+          "low": 2673079.0790071846,
+          "high": 2673079.0790071846,
+          "center": 2673079.0790071846,
+          "role": "RESISTANCE",
+          "score": 1.2,
+          "sources": [
+            {
+              "kind": "bollinger_upper",
+              "name": "5m",
+              "column": "BB_60_1.541_UPPER",
+              "price": 2673079.0790071846,
+              "timeframe": "daily"
+            }
+          ],
+          "reaction_count": 0,
+          "width_pct": 0.0
+        },
+        {
+          "low": 2963142.8571428573,
+          "high": 3010857.1428571427,
+          "center": 2998694.9948514695,
+          "role": "RESISTANCE",
+          "score": 3.3499999999999996,
+          "sources": [
+            {
+              "kind": "pivot_high",
+              "date": "2026-06-25",
+              "price": 2987000.0,
+              "confirmed": true,
+              "timeframe": "daily"
+            },
+            {
+              "kind": "bollinger_upper",
+              "name": "6m",
+              "column": "BB_50_2.25_UPPER",
+              "price": 3010389.989702939,
+              "timeframe": "daily"
+            }
+          ],
+          "reaction_count": 1,
+          "width_pct": 0.015911683514397843
+        },
+        {
+          "low": 3265492.569993636,
+          "high": 3265492.569993636,
+          "center": 3265492.569993636,
+          "role": "RESISTANCE",
+          "score": 1.2,
+          "sources": [
+            {
+              "kind": "bollinger_upper",
+              "name": "54m",
+              "column": "BB_300_3.33_UPPER",
+              "price": 3265492.569993636,
+              "timeframe": "daily"
+            }
+          ],
+          "reaction_count": 0,
+          "width_pct": 0.0
+        }
+      ],
+      "supports_nearest": [
+        {
+          "low": 1661100.0,
+          "high": 1748900.0,
+          "center": 1690000.0,
+          "role": "CURRENT_ZONE",
+          "score": 2.8499999999999996,
+          "sources": [
+            {
+              "kind": "pivot_low",
+              "date": "2026-07-14",
+              "price": 1678000.0,
+              "confirmed": true,
+              "timeframe": "daily"
+            },
+            {
+              "kind": "pivot_low",
+              "date": "2026-05-20",
+              "price": 1690000.0,
+              "confirmed": true,
+              "timeframe": "daily"
+            },
+            {
+              "kind": "pivot_low",
+              "date": "2026-07-21",
+              "price": 1732000.0,
+              "confirmed": true,
+              "timeframe": "daily"
+            }
+          ],
+          "reaction_count": 3,
+          "width_pct": 0.05195266272189349
+        },
+        {
+          "low": 1656876.0,
+          "high": 1656876.0,
+          "center": 1656876.0,
+          "role": "SUPPORT",
+          "score": 1.4,
+          "sources": [
+            {
+              "kind": "fibonacci",
+              "name": "current_rebound_prices",
+              "level": "0.236",
+              "price": 1656876.0,
+              "timeframe": "daily"
+            }
+          ],
+          "reaction_count": 0,
+          "width_pct": 0.0
+        },
+        {
+          "low": 1565850.0,
+          "high": 1565850.0,
+          "center": 1565850.0,
+          "role": "SUPPORT",
+          "score": 1.4,
+          "sources": [
+            {
+              "kind": "fibonacci",
+              "name": "wave3_retracement_prices",
+              "level": "0.500",
+              "price": 1565850.0,
+              "timeframe": "daily"
+            }
+          ],
+          "reaction_count": 0,
+          "width_pct": 0.0
+        },
+        {
+          "low": 1530050.0,
+          "high": 1530050.0,
+          "center": 1530050.0,
+          "role": "SUPPORT",
+          "score": 1.4,
+          "sources": [
+            {
+              "kind": "fibonacci",
+              "name": "primary_cycle_retracement_prices",
+              "level": "0.500",
+              "price": 1530050.0,
+              "timeframe": "daily"
+            }
+          ],
+          "reaction_count": 0,
+          "width_pct": 0.0
+        },
+        {
+          "low": 1359270.0,
+          "high": 1386730.0,
+          "center": 1373000.0,
+          "role": "SUPPORT",
+          "score": 1.15,
+          "sources": [
+            {
+              "kind": "pivot_low",
+              "date": "2026-08-11",
+              "price": 1373000.0,
+              "confirmed": true,
+              "timeframe": "daily"
+            }
+          ],
+          "reaction_count": 1,
+          "width_pct": 0.02
+        },
+        {
+          "low": 1230458.6,
+          "high": 1258460.0,
+          "center": 1238229.3,
+          "role": "SUPPORT",
+          "score": 3.55,
+          "sources": [
+            {
+              "kind": "fibonacci",
+              "name": "wave3_retracement_prices",
+              "level": "0.618",
+              "price": 1230458.6,
+              "timeframe": "daily"
+            },
+            {
+              "kind": "pivot_low",
+              "date": "2026-07-29",
+              "price": 1246000.0,
+              "confirmed": true,
+              "timeframe": "daily"
+            }
+          ],
+          "reaction_count": 1,
+          "width_pct": 0.022614066716075857
+        },
+        {
+          "low": 1186209.8,
+          "high": 1186209.8,
+          "center": 1186209.8,
+          "role": "SUPPORT",
+          "score": 1.4,
+          "sources": [
+            {
+              "kind": "fibonacci",
+              "name": "primary_cycle_retracement_prices",
+              "level": "0.618",
+              "price": 1186209.8,
+              "timeframe": "daily"
+            }
+          ],
+          "reaction_count": 0,
+          "width_pct": 0.0
+        },
+        {
+          "low": 1094421.4285714286,
+          "high": 1103578.5714285714,
+          "center": 1099000.0,
+          "role": "SUPPORT",
+          "score": 1.15,
+          "sources": [
+            {
+              "kind": "pivot_high",
+              "date": "2026-02-26",
+              "price": 1099000.0,
+              "confirmed": true,
+              "timeframe": "daily"
+            }
+          ],
+          "reaction_count": 1,
+          "width_pct": 0.008332250097491105
+        }
+      ],
+      "resistances_nearest": [
+        {
+          "low": 1661100.0,
+          "high": 1748900.0,
+          "center": 1690000.0,
+          "role": "CURRENT_ZONE",
+          "score": 2.8499999999999996,
+          "sources": [
+            {
+              "kind": "pivot_low",
+              "date": "2026-07-14",
+              "price": 1678000.0,
+              "confirmed": true,
+              "timeframe": "daily"
+            },
+            {
+              "kind": "pivot_low",
+              "date": "2026-05-20",
+              "price": 1690000.0,
+              "confirmed": true,
+              "timeframe": "daily"
+            },
+            {
+              "kind": "pivot_low",
+              "date": "2026-07-21",
+              "price": 1732000.0,
+              "confirmed": true,
+              "timeframe": "daily"
+            }
+          ],
+          "reaction_count": 3,
+          "width_pct": 0.05195266272189349
+        },
+        {
+          "low": 1840057.142857143,
+          "high": 1873890.2,
+          "center": 1864445.1,
+          "role": "RESISTANCE",
+          "score": 3.55,
+          "sources": [
+            {
+              "kind": "pivot_low",
+              "date": "2026-06-08",
+              "price": 1855000.0,
+              "confirmed": true,
+              "timeframe": "daily"
+            },
+            {
+              "kind": "fibonacci",
+              "name": "primary_cycle_retracement_prices",
+              "level": "0.382",
+              "price": 1873890.2,
+              "timeframe": "daily"
+            }
+          ],
+          "reaction_count": 1,
+          "width_pct": 0.018146448582936014
+        },
+        {
+          "low": 1901241.4,
+          "high": 1911062.0,
+          "center": 1906151.7,
+          "role": "RESISTANCE",
+          "score": 2.8,
+          "sources": [
+            {
+              "kind": "fibonacci",
+              "name": "wave3_retracement_prices",
+              "level": "0.382",
+              "price": 1901241.4,
+              "timeframe": "daily"
+            },
+            {
+              "kind": "fibonacci",
+              "name": "current_rebound_prices",
+              "level": "0.382",
+              "price": 1911062.0,
+              "timeframe": "daily"
+            }
+          ],
+          "reaction_count": 0,
+          "width_pct": 0.005152055841096012
+        },
+        {
+          "low": 1976700.0,
+          "high": 2024300.0,
+          "center": 2000500.0,
+          "role": "RESISTANCE",
+          "score": 2.0,
+          "sources": [
+            {
+              "kind": "pivot_high",
+              "date": "2026-05-15",
+              "price": 1995000.0,
+              "confirmed": true,
+              "timeframe": "daily"
+            },
+            {
+              "kind": "pivot_high",
+              "date": "2026-07-22",
+              "price": 2006000.0,
+              "confirmed": true,
+              "timeframe": "daily"
+            }
+          ],
+          "reaction_count": 2,
+          "width_pct": 0.023794051487128216
+        },
+        {
+          "low": 2024550.0,
+          "high": 2065450.0,
+          "center": 2047368.0175774496,
+          "role": "RESISTANCE",
+          "score": 3.3499999999999996,
+          "sources": [
+            {
+              "kind": "pivot_low",
+              "date": "2026-07-03",
+              "price": 2045000.0,
+              "confirmed": true,
+              "timeframe": "daily"
+            },
+            {
+              "kind": "bollinger_upper",
+              "name": "24m",
+              "column": "BB_288_1.541_UPPER",
+              "price": 2049736.0351548991,
+              "timeframe": "daily"
+            }
+          ],
+          "reaction_count": 1,
+          "width_pct": 0.019976867690057486
+        },
+        {
+          "low": 2116500.0,
+          "high": 2125373.766380405,
+          "center": 2120936.8831902025,
+          "role": "RESISTANCE",
+          "score": 3.5999999999999996,
+          "sources": [
+            {
+              "kind": "fibonacci",
+              "name": "current_rebound_prices",
+              "level": "0.500",
+              "price": 2116500.0,
+              "timeframe": "daily"
+            },
+            {
+              "kind": "bollinger_upper",
+              "name": "3m",
+              "column": "BB_36_1.541_UPPER",
+              "price": 2125373.766380405,
+              "timeframe": "daily"
+            }
+          ],
+          "reaction_count": 0,
+          "width_pct": 0.004183889888820075
+        },
+        {
+          "low": 2299319.6,
+          "high": 2321938.0,
+          "center": 2316217.2,
+          "role": "RESISTANCE",
+          "score": 4.199999999999999,
+          "sources": [
+            {
+              "kind": "fibonacci",
+              "name": "primary_cycle_retracement_prices",
+              "level": "0.236",
+              "price": 2299319.6,
+              "timeframe": "daily"
+            },
+            {
+              "kind": "fibonacci",
+              "name": "wave3_retracement_prices",
+              "level": "0.236",
+              "price": 2316217.2,
+              "timeframe": "daily"
+            },
+            {
+              "kind": "fibonacci",
+              "name": "current_rebound_prices",
+              "level": "0.618",
+              "price": 2321938.0,
+              "timeframe": "daily"
+            }
+          ],
+          "reaction_count": 0,
+          "width_pct": 0.009765232725151987
+        },
+        {
+          "low": 2392564.285714286,
+          "high": 2475578.5714285714,
+          "center": 2429562.21369905,
+          "role": "RESISTANCE",
+          "score": 4.5,
+          "sources": [
+            {
+              "kind": "pivot_high",
+              "date": "2026-06-02",
+              "price": 2407000.0,
+              "confirmed": true,
+              "timeframe": "daily"
+            },
+            {
+              "kind": "bollinger_upper",
+              "name": "12m",
+              "column": "BB_144_1.541_UPPER",
+              "price": 2429562.21369905,
+              "timeframe": "daily"
+            },
+            {
+              "kind": "pivot_low",
+              "date": "2026-06-24",
+              "price": 2453000.0,
+              "confirmed": true,
+              "timeframe": "daily"
+            }
+          ],
+          "reaction_count": 2,
+          "width_pct": 0.034168413241781034
+        }
+      ],
+      "boxes": [
+        {
+          "low": 1565850.0,
+          "high": 1748900.0,
+          "center": 1657375.0,
+          "width_pct": 0.11044573497247152,
+          "close_inside_ratio": 0.8,
+          "range_overlap_ratio": 0.8,
+          "touched_lower": true,
+          "touched_upper": true,
+          "score": 5.0895542650275285,
+          "label": "BALANCE_BOX"
+        },
+        {
+          "low": 1661100.0,
+          "high": 1748900.0,
+          "center": 1705000.0,
+          "width_pct": 0.05149560117302053,
+          "close_inside_ratio": 0.6,
+          "range_overlap_ratio": 0.7,
+          "touched_lower": true,
+          "touched_upper": true,
+          "score": 4.548504398826979,
+          "label": "BALANCE_BOX"
+        }
+      ]
+    },
+    "weekly": {
+      "timeframe": "weekly",
+      "current_price": 1716000.0,
+      "pivots": [
+        {
+          "idx": 440,
+          "date": "2025-07-07",
+          "kind": "high",
+          "price": 306500.0,
+          "confirmed": true,
+          "atr14": 22071.428571428572,
+          "source_tf": "weekly"
+        },
+        {
+          "idx": 445,
+          "date": "2025-08-11",
+          "kind": "high",
+          "price": 279000.0,
+          "confirmed": true,
+          "atr14": 24714.285714285714,
+          "source_tf": "weekly"
+        },
+        {
+          "idx": 446,
+          "date": "2025-08-18",
+          "kind": "low",
+          "price": 245000.0,
+          "confirmed": true,
+          "atr14": 25685.714285714286,
+          "source_tf": "weekly"
+        },
+        {
+          "idx": 458,
+          "date": "2025-11-10",
+          "kind": "high",
+          "price": 646000.0,
+          "confirmed": true,
+          "atr14": 49589.28571428572,
+          "source_tf": "weekly"
+        },
+        {
+          "idx": 460,
+          "date": "2025-11-24",
+          "kind": "low",
+          "price": 501000.0,
+          "confirmed": true,
+          "atr14": 56232.142857142855,
+          "source_tf": "weekly"
+        },
+        {
+          "idx": 466,
+          "date": "2026-01-05",
+          "kind": "high",
+          "price": 788000.0,
+          "confirmed": true,
+          "atr14": 68089.28571428571,
+          "source_tf": "weekly"
+        },
+        {
+          "idx": 469,
+          "date": "2026-01-26",
+          "kind": "high",
+          "price": 931000.0,
+          "confirmed": true,
+          "atr14": 76785.71428571429,
+          "source_tf": "weekly"
+        },
+        {
+          "idx": 473,
+          "date": "2026-02-23",
+          "kind": "high",
+          "price": 1099000.0,
+          "confirmed": true,
+          "atr14": 82285.71428571429,
+          "source_tf": "weekly"
+        },
+        {
+          "idx": 475,
+          "date": "2026-03-09",
+          "kind": "low",
+          "price": 808000.0,
+          "confirmed": true,
+          "atr14": 103928.57142857143,
+          "source_tf": "weekly"
+        },
+        {
+          "idx": 476,
+          "date": "2026-03-16",
+          "kind": "high",
+          "price": 1060000.0,
+          "confirmed": true,
+          "atr14": 110357.14285714286,
+          "source_tf": "weekly"
+        },
+        {
+          "idx": 478,
+          "date": "2026-03-30",
+          "kind": "low",
+          "price": 806000.0,
+          "confirmed": true,
+          "atr14": 122785.71428571429,
+          "source_tf": "weekly"
+        },
+        {
+          "idx": 488,
+          "date": "2026-06-08",
+          "kind": "low",
+          "price": 1855000.0,
+          "confirmed": true,
+          "atr14": 243857.14285714287,
+          "source_tf": "weekly"
+        },
+        {
+          "idx": 490,
+          "date": "2026-06-22",
+          "kind": "high",
+          "price": 2987000.0,
+          "confirmed": true,
+          "atr14": 311571.4285714286,
+          "source_tf": "weekly"
+        },
+        {
+          "idx": 495,
+          "date": "2026-07-27",
+          "kind": "low",
+          "price": 1246000.0,
+          "confirmed": true,
+          "atr14": 432142.85714285716,
+          "source_tf": "weekly"
+        },
+        {
+          "idx": 498,
+          "date": "2026-08-18",
+          "kind": "high",
+          "price": 1792000.0,
+          "confirmed": false,
+          "atr14": 440785.71428571426,
+          "source_tf": "weekly"
+        }
+      ],
+      "zones_all": [
+        {
+          "low": 110635.6,
+          "high": 110635.6,
+          "center": 110635.6,
+          "role": "SUPPORT",
+          "score": 1.4,
+          "sources": [
+            {
+              "kind": "fibonacci",
+              "name": "wave1_retracement_prices",
+              "level": "0.786",
+              "price": 110635.6,
+              "timeframe": "weekly"
+            }
+          ],
+          "reaction_count": 0,
+          "width_pct": 0.0
+        },
+        {
+          "low": 140102.8,
+          "high": 140102.8,
+          "center": 140102.8,
+          "role": "SUPPORT",
+          "score": 1.4,
+          "sources": [
+            {
+              "kind": "fibonacci",
+              "name": "wave1_retracement_prices",
+              "level": "0.618",
+              "price": 140102.8,
+              "timeframe": "weekly"
+            }
+          ],
+          "reaction_count": 0,
+          "width_pct": 0.0
+        },
+        {
+          "low": 160800.0,
+          "high": 160800.0,
+          "center": 160800.0,
+          "role": "SUPPORT",
+          "score": 1.4,
+          "sources": [
+            {
+              "kind": "fibonacci",
+              "name": "wave1_retracement_prices",
+              "level": "0.500",
+              "price": 160800.0,
+              "timeframe": "weekly"
+            }
+          ],
+          "reaction_count": 0,
+          "width_pct": 0.0
+        },
+        {
+          "low": 181497.2,
+          "high": 181497.2,
+          "center": 181497.2,
+          "role": "SUPPORT",
+          "score": 1.4,
+          "sources": [
+            {
+              "kind": "fibonacci",
+              "name": "wave1_retracement_prices",
+              "level": "0.382",
+              "price": 181497.2,
+              "timeframe": "weekly"
+            }
+          ],
+          "reaction_count": 0,
+          "width_pct": 0.0
+        },
+        {
+          "low": 207105.6,
+          "high": 207105.6,
+          "center": 207105.6,
+          "role": "SUPPORT",
+          "score": 1.4,
+          "sources": [
+            {
+              "kind": "fibonacci",
+              "name": "wave1_retracement_prices",
+              "level": "0.236",
+              "price": 207105.6,
+              "timeframe": "weekly"
+            }
+          ],
+          "reaction_count": 0,
+          "width_pct": 0.0
+        },
+        {
+          "low": 242550.0,
+          "high": 247450.0,
+          "center": 245000.0,
+          "role": "SUPPORT",
+          "score": 1.15,
+          "sources": [
+            {
+              "kind": "pivot_low",
+              "date": "2025-08-18",
+              "price": 245000.0,
+              "confirmed": true,
+              "timeframe": "weekly"
+            }
+          ],
+          "reaction_count": 1,
+          "width_pct": 0.02
+        },
+        {
+          "low": 276528.5714285714,
+          "high": 281471.4285714286,
+          "center": 279000.0,
+          "role": "SUPPORT",
+          "score": 1.15,
+          "sources": [
+            {
+              "kind": "pivot_high",
+              "date": "2025-08-11",
+              "price": 279000.0,
+              "confirmed": true,
+              "timeframe": "weekly"
+            }
+          ],
+          "reaction_count": 1,
+          "width_pct": 0.017716333845366163
+        },
+        {
+          "low": 304292.85714285716,
+          "high": 308707.14285714284,
+          "center": 306500.0,
+          "role": "SUPPORT",
+          "score": 1.15,
+          "sources": [
+            {
+              "kind": "pivot_high",
+              "date": "2025-07-07",
+              "price": 306500.0,
+              "confirmed": true,
+              "timeframe": "weekly"
+            }
+          ],
+          "reaction_count": 1,
+          "width_pct": 0.014402237240736316
+        },
+        {
+          "low": 495990.0,
+          "high": 506010.0,
+          "center": 501000.0,
+          "role": "SUPPORT",
+          "score": 1.15,
+          "sources": [
+            {
+              "kind": "pivot_low",
+              "date": "2025-11-24",
+              "price": 501000.0,
+              "confirmed": true,
+              "timeframe": "weekly"
+            }
+          ],
+          "reaction_count": 1,
+          "width_pct": 0.02
+        },
+        {
+          "low": 641041.0714285715,
+          "high": 650958.9285714285,
+          "center": 646000.0,
+          "role": "SUPPORT",
+          "score": 1.15,
+          "sources": [
+            {
+              "kind": "pivot_high",
+              "date": "2025-11-10",
+              "price": 646000.0,
+              "confirmed": true,
+              "timeframe": "weekly"
+            }
+          ],
+          "reaction_count": 1,
+          "width_pct": 0.01535272003538242
+        },
+        {
+          "low": 696674.6000000001,
+          "high": 696674.6000000001,
+          "center": 696674.6000000001,
+          "role": "SUPPORT",
+          "score": 1.4,
+          "sources": [
+            {
+              "kind": "fibonacci",
+              "name": "primary_cycle_retracement_prices",
+              "level": "0.786",
+              "price": 696674.6000000001,
+              "timeframe": "weekly"
+            }
+          ],
+          "reaction_count": 0,
+          "width_pct": 0.0
+        },
+        {
+          "low": 752952.1999999997,
+          "high": 752952.1999999997,
+          "center": 752952.1999999997,
+          "role": "SUPPORT",
+          "score": 1.4,
+          "sources": [
+            {
+              "kind": "fibonacci",
+              "name": "wave3_retracement_prices",
+              "level": "0.786",
+              "price": 752952.1999999997,
+              "timeframe": "weekly"
+            }
+          ],
+          "reaction_count": 0,
+          "width_pct": 0.0
+        },
+        {
+          "low": 781191.0714285715,
+          "high": 794808.9285714285,
+          "center": 788000.0,
+          "role": "SUPPORT",
+          "score": 1.15,
+          "sources": [
+            {
+              "kind": "pivot_high",
+              "date": "2026-01-05",
+              "price": 788000.0,
+              "confirmed": true,
+              "timeframe": "weekly"
+            }
+          ],
+          "reaction_count": 1,
+          "width_pct": 0.01728154459753432
+        },
+        {
+          "low": 797930.0,
+          "high": 816070.0,
+          "center": 807000.0,
+          "role": "SUPPORT",
+          "score": 2.0,
+          "sources": [
+            {
+              "kind": "pivot_low",
+              "date": "2026-03-30",
+              "price": 806000.0,
+              "confirmed": true,
+              "timeframe": "weekly"
+            },
+            {
+              "kind": "pivot_low",
+              "date": "2026-03-09",
+              "price": 808000.0,
+              "confirmed": true,
+              "timeframe": "weekly"
+            }
+          ],
+          "reaction_count": 2,
+          "width_pct": 0.022478314745972738
+        },
+        {
+          "low": 923321.4285714285,
+          "high": 938678.5714285715,
+          "center": 931000.0,
+          "role": "SUPPORT",
+          "score": 1.15,
+          "sources": [
+            {
+              "kind": "pivot_high",
+              "date": "2026-01-26",
+              "price": 931000.0,
+              "confirmed": true,
+              "timeframe": "weekly"
+            }
+          ],
+          "reaction_count": 1,
+          "width_pct": 0.01649531993248438
+        },
+        {
+          "low": 1050367.857142857,
+          "high": 1108632.142857143,
+          "center": 1069004.6948516956,
+          "role": "SUPPORT",
+          "score": 4.2,
+          "sources": [
+            {
+              "kind": "bollinger_upper",
+              "name": "24m",
+              "column": "BB_288_1.541_UPPER",
+              "price": 1058509.389703391,
+              "timeframe": "weekly"
+            },
+            {
+              "kind": "pivot_high",
+              "date": "2026-03-16",
+              "price": 1060000.0,
+              "confirmed": true,
+              "timeframe": "weekly"
+            },
+            {
+              "kind": "pivot_high",
+              "date": "2026-02-23",
+              "price": 1099000.0,
+              "confirmed": true,
+              "timeframe": "weekly"
+            }
+          ],
+          "reaction_count": 2,
+          "width_pct": 0.05450330199192343
+        },
+        {
+          "low": 1186209.8,
+          "high": 1186209.8,
+          "center": 1186209.8,
+          "role": "SUPPORT",
+          "score": 1.4,
+          "sources": [
+            {
+              "kind": "fibonacci",
+              "name": "primary_cycle_retracement_prices",
+              "level": "0.618",
+              "price": 1186209.8,
+              "timeframe": "weekly"
+            }
+          ],
+          "reaction_count": 0,
+          "width_pct": 0.0
+        },
+        {
+          "low": 1230458.6,
+          "high": 1258460.0,
+          "center": 1238229.3,
+          "role": "SUPPORT",
+          "score": 3.55,
+          "sources": [
+            {
+              "kind": "fibonacci",
+              "name": "wave3_retracement_prices",
+              "level": "0.618",
+              "price": 1230458.6,
+              "timeframe": "weekly"
+            },
+            {
+              "kind": "pivot_low",
+              "date": "2026-07-27",
+              "price": 1246000.0,
+              "confirmed": true,
+              "timeframe": "weekly"
+            }
+          ],
+          "reaction_count": 1,
+          "width_pct": 0.022614066716075857
+        },
+        {
+          "low": 1469367.9749003227,
+          "high": 1469367.9749003227,
+          "center": 1469367.9749003227,
+          "role": "SUPPORT",
+          "score": 1.2,
+          "sources": [
+            {
+              "kind": "bollinger_upper",
+              "name": "12m",
+              "column": "BB_144_1.541_UPPER",
+              "price": 1469367.9749003227,
+              "timeframe": "weekly"
+            }
+          ],
+          "reaction_count": 0,
+          "width_pct": 0.0
+        },
+        {
+          "low": 1530050.0,
+          "high": 1530050.0,
+          "center": 1530050.0,
+          "role": "SUPPORT",
+          "score": 1.4,
+          "sources": [
+            {
+              "kind": "fibonacci",
+              "name": "primary_cycle_retracement_prices",
+              "level": "0.500",
+              "price": 1530050.0,
+              "timeframe": "weekly"
+            }
+          ],
+          "reaction_count": 0,
+          "width_pct": 0.0
+        },
+        {
+          "low": 1565850.0,
+          "high": 1565850.0,
+          "center": 1565850.0,
+          "role": "SUPPORT",
+          "score": 1.4,
+          "sources": [
+            {
+              "kind": "fibonacci",
+              "name": "wave3_retracement_prices",
+              "level": "0.500",
+              "price": 1565850.0,
+              "timeframe": "weekly"
+            }
+          ],
+          "reaction_count": 0,
+          "width_pct": 0.0
+        },
+        {
+          "low": 1656876.0,
+          "high": 1656876.0,
+          "center": 1656876.0,
+          "role": "SUPPORT",
+          "score": 1.4,
+          "sources": [
+            {
+              "kind": "fibonacci",
+              "name": "current_rebound_prices",
+              "level": "0.236",
+              "price": 1656876.0,
+              "timeframe": "weekly"
+            }
+          ],
+          "reaction_count": 0,
+          "width_pct": 0.0
+        },
+        {
+          "low": 1774080.0,
+          "high": 1809920.0,
+          "center": 1792000.0,
+          "role": "RESISTANCE",
+          "score": 1.0,
+          "sources": [
+            {
+              "kind": "pivot_high",
+              "date": "2026-08-18",
+              "price": 1792000.0,
+              "confirmed": false,
+              "timeframe": "weekly"
+            }
+          ],
+          "reaction_count": 1,
+          "width_pct": 0.02
+        },
+        {
+          "low": 1836450.0,
+          "high": 1911062.0,
+          "center": 1880534.178826104,
+          "role": "RESISTANCE",
+          "score": 7.550000000000001,
+          "sources": [
+            {
+              "kind": "pivot_low",
+              "date": "2026-06-08",
+              "price": 1855000.0,
+              "confirmed": true,
+              "timeframe": "weekly"
+            },
+            {
+              "kind": "fibonacci",
+              "name": "primary_cycle_retracement_prices",
+              "level": "0.382",
+              "price": 1873890.2,
+              "timeframe": "weekly"
+            },
+            {
+              "kind": "bollinger_upper",
+              "name": "54m",
+              "column": "BB_300_3.33_UPPER",
+              "price": 1880534.178826104,
+              "timeframe": "weekly"
+            },
+            {
+              "kind": "fibonacci",
+              "name": "wave3_retracement_prices",
+              "level": "0.382",
+              "price": 1901241.4,
+              "timeframe": "weekly"
+            },
+            {
+              "kind": "fibonacci",
+              "name": "current_rebound_prices",
+              "level": "0.382",
+              "price": 1911062.0,
+              "timeframe": "weekly"
+            }
+          ],
+          "reaction_count": 1,
+          "width_pct": 0.03967596060741393
+        },
+        {
+          "low": 2090907.148263896,
+          "high": 2116500.0,
+          "center": 2103703.574131948,
+          "role": "RESISTANCE",
+          "score": 3.5999999999999996,
+          "sources": [
+            {
+              "kind": "bollinger_upper",
+              "name": "5m",
+              "column": "BB_60_1.541_UPPER",
+              "price": 2090907.148263896,
+              "timeframe": "weekly"
+            },
+            {
+              "kind": "fibonacci",
+              "name": "current_rebound_prices",
+              "level": "0.500",
+              "price": 2116500.0,
+              "timeframe": "weekly"
+            }
+          ],
+          "reaction_count": 0,
+          "width_pct": 0.012165616891469371
+        },
+        {
+          "low": 2299319.6,
+          "high": 2321938.0,
+          "center": 2316217.2,
+          "role": "RESISTANCE",
+          "score": 4.199999999999999,
+          "sources": [
+            {
+              "kind": "fibonacci",
+              "name": "primary_cycle_retracement_prices",
+              "level": "0.236",
+              "price": 2299319.6,
+              "timeframe": "weekly"
+            },
+            {
+              "kind": "fibonacci",
+              "name": "wave3_retracement_prices",
+              "level": "0.236",
+              "price": 2316217.2,
+              "timeframe": "weekly"
+            },
+            {
+              "kind": "fibonacci",
+              "name": "current_rebound_prices",
+              "level": "0.618",
+              "price": 2321938.0,
+              "timeframe": "weekly"
+            }
+          ],
+          "reaction_count": 0,
+          "width_pct": 0.009765232725151987
+        },
+        {
+          "low": 2372118.296354064,
+          "high": 2372118.296354064,
+          "center": 2372118.296354064,
+          "role": "RESISTANCE",
+          "score": 1.2,
+          "sources": [
+            {
+              "kind": "bollinger_upper",
+              "name": "3m",
+              "column": "BB_36_1.541_UPPER",
+              "price": 2372118.296354064,
+              "timeframe": "weekly"
+            }
+          ],
+          "reaction_count": 0,
+          "width_pct": 0.0
+        },
+        {
+          "low": 2614426.0,
+          "high": 2614426.0,
+          "center": 2614426.0,
+          "role": "RESISTANCE",
+          "score": 1.4,
+          "sources": [
+            {
+              "kind": "fibonacci",
+              "name": "current_rebound_prices",
+              "level": "0.786",
+              "price": 2614426.0,
+              "timeframe": "weekly"
+            }
+          ],
+          "reaction_count": 0,
+          "width_pct": 0.0
+        },
+        {
+          "low": 2674607.712546543,
+          "high": 2674607.712546543,
+          "center": 2674607.712546543,
+          "role": "RESISTANCE",
+          "score": 1.2,
+          "sources": [
+            {
+              "kind": "bollinger_upper",
+              "name": "6m",
+              "column": "BB_50_2.25_UPPER",
+              "price": 2674607.712546543,
+              "timeframe": "weekly"
+            }
+          ],
+          "reaction_count": 0,
+          "width_pct": 0.0
+        },
+        {
+          "low": 2957130.0,
+          "high": 3016870.0,
+          "center": 2987000.0,
+          "role": "RESISTANCE",
+          "score": 1.15,
+          "sources": [
+            {
+              "kind": "pivot_high",
+              "date": "2026-06-22",
+              "price": 2987000.0,
+              "confirmed": true,
+              "timeframe": "weekly"
+            }
+          ],
+          "reaction_count": 1,
+          "width_pct": 0.02
+        }
+      ],
+      "supports_nearest": [
+        {
+          "low": 1656876.0,
+          "high": 1656876.0,
+          "center": 1656876.0,
+          "role": "SUPPORT",
+          "score": 1.4,
+          "sources": [
+            {
+              "kind": "fibonacci",
+              "name": "current_rebound_prices",
+              "level": "0.236",
+              "price": 1656876.0,
+              "timeframe": "weekly"
+            }
+          ],
+          "reaction_count": 0,
+          "width_pct": 0.0
+        },
+        {
+          "low": 1565850.0,
+          "high": 1565850.0,
+          "center": 1565850.0,
+          "role": "SUPPORT",
+          "score": 1.4,
+          "sources": [
+            {
+              "kind": "fibonacci",
+              "name": "wave3_retracement_prices",
+              "level": "0.500",
+              "price": 1565850.0,
+              "timeframe": "weekly"
+            }
+          ],
+          "reaction_count": 0,
+          "width_pct": 0.0
+        },
+        {
+          "low": 1530050.0,
+          "high": 1530050.0,
+          "center": 1530050.0,
+          "role": "SUPPORT",
+          "score": 1.4,
+          "sources": [
+            {
+              "kind": "fibonacci",
+              "name": "primary_cycle_retracement_prices",
+              "level": "0.500",
+              "price": 1530050.0,
+              "timeframe": "weekly"
+            }
+          ],
+          "reaction_count": 0,
+          "width_pct": 0.0
+        },
+        {
+          "low": 1469367.9749003227,
+          "high": 1469367.9749003227,
+          "center": 1469367.9749003227,
+          "role": "SUPPORT",
+          "score": 1.2,
+          "sources": [
+            {
+              "kind": "bollinger_upper",
+              "name": "12m",
+              "column": "BB_144_1.541_UPPER",
+              "price": 1469367.9749003227,
+              "timeframe": "weekly"
+            }
+          ],
+          "reaction_count": 0,
+          "width_pct": 0.0
+        },
+        {
+          "low": 1230458.6,
+          "high": 1258460.0,
+          "center": 1238229.3,
+          "role": "SUPPORT",
+          "score": 3.55,
+          "sources": [
+            {
+              "kind": "fibonacci",
+              "name": "wave3_retracement_prices",
+              "level": "0.618",
+              "price": 1230458.6,
+              "timeframe": "weekly"
+            },
+            {
+              "kind": "pivot_low",
+              "date": "2026-07-27",
+              "price": 1246000.0,
+              "confirmed": true,
+              "timeframe": "weekly"
+            }
+          ],
+          "reaction_count": 1,
+          "width_pct": 0.022614066716075857
+        },
+        {
+          "low": 1186209.8,
+          "high": 1186209.8,
+          "center": 1186209.8,
+          "role": "SUPPORT",
+          "score": 1.4,
+          "sources": [
+            {
+              "kind": "fibonacci",
+              "name": "primary_cycle_retracement_prices",
+              "level": "0.618",
+              "price": 1186209.8,
+              "timeframe": "weekly"
+            }
+          ],
+          "reaction_count": 0,
+          "width_pct": 0.0
+        },
+        {
+          "low": 1050367.857142857,
+          "high": 1108632.142857143,
+          "center": 1069004.6948516956,
+          "role": "SUPPORT",
+          "score": 4.2,
+          "sources": [
+            {
+              "kind": "bollinger_upper",
+              "name": "24m",
+              "column": "BB_288_1.541_UPPER",
+              "price": 1058509.389703391,
+              "timeframe": "weekly"
+            },
+            {
+              "kind": "pivot_high",
+              "date": "2026-03-16",
+              "price": 1060000.0,
+              "confirmed": true,
+              "timeframe": "weekly"
+            },
+            {
+              "kind": "pivot_high",
+              "date": "2026-02-23",
+              "price": 1099000.0,
+              "confirmed": true,
+              "timeframe": "weekly"
+            }
+          ],
+          "reaction_count": 2,
+          "width_pct": 0.05450330199192343
+        },
+        {
+          "low": 923321.4285714285,
+          "high": 938678.5714285715,
+          "center": 931000.0,
+          "role": "SUPPORT",
+          "score": 1.15,
+          "sources": [
+            {
+              "kind": "pivot_high",
+              "date": "2026-01-26",
+              "price": 931000.0,
+              "confirmed": true,
+              "timeframe": "weekly"
+            }
+          ],
+          "reaction_count": 1,
+          "width_pct": 0.01649531993248438
+        }
+      ],
+      "resistances_nearest": [
+        {
+          "low": 1774080.0,
+          "high": 1809920.0,
+          "center": 1792000.0,
+          "role": "RESISTANCE",
+          "score": 1.0,
+          "sources": [
+            {
+              "kind": "pivot_high",
+              "date": "2026-08-18",
+              "price": 1792000.0,
+              "confirmed": false,
+              "timeframe": "weekly"
+            }
+          ],
+          "reaction_count": 1,
+          "width_pct": 0.02
+        },
+        {
+          "low": 1836450.0,
+          "high": 1911062.0,
+          "center": 1880534.178826104,
+          "role": "RESISTANCE",
+          "score": 7.550000000000001,
+          "sources": [
+            {
+              "kind": "pivot_low",
+              "date": "2026-06-08",
+              "price": 1855000.0,
+              "confirmed": true,
+              "timeframe": "weekly"
+            },
+            {
+              "kind": "fibonacci",
+              "name": "primary_cycle_retracement_prices",
+              "level": "0.382",
+              "price": 1873890.2,
+              "timeframe": "weekly"
+            },
+            {
+              "kind": "bollinger_upper",
+              "name": "54m",
+              "column": "BB_300_3.33_UPPER",
+              "price": 1880534.178826104,
+              "timeframe": "weekly"
+            },
+            {
+              "kind": "fibonacci",
+              "name": "wave3_retracement_prices",
+              "level": "0.382",
+              "price": 1901241.4,
+              "timeframe": "weekly"
+            },
+            {
+              "kind": "fibonacci",
+              "name": "current_rebound_prices",
+              "level": "0.382",
+              "price": 1911062.0,
+              "timeframe": "weekly"
+            }
+          ],
+          "reaction_count": 1,
+          "width_pct": 0.03967596060741393
+        },
+        {
+          "low": 2090907.148263896,
+          "high": 2116500.0,
+          "center": 2103703.574131948,
+          "role": "RESISTANCE",
+          "score": 3.5999999999999996,
+          "sources": [
+            {
+              "kind": "bollinger_upper",
+              "name": "5m",
+              "column": "BB_60_1.541_UPPER",
+              "price": 2090907.148263896,
+              "timeframe": "weekly"
+            },
+            {
+              "kind": "fibonacci",
+              "name": "current_rebound_prices",
+              "level": "0.500",
+              "price": 2116500.0,
+              "timeframe": "weekly"
+            }
+          ],
+          "reaction_count": 0,
+          "width_pct": 0.012165616891469371
+        },
+        {
+          "low": 2299319.6,
+          "high": 2321938.0,
+          "center": 2316217.2,
+          "role": "RESISTANCE",
+          "score": 4.199999999999999,
+          "sources": [
+            {
+              "kind": "fibonacci",
+              "name": "primary_cycle_retracement_prices",
+              "level": "0.236",
+              "price": 2299319.6,
+              "timeframe": "weekly"
+            },
+            {
+              "kind": "fibonacci",
+              "name": "wave3_retracement_prices",
+              "level": "0.236",
+              "price": 2316217.2,
+              "timeframe": "weekly"
+            },
+            {
+              "kind": "fibonacci",
+              "name": "current_rebound_prices",
+              "level": "0.618",
+              "price": 2321938.0,
+              "timeframe": "weekly"
+            }
+          ],
+          "reaction_count": 0,
+          "width_pct": 0.009765232725151987
+        },
+        {
+          "low": 2372118.296354064,
+          "high": 2372118.296354064,
+          "center": 2372118.296354064,
+          "role": "RESISTANCE",
+          "score": 1.2,
+          "sources": [
+            {
+              "kind": "bollinger_upper",
+              "name": "3m",
+              "column": "BB_36_1.541_UPPER",
+              "price": 2372118.296354064,
+              "timeframe": "weekly"
+            }
+          ],
+          "reaction_count": 0,
+          "width_pct": 0.0
+        },
+        {
+          "low": 2614426.0,
+          "high": 2614426.0,
+          "center": 2614426.0,
+          "role": "RESISTANCE",
+          "score": 1.4,
+          "sources": [
+            {
+              "kind": "fibonacci",
+              "name": "current_rebound_prices",
+              "level": "0.786",
+              "price": 2614426.0,
+              "timeframe": "weekly"
+            }
+          ],
+          "reaction_count": 0,
+          "width_pct": 0.0
+        },
+        {
+          "low": 2674607.712546543,
+          "high": 2674607.712546543,
+          "center": 2674607.712546543,
+          "role": "RESISTANCE",
+          "score": 1.2,
+          "sources": [
+            {
+              "kind": "bollinger_upper",
+              "name": "6m",
+              "column": "BB_50_2.25_UPPER",
+              "price": 2674607.712546543,
+              "timeframe": "weekly"
+            }
+          ],
+          "reaction_count": 0,
+          "width_pct": 0.0
+        },
+        {
+          "low": 2957130.0,
+          "high": 3016870.0,
+          "center": 2987000.0,
+          "role": "RESISTANCE",
+          "score": 1.15,
+          "sources": [
+            {
+              "kind": "pivot_high",
+              "date": "2026-06-22",
+              "price": 2987000.0,
+              "confirmed": true,
+              "timeframe": "weekly"
+            }
+          ],
+          "reaction_count": 1,
+          "width_pct": 0.02
+        }
+      ],
+      "boxes": [
+        {
+          "low": 1565850.0,
+          "high": 1809920.0,
+          "center": 1687885.0,
+          "width_pct": 0.14460108360462945,
+          "close_inside_ratio": 0.8333333333333334,
+          "range_overlap_ratio": 1.0,
+          "touched_lower": true,
+          "touched_upper": true,
+          "score": 5.522065583062037,
+          "label": "BALANCE_BOX"
+        },
+        {
+          "low": 1656876.0,
+          "high": 1809920.0,
+          "center": 1733398.0,
+          "width_pct": 0.0882913214391617,
+          "close_inside_ratio": 0.6666666666666666,
+          "range_overlap_ratio": 1.0,
+          "touched_lower": true,
+          "touched_upper": true,
+          "score": 5.245042011894172,
+          "label": "BALANCE_BOX"
+        },
+        {
+          "low": 1656876.0,
+          "high": 1911062.0,
+          "center": 1783969.0,
+          "width_pct": 0.14248341759301872,
+          "close_inside_ratio": 0.6666666666666666,
+          "range_overlap_ratio": 1.0,
+          "touched_lower": true,
+          "touched_upper": true,
+          "score": 5.190849915740315,
+          "label": "BALANCE_BOX"
+        }
+      ]
+    },
+    "monthly": {
+      "timeframe": "monthly",
+      "current_price": 1717000.0,
+      "pivots": [
+        {
+          "idx": 241,
+          "date": "2021-10-01",
+          "kind": "low",
+          "price": 90500.0,
+          "confirmed": true,
+          "atr14": 18200.0,
+          "source_tf": "monthly"
+        },
+        {
+          "idx": 245,
+          "date": "2022-02-03",
+          "kind": "high",
+          "price": 134000.0,
+          "confirmed": true,
+          "atr14": 18857.14285714286,
+          "source_tf": "monthly"
+        },
+        {
+          "idx": 252,
+          "date": "2022-09-01",
+          "kind": "low",
+          "price": 80400.0,
+          "confirmed": true,
+          "atr14": 16407.14285714286,
+          "source_tf": "monthly"
+        },
+        {
+          "idx": 256,
+          "date": "2023-01-02",
+          "kind": "low",
+          "price": 73100.0,
+          "confirmed": true,
+          "atr14": 15650.0,
+          "source_tf": "monthly"
+        },
+        {
+          "idx": 257,
+          "date": "2023-02-01",
+          "kind": "high",
+          "price": 95000.0,
+          "confirmed": true,
+          "atr14": 14578.57142857143,
+          "source_tf": "monthly"
+        },
+        {
+          "idx": 262,
+          "date": "2023-07-03",
+          "kind": "high",
+          "price": 129000.0,
+          "confirmed": true,
+          "atr14": 15157.142857142857,
+          "source_tf": "monthly"
+        },
+        {
+          "idx": 274,
+          "date": "2024-07-01",
+          "kind": "high",
+          "price": 248500.0,
+          "confirmed": true,
+          "atr14": 27221.428571428572,
+          "source_tf": "monthly"
+        },
+        {
+          "idx": 276,
+          "date": "2024-09-02",
+          "kind": "low",
+          "price": 144700.0,
+          "confirmed": true,
+          "atr14": 31585.714285714286,
+          "source_tf": "monthly"
+        },
+        {
+          "idx": 277,
+          "date": "2024-10-02",
+          "kind": "high",
+          "price": 206000.0,
+          "confirmed": true,
+          "atr14": 33178.57142857143,
+          "source_tf": "monthly"
+        },
+        {
+          "idx": 280,
+          "date": "2025-01-02",
+          "kind": "high",
+          "price": 227000.0,
+          "confirmed": true,
+          "atr14": 38914.28571428572,
+          "source_tf": "monthly"
+        },
+        {
+          "idx": 283,
+          "date": "2025-04-01",
+          "kind": "low",
+          "price": 162700.0,
+          "confirmed": true,
+          "atr14": 41685.71428571428,
+          "source_tf": "monthly"
+        },
+        {
+          "idx": 297,
+          "date": "2026-06-01",
+          "kind": "high",
+          "price": 2987000.0,
+          "confirmed": false,
+          "atr14": 316500.0,
+          "source_tf": "monthly"
+        },
+        {
+          "idx": 298,
+          "date": "2026-07-01",
+          "kind": "low",
+          "price": 1246000.0,
+          "confirmed": false,
+          "atr14": 419357.14285714284,
+          "source_tf": "monthly"
+        }
+      ],
+      "zones_all": [
+        {
+          "low": 72332.5,
+          "high": 81167.5,
+          "center": 76750.0,
+          "role": "SUPPORT",
+          "score": 2.0,
+          "sources": [
+            {
+              "kind": "pivot_low",
+              "date": "2023-01-02",
+              "price": 73100.0,
+              "confirmed": true,
+              "timeframe": "monthly"
+            },
+            {
+              "kind": "pivot_low",
+              "date": "2022-09-01",
+              "price": 80400.0,
+              "confirmed": true,
+              "timeframe": "monthly"
+            }
+          ],
+          "reaction_count": 2,
+          "width_pct": 0.11511400651465797
+        },
+        {
+          "low": 89595.0,
+          "high": 91405.0,
+          "center": 90500.0,
+          "role": "SUPPORT",
+          "score": 1.15,
+          "sources": [
+            {
+              "kind": "pivot_low",
+              "date": "2021-10-01",
+              "price": 90500.0,
+              "confirmed": true,
+              "timeframe": "monthly"
+            }
+          ],
+          "reaction_count": 1,
+          "width_pct": 0.02
+        },
+        {
+          "low": 94050.0,
+          "high": 95950.0,
+          "center": 95000.0,
+          "role": "SUPPORT",
+          "score": 1.15,
+          "sources": [
+            {
+              "kind": "pivot_high",
+              "date": "2023-02-01",
+              "price": 95000.0,
+              "confirmed": true,
+              "timeframe": "monthly"
+            }
+          ],
+          "reaction_count": 1,
+          "width_pct": 0.02
+        },
+        {
+          "low": 110635.6,
+          "high": 110635.6,
+          "center": 110635.6,
+          "role": "SUPPORT",
+          "score": 1.4,
+          "sources": [
+            {
+              "kind": "fibonacci",
+              "name": "wave1_retracement_prices",
+              "level": "0.786",
+              "price": 110635.6,
+              "timeframe": "monthly"
+            }
+          ],
+          "reaction_count": 0,
+          "width_pct": 0.0
+        },
+        {
+          "low": 127685.0,
+          "high": 135315.0,
+          "center": 131500.0,
+          "role": "SUPPORT",
+          "score": 2.0,
+          "sources": [
+            {
+              "kind": "pivot_high",
+              "date": "2023-07-03",
+              "price": 129000.0,
+              "confirmed": true,
+              "timeframe": "monthly"
+            },
+            {
+              "kind": "pivot_high",
+              "date": "2022-02-03",
+              "price": 134000.0,
+              "confirmed": true,
+              "timeframe": "monthly"
+            }
+          ],
+          "reaction_count": 2,
+          "width_pct": 0.05802281368821293
+        },
+        {
+          "low": 140102.8,
+          "high": 140102.8,
+          "center": 140102.8,
+          "role": "SUPPORT",
+          "score": 1.4,
+          "sources": [
+            {
+              "kind": "fibonacci",
+              "name": "wave1_retracement_prices",
+              "level": "0.618",
+              "price": 140102.8,
+              "timeframe": "monthly"
+            }
+          ],
+          "reaction_count": 0,
+          "width_pct": 0.0
+        },
+        {
+          "low": 160800.0,
+          "high": 160800.0,
+          "center": 160800.0,
+          "role": "SUPPORT",
+          "score": 1.4,
+          "sources": [
+            {
+              "kind": "fibonacci",
+              "name": "wave1_retracement_prices",
+              "level": "0.500",
+              "price": 160800.0,
+              "timeframe": "monthly"
+            }
+          ],
+          "reaction_count": 0,
+          "width_pct": 0.0
+        },
+        {
+          "low": 181497.2,
+          "high": 181497.2,
+          "center": 181497.2,
+          "role": "SUPPORT",
+          "score": 1.4,
+          "sources": [
+            {
+              "kind": "fibonacci",
+              "name": "wave1_retracement_prices",
+              "level": "0.382",
+              "price": 181497.2,
+              "timeframe": "monthly"
+            }
+          ],
+          "reaction_count": 0,
+          "width_pct": 0.0
+        },
+        {
+          "low": 203940.0,
+          "high": 208060.0,
+          "center": 206552.8,
+          "role": "SUPPORT",
+          "score": 3.55,
+          "sources": [
+            {
+              "kind": "pivot_high",
+              "date": "2024-10-02",
+              "price": 206000.0,
+              "confirmed": true,
+              "timeframe": "monthly"
+            },
+            {
+              "kind": "fibonacci",
+              "name": "wave1_retracement_prices",
+              "level": "0.236",
+              "price": 207105.6,
+              "timeframe": "monthly"
+            }
+          ],
+          "reaction_count": 1,
+          "width_pct": 0.01994647373456085
+        },
+        {
+          "low": 224730.0,
+          "high": 229270.0,
+          "center": 227000.0,
+          "role": "SUPPORT",
+          "score": 1.15,
+          "sources": [
+            {
+              "kind": "pivot_high",
+              "date": "2025-01-02",
+              "price": 227000.0,
+              "confirmed": true,
+              "timeframe": "monthly"
+            }
+          ],
+          "reaction_count": 1,
+          "width_pct": 0.02
+        },
+        {
+          "low": 246015.0,
+          "high": 250985.0,
+          "center": 248500.0,
+          "role": "SUPPORT",
+          "score": 1.15,
+          "sources": [
+            {
+              "kind": "pivot_high",
+              "date": "2024-07-01",
+              "price": 248500.0,
+              "confirmed": true,
+              "timeframe": "monthly"
+            }
+          ],
+          "reaction_count": 1,
+          "width_pct": 0.02
+        },
+        {
+          "low": 534622.2359507384,
+          "high": 534622.2359507384,
+          "center": 534622.2359507384,
+          "role": "SUPPORT",
+          "score": 1.2,
+          "sources": [
+            {
+              "kind": "bollinger_upper",
+              "name": "24m",
+              "column": "BB_288_1.541_UPPER",
+              "price": 534622.2359507384,
+              "timeframe": "monthly"
+            }
+          ],
+          "reaction_count": 0,
+          "width_pct": 0.0
+        },
+        {
+          "low": 696674.6000000001,
+          "high": 696674.6000000001,
+          "center": 696674.6000000001,
+          "role": "SUPPORT",
+          "score": 1.4,
+          "sources": [
+            {
+              "kind": "fibonacci",
+              "name": "primary_cycle_retracement_prices",
+              "level": "0.786",
+              "price": 696674.6000000001,
+              "timeframe": "monthly"
+            }
+          ],
+          "reaction_count": 0,
+          "width_pct": 0.0
+        },
+        {
+          "low": 752952.1999999997,
+          "high": 768334.0639067417,
+          "center": 760643.1319533708,
+          "role": "SUPPORT",
+          "score": 3.5999999999999996,
+          "sources": [
+            {
+              "kind": "fibonacci",
+              "name": "wave3_retracement_prices",
+              "level": "0.786",
+              "price": 752952.1999999997,
+              "timeframe": "monthly"
+            },
+            {
+              "kind": "bollinger_upper",
+              "name": "12m",
+              "column": "BB_144_1.541_UPPER",
+              "price": 768334.0639067417,
+              "timeframe": "monthly"
+            }
+          ],
+          "reaction_count": 0,
+          "width_pct": 0.02022218207274223
+        },
+        {
+          "low": 1011819.7686766702,
+          "high": 1011819.7686766702,
+          "center": 1011819.7686766702,
+          "role": "SUPPORT",
+          "score": 1.2,
+          "sources": [
+            {
+              "kind": "bollinger_upper",
+              "name": "54m",
+              "column": "BB_300_3.33_UPPER",
+              "price": 1011819.7686766702,
+              "timeframe": "monthly"
+            }
+          ],
+          "reaction_count": 0,
+          "width_pct": 0.0
+        },
+        {
+          "low": 1186209.8,
+          "high": 1190026.877421165,
+          "center": 1188118.3387105823,
+          "role": "SUPPORT",
+          "score": 3.5999999999999996,
+          "sources": [
+            {
+              "kind": "fibonacci",
+              "name": "primary_cycle_retracement_prices",
+              "level": "0.618",
+              "price": 1186209.8,
+              "timeframe": "monthly"
+            },
+            {
+              "kind": "bollinger_upper",
+              "name": "5m",
+              "column": "BB_60_1.541_UPPER",
+              "price": 1190026.877421165,
+              "timeframe": "monthly"
+            }
+          ],
+          "reaction_count": 0,
+          "width_pct": 0.0032127081089475995
+        },
+        {
+          "low": 1230458.6,
+          "high": 1258460.0,
+          "center": 1238229.3,
+          "role": "SUPPORT",
+          "score": 3.4,
+          "sources": [
+            {
+              "kind": "fibonacci",
+              "name": "wave3_retracement_prices",
+              "level": "0.618",
+              "price": 1230458.6,
+              "timeframe": "monthly"
+            },
+            {
+              "kind": "pivot_low",
+              "date": "2026-07-01",
+              "price": 1246000.0,
+              "confirmed": false,
+              "timeframe": "monthly"
+            }
+          ],
+          "reaction_count": 1,
+          "width_pct": 0.022614066716075857
+        },
+        {
+          "low": 1523056.186277819,
+          "high": 1530050.0,
+          "center": 1526553.0931389094,
+          "role": "SUPPORT",
+          "score": 3.5999999999999996,
+          "sources": [
+            {
+              "kind": "bollinger_upper",
+              "name": "3m",
+              "column": "BB_36_1.541_UPPER",
+              "price": 1523056.186277819,
+              "timeframe": "monthly"
+            },
+            {
+              "kind": "fibonacci",
+              "name": "primary_cycle_retracement_prices",
+              "level": "0.500",
+              "price": 1530050.0,
+              "timeframe": "monthly"
+            }
+          ],
+          "reaction_count": 0,
+          "width_pct": 0.0045814415192072825
+        },
+        {
+          "low": 1565850.0,
+          "high": 1565850.0,
+          "center": 1565850.0,
+          "role": "SUPPORT",
+          "score": 1.4,
+          "sources": [
+            {
+              "kind": "fibonacci",
+              "name": "wave3_retracement_prices",
+              "level": "0.500",
+              "price": 1565850.0,
+              "timeframe": "monthly"
+            }
+          ],
+          "reaction_count": 0,
+          "width_pct": 0.0
+        },
+        {
+          "low": 1656876.0,
+          "high": 1656876.0,
+          "center": 1656876.0,
+          "role": "SUPPORT",
+          "score": 1.4,
+          "sources": [
+            {
+              "kind": "fibonacci",
+              "name": "current_rebound_prices",
+              "level": "0.236",
+              "price": 1656876.0,
+              "timeframe": "monthly"
+            }
+          ],
+          "reaction_count": 0,
+          "width_pct": 0.0
+        },
+        {
+          "low": 1711804.9042440986,
+          "high": 1711804.9042440986,
+          "center": 1711804.9042440986,
+          "role": "SUPPORT",
+          "score": 1.2,
+          "sources": [
+            {
+              "kind": "bollinger_upper",
+              "name": "6m",
+              "column": "BB_50_2.25_UPPER",
+              "price": 1711804.9042440986,
+              "timeframe": "monthly"
+            }
+          ],
+          "reaction_count": 0,
+          "width_pct": 0.0
+        },
+        {
+          "low": 1873890.2,
+          "high": 1911062.0,
+          "center": 1901241.4,
+          "role": "RESISTANCE",
+          "score": 4.199999999999999,
+          "sources": [
+            {
+              "kind": "fibonacci",
+              "name": "primary_cycle_retracement_prices",
+              "level": "0.382",
+              "price": 1873890.2,
+              "timeframe": "monthly"
+            },
+            {
+              "kind": "fibonacci",
+              "name": "wave3_retracement_prices",
+              "level": "0.382",
+              "price": 1901241.4,
+              "timeframe": "monthly"
+            },
+            {
+              "kind": "fibonacci",
+              "name": "current_rebound_prices",
+              "level": "0.382",
+              "price": 1911062.0,
+              "timeframe": "monthly"
+            }
+          ],
+          "reaction_count": 0,
+          "width_pct": 0.019551331040866274
+        },
+        {
+          "low": 2116500.0,
+          "high": 2116500.0,
+          "center": 2116500.0,
+          "role": "RESISTANCE",
+          "score": 1.4,
+          "sources": [
+            {
+              "kind": "fibonacci",
+              "name": "current_rebound_prices",
+              "level": "0.500",
+              "price": 2116500.0,
+              "timeframe": "monthly"
+            }
+          ],
+          "reaction_count": 0,
+          "width_pct": 0.0
+        },
+        {
+          "low": 2299319.6,
+          "high": 2321938.0,
+          "center": 2316217.2,
+          "role": "RESISTANCE",
+          "score": 4.199999999999999,
+          "sources": [
+            {
+              "kind": "fibonacci",
+              "name": "primary_cycle_retracement_prices",
+              "level": "0.236",
+              "price": 2299319.6,
+              "timeframe": "monthly"
+            },
+            {
+              "kind": "fibonacci",
+              "name": "wave3_retracement_prices",
+              "level": "0.236",
+              "price": 2316217.2,
+              "timeframe": "monthly"
+            },
+            {
+              "kind": "fibonacci",
+              "name": "current_rebound_prices",
+              "level": "0.618",
+              "price": 2321938.0,
+              "timeframe": "monthly"
+            }
+          ],
+          "reaction_count": 0,
+          "width_pct": 0.009765232725151987
+        },
+        {
+          "low": 2614426.0,
+          "high": 2614426.0,
+          "center": 2614426.0,
+          "role": "RESISTANCE",
+          "score": 1.4,
+          "sources": [
+            {
+              "kind": "fibonacci",
+              "name": "current_rebound_prices",
+              "level": "0.786",
+              "price": 2614426.0,
+              "timeframe": "monthly"
+            }
+          ],
+          "reaction_count": 0,
+          "width_pct": 0.0
+        },
+        {
+          "low": 2957130.0,
+          "high": 3016870.0,
+          "center": 2987000.0,
+          "role": "RESISTANCE",
+          "score": 1.0,
+          "sources": [
+            {
+              "kind": "pivot_high",
+              "date": "2026-06-01",
+              "price": 2987000.0,
+              "confirmed": false,
+              "timeframe": "monthly"
+            }
+          ],
+          "reaction_count": 1,
+          "width_pct": 0.02
+        }
+      ],
+      "supports_nearest": [
+        {
+          "low": 1711804.9042440986,
+          "high": 1711804.9042440986,
+          "center": 1711804.9042440986,
+          "role": "SUPPORT",
+          "score": 1.2,
+          "sources": [
+            {
+              "kind": "bollinger_upper",
+              "name": "6m",
+              "column": "BB_50_2.25_UPPER",
+              "price": 1711804.9042440986,
+              "timeframe": "monthly"
+            }
+          ],
+          "reaction_count": 0,
+          "width_pct": 0.0
+        },
+        {
+          "low": 1656876.0,
+          "high": 1656876.0,
+          "center": 1656876.0,
+          "role": "SUPPORT",
+          "score": 1.4,
+          "sources": [
+            {
+              "kind": "fibonacci",
+              "name": "current_rebound_prices",
+              "level": "0.236",
+              "price": 1656876.0,
+              "timeframe": "monthly"
+            }
+          ],
+          "reaction_count": 0,
+          "width_pct": 0.0
+        },
+        {
+          "low": 1565850.0,
+          "high": 1565850.0,
+          "center": 1565850.0,
+          "role": "SUPPORT",
+          "score": 1.4,
+          "sources": [
+            {
+              "kind": "fibonacci",
+              "name": "wave3_retracement_prices",
+              "level": "0.500",
+              "price": 1565850.0,
+              "timeframe": "monthly"
+            }
+          ],
+          "reaction_count": 0,
+          "width_pct": 0.0
+        },
+        {
+          "low": 1523056.186277819,
+          "high": 1530050.0,
+          "center": 1526553.0931389094,
+          "role": "SUPPORT",
+          "score": 3.5999999999999996,
+          "sources": [
+            {
+              "kind": "bollinger_upper",
+              "name": "3m",
+              "column": "BB_36_1.541_UPPER",
+              "price": 1523056.186277819,
+              "timeframe": "monthly"
+            },
+            {
+              "kind": "fibonacci",
+              "name": "primary_cycle_retracement_prices",
+              "level": "0.500",
+              "price": 1530050.0,
+              "timeframe": "monthly"
+            }
+          ],
+          "reaction_count": 0,
+          "width_pct": 0.0045814415192072825
+        },
+        {
+          "low": 1230458.6,
+          "high": 1258460.0,
+          "center": 1238229.3,
+          "role": "SUPPORT",
+          "score": 3.4,
+          "sources": [
+            {
+              "kind": "fibonacci",
+              "name": "wave3_retracement_prices",
+              "level": "0.618",
+              "price": 1230458.6,
+              "timeframe": "monthly"
+            },
+            {
+              "kind": "pivot_low",
+              "date": "2026-07-01",
+              "price": 1246000.0,
+              "confirmed": false,
+              "timeframe": "monthly"
+            }
+          ],
+          "reaction_count": 1,
+          "width_pct": 0.022614066716075857
+        },
+        {
+          "low": 1186209.8,
+          "high": 1190026.877421165,
+          "center": 1188118.3387105823,
+          "role": "SUPPORT",
+          "score": 3.5999999999999996,
+          "sources": [
+            {
+              "kind": "fibonacci",
+              "name": "primary_cycle_retracement_prices",
+              "level": "0.618",
+              "price": 1186209.8,
+              "timeframe": "monthly"
+            },
+            {
+              "kind": "bollinger_upper",
+              "name": "5m",
+              "column": "BB_60_1.541_UPPER",
+              "price": 1190026.877421165,
+              "timeframe": "monthly"
+            }
+          ],
+          "reaction_count": 0,
+          "width_pct": 0.0032127081089475995
+        },
+        {
+          "low": 1011819.7686766702,
+          "high": 1011819.7686766702,
+          "center": 1011819.7686766702,
+          "role": "SUPPORT",
+          "score": 1.2,
+          "sources": [
+            {
+              "kind": "bollinger_upper",
+              "name": "54m",
+              "column": "BB_300_3.33_UPPER",
+              "price": 1011819.7686766702,
+              "timeframe": "monthly"
+            }
+          ],
+          "reaction_count": 0,
+          "width_pct": 0.0
+        },
+        {
+          "low": 752952.1999999997,
+          "high": 768334.0639067417,
+          "center": 760643.1319533708,
+          "role": "SUPPORT",
+          "score": 3.5999999999999996,
+          "sources": [
+            {
+              "kind": "fibonacci",
+              "name": "wave3_retracement_prices",
+              "level": "0.786",
+              "price": 752952.1999999997,
+              "timeframe": "monthly"
+            },
+            {
+              "kind": "bollinger_upper",
+              "name": "12m",
+              "column": "BB_144_1.541_UPPER",
+              "price": 768334.0639067417,
+              "timeframe": "monthly"
+            }
+          ],
+          "reaction_count": 0,
+          "width_pct": 0.02022218207274223
+        }
+      ],
+      "resistances_nearest": [
+        {
+          "low": 1873890.2,
+          "high": 1911062.0,
+          "center": 1901241.4,
+          "role": "RESISTANCE",
+          "score": 4.199999999999999,
+          "sources": [
+            {
+              "kind": "fibonacci",
+              "name": "primary_cycle_retracement_prices",
+              "level": "0.382",
+              "price": 1873890.2,
+              "timeframe": "monthly"
+            },
+            {
+              "kind": "fibonacci",
+              "name": "wave3_retracement_prices",
+              "level": "0.382",
+              "price": 1901241.4,
+              "timeframe": "monthly"
+            },
+            {
+              "kind": "fibonacci",
+              "name": "current_rebound_prices",
+              "level": "0.382",
+              "price": 1911062.0,
+              "timeframe": "monthly"
+            }
+          ],
+          "reaction_count": 0,
+          "width_pct": 0.019551331040866274
+        },
+        {
+          "low": 2116500.0,
+          "high": 2116500.0,
+          "center": 2116500.0,
+          "role": "RESISTANCE",
+          "score": 1.4,
+          "sources": [
+            {
+              "kind": "fibonacci",
+              "name": "current_rebound_prices",
+              "level": "0.500",
+              "price": 2116500.0,
+              "timeframe": "monthly"
+            }
+          ],
+          "reaction_count": 0,
+          "width_pct": 0.0
+        },
+        {
+          "low": 2299319.6,
+          "high": 2321938.0,
+          "center": 2316217.2,
+          "role": "RESISTANCE",
+          "score": 4.199999999999999,
+          "sources": [
+            {
+              "kind": "fibonacci",
+              "name": "primary_cycle_retracement_prices",
+              "level": "0.236",
+              "price": 2299319.6,
+              "timeframe": "monthly"
+            },
+            {
+              "kind": "fibonacci",
+              "name": "wave3_retracement_prices",
+              "level": "0.236",
+              "price": 2316217.2,
+              "timeframe": "monthly"
+            },
+            {
+              "kind": "fibonacci",
+              "name": "current_rebound_prices",
+              "level": "0.618",
+              "price": 2321938.0,
+              "timeframe": "monthly"
+            }
+          ],
+          "reaction_count": 0,
+          "width_pct": 0.009765232725151987
+        },
+        {
+          "low": 2614426.0,
+          "high": 2614426.0,
+          "center": 2614426.0,
+          "role": "RESISTANCE",
+          "score": 1.4,
+          "sources": [
+            {
+              "kind": "fibonacci",
+              "name": "current_rebound_prices",
+              "level": "0.786",
+              "price": 2614426.0,
+              "timeframe": "monthly"
+            }
+          ],
+          "reaction_count": 0,
+          "width_pct": 0.0
+        },
+        {
+          "low": 2957130.0,
+          "high": 3016870.0,
+          "center": 2987000.0,
+          "role": "RESISTANCE",
+          "score": 1.0,
+          "sources": [
+            {
+              "kind": "pivot_high",
+              "date": "2026-06-01",
+              "price": 2987000.0,
+              "confirmed": false,
+              "timeframe": "monthly"
+            }
+          ],
+          "reaction_count": 1,
+          "width_pct": 0.02
+        }
+      ],
+      "boxes": []
+    }
+  },
+  "interpretation_rules": {
+    "pivot_first": true,
+    "fibonacci_is_validator_not_endpoint_generator": true,
+    "hard_rules_override_soft_scores": true,
+    "partial_impulse_allowed": true,
+    "wave4_candidate_requires_future_wave5_confirmation": true,
+    "nontruncated_wave5_requires_break_above_wave3": true
+  }
+}

@@ -29,6 +29,8 @@ BAR_COMPLETION_CONTRACT = "ohlcv-bar-completion-v1"
 HISTORY_CACHE_CONTRACT = "ohlcv-1200-backfill-cache-v1"
 WAVE_DEGREE_CONTRACT = "wave-degree-current-cycle-v1"
 AI_FEEDBACK_CONTRACT = "price-structure-v3-ai-feedback-loop-v1"
+FIB_FAMILY_DEPENDENCY_CONTRACT = "fib-family-endpoint-dependency-v1"
+FAMILY_CONSENSUS_CONTRACT = "fib-family-consensus-v1"
 
 TIMEFRAME_ORDER: tuple[Timeframe, ...] = ("monthly", "weekly", "daily")
 HISTORY_REQUESTS: dict[Timeframe, int] = {
@@ -141,6 +143,9 @@ class ZoneSource(FrozenModel):
     confluence_target_timeframe: Timeframe
     price: Decimal
     status: Literal["CONFIRMED", "PROVISIONAL", "PROJECTION"]
+    family_stability: Literal["EXACT_INVARIANT", "PRICE_EQUIVALENT"] | None = None
+    consensus_set_id: str | None = None
+    equivalence_class_id: str | None = None
 
 
 class TechnicalZone(FrozenModel):
@@ -160,6 +165,11 @@ class TechnicalZone(FrozenModel):
     historical_role: ZoneRole | None = None
     reclaim_status: Literal["NOT_TESTED", "RECLAIMED", "LOST", "INSIDE"] = "NOT_TESTED"
     sources: tuple[ZoneSource, ...]
+    confluence_stability: Literal[
+        "CONFLUENCE_EXACT_INVARIANT",
+        "CONFLUENCE_PRICE_EQUIVALENT",
+        "CONFLUENCE_MATERIAL_VARIATION",
+    ] | None = None
 
 
 class WaveEndpoint(FrozenModel):
@@ -210,6 +220,12 @@ class FibonacciReference(FrozenModel):
     status: Literal["CONFIRMED", "PROVISIONAL", "PROJECTION"]
     as_of: str
     calculation_version: str = CALCULATION_VERSION
+    dependency_contract: str = FIB_FAMILY_DEPENDENCY_CONTRACT
+    required_endpoint_labels: tuple[str, ...] = ()
+    family_stability: Literal["EXACT_INVARIANT", "PRICE_EQUIVALENT"] | None = None
+    consensus_set_id: str | None = None
+    consensus_candidate_ids: tuple[str, ...] = ()
+    equivalence_class_id: str | None = None
 
 
 class WaveSelectionStatus(StrEnum):
@@ -222,6 +238,8 @@ class WaveHypothesisSelection(FrozenModel):
     status: WaveSelectionStatus
     hypothesis_id: str | None = None
     alternative_hypothesis_id: str | None = None
+    competing_hypothesis_ids: tuple[str, ...] = Field(default=(), max_length=3)
+    equivalence_class_id: str | None = None
     confidence: Literal["HIGH", "MEDIUM", "LOW"] = "LOW"
     reason_categories: tuple[str, ...] = Field(min_length=1, max_length=3)
     evidence_refs: tuple[str, ...] = Field(default=(), max_length=16)
@@ -271,6 +289,7 @@ class PriceStructureWaveFibV3Result(FrozenModel):
     computation_ms: Decimal
     degree_candidate_counts: dict[WaveDegree, int] = Field(default_factory=dict)
     feedback_audit: WaveFeedbackAudit | None = None
+    family_consensus_audit: dict[str, object] | None = None
     user_visible: bool = False
     business_thesis_mutation: bool = False
     official_assessment_mutation: bool = False
@@ -1010,6 +1029,7 @@ def validate_wave_hypothesis_selection(
     cutoff: str | None = None,
     adjustment_basis: str | None = None,
     strict_context: bool = False,
+    equivalence_class_members: Mapping[str, Sequence[str]] | None = None,
 ) -> WaveSelectionValidation:
     hypothesis_map = {hypothesis.hypothesis_id: hypothesis for hypothesis in hypotheses}
     valid_ids = set(hypothesis_map)
@@ -1021,6 +1041,8 @@ def validate_wave_hypothesis_selection(
             selection.alternative_hypothesis_id not in valid_ids
         ):
             errors.append("unknown_alternative_hypothesis_id")
+        if selection.competing_hypothesis_ids:
+            errors.append("selected_requires_empty_competing_ids")
         selected = hypothesis_map.get(selection.hypothesis_id or "")
         if ticker is not None and selection.ticker != ticker:
             errors.append("ticker_mismatch")
@@ -1040,6 +1062,17 @@ def validate_wave_hypothesis_selection(
                 errors.append("endpoint_refs_mismatch")
             if cutoff is not None and any(point.date > cutoff for point in selected.endpoints):
                 errors.append("future_endpoint")
+        if selection.equivalence_class_id is not None:
+            members = set(
+                (equivalence_class_members or {}).get(selection.equivalence_class_id, ())
+            )
+            if not members:
+                errors.append("unknown_equivalence_class_id")
+            elif selection.hypothesis_id not in members or (
+                selection.alternative_hypothesis_id is not None
+                and selection.alternative_hypothesis_id not in members
+            ):
+                errors.append("hypothesis_equivalence_class_mismatch")
         if strict_context:
             if selection.ticker is None:
                 errors.append("missing_ticker")
@@ -1054,6 +1087,44 @@ def validate_wave_hypothesis_selection(
         return WaveSelectionValidation(valid=not errors, errors=tuple(errors))
     if selection.hypothesis_id is not None or selection.alternative_hypothesis_id is not None:
         errors.append("abstention_requires_null_ids")
+    if selection.status == WaveSelectionStatus.AMBIGUOUS and selection.competing_hypothesis_ids:
+        competing = selection.competing_hypothesis_ids
+        if len(competing) < 2 or len(set(competing)) != len(competing):
+            errors.append("ambiguous_requires_two_or_three_unique_ids")
+        unknown = [value for value in competing if value not in valid_ids]
+        if unknown:
+            errors.append("unknown_competing_hypothesis_id")
+        known = [hypothesis_map[value] for value in competing if value in hypothesis_map]
+        if len({item.ticker for item in known}) > 1:
+            errors.append("competing_ticker_mismatch")
+        if len({item.source_degree for item in known}) > 1:
+            errors.append("competing_degree_mismatch")
+        if (
+            selection.source_degree is not None
+            and known
+            and any(item.source_degree != selection.source_degree for item in known)
+        ):
+            errors.append("source_degree_mismatch")
+        if selection.equivalence_class_id is not None:
+            members = set(
+                (equivalence_class_members or {}).get(selection.equivalence_class_id, ())
+            )
+            if not members:
+                errors.append("unknown_equivalence_class_id")
+            elif not set(competing).issubset(members):
+                errors.append("competing_equivalence_class_mismatch")
+        if ticker is not None and selection.ticker != ticker:
+            errors.append("ticker_mismatch")
+        if cutoff is not None and selection.cutoff != cutoff:
+            errors.append("cutoff_mismatch")
+        if adjustment_basis is not None and selection.adjustment_basis != adjustment_basis:
+            errors.append("adjustment_basis_mismatch")
+    elif selection.competing_hypothesis_ids:
+        errors.append("insufficient_structure_requires_empty_competing_ids")
+    if selection.status == WaveSelectionStatus.INSUFFICIENT_STRUCTURE and (
+        selection.equivalence_class_id is not None
+    ):
+        errors.append("insufficient_structure_requires_null_class")
     return WaveSelectionValidation(
         valid=not errors,
         errors=tuple(errors),
@@ -1238,6 +1309,11 @@ def _fib_reference(
         calculated_price=calculated,
         status=status,  # type: ignore[arg-type]
         as_of=as_of,
+        required_endpoint_labels=tuple(
+            point.label
+            for point in hypothesis.endpoints
+            if point.pivot_ref in refs
+        ),
     )
 
 
@@ -1252,6 +1328,9 @@ def _fib_source(reference: FibonacciReference) -> ZoneSource:
         confluence_target_timeframe=reference.confluence_target_timeframe,
         price=reference.calculated_price,
         status=reference.status,
+        family_stability=reference.family_stability,
+        consensus_set_id=reference.consensus_set_id,
+        equivalence_class_id=reference.equivalence_class_id,
     )
 
 
@@ -1327,6 +1406,16 @@ def merge_zone_sources(
         confirmation = Decimal(
             sum(source.status == "CONFIRMED" for source in group)
         ) / Decimal(len(group))
+        fib_stabilities = {
+            source.family_stability
+            for source in group
+            if source.evidence_type == "FIBONACCI" and source.family_stability is not None
+        }
+        confluence_stability = None
+        if "PRICE_EQUIVALENT" in fib_stabilities:
+            confluence_stability = "CONFLUENCE_PRICE_EQUIVALENT"
+        elif "EXACT_INVARIANT" in fib_stabilities:
+            confluence_stability = "CONFLUENCE_EXACT_INVARIANT"
         zones.append(
             TechnicalZone(
                 zone_id=_stable_id(
@@ -1349,6 +1438,7 @@ def merge_zone_sources(
                 reaction_count=sum(source.evidence_type == "PIVOT" for source in group),
                 last_meaningful_interaction=None,
                 sources=tuple(group),
+                confluence_stability=confluence_stability,
             )
         )
     return rank_zones(zones)

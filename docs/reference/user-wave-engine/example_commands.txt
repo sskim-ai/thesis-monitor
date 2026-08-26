@@ -1,0 +1,17 @@
+# AUTO
+python stock_structure_engine.py \
+  --daily daily_000660_900bars.csv \
+  --weekly weekly_000660_500bars.csv \
+  --monthly monthly_000660_300bars.csv \
+  --anchor-mode auto \
+  --out analysis_auto.json
+
+# HYBRID: user long-cycle anchor + automatic comparison
+python stock_structure_engine.py \
+  --daily daily_000660_900bars.csv \
+  --weekly weekly_000660_500bars.csv \
+  --monthly monthly_000660_300bars.csv \
+  --anchor-mode hybrid \
+  --anchor-date 2023-01-02 \
+  --anchor-price 73100 \
+  --out analysis_hybrid.json

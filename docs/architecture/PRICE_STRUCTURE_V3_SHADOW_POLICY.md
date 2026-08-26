@@ -23,6 +23,11 @@ current structural cycle, and validated variable-AI IDs feed the deterministic e
 eligibility is still decided only from the completed repair evidence, full CI, and zero visible
 runtime diff.
 
+The family-consensus stability repair remains shadow-only as well. It can retain Fib families that
+are invariant across defensible counts, but removes materially variant families before confluence
+is rebuilt. Passing this repair may set `INTEGRATED_READY_NOT_ARMED`; it does not arm or expose the
+renderer. Selective enablement is a separate bounded task.
+
 ## Why
 
 Shadow isolation preserves the engineering value of the implementation without converting an

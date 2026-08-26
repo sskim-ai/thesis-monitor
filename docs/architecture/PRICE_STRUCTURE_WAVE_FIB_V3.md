@@ -23,6 +23,11 @@ The implemented wave scope is bullish standard impulse only. Candidate endpoints
 confirmed or explicitly provisional pivots. Elliott hard rules filter candidates before
 Fibonacci fit contributes soft ranking. `NONE` and `AMBIGUOUS` are valid fail-closed outcomes.
 
+Full-count ambiguity no longer requires deleting every Fib family. The deterministic dependency
+registry tests each formula against the complete supplied ambiguity set. Exact-invariant and
+existing-tolerance price-equivalent families survive; materially variant families are omitted.
+Confluence is rebuilt only after this filtering step.
+
 The bounded repair adds `ohlcv-bar-completion-v1`, provider-native 1200-day backfill, explicit
 grand/current/intermediate degree separation, and a strict AI-selection feedback path. Partial
 bars remain available for current context but cannot confirm pivots. A validated AI ID now owns
@@ -45,5 +50,5 @@ widening, and forced Elliott labels were rejected.
 ## Safety Constraint
 
 The module has no production import, route, packet, fallback, Telegram, task, assessment, or DB
-integration. `PRICE_STRUCTURE_WAVE_FIB_V3 = SHADOW`; any later enablement requires a separate
-user-visible decision after the repaired shadow evidence and CI pass.
+integration. `PRICE_STRUCTURE_WAVE_FIB_V3 = INTEGRATED_READY_NOT_ARMED` only after the complete
+shadow evidence and CI pass; any later user-visible enablement remains a separate decision.
