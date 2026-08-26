@@ -9,7 +9,7 @@ from enum import StrEnum
 from statistics import median
 from typing import Literal
 
-from pydantic import BaseModel, ConfigDict, Field, ValidationError, model_validator
+from pydantic import BaseModel, ConfigDict, Field, ValidationError
 
 from app.services.multi_timeframe_price_structure_service import (
     CONTRACT_VERSION as PRICE_STRUCTURE_CONTRACT,
@@ -175,24 +175,6 @@ class VariableTimeframeSelection(FrozenModel):
     reason_categories: tuple[ReasonCategory, ...] = Field(min_length=1, max_length=3)
     evidence_refs: tuple[str, ...] = Field(default=(), max_length=16)
     concise_reason: str = Field(default="", max_length=240)
-
-    @model_validator(mode="after")
-    def validate_selection_shape(self) -> VariableTimeframeSelection:
-        if self.status != "SELECTED" and any(
-            (self.low_pivot_id, self.high_pivot_id, self.correction_low_pivot_id)
-        ):
-            raise ValueError("non-selected output cannot own pivot IDs")
-        if self.status != "SELECTED" and self.fib_mode != "NONE":
-            raise ValueError("non-selected output cannot request Fibonacci")
-        if self.status != "SELECTED" and self.alternative is not None:
-            raise ValueError("non-selected output cannot own an alternative anchor")
-        if self.status == "SELECTED" and self.fib_mode != "NONE" and not (
-            self.low_pivot_id and self.high_pivot_id
-        ):
-            raise ValueError("Fibonacci selection requires low/high pivot IDs")
-        if self.fib_mode in {"EXTENSION", "BOTH"} and not self.correction_low_pivot_id:
-            raise ValueError("extension selection requires a correction-low pivot ID")
-        return self
 
 
 class VariableAIAnchorOutput(FrozenModel):
@@ -689,6 +671,18 @@ def validate_variable_ai_anchor_output(
         if not selected_refs.issubset(set(selected.evidence_refs)):
             timeframe_errors.append(f"{timeframe}:selected_ref_missing_from_evidence_refs")
         if selected.status != "SELECTED":
+            if any(
+                (
+                    selected.low_pivot_id,
+                    selected.high_pivot_id,
+                    selected.correction_low_pivot_id,
+                )
+            ):
+                timeframe_errors.append(f"{timeframe}:non_selected_pivot_ref")
+            if selected.fib_mode != "NONE":
+                timeframe_errors.append(f"{timeframe}:non_selected_fibonacci")
+            if selected.alternative is not None:
+                timeframe_errors.append(f"{timeframe}:non_selected_alternative")
             errors.extend(timeframe_errors)
             statuses[timeframe] = "REJECTED" if timeframe_errors else "OMITTED"
             continue

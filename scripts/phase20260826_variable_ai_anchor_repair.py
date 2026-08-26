@@ -637,6 +637,9 @@ def _finalize(args: argparse.Namespace) -> None:
                     "run": run,
                     "status": execution.status,
                     "failure_reason": execution.failure_reason,
+                    "variable_ai_output": (
+                        output.model_dump(mode="json") if output is not None else None
+                    ),
                     "selection": _selection_signature(execution.selection.model_dump(mode="json")),
                     "validation": execution.validation.model_dump(mode="json"),
                     "reasons": {
@@ -734,6 +737,12 @@ def _finalize(args: argparse.Namespace) -> None:
             material_omissions += sum(bool(value) for value in omissions.values())
             full_debug = {
                 "status": full_execution.status,
+                "variable_ai_output": (
+                    full_output.model_dump(mode="json") if full_output is not None else None
+                ),
+                "selection": _selection_signature(
+                    full_execution.selection.model_dump(mode="json")
+                ),
                 "classifications": classifications,
                 "material_anchor_omissions": omissions,
                 "compact_evidence_sha256": packet.evidence_sha256,
@@ -1073,13 +1082,17 @@ neighborhoods may add older bars without omitting eligible canonical pivots.
                         [
                             (
                                 run.get("run"),
-                                run.get("status"),
-                                ((run.get("selection") or {}).get(timeframe) or {}).get("low_pivot_id"),
-                                ((run.get("selection") or {}).get(timeframe) or {}).get("high_pivot_id"),
-                                ((run.get("selection") or {}).get(timeframe) or {}).get("correction_low_pivot_id"),
-                                ((run.get("selection") or {}).get(timeframe) or {}).get("fib_mode"),
-                                ((run.get("selection") or {}).get(timeframe) or {}).get("support_zone_id"),
-                                ((run.get("selection") or {}).get(timeframe) or {}).get("resistance_zone_id"),
+                                (
+                                    ((run.get("variable_ai_output") or {}).get(timeframe) or {}).get("status")
+                                    if run.get("variable_ai_output")
+                                    else run.get("status")
+                                ),
+                                ((run.get("variable_ai_output") or {}).get(timeframe) or {}).get("low_pivot_id"),
+                                ((run.get("variable_ai_output") or {}).get(timeframe) or {}).get("high_pivot_id"),
+                                ((run.get("variable_ai_output") or {}).get(timeframe) or {}).get("correction_low_pivot_id"),
+                                ((run.get("variable_ai_output") or {}).get(timeframe) or {}).get("fib_mode"),
+                                ((run.get("variable_ai_output") or {}).get(timeframe) or {}).get("support_zone_id"),
+                                ((run.get("variable_ai_output") or {}).get(timeframe) or {}).get("resistance_zone_id"),
                             )
                             for run in runs
                             if isinstance(run, Mapping)

@@ -323,6 +323,32 @@ def test_insufficient_slot_may_cite_valid_sr_but_fallback_stays_deterministic() 
     assert result.shadow.selected_fibonacci["daily"] == ()
 
 
+def test_semantically_invalid_non_selected_slot_rejects_only_that_timeframe() -> None:
+    packet = _packet()
+    output = _output(packet)
+    invalid = output.model_copy(
+        update={
+            "daily": output.daily.model_copy(
+                update={
+                    "status": "INSUFFICIENT_STRUCTURE",
+                    "fib_mode": "RETRACEMENT",
+                }
+            )
+        }
+    )
+    result = execute_variable_anchor_selector(packet, lambda _: invalid)
+
+    assert result.validation.timeframe_status == {
+        "monthly": "PASS",
+        "weekly": "PASS",
+        "daily": "REJECTED",
+    }
+    assert result.fallback_timeframes == ("daily",)
+    assert result.shadow.selected_fibonacci["monthly"]
+    assert result.shadow.selected_fibonacci["weekly"]
+    assert result.shadow.selected_fibonacci["daily"] == ()
+
+
 @pytest.mark.parametrize(
     "selector",
     (
