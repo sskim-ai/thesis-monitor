@@ -21,6 +21,10 @@ The current structure renders under `📐 현재 가격 구조`. Stored rules re
 `🧭 기존 등록 가격 규칙` and remain bound to `chart:stored_price_rules`. Proximity or overlap
 does not merge ownership.
 
+Legacy suppression also has typed ownership. Structural fields are protected; current v3 and
+stored rules are retained by their owners; only explicitly eligible legacy-technical prose is
+token-scanned. The detector cannot suppress a company header or section heading.
+
 ## Isolation
 
 The contract is exercised by archive-only replay and tests. Production packets, Telegram,

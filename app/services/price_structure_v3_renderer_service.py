@@ -18,6 +18,16 @@ PriceOwner = Literal[
     "STORED_MONITORING_PRICE_RULE",
 ]
 
+LegacySemanticField = Literal[
+    "PROTECTED_STRUCTURAL_FIELD",
+    "BUSINESS_PROSE",
+    "TECHNICAL_PROSE_CANDIDATE",
+    "STORED_PRICE_RULE",
+    "CURRENT_V3_PRICE_STRUCTURE",
+    "VALUATION_PROSE",
+    "OTHER",
+]
+
 
 @dataclass(frozen=True)
 class ConfluenceRenderDecision:
@@ -51,6 +61,18 @@ class LegacyTechnicalOccurrence:
         "STALE_OR_REDUNDANT_LEGACY",
     ]
     action: Literal["KEEP", "SUPPRESS"]
+    semantic_field: LegacySemanticField = "OTHER"
+    matched_terms: tuple[str, ...] = ()
+    match_spans: tuple[tuple[int, int], ...] = ()
+    token_boundary_types: tuple[str, ...] = ()
+    suppression_reason: str | None = None
+
+
+@dataclass(frozen=True)
+class LegacyTechnicalTokenMatch:
+    matched_term: str
+    match_span: tuple[int, int]
+    token_boundary_type: str
 
 
 @dataclass(frozen=True)
@@ -59,9 +81,11 @@ class LegacyTechnicalRender:
     occurrences: tuple[LegacyTechnicalOccurrence, ...]
 
 
-_LEGACY_TECHNICAL_PATTERN = re.compile(
-    r"OHLCV|RSI|MACD|Bollinger|볼린저|월봉|주봉|일봉|"
-    r"상승 레짐|하락 레짐|지지선|저항선|기술적|차트 구조",
+_LEGACY_TECHNICAL_TOKEN_PATTERN = re.compile(
+    r"(?<![A-Za-z0-9_])(?P<acronym>OHLCV|RSI|MACD|ATR|EMA|SMA)(?![A-Za-z_])|"
+    r"(?<![A-Za-z0-9_])(?P<english>Bollinger)(?![A-Za-z0-9_])|"
+    r"(?P<korean>볼린저|월봉|주봉|일봉|상승 레짐|하락 레짐|지지선|저항선|"
+    r"기술적|차트 구조)",
     re.IGNORECASE,
 )
 _DATE_PATTERN = re.compile(r"\b\d{4}-\d{2}-\d{2}\b")
@@ -71,6 +95,26 @@ _STORED_RULE_BLOCK = re.compile(
 )
 _PRICE_TOKEN = re.compile(
     r"\$[\d,]+(?:\.\d+)?|[\d,]+(?:\.\d+)?(?:원|만원)",
+)
+
+_SECTION_BODY_FIELDS: dict[str, LegacySemanticField] = {
+    "🎯 핵심": "TECHNICAL_PROSE_CANDIDATE",
+    "📈 사업·실적": "BUSINESS_PROSE",
+    "👁 핵심 감시": "OTHER",
+    "💰 가격": "OTHER",
+    "📐 가격 구조": "CURRENT_V3_PRICE_STRUCTURE",
+    "📐 현재 가격 구조": "CURRENT_V3_PRICE_STRUCTURE",
+    "보유자:": "STORED_PRICE_RULE",
+    "🧭 기존 등록 가격 규칙": "STORED_PRICE_RULE",
+    "📐 Valuation": "VALUATION_PROSE",
+    "⚠️ 데이터 주의": "OTHER",
+    "📌 다음 확인": "OTHER",
+}
+_PROTECTED_LINE_PREFIXES = (
+    "🏢 ",
+    "투자 논리:",
+    "구조적 위험:",
+    "시장 기대:",
 )
 
 
@@ -311,14 +355,64 @@ def relabel_stored_price_rules(message: str, *, ticker: str) -> StoredPriceRuleR
     )
 
 
-def _section_owner(line: str, current: str) -> str:
-    if line == "📐 현재 가격 구조":
-        return "CURRENT_V3"
-    if line == "🧭 기존 등록 가격 규칙":
-        return "STORED_PRICE_RULE"
-    if line.startswith(("📐 Valuation", "📌 ", "🎯 ", "📈 ", "👁 ", "⚠️ ", "💰 ")):
-        return "OTHER"
-    return current
+def detect_legacy_technical_tokens(
+    text: str,
+) -> tuple[LegacyTechnicalTokenMatch, ...]:
+    matches: list[LegacyTechnicalTokenMatch] = []
+    for match in _LEGACY_TECHNICAL_TOKEN_PATTERN.finditer(text):
+        if match.lastgroup == "acronym":
+            boundary = "ASCII_TOKEN_OR_KOREAN_SUFFIX_BOUNDARY"
+        elif match.lastgroup == "english":
+            boundary = "ENGLISH_WORD_OR_KOREAN_SUFFIX_BOUNDARY"
+        else:
+            boundary = "KOREAN_TECHNICAL_TERM"
+        matches.append(
+            LegacyTechnicalTokenMatch(
+                matched_term=match.group(0),
+                match_span=match.span(),
+                token_boundary_type=boundary,
+            )
+        )
+    return tuple(matches)
+
+
+def _line_semantic_field(
+    line: str,
+    current: LegacySemanticField,
+) -> tuple[LegacySemanticField, LegacySemanticField]:
+    body_field = _SECTION_BODY_FIELDS.get(line)
+    if body_field is not None:
+        return "PROTECTED_STRUCTURAL_FIELD", body_field
+    if line.startswith(_PROTECTED_LINE_PREFIXES):
+        return "PROTECTED_STRUCTURAL_FIELD", current
+    if line.startswith(("🎯 ", "📈 ", "👁 ", "💰 ", "📐 ", "⚠️ ", "📌 ", "🧭 ")):
+        return "PROTECTED_STRUCTURAL_FIELD", "OTHER"
+    return current, current
+
+
+def _technical_occurrence(
+    text: str,
+    classification: Literal[
+        "CURRENT_V3",
+        "STORED_PRICE_RULE",
+        "VALID_NONREDUNDANT_LEGACY",
+        "STALE_OR_REDUNDANT_LEGACY",
+    ],
+    action: Literal["KEEP", "SUPPRESS"],
+    semantic_field: LegacySemanticField,
+    matches: Sequence[LegacyTechnicalTokenMatch],
+    suppression_reason: str | None,
+) -> LegacyTechnicalOccurrence:
+    return LegacyTechnicalOccurrence(
+        text=text,
+        classification=classification,
+        action=action,
+        semantic_field=semantic_field,
+        matched_terms=tuple(match.matched_term for match in matches),
+        match_spans=tuple(match.match_span for match in matches),
+        token_boundary_types=tuple(match.token_boundary_type for match in matches),
+        suppression_reason=suppression_reason,
+    )
 
 
 def suppress_legacy_technical_prose(
@@ -328,29 +422,51 @@ def suppress_legacy_technical_prose(
     active_v3: bool,
     canonical_indicator_sessions: Sequence[str] = (),
 ) -> LegacyTechnicalRender:
-    owner = "OTHER"
+    section_field: LegacySemanticField = "OTHER"
     output: list[str] = []
     occurrences: list[LegacyTechnicalOccurrence] = []
     valid_sessions = set(canonical_indicator_sessions)
     for line in message.splitlines():
-        owner = _section_owner(line, owner)
-        if owner == "CURRENT_V3" and _LEGACY_TECHNICAL_PATTERN.search(line):
-            occurrences.append(LegacyTechnicalOccurrence(line, "CURRENT_V3", "KEEP"))
-            output.append(line)
-            continue
-        if owner == "STORED_PRICE_RULE" and _LEGACY_TECHNICAL_PATTERN.search(line):
+        semantic_field, section_field = _line_semantic_field(line, section_field)
+        line_matches = detect_legacy_technical_tokens(line)
+        if semantic_field == "CURRENT_V3_PRICE_STRUCTURE" and line_matches:
             occurrences.append(
-                LegacyTechnicalOccurrence(line, "STORED_PRICE_RULE", "KEEP")
+                _technical_occurrence(
+                    line,
+                    "CURRENT_V3",
+                    "KEEP",
+                    semantic_field,
+                    line_matches,
+                    "owned_by_current_v3_price_structure",
+                )
             )
             output.append(line)
             continue
-        if not active_v3 or not _LEGACY_TECHNICAL_PATTERN.search(line):
+        if semantic_field == "STORED_PRICE_RULE" and line_matches:
+            occurrences.append(
+                _technical_occurrence(
+                    line,
+                    "STORED_PRICE_RULE",
+                    "KEEP",
+                    semantic_field,
+                    line_matches,
+                    "owned_by_stored_price_rule",
+                )
+            )
+            output.append(line)
+            continue
+        if (
+            not active_v3
+            or semantic_field != "TECHNICAL_PROSE_CANDIDATE"
+            or not line_matches
+        ):
             output.append(line)
             continue
 
         kept_sentences: list[str] = []
         for sentence in re.split(r"(?<=[.!?])\s+", line):
-            if not _LEGACY_TECHNICAL_PATTERN.search(sentence):
+            sentence_matches = detect_legacy_technical_tokens(sentence)
+            if not sentence_matches:
                 kept_sentences.append(sentence)
                 continue
             dates = set(_DATE_PATTERN.findall(sentence))
@@ -361,7 +477,20 @@ def suppress_legacy_technical_prose(
                 else "STALE_OR_REDUNDANT_LEGACY"
             )
             action = "KEEP" if is_current else "SUPPRESS"
-            occurrences.append(LegacyTechnicalOccurrence(sentence, classification, action))
+            occurrences.append(
+                _technical_occurrence(
+                    sentence,
+                    classification,
+                    action,
+                    semantic_field,
+                    sentence_matches,
+                    (
+                        "current_canonical_nonredundant_legacy_technical_sentence"
+                        if is_current
+                        else "stale_or_redundant_legacy_technical_sentence"
+                    ),
+                )
+            )
             if is_current:
                 kept_sentences.append(sentence)
         if kept_sentences:

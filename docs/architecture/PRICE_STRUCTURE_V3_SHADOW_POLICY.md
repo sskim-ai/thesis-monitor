@@ -62,3 +62,8 @@ enablement: material Fib/SR range extensions retain their full registered range,
 stored monitoring rules use separate headings and provenance owners, and stale parallel technical
 prose is suppressed while business text remains unchanged. These rules do not reopen SR/Fib
 calculation, change rollout eligibility, or arm production.
+
+The final detector micro-repair keeps this state shadow-only while replacing global substring
+matching with semantic-field and token-boundary detection. It must restore all protected entity
+labels, retain the intended stale MU sentence suppression, and preserve the exact prior SR/Fib and
+stored-rule renderer output before a separate selective-enablement task may proceed.

@@ -6,6 +6,7 @@ from pathlib import Path
 
 from app.services.price_structure_v3_renderer_service import (
     classify_confluence_render_equivalence,
+    detect_legacy_technical_tokens,
     relabel_stored_price_rules,
     render_current_price_structure,
     replace_current_price_structure,
@@ -227,6 +228,103 @@ def test_current_canonical_nonredundant_indicator_sentence_may_remain() -> None:
 
     assert "MACD" in repaired.message
     assert repaired.occurrences[0].classification == "VALID_NONREDUNDANT_LEGACY"
+
+
+def test_indicator_acronyms_do_not_match_inside_ordinary_words() -> None:
+    ordinary_words = (
+        "Recursion",
+        "recursion",
+        "conversion",
+        "version",
+        "diversion",
+        "precision",
+        "decision",
+        "macdonald",
+    )
+
+    assert all(not detect_legacy_technical_tokens(word) for word in ordinary_words)
+
+
+def test_indicator_tokens_support_korean_postpositions_and_numeric_suffixes() -> None:
+    values = (
+        "RSI 72",
+        "RSI가 70을 상회",
+        "RSI는 과열",
+        "MACD histogram 둔화",
+        "MACD가 0선 아래",
+        "OHLCV를 확인",
+        "Bollinger 상단",
+        "ATR 확대",
+        "EMA20",
+    )
+
+    assert all(detect_legacy_technical_tokens(value) for value in values)
+
+
+def test_company_header_is_protected_from_legacy_technical_suppression() -> None:
+    message = """🏢 Recursion Pharmaceuticals(RXRX)
+
+투자 논리: 유지 · 오늘 중요한 신규 변화 없음
+
+🎯 핵심
+파트너 타깃 선택과 임상 진전이 핵심이다.
+"""
+
+    repaired = suppress_legacy_technical_prose(
+        message,
+        current_session="2026-08-25",
+        active_v3=True,
+    )
+
+    assert repaired.message == message.strip()
+    assert repaired.message.startswith("🏢 Recursion Pharmaceuticals(RXRX)")
+    assert repaired.occurrences == ()
+
+
+def test_structural_fields_are_never_suppressed_by_indicator_tokens() -> None:
+    message = """🏢 RSI Holdings(TEST)
+
+투자 논리: RSI 검증 상태 유지
+
+🎯 핵심
+사업 근거는 유지된다.
+
+📌 다음 확인
+• RSI 관련 제품명 확인
+"""
+
+    repaired = suppress_legacy_technical_prose(
+        message,
+        current_session="2026-08-25",
+        active_v3=True,
+    )
+
+    assert repaired.message == message.strip()
+    assert repaired.occurrences == ()
+
+
+def test_stale_token_match_records_field_span_and_boundary() -> None:
+    message = """🎯 핵심
+사업 근거는 유지된다. 2026-08-12 OHLCV 기준 MACD가 둔화했다.
+"""
+
+    repaired = suppress_legacy_technical_prose(
+        message,
+        current_session="2026-08-25",
+        active_v3=True,
+    )
+
+    occurrence = repaired.occurrences[0]
+    assert occurrence.semantic_field == "TECHNICAL_PROSE_CANDIDATE"
+    assert occurrence.matched_terms == ("OHLCV", "MACD")
+    assert occurrence.match_spans
+    assert occurrence.token_boundary_types == (
+        "ASCII_TOKEN_OR_KOREAN_SUFFIX_BOUNDARY",
+        "ASCII_TOKEN_OR_KOREAN_SUFFIX_BOUNDARY",
+    )
+    assert occurrence.suppression_reason == (
+        "stale_or_redundant_legacy_technical_sentence"
+    )
 
 
 def test_exact_controls_repair_only_renderer_surfaces() -> None:
