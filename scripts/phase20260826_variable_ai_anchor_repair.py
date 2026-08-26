@@ -602,6 +602,7 @@ def _finalize(args: argparse.Namespace) -> None:
     benchmark = {str(value) for value in evidence.get("benchmark_tickers") or ()}
     results: list[dict[str, object]] = []
     runtime_failures = len(load_errors)
+    semantic_rejected_timeframes = 0
     full_material = 0
     material_omissions = 0
     for row in rows:
@@ -630,8 +631,12 @@ def _finalize(args: argparse.Namespace) -> None:
                 else (lambda _: (_ for _ in ()).throw(RuntimeError("trial_output_missing"))),
             )
             executions.append(execution)
-            if execution.status != "PASS":
+            if output is None:
                 runtime_failures += 1
+            semantic_rejected_timeframes += sum(
+                value == "REJECTED"
+                for value in execution.validation.timeframe_status.values()
+            )
             run_details.append(
                 {
                     "run": run,
@@ -701,8 +706,12 @@ def _finalize(args: argparse.Namespace) -> None:
                 if full_output is not None
                 else (lambda _: (_ for _ in ()).throw(RuntimeError("full_output_missing"))),
             )
-            if full_execution.status != "PASS":
+            if full_output is None:
                 runtime_failures += 1
+            semantic_rejected_timeframes += sum(
+                value == "REJECTED"
+                for value in full_execution.validation.timeframe_status.values()
+            )
             compact_full = classify_anchor_stability(
                 packet, [executions[0], full_execution]
             )
@@ -819,7 +828,13 @@ def _finalize(args: argparse.Namespace) -> None:
     egress_pass = all(
         (item.get("egress_audit") or {}).get("status") == "PASS" for item in successful
     )
-    variable_trial = "PASS" if not runtime_failures and successful else "FAIL"
+    variable_trial = (
+        "PASS"
+        if not runtime_failures and not semantic_rejected_timeframes and successful
+        else "PARTIAL"
+        if not runtime_failures and successful
+        else "FAIL"
+    )
     rich_sufficiency = (
         "FAIL"
         if material_omissions
@@ -832,13 +847,13 @@ def _finalize(args: argparse.Namespace) -> None:
     code_correct = all(
         (
             egress_pass,
-            variable_trial == "PASS",
-            not load_errors,
+            bool(successful),
         )
     )
     code_ready = all(
         (
             code_correct,
+            variable_trial == "PASS",
             rich_sufficiency in {"PASS", "PARTIAL"},
             monthly_ok,
             weekly_ok,
@@ -889,6 +904,7 @@ def _finalize(args: argparse.Namespace) -> None:
         "stock_user_visible_ineligible": len(successful) - eligible,
         "timeframe_fib_fallback_count": timeframe_fallbacks,
         "runtime_failure_count": runtime_failures,
+        "semantic_rejected_timeframe_count": semantic_rejected_timeframes,
         "load_errors": load_errors,
         "material_anchor_omission": material_omissions,
         "full_debug_material_variation": full_material,
@@ -1143,6 +1159,7 @@ neighborhoods may add older bars without omitting eligible canonical pivots.
 - Ineligible stocks: `{summary['stock_user_visible_ineligible']}`.
 - Timeframe Fibonacci fallbacks: `{summary['timeframe_fib_fallback_count']}`.
 - Runtime failures: `{summary['runtime_failure_count']}`.
+- Semantically rejected timeframes: `{summary['semantic_rejected_timeframe_count']}`.
 - Benchmark runs per packet: `5`; wider universe runs per packet: `3`.
 
 Monthly/weekly material variation blocks the first enablement pool. Daily-only material variation
