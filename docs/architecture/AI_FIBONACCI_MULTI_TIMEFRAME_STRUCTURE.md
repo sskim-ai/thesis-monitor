@@ -43,5 +43,16 @@ promote a daily level to structural ownership.
 ## Implementation
 
 - Service: `app/services/multi_timeframe_price_structure_service.py`
+- Variable selector boundary: `app/services/variable_ai_anchor_selection_service.py`
 - Archive generator: `scripts/phase20260826_ai_fibonacci_multi_timeframe_v2.py`
+- Variable trial generator: `scripts/phase20260826_variable_ai_anchor_repair.py`
 - Focused tests: `tests/test_multi_timeframe_price_structure_service.py`
+
+## Variable Selection Closure
+
+The original v2 archive repeated `reference_select_price_structure()` and therefore proved only a
+deterministic reference harness. The bounded closure adds an actual variable selector trial over
+`price-only-ai-anchor-packet-v1`. The prompt contains raw candle context and canonical IDs but no
+reference anchor or precomputed Fibonacci. Backend validation and all Fibonacci arithmetic remain
+unchanged. Per-timeframe failure preserves deterministic SR and suppresses only that timeframe's
+Fibonacci.
