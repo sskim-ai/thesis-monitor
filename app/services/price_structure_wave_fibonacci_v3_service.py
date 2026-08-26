@@ -1808,8 +1808,8 @@ def _rank_major(
             zone.evidence_family_score,
             zone.confirmation_quality,
             zone.last_meaningful_interaction or "",
-            min(zone.reaction_count, 5),
             active_rank[tiers[zone.zone_id]],
+            min(zone.reaction_count, 5),
             -zone.proximity_pct,
         ),
     )

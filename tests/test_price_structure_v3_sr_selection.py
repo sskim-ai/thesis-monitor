@@ -251,3 +251,57 @@ def test_role_conversion_uses_current_role() -> None:
     assert zone.historical_role == "RESISTANCE"
     assert zone.current_role == "SUPPORT"
     assert zone.reclaim_status == "RECLAIMED"
+
+
+def test_relevant_cross_zone_can_strengthen_local_structure() -> None:
+    monthly = _zone(
+        "monthly",
+        "93.8",
+        "95.2",
+        timeframe="monthly",
+        sources=(_source("monthly:near", "94.5", timeframe="monthly", role="SUPPORT"),),
+    )
+    weekly = _zone(
+        "weekly",
+        "94.2",
+        "95.6",
+        timeframe="weekly",
+        sources=(_source("weekly:near", "94.9", timeframe="weekly", role="SUPPORT"),),
+    )
+    daily = _zone("daily", "94", "96", timeframe="daily")
+    result = _build({"monthly": (monthly,), "weekly": (weekly,), "daily": (daily,)})
+
+    assert result.summary.nearest_cross_timeframe_zone is not None
+    assert set(result.summary.nearest_cross_timeframe_zone.source_timeframes) >= {
+        "monthly",
+        "weekly",
+    }
+
+
+def test_no_confirmed_resistance_returns_explicit_reason() -> None:
+    result = _build({"daily": (_zone("support", "94", "96"),)})
+
+    assert result.summary.nearest_resistance.zone is None
+    assert result.summary.nearest_resistance.reason == "NO_CONFIRMED_HISTORICAL_LEVEL"
+
+
+def test_unstable_fib_does_not_suppress_base_sr_or_create_confluence() -> None:
+    base_source = _source("base", "95", role="SUPPORT")
+    unstable_fib = _source("fib", "95.2", evidence_type="FIBONACCI")
+    base = _zone("base-zone", "94", "96", sources=(base_source,))
+    combined = _zone("combined-zone", "94", "96", sources=(base_source, unstable_fib))
+    result = _build(
+        {"daily": (base,)},
+        combined={"monthly": (), "weekly": (), "daily": (combined,)},
+    )
+
+    assert result.summary.nearest_support.zone.zone_id == "base-zone"  # type: ignore[union-attr]
+    assert result.summary.fib_sr_confluence is None
+
+
+def test_historical_reaction_count_alone_cannot_beat_active_near_zone() -> None:
+    near = _zone("near", "96", "98", structural=11, reaction_count=1)
+    older = _zone("older", "89", "91", structural=11, reaction_count=100)
+    result = _build({"daily": (near, older)})
+
+    assert result.timeframes["daily"].major_support.zone.zone_id == "near"  # type: ignore[union-attr]
