@@ -443,6 +443,26 @@ def _prompts(args: argparse.Namespace) -> None:
 
 def _run_trials(args: argparse.Namespace) -> None:
     manifest = _read_json(args.trial_dir / "manifest.json")
+    version = subprocess.run(
+        [str(args.codex_bin), "--version"],
+        capture_output=True,
+        check=False,
+        text=True,
+    )
+    runtime_config = {
+        "route": "signed_in_local_codex_cli_archive_only",
+        "cli_version": version.stdout.strip() or "unavailable",
+        "model": args.model,
+        "reasoning_effort": "high",
+        "sandbox": "read-only",
+        "session": "ephemeral",
+        "tools": "prohibited_by_prompt",
+    }
+    manifest["runtime_config"] = runtime_config
+    manifest["runtime_config_sha256"] = hashlib.sha256(
+        json.dumps(runtime_config, sort_keys=True, separators=(",", ":")).encode()
+    ).hexdigest()
+    _write_json(args.trial_dir / "manifest.json", manifest)
     entries = [item for item in manifest.get("entries") or () if isinstance(item, Mapping)]
     completed = 0
     failed = 0
@@ -881,10 +901,8 @@ def _finalize(args: argparse.Namespace) -> None:
         "frozen_evidence_sha256": _sha256(args.evidence),
         "trial_manifest_sha256": _sha256(args.trial_dir / "manifest.json"),
         "approved_runtime": {
-            "route": "signed_in_local_codex_cli_archive_only",
-            "model": "gpt-5.6-sol",
-            "sandbox": "read-only",
-            "session": "ephemeral",
+            **dict(manifest.get("runtime_config") or {}),
+            "config_sha256": manifest.get("runtime_config_sha256"),
             "external_provider_added": False,
             "paid_api_key_added": False,
         },
