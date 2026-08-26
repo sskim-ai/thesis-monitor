@@ -1,0 +1,48 @@
+{
+  "code_correctness": "PASS",
+  "gates": {
+    "012450_diagnostic_alternative_contamination": 0,
+    "consensus_membership_semantics": "PASS",
+    "current_user_visible_message_diff": 0,
+    "custom_gpt_price_history_default": "1200_600_300_SYNCED",
+    "knowledge_price_policy_regression": 0,
+    "previous_stable_baseline_count": 7,
+    "previous_stable_evaluated_count": 7,
+    "previous_stable_regression": "PASS",
+    "previous_stable_regression_count": 0,
+    "raw_numeric_changed_by_display_formatter": 0,
+    "sk_hynix_family_level_price_structure": "PASS",
+    "sk_hynix_structural_resistance_regression": "PASS",
+    "stale_internal_ohlcv_default_reference": 0,
+    "technical_zone_display_formatting": "PASS",
+    "tsla_false_stabilization": 0,
+    "tsla_true_conflict_preserved": "PASS",
+    "tsm_w3_dependency_conflict": "PASS",
+    "unjustified_alternative_in_consensus": 0,
+    "unstable_fib_family_user_visible_eligible": 0,
+    "unstable_fib_source_in_confluence": 0,
+    "valid_abstention_forced_to_selection": 0
+  },
+  "next_action": "BOUNDED_PRICE_STRUCTURE_V3_FAMILY_SELECTIVE_ENABLEMENT",
+  "open_material_p1": [],
+  "open_p0": [],
+  "p2_backlog": [
+    "full_elliott_count_may_remain_ambiguous",
+    "display_label_wording_polish",
+    "short_listing_history_remains_partial"
+  ],
+  "price_structure_v3_preenablement": "INTEGRATED_READY_NOT_ARMED",
+  "production_enablement_ready": true,
+  "validation": {
+    "focused_tests": "44_passed",
+    "full_pytest": "1692_passed",
+    "ruff": "pass",
+    "git_diff_check": "pass",
+    "investment_knowledge_parity": "pass",
+    "chart_knowledge_consistency": "pass",
+    "public_action_version": "0.4.5",
+    "operation_ids": "20/20_unique",
+    "implementation_github_actions_run": 32952892086,
+    "implementation_github_actions": "passed_test_and_lint"
+  }
+}

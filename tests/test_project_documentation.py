@@ -92,18 +92,19 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     assert state["repository"] == "sskim-ai/thesis-monitor"
     assert state["branch"] == "main"
     assert state["experimental_branch"] == (
-        "codex/price-structure-v3-family-consensus-stability"
+        "codex/price-structure-v3-preenablement-micro-repair"
     )
     assert state["current_phase"] == (
-        "price_structure_v3_family_consensus_integrated_ready_not_armed"
+        "price_structure_v3_preenablement_integrated_ready_not_armed"
     )
     assert state["last_completed_phase"] == (
-        "price_structure_v3_family_consensus_stability_bounded_repair"
+        "price_structure_v3_preenablement_micro_repair"
     )
     assert state["next_default_phase"] == (
         "bounded_price_structure_v3_family_selective_enablement"
     )
-    implementation_commit = "631e82f202b6f081866ef83c8b67b2138a8b51d8"
+    implementation_commit = "84f8f549bc8fa0338309a84b23b2738f2e357646"
+    prior_price_structure_commit = "631e82f202b6f081866ef83c8b67b2138a8b51d8"
     prior_fibonacci_commit = "0dfef76bba606f018893d6e68e7beaf410aa7438"
     assert state["deployed_code_commit"] == implementation_commit
     assert state["main_code_commit"] == implementation_commit
@@ -265,6 +266,9 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     assert state["contracts"]["fib_family_consensus"] == (
         "fib-family-consensus-v1"
     )
+    assert state["contracts"]["family_consensus_membership_audit"] == (
+        "family-consensus-membership-audit-v1"
+    )
     assert state["contracts"]["price_structure_v3_ambiguity_set"] == (
         "price-structure-v3-ambiguity-set-v1"
     )
@@ -357,7 +361,7 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     assert price_structure_v3["instruction_commit"] == (
         "b0f81c8e16f588e314f93eb6097370e85f285241"
     )
-    assert price_structure_v3["implementation_commit"] == implementation_commit
+    assert price_structure_v3["implementation_commit"] == prior_price_structure_commit
     assert price_structure_v3["implementation_github_actions_run"] == 32945710995
     assert price_structure_v3["implementation_github_actions_status"] == (
         "passed_test_and_lint"
@@ -412,6 +416,37 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     assert price_structure_v3["open_material_p1"] == []
     assert price_structure_v3["current_user_visible_message_diff"] == 0
     assert price_structure_v3["production_assist"] is False
+    preenablement = state["price_structure_v3_preenablement_micro_repair"]
+    assert preenablement["instruction_commit"] == (
+        "38b5fbca8a7264e3b73ef78c121b6ed6758c3ad8"
+    )
+    assert preenablement["implementation_commit"] == implementation_commit
+    assert preenablement["membership_contract"] == (
+        "family-consensus-membership-audit-v1"
+    )
+    assert preenablement["consensus_membership_semantics"] == "PASS"
+    assert preenablement["unjustified_alternative_in_consensus"] == 0
+    assert preenablement["previous_stable_baseline_count"] == 7
+    assert preenablement["previous_stable_evaluated_count"] == 7
+    assert preenablement["previous_stable_regression_count"] == 0
+    assert preenablement["diagnostic_alternative_control_012450"] == {
+        "contamination": 0,
+        "family_level_before": "FAIL",
+        "family_level_after": "PASS",
+    }
+    assert preenablement["true_conflict_controls"] == {
+        "TSLA": "PASS",
+        "TSM_W3_DEPENDENCY": "PASS",
+    }
+    assert preenablement["knowledge"]["price_history_default"] == "1200/600/300"
+    assert preenablement["technical_zone_display_formatting"] == "PASS"
+    assert preenablement["raw_numeric_changed_by_display_formatter"] == 0
+    assert preenablement["shadow_replay"] == {"kr": "7/7", "us_foreign": "13/13"}
+    assert preenablement["production_enablement_ready"] == "YES"
+    assert preenablement["open_p0"] == []
+    assert preenablement["open_material_p1"] == []
+    assert preenablement["current_user_visible_message_diff"] == 0
+    assert preenablement["production_assist"] is False
     advancement = state["phase_advancement_rule_v1"]
     assert advancement["p0_open"] == []
     assert advancement["p1_open"] == []

@@ -3,19 +3,20 @@
 Repository: `sskim-ai/thesis-monitor`
 
 Latest authoritative price-structure work follows exact instruction commit
-`b0f81c8e16f588e314f93eb6097370e85f285241` and implementation commit
-`631e82f202b6f081866ef83c8b67b2138a8b51d8`. Read the family-consensus artifact index/readiness
-JSON, the five family-contract architecture documents, and the detailed SK hynix family audit
-first. The supplied reference engine is available only under `docs/reference/user-wave-engine/` as
-`REFERENCE_ONLY / NOT_PRODUCTION_RUNTIME`; method comparison is `REFERENCE_MATCH`.
+`38b5fbca8a7264e3b73ef78c121b6ed6758c3ad8` and implementation commit
+`84f8f549bc8fa0338309a84b23b2738f2e357646`. Read the pre-enablement artifact index/readiness,
+membership repair, previous-stable regression, `012450`, difficult-cohort, SK hynix, Knowledge
+sync, technical display, full replay, and safety reports first.
 
-`PRICE_STRUCTURE_V3_FAMILY_CONSENSUS=INTEGRATED_READY_NOT_ARMED`; selective readiness is YES with
-open P0/material P1 `0/0`. Eleven archive-only calls and 74 decisions pass with zero runtime or
-semantic failure. SK's full hypothesis remains material, but six endpoint-dependent Fib families
-are safe and the W1 family is omitted. TSLA and TSM true conflicts remain material. Do not activate
-from this prompt or widen tolerances. The next feature-local action is a separately instructed
-`BOUNDED_PRICE_STRUCTURE_V3_FAMILY_SELECTIVE_ENABLEMENT`. Production SR, Telegram, schedules,
-Public Action, schema, assessments, and Production Assist stay unchanged.
+`FAMILY_CONSENSUS_MEMBERSHIP_AUDIT=PASS`: active membership contains only actually selected IDs
+and explicit `AMBIGUOUS` competitors. Stable controls are evaluated 7/7 with zero artificial
+regression; `012450` is restored from family `FAIL` to `PASS`, while TSLA and TSM conflicts remain
+material and SK hynix raw resistance is unchanged. Knowledge v3.1 uses internal history
+1200/600/300 with Public Action still compact and raw-OHLCV-free. Display formatting changes no raw
+numeric. `PRICE_STRUCTURE_V3_PREENABLEMENT=INTEGRATED_READY_NOT_ARMED`; selective readiness is YES
+with P0/material P1 `0/0`. Do not activate from this prompt. The next feature-local action is a
+separately instructed `BOUNDED_PRICE_STRUCTURE_V3_FAMILY_SELECTIVE_ENABLEMENT`; production SR,
+Telegram, schedules, Public Action, assessments, and Production Assist stay unchanged.
 
 ---
 

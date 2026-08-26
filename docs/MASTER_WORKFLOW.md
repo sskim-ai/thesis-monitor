@@ -1330,3 +1330,27 @@ conflict remain material.
 selective production-enablement readiness is YES with open P0/material P1 `0/0`. This authorizes
 only a separately instructed bounded family-selective enablement. Production imports, SR, packet,
 Telegram, task schedules, Public Action, assessments, and Production Assist remain unchanged.
+
+### 40.3 Pre-Enablement Membership And Display Micro-Repair
+
+Exact instruction commit `38b5fbca8a7264e3b73ef78c121b6ed6758c3ad8` precedes implementation
+commit `84f8f549bc8fa0338309a84b23b2738f2e357646`. The
+`family-consensus-membership-audit-v1` contract limits the active family universe to hypotheses
+actually selected across runs or explicitly returned as `AMBIGUOUS` competitors. An alternative
+attached to `SELECTED` remains diagnostic unless another run promotes it through one of those
+active paths. Wrong-ticker, same-ID, unknown, and wrong-degree alternatives fail validation.
+
+The same immutable protocol runs 11 signed-in archive-only calls: three repeats for the exact
+seven-stock prior-stable cohort, five for the seven difficult controls, and three for valid
+abstentions. Runtime and semantic failures are zero. Stable baseline/evaluation is `7/7`, artificial
+regression is zero, and `012450` moves from family `FAIL` to `PASS` with diagnostic contamination
+zero. TSLA's true conflict, TSM's W3 conflict, and SK hynix's raw structural resistance remain
+unchanged.
+
+Investment Knowledge v3.1 synchronizes internal history defaults to daily 1200, weekly 600, and
+monthly 300 while preserving the compact Public Action/no-raw-OHLCV boundary. Technical-zone
+formatting is display-only: raw `Decimal` values and all calculations stay unchanged, while SK
+hynix's high-price KRW resistance renders as `약 186.9만~191.6만원`. State remains
+`INTEGRATED_READY_NOT_ARMED`; selective enablement readiness is YES with open P0/material P1
+`0/0`. No production import, Telegram, task, Public Action, assessment, or Production Assist state
+changes in this repair.

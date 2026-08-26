@@ -7,6 +7,26 @@ validation, delivery, or Scheduled Tasks.
 
 ## Current Authoritative Handoff — 2026-08-26
 
+### Price Structure v3 Pre-Enablement Micro-Repair
+
+The exact instruction is commit `38b5fbca8a7264e3b73ef78c121b6ed6758c3ad8`; implementation is
+`84f8f549bc8fa0338309a84b23b2738f2e357646`. Read the pre-enablement readiness JSON, membership
+repair, real stable regression, `012450`, difficult-cohort, SK hynix, Knowledge sync, display, full
+replay, and safety reports first.
+
+Active family membership now means actually selected IDs plus explicit `AMBIGUOUS` competitors.
+A `SELECTED` alternative is diagnostic only unless another run promotes it. The exact stable cohort
+`012450, 086280, GOOGL, HUT, IBM, MU, WULF` was evaluated 7/7 with zero artificial regression;
+`012450` is `FAIL -> PASS` with contamination zero. TSLA and TSM conflicts remain protected, and
+SK hynix's raw resistance is unchanged while the shadow display is compact.
+
+Investment Knowledge v3.1 and its runtime/upload mirrors are byte-identical at
+`dc747fff856530e82477851cbd0bb16c5876770de514a9c02cfd5a26ac91c312`, with internal history
+`1200/600/300` and no raw OHLCV in Public Action. State is `INTEGRATED_READY_NOT_ARMED`, production
+enablement readiness YES, P0/material P1 `0/0`. The next feature-local action is separately
+instructed bounded family-selective enablement. Do not arm this repair, run a task, send Telegram,
+mutate assessments, or enable Production Assist.
+
 ### Price Structure v3 Family Consensus Stability Closure
 
 Start from immutable instruction commit `b0f81c8e16f588e314f93eb6097370e85f285241` and

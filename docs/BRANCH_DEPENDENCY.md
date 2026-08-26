@@ -248,3 +248,13 @@ reference data and is never imported by runtime code. Any later enablement must 
 or price-equivalent endpoint families, filter unstable families before confluence, retain TSLA/TSM
 true conflicts, and preserve current tolerances and deterministic SR. It has no dependency on Open
 Research, KRX telemetry, cash flow, working capital, task execution, or natural delivery proof.
+
+The v3 pre-enablement micro-repair starts from exact instruction commit
+`38b5fbca8a7264e3b73ef78c121b6ed6758c3ad8`, whose parent is operating main
+`f53434e38e374a41436f61fc06864357b783a516`. Implementation commit
+`84f8f549bc8fa0338309a84b23b2738f2e357646` narrows family membership semantics, adds
+display-only technical-zone formatting, synchronizes Investment Knowledge v3.1, and extends only
+the archive/test evidence path. A later bounded enablement must descend from this repair, preserve
+diagnostic-versus-active membership, retain explicit ambiguity and cross-run selected competitors,
+and keep raw numerics unchanged. Production packets, Telegram, tasks, Public Action, assessments,
+and Production Assist remain outside this branch.
