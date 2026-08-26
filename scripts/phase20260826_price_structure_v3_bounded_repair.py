@@ -37,6 +37,8 @@ BACKFILL = REPORTS / "20260826-v3-daily-1200-backfill.json"
 EVIDENCE = REPORTS / "20260826-v3-bounded-repair-evidence.json"
 OBSERVED_AT = "2026-08-26T13:19:36+09:00"
 INSTRUCTION_COMMIT = "82cb04e2880d1ed7b0405e1ddd20c5f333305394"
+IMPLEMENTATION_COMMIT = "bea877d3a6a9977c19832cbde28ed235676929d2"
+IMPLEMENTATION_ACTIONS_RUN = 32935362029
 
 
 def _read(path: Path) -> dict[str, object]:
@@ -653,6 +655,7 @@ failure = 0
 runtime_ms = {evidence['provider']['elapsed_ms']}
 bytes = {BACKFILL.stat().st_size}
 paid_source = 0
+provider_source_commit = f19c54b8299031caf473737e044f0a2b77db5671
 ```
 
 No auth header, token, account identifier, or secret is archived.
@@ -923,6 +926,9 @@ Production Assist state are unchanged. This branch remains shadow-only.
     )
     readiness = {
         "instruction_commit": INSTRUCTION_COMMIT,
+        "implementation_commit": IMPLEMENTATION_COMMIT,
+        "implementation_github_actions_run": IMPLEMENTATION_ACTIONS_RUN,
+        "implementation_github_actions_status": "passed_test_and_lint",
         "bar_completion_temporal_contract": "PASS",
         "partial_bar_used_for_pivot_confirmation": 0,
         "partial_bar_promoted_to_confirmed_endpoint": 0,
@@ -1004,7 +1010,8 @@ NEXT_ACTION = {'BOUNDED_PRICE_STRUCTURE_V3_ENABLEMENT' if readiness_pass else 'B
 Validation baseline: focused `108 passed`, bounded core `23 passed`, full pytest `1673 passed`,
 Ruff and diff check `PASS`. Knowledge and Public Action parity are unchanged. The reference archive
 and selective short-listing history remain P2 and do not block a separately instructed enablement.
-No live activation is performed by this repair.
+Implementation Actions run `{IMPLEMENTATION_ACTIONS_RUN}` is `PASS`. No live activation is
+performed by this repair.
 """,
         )
     )
@@ -1023,6 +1030,18 @@ No live activation is performed by this repair.
             ROOT / "docs/work-instructions/20260826-price-structure-v3-temporal-cycle-feedback-bounded-repair.md",
             BACKFILL,
             EVIDENCE,
+            ROOT / "docs/architecture/OHLCV_BAR_COMPLETION_CONTRACT.md",
+            ROOT / "docs/architecture/OHLCV_1200_BACKFILL_CACHE.md",
+            ROOT / "docs/architecture/WAVE_DEGREE_CURRENT_CYCLE.md",
+            ROOT / "docs/architecture/PRICE_STRUCTURE_V3_AI_FEEDBACK_LOOP.md",
+            ROOT / "docs/architecture/PRICE_STRUCTURE_WAVE_FIB_V3.md",
+            ROOT / "docs/architecture/PRIMARY_MONTHLY_WAVE_HYPOTHESIS.md",
+            ROOT / "docs/architecture/PRICE_STRUCTURE_V3_SHADOW_POLICY.md",
+            ROOT / "docs/MASTER_WORKFLOW.md",
+            ROOT / "docs/PROJECT_HANDOFF.md",
+            ROOT / "docs/NEXT_SESSION_PROMPT.md",
+            ROOT / "docs/BRANCH_DEPENDENCY.md",
+            ROOT / "docs/project-state.json",
         )
     )
     _report(

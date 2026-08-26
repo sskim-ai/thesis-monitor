@@ -1,0 +1,50 @@
+# SK hynix v3 Bounded Repair Validation
+
+```text
+JUNE_MONTHLY_PIVOT_BEFORE = CONFIRMED
+JUNE_MONTHLY_PIVOT_AFTER = PROVISIONAL
+W3_STATUS = PROVISIONAL
+W4_STATUS = PROVISIONAL
+GRAND_CYCLE_CANDIDATES = 8
+CURRENT_CYCLE_CANDIDATES = 8
+CURRENT_CYCLE_COVERAGE = PASS
+AI_SELECTED_DEGREE = PRIMARY_CURRENT_CYCLE
+AI_SELECTED_HYPOTHESIS = v3-monthly-wave:851988f906e688b59a32
+VALIDATOR = PASS
+FIB_REFERENCES = 93
+AI_STABILITY = MATERIAL_VARIATION
+USER_VISIBLE_ELIGIBLE = NO
+```
+
+Selected endpoints:
+
+| Wave | Date | Status |
+| --- | --- | --- |
+| W0 | 2023-01-02 | CONFIRMED |
+| W1 | 2024-07-01 | CONFIRMED |
+| W2 | 2024-09-02 | CONFIRMED |
+| W3 | 2026-06-01 | PROVISIONAL |
+| W4 | 2026-07-01 | PROVISIONAL |
+
+The exact downstream shadow render is:
+
+```text
+📐 가격 구조 v3 (shadow)
+월봉 — 구조
+• 지지: 1652673.408500-1709399.791500 KRW (SUPPORT)
+• 저항: 1869151.705333-1915800.494667 KRW (RESISTANCE)
+• 파동: W4_CANDIDATE_W5_UNCONFIRMED / VALID_PROVISIONAL
+주봉 — 중기
+• 지지: 1700934.207000-1709460.193000 KRW (SUPPORT)
+• 저항: 1869163.922750-1915788.277250 KRW (RESISTANCE)
+일봉 — 단기
+• 지지: 1700934.207000-1709460.193000 KRW (SUPPORT)
+• 저항: 1869151.705333-1915800.494667 KRW (RESISTANCE)
+종합
+• 가장 가까운 교차구간: 1561922.900000-1590427.100000 KRW (SUPPORT)
+• 가장 중요한 구조구간: 1869156.592300-1915795.607700 KRW (RESISTANCE)
+• provisional/projection은 확인 후보이며 목표가가 아닙니다.
+```
+
+The June/July endpoints remain provisional in both the candidate and the render. Fibonacci values
+are backend Decimal outputs bound to the selected hypothesis; AI supplied no technical price.

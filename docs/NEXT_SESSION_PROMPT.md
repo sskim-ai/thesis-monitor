@@ -3,19 +3,18 @@
 Repository: `sskim-ai/thesis-monitor`
 
 Latest authoritative price-structure work follows exact instruction commit
-`5bcf2a1a73a10c73db12c37e93a51652983599d5` and implementation commit
-`63b3ce219f996ea23b0a2a254d842bbb579adef2`. Read all seven v3 architecture documents and
-`docs/reports/20260826-price-structure-v3-artifact-index.md` plus readiness JSON first. The 20-stock
-archive replay and 17 signed-in ID-only AI calls pass deterministic, provenance, confluence,
-look-ahead, schema, and stability checks. Production output diff is zero.
+`82cb04e2880d1ed7b0405e1ddd20c5f333305394` and implementation commit
+`bea877d3a6a9977c19832cbde28ed235676929d2`. Read the bounded-repair artifact index/readiness JSON
+and the bar-completion, backfill-cache, degree, and feedback-loop architecture documents first.
+Daily 1200 passes for 14 long-listed subjects and six shorter histories are safe partial. SK's
+2023-01 current-cycle candidate is visible; its June/July endpoints remain provisional.
 
-Keep `PRICE_STRUCTURE_WAVE_FIB_V3=SHADOW` and do not arm production. Two material P1s remain:
-the local provider interface caps daily history at 1000 instead of the canonical 1200, and SK
-hynix's diagnostic W0-W2 materially conflict with the quoted user reference while the reference
-source archive is unavailable. Perform only a bounded history-interface repair and source-backed
-method review. Do not shrink the canonical budget, hard-code SK endpoints, widen tolerances, or
-enable favorable tickers. Production SR, Telegram, tasks, Public Action, schema, assessments, and
-Production Assist remain unchanged.
+`PRICE_STRUCTURE_WAVE_FIB_V3=INTEGRATED_READY_NOT_ARMED`; selective readiness is YES with open
+P0/material P1 `0/0`. Seven stable subjects may be considered only in a separately instructed
+bounded enablement; six abstentions and seven material-variation subjects remain shadow-only.
+Do not activate from this prompt, do not broaden eligibility, and do not expose unstable SK Fib.
+Production SR, Telegram, schedules, Public Action, schema, assessments, and Production Assist stay
+unchanged. The unavailable user reference engine remains P2.
 
 ---
 

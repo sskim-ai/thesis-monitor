@@ -5,25 +5,27 @@ with [MASTER_WORKFLOW.md](MASTER_WORKFLOW.md), [project-state.json](project-stat
 [NEXT_SESSION_PROMPT.md](NEXT_SESSION_PROMPT.md) before changing runtime policy, Knowledge,
 validation, delivery, or Scheduled Tasks.
 
-## Current Authoritative Handoff — 2026-08-25
+## Current Authoritative Handoff — 2026-08-26
 
-### Price Structure Wave Fibonacci v3 Shadow
+### Price Structure Wave Fibonacci v3 Bounded Repair
 
-Start with exact instruction commit `5bcf2a1a73a10c73db12c37e93a51652983599d5`, implementation
-commit `63b3ce219f996ea23b0a2a254d842bbb579adef2`,
-`docs/architecture/PRICE_STRUCTURE_WAVE_FIB_V3.md`, and the v3 artifact index/readiness reports.
-The new common KR/US core is archive/test-only: monthly primary-wave candidates own wave endpoints,
-weekly confirms them, each timeframe owns an independent SR map, and Fibonacci references preserve
-their true source timeframe/degree before cross-timeframe synthesis. Actual 5/3 signed-in trials
-pass with 14 stable selections, six valid abstentions, and zero semantic failures.
+Start with exact instruction commit `82cb04e2880d1ed7b0405e1ddd20c5f333305394`, implementation
+commit `bea877d3a6a9977c19832cbde28ed235676929d2`, the four bounded-repair architecture documents,
+and `docs/reports/20260826-v3-bounded-repair-artifact-index.md`. Calendar-aware completion keeps
+SK hynix's June/July monthly endpoints provisional at the 2026-08-26 observation cutoff. Official
+free provider continuation gives 1200 completed daily bars for 14 long-listed subjects; six shorter
+listing histories remain safe partial.
 
-Do not enable v3. The local OHLCV interface caps requests at 1000, so canonical daily 1200 remains
-partial for all 20 subjects. SK hynix is `MATERIAL_METHOD_CONFLICT`: v3's diagnostic W0-W2 dates
-differ materially from the quoted reference, and the referenced source archive was unavailable.
-Open P0 is zero; these two feature-local items are open material P1. Current production SR,
-Telegram, tasks, Public Action 0.4.5, schema 4, assessments, and Production Assist are unchanged.
-The next task is bounded provider-history and SK-method review; natural monitoring, KRX, and Open
-Research remain independent tracks.
+The 2023-01 SK W0 is independently visible in `PRIMARY_CURRENT_CYCLE`; 2015/2016 candidates remain
+`GRAND_CYCLE`. Fourteen signed-in archive-only calls have zero runtime/semantic rejection and zero
+selected-but-not-fed outcomes. Seven subjects are stable, six safely abstain, and seven material
+variations, including SK, remain shadow-only. The unavailable user reference engine is P2.
+
+State is `INTEGRATED_READY_NOT_ARMED`, selective production readiness is `YES`, and open P0/material
+P1 is `0/0`. Do not activate v3 from this handoff. The next feature-local task is a separately
+instructed bounded enablement limited to stable eligible subjects with immediate fallback for all
+others. Production SR, Telegram, schedules, Public Action 0.4.5, schema 4, assessments, and
+Production Assist are unchanged.
 
 ### 2026-08-26 KR Rehearsal And US Exchange Breadth
 

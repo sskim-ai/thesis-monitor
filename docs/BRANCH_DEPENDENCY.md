@@ -227,3 +227,13 @@ The branch is promotable as shadow evidence but is not a production-enablement a
 1200 coverage and SK reference-method review remain feature-local material P1. It changes no
 Open Research, KRX telemetry, cash flow, working capital, Free Analyst canary, task, schema,
 Telegram, DB, assessment, or Production Assist state.
+
+The v3 temporal/cycle/feedback bounded repair starts from exact instruction commit
+`82cb04e2880d1ed7b0405e1ddd20c5f333305394`, whose parent is prior v3 final main
+`d78940be0aab43227a1eb76bc0d9caa6f56c0d00`. Implementation commit
+`bea877d3a6a9977c19832cbde28ed235676929d2` extends only the shadow v3 service, canonical history
+cache contract, archive evidence generator, architecture, and tests. It does not add a production
+import or change user-visible routing. A later bounded enablement must descend from this repair,
+admit only stable eligible subjects, omit material variation/abstention, and preserve deterministic
+SR fallback. The unavailable user reference remains a non-blocking P2 and is not an ancestry
+dependency.

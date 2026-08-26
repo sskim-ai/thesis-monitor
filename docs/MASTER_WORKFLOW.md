@@ -1278,3 +1278,25 @@ reference source archive itself was not supplied. Therefore `SK_HYNIX_REFERENCE`
 and the SK method conflict. Keep production SR, packets, Telegram, tasks, schema, assessment state,
 and Production Assist unchanged. The next action is a bounded feature-local repair, not live
 enablement.
+
+### 40.1 Temporal, History, Degree, And Feedback Bounded Repair
+
+Exact bounded-repair instruction commit `82cb04e2880d1ed7b0405e1ddd20c5f333305394` precedes
+implementation commit `bea877d3a6a9977c19832cbde28ed235676929d2`. The repair adds
+exchange-calendar `COMPLETE/PARTIAL` bar state, provider-native daily pagination with a canonical
+cache identity, separate grand/current/intermediate candidate sets, and strict variable-AI
+selection feedback into deterministic Fib, SR, confluence, and shadow rendering.
+
+SK hynix's August monthly bar is partial at the frozen observation time, so the June high and July
+low are provisional. The current-cycle set independently surfaces the 2023-01 W0 candidate; older
+2015/2016 candidates remain grand-cycle context. Fourteen signed-in archive-only calls have zero
+runtime/semantic rejection and zero selected-but-not-fed results. Seven subjects are stable, six
+safely abstain, and seven material-variation subjects remain shadow-only and user-visible
+ineligible.
+
+Provider-native continuation gives 1200 completed daily bars for 14 long-listed subjects; six
+short-listing histories are safe partial. Dedicated weekly/monthly coverage remains selective and
+is never fabricated. `PRICE_STRUCTURE_WAVE_FIB_V3=INTEGRATED_READY_NOT_ARMED` and selective
+`PRODUCTION_ENABLEMENT_READY=YES`, with open P0/material P1 at `0/0`. This permits only a separately
+instructed bounded enablement of stable eligible subjects. Current production SR, packet,
+Telegram, tasks, Public Action, assessment state, and Production Assist remain unchanged.
