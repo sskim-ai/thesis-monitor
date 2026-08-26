@@ -2017,7 +2017,8 @@ def _fib_sr_confluence(
                 fib_sources
                 and base_sources
                 and all(source.family_stability is not None for source in fib_sources)
-                and _sr_quality_eligible(zone)
+                and any(source.status == "CONFIRMED" for source in base_sources)
+                and _zone_width_pct(zone) <= Decimal("20")
             ):
                 tier = _sr_distance_tier(
                     zone,
