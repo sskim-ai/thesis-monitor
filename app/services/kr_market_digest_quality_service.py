@@ -260,7 +260,7 @@ def _sector_claim(context: NormalizedMarketContext) -> KrDigestClaim | None:
         return None
     return KrDigestClaim(
         role="sector_context",
-        text=f"업종지수 등락 기준 {'; '.join(clauses)}.",
+        text=f"업종지수 등락 기준 {'. '.join(clauses)}.",
         priority=KrEvidencePriority.P3_LOCAL_STOCK_CROSS_SECTION,
         source_refs=tuple(dict.fromkeys(refs)),
     )
@@ -320,8 +320,20 @@ def build_kr_market_digest_plan(
         )
     )
     if opposite_index_directions:
-        kospi_direction = "상승" if float(kospi.return_pct) > 0 else "하락 또는 보합"
-        kosdaq_direction = "상승" if float(kosdaq.return_pct) > 0 else "하락 또는 보합"
+        kospi_direction = (
+            "상승"
+            if float(kospi.return_pct) > 0
+            else "하락"
+            if float(kospi.return_pct) < 0
+            else "보합"
+        )
+        kosdaq_direction = (
+            "상승"
+            if float(kosdaq.return_pct) > 0
+            else "하락"
+            if float(kosdaq.return_pct) < 0
+            else "보합"
+        )
         breadth_text = (
             "두 시장 모두 상승 종목이 하락 종목보다 많았습니다"
             if both_positive_breadth

@@ -6,10 +6,19 @@ from typing import Iterable
 
 from app.macro.temporal import rehydrate_legacy_market_summary
 from app.models.macro import MacroBriefing
-from app.services.market_cross_section_service import MarketCrossSection
+from app.services.market_cross_section_service import MarketCrossSection, MarketSectorFact
 
 
 USABLE_QUALITY = {"fresh", "revised"}
+
+
+def market_cross_section_sector_fact_id(sector: MarketSectorFact) -> str:
+    scope = sector.market_scope or "UNSCOPED"
+    occurrence = sector.sector_code or sector.sector
+    return (
+        f"market:cross-section:sector:{sector.taxonomy}:"
+        f"{scope}:{occurrence}"
+    )
 
 _SERIES = {
     "SPY": ("indices", "market_index", "S&P500"),
@@ -743,7 +752,7 @@ def build_market_intelligence(
         for sector in cross_section.sectors:
             cross_section_facts.append(
                 {
-                    "fact_id": f"market:cross-section:sector:{sector.taxonomy}:{sector.sector}",
+                    "fact_id": market_cross_section_sector_fact_id(sector),
                     "fact_type": "market_cross_section_sector",
                     "as_of_date": run_date.isoformat(),
                     "source": cross_section.quality.provider,

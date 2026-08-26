@@ -187,7 +187,7 @@ def test_run40_local_first_plan_uses_all_material_local_layers() -> None:
 
     assert plan.richness.status is True
     assert "KOSPI는 상승" in plan.judgment.text
-    assert "KOSDAQ은 하락 또는 보합" in plan.judgment.text
+    assert "KOSDAQ은 하락" in plan.judgment.text
     assert "두 시장 모두 상승 종목이 하락 종목보다 많았습니다" in plan.judgment.text
     assert "외국인은 KOSPI에서 순매수하고 KOSDAQ에서 순매도" in plan.interpretation.text
     assert "기관은 KOSPI에서 순매수하고 KOSDAQ에서 순매도" in plan.interpretation.text

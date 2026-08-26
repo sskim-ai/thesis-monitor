@@ -2,6 +2,10 @@ from app.services.numeric_semantic_registry import (
     build_numeric_registry,
     numeric_registry_coverage,
 )
+from app.services.market_cross_section_service import MarketSectorFact
+from app.services.market_intelligence_service import (
+    market_cross_section_sector_fact_id,
+)
 
 
 def _sector_fact(**overrides: object) -> dict[str, object]:
@@ -98,3 +102,26 @@ def test_unknown_future_sector_count_remains_fail_closed() -> None:
     assert unknown["prose_allowed"] is False
     assert unknown["registry_class"] == "UNSUPPORTED_BLOCKING"
     assert numeric_registry_coverage([registry])["ready"] is False
+
+
+def test_same_sector_name_on_two_markets_has_distinct_fact_identity() -> None:
+    kospi = MarketSectorFact(
+        sector="금속",
+        taxonomy="kiwoom-sector-index-v1",
+        metric_role="actual_sector_breadth",
+        sector_code="011",
+        market_scope="KOSPI",
+    )
+    kosdaq = MarketSectorFact(
+        sector="금속",
+        taxonomy="kiwoom-sector-index-v1",
+        metric_role="actual_sector_breadth",
+        sector_code="122",
+        market_scope="KOSDAQ",
+    )
+
+    assert market_cross_section_sector_fact_id(kospi) != (
+        market_cross_section_sector_fact_id(kosdaq)
+    )
+    assert market_cross_section_sector_fact_id(kospi).endswith("KOSPI:011")
+    assert market_cross_section_sector_fact_id(kosdaq).endswith("KOSDAQ:122")
