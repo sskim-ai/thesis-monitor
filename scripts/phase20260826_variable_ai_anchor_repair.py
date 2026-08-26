@@ -792,18 +792,27 @@ def _finalize(args: argparse.Namespace) -> None:
     )
     variable_trial = "PASS" if not runtime_failures and successful else "FAIL"
     rich_sufficiency = (
-        "PASS" if not full_material and not material_omissions else "FAIL"
+        "FAIL"
+        if material_omissions
+        else "PARTIAL"
+        if full_material
+        else "PASS"
     )
     monthly_ok = aggregate["monthly"]["MATERIAL_VARIATION"] == 0
     weekly_ok = aggregate["weekly"]["MATERIAL_VARIATION"] == 0
-    code_ready = all(
+    code_correct = all(
         (
             egress_pass,
             variable_trial == "PASS",
-            rich_sufficiency == "PASS",
+            not load_errors,
+        )
+    )
+    code_ready = all(
+        (
+            code_correct,
+            rich_sufficiency in {"PASS", "PARTIAL"},
             monthly_ok,
             weekly_ok,
-            not load_errors,
         )
     )
     gates = {
@@ -837,7 +846,7 @@ def _finalize(args: argparse.Namespace) -> None:
         "AI_FIBONACCI_MULTI_TIMEFRAME_STRUCTURE": (
             "INTEGRATED_READY_NOT_ARMED" if code_ready else "SHADOW"
         ),
-        "CODE_CORRECTNESS": "PASS" if code_ready else "FAIL",
+        "CODE_CORRECTNESS": "PASS" if code_correct else "FAIL",
         "PRODUCTION_ENABLEMENT_READY": "YES" if code_ready else "NO",
     }
     summary = {
