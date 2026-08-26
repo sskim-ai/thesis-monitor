@@ -22,6 +22,7 @@ from app.services.price_structure_wave_fibonacci_v3_service import (
     ZoneSource,
     _fib_source,
     _stable_id,
+    build_deterministic_sr_base_layer,
     build_cross_timeframe_confluence,
     calculate_wave_fibonacci,
     merge_zone_sources,
@@ -732,7 +733,8 @@ def _deterministic_sources(
     timeframe: Timeframe,
 ) -> tuple[ZoneSource, ...]:
     sources: dict[str, ZoneSource] = {}
-    for zone in result.timeframe_zone_maps.get(timeframe, ()):
+    source_maps = result.deterministic_sr_maps or result.timeframe_zone_maps
+    for zone in source_maps.get(timeframe, ()):
         for source in zone.sources:
             if source.evidence_type != "FIBONACCI":
                 sources[source.source_id] = source
@@ -771,9 +773,17 @@ def apply_family_consensus_feedback(
             }
         )
 
+    deterministic_maps: dict[Timeframe, tuple] = {}
     maps: dict[Timeframe, tuple] = {}
     for timeframe in TIMEFRAME_ORDER:
-        sources = list(_deterministic_sources(result, timeframe))
+        deterministic_sources = _deterministic_sources(result, timeframe)
+        deterministic_maps[timeframe] = merge_zone_sources(
+            deterministic_sources,
+            ticker=result.ticker,
+            timeframe=timeframe,
+            current_price=result.current_price,
+        )
+        sources = list(deterministic_sources)
         sources.extend(
             _fib_source(reference)
             for reference in evaluation.eligible_fibonacci
@@ -805,6 +815,16 @@ def apply_family_consensus_feedback(
     else:
         primary_status = "NONE"
         selected_id = None
+    sr_base_layer = build_deterministic_sr_base_layer(
+        ticker=result.ticker,
+        currency=result.currency,
+        as_of=result.as_of,
+        current_price=result.current_price,
+        coverage=result.coverage,
+        deterministic_maps=deterministic_maps,
+        combined_maps=maps,
+        primary_hypothesis_status=primary_status,
+    )
     render = render_shadow_v3(
         result_maps=maps,
         hypotheses=selected_hypotheses,
@@ -812,6 +832,7 @@ def apply_family_consensus_feedback(
         cross=cross,
         currency=result.currency,
         current_price=result.current_price,
+        sr_base_layer=sr_base_layer,
     )
     if len(selected_hypotheses) > 1 and evaluation.eligible_fibonacci:
         render += (
@@ -835,5 +856,7 @@ def apply_family_consensus_feedback(
             "cross_timeframe_confluence": cross,
             "shadow_render": render,
             "family_consensus_audit": audit,
+            "deterministic_sr_maps": deterministic_maps,
+            "sr_base_layer": sr_base_layer,
         }
     )

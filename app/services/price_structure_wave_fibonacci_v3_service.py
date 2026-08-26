@@ -31,6 +31,8 @@ WAVE_DEGREE_CONTRACT = "wave-degree-current-cycle-v1"
 AI_FEEDBACK_CONTRACT = "price-structure-v3-ai-feedback-loop-v1"
 FIB_FAMILY_DEPENDENCY_CONTRACT = "fib-family-endpoint-dependency-v1"
 FAMILY_CONSENSUS_CONTRACT = "fib-family-consensus-v1"
+SR_BASE_CONTRACT = "deterministic-sr-base-layer-v1"
+SR_PROXIMITY_CONTRACT = "sr-proximity-relevance-gate-v1"
 
 TIMEFRAME_ORDER: tuple[Timeframe, ...] = ("monthly", "weekly", "daily")
 HISTORY_REQUESTS: dict[Timeframe, int] = {
@@ -146,6 +148,8 @@ class ZoneSource(FrozenModel):
     family_stability: Literal["EXACT_INVARIANT", "PRICE_EQUIVALENT"] | None = None
     consensus_set_id: str | None = None
     equivalence_class_id: str | None = None
+    interaction_date: str | None = None
+    source_role: Literal["SUPPORT", "RESISTANCE"] | None = None
 
 
 class TechnicalZone(FrozenModel):
@@ -170,6 +174,98 @@ class TechnicalZone(FrozenModel):
         "CONFLUENCE_PRICE_EQUIVALENT",
         "CONFLUENCE_MATERIAL_VARIATION",
     ] | None = None
+
+
+SRRequestedTimeframe = Literal["monthly", "weekly", "daily", "cross_timeframe", "summary"]
+SRSideClassification = Literal[
+    "AVAILABLE_LOCAL",
+    "AVAILABLE_HIGHER_TF_FALLBACK",
+    "NO_CONFIRMED_HISTORICAL_LEVEL",
+    "INSUFFICIENT_HISTORY",
+]
+SRDistanceTier = Literal["NEAR", "RELEVANT", "LONG_HORIZON", "OUT_OF_ACTIVE_RANGE"]
+SRActiveRelevance = Literal[
+    "ACTIVE_NEAR",
+    "ACTIVE_STRUCTURAL",
+    "LONG_HORIZON_HISTORICAL",
+    "RETIRED_OR_LOW_RELEVANCE",
+]
+
+
+class SelectedSRZone(FrozenModel):
+    contract: str = SR_BASE_CONTRACT
+    zone_id: str
+    ticker: str
+    currency: str
+    requested_timeframe: SRRequestedTimeframe
+    source_timeframe: Timeframe
+    source_timeframes: tuple[Timeframe, ...]
+    source_families: tuple[str, ...]
+    source_refs: tuple[str, ...]
+    raw_low: Decimal
+    raw_high: Decimal
+    display: str
+    current_role: ZoneRole
+    distance_pct: Decimal
+    structural_score: int
+    evidence_family_score: Decimal
+    confirmation_quality: Decimal
+    reaction_count: int
+    last_meaningful_interaction: str | None
+    proximity_tier: SRDistanceTier
+    active_relevance: SRActiveRelevance
+    as_of: str
+    fallback_reason: str | None = None
+
+
+class SRSideSelection(FrozenModel):
+    classification: SRSideClassification
+    zone: SelectedSRZone | None = None
+    reason: str | None = None
+
+
+class TimeframeSRSelection(FrozenModel):
+    timeframe: Timeframe
+    current_zone: SelectedSRZone | None = None
+    nearest_support: SRSideSelection
+    nearest_resistance: SRSideSelection
+    major_support: SRSideSelection
+    major_resistance: SRSideSelection
+    additional_supports: tuple[SelectedSRZone, ...] = ()
+    additional_resistances: tuple[SelectedSRZone, ...] = ()
+
+
+class SRFinalSummary(FrozenModel):
+    nearest_support: SRSideSelection
+    nearest_resistance: SRSideSelection
+    major_structural_support: SRSideSelection
+    major_structural_resistance: SRSideSelection
+    nearest_cross_timeframe_zone: SelectedSRZone | None = None
+    nearest_cross_timeframe_reason: str | None = None
+    major_cross_timeframe_zone: SelectedSRZone | None = None
+    fib_sr_confluence: SelectedSRZone | None = None
+    fib_sr_confluence_state: Literal[
+        "DIRECT_SR_CONFLUENCE",
+        "NEAR_SR_CONFLUENCE",
+        "FIB_REFERENCE_ONLY",
+        "NO_MEANINGFUL_SR_OVERLAP",
+    ] = "NO_MEANINGFUL_SR_OVERLAP"
+    no_wave_reason: str | None = None
+    no_resistance_reason: str | None = None
+
+
+class DeterministicSRBaseLayer(FrozenModel):
+    contract: str = SR_BASE_CONTRACT
+    proximity_contract: str = SR_PROXIMITY_CONTRACT
+    ticker: str
+    currency: str
+    as_of: str
+    timeframes: dict[Timeframe, TimeframeSRSelection]
+    summary: SRFinalSummary
+    unexpected_empty_support: int = 0
+    unexpected_empty_resistance: int = 0
+    fabricated_fill: int = 0
+    fallback_timeframe_relabel: int = 0
 
 
 class WaveEndpoint(FrozenModel):
@@ -290,6 +386,10 @@ class PriceStructureWaveFibV3Result(FrozenModel):
     degree_candidate_counts: dict[WaveDegree, int] = Field(default_factory=dict)
     feedback_audit: WaveFeedbackAudit | None = None
     family_consensus_audit: dict[str, object] | None = None
+    deterministic_sr_maps: dict[Timeframe, tuple[TechnicalZone, ...]] = Field(
+        default_factory=dict
+    )
+    sr_base_layer: DeterministicSRBaseLayer | None = None
     user_visible: bool = False
     business_thesis_mutation: bool = False
     official_assessment_mutation: bool = False
@@ -640,6 +740,8 @@ def _zone_source_for_pivot(pivot: PivotPoint, target: Timeframe) -> ZoneSource:
         confluence_target_timeframe=target,
         price=pivot.price,
         status=pivot.status,
+        interaction_date=pivot.bar_date,
+        source_role="SUPPORT" if pivot.kind == "LOW" else "RESISTANCE",
     )
 
 
@@ -739,6 +841,14 @@ def _bollinger_sources(
             confluence_target_timeframe=timeframe,
             price=_rounded(price),
             status="CONFIRMED",
+            interaction_date=bars[-1].date,
+            source_role=(
+                "SUPPORT"
+                if name == "LOWER_20_2"
+                else "RESISTANCE"
+                if name == "UPPER_20_2"
+                else None
+            ),
         )
         for name, price in points.items()
         if price > 0
@@ -774,6 +884,7 @@ def _balance_box_source(
         confluence_target_timeframe=timeframe,
         price=_rounded(center),
         status="CONFIRMED",
+        interaction_date=recent[-1].date,
     )
 
 
@@ -1393,6 +1504,7 @@ def merge_zone_sources(
     ticker: str,
     timeframe: Timeframe,
     current_price: Decimal,
+    limit: int | None = 12,
 ) -> tuple[TechnicalZone, ...]:
     ordered = sorted(sources, key=lambda item: (item.price, item.source_id))
     groups: list[list[ZoneSource]] = []
@@ -1428,6 +1540,17 @@ def merge_zone_sources(
             confluence_stability = "CONFLUENCE_PRICE_EQUIVALENT"
         elif "EXACT_INVARIANT" in fib_stabilities:
             confluence_stability = "CONFLUENCE_EXACT_INVARIANT"
+        current_role = _role(low, high, current_price)
+        source_roles = {source.source_role for source in group if source.source_role is not None}
+        historical_role = next(iter(source_roles)) if len(source_roles) == 1 else None
+        reclaim_status: Literal["NOT_TESTED", "RECLAIMED", "LOST", "INSIDE"] = "NOT_TESTED"
+        if current_role == "CURRENT_ZONE":
+            reclaim_status = "INSIDE"
+        elif historical_role == "RESISTANCE" and current_role == "SUPPORT":
+            reclaim_status = "RECLAIMED"
+        elif historical_role == "SUPPORT" and current_role == "RESISTANCE":
+            reclaim_status = "LOST"
+        interactions = [source.interaction_date for source in group if source.interaction_date]
         zones.append(
             TechnicalZone(
                 zone_id=_stable_id(
@@ -1438,7 +1561,7 @@ def merge_zone_sources(
                 low=low,
                 high=high,
                 center=center,
-                current_role=_role(low, high, current_price),
+                current_role=current_role,
                 structural_importance=max(
                     TIMEFRAME_IMPORTANCE[source.source_timeframe] for source in group
                 )
@@ -1448,29 +1571,32 @@ def merge_zone_sources(
                 evidence_family_score=_source_score(group),
                 confirmation_quality=_rounded(confirmation),
                 reaction_count=sum(source.evidence_type == "PIVOT" for source in group),
-                last_meaningful_interaction=None,
+                last_meaningful_interaction=max(interactions) if interactions else None,
+                historical_role=historical_role,
+                reclaim_status=reclaim_status,
                 sources=tuple(group),
                 confluence_stability=confluence_stability,
             )
         )
-    return rank_zones(zones)
+    return rank_zones(zones, limit=limit)
 
 
-def rank_zones(zones: Sequence[TechnicalZone], limit: int = 12) -> tuple[TechnicalZone, ...]:
-    return tuple(
-        sorted(
-            zones,
-            key=lambda zone: (
-                zone.structural_importance,
-                zone.evidence_family_score,
-                zone.confirmation_quality,
-                zone.reaction_count,
-                -zone.proximity_pct,
-                zone.center,
-            ),
-            reverse=True,
-        )[:limit]
+def rank_zones(
+    zones: Sequence[TechnicalZone], limit: int | None = 12
+) -> tuple[TechnicalZone, ...]:
+    ranked = sorted(
+        zones,
+        key=lambda zone: (
+            zone.structural_importance,
+            zone.evidence_family_score,
+            zone.confirmation_quality,
+            zone.reaction_count,
+            -zone.proximity_pct,
+            zone.center,
+        ),
+        reverse=True,
     )
+    return tuple(ranked if limit is None else ranked[:limit])
 
 
 def build_timeframe_zone_map(
@@ -1507,22 +1633,638 @@ def build_cross_timeframe_confluence(
     *,
     ticker: str,
     current_price: Decimal,
+    candidate_limit: int | None = 8,
 ) -> tuple[TechnicalZone, ...]:
     sources: list[ZoneSource] = []
     for timeframe in TIMEFRAME_ORDER:
-        for zone in maps.get(timeframe, ())[:8]:
+        for zone in maps.get(timeframe, ())[:candidate_limit]:
             sources.extend(zone.sources)
     merged = merge_zone_sources(
         sources,
         ticker=ticker,
         timeframe="daily",
         current_price=current_price,
+        limit=None,
     )
     return tuple(
         zone
         for zone in merged
         if len({source.source_timeframe for source in zone.sources}) >= 2
         and len({_source_key(source) for source in zone.sources}) >= 2
+    )
+
+
+_SR_NEAR_BASE_PCT: dict[Timeframe, Decimal] = {
+    "daily": Decimal("4"),
+    "weekly": Decimal("8"),
+    "monthly": Decimal("12"),
+}
+_SR_NEAR_CAP_PCT: dict[Timeframe, Decimal] = {
+    "daily": Decimal("10"),
+    "weekly": Decimal("16"),
+    "monthly": Decimal("24"),
+}
+
+
+def _zone_width_pct(zone: TechnicalZone) -> Decimal:
+    if zone.center <= 0:
+        return Decimal(0)
+    return _rounded((zone.high - zone.low) / zone.center * Decimal(100))
+
+
+def _sr_quality_eligible(zone: TechnicalZone) -> bool:
+    if zone.low <= 0 or zone.high < zone.low or not zone.sources:
+        return False
+    if all(source.evidence_type == "FIBONACCI" for source in zone.sources):
+        return False
+    if zone.confirmation_quality < Decimal("0.50"):
+        return False
+    if all(source.status != "CONFIRMED" for source in zone.sources):
+        return False
+    return _zone_width_pct(zone) <= Decimal("20")
+
+
+def _adaptive_near_limit(
+    timeframe: Timeframe,
+    zones: Sequence[TechnicalZone],
+) -> Decimal:
+    widths = [float(_zone_width_pct(zone)) for zone in zones if _sr_quality_eligible(zone)]
+    volatility_component = (
+        Decimal(str(statistics.median(widths))) * Decimal(4) if widths else Decimal(0)
+    )
+    return min(
+        _SR_NEAR_CAP_PCT[timeframe],
+        max(_SR_NEAR_BASE_PCT[timeframe], volatility_component),
+    )
+
+
+def _sr_distance_tier(
+    zone: TechnicalZone,
+    *,
+    timeframe: Timeframe,
+    zones: Sequence[TechnicalZone],
+) -> SRDistanceTier:
+    near = _adaptive_near_limit(timeframe, zones)
+    relevant = near * Decimal("2.5")
+    long_horizon = relevant * Decimal(2)
+    if zone.proximity_pct <= near:
+        return "NEAR"
+    if zone.proximity_pct <= relevant:
+        return "RELEVANT"
+    if zone.proximity_pct <= long_horizon:
+        return "LONG_HORIZON"
+    return "OUT_OF_ACTIVE_RANGE"
+
+
+def _active_relevance(tier: SRDistanceTier) -> SRActiveRelevance:
+    return {
+        "NEAR": "ACTIVE_NEAR",
+        "RELEVANT": "ACTIVE_STRUCTURAL",
+        "LONG_HORIZON": "LONG_HORIZON_HISTORICAL",
+        "OUT_OF_ACTIVE_RANGE": "RETIRED_OR_LOW_RELEVANCE",
+    }[tier]  # type: ignore[return-value]
+
+
+def _dominant_source_timeframe(zone: TechnicalZone) -> Timeframe:
+    return max(
+        (source.source_timeframe for source in zone.sources),
+        key=lambda value: TIMEFRAME_IMPORTANCE[value],
+        default=zone.timeframe,
+    )
+
+
+def _selected_sr_zone(
+    zone: TechnicalZone,
+    *,
+    requested_timeframe: SRRequestedTimeframe,
+    source_timeframe: Timeframe,
+    all_source_zones: Sequence[TechnicalZone],
+    currency: str,
+    current_price: Decimal,
+    as_of: str,
+    fallback_reason: str | None = None,
+) -> SelectedSRZone:
+    tier = _sr_distance_tier(
+        zone,
+        timeframe=source_timeframe,
+        zones=all_source_zones,
+    )
+    return SelectedSRZone(
+        zone_id=zone.zone_id,
+        ticker=zone.ticker,
+        currency=currency,
+        requested_timeframe=requested_timeframe,
+        source_timeframe=source_timeframe,
+        source_timeframes=tuple(
+            sorted(
+                {source.source_timeframe for source in zone.sources},
+                key=TIMEFRAME_ORDER.index,
+            )
+        ),
+        source_families=tuple(sorted({source.evidence_family for source in zone.sources})),
+        source_refs=tuple(sorted({source.source_id for source in zone.sources})),
+        raw_low=zone.low,
+        raw_high=zone.high,
+        display=format_technical_price_zone(
+            zone.low,
+            zone.high,
+            currency=currency,
+            current_price=current_price,
+            role=zone.current_role,
+        ),
+        current_role=zone.current_role,
+        distance_pct=zone.proximity_pct,
+        structural_score=zone.structural_importance,
+        evidence_family_score=zone.evidence_family_score,
+        confirmation_quality=zone.confirmation_quality,
+        reaction_count=zone.reaction_count,
+        last_meaningful_interaction=zone.last_meaningful_interaction,
+        proximity_tier=tier,
+        active_relevance=_active_relevance(tier),
+        as_of=as_of,
+        fallback_reason=fallback_reason,
+    )
+
+
+def _rank_major(
+    zones: Sequence[TechnicalZone],
+    *,
+    timeframe: Timeframe,
+) -> TechnicalZone | None:
+    eligible = [zone for zone in zones if _sr_quality_eligible(zone)]
+    if not eligible:
+        return None
+    tiers = {
+        zone.zone_id: _sr_distance_tier(zone, timeframe=timeframe, zones=eligible)
+        for zone in eligible
+    }
+    active = [zone for zone in eligible if tiers[zone.zone_id] in {"NEAR", "RELEVANT"}]
+    candidates = active or eligible
+    active_rank = {"NEAR": 3, "RELEVANT": 2, "LONG_HORIZON": 1, "OUT_OF_ACTIVE_RANGE": 0}
+    return max(
+        candidates,
+        key=lambda zone: (
+            zone.structural_importance,
+            zone.evidence_family_score,
+            zone.confirmation_quality,
+            zone.last_meaningful_interaction or "",
+            min(zone.reaction_count, 5),
+            active_rank[tiers[zone.zone_id]],
+            -zone.proximity_pct,
+        ),
+    )
+
+
+def _missing_side_classification(
+    coverage: LongHistoryCoverage | None,
+) -> tuple[SRSideClassification, str]:
+    if coverage is None:
+        return "NO_CONFIRMED_HISTORICAL_LEVEL", "NO_CONFIRMED_HISTORICAL_LEVEL"
+    minimum = sum(PIVOT_WINDOWS[coverage.timeframe]) + 1
+    if coverage.actual_count < minimum:
+        return "INSUFFICIENT_HISTORY", "INSUFFICIENT_HISTORY"
+    return "NO_CONFIRMED_HISTORICAL_LEVEL", "NO_CONFIRMED_HISTORICAL_LEVEL"
+
+
+def _local_side_zones(
+    maps: Mapping[Timeframe, Sequence[TechnicalZone]],
+    timeframe: Timeframe,
+    role: Literal["SUPPORT", "RESISTANCE"],
+) -> list[TechnicalZone]:
+    return [
+        zone
+        for zone in maps.get(timeframe, ())
+        if zone.current_role == role and _sr_quality_eligible(zone)
+    ]
+
+
+def _side_selection(
+    maps: Mapping[Timeframe, Sequence[TechnicalZone]],
+    coverage: Mapping[Timeframe, LongHistoryCoverage],
+    *,
+    requested: Timeframe,
+    role: Literal["SUPPORT", "RESISTANCE"],
+    major: bool,
+    currency: str,
+    current_price: Decimal,
+    as_of: str,
+) -> SRSideSelection:
+    local = _local_side_zones(maps, requested, role)
+    zone = _rank_major(local, timeframe=requested) if major else min(
+        local, key=lambda item: item.proximity_pct, default=None
+    )
+    if zone is not None:
+        return SRSideSelection(
+            classification="AVAILABLE_LOCAL",
+            zone=_selected_sr_zone(
+                zone,
+                requested_timeframe=requested,
+                source_timeframe=requested,
+                all_source_zones=local,
+                currency=currency,
+                current_price=current_price,
+                as_of=as_of,
+            ),
+        )
+    fallback_order: dict[Timeframe, tuple[Timeframe, ...]] = {
+        "daily": ("weekly", "monthly"),
+        "weekly": ("monthly",),
+        "monthly": (),
+    }
+    fallback_candidates: list[tuple[Timeframe, TechnicalZone, Sequence[TechnicalZone]]] = []
+    for source_timeframe in fallback_order[requested]:
+        source_zones = _local_side_zones(maps, source_timeframe, role)
+        fallback = (
+            _rank_major(source_zones, timeframe=source_timeframe)
+            if major
+            else min(source_zones, key=lambda item: item.proximity_pct, default=None)
+        )
+        if fallback is not None:
+            fallback_candidates.append((source_timeframe, fallback, source_zones))
+    if fallback_candidates:
+        source_timeframe, fallback, source_zones = (
+            max(
+                fallback_candidates,
+                key=lambda item: (
+                    item[1].structural_importance,
+                    -item[1].proximity_pct,
+                ),
+            )
+            if major
+            else min(fallback_candidates, key=lambda item: item[1].proximity_pct)
+        )
+        return SRSideSelection(
+            classification="AVAILABLE_HIGHER_TF_FALLBACK",
+            zone=_selected_sr_zone(
+                fallback,
+                requested_timeframe=requested,
+                source_timeframe=source_timeframe,
+                all_source_zones=source_zones,
+                currency=currency,
+                current_price=current_price,
+                as_of=as_of,
+                fallback_reason=f"NO_LOCAL_{role}_{requested.upper()}",
+            ),
+            reason=f"NO_LOCAL_{role}_{requested.upper()}",
+        )
+    classification, reason = _missing_side_classification(coverage.get(requested))
+    return SRSideSelection(classification=classification, reason=reason)
+
+
+def _summary_side(
+    maps: Mapping[Timeframe, Sequence[TechnicalZone]],
+    *,
+    role: Literal["SUPPORT", "RESISTANCE"],
+    major: bool,
+    currency: str,
+    current_price: Decimal,
+    as_of: str,
+) -> SRSideSelection:
+    candidates = [
+        (timeframe, zone, local)
+        for timeframe in TIMEFRAME_ORDER
+        for local in [_local_side_zones(maps, timeframe, role)]
+        for zone in local
+    ]
+    if not candidates:
+        return SRSideSelection(
+            classification="NO_CONFIRMED_HISTORICAL_LEVEL",
+            reason="NO_CONFIRMED_HISTORICAL_LEVEL",
+        )
+    if major:
+        active_candidates = [
+            item
+            for item in candidates
+            if _sr_distance_tier(item[1], timeframe=item[0], zones=item[2])
+            in {"NEAR", "RELEVANT"}
+        ]
+        if not active_candidates:
+            return SRSideSelection(
+                classification="NO_CONFIRMED_HISTORICAL_LEVEL",
+                reason="NO_ACTIVE_STRUCTURAL_LEVEL",
+            )
+        timeframe, zone, local = max(
+            active_candidates,
+            key=lambda item: (
+                item[1].structural_importance,
+                item[1].evidence_family_score,
+                item[1].confirmation_quality,
+                item[1].last_meaningful_interaction or "",
+                min(item[1].reaction_count, 5),
+                -item[1].proximity_pct,
+            ),
+        )
+    else:
+        timeframe, zone, local = min(candidates, key=lambda item: item[1].proximity_pct)
+    return SRSideSelection(
+        classification="AVAILABLE_LOCAL",
+        zone=_selected_sr_zone(
+            zone,
+            requested_timeframe="summary",
+            source_timeframe=timeframe,
+            all_source_zones=local,
+            currency=currency,
+            current_price=current_price,
+            as_of=as_of,
+        ),
+    )
+
+
+def _active_cross_zone(
+    cross: Sequence[TechnicalZone],
+    maps: Mapping[Timeframe, Sequence[TechnicalZone]],
+) -> list[tuple[TechnicalZone, Timeframe, SRDistanceTier]]:
+    output: list[tuple[TechnicalZone, Timeframe, SRDistanceTier]] = []
+    for zone in cross:
+        if not _sr_quality_eligible(zone):
+            continue
+        timeframe = _dominant_source_timeframe(zone)
+        source_zones = maps.get(timeframe, ())
+        tier = _sr_distance_tier(zone, timeframe=timeframe, zones=source_zones)
+        if tier not in {"NEAR", "RELEVANT"}:
+            continue
+        local = _local_side_zones(
+            maps,
+            timeframe,
+            "SUPPORT" if zone.current_role == "SUPPORT" else "RESISTANCE",
+        )
+        local_nearest = min(local, key=lambda item: item.proximity_pct, default=None)
+        if local_nearest is None:
+            continue
+        allowance = _adaptive_near_limit(timeframe, source_zones)
+        active_limit = max(
+            local_nearest.proximity_pct * Decimal("1.75"),
+            local_nearest.proximity_pct + allowance,
+        )
+        if zone.proximity_pct <= active_limit:
+            output.append((zone, timeframe, tier))
+    return output
+
+
+def _fib_sr_confluence(
+    combined_maps: Mapping[Timeframe, Sequence[TechnicalZone]],
+    *,
+    currency: str,
+    current_price: Decimal,
+    as_of: str,
+) -> tuple[SelectedSRZone | None, str]:
+    candidates: list[tuple[Timeframe, TechnicalZone]] = []
+    for timeframe in TIMEFRAME_ORDER:
+        for zone in combined_maps.get(timeframe, ()):
+            fib_sources = [source for source in zone.sources if source.evidence_type == "FIBONACCI"]
+            base_sources = [source for source in zone.sources if source.evidence_type != "FIBONACCI"]
+            if (
+                fib_sources
+                and base_sources
+                and all(source.family_stability is not None for source in fib_sources)
+                and _sr_quality_eligible(zone)
+            ):
+                tier = _sr_distance_tier(
+                    zone,
+                    timeframe=timeframe,
+                    zones=combined_maps.get(timeframe, ()),
+                )
+                if tier in {"NEAR", "RELEVANT"}:
+                    candidates.append((timeframe, zone))
+    if not candidates:
+        return None, "NO_MEANINGFUL_SR_OVERLAP"
+    timeframe, zone = max(
+        candidates,
+        key=lambda item: (
+            item[1].structural_importance,
+            item[1].evidence_family_score,
+            item[1].confirmation_quality,
+            -item[1].proximity_pct,
+        ),
+    )
+    return (
+        _selected_sr_zone(
+            zone,
+            requested_timeframe="summary",
+            source_timeframe=timeframe,
+            all_source_zones=combined_maps.get(timeframe, ()),
+            currency=currency,
+            current_price=current_price,
+            as_of=as_of,
+        ),
+        "DIRECT_SR_CONFLUENCE",
+    )
+
+
+def build_deterministic_sr_base_layer(
+    *,
+    ticker: str,
+    currency: str,
+    as_of: str,
+    current_price: Decimal,
+    coverage: Mapping[Timeframe, LongHistoryCoverage],
+    deterministic_maps: Mapping[Timeframe, Sequence[TechnicalZone]],
+    combined_maps: Mapping[Timeframe, Sequence[TechnicalZone]],
+    primary_hypothesis_status: HypothesisStatus,
+) -> DeterministicSRBaseLayer:
+    timeframe_selections: dict[Timeframe, TimeframeSRSelection] = {}
+    for timeframe in TIMEFRAME_ORDER:
+        local = [zone for zone in deterministic_maps.get(timeframe, ()) if _sr_quality_eligible(zone)]
+        current = max(
+            (zone for zone in local if zone.current_role == "CURRENT_ZONE"),
+            key=lambda zone: (zone.structural_importance, zone.confirmation_quality),
+            default=None,
+        )
+        supports = sorted(
+            (zone for zone in local if zone.current_role == "SUPPORT"),
+            key=lambda zone: zone.proximity_pct,
+        )
+        resistances = sorted(
+            (zone for zone in local if zone.current_role == "RESISTANCE"),
+            key=lambda zone: zone.proximity_pct,
+        )
+        timeframe_selections[timeframe] = TimeframeSRSelection(
+            timeframe=timeframe,
+            current_zone=(
+                _selected_sr_zone(
+                    current,
+                    requested_timeframe=timeframe,
+                    source_timeframe=timeframe,
+                    all_source_zones=local,
+                    currency=currency,
+                    current_price=current_price,
+                    as_of=as_of,
+                )
+                if current is not None
+                else None
+            ),
+            nearest_support=_side_selection(
+                deterministic_maps,
+                coverage,
+                requested=timeframe,
+                role="SUPPORT",
+                major=False,
+                currency=currency,
+                current_price=current_price,
+                as_of=as_of,
+            ),
+            nearest_resistance=_side_selection(
+                deterministic_maps,
+                coverage,
+                requested=timeframe,
+                role="RESISTANCE",
+                major=False,
+                currency=currency,
+                current_price=current_price,
+                as_of=as_of,
+            ),
+            major_support=_side_selection(
+                deterministic_maps,
+                coverage,
+                requested=timeframe,
+                role="SUPPORT",
+                major=True,
+                currency=currency,
+                current_price=current_price,
+                as_of=as_of,
+            ),
+            major_resistance=_side_selection(
+                deterministic_maps,
+                coverage,
+                requested=timeframe,
+                role="RESISTANCE",
+                major=True,
+                currency=currency,
+                current_price=current_price,
+                as_of=as_of,
+            ),
+            additional_supports=tuple(
+                _selected_sr_zone(
+                    zone,
+                    requested_timeframe=timeframe,
+                    source_timeframe=timeframe,
+                    all_source_zones=local,
+                    currency=currency,
+                    current_price=current_price,
+                    as_of=as_of,
+                )
+                for zone in supports[1:4]
+            ),
+            additional_resistances=tuple(
+                _selected_sr_zone(
+                    zone,
+                    requested_timeframe=timeframe,
+                    source_timeframe=timeframe,
+                    all_source_zones=local,
+                    currency=currency,
+                    current_price=current_price,
+                    as_of=as_of,
+                )
+                for zone in resistances[1:4]
+            ),
+        )
+
+    deterministic_cross = build_cross_timeframe_confluence(
+        deterministic_maps,
+        ticker=ticker,
+        current_price=current_price,
+        candidate_limit=None,
+    )
+    active_cross = _active_cross_zone(
+        deterministic_cross,
+        deterministic_maps,
+    )
+    nearest_cross = min(active_cross, key=lambda item: item[0].proximity_pct, default=None)
+    major_cross = max(
+        active_cross,
+        key=lambda item: (
+            item[0].structural_importance,
+            item[0].evidence_family_score,
+            item[0].confirmation_quality,
+            -item[0].proximity_pct,
+        ),
+        default=None,
+    )
+    fib_zone, fib_state = _fib_sr_confluence(
+        combined_maps,
+        currency=currency,
+        current_price=current_price,
+        as_of=as_of,
+    )
+    nearest_support = _summary_side(
+        deterministic_maps,
+        role="SUPPORT",
+        major=False,
+        currency=currency,
+        current_price=current_price,
+        as_of=as_of,
+    )
+    nearest_resistance = _summary_side(
+        deterministic_maps,
+        role="RESISTANCE",
+        major=False,
+        currency=currency,
+        current_price=current_price,
+        as_of=as_of,
+    )
+    summary = SRFinalSummary(
+        nearest_support=nearest_support,
+        nearest_resistance=nearest_resistance,
+        major_structural_support=_summary_side(
+            deterministic_maps,
+            role="SUPPORT",
+            major=True,
+            currency=currency,
+            current_price=current_price,
+            as_of=as_of,
+        ),
+        major_structural_resistance=_summary_side(
+            deterministic_maps,
+            role="RESISTANCE",
+            major=True,
+            currency=currency,
+            current_price=current_price,
+            as_of=as_of,
+        ),
+        nearest_cross_timeframe_zone=(
+            _selected_sr_zone(
+                nearest_cross[0],
+                requested_timeframe="cross_timeframe",
+                source_timeframe=nearest_cross[1],
+                all_source_zones=deterministic_maps.get(nearest_cross[1], ()),
+                currency=currency,
+                current_price=current_price,
+                as_of=as_of,
+            )
+            if nearest_cross is not None
+            else None
+        ),
+        nearest_cross_timeframe_reason=(
+            None if nearest_cross is not None else "NO_RELEVANT_CROSS_TIMEFRAME_ZONE"
+        ),
+        major_cross_timeframe_zone=(
+            _selected_sr_zone(
+                major_cross[0],
+                requested_timeframe="cross_timeframe",
+                source_timeframe=major_cross[1],
+                all_source_zones=deterministic_maps.get(major_cross[1], ()),
+                currency=currency,
+                current_price=current_price,
+                as_of=as_of,
+            )
+            if major_cross is not None
+            else None
+        ),
+        fib_sr_confluence=fib_zone,
+        fib_sr_confluence_state=fib_state,  # type: ignore[arg-type]
+        no_wave_reason=(
+            "NO_VALID_WAVE" if primary_hypothesis_status == "NONE" else None
+        ),
+        no_resistance_reason=(
+            nearest_resistance.reason if nearest_resistance.zone is None else None
+        ),
+    )
+    return DeterministicSRBaseLayer(
+        ticker=ticker,
+        currency=currency,
+        as_of=as_of,
+        timeframes=timeframe_selections,
+        summary=summary,
     )
 
 
@@ -1623,6 +2365,15 @@ def _render_zone(
     return f"{rendered} ({zone.current_role})"
 
 
+def _render_sr_side(value: SRSideSelection) -> str:
+    if value.zone is None:
+        return value.reason or value.classification
+    source = ""
+    if value.classification == "AVAILABLE_HIGHER_TF_FALLBACK":
+        source = f" ({value.zone.source_timeframe} fallback)"
+    return f"{value.zone.display}{source}"
+
+
 def render_shadow_v3(
     *,
     result_maps: Mapping[Timeframe, Sequence[TechnicalZone]],
@@ -1631,9 +2382,48 @@ def render_shadow_v3(
     cross: Sequence[TechnicalZone],
     currency: str,
     current_price: Decimal | None = None,
+    sr_base_layer: DeterministicSRBaseLayer | None = None,
 ) -> str:
     labels = {"monthly": "월봉 — 구조", "weekly": "주봉 — 중기", "daily": "일봉 — 단기"}
     lines = ["📐 가격 구조 v3 (shadow)"]
+    if sr_base_layer is not None:
+        for timeframe in TIMEFRAME_ORDER:
+            selected = sr_base_layer.timeframes[timeframe]
+            lines.append(labels[timeframe])
+            if selected.current_zone is not None:
+                lines.append(f"• 현재 구간: {selected.current_zone.display}")
+            lines.append(f"• 주요 지지: {_render_sr_side(selected.major_support)}")
+            lines.append(f"• 주요 저항: {_render_sr_side(selected.major_resistance)}")
+            lines.append(f"• 가까운 지지: {_render_sr_side(selected.nearest_support)}")
+            lines.append(f"• 가까운 저항: {_render_sr_side(selected.nearest_resistance)}")
+            if timeframe == "monthly":
+                if hypotheses:
+                    lines.append(f"• 파동: {hypotheses[0].wave_state} / {primary_status}")
+                else:
+                    lines.append("• 파동: 유효한 bullish standard impulse 없음; SR은 유지")
+        summary = sr_base_layer.summary
+        lines.append("종합")
+        lines.append(f"• 가장 가까운 지지: {_render_sr_side(summary.nearest_support)}")
+        lines.append(f"• 가장 가까운 저항: {_render_sr_side(summary.nearest_resistance)}")
+        lines.append(
+            f"• 주요 구조적 지지: {_render_sr_side(summary.major_structural_support)}"
+        )
+        lines.append(
+            f"• 주요 구조적 저항: {_render_sr_side(summary.major_structural_resistance)}"
+        )
+        if summary.nearest_cross_timeframe_zone is not None:
+            lines.append(
+                "• 현재 관련 교차구간: "
+                f"{summary.nearest_cross_timeframe_zone.display}"
+            )
+        if summary.fib_sr_confluence is not None:
+            lines.append(
+                "• Fib/SR 결합: "
+                f"{summary.fib_sr_confluence.display} "
+                f"({summary.fib_sr_confluence_state})"
+            )
+        lines.append("• provisional/projection은 확인 후보이며 목표가가 아닙니다.")
+        return "\n".join(lines)
     for timeframe in TIMEFRAME_ORDER:
         zones = result_maps.get(timeframe, ())
         supports = [zone for zone in zones if zone.current_role == "SUPPORT"]
@@ -1730,8 +2520,17 @@ def build_price_structure_wave_fib_v3(
         if selected is not None
         else ()
     )
+    deterministic_maps: dict[Timeframe, tuple[TechnicalZone, ...]] = {}
     maps: dict[Timeframe, tuple[TechnicalZone, ...]] = {}
     for timeframe in TIMEFRAME_ORDER:
+        deterministic_maps[timeframe] = build_timeframe_zone_map(
+            ticker=ticker,
+            timeframe=timeframe,
+            bars=histories[timeframe],
+            pivot_zones=sr_maps[timeframe],
+            fibonacci=(),
+            current_price=current_price,
+        )
         maps[timeframe] = build_timeframe_zone_map(
             ticker=ticker,
             timeframe=timeframe,
@@ -1745,6 +2544,16 @@ def build_price_structure_wave_fib_v3(
         ticker=ticker,
         current_price=current_price,
     )
+    sr_base_layer = build_deterministic_sr_base_layer(
+        ticker=ticker,
+        currency=currency,
+        as_of=cutoff,
+        current_price=current_price,
+        coverage=coverage,
+        deterministic_maps=deterministic_maps,
+        combined_maps=maps,
+        primary_hypothesis_status=primary_status,
+    )
     render = render_shadow_v3(
         result_maps=maps,
         hypotheses=hypotheses,
@@ -1752,6 +2561,7 @@ def build_price_structure_wave_fib_v3(
         cross=cross,
         currency=currency,
         current_price=current_price,
+        sr_base_layer=sr_base_layer,
     )
     elapsed = _rounded(Decimal(str((time.perf_counter() - started) * 1000)))
     return PriceStructureWaveFibV3Result(
@@ -1773,6 +2583,8 @@ def build_price_structure_wave_fib_v3(
         cross_timeframe_confluence=cross,
         shadow_render=render,
         computation_ms=elapsed,
+        deterministic_sr_maps=deterministic_maps,
+        sr_base_layer=sr_base_layer,
         degree_candidate_counts={
             degree: sum(item.source_degree == degree for item in hypotheses)
             for degree in (
@@ -1832,8 +2644,17 @@ def apply_wave_selection_feedback(
         if selected is not None
         else ()
     )
+    deterministic_maps: dict[Timeframe, tuple[TechnicalZone, ...]] = {}
     maps: dict[Timeframe, tuple[TechnicalZone, ...]] = {}
     for timeframe in TIMEFRAME_ORDER:
+        deterministic_maps[timeframe] = build_timeframe_zone_map(
+            ticker=result.ticker,
+            timeframe=timeframe,
+            bars=histories[timeframe],
+            pivot_zones=result.sr_maps[timeframe],
+            fibonacci=(),
+            current_price=result.current_price,
+        )
         maps[timeframe] = build_timeframe_zone_map(
             ticker=result.ticker,
             timeframe=timeframe,
@@ -1848,6 +2669,16 @@ def apply_wave_selection_feedback(
         current_price=result.current_price,
     )
     selected_status: HypothesisStatus = selected.status if selected is not None else "NONE"
+    sr_base_layer = build_deterministic_sr_base_layer(
+        ticker=result.ticker,
+        currency=result.currency,
+        as_of=result.as_of,
+        current_price=result.current_price,
+        coverage=result.coverage,
+        deterministic_maps=deterministic_maps,
+        combined_maps=maps,
+        primary_hypothesis_status=selected_status,
+    )
     render = render_shadow_v3(
         result_maps=maps,
         hypotheses=(selected,) if selected is not None else (),
@@ -1855,6 +2686,7 @@ def apply_wave_selection_feedback(
         cross=cross,
         currency=result.currency,
         current_price=result.current_price,
+        sr_base_layer=sr_base_layer,
     )
     audit = WaveFeedbackAudit(
         selection=selection,
@@ -1870,6 +2702,8 @@ def apply_wave_selection_feedback(
             "timeframe_zone_maps": maps,
             "cross_timeframe_confluence": cross,
             "shadow_render": render,
+            "deterministic_sr_maps": deterministic_maps,
+            "sr_base_layer": sr_base_layer,
             "feedback_audit": audit,
         }
     )
