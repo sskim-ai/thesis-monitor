@@ -92,6 +92,7 @@ from app.services.financial_amount_period_service import (
 from app.services.market_session import market_scope_for_security
 from app.services.market_intelligence_service import build_market_intelligence
 from app.services.market_context_adapter_service import market_context_adapter
+from app.services.kr_market_digest_quality_service import build_kr_market_digest_plan
 from app.services.night_futures import NIGHT_FUTURES_SERIES
 from app.services.official_security_identity_service import (
     load_official_identity_provenance,
@@ -3548,6 +3549,17 @@ def build_ai_review_packet(
         mode="json",
         exclude={"official_event_sources"},
     )
+    if market == "kr":
+        market_context["kr_market_digest_plan"] = build_kr_market_digest_plan(
+            adapter_context,
+            available_text="\n".join(
+                (
+                    str(market_context.get("regime", {}).get("one_line") or ""),
+                    *(str(item) for item in market_context.get("important_changes", [])),
+                    *(str(item) for item in market_context.get("integrated_view", [])),
+                )
+            ),
+        ).to_dict()
     market_facts_by_id = {
         str(fact["fact_id"]): fact
         for fact in market_context["fact_catalog"]

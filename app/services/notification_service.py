@@ -51,6 +51,9 @@ from app.services.financial_quality_service import (
     sanitize_financial_snapshot_for_prose,
 )
 from app.services.kr_close_fx import render_kr_close_fx, summarize_kr_close_fx
+from app.services.kr_market_digest_context_service import (
+    load_current_kr_digest_context,
+)
 from app.services.night_futures import (
     NIGHT_FUTURES_SERIES,
     is_night_futures_warning,
@@ -2207,7 +2210,22 @@ def queue_daily_digest_notification(
     market_scope: str = "all",
     requeue_sent_before: datetime | None = None,
 ) -> NotificationDelivery | None:
-    digest = build_daily_digest(session, run_date, market_scope=market_scope)
+    current = datetime.now(timezone.utc)
+    market_context = (
+        load_current_kr_digest_context(
+            run_date,
+            as_of=current,
+            cutoff=current,
+        )
+        if market_scope == "kr"
+        else None
+    )
+    digest = build_daily_digest(
+        session,
+        run_date,
+        market_scope=market_scope,
+        market_context=market_context,
+    )
     payload = json.dumps(
         {
             "text": render_daily_digest(digest, include_stock_details=False),

@@ -14,6 +14,10 @@ from app.models.security import SecurityMaster
 from app.models.thesis import InvestmentThesis, MonitorRun, ThesisAssessment
 from app.models.watchlist import WatchlistItem
 from app.services.kr_close_fx import KrCloseFxSummary, summarize_kr_close_fx
+from app.services.kr_market_digest_quality_service import (
+    KrMarketDigestPlan,
+    build_kr_market_digest_plan,
+)
 from app.services.market_session import MarketScope, market_scope_for_security
 from app.services.night_futures import (
     NIGHT_FUTURES_LABELS,
@@ -162,6 +166,7 @@ class DailyDigest:
     schedule: ScheduleSummary
     data_quality: DataQualitySummary
     kr_close_fx: KrCloseFxSummary | None = None
+    kr_market_digest_plan: KrMarketDigestPlan | None = None
     night_futures: NightFuturesSummary = field(default_factory=NightFuturesSummary)
 
 
@@ -1036,6 +1041,7 @@ def build_daily_digest(
     run_date: date,
     detail_limit: int = 5,
     market_scope: MarketScope = "all",
+    market_context: object | None = None,
 ) -> DailyDigest:
     briefing = session.exec(
         select(MacroBriefing)
@@ -1069,18 +1075,33 @@ def build_daily_digest(
         if briefing is not None and market_scope in {"all", "us"}
         else NightFuturesSummary()
     )
+    macro = (
+        _macro_interpretation(
+            briefing,
+            previous_briefing,
+            market_scope=market_scope,
+        )
+        if briefing is not None
+        else _unavailable_macro()
+    )
+    kr_market_digest_plan = (
+        build_kr_market_digest_plan(
+            market_context,
+            available_text="\n".join(
+                (
+                    macro.one_line,
+                    *macro.key_changes,
+                    *macro.integrated_view,
+                )
+            ),
+        )
+        if market_scope == "kr"
+        else None
+    )
     return DailyDigest(
         digest_date=run_date,
         market_scope=market_scope,
-        macro=(
-            _macro_interpretation(
-                briefing,
-                previous_briefing,
-                market_scope=market_scope,
-            )
-            if briefing is not None
-            else _unavailable_macro()
-        ),
+        macro=macro,
         portfolio=portfolio,
         schedule=_schedule(session, run_date, market_scope),
         data_quality=_data_quality(
@@ -1094,5 +1115,6 @@ def build_daily_digest(
         kr_close_fx=(
             summarize_kr_close_fx(kr_close_briefing) if market_scope == "kr" else None
         ),
+        kr_market_digest_plan=kr_market_digest_plan,
         night_futures=night_futures,
     )

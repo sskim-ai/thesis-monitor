@@ -64,6 +64,8 @@ class AdapterSector(BaseModel):
     ] = "CURRENT_DIRECTIONAL"
     basis: Literal["actual_sector_breadth", "sector_price_proxy"]
     source_ref: str
+    market_scope: str | None = None
+    listed_count: int | None = None
 
 
 class AdapterSizeContext(BaseModel):
@@ -137,7 +139,7 @@ class NormalizedMarketContext(BaseModel):
         default_factory=list
     )
     session_context: AdapterSessionContext
-    official_event_sources: list[str]
+    official_event_sources: list[str] = Field(default_factory=list)
     data_gaps: list[str] = Field(default_factory=list)
 
     @model_validator(mode="after")
@@ -636,12 +638,15 @@ class MarketContextAdapter:
                         item.source_ref
                         or f"cross-section:sector:{item.taxonomy}:{item.sector}"
                     ),
+                    market_scope=item.market_scope,
+                    listed_count=item.listed_count,
                 )
                 for item in cross_section.sectors
                 if not (
                     item.market_scope == "KOSPI"
                     and item.sector_code in {"002", "003", "004"}
                 )
+                and (item.listed_count is None or item.listed_count > 0)
             )
         if self.market == "US":
             for fact in _facts(fact_catalog, "market_sector"):
