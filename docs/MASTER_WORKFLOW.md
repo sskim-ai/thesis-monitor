@@ -86,10 +86,10 @@ Registered levels are audit history; current dynamic structure is the decision c
 
 ## 7. Investment Knowledge
 
-Investment Knowledge v3.0 governs business, earnings, valuation, expectations, industry, macro,
+Investment Knowledge v3.1 governs business, earnings, valuation, expectations, industry, macro,
 risk, and monitoring safety.
 
-SHA-256: `559ad45e4dd86cb0aec9bb09b51a5dc816bf323e8c2b4fd050cf28960a5a9d18`
+SHA-256: `dc747fff856530e82477851cbd0bb16c5876770de514a9c02cfd5a26ac91c312`
 
 Canonical, upload, and runtime mirror files must remain byte-identical. Knowledge changes require a
 separate approved work order.

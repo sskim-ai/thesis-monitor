@@ -11,7 +11,7 @@ Maintain two separate canonical Knowledge files and byte-identical Codex mirrors
 
 | Knowledge | Canonical source | Runtime mirror | Version | SHA-256 |
 |---|---|---|---:|---|
-| Investment | `investment-thesis-analysis-monitoring-knowledge-v3.md` | `.agents/skills/thesis-monitor-daily-review/references/investment-thesis-analysis-monitoring-knowledge.md` | 3.0 | `559ad45e4dd86cb0aec9bb09b51a5dc816bf323e8c2b4fd050cf28960a5a9d18` |
+| Investment | `investment-thesis-analysis-monitoring-knowledge-v3.md` | `.agents/skills/thesis-monitor-daily-review/references/investment-thesis-analysis-monitoring-knowledge.md` | 3.1 | `dc747fff856530e82477851cbd0bb16c5876770de514a9c02cfd5a26ac91c312` |
 | Chart | `stock-chart-value-analysis-knowledge-v1.md` | `.agents/skills/thesis-monitor-daily-review/references/stock-chart-value-analysis-knowledge-v1.md` | 1.0 | `beee64559831479168f1347c43d979391126926d73e2473ce837cefbf0ede19b` |
 
 The Custom GPT upload artifact for Investment Knowledge is `docs/custom_gpt_knowledge_ko.md`.
@@ -50,4 +50,3 @@ Runtime manifests are:
 
 Checksum tests must pass before deployment. Investment Knowledge changes require a new Knowledge and
 analysis-policy cohort; Chart Knowledge changes require their own version and runtime checksum update.
-

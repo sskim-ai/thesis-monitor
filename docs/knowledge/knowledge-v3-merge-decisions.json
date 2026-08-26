@@ -83,10 +83,10 @@
     }
   ],
   "v3": {
-    "byte_count": 33624,
+    "byte_count": 33812,
     "line_count": 704,
     "path": "docs/knowledge/investment-thesis-analysis-monitoring-knowledge-v3.md",
-    "sha256": "559ad45e4dd86cb0aec9bb09b51a5dc816bf323e8c2b4fd050cf28960a5a9d18",
-    "version": "3.0"
+    "sha256": "dc747fff856530e82477851cbd0bb16c5876770de514a9c02cfd5a26ac91c312",
+    "version": "3.1"
   }
 }

@@ -7,7 +7,7 @@ import statistics
 import time
 from collections.abc import Mapping, Sequence
 from datetime import date, datetime, timedelta, timezone
-from decimal import Decimal, ROUND_HALF_UP
+from decimal import ROUND_CEILING, ROUND_FLOOR, ROUND_HALF_UP, Decimal
 from enum import StrEnum
 from typing import Literal
 from zoneinfo import ZoneInfo
@@ -1044,6 +1044,14 @@ def validate_wave_hypothesis_selection(
         if selection.competing_hypothesis_ids:
             errors.append("selected_requires_empty_competing_ids")
         selected = hypothesis_map.get(selection.hypothesis_id or "")
+        alternative = hypothesis_map.get(selection.alternative_hypothesis_id or "")
+        if selected is not None and alternative is not None:
+            if alternative.hypothesis_id == selected.hypothesis_id:
+                errors.append("alternative_matches_selected_hypothesis_id")
+            if alternative.ticker != selected.ticker:
+                errors.append("alternative_ticker_mismatch")
+            if alternative.source_degree != selected.source_degree:
+                errors.append("alternative_degree_mismatch")
         if ticker is not None and selection.ticker != ticker:
             errors.append("ticker_mismatch")
         if (
@@ -1528,10 +1536,91 @@ def _primary_status(
     return hypotheses[0].status
 
 
-def _render_zone(zone: TechnicalZone | None, currency: str) -> str:
+def _compact_decimal(value: Decimal, *, grouped: bool = False) -> str:
+    rendered = format(value.normalize(), "f")
+    if "." in rendered:
+        rendered = rendered.rstrip("0").rstrip(".")
+    if not grouped:
+        return rendered
+    integer, dot, fraction = rendered.partition(".")
+    grouped_integer = f"{int(integer):,}"
+    return f"{grouped_integer}{dot}{fraction}" if dot else grouped_integer
+
+
+def _outward_display_bounds(
+    low: Decimal,
+    high: Decimal,
+    *,
+    preferred_quantum: Decimal,
+    current_price: Decimal | None,
+    role: ZoneRole | None,
+) -> tuple[Decimal, Decimal]:
+    quantum = preferred_quantum
+    for _ in range(12):
+        displayed_low = (low / quantum).to_integral_value(rounding=ROUND_FLOOR) * quantum
+        displayed_high = (high / quantum).to_integral_value(rounding=ROUND_CEILING) * quantum
+        if (
+            current_price is None
+            or role is None
+            or _role(displayed_low, displayed_high, current_price) == role
+        ):
+            return displayed_low, displayed_high
+        quantum /= Decimal(10)
+    return low, high
+
+
+def format_technical_price_zone(
+    low: Decimal,
+    high: Decimal,
+    *,
+    currency: str,
+    current_price: Decimal | None = None,
+    role: ZoneRole | None = None,
+) -> str:
+    """Format a technical zone without changing its canonical numeric bounds."""
+    if low > high:
+        raise ValueError("technical zone low must not exceed high")
+    preferred_quantum = Decimal("1000") if currency == "KRW" else Decimal("0.01")
+    displayed_low, displayed_high = _outward_display_bounds(
+        low,
+        high,
+        preferred_quantum=preferred_quantum,
+        current_price=current_price,
+        role=role,
+    )
+    if currency == "KRW":
+        if max(abs(displayed_low), abs(displayed_high)) >= Decimal("10000"):
+            rendered_low = _compact_decimal(displayed_low / Decimal("10000"))
+            rendered_high = _compact_decimal(displayed_high / Decimal("10000"))
+            return f"약 {rendered_low}만~{rendered_high}만원"
+        return (
+            f"약 {_compact_decimal(displayed_low, grouped=True)}"
+            f"~{_compact_decimal(displayed_high, grouped=True)}원"
+        )
+    prefix = {"USD": "$", "TWD": "NT$", "JPY": "¥", "EUR": "€"}.get(currency)
+    rendered_low = _compact_decimal(displayed_low, grouped=True)
+    rendered_high = _compact_decimal(displayed_high, grouped=True)
+    if prefix is not None:
+        return f"약 {prefix}{rendered_low}~{prefix}{rendered_high}"
+    return f"약 {rendered_low}~{rendered_high} {currency}"
+
+
+def _render_zone(
+    zone: TechnicalZone | None,
+    currency: str,
+    *,
+    current_price: Decimal | None,
+) -> str:
     if zone is None:
         return "없음"
-    return f"{zone.low}-{zone.high} {currency} ({zone.current_role})"
+    rendered = format_technical_price_zone(
+        zone.low,
+        zone.high,
+        currency=currency,
+        current_price=current_price,
+        role=zone.current_role,
+    )
+    return f"{rendered} ({zone.current_role})"
 
 
 def render_shadow_v3(
@@ -1541,6 +1630,7 @@ def render_shadow_v3(
     primary_status: HypothesisStatus,
     cross: Sequence[TechnicalZone],
     currency: str,
+    current_price: Decimal | None = None,
 ) -> str:
     labels = {"monthly": "월봉 — 구조", "weekly": "주봉 — 중기", "daily": "일봉 — 단기"}
     lines = ["📐 가격 구조 v3 (shadow)"]
@@ -1551,8 +1641,12 @@ def render_shadow_v3(
         nearest_support = min(supports, key=lambda zone: zone.proximity_pct, default=None)
         nearest_resistance = min(resistances, key=lambda zone: zone.proximity_pct, default=None)
         lines.append(labels[timeframe])
-        lines.append(f"• 지지: {_render_zone(nearest_support, currency)}")
-        lines.append(f"• 저항: {_render_zone(nearest_resistance, currency)}")
+        lines.append(
+            f"• 지지: {_render_zone(nearest_support, currency, current_price=current_price)}"
+        )
+        lines.append(
+            f"• 저항: {_render_zone(nearest_resistance, currency, current_price=current_price)}"
+        )
         if timeframe == "monthly":
             if hypotheses:
                 lines.append(f"• 파동: {hypotheses[0].wave_state} / {primary_status}")
@@ -1561,8 +1655,12 @@ def render_shadow_v3(
     nearest = min(cross, key=lambda zone: zone.proximity_pct, default=None)
     structural = max(cross, key=lambda zone: zone.structural_importance, default=None)
     lines.append("종합")
-    lines.append(f"• 가장 가까운 교차구간: {_render_zone(nearest, currency)}")
-    lines.append(f"• 가장 중요한 구조구간: {_render_zone(structural, currency)}")
+    lines.append(
+        f"• 가장 가까운 교차구간: {_render_zone(nearest, currency, current_price=current_price)}"
+    )
+    lines.append(
+        f"• 가장 중요한 구조구간: {_render_zone(structural, currency, current_price=current_price)}"
+    )
     lines.append("• provisional/projection은 확인 후보이며 목표가가 아닙니다.")
     return "\n".join(lines)
 
@@ -1653,6 +1751,7 @@ def build_price_structure_wave_fib_v3(
         primary_status=primary_status,
         cross=cross,
         currency=currency,
+        current_price=current_price,
     )
     elapsed = _rounded(Decimal(str((time.perf_counter() - started) * 1000)))
     return PriceStructureWaveFibV3Result(
@@ -1755,6 +1854,7 @@ def apply_wave_selection_feedback(
         primary_status=selected_status,
         cross=cross,
         currency=result.currency,
+        current_price=result.current_price,
     )
     audit = WaveFeedbackAudit(
         selection=selection,

@@ -10,7 +10,7 @@ from tempfile import NamedTemporaryFile
 
 
 KNOWLEDGE_NAME = "Investment Thesis Analysis & Monitoring Knowledge Guide"
-KNOWLEDGE_VERSION = "3.0"
+KNOWLEDGE_VERSION = "3.1"
 CANONICAL_PATH = Path(
     "docs/knowledge/investment-thesis-analysis-monitoring-knowledge-v3.md"
 )
@@ -126,7 +126,7 @@ def _arguments() -> argparse.Namespace:
     parser.add_argument("--check", action="store_true")
     parser.add_argument(
         "--mirror-revision",
-        default="knowledge-v3-canonical-activation",
+        default="knowledge-v3.1-price-history-sync",
     )
     return parser.parse_args()
 

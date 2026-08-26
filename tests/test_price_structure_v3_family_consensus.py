@@ -6,6 +6,7 @@ from app.services.price_structure_v3_family_consensus_service import (
     FIB_FAMILY_ENDPOINT_DEPENDENCY_REGISTRY,
     FamilyStability,
     apply_family_consensus_feedback,
+    build_family_consensus_membership_audit,
     build_wave_hypothesis_equivalence_classes,
     equivalence_class_members,
     evaluate_fib_family_consensus,
@@ -21,6 +22,7 @@ from app.services.price_structure_wave_fibonacci_v3_service import (
     WaveSelectionStatus,
     ZoneSource,
     calculate_wave_fibonacci,
+    format_technical_price_zone,
     validate_wave_hypothesis_selection,
 )
 
@@ -453,3 +455,145 @@ def test_stable_selection_remains_stable_and_abstention_is_not_forced() -> None:
     assert abstained.family_consensus_audit["full_hypothesis_stability"] == (
         "VALID_ABSTENTION"
     )
+
+
+def test_selected_alternative_remains_diagnostic_only() -> None:
+    selected = _hypothesis("A")
+    alternative = _hypothesis("B", prices=(60, 260, 120, 600, 180))
+    selections = tuple(_selection(selected, alternative="B") for _ in range(3))
+    audit = build_family_consensus_membership_audit(
+        selections,
+        (selected, alternative),
+        ticker="TEST",
+        cutoff="2026-08-26",
+        adjustment_basis="adjusted_close",
+        classes=build_wave_hypothesis_equivalence_classes((selected, alternative)),
+    )
+    assert audit.consensus_member_ids == ("A",)
+    assert audit.diagnostic_only_ids == ("B",)
+    assert audit.membership_reason == {
+        "A": "ACTUALLY_SELECTED",
+        "B": "DIAGNOSTIC_ALTERNATIVE_ONLY",
+    }
+    assert audit.unjustified_alternative_in_consensus == 0
+
+
+def test_ambiguity_or_cross_run_selection_promotes_real_competitors() -> None:
+    first = _hypothesis("A")
+    second = _hypothesis("B", prices=(60, 260, 120, 600, 180))
+    classes = build_wave_hypothesis_equivalence_classes((first, second))
+    ambiguous = WaveHypothesisSelection(
+        status=WaveSelectionStatus.AMBIGUOUS,
+        competing_hypothesis_ids=("A", "B"),
+        confidence="LOW",
+        reason_categories=("MULTIPLE_VALID",),
+        ticker="TEST",
+        source_degree="PRIMARY_CURRENT_CYCLE",
+        cutoff="2026-08-26",
+        adjustment_basis="adjusted_close",
+    )
+    ambiguity_audit = build_family_consensus_membership_audit(
+        (_selection(first, alternative="B"), ambiguous),
+        (first, second),
+        ticker="TEST",
+        cutoff="2026-08-26",
+        adjustment_basis="adjusted_close",
+        classes=classes,
+    )
+    assert ambiguity_audit.consensus_member_ids == ("A", "B")
+    assert ambiguity_audit.diagnostic_only_ids == ()
+    assert (
+        ambiguity_audit.runs[0].membership_reason["B"]
+        == "PROMOTED_ALTERNATIVE_BY_OTHER_RUN"
+    )
+
+    selection_audit = build_family_consensus_membership_audit(
+        (_selection(first), _selection(second)),
+        (first, second),
+        ticker="TEST",
+        cutoff="2026-08-26",
+        adjustment_basis="adjusted_close",
+        classes=classes,
+    )
+    assert selection_audit.consensus_member_ids == ("A", "B")
+
+
+def test_multiple_diagnostic_alternatives_do_not_expand_consensus() -> None:
+    selected = _hypothesis("A")
+    second = _hypothesis("B", prices=(60, 260, 120, 600, 180))
+    third = _hypothesis("C", prices=(70, 240, 130, 550, 190))
+    hypotheses = (selected, second, third)
+    audit = build_family_consensus_membership_audit(
+        (_selection(selected, alternative="B"), _selection(selected, alternative="C")),
+        hypotheses,
+        ticker="TEST",
+        cutoff="2026-08-26",
+        adjustment_basis="adjusted_close",
+        classes=build_wave_hypothesis_equivalence_classes(hypotheses),
+    )
+    assert audit.consensus_member_ids == ("A",)
+    assert audit.diagnostic_only_ids == ("B", "C")
+
+
+def test_wrong_ticker_alternative_is_rejected_not_diagnostic() -> None:
+    selected = _hypothesis("A")
+    wrong_ticker = _hypothesis("B", ticker="OTHER")
+    selection = _selection(selected, alternative="B")
+    validation = validate_wave_hypothesis_selection(selection, (selected, wrong_ticker))
+    assert "alternative_ticker_mismatch" in validation.errors
+
+    audit = build_family_consensus_membership_audit(
+        (selection,),
+        (selected, wrong_ticker),
+        ticker="TEST",
+        cutoff="2026-08-26",
+        adjustment_basis="adjusted_close",
+        classes=build_wave_hypothesis_equivalence_classes((selected, wrong_ticker)),
+    )
+    assert audit.consensus_member_ids == ("A",)
+    assert audit.diagnostic_only_ids == ()
+    assert "selection_0:alternative_ticker_mismatch" in audit.validation_errors
+
+
+def test_diagnostic_alternative_does_not_suppress_stable_fibonacci() -> None:
+    selected = _hypothesis("A")
+    diagnostic = _hypothesis("B", prices=(60, 260, 120, 600, 180))
+    applied = apply_family_consensus_feedback(
+        _result((selected, diagnostic)),
+        tuple(_selection(selected, alternative="B") for _ in range(3)),
+    )
+    assert applied.family_consensus_audit is not None
+    assert applied.family_consensus_audit["full_hypothesis_stability"] == "STABLE"
+    assert applied.family_consensus_audit["family_level_price_structure"] == "PASS"
+    assert applied.fibonacci
+    membership = applied.family_consensus_audit["membership_audit"]
+    assert membership["consensus_member_ids"] == ["A"]
+    assert membership["diagnostic_only_ids"] == ["B"]
+
+
+def test_technical_zone_formatter_is_display_only_and_role_preserving() -> None:
+    krw_low = Decimal("1869163.404750")
+    krw_high = Decimal("1915788.795250")
+    raw_bounds = (krw_low, krw_high)
+    assert format_technical_price_zone(
+        krw_low,
+        krw_high,
+        currency="KRW",
+        current_price=Decimal("1800000"),
+        role="RESISTANCE",
+    ) == "약 186.9만~191.6만원"
+    assert (krw_low, krw_high) == raw_bounds
+    assert format_technical_price_zone(
+        Decimal("99.991"),
+        Decimal("99.999"),
+        currency="USD",
+        current_price=Decimal("100"),
+        role="SUPPORT",
+    ) == "약 $99.991~$99.999"
+    assert format_technical_price_zone(
+        Decimal("312.345678"),
+        Decimal("318.765432"),
+        currency="USD",
+        current_price=Decimal("300"),
+        role="RESISTANCE",
+    ) == "약 $312.34~$318.77"

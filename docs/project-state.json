@@ -16,8 +16,8 @@
   "official_assessment_source": "deterministic",
   "ai_review_mode": "shadow",
   "natural_ai_assisted_delivery": "partial",
-  "investment_knowledge_version": "3.0",
-  "investment_knowledge_sha256": "559ad45e4dd86cb0aec9bb09b51a5dc816bf323e8c2b4fd050cf28960a5a9d18",
+  "investment_knowledge_version": "3.1",
+  "investment_knowledge_sha256": "dc747fff856530e82477851cbd0bb16c5876770de514a9c02cfd5a26ac91c312",
   "chart_knowledge_version": "1.0",
   "chart_knowledge_sha256": "beee64559831479168f1347c43d979391126926d73e2473ce837cefbf0ede19b",
   "ohlcv_structure_version": "ohlcv-structure-v2",
@@ -26,7 +26,7 @@
   "security_identity_version": "security-identity-v2",
   "financial_quality_version": "financial-quality-taint-v2",
   "knowledge_sha": {
-    "investment_v3": "559ad45e4dd86cb0aec9bb09b51a5dc816bf323e8c2b4fd050cf28960a5a9d18",
+    "investment_v3": "dc747fff856530e82477851cbd0bb16c5876770de514a9c02cfd5a26ac91c312",
     "chart_v1": "beee64559831479168f1347c43d979391126926d73e2473ce837cefbf0ede19b"
   },
   "contracts": {

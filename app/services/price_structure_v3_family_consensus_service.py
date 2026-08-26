@@ -162,6 +162,37 @@ class FibFamilyConsensus(FrozenModel):
     user_role: Literal["PRIMARY_CURRENT_RESISTANCE", "LONG_HORIZON_CONTEXT"] | None = None
 
 
+MembershipReason = Literal[
+    "ACTUALLY_SELECTED",
+    "EXPLICIT_AMBIGUOUS_COMPETITOR",
+    "PROMOTED_ALTERNATIVE_BY_OTHER_RUN",
+    "DIAGNOSTIC_ALTERNATIVE_ONLY",
+]
+
+
+class FamilyConsensusMembershipRun(FrozenModel):
+    run_id: str
+    status: str
+    selected_hypothesis_id: str | None
+    alternative_hypothesis_id: str | None
+    ambiguous_competing_hypothesis_ids: tuple[str, ...]
+    consensus_member_ids: tuple[str, ...]
+    diagnostic_only_ids: tuple[str, ...]
+    membership_reason: dict[str, MembershipReason]
+    validation_errors: tuple[str, ...] = ()
+
+
+class FamilyConsensusMembershipAudit(FrozenModel):
+    contract: str = "family-consensus-membership-audit-v1"
+    ticker: str
+    consensus_member_ids: tuple[str, ...]
+    diagnostic_only_ids: tuple[str, ...]
+    membership_reason: dict[str, MembershipReason]
+    runs: tuple[FamilyConsensusMembershipRun, ...]
+    validation_errors: tuple[str, ...] = ()
+    unjustified_alternative_in_consensus: int = 0
+
+
 class FamilyConsensusEvaluation(FrozenModel):
     contract: str = FAMILY_CONSENSUS_CONTRACT
     ambiguity_contract: str = AMBIGUITY_SET_CONTRACT
@@ -304,12 +335,53 @@ def selection_consensus_universe(
     adjustment_basis: str,
     classes: Sequence[WaveHypothesisEquivalenceClass],
 ) -> tuple[tuple[str, ...], tuple[str, ...]]:
+    audit = build_family_consensus_membership_audit(
+        selections,
+        hypotheses,
+        ticker=ticker,
+        cutoff=cutoff,
+        adjustment_basis=adjustment_basis,
+        classes=classes,
+    )
+    return audit.consensus_member_ids, audit.validation_errors
+
+
+def build_family_consensus_membership_audit(
+    selections: Sequence[WaveHypothesisSelection],
+    hypotheses: Sequence[MonthlyWaveHypothesis],
+    *,
+    ticker: str,
+    cutoff: str,
+    adjustment_basis: str,
+    classes: Sequence[WaveHypothesisEquivalenceClass],
+) -> FamilyConsensusMembershipAudit:
     members = equivalence_class_members(classes)
-    candidate_ids: set[str] = set()
+    hypothesis_map = {item.hypothesis_id: item for item in hypotheses}
     errors: list[str] = []
+    prepared: list[tuple[int, WaveHypothesisSelection, tuple[str, ...]]] = []
     for index, selection in enumerate(selections):
+        alternative_errors: list[str] = []
+        effective = selection
+        if (
+            selection.status == WaveSelectionStatus.SELECTED
+            and selection.alternative_hypothesis_id is not None
+        ):
+            selected = hypothesis_map.get(selection.hypothesis_id or "")
+            alternative = hypothesis_map.get(selection.alternative_hypothesis_id)
+            if alternative is None:
+                alternative_errors.append("unknown_alternative_hypothesis_id")
+            elif selected is not None and alternative.hypothesis_id == selected.hypothesis_id:
+                alternative_errors.append("alternative_matches_selected_hypothesis_id")
+            elif alternative.ticker != ticker:
+                alternative_errors.append("alternative_ticker_mismatch")
+            elif selected is not None and alternative.source_degree != selected.source_degree:
+                alternative_errors.append("alternative_degree_mismatch")
+            if alternative_errors:
+                effective = selection.model_copy(
+                    update={"alternative_hypothesis_id": None}
+                )
         validation = validate_wave_hypothesis_selection(
-            selection,
+            effective,
             hypotheses,
             ticker=ticker,
             cutoff=cutoff,
@@ -317,17 +389,95 @@ def selection_consensus_universe(
             strict_context=False,
             equivalence_class_members=members,
         )
+        run_errors = tuple(alternative_errors) + validation.errors
+        errors.extend(f"selection_{index}:{value}" for value in run_errors)
         if not validation.valid:
-            errors.extend(f"selection_{index}:{value}" for value in validation.errors)
             continue
+        prepared.append((index, effective, run_errors))
+
+    actually_selected = {
+        selection.hypothesis_id
+        for _index, selection, _errors in prepared
+        if selection.status == WaveSelectionStatus.SELECTED
+        and selection.hypothesis_id is not None
+    }
+    explicit_ambiguous = {
+        hypothesis_id
+        for _index, selection, _errors in prepared
+        if selection.status == WaveSelectionStatus.AMBIGUOUS
+        for hypothesis_id in selection.competing_hypothesis_ids
+    }
+    consensus_ids = tuple(sorted(actually_selected | explicit_ambiguous))
+    alternatives = {
+        selection.alternative_hypothesis_id
+        for _index, selection, _errors in prepared
+        if selection.status == WaveSelectionStatus.SELECTED
+        and selection.alternative_hypothesis_id is not None
+    }
+    diagnostic_ids = tuple(sorted(alternatives - set(consensus_ids)))
+    global_reasons: dict[str, MembershipReason] = {
+        hypothesis_id: "ACTUALLY_SELECTED" for hypothesis_id in actually_selected
+    }
+    global_reasons.update(
+        {
+            hypothesis_id: "EXPLICIT_AMBIGUOUS_COMPETITOR"
+            for hypothesis_id in explicit_ambiguous - actually_selected
+        }
+    )
+    global_reasons.update(
+        {
+            hypothesis_id: "DIAGNOSTIC_ALTERNATIVE_ONLY"
+            for hypothesis_id in diagnostic_ids
+        }
+    )
+
+    run_rows: list[FamilyConsensusMembershipRun] = []
+    for index, selection, run_errors in prepared:
+        reasons: dict[str, MembershipReason] = {}
         if selection.status == WaveSelectionStatus.SELECTED:
             if selection.hypothesis_id is not None:
-                candidate_ids.add(selection.hypothesis_id)
+                reasons[selection.hypothesis_id] = "ACTUALLY_SELECTED"
             if selection.alternative_hypothesis_id is not None:
-                candidate_ids.add(selection.alternative_hypothesis_id)
+                reasons[selection.alternative_hypothesis_id] = (
+                    "PROMOTED_ALTERNATIVE_BY_OTHER_RUN"
+                    if selection.alternative_hypothesis_id in consensus_ids
+                    else "DIAGNOSTIC_ALTERNATIVE_ONLY"
+                )
         elif selection.status == WaveSelectionStatus.AMBIGUOUS:
-            candidate_ids.update(selection.competing_hypothesis_ids)
-    return tuple(sorted(candidate_ids)), tuple(errors)
+            reasons.update(
+                {
+                    hypothesis_id: "EXPLICIT_AMBIGUOUS_COMPETITOR"
+                    for hypothesis_id in selection.competing_hypothesis_ids
+                }
+            )
+        run_rows.append(
+            FamilyConsensusMembershipRun(
+                run_id=f"run-{index + 1:02d}",
+                status=selection.status.value,
+                selected_hypothesis_id=selection.hypothesis_id,
+                alternative_hypothesis_id=selection.alternative_hypothesis_id,
+                ambiguous_competing_hypothesis_ids=selection.competing_hypothesis_ids,
+                consensus_member_ids=consensus_ids,
+                diagnostic_only_ids=diagnostic_ids,
+                membership_reason=reasons,
+                validation_errors=run_errors,
+            )
+        )
+    unjustified = sum(
+        hypothesis_id in consensus_ids
+        and hypothesis_id not in actually_selected
+        and hypothesis_id not in explicit_ambiguous
+        for hypothesis_id in alternatives
+    )
+    return FamilyConsensusMembershipAudit(
+        ticker=ticker,
+        consensus_member_ids=consensus_ids,
+        diagnostic_only_ids=diagnostic_ids,
+        membership_reason=global_reasons,
+        runs=tuple(run_rows),
+        validation_errors=tuple(errors),
+        unjustified_alternative_in_consensus=unjustified,
+    )
 
 
 def _family_references(
@@ -594,7 +744,7 @@ def apply_family_consensus_feedback(
     selections: Sequence[WaveHypothesisSelection],
 ) -> PriceStructureWaveFibV3Result:
     classes = build_wave_hypothesis_equivalence_classes(result.primary_monthly_hypotheses)
-    candidate_ids, selection_errors = selection_consensus_universe(
+    membership_audit = build_family_consensus_membership_audit(
         selections,
         result.primary_monthly_hypotheses,
         ticker=result.ticker,
@@ -602,6 +752,8 @@ def apply_family_consensus_feedback(
         adjustment_basis=result.adjustment_basis,
         classes=classes,
     )
+    candidate_ids = membership_audit.consensus_member_ids
+    selection_errors = membership_audit.validation_errors
     evaluation = evaluate_fib_family_consensus(
         result.primary_monthly_hypotheses,
         candidate_ids,
@@ -659,6 +811,7 @@ def apply_family_consensus_feedback(
         primary_status=primary_status,
         cross=cross,
         currency=result.currency,
+        current_price=result.current_price,
     )
     if len(selected_hypotheses) > 1 and evaluation.eligible_fibonacci:
         render += (
@@ -666,6 +819,7 @@ def apply_family_consensus_feedback(
             "동일하거나 기존 가격대 허용범위에서 일치합니다."
         )
     audit = evaluation.model_dump(mode="json")
+    audit["membership_audit"] = membership_audit.model_dump(mode="json")
     audit["selection_validation_errors"] = list(selection_errors)
     audit["unstable_fib_source_in_confluence"] = sum(
         source.evidence_type == "FIBONACCI" and source.family_stability is None

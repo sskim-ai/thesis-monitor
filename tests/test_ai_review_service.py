@@ -1892,7 +1892,7 @@ def test_full_knowledge_manifest_and_industry_routing_are_valid() -> None:
     assert hashlib.sha256(mirror.read_bytes()).hexdigest() == manifest["sha256"]
     assert len(source.read_bytes()) == manifest["byte_count"]
     assert len(source.read_bytes().splitlines()) == manifest["line_count"]
-    assert manifest["version"] == "3.0"
+    assert manifest["version"] == "3.1"
     index = (references / "knowledge-index.md").read_text(encoding="utf-8")
     knowledge = mirror.read_text(encoding="utf-8")
     for heading in (
@@ -1941,7 +1941,7 @@ def test_canonical_knowledge_import_preserves_exact_bytes(tmp_path: Path) -> Non
     assert metrics == validated
     assert manifest["sha256"] == hashlib.sha256(canonical_bytes).hexdigest()
     assert manifest["source_role"] == "knowledge_v3_canonical"
-    assert manifest["knowledge_version"] == "3.0"
+    assert manifest["knowledge_version"] == "3.1"
     assert "/Users/" not in json.dumps(manifest)
 
 
@@ -2031,9 +2031,9 @@ def test_dual_knowledge_policy_identity_starts_v38_stateful_cohort() -> None:
     assert ai_review_service.ANALYSIS_POLICY_VERSION == "daily-review-v3.10"
     assert ai_review_service.OUTPUT_SCHEMA_VERSION == "4"
     manifest = knowledge_manifest()
-    assert manifest["version"] == "3.0"
+    assert manifest["version"] == "3.1"
     assert manifest["sha256"] == (
-        "559ad45e4dd86cb0aec9bb09b51a5dc816bf323e8c2b4fd050cf28960a5a9d18"
+        "dc747fff856530e82477851cbd0bb16c5876770de514a9c02cfd5a26ac91c312"
     )
     chart_manifest = ai_review_service.chart_knowledge_manifest()
     assert chart_manifest["version"] == "1.0"

@@ -1,16 +1,16 @@
 {
-  "byte_count": 33624,
+  "byte_count": 33812,
   "created_from": [
     "current-custom-gpt-knowledge",
     "1-thesis_monitor_analysis_knowledge_v2.md"
   ],
-  "imported_at": "2026-08-13T04:32:38.908548+00:00",
+  "imported_at": "2026-08-26T08:56:34.542131+00:00",
   "knowledge_name": "Investment Thesis Analysis & Monitoring Knowledge Guide",
-  "knowledge_version": "3.0",
+  "knowledge_version": "3.1",
   "line_count": 704,
   "mirror_path": ".agents/skills/thesis-monitor-daily-review/references/investment-thesis-analysis-monitoring-knowledge.md",
-  "mirror_revision": "knowledge-v3-canonical-merge",
-  "sha256": "559ad45e4dd86cb0aec9bb09b51a5dc816bf323e8c2b4fd050cf28960a5a9d18",
+  "mirror_revision": "knowledge-v3.1-price-history-sync",
+  "sha256": "dc747fff856530e82477851cbd0bb16c5876770de514a9c02cfd5a26ac91c312",
   "source": "Knowledge v3 canonical",
   "source_path": "docs/knowledge/investment-thesis-analysis-monitoring-knowledge-v3.md",
   "source_role": "knowledge_v3_canonical",
