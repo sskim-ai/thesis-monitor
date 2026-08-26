@@ -1689,3 +1689,21 @@ State is `INTEGRATED_READY_NOT_ARMED`; P0/material P1 are `0/0`; selective produ
 readiness is YES. Do not enable implicitly. The next feature-local action remains
 `BOUNDED_PRICE_STRUCTURE_V3_SR_AND_FAMILY_SELECTIVE_ENABLEMENT`, with Production Assist OFF and no
 manual task or Telegram operation.
+
+## 2026-08-27 KR Local-First and Numeric Registry Handoff
+
+The exact instruction is `f6ba660048d3fa520e3aeb43d04036c119764292`; integrated code is
+`848eb80f6ce6504a9a855973b591ee0749167514`. Read
+`docs/reports/20260827-kr-bounded-repair-readiness.md`, the before/after digest, evidence ownership,
+378-path inventory, registry-after, AI readiness, fallback parity, safety parity, and artifact index
+before changing this path.
+
+Run 40 immutable replay now uses KR local evidence as the digest primary block and binds all
+1,961 numeric paths: 1,472 prose-allowed, 489 denied, zero unsupported. Supported sector count
+semantics are exact; audit-only limits remain denied. Cross-market sector fact IDs are unique.
+Reconciliation and concentration uncertainty are unchanged and remain suppressed from prose.
+
+Replay gates close at P0/material P1 `0/0`, but natural KR proof is still pending. Do not run a
+manual KR task or Telegram. Wait for the next natural close, inspect it read-only, and keep Track C
+`DO_NOT_START`, Price Structure v3 `INTEGRATED_READY_NOT_ARMED`, and Production Assist OFF. Natural
+US reproof may continue independently.

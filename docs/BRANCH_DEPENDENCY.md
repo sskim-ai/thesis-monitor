@@ -307,3 +307,16 @@ No Price Structure Track C branch exists because Track B has two material P1s. A
 enablement must descend from the eventual bounded KR local-first/numeric-registry closure and may
 begin only after the Track B replay and natural gate return P0/P1 `0/0`. This stop does not erase
 the prior v3 shadow readiness and does not block parallel natural US reproof.
+
+The bounded KR closure starts from immutable instruction commit
+`f6ba660048d3fa520e3aeb43d04036c119764292`, whose parent is operating main
+`95553b931150f4dd61573888e9fa94198eb43041`. Track A
+`3828c2093ede67ab2f61c6fceb13a670b22931db` and Track B
+`d6c766543205ee74f2c4023cd17a0bfd682b4a7f` are integrated by code commit
+`848eb80f6ce6504a9a855973b591ee0749167514`. Any later Track C must descend from this closure and
+must preserve local-first digest ownership, exact sector-count semantics, unique market-scoped
+sector fact identity, unresolved reconciliation suppression, and zero unsupported numeric paths.
+
+Immutable replay is PASS at P0/material P1 `0/0`; the remaining dependency is observation of a
+natural KR close. This observation requirement does not authorize manual production execution and
+does not arm Price Structure v3. Parallel natural US proof remains independent.

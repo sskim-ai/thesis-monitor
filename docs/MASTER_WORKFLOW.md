@@ -1458,3 +1458,26 @@ created and production was not armed. The next bounded task is
 `BOUNDED_KR_LOCAL_FIRST_AND_NUMERIC_REGISTRY_REPAIR`, followed by immutable run-40 replay and a new
 natural KR proof. Natural US reproof continues in parallel. Manual Telegram, scheduled-task,
 pilot, database, archive, and Production Assist mutations remain zero.
+
+### 40.9 Bounded KR Local-First and Numeric Registry Repair
+
+Exact instruction commit `f6ba660048d3fa520e3aeb43d04036c119764292` precedes Track A
+`3828c2093ede67ab2f61c6fceb13a670b22931db`, Track B
+`d6c766543205ee74f2c4023cd17a0bfd682b4a7f`, and integrated implementation
+`848eb80f6ce6504a9a855973b591ee0749167514`. The deterministic KR digest now consumes one shared
+local-first plan: KOSPI/KOSDAQ direction and breadth are the minimum sufficient primary block,
+aggregate investor flow is participant-owned, and size/sector leaders are bounded supplements.
+Prior/global context is explicitly secondary.
+
+The exact registry preserves listed, advance, decline, and unchanged sector counts as prose-safe
+semantics and keeps limit counts audit-only. No wildcard or inferred semantic is admitted. The
+integration also fixes cross-market same-name sector fact collisions by including taxonomy,
+market scope, and sector code in deterministic fact identity.
+
+Immutable run 40 replay changes numeric registration from `1583/1961` with 378 unsupported paths
+to `1961/1961` with zero unsupported paths. Final policy classifies 1,472 paths prose-allowed and
+489 denied; reconciliation remains `UNRESOLVED_BASIS_OR_TAXONOMY`, concentration claims remain
+suppressed, and the AI readiness gate passes with P0/material P1 `0/0`. State is
+`REPLAY_PASS_NATURAL_REPROOF_PENDING`: wait for the next natural KR close without a manual run.
+Track C remains `DO_NOT_START`, Price Structure v3 remains `INTEGRATED_READY_NOT_ARMED`, and
+Production Assist stays OFF.

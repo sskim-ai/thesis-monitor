@@ -1,18 +1,18 @@
 {
   "repository": "sskim-ai/thesis-monitor",
   "branch": "main",
-  "experimental_branch": "codex/20260826-master-market-validation-rollout",
-  "current_commit": "65196d2d2a54483143d23d1c61500f70d0e2325a",
-  "recorded_base_commit": "e76a7d6b5e8ddc110d3228cfd5e55f26dbdb1e1d",
-  "current_phase": "master_market_validation_bounded_kr_repair_required",
-  "last_completed_phase": "us_morning_pipeline_replay_repair_and_kr_afternoon_natural_review",
-  "next_default_phase": "bounded_kr_local_first_and_numeric_registry_repair",
-  "next_candidate": "bounded_kr_local_first_and_numeric_registry_repair",
+  "experimental_branch": "codex/kr-run40-integration-replay",
+  "current_commit": "848eb80f6ce6504a9a855973b591ee0749167514",
+  "recorded_base_commit": "f6ba660048d3fa520e3aeb43d04036c119764292",
+  "current_phase": "kr_bounded_repair_replay_pass_natural_reproof_pending",
+  "last_completed_phase": "bounded_kr_local_first_and_numeric_registry_repair",
+  "next_default_phase": "wait_for_next_natural_kr_close",
+  "next_candidate": "wait_for_next_natural_kr_close",
   "alternative_next_phase": "wait_for_natural_us_morning_reproof_in_parallel",
-  "latest_validation_report": "docs/reports/20260826-master-final-readiness.md",
-  "deployed_code_commit": "65196d2d2a54483143d23d1c61500f70d0e2325a",
-  "main_code_commit": "65196d2d2a54483143d23d1c61500f70d0e2325a",
-  "operating_code_commit": "65196d2d2a54483143d23d1c61500f70d0e2325a",
+  "latest_validation_report": "docs/reports/20260827-kr-bounded-repair-readiness.md",
+  "deployed_code_commit": "848eb80f6ce6504a9a855973b591ee0749167514",
+  "main_code_commit": "848eb80f6ce6504a9a855973b591ee0749167514",
+  "operating_code_commit": "848eb80f6ce6504a9a855973b591ee0749167514",
   "official_assessment_source": "deterministic",
   "ai_review_mode": "shadow",
   "natural_ai_assisted_delivery": "partial",
@@ -2992,11 +2992,11 @@
     "report": "docs/reports/20260826-v3-legacy-detector-readiness.json"
   },
   "master_market_validation_price_structure_rollout": {
-    "status": "bounded_repair_required",
+    "status": "replay_pass_natural_reproof_pending",
     "branch": "codex/20260826-master-market-validation-rollout",
     "original_main": "33f82227245f3757815a231cdaad86b75f8c2b76",
     "instruction_commit": "e76a7d6b5e8ddc110d3228cfd5e55f26dbdb1e1d",
-    "integration_code_commit": "65196d2d2a54483143d23d1c61500f70d0e2325a",
+    "integration_code_commit": "848eb80f6ce6504a9a855973b591ee0749167514",
     "target_sessions": {
       "us": "2026-08-25",
       "kr": "2026-08-26"
@@ -3010,16 +3010,13 @@
       "open_material_p1": []
     },
     "track_b": {
-      "status": "material_p1_found_stop",
-      "branch": "codex/kr-afternoon-natural-review",
-      "report_commit": "f089ebe1bd2f47612b36a3093ed57f35f39bf67f",
+      "status": "replay_pass_natural_reproof_pending",
+      "branch": "codex/kr-run40-integration-replay",
+      "report_commit": "848eb80f6ce6504a9a855973b591ee0749167514",
       "natural_packet": "2026-08-26-kr-run-40-706bc3003536",
       "delivery": "8/8_exactly_once",
       "open_p0": [],
-      "open_material_p1": [
-        "kr_market_digest_local_first_material_information_loss",
-        "kr_ai_packet_sector_breadth_numeric_registry_incomplete"
-      ]
+      "open_material_p1": []
     },
     "track_c": {
       "status": "do_not_start",
@@ -3028,21 +3025,44 @@
     },
     "price_structure_v3": "integrated_ready_not_armed",
     "open_p0": [],
-    "open_material_p1": [
-      "kr_market_digest_local_first_material_information_loss",
-      "kr_ai_packet_sector_breadth_numeric_registry_incomplete"
-    ],
+    "open_material_p1": [],
     "validation": {
-      "focused_tests": "243_PASSED",
-      "full_pytest": "1729_PASSED",
+      "focused_tests": "408_PASSED",
+      "full_pytest": "1738_PASSED",
       "ruff": "PASS",
       "diff_check": "PASS",
       "public_action": "0.4.5",
       "operation_ids": "20/20_UNIQUE"
     },
     "production_assist": false,
-    "next_action": "BOUNDED_KR_LOCAL_FIRST_AND_NUMERIC_REGISTRY_REPAIR",
-    "report": "docs/reports/20260826-master-final-readiness.json"
+    "next_action": "WAIT_FOR_NEXT_NATURAL_KR_CLOSE",
+    "report": "docs/reports/20260827-kr-bounded-repair-readiness.json"
+  },
+  "kr_bounded_local_first_numeric_registry_repair": {
+    "status": "replay_pass_natural_reproof_pending",
+    "instruction_commit": "f6ba660048d3fa520e3aeb43d04036c119764292",
+    "track_a_branch": "codex/kr-local-first-digest-consumption-repair",
+    "track_a_commit": "3828c2093ede67ab2f61c6fceb13a670b22931db",
+    "track_b_branch": "codex/kr-sector-breadth-numeric-registry-repair",
+    "track_b_commit": "d6c766543205ee74f2c4023cd17a0bfd682b4a7f",
+    "integration_branch": "codex/kr-run40-integration-replay",
+    "integration_code_commit": "848eb80f6ce6504a9a855973b591ee0749167514",
+    "natural_packet": "2026-08-26-kr-run-40-706bc3003536",
+    "delivery": "8/8_exactly_once_deterministic_fallback",
+    "numeric_paths": {
+      "total": 1961,
+      "registered": 1961,
+      "unsupported": 0,
+      "prose_allowed": 1472,
+      "denied": 489
+    },
+    "open_p0": [],
+    "open_material_p1": [],
+    "natural_kr_reproof": "PENDING",
+    "track_c": "DO_NOT_START",
+    "price_structure_v3": "INTEGRATED_READY_NOT_ARMED",
+    "production_assist": false,
+    "report": "docs/reports/20260827-kr-bounded-repair-readiness.json"
   },
   "production_assist": false,
   "public_action_version": "0.4.5",

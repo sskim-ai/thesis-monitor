@@ -101,19 +101,15 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
 
     assert state["repository"] == "sskim-ai/thesis-monitor"
     assert state["branch"] == "main"
-    assert state["experimental_branch"] == (
-        "codex/20260826-master-market-validation-rollout"
-    )
+    assert state["experimental_branch"] == "codex/kr-run40-integration-replay"
     assert state["current_phase"] == (
-        "master_market_validation_bounded_kr_repair_required"
+        "kr_bounded_repair_replay_pass_natural_reproof_pending"
     )
     assert state["last_completed_phase"] == (
-        "us_morning_pipeline_replay_repair_and_kr_afternoon_natural_review"
-    )
-    assert state["next_default_phase"] == (
         "bounded_kr_local_first_and_numeric_registry_repair"
     )
-    implementation_commit = "65196d2d2a54483143d23d1c61500f70d0e2325a"
+    assert state["next_default_phase"] == "wait_for_next_natural_kr_close"
+    implementation_commit = "848eb80f6ce6504a9a855973b591ee0749167514"
     detector_implementation_commit = "3685aa991589ca0e7cc560104d4ebf8289e3f91d"
     preenablement_commit = "84f8f549bc8fa0338309a84b23b2738f2e357646"
     prior_price_structure_commit = "631e82f202b6f081866ef83c8b67b2138a8b51d8"
@@ -856,7 +852,7 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
         == "CLOSED_RETROSPECTIVE_AND_OPERATING_CODE_PROMOTED"
     )
     master = state["master_market_validation_price_structure_rollout"]
-    assert master["status"] == "bounded_repair_required"
+    assert master["status"] == "replay_pass_natural_reproof_pending"
     assert master["instruction_commit"] == (
         "e76a7d6b5e8ddc110d3228cfd5e55f26dbdb1e1d"
     )
@@ -864,8 +860,8 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     assert master["track_a"]["status"] == (
         "replay_pass_natural_reproof_pending"
     )
-    assert master["track_b"]["status"] == "material_p1_found_stop"
-    assert len(master["track_b"]["open_material_p1"]) == 2
+    assert master["track_b"]["status"] == "replay_pass_natural_reproof_pending"
+    assert master["track_b"]["open_material_p1"] == []
     assert master["track_c"] == {
         "status": "do_not_start",
         "branch": None,
@@ -873,8 +869,25 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     }
     assert master["price_structure_v3"] == "integrated_ready_not_armed"
     assert master["open_p0"] == []
-    assert len(master["open_material_p1"]) == 2
+    assert master["open_material_p1"] == []
     assert master["production_assist"] is False
+    bounded_repair = state["kr_bounded_local_first_numeric_registry_repair"]
+    assert bounded_repair["status"] == "replay_pass_natural_reproof_pending"
+    assert bounded_repair["instruction_commit"] == (
+        "f6ba660048d3fa520e3aeb43d04036c119764292"
+    )
+    assert bounded_repair["integration_code_commit"] == implementation_commit
+    assert bounded_repair["numeric_paths"] == {
+        "total": 1961,
+        "registered": 1961,
+        "unsupported": 0,
+        "prose_allowed": 1472,
+        "denied": 489,
+    }
+    assert bounded_repair["open_p0"] == []
+    assert bounded_repair["open_material_p1"] == []
+    assert bounded_repair["natural_kr_reproof"] == "PENDING"
+    assert bounded_repair["track_c"] == "DO_NOT_START"
     assert state["current_commit"] == implementation_commit
     assert state["ai_review_mode"] == "shadow"
     assert state["ai_policy_version"] == "daily-review-v3.10"

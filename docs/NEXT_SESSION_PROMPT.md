@@ -2,6 +2,23 @@
 
 Repository: `sskim-ai/thesis-monitor`
 
+Latest authoritative bounded KR repair follows exact instruction commit
+`f6ba660048d3fa520e3aeb43d04036c119764292` and integrated code commit
+`848eb80f6ce6504a9a855973b591ee0749167514`. Read
+`docs/reports/20260827-kr-bounded-repair-readiness.md`, the before/after digest, numeric inventory,
+registry-after, AI readiness, safety parity, and artifact index first.
+
+Immutable run 40 replay is PASS: the KR digest is local-first, all `1961/1961` numeric paths are
+registered, unsupported paths are zero, and P0/material P1 are `0/0`. Natural KR reproof remains
+`PENDING`. Wait for the next natural KR close and inspect it read-only; do not manually run a task
+or Telegram. Track C remains `DO_NOT_START`, Price Structure v3 remains
+`INTEGRATED_READY_NOT_ARMED`, and Production Assist stays OFF. Natural US proof continues in
+parallel.
+
+---
+
+Prior master-gate context follows.
+
 Latest authoritative master work follows exact instruction commit
 `e76a7d6b5e8ddc110d3228cfd5e55f26dbdb1e1d` and integrated code commit
 `65196d2d2a54483143d23d1c61500f70d0e2325a`. Read

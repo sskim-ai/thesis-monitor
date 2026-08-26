@@ -1,0 +1,126 @@
+{
+  "contract": "kr-bounded-repair-readiness-v1",
+  "final_ai_ready": true,
+  "final_duplicate_alias_paths": 0,
+  "gates": {
+    "ai_derived_breadth_numeric": 0,
+    "db_mutation": 0,
+    "kr_local_first_digest": "PASS",
+    "kr_local_first_evidence_ownership": "PASS",
+    "kr_local_first_root_cause": "PASS",
+    "manual_task": 0,
+    "official_assessment_mutation": 0,
+    "price_structure_v3_code_diff": 0,
+    "price_structure_v3_runtime_armed": 0,
+    "sector_breadth_count_semantic_mislabel": 0,
+    "supported_canonical_path_registration_gap": 0,
+    "telegram_send": 0,
+    "unknown_numeric_semantic_registered": 0,
+    "unreconciled_concentration_prose": 0,
+    "us_track_a_code_diff": 0,
+    "wildcard_registry_bypass": 0
+  },
+  "kr_bounded_repair": "REPLAY_PASS_NATURAL_REPROOF_PENDING",
+  "legacy_duplicate_alias_paths": 120,
+  "local_first": {
+    "claims": [
+      {
+        "priority": "P1_KR_LOCAL_MARKET_STRUCTURE",
+        "role": "judgment",
+        "source_refs": [
+          "kiwoom:ka20001:KOSPI:2026-08-26",
+          "kiwoom:ka20001:KOSDAQ:2026-08-26",
+          "cross-section:KIWOOM_REST:breadth:KOSPI",
+          "cross-section:KIWOOM_REST:breadth:KOSDAQ"
+        ],
+        "text": "KOSPI는 상승, KOSDAQ은 하락으로 지수 방향이 달랐지만 두 시장 모두 상승 종목이 하락 종목보다 많았습니다."
+      },
+      {
+        "priority": "P2_KR_LOCAL_MARKET_FLOW",
+        "role": "interpretation",
+        "source_refs": [
+          "kiwoom:ka10051:KOSPI:foreign:2026-08-26",
+          "kiwoom:ka10051:KOSPI:institution:2026-08-26",
+          "kiwoom:ka10051:KOSPI:retail:2026-08-26",
+          "kiwoom:ka10051:KOSDAQ:foreign:2026-08-26",
+          "kiwoom:ka10051:KOSDAQ:institution:2026-08-26",
+          "kiwoom:ka10051:KOSDAQ:retail:2026-08-26"
+        ],
+        "text": "외국인은 KOSPI에서 순매수하고 KOSDAQ에서 순매도했습니다. 기관은 KOSPI에서 순매수하고 KOSDAQ에서 순매도했습니다. 개인은 KOSPI에서 순매도하고 KOSDAQ에서 순매수했습니다."
+      },
+      {
+        "priority": "P1_KR_LOCAL_MARKET_STRUCTURE",
+        "role": "size_context",
+        "source_refs": [
+          "kiwoom:ka20003:KOSPI:002:2026-08-26",
+          "kiwoom:ka20003:KOSPI:003:2026-08-26",
+          "kiwoom:ka20003:KOSPI:004:2026-08-26"
+        ],
+        "text": "KOSPI 규모별 지수에서는 중형주가 대형주·소형주보다 강했습니다."
+      },
+      {
+        "priority": "P3_KR_LOCAL_STOCK_CROSS_SECTION",
+        "role": "sector_context",
+        "source_refs": [
+          "kiwoom:ka20003:KOSPI:025:2026-08-26",
+          "kiwoom:ka20003:KOSPI:019:2026-08-26",
+          "kiwoom:ka20003:KOSDAQ:122:2026-08-26",
+          "kiwoom:ka20003:KOSDAQ:128:2026-08-26"
+        ],
+        "text": "업종지수 등락 기준 KOSPI는 보험 상대 강세, 운송/창고 상대 약세였습니다. KOSDAQ은 금속 상대 강세, 통신 상대 약세였습니다."
+      },
+      {
+        "priority": "P2_KR_LOCAL_MARKET_FLOW",
+        "role": "next_check",
+        "source_refs": [
+          "kiwoom:ka20001:KOSPI:2026-08-26",
+          "kiwoom:ka20001:KOSDAQ:2026-08-26",
+          "cross-section:KIWOOM_REST:breadth:KOSPI",
+          "cross-section:KIWOOM_REST:breadth:KOSDAQ",
+          "kiwoom:ka10051:KOSPI:foreign:2026-08-26",
+          "kiwoom:ka10051:KOSPI:institution:2026-08-26",
+          "kiwoom:ka10051:KOSPI:retail:2026-08-26",
+          "kiwoom:ka10051:KOSDAQ:foreign:2026-08-26",
+          "kiwoom:ka10051:KOSDAQ:institution:2026-08-26",
+          "kiwoom:ka10051:KOSDAQ:retail:2026-08-26"
+        ],
+        "text": "양 시장의 상승 종목 우위가 유지되는지, 외국인·기관의 시장별 수급 방향과 함께 확인합니다."
+      }
+    ],
+    "richness": {
+      "completed_session": true,
+      "contract": "kr-market-digest-quality-v1",
+      "kospi_kosdaq_breadth": true,
+      "kospi_kosdaq_indices": true,
+      "reasons": [],
+      "status": true,
+      "supporting_local_context": [
+        "market_wide_participant_flow",
+        "size_style_context",
+        "sector_context"
+      ]
+    }
+  },
+  "natural_kr_reproof": "PENDING",
+  "numeric": {
+    "entry_count": 1961,
+    "prose_allowed_count": 1472,
+    "prose_denied_count": 489,
+    "ready": true,
+    "registered_count": 1961,
+    "unsupported": []
+  },
+  "numeric_gate": "PASS",
+  "open_material_p1": 0,
+  "open_p0": 0,
+  "other_blocking_gates": [],
+  "packet_id": "2026-08-26-kr-run-40-706bc3003536",
+  "packet_sha256": "d1c06d561b583f75d749d89aa1ebaf0f3ca928e49ef85055e8b3f6aeeb09eb1a",
+  "price_structure_v3": "INTEGRATED_READY_NOT_ARMED",
+  "run40_internal_only": 126,
+  "run40_numeric_total": 1961,
+  "run40_registered_supported": 252,
+  "run40_supported_canonical": 252,
+  "run40_unsupported": 0,
+  "track_c": "DO_NOT_START"
+}
