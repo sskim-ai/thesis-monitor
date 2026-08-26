@@ -1354,3 +1354,25 @@ hynix's high-price KRW resistance renders as `약 186.9만~191.6만원`. State r
 `INTEGRATED_READY_NOT_ARMED`; selective enablement readiness is YES with open P0/material P1
 `0/0`. No production import, Telegram, task, Public Action, assessment, or Production Assist state
 changes in this repair.
+
+### 40.4 Deterministic SR Completeness And Active Relevance
+
+Exact instruction commit `7267ca1d3e518d39986941bfda1d6447560db344` precedes final code
+implementation `176f3e73eb097fac99f4038a8987b610954804cc`. The shadow v3 core now uses
+`deterministic-sr-base-layer-v1` and `sr-proximity-relevance-gate-v1`: monthly, weekly, and daily
+base SR is selected before optional wave/Fib; nearest applies a quality floor then proximity;
+major applies active relevance then structural importance; current-zone and timeframe-fallback
+ownership are explicit.
+
+The immutable 20-subject replay passes KR `7/7` and US/foreign `13/13`. Remote historical
+cross-zones no longer displace local nearest SR for `010120`, `MU`, `TSM`, or no-wave `SNDK`.
+`003690` and `HUT` recover valid daily resistance that had been excluded when optional Fib occupied
+combined-map structural slots. SKHY remains a legitimate short-history monthly insufficiency. SK
+hynix's family-stable Fib/SR resistance remains `about KRW 1.869M-1.916M`, `012450` remains stable,
+and TSLA receives no unstable Fib.
+
+`PRICE_STRUCTURE_V3_SR_COMPLETENESS=INTEGRATED_READY_NOT_ARMED`, code correctness is PASS, and
+selective production-enablement readiness is YES with open P0/material P1 `0/0`. This authorizes
+only `BOUNDED_PRICE_STRUCTURE_V3_SR_AND_FAMILY_SELECTIVE_ENABLEMENT`. Production imports, current
+messages, Telegram, tasks, Public Action, assessment state, price rules, tolerances, and Production
+Assist remain unchanged.

@@ -72,6 +72,12 @@ DOCUMENTS = (
     ROOT / "docs" / "architecture" / "FIB_FAMILY_CONSENSUS_POLICY.md",
     ROOT / "docs" / "architecture" / "PRICE_STRUCTURE_V3_AMBIGUITY_SET.md",
     ROOT / "docs" / "architecture" / "FAMILY_FILTERED_CONFLUENCE.md",
+    ROOT / "docs" / "architecture" / "DETERMINISTIC_SR_BASE_LAYER.md",
+    ROOT / "docs" / "architecture" / "SR_NEAREST_VS_MAJOR.md",
+    ROOT / "docs" / "architecture" / "SR_PROXIMITY_RELEVANCE_GATE.md",
+    ROOT / "docs" / "architecture" / "SR_TIMEFRAME_FALLBACK_PROVENANCE.md",
+    ROOT / "docs" / "architecture" / "FIB_OPTIONAL_CONFLUENCE_POLICY.md",
+    ROOT / "docs" / "architecture" / "CROSS_TIMEFRAME_SR_RELEVANCE.md",
     ROOT / "docs" / "operations" / "AI_ASSISTED_PILOT.md",
     ROOT / "docs" / "operations" / "CASH_FLOW_USER_VISIBLE_KILL_SWITCH.md",
     ROOT / "docs" / "operations" / "WORKING_CAPITAL_USER_VISIBLE_KILL_SWITCH.md",
@@ -92,18 +98,19 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     assert state["repository"] == "sskim-ai/thesis-monitor"
     assert state["branch"] == "main"
     assert state["experimental_branch"] == (
-        "codex/price-structure-v3-preenablement-micro-repair"
+        "codex/price-structure-v3-sr-completeness-proximity-repair"
     )
     assert state["current_phase"] == (
-        "price_structure_v3_preenablement_integrated_ready_not_armed"
+        "price_structure_v3_sr_completeness_integrated_ready_not_armed"
     )
     assert state["last_completed_phase"] == (
-        "price_structure_v3_preenablement_micro_repair"
+        "price_structure_v3_sr_completeness_proximity_repair"
     )
     assert state["next_default_phase"] == (
-        "bounded_price_structure_v3_family_selective_enablement"
+        "bounded_price_structure_v3_sr_and_family_selective_enablement"
     )
-    implementation_commit = "84f8f549bc8fa0338309a84b23b2738f2e357646"
+    implementation_commit = "176f3e73eb097fac99f4038a8987b610954804cc"
+    preenablement_commit = "84f8f549bc8fa0338309a84b23b2738f2e357646"
     prior_price_structure_commit = "631e82f202b6f081866ef83c8b67b2138a8b51d8"
     prior_fibonacci_commit = "0dfef76bba606f018893d6e68e7beaf410aa7438"
     assert state["deployed_code_commit"] == implementation_commit
@@ -121,6 +128,12 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     assert state["contracts"]["numeric_summary_ownership"] == ("numeric-summary-ownership-v1")
     assert state["contracts"]["typed_template_skeleton"] == ("typed-template-skeleton-v1")
     assert state["contracts"]["canonical_supply_flow_tuple"] == ("canonical-supply-flow-tuple-v1")
+    assert state["contracts"]["deterministic_sr_base_layer"] == (
+        "deterministic-sr-base-layer-v1"
+    )
+    assert state["contracts"]["sr_proximity_relevance_gate"] == (
+        "sr-proximity-relevance-gate-v1"
+    )
     assert state["contracts"]["market_context_adapter"] == (
         "market-context-adapter-v1"
     )
@@ -420,7 +433,7 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     assert preenablement["instruction_commit"] == (
         "38b5fbca8a7264e3b73ef78c121b6ed6758c3ad8"
     )
-    assert preenablement["implementation_commit"] == implementation_commit
+    assert preenablement["implementation_commit"] == preenablement_commit
     assert preenablement["membership_contract"] == (
         "family-consensus-membership-audit-v1"
     )
@@ -447,6 +460,34 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     assert preenablement["open_material_p1"] == []
     assert preenablement["current_user_visible_message_diff"] == 0
     assert preenablement["production_assist"] is False
+    sr_completeness = state["price_structure_v3_sr_completeness_proximity_repair"]
+    assert sr_completeness["instruction_commit"] == (
+        "7267ca1d3e518d39986941bfda1d6447560db344"
+    )
+    assert sr_completeness["implementation_commit"] == implementation_commit
+    assert sr_completeness["contracts"] == {
+        "base_layer": "deterministic-sr-base-layer-v1",
+        "proximity_relevance": "sr-proximity-relevance-gate-v1",
+    }
+    assert sr_completeness["shadow_replay"] == {"kr": "7/7", "us_foreign": "13/13"}
+    assert sr_completeness["remote_zone_promoted_as_nearest"] == 0
+    assert sr_completeness["unexpected_empty_support"] == 0
+    assert sr_completeness["unexpected_empty_resistance"] == 0
+    assert sr_completeness["fabricated_sr_fill"] == 0
+    assert sr_completeness["fallback_timeframe_relabel"] == 0
+    assert sr_completeness["daily_resistance_audits"] == {
+        "003690": "REPAIRED",
+        "HUT": "REPAIRED",
+    }
+    assert sr_completeness["regressions"] == {
+        "000660": 0,
+        "012450": 0,
+        "TSLA_unstable_fib": 0,
+    }
+    assert sr_completeness["production_enablement_ready"] == "YES"
+    assert sr_completeness["open_p0"] == []
+    assert sr_completeness["open_material_p1"] == []
+    assert sr_completeness["current_user_visible_message_diff"] == 0
     advancement = state["phase_advancement_rule_v1"]
     assert advancement["p0_open"] == []
     assert advancement["p1_open"] == []

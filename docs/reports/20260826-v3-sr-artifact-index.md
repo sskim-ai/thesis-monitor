@@ -1,0 +1,19 @@
+# Price Structure v3 SR Artifact Index
+
+| Artifact | SHA-256 | Bytes |
+| --- | --- | --- |
+| 20260826-v3-sr-completeness-evidence.json | 71200bbaf8f69389d1e4979588c8f5be5db2bf34dc45977b5c152ce0642c0979 | 836503 |
+| 20260826-v3-sr-base-layer-audit.md | a54b085ca507d0b0116b7ddf6023308e2b4b11d96d0965012ab6bc262fbf2f58 | 521 |
+| 20260826-v3-sr-nearest-major-policy.md | 203f1e58e3380dc5b95c98a3fd3d3cf064d6d015616263045ccc261ea64850f5 | 394 |
+| 20260826-v3-cross-timeframe-proximity-root-cause.md | bbb8f2eb0bd9bf67a44c7847c73c0c1556ac01d1040b42a592f21122225ae50d | 1007 |
+| 20260826-v3-sr-proximity-relevance-validation.md | 3f732e6cac00a338e1c5084b037ab85fc3cc13a0d011144c622c4c2093c0ea27 | 324 |
+| 20260826-v3-missing-local-sr-side-audit.md | 955e16e6009ccbe85269387d40e85c7d5610b5b8a45c6932c8c292f871d20f13 | 836 |
+| 20260826-v3-no-wave-sr-fallback-validation.md | b1e845f367bcd10786d3919c866a28bcd64dfc169322ec7663b6cc2a4508e0e0 | 1091 |
+| 20260826-v3-fib-optional-confluence-audit.md | e1fcb50c902675c203a07f46c921582eb59f3ab3acb52ed0dc4fd06c40a602b0 | 1796 |
+| 20260826-v3-sr-negative-controls.md | 5f1ad9dd5bcb71c2b09551c64c19a6522226e771ff53e2dfa01bff73a31d5d9b | 1619 |
+| 20260826-sk-hynix-sr-regression.md | 229a000d327386f0850ae78a719f53e052f1ab3f30bfc9d0eb759c77eb621123 | 629 |
+| 20260826-v3-sr-full-universe-replay.md | bd054b93377abd7ea32639a63c59ad6617fa7e4d003d3a7c9085ad93adb15740 | 5548 |
+| 20260826-v3-sr-before-after-shadow.md | 5ff4d5ca2cd6c5f85d6498c1ae6179f0c92d5078cb2ccbf881fd3b3f1dd0386a | 2165 |
+| 20260826-v3-sr-safety-parity.md | 48fdd4232b64ab8a2cfc03076debe7c2d514b7409687f1f83decf86bafadb6b8 | 904 |
+| 20260826-v3-sr-readiness.md | 25a14c5ffe7911ee7880b9a00f53a88291ae22a8a84ac152a4a7bc3272a27fab | 2013 |
+| 20260826-v3-sr-readiness.json | e0719e0b4a284d6cff84f568e82c17ddedadddf610843d463b89102b8f3022c9 | 2074 |

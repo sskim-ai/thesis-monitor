@@ -259,3 +259,16 @@ The feature-local next task is a separately instructed bounded multi-timeframe F
 enablement. Keep deterministic SR and current tolerances fixed, expose no unstable timeframe, and
 retain per-timeframe omission. Open Research, natural monitoring, KRX telemetry, cash flow, working
 capital, and Production Assist remain independent.
+
+The latest price-structure closure follows instruction commit
+`7267ca1d3e518d39986941bfda1d6447560db344` and implementation
+`176f3e73eb097fac99f4038a8987b610954804cc`. Read
+`docs/reports/20260826-v3-sr-readiness.json` and its artifact index first. Deterministic SR base,
+nearest/major separation, proximity relevance, typed fallback, no-wave fallback, and optional
+family-stable Fib/SR confluence all pass for the immutable 20-subject replay. P0/material P1 are
+zero and production visible diff is zero.
+
+Do not enable implicitly. The next separately instructed feature-local action is
+`BOUNDED_PRICE_STRUCTURE_V3_SR_AND_FAMILY_SELECTIVE_ENABLEMENT`. It must preserve SR-first ordering,
+remote-zone suppression, exact timeframe provenance, existing tolerances, and unstable-Fib
+exclusion. Natural monitoring and all other parallel tracks remain independent.

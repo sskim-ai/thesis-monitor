@@ -52,3 +52,15 @@ widening, and forced Elliott labels were rejected.
 The module has no production import, route, packet, fallback, Telegram, task, assessment, or DB
 integration. `PRICE_STRUCTURE_WAVE_FIB_V3 = INTEGRATED_READY_NOT_ARMED` only after the complete
 shadow evidence and CI pass; any later user-visible enablement remains a separate decision.
+
+## Deterministic SR Completeness Extension
+
+`deterministic-sr-base-layer-v1` now precedes every optional wave/Fib path. It produces independent
+monthly, weekly, and daily current, nearest, and major selections with typed missing-side and
+higher-timeframe fallback provenance. The base layer consumes only deterministic sources; stable
+Fib is evaluated afterward as optional confluence.
+
+`sr-proximity-relevance-gate-v1` separates structural importance from active relevance. A remote
+historical cross-timeframe zone remains auditable but cannot replace a closer qualified local
+support or resistance. The gate does not alter grouping or Fib-confluence tolerances, and all
+authoritative zone selection remains backend deterministic.

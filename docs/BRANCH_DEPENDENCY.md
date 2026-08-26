@@ -258,3 +258,12 @@ the archive/test evidence path. A later bounded enablement must descend from thi
 diagnostic-versus-active membership, retain explicit ambiguity and cross-run selected competitors,
 and keep raw numerics unchanged. Production packets, Telegram, tasks, Public Action, assessments,
 and Production Assist remain outside this branch.
+
+The v3 SR-completeness/proximity repair starts from exact instruction commit
+`7267ca1d3e518d39986941bfda1d6447560db344`, whose parent is operating main
+`cb5e660a617cc5bdff7cc4fa8d0d44e1fab27317`. Final code implementation
+`176f3e73eb097fac99f4038a8987b610954804cc` extends only the archive/test v3 service, tests, and
+evidence generator. A later enablement must descend from this closure and preserve deterministic
+SR-first ownership, nearest/major separation, active cross-zone relevance, typed fallback
+provenance, and family-stable Fib-only confluence. It has no dependency on natural monitoring,
+Open Research, KRX telemetry, cash flow, working capital, tasks, or Production Assist.

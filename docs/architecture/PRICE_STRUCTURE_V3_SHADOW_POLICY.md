@@ -42,3 +42,15 @@ without review, or waiting for unrelated natural/KRX tracks were rejected.
 
 No manual Telegram, manual task, DB mutation, Pilot mutation, official assessment mutation, or
 Production Assist change is authorized. The next action is a bounded feature-local repair.
+
+## SR Completeness Readiness
+
+The SR-completeness repair remains archive/test-only and keeps production visible output at zero
+diff. Production enablement requires deterministic base maps, nearest/major separation, active
+proximity gating, typed timeframe fallback, no-wave SR continuity, and family-stable Fib-only
+confluence. Remote historical zones are never promoted as nearest merely because they combine
+multiple timeframes.
+
+Passing this shadow gate authorizes only a separately instructed bounded selective enablement of
+deterministic nearest/major SR plus safe family-stable Fib/SR confluence. It does not arm v3, alter
+current price rules, or create technical-to-business thesis mutation.

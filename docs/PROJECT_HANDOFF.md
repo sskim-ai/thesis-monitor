@@ -1593,3 +1593,21 @@ is YES with P0/material P1 at 0/0. Do not treat this as activation. The next fea
 a separately instructed bounded multi-timeframe Fibonacci enablement. Keep existing merge
 tolerances, deterministic SR, backend Fibonacci arithmetic, user-visible routing, task schedules,
 and Production Assist unchanged until then.
+
+## 2026-08-26 Price Structure v3 SR Completeness Handoff
+
+The exact instruction is commit `7267ca1d3e518d39986941bfda1d6447560db344`; final code
+implementation is `176f3e73eb097fac99f4038a8987b610954804cc`. Read the SR readiness JSON,
+base-layer audit, proximity root cause, missing-side audit, negative controls, full replay, and SK
+hynix regression before changing this feature.
+
+Deterministic monthly/weekly/daily SR now precedes wave/Fib. Nearest and major have separate
+rankings, current-zone ownership is explicit, and daily/weekly fallback preserves requested versus
+source timeframe. Remote historical cross-zones are audit-only unless they pass the active
+local-relative relevance gate. `010120`, `MU`, `TSM`, and no-wave `SNDK` pass; `003690` and `HUT`
+recover local daily resistance; SKHY remains legitimate insufficient monthly history.
+
+State is `INTEGRATED_READY_NOT_ARMED`; P0/material P1 are `0/0`; user-visible diff is zero. The next
+feature-local task is `BOUNDED_PRICE_STRUCTURE_V3_SR_AND_FAMILY_SELECTIVE_ENABLEMENT`. Preserve
+current grouping/Fib tolerances, SK hynix stable confluence, TSLA Fib suppression, task schedules,
+Public Action, assessments, and Production Assist until separately instructed.
