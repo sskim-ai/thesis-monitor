@@ -451,6 +451,57 @@ def finalize(trial_dir: Path) -> None:
             )
             for selection in selections[ticker]
         )
+        resistance: dict[str, object] = {}
+        rendered_fib_sources: list[dict[str, object]] = []
+        dependency_map = {
+            item.key: item for item in FIB_FAMILY_ENDPOINT_DEPENDENCY_REGISTRY
+        }
+        zone_groups = {
+            **applied.timeframe_zone_maps,
+            "cross_timeframe": applied.cross_timeframe_confluence,
+        }
+        for timeframe, zones in zone_groups.items():
+            nearest = min(
+                (zone for zone in zones if zone.current_role == "RESISTANCE"),
+                key=lambda zone: zone.proximity_pct,
+                default=None,
+            )
+            resistance[timeframe] = (
+                {
+                    "low": str(nearest.low),
+                    "high": str(nearest.high),
+                    "stability": nearest.confluence_stability
+                    or "DETERMINISTIC_SR_ONLY",
+                    "zone_id": nearest.zone_id,
+                }
+                if nearest is not None
+                else {"stability": "NOT_AVAILABLE"}
+            )
+            for zone in zones:
+                if zone.current_role != "RESISTANCE":
+                    continue
+                for source in zone.sources:
+                    if source.evidence_type != "FIBONACCI":
+                        continue
+                    dependency = dependency_map[
+                        f"{source.evidence_family}:{source.method_family}"
+                    ]
+                    rendered_fib_sources.append(
+                        {
+                            "timeframe": timeframe,
+                            "zone_id": zone.zone_id,
+                            "zone_low": str(zone.low),
+                            "zone_high": str(zone.high),
+                            "family": source.evidence_family,
+                            "method_family": source.method_family,
+                            "required_endpoint_labels": list(
+                                dependency.required_endpoint_labels
+                            ),
+                            "family_stability": source.family_stability,
+                            "source_degree": source.source_degree,
+                            "consensus_set_id": source.consensus_set_id,
+                        }
+                    )
         output_rows.append(
             {
                 "ticker": ticker,
@@ -476,15 +527,46 @@ def finalize(trial_dir: Path) -> None:
                 ),
                 "sr_only_fallback": not applied.fibonacci,
                 "shadow_render": applied.shadow_render,
+                "final_resistance": resistance,
+                "rendered_fib_sources": rendered_fib_sources,
                 "selections": selection_payloads[ticker],
                 "family_consensus_audit": audit,
             }
         )
 
     row_map = {str(item["ticker"]): item for item in output_rows}
-    previous_stable_regression = sum(
-        not row_map[ticker]["safe_families"] for ticker in STABLE
-    )
+    previous_stable_regressions: list[str] = []
+    expected_family_keys = {
+        item.key for item in FIB_FAMILY_ENDPOINT_DEPENDENCY_REGISTRY
+    }
+    for ticker in STABLE:
+        source_row = rows[ticker]
+        source_result, _ = _hypotheses(source_row)
+        prior_runs = source_row["feedback"]["runs"]  # type: ignore[index]
+        prior_selections = tuple(
+            _selection(run["selection"]).model_copy(
+                update={
+                    "alternative_hypothesis_id": None,
+                    "competing_hypothesis_ids": (),
+                    "equivalence_class_id": None,
+                }
+            )
+            for run in prior_runs
+            if isinstance(run, Mapping) and isinstance(run.get("selection"), Mapping)
+        )
+        prior_applied = apply_family_consensus_feedback(
+            source_result,
+            prior_selections,
+        )
+        prior_audit = prior_applied.family_consensus_audit or {}
+        prior_safe = {
+            f"{item['family']}:{item['method_family']}"
+            for item in prior_audit.get("families", [])
+            if isinstance(item, Mapping) and item.get("eligible")
+        }
+        if prior_safe != expected_family_keys or prior_applied.selected_hypothesis_id is None:
+            previous_stable_regressions.append(ticker)
+    previous_stable_regression = len(previous_stable_regressions)
     abstention_forced = sum(
         selection.status == WaveSelectionStatus.SELECTED
         for ticker in ABSTENTION
@@ -540,16 +622,7 @@ def finalize(trial_dir: Path) -> None:
     tsla = row_map["TSLA"]
     tsm = row_map["TSM"]
     sk_families = sk["family_states"]
-    tsla_false = int(
-        any(
-            key in tsla["safe_families"]
-            for key in (
-                "CURRENT_REBOUND:CURRENT_REBOUND",
-                "WAVE3_RETRACEMENT:WAVE3_RETRACEMENT",
-            )
-        )
-        and "CURRENT_REBOUND:CURRENT_REBOUND" in tsla["omitted_families"]
-    )
+    tsla_false = int(bool(tsla["safe_families"]))
     tsm_w3 = (
         "PASS"
         if tsm["family_states"].get("WAVE3_RETRACEMENT:WAVE3_RETRACEMENT")
@@ -584,6 +657,7 @@ def finalize(trial_dir: Path) -> None:
             "expected_runs": expected_runs,
         },
         "gates": gates,
+        "previous_stable_regression_tickers": previous_stable_regressions,
         "seven_subject_value": dict(difficult_value),
         "sk_hynix": {
             "full_hypothesis_stability": sk["full_hypothesis_stability"],
@@ -663,10 +737,23 @@ def write_reports(evidence: Mapping[str, object]) -> None:
         )
         result, candidates = _hypotheses(_rows()[ticker])
         del result
+        audit = item["family_consensus_audit"]
+        assert isinstance(audit, Mapping)
+        consensus_ids = set(audit["candidate_hypothesis_ids"])
+        consensus_candidates = [
+            hypothesis
+            for hypothesis in candidates
+            if hypothesis.hypothesis_id in consensus_ids
+        ]
         endpoint_sets = {
-            point.label: {point.pivot_ref for hypothesis in candidates for point in hypothesis.endpoints}
-            for point in candidates[0].endpoints
-        } if candidates else {}
+            label: {
+                endpoint.pivot_ref
+                for hypothesis in consensus_candidates
+                for endpoint in hypothesis.endpoints
+                if endpoint.label == label
+            }
+            for label in (endpoint.label for endpoint in consensus_candidates[0].endpoints)
+        } if consensus_candidates else {}
         divergent = [label for label, values in endpoint_sets.items() if len(values) > 1]
         shared = [label for label, values in endpoint_sets.items() if len(values) == 1]
         root_rows.append(
@@ -761,14 +848,67 @@ def write_reports(evidence: Mapping[str, object]) -> None:
     sk = row_map["000660"]
     sk_states = sk["family_states"]
     assert isinstance(sk_states, Mapping)
-    sk_rows = [(key, value, key in sk["safe_families"]) for key, value in sk_states.items()]
+    sk_audit = sk["family_consensus_audit"]
+    assert isinstance(sk_audit, Mapping)
+    sk_rows = [
+        (
+            f"{item['family']}:{item['method_family']}",
+            ",".join(item["required_endpoint_labels"]),
+            json.dumps(item["endpoint_refs_by_hypothesis"], separators=(",", ":")),
+            json.dumps(item["calculated_values_by_hypothesis"], separators=(",", ":")),
+            json.dumps(item["visible_zone_by_timeframe"], separators=(",", ":")),
+            item["stability"],
+            item["eligible"],
+        )
+        for item in sk_audit["families"]
+    ]
+    resistance_rows = [
+        (
+            timeframe,
+            value.get("low", "-"),
+            value.get("high", "-"),
+            value["stability"],
+            value.get("zone_id", "-"),
+        )
+        for timeframe, value in sk["final_resistance"].items()
+    ]
+    source_rows = [
+        (
+            item["timeframe"],
+            f"{item['zone_low']}-{item['zone_high']}",
+            item["family"],
+            item["method_family"],
+            ",".join(item["required_endpoint_labels"]),
+            item["family_stability"],
+            item["source_degree"],
+        )
+        for item in sk["rendered_fib_sources"]
+    ]
     _report(
         "20260826-sk-hynix-family-consensus-validation.md",
         "SK hynix Family Consensus Validation",
         f"FULL_HYPOTHESIS_STABILITY = {sk['full_hypothesis_stability']}\n\n"
         f"EQUIVALENCE_CLASS_COUNT = {sk['equivalence_class_count']}\n\n"
         f"FAMILY_LEVEL_PRICE_STRUCTURE = {sk['family_level_price_structure']}\n\n"
-        + _table(["Family / method", "Stability", "Eligible"], sk_rows)
+        + _table(
+            [
+                "Family / method",
+                "Required endpoints",
+                "Candidate endpoints",
+                "Calculated values",
+                "Visible zone",
+                "Stability",
+                "Eligible",
+            ],
+            sk_rows,
+        )
+        + "\n\n## Final Resistance\n\n"
+        + _table(["Map", "Low", "High", "Stability", "Zone ID"], resistance_rows)
+        + "\n\n## Rendered Fib Source Provenance\n\n"
+        + _table(
+            ["Map", "Zone", "Family", "Method", "Endpoints", "Consensus", "Degree"],
+            source_rows,
+        )
         + "\n\n## Shadow Render\n\n"
         + str(sk["shadow_render"]),
     )

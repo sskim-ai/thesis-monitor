@@ -293,6 +293,18 @@ def test_ambiguous_candidate_ids_validate_and_backend_never_selects_member() -> 
         equivalence_class_members=equivalence_class_members(classes),
     )
     assert validation.valid
+    optional_context = selection.model_copy(
+        update={"source_degree": None, "cutoff": None, "adjustment_basis": None}
+    )
+    assert validate_wave_hypothesis_selection(
+        optional_context,
+        (first, second),
+        ticker="TEST",
+        cutoff="2026-08-26",
+        adjustment_basis="adjusted_close",
+        strict_context=True,
+        equivalence_class_members=equivalence_class_members(classes),
+    ).valid
     ids, errors = selection_consensus_universe(
         (selection,),
         (first, second),

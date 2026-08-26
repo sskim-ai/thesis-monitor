@@ -1113,11 +1113,15 @@ def validate_wave_hypothesis_selection(
                 errors.append("unknown_equivalence_class_id")
             elif not set(competing).issubset(members):
                 errors.append("competing_equivalence_class_mismatch")
-        if ticker is not None and selection.ticker != ticker:
+        if ticker is not None and selection.ticker is not None and selection.ticker != ticker:
             errors.append("ticker_mismatch")
-        if cutoff is not None and selection.cutoff != cutoff:
+        if cutoff is not None and selection.cutoff is not None and selection.cutoff != cutoff:
             errors.append("cutoff_mismatch")
-        if adjustment_basis is not None and selection.adjustment_basis != adjustment_basis:
+        if (
+            adjustment_basis is not None
+            and selection.adjustment_basis is not None
+            and selection.adjustment_basis != adjustment_basis
+        ):
             errors.append("adjustment_basis_mismatch")
     elif selection.competing_hypothesis_ids:
         errors.append("insufficient_structure_requires_empty_competing_ids")
