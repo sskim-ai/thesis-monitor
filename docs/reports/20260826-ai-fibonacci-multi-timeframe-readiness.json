@@ -1,0 +1,40 @@
+{
+  "ai_fibonacci_multi_timeframe_structure": "SHADOW",
+  "ai_swing_anchor_selection": "PASS",
+  "anchor_selection_stability": "PARTIAL",
+  "benchmark_material_value": 10,
+  "benchmark_minor_value": 2,
+  "benchmark_no_added_value": 8,
+  "benchmark_worse": 0,
+  "code_correctness": "PASS",
+  "compact_evidence_sufficiency": "PASS",
+  "current_sr_architecture": "MULTI_TIMEFRAME_COLLAPSED",
+  "current_user_visible_message_diff": 0,
+  "daily_fibonacci": "PASS",
+  "daily_sr_analysis": "PASS",
+  "existing_fibonacci_path": "COMPUTED_NOT_RENDERED",
+  "fibonacci_deterministic_calc": "PASS",
+  "fibonacci_numeric_provenance": "PASS",
+  "instruction_commit": "608f8a0c34fab8e13010ce75d8d64af95a78852d",
+  "kr_shadow_replay": "7/7",
+  "kr_us_multi_timeframe_schema_common": "PASS",
+  "lookahead_safety": "PASS",
+  "monthly_fibonacci": "PASS",
+  "monthly_sr_analysis": "PASS",
+  "multi_timeframe_confluence": "PASS",
+  "next_action": "KEEP_SHADOW_AND_REVIEW",
+  "open_material_p1": [
+    "variable AI-runtime monthly/weekly anchor-selection stability not yet exercised"
+  ],
+  "open_p0": [],
+  "p2_backlog": [
+    "management of optional Fib label wording",
+    "SKHY insufficient adjusted OHLCV structure remains fail-closed"
+  ],
+  "price_structure_evidence_packet": "PASS",
+  "production_enablement_ready": "NO",
+  "timeframe_hierarchy": "PASS",
+  "us_shadow_replay": "13/13",
+  "weekly_fibonacci": "PASS",
+  "weekly_sr_analysis": "PASS"
+}

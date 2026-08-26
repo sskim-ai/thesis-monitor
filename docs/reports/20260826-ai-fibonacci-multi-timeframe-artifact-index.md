@@ -1,0 +1,24 @@
+# AI Fibonacci Multi-Timeframe Artifact Index
+
+- `docs/work-instructions/20260826-ai-swing-anchor-fibonacci-multi-timeframe-structure-shadow-v2.md` — SHA-256 `d1e290ed387b6a5ab08da77aff3f8ac0743faffac7431f8da4c1fee212b5f327`
+- `docs/architecture/AI_FIBONACCI_MULTI_TIMEFRAME_STRUCTURE.md` — SHA-256 `f2d2c99a847a708b83739965ed4bb3f0128593262c3a355b57081ae3162ffb9c`
+- `docs/architecture/MULTI_TIMEFRAME_PRICE_STRUCTURE_EVIDENCE_PACKET.md` — SHA-256 `bc8247add2cdab2a12ef8a06e2bb03c9ab3a7d1ba234a93f6113394d44c8aaa4`
+- `docs/architecture/MULTI_TIMEFRAME_SUPPORT_RESISTANCE_HIERARCHY.md` — SHA-256 `1c8e957cd1c575d20cae7eba66ca225ce394bc4b0d2113b236a6c587e84bb39b`
+- `docs/architecture/FIBONACCI_NUMERIC_PROVENANCE.md` — SHA-256 `ff7691b1a8ff51b80a18941f332a84a1e3c38dc1a763fee3799cebf90bbf6707`
+- `docs/architecture/PRICE_STRUCTURE_SHADOW_POLICY.md` — SHA-256 `25bfb40469acbad90e26d28a5e23ef6aaf5440846d78bf3ff36e84e8e432b2f5`
+- `docs/reports/20260826-current-sr-timeframe-ownership-audit.md` — SHA-256 `0fb2975ef03205e300c22e5c844a75b17229b66ab71965de1b2c3e46070f1e95`
+- `docs/reports/20260826-existing-fibonacci-path-audit-v2.md` — SHA-256 `a730e22ac4b0d736dcf8950fc93b02ed76b971784715ed853675765eb401c3aa`
+- `docs/reports/20260826-multi-timeframe-pivot-contract.md` — SHA-256 `06b0c089011d7f8148755bacefe3d8f223645e878673dba2dad5ea87740eb1a7`
+- `docs/reports/20260826-multi-timeframe-sr-contract.md` — SHA-256 `887796fa95f8a9f63dcf49f6e7a5c277f3471d29f1fd03871524fc1cc54f7aac`
+- `docs/reports/20260826-multi-timeframe-evidence-packet.md` — SHA-256 `209f90aff95d6ebcd2af56c1a1398a7a411c977eae384b1e5a40fbf778b6013e`
+- `docs/reports/20260826-ai-timeframe-anchor-selection-validation.md` — SHA-256 `21de1d49fef0d2d88ca6103dc00f20eac479fca6ae40d3007f5438f382f87341`
+- `docs/reports/20260826-fibonacci-per-timeframe-numeric-provenance.md` — SHA-256 `f3b78b937cc428b9e856cc9e145172e905dd8f4e261db39f4c3a9616060334a8`
+- `docs/reports/20260826-multi-timeframe-confluence-audit.md` — SHA-256 `fcfd5f808e421cd00f36a169849540d95d843ed0937e146f4b0dfe177010c343`
+- `docs/reports/20260826-multi-timeframe-anchor-stability.md` — SHA-256 `b8fcc96458eba5e86bc4daeb79f5e25969faf99e64bf2cf7be07ba517fea6395`
+- `docs/reports/20260826-multi-timeframe-lookahead-sanity.md` — SHA-256 `5e723137c7b574b75c082f8a57ec18a364987563dfba0413fc7fd75c12fa3925`
+- `docs/reports/20260826-price-structure-single-vs-multi-timeframe-before-after.md` — SHA-256 `edbcb944a82973ec2af619821c8f8c70ae08abcd17ae3793c71591db1c37ecd9`
+- `docs/reports/20260826-ai-fibonacci-multi-timeframe-exact-benchmark.md` — SHA-256 `2681e86b05106e09322f0a444408cbad24fa0d24ccb563dd24ad393d9ba876ab`
+- `docs/reports/20260826-ai-fibonacci-multi-timeframe-kr-us-shadow-replay.md` — SHA-256 `6e96e18341b325ead287faafd6af9501c85fb6a7dcaf3bc83e1040cfd643a08e`
+- `docs/reports/20260826-ai-fibonacci-multi-timeframe-readiness.md` — SHA-256 `788e25779271690cc5be414e30f3276e603966096e8183404ac927d4e49fd899`
+- `docs/reports/20260826-ai-fibonacci-multi-timeframe-shadow-evidence.json` — SHA-256 `b5a4b03bcbbe71b2baadc9058789f8e68f9db460fe6770daec7fa2ef16cedced`
+- `docs/reports/20260826-ai-fibonacci-multi-timeframe-readiness.json` — SHA-256 `e55bc74b87c3fae14a09c1336c6fde789e176f6b4bf6a7910411834a5e3242dc`
