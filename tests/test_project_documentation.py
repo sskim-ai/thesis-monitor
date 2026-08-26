@@ -63,6 +63,10 @@ DOCUMENTS = (
     ROOT / "docs" / "architecture" / "MULTI_TIMEFRAME_SR_CONFLUENCE_V3.md",
     ROOT / "docs" / "architecture" / "TECHNICAL_ZONE_EVIDENCE_FAMILIES.md",
     ROOT / "docs" / "architecture" / "PRICE_STRUCTURE_V3_SHADOW_POLICY.md",
+    ROOT / "docs" / "architecture" / "OHLCV_BAR_COMPLETION_CONTRACT.md",
+    ROOT / "docs" / "architecture" / "OHLCV_1200_BACKFILL_CACHE.md",
+    ROOT / "docs" / "architecture" / "WAVE_DEGREE_CURRENT_CYCLE.md",
+    ROOT / "docs" / "architecture" / "PRICE_STRUCTURE_V3_AI_FEEDBACK_LOOP.md",
     ROOT / "docs" / "operations" / "AI_ASSISTED_PILOT.md",
     ROOT / "docs" / "operations" / "CASH_FLOW_USER_VISIBLE_KILL_SWITCH.md",
     ROOT / "docs" / "operations" / "WORKING_CAPITAL_USER_VISIBLE_KILL_SWITCH.md",
@@ -82,13 +86,17 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
 
     assert state["repository"] == "sskim-ai/thesis-monitor"
     assert state["branch"] == "main"
-    assert state["experimental_branch"] == "codex/price-structure-wave-fibonacci-engine-v3"
-    assert state["current_phase"] == (
-        "price_structure_wave_fib_v3_shadow_bounded_repair_required"
+    assert state["experimental_branch"] == (
+        "codex/price-structure-v3-temporal-cycle-feedback-bounded-repair"
     )
-    assert state["last_completed_phase"] == "price_structure_wave_fib_v3_shadow_implementation"
-    assert state["next_default_phase"] == "bounded_price_structure_v3_history_and_method_repair"
-    implementation_commit = "63b3ce219f996ea23b0a2a254d842bbb579adef2"
+    assert state["current_phase"] == (
+        "price_structure_wave_fib_v3_integrated_ready_not_armed"
+    )
+    assert state["last_completed_phase"] == (
+        "price_structure_v3_temporal_cycle_feedback_bounded_repair"
+    )
+    assert state["next_default_phase"] == "bounded_price_structure_v3_enablement"
+    implementation_commit = "bea877d3a6a9977c19832cbde28ed235676929d2"
     prior_fibonacci_commit = "0dfef76bba606f018893d6e68e7beaf410aa7438"
     assert state["deployed_code_commit"] == implementation_commit
     assert state["main_code_commit"] == implementation_commit
@@ -231,6 +239,16 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     assert state["contracts"]["price_structure_v3_shadow_policy"] == (
         "price-structure-v3-shadow-policy-v1"
     )
+    assert state["contracts"]["ohlcv_bar_completion"] == "ohlcv-bar-completion-v1"
+    assert state["contracts"]["ohlcv_1200_backfill_cache"] == (
+        "ohlcv-1200-backfill-cache-v1"
+    )
+    assert state["contracts"]["wave_degree_current_cycle"] == (
+        "wave-degree-current-cycle-v1"
+    )
+    assert state["contracts"]["price_structure_v3_ai_feedback_loop"] == (
+        "price-structure-v3-ai-feedback-loop-v1"
+    )
     bounded_quality = state[
         "kr_market_digest_us_entity_specific_synthesis_bounded_repair"
     ]
@@ -313,36 +331,51 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     assert fibonacci_consensus["open_material_p1"] == []
     assert fibonacci_consensus["production_assist"] is False
     price_structure_v3 = state["price_structure_wave_fibonacci_v3"]
-    assert price_structure_v3["status"] == "shadow_bounded_repair_required"
+    assert price_structure_v3["status"] == "integrated_ready_not_armed"
     assert price_structure_v3["instruction_commit"] == (
-        "5bcf2a1a73a10c73db12c37e93a51652983599d5"
+        "82cb04e2880d1ed7b0405e1ddd20c5f333305394"
     )
     assert price_structure_v3["implementation_commit"] == implementation_commit
-    assert price_structure_v3["implementation_github_actions_run"] == 32930077637
+    assert price_structure_v3["implementation_github_actions_run"] == 32935362029
     assert price_structure_v3["implementation_github_actions_status"] == (
         "passed_test_and_lint"
     )
     assert price_structure_v3["active_universe"] == 20
-    assert price_structure_v3["coverage"]["daily"] == {"partial": 20}
-    assert price_structure_v3["coverage"]["weekly"] == {"pass": 12, "partial": 8}
+    assert price_structure_v3["coverage"]["daily"] == {"pass": 14, "partial": 6}
+    assert price_structure_v3["coverage"]["weekly"] == {
+        "pass": 12,
+        "partial": 7,
+        "fail": 1,
+    }
     assert price_structure_v3["coverage"]["monthly"] == {
         "pass": 8,
         "partial": 11,
         "fail": 1,
     }
-    assert price_structure_v3["ai_runtime_calls"] == 17
-    assert price_structure_v3["focused_tests"] == "60_passed"
-    assert price_structure_v3["full_tests"] == "1667_passed"
+    assert price_structure_v3["ai_runtime_calls"] == 14
+    assert price_structure_v3["focused_tests"] == "108_passed"
+    assert price_structure_v3["full_tests"] == "1673_passed"
     assert price_structure_v3["ruff"] == "pass"
     assert price_structure_v3["ai_runtime_failures"] == 0
     assert price_structure_v3["ai_semantic_rejections"] == 0
-    assert price_structure_v3["ai_stability"] == {"stable": 14, "valid_abstention": 6}
+    assert price_structure_v3["ai_stability"] == {
+        "stable": 7,
+        "valid_abstention": 6,
+        "material_variation": 7,
+    }
+    assert price_structure_v3["selected_but_not_fed_to_engine"] == 0
     assert price_structure_v3["unstable_fibonacci_user_visible_eligible"] == 0
-    assert price_structure_v3["sk_hynix_reference"] == "MATERIAL_METHOD_CONFLICT"
-    assert price_structure_v3["price_structure_wave_fib_v3"] == "SHADOW"
-    assert price_structure_v3["production_enablement_ready"] == "NO"
+    assert price_structure_v3["sk_hynix_reference"] == (
+        "CURRENT_CYCLE_CANDIDATE_VISIBLE_REFERENCE_SOURCE_UNAVAILABLE"
+    )
+    assert price_structure_v3["price_structure_wave_fib_v3"] == (
+        "INTEGRATED_READY_NOT_ARMED"
+    )
+    assert price_structure_v3["production_enablement_ready"] == (
+        "YES_SELECTIVE_STABLE_SUBSET"
+    )
     assert price_structure_v3["open_p0"] == []
-    assert len(price_structure_v3["open_material_p1"]) == 2
+    assert price_structure_v3["open_material_p1"] == []
     assert price_structure_v3["current_user_visible_message_diff"] == 0
     assert price_structure_v3["production_assist"] is False
     advancement = state["phase_advancement_rule_v1"]

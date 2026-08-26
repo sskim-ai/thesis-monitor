@@ -32,7 +32,7 @@ Instruction commit: `82cb04e2880d1ed7b0405e1ddd20c5f333305394`.
 | docs/PROJECT_HANDOFF.md | 2eb66f3d993f38468597eee73a501b0d1b0f620c99676dbfbc2b2f35ac43c17c | 105884 |
 | docs/NEXT_SESSION_PROMPT.md | 099c35fd758f2e0fedd607bc4d9946a5a7b8b99bde7adfa40e1ea0060946c98b | 17389 |
 | docs/BRANCH_DEPENDENCY.md | c9bc146f29f6e226594ed58cd06c6f1cb6ff0617ced03cad5059865cb4414840 | 28585 |
-| docs/project-state.json | 70be36f4651e249d9fb1f3a39f2bb827a474637d1fb596275a1e9757d7fed5c5 | 119105 |
+| docs/project-state.json | 217d74b7220cb81db1e15120766feddca3684ecda68eceb18254b1cd4041e86c | 119121 |
 
 The downloadable completion ZIP is created after final validation and report commit so its own
 hash can be reported outside the archive without recursive mutation.
