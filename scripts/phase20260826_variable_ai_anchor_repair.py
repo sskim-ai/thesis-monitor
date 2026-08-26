@@ -670,8 +670,9 @@ def _finalize(args: argparse.Namespace) -> None:
                     },
                     "visible_confluence": [
                         {
-                            "zone_id": zone.zone_id,
-                            "center": str(zone.center),
+                            "confluence_id": zone.confluence_id,
+                            "zone_low": str(zone.zone_low),
+                            "zone_high": str(zone.zone_high),
                             "timeframes": list(zone.timeframes),
                         }
                         for zone in execution.shadow.confluence
@@ -746,6 +747,7 @@ def _finalize(args: argparse.Namespace) -> None:
             material_omissions += sum(bool(value) for value in omissions.values())
             full_debug = {
                 "status": full_execution.status,
+                "validation": full_execution.validation.model_dump(mode="json"),
                 "variable_ai_output": (
                     full_output.model_dump(mode="json") if full_output is not None else None
                 ),
@@ -952,7 +954,14 @@ def _finalize(args: argparse.Namespace) -> None:
             "gates": gates,
             "summary": summary,
             "open_p0": [],
-            "open_material_p1": [] if code_ready else ["variable_anchor_stability_or_trial"],
+            "open_material_p1": (
+                []
+                if code_ready
+                else [
+                    "higher_timeframe_variable_anchor_or_sr_material_variation",
+                    "ambiguous_or_insufficient_output_semantic_rejections",
+                ]
+            ),
             "p2_backlog": [
                 "minor anchor-ID variation inside equivalent visible structure",
                 "optional variable-AI rationale wording polish",
@@ -960,6 +969,8 @@ def _finalize(args: argparse.Namespace) -> None:
             "next_action": (
                 "BOUNDED_MULTI_TIMEFRAME_ENABLEMENT"
                 if code_ready
+                else "BOUNDED_REPAIR"
+                if code_correct
                 else "KEEP_SHADOW_AND_REVIEW"
             ),
         },
@@ -1151,6 +1162,24 @@ neighborhoods may add older bars without omitting eligible canonical pivots.
         )
         for timeframe in TIMEFRAME_ORDER
     ]
+    material_tickers = {
+        timeframe: [
+            str(item["ticker"])
+            for item in successful
+            if ((item.get("stability") or {}).get(timeframe) or {}).get("classification")
+            == "MATERIAL_VARIATION"
+        ]
+        for timeframe in TIMEFRAME_ORDER
+    }
+    minor_tickers = {
+        timeframe: [
+            str(item["ticker"])
+            for item in successful
+            if ((item.get("stability") or {}).get(timeframe) or {}).get("classification")
+            == "MINOR_VARIATION"
+        ]
+        for timeframe in TIMEFRAME_ORDER
+    }
     stability = f"""# Variable AI Anchor Stability
 
 {_table(('Timeframe', 'Stable', 'Minor', 'Material'), stability_rows)}
@@ -1161,6 +1190,11 @@ neighborhoods may add older bars without omitting eligible canonical pivots.
 - Runtime failures: `{summary['runtime_failure_count']}`.
 - Semantically rejected timeframes: `{summary['semantic_rejected_timeframe_count']}`.
 - Benchmark runs per packet: `5`; wider universe runs per packet: `3`.
+
+- Monthly material: `{', '.join(material_tickers['monthly']) or 'none'}`.
+- Weekly material: `{', '.join(material_tickers['weekly']) or 'none'}`.
+- Daily material: `{', '.join(material_tickers['daily']) or 'none'}`.
+- Daily minor variation: `{', '.join(minor_tickers['daily']) or 'none'}`.
 
 Monthly/weekly material variation blocks the first enablement pool. Daily-only material variation
 retains deterministic daily SR and omits only daily Fibonacci.
@@ -1248,11 +1282,16 @@ independent selections were archived.
 - Exact benchmark: `{len(benchmark)}` tickers, five independent calls per packet.
 - Wider universe: three independent calls per eligible packet.
 - Runtime failures: `{summary['runtime_failure_count']}`.
+- Semantic timeframe rejections: `{summary['semantic_rejected_timeframe_count']}`.
 - Material anchor omissions versus full debug: `{summary['material_anchor_omission']}`.
 - Monthly/weekly material variations: `{aggregate['monthly']['MATERIAL_VARIATION']} / {aggregate['weekly']['MATERIAL_VARIATION']}`.
+- Monthly material tickers: `{', '.join(material_tickers['monthly']) or 'none'}`.
+- Weekly material tickers: `{', '.join(material_tickers['weekly']) or 'none'}`.
 
 Open P0: `0`. Open material P1: `{'0' if gates['PRODUCTION_ENABLEMENT_READY'] == 'YES' else '1'}`.
-Production remains unarmed; a separate bounded enablement instruction is required.
+Production remains unarmed. The bounded next repair is to separate variable Fibonacci-anchor
+judgment from deterministic SR ownership, tighten ambiguous/insufficient output semantics, and
+rerun the same frozen 5/3 protocol without widening canonical tolerances.
 """
     _write_text(REPORTS / "20260826-fibonacci-p1-closure-readiness.md", readiness)
 
