@@ -1300,3 +1300,33 @@ is never fabricated. `PRICE_STRUCTURE_WAVE_FIB_V3=INTEGRATED_READY_NOT_ARMED` an
 `PRODUCTION_ENABLEMENT_READY=YES`, with open P0/material P1 at `0/0`. This permits only a separately
 instructed bounded enablement of stable eligible subjects. Current production SR, packet,
 Telegram, tasks, Public Action, assessment state, and Production Assist remain unchanged.
+
+### 40.2 Hypothesis Equivalence And Fibonacci Family Consensus
+
+Exact instruction commit `b0f81c8e16f588e314f93eb6097370e85f285241` precedes implementation
+commit `631e82f202b6f081866ef83c8b67b2138a8b51d8`. The repair adds deterministic
+`wave-hypothesis-equivalence-class-v1`, `fib-family-endpoint-dependency-v1`,
+`price-structure-v3-ambiguity-set-v1`, `fib-family-consensus-v1`, and
+`family-filtered-confluence-v1` contracts. Fibonacci stability is now evaluated only across the
+endpoints each family actually depends on. Unstable family sources are removed before confluence;
+the existing price tolerance and deterministic SR ownership remain unchanged.
+
+The original material cohort is `000660`, `003690`, `005490`, `005930`, `010120`, `TSLA`, and
+`TSM`. Eleven signed-in archive-only calls cover five material-cohort, three stable-control, and
+three abstention-control runs, totaling 74 ticker decisions with zero runtime or semantic failure.
+The 20-subject replay passes KR `7/7` and US/foreign `13/13`; prior stable regression, forced
+abstention selection, dependency mismatch, correlated-Fib inflation, and unstable confluence are
+all zero.
+
+SK hynix remains full-hypothesis `MATERIAL_VARIATION`, but six endpoint-dependent families are
+safe: current rebound and W3 retracement are exact invariant; primary-cycle retracement and two W5
+projection families are price equivalent; one additional W5 family is exact invariant. W1
+retracement remains material and is omitted. The supplied reference engine is retained byte-audited
+under `docs/reference/user-wave-engine/` as `REFERENCE_ONLY / NOT_PRODUCTION_RUNTIME`, and the
+endpoint/confirmation comparison is `REFERENCE_MATCH`. TSLA's true conflict and TSM's W3-dependent
+conflict remain material.
+
+`PRICE_STRUCTURE_V3_FAMILY_CONSENSUS=INTEGRATED_READY_NOT_ARMED`, code correctness is PASS, and
+selective production-enablement readiness is YES with open P0/material P1 `0/0`. This authorizes
+only a separately instructed bounded family-selective enablement. Production imports, SR, packet,
+Telegram, task schedules, Public Action, assessments, and Production Assist remain unchanged.

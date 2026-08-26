@@ -1,0 +1,31 @@
+{
+  "code_correctness": "PASS",
+  "gates": {
+    "ambiguity_set_contract": "PASS",
+    "correlated_fib_strength_inflation": 0,
+    "current_user_visible_message_diff": 0,
+    "family_consensus": "PASS",
+    "family_dependency_mismatch": 0,
+    "family_filtered_confluence": "PASS",
+    "fib_family_endpoint_dependency_registry": "PASS",
+    "fib_family_without_endpoint_dependency": 0,
+    "material_variation_root_cause": "PASS",
+    "previous_stable_regression": 0,
+    "tolerance_widening": 0,
+    "unstable_fib_family_user_visible_eligible": 0,
+    "unstable_fib_source_in_confluence": 0,
+    "valid_abstention_forced_to_selection": 0,
+    "wave_hypothesis_equivalence_class": "PASS"
+  },
+  "next_action": "BOUNDED_PRICE_STRUCTURE_V3_FAMILY_SELECTIVE_ENABLEMENT",
+  "open_material_p1": [],
+  "open_p0": [],
+  "p2_backlog": [
+    "full_elliott_count_may_remain_ambiguous",
+    "grand_cycle_context_can_be_omitted_from_short_renderer",
+    "some_subjects_remain_sr_only",
+    "short_listing_history_remains_partial"
+  ],
+  "price_structure_v3_family_consensus": "INTEGRATED_READY_NOT_ARMED",
+  "production_enablement_ready": true
+}

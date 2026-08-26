@@ -67,6 +67,11 @@ DOCUMENTS = (
     ROOT / "docs" / "architecture" / "OHLCV_1200_BACKFILL_CACHE.md",
     ROOT / "docs" / "architecture" / "WAVE_DEGREE_CURRENT_CYCLE.md",
     ROOT / "docs" / "architecture" / "PRICE_STRUCTURE_V3_AI_FEEDBACK_LOOP.md",
+    ROOT / "docs" / "architecture" / "WAVE_HYPOTHESIS_EQUIVALENCE_CLASS.md",
+    ROOT / "docs" / "architecture" / "FIB_FAMILY_ENDPOINT_DEPENDENCY.md",
+    ROOT / "docs" / "architecture" / "FIB_FAMILY_CONSENSUS_POLICY.md",
+    ROOT / "docs" / "architecture" / "PRICE_STRUCTURE_V3_AMBIGUITY_SET.md",
+    ROOT / "docs" / "architecture" / "FAMILY_FILTERED_CONFLUENCE.md",
     ROOT / "docs" / "operations" / "AI_ASSISTED_PILOT.md",
     ROOT / "docs" / "operations" / "CASH_FLOW_USER_VISIBLE_KILL_SWITCH.md",
     ROOT / "docs" / "operations" / "WORKING_CAPITAL_USER_VISIBLE_KILL_SWITCH.md",
@@ -87,16 +92,18 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     assert state["repository"] == "sskim-ai/thesis-monitor"
     assert state["branch"] == "main"
     assert state["experimental_branch"] == (
-        "codex/price-structure-v3-temporal-cycle-feedback-bounded-repair"
+        "codex/price-structure-v3-family-consensus-stability"
     )
     assert state["current_phase"] == (
-        "price_structure_wave_fib_v3_integrated_ready_not_armed"
+        "price_structure_v3_family_consensus_integrated_ready_not_armed"
     )
     assert state["last_completed_phase"] == (
-        "price_structure_v3_temporal_cycle_feedback_bounded_repair"
+        "price_structure_v3_family_consensus_stability_bounded_repair"
     )
-    assert state["next_default_phase"] == "bounded_price_structure_v3_enablement"
-    implementation_commit = "bea877d3a6a9977c19832cbde28ed235676929d2"
+    assert state["next_default_phase"] == (
+        "bounded_price_structure_v3_family_selective_enablement"
+    )
+    implementation_commit = "631e82f202b6f081866ef83c8b67b2138a8b51d8"
     prior_fibonacci_commit = "0dfef76bba606f018893d6e68e7beaf410aa7438"
     assert state["deployed_code_commit"] == implementation_commit
     assert state["main_code_commit"] == implementation_commit
@@ -249,6 +256,21 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     assert state["contracts"]["price_structure_v3_ai_feedback_loop"] == (
         "price-structure-v3-ai-feedback-loop-v1"
     )
+    assert state["contracts"]["wave_hypothesis_equivalence_class"] == (
+        "wave-hypothesis-equivalence-class-v1"
+    )
+    assert state["contracts"]["fib_family_endpoint_dependency"] == (
+        "fib-family-endpoint-dependency-v1"
+    )
+    assert state["contracts"]["fib_family_consensus"] == (
+        "fib-family-consensus-v1"
+    )
+    assert state["contracts"]["price_structure_v3_ambiguity_set"] == (
+        "price-structure-v3-ambiguity-set-v1"
+    )
+    assert state["contracts"]["family_filtered_confluence"] == (
+        "family-filtered-confluence-v1"
+    )
     bounded_quality = state[
         "kr_market_digest_us_entity_specific_synthesis_bounded_repair"
     ]
@@ -333,10 +355,10 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     price_structure_v3 = state["price_structure_wave_fibonacci_v3"]
     assert price_structure_v3["status"] == "integrated_ready_not_armed"
     assert price_structure_v3["instruction_commit"] == (
-        "82cb04e2880d1ed7b0405e1ddd20c5f333305394"
+        "b0f81c8e16f588e314f93eb6097370e85f285241"
     )
     assert price_structure_v3["implementation_commit"] == implementation_commit
-    assert price_structure_v3["implementation_github_actions_run"] == 32935362029
+    assert price_structure_v3["implementation_github_actions_run"] == 32945710995
     assert price_structure_v3["implementation_github_actions_status"] == (
         "passed_test_and_lint"
     )
@@ -352,28 +374,40 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
         "partial": 11,
         "fail": 1,
     }
-    assert price_structure_v3["ai_runtime_calls"] == 14
-    assert price_structure_v3["focused_tests"] == "108_passed"
-    assert price_structure_v3["full_tests"] == "1673_passed"
+    assert price_structure_v3["ai_runtime_calls"] == 11
+    assert price_structure_v3["ai_runtime_decisions"] == 74
+    assert price_structure_v3["focused_tests"] == "40_passed"
+    assert price_structure_v3["full_tests"] == "1686_passed"
     assert price_structure_v3["ruff"] == "pass"
     assert price_structure_v3["ai_runtime_failures"] == 0
     assert price_structure_v3["ai_semantic_rejections"] == 0
-    assert price_structure_v3["ai_stability"] == {
-        "stable": 7,
-        "valid_abstention": 6,
-        "material_variation": 7,
+    assert price_structure_v3["family_consensus_gates"]["dependency_mismatch"] == 0
+    assert price_structure_v3["family_consensus_gates"]["tolerance_widening"] == 0
+    assert price_structure_v3["family_consensus_gates"][
+        "unstable_source_in_confluence"
+    ] == 0
+    assert price_structure_v3["sk_hynix_family_consensus"][
+        "full_hypothesis_stability"
+    ] == "MATERIAL_VARIATION"
+    assert price_structure_v3["sk_hynix_family_consensus"][
+        "family_level_price_structure"
+    ] == "PASS"
+    assert price_structure_v3["true_conflict_controls"] == {
+        "TSLA": "PASS_ZERO_SAFE_FAMILIES",
+        "TSM_W3_DEPENDENCY": "PASS",
     }
     assert price_structure_v3["selected_but_not_fed_to_engine"] == 0
     assert price_structure_v3["unstable_fibonacci_user_visible_eligible"] == 0
     assert price_structure_v3["sk_hynix_reference"] == (
-        "CURRENT_CYCLE_CANDIDATE_VISIBLE_REFERENCE_SOURCE_UNAVAILABLE"
+        "REFERENCE_MATCH_FAMILY_LEVEL_SAFE_SUBSET"
     )
     assert price_structure_v3["price_structure_wave_fib_v3"] == (
         "INTEGRATED_READY_NOT_ARMED"
     )
-    assert price_structure_v3["production_enablement_ready"] == (
-        "YES_SELECTIVE_STABLE_SUBSET"
+    assert price_structure_v3["price_structure_v3_family_consensus"] == (
+        "INTEGRATED_READY_NOT_ARMED"
     )
+    assert price_structure_v3["production_enablement_ready"] == "YES"
     assert price_structure_v3["open_p0"] == []
     assert price_structure_v3["open_material_p1"] == []
     assert price_structure_v3["current_user_visible_message_diff"] == 0

@@ -3,18 +3,19 @@
 Repository: `sskim-ai/thesis-monitor`
 
 Latest authoritative price-structure work follows exact instruction commit
-`82cb04e2880d1ed7b0405e1ddd20c5f333305394` and implementation commit
-`bea877d3a6a9977c19832cbde28ed235676929d2`. Read the bounded-repair artifact index/readiness JSON
-and the bar-completion, backfill-cache, degree, and feedback-loop architecture documents first.
-Daily 1200 passes for 14 long-listed subjects and six shorter histories are safe partial. SK's
-2023-01 current-cycle candidate is visible; its June/July endpoints remain provisional.
+`b0f81c8e16f588e314f93eb6097370e85f285241` and implementation commit
+`631e82f202b6f081866ef83c8b67b2138a8b51d8`. Read the family-consensus artifact index/readiness
+JSON, the five family-contract architecture documents, and the detailed SK hynix family audit
+first. The supplied reference engine is available only under `docs/reference/user-wave-engine/` as
+`REFERENCE_ONLY / NOT_PRODUCTION_RUNTIME`; method comparison is `REFERENCE_MATCH`.
 
-`PRICE_STRUCTURE_WAVE_FIB_V3=INTEGRATED_READY_NOT_ARMED`; selective readiness is YES with open
-P0/material P1 `0/0`. Seven stable subjects may be considered only in a separately instructed
-bounded enablement; six abstentions and seven material-variation subjects remain shadow-only.
-Do not activate from this prompt, do not broaden eligibility, and do not expose unstable SK Fib.
-Production SR, Telegram, schedules, Public Action, schema, assessments, and Production Assist stay
-unchanged. The unavailable user reference engine remains P2.
+`PRICE_STRUCTURE_V3_FAMILY_CONSENSUS=INTEGRATED_READY_NOT_ARMED`; selective readiness is YES with
+open P0/material P1 `0/0`. Eleven archive-only calls and 74 decisions pass with zero runtime or
+semantic failure. SK's full hypothesis remains material, but six endpoint-dependent Fib families
+are safe and the W1 family is omitted. TSLA and TSM true conflicts remain material. Do not activate
+from this prompt or widen tolerances. The next feature-local action is a separately instructed
+`BOUNDED_PRICE_STRUCTURE_V3_FAMILY_SELECTIVE_ENABLEMENT`. Production SR, Telegram, schedules,
+Public Action, schema, assessments, and Production Assist stay unchanged.
 
 ---
 

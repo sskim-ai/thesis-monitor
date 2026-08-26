@@ -7,6 +7,29 @@ validation, delivery, or Scheduled Tasks.
 
 ## Current Authoritative Handoff — 2026-08-26
 
+### Price Structure v3 Family Consensus Stability Closure
+
+Start from immutable instruction commit `b0f81c8e16f588e314f93eb6097370e85f285241` and
+implementation commit `631e82f202b6f081866ef83c8b67b2138a8b51d8`. Read the family-consensus
+artifact index/readiness JSON, the five family-contract architecture documents, and the detailed SK
+hynix validation first. The repair preserves deterministic SR and existing tolerances while making
+Fibonacci eligibility depend on exact endpoint families, bounded hypothesis equivalence classes,
+and validated ambiguity sets. Unstable family sources are excluded before confluence.
+
+The signed-in archive-only protocol completed 11 calls and 74 ticker decisions with zero runtime
+failure or semantic rejection. Full-universe replay passes KR `7/7` and US/foreign `13/13`.
+SK hynix's full hypothesis remains material, but six of seven Fibonacci families are safely exact
+or price equivalent and one material W1 family is omitted. TSLA retains zero safe families and its
+true conflict; TSM retains its W3-dependent conflict. The supplied user engine is staged only as
+`REFERENCE_ONLY / NOT_PRODUCTION_RUNTIME`; its endpoint and confirmation method matches the
+selected SK hypothesis.
+
+State is `INTEGRATED_READY_NOT_ARMED`; production-enablement readiness is YES and open P0/material
+P1 is `0/0`. The next feature-local task is
+`BOUNDED_PRICE_STRUCTURE_V3_FAMILY_SELECTIVE_ENABLEMENT`. Do not activate from this handoff.
+Production SR, packets, Telegram, schedules, Public Action 0.4.5, schema 4, assessments, and
+Production Assist remain unchanged.
+
 ### Price Structure Wave Fibonacci v3 Bounded Repair
 
 Start with exact instruction commit `82cb04e2880d1ed7b0405e1ddd20c5f333305394`, implementation
