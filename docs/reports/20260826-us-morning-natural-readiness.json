@@ -1,0 +1,60 @@
+{
+  "contract": "us-morning-natural-production-review-v1",
+  "review_date_kst": "2026-08-26",
+  "instruction_commit": "88a6d60b6e8cc2e1eb277f8fe6c2dfabcdfb6ffd",
+  "review_base_sha": "88a6d60b6e8cc2e1eb277f8fe6c2dfabcdfb6ffd",
+  "natural_producer_sha": "0e916197b2d3214d9a10a6ed0ae17c09c9f00f3e",
+  "main_at_review": "cfb7838e065ea76f9c224bc71309fb251d67e4f8",
+  "operating_at_review": "cfb7838e065ea76f9c224bc71309fb251d67e4f8",
+  "natural_run_id": 39,
+  "packet_id": "2026-08-26-us-run-39-d55fe527c8e9",
+  "target_session": "2026-08-25",
+  "receipt_count": 14,
+  "delivery_count": 14,
+  "duplicate_count": 0,
+  "orphan_count": 0,
+  "gates": {
+    "US_MORNING_SCHEDULER": "LIVE_PASS",
+    "US_MORNING_PACKET_INTEGRITY": "PASS",
+    "US_MORNING_EXACTLY_ONCE": "PASS",
+    "US_COMPLETED_SESSION": "PASS",
+    "US_STRUCTURED_MARKET_CONTEXT": "PARTIAL",
+    "US_SECTOR_CONTEXT": "PARTIAL",
+    "NASDAQ_BREADTH_NATURAL": "SAFE_PUBLICATION_PENDING",
+    "NYSE_BREADTH_NATURAL": "UNAVAILABLE",
+    "NASDAQ_BREADTH_MESSAGE_VALUE_ADD": "NOT_OBSERVED",
+    "US_MARKET_DIGEST_EVIDENCE_UTILIZATION": "PARTIAL",
+    "US_MARKET_DIGEST_BREADTH_BOUNDARY": "PASS",
+    "US_MARKET_DIGEST_INFORMATION_DENSITY": "SAFE_BUT_THIN",
+    "US_FREE_ANALYST_CANARY_NATURAL": "NOT_OBSERVED",
+    "US_ENTITY_SPECIFIC_SYNTHESIS": "PASS",
+    "US_MACRO_TEMPORAL": "PASS",
+    "FIBONACCI_SHADOW_AT_NATURAL_RUN": "NOT_PRESENT",
+    "FIBONACCI_USER_VISIBLE_LEAK": "NOT_APPLICABLE",
+    "OPEN_RESEARCH_LEAK": 0,
+    "TRADE_AR_LEAK": 0,
+    "SAFETY_PARITY": "PASS",
+    "US_MORNING_NATURAL": "PARTIAL"
+  },
+  "counts": {
+    "free_analyst_candidates": 14,
+    "free_analyst_validated": 14,
+    "canary_selected": 0,
+    "fallback_messages": 14,
+    "numeric_claims": 127,
+    "open_p0": 0,
+    "open_material_p1": 2
+  },
+  "p0_open": [],
+  "p1_open": [
+    "current packet AI finalized after fallback deadline",
+    "acquired RSP/sector evidence did not propagate into packet/digest"
+  ],
+  "p2_backlog": [
+    "Nasdaq exact-session breadth publication pending",
+    "NYSE breadth unavailable",
+    "XLC provider failure",
+    "WRD deterministic message safe but thin"
+  ],
+  "next_action": "BOUNDED_REPAIR"
+}
