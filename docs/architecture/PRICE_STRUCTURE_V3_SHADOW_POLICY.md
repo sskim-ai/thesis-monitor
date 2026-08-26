@@ -54,3 +54,11 @@ multiple timeframes.
 Passing this shadow gate authorizes only a separately instructed bounded selective enablement of
 deterministic nearest/major SR plus safe family-stable Fib/SR confluence. It does not arm v3, alter
 current price rules, or create technical-to-business thesis mutation.
+
+## Renderer Integration Readiness
+
+The current-data renderer repair adds three shadow-only ownership rules before selective
+enablement: material Fib/SR range extensions retain their full registered range, current v3 SR and
+stored monitoring rules use separate headings and provenance owners, and stale parallel technical
+prose is suppressed while business text remains unchanged. These rules do not reopen SR/Fib
+calculation, change rollout eligibility, or arm production.

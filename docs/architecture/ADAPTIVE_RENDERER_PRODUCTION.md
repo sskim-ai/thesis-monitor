@@ -46,3 +46,11 @@ Negative OCF/FCF, market ambiguity, and competing interpretations are facts or b
 ## Broad Repetition
 
 The immutable full-cohort replay exposes two repeated generic Free Analyst synthesis sentences. Existing repetition thresholds remain unchanged, so full mode is not enabled. The limited canary contains at most two stock messages, passes its scoped receipt, and is the only production mode eligible for a later explicit enablement decision.
+
+## Price Structure v3 Ownership Boundary
+
+Future selective v3 rendering must keep current completed-session SR/Fib under
+`CURRENT_PRICE_STRUCTURE` and existing confirmation, warning, invalidation, and registered support
+under `STORED_MONITORING_PRICE_RULE`. A material Fib confluence extension must preserve its full
+registered range. Stale legacy technical prose cannot appear as a second current technical system.
+This policy statement does not enable v3 in production.
