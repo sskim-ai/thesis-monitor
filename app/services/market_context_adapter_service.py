@@ -61,7 +61,7 @@ class AdapterSector(BaseModel):
         "CURRENT_LEVEL_ONLY",
         "PUBLICATION_PENDING",
         "SOURCE_UNAVAILABLE",
-    ]
+    ] = "CURRENT_DIRECTIONAL"
     basis: Literal["actual_sector_breadth", "sector_price_proxy"]
     source_ref: str
 
@@ -75,7 +75,7 @@ class AdapterSizeContext(BaseModel):
         "CURRENT_LEVEL_ONLY",
         "PUBLICATION_PENDING",
         "SOURCE_UNAVAILABLE",
-    ]
+    ] = "CURRENT_DIRECTIONAL"
     basis: str
     as_of_date: date
     source_ref: str
