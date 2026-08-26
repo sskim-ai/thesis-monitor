@@ -25,7 +25,15 @@ def render_daily_digest(
         "kr": f"🇰🇷 한국 종목 장마감 점검 · {digest.digest_date}",
     }.get(digest.market_scope, f"🌍 시장환경 점검 · {digest.digest_date}")
     lines = [title]
-    if digest.kr_close_fx is not None:
+    kr_plan = digest.kr_market_digest_plan
+    if kr_plan is not None and kr_plan.richness.status:
+        lines.extend(["", "📍 국내 장마감 구조"])
+        for claim in kr_plan.claims():
+            lines.append(f"• {claim.text}")
+        if digest.kr_close_fx is not None:
+            lines.extend(["", render_kr_close_fx(digest.kr_close_fx)])
+        lines.extend(["", "🌐 보조 시장환경"])
+    elif digest.kr_close_fx is not None:
         lines.extend([render_kr_close_fx(digest.kr_close_fx), ""])
     lines.append(f"현재 환경: {macro.regime_label}")
     if macro.assessment_state == "provisional":

@@ -908,6 +908,29 @@ def build_free_analyst_analysis(
                     confidence=ConfidenceLabel.HIGH,
                 )
             )
+            for supporting_claim in (
+                kr_digest_plan.size_context,
+                kr_digest_plan.sector_context,
+            ):
+                if supporting_claim is None:
+                    continue
+                thesis.append(
+                    _item(
+                        item_id=(
+                            f"{identifier}-kr-local-{supporting_claim.role}"
+                        ),
+                        text=supporting_claim.text,
+                        support_type=SupportType.DIRECT_RELATION,
+                        evidence_refs=(kr_claim_refs[supporting_claim.role],),
+                        materiality_reason=(
+                            "keeps bounded same-session KR size or sector context "
+                            "behind index, breadth, and aggregate flow"
+                        ),
+                        rule_id=None,
+                        boundary="",
+                        confidence=ConfidenceLabel.HIGH,
+                    )
+                )
             next_checks = (
                 NextCheck(
                     check=kr_digest_plan.next_check.text,

@@ -187,6 +187,7 @@ def test_kr_rich_digest_keeps_judgment_interpretation_and_next_check_local_first
     assert candidate.eligible is True
     assert "KOSDAQ이 KOSPI보다 강했고" in candidate.candidate_text
     assert "외국인은 KOSPI에서 순매도하고 KOSDAQ에서 순매수" in candidate.candidate_text
+    assert "기관은 양 시장에서 순매수" in candidate.candidate_text
     assert "상승 종목 우위가 유지되는지" in candidate.candidate_text
     assert "S&P500 상대수익률" not in candidate.candidate_text
     quality = candidate.quality_v2["kr_market_digest"]

@@ -46,6 +46,8 @@ class KrMarketDigestPlan:
     richness: KrDomesticRichness
     judgment: KrDigestClaim | None
     interpretation: KrDigestClaim | None
+    size_context: KrDigestClaim | None
+    sector_context: KrDigestClaim | None
     next_check: KrDigestClaim | None
     global_context_retained: bool
     global_context_reason: str
@@ -54,7 +56,13 @@ class KrMarketDigestPlan:
     def claims(self) -> tuple[KrDigestClaim, ...]:
         return tuple(
             claim
-            for claim in (self.judgment, self.interpretation, self.next_check)
+            for claim in (
+                self.judgment,
+                self.interpretation,
+                self.size_context,
+                self.sector_context,
+                self.next_check,
+            )
             if claim is not None
         )
 
@@ -124,13 +132,10 @@ def kr_domestic_context_richness(value: object) -> KrDomesticRichness:
         reasons.append("kospi_kosdaq_indices_incomplete")
     if not kospi_kosdaq_breadth:
         reasons.append("kospi_kosdaq_breadth_incomplete")
-    if not supporting:
-        reasons.append("local_flow_size_sector_context_missing")
     status = bool(
         completed_session
         and kospi_kosdaq_indices
         and kospi_kosdaq_breadth
-        and supporting
     )
     return KrDomesticRichness(
         contract=CONTRACT_VERSION,
@@ -168,6 +173,99 @@ def _flow_map(context: NormalizedMarketContext) -> dict[tuple[str, str], float]:
     }
 
 
+_PARTICIPANT_LABELS = {
+    "foreign": "외국인",
+    "institution": "기관",
+    "retail": "개인",
+}
+
+
+def _flow_action(value: float) -> str:
+    if value > 0:
+        return "순매수"
+    if value < 0:
+        return "순매도"
+    return "중립"
+
+
+def _participant_flow_clause(
+    participant: str,
+    flows: dict[tuple[str, str], float],
+) -> str | None:
+    scopes = [
+        scope for scope in ("KOSPI", "KOSDAQ") if (scope, participant) in flows
+    ]
+    if not scopes:
+        return None
+    label = _PARTICIPANT_LABELS[participant]
+    actions = {
+        scope: _flow_action(flows[(scope, participant)]) for scope in scopes
+    }
+    if len(scopes) == 2 and len(set(actions.values())) == 1:
+        return f"{label}은 양 시장에서 {actions[scopes[0]]}했습니다."
+    if len(scopes) == 2:
+        return (
+            f"{label}은 KOSPI에서 {actions['KOSPI']}하고 "
+            f"KOSDAQ에서 {actions['KOSDAQ']}했습니다."
+        )
+    return f"{label}은 {scopes[0]}에서 {actions[scopes[0]]}했습니다."
+
+
+def _size_claim(context: NormalizedMarketContext) -> KrDigestClaim | None:
+    current = [
+        item
+        for item in context.size_context
+        if item.as_of_date == context.session_date and item.return_pct is not None
+    ]
+    if len(current) < 2:
+        return None
+    strongest = max(current, key=lambda item: float(item.return_pct))
+    peers = [item.name for item in current if item.name != strongest.name]
+    return KrDigestClaim(
+        role="size_context",
+        text=(
+            f"KOSPI 규모별 지수에서는 {strongest.name}가 "
+            f"{'·'.join(peers)}보다 강했습니다."
+        ),
+        priority=KrEvidencePriority.P1_LOCAL_MARKET_STRUCTURE,
+        source_refs=tuple(item.source_ref for item in current),
+    )
+
+
+def _sector_claim(context: NormalizedMarketContext) -> KrDigestClaim | None:
+    clauses: list[str] = []
+    refs: list[str] = []
+    for scope in ("KOSPI", "KOSDAQ"):
+        current = [
+            item
+            for item in context.sectors
+            if item.market_scope == scope
+            and item.basis == "actual_sector_breadth"
+            and item.return_pct is not None
+            and (item.listed_count is None or item.listed_count > 0)
+        ]
+        if len(current) < 2:
+            continue
+        leader = max(current, key=lambda item: float(item.return_pct))
+        laggard = min(current, key=lambda item: float(item.return_pct))
+        if leader.source_ref == laggard.source_ref:
+            continue
+        scope_topic = "KOSDAQ은" if scope == "KOSDAQ" else f"{scope}는"
+        clauses.append(
+            f"{scope_topic} {leader.name} 상대 강세, "
+            f"{laggard.name} 상대 약세였습니다"
+        )
+        refs.extend((leader.source_ref, laggard.source_ref))
+    if not clauses:
+        return None
+    return KrDigestClaim(
+        role="sector_context",
+        text=f"업종지수 등락 기준 {'; '.join(clauses)}.",
+        priority=KrEvidencePriority.P3_LOCAL_STOCK_CROSS_SECTION,
+        source_refs=tuple(dict.fromkeys(refs)),
+    )
+
+
 def _global_contradiction(text: str) -> bool:
     return bool(
         re.search(
@@ -191,6 +289,8 @@ def build_kr_market_digest_plan(
             richness=richness,
             judgment=None,
             interpretation=None,
+            size_context=None,
+            sector_context=None,
             next_check=None,
             global_context_retained=False,
             global_context_reason="domestic_context_not_rich",
@@ -211,7 +311,27 @@ def build_kr_market_digest_plan(
         and kospi_breadth.breadth_ratio > 0.5
         and kosdaq_breadth.breadth_ratio > 0.5
     )
-    if (
+    opposite_index_directions = bool(
+        kospi.return_pct is not None
+        and kosdaq.return_pct is not None
+        and (
+            (kospi.return_pct > 0 >= kosdaq.return_pct)
+            or (kosdaq.return_pct > 0 >= kospi.return_pct)
+        )
+    )
+    if opposite_index_directions:
+        kospi_direction = "상승" if float(kospi.return_pct) > 0 else "하락 또는 보합"
+        kosdaq_direction = "상승" if float(kosdaq.return_pct) > 0 else "하락 또는 보합"
+        breadth_text = (
+            "두 시장 모두 상승 종목이 하락 종목보다 많았습니다"
+            if both_positive_breadth
+            else "양 시장의 시장 폭은 같은 방향으로 정렬되지 않았습니다"
+        )
+        judgment_text = (
+            f"KOSPI는 {kospi_direction}, KOSDAQ은 {kosdaq_direction}으로 지수 방향이 "
+            f"달랐지만 {breadth_text}."
+        )
+    elif (
         kospi.return_pct is not None
         and kosdaq.return_pct is not None
         and kosdaq.return_pct > kospi.return_pct
@@ -245,50 +365,29 @@ def build_kr_market_digest_plan(
         for item in context.market_flows
         if item.as_of_date == context.session_date
     )
-    split_foreign = bool(
-        flows.get(("KOSPI", "foreign"), 0) < 0
-        and flows.get(("KOSDAQ", "foreign"), 0) > 0
-    )
-    institutions_buy_both = bool(
-        flows.get(("KOSPI", "institution"), 0) > 0
-        and flows.get(("KOSDAQ", "institution"), 0) > 0
-    )
-    if split_foreign and institutions_buy_both:
-        interpretation_text = (
-            "외국인은 KOSPI에서 순매도하고 KOSDAQ에서 순매수한 반면 기관은 "
-            "양 시장에서 순매수해, 시장별 참여 흐름이 한 방향으로 정렬되지는 "
-            "않았습니다."
-        )
+    flow_clauses = [
+        clause
+        for participant in _PARTICIPANT_LABELS
+        if (clause := _participant_flow_clause(participant, flows)) is not None
+    ]
+    size_context = _size_claim(context)
+    sector_context = _sector_claim(context)
+    if flow_clauses:
+        interpretation_text = " ".join(flow_clauses)
         interpretation_priority = KrEvidencePriority.P2_LOCAL_MARKET_FLOW
         interpretation_refs = flow_refs
         next_text = (
-            "외국인의 KOSPI 순매도가 이어지는 동안 양 시장의 상승 종목 우위가 "
-            "유지되는지 확인합니다."
+            "양 시장의 상승 종목 우위가 유지되는지, 외국인·기관의 시장별 "
+            "수급 방향과 함께 확인합니다."
+            if both_positive_breadth
+            else "양 시장의 상승·하락 종목 분포와 외국인·기관의 시장별 수급 "
+            "방향이 함께 유지되는지 확인합니다."
         )
         next_refs = tuple(dict.fromkeys((*p1_refs, *flow_refs)))
-    elif context.size_context:
-        returns = {
-            item.name: item.return_pct
-            for item in context.size_context
-            if item.return_pct is not None
-        }
-        large = returns.get("대형주")
-        medium = returns.get("중형주")
-        small = returns.get("소형주")
-        if large is not None and medium is not None and small is not None and min(
-            medium, small
-        ) > large:
-            interpretation_text = (
-                "중형주와 소형주가 대형주보다 강해 국내 상승 참여가 대형주에만 "
-                "집중된 구조는 아니었습니다."
-            )
-        else:
-            interpretation_text = (
-                "지수와 시장 폭을 함께 보면 국내 상승 참여의 지속 여부가 다음 "
-                "판단을 가를 핵심입니다."
-            )
+    elif size_context is not None:
+        interpretation_text = size_context.text
         interpretation_priority = KrEvidencePriority.P1_LOCAL_MARKET_STRUCTURE
-        interpretation_refs = tuple(item.source_ref for item in context.size_context)
+        interpretation_refs = size_context.source_refs
         next_text = "양 시장의 상승 종목 우위와 중소형주 상대 흐름이 이어지는지 확인합니다."
         next_refs = tuple(dict.fromkeys((*p1_refs, *interpretation_refs)))
     else:
@@ -323,6 +422,8 @@ def build_kr_market_digest_plan(
         richness=richness,
         judgment=judgment,
         interpretation=interpretation,
+        size_context=size_context if flow_clauses else None,
+        sector_context=sector_context,
         next_check=next_check,
         global_context_retained=contradiction,
         global_context_reason=(
