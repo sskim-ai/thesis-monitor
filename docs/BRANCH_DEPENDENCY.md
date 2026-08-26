@@ -214,3 +214,16 @@ task, and assessment imports remain unchanged. A later enablement branch must de
 closure and preserve backend SR ownership, typed abstention, per-timeframe consensus omission, and
 the existing tolerances. It has no ancestry dependency on Open Research, KRX telemetry, cash flow,
 working capital, or natural delivery proof.
+
+The Price Structure Wave Fibonacci v3 branch starts from immutable instruction commit
+`5bcf2a1a73a10c73db12c37e93a51652983599d5`, whose parent is operating main
+`aa79fefec9fe9da43c1b241a68f7ec43f9247b1d`. Implementation commit
+`63b3ce219f996ea23b0a2a254d842bbb579adef2` adds only a new archive/test service, evidence
+generator, and focused tests. No production module imports the v3 service. It preserves the prior
+consensus safety principles while redefining price structure around monthly wave ownership,
+weekly confirmation, independent timeframe SR, and source-provenance-preserving Fib families.
+
+The branch is promotable as shadow evidence but is not a production-enablement ancestor: daily
+1200 coverage and SK reference-method review remain feature-local material P1. It changes no
+Open Research, KRX telemetry, cash flow, working capital, Free Analyst canary, task, schema,
+Telegram, DB, assessment, or Production Assist state.

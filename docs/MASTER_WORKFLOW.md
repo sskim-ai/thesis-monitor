@@ -1254,3 +1254,27 @@ multi-timeframe Fibonacci enablement, not activation. Production imports, Telegr
 tasks, Public Action, assessment state, price rules, tolerances, and Production Assist remain
 unchanged. The independent Open Research and natural monitoring tracks continue under Phase
 Advancement Rule v1.
+
+## 40. Price Structure Wave Fibonacci Engine v3
+
+Exact instruction commit `5bcf2a1a73a10c73db12c37e93a51652983599d5` precedes implementation
+commit `63b3ce219f996ea23b0a2a254d842bbb579adef2`. The v3 archive-only core supersedes the
+generic per-timeframe Fib concept with completed adjusted OHLCV, monthly primary-wave candidates,
+weekly endpoint confirmation, independent monthly/weekly/daily SR maps, wave-owned Fibonacci
+families, and final cross-timeframe synthesis. AI makes ID-only selections and cannot calculate
+technical prices.
+
+The 20-stock frozen replay made 20 successful local provider calls. Weekly 600 passes for 12 and
+monthly 300 passes for eight; shorter listings remain explicit partial/fail. Daily 1200 is partial
+for all 20 because the current `/ohlcv` interface caps requests at 1000. The deterministic engine
+produces three confirmed primary hypotheses, 11 ambiguous results, and six valid no-impulse
+results. Seventeen signed-in archive-only model calls yield 14 stable selections and six stable
+abstentions with zero runtime failures, semantic rejections, or unstable Fib eligibility.
+
+The quoted SK hynix reference and v3 primary method materially disagree at W0-W2, while the user
+reference source archive itself was not supplied. Therefore `SK_HYNIX_REFERENCE` is
+`MATERIAL_METHOD_CONFLICT`, `PRICE_STRUCTURE_WAVE_FIB_V3=SHADOW`, and
+`PRODUCTION_ENABLEMENT_READY=NO`. Open P0 is zero; the two material P1s are the daily provider cap
+and the SK method conflict. Keep production SR, packets, Telegram, tasks, schema, assessment state,
+and Production Assist unchanged. The next action is a bounded feature-local repair, not live
+enablement.

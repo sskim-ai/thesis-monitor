@@ -2,6 +2,25 @@
 
 Repository: `sskim-ai/thesis-monitor`
 
+Latest authoritative price-structure work follows exact instruction commit
+`5bcf2a1a73a10c73db12c37e93a51652983599d5` and implementation commit
+`63b3ce219f996ea23b0a2a254d842bbb579adef2`. Read all seven v3 architecture documents and
+`docs/reports/20260826-price-structure-v3-artifact-index.md` plus readiness JSON first. The 20-stock
+archive replay and 17 signed-in ID-only AI calls pass deterministic, provenance, confluence,
+look-ahead, schema, and stability checks. Production output diff is zero.
+
+Keep `PRICE_STRUCTURE_WAVE_FIB_V3=SHADOW` and do not arm production. Two material P1s remain:
+the local provider interface caps daily history at 1000 instead of the canonical 1200, and SK
+hynix's diagnostic W0-W2 materially conflict with the quoted user reference while the reference
+source archive is unavailable. Perform only a bounded history-interface repair and source-backed
+method review. Do not shrink the canonical budget, hard-code SK endpoints, widen tolerances, or
+enable favorable tickers. Production SR, Telegram, tasks, Public Action, schema, assessments, and
+Production Assist remain unchanged.
+
+---
+
+Prior Fibonacci context follows.
+
 Latest Fibonacci variable-anchor closure follows exact instruction commit
 `d9e6e2327f0f32256a1bd0d8caf2c0b0f1faf890`. Read
 `docs/reports/20260826-fibonacci-p1-closure-readiness.md` and JSON, then the exact benchmark,

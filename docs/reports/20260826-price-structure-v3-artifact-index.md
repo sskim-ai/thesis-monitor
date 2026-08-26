@@ -1,0 +1,29 @@
+# Price Structure v3 Artifact Index
+
+- `docs/work-instructions/20260826-price-structure-wave-fibonacci-engine-v3.md`
+- `docs/architecture/PRICE_STRUCTURE_WAVE_FIB_V3.md`
+- `docs/architecture/OHLCV_LONG_HISTORY_CONTRACT.md`
+- `docs/architecture/PRIMARY_MONTHLY_WAVE_HYPOTHESIS.md`
+- `docs/architecture/WAVE_FIBONACCI_SOURCE_PROVENANCE.md`
+- `docs/architecture/MULTI_TIMEFRAME_SR_CONFLUENCE_V3.md`
+- `docs/architecture/TECHNICAL_ZONE_EVIDENCE_FAMILIES.md`
+- `docs/architecture/PRICE_STRUCTURE_V3_SHADOW_POLICY.md`
+- `docs/reports/20260826-user-reference-wave-engine-audit.md`
+- `docs/reports/20260826-reference-wave-engine-production-gap-audit.md`
+- `docs/reports/20260826-ohlcv-1200-600-300-acquisition.md`
+- `docs/reports/20260826-ohlcv-long-history-sr-impact.md`
+- `docs/reports/20260826-primary-monthly-wave-hypothesis-validation.md`
+- `docs/reports/20260826-wave-fibonacci-source-provenance-audit.md`
+- `docs/reports/20260826-technical-zone-evidence-family-audit.md`
+- `docs/reports/20260826-cross-timeframe-confluence-v3-audit.md`
+- `docs/reports/20260826-sk-hynix-wave-fibonacci-v3-validation.md`
+- `docs/reports/20260826-wave-fibonacci-v3-generalization.md`
+- `docs/reports/20260826-price-structure-v3-variable-ai-stability.md`
+- `docs/reports/20260826-price-structure-v3-exact-before-after.md`
+- `docs/reports/20260826-price-structure-v3-kr-us-shadow-replay.md`
+- `docs/reports/20260826-price-structure-v3-performance.md`
+- `docs/reports/20260826-price-structure-v3-safety-parity.md`
+- `docs/reports/20260826-price-structure-v3-readiness.md`
+- `docs/reports/20260826-price-structure-v3-readiness.json`
+- `docs/reports/20260826-price-structure-v3-evidence.json`
+- `docs/reports/20260826-price-structure-v3-artifact-index.md`

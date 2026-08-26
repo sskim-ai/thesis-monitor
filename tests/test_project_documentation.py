@@ -56,6 +56,13 @@ DOCUMENTS = (
     ROOT / "docs" / "architecture" / "CANONICAL_SWING_STRUCTURE_CANDIDATE.md",
     ROOT / "docs" / "architecture" / "FIBONACCI_VALID_ABSTENTION.md",
     ROOT / "docs" / "architecture" / "AI_ANCHOR_CONSENSUS_POLICY.md",
+    ROOT / "docs" / "architecture" / "PRICE_STRUCTURE_WAVE_FIB_V3.md",
+    ROOT / "docs" / "architecture" / "OHLCV_LONG_HISTORY_CONTRACT.md",
+    ROOT / "docs" / "architecture" / "PRIMARY_MONTHLY_WAVE_HYPOTHESIS.md",
+    ROOT / "docs" / "architecture" / "WAVE_FIBONACCI_SOURCE_PROVENANCE.md",
+    ROOT / "docs" / "architecture" / "MULTI_TIMEFRAME_SR_CONFLUENCE_V3.md",
+    ROOT / "docs" / "architecture" / "TECHNICAL_ZONE_EVIDENCE_FAMILIES.md",
+    ROOT / "docs" / "architecture" / "PRICE_STRUCTURE_V3_SHADOW_POLICY.md",
     ROOT / "docs" / "operations" / "AI_ASSISTED_PILOT.md",
     ROOT / "docs" / "operations" / "CASH_FLOW_USER_VISIBLE_KILL_SWITCH.md",
     ROOT / "docs" / "operations" / "WORKING_CAPITAL_USER_VISIBLE_KILL_SWITCH.md",
@@ -75,19 +82,14 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
 
     assert state["repository"] == "sskim-ai/thesis-monitor"
     assert state["branch"] == "main"
-    assert state["experimental_branch"] == (
-        "codex/fibonacci-anchor-sr-ownership-consensus-repair"
-    )
+    assert state["experimental_branch"] == "codex/price-structure-wave-fibonacci-engine-v3"
     assert state["current_phase"] == (
-        "fibonacci_anchor_sr_consensus_integrated_ready_not_armed"
+        "price_structure_wave_fib_v3_shadow_bounded_repair_required"
     )
-    assert state["last_completed_phase"] == (
-        "fibonacci_anchor_sr_ownership_consensus_bounded_repair"
-    )
-    assert state["next_default_phase"] == (
-        "open_research_production_connector_selective_event_attribution"
-    )
-    implementation_commit = "0dfef76bba606f018893d6e68e7beaf410aa7438"
+    assert state["last_completed_phase"] == "price_structure_wave_fib_v3_shadow_implementation"
+    assert state["next_default_phase"] == "bounded_price_structure_v3_history_and_method_repair"
+    implementation_commit = "63b3ce219f996ea23b0a2a254d842bbb579adef2"
+    prior_fibonacci_commit = "0dfef76bba606f018893d6e68e7beaf410aa7438"
     assert state["deployed_code_commit"] == implementation_commit
     assert state["main_code_commit"] == implementation_commit
     assert state["operating_code_commit"] == implementation_commit
@@ -210,6 +212,25 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     assert state["contracts"]["variable_ai_swing_structure_consensus"] == (
         "variable-ai-swing-structure-consensus-v1"
     )
+    assert state["contracts"]["price_structure_wave_fibonacci_v3"] == (
+        "price-structure-wave-fibonacci-v3"
+    )
+    assert state["contracts"]["ohlcv_long_history"] == "ohlcv-long-history-contract-v1"
+    assert state["contracts"]["primary_monthly_wave_hypothesis"] == (
+        "primary-monthly-wave-hypothesis-v1"
+    )
+    assert state["contracts"]["wave_fibonacci_source_provenance"] == (
+        "wave-fibonacci-source-provenance-v1"
+    )
+    assert state["contracts"]["multi_timeframe_sr_confluence_v3"] == (
+        "multi-timeframe-sr-confluence-v3"
+    )
+    assert state["contracts"]["technical_zone_evidence_families"] == (
+        "technical-zone-evidence-families-v1"
+    )
+    assert state["contracts"]["price_structure_v3_shadow_policy"] == (
+        "price-structure-v3-shadow-policy-v1"
+    )
     bounded_quality = state[
         "kr_market_digest_us_entity_specific_synthesis_bounded_repair"
     ]
@@ -262,7 +283,7 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     assert fibonacci_consensus["instruction_commit"] == (
         "39cab7ed8b1cb3bebea1bd1240498caa454bd09a"
     )
-    assert fibonacci_consensus["implementation_commit"] == implementation_commit
+    assert fibonacci_consensus["implementation_commit"] == prior_fibonacci_commit
     assert fibonacci_consensus["active_universe"] == 20
     assert fibonacci_consensus["benchmark_runs_per_packet"] == 5
     assert fibonacci_consensus["wider_universe_runs_per_packet"] == 3
@@ -291,6 +312,39 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     assert fibonacci_consensus["open_p0"] == []
     assert fibonacci_consensus["open_material_p1"] == []
     assert fibonacci_consensus["production_assist"] is False
+    price_structure_v3 = state["price_structure_wave_fibonacci_v3"]
+    assert price_structure_v3["status"] == "shadow_bounded_repair_required"
+    assert price_structure_v3["instruction_commit"] == (
+        "5bcf2a1a73a10c73db12c37e93a51652983599d5"
+    )
+    assert price_structure_v3["implementation_commit"] == implementation_commit
+    assert price_structure_v3["implementation_github_actions_run"] == 32930077637
+    assert price_structure_v3["implementation_github_actions_status"] == (
+        "passed_test_and_lint"
+    )
+    assert price_structure_v3["active_universe"] == 20
+    assert price_structure_v3["coverage"]["daily"] == {"partial": 20}
+    assert price_structure_v3["coverage"]["weekly"] == {"pass": 12, "partial": 8}
+    assert price_structure_v3["coverage"]["monthly"] == {
+        "pass": 8,
+        "partial": 11,
+        "fail": 1,
+    }
+    assert price_structure_v3["ai_runtime_calls"] == 17
+    assert price_structure_v3["focused_tests"] == "60_passed"
+    assert price_structure_v3["full_tests"] == "1667_passed"
+    assert price_structure_v3["ruff"] == "pass"
+    assert price_structure_v3["ai_runtime_failures"] == 0
+    assert price_structure_v3["ai_semantic_rejections"] == 0
+    assert price_structure_v3["ai_stability"] == {"stable": 14, "valid_abstention": 6}
+    assert price_structure_v3["unstable_fibonacci_user_visible_eligible"] == 0
+    assert price_structure_v3["sk_hynix_reference"] == "MATERIAL_METHOD_CONFLICT"
+    assert price_structure_v3["price_structure_wave_fib_v3"] == "SHADOW"
+    assert price_structure_v3["production_enablement_ready"] == "NO"
+    assert price_structure_v3["open_p0"] == []
+    assert len(price_structure_v3["open_material_p1"]) == 2
+    assert price_structure_v3["current_user_visible_message_diff"] == 0
+    assert price_structure_v3["production_assist"] is False
     advancement = state["phase_advancement_rule_v1"]
     assert advancement["p0_open"] == []
     assert advancement["p1_open"] == []
@@ -682,6 +736,13 @@ def test_architecture_guides_record_decisions_and_readme_navigation() -> None:
         ROOT / "docs" / "architecture" / "WORKING_CAPITAL_SHADOW_CONSUMPTION.md",
         ROOT / "docs" / "architecture" / "WORKING_CAPITAL_RUNTIME_SHADOW_CANARY.md",
         ROOT / "docs" / "architecture" / "WORKING_CAPITAL_USER_VISIBLE_PREINTEGRATION.md",
+        ROOT / "docs" / "architecture" / "PRICE_STRUCTURE_WAVE_FIB_V3.md",
+        ROOT / "docs" / "architecture" / "OHLCV_LONG_HISTORY_CONTRACT.md",
+        ROOT / "docs" / "architecture" / "PRIMARY_MONTHLY_WAVE_HYPOTHESIS.md",
+        ROOT / "docs" / "architecture" / "WAVE_FIBONACCI_SOURCE_PROVENANCE.md",
+        ROOT / "docs" / "architecture" / "MULTI_TIMEFRAME_SR_CONFLUENCE_V3.md",
+        ROOT / "docs" / "architecture" / "TECHNICAL_ZONE_EVIDENCE_FAMILIES.md",
+        ROOT / "docs" / "architecture" / "PRICE_STRUCTURE_V3_SHADOW_POLICY.md",
         ROOT / "docs" / "operations" / "AI_ASSISTED_PILOT.md",
         ROOT / "docs" / "knowledge" / "README.md",
     )
@@ -711,6 +772,13 @@ def test_architecture_guides_record_decisions_and_readme_navigation() -> None:
         "docs/architecture/WORKING_CAPITAL_USER_VISIBLE_PREINTEGRATION.md",
         "docs/architecture/NIGHT_FUTURES_SESSION_BASIS.md",
         "docs/architecture/NIGHT_FUTURES_PUBLICATION_TELEMETRY.md",
+        "docs/architecture/PRICE_STRUCTURE_WAVE_FIB_V3.md",
+        "docs/architecture/OHLCV_LONG_HISTORY_CONTRACT.md",
+        "docs/architecture/PRIMARY_MONTHLY_WAVE_HYPOTHESIS.md",
+        "docs/architecture/WAVE_FIBONACCI_SOURCE_PROVENANCE.md",
+        "docs/architecture/MULTI_TIMEFRAME_SR_CONFLUENCE_V3.md",
+        "docs/architecture/TECHNICAL_ZONE_EVIDENCE_FAMILIES.md",
+        "docs/architecture/PRICE_STRUCTURE_V3_SHADOW_POLICY.md",
         "docs/operations/AI_ASSISTED_PILOT.md",
         "docs/operations/SCHEDULED_TASK_CONTRACTS.md",
         "docs/knowledge/README.md",

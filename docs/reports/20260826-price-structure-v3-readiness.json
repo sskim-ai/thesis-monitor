@@ -1,0 +1,86 @@
+{
+  "active_universe": 20,
+  "contract": "price-structure-wave-fibonacci-v3-readiness-v1",
+  "coverage_counts": {
+    "daily": {
+      "PARTIAL": 20
+    },
+    "monthly": {
+      "FAIL": 1,
+      "PARTIAL": 11,
+      "PASS": 8
+    },
+    "weekly": {
+      "PARTIAL": 8,
+      "PASS": 12
+    }
+  },
+  "gates": {
+    "CODE_CORRECTNESS": "PASS",
+    "CROSS_TIMEFRAME_CONFLUENCE_V3": "PASS",
+    "CURRENT_REBOUND_FIB": "PASS",
+    "CURRENT_USER_VISIBLE_MESSAGE_DIFF": 0,
+    "DAILY_1200": "PARTIAL",
+    "DAILY_SR_MAP": "PASS",
+    "KR_SHADOW_REPLAY": "PASS",
+    "KR_US_PRICE_STRUCTURE_V3_SCHEMA_COMMON": "PASS",
+    "LONG_HISTORY_SR": "PASS",
+    "MONTHLY_300": "PARTIAL",
+    "MONTHLY_SR_MAP": "PASS",
+    "NO_FORCED_ELLIOTT": "PASS",
+    "OHLCV_1200_600_300_CONTRACT": "PARTIAL",
+    "PERFORMANCE": "PASS",
+    "PRICE_STRUCTURE_WAVE_FIB_V3": "SHADOW",
+    "PRIMARY_CYCLE_FIB": "PASS",
+    "PRIMARY_MONTHLY_WAVE_HYPOTHESIS": "PASS",
+    "PRODUCTION_ENABLEMENT_READY": "NO",
+    "PROVISIONAL_WAVE_SEMANTICS": "PASS",
+    "SK_HYNIX_REFERENCE": "MATERIAL_METHOD_CONFLICT",
+    "TECHNICAL_EVIDENCE_FAMILY_SCORING": "PASS",
+    "UNSTABLE_FIB_USER_VISIBLE_ELIGIBLE": 0,
+    "USER_REFERENCE_ENGINE_AUDIT": "PASS",
+    "US_SHADOW_REPLAY": "PASS",
+    "VARIABLE_AI_HYPOTHESIS_SELECTION": "PASS",
+    "WAVE5_PROJECTION": "PASS",
+    "WAVE_FIB_SOURCE_PROVENANCE": "PASS",
+    "WEEKLY_600": "PARTIAL",
+    "WEEKLY_ENDPOINT_CONFIRMATION": "PASS",
+    "WEEKLY_SR_MAP": "PASS"
+  },
+  "generated_for": "2026-08-26",
+  "instruction_commit": "5bcf2a1a73a10c73db12c37e93a51652983599d5",
+  "implementation_commit": "63b3ce219f996ea23b0a2a254d842bbb579adef2",
+  "implementation_github_actions_run": 32930077637,
+  "implementation_github_actions_status": "passed_test_and_lint",
+  "kr_count": 7,
+  "next_action": "BOUNDED_REPAIR",
+  "open_material_p1": [
+    "daily_provider_interface_cap_1000_blocks_canonical_1200",
+    "sk_hynix_reference_method_conflict_requires_source_archive_or_bounded_method_review"
+  ],
+  "open_p0": [],
+  "p2_backlog": [
+    "bearish_wave_engine",
+    "abc_internal_structure",
+    "nested_intermediate_degree",
+    "optional_indicator_expansion"
+  ],
+  "primary_hypothesis_counts": {
+    "AMBIGUOUS": 11,
+    "NONE": 6,
+    "VALID_CONFIRMED": 3
+  },
+  "provider_calls": 20,
+  "provider_failures": 0,
+  "validation": {
+    "focused_tests": "60_passed",
+    "full_tests": "1667_passed",
+    "ruff": "pass",
+    "git_diff_check": "pass",
+    "knowledge": "pass",
+    "public_action": "0.4.5_unchanged",
+    "operation_ids": "20_of_20_unique",
+    "production_import_diff": 0
+  },
+  "us_count": 13
+}
