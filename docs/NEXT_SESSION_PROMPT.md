@@ -2,6 +2,23 @@
 
 Repository: `sskim-ai/thesis-monitor`
 
+Latest authoritative renderer work follows exact instruction commit
+`2ac7eaaede9cb8d9047173bbec5f2bd99c665573` and implementation commit
+`4246efb4f8afa3516402d1df7864967c177ac6e7`. Read
+`docs/reports/20260826-v3-renderer-readiness.md` and JSON, then the Fib confluence,
+current-vs-stored price-rule, legacy technical prose, exact-control, full-universe, exact-diff,
+message-quality, safety, and artifact-index reports.
+
+The current-data renderer preserves material Fib extensions, labels current v3 SR and stored
+monitoring rules as separate owners, and suppresses stale parallel technical prose. SK hynix,
+SNDK, MU, TSM, TSLA, and `012450` controls pass; eligibility remains KR `6+1` and US/foreign
+`4+9`; quality is `16 material / 4 minor / 0 worse`; all hard counters are zero.
+`PRICE_STRUCTURE_V3_RENDERER_INTEGRATION=INTEGRATED_READY_NOT_ARMED` and production enablement
+readiness is YES with P0/material P1 `0/0`. Do not activate from this prompt. The next separately
+instructed task is `BOUNDED_PRICE_STRUCTURE_V3_SR_AND_FAMILY_SELECTIVE_ENABLEMENT`.
+
+---
+
 Latest authoritative price-structure work follows exact instruction commit
 `38b5fbca8a7264e3b73ef78c121b6ed6758c3ad8` and implementation commit
 `84f8f549bc8fa0338309a84b23b2738f2e357646`. Read the pre-enablement artifact index/readiness,

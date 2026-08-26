@@ -1398,3 +1398,24 @@ technical numbers, business-text change, and runtime-visible change are all zero
 this validation does not arm production. The only authorized next feature-local action remains
 `BOUNDED_PRICE_STRUCTURE_V3_SR_AND_FAMILY_SELECTIVE_ENABLEMENT`; Telegram, tasks, Public Action,
 assessments, price rules, Production Assist, and current runtime imports remain unchanged.
+
+### 40.6 Renderer Ownership Integration Micro-Repair
+
+Exact instruction commit `2ac7eaaede9cb8d9047173bbec5f2bd99c665573` precedes implementation
+commit `4246efb4f8afa3516402d1df7864967c177ac6e7`. The pure
+`price-structure-v3-renderer-ownership-v1` contract preserves material Fib/SR range extensions,
+separates current completed-session structure from `chart:stored_price_rules`, and suppresses stale
+parallel technical prose without changing the surrounding business sentence.
+
+The same 20-subject current-data dataset replays with unchanged eligibility: KR
+`6 ELIGIBLE / 1 ELIGIBLE_SR_ONLY`, US/foreign `4 ELIGIBLE / 9 ELIGIBLE_SR_ONLY`, and zero blocked.
+SK hynix retains major resistance `about KRW 1.869M-1.879M` while displaying the full safe Fib/SR
+range `about KRW 1.869M-1.916M`. SNDK and TSM keep current SR and stored management rules under
+separate headings. MU retains its business thesis and removes only the stale 2026-08-12
+OHLCV/MACD sentence. TSLA remains SR-only and `012450` retains its stable family range.
+
+All renderer ownership, provenance, calculation-parity, business-parity, temporal, and isolation
+counters are zero. Human review remains 16 material improvements, four minor improvements, and
+zero worse. `PRICE_STRUCTURE_V3_RENDERER_INTEGRATION=INTEGRATED_READY_NOT_ARMED` and
+`PRODUCTION_ENABLEMENT_READY=YES`; only the separately instructed
+`BOUNDED_PRICE_STRUCTURE_V3_SR_AND_FAMILY_SELECTIVE_ENABLEMENT` may arm production.

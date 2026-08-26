@@ -78,6 +78,10 @@ DOCUMENTS = (
     ROOT / "docs" / "architecture" / "SR_TIMEFRAME_FALLBACK_PROVENANCE.md",
     ROOT / "docs" / "architecture" / "FIB_OPTIONAL_CONFLUENCE_POLICY.md",
     ROOT / "docs" / "architecture" / "CROSS_TIMEFRAME_SR_RELEVANCE.md",
+    ROOT / "docs" / "architecture" / "PRICE_STRUCTURE_V3_RENDERER_OWNERSHIP.md",
+    ROOT / "docs" / "architecture" / "FIB_CONFLUENCE_RENDER_EQUIVALENCE.md",
+    ROOT / "docs" / "architecture" / "CURRENT_SR_VS_STORED_PRICE_RULES.md",
+    ROOT / "docs" / "architecture" / "LEGACY_TECHNICAL_PROSE_SUPPRESSION.md",
     ROOT / "docs" / "operations" / "AI_ASSISTED_PILOT.md",
     ROOT / "docs" / "operations" / "CASH_FLOW_USER_VISIBLE_KILL_SWITCH.md",
     ROOT / "docs" / "operations" / "WORKING_CAPITAL_USER_VISIBLE_KILL_SWITCH.md",
@@ -98,18 +102,18 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     assert state["repository"] == "sskim-ai/thesis-monitor"
     assert state["branch"] == "main"
     assert state["experimental_branch"] == (
-        "codex/price-structure-v3-current-data-shadow-message-validation"
+        "codex/price-structure-v3-renderer-integration-micro-repair"
     )
     assert state["current_phase"] == (
-        "price_structure_v3_current_data_validated_ready_not_armed"
+        "price_structure_v3_renderer_integrated_ready_not_armed"
     )
     assert state["last_completed_phase"] == (
-        "price_structure_v3_current_data_shadow_message_validation"
+        "price_structure_v3_renderer_integration_micro_repair"
     )
     assert state["next_default_phase"] == (
         "bounded_price_structure_v3_sr_and_family_selective_enablement"
     )
-    implementation_commit = "ef586c3816ff76417d2620636975d054935533d4"
+    implementation_commit = "4246efb4f8afa3516402d1df7864967c177ac6e7"
     preenablement_commit = "84f8f549bc8fa0338309a84b23b2738f2e357646"
     prior_price_structure_commit = "631e82f202b6f081866ef83c8b67b2138a8b51d8"
     prior_fibonacci_commit = "0dfef76bba606f018893d6e68e7beaf410aa7438"
@@ -137,12 +141,26 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     assert state["contracts"]["price_structure_v3_current_data_shadow_validation"] == (
         "price-structure-v3-current-data-shadow-validation-v1"
     )
+    assert state["contracts"]["price_structure_v3_renderer_ownership"] == (
+        "price-structure-v3-renderer-ownership-v1"
+    )
     current_data = state["price_structure_v3_current_data_shadow_message_validation"]
     assert current_data["status"] == "validated_ready_not_armed"
     assert current_data["target_sessions"] == {"kr": "2026-08-26", "us": "2026-08-25"}
     assert current_data["mandatory_controls"] == "10/10_PASS"
     assert current_data["current_runtime_visible_diff"] == 0
     assert current_data["production_enabled"] is False
+    renderer = state["price_structure_v3_renderer_integration_micro_repair"]
+    assert renderer["status"] == "integrated_ready_not_armed"
+    assert renderer["implementation_commit"] == implementation_commit
+    assert renderer["target_sessions"] == {"kr": "2026-08-26", "us": "2026-08-25"}
+    assert renderer["fib_confluence_render_equivalence"] == "PASS"
+    assert renderer["current_sr_stored_rule_separation"] == "PASS"
+    assert renderer["legacy_technical_prose_policy"] == "PASS"
+    assert renderer["message_eligibility_regression"] == 0
+    assert renderer["numbers_without_provenance"] == 0
+    assert renderer["production_enablement_ready"] == "YES"
+    assert renderer["production_enabled"] is False
     assert state["contracts"]["market_context_adapter"] == (
         "market-context-adapter-v1"
     )

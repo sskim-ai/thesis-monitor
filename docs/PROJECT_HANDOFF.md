@@ -7,6 +7,26 @@ validation, delivery, or Scheduled Tasks.
 
 ## Current Authoritative Handoff — 2026-08-26
 
+### Price Structure v3 Renderer Integration Micro-Repair
+
+Start from exact instruction commit `2ac7eaaede9cb8d9047173bbec5f2bd99c665573` and implementation
+commit `4246efb4f8afa3516402d1df7864967c177ac6e7`. Read the renderer readiness JSON, Fib render audit,
+current-vs-stored audit, legacy-prose audit, exact six controls, full-universe replay, exact message
+diff, quality, safety, and artifact index first.
+
+The renderer now preserves a partially overlapping Fib/SR range when it extends beyond a displayed
+structure zone. Current OHLCV-derived SR renders under `📐 현재 가격 구조`; existing confirmation,
+support, warning, and invalidation rules remain under `🧭 기존 등록 가격 규칙` and
+`chart:stored_price_rules`. MU's stale 2026-08-12 OHLCV/MACD sentence is suppressed while its
+business sentence is unchanged.
+
+The frozen 20-subject replay preserves KR `6+1` and US/foreign `4+9` eligibility with 16 material,
+four minor, and zero worse outcomes. All hard counters are zero. State is
+`INTEGRATED_READY_NOT_ARMED`, production enablement readiness is YES, and open P0/material P1 is
+`0/0`. Do not activate from this handoff. The next authorized task remains bounded selective
+enablement; Telegram, schedules, Public Action 0.4.5, schema 4, stored rules, assessments, and
+Production Assist remain unchanged.
+
 ### Price Structure v3 Pre-Enablement Micro-Repair
 
 The exact instruction is commit `38b5fbca8a7264e3b73ef78c121b6ed6758c3ad8`; implementation is

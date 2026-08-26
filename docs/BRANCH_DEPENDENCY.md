@@ -39,6 +39,7 @@ self-referential.
 | `codex/kr-us-structured-data-first-quality-v2` | exact instruction `e04403c...` on operating main `b7dc151...` | exact structured market context acquisition, KR KRX fail-closed cross-section, US RSP/sector context, and message-quality v2 | extends the common market adapter and limited Free Analyst canary; no paid provider, schema, schedule, DB, Pilot, full-mode, Open Research, or manual delivery dependency | promotion eligible after exact-SHA CI | implementation `1a6d2f4...`; preserve `1/2/3`, full OFF, and natural US then KR proof |
 | `codex/20260826-kr-postdeploy-live-rehearsal-us-exchange-breadth-v1` | exact instruction `d7a0101...` on operating main `73de7d4...` | bounded KR latest-completed-session guard plus official Nasdaq-listed advances/declines/unchanged sidecar | extends Kiwoom session validation and the common structured market adapter; no NYSE derivation, participant-flow proxy, schema, task, DB, Pilot, full-mode, Open Research, Trade AR, or manual delivery dependency | safe partial promotion eligible after exact-SHA CI | implementation `0e2fc65...`; run-37 exact breadth remains publication-pending and next natural proof must not be manufactured |
 | `codex/kr-digest-us-entity-synthesis-bounded-repair` | exact instruction `8cf5226...` on main `760dbe1...` | KR local-first digest planning plus US entity-specific and cross-message synthesis quality | consumes existing structured context and stored thesis evidence; no provider, Public Action, schema, task, DB, Pilot, full-mode, Open Research, Trade AR, or canary-limit dependency | promotion eligible after exact-SHA CI | implementation `f2326c3...`; natural proof is read-only and Open Research work may continue in parallel |
+| `codex/price-structure-v3-renderer-integration-micro-repair` | exact instruction `2ac7eaa...` on current-data validation main `bb4e5b0...` | Fib range preservation, current-vs-stored ownership labels, stale legacy technical suppression | consumes frozen v3 current-data evidence and existing `chart:stored_price_rules`; no calculation, packet, Telegram, task, DB, assessment, or activation dependency | shadow promotion eligible after exact-SHA CI | implementation `4246efb...`; next task is separately instructed bounded selective enablement |
 
 The Phase 8.3 original branch has a hidden Git ancestry dependency but no required KRX code,
 schema or runtime import. The clean branch resolves that promotion risk. Phase 8.3.2A starts from
@@ -277,3 +278,11 @@ descend from this validation, preserve KR `2026-08-26` / US `2026-08-25` complet
 admit only ELIGIBLE or ELIGIBLE_SR_ONLY subjects, and retain all numeric/provenance and business-text
 parity gates. It has no dependency on natural monitoring, Open Research, KRX telemetry, cash flow,
 working capital, tasks, or Production Assist.
+
+The v3 renderer-integration micro-repair starts from exact instruction commit
+`2ac7eaaede9cb8d9047173bbec5f2bd99c665573`, whose parent is the final current-data validation main
+`bb4e5b0772f56b22ac49cb1c2bf72287391b8b19`. Implementation commit
+`4246efb4f8afa3516402d1df7864967c177ac6e7` adds a pure renderer service, archive replay, policy
+documents, and focused tests. Production modules do not import the renderer. A later enablement
+must preserve complete material Fib ranges, explicit current/stored ownership, stale-technical
+suppression, source registries, and the unchanged eligibility cohort.
