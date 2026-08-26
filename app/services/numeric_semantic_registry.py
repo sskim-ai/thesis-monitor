@@ -485,6 +485,30 @@ NUMERIC_SEMANTICS = {
         "market_unchanged_count", ("count",), ("보합 종목 수",),
         (r"보합.*종목.*수", r"unchanged.*count"), "count", scope="market",
     ),
+    "sector_listed_issue_count": _spec(
+        "sector_listed_issue_count", ("count",), ("업종 상장 종목 수",),
+        (r"(?:업종|섹터).*상장.*종목.*수", r"sector.*listed.*count"), "count", scope="market",
+    ),
+    "sector_advance_count": _spec(
+        "sector_advance_count", ("count",), ("업종 상승 종목 수",),
+        (r"(?:업종|섹터).*상승.*종목.*수", r"sector.*advance.*count"), "count", scope="market",
+    ),
+    "sector_decline_count": _spec(
+        "sector_decline_count", ("count",), ("업종 하락 종목 수",),
+        (r"(?:업종|섹터).*하락.*종목.*수", r"sector.*decline.*count"), "count", scope="market",
+    ),
+    "sector_unchanged_count": _spec(
+        "sector_unchanged_count", ("count",), ("업종 보합 종목 수",),
+        (r"(?:업종|섹터).*보합.*종목.*수", r"sector.*unchanged.*count"), "count", scope="market",
+    ),
+    "sector_limit_up_count_audit": _spec(
+        "sector_limit_up_count_audit", ("count",), (), (), "count",
+        prose_allowed=False, scope="market",
+    ),
+    "sector_limit_down_count_audit": _spec(
+        "sector_limit_down_count_audit", ("count",), (), (), "count",
+        prose_allowed=False, scope="market",
+    ),
     "market_advance_ratio": _spec(
         "market_advance_ratio", ("pct",), ("상승 종목 비율",),
         (r"상승.*종목.*비율", r"advance.*ratio"), "percentage", scope="market",
@@ -1430,6 +1454,12 @@ _FIELD_RULES = (
     NumericFieldRule(("market_cross_section_sector",), r"fields\.return_pct", "sector_return_pct", "pct"),
     NumericFieldRule(("market_cross_section_sector",), r"fields\.advance_ratio_pct", "market_advance_ratio", "pct"),
     NumericFieldRule(("market_cross_section_sector",), r"fields\.relative_return_pct", "sector_relative_return_pct", "pct"),
+    NumericFieldRule(("market_cross_section_sector",), r"fields\.listed_count", "sector_listed_issue_count", "count"),
+    NumericFieldRule(("market_cross_section_sector",), r"fields\.advance_count", "sector_advance_count", "count"),
+    NumericFieldRule(("market_cross_section_sector",), r"fields\.decline_count", "sector_decline_count", "count"),
+    NumericFieldRule(("market_cross_section_sector",), r"fields\.unchanged_count", "sector_unchanged_count", "count"),
+    NumericFieldRule(("market_cross_section_sector",), r"fields\.limit_up_count", "sector_limit_up_count_audit", "count"),
+    NumericFieldRule(("market_cross_section_sector",), r"fields\.limit_down_count", "sector_limit_down_count_audit", "count"),
     NumericFieldRule(("market_breadth_counts",), r"fields\.eligible_count", "market_eligible_count", "count"),
     NumericFieldRule(("market_breadth_counts",), r"fields\.advance_count", "market_advance_count", "count"),
     NumericFieldRule(("market_breadth_counts",), r"fields\.decline_count", "market_decline_count", "count"),
@@ -1640,6 +1670,10 @@ _INSTRUMENT_LABEL_SEMANTICS = {
     "futures_close",
     "futures_point_change",
     "futures_return_pct",
+    "sector_listed_issue_count",
+    "sector_advance_count",
+    "sector_decline_count",
+    "sector_unchanged_count",
     *{semantic for semantic, _ in _MARKET_SERIES_LABELS},
 }
 
@@ -1729,6 +1763,19 @@ def _source_aware_label(
         series = str(fields.get("series_code") or "")
         if series:
             return f"{series} 수준"
+    if semantic_type.startswith("sector_") and semantic_type.endswith("_count"):
+        sector = str(fields.get("sector") or "").strip()
+        market_scope = str(fields.get("market_scope") or "").strip()
+        if sector:
+            prefix = f"{market_scope} {sector}".strip()
+            suffix = {
+                "sector_listed_issue_count": "상장 종목 수",
+                "sector_advance_count": "상승 종목 수",
+                "sector_decline_count": "하락 종목 수",
+                "sector_unchanged_count": "보합 종목 수",
+            }.get(semantic_type)
+            if suffix:
+                return f"{prefix} {suffix}"
     if semantic_type == "style_return_pct":
         series = str(fields.get("series_code") or "")
         if series == "RSP":
@@ -1977,6 +2024,8 @@ def canonical_display_value(
         return f"${_fixed_number(value, 2)}/bbl"
     if unit == "index":
         return _fixed_number(value, 2)
+    if unit == "count":
+        return f"{value:,.0f}개"
     return None
 
 
@@ -2030,6 +2079,8 @@ def approved_display_variants(
         )
     elif unit == "index":
         variants.extend((f"{_plain_number(value)}", f"{_plain_number(value)}포인트"))
+    elif unit == "count":
+        variants.extend((f"{value:,.0f}개", f"{value:,.0f}종목"))
     if (canonical := canonical_display_value(spec, value, unit)) is not None:
         variants.append(canonical)
     return list(dict.fromkeys(variants))
@@ -2039,6 +2090,7 @@ def _registry_contract_metadata(
     fact_type: str,
     field_path: str,
     fact_id: str,
+    fields: dict[str, object],
     *,
     registered: bool,
     prose_allowed: bool,
@@ -2080,6 +2132,20 @@ def _registry_contract_metadata(
         metadata["owner"] = "positioning"
         if prose_allowed:
             metadata["allowed_sections"] = ["supply_analysis"]
+    if fact_type == "market_cross_section_sector":
+        source_ref = str(fields.get("source_ref") or "")
+        metadata.update(
+            {
+                "owner": "market_context",
+                "market_scope": fields.get("market_scope"),
+                "sector_scope": fields.get("sector"),
+                "session_basis": "same_session_cross_section",
+                "source_owner": source_ref.split(":", 1)[0] if source_ref else None,
+                "comparison_eligible": False,
+            }
+        )
+        if prose_allowed:
+            metadata["allowed_sections"] = ["market_context"]
     return metadata
 
 
@@ -2266,6 +2332,7 @@ def build_numeric_registry(
                             fact_type,
                             path,
                             fact_id,
+                            fields,
                             registered=registered,
                             prose_allowed=prose_allowed,
                         ),
