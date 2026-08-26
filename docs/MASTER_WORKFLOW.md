@@ -1232,3 +1232,25 @@ higher-timeframe anchor/SR stability and ambiguous/insufficient output semantics
 canonical tolerances or arm production. A future bounded repair may separate variable Fibonacci
 anchor judgment from deterministic SR ownership and rerun the same frozen 5/3 protocol. This
 feature-local P1 does not block the independent Open Research roadmap or natural monitoring tracks.
+
+## 39. Fibonacci Anchor/SR Ownership And Consensus Closure
+
+Instruction commit `39cab7ed8b1cb3bebea1bd1240498caa454bd09a` fixes the final bounded P1 scope;
+implementation commit `0dfef76bba606f018893d6e68e7beaf410aa7438` adds the archive-only consensus
+core. `fibonacci-sr-ownership-v1` makes support/resistance deterministic backend property and
+removes SR from variable-AI output. The AI selects only backend-enumerated
+`canonical-swing-structure-candidate-v1` IDs or returns a typed valid abstention.
+
+The same frozen public-price universe ran with the prior 5/3 protocol through 17 actual signed-in
+runtime calls. Runtime and semantic failures are zero. Valid abstentions are 56 with zero wrongful
+rejections. Monthly/weekly/daily SR variation is `0/0/0`; stable Fib consensus remains selective at
+`10/7/11`, while 13 materially unstable and 19 insufficient timeframes are safely omitted. All 28
+eligible Fibonacci timeframes preserve deterministic arithmetic and provenance, and unstable
+user-visible eligibility is zero.
+
+`AI_FIBONACCI_MULTI_TIMEFRAME_STRUCTURE=INTEGRATED_READY_NOT_ARMED` and
+`PRODUCTION_ENABLEMENT_READY=YES`. This is permission for a separately instructed bounded
+multi-timeframe Fibonacci enablement, not activation. Production imports, Telegram, scheduled
+tasks, Public Action, assessment state, price rules, tolerances, and Production Assist remain
+unchanged. The independent Open Research and natural monitoring tracks continue under Phase
+Advancement Rule v1.

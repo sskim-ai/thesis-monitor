@@ -1511,3 +1511,22 @@ rejections are `4`, and only `8/20` stocks satisfy the first-pool higher-timefra
 `PRODUCTION_ENABLEMENT_READY=NO`. The bounded next repair is anchor-versus-SR ownership separation
 plus tighter `AMBIGUOUS/INSUFFICIENT_STRUCTURE` semantics; retain existing tolerances and frozen
 trial protocol. This P1 is local to Fibonacci enablement and does not block Open Research work.
+
+## 2026-08-26 Fibonacci Anchor/SR Consensus Handoff
+
+The exact instruction is commit `39cab7ed8b1cb3bebea1bd1240498caa454bd09a`; the archive-only
+implementation is `0dfef76bba606f018893d6e68e7beaf410aa7438`. Read the final P1 readiness,
+root-cause, ownership, candidate, abstention, exact benchmark, stability, KR/US replay, and safety
+parity reports before changing this feature.
+
+SR is now backend-owned and cannot vary with AI selection. AI returns only a canonical swing
+structure ID, optional alternative, or valid `AMBIGUOUS`/`INSUFFICIENT_STRUCTURE` abstention.
+Consensus is per timeframe under the unchanged 5/3 protocol. Monthly/weekly/daily SR variation is
+zero; valid abstentions are 56; 28 timeframe structures are eligible; 13 unstable and 19
+insufficient timeframes are safely omitted; unstable Fib exposure is zero.
+
+State is `INTEGRATED_READY_NOT_ARMED`, code correctness is PASS, and production enablement readiness
+is YES with P0/material P1 at 0/0. Do not treat this as activation. The next feature-local action is
+a separately instructed bounded multi-timeframe Fibonacci enablement. Keep existing merge
+tolerances, deterministic SR, backend Fibonacci arithmetic, user-visible routing, task schedules,
+and Production Assist unchanged until then.

@@ -52,6 +52,10 @@ DOCUMENTS = (
     ROOT / "docs" / "architecture" / "VARIABLE_AI_SWING_ANCHOR_SELECTION.md",
     ROOT / "docs" / "architecture" / "PRICE_ONLY_AI_ANCHOR_PACKET.md",
     ROOT / "docs" / "architecture" / "AI_ANCHOR_STABILITY_POLICY.md",
+    ROOT / "docs" / "architecture" / "FIBONACCI_SR_OWNERSHIP.md",
+    ROOT / "docs" / "architecture" / "CANONICAL_SWING_STRUCTURE_CANDIDATE.md",
+    ROOT / "docs" / "architecture" / "FIBONACCI_VALID_ABSTENTION.md",
+    ROOT / "docs" / "architecture" / "AI_ANCHOR_CONSENSUS_POLICY.md",
     ROOT / "docs" / "operations" / "AI_ASSISTED_PILOT.md",
     ROOT / "docs" / "operations" / "CASH_FLOW_USER_VISIBLE_KILL_SWITCH.md",
     ROOT / "docs" / "operations" / "WORKING_CAPITAL_USER_VISIBLE_KILL_SWITCH.md",
@@ -72,18 +76,18 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     assert state["repository"] == "sskim-ai/thesis-monitor"
     assert state["branch"] == "main"
     assert state["experimental_branch"] == (
-        "codex/fibonacci-variable-ai-anchor-candle-context-repair"
+        "codex/fibonacci-anchor-sr-ownership-consensus-repair"
     )
     assert state["current_phase"] == (
-        "fibonacci_variable_ai_anchor_shadow_bounded_repair_required"
+        "fibonacci_anchor_sr_consensus_integrated_ready_not_armed"
     )
     assert state["last_completed_phase"] == (
-        "fibonacci_variable_ai_anchor_candle_context_bounded_repair"
+        "fibonacci_anchor_sr_ownership_consensus_bounded_repair"
     )
     assert state["next_default_phase"] == (
         "open_research_production_connector_selective_event_attribution"
     )
-    implementation_commit = "9ac9a3cf2f6c759fa73ba5cbee6ab55c08ee1901"
+    implementation_commit = "0dfef76bba606f018893d6e68e7beaf410aa7438"
     assert state["deployed_code_commit"] == implementation_commit
     assert state["main_code_commit"] == implementation_commit
     assert state["operating_code_commit"] == implementation_commit
@@ -191,6 +195,21 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     assert state["contracts"]["ai_anchor_stability_policy"] == (
         "ai-anchor-stability-policy-v1"
     )
+    assert state["contracts"]["fibonacci_sr_ownership"] == (
+        "fibonacci-sr-ownership-v1"
+    )
+    assert state["contracts"]["canonical_swing_structure_candidate"] == (
+        "canonical-swing-structure-candidate-v1"
+    )
+    assert state["contracts"]["fibonacci_valid_abstention"] == (
+        "fibonacci-valid-abstention-v1"
+    )
+    assert state["contracts"]["ai_anchor_consensus_policy"] == (
+        "ai-anchor-consensus-policy-v1"
+    )
+    assert state["contracts"]["variable_ai_swing_structure_consensus"] == (
+        "variable-ai-swing-structure-consensus-v1"
+    )
     bounded_quality = state[
         "kr_market_digest_us_entity_specific_synthesis_bounded_repair"
     ]
@@ -216,7 +235,9 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     assert fibonacci_anchor["instruction_commit"] == (
         "d9e6e2327f0f32256a1bd0d8caf2c0b0f1faf890"
     )
-    assert fibonacci_anchor["implementation_commit"] == implementation_commit
+    assert fibonacci_anchor["implementation_commit"] == (
+        "9ac9a3cf2f6c759fa73ba5cbee6ab55c08ee1901"
+    )
     assert fibonacci_anchor["active_universe"] == 20
     assert fibonacci_anchor["benchmark_runs_per_packet"] == 5
     assert fibonacci_anchor["wider_universe_runs_per_packet"] == 3
@@ -237,6 +258,39 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     assert fibonacci_anchor["open_p0"] == []
     assert len(fibonacci_anchor["open_material_p1"]) == 2
     assert fibonacci_anchor["production_assist"] is False
+    fibonacci_consensus = state["fibonacci_anchor_sr_consensus_final_p1_closure"]
+    assert fibonacci_consensus["instruction_commit"] == (
+        "39cab7ed8b1cb3bebea1bd1240498caa454bd09a"
+    )
+    assert fibonacci_consensus["implementation_commit"] == implementation_commit
+    assert fibonacci_consensus["active_universe"] == 20
+    assert fibonacci_consensus["benchmark_runs_per_packet"] == 5
+    assert fibonacci_consensus["wider_universe_runs_per_packet"] == 3
+    assert fibonacci_consensus["runtime_failures"] == 0
+    assert fibonacci_consensus["semantic_rejected_timeframes"] == 0
+    assert fibonacci_consensus["valid_abstentions"] == 56
+    assert fibonacci_consensus["valid_abstentions_rejected"] == 0
+    assert fibonacci_consensus["monthly_stability"]["material"] == 5
+    assert fibonacci_consensus["weekly_stability"]["material"] == 7
+    assert fibonacci_consensus["daily_stability"]["material"] == 1
+    assert fibonacci_consensus["eligible_fibonacci_timeframes"] == 28
+    assert fibonacci_consensus["omitted_unstable_timeframes"] == 13
+    assert fibonacci_consensus["omitted_insufficient_timeframes"] == 19
+    assert fibonacci_consensus["sr_runtime_variation"] == {
+        "monthly": 0,
+        "weekly": 0,
+        "daily": 0,
+    }
+    assert fibonacci_consensus["prior_selected_structure_omissions"] == 0
+    assert fibonacci_consensus["unstable_fibonacci_user_visible_eligible"] == 0
+    assert fibonacci_consensus["production_enablement_ready"] == "YES"
+    assert fibonacci_consensus["ai_fibonacci_multi_timeframe_structure"] == (
+        "INTEGRATED_READY_NOT_ARMED"
+    )
+    assert fibonacci_consensus["current_user_visible_message_diff"] == 0
+    assert fibonacci_consensus["open_p0"] == []
+    assert fibonacci_consensus["open_material_p1"] == []
+    assert fibonacci_consensus["production_assist"] is False
     advancement = state["phase_advancement_rule_v1"]
     assert advancement["p0_open"] == []
     assert advancement["p1_open"] == []

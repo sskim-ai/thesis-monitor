@@ -225,3 +225,17 @@ remain 08:05/10/15/20; the detached observer is 08:45/09:15. Do not run either m
 natural horizon, inspect stored evidence only. Until multi-day evidence supports otherwise,
 `P1_TELEMETRY_GAP=REPAIR_DEPLOYED_PENDING_NATURAL` and
 `DEADLINE_VERDICT=DEADLINE_UNPROVEN`.
+
+The Fibonacci final P1 closure follows instruction commit
+`39cab7ed8b1cb3bebea1bd1240498caa454bd09a` and implementation commit
+`0dfef76bba606f018893d6e68e7beaf410aa7438`. Start by reading
+`docs/reports/20260826-fibonacci-final-p1-readiness.json` and the linked architecture/audit bundle.
+The 20-subject frozen 5/3 trial passed SR ownership separation, canonical candidate validation,
+valid abstention semantics, arithmetic, provenance, look-ahead, KR/US parity, and zero user-visible
+diff. P0/material P1 are 0/0.
+
+`AI_FIBONACCI_MULTI_TIMEFRAME_STRUCTURE` is `INTEGRATED_READY_NOT_ARMED`; do not arm it implicitly.
+The feature-local next task is a separately instructed bounded multi-timeframe Fibonacci
+enablement. Keep deterministic SR and current tolerances fixed, expose no unstable timeframe, and
+retain per-timeframe omission. Open Research, natural monitoring, KRX telemetry, cash flow, working
+capital, and Production Assist remain independent.

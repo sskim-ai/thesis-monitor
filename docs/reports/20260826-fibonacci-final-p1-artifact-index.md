@@ -1,0 +1,22 @@
+# Fibonacci Final P1 Artifact Index
+
+- `docs/work-instructions/20260826-fibonacci-anchor-sr-ownership-consensus-bounded-repair.md`
+- `docs/architecture/FIBONACCI_SR_OWNERSHIP.md`
+- `docs/architecture/CANONICAL_SWING_STRUCTURE_CANDIDATE.md`
+- `docs/architecture/FIBONACCI_VALID_ABSTENTION.md`
+- `docs/architecture/AI_ANCHOR_CONSENSUS_POLICY.md`
+- `docs/architecture/AI_FIBONACCI_MULTI_TIMEFRAME_STRUCTURE.md`
+- `docs/architecture/PRICE_STRUCTURE_SHADOW_POLICY.md`
+- `docs/reports/20260826-fibonacci-final-p1-evidence.json`
+- `docs/reports/20260826-fibonacci-final-p1-readiness.json`
+- `docs/reports/20260826-fibonacci-anchor-vs-sr-variation-root-cause.md`
+- `docs/reports/20260826-fibonacci-sr-ownership-repair.md`
+- `docs/reports/20260826-canonical-swing-structure-candidate-audit.md`
+- `docs/reports/20260826-fibonacci-abstention-semantics-audit.md`
+- `docs/reports/20260826-fibonacci-consensus-exact-benchmark.md`
+- `docs/reports/20260826-fibonacci-consensus-stability.md`
+- `docs/reports/20260826-fibonacci-consensus-kr-shadow-replay.md`
+- `docs/reports/20260826-fibonacci-consensus-us-shadow-replay.md`
+- `docs/reports/20260826-fibonacci-final-p1-safety-parity.md`
+- `docs/reports/20260826-fibonacci-final-p1-readiness.md`
+- `docs/reports/20260826-fibonacci-final-p1-artifact-index.md`

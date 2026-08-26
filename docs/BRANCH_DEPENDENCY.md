@@ -204,3 +204,13 @@ archive trial generator. The signed-in variable runtime receives only the frozen
 Telegram, Public Action, or assessment imports. Promotion preserves SHADOW state because actual
 monthly/weekly stability failed. The open P1 is feature-local and has no ancestry dependency on
 Open Research, KRX telemetry, cash flow, working capital, or natural delivery proof.
+
+The final Fibonacci consensus branch starts from immutable instruction commit
+`39cab7ed8b1cb3bebea1bd1240498caa454bd09a`, whose parent is operating main
+`987a684f72b96c9d549eaf4d4328590bb0b7cd81`. It supersedes only the feature-local variable-anchor
+P1 state. The new service remains archive/test-only and depends on existing deterministic
+multi-timeframe structure code; production packet, selector, fallback, Telegram, Public Action,
+task, and assessment imports remain unchanged. A later enablement branch must descend from this
+closure and preserve backend SR ownership, typed abstention, per-timeframe consensus omission, and
+the existing tolerances. It has no ancestry dependency on Open Research, KRX telemetry, cash flow,
+working capital, or natural delivery proof.

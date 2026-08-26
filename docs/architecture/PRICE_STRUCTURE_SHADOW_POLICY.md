@@ -41,3 +41,16 @@ remain authoritative.
 Runtime unavailability, timeout, malformed JSON, wrong IDs, or invalid chronology fail closed per
 timeframe. Deterministic SR remains available, invalid Fibonacci is omitted, and independent valid
 timeframes continue. Current production imports and user-visible output remain unchanged.
+
+## Consensus Boundary
+
+The final P1 shadow contract removes SR from variable-AI ownership. The backend calculates monthly,
+weekly, and daily SR once, supplies only canonical swing-structure candidates to the selector, and
+applies the 5/3 consensus policy to validated structure IDs. `AMBIGUOUS` and
+`INSUFFICIENT_STRUCTURE` are valid abstentions when both selection IDs are null; they omit only the
+affected timeframe's Fibonacci.
+
+Material structure variation is a controlled `OMIT_UNSTABLE` state, not a reason to vary or hide
+deterministic SR. Existing candidate bounds and merge tolerances remain unchanged. The successful
+archive closure sets the feature to `INTEGRATED_READY_NOT_ARMED` and authorizes only a separately
+instructed bounded multi-timeframe Fibonacci enablement.

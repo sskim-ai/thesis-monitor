@@ -1,0 +1,95 @@
+{
+  "contract": "fibonacci-final-p1-readiness-v1",
+  "gates": {
+    "AI_FIBONACCI_MULTI_TIMEFRAME_STRUCTURE": "INTEGRATED_READY_NOT_ARMED",
+    "CANONICAL_SWING_STRUCTURE_CANDIDATES": "PASS",
+    "CODE_CORRECTNESS": "PASS",
+    "CURRENT_USER_VISIBLE_MESSAGE_DIFF": 0,
+    "DAILY_FIB_STABILITY": "PARTIAL",
+    "DAILY_SR_RUNTIME_VARIATION": 0,
+    "FIBONACCI_DETERMINISTIC_CALC": "PASS",
+    "FIBONACCI_NUMERIC_PROVENANCE": "PASS",
+    "KR_SHADOW_REPLAY": "PASS",
+    "KR_US_SWING_STRUCTURE_SCHEMA_COMMON": "PASS",
+    "LOOKAHEAD_SAFETY": "PASS",
+    "MONTHLY_FIB_STABILITY": "PARTIAL",
+    "MONTHLY_SR_RUNTIME_VARIATION": 0,
+    "PRODUCTION_ENABLEMENT_READY": "YES",
+    "RICH_CANDLE_CONTEXT_REGRESSION": "PASS",
+    "SR_AI_OWNERSHIP_SEPARATED": "PASS",
+    "UNSTABLE_FIB_USER_VISIBLE_ELIGIBLE": 0,
+    "US_SHADOW_REPLAY": "PASS",
+    "VALID_ABSTENTION_REJECTED": 0,
+    "VALID_ABSTENTION_SEMANTICS": "PASS",
+    "VARIABLE_AI_SWING_STRUCTURE_SELECTION": "PASS",
+    "WEEKLY_FIB_STABILITY": "PARTIAL",
+    "WEEKLY_SR_RUNTIME_VARIATION": 0
+  },
+  "generated_for": "2026-08-26",
+  "instruction_commit": "39cab7ed8b1cb3bebea1bd1240498caa454bd09a",
+  "implementation_commit": "0dfef76bba606f018893d6e68e7beaf410aa7438",
+  "next_action": "BOUNDED_MULTI_TIMEFRAME_FIBONACCI_ENABLEMENT",
+  "open_material_p1": [],
+  "open_p0": [],
+  "p2_backlog": [
+    "safely omitted ambiguous or unstable Fibonacci timeframes",
+    "optional consensus reason wording polish"
+  ],
+  "summary": {
+    "active_universe": 20,
+    "aggregate_stability": {
+      "daily": {
+        "MATERIAL_VARIATION": 1,
+        "STABLE": 11,
+        "VALID_ABSTENTION": 8
+      },
+      "monthly": {
+        "MATERIAL_VARIATION": 5,
+        "STABLE": 10,
+        "VALID_ABSTENTION": 5
+      },
+      "weekly": {
+        "MATERIAL_VARIATION": 7,
+        "STABLE": 7,
+        "VALID_ABSTENTION": 6
+      }
+    },
+    "ai_calculated_fib_price": 0,
+    "anchor_date_mismatch": 0,
+    "anchor_price_mismatch": 0,
+    "anchor_ticker_mismatch": 0,
+    "benchmark_runs_per_packet": 5,
+    "benchmark_tickers": [
+      "005490",
+      "010120",
+      "GOOGL",
+      "WULF"
+    ],
+    "corporate_action_basis_conflict": 0,
+    "eligibility_counts": {
+      "ELIGIBLE": 28,
+      "OMIT_INSUFFICIENT": 19,
+      "OMIT_UNSTABLE": 13
+    },
+    "lookahead_leak": 0,
+    "prior_selected_structure_omissions": 0,
+    "private_field_egress": 0,
+    "runtime_failure_count": 0,
+    "secret_egress": 0,
+    "security_basis_conflict": 0,
+    "semantic_rejection_count": 0,
+    "sr_runtime_variation": {
+      "daily": 0,
+      "monthly": 0,
+      "weekly": 0
+    },
+    "successful_packets": 20,
+    "tolerance_widening": 0,
+    "unregistered_fibonacci_numeric": 0,
+    "unrelated_thesis_egress": 0,
+    "unstable_fib_user_visible_eligible": 0,
+    "valid_abstention_count": 56,
+    "valid_abstention_rejected": 0,
+    "wider_universe_runs_per_packet": 3
+  }
+}
