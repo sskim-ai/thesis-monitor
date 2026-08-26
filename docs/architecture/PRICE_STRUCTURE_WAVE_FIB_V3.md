@@ -23,6 +23,11 @@ The implemented wave scope is bullish standard impulse only. Candidate endpoints
 confirmed or explicitly provisional pivots. Elliott hard rules filter candidates before
 Fibonacci fit contributes soft ranking. `NONE` and `AMBIGUOUS` are valid fail-closed outcomes.
 
+The bounded repair adds `ohlcv-bar-completion-v1`, provider-native 1200-day backfill, explicit
+grand/current/intermediate degree separation, and a strict AI-selection feedback path. Partial
+bars remain available for current context but cannot confirm pivots. A validated AI ID now owns
+the subsequent deterministic Fib/confluence/render computation.
+
 The core returns deterministic IDs, source provenance, hypothesis status, per-timeframe zones,
 cross-timeframe confluence, and a monthly-to-daily shadow rendering order. AI may select only from
 listed hypothesis IDs and cannot calculate a price.
@@ -40,5 +45,5 @@ widening, and forced Elliott labels were rejected.
 ## Safety Constraint
 
 The module has no production import, route, packet, fallback, Telegram, task, assessment, or DB
-integration. `PRICE_STRUCTURE_WAVE_FIB_V3 = SHADOW` and production enablement remains `NO` while
-the daily 1200 provider gap and SK hynix method conflict remain open material P1 issues.
+integration. `PRICE_STRUCTURE_WAVE_FIB_V3 = SHADOW`; any later enablement requires a separate
+user-visible decision after the repaired shadow evidence and CI pass.

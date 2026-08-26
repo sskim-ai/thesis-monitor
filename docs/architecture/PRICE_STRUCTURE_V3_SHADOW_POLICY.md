@@ -17,9 +17,11 @@ hynix benchmark without material method conflict, generalization, provenance, co
 look-ahead and numeric safety, stable ID-only AI selection, full CI, no P0/material P1, and zero
 visible diff.
 
-Current state is `SHADOW`: 17 archive-only model calls passed, 14 subjects had stable selection,
-six had valid abstention, and unstable Fib eligibility is zero. The daily 1200 interface cap and
-SK hynix method conflict remain material P1.
+The bounded repair remains `SHADOW`. Provider-native continuation supplies the 1200-day backfill,
+calendar-aware completion prevents partial-bar confirmation, degree-aware candidates expose the
+current structural cycle, and validated variable-AI IDs feed the deterministic engine. Production
+eligibility is still decided only from the completed repair evidence, full CI, and zero visible
+runtime diff.
 
 ## Why
 

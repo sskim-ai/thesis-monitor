@@ -6,10 +6,13 @@ import math
 import statistics
 import time
 from collections.abc import Mapping, Sequence
+from datetime import date, datetime, timedelta, timezone
 from decimal import Decimal, ROUND_HALF_UP
 from enum import StrEnum
 from typing import Literal
+from zoneinfo import ZoneInfo
 
+import exchange_calendars as exchange_calendar
 from pydantic import BaseModel, ConfigDict, Field
 
 from app.services.ohlcv_structure_service import Timeframe
@@ -22,6 +25,10 @@ FIBONACCI_CONTRACT = "wave-fibonacci-source-provenance-v1"
 CONFLUENCE_CONTRACT = "multi-timeframe-sr-confluence-v3"
 SHADOW_POLICY = "price-structure-v3-shadow-policy-v1"
 CALCULATION_VERSION = "wave-fibonacci-deterministic-v3"
+BAR_COMPLETION_CONTRACT = "ohlcv-bar-completion-v1"
+HISTORY_CACHE_CONTRACT = "ohlcv-1200-backfill-cache-v1"
+WAVE_DEGREE_CONTRACT = "wave-degree-current-cycle-v1"
+AI_FEEDBACK_CONTRACT = "price-structure-v3-ai-feedback-loop-v1"
 
 TIMEFRAME_ORDER: tuple[Timeframe, ...] = ("monthly", "weekly", "daily")
 HISTORY_REQUESTS: dict[Timeframe, int] = {
@@ -50,6 +57,7 @@ TIMEFRAME_IMPORTANCE: dict[Timeframe, int] = {"daily": 1, "weekly": 2, "monthly"
 
 PivotKind = Literal["LOW", "HIGH"]
 ConfirmationStatus = Literal["CONFIRMED", "PROVISIONAL"]
+BarState = Literal["COMPLETE", "PARTIAL"]
 ZoneRole = Literal["SUPPORT", "RESISTANCE", "CURRENT_ZONE"]
 CoverageStatus = Literal["PASS", "PARTIAL", "FAIL"]
 HypothesisStatus = Literal[
@@ -58,6 +66,12 @@ HypothesisStatus = Literal[
     "AMBIGUOUS",
     "NONE",
 ]
+WaveDegree = Literal[
+    "GRAND_CYCLE",
+    "PRIMARY_CURRENT_CYCLE",
+    "INTERMEDIATE",
+    "TACTICAL",
+]
 
 
 class FrozenModel(BaseModel):
@@ -65,6 +79,8 @@ class FrozenModel(BaseModel):
 
 
 class PriceBar(FrozenModel):
+    contract: str = BAR_COMPLETION_CONTRACT
+    bar_id: str | None = None
     date: str
     open: Decimal
     high: Decimal
@@ -72,6 +88,12 @@ class PriceBar(FrozenModel):
     close: Decimal
     volume: Decimal | None = None
     trading_value: Decimal | None = None
+    timeframe: Timeframe | None = None
+    period_start: str | None = None
+    period_end: str | None = None
+    market_calendar: str | None = None
+    observed_at: str | None = None
+    bar_state: BarState = "COMPLETE"
 
 
 class LongHistoryCoverage(FrozenModel):
@@ -96,7 +118,11 @@ class PivotPoint(FrozenModel):
     ticker: str
     timeframe: Timeframe
     bar_date: str
+    pivot_bar_date: str | None = None
+    required_right_bar_count: int = 0
     confirmation_date: str | None
+    pivot_confirmation_date: str | None = None
+    confirmation_bar_ids: tuple[str, ...] = ()
     kind: PivotKind
     price: Decimal
     atr14: Decimal | None
@@ -149,7 +175,7 @@ class MonthlyWaveHypothesis(FrozenModel):
     hypothesis_id: str
     ticker: str
     source_timeframe: Literal["monthly"] = "monthly"
-    source_degree: Literal["PRIMARY_MONTHLY_CYCLE"] = "PRIMARY_MONTHLY_CYCLE"
+    source_degree: WaveDegree = "PRIMARY_CURRENT_CYCLE"
     status: Literal["VALID_CONFIRMED", "VALID_PROVISIONAL"]
     wave_state: Literal["W4_CANDIDATE_W5_UNCONFIRMED", "W5_CANDIDATE"]
     endpoints: tuple[WaveEndpoint, ...]
@@ -199,13 +225,27 @@ class WaveHypothesisSelection(FrozenModel):
     confidence: Literal["HIGH", "MEDIUM", "LOW"] = "LOW"
     reason_categories: tuple[str, ...] = Field(min_length=1, max_length=3)
     evidence_refs: tuple[str, ...] = Field(default=(), max_length=16)
+    endpoint_refs: tuple[str, ...] = Field(default=(), max_length=6)
     concise_reason: str = Field(default="", max_length=240)
+    ticker: str | None = None
+    source_degree: WaveDegree | None = None
+    cutoff: str | None = None
+    adjustment_basis: str | None = None
 
 
 class WaveSelectionValidation(FrozenModel):
     valid: bool
     errors: tuple[str, ...] = ()
     valid_abstention: bool = False
+
+
+class WaveFeedbackAudit(FrozenModel):
+    contract: str = AI_FEEDBACK_CONTRACT
+    selection: WaveHypothesisSelection
+    validation: WaveSelectionValidation
+    selected_hypothesis_id: str | None = None
+    selected_hypothesis_fed_to_engine: bool = False
+    deterministic_sr_preserved: bool = True
 
 
 class PriceStructureWaveFibV3Result(FrozenModel):
@@ -229,6 +269,8 @@ class PriceStructureWaveFibV3Result(FrozenModel):
     cross_timeframe_confluence: tuple[TechnicalZone, ...]
     shadow_render: str
     computation_ms: Decimal
+    degree_candidate_counts: dict[WaveDegree, int] = Field(default_factory=dict)
+    feedback_audit: WaveFeedbackAudit | None = None
     user_visible: bool = False
     business_thesis_mutation: bool = False
     official_assessment_mutation: bool = False
@@ -252,11 +294,91 @@ def _canonical_hash(value: object) -> str:
     return hashlib.sha256(payload.encode()).hexdigest()
 
 
+def _parse_observed_at(value: str, *, market: Literal["KR", "US"]) -> datetime:
+    zone = ZoneInfo("Asia/Seoul" if market == "KR" else "America/New_York")
+    normalized = value.replace("Z", "+00:00")
+    parsed = datetime.fromisoformat(normalized)
+    if parsed.tzinfo is None:
+        parsed = parsed.replace(tzinfo=zone)
+    return parsed.astimezone(zone)
+
+
+def _calendar_for_range(
+    market: Literal["KR", "US"],
+    *,
+    start: date,
+    end: date,
+):
+    name = "XKRX" if market == "KR" else "XNYS"
+    return name, exchange_calendar.get_calendar(
+        name,
+        start=start - timedelta(days=370),
+        end=end + timedelta(days=370),
+    )
+
+
+def _latest_completed_session(calendar, observed_at: datetime) -> date | None:
+    observed_date = observed_at.date()
+    try:
+        if calendar.is_session(observed_date):
+            session = calendar.date_to_session(observed_date)
+            close = calendar.session_close(session).to_pydatetime().astimezone(
+                observed_at.tzinfo or timezone.utc
+            )
+            if observed_at >= close:
+                return session.date()
+            return calendar.previous_session(session).date()
+        return calendar.date_to_session(observed_date, direction="previous").date()
+    except (ValueError, IndexError, TypeError):
+        return None
+
+
+def _bar_period_bounds(calendar, bar_date: date, timeframe: Timeframe) -> tuple[date, date]:
+    if timeframe == "daily":
+        return bar_date, bar_date
+    if timeframe == "weekly":
+        calendar_start = bar_date - timedelta(days=bar_date.weekday())
+        calendar_end = calendar_start + timedelta(days=6)
+    else:
+        calendar_start = bar_date.replace(day=1)
+        next_month = (
+            calendar_start.replace(year=calendar_start.year + 1, month=1)
+            if calendar_start.month == 12
+            else calendar_start.replace(month=calendar_start.month + 1)
+        )
+        calendar_end = next_month - timedelta(days=1)
+    sessions = calendar.sessions_in_range(calendar_start, calendar_end)
+    if len(sessions) == 0:
+        return calendar_start, calendar_end
+    return sessions[0].date(), sessions[-1].date()
+
+
 def normalize_completed_bars(
     raw_bars: Sequence[Mapping[str, object]],
     *,
     cutoff: str,
+    timeframe: Timeframe | None = None,
+    market: Literal["KR", "US"] | None = None,
+    observed_at: str | None = None,
 ) -> tuple[PriceBar, ...]:
+    parsed_dates = [
+        date.fromisoformat(str(raw.get("date"))[:10])
+        for raw in raw_bars
+        if raw.get("date") and str(raw.get("date"))[:10] <= cutoff
+    ]
+    calendar = None
+    calendar_name: str | None = None
+    completed_session: date | None = None
+    normalized_observed_at: str | None = None
+    if timeframe is not None and market is not None and observed_at is not None and parsed_dates:
+        observed = _parse_observed_at(observed_at, market=market)
+        calendar_name, calendar = _calendar_for_range(
+            market,
+            start=min(parsed_dates),
+            end=max(max(parsed_dates), observed.date()),
+        )
+        completed_session = _latest_completed_session(calendar, observed)
+        normalized_observed_at = observed.isoformat()
     normalized: dict[str, PriceBar] = {}
     for raw in raw_bars:
         bar_date = str(raw.get("date") or "")[:10]
@@ -265,7 +387,31 @@ def normalize_completed_bars(
         required = (raw.get("open"), raw.get("high"), raw.get("low"), raw.get("close"))
         if any(value is None for value in required):
             continue
+        period_start = bar_date
+        period_end = bar_date
+        state: BarState = "COMPLETE"
+        if calendar is not None and timeframe is not None:
+            start, end = _bar_period_bounds(
+                calendar,
+                date.fromisoformat(bar_date),
+                timeframe,
+            )
+            period_start = start.isoformat()
+            period_end = end.isoformat()
+            state = (
+                "COMPLETE"
+                if completed_session is not None and end <= completed_session
+                else "PARTIAL"
+            )
         bar = PriceBar(
+            bar_id=_stable_id(
+                "v3-bar",
+                market or "legacy",
+                timeframe or "unknown",
+                bar_date,
+                period_start,
+                period_end,
+            ),
             date=bar_date,
             open=_decimal(raw["open"]),
             high=_decimal(raw["high"]),
@@ -279,6 +425,12 @@ def normalize_completed_bars(
                 if raw.get("trading_value") is not None
                 else None
             ),
+            timeframe=timeframe,
+            period_start=period_start,
+            period_end=period_end,
+            market_calendar=calendar_name,
+            observed_at=normalized_observed_at,
+            bar_state=state,
         )
         if bar.high < bar.low or not (bar.low <= bar.open <= bar.high) or not (
             bar.low <= bar.close <= bar.high
@@ -294,23 +446,34 @@ def prepare_long_history(
     timeframe: Timeframe,
     cutoff: str,
     adjustment_basis: str,
+    market: Literal["KR", "US"] | None = None,
+    observed_at: str | None = None,
     provider_limit: int | None = PROVIDER_INTERFACE_LIMIT,
 ) -> tuple[tuple[PriceBar, ...], LongHistoryCoverage]:
-    completed = normalize_completed_bars(raw_bars, cutoff=cutoff)
+    completed = normalize_completed_bars(
+        raw_bars,
+        cutoff=cutoff,
+        timeframe=timeframe,
+        market=market,
+        observed_at=observed_at,
+    )
     requested = HISTORY_REQUESTS[timeframe]
     provider_returned = len(completed)
-    selected = completed[-requested:]
+    complete_bars = tuple(bar for bar in completed if bar.bar_state == "COMPLETE")
+    partial_bars = tuple(bar for bar in completed if bar.bar_state == "PARTIAL")
+    selected = tuple(sorted(complete_bars[-requested:] + partial_bars, key=lambda bar: bar.date))
     actual = len(selected)
+    completed_count = len(complete_bars[-requested:])
     limit_hit = bool(
         provider_limit is not None
         and provider_returned >= provider_limit
-        and provider_returned < requested
+        and completed_count < requested
     )
-    complete_to_listing = provider_returned < requested and not limit_hit
-    if actual >= requested:
+    complete_to_listing = completed_count < requested and not limit_hit
+    if completed_count >= requested:
         status: CoverageStatus = "PASS"
         reason = None
-    elif actual > max(PIVOT_WINDOWS[timeframe]) * 2 + 3:
+    elif completed_count > max(PIVOT_WINDOWS[timeframe]) * 2 + 3:
         status = "PARTIAL"
         reason = "provider_limit" if limit_hit else "short_listing_or_available_history"
     else:
@@ -321,7 +484,7 @@ def prepare_long_history(
         requested_count=requested,
         provider_returned_count=provider_returned,
         actual_count=actual,
-        completed_count=actual,
+        completed_count=completed_count,
         actual_start_date=selected[0].date if selected else None,
         actual_end_date=selected[-1].date if selected else None,
         provider_limit=provider_limit,
@@ -378,8 +541,19 @@ def detect_pivots(
         )
         if not is_low and not is_high:
             continue
-        status: ConfirmationStatus = "CONFIRMED" if available_right == right else "PROVISIONAL"
-        confirmation = bars[index + right].date if status == "CONFIRMED" else None
+        confirmation_bars = tuple(right_bars[:right])
+        confirmation_ready = (
+            bar.bar_state == "COMPLETE"
+            and len(confirmation_bars) == right
+            and all(item.bar_state == "COMPLETE" for item in confirmation_bars)
+        )
+        status: ConfirmationStatus = "CONFIRMED" if confirmation_ready else "PROVISIONAL"
+        confirmation = confirmation_bars[-1].date if confirmation_ready else None
+        confirmation_ids = tuple(
+            item.bar_id or _stable_id("v3-bar-legacy", timeframe, item.date)
+            for item in confirmation_bars
+            if item.bar_state == "COMPLETE"
+        )
         for kind, price, eligible in (
             ("LOW", bar.low, is_low),
             ("HIGH", bar.high, is_high),
@@ -401,7 +575,11 @@ def detect_pivots(
                     ticker=ticker,
                     timeframe=timeframe,
                     bar_date=bar.date,
+                    pivot_bar_date=bar.date,
+                    required_right_bar_count=right,
                     confirmation_date=confirmation,
+                    pivot_confirmation_date=confirmation,
+                    confirmation_bar_ids=(confirmation_ids if confirmation_ready else ()),
                     kind=kind,  # type: ignore[arg-type]
                     price=price,
                     atr14=_atr_at(ranges, index),
@@ -626,6 +804,20 @@ def _date_ordinal(value: str) -> int:
     return year * 372 + month * 31 + day
 
 
+def _month_distance(start: str, end: str) -> int:
+    start_year, start_month, _ = (int(part) for part in start[:10].split("-"))
+    end_year, end_month, _ = (int(part) for part in end[:10].split("-"))
+    return max((end_year - start_year) * 12 + end_month - start_month, 0)
+
+
+def _monthly_wave_degree(span_months: int) -> WaveDegree:
+    if span_months >= 84:
+        return "GRAND_CYCLE"
+    if span_months >= 24:
+        return "PRIMARY_CURRENT_CYCLE"
+    return "INTERMEDIATE"
+
+
 def generate_primary_monthly_hypotheses(
     monthly_bars: Sequence[PriceBar],
     monthly_pivots: Sequence[PivotPoint],
@@ -758,19 +950,69 @@ def generate_primary_monthly_hypotheses(
                             )
                         )
     unique = {hypothesis.hypothesis_id: hypothesis for hypothesis in hypotheses}
-    ordered = sorted(
-        unique.values(),
-        key=lambda item: (item.score, item.endpoints[-1].date, item.hypothesis_id),
-        reverse=True,
+    if not unique:
+        return ()
+    classified: list[MonthlyWaveHypothesis] = []
+    for item in unique.values():
+        w0_date = next(point.date for point in item.endpoints if point.label == "W0")
+        span_months = _month_distance(w0_date, item.endpoints[-1].date)
+        degree = _monthly_wave_degree(span_months)
+        components = dict(item.score_components)
+        components["magnitude"] = min(components["magnitude"], Decimal(2))
+        if degree == "PRIMARY_CURRENT_CYCLE":
+            recency_fit = Decimal(max(84 - span_months, 0)) / Decimal(30)
+        elif degree == "GRAND_CYCLE":
+            recency_fit = min(Decimal(span_months) / Decimal(120), Decimal(1))
+        else:
+            recency_fit = Decimal(span_months) / Decimal(24)
+        components["degree_fit"] = Decimal(2)
+        components["degree_recency_fit"] = _rounded(recency_fit)
+        components.pop("recency", None)
+        score = _rounded(sum(components.values()))
+        classified.append(
+            item.model_copy(
+                update={
+                    "hypothesis_id": _stable_id(
+                        "v3-monthly-wave",
+                        ticker,
+                        degree,
+                        *(point.pivot_ref for point in item.endpoints),
+                    ),
+                    "source_degree": degree,
+                    "score_components": components,
+                    "score": score,
+                }
+            )
+        )
+
+    def ordered(values: Sequence[MonthlyWaveHypothesis]) -> list[MonthlyWaveHypothesis]:
+        return sorted(
+            values,
+            key=lambda item: (item.score, item.endpoints[-1].date, item.hypothesis_id),
+            reverse=True,
+        )[:max_hypotheses]
+
+    current = ordered(
+        [item for item in classified if item.source_degree == "PRIMARY_CURRENT_CYCLE"]
     )
-    return tuple(ordered[:max_hypotheses])
+    grand = ordered([item for item in classified if item.source_degree == "GRAND_CYCLE"])
+    intermediate = ordered(
+        [item for item in classified if item.source_degree == "INTERMEDIATE"]
+    )
+    return tuple(current + grand + intermediate)
 
 
 def validate_wave_hypothesis_selection(
     selection: WaveHypothesisSelection,
     hypotheses: Sequence[MonthlyWaveHypothesis],
+    *,
+    ticker: str | None = None,
+    cutoff: str | None = None,
+    adjustment_basis: str | None = None,
+    strict_context: bool = False,
 ) -> WaveSelectionValidation:
-    valid_ids = {hypothesis.hypothesis_id for hypothesis in hypotheses}
+    hypothesis_map = {hypothesis.hypothesis_id: hypothesis for hypothesis in hypotheses}
+    valid_ids = set(hypothesis_map)
     errors: list[str] = []
     if selection.status == WaveSelectionStatus.SELECTED:
         if selection.hypothesis_id not in valid_ids:
@@ -779,6 +1021,36 @@ def validate_wave_hypothesis_selection(
             selection.alternative_hypothesis_id not in valid_ids
         ):
             errors.append("unknown_alternative_hypothesis_id")
+        selected = hypothesis_map.get(selection.hypothesis_id or "")
+        if ticker is not None and selection.ticker != ticker:
+            errors.append("ticker_mismatch")
+        if (
+            selected is not None
+            and selection.source_degree is not None
+            and selection.source_degree != selected.source_degree
+        ):
+            errors.append("source_degree_mismatch")
+        if cutoff is not None and selection.cutoff != cutoff:
+            errors.append("cutoff_mismatch")
+        if adjustment_basis is not None and selection.adjustment_basis != adjustment_basis:
+            errors.append("adjustment_basis_mismatch")
+        if selected is not None:
+            expected_refs = tuple(point.pivot_ref for point in selected.endpoints)
+            if selection.endpoint_refs and selection.endpoint_refs != expected_refs:
+                errors.append("endpoint_refs_mismatch")
+            if cutoff is not None and any(point.date > cutoff for point in selected.endpoints):
+                errors.append("future_endpoint")
+        if strict_context:
+            if selection.ticker is None:
+                errors.append("missing_ticker")
+            if selection.source_degree is None:
+                errors.append("missing_source_degree")
+            if selection.cutoff is None:
+                errors.append("missing_cutoff")
+            if selection.adjustment_basis is None:
+                errors.append("missing_adjustment_basis")
+            if not selection.endpoint_refs:
+                errors.append("missing_endpoint_refs")
         return WaveSelectionValidation(valid=not errors, errors=tuple(errors))
     if selection.hypothesis_id is not None or selection.alternative_hypothesis_id is not None:
         errors.append("abstention_requires_null_ids")
@@ -955,7 +1227,7 @@ def _fib_reference(
         ticker=ticker,
         currency=currency,
         source_timeframe="monthly",
-        source_degree="PRIMARY_MONTHLY_CYCLE",
+        source_degree=hypothesis.source_degree,
         confluence_target_timeframe=target,
         wave_hypothesis_id=hypothesis.hypothesis_id,
         family=family,  # type: ignore[arg-type]
@@ -1210,6 +1482,7 @@ def build_price_structure_wave_fib_v3(
     adjustment_basis: str,
     cutoff: str,
     raw_by_timeframe: Mapping[Timeframe, Sequence[Mapping[str, object]]],
+    observed_at: str | None = None,
     provider_limit: int | None = PROVIDER_INTERFACE_LIMIT,
 ) -> PriceStructureWaveFibV3Result:
     started = time.perf_counter()
@@ -1223,6 +1496,8 @@ def build_price_structure_wave_fib_v3(
             timeframe=timeframe,
             cutoff=cutoff,
             adjustment_basis=adjustment_basis,
+            market=market,
+            observed_at=observed_at,
             provider_limit=provider_limit,
         )
         histories[timeframe] = bars
@@ -1248,8 +1523,11 @@ def build_price_structure_wave_fib_v3(
         pivots["weekly"],
         ticker=ticker,
     )
-    primary_status = _primary_status(hypotheses)
-    selected = hypotheses[0] if hypotheses and primary_status != "AMBIGUOUS" else None
+    current_cycle = tuple(
+        item for item in hypotheses if item.source_degree == "PRIMARY_CURRENT_CYCLE"
+    )
+    primary_status = _primary_status(current_cycle)
+    selected = current_cycle[0] if current_cycle and primary_status != "AMBIGUOUS" else None
     fibonacci = (
         calculate_wave_fibonacci(
             selected,
@@ -1302,6 +1580,104 @@ def build_price_structure_wave_fib_v3(
         cross_timeframe_confluence=cross,
         shadow_render=render,
         computation_ms=elapsed,
+        degree_candidate_counts={
+            degree: sum(item.source_degree == degree for item in hypotheses)
+            for degree in (
+                "GRAND_CYCLE",
+                "PRIMARY_CURRENT_CYCLE",
+                "INTERMEDIATE",
+                "TACTICAL",
+            )
+        },
+    )
+
+
+def apply_wave_selection_feedback(
+    result: PriceStructureWaveFibV3Result,
+    selection: WaveHypothesisSelection,
+    *,
+    raw_by_timeframe: Mapping[Timeframe, Sequence[Mapping[str, object]]],
+    observed_at: str | None = None,
+    provider_limit: int | None = PROVIDER_INTERFACE_LIMIT,
+) -> PriceStructureWaveFibV3Result:
+    validation = validate_wave_hypothesis_selection(
+        selection,
+        result.primary_monthly_hypotheses,
+        ticker=result.ticker,
+        cutoff=result.as_of,
+        adjustment_basis=result.adjustment_basis,
+        strict_context=selection.status == WaveSelectionStatus.SELECTED,
+    )
+    selected = None
+    if validation.valid and selection.status == WaveSelectionStatus.SELECTED:
+        selected = next(
+            (
+                item
+                for item in result.primary_monthly_hypotheses
+                if item.hypothesis_id == selection.hypothesis_id
+            ),
+            None,
+        )
+    histories: dict[Timeframe, tuple[PriceBar, ...]] = {}
+    for timeframe in TIMEFRAME_ORDER:
+        histories[timeframe], _ = prepare_long_history(
+            raw_by_timeframe.get(timeframe, ()),
+            timeframe=timeframe,
+            cutoff=result.as_of,
+            adjustment_basis=result.adjustment_basis,
+            market=result.market,
+            observed_at=observed_at,
+            provider_limit=provider_limit,
+        )
+    fibonacci = (
+        calculate_wave_fibonacci(
+            selected,
+            ticker=result.ticker,
+            currency=result.currency,
+            as_of=result.as_of,
+        )
+        if selected is not None
+        else ()
+    )
+    maps: dict[Timeframe, tuple[TechnicalZone, ...]] = {}
+    for timeframe in TIMEFRAME_ORDER:
+        maps[timeframe] = build_timeframe_zone_map(
+            ticker=result.ticker,
+            timeframe=timeframe,
+            bars=histories[timeframe],
+            pivot_zones=result.sr_maps[timeframe],
+            fibonacci=fibonacci,
+            current_price=result.current_price,
+        )
+    cross = build_cross_timeframe_confluence(
+        maps,
+        ticker=result.ticker,
+        current_price=result.current_price,
+    )
+    selected_status: HypothesisStatus = selected.status if selected is not None else "NONE"
+    render = render_shadow_v3(
+        result_maps=maps,
+        hypotheses=(selected,) if selected is not None else (),
+        primary_status=selected_status,
+        cross=cross,
+        currency=result.currency,
+    )
+    audit = WaveFeedbackAudit(
+        selection=selection,
+        validation=validation,
+        selected_hypothesis_id=selected.hypothesis_id if selected is not None else None,
+        selected_hypothesis_fed_to_engine=selected is not None,
+    )
+    return result.model_copy(
+        update={
+            "selected_hypothesis_id": selected.hypothesis_id if selected is not None else None,
+            "primary_hypothesis_status": selected_status,
+            "fibonacci": fibonacci,
+            "timeframe_zone_maps": maps,
+            "cross_timeframe_confluence": cross,
+            "shadow_render": render,
+            "feedback_audit": audit,
+        }
     )
 
 
@@ -1316,6 +1692,7 @@ def wave_hypothesis_packet(
         hypotheses.append(
             {
                 "hypothesis_id": hypothesis.hypothesis_id,
+                "source_degree": hypothesis.source_degree,
                 "status": hypothesis.status,
                 "wave_state": hypothesis.wave_state,
                 "endpoints": [
@@ -1340,6 +1717,14 @@ def wave_hypothesis_packet(
         "market": result.market,
         "cutoff": result.as_of,
         "adjustment_basis": result.adjustment_basis,
+        "selection_echo_required": [
+            "ticker",
+            "source_degree",
+            "cutoff",
+            "adjustment_basis",
+            "endpoint_refs",
+        ],
+        "degree_candidate_counts": result.degree_candidate_counts,
         "hypotheses": hypotheses,
         "monthly_candle_context": [
             {

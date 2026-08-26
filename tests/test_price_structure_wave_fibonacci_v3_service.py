@@ -232,7 +232,7 @@ def test_fibonacci_families_keep_monthly_source_and_target_separate() -> None:
         and reference.ratio == "0.382"
     )
     assert weekly.source_timeframe == "monthly"
-    assert weekly.source_degree == "PRIMARY_MONTHLY_CYCLE"
+    assert weekly.source_degree == "PRIMARY_CURRENT_CYCLE"
     assert weekly.status == "PROVISIONAL"
     assert weekly.calculated_price == Decimal("264.380000")
 

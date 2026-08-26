@@ -18,7 +18,9 @@ endpoints within bounded date and price tolerances. Fibonacci fit, magnitude, re
 confirmation, and weekly confirmation are supporting score components only.
 
 States are `VALID_CONFIRMED`, `VALID_PROVISIONAL`, `AMBIGUOUS`, or `NONE`. Multiple close
-candidates remain ambiguous unless the ID-only variable-AI consensus is stable.
+candidates remain ambiguous unless the ID-only variable-AI consensus is stable. The bounded
+repair assigns explicit degree metadata and ranks grand-cycle, primary-current-cycle, and
+intermediate candidates independently; raw magnitude no longer decides the shared top-N set.
 
 ## Why
 
@@ -32,5 +34,5 @@ W5 absence as an error were rejected.
 
 ## Safety Constraint
 
-The implementation does not claim bearish impulses, ABC corrections, or nested intermediate
-degrees. An unsupported structure produces abstention and no Fibonacci prices.
+The implementation does not claim bearish impulses, ABC corrections, or a complete nested
+Elliott ontology. An unsupported structure produces abstention and no Fibonacci prices.
