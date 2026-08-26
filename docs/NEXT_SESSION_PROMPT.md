@@ -2,6 +2,27 @@
 
 Repository: `sskim-ai/thesis-monitor`
 
+Latest authoritative master work follows exact instruction commit
+`e76a7d6b5e8ddc110d3228cfd5e55f26dbdb1e1d` and integrated code commit
+`65196d2d2a54483143d23d1c61500f70d0e2325a`. Read
+`docs/reports/20260826-master-final-readiness.md`, the gate matrix, track status, natural proof
+status, artifact index, and both track readiness reports first.
+
+Track A is replay PASS with natural US reproof pending. Track B observed natural KR run 40 and
+8/8 exactly-once delivery, but has two material P1s: the sent market digest omitted all same-session
+KR local market structure/flow evidence, and 378 sector breadth numeric paths were unregistered,
+blocking AI eligibility. Open P0 is zero. Track C did not start and Price Structure v3 remains
+`INTEGRATED_READY_NOT_ARMED`.
+
+Perform only `BOUNDED_KR_LOCAL_FIRST_AND_NUMERIC_REGISTRY_REPAIR`: preserve exact Kiwoom source
+semantics and unresolved concentration suppression, make the deterministic KR digest local-first,
+register only supported canonical numeric paths, replay immutable packet
+`2026-08-26-kr-run-40-706bc3003536`, and then wait for natural KR proof. Do not arm Price Structure
+v3 until the master Track B gate returns P0/P1 `0/0`. Natural US reproof continues in parallel.
+Do not manually run tasks or Telegram; keep Production Assist OFF.
+
+---
+
 Latest authoritative renderer work follows exact instruction commit
 `97b65fc1d258339563b54961a83acd997867e11e` and implementation commit
 `3685aa991589ca0e7cc560104d4ebf8289e3f91d`. Read

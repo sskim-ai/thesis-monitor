@@ -1,18 +1,18 @@
 {
   "repository": "sskim-ai/thesis-monitor",
   "branch": "main",
-  "experimental_branch": "codex/price-structure-v3-legacy-detector-false-positive-repair",
-  "current_commit": "3685aa991589ca0e7cc560104d4ebf8289e3f91d",
-  "recorded_base_commit": "97b65fc1d258339563b54961a83acd997867e11e",
-  "current_phase": "price_structure_v3_legacy_detector_integrated_ready_not_armed",
-  "last_completed_phase": "price_structure_v3_legacy_detector_false_positive_micro_repair",
-  "next_default_phase": "bounded_price_structure_v3_sr_and_family_selective_enablement",
-  "next_candidate": "bounded_price_structure_v3_sr_and_family_selective_enablement",
-  "alternative_next_phase": "open_research_production_connector_selective_event_attribution",
-  "latest_validation_report": "docs/reports/20260826-v3-legacy-detector-readiness.md",
-  "deployed_code_commit": "3685aa991589ca0e7cc560104d4ebf8289e3f91d",
-  "main_code_commit": "3685aa991589ca0e7cc560104d4ebf8289e3f91d",
-  "operating_code_commit": "3685aa991589ca0e7cc560104d4ebf8289e3f91d",
+  "experimental_branch": "codex/20260826-master-market-validation-rollout",
+  "current_commit": "65196d2d2a54483143d23d1c61500f70d0e2325a",
+  "recorded_base_commit": "e76a7d6b5e8ddc110d3228cfd5e55f26dbdb1e1d",
+  "current_phase": "master_market_validation_bounded_kr_repair_required",
+  "last_completed_phase": "us_morning_pipeline_replay_repair_and_kr_afternoon_natural_review",
+  "next_default_phase": "bounded_kr_local_first_and_numeric_registry_repair",
+  "next_candidate": "bounded_kr_local_first_and_numeric_registry_repair",
+  "alternative_next_phase": "wait_for_natural_us_morning_reproof_in_parallel",
+  "latest_validation_report": "docs/reports/20260826-master-final-readiness.md",
+  "deployed_code_commit": "65196d2d2a54483143d23d1c61500f70d0e2325a",
+  "main_code_commit": "65196d2d2a54483143d23d1c61500f70d0e2325a",
+  "operating_code_commit": "65196d2d2a54483143d23d1c61500f70d0e2325a",
   "official_assessment_source": "deterministic",
   "ai_review_mode": "shadow",
   "natural_ai_assisted_delivery": "partial",
@@ -2990,6 +2990,59 @@
     "production_assist": false,
     "next_action": "BOUNDED_PRICE_STRUCTURE_V3_SR_AND_FAMILY_SELECTIVE_ENABLEMENT",
     "report": "docs/reports/20260826-v3-legacy-detector-readiness.json"
+  },
+  "master_market_validation_price_structure_rollout": {
+    "status": "bounded_repair_required",
+    "branch": "codex/20260826-master-market-validation-rollout",
+    "original_main": "33f82227245f3757815a231cdaad86b75f8c2b76",
+    "instruction_commit": "e76a7d6b5e8ddc110d3228cfd5e55f26dbdb1e1d",
+    "integration_code_commit": "65196d2d2a54483143d23d1c61500f70d0e2325a",
+    "target_sessions": {
+      "us": "2026-08-25",
+      "kr": "2026-08-26"
+    },
+    "track_a": {
+      "status": "replay_pass_natural_reproof_pending",
+      "branch": "codex/us-morning-market-pipeline-repair",
+      "implementation_commit": "505a3a2c63390c683323192b7ca516513dfe7a24",
+      "report_commit": "1648e00c2525fe0df2abbcb13db1696cd9296bc1",
+      "open_p0": [],
+      "open_material_p1": []
+    },
+    "track_b": {
+      "status": "material_p1_found_stop",
+      "branch": "codex/kr-afternoon-natural-review",
+      "report_commit": "f089ebe1bd2f47612b36a3093ed57f35f39bf67f",
+      "natural_packet": "2026-08-26-kr-run-40-706bc3003536",
+      "delivery": "8/8_exactly_once",
+      "open_p0": [],
+      "open_material_p1": [
+        "kr_market_digest_local_first_material_information_loss",
+        "kr_ai_packet_sector_breadth_numeric_registry_incomplete"
+      ]
+    },
+    "track_c": {
+      "status": "do_not_start",
+      "branch": null,
+      "production_armed": false
+    },
+    "price_structure_v3": "integrated_ready_not_armed",
+    "open_p0": [],
+    "open_material_p1": [
+      "kr_market_digest_local_first_material_information_loss",
+      "kr_ai_packet_sector_breadth_numeric_registry_incomplete"
+    ],
+    "validation": {
+      "focused_tests": "243_PASSED",
+      "full_pytest": "1729_PASSED",
+      "ruff": "PASS",
+      "diff_check": "PASS",
+      "public_action": "0.4.5",
+      "operation_ids": "20/20_UNIQUE"
+    },
+    "production_assist": false,
+    "next_action": "BOUNDED_KR_LOCAL_FIRST_AND_NUMERIC_REGISTRY_REPAIR",
+    "report": "docs/reports/20260826-master-final-readiness.json"
   },
   "production_assist": false,
   "public_action_version": "0.4.5",

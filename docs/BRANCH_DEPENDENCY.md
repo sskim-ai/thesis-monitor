@@ -295,3 +295,15 @@ evidence generator, architecture, and focused tests. A later selective enablemen
 this closure and preserve protected structural fields, complete token boundaries, sentence-level
 MU suppression, existing SR/Fib numerics, current/stored ownership, and the unchanged eligibility
 cohort. Production imports and runtime behavior remain unchanged.
+
+The 2026-08-26 master validation starts from immutable instruction commit
+`e76a7d6b5e8ddc110d3228cfd5e55f26dbdb1e1d`, whose parent is operating main
+`33f82227245f3757815a231cdaad86b75f8c2b76`. Track A implementation
+`505a3a2c63390c683323192b7ca516513dfe7a24` and combined compatibility repair
+`65196d2d2a54483143d23d1c61500f70d0e2325a` are the code ancestors for the next bounded KR repair.
+Track B report `f089ebe1bd2f47612b36a3093ed57f35f39bf67f` is read-only evidence.
+
+No Price Structure Track C branch exists because Track B has two material P1s. A future selective
+enablement must descend from the eventual bounded KR local-first/numeric-registry closure and may
+begin only after the Track B replay and natural gate return P0/P1 `0/0`. This stop does not erase
+the prior v3 shadow readiness and does not block parallel natural US reproof.

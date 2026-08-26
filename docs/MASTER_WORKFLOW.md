@@ -1437,3 +1437,24 @@ sentence and retains its business thesis.
 All entity, structure, nontechnical-suppression, SR/Fib, eligibility, provenance, temporal, and
 runtime-isolation counters are zero. State remains `INTEGRATED_READY_NOT_ARMED` with
 `PRODUCTION_ENABLEMENT_READY=YES`; a separate bounded selective-enablement task is still required.
+
+### 40.8 Master Market Validation Gate
+
+Exact master instruction commit `e76a7d6b5e8ddc110d3228cfd5e55f26dbdb1e1d` split the work into
+US pipeline repair, KR natural review, and conditionally gated Price Structure v3 enablement.
+Track A implementation `505a3a2c63390c683323192b7ca516513dfe7a24` closes stale pending-packet
+claim ownership, preserves level-only RSP without directional leakage, propagates current sector
+state, and binds release observations to their source dates. Its 2026-08-25 replay passes with
+natural reproof still pending. Combined validation repair `65196d2d2a54483143d23d1c61500f70d0e2325a`
+preserves legacy KR adapter payload compatibility.
+
+Track B observed natural KR run 40 and confirmed packet integrity, official Kiwoom breadth/flow,
+safe reconciliation suppression, and 8/8 exactly-once delivery. It also found two material P1s:
+the sent digest omitted same-session KR local market evidence, and 378 sector breadth numeric paths
+were absent from the AI registry. Open P0 is zero, but Track B is `MATERIAL_P1_FOUND_STOP`.
+
+The master gate therefore keeps Price Structure v3 `INTEGRATED_READY_NOT_ARMED`; Track C was not
+created and production was not armed. The next bounded task is
+`BOUNDED_KR_LOCAL_FIRST_AND_NUMERIC_REGISTRY_REPAIR`, followed by immutable run-40 replay and a new
+natural KR proof. Natural US reproof continues in parallel. Manual Telegram, scheduled-task,
+pilot, database, archive, and Production Assist mutations remain zero.

@@ -102,18 +102,19 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     assert state["repository"] == "sskim-ai/thesis-monitor"
     assert state["branch"] == "main"
     assert state["experimental_branch"] == (
-        "codex/price-structure-v3-legacy-detector-false-positive-repair"
+        "codex/20260826-master-market-validation-rollout"
     )
     assert state["current_phase"] == (
-        "price_structure_v3_legacy_detector_integrated_ready_not_armed"
+        "master_market_validation_bounded_kr_repair_required"
     )
     assert state["last_completed_phase"] == (
-        "price_structure_v3_legacy_detector_false_positive_micro_repair"
+        "us_morning_pipeline_replay_repair_and_kr_afternoon_natural_review"
     )
     assert state["next_default_phase"] == (
-        "bounded_price_structure_v3_sr_and_family_selective_enablement"
+        "bounded_kr_local_first_and_numeric_registry_repair"
     )
-    implementation_commit = "3685aa991589ca0e7cc560104d4ebf8289e3f91d"
+    implementation_commit = "65196d2d2a54483143d23d1c61500f70d0e2325a"
+    detector_implementation_commit = "3685aa991589ca0e7cc560104d4ebf8289e3f91d"
     preenablement_commit = "84f8f549bc8fa0338309a84b23b2738f2e357646"
     prior_price_structure_commit = "631e82f202b6f081866ef83c8b67b2138a8b51d8"
     prior_fibonacci_commit = "0dfef76bba606f018893d6e68e7beaf410aa7438"
@@ -168,7 +169,7 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     assert renderer["production_enabled"] is False
     detector = state["price_structure_v3_legacy_detector_false_positive_micro_repair"]
     assert detector["status"] == "integrated_ready_not_armed"
-    assert detector["implementation_commit"] == implementation_commit
+    assert detector["implementation_commit"] == detector_implementation_commit
     assert detector["target_sessions"] == {"kr": "2026-08-26", "us": "2026-08-25"}
     assert detector["rxrx_header_false_positive_root_cause"] == "PASS"
     assert detector["legacy_technical_token_policy"] == "PASS"
@@ -854,6 +855,26 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
         state["persistent_gaps"]["fallback_price_lifecycle"]
         == "CLOSED_RETROSPECTIVE_AND_OPERATING_CODE_PROMOTED"
     )
+    master = state["master_market_validation_price_structure_rollout"]
+    assert master["status"] == "bounded_repair_required"
+    assert master["instruction_commit"] == (
+        "e76a7d6b5e8ddc110d3228cfd5e55f26dbdb1e1d"
+    )
+    assert master["integration_code_commit"] == implementation_commit
+    assert master["track_a"]["status"] == (
+        "replay_pass_natural_reproof_pending"
+    )
+    assert master["track_b"]["status"] == "material_p1_found_stop"
+    assert len(master["track_b"]["open_material_p1"]) == 2
+    assert master["track_c"] == {
+        "status": "do_not_start",
+        "branch": None,
+        "production_armed": False,
+    }
+    assert master["price_structure_v3"] == "integrated_ready_not_armed"
+    assert master["open_p0"] == []
+    assert len(master["open_material_p1"]) == 2
+    assert master["production_assist"] is False
     assert state["current_commit"] == implementation_commit
     assert state["ai_review_mode"] == "shadow"
     assert state["ai_policy_version"] == "daily-review-v3.10"

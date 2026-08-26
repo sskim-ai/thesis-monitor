@@ -1,0 +1,57 @@
+{
+  "contract": "master-market-validation-price-structure-rollout-v1",
+  "instruction_commit": "e76a7d6b5e8ddc110d3228cfd5e55f26dbdb1e1d",
+  "original_main": "33f82227245f3757815a231cdaad86b75f8c2b76",
+  "integration_code_commit": "65196d2",
+  "target_sessions": {
+    "us": "2026-08-25",
+    "kr": "2026-08-26"
+  },
+  "tracks": {
+    "a": {
+      "branch": "codex/us-morning-market-pipeline-repair",
+      "implementation_commit": "505a3a2c63390c683323192b7ca516513dfe7a24",
+      "report_commit": "1648e00c2525fe0df2abbcb13db1696cd9296bc1",
+      "status": "REPLAY_PASS_NATURAL_REPROOF_PENDING",
+      "open_p0": 0,
+      "open_material_p1": 0
+    },
+    "b": {
+      "branch": "codex/kr-afternoon-natural-review",
+      "report_commit": "f089ebe",
+      "status": "MATERIAL_P1_FOUND_STOP",
+      "open_p0": 0,
+      "open_material_p1": 2
+    },
+    "c": {
+      "branch": null,
+      "implementation_commit": null,
+      "status": "DO_NOT_START",
+      "production_armed": false
+    }
+  },
+  "validation": {
+    "focused_tests": "243_PASSED",
+    "full_pytest": "1729_PASSED",
+    "ruff": "PASS",
+    "diff_check": "PASS",
+    "investment_knowledge_parity": "PASS",
+    "chart_knowledge_parity": "PASS",
+    "public_action": "0.4.5",
+    "operation_ids": "20/20_UNIQUE"
+  },
+  "open_p0": [],
+  "open_material_p1": [
+    "kr_market_digest_local_first_material_information_loss",
+    "kr_ai_packet_sector_breadth_numeric_registry_incomplete"
+  ],
+  "price_structure_v3": "INTEGRATED_READY_NOT_ARMED",
+  "price_structure_selective_enablement": "DO_NOT_ARM",
+  "master_status": "BOUNDED_REPAIR_REQUIRED",
+  "next_action": "BOUNDED_KR_LOCAL_FIRST_AND_NUMERIC_REGISTRY_REPAIR",
+  "production_assist": false,
+  "manual_telegram": 0,
+  "manual_tasks": 0,
+  "pilot_mutations": 0,
+  "database_mutations": 0
+}
