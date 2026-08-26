@@ -1493,3 +1493,21 @@ Do not manually run KR/US production or Telegram. Keep full mode OFF, canary lim
 Research integration 0, Trade AR OFF, and Production Assist OFF. Observe natural delivery
 read-only. Unless that observation reveals a new P0/P1, the next major engineering scope is the
 Open Research production connector and selective event attribution.
+
+## 2026-08-26 Fibonacci Variable AI Anchor Handoff
+
+The exact instruction is commit `d9e6e2327f0f32256a1bd0d8caf2c0b0f1faf890`. Read the
+Fibonacci P1 closure readiness JSON, exact benchmark, stability, egress, candle-context, KR/US
+replay, reference comparison, and safety-parity reports first.
+
+The signed-in local Codex route actually ran with `gpt-5.6-sol`, high reasoning, read-only sandbox,
+ephemeral sessions, and a strict ID-only schema. Frozen public price packets cover 20/20 active
+subjects. Benchmark packets ran five times and all others three times. Runtime failures are zero,
+private/secret/thesis egress is zero, and material candidate omissions versus full debug are zero.
+
+Do not enable this feature. Monthly/weekly material variation is `3/11`, semantic timeframe
+rejections are `4`, and only `8/20` stocks satisfy the first-pool higher-timeframe gate. State is
+`SHADOW`, code correctness is PASS, variable trial is PARTIAL, and
+`PRODUCTION_ENABLEMENT_READY=NO`. The bounded next repair is anchor-versus-SR ownership separation
+plus tighter `AMBIGUOUS/INSUFFICIENT_STRUCTURE` semantics; retain existing tolerances and frozen
+trial protocol. This P1 is local to Fibonacci enablement and does not block Open Research work.

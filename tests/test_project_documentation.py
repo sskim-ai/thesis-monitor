@@ -47,6 +47,11 @@ DOCUMENTS = (
     ROOT / "docs" / "architecture" / "FREE_ANALYST_CANARY_POLICY.md",
     ROOT / "docs" / "architecture" / "FREE_ANALYST_MESSAGE_QUALITY.md",
     ROOT / "docs" / "architecture" / "KR_MARKET_DIGEST_QUALITY.md",
+    ROOT / "docs" / "architecture" / "AI_FIBONACCI_MULTI_TIMEFRAME_STRUCTURE.md",
+    ROOT / "docs" / "architecture" / "PRICE_STRUCTURE_SHADOW_POLICY.md",
+    ROOT / "docs" / "architecture" / "VARIABLE_AI_SWING_ANCHOR_SELECTION.md",
+    ROOT / "docs" / "architecture" / "PRICE_ONLY_AI_ANCHOR_PACKET.md",
+    ROOT / "docs" / "architecture" / "AI_ANCHOR_STABILITY_POLICY.md",
     ROOT / "docs" / "operations" / "AI_ASSISTED_PILOT.md",
     ROOT / "docs" / "operations" / "CASH_FLOW_USER_VISIBLE_KILL_SWITCH.md",
     ROOT / "docs" / "operations" / "WORKING_CAPITAL_USER_VISIBLE_KILL_SWITCH.md",
@@ -67,18 +72,18 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     assert state["repository"] == "sskim-ai/thesis-monitor"
     assert state["branch"] == "main"
     assert state["experimental_branch"] == (
-        "codex/kr-digest-us-entity-synthesis-bounded-repair"
+        "codex/fibonacci-variable-ai-anchor-candle-context-repair"
     )
     assert state["current_phase"] == (
-        "kr_us_bounded_quality_repair_closed_pending_natural"
+        "fibonacci_variable_ai_anchor_shadow_bounded_repair_required"
     )
     assert state["last_completed_phase"] == (
-        "kr_market_digest_us_entity_specific_synthesis_bounded_repair"
+        "fibonacci_variable_ai_anchor_candle_context_bounded_repair"
     )
     assert state["next_default_phase"] == (
         "open_research_production_connector_selective_event_attribution"
     )
-    implementation_commit = "f2326c39485e600bca2cee15747deeb8465c5c8a"
+    implementation_commit = "9ac9a3cf2f6c759fa73ba5cbee6ab55c08ee1901"
     assert state["deployed_code_commit"] == implementation_commit
     assert state["main_code_commit"] == implementation_commit
     assert state["operating_code_commit"] == implementation_commit
@@ -177,13 +182,24 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     assert state["contracts"]["cross_message_synthesis_specificity"] == (
         "cross-message-synthesis-specificity-v1"
     )
+    assert state["contracts"]["price_only_ai_anchor_packet"] == (
+        "price-only-ai-anchor-packet-v1"
+    )
+    assert state["contracts"]["variable_ai_swing_anchor_selection"] == (
+        "variable-ai-swing-anchor-selection-v1"
+    )
+    assert state["contracts"]["ai_anchor_stability_policy"] == (
+        "ai-anchor-stability-policy-v1"
+    )
     bounded_quality = state[
         "kr_market_digest_us_entity_specific_synthesis_bounded_repair"
     ]
     assert bounded_quality["instruction_commit"] == (
         "8cf5226ca0c5ae5553fb06b24399462ea3cf6088"
     )
-    assert bounded_quality["implementation_commit"] == implementation_commit
+    assert bounded_quality["implementation_commit"] == (
+        "f2326c39485e600bca2cee15747deeb8465c5c8a"
+    )
     assert bounded_quality["kr_domestic_context_rich"] is True
     assert bounded_quality["kr_market_digest_local_first"] == "pass"
     assert bounded_quality["kr_replay"] == "pass_8_of_8"
@@ -196,6 +212,31 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     assert bounded_quality["hard_safety_errors"] == 0
     assert bounded_quality["open_p0"] == []
     assert bounded_quality["open_material_p1"] == []
+    fibonacci_anchor = state["fibonacci_variable_ai_anchor_p1_closure"]
+    assert fibonacci_anchor["instruction_commit"] == (
+        "d9e6e2327f0f32256a1bd0d8caf2c0b0f1faf890"
+    )
+    assert fibonacci_anchor["implementation_commit"] == implementation_commit
+    assert fibonacci_anchor["active_universe"] == 20
+    assert fibonacci_anchor["benchmark_runs_per_packet"] == 5
+    assert fibonacci_anchor["wider_universe_runs_per_packet"] == 3
+    assert fibonacci_anchor["runtime_failures"] == 0
+    assert fibonacci_anchor["semantic_rejected_timeframes"] == 4
+    assert fibonacci_anchor["monthly_stability"]["material"] == 3
+    assert fibonacci_anchor["weekly_stability"]["material"] == 11
+    assert fibonacci_anchor["daily_stability"]["material"] == 10
+    assert fibonacci_anchor["stock_user_visible_eligible"] == 8
+    assert fibonacci_anchor["stock_user_visible_ineligible"] == 12
+    assert fibonacci_anchor["material_anchor_omission"] == 0
+    assert fibonacci_anchor["rich_packet_sufficiency"] == "PARTIAL"
+    assert fibonacci_anchor["variable_ai_trial"] == "PARTIAL"
+    assert fibonacci_anchor["code_correctness"] == "PASS"
+    assert fibonacci_anchor["ai_fibonacci_multi_timeframe_structure"] == "SHADOW"
+    assert fibonacci_anchor["production_enablement_ready"] == "NO"
+    assert fibonacci_anchor["current_user_visible_message_diff"] == 0
+    assert fibonacci_anchor["open_p0"] == []
+    assert len(fibonacci_anchor["open_material_p1"]) == 2
+    assert fibonacci_anchor["production_assist"] is False
     advancement = state["phase_advancement_rule_v1"]
     assert advancement["p0_open"] == []
     assert advancement["p1_open"] == []

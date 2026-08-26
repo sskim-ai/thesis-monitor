@@ -1,0 +1,21 @@
+# Fibonacci P1 Closure Artifact Index
+
+- `docs/work-instructions/20260826-fibonacci-variable-ai-anchor-candle-context-bounded-repair.md`
+- `docs/architecture/VARIABLE_AI_SWING_ANCHOR_SELECTION.md`
+- `docs/architecture/PRICE_ONLY_AI_ANCHOR_PACKET.md`
+- `docs/architecture/AI_ANCHOR_STABILITY_POLICY.md`
+- `docs/architecture/AI_FIBONACCI_MULTI_TIMEFRAME_STRUCTURE.md`
+- `docs/architecture/PRICE_STRUCTURE_SHADOW_POLICY.md`
+- `docs/reports/20260826-variable-ai-anchor-price-only-evidence.json`
+- `docs/reports/20260826-fibonacci-p1-closure-evidence.json`
+- `docs/reports/20260826-fibonacci-p1-closure-readiness.json`
+- `docs/reports/20260826-ai-anchor-candle-context-audit.md`
+- `docs/reports/20260826-fibonacci-p1-closure-readiness.md`
+- `docs/reports/20260826-fibonacci-p1-closure-safety-parity.md`
+- `docs/reports/20260826-fibonacci-v2-selector-path-audit.md`
+- `docs/reports/20260826-price-only-ai-evidence-egress-audit.md`
+- `docs/reports/20260826-variable-ai-anchor-exact-benchmark.md`
+- `docs/reports/20260826-variable-ai-anchor-kr-shadow-replay.md`
+- `docs/reports/20260826-variable-ai-anchor-stability.md`
+- `docs/reports/20260826-variable-ai-anchor-us-shadow-replay.md`
+- `docs/reports/20260826-variable-ai-vs-reference-shadow-comparison.md`

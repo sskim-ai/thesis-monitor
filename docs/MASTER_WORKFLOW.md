@@ -1209,3 +1209,26 @@ Keep Free Analyst full mode OFF, canary `1/2/3`, Open Research production integr
 OFF, and Production Assist OFF. Natural proof continues read-only and independently. With no new
 P0/P1, stop message-polishing iterations and continue to the Open Research production connector
 and selective event-attribution integration.
+
+## 38. Fibonacci Variable AI Anchor Bounded Closure
+
+Instruction commit `d9e6e2327f0f32256a1bd0d8caf2c0b0f1faf890` fixes the exact P1 closure
+scope. `price-only-ai-anchor-packet-v1` carries bounded completed OHLCV, deterministic candle
+features, canonical pivot/SR IDs, candidate neighborhoods, and swing segments with no prior anchor
+or precomputed Fibonacci. `variable-ai-swing-anchor-selection-v1` returns IDs only; backend
+validation, Decimal Fibonacci, confluence, and per-timeframe deterministic-SR fallback remain
+authoritative.
+
+The actual signed-in variable runtime executed five independent runs for the two-KR/two-US
+benchmark and three for every other active monitored packet. Egress, runtime availability,
+deterministic arithmetic, provenance, look-ahead, and KR/US schema pass with no user-visible change.
+However, material variation remains for monthly `3/20`, weekly `11/20`, and daily `10/20`; four
+timeframes also required semantic fail-closed rejection. Material full-debug candidate omission is
+zero, so rich packet coverage is bounded `PARTIAL`, not an information-loss failure.
+
+State remains `AI_FIBONACCI_MULTI_TIMEFRAME_STRUCTURE=SHADOW` and
+`PRODUCTION_ENABLEMENT_READY=NO`. Open P0 is zero. The open material P1 is limited to variable
+higher-timeframe anchor/SR stability and ambiguous/insufficient output semantics. Do not widen
+canonical tolerances or arm production. A future bounded repair may separate variable Fibonacci
+anchor judgment from deterministic SR ownership and rerun the same frozen 5/3 protocol. This
+feature-local P1 does not block the independent Open Research roadmap or natural monitoring tracks.

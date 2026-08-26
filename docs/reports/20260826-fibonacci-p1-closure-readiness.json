@@ -1,0 +1,85 @@
+{
+  "contract": "fibonacci-p1-closure-readiness-v1",
+  "gates": {
+    "AI_FIBONACCI_MULTI_TIMEFRAME_STRUCTURE": "SHADOW",
+    "ANCHOR_SELECTION_STABILITY": "FAIL",
+    "APPROVED_VARIABLE_AI_RUNTIME": "AVAILABLE_WITH_FIELD_RESTRICTIONS",
+    "CODE_CORRECTNESS": "PASS",
+    "CURRENT_USER_VISIBLE_MESSAGE_DIFF": 0,
+    "DAILY_ANCHOR_STABILITY": "PARTIAL",
+    "FIBONACCI_DETERMINISTIC_CALC": "PASS",
+    "FIBONACCI_NUMERIC_PROVENANCE": "PASS",
+    "KR_SHADOW_REPLAY": "PASS",
+    "KR_US_VARIABLE_AI_ANCHOR_SCHEMA_COMMON": "PASS",
+    "LOOKAHEAD_SAFETY": "PASS",
+    "MONTHLY_ANCHOR_STABILITY": "FAIL",
+    "PRICE_ONLY_EVIDENCE_EGRESS": "PASS",
+    "PRODUCTION_ENABLEMENT_READY": "NO",
+    "REFERENCE_HARNESS_COMPARISON": "REVIEW_REQUIRED",
+    "RICH_CANDLE_CONTEXT_PACKET": "PASS",
+    "RICH_PACKET_SUFFICIENCY": "PARTIAL",
+    "US_SHADOW_REPLAY": "PASS",
+    "VARIABLE_AI_TRIAL": "PARTIAL",
+    "WAS_VARIABLE_AI_RUNTIME_ACTUALLY_EXECUTED": "YES",
+    "WEEKLY_ANCHOR_STABILITY": "FAIL"
+  },
+  "generated_for": "2026-08-26",
+  "next_action": "BOUNDED_REPAIR",
+  "open_material_p1": [
+    "higher_timeframe_variable_anchor_or_sr_material_variation",
+    "ambiguous_or_insufficient_output_semantic_rejections"
+  ],
+  "open_p0": [],
+  "p2_backlog": [
+    "minor anchor-ID variation inside equivalent visible structure",
+    "optional variable-AI rationale wording polish"
+  ],
+  "summary": {
+    "active_universe": 20,
+    "aggregate_stability": {
+      "daily": {
+        "MATERIAL_VARIATION": 10,
+        "MINOR_VARIATION": 1,
+        "STABLE": 9
+      },
+      "monthly": {
+        "MATERIAL_VARIATION": 3,
+        "MINOR_VARIATION": 0,
+        "STABLE": 17
+      },
+      "weekly": {
+        "MATERIAL_VARIATION": 11,
+        "MINOR_VARIATION": 0,
+        "STABLE": 9
+      }
+    },
+    "ai_calculated_fib_price": 0,
+    "anchor_date_mismatch": 0,
+    "anchor_price_mismatch": 0,
+    "anchor_ticker_mismatch": 0,
+    "benchmark_runs_per_packet": 5,
+    "benchmark_tickers": [
+      "005490",
+      "010120",
+      "GOOGL",
+      "WULF"
+    ],
+    "corporate_action_basis_conflict": 0,
+    "full_debug_material_variation": 4,
+    "load_errors": [],
+    "lookahead_leak": 0,
+    "material_anchor_omission": 0,
+    "private_field_egress": 0,
+    "runtime_failure_count": 0,
+    "secret_egress": 0,
+    "security_basis_conflict": 0,
+    "semantic_rejected_timeframe_count": 4,
+    "stock_user_visible_eligible": 8,
+    "stock_user_visible_ineligible": 12,
+    "successful_packets": 20,
+    "timeframe_fib_fallback_count": 24,
+    "unregistered_fibonacci_numeric": 0,
+    "unrelated_thesis_egress": 0,
+    "wider_universe_runs_per_packet": 3
+  }
+}

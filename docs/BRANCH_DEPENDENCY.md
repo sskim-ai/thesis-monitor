@@ -195,3 +195,12 @@ acquisition boundary. It does not import Open Research, alter canary limits, cha
 schema 4, modify schedules, or add a trading/account surface. KRX telemetry remains an independent
 parallel provider track. Production activation is environment-only and fail-closed; natural proof
 must not be manufactured.
+
+The Fibonacci variable-anchor repair branch starts from docs-only instruction commit
+`d9e6e2327f0f32256a1bd0d8caf2c0b0f1faf890`, whose parent is operating main
+`75328361b6831d44c647c64e0d811da6251ea673`. Its new service is imported only by tests and the
+archive trial generator. The signed-in variable runtime receives only the frozen public
+`price-only-ai-anchor-packet-v1`; it does not enter scheduled task, production packet, fallback,
+Telegram, Public Action, or assessment imports. Promotion preserves SHADOW state because actual
+monthly/weekly stability failed. The open P1 is feature-local and has no ancestry dependency on
+Open Research, KRX telemetry, cash flow, working capital, or natural delivery proof.
