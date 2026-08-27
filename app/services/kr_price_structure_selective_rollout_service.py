@@ -11,7 +11,9 @@ from app.services.price_structure_v3_family_consensus_service import (
 )
 from app.services.price_structure_v3_renderer_service import (
     PriceStructureRender,
+    classify_user_visible_sr,
     render_current_price_structure,
+    validate_price_structure_render,
 )
 from app.services.price_structure_wave_fibonacci_v3_service import (
     WaveHypothesisSelection,
@@ -43,6 +45,7 @@ class KrPriceStructureRolloutDecision:
     numeric_bindings: tuple[dict[str, object], ...]
     displayed_zone_ids: tuple[str, ...]
     denial_reasons: tuple[str, ...]
+    render_validation_errors: tuple[str, ...]
 
     def to_dict(self) -> dict[str, object]:
         return asdict(self)
@@ -67,8 +70,26 @@ def classify_kr_price_structure(
         return KrPriceStructureEligibility.BLOCKED
     if int(context.get("partial_bar_used_for_pivot_confirmation") or 0):
         return KrPriceStructureEligibility.BLOCKED
+    coverage = _mapping(context.get("coverage"))
+    if coverage and not any(
+        _mapping(value).get("status") in {"PASS", "PARTIAL"}
+        and int(_mapping(value).get("completed_count") or 0) > 0
+        for value in coverage.values()
+    ):
+        return KrPriceStructureEligibility.BLOCKED
     summary = _mapping(context.get("summary"))
-    if not (_zone(summary.get("nearest_support")) or _zone(summary.get("nearest_resistance"))):
+    visible_zones = [
+        zone
+        for key in (
+            "nearest_support",
+            "nearest_resistance",
+            "major_structural_support",
+            "major_structural_resistance",
+        )
+        if (zone := _zone(summary.get(key))) is not None
+        and classify_user_visible_sr(zone) != "OMIT"
+    ]
+    if not visible_zones:
         return KrPriceStructureEligibility.OMIT_PRICE_STRUCTURE
     has_safe_fib = bool(
         context.get("family_consensus_safe") is True
@@ -131,6 +152,7 @@ def build_kr_price_structure_rollout_decision(
             numeric_bindings=(),
             displayed_zone_ids=(),
             denial_reasons=tuple(reasons),
+            render_validation_errors=(),
         )
 
     render: PriceStructureRender = render_current_price_structure(
@@ -141,6 +163,21 @@ def build_kr_price_structure_rollout_decision(
         currency=str(context.get("currency") or "KRW"),
         include_current_price=True,
     )
+    validation = validate_price_structure_render(render)
+    if validation.status == "FAIL":
+        return KrPriceStructureRolloutDecision(
+            contract=CONTRACT_VERSION,
+            ticker=ticker,
+            market=market,
+            enabled=effective_enabled,
+            monitored_subject=monitored_subject,
+            eligibility=KrPriceStructureEligibility.BLOCKED,
+            section=None,
+            numeric_bindings=(),
+            displayed_zone_ids=(),
+            denial_reasons=("price_structure_render_validation_failed",),
+            render_validation_errors=validation.errors,
+        )
     return KrPriceStructureRolloutDecision(
         contract=CONTRACT_VERSION,
         ticker=ticker,
@@ -152,6 +189,7 @@ def build_kr_price_structure_rollout_decision(
         numeric_bindings=render.numeric_bindings,
         displayed_zone_ids=render.displayed_zone_ids,
         denial_reasons=(),
+        render_validation_errors=(),
     )
 
 

@@ -10,7 +10,16 @@ from app.services.kr_price_structure_selective_rollout_service import (
 )
 
 
-def _zone(zone_id: str, low: int, high: int, display: str) -> dict[str, object]:
+def _zone(
+    zone_id: str,
+    low: int,
+    high: int,
+    display: str,
+    *,
+    tier: str = "NEAR",
+    relevance: str = "ACTIVE_NEAR",
+) -> dict[str, object]:
+    role = "RESISTANCE" if "resistance" in zone_id else "SUPPORT"
     return {
         "zone_id": zone_id,
         "raw_low": str(low),
@@ -18,6 +27,12 @@ def _zone(zone_id: str, low: int, high: int, display: str) -> dict[str, object]:
         "display": display,
         "currency": "KRW",
         "source_refs": [f"source:{zone_id}"],
+        "source_timeframe": "weekly",
+        "source_timeframes": ["weekly"],
+        "distance_pct": "2.0",
+        "proximity_tier": tier,
+        "active_relevance": relevance,
+        "current_role": role,
     }
 
 
@@ -68,7 +83,8 @@ def test_eligible_kr_subject_renders_nearest_major_and_safe_fib() -> None:
     assert "기준 종가: 328,000원" in decision.section
     assert "가까운 지지: 약 31.8만~32.6만원" in decision.section
     assert "가까운 저항: 약 33만~34.2만원" in decision.section
-    assert "주요 구조: 지지 약 30.8만~31.7만원 · 저항 약 42.5만~43.8만원" in decision.section
+    assert "주요 구조 지지: 약 30.8만~31.7만원" in decision.section
+    assert "주요 구조 저항: 약 42.5만~43.8만원" in decision.section
     assert "Fib/SR 겹침: 약 38.6만~39.6만원" in decision.section
     assert {item["fact_ref"] for item in decision.numeric_bindings} == {
         "nearest-support",
@@ -164,6 +180,81 @@ def test_partial_bar_pivot_confirmation_blocks_rendering() -> None:
 
     assert decision.eligibility == KrPriceStructureEligibility.BLOCKED
     assert decision.section is None
+
+
+def test_relevant_and_long_horizon_nearest_receive_structural_labels() -> None:
+    context = _context(family_consensus_safe=False)
+    summary = context["summary"]
+    summary["nearest_support"] = {
+        "zone": _zone(
+            "nearest-support",
+            198000,
+            200000,
+            "약 19.8만~20만원",
+            tier="RELEVANT",
+            relevance="ACTIVE_STRUCTURAL",
+        )
+    }
+    summary["nearest_resistance"] = {
+        "zone": _zone(
+            "nearest-resistance",
+            452000,
+            460000,
+            "약 45.2만~46만원",
+            tier="LONG_HORIZON",
+            relevance="LONG_HORIZON_HISTORICAL",
+        )
+    }
+
+    decision = build_kr_price_structure_rollout_decision(
+        context,
+        ticker="005930",
+        monitored_subject=True,
+        enabled=True,
+    )
+
+    assert decision.section is not None
+    assert "가까운 지지" not in decision.section
+    assert "가까운 저항" not in decision.section
+    assert "주요 구조 지지: 약 19.8만~20만원" in decision.section
+    assert "장기 구조 저항: 약 45.2만~46만원" in decision.section
+    assert decision.render_validation_errors == ()
+
+
+def test_all_failed_coverage_blocks_but_safe_higher_timeframe_allows_sr() -> None:
+    failed = {
+        **_context(family_consensus_safe=False),
+        "coverage": {
+            timeframe: {"status": "FAIL", "completed_count": 0}
+            for timeframe in ("daily", "weekly", "monthly")
+        },
+    }
+    higher_timeframe_safe = {
+        **failed,
+        "coverage": {
+            "daily": {"status": "FAIL", "completed_count": 0},
+            "weekly": {"status": "PARTIAL", "completed_count": 599},
+            "monthly": {"status": "PARTIAL", "completed_count": 299},
+        },
+    }
+
+    blocked = build_kr_price_structure_rollout_decision(
+        failed,
+        ticker="005490",
+        monitored_subject=True,
+        enabled=True,
+    )
+    allowed = build_kr_price_structure_rollout_decision(
+        higher_timeframe_safe,
+        ticker="005490",
+        monitored_subject=True,
+        enabled=True,
+    )
+
+    assert blocked.eligibility == KrPriceStructureEligibility.BLOCKED
+    assert blocked.section is None
+    assert allowed.eligibility == KrPriceStructureEligibility.ELIGIBLE_SR_ONLY
+    assert allowed.section is not None
 
 
 def test_current_structure_is_inserted_before_separate_stored_rules() -> None:

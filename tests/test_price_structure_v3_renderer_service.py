@@ -5,17 +5,22 @@ import json
 from pathlib import Path
 
 from app.services.price_structure_v3_renderer_service import (
+    PriceStructureRender,
     classify_confluence_render_equivalence,
     detect_legacy_technical_tokens,
     relabel_stored_price_rules,
     render_current_price_structure,
     replace_current_price_structure,
     suppress_legacy_technical_prose,
+    validate_price_structure_render,
 )
 
 
 ROOT = Path(__file__).resolve().parents[1]
 EVIDENCE = ROOT / "docs/reports/20260826-v3-current-data-validation-evidence.json"
+KR_PREENABLE_EVIDENCE = (
+    ROOT / "docs/reports/20260827-kr-price-structure-per-ticker-audit.json"
+)
 
 
 def _zone(
@@ -23,7 +28,12 @@ def _zone(
     low: str,
     high: str,
     display: str,
+    *,
+    tier: str = "NEAR",
+    relevance: str = "ACTIVE_NEAR",
+    role: str | None = None,
 ) -> dict[str, object]:
+    resolved_role = role or ("RESISTANCE" if "resistance" in zone_id else "SUPPORT")
     return {
         "zone_id": zone_id,
         "raw_low": low,
@@ -31,6 +41,12 @@ def _zone(
         "display": display,
         "currency": "USD",
         "source_refs": [f"source:{zone_id}"],
+        "source_timeframe": "weekly",
+        "source_timeframes": ["weekly"],
+        "distance_pct": "2.0",
+        "proximity_tier": tier,
+        "active_relevance": relevance,
+        "current_role": resolved_role,
     }
 
 
@@ -70,6 +86,11 @@ def _render(summary: dict[str, object]) -> str:
 
 def _evidence_rows() -> dict[str, dict[str, object]]:
     payload = json.loads(EVIDENCE.read_text(encoding="utf-8"))
+    return {row["ticker"]: row for row in payload["rows"]}
+
+
+def _kr_preenable_rows() -> dict[str, dict[str, object]]:
+    payload = json.loads(KR_PREENABLE_EVIDENCE.read_text(encoding="utf-8"))
     return {row["ticker"]: row for row in payload["rows"]}
 
 
@@ -152,6 +173,138 @@ def test_renderer_does_not_mutate_raw_sr_or_fib_values() -> None:
     _render(summary)
 
     assert summary == original
+
+
+def test_long_horizon_internal_nearest_renders_as_long_structure_not_near() -> None:
+    support = _zone(
+        "long-support",
+        "57.5",
+        "57.8",
+        "약 $57.5~$57.8",
+        tier="LONG_HORIZON",
+        relevance="LONG_HORIZON_HISTORICAL",
+    )
+
+    render = render_current_price_structure(
+        _summary(support=support),
+        ticker="000660",
+        as_of="2026-08-27",
+        current_price="100",
+        currency="USD",
+        include_current_price=False,
+    )
+
+    assert "가까운 지지" not in render.section
+    assert "장기 구조 지지: 약 $57.5~$57.8" in render.section
+    assert validate_price_structure_render(render).status == "PASS"
+
+
+def test_relevant_internal_nearest_renders_as_major_structure_not_near() -> None:
+    support = _zone(
+        "relevant-support",
+        "74",
+        "75",
+        "약 $74~$75",
+        tier="RELEVANT",
+        relevance="ACTIVE_STRUCTURAL",
+    )
+
+    rendered = _render(_summary(support=support))
+
+    assert "가까운 지지" not in rendered
+    assert "주요 구조 지지: 약 $74~$75" in rendered
+
+
+def test_old_000660_remote_near_fixture_fails_provenance_validator() -> None:
+    render = PriceStructureRender(
+        section="""📐 현재 가격 구조
+• 기준 종가: 1,730,000원
+• 가까운 지지: 약 99.5만~100.1만원
+• 가까운 저항: 약 187.1만~188.1만원""",
+        numeric_bindings=(
+            {
+                "owner": "CURRENT_PRICE_STRUCTURE",
+                "semantic_type": "NEAR_SUPPORT",
+                "fact_ref": "v3-zone:000660-old-support",
+                "display": "약 99.5만~100.1만원",
+                "proximity_tier": "LONG_HORIZON",
+                "active_relevance": "LONG_HORIZON_HISTORICAL",
+            },
+            {
+                "owner": "CURRENT_PRICE_STRUCTURE",
+                "semantic_type": "NEAR_RESISTANCE",
+                "fact_ref": "v3-zone:000660-old-resistance",
+                "display": "약 187.1만~188.1만원",
+                "proximity_tier": "RELEVANT",
+                "active_relevance": "ACTIVE_STRUCTURAL",
+            },
+        ),
+        confluence_decision=None,
+        displayed_zone_ids=(
+            "v3-zone:000660-old-support",
+            "v3-zone:000660-old-resistance",
+        ),
+    )
+
+    validation = validate_price_structure_render(render)
+
+    assert validation.status == "FAIL"
+    assert validation.errors == (
+        "near_label_ineligible_proximity:v3-zone:000660-old-support",
+        "near_label_ineligible_proximity:v3-zone:000660-old-resistance",
+    )
+
+
+def test_out_of_active_range_is_omitted_without_remote_near_fill() -> None:
+    support = _zone(
+        "retired-support",
+        "20",
+        "22",
+        "약 $20~$22",
+        tier="OUT_OF_ACTIVE_RANGE",
+        relevance="RETIRED_OR_LOW_RELEVANCE",
+    )
+
+    render = render_current_price_structure(
+        _summary(support=support),
+        ticker="TEST",
+        as_of="2026-08-27",
+        current_price="100",
+        currency="USD",
+        include_current_price=False,
+    )
+
+    assert "약 $20~$22" not in render.section
+    assert not render.numeric_bindings
+    assert validate_price_structure_render(render).status == "PASS"
+
+
+def test_supplied_kr_seven_ticker_proximity_controls_follow_canonical_tiers() -> None:
+    rows = _kr_preenable_rows()
+    rendered = {
+        ticker: render_current_price_structure(
+            rows[ticker]["summary"],
+            ticker=ticker,
+            as_of=rows[ticker]["target_session"],
+            current_price=rows[ticker]["current_price"],
+            currency=rows[ticker]["currency"],
+            include_current_price=True,
+        )
+        for ticker in ("000660", "003690", "005490", "005930", "010120", "012450", "086280")
+    }
+
+    assert "가까운 지지: 약 99.5만~100.1만원" not in rendered["000660"].section
+    assert "장기 구조 지지: 약 99.5만~100.1만원" in rendered["000660"].section
+    assert "가까운 지지: 약 19.8만~20만원" not in rendered["005930"].section
+    assert "주요 구조 지지: 약 19.8만~20만원" in rendered["005930"].section
+    assert "가까운 지지" not in rendered["012450"].section
+    assert "가까운 저항" not in rendered["012450"].section
+    assert "주요 구조 지지: 약 95.7만~96.3만원" in rendered["012450"].section
+    assert "주요 구조 저항: 약 145.2만~146만원" in rendered["012450"].section
+    for ticker in ("003690", "005490", "010120", "086280"):
+        assert "가까운 지지" in rendered[ticker].section
+        assert "가까운 저항" in rendered[ticker].section
+        assert validate_price_structure_render(rendered[ticker]).status == "PASS"
 
 
 def test_stored_price_rules_receive_explicit_owner_without_numeric_change() -> None:
