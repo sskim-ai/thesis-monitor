@@ -13,7 +13,7 @@
 | --- | --- |
 | Track A/B/C-focused regression | `162 passed` |
 | Bounded non-sector-index repair | `25 passed` |
-| Full pytest | `1778 passed, 1 upstream deprecation warning` |
+| Full pytest | `1779 passed, 1 upstream deprecation warning` |
 | Ruff | PASS |
 | `git diff --check` | PASS |
 | Investment Knowledge v3.1 | PASS, `dc747fff856530e82477851cbd0bb16c5876770de514a9c02cfd5a26ac91c312` |
