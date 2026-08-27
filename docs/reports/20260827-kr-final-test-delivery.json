@@ -1,0 +1,18 @@
+{
+  "schema_version": "kr-final-test-delivery-v1",
+  "as_of_date": "2026-08-27",
+  "namespace": "TEST_ONLY_NON_PRODUCTION",
+  "test_sink_available": false,
+  "delivery_state": "NOT_SENT_TRACK_A_BLOCKED",
+  "market_message_count": 0,
+  "stock_message_count": 0,
+  "total_message_count": 0,
+  "exact_payload_match": "NOT_SENT",
+  "message_quality": "NOT_SENT",
+  "duplicate": 0,
+  "orphan": 0,
+  "unowned_retry": 0,
+  "test_message_sent_to_production_recipient": 0,
+  "production_delivery_intent_created": 0,
+  "receipts": []
+}

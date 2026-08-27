@@ -1,0 +1,60 @@
+{
+  "schema_version": "kr-final-rollout-readiness-v1",
+  "as_of_date": "2026-08-27",
+  "master_instruction_commit": "9f37cfad97487876d6dfa63c03750f4dab664dbf",
+  "base_sha": "0ede6a0eb3335371322d1f7921b350d07f669f9a",
+  "previous_operating_sha": "43731f015901b96e2dee3af009b9e1d074382349",
+  "track_a": {
+    "state": "BLOCKED_NO_TEST_SINK",
+    "test_sink_available": false,
+    "test_sink_alias": "NOT_CONFIGURED",
+    "test_sink_redacted_hash": "NOT_CONFIGURED",
+    "production_sink_redacted_hash": "production:7937bea5b823",
+    "test_production_sink_collision": 0,
+    "test_production_intent_collision": 0,
+    "secret_in_repo": 0,
+    "private_sink_id_in_report": 0
+  },
+  "track_b": {
+    "state": "NOT_RUN_TRACK_A_BLOCKED",
+    "preenable_target_session": "NOT_RESOLVED_TRACK_A_BLOCKED",
+    "preenable_data_collection": "NOT_RUN",
+    "kr_local_first_plan": "NOT_RUN",
+    "numeric_gate": "NOT_RUN",
+    "all_kr_stock_price_structure_replay": "NOT_RUN",
+    "test_exact_payload_match": "NOT_SENT",
+    "test_message_quality": "NOT_SENT"
+  },
+  "track_c": {
+    "state": "NOT_RUN_TRACK_A_BLOCKED",
+    "operating_promotion": "NOT_RUN",
+    "feature_off_parity": "NOT_RUN",
+    "kr_market_top3_enabled": false,
+    "post_top3_enable_market": "NOT_RUN",
+    "kr_price_structure_enabled": false,
+    "post_kr_price_structure_enable": "NOT_RUN",
+    "us_price_structure_enabled": 0,
+    "post_enable_us_price_structure_leak": 0
+  },
+  "safety": {
+    "manual_telegram": 0,
+    "manual_production_task": 0,
+    "pilot_mutation": 0,
+    "db_mutation": 0,
+    "archive_rewrite": 0,
+    "production_assist": "OFF",
+    "business_thesis_mutation": 0,
+    "valuation_text_diff_from_kr_enablement": 0,
+    "production_delivery_intent_created": 0,
+    "test_message_sent_to_production_recipient": 0
+  },
+  "open_p0": [],
+  "open_material_p1": ["dedicated_test_sink_not_configured"],
+  "p2_backlog": [],
+  "kr_final_preenable": "BLOCKED",
+  "kr_final_preenable_detail": "BLOCKED_NO_TEST_SINK",
+  "kr_rollout": "NOT_ENABLED",
+  "natural_kr_market_top3": "PENDING",
+  "natural_kr_price_structure": "PENDING",
+  "next_action": "CONFIGURE_APPROVED_DEDICATED_TEST_SINK_AND_RERUN_TRACK_A"
+}

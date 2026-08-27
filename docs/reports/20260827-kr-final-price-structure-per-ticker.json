@@ -1,0 +1,40 @@
+{
+  "schema_version": "kr-final-price-structure-audit-v1",
+  "as_of_date": "2026-08-27",
+  "current_universe_resolved": false,
+  "current_kr_monitored_stock_count": null,
+  "prior_validated_kr_monitored_stock_count": 7,
+  "all_kr_stock_price_structure_replay": "NOT_RUN_TRACK_A_BLOCKED",
+  "canonical_daily_target": 1200,
+  "official_provider_cap": 1000,
+  "canonical_daily_budget_changed_to_1000": 0,
+  "provider_limit_misreported_as_full": 0,
+  "counts": {
+    "eligible": 0,
+    "sr_only": 0,
+    "omit": 0,
+    "blocked": 0,
+    "not_run": 7
+  },
+  "prior_validated_tickers": [
+    {"ticker": "000660", "state": "NOT_RUN"},
+    {"ticker": "003690", "state": "NOT_RUN"},
+    {"ticker": "005490", "state": "NOT_RUN"},
+    {"ticker": "005930", "state": "NOT_RUN"},
+    {"ticker": "010120", "state": "NOT_RUN"},
+    {"ticker": "012450", "state": "NOT_RUN"},
+    {"ticker": "086280", "state": "NOT_RUN"}
+  ],
+  "safety_counters": {
+    "long_horizon_rendered_as_near": 0,
+    "remote_zone_promoted_as_near_fill": 0,
+    "rendered_near_with_ineligible_proximity": 0,
+    "unstable_fib_exposed": 0,
+    "current_sr_rendered_as_stored_rule": 0,
+    "stored_rule_rendered_as_current_sr": 0,
+    "ai_calculated_technical_price": 0,
+    "unregistered_price_structure_numeric": 0,
+    "unsupported_target_price": 0,
+    "unsupported_stop_price": 0
+  }
+}
