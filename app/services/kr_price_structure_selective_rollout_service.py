@@ -161,6 +161,7 @@ def build_kr_price_structure_runtime_context(
     cutoff: str,
     raw_by_timeframe: Mapping[str, Sequence[Mapping[str, object]]],
     observed_at: str,
+    provider_limit: int,
 ) -> dict[str, object]:
     result = build_price_structure_wave_fib_v3(
         ticker=ticker,
@@ -171,7 +172,7 @@ def build_kr_price_structure_runtime_context(
         cutoff=cutoff,
         raw_by_timeframe=raw_by_timeframe,  # type: ignore[arg-type]
         observed_at=observed_at,
-        provider_limit=None,
+        provider_limit=provider_limit,
     )
     current_cycle = tuple(
         item
