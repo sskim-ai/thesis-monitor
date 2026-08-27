@@ -245,7 +245,7 @@ read-only로 재사용했습니다.
 `PREENABLE_DATA_COLLECTION = PASS`
 """,
     )
-    provenance = utilization.get("provenance")
+    provenance = utilization.get("numeric_provenance")
     if not isinstance(provenance, list):
         provenance = []
     provenance_rows = [
