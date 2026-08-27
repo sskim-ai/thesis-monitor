@@ -215,6 +215,39 @@ def test_relevant_internal_nearest_renders_as_major_structure_not_near() -> None
     assert "주요 구조 지지: 약 $74~$75" in rendered
 
 
+def test_one_primary_zone_owns_each_user_visible_structural_semantic() -> None:
+    nearest = _zone(
+        "relevant-resistance",
+        "105",
+        "106",
+        "약 $105~$106",
+        tier="RELEVANT",
+        relevance="ACTIVE_STRUCTURAL",
+    )
+    major = _zone(
+        "major-resistance",
+        "108",
+        "110",
+        "약 $108~$110",
+        tier="RELEVANT",
+        relevance="ACTIVE_STRUCTURAL",
+    )
+
+    render = render_current_price_structure(
+        _summary(resistance=nearest, major_resistance=major),
+        ticker="TEST",
+        as_of="2026-08-27",
+        current_price="100",
+        currency="USD",
+        include_current_price=False,
+    )
+
+    assert render.section.count("주요 구조 저항:") == 1
+    assert "주요 구조 저항: 약 $105~$106" in render.section
+    assert "약 $108~$110" not in render.section
+    assert validate_price_structure_render(render).status == "PASS"
+
+
 def test_old_000660_remote_near_fixture_fails_provenance_validator() -> None:
     render = PriceStructureRender(
         section="""📐 현재 가격 구조

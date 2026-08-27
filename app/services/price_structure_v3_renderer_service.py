@@ -257,6 +257,8 @@ def _append_sr_zone(
     if any(zone.get("zone_id") == item.get("zone_id") for item in displayed):
         return
     semantic_type = _semantic_type(user_class, str(zone.get("current_role") or ""))
+    if any(binding.get("semantic_type") == semantic_type for binding in bindings):
+        return
     label = _VISIBLE_SR_LABELS[semantic_type]
     lines.append(f"• {label}: {zone['display']}")
     displayed.append(zone)
@@ -287,6 +289,8 @@ def validate_price_structure_render(
         bound_values = [str(binding.get("display") or "") for binding in bindings]
         if sorted(rendered_values) != sorted(bound_values):
             errors.append(f"render_binding_mismatch:{semantic_type}")
+        if len(bindings) > 1:
+            errors.append(f"duplicate_user_visible_semantic:{semantic_type}")
         for binding in bindings:
             fact_ref = str(binding.get("fact_ref") or "missing_fact_ref")
             tier = str(binding.get("proximity_tier") or "")
