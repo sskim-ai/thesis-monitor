@@ -63,7 +63,7 @@ PivotKind = Literal["LOW", "HIGH"]
 ConfirmationStatus = Literal["CONFIRMED", "PROVISIONAL"]
 BarState = Literal["COMPLETE", "PARTIAL"]
 ZoneRole = Literal["SUPPORT", "RESISTANCE", "CURRENT_ZONE"]
-CoverageStatus = Literal["PASS", "PARTIAL", "FAIL"]
+CoverageStatus = Literal["PASS", "PARTIAL_SAFE", "PARTIAL", "FAIL"]
 HypothesisStatus = Literal[
     "VALID_CONFIRMED",
     "VALID_PROVISIONAL",
@@ -593,7 +593,7 @@ def prepare_long_history(
         status: CoverageStatus = "PASS"
         reason = None
     elif completed_count > max(PIVOT_WINDOWS[timeframe]) * 2 + 3:
-        status = "PARTIAL"
+        status = "PARTIAL_SAFE" if limit_hit else "PARTIAL"
         reason = "provider_limit" if limit_hit else "short_listing_or_available_history"
     else:
         status = "FAIL"

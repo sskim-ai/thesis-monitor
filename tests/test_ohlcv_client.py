@@ -216,11 +216,17 @@ async def test_kr_price_structure_controls_respect_provider_count_limit(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     requests: list[tuple[str, int]] = []
+    unsupported_window_params: list[str] = []
 
     def handler(request: httpx.Request) -> httpx.Response:
         period = request.url.params["periods"]
         count = int(request.url.params["count"])
         requests.append((period, count))
+        unsupported_window_params.extend(
+            key
+            for key in ("cursor", "offset", "before", "start_date", "end_date")
+            if key in request.url.params
+        )
         if count > 1000:
             return httpx.Response(422, json={"detail": "count exceeds provider limit"})
         return httpx.Response(
@@ -255,6 +261,7 @@ async def test_kr_price_structure_controls_respect_provider_count_limit(
 
     assert ("daily", 1000) in requests
     assert all(count <= 1000 for _, count in requests)
+    assert unsupported_window_params == []
     assert context.periods["daily"].requested_count == 1200
     assert context.periods["daily"].actual_count == 1
 

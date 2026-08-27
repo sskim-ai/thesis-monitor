@@ -257,6 +257,35 @@ def test_all_failed_coverage_blocks_but_safe_higher_timeframe_allows_sr() -> Non
     assert allowed.section is not None
 
 
+def test_verified_provider_limit_partial_safe_allows_sr_without_claiming_full() -> None:
+    context = {
+        **_context(family_consensus_safe=False),
+        "coverage": {
+            "daily": {
+                "status": "PARTIAL_SAFE",
+                "requested_count": 1200,
+                "completed_count": 1000,
+                "provider_limit": 1000,
+                "provider_limit_hit": True,
+                "denial_reason": "provider_limit",
+            },
+            "weekly": {"status": "PARTIAL", "completed_count": 599},
+            "monthly": {"status": "PARTIAL", "completed_count": 299},
+        },
+    }
+
+    decision = build_kr_price_structure_rollout_decision(
+        context,
+        ticker="005930",
+        monitored_subject=True,
+        enabled=True,
+    )
+
+    assert decision.eligibility == KrPriceStructureEligibility.ELIGIBLE_SR_ONLY
+    assert decision.section is not None
+    assert context["coverage"]["daily"]["status"] != "PASS"
+
+
 def test_current_structure_is_inserted_before_separate_stored_rules() -> None:
     message = """🏢 POSCO홀딩스(005490)
 

@@ -72,7 +72,7 @@ def classify_kr_price_structure(
         return KrPriceStructureEligibility.BLOCKED
     coverage = _mapping(context.get("coverage"))
     if coverage and not any(
-        _mapping(value).get("status") in {"PASS", "PARTIAL"}
+        _mapping(value).get("status") in {"PASS", "PARTIAL_SAFE", "PARTIAL"}
         and int(_mapping(value).get("completed_count") or 0) > 0
         for value in coverage.values()
     ):

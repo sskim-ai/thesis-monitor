@@ -98,7 +98,7 @@ def _hypothesis(identifier: str = "wave:1") -> MonthlyWaveHypothesis:
     )
 
 
-def test_history_contract_uses_1200_600_300_and_reports_provider_cap() -> None:
+def test_history_contract_uses_1200_600_300_and_reports_safe_provider_cap() -> None:
     assert HISTORY_REQUESTS == {"daily": 1200, "weekly": 600, "monthly": 300}
     start = date(2023, 1, 1)
     raw = [
@@ -113,9 +113,10 @@ def test_history_contract_uses_1200_600_300_and_reports_provider_cap() -> None:
     )
     assert len(bars) <= 1000
     assert coverage.requested_count == 1200
-    assert coverage.status == "PARTIAL"
+    assert coverage.status == "PARTIAL_SAFE"
     assert coverage.provider_limit_hit is True
     assert coverage.denial_reason == "provider_limit"
+    assert coverage.status != "PASS"
 
 
 def test_short_listing_is_safe_partial_without_padding() -> None:
