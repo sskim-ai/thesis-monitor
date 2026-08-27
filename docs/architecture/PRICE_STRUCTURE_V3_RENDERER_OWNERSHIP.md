@@ -12,7 +12,7 @@ Every rendered price item has one owner:
 
 | Owner | Meaning | Allowed content |
 | --- | --- | --- |
-| `CURRENT_PRICE_STRUCTURE` | Current completed-session OHLCV structure | nearest/major SR and eligible Fib/SR confluence |
+| `CURRENT_PRICE_STRUCTURE` | Current completed-session OHLCV structure | user-visible near/major/long-horizon SR and eligible Fib/SR confluence |
 | `STORED_MONITORING_PRICE_RULE` | Existing holder or monitoring management reference | confirmation, warning, invalidation, registered support |
 | `VALUATION` | Existing valuation contract | valuation facts only |
 | `OTHER` | Non-price supporting content | no v3 or stored-rule relabeling |
@@ -21,6 +21,11 @@ The current structure renders under `📐 현재 가격 구조`. Stored rules re
 `🧭 기존 등록 가격 규칙` and remain bound to `chart:stored_price_rules`. Proximity or overlap
 does not merge ownership.
 
+Internal nearest ownership is not a display label. Only canonical `NEAR/ACTIVE_NEAR` zones render
+as `가까운`; `RELEVANT` and `LONG_HORIZON` use structural labels. Each visible SR line carries its
+zone ID, source refs, distance, proximity tier, and active relevance. The renderer-output validator
+rejects a line whose label and provenance disagree.
+
 Legacy suppression also has typed ownership. Structural fields are protected; current v3 and
 stored rules are retained by their owners; only explicitly eligible legacy-technical prose is
 token-scanned. The detector cannot suppress a company header or section heading.
@@ -28,7 +33,7 @@ token-scanned. The detector cannot suppress a company header or section heading.
 ## Isolation
 
 `kr-price-structure-selective-rollout-v1` may compose this contract for monitored numeric KR
-tickers only. It renders nearest/major SR plus family-consensus-safe Fib for `ELIGIBLE`, SR without
+tickers only. It renders proximity-eligible SR plus family-consensus-safe Fib for `ELIGIBLE`, SR without
 a Fib placeholder for `ELIGIBLE_SR_ONLY`, and no section for `OMIT_PRICE_STRUCTURE` or `BLOCKED`.
 Omission never invalidates the rest of the stock message.
 

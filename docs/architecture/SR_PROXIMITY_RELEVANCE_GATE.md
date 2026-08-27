@@ -7,3 +7,8 @@ zones, subject to timeframe caps. It classifies `NEAR`, `RELEVANT`, `LONG_HORIZO
 `OUT_OF_ACTIVE_RANGE`. A cross-timeframe candidate must also remain close to the nearest valid
 local zone on the same side. Long-history zones remain auditable but cannot become the current
 nearest or active-major summary merely through historical source count.
+
+These tiers have explicit renderer semantics. `NEAR` alone may own `가까운`; `RELEVANT` is
+structural rather than near; `LONG_HORIZON` is historical structure; out-of-range or inconsistent
+tier/relevance pairs are omitted. The renderer does not add a second distance threshold and never
+uses a remote candidate as a near-field filler.
