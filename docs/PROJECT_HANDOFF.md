@@ -5,26 +5,29 @@ with [MASTER_WORKFLOW.md](MASTER_WORKFLOW.md), [project-state.json](project-stat
 [NEXT_SESSION_PROMPT.md](NEXT_SESSION_PROMPT.md) before changing runtime policy, Knowledge,
 validation, delivery, or Scheduled Tasks.
 
-## Current Authoritative Handoff — 2026-08-27 Master Gate
+## Current Authoritative Handoff — 2026-08-27 KR Natural Reproof
 
-Start from master instruction commit `e76a7d6b5e8ddc110d3228cfd5e55f26dbdb1e1d` and integrated code
-commit `65196d2d2a54483143d23d1c61500f70d0e2325a`. Read the master final readiness,
-gate matrix, track status, natural proof status, and artifact index, then the Track A and Track B
-readiness reports.
+Start from exact instruction commit `107f40b0b6b7e794f420534e71b69af0c969e643` and read
+`docs/reports/20260827-kr-afternoon-natural-reproof-readiness.md`, the exact-message report,
+Kiwoom family audits, reconciliation/concentration reports, local-first parity, completeness JSON,
+and artifact index first.
 
-Track A is `REPLAY_PASS_NATURAL_REPROOF_PENDING`: the current completed US session owns packet
-claiming; level-only RSP does not leak direction; current XLE/XLF dispersion and release-date
-labels survive the adapters. The next natural US morning cycle is observation only.
+Natural KR run 42 used operating SHA `a1fb1a7006109f8699e03997662bde27db5ad464` and final packet
+`2026-08-27-kr-run-42-5d8d23e6fbd6` for the completed 2026-08-27 session. The backup AI reviewer
+passed after one bounded correction, and the deadline dispatcher delivered `8/8` exactly once.
+All archive, persisted, and receipt-linked payloads match.
 
-Track B is `MATERIAL_P1_FOUND_STOP`. Natural KR run 40 delivered the market digest and seven stock
-messages 8/8 exactly once, but its digest discarded KOSPI/KOSDAQ close, breadth, size, sector, and
-participant-flow context. In parallel, 378 unregistered sector breadth numeric paths kept all
-three packet snapshots ineligible for AI. These are the only open material P1s; open P0 is zero.
+Kiwoom is complete at `42/42`; ka10066 pagination is KOSPI `14/1316` and KOSDAQ `19/1824` with no
+duplicates. Aggregate reconciliation remains unresolved for all six actor/market pairs, so
+concentration stays blocked. Numeric registration is `1989/1989` with unsupported zero. The exact
+digest consumes both index directions, both breadth states, and all aggregate participant
+directions before any secondary context. KRX secondary publication remains pending and safe.
 
-Do not create or arm Track C. Price Structure v3 stays `INTEGRATED_READY_NOT_ARMED`. The next task
-is a bounded KR local-first digest-consumption and numeric-registry repair, followed by immutable
-run-40 replay and a new natural KR proof. Preserve schedules, exactly-once ownership, KRX telemetry,
-Public Action 0.4.5, Production Assist OFF, and zero manual Telegram/task/DB operations.
+`NATURAL_KR_REPROOF=PASS`, open P0/material P1 are `0/0`, and the bounded KR repair is
+`LIVE_PASS_RUN42`. The separate US repair remains `REPLAY_PASS_NATURAL_REPROOF_PENDING`; wait for
+the next naturally scheduled US morning proof. Track C stays `DO_NOT_START`, Price Structure v3
+stays `INTEGRATED_READY_NOT_ARMED`, and Production Assist stays OFF. Do not manually execute a
+task or Telegram delivery.
 
 ## Current Authoritative Handoff — 2026-08-26
 

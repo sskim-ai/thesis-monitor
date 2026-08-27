@@ -1525,3 +1525,31 @@ State is `REPLAY_PASS_NATURAL_REPROOF_PENDING`, with open P0/material P1 `0/0`. 
 packet, shared plan, route, exact delivery, evidence utilization, receipt, and exactly-once state
 read-only. Natural KR reproof remains independent. `PRICE_STRUCTURE_TRACK_C=DO_NOT_START`, Price
 Structure v3 remains `INTEGRATED_READY_NOT_ARMED`, and Production Assist remains OFF.
+
+### 40.12 KR Afternoon Natural Market Reproof
+
+Exact instruction commit `107f40b0b6b7e794f420534e71b69af0c969e643` governs the read-only
+review of natural KR run 42. Operating SHA `a1fb1a7006109f8699e03997662bde27db5ad464`
+produced the final immutable packet `2026-08-27-kr-run-42-5d8d23e6fbd6` for the completed
+2026-08-27 XKRX session. The 16:55 backup claimed it, final validation and runtime quality passed,
+and the 17:10 dispatcher delivered one digest plus seven stock messages `8/8` exactly once.
+
+Kiwoom acquisition is complete at `42/42`: ka20001 preserves index-versus-breadth semantics,
+ka20003 preserves size/sector returns and component counts, ka10051 owns aggregate participant
+flow, and ka10066 completed 14 KOSPI pages plus 19 KOSDAQ pages without duplicate identities.
+Today's six aggregate-versus-paginated comparisons remain
+`UNRESOLVED_BASIS_OR_TAXONOMY`; concentration relations and prose remain zero. The packet numeric
+registry is `1989/1989` registered with zero unsupported paths. The required sector-count inventory
+is `252/252` registered supported paths plus 126 intentional internal-only paths.
+
+The exact AI digest is KR local-first: it consumes KOSPI/KOSDAQ direction, both breadth states, and
+all foreign/institution/retail directions. Size and sector detail are safely omitted from the
+concise message and retained by deterministic fallback. Archive, persisted delivery, and
+receipt-linked rendered payloads match; KRX official secondary publication remains pending with no
+stale injection. Open P0/material P1 are `0/0`, so `NATURAL_KR_REPROOF=PASS` and the bounded KR
+repair is independently `LIVE_PASS_RUN42`.
+
+This does not start Track C. The separate bounded US repair still requires one new natural US
+morning reproof, so `PRICE_STRUCTURE_TRACK_C=DO_NOT_START` and Price Structure v3 remains
+`INTEGRATED_READY_NOT_ARMED`. Production Assist stays OFF; review-triggered Telegram, Scheduled
+Task, DB, assessment, and production behavior changes are zero.

@@ -2,20 +2,23 @@
 
 Repository: `sskim-ai/thesis-monitor`
 
-Latest authoritative US natural review follows exact instruction commit
-`5377d5e4f15a82e01ac40b6d50d47eee9ef0a30c`. Read
-`docs/reports/20260827-us-morning-natural-reproof-readiness.md`, the data-completeness matrix,
-evidence-utilization audit, exact message, AI/fallback parity, and artifact index first.
+Latest authoritative natural proof follows exact instruction commit
+`107f40b0b6b7e794f420534e71b69af0c969e643`. Read
+`docs/reports/20260827-kr-afternoon-natural-reproof-readiness.md`, exact message, exactly-once,
+Kiwoom, numeric-registry, local-first, AI/fallback, safety, and artifact-index reports first.
 
-Natural US run 41 used current packet `2026-08-27-us-run-41-ae4f42c23abc` for the completed
-`2026-08-26` session and delivered `14/14` exactly once. Packet identity, ownership, RSP and sector
-canonical states, Nasdaq publication boundary, macro temporal safety, numeric binding, receipt,
-and payload identity pass. The sent market digest nevertheless omitted SPY/QQQ/IWM/SOXX/RSP and
-all current directional sector facts; only the 8/25 real-yield observation remained. State is
-`MATERIAL_P1_FOUND_STOP`, Track A is `BOUNDED_REPAIR_REQUIRED`, and the next task is the separately
-instructed `BOUNDED_US_MARKET_REPAIR`. Do not repair from this prompt, weaken validators, or force a
-market numeric dump. Natural KR reproof remains pending, Track C stays `DO_NOT_START`, Price
-Structure v3 remains `INTEGRATED_READY_NOT_ARMED`, and Production Assist stays OFF.
+KR run 42 and final packet `2026-08-27-kr-run-42-5d8d23e6fbd6` are `LIVE_PASS`: target session
+2026-08-27, Kiwoom `42/42`, packet registry `1989/1989`, local-first digest PASS, payload parity
+PASS, and delivery `8/8` exactly once. Reconciliation remains safely unresolved and concentration
+stays suppressed. KRX secondary publication remains pending without stale injection. Open
+P0/material P1 are `0/0`.
+
+The next action is the next naturally scheduled US morning reproof of bounded implementation
+`069f002437163bff1df7aa6e258918c1777d5dfa`. Inspect the current-session-first plan, exact packet,
+route, delivered payload, evidence utilization, runtime receipt, and exactly-once state read-only.
+Do not manually run a task or Telegram. Until US also returns natural PASS,
+`PRICE_STRUCTURE_TRACK_C=DO_NOT_START`; Price Structure v3 remains
+`INTEGRATED_READY_NOT_ARMED`, and Production Assist remains OFF.
 
 ---
 

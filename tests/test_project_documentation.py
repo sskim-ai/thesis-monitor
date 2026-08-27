@@ -102,13 +102,13 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     assert state["repository"] == "sskim-ai/thesis-monitor"
     assert state["branch"] == "main"
     assert state["experimental_branch"] == (
-        "codex/us-run41-integration-replay"
+        "codex/20260827-kr-afternoon-natural-market-data-review-and-reproof"
     )
     assert state["current_phase"] == (
-        "us_bounded_market_repair_replay_pass_natural_reproof_pending"
+        "kr_natural_reproof_live_pass_us_natural_reproof_pending"
     )
     assert state["last_completed_phase"] == (
-        "bounded_us_current_session_market_evidence_repair"
+        "kr_afternoon_natural_market_data_reproof"
     )
     assert state["next_default_phase"] == "wait_for_next_natural_us_morning"
     implementation_commit = "069f002437163bff1df7aa6e258918c1777d5dfa"
@@ -861,7 +861,7 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
         == "CLOSED_RETROSPECTIVE_AND_OPERATING_CODE_PROMOTED"
     )
     master = state["master_market_validation_price_structure_rollout"]
-    assert master["status"] == "natural_us_kr_reproof_pending"
+    assert master["status"] == "natural_us_reproof_pending_kr_live_pass"
     assert master["instruction_commit"] == (
         "e76a7d6b5e8ddc110d3228cfd5e55f26dbdb1e1d"
     )
@@ -872,7 +872,14 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
         "2026-08-27-us-run-41-ae4f42c23abc"
     )
     assert master["track_a"]["open_material_p1"] == []
-    assert master["track_b"]["status"] == "replay_pass_natural_reproof_pending"
+    assert master["track_b"]["status"] == "live_pass_run42"
+    assert master["track_b"]["natural_run_id"] == 42
+    assert master["track_b"]["target_session"] == "2026-08-27"
+    assert master["track_b"]["natural_packet"] == (
+        "2026-08-27-kr-run-42-5d8d23e6fbd6"
+    )
+    assert master["track_b"]["natural_route"] == "ai_assisted"
+    assert master["track_b"]["natural_reproof"] == "PASS"
     assert master["track_b"]["open_material_p1"] == []
     assert master["track_c"] == {
         "status": "do_not_start",
@@ -884,21 +891,21 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     assert master["open_material_p1"] == []
     assert master["production_assist"] is False
     bounded_repair = state["kr_bounded_local_first_numeric_registry_repair"]
-    assert bounded_repair["status"] == "replay_pass_natural_reproof_pending"
+    assert bounded_repair["status"] == "live_pass_run42"
     assert bounded_repair["instruction_commit"] == (
         "f6ba660048d3fa520e3aeb43d04036c119764292"
     )
     assert bounded_repair["integration_code_commit"] == kr_integration_commit
     assert bounded_repair["numeric_paths"] == {
-        "total": 1961,
-        "registered": 1961,
+        "total": 1989,
+        "registered": 1989,
         "unsupported": 0,
-        "prose_allowed": 1472,
-        "denied": 489,
+        "prose_allowed": 1499,
+        "denied": 490,
     }
     assert bounded_repair["open_p0"] == []
     assert bounded_repair["open_material_p1"] == []
-    assert bounded_repair["natural_kr_reproof"] == "PENDING"
+    assert bounded_repair["natural_kr_reproof"] == "PASS"
     assert bounded_repair["track_c"] == "DO_NOT_START"
     us_natural = state["us_morning_natural_market_data_review"]
     assert us_natural["status"] == "material_p1_found_stop"
@@ -925,6 +932,25 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     assert us_repair["price_structure_track_c"] == "DO_NOT_START"
     assert us_repair["price_structure_v3"] == "INTEGRATED_READY_NOT_ARMED"
     assert us_repair["next_action"] == "WAIT_FOR_NEXT_NATURAL_US_MORNING"
+    kr_natural = state["kr_afternoon_natural_market_data_reproof"]
+    assert kr_natural["status"] == "live_pass"
+    assert kr_natural["instruction_commit"] == (
+        "107f40b0b6b7e794f420534e71b69af0c969e643"
+    )
+    assert kr_natural["producer_operating_sha"] == (
+        "a1fb1a7006109f8699e03997662bde27db5ad464"
+    )
+    assert kr_natural["natural_run_id"] == 42
+    assert kr_natural["target_session"] == "2026-08-27"
+    assert kr_natural["packet_id"] == "2026-08-27-kr-run-42-5d8d23e6fbd6"
+    assert kr_natural["delivery"] == "8/8_exactly_once"
+    assert kr_natural["exact_message_payload_match"] == "PASS"
+    assert kr_natural["numeric_registry"] == "1989/1989_REGISTERED_UNSUPPORTED_0"
+    assert kr_natural["local_first_digest"] == "PASS"
+    assert kr_natural["natural_kr_reproof"] == "PASS"
+    assert kr_natural["price_structure_track_c"] == "DO_NOT_START"
+    assert kr_natural["open_p0"] == []
+    assert kr_natural["open_material_p1"] == []
     assert state["current_commit"] == implementation_commit
     assert state["ai_review_mode"] == "shadow"
     assert state["ai_policy_version"] == "daily-review-v3.10"
@@ -934,7 +960,7 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     assert state["ohlcv_structure_version"] == "ohlcv-structure-v2"
     assert state["pilot_version"] == "ai-assisted-pilot-v3"
     assert state["pilot_counts_at_activation"] == {"kr": 0, "us": 0}
-    assert state["pilot_current_successful_sessions"] == {"kr": 3, "us": 4}
+    assert state["pilot_current_successful_sessions"] == {"kr": 4, "us": 4}
     assert state["monitoring_state_version"] == "monitoring-state-v1"
     task_state = state["scheduled_task_contract_verification"]
     assert task_state["status"] == "passed"
@@ -949,6 +975,80 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     assert state["production_assist"] is False
     assert state["public_action_version"] == "0.4.5"
     assert state["public_action_operation_ids"] == "20/20"
+
+
+def test_kr_afternoon_run42_natural_reproof_artifacts_are_closed() -> None:
+    prefix = "20260827-kr-afternoon-"
+    markdown_suffixes = (
+        "natural-run-identity.md",
+        "exactly-once.md",
+        "ka20001-index-breadth.md",
+        "ka20003-size-sector.md",
+        "ka10051-aggregate-flow.md",
+        "ka10066-pagination.md",
+        "flow-reconciliation.md",
+        "concentration-eligibility.md",
+        "sector-numeric-registry.md",
+        "ai-readiness.md",
+        "krx-cross-provider.md",
+        "local-first-reproof.md",
+        "ai-fallback-parity.md",
+        "exact-message.md",
+        "evidence-utilization.md",
+        "message-quality.md",
+        "safety-parity.md",
+        "natural-reproof-readiness.md",
+        "artifact-index.md",
+    )
+    for suffix in markdown_suffixes:
+        assert (ROOT / "docs" / "reports" / f"{prefix}{suffix}").exists()
+
+    readiness = json.loads(
+        (
+            ROOT
+            / "docs"
+            / "reports"
+            / f"{prefix}natural-reproof-readiness.json"
+        ).read_text()
+    )
+    gates = readiness["gates"]
+    assert readiness["natural_run_id"] == 42
+    assert readiness["target_session"] == "2026-08-27"
+    assert readiness["packet_id"] == "2026-08-27-kr-run-42-5d8d23e6fbd6"
+    assert readiness["route"] == "AI"
+    assert gates["KR_AFTERNOON_NATURAL"] == "LIVE_PASS"
+    assert gates["KR_PACKET_INTEGRITY"] == "PASS"
+    assert gates["KR_EXACTLY_ONCE"] == "PASS"
+    assert gates["KR_EXACT_MESSAGE_PAYLOAD_MATCH"] == "PASS"
+    assert gates["TOTAL_NUMERIC_PATHS"] == 1989
+    assert gates["SUPPORTED_CANONICAL_PATHS"] == 252
+    assert gates["REGISTERED_SUPPORTED_PATHS"] == 252
+    assert gates["INTERNAL_ONLY_PATHS"] == 126
+    assert gates["UNSUPPORTED_PATHS"] == 0
+    assert gates["NUMERIC_GATE"] == "PASS"
+    assert gates["READY_FOR_AI"] is True
+    assert gates["KOSPI_RECONCILIATION"] == "UNRESOLVED_BASIS_OR_TAXONOMY"
+    assert gates["KOSDAQ_RECONCILIATION"] == "UNRESOLVED_BASIS_OR_TAXONOMY"
+    assert gates["UNRECONCILED_CONCENTRATION_PROSE"] == 0
+    assert gates["KR_LOCAL_FIRST_DIGEST"] == "PASS"
+    assert gates["AI_FALLBACK_LOCAL_FIRST_PARITY"] == "PASS"
+    assert gates["V3_PRICE_STRUCTURE_LEAK"] == 0
+    assert readiness["open_p0"] == []
+    assert readiness["open_material_p1"] == []
+    assert readiness["natural_kr_reproof"] == "PASS"
+    assert readiness["price_structure_track_c"] == "DO_NOT_START"
+
+    matrix = json.loads(
+        (
+            ROOT
+            / "docs"
+            / "reports"
+            / f"{prefix}data-completeness-matrix.json"
+        ).read_text()
+    )
+    assert matrix["target_session"] == "2026-08-27"
+    assert len(matrix["rows"]) == 19
+    assert not any(row["message_used"] == "MESSAGE_OMITTED_MATERIAL_LOSS" for row in matrix["rows"])
 
 
 def test_knowledge_checksums_and_runtime_parity_are_documented() -> None:

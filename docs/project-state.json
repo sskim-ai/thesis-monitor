@@ -1,15 +1,15 @@
 {
   "repository": "sskim-ai/thesis-monitor",
   "branch": "main",
-  "experimental_branch": "codex/us-run41-integration-replay",
+  "experimental_branch": "codex/20260827-kr-afternoon-natural-market-data-review-and-reproof",
   "current_commit": "069f002437163bff1df7aa6e258918c1777d5dfa",
   "recorded_base_commit": "c17f67a5d385b51d1249aa7b3d5452207938f084",
-  "current_phase": "us_bounded_market_repair_replay_pass_natural_reproof_pending",
-  "last_completed_phase": "bounded_us_current_session_market_evidence_repair",
+  "current_phase": "kr_natural_reproof_live_pass_us_natural_reproof_pending",
+  "last_completed_phase": "kr_afternoon_natural_market_data_reproof",
   "next_default_phase": "wait_for_next_natural_us_morning",
   "next_candidate": "wait_for_next_natural_us_morning",
   "alternative_next_phase": "wait_for_next_natural_kr_close",
-  "latest_validation_report": "docs/reports/20260827-us-bounded-repair-readiness.md",
+  "latest_validation_report": "docs/reports/20260827-kr-afternoon-natural-reproof-readiness.md",
   "deployed_code_commit": "069f002437163bff1df7aa6e258918c1777d5dfa",
   "main_code_commit": "069f002437163bff1df7aa6e258918c1777d5dfa",
   "operating_code_commit": "069f002437163bff1df7aa6e258918c1777d5dfa",
@@ -1273,13 +1273,13 @@
     "us": 0
   },
   "pilot_current_successful_sessions": {
-    "kr": 3,
+    "kr": 4,
     "us": 4
   },
   "pilot": {
     "version": "ai-assisted-pilot-v3",
     "target_per_market": 5,
-    "current": {"kr": 3, "us": 3},
+    "current": {"kr": 4, "us": 4},
     "human_approved_production_evidence": "insufficient"
   },
   "phase_advancement_rule_v1": {
@@ -2994,8 +2994,8 @@
     "report": "docs/reports/20260826-v3-legacy-detector-readiness.json"
   },
   "master_market_validation_price_structure_rollout": {
-    "status": "natural_us_kr_reproof_pending",
-    "branch": "codex/us-run41-integration-replay",
+    "status": "natural_us_reproof_pending_kr_live_pass",
+    "branch": "codex/20260827-kr-afternoon-natural-market-data-review-and-reproof",
     "original_main": "33f82227245f3757815a231cdaad86b75f8c2b76",
     "instruction_commit": "e76a7d6b5e8ddc110d3228cfd5e55f26dbdb1e1d",
     "integration_code_commit": "069f002437163bff1df7aa6e258918c1777d5dfa",
@@ -3017,13 +3017,18 @@
       "open_material_p1": []
     },
     "track_b": {
-      "status": "replay_pass_natural_reproof_pending",
-      "branch": "codex/kr-run40-integration-replay",
+      "status": "live_pass_run42",
+      "branch": "codex/20260827-kr-afternoon-natural-market-data-review-and-reproof",
       "report_commit": "848eb80f6ce6504a9a855973b591ee0749167514",
-      "natural_packet": "2026-08-26-kr-run-40-706bc3003536",
+      "natural_run_id": 42,
+      "target_session": "2026-08-27",
+      "natural_packet": "2026-08-27-kr-run-42-5d8d23e6fbd6",
+      "natural_route": "ai_assisted",
       "delivery": "8/8_exactly_once",
+      "natural_reproof": "PASS",
       "open_p0": [],
-      "open_material_p1": []
+      "open_material_p1": [],
+      "report": "docs/reports/20260827-kr-afternoon-natural-reproof-readiness.md"
     },
     "track_c": {
       "status": "do_not_start",
@@ -3043,10 +3048,10 @@
     },
     "production_assist": false,
     "next_action": "WAIT_FOR_NEXT_NATURAL_US_MORNING",
-    "report": "docs/reports/20260827-us-bounded-repair-readiness.json"
+    "report": "docs/reports/20260827-kr-afternoon-natural-reproof-readiness.json"
   },
   "kr_bounded_local_first_numeric_registry_repair": {
-    "status": "replay_pass_natural_reproof_pending",
+    "status": "live_pass_run42",
     "instruction_commit": "f6ba660048d3fa520e3aeb43d04036c119764292",
     "track_a_branch": "codex/kr-local-first-digest-consumption-repair",
     "track_a_commit": "3828c2093ede67ab2f61c6fceb13a670b22931db",
@@ -3054,22 +3059,22 @@
     "track_b_commit": "d6c766543205ee74f2c4023cd17a0bfd682b4a7f",
     "integration_branch": "codex/kr-run40-integration-replay",
     "integration_code_commit": "848eb80f6ce6504a9a855973b591ee0749167514",
-    "natural_packet": "2026-08-26-kr-run-40-706bc3003536",
-    "delivery": "8/8_exactly_once_deterministic_fallback",
+    "natural_packet": "2026-08-27-kr-run-42-5d8d23e6fbd6",
+    "delivery": "8/8_exactly_once_ai_assisted",
     "numeric_paths": {
-      "total": 1961,
-      "registered": 1961,
+      "total": 1989,
+      "registered": 1989,
       "unsupported": 0,
-      "prose_allowed": 1472,
-      "denied": 489
+      "prose_allowed": 1499,
+      "denied": 490
     },
     "open_p0": [],
     "open_material_p1": [],
-    "natural_kr_reproof": "PENDING",
+    "natural_kr_reproof": "PASS",
     "track_c": "DO_NOT_START",
     "price_structure_v3": "INTEGRATED_READY_NOT_ARMED",
     "production_assist": false,
-    "report": "docs/reports/20260827-kr-bounded-repair-readiness.json"
+    "report": "docs/reports/20260827-kr-afternoon-natural-reproof-readiness.json"
   },
   "us_morning_natural_market_data_review": {
     "status": "material_p1_found_stop",
@@ -3134,6 +3139,38 @@
     "production_assist": false,
     "next_action": "WAIT_FOR_NEXT_NATURAL_US_MORNING",
     "report": "docs/reports/20260827-us-bounded-repair-readiness.json"
+  },
+  "kr_afternoon_natural_market_data_reproof": {
+    "status": "live_pass",
+    "instruction_commit": "107f40b0b6b7e794f420534e71b69af0c969e643",
+    "producer_operating_sha": "a1fb1a7006109f8699e03997662bde27db5ad464",
+    "natural_run_id": 42,
+    "target_session": "2026-08-27",
+    "packet_id": "2026-08-27-kr-run-42-5d8d23e6fbd6",
+    "claim_owner": "codex-kr-backup",
+    "claim_id": "c5eb6c5c-c618-4a5c-9c29-546e3e0cfcd6",
+    "route": "ai_assisted",
+    "delivery": "8/8_exactly_once",
+    "exact_message_payload_match": "PASS",
+    "ka20001": "PASS",
+    "ka20003": "PASS",
+    "ka10051": "PASS",
+    "ka10066": "PASS",
+    "reconciliation": "UNRESOLVED_BASIS_OR_TAXONOMY_FAIL_CLOSED",
+    "numeric_registry": "1989/1989_REGISTERED_UNSUPPORTED_0",
+    "local_first_digest": "PASS",
+    "ai_fallback_parity": "PASS",
+    "krx_cross_provider": "PUBLICATION_PENDING",
+    "v3_price_structure_leak": 0,
+    "open_p0": [],
+    "open_material_p1": [],
+    "natural_kr_reproof": "PASS",
+    "price_structure_track_c": "DO_NOT_START",
+    "track_c_blocking_prerequisite": "NATURAL_US_REPROOF_PENDING",
+    "production_mutation_from_review": 0,
+    "production_assist": false,
+    "next_action": "REVIEW_MASTER_GATES",
+    "report": "docs/reports/20260827-kr-afternoon-natural-reproof-readiness.json"
   },
   "production_assist": false,
   "public_action_version": "0.4.5",
