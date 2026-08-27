@@ -105,13 +105,13 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     assert state["repository"] == "sskim-ai/thesis-monitor"
     assert state["branch"] == "main"
     assert state["experimental_branch"] == (
-        "codex/kr-final-dedicated-test-sink-configuration"
+        "codex/20260828-kr-test-sink-configuration-final-preenable-resume"
     )
-    assert state["current_phase"] == "kr_final_preenable_blocked_no_test_sink"
-    assert state["last_completed_phase"] == "kr_final_test_sink_audit"
-    assert state["next_default_phase"] == (
-        "configure_approved_dedicated_test_sink_and_rerun_track_a"
+    assert state["current_phase"] == (
+        "kr_test_sink_resume_blocked_operator_secret_required"
     )
+    assert state["last_completed_phase"] == "kr_test_sink_secure_path_reaudit"
+    assert state["next_default_phase"] == "operator_provide_dedicated_test_chat"
     implementation_commit = "069f002437163bff1df7aa6e258918c1777d5dfa"
     kr_size_sector_implementation = "6a54db130e95e25969a5ca0a100648d4a12c3aa2"
     preenable_implementation = "7d2823c236c458cf76c77faae043c6288e46e65e"
@@ -1128,8 +1128,33 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
         "dedicated_test_sink_not_configured"
     ]
     assert final_preenable["kr_rollout"] == "NOT_ENABLED"
+    resume = state["kr_test_sink_configuration_and_final_preenable_resume"]
+    assert resume["status"] == "blocked_no_operator_test_chat"
+    assert resume["instruction_commit"] == (
+        "68ede1eae42315d94a89023fbc6c1f9be07fc99d"
+    )
+    assert resume["implementation_commit"] == (
+        "69e4bd6bc15da2a654ab6dcb678263f0ea049d37"
+    )
+    assert resume["implementation_github_actions_run"] == 33088486288
+    assert resume["implementation_github_actions_status"] == (
+        "passed_test_and_lint"
+    )
+    assert resume["test_sink_available"] is False
+    assert resume["accepted_test_keys_found"] == []
+    assert resume["provider_requests"] == 0
+    assert resume["test_delivery_count"] == 0
+    assert resume["operating_promotion"] is False
+    assert resume["kr_market_top3_enabled"] is False
+    assert resume["kr_price_structure_enabled"] is False
+    assert resume["us_price_structure_enabled"] is False
+    assert resume["open_p0"] == []
+    assert resume["open_material_p1"] == [
+        "dedicated_test_sink_not_configured"
+    ]
+    assert resume["next_action"] == "OPERATOR_PROVIDE_DEDICATED_TEST_CHAT"
     assert state["current_commit"] == (
-        "05b57901f7cf25086b580510aac6a6e72329cdfc"
+        "69e4bd6bc15da2a654ab6dcb678263f0ea049d37"
     )
     assert state["ai_review_mode"] == "shadow"
     assert state["ai_policy_version"] == "daily-review-v3.10"

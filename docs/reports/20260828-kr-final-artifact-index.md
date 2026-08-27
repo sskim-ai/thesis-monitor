@@ -30,5 +30,10 @@
 - `20260828-kr-final-test-delivery.json`
 - `20260828-kr-final-rollout-readiness.json`
 
+## Validation
+
+- `20260828-kr-final-validation.md`
+- Evidence GitHub Actions run `33088486288`: Test/Lint PASS
+
 All artifacts record the no-real-test-chat stop path. No payload, receipt, provider result, or
 post-enable proof is fabricated.

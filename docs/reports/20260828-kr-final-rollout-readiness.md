@@ -37,3 +37,10 @@ secure configuration paths. The mandatory STOP condition therefore remains activ
 The bounded repair is external configuration only: an operator must provide exactly one approved
 test chat through an accepted secret key. No calculation, renderer, or flag framework work is
 authorized.
+
+## Validation
+
+Focused tests `14 passed`; full pytest `1805 passed`; Ruff and diff checks PASS. Evidence-SHA
+GitHub Actions run `33088486288` passed Test/Lint. Knowledge checksums, Public Action `0.4.5`,
+output schema `4`, operationId `20/20`, and local API health all pass. OHLCV/provider data was not
+requested after the mandatory stop.

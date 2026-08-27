@@ -1865,3 +1865,20 @@ Next action is only `CONFIGURE_APPROVED_DEDICATED_TEST_SINK_AND_RERUN_TRACK_A`. 
 secret/config mechanism, never the production recipient. Do not run Track B, create Track C,
 promote operating, change flags, restart services, or send any message until isolation proves
 Track A PASS.
+
+## 2026-08-28 KR Test Sink Resume Stop Handoff
+
+The exact instruction commit is `68ede1eae42315d94a89023fbc6c1f9be07fc99d`; blocked-resume
+evidence is `69e4bd6bc15da2a654ab6dcb678263f0ea049d37`. Start with
+`docs/reports/20260828-kr-final-rollout-readiness.json`, then read test-sink config/isolation,
+delivery, enablement, natural-proof, and artifact-index reports.
+
+No real test chat was present in any approved secure configuration path. The current process,
+canonical environment, operating environment, and seven thesis-monitor LaunchAgents expose zero
+accepted test-recipient keys. `KR_FINAL_PREENABLE=BLOCKED_NO_TEST_SINK`; P0/material P1 is `0/1`,
+with only `dedicated_test_sink_not_configured`. Track B and all later stages were not run.
+
+The operator must provide exactly one approved non-production Telegram chat through an accepted
+secret key. Until then, do not resolve a session, call providers, generate or send messages,
+promote operating, restart services, or change flags. Production must never substitute for the
+test destination.

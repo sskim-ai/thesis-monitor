@@ -1697,3 +1697,23 @@ Open P0 is zero. The sole material P1 is `dedicated_test_sink_not_configured`. C
 one approved non-production destination through the existing secret/config mechanism, prove its
 isolation, and rerun Track A. Do not reinterpret prior replay evidence as this final test-send
 proof, and do not begin Track B or Track C until Track A passes.
+
+### 40.19 KR Test Sink Configuration Resume Stop
+
+Exact instruction commit `68ede1eae42315d94a89023fbc6c1f9be07fc99d` precedes blocked-resume
+evidence commit `69e4bd6bc15da2a654ab6dcb678263f0ea049d37`. The existing resolver was applied to
+the canonical and operating environment files, current process environment, and every
+thesis-monitor LaunchAgent environment key set. No approved test, staging, or developer Telegram
+recipient key exists. Only the production recipient has a redacted alias; it was never copied,
+queried, logged, or used.
+
+The explicit operator-secret boundary stopped the workflow before session resolution. Provider
+calls, market/stock candidate generation, Telegram payloads, receipts, operating promotion,
+service restart, smoke, and flag writes are zero. Operating remains
+`43731f015901b96e2dee3af009b9e1d074382349`; KR TOP3, KR Price Structure, and US Price Structure
+remain OFF; Production Assist stays OFF.
+
+State remains `KR_FINAL_PREENABLE=BLOCKED_NO_TEST_SINK` and `KR_ROLLOUT=NOT_ENABLED`, with open
+P0/material P1 `0/1`. The only next action is `OPERATOR_PROVIDE_DEDICATED_TEST_CHAT`. Once exactly
+one approved secret is externally configured, rerun the resolver and isolation proof before any
+data collection or send.

@@ -402,3 +402,14 @@ intent isolation, then rerun Track A; only a PASS may authorize Track B. It may 
 production recipient, treat prior replay as current test-send proof, promote operating, or change a
 feature flag while this P1 remains open. The operating checkout intentionally remains
 `43731f015901b96e2dee3af009b9e1d074382349`.
+
+The 2026-08-28 resume branch starts from exact instruction commit
+`68ede1eae42315d94a89023fbc6c1f9be07fc99d`, whose parent is final main
+`6a2068b00f10e28c5eba2133d2423293f4a1bb25`. Evidence commit
+`69e4bd6bc15da2a654ab6dcb678263f0ea049d37` confirms the operator-supplied secret is still absent.
+No data-collection, delivery, operating-promotion, or enablement descendant exists.
+
+A future execution must descend from this stop state only after an operator configures exactly one
+accepted test recipient outside git. It must repeat sink resolution and direct equality isolation
+before resolving the KR session. The absence of a secret cannot be repaired by code, Telegram
+discovery, production-recipient reuse, or another alias framework.

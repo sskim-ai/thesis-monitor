@@ -3,6 +3,25 @@
 Repository: `sskim-ai/thesis-monitor`
 
 Latest authoritative work follows exact instruction commit
+`68ede1eae42315d94a89023fbc6c1f9be07fc99d` and blocked-resume evidence commit
+`69e4bd6bc15da2a654ab6dcb678263f0ea049d37`. Read
+`docs/reports/20260828-kr-final-rollout-readiness.json`, sink configuration/isolation, delivery,
+operating-promotion, enablement, natural-proof, and artifact-index reports first.
+
+The approved secure paths still contain no dedicated Telegram test recipient. The canonical and
+operating environments, current process, and thesis-monitor LaunchAgents were checked without
+printing raw values. `TEST_SINK_AVAILABLE=NO`, `KR_FINAL_PREENABLE=BLOCKED_NO_TEST_SINK`, and
+P0/material P1 is `0/1`. No session, provider call, message, receipt, operating promotion, restart,
+or flag write occurred. Operating remains `43731f015901b96e2dee3af009b9e1d074382349`; all KR/US
+Price Structure rollout flags remain OFF.
+
+Next action: `OPERATOR_PROVIDE_DEDICATED_TEST_CHAT`. Configure exactly one real non-production chat
+through an accepted secret key. Then rerun sink resolution and collision proof before any other
+stage. Never invent or discover a destination, reuse production, or skip directly to test delivery.
+
+---
+
+Latest authoritative work follows exact instruction commit
 `9f37cfad97487876d6dfa63c03750f4dab664dbf` and Track A evidence commit
 `05b57901f7cf25086b580510aac6a6e72329cdfc`. Read
 `docs/reports/20260827-kr-final-rollout-readiness.json`, test-sink configuration/isolation,

@@ -51,6 +51,21 @@
     "valuation_text_diff_from_kr_enablement": 0,
     "production_assist": "OFF"
   },
+  "validation": {
+    "focused_tests": "14 passed",
+    "full_pytest": "1805 passed",
+    "ruff": "PASS",
+    "diff_check": "PASS",
+    "knowledge_parity": "PASS",
+    "public_action": "0.4.5_UNCHANGED",
+    "output_schema": 4,
+    "operation_id": "20/20_UNIQUE",
+    "api_health": "PASS",
+    "ohlcv_provider_health": "NOT_RUN_TEST_SINK_BLOCKED",
+    "runtime_visible_diff": 0,
+    "github_actions_run": 33088486288,
+    "github_actions": "PASS_TEST_AND_LINT"
+  },
   "open_p0": [],
   "open_material_p1": ["dedicated_test_sink_not_configured"],
   "p2_backlog": [],
