@@ -192,9 +192,9 @@ def test_run40_local_first_plan_uses_all_material_local_layers() -> None:
     assert "외국인은 KOSPI에서 순매수하고 KOSDAQ에서 순매도" in plan.interpretation.text
     assert "기관은 KOSPI에서 순매수하고 KOSDAQ에서 순매도" in plan.interpretation.text
     assert "개인은 KOSPI에서 순매도하고 KOSDAQ에서 순매수" in plan.interpretation.text
-    assert "중형주가 대형주·소형주보다 강했습니다" in plan.size_context.text
-    assert "KOSPI는 보험 상대 강세, 운송/창고 상대 약세" in plan.sector_context.text
-    assert "KOSDAQ은 금속 상대 강세, 통신 상대 약세" in plan.sector_context.text
+    assert "KOSPI 대형 +0.93% · 중형 +1.69% · 소형 +0.70%" in plan.size_context.text
+    assert "업종 상대 강세: KOSPI 보험 +5.88% · KOSDAQ 금속 +2.87%" in plan.sector_context.text
+    assert "업종 상대 약세: KOSPI 운송·창고 -2.66% · KOSDAQ 통신 -0.93%" in plan.sector_context.text
     assert "빈 업종" not in plan.sector_context.text
     assert plan.concentration_scopes_used == ()
 
@@ -207,8 +207,8 @@ def test_renderer_places_local_structure_before_fx_and_global_context() -> None:
         "📍 국내 장마감 구조",
         "KOSPI는 상승",
         "외국인은 KOSPI에서 순매수하고 KOSDAQ에서 순매도",
-        "KOSPI 규모별 지수에서는 중형주",
-        "업종지수 등락 기준",
+        "규모별: KOSPI 대형 +0.93%",
+        "업종 상대 강세",
         "💱 환율",
         "🌐 보조 시장환경",
         "현재 환경: 혼합",

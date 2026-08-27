@@ -1795,12 +1795,32 @@ def _render_blocks(
     )
 
 
+def _kr_required_market_structure_items(
+    analysis: FreeAnalystAnalysis,
+) -> list[AnalysisItem]:
+    suffixes = ("-kr-local-size_context", "-kr-local-sector_context")
+    return [
+        item
+        for item in analysis.thesis_implications
+        if item.item_id.endswith(suffixes)
+    ]
+
+
 def render_free_analyst_direct(analysis: FreeAnalystAnalysis) -> RenderedFreeAnalyst:
     blocks: list[tuple[str, list[AnalysisItem | NextCheck]]] = []
     if analysis.top_findings:
         blocks.append(("🎯 판단", [analysis.top_findings[0]]))
+    primary_evidence: list[AnalysisItem] = []
     if analysis.thesis_implications:
-        blocks.append(("🔎 핵심 근거", [analysis.thesis_implications[0]]))
+        primary_evidence = [analysis.thesis_implications[0]]
+        blocks.append(("🔎 핵심 근거", primary_evidence))
+    required_structure = [
+        item
+        for item in _kr_required_market_structure_items(analysis)
+        if all(item.text != primary.text for primary in primary_evidence)
+    ]
+    if required_structure:
+        blocks.append(("📊 시장 내부", required_structure))
     if analysis.alternative_interpretations:
         row = analysis.alternative_interpretations[0]
         balance_items = [row.negative_interpretation]
@@ -1831,12 +1851,21 @@ def render_free_analyst_vnext_hybrid(
     blocks: list[tuple[str, list[AnalysisItem | NextCheck]]] = []
     if analysis.top_findings:
         blocks.append(("🎯 판단", [analysis.top_findings[0]]))
+    primary_evidence: list[AnalysisItem] = []
     if analysis.expectation_valuation_interaction:
         blocks.append(("🔎 왜 중요한가", [analysis.expectation_valuation_interaction[0]]))
     elif analysis.alternative_interpretations:
         blocks.append(("⚖️ 경계", [analysis.alternative_interpretations[0].negative_interpretation]))
     elif analysis.thesis_implications:
-        blocks.append(("🔎 왜 중요한가", [analysis.thesis_implications[0]]))
+        primary_evidence = [analysis.thesis_implications[0]]
+        blocks.append(("🔎 왜 중요한가", primary_evidence))
+    required_structure = [
+        item
+        for item in _kr_required_market_structure_items(analysis)
+        if all(item.text != primary.text for primary in primary_evidence)
+    ]
+    if required_structure:
+        blocks.append(("📊 시장 내부", required_structure))
     if analysis.next_checks:
         blocks.append(("📌 다음 확인", [analysis.next_checks[0]]))
     return _render_blocks(analysis, blocks, renderer="VNEXT_HYBRID")

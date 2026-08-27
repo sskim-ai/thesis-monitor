@@ -18,6 +18,14 @@ class KrEvidencePriority(StrEnum):
     P5_REFERENCE_LAGGING_MACRO = "P5_REFERENCE_LAGGING_MACRO"
 
 
+class KrDigestSelectionState(StrEnum):
+    SELECTED_REQUIRED = "SELECTED_REQUIRED"
+    SOURCE_UNAVAILABLE = "SOURCE_UNAVAILABLE"
+    WRONG_SESSION = "WRONG_SESSION"
+    INVALID_SEMANTIC = "INVALID_SEMANTIC"
+    NO_VALID_ROWS = "NO_VALID_ROWS"
+
+
 @dataclass(frozen=True)
 class KrDigestClaim:
     role: str
@@ -49,6 +57,8 @@ class KrMarketDigestPlan:
     size_context: KrDigestClaim | None
     sector_context: KrDigestClaim | None
     next_check: KrDigestClaim | None
+    size_style_state: KrDigestSelectionState
+    sector_extremes_state: KrDigestSelectionState
     global_context_retained: bool
     global_context_reason: str
     concentration_scopes_used: tuple[str, ...]
@@ -179,6 +189,18 @@ _PARTICIPANT_LABELS = {
     "retail": "개인",
 }
 
+_KOSPI_SIZE_LABELS = (
+    ("대형주", "대형"),
+    ("중형주", "중형"),
+    ("소형주", "소형"),
+)
+_KOSDAQ_SIZE_LABELS = (
+    ("KOSDAQ 100", "KOSDAQ100"),
+    ("KOSDAQ MID 300", "MID300"),
+    ("KOSDAQ SMALL", "SMALL"),
+)
+_KOSDAQ_SIZE_NAMES = {name for name, _label in _KOSDAQ_SIZE_LABELS}
+
 
 def _flow_action(value: float) -> str:
     if value > 0:
@@ -211,58 +233,126 @@ def _participant_flow_clause(
     return f"{label}은 {scopes[0]}에서 {actions[scopes[0]]}했습니다."
 
 
-def _size_claim(context: NormalizedMarketContext) -> KrDigestClaim | None:
-    current = [
+def _normalized_name(value: str) -> str:
+    return " ".join(value.upper().split())
+
+
+def _display_name(value: str) -> str:
+    return re.sub(r"\s*/\s*", "·", value.strip())
+
+
+def _return_text(value: float) -> str:
+    return f"{float(value):+.2f}%"
+
+
+def _size_claim(
+    context: NormalizedMarketContext,
+) -> tuple[KrDigestClaim | None, KrDigestSelectionState]:
+    current_kospi = [
         item
         for item in context.size_context
-        if item.as_of_date == context.session_date and item.return_pct is not None
+        if item.as_of_date == context.session_date
+        and item.state == "CURRENT_DIRECTIONAL"
+        and item.return_pct is not None
     ]
-    if len(current) < 2:
-        return None
-    strongest = max(current, key=lambda item: float(item.return_pct))
-    peers = [item.name for item in current if item.name != strongest.name]
-    return KrDigestClaim(
-        role="size_context",
-        text=(
-            f"KOSPI 규모별 지수에서는 {strongest.name}가 "
-            f"{'·'.join(peers)}보다 강했습니다."
-        ),
-        priority=KrEvidencePriority.P1_LOCAL_MARKET_STRUCTURE,
-        source_refs=tuple(item.source_ref for item in current),
-    )
-
-
-def _sector_claim(context: NormalizedMarketContext) -> KrDigestClaim | None:
+    current_kosdaq = [
+        item
+        for item in context.sectors
+        if item.market_scope == "KOSDAQ"
+        and _normalized_name(item.name) in _KOSDAQ_SIZE_NAMES
+        and item.state == "CURRENT_DIRECTIONAL"
+        and item.return_pct is not None
+        and (item.listed_count is None or item.listed_count > 0)
+    ]
     clauses: list[str] = []
     refs: list[str] = []
+    for scope, rows, labels in (
+        ("KOSPI", current_kospi, _KOSPI_SIZE_LABELS),
+        ("KOSDAQ", current_kosdaq, _KOSDAQ_SIZE_LABELS),
+    ):
+        by_name = {_normalized_name(item.name): item for item in rows}
+        required_names = {_normalized_name(name) for name, _label in labels}
+        if set(by_name) != required_names:
+            continue
+        rendered = []
+        for name, label in labels:
+            item = by_name[_normalized_name(name)]
+            rendered.append(f"{label} {_return_text(float(item.return_pct))}")
+            refs.append(item.source_ref)
+        prefix = "KOSPI " if scope == "KOSPI" else ""
+        clauses.append(f"{prefix}{' · '.join(rendered)}")
+    if clauses:
+        return (
+            KrDigestClaim(
+                role="size_context",
+                text=f"규모별: {'; '.join(clauses)}.",
+                priority=KrEvidencePriority.P1_LOCAL_MARKET_STRUCTURE,
+                source_refs=tuple(dict.fromkeys(refs)),
+            ),
+            KrDigestSelectionState.SELECTED_REQUIRED,
+        )
+    if any(item.as_of_date != context.session_date for item in context.size_context):
+        return None, KrDigestSelectionState.WRONG_SESSION
+    if context.size_context or current_kosdaq:
+        return None, KrDigestSelectionState.INVALID_SEMANTIC
+    return None, KrDigestSelectionState.NO_VALID_ROWS
+
+
+def _sector_claim(
+    context: NormalizedMarketContext,
+) -> tuple[KrDigestClaim | None, KrDigestSelectionState]:
+    strongest_clauses: list[str] = []
+    weakest_clauses: list[str] = []
+    refs: list[str] = []
+    valid_rows = 0
     for scope in ("KOSPI", "KOSDAQ"):
         current = [
             item
             for item in context.sectors
             if item.market_scope == scope
             and item.basis == "actual_sector_breadth"
+            and item.state == "CURRENT_DIRECTIONAL"
             and item.return_pct is not None
             and (item.listed_count is None or item.listed_count > 0)
+            and not (
+                scope == "KOSDAQ"
+                and _normalized_name(item.name) in _KOSDAQ_SIZE_NAMES
+            )
         ]
+        valid_rows += len(current)
         if len(current) < 2:
             continue
-        leader = max(current, key=lambda item: float(item.return_pct))
-        laggard = min(current, key=lambda item: float(item.return_pct))
-        if leader.source_ref == laggard.source_ref:
+        strongest = max(current, key=lambda item: float(item.return_pct))
+        weakest = min(current, key=lambda item: float(item.return_pct))
+        if strongest.source_ref == weakest.source_ref:
             continue
-        scope_topic = "KOSDAQ은" if scope == "KOSDAQ" else f"{scope}는"
-        clauses.append(
-            f"{scope_topic} {leader.name} 상대 강세, "
-            f"{laggard.name} 상대 약세였습니다"
+        strongest_clauses.append(
+            f"{scope} {_display_name(strongest.name)} "
+            f"{_return_text(float(strongest.return_pct))}"
         )
-        refs.extend((leader.source_ref, laggard.source_ref))
-    if not clauses:
-        return None
-    return KrDigestClaim(
-        role="sector_context",
-        text=f"업종지수 등락 기준 {'. '.join(clauses)}.",
-        priority=KrEvidencePriority.P3_LOCAL_STOCK_CROSS_SECTION,
-        source_refs=tuple(dict.fromkeys(refs)),
+        weakest_clauses.append(
+            f"{scope} {_display_name(weakest.name)} "
+            f"{_return_text(float(weakest.return_pct))}"
+        )
+        refs.extend((strongest.source_ref, weakest.source_ref))
+    if not strongest_clauses:
+        return (
+            None,
+            KrDigestSelectionState.INVALID_SEMANTIC
+            if valid_rows
+            else KrDigestSelectionState.NO_VALID_ROWS,
+        )
+    return (
+        KrDigestClaim(
+            role="sector_context",
+            text=(
+                f"업종 상대 강세: {' · '.join(strongest_clauses)}. "
+                f"업종 상대 약세: {' · '.join(weakest_clauses)}."
+            ),
+            priority=KrEvidencePriority.P3_LOCAL_STOCK_CROSS_SECTION,
+            source_refs=tuple(dict.fromkeys(refs)),
+        ),
+        KrDigestSelectionState.SELECTED_REQUIRED,
     )
 
 
@@ -292,6 +382,8 @@ def build_kr_market_digest_plan(
             size_context=None,
             sector_context=None,
             next_check=None,
+            size_style_state=KrDigestSelectionState.SOURCE_UNAVAILABLE,
+            sector_extremes_state=KrDigestSelectionState.SOURCE_UNAVAILABLE,
             global_context_retained=False,
             global_context_reason="domestic_context_not_rich",
             concentration_scopes_used=(),
@@ -382,8 +474,8 @@ def build_kr_market_digest_plan(
         for participant in _PARTICIPANT_LABELS
         if (clause := _participant_flow_clause(participant, flows)) is not None
     ]
-    size_context = _size_claim(context)
-    sector_context = _sector_claim(context)
+    size_context, size_style_state = _size_claim(context)
+    sector_context, sector_extremes_state = _sector_claim(context)
     if flow_clauses:
         interpretation_text = " ".join(flow_clauses)
         interpretation_priority = KrEvidencePriority.P2_LOCAL_MARKET_FLOW
@@ -434,9 +526,11 @@ def build_kr_market_digest_plan(
         richness=richness,
         judgment=judgment,
         interpretation=interpretation,
-        size_context=size_context if flow_clauses else None,
+        size_context=size_context,
         sector_context=sector_context,
         next_check=next_check,
+        size_style_state=size_style_state,
+        sector_extremes_state=sector_extremes_state,
         global_context_retained=contradiction,
         global_context_reason=(
             "supported_global_semiconductor_contradiction_available"

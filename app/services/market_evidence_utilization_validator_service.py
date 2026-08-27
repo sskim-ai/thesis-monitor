@@ -1,11 +1,13 @@
 from __future__ import annotations
 
 from dataclasses import asdict, dataclass
+import re
 from typing import Iterable, Mapping
 
 
 CONTRACT_VERSION = "market-evidence-utilization-validator-v1"
 US_PLAN_CONTRACT = "us-market-digest-plan-v1"
+KR_PLAN_CONTRACT = "kr-market-digest-quality-v1"
 
 _REQUIRED_SLOT_ERRORS = {
     "CURRENT_MARKET": "CORE_MARKET_SLOT_UNCONSUMED",
@@ -19,6 +21,13 @@ _ALLOWED_OMISSION_REASONS = {
     "OMITTED_SAFE_LENGTH_BUDGET",
     "OMITTED_UNAVAILABLE",
     "OMITTED_TEMPORAL",
+}
+_ALLOWED_KR_SELECTION_STATES = {
+    "SELECTED_REQUIRED",
+    "SOURCE_UNAVAILABLE",
+    "WRONG_SESSION",
+    "INVALID_SEMANTIC",
+    "NO_VALID_ROWS",
 }
 
 
@@ -159,6 +168,108 @@ def validate_us_market_evidence_utilization(
         "US_MARKET_DIGEST_MATERIAL_INFORMATION_LOSS": sum(
             row.status == "FAIL" for row in rows
         ),
+    }
+    return MarketEvidenceUtilizationResult(
+        contract=CONTRACT_VERSION,
+        status="PASS" if not unique_errors else "FAIL",
+        errors=unique_errors,
+        slot_results=tuple(rows),
+        counters=counters,
+    )
+
+
+def _normalized_text(value: object) -> str:
+    return " ".join(str(value or "").split())
+
+
+def _kr_plan(value: object) -> Mapping[str, object] | None:
+    if hasattr(value, "to_dict"):
+        value = value.to_dict()
+    if not isinstance(value, Mapping) or value.get("contract") != KR_PLAN_CONTRACT:
+        return None
+    return value
+
+
+def validate_kr_market_evidence_utilization(
+    plan: object,
+    *,
+    rendered_text: str,
+) -> MarketEvidenceUtilizationResult:
+    value = _kr_plan(plan)
+    errors: list[str] = []
+    rows: list[SlotUtilization] = []
+    if value is None:
+        errors.append("KR_MARKET_DIGEST_PLAN_MISSING")
+        value = {}
+
+    rendered = _normalized_text(rendered_text)
+    for slot, claim_key, state_key, missing_error in (
+        (
+            "SIZE_STYLE",
+            "size_context",
+            "size_style_state",
+            "SIZE_STYLE_AVAILABLE_BUT_OMITTED",
+        ),
+        (
+            "SECTOR_EXTREMES",
+            "sector_context",
+            "sector_extremes_state",
+            "SECTOR_EXTREMES_AVAILABLE_BUT_OMITTED",
+        ),
+    ):
+        state = str(value.get(state_key) or "")
+        claim = value.get(claim_key)
+        claim_map = claim if isinstance(claim, Mapping) else {}
+        claim_text = _normalized_text(claim_map.get("text"))
+        refs = _strings(claim_map.get("source_refs"))
+        selected = state == "SELECTED_REQUIRED"
+        consumed = bool(selected and claim_text and claim_text in rendered)
+        if state not in _ALLOWED_KR_SELECTION_STATES:
+            errors.append(f"UNEXPLAINED_MATERIAL_EVIDENCE_OMISSION:{slot}")
+        if selected and (not claim_text or not refs):
+            errors.append(f"UNEXPLAINED_MATERIAL_EVIDENCE_OMISSION:{slot}")
+        if selected and not consumed:
+            errors.append(missing_error)
+        rows.append(
+            SlotUtilization(
+                slot=slot,
+                selected=selected,
+                required_consumption=selected,
+                evidence_refs=refs,
+                consumed_refs=refs if consumed else (),
+                status="PASS" if not selected or consumed else "FAIL",
+                omission_reason=state,
+            )
+        )
+
+    if re.search(r"(?<![A-Za-z])(leader|laggard)(?![A-Za-z])", rendered_text, re.I):
+        errors.append("USER_FACING_LEADER_LAGGARD_TERM")
+    unique_errors = tuple(dict.fromkeys(errors))
+    names = {error.split(":", 1)[0] for error in unique_errors}
+    counters = {
+        "SIZE_STYLE_AVAILABLE_BUT_OMITTED": int(
+            "SIZE_STYLE_AVAILABLE_BUT_OMITTED" in names
+        ),
+        "SECTOR_EXTREMES_AVAILABLE_BUT_OMITTED": int(
+            "SECTOR_EXTREMES_AVAILABLE_BUT_OMITTED" in names
+        ),
+        "GLOBAL_CONTEXT_PRIORITIZED_OVER_KR_SIZE_SECTOR": int(
+            bool(
+                names
+                & {
+                    "SIZE_STYLE_AVAILABLE_BUT_OMITTED",
+                    "SECTOR_EXTREMES_AVAILABLE_BUT_OMITTED",
+                }
+                and re.search(r"(?:미국|글로벌|해외)", rendered_text)
+            )
+        ),
+        "USER_FACING_LEADER_LAGGARD_TERM": int(
+            "USER_FACING_LEADER_LAGGARD_TERM" in names
+        ),
+        "KR_MARKET_DIGEST_MATERIAL_INFORMATION_LOSS": sum(
+            row.status == "FAIL" for row in rows
+        ),
+        "VALIDATOR_FORCED_NUMERIC_DUMP": 0,
     }
     return MarketEvidenceUtilizationResult(
         contract=CONTRACT_VERSION,

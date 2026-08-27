@@ -22,6 +22,9 @@ from app.services.free_analyst_message_service import (
     parse_rendered_message,
 )
 from app.services.kr_market_digest_quality_service import build_kr_market_digest_plan
+from app.services.market_evidence_utilization_validator_service import (
+    validate_kr_market_evidence_utilization,
+)
 
 
 CONTRACT_VERSION = "common-ai-core-v1"
@@ -293,8 +296,13 @@ def build_production_candidate(
             market_context,
             available_text=f"{source_text}\n\n{deterministic_text}",
         )
+        utilization = validate_kr_market_evidence_utilization(
+            kr_plan,
+            rendered_text=result.final_text,
+        )
         quality_v2["kr_market_digest"] = {
             **kr_plan.to_dict(),
+            "utilization": utilization.to_dict(),
             "local_first": (
                 "PASS"
                 if not kr_plan.richness.status
@@ -310,6 +318,8 @@ def build_production_candidate(
                 else "FAIL"
             ),
         }
+        if utilization.status != "PASS":
+            quality_v2["status"] = "FAIL"
     if not is_market_digest:
         specificity = entity_specific_synthesis_report(
             result.final_text,
