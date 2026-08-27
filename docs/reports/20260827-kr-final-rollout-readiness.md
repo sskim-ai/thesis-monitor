@@ -42,3 +42,10 @@ indicated.
 | `US_PRICE_STRUCTURE_ENABLED` | `0` |
 
 `NEXT_ACTION = CONFIGURE_APPROVED_DEDICATED_TEST_SINK_AND_RERUN_TRACK_A`
+
+## Validation
+
+Focused tests `14 passed`; full pytest `1803 passed`; Ruff and diff checks PASS. Track A exact-SHA
+GitHub Actions run `33085141564` passed Test and Lint. Public Action remains `0.4.5`, output schema
+remains `4`, operationId uniqueness is `20/20`, runtime code diff is zero, and local API health is
+PASS. No OHLCV provider data request was made after the Track A stop.

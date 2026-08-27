@@ -34,5 +34,10 @@
 - `20260827-kr-final-test-delivery.json`
 - `20260827-kr-final-rollout-readiness.json`
 
+## Validation
+
+- `20260827-kr-final-rollout-validation.md`
+- Track A GitHub Actions run `33085141564`: Test/Lint PASS
+
 All listed artifacts are Track A blocked-path evidence. No test payload, receipt, or post-enable
 proof exists because dependent stages were not run.

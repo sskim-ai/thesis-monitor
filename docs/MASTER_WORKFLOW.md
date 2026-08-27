@@ -1676,3 +1676,24 @@ Price Structure remains `INTEGRATED_READY_NOT_ARMED`. This work changes no user-
 Telegram, task, DB, assessment, archive, TOP3 sector path, US path, production flag, or operating
 checkout. Next action is exactly `RERUN_KR_TOP3_PRICE_STRUCTURE_TEST_SINK_PREENABLEMENT` under a
 separate authorization.
+
+### 40.18 KR TOP3 / Price Structure Final Pre-Enable Stop
+
+Exact instruction commit `9f37cfad97487876d6dfa63c03750f4dab664dbf` precedes Track A audit
+commit `05b57901f7cf25086b580510aac6a6e72329cdfc`. The repository-native test routing contract
+accepts dedicated test, staging, or developer recipient secrets, but none is configured in the
+canonical or operating environment. The production recipient is present only as a one-way
+redacted alias and was not copied, queried, or used as a substitute.
+
+The strict sequence stopped at Track A with
+`KR_FINAL_PREENABLE=BLOCKED` and `BLOCKED_NO_TEST_SINK`. Track B data collection, current-universe
+resolution, market/stock generation, test delivery, and quality proof are `NOT_RUN` or `NOT_SENT`.
+Track C was not created or started: operating remains
+`43731f015901b96e2dee3af009b9e1d074382349`, both KR guards remain OFF, US Price Structure remains
+OFF, and no restart or smoke was performed. Telegram messages, production intents, manual tasks,
+DB/Pilot/archive mutations, and Production Assist changes are zero.
+
+Open P0 is zero. The sole material P1 is `dedicated_test_sink_not_configured`. Configure exactly
+one approved non-production destination through the existing secret/config mechanism, prove its
+isolation, and rerun Track A. Do not reinterpret prior replay evidence as this final test-send
+proof, and do not begin Track B or Track C until Track A passes.

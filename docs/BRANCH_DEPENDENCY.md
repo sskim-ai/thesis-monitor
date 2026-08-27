@@ -389,3 +389,16 @@ Any later pre-enable rerun must descend from this closure and preserve the 1,200
 proximity/Fib/current-cycle validators, and old-000660 negative control. It must not infer an older
 window from unsupported parameters, use the static backfill artifact as runtime truth, arm either
 guard, alter US/TOP3 behavior, or promote operating without separate authorization.
+
+The final KR pre-enable instruction branch starts from exact instruction commit
+`9f37cfad97487876d6dfa63c03750f4dab664dbf`, whose parent is clean final main
+`0ede6a0eb3335371322d1f7921b350d07f669f9a`. Track A evidence commit
+`05b57901f7cf25086b580510aac6a6e72329cdfc` records the fail-closed result. No Track B or Track C
+branch exists because the dedicated test-sink prerequisite failed.
+
+A future rerun must descend from this evidence state after exactly one approved non-production
+recipient is configured through the existing secret/config mechanism. It must first prove sink and
+intent isolation, then rerun Track A; only a PASS may authorize Track B. It may not reuse the
+production recipient, treat prior replay as current test-send proof, promote operating, or change a
+feature flag while this P1 remains open. The operating checkout intentionally remains
+`43731f015901b96e2dee3af009b9e1d074382349`.

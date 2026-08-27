@@ -3,6 +3,25 @@
 Repository: `sskim-ai/thesis-monitor`
 
 Latest authoritative work follows exact instruction commit
+`9f37cfad97487876d6dfa63c03750f4dab664dbf` and Track A evidence commit
+`05b57901f7cf25086b580510aac6a6e72329cdfc`. Read
+`docs/reports/20260827-kr-final-rollout-readiness.json`, test-sink configuration/isolation,
+test-delivery, rollout safety, and artifact index first.
+
+Track A is `BLOCKED_NO_TEST_SINK`: none of the existing approved non-production recipient keys is
+configured. P0/material P1 is `0/1`, with only `dedicated_test_sink_not_configured`. Track B did not
+resolve a current session, collect data, generate messages, or send. Track C did not start;
+operating remains `43731f015901b96e2dee3af009b9e1d074382349`, both KR flags remain false, US Price
+Structure remains OFF, and all production mutation/send counters are zero.
+
+Next action: `CONFIGURE_APPROVED_DEDICATED_TEST_SINK_AND_RERUN_TRACK_A`. Configure exactly one
+approved destination through an accepted secret key and prove it differs from production. Do not
+discover or invent a recipient, use production as a substitute, begin Track B/C, promote operating,
+change flags, restart, send Telegram, or run a production task before Track A PASS.
+
+---
+
+Latest authoritative work follows exact instruction commit
 `3e42f3fad2e32ff1b3cca47861cfb9704095ce28` and implementation
 `f957bea48e1bf8df23c6b8fe769812ade5663456`. Read
 `docs/reports/20260827-kr-daily-1200-readiness.json`, provider capability, window probe,

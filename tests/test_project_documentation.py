@@ -105,16 +105,12 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     assert state["repository"] == "sskim-ai/thesis-monitor"
     assert state["branch"] == "main"
     assert state["experimental_branch"] == (
-        "codex/20260827-kr-price-structure-daily-1200-extension-degradation"
+        "codex/kr-final-dedicated-test-sink-configuration"
     )
-    assert state["current_phase"] == (
-        "kr_price_structure_daily_1200_verified_degradation_replay_pass"
-    )
-    assert state["last_completed_phase"] == (
-        "kr_price_structure_daily_1200_extension_or_degradation_policy"
-    )
+    assert state["current_phase"] == "kr_final_preenable_blocked_no_test_sink"
+    assert state["last_completed_phase"] == "kr_final_test_sink_audit"
     assert state["next_default_phase"] == (
-        "rerun_kr_top3_price_structure_test_sink_preenablement"
+        "configure_approved_dedicated_test_sink_and_rerun_track_a"
     )
     implementation_commit = "069f002437163bff1df7aa6e258918c1777d5dfa"
     kr_size_sector_implementation = "6a54db130e95e25969a5ca0a100648d4a12c3aa2"
@@ -1106,7 +1102,35 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     assert daily_1200["open_material_p1"] == []
     assert daily_1200["runtime_enablement"] is False
     assert daily_1200["operating_promotion"] is False
-    assert state["current_commit"] == daily_1200_implementation
+    final_preenable = state["kr_top3_price_structure_final_preenable_and_enable"]
+    assert final_preenable["status"] == "blocked_no_test_sink"
+    assert final_preenable["instruction_commit"] == (
+        "9f37cfad97487876d6dfa63c03750f4dab664dbf"
+    )
+    assert final_preenable["track_a_commit"] == (
+        "05b57901f7cf25086b580510aac6a6e72329cdfc"
+    )
+    assert final_preenable["track_a_github_actions_run"] == 33085141564
+    assert final_preenable["track_a_github_actions_status"] == (
+        "passed_test_and_lint"
+    )
+    assert final_preenable["track_a"] == "BLOCKED_NO_TEST_SINK"
+    assert final_preenable["track_b"] == "NOT_RUN_TRACK_A_BLOCKED"
+    assert final_preenable["track_c"] == "NOT_RUN_TRACK_A_BLOCKED"
+    assert final_preenable["test_sink_available"] is False
+    assert final_preenable["test_delivery_count"] == 0
+    assert final_preenable["operating_promotion"] is False
+    assert final_preenable["kr_market_top3_enabled"] is False
+    assert final_preenable["kr_price_structure_enabled"] is False
+    assert final_preenable["us_price_structure_enabled"] is False
+    assert final_preenable["open_p0"] == []
+    assert final_preenable["open_material_p1"] == [
+        "dedicated_test_sink_not_configured"
+    ]
+    assert final_preenable["kr_rollout"] == "NOT_ENABLED"
+    assert state["current_commit"] == (
+        "05b57901f7cf25086b580510aac6a6e72329cdfc"
+    )
     assert state["ai_review_mode"] == "shadow"
     assert state["ai_policy_version"] == "daily-review-v3.10"
     assert state["output_schema_version"] == 4

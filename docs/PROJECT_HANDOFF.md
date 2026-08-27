@@ -1846,3 +1846,22 @@ State is `REPLAY_PASS_READY_FOR_PREENABLE`, P0/material P1 `0/0`. Price Structur
 `INTEGRATED_READY_NOT_ARMED`; operating stays on `43731f015901b96e2dee3af009b9e1d074382349`.
 No test send or enablement occurred. Next action is
 `RERUN_KR_TOP3_PRICE_STRUCTURE_TEST_SINK_PREENABLEMENT` under a separate instruction.
+
+## 2026-08-27 KR Final Pre-Enable Stop Handoff
+
+The exact master instruction commit is `9f37cfad97487876d6dfa63c03750f4dab664dbf`; Track A blocked-path
+evidence is `05b57901f7cf25086b580510aac6a6e72329cdfc`. Start with
+`docs/reports/20260827-kr-final-rollout-readiness.json`, then read the sink configuration/isolation,
+delivery, enablement, safety, and artifact-index reports.
+
+No approved dedicated non-production Telegram destination exists under the repository's accepted
+secret keys. `KR_FINAL_PREENABLE=BLOCKED`, detail is `BLOCKED_NO_TEST_SINK`, and the sole material
+P1 is `dedicated_test_sink_not_configured`; P0 is zero. The strict dependency stopped before
+current-session resolution and all Track B work. No test payload, receipt, or message-quality proof
+exists. Track C branches were not created, operating was not promoted, both KR feature flags and
+US Price Structure remain OFF, and production mutation counters are zero.
+
+Next action is only `CONFIGURE_APPROVED_DEDICATED_TEST_SINK_AND_RERUN_TRACK_A`. Use the existing
+secret/config mechanism, never the production recipient. Do not run Track B, create Track C,
+promote operating, change flags, restart services, or send any message until isolation proves
+Track A PASS.
