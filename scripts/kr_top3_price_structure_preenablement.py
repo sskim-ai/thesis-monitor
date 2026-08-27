@@ -17,6 +17,7 @@ from app.services.free_analyst_production_integration_service import (
 )
 from app.services.kr_market_digest_quality_service import (
     build_kr_market_digest_plan,
+    is_kr_sector_return_row,
 )
 from app.services.kr_price_structure_selective_rollout_service import (
     build_kr_price_structure_rollout_decision,
@@ -103,11 +104,7 @@ def _sector_selection(context: NormalizedMarketContext) -> dict[str, object]:
             and item.return_pct is not None
             and item.state == "CURRENT_DIRECTIONAL"
             and (item.as_of_date is None or item.as_of_date == context.session_date)
-            and not (
-                scope == "KOSDAQ"
-                and " ".join(item.name.upper().split())
-                in {"KOSDAQ 100", "KOSDAQ MID 300", "KOSDAQ SMALL"}
-            )
+            and is_kr_sector_return_row(market_scope=scope, name=item.name)
         ]
         deduplicated = {
             " ".join(item.name.upper().split()): item

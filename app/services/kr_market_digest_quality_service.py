@@ -204,6 +204,21 @@ _KOSDAQ_SIZE_LABELS = (
     ("KOSDAQ SMALL", "SMALL"),
 )
 _KOSDAQ_SIZE_NAMES = {name for name, _label in _KOSDAQ_SIZE_LABELS}
+_KOSDAQ_NON_SECTOR_INDEX_NAMES = _KOSDAQ_SIZE_NAMES | {
+    "KOSDAQ 150",
+    "코스닥글로벌지수",
+    "코스닥 신성장기업",
+    "코스닥 우량기업",
+    "코스닥 중견기업",
+    "코스닥 벤처기업",
+}
+
+
+def is_kr_sector_return_row(*, market_scope: str, name: str) -> bool:
+    return not (
+        market_scope == "KOSDAQ"
+        and _normalized_name(name) in _KOSDAQ_NON_SECTOR_INDEX_NAMES
+    )
 
 
 def _flow_action(value: float) -> str:
@@ -324,9 +339,9 @@ def _sector_claim(
             and item.state == "CURRENT_DIRECTIONAL"
             and item.return_pct is not None
             and (item.listed_count is None or item.listed_count > 0)
-            and not (
-                scope == "KOSDAQ"
-                and _normalized_name(item.name) in _KOSDAQ_SIZE_NAMES
+            and is_kr_sector_return_row(
+                market_scope=scope,
+                name=item.name,
             )
         ]
         stale_rows += sum(

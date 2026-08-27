@@ -261,6 +261,27 @@ def test_top3_exact_ties_use_canonical_sector_name() -> None:
     assert "KOSPI 기계 +2.00% · 운송장비 +2.00% · 전기·전자 +2.00%" in claim.text
 
 
+def test_top3_excludes_kosdaq_company_classification_indexes() -> None:
+    context = _top3_context()
+    context["sectors"].append(
+        {
+            "name": "코스닥 중견기업",
+            "market_scope": "KOSDAQ",
+            "basis": "actual_sector_breadth",
+            "return_pct": 99.0,
+            "state": "CURRENT_DIRECTIONAL",
+            "source_ref": "sector:kosdaq:classification",
+            "as_of_date": "2026-08-27",
+        }
+    )
+
+    plan = build_kr_market_digest_plan(context, sector_rank_limit=3)
+
+    assert plan.sector_context is not None
+    assert "코스닥 중견기업" not in plan.sector_context.text
+    assert "sector:kosdaq:classification" not in plan.sector_context.source_refs
+
+
 def test_top3_partial_safe_rows_do_not_duplicate_to_fill_three() -> None:
     context = _top3_context()
     context["sectors"] = [

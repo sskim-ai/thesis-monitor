@@ -31,7 +31,8 @@ The TOP3 form accepts only same-session `CURRENT_DIRECTIONAL` rows. It canonical
 before ranking and uses the stable order `(return, canonical sector name, source ref)`, descending
 for strong and ascending for weak. Fewer than three safe rows remain fewer than three; the renderer
 does not duplicate or carry forward sectors to fill a slot. Ranking is backend-owned and AI cannot
-reorder it.
+reorder it. KOSDAQ size buckets, company-classification indexes, KOSDAQ 150, and the KOSDAQ Global
+index are not sectors and are excluded before ranking.
 
 ## Length Ownership
 
