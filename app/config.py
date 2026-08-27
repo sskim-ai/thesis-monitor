@@ -103,6 +103,7 @@ class Settings(BaseSettings):
     notification_channel: str = "telegram"
     telegram_bot_token: str | None = None
     telegram_chat_id: str | None = None
+    telegram_test_chat_id: str | None = None
     telegram_message_max_chars: int = 3500
     telegram_retry_attempts: int = 3
     telegram_retry_base_seconds: float = 2.0

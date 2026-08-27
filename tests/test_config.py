@@ -19,6 +19,7 @@ def test_known_telegram_environment_settings_load(tmp_path: Path) -> None:
             "NOTIFICATION_CHANNEL=telegram",
             "TELEGRAM_BOT_TOKEN=dummy-token",
             "TELEGRAM_CHAT_ID=123",
+            "TELEGRAM_TEST_CHAT_ID=456",
         ],
     )
 
@@ -27,6 +28,7 @@ def test_known_telegram_environment_settings_load(tmp_path: Path) -> None:
     assert settings.notification_channel == "telegram"
     assert settings.telegram_bot_token == "dummy-token"
     assert settings.telegram_chat_id == "123"
+    assert settings.telegram_test_chat_id == "456"
 
 
 def test_known_krx_environment_setting_loads(tmp_path: Path) -> None:
