@@ -1596,3 +1596,25 @@ default and was neither re-armed nor reverted, so its state remains
 Open P0 is zero. The one material operational P1 is `dedicated_test_sink_not_configured`. The next
 bounded action is to configure one explicit test recipient that differs from production, then rerun
 this preflight exactly once. A production recipient must never substitute for that proof.
+
+### 40.15 KR TOP3 Sector and Price Structure Selective Pre-Enablement
+
+Exact instruction commit `0c95ddc9be319dbacc5ce1d824802e0c3c72fed1` precedes guarded
+implementation `a7de99c2d1d1211615e0fcbf4bd3eadc06d957fb`. Track A expands the backend-owned
+same-session sector ranking to strong/weak TOP3 per KOSPI and KOSDAQ with stable ties, no stale
+carry-forward, no duplicate fill, and explicit exclusion of KOSDAQ size, company-classification,
+KOSDAQ 150, and Global indexes. Track B wires the existing Price Structure v3 engine and renderer
+behind a default-OFF monitored-KR guard. Current SR remains separate from stored monitoring rules;
+Fib renders only after family-consensus safety.
+
+Run-42 replay selects KOSPI strong `전기/전자, 금속, 제조`, KOSPI weak
+`유통, 전기/가스, 음식료/담배`, KOSDAQ strong `금융, 전기/전자, 기계/장비`, and KOSDAQ weak
+`오락/문화, 출판/매체복제, 통신`. Current completed-session price evidence classifies all seven
+monitored KR subjects `ELIGIBLE_SR_ONLY`; no unstable Fib, target, stop, look-ahead, or partial-bar
+pivot leaks.
+
+Track C did not send because no dedicated non-production Telegram sink exists. Track D therefore
+did not start. Both new guards remain OFF, US Price Structure remains OFF, delivery and production
+intent counts are zero, and operating user-visible behavior is unchanged. Open P0 is zero; the one
+material P1 is `dedicated_test_sink_not_configured`. Configure exactly one isolated test sink and
+rerun Track C before any KR-only enablement.

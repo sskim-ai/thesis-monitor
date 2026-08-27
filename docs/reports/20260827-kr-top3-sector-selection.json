@@ -1,0 +1,95 @@
+{
+  "candidate_route": "AI",
+  "candidate_sha256": "b8c859c4d260f6bad1288f7981e6b0c008394e58bcf04e595ad0c8fa086bf24e",
+  "contract": "kr-sector-relative-ranking-v1",
+  "packet_id": "2026-08-27-kr-run-42-5d8d23e6fbd6",
+  "selection": {
+    "KOSDAQ": {
+      "safe_count": 22,
+      "strong": [
+        {
+          "name": "금융",
+          "rank": 1,
+          "return_pct": 3.21,
+          "source_ref": "kiwoom:ka20003:KOSDAQ:111:2026-08-27"
+        },
+        {
+          "name": "전기/전자",
+          "rank": 2,
+          "return_pct": 3.08,
+          "source_ref": "kiwoom:ka20003:KOSDAQ:124:2026-08-27"
+        },
+        {
+          "name": "기계/장비",
+          "rank": 3,
+          "return_pct": 2.48,
+          "source_ref": "kiwoom:ka20003:KOSDAQ:123:2026-08-27"
+        }
+      ],
+      "weak": [
+        {
+          "name": "오락/문화",
+          "rank": 1,
+          "return_pct": -1.29,
+          "source_ref": "kiwoom:ka20003:KOSDAQ:141:2026-08-27"
+        },
+        {
+          "name": "출판/매체복제",
+          "rank": 2,
+          "return_pct": -1.11,
+          "source_ref": "kiwoom:ka20003:KOSDAQ:118:2026-08-27"
+        },
+        {
+          "name": "통신",
+          "rank": 3,
+          "return_pct": -0.82,
+          "source_ref": "kiwoom:ka20003:KOSDAQ:128:2026-08-27"
+        }
+      ]
+    },
+    "KOSPI": {
+      "safe_count": 24,
+      "strong": [
+        {
+          "name": "전기/전자",
+          "rank": 1,
+          "return_pct": 2.62,
+          "source_ref": "kiwoom:ka20003:KOSPI:013:2026-08-27"
+        },
+        {
+          "name": "금속",
+          "rank": 2,
+          "return_pct": 2.3,
+          "source_ref": "kiwoom:ka20003:KOSPI:011:2026-08-27"
+        },
+        {
+          "name": "제조",
+          "rank": 3,
+          "return_pct": 2.04,
+          "source_ref": "kiwoom:ka20003:KOSPI:027:2026-08-27"
+        }
+      ],
+      "weak": [
+        {
+          "name": "유통",
+          "rank": 1,
+          "return_pct": -2.36,
+          "source_ref": "kiwoom:ka20003:KOSPI:016:2026-08-27"
+        },
+        {
+          "name": "전기/가스",
+          "rank": 2,
+          "return_pct": -2.05,
+          "source_ref": "kiwoom:ka20003:KOSPI:017:2026-08-27"
+        },
+        {
+          "name": "음식료/담배",
+          "rank": 3,
+          "return_pct": -1.56,
+          "source_ref": "kiwoom:ka20003:KOSPI:005:2026-08-27"
+        }
+      ]
+    }
+  },
+  "target_session": "2026-08-27"
+}

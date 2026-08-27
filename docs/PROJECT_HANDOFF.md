@@ -5,6 +5,25 @@ with [MASTER_WORKFLOW.md](MASTER_WORKFLOW.md), [project-state.json](project-stat
 [NEXT_SESSION_PROMPT.md](NEXT_SESSION_PROMPT.md) before changing runtime policy, Knowledge,
 validation, delivery, or Scheduled Tasks.
 
+## Latest Handoff — KR TOP3 / Price Structure Pre-Enablement
+
+Use exact instruction commit `0c95ddc9be319dbacc5ce1d824802e0c3c72fed1` and implementation
+commit `a7de99c2d1d1211615e0fcbf4bd3eadc06d957fb`. Start with
+`docs/reports/20260827-kr-rollout-gate-matrix.json`, the TOP3 selection JSON, per-ticker Price
+Structure audit, sink isolation, validation, and artifact index.
+
+Tracks A/B are implemented behind default-OFF KR guards. Run-42 TOP3 selection and all seven
+completed-session KR SR-only previews pass with backend provenance and current/stored ownership
+separation. No user-visible runtime path is enabled. Track C is blocked because the operating
+environment has no dedicated non-production test recipient; test sends, production intents, and
+manual runs are zero. Track D was not started. State is `KR_ROLLOUT=NOT_ENABLED`, P0/material P1
+`0/1`, with the sole P1 `dedicated_test_sink_not_configured`.
+
+The next bounded action is external configuration of exactly one test recipient different from
+production, followed by one Track C preflight. Do not use production as the test sink. Do not turn
+on either KR guard, US Price Structure, Production Assist, or any manual scheduled delivery before
+that proof passes.
+
 ## Current Authoritative Handoff — 2026-08-27 KR Natural Reproof
 
 Start from exact instruction commit `107f40b0b6b7e794f420534e71b69af0c969e643` and read

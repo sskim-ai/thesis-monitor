@@ -48,6 +48,8 @@ DOCUMENTS = (
     ROOT / "docs" / "architecture" / "FREE_ANALYST_MESSAGE_QUALITY.md",
     ROOT / "docs" / "architecture" / "KR_MARKET_DIGEST_QUALITY.md",
     ROOT / "docs" / "architecture" / "KR_SIZE_SECTOR_MESSAGE_POLICY.md",
+    ROOT / "docs" / "architecture" / "KR_PRICE_STRUCTURE_SELECTIVE_ROLLOUT.md",
+    ROOT / "docs" / "architecture" / "KR_TEST_SINK_ROLLOUT_SAFETY.md",
     ROOT / "docs" / "architecture" / "AI_FIBONACCI_MULTI_TIMEFRAME_STRUCTURE.md",
     ROOT / "docs" / "architecture" / "PRICE_STRUCTURE_SHADOW_POLICY.md",
     ROOT / "docs" / "architecture" / "VARIABLE_AI_SWING_ANCHOR_SELECTION.md",
@@ -103,11 +105,13 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     assert state["repository"] == "sskim-ai/thesis-monitor"
     assert state["branch"] == "main"
     assert state["experimental_branch"] == (
-        "codex/20260827-kr-market-preenable-test-send-enablement"
+        "codex/20260827-kr-top3-sector-price-structure-preenablement"
     )
-    assert state["current_phase"] == "kr_market_preenable_blocked_no_safe_test_sink"
+    assert state["current_phase"] == (
+        "kr_top3_price_structure_preenable_blocked_no_safe_test_sink"
+    )
     assert state["last_completed_phase"] == (
-        "kr_size_sector_message_selection_bounded_repair"
+        "kr_top3_sector_and_price_structure_tracks_a_b"
     )
     assert state["next_default_phase"] == (
         "configure_dedicated_test_sink_and_rerun_preenable"
@@ -115,13 +119,14 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     implementation_commit = "069f002437163bff1df7aa6e258918c1777d5dfa"
     kr_size_sector_implementation = "6a54db130e95e25969a5ca0a100648d4a12c3aa2"
     preenable_implementation = "7d2823c236c458cf76c77faae043c6288e46e65e"
+    top3_implementation = "a7de99c2d1d1211615e0fcbf4bd3eadc06d957fb"
     kr_integration_commit = "848eb80f6ce6504a9a855973b591ee0749167514"
     detector_implementation_commit = "3685aa991589ca0e7cc560104d4ebf8289e3f91d"
     preenablement_commit = "84f8f549bc8fa0338309a84b23b2738f2e357646"
     prior_price_structure_commit = "631e82f202b6f081866ef83c8b67b2138a8b51d8"
     prior_fibonacci_commit = "0dfef76bba606f018893d6e68e7beaf410aa7438"
     assert state["deployed_code_commit"] == "de352342f15a75069289f35f00b4bd24ddcdd19f"
-    assert state["main_code_commit"] == preenable_implementation
+    assert state["main_code_commit"] == top3_implementation
     assert state["operating_code_commit"] == "de352342f15a75069289f35f00b4bd24ddcdd19f"
     phase_8552 = state["phase_8_5_5_2_kr_structured_field_repetition"]
     assert phase_8552["status"] == "operating_shadow_pending_natural_proof"
@@ -996,7 +1001,29 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     assert preenable["open_material_p1"] == [
         "dedicated_test_sink_not_configured"
     ]
-    assert state["current_commit"] == preenable_implementation
+    rollout = state["kr_top3_sector_price_structure_selective_preenablement"]
+    assert rollout["status"] == "blocked_no_safe_test_sink"
+    assert rollout["instruction_commit"] == (
+        "0c95ddc9be319dbacc5ce1d824802e0c3c72fed1"
+    )
+    assert rollout["implementation_commit"] == top3_implementation
+    assert rollout["implementation_github_actions_run"] == 33071858051
+    assert rollout["track_a"] == "implemented_default_off"
+    assert rollout["track_b"] == "implemented_default_off"
+    assert rollout["track_c"] == "blocked_no_safe_test_sink"
+    assert rollout["track_d"] == "not_started"
+    assert rollout["price_structure_sr_only"] == 7
+    assert rollout["test_delivery_count"] == 0
+    assert rollout["production_delivery_intent_created"] == 0
+    assert rollout["kr_market_top3_enablement"] == "DO_NOT_ENABLE"
+    assert rollout["kr_price_structure_enablement"] == "DO_NOT_ENABLE"
+    assert rollout["us_price_structure_enabled"] is False
+    assert rollout["runtime_user_visible_diff"] == 0
+    assert rollout["open_p0"] == []
+    assert rollout["open_material_p1"] == [
+        "dedicated_test_sink_not_configured"
+    ]
+    assert state["current_commit"] == top3_implementation
     assert state["ai_review_mode"] == "shadow"
     assert state["ai_policy_version"] == "daily-review-v3.10"
     assert state["output_schema_version"] == 4
@@ -1297,6 +1324,52 @@ def test_fail_closed_kr_preenable_artifacts_are_complete() -> None:
     assert gates["PRODUCTION_DELIVERY_INTENT_CREATED"] == 0
     assert gates["ENABLEMENT_ACTION"] == "DO_NOT_ENABLE"
     assert gates["PRICE_STRUCTURE_RUNTIME_ARMED"] == 0
+    assert evidence["open_p0"] == []
+    assert evidence["open_material_p1"] == [
+        "dedicated_test_sink_not_configured"
+    ]
+
+
+def test_kr_top3_price_structure_preenablement_artifacts_are_complete() -> None:
+    reports = ROOT / "docs" / "reports"
+    markdown = (
+        "20260827-kr-top3-sector-policy.md",
+        "20260827-kr-top3-sector-run42-replay.md",
+        "20260827-kr-price-structure-selective-scope.md",
+        "20260827-kr-price-structure-current-replay.md",
+        "20260827-kr-price-structure-per-ticker-audit.md",
+        "20260827-kr-test-sink-isolation.md",
+        "20260827-kr-market-test-exact-message.md",
+        "20260827-kr-stock-test-exact-messages.md",
+        "20260827-kr-test-message-quality.md",
+        "20260827-kr-rollout-gate-matrix.md",
+        "20260827-kr-only-enablement-action.md",
+        "20260827-kr-post-enable-smoke.md",
+        "20260827-kr-natural-proof-status.md",
+        "20260827-kr-rollout-safety-parity.md",
+        "20260827-kr-rollout-artifact-index.md",
+        "20260827-kr-price-structure-numeric-provenance.md",
+        "20260827-kr-rollout-validation.md",
+    )
+    machine_readable = (
+        "20260827-kr-top3-sector-selection.json",
+        "20260827-kr-price-structure-per-ticker-audit.json",
+        "20260827-kr-rollout-gate-matrix.json",
+        "20260827-kr-rollout-status.json",
+    )
+    assert all((reports / name).exists() for name in (*markdown, *machine_readable))
+
+    evidence = json.loads(
+        (reports / "20260827-kr-rollout-gate-matrix.json").read_text()
+    )
+    gates = evidence["gates"]
+    assert gates["KR_TOP3_SECTOR_POLICY"] == "PASS"
+    assert gates["SELECTIVE_ELIGIBILITY_ROUTING"] == "PASS"
+    assert gates["TEST_SINK_AVAILABLE"] == "NO"
+    assert gates["PRODUCTION_DELIVERY_INTENT_CREATED"] == 0
+    assert gates["KR_MARKET_TOP3_ENABLEMENT"] == "DO_NOT_ENABLE"
+    assert gates["KR_PRICE_STRUCTURE_ENABLEMENT"] == "DO_NOT_ENABLE"
+    assert gates["US_PRICE_STRUCTURE_ENABLED"] == 0
     assert evidence["open_p0"] == []
     assert evidence["open_material_p1"] == [
         "dedicated_test_sink_not_configured"

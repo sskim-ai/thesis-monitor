@@ -1,0 +1,2056 @@
+{
+  "contract": "kr-top3-price-structure-selective-preenablement-v1",
+  "provider_calls": {
+    "cache_hit": "provider_internal_not_exposed",
+    "failed_subjects": 0,
+    "local_ohlcv_analyst_requests": 28,
+    "success_subjects": 7
+  },
+  "rows": [
+    {
+      "ai_preview": "🤖 AI 보조 종목 점검 · KR Pilot 4/5\n\n🏢 SK하이닉스(000660)\n투자 논리: 유지 · 오늘 중요한 신규 변화 없음\n구조적 위험: 높아진 상태\n시장 기대: 매우 높음\n\n🎯 판단\nHBM4와 AI 서버용 고부가 메모리 수요가 높은 수익성을 지지한다.\n\n🔎 핵심 근거\n현재 자료에서는 재고가 원가 규모보다 더 빠르게 쌓인다는 신호가 뚜렷하지 않습니다.\n\n⚖️ 해석의 균형\n다만 ASP와 제품 믹스의 영향이 남아 있어 이 관계만으로 최종 수요 개선을 단정하기 어렵습니다.\n\n📐 현재 가격 구조\n• 기준 종가: 1,730,000원\n• 가까운 지지: 약 99.5만~100.1만원\n• 가까운 저항: 약 187.1만~188.1만원\n\n📌 다음 확인\n• 다음 공식 실적에서 HBM 세부 믹스·가동률, CAPEX와 FCF를 함께 확인합니다.\n\n📊 수급\n외국인 당일 순매도 153,462주 신호와 기관 당일 순매도 142,639주 신호는 당일 가격 참여로만 봅니다. 외국인 5일 순매도 2,524,068주 흐름과 기관 5일 순매도 50,394주 흐름은 단기 포지셔닝 근거입니다. 외국인 20일 순매도 1,146,330주 흐름과 기관 20일 순매도 636,903주 흐름은 중기 포지셔닝 근거입니다. 세 시간축 모두 분산 성격이므로 HBM 수요와 마진의 근거로 확대하지 않습니다.",
+      "coverage": {
+        "daily": {
+          "actual_count": 0,
+          "actual_end_date": null,
+          "actual_start_date": null,
+          "adjustment_basis": "provider_adjusted_price_v1",
+          "completed_count": 0,
+          "contract": "ohlcv-long-history-contract-v1",
+          "denial_reason": "insufficient_completed_history",
+          "history_complete_to_listing": true,
+          "provider_limit": null,
+          "provider_limit_hit": false,
+          "provider_returned_count": 0,
+          "requested_count": 1200,
+          "status": "FAIL",
+          "timeframe": "daily"
+        },
+        "monthly": {
+          "actual_count": 300,
+          "actual_end_date": "2026-08-03",
+          "actual_start_date": "2001-09-03",
+          "adjustment_basis": "provider_adjusted_price_v1",
+          "completed_count": 299,
+          "contract": "ohlcv-long-history-contract-v1",
+          "denial_reason": "short_listing_or_available_history",
+          "history_complete_to_listing": true,
+          "provider_limit": null,
+          "provider_limit_hit": false,
+          "provider_returned_count": 300,
+          "requested_count": 300,
+          "status": "PARTIAL",
+          "timeframe": "monthly"
+        },
+        "weekly": {
+          "actual_count": 600,
+          "actual_end_date": "2026-08-24",
+          "actual_start_date": "2015-02-23",
+          "adjustment_basis": "provider_adjusted_price_v1",
+          "completed_count": 599,
+          "contract": "ohlcv-long-history-contract-v1",
+          "denial_reason": "short_listing_or_available_history",
+          "history_complete_to_listing": true,
+          "provider_limit": null,
+          "provider_limit_hit": false,
+          "provider_returned_count": 600,
+          "requested_count": 600,
+          "status": "PARTIAL",
+          "timeframe": "weekly"
+        }
+      },
+      "currency": "KRW",
+      "current_price": "1730000.0",
+      "denial_reasons": [],
+      "eligibility": "ELIGIBLE_SR_ONLY",
+      "fallback_preview": "🏢 SK하이닉스(000660)\n\n투자 논리: 유지 · 오늘 중요한 신규 변화 없음\n\n구조적 위험: 높아진 상태\n\n시장 기대: 매우 높음\n\n🎯 핵심\nHBM4와 AI 서버용 고부가 메모리 수요가 높은 수익성을 지지한다. 다만 피크 이익의 낮은 PER보다 mid-cycle 수익성, PBR, FCF와 ROIC를 우선한다.\n\n📈 사업·실적\n재고 증가율은 매출원가 증가율보다 2.1%p 밑돌았습니다. ASP·제품 믹스·메모리 수요와 함께 확인하며 사이클 방향을 확정하지 않습니다.\n\n⚠️ 기존 경고\n• 유상증자에 따른 희석·자본조달 경제적 영향\n\n👁 핵심 감시\n• ASP 하락 또는 HBM4 지연\n• HBM4 출하·수율·LTA\n• HBM·DRAM ASP와 영업이익률\n\n📐 현재 가격 구조\n• 기준 종가: 1,730,000원\n• 가까운 지지: 약 99.5만~100.1만원\n• 가까운 저항: 약 187.1만~188.1만원\n\n🧭 기존 등록 가격 규칙\n• 기존 1,550,000원 확인선은 이미 돌파한 상태입니다.\n\n📊 수급(주요 3주체) · 8/27 기준\n당일: 외국인 -15.3만주 · 기관 -14.3만주 · 개인 -33.7만주\n5일: 외국인 -252.4만주 · 기관 -5.0만주 · 개인 -64.3만주\n20일: 외국인 -114.6만주 · 기관 -63.7만주 · 개인 -195.6만주\n외국인 보유: 3.70억주 · 50.6%\n수급 점수: 48 · 분산/매도 우위 · 20일 기준 분산/매도 우위\n\n📐 Valuation\nPBR = 현재가 ÷ BVPS = 1,730,000원 ÷ 368,991.21원 = 4.7배\n과거 대비:\nPER 중앙값 11.1배 · PBR 중앙값 1.7배 · 88백분위\n현재 Valuation: 판단 자료 부족\n오늘 Valuation 변화: 판단 자료 부족\n검증된 현재 PBR과 과거 장부가 배수 분포를 함께 확인하며, 이익 기반 배수는 사용하지 않습니다.\n\n⚠️ 데이터 주의\n• 최신 잠정실적의 수익성 관계에 중대한 검증 경고가 있어 매출·이익과 이익 기반 배수의 정량 해석을 보류합니다.\n\n📌 다음 확인\n• HBM4 출하·수율·LTA\n• HBM·DRAM ASP와 영업이익률\n• CAPEX·FCF·ROIC",
+      "family_consensus_safe": false,
+      "lookahead_leak": 0,
+      "numeric_bindings": [
+        {
+          "currency": "KRW",
+          "fact_ref": "current-price:000660:2026-08-27",
+          "owner": "CURRENT_PRICE_STRUCTURE",
+          "semantic_type": "CURRENT_PRICE",
+          "value": "1730000.0"
+        },
+        {
+          "currency": "KRW",
+          "display": "약 99.5만~100.1만원",
+          "fact_ref": "v3-zone:c9ab336df8eb6d4108eb",
+          "owner": "CURRENT_PRICE_STRUCTURE",
+          "raw_high": "1000015.036197",
+          "raw_low": "995027.430031",
+          "semantic_type": "NEAREST_SUPPORT",
+          "source_refs": [
+            "v3-bollinger:0b2b6b14a9329f9a57ef"
+          ]
+        },
+        {
+          "currency": "KRW",
+          "display": "약 187.1만~188.1만원",
+          "fact_ref": "v3-zone:dab8fb35df851e9781b4",
+          "owner": "CURRENT_PRICE_STRUCTURE",
+          "raw_high": "1880840.375000",
+          "raw_low": "1871459.625000",
+          "semantic_type": "NEAREST_RESISTANCE",
+          "source_refs": [
+            "v3-bollinger:e4dcf20d40dcc907eac6"
+          ]
+        }
+      ],
+      "partial_bar_used_for_pivot_confirmation": 0,
+      "price_as_of": "2026-08-27",
+      "section": "📐 현재 가격 구조\n• 기준 종가: 1,730,000원\n• 가까운 지지: 약 99.5만~100.1만원\n• 가까운 저항: 약 187.1만~188.1만원",
+      "stored_rule_present": true,
+      "stored_rule_separated": true,
+      "summary": {
+        "fib_sr_confluence": null,
+        "fib_sr_confluence_state": "NO_MEANINGFUL_SR_OVERLAP",
+        "major_cross_timeframe_zone": null,
+        "major_structural_resistance": {
+          "classification": "AVAILABLE_LOCAL",
+          "reason": null,
+          "zone": {
+            "active_relevance": "ACTIVE_STRUCTURAL",
+            "as_of": "2026-08-27",
+            "confirmation_quality": "1.000000",
+            "contract": "deterministic-sr-base-layer-v1",
+            "currency": "KRW",
+            "current_role": "RESISTANCE",
+            "display": "약 187.1만~188.1만원",
+            "distance_pct": "8.176857",
+            "evidence_family_score": "1.200000",
+            "fallback_reason": null,
+            "last_meaningful_interaction": "2026-08-24",
+            "proximity_tier": "RELEVANT",
+            "raw_high": "1880840.375000",
+            "raw_low": "1871459.625000",
+            "reaction_count": 0,
+            "requested_timeframe": "summary",
+            "source_families": [
+              "BOLLINGER_WEEKLY"
+            ],
+            "source_refs": [
+              "v3-bollinger:e4dcf20d40dcc907eac6"
+            ],
+            "source_timeframe": "weekly",
+            "source_timeframes": [
+              "weekly"
+            ],
+            "structural_score": 21,
+            "ticker": "000660",
+            "zone_id": "v3-zone:dab8fb35df851e9781b4"
+          }
+        },
+        "major_structural_support": {
+          "classification": "NO_CONFIRMED_HISTORICAL_LEVEL",
+          "reason": "NO_ACTIVE_STRUCTURAL_LEVEL",
+          "zone": null
+        },
+        "nearest_cross_timeframe_reason": "NO_RELEVANT_CROSS_TIMEFRAME_ZONE",
+        "nearest_cross_timeframe_zone": null,
+        "nearest_resistance": {
+          "classification": "AVAILABLE_LOCAL",
+          "reason": null,
+          "zone": {
+            "active_relevance": "ACTIVE_STRUCTURAL",
+            "as_of": "2026-08-27",
+            "confirmation_quality": "1.000000",
+            "contract": "deterministic-sr-base-layer-v1",
+            "currency": "KRW",
+            "current_role": "RESISTANCE",
+            "display": "약 187.1만~188.1만원",
+            "distance_pct": "8.176857",
+            "evidence_family_score": "1.200000",
+            "fallback_reason": null,
+            "last_meaningful_interaction": "2026-08-24",
+            "proximity_tier": "RELEVANT",
+            "raw_high": "1880840.375000",
+            "raw_low": "1871459.625000",
+            "reaction_count": 0,
+            "requested_timeframe": "summary",
+            "source_families": [
+              "BOLLINGER_WEEKLY"
+            ],
+            "source_refs": [
+              "v3-bollinger:e4dcf20d40dcc907eac6"
+            ],
+            "source_timeframe": "weekly",
+            "source_timeframes": [
+              "weekly"
+            ],
+            "structural_score": 21,
+            "ticker": "000660",
+            "zone_id": "v3-zone:dab8fb35df851e9781b4"
+          }
+        },
+        "nearest_support": {
+          "classification": "AVAILABLE_LOCAL",
+          "reason": null,
+          "zone": {
+            "active_relevance": "LONG_HORIZON_HISTORICAL",
+            "as_of": "2026-08-27",
+            "confirmation_quality": "1.000000",
+            "contract": "deterministic-sr-base-layer-v1",
+            "currency": "KRW",
+            "current_role": "SUPPORT",
+            "display": "약 99.5만~100.1만원",
+            "distance_pct": "42.195663",
+            "evidence_family_score": "1.200000",
+            "fallback_reason": null,
+            "last_meaningful_interaction": "2026-08-24",
+            "proximity_tier": "LONG_HORIZON",
+            "raw_high": "1000015.036197",
+            "raw_low": "995027.430031",
+            "reaction_count": 0,
+            "requested_timeframe": "summary",
+            "source_families": [
+              "BOLLINGER_WEEKLY"
+            ],
+            "source_refs": [
+              "v3-bollinger:0b2b6b14a9329f9a57ef"
+            ],
+            "source_timeframe": "weekly",
+            "source_timeframes": [
+              "weekly"
+            ],
+            "structural_score": 21,
+            "ticker": "000660",
+            "zone_id": "v3-zone:c9ab336df8eb6d4108eb"
+          }
+        },
+        "no_resistance_reason": null,
+        "no_wave_reason": "NO_VALID_WAVE"
+      },
+      "target_session": "2026-08-27",
+      "ticker": "000660",
+      "unsupported_stop": 0,
+      "unsupported_target": 0
+    },
+    {
+      "ai_preview": "🤖 AI 보조 종목 점검 · KR Pilot 4/5\n\n🏢 코리안리(003690)\n투자 논리: 유지 · 오늘 중요한 신규 변화 없음\n구조적 위험: 보통\n시장 기대: 균형\n\n🎯 핵심 판단\n재보험 언더라이팅과 자본관리의 지속성이 현재 기대를 검증할 핵심입니다. 현재 가격은 현재가 14,500원 수준이고, 2026년 2분기 연결 기준 영업이익 1,750억원 실적은 확인됐지만 단일 실적으로 합산비율과 자본적정성을 추정하지 않습니다.\n\n📈 사업·실적\n2026년 2분기 연결 기준 영업이익 1,750억원 실적을 확인했습니다. 다만 재보험의 판단을 바꿀 손해율·합산비율, 투자수익률, 지속 가능한 ROE와 자본적정성의 동행은 아직 제공되지 않았습니다.\n\n📐 현재 가격 구조\n• 기준 종가: 14,500원\n• 가까운 지지: 약 1.4만~1.41만원\n• 가까운 저항: 약 1.48만~1.52만원\n• 주요 구조: 지지 약 1.1만~1.2만원\n\n📊 수급\n외국인 당일 순매도 37,705주 신호와 기관 당일 순매수 38,149주 신호는 당일 가격 참여로만 봅니다. 외국인 5일 순매수 89,638주 흐름과 기관 5일 순매수 2,387주 흐름은 단기 포지셔닝 근거입니다. 외국인 20일 순매수 652,839주 흐름과 기관 20일 순매도 141,579주 흐름은 중기 포지셔닝 근거입니다. 외국인 중심의 중기 흐름은 재보험 수익성과 자본적정성의 확인 근거와 분리합니다.\n\n📐 Valuation\n현재 PER 6.01배 기준을 확인합니다. 내부 추정 fPER 6.03배 기준도 확인합니다. 재보험 판단에서는 합산비율·ROE·자본적정성 확인이 우선입니다.\n\n👁 핵심 감시\n• 합산비율과 지속 가능한 ROE를 감시합니다.\n• 자본적정성과 자본환원 여력을 감시합니다.\n\n📌 다음 확인\n• 다음 공식 실적에서 합산비율·ROE·자본적정성과 투자수익을 확인합니다.\n\n⚠️ 미확인\n• 손해율·합산비율과 자본적정성의 동행이 확인되지 않았습니다.",
+      "coverage": {
+        "daily": {
+          "actual_count": 0,
+          "actual_end_date": null,
+          "actual_start_date": null,
+          "adjustment_basis": "provider_adjusted_price_v1",
+          "completed_count": 0,
+          "contract": "ohlcv-long-history-contract-v1",
+          "denial_reason": "insufficient_completed_history",
+          "history_complete_to_listing": true,
+          "provider_limit": null,
+          "provider_limit_hit": false,
+          "provider_returned_count": 0,
+          "requested_count": 1200,
+          "status": "FAIL",
+          "timeframe": "daily"
+        },
+        "monthly": {
+          "actual_count": 300,
+          "actual_end_date": "2026-08-03",
+          "actual_start_date": "2001-09-03",
+          "adjustment_basis": "provider_adjusted_price_v1",
+          "completed_count": 299,
+          "contract": "ohlcv-long-history-contract-v1",
+          "denial_reason": "short_listing_or_available_history",
+          "history_complete_to_listing": true,
+          "provider_limit": null,
+          "provider_limit_hit": false,
+          "provider_returned_count": 300,
+          "requested_count": 300,
+          "status": "PARTIAL",
+          "timeframe": "monthly"
+        },
+        "weekly": {
+          "actual_count": 600,
+          "actual_end_date": "2026-08-24",
+          "actual_start_date": "2015-02-23",
+          "adjustment_basis": "provider_adjusted_price_v1",
+          "completed_count": 599,
+          "contract": "ohlcv-long-history-contract-v1",
+          "denial_reason": "short_listing_or_available_history",
+          "history_complete_to_listing": true,
+          "provider_limit": null,
+          "provider_limit_hit": false,
+          "provider_returned_count": 600,
+          "requested_count": 600,
+          "status": "PARTIAL",
+          "timeframe": "weekly"
+        }
+      },
+      "currency": "KRW",
+      "current_price": "14500.0",
+      "denial_reasons": [],
+      "eligibility": "ELIGIBLE_SR_ONLY",
+      "fallback_preview": "🏢 코리안리(003690)\n\n투자 논리: 유지 · 오늘 중요한 신규 변화 없음\n\n구조적 위험: 보통\n\n시장 기대: 균형\n\n🎯 핵심\n재보험 갱신요율과 손해율 관리가 안정적인 언더라이팅 이익을 만들고 투자수익과 자본적정성이 ROE·배당여력을 높이는지가 핵심이다. 2026년 자사주 전량 소각은 주당가치와 자본배분 측면의 긍정 신호지만, 장기 재평가는 합산비율·대형재해 손실·투자수익률과 자본적정성이 지속적으로 뒷받침해야 한다.\n\n👁 핵심 감시\n• 대형재해 손실 또는 갱신요율 약화\n• 갱신요율\n• 합산비율·손해율\n\n📐 현재 가격 구조\n• 기준 종가: 14,500원\n• 가까운 지지: 약 1.4만~1.41만원\n• 가까운 저항: 약 1.48만~1.52만원\n• 주요 구조: 지지 약 1.1만~1.2만원\n\n🧭 기존 등록 가격 규칙\n• 기존 14,300원 확인선의 재시험이 진행 중입니다.\n\n📊 수급(주요 3주체) · 8/27 기준\n당일: 외국인 -3.8만주 · 기관 +3.8만주 · 개인 -230주\n5일: 외국인 +9.0만주 · 기관 +2,387주 · 개인 -4.5만주\n20일: 외국인 +65.3만주 · 기관 -14.2만주 · 개인 -35.3만주\n외국인 보유: 4,691.1만주 · 26.6%\n수급 점수: 68 · 20일 기준 기타 투자주체 영향 큼\n\n📐 Valuation\nPER = 현재가 ÷ TTM EPS = 14,500원 ÷ 2,411원 = 6.0배\nPBR = 현재가 ÷ BVPS = 14,500원 ÷ 22,746.58원 = 0.6배\nfPER = 현재가 ÷ 내부 정상화 ROE 추정 EPS = 14,500원 ÷ 2,404.13원 = 6.0배\nfPBR = 현재가 ÷ 내부 FY1 추정 BVPS = 14,500원 ÷ 24,580.72원 = 0.6배\n※ 내부 모델 추정치이며 시장 컨센서스가 아닙니다.\n과거 대비:\nPER 중앙값 6.7배 · 21백분위 · PBR 중앙값 0.5배 · 90백분위\n현재 Valuation: 부담 구간\n해석: 현재 시스템에 확보된 point-in-time 재무 이력이 충분하지 않거나 사업구조 변화가 있어 장기 역사적 비교 신뢰도가 낮습니다.\n\n📌 다음 확인\n• 갱신요율\n• 합산비율·손해율\n• 대형재해 손실",
+      "family_consensus_safe": false,
+      "lookahead_leak": 0,
+      "numeric_bindings": [
+        {
+          "currency": "KRW",
+          "fact_ref": "current-price:003690:2026-08-27",
+          "owner": "CURRENT_PRICE_STRUCTURE",
+          "semantic_type": "CURRENT_PRICE",
+          "value": "14500.0"
+        },
+        {
+          "currency": "KRW",
+          "display": "약 1.4만~1.41만원",
+          "fact_ref": "v3-zone:a93b20d6fea957391f25",
+          "owner": "CURRENT_PRICE_STRUCTURE",
+          "raw_high": "14090.137500",
+          "raw_low": "14019.862500",
+          "semantic_type": "NEAREST_SUPPORT",
+          "source_refs": [
+            "v3-balance-box:43b9cc255dc83fdd9936"
+          ]
+        },
+        {
+          "currency": "KRW",
+          "display": "약 1.48만~1.52만원",
+          "fact_ref": "v3-zone:429e728e5db223554f07",
+          "owner": "CURRENT_PRICE_STRUCTURE",
+          "raw_high": "15130.544732",
+          "raw_low": "14882.483714",
+          "semantic_type": "NEAREST_RESISTANCE",
+          "source_refs": [
+            "v3-bollinger:ffc3554e7e95b1148865",
+            "v3-pivot:70910a9505b0c46f30b5"
+          ]
+        },
+        {
+          "currency": "KRW",
+          "display": "약 1.1만~1.2만원",
+          "fact_ref": "v3-zone:013d3a0ef1d145b6a0ca",
+          "owner": "CURRENT_PRICE_STRUCTURE",
+          "raw_high": "11170.356250",
+          "raw_low": "11114.643750",
+          "semantic_type": "MAJOR_SUPPORT",
+          "source_refs": [
+            "v3-bollinger:de1cd3d11ed494432898"
+          ]
+        }
+      ],
+      "partial_bar_used_for_pivot_confirmation": 0,
+      "price_as_of": "2026-08-27",
+      "section": "📐 현재 가격 구조\n• 기준 종가: 14,500원\n• 가까운 지지: 약 1.4만~1.41만원\n• 가까운 저항: 약 1.48만~1.52만원\n• 주요 구조: 지지 약 1.1만~1.2만원",
+      "stored_rule_present": true,
+      "stored_rule_separated": true,
+      "summary": {
+        "fib_sr_confluence": null,
+        "fib_sr_confluence_state": "NO_MEANINGFUL_SR_OVERLAP",
+        "major_cross_timeframe_zone": null,
+        "major_structural_resistance": {
+          "classification": "AVAILABLE_LOCAL",
+          "reason": null,
+          "zone": {
+            "active_relevance": "ACTIVE_NEAR",
+            "as_of": "2026-08-27",
+            "confirmation_quality": "1.000000",
+            "contract": "deterministic-sr-base-layer-v1",
+            "currency": "KRW",
+            "current_role": "RESISTANCE",
+            "display": "약 1.48만~1.52만원",
+            "distance_pct": "2.637819",
+            "evidence_family_score": "2.700000",
+            "fallback_reason": null,
+            "last_meaningful_interaction": "2026-08-03",
+            "proximity_tier": "NEAR",
+            "raw_high": "15130.544732",
+            "raw_low": "14882.483714",
+            "reaction_count": 1,
+            "requested_timeframe": "summary",
+            "source_families": [
+              "BOLLINGER_MONTHLY",
+              "PIVOT_MONTHLY"
+            ],
+            "source_refs": [
+              "v3-bollinger:ffc3554e7e95b1148865",
+              "v3-pivot:70910a9505b0c46f30b5"
+            ],
+            "source_timeframe": "monthly",
+            "source_timeframes": [
+              "monthly"
+            ],
+            "structural_score": 32,
+            "ticker": "003690",
+            "zone_id": "v3-zone:429e728e5db223554f07"
+          }
+        },
+        "major_structural_support": {
+          "classification": "AVAILABLE_LOCAL",
+          "reason": null,
+          "zone": {
+            "active_relevance": "ACTIVE_STRUCTURAL",
+            "as_of": "2026-08-27",
+            "confirmation_quality": "1.000000",
+            "contract": "deterministic-sr-base-layer-v1",
+            "currency": "KRW",
+            "current_role": "SUPPORT",
+            "display": "약 1.1만~1.2만원",
+            "distance_pct": "22.963060",
+            "evidence_family_score": "1.200000",
+            "fallback_reason": null,
+            "last_meaningful_interaction": "2026-08-03",
+            "proximity_tier": "RELEVANT",
+            "raw_high": "11170.356250",
+            "raw_low": "11114.643750",
+            "reaction_count": 0,
+            "requested_timeframe": "summary",
+            "source_families": [
+              "BOLLINGER_MONTHLY"
+            ],
+            "source_refs": [
+              "v3-bollinger:de1cd3d11ed494432898"
+            ],
+            "source_timeframe": "monthly",
+            "source_timeframes": [
+              "monthly"
+            ],
+            "structural_score": 31,
+            "ticker": "003690",
+            "zone_id": "v3-zone:013d3a0ef1d145b6a0ca"
+          }
+        },
+        "nearest_cross_timeframe_reason": "NO_RELEVANT_CROSS_TIMEFRAME_ZONE",
+        "nearest_cross_timeframe_zone": null,
+        "nearest_resistance": {
+          "classification": "AVAILABLE_LOCAL",
+          "reason": null,
+          "zone": {
+            "active_relevance": "ACTIVE_NEAR",
+            "as_of": "2026-08-27",
+            "confirmation_quality": "1.000000",
+            "contract": "deterministic-sr-base-layer-v1",
+            "currency": "KRW",
+            "current_role": "RESISTANCE",
+            "display": "약 1.48만~1.52만원",
+            "distance_pct": "2.637819",
+            "evidence_family_score": "2.700000",
+            "fallback_reason": null,
+            "last_meaningful_interaction": "2026-08-03",
+            "proximity_tier": "NEAR",
+            "raw_high": "15130.544732",
+            "raw_low": "14882.483714",
+            "reaction_count": 1,
+            "requested_timeframe": "summary",
+            "source_families": [
+              "BOLLINGER_MONTHLY",
+              "PIVOT_MONTHLY"
+            ],
+            "source_refs": [
+              "v3-bollinger:ffc3554e7e95b1148865",
+              "v3-pivot:70910a9505b0c46f30b5"
+            ],
+            "source_timeframe": "monthly",
+            "source_timeframes": [
+              "monthly"
+            ],
+            "structural_score": 32,
+            "ticker": "003690",
+            "zone_id": "v3-zone:429e728e5db223554f07"
+          }
+        },
+        "nearest_support": {
+          "classification": "AVAILABLE_LOCAL",
+          "reason": null,
+          "zone": {
+            "active_relevance": "ACTIVE_NEAR",
+            "as_of": "2026-08-27",
+            "confirmation_quality": "1.000000",
+            "contract": "deterministic-sr-base-layer-v1",
+            "currency": "KRW",
+            "current_role": "SUPPORT",
+            "display": "약 1.4만~1.41만원",
+            "distance_pct": "2.826638",
+            "evidence_family_score": "1.100000",
+            "fallback_reason": null,
+            "last_meaningful_interaction": "2026-08-24",
+            "proximity_tier": "NEAR",
+            "raw_high": "14090.137500",
+            "raw_low": "14019.862500",
+            "reaction_count": 0,
+            "requested_timeframe": "summary",
+            "source_families": [
+              "BALANCE_BOX"
+            ],
+            "source_refs": [
+              "v3-balance-box:43b9cc255dc83fdd9936"
+            ],
+            "source_timeframe": "weekly",
+            "source_timeframes": [
+              "weekly"
+            ],
+            "structural_score": 21,
+            "ticker": "003690",
+            "zone_id": "v3-zone:a93b20d6fea957391f25"
+          }
+        },
+        "no_resistance_reason": null,
+        "no_wave_reason": "NO_VALID_WAVE"
+      },
+      "target_session": "2026-08-27",
+      "ticker": "003690",
+      "unsupported_stop": 0,
+      "unsupported_target": 0
+    },
+    {
+      "ai_preview": "🤖 AI 보조 종목 점검 · KR Pilot 4/5\n\n🏢 POSCO홀딩스(005490)\n투자 논리: 유지 · 오늘 중요한 신규 변화 없음\n구조적 위험: 높아진 상태\n시장 기대: 균형\n\n🎯 핵심 판단\n철강 스프레드·원재료비·가동률이 현재 기대를 검증할 핵심입니다. 현재 가격은 현재가 339,500원 수준이고, 가장 가까운 지지 판단은 동적 지지구간 하단 333,398원 경계부터 시작합니다. 사업 논리를 바꿀 새 근거는 없습니다.\n\n📈 사업·실적\n손익 항목의 금액별 기간·연결 기준이 확인되지 않아 금액과 성장률을 표시하지 않습니다. 철강 스프레드·원재료비·가동률과 영업현금흐름이 확인돼야 사이클 이익의 질을 판단할 수 있습니다. 재고 증가율은 매출 증가율을 7.1%p 앞섰습니다.\n\n📐 현재 가격 구조\n• 기준 종가: 339,500원\n• 가까운 지지: 약 32.5만~33.5만원\n• 가까운 저항: 약 34.1만~35.1만원\n• 주요 구조: 지지 약 30.8만~31.8만원 · 저항 약 42.5만~43.8만원\n\n📊 수급\n외국인 당일 순매도 22,195주 신호와 기관 당일 순매수 107,691주 신호는 당일 가격 참여로만 봅니다. 외국인 5일 순매도 31,322주 흐름과 기관 5일 순매수 250,888주 흐름은 단기 포지셔닝 근거입니다. 외국인 20일 순매수 228,305주 흐름과 기관 20일 순매수 53,568주 흐름은 중기 포지셔닝 근거입니다. 외국인·기관의 동행은 가격 참여를 지지하지만 철강 스프레드와 원재료 수요의 증거는 아닙니다.\n\n📐 Valuation\n현재 PER 19.05배 기준을 확인합니다. 현재 PBR 0.45배 기준도 확인합니다. 철강·소재 사이클에서는 두 배수를 스프레드·가동률·재고·현금전환과 함께 봐야 합니다.\n\n⚠️ 기존 경고\n• 신주인수권의 잠재 희석 영향\n\n👁 핵심 감시\n• 철강 스프레드와 원재료비의 방향을 감시합니다.\n• 가동률·재고와 영업현금흐름의 연결을 감시합니다.\n\n📌 다음 확인\n• 다음 공식 실적에서 철강 가격·물량, 원재료비, 재고와 영업현금흐름을 확인합니다.\n\n⚠️ 미확인\n• 철강 스프레드·가동률과 원재료 비용의 최신 동행이 확인되지 않았습니다.",
+      "coverage": {
+        "daily": {
+          "actual_count": 0,
+          "actual_end_date": null,
+          "actual_start_date": null,
+          "adjustment_basis": "provider_adjusted_price_v1",
+          "completed_count": 0,
+          "contract": "ohlcv-long-history-contract-v1",
+          "denial_reason": "insufficient_completed_history",
+          "history_complete_to_listing": true,
+          "provider_limit": null,
+          "provider_limit_hit": false,
+          "provider_returned_count": 0,
+          "requested_count": 1200,
+          "status": "FAIL",
+          "timeframe": "daily"
+        },
+        "monthly": {
+          "actual_count": 300,
+          "actual_end_date": "2026-08-03",
+          "actual_start_date": "2001-09-03",
+          "adjustment_basis": "provider_adjusted_price_v1",
+          "completed_count": 299,
+          "contract": "ohlcv-long-history-contract-v1",
+          "denial_reason": "short_listing_or_available_history",
+          "history_complete_to_listing": true,
+          "provider_limit": null,
+          "provider_limit_hit": false,
+          "provider_returned_count": 300,
+          "requested_count": 300,
+          "status": "PARTIAL",
+          "timeframe": "monthly"
+        },
+        "weekly": {
+          "actual_count": 600,
+          "actual_end_date": "2026-08-24",
+          "actual_start_date": "2015-02-23",
+          "adjustment_basis": "provider_adjusted_price_v1",
+          "completed_count": 599,
+          "contract": "ohlcv-long-history-contract-v1",
+          "denial_reason": "short_listing_or_available_history",
+          "history_complete_to_listing": true,
+          "provider_limit": null,
+          "provider_limit_hit": false,
+          "provider_returned_count": 600,
+          "requested_count": 600,
+          "status": "PARTIAL",
+          "timeframe": "weekly"
+        }
+      },
+      "currency": "KRW",
+      "current_price": "339500.0",
+      "denial_reasons": [],
+      "eligibility": "ELIGIBLE_SR_ONLY",
+      "fallback_preview": "🏢 POSCO홀딩스(005490)\n\n투자 논리: 유지 · 오늘 중요한 신규 변화 없음\n\n구조적 위험: 높아진 상태\n\n시장 기대: 균형\n\n🎯 핵심\nPOSCO홀딩스의 재평가 조건은 철강 본업의 스프레드·수익성 회복과 리튬·이차전지 소재의 흑자 지속이 동시에 나타나고, 그 성장이 FCF와 ROIC 개선으로 연결되는 것이다. 대규모 CAPEX와 전환·희석 가능성이 존재하므로 연결 영업이익 개선만으로는 충분하지 않으며 완전희석 기준 주당가치가 증가하는지를 본다.\n\n📈 사업·실적\n재고 증가율은 매출 증가율보다 7.1%p 앞섰습니다. 철강 스프레드·원재료·물량과 함께 확인하며 사이클 방향을 확정하지 않습니다.\n\n⚠️ 기존 경고\n• 신주인수권의 잠재 희석 영향\n\n👁 핵심 감시\n• 중국 철강 수요와 스프레드 악화\n• 리튬 가격·가동률 부진과 추가 자금조달\n• 적자 성장사업에 과도한 매출배수 적용 위험\n\n📐 현재 가격 구조\n• 기준 종가: 339,500원\n• 가까운 지지: 약 32.5만~33.5만원\n• 가까운 저항: 약 34.1만~35.1만원\n• 주요 구조: 지지 약 30.8만~31.8만원 · 저항 약 42.5만~43.8만원\n\n🧭 기존 등록 가격 규칙\n• 기존 확인선 344,000원은 아직 도달하지 않았습니다.\n\n📊 수급(주요 3주체) · 8/27 기준\n당일: 외국인 -2.2만주 · 기관 +10.8만주 · 개인 -8.6만주\n5일: 외국인 -3.1만주 · 기관 +25.1만주 · 개인 -21.6만주\n20일: 외국인 +22.8만주 · 기관 +5.4만주 · 개인 -25.7만주\n외국인 보유: 2,565.2만주 · 32.4%\n수급 점수: 90 · 20일 기준 기타 투자주체 영향 큼\n\n📐 Valuation\nPER = 현재가 ÷ TTM EPS = 339,500원 ÷ 17,818원 = 19.1배\nPBR = 현재가 ÷ BVPS = 339,500원 ÷ 759,917.29원 = 0.4배\n과거 대비:\nPER 중앙값 17.8배 · 54백분위 · PBR 중앙값 0.4배 · 49백분위\n현재 Valuation: 중립 범위\n해석: SOTP가 주 평가 방식이므로 역사적 PER/PBR은 참고 수준으로만 반영했습니다.\n\n📌 다음 확인\n• 연결 영업이익률\n• 철강 스프레드\n• 리튬·이차전지 소재 영업이익",
+      "family_consensus_safe": false,
+      "lookahead_leak": 0,
+      "numeric_bindings": [
+        {
+          "currency": "KRW",
+          "fact_ref": "current-price:005490:2026-08-27",
+          "owner": "CURRENT_PRICE_STRUCTURE",
+          "semantic_type": "CURRENT_PRICE",
+          "value": "339500.0"
+        },
+        {
+          "currency": "KRW",
+          "display": "약 32.5만~33.5만원",
+          "fact_ref": "v3-zone:933b2d216504c8b8ce7c",
+          "owner": "CURRENT_PRICE_STRUCTURE",
+          "raw_high": "334825.000000",
+          "raw_low": "325175.000000",
+          "semantic_type": "NEAREST_SUPPORT",
+          "source_refs": [
+            "v3-balance-box:1341a86ddb3148d3d87e",
+            "v3-pivot:0bfcd2de0758630f8882",
+            "v3-pivot:213275bafe44bff25b8a",
+            "v3-pivot:546a4fb414c3c2d4a4ed",
+            "v3-pivot:7977ca32a2739088f0aa",
+            "v3-pivot:9327ae581b3e67c8111c"
+          ]
+        },
+        {
+          "currency": "KRW",
+          "display": "약 34.1만~35.1만원",
+          "fact_ref": "v3-zone:ddd126e4bca8a4785a80",
+          "owner": "CURRENT_PRICE_STRUCTURE",
+          "raw_high": "350364.687500",
+          "raw_low": "341135.312500",
+          "semantic_type": "NEAREST_RESISTANCE",
+          "source_refs": [
+            "v3-pivot:0bbc096f44fbe3dd8d95",
+            "v3-pivot:413371f51eee0d7371a0",
+            "v3-pivot:6ae9b32b936943f4ab2f",
+            "v3-pivot:b0044455e299303838fb"
+          ]
+        },
+        {
+          "currency": "KRW",
+          "display": "약 30.8만~31.8만원",
+          "fact_ref": "v3-zone:590e012abde4261aea87",
+          "owner": "CURRENT_PRICE_STRUCTURE",
+          "raw_high": "317057.046875",
+          "raw_low": "308217.953125",
+          "semantic_type": "MAJOR_SUPPORT",
+          "source_refs": [
+            "v3-bollinger:3eb9a865e2d976f92d7c",
+            "v3-pivot:61d4ed64742fdf2c3b84",
+            "v3-pivot:722dd70f940b5bd489ca",
+            "v3-pivot:a112aa6f1b1f8eac69b0"
+          ]
+        },
+        {
+          "currency": "KRW",
+          "display": "약 42.5만~43.8만원",
+          "fact_ref": "v3-zone:55914325f30008f7b65d",
+          "owner": "CURRENT_PRICE_STRUCTURE",
+          "raw_high": "437078.586476",
+          "raw_low": "425921.413524",
+          "semantic_type": "MAJOR_RESISTANCE",
+          "source_refs": [
+            "v3-bollinger:2896e7e500dea96e9d5a",
+            "v3-pivot:206cbf280d26e33eb5cd",
+            "v3-pivot:27d72c0da9ca8a90ae40",
+            "v3-pivot:92131790e22c1b0f8e22",
+            "v3-pivot:c51773e328a47a8845ce"
+          ]
+        }
+      ],
+      "partial_bar_used_for_pivot_confirmation": 0,
+      "price_as_of": "2026-08-27",
+      "section": "📐 현재 가격 구조\n• 기준 종가: 339,500원\n• 가까운 지지: 약 32.5만~33.5만원\n• 가까운 저항: 약 34.1만~35.1만원\n• 주요 구조: 지지 약 30.8만~31.8만원 · 저항 약 42.5만~43.8만원",
+      "stored_rule_present": true,
+      "stored_rule_separated": true,
+      "summary": {
+        "fib_sr_confluence": null,
+        "fib_sr_confluence_state": "NO_MEANINGFUL_SR_OVERLAP",
+        "major_cross_timeframe_zone": {
+          "active_relevance": "ACTIVE_NEAR",
+          "as_of": "2026-08-27",
+          "confirmation_quality": "1.000000",
+          "contract": "deterministic-sr-base-layer-v1",
+          "currency": "KRW",
+          "current_role": "SUPPORT",
+          "display": "약 31.5만~32.3만원",
+          "distance_pct": "5.067652",
+          "evidence_family_score": "4.450000",
+          "fallback_reason": null,
+          "last_meaningful_interaction": "2026-08-03",
+          "proximity_tier": "NEAR",
+          "raw_high": "322295.322917",
+          "raw_low": "315204.677083",
+          "reaction_count": 5,
+          "requested_timeframe": "cross_timeframe",
+          "source_families": [
+            "BOLLINGER_MONTHLY",
+            "PIVOT_MONTHLY",
+            "PIVOT_WEEKLY"
+          ],
+          "source_refs": [
+            "v3-bollinger:3eb9a865e2d976f92d7c",
+            "v3-pivot:18736d673ae65615b37b",
+            "v3-pivot:487109a126256e04ae4e",
+            "v3-pivot:722dd70f940b5bd489ca",
+            "v3-pivot:ad116cc0dc2fc641b9c0",
+            "v3-pivot:b3c728733541691d5e4d"
+          ],
+          "source_timeframe": "monthly",
+          "source_timeframes": [
+            "monthly",
+            "weekly"
+          ],
+          "structural_score": 33,
+          "ticker": "005490",
+          "zone_id": "v3-zone:1723c6cf284fdfa27a9e"
+        },
+        "major_structural_resistance": {
+          "classification": "AVAILABLE_LOCAL",
+          "reason": null,
+          "zone": {
+            "active_relevance": "ACTIVE_STRUCTURAL",
+            "as_of": "2026-08-27",
+            "confirmation_quality": "1.000000",
+            "contract": "deterministic-sr-base-layer-v1",
+            "currency": "KRW",
+            "current_role": "RESISTANCE",
+            "display": "약 42.5만~43.8만원",
+            "distance_pct": "25.455497",
+            "evidence_family_score": "2.700000",
+            "fallback_reason": null,
+            "last_meaningful_interaction": "2026-08-03",
+            "proximity_tier": "RELEVANT",
+            "raw_high": "437078.586476",
+            "raw_low": "425921.413524",
+            "reaction_count": 4,
+            "requested_timeframe": "summary",
+            "source_families": [
+              "BOLLINGER_MONTHLY",
+              "PIVOT_MONTHLY"
+            ],
+            "source_refs": [
+              "v3-bollinger:2896e7e500dea96e9d5a",
+              "v3-pivot:206cbf280d26e33eb5cd",
+              "v3-pivot:27d72c0da9ca8a90ae40",
+              "v3-pivot:92131790e22c1b0f8e22",
+              "v3-pivot:c51773e328a47a8845ce"
+            ],
+            "source_timeframe": "monthly",
+            "source_timeframes": [
+              "monthly"
+            ],
+            "structural_score": 32,
+            "ticker": "005490",
+            "zone_id": "v3-zone:55914325f30008f7b65d"
+          }
+        },
+        "major_structural_support": {
+          "classification": "AVAILABLE_LOCAL",
+          "reason": null,
+          "zone": {
+            "active_relevance": "ACTIVE_NEAR",
+            "as_of": "2026-08-27",
+            "confirmation_quality": "1.000000",
+            "contract": "deterministic-sr-base-layer-v1",
+            "currency": "KRW",
+            "current_role": "SUPPORT",
+            "display": "약 30.8만~31.8만원",
+            "distance_pct": "6.610590",
+            "evidence_family_score": "2.700000",
+            "fallback_reason": null,
+            "last_meaningful_interaction": "2026-08-03",
+            "proximity_tier": "NEAR",
+            "raw_high": "317057.046875",
+            "raw_low": "308217.953125",
+            "reaction_count": 3,
+            "requested_timeframe": "summary",
+            "source_families": [
+              "BOLLINGER_MONTHLY",
+              "PIVOT_MONTHLY"
+            ],
+            "source_refs": [
+              "v3-bollinger:3eb9a865e2d976f92d7c",
+              "v3-pivot:61d4ed64742fdf2c3b84",
+              "v3-pivot:722dd70f940b5bd489ca",
+              "v3-pivot:a112aa6f1b1f8eac69b0"
+            ],
+            "source_timeframe": "monthly",
+            "source_timeframes": [
+              "monthly"
+            ],
+            "structural_score": 32,
+            "ticker": "005490",
+            "zone_id": "v3-zone:590e012abde4261aea87"
+          }
+        },
+        "nearest_cross_timeframe_reason": null,
+        "nearest_cross_timeframe_zone": {
+          "active_relevance": "ACTIVE_NEAR",
+          "as_of": "2026-08-27",
+          "confirmation_quality": "1.000000",
+          "contract": "deterministic-sr-base-layer-v1",
+          "currency": "KRW",
+          "current_role": "CURRENT_ZONE",
+          "display": "약 33.9만~34.7만원",
+          "distance_pct": "0",
+          "evidence_family_score": "2.750000",
+          "fallback_reason": null,
+          "last_meaningful_interaction": "2025-07-01",
+          "proximity_tier": "NEAR",
+          "raw_high": "346857.916667",
+          "raw_low": "339142.083333",
+          "reaction_count": 6,
+          "requested_timeframe": "cross_timeframe",
+          "source_families": [
+            "PIVOT_MONTHLY",
+            "PIVOT_WEEKLY"
+          ],
+          "source_refs": [
+            "v3-pivot:413371f51eee0d7371a0",
+            "v3-pivot:65daf7ee47569b2842aa",
+            "v3-pivot:6ae9b32b936943f4ab2f",
+            "v3-pivot:74a86b7b5937766d8693",
+            "v3-pivot:84a119b7e2073a315141",
+            "v3-pivot:bf018e5e072420eebe66"
+          ],
+          "source_timeframe": "monthly",
+          "source_timeframes": [
+            "monthly",
+            "weekly"
+          ],
+          "structural_score": 32,
+          "ticker": "005490",
+          "zone_id": "v3-zone:d9e07d5b425c505a35e9"
+        },
+        "nearest_resistance": {
+          "classification": "AVAILABLE_LOCAL",
+          "reason": null,
+          "zone": {
+            "active_relevance": "ACTIVE_NEAR",
+            "as_of": "2026-08-27",
+            "confirmation_quality": "1.000000",
+            "contract": "deterministic-sr-base-layer-v1",
+            "currency": "KRW",
+            "current_role": "RESISTANCE",
+            "display": "약 34.1만~35.1만원",
+            "distance_pct": "0.481683",
+            "evidence_family_score": "1.000000",
+            "fallback_reason": null,
+            "last_meaningful_interaction": "2025-07-01",
+            "proximity_tier": "NEAR",
+            "raw_high": "350364.687500",
+            "raw_low": "341135.312500",
+            "reaction_count": 4,
+            "requested_timeframe": "summary",
+            "source_families": [
+              "PIVOT_MONTHLY"
+            ],
+            "source_refs": [
+              "v3-pivot:0bbc096f44fbe3dd8d95",
+              "v3-pivot:413371f51eee0d7371a0",
+              "v3-pivot:6ae9b32b936943f4ab2f",
+              "v3-pivot:b0044455e299303838fb"
+            ],
+            "source_timeframe": "monthly",
+            "source_timeframes": [
+              "monthly"
+            ],
+            "structural_score": 31,
+            "ticker": "005490",
+            "zone_id": "v3-zone:ddd126e4bca8a4785a80"
+          }
+        },
+        "nearest_support": {
+          "classification": "AVAILABLE_LOCAL",
+          "reason": null,
+          "zone": {
+            "active_relevance": "ACTIVE_NEAR",
+            "as_of": "2026-08-27",
+            "confirmation_quality": "1.000000",
+            "contract": "deterministic-sr-base-layer-v1",
+            "currency": "KRW",
+            "current_role": "SUPPORT",
+            "display": "약 32.5만~33.5만원",
+            "distance_pct": "1.377025",
+            "evidence_family_score": "2.600000",
+            "fallback_reason": null,
+            "last_meaningful_interaction": "2026-08-24",
+            "proximity_tier": "NEAR",
+            "raw_high": "334825.000000",
+            "raw_low": "325175.000000",
+            "reaction_count": 5,
+            "requested_timeframe": "summary",
+            "source_families": [
+              "BALANCE_BOX",
+              "PIVOT_WEEKLY"
+            ],
+            "source_refs": [
+              "v3-balance-box:1341a86ddb3148d3d87e",
+              "v3-pivot:0bfcd2de0758630f8882",
+              "v3-pivot:213275bafe44bff25b8a",
+              "v3-pivot:546a4fb414c3c2d4a4ed",
+              "v3-pivot:7977ca32a2739088f0aa",
+              "v3-pivot:9327ae581b3e67c8111c"
+            ],
+            "source_timeframe": "weekly",
+            "source_timeframes": [
+              "weekly"
+            ],
+            "structural_score": 22,
+            "ticker": "005490",
+            "zone_id": "v3-zone:933b2d216504c8b8ce7c"
+          }
+        },
+        "no_resistance_reason": null,
+        "no_wave_reason": "NO_VALID_WAVE"
+      },
+      "target_session": "2026-08-27",
+      "ticker": "005490",
+      "unsupported_stop": 0,
+      "unsupported_target": 0
+    },
+    {
+      "ai_preview": "🤖 AI 보조 종목 점검 · KR Pilot 4/5\n\n🏢 삼성전자(005930)\n투자 논리: 유지 · 오늘 중요한 신규 변화 없음\n구조적 위험: 보통\n시장 기대: 매우 높음\n\n🎯 판단\n메모리 ASP 상승만으로는 충분하지 않고, HBM 출하·DS 마진·영업현금흐름이 함께 개선되어야 한다.\n\n🔎 핵심 근거\n재고가 원가보다 빠르게 늘어난 관계는 재고 부담 점검의 우선순위가 높아졌음을 시사합니다.\n\n⚖️ 해석의 균형\nASP나 제품 믹스 변화가 재고 관계에 영향을 준 결과일 가능성은 남아 있습니다.\n반대로 재고가 원가보다 빠르게 늘어난 점은 운전자본 부담 가능성을 열어 둡니다.\n\n📐 현재 가격 구조\n• 기준 종가: 266,000원\n• 가까운 지지: 약 19.8만~20만원\n• 가까운 저항: 약 27.7만~27.9만원\n• 주요 구조: 저항 약 32.6만~32.8만원\n\n📌 다음 확인\n• 다음 공식 실적에서 메모리 믹스·가동률, 마진, 투자와 영업현금흐름을 확인합니다.\n\n📊 수급\n외국인 당일 순매수 1,399,476주 신호와 기관 당일 순매도 97,433주 신호는 당일 가격 참여로만 봅니다. 외국인 5일 순매도 6,391,606주 흐름과 기관 5일 순매도 4,353,005주 흐름은 단기 포지셔닝 근거입니다. 외국인 20일 순매수 6,053,857주 흐름과 기관 20일 순매도 11,028,681주 흐름은 중기 포지셔닝 근거입니다. 시간축이 엇갈린 외국인 중심 흐름은 메모리 믹스·마진의 증거가 아닙니다.",
+      "coverage": {
+        "daily": {
+          "actual_count": 0,
+          "actual_end_date": null,
+          "actual_start_date": null,
+          "adjustment_basis": "provider_adjusted_price_v1",
+          "completed_count": 0,
+          "contract": "ohlcv-long-history-contract-v1",
+          "denial_reason": "insufficient_completed_history",
+          "history_complete_to_listing": true,
+          "provider_limit": null,
+          "provider_limit_hit": false,
+          "provider_returned_count": 0,
+          "requested_count": 1200,
+          "status": "FAIL",
+          "timeframe": "daily"
+        },
+        "monthly": {
+          "actual_count": 300,
+          "actual_end_date": "2026-08-03",
+          "actual_start_date": "2001-09-03",
+          "adjustment_basis": "provider_adjusted_price_v1",
+          "completed_count": 299,
+          "contract": "ohlcv-long-history-contract-v1",
+          "denial_reason": "short_listing_or_available_history",
+          "history_complete_to_listing": true,
+          "provider_limit": null,
+          "provider_limit_hit": false,
+          "provider_returned_count": 300,
+          "requested_count": 300,
+          "status": "PARTIAL",
+          "timeframe": "monthly"
+        },
+        "weekly": {
+          "actual_count": 600,
+          "actual_end_date": "2026-08-24",
+          "actual_start_date": "2015-02-23",
+          "adjustment_basis": "provider_adjusted_price_v1",
+          "completed_count": 599,
+          "contract": "ohlcv-long-history-contract-v1",
+          "denial_reason": "short_listing_or_available_history",
+          "history_complete_to_listing": true,
+          "provider_limit": null,
+          "provider_limit_hit": false,
+          "provider_returned_count": 600,
+          "requested_count": 600,
+          "status": "PARTIAL",
+          "timeframe": "weekly"
+        }
+      },
+      "currency": "KRW",
+      "current_price": "266000.0",
+      "denial_reasons": [],
+      "eligibility": "ELIGIBLE_SR_ONLY",
+      "fallback_preview": "🏢 삼성전자(005930)\n\n투자 논리: 유지 · 오늘 중요한 신규 변화 없음\n\n구조적 위험: 보통\n\n시장 기대: 매우 높음\n\n🎯 핵심\n삼성전자의 재평가 핵심은 HBM4·HBM4E 고객 채택과 서버 메모리 강세가 DS 이익률과 전사 현금창출력 개선으로 연결되면서 HBM 경쟁력 할인까지 축소되는 것이다. 메모리 ASP 상승만으로는 충분하지 않고, HBM 출하·DS 마진·영업현금흐름이 함께 개선되어야 한다.\n\n📈 사업·실적\n재고 증가율은 매출원가 증가율보다 35.8%p 앞섰습니다. ASP·제품 믹스·메모리 수요와 함께 확인하며 사이클 방향을 확정하지 않습니다.\n\n👁 핵심 감시\n• HBM 인증·출하 지연\n• DX 부진과 CAPEX로 FCF가 기대 하회\n• 피크 메모리 이익을 영구화할 위험\n\n📐 현재 가격 구조\n• 기준 종가: 266,000원\n• 가까운 지지: 약 19.8만~20만원\n• 가까운 저항: 약 27.7만~27.9만원\n• 주요 구조: 저항 약 32.6만~32.8만원\n\n🧭 기존 등록 가격 규칙\n• 기존 255,000원 확인선은 이미 돌파한 상태입니다.\n\n📊 수급(주요 3주체) · 8/27 기준\n당일: 외국인 +139.9만주 · 기관 -9.7만주 · 개인 -322.3만주\n5일: 외국인 -639.2만주 · 기관 -435.3만주 · 개인 +315.3만주\n20일: 외국인 +605.4만주 · 기관 -1,102.9만주 · 개인 -345.3만주\n외국인 보유: 27.31억주 · 46.7%\n수급 점수: 63 · 5일·20일 흐름 혼재\n\n📐 Valuation\nPER = 현재가 ÷ TTM EPS = 266,000원 ÷ 22,463원 = 11.8배\nPBR = 현재가 ÷ BVPS = 266,000원 ÷ 98,030.17원 = 2.7배\n과거 대비:\nPER 중앙값 13.4배 · 41백분위 · PBR 중앙값 1.2배 · 90백분위\n현재 Valuation: 부담 구간\n해석: 사이클 기업은 낮은 trailing PER를 할인 근거로 쓰지 않고 PBR과 정상화 이익을 우선했습니다.\n오늘 Valuation 변화: 확장\n사업 투자 논리를 바꿀 신규 근거는 없고, 오늘 할인율·위험선호의 거시 전달 경로가 Valuation에 확장 영향을 줬습니다.\n\n📌 다음 확인\n• HBM 주요 고객 채택·출하량\n• DS 영업이익률\n• 메모리 ASP와 제품 믹스",
+      "family_consensus_safe": false,
+      "lookahead_leak": 0,
+      "numeric_bindings": [
+        {
+          "currency": "KRW",
+          "fact_ref": "current-price:005930:2026-08-27",
+          "owner": "CURRENT_PRICE_STRUCTURE",
+          "semantic_type": "CURRENT_PRICE",
+          "value": "266000.0"
+        },
+        {
+          "currency": "KRW",
+          "display": "약 19.8만~20만원",
+          "fact_ref": "v3-zone:355d93fefa139c5fc0d4",
+          "owner": "CURRENT_PRICE_STRUCTURE",
+          "raw_high": "199211.946575",
+          "raw_low": "198218.370781",
+          "semantic_type": "NEAREST_SUPPORT",
+          "source_refs": [
+            "v3-bollinger:9fb100f4fe0fcbf0d7b8"
+          ]
+        },
+        {
+          "currency": "KRW",
+          "display": "약 27.7만~27.9만원",
+          "fact_ref": "v3-zone:422d8c5e1b19a6ea774f",
+          "owner": "CURRENT_PRICE_STRUCTURE",
+          "raw_high": "278895.500000",
+          "raw_low": "277504.500000",
+          "semantic_type": "NEAREST_RESISTANCE",
+          "source_refs": [
+            "v3-bollinger:2473b466113d59cba868"
+          ]
+        },
+        {
+          "currency": "KRW",
+          "display": "약 32.6만~32.8만원",
+          "fact_ref": "v3-zone:fb572ffefa8d59712cde",
+          "owner": "CURRENT_PRICE_STRUCTURE",
+          "raw_high": "327649.976591",
+          "raw_low": "326015.812119",
+          "semantic_type": "MAJOR_RESISTANCE",
+          "source_refs": [
+            "v3-bollinger:a05d4aa2927cd981eb52"
+          ]
+        }
+      ],
+      "partial_bar_used_for_pivot_confirmation": 0,
+      "price_as_of": "2026-08-27",
+      "section": "📐 현재 가격 구조\n• 기준 종가: 266,000원\n• 가까운 지지: 약 19.8만~20만원\n• 가까운 저항: 약 27.7만~27.9만원\n• 주요 구조: 저항 약 32.6만~32.8만원",
+      "stored_rule_present": true,
+      "stored_rule_separated": true,
+      "summary": {
+        "fib_sr_confluence": null,
+        "fib_sr_confluence_state": "NO_MEANINGFUL_SR_OVERLAP",
+        "major_cross_timeframe_zone": null,
+        "major_structural_resistance": {
+          "classification": "AVAILABLE_LOCAL",
+          "reason": null,
+          "zone": {
+            "active_relevance": "ACTIVE_STRUCTURAL",
+            "as_of": "2026-08-27",
+            "confirmation_quality": "1.000000",
+            "contract": "deterministic-sr-base-layer-v1",
+            "currency": "KRW",
+            "current_role": "RESISTANCE",
+            "display": "약 32.6만~32.8만원",
+            "distance_pct": "22.562335",
+            "evidence_family_score": "1.200000",
+            "fallback_reason": null,
+            "last_meaningful_interaction": "2026-08-03",
+            "proximity_tier": "RELEVANT",
+            "raw_high": "327649.976591",
+            "raw_low": "326015.812119",
+            "reaction_count": 0,
+            "requested_timeframe": "summary",
+            "source_families": [
+              "BOLLINGER_MONTHLY"
+            ],
+            "source_refs": [
+              "v3-bollinger:a05d4aa2927cd981eb52"
+            ],
+            "source_timeframe": "monthly",
+            "source_timeframes": [
+              "monthly"
+            ],
+            "structural_score": 31,
+            "ticker": "005930",
+            "zone_id": "v3-zone:fb572ffefa8d59712cde"
+          }
+        },
+        "major_structural_support": {
+          "classification": "AVAILABLE_LOCAL",
+          "reason": null,
+          "zone": {
+            "active_relevance": "ACTIVE_STRUCTURAL",
+            "as_of": "2026-08-27",
+            "confirmation_quality": "1.000000",
+            "contract": "deterministic-sr-base-layer-v1",
+            "currency": "KRW",
+            "current_role": "SUPPORT",
+            "display": "약 19.8만~20만원",
+            "distance_pct": "25.108291",
+            "evidence_family_score": "1.200000",
+            "fallback_reason": null,
+            "last_meaningful_interaction": "2026-08-24",
+            "proximity_tier": "RELEVANT",
+            "raw_high": "199211.946575",
+            "raw_low": "198218.370781",
+            "reaction_count": 0,
+            "requested_timeframe": "summary",
+            "source_families": [
+              "BOLLINGER_WEEKLY"
+            ],
+            "source_refs": [
+              "v3-bollinger:9fb100f4fe0fcbf0d7b8"
+            ],
+            "source_timeframe": "weekly",
+            "source_timeframes": [
+              "weekly"
+            ],
+            "structural_score": 21,
+            "ticker": "005930",
+            "zone_id": "v3-zone:355d93fefa139c5fc0d4"
+          }
+        },
+        "nearest_cross_timeframe_reason": "NO_RELEVANT_CROSS_TIMEFRAME_ZONE",
+        "nearest_cross_timeframe_zone": null,
+        "nearest_resistance": {
+          "classification": "AVAILABLE_LOCAL",
+          "reason": null,
+          "zone": {
+            "active_relevance": "ACTIVE_NEAR",
+            "as_of": "2026-08-27",
+            "confirmation_quality": "1.000000",
+            "contract": "deterministic-sr-base-layer-v1",
+            "currency": "KRW",
+            "current_role": "RESISTANCE",
+            "display": "약 27.7만~27.9만원",
+            "distance_pct": "4.325000",
+            "evidence_family_score": "1.200000",
+            "fallback_reason": null,
+            "last_meaningful_interaction": "2026-08-24",
+            "proximity_tier": "NEAR",
+            "raw_high": "278895.500000",
+            "raw_low": "277504.500000",
+            "reaction_count": 0,
+            "requested_timeframe": "summary",
+            "source_families": [
+              "BOLLINGER_WEEKLY"
+            ],
+            "source_refs": [
+              "v3-bollinger:2473b466113d59cba868"
+            ],
+            "source_timeframe": "weekly",
+            "source_timeframes": [
+              "weekly"
+            ],
+            "structural_score": 21,
+            "ticker": "005930",
+            "zone_id": "v3-zone:422d8c5e1b19a6ea774f"
+          }
+        },
+        "nearest_support": {
+          "classification": "AVAILABLE_LOCAL",
+          "reason": null,
+          "zone": {
+            "active_relevance": "ACTIVE_STRUCTURAL",
+            "as_of": "2026-08-27",
+            "confirmation_quality": "1.000000",
+            "contract": "deterministic-sr-base-layer-v1",
+            "currency": "KRW",
+            "current_role": "SUPPORT",
+            "display": "약 19.8만~20만원",
+            "distance_pct": "25.108291",
+            "evidence_family_score": "1.200000",
+            "fallback_reason": null,
+            "last_meaningful_interaction": "2026-08-24",
+            "proximity_tier": "RELEVANT",
+            "raw_high": "199211.946575",
+            "raw_low": "198218.370781",
+            "reaction_count": 0,
+            "requested_timeframe": "summary",
+            "source_families": [
+              "BOLLINGER_WEEKLY"
+            ],
+            "source_refs": [
+              "v3-bollinger:9fb100f4fe0fcbf0d7b8"
+            ],
+            "source_timeframe": "weekly",
+            "source_timeframes": [
+              "weekly"
+            ],
+            "structural_score": 21,
+            "ticker": "005930",
+            "zone_id": "v3-zone:355d93fefa139c5fc0d4"
+          }
+        },
+        "no_resistance_reason": null,
+        "no_wave_reason": "NO_VALID_WAVE"
+      },
+      "target_session": "2026-08-27",
+      "ticker": "005930",
+      "unsupported_stop": 0,
+      "unsupported_target": 0
+    },
+    {
+      "ai_preview": "🤖 AI 보조 종목 점검 · KR Pilot 4/5\n\n🏢 LS일렉트릭(010120)\n투자 논리: 유지 · 오늘 중요한 신규 변화 없음\n구조적 위험: 보통\n시장 기대: 높음\n\n🎯 핵심 판단\n전력기기 수주가 출하·마진·현금전환으로 이어지는지가 현재 기대를 검증할 핵심입니다. 현재 가격은 현재가 219,500원 수준이고, 가장 가까운 지지 판단은 동적 지지구간 하단 216,540원 경계부터 시작합니다. 사업 논리를 바꿀 새 근거는 없습니다.\n\n📈 사업·실적\n현재 확인 가능한 사실에는 전력기기 매출·영업마진·수주가 영업현금흐름으로 이어지는지를 판단할 적격 사업 수치가 없습니다. AI 인프라 예산은 실제 수주·출하·마진·현금전환과 구분합니다.\n\n📐 현재 가격 구조\n• 기준 종가: 219,500원\n• 가까운 지지: 약 21.1만~21.3만원\n• 가까운 저항: 약 22.5만~22.7만원\n• 주요 구조: 저항 약 26.6만~26.9만원\n\n📊 수급\n외국인 당일 순매수 284,716주 신호와 기관 당일 순매수 191,033주 신호는 당일 가격 참여로만 봅니다. 외국인 5일 순매수 377,491주 흐름과 기관 5일 순매수 80,874주 흐름은 단기 포지셔닝 근거입니다. 외국인 20일 순매수 779,543주 흐름과 기관 20일 순매도 20,964주 흐름은 중기 포지셔닝 근거입니다. 외국인 중심의 중기 흐름은 전력기기 수주·마진·현금전환을 대신하지 않습니다.\n\n📐 Valuation\n안전한 EPS 기준이 확인되지 않아 PER 해석을 보류합니다. 안전한 BVPS 기준도 확인되지 않아 PBR 해석을 보류합니다. 수주잔고의 마진과 운전자본 회수, 투자 이후 현금전환이 확인돼야 현재 기대를 평가할 수 있습니다.\n\n👁 핵심 감시\n• 전력기기 수주가 출하·마진으로 전환되는 속도를 감시합니다.\n• 운전자본 회수와 영업현금흐름을 감시합니다.\n\n📌 다음 확인\n• 다음 공식 실적에서 수주잔고, 영업마진, 운전자본과 영업현금흐름을 확인합니다.\n\n⚠️ 미확인\n• 수주별 마진과 운전자본 회수의 최신 연결이 확인되지 않았습니다.",
+      "coverage": {
+        "daily": {
+          "actual_count": 0,
+          "actual_end_date": null,
+          "actual_start_date": null,
+          "adjustment_basis": "provider_adjusted_price_v1",
+          "completed_count": 0,
+          "contract": "ohlcv-long-history-contract-v1",
+          "denial_reason": "insufficient_completed_history",
+          "history_complete_to_listing": true,
+          "provider_limit": null,
+          "provider_limit_hit": false,
+          "provider_returned_count": 0,
+          "requested_count": 1200,
+          "status": "FAIL",
+          "timeframe": "daily"
+        },
+        "monthly": {
+          "actual_count": 300,
+          "actual_end_date": "2026-08-03",
+          "actual_start_date": "2001-09-03",
+          "adjustment_basis": "provider_adjusted_price_v1",
+          "completed_count": 299,
+          "contract": "ohlcv-long-history-contract-v1",
+          "denial_reason": "short_listing_or_available_history",
+          "history_complete_to_listing": true,
+          "provider_limit": null,
+          "provider_limit_hit": false,
+          "provider_returned_count": 300,
+          "requested_count": 300,
+          "status": "PARTIAL",
+          "timeframe": "monthly"
+        },
+        "weekly": {
+          "actual_count": 600,
+          "actual_end_date": "2026-08-24",
+          "actual_start_date": "2015-02-23",
+          "adjustment_basis": "provider_adjusted_price_v1",
+          "completed_count": 599,
+          "contract": "ohlcv-long-history-contract-v1",
+          "denial_reason": "short_listing_or_available_history",
+          "history_complete_to_listing": true,
+          "provider_limit": null,
+          "provider_limit_hit": false,
+          "provider_returned_count": 600,
+          "requested_count": 600,
+          "status": "PARTIAL",
+          "timeframe": "weekly"
+        }
+      },
+      "currency": "KRW",
+      "current_price": "219500.0",
+      "denial_reasons": [],
+      "eligibility": "ELIGIBLE_SR_ONLY",
+      "fallback_preview": "🏢 LS일렉트릭(010120)\n\n투자 논리: 유지 · 오늘 중요한 신규 변화 없음\n\n구조적 위험: 보통\n\n시장 기대: 높음\n\n🎯 핵심\n북미 데이터센터 및 전력 인프라 투자 확대가 LS일렉트릭의 대형 수주와 매출 성장으로 전환되고, 고부가 전력기기·솔루션 믹스 개선을 통해 두 자릿수 영업이익률과 이익 성장이 지속되는지가 핵심 투자 논리다. 2026년 2분기 잠정 매출 1조5,770억원, 영업이익 1,785억원, 영업이익률 11.3%와 북미 데이터센터용 전력설비 대형 계약, 수주잔고 확대가 핵심 근거다.\n\n👁 핵심 감시\n• 수주 모멘텀 둔화 또는 프로젝트 지연\n• 영업이익률의 의미 있는 하락\n• 매출채권·재고 증가와 FCF 부진으로 성장의 현금 전환이 약해짐\n\n📐 현재 가격 구조\n• 기준 종가: 219,500원\n• 가까운 지지: 약 21.1만~21.3만원\n• 가까운 저항: 약 22.5만~22.7만원\n• 주요 구조: 저항 약 26.6만~26.9만원\n\n📊 수급(주요 3주체) · 8/27 기준\n당일: 외국인 +28.5만주 · 기관 +19.1만주 · 개인 -46.8만주\n5일: 외국인 +37.7만주 · 기관 +8.1만주 · 개인 -44.1만주\n20일: 외국인 +78.0만주 · 기관 -2.1만주 · 개인 -72.5만주\n외국인 보유: 2,762.8만주 · 18.4%\n수급 점수: 68 · 20일 기준 기타 투자주체 영향 큼\n\n📐 Valuation\n현재 Valuation: 판단 자료 부족\n오늘 Valuation 변화: 판단 자료 부족\n증권 유형과 주당 기준의 일치 여부를 확인하지 못해 배수 해석을 보류합니다.\n\n📌 다음 확인\n• 분기 매출 성장과 영업이익 성장의 동행 여부\n• 영업이익률이 2026년 2분기 11.3% 수준을 유지·개선하는지\n• 수주잔고 약 7조원 수준의 유지·증가와 북미 데이터센터·전력 인프라 관련 신규 대형 수주",
+      "family_consensus_safe": false,
+      "lookahead_leak": 0,
+      "numeric_bindings": [
+        {
+          "currency": "KRW",
+          "fact_ref": "current-price:010120:2026-08-27",
+          "owner": "CURRENT_PRICE_STRUCTURE",
+          "semantic_type": "CURRENT_PRICE",
+          "value": "219500.0"
+        },
+        {
+          "currency": "KRW",
+          "display": "약 21.1만~21.3만원",
+          "fact_ref": "v3-zone:7098464a3ab93da93ceb",
+          "owner": "CURRENT_PRICE_STRUCTURE",
+          "raw_high": "212279.375000",
+          "raw_low": "211220.625000",
+          "semantic_type": "NEAREST_SUPPORT",
+          "source_refs": [
+            "v3-balance-box:7baf0261475383afa9eb"
+          ]
+        },
+        {
+          "currency": "KRW",
+          "display": "약 22.5만~22.7만원",
+          "fact_ref": "v3-zone:8be5998c4d668a60482b",
+          "owner": "CURRENT_PRICE_STRUCTURE",
+          "raw_high": "226554.975000",
+          "raw_low": "225425.025000",
+          "semantic_type": "NEAREST_RESISTANCE",
+          "source_refs": [
+            "v3-bollinger:fb29ec03bf3808f7f278"
+          ]
+        },
+        {
+          "currency": "KRW",
+          "display": "약 26.6만~26.9만원",
+          "fact_ref": "v3-zone:a343a5903b9e6fddc0de",
+          "owner": "CURRENT_PRICE_STRUCTURE",
+          "raw_high": "268038.945046",
+          "raw_low": "266702.092452",
+          "semantic_type": "MAJOR_RESISTANCE",
+          "source_refs": [
+            "v3-bollinger:020dcb3bef8f02c5b54a"
+          ]
+        }
+      ],
+      "partial_bar_used_for_pivot_confirmation": 0,
+      "price_as_of": "2026-08-27",
+      "section": "📐 현재 가격 구조\n• 기준 종가: 219,500원\n• 가까운 지지: 약 21.1만~21.3만원\n• 가까운 저항: 약 22.5만~22.7만원\n• 주요 구조: 저항 약 26.6만~26.9만원",
+      "stored_rule_present": false,
+      "stored_rule_separated": true,
+      "summary": {
+        "fib_sr_confluence": null,
+        "fib_sr_confluence_state": "NO_MEANINGFUL_SR_OVERLAP",
+        "major_cross_timeframe_zone": null,
+        "major_structural_resistance": {
+          "classification": "AVAILABLE_LOCAL",
+          "reason": null,
+          "zone": {
+            "active_relevance": "ACTIVE_STRUCTURAL",
+            "as_of": "2026-08-27",
+            "confirmation_quality": "1.000000",
+            "contract": "deterministic-sr-base-layer-v1",
+            "currency": "KRW",
+            "current_role": "RESISTANCE",
+            "display": "약 26.6만~26.9만원",
+            "distance_pct": "21.504370",
+            "evidence_family_score": "1.200000",
+            "fallback_reason": null,
+            "last_meaningful_interaction": "2026-08-03",
+            "proximity_tier": "RELEVANT",
+            "raw_high": "268038.945046",
+            "raw_low": "266702.092452",
+            "reaction_count": 0,
+            "requested_timeframe": "summary",
+            "source_families": [
+              "BOLLINGER_MONTHLY"
+            ],
+            "source_refs": [
+              "v3-bollinger:020dcb3bef8f02c5b54a"
+            ],
+            "source_timeframe": "monthly",
+            "source_timeframes": [
+              "monthly"
+            ],
+            "structural_score": 31,
+            "ticker": "010120",
+            "zone_id": "v3-zone:a343a5903b9e6fddc0de"
+          }
+        },
+        "major_structural_support": {
+          "classification": "AVAILABLE_LOCAL",
+          "reason": null,
+          "zone": {
+            "active_relevance": "ACTIVE_NEAR",
+            "as_of": "2026-08-27",
+            "confirmation_quality": "1.000000",
+            "contract": "deterministic-sr-base-layer-v1",
+            "currency": "KRW",
+            "current_role": "SUPPORT",
+            "display": "약 21.1만~21.3만원",
+            "distance_pct": "3.289579",
+            "evidence_family_score": "1.100000",
+            "fallback_reason": null,
+            "last_meaningful_interaction": "2026-08-24",
+            "proximity_tier": "NEAR",
+            "raw_high": "212279.375000",
+            "raw_low": "211220.625000",
+            "reaction_count": 0,
+            "requested_timeframe": "summary",
+            "source_families": [
+              "BALANCE_BOX"
+            ],
+            "source_refs": [
+              "v3-balance-box:7baf0261475383afa9eb"
+            ],
+            "source_timeframe": "weekly",
+            "source_timeframes": [
+              "weekly"
+            ],
+            "structural_score": 21,
+            "ticker": "010120",
+            "zone_id": "v3-zone:7098464a3ab93da93ceb"
+          }
+        },
+        "nearest_cross_timeframe_reason": "NO_RELEVANT_CROSS_TIMEFRAME_ZONE",
+        "nearest_cross_timeframe_zone": null,
+        "nearest_resistance": {
+          "classification": "AVAILABLE_LOCAL",
+          "reason": null,
+          "zone": {
+            "active_relevance": "ACTIVE_NEAR",
+            "as_of": "2026-08-27",
+            "confirmation_quality": "1.000000",
+            "contract": "deterministic-sr-base-layer-v1",
+            "currency": "KRW",
+            "current_role": "RESISTANCE",
+            "display": "약 22.5만~22.7만원",
+            "distance_pct": "2.699328",
+            "evidence_family_score": "1.200000",
+            "fallback_reason": null,
+            "last_meaningful_interaction": "2026-08-24",
+            "proximity_tier": "NEAR",
+            "raw_high": "226554.975000",
+            "raw_low": "225425.025000",
+            "reaction_count": 0,
+            "requested_timeframe": "summary",
+            "source_families": [
+              "BOLLINGER_WEEKLY"
+            ],
+            "source_refs": [
+              "v3-bollinger:fb29ec03bf3808f7f278"
+            ],
+            "source_timeframe": "weekly",
+            "source_timeframes": [
+              "weekly"
+            ],
+            "structural_score": 21,
+            "ticker": "010120",
+            "zone_id": "v3-zone:8be5998c4d668a60482b"
+          }
+        },
+        "nearest_support": {
+          "classification": "AVAILABLE_LOCAL",
+          "reason": null,
+          "zone": {
+            "active_relevance": "ACTIVE_NEAR",
+            "as_of": "2026-08-27",
+            "confirmation_quality": "1.000000",
+            "contract": "deterministic-sr-base-layer-v1",
+            "currency": "KRW",
+            "current_role": "SUPPORT",
+            "display": "약 21.1만~21.3만원",
+            "distance_pct": "3.289579",
+            "evidence_family_score": "1.100000",
+            "fallback_reason": null,
+            "last_meaningful_interaction": "2026-08-24",
+            "proximity_tier": "NEAR",
+            "raw_high": "212279.375000",
+            "raw_low": "211220.625000",
+            "reaction_count": 0,
+            "requested_timeframe": "summary",
+            "source_families": [
+              "BALANCE_BOX"
+            ],
+            "source_refs": [
+              "v3-balance-box:7baf0261475383afa9eb"
+            ],
+            "source_timeframe": "weekly",
+            "source_timeframes": [
+              "weekly"
+            ],
+            "structural_score": 21,
+            "ticker": "010120",
+            "zone_id": "v3-zone:7098464a3ab93da93ceb"
+          }
+        },
+        "no_resistance_reason": null,
+        "no_wave_reason": "NO_VALID_WAVE"
+      },
+      "target_session": "2026-08-27",
+      "ticker": "010120",
+      "unsupported_stop": 0,
+      "unsupported_target": 0
+    },
+    {
+      "ai_preview": "🤖 AI 보조 종목 점검 · KR Pilot 4/5\n\n🏢 한화에어로스페이스(012450)\n투자 논리: 유지 · 오늘 중요한 신규 변화 없음\n구조적 위험: 보통\n시장 기대: 높음\n\n🎯 핵심 판단\n방산 수주가 매출 인식·프로젝트 마진·현금 회수로 전환되는지가 현재 기대를 검증할 핵심입니다. 현재 가격은 현재가 1,150,000원 수준이고, 가장 가까운 지지 판단은 동적 지지구간 하단 1,024,140원 경계부터 시작합니다. 사업 논리를 바꿀 새 근거는 없습니다.\n\n📈 사업·실적\n현재 확인 가능한 사실에는 방산 수주가 매출 인식·마진·현금 회수로 이어지는지를 판단할 적격 사업 수치가 없습니다. 수주 규모만으로 프로젝트 수익성과 운전자본을 추정하지 않습니다.\n\n📐 현재 가격 구조\n• 기준 종가: 1,150,000원\n• 가까운 지지: 약 95.7만~96.3만원\n• 가까운 저항: 약 145.2만~146만원\n\n📊 수급\n외국인 당일 순매수 1,522주 신호와 기관 당일 순매수 17,961주 신호는 당일 가격 참여로만 봅니다. 외국인 5일 순매수 22,280주 흐름과 기관 5일 순매도 12,914주 흐름은 단기 포지셔닝 근거입니다. 외국인 20일 순매수 116,615주 흐름과 기관 20일 순매도 21,248주 흐름은 중기 포지셔닝 근거입니다. 외국인 중심의 중기 흐름은 수주 마진과 계약대금 회수의 증거가 아닙니다.\n\n📐 Valuation\n안전한 EPS 기준이 확인되지 않아 PER 해석을 보류합니다. 안전한 BVPS 기준도 확인되지 않아 PBR 해석을 보류합니다. 수주잔고의 마진·매출 인식·계약대금 회수가 확인돼야 현재 기대를 평가할 수 있습니다.\n\n👁 핵심 감시\n• 수주잔고의 매출 인식과 프로젝트 마진을 감시합니다.\n• 계약대금 회수와 영업현금흐름을 감시합니다.\n\n📌 다음 확인\n• 다음 공식 실적에서 수주잔고, 매출 인식, 프로젝트 마진과 영업현금흐름을 확인합니다.\n\n⚠️ 미확인\n• 프로젝트별 마진과 계약대금 회수 속도가 확인되지 않았습니다.",
+      "coverage": {
+        "daily": {
+          "actual_count": 0,
+          "actual_end_date": null,
+          "actual_start_date": null,
+          "adjustment_basis": "provider_adjusted_price_v1",
+          "completed_count": 0,
+          "contract": "ohlcv-long-history-contract-v1",
+          "denial_reason": "insufficient_completed_history",
+          "history_complete_to_listing": true,
+          "provider_limit": null,
+          "provider_limit_hit": false,
+          "provider_returned_count": 0,
+          "requested_count": 1200,
+          "status": "FAIL",
+          "timeframe": "daily"
+        },
+        "monthly": {
+          "actual_count": 300,
+          "actual_end_date": "2026-08-03",
+          "actual_start_date": "2001-09-03",
+          "adjustment_basis": "provider_adjusted_price_v1",
+          "completed_count": 299,
+          "contract": "ohlcv-long-history-contract-v1",
+          "denial_reason": "short_listing_or_available_history",
+          "history_complete_to_listing": true,
+          "provider_limit": null,
+          "provider_limit_hit": false,
+          "provider_returned_count": 300,
+          "requested_count": 300,
+          "status": "PARTIAL",
+          "timeframe": "monthly"
+        },
+        "weekly": {
+          "actual_count": 600,
+          "actual_end_date": "2026-08-24",
+          "actual_start_date": "2015-02-23",
+          "adjustment_basis": "provider_adjusted_price_v1",
+          "completed_count": 599,
+          "contract": "ohlcv-long-history-contract-v1",
+          "denial_reason": "short_listing_or_available_history",
+          "history_complete_to_listing": true,
+          "provider_limit": null,
+          "provider_limit_hit": false,
+          "provider_returned_count": 600,
+          "requested_count": 600,
+          "status": "PARTIAL",
+          "timeframe": "weekly"
+        }
+      },
+      "currency": "KRW",
+      "current_price": "1150000.0",
+      "denial_reasons": [],
+      "eligibility": "ELIGIBLE_SR_ONLY",
+      "fallback_preview": "🏢 한화에어로스페이스(012450)\n\n투자 논리: 유지 · 오늘 중요한 신규 변화 없음\n\n구조적 위험: 보통\n\n시장 기대: 높음\n\n🎯 핵심\n유럽·중동을 중심으로 한 방산 수요 확대가 K9·천무 등 지상방산의 대형 수출 수주와 높은 수익성으로 연결되고, 약 38.3조원 수준의 지상방산 수주잔고가 향후 수년간 매출·이익 가시성을 제공하는지가 핵심 투자 논리다. 2026년 2분기 연결 매출 9조2,929억원, 영업이익 1조3,655억원, 영업이익률 14.7%와 지상방산 영업이익률 약 25%가 핵심 근거다.\n\n👁 핵심 감시\n• 대형 수주 모멘텀 둔화 또는 수주잔고 감소\n• 지상방산 마진의 의미 있는 하락\n• 기존 프로젝트 인도 지연과 운전자본 악화\n\n📐 현재 가격 구조\n• 기준 종가: 1,150,000원\n• 가까운 지지: 약 95.7만~96.3만원\n• 가까운 저항: 약 145.2만~146만원\n\n📊 수급(주요 3주체) · 8/27 기준\n당일: 외국인 +1,522주 · 기관 +1.8만주 · 개인 -2.0만주\n5일: 외국인 +2.2만주 · 기관 -1.3만주 · 개인 -1.0만주\n20일: 외국인 +11.7만주 · 기관 -2.1만주 · 개인 -9.5만주\n외국인 보유: 2,347.3만주 · 45.5%\n수급 점수: 63 · 20일 기준 기타 투자주체 영향 큼\n\n📐 Valuation\n현재 Valuation: 판단 자료 부족\n오늘 Valuation 변화: 판단 자료 부족\n증권 유형과 주당 기준의 일치 여부를 확인하지 못해 배수 해석을 보류합니다.\n\n📌 다음 확인\n• 지상방산 수주잔고 약 38.3조원의 유지·증가 여부\n• 지상방산 영업이익률 약 25% 및 연결 영업이익률 14%대의 지속 여부\n• 폴란드·이집트·호주 등 기존 대형 계약의 정상 인도와 매출 인식",
+      "family_consensus_safe": false,
+      "lookahead_leak": 0,
+      "numeric_bindings": [
+        {
+          "currency": "KRW",
+          "fact_ref": "current-price:012450:2026-08-27",
+          "owner": "CURRENT_PRICE_STRUCTURE",
+          "semantic_type": "CURRENT_PRICE",
+          "value": "1150000.0"
+        },
+        {
+          "currency": "KRW",
+          "display": "약 95.7만~96.3만원",
+          "fact_ref": "v3-zone:3f257db56fab1aa11672",
+          "owner": "CURRENT_PRICE_STRUCTURE",
+          "raw_high": "962149.625625",
+          "raw_low": "957350.874375",
+          "semantic_type": "NEAREST_SUPPORT",
+          "source_refs": [
+            "v3-bollinger:c1e12967c5c8ebc59b0e"
+          ]
+        },
+        {
+          "currency": "KRW",
+          "display": "약 145.2만~146만원",
+          "fact_ref": "v3-zone:d7a6f766a68ebc769560",
+          "owner": "CURRENT_PRICE_STRUCTURE",
+          "raw_high": "1459937.972912",
+          "raw_low": "1452656.486762",
+          "semantic_type": "NEAREST_RESISTANCE",
+          "source_refs": [
+            "v3-bollinger:f90ca782ed90962eece6"
+          ]
+        }
+      ],
+      "partial_bar_used_for_pivot_confirmation": 0,
+      "price_as_of": "2026-08-27",
+      "section": "📐 현재 가격 구조\n• 기준 종가: 1,150,000원\n• 가까운 지지: 약 95.7만~96.3만원\n• 가까운 저항: 약 145.2만~146만원",
+      "stored_rule_present": false,
+      "stored_rule_separated": true,
+      "summary": {
+        "fib_sr_confluence": null,
+        "fib_sr_confluence_state": "NO_MEANINGFUL_SR_OVERLAP",
+        "major_cross_timeframe_zone": {
+          "active_relevance": "ACTIVE_STRUCTURAL",
+          "as_of": "2026-08-27",
+          "confirmation_quality": "1.000000",
+          "contract": "deterministic-sr-base-layer-v1",
+          "currency": "KRW",
+          "current_role": "RESISTANCE",
+          "display": "약 145.2만~146.6만원",
+          "distance_pct": "26.317303",
+          "evidence_family_score": "3.150000",
+          "fallback_reason": null,
+          "last_meaningful_interaction": "2026-08-24",
+          "proximity_tier": "RELEVANT",
+          "raw_high": "1465950.308116",
+          "raw_low": "1452648.980726",
+          "reaction_count": 0,
+          "requested_timeframe": "cross_timeframe",
+          "source_families": [
+            "BOLLINGER_MONTHLY",
+            "BOLLINGER_WEEKLY"
+          ],
+          "source_refs": [
+            "v3-bollinger:d7414506807d089b6797",
+            "v3-bollinger:f90ca782ed90962eece6"
+          ],
+          "source_timeframe": "monthly",
+          "source_timeframes": [
+            "monthly",
+            "weekly"
+          ],
+          "structural_score": 32,
+          "ticker": "012450",
+          "zone_id": "v3-zone:349fc703a83d7356e22e"
+        },
+        "major_structural_resistance": {
+          "classification": "AVAILABLE_LOCAL",
+          "reason": null,
+          "zone": {
+            "active_relevance": "ACTIVE_STRUCTURAL",
+            "as_of": "2026-08-27",
+            "confirmation_quality": "1.000000",
+            "contract": "deterministic-sr-base-layer-v1",
+            "currency": "KRW",
+            "current_role": "RESISTANCE",
+            "display": "약 145.2만~146만원",
+            "distance_pct": "26.317955",
+            "evidence_family_score": "1.200000",
+            "fallback_reason": null,
+            "last_meaningful_interaction": "2026-08-03",
+            "proximity_tier": "RELEVANT",
+            "raw_high": "1459937.972912",
+            "raw_low": "1452656.486762",
+            "reaction_count": 0,
+            "requested_timeframe": "summary",
+            "source_families": [
+              "BOLLINGER_MONTHLY"
+            ],
+            "source_refs": [
+              "v3-bollinger:f90ca782ed90962eece6"
+            ],
+            "source_timeframe": "monthly",
+            "source_timeframes": [
+              "monthly"
+            ],
+            "structural_score": 31,
+            "ticker": "012450",
+            "zone_id": "v3-zone:d7a6f766a68ebc769560"
+          }
+        },
+        "major_structural_support": {
+          "classification": "AVAILABLE_LOCAL",
+          "reason": null,
+          "zone": {
+            "active_relevance": "ACTIVE_STRUCTURAL",
+            "as_of": "2026-08-27",
+            "confirmation_quality": "1.000000",
+            "contract": "deterministic-sr-base-layer-v1",
+            "currency": "KRW",
+            "current_role": "SUPPORT",
+            "display": "약 95.7만~96.3만원",
+            "distance_pct": "16.334815",
+            "evidence_family_score": "1.200000",
+            "fallback_reason": null,
+            "last_meaningful_interaction": "2026-08-03",
+            "proximity_tier": "RELEVANT",
+            "raw_high": "962149.625625",
+            "raw_low": "957350.874375",
+            "reaction_count": 0,
+            "requested_timeframe": "summary",
+            "source_families": [
+              "BOLLINGER_MONTHLY"
+            ],
+            "source_refs": [
+              "v3-bollinger:c1e12967c5c8ebc59b0e"
+            ],
+            "source_timeframe": "monthly",
+            "source_timeframes": [
+              "monthly"
+            ],
+            "structural_score": 31,
+            "ticker": "012450",
+            "zone_id": "v3-zone:3f257db56fab1aa11672"
+          }
+        },
+        "nearest_cross_timeframe_reason": null,
+        "nearest_cross_timeframe_zone": {
+          "active_relevance": "ACTIVE_STRUCTURAL",
+          "as_of": "2026-08-27",
+          "confirmation_quality": "1.000000",
+          "contract": "deterministic-sr-base-layer-v1",
+          "currency": "KRW",
+          "current_role": "RESISTANCE",
+          "display": "약 145.2만~146.6만원",
+          "distance_pct": "26.317303",
+          "evidence_family_score": "3.150000",
+          "fallback_reason": null,
+          "last_meaningful_interaction": "2026-08-24",
+          "proximity_tier": "RELEVANT",
+          "raw_high": "1465950.308116",
+          "raw_low": "1452648.980726",
+          "reaction_count": 0,
+          "requested_timeframe": "cross_timeframe",
+          "source_families": [
+            "BOLLINGER_MONTHLY",
+            "BOLLINGER_WEEKLY"
+          ],
+          "source_refs": [
+            "v3-bollinger:d7414506807d089b6797",
+            "v3-bollinger:f90ca782ed90962eece6"
+          ],
+          "source_timeframe": "monthly",
+          "source_timeframes": [
+            "monthly",
+            "weekly"
+          ],
+          "structural_score": 32,
+          "ticker": "012450",
+          "zone_id": "v3-zone:349fc703a83d7356e22e"
+        },
+        "nearest_resistance": {
+          "classification": "AVAILABLE_LOCAL",
+          "reason": null,
+          "zone": {
+            "active_relevance": "ACTIVE_STRUCTURAL",
+            "as_of": "2026-08-27",
+            "confirmation_quality": "1.000000",
+            "contract": "deterministic-sr-base-layer-v1",
+            "currency": "KRW",
+            "current_role": "RESISTANCE",
+            "display": "약 145.2만~146만원",
+            "distance_pct": "26.317955",
+            "evidence_family_score": "1.200000",
+            "fallback_reason": null,
+            "last_meaningful_interaction": "2026-08-03",
+            "proximity_tier": "RELEVANT",
+            "raw_high": "1459937.972912",
+            "raw_low": "1452656.486762",
+            "reaction_count": 0,
+            "requested_timeframe": "summary",
+            "source_families": [
+              "BOLLINGER_MONTHLY"
+            ],
+            "source_refs": [
+              "v3-bollinger:f90ca782ed90962eece6"
+            ],
+            "source_timeframe": "monthly",
+            "source_timeframes": [
+              "monthly"
+            ],
+            "structural_score": 31,
+            "ticker": "012450",
+            "zone_id": "v3-zone:d7a6f766a68ebc769560"
+          }
+        },
+        "nearest_support": {
+          "classification": "AVAILABLE_LOCAL",
+          "reason": null,
+          "zone": {
+            "active_relevance": "ACTIVE_STRUCTURAL",
+            "as_of": "2026-08-27",
+            "confirmation_quality": "1.000000",
+            "contract": "deterministic-sr-base-layer-v1",
+            "currency": "KRW",
+            "current_role": "SUPPORT",
+            "display": "약 95.7만~96.3만원",
+            "distance_pct": "16.334815",
+            "evidence_family_score": "1.200000",
+            "fallback_reason": null,
+            "last_meaningful_interaction": "2026-08-03",
+            "proximity_tier": "RELEVANT",
+            "raw_high": "962149.625625",
+            "raw_low": "957350.874375",
+            "reaction_count": 0,
+            "requested_timeframe": "summary",
+            "source_families": [
+              "BOLLINGER_MONTHLY"
+            ],
+            "source_refs": [
+              "v3-bollinger:c1e12967c5c8ebc59b0e"
+            ],
+            "source_timeframe": "monthly",
+            "source_timeframes": [
+              "monthly"
+            ],
+            "structural_score": 31,
+            "ticker": "012450",
+            "zone_id": "v3-zone:3f257db56fab1aa11672"
+          }
+        },
+        "no_resistance_reason": null,
+        "no_wave_reason": "NO_VALID_WAVE"
+      },
+      "target_session": "2026-08-27",
+      "ticker": "012450",
+      "unsupported_stop": 0,
+      "unsupported_target": 0
+    },
+    {
+      "ai_preview": "🤖 AI 보조 종목 점검 · KR Pilot 4/5\n\n🏢 현대글로비스(086280)\n투자 논리: 유지 · 오늘 중요한 신규 변화 없음\n구조적 위험: 보통\n시장 기대: 높음\n\n🎯 핵심 판단\n물량·운임 믹스·연료비가 마진과 현금전환으로 이어지는지가 현재 기대를 검증할 핵심입니다. 현재 가격은 현재가 203,500원 수준이고, 가장 가까운 지지 판단은 동적 지지구간 하단 197,803원 경계부터 시작합니다. 사업 논리를 바꿀 새 근거는 없습니다.\n\n📈 사업·실적\n현재 확인 가능한 사실에는 물량·운임·연료비가 마진과 영업현금흐름으로 이어지는지를 판단할 적격 사업 수치가 없습니다. 운송 가격만으로 계약 운임과 현금전환을 추정하지 않습니다.\n\n📐 현재 가격 구조\n• 기준 종가: 203,500원\n• 가까운 지지: 약 20.2만~20.32만원\n• 가까운 저항: 약 21.2만~21.5만원\n• 주요 구조: 지지 약 17.8만~18만원\n\n📊 수급\n외국인 당일 순매도 9,310주 신호와 기관 당일 순매수 4,731주 신호는 당일 가격 참여로만 봅니다. 외국인 5일 순매수 48,394주 흐름과 기관 5일 순매수 78,421주 흐름은 단기 포지셔닝 근거입니다. 외국인 20일 순매수 216,115주 흐름과 기관 20일 순매수 16,361주 흐름은 중기 포지셔닝 근거입니다. 외국인·기관의 동행은 가격 참여를 지지하지만 물량·운임·마진의 확인을 대체하지 않습니다.\n\n📐 Valuation\n현재 PER 9.9배 기준을 확인합니다. 내부 추정 fPER 9.09배 기준도 확인합니다. 운송업 판단에서는 물량·운임·연료비·현금전환 확인이 우선입니다.\n\n👁 핵심 감시\n• 물량과 계약·현물 운임 믹스를 감시합니다.\n• 연료비 전가와 영업현금흐름을 감시합니다.\n\n📌 다음 확인\n• 다음 공식 실적에서 물량·운임 믹스, 연료비, 마진과 영업현금흐름을 확인합니다.\n\n⚠️ 미확인\n• 물량·운임 믹스와 연료비 전가의 최신 동행이 확인되지 않았습니다.",
+      "coverage": {
+        "daily": {
+          "actual_count": 0,
+          "actual_end_date": null,
+          "actual_start_date": null,
+          "adjustment_basis": "provider_adjusted_price_v1",
+          "completed_count": 0,
+          "contract": "ohlcv-long-history-contract-v1",
+          "denial_reason": "insufficient_completed_history",
+          "history_complete_to_listing": true,
+          "provider_limit": null,
+          "provider_limit_hit": false,
+          "provider_returned_count": 0,
+          "requested_count": 1200,
+          "status": "FAIL",
+          "timeframe": "daily"
+        },
+        "monthly": {
+          "actual_count": 249,
+          "actual_end_date": "2026-08-03",
+          "actual_start_date": "2005-12-26",
+          "adjustment_basis": "provider_adjusted_price_v1",
+          "completed_count": 248,
+          "contract": "ohlcv-long-history-contract-v1",
+          "denial_reason": "short_listing_or_available_history",
+          "history_complete_to_listing": true,
+          "provider_limit": null,
+          "provider_limit_hit": false,
+          "provider_returned_count": 249,
+          "requested_count": 300,
+          "status": "PARTIAL",
+          "timeframe": "monthly"
+        },
+        "weekly": {
+          "actual_count": 600,
+          "actual_end_date": "2026-08-24",
+          "actual_start_date": "2015-02-23",
+          "adjustment_basis": "provider_adjusted_price_v1",
+          "completed_count": 599,
+          "contract": "ohlcv-long-history-contract-v1",
+          "denial_reason": "short_listing_or_available_history",
+          "history_complete_to_listing": true,
+          "provider_limit": null,
+          "provider_limit_hit": false,
+          "provider_returned_count": 600,
+          "requested_count": 600,
+          "status": "PARTIAL",
+          "timeframe": "weekly"
+        }
+      },
+      "currency": "KRW",
+      "current_price": "203500.0",
+      "denial_reasons": [],
+      "eligibility": "ELIGIBLE_SR_ONLY",
+      "fallback_preview": "🏢 현대글로비스(086280)\n\n투자 논리: 유지 · 오늘 중요한 신규 변화 없음\n\n구조적 위험: 보통\n\n시장 기대: 높음\n\n🎯 핵심\n현대글로비스의 핵심은 완성차 해상운송과 CKD·물류의 물량·운임·마진 개선이 비계열 화주 확대와 함께 지속되고, 선박 CAPEX가 높은 가동률과 ROIC로 회수되는 것이다. 기존 수급·가격 구조는 진입 판단의 보조 신호로 낮추고, 현대차그룹 물량 의존도와 비계열 화주 확대, PCTC 운임·선복, 물류 마진, FCF를 기업가치 판단의 중심에 둔다.\n\n👁 핵심 감시\n• 완성차 판매·운임 둔화\n• 운전자본과 CAPEX 부담 확대\n• 계열사 의존도\n\n📐 현재 가격 구조\n• 기준 종가: 203,500원\n• 가까운 지지: 약 20.2만~20.32만원\n• 가까운 저항: 약 21.2만~21.5만원\n• 주요 구조: 지지 약 17.8만~18만원\n\n🧭 기존 등록 가격 규칙\n• 기존 200,000원 확인선의 재시험이 진행 중입니다.\n\n📊 수급(주요 3주체) · 8/27 기준\n당일: 외국인 -9,310주 · 기관 +4,731주 · 개인 +4,541주\n5일: 외국인 +4.8만주 · 기관 +7.8만주 · 개인 -12.1만주\n20일: 외국인 +21.6만주 · 기관 +1.6만주 · 개인 -22.1만주\n외국인 보유: 3,490.3만주 · 46.5%\n수급 점수: 90 · 20일 기준 기타 투자주체 영향 큼\n\n📐 Valuation\nPER = 현재가 ÷ TTM EPS = 203,500원 ÷ 20,548원 = 9.9배\nPBR = 현재가 ÷ BVPS = 203,500원 ÷ 145,223.80원 = 1.4배\nfPER = 현재가 ÷ 내부 정상화 마진 추정 EPS = 203,500원 ÷ 22,380.20원 = 9.1배\nfPBR = 현재가 ÷ 내부 FY1 추정 BVPS = 203,500원 ÷ 145,513.28원 = 1.4배\n※ 내부 모델 추정치이며 시장 컨센서스가 아닙니다.\n과거 대비:\nPER 중앙값 6.1배 · 90백분위 · PBR 중앙값 1.0배 · 84백분위\n현재 Valuation: 부담 구간\n해석: 현재 배수를 그 시점에 공개된 재무정보로 재구성한 역사적 분포와 비교했습니다.\n\n📌 다음 확인\n• PCTC 운임\n• 완성차 해상운송 물량\n• 현대차그룹 물량 비중",
+      "family_consensus_safe": false,
+      "lookahead_leak": 0,
+      "numeric_bindings": [
+        {
+          "currency": "KRW",
+          "fact_ref": "current-price:086280:2026-08-27",
+          "owner": "CURRENT_PRICE_STRUCTURE",
+          "semantic_type": "CURRENT_PRICE",
+          "value": "203500.0"
+        },
+        {
+          "currency": "KRW",
+          "display": "약 20.2만~20.32만원",
+          "fact_ref": "v3-zone:cd8d8b21cb52a2b5a3f3",
+          "owner": "CURRENT_PRICE_STRUCTURE",
+          "raw_high": "203106.500000",
+          "raw_low": "202093.500000",
+          "semantic_type": "NEAREST_SUPPORT",
+          "source_refs": [
+            "v3-balance-box:210a55f34b656453984f"
+          ]
+        },
+        {
+          "currency": "KRW",
+          "display": "약 21.2만~21.5만원",
+          "fact_ref": "v3-zone:52899ec27ff00a5feddb",
+          "owner": "CURRENT_PRICE_STRUCTURE",
+          "raw_high": "214033.750000",
+          "raw_low": "212966.250000",
+          "semantic_type": "NEAREST_RESISTANCE",
+          "source_refs": [
+            "v3-balance-box:6fd77dce5629435129ee"
+          ]
+        },
+        {
+          "currency": "KRW",
+          "display": "약 17.8만~18만원",
+          "fact_ref": "v3-zone:dea8801e7bdafe709254",
+          "owner": "CURRENT_PRICE_STRUCTURE",
+          "raw_high": "179462.537500",
+          "raw_low": "178567.462500",
+          "semantic_type": "MAJOR_SUPPORT",
+          "source_refs": [
+            "v3-bollinger:0f6e23a0d81b93c818af"
+          ]
+        }
+      ],
+      "partial_bar_used_for_pivot_confirmation": 0,
+      "price_as_of": "2026-08-27",
+      "section": "📐 현재 가격 구조\n• 기준 종가: 203,500원\n• 가까운 지지: 약 20.2만~20.32만원\n• 가까운 저항: 약 21.2만~21.5만원\n• 주요 구조: 지지 약 17.8만~18만원",
+      "stored_rule_present": true,
+      "stored_rule_separated": true,
+      "summary": {
+        "fib_sr_confluence": null,
+        "fib_sr_confluence_state": "NO_MEANINGFUL_SR_OVERLAP",
+        "major_cross_timeframe_zone": {
+          "active_relevance": "ACTIVE_NEAR",
+          "as_of": "2026-08-27",
+          "confirmation_quality": "1.000000",
+          "contract": "deterministic-sr-base-layer-v1",
+          "currency": "KRW",
+          "current_role": "RESISTANCE",
+          "display": "약 21.2만~21.5만원",
+          "distance_pct": "4.651634",
+          "evidence_family_score": "3.550000",
+          "fallback_reason": null,
+          "last_meaningful_interaction": "2026-08-24",
+          "proximity_tier": "NEAR",
+          "raw_high": "214173.925000",
+          "raw_low": "212966.075000",
+          "reaction_count": 0,
+          "requested_timeframe": "cross_timeframe",
+          "source_families": [
+            "BALANCE_BOX",
+            "BOLLINGER_WEEKLY"
+          ],
+          "source_refs": [
+            "v3-balance-box:6fd77dce5629435129ee",
+            "v3-bollinger:cf826ebc12af88182d0e"
+          ],
+          "source_timeframe": "monthly",
+          "source_timeframes": [
+            "monthly",
+            "weekly"
+          ],
+          "structural_score": 32,
+          "ticker": "086280",
+          "zone_id": "v3-zone:6f4c55867cef64e7b607"
+        },
+        "major_structural_resistance": {
+          "classification": "AVAILABLE_LOCAL",
+          "reason": null,
+          "zone": {
+            "active_relevance": "ACTIVE_NEAR",
+            "as_of": "2026-08-27",
+            "confirmation_quality": "1.000000",
+            "contract": "deterministic-sr-base-layer-v1",
+            "currency": "KRW",
+            "current_role": "RESISTANCE",
+            "display": "약 21.2만~21.5만원",
+            "distance_pct": "4.651720",
+            "evidence_family_score": "1.100000",
+            "fallback_reason": null,
+            "last_meaningful_interaction": "2026-08-03",
+            "proximity_tier": "NEAR",
+            "raw_high": "214033.750000",
+            "raw_low": "212966.250000",
+            "reaction_count": 0,
+            "requested_timeframe": "summary",
+            "source_families": [
+              "BALANCE_BOX"
+            ],
+            "source_refs": [
+              "v3-balance-box:6fd77dce5629435129ee"
+            ],
+            "source_timeframe": "monthly",
+            "source_timeframes": [
+              "monthly"
+            ],
+            "structural_score": 31,
+            "ticker": "086280",
+            "zone_id": "v3-zone:52899ec27ff00a5feddb"
+          }
+        },
+        "major_structural_support": {
+          "classification": "AVAILABLE_LOCAL",
+          "reason": null,
+          "zone": {
+            "active_relevance": "ACTIVE_NEAR",
+            "as_of": "2026-08-27",
+            "confirmation_quality": "1.000000",
+            "contract": "deterministic-sr-base-layer-v1",
+            "currency": "KRW",
+            "current_role": "SUPPORT",
+            "display": "약 17.8만~18만원",
+            "distance_pct": "11.812021",
+            "evidence_family_score": "1.200000",
+            "fallback_reason": null,
+            "last_meaningful_interaction": "2026-08-03",
+            "proximity_tier": "NEAR",
+            "raw_high": "179462.537500",
+            "raw_low": "178567.462500",
+            "reaction_count": 0,
+            "requested_timeframe": "summary",
+            "source_families": [
+              "BOLLINGER_MONTHLY"
+            ],
+            "source_refs": [
+              "v3-bollinger:0f6e23a0d81b93c818af"
+            ],
+            "source_timeframe": "monthly",
+            "source_timeframes": [
+              "monthly"
+            ],
+            "structural_score": 31,
+            "ticker": "086280",
+            "zone_id": "v3-zone:dea8801e7bdafe709254"
+          }
+        },
+        "nearest_cross_timeframe_reason": null,
+        "nearest_cross_timeframe_zone": {
+          "active_relevance": "ACTIVE_NEAR",
+          "as_of": "2026-08-27",
+          "confirmation_quality": "1.000000",
+          "contract": "deterministic-sr-base-layer-v1",
+          "currency": "KRW",
+          "current_role": "RESISTANCE",
+          "display": "약 21.2만~21.5만원",
+          "distance_pct": "4.651634",
+          "evidence_family_score": "3.550000",
+          "fallback_reason": null,
+          "last_meaningful_interaction": "2026-08-24",
+          "proximity_tier": "NEAR",
+          "raw_high": "214173.925000",
+          "raw_low": "212966.075000",
+          "reaction_count": 0,
+          "requested_timeframe": "cross_timeframe",
+          "source_families": [
+            "BALANCE_BOX",
+            "BOLLINGER_WEEKLY"
+          ],
+          "source_refs": [
+            "v3-balance-box:6fd77dce5629435129ee",
+            "v3-bollinger:cf826ebc12af88182d0e"
+          ],
+          "source_timeframe": "monthly",
+          "source_timeframes": [
+            "monthly",
+            "weekly"
+          ],
+          "structural_score": 32,
+          "ticker": "086280",
+          "zone_id": "v3-zone:6f4c55867cef64e7b607"
+        },
+        "nearest_resistance": {
+          "classification": "AVAILABLE_LOCAL",
+          "reason": null,
+          "zone": {
+            "active_relevance": "ACTIVE_NEAR",
+            "as_of": "2026-08-27",
+            "confirmation_quality": "1.000000",
+            "contract": "deterministic-sr-base-layer-v1",
+            "currency": "KRW",
+            "current_role": "RESISTANCE",
+            "display": "약 21.2만~21.5만원",
+            "distance_pct": "4.651720",
+            "evidence_family_score": "1.100000",
+            "fallback_reason": null,
+            "last_meaningful_interaction": "2026-08-03",
+            "proximity_tier": "NEAR",
+            "raw_high": "214033.750000",
+            "raw_low": "212966.250000",
+            "reaction_count": 0,
+            "requested_timeframe": "summary",
+            "source_families": [
+              "BALANCE_BOX"
+            ],
+            "source_refs": [
+              "v3-balance-box:6fd77dce5629435129ee"
+            ],
+            "source_timeframe": "monthly",
+            "source_timeframes": [
+              "monthly"
+            ],
+            "structural_score": 31,
+            "ticker": "086280",
+            "zone_id": "v3-zone:52899ec27ff00a5feddb"
+          }
+        },
+        "nearest_support": {
+          "classification": "AVAILABLE_LOCAL",
+          "reason": null,
+          "zone": {
+            "active_relevance": "ACTIVE_NEAR",
+            "as_of": "2026-08-27",
+            "confirmation_quality": "1.000000",
+            "contract": "deterministic-sr-base-layer-v1",
+            "currency": "KRW",
+            "current_role": "SUPPORT",
+            "display": "약 20.2만~20.32만원",
+            "distance_pct": "0.193366",
+            "evidence_family_score": "1.100000",
+            "fallback_reason": null,
+            "last_meaningful_interaction": "2026-08-24",
+            "proximity_tier": "NEAR",
+            "raw_high": "203106.500000",
+            "raw_low": "202093.500000",
+            "reaction_count": 0,
+            "requested_timeframe": "summary",
+            "source_families": [
+              "BALANCE_BOX"
+            ],
+            "source_refs": [
+              "v3-balance-box:210a55f34b656453984f"
+            ],
+            "source_timeframe": "weekly",
+            "source_timeframes": [
+              "weekly"
+            ],
+            "structural_score": 21,
+            "ticker": "086280",
+            "zone_id": "v3-zone:cd8d8b21cb52a2b5a3f3"
+          }
+        },
+        "no_resistance_reason": null,
+        "no_wave_reason": "NO_VALID_WAVE"
+      },
+      "target_session": "2026-08-27",
+      "ticker": "086280",
+      "unsupported_stop": 0,
+      "unsupported_target": 0
+    }
+  ],
+  "target_session": "2026-08-27"
+}

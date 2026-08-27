@@ -1,0 +1,15 @@
+{
+  "blocking_reason": [
+    "dedicated_test_sink_not_configured"
+  ],
+  "contract": "kr-top3-price-structure-rollout-status-v1",
+  "enablement_action": "DO_NOT_ENABLE",
+  "kr_price_structure": "IMPLEMENTED_DEFAULT_OFF",
+  "kr_rollout": "NOT_ENABLED",
+  "market_top3": "IMPLEMENTED_DEFAULT_OFF",
+  "natural_kr_market_top3": "PENDING",
+  "natural_kr_price_structure": "PENDING",
+  "production_delivery_intent_created": 0,
+  "test_delivery_count": 0,
+  "us_price_structure": "OFF"
+}

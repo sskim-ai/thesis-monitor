@@ -2,6 +2,24 @@
 
 Repository: `sskim-ai/thesis-monitor`
 
+Latest authoritative work follows instruction commit
+`0c95ddc9be319dbacc5ce1d824802e0c3c72fed1` and implementation commit
+`a7de99c2d1d1211615e0fcbf4bd3eadc06d957fb`. Read the bundled 2026-08-27 KR TOP3 / Price
+Structure reports, especially `20260827-kr-rollout-gate-matrix.json`, sink isolation, exact local
+previews, per-ticker audit, validation, and artifact index.
+
+Track A/B code is complete and default OFF. Run-42 TOP3 and seven monitored-KR SR-only previews
+pass, but no dedicated non-production Telegram sink is configured. Therefore Track C sent zero
+messages and Track D did not start. `KR_ROLLOUT=NOT_ENABLED`, P0/material P1 is `0/1`, and the sole
+P1 is `dedicated_test_sink_not_configured`.
+
+Next action: configure exactly one dedicated TEST recipient that differs from production, then
+rerun Track C once. Do not use the production recipient, manually run a Scheduled Task, enable the
+KR guards, enable US Price Structure, or turn on Production Assist. Keep current natural monitoring
+independent.
+
+---
+
 Latest authoritative bounded KR message repair follows exact instruction commit
 `794c6f5d956d0928eac0113d658fede58b1266dc` and implementation commit
 `6a54db130e95e25969a5ca0a100648d4a12c3aa2`. Read
