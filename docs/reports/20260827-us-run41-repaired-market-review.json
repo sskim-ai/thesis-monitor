@@ -1,0 +1,171 @@
+{
+  "core_judgment": {
+    "fact_ids": [
+      "market:index:SPY",
+      "market:index:QQQ",
+      "market:index:IWM",
+      "market:sector:SOXX"
+    ],
+    "text": "현재 세션에서 상승은 S&P500·Nasdaq·반도체, 하락은 Russell 2000이었습니다."
+  },
+  "facts_used": [
+    "market:real_yield:DFII10",
+    "market:oil:DCOILWTICO",
+    "market:nominal_yield:DGS10",
+    "market:index:SPY",
+    "market:index:QQQ",
+    "market:index:IWM",
+    "market:sector:SOXX",
+    "market:style:RSP",
+    "market:sector:XLI",
+    "market:sector:XLV"
+  ],
+  "frameworks_used": [
+    "fact_interpretation_unknown",
+    "market_expectations",
+    "multiple_expansion_compression",
+    "macro_transmission",
+    "monitoring_data_quality"
+  ],
+  "important_changes": [
+    {
+      "fact_ids": [
+        "market:style:RSP",
+        "market:index:SPY"
+      ],
+      "text": "동일가중 S&P500은 상승해 시가총액가중 S&P500과 방향이 같았습니다."
+    },
+    {
+      "fact_ids": [
+        "market:sector:XLI",
+        "market:sector:XLV"
+      ],
+      "text": "업종 프록시에서는 산업재가 가장 강했고 헬스케어가 가장 약했습니다."
+    }
+  ],
+  "market_assumptions": {
+    "fact_ids": [
+      "market:real_yield:DFII10",
+      "market:oil:DCOILWTICO"
+    ],
+    "text": "연착륙과 점진적 디스인플레이션 가정은 유지하되, 금리와 유가의 하루 변화만으로 AI 주문·기업 마진·현금흐름 가정을 바꾸지 않습니다. 한국 야간선물의 최신 완료 세션은 확인되지 않았습니다."
+  },
+  "market_context": {
+    "fact_ids": [
+      "market:index:SPY",
+      "market:index:QQQ",
+      "market:index:IWM",
+      "market:sector:SOXX",
+      "market:style:RSP",
+      "market:sector:XLI",
+      "market:sector:XLV"
+    ],
+    "text": "현재 세션의 지수 방향, 동일가중 참여, 업종 분산을 먼저 보고 공식 거시 관측은 보조 맥락으로 둡니다."
+  },
+  "next_checks": [
+    {
+      "fact_ids": [
+        "market:real_yield:DFII10",
+        "market:nominal_yield:DGS10"
+      ],
+      "text": "다음 공식 실질금리와 명목금리 관측에서 할인율 완화가 이어지는지 확인합니다."
+    },
+    {
+      "fact_ids": [
+        "market:oil:DCOILWTICO"
+      ],
+      "text": "다음 공식 WTI 관측에서 유가 하락이 지속되는지와 에너지 업종 가격 반응이 같은 방향인지 확인합니다."
+    }
+  ],
+  "numeric_claims": [
+    {
+      "fact_id": "market:real_yield:DFII10",
+      "field_path": "fields.change_bp",
+      "semantic_type": "real_yield_change_bp",
+      "text_ref": "core_judgment.text",
+      "unit": "bp",
+      "usage": "미국 10년물 실질금리 변동 -6bp",
+      "value": -6.000000000000005
+    },
+    {
+      "fact_id": "market:oil:DCOILWTICO",
+      "field_path": "fields.return_pct",
+      "semantic_type": "oil_return_pct",
+      "text_ref": "core_judgment.text",
+      "unit": "pct",
+      "usage": "WTI 등락률 -3%",
+      "value": -2.9833
+    },
+    {
+      "fact_id": "market:nominal_yield:DGS10",
+      "field_path": "fields.change_bp",
+      "semantic_type": "nominal_yield_change_bp",
+      "text_ref": "core_judgment.text",
+      "unit": "bp",
+      "usage": "미국 10년물 금리 변동 -6bp",
+      "value": -6.00000000000005
+    },
+    {
+      "fact_id": "market:real_yield:DFII10",
+      "field_path": "fields.change_bp",
+      "semantic_type": "real_yield_change_bp",
+      "text_ref": "important_changes[0].text",
+      "unit": "bp",
+      "usage": "미국 10년물 실질금리 변동 -6bp",
+      "value": -6.000000000000005
+    },
+    {
+      "fact_id": "market:oil:DCOILWTICO",
+      "field_path": "fields.return_pct",
+      "semantic_type": "oil_return_pct",
+      "text_ref": "important_changes[1].text",
+      "unit": "pct",
+      "usage": "WTI 등락률 -3%",
+      "value": -2.9833
+    },
+    {
+      "fact_id": "market:nominal_yield:DGS10",
+      "field_path": "fields.change_bp",
+      "semantic_type": "nominal_yield_change_bp",
+      "text_ref": "important_changes[2].text",
+      "unit": "bp",
+      "usage": "미국 10년물 금리 변동 -6bp",
+      "value": -6.00000000000005
+    }
+  ],
+  "portfolio_transmission": [
+    {
+      "fact_ids": [
+        "market:real_yield:DFII10"
+      ],
+      "portfolio_group": "biotech",
+      "text": "실질금리 하락은 RXRX의 장기 옵션 가치와 자금조달 민감도에 우호적일 수 있으나 임상 이정표·현금소진·희석 조건이 판단을 결정합니다."
+    },
+    {
+      "fact_ids": [
+        "market:real_yield:DFII10"
+      ],
+      "portfolio_group": "automotive",
+      "text": "실질금리 하락은 TSLA의 장기 성장 옵션 할인율에는 우호적일 수 있지만 판매량·마진·현금흐름의 확인을 대체하지 않습니다."
+    },
+    {
+      "fact_ids": [
+        "market:real_yield:DFII10"
+      ],
+      "portfolio_group": "semiconductor",
+      "text": "실질금리 하락은 TSM을 포함한 반도체 성장주의 멀티플 부담을 낮출 수 있지만 첨단공정 수요·가동률·마진 확인이 우선입니다."
+    },
+    {
+      "fact_ids": [
+        "market:nominal_yield:DGS10"
+      ],
+      "portfolio_group": "general",
+      "text": "명목금리 하락은 CRCL의 성장주 할인율에는 우호적이지만 준비금 수익의 금리 민감도와 비이자 플랫폼 수익의 순효과를 따로 확인해야 합니다."
+    }
+  ],
+  "unknowns": [
+    "시장 breadth는 제공되지 않아 상승의 폭을 판단할 수 없습니다.",
+    "시장 전체 투자주체 흐름은 제공되지 않았습니다.",
+    "한국 야간선물의 최신 완료 세션을 확인하지 못해 한국 개장 전 가격 맥락은 Unknown입니다."
+  ]
+}

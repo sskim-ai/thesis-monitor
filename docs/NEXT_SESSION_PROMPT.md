@@ -361,3 +361,16 @@ Do not arm production from this handoff. The next task, only when separately ins
 gate that rejected all 13 incomplete US `2026-08-26` stubs, use the per-subject ELIGIBLE versus
 ELIGIBLE_SR_ONLY result, preserve existing holder invalidation and price-rule history, and leave
 business text and all non-price-structure surfaces unchanged.
+
+The latest bounded US repair is replay-complete. Instruction commit is
+`c17f67a5d385b51d1249aa7b3d5452207938f084`; integrated implementation is
+`069f002437163bff1df7aa6e258918c1777d5dfa`. Start by reading
+`docs/reports/20260827-us-bounded-repair-readiness.json` and its artifact index.
+
+Next action: `WAIT_FOR_NEXT_NATURAL_US_MORNING`. Do not run a Scheduled Task or send Telegram.
+For the next naturally scheduled US packet, inspect shared digest plan identity, current ETF slot,
+selected RSP and sector slots, macro subordination, AI/fallback route, exact delivery, runtime
+receipt, duplicates, and orphans. Only a natural PASS may set `US_TRACK_A=LIVE_PASS`.
+
+Natural KR reproof continues independently. Do not start Price Structure Track C and do not arm
+Price Structure v3. Production Assist remains OFF.

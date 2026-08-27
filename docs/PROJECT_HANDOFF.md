@@ -1726,3 +1726,18 @@ runtime quality passed because it does not enforce this cross-section survival. 
 material P1 and no P0. State is `MATERIAL_P1_FOUND_STOP`; Track A is
 `BOUNDED_REPAIR_REQUIRED`; next action is `BOUNDED_US_MARKET_REPAIR`. Do not fold the repair into
 this report-only branch. KR natural proof stays pending and Price Structure Track C stays blocked.
+
+Latest bounded US market repair follows instruction commit
+`c17f67a5d385b51d1249aa7b3d5452207938f084` and integrated implementation
+`069f002437163bff1df7aa6e258918c1777d5dfa`. Read
+`docs/architecture/US_MARKET_DIGEST_PLAN.md`,
+`docs/architecture/MARKET_EVIDENCE_UTILIZATION_VALIDATOR.md`, and
+`docs/reports/20260827-us-bounded-repair-readiness.json` first. Immutable run 41 proves the old
+macro-only digest now fails and repaired AI/fallback candidates consume current ETF, RSP, and
+sector-dispersion slots from one shared plan. Breadth remains unavailable without zero fill.
+
+State is `REPLAY_PASS_NATURAL_REPROOF_PENDING`, not `LIVE_PASS`. Wait for the next natural US
+morning. Do not trigger a task or send Telegram. Verify the naturally produced shared plan,
+current-session slot consumption, optional macro subordination, exact delivery, receipt, duplicate
+count, and orphan count read-only. Keep the KR natural reproof separate, Price Structure Track C at
+`DO_NOT_START`, v3 unarmed, and Production Assist OFF.

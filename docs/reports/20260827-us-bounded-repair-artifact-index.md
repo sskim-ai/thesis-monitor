@@ -1,0 +1,37 @@
+# US Bounded Repair Artifact Index
+
+- Run: `41`
+- Packet: `2026-08-27-us-run-41-ae4f42c23abc`
+- Target session: `2026-08-26`
+- Implementation SHA: `069f002437163bff1df7aa6e258918c1777d5dfa`
+- Replay mode: immutable archive read-only
+
+- `docs/work-instructions/20260827-bounded-us-current-session-market-evidence-consumption-repair.md`
+- `docs/work-instructions/tracks/20260827-track-a-us-shared-market-digest-plan-repair.md`
+- `docs/work-instructions/tracks/20260827-track-b-us-market-evidence-utilization-validator.md`
+- `docs/work-instructions/tracks/20260827-track-c-us-run41-integration-replay-and-natural-reproof.md`
+- `docs/architecture/US_MARKET_DIGEST_EVIDENCE_OWNERSHIP.md`
+- `docs/architecture/US_MARKET_DIGEST_PLAN.md`
+- `docs/architecture/MARKET_EVIDENCE_UTILIZATION_VALIDATOR.md`
+- `docs/reports/20260827-us-bounded-repair-artifact-index.md`
+- `docs/reports/20260827-us-bounded-repair-readiness.json`
+- `docs/reports/20260827-us-bounded-repair-readiness.md`
+- `docs/reports/20260827-us-bounded-repair-test-ci-summary.md`
+- `docs/reports/20260827-us-current-session-evidence-root-cause.md`
+- `docs/reports/20260827-us-evidence-utilization-validator.md`
+- `docs/reports/20260827-us-market-evidence-selection-policy.md`
+- `docs/reports/20260827-us-market-message-safety-parity.md`
+- `docs/reports/20260827-us-run41-ai-after.txt`
+- `docs/reports/20260827-us-run41-ai-fallback-after-repair.md`
+- `docs/reports/20260827-us-run41-before-after-digest.md`
+- `docs/reports/20260827-us-run41-evidence-utilization-after.json`
+- `docs/reports/20260827-us-run41-evidence-utilization-after.md`
+- `docs/reports/20260827-us-run41-fallback-after.txt`
+- `docs/reports/20260827-us-run41-repaired-market-review.json`
+- `docs/reports/20260827-us-run41-shared-plan.json`
+- `docs/reports/20260827-us-run41-shared-plan.md`
+- `docs/reports/20260827-us-run41-validator-result.json`
+- `docs/reports/20260827-us-run41-validator-result.md`
+- `docs/reports/20260827-us-shared-market-digest-plan.md`
+- `docs/reports/20260827-us-track-a-implementation-notes.md`
+- `docs/reports/20260827-us-track-b-implementation-notes.md`

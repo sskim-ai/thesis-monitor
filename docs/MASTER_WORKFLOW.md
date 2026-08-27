@@ -1499,3 +1499,29 @@ deterministic fallback shares this omission. Seven required material rows are lo
 `BOUNDED_REPAIR_REQUIRED`; perform no repair inside the review. The next separately instructed task
 is `BOUNDED_US_MARKET_REPAIR`. Natural KR proof continues independently, Track C remains
 `DO_NOT_START`, v3 remains unarmed, and production safety settings remain unchanged.
+
+### 40.11 Bounded US Current-Session Market Evidence Repair
+
+Exact instruction commit `c17f67a5d385b51d1249aa7b3d5452207938f084` precedes independent
+Track A implementation `c4b02a10c2b7da0184c7dba26c7c1db39344f258`, Track B implementation
+`2f7d6853605541a81e430754d7b6fea98ccbbbea`, and integrated implementation
+`069f002437163bff1df7aa6e258918c1777d5dfa`.
+
+`us-market-digest-plan-v1` establishes one current-session-first evidence plan for structured AI
+and deterministic fallback. The semantic order is current market, RSP participation/style, sector
+dispersion, official breadth, then macro context. Near-flat SPY/QQQ/IWM/SOXX observations remain
+primary; RSP is never called exchange breadth; current directional sector leader/laggard ranking is
+calculated once in the backend plan; level-only sectors and unavailable breadth stay fail-closed.
+
+`market-evidence-utilization-validator-v1` checks plan slots, canonical refs, and structured
+interpretation refs without keyword scanning or numeric-dump requirements. On immutable run 41,
+the historical macro-only digest fails with core, RSP, sector, and macro-substitution errors. The
+repaired concise AI and fallback candidates share plan SHA
+`8761a2f65a3ae6b429f1d7feb0a4ab67bd5120ca0d27526ed9fc6f9b570ce8ef` and pass with all material
+loss counters zero.
+
+State is `REPLAY_PASS_NATURAL_REPROOF_PENDING`, with open P0/material P1 `0/0`. Do not claim
+`LIVE_PASS` from replay. Wait for the next naturally scheduled US morning run and inspect its
+packet, shared plan, route, exact delivery, evidence utilization, receipt, and exactly-once state
+read-only. Natural KR reproof remains independent. `PRICE_STRUCTURE_TRACK_C=DO_NOT_START`, Price
+Structure v3 remains `INTEGRATED_READY_NOT_ARMED`, and Production Assist remains OFF.

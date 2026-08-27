@@ -1,0 +1,172 @@
+{
+  "historical": {
+    "contract": "market-evidence-utilization-validator-v1",
+    "counters": {
+      "CORE_MARKET_SLOT_UNCONSUMED": 1,
+      "MACRO_ONLY_DIGEST_WHEN_CURRENT_MARKET_AVAILABLE": 1,
+      "SELECTED_BREADTH_SLOT_UNCONSUMED": 0,
+      "SELECTED_RSP_SLOT_UNCONSUMED": 1,
+      "SELECTED_SECTOR_DISPERSION_UNCONSUMED": 1,
+      "UNEXPLAINED_MATERIAL_EVIDENCE_OMISSION": 0,
+      "US_MARKET_DIGEST_MATERIAL_INFORMATION_LOSS": 3,
+      "VALIDATOR_FORCED_NUMERIC_DUMP": 0
+    },
+    "errors": [
+      "CORE_MARKET_SLOT_UNCONSUMED",
+      "SELECTED_RSP_SLOT_UNCONSUMED",
+      "SELECTED_SECTOR_DISPERSION_UNCONSUMED",
+      "MACRO_ONLY_DIGEST_WHEN_CURRENT_MARKET_AVAILABLE"
+    ],
+    "slot_results": [
+      {
+        "consumed_refs": [],
+        "evidence_refs": [
+          "market:index:SPY",
+          "market:index:QQQ",
+          "market:index:IWM",
+          "market:sector:SOXX"
+        ],
+        "omission_reason": "SELECTED",
+        "required_consumption": true,
+        "selected": true,
+        "slot": "CURRENT_MARKET",
+        "status": "FAIL"
+      },
+      {
+        "consumed_refs": [],
+        "evidence_refs": [
+          "market:style:RSP",
+          "market:index:SPY"
+        ],
+        "omission_reason": "SELECTED",
+        "required_consumption": true,
+        "selected": true,
+        "slot": "PARTICIPATION_STYLE",
+        "status": "FAIL"
+      },
+      {
+        "consumed_refs": [],
+        "evidence_refs": [
+          "market:sector:XLI",
+          "market:sector:XLV"
+        ],
+        "omission_reason": "SELECTED",
+        "required_consumption": true,
+        "selected": true,
+        "slot": "SECTOR_DISPERSION",
+        "status": "FAIL"
+      },
+      {
+        "consumed_refs": [],
+        "evidence_refs": [],
+        "omission_reason": "OMITTED_UNAVAILABLE",
+        "required_consumption": false,
+        "selected": false,
+        "slot": "BREADTH_STATE",
+        "status": "PASS"
+      },
+      {
+        "consumed_refs": [
+          "market:real_yield:DFII10"
+        ],
+        "evidence_refs": [
+          "market:real_yield:DFII10"
+        ],
+        "omission_reason": "SELECTED",
+        "required_consumption": false,
+        "selected": true,
+        "slot": "MACRO_CONTEXT",
+        "status": "PASS"
+      }
+    ],
+    "status": "FAIL"
+  },
+  "repaired": {
+    "contract": "market-evidence-utilization-validator-v1",
+    "counters": {
+      "CORE_MARKET_SLOT_UNCONSUMED": 0,
+      "MACRO_ONLY_DIGEST_WHEN_CURRENT_MARKET_AVAILABLE": 0,
+      "SELECTED_BREADTH_SLOT_UNCONSUMED": 0,
+      "SELECTED_RSP_SLOT_UNCONSUMED": 0,
+      "SELECTED_SECTOR_DISPERSION_UNCONSUMED": 0,
+      "UNEXPLAINED_MATERIAL_EVIDENCE_OMISSION": 0,
+      "US_MARKET_DIGEST_MATERIAL_INFORMATION_LOSS": 0,
+      "VALIDATOR_FORCED_NUMERIC_DUMP": 0
+    },
+    "errors": [],
+    "slot_results": [
+      {
+        "consumed_refs": [
+          "market:index:SPY",
+          "market:index:QQQ",
+          "market:index:IWM",
+          "market:sector:SOXX"
+        ],
+        "evidence_refs": [
+          "market:index:SPY",
+          "market:index:QQQ",
+          "market:index:IWM",
+          "market:sector:SOXX"
+        ],
+        "omission_reason": "SELECTED",
+        "required_consumption": true,
+        "selected": true,
+        "slot": "CURRENT_MARKET",
+        "status": "PASS"
+      },
+      {
+        "consumed_refs": [
+          "market:style:RSP",
+          "market:index:SPY"
+        ],
+        "evidence_refs": [
+          "market:style:RSP",
+          "market:index:SPY"
+        ],
+        "omission_reason": "SELECTED",
+        "required_consumption": true,
+        "selected": true,
+        "slot": "PARTICIPATION_STYLE",
+        "status": "PASS"
+      },
+      {
+        "consumed_refs": [
+          "market:sector:XLI",
+          "market:sector:XLV"
+        ],
+        "evidence_refs": [
+          "market:sector:XLI",
+          "market:sector:XLV"
+        ],
+        "omission_reason": "SELECTED",
+        "required_consumption": true,
+        "selected": true,
+        "slot": "SECTOR_DISPERSION",
+        "status": "PASS"
+      },
+      {
+        "consumed_refs": [],
+        "evidence_refs": [],
+        "omission_reason": "OMITTED_UNAVAILABLE",
+        "required_consumption": false,
+        "selected": false,
+        "slot": "BREADTH_STATE",
+        "status": "PASS"
+      },
+      {
+        "consumed_refs": [
+          "market:real_yield:DFII10"
+        ],
+        "evidence_refs": [
+          "market:real_yield:DFII10"
+        ],
+        "omission_reason": "SELECTED",
+        "required_consumption": false,
+        "selected": true,
+        "slot": "MACRO_CONTEXT",
+        "status": "PASS"
+      }
+    ],
+    "status": "PASS"
+  }
+}

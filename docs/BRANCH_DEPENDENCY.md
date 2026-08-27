@@ -330,3 +330,17 @@ from both AI and deterministic market digests. A future `BOUNDED_US_MARKET_REPAI
 the promoted review state and preserve temporal roles, level-only semantics, exact-session breadth
 fail-closed behavior, numeric binding, canary limits, and fallback parity. It must not depend on or
 arm Price Structure Track C; KR natural reproof remains a separate pending dependency.
+
+The bounded US current-session evidence repair starts from immutable instruction commit
+`c17f67a5d385b51d1249aa7b3d5452207938f084`, whose parent is promoted review main
+`d625eaca37a461f9754e080362778986cddb2b52`. Track A
+`c4b02a10c2b7da0184c7dba26c7c1db39344f258` and Track B
+`2f7d6853605541a81e430754d7b6fea98ccbbbea` are integrated by implementation
+`069f002437163bff1df7aa6e258918c1777d5dfa`.
+
+Any subsequent US natural-proof report must descend from this repair and preserve the shared
+current-session-first digest plan, typed omission reasons, RSP/style ownership, backend sector
+relation, evidence-ref utilization validator, existing numeric registry, and macro temporal
+policy. Replay is PASS at P0/material P1 `0/0`; the remaining dependency is one naturally scheduled
+US morning observation. This branch does not satisfy the separate KR natural gate, does not create
+Price Structure Track C, and does not arm v3.

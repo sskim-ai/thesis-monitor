@@ -1,0 +1,234 @@
+{
+  "contract": "us-bounded-current-session-market-repair-readiness-v1",
+  "gates": {
+    "AI_CALCULATED_MARKET_NUMERIC": 0,
+    "AI_CURRENT_SESSION_EVIDENCE_UTILIZATION": "PASS",
+    "AI_DERIVED_SECTOR_RANKING": 0,
+    "AI_DERIVED_SECTOR_RETURN": 0,
+    "AI_FALLBACK_MARKET_PLAN_DIVERGENCE": 0,
+    "AI_UNREGISTERED_NUMERIC": 0,
+    "ARCHIVE_REWRITE": 0,
+    "BUSINESS_THESIS_MUTATION": 0,
+    "CODE_CORRECTNESS": "PASS",
+    "CORE_ETF_ALL_DROPPED": 0,
+    "CORE_MARKET_SLOT_UNCONSUMED": 0,
+    "CURRENT_SESSION_CORE_MARKET_EVIDENCE_USED": "PASS",
+    "DB_MUTATION": 0,
+    "FALLBACK_CURRENT_SESSION_EVIDENCE_UTILIZATION": "PASS",
+    "KR_MARKET_DIGEST_REGRESSION": 0,
+    "LAGGING_WTI_AS_TODAY": 0,
+    "LEVEL_ONLY_DIRECTION_LEAK": 0,
+    "MACRO_ONLY_DIGEST_WHEN_CURRENT_MARKET_AVAILABLE": 0,
+    "MACRO_TEMPORAL_POLICY_DIFF": 0,
+    "MANUAL_TASK": 0,
+    "MATERIAL_SECTOR_EXTREMES_ALL_DROPPED": 0,
+    "OFFICIAL_ASSESSMENT_MUTATION": 0,
+    "PACKET_OWNERSHIP_CODE_DIFF": 0,
+    "PRICE_STRUCTURE_RUNTIME_ARMED": 0,
+    "PRICE_STRUCTURE_V3_CODE_DIFF": 0,
+    "PRIOR_VIX_AS_TODAY": 0,
+    "PRIOR_YIELD_AS_TODAY": 0,
+    "PUBLICATION_PENDING_AS_ZERO": 0,
+    "RSP_AS_EXCHANGE_BREADTH": 0,
+    "RSP_MATERIAL_EVIDENCE_DROPPED": 0,
+    "SELECTED_RSP_SLOT_UNCONSUMED": 0,
+    "SELECTED_SECTOR_DISPERSION_UNCONSUMED": 0,
+    "SUMMARY_ITEM_WITHOUT_TEMPORAL_BINDING": 0,
+    "TELEGRAM_SEND": 0,
+    "UNEXPLAINED_MATERIAL_EVIDENCE_OMISSION": 0,
+    "US_BOUNDED_REPAIR": "REPLAY_PASS_NATURAL_REPROOF_PENDING",
+    "US_CURRENT_SESSION_EVIDENCE_ROOT_CAUSE": "PASS",
+    "US_MARKET_DIGEST_MATERIAL_INFORMATION_LOSS": 0,
+    "US_NUMERIC_REGISTRY_POLICY_DIFF": 0,
+    "US_SHARED_MARKET_DIGEST_PLAN": "PASS",
+    "VALIDATOR_FORCED_NUMERIC_DUMP": 0
+  },
+  "historical_broken_validator": {
+    "contract": "market-evidence-utilization-validator-v1",
+    "counters": {
+      "CORE_MARKET_SLOT_UNCONSUMED": 1,
+      "MACRO_ONLY_DIGEST_WHEN_CURRENT_MARKET_AVAILABLE": 1,
+      "SELECTED_BREADTH_SLOT_UNCONSUMED": 0,
+      "SELECTED_RSP_SLOT_UNCONSUMED": 1,
+      "SELECTED_SECTOR_DISPERSION_UNCONSUMED": 1,
+      "UNEXPLAINED_MATERIAL_EVIDENCE_OMISSION": 0,
+      "US_MARKET_DIGEST_MATERIAL_INFORMATION_LOSS": 3,
+      "VALIDATOR_FORCED_NUMERIC_DUMP": 0
+    },
+    "errors": [
+      "CORE_MARKET_SLOT_UNCONSUMED",
+      "SELECTED_RSP_SLOT_UNCONSUMED",
+      "SELECTED_SECTOR_DISPERSION_UNCONSUMED",
+      "MACRO_ONLY_DIGEST_WHEN_CURRENT_MARKET_AVAILABLE"
+    ],
+    "slot_results": [
+      {
+        "consumed_refs": [],
+        "evidence_refs": [
+          "market:index:SPY",
+          "market:index:QQQ",
+          "market:index:IWM",
+          "market:sector:SOXX"
+        ],
+        "omission_reason": "SELECTED",
+        "required_consumption": true,
+        "selected": true,
+        "slot": "CURRENT_MARKET",
+        "status": "FAIL"
+      },
+      {
+        "consumed_refs": [],
+        "evidence_refs": [
+          "market:style:RSP",
+          "market:index:SPY"
+        ],
+        "omission_reason": "SELECTED",
+        "required_consumption": true,
+        "selected": true,
+        "slot": "PARTICIPATION_STYLE",
+        "status": "FAIL"
+      },
+      {
+        "consumed_refs": [],
+        "evidence_refs": [
+          "market:sector:XLI",
+          "market:sector:XLV"
+        ],
+        "omission_reason": "SELECTED",
+        "required_consumption": true,
+        "selected": true,
+        "slot": "SECTOR_DISPERSION",
+        "status": "FAIL"
+      },
+      {
+        "consumed_refs": [],
+        "evidence_refs": [],
+        "omission_reason": "OMITTED_UNAVAILABLE",
+        "required_consumption": false,
+        "selected": false,
+        "slot": "BREADTH_STATE",
+        "status": "PASS"
+      },
+      {
+        "consumed_refs": [
+          "market:real_yield:DFII10"
+        ],
+        "evidence_refs": [
+          "market:real_yield:DFII10"
+        ],
+        "omission_reason": "SELECTED",
+        "required_consumption": false,
+        "selected": true,
+        "slot": "MACRO_CONTEXT",
+        "status": "PASS"
+      }
+    ],
+    "status": "FAIL"
+  },
+  "implementation_sha": "069f002437163bff1df7aa6e258918c1777d5dfa",
+  "instruction_commit": "c17f67a5d385b51d1249aa7b3d5452207938f084",
+  "open_material_p1": [],
+  "open_p0": [],
+  "p2_backlog": [],
+  "packet_id": "2026-08-27-us-run-41-ae4f42c23abc",
+  "plan_sha256": "8761a2f65a3ae6b429f1d7feb0a4ab67bd5120ca0d27526ed9fc6f9b570ce8ef",
+  "price_structure_track_c": "DO_NOT_START",
+  "price_structure_v3": "INTEGRATED_READY_NOT_ARMED",
+  "production_assist": "OFF",
+  "ready": true,
+  "repaired_validator": {
+    "contract": "market-evidence-utilization-validator-v1",
+    "counters": {
+      "CORE_MARKET_SLOT_UNCONSUMED": 0,
+      "MACRO_ONLY_DIGEST_WHEN_CURRENT_MARKET_AVAILABLE": 0,
+      "SELECTED_BREADTH_SLOT_UNCONSUMED": 0,
+      "SELECTED_RSP_SLOT_UNCONSUMED": 0,
+      "SELECTED_SECTOR_DISPERSION_UNCONSUMED": 0,
+      "UNEXPLAINED_MATERIAL_EVIDENCE_OMISSION": 0,
+      "US_MARKET_DIGEST_MATERIAL_INFORMATION_LOSS": 0,
+      "VALIDATOR_FORCED_NUMERIC_DUMP": 0
+    },
+    "errors": [],
+    "slot_results": [
+      {
+        "consumed_refs": [
+          "market:index:SPY",
+          "market:index:QQQ",
+          "market:index:IWM",
+          "market:sector:SOXX"
+        ],
+        "evidence_refs": [
+          "market:index:SPY",
+          "market:index:QQQ",
+          "market:index:IWM",
+          "market:sector:SOXX"
+        ],
+        "omission_reason": "SELECTED",
+        "required_consumption": true,
+        "selected": true,
+        "slot": "CURRENT_MARKET",
+        "status": "PASS"
+      },
+      {
+        "consumed_refs": [
+          "market:style:RSP",
+          "market:index:SPY"
+        ],
+        "evidence_refs": [
+          "market:style:RSP",
+          "market:index:SPY"
+        ],
+        "omission_reason": "SELECTED",
+        "required_consumption": true,
+        "selected": true,
+        "slot": "PARTICIPATION_STYLE",
+        "status": "PASS"
+      },
+      {
+        "consumed_refs": [
+          "market:sector:XLI",
+          "market:sector:XLV"
+        ],
+        "evidence_refs": [
+          "market:sector:XLI",
+          "market:sector:XLV"
+        ],
+        "omission_reason": "SELECTED",
+        "required_consumption": true,
+        "selected": true,
+        "slot": "SECTOR_DISPERSION",
+        "status": "PASS"
+      },
+      {
+        "consumed_refs": [],
+        "evidence_refs": [],
+        "omission_reason": "OMITTED_UNAVAILABLE",
+        "required_consumption": false,
+        "selected": false,
+        "slot": "BREADTH_STATE",
+        "status": "PASS"
+      },
+      {
+        "consumed_refs": [
+          "market:real_yield:DFII10"
+        ],
+        "evidence_refs": [
+          "market:real_yield:DFII10"
+        ],
+        "omission_reason": "SELECTED",
+        "required_consumption": false,
+        "selected": true,
+        "slot": "MACRO_CONTEXT",
+        "status": "PASS"
+      }
+    ],
+    "status": "PASS"
+  },
+  "run": 41,
+  "target_session": "2026-08-26",
+  "track_a_commit": "c4b02a10c2b7da0184c7dba26c7c1db39344f258",
+  "track_b_commit": "2f7d6853605541a81e430754d7b6fea98ccbbbea",
+  "us_bounded_repair": "REPLAY_PASS_NATURAL_REPROOF_PENDING",
+  "us_track_a": "REPLAY_PASS_NATURAL_REPROOF_PENDING",
+  "validation_status": "PASS"
+}

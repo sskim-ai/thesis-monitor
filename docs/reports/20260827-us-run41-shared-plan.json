@@ -1,0 +1,108 @@
+{
+  "contract": "us-market-digest-plan-v1",
+  "items": [
+    {
+      "claim_text": "현재 세션에서 상승은 S&P500·Nasdaq·반도체, 하락은 Russell 2000이었습니다.",
+      "evidence_refs": [
+        "market:index:SPY",
+        "market:index:QQQ",
+        "market:index:IWM",
+        "market:sector:SOXX"
+      ],
+      "materiality": "current-session cross-section remains primary even when returns are near flat",
+      "numeric_refs": [
+        "market:index:SPY#fields.return_pct",
+        "market:index:QQQ#fields.return_pct",
+        "market:index:IWM#fields.return_pct",
+        "market:sector:SOXX#fields.return_pct"
+      ],
+      "observation_dates": [
+        "2026-08-26"
+      ],
+      "omission_reason": "SELECTED",
+      "priority": 1,
+      "required_consumption": true,
+      "slot": "CURRENT_MARKET",
+      "temporal_roles": [
+        "CURRENT_OBSERVATION"
+      ]
+    },
+    {
+      "claim_text": "동일가중 S&P500은 상승해 시가총액가중 S&P500과 방향이 같았습니다.",
+      "evidence_refs": [
+        "market:style:RSP",
+        "market:index:SPY"
+      ],
+      "materiality": "RSP is a participation-style proxy, not market breadth",
+      "numeric_refs": [
+        "market:style:RSP#fields.return_pct",
+        "market:index:SPY#fields.return_pct"
+      ],
+      "observation_dates": [
+        "2026-08-26"
+      ],
+      "omission_reason": "SELECTED",
+      "priority": 2,
+      "required_consumption": true,
+      "slot": "PARTICIPATION_STYLE",
+      "temporal_roles": [
+        "CURRENT_OBSERVATION"
+      ]
+    },
+    {
+      "claim_text": "업종 프록시에서는 산업재가 가장 강했고 헬스케어가 가장 약했습니다.",
+      "evidence_refs": [
+        "market:sector:XLI",
+        "market:sector:XLV"
+      ],
+      "materiality": "bounded current-session leader and laggard preserve sector dispersion",
+      "numeric_refs": [
+        "market:sector:XLI#fields.return_pct",
+        "market:sector:XLV#fields.return_pct"
+      ],
+      "observation_dates": [
+        "2026-08-26"
+      ],
+      "omission_reason": "SELECTED",
+      "priority": 3,
+      "required_consumption": true,
+      "slot": "SECTOR_DISPERSION",
+      "temporal_roles": [
+        "CURRENT_OBSERVATION"
+      ]
+    },
+    {
+      "claim_text": "",
+      "evidence_refs": [],
+      "materiality": "official breadth state is unavailable",
+      "numeric_refs": [],
+      "observation_dates": [],
+      "omission_reason": "OMITTED_UNAVAILABLE",
+      "priority": 4,
+      "required_consumption": false,
+      "slot": "BREADTH_STATE",
+      "temporal_roles": []
+    },
+    {
+      "claim_text": "보조 거시 맥락에서는 미국 10년물 실질금리가 하락했습니다.",
+      "evidence_refs": [
+        "market:real_yield:DFII10"
+      ],
+      "materiality": "macro is retained only after current-session market structure",
+      "numeric_refs": [
+        "market:real_yield:DFII10#fields.change_bp"
+      ],
+      "observation_dates": [
+        "2026-08-25"
+      ],
+      "omission_reason": "SELECTED",
+      "priority": 5,
+      "required_consumption": false,
+      "slot": "MACRO_CONTEXT",
+      "temporal_roles": [
+        "CURRENT_OBSERVATION"
+      ]
+    }
+  ],
+  "market": "US"
+}

@@ -1,0 +1,31 @@
+# US Evidence Utilization Validator
+
+- Run: `41`
+- Packet: `2026-08-27-us-run-41-ae4f42c23abc`
+- Target session: `2026-08-26`
+- Implementation SHA: `069f002437163bff1df7aa6e258918c1777d5dfa`
+- Replay mode: immutable archive read-only
+
+The validator uses slots and canonical refs, not prose keywords. The historical macro-only review fails; the repaired concise review passes without requiring exact ETF numbers.
+
+## Broken counters
+
+- `CORE_MARKET_SLOT_UNCONSUMED = 1`
+- `SELECTED_RSP_SLOT_UNCONSUMED = 1`
+- `SELECTED_SECTOR_DISPERSION_UNCONSUMED = 1`
+- `SELECTED_BREADTH_SLOT_UNCONSUMED = 0`
+- `MACRO_ONLY_DIGEST_WHEN_CURRENT_MARKET_AVAILABLE = 1`
+- `UNEXPLAINED_MATERIAL_EVIDENCE_OMISSION = 0`
+- `VALIDATOR_FORCED_NUMERIC_DUMP = 0`
+- `US_MARKET_DIGEST_MATERIAL_INFORMATION_LOSS = 3`
+
+## Repaired counters
+
+- `CORE_MARKET_SLOT_UNCONSUMED = 0`
+- `SELECTED_RSP_SLOT_UNCONSUMED = 0`
+- `SELECTED_SECTOR_DISPERSION_UNCONSUMED = 0`
+- `SELECTED_BREADTH_SLOT_UNCONSUMED = 0`
+- `MACRO_ONLY_DIGEST_WHEN_CURRENT_MARKET_AVAILABLE = 0`
+- `UNEXPLAINED_MATERIAL_EVIDENCE_OMISSION = 0`
+- `VALIDATOR_FORCED_NUMERIC_DUMP = 0`
+- `US_MARKET_DIGEST_MATERIAL_INFORMATION_LOSS = 0`

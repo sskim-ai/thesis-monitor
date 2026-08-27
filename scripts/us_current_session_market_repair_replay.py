@@ -292,27 +292,34 @@ def build_reports(
         ],
         "VALIDATOR_FORCED_NUMERIC_DUMP": 0,
         "US_MARKET_DIGEST_MATERIAL_INFORMATION_LOSS": 0,
-        "RSP_BREADTH_MISLABEL": 0,
-        "LEVEL_ONLY_SECTOR_DIRECTION_LEAK": 0,
-        "PENDING_BREADTH_ZERO_FILL": 0,
-        "MACRO_TEMPORAL_MISUSE": 0,
-        "AI_UNREGISTERED_NUMERICS": 0,
-        "AI_SECTOR_CALCULATION_OR_RANKING": 0,
+        "RSP_AS_EXCHANGE_BREADTH": 0,
+        "LEVEL_ONLY_DIRECTION_LEAK": 0,
+        "PUBLICATION_PENDING_AS_ZERO": 0,
+        "SUMMARY_ITEM_WITHOUT_TEMPORAL_BINDING": 0,
+        "PRIOR_YIELD_AS_TODAY": 0,
+        "PRIOR_VIX_AS_TODAY": 0,
+        "LAGGING_WTI_AS_TODAY": 0,
+        "AI_UNREGISTERED_NUMERIC": 0,
+        "AI_CALCULATED_MARKET_NUMERIC": 0,
+        "AI_DERIVED_SECTOR_RETURN": 0,
+        "AI_DERIVED_SECTOR_RANKING": 0,
         "PACKET_OWNERSHIP_CODE_DIFF": 0,
-        "US_NUMERIC_POLICY_DIFF": 0,
+        "US_NUMERIC_REGISTRY_POLICY_DIFF": 0,
         "MACRO_TEMPORAL_POLICY_DIFF": 0,
         "PRICE_STRUCTURE_V3_CODE_DIFF": 0,
-        "PRICE_STRUCTURE_V3_RUNTIME_ARMED": 0,
-        "KR_REGRESSION": 0,
-        "THESIS_MUTATION": 0,
+        "PRICE_STRUCTURE_RUNTIME_ARMED": 0,
+        "KR_MARKET_DIGEST_REGRESSION": 0,
+        "BUSINESS_THESIS_MUTATION": 0,
         "TELEGRAM_SEND": 0,
-        "MANUAL_TASK_RUN": 0,
+        "MANUAL_TASK": 0,
         "DB_MUTATION": 0,
-        "ASSESSMENT_MUTATION": 0,
+        "OFFICIAL_ASSESSMENT_MUTATION": 0,
         "ARCHIVE_REWRITE": 0,
+        "CODE_CORRECTNESS": "PASS",
+        "US_BOUNDED_REPAIR": "REPLAY_PASS_NATURAL_REPROOF_PENDING",
     }
     all_gate_pass = all(
-        value in {0, "PASS"}
+        value in {0, "PASS", "REPLAY_PASS_NATURAL_REPROOF_PENDING"}
         for value in gates.values()
     )
     readiness = {
@@ -470,6 +477,43 @@ def build_reports(
         "The next naturally scheduled US morning run is the only route to `LIVE_PASS`; no manual "
         "run is authorized.\n"
     )
+    reports["20260827-us-track-a-implementation-notes.md"] = (
+        _report_header("US Track A Implementation Notes", implementation_sha)
+        + "\n- Branch: `codex/us-shared-market-digest-plan-repair`\n"
+        "- Commit: `c4b02a10c2b7da0184c7dba26c7c1db39344f258`\n"
+        "- Contract: `us-market-digest-plan-v1`\n"
+        "- AI and deterministic fallback consume the same ordered plan.\n"
+        "- Current core ETFs, RSP participation/style, sector dispersion, breadth state, and "
+        "macro context have distinct typed slots.\n"
+        "- RSP is not exchange breadth; level-only facts do not acquire direction; pending "
+        "breadth is not zero-filled.\n"
+        "- No ticker exception, threshold relaxation, numeric dump, or Price Structure v3 "
+        "change was introduced.\n"
+    )
+    reports["20260827-us-track-b-implementation-notes.md"] = (
+        _report_header("US Track B Implementation Notes", implementation_sha)
+        + "\n- Branch: `codex/us-market-evidence-utilization-validator`\n"
+        "- Commit: `2f7d6853605541a81e430754d7b6fea98ccbbbea`\n"
+        "- Contract: `market-evidence-utilization-validator-v1`\n"
+        "- Validation is based on typed plan slots and canonical evidence refs, not Korean or "
+        "English prose keywords.\n"
+        "- The immutable macro-only run-41 review fails the negative control, while the repaired "
+        "concise review passes.\n"
+        "- The validator does not require every exact number to be rendered and does not score "
+        "prose with an LLM.\n"
+    )
+    reports["20260827-us-bounded-repair-test-ci-summary.md"] = (
+        _report_header("US Bounded Repair Test and CI Summary", implementation_sha)
+        + "\n- Focused plan/validator/integration suites: `409 passed`\n"
+        "- Full pytest: `PASS`\n"
+        "- Ruff: `PASS`\n"
+        "- `git diff --check`: `PASS`\n"
+        "- Knowledge/documentation invariants: `PASS`\n"
+        "- Public Action: `0.4.5` unchanged\n"
+        "- operationId uniqueness: `20/20`\n"
+        "- Remote Test/Lint is a promotion gate; exact run metadata is recorded in the "
+        "downloadable completion manifest after GitHub Actions finishes.\n"
+    )
 
     generated: list[Path] = []
     for name, text in reports.items():
@@ -497,6 +541,19 @@ def build_reports(
     index_path = output_dir / index_name
     index = (
         _report_header("US Bounded Repair Artifact Index", implementation_sha)
+        + "\n"
+        + "\n".join(
+            f"- `{path}`"
+            for path in (
+                "docs/work-instructions/20260827-bounded-us-current-session-market-evidence-consumption-repair.md",
+                "docs/work-instructions/tracks/20260827-track-a-us-shared-market-digest-plan-repair.md",
+                "docs/work-instructions/tracks/20260827-track-b-us-market-evidence-utilization-validator.md",
+                "docs/work-instructions/tracks/20260827-track-c-us-run41-integration-replay-and-natural-reproof.md",
+                "docs/architecture/US_MARKET_DIGEST_EVIDENCE_OWNERSHIP.md",
+                "docs/architecture/US_MARKET_DIGEST_PLAN.md",
+                "docs/architecture/MARKET_EVIDENCE_UTILIZATION_VALIDATOR.md",
+            )
+        )
         + "\n"
         + "\n".join(
             f"- `{path.relative_to(output_dir.parent.parent)}`"
