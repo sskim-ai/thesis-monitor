@@ -47,6 +47,7 @@ DOCUMENTS = (
     ROOT / "docs" / "architecture" / "FREE_ANALYST_CANARY_POLICY.md",
     ROOT / "docs" / "architecture" / "FREE_ANALYST_MESSAGE_QUALITY.md",
     ROOT / "docs" / "architecture" / "KR_MARKET_DIGEST_QUALITY.md",
+    ROOT / "docs" / "architecture" / "KR_SIZE_SECTOR_MESSAGE_POLICY.md",
     ROOT / "docs" / "architecture" / "AI_FIBONACCI_MULTI_TIMEFRAME_STRUCTURE.md",
     ROOT / "docs" / "architecture" / "PRICE_STRUCTURE_SHADOW_POLICY.md",
     ROOT / "docs" / "architecture" / "VARIABLE_AI_SWING_ANCHOR_SELECTION.md",
@@ -102,24 +103,25 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     assert state["repository"] == "sskim-ai/thesis-monitor"
     assert state["branch"] == "main"
     assert state["experimental_branch"] == (
-        "codex/20260827-kr-afternoon-natural-market-data-review-and-reproof"
+        "codex/20260827-kr-size-sector-message-selection-bounded-repair"
     )
     assert state["current_phase"] == (
-        "kr_natural_reproof_live_pass_us_natural_reproof_pending"
+        "kr_size_sector_replay_pass_natural_reproof_pending_us_natural_reproof_pending"
     )
     assert state["last_completed_phase"] == (
-        "kr_afternoon_natural_market_data_reproof"
+        "kr_size_sector_message_selection_bounded_repair"
     )
-    assert state["next_default_phase"] == "wait_for_next_natural_us_morning"
+    assert state["next_default_phase"] == "wait_for_next_natural_kr_close"
     implementation_commit = "069f002437163bff1df7aa6e258918c1777d5dfa"
+    kr_size_sector_implementation = "6a54db130e95e25969a5ca0a100648d4a12c3aa2"
     kr_integration_commit = "848eb80f6ce6504a9a855973b591ee0749167514"
     detector_implementation_commit = "3685aa991589ca0e7cc560104d4ebf8289e3f91d"
     preenablement_commit = "84f8f549bc8fa0338309a84b23b2738f2e357646"
     prior_price_structure_commit = "631e82f202b6f081866ef83c8b67b2138a8b51d8"
     prior_fibonacci_commit = "0dfef76bba606f018893d6e68e7beaf410aa7438"
-    assert state["deployed_code_commit"] == implementation_commit
-    assert state["main_code_commit"] == implementation_commit
-    assert state["operating_code_commit"] == implementation_commit
+    assert state["deployed_code_commit"] == kr_size_sector_implementation
+    assert state["main_code_commit"] == kr_size_sector_implementation
+    assert state["operating_code_commit"] == kr_size_sector_implementation
     phase_8552 = state["phase_8_5_5_2_kr_structured_field_repetition"]
     assert phase_8552["status"] == "operating_shadow_pending_natural_proof"
     assert phase_8552["operating_shadow_promoted"] is True
@@ -152,6 +154,9 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     )
     assert state["contracts"]["market_evidence_utilization_validator"] == (
         "market-evidence-utilization-validator-v1"
+    )
+    assert state["contracts"]["kr_size_sector_message_selection"] == (
+        "kr-size-sector-message-selection-repair-v1"
     )
     current_data = state["price_structure_v3_current_data_shadow_message_validation"]
     assert current_data["status"] == "validated_ready_not_armed"
@@ -951,7 +956,24 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     assert kr_natural["price_structure_track_c"] == "DO_NOT_START"
     assert kr_natural["open_p0"] == []
     assert kr_natural["open_material_p1"] == []
-    assert state["current_commit"] == implementation_commit
+    kr_size_sector = state["kr_size_sector_message_selection_bounded_repair"]
+    assert kr_size_sector["status"] == "replay_pass_natural_reproof_pending"
+    assert kr_size_sector["instruction_commit"] == (
+        "794c6f5d956d0928eac0113d658fede58b1266dc"
+    )
+    assert kr_size_sector["implementation_commit"] == kr_size_sector_implementation
+    assert kr_size_sector["historical_message_new_policy"] == "FAIL_AS_EXPECTED"
+    assert kr_size_sector["repaired_ai_utilization"] == "PASS"
+    assert kr_size_sector["repaired_fallback_utilization"] == "PASS"
+    assert kr_size_sector["selected_size_refs"] == 6
+    assert kr_size_sector["selected_sector_refs"] == 4
+    assert kr_size_sector["unregistered_size_sector_numeric"] == 0
+    assert kr_size_sector["material_information_loss"] == 0
+    assert kr_size_sector["open_p0"] == []
+    assert kr_size_sector["open_material_p1"] == []
+    assert kr_size_sector["natural_kr_reproof"] == "PENDING"
+    assert kr_size_sector["next_action"] == "WAIT_FOR_NEXT_NATURAL_KR_CLOSE"
+    assert state["current_commit"] == kr_size_sector_implementation
     assert state["ai_review_mode"] == "shadow"
     assert state["ai_policy_version"] == "daily-review-v3.10"
     assert state["output_schema_version"] == 4
@@ -1049,6 +1071,51 @@ def test_kr_afternoon_run42_natural_reproof_artifacts_are_closed() -> None:
     assert matrix["target_session"] == "2026-08-27"
     assert len(matrix["rows"]) == 19
     assert not any(row["message_used"] == "MESSAGE_OMITTED_MATERIAL_LOSS" for row in matrix["rows"])
+
+
+def test_kr_size_sector_message_selection_replay_artifacts_are_closed() -> None:
+    prefix = "20260827-kr-"
+    suffixes = (
+        "size-sector-selection-root-cause.md",
+        "size-sector-message-policy.md",
+        "run42-size-sector-plan.md",
+        "run42-before-after-message.md",
+        "run42-ai-fallback-size-sector-parity.md",
+        "run42-size-sector-provenance.md",
+        "size-sector-message-quality.md",
+        "size-sector-safety-parity.md",
+        "size-sector-repair-readiness.md",
+        "size-sector-validation.md",
+        "run42-size-sector-utilization.json",
+        "size-sector-repair-readiness.json",
+        "size-sector-artifact-index.md",
+    )
+    for suffix in suffixes:
+        assert (ROOT / "docs" / "reports" / f"{prefix}{suffix}").exists()
+
+    readiness = json.loads(
+        (
+            ROOT
+            / "docs"
+            / "reports"
+            / f"{prefix}size-sector-repair-readiness.json"
+        ).read_text()
+    )
+    gates = readiness["gates"]
+    assert readiness["packet_id"] == "2026-08-27-kr-run-42-5d8d23e6fbd6"
+    assert gates["RUN42_OLD_MESSAGE_NEW_POLICY"] == "FAIL_AS_EXPECTED"
+    assert gates["AI_FALLBACK_SIZE_STYLE_PARITY"] == "PASS"
+    assert gates["AI_FALLBACK_SECTOR_PARITY"] == "PASS"
+    assert gates["SIZE_STYLE_AVAILABLE_BUT_OMITTED"] == 0
+    assert gates["SECTOR_EXTREMES_AVAILABLE_BUT_OMITTED"] == 0
+    assert gates["UNREGISTERED_SIZE_SECTOR_NUMERIC"] == 0
+    assert gates["CODE_CORRECTNESS"] == "PASS"
+    assert gates["KR_SIZE_SECTOR_MESSAGE_REPAIR"] == (
+        "REPLAY_PASS_NATURAL_REPROOF_PENDING"
+    )
+    assert readiness["open_p0"] == []
+    assert readiness["open_material_p1"] == []
+    assert readiness["natural_kr_reproof"] == "PENDING"
 
 
 def test_knowledge_checksums_and_runtime_parity_are_documented() -> None:

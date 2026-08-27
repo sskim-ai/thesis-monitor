@@ -1,10 +1,10 @@
 # Thesis Monitor Master Workflow
 
-Master Workflow: `v17`
-As of: `2026-08-24`
+Master Workflow: `v18`
+As of: `2026-08-27`
 Repository: `sskim-ai/thesis-monitor`
 Operating branch: `main`
-Latest evidence branch: `codex/kr-shadow-cohort-activation-gate-packet-persistence-repair`
+Latest evidence branch: `codex/20260827-kr-size-sector-message-selection-bounded-repair`
 Commit resolution: run `git rev-parse HEAD`; this document is part of that commit and must not
 hardcode a self-referential final SHA. Resolve `origin/main` and the clean operating checkout at
 session start. Phase 9.1A defines `working-capital-evidence-v1`; Phase 9.1B implements canonical
@@ -1553,3 +1553,26 @@ This does not start Track C. The separate bounded US repair still requires one n
 morning reproof, so `PRICE_STRUCTURE_TRACK_C=DO_NOT_START` and Price Structure v3 remains
 `INTEGRATED_READY_NOT_ARMED`. Production Assist stays OFF; review-triggered Telegram, Scheduled
 Task, DB, assessment, and production behavior changes are zero.
+
+### 40.13 KR Size / Sector Message Selection Bounded Repair
+
+Exact instruction commit `794c6f5d956d0928eac0113d658fede58b1266dc` precedes implementation
+commit `6a54db130e95e25969a5ca0a100648d4a12c3aa2`. The run-42 review proved the
+source, registry, and local-first path, but its prior brevity policy allowed safe same-session
+size/style and sector extrema to disappear. That historical `OMITTED_SAFE` conclusion is retained
+as an immutable observation but is no longer valid under the new user-facing selection policy.
+
+`KrMarketDigestPlan` now marks complete size/style and relative sector-extrema slots
+`SELECTED_REQUIRED`. It renders KOSPI large/mid/small, KOSDAQ100/MID300/SMALL, and at most one
+relative-strong and one relative-weak non-empty sector per available market. The backend owns
+selection, ranking, signs, formatting, and evidence refs. AI and deterministic fallback consume
+the same claims after index, breadth, and participant flow; global context yields first.
+
+Immutable run-42 replay makes the old message fail as expected and makes repaired AI/fallback pass
+with six size refs and four sector refs. Numeric registry policy, provider acquisition, flow
+reconciliation, concentration, US digest policy, Price Structure v3, business thesis, archives,
+Telegram, tasks, DB, assessments, and Production Assist are unchanged. Open P0/material P1 are
+`0/0`; state is `REPLAY_PASS_NATURAL_REPROOF_PENDING`, not `LIVE_PASS`. Wait for the next natural
+KR close and verify required detail, local-first ordering, provenance, receipt, duplicates, and
+orphans read-only. The separate US natural reproof remains pending and Track C remains
+`DO_NOT_START`.

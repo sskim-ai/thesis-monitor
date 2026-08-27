@@ -2,6 +2,28 @@
 
 Repository: `sskim-ai/thesis-monitor`
 
+Latest authoritative bounded KR message repair follows exact instruction commit
+`794c6f5d956d0928eac0113d658fede58b1266dc` and implementation commit
+`6a54db130e95e25969a5ca0a100648d4a12c3aa2`. Read
+`docs/reports/20260827-kr-size-sector-repair-readiness.json`, the run-42 before/after, plan,
+AI/fallback parity, numeric provenance, message-quality, safety, validation, and artifact index
+first.
+
+Immutable run-42 replay is PASS under the repaired policy: complete KOSPI/KOSDAQ size/style and
+relative sector-extrema slots are `SELECTED_REQUIRED`, repaired AI/fallback consume the same six
+size and four sector refs, and the historical sparse message fails as expected. Open P0/material
+P1 are `0/0`, but this is `REPLAY_PASS_NATURAL_REPROOF_PENDING`, not `LIVE_PASS`.
+
+Next action: `WAIT_FOR_NEXT_NATURAL_KR_CLOSE`. Do not manually run a Scheduled Task or send
+Telegram. Inspect the next natural KR packet, exact message, required local slots, index/breadth/
+flow ordering, numeric provenance, receipt, duplicates, and orphans read-only. The separate US
+natural reproof also remains pending. Keep Price Structure Track C `DO_NOT_START`, v3
+`INTEGRATED_READY_NOT_ARMED`, and Production Assist OFF.
+
+---
+
+Prior run-42 natural review context follows.
+
 Latest authoritative natural proof follows exact instruction commit
 `107f40b0b6b7e794f420534e71b69af0c969e643`. Read
 `docs/reports/20260827-kr-afternoon-natural-reproof-readiness.md`, exact message, exactly-once,

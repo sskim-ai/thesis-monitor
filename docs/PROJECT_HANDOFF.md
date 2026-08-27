@@ -1744,3 +1744,25 @@ morning. Do not trigger a task or send Telegram. Verify the naturally produced s
 current-session slot consumption, optional macro subordination, exact delivery, receipt, duplicate
 count, and orphan count read-only. Keep the KR natural reproof separate, Price Structure Track C at
 `DO_NOT_START`, v3 unarmed, and Production Assist OFF.
+
+## 2026-08-27 KR Size / Sector Selection Repair Handoff
+
+The exact instruction is commit `794c6f5d956d0928eac0113d658fede58b1266dc`; implementation is
+`6a54db130e95e25969a5ca0a100648d4a12c3aa2`. Read
+`docs/reports/20260827-kr-size-sector-repair-readiness.json`, the run-42 before/after, plan,
+AI/fallback parity, provenance, message-quality, safety, validation, and artifact-index reports
+before changing the KR digest path.
+
+The shared KR plan now requires complete safe size/style groups and bounded relative sector
+extrema. Immutable packet `2026-08-27-kr-run-42-5d8d23e6fbd6` proves six size and four sector
+source refs survive into repaired AI and fallback messages with zero material information loss.
+The old exact message fails the new policy as expected. Provider acquisition, numeric-registry
+policy, participant-flow reconciliation, concentration, US digest logic, Price Structure v3, and
+business-thesis state are unchanged.
+
+State is `REPLAY_PASS_NATURAL_REPROOF_PENDING`, not `LIVE_PASS`; P0/material P1 are `0/0`. Wait for
+the next natural KR close and inspect current session, exact packet/message, required size/style,
+relative sector extrema, index/breadth/flow preservation, provenance, exactly-once receipt,
+duplicates, and orphans read-only. Do not manually run a task or send Telegram. The independent US
+natural reproof remains pending, Track C remains `DO_NOT_START`, v3 remains unarmed, and Production
+Assist remains OFF.
