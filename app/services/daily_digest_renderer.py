@@ -25,6 +25,12 @@ def render_daily_digest(
         "kr": f"🇰🇷 한국 종목 장마감 점검 · {digest.digest_date}",
     }.get(digest.market_scope, f"🌍 시장환경 점검 · {digest.digest_date}")
     lines = [title]
+    us_plan = digest.us_market_digest_plan
+    if us_plan is not None and us_plan.primary_claims():
+        lines.extend(["", "📍 미국장 세션 구조"])
+        for claim in us_plan.primary_claims():
+            lines.append(f"• {claim.claim_text}")
+        lines.extend(["", "🌐 보조 거시환경"])
     kr_plan = digest.kr_market_digest_plan
     if kr_plan is not None and kr_plan.richness.status:
         lines.extend(["", "📍 국내 장마감 구조"])
