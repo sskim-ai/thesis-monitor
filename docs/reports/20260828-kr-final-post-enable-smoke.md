@@ -1,13 +1,13 @@
 # KR Final Post-Enable Smoke
 
-No enablement occurred, so no post-enable smoke was run.
-
-| Check | Result |
+| Gate | Result |
 | --- | --- |
-| Feature-off parity | `NOT_RUN` |
-| TOP3 market smoke | `NOT_RUN` |
-| Full monitored-KR Price Structure smoke | `NOT_RUN` |
-| US isolation smoke | `NOT_RUN` |
-| Production delivery intent | `0` |
+| API health | PASS |
+| OHLCV health | PASS |
+| POST_TOP3_ENABLE_MARKET | PASS |
+| POST_TOP3_ENABLE_PRICE_STRUCTURE_LEAK | `0` |
+| POST_KR_PRICE_STRUCTURE_ENABLE | `PASS_7_OF_7` |
+| POST_ENABLE_US_PRICE_STRUCTURE_LEAK | `0` |
+| Production Assist | OFF |
 
-This is a skipped dependent stage, not a smoke PASS.
+The smoke was read-only and did not execute a production scheduler or create a delivery intent.

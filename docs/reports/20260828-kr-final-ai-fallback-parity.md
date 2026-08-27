@@ -1,15 +1,12 @@
 # KR Final AI / Fallback Parity
 
-No current-session candidate pair was generated because Track B did not start.
-
 | Gate | Result |
 | --- | --- |
-| Local-first parity | `NOT_RUN` |
-| TOP3 parity | `NOT_RUN` |
-| Price Structure eligibility parity | `NOT_RUN` |
-| Price Structure numeric parity | `NOT_RUN` |
-| Stored-rule ownership parity | `NOT_RUN` |
-| AI-calculated technical price | `0` |
-| Unregistered Price Structure numeric | `0` |
+| Local-first parity | PASS |
+| TOP3 parity | PASS |
+| Price Structure eligibility parity | PASS |
+| Price Structure numeric parity | PASS |
+| Stored-rule ownership parity | PASS |
 
-Historical replay PASS remains historical and is not relabeled as resume proof.
+The test route follows each archived production delivery mode. No message was chosen by aesthetic
+preference, and no AI-calculated technical price was admitted.

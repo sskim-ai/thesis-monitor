@@ -1,17 +1,15 @@
 # KR Final Test Delivery
 
-`TEST_SEND = NOT_SENT_NO_REAL_TEST_CHAT`
-
 | Gate | Result |
 | --- | --- |
-| Market messages | `0` |
-| Stock messages | `0` |
-| Total messages | `0` |
-| Exact payload match | `NOT_SENT` |
-| Duplicate | `0` |
-| Orphan | `0` |
-| Unowned retry | `0` |
-| Production-recipient test message | `0` |
-| Production delivery intent | `0` |
+| Test sink | `test:6d6e2ff463bf` |
+| Market / stock / total | `1 / 7 / 8` |
+| Sent | `8/8` |
+| Exact rendered/outbound/received hash | `8/8 PASS` |
+| One attempt each | PASS |
+| Duplicate / orphan / unowned retry | `0 / 0 / 0` |
+| Production-recipient sends | `0` |
+| Production delivery intents | `0` |
 
-No outbound payload, receipt, or received payload exists.
+Telegram `sendMessage` responses returned the exact text for all eight payloads. The receipt stores
+only aliases, payload hashes, sequence, route, and redacted remote-message aliases.

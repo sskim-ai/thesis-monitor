@@ -5,24 +5,23 @@ with [MASTER_WORKFLOW.md](MASTER_WORKFLOW.md), [project-state.json](project-stat
 [NEXT_SESSION_PROMPT.md](NEXT_SESSION_PROMPT.md) before changing runtime policy, Knowledge,
 validation, delivery, or Scheduled Tasks.
 
-## Latest Handoff — KR TOP3 / Price Structure Pre-Enablement
+## Latest Handoff — KR Final Pre-Enable Resume PASS
 
-Use exact instruction commit `0c95ddc9be319dbacc5ce1d824802e0c3c72fed1` and implementation
-commit `a7de99c2d1d1211615e0fcbf4bd3eadc06d957fb`. Start with
-`docs/reports/20260827-kr-rollout-gate-matrix.json`, the TOP3 selection JSON, per-ticker Price
-Structure audit, sink isolation, validation, and artifact index.
+Use exact instruction commit `68ede1eae42315d94a89023fbc6c1f9be07fc99d` and implementation
+commit `315081005198e7b5676e9383f10d4a52b3d3ca34`. Implementation Actions run `33094185080`
+passed Test and Lint. Start with `docs/reports/20260828-kr-final-rollout-readiness.json`, the test
+sink isolation and delivery evidence, operating-promotion reports, and the single completion bundle.
 
-Tracks A/B are implemented behind default-OFF KR guards. Run-42 TOP3 selection and all seven
-completed-session KR SR-only previews pass with backend provenance and current/stored ownership
-separation. No user-visible runtime path is enabled. Track C is blocked because the operating
-environment has no dedicated non-production test recipient; test sends, production intents, and
-manual runs are zero. Track D was not started. State is `KR_ROLLOUT=NOT_ENABLED`, P0/material P1
-`0/1`, with the sole P1 `dedicated_test_sink_not_configured`.
+The canonical test sink is configured outside git and differs from production. Test delivery was
+one market plus seven stock messages, exact 8/8, one attempt each, with production-recipient sends,
+production delivery intents, duplicates, orphans, and unowned retries all zero. The completed
+session is 2026-08-27 packet `2026-08-27-kr-run-42-5d8d23e6fbd6`.
 
-The next bounded action is external configuration of exactly one test recipient different from
-production, followed by one Track C preflight. Do not use production as the test sink. Do not turn
-on either KR guard, US Price Structure, Production Assist, or any manual scheduled delivery before
-that proof passes.
+Operating has KR TOP3 ON and KR Price Structure ON. All seven KR subjects were
+`ELIGIBLE_SR_ONLY`; US Price Structure and Production Assist remain OFF. State is
+`ENABLED_AWAITING_NATURAL_PROOF`, not `LIVE_PASS`, with open P0/material P1 `0/0`. Do not run a
+manual task or production Telegram. Inspect the next natural KR market digest and monitored-stock
+cycle, then close or independently roll back the affected flag if a material failure appears.
 
 ## Current Authoritative Handoff — 2026-08-27 KR Natural Reproof
 

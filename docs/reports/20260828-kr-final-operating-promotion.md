@@ -1,17 +1,12 @@
 # KR Final Operating Promotion
 
-`OPERATING_PROMOTION = NOT_RUN`
-
-Pre-enable did not pass, so operating promotion was prohibited.
-
 | Item | Result |
 | --- | --- |
-| Validated main at start | `6a2068b00f10e28c5eba2133d2423293f4a1bb25` |
-| Operating SHA | `43731f015901b96e2dee3af009b9e1d074382349` |
-| Operating checkout changed | `0` |
-| Service restart | `0` |
-| API health after promotion | `NOT_RUN` |
-| Provider health after promotion | `NOT_RUN` |
-| Feature-off parity | `NOT_RUN` |
+| Previous operating | `43731f015901b96e2dee3af009b9e1d074382349` |
+| Promoted main / operating | `315081005198e7b5676e9383f10d4a52b3d3ca34` |
+| Feature-off health | PASS |
+| Feature-off market rank limit | `1` |
+| Feature-off Price Structure section | absent |
+| Feature-off parity | PASS |
 
-No rollback was needed because no operating state changed.
+Promotion used a linear fast-forward. Both KR flags were explicitly OFF before the first restart.

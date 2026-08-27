@@ -3,44 +3,17 @@
 ## Decision
 
 ```text
-TEST_SINK_AVAILABLE = NO
-KR_FINAL_PREENABLE = BLOCKED_NO_TEST_SINK
-KR_ROLLOUT = NOT_ENABLED
-NEXT_ACTION = OPERATOR_PROVIDE_DEDICATED_TEST_CHAT
+TEST_SINK_AVAILABLE = YES
+KR_FINAL_PREENABLE = PASS
+OPEN_P0 = 0
+OPEN_MATERIAL_P1 = 0
+KR_ROLLOUT = ENABLED_AWAITING_NATURAL_PROOF
+NEXT_ACTION = WAIT_FOR_NEXT_NATURAL_KR_MESSAGES
 ```
 
-No real operator-supplied non-production Telegram recipient is available through the existing
-secure configuration paths. The mandatory STOP condition therefore remains active.
+Test delivery is exact 8/8 to `test:6d6e2ff463bf` with production collision, duplicate, orphan,
+unowned retry, and production intent all zero. Operating main `315081005198e7b5676e9383f10d4a52b3d3ca34` passed feature-off,
+TOP3-only, and TOP3-plus-KR-Price-Structure smoke. US Price Structure and Production Assist remain
+OFF. Natural proof is deliberately pending and is not mislabeled as `LIVE_PASS`.
 
-## Stage State
-
-| Stage | Result |
-| --- | --- |
-| Test-sink resolution | `BLOCKED_NO_TEST_SINK` |
-| Completed-session resolution | `NOT_RUN` |
-| Market/stock preflight | `NOT_RUN` |
-| Test delivery | `NOT_SENT` |
-| Operating promotion | `NOT_RUN` |
-| TOP3 enablement | `false` |
-| KR Price Structure enablement | `false` |
-| US Price Structure | `OFF` |
-| Production Assist | `OFF` |
-
-## Severity
-
-| Class | Count | Item |
-| --- | ---: | --- |
-| Open P0 | 0 | Production remains fail-closed |
-| Open material P1 | 1 | `dedicated_test_sink_not_configured` |
-| P2 | 0 | None recorded |
-
-The bounded repair is external configuration only: an operator must provide exactly one approved
-test chat through an accepted secret key. No calculation, renderer, or flag framework work is
-authorized.
-
-## Validation
-
-Focused tests `14 passed`; full pytest `1805 passed`; Ruff and diff checks PASS. Evidence-SHA
-GitHub Actions run `33088486288` passed Test/Lint. Knowledge checksums, Public Action `0.4.5`,
-output schema `4`, operationId `20/20`, and local API health all pass. OHLCV/provider data was not
-requested after the mandatory stop.
+P2 backlog: legacy current-AI full-set prose dedup only; it does not block the enabled canary.

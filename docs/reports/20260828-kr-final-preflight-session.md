@@ -1,14 +1,7 @@
 # KR Final Preflight Session
 
-`PREENABLE_TARGET_SESSION = NOT_RESOLVED_TEST_SINK_BLOCKED`
+`PREENABLE_TARGET_SESSION = 2026-08-27`
 
-The test-sink prerequisite failed before completed-session resolution. No current or incomplete
-2026-08-28 session was selected, and prior 2026-08-27 replay evidence was not substituted for a new
-test-send proof.
-
-| Item | Result |
-| --- | --- |
-| Session resolver entered | `0` |
-| Incomplete bar admitted | `0` |
-| Manual production task | `0` |
-| Provider requests | `0` |
+Packet `2026-08-27-kr-run-42-5d8d23e6fbd6` is the latest completed KR regular session at execution time. The incomplete
+2026-08-28 session was not used. Stored official Kiwoom acquisition is 42/42, numeric registry is
+1,989/1,989, and reconciliation remains fail-closed without concentration prose.

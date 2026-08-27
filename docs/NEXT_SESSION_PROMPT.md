@@ -3,21 +3,21 @@
 Repository: `sskim-ai/thesis-monitor`
 
 Latest authoritative work follows exact instruction commit
-`68ede1eae42315d94a89023fbc6c1f9be07fc99d` and blocked-resume evidence commit
-`69e4bd6bc15da2a654ab6dcb678263f0ea049d37`. Read
-`docs/reports/20260828-kr-final-rollout-readiness.json`, sink configuration/isolation, delivery,
-operating-promotion, enablement, natural-proof, and artifact-index reports first.
+`68ede1eae42315d94a89023fbc6c1f9be07fc99d` and implementation commit
+`315081005198e7b5676e9383f10d4a52b3d3ca34`. Read
+`docs/reports/20260828-kr-final-rollout-readiness.json`, sink configuration/isolation, test delivery,
+operating promotion, enablement, natural-proof, and artifact-index reports first.
 
-The approved secure paths still contain no dedicated Telegram test recipient. The canonical and
-operating environments, current process, and thesis-monitor LaunchAgents were checked without
-printing raw values. `TEST_SINK_AVAILABLE=NO`, `KR_FINAL_PREENABLE=BLOCKED_NO_TEST_SINK`, and
-P0/material P1 is `0/1`. No session, provider call, message, receipt, operating promotion, restart,
-or flag write occurred. Operating remains `43731f015901b96e2dee3af009b9e1d074382349`; all KR/US
-Price Structure rollout flags remain OFF.
+The dedicated test sink is configured outside git, differs from production, and received exactly
+one market plus seven stock messages with exact payload parity. Production-recipient sends,
+production delivery intents, duplicates, orphans, and unowned retries are all zero. Operating has
+KR market TOP3 and KR Price Structure ON; US Price Structure and Production Assist remain OFF.
+State is `ENABLED_AWAITING_NATURAL_PROOF`, not `LIVE_PASS`, with P0/material P1 `0/0`.
 
-Next action: `OPERATOR_PROVIDE_DEDICATED_TEST_CHAT`. Configure exactly one real non-production chat
-through an accepted secret key. Then rerun sink resolution and collision proof before any other
-stage. Never invent or discover a destination, reuse production, or skip directly to test delivery.
+Next action: `WAIT_FOR_NEXT_NATURAL_KR_MESSAGES`. Do not trigger a Scheduled Task or production
+Telegram. Inspect the next natural KR market digest and monitored-stock cycle for TOP3 visibility,
+per-ticker selective Price Structure eligibility, numeric provenance, exact delivery, duplicates,
+and orphans. Only both natural product-family proofs may promote the state to `LIVE_PASS`.
 
 ---
 

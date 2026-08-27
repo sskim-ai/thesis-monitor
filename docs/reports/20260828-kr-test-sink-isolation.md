@@ -1,15 +1,14 @@
 # KR Test Sink Isolation
 
-No test recipient was selected, so delivery remains fail-closed before namespace or sender use.
-
 | Gate | Result |
 | --- | --- |
-| Namespace | `TEST_ONLY / KR_FINAL_PREENABLE / NON_PRODUCTION` |
-| `TEST_PRODUCTION_SINK_COLLISION` | `0` |
-| `TEST_PRODUCTION_INTENT_COLLISION` | `0` |
-| `PRODUCTION_DELIVERY_INTENT_CREATED` | `0` |
-| `TEST_MESSAGE_SENT_TO_PRODUCTION_RECIPIENT` | `0` |
-| Raw test ID in log | `0` |
-| Raw production ID in log | `0` |
+| Namespace | `TEST_ONLY_NON_PRODUCTION` |
+| Test alias | `test:6d6e2ff463bf` |
+| Production alias | `production:7937bea5b823` |
+| Recipient collision | `0` |
+| Production intent collision | `0` |
+| Production-recipient test send | `0` |
+| Production delivery intent | `0` |
 
-Zero collision counters do not establish availability. `TEST_SINK_AVAILABLE` remains `NO`.
+The isolated audit sender accepts only the canonical test key, refuses an existing receipt, uses
+one network attempt per payload, and never calls the production notifier or delivery database.

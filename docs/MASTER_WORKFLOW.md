@@ -1717,3 +1717,24 @@ State remains `KR_FINAL_PREENABLE=BLOCKED_NO_TEST_SINK` and `KR_ROLLOUT=NOT_ENAB
 P0/material P1 `0/1`. The only next action is `OPERATOR_PROVIDE_DEDICATED_TEST_CHAT`. Once exactly
 one approved secret is externally configured, rerun the resolver and isolation proof before any
 data collection or send.
+
+### 40.20 KR Test Sink Resume PASS and Sequential Enablement
+
+The operator configured one dedicated private Telegram group through the canonical ignored secret
+key `TELEGRAM_TEST_CHAT_ID`. Exact instruction commit
+`68ede1eae42315d94a89023fbc6c1f9be07fc99d` precedes implementation
+`315081005198e7b5676e9383f10d4a52b3d3ca34`. The Settings model now accepts the test-only key, while
+the production notifier continues to own only `TELEGRAM_CHAT_ID`. Direct runtime equality proves
+the recipients differ; reports and receipts contain aliases only.
+
+Completed-session run 42 produced one TOP3 market message and seven monitored-KR stock messages.
+The isolated `TEST_ONLY_NON_PRODUCTION` sender delivered 8/8 once, and Telegram response text hashes
+match rendered and outbound hashes 8/8. Duplicate, orphan, retry, production-recipient send, and
+production delivery-intent counts are zero. All seven price sections are `ELIGIBLE_SR_ONLY` with
+zero unstable Fib, target, stop, look-ahead, partial-bar pivot, proximity, or ownership errors.
+
+Main and operating advanced linearly to the implementation SHA. Feature-off parity passed first;
+KR market TOP3 then passed with Price Structure OFF; KR Price Structure then passed 7/7 with the US
+negative control still blocked. Final state is `KR_ROLLOUT=ENABLED_AWAITING_NATURAL_PROOF`, not
+`LIVE_PASS`. Open P0/material P1 are `0/0`; Production Assist remains OFF. Wait for the next natural
+KR market and stock cycle and inspect it read-only.

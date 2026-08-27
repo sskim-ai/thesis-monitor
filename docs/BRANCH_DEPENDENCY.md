@@ -413,3 +413,15 @@ A future execution must descend from this stop state only after an operator conf
 accepted test recipient outside git. It must repeat sink resolution and direct equality isolation
 before resolving the KR session. The absence of a secret cannot be repaired by code, Telegram
 discovery, production-recipient reuse, or another alias framework.
+
+The resumed execution descends linearly from that stop through final main
+`5b926a9a1edf396244ef83ab127d7608ceefe390` to implementation
+`315081005198e7b5676e9383f10d4a52b3d3ca34`. The implementation adds only canonical Settings
+acceptance for the ignored test key and an isolated audit sender with duplicate-send refusal; it
+does not alter the production Telegram recipient or delivery-intent path.
+
+The test-sink gate, run-42 preflight, exact 8/8 test delivery, feature-off promotion, TOP3-only
+smoke, and KR Price Structure 7/7 smoke all pass. Subsequent work must treat KR TOP3 and KR Price
+Structure as enabled awaiting natural proof, keep US Price Structure and Production Assist OFF,
+and preserve independent rollback. No new branch should reinterpret the old blocked reports as
+current state; the 20260828 resume readiness artifact is authoritative.

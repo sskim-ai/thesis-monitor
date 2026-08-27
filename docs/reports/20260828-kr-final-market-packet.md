@@ -1,14 +1,12 @@
 # KR Final Market Packet
 
-`PREENABLE_DATA_COLLECTION = NOT_RUN_TEST_SINK_BLOCKED`
-
-Track B did not start. No `ka20001`, `ka20003`, `ka10051`, or `ka10066` call was made.
-
 | Gate | Result |
 | --- | --- |
-| Numeric gate | `NOT_RUN` |
-| KR local-first plan | `NOT_RUN` |
-| Reconciliation | `NOT_RUN` |
+| ka20001 / ka20003 / ka10051 / ka10066 | PASS |
+| Numeric registry | `1989/1989` |
+| KR local-first plan | PASS |
 | Reconciliation tolerance widened | `0` |
 | Unreconciled concentration prose | `0` |
-| Production packet mutation | `0` |
+| TOP3 duplicate / stale | `0 / 0` |
+
+Candidate SHA-256: `b8c859c4d260f6bad1288f7981e6b0c008394e58bcf04e595ad0c8fa086bf24e`.

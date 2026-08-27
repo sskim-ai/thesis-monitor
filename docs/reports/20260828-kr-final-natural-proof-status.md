@@ -1,12 +1,10 @@
 # KR Final Natural Proof Status
 
-The rollout was not enabled, so natural proof remains pending.
+```text
+KR_ROLLOUT = ENABLED_AWAITING_NATURAL_PROOF
+NATURAL_KR_MARKET_TOP3 = PENDING
+NATURAL_KR_PRICE_STRUCTURE = PENDING
+```
 
-| State | Result |
-| --- | --- |
-| `KR_ROLLOUT` | `NOT_ENABLED` |
-| `NATURAL_KR_MARKET_TOP3` | `PENDING` |
-| `NATURAL_KR_PRICE_STRUCTURE` | `PENDING` |
-| Natural duplicate/orphan review | `NOT_OBSERVED` |
-
-Historical natural messages cannot satisfy proof for flags that were never enabled.
+No manual production task or Telegram send was used as natural proof. The next naturally scheduled
+KR market digest and monitored-stock cycle must be inspected read-only before `LIVE_PASS`.
