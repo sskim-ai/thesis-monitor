@@ -103,25 +103,26 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     assert state["repository"] == "sskim-ai/thesis-monitor"
     assert state["branch"] == "main"
     assert state["experimental_branch"] == (
-        "codex/20260827-kr-size-sector-message-selection-bounded-repair"
+        "codex/20260827-kr-market-preenable-test-send-enablement"
     )
-    assert state["current_phase"] == (
-        "kr_size_sector_replay_pass_natural_reproof_pending_us_natural_reproof_pending"
-    )
+    assert state["current_phase"] == "kr_market_preenable_blocked_no_safe_test_sink"
     assert state["last_completed_phase"] == (
         "kr_size_sector_message_selection_bounded_repair"
     )
-    assert state["next_default_phase"] == "wait_for_next_natural_kr_close"
+    assert state["next_default_phase"] == (
+        "configure_dedicated_test_sink_and_rerun_preenable"
+    )
     implementation_commit = "069f002437163bff1df7aa6e258918c1777d5dfa"
     kr_size_sector_implementation = "6a54db130e95e25969a5ca0a100648d4a12c3aa2"
+    preenable_implementation = "7d2823c236c458cf76c77faae043c6288e46e65e"
     kr_integration_commit = "848eb80f6ce6504a9a855973b591ee0749167514"
     detector_implementation_commit = "3685aa991589ca0e7cc560104d4ebf8289e3f91d"
     preenablement_commit = "84f8f549bc8fa0338309a84b23b2738f2e357646"
     prior_price_structure_commit = "631e82f202b6f081866ef83c8b67b2138a8b51d8"
     prior_fibonacci_commit = "0dfef76bba606f018893d6e68e7beaf410aa7438"
-    assert state["deployed_code_commit"] == kr_size_sector_implementation
-    assert state["main_code_commit"] == kr_size_sector_implementation
-    assert state["operating_code_commit"] == kr_size_sector_implementation
+    assert state["deployed_code_commit"] == "de352342f15a75069289f35f00b4bd24ddcdd19f"
+    assert state["main_code_commit"] == preenable_implementation
+    assert state["operating_code_commit"] == "de352342f15a75069289f35f00b4bd24ddcdd19f"
     phase_8552 = state["phase_8_5_5_2_kr_structured_field_repetition"]
     assert phase_8552["status"] == "operating_shadow_pending_natural_proof"
     assert phase_8552["operating_shadow_promoted"] is True
@@ -157,6 +158,9 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     )
     assert state["contracts"]["kr_size_sector_message_selection"] == (
         "kr-size-sector-message-selection-repair-v1"
+    )
+    assert state["contracts"]["kr_market_preenable_test_send"] == (
+        "kr-market-preenable-test-send-v1"
     )
     current_data = state["price_structure_v3_current_data_shadow_message_validation"]
     assert current_data["status"] == "validated_ready_not_armed"
@@ -973,7 +977,26 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     assert kr_size_sector["open_material_p1"] == []
     assert kr_size_sector["natural_kr_reproof"] == "PENDING"
     assert kr_size_sector["next_action"] == "WAIT_FOR_NEXT_NATURAL_KR_CLOSE"
-    assert state["current_commit"] == kr_size_sector_implementation
+    preenable = state["kr_market_preenable_test_send_and_bounded_enablement"]
+    assert preenable["status"] == "blocked_no_safe_test_sink"
+    assert preenable["instruction_commit"] == (
+        "f161bc1c724cfd431efaaa458af61e02a378daeb"
+    )
+    assert preenable["implementation_commit"] == preenable_implementation
+    assert preenable["data_collection"] == "PASS_STORED_PRODUCTION_PACKET_42_OF_42"
+    assert preenable["numeric_gate"] == "PASS"
+    assert preenable["candidate_quality"] == "PASS"
+    assert preenable["test_sink_available"] is False
+    assert preenable["test_send"] == "BLOCKED_NO_SAFE_SINK"
+    assert preenable["test_delivery_count"] == 0
+    assert preenable["production_delivery_intent_created"] == 0
+    assert preenable["runtime_gate_type"] == "ALREADY_ACTIVE_BY_CODE_DEFAULT"
+    assert preenable["enablement_action"] == "DO_NOT_ENABLE"
+    assert preenable["open_p0"] == []
+    assert preenable["open_material_p1"] == [
+        "dedicated_test_sink_not_configured"
+    ]
+    assert state["current_commit"] == preenable_implementation
     assert state["ai_review_mode"] == "shadow"
     assert state["ai_policy_version"] == "daily-review-v3.10"
     assert state["output_schema_version"] == 4
@@ -1235,3 +1258,46 @@ def test_documentation_relative_links_resolve_and_contains_no_secrets() -> None:
             if not target or target.startswith(("http://", "https://", "mailto:")):
                 continue
             assert (path.parent / target).resolve().exists(), (path, target)
+
+
+def test_fail_closed_kr_preenable_artifacts_are_complete() -> None:
+    reports = ROOT / "docs" / "reports"
+    required = (
+        "20260827-kr-preenable-target-session.md",
+        "20260827-kr-preenable-data-collection.md",
+        "20260827-kr-preenable-numeric-provenance.md",
+        "20260827-kr-preenable-reconciliation.md",
+        "20260827-kr-preenable-market-digest-plan.md",
+        "20260827-kr-preenable-ai-fallback-parity.md",
+        "20260827-kr-preenable-test-sink-safety.md",
+        "20260827-kr-preenable-test-delivery.md",
+        "20260827-kr-preenable-exact-test-message.md",
+        "20260827-kr-preenable-message-quality.md",
+        "20260827-kr-preenable-gate-matrix.md",
+        "20260827-kr-size-sector-enablement-action.md",
+        "20260827-kr-size-sector-post-enable-smoke.md",
+        "20260827-kr-size-sector-natural-proof-status.md",
+        "20260827-kr-preenable-safety-parity.md",
+        "20260827-kr-preenable-artifact-index.md",
+    )
+    assert all((reports / name).exists() for name in required)
+    provenance = (reports / "20260827-kr-preenable-numeric-provenance.md").read_text()
+    assert provenance.count("market:cross-section:sector:") == 10
+
+    evidence = json.loads(
+        (reports / "20260827-kr-preenable-gate-matrix.json").read_text()
+    )
+    gates = evidence["gates"]
+    assert gates["PREENABLE_DATA_COLLECTION"] == "PASS"
+    assert gates["NUMERIC_GATE"] == "PASS"
+    assert gates["AI_FALLBACK_SIZE_STYLE_PARITY"] == "PASS"
+    assert gates["AI_FALLBACK_SECTOR_PARITY"] == "PASS"
+    assert gates["TEST_SINK_AVAILABLE"] == "NO"
+    assert gates["TEST_DELIVERY_COUNT"] == 0
+    assert gates["PRODUCTION_DELIVERY_INTENT_CREATED"] == 0
+    assert gates["ENABLEMENT_ACTION"] == "DO_NOT_ENABLE"
+    assert gates["PRICE_STRUCTURE_RUNTIME_ARMED"] == 0
+    assert evidence["open_p0"] == []
+    assert evidence["open_material_p1"] == [
+        "dedicated_test_sink_not_configured"
+    ]

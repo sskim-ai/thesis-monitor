@@ -1766,3 +1766,21 @@ relative sector extrema, index/breadth/flow preservation, provenance, exactly-on
 duplicates, and orphans read-only. Do not manually run a task or send Telegram. The independent US
 natural reproof remains pending, Track C remains `DO_NOT_START`, v3 remains unarmed, and Production
 Assist remains OFF.
+
+## 2026-08-27 KR Market Pre-Enable Test-Send Handoff
+
+The exact instruction is commit `f161bc1c724cfd431efaaa458af61e02a378daeb`; the fail-closed audit
+implementation is `7d2823c236c458cf76c77faae043c6288e46e65e`. Start with
+`docs/reports/20260827-kr-preenable-gate-matrix.json` and the 16-report artifact bundle.
+
+Run-42 production-equivalent data, numeric provenance, reconciliation suppression, shared plan,
+repaired AI candidate, and deterministic fallback all pass. The AI candidate includes both markets'
+size/style and relative strong/weak sector lines. It was not sent: operating configuration has no
+dedicated TEST chat and production must not be reused. Test delivery, receipt, received-message
+inspection, and further enablement are therefore `NOT_SENT` / `DO_NOT_ENABLE`.
+
+The size/sector policy remains pre-existing `ACTIVE_BY_CODE_DEFAULT`; this task changed no runtime
+gate. Open P0 is zero and the one material P1 is `dedicated_test_sink_not_configured`. Next action is
+a bounded external configuration repair: add one explicit dedicated test sink, prove its ID differs
+from production, and rerun this exact preflight once. Keep Price Structure v3 unarmed, US untouched,
+Production Assist OFF, and all production/manual delivery paths unused.

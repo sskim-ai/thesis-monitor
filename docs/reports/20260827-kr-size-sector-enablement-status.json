@@ -1,0 +1,13 @@
+{
+  "contract": "kr-size-sector-bounded-enablement-v1",
+  "runtime_gate_type": "ALREADY_ACTIVE_BY_CODE_DEFAULT",
+  "enablement_action": "DO_NOT_ENABLE",
+  "old_value": "ACTIVE_BY_CODE_DEFAULT",
+  "new_value": "ACTIVE_BY_CODE_DEFAULT_UNCHANGED",
+  "scope": "KR_AFTERNOON_CLOSE_MARKET_DIGEST_SIZE_SECTOR_ONLY",
+  "scope_bleed": 0,
+  "production_state": "ACTIVE_AWAITING_NATURAL_PROOF",
+  "blocking_reason": "dedicated_test_sink_not_configured",
+  "rollback": "NOT_APPLICABLE_NO_CHANGE",
+  "next_action": "CONFIGURE_DEDICATED_TEST_SINK_AND_RERUN_PREENABLE"
+}

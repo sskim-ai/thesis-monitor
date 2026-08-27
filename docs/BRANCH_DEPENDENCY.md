@@ -346,3 +346,17 @@ relation, evidence-ref utilization validator, existing numeric registry, and mac
 policy. Replay is PASS at P0/material P1 `0/0`; the remaining dependency is one naturally scheduled
 US morning observation. This branch does not satisfy the separate KR natural gate, does not create
 Price Structure Track C, and does not arm v3.
+
+The KR market pre-enable audit branch starts from exact instruction commit
+`f161bc1c724cfd431efaaa458af61e02a378daeb`, whose parent is clean main
+`de352342f15a75069289f35f00b4bd24ddcdd19f`. Audit implementation
+`7d2823c236c458cf76c77faae043c6288e46e65e` adds only an evidence generator and routing safety
+tests. It introduces no production import, runtime gate, Telegram intent, task, DB mutation, or
+feature activation.
+
+A future pre-enable rerun may descend from this audit only after one dedicated TEST sink is
+configured outside the production recipient. It must preserve the collision guard, use the frozen
+run-42 production-equivalent packet unless a newer completed-session instruction supersedes it, send
+exactly once, and leave the already-active code default unchanged unless a separately proven existing
+gate is discovered. This dependency does not arm Price Structure v3 or alter the independent US
+natural-proof track.

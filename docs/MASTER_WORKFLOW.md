@@ -1576,3 +1576,23 @@ Telegram, tasks, DB, assessments, and Production Assist are unchanged. Open P0/m
 KR close and verify required detail, local-first ordering, provenance, receipt, duplicates, and
 orphans read-only. The separate US natural reproof remains pending and Track C remains
 `DO_NOT_START`.
+
+### 40.14 KR Market Pre-Enable Test-Send Gate
+
+Exact instruction commit `f161bc1c724cfd431efaaa458af61e02a378daeb` precedes audit-only
+implementation `7d2823c236c458cf76c77faae043c6288e46e65e`. The immutable production packet
+`2026-08-27-kr-run-42-5d8d23e6fbd6` remains the completed-session owner. Its stored 42/42 Kiwoom
+acquisition, 1,989/1,989 numeric registry, local-first plan, and repaired AI/fallback size-sector
+selection all replay PASS without an additional provider call.
+
+The operating environment and all thesis-monitor LaunchAgents expose only the production Telegram
+recipient; no dedicated test/staging/developer chat is configured. The safety gate therefore sets
+`TEST_SINK_AVAILABLE=NO`, `TEST_DELIVERY_COUNT=0`, and `ENABLEMENT_ACTION=DO_NOT_ENABLE`. Production
+Telegram, delivery intent, tasks, DB, assessments, archives, US policy, Price Structure v3, and
+Production Assist remain unchanged. The pre-existing size/sector policy is already active by code
+default and was neither re-armed nor reverted, so its state remains
+`ACTIVE_AWAITING_NATURAL_PROOF`.
+
+Open P0 is zero. The one material operational P1 is `dedicated_test_sink_not_configured`. The next
+bounded action is to configure one explicit test recipient that differs from production, then rerun
+this preflight exactly once. A production recipient must never substitute for that proof.

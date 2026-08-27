@@ -399,3 +399,16 @@ receipt, duplicates, and orphans. Only a natural PASS may set `US_TRACK_A=LIVE_P
 
 Natural KR reproof continues independently. Do not start Price Structure Track C and do not arm
 Price Structure v3. Production Assist remains OFF.
+
+The latest KR size/sector pre-enable task is fail-closed under instruction commit
+`f161bc1c724cfd431efaaa458af61e02a378daeb`. Read
+`docs/reports/20260827-kr-preenable-gate-matrix.json` first. The current run-42 packet and repaired
+AI/fallback candidates pass all data, numeric, local-first, selection, and reconciliation boundaries,
+but no dedicated Telegram TEST sink exists. No test send, production intent, or enablement action
+occurred.
+
+Next bounded action: configure exactly one explicit TEST recipient that is provably different from
+`TELEGRAM_CHAT_ID`, then rerun `KR Market Pre-Enable Test Send + Bounded Enablement`. Do not send to
+production as a substitute. The runtime policy is already active by code default and remains
+`ACTIVE_AWAITING_NATURAL_PROOF`; do not add a redundant feature flag. Natural US proof may continue
+independently. Keep Price Structure v3 unarmed and Production Assist OFF.
