@@ -12,6 +12,8 @@ from datetime import datetime
 from pathlib import Path
 from zoneinfo import ZoneInfo
 
+import exchange_calendars as exchange_calendar
+
 from app.config import get_settings
 from app.services.kr_price_structure_selective_rollout_service import (
     build_kr_price_structure_rollout_decision,
@@ -40,6 +42,10 @@ REPORT_NAMES = (
     "20260827-kr-price-structure-repair-artifact-index.md",
 )
 POSITIVE_CONTROLS = {"003690", "005490", "010120", "086280"}
+OFFICIAL_XKRX_CLOSURES = {
+    "2026-06-03": "local_election_public_holiday",
+    "2026-07-17": "constitution_day_temporary_public_holiday",
+}
 
 
 def _read_json(path: Path) -> object:
@@ -171,6 +177,43 @@ def _compact_zone(value: Mapping[str, object] | None) -> dict[str, object] | Non
     return output
 
 
+def _daily_session_diagnostics(context: object) -> dict[str, object]:
+    raw_dates = [
+        point.date.isoformat()
+        for point in getattr(context, "daily_history", ())
+    ]
+    dates = sorted(set(raw_dates))
+    calendar_missing: list[str] = []
+    if dates:
+        calendar = exchange_calendar.get_calendar(
+            "XKRX",
+            start=dates[0],
+            end=dates[-1],
+        )
+        actual = set(dates)
+        calendar_missing = [
+            session.date().isoformat()
+            for session in calendar.sessions_in_range(dates[0], dates[-1])
+            if session.date().isoformat() not in actual
+        ]
+    official_closures = [
+        value for value in calendar_missing if value in OFFICIAL_XKRX_CLOSURES
+    ]
+    missing = [
+        value for value in calendar_missing if value not in OFFICIAL_XKRX_CLOSURES
+    ]
+    return {
+        "request_count": 1,
+        "deduped_total": len(dates),
+        "duplicate_count": len(raw_dates) - len(dates),
+        "gap_count": len(missing),
+        "gap_dates": missing,
+        "calendar_library_overexpectation_count": len(official_closures),
+        "calendar_library_overexpectation_dates": official_closures,
+        "ordering": "ascending" if raw_dates == sorted(raw_dates) else "invalid",
+    }
+
+
 async def _collect_rows(before_rows: Sequence[Mapping[str, object]]) -> list[dict[str, object]]:
     settings = get_settings()
     settings.kr_price_structure_v3_enabled = True
@@ -215,6 +258,7 @@ async def _collect_rows(before_rows: Sequence[Mapping[str, object]]) -> list[dic
                 "currency": structure.get("currency"),
                 "eligibility": decision.eligibility.value,
                 "coverage": coverage,
+                "daily_session_diagnostics": _daily_session_diagnostics(context),
                 "internal_nearest_support": _compact_zone(
                     _zone(summary.get("nearest_support"))
                 ),
