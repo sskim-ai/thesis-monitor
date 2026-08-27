@@ -2226,6 +2226,25 @@ def queue_daily_digest_notification(
         market_scope=market_scope,
         market_context=market_context,
     )
+    us_market_digest_plan = (
+        digest.us_market_digest_plan.to_dict()
+        if getattr(digest, "us_market_digest_plan", None) is not None
+        else None
+    )
+    us_market_digest_consumption = (
+        {
+            "contract": "us-market-digest-plan-consumption-v1",
+            "selected_slots": [
+                item.slot.value
+                for item in digest.us_market_digest_plan.primary_claims()
+            ],
+            "evidence_refs": list(
+                digest.us_market_digest_plan.required_evidence_refs()
+            ),
+        }
+        if getattr(digest, "us_market_digest_plan", None) is not None
+        else None
+    )
     payload = json.dumps(
         {
             "text": render_daily_digest(digest, include_stock_details=False),
@@ -2234,6 +2253,14 @@ def queue_daily_digest_notification(
             "market_scope": market_scope,
             "presentation": "long_text",
             "use_llm": False,
+            **(
+                {
+                    "us_market_digest_plan": us_market_digest_plan,
+                    "us_market_digest_consumption": us_market_digest_consumption,
+                }
+                if us_market_digest_plan is not None
+                else {}
+            ),
         },
         ensure_ascii=False,
     )

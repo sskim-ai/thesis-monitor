@@ -10,6 +10,9 @@ from app.services.daily_digest import (
     ScheduleSummary,
 )
 from app.services.daily_digest_renderer import render_daily_digest
+from app.services.free_analyst_production_integration_service import (
+    build_production_candidate,
+)
 from app.services.us_market_digest_plan_service import (
     DigestOmissionReason,
     UsMarketDigestPlan,
@@ -189,3 +192,45 @@ def test_non_current_core_is_temporally_omitted_not_promoted() -> None:
     assert current.slot == UsMarketDigestSlot.CURRENT_MARKET
     assert current.omission_reason == DigestOmissionReason.OMITTED_TEMPORAL
     assert current.required_consumption is False
+
+
+def test_adaptive_market_renderer_retains_shared_plan_claims() -> None:
+    context = run41_market_context()
+    plan = build_us_market_digest_plan(context)
+    context["us_market_digest_plan"] = plan.to_dict()
+    source = """🤖 AI 보조 미국시장 점검 · US Pilot 4/5
+
+🎯 판단
+공식 관측 미국 실질금리는 하락했습니다.
+
+🔎 왜 중요한가
+할인율 신호가 가격을 결정하는 시장입니다.
+
+📌 다음 확인
+• 다음 공식 실질금리 관측을 확인합니다.
+"""
+    deterministic = """🌎 미국 종목 점검 · 2026-08-27
+
+📍 미국장 세션 구조
+• 현재 세션에서 상승은 S&P500·Nasdaq·반도체, 하락은 Russell 2000이었습니다.
+• 동일가중 S&P500은 상승해 시가총액가중 S&P500과 방향이 같았습니다.
+• 업종 프록시에서는 산업재가 가장 강했고 헬스케어가 가장 약했습니다.
+
+🌐 보조 거시환경
+미국 실질금리는 직전 공식 관측에서 하락했습니다.
+"""
+
+    candidate = build_production_candidate(
+        source,
+        deterministic_text=deterministic,
+        message_key="market:run41-repair",
+        market="us",
+        packet_owner="2026-08-27-us-run-41-ae4f42c23abc",
+        is_market_digest=True,
+        market_context=context,
+    )
+
+    assert candidate.eligible is True
+    assert "현재 세션에서 상승은 S&P500·Nasdaq·반도체" in candidate.candidate_text
+    assert "동일가중 S&P500은 상승" in candidate.candidate_text
+    assert "산업재가 가장 강했고 헬스케어가 가장 약했습니다" in candidate.candidate_text

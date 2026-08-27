@@ -91,6 +91,9 @@ from app.services.financial_amount_period_service import (
 )
 from app.services.market_session import market_scope_for_security
 from app.services.market_intelligence_service import build_market_intelligence
+from app.services.market_evidence_utilization_validator_service import (
+    validate_us_market_evidence_utilization,
+)
 from app.services.market_context_adapter_service import market_context_adapter
 from app.services.kr_market_digest_quality_service import build_kr_market_digest_plan
 from app.services.night_futures import NIGHT_FUTURES_SERIES
@@ -5632,6 +5635,20 @@ def _validate_bound_ai_review_output(
     }
     if market_interpretation_facts - market_fact_ids:
         errors.append("market_review:interpretation_unknown_fact_ids")
+    if (
+        output.market == "us"
+        and isinstance(market_context, dict)
+        and market_context.get("us_market_digest_plan")
+    ):
+        utilization = validate_us_market_evidence_utilization(
+            market_context.get("us_market_digest_plan"),
+            facts_used=output.market_review.facts_used,
+            interpretation_fact_ids=market_interpretation_facts,
+        )
+        errors.extend(
+            f"market_review:evidence_utilization:{error}"
+            for error in utilization.errors
+        )
     required_market_facts = {
         str(item)
         for item in (

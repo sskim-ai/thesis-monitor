@@ -16,6 +16,11 @@ from app.services.kr_market_digest_quality_service import (
     KrMarketDigestPlan,
     build_kr_market_digest_plan,
 )
+from app.services.us_market_digest_plan_service import (
+    UsMarketDigestPlan,
+    UsMarketDigestSlot,
+    market_digest_plan_from_context,
+)
 
 
 CONTRACT_VERSION = "evidence-locked-free-analyst-v1"
@@ -843,6 +848,44 @@ def build_free_analyst_analysis(
                     )
                 )
             catalog = (*catalog, *context_atoms)
+    us_digest_plan: UsMarketDigestPlan | None = None
+    us_claim_refs: dict[UsMarketDigestSlot, str] = {}
+    us_supporting_ref: str | None = None
+    if parsed.is_market_digest and str(market or "").lower() == "us":
+        us_digest_plan = market_digest_plan_from_context(market_context)
+        if us_digest_plan is not None:
+            context_atoms = []
+            for claim in us_digest_plan.primary_claims():
+                ref = f"market-context:us:{claim.priority}:{claim.slot.value}"
+                us_claim_refs[claim.slot] = ref
+                context_atoms.append(
+                    EvidenceAtom(
+                        ref=ref,
+                        section_key="market_context",
+                        text=claim.claim_text,
+                        owner=semantic_owner,
+                        concept_families=(),
+                    )
+                )
+            supporting_claims = [
+                claim
+                for claim in us_digest_plan.primary_claims()
+                if claim.slot != UsMarketDigestSlot.CURRENT_MARKET
+            ]
+            if supporting_claims:
+                us_supporting_ref = "market-context:us:supporting-structure"
+                context_atoms.append(
+                    EvidenceAtom(
+                        ref=us_supporting_ref,
+                        section_key="market_context",
+                        text=" ".join(
+                            claim.claim_text for claim in supporting_claims
+                        ),
+                        owner=semantic_owner,
+                        concept_families=(),
+                    )
+                )
+            catalog = (*catalog, *context_atoms)
     identifier = _safe_id(benchmark_id)
     core_refs = _refs(catalog, "core")
     business_refs = _refs(catalog, "business")
@@ -880,7 +923,51 @@ def build_free_analyst_analysis(
     )
 
     if parsed.is_market_digest:
-        if kr_digest_plan is not None and kr_digest_plan.richness.status:
+        if us_digest_plan is not None and us_digest_plan.primary_claims():
+            claims = {item.slot: item for item in us_digest_plan.primary_claims()}
+            current = claims.get(UsMarketDigestSlot.CURRENT_MARKET)
+            if current is not None:
+                top.append(
+                    _item(
+                        item_id=f"{identifier}-us-current-market",
+                        text=current.claim_text,
+                        support_type=SupportType.DIRECT_RELATION,
+                        evidence_refs=(us_claim_refs[current.slot],),
+                        materiality_reason=(
+                            "keeps the current-session US cross-section in the primary judgment"
+                        ),
+                        rule_id=None,
+                        boundary="",
+                        confidence=ConfidenceLabel.HIGH,
+                    )
+                )
+            supporting_claims = [
+                claim
+                for slot in (
+                    UsMarketDigestSlot.PARTICIPATION_STYLE,
+                    UsMarketDigestSlot.SECTOR_DISPERSION,
+                    UsMarketDigestSlot.BREADTH_STATE,
+                )
+                if (claim := claims.get(slot)) is not None
+            ]
+            if supporting_claims:
+                assert us_supporting_ref is not None
+                thesis.append(
+                    _item(
+                        item_id=f"{identifier}-us-supporting-market-structure",
+                        text=" ".join(claim.claim_text for claim in supporting_claims),
+                        support_type=SupportType.DIRECT_RELATION,
+                        evidence_refs=(us_supporting_ref,),
+                        materiality_reason=(
+                            "preserves bounded current-session US participation or dispersion"
+                        ),
+                        rule_id=None,
+                        boundary="",
+                        confidence=ConfidenceLabel.HIGH,
+                    )
+                )
+            selected = ("judgment", "evidence", "next_check")
+        elif kr_digest_plan is not None and kr_digest_plan.richness.status:
             assert kr_digest_plan.judgment is not None
             assert kr_digest_plan.interpretation is not None
             assert kr_digest_plan.next_check is not None

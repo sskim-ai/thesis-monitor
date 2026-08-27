@@ -28,6 +28,9 @@ from app.services.free_analyst_production_integration_service import (
     restrict_canary_selection,
     select_limited_canary,
 )
+from app.services.market_evidence_utilization_validator_service import (
+    validate_us_market_evidence_utilization,
+)
 from app.services.ai_reasoning_quality_service import (
     runtime_message_quality_receipt,
     verify_runtime_message_quality_receipt,
@@ -994,6 +997,21 @@ def _render_ai_market_message(
     return "\n\n".join(sections)
 
 
+def _market_interpretation_fact_ids(review: AIMarketReview) -> set[str]:
+    return {
+        fact_id
+        for item in (
+            review.core_judgment,
+            *review.important_changes,
+            review.market_context,
+            review.market_assumptions,
+            *review.portfolio_transmission,
+            *review.next_checks,
+        )
+        for fact_id in item.fact_ids
+    }
+
+
 def _render_ai_stock_message(
     deterministic_text: str,
     review: AIStockReview,
@@ -1162,6 +1180,23 @@ async def deliver_validated_ai_review(
         archive_dir / "market-review.json",
         output.market_review.model_dump(mode="json"),
     )
+    market_context = (
+        packet.get("market_context")
+        if isinstance(packet.get("market_context"), dict)
+        else {}
+    )
+    us_plan = market_context.get("us_market_digest_plan")
+    if market == "us" and us_plan:
+        _atomic_json(
+            archive_dir / "market-evidence-utilization.json",
+            validate_us_market_evidence_utilization(
+                us_plan,
+                facts_used=output.market_review.facts_used,
+                interpretation_fact_ids=_market_interpretation_fact_ids(
+                    output.market_review
+                ),
+            ).to_dict(),
+        )
     _atomic_json(
         archive_dir / "market-numeric-claims.json",
         [item.model_dump(mode="json") for item in output.market_review.numeric_claims],
