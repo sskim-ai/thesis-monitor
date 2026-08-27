@@ -283,28 +283,32 @@ def _size_claim(
         and item.return_pct is not None
         and (item.listed_count is None or item.listed_count > 0)
     ]
-    clauses: list[str] = []
+    rows: list[str] = []
     refs: list[str] = []
-    for scope, rows, labels in (
+    for scope, scope_rows, labels in (
         ("KOSPI", current_kospi, _KOSPI_SIZE_LABELS),
         ("KOSDAQ", current_kosdaq, _KOSDAQ_SIZE_LABELS),
     ):
-        by_name = {_normalized_name(item.name): item for item in rows}
+        by_name = {_normalized_name(item.name): item for item in scope_rows}
         required_names = {_normalized_name(name) for name, _label in labels}
         if set(by_name) != required_names:
             continue
-        rendered = []
+        rendered: list[str] = []
         for name, label in labels:
             item = by_name[_normalized_name(name)]
-            rendered.append(f"{label} {_return_text(float(item.return_pct))}")
+            display_label = (
+                label.removeprefix("KOSDAQ") if scope == "KOSDAQ" else label
+            )
+            rendered.append(
+                f"{display_label} {_return_text(float(item.return_pct))}"
+            )
             refs.append(item.source_ref)
-        prefix = "KOSPI " if scope == "KOSPI" else ""
-        clauses.append(f"{prefix}{' · '.join(rendered)}")
-    if clauses:
+        rows.append(f"• {scope}: {' · '.join(rendered)}")
+    if rows:
         return (
             KrDigestClaim(
                 role="size_context",
-                text=f"규모별: {'; '.join(clauses)}.",
+                text="규모별\n" + "\n".join(rows),
                 priority=KrEvidencePriority.P1_LOCAL_MARKET_STRUCTURE,
                 source_refs=tuple(dict.fromkeys(refs)),
             ),
@@ -324,8 +328,8 @@ def _sector_claim(
 ) -> tuple[KrDigestClaim | None, KrDigestSelectionState, dict[str, int]]:
     if rank_limit not in {1, 3}:
         raise ValueError("KR sector rank limit must be 1 or 3")
-    strongest_clauses: list[str] = []
-    weakest_clauses: list[str] = []
+    strongest_rows: list[str] = []
+    weakest_rows: list[str] = []
     refs: list[str] = []
     valid_rows = 0
     stale_rows = 0
@@ -387,8 +391,8 @@ def _sector_claim(
             strongest = descending[:rank_limit]
             weakest = ascending[:rank_limit]
         if strongest:
-            strongest_clauses.append(
-                f"{scope} "
+            strongest_rows.append(
+                f"• {scope}: "
                 + " · ".join(
                     f"{_display_name(item.name)} "
                     f"{_return_text(float(item.return_pct))}"
@@ -397,8 +401,8 @@ def _sector_claim(
             )
             refs.extend(item.source_ref for item in strongest)
         if weakest:
-            weakest_clauses.append(
-                f"{scope} "
+            weakest_rows.append(
+                f"• {scope}: "
                 + " · ".join(
                     f"{_display_name(item.name)} "
                     f"{_return_text(float(item.return_pct))}"
@@ -406,7 +410,7 @@ def _sector_claim(
                 )
             )
             refs.extend(item.source_ref for item in weakest)
-    if not strongest_clauses:
+    if not strongest_rows:
         return (
             None,
             (
@@ -418,18 +422,13 @@ def _sector_claim(
             ),
             safe_counts,
         )
-    scope_delimiter = " · " if rank_limit == 1 else "; "
-    text_parts = [
-        f"업종 상대 강세: {scope_delimiter.join(strongest_clauses)}."
-    ]
-    if weakest_clauses:
-        text_parts.append(
-            f"업종 상대 약세: {scope_delimiter.join(weakest_clauses)}."
-        )
+    text_parts = ["업종 상대 강세", *strongest_rows]
+    if weakest_rows:
+        text_parts.extend(["", "업종 상대 약세", *weakest_rows])
     return (
         KrDigestClaim(
             role="sector_context",
-            text=" ".join(text_parts),
+            text="\n".join(text_parts),
             priority=KrEvidencePriority.P3_LOCAL_STOCK_CROSS_SECTION,
             source_refs=tuple(dict.fromkeys(refs)),
         ),

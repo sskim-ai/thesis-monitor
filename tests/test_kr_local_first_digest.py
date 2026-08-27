@@ -9,6 +9,9 @@ from app.services.daily_digest import (
     ScheduleSummary,
 )
 from app.services.daily_digest_renderer import render_daily_digest
+from app.services.free_analyst_production_integration_service import (
+    build_production_candidate,
+)
 from app.services.kr_close_fx import KrCloseFxItem, KrCloseFxSummary
 from app.services.kr_market_digest_quality_service import (
     build_kr_market_digest_plan,
@@ -192,9 +195,9 @@ def test_run40_local_first_plan_uses_all_material_local_layers() -> None:
     assert "외국인은 KOSPI에서 순매수하고 KOSDAQ에서 순매도" in plan.interpretation.text
     assert "기관은 KOSPI에서 순매수하고 KOSDAQ에서 순매도" in plan.interpretation.text
     assert "개인은 KOSPI에서 순매도하고 KOSDAQ에서 순매수" in plan.interpretation.text
-    assert "KOSPI 대형 +0.93% · 중형 +1.69% · 소형 +0.70%" in plan.size_context.text
-    assert "업종 상대 강세: KOSPI 보험 +5.88% · KOSDAQ 금속 +2.87%" in plan.sector_context.text
-    assert "업종 상대 약세: KOSPI 운송·창고 -2.66% · KOSDAQ 통신 -0.93%" in plan.sector_context.text
+    assert "• KOSPI: 대형 +0.93% · 중형 +1.69% · 소형 +0.70%" in plan.size_context.text
+    assert "업종 상대 강세\n• KOSPI: 보험 +5.88%\n• KOSDAQ: 금속 +2.87%" in plan.sector_context.text
+    assert "업종 상대 약세\n• KOSPI: 운송·창고 -2.66%\n• KOSDAQ: 통신 -0.93%" in plan.sector_context.text
     assert "빈 업종" not in plan.sector_context.text
     assert plan.concentration_scopes_used == ()
 
@@ -207,7 +210,8 @@ def test_renderer_places_local_structure_before_fx_and_global_context() -> None:
         "📍 국내 장마감 구조",
         "KOSPI는 상승",
         "외국인은 KOSPI에서 순매수하고 KOSDAQ에서 순매도",
-        "규모별: KOSPI 대형 +0.93%",
+        "📊 시장 내부",
+        "규모별\n• KOSPI: 대형 +0.93%",
         "업종 상대 강세",
         "💱 환율",
         "🌐 보조 시장환경",
@@ -216,6 +220,48 @@ def test_renderer_places_local_structure_before_fx_and_global_context() -> None:
     ]
     positions = [rendered.index(value) for value in ordered]
     assert positions == sorted(positions)
+
+
+def test_ai_and_fallback_share_exact_market_internal_layout() -> None:
+    context = _run40_style_context()
+    plan = build_kr_market_digest_plan(context, sector_rank_limit=3)
+    fallback = render_daily_digest(_digest(plan), include_stock_details=False)
+    source = """🤖 AI 보조 한국시장 마감 · KR Pilot 4/5
+
+🎯 판단
+KOSPI와 KOSDAQ의 지수 방향이 달랐습니다.
+
+🔎 핵심 근거
+외국인과 기관의 양 시장 수급 방향이 엇갈렸습니다.
+
+📌 다음 확인
+• 양 시장의 수급 방향을 확인합니다.
+"""
+    candidate = build_production_candidate(
+        source,
+        deterministic_text=fallback,
+        message_key="market:kr-linebreak-formatting",
+        market="kr",
+        packet_owner="packet:kr-linebreak-formatting",
+        is_market_digest=True,
+        market_context={"adapter_context": context},
+    )
+
+    assert candidate.eligible is True
+    assert plan.size_context is not None
+    assert plan.sector_context is not None
+    expected = (
+        f"📊 시장 내부\n\n{plan.size_context.text}\n\n"
+        f"{plan.sector_context.text}"
+    )
+    assert expected in fallback
+    assert expected in candidate.candidate_text
+    assert fallback.count(expected) == 1
+    assert candidate.candidate_text.count(expected) == 1
+    assert "규모별:" not in candidate.candidate_text
+    assert "업종 상대 강세:" not in candidate.candidate_text
+    assert "업종 상대 약세:" not in candidate.candidate_text
+    assert "• •" not in candidate.candidate_text
 
 
 def test_missing_local_context_preserves_safe_existing_digest_path() -> None:

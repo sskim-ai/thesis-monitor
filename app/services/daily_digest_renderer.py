@@ -34,8 +34,26 @@ def render_daily_digest(
     kr_plan = digest.kr_market_digest_plan
     if kr_plan is not None and kr_plan.richness.status:
         lines.extend(["", "📍 국내 장마감 구조"])
-        for claim in kr_plan.claims():
+        market_internal = tuple(
+            claim
+            for claim in (kr_plan.size_context, kr_plan.sector_context)
+            if claim is not None
+        )
+        internal_texts = {claim.text for claim in market_internal}
+        for claim in (
+            kr_plan.judgment,
+            kr_plan.interpretation,
+            kr_plan.next_check,
+        ):
+            if claim is None or claim.text in internal_texts:
+                continue
             lines.append(f"• {claim.text}")
+        if market_internal:
+            lines.extend(["", "📊 시장 내부", ""])
+            for index, claim in enumerate(market_internal):
+                if index:
+                    lines.append("")
+                lines.append(claim.text)
         if digest.kr_close_fx is not None:
             lines.extend(["", render_kr_close_fx(digest.kr_close_fx)])
         lines.extend(["", "🌐 보조 시장환경"])

@@ -204,13 +204,19 @@ def test_run42_plan_selects_all_size_rows_and_sector_extremes() -> None:
     assert plan.sector_extremes_state == KrDigestSelectionState.SELECTED_REQUIRED
     assert plan.size_context is not None
     assert plan.sector_context is not None
-    assert (
-        "KOSPI 대형 +1.66% · 중형 +0.22% · 소형 -0.13%"
-        in plan.size_context.text
+    assert plan.size_context.text == (
+        "규모별\n"
+        "• KOSPI: 대형 +1.66% · 중형 +0.22% · 소형 -0.13%\n"
+        "• KOSDAQ: 100 +1.94% · MID300 +0.76% · SMALL +0.44%"
     )
-    assert "KOSDAQ100 +1.94% · MID300 +0.76% · SMALL +0.44%" in plan.size_context.text
-    assert "업종 상대 강세: KOSPI 전기·전자 +2.62% · KOSDAQ 금융 +3.21%" in plan.sector_context.text
-    assert "업종 상대 약세: KOSPI 유통 -2.36% · KOSDAQ 오락·문화 -1.29%" in plan.sector_context.text
+    assert plan.sector_context.text == (
+        "업종 상대 강세\n"
+        "• KOSPI: 전기·전자 +2.62%\n"
+        "• KOSDAQ: 금융 +3.21%\n\n"
+        "업종 상대 약세\n"
+        "• KOSPI: 유통 -2.36%\n"
+        "• KOSDAQ: 오락·문화 -1.29%"
+    )
     assert "leader" not in plan.sector_context.text.casefold()
     assert "laggard" not in plan.sector_context.text.casefold()
 
@@ -222,22 +228,63 @@ def test_top3_policy_selects_distinct_strongest_and_weakest_per_market() -> None
     assert plan.sector_safe_counts == {"KOSPI": 7, "KOSDAQ": 7}
     assert plan.sector_context is not None
     assert (
-        "KOSPI 전기·전자 +2.62% · 기계 +1.50% · 운송장비 +1.20%"
+        "• KOSPI: 전기·전자 +2.62% · 기계 +1.50% · 운송장비 +1.20%"
         in plan.sector_context.text
     )
     assert (
-        "KOSDAQ 금융 +3.21% · 반도체 +2.10% · IT서비스 +1.30%"
+        "• KOSDAQ: 금융 +3.21% · 반도체 +2.10% · IT서비스 +1.30%"
         in plan.sector_context.text
     )
     assert (
-        "KOSPI 유통 -2.36% · 의약품 -1.20% · 철강 -0.40%"
+        "• KOSPI: 유통 -2.36% · 의약품 -1.20% · 철강 -0.40%"
         in plan.sector_context.text
     )
     assert (
-        "KOSDAQ 오락·문화 -1.29% · 섬유·의류 -0.70% · 운송 -0.25%"
+        "• KOSDAQ: 오락·문화 -1.29% · 섬유·의류 -0.70% · 운송 -0.25%"
         in plan.sector_context.text
     )
     assert len(plan.sector_context.source_refs) == 12
+
+
+def test_top3_layout_preserves_values_order_refs_and_telegram_bullets() -> None:
+    plan = build_kr_market_digest_plan(_top3_context(), sector_rank_limit=3)
+
+    assert plan.size_context is not None
+    assert plan.sector_context is not None
+    market_internal = (
+        f"📊 시장 내부\n\n{plan.size_context.text}\n\n"
+        f"{plan.sector_context.text}"
+    )
+    assert market_internal == (
+        "📊 시장 내부\n\n"
+        "규모별\n"
+        "• KOSPI: 대형 +1.66% · 중형 +0.22% · 소형 -0.13%\n"
+        "• KOSDAQ: 100 +1.94% · MID300 +0.76% · SMALL +0.44%\n\n"
+        "업종 상대 강세\n"
+        "• KOSPI: 전기·전자 +2.62% · 기계 +1.50% · 운송장비 +1.20%\n"
+        "• KOSDAQ: 금융 +3.21% · 반도체 +2.10% · IT서비스 +1.30%\n\n"
+        "업종 상대 약세\n"
+        "• KOSPI: 유통 -2.36% · 의약품 -1.20% · 철강 -0.40%\n"
+        "• KOSDAQ: 오락·문화 -1.29% · 섬유·의류 -0.70% · 운송 -0.25%"
+    )
+    assert plan.sector_context.source_refs == (
+        "sector:KOSPI:전기/전자",
+        "sector:KOSPI:기계",
+        "sector:KOSPI:운송장비",
+        "sector:KOSPI:유통",
+        "sector:KOSPI:의약품",
+        "sector:KOSPI:철강",
+        "sector:KOSDAQ:금융",
+        "sector:KOSDAQ:반도체",
+        "sector:KOSDAQ:IT서비스",
+        "sector:KOSDAQ:오락/문화",
+        "sector:KOSDAQ:섬유/의류",
+        "sector:KOSDAQ:운송",
+    )
+    assert "• •" not in market_internal
+    assert "\\•" not in market_internal
+    assert "leader" not in market_internal.casefold()
+    assert "laggard" not in market_internal.casefold()
 
 
 def test_top3_exact_ties_use_canonical_sector_name() -> None:
@@ -258,7 +305,7 @@ def test_top3_exact_ties_use_canonical_sector_name() -> None:
     ).sector_context
 
     assert claim is not None
-    assert "KOSPI 기계 +2.00% · 운송장비 +2.00% · 전기·전자 +2.00%" in claim.text
+    assert "• KOSPI: 기계 +2.00% · 운송장비 +2.00% · 전기·전자 +2.00%" in claim.text
 
 
 def test_top3_excludes_kosdaq_company_classification_indexes() -> None:
@@ -303,6 +350,12 @@ def test_top3_partial_safe_rows_do_not_duplicate_to_fill_three() -> None:
     )
     assert claim.text.count("전기·전자") == 1
     assert claim.text.count("유통") == 1
+    assert claim.text == (
+        "업종 상대 강세\n"
+        "• KOSPI: 전기·전자 +2.62%\n\n"
+        "업종 상대 약세\n"
+        "• KOSPI: 유통 -2.36%"
+    )
 
 
 def test_top3_explicit_stale_sector_rows_are_excluded() -> None:
@@ -327,8 +380,10 @@ def test_incomplete_size_market_is_omitted_without_fabrication() -> None:
 
     assert plan.size_style_state == KrDigestSelectionState.SELECTED_REQUIRED
     assert plan.size_context is not None
-    assert "KOSPI 대형" not in plan.size_context.text
-    assert "KOSDAQ100 +1.94%" in plan.size_context.text
+    assert "• KOSPI:" not in plan.size_context.text
+    assert "• KOSDAQ: 100 +1.94%" in plan.size_context.text
+    assert plan.size_context.text.count("규모별") == 1
+    assert "\n\n" not in plan.size_context.text
 
 
 def test_wrong_session_size_rows_are_not_carried_forward() -> None:
@@ -389,8 +444,9 @@ def test_one_sector_market_unavailable_renders_only_safe_market() -> None:
 
     assert plan.sector_extremes_state == KrDigestSelectionState.SELECTED_REQUIRED
     assert plan.sector_context is not None
-    assert "KOSPI 전기·전자 +2.62%" in plan.sector_context.text
-    assert "KOSDAQ 금융" not in plan.sector_context.text
+    assert "• KOSPI: 전기·전자 +2.62%" in plan.sector_context.text
+    assert "• KOSDAQ: 금융" not in plan.sector_context.text
+    assert "• KOSDAQ:" not in plan.sector_context.text
 
 
 def test_stale_completed_session_disables_required_slots() -> None:
@@ -436,10 +492,10 @@ def test_repaired_ai_and_fallback_consume_the_same_required_plan() -> None:
     assert candidate.quality_v2 is not None
     assert candidate.quality_v2["kr_market_digest"]["utilization"]["status"] == "PASS"
     for marker in (
-        "KOSPI 대형 +1.66% · 중형 +0.22% · 소형 -0.13%",
-        "KOSDAQ100 +1.94% · MID300 +0.76% · SMALL +0.44%",
-        "업종 상대 강세: KOSPI 전기·전자 +2.62% · KOSDAQ 금융 +3.21%",
-        "업종 상대 약세: KOSPI 유통 -2.36% · KOSDAQ 오락·문화 -1.29%",
+        "• KOSPI: 대형 +1.66% · 중형 +0.22% · 소형 -0.13%",
+        "• KOSDAQ: 100 +1.94% · MID300 +0.76% · SMALL +0.44%",
+        "업종 상대 강세\n• KOSPI: 전기·전자 +2.62%\n• KOSDAQ: 금융 +3.21%",
+        "업종 상대 약세\n• KOSPI: 유통 -2.36%\n• KOSDAQ: 오락·문화 -1.29%",
     ):
         assert marker in fallback
         assert marker in candidate.candidate_text
