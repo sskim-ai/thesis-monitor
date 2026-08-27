@@ -105,13 +105,13 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     assert state["repository"] == "sskim-ai/thesis-monitor"
     assert state["branch"] == "main"
     assert state["experimental_branch"] == (
-        "codex/20260827-kr-price-structure-daily-history-nearest-repair"
+        "codex/20260827-kr-price-structure-daily-1200-extension-degradation"
     )
     assert state["current_phase"] == (
-        "kr_price_structure_daily_history_nearest_repair_replay_pass"
+        "kr_price_structure_daily_1200_verified_degradation_replay_pass"
     )
     assert state["last_completed_phase"] == (
-        "kr_price_structure_daily_history_nearest_bounded_repair"
+        "kr_price_structure_daily_1200_extension_or_degradation_policy"
     )
     assert state["next_default_phase"] == (
         "rerun_kr_top3_price_structure_test_sink_preenablement"
@@ -123,13 +123,16 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     price_structure_repair_implementation = (
         "04fb7ad7646a55e03000134f50b3f402a6c49c87"
     )
+    daily_1200_implementation = (
+        "f957bea48e1bf8df23c6b8fe769812ade5663456"
+    )
     kr_integration_commit = "848eb80f6ce6504a9a855973b591ee0749167514"
     detector_implementation_commit = "3685aa991589ca0e7cc560104d4ebf8289e3f91d"
     preenablement_commit = "84f8f549bc8fa0338309a84b23b2738f2e357646"
     prior_price_structure_commit = "631e82f202b6f081866ef83c8b67b2138a8b51d8"
     prior_fibonacci_commit = "0dfef76bba606f018893d6e68e7beaf410aa7438"
     assert state["deployed_code_commit"] == "43731f015901b96e2dee3af009b9e1d074382349"
-    assert state["main_code_commit"] == price_structure_repair_implementation
+    assert state["main_code_commit"] == daily_1200_implementation
     assert state["operating_code_commit"] == "43731f015901b96e2dee3af009b9e1d074382349"
     phase_8552 = state["phase_8_5_5_2_kr_structured_field_repetition"]
     assert phase_8552["status"] == "operating_shadow_pending_natural_proof"
@@ -172,6 +175,12 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     )
     assert state["contracts"]["kr_price_structure_daily_history"] == (
         "kr-price-structure-daily-history-v1"
+    )
+    assert state["contracts"]["ohlcv_provider_limit_window_chaining"] == (
+        "ohlcv-provider-limit-window-chaining-v1"
+    )
+    assert state["contracts"]["price_structure_coverage_degradation"] == (
+        "price-structure-coverage-degradation-v1"
     )
     assert state["contracts"]["sr_nearest_user_visible_proximity"] == (
         "sr-nearest-user-visible-proximity-v1"
@@ -1069,7 +1078,35 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     )
     assert price_structure_repair["runtime_enablement"] is False
     assert price_structure_repair["test_send"] is False
-    assert state["current_commit"] == price_structure_repair_implementation
+    daily_1200 = state["kr_price_structure_daily_1200_extension_or_degradation"]
+    assert daily_1200["status"] == "replay_pass_ready_for_preenable"
+    assert daily_1200["instruction_commit"] == (
+        "3e42f3fad2e32ff1b3cca47861cfb9704095ce28"
+    )
+    assert daily_1200["track_a_commit"] == (
+        "c9e8fc1e25394857bd88d4652e3a8b1e88638011"
+    )
+    assert daily_1200["track_b_commit"] == (
+        "d60b7b2a9edecbad0ed54c2151ecfba163478522"
+    )
+    assert daily_1200["integration_code_commit"] == daily_1200_implementation
+    assert daily_1200["implementation_github_actions_run"] == 33081793581
+    assert daily_1200["implementation_github_actions_status"] == (
+        "passed_test_and_lint"
+    )
+    assert daily_1200["provider_capability"] == (
+        "PROVIDER_HARD_LIMIT_NO_OLDER_WINDOW"
+    )
+    assert daily_1200["implementation_path"] == "VERIFIED_PARTIAL_SAFE_1000"
+    assert daily_1200["daily_canonical_target"] == 1200
+    assert daily_1200["daily_provider_request_limit"] == 1000
+    assert daily_1200["daily_subjects_partial_safe"] == 7
+    assert daily_1200["unexplained_daily_shortfall"] == 0
+    assert daily_1200["open_p0"] == []
+    assert daily_1200["open_material_p1"] == []
+    assert daily_1200["runtime_enablement"] is False
+    assert daily_1200["operating_promotion"] is False
+    assert state["current_commit"] == daily_1200_implementation
     assert state["ai_review_mode"] == "shadow"
     assert state["ai_policy_version"] == "daily-review-v3.10"
     assert state["output_schema_version"] == 4

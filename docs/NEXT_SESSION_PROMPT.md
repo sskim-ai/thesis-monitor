@@ -3,6 +3,25 @@
 Repository: `sskim-ai/thesis-monitor`
 
 Latest authoritative work follows exact instruction commit
+`3e42f3fad2e32ff1b3cca47861cfb9704095ce28` and implementation
+`f957bea48e1bf8df23c6b8fe769812ade5663456`. Read
+`docs/reports/20260827-kr-daily-1200-readiness.json`, provider capability, window probe,
+seven-ticker coverage, replay, render diff, safety, and validation first.
+
+The supported provider cannot expose an older window beyond its 1,000-row cap. Preserve the
+canonical 1,200 target and the explicit `PARTIAL_SAFE/provider_limit` state; do not call it full,
+fabricate bars, switch provider, or use the static audit artifact as runtime cache. Frozen
+2026-08-27 replay passes 7/7 with actual session gaps/duplicates zero, validator errors zero, and
+the old 000660 negative control failing as expected.
+
+Next action: `RERUN_KR_TOP3_PRICE_STRUCTURE_TEST_SINK_PREENABLEMENT`. This requires a separately
+authorized, dedicated non-production sink. Do not use the production recipient, enable either KR
+guard, enable US Price Structure, promote operating from this task, manually run a Scheduled Task,
+or turn on Production Assist.
+
+---
+
+Latest authoritative work follows exact instruction commit
 `0a8dae7eeca7126844094f0aebcc7a7df0bea606` and integrated code commit
 `04fb7ad7646a55e03000134f50b3f402a6c49c87`. Read
 `docs/reports/20260827-kr-price-structure-repair-readiness.json`, the seven-ticker replay/render

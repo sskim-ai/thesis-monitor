@@ -1825,3 +1825,24 @@ not arm either KR guard. Price Structure v3 remains `INTEGRATED_READY_NOT_ARMED`
 TOP3 sector logic, Telegram, tasks, DB, assessments, archives, and Production Assist are unchanged.
 The next action remains a separately authorized test-sink pre-enable rerun after one dedicated
 non-production recipient is configured.
+
+## 2026-08-27 KR Daily 1200 Extension / Degradation Handoff
+
+The exact instruction commit is `3e42f3fad2e32ff1b3cca47861cfb9704095ce28`; Track A is
+`c9e8fc1e25394857bd88d4652e3a8b1e88638011`, Track B is
+`d60b7b2a9edecbad0ed54c2151ecfba163478522`, and Track C implementation is
+`f957bea48e1bf8df23c6b8fe769812ade5663456`. Start with
+`docs/reports/20260827-kr-daily-1200-readiness.json`, then read provider capability, window probe,
+seven-ticker coverage, replay, render diff, safety, and validation reports.
+
+The supported `/ohlcv` endpoint has a hard 1,000-row maximum and no exposed older-window control.
+The canonical target remains 1,200; all seven frozen-session daily series are therefore
+`PARTIAL_SAFE/provider_limit` at 1,000, never `PASS`. Actual session gaps and duplicates are zero.
+The two calendar-library overexpectations are official KRX closures and are retained separately.
+All seven price-structure sections remain `ELIGIBLE_SR_ONLY`, all proximity validators pass, and
+the old 000660 negative fixture still fails as expected.
+
+State is `REPLAY_PASS_READY_FOR_PREENABLE`, P0/material P1 `0/0`. Price Structure remains
+`INTEGRATED_READY_NOT_ARMED`; operating stays on `43731f015901b96e2dee3af009b9e1d074382349`.
+No test send or enablement occurred. Next action is
+`RERUN_KR_TOP3_PRICE_STRUCTURE_TEST_SINK_PREENABLEMENT` under a separate instruction.

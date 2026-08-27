@@ -7,4 +7,5 @@
 - Integration input: `d60b7b2a9edecbad0ed54c2151ecfba163478522`
 - Required Markdown reports: `11/11`
 - Machine-readable reports: `2/2`
+- Test/CI summary: `docs/reports/20260827-kr-daily-1200-validation.md`
 - Completion ZIP: `20260827-kr-price-structure-daily-1200-extension-or-degradation-policy-bundle.zip`

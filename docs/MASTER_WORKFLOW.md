@@ -1644,3 +1644,35 @@ Price Structure, market digest, business thesis, valuation, Telegram, tasks, DB,
 production flags. State is `REPLAY_PASS_READY_FOR_PREENABLE`, with open P0/material P1 `0/0`.
 Price Structure remains `INTEGRATED_READY_NOT_ARMED`; do not enable or send from this repair.
 Configure a dedicated non-production test sink and rerun the bounded pre-enable proof separately.
+
+### 40.17 KR Daily 1200 Extension or Verified Degradation
+
+Exact instruction commit `3e42f3fad2e32ff1b3cca47861cfb9704095ce28` precedes provider audit
+`c9e8fc1e25394857bd88d4652e3a8b1e88638011`, degradation implementation
+`d60b7b2a9edecbad0ed54c2151ecfba163478522`, and seven-ticker replay implementation
+`f957bea48e1bf8df23c6b8fe769812ade5663456`.
+
+Track A proves the supported thesis-monitor `/ohlcv` contract caps `count` at 1,000 and exposes no
+cursor, offset, date window, or continuation state. Unsupported `end_date` input is ignored and
+returns the latest overlapping window, while `count=1200` is rejected. The upstream Kiwoom adapter
+has private continuation mechanics, but they are not part of the supported consumer contract; the
+static 1,200-bar audit artifact is not a live cache. Capability is therefore
+`PROVIDER_HARD_LIMIT_NO_OLDER_WINDOW`.
+
+Track B preserves the canonical daily target at 1,200 and records long-listed provider-limited
+series as `PARTIAL_SAFE/provider_limit` at 1,000. `PARTIAL_SAFE` is explicitly not `PASS`; short
+listings remain `PARTIAL`, insufficient evidence remains `FAIL`, and the existing coverage-aware
+proximity/Fib/current-cycle gates remain authoritative. No second window, synthetic bar, alternate
+provider, weekly/monthly substitution, or adjusted/raw merge is admitted.
+
+The frozen 2026-08-27 replay returns 1,000 completed bars for all seven KR controls, zero actual
+session gaps, zero duplicates, ascending order, and seven `ELIGIBLE_SR_ONLY` results with zero
+renderer-validator errors. `2026-06-03` and `2026-07-17` are official KRX closures that the local
+calendar package overexpected; they are retained as diagnostics rather than counted as data gaps.
+The old 000660 section still fails as expected. Open P0/material P1 are `0/0`, and state is
+`REPLAY_PASS_READY_FOR_PREENABLE`.
+
+Price Structure remains `INTEGRATED_READY_NOT_ARMED`. This work changes no user-visible runtime,
+Telegram, task, DB, assessment, archive, TOP3 sector path, US path, production flag, or operating
+checkout. Next action is exactly `RERUN_KR_TOP3_PRICE_STRUCTURE_TEST_SINK_PREENABLEMENT` under a
+separate authorization.

@@ -376,3 +376,16 @@ and old-000660 negative control. It must also preserve explicit KR-only renderer
 US/TOP3 behavior, both default-OFF guards, and the dedicated-test-sink requirement. This repair
 does not itself authorize a Telegram send, runtime enablement, operating promotion, or Production
 Assist.
+
+The KR daily-1200 extension/degradation policy starts from exact instruction commit
+`3e42f3fad2e32ff1b3cca47861cfb9704095ce28`, whose parent is clean main
+`48a699798462639b27056523ef8fdd94b261092b`. Track A
+`c9e8fc1e25394857bd88d4652e3a8b1e88638011` proves the supported provider capability; Track B
+`d60b7b2a9edecbad0ed54c2151ecfba163478522` implements the verified degradation contract; Track C
+`f957bea48e1bf8df23c6b8fe769812ade5663456` closes the frozen seven-ticker replay.
+
+Any later pre-enable rerun must descend from this closure and preserve the 1,200 canonical target,
+1,000 provider cap, `PARTIAL_SAFE/provider_limit` semantics, official-closure-aware gap audit,
+proximity/Fib/current-cycle validators, and old-000660 negative control. It must not infer an older
+window from unsupported parameters, use the static backfill artifact as runtime truth, arm either
+guard, alter US/TOP3 behavior, or promote operating without separate authorization.
