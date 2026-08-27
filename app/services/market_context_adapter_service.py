@@ -66,6 +66,7 @@ class AdapterSector(BaseModel):
     source_ref: str
     market_scope: str | None = None
     listed_count: int | None = None
+    as_of_date: date | None = None
 
 
 class AdapterSizeContext(BaseModel):
@@ -640,6 +641,7 @@ class MarketContextAdapter:
                     ),
                     market_scope=item.market_scope,
                     listed_count=item.listed_count,
+                    as_of_date=cross_section.session_date,
                 )
                 for item in cross_section.sectors
                 if not (
@@ -659,6 +661,7 @@ class MarketContextAdapter:
                         state=_structured_state(fields),
                         basis="sector_price_proxy",
                         source_ref=str(fact.get("fact_id") or ""),
+                        as_of_date=_fact_date(fact),
                     )
                 )
         return [

@@ -1,6 +1,6 @@
 # KR Size / Sector Message Policy
 
-Contract owner: `kr-market-digest-quality-v1`
+Contract owners: `kr-market-digest-quality-v1`, `kr-sector-relative-ranking-v1`
 
 ## Selection
 
@@ -9,8 +9,9 @@ breadth, and aggregate participant flow:
 
 1. `SIZE_STYLE`: complete same-session KOSPI large/mid/small and complete KOSDAQ100/MID300/SMALL
    groups.
-2. `SECTOR_EXTREMES`: at most one relative-strong and one relative-weak non-empty sector for each
-   available KOSPI/KOSDAQ market.
+2. `SECTOR_EXTREMES`: one relative-strong and one relative-weak non-empty sector for each available
+   KOSPI/KOSDAQ market while the rollout guard is OFF. The guarded TOP3 form selects up to three
+   relative-strong and three relative-weak sectors per market.
 
 When at least one market has a complete safe group, the slot state is `SELECTED_REQUIRED`. Allowed
 fail-closed states are `SOURCE_UNAVAILABLE`, `WRONG_SESSION`, `INVALID_SEMANTIC`, and
@@ -25,6 +26,12 @@ returns and the Korean labels `규모별`, `업종 상대 강세`, and `업종 �
 Sector return ranks are not component breadth. The plan excludes KOSDAQ size/style indexes from
 sector extrema and excludes rows with empty listed universes. Relative terminology remains valid
 when all sectors are positive or all are negative.
+
+The TOP3 form accepts only same-session `CURRENT_DIRECTIONAL` rows. It canonical-name deduplicates
+before ranking and uses the stable order `(return, canonical sector name, source ref)`, descending
+for strong and ascending for weak. Fewer than three safe rows remain fewer than three; the renderer
+does not duplicate or carry forward sectors to fill a slot. Ranking is backend-owned and AI cannot
+reorder it.
 
 ## Length Ownership
 
@@ -41,4 +48,5 @@ while repaired AI and fallback previews must pass with identical selected source
 
 No provider acquisition, numeric-registry policy, flow reconciliation, concentration eligibility,
 Price Structure v3, US market digest, business-thesis persistence, or delivery behavior is owned by
-this policy.
+this policy. `KR_MARKET_SECTOR_TOP3_ENABLED` defaults OFF; changing it requires the separate
+dedicated-test-sink rollout gate.

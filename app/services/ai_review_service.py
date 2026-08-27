@@ -1672,6 +1672,7 @@ def _compact_chart_structure(structure: dict[str, object]) -> dict[str, object]:
         "risk_reward": _dict(structure.get("risk_reward")),
         "supply_classification": _dict(structure.get("supply_classification")),
         "chart_state": _dict(structure.get("chart_state")),
+        "price_structure_v3": _dict(structure.get("price_structure_v3")),
     }
 
 
@@ -2016,6 +2017,41 @@ def _chart_facts(chart: dict[str, object], currency: str) -> list[dict[str, obje
                             "user_semantics",
                         )
                         if state.get(key) not in (None, [], {})
+                    },
+                }
+            )
+        price_structure_v3 = _dict(structure.get("price_structure_v3"))
+        price_structure_summary = _dict(price_structure_v3.get("summary"))
+        seen_v3_zone_ids: set[str] = set()
+        for role, value in (
+            ("nearest_support", _dict(price_structure_summary.get("nearest_support")).get("zone")),
+            ("nearest_resistance", _dict(price_structure_summary.get("nearest_resistance")).get("zone")),
+            ("major_structural_support", _dict(price_structure_summary.get("major_structural_support")).get("zone")),
+            ("major_structural_resistance", _dict(price_structure_summary.get("major_structural_resistance")).get("zone")),
+            ("fib_sr_confluence", price_structure_summary.get("fib_sr_confluence")),
+        ):
+            zone = _dict(value)
+            zone_id = str(zone.get("zone_id") or "")
+            if not zone_id or zone_id in seen_v3_zone_ids:
+                continue
+            seen_v3_zone_ids.add(zone_id)
+            facts.append(
+                {
+                    "fact_id": zone_id,
+                    "fact_type": "chart_price_structure_v3_zone",
+                    "as_of_date": str(price_structure_v3.get("as_of") or ""),
+                    "source": "price_structure_wave_fibonacci_v3",
+                    "fields": {
+                        "role": role,
+                        "raw_low": zone.get("raw_low"),
+                        "raw_high": zone.get("raw_high"),
+                        "display": zone.get("display"),
+                        "currency": zone.get("currency") or currency,
+                        "source_refs": zone.get("source_refs", []),
+                        "family_consensus_safe": price_structure_v3.get(
+                            "family_consensus_safe"
+                        ),
+                        "eligibility": price_structure_v3.get("eligibility"),
                     },
                 }
             )

@@ -150,6 +150,53 @@ def _fallback_text(context: dict[str, object]) -> str:
     return "\n".join(claim.text for claim in plan.claims())
 
 
+def _top3_context() -> dict[str, object]:
+    context = _context()
+    size_names = {"KOSDAQ 100", "KOSDAQ MID 300", "KOSDAQ SMALL"}
+    context["sectors"] = [
+        item for item in context["sectors"] if item["name"] in size_names
+    ]
+    context["sectors"].extend(
+        {
+            "name": name,
+            "return_pct": value,
+            "basis": "actual_sector_breadth",
+            "source_ref": f"sector:{scope}:{name}",
+            "market_scope": scope,
+            "listed_count": 10,
+            "as_of_date": "2026-08-27",
+        }
+        for scope, rows in (
+            (
+                "KOSPI",
+                (
+                    ("전기/전자", 2.62),
+                    ("기계", 1.50),
+                    ("운송장비", 1.20),
+                    ("화학", 0.18),
+                    ("철강", -0.40),
+                    ("의약품", -1.20),
+                    ("유통", -2.36),
+                ),
+            ),
+            (
+                "KOSDAQ",
+                (
+                    ("금융", 3.21),
+                    ("반도체", 2.10),
+                    ("IT서비스", 1.30),
+                    ("제약", 0.20),
+                    ("운송", -0.25),
+                    ("섬유/의류", -0.70),
+                    ("오락/문화", -1.29),
+                ),
+            ),
+        )
+        for name, value in rows
+    )
+    return context
+
+
 def test_run42_plan_selects_all_size_rows_and_sector_extremes() -> None:
     plan = build_kr_market_digest_plan(_context())
 
@@ -166,6 +213,89 @@ def test_run42_plan_selects_all_size_rows_and_sector_extremes() -> None:
     assert "업종 상대 약세: KOSPI 유통 -2.36% · KOSDAQ 오락·문화 -1.29%" in plan.sector_context.text
     assert "leader" not in plan.sector_context.text.casefold()
     assert "laggard" not in plan.sector_context.text.casefold()
+
+
+def test_top3_policy_selects_distinct_strongest_and_weakest_per_market() -> None:
+    plan = build_kr_market_digest_plan(_top3_context(), sector_rank_limit=3)
+
+    assert plan.sector_rank_limit == 3
+    assert plan.sector_safe_counts == {"KOSPI": 7, "KOSDAQ": 7}
+    assert plan.sector_context is not None
+    assert (
+        "KOSPI 전기·전자 +2.62% · 기계 +1.50% · 운송장비 +1.20%"
+        in plan.sector_context.text
+    )
+    assert (
+        "KOSDAQ 금융 +3.21% · 반도체 +2.10% · IT서비스 +1.30%"
+        in plan.sector_context.text
+    )
+    assert (
+        "KOSPI 유통 -2.36% · 의약품 -1.20% · 철강 -0.40%"
+        in plan.sector_context.text
+    )
+    assert (
+        "KOSDAQ 오락·문화 -1.29% · 섬유·의류 -0.70% · 운송 -0.25%"
+        in plan.sector_context.text
+    )
+    assert len(plan.sector_context.source_refs) == 12
+
+
+def test_top3_exact_ties_use_canonical_sector_name() -> None:
+    context = _top3_context()
+    kospi = [
+        item
+        for item in context["sectors"]
+        if item.get("market_scope") == "KOSPI"
+    ]
+    for item in kospi:
+        if item["name"] in {"기계", "운송장비", "전기/전자"}:
+            item["return_pct"] = 2.0
+    context["sectors"] = list(reversed(context["sectors"]))
+
+    claim = build_kr_market_digest_plan(
+        context,
+        sector_rank_limit=3,
+    ).sector_context
+
+    assert claim is not None
+    assert "KOSPI 기계 +2.00% · 운송장비 +2.00% · 전기·전자 +2.00%" in claim.text
+
+
+def test_top3_partial_safe_rows_do_not_duplicate_to_fill_three() -> None:
+    context = _top3_context()
+    context["sectors"] = [
+        item
+        for item in context["sectors"]
+        if item.get("market_scope") == "KOSPI"
+        and item["name"] in {"전기/전자", "유통"}
+    ]
+
+    claim = build_kr_market_digest_plan(
+        context,
+        sector_rank_limit=3,
+    ).sector_context
+
+    assert claim is not None
+    assert claim.source_refs == (
+        "sector:KOSPI:전기/전자",
+        "sector:KOSPI:유통",
+    )
+    assert claim.text.count("전기·전자") == 1
+    assert claim.text.count("유통") == 1
+
+
+def test_top3_explicit_stale_sector_rows_are_excluded() -> None:
+    context = _top3_context()
+    stale_ref = "sector:KOSPI:전기/전자"
+    for item in context["sectors"]:
+        if item.get("source_ref") == stale_ref:
+            item["as_of_date"] = "2026-08-26"
+
+    plan = build_kr_market_digest_plan(context, sector_rank_limit=3)
+
+    assert plan.sector_context is not None
+    assert stale_ref not in plan.sector_context.source_refs
+    assert "전기·전자" not in plan.sector_context.text
 
 
 def test_incomplete_size_market_is_omitted_without_fabrication() -> None:

@@ -27,6 +27,16 @@ token-scanned. The detector cannot suppress a company header or section heading.
 
 ## Isolation
 
-The contract is exercised by archive-only replay and tests. Production packets, Telegram,
-fallback, Public Action, schema 4, tasks, assessments, and stored rules remain unchanged until a
-separate selective-enablement task.
+`kr-price-structure-selective-rollout-v1` may compose this contract for monitored numeric KR
+tickers only. It renders nearest/major SR plus family-consensus-safe Fib for `ELIGIBLE`, SR without
+a Fib placeholder for `ELIGIBLE_SR_ONLY`, and no section for `OMIT_PRICE_STRUCTURE` or `BLOCKED`.
+Omission never invalidates the rest of the stock message.
+
+The guarded runtime path keeps the same current section in deterministic fallback and AI/adaptive
+candidate output. All rendered numbers carry backend numeric references. The renderer does not
+invent a target, stop, confirmation, invalidation, or monitoring rule. US and unmonitored subjects
+remain outside this route.
+
+`KR_PRICE_STRUCTURE_V3_ENABLED` defaults OFF. Production packets, Telegram, Public Action, schema
+4, tasks, assessments, and stored rules remain unchanged until the dedicated-test-sink gate passes
+and a separate KR-only enablement action sets the guard.

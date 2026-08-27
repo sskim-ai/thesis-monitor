@@ -4,10 +4,12 @@ import re
 from dataclasses import asdict, dataclass
 from enum import StrEnum
 
+from app.config import get_settings
 from app.services.market_context_adapter_service import NormalizedMarketContext
 
 
 CONTRACT_VERSION = "kr-market-digest-quality-v1"
+SECTOR_RANKING_CONTRACT = "kr-sector-relative-ranking-v1"
 
 
 class KrEvidencePriority(StrEnum):
@@ -62,6 +64,8 @@ class KrMarketDigestPlan:
     global_context_retained: bool
     global_context_reason: str
     concentration_scopes_used: tuple[str, ...]
+    sector_rank_limit: int
+    sector_safe_counts: dict[str, int]
 
     def claims(self) -> tuple[KrDigestClaim, ...]:
         return tuple(
@@ -300,13 +304,19 @@ def _size_claim(
 
 def _sector_claim(
     context: NormalizedMarketContext,
-) -> tuple[KrDigestClaim | None, KrDigestSelectionState]:
+    *,
+    rank_limit: int,
+) -> tuple[KrDigestClaim | None, KrDigestSelectionState, dict[str, int]]:
+    if rank_limit not in {1, 3}:
+        raise ValueError("KR sector rank limit must be 1 or 3")
     strongest_clauses: list[str] = []
     weakest_clauses: list[str] = []
     refs: list[str] = []
     valid_rows = 0
+    stale_rows = 0
+    safe_counts: dict[str, int] = {}
     for scope in ("KOSPI", "KOSDAQ"):
-        current = [
+        candidates = [
             item
             for item in context.sectors
             if item.market_scope == scope
@@ -319,40 +329,97 @@ def _sector_claim(
                 and _normalized_name(item.name) in _KOSDAQ_SIZE_NAMES
             )
         ]
+        stale_rows += sum(
+            item.as_of_date is not None and item.as_of_date != context.session_date
+            for item in candidates
+        )
+        current_by_name: dict[str, object] = {}
+        for item in sorted(
+            candidates,
+            key=lambda value: (_normalized_name(value.name), value.source_ref),
+        ):
+            if item.as_of_date is not None and item.as_of_date != context.session_date:
+                continue
+            current_by_name.setdefault(_normalized_name(item.name), item)
+        current = list(current_by_name.values())
+        safe_counts[scope] = len(current)
         valid_rows += len(current)
-        if len(current) < 2:
+        if not current:
             continue
-        strongest = max(current, key=lambda item: float(item.return_pct))
-        weakest = min(current, key=lambda item: float(item.return_pct))
-        if strongest.source_ref == weakest.source_ref:
-            continue
-        strongest_clauses.append(
-            f"{scope} {_display_name(strongest.name)} "
-            f"{_return_text(float(strongest.return_pct))}"
+        descending = sorted(
+            current,
+            key=lambda item: (
+                -float(item.return_pct),
+                _normalized_name(item.name),
+                item.source_ref,
+            ),
         )
-        weakest_clauses.append(
-            f"{scope} {_display_name(weakest.name)} "
-            f"{_return_text(float(weakest.return_pct))}"
+        ascending = sorted(
+            current,
+            key=lambda item: (
+                float(item.return_pct),
+                _normalized_name(item.name),
+                item.source_ref,
+            ),
         )
-        refs.extend((strongest.source_ref, weakest.source_ref))
+        if rank_limit == 3 and len(current) < 3:
+            strongest = descending[:1]
+            strongest_refs = {item.source_ref for item in strongest}
+            weakest = [
+                item for item in ascending if item.source_ref not in strongest_refs
+            ][:1]
+        else:
+            strongest = descending[:rank_limit]
+            weakest = ascending[:rank_limit]
+        if strongest:
+            strongest_clauses.append(
+                f"{scope} "
+                + " · ".join(
+                    f"{_display_name(item.name)} "
+                    f"{_return_text(float(item.return_pct))}"
+                    for item in strongest
+                )
+            )
+            refs.extend(item.source_ref for item in strongest)
+        if weakest:
+            weakest_clauses.append(
+                f"{scope} "
+                + " · ".join(
+                    f"{_display_name(item.name)} "
+                    f"{_return_text(float(item.return_pct))}"
+                    for item in weakest
+                )
+            )
+            refs.extend(item.source_ref for item in weakest)
     if not strongest_clauses:
         return (
             None,
-            KrDigestSelectionState.INVALID_SEMANTIC
-            if valid_rows
-            else KrDigestSelectionState.NO_VALID_ROWS,
+            (
+                KrDigestSelectionState.WRONG_SESSION
+                if stale_rows
+                else KrDigestSelectionState.INVALID_SEMANTIC
+                if valid_rows
+                else KrDigestSelectionState.NO_VALID_ROWS
+            ),
+            safe_counts,
+        )
+    scope_delimiter = " · " if rank_limit == 1 else "; "
+    text_parts = [
+        f"업종 상대 강세: {scope_delimiter.join(strongest_clauses)}."
+    ]
+    if weakest_clauses:
+        text_parts.append(
+            f"업종 상대 약세: {scope_delimiter.join(weakest_clauses)}."
         )
     return (
         KrDigestClaim(
             role="sector_context",
-            text=(
-                f"업종 상대 강세: {' · '.join(strongest_clauses)}. "
-                f"업종 상대 약세: {' · '.join(weakest_clauses)}."
-            ),
+            text=" ".join(text_parts),
             priority=KrEvidencePriority.P3_LOCAL_STOCK_CROSS_SECTION,
             source_refs=tuple(dict.fromkeys(refs)),
         ),
         KrDigestSelectionState.SELECTED_REQUIRED,
+        safe_counts,
     )
 
 
@@ -370,7 +437,15 @@ def build_kr_market_digest_plan(
     value: object,
     *,
     available_text: str = "",
+    sector_rank_limit: int | None = None,
 ) -> KrMarketDigestPlan:
+    effective_sector_rank_limit = (
+        sector_rank_limit
+        if sector_rank_limit is not None
+        else 3
+        if get_settings().kr_market_sector_top3_enabled
+        else 1
+    )
     context = _normalized_context(value)
     richness = kr_domestic_context_richness(context)
     if context is None or not richness.status:
@@ -387,6 +462,8 @@ def build_kr_market_digest_plan(
             global_context_retained=False,
             global_context_reason="domestic_context_not_rich",
             concentration_scopes_used=(),
+            sector_rank_limit=effective_sector_rank_limit,
+            sector_safe_counts={},
         )
 
     indices = {item.symbol.upper(): item for item in context.indices}
@@ -475,7 +552,10 @@ def build_kr_market_digest_plan(
         if (clause := _participant_flow_clause(participant, flows)) is not None
     ]
     size_context, size_style_state = _size_claim(context)
-    sector_context, sector_extremes_state = _sector_claim(context)
+    sector_context, sector_extremes_state, sector_safe_counts = _sector_claim(
+        context,
+        rank_limit=effective_sector_rank_limit,
+    )
     if flow_clauses:
         interpretation_text = " ".join(flow_clauses)
         interpretation_priority = KrEvidencePriority.P2_LOCAL_MARKET_FLOW
@@ -538,4 +618,6 @@ def build_kr_market_digest_plan(
             else "no_material_global_contradiction_required"
         ),
         concentration_scopes_used=(),
+        sector_rank_limit=effective_sector_rank_limit,
+        sector_safe_counts=sector_safe_counts,
     )

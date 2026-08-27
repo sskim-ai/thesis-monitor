@@ -31,6 +31,9 @@ from app.services.free_analyst_production_integration_service import (
 from app.services.market_evidence_utilization_validator_service import (
     validate_us_market_evidence_utilization,
 )
+from app.services.kr_price_structure_selective_rollout_service import (
+    preserve_current_price_structure_section,
+)
 from app.services.ai_reasoning_quality_service import (
     runtime_message_quality_receipt,
     verify_runtime_message_quality_receipt,
@@ -1367,6 +1370,11 @@ async def deliver_validated_ai_review(
                     pilot_day=pilot_day,
                     target_days=target_days,
                 )
+                if market == "kr":
+                    text = preserve_current_price_structure_section(
+                        text,
+                        deterministic_text,
+                    )
                 identity = f"{PILOT_VERSION}:{packet_id}:stock:{delivery.ticker}"
                 message_type = "ai_assisted_pilot_stock"
                 common_ai_message_key = f"stock:{delivery.ticker}"

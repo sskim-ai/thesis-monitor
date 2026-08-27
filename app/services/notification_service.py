@@ -54,6 +54,10 @@ from app.services.kr_close_fx import render_kr_close_fx, summarize_kr_close_fx
 from app.services.kr_market_digest_context_service import (
     load_current_kr_digest_context,
 )
+from app.services.kr_price_structure_selective_rollout_service import (
+    build_kr_price_structure_rollout_decision,
+    replace_legacy_price_surface,
+)
 from app.services.night_futures import (
     NIGHT_FUTURES_SERIES,
     is_night_futures_warning,
@@ -1747,6 +1751,22 @@ def _assessment_report(
         price_lines.append("⚠️ 현재 장중 데이터로 가격 판단은 잠정입니다.")
     sections.append("\n".join(price_lines))
 
+    price_structure_v3_decision = None
+    if is_krx and get_settings().kr_price_structure_v3_enabled:
+        chart = price_context.get("chart")
+        chart = chart if isinstance(chart, dict) else {}
+        structure = chart.get("structure")
+        structure = structure if isinstance(structure, dict) else {}
+        price_structure_v3 = structure.get("price_structure_v3")
+        price_structure_v3 = (
+            price_structure_v3 if isinstance(price_structure_v3, dict) else {}
+        )
+        price_structure_v3_decision = build_kr_price_structure_rollout_decision(
+            price_structure_v3,
+            ticker=assessment.ticker,
+            monitored_subject=True,
+        )
+
     if is_krx:
         supply_section = _supply_report(price_context)
         if supply_section:
@@ -1821,6 +1841,14 @@ def _assessment_report(
     if next_checks:
         sections.append("📌 다음 확인\n" + _bullet_text(next_checks, ""))
     fallback = "\n\n".join(section for section in sections if section.strip())
+    if (
+        price_structure_v3_decision is not None
+        and price_structure_v3_decision.section
+    ):
+        fallback = replace_legacy_price_surface(
+            fallback,
+            price_structure_v3_decision.section,
+        )
     fallback_price_errors = fallback_price_context_errors(
         current_price_context,
         fallback,
@@ -1888,6 +1916,15 @@ def _assessment_report(
         },
         "cash_flow_user_visible": cash_flow_selection_to_dict(
             cash_flow_selection
+        ),
+        **(
+            {
+                "price_structure_v3_rollout": (
+                    price_structure_v3_decision.to_dict()
+                )
+            }
+            if price_structure_v3_decision is not None
+            else {}
         ),
         **(
             {

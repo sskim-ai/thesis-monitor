@@ -22,6 +22,9 @@ from app.services.free_analyst_message_service import (
     parse_rendered_message,
 )
 from app.services.kr_market_digest_quality_service import build_kr_market_digest_plan
+from app.services.kr_price_structure_selective_rollout_service import (
+    preserve_current_price_structure_section,
+)
 from app.services.market_evidence_utilization_validator_service import (
     validate_kr_market_evidence_utilization,
 )
@@ -181,6 +184,7 @@ def _preserve_required_stock_sections(
 ) -> AdaptiveRendererResult:
     if is_market_digest or result.rendered is None:
         return result
+    text = result.final_text
     expected_heading = "📊 거래량·포지셔닝" if market == "us" else "📊 수급"
     supply = next(
         (
@@ -190,22 +194,25 @@ def _preserve_required_stock_sections(
         ),
         None,
     )
-    if supply is None:
+    if supply is not None:
+        rendered_supply = next(
+            (
+                section
+                for section in parse_rendered_message(text).sections
+                if section.key == "supply"
+            ),
+            None,
+        )
+        if rendered_supply is not None:
+            rendered_block = f"{rendered_supply.heading}\n{rendered_supply.body}"
+            required_block = f"{expected_heading}\n{supply.body}"
+            text = text.replace(rendered_block, required_block, 1)
+        else:
+            text = f"{text.rstrip()}\n\n{expected_heading}\n{supply.body}"
+    if market == "kr":
+        text = preserve_current_price_structure_section(text, source_text)
+    if text == result.final_text:
         return result
-    rendered_supply = next(
-        (
-            section
-            for section in parse_rendered_message(result.final_text).sections
-            if section.key == "supply"
-        ),
-        None,
-    )
-    if rendered_supply is not None:
-        rendered_block = f"{rendered_supply.heading}\n{rendered_supply.body}"
-        required_block = f"{expected_heading}\n{supply.body}"
-        text = result.final_text.replace(rendered_block, required_block, 1)
-    else:
-        text = f"{result.final_text.rstrip()}\n\n{expected_heading}\n{supply.body}"
     return replace(result, rendered=replace(result.rendered, text=text), final_text=text)
 
 

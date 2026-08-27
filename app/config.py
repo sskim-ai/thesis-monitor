@@ -126,6 +126,8 @@ class Settings(BaseSettings):
     working_capital_runtime_shadow_canary_enabled: bool = True
     cash_flow_user_visible_mode: str = "OFF"
     working_capital_user_visible_mode: str = "OFF"
+    kr_market_sector_top3_enabled: bool = False
+    kr_price_structure_v3_enabled: bool = False
 
     @model_validator(mode="after")
     def validate_ai_review_schedule(self) -> "Settings":

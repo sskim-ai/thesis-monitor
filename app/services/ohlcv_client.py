@@ -22,6 +22,9 @@ from app.services.kr_investor_flow_service import (
     build_investor_flow_reconciliation,
     serialized_reconciliation_payload,
 )
+from app.services.kr_price_structure_selective_rollout_service import (
+    build_kr_price_structure_runtime_context,
+)
 from app.services.ohlcv_structure_service import analyze_chart_structure
 from app.services.provider_telemetry_service import ProviderTelemetryService
 
@@ -30,6 +33,11 @@ PERIOD_COUNTS = {
     "daily": 500,
     "weekly": 300,
     "monthly": 100,
+}
+KR_PRICE_STRUCTURE_PERIOD_COUNTS = {
+    "daily": 1200,
+    "weekly": 600,
+    "monthly": 300,
 }
 
 _DAILY_BOLLINGER_UPPER = {
@@ -372,13 +380,18 @@ class OhlcvClient:
         headers = {"X-API-Key": api_key} if api_key else {}
         context = PriceContext()
         adjusted_bars: dict[str, list[dict[str, object]]] = {}
+        period_counts = (
+            KR_PRICE_STRUCTURE_PERIOD_COUNTS
+            if ticker.isdigit() and self.settings.kr_price_structure_v3_enabled
+            else PERIOD_COUNTS
+        )
         async with httpx.AsyncClient(
             base_url=self.settings.ohlcv_base_url.rstrip("/"),
             headers=headers,
             timeout=self.settings.ohlcv_timeout_seconds,
             transport=self.transport,
         ) as client:
-            for period, count in PERIOD_COUNTS.items():
+            for period, count in period_counts.items():
                 started_at = datetime.now(timezone.utc)
                 try:
                     summary, bars = await self._request_period(
@@ -574,6 +587,22 @@ class OhlcvClient:
             investor_supply=context.supply,
             price_basis=context.chart.price_basis,
         )
+        if ticker.isdigit() and self.settings.kr_price_structure_v3_enabled:
+            try:
+                context.chart.structure["price_structure_v3"] = (
+                    build_kr_price_structure_runtime_context(
+                        ticker=ticker,
+                        cutoff=(
+                            session_state.latest_completed_regular_session_date.isoformat()
+                        ),
+                        raw_by_timeframe=adjusted_bars,
+                        observed_at=observed_local.isoformat(),
+                    )
+                )
+            except (TypeError, ValueError) as exc:
+                context.warnings.append(
+                    f"price_structure_v3: {type(exc).__name__}"
+                )
         structure_unavailable = context.chart.structure.get("unavailable_fields", [])
         context.chart.unavailable_fields = list(
             dict.fromkeys(
