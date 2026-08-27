@@ -10,6 +10,17 @@ from app.schemas.thesis import PriceContext
 from app.services.ohlcv_client import OhlcvClient, _investor_supply_context
 
 
+KR_PRICE_STRUCTURE_CONTROLS = (
+    "000660",
+    "003690",
+    "005490",
+    "005930",
+    "010120",
+    "012450",
+    "086280",
+)
+
+
 @pytest.mark.anyio
 async def test_ohlcv_client_requests_each_period_and_accepts_shorter_history() -> None:
     requested: dict[str, int] = {}
@@ -186,14 +197,66 @@ async def test_kr_price_structure_gate_requests_long_history_and_builds_sidecar(
         as_of=datetime(2026, 8, 27, 16, 5, tzinfo=ZoneInfo("Asia/Seoul")),
     )
 
-    assert ("daily", 1200, "true") in requests
+    assert ("daily", 1000, "true") in requests
     assert ("weekly", 600, "true") in requests
     assert ("monthly", 300, "true") in requests
+    assert context.periods["daily"].requested_count == 1200
     assert captured["ticker"] == "005930"
     assert captured["cutoff"] == "2026-08-27"
+    assert captured["provider_limit"] == 1000
     assert context.chart.structure["price_structure_v3"] == {
         "contract": "kr-price-structure-runtime-context-v1"
     }
+
+
+@pytest.mark.anyio
+@pytest.mark.parametrize("ticker", KR_PRICE_STRUCTURE_CONTROLS)
+async def test_kr_price_structure_controls_respect_provider_count_limit(
+    ticker: str,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    requests: list[tuple[str, int]] = []
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        period = request.url.params["periods"]
+        count = int(request.url.params["count"])
+        requests.append((period, count))
+        if count > 1000:
+            return httpx.Response(422, json={"detail": "count exceeds provider limit"})
+        return httpx.Response(
+            200,
+            json={
+                "periods": {
+                    period: [
+                        {
+                            "date": "2026-08-27",
+                            "open": 100,
+                            "high": 101,
+                            "low": 99,
+                            "close": 100,
+                            "volume": 1_000,
+                        }
+                    ]
+                }
+            },
+        )
+
+    monkeypatch.setattr(
+        "app.services.ohlcv_client.build_kr_price_structure_runtime_context",
+        lambda **_: {"contract": "kr-price-structure-runtime-context-v1"},
+    )
+    client = OhlcvClient(transport=httpx.MockTransport(handler))
+    monkeypatch.setattr(client.settings, "kr_price_structure_v3_enabled", True)
+
+    context = await client.fetch_price_context(
+        ticker,
+        as_of=datetime(2026, 8, 27, 16, 5, tzinfo=ZoneInfo("Asia/Seoul")),
+    )
+
+    assert ("daily", 1000) in requests
+    assert all(count <= 1000 for _, count in requests)
+    assert context.periods["daily"].requested_count == 1200
+    assert context.periods["daily"].actual_count == 1
 
 
 @pytest.mark.anyio

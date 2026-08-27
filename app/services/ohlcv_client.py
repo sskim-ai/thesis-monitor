@@ -39,6 +39,7 @@ KR_PRICE_STRUCTURE_PERIOD_COUNTS = {
     "weekly": 600,
     "monthly": 300,
 }
+OHLCV_PROVIDER_REQUEST_LIMIT = 1000
 
 _DAILY_BOLLINGER_UPPER = {
     "3_month": "BB_36_1.541_UPPER",
@@ -337,6 +338,7 @@ class OhlcvClient:
     ) -> tuple[PricePeriodSummary, list[dict[str, object]]]:
         last_error: Exception | None = None
         attempts = max(1, self.settings.monitor_retry_attempts)
+        provider_count = min(count, OHLCV_PROVIDER_REQUEST_LIMIT)
         for attempt in range(attempts):
             try:
                 response = await client.get(
@@ -344,7 +346,7 @@ class OhlcvClient:
                     params={
                         "symbol": ticker,
                         "periods": period,
-                        "count": count,
+                        "count": provider_count,
                         "include_indicators": str(include_indicators).lower(),
                         "indicator_limit": 1 if include_indicators else 0,
                         "adjusted": str(adjusted).lower(),
@@ -597,6 +599,7 @@ class OhlcvClient:
                         ),
                         raw_by_timeframe=adjusted_bars,
                         observed_at=observed_local.isoformat(),
+                        provider_limit=OHLCV_PROVIDER_REQUEST_LIMIT,
                     )
                 )
             except (TypeError, ValueError) as exc:
