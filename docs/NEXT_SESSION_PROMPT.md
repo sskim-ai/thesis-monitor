@@ -2,6 +2,23 @@
 
 Repository: `sskim-ai/thesis-monitor`
 
+Latest authoritative work follows instruction commit
+`dd1b5eb712081c222bcfe1b4465d4fe0aac5f89a` and implementation
+`03a418ab1f616d0063becf3928a1327056dd2d66`. Read the
+`20260828-kr-market-internal-*` report family and the single completion bundle first.
+
+The formatting-only repair preserves run-42 data, TOP3 rankings, evidence selection, numeric
+provenance, Price Structure, and US behavior. One market message reached the dedicated test sink
+exactly once with byte-identical renderer/outbound/received payloads. KR TOP3 and KR Price Structure
+remain ON; US Price Structure and Production Assist remain OFF. P0/material P1 is `0/0` and the
+state is `DEPLOYED_AWAITING_NATURAL_PROOF`.
+
+Next action: `WAIT_FOR_NEXT_NATURAL_KR_MARKET_MESSAGE`. Review the naturally scheduled message for
+the new `📊 시장 내부` line breaks, unchanged TOP3 data, and exactly-once delivery. Do not manually
+run a Scheduled Task or production Telegram.
+
+---
+
 Latest authoritative work follows exact instruction commit
 `68ede1eae42315d94a89023fbc6c1f9be07fc99d` and implementation commit
 `315081005198e7b5676e9383f10d4a52b3d3ca34`. Read

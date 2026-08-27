@@ -1,10 +1,10 @@
 # Thesis Monitor Master Workflow
 
-Master Workflow: `v18`
-As of: `2026-08-27`
+Master Workflow: `v19`
+As of: `2026-08-28`
 Repository: `sskim-ai/thesis-monitor`
 Operating branch: `main`
-Latest evidence branch: `codex/20260827-kr-size-sector-message-selection-bounded-repair`
+Latest evidence branch: `codex/20260828-kr-market-internal-linebreak-formatting`
 Commit resolution: run `git rev-parse HEAD`; this document is part of that commit and must not
 hardcode a self-referential final SHA. Resolve `origin/main` and the clean operating checkout at
 session start. Phase 9.1A defines `working-capital-evidence-v1`; Phase 9.1B implements canonical
@@ -15,6 +15,21 @@ Phase 9.1E.1 implements only the Inventory path, reuses the existing contract, p
 AI/fallback parity and leaves Trade AR/broad AR/AP/advanced ratios blocked. Open P0/material P1 are
 zero. Natural AI-assisted delivery remains `PARTIAL` independently.
 KRX 8.2A.x and peer 8.3.x also remain experimental.
+
+## 0. Latest KR Market Formatting State
+
+The bounded `📊 시장 내부` formatting repair starts from instruction commit
+`dd1b5eb712081c222bcfe1b4465d4fe0aac5f89a` and implementation
+`03a418ab1f616d0063becf3928a1327056dd2d66`. Canonical size, strong-sector, and weak-sector
+tuples now render as standalone KOSPI/KOSDAQ bullet rows in both adaptive and deterministic paths.
+Run-42 retains all values, TOP3 order, evidence selection, and numeric provenance.
+
+One production-equivalent market message reached the dedicated non-production sink exactly once;
+renderer, outbound, and received payload hashes matched. Stock test sends, production-recipient
+sends, delivery intents, duplicates, and orphans were zero. KR TOP3 and KR Price Structure remain
+ON; US Price Structure and Production Assist remain OFF. The state is
+`DEPLOYED_AWAITING_NATURAL_PROOF`, with open P0/material P1 `0/0`. Wait for the next natural KR
+market message; do not trigger a manual task or production Telegram.
 
 ## 1. Project Mission
 

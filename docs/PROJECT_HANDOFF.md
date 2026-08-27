@@ -5,6 +5,23 @@ with [MASTER_WORKFLOW.md](MASTER_WORKFLOW.md), [project-state.json](project-stat
 [NEXT_SESSION_PROMPT.md](NEXT_SESSION_PROMPT.md) before changing runtime policy, Knowledge,
 validation, delivery, or Scheduled Tasks.
 
+## Latest Handoff — KR Market Internal Formatting PASS
+
+Use instruction commit `dd1b5eb712081c222bcfe1b4465d4fe0aac5f89a` and implementation
+`03a418ab1f616d0063becf3928a1327056dd2d66`. Start with
+`docs/reports/20260828-kr-market-internal-readiness.md`, the exact test message, delivery evidence,
+AI/fallback parity, safety parity, and the single completion bundle.
+
+The run-42 production-equivalent market payload retained every value, TOP3 rank, selected evidence,
+and source ref. `📊 시장 내부` now has standalone size/strong/weak headings and scoped bullet rows.
+The dedicated non-production sink received exactly one market message with byte-identical response;
+stock sends, production sends/intents, duplicates, and orphans were zero.
+
+Operating is healthy at the implementation SHA. KR TOP3 and KR Price Structure remain ON, US Price
+Structure and Production Assist remain OFF, and open P0/material P1 are `0/0`. Keep rollout state
+`ENABLED_AWAITING_NATURAL_PROOF`; the next action is read-only review of the next naturally
+scheduled KR close message. Do not run a task or production Telegram manually.
+
 ## Latest Handoff — KR Final Pre-Enable Resume PASS
 
 Use exact instruction commit `68ede1eae42315d94a89023fbc6c1f9be07fc99d` and implementation

@@ -425,3 +425,15 @@ smoke, and KR Price Structure 7/7 smoke all pass. Subsequent work must treat KR 
 Structure as enabled awaiting natural proof, keep US Price Structure and Production Assist OFF,
 and preserve independent rollback. No new branch should reinterpret the old blocked reports as
 current state; the 20260828 resume readiness artifact is authoritative.
+
+The KR market-internal formatting branch starts with exact instruction commit
+`dd1b5eb712081c222bcfe1b4465d4fe0aac5f89a`, whose parent is enabled main
+`d00b5b6c89e67748d6b1d376e709770ae747566c`. Implementation
+`03a418ab1f616d0063becf3928a1327056dd2d66` changes only canonical KR size/sector presentation and
+adaptive/deterministic renderer placement.
+
+Subsequent natural-proof work must descend from this implementation and preserve the exact value,
+TOP3, selection, and provenance parity proved against run-42. It must keep KR TOP3 and KR Price
+Structure ON, US Price Structure and Production Assist OFF, and must not reinterpret the single
+non-production test message as natural production proof. The next authorized action is read-only
+review of the next natural KR close message.

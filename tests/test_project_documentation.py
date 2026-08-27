@@ -10,6 +10,8 @@ DOCUMENTS = (
     ROOT / "docs" / "PROJECT_HANDOFF.md",
     ROOT / "docs" / "NEXT_SESSION_PROMPT.md",
     ROOT / "docs" / "project-state.json",
+    ROOT / "docs" / "reports" / "20260828-kr-market-internal-readiness.md",
+    ROOT / "docs" / "reports" / "20260828-kr-market-internal-artifact-index.md",
     ROOT / "docs" / "architecture" / "AI_ASSISTED_MONITORING.md",
     ROOT / "docs" / "architecture" / "OHLCV_STRUCTURE_ENGINE.md",
     ROOT / "docs" / "architecture" / "MARKET_INTELLIGENCE.md",
@@ -105,11 +107,11 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     assert state["repository"] == "sskim-ai/thesis-monitor"
     assert state["branch"] == "main"
     assert state["experimental_branch"] == (
-        "codex/20260828-kr-final-preenable-resume-execution"
+        "codex/20260828-kr-market-internal-linebreak-formatting"
     )
     assert state["current_phase"] == "kr_rollout_enabled_awaiting_natural_proof"
     assert state["last_completed_phase"] == (
-        "kr_test_sink_configuration_and_final_preenable_resume"
+        "kr_market_internal_linebreak_formatting_micro_repair"
     )
     assert state["next_default_phase"] == "wait_for_next_natural_kr_messages"
     implementation_commit = "069f002437163bff1df7aa6e258918c1777d5dfa"
@@ -128,13 +130,13 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     prior_price_structure_commit = "631e82f202b6f081866ef83c8b67b2138a8b51d8"
     prior_fibonacci_commit = "0dfef76bba606f018893d6e68e7beaf410aa7438"
     assert state["deployed_code_commit"] == (
-        "315081005198e7b5676e9383f10d4a52b3d3ca34"
+        "03a418ab1f616d0063becf3928a1327056dd2d66"
     )
     assert state["main_code_commit"] == (
-        "315081005198e7b5676e9383f10d4a52b3d3ca34"
+        "03a418ab1f616d0063becf3928a1327056dd2d66"
     )
     assert state["operating_code_commit"] == (
-        "315081005198e7b5676e9383f10d4a52b3d3ca34"
+        "03a418ab1f616d0063becf3928a1327056dd2d66"
     )
     phase_8552 = state["phase_8_5_5_2_kr_structured_field_repetition"]
     assert phase_8552["status"] == "operating_shadow_pending_natural_proof"
@@ -239,6 +241,9 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
         "kr-market-flow-concentration-v1"
     )
     assert state["contracts"]["message_quality_v2"] == "message-quality-v2"
+    assert state["contracts"]["kr_market_internal_layout"] == (
+        "kr-market-internal-layout-v1"
+    )
     assert state["contracts"]["market_research_seed_adapter"] == (
         "market-research-seed-adapter-v1"
     )
@@ -1160,8 +1165,36 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     assert resume["open_material_p1"] == []
     assert resume["kr_rollout"] == "ENABLED_AWAITING_NATURAL_PROOF"
     assert resume["next_action"] == "WAIT_FOR_NEXT_NATURAL_KR_MESSAGES"
+    formatting = state["kr_market_internal_linebreak_formatting_micro_repair"]
+    assert formatting["status"] == "deployed_awaiting_natural_proof"
+    assert formatting["instruction_commit"] == (
+        "dd1b5eb712081c222bcfe1b4465d4fe0aac5f89a"
+    )
+    assert formatting["implementation_commit"] == (
+        "03a418ab1f616d0063becf3928a1327056dd2d66"
+    )
+    assert formatting["implementation_github_actions_run"] == 33099146372
+    assert formatting["implementation_github_actions_status"] == (
+        "passed_test_and_lint"
+    )
+    assert formatting["test_market_message_count"] == 1
+    assert formatting["test_stock_message_count"] == 0
+    assert formatting["test_exact_payload_match"] == "PASS_1_OF_1"
+    assert formatting["production_recipient_send"] == 0
+    assert formatting["production_delivery_intent_created"] == 0
+    assert formatting["data_value_diff"] == 0
+    assert formatting["top3_ranking_diff"] == 0
+    assert formatting["numeric_provenance_diff"] == 0
+    assert formatting["kr_market_top3_enabled"] is True
+    assert formatting["kr_price_structure_enabled"] is True
+    assert formatting["us_price_structure_enabled"] is False
+    assert formatting["production_assist"] is False
+    assert formatting["open_p0"] == []
+    assert formatting["open_material_p1"] == []
+    assert formatting["kr_rollout"] == "ENABLED_AWAITING_NATURAL_PROOF"
+    assert formatting["next_action"] == "WAIT_FOR_NEXT_NATURAL_KR_MARKET_MESSAGE"
     assert state["current_commit"] == (
-        "315081005198e7b5676e9383f10d4a52b3d3ca34"
+        "03a418ab1f616d0063becf3928a1327056dd2d66"
     )
     assert state["ai_review_mode"] == "shadow"
     assert state["ai_policy_version"] == "daily-review-v3.10"
