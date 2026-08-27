@@ -2,6 +2,25 @@
 
 Repository: `sskim-ai/thesis-monitor`
 
+Latest authoritative US natural review follows exact instruction commit
+`5377d5e4f15a82e01ac40b6d50d47eee9ef0a30c`. Read
+`docs/reports/20260827-us-morning-natural-reproof-readiness.md`, the data-completeness matrix,
+evidence-utilization audit, exact message, AI/fallback parity, and artifact index first.
+
+Natural US run 41 used current packet `2026-08-27-us-run-41-ae4f42c23abc` for the completed
+`2026-08-26` session and delivered `14/14` exactly once. Packet identity, ownership, RSP and sector
+canonical states, Nasdaq publication boundary, macro temporal safety, numeric binding, receipt,
+and payload identity pass. The sent market digest nevertheless omitted SPY/QQQ/IWM/SOXX/RSP and
+all current directional sector facts; only the 8/25 real-yield observation remained. State is
+`MATERIAL_P1_FOUND_STOP`, Track A is `BOUNDED_REPAIR_REQUIRED`, and the next task is the separately
+instructed `BOUNDED_US_MARKET_REPAIR`. Do not repair from this prompt, weaken validators, or force a
+market numeric dump. Natural KR reproof remains pending, Track C stays `DO_NOT_START`, Price
+Structure v3 remains `INTEGRATED_READY_NOT_ARMED`, and Production Assist stays OFF.
+
+---
+
+Prior KR repair context follows.
+
 Latest authoritative bounded KR repair follows exact instruction commit
 `f6ba660048d3fa520e3aeb43d04036c119764292` and integrated code commit
 `848eb80f6ce6504a9a855973b591ee0749167514`. Read

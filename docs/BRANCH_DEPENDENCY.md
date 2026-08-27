@@ -320,3 +320,13 @@ sector fact identity, unresolved reconciliation suppression, and zero unsupporte
 Immutable replay is PASS at P0/material P1 `0/0`; the remaining dependency is observation of a
 natural KR close. This observation requirement does not authorize manual production execution and
 does not arm Price Structure v3. Parallel natural US proof remains independent.
+
+The US morning natural review branch starts from immutable instruction commit
+`5377d5e4f15a82e01ac40b6d50d47eee9ef0a30c`, whose parent is clean main
+`ae4d22a4134341f7dfeffc4aef918c97e56091b2`. It is report/state-only and makes no production
+behavior change. Natural run 41 proves current packet ownership and exactly-once delivery but finds
+one material Track A P1: current-session ETF/RSP/sector evidence was present canonically and absent
+from both AI and deterministic market digests. A future `BOUNDED_US_MARKET_REPAIR` must descend from
+the promoted review state and preserve temporal roles, level-only semantics, exact-session breadth
+fail-closed behavior, numeric binding, canary limits, and fallback parity. It must not depend on or
+arm Price Structure Track C; KR natural reproof remains a separate pending dependency.

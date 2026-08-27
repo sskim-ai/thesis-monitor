@@ -1481,3 +1481,21 @@ suppressed, and the AI readiness gate passes with P0/material P1 `0/0`. State is
 `REPLAY_PASS_NATURAL_REPROOF_PENDING`: wait for the next natural KR close without a manual run.
 Track C remains `DO_NOT_START`, Price Structure v3 remains `INTEGRATED_READY_NOT_ARMED`, and
 Production Assist stays OFF.
+
+### 40.10 US Morning Natural Market Data Review
+
+Exact instruction commit `5377d5e4f15a82e01ac40b6d50d47eee9ef0a30c` governs the read-only
+review of natural US run 41 and packet `2026-08-27-us-run-41-ae4f42c23abc`. The run used the
+completed `2026-08-26` US regular session and delivered one market digest plus 13 stock messages
+exactly once. Packet claim, primary/backup lease transfer, temporal normalization, numeric
+registration, final validation, runtime receipt, Nasdaq exact-session publication boundary, and
+payload identity all pass.
+
+The packet contained current SPY, QQQ, IWM, SOXX, RSP, and 11 directional sector facts plus one
+XLC level-only fact. The AI market review selected only real yield, WTI, and nominal yield; the
+concise delivered digest selected only the date-labeled 8/25 real-yield observation. The
+deterministic fallback shares this omission. Seven required material rows are lost and the issue is
+`us_current_session_market_evidence_omitted_from_natural_digest`, a material P1. Track A is
+`BOUNDED_REPAIR_REQUIRED`; perform no repair inside the review. The next separately instructed task
+is `BOUNDED_US_MARKET_REPAIR`. Natural KR proof continues independently, Track C remains
+`DO_NOT_START`, v3 remains unarmed, and production safety settings remain unchanged.

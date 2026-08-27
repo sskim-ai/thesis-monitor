@@ -101,14 +101,16 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
 
     assert state["repository"] == "sskim-ai/thesis-monitor"
     assert state["branch"] == "main"
-    assert state["experimental_branch"] == "codex/kr-run40-integration-replay"
+    assert state["experimental_branch"] == (
+        "codex/20260827-us-morning-natural-market-data-review"
+    )
     assert state["current_phase"] == (
-        "kr_bounded_repair_replay_pass_natural_reproof_pending"
+        "us_morning_natural_market_data_material_p1_found_stop"
     )
     assert state["last_completed_phase"] == (
-        "bounded_kr_local_first_and_numeric_registry_repair"
+        "us_morning_natural_market_data_read_only_review"
     )
-    assert state["next_default_phase"] == "wait_for_next_natural_kr_close"
+    assert state["next_default_phase"] == "bounded_us_market_repair"
     implementation_commit = "848eb80f6ce6504a9a855973b591ee0749167514"
     detector_implementation_commit = "3685aa991589ca0e7cc560104d4ebf8289e3f91d"
     preenablement_commit = "84f8f549bc8fa0338309a84b23b2738f2e357646"
@@ -852,14 +854,19 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
         == "CLOSED_RETROSPECTIVE_AND_OPERATING_CODE_PROMOTED"
     )
     master = state["master_market_validation_price_structure_rollout"]
-    assert master["status"] == "replay_pass_natural_reproof_pending"
+    assert master["status"] == "bounded_us_market_repair_required"
     assert master["instruction_commit"] == (
         "e76a7d6b5e8ddc110d3228cfd5e55f26dbdb1e1d"
     )
     assert master["integration_code_commit"] == implementation_commit
-    assert master["track_a"]["status"] == (
-        "replay_pass_natural_reproof_pending"
+    assert master["track_a"]["status"] == "bounded_repair_required"
+    assert master["track_a"]["natural_run_id"] == 41
+    assert master["track_a"]["natural_packet"] == (
+        "2026-08-27-us-run-41-ae4f42c23abc"
     )
+    assert master["track_a"]["open_material_p1"] == [
+        "us_current_session_market_evidence_omitted_from_natural_digest"
+    ]
     assert master["track_b"]["status"] == "replay_pass_natural_reproof_pending"
     assert master["track_b"]["open_material_p1"] == []
     assert master["track_c"] == {
@@ -869,7 +876,9 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     }
     assert master["price_structure_v3"] == "integrated_ready_not_armed"
     assert master["open_p0"] == []
-    assert master["open_material_p1"] == []
+    assert master["open_material_p1"] == [
+        "us_current_session_market_evidence_omitted_from_natural_digest"
+    ]
     assert master["production_assist"] is False
     bounded_repair = state["kr_bounded_local_first_numeric_registry_repair"]
     assert bounded_repair["status"] == "replay_pass_natural_reproof_pending"
@@ -888,6 +897,17 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     assert bounded_repair["open_material_p1"] == []
     assert bounded_repair["natural_kr_reproof"] == "PENDING"
     assert bounded_repair["track_c"] == "DO_NOT_START"
+    us_natural = state["us_morning_natural_market_data_review"]
+    assert us_natural["status"] == "material_p1_found_stop"
+    assert us_natural["natural_run_id"] == 41
+    assert us_natural["target_session"] == "2026-08-26"
+    assert us_natural["delivery"] == "14/14_exactly_once"
+    assert us_natural["material_information_loss_count"] == 7
+    assert us_natural["open_p0"] == []
+    assert us_natural["open_material_p1"] == [
+        "us_current_session_market_evidence_omitted_from_natural_digest"
+    ]
+    assert us_natural["next_action"] == "BOUNDED_US_MARKET_REPAIR"
     assert state["current_commit"] == implementation_commit
     assert state["ai_review_mode"] == "shadow"
     assert state["ai_policy_version"] == "daily-review-v3.10"
@@ -897,7 +917,7 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     assert state["ohlcv_structure_version"] == "ohlcv-structure-v2"
     assert state["pilot_version"] == "ai-assisted-pilot-v3"
     assert state["pilot_counts_at_activation"] == {"kr": 0, "us": 0}
-    assert state["pilot_current_successful_sessions"] == {"kr": 3, "us": 3}
+    assert state["pilot_current_successful_sessions"] == {"kr": 3, "us": 4}
     assert state["monitoring_state_version"] == "monitoring-state-v1"
     task_state = state["scheduled_task_contract_verification"]
     assert task_state["status"] == "passed"

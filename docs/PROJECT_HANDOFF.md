@@ -1707,3 +1707,22 @@ Replay gates close at P0/material P1 `0/0`, but natural KR proof is still pendin
 manual KR task or Telegram. Wait for the next natural close, inspect it read-only, and keep Track C
 `DO_NOT_START`, Price Structure v3 `INTEGRATED_READY_NOT_ARMED`, and Production Assist OFF. Natural
 US reproof may continue independently.
+
+## 2026-08-27 US Morning Natural Market Data Review Handoff
+
+The exact instruction is commit `5377d5e4f15a82e01ac40b6d50d47eee9ef0a30c`. Read the US morning
+readiness JSON/Markdown, completeness matrix, evidence-utilization audit, exact message, ownership,
+and AI/fallback parity reports before changing the US market path.
+
+Natural run 41 and packet `2026-08-27-us-run-41-ae4f42c23abc` correctly own the completed
+`2026-08-26` session. Backup claim `47434507-ac80-48ed-95f0-ea1fb91abe83` delivered `14/14`
+messages exactly once. RSP is safely `CURRENT_DIRECTIONAL`, XLC remains `CURRENT_LEVEL_ONLY`,
+official Nasdaq breadth is `PUBLICATION_PENDING`, all macro facts are date/role-bound, and the exact
+market payload matches its receipt-linked archive.
+
+The natural digest still fails human evidence utilization: SPY, QQQ, IWM, SOXX, RSP, XLI, and XLV
+were material omissions, and no current-session ETF/sector fact reached the final digest. Existing
+runtime quality passed because it does not enforce this cross-section survival. This is one open
+material P1 and no P0. State is `MATERIAL_P1_FOUND_STOP`; Track A is
+`BOUNDED_REPAIR_REQUIRED`; next action is `BOUNDED_US_MARKET_REPAIR`. Do not fold the repair into
+this report-only branch. KR natural proof stays pending and Price Structure Track C stays blocked.
