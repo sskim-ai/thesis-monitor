@@ -152,11 +152,12 @@ def _binding_by_semantic(
 def _compact_zone(value: Mapping[str, object] | None) -> dict[str, object] | None:
     if value is None:
         return None
-    return {
+    output = {
         key: value.get(key)
         for key in (
-            "zone_id",
             "display",
+            "raw_low",
+            "raw_high",
             "distance_pct",
             "proximity_tier",
             "active_relevance",
@@ -166,6 +167,8 @@ def _compact_zone(value: Mapping[str, object] | None) -> dict[str, object] | Non
             "source_refs",
         )
     }
+    output["fact_ref"] = value.get("zone_id") or value.get("fact_ref")
+    return output
 
 
 async def _collect_rows(before_rows: Sequence[Mapping[str, object]]) -> list[dict[str, object]]:
@@ -261,6 +264,36 @@ async def _collect_rows(before_rows: Sequence[Mapping[str, object]]) -> list[dic
 
 def _coverage_line(row: Mapping[str, object], timeframe: str) -> Mapping[str, object]:
     return _mapping(_mapping(row.get("coverage")).get(timeframe))
+
+
+def _coverage_display(row: Mapping[str, object], timeframe: str) -> str:
+    value = _coverage_line(row, timeframe)
+    return (
+        f"{value.get('requested_count')}/{value.get('provider_returned_count')}/"
+        f"{value.get('completed_count')} {value.get('status')}"
+    )
+
+
+def _zone_display(value: object) -> str:
+    zone = _mapping(value)
+    if not zone:
+        return "none"
+    return (
+        f"{zone.get('display')} · {zone.get('distance_pct')}% · "
+        f"{zone.get('proximity_tier')} · {zone.get('source_timeframe')} · "
+        f"{zone.get('fact_ref') or zone.get('zone_id')}"
+    )
+
+
+def _visible_side(row: Mapping[str, object], side: str) -> str:
+    for label, key in (
+        ("near", f"near_user_visible_{side}"),
+        ("major", f"major_user_visible_{side}"),
+        ("long", f"long_horizon_user_visible_{side}"),
+    ):
+        if value := _mapping(row.get(key)):
+            return f"{label}: {_zone_display(value)}"
+    return "omitted"
 
 
 def _gate_matrix(rows: Sequence[Mapping[str, object]]) -> dict[str, object]:
@@ -366,11 +399,16 @@ def _render_reports(
             (
                 row["ticker"],
                 row["price_as_of"],
+                row["current_price"],
+                _coverage_display(row, "daily"),
+                _coverage_display(row, "weekly"),
+                _coverage_display(row, "monthly"),
                 row["eligibility"],
-                _mapping(row.get("internal_nearest_support")).get("proximity_tier"),
-                _mapping(row.get("internal_nearest_resistance")).get("proximity_tier"),
-                "YES" if row.get("near_user_visible_support") else "NO",
-                "YES" if row.get("near_user_visible_resistance") else "NO",
+                _zone_display(row.get("internal_nearest_support")),
+                _zone_display(row.get("internal_nearest_resistance")),
+                _visible_side(row, "support"),
+                _visible_side(row, "resistance"),
+                row.get("fib_state"),
                 _mapping(row.get("validator")).get("status"),
             )
         )
@@ -464,7 +502,21 @@ The supplied old 000660 section fails as expected under this validator.
         reports / REPORT_NAMES[6],
         "# KR Price Structure 7-Ticker Replay\n\n"
         + _table(
-            ["Ticker", "As of", "Eligibility", "Internal S", "Internal R", "Near S", "Near R", "Validator"],
+            [
+                "Ticker",
+                "As of",
+                "Price",
+                "D req/raw/done",
+                "W req/raw/done",
+                "M req/raw/done",
+                "Eligibility",
+                "Internal S",
+                "Internal R",
+                "Visible S",
+                "Visible R",
+                "Fib",
+                "Validator",
+            ],
             replay_rows,
         )
         + "\n\n"

@@ -73,7 +73,11 @@ def _summary(
     }
 
 
-def _render(summary: dict[str, object]) -> str:
+def _render(
+    summary: dict[str, object],
+    *,
+    enforce_user_visible_proximity: bool = False,
+) -> str:
     return render_current_price_structure(
         summary,
         ticker="TEST",
@@ -81,6 +85,7 @@ def _render(summary: dict[str, object]) -> str:
         current_price="100",
         currency="USD",
         include_current_price=False,
+        enforce_user_visible_proximity=enforce_user_visible_proximity,
     ).section
 
 
@@ -192,11 +197,36 @@ def test_long_horizon_internal_nearest_renders_as_long_structure_not_near() -> N
         current_price="100",
         currency="USD",
         include_current_price=False,
+        enforce_user_visible_proximity=True,
     )
 
     assert "가까운 지지" not in render.section
     assert "장기 구조 지지: 약 $57.5~$57.8" in render.section
     assert validate_price_structure_render(render).status == "PASS"
+
+
+def test_default_renderer_contract_preserves_non_kr_legacy_behavior() -> None:
+    support = _zone(
+        "long-support",
+        "57.5",
+        "57.8",
+        "약 $57.5~$57.8",
+        tier="LONG_HORIZON",
+        relevance="LONG_HORIZON_HISTORICAL",
+    )
+
+    render = render_current_price_structure(
+        _summary(support=support),
+        ticker="US-CONTROL",
+        as_of="2026-08-27",
+        current_price="100",
+        currency="USD",
+        include_current_price=False,
+    )
+
+    assert "가까운 지지: 약 $57.5~$57.8" in render.section
+    assert render.numeric_bindings[0]["semantic_type"] == "NEAREST_SUPPORT"
+    assert "proximity_tier" not in render.numeric_bindings[0]
 
 
 def test_relevant_internal_nearest_renders_as_major_structure_not_near() -> None:
@@ -209,7 +239,10 @@ def test_relevant_internal_nearest_renders_as_major_structure_not_near() -> None
         relevance="ACTIVE_STRUCTURAL",
     )
 
-    rendered = _render(_summary(support=support))
+    rendered = _render(
+        _summary(support=support),
+        enforce_user_visible_proximity=True,
+    )
 
     assert "가까운 지지" not in rendered
     assert "주요 구조 지지: 약 $74~$75" in rendered
@@ -240,6 +273,7 @@ def test_one_primary_zone_owns_each_user_visible_structural_semantic() -> None:
         current_price="100",
         currency="USD",
         include_current_price=False,
+        enforce_user_visible_proximity=True,
     )
 
     assert render.section.count("주요 구조 저항:") == 1
@@ -305,6 +339,7 @@ def test_out_of_active_range_is_omitted_without_remote_near_fill() -> None:
         current_price="100",
         currency="USD",
         include_current_price=False,
+        enforce_user_visible_proximity=True,
     )
 
     assert "약 $20~$22" not in render.section
@@ -322,6 +357,7 @@ def test_supplied_kr_seven_ticker_proximity_controls_follow_canonical_tiers() ->
             current_price=rows[ticker]["current_price"],
             currency=rows[ticker]["currency"],
             include_current_price=True,
+            enforce_user_visible_proximity=True,
         )
         for ticker in ("000660", "003690", "005490", "005930", "010120", "012450", "086280")
     }

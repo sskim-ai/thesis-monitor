@@ -198,8 +198,9 @@ def _binding(
     *,
     semantic_type: str,
     owner: PriceOwner = "CURRENT_PRICE_STRUCTURE",
+    include_proximity: bool = False,
 ) -> dict[str, object]:
-    return {
+    binding: dict[str, object] = {
         "owner": owner,
         "semantic_type": semantic_type,
         "fact_ref": zone["zone_id"],
@@ -208,12 +209,19 @@ def _binding(
         "display": zone["display"],
         "currency": zone["currency"],
         "source_refs": zone["source_refs"],
-        "source_timeframe": zone.get("source_timeframe"),
-        "source_timeframes": zone.get("source_timeframes", ()),
-        "distance_pct": zone.get("distance_pct"),
-        "proximity_tier": zone.get("proximity_tier"),
-        "active_relevance": zone.get("active_relevance"),
     }
+    if include_proximity:
+        binding.update(
+            {
+                "source_timeframe": zone.get("source_timeframe"),
+                "source_timeframes": zone.get("source_timeframes", ()),
+                "source_families": zone.get("source_families", ()),
+                "distance_pct": zone.get("distance_pct"),
+                "proximity_tier": zone.get("proximity_tier"),
+                "active_relevance": zone.get("active_relevance"),
+            }
+        )
+    return binding
 
 
 def _price_display(value: object, currency: str) -> str:
@@ -262,7 +270,9 @@ def _append_sr_zone(
     label = _VISIBLE_SR_LABELS[semantic_type]
     lines.append(f"• {label}: {zone['display']}")
     displayed.append(zone)
-    bindings.append(_binding(zone, semantic_type=semantic_type))
+    bindings.append(
+        _binding(zone, semantic_type=semantic_type, include_proximity=True)
+    )
 
 
 def validate_price_structure_render(
@@ -336,6 +346,7 @@ def render_current_price_structure(
     current_price: object,
     currency: str,
     include_current_price: bool,
+    enforce_user_visible_proximity: bool = False,
 ) -> PriceStructureRender:
     nearest_support = summary.get("nearest_support")
     nearest_resistance = summary.get("nearest_resistance")
@@ -361,48 +372,79 @@ def render_current_price_structure(
             }
         )
 
-    deferred: list[tuple[Mapping[str, object], UserVisibleSRClass]] = []
-    for zone in (support_zone, resistance_zone):
-        if zone is None:
-            continue
-        user_class = classify_user_visible_sr(zone)
-        if user_class == "NEAR":
-            _append_sr_zone(
-                lines=lines,
-                bindings=bindings,
-                displayed=displayed,
-                zone=zone,
-                user_class=user_class,
-            )
-        elif user_class != "OMIT":
-            deferred.append((zone, user_class))
-
-    for zone in (major_support_zone, major_resistance_zone):
-        if zone is None:
-            continue
-        user_class = classify_user_visible_sr(zone)
-        if user_class in {"NEAR", "STRUCTURAL"}:
-            user_class = "STRUCTURAL"
-        if user_class != "OMIT":
-            deferred.append((zone, user_class))
-
-    for user_class in ("STRUCTURAL", "LONG_HORIZON"):
-        for zone, zone_class in deferred:
-            if zone_class != user_class:
+    if enforce_user_visible_proximity:
+        deferred: list[tuple[Mapping[str, object], UserVisibleSRClass]] = []
+        for zone in (support_zone, resistance_zone):
+            if zone is None:
                 continue
-            if any(
-                zone.get("display") == item.get("display")
-                or _overlap(zone, item)
-                for item in displayed
+            user_class = classify_user_visible_sr(zone)
+            if user_class == "NEAR":
+                _append_sr_zone(
+                    lines=lines,
+                    bindings=bindings,
+                    displayed=displayed,
+                    zone=zone,
+                    user_class=user_class,
+                )
+            elif user_class != "OMIT":
+                deferred.append((zone, user_class))
+
+        for zone in (major_support_zone, major_resistance_zone):
+            if zone is None:
+                continue
+            user_class = classify_user_visible_sr(zone)
+            if user_class in {"NEAR", "STRUCTURAL"}:
+                user_class = "STRUCTURAL"
+            if user_class != "OMIT":
+                deferred.append((zone, user_class))
+
+        for user_class in ("STRUCTURAL", "LONG_HORIZON"):
+            for zone, zone_class in deferred:
+                if zone_class != user_class:
+                    continue
+                if any(
+                    zone.get("display") == item.get("display")
+                    or _overlap(zone, item)
+                    for item in displayed
+                ):
+                    continue
+                _append_sr_zone(
+                    lines=lines,
+                    bindings=bindings,
+                    displayed=displayed,
+                    zone=zone,
+                    user_class=user_class,
+                )
+    else:
+        for label, semantic_type, zone in (
+            ("가까운 지지", "NEAREST_SUPPORT", support_zone),
+            ("가까운 저항", "NEAREST_RESISTANCE", resistance_zone),
+        ):
+            if zone:
+                lines.append(f"• {label}: {zone['display']}")
+                displayed.append(zone)
+                bindings.append(_binding(zone, semantic_type=semantic_type))
+            else:
+                lines.append(f"• {label}: 확인된 역사적 {label.split()[-1]} 없음")
+
+        major_parts: list[str] = []
+        for label, semantic_type, zone, nearest in (
+            ("지지", "MAJOR_SUPPORT", major_support_zone, support_zone),
+            ("저항", "MAJOR_RESISTANCE", major_resistance_zone, resistance_zone),
+        ):
+            if not zone or (
+                nearest and zone.get("zone_id") == nearest.get("zone_id")
             ):
                 continue
-            _append_sr_zone(
-                lines=lines,
-                bindings=bindings,
-                displayed=displayed,
-                zone=zone,
-                user_class=user_class,
-            )
+            if nearest and _overlap(zone, nearest):
+                continue
+            if any(zone.get("display") == item.get("display") for item in displayed):
+                continue
+            major_parts.append(f"{label} {zone['display']}")
+            displayed.append(zone)
+            bindings.append(_binding(zone, semantic_type=semantic_type))
+        if major_parts:
+            lines.append("• 주요 구조: " + " · ".join(major_parts))
 
     confluence = summary.get("fib_sr_confluence")
     confluence_state = str(summary.get("fib_sr_confluence_state") or "")

@@ -26,6 +26,10 @@ as `가까운`; `RELEVANT` and `LONG_HORIZON` use structural labels. Each visibl
 zone ID, source refs, distance, proximity tier, and active relevance. The renderer-output validator
 rejects a line whose label and provenance disagree.
 
+This proximity-aware surface is an explicit KR rollout mode. The renderer's default contract stays
+legacy-compatible for existing non-KR shadow callers, so the bounded KR repair does not alter US
+Price Structure output or eligibility.
+
 Legacy suppression also has typed ownership. Structural fields are protected; current v3 and
 stored rules are retained by their owners; only explicitly eligible legacy-technical prose is
 token-scanned. The detector cannot suppress a company header or section heading.

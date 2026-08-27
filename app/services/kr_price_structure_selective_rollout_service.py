@@ -162,6 +162,7 @@ def build_kr_price_structure_rollout_decision(
         current_price=context.get("current_price"),
         currency=str(context.get("currency") or "KRW"),
         include_current_price=True,
+        enforce_user_visible_proximity=True,
     )
     validation = validate_price_structure_render(render)
     if validation.status == "FAIL":
