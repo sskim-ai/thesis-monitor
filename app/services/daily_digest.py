@@ -18,6 +18,7 @@ from app.services.kr_market_digest_quality_service import (
     KrMarketDigestPlan,
     build_kr_market_digest_plan,
 )
+from app.services.market_intelligence_service import build_market_intelligence
 from app.services.market_session import MarketScope, market_scope_for_security
 from app.services.night_futures import (
     NIGHT_FUTURES_LABELS,
@@ -25,6 +26,10 @@ from app.services.night_futures import (
     NightFuturesSummary,
     is_night_futures_warning,
     summarize_night_futures,
+)
+from app.services.us_market_digest_plan_service import (
+    UsMarketDigestPlan,
+    build_us_market_digest_plan,
 )
 
 
@@ -167,6 +172,7 @@ class DailyDigest:
     data_quality: DataQualitySummary
     kr_close_fx: KrCloseFxSummary | None = None
     kr_market_digest_plan: KrMarketDigestPlan | None = None
+    us_market_digest_plan: UsMarketDigestPlan | None = None
     night_futures: NightFuturesSummary = field(default_factory=NightFuturesSummary)
 
 
@@ -1098,6 +1104,20 @@ def build_daily_digest(
         if market_scope == "kr"
         else None
     )
+    us_market_digest_plan = (
+        build_us_market_digest_plan(
+            build_market_intelligence(
+                briefing,
+                run_date,
+                [],
+                [],
+                market="us",
+                previous_briefing=previous_briefing,
+            )
+        )
+        if market_scope == "us"
+        else None
+    )
     return DailyDigest(
         digest_date=run_date,
         market_scope=market_scope,
@@ -1116,5 +1136,6 @@ def build_daily_digest(
             summarize_kr_close_fx(kr_close_briefing) if market_scope == "kr" else None
         ),
         kr_market_digest_plan=kr_market_digest_plan,
+        us_market_digest_plan=us_market_digest_plan,
         night_futures=night_futures,
     )

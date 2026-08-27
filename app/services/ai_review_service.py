@@ -129,6 +129,7 @@ from app.services.structured_market_context_service import (
     load_current_cross_section,
     load_structured_market_context,
 )
+from app.services.us_market_digest_plan_service import build_us_market_digest_plan
 from app.services.market_session import us_market_session
 from app.services.valuation_snapshot_service import (
     _earnings_quarters,
@@ -3549,6 +3550,10 @@ def build_ai_review_packet(
         mode="json",
         exclude={"official_event_sources"},
     )
+    if market == "us":
+        market_context["us_market_digest_plan"] = build_us_market_digest_plan(
+            market_context
+        ).to_dict()
     if market == "kr":
         market_context["kr_market_digest_plan"] = build_kr_market_digest_plan(
             adapter_context,
