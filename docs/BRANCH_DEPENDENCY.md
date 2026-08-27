@@ -361,3 +361,18 @@ run-42 production-equivalent packet unless a newer completed-session instruction
 exactly once, and leave the already-active code default unchanged unless a separately proven existing
 gate is discovered. This dependency does not arm Price Structure v3 or alter the independent US
 natural-proof track.
+
+The KR daily-history and nearest-semantics repair starts from exact instruction commit
+`0a8dae7eeca7126844094f0aebcc7a7df0bea606`, whose parent is clean main
+`43731f015901b96e2dee3af009b9e1d074382349`. Independent Track A
+`da82d89c2e1c3bc125442128da1573d532263d74` and Track B
+`83f3d643bc2cb40d9039c1d965647d01a43769e2` are integrated by code commit
+`04fb7ad7646a55e03000134f50b3f402a6c49c87`.
+
+A future KR pre-enable rerun must descend from this repair and preserve the provider's 1,000-bar
+transport ceiling as `PARTIAL/provider_limit`, the 1,200-bar canonical target, completed-bar and
+look-ahead gates, provenance-bound proximity labels, one primary user-visible semantic per side,
+and old-000660 negative control. It must also preserve explicit KR-only renderer opt-in, unchanged
+US/TOP3 behavior, both default-OFF guards, and the dedicated-test-sink requirement. This repair
+does not itself authorize a Telegram send, runtime enablement, operating promotion, or Production
+Assist.

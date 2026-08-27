@@ -2,6 +2,27 @@
 
 Repository: `sskim-ai/thesis-monitor`
 
+Latest authoritative work follows exact instruction commit
+`0a8dae7eeca7126844094f0aebcc7a7df0bea606` and integrated code commit
+`04fb7ad7646a55e03000134f50b3f402a6c49c87`. Read
+`docs/reports/20260827-kr-price-structure-repair-readiness.json`, the seven-ticker replay/render
+diff, provider contract, nearest-semantics/proximity-validator audits, validation, safety parity,
+and artifact index first.
+
+The seven KR daily series now return 1,000 completed bars from the provider and remain honestly
+`PARTIAL/provider_limit` against the 1,200-bar canonical target. The renderer exposes `가까운`
+only for `NEAR/ACTIVE_NEAR`; relevant structural and long-horizon zones use distinct labels, with
+one primary semantic per side. The supplied old 000660 output fails the new validator as expected;
+all seven repaired current sections pass. P0/material P1 are `0/0`, but Price Structure remains
+`INTEGRATED_READY_NOT_ARMED` and no runtime enablement or test send occurred.
+
+Next action: configure one dedicated non-production Telegram test sink and rerun the KR TOP3 /
+Price Structure pre-enable proof under a separate instruction. Do not use the production recipient,
+arm either guard, enable US Price Structure, manually run a Scheduled Task, or turn on Production
+Assist. Operating remains intentionally unchanged by this repair.
+
+---
+
 Latest authoritative work follows instruction commit
 `0c95ddc9be319dbacc5ce1d824802e0c3c72fed1` and implementation commit
 `a7de99c2d1d1211615e0fcbf4bd3eadc06d957fb`. Read the bundled 2026-08-27 KR TOP3 / Price

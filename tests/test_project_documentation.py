@@ -105,29 +105,32 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     assert state["repository"] == "sskim-ai/thesis-monitor"
     assert state["branch"] == "main"
     assert state["experimental_branch"] == (
-        "codex/20260827-kr-top3-sector-price-structure-preenablement"
+        "codex/20260827-kr-price-structure-daily-history-nearest-repair"
     )
     assert state["current_phase"] == (
-        "kr_top3_price_structure_preenable_blocked_no_safe_test_sink"
+        "kr_price_structure_daily_history_nearest_repair_replay_pass"
     )
     assert state["last_completed_phase"] == (
-        "kr_top3_sector_and_price_structure_tracks_a_b"
+        "kr_price_structure_daily_history_nearest_bounded_repair"
     )
     assert state["next_default_phase"] == (
-        "configure_dedicated_test_sink_and_rerun_preenable"
+        "rerun_kr_top3_price_structure_test_sink_preenablement"
     )
     implementation_commit = "069f002437163bff1df7aa6e258918c1777d5dfa"
     kr_size_sector_implementation = "6a54db130e95e25969a5ca0a100648d4a12c3aa2"
     preenable_implementation = "7d2823c236c458cf76c77faae043c6288e46e65e"
     top3_implementation = "a7de99c2d1d1211615e0fcbf4bd3eadc06d957fb"
+    price_structure_repair_implementation = (
+        "04fb7ad7646a55e03000134f50b3f402a6c49c87"
+    )
     kr_integration_commit = "848eb80f6ce6504a9a855973b591ee0749167514"
     detector_implementation_commit = "3685aa991589ca0e7cc560104d4ebf8289e3f91d"
     preenablement_commit = "84f8f549bc8fa0338309a84b23b2738f2e357646"
     prior_price_structure_commit = "631e82f202b6f081866ef83c8b67b2138a8b51d8"
     prior_fibonacci_commit = "0dfef76bba606f018893d6e68e7beaf410aa7438"
-    assert state["deployed_code_commit"] == "de352342f15a75069289f35f00b4bd24ddcdd19f"
-    assert state["main_code_commit"] == top3_implementation
-    assert state["operating_code_commit"] == "de352342f15a75069289f35f00b4bd24ddcdd19f"
+    assert state["deployed_code_commit"] == "43731f015901b96e2dee3af009b9e1d074382349"
+    assert state["main_code_commit"] == price_structure_repair_implementation
+    assert state["operating_code_commit"] == "43731f015901b96e2dee3af009b9e1d074382349"
     phase_8552 = state["phase_8_5_5_2_kr_structured_field_repetition"]
     assert phase_8552["status"] == "operating_shadow_pending_natural_proof"
     assert phase_8552["operating_shadow_promoted"] is True
@@ -166,6 +169,12 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     )
     assert state["contracts"]["kr_market_preenable_test_send"] == (
         "kr-market-preenable-test-send-v1"
+    )
+    assert state["contracts"]["kr_price_structure_daily_history"] == (
+        "kr-price-structure-daily-history-v1"
+    )
+    assert state["contracts"]["sr_nearest_user_visible_proximity"] == (
+        "sr-nearest-user-visible-proximity-v1"
     )
     current_data = state["price_structure_v3_current_data_shadow_message_validation"]
     assert current_data["status"] == "validated_ready_not_armed"
@@ -1023,7 +1032,44 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     assert rollout["open_material_p1"] == [
         "dedicated_test_sink_not_configured"
     ]
-    assert state["current_commit"] == top3_implementation
+    price_structure_repair = state[
+        "kr_price_structure_daily_history_nearest_repair"
+    ]
+    assert price_structure_repair["status"] == (
+        "replay_pass_ready_for_preenable"
+    )
+    assert price_structure_repair["instruction_commit"] == (
+        "0a8dae7eeca7126844094f0aebcc7a7df0bea606"
+    )
+    assert price_structure_repair["track_a_commit"] == (
+        "da82d89c2e1c3bc125442128da1573d532263d74"
+    )
+    assert price_structure_repair["track_b_commit"] == (
+        "83f3d643bc2cb40d9039c1d965647d01a43769e2"
+    )
+    assert price_structure_repair["integration_code_commit"] == (
+        price_structure_repair_implementation
+    )
+    assert price_structure_repair["implementation_github_actions_status"] == (
+        "passed_test_and_lint"
+    )
+    assert price_structure_repair["daily_zero_root_cause"] == (
+        "provider_parameter_bug"
+    )
+    assert price_structure_repair["daily_subjects_partial_provider_limit"] == 7
+    assert price_structure_repair["synthetic_daily_bars"] == 0
+    assert price_structure_repair["old_000660_render_new_validator"] == (
+        "fail_as_expected"
+    )
+    assert price_structure_repair["current_validator_errors"] == 0
+    assert price_structure_repair["open_p0"] == []
+    assert price_structure_repair["open_material_p1"] == []
+    assert price_structure_repair["kr_price_structure"] == (
+        "INTEGRATED_READY_NOT_ARMED"
+    )
+    assert price_structure_repair["runtime_enablement"] is False
+    assert price_structure_repair["test_send"] is False
+    assert state["current_commit"] == price_structure_repair_implementation
     assert state["ai_review_mode"] == "shadow"
     assert state["ai_policy_version"] == "daily-review-v3.10"
     assert state["output_schema_version"] == 4

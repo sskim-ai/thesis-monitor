@@ -1803,3 +1803,25 @@ gate. Open P0 is zero and the one material P1 is `dedicated_test_sink_not_config
 a bounded external configuration repair: add one explicit dedicated test sink, prove its ID differs
 from production, and rerun this exact preflight once. Keep Price Structure v3 unarmed, US untouched,
 Production Assist OFF, and all production/manual delivery paths unused.
+
+## 2026-08-27 KR Price Structure Daily History / Nearest Semantics Handoff
+
+The exact instruction is commit `0a8dae7eeca7126844094f0aebcc7a7df0bea606`; independent Track A
+and B are `da82d89c2e1c3bc125442128da1573d532263d74` and
+`83f3d643bc2cb40d9039c1d965647d01a43769e2`; integrated code is
+`04fb7ad7646a55e03000134f50b3f402a6c49c87`. Start with
+`docs/reports/20260827-kr-price-structure-repair-readiness.json`, the seven-ticker replay, render
+diff, daily-history contract, proximity validator, safety parity, and artifact index.
+
+Daily acquisition was failing because the client sent `count=1200` to an endpoint capped at
+1,000. It now requests 1,000, retains the 1,200-bar canonical target, and marks the result
+`PARTIAL/provider_limit`. No synthetic daily bars or weekly/monthly substitution is allowed.
+User-visible proximity is also provenance-bound: only `NEAR/ACTIVE_NEAR` is `가까운`, while
+relevant structural and long-horizon zones use their own labels. The old 000660 output fails as
+expected and all seven current repaired outputs pass.
+
+State is `REPLAY_PASS_READY_FOR_PREENABLE`, P0/material P1 `0/0`. This repair sent nothing and did
+not arm either KR guard. Price Structure v3 remains `INTEGRATED_READY_NOT_ARMED`; US behavior,
+TOP3 sector logic, Telegram, tasks, DB, assessments, archives, and Production Assist are unchanged.
+The next action remains a separately authorized test-sink pre-enable rerun after one dedicated
+non-production recipient is configured.

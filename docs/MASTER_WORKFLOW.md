@@ -1618,3 +1618,29 @@ did not start. Both new guards remain OFF, US Price Structure remains OFF, deliv
 intent counts are zero, and operating user-visible behavior is unchanged. Open P0 is zero; the one
 material P1 is `dedicated_test_sink_not_configured`. Configure exactly one isolated test sink and
 rerun Track C before any KR-only enablement.
+
+### 40.16 KR Daily History and Nearest-Semantics Bounded Repair
+
+Exact instruction commit `0a8dae7eeca7126844094f0aebcc7a7df0bea606` precedes independent
+Track A `da82d89c2e1c3bc125442128da1573d532263d74`, Track B
+`83f3d643bc2cb40d9039c1d965647d01a43769e2`, and integrated code
+`04fb7ad7646a55e03000134f50b3f402a6c49c87`. Track A proves the seven monitored-KR daily zero
+count came from requesting 1,200 bars from an `/ohlcv` endpoint capped at 1,000. The client now
+requests at most 1,000 while preserving the canonical 1,200-bar target and reports all seven daily
+series `PARTIAL/provider_limit`; it does not synthesize daily bars or substitute weekly/monthly
+data.
+
+Track B separates mathematical nearest-zone ownership from user-visible proximity. Only
+`NEAR/ACTIVE_NEAR` may render as `가까운`; `RELEVANT/ACTIVE_STRUCTURAL` renders as `주요 구조`,
+and `LONG_HORIZON/LONG_HORIZON_HISTORICAL` renders as `장기 구조`. One zone per side owns each
+primary user-visible semantic, while distinct near and structural zones remain allowed. The old
+000660 section fails the new provenance validator as expected; all seven repaired sections pass.
+The policy is an explicit KR rollout option, so existing US/shadow renderer callers retain their
+prior behavior.
+
+Read-only current-data replay returns daily/weekly/monthly evidence for all seven subjects, zero
+validator errors, zero look-ahead or partial-bar pivots, and no changes to TOP3 sector code, US
+Price Structure, market digest, business thesis, valuation, Telegram, tasks, DB, archives, or
+production flags. State is `REPLAY_PASS_READY_FOR_PREENABLE`, with open P0/material P1 `0/0`.
+Price Structure remains `INTEGRATED_READY_NOT_ARMED`; do not enable or send from this repair.
+Configure a dedicated non-production test sink and rerun the bounded pre-enable proof separately.
