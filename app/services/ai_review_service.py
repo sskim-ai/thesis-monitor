@@ -96,7 +96,11 @@ from app.services.market_evidence_utilization_validator_service import (
 )
 from app.services.market_context_adapter_service import market_context_adapter
 from app.services.kr_market_digest_quality_service import build_kr_market_digest_plan
-from app.services.night_futures import NIGHT_FUTURES_SERIES
+from app.services.night_futures import (
+    NIGHT_FUTURES_FACT_IDS,
+    NIGHT_FUTURES_SERIES,
+    night_futures_context_row,
+)
 from app.services.official_security_identity_service import (
     load_official_identity_provenance,
 )
@@ -3392,19 +3396,21 @@ def _market_packet(
         previous_briefing=previous_briefing,
     )
     market_facts = list(intelligence["fact_catalog"])
-    night_futures = [asdict(item) for item in digest.night_futures.items]
-    for index, item in enumerate(night_futures, start=1):
+    night_futures = [
+        night_futures_context_row(item) for item in digest.night_futures.items
+    ]
+    for item in night_futures:
+        fact_id = NIGHT_FUTURES_FACT_IDS[str(item["series_code"])]
         market_facts.append(
             {
-                "fact_id": f"market:night_futures:{index}",
+                "fact_id": fact_id,
                 "fact_type": "night_futures",
                 "as_of_date": str(item.get("session_date") or run_date),
                 "fields": _public_value(item),
             }
         )
     night_fact_ids = [
-        f"market:night_futures:{index}"
-        for index, _item in enumerate(night_futures, start=1)
+        NIGHT_FUTURES_FACT_IDS[str(item["series_code"])] for item in night_futures
     ]
     briefing_market = (
         _dict(_json(briefing.market_summary, {})) if briefing is not None else {}
@@ -3416,8 +3422,10 @@ def _market_packet(
         if isinstance(item, dict) and item.get("series_code")
     }
     fact_id_by_series = {
-        str(item.get("series_code")): f"market:night_futures:{index}"
-        for index, item in enumerate(night_futures, start=1)
+        str(item.get("series_code")): NIGHT_FUTURES_FACT_IDS[
+            str(item.get("series_code"))
+        ]
+        for item in night_futures
         if isinstance(item, dict) and item.get("series_code")
     }
     night_audit = {

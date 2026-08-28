@@ -518,6 +518,7 @@ def _set_fresh_night_futures(session: Session, *series_codes: str) -> None:
             "observations": observations,
             "night_futures_gate": {
                 "expected_session": "2026-08-13",
+                "ready_products": list(series_codes),
                 "query_attempted": True,
                 "first_query_at": "2026-08-14T08:05:00+09:00",
                 "last_query_at": "2026-08-14T08:05:00+09:00",

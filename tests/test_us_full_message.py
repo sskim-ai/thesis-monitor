@@ -120,11 +120,15 @@ def test_full_message_renders_verified_night_returns_without_levels() -> None:
     context["night_futures"] = [
         {
             "fact_id": "market:night_futures:1",
+            "field_path": "fields.change_pct",
+            "state": "CURRENT_DIRECTIONAL",
             "series_code": "KRX_KOSPI200_NIGHT_FUT",
             "change_pct": 0.67,
         },
         {
             "fact_id": "market:night_futures:2",
+            "field_path": "fields.change_pct",
+            "state": "CURRENT_DIRECTIONAL",
             "series_code": "KRX_KOSDAQ150_NIGHT_FUT",
             "change_pct": -0.28,
         },
@@ -139,6 +143,23 @@ def test_full_message_renders_verified_night_returns_without_levels() -> None:
         "market:night_futures:1",
         "market:night_futures:2",
     )
+
+
+def test_full_message_suppresses_noncanonical_night_futures_sidecar() -> None:
+    context = _context()
+    context["night_futures"] = [
+        {
+            "fact_id": "legacy:night-futures",
+            "series_code": "KRX_KOSPI200_NIGHT_FUT",
+            "change_pct": 9.99,
+        }
+    ]
+
+    rendered = render_us_full_market_message(context)
+
+    assert rendered.status == "PASS"
+    assert "🌙 한국 야간선물" not in rendered.text
+    assert rendered.night_fact_ids == ()
 
 
 def test_incomplete_index_tuple_fails_closed_for_new_layout() -> None:

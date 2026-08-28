@@ -3,6 +3,7 @@ from __future__ import annotations
 from dataclasses import asdict, dataclass
 from typing import Iterable, Mapping
 
+from app.services.night_futures import NIGHT_FUTURES_FACT_IDS
 from app.services.us_market_digest_plan_service import (
     DigestOmissionReason,
     SUPPORTED_MACRO_FACT_TYPES,
@@ -202,18 +203,23 @@ def render_us_full_market_message(
     night_fact_ids: list[str] = []
     night_rows = _mapping(context).get("night_futures", [])
     if isinstance(night_rows, list):
-        for index, row in enumerate(night_rows, start=1):
+        for row in night_rows:
             if not isinstance(row, Mapping):
                 continue
             series = str(row.get("series_code") or "")
             value = _number(row.get("change_pct"))
             label = NIGHT_LABELS.get(series)
-            if label is None or value is None:
+            expected_fact_id = NIGHT_FUTURES_FACT_IDS.get(series)
+            if (
+                label is None
+                or value is None
+                or row.get("fact_id") != expected_fact_id
+                or row.get("field_path") != "fields.change_pct"
+                or row.get("state") != "CURRENT_DIRECTIONAL"
+            ):
                 continue
             night_lines.append(f"• {label} {_format_pct(value)}")
-            night_fact_ids.append(
-                str(row.get("fact_id") or f"market:night_futures:{index}")
-            )
+            night_fact_ids.append(str(row["fact_id"]))
 
     macro_lines: list[str] = []
     macro = _plan_item(plan, UsMarketDigestSlot.MACRO_CONTEXT)

@@ -17,7 +17,14 @@ NIGHT_FUTURES_LABELS = {
     "KRX_KOSPI200_NIGHT_FUT": "KOSPI200 최근월물",
     "KRX_KOSDAQ150_NIGHT_FUT": "KOSDAQ150 최근월물",
 }
+NIGHT_FUTURES_FACT_IDS = {
+    "KRX_KOSPI200_NIGHT_FUT": "market:night_futures:1",
+    "KRX_KOSDAQ150_NIGHT_FUT": "market:night_futures:2",
+}
 NIGHT_FUTURES_SESSION_BASIS_CONTRACT = "night-futures-session-basis-v1"
+NIGHT_FUTURES_SUMMARY_PROJECTION_CONTRACT = (
+    "night-futures-summary-canonical-projection-v1"
+)
 NIGHT_COMPARISON_SEMANTIC = (
     "completed_night_close_minus_immediately_preceding_day_close"
 )
@@ -83,6 +90,27 @@ def _number(value: object) -> float | None:
     if isinstance(value, (int, float)):
         return float(value)
     return None
+
+
+def _gate_ready_products(market: object) -> tuple[set[str], date | None] | None:
+    if not isinstance(market, dict):
+        return None
+    gate = market.get("night_futures_gate")
+    if not isinstance(gate, dict):
+        return None
+    if not any(
+        key in gate
+        for key in ("expected_session", "ready_products", "query_attempted", "state")
+    ):
+        return None
+    raw_ready = gate.get("ready_products")
+    ready_values = raw_ready if isinstance(raw_ready, list) else []
+    ready = {
+        str(item)
+        for item in ready_values
+        if str(item) in NIGHT_FUTURES_SERIES
+    }
+    return ready, _date_value(gate.get("expected_session"))
 
 
 def _session_is_fresh(item: dict[str, object]) -> tuple[bool, date | None]:
@@ -182,7 +210,11 @@ def _verified_session_basis(
     return valid, reference_date, reference_price
 
 
-def summarize_night_futures(market: object) -> NightFuturesSummary:
+def summarize_night_futures(
+    market: object,
+    *,
+    enforce_gate: bool = True,
+) -> NightFuturesSummary:
     observations = market.get("observations", []) if isinstance(market, dict) else []
     rows = {
         str(item["series_code"]): item
@@ -200,6 +232,7 @@ def summarize_night_futures(market: object) -> NightFuturesSummary:
             )
         return NightFuturesSummary()
 
+    gate_selection = _gate_ready_products(market) if enforce_gate else None
     items: list[NightFuturesItem] = []
     excluded: list[str] = []
     for series_code in NIGHT_FUTURES_SERIES:
@@ -212,6 +245,15 @@ def summarize_night_futures(market: object) -> NightFuturesSummary:
         if not fresh or session_date is None or value is None:
             excluded.append(series_code)
             continue
+        if gate_selection is not None:
+            ready_products, expected_session = gate_selection
+            if (
+                series_code not in ready_products
+                or expected_session is None
+                or session_date != expected_session
+            ):
+                excluded.append(series_code)
+                continue
         verified, reference_date, reference_price = _verified_session_basis(
             row,
             session_date=session_date,
@@ -260,6 +302,55 @@ def summarize_night_futures(market: object) -> NightFuturesSummary:
             for series_code in excluded
         ]
     return NightFuturesSummary(items=items, cautions=cautions)
+
+
+def night_futures_context_row(item: NightFuturesItem) -> dict[str, object]:
+    return {
+        **item.__dict__,
+        "fact_id": NIGHT_FUTURES_FACT_IDS[item.series_code],
+        "field_path": "fields.change_pct",
+        "state": "CURRENT_DIRECTIONAL",
+    }
+
+
+def _is_night_futures_summary_item(value: object) -> bool:
+    if isinstance(value, str):
+        return "야간선물" in value or any(
+            series_code in value for series_code in NIGHT_FUTURES_SERIES
+        )
+    if not isinstance(value, dict):
+        return False
+    return bool(
+        str(value.get("series_code") or "") in NIGHT_FUTURES_SERIES
+        or str(value.get("fact_id") or "").startswith("market:night_futures:")
+        or value.get("category") == "kr_night_futures"
+    )
+
+
+def canonicalize_night_futures_market_summary(
+    market: object,
+) -> dict[str, object]:
+    """Project gate-approved returns into summary items without a raw bypass."""
+    result = dict(market) if isinstance(market, dict) else {}
+    raw_items = result.get("items")
+    items = list(raw_items) if isinstance(raw_items, list) else []
+    retained = [item for item in items if not _is_night_futures_summary_item(item)]
+    summary = summarize_night_futures(result)
+    for item in summary.items:
+        retained.append(
+            {
+                "contract": NIGHT_FUTURES_SUMMARY_PROJECTION_CONTRACT,
+                "fact_id": NIGHT_FUTURES_FACT_IDS[item.series_code],
+                "field_path": "fields.change_pct",
+                "series_code": item.series_code,
+                "label": f"{NIGHT_FUTURES_LABELS[item.series_code]} 야간선물",
+                "value": item.change_pct,
+                "session": item.session_date.isoformat(),
+                "state": "CURRENT_DIRECTIONAL",
+            }
+        )
+    result["items"] = retained
+    return result
 
 
 def render_night_futures(summary: NightFuturesSummary) -> str:

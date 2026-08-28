@@ -227,7 +227,12 @@ def build_macro_briefing(
     decisions = decisions if isinstance(decisions, dict) else {}
     daily_axes = temporal_context.get("daily_axes", {})
     daily_axes = daily_axes if isinstance(daily_axes, dict) else {}
-    market_items = [_format_move(item) for item in observations]
+    # The morning gate is the sole owner of user-facing night-futures summaries.
+    market_items = [
+        _format_move(item)
+        for item in observations
+        if item.category != "kr_night_futures"
+    ]
     calendar = session.exec(
         select(MacroEvent)
         .where(MacroEvent.scheduled_at.is_not(None))

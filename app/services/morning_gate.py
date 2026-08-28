@@ -18,7 +18,11 @@ from app.models.security import SecurityMaster
 from app.models.thesis import NotificationDelivery, ThesisAssessment
 from app.models.watchlist import WatchlistItem
 from app.services.market_session import market_scope_for_security
-from app.services.night_futures import NIGHT_FUTURES_SERIES, summarize_night_futures
+from app.services.night_futures import (
+    NIGHT_FUTURES_SERIES,
+    canonicalize_night_futures_market_summary,
+    summarize_night_futures,
+)
 from app.services.night_futures_publication_telemetry_service import (
     record_attempt_best_effort,
 )
@@ -130,6 +134,7 @@ def _write_gate_metadata(
     if briefing is not None:
         market = _json_dict(briefing.market_summary)
         market["night_futures_gate"] = metadata
+        market = canonicalize_night_futures_market_summary(market)
         briefing.market_summary = json.dumps(market, ensure_ascii=False, default=str)
         session.add(briefing)
     delivery = _digest_delivery(session, run_date)
@@ -199,6 +204,7 @@ def _replace_night_observations(
         for item in existing
         if not isinstance(item, dict) or item.get("series_code") not in NIGHT_FUTURES_SERIES
     ] + [by_series[series] for series in NIGHT_FUTURES_SERIES if series in by_series]
+    market = canonicalize_night_futures_market_summary(market)
     briefing.market_summary = json.dumps(market, ensure_ascii=False, default=str)
     session.add(briefing)
     session.commit()
@@ -420,7 +426,9 @@ async def run_morning_night_futures_gate(
 
     briefing = _briefing(session, run_date)
     market = _json_dict(briefing.market_summary) if briefing is not None else {}
-    summary = summarize_night_futures(market)
+    # This pass computes gate readiness from freshly normalized occurrences.
+    # All downstream consumers use the persisted gate-enforced projection.
+    summary = summarize_night_futures(market, enforce_gate=False)
     ready_products = [item.series_code for item in summary.items]
     metadata["ready_products"] = ready_products
     for series_code, field in (

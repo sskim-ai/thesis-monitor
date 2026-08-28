@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import json
 import re
-from dataclasses import asdict, dataclass, field
+from dataclasses import dataclass, field
 from datetime import date, datetime, timedelta, timezone
 
 from sqlmodel import Session, select
@@ -25,6 +25,7 @@ from app.services.night_futures import (
     NIGHT_FUTURES_SERIES,
     NightFuturesSummary,
     is_night_futures_warning,
+    night_futures_context_row,
     summarize_night_futures,
 )
 from app.services.us_market_digest_plan_service import (
@@ -1126,7 +1127,9 @@ def build_daily_digest(
         {
             **us_market_intelligence,
             "us_market_digest_plan": us_market_digest_plan.to_dict(),
-            "night_futures": [asdict(item) for item in night_futures.items],
+            "night_futures": [
+                night_futures_context_row(item) for item in night_futures.items
+            ],
             "night_futures_cautions": list(night_futures.cautions),
         }
         if us_market_intelligence is not None and us_market_digest_plan is not None
