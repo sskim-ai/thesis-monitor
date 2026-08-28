@@ -1,0 +1,792 @@
+{
+  "base_sha": "104b0a04d326e66178c9f432798fdeb6cf82a85a",
+  "contract": "us-morning-market-data-review-v1",
+  "core_indices": {
+    "IWM": {
+      "close": 295.75,
+      "previous_close": 299.81,
+      "session_date": "2026-08-28",
+      "session_return_pct": -1.3542,
+      "source": "ohlcv_analyst",
+      "state": "CURRENT_DIRECTIONAL",
+      "temporal_role": "CURRENT_OBSERVATION",
+      "ticker": "IWM"
+    },
+    "QQQ": {
+      "close": 716.43,
+      "previous_close": 721.11,
+      "session_date": "2026-08-28",
+      "session_return_pct": -0.649,
+      "source": "ohlcv_analyst",
+      "state": "CURRENT_DIRECTIONAL",
+      "temporal_role": "CURRENT_OBSERVATION",
+      "ticker": "QQQ"
+    },
+    "RSP": {
+      "close": 220.69,
+      "previous_close": 221.45,
+      "session_date": "2026-08-28",
+      "session_return_pct": -0.3432,
+      "source": "ohlcv_analyst",
+      "state": "CURRENT_DIRECTIONAL",
+      "temporal_role": "CURRENT_OBSERVATION",
+      "ticker": "RSP"
+    },
+    "SOXX": {
+      "close": 508.62,
+      "previous_close": 525.43,
+      "session_date": "2026-08-28",
+      "session_return_pct": -3.1993,
+      "source": "ohlcv_analyst",
+      "state": "CURRENT_DIRECTIONAL",
+      "temporal_role": "CURRENT_OBSERVATION",
+      "ticker": "SOXX"
+    },
+    "SPY": {
+      "close": 769.35,
+      "previous_close": 771.1,
+      "session_date": "2026-08-28",
+      "session_return_pct": -0.2269,
+      "source": "ohlcv_analyst",
+      "state": "CURRENT_DIRECTIONAL",
+      "temporal_role": "CURRENT_OBSERVATION",
+      "ticker": "SPY"
+    }
+  },
+  "data_quality_issues": [
+    {
+      "actual": "5 current",
+      "component": "core indices",
+      "expected": "5 current",
+      "impact": "none",
+      "state": "NONE"
+    },
+    {
+      "actual": "current; not promoted to breadth",
+      "component": "RSP",
+      "expected": "participation proxy",
+      "impact": "none",
+      "state": "NONE"
+    },
+    {
+      "actual": "current; relative weakness",
+      "component": "SOXX",
+      "expected": "current relative input",
+      "impact": "none",
+      "state": "NONE"
+    },
+    {
+      "actual": "11 current",
+      "component": "sector universe",
+      "expected": "11 current",
+      "impact": "none",
+      "state": "NONE"
+    },
+    {
+      "actual": "2026-08-26",
+      "component": "Nasdaq breadth",
+      "expected": "2026-08-28",
+      "impact": "safe omission",
+      "state": "PUBLICATION_PENDING"
+    },
+    {
+      "actual": "unavailable",
+      "component": "NYSE breadth",
+      "expected": "official/free supported source",
+      "impact": "no synthetic substitute",
+      "state": "SAFE_OMISSION"
+    },
+    {
+      "actual": "prior session only",
+      "component": "night futures",
+      "expected": "2026-08-29",
+      "impact": "entire section omitted",
+      "state": "STALE"
+    },
+    {
+      "actual": "none selected",
+      "component": "macro",
+      "expected": "specific/material/current",
+      "impact": "current market evidence retained",
+      "state": "SAFE_OMISSION"
+    },
+    {
+      "actual": "14/14 sent",
+      "component": "natural run",
+      "expected": "1 market + 13 stock",
+      "impact": "deterministic route delivered",
+      "state": "NONE"
+    },
+    {
+      "actual": "37 primary errors",
+      "component": "AI stock candidate",
+      "expected": "validator pass",
+      "impact": "AI output rejected; safe deterministic delivery already complete",
+      "state": "MATERIAL_P1"
+    }
+  ],
+  "deterministic_relations": {
+    "iwm_minus_spy_pp": -1.1273,
+    "qqq_minus_spy_pp": -0.4221,
+    "rsp_minus_spy_pp": -0.1163,
+    "soxx_minus_qqq_pp": -2.5503,
+    "soxx_minus_spy_pp": -2.9724
+  },
+  "execution_time_kst": "2026-08-29T08:27:23+09:00",
+  "instruction_commit": "428836d4a997a10eb7dd1d1935acdea8ea469b54",
+  "latest_completed_us_session": "2026-08-28",
+  "macro": [
+    {
+      "change": "+1bp",
+      "observation_date": "2026-08-27",
+      "reason": "new_official_observation_since_previous_briefing",
+      "series_code": "DGS10",
+      "source": "fred",
+      "structured_state": "CURRENT_DIRECTIONAL",
+      "temporal_role": "CURRENT_OBSERVATION",
+      "today_signal_eligible": true,
+      "unit": "percent",
+      "value": 4.67
+    },
+    {
+      "change": "+0bp",
+      "observation_date": "2026-08-27",
+      "reason": "new_official_observation_since_previous_briefing",
+      "series_code": "DFII10",
+      "source": "fred",
+      "structured_state": "CURRENT_DIRECTIONAL",
+      "temporal_role": "CURRENT_OBSERVATION",
+      "today_signal_eligible": true,
+      "unit": "percent",
+      "value": 2.34
+    },
+    {
+      "change": "-2bp",
+      "observation_date": "2026-08-28",
+      "reason": "new_official_observation_since_previous_briefing",
+      "series_code": "T10YIE",
+      "source": "fred",
+      "structured_state": "CURRENT_DIRECTIONAL",
+      "temporal_role": "CURRENT_OBSERVATION",
+      "today_signal_eligible": true,
+      "unit": "percent",
+      "value": 2.31
+    },
+    {
+      "change": "-4bp",
+      "observation_date": "2026-08-27",
+      "reason": "new_official_observation_since_previous_briefing",
+      "series_code": "BAMLH0A0HYM2",
+      "source": "fred",
+      "structured_state": "CURRENT_DIRECTIONAL",
+      "temporal_role": "CURRENT_OBSERVATION",
+      "today_signal_eligible": true,
+      "unit": "percent",
+      "value": 2.63
+    },
+    {
+      "change": "-4.60%",
+      "observation_date": "2026-08-27",
+      "reason": "new_official_observation_since_previous_briefing",
+      "series_code": "VIXCLS",
+      "source": "fred",
+      "structured_state": "CURRENT_DIRECTIONAL",
+      "temporal_role": "CURRENT_OBSERVATION",
+      "today_signal_eligible": true,
+      "unit": "index",
+      "value": 14.51
+    },
+    {
+      "change": "-2.98%",
+      "observation_date": "2026-08-25",
+      "reason": "no_new_official_observation_since_previous_briefing",
+      "series_code": "DCOILWTICO",
+      "source": "fred",
+      "structured_state": "SOURCE_UNAVAILABLE",
+      "temporal_role": "REFERENCE_LAGGING",
+      "today_signal_eligible": false,
+      "unit": "usd_per_barrel",
+      "value": 83.9
+    },
+    {
+      "change": "-0.61%",
+      "observation_date": "2026-08-28",
+      "reason": "source_occurrence_date_not_verified_for_daily_delta",
+      "series_code": "USDKRW",
+      "source": "ecos",
+      "structured_state": "SOURCE_UNAVAILABLE",
+      "temporal_role": "REFERENCE_LAGGING",
+      "today_signal_eligible": false,
+      "unit": "원",
+      "value": 1372.5
+    },
+    {
+      "change": "-0.71%",
+      "observation_date": "2026-08-21",
+      "reason": "no_new_official_observation_since_previous_briefing",
+      "series_code": "DTWEXBGS",
+      "source": "fred",
+      "structured_state": "SOURCE_UNAVAILABLE",
+      "temporal_role": "REFERENCE_LAGGING",
+      "today_signal_eligible": false,
+      "unit": "index",
+      "value": 118.0628
+    }
+  ],
+  "macro_selected_facts": [],
+  "nasdaq_breadth": {
+    "contract_version": "nasdaq-official-exchange-breadth-v1",
+    "denial_reason": "exact_session_not_published",
+    "invalid_breadth_sessions": [
+      "2026-03-09"
+    ],
+    "latest_available_session": "2026-08-26",
+    "latest_completed_session": "2026-08-28",
+    "observation": null,
+    "publication_state": "PUBLICATION_PENDING",
+    "retrieved_at": "2026-08-29T08:06:47.571477+09:00",
+    "source_etag": null,
+    "source_last_modified": null,
+    "source_payload_sha256": "c54c5ff3a1ad753a635f610df1b114a3b329ee715a041f397038c2aebfb1db71",
+    "source_url": "https://www.nasdaqtrader.com/dynamic/dailyfiles/daily2026.csv",
+    "target_session": "2026-08-28"
+  },
+  "natural_run": {
+    "backup_ai_validation": {
+      "error_count": 4,
+      "errors": [
+        "market_review:evidence_utilization:CORE_MARKET_SLOT_UNCONSUMED",
+        "market_review:evidence_utilization:SELECTED_RSP_SLOT_UNCONSUMED",
+        "market_review:evidence_utilization:SELECTED_SECTOR_DISPERSION_UNCONSUMED",
+        "market_review:framework_not_allowed:hyperscaler_capex_transmission"
+      ],
+      "fallback_eligibility_preserved": true,
+      "recorded_at": null,
+      "rejected_ai_sent": null,
+      "status": "rejected"
+    },
+    "delivery_count": 14,
+    "market_message": "🇺🇸 미국시장 마감\n\n📈 주요 지수\n• SPY -0.23%\n• QQQ -0.65%\n• IWM -1.35%\n• SOXX -3.20%\n• RSP -0.34%\n\n🔎 시장 내부\n• 동일가중 S&P500은 하락해 시가총액가중 S&P500과 방향이 같았습니다.\n• 업종 강세: 커뮤니케이션 서비스 +1.42%\n• 업종 약세: 정보기술 -1.55%\n\n📌 다음 확인\n• 다음 완료 세션의 주요 지수·동일가중·업종 분산이 이어지는지 확인합니다.",
+    "market_message_sha256": "04bd0c599428b1a6a3b1306f022961ed2324c223470b68561d7918052816ea97",
+    "message_evidence_parity": "PASS",
+    "packet_id": "2026-08-29-us-run-45-0e9c491532df",
+    "primary_ai_validation": {
+      "error_count": 37,
+      "errors": [
+        "CORZ:unknown_fact_ids:monitoring:risk_reward_transition",
+        "CORZ:interpretation_unknown_fact_ids:monitoring:risk_reward_transition",
+        "CRCL:financial_quality_denied_fact_used:valuation:current",
+        "MU:inventory_relation_not_declared",
+        "MU:inventory_business_owner_fact_missing",
+        "MU:inventory_primary_numeric_claim_count",
+        "MU:inventory_label_missing",
+        "MU:inventory_numeric_ownership_count",
+        "SNDK:financial_quality_denied_fact_used:valuation:current",
+        "TSLA:inventory_relation_not_declared",
+        "TSLA:inventory_business_owner_fact_missing",
+        "TSLA:inventory_primary_numeric_claim_count",
+        "TSLA:inventory_label_missing",
+        "TSLA:inventory_numeric_ownership_count",
+        "WULF:unknown_fact_ids:monitoring:risk_reward_transition",
+        "WULF:interpretation_unknown_fact_ids:monitoring:risk_reward_transition",
+        "CRCL:valuation_interpretation_numeric_occurrence_uncovered:valuation_analysis.text:현재 PBR 6.78배",
+        "CRCL:valuation_interpretation_numeric_occurrence_uncovered:valuation_analysis.text:시장 예상 fPER 87.86배",
+        "GOOGL:valuation_interpretation_numeric_occurrence_uncovered:valuation_analysis.text:현재 PER 12.42배",
+        "GOOGL:valuation_interpretation_numeric_occurrence_uncovered:valuation_analysis.text:시장 예상 fPER 19.29배",
+        "HUT:valuation_interpretation_numeric_occurrence_uncovered:valuation_analysis.text:현재 PBR 6.48배",
+        "HUT:valuation_interpretation_numeric_occurrence_uncovered:valuation_analysis.text:시장 예상 fPER 134.61배",
+        "IBM:valuation_interpretation_numeric_occurrence_uncovered:valuation_analysis.text:현재 PER 14.23배",
+        "IBM:valuation_interpretation_numeric_occurrence_uncovered:valuation_analysis.text:시장 예상 fPER 17.35배",
+        "MU:valuation_interpretation_occurrence_uncovered:valuation_analysis.text:30",
+        "MU:valuation_interpretation_numeric_occurrence_uncovered:valuation_analysis.text:현재 PER 19.07배",
+        "MU:valuation_interpretation_numeric_occurrence_uncovered:valuation_analysis.text:현재 PBR 10.46배",
+        "RXRX:valuation_interpretation_numeric_occurrence_uncovered:valuation_analysis.text:현재 PBR 1.95배",
+        "RXRX:valuation_interpretation_numeric_occurrence_uncovered:valuation_analysis.text:PBR 역사적 백분위 15.6%",
+        "SNDK:valuation_interpretation_numeric_occurrence_uncovered:valuation_analysis.text:현재 PBR 13.78배",
+        "SNDK:valuation_interpretation_numeric_occurrence_uncovered:valuation_analysis.text:시장 예상 fPER 6.5배",
+        "TSLA:valuation_interpretation_numeric_occurrence_uncovered:valuation_analysis.text:현재 PER 181.64배",
+        "TSLA:valuation_interpretation_numeric_occurrence_uncovered:valuation_analysis.text:현재 PBR 15.86배",
+        "TSM:valuation_interpretation_unknown_occurrence_uncovered:valuation_analysis.text",
+        "WRD:valuation_interpretation_unknown_occurrence_uncovered:valuation_analysis.text",
+        "WULF:valuation_interpretation_numeric_occurrence_uncovered:valuation_analysis.text:현재 PBR 52배",
+        "WULF:valuation_interpretation_numeric_occurrence_uncovered:valuation_analysis.text:PBR 역사적 백분위 100%"
+      ],
+      "fallback_eligibility_preserved": true,
+      "recorded_at": null,
+      "rejected_ai_sent": null,
+      "status": "rejected"
+    },
+    "route": "DETERMINISTIC_PRODUCTION_RENDERER",
+    "run": {
+      "completed_at": "2026-08-28 23:06:46.939808",
+      "failure_count": 0,
+      "id": 45,
+      "run_date": "2026-08-29",
+      "run_type": "daily_us",
+      "started_at": "2026-08-28 23:05:33.483883",
+      "status": "success",
+      "success_count": 13,
+      "ticker_count": 13
+    },
+    "sent_count": 14,
+    "state": "FOUND"
+  },
+  "night_futures": {
+    "attempts": [
+      {
+        "candidate_product_count": 0,
+        "expected_night_bas_dd": "2026-08-29",
+        "expected_preceding_day_bas_dd": "2026-08-28",
+        "per_product": [
+          {
+            "product": "KOSPI200",
+            "rejection_reason": "expected_session_absent",
+            "returned_night_bas_dd": "2026-08-28",
+            "row_state": "STALE_PRIOR_SESSION_PRESENT"
+          },
+          {
+            "product": "KOSDAQ150",
+            "rejection_reason": "expected_session_absent",
+            "returned_night_bas_dd": "2026-08-28",
+            "row_state": "STALE_PRIOR_SESSION_PRESENT"
+          }
+        ],
+        "production_state_mutation": false,
+        "ready_product_count": 0,
+        "role": "production_gate_attempt_1",
+        "terminal_classification": "STALE_PRIOR_SESSION_PRESENT",
+        "timestamp_end": "2026-08-29T08:06:50.543085+09:00",
+        "timestamp_start": "2026-08-29T08:06:49.479105+09:00",
+        "user_visible_integration": false
+      },
+      {
+        "candidate_product_count": 0,
+        "expected_night_bas_dd": "2026-08-29",
+        "expected_preceding_day_bas_dd": "2026-08-28",
+        "per_product": [
+          {
+            "product": "KOSPI200",
+            "rejection_reason": "expected_session_absent",
+            "returned_night_bas_dd": "2026-08-28",
+            "row_state": "STALE_PRIOR_SESSION_PRESENT"
+          },
+          {
+            "product": "KOSDAQ150",
+            "rejection_reason": "expected_session_absent",
+            "returned_night_bas_dd": "2026-08-28",
+            "row_state": "STALE_PRIOR_SESSION_PRESENT"
+          }
+        ],
+        "production_state_mutation": false,
+        "ready_product_count": 0,
+        "role": "production_gate_attempt_2",
+        "terminal_classification": "STALE_PRIOR_SESSION_PRESENT",
+        "timestamp_end": "2026-08-29T08:10:06.409167+09:00",
+        "timestamp_start": "2026-08-29T08:10:05.294475+09:00",
+        "user_visible_integration": false
+      },
+      {
+        "candidate_product_count": 0,
+        "expected_night_bas_dd": "2026-08-29",
+        "expected_preceding_day_bas_dd": "2026-08-28",
+        "per_product": [
+          {
+            "product": "KOSPI200",
+            "rejection_reason": "expected_session_absent",
+            "returned_night_bas_dd": "2026-08-28",
+            "row_state": "STALE_PRIOR_SESSION_PRESENT"
+          },
+          {
+            "product": "KOSDAQ150",
+            "rejection_reason": "expected_session_absent",
+            "returned_night_bas_dd": "2026-08-28",
+            "row_state": "STALE_PRIOR_SESSION_PRESENT"
+          }
+        ],
+        "production_state_mutation": false,
+        "ready_product_count": 0,
+        "role": "production_gate_attempt_3",
+        "terminal_classification": "STALE_PRIOR_SESSION_PRESENT",
+        "timestamp_end": "2026-08-29T08:15:06.737539+09:00",
+        "timestamp_start": "2026-08-29T08:15:05.302446+09:00",
+        "user_visible_integration": false
+      },
+      {
+        "candidate_product_count": 0,
+        "expected_night_bas_dd": "2026-08-29",
+        "expected_preceding_day_bas_dd": "2026-08-28",
+        "per_product": [
+          {
+            "product": "KOSPI200",
+            "rejection_reason": "expected_session_absent",
+            "returned_night_bas_dd": "2026-08-28",
+            "row_state": "STALE_PRIOR_SESSION_PRESENT"
+          },
+          {
+            "product": "KOSDAQ150",
+            "rejection_reason": "expected_session_absent",
+            "returned_night_bas_dd": "2026-08-28",
+            "row_state": "STALE_PRIOR_SESSION_PRESENT"
+          }
+        ],
+        "production_state_mutation": false,
+        "ready_product_count": 0,
+        "role": "production_gate_attempt_4",
+        "terminal_classification": "STALE_PRIOR_SESSION_PRESENT",
+        "timestamp_end": "2026-08-29T08:20:07.545792+09:00",
+        "timestamp_start": "2026-08-29T08:20:06.267187+09:00",
+        "user_visible_integration": false
+      }
+    ],
+    "canonical_gate_used": true,
+    "expected_session": "2026-08-29",
+    "next_relevant_kr_regular_session": "2026-08-31",
+    "products": {
+      "KOSDAQ150": {
+        "actual_session": null,
+        "reason": "expected_session_absent; stale prior session rejected",
+        "source": "KRX canonical gate",
+        "state": "NOT_READY",
+        "value": null
+      },
+      "KOSPI200": {
+        "actual_session": null,
+        "reason": "expected_session_absent; stale prior session rejected",
+        "source": "KRX canonical gate",
+        "state": "NOT_READY",
+        "value": null
+      }
+    },
+    "raw_summary_bypass": 0,
+    "stale_visible": 0
+  },
+  "nyse_breadth": {
+    "reason": "no supported official/free production source",
+    "state": "UNAVAILABLE"
+  },
+  "open_material_p1": [
+    "AI full-stock candidate validation failed; market evidence remained safe and deterministic delivery succeeded."
+  ],
+  "open_p0": [],
+  "operating_sha_observed": "104b0a04d326e66178c9f432798fdeb6cf82a85a",
+  "packet_id": "2026-08-29-us-run-45-0e9c491532df",
+  "participation_style_summary": "동일가중도 같은 방향으로 하락했지만 SPY보다 0.12%p 약했고, QQQ와 IWM도 SPY를 하회해 대형주 방어가 상대적으로 나았던 혼합·좁은 참여였습니다. RSP는 참여 스타일 프록시이며 공식 거래소 breadth가 아닙니다.",
+  "production_sector_policy": "TOP_1_BOTTOM_1",
+  "render": {
+    "ai_assisted": {
+      "contract": "us-morning-full-message-v1",
+      "index_fact_ids": [
+        "market:index:SPY",
+        "market:index:QQQ",
+        "market:index:IWM",
+        "market:sector:SOXX",
+        "market:style:RSP"
+      ],
+      "night_fact_ids": [],
+      "section_order": [
+        "HEADER",
+        "INDEX_BLOCK",
+        "MARKET_INTERNAL",
+        "NEXT_CHECK"
+      ],
+      "sector_fact_ids": [
+        "market:sector:XLC",
+        "market:sector:XLK"
+      ],
+      "text": "🇺🇸 미국시장 마감\n\n📈 주요 지수\n• SPY -0.23%\n• QQQ -0.65%\n• IWM -1.35%\n• SOXX -3.20%\n• RSP -0.34%\n\n🔎 시장 내부\n• 동일가중 S&P500은 하락해 시가총액가중 S&P500과 방향이 같았습니다.\n• 업종 강세: 커뮤니케이션 서비스 +1.42%\n• 업종 약세: 정보기술 -1.55%\n\n📌 다음 확인\n• 다음 세션의 반도체 상대수익률이 실제 반도체 주문·마진 데이터와 같은 방향인지 확인합니다.\n• 다음 세션 동일가중 상대수익률로 참여 스타일의 지속 여부를 확인하되 breadth로 해석하지 않습니다.",
+      "validation_errors": []
+    },
+    "ai_quality": {
+      "contract": "us-morning-exact-payload-quality-v1",
+      "errors": [],
+      "generic_macro_without_specific_evidence_visible": 0,
+      "generic_no_change_macro_section_visible": 0,
+      "malformed_zero_change_korean": 0,
+      "payload_sha256": "13772e784e618193caeb94540754e90e06185f442d89376617f3ee9e5efc7043",
+      "required_layout_valid": true,
+      "status": "PASS"
+    },
+    "evidence_utilization": {
+      "contract": "market-evidence-utilization-validator-v1",
+      "counters": {
+        "CORE_MARKET_SLOT_UNCONSUMED": 0,
+        "MACRO_ONLY_DIGEST_WHEN_CURRENT_MARKET_AVAILABLE": 0,
+        "SELECTED_BREADTH_SLOT_UNCONSUMED": 0,
+        "SELECTED_RSP_SLOT_UNCONSUMED": 0,
+        "SELECTED_SECTOR_DISPERSION_UNCONSUMED": 0,
+        "UNEXPLAINED_MATERIAL_EVIDENCE_OMISSION": 0,
+        "US_MARKET_DIGEST_MATERIAL_INFORMATION_LOSS": 0,
+        "VALIDATOR_FORCED_NUMERIC_DUMP": 0
+      },
+      "errors": [],
+      "slot_results": [
+        {
+          "consumed_refs": [
+            "market:index:SPY",
+            "market:index:QQQ",
+            "market:index:IWM",
+            "market:sector:SOXX"
+          ],
+          "evidence_refs": [
+            "market:index:SPY",
+            "market:index:QQQ",
+            "market:index:IWM",
+            "market:sector:SOXX"
+          ],
+          "omission_reason": "SELECTED",
+          "required_consumption": true,
+          "selected": true,
+          "slot": "CURRENT_MARKET",
+          "status": "PASS"
+        },
+        {
+          "consumed_refs": [
+            "market:style:RSP",
+            "market:index:SPY"
+          ],
+          "evidence_refs": [
+            "market:style:RSP",
+            "market:index:SPY"
+          ],
+          "omission_reason": "SELECTED",
+          "required_consumption": true,
+          "selected": true,
+          "slot": "PARTICIPATION_STYLE",
+          "status": "PASS"
+        },
+        {
+          "consumed_refs": [
+            "market:sector:XLC",
+            "market:sector:XLK"
+          ],
+          "evidence_refs": [
+            "market:sector:XLC",
+            "market:sector:XLK"
+          ],
+          "omission_reason": "SELECTED",
+          "required_consumption": true,
+          "selected": true,
+          "slot": "SECTOR_DISPERSION",
+          "status": "PASS"
+        },
+        {
+          "consumed_refs": [],
+          "evidence_refs": [],
+          "omission_reason": "OMITTED_UNAVAILABLE",
+          "required_consumption": false,
+          "selected": false,
+          "slot": "BREADTH_STATE",
+          "status": "PASS"
+        },
+        {
+          "consumed_refs": [],
+          "evidence_refs": [],
+          "omission_reason": "OMITTED_SAFE_NOT_MATERIAL",
+          "required_consumption": false,
+          "selected": false,
+          "slot": "MACRO_CONTEXT",
+          "status": "PASS"
+        }
+      ],
+      "status": "PASS"
+    },
+    "exact_candidate": "🇺🇸 미국시장 마감\n\n📈 주요 지수\n• SPY -0.23%\n• QQQ -0.65%\n• IWM -1.35%\n• SOXX -3.20%\n• RSP -0.34%\n\n🔎 시장 내부\n• 동일가중 S&P500은 하락해 시가총액가중 S&P500과 방향이 같았습니다.\n• 업종 강세: 커뮤니케이션 서비스 +1.42%\n• 업종 약세: 정보기술 -1.55%\n\n📌 다음 확인\n• 다음 완료 세션의 주요 지수·동일가중·업종 분산이 이어지는지 확인합니다.",
+    "exact_candidate_sha256": "04bd0c599428b1a6a3b1306f022961ed2324c223470b68561d7918052816ea97",
+    "fallback": {
+      "contract": "us-morning-full-message-v1",
+      "index_fact_ids": [
+        "market:index:SPY",
+        "market:index:QQQ",
+        "market:index:IWM",
+        "market:sector:SOXX",
+        "market:style:RSP"
+      ],
+      "night_fact_ids": [],
+      "section_order": [
+        "HEADER",
+        "INDEX_BLOCK",
+        "MARKET_INTERNAL",
+        "NEXT_CHECK"
+      ],
+      "sector_fact_ids": [
+        "market:sector:XLC",
+        "market:sector:XLK"
+      ],
+      "text": "🇺🇸 미국시장 마감\n\n📈 주요 지수\n• SPY -0.23%\n• QQQ -0.65%\n• IWM -1.35%\n• SOXX -3.20%\n• RSP -0.34%\n\n🔎 시장 내부\n• 동일가중 S&P500은 하락해 시가총액가중 S&P500과 방향이 같았습니다.\n• 업종 강세: 커뮤니케이션 서비스 +1.42%\n• 업종 약세: 정보기술 -1.55%\n\n📌 다음 확인\n• 다음 완료 세션의 주요 지수·동일가중·업종 분산이 이어지는지 확인합니다.",
+      "validation_errors": []
+    },
+    "fallback_quality": {
+      "contract": "us-morning-exact-payload-quality-v1",
+      "errors": [],
+      "generic_macro_without_specific_evidence_visible": 0,
+      "generic_no_change_macro_section_visible": 0,
+      "malformed_zero_change_korean": 0,
+      "payload_sha256": "04bd0c599428b1a6a3b1306f022961ed2324c223470b68561d7918052816ea97",
+      "required_layout_valid": true,
+      "status": "PASS"
+    }
+  },
+  "review_state": "PARTIAL_SAFE",
+  "sector_top3_strong": [
+    {
+      "close": 112.99,
+      "return_pct": 1.4182,
+      "sector_name": "커뮤니케이션 서비스",
+      "session_date": "2026-08-28",
+      "source": "ohlcv_analyst",
+      "state": "CURRENT_DIRECTIONAL",
+      "ticker": "XLC"
+    },
+    {
+      "close": 117.21,
+      "return_pct": 1.1477,
+      "sector_name": "경기소비재",
+      "session_date": "2026-08-28",
+      "source": "ohlcv_analyst",
+      "state": "CURRENT_DIRECTIONAL",
+      "ticker": "XLY"
+    },
+    {
+      "close": 62.68,
+      "return_pct": 0.6261,
+      "sector_name": "에너지",
+      "session_date": "2026-08-28",
+      "source": "ohlcv_analyst",
+      "state": "CURRENT_DIRECTIONAL",
+      "ticker": "XLE"
+    }
+  ],
+  "sector_top3_weak": [
+    {
+      "close": 185.69,
+      "return_pct": -1.5482,
+      "sector_name": "정보기술",
+      "session_date": "2026-08-28",
+      "source": "ohlcv_analyst",
+      "state": "CURRENT_DIRECTIONAL",
+      "ticker": "XLK"
+    },
+    {
+      "close": 42.73,
+      "return_pct": -1.0421,
+      "sector_name": "유틸리티",
+      "session_date": "2026-08-28",
+      "source": "ohlcv_analyst",
+      "state": "CURRENT_DIRECTIONAL",
+      "ticker": "XLU"
+    },
+    {
+      "close": 177.14,
+      "return_pct": -0.9284,
+      "sector_name": "산업재",
+      "session_date": "2026-08-28",
+      "source": "ohlcv_analyst",
+      "state": "CURRENT_DIRECTIONAL",
+      "ticker": "XLI"
+    }
+  ],
+  "sectors_ranked": [
+    {
+      "close": 112.99,
+      "return_pct": 1.4182,
+      "sector_name": "커뮤니케이션 서비스",
+      "session_date": "2026-08-28",
+      "source": "ohlcv_analyst",
+      "state": "CURRENT_DIRECTIONAL",
+      "ticker": "XLC"
+    },
+    {
+      "close": 117.21,
+      "return_pct": 1.1477,
+      "sector_name": "경기소비재",
+      "session_date": "2026-08-28",
+      "source": "ohlcv_analyst",
+      "state": "CURRENT_DIRECTIONAL",
+      "ticker": "XLY"
+    },
+    {
+      "close": 62.68,
+      "return_pct": 0.6261,
+      "sector_name": "에너지",
+      "session_date": "2026-08-28",
+      "source": "ohlcv_analyst",
+      "state": "CURRENT_DIRECTIONAL",
+      "ticker": "XLE"
+    },
+    {
+      "close": 85.45,
+      "return_pct": 0.4349,
+      "sector_name": "필수소비재",
+      "session_date": "2026-08-28",
+      "source": "ohlcv_analyst",
+      "state": "CURRENT_DIRECTIONAL",
+      "ticker": "XLP"
+    },
+    {
+      "close": 58.1,
+      "return_pct": 0.3801,
+      "sector_name": "금융",
+      "session_date": "2026-08-28",
+      "source": "ohlcv_analyst",
+      "state": "CURRENT_DIRECTIONAL",
+      "ticker": "XLF"
+    },
+    {
+      "close": 53.18,
+      "return_pct": -0.0939,
+      "sector_name": "소재",
+      "session_date": "2026-08-28",
+      "source": "ohlcv_analyst",
+      "state": "CURRENT_DIRECTIONAL",
+      "ticker": "XLB"
+    },
+    {
+      "close": 171.16,
+      "return_pct": -0.2448,
+      "sector_name": "헬스케어",
+      "session_date": "2026-08-28",
+      "source": "ohlcv_analyst",
+      "state": "CURRENT_DIRECTIONAL",
+      "ticker": "XLV"
+    },
+    {
+      "close": 44.48,
+      "return_pct": -0.403,
+      "sector_name": "부동산",
+      "session_date": "2026-08-28",
+      "source": "ohlcv_analyst",
+      "state": "CURRENT_DIRECTIONAL",
+      "ticker": "XLRE"
+    },
+    {
+      "close": 177.14,
+      "return_pct": -0.9284,
+      "sector_name": "산업재",
+      "session_date": "2026-08-28",
+      "source": "ohlcv_analyst",
+      "state": "CURRENT_DIRECTIONAL",
+      "ticker": "XLI"
+    },
+    {
+      "close": 42.73,
+      "return_pct": -1.0421,
+      "sector_name": "유틸리티",
+      "session_date": "2026-08-28",
+      "source": "ohlcv_analyst",
+      "state": "CURRENT_DIRECTIONAL",
+      "ticker": "XLU"
+    },
+    {
+      "close": 185.69,
+      "return_pct": -1.5482,
+      "sector_name": "정보기술",
+      "session_date": "2026-08-28",
+      "source": "ohlcv_analyst",
+      "state": "CURRENT_DIRECTIONAL",
+      "ticker": "XLK"
+    }
+  ],
+  "semiconductor_relative_state": "RELATIVE_WEAKNESS",
+  "source_monitor_run_id": "45",
+  "us_market_calendar_status": "after_hours"
+}
