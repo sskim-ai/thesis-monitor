@@ -1,10 +1,10 @@
 # Thesis Monitor Master Workflow
 
-Master Workflow: `v22`
+Master Workflow: `v23`
 As of: `2026-08-28`
 Repository: `sskim-ai/thesis-monitor`
 Operating branch: `main`
-Latest evidence branch: `codex/20260828-price-structure-major-sr-reality-gate`
+Latest evidence branch: `codex/run44-v3-validator-convergence-cross-market-readiness`
 Commit resolution: run `git rev-parse HEAD`; this document is part of that commit and must not
 hardcode a self-referential final SHA. Resolve `origin/main` and the clean operating checkout at
 session start. Phase 9.1A defines `working-capital-evidence-v1`; Phase 9.1B implements canonical
@@ -16,7 +16,28 @@ AI/fallback parity and leaves Trade AR/broad AR/AP/advanced ratios blocked. Open
 zero. Natural AI-assisted delivery remains `PARTIAL` independently.
 KRX 8.2A.x and peer 8.3.x also remain experimental.
 
-## 0. Latest Major Structural S/R Reality Gate
+## 0. Latest Run-44 V3 Validator Convergence
+
+The task starts from exact instruction commit `1e8a008368ab79c44213545da192edbc5a545c98`
+on operating main `026df711fa151cc7816b2a57d9ed7d224c1b33cf`. Permanent controls were
+implemented at `aa5e7d4a799a1e2093bca6f87ff09f19c19e94a9`. The prior readiness
+metadata that ended at `d3a58c9` was stale only: `d3a58c9` is the direct parent of `026df71`, and
+the operating checkout and `origin/main` agreed at task start.
+
+Exact frozen replay of packet `2026-08-28-kr-run-44-4606feed1396` now passes on the latest runtime.
+For `000660`, V3 selects the structure close and near support with daily Bollinger confluence, while
+the weekly dynamic resistance is intentionally `OMITTED_BY_MATERIALITY`. The current fallback
+validator does not recreate that omitted obligation. Removing an actually selected standalone or
+confluence fact still fails, and V3-off legacy behavior is unchanged.
+
+KR `7/7`, US/foreign `13/13`, and the 22-message cross-market dedicated test-sink batch pass.
+Rendered, outbound, and received hashes match for all messages; production sends/intents,
+duplicates, and orphans are zero. The first 20-message batch hit Telegram rate limiting, and a
+bounded continuation sent only the two unsent messages. Runtime-visible diff is zero, so no runtime
+hotfix or restart is required. Open P0/material P1 is `0/0`; the state is
+`READY_NO_RUNTIME_CHANGE` pending naturally scheduled US and next normal KR close proof.
+
+## 0A. Latest Major Structural S/R Reality Gate
 
 The repair starts from exact instruction commit `4a5702823da3f950b9f125bcbcfecd7c6cfa84df`
 and implementation `c5f1fbcb9c952c2d14ad0b178a9b33351d15b512`. The shared
@@ -36,7 +57,7 @@ post-deploy `13+7` replay pass. Open P0/material P1 are `0/0`. The gate is
 `DEPLOYED_AWAITING_NATURAL_PROOF`; do not manually run a task or production Telegram. Review the
 next natural stock messages read-only.
 
-## 0A. Latest US Macro Exact-Payload Quality Repair
+## 0B. Latest US Macro Exact-Payload Quality Repair
 
 The bounded repair starts from instruction commit `e59c0e6a0574824bd512c1d4c06775b0afe1e468`
 and implementation commit `535855631890928a9dd9e798e12adbeabde74df2`. Run-43 exposed two
@@ -55,7 +76,7 @@ Production Assist is OFF.
 The repair is `DEPLOYED_AWAITING_NATURAL_PROOF`, with P0/material P1 `0/0`. Review the next natural
 US morning message read-only; do not manually run a task or send production Telegram.
 
-## 0B. Previous US Market And Price Structure Rollout
+## 0C. Previous US Market And Price Structure Rollout
 
 The rollout starts from instruction commit `2ee201690787136780c7d5c8a046506d44227633`
 and implementation commit `1ba463571060a1fc9a5868afcdeab3de15f2bbe6`. The
@@ -76,7 +97,7 @@ US Price Structure is enabled independently of the existing KR flags. Post-enabl
 The state is `ENABLED_AWAITING_NATURAL_PROOF`, not `LIVE_PASS`. Wait for the next naturally
 scheduled US morning market and stock cycle; do not run a task or production Telegram manually.
 
-## 0C. Latest KR Market Formatting State
+## 0D. Latest KR Market Formatting State
 
 The bounded `📊 시장 내부` formatting repair starts from instruction commit
 `dd1b5eb712081c222bcfe1b4465d4fe0aac5f89a` and implementation

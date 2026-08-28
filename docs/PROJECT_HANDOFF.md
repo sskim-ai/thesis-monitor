@@ -5,6 +5,26 @@ with [MASTER_WORKFLOW.md](MASTER_WORKFLOW.md), [project-state.json](project-stat
 [NEXT_SESSION_PROMPT.md](NEXT_SESSION_PROMPT.md) before changing runtime policy, Knowledge,
 validation, delivery, or Scheduled Tasks.
 
+## Latest Handoff - Run-44 V3 Validator Convergence
+
+Use instruction commit `1e8a008368ab79c44213545da192edbc5a545c98` and implementation
+`aa5e7d4a799a1e2093bca6f87ff09f19c19e94a9`. Start with
+`docs/reports/20260828-final-operating-readiness.json`, the exact `000660` frozen replay, KR7/US
+replays, cross-market exact test messages, and the artifact index.
+
+The actual operating and `origin/main` baseline was
+`026df711fa151cc7816b2a57d9ed7d224c1b33cf`; the earlier `d3a58c9` report value was stale
+metadata only. Latest runtime already resolves run-44. Candidate availability is not a render
+obligation; emitted V3 bindings are the validator source of truth. Intentional materiality or
+display-budget omissions pass, while missing selected standalone, confluence, and provisional facts
+fail. V3-off legacy validation remains unchanged.
+
+Run-44, KR `7/7`, US/foreign `13/13`, and 22 dedicated test-sink messages pass with exact payload
+parity and zero production sends/intents, duplicates, or orphans. No runtime module changed. Open
+P0/material P1 is `0/0`, Production Assist is OFF, and today's cancelled 16:50 KR production run
+was not recreated. Wait for the next natural US messages and next normal KR close, then inspect
+read-only. Do not manually run a Scheduled Task or send production Telegram.
+
 ## Latest Handoff - Major Structural S/R Reality Gate
 
 Use instruction commit `4a5702823da3f950b9f125bcbcfecd7c6cfa84df` and implementation

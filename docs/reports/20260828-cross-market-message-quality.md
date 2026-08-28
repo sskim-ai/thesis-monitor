@@ -1,0 +1,37 @@
+# Cross-Market Message Quality
+
+- stock messages reviewed: `20`
+- quality failures: `0`
+- average length: `1145.0` characters
+- minimum / maximum length: `969` / `1488`
+- current-vs-structure ambiguity: `0`
+- Bollinger-only major S/R: `0`
+- major S/R without price anchors: `0`
+- SNDK/WULF provisional bypass: `0/0`
+
+| Market | Ticker | Eligibility | Length | Quality | SHA-256 |
+| --- | --- | --- | --- | --- | --- |
+| KR | 000660 | ELIGIBLE_SR_ONLY | 1114 | PASS | 69fcf8b8fbc69877df2f2c67fa078d187b778b6ee1f55fbc3e84cc9d319a0752 |
+| KR | 003690 | ELIGIBLE_SR_ONLY | 1157 | PASS | b8d251aa88bfda887ecce88494260a81d8cf0fb0f896d67dd9ed4054d29b8ef6 |
+| KR | 005490 | ELIGIBLE_SR_ONLY | 1141 | PASS | 155a205f75e2ca7119f63c0f998cf954c7c800ec14e511627bd8577fbc86fbf9 |
+| KR | 005930 | ELIGIBLE_SR_ONLY | 1095 | PASS | d29e33b922abac18d554ed07a5715c26bf767918de5ae6b5546ca92700e3800f |
+| KR | 010120 | ELIGIBLE_SR_ONLY | 970 | PASS | 9d841e7f85336d4152654e644b5c184fa82b4ce8c9c501c21f7fe37fb15d1cbe |
+| KR | 012450 | ELIGIBLE_SR_ONLY | 969 | PASS | 5befb0be4ae150824f869c5a0c9769002b55437943c9440180459667fd3c2c75 |
+| KR | 086280 | ELIGIBLE_SR_ONLY | 1203 | PASS | c98354cca5949dd7a116382a4e931cb9211c6409deee796dea813724a0a67764 |
+| US | CORZ | ELIGIBLE_SR_ONLY | 1284 | PASS | d3448fbce1f060c8b67accdf5dd06fca653f039d570df7ee5a8138fe282412cd |
+| US | CRCL | ELIGIBLE_SR_ONLY | 1158 | PASS | d320679186b803c2db55a1b13e94b7a189d99996363f9d81af015b01e76d12d4 |
+| US | GOOGL | ELIGIBLE_SR_ONLY | 1207 | PASS | 696e7dea8160365c2a24619dc1e10666e29b0590707fdff8e11394d991b460ae |
+| US | HUT | ELIGIBLE_SR_ONLY | 1209 | PASS | d57447c7dda32210942f17e42c6392767d815fd3bea140d5f0268f3412cdec2a |
+| US | IBM | ELIGIBLE_SR_ONLY | 1303 | PASS | 2c14cd21731d16a10a730f76310768472a2d7a62cc46d301ed7c0805ff67e1f0 |
+| US | MU | ELIGIBLE_SR_ONLY | 1488 | PASS | 14d686a7c9f7f0fda5da5e352a678892443bff19f1f2262fb95fbfa76d89db8c |
+| US | RXRX | ELIGIBLE_SR_ONLY | 1093 | PASS | 8c4c663e743f94c6885d6883acbe39ce8d892c973b7295708017351922ee3c1e |
+| US | SKHY | ELIGIBLE_SR_ONLY | 1018 | PASS | 17a9ca67186b97a430098bed45bf2d5cd552f24dd5a92713a78b3dc9606f9934 |
+| US | SNDK | ELIGIBLE_SR_ONLY | 1042 | PASS | a62297e5e03f683409c9fece0895db08cc0d890a9de28489a54992358c02c983 |
+| US | TSLA | ELIGIBLE_SR_ONLY | 1170 | PASS | 78b65f844033b726d4574b8c4c4d1bc9ab44d340d6afc50d26f6f8d336bbe378 |
+| US | TSM | ELIGIBLE_SR_ONLY | 1017 | PASS | 5f2b28b0febbb59514ac1561f9de15a4c615ca0c091456eaf265b29be2ff718f |
+| US | WRD | ELIGIBLE_SR_ONLY | 981 | PASS | ae9344761cdd59bbd62fd219ec2ccabafb8305ce0fe814a37050314ac43752c9 |
+| US | WULF | ELIGIBLE_SR_ONLY | 1280 | PASS | 29d519b5cd505dfd1527a59f79b734628044fc451f64217ccd00d36eee88ce2a |
+
+Human review found readable current-price ownership, bounded dynamic detail, no target/stop
+promotion, and no missing Price Structure caused by the old false validator rejection.
+`CROSS_MARKET_MESSAGE_QUALITY = PASS`.

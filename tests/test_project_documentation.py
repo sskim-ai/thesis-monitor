@@ -87,6 +87,7 @@ DOCUMENTS = (
     ROOT / "docs" / "architecture" / "FIB_OPTIONAL_CONFLUENCE_POLICY.md",
     ROOT / "docs" / "architecture" / "CROSS_TIMEFRAME_SR_RELEVANCE.md",
     ROOT / "docs" / "architecture" / "PRICE_STRUCTURE_V3_RENDERER_OWNERSHIP.md",
+    ROOT / "docs" / "architecture" / "PRICE_STRUCTURE_V3_VALIDATOR_OWNERSHIP.md",
     ROOT / "docs" / "architecture" / "FIB_CONFLUENCE_RENDER_EQUIVALENCE.md",
     ROOT / "docs" / "architecture" / "CURRENT_SR_VS_STORED_PRICE_RULES.md",
     ROOT / "docs" / "architecture" / "LEGACY_TECHNICAL_PROSE_SUPPRESSION.md",
@@ -116,17 +117,15 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     assert state["repository"] == "sskim-ai/thesis-monitor"
     assert state["branch"] == "main"
     assert state["experimental_branch"] == (
-        "codex/20260828-price-structure-major-sr-reality-gate"
+        "codex/run44-v3-validator-convergence-cross-market-readiness"
     )
     assert state["current_phase"] == (
-        "major_sr_reality_gate_deployed_awaiting_natural_proof"
+        "run44_v3_validator_convergence_ready_no_runtime_change"
     )
     assert state["last_completed_phase"] == (
-        "price_structure_major_sr_reality_gate_repair"
+        "run44_v3_validator_convergence_cross_market_readiness"
     )
-    assert state["next_default_phase"] == (
-        "wait_for_next_natural_stock_messages"
-    )
+    assert state["next_default_phase"] == "wait_for_natural_us_messages"
     implementation_commit = "069f002437163bff1df7aa6e258918c1777d5dfa"
     kr_size_sector_implementation = "6a54db130e95e25969a5ca0a100648d4a12c3aa2"
     preenable_implementation = "7d2823c236c458cf76c77faae043c6288e46e65e"
@@ -142,15 +141,10 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     preenablement_commit = "84f8f549bc8fa0338309a84b23b2738f2e357646"
     prior_price_structure_commit = "631e82f202b6f081866ef83c8b67b2138a8b51d8"
     prior_fibonacci_commit = "0dfef76bba606f018893d6e68e7beaf410aa7438"
-    assert state["deployed_code_commit"] == (
-        "c5f1fbcb9c952c2d14ad0b178a9b33351d15b512"
-    )
-    assert state["main_code_commit"] == (
-        "c5f1fbcb9c952c2d14ad0b178a9b33351d15b512"
-    )
-    assert state["operating_code_commit"] == (
-        "c5f1fbcb9c952c2d14ad0b178a9b33351d15b512"
-    )
+    runtime_code_commit = "026df711fa151cc7816b2a57d9ed7d224c1b33cf"
+    assert state["deployed_code_commit"] == runtime_code_commit
+    assert state["main_code_commit"] == runtime_code_commit
+    assert state["operating_code_commit"] == runtime_code_commit
     phase_8552 = state["phase_8_5_5_2_kr_structured_field_repetition"]
     assert phase_8552["status"] == "operating_shadow_pending_natural_proof"
     assert phase_8552["operating_shadow_promoted"] is True
@@ -178,6 +172,23 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     assert state["contracts"]["price_structure_v3_renderer_ownership"] == (
         "price-structure-v3-renderer-ownership-v1"
     )
+    assert state["contracts"]["price_structure_v3_validator_ownership"] == (
+        "price-structure-v3-validator-ownership-v1"
+    )
+    convergence = state["run44_v3_validator_convergence"]
+    assert convergence["status"] == "ready_no_runtime_change"
+    assert convergence["latest_runtime_already_fixed"] is True
+    assert convergence["runtime_hotfix_required"] is False
+    assert convergence["run44_frozen_replay"] == "PASS"
+    assert convergence["fallback_dynamic_resistance_not_rendered"] == 0
+    assert convergence["selected_fact_missing_negative_control"] == (
+        "FAIL_AS_EXPECTED"
+    )
+    assert convergence["kr7_replay"] == "PASS_7_OF_7"
+    assert convergence["us_replay"] == "PASS_13_OF_13"
+    assert convergence["test_exact_payload_match"] == "PASS_22_OF_22"
+    assert convergence["production_recipient_send"] == 0
+    assert convergence["production_delivery_intent_created"] == 0
     assert state["contracts"]["legacy_technical_token_detection"] == (
         "legacy-technical-token-detection-v1"
     )
@@ -1248,7 +1259,7 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     assert formatting["kr_rollout"] == "ENABLED_AWAITING_NATURAL_PROOF"
     assert formatting["next_action"] == "WAIT_FOR_NEXT_NATURAL_KR_MARKET_MESSAGE"
     assert state["current_commit"] == (
-        "c5f1fbcb9c952c2d14ad0b178a9b33351d15b512"
+        "aa5e7d4a799a1e2093bca6f87ff09f19c19e94a9"
     )
     reality_gate = state["price_structure_major_sr_reality_gate"]
     assert reality_gate["status"] == "deployed_awaiting_natural_proof"

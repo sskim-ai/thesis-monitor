@@ -3,6 +3,26 @@
 Repository: `sskim-ai/thesis-monitor`
 
 Latest authoritative work follows instruction commit
+`1e8a008368ab79c44213545da192edbc5a545c98` and implementation
+`aa5e7d4a799a1e2093bca6f87ff09f19c19e94a9`. Read
+`docs/reports/20260828-final-operating-readiness.json`, the run-44 exact frozen replay, KR7/US
+replays, cross-market delivery/message-quality reports, and
+`docs/architecture/PRICE_STRUCTURE_V3_VALIDATOR_OWNERSHIP.md` first.
+
+Run-44 is `ALREADY_FIXED_BY_LATEST_ROLLOUT`. The final V3 selected render plan owns validator
+requirements; omitted candidates are not reconstructed, selected facts still fail if missing, and
+V3-off legacy validation is unchanged. KR `7/7`, US/foreign `13/13`, and all 22 dedicated test-sink
+messages pass with exact hash parity and no production recipient or intent. Runtime-visible diff is
+zero, P0/material P1 is `0/0`, and Production Assist remains OFF.
+
+Next actions are `WAIT_FOR_NATURAL_US_MESSAGES` and `WAIT_FOR_NEXT_NATURAL_KR_CLOSE`. The user
+cancelled today's 16:50 KR run; do not recreate or manually trigger it. Review future naturally
+scheduled evidence read-only for V3 validation, price labels, provisional/completed Bollinger,
+market messages, receipts, duplicates, and orphans.
+
+---
+
+Latest authoritative work follows instruction commit
 `4a5702823da3f950b9f125bcbcfecd7c6cfa84df` and implementation
 `c5f1fbcb9c952c2d14ad0b178a9b33351d15b512`. Read the
 `20260828-major-sr-*`, `20260828-googl-major-sr-negative-control.md`, and US/KR major-S/R
