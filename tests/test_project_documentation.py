@@ -15,6 +15,8 @@ DOCUMENTS = (
     ROOT / "docs" / "reports" / "20260828-us-full-message-readiness.md",
     ROOT / "docs" / "reports" / "20260828-us-price-structure-preenable-readiness.md",
     ROOT / "docs" / "reports" / "20260828-us-macro-quality-readiness.md",
+    ROOT / "docs" / "reports" / "20260829-us-morning-review-summary.md",
+    ROOT / "docs" / "reports" / "20260829-us-morning-review-summary.json",
     ROOT / "docs" / "architecture" / "AI_ASSISTED_MONITORING.md",
     ROOT / "docs" / "architecture" / "OHLCV_STRUCTURE_ENGINE.md",
     ROOT / "docs" / "architecture" / "MARKET_INTELLIGENCE.md",
@@ -117,13 +119,15 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     assert state["repository"] == "sskim-ai/thesis-monitor"
     assert state["branch"] == "main"
     assert state["experimental_branch"] == (
-        "codex/run-now-one-shot-kr-close-live-proof"
+        "codex/20260829-us-morning-market-data-extraction-review"
     )
-    assert state["current_phase"] == "run_now_one_shot_kr_close_live_pass"
+    assert state["current_phase"] == "us_morning_market_data_review_partial_safe"
     assert state["last_completed_phase"] == (
-        "run_now_one_shot_kr_close_live_proof"
+        "20260829_us_morning_market_data_extraction_and_message_review"
     )
-    assert state["next_default_phase"] == "wait_for_natural_us_messages"
+    assert state["next_default_phase"] == (
+        "bounded_us_ai_full_stock_validation_repair"
+    )
     implementation_commit = "069f002437163bff1df7aa6e258918c1777d5dfa"
     kr_size_sector_implementation = "6a54db130e95e25969a5ca0a100648d4a12c3aa2"
     preenable_implementation = "7d2823c236c458cf76c77faae043c6288e46e65e"
@@ -139,7 +143,7 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     preenablement_commit = "84f8f549bc8fa0338309a84b23b2738f2e357646"
     prior_price_structure_commit = "631e82f202b6f081866ef83c8b67b2138a8b51d8"
     prior_fibonacci_commit = "0dfef76bba606f018893d6e68e7beaf410aa7438"
-    runtime_code_commit = "23b17c487a4c0ae7dc56935e9028cf62f2b00f2c"
+    runtime_code_commit = "104b0a04d326e66178c9f432798fdeb6cf82a85a"
     assert state["deployed_code_commit"] == runtime_code_commit
     assert state["main_code_commit"] == runtime_code_commit
     assert state["operating_code_commit"] == runtime_code_commit
@@ -205,6 +209,21 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     assert live_proof["orphan"] == 0
     assert live_proof["unowned_retry"] == 0
     assert live_proof["final_v3_validator_convergence"] == "LIVE_PASS"
+    morning_review = state["us_morning_market_data_review_20260829"]
+    assert morning_review["status"] == "PARTIAL_SAFE"
+    assert morning_review["latest_completed_us_session"] == "2026-08-28"
+    assert morning_review["core_etf_current"] == "PASS_5_OF_5"
+    assert morning_review["sector_current"] == "PASS_11_OF_11"
+    assert morning_review["nasdaq_breadth"] == "PUBLICATION_PENDING"
+    assert morning_review["night_futures"] == "NOT_READY_SAFE_OMISSION"
+    assert morning_review["natural_market_message_evidence_parity"] == "PASS"
+    assert morning_review["natural_delivery"] == "PASS_14_OF_14"
+    assert morning_review["rejected_ai_sent"] is False
+    assert morning_review["open_p0"] == []
+    assert morning_review["open_material_p1"] == [
+        "run45_ai_full_stock_validation_rejected"
+    ]
+    assert morning_review["runtime_behavior_changed"] is False
     assert state["contracts"]["legacy_technical_token_detection"] == (
         "legacy-technical-token-detection-v1"
     )
@@ -1277,7 +1296,7 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     assert formatting["kr_rollout"] == "LIVE_PASS"
     assert formatting["next_action"] == "NO_ACTION_KR_LIVE_PROOF_CLOSED"
     assert state["current_commit"] == (
-        "239db58958b1193a8fd591500618ee4e7940c994"
+        "7fc982ecce30a0af261dcda198ef50280e707531"
     )
     reality_gate = state["price_structure_major_sr_reality_gate"]
     assert reality_gate["status"] == "deployed_kr_live_pass_us_pending"
