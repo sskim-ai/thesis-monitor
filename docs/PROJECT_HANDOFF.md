@@ -2057,3 +2057,23 @@ only and never touched production. Open P0/material P1 are `0/0`. Main and opera
 at `d3a58c953c2dd6d100031421770be3a54d0328b5`; API/OHLCV health and post-deploy frozen replay pass
 `20/20`. Wait for natural US/KR messages; never trigger a production task for proof. Production
 Assist remains OFF.
+
+## 2026-08-29 US Morning Market Data Review Handoff
+
+The exact instruction commit is `428836d4a997a10eb7dd1d1935acdea8ea469b54`; the read-only
+evidence implementation is `7fc982ecce30a0af261dcda198ef50280e707531`. Start with
+`docs/reports/20260829-us-morning-review-summary.json`, then read the exact-message, natural-run,
+Nasdaq breadth, night-futures, macro, and artifact-index reports.
+
+Run 45 targets completed US session `2026-08-28`. All five core ETFs and 11 sector proxies are
+current. The exact deterministic candidate equals the naturally delivered market message, and
+delivery completed `14/14` with no review-task send. Nasdaq breadth and the `2026-08-29` night
+session were not published at collection time; prior rows were rejected and omitted. Macro facts
+were classified but none was selected.
+
+State is `PARTIAL_SAFE`, with P0/material P1 `0/1`. The remaining P1 is the rejected AI full-stock
+path: the primary candidate has stock risk/reward, valuation, inventory-ownership, and numeric
+coverage errors; the backup has three market-evidence-consumption errors and one framework
+allowlist error. Rejected AI was not sent. Preserve the already-proven market-data and delivery
+parity, and perform only a separately authorized bounded AI validation repair. US Price Structure
+natural proof was not adjudicated by this market-message review. Production Assist remains OFF.

@@ -1925,3 +1925,25 @@ and evidence Actions Test/Lint PASS; open P0/material P1 are `0/0`. Main and ope
 linearly to `d3a58c953c2dd6d100031421770be3a54d0328b5`; API/OHLCV health and post-deploy US `13/13`
 plus KR `7/7` frozen replay pass. State is `DEPLOYED_AWAITING_NATURAL_PROOF`. Natural
 provisional/price-label proof remains independently `PENDING` and must not be triggered manually.
+
+### 40.23 2026-08-29 US Morning Market Data and Natural Message Review
+
+Exact instruction commit `428836d4a997a10eb7dd1d1935acdea8ea469b54` precedes read-only
+evidence implementation `7fc982ecce30a0af261dcda198ef50280e707531`. The XNYS calendar and
+run-45 packet both resolve the latest completed regular session to `2026-08-28`. SPY, QQQ, IWM,
+SOXX, and RSP are current, all 11 supported sector proxies are current, and the deployed
+deterministic renderer reproduces the exact naturally delivered market message byte-for-byte.
+
+Official Nasdaq breadth is `PUBLICATION_PENDING`: the exact target row is absent and the latest
+official row is `2026-08-26`, so no stale breadth is promoted. The canonical night-futures target
+is the `2026-08-29` 06:00 end-date session; all four production-gate attempts found only the stale
+`2026-08-28` session, and the entire section is safely omitted. Macro evidence is temporally
+classified, but no item passes the existing additional-materiality selector.
+
+Natural monitor run 45 delivered one market and 13 stock messages `14/14` once through the
+deterministic production renderer. Market-message evidence parity is `PASS`; rejected AI output
+was never sent. The primary and backup AI full-stock candidates remain rejected, so the overall
+review is `PARTIAL_SAFE` with open P0/material P1 `0/1`. The P1 is bounded to AI validation and
+does not reopen current market-data, temporal-safety, renderer, or delivery proof. No Telegram,
+task, DB, assessment, scheduler, feature, or Production Assist mutation was performed by this
+review.

@@ -2,6 +2,27 @@
 
 Repository: `sskim-ai/thesis-monitor`
 
+Latest authoritative review follows instruction commit
+`428836d4a997a10eb7dd1d1935acdea8ea469b54` and evidence implementation
+`7fc982ecce30a0af261dcda198ef50280e707531`. Read
+`docs/reports/20260829-us-morning-review-summary.json`, the exact-message candidate, natural-run
+inspection, official breadth, night-futures, macro, and artifact-index reports first.
+
+Natural run 45 targets completed US session `2026-08-28` and delivered one market plus 13 stock
+messages `14/14`. The deterministic market message has exact evidence parity. SPY/QQQ/IWM/SOXX/RSP
+and all 11 sectors are current; official Nasdaq breadth and the expected `2026-08-29` night session
+were not yet published and were safely omitted. No macro fact was selected. This review sent
+nothing and changed no runtime state.
+
+`US_MORNING_DATA_REVIEW=PARTIAL_SAFE`, with P0/material P1 `0/1`. Do not reopen the market-data or
+delivery proof. The next bounded task is to repair the rejected AI full-stock validation path,
+covering risk/reward Fact ownership, denied valuation use, inventory ownership, numeric occurrence
+coverage, market slot consumption, and the framework allowlist. Rejected AI was not sent. Keep US
+Price Structure natural proof separate, do not manually run a task or send Telegram, and keep
+Production Assist OFF.
+
+---
+
 Latest authoritative work follows instruction commit
 `a0d8f190a0dd2105925810bcf21eeb1d483e0277` and evidence implementation
 `239db58958b1193a8fd591500618ee4e7940c994`. Read

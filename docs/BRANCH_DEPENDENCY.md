@@ -473,3 +473,15 @@ Evidence commit `d3a58c953c2dd6d100031421770be3a54d0328b5` passed Actions Test/L
 linearly deployed main/operating runtime. Post-deploy API/OHLCV health and frozen US `13/13` plus KR
 `7/7` replay pass. Natural proof remains pending, so descendants must begin from deployed main and
 preserve the no-manual-proof boundary.
+
+The 2026-08-29 US morning review starts from exact instruction commit
+`428836d4a997a10eb7dd1d1935acdea8ea469b54`, whose parent is clean main
+`104b0a04d326e66178c9f432798fdeb6cf82a85a`. Read-only evidence implementation
+`7fc982ecce30a0af261dcda198ef50280e707531` consumes immutable run-45 artifacts, the official
+Nasdaq archive, canonical night-futures telemetry, and a read-only delivery database.
+
+Any bounded AI repair may descend from this evidence but must preserve completed session
+`2026-08-28`, exact deterministic market-message parity, official breadth fail-closed behavior,
+the `2026-08-29` night-session omission, macro temporal selection, and zero duplicate delivery.
+It may not reinterpret this market review as US Price Structure natural proof or mutate Telegram,
+tasks, DB, assessments, schedulers, feature flags, or Production Assist.
