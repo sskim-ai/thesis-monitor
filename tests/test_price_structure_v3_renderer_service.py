@@ -7,6 +7,7 @@ from pathlib import Path
 from app.services.price_structure_v3_renderer_service import (
     PriceStructureRender,
     classify_confluence_render_equivalence,
+    classify_user_visible_dynamic_bollinger,
     detect_legacy_technical_tokens,
     relabel_stored_price_rules,
     render_current_price_structure,
@@ -65,15 +66,52 @@ def _summary(
     major_resistance: dict[str, object] | None = None,
     confluence: dict[str, object] | None = None,
     confluence_state: str = "UNAVAILABLE",
+    dynamic_support: dict[str, object] | None = None,
+    dynamic_resistance: dict[str, object] | None = None,
 ) -> dict[str, object]:
     return {
         "nearest_support": _selection(support),
         "nearest_resistance": _selection(resistance),
         "major_structural_support": _selection(major_support),
         "major_structural_resistance": _selection(major_resistance),
+        "dynamic_bollinger_support": dynamic_support,
+        "dynamic_bollinger_resistance": dynamic_resistance,
         "fib_sr_confluence": confluence,
         "fib_sr_confluence_state": confluence_state,
     }
+
+
+def _bollinger_zone(
+    zone_id: str,
+    low: str,
+    high: str,
+    display: str,
+    *,
+    role: str,
+    timeframe: str = "weekly",
+    tier: str = "NEAR",
+    relevance: str = "ACTIVE_NEAR",
+) -> dict[str, object]:
+    zone = _zone(
+        zone_id,
+        low,
+        high,
+        display,
+        role=role,
+        tier=tier,
+        relevance=relevance,
+    )
+    zone.update(
+        {
+            "source_families": [f"BOLLINGER_{timeframe.upper()}"],
+            "price_anchor_refs": [],
+            "source_timeframe": timeframe,
+            "source_timeframes": [timeframe],
+            "indicator_observation_dates": ["2026-08-21"],
+            "indicator_bar_states": ["COMPLETE"],
+        }
+    )
+    return zone
 
 
 def _render(
@@ -315,6 +353,175 @@ def test_unanchored_major_zone_is_omitted_by_renderer_defense() -> None:
         binding.get("semantic_type") == "MAJOR_RESISTANCE"
         for binding in render.numeric_bindings
     )
+    assert validate_price_structure_render(render).status == "PASS"
+
+
+def test_distinct_bollinger_zone_renders_under_transparent_dynamic_label() -> None:
+    dynamic = _bollinger_zone(
+        "bollinger-weekly-resistance",
+        "118",
+        "120",
+        "약 $118~$120",
+        role="RESISTANCE",
+    )
+
+    render = render_current_price_structure(
+        _summary(dynamic_resistance=dynamic),
+        ticker="TEST",
+        as_of="2026-08-25",
+        current_price="100",
+        currency="USD",
+        include_current_price=True,
+        enforce_user_visible_proximity=True,
+        security_basis="US_LISTED:TEST",
+        adjustment_basis="provider_adjusted_price_v1",
+    )
+
+    assert "볼린저 저항(주봉): 약 $118~$120" in render.section
+    assert "주요 구조 저항" not in render.section
+    binding = next(
+        item
+        for item in render.numeric_bindings
+        if item.get("semantic_type") == "DYNAMIC_BOLLINGER_RESISTANCE"
+    )
+    assert binding["fact_ref"] == "bollinger-weekly-resistance"
+    assert binding["indicator_bar_states"] == ["COMPLETE"]
+    assert validate_price_structure_render(render).status == "PASS"
+
+
+def test_overlapping_bollinger_zone_annotates_near_sr_without_duplicate_range() -> None:
+    near = _zone("resistance", "105", "110", "약 $105~$110")
+    dynamic = _bollinger_zone(
+        "bollinger-weekly-resistance",
+        "108",
+        "112",
+        "약 $108~$112",
+        role="RESISTANCE",
+    )
+
+    render = render_current_price_structure(
+        _summary(resistance=near, dynamic_resistance=dynamic),
+        ticker="TEST",
+        as_of="2026-08-25",
+        current_price="100",
+        currency="USD",
+        include_current_price=False,
+        enforce_user_visible_proximity=True,
+        security_basis="US_LISTED:TEST",
+        adjustment_basis="provider_adjusted_price_v1",
+    )
+
+    assert "가까운 저항: 약 $105~$110 · 주봉 볼린저 중첩" in render.section
+    assert "약 $108~$112" not in render.section
+    assert not any(
+        item.get("semantic_type") == "DYNAMIC_BOLLINGER_RESISTANCE"
+        for item in render.numeric_bindings
+    )
+    assert validate_price_structure_render(render).status == "PASS"
+
+
+def test_same_display_bollinger_zone_is_confluence_even_without_raw_overlap() -> None:
+    near = _zone("support", "90", "94.999", "약 $90~$95")
+    dynamic = _bollinger_zone(
+        "bollinger-weekly-support",
+        "95.001",
+        "99",
+        "약 $90~$95",
+        role="SUPPORT",
+    )
+
+    render = render_current_price_structure(
+        _summary(support=near, dynamic_support=dynamic),
+        ticker="TEST",
+        as_of="2026-08-25",
+        current_price="100",
+        currency="USD",
+        include_current_price=False,
+        enforce_user_visible_proximity=True,
+        security_basis="US_LISTED:TEST",
+        adjustment_basis="provider_adjusted_price_v1",
+    )
+
+    assert render.section.count("약 $90~$95") == 1
+    assert "주봉 볼린저 중첩" in render.section
+    assert validate_price_structure_render(render).status == "PASS"
+
+
+def test_remote_or_partial_bollinger_zone_is_not_user_visible() -> None:
+    remote = _bollinger_zone(
+        "bollinger-monthly-resistance",
+        "180",
+        "185",
+        "약 $180~$185",
+        role="RESISTANCE",
+        timeframe="monthly",
+        tier="OUT_OF_ACTIVE_RANGE",
+        relevance="RETIRED_OR_LOW_RELEVANCE",
+    )
+    partial = _bollinger_zone(
+        "bollinger-weekly-resistance",
+        "118",
+        "120",
+        "약 $118~$120",
+        role="RESISTANCE",
+    )
+    partial["indicator_bar_states"] = ["PARTIAL"]
+
+    assert classify_user_visible_dynamic_bollinger(remote) is False
+    assert classify_user_visible_dynamic_bollinger(partial) is False
+
+    for zone in (remote, partial):
+        render = render_current_price_structure(
+            _summary(dynamic_resistance=zone),
+            ticker="TEST",
+            as_of="2026-08-25",
+            current_price="100",
+            currency="USD",
+            include_current_price=False,
+            enforce_user_visible_proximity=True,
+            security_basis="US_LISTED:TEST",
+            adjustment_basis="provider_adjusted_price_v1",
+        )
+        assert "볼린저 저항" not in render.section
+        assert validate_price_structure_render(render).status == "PASS"
+
+
+def test_materiality_budget_selects_one_dynamic_side_without_band_dump() -> None:
+    daily_support = _bollinger_zone(
+        "bollinger-daily-support",
+        "94",
+        "95",
+        "약 $94~$95",
+        role="SUPPORT",
+        timeframe="daily",
+    )
+    weekly_resistance = _bollinger_zone(
+        "bollinger-weekly-resistance",
+        "108",
+        "110",
+        "약 $108~$110",
+        role="RESISTANCE",
+        timeframe="weekly",
+    )
+
+    render = render_current_price_structure(
+        _summary(
+            dynamic_support=daily_support,
+            dynamic_resistance=weekly_resistance,
+        ),
+        ticker="TEST",
+        as_of="2026-08-25",
+        current_price="100",
+        currency="USD",
+        include_current_price=False,
+        enforce_user_visible_proximity=True,
+        security_basis="US_LISTED:TEST",
+        adjustment_basis="provider_adjusted_price_v1",
+    )
+
+    assert "볼린저 저항(주봉): 약 $108~$110" in render.section
+    assert "볼린저 지지" not in render.section
+    assert sum("볼린저" in line for line in render.section.splitlines()) == 1
     assert validate_price_structure_render(render).status == "PASS"
 
 

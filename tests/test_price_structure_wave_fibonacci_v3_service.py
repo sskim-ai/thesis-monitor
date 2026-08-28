@@ -204,14 +204,41 @@ def test_indicator_observation_is_not_a_price_interaction() -> None:
 
     assert sources
     assert all(source.indicator_observation_date == bars[-1].date for source in sources)
+    assert all(source.indicator_bar_state == "COMPLETE" for source in sources)
     assert all(source.last_price_interaction_date is None for source in sources)
     assert all(source.interaction_date is None for source in sources)
     assert all(source.historical_interaction_count == 0 for source in sources)
     assert all(zone.indicator_observation_dates == (bars[-1].date,) for zone in zones)
+    assert all(zone.indicator_bar_states == ("COMPLETE",) for zone in zones)
     assert all(zone.last_price_interaction_date is None for zone in zones)
     assert all(zone.last_meaningful_interaction is None for zone in zones)
     assert all(zone.reaction_count == 0 for zone in zones)
     assert all(not zone.price_anchor_refs for zone in zones)
+
+
+def test_bollinger_sources_exclude_partial_current_bar() -> None:
+    complete = tuple(_bar(index, 100 + index) for index in range(20))
+    partial = PriceBar(
+        date="2021-09-01",
+        open=Decimal("500"),
+        high=Decimal("510"),
+        low=Decimal("490"),
+        close=Decimal("505"),
+        volume=Decimal(1000),
+        timeframe="monthly",
+        bar_state="PARTIAL",
+    )
+
+    sources = _bollinger_sources(
+        (*complete, partial),
+        ticker="TEST",
+        timeframe="monthly",
+    )
+
+    assert sources
+    assert all(source.indicator_observation_date == complete[-1].date for source in sources)
+    assert all(source.indicator_bar_state == "COMPLETE" for source in sources)
+    assert all(source.price < Decimal("300") for source in sources)
 
 
 def test_wave_hard_rules_generate_no_forced_impulse() -> None:

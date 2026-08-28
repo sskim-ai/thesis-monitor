@@ -20,6 +20,8 @@ UserVisibleSRClass = Literal[
     "OMIT",
 ]
 
+DYNAMIC_BOLLINGER_CONTRACT = "dynamic-bollinger-support-resistance-v1"
+
 PriceOwner = Literal[
     "CURRENT_PRICE_STRUCTURE",
     "STORED_MONITORING_PRICE_RULE",
@@ -157,6 +159,30 @@ def classify_user_visible_sr(zone: Mapping[str, object]) -> UserVisibleSRClass:
     return "OMIT"
 
 
+def classify_user_visible_dynamic_bollinger(
+    zone: Mapping[str, object],
+) -> bool:
+    families = zone.get("source_families")
+    observation_dates = zone.get("indicator_observation_dates")
+    bar_states = zone.get("indicator_bar_states")
+    return bool(
+        str(zone.get("current_role") or "") in {"SUPPORT", "RESISTANCE"}
+        and str(zone.get("proximity_tier") or "") in {"NEAR", "RELEVANT"}
+        and str(zone.get("active_relevance") or "")
+        in {"ACTIVE_NEAR", "ACTIVE_STRUCTURAL"}
+        and isinstance(families, Sequence)
+        and not isinstance(families, (str, bytes))
+        and any(str(family).startswith("BOLLINGER_") for family in families)
+        and isinstance(observation_dates, Sequence)
+        and not isinstance(observation_dates, (str, bytes))
+        and any(str(value).strip() for value in observation_dates)
+        and isinstance(bar_states, Sequence)
+        and not isinstance(bar_states, (str, bytes))
+        and bool(bar_states)
+        and all(str(value) == "COMPLETE" for value in bar_states)
+    )
+
+
 def _has_price_anchor_refs(zone: Mapping[str, object]) -> bool:
     refs = zone.get("price_anchor_refs")
     return bool(
@@ -241,6 +267,7 @@ def _binding(
                 "indicator_observation_dates": zone.get(
                     "indicator_observation_dates", ()
                 ),
+                "indicator_bar_states": zone.get("indicator_bar_states", ()),
                 "last_price_interaction_date": zone.get(
                     "last_price_interaction_date"
                 ),
@@ -266,6 +293,17 @@ _VISIBLE_SR_LABELS = {
     "MAJOR_RESISTANCE": "주요 구조 저항",
     "LONG_HORIZON_SUPPORT": "장기 구조 지지",
     "LONG_HORIZON_RESISTANCE": "장기 구조 저항",
+}
+
+_DYNAMIC_BOLLINGER_LABELS = {
+    "DYNAMIC_BOLLINGER_SUPPORT": "볼린저 지지",
+    "DYNAMIC_BOLLINGER_RESISTANCE": "볼린저 저항",
+}
+
+_TIMEFRAME_LABELS = {
+    "daily": "일봉",
+    "weekly": "주봉",
+    "monthly": "월봉",
 }
 
 
@@ -311,6 +349,110 @@ def _append_sr_zone(
     )
 
 
+def _dynamic_timeframe_label(zone: Mapping[str, object]) -> str:
+    timeframe = str(zone.get("source_timeframe") or "")
+    if timeframe not in _TIMEFRAME_LABELS:
+        raise ValueError("dynamic Bollinger zone requires a supported timeframe")
+    return _TIMEFRAME_LABELS[timeframe]
+
+
+def _material_dynamic_bollinger_zones(
+    zones: Sequence[Mapping[str, object]],
+) -> tuple[Mapping[str, object], ...]:
+    eligible = [zone for zone in zones if classify_user_visible_dynamic_bollinger(zone)]
+    if not eligible:
+        return ()
+    tier_rank = {"NEAR": 2, "RELEVANT": 1}
+    timeframe_rank = {"daily": 1, "weekly": 2, "monthly": 3}
+    selected = max(
+        eligible,
+        key=lambda zone: (
+            tier_rank.get(str(zone.get("proximity_tier") or ""), 0),
+            timeframe_rank.get(str(zone.get("source_timeframe") or ""), 0),
+            -Decimal(str(zone.get("distance_pct") or 0)),
+        ),
+    )
+    return (selected,)
+
+
+def _append_dynamic_bollinger_zone(
+    *,
+    lines: list[str],
+    bindings: list[dict[str, object]],
+    displayed: list[Mapping[str, object]],
+    zone: Mapping[str, object],
+    security_basis: str | None,
+    adjustment_basis: str | None,
+) -> None:
+    if not classify_user_visible_dynamic_bollinger(zone):
+        return
+    role = str(zone.get("current_role") or "")
+    semantic_type = f"DYNAMIC_BOLLINGER_{role}"
+    if semantic_type not in _DYNAMIC_BOLLINGER_LABELS:
+        return
+    if any(binding.get("semantic_type") == semantic_type for binding in bindings):
+        return
+    timeframe_label = _dynamic_timeframe_label(zone)
+    overlap = next(
+        (
+            item
+            for item in displayed
+            if zone.get("display") == item.get("display") or _overlap(zone, item)
+        ),
+        None,
+    )
+    if overlap is not None:
+        target = next(
+            (
+                binding
+                for binding in bindings
+                if binding.get("fact_ref") == overlap.get("zone_id")
+                and binding.get("semantic_type") in _VISIBLE_SR_LABELS
+            ),
+            None,
+        )
+        if target is None:
+            return
+        target_label = _VISIBLE_SR_LABELS[str(target["semantic_type"])]
+        original = f"• {target_label}: {target['display']}"
+        annotation = f"{timeframe_label} 볼린저 중첩"
+        for index, line in enumerate(lines):
+            if line == original:
+                lines[index] = f"{line} · {annotation}"
+                break
+        target.update(
+            {
+                "dynamic_bollinger_confluence": True,
+                "dynamic_bollinger_timeframe": zone.get("source_timeframe"),
+                "dynamic_bollinger_source_refs": zone.get("source_refs", ()),
+                "dynamic_bollinger_indicator_observation_dates": zone.get(
+                    "indicator_observation_dates", ()
+                ),
+                "dynamic_bollinger_indicator_bar_states": zone.get(
+                    "indicator_bar_states", ()
+                ),
+            }
+        )
+        return
+    label = _DYNAMIC_BOLLINGER_LABELS[semantic_type]
+    lines.append(f"• {label}({timeframe_label}): {zone['display']}")
+    displayed.append(zone)
+    binding = _binding(
+        zone,
+        semantic_type=semantic_type,
+        include_proximity=True,
+        security_basis=security_basis,
+        adjustment_basis=adjustment_basis,
+    )
+    binding.update(
+        {
+            "contract": DYNAMIC_BOLLINGER_CONTRACT,
+            "dynamic_bollinger_timeframe": zone.get("source_timeframe"),
+        }
+    )
+    bindings.append(binding)
+
+
 def validate_price_structure_render(
     render: PriceStructureRender,
 ) -> PriceStructureRenderValidation:
@@ -323,7 +465,7 @@ def validate_price_structure_render(
     for semantic_type, label in _VISIBLE_SR_LABELS.items():
         prefix = f"• {label}: "
         rendered_values = [
-            line.removeprefix(prefix)
+            line.removeprefix(prefix).split(" · ", 1)[0]
             for line in render.section.splitlines()
             if line.startswith(prefix)
         ]
@@ -360,8 +502,66 @@ def validate_price_structure_render(
             ):
                 errors.append(f"long_horizon_label_ineligible_proximity:{fact_ref}")
 
-    semantic_by_fact: dict[str, set[str]] = {}
+    dynamic_bindings = [
+        binding
+        for binding in render.numeric_bindings
+        if binding.get("semantic_type") in _DYNAMIC_BOLLINGER_LABELS
+    ]
+    for semantic_type, label in _DYNAMIC_BOLLINGER_LABELS.items():
+        bindings = [
+            binding
+            for binding in dynamic_bindings
+            if binding.get("semantic_type") == semantic_type
+        ]
+        if len(bindings) > 1:
+            errors.append(f"duplicate_user_visible_semantic:{semantic_type}")
+        for binding in bindings:
+            fact_ref = str(binding.get("fact_ref") or "missing_fact_ref")
+            timeframe = str(binding.get("dynamic_bollinger_timeframe") or "")
+            timeframe_label = _TIMEFRAME_LABELS.get(timeframe)
+            expected_line = (
+                f"• {label}({timeframe_label}): {binding.get('display')}"
+                if timeframe_label
+                else ""
+            )
+            if not expected_line or expected_line not in render.section.splitlines():
+                errors.append(f"render_binding_mismatch:{semantic_type}")
+            families = binding.get("source_families")
+            if not (
+                isinstance(families, Sequence)
+                and not isinstance(families, (str, bytes))
+                and any(str(value).startswith("BOLLINGER_") for value in families)
+            ):
+                errors.append(f"dynamic_bollinger_source_missing:{fact_ref}")
+            if not binding.get("indicator_observation_dates"):
+                errors.append(f"dynamic_bollinger_observation_missing:{fact_ref}")
+            if tuple(binding.get("indicator_bar_states") or ()) != ("COMPLETE",):
+                errors.append(f"dynamic_bollinger_partial_or_unknown_bar:{fact_ref}")
+            if not binding.get("security_basis"):
+                errors.append(f"dynamic_bollinger_security_basis_missing:{fact_ref}")
+            if not binding.get("adjustment_basis"):
+                errors.append(f"dynamic_bollinger_adjustment_basis_missing:{fact_ref}")
+            if str(binding.get("proximity_tier") or "") not in {"NEAR", "RELEVANT"}:
+                errors.append(f"dynamic_bollinger_irrelevant:{fact_ref}")
+            for structural in sr_bindings:
+                if _overlap(binding, structural):
+                    errors.append(f"duplicate_sr_range_visible:{fact_ref}")
+
     for binding in sr_bindings:
+        if binding.get("dynamic_bollinger_confluence") is not True:
+            continue
+        fact_ref = str(binding.get("fact_ref") or "missing_fact_ref")
+        timeframe = str(binding.get("dynamic_bollinger_timeframe") or "")
+        timeframe_label = _TIMEFRAME_LABELS.get(timeframe)
+        if not timeframe_label or f"{timeframe_label} 볼린저 중첩" not in render.section:
+            errors.append(f"dynamic_bollinger_confluence_label_missing:{fact_ref}")
+        if tuple(binding.get("dynamic_bollinger_indicator_bar_states") or ()) != (
+            "COMPLETE",
+        ):
+            errors.append(f"dynamic_bollinger_partial_or_unknown_bar:{fact_ref}")
+
+    semantic_by_fact: dict[str, set[str]] = {}
+    for binding in (*sr_bindings, *dynamic_bindings):
         fact_ref = str(binding.get("fact_ref") or "")
         semantic_by_fact.setdefault(fact_ref, set()).add(
             str(binding.get("semantic_type") or "")
@@ -394,10 +594,18 @@ def render_current_price_structure(
     nearest_resistance = summary.get("nearest_resistance")
     major_support = summary.get("major_structural_support")
     major_resistance = summary.get("major_structural_resistance")
+    dynamic_support = summary.get("dynamic_bollinger_support")
+    dynamic_resistance = summary.get("dynamic_bollinger_resistance")
     support_zone = _zone(nearest_support)
     resistance_zone = _zone(nearest_resistance)
     major_support_zone = _zone(major_support)
     major_resistance_zone = _zone(major_resistance)
+    dynamic_support_zone = (
+        dynamic_support if isinstance(dynamic_support, Mapping) else None
+    )
+    dynamic_resistance_zone = (
+        dynamic_resistance if isinstance(dynamic_resistance, Mapping) else None
+    )
 
     lines = ["📐 현재 가격 구조"]
     bindings: list[dict[str, object]] = []
@@ -461,6 +669,20 @@ def render_current_price_structure(
                     security_basis=security_basis,
                     adjustment_basis=adjustment_basis,
                 )
+        dynamic_candidates = tuple(
+            zone
+            for zone in (dynamic_support_zone, dynamic_resistance_zone)
+            if zone is not None
+        )
+        for zone in _material_dynamic_bollinger_zones(dynamic_candidates):
+            _append_dynamic_bollinger_zone(
+                lines=lines,
+                bindings=bindings,
+                displayed=displayed,
+                zone=zone,
+                security_basis=security_basis,
+                adjustment_basis=adjustment_basis,
+            )
     else:
         for label, semantic_type, zone in (
             ("가까운 지지", "NEAREST_SUPPORT", support_zone),

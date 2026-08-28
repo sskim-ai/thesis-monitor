@@ -34,6 +34,7 @@ FAMILY_CONSENSUS_CONTRACT = "fib-family-consensus-v1"
 SR_BASE_CONTRACT = "deterministic-sr-base-layer-v1"
 SR_PROXIMITY_CONTRACT = "sr-proximity-relevance-gate-v1"
 MAJOR_SR_REALITY_CONTRACT = "major-sr-price-anchor-reality-gate-v1"
+DYNAMIC_BOLLINGER_CONTRACT = "dynamic-bollinger-support-resistance-v1"
 
 TIMEFRAME_ORDER: tuple[Timeframe, ...] = ("monthly", "weekly", "daily")
 HISTORY_REQUESTS: dict[Timeframe, int] = {
@@ -151,6 +152,7 @@ class ZoneSource(FrozenModel):
     consensus_set_id: str | None = None
     equivalence_class_id: str | None = None
     indicator_observation_date: str | None = None
+    indicator_bar_state: BarState | None = None
     last_price_interaction_date: str | None = None
     historical_interaction_count: int = 0
     price_anchor_ref: str | None = None
@@ -178,6 +180,7 @@ class TechnicalZone(FrozenModel):
     sources: tuple[ZoneSource, ...]
     price_anchor_refs: tuple[str, ...] = ()
     indicator_observation_dates: tuple[str, ...] = ()
+    indicator_bar_states: tuple[BarState, ...] = ()
     last_price_interaction_date: str | None = None
     historical_interaction_count: int = 0
     confluence_stability: Literal[
@@ -215,6 +218,7 @@ class SelectedSRZone(FrozenModel):
     source_refs: tuple[str, ...]
     price_anchor_refs: tuple[str, ...] = ()
     indicator_observation_dates: tuple[str, ...] = ()
+    indicator_bar_states: tuple[BarState, ...] = ()
     last_price_interaction_date: str | None = None
     historical_interaction_count: int = 0
     raw_low: Decimal
@@ -255,6 +259,8 @@ class SRFinalSummary(FrozenModel):
     nearest_resistance: SRSideSelection
     major_structural_support: SRSideSelection
     major_structural_resistance: SRSideSelection
+    dynamic_bollinger_support: SelectedSRZone | None = None
+    dynamic_bollinger_resistance: SelectedSRZone | None = None
     nearest_cross_timeframe_zone: SelectedSRZone | None = None
     nearest_cross_timeframe_reason: str | None = None
     major_cross_timeframe_zone: SelectedSRZone | None = None
@@ -841,11 +847,14 @@ def _bollinger_sources(
     ticker: str,
     timeframe: Timeframe,
 ) -> tuple[ZoneSource, ...]:
-    if len(bars) < 20:
+    completed = tuple(bar for bar in bars if bar.bar_state == "COMPLETE")
+    if len(completed) < 20:
         return ()
-    closes = [float(bar.close) for bar in bars[-20:]]
+    closes = [float(bar.close) for bar in completed[-20:]]
     mean = Decimal(str(statistics.fmean(closes)))
     deviation = Decimal(str(statistics.pstdev(closes)))
+    latest = completed[-1]
+    observation_date = latest.period_end or latest.date
     points = {
         "LOWER_20_2": mean - deviation * Decimal(2),
         "MID_20": mean,
@@ -853,7 +862,14 @@ def _bollinger_sources(
     }
     return tuple(
         ZoneSource(
-            source_id=_stable_id("v3-bollinger", ticker, timeframe, name, price, bars[-1].date),
+            source_id=_stable_id(
+                "v3-bollinger",
+                ticker,
+                timeframe,
+                name,
+                price,
+                observation_date,
+            ),
             evidence_type="BOLLINGER",
             evidence_family=f"BOLLINGER_{timeframe.upper()}",
             method_family=name,
@@ -862,7 +878,8 @@ def _bollinger_sources(
             confluence_target_timeframe=timeframe,
             price=_rounded(price),
             status="CONFIRMED",
-            indicator_observation_date=bars[-1].date,
+            indicator_observation_date=observation_date,
+            indicator_bar_state=latest.bar_state,
             source_role=(
                 "SUPPORT"
                 if name == "LOWER_20_2"
@@ -1623,6 +1640,15 @@ def merge_zone_sources(
                 }
             )
         )
+        indicator_bar_states = tuple(
+            sorted(
+                {
+                    source.indicator_bar_state
+                    for source in group
+                    if source.indicator_bar_state is not None
+                }
+            )
+        )
         last_price_interaction_date = max(interactions) if interactions else None
         zones.append(
             TechnicalZone(
@@ -1650,6 +1676,7 @@ def merge_zone_sources(
                 sources=tuple(group),
                 price_anchor_refs=price_anchor_refs,
                 indicator_observation_dates=indicator_observation_dates,
+                indicator_bar_states=indicator_bar_states,
                 last_price_interaction_date=last_price_interaction_date,
                 historical_interaction_count=historical_interaction_count,
                 confluence_stability=confluence_stability,
@@ -1851,6 +1878,7 @@ def _selected_sr_zone(
             )
         ),
         indicator_observation_dates=zone.indicator_observation_dates,
+        indicator_bar_states=zone.indicator_bar_states,
         last_price_interaction_date=(
             zone.last_price_interaction_date or zone.last_meaningful_interaction
         ),
@@ -2066,6 +2094,64 @@ def _summary_side(
             current_price=current_price,
             as_of=as_of,
         ),
+    )
+
+
+def _dynamic_bollinger_zone_eligible(zone: TechnicalZone) -> bool:
+    sources = [
+        source for source in zone.sources if source.evidence_type == "BOLLINGER"
+    ]
+    return bool(sources) and all(
+        source.status == "CONFIRMED"
+        and source.indicator_observation_date is not None
+        and source.indicator_bar_state == "COMPLETE"
+        for source in sources
+    )
+
+
+def _dynamic_bollinger_summary_side(
+    maps: Mapping[Timeframe, Sequence[TechnicalZone]],
+    *,
+    role: Literal["SUPPORT", "RESISTANCE"],
+    currency: str,
+    current_price: Decimal,
+    as_of: str,
+) -> SelectedSRZone | None:
+    candidates: list[tuple[Timeframe, TechnicalZone, Sequence[TechnicalZone], SRDistanceTier]] = []
+    for timeframe in TIMEFRAME_ORDER:
+        local = [
+            zone
+            for zone in maps.get(timeframe, ())
+            if _sr_quality_eligible(zone)
+        ]
+        for zone in local:
+            tier = _sr_distance_tier(zone, timeframe=timeframe, zones=local)
+            if (
+                zone.current_role == role
+                and tier in {"NEAR", "RELEVANT"}
+                and _dynamic_bollinger_zone_eligible(zone)
+            ):
+                candidates.append((timeframe, zone, local, tier))
+    if not candidates:
+        return None
+    tier_rank = {"NEAR": 2, "RELEVANT": 1}
+    timeframe, zone, local, _tier = max(
+        candidates,
+        key=lambda item: (
+            tier_rank[item[3]],
+            TIMEFRAME_IMPORTANCE[item[0]],
+            item[1].evidence_family_score,
+            -item[1].proximity_pct,
+        ),
+    )
+    return _selected_sr_zone(
+        zone,
+        requested_timeframe="summary",
+        source_timeframe=timeframe,
+        all_source_zones=local,
+        currency=currency,
+        current_price=current_price,
+        as_of=as_of,
     )
 
 
@@ -2321,6 +2407,20 @@ def build_deterministic_sr_base_layer(
             deterministic_maps,
             role="RESISTANCE",
             major=True,
+            currency=currency,
+            current_price=current_price,
+            as_of=as_of,
+        ),
+        dynamic_bollinger_support=_dynamic_bollinger_summary_side(
+            deterministic_maps,
+            role="SUPPORT",
+            currency=currency,
+            current_price=current_price,
+            as_of=as_of,
+        ),
+        dynamic_bollinger_resistance=_dynamic_bollinger_summary_side(
+            deterministic_maps,
+            role="RESISTANCE",
             currency=currency,
             current_price=current_price,
             as_of=as_of,

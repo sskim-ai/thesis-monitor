@@ -11,6 +11,7 @@ from app.services.price_structure_v3_family_consensus_service import (
 )
 from app.services.price_structure_v3_renderer_service import (
     PriceStructureRender,
+    classify_user_visible_dynamic_bollinger,
     classify_user_visible_sr,
     render_current_price_structure,
     validate_price_structure_render,
@@ -89,6 +90,15 @@ def classify_kr_price_structure(
         if (zone := _zone(summary.get(key))) is not None
         and classify_user_visible_sr(zone) != "OMIT"
     ]
+    visible_zones.extend(
+        zone
+        for key in (
+            "dynamic_bollinger_support",
+            "dynamic_bollinger_resistance",
+        )
+        if isinstance((zone := summary.get(key)), Mapping)
+        and classify_user_visible_dynamic_bollinger(zone)
+    )
     if not visible_zones:
         return KrPriceStructureEligibility.OMIT_PRICE_STRUCTURE
     has_safe_fib = bool(

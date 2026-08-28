@@ -44,6 +44,8 @@ def _context(*, family_consensus_safe: bool = True) -> dict[str, object]:
         "as_of": "2026-08-27",
         "current_price": "126.50",
         "currency": "USD",
+        "security_basis": "US_LISTED:MU",
+        "adjustment_basis": "provider_adjusted_price_v1",
         "selection_errors": [],
         "partial_bar_used_for_pivot_confirmation": 0,
         "family_consensus_safe": family_consensus_safe,
@@ -114,6 +116,41 @@ def test_us_sr_only_and_safe_omit_are_not_failures() -> None:
     assert "Fib" not in sr_only.section
     assert omitted.eligibility == KrPriceStructureEligibility.OMIT_PRICE_STRUCTURE
     assert omitted.section is None
+
+
+def test_dynamic_bollinger_only_is_safe_sr_only_eligibility() -> None:
+    dynamic = _zone(
+        "bollinger-resistance",
+        139.0,
+        145.0,
+        "$139.00~$145.00",
+    )
+    dynamic.update(
+        {
+            "source_families": ["BOLLINGER_WEEKLY"],
+            "price_anchor_refs": [],
+            "indicator_observation_dates": ["2026-08-21"],
+            "indicator_bar_states": ["COMPLETE"],
+        }
+    )
+    context = {
+        **_context(family_consensus_safe=False),
+        "summary": {
+            "dynamic_bollinger_resistance": dynamic,
+        },
+    }
+
+    decision = build_us_price_structure_rollout_decision(
+        context,
+        ticker="MU",
+        monitored_subject=True,
+        enabled=True,
+    )
+
+    assert decision.eligibility == KrPriceStructureEligibility.ELIGIBLE_SR_ONLY
+    assert decision.section is not None
+    assert "볼린저 저항(주봉): $139.00~$145.00" in decision.section
+    assert "주요 구조 저항" not in decision.section
 
 
 def test_us_rollout_is_market_scoped_and_default_off() -> None:
