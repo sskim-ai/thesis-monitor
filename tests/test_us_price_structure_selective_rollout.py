@@ -81,7 +81,7 @@ def test_eligible_us_subject_renders_backend_owned_usd_structure() -> None:
 
     assert decision.eligibility == KrPriceStructureEligibility.ELIGIBLE
     assert decision.section is not None
-    assert "기준 종가: $126.50" in decision.section
+    assert "가격 구조 기준 종가(정규장): $126.50" in decision.section
     assert "가까운 지지: $121.00~$123.50" in decision.section
     assert "가까운 저항: $129.00~$132.00" in decision.section
     assert "Fib/SR 겹침: $130.00~$133.00" in decision.section
@@ -91,7 +91,7 @@ def test_eligible_us_subject_renders_backend_owned_usd_structure() -> None:
         "major-support",
         "major-resistance",
         "fib-confluence",
-        "current-price:MU:2026-08-27",
+        "structure-close:MU:2026-08-27",
     }
     assert "목표" not in decision.section
     assert "손절" not in decision.section

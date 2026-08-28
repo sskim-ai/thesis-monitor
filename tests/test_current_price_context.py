@@ -92,6 +92,22 @@ def test_fallback_context_rejects_crossed_confirmation_as_future_trigger() -> No
     assert "crossed_confirmation_rendered_as_future_trigger" in errors
 
 
+def test_validated_v3_render_owns_material_dynamic_selection() -> None:
+    selected = select_current_price_context(
+        _price_context(confirmation_state="not_reached")
+    )
+
+    errors = fallback_price_context_errors(
+        selected,
+        "📐 현재 가격 구조\n"
+        "• 현재가(정규장 종가): 206,500원\n"
+        "• 가까운 지지: 약 20.1만~20.9만원 · 일봉 볼린저 중첩",
+        validated_v3_render=True,
+    )
+
+    assert errors == []
+
+
 def test_current_price_context_keeps_structural_rr_unavailable() -> None:
     selected = select_current_price_context(_price_context(rr_available=False))
 

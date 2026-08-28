@@ -8,6 +8,7 @@ from app.services.price_structure_v3_renderer_service import (
     PriceStructureRender,
     classify_confluence_render_equivalence,
     classify_user_visible_dynamic_bollinger,
+    classify_user_visible_provisional_bollinger,
     detect_legacy_technical_tokens,
     relabel_stored_price_rules,
     render_current_price_structure,
@@ -68,6 +69,8 @@ def _summary(
     confluence_state: str = "UNAVAILABLE",
     dynamic_support: dict[str, object] | None = None,
     dynamic_resistance: dict[str, object] | None = None,
+    provisional_support: dict[str, object] | None = None,
+    provisional_resistance: dict[str, object] | None = None,
 ) -> dict[str, object]:
     return {
         "nearest_support": _selection(support),
@@ -76,6 +79,8 @@ def _summary(
         "major_structural_resistance": _selection(major_resistance),
         "dynamic_bollinger_support": dynamic_support,
         "dynamic_bollinger_resistance": dynamic_resistance,
+        "provisional_bollinger_support": provisional_support,
+        "provisional_bollinger_resistance": provisional_resistance,
         "fib_sr_confluence": confluence,
         "fib_sr_confluence_state": confluence_state,
     }
@@ -109,6 +114,32 @@ def _bollinger_zone(
             "source_timeframes": [timeframe],
             "indicator_observation_dates": ["2026-08-21"],
             "indicator_bar_states": ["COMPLETE"],
+        }
+    )
+    return zone
+
+
+def _provisional_bollinger_zone(
+    zone_id: str,
+    low: str,
+    high: str,
+    display: str,
+    *,
+    role: str,
+    timeframe: str = "monthly",
+) -> dict[str, object]:
+    zone = _zone(zone_id, low, high, display, role=role)
+    zone.update(
+        {
+            "source_families": [f"PROVISIONAL_BOLLINGER_{timeframe.upper()}"],
+            "price_anchor_refs": [],
+            "source_timeframe": timeframe,
+            "source_timeframes": [timeframe],
+            "indicator_observation_dates": ["2026-08-27"],
+            "indicator_bar_states": ["PARTIAL"],
+            "observation_timestamps": ["2026-08-27T19:05:00-04:00"],
+            "indicator_bar_starts": ["2026-08-03"],
+            "indicator_bar_expected_closes": ["2026-08-31"],
         }
     )
     return zone
@@ -522,6 +553,200 @@ def test_materiality_budget_selects_one_dynamic_side_without_band_dump() -> None
     assert "볼린저 저항(주봉): 약 $108~$110" in render.section
     assert "볼린저 지지" not in render.section
     assert sum("볼린저" in line for line in render.section.splitlines()) == 1
+    assert validate_price_structure_render(render).status == "PASS"
+
+
+def test_provisional_bollinger_renders_one_non_authoritative_monthly_line() -> None:
+    support = _provisional_bollinger_zone(
+        "provisional-weekly-support",
+        "92",
+        "94",
+        "약 $92~$94",
+        role="SUPPORT",
+        timeframe="weekly",
+    )
+    resistance = _provisional_bollinger_zone(
+        "provisional-monthly-resistance",
+        "120",
+        "124",
+        "약 $120~$124",
+        role="RESISTANCE",
+        timeframe="monthly",
+    )
+
+    render = render_current_price_structure(
+        _summary(
+            provisional_support=support,
+            provisional_resistance=resistance,
+        ),
+        ticker="TEST",
+        as_of="2026-08-25",
+        current_price="100",
+        currency="USD",
+        include_current_price=False,
+        enforce_user_visible_proximity=True,
+        security_basis="US_LISTED:TEST",
+        adjustment_basis="provider_adjusted_price_v1",
+    )
+
+    assert classify_user_visible_provisional_bollinger(resistance) is True
+    assert "잠정 볼린저 저항(월봉·진행중): 약 $120~$124" in render.section
+    assert "봉 마감 전 변동 가능" in render.section
+    assert "잠정 볼린저 지지" not in render.section
+    assert validate_price_structure_render(render).status == "PASS"
+
+
+def test_provisional_overlap_annotates_existing_range_without_duplicate() -> None:
+    resistance = _zone(
+        "pivot-resistance",
+        "120",
+        "124",
+        "약 $120~$124",
+        role="RESISTANCE",
+    )
+    provisional = _provisional_bollinger_zone(
+        "provisional-monthly-resistance",
+        "120",
+        "124",
+        "약 $120~$124",
+        role="RESISTANCE",
+    )
+
+    render = render_current_price_structure(
+        _summary(
+            resistance=resistance,
+            provisional_resistance=provisional,
+        ),
+        ticker="TEST",
+        as_of="2026-08-25",
+        current_price="100",
+        currency="USD",
+        include_current_price=False,
+        enforce_user_visible_proximity=True,
+        security_basis="US_LISTED:TEST",
+        adjustment_basis="provider_adjusted_price_v1",
+    )
+
+    assert render.section.count("약 $120~$124") == 1
+    assert "잠정 월봉 볼린저 중첩" in render.section
+    assert validate_price_structure_render(render).status == "PASS"
+
+
+def test_provisional_overlap_requires_complete_partial_bar_lineage() -> None:
+    resistance = _zone(
+        "pivot-resistance",
+        "120",
+        "124",
+        "약 $120~$124",
+        role="RESISTANCE",
+    )
+    provisional = _provisional_bollinger_zone(
+        "provisional-monthly-resistance",
+        "120",
+        "124",
+        "약 $120~$124",
+        role="RESISTANCE",
+    )
+    provisional["observation_timestamps"] = []
+
+    render = render_current_price_structure(
+        _summary(
+            resistance=resistance,
+            provisional_resistance=provisional,
+        ),
+        ticker="TEST",
+        as_of="2026-08-25",
+        current_price="100",
+        currency="USD",
+        include_current_price=False,
+        enforce_user_visible_proximity=True,
+        security_basis="US_LISTED:TEST",
+        adjustment_basis="provider_adjusted_price_v1",
+    )
+
+    assert "잠정" not in render.section
+    assert validate_price_structure_render(render).status == "PASS"
+
+
+def test_different_current_quote_and_structure_close_have_explicit_labels() -> None:
+    render = render_current_price_structure(
+        _summary(),
+        ticker="MU",
+        as_of="2026-08-27",
+        current_price="915.99",
+        currency="USD",
+        include_current_price=True,
+        current_quote={
+            "value": "935.39",
+            "currency": "USD",
+            "source": "ohlcv_analyst",
+            "observation_timestamp": "2026-08-27T19:05:00-04:00",
+            "market_session": "after_hours",
+            "security_basis": "US_LISTED:MU",
+        },
+        structure_basis_session="2026-08-27",
+        enforce_user_visible_proximity=True,
+        security_basis="US_LISTED:MU",
+        adjustment_basis="provider_adjusted_price_v1",
+    )
+
+    assert "현재가(시간외): $935.39" in render.section
+    assert "가격 구조 기준 종가(정규장): $915.99" in render.section
+    assert validate_price_structure_render(render).status == "PASS"
+
+
+def test_identical_current_quote_and_structure_close_collapse_to_one_line() -> None:
+    render = render_current_price_structure(
+        _summary(),
+        ticker="000660",
+        as_of="2026-08-28",
+        current_price="1653000",
+        currency="KRW",
+        include_current_price=True,
+        current_quote={
+            "value": "1653000",
+            "currency": "KRW",
+            "source": "ohlcv_analyst",
+            "observation_timestamp": "2026-08-28T16:05:00+09:00",
+            "market_session": "after_hours",
+            "security_basis": "KR:000660",
+        },
+        structure_basis_session="2026-08-28",
+        enforce_user_visible_proximity=True,
+        security_basis="KR:000660",
+        adjustment_basis="provider_adjusted_price_v1",
+    )
+
+    assert "현재가(정규장 종가): 1,653,000원" in render.section
+    assert "가격 구조 기준 종가" not in render.section
+    assert sum("1,653,000원" in line for line in render.section.splitlines()) == 1
+    assert validate_price_structure_render(render).status == "PASS"
+
+
+def test_mismatched_quote_currency_is_suppressed() -> None:
+    render = render_current_price_structure(
+        _summary(),
+        ticker="MU",
+        as_of="2026-08-27",
+        current_price="915.99",
+        currency="USD",
+        include_current_price=True,
+        current_quote={
+            "value": "935.39",
+            "currency": "KRW",
+            "source": "ohlcv_analyst",
+            "observation_timestamp": "2026-08-27T19:05:00-04:00",
+            "market_session": "after_hours",
+            "security_basis": "US_LISTED:MU",
+        },
+        structure_basis_session="2026-08-27",
+        enforce_user_visible_proximity=True,
+        security_basis="US_LISTED:MU",
+        adjustment_basis="provider_adjusted_price_v1",
+    )
+
+    assert "현재가(시간외)" not in render.section
+    assert "가격 구조 기준 종가(정규장): $915.99" in render.section
     assert validate_price_structure_render(render).status == "PASS"
 
 

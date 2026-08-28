@@ -35,6 +35,7 @@ SR_BASE_CONTRACT = "deterministic-sr-base-layer-v1"
 SR_PROXIMITY_CONTRACT = "sr-proximity-relevance-gate-v1"
 MAJOR_SR_REALITY_CONTRACT = "major-sr-price-anchor-reality-gate-v1"
 DYNAMIC_BOLLINGER_CONTRACT = "dynamic-bollinger-support-resistance-v1"
+PROVISIONAL_BOLLINGER_CONTRACT = "provisional-bollinger-expansion-v2"
 
 TIMEFRAME_ORDER: tuple[Timeframe, ...] = ("monthly", "weekly", "daily")
 HISTORY_REQUESTS: dict[Timeframe, int] = {
@@ -153,6 +154,9 @@ class ZoneSource(FrozenModel):
     equivalence_class_id: str | None = None
     indicator_observation_date: str | None = None
     indicator_bar_state: BarState | None = None
+    observation_timestamp: str | None = None
+    indicator_bar_start: str | None = None
+    indicator_bar_expected_close: str | None = None
     last_price_interaction_date: str | None = None
     historical_interaction_count: int = 0
     price_anchor_ref: str | None = None
@@ -181,6 +185,9 @@ class TechnicalZone(FrozenModel):
     price_anchor_refs: tuple[str, ...] = ()
     indicator_observation_dates: tuple[str, ...] = ()
     indicator_bar_states: tuple[BarState, ...] = ()
+    observation_timestamps: tuple[str, ...] = ()
+    indicator_bar_starts: tuple[str, ...] = ()
+    indicator_bar_expected_closes: tuple[str, ...] = ()
     last_price_interaction_date: str | None = None
     historical_interaction_count: int = 0
     confluence_stability: Literal[
@@ -219,6 +226,9 @@ class SelectedSRZone(FrozenModel):
     price_anchor_refs: tuple[str, ...] = ()
     indicator_observation_dates: tuple[str, ...] = ()
     indicator_bar_states: tuple[BarState, ...] = ()
+    observation_timestamps: tuple[str, ...] = ()
+    indicator_bar_starts: tuple[str, ...] = ()
+    indicator_bar_expected_closes: tuple[str, ...] = ()
     last_price_interaction_date: str | None = None
     historical_interaction_count: int = 0
     raw_low: Decimal
@@ -261,6 +271,8 @@ class SRFinalSummary(FrozenModel):
     major_structural_resistance: SRSideSelection
     dynamic_bollinger_support: SelectedSRZone | None = None
     dynamic_bollinger_resistance: SelectedSRZone | None = None
+    provisional_bollinger_support: SelectedSRZone | None = None
+    provisional_bollinger_resistance: SelectedSRZone | None = None
     nearest_cross_timeframe_zone: SelectedSRZone | None = None
     nearest_cross_timeframe_reason: str | None = None
     major_cross_timeframe_zone: SelectedSRZone | None = None
@@ -393,6 +405,9 @@ class PriceStructureWaveFibV3Result(FrozenModel):
     adjustment_basis: str
     as_of: str
     current_price: Decimal
+    structure_basis_close: Decimal | None = None
+    structure_basis_session: str | None = None
+    observed_at: str | None = None
     coverage: dict[Timeframe, LongHistoryCoverage]
     pivots: dict[Timeframe, tuple[PivotPoint, ...]]
     sr_maps: dict[Timeframe, tuple[TechnicalZone, ...]]
@@ -543,6 +558,30 @@ def normalize_completed_bars(
                 if completed_session is not None and end <= completed_session
                 else "PARTIAL"
             )
+        try:
+            open_price = _decimal(raw["open"])
+            high_price = _decimal(raw["high"])
+            low_price = _decimal(raw["low"])
+            close_price = _decimal(raw["close"])
+            volume = (
+                _decimal(raw["volume"]) if raw.get("volume") is not None else None
+            )
+            trading_value = (
+                _decimal(raw.get("value"))
+                if raw.get("value") is not None
+                else _decimal(raw.get("trading_value"))
+                if raw.get("trading_value") is not None
+                else None
+            )
+        except (ArithmeticError, TypeError, ValueError):
+            continue
+        prices = (open_price, high_price, low_price, close_price)
+        if not all(value.is_finite() for value in prices):
+            continue
+        if volume is not None and (not volume.is_finite() or volume < 0):
+            continue
+        if trading_value is not None and not trading_value.is_finite():
+            continue
         bar = PriceBar(
             bar_id=_stable_id(
                 "v3-bar",
@@ -553,18 +592,12 @@ def normalize_completed_bars(
                 period_end,
             ),
             date=bar_date,
-            open=_decimal(raw["open"]),
-            high=_decimal(raw["high"]),
-            low=_decimal(raw["low"]),
-            close=_decimal(raw["close"]),
-            volume=_decimal(raw["volume"]) if raw.get("volume") is not None else None,
-            trading_value=(
-                _decimal(raw.get("value"))
-                if raw.get("value") is not None
-                else _decimal(raw.get("trading_value"))
-                if raw.get("trading_value") is not None
-                else None
-            ),
+            open=open_price,
+            high=high_price,
+            low=low_price,
+            close=close_price,
+            volume=volume,
+            trading_value=trading_value,
             timeframe=timeframe,
             period_start=period_start,
             period_end=period_end,
@@ -890,6 +923,87 @@ def _bollinger_sources(
         )
         for name, price in points.items()
         if price > 0
+    )
+
+
+def _provisional_bollinger_sources(
+    bars: Sequence[PriceBar],
+    *,
+    ticker: str,
+    timeframe: Timeframe,
+) -> tuple[ZoneSource, ...]:
+    completed = tuple(bar for bar in bars if bar.bar_state == "COMPLETE")
+    partial = tuple(bar for bar in bars if bar.bar_state == "PARTIAL")
+    if len(completed) < 19 or not partial:
+        return ()
+    latest = partial[-1]
+    if not (
+        latest.observed_at
+        and latest.period_start
+        and latest.period_end
+        and latest.bar_state == "PARTIAL"
+    ):
+        return ()
+    observed_date = datetime.fromisoformat(latest.observed_at).date().isoformat()
+    if not (latest.period_start <= observed_date <= latest.period_end):
+        return ()
+    closes = [float(bar.close) for bar in completed[-19:]] + [float(latest.close)]
+    mean = Decimal(str(statistics.fmean(closes)))
+    deviation = Decimal(str(statistics.pstdev(closes)))
+    points = {
+        "LOWER_20_2": mean - deviation * Decimal(2),
+        "UPPER_20_2": mean + deviation * Decimal(2),
+    }
+    return tuple(
+        ZoneSource(
+            source_id=_stable_id(
+                "v3-provisional-bollinger",
+                ticker,
+                timeframe,
+                name,
+                price,
+                latest.observed_at,
+                latest.period_start,
+                latest.period_end,
+            ),
+            evidence_type="BOLLINGER",
+            evidence_family=f"PROVISIONAL_BOLLINGER_{timeframe.upper()}",
+            method_family=name,
+            source_timeframe=timeframe,
+            source_degree=f"{timeframe.upper()}_IN_PROGRESS_EXPANSION",
+            confluence_target_timeframe=timeframe,
+            price=_rounded(price),
+            status="PROVISIONAL",
+            indicator_observation_date=observed_date,
+            indicator_bar_state="PARTIAL",
+            observation_timestamp=latest.observed_at,
+            indicator_bar_start=latest.period_start,
+            indicator_bar_expected_close=latest.period_end,
+            source_role=("SUPPORT" if name == "LOWER_20_2" else "RESISTANCE"),
+        )
+        for name, price in points.items()
+        if price.is_finite() and price > 0
+    )
+
+
+def build_provisional_bollinger_zone_map(
+    *,
+    ticker: str,
+    timeframe: Timeframe,
+    bars: Sequence[PriceBar],
+    current_price: Decimal,
+) -> tuple[TechnicalZone, ...]:
+    sources = _provisional_bollinger_sources(
+        bars,
+        ticker=ticker,
+        timeframe=timeframe,
+    )
+    return merge_zone_sources(
+        sources,
+        ticker=ticker,
+        timeframe=timeframe,
+        current_price=current_price,
+        limit=None,
     )
 
 
@@ -1649,6 +1763,33 @@ def merge_zone_sources(
                 }
             )
         )
+        observation_timestamps = tuple(
+            sorted(
+                {
+                    source.observation_timestamp
+                    for source in group
+                    if source.observation_timestamp
+                }
+            )
+        )
+        indicator_bar_starts = tuple(
+            sorted(
+                {
+                    source.indicator_bar_start
+                    for source in group
+                    if source.indicator_bar_start
+                }
+            )
+        )
+        indicator_bar_expected_closes = tuple(
+            sorted(
+                {
+                    source.indicator_bar_expected_close
+                    for source in group
+                    if source.indicator_bar_expected_close
+                }
+            )
+        )
         last_price_interaction_date = max(interactions) if interactions else None
         zones.append(
             TechnicalZone(
@@ -1677,6 +1818,9 @@ def merge_zone_sources(
                 price_anchor_refs=price_anchor_refs,
                 indicator_observation_dates=indicator_observation_dates,
                 indicator_bar_states=indicator_bar_states,
+                observation_timestamps=observation_timestamps,
+                indicator_bar_starts=indicator_bar_starts,
+                indicator_bar_expected_closes=indicator_bar_expected_closes,
                 last_price_interaction_date=last_price_interaction_date,
                 historical_interaction_count=historical_interaction_count,
                 confluence_stability=confluence_stability,
@@ -1712,11 +1856,18 @@ def build_timeframe_zone_map(
     fibonacci: Sequence[FibonacciReference],
     current_price: Decimal,
 ) -> tuple[TechnicalZone, ...]:
+    completed_bars = tuple(bar for bar in bars if bar.bar_state == "COMPLETE")
     sources: list[ZoneSource] = []
     for zone in pivot_zones:
         sources.extend(zone.sources)
-    sources.extend(_bollinger_sources(bars, ticker=ticker, timeframe=timeframe))
-    box = _balance_box_source(bars, ticker=ticker, timeframe=timeframe)
+    sources.extend(
+        _bollinger_sources(completed_bars, ticker=ticker, timeframe=timeframe)
+    )
+    box = _balance_box_source(
+        completed_bars,
+        ticker=ticker,
+        timeframe=timeframe,
+    )
     if box is not None:
         sources.append(box)
     sources.extend(
@@ -1879,6 +2030,9 @@ def _selected_sr_zone(
         ),
         indicator_observation_dates=zone.indicator_observation_dates,
         indicator_bar_states=zone.indicator_bar_states,
+        observation_timestamps=zone.observation_timestamps,
+        indicator_bar_starts=zone.indicator_bar_starts,
+        indicator_bar_expected_closes=zone.indicator_bar_expected_closes,
         last_price_interaction_date=(
             zone.last_price_interaction_date or zone.last_meaningful_interaction
         ),
@@ -2155,6 +2309,59 @@ def _dynamic_bollinger_summary_side(
     )
 
 
+def _provisional_bollinger_zone_eligible(zone: TechnicalZone) -> bool:
+    sources = [
+        source
+        for source in zone.sources
+        if source.evidence_family.startswith("PROVISIONAL_BOLLINGER_")
+    ]
+    return bool(sources) and all(
+        source.status == "PROVISIONAL"
+        and source.indicator_bar_state == "PARTIAL"
+        and source.observation_timestamp is not None
+        and source.indicator_bar_start is not None
+        and source.indicator_bar_expected_close is not None
+        for source in sources
+    )
+
+
+def _provisional_bollinger_summary_side(
+    maps: Mapping[Timeframe, Sequence[TechnicalZone]],
+    *,
+    role: Literal["SUPPORT", "RESISTANCE"],
+    currency: str,
+    current_price: Decimal,
+    as_of: str,
+) -> SelectedSRZone | None:
+    candidates: list[tuple[Timeframe, TechnicalZone, Sequence[TechnicalZone]]] = []
+    for timeframe in TIMEFRAME_ORDER:
+        local = maps.get(timeframe, ())
+        candidates.extend(
+            (timeframe, zone, local)
+            for zone in local
+            if zone.current_role == role
+            and _provisional_bollinger_zone_eligible(zone)
+        )
+    if not candidates:
+        return None
+    timeframe, zone, local = max(
+        candidates,
+        key=lambda item: (
+            TIMEFRAME_IMPORTANCE[item[0]],
+            -item[1].proximity_pct,
+        ),
+    )
+    return _selected_sr_zone(
+        zone,
+        requested_timeframe="summary",
+        source_timeframe=timeframe,
+        all_source_zones=local,
+        currency=currency,
+        current_price=current_price,
+        as_of=as_of,
+    )
+
+
 def _active_cross_zone(
     cross: Sequence[TechnicalZone],
     maps: Mapping[Timeframe, Sequence[TechnicalZone]],
@@ -2247,6 +2454,7 @@ def build_deterministic_sr_base_layer(
     deterministic_maps: Mapping[Timeframe, Sequence[TechnicalZone]],
     combined_maps: Mapping[Timeframe, Sequence[TechnicalZone]],
     primary_hypothesis_status: HypothesisStatus,
+    provisional_maps: Mapping[Timeframe, Sequence[TechnicalZone]] | None = None,
 ) -> DeterministicSRBaseLayer:
     timeframe_selections: dict[Timeframe, TimeframeSRSelection] = {}
     for timeframe in TIMEFRAME_ORDER:
@@ -2420,6 +2628,20 @@ def build_deterministic_sr_base_layer(
         ),
         dynamic_bollinger_resistance=_dynamic_bollinger_summary_side(
             deterministic_maps,
+            role="RESISTANCE",
+            currency=currency,
+            current_price=current_price,
+            as_of=as_of,
+        ),
+        provisional_bollinger_support=_provisional_bollinger_summary_side(
+            provisional_maps or {},
+            role="SUPPORT",
+            currency=currency,
+            current_price=current_price,
+            as_of=as_of,
+        ),
+        provisional_bollinger_resistance=_provisional_bollinger_summary_side(
+            provisional_maps or {},
             role="RESISTANCE",
             currency=currency,
             current_price=current_price,
@@ -2694,8 +2916,28 @@ def build_price_structure_wave_fib_v3(
             timeframe=timeframe,
             adjustment_basis=adjustment_basis,
         )
-    latest_bars = histories["daily"] or histories["weekly"] or histories["monthly"]
-    current_price = latest_bars[-1].close if latest_bars else Decimal(0)
+    latest_complete_bars = next(
+        (
+            complete
+            for timeframe in ("daily", "weekly", "monthly")
+            if (
+                complete := tuple(
+                    bar
+                    for bar in histories[timeframe]
+                    if bar.bar_state == "COMPLETE"
+                )
+            )
+        ),
+        (),
+    )
+    current_price = (
+        latest_complete_bars[-1].close if latest_complete_bars else Decimal(0)
+    )
+    structure_basis_session = (
+        latest_complete_bars[-1].period_end or latest_complete_bars[-1].date
+        if latest_complete_bars
+        else None
+    )
     for timeframe in TIMEFRAME_ORDER:
         sr_maps[timeframe] = build_pivot_zones(
             pivots[timeframe],
@@ -2725,6 +2967,7 @@ def build_price_structure_wave_fib_v3(
         else ()
     )
     deterministic_maps: dict[Timeframe, tuple[TechnicalZone, ...]] = {}
+    provisional_maps: dict[Timeframe, tuple[TechnicalZone, ...]] = {}
     maps: dict[Timeframe, tuple[TechnicalZone, ...]] = {}
     for timeframe in TIMEFRAME_ORDER:
         deterministic_maps[timeframe] = build_timeframe_zone_map(
@@ -2743,6 +2986,12 @@ def build_price_structure_wave_fib_v3(
             fibonacci=fibonacci,
             current_price=current_price,
         )
+        provisional_maps[timeframe] = build_provisional_bollinger_zone_map(
+            ticker=ticker,
+            timeframe=timeframe,
+            bars=histories[timeframe],
+            current_price=current_price,
+        )
     cross = build_cross_timeframe_confluence(
         maps,
         ticker=ticker,
@@ -2757,6 +3006,7 @@ def build_price_structure_wave_fib_v3(
         deterministic_maps=deterministic_maps,
         combined_maps=maps,
         primary_hypothesis_status=primary_status,
+        provisional_maps=provisional_maps,
     )
     render = render_shadow_v3(
         result_maps=maps,
@@ -2776,6 +3026,9 @@ def build_price_structure_wave_fib_v3(
         adjustment_basis=adjustment_basis,
         as_of=cutoff,
         current_price=current_price,
+        structure_basis_close=current_price if latest_complete_bars else None,
+        structure_basis_session=structure_basis_session,
+        observed_at=observed_at,
         coverage=coverage,
         pivots=pivots,
         sr_maps=sr_maps,
@@ -2849,6 +3102,7 @@ def apply_wave_selection_feedback(
         else ()
     )
     deterministic_maps: dict[Timeframe, tuple[TechnicalZone, ...]] = {}
+    provisional_maps: dict[Timeframe, tuple[TechnicalZone, ...]] = {}
     maps: dict[Timeframe, tuple[TechnicalZone, ...]] = {}
     for timeframe in TIMEFRAME_ORDER:
         deterministic_maps[timeframe] = build_timeframe_zone_map(
@@ -2857,6 +3111,12 @@ def apply_wave_selection_feedback(
             bars=histories[timeframe],
             pivot_zones=result.sr_maps[timeframe],
             fibonacci=(),
+            current_price=result.current_price,
+        )
+        provisional_maps[timeframe] = build_provisional_bollinger_zone_map(
+            ticker=result.ticker,
+            timeframe=timeframe,
+            bars=histories[timeframe],
             current_price=result.current_price,
         )
         maps[timeframe] = build_timeframe_zone_map(
@@ -2882,6 +3142,7 @@ def apply_wave_selection_feedback(
         deterministic_maps=deterministic_maps,
         combined_maps=maps,
         primary_hypothesis_status=selected_status,
+        provisional_maps=provisional_maps,
     )
     render = render_shadow_v3(
         result_maps=maps,

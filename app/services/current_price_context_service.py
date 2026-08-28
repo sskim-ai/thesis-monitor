@@ -142,6 +142,8 @@ def select_current_price_context(
 def fallback_price_context_errors(
     selection: Mapping[str, object],
     rendered_text: str,
+    *,
+    validated_v3_render: bool = False,
 ) -> list[str]:
     """Fail closed when fallback prose contradicts the selected current context."""
     if selection.get("availability") == "legacy_only":
@@ -151,11 +153,21 @@ def fallback_price_context_errors(
     resistance = _mapping(selection.get("active_resistance"))
     risk_reward = _mapping(selection.get("current_price_risk_reward"))
     confirmation = _mapping(selection.get("registered_confirmation"))
-    if support.get("available") is True and "동적 지지" not in rendered_text:
+    if (
+        not validated_v3_render
+        and support.get("available") is True
+        and "동적 지지" not in rendered_text
+    ):
         errors.append("fallback_dynamic_support_not_rendered")
-    if resistance.get("available") is True and "동적 저항" not in rendered_text:
+    if (
+        not validated_v3_render
+        and resistance.get("available") is True
+        and "동적 저항" not in rendered_text
+    ):
         errors.append("fallback_dynamic_resistance_not_rendered")
     if (
+        not validated_v3_render
+        and
         risk_reward.get("available") is True
         and "현재가 기준 차트 손익비" not in rendered_text
     ):

@@ -825,6 +825,22 @@ def apply_family_consensus_feedback(
         combined_maps=maps,
         primary_hypothesis_status=primary_status,
     )
+    if result.sr_base_layer is not None:
+        original_summary = result.sr_base_layer.summary
+        sr_base_layer = sr_base_layer.model_copy(
+            update={
+                "summary": sr_base_layer.summary.model_copy(
+                    update={
+                        "provisional_bollinger_support": (
+                            original_summary.provisional_bollinger_support
+                        ),
+                        "provisional_bollinger_resistance": (
+                            original_summary.provisional_bollinger_resistance
+                        ),
+                    }
+                )
+            }
+        )
     render = render_shadow_v3(
         result_maps=maps,
         hypotheses=selected_hypotheses,

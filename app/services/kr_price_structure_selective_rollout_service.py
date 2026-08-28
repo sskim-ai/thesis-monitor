@@ -172,6 +172,12 @@ def build_kr_price_structure_rollout_decision(
         current_price=context.get("current_price"),
         currency=str(context.get("currency") or "KRW"),
         include_current_price=True,
+        current_quote=(
+            _mapping(context.get("current_quote")) or None
+        ),
+        structure_basis_session=(
+            str(context.get("structure_basis_session") or "") or None
+        ),
         enforce_user_visible_proximity=True,
         security_basis=str(context.get("security_basis") or "") or None,
         adjustment_basis=str(context.get("adjustment_basis") or "") or None,
@@ -321,6 +327,26 @@ def build_price_structure_runtime_context(
         "market": market,
         "as_of": safe_result.as_of,
         "current_price": str(safe_result.current_price),
+        "structure_basis_close": (
+            str(safe_result.structure_basis_close)
+            if safe_result.structure_basis_close is not None
+            else None
+        ),
+        "structure_basis_session": safe_result.structure_basis_session,
+        "current_quote": (
+            {
+                "value": str(safe_result.structure_basis_close),
+                "currency": safe_result.currency,
+                "source": "authoritative_regular_session_close",
+                "observation_timestamp": safe_result.observed_at,
+                "market_session": "regular_session",
+                "security_basis": safe_result.security_id,
+            }
+            if safe_result.structure_basis_close is not None
+            and safe_result.structure_basis_session
+            and safe_result.observed_at
+            else None
+        ),
         "currency": safe_result.currency,
         "security_basis": safe_result.security_id,
         "adjustment_basis": safe_result.adjustment_basis,

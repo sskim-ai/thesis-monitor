@@ -14,6 +14,7 @@ from app.services.price_structure_wave_fibonacci_v3_service import (
     WaveSelectionStatus,
     ZoneSource,
     _bollinger_sources,
+    _provisional_bollinger_sources,
     _source_score,
     build_cross_timeframe_confluence,
     build_pivot_zones,
@@ -239,6 +240,67 @@ def test_bollinger_sources_exclude_partial_current_bar() -> None:
     assert all(source.indicator_observation_date == complete[-1].date for source in sources)
     assert all(source.indicator_bar_state == "COMPLETE" for source in sources)
     assert all(source.price < Decimal("300") for source in sources)
+
+
+def test_provisional_bollinger_uses_valid_partial_bar_with_full_lineage() -> None:
+    complete = tuple(_bar(index, 100 + index) for index in range(19))
+    partial = PriceBar(
+        date="2026-08-03",
+        open=Decimal("118"),
+        high=Decimal("126"),
+        low=Decimal("115"),
+        close=Decimal("124"),
+        volume=Decimal(1000),
+        timeframe="monthly",
+        period_start="2026-08-03",
+        period_end="2026-08-31",
+        observed_at="2026-08-27T19:05:00-04:00",
+        bar_state="PARTIAL",
+    )
+
+    sources = _provisional_bollinger_sources(
+        (*complete, partial),
+        ticker="TEST",
+        timeframe="monthly",
+    )
+
+    assert len(sources) == 2
+    assert all(source.status == "PROVISIONAL" for source in sources)
+    assert all(source.indicator_bar_state == "PARTIAL" for source in sources)
+    assert all(source.observation_timestamp == partial.observed_at for source in sources)
+    assert all(source.indicator_bar_start == partial.period_start for source in sources)
+    assert all(
+        source.indicator_bar_expected_close == partial.period_end
+        for source in sources
+    )
+    assert all(not source.price_anchor_ref for source in sources)
+
+
+def test_malformed_or_negative_volume_bar_is_excluded() -> None:
+    bars = normalize_completed_bars(
+        [
+            _raw("2026-08-25", 100),
+            {
+                "date": "2026-08-26",
+                "open": 100,
+                "high": 99,
+                "low": 95,
+                "close": 101,
+                "volume": 1000,
+            },
+            {
+                "date": "2026-08-27",
+                "open": 100,
+                "high": 102,
+                "low": 98,
+                "close": 101,
+                "volume": -1,
+            },
+        ],
+        cutoff="2026-08-27",
+    )
+
+    assert [bar.date for bar in bars] == ["2026-08-25"]
 
 
 def test_wave_hard_rules_generate_no_forced_impulse() -> None:

@@ -103,6 +103,14 @@ def build_us_price_structure_rollout_decision(
         current_price=context.get("current_price"),
         currency=str(context.get("currency") or "USD"),
         include_current_price=True,
+        current_quote=(
+            context.get("current_quote")
+            if isinstance(context.get("current_quote"), Mapping)
+            else None
+        ),
+        structure_basis_session=(
+            str(context.get("structure_basis_session") or "") or None
+        ),
         enforce_user_visible_proximity=True,
         security_basis=str(context.get("security_basis") or "") or None,
         adjustment_basis=str(context.get("adjustment_basis") or "") or None,

@@ -85,7 +85,7 @@ def test_eligible_kr_subject_renders_nearest_major_and_safe_fib() -> None:
 
     assert decision.eligibility == KrPriceStructureEligibility.ELIGIBLE
     assert decision.section is not None
-    assert "기준 종가: 328,000원" in decision.section
+    assert "가격 구조 기준 종가(정규장): 328,000원" in decision.section
     assert "가까운 지지: 약 31.8만~32.6만원" in decision.section
     assert "가까운 저항: 약 33만~34.2만원" in decision.section
     assert "주요 구조 지지: 약 30.8만~31.7만원" in decision.section
@@ -97,7 +97,7 @@ def test_eligible_kr_subject_renders_nearest_major_and_safe_fib() -> None:
         "major-support",
         "major-resistance",
         "fib-confluence",
-        "current-price:005490:2026-08-27",
+        "structure-close:005490:2026-08-27",
     }
     assert "목표" not in decision.section
     assert "손절" not in decision.section

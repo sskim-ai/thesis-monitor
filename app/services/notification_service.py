@@ -1768,8 +1768,33 @@ def _assessment_report(
         structure = structure if isinstance(structure, dict) else {}
         price_structure_v3 = structure.get("price_structure_v3")
         price_structure_v3 = (
-            price_structure_v3 if isinstance(price_structure_v3, dict) else {}
+            dict(price_structure_v3) if isinstance(price_structure_v3, dict) else {}
         )
+        quote_value = decision.get("current_price")
+        quote_currency = decision.get("currency")
+        quote_observed_at = decision.get("price_observed_at")
+        quote_market_session = decision.get("market_session")
+        quote_source = chart.get("source")
+        quote_security_basis = price_structure_v3.get("security_basis")
+        if all(
+            value not in {None, ""}
+            for value in (
+                quote_value,
+                quote_currency,
+                quote_observed_at,
+                quote_market_session,
+                quote_source,
+                quote_security_basis,
+            )
+        ):
+            price_structure_v3["current_quote"] = {
+                "value": quote_value,
+                "currency": quote_currency,
+                "source": quote_source,
+                "observation_timestamp": quote_observed_at,
+                "market_session": quote_market_session,
+                "security_basis": quote_security_basis,
+            }
         decision_builder = (
             build_kr_price_structure_rollout_decision
             if is_krx
@@ -1864,6 +1889,11 @@ def _assessment_report(
     fallback_price_errors = fallback_price_context_errors(
         current_price_context,
         fallback,
+        validated_v3_render=bool(
+            price_structure_v3_decision is not None
+            and price_structure_v3_decision.section
+            and not price_structure_v3_decision.render_validation_errors
+        ),
     )
     if fallback_price_errors:
         raise ValueError(";".join(fallback_price_errors))

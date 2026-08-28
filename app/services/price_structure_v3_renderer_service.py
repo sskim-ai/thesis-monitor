@@ -21,6 +21,8 @@ UserVisibleSRClass = Literal[
 ]
 
 DYNAMIC_BOLLINGER_CONTRACT = "dynamic-bollinger-support-resistance-v1"
+PROVISIONAL_BOLLINGER_CONTRACT = "provisional-bollinger-expansion-v2"
+PRICE_BASIS_LABEL_CONTRACT = "current-quote-structure-close-label-v2"
 
 PriceOwner = Literal[
     "CURRENT_PRICE_STRUCTURE",
@@ -183,6 +185,26 @@ def classify_user_visible_dynamic_bollinger(
     )
 
 
+def classify_user_visible_provisional_bollinger(
+    zone: Mapping[str, object],
+) -> bool:
+    families = zone.get("source_families")
+    bar_states = zone.get("indicator_bar_states")
+    return bool(
+        str(zone.get("current_role") or "") in {"SUPPORT", "RESISTANCE"}
+        and isinstance(families, Sequence)
+        and not isinstance(families, (str, bytes))
+        and any(
+            str(family).startswith("PROVISIONAL_BOLLINGER_")
+            for family in families
+        )
+        and tuple(bar_states or ()) == ("PARTIAL",)
+        and zone.get("observation_timestamps")
+        and zone.get("indicator_bar_starts")
+        and zone.get("indicator_bar_expected_closes")
+    )
+
+
 def _has_price_anchor_refs(zone: Mapping[str, object]) -> bool:
     refs = zone.get("price_anchor_refs")
     return bool(
@@ -268,6 +290,13 @@ def _binding(
                     "indicator_observation_dates", ()
                 ),
                 "indicator_bar_states": zone.get("indicator_bar_states", ()),
+                "observation_timestamps": zone.get(
+                    "observation_timestamps", ()
+                ),
+                "indicator_bar_starts": zone.get("indicator_bar_starts", ()),
+                "indicator_bar_expected_closes": zone.get(
+                    "indicator_bar_expected_closes", ()
+                ),
                 "last_price_interaction_date": zone.get(
                     "last_price_interaction_date"
                 ),
@@ -286,6 +315,113 @@ def _price_display(value: object, currency: str) -> str:
     return f"${amount:,.2f}"
 
 
+def _quote_session_label(value: object) -> str | None:
+    return {
+        "regular": "정규장",
+        "regular_session": "정규장",
+        "after_hours": "시간외",
+        "pre_market": "장전",
+        "premarket": "장전",
+    }.get(str(value or "").lower())
+
+
+def _complete_current_quote(value: object) -> Mapping[str, object] | None:
+    if not isinstance(value, Mapping):
+        return None
+    required = (
+        "value",
+        "currency",
+        "source",
+        "observation_timestamp",
+        "market_session",
+        "security_basis",
+    )
+    if any(value.get(key) in {None, ""} for key in required):
+        return None
+    return value
+
+
+def _append_price_basis_lines(
+    *,
+    lines: list[str],
+    bindings: list[dict[str, object]],
+    ticker: str,
+    as_of: str,
+    structure_basis_close: object,
+    structure_basis_session: str,
+    currency: str,
+    current_quote: Mapping[str, object] | None,
+    security_basis: str | None,
+    adjustment_basis: str | None,
+) -> None:
+    quote = _complete_current_quote(current_quote)
+    if quote is not None and str(quote["currency"]) != currency:
+        quote = None
+    structure_value = Decimal(str(structure_basis_close))
+    quote_value = Decimal(str(quote["value"])) if quote is not None else None
+    if quote is not None and quote_value == structure_value:
+        lines.append(
+            f"• 현재가(정규장 종가): {_price_display(structure_value, currency)}"
+        )
+        bindings.append(
+            {
+                "contract": PRICE_BASIS_LABEL_CONTRACT,
+                "owner": "CURRENT_PRICE_STRUCTURE",
+                "semantic_type": "CURRENT_QUOTE_AND_STRUCTURE_BASIS_CLOSE",
+                "fact_ref": f"price-basis:{ticker}:{structure_basis_session}",
+                "value": str(structure_value),
+                "currency": currency,
+                "source": quote["source"],
+                "observation_timestamp": quote["observation_timestamp"],
+                "market_session": quote["market_session"],
+                "security_basis": security_basis,
+                "adjustment_basis": adjustment_basis,
+                "structure_basis_session": structure_basis_session,
+                "structure_basis": "completed_regular_session_close",
+            }
+        )
+        return
+    if quote is not None:
+        session_label = _quote_session_label(quote.get("market_session"))
+        label = f"현재가({session_label})" if session_label else "현재가"
+        lines.append(f"• {label}: {_price_display(quote_value, currency)}")
+        bindings.append(
+            {
+                "contract": PRICE_BASIS_LABEL_CONTRACT,
+                "owner": "CURRENT_PRICE_STRUCTURE",
+                "semantic_type": "CURRENT_QUOTE",
+                "fact_ref": (
+                    f"current-quote:{ticker}:{quote['observation_timestamp']}"
+                ),
+                "value": str(quote_value),
+                "currency": quote["currency"],
+                "source": quote["source"],
+                "observation_timestamp": quote["observation_timestamp"],
+                "market_session": quote["market_session"],
+                "security_basis": quote["security_basis"],
+            }
+        )
+    lines.append(
+        "• 가격 구조 기준 종가(정규장): "
+        f"{_price_display(structure_value, currency)}"
+    )
+    bindings.append(
+        {
+            "contract": PRICE_BASIS_LABEL_CONTRACT,
+            "owner": "CURRENT_PRICE_STRUCTURE",
+            "semantic_type": "STRUCTURE_BASIS_CLOSE",
+            "fact_ref": f"structure-close:{ticker}:{structure_basis_session}",
+            "value": str(structure_value),
+            "currency": currency,
+            "security_basis": security_basis,
+            "adjustment_basis": adjustment_basis,
+            "structure_basis_session": structure_basis_session,
+            "structure_basis": "completed_regular_session_close",
+            "as_of": as_of,
+        }
+    )
+
+
 _VISIBLE_SR_LABELS = {
     "NEAR_SUPPORT": "가까운 지지",
     "NEAR_RESISTANCE": "가까운 저항",
@@ -298,6 +434,11 @@ _VISIBLE_SR_LABELS = {
 _DYNAMIC_BOLLINGER_LABELS = {
     "DYNAMIC_BOLLINGER_SUPPORT": "볼린저 지지",
     "DYNAMIC_BOLLINGER_RESISTANCE": "볼린저 저항",
+}
+
+_PROVISIONAL_BOLLINGER_LABELS = {
+    "PROVISIONAL_BOLLINGER_SUPPORT": "잠정 볼린저 지지",
+    "PROVISIONAL_BOLLINGER_RESISTANCE": "잠정 볼린저 저항",
 }
 
 _TIMEFRAME_LABELS = {
@@ -375,6 +516,28 @@ def _material_dynamic_bollinger_zones(
     return (selected,)
 
 
+def _material_provisional_bollinger_zones(
+    zones: Sequence[Mapping[str, object]],
+) -> tuple[Mapping[str, object], ...]:
+    eligible = [
+        zone
+        for zone in zones
+        if classify_user_visible_provisional_bollinger(zone)
+    ]
+    if not eligible:
+        return ()
+    timeframe_rank = {"daily": 1, "weekly": 2, "monthly": 3}
+    return (
+        max(
+            eligible,
+            key=lambda zone: (
+                timeframe_rank.get(str(zone.get("source_timeframe") or ""), 0),
+                -Decimal(str(zone.get("distance_pct") or 0)),
+            ),
+        ),
+    )
+
+
 def _append_dynamic_bollinger_zone(
     *,
     lines: list[str],
@@ -448,6 +611,90 @@ def _append_dynamic_bollinger_zone(
         {
             "contract": DYNAMIC_BOLLINGER_CONTRACT,
             "dynamic_bollinger_timeframe": zone.get("source_timeframe"),
+        }
+    )
+    bindings.append(binding)
+
+
+def _append_provisional_bollinger_zone(
+    *,
+    lines: list[str],
+    bindings: list[dict[str, object]],
+    displayed: list[Mapping[str, object]],
+    zone: Mapping[str, object],
+    security_basis: str | None,
+    adjustment_basis: str | None,
+) -> None:
+    if not classify_user_visible_provisional_bollinger(zone):
+        return
+    role = str(zone.get("current_role") or "")
+    semantic_type = f"PROVISIONAL_BOLLINGER_{role}"
+    if semantic_type not in _PROVISIONAL_BOLLINGER_LABELS:
+        return
+    timeframe_label = _dynamic_timeframe_label(zone)
+    overlap = next(
+        (
+            item
+            for item in displayed
+            if zone.get("display") == item.get("display") or _overlap(zone, item)
+        ),
+        None,
+    )
+    if overlap is not None:
+        target = next(
+            (
+                binding
+                for binding in bindings
+                if binding.get("fact_ref") == overlap.get("zone_id")
+            ),
+            None,
+        )
+        if target is None:
+            return
+        annotation = f"잠정 {timeframe_label} 볼린저 중첩"
+        for index, line in enumerate(lines):
+            if line.startswith("• ") and str(target.get("display") or "") in line:
+                lines[index] = f"{line} · {annotation}"
+                break
+        target.update(
+            {
+                "provisional_bollinger_confluence": True,
+                "provisional_bollinger_timeframe": zone.get("source_timeframe"),
+                "provisional_bollinger_source_refs": zone.get("source_refs", ()),
+                "provisional_bollinger_observation_timestamps": zone.get(
+                    "observation_timestamps", ()
+                ),
+                "provisional_bollinger_indicator_bar_states": zone.get(
+                    "indicator_bar_states", ()
+                ),
+                "provisional_bollinger_bar_starts": zone.get(
+                    "indicator_bar_starts", ()
+                ),
+                "provisional_bollinger_bar_expected_closes": zone.get(
+                    "indicator_bar_expected_closes", ()
+                ),
+            }
+        )
+        return
+    label = _PROVISIONAL_BOLLINGER_LABELS[semantic_type]
+    lines.append(
+        f"• {label}({timeframe_label}·진행중): {zone['display']}"
+        " · 봉 마감 전 변동 가능"
+    )
+    displayed.append(zone)
+    binding = _binding(
+        zone,
+        semantic_type=semantic_type,
+        include_proximity=True,
+        security_basis=security_basis,
+        adjustment_basis=adjustment_basis,
+    )
+    binding.update(
+        {
+            "contract": PROVISIONAL_BOLLINGER_CONTRACT,
+            "provisional_bollinger_timeframe": zone.get("source_timeframe"),
+            "is_partial_bar": True,
+            "authoritative": False,
         }
     )
     bindings.append(binding)
@@ -560,8 +807,126 @@ def validate_price_structure_render(
         ):
             errors.append(f"dynamic_bollinger_partial_or_unknown_bar:{fact_ref}")
 
-    semantic_by_fact: dict[str, set[str]] = {}
+    provisional_bindings = [
+        binding
+        for binding in render.numeric_bindings
+        if binding.get("semantic_type") in _PROVISIONAL_BOLLINGER_LABELS
+    ]
+    if len(provisional_bindings) > 1:
+        errors.append("provisional_bollinger_line_budget_exceeded")
+    for binding in provisional_bindings:
+        semantic_type = str(binding.get("semantic_type") or "")
+        fact_ref = str(binding.get("fact_ref") or "missing_fact_ref")
+        label = _PROVISIONAL_BOLLINGER_LABELS[semantic_type]
+        timeframe = str(binding.get("provisional_bollinger_timeframe") or "")
+        timeframe_label = _TIMEFRAME_LABELS.get(timeframe)
+        expected_prefix = f"• {label}({timeframe_label}·진행중): "
+        if not timeframe_label or not any(
+            line.startswith(expected_prefix)
+            and "봉 마감 전 변동 가능" in line
+            for line in render.section.splitlines()
+        ):
+            errors.append(f"provisional_bollinger_label_missing:{fact_ref}")
+        if tuple(binding.get("indicator_bar_states") or ()) != ("PARTIAL",):
+            errors.append(f"provisional_bollinger_not_partial:{fact_ref}")
+        if not binding.get("observation_timestamps"):
+            errors.append(f"provisional_bollinger_observation_missing:{fact_ref}")
+        if not binding.get("indicator_bar_starts"):
+            errors.append(f"provisional_bollinger_bar_start_missing:{fact_ref}")
+        if not binding.get("indicator_bar_expected_closes"):
+            errors.append(f"provisional_bollinger_expected_close_missing:{fact_ref}")
+        if binding.get("authoritative") is not False:
+            errors.append(f"provisional_bollinger_authority_leak:{fact_ref}")
+        if not binding.get("security_basis") or not binding.get("adjustment_basis"):
+            errors.append(f"provisional_bollinger_basis_missing:{fact_ref}")
+        for visible in (*sr_bindings, *dynamic_bindings):
+            if _overlap(binding, visible):
+                errors.append(f"duplicate_provisional_range_visible:{fact_ref}")
+
     for binding in (*sr_bindings, *dynamic_bindings):
+        if binding.get("provisional_bollinger_confluence") is not True:
+            continue
+        fact_ref = str(binding.get("fact_ref") or "missing_fact_ref")
+        timeframe = str(binding.get("provisional_bollinger_timeframe") or "")
+        timeframe_label = _TIMEFRAME_LABELS.get(timeframe)
+        if not timeframe_label or f"잠정 {timeframe_label} 볼린저 중첩" not in render.section:
+            errors.append(f"provisional_bollinger_confluence_label_missing:{fact_ref}")
+        if tuple(
+            binding.get("provisional_bollinger_indicator_bar_states") or ()
+        ) != ("PARTIAL",):
+            errors.append(f"provisional_bollinger_not_partial:{fact_ref}")
+        if not binding.get("provisional_bollinger_observation_timestamps"):
+            errors.append(f"provisional_bollinger_observation_missing:{fact_ref}")
+        if not binding.get("provisional_bollinger_bar_starts"):
+            errors.append(f"provisional_bollinger_bar_start_missing:{fact_ref}")
+        if not binding.get("provisional_bollinger_bar_expected_closes"):
+            errors.append(f"provisional_bollinger_expected_close_missing:{fact_ref}")
+
+    price_bindings = [
+        binding
+        for binding in render.numeric_bindings
+        if binding.get("semantic_type")
+        in {
+            "CURRENT_QUOTE",
+            "STRUCTURE_BASIS_CLOSE",
+            "CURRENT_QUOTE_AND_STRUCTURE_BASIS_CLOSE",
+        }
+    ]
+    for binding in price_bindings:
+        semantic_type = str(binding.get("semantic_type") or "")
+        if semantic_type in {
+            "STRUCTURE_BASIS_CLOSE",
+            "CURRENT_QUOTE_AND_STRUCTURE_BASIS_CLOSE",
+        } and not binding.get("structure_basis_session"):
+            errors.append("structure_basis_close_without_session")
+        if semantic_type in {
+            "CURRENT_QUOTE",
+            "CURRENT_QUOTE_AND_STRUCTURE_BASIS_CLOSE",
+        } and not all(
+            binding.get(key)
+            for key in (
+                "source",
+                "observation_timestamp",
+                "market_session",
+                "currency",
+                "security_basis",
+            )
+        ):
+            errors.append("current_quote_metadata_incomplete")
+    current_binding = next(
+        (
+            binding
+            for binding in price_bindings
+            if binding.get("semantic_type") == "CURRENT_QUOTE"
+        ),
+        None,
+    )
+    structure_binding = next(
+        (
+            binding
+            for binding in price_bindings
+            if binding.get("semantic_type") == "STRUCTURE_BASIS_CLOSE"
+        ),
+        None,
+    )
+    if (
+        current_binding is not None
+        and structure_binding is not None
+        and current_binding.get("currency") != structure_binding.get("currency")
+    ):
+        errors.append("current_quote_structure_currency_mismatch")
+    if (
+        current_binding is not None
+        and structure_binding is not None
+        and Decimal(str(current_binding.get("value")))
+        == Decimal(str(structure_binding.get("value")))
+    ):
+        errors.append("duplicate_identical_price_lines")
+    if price_bindings and "• 기준 종가:" in render.section:
+        errors.append("ambiguous_current_vs_structure_price_label")
+
+    semantic_by_fact: dict[str, set[str]] = {}
+    for binding in (*sr_bindings, *dynamic_bindings, *provisional_bindings):
         fact_ref = str(binding.get("fact_ref") or "")
         semantic_by_fact.setdefault(fact_ref, set()).add(
             str(binding.get("semantic_type") or "")
@@ -586,6 +951,8 @@ def render_current_price_structure(
     current_price: object,
     currency: str,
     include_current_price: bool,
+    current_quote: Mapping[str, object] | None = None,
+    structure_basis_session: str | None = None,
     enforce_user_visible_proximity: bool = False,
     security_basis: str | None = None,
     adjustment_basis: str | None = None,
@@ -596,6 +963,8 @@ def render_current_price_structure(
     major_resistance = summary.get("major_structural_resistance")
     dynamic_support = summary.get("dynamic_bollinger_support")
     dynamic_resistance = summary.get("dynamic_bollinger_resistance")
+    provisional_support = summary.get("provisional_bollinger_support")
+    provisional_resistance = summary.get("provisional_bollinger_resistance")
     support_zone = _zone(nearest_support)
     resistance_zone = _zone(nearest_resistance)
     major_support_zone = _zone(major_support)
@@ -606,20 +975,30 @@ def render_current_price_structure(
     dynamic_resistance_zone = (
         dynamic_resistance if isinstance(dynamic_resistance, Mapping) else None
     )
+    provisional_support_zone = (
+        provisional_support if isinstance(provisional_support, Mapping) else None
+    )
+    provisional_resistance_zone = (
+        provisional_resistance
+        if isinstance(provisional_resistance, Mapping)
+        else None
+    )
 
     lines = ["📐 현재 가격 구조"]
     bindings: list[dict[str, object]] = []
     displayed: list[Mapping[str, object]] = []
     if include_current_price:
-        lines.append(f"• 기준 종가: {_price_display(current_price, currency)}")
-        bindings.append(
-            {
-                "owner": "CURRENT_PRICE_STRUCTURE",
-                "semantic_type": "CURRENT_PRICE",
-                "fact_ref": f"current-price:{ticker}:{as_of}",
-                "value": str(current_price),
-                "currency": currency,
-            }
+        _append_price_basis_lines(
+            lines=lines,
+            bindings=bindings,
+            ticker=ticker,
+            as_of=as_of,
+            structure_basis_close=current_price,
+            structure_basis_session=structure_basis_session or as_of,
+            currency=currency,
+            current_quote=current_quote,
+            security_basis=security_basis,
+            adjustment_basis=adjustment_basis,
         )
 
     if enforce_user_visible_proximity:
@@ -676,6 +1055,22 @@ def render_current_price_structure(
         )
         for zone in _material_dynamic_bollinger_zones(dynamic_candidates):
             _append_dynamic_bollinger_zone(
+                lines=lines,
+                bindings=bindings,
+                displayed=displayed,
+                zone=zone,
+                security_basis=security_basis,
+                adjustment_basis=adjustment_basis,
+            )
+        provisional_candidates = tuple(
+            zone
+            for zone in (provisional_support_zone, provisional_resistance_zone)
+            if zone is not None
+        )
+        for zone in _material_provisional_bollinger_zones(
+            provisional_candidates
+        ):
+            _append_provisional_bollinger_zone(
                 lines=lines,
                 bindings=bindings,
                 displayed=displayed,
