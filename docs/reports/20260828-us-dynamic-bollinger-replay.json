@@ -1,0 +1,5046 @@
+{
+  "contract": "dynamic-bollinger-us-replay-v1",
+  "rows": [
+    {
+      "adjustment_basis": "provider_adjusted_price_v1",
+      "as_of": "2026-08-27",
+      "bollinger_only_major_visible": 0,
+      "company": "Core Scientific, Inc.",
+      "coverage": {
+        "daily": {
+          "actual_count": 1000,
+          "actual_end_date": "2026-08-27",
+          "actual_start_date": "2022-09-01",
+          "adjustment_basis": "provider_adjusted_price_v1",
+          "completed_count": 1000,
+          "contract": "ohlcv-long-history-contract-v1",
+          "denial_reason": "provider_limit",
+          "history_complete_to_listing": false,
+          "provider_limit": 1000,
+          "provider_limit_hit": true,
+          "provider_returned_count": 1000,
+          "requested_count": 1200,
+          "status": "PARTIAL_SAFE",
+          "timeframe": "daily"
+        },
+        "monthly": {
+          "actual_count": 56,
+          "actual_end_date": "2026-08-03",
+          "actual_start_date": "2022-01-20",
+          "adjustment_basis": "provider_adjusted_price_v1",
+          "completed_count": 55,
+          "contract": "ohlcv-long-history-contract-v1",
+          "denial_reason": "short_listing_or_available_history",
+          "history_complete_to_listing": true,
+          "provider_limit": 1000,
+          "provider_limit_hit": false,
+          "provider_returned_count": 56,
+          "requested_count": 300,
+          "status": "PARTIAL",
+          "timeframe": "monthly"
+        },
+        "weekly": {
+          "actual_count": 241,
+          "actual_end_date": "2026-08-24",
+          "actual_start_date": "2022-01-20",
+          "adjustment_basis": "provider_adjusted_price_v1",
+          "completed_count": 240,
+          "contract": "ohlcv-long-history-contract-v1",
+          "denial_reason": "short_listing_or_available_history",
+          "history_complete_to_listing": true,
+          "provider_limit": 1000,
+          "provider_limit_hit": false,
+          "provider_returned_count": 241,
+          "requested_count": 600,
+          "status": "PARTIAL",
+          "timeframe": "weekly"
+        }
+      },
+      "currency": "USD",
+      "current_price": "17.54",
+      "denial_reasons": [],
+      "duplicate_sr_range_visible": 0,
+      "dynamic_adjustment_basis_conflicts": 0,
+      "dynamic_ai_fallback_parity": true,
+      "dynamic_bindings": [
+        {
+          "active_relevance": "ACTIVE_NEAR",
+          "adjustment_basis": "provider_adjusted_price_v1",
+          "as_of": "2026-08-27",
+          "contract": "dynamic-bollinger-support-resistance-v1",
+          "currency": "USD",
+          "display": "약 $16.08~$16.17",
+          "distance_pct": "7.854590",
+          "dynamic_bollinger_timeframe": "monthly",
+          "fact_ref": "v3-zone:f5828094114105086844",
+          "historical_interaction_count": 0,
+          "indicator_bar_states": [
+            "COMPLETE"
+          ],
+          "indicator_observation_dates": [
+            "2026-07-31"
+          ],
+          "last_price_interaction_date": null,
+          "owner": "CURRENT_PRICE_STRUCTURE",
+          "price_anchor_refs": [],
+          "proximity_tier": "NEAR",
+          "raw_high": "16.162305",
+          "raw_low": "16.081695",
+          "security_basis": "US_LISTED:CORZ",
+          "semantic_type": "DYNAMIC_BOLLINGER_SUPPORT",
+          "source_families": [
+            "BOLLINGER_MONTHLY"
+          ],
+          "source_refs": [
+            "v3-bollinger:1f1b7d9e816aedb6eb77"
+          ],
+          "source_timeframe": "monthly",
+          "source_timeframes": [
+            "monthly"
+          ]
+        }
+      ],
+      "dynamic_bollinger_resistance": {
+        "active_relevance": "ACTIVE_STRUCTURAL",
+        "display": "약 $19.65~$19.77",
+        "indicator_bar_states": [
+          "COMPLETE"
+        ],
+        "indicator_observation_dates": [
+          "2026-08-27"
+        ],
+        "price_anchor_refs": [
+          "v3-balance-box:db8cf1c45da22e57ac4a"
+        ],
+        "proximity_tier": "RELEVANT",
+        "source_families": [
+          "BALANCE_BOX",
+          "BOLLINGER_DAILY"
+        ],
+        "source_refs": [
+          "v3-balance-box:db8cf1c45da22e57ac4a",
+          "v3-bollinger:f1646929eab7c4f80f59"
+        ],
+        "source_timeframe": "daily",
+        "visible": true,
+        "zone_id": "v3-zone:e9025caac1fd03d4d2b2"
+      },
+      "dynamic_bollinger_support": {
+        "active_relevance": "ACTIVE_NEAR",
+        "display": "약 $16.08~$16.17",
+        "indicator_bar_states": [
+          "COMPLETE"
+        ],
+        "indicator_observation_dates": [
+          "2026-07-31"
+        ],
+        "price_anchor_refs": [],
+        "proximity_tier": "NEAR",
+        "source_families": [
+          "BOLLINGER_MONTHLY"
+        ],
+        "source_refs": [
+          "v3-bollinger:1f1b7d9e816aedb6eb77"
+        ],
+        "source_timeframe": "monthly",
+        "visible": true,
+        "zone_id": "v3-zone:f5828094114105086844"
+      },
+      "dynamic_confluence_bindings": [],
+      "dynamic_currency_conflicts": 0,
+      "dynamic_partial_or_unknown_bar_visible": 0,
+      "dynamic_resistance_line_count": 0,
+      "dynamic_security_basis_conflicts": 0,
+      "dynamic_support_line_count": 1,
+      "eligibility": "ELIGIBLE_SR_ONLY",
+      "invalid_ohlc_rows": [],
+      "major_resistance": {
+        "active_relevance": "ACTIVE_NEAR",
+        "display": "약 $18.58~$18.68",
+        "indicator_bar_states": [],
+        "indicator_observation_dates": [],
+        "price_anchor_refs": [
+          "v3-pivot:11acb35f80bf7aff9a8e"
+        ],
+        "proximity_tier": "NEAR",
+        "source_families": [
+          "PIVOT_MONTHLY"
+        ],
+        "source_refs": [
+          "v3-pivot:11acb35f80bf7aff9a8e"
+        ],
+        "source_timeframe": "monthly",
+        "visible": true,
+        "zone_id": "v3-zone:3c75039e68f85d753525"
+      },
+      "major_support": {
+        "active_relevance": "ACTIVE_STRUCTURAL",
+        "display": "약 $13.32~$13.6",
+        "indicator_bar_states": [],
+        "indicator_observation_dates": [],
+        "price_anchor_refs": [
+          "v3-pivot:1945039698d19a0041b1",
+          "v3-pivot:e84fe5838c9d280b9714"
+        ],
+        "proximity_tier": "RELEVANT",
+        "source_families": [
+          "PIVOT_MONTHLY"
+        ],
+        "source_refs": [
+          "v3-pivot:1945039698d19a0041b1",
+          "v3-pivot:e84fe5838c9d280b9714"
+        ],
+        "source_timeframe": "monthly",
+        "visible": true,
+        "zone_id": "v3-zone:a89a9ad75905ada29b1e"
+      },
+      "major_without_price_anchor": 0,
+      "market": "US",
+      "near_resistance": {
+        "active_relevance": "ACTIVE_NEAR",
+        "display": "약 $17.75~$18.08",
+        "indicator_bar_states": [],
+        "indicator_observation_dates": [],
+        "price_anchor_refs": [
+          "v3-pivot:5e6df8ea67938399d599",
+          "v3-pivot:63203336308618086815",
+          "v3-pivot:889497dbb32500fa6621",
+          "v3-pivot:ba7c4e73ae09df15af92"
+        ],
+        "proximity_tier": "NEAR",
+        "source_families": [
+          "PIVOT_DAILY"
+        ],
+        "source_refs": [
+          "v3-pivot:5e6df8ea67938399d599",
+          "v3-pivot:63203336308618086815",
+          "v3-pivot:889497dbb32500fa6621",
+          "v3-pivot:ba7c4e73ae09df15af92"
+        ],
+        "source_timeframe": "daily",
+        "visible": true,
+        "zone_id": "v3-zone:fe613b13a60642cdbff6"
+      },
+      "near_support": {
+        "active_relevance": "ACTIVE_NEAR",
+        "display": "약 $16.86~$17.3",
+        "indicator_bar_states": [],
+        "indicator_observation_dates": [],
+        "price_anchor_refs": [
+          "v3-pivot:1aa0685c38401dc13c45",
+          "v3-pivot:5086154f936086d47e7a",
+          "v3-pivot:741ee2cdf18f106abfca",
+          "v3-pivot:c78a823a8eebc2663962"
+        ],
+        "proximity_tier": "NEAR",
+        "source_families": [
+          "PIVOT_DAILY"
+        ],
+        "source_refs": [
+          "v3-pivot:1aa0685c38401dc13c45",
+          "v3-pivot:5086154f936086d47e7a",
+          "v3-pivot:741ee2cdf18f106abfca",
+          "v3-pivot:c78a823a8eebc2663962"
+        ],
+        "source_timeframe": "daily",
+        "visible": true,
+        "zone_id": "v3-zone:dbcc216f42af474a3922"
+      },
+      "numeric_bindings": [
+        {
+          "currency": "USD",
+          "fact_ref": "current-price:CORZ:2026-08-27",
+          "owner": "CURRENT_PRICE_STRUCTURE",
+          "semantic_type": "CURRENT_PRICE",
+          "value": "17.54"
+        },
+        {
+          "active_relevance": "ACTIVE_NEAR",
+          "adjustment_basis": "provider_adjusted_price_v1",
+          "as_of": "2026-08-27",
+          "currency": "USD",
+          "display": "약 $16.86~$17.3",
+          "distance_pct": "1.409601",
+          "fact_ref": "v3-zone:dbcc216f42af474a3922",
+          "historical_interaction_count": 4,
+          "indicator_bar_states": [],
+          "indicator_observation_dates": [],
+          "last_price_interaction_date": "2026-08-24",
+          "owner": "CURRENT_PRICE_STRUCTURE",
+          "price_anchor_refs": [
+            "v3-pivot:1aa0685c38401dc13c45",
+            "v3-pivot:5086154f936086d47e7a",
+            "v3-pivot:741ee2cdf18f106abfca",
+            "v3-pivot:c78a823a8eebc2663962"
+          ],
+          "proximity_tier": "NEAR",
+          "raw_high": "17.292756",
+          "raw_low": "16.867244",
+          "security_basis": "US_LISTED:CORZ",
+          "semantic_type": "NEAR_SUPPORT",
+          "source_families": [
+            "PIVOT_DAILY"
+          ],
+          "source_refs": [
+            "v3-pivot:1aa0685c38401dc13c45",
+            "v3-pivot:5086154f936086d47e7a",
+            "v3-pivot:741ee2cdf18f106abfca",
+            "v3-pivot:c78a823a8eebc2663962"
+          ],
+          "source_timeframe": "daily",
+          "source_timeframes": [
+            "daily"
+          ]
+        },
+        {
+          "active_relevance": "ACTIVE_NEAR",
+          "adjustment_basis": "provider_adjusted_price_v1",
+          "as_of": "2026-08-27",
+          "currency": "USD",
+          "display": "약 $17.75~$18.08",
+          "distance_pct": "1.226522",
+          "fact_ref": "v3-zone:fe613b13a60642cdbff6",
+          "historical_interaction_count": 4,
+          "indicator_bar_states": [],
+          "indicator_observation_dates": [],
+          "last_price_interaction_date": "2026-03-25",
+          "owner": "CURRENT_PRICE_STRUCTURE",
+          "price_anchor_refs": [
+            "v3-pivot:5e6df8ea67938399d599",
+            "v3-pivot:63203336308618086815",
+            "v3-pivot:889497dbb32500fa6621",
+            "v3-pivot:ba7c4e73ae09df15af92"
+          ],
+          "proximity_tier": "NEAR",
+          "raw_high": "18.074868",
+          "raw_low": "17.755132",
+          "security_basis": "US_LISTED:CORZ",
+          "semantic_type": "NEAR_RESISTANCE",
+          "source_families": [
+            "PIVOT_DAILY"
+          ],
+          "source_refs": [
+            "v3-pivot:5e6df8ea67938399d599",
+            "v3-pivot:63203336308618086815",
+            "v3-pivot:889497dbb32500fa6621",
+            "v3-pivot:ba7c4e73ae09df15af92"
+          ],
+          "source_timeframe": "daily",
+          "source_timeframes": [
+            "daily"
+          ]
+        },
+        {
+          "active_relevance": "ACTIVE_STRUCTURAL",
+          "adjustment_basis": "provider_adjusted_price_v1",
+          "as_of": "2026-08-27",
+          "currency": "USD",
+          "display": "약 $13.32~$13.6",
+          "distance_pct": "22.499179",
+          "fact_ref": "v3-zone:a89a9ad75905ada29b1e",
+          "historical_interaction_count": 2,
+          "indicator_bar_states": [],
+          "indicator_observation_dates": [],
+          "last_price_interaction_date": "2026-03-02",
+          "owner": "CURRENT_PRICE_STRUCTURE",
+          "price_anchor_refs": [
+            "v3-pivot:1945039698d19a0041b1",
+            "v3-pivot:e84fe5838c9d280b9714"
+          ],
+          "proximity_tier": "RELEVANT",
+          "raw_high": "13.593644",
+          "raw_low": "13.321356",
+          "security_basis": "US_LISTED:CORZ",
+          "semantic_type": "MAJOR_SUPPORT",
+          "source_families": [
+            "PIVOT_MONTHLY"
+          ],
+          "source_refs": [
+            "v3-pivot:1945039698d19a0041b1",
+            "v3-pivot:e84fe5838c9d280b9714"
+          ],
+          "source_timeframe": "monthly",
+          "source_timeframes": [
+            "monthly"
+          ]
+        },
+        {
+          "active_relevance": "ACTIVE_NEAR",
+          "adjustment_basis": "provider_adjusted_price_v1",
+          "as_of": "2026-08-27",
+          "currency": "USD",
+          "display": "약 $18.58~$18.68",
+          "distance_pct": "5.942007",
+          "fact_ref": "v3-zone:3c75039e68f85d753525",
+          "historical_interaction_count": 1,
+          "indicator_bar_states": [],
+          "indicator_observation_dates": [],
+          "last_price_interaction_date": "2024-11-01",
+          "owner": "CURRENT_PRICE_STRUCTURE",
+          "price_anchor_refs": [
+            "v3-pivot:11acb35f80bf7aff9a8e"
+          ],
+          "proximity_tier": "NEAR",
+          "raw_high": "18.675372",
+          "raw_low": "18.582228",
+          "security_basis": "US_LISTED:CORZ",
+          "semantic_type": "MAJOR_RESISTANCE",
+          "source_families": [
+            "PIVOT_MONTHLY"
+          ],
+          "source_refs": [
+            "v3-pivot:11acb35f80bf7aff9a8e"
+          ],
+          "source_timeframe": "monthly",
+          "source_timeframes": [
+            "monthly"
+          ]
+        },
+        {
+          "active_relevance": "ACTIVE_NEAR",
+          "adjustment_basis": "provider_adjusted_price_v1",
+          "as_of": "2026-08-27",
+          "contract": "dynamic-bollinger-support-resistance-v1",
+          "currency": "USD",
+          "display": "약 $16.08~$16.17",
+          "distance_pct": "7.854590",
+          "dynamic_bollinger_timeframe": "monthly",
+          "fact_ref": "v3-zone:f5828094114105086844",
+          "historical_interaction_count": 0,
+          "indicator_bar_states": [
+            "COMPLETE"
+          ],
+          "indicator_observation_dates": [
+            "2026-07-31"
+          ],
+          "last_price_interaction_date": null,
+          "owner": "CURRENT_PRICE_STRUCTURE",
+          "price_anchor_refs": [],
+          "proximity_tier": "NEAR",
+          "raw_high": "16.162305",
+          "raw_low": "16.081695",
+          "security_basis": "US_LISTED:CORZ",
+          "semantic_type": "DYNAMIC_BOLLINGER_SUPPORT",
+          "source_families": [
+            "BOLLINGER_MONTHLY"
+          ],
+          "source_refs": [
+            "v3-bollinger:1f1b7d9e816aedb6eb77"
+          ],
+          "source_timeframe": "monthly",
+          "source_timeframes": [
+            "monthly"
+          ]
+        }
+      ],
+      "render_validation_errors": [],
+      "route": "free_analyst_adaptive_canary",
+      "section": "📐 현재 가격 구조\n• 기준 종가: $17.54\n• 가까운 지지: 약 $16.86~$17.3\n• 가까운 저항: 약 $17.75~$18.08\n• 주요 구조 지지: 약 $13.32~$13.6\n• 주요 구조 저항: 약 $18.58~$18.68\n• 볼린저 지지(월봉): 약 $16.08~$16.17",
+      "security_basis": "US_LISTED:CORZ",
+      "selected_sha256": "e31bdc9ac3f343c003661e3e2161740f7f50437a8aa7bdd8c436074a68b9dadc",
+      "status": "PASS",
+      "ticker": "CORZ",
+      "unsupported_stop": 0,
+      "unsupported_target": 0
+    },
+    {
+      "adjustment_basis": "provider_adjusted_price_v1",
+      "as_of": "2026-08-27",
+      "bollinger_only_major_visible": 0,
+      "company": "Circle Internet Group",
+      "coverage": {
+        "daily": {
+          "actual_count": 309,
+          "actual_end_date": "2026-08-27",
+          "actual_start_date": "2025-06-05",
+          "adjustment_basis": "provider_adjusted_price_v1",
+          "completed_count": 309,
+          "contract": "ohlcv-long-history-contract-v1",
+          "denial_reason": "short_listing_or_available_history",
+          "history_complete_to_listing": true,
+          "provider_limit": 1000,
+          "provider_limit_hit": false,
+          "provider_returned_count": 309,
+          "requested_count": 1200,
+          "status": "PARTIAL",
+          "timeframe": "daily"
+        },
+        "monthly": {
+          "actual_count": 15,
+          "actual_end_date": "2026-08-03",
+          "actual_start_date": "2025-06-05",
+          "adjustment_basis": "provider_adjusted_price_v1",
+          "completed_count": 14,
+          "contract": "ohlcv-long-history-contract-v1",
+          "denial_reason": "short_listing_or_available_history",
+          "history_complete_to_listing": true,
+          "provider_limit": 1000,
+          "provider_limit_hit": false,
+          "provider_returned_count": 15,
+          "requested_count": 300,
+          "status": "PARTIAL",
+          "timeframe": "monthly"
+        },
+        "weekly": {
+          "actual_count": 65,
+          "actual_end_date": "2026-08-24",
+          "actual_start_date": "2025-06-05",
+          "adjustment_basis": "provider_adjusted_price_v1",
+          "completed_count": 64,
+          "contract": "ohlcv-long-history-contract-v1",
+          "denial_reason": "short_listing_or_available_history",
+          "history_complete_to_listing": true,
+          "provider_limit": 1000,
+          "provider_limit_hit": false,
+          "provider_returned_count": 65,
+          "requested_count": 600,
+          "status": "PARTIAL",
+          "timeframe": "weekly"
+        }
+      },
+      "currency": "USD",
+      "current_price": "94.22",
+      "denial_reasons": [],
+      "duplicate_sr_range_visible": 0,
+      "dynamic_adjustment_basis_conflicts": 0,
+      "dynamic_ai_fallback_parity": true,
+      "dynamic_bindings": [],
+      "dynamic_bollinger_resistance": {
+        "active_relevance": "ACTIVE_NEAR",
+        "display": "약 $95.54~$97.94",
+        "indicator_bar_states": [
+          "COMPLETE"
+        ],
+        "indicator_observation_dates": [
+          "2026-08-27"
+        ],
+        "price_anchor_refs": [
+          "v3-pivot:14deaf7b7016d1c8e0e8",
+          "v3-pivot:e2e985c044c30b6e6fda"
+        ],
+        "proximity_tier": "NEAR",
+        "source_families": [
+          "BOLLINGER_DAILY",
+          "PIVOT_DAILY"
+        ],
+        "source_refs": [
+          "v3-bollinger:7cb59b64e62f0013ac83",
+          "v3-pivot:14deaf7b7016d1c8e0e8",
+          "v3-pivot:70a7169f33678b165bf6",
+          "v3-pivot:e2e985c044c30b6e6fda"
+        ],
+        "source_timeframe": "daily",
+        "visible": true,
+        "zone_id": "v3-zone:0a3a42ce861e4e022908"
+      },
+      "dynamic_bollinger_support": {
+        "active_relevance": "ACTIVE_STRUCTURAL",
+        "display": "약 $84.05~$85.29",
+        "indicator_bar_states": [
+          "COMPLETE"
+        ],
+        "indicator_observation_dates": [
+          "2026-08-21"
+        ],
+        "price_anchor_refs": [
+          "v3-pivot:3ba0d6a4282e01d42ddb"
+        ],
+        "proximity_tier": "RELEVANT",
+        "source_families": [
+          "BOLLINGER_WEEKLY",
+          "PIVOT_WEEKLY"
+        ],
+        "source_refs": [
+          "v3-bollinger:1afe1683f1002fd956b1",
+          "v3-pivot:3ba0d6a4282e01d42ddb"
+        ],
+        "source_timeframe": "weekly",
+        "visible": true,
+        "zone_id": "v3-zone:a99dfcf510eeb1764722"
+      },
+      "dynamic_confluence_bindings": [
+        {
+          "active_relevance": "ACTIVE_NEAR",
+          "adjustment_basis": "provider_adjusted_price_v1",
+          "as_of": "2026-08-27",
+          "currency": "USD",
+          "display": "약 $95.54~$97.94",
+          "distance_pct": "1.410387",
+          "dynamic_bollinger_confluence": true,
+          "dynamic_bollinger_indicator_bar_states": [
+            "COMPLETE"
+          ],
+          "dynamic_bollinger_indicator_observation_dates": [
+            "2026-08-27"
+          ],
+          "dynamic_bollinger_source_refs": [
+            "v3-bollinger:7cb59b64e62f0013ac83",
+            "v3-pivot:14deaf7b7016d1c8e0e8",
+            "v3-pivot:70a7169f33678b165bf6",
+            "v3-pivot:e2e985c044c30b6e6fda"
+          ],
+          "dynamic_bollinger_timeframe": "daily",
+          "fact_ref": "v3-zone:0a3a42ce861e4e022908",
+          "historical_interaction_count": 2,
+          "indicator_bar_states": [
+            "COMPLETE"
+          ],
+          "indicator_observation_dates": [
+            "2026-08-27"
+          ],
+          "last_price_interaction_date": "2026-05-28",
+          "owner": "CURRENT_PRICE_STRUCTURE",
+          "price_anchor_refs": [
+            "v3-pivot:14deaf7b7016d1c8e0e8",
+            "v3-pivot:e2e985c044c30b6e6fda"
+          ],
+          "proximity_tier": "NEAR",
+          "raw_high": "97.931133",
+          "raw_low": "95.548867",
+          "security_basis": "US_LISTED:CRCL",
+          "semantic_type": "NEAR_RESISTANCE",
+          "source_families": [
+            "BOLLINGER_DAILY",
+            "PIVOT_DAILY"
+          ],
+          "source_refs": [
+            "v3-bollinger:7cb59b64e62f0013ac83",
+            "v3-pivot:14deaf7b7016d1c8e0e8",
+            "v3-pivot:70a7169f33678b165bf6",
+            "v3-pivot:e2e985c044c30b6e6fda"
+          ],
+          "source_timeframe": "daily",
+          "source_timeframes": [
+            "daily"
+          ]
+        }
+      ],
+      "dynamic_currency_conflicts": 0,
+      "dynamic_partial_or_unknown_bar_visible": 0,
+      "dynamic_resistance_line_count": 0,
+      "dynamic_security_basis_conflicts": 0,
+      "dynamic_support_line_count": 0,
+      "eligibility": "ELIGIBLE_SR_ONLY",
+      "invalid_ohlc_rows": [],
+      "major_resistance": {
+        "active_relevance": "ACTIVE_STRUCTURAL",
+        "display": "약 $110.92~$111.48",
+        "indicator_bar_states": [],
+        "indicator_observation_dates": [],
+        "price_anchor_refs": [
+          "v3-pivot:7e674dd0875b4e7ac0af"
+        ],
+        "proximity_tier": "RELEVANT",
+        "source_families": [
+          "PIVOT_WEEKLY"
+        ],
+        "source_refs": [
+          "v3-pivot:7e674dd0875b4e7ac0af"
+        ],
+        "source_timeframe": "weekly",
+        "visible": true,
+        "zone_id": "v3-zone:c82cc7c16a92a34bb10a"
+      },
+      "major_support": {
+        "active_relevance": "ACTIVE_STRUCTURAL",
+        "display": "약 $84.05~$85.29",
+        "indicator_bar_states": [
+          "COMPLETE"
+        ],
+        "indicator_observation_dates": [
+          "2026-08-21"
+        ],
+        "price_anchor_refs": [
+          "v3-pivot:3ba0d6a4282e01d42ddb"
+        ],
+        "proximity_tier": "RELEVANT",
+        "source_families": [
+          "BOLLINGER_WEEKLY",
+          "PIVOT_WEEKLY"
+        ],
+        "source_refs": [
+          "v3-bollinger:1afe1683f1002fd956b1",
+          "v3-pivot:3ba0d6a4282e01d42ddb"
+        ],
+        "source_timeframe": "weekly",
+        "visible": true,
+        "zone_id": "v3-zone:a99dfcf510eeb1764722"
+      },
+      "major_without_price_anchor": 0,
+      "market": "US",
+      "near_resistance": {
+        "active_relevance": "ACTIVE_NEAR",
+        "display": "약 $95.54~$97.94",
+        "indicator_bar_states": [
+          "COMPLETE"
+        ],
+        "indicator_observation_dates": [
+          "2026-08-27"
+        ],
+        "price_anchor_refs": [
+          "v3-pivot:14deaf7b7016d1c8e0e8",
+          "v3-pivot:e2e985c044c30b6e6fda"
+        ],
+        "proximity_tier": "NEAR",
+        "source_families": [
+          "BOLLINGER_DAILY",
+          "PIVOT_DAILY"
+        ],
+        "source_refs": [
+          "v3-bollinger:7cb59b64e62f0013ac83",
+          "v3-pivot:14deaf7b7016d1c8e0e8",
+          "v3-pivot:70a7169f33678b165bf6",
+          "v3-pivot:e2e985c044c30b6e6fda"
+        ],
+        "source_timeframe": "daily",
+        "visible": true,
+        "zone_id": "v3-zone:0a3a42ce861e4e022908"
+      },
+      "near_support": {
+        "active_relevance": "ACTIVE_NEAR",
+        "display": "약 $91.07~$91.53",
+        "indicator_bar_states": [],
+        "indicator_observation_dates": [],
+        "price_anchor_refs": [
+          "v3-pivot:d4addcc42aa8a11834af"
+        ],
+        "proximity_tier": "NEAR",
+        "source_families": [
+          "PIVOT_WEEKLY"
+        ],
+        "source_refs": [
+          "v3-pivot:d4addcc42aa8a11834af"
+        ],
+        "source_timeframe": "weekly",
+        "visible": true,
+        "zone_id": "v3-zone:815fc4f0816a1a4991b6"
+      },
+      "numeric_bindings": [
+        {
+          "currency": "USD",
+          "fact_ref": "current-price:CRCL:2026-08-27",
+          "owner": "CURRENT_PRICE_STRUCTURE",
+          "semantic_type": "CURRENT_PRICE",
+          "value": "94.22"
+        },
+        {
+          "active_relevance": "ACTIVE_NEAR",
+          "adjustment_basis": "provider_adjusted_price_v1",
+          "as_of": "2026-08-27",
+          "currency": "USD",
+          "display": "약 $91.07~$91.53",
+          "distance_pct": "2.856878",
+          "fact_ref": "v3-zone:815fc4f0816a1a4991b6",
+          "historical_interaction_count": 1,
+          "indicator_bar_states": [],
+          "indicator_observation_dates": [],
+          "last_price_interaction_date": "2025-12-08",
+          "owner": "CURRENT_PRICE_STRUCTURE",
+          "price_anchor_refs": [
+            "v3-pivot:d4addcc42aa8a11834af"
+          ],
+          "proximity_tier": "NEAR",
+          "raw_high": "91.528250",
+          "raw_low": "91.071750",
+          "security_basis": "US_LISTED:CRCL",
+          "semantic_type": "NEAR_SUPPORT",
+          "source_families": [
+            "PIVOT_WEEKLY"
+          ],
+          "source_refs": [
+            "v3-pivot:d4addcc42aa8a11834af"
+          ],
+          "source_timeframe": "weekly",
+          "source_timeframes": [
+            "weekly"
+          ]
+        },
+        {
+          "active_relevance": "ACTIVE_NEAR",
+          "adjustment_basis": "provider_adjusted_price_v1",
+          "as_of": "2026-08-27",
+          "currency": "USD",
+          "display": "약 $95.54~$97.94",
+          "distance_pct": "1.410387",
+          "dynamic_bollinger_confluence": true,
+          "dynamic_bollinger_indicator_bar_states": [
+            "COMPLETE"
+          ],
+          "dynamic_bollinger_indicator_observation_dates": [
+            "2026-08-27"
+          ],
+          "dynamic_bollinger_source_refs": [
+            "v3-bollinger:7cb59b64e62f0013ac83",
+            "v3-pivot:14deaf7b7016d1c8e0e8",
+            "v3-pivot:70a7169f33678b165bf6",
+            "v3-pivot:e2e985c044c30b6e6fda"
+          ],
+          "dynamic_bollinger_timeframe": "daily",
+          "fact_ref": "v3-zone:0a3a42ce861e4e022908",
+          "historical_interaction_count": 2,
+          "indicator_bar_states": [
+            "COMPLETE"
+          ],
+          "indicator_observation_dates": [
+            "2026-08-27"
+          ],
+          "last_price_interaction_date": "2026-05-28",
+          "owner": "CURRENT_PRICE_STRUCTURE",
+          "price_anchor_refs": [
+            "v3-pivot:14deaf7b7016d1c8e0e8",
+            "v3-pivot:e2e985c044c30b6e6fda"
+          ],
+          "proximity_tier": "NEAR",
+          "raw_high": "97.931133",
+          "raw_low": "95.548867",
+          "security_basis": "US_LISTED:CRCL",
+          "semantic_type": "NEAR_RESISTANCE",
+          "source_families": [
+            "BOLLINGER_DAILY",
+            "PIVOT_DAILY"
+          ],
+          "source_refs": [
+            "v3-bollinger:7cb59b64e62f0013ac83",
+            "v3-pivot:14deaf7b7016d1c8e0e8",
+            "v3-pivot:70a7169f33678b165bf6",
+            "v3-pivot:e2e985c044c30b6e6fda"
+          ],
+          "source_timeframe": "daily",
+          "source_timeframes": [
+            "daily"
+          ]
+        },
+        {
+          "active_relevance": "ACTIVE_STRUCTURAL",
+          "adjustment_basis": "provider_adjusted_price_v1",
+          "as_of": "2026-08-27",
+          "currency": "USD",
+          "display": "약 $84.05~$85.29",
+          "distance_pct": "9.483465",
+          "fact_ref": "v3-zone:a99dfcf510eeb1764722",
+          "historical_interaction_count": 1,
+          "indicator_bar_states": [
+            "COMPLETE"
+          ],
+          "indicator_observation_dates": [
+            "2026-08-21"
+          ],
+          "last_price_interaction_date": "2026-03-30",
+          "owner": "CURRENT_PRICE_STRUCTURE",
+          "price_anchor_refs": [
+            "v3-pivot:3ba0d6a4282e01d42ddb"
+          ],
+          "proximity_tier": "RELEVANT",
+          "raw_high": "85.284679",
+          "raw_low": "84.058321",
+          "security_basis": "US_LISTED:CRCL",
+          "semantic_type": "MAJOR_SUPPORT",
+          "source_families": [
+            "BOLLINGER_WEEKLY",
+            "PIVOT_WEEKLY"
+          ],
+          "source_refs": [
+            "v3-bollinger:1afe1683f1002fd956b1",
+            "v3-pivot:3ba0d6a4282e01d42ddb"
+          ],
+          "source_timeframe": "weekly",
+          "source_timeframes": [
+            "weekly"
+          ]
+        },
+        {
+          "active_relevance": "ACTIVE_STRUCTURAL",
+          "adjustment_basis": "provider_adjusted_price_v1",
+          "as_of": "2026-08-27",
+          "currency": "USD",
+          "display": "약 $110.92~$111.48",
+          "distance_pct": "17.725539",
+          "fact_ref": "v3-zone:c82cc7c16a92a34bb10a",
+          "historical_interaction_count": 1,
+          "indicator_bar_states": [],
+          "indicator_observation_dates": [],
+          "last_price_interaction_date": "2026-04-13",
+          "owner": "CURRENT_PRICE_STRUCTURE",
+          "price_anchor_refs": [
+            "v3-pivot:7e674dd0875b4e7ac0af"
+          ],
+          "proximity_tier": "RELEVANT",
+          "raw_high": "111.476998",
+          "raw_low": "110.921003",
+          "security_basis": "US_LISTED:CRCL",
+          "semantic_type": "MAJOR_RESISTANCE",
+          "source_families": [
+            "PIVOT_WEEKLY"
+          ],
+          "source_refs": [
+            "v3-pivot:7e674dd0875b4e7ac0af"
+          ],
+          "source_timeframe": "weekly",
+          "source_timeframes": [
+            "weekly"
+          ]
+        }
+      ],
+      "render_validation_errors": [],
+      "route": "free_analyst_adaptive_canary",
+      "section": "📐 현재 가격 구조\n• 기준 종가: $94.22\n• 가까운 지지: 약 $91.07~$91.53\n• 가까운 저항: 약 $95.54~$97.94 · 일봉 볼린저 중첩\n• 주요 구조 지지: 약 $84.05~$85.29\n• 주요 구조 저항: 약 $110.92~$111.48",
+      "security_basis": "US_LISTED:CRCL",
+      "selected_sha256": "3e6810012243652c67bf2c76e91c941ccd98923b63c812e03b80d1da3d7b6f13",
+      "status": "PASS",
+      "ticker": "CRCL",
+      "unsupported_stop": 0,
+      "unsupported_target": 0
+    },
+    {
+      "adjustment_basis": "provider_adjusted_price_v1",
+      "as_of": "2026-08-27",
+      "bollinger_only_major_visible": 0,
+      "company": "Alphabet Inc. Class A",
+      "coverage": {
+        "daily": {
+          "actual_count": 1000,
+          "actual_end_date": "2026-08-27",
+          "actual_start_date": "2022-09-01",
+          "adjustment_basis": "provider_adjusted_price_v1",
+          "completed_count": 1000,
+          "contract": "ohlcv-long-history-contract-v1",
+          "denial_reason": "provider_limit",
+          "history_complete_to_listing": false,
+          "provider_limit": 1000,
+          "provider_limit_hit": true,
+          "provider_returned_count": 1000,
+          "requested_count": 1200,
+          "status": "PARTIAL_SAFE",
+          "timeframe": "daily"
+        },
+        "monthly": {
+          "actual_count": 265,
+          "actual_end_date": "2026-08-03",
+          "actual_start_date": "2004-08-19",
+          "adjustment_basis": "provider_adjusted_price_v1",
+          "completed_count": 264,
+          "contract": "ohlcv-long-history-contract-v1",
+          "denial_reason": "short_listing_or_available_history",
+          "history_complete_to_listing": true,
+          "provider_limit": 1000,
+          "provider_limit_hit": false,
+          "provider_returned_count": 265,
+          "requested_count": 300,
+          "status": "PARTIAL",
+          "timeframe": "monthly"
+        },
+        "weekly": {
+          "actual_count": 600,
+          "actual_end_date": "2026-08-24",
+          "actual_start_date": "2015-03-02",
+          "adjustment_basis": "provider_adjusted_price_v1",
+          "completed_count": 599,
+          "contract": "ohlcv-long-history-contract-v1",
+          "denial_reason": "short_listing_or_available_history",
+          "history_complete_to_listing": true,
+          "provider_limit": 1000,
+          "provider_limit_hit": false,
+          "provider_returned_count": 600,
+          "requested_count": 600,
+          "status": "PARTIAL",
+          "timeframe": "weekly"
+        }
+      },
+      "currency": "USD",
+      "current_price": "341.16",
+      "denial_reasons": [],
+      "duplicate_sr_range_visible": 0,
+      "dynamic_adjustment_basis_conflicts": 0,
+      "dynamic_ai_fallback_parity": true,
+      "dynamic_bindings": [],
+      "dynamic_bollinger_resistance": {
+        "active_relevance": "ACTIVE_NEAR",
+        "display": "약 $351.36~$359.31",
+        "indicator_bar_states": [
+          "COMPLETE"
+        ],
+        "indicator_observation_dates": [
+          "2026-08-21"
+        ],
+        "price_anchor_refs": [
+          "v3-balance-box:8b9e4af424e7e5398ece"
+        ],
+        "proximity_tier": "NEAR",
+        "source_families": [
+          "BALANCE_BOX",
+          "BOLLINGER_WEEKLY"
+        ],
+        "source_refs": [
+          "v3-balance-box:8b9e4af424e7e5398ece",
+          "v3-bollinger:8bffa2a5fbd714030f20"
+        ],
+        "source_timeframe": "weekly",
+        "visible": true,
+        "zone_id": "v3-zone:0d15adff1c1b7702cda6"
+      },
+      "dynamic_bollinger_support": {
+        "active_relevance": "ACTIVE_NEAR",
+        "display": "약 $313.12~$314.7",
+        "indicator_bar_states": [
+          "COMPLETE"
+        ],
+        "indicator_observation_dates": [
+          "2026-08-21"
+        ],
+        "price_anchor_refs": [],
+        "proximity_tier": "NEAR",
+        "source_families": [
+          "BOLLINGER_WEEKLY"
+        ],
+        "source_refs": [
+          "v3-bollinger:a08a3063567b51f69b34"
+        ],
+        "source_timeframe": "weekly",
+        "visible": true,
+        "zone_id": "v3-zone:5a5205220b5d9a7a518f"
+      },
+      "dynamic_confluence_bindings": [
+        {
+          "active_relevance": "ACTIVE_NEAR",
+          "adjustment_basis": "provider_adjusted_price_v1",
+          "as_of": "2026-08-27",
+          "currency": "USD",
+          "display": "약 $349.88~$351.66",
+          "distance_pct": "2.556889",
+          "dynamic_bollinger_confluence": true,
+          "dynamic_bollinger_indicator_bar_states": [
+            "COMPLETE"
+          ],
+          "dynamic_bollinger_indicator_observation_dates": [
+            "2026-08-21"
+          ],
+          "dynamic_bollinger_source_refs": [
+            "v3-balance-box:8b9e4af424e7e5398ece",
+            "v3-bollinger:8bffa2a5fbd714030f20"
+          ],
+          "dynamic_bollinger_timeframe": "weekly",
+          "fact_ref": "v3-zone:eb9c01d9b06e5b48e508",
+          "historical_interaction_count": 11,
+          "indicator_bar_states": [
+            "COMPLETE"
+          ],
+          "indicator_observation_dates": [
+            "2026-08-27"
+          ],
+          "last_price_interaction_date": "2026-08-25",
+          "owner": "CURRENT_PRICE_STRUCTURE",
+          "price_anchor_refs": [
+            "v3-balance-box:f9946051ff8f56580566"
+          ],
+          "proximity_tier": "NEAR",
+          "raw_high": "351.650918",
+          "raw_low": "349.883083",
+          "security_basis": "US_LISTED:GOOGL",
+          "semantic_type": "NEAR_RESISTANCE",
+          "source_families": [
+            "BALANCE_BOX",
+            "BOLLINGER_DAILY"
+          ],
+          "source_refs": [
+            "v3-balance-box:f9946051ff8f56580566",
+            "v3-bollinger:7e4f96f7bc76920701ea"
+          ],
+          "source_timeframe": "daily",
+          "source_timeframes": [
+            "daily"
+          ]
+        }
+      ],
+      "dynamic_currency_conflicts": 0,
+      "dynamic_partial_or_unknown_bar_visible": 0,
+      "dynamic_resistance_line_count": 0,
+      "dynamic_security_basis_conflicts": 0,
+      "dynamic_support_line_count": 0,
+      "eligibility": "ELIGIBLE_SR_ONLY",
+      "invalid_ohlc_rows": [],
+      "major_resistance": {
+        "active_relevance": "ACTIVE_NEAR",
+        "display": "약 $359.84~$361.66",
+        "indicator_bar_states": [],
+        "indicator_observation_dates": [],
+        "price_anchor_refs": [
+          "v3-balance-box:f9459a3f3cd44b427f10"
+        ],
+        "proximity_tier": "NEAR",
+        "source_families": [
+          "BALANCE_BOX"
+        ],
+        "source_refs": [
+          "v3-balance-box:f9459a3f3cd44b427f10"
+        ],
+        "source_timeframe": "monthly",
+        "visible": true,
+        "zone_id": "v3-zone:9f76e4221e44a58c0d78"
+      },
+      "major_support": {
+        "active_relevance": null,
+        "display": null,
+        "indicator_bar_states": [],
+        "indicator_observation_dates": [],
+        "price_anchor_refs": [],
+        "proximity_tier": null,
+        "source_families": [],
+        "source_refs": [],
+        "source_timeframe": null,
+        "visible": false,
+        "zone_id": null
+      },
+      "major_without_price_anchor": 0,
+      "market": "US",
+      "near_resistance": {
+        "active_relevance": "ACTIVE_NEAR",
+        "display": "약 $349.88~$351.66",
+        "indicator_bar_states": [
+          "COMPLETE"
+        ],
+        "indicator_observation_dates": [
+          "2026-08-27"
+        ],
+        "price_anchor_refs": [
+          "v3-balance-box:f9946051ff8f56580566"
+        ],
+        "proximity_tier": "NEAR",
+        "source_families": [
+          "BALANCE_BOX",
+          "BOLLINGER_DAILY"
+        ],
+        "source_refs": [
+          "v3-balance-box:f9946051ff8f56580566",
+          "v3-bollinger:7e4f96f7bc76920701ea"
+        ],
+        "source_timeframe": "daily",
+        "visible": true,
+        "zone_id": "v3-zone:eb9c01d9b06e5b48e508"
+      },
+      "near_support": {
+        "active_relevance": "ACTIVE_NEAR",
+        "display": "약 $329.4~$331.07",
+        "indicator_bar_states": [
+          "COMPLETE"
+        ],
+        "indicator_observation_dates": [
+          "2026-08-27"
+        ],
+        "price_anchor_refs": [],
+        "proximity_tier": "NEAR",
+        "source_families": [
+          "BOLLINGER_DAILY"
+        ],
+        "source_refs": [
+          "v3-bollinger:77a0d3c11279c5eb7926"
+        ],
+        "source_timeframe": "daily",
+        "visible": true,
+        "zone_id": "v3-zone:c5ca01934ce99e9e2450"
+      },
+      "numeric_bindings": [
+        {
+          "currency": "USD",
+          "fact_ref": "current-price:GOOGL:2026-08-27",
+          "owner": "CURRENT_PRICE_STRUCTURE",
+          "semantic_type": "CURRENT_PRICE",
+          "value": "341.16"
+        },
+        {
+          "active_relevance": "ACTIVE_NEAR",
+          "adjustment_basis": "provider_adjusted_price_v1",
+          "as_of": "2026-08-27",
+          "currency": "USD",
+          "display": "약 $329.4~$331.07",
+          "distance_pct": "2.960280",
+          "fact_ref": "v3-zone:c5ca01934ce99e9e2450",
+          "historical_interaction_count": 0,
+          "indicator_bar_states": [
+            "COMPLETE"
+          ],
+          "indicator_observation_dates": [
+            "2026-08-27"
+          ],
+          "last_price_interaction_date": null,
+          "owner": "CURRENT_PRICE_STRUCTURE",
+          "price_anchor_refs": [],
+          "proximity_tier": "NEAR",
+          "raw_high": "331.060710",
+          "raw_low": "329.409534",
+          "security_basis": "US_LISTED:GOOGL",
+          "semantic_type": "NEAR_SUPPORT",
+          "source_families": [
+            "BOLLINGER_DAILY"
+          ],
+          "source_refs": [
+            "v3-bollinger:77a0d3c11279c5eb7926"
+          ],
+          "source_timeframe": "daily",
+          "source_timeframes": [
+            "daily"
+          ]
+        },
+        {
+          "active_relevance": "ACTIVE_NEAR",
+          "adjustment_basis": "provider_adjusted_price_v1",
+          "as_of": "2026-08-27",
+          "currency": "USD",
+          "display": "약 $349.88~$351.66",
+          "distance_pct": "2.556889",
+          "dynamic_bollinger_confluence": true,
+          "dynamic_bollinger_indicator_bar_states": [
+            "COMPLETE"
+          ],
+          "dynamic_bollinger_indicator_observation_dates": [
+            "2026-08-21"
+          ],
+          "dynamic_bollinger_source_refs": [
+            "v3-balance-box:8b9e4af424e7e5398ece",
+            "v3-bollinger:8bffa2a5fbd714030f20"
+          ],
+          "dynamic_bollinger_timeframe": "weekly",
+          "fact_ref": "v3-zone:eb9c01d9b06e5b48e508",
+          "historical_interaction_count": 11,
+          "indicator_bar_states": [
+            "COMPLETE"
+          ],
+          "indicator_observation_dates": [
+            "2026-08-27"
+          ],
+          "last_price_interaction_date": "2026-08-25",
+          "owner": "CURRENT_PRICE_STRUCTURE",
+          "price_anchor_refs": [
+            "v3-balance-box:f9946051ff8f56580566"
+          ],
+          "proximity_tier": "NEAR",
+          "raw_high": "351.650918",
+          "raw_low": "349.883083",
+          "security_basis": "US_LISTED:GOOGL",
+          "semantic_type": "NEAR_RESISTANCE",
+          "source_families": [
+            "BALANCE_BOX",
+            "BOLLINGER_DAILY"
+          ],
+          "source_refs": [
+            "v3-balance-box:f9946051ff8f56580566",
+            "v3-bollinger:7e4f96f7bc76920701ea"
+          ],
+          "source_timeframe": "daily",
+          "source_timeframes": [
+            "daily"
+          ]
+        },
+        {
+          "active_relevance": "ACTIVE_NEAR",
+          "adjustment_basis": "provider_adjusted_price_v1",
+          "as_of": "2026-08-27",
+          "currency": "USD",
+          "display": "약 $359.84~$361.66",
+          "distance_pct": "5.477818",
+          "fact_ref": "v3-zone:9f76e4221e44a58c0d78",
+          "historical_interaction_count": 4,
+          "indicator_bar_states": [],
+          "indicator_observation_dates": [],
+          "last_price_interaction_date": "2026-08-03",
+          "owner": "CURRENT_PRICE_STRUCTURE",
+          "price_anchor_refs": [
+            "v3-balance-box:f9459a3f3cd44b427f10"
+          ],
+          "proximity_tier": "NEAR",
+          "raw_high": "361.651875",
+          "raw_low": "359.848125",
+          "security_basis": "US_LISTED:GOOGL",
+          "semantic_type": "MAJOR_RESISTANCE",
+          "source_families": [
+            "BALANCE_BOX"
+          ],
+          "source_refs": [
+            "v3-balance-box:f9459a3f3cd44b427f10"
+          ],
+          "source_timeframe": "monthly",
+          "source_timeframes": [
+            "monthly"
+          ]
+        }
+      ],
+      "render_validation_errors": [],
+      "route": "current_ai_existing",
+      "section": "📐 현재 가격 구조\n• 기준 종가: $341.16\n• 가까운 지지: 약 $329.4~$331.07\n• 가까운 저항: 약 $349.88~$351.66 · 주봉 볼린저 중첩\n• 주요 구조 저항: 약 $359.84~$361.66",
+      "security_basis": "US_LISTED:GOOGL",
+      "selected_sha256": "6598890eeda3a2d67831ff904b79ecd93cb3ba20def92207d36397d1f03ab90f",
+      "status": "PASS",
+      "ticker": "GOOGL",
+      "unsupported_stop": 0,
+      "unsupported_target": 0
+    },
+    {
+      "adjustment_basis": "provider_adjusted_price_v1",
+      "as_of": "2026-08-27",
+      "bollinger_only_major_visible": 0,
+      "company": "Hut 8 Corp.",
+      "coverage": {
+        "daily": {
+          "actual_count": 1000,
+          "actual_end_date": "2026-08-27",
+          "actual_start_date": "2022-09-01",
+          "adjustment_basis": "provider_adjusted_price_v1",
+          "completed_count": 1000,
+          "contract": "ohlcv-long-history-contract-v1",
+          "denial_reason": "provider_limit",
+          "history_complete_to_listing": false,
+          "provider_limit": 1000,
+          "provider_limit_hit": true,
+          "provider_returned_count": 1000,
+          "requested_count": 1200,
+          "status": "PARTIAL_SAFE",
+          "timeframe": "daily"
+        },
+        "monthly": {
+          "actual_count": 63,
+          "actual_end_date": "2026-08-03",
+          "actual_start_date": "2021-06-15",
+          "adjustment_basis": "provider_adjusted_price_v1",
+          "completed_count": 62,
+          "contract": "ohlcv-long-history-contract-v1",
+          "denial_reason": "short_listing_or_available_history",
+          "history_complete_to_listing": true,
+          "provider_limit": 1000,
+          "provider_limit_hit": false,
+          "provider_returned_count": 63,
+          "requested_count": 300,
+          "status": "PARTIAL",
+          "timeframe": "monthly"
+        },
+        "weekly": {
+          "actual_count": 272,
+          "actual_end_date": "2026-08-24",
+          "actual_start_date": "2021-06-15",
+          "adjustment_basis": "provider_adjusted_price_v1",
+          "completed_count": 271,
+          "contract": "ohlcv-long-history-contract-v1",
+          "denial_reason": "short_listing_or_available_history",
+          "history_complete_to_listing": true,
+          "provider_limit": 1000,
+          "provider_limit_hit": false,
+          "provider_returned_count": 272,
+          "requested_count": 600,
+          "status": "PARTIAL",
+          "timeframe": "weekly"
+        }
+      },
+      "currency": "USD",
+      "current_price": "86.99",
+      "denial_reasons": [],
+      "duplicate_sr_range_visible": 0,
+      "dynamic_adjustment_basis_conflicts": 0,
+      "dynamic_ai_fallback_parity": true,
+      "dynamic_bindings": [],
+      "dynamic_bollinger_resistance": {
+        "active_relevance": "ACTIVE_NEAR",
+        "display": "약 $87.66~$89.42",
+        "indicator_bar_states": [
+          "COMPLETE"
+        ],
+        "indicator_observation_dates": [
+          "2026-08-27"
+        ],
+        "price_anchor_refs": [
+          "v3-balance-box:eb93121e47a406e31a9d"
+        ],
+        "proximity_tier": "NEAR",
+        "source_families": [
+          "BALANCE_BOX",
+          "BOLLINGER_DAILY"
+        ],
+        "source_refs": [
+          "v3-balance-box:eb93121e47a406e31a9d",
+          "v3-bollinger:024a258e9e7976788797"
+        ],
+        "source_timeframe": "daily",
+        "visible": true,
+        "zone_id": "v3-zone:3d0ce2c216cb23cdffab"
+      },
+      "dynamic_bollinger_support": {
+        "active_relevance": "ACTIVE_STRUCTURAL",
+        "display": "약 $72.21~$72.58",
+        "indicator_bar_states": [
+          "COMPLETE"
+        ],
+        "indicator_observation_dates": [
+          "2026-08-27"
+        ],
+        "price_anchor_refs": [],
+        "proximity_tier": "RELEVANT",
+        "source_families": [
+          "BOLLINGER_DAILY"
+        ],
+        "source_refs": [
+          "v3-bollinger:d29d937f719b6dc360f0"
+        ],
+        "source_timeframe": "daily",
+        "visible": true,
+        "zone_id": "v3-zone:96e3fdd5e2c81bc88dfc"
+      },
+      "dynamic_confluence_bindings": [
+        {
+          "active_relevance": "ACTIVE_NEAR",
+          "adjustment_basis": "provider_adjusted_price_v1",
+          "as_of": "2026-08-27",
+          "currency": "USD",
+          "display": "약 $87.66~$89.42",
+          "distance_pct": "0.774397",
+          "dynamic_bollinger_confluence": true,
+          "dynamic_bollinger_indicator_bar_states": [
+            "COMPLETE"
+          ],
+          "dynamic_bollinger_indicator_observation_dates": [
+            "2026-08-27"
+          ],
+          "dynamic_bollinger_source_refs": [
+            "v3-balance-box:eb93121e47a406e31a9d",
+            "v3-bollinger:024a258e9e7976788797"
+          ],
+          "dynamic_bollinger_timeframe": "daily",
+          "fact_ref": "v3-zone:3d0ce2c216cb23cdffab",
+          "historical_interaction_count": 11,
+          "indicator_bar_states": [
+            "COMPLETE"
+          ],
+          "indicator_observation_dates": [
+            "2026-08-27"
+          ],
+          "last_price_interaction_date": "2026-08-27",
+          "owner": "CURRENT_PRICE_STRUCTURE",
+          "price_anchor_refs": [
+            "v3-balance-box:eb93121e47a406e31a9d"
+          ],
+          "proximity_tier": "NEAR",
+          "raw_high": "89.418353",
+          "raw_low": "87.663648",
+          "security_basis": "US_LISTED:HUT",
+          "semantic_type": "NEAR_RESISTANCE",
+          "source_families": [
+            "BALANCE_BOX",
+            "BOLLINGER_DAILY"
+          ],
+          "source_refs": [
+            "v3-balance-box:eb93121e47a406e31a9d",
+            "v3-bollinger:024a258e9e7976788797"
+          ],
+          "source_timeframe": "daily",
+          "source_timeframes": [
+            "daily"
+          ]
+        }
+      ],
+      "dynamic_currency_conflicts": 0,
+      "dynamic_partial_or_unknown_bar_visible": 0,
+      "dynamic_resistance_line_count": 0,
+      "dynamic_security_basis_conflicts": 0,
+      "dynamic_support_line_count": 0,
+      "eligibility": "ELIGIBLE_SR_ONLY",
+      "invalid_ohlc_rows": [],
+      "major_resistance": {
+        "active_relevance": "ACTIVE_NEAR",
+        "display": "약 $87.66~$89.42",
+        "indicator_bar_states": [
+          "COMPLETE"
+        ],
+        "indicator_observation_dates": [
+          "2026-08-27"
+        ],
+        "price_anchor_refs": [
+          "v3-balance-box:eb93121e47a406e31a9d"
+        ],
+        "proximity_tier": "NEAR",
+        "source_families": [
+          "BALANCE_BOX",
+          "BOLLINGER_DAILY"
+        ],
+        "source_refs": [
+          "v3-balance-box:eb93121e47a406e31a9d",
+          "v3-bollinger:024a258e9e7976788797"
+        ],
+        "source_timeframe": "daily",
+        "visible": true,
+        "zone_id": "v3-zone:3d0ce2c216cb23cdffab"
+      },
+      "major_support": {
+        "active_relevance": "ACTIVE_STRUCTURAL",
+        "display": "약 $65.9~$66.24",
+        "indicator_bar_states": [],
+        "indicator_observation_dates": [],
+        "price_anchor_refs": [
+          "v3-pivot:569300fa2e406317769f"
+        ],
+        "proximity_tier": "RELEVANT",
+        "source_families": [
+          "PIVOT_MONTHLY"
+        ],
+        "source_refs": [
+          "v3-pivot:569300fa2e406317769f"
+        ],
+        "source_timeframe": "monthly",
+        "visible": true,
+        "zone_id": "v3-zone:9beac46a6b8ac1e044d6"
+      },
+      "major_without_price_anchor": 0,
+      "market": "US",
+      "near_resistance": {
+        "active_relevance": "ACTIVE_NEAR",
+        "display": "약 $87.66~$89.42",
+        "indicator_bar_states": [
+          "COMPLETE"
+        ],
+        "indicator_observation_dates": [
+          "2026-08-27"
+        ],
+        "price_anchor_refs": [
+          "v3-balance-box:eb93121e47a406e31a9d"
+        ],
+        "proximity_tier": "NEAR",
+        "source_families": [
+          "BALANCE_BOX",
+          "BOLLINGER_DAILY"
+        ],
+        "source_refs": [
+          "v3-balance-box:eb93121e47a406e31a9d",
+          "v3-bollinger:024a258e9e7976788797"
+        ],
+        "source_timeframe": "daily",
+        "visible": true,
+        "zone_id": "v3-zone:3d0ce2c216cb23cdffab"
+      },
+      "near_support": {
+        "active_relevance": "ACTIVE_NEAR",
+        "display": "약 $82.64~$83.06",
+        "indicator_bar_states": [],
+        "indicator_observation_dates": [],
+        "price_anchor_refs": [
+          "v3-pivot:1c3dbbd33d5eba876596"
+        ],
+        "proximity_tier": "NEAR",
+        "source_families": [
+          "PIVOT_MONTHLY"
+        ],
+        "source_refs": [
+          "v3-pivot:1c3dbbd33d5eba876596"
+        ],
+        "source_timeframe": "monthly",
+        "visible": true,
+        "zone_id": "v3-zone:42bd272f0914d26715e7"
+      },
+      "numeric_bindings": [
+        {
+          "currency": "USD",
+          "fact_ref": "current-price:HUT:2026-08-27",
+          "owner": "CURRENT_PRICE_STRUCTURE",
+          "semantic_type": "CURRENT_PRICE",
+          "value": "86.99"
+        },
+        {
+          "active_relevance": "ACTIVE_NEAR",
+          "adjustment_basis": "provider_adjusted_price_v1",
+          "as_of": "2026-08-27",
+          "currency": "USD",
+          "display": "약 $82.64~$83.06",
+          "distance_pct": "4.521066",
+          "fact_ref": "v3-zone:42bd272f0914d26715e7",
+          "historical_interaction_count": 1,
+          "indicator_bar_states": [],
+          "indicator_observation_dates": [],
+          "last_price_interaction_date": "2021-11-01",
+          "owner": "CURRENT_PRICE_STRUCTURE",
+          "price_anchor_refs": [
+            "v3-pivot:1c3dbbd33d5eba876596"
+          ],
+          "proximity_tier": "NEAR",
+          "raw_high": "83.057125",
+          "raw_low": "82.642875",
+          "security_basis": "US_LISTED:HUT",
+          "semantic_type": "NEAR_SUPPORT",
+          "source_families": [
+            "PIVOT_MONTHLY"
+          ],
+          "source_refs": [
+            "v3-pivot:1c3dbbd33d5eba876596"
+          ],
+          "source_timeframe": "monthly",
+          "source_timeframes": [
+            "monthly"
+          ]
+        },
+        {
+          "active_relevance": "ACTIVE_NEAR",
+          "adjustment_basis": "provider_adjusted_price_v1",
+          "as_of": "2026-08-27",
+          "currency": "USD",
+          "display": "약 $87.66~$89.42",
+          "distance_pct": "0.774397",
+          "dynamic_bollinger_confluence": true,
+          "dynamic_bollinger_indicator_bar_states": [
+            "COMPLETE"
+          ],
+          "dynamic_bollinger_indicator_observation_dates": [
+            "2026-08-27"
+          ],
+          "dynamic_bollinger_source_refs": [
+            "v3-balance-box:eb93121e47a406e31a9d",
+            "v3-bollinger:024a258e9e7976788797"
+          ],
+          "dynamic_bollinger_timeframe": "daily",
+          "fact_ref": "v3-zone:3d0ce2c216cb23cdffab",
+          "historical_interaction_count": 11,
+          "indicator_bar_states": [
+            "COMPLETE"
+          ],
+          "indicator_observation_dates": [
+            "2026-08-27"
+          ],
+          "last_price_interaction_date": "2026-08-27",
+          "owner": "CURRENT_PRICE_STRUCTURE",
+          "price_anchor_refs": [
+            "v3-balance-box:eb93121e47a406e31a9d"
+          ],
+          "proximity_tier": "NEAR",
+          "raw_high": "89.418353",
+          "raw_low": "87.663648",
+          "security_basis": "US_LISTED:HUT",
+          "semantic_type": "NEAR_RESISTANCE",
+          "source_families": [
+            "BALANCE_BOX",
+            "BOLLINGER_DAILY"
+          ],
+          "source_refs": [
+            "v3-balance-box:eb93121e47a406e31a9d",
+            "v3-bollinger:024a258e9e7976788797"
+          ],
+          "source_timeframe": "daily",
+          "source_timeframes": [
+            "daily"
+          ]
+        },
+        {
+          "active_relevance": "ACTIVE_STRUCTURAL",
+          "adjustment_basis": "provider_adjusted_price_v1",
+          "as_of": "2026-08-27",
+          "currency": "USD",
+          "display": "약 $65.9~$66.24",
+          "distance_pct": "23.858863",
+          "fact_ref": "v3-zone:9beac46a6b8ac1e044d6",
+          "historical_interaction_count": 1,
+          "indicator_bar_states": [],
+          "indicator_observation_dates": [],
+          "last_price_interaction_date": "2026-01-02",
+          "owner": "CURRENT_PRICE_STRUCTURE",
+          "price_anchor_refs": [
+            "v3-pivot:569300fa2e406317769f"
+          ],
+          "proximity_tier": "RELEVANT",
+          "raw_high": "66.235175",
+          "raw_low": "65.904825",
+          "security_basis": "US_LISTED:HUT",
+          "semantic_type": "MAJOR_SUPPORT",
+          "source_families": [
+            "PIVOT_MONTHLY"
+          ],
+          "source_refs": [
+            "v3-pivot:569300fa2e406317769f"
+          ],
+          "source_timeframe": "monthly",
+          "source_timeframes": [
+            "monthly"
+          ]
+        }
+      ],
+      "render_validation_errors": [],
+      "route": "current_ai_existing",
+      "section": "📐 현재 가격 구조\n• 기준 종가: $86.99\n• 가까운 지지: 약 $82.64~$83.06\n• 가까운 저항: 약 $87.66~$89.42 · 일봉 볼린저 중첩\n• 주요 구조 지지: 약 $65.9~$66.24",
+      "security_basis": "US_LISTED:HUT",
+      "selected_sha256": "e2c29df6ad43991895a9ba9ef5a5b707e3b6452cedc56fb156e7ae1eb1aba3e5",
+      "status": "PASS",
+      "ticker": "HUT",
+      "unsupported_stop": 0,
+      "unsupported_target": 0
+    },
+    {
+      "adjustment_basis": "provider_adjusted_price_v1",
+      "as_of": "2026-08-27",
+      "bollinger_only_major_visible": 0,
+      "company": "IBM",
+      "coverage": {
+        "daily": {
+          "actual_count": 1000,
+          "actual_end_date": "2026-08-27",
+          "actual_start_date": "2022-09-01",
+          "adjustment_basis": "provider_adjusted_price_v1",
+          "completed_count": 1000,
+          "contract": "ohlcv-long-history-contract-v1",
+          "denial_reason": "provider_limit",
+          "history_complete_to_listing": false,
+          "provider_limit": 1000,
+          "provider_limit_hit": true,
+          "provider_returned_count": 1000,
+          "requested_count": 1200,
+          "status": "PARTIAL_SAFE",
+          "timeframe": "daily"
+        },
+        "monthly": {
+          "actual_count": 300,
+          "actual_end_date": "2026-08-03",
+          "actual_start_date": "2001-09-04",
+          "adjustment_basis": "provider_adjusted_price_v1",
+          "completed_count": 299,
+          "contract": "ohlcv-long-history-contract-v1",
+          "denial_reason": "short_listing_or_available_history",
+          "history_complete_to_listing": true,
+          "provider_limit": 1000,
+          "provider_limit_hit": false,
+          "provider_returned_count": 300,
+          "requested_count": 300,
+          "status": "PARTIAL",
+          "timeframe": "monthly"
+        },
+        "weekly": {
+          "actual_count": 600,
+          "actual_end_date": "2026-08-24",
+          "actual_start_date": "2015-03-02",
+          "adjustment_basis": "provider_adjusted_price_v1",
+          "completed_count": 599,
+          "contract": "ohlcv-long-history-contract-v1",
+          "denial_reason": "short_listing_or_available_history",
+          "history_complete_to_listing": true,
+          "provider_limit": 1000,
+          "provider_limit_hit": false,
+          "provider_returned_count": 600,
+          "requested_count": 600,
+          "status": "PARTIAL",
+          "timeframe": "weekly"
+        }
+      },
+      "currency": "USD",
+      "current_price": "239.11",
+      "denial_reasons": [],
+      "duplicate_sr_range_visible": 0,
+      "dynamic_adjustment_basis_conflicts": 0,
+      "dynamic_ai_fallback_parity": true,
+      "dynamic_bindings": [
+        {
+          "active_relevance": "ACTIVE_NEAR",
+          "adjustment_basis": "provider_adjusted_price_v1",
+          "as_of": "2026-08-27",
+          "contract": "dynamic-bollinger-support-resistance-v1",
+          "currency": "USD",
+          "display": "약 $263.65~$264.98",
+          "distance_pct": "10.263360",
+          "dynamic_bollinger_timeframe": "monthly",
+          "fact_ref": "v3-zone:b8a982cbf44e0d822468",
+          "historical_interaction_count": 0,
+          "indicator_bar_states": [
+            "COMPLETE"
+          ],
+          "indicator_observation_dates": [
+            "2026-07-31"
+          ],
+          "last_price_interaction_date": null,
+          "owner": "CURRENT_PRICE_STRUCTURE",
+          "price_anchor_refs": [],
+          "proximity_tier": "NEAR",
+          "raw_high": "264.972279",
+          "raw_low": "263.650721",
+          "security_basis": "US_LISTED:IBM",
+          "semantic_type": "DYNAMIC_BOLLINGER_RESISTANCE",
+          "source_families": [
+            "BOLLINGER_MONTHLY"
+          ],
+          "source_refs": [
+            "v3-bollinger:d789a42e8fc9a786eec9"
+          ],
+          "source_timeframe": "monthly",
+          "source_timeframes": [
+            "monthly"
+          ]
+        }
+      ],
+      "dynamic_bollinger_resistance": {
+        "active_relevance": "ACTIVE_NEAR",
+        "display": "약 $263.65~$264.98",
+        "indicator_bar_states": [
+          "COMPLETE"
+        ],
+        "indicator_observation_dates": [
+          "2026-07-31"
+        ],
+        "price_anchor_refs": [],
+        "proximity_tier": "NEAR",
+        "source_families": [
+          "BOLLINGER_MONTHLY"
+        ],
+        "source_refs": [
+          "v3-bollinger:d789a42e8fc9a786eec9"
+        ],
+        "source_timeframe": "monthly",
+        "visible": true,
+        "zone_id": "v3-zone:b8a982cbf44e0d822468"
+      },
+      "dynamic_bollinger_support": {
+        "active_relevance": "ACTIVE_NEAR",
+        "display": "약 $206.09~$212.32",
+        "indicator_bar_states": [
+          "COMPLETE"
+        ],
+        "indicator_observation_dates": [
+          "2026-07-31"
+        ],
+        "price_anchor_refs": [
+          "v3-pivot:0496a99e9271406d735f",
+          "v3-pivot:2b177166eb439fc537f0"
+        ],
+        "proximity_tier": "NEAR",
+        "source_families": [
+          "BOLLINGER_MONTHLY",
+          "PIVOT_MONTHLY"
+        ],
+        "source_refs": [
+          "v3-bollinger:7b3a1210c2aff0dd5197",
+          "v3-pivot:0496a99e9271406d735f",
+          "v3-pivot:2b177166eb439fc537f0"
+        ],
+        "source_timeframe": "monthly",
+        "visible": true,
+        "zone_id": "v3-zone:872988815988e4df0ae2"
+      },
+      "dynamic_confluence_bindings": [],
+      "dynamic_currency_conflicts": 0,
+      "dynamic_partial_or_unknown_bar_visible": 0,
+      "dynamic_resistance_line_count": 1,
+      "dynamic_security_basis_conflicts": 0,
+      "dynamic_support_line_count": 0,
+      "eligibility": "ELIGIBLE_SR_ONLY",
+      "invalid_ohlc_rows": [],
+      "major_resistance": {
+        "active_relevance": "ACTIVE_NEAR",
+        "display": "약 $247.46~$253.91",
+        "indicator_bar_states": [
+          "COMPLETE"
+        ],
+        "indicator_observation_dates": [
+          "2026-08-21"
+        ],
+        "price_anchor_refs": [
+          "v3-balance-box:00979ee59c25c6db21f8"
+        ],
+        "proximity_tier": "NEAR",
+        "source_families": [
+          "BALANCE_BOX",
+          "BOLLINGER_WEEKLY"
+        ],
+        "source_refs": [
+          "v3-balance-box:00979ee59c25c6db21f8",
+          "v3-bollinger:d9305c5fbd1458787531"
+        ],
+        "source_timeframe": "weekly",
+        "visible": true,
+        "zone_id": "v3-zone:9bb6e55cf88182f481f8"
+      },
+      "major_support": {
+        "active_relevance": "ACTIVE_NEAR",
+        "display": "약 $206.09~$212.32",
+        "indicator_bar_states": [
+          "COMPLETE"
+        ],
+        "indicator_observation_dates": [
+          "2026-07-31"
+        ],
+        "price_anchor_refs": [
+          "v3-pivot:0496a99e9271406d735f",
+          "v3-pivot:2b177166eb439fc537f0"
+        ],
+        "proximity_tier": "NEAR",
+        "source_families": [
+          "BOLLINGER_MONTHLY",
+          "PIVOT_MONTHLY"
+        ],
+        "source_refs": [
+          "v3-bollinger:7b3a1210c2aff0dd5197",
+          "v3-pivot:0496a99e9271406d735f",
+          "v3-pivot:2b177166eb439fc537f0"
+        ],
+        "source_timeframe": "monthly",
+        "visible": true,
+        "zone_id": "v3-zone:872988815988e4df0ae2"
+      },
+      "major_without_price_anchor": 0,
+      "market": "US",
+      "near_resistance": {
+        "active_relevance": "ACTIVE_NEAR",
+        "display": "약 $240.19~$246.22",
+        "indicator_bar_states": [
+          "COMPLETE"
+        ],
+        "indicator_observation_dates": [
+          "2026-08-27"
+        ],
+        "price_anchor_refs": [
+          "v3-pivot:4a431973884030a952a0",
+          "v3-pivot:5f5972d21c1a0d6c4acb",
+          "v3-pivot:8217bdc3da7019845efe",
+          "v3-pivot:9a4605249dd973990608",
+          "v3-pivot:ae2df3cf50dabcea1981",
+          "v3-pivot:bf052e49f32c939a8544",
+          "v3-pivot:ca15a2e8620a3a4d524e",
+          "v3-pivot:d5f14414af6654dd982f",
+          "v3-pivot:f9d3e53ac78a2d5e37b9"
+        ],
+        "proximity_tier": "NEAR",
+        "source_families": [
+          "BOLLINGER_DAILY",
+          "PIVOT_DAILY"
+        ],
+        "source_refs": [
+          "v3-bollinger:4e2087df0f4a7b2b1220",
+          "v3-pivot:4a431973884030a952a0",
+          "v3-pivot:4e7b69fbb192e7e276f4",
+          "v3-pivot:5f5972d21c1a0d6c4acb",
+          "v3-pivot:8217bdc3da7019845efe",
+          "v3-pivot:9a4605249dd973990608",
+          "v3-pivot:ae2df3cf50dabcea1981",
+          "v3-pivot:bf052e49f32c939a8544",
+          "v3-pivot:ca15a2e8620a3a4d524e",
+          "v3-pivot:d5f14414af6654dd982f",
+          "v3-pivot:f9d3e53ac78a2d5e37b9"
+        ],
+        "source_timeframe": "daily",
+        "visible": true,
+        "zone_id": "v3-zone:fc3bfdc5b35dab66b30f"
+      },
+      "near_support": {
+        "active_relevance": "ACTIVE_NEAR",
+        "display": "약 $229.92~$235.49",
+        "indicator_bar_states": [
+          "COMPLETE"
+        ],
+        "indicator_observation_dates": [
+          "2026-08-27"
+        ],
+        "price_anchor_refs": [
+          "v3-balance-box:2bf2a4b3ec1679637421",
+          "v3-pivot:15db6db36b58a61a347a",
+          "v3-pivot:615c42fce7ad3d4ce69b",
+          "v3-pivot:67b25bf54fc4b1b19e16",
+          "v3-pivot:a2b6bd216c6bd29a3027",
+          "v3-pivot:af8e657f5f4693a4c8be"
+        ],
+        "proximity_tier": "NEAR",
+        "source_families": [
+          "BALANCE_BOX",
+          "BOLLINGER_DAILY",
+          "PIVOT_DAILY"
+        ],
+        "source_refs": [
+          "v3-balance-box:2bf2a4b3ec1679637421",
+          "v3-bollinger:9443d5c186718a4a8cc1",
+          "v3-pivot:15db6db36b58a61a347a",
+          "v3-pivot:615c42fce7ad3d4ce69b",
+          "v3-pivot:67b25bf54fc4b1b19e16",
+          "v3-pivot:a2b6bd216c6bd29a3027",
+          "v3-pivot:af8e657f5f4693a4c8be"
+        ],
+        "source_timeframe": "daily",
+        "visible": true,
+        "zone_id": "v3-zone:27f1081d8b7a8a59274b"
+      },
+      "numeric_bindings": [
+        {
+          "currency": "USD",
+          "fact_ref": "current-price:IBM:2026-08-27",
+          "owner": "CURRENT_PRICE_STRUCTURE",
+          "semantic_type": "CURRENT_PRICE",
+          "value": "239.11"
+        },
+        {
+          "active_relevance": "ACTIVE_NEAR",
+          "adjustment_basis": "provider_adjusted_price_v1",
+          "as_of": "2026-08-27",
+          "currency": "USD",
+          "display": "약 $229.92~$235.49",
+          "distance_pct": "1.515046",
+          "fact_ref": "v3-zone:27f1081d8b7a8a59274b",
+          "historical_interaction_count": 16,
+          "indicator_bar_states": [
+            "COMPLETE"
+          ],
+          "indicator_observation_dates": [
+            "2026-08-27"
+          ],
+          "last_price_interaction_date": "2026-08-25",
+          "owner": "CURRENT_PRICE_STRUCTURE",
+          "price_anchor_refs": [
+            "v3-balance-box:2bf2a4b3ec1679637421",
+            "v3-pivot:15db6db36b58a61a347a",
+            "v3-pivot:615c42fce7ad3d4ce69b",
+            "v3-pivot:67b25bf54fc4b1b19e16",
+            "v3-pivot:a2b6bd216c6bd29a3027",
+            "v3-pivot:af8e657f5f4693a4c8be"
+          ],
+          "proximity_tier": "NEAR",
+          "raw_high": "235.487373",
+          "raw_low": "229.927627",
+          "security_basis": "US_LISTED:IBM",
+          "semantic_type": "NEAR_SUPPORT",
+          "source_families": [
+            "BALANCE_BOX",
+            "BOLLINGER_DAILY",
+            "PIVOT_DAILY"
+          ],
+          "source_refs": [
+            "v3-balance-box:2bf2a4b3ec1679637421",
+            "v3-bollinger:9443d5c186718a4a8cc1",
+            "v3-pivot:15db6db36b58a61a347a",
+            "v3-pivot:615c42fce7ad3d4ce69b",
+            "v3-pivot:67b25bf54fc4b1b19e16",
+            "v3-pivot:a2b6bd216c6bd29a3027",
+            "v3-pivot:af8e657f5f4693a4c8be"
+          ],
+          "source_timeframe": "daily",
+          "source_timeframes": [
+            "daily"
+          ]
+        },
+        {
+          "active_relevance": "ACTIVE_NEAR",
+          "adjustment_basis": "provider_adjusted_price_v1",
+          "as_of": "2026-08-27",
+          "currency": "USD",
+          "display": "약 $240.19~$246.22",
+          "distance_pct": "0.455228",
+          "fact_ref": "v3-zone:fc3bfdc5b35dab66b30f",
+          "historical_interaction_count": 9,
+          "indicator_bar_states": [
+            "COMPLETE"
+          ],
+          "indicator_observation_dates": [
+            "2026-08-27"
+          ],
+          "last_price_interaction_date": "2026-08-11",
+          "owner": "CURRENT_PRICE_STRUCTURE",
+          "price_anchor_refs": [
+            "v3-pivot:4a431973884030a952a0",
+            "v3-pivot:5f5972d21c1a0d6c4acb",
+            "v3-pivot:8217bdc3da7019845efe",
+            "v3-pivot:9a4605249dd973990608",
+            "v3-pivot:ae2df3cf50dabcea1981",
+            "v3-pivot:bf052e49f32c939a8544",
+            "v3-pivot:ca15a2e8620a3a4d524e",
+            "v3-pivot:d5f14414af6654dd982f",
+            "v3-pivot:f9d3e53ac78a2d5e37b9"
+          ],
+          "proximity_tier": "NEAR",
+          "raw_high": "246.218004",
+          "raw_low": "240.198496",
+          "security_basis": "US_LISTED:IBM",
+          "semantic_type": "NEAR_RESISTANCE",
+          "source_families": [
+            "BOLLINGER_DAILY",
+            "PIVOT_DAILY"
+          ],
+          "source_refs": [
+            "v3-bollinger:4e2087df0f4a7b2b1220",
+            "v3-pivot:4a431973884030a952a0",
+            "v3-pivot:4e7b69fbb192e7e276f4",
+            "v3-pivot:5f5972d21c1a0d6c4acb",
+            "v3-pivot:8217bdc3da7019845efe",
+            "v3-pivot:9a4605249dd973990608",
+            "v3-pivot:ae2df3cf50dabcea1981",
+            "v3-pivot:bf052e49f32c939a8544",
+            "v3-pivot:ca15a2e8620a3a4d524e",
+            "v3-pivot:d5f14414af6654dd982f",
+            "v3-pivot:f9d3e53ac78a2d5e37b9"
+          ],
+          "source_timeframe": "daily",
+          "source_timeframes": [
+            "daily"
+          ]
+        },
+        {
+          "active_relevance": "ACTIVE_NEAR",
+          "adjustment_basis": "provider_adjusted_price_v1",
+          "as_of": "2026-08-27",
+          "currency": "USD",
+          "display": "약 $206.09~$212.32",
+          "distance_pct": "11.206453",
+          "fact_ref": "v3-zone:872988815988e4df0ae2",
+          "historical_interaction_count": 2,
+          "indicator_bar_states": [
+            "COMPLETE"
+          ],
+          "indicator_observation_dates": [
+            "2026-07-31"
+          ],
+          "last_price_interaction_date": "2012-10-01",
+          "owner": "CURRENT_PRICE_STRUCTURE",
+          "price_anchor_refs": [
+            "v3-pivot:0496a99e9271406d735f",
+            "v3-pivot:2b177166eb439fc537f0"
+          ],
+          "proximity_tier": "NEAR",
+          "raw_high": "212.314250",
+          "raw_low": "206.095965",
+          "security_basis": "US_LISTED:IBM",
+          "semantic_type": "MAJOR_SUPPORT",
+          "source_families": [
+            "BOLLINGER_MONTHLY",
+            "PIVOT_MONTHLY"
+          ],
+          "source_refs": [
+            "v3-bollinger:7b3a1210c2aff0dd5197",
+            "v3-pivot:0496a99e9271406d735f",
+            "v3-pivot:2b177166eb439fc537f0"
+          ],
+          "source_timeframe": "monthly",
+          "source_timeframes": [
+            "monthly"
+          ]
+        },
+        {
+          "active_relevance": "ACTIVE_NEAR",
+          "adjustment_basis": "provider_adjusted_price_v1",
+          "as_of": "2026-08-27",
+          "currency": "USD",
+          "display": "약 $247.46~$253.91",
+          "distance_pct": "3.493283",
+          "fact_ref": "v3-zone:9bb6e55cf88182f481f8",
+          "historical_interaction_count": 7,
+          "indicator_bar_states": [
+            "COMPLETE"
+          ],
+          "indicator_observation_dates": [
+            "2026-08-21"
+          ],
+          "last_price_interaction_date": "2026-08-24",
+          "owner": "CURRENT_PRICE_STRUCTURE",
+          "price_anchor_refs": [
+            "v3-balance-box:00979ee59c25c6db21f8"
+          ],
+          "proximity_tier": "NEAR",
+          "raw_high": "253.906712",
+          "raw_low": "247.462788",
+          "security_basis": "US_LISTED:IBM",
+          "semantic_type": "MAJOR_RESISTANCE",
+          "source_families": [
+            "BALANCE_BOX",
+            "BOLLINGER_WEEKLY"
+          ],
+          "source_refs": [
+            "v3-balance-box:00979ee59c25c6db21f8",
+            "v3-bollinger:d9305c5fbd1458787531"
+          ],
+          "source_timeframe": "weekly",
+          "source_timeframes": [
+            "weekly"
+          ]
+        },
+        {
+          "active_relevance": "ACTIVE_NEAR",
+          "adjustment_basis": "provider_adjusted_price_v1",
+          "as_of": "2026-08-27",
+          "contract": "dynamic-bollinger-support-resistance-v1",
+          "currency": "USD",
+          "display": "약 $263.65~$264.98",
+          "distance_pct": "10.263360",
+          "dynamic_bollinger_timeframe": "monthly",
+          "fact_ref": "v3-zone:b8a982cbf44e0d822468",
+          "historical_interaction_count": 0,
+          "indicator_bar_states": [
+            "COMPLETE"
+          ],
+          "indicator_observation_dates": [
+            "2026-07-31"
+          ],
+          "last_price_interaction_date": null,
+          "owner": "CURRENT_PRICE_STRUCTURE",
+          "price_anchor_refs": [],
+          "proximity_tier": "NEAR",
+          "raw_high": "264.972279",
+          "raw_low": "263.650721",
+          "security_basis": "US_LISTED:IBM",
+          "semantic_type": "DYNAMIC_BOLLINGER_RESISTANCE",
+          "source_families": [
+            "BOLLINGER_MONTHLY"
+          ],
+          "source_refs": [
+            "v3-bollinger:d789a42e8fc9a786eec9"
+          ],
+          "source_timeframe": "monthly",
+          "source_timeframes": [
+            "monthly"
+          ]
+        }
+      ],
+      "render_validation_errors": [],
+      "route": "current_ai_existing",
+      "section": "📐 현재 가격 구조\n• 기준 종가: $239.11\n• 가까운 지지: 약 $229.92~$235.49\n• 가까운 저항: 약 $240.19~$246.22\n• 주요 구조 지지: 약 $206.09~$212.32\n• 주요 구조 저항: 약 $247.46~$253.91\n• 볼린저 저항(월봉): 약 $263.65~$264.98",
+      "security_basis": "US_LISTED:IBM",
+      "selected_sha256": "394e7666dc10d74a5bfad42a263d85fd25070761c4af71dd9d96d3e128b6280e",
+      "status": "PASS",
+      "ticker": "IBM",
+      "unsupported_stop": 0,
+      "unsupported_target": 0
+    },
+    {
+      "adjustment_basis": "provider_adjusted_price_v1",
+      "as_of": "2026-08-27",
+      "bollinger_only_major_visible": 0,
+      "company": "Micron Technology",
+      "coverage": {
+        "daily": {
+          "actual_count": 1000,
+          "actual_end_date": "2026-08-27",
+          "actual_start_date": "2022-09-01",
+          "adjustment_basis": "provider_adjusted_price_v1",
+          "completed_count": 1000,
+          "contract": "ohlcv-long-history-contract-v1",
+          "denial_reason": "provider_limit",
+          "history_complete_to_listing": false,
+          "provider_limit": 1000,
+          "provider_limit_hit": true,
+          "provider_returned_count": 1000,
+          "requested_count": 1200,
+          "status": "PARTIAL_SAFE",
+          "timeframe": "daily"
+        },
+        "monthly": {
+          "actual_count": 300,
+          "actual_end_date": "2026-08-03",
+          "actual_start_date": "2001-09-04",
+          "adjustment_basis": "provider_adjusted_price_v1",
+          "completed_count": 299,
+          "contract": "ohlcv-long-history-contract-v1",
+          "denial_reason": "short_listing_or_available_history",
+          "history_complete_to_listing": true,
+          "provider_limit": 1000,
+          "provider_limit_hit": false,
+          "provider_returned_count": 300,
+          "requested_count": 300,
+          "status": "PARTIAL",
+          "timeframe": "monthly"
+        },
+        "weekly": {
+          "actual_count": 600,
+          "actual_end_date": "2026-08-24",
+          "actual_start_date": "2015-03-02",
+          "adjustment_basis": "provider_adjusted_price_v1",
+          "completed_count": 599,
+          "contract": "ohlcv-long-history-contract-v1",
+          "denial_reason": "short_listing_or_available_history",
+          "history_complete_to_listing": true,
+          "provider_limit": 1000,
+          "provider_limit_hit": false,
+          "provider_returned_count": 600,
+          "requested_count": 600,
+          "status": "PARTIAL",
+          "timeframe": "weekly"
+        }
+      },
+      "currency": "USD",
+      "current_price": "915.99",
+      "denial_reasons": [],
+      "duplicate_sr_range_visible": 0,
+      "dynamic_adjustment_basis_conflicts": 0,
+      "dynamic_ai_fallback_parity": true,
+      "dynamic_bindings": [],
+      "dynamic_bollinger_resistance": {
+        "active_relevance": "ACTIVE_NEAR",
+        "display": "약 $938.01~$942.72",
+        "indicator_bar_states": [
+          "COMPLETE"
+        ],
+        "indicator_observation_dates": [
+          "2026-07-31"
+        ],
+        "price_anchor_refs": [],
+        "proximity_tier": "NEAR",
+        "source_families": [
+          "BOLLINGER_MONTHLY"
+        ],
+        "source_refs": [
+          "v3-bollinger:76591275dd2435e3228c"
+        ],
+        "source_timeframe": "monthly",
+        "visible": true,
+        "zone_id": "v3-zone:a98becd6ea5f849d5365"
+      },
+      "dynamic_bollinger_support": {
+        "active_relevance": "ACTIVE_STRUCTURAL",
+        "display": "약 $827.11~$831.27",
+        "indicator_bar_states": [
+          "COMPLETE"
+        ],
+        "indicator_observation_dates": [
+          "2026-08-21"
+        ],
+        "price_anchor_refs": [],
+        "proximity_tier": "RELEVANT",
+        "source_families": [
+          "BOLLINGER_WEEKLY"
+        ],
+        "source_refs": [
+          "v3-bollinger:3aa379921060f2b5ce68"
+        ],
+        "source_timeframe": "weekly",
+        "visible": true,
+        "zone_id": "v3-zone:46646ffb51ea22ef5c44"
+      },
+      "dynamic_confluence_bindings": [
+        {
+          "active_relevance": "ACTIVE_NEAR",
+          "adjustment_basis": "provider_adjusted_price_v1",
+          "as_of": "2026-08-27",
+          "currency": "USD",
+          "display": "약 $938.01~$942.72",
+          "distance_pct": "2.404592",
+          "dynamic_bollinger_confluence": true,
+          "dynamic_bollinger_indicator_bar_states": [
+            "COMPLETE"
+          ],
+          "dynamic_bollinger_indicator_observation_dates": [
+            "2026-07-31"
+          ],
+          "dynamic_bollinger_source_refs": [
+            "v3-bollinger:76591275dd2435e3228c"
+          ],
+          "dynamic_bollinger_timeframe": "monthly",
+          "fact_ref": "v3-zone:a98becd6ea5f849d5365",
+          "historical_interaction_count": 0,
+          "indicator_bar_states": [
+            "COMPLETE"
+          ],
+          "indicator_observation_dates": [
+            "2026-07-31"
+          ],
+          "last_price_interaction_date": null,
+          "owner": "CURRENT_PRICE_STRUCTURE",
+          "price_anchor_refs": [],
+          "proximity_tier": "NEAR",
+          "raw_high": "942.717652",
+          "raw_low": "938.015818",
+          "security_basis": "US_LISTED:MU",
+          "semantic_type": "NEAR_RESISTANCE",
+          "source_families": [
+            "BOLLINGER_MONTHLY"
+          ],
+          "source_refs": [
+            "v3-bollinger:76591275dd2435e3228c"
+          ],
+          "source_timeframe": "monthly",
+          "source_timeframes": [
+            "monthly"
+          ]
+        }
+      ],
+      "dynamic_currency_conflicts": 0,
+      "dynamic_partial_or_unknown_bar_visible": 0,
+      "dynamic_resistance_line_count": 0,
+      "dynamic_security_basis_conflicts": 0,
+      "dynamic_support_line_count": 0,
+      "eligibility": "ELIGIBLE_SR_ONLY",
+      "invalid_ohlc_rows": [],
+      "major_resistance": {
+        "active_relevance": "ACTIVE_NEAR",
+        "display": "약 $946.42~$951.18",
+        "indicator_bar_states": [],
+        "indicator_observation_dates": [],
+        "price_anchor_refs": [
+          "v3-balance-box:4bb2eb90160c02816307"
+        ],
+        "proximity_tier": "NEAR",
+        "source_families": [
+          "BALANCE_BOX"
+        ],
+        "source_refs": [
+          "v3-balance-box:4bb2eb90160c02816307"
+        ],
+        "source_timeframe": "weekly",
+        "visible": true,
+        "zone_id": "v3-zone:d88ccc0c217dac2d1b18"
+      },
+      "major_support": {
+        "active_relevance": null,
+        "display": null,
+        "indicator_bar_states": [],
+        "indicator_observation_dates": [],
+        "price_anchor_refs": [],
+        "proximity_tier": null,
+        "source_families": [],
+        "source_refs": [],
+        "source_timeframe": null,
+        "visible": false,
+        "zone_id": null
+      },
+      "major_without_price_anchor": 0,
+      "market": "US",
+      "near_resistance": {
+        "active_relevance": "ACTIVE_NEAR",
+        "display": "약 $938.01~$942.72",
+        "indicator_bar_states": [
+          "COMPLETE"
+        ],
+        "indicator_observation_dates": [
+          "2026-07-31"
+        ],
+        "price_anchor_refs": [],
+        "proximity_tier": "NEAR",
+        "source_families": [
+          "BOLLINGER_MONTHLY"
+        ],
+        "source_refs": [
+          "v3-bollinger:76591275dd2435e3228c"
+        ],
+        "source_timeframe": "monthly",
+        "visible": true,
+        "zone_id": "v3-zone:a98becd6ea5f849d5365"
+      },
+      "near_support": {
+        "active_relevance": "ACTIVE_STRUCTURAL",
+        "display": "약 $827.11~$831.27",
+        "indicator_bar_states": [
+          "COMPLETE"
+        ],
+        "indicator_observation_dates": [
+          "2026-08-21"
+        ],
+        "price_anchor_refs": [],
+        "proximity_tier": "RELEVANT",
+        "source_families": [
+          "BOLLINGER_WEEKLY"
+        ],
+        "source_refs": [
+          "v3-bollinger:3aa379921060f2b5ce68"
+        ],
+        "source_timeframe": "weekly",
+        "visible": true,
+        "zone_id": "v3-zone:46646ffb51ea22ef5c44"
+      },
+      "numeric_bindings": [
+        {
+          "currency": "USD",
+          "fact_ref": "current-price:MU:2026-08-27",
+          "owner": "CURRENT_PRICE_STRUCTURE",
+          "semantic_type": "CURRENT_PRICE",
+          "value": "915.99"
+        },
+        {
+          "active_relevance": "ACTIVE_NEAR",
+          "adjustment_basis": "provider_adjusted_price_v1",
+          "as_of": "2026-08-27",
+          "currency": "USD",
+          "display": "약 $938.01~$942.72",
+          "distance_pct": "2.404592",
+          "dynamic_bollinger_confluence": true,
+          "dynamic_bollinger_indicator_bar_states": [
+            "COMPLETE"
+          ],
+          "dynamic_bollinger_indicator_observation_dates": [
+            "2026-07-31"
+          ],
+          "dynamic_bollinger_source_refs": [
+            "v3-bollinger:76591275dd2435e3228c"
+          ],
+          "dynamic_bollinger_timeframe": "monthly",
+          "fact_ref": "v3-zone:a98becd6ea5f849d5365",
+          "historical_interaction_count": 0,
+          "indicator_bar_states": [
+            "COMPLETE"
+          ],
+          "indicator_observation_dates": [
+            "2026-07-31"
+          ],
+          "last_price_interaction_date": null,
+          "owner": "CURRENT_PRICE_STRUCTURE",
+          "price_anchor_refs": [],
+          "proximity_tier": "NEAR",
+          "raw_high": "942.717652",
+          "raw_low": "938.015818",
+          "security_basis": "US_LISTED:MU",
+          "semantic_type": "NEAR_RESISTANCE",
+          "source_families": [
+            "BOLLINGER_MONTHLY"
+          ],
+          "source_refs": [
+            "v3-bollinger:76591275dd2435e3228c"
+          ],
+          "source_timeframe": "monthly",
+          "source_timeframes": [
+            "monthly"
+          ]
+        },
+        {
+          "active_relevance": "ACTIVE_NEAR",
+          "adjustment_basis": "provider_adjusted_price_v1",
+          "as_of": "2026-08-27",
+          "currency": "USD",
+          "display": "약 $946.42~$951.18",
+          "distance_pct": "3.322962",
+          "fact_ref": "v3-zone:d88ccc0c217dac2d1b18",
+          "historical_interaction_count": 7,
+          "indicator_bar_states": [],
+          "indicator_observation_dates": [],
+          "last_price_interaction_date": "2026-08-24",
+          "owner": "CURRENT_PRICE_STRUCTURE",
+          "price_anchor_refs": [
+            "v3-balance-box:4bb2eb90160c02816307"
+          ],
+          "proximity_tier": "NEAR",
+          "raw_high": "951.172000",
+          "raw_low": "946.428000",
+          "security_basis": "US_LISTED:MU",
+          "semantic_type": "MAJOR_RESISTANCE",
+          "source_families": [
+            "BALANCE_BOX"
+          ],
+          "source_refs": [
+            "v3-balance-box:4bb2eb90160c02816307"
+          ],
+          "source_timeframe": "weekly",
+          "source_timeframes": [
+            "weekly"
+          ]
+        }
+      ],
+      "render_validation_errors": [],
+      "route": "current_ai_existing",
+      "section": "📐 현재 가격 구조\n• 기준 종가: $915.99\n• 가까운 저항: 약 $938.01~$942.72 · 월봉 볼린저 중첩\n• 주요 구조 저항: 약 $946.42~$951.18",
+      "security_basis": "US_LISTED:MU",
+      "selected_sha256": "861644d5d58de09b52f8656f609b16a34388ad8b39f4facd9dbd6b005fbcc0bb",
+      "status": "PASS",
+      "ticker": "MU",
+      "unsupported_stop": 0,
+      "unsupported_target": 0
+    },
+    {
+      "adjustment_basis": "provider_adjusted_price_v1",
+      "as_of": "2026-08-27",
+      "bollinger_only_major_visible": 0,
+      "company": "Recursion Pharmaceuticals",
+      "coverage": {
+        "daily": {
+          "actual_count": 1000,
+          "actual_end_date": "2026-08-27",
+          "actual_start_date": "2022-09-01",
+          "adjustment_basis": "provider_adjusted_price_v1",
+          "completed_count": 1000,
+          "contract": "ohlcv-long-history-contract-v1",
+          "denial_reason": "provider_limit",
+          "history_complete_to_listing": false,
+          "provider_limit": 1000,
+          "provider_limit_hit": true,
+          "provider_returned_count": 1000,
+          "requested_count": 1200,
+          "status": "PARTIAL_SAFE",
+          "timeframe": "daily"
+        },
+        "monthly": {
+          "actual_count": 65,
+          "actual_end_date": "2026-08-03",
+          "actual_start_date": "2021-04-16",
+          "adjustment_basis": "provider_adjusted_price_v1",
+          "completed_count": 64,
+          "contract": "ohlcv-long-history-contract-v1",
+          "denial_reason": "short_listing_or_available_history",
+          "history_complete_to_listing": true,
+          "provider_limit": 1000,
+          "provider_limit_hit": false,
+          "provider_returned_count": 65,
+          "requested_count": 300,
+          "status": "PARTIAL",
+          "timeframe": "monthly"
+        },
+        "weekly": {
+          "actual_count": 281,
+          "actual_end_date": "2026-08-24",
+          "actual_start_date": "2021-04-16",
+          "adjustment_basis": "provider_adjusted_price_v1",
+          "completed_count": 280,
+          "contract": "ohlcv-long-history-contract-v1",
+          "denial_reason": "short_listing_or_available_history",
+          "history_complete_to_listing": true,
+          "provider_limit": 1000,
+          "provider_limit_hit": false,
+          "provider_returned_count": 281,
+          "requested_count": 600,
+          "status": "PARTIAL",
+          "timeframe": "weekly"
+        }
+      },
+      "currency": "USD",
+      "current_price": "3.45",
+      "denial_reasons": [],
+      "duplicate_sr_range_visible": 0,
+      "dynamic_adjustment_basis_conflicts": 0,
+      "dynamic_ai_fallback_parity": true,
+      "dynamic_bindings": [],
+      "dynamic_bollinger_resistance": {
+        "active_relevance": "ACTIVE_NEAR",
+        "display": "약 $3.57~$3.6",
+        "indicator_bar_states": [
+          "COMPLETE"
+        ],
+        "indicator_observation_dates": [
+          "2026-08-27"
+        ],
+        "price_anchor_refs": [],
+        "proximity_tier": "NEAR",
+        "source_families": [
+          "BOLLINGER_DAILY"
+        ],
+        "source_refs": [
+          "v3-bollinger:f9d5345a40c4609467f3"
+        ],
+        "source_timeframe": "daily",
+        "visible": true,
+        "zone_id": "v3-zone:142b975cd4b6f86325f8"
+      },
+      "dynamic_bollinger_support": {
+        "active_relevance": "ACTIVE_NEAR",
+        "display": "약 $3.3~$3.35",
+        "indicator_bar_states": [
+          "COMPLETE"
+        ],
+        "indicator_observation_dates": [
+          "2026-08-21"
+        ],
+        "price_anchor_refs": [
+          "v3-balance-box:c4614668b8c457470160"
+        ],
+        "proximity_tier": "NEAR",
+        "source_families": [
+          "BALANCE_BOX",
+          "BOLLINGER_WEEKLY"
+        ],
+        "source_refs": [
+          "v3-balance-box:c4614668b8c457470160",
+          "v3-bollinger:c2aea9360f2a50833a13"
+        ],
+        "source_timeframe": "weekly",
+        "visible": true,
+        "zone_id": "v3-zone:fa81d56b15a4da055978"
+      },
+      "dynamic_confluence_bindings": [
+        {
+          "active_relevance": "ACTIVE_NEAR",
+          "adjustment_basis": "provider_adjusted_price_v1",
+          "as_of": "2026-08-27",
+          "currency": "USD",
+          "display": "약 $3.3~$3.35",
+          "distance_pct": "3.092638",
+          "dynamic_bollinger_confluence": true,
+          "dynamic_bollinger_indicator_bar_states": [
+            "COMPLETE"
+          ],
+          "dynamic_bollinger_indicator_observation_dates": [
+            "2026-08-21"
+          ],
+          "dynamic_bollinger_source_refs": [
+            "v3-balance-box:c4614668b8c457470160",
+            "v3-bollinger:c2aea9360f2a50833a13"
+          ],
+          "dynamic_bollinger_timeframe": "weekly",
+          "fact_ref": "v3-zone:fa81d56b15a4da055978",
+          "historical_interaction_count": 7,
+          "indicator_bar_states": [
+            "COMPLETE"
+          ],
+          "indicator_observation_dates": [
+            "2026-08-21"
+          ],
+          "last_price_interaction_date": "2026-08-24",
+          "owner": "CURRENT_PRICE_STRUCTURE",
+          "price_anchor_refs": [
+            "v3-balance-box:c4614668b8c457470160"
+          ],
+          "proximity_tier": "NEAR",
+          "raw_high": "3.343304",
+          "raw_low": "3.300196",
+          "security_basis": "US_LISTED:RXRX",
+          "semantic_type": "NEAR_SUPPORT",
+          "source_families": [
+            "BALANCE_BOX",
+            "BOLLINGER_WEEKLY"
+          ],
+          "source_refs": [
+            "v3-balance-box:c4614668b8c457470160",
+            "v3-bollinger:c2aea9360f2a50833a13"
+          ],
+          "source_timeframe": "weekly",
+          "source_timeframes": [
+            "weekly"
+          ]
+        }
+      ],
+      "dynamic_currency_conflicts": 0,
+      "dynamic_partial_or_unknown_bar_visible": 0,
+      "dynamic_resistance_line_count": 0,
+      "dynamic_security_basis_conflicts": 0,
+      "dynamic_support_line_count": 0,
+      "eligibility": "ELIGIBLE_SR_ONLY",
+      "invalid_ohlc_rows": [],
+      "major_resistance": {
+        "active_relevance": "ACTIVE_NEAR",
+        "display": "약 $3.78~$3.82",
+        "indicator_bar_states": [],
+        "indicator_observation_dates": [],
+        "price_anchor_refs": [
+          "v3-pivot:4a36e6e212db329aff68",
+          "v3-pivot:81a2006e7780513174eb"
+        ],
+        "proximity_tier": "NEAR",
+        "source_families": [
+          "PIVOT_MONTHLY"
+        ],
+        "source_refs": [
+          "v3-pivot:4a36e6e212db329aff68",
+          "v3-pivot:81a2006e7780513174eb"
+        ],
+        "source_timeframe": "monthly",
+        "visible": true,
+        "zone_id": "v3-zone:69365d6f83651957c112"
+      },
+      "major_support": {
+        "active_relevance": "ACTIVE_STRUCTURAL",
+        "display": "약 $2.76~$2.78",
+        "indicator_bar_states": [],
+        "indicator_observation_dates": [],
+        "price_anchor_refs": [
+          "v3-pivot:7837bce04b9dfeeda7de"
+        ],
+        "proximity_tier": "RELEVANT",
+        "source_families": [
+          "PIVOT_MONTHLY"
+        ],
+        "source_refs": [
+          "v3-pivot:7837bce04b9dfeeda7de"
+        ],
+        "source_timeframe": "monthly",
+        "visible": true,
+        "zone_id": "v3-zone:46c794af4c9b6e66763f"
+      },
+      "major_without_price_anchor": 0,
+      "market": "US",
+      "near_resistance": {
+        "active_relevance": "ACTIVE_NEAR",
+        "display": "약 $3.57~$3.6",
+        "indicator_bar_states": [
+          "COMPLETE"
+        ],
+        "indicator_observation_dates": [
+          "2026-08-27"
+        ],
+        "price_anchor_refs": [],
+        "proximity_tier": "NEAR",
+        "source_families": [
+          "BOLLINGER_DAILY"
+        ],
+        "source_refs": [
+          "v3-bollinger:f9d5345a40c4609467f3"
+        ],
+        "source_timeframe": "daily",
+        "visible": true,
+        "zone_id": "v3-zone:142b975cd4b6f86325f8"
+      },
+      "near_support": {
+        "active_relevance": "ACTIVE_NEAR",
+        "display": "약 $3.3~$3.35",
+        "indicator_bar_states": [
+          "COMPLETE"
+        ],
+        "indicator_observation_dates": [
+          "2026-08-21"
+        ],
+        "price_anchor_refs": [
+          "v3-balance-box:c4614668b8c457470160"
+        ],
+        "proximity_tier": "NEAR",
+        "source_families": [
+          "BALANCE_BOX",
+          "BOLLINGER_WEEKLY"
+        ],
+        "source_refs": [
+          "v3-balance-box:c4614668b8c457470160",
+          "v3-bollinger:c2aea9360f2a50833a13"
+        ],
+        "source_timeframe": "weekly",
+        "visible": true,
+        "zone_id": "v3-zone:fa81d56b15a4da055978"
+      },
+      "numeric_bindings": [
+        {
+          "currency": "USD",
+          "fact_ref": "current-price:RXRX:2026-08-27",
+          "owner": "CURRENT_PRICE_STRUCTURE",
+          "semantic_type": "CURRENT_PRICE",
+          "value": "3.45"
+        },
+        {
+          "active_relevance": "ACTIVE_NEAR",
+          "adjustment_basis": "provider_adjusted_price_v1",
+          "as_of": "2026-08-27",
+          "currency": "USD",
+          "display": "약 $3.3~$3.35",
+          "distance_pct": "3.092638",
+          "dynamic_bollinger_confluence": true,
+          "dynamic_bollinger_indicator_bar_states": [
+            "COMPLETE"
+          ],
+          "dynamic_bollinger_indicator_observation_dates": [
+            "2026-08-21"
+          ],
+          "dynamic_bollinger_source_refs": [
+            "v3-balance-box:c4614668b8c457470160",
+            "v3-bollinger:c2aea9360f2a50833a13"
+          ],
+          "dynamic_bollinger_timeframe": "weekly",
+          "fact_ref": "v3-zone:fa81d56b15a4da055978",
+          "historical_interaction_count": 7,
+          "indicator_bar_states": [
+            "COMPLETE"
+          ],
+          "indicator_observation_dates": [
+            "2026-08-21"
+          ],
+          "last_price_interaction_date": "2026-08-24",
+          "owner": "CURRENT_PRICE_STRUCTURE",
+          "price_anchor_refs": [
+            "v3-balance-box:c4614668b8c457470160"
+          ],
+          "proximity_tier": "NEAR",
+          "raw_high": "3.343304",
+          "raw_low": "3.300196",
+          "security_basis": "US_LISTED:RXRX",
+          "semantic_type": "NEAR_SUPPORT",
+          "source_families": [
+            "BALANCE_BOX",
+            "BOLLINGER_WEEKLY"
+          ],
+          "source_refs": [
+            "v3-balance-box:c4614668b8c457470160",
+            "v3-bollinger:c2aea9360f2a50833a13"
+          ],
+          "source_timeframe": "weekly",
+          "source_timeframes": [
+            "weekly"
+          ]
+        },
+        {
+          "active_relevance": "ACTIVE_NEAR",
+          "adjustment_basis": "provider_adjusted_price_v1",
+          "as_of": "2026-08-27",
+          "currency": "USD",
+          "display": "약 $3.57~$3.6",
+          "distance_pct": "3.744580",
+          "fact_ref": "v3-zone:142b975cd4b6f86325f8",
+          "historical_interaction_count": 0,
+          "indicator_bar_states": [
+            "COMPLETE"
+          ],
+          "indicator_observation_dates": [
+            "2026-08-27"
+          ],
+          "last_price_interaction_date": null,
+          "owner": "CURRENT_PRICE_STRUCTURE",
+          "price_anchor_refs": [],
+          "proximity_tier": "NEAR",
+          "raw_high": "3.597128",
+          "raw_low": "3.579188",
+          "security_basis": "US_LISTED:RXRX",
+          "semantic_type": "NEAR_RESISTANCE",
+          "source_families": [
+            "BOLLINGER_DAILY"
+          ],
+          "source_refs": [
+            "v3-bollinger:f9d5345a40c4609467f3"
+          ],
+          "source_timeframe": "daily",
+          "source_timeframes": [
+            "daily"
+          ]
+        },
+        {
+          "active_relevance": "ACTIVE_STRUCTURAL",
+          "adjustment_basis": "provider_adjusted_price_v1",
+          "as_of": "2026-08-27",
+          "currency": "USD",
+          "display": "약 $2.76~$2.78",
+          "distance_pct": "19.509420",
+          "fact_ref": "v3-zone:46c794af4c9b6e66763f",
+          "historical_interaction_count": 1,
+          "indicator_bar_states": [],
+          "indicator_observation_dates": [],
+          "last_price_interaction_date": "2026-05-01",
+          "owner": "CURRENT_PRICE_STRUCTURE",
+          "price_anchor_refs": [
+            "v3-pivot:7837bce04b9dfeeda7de"
+          ],
+          "proximity_tier": "RELEVANT",
+          "raw_high": "2.776925",
+          "raw_low": "2.763075",
+          "security_basis": "US_LISTED:RXRX",
+          "semantic_type": "MAJOR_SUPPORT",
+          "source_families": [
+            "PIVOT_MONTHLY"
+          ],
+          "source_refs": [
+            "v3-pivot:7837bce04b9dfeeda7de"
+          ],
+          "source_timeframe": "monthly",
+          "source_timeframes": [
+            "monthly"
+          ]
+        },
+        {
+          "active_relevance": "ACTIVE_NEAR",
+          "adjustment_basis": "provider_adjusted_price_v1",
+          "as_of": "2026-08-27",
+          "currency": "USD",
+          "display": "약 $3.78~$3.82",
+          "distance_pct": "9.579710",
+          "fact_ref": "v3-zone:69365d6f83651957c112",
+          "historical_interaction_count": 2,
+          "indicator_bar_states": [],
+          "indicator_observation_dates": [],
+          "last_price_interaction_date": "2025-11-03",
+          "owner": "CURRENT_PRICE_STRUCTURE",
+          "price_anchor_refs": [
+            "v3-pivot:4a36e6e212db329aff68",
+            "v3-pivot:81a2006e7780513174eb"
+          ],
+          "proximity_tier": "NEAR",
+          "raw_high": "3.819500",
+          "raw_low": "3.780500",
+          "security_basis": "US_LISTED:RXRX",
+          "semantic_type": "MAJOR_RESISTANCE",
+          "source_families": [
+            "PIVOT_MONTHLY"
+          ],
+          "source_refs": [
+            "v3-pivot:4a36e6e212db329aff68",
+            "v3-pivot:81a2006e7780513174eb"
+          ],
+          "source_timeframe": "monthly",
+          "source_timeframes": [
+            "monthly"
+          ]
+        }
+      ],
+      "render_validation_errors": [],
+      "route": "current_ai_existing",
+      "section": "📐 현재 가격 구조\n• 기준 종가: $3.45\n• 가까운 지지: 약 $3.3~$3.35 · 주봉 볼린저 중첩\n• 가까운 저항: 약 $3.57~$3.6\n• 주요 구조 지지: 약 $2.76~$2.78\n• 주요 구조 저항: 약 $3.78~$3.82",
+      "security_basis": "US_LISTED:RXRX",
+      "selected_sha256": "9f8c3cdabfea234fc4c726fa98c82035d05d054d450a3c40296fd2c2f164d80c",
+      "status": "PASS",
+      "ticker": "RXRX",
+      "unsupported_stop": 0,
+      "unsupported_target": 0
+    },
+    {
+      "adjustment_basis": "provider_adjusted_price_v1",
+      "as_of": "2026-08-27",
+      "bollinger_only_major_visible": 0,
+      "company": "SK hynix Inc. ADR",
+      "coverage": {
+        "daily": {
+          "actual_count": 35,
+          "actual_end_date": "2026-08-27",
+          "actual_start_date": "2026-07-10",
+          "adjustment_basis": "provider_adjusted_price_v1",
+          "completed_count": 35,
+          "contract": "ohlcv-long-history-contract-v1",
+          "denial_reason": "short_listing_or_available_history",
+          "history_complete_to_listing": true,
+          "provider_limit": 1000,
+          "provider_limit_hit": false,
+          "provider_returned_count": 35,
+          "requested_count": 1200,
+          "status": "PARTIAL",
+          "timeframe": "daily"
+        },
+        "monthly": {
+          "actual_count": 2,
+          "actual_end_date": "2026-08-03",
+          "actual_start_date": "2026-07-10",
+          "adjustment_basis": "provider_adjusted_price_v1",
+          "completed_count": 1,
+          "contract": "ohlcv-long-history-contract-v1",
+          "denial_reason": "insufficient_completed_history",
+          "history_complete_to_listing": true,
+          "provider_limit": 1000,
+          "provider_limit_hit": false,
+          "provider_returned_count": 2,
+          "requested_count": 300,
+          "status": "FAIL",
+          "timeframe": "monthly"
+        },
+        "weekly": {
+          "actual_count": 8,
+          "actual_end_date": "2026-08-24",
+          "actual_start_date": "2026-07-10",
+          "adjustment_basis": "provider_adjusted_price_v1",
+          "completed_count": 7,
+          "contract": "ohlcv-long-history-contract-v1",
+          "denial_reason": "insufficient_completed_history",
+          "history_complete_to_listing": true,
+          "provider_limit": 1000,
+          "provider_limit_hit": false,
+          "provider_returned_count": 8,
+          "requested_count": 600,
+          "status": "FAIL",
+          "timeframe": "weekly"
+        }
+      },
+      "currency": "USD",
+      "current_price": "159.76",
+      "denial_reasons": [],
+      "duplicate_sr_range_visible": 0,
+      "dynamic_adjustment_basis_conflicts": 0,
+      "dynamic_ai_fallback_parity": true,
+      "dynamic_bindings": [],
+      "dynamic_bollinger_resistance": {
+        "active_relevance": "ACTIVE_STRUCTURAL",
+        "display": "약 $173.32~$174.2",
+        "indicator_bar_states": [
+          "COMPLETE"
+        ],
+        "indicator_observation_dates": [
+          "2026-08-27"
+        ],
+        "price_anchor_refs": [],
+        "proximity_tier": "RELEVANT",
+        "source_families": [
+          "BOLLINGER_DAILY"
+        ],
+        "source_refs": [
+          "v3-bollinger:78ed192dfb4bc3d1d849"
+        ],
+        "source_timeframe": "daily",
+        "visible": true,
+        "zone_id": "v3-zone:1c7ca61d331c6bb843c9"
+      },
+      "dynamic_bollinger_support": {
+        "active_relevance": "ACTIVE_NEAR",
+        "display": "약 $151.11~$154.34",
+        "indicator_bar_states": [
+          "COMPLETE"
+        ],
+        "indicator_observation_dates": [
+          "2026-08-27"
+        ],
+        "price_anchor_refs": [
+          "v3-balance-box:f337ef1769cb088b5a7d",
+          "v3-pivot:2615385faece86098c23"
+        ],
+        "proximity_tier": "NEAR",
+        "source_families": [
+          "BALANCE_BOX",
+          "BOLLINGER_DAILY",
+          "PIVOT_DAILY"
+        ],
+        "source_refs": [
+          "v3-balance-box:f337ef1769cb088b5a7d",
+          "v3-bollinger:5ccbef4d1275fb60c8ae",
+          "v3-pivot:2615385faece86098c23"
+        ],
+        "source_timeframe": "daily",
+        "visible": true,
+        "zone_id": "v3-zone:2e220e7333cd4b770bc3"
+      },
+      "dynamic_confluence_bindings": [
+        {
+          "active_relevance": "ACTIVE_NEAR",
+          "adjustment_basis": "provider_adjusted_price_v1",
+          "as_of": "2026-08-27",
+          "currency": "USD",
+          "display": "약 $151.11~$154.34",
+          "distance_pct": "3.397986",
+          "dynamic_bollinger_confluence": true,
+          "dynamic_bollinger_indicator_bar_states": [
+            "COMPLETE"
+          ],
+          "dynamic_bollinger_indicator_observation_dates": [
+            "2026-08-27"
+          ],
+          "dynamic_bollinger_source_refs": [
+            "v3-balance-box:f337ef1769cb088b5a7d",
+            "v3-bollinger:5ccbef4d1275fb60c8ae",
+            "v3-pivot:2615385faece86098c23"
+          ],
+          "dynamic_bollinger_timeframe": "daily",
+          "fact_ref": "v3-zone:2e220e7333cd4b770bc3",
+          "historical_interaction_count": 12,
+          "indicator_bar_states": [
+            "COMPLETE"
+          ],
+          "indicator_observation_dates": [
+            "2026-08-27"
+          ],
+          "last_price_interaction_date": "2026-08-27",
+          "owner": "CURRENT_PRICE_STRUCTURE",
+          "price_anchor_refs": [
+            "v3-balance-box:f337ef1769cb088b5a7d",
+            "v3-pivot:2615385faece86098c23"
+          ],
+          "proximity_tier": "NEAR",
+          "raw_high": "154.331378",
+          "raw_low": "151.117622",
+          "security_basis": "US_LISTED:SKHY",
+          "semantic_type": "NEAR_SUPPORT",
+          "source_families": [
+            "BALANCE_BOX",
+            "BOLLINGER_DAILY",
+            "PIVOT_DAILY"
+          ],
+          "source_refs": [
+            "v3-balance-box:f337ef1769cb088b5a7d",
+            "v3-bollinger:5ccbef4d1275fb60c8ae",
+            "v3-pivot:2615385faece86098c23"
+          ],
+          "source_timeframe": "daily",
+          "source_timeframes": [
+            "daily"
+          ]
+        }
+      ],
+      "dynamic_currency_conflicts": 0,
+      "dynamic_partial_or_unknown_bar_visible": 0,
+      "dynamic_resistance_line_count": 0,
+      "dynamic_security_basis_conflicts": 0,
+      "dynamic_support_line_count": 0,
+      "eligibility": "ELIGIBLE_SR_ONLY",
+      "invalid_ohlc_rows": [],
+      "major_resistance": {
+        "active_relevance": "ACTIVE_STRUCTURAL",
+        "display": "약 $167.04~$167.88",
+        "indicator_bar_states": [],
+        "indicator_observation_dates": [],
+        "price_anchor_refs": [
+          "v3-pivot:49ca3e562c4a897872b9"
+        ],
+        "proximity_tier": "RELEVANT",
+        "source_families": [
+          "PIVOT_DAILY"
+        ],
+        "source_refs": [
+          "v3-pivot:49ca3e562c4a897872b9"
+        ],
+        "source_timeframe": "daily",
+        "visible": true,
+        "zone_id": "v3-zone:2305e1e5dfbf3dcdca96"
+      },
+      "major_support": {
+        "active_relevance": "ACTIVE_NEAR",
+        "display": "약 $151.11~$154.34",
+        "indicator_bar_states": [
+          "COMPLETE"
+        ],
+        "indicator_observation_dates": [
+          "2026-08-27"
+        ],
+        "price_anchor_refs": [
+          "v3-balance-box:f337ef1769cb088b5a7d",
+          "v3-pivot:2615385faece86098c23"
+        ],
+        "proximity_tier": "NEAR",
+        "source_families": [
+          "BALANCE_BOX",
+          "BOLLINGER_DAILY",
+          "PIVOT_DAILY"
+        ],
+        "source_refs": [
+          "v3-balance-box:f337ef1769cb088b5a7d",
+          "v3-bollinger:5ccbef4d1275fb60c8ae",
+          "v3-pivot:2615385faece86098c23"
+        ],
+        "source_timeframe": "daily",
+        "visible": true,
+        "zone_id": "v3-zone:2e220e7333cd4b770bc3"
+      },
+      "major_without_price_anchor": 0,
+      "market": "US",
+      "near_resistance": {
+        "active_relevance": "ACTIVE_NEAR",
+        "display": "약 $162.24~$165.14",
+        "indicator_bar_states": [],
+        "indicator_observation_dates": [],
+        "price_anchor_refs": [
+          "v3-pivot:f8113439e7b74bd7282f"
+        ],
+        "proximity_tier": "NEAR",
+        "source_families": [
+          "PIVOT_DAILY"
+        ],
+        "source_refs": [
+          "v3-pivot:a7898489abf9b2a4347b",
+          "v3-pivot:f8113439e7b74bd7282f"
+        ],
+        "source_timeframe": "daily",
+        "visible": true,
+        "zone_id": "v3-zone:9fa6f49686b2750fa5f5"
+      },
+      "near_support": {
+        "active_relevance": "ACTIVE_NEAR",
+        "display": "약 $151.11~$154.34",
+        "indicator_bar_states": [
+          "COMPLETE"
+        ],
+        "indicator_observation_dates": [
+          "2026-08-27"
+        ],
+        "price_anchor_refs": [
+          "v3-balance-box:f337ef1769cb088b5a7d",
+          "v3-pivot:2615385faece86098c23"
+        ],
+        "proximity_tier": "NEAR",
+        "source_families": [
+          "BALANCE_BOX",
+          "BOLLINGER_DAILY",
+          "PIVOT_DAILY"
+        ],
+        "source_refs": [
+          "v3-balance-box:f337ef1769cb088b5a7d",
+          "v3-bollinger:5ccbef4d1275fb60c8ae",
+          "v3-pivot:2615385faece86098c23"
+        ],
+        "source_timeframe": "daily",
+        "visible": true,
+        "zone_id": "v3-zone:2e220e7333cd4b770bc3"
+      },
+      "numeric_bindings": [
+        {
+          "currency": "USD",
+          "fact_ref": "current-price:SKHY:2026-08-27",
+          "owner": "CURRENT_PRICE_STRUCTURE",
+          "semantic_type": "CURRENT_PRICE",
+          "value": "159.76"
+        },
+        {
+          "active_relevance": "ACTIVE_NEAR",
+          "adjustment_basis": "provider_adjusted_price_v1",
+          "as_of": "2026-08-27",
+          "currency": "USD",
+          "display": "약 $151.11~$154.34",
+          "distance_pct": "3.397986",
+          "dynamic_bollinger_confluence": true,
+          "dynamic_bollinger_indicator_bar_states": [
+            "COMPLETE"
+          ],
+          "dynamic_bollinger_indicator_observation_dates": [
+            "2026-08-27"
+          ],
+          "dynamic_bollinger_source_refs": [
+            "v3-balance-box:f337ef1769cb088b5a7d",
+            "v3-bollinger:5ccbef4d1275fb60c8ae",
+            "v3-pivot:2615385faece86098c23"
+          ],
+          "dynamic_bollinger_timeframe": "daily",
+          "fact_ref": "v3-zone:2e220e7333cd4b770bc3",
+          "historical_interaction_count": 12,
+          "indicator_bar_states": [
+            "COMPLETE"
+          ],
+          "indicator_observation_dates": [
+            "2026-08-27"
+          ],
+          "last_price_interaction_date": "2026-08-27",
+          "owner": "CURRENT_PRICE_STRUCTURE",
+          "price_anchor_refs": [
+            "v3-balance-box:f337ef1769cb088b5a7d",
+            "v3-pivot:2615385faece86098c23"
+          ],
+          "proximity_tier": "NEAR",
+          "raw_high": "154.331378",
+          "raw_low": "151.117622",
+          "security_basis": "US_LISTED:SKHY",
+          "semantic_type": "NEAR_SUPPORT",
+          "source_families": [
+            "BALANCE_BOX",
+            "BOLLINGER_DAILY",
+            "PIVOT_DAILY"
+          ],
+          "source_refs": [
+            "v3-balance-box:f337ef1769cb088b5a7d",
+            "v3-bollinger:5ccbef4d1275fb60c8ae",
+            "v3-pivot:2615385faece86098c23"
+          ],
+          "source_timeframe": "daily",
+          "source_timeframes": [
+            "daily"
+          ]
+        },
+        {
+          "active_relevance": "ACTIVE_NEAR",
+          "adjustment_basis": "provider_adjusted_price_v1",
+          "as_of": "2026-08-27",
+          "currency": "USD",
+          "display": "약 $162.24~$165.14",
+          "distance_pct": "1.552814",
+          "fact_ref": "v3-zone:9fa6f49686b2750fa5f5",
+          "historical_interaction_count": 1,
+          "indicator_bar_states": [],
+          "indicator_observation_dates": [],
+          "last_price_interaction_date": "2026-07-31",
+          "owner": "CURRENT_PRICE_STRUCTURE",
+          "price_anchor_refs": [
+            "v3-pivot:f8113439e7b74bd7282f"
+          ],
+          "proximity_tier": "NEAR",
+          "raw_high": "165.139225",
+          "raw_low": "162.240775",
+          "security_basis": "US_LISTED:SKHY",
+          "semantic_type": "NEAR_RESISTANCE",
+          "source_families": [
+            "PIVOT_DAILY"
+          ],
+          "source_refs": [
+            "v3-pivot:a7898489abf9b2a4347b",
+            "v3-pivot:f8113439e7b74bd7282f"
+          ],
+          "source_timeframe": "daily",
+          "source_timeframes": [
+            "daily"
+          ]
+        },
+        {
+          "active_relevance": "ACTIVE_STRUCTURAL",
+          "adjustment_basis": "provider_adjusted_price_v1",
+          "as_of": "2026-08-27",
+          "currency": "USD",
+          "display": "약 $167.04~$167.88",
+          "distance_pct": "4.557680",
+          "fact_ref": "v3-zone:2305e1e5dfbf3dcdca96",
+          "historical_interaction_count": 1,
+          "indicator_bar_states": [],
+          "indicator_observation_dates": [],
+          "last_price_interaction_date": "2026-08-21",
+          "owner": "CURRENT_PRICE_STRUCTURE",
+          "price_anchor_refs": [
+            "v3-pivot:49ca3e562c4a897872b9"
+          ],
+          "proximity_tier": "RELEVANT",
+          "raw_high": "167.878650",
+          "raw_low": "167.041350",
+          "security_basis": "US_LISTED:SKHY",
+          "semantic_type": "MAJOR_RESISTANCE",
+          "source_families": [
+            "PIVOT_DAILY"
+          ],
+          "source_refs": [
+            "v3-pivot:49ca3e562c4a897872b9"
+          ],
+          "source_timeframe": "daily",
+          "source_timeframes": [
+            "daily"
+          ]
+        }
+      ],
+      "render_validation_errors": [],
+      "route": "current_ai_existing",
+      "section": "📐 현재 가격 구조\n• 기준 종가: $159.76\n• 가까운 지지: 약 $151.11~$154.34 · 일봉 볼린저 중첩\n• 가까운 저항: 약 $162.24~$165.14\n• 주요 구조 저항: 약 $167.04~$167.88",
+      "security_basis": "US_LISTED:SKHY",
+      "selected_sha256": "7e99440603a29f110ce0479eac4fb8c57252cfd24d4717dbd637c436c3a658ef",
+      "status": "PASS",
+      "ticker": "SKHY",
+      "unsupported_stop": 0,
+      "unsupported_target": 0
+    },
+    {
+      "adjustment_basis": "provider_adjusted_price_v1",
+      "as_of": "2026-08-27",
+      "bollinger_only_major_visible": 0,
+      "company": "SanDisk",
+      "coverage": {
+        "daily": {
+          "actual_count": 379,
+          "actual_end_date": "2026-08-26",
+          "actual_start_date": "2025-02-24",
+          "adjustment_basis": "provider_adjusted_price_v1",
+          "completed_count": 379,
+          "contract": "ohlcv-long-history-contract-v1",
+          "denial_reason": "short_listing_or_available_history",
+          "history_complete_to_listing": true,
+          "provider_limit": 1000,
+          "provider_limit_hit": false,
+          "provider_returned_count": 379,
+          "requested_count": 1200,
+          "status": "PARTIAL",
+          "timeframe": "daily"
+        },
+        "monthly": {
+          "actual_count": 19,
+          "actual_end_date": "2026-08-03",
+          "actual_start_date": "2025-02-24",
+          "adjustment_basis": "provider_adjusted_price_v1",
+          "completed_count": 18,
+          "contract": "ohlcv-long-history-contract-v1",
+          "denial_reason": "short_listing_or_available_history",
+          "history_complete_to_listing": true,
+          "provider_limit": 1000,
+          "provider_limit_hit": false,
+          "provider_returned_count": 19,
+          "requested_count": 300,
+          "status": "PARTIAL",
+          "timeframe": "monthly"
+        },
+        "weekly": {
+          "actual_count": 79,
+          "actual_end_date": "2026-08-24",
+          "actual_start_date": "2025-02-24",
+          "adjustment_basis": "provider_adjusted_price_v1",
+          "completed_count": 78,
+          "contract": "ohlcv-long-history-contract-v1",
+          "denial_reason": "short_listing_or_available_history",
+          "history_complete_to_listing": true,
+          "provider_limit": 1000,
+          "provider_limit_hit": false,
+          "provider_returned_count": 79,
+          "requested_count": 600,
+          "status": "PARTIAL",
+          "timeframe": "weekly"
+        }
+      },
+      "currency": "USD",
+      "current_price": "1499.37",
+      "denial_reasons": [
+        "daily_history_as_of_mismatch"
+      ],
+      "duplicate_sr_range_visible": 0,
+      "dynamic_adjustment_basis_conflicts": 0,
+      "dynamic_ai_fallback_parity": true,
+      "dynamic_bindings": [],
+      "dynamic_bollinger_resistance": {
+        "active_relevance": "ACTIVE_STRUCTURAL",
+        "display": "약 $1,762~$1,770.85",
+        "indicator_bar_states": [
+          "COMPLETE"
+        ],
+        "indicator_observation_dates": [
+          "2026-08-26"
+        ],
+        "price_anchor_refs": [],
+        "proximity_tier": "RELEVANT",
+        "source_families": [
+          "BOLLINGER_DAILY"
+        ],
+        "source_refs": [
+          "v3-bollinger:daac2ca94e354e9ef7c0"
+        ],
+        "source_timeframe": "daily",
+        "visible": true,
+        "zone_id": "v3-zone:75d9f26ae417cecf368a"
+      },
+      "dynamic_bollinger_support": {
+        "active_relevance": "ACTIVE_NEAR",
+        "display": "약 $1,412.99~$1,438.85",
+        "indicator_bar_states": [
+          "COMPLETE"
+        ],
+        "indicator_observation_dates": [
+          "2026-08-26"
+        ],
+        "price_anchor_refs": [],
+        "proximity_tier": "NEAR",
+        "source_families": [
+          "BOLLINGER_DAILY",
+          "PIVOT_DAILY"
+        ],
+        "source_refs": [
+          "v3-bollinger:ff7926366d27f1c6d9c8",
+          "v3-pivot:73317e2ddf643ddacfcd"
+        ],
+        "source_timeframe": "daily",
+        "visible": true,
+        "zone_id": "v3-zone:5abfa1afe637f6e99bc0"
+      },
+      "dynamic_confluence_bindings": [],
+      "dynamic_currency_conflicts": 0,
+      "dynamic_partial_or_unknown_bar_visible": 0,
+      "dynamic_resistance_line_count": 0,
+      "dynamic_security_basis_conflicts": 0,
+      "dynamic_support_line_count": 0,
+      "eligibility": "BLOCKED",
+      "invalid_ohlc_rows": [
+        {
+          "close": 1449.4,
+          "date": "2026-08-27",
+          "high": 1557.89,
+          "low": 1456.0,
+          "open": 1549.42,
+          "timeframe": "daily"
+        }
+      ],
+      "major_resistance": {
+        "active_relevance": null,
+        "display": null,
+        "indicator_bar_states": [],
+        "indicator_observation_dates": [],
+        "price_anchor_refs": [],
+        "proximity_tier": null,
+        "source_families": [],
+        "source_refs": [],
+        "source_timeframe": null,
+        "visible": false,
+        "zone_id": null
+      },
+      "major_support": {
+        "active_relevance": null,
+        "display": null,
+        "indicator_bar_states": [],
+        "indicator_observation_dates": [],
+        "price_anchor_refs": [],
+        "proximity_tier": null,
+        "source_families": [],
+        "source_refs": [],
+        "source_timeframe": null,
+        "visible": false,
+        "zone_id": null
+      },
+      "major_without_price_anchor": 0,
+      "market": "US",
+      "near_resistance": {
+        "active_relevance": "LONG_HORIZON_HISTORICAL",
+        "display": "약 $1,762~$1,770.85",
+        "indicator_bar_states": [
+          "COMPLETE"
+        ],
+        "indicator_observation_dates": [
+          "2026-08-26"
+        ],
+        "price_anchor_refs": [],
+        "proximity_tier": "LONG_HORIZON",
+        "source_families": [
+          "BOLLINGER_DAILY"
+        ],
+        "source_refs": [
+          "v3-bollinger:daac2ca94e354e9ef7c0"
+        ],
+        "source_timeframe": "daily",
+        "visible": true,
+        "zone_id": "v3-zone:75d9f26ae417cecf368a"
+      },
+      "near_support": {
+        "active_relevance": "ACTIVE_NEAR",
+        "display": "약 $1,412.99~$1,438.85",
+        "indicator_bar_states": [
+          "COMPLETE"
+        ],
+        "indicator_observation_dates": [
+          "2026-08-26"
+        ],
+        "price_anchor_refs": [],
+        "proximity_tier": "NEAR",
+        "source_families": [
+          "BOLLINGER_DAILY",
+          "PIVOT_DAILY"
+        ],
+        "source_refs": [
+          "v3-bollinger:ff7926366d27f1c6d9c8",
+          "v3-pivot:73317e2ddf643ddacfcd"
+        ],
+        "source_timeframe": "daily",
+        "visible": true,
+        "zone_id": "v3-zone:5abfa1afe637f6e99bc0"
+      },
+      "numeric_bindings": [],
+      "render_validation_errors": [],
+      "route": "deterministic_fallback",
+      "section": null,
+      "security_basis": "US_LISTED:SNDK",
+      "selected_sha256": "59f1d898d466ba34025bef934c1de922fe6f175b05e32059d44bc4eed609fd95",
+      "status": "PASS",
+      "ticker": "SNDK",
+      "unsupported_stop": 0,
+      "unsupported_target": 0
+    },
+    {
+      "adjustment_basis": "provider_adjusted_price_v1",
+      "as_of": "2026-08-27",
+      "bollinger_only_major_visible": 0,
+      "company": "Tesla, Inc.",
+      "coverage": {
+        "daily": {
+          "actual_count": 1000,
+          "actual_end_date": "2026-08-27",
+          "actual_start_date": "2022-09-01",
+          "adjustment_basis": "provider_adjusted_price_v1",
+          "completed_count": 1000,
+          "contract": "ohlcv-long-history-contract-v1",
+          "denial_reason": "provider_limit",
+          "history_complete_to_listing": false,
+          "provider_limit": 1000,
+          "provider_limit_hit": true,
+          "provider_returned_count": 1000,
+          "requested_count": 1200,
+          "status": "PARTIAL_SAFE",
+          "timeframe": "daily"
+        },
+        "monthly": {
+          "actual_count": 195,
+          "actual_end_date": "2026-08-03",
+          "actual_start_date": "2010-06-29",
+          "adjustment_basis": "provider_adjusted_price_v1",
+          "completed_count": 194,
+          "contract": "ohlcv-long-history-contract-v1",
+          "denial_reason": "short_listing_or_available_history",
+          "history_complete_to_listing": true,
+          "provider_limit": 1000,
+          "provider_limit_hit": false,
+          "provider_returned_count": 195,
+          "requested_count": 300,
+          "status": "PARTIAL",
+          "timeframe": "monthly"
+        },
+        "weekly": {
+          "actual_count": 600,
+          "actual_end_date": "2026-08-24",
+          "actual_start_date": "2015-03-02",
+          "adjustment_basis": "provider_adjusted_price_v1",
+          "completed_count": 599,
+          "contract": "ohlcv-long-history-contract-v1",
+          "denial_reason": "short_listing_or_available_history",
+          "history_complete_to_listing": true,
+          "provider_limit": 1000,
+          "provider_limit_hit": false,
+          "provider_returned_count": 600,
+          "requested_count": 600,
+          "status": "PARTIAL",
+          "timeframe": "weekly"
+        }
+      },
+      "currency": "USD",
+      "current_price": "354.65",
+      "denial_reasons": [],
+      "duplicate_sr_range_visible": 0,
+      "dynamic_adjustment_basis_conflicts": 0,
+      "dynamic_ai_fallback_parity": true,
+      "dynamic_bindings": [],
+      "dynamic_bollinger_resistance": {
+        "active_relevance": "ACTIVE_NEAR",
+        "display": "약 $366.78~$375.14",
+        "indicator_bar_states": [
+          "COMPLETE"
+        ],
+        "indicator_observation_dates": [
+          "2026-07-31"
+        ],
+        "price_anchor_refs": [
+          "v3-pivot:b132d066eee1638e7a89"
+        ],
+        "proximity_tier": "NEAR",
+        "source_families": [
+          "BOLLINGER_MONTHLY",
+          "PIVOT_MONTHLY"
+        ],
+        "source_refs": [
+          "v3-bollinger:7ddd3ed486305f786db2",
+          "v3-pivot:b132d066eee1638e7a89"
+        ],
+        "source_timeframe": "monthly",
+        "visible": true,
+        "zone_id": "v3-zone:c00dc1c22a4cf135238f"
+      },
+      "dynamic_bollinger_support": {
+        "active_relevance": "ACTIVE_NEAR",
+        "display": "약 $336.09~$339.08",
+        "indicator_bar_states": [
+          "COMPLETE"
+        ],
+        "indicator_observation_dates": [
+          "2026-08-27"
+        ],
+        "price_anchor_refs": [
+          "v3-balance-box:e39a530ca8bd95531219"
+        ],
+        "proximity_tier": "NEAR",
+        "source_families": [
+          "BALANCE_BOX",
+          "BOLLINGER_DAILY"
+        ],
+        "source_refs": [
+          "v3-balance-box:e39a530ca8bd95531219",
+          "v3-bollinger:1d6258603c50ca81f45c"
+        ],
+        "source_timeframe": "daily",
+        "visible": true,
+        "zone_id": "v3-zone:60ae294dc9e7720b7fa9"
+      },
+      "dynamic_confluence_bindings": [
+        {
+          "active_relevance": "ACTIVE_NEAR",
+          "adjustment_basis": "provider_adjusted_price_v1",
+          "as_of": "2026-08-27",
+          "currency": "USD",
+          "display": "약 $366.78~$375.14",
+          "distance_pct": "3.421009",
+          "dynamic_bollinger_confluence": true,
+          "dynamic_bollinger_indicator_bar_states": [
+            "COMPLETE"
+          ],
+          "dynamic_bollinger_indicator_observation_dates": [
+            "2026-07-31"
+          ],
+          "dynamic_bollinger_source_refs": [
+            "v3-bollinger:7ddd3ed486305f786db2",
+            "v3-pivot:b132d066eee1638e7a89"
+          ],
+          "dynamic_bollinger_timeframe": "monthly",
+          "fact_ref": "v3-zone:c00dc1c22a4cf135238f",
+          "historical_interaction_count": 1,
+          "indicator_bar_states": [
+            "COMPLETE"
+          ],
+          "indicator_observation_dates": [
+            "2026-07-31"
+          ],
+          "last_price_interaction_date": "2025-05-01",
+          "owner": "CURRENT_PRICE_STRUCTURE",
+          "price_anchor_refs": [
+            "v3-pivot:b132d066eee1638e7a89"
+          ],
+          "proximity_tier": "NEAR",
+          "raw_high": "375.130892",
+          "raw_low": "366.782608",
+          "security_basis": "US_LISTED:TSLA",
+          "semantic_type": "MAJOR_RESISTANCE",
+          "source_families": [
+            "BOLLINGER_MONTHLY",
+            "PIVOT_MONTHLY"
+          ],
+          "source_refs": [
+            "v3-bollinger:7ddd3ed486305f786db2",
+            "v3-pivot:b132d066eee1638e7a89"
+          ],
+          "source_timeframe": "monthly",
+          "source_timeframes": [
+            "monthly"
+          ]
+        }
+      ],
+      "dynamic_currency_conflicts": 0,
+      "dynamic_partial_or_unknown_bar_visible": 0,
+      "dynamic_resistance_line_count": 0,
+      "dynamic_security_basis_conflicts": 0,
+      "dynamic_support_line_count": 0,
+      "eligibility": "ELIGIBLE_SR_ONLY",
+      "invalid_ohlc_rows": [],
+      "major_resistance": {
+        "active_relevance": "ACTIVE_NEAR",
+        "display": "약 $366.78~$375.14",
+        "indicator_bar_states": [
+          "COMPLETE"
+        ],
+        "indicator_observation_dates": [
+          "2026-07-31"
+        ],
+        "price_anchor_refs": [
+          "v3-pivot:b132d066eee1638e7a89"
+        ],
+        "proximity_tier": "NEAR",
+        "source_families": [
+          "BOLLINGER_MONTHLY",
+          "PIVOT_MONTHLY"
+        ],
+        "source_refs": [
+          "v3-bollinger:7ddd3ed486305f786db2",
+          "v3-pivot:b132d066eee1638e7a89"
+        ],
+        "source_timeframe": "monthly",
+        "visible": true,
+        "zone_id": "v3-zone:c00dc1c22a4cf135238f"
+      },
+      "major_support": {
+        "active_relevance": "ACTIVE_STRUCTURAL",
+        "display": "약 $298.54~$300.88",
+        "indicator_bar_states": [],
+        "indicator_observation_dates": [],
+        "price_anchor_refs": [
+          "v3-pivot:85830049edd0f527573f",
+          "v3-pivot:cb76749a86be60711b2b"
+        ],
+        "proximity_tier": "RELEVANT",
+        "source_families": [
+          "PIVOT_MONTHLY"
+        ],
+        "source_refs": [
+          "v3-pivot:85830049edd0f527573f",
+          "v3-pivot:cb76749a86be60711b2b"
+        ],
+        "source_timeframe": "monthly",
+        "visible": true,
+        "zone_id": "v3-zone:8b83072b269ad847033d"
+      },
+      "major_without_price_anchor": 0,
+      "market": "US",
+      "near_resistance": {
+        "active_relevance": "ACTIVE_NEAR",
+        "display": "약 $356.63~$365.37",
+        "indicator_bar_states": [
+          "COMPLETE"
+        ],
+        "indicator_observation_dates": [
+          "2026-08-27"
+        ],
+        "price_anchor_refs": [
+          "v3-pivot:253617dbe5736de935f4",
+          "v3-pivot:750b769555a37f0337f4",
+          "v3-pivot:ac0d98855f7c68abde90",
+          "v3-pivot:b53b65022c59c519fb7b",
+          "v3-pivot:fe0992f2537850c8edfe"
+        ],
+        "proximity_tier": "NEAR",
+        "source_families": [
+          "BOLLINGER_DAILY",
+          "PIVOT_DAILY"
+        ],
+        "source_refs": [
+          "v3-bollinger:71d94b90add8b5555f39",
+          "v3-pivot:253617dbe5736de935f4",
+          "v3-pivot:750b769555a37f0337f4",
+          "v3-pivot:ac0d98855f7c68abde90",
+          "v3-pivot:b53b65022c59c519fb7b",
+          "v3-pivot:fe0992f2537850c8edfe"
+        ],
+        "source_timeframe": "daily",
+        "visible": true,
+        "zone_id": "v3-zone:e3da6dcb9eec984dc64e"
+      },
+      "near_support": {
+        "active_relevance": "ACTIVE_NEAR",
+        "display": "약 $336.09~$339.08",
+        "indicator_bar_states": [
+          "COMPLETE"
+        ],
+        "indicator_observation_dates": [
+          "2026-08-27"
+        ],
+        "price_anchor_refs": [
+          "v3-balance-box:e39a530ca8bd95531219"
+        ],
+        "proximity_tier": "NEAR",
+        "source_families": [
+          "BALANCE_BOX",
+          "BOLLINGER_DAILY"
+        ],
+        "source_refs": [
+          "v3-balance-box:e39a530ca8bd95531219",
+          "v3-bollinger:1d6258603c50ca81f45c"
+        ],
+        "source_timeframe": "daily",
+        "visible": true,
+        "zone_id": "v3-zone:60ae294dc9e7720b7fa9"
+      },
+      "numeric_bindings": [
+        {
+          "currency": "USD",
+          "fact_ref": "current-price:TSLA:2026-08-27",
+          "owner": "CURRENT_PRICE_STRUCTURE",
+          "semantic_type": "CURRENT_PRICE",
+          "value": "354.65"
+        },
+        {
+          "active_relevance": "ACTIVE_NEAR",
+          "adjustment_basis": "provider_adjusted_price_v1",
+          "as_of": "2026-08-27",
+          "currency": "USD",
+          "display": "약 $336.09~$339.08",
+          "distance_pct": "4.391948",
+          "fact_ref": "v3-zone:60ae294dc9e7720b7fa9",
+          "historical_interaction_count": 11,
+          "indicator_bar_states": [
+            "COMPLETE"
+          ],
+          "indicator_observation_dates": [
+            "2026-08-27"
+          ],
+          "last_price_interaction_date": "2026-08-26",
+          "owner": "CURRENT_PRICE_STRUCTURE",
+          "price_anchor_refs": [
+            "v3-balance-box:e39a530ca8bd95531219"
+          ],
+          "proximity_tier": "NEAR",
+          "raw_high": "339.073955",
+          "raw_low": "336.090045",
+          "security_basis": "US_LISTED:TSLA",
+          "semantic_type": "NEAR_SUPPORT",
+          "source_families": [
+            "BALANCE_BOX",
+            "BOLLINGER_DAILY"
+          ],
+          "source_refs": [
+            "v3-balance-box:e39a530ca8bd95531219",
+            "v3-bollinger:1d6258603c50ca81f45c"
+          ],
+          "source_timeframe": "daily",
+          "source_timeframes": [
+            "daily"
+          ]
+        },
+        {
+          "active_relevance": "ACTIVE_NEAR",
+          "adjustment_basis": "provider_adjusted_price_v1",
+          "as_of": "2026-08-27",
+          "currency": "USD",
+          "display": "약 $356.63~$365.37",
+          "distance_pct": "0.559978",
+          "fact_ref": "v3-zone:e3da6dcb9eec984dc64e",
+          "historical_interaction_count": 5,
+          "indicator_bar_states": [
+            "COMPLETE"
+          ],
+          "indicator_observation_dates": [
+            "2026-08-27"
+          ],
+          "last_price_interaction_date": "2026-04-27",
+          "owner": "CURRENT_PRICE_STRUCTURE",
+          "price_anchor_refs": [
+            "v3-pivot:253617dbe5736de935f4",
+            "v3-pivot:750b769555a37f0337f4",
+            "v3-pivot:ac0d98855f7c68abde90",
+            "v3-pivot:b53b65022c59c519fb7b",
+            "v3-pivot:fe0992f2537850c8edfe"
+          ],
+          "proximity_tier": "NEAR",
+          "raw_high": "365.364139",
+          "raw_low": "356.635961",
+          "security_basis": "US_LISTED:TSLA",
+          "semantic_type": "NEAR_RESISTANCE",
+          "source_families": [
+            "BOLLINGER_DAILY",
+            "PIVOT_DAILY"
+          ],
+          "source_refs": [
+            "v3-bollinger:71d94b90add8b5555f39",
+            "v3-pivot:253617dbe5736de935f4",
+            "v3-pivot:750b769555a37f0337f4",
+            "v3-pivot:ac0d98855f7c68abde90",
+            "v3-pivot:b53b65022c59c519fb7b",
+            "v3-pivot:fe0992f2537850c8edfe"
+          ],
+          "source_timeframe": "daily",
+          "source_timeframes": [
+            "daily"
+          ]
+        },
+        {
+          "active_relevance": "ACTIVE_STRUCTURAL",
+          "adjustment_basis": "provider_adjusted_price_v1",
+          "as_of": "2026-08-27",
+          "currency": "USD",
+          "display": "약 $298.54~$300.88",
+          "distance_pct": "15.161547",
+          "fact_ref": "v3-zone:8b83072b269ad847033d",
+          "historical_interaction_count": 2,
+          "indicator_bar_states": [],
+          "indicator_observation_dates": [],
+          "last_price_interaction_date": "2023-07-03",
+          "owner": "CURRENT_PRICE_STRUCTURE",
+          "price_anchor_refs": [
+            "v3-pivot:85830049edd0f527573f",
+            "v3-pivot:cb76749a86be60711b2b"
+          ],
+          "proximity_tier": "RELEVANT",
+          "raw_high": "300.879575",
+          "raw_low": "298.540725",
+          "security_basis": "US_LISTED:TSLA",
+          "semantic_type": "MAJOR_SUPPORT",
+          "source_families": [
+            "PIVOT_MONTHLY"
+          ],
+          "source_refs": [
+            "v3-pivot:85830049edd0f527573f",
+            "v3-pivot:cb76749a86be60711b2b"
+          ],
+          "source_timeframe": "monthly",
+          "source_timeframes": [
+            "monthly"
+          ]
+        },
+        {
+          "active_relevance": "ACTIVE_NEAR",
+          "adjustment_basis": "provider_adjusted_price_v1",
+          "as_of": "2026-08-27",
+          "currency": "USD",
+          "display": "약 $366.78~$375.14",
+          "distance_pct": "3.421009",
+          "dynamic_bollinger_confluence": true,
+          "dynamic_bollinger_indicator_bar_states": [
+            "COMPLETE"
+          ],
+          "dynamic_bollinger_indicator_observation_dates": [
+            "2026-07-31"
+          ],
+          "dynamic_bollinger_source_refs": [
+            "v3-bollinger:7ddd3ed486305f786db2",
+            "v3-pivot:b132d066eee1638e7a89"
+          ],
+          "dynamic_bollinger_timeframe": "monthly",
+          "fact_ref": "v3-zone:c00dc1c22a4cf135238f",
+          "historical_interaction_count": 1,
+          "indicator_bar_states": [
+            "COMPLETE"
+          ],
+          "indicator_observation_dates": [
+            "2026-07-31"
+          ],
+          "last_price_interaction_date": "2025-05-01",
+          "owner": "CURRENT_PRICE_STRUCTURE",
+          "price_anchor_refs": [
+            "v3-pivot:b132d066eee1638e7a89"
+          ],
+          "proximity_tier": "NEAR",
+          "raw_high": "375.130892",
+          "raw_low": "366.782608",
+          "security_basis": "US_LISTED:TSLA",
+          "semantic_type": "MAJOR_RESISTANCE",
+          "source_families": [
+            "BOLLINGER_MONTHLY",
+            "PIVOT_MONTHLY"
+          ],
+          "source_refs": [
+            "v3-bollinger:7ddd3ed486305f786db2",
+            "v3-pivot:b132d066eee1638e7a89"
+          ],
+          "source_timeframe": "monthly",
+          "source_timeframes": [
+            "monthly"
+          ]
+        }
+      ],
+      "render_validation_errors": [],
+      "route": "current_ai_existing",
+      "section": "📐 현재 가격 구조\n• 기준 종가: $354.65\n• 가까운 지지: 약 $336.09~$339.08\n• 가까운 저항: 약 $356.63~$365.37\n• 주요 구조 지지: 약 $298.54~$300.88\n• 주요 구조 저항: 약 $366.78~$375.14 · 월봉 볼린저 중첩",
+      "security_basis": "US_LISTED:TSLA",
+      "selected_sha256": "de862578cbfb927930b05a746323ebd3523602592274968808c56497066d4764",
+      "status": "PASS",
+      "ticker": "TSLA",
+      "unsupported_stop": 0,
+      "unsupported_target": 0
+    },
+    {
+      "adjustment_basis": "provider_adjusted_price_v1",
+      "as_of": "2026-08-27",
+      "bollinger_only_major_visible": 0,
+      "company": "TSMC",
+      "coverage": {
+        "daily": {
+          "actual_count": 1000,
+          "actual_end_date": "2026-08-27",
+          "actual_start_date": "2022-09-01",
+          "adjustment_basis": "provider_adjusted_price_v1",
+          "completed_count": 1000,
+          "contract": "ohlcv-long-history-contract-v1",
+          "denial_reason": "provider_limit",
+          "history_complete_to_listing": false,
+          "provider_limit": 1000,
+          "provider_limit_hit": true,
+          "provider_returned_count": 1000,
+          "requested_count": 1200,
+          "status": "PARTIAL_SAFE",
+          "timeframe": "daily"
+        },
+        "monthly": {
+          "actual_count": 261,
+          "actual_end_date": "2026-08-03",
+          "actual_start_date": "2004-12-21",
+          "adjustment_basis": "provider_adjusted_price_v1",
+          "completed_count": 260,
+          "contract": "ohlcv-long-history-contract-v1",
+          "denial_reason": "short_listing_or_available_history",
+          "history_complete_to_listing": true,
+          "provider_limit": 1000,
+          "provider_limit_hit": false,
+          "provider_returned_count": 261,
+          "requested_count": 300,
+          "status": "PARTIAL",
+          "timeframe": "monthly"
+        },
+        "weekly": {
+          "actual_count": 600,
+          "actual_end_date": "2026-08-24",
+          "actual_start_date": "2015-03-02",
+          "adjustment_basis": "provider_adjusted_price_v1",
+          "completed_count": 599,
+          "contract": "ohlcv-long-history-contract-v1",
+          "denial_reason": "short_listing_or_available_history",
+          "history_complete_to_listing": true,
+          "provider_limit": 1000,
+          "provider_limit_hit": false,
+          "provider_returned_count": 600,
+          "requested_count": 600,
+          "status": "PARTIAL",
+          "timeframe": "weekly"
+        }
+      },
+      "currency": "USD",
+      "current_price": "425.67",
+      "denial_reasons": [],
+      "duplicate_sr_range_visible": 0,
+      "dynamic_adjustment_basis_conflicts": 0,
+      "dynamic_ai_fallback_parity": true,
+      "dynamic_bindings": [
+        {
+          "active_relevance": "ACTIVE_NEAR",
+          "adjustment_basis": "provider_adjusted_price_v1",
+          "as_of": "2026-08-27",
+          "contract": "dynamic-bollinger-support-resistance-v1",
+          "currency": "USD",
+          "display": "약 $466.32~$468.67",
+          "distance_pct": "9.551598",
+          "dynamic_bollinger_timeframe": "monthly",
+          "fact_ref": "v3-zone:ddc280ec37b29b16ac1a",
+          "historical_interaction_count": 0,
+          "indicator_bar_states": [
+            "COMPLETE"
+          ],
+          "indicator_observation_dates": [
+            "2026-07-31"
+          ],
+          "last_price_interaction_date": null,
+          "owner": "CURRENT_PRICE_STRUCTURE",
+          "price_anchor_refs": [],
+          "proximity_tier": "NEAR",
+          "raw_high": "468.665775",
+          "raw_low": "466.328289",
+          "security_basis": "US_LISTED:TSM",
+          "semantic_type": "DYNAMIC_BOLLINGER_RESISTANCE",
+          "source_families": [
+            "BOLLINGER_MONTHLY"
+          ],
+          "source_refs": [
+            "v3-bollinger:c0b529987ba9c1bf50f7"
+          ],
+          "source_timeframe": "monthly",
+          "source_timeframes": [
+            "monthly"
+          ]
+        }
+      ],
+      "dynamic_bollinger_resistance": {
+        "active_relevance": "ACTIVE_NEAR",
+        "display": "약 $466.32~$468.67",
+        "indicator_bar_states": [
+          "COMPLETE"
+        ],
+        "indicator_observation_dates": [
+          "2026-07-31"
+        ],
+        "price_anchor_refs": [],
+        "proximity_tier": "NEAR",
+        "source_families": [
+          "BOLLINGER_MONTHLY"
+        ],
+        "source_refs": [
+          "v3-bollinger:c0b529987ba9c1bf50f7"
+        ],
+        "source_timeframe": "monthly",
+        "visible": true,
+        "zone_id": "v3-zone:ddc280ec37b29b16ac1a"
+      },
+      "dynamic_bollinger_support": {
+        "active_relevance": "ACTIVE_NEAR",
+        "display": "약 $411.64~$413.71",
+        "indicator_bar_states": [
+          "COMPLETE"
+        ],
+        "indicator_observation_dates": [
+          "2026-08-21"
+        ],
+        "price_anchor_refs": [],
+        "proximity_tier": "NEAR",
+        "source_families": [
+          "BOLLINGER_WEEKLY"
+        ],
+        "source_refs": [
+          "v3-bollinger:123953702488f1d29e19"
+        ],
+        "source_timeframe": "weekly",
+        "visible": true,
+        "zone_id": "v3-zone:ec44ca4e7697ba5b9b6c"
+      },
+      "dynamic_confluence_bindings": [],
+      "dynamic_currency_conflicts": 0,
+      "dynamic_partial_or_unknown_bar_visible": 0,
+      "dynamic_resistance_line_count": 1,
+      "dynamic_security_basis_conflicts": 0,
+      "dynamic_support_line_count": 0,
+      "eligibility": "ELIGIBLE_SR_ONLY",
+      "invalid_ohlc_rows": [],
+      "major_resistance": {
+        "active_relevance": null,
+        "display": null,
+        "indicator_bar_states": [],
+        "indicator_observation_dates": [],
+        "price_anchor_refs": [],
+        "proximity_tier": null,
+        "source_families": [],
+        "source_refs": [],
+        "source_timeframe": null,
+        "visible": false,
+        "zone_id": null
+      },
+      "major_support": {
+        "active_relevance": "ACTIVE_NEAR",
+        "display": "약 $409.83~$411.9",
+        "indicator_bar_states": [],
+        "indicator_observation_dates": [],
+        "price_anchor_refs": [
+          "v3-balance-box:2daa61a6833b980c7f42"
+        ],
+        "proximity_tier": "NEAR",
+        "source_families": [
+          "BALANCE_BOX"
+        ],
+        "source_refs": [
+          "v3-balance-box:2daa61a6833b980c7f42"
+        ],
+        "source_timeframe": "monthly",
+        "visible": true,
+        "zone_id": "v3-zone:ec1f1e305b8d6aa3a541"
+      },
+      "major_without_price_anchor": 0,
+      "market": "US",
+      "near_resistance": {
+        "active_relevance": "ACTIVE_NEAR",
+        "display": "약 $452.95~$455.23",
+        "indicator_bar_states": [
+          "COMPLETE"
+        ],
+        "indicator_observation_dates": [
+          "2026-08-21"
+        ],
+        "price_anchor_refs": [],
+        "proximity_tier": "NEAR",
+        "source_families": [
+          "BOLLINGER_WEEKLY"
+        ],
+        "source_refs": [
+          "v3-bollinger:5d564c87121074c563be"
+        ],
+        "source_timeframe": "weekly",
+        "visible": true,
+        "zone_id": "v3-zone:a68c8a21d201543b9aad"
+      },
+      "near_support": {
+        "active_relevance": "ACTIVE_NEAR",
+        "display": "약 $413.45~$423.02",
+        "indicator_bar_states": [
+          "COMPLETE"
+        ],
+        "indicator_observation_dates": [
+          "2026-08-27"
+        ],
+        "price_anchor_refs": [
+          "v3-balance-box:5e8193c52b3961ea297b",
+          "v3-pivot:22da91fb83cc0bf5141e",
+          "v3-pivot:82b0a9afef613129bc04",
+          "v3-pivot:bb750d78683ef0affd78"
+        ],
+        "proximity_tier": "NEAR",
+        "source_families": [
+          "BALANCE_BOX",
+          "BOLLINGER_DAILY",
+          "PIVOT_DAILY"
+        ],
+        "source_refs": [
+          "v3-balance-box:5e8193c52b3961ea297b",
+          "v3-bollinger:821209bc24965f60854f",
+          "v3-pivot:22da91fb83cc0bf5141e",
+          "v3-pivot:82b0a9afef613129bc04",
+          "v3-pivot:bb750d78683ef0affd78"
+        ],
+        "source_timeframe": "daily",
+        "visible": true,
+        "zone_id": "v3-zone:c1687653d55e15720c31"
+      },
+      "numeric_bindings": [
+        {
+          "currency": "USD",
+          "fact_ref": "current-price:TSM:2026-08-27",
+          "owner": "CURRENT_PRICE_STRUCTURE",
+          "semantic_type": "CURRENT_PRICE",
+          "value": "425.67"
+        },
+        {
+          "active_relevance": "ACTIVE_NEAR",
+          "adjustment_basis": "provider_adjusted_price_v1",
+          "as_of": "2026-08-27",
+          "currency": "USD",
+          "display": "약 $413.45~$423.02",
+          "distance_pct": "0.623166",
+          "fact_ref": "v3-zone:c1687653d55e15720c31",
+          "historical_interaction_count": 14,
+          "indicator_bar_states": [
+            "COMPLETE"
+          ],
+          "indicator_observation_dates": [
+            "2026-08-27"
+          ],
+          "last_price_interaction_date": "2026-08-27",
+          "owner": "CURRENT_PRICE_STRUCTURE",
+          "price_anchor_refs": [
+            "v3-balance-box:5e8193c52b3961ea297b",
+            "v3-pivot:22da91fb83cc0bf5141e",
+            "v3-pivot:82b0a9afef613129bc04",
+            "v3-pivot:bb750d78683ef0affd78"
+          ],
+          "proximity_tier": "NEAR",
+          "raw_high": "423.017368",
+          "raw_low": "413.452633",
+          "security_basis": "US_LISTED:TSM",
+          "semantic_type": "NEAR_SUPPORT",
+          "source_families": [
+            "BALANCE_BOX",
+            "BOLLINGER_DAILY",
+            "PIVOT_DAILY"
+          ],
+          "source_refs": [
+            "v3-balance-box:5e8193c52b3961ea297b",
+            "v3-bollinger:821209bc24965f60854f",
+            "v3-pivot:22da91fb83cc0bf5141e",
+            "v3-pivot:82b0a9afef613129bc04",
+            "v3-pivot:bb750d78683ef0affd78"
+          ],
+          "source_timeframe": "daily",
+          "source_timeframes": [
+            "daily"
+          ]
+        },
+        {
+          "active_relevance": "ACTIVE_NEAR",
+          "adjustment_basis": "provider_adjusted_price_v1",
+          "as_of": "2026-08-27",
+          "currency": "USD",
+          "display": "약 $452.95~$455.23",
+          "distance_pct": "6.409494",
+          "fact_ref": "v3-zone:a68c8a21d201543b9aad",
+          "historical_interaction_count": 0,
+          "indicator_bar_states": [
+            "COMPLETE"
+          ],
+          "indicator_observation_dates": [
+            "2026-08-21"
+          ],
+          "last_price_interaction_date": null,
+          "owner": "CURRENT_PRICE_STRUCTURE",
+          "price_anchor_refs": [],
+          "proximity_tier": "NEAR",
+          "raw_high": "455.223737",
+          "raw_low": "452.953295",
+          "security_basis": "US_LISTED:TSM",
+          "semantic_type": "NEAR_RESISTANCE",
+          "source_families": [
+            "BOLLINGER_WEEKLY"
+          ],
+          "source_refs": [
+            "v3-bollinger:5d564c87121074c563be"
+          ],
+          "source_timeframe": "weekly",
+          "source_timeframes": [
+            "weekly"
+          ]
+        },
+        {
+          "active_relevance": "ACTIVE_NEAR",
+          "adjustment_basis": "provider_adjusted_price_v1",
+          "as_of": "2026-08-27",
+          "currency": "USD",
+          "display": "약 $409.83~$411.9",
+          "distance_pct": "3.236741",
+          "fact_ref": "v3-zone:ec1f1e305b8d6aa3a541",
+          "historical_interaction_count": 4,
+          "indicator_bar_states": [],
+          "indicator_observation_dates": [],
+          "last_price_interaction_date": "2026-08-03",
+          "owner": "CURRENT_PRICE_STRUCTURE",
+          "price_anchor_refs": [
+            "v3-balance-box:2daa61a6833b980c7f42"
+          ],
+          "proximity_tier": "NEAR",
+          "raw_high": "411.892163",
+          "raw_low": "409.837838",
+          "security_basis": "US_LISTED:TSM",
+          "semantic_type": "MAJOR_SUPPORT",
+          "source_families": [
+            "BALANCE_BOX"
+          ],
+          "source_refs": [
+            "v3-balance-box:2daa61a6833b980c7f42"
+          ],
+          "source_timeframe": "monthly",
+          "source_timeframes": [
+            "monthly"
+          ]
+        },
+        {
+          "active_relevance": "ACTIVE_NEAR",
+          "adjustment_basis": "provider_adjusted_price_v1",
+          "as_of": "2026-08-27",
+          "contract": "dynamic-bollinger-support-resistance-v1",
+          "currency": "USD",
+          "display": "약 $466.32~$468.67",
+          "distance_pct": "9.551598",
+          "dynamic_bollinger_timeframe": "monthly",
+          "fact_ref": "v3-zone:ddc280ec37b29b16ac1a",
+          "historical_interaction_count": 0,
+          "indicator_bar_states": [
+            "COMPLETE"
+          ],
+          "indicator_observation_dates": [
+            "2026-07-31"
+          ],
+          "last_price_interaction_date": null,
+          "owner": "CURRENT_PRICE_STRUCTURE",
+          "price_anchor_refs": [],
+          "proximity_tier": "NEAR",
+          "raw_high": "468.665775",
+          "raw_low": "466.328289",
+          "security_basis": "US_LISTED:TSM",
+          "semantic_type": "DYNAMIC_BOLLINGER_RESISTANCE",
+          "source_families": [
+            "BOLLINGER_MONTHLY"
+          ],
+          "source_refs": [
+            "v3-bollinger:c0b529987ba9c1bf50f7"
+          ],
+          "source_timeframe": "monthly",
+          "source_timeframes": [
+            "monthly"
+          ]
+        }
+      ],
+      "render_validation_errors": [],
+      "route": "current_ai_existing",
+      "section": "📐 현재 가격 구조\n• 기준 종가: $425.67\n• 가까운 지지: 약 $413.45~$423.02\n• 가까운 저항: 약 $452.95~$455.23\n• 주요 구조 지지: 약 $409.83~$411.9\n• 볼린저 저항(월봉): 약 $466.32~$468.67",
+      "security_basis": "US_LISTED:TSM",
+      "selected_sha256": "8f26e8d57cdb110090970c8c4b90ae3d5c2c1463ff725cfcb625ccfaf502dc9f",
+      "status": "PASS",
+      "ticker": "TSM",
+      "unsupported_stop": 0,
+      "unsupported_target": 0
+    },
+    {
+      "adjustment_basis": "provider_adjusted_price_v1",
+      "as_of": "2026-08-27",
+      "bollinger_only_major_visible": 0,
+      "company": "WeRide",
+      "coverage": {
+        "daily": {
+          "actual_count": 460,
+          "actual_end_date": "2026-08-27",
+          "actual_start_date": "2024-10-25",
+          "adjustment_basis": "provider_adjusted_price_v1",
+          "completed_count": 460,
+          "contract": "ohlcv-long-history-contract-v1",
+          "denial_reason": "short_listing_or_available_history",
+          "history_complete_to_listing": true,
+          "provider_limit": 1000,
+          "provider_limit_hit": false,
+          "provider_returned_count": 460,
+          "requested_count": 1200,
+          "status": "PARTIAL",
+          "timeframe": "daily"
+        },
+        "monthly": {
+          "actual_count": 23,
+          "actual_end_date": "2026-08-03",
+          "actual_start_date": "2024-10-25",
+          "adjustment_basis": "provider_adjusted_price_v1",
+          "completed_count": 22,
+          "contract": "ohlcv-long-history-contract-v1",
+          "denial_reason": "short_listing_or_available_history",
+          "history_complete_to_listing": true,
+          "provider_limit": 1000,
+          "provider_limit_hit": false,
+          "provider_returned_count": 23,
+          "requested_count": 300,
+          "status": "PARTIAL",
+          "timeframe": "monthly"
+        },
+        "weekly": {
+          "actual_count": 97,
+          "actual_end_date": "2026-08-24",
+          "actual_start_date": "2024-10-25",
+          "adjustment_basis": "provider_adjusted_price_v1",
+          "completed_count": 96,
+          "contract": "ohlcv-long-history-contract-v1",
+          "denial_reason": "short_listing_or_available_history",
+          "history_complete_to_listing": true,
+          "provider_limit": 1000,
+          "provider_limit_hit": false,
+          "provider_returned_count": 97,
+          "requested_count": 600,
+          "status": "PARTIAL",
+          "timeframe": "weekly"
+        }
+      },
+      "currency": "USD",
+      "current_price": "6.04",
+      "denial_reasons": [],
+      "duplicate_sr_range_visible": 0,
+      "dynamic_adjustment_basis_conflicts": 0,
+      "dynamic_ai_fallback_parity": true,
+      "dynamic_bindings": [
+        {
+          "active_relevance": "ACTIVE_NEAR",
+          "adjustment_basis": "provider_adjusted_price_v1",
+          "as_of": "2026-08-27",
+          "contract": "dynamic-bollinger-support-resistance-v1",
+          "currency": "USD",
+          "display": "약 $6.47~$6.64",
+          "distance_pct": "7.179139",
+          "dynamic_bollinger_timeframe": "weekly",
+          "fact_ref": "v3-zone:d3afff07ff43659d65e6",
+          "historical_interaction_count": 0,
+          "indicator_bar_states": [
+            "COMPLETE"
+          ],
+          "indicator_observation_dates": [
+            "2026-08-21"
+          ],
+          "last_price_interaction_date": null,
+          "owner": "CURRENT_PRICE_STRUCTURE",
+          "price_anchor_refs": [],
+          "proximity_tier": "NEAR",
+          "raw_high": "6.630380",
+          "raw_low": "6.473620",
+          "security_basis": "US_LISTED:WRD",
+          "semantic_type": "DYNAMIC_BOLLINGER_RESISTANCE",
+          "source_families": [
+            "BOLLINGER_WEEKLY",
+            "PIVOT_WEEKLY"
+          ],
+          "source_refs": [
+            "v3-bollinger:b1e9fb8a421bc9988338",
+            "v3-pivot:f778e4e2a438a2dfb13a"
+          ],
+          "source_timeframe": "weekly",
+          "source_timeframes": [
+            "weekly"
+          ]
+        }
+      ],
+      "dynamic_bollinger_resistance": {
+        "active_relevance": "ACTIVE_NEAR",
+        "display": "약 $6.47~$6.64",
+        "indicator_bar_states": [
+          "COMPLETE"
+        ],
+        "indicator_observation_dates": [
+          "2026-08-21"
+        ],
+        "price_anchor_refs": [],
+        "proximity_tier": "NEAR",
+        "source_families": [
+          "BOLLINGER_WEEKLY",
+          "PIVOT_WEEKLY"
+        ],
+        "source_refs": [
+          "v3-bollinger:b1e9fb8a421bc9988338",
+          "v3-pivot:f778e4e2a438a2dfb13a"
+        ],
+        "source_timeframe": "weekly",
+        "visible": true,
+        "zone_id": "v3-zone:d3afff07ff43659d65e6"
+      },
+      "dynamic_bollinger_support": {
+        "active_relevance": "ACTIVE_NEAR",
+        "display": "약 $5.64~$5.68",
+        "indicator_bar_states": [
+          "COMPLETE"
+        ],
+        "indicator_observation_dates": [
+          "2026-08-27"
+        ],
+        "price_anchor_refs": [],
+        "proximity_tier": "NEAR",
+        "source_families": [
+          "BOLLINGER_DAILY"
+        ],
+        "source_refs": [
+          "v3-bollinger:743d8be2d5be4a3ddd9c"
+        ],
+        "source_timeframe": "daily",
+        "visible": true,
+        "zone_id": "v3-zone:4a20af34ed2fbac2c571"
+      },
+      "dynamic_confluence_bindings": [],
+      "dynamic_currency_conflicts": 0,
+      "dynamic_partial_or_unknown_bar_visible": 0,
+      "dynamic_resistance_line_count": 1,
+      "dynamic_security_basis_conflicts": 0,
+      "dynamic_support_line_count": 0,
+      "eligibility": "ELIGIBLE_SR_ONLY",
+      "invalid_ohlc_rows": [],
+      "major_resistance": {
+        "active_relevance": "ACTIVE_STRUCTURAL",
+        "display": "약 $6.8~$6.84",
+        "indicator_bar_states": [],
+        "indicator_observation_dates": [],
+        "price_anchor_refs": [
+          "v3-pivot:a18afb1b90363e93bb8f"
+        ],
+        "proximity_tier": "RELEVANT",
+        "source_families": [
+          "PIVOT_MONTHLY"
+        ],
+        "source_refs": [
+          "v3-pivot:a18afb1b90363e93bb8f"
+        ],
+        "source_timeframe": "monthly",
+        "visible": true,
+        "zone_id": "v3-zone:646393021c2258860d27"
+      },
+      "major_support": {
+        "active_relevance": "ACTIVE_STRUCTURAL",
+        "display": "약 $5.16~$5.2",
+        "indicator_bar_states": [],
+        "indicator_observation_dates": [],
+        "price_anchor_refs": [
+          "v3-pivot:6735055df971e623e884"
+        ],
+        "proximity_tier": "RELEVANT",
+        "source_families": [
+          "PIVOT_WEEKLY"
+        ],
+        "source_refs": [
+          "v3-pivot:6735055df971e623e884"
+        ],
+        "source_timeframe": "weekly",
+        "visible": true,
+        "zone_id": "v3-zone:6a6a42194ae1972e9642"
+      },
+      "major_without_price_anchor": 0,
+      "market": "US",
+      "near_resistance": {
+        "active_relevance": "ACTIVE_NEAR",
+        "display": "약 $6.27~$6.31",
+        "indicator_bar_states": [],
+        "indicator_observation_dates": [],
+        "price_anchor_refs": [
+          "v3-pivot:106f9556a1c038877d90"
+        ],
+        "proximity_tier": "NEAR",
+        "source_families": [
+          "PIVOT_WEEKLY"
+        ],
+        "source_refs": [
+          "v3-pivot:106f9556a1c038877d90"
+        ],
+        "source_timeframe": "weekly",
+        "visible": true,
+        "zone_id": "v3-zone:27b5b9cf4d5be224c701"
+      },
+      "near_support": {
+        "active_relevance": "ACTIVE_STRUCTURAL",
+        "display": "약 $5.64~$5.68",
+        "indicator_bar_states": [
+          "COMPLETE"
+        ],
+        "indicator_observation_dates": [
+          "2026-08-27"
+        ],
+        "price_anchor_refs": [],
+        "proximity_tier": "RELEVANT",
+        "source_families": [
+          "BOLLINGER_DAILY"
+        ],
+        "source_refs": [
+          "v3-bollinger:743d8be2d5be4a3ddd9c"
+        ],
+        "source_timeframe": "daily",
+        "visible": true,
+        "zone_id": "v3-zone:4a20af34ed2fbac2c571"
+      },
+      "numeric_bindings": [
+        {
+          "currency": "USD",
+          "fact_ref": "current-price:WRD:2026-08-27",
+          "owner": "CURRENT_PRICE_STRUCTURE",
+          "semantic_type": "CURRENT_PRICE",
+          "value": "6.04"
+        },
+        {
+          "active_relevance": "ACTIVE_NEAR",
+          "adjustment_basis": "provider_adjusted_price_v1",
+          "as_of": "2026-08-27",
+          "currency": "USD",
+          "display": "약 $6.27~$6.31",
+          "distance_pct": "3.878725",
+          "fact_ref": "v3-zone:27b5b9cf4d5be224c701",
+          "historical_interaction_count": 1,
+          "indicator_bar_states": [],
+          "indicator_observation_dates": [],
+          "last_price_interaction_date": "2026-07-13",
+          "owner": "CURRENT_PRICE_STRUCTURE",
+          "price_anchor_refs": [
+            "v3-pivot:106f9556a1c038877d90"
+          ],
+          "proximity_tier": "NEAR",
+          "raw_high": "6.305725",
+          "raw_low": "6.274275",
+          "security_basis": "US_LISTED:WRD",
+          "semantic_type": "NEAR_RESISTANCE",
+          "source_families": [
+            "PIVOT_WEEKLY"
+          ],
+          "source_refs": [
+            "v3-pivot:106f9556a1c038877d90"
+          ],
+          "source_timeframe": "weekly",
+          "source_timeframes": [
+            "weekly"
+          ]
+        },
+        {
+          "active_relevance": "ACTIVE_STRUCTURAL",
+          "adjustment_basis": "provider_adjusted_price_v1",
+          "as_of": "2026-08-27",
+          "currency": "USD",
+          "display": "약 $5.16~$5.2",
+          "distance_pct": "14.024007",
+          "fact_ref": "v3-zone:6a6a42194ae1972e9642",
+          "historical_interaction_count": 1,
+          "indicator_bar_states": [],
+          "indicator_observation_dates": [],
+          "last_price_interaction_date": "2026-06-22",
+          "owner": "CURRENT_PRICE_STRUCTURE",
+          "price_anchor_refs": [
+            "v3-pivot:6735055df971e623e884"
+          ],
+          "proximity_tier": "RELEVANT",
+          "raw_high": "5.192950",
+          "raw_low": "5.167050",
+          "security_basis": "US_LISTED:WRD",
+          "semantic_type": "MAJOR_SUPPORT",
+          "source_families": [
+            "PIVOT_WEEKLY"
+          ],
+          "source_refs": [
+            "v3-pivot:6735055df971e623e884"
+          ],
+          "source_timeframe": "weekly",
+          "source_timeframes": [
+            "weekly"
+          ]
+        },
+        {
+          "active_relevance": "ACTIVE_STRUCTURAL",
+          "adjustment_basis": "provider_adjusted_price_v1",
+          "as_of": "2026-08-27",
+          "currency": "USD",
+          "display": "약 $6.8~$6.84",
+          "distance_pct": "12.631623",
+          "fact_ref": "v3-zone:646393021c2258860d27",
+          "historical_interaction_count": 1,
+          "indicator_bar_states": [],
+          "indicator_observation_dates": [],
+          "last_price_interaction_date": "2025-11-03",
+          "owner": "CURRENT_PRICE_STRUCTURE",
+          "price_anchor_refs": [
+            "v3-pivot:a18afb1b90363e93bb8f"
+          ],
+          "proximity_tier": "RELEVANT",
+          "raw_high": "6.837050",
+          "raw_low": "6.802950",
+          "security_basis": "US_LISTED:WRD",
+          "semantic_type": "MAJOR_RESISTANCE",
+          "source_families": [
+            "PIVOT_MONTHLY"
+          ],
+          "source_refs": [
+            "v3-pivot:a18afb1b90363e93bb8f"
+          ],
+          "source_timeframe": "monthly",
+          "source_timeframes": [
+            "monthly"
+          ]
+        },
+        {
+          "active_relevance": "ACTIVE_NEAR",
+          "adjustment_basis": "provider_adjusted_price_v1",
+          "as_of": "2026-08-27",
+          "contract": "dynamic-bollinger-support-resistance-v1",
+          "currency": "USD",
+          "display": "약 $6.47~$6.64",
+          "distance_pct": "7.179139",
+          "dynamic_bollinger_timeframe": "weekly",
+          "fact_ref": "v3-zone:d3afff07ff43659d65e6",
+          "historical_interaction_count": 0,
+          "indicator_bar_states": [
+            "COMPLETE"
+          ],
+          "indicator_observation_dates": [
+            "2026-08-21"
+          ],
+          "last_price_interaction_date": null,
+          "owner": "CURRENT_PRICE_STRUCTURE",
+          "price_anchor_refs": [],
+          "proximity_tier": "NEAR",
+          "raw_high": "6.630380",
+          "raw_low": "6.473620",
+          "security_basis": "US_LISTED:WRD",
+          "semantic_type": "DYNAMIC_BOLLINGER_RESISTANCE",
+          "source_families": [
+            "BOLLINGER_WEEKLY",
+            "PIVOT_WEEKLY"
+          ],
+          "source_refs": [
+            "v3-bollinger:b1e9fb8a421bc9988338",
+            "v3-pivot:f778e4e2a438a2dfb13a"
+          ],
+          "source_timeframe": "weekly",
+          "source_timeframes": [
+            "weekly"
+          ]
+        }
+      ],
+      "render_validation_errors": [],
+      "route": "current_ai_existing",
+      "section": "📐 현재 가격 구조\n• 기준 종가: $6.04\n• 가까운 저항: 약 $6.27~$6.31\n• 주요 구조 지지: 약 $5.16~$5.2\n• 주요 구조 저항: 약 $6.8~$6.84\n• 볼린저 저항(주봉): 약 $6.47~$6.64",
+      "security_basis": "US_LISTED:WRD",
+      "selected_sha256": "3cf309917059c31b644b7d6e605230eeef6eaa8acfeedcf056afbe7617df3239",
+      "status": "PASS",
+      "ticker": "WRD",
+      "unsupported_stop": 0,
+      "unsupported_target": 0
+    },
+    {
+      "adjustment_basis": "provider_adjusted_price_v1",
+      "as_of": "2026-08-27",
+      "bollinger_only_major_visible": 0,
+      "company": "TeraWulf Inc.",
+      "coverage": {
+        "daily": {
+          "actual_count": 999,
+          "actual_end_date": "2026-08-26",
+          "actual_start_date": "2022-09-01",
+          "adjustment_basis": "provider_adjusted_price_v1",
+          "completed_count": 999,
+          "contract": "ohlcv-long-history-contract-v1",
+          "denial_reason": "short_listing_or_available_history",
+          "history_complete_to_listing": true,
+          "provider_limit": 1000,
+          "provider_limit_hit": false,
+          "provider_returned_count": 999,
+          "requested_count": 1200,
+          "status": "PARTIAL",
+          "timeframe": "daily"
+        },
+        "monthly": {
+          "actual_count": 57,
+          "actual_end_date": "2026-08-03",
+          "actual_start_date": "2021-12-14",
+          "adjustment_basis": "provider_adjusted_price_v1",
+          "completed_count": 56,
+          "contract": "ohlcv-long-history-contract-v1",
+          "denial_reason": "short_listing_or_available_history",
+          "history_complete_to_listing": true,
+          "provider_limit": 1000,
+          "provider_limit_hit": false,
+          "provider_returned_count": 57,
+          "requested_count": 300,
+          "status": "PARTIAL",
+          "timeframe": "monthly"
+        },
+        "weekly": {
+          "actual_count": 246,
+          "actual_end_date": "2026-08-24",
+          "actual_start_date": "2021-12-14",
+          "adjustment_basis": "provider_adjusted_price_v1",
+          "completed_count": 245,
+          "contract": "ohlcv-long-history-contract-v1",
+          "denial_reason": "short_listing_or_available_history",
+          "history_complete_to_listing": true,
+          "provider_limit": 1000,
+          "provider_limit_hit": false,
+          "provider_returned_count": 246,
+          "requested_count": 600,
+          "status": "PARTIAL",
+          "timeframe": "weekly"
+        }
+      },
+      "currency": "USD",
+      "current_price": "15.97",
+      "denial_reasons": [
+        "daily_history_as_of_mismatch"
+      ],
+      "duplicate_sr_range_visible": 0,
+      "dynamic_adjustment_basis_conflicts": 0,
+      "dynamic_ai_fallback_parity": true,
+      "dynamic_bindings": [],
+      "dynamic_bollinger_resistance": {
+        "active_relevance": "ACTIVE_NEAR",
+        "display": "약 $16.7~$17.1",
+        "indicator_bar_states": [
+          "COMPLETE"
+        ],
+        "indicator_observation_dates": [
+          "2026-08-26"
+        ],
+        "price_anchor_refs": [
+          "v3-balance-box:7b279488de9b5cf0234f",
+          "v3-pivot:271a3bf57070b55c2e37",
+          "v3-pivot:2ac3c42d0a2dee7423ec",
+          "v3-pivot:b39e050945d2d8b1a8e7"
+        ],
+        "proximity_tier": "NEAR",
+        "source_families": [
+          "BALANCE_BOX",
+          "BOLLINGER_DAILY",
+          "PIVOT_DAILY"
+        ],
+        "source_refs": [
+          "v3-balance-box:7b279488de9b5cf0234f",
+          "v3-bollinger:7e888323e77a5a6a43ae",
+          "v3-pivot:271a3bf57070b55c2e37",
+          "v3-pivot:2ac3c42d0a2dee7423ec",
+          "v3-pivot:b39e050945d2d8b1a8e7"
+        ],
+        "source_timeframe": "daily",
+        "visible": true,
+        "zone_id": "v3-zone:ed80676ccb4527b6c147"
+      },
+      "dynamic_bollinger_support": {
+        "active_relevance": "ACTIVE_NEAR",
+        "display": "약 $14.81~$14.9",
+        "indicator_bar_states": [
+          "COMPLETE"
+        ],
+        "indicator_observation_dates": [
+          "2026-08-26"
+        ],
+        "price_anchor_refs": [],
+        "proximity_tier": "NEAR",
+        "source_families": [
+          "BOLLINGER_DAILY"
+        ],
+        "source_refs": [
+          "v3-bollinger:02129e1e104f64737c68"
+        ],
+        "source_timeframe": "daily",
+        "visible": true,
+        "zone_id": "v3-zone:2ebb704f7445e01258d4"
+      },
+      "dynamic_confluence_bindings": [],
+      "dynamic_currency_conflicts": 0,
+      "dynamic_partial_or_unknown_bar_visible": 0,
+      "dynamic_resistance_line_count": 0,
+      "dynamic_security_basis_conflicts": 0,
+      "dynamic_support_line_count": 0,
+      "eligibility": "BLOCKED",
+      "invalid_ohlc_rows": [
+        {
+          "close": 16.35,
+          "date": "2026-08-27",
+          "high": 17.31,
+          "low": 16.4,
+          "open": 16.49,
+          "timeframe": "daily"
+        }
+      ],
+      "major_resistance": {
+        "active_relevance": "ACTIVE_NEAR",
+        "display": "약 $17~$17.1",
+        "indicator_bar_states": [],
+        "indicator_observation_dates": [],
+        "price_anchor_refs": [
+          "v3-pivot:f008eb893567aaa9cb6c"
+        ],
+        "proximity_tier": "NEAR",
+        "source_families": [
+          "PIVOT_MONTHLY"
+        ],
+        "source_refs": [
+          "v3-pivot:f008eb893567aaa9cb6c"
+        ],
+        "source_timeframe": "monthly",
+        "visible": true,
+        "zone_id": "v3-zone:7386efe1af50e10bbacf"
+      },
+      "major_support": {
+        "active_relevance": "ACTIVE_STRUCTURAL",
+        "display": "약 $12.98~$13.23",
+        "indicator_bar_states": [],
+        "indicator_observation_dates": [],
+        "price_anchor_refs": [
+          "v3-pivot:335588ed17c0831ac915",
+          "v3-pivot:7244f1b34255423aabe8"
+        ],
+        "proximity_tier": "RELEVANT",
+        "source_families": [
+          "PIVOT_WEEKLY"
+        ],
+        "source_refs": [
+          "v3-pivot:335588ed17c0831ac915",
+          "v3-pivot:7244f1b34255423aabe8"
+        ],
+        "source_timeframe": "weekly",
+        "visible": true,
+        "zone_id": "v3-zone:e7e47463d6c82b18c2af"
+      },
+      "major_without_price_anchor": 0,
+      "market": "US",
+      "near_resistance": {
+        "active_relevance": "ACTIVE_NEAR",
+        "display": "약 $16.08~$16.43",
+        "indicator_bar_states": [],
+        "indicator_observation_dates": [],
+        "price_anchor_refs": [
+          "v3-pivot:3c2e7fdf06ddf8cb5b1f",
+          "v3-pivot:4f563e0785e7f68f1490",
+          "v3-pivot:4fa496162f5982e65db7"
+        ],
+        "proximity_tier": "NEAR",
+        "source_families": [
+          "PIVOT_DAILY"
+        ],
+        "source_refs": [
+          "v3-pivot:3c2e7fdf06ddf8cb5b1f",
+          "v3-pivot:4f563e0785e7f68f1490",
+          "v3-pivot:4fa496162f5982e65db7"
+        ],
+        "source_timeframe": "daily",
+        "visible": true,
+        "zone_id": "v3-zone:6360f81f1ac90b9ccc8e"
+      },
+      "near_support": {
+        "active_relevance": "ACTIVE_NEAR",
+        "display": "약 $15.38~$15.64",
+        "indicator_bar_states": [],
+        "indicator_observation_dates": [],
+        "price_anchor_refs": [
+          "v3-pivot:ab426998cfc8d789b0fb",
+          "v3-pivot:d2ba6a13933e18dbfb97"
+        ],
+        "proximity_tier": "NEAR",
+        "source_families": [
+          "PIVOT_DAILY"
+        ],
+        "source_refs": [
+          "v3-pivot:ab426998cfc8d789b0fb",
+          "v3-pivot:d2ba6a13933e18dbfb97"
+        ],
+        "source_timeframe": "daily",
+        "visible": true,
+        "zone_id": "v3-zone:1535ba26111d08a933c5"
+      },
+      "numeric_bindings": [],
+      "render_validation_errors": [],
+      "route": "current_ai_existing",
+      "section": null,
+      "security_basis": "US_LISTED:WULF",
+      "selected_sha256": "d3d094ea96cf219fa05eaf6c18b8b92dd4b7a2747e350ab8e687f0820ab53e24",
+      "status": "PASS",
+      "ticker": "WULF",
+      "unsupported_stop": 0,
+      "unsupported_target": 0
+    }
+  ],
+  "status": "PASS"
+}
