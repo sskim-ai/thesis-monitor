@@ -2,6 +2,24 @@
 
 Repository: `sskim-ai/thesis-monitor`
 
+Latest authoritative rollout work follows instruction commit
+`2ee201690787136780c7d5c8a046506d44227633` and implementation
+`1ba463571060a1fc9a5868afcdeab3de15f2bbe6`. Read the `20260828-us-full-message-*` and
+`20260828-us-price-structure-*` reports and the single completion bundle first.
+
+The run-43 completed-session replay passes the deterministic full US market message and all 13
+active US/foreign Price Structure previews. Test-sink delivery was exactly one market plus 13 stock
+messages with no production-recipient send or production delivery intent. KR TOP3, KR Price
+Structure, and US Price Structure are ON; Production Assist is OFF. Open P0/material P1 is `0/0`.
+
+`US_FULL_MESSAGE=DEPLOYED_AWAITING_NATURAL_PROOF` and
+`US_PRICE_STRUCTURE=ENABLED_AWAITING_NATURAL_PROOF`. Next action:
+`WAIT_FOR_NEXT_NATURAL_US_MARKET_AND_STOCK_CYCLE`. Review only the naturally scheduled output for
+evidence use, per-ticker selective routing, numeric provenance, stored-rule separation, quality,
+and exactly-once delivery. Do not manually run a Scheduled Task or production Telegram.
+
+---
+
 Latest authoritative US market-track work follows instruction commit
 `18d36852f74a6a1609365cbcb5dc093feb293e71`. Read the
 `20260828-us-morning-*` reports and the single completion bundle first.

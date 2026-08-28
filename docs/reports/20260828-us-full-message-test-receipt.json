@@ -1,0 +1,31 @@
+{
+  "contract": "us-full-market-message-test-delivery-v1",
+  "duplicate_count": 0,
+  "exact_payload_match": true,
+  "namespace": "TEST_ONLY_US_FULL_MARKET_MESSAGE",
+  "orphan_count": 0,
+  "planned_message_count": 1,
+  "production_collision": 0,
+  "production_intent_created": 0,
+  "production_recipient_send_count": 0,
+  "production_sink_alias": "production:7937bea5b823",
+  "rows": [
+    {
+      "character_count": 295,
+      "exact_payload_match": true,
+      "logical_identity": "TEST_ONLY_US_FULL_MARKET_MESSAGE:2026-08-28-us-run-43-c086d78415ac:market",
+      "outbound_sha256": "23bfd679e8c1249f3d12ea23a16e19a3172adaf5aca08d52305baf9501bcf822",
+      "received_sha256": "23bfd679e8c1249f3d12ea23a16e19a3172adaf5aca08d52305baf9501bcf822",
+      "remote_message_alias": "8bf73d7a897b",
+      "rendered_sha256": "23bfd679e8c1249f3d12ea23a16e19a3172adaf5aca08d52305baf9501bcf822",
+      "route": "free_analyst_adaptive_canary",
+      "send_attempts": 1,
+      "sequence": 1,
+      "ticker": "__DAILY_DIGEST__"
+    }
+  ],
+  "sent_message_count": 1,
+  "status": "sent",
+  "test_sink_alias": "test:6d6e2ff463bf",
+  "unowned_retry_count": 0
+}

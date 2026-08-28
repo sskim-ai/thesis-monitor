@@ -5,6 +5,29 @@ with [MASTER_WORKFLOW.md](MASTER_WORKFLOW.md), [project-state.json](project-stat
 [NEXT_SESSION_PROMPT.md](NEXT_SESSION_PROMPT.md) before changing runtime policy, Knowledge,
 validation, delivery, or Scheduled Tasks.
 
+## Latest Handoff - US Market And Price Structure Rollout
+
+Use instruction commit `2ee201690787136780c7d5c8a046506d44227633` and implementation
+commit `1ba463571060a1fc9a5868afcdeab3de15f2bbe6`. Start with the
+`20260828-us-full-message-*` and `20260828-us-price-structure-*` report families and the single
+completion bundle.
+
+The immutable source is run-43 packet `2026-08-28-us-run-43-c086d78415ac` for completed session
+2026-08-27. The deterministic full-market renderer consumes SPY/QQQ/IWM/SOXX/RSP and sector
+dispersion without legacy macro promotion. All 13 active US/foreign subjects passed selective
+Price Structure as `ELIGIBLE_SR_ONLY`; no Fib, look-ahead, partial-bar pivot, security/currency
+conflict, target/stop, or current-vs-stored-rule leakage was observed.
+
+The dedicated non-production sink received one market message and 13 stock messages, each exactly
+once with payload parity. Production-recipient sends and production delivery intents were zero.
+Operating has KR TOP3, KR Price Structure, and US Price Structure ON; Production Assist remains
+OFF. `US_FULL_MESSAGE=DEPLOYED_AWAITING_NATURAL_PROOF` and
+`US_PRICE_STRUCTURE=ENABLED_AWAITING_NATURAL_PROOF`, with P0/material P1 `0/0`.
+
+Next action is read-only review of the next naturally scheduled US morning market and stock cycle.
+Do not manually run a Scheduled Task or send a production Telegram. Natural proof alone may promote
+these product-family states to `LIVE_PASS`.
+
 ## Latest Handoff — US Current-Session Natural Reproof PASS
 
 Use instruction commit `18d36852f74a6a1609365cbcb5dc093feb293e71`. Start with

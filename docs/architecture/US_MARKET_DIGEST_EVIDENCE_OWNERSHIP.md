@@ -30,6 +30,24 @@ Sector dispersion is a bounded deterministic relation. The plan selects the curr
 leader and laggard and retains both source refs. AI receives the completed relation and must not
 calculate or rank sectors itself.
 
+## Full-Message Ownership
+
+The `us-morning-full-message-v1` renderer owns layout and canonical numeric formatting while the
+shared plan remains the interpretation owner.
+
+| Surface | Owner | Allowed evidence |
+| --- | --- | --- |
+| Major indices | Backend renderer | Current directional SPY/QQQ/IWM/SOXX/RSP facts |
+| Participation | Shared plan | RSP versus cap-weighted market relation |
+| Sector dispersion | Shared plan + renderer | Selected current strongest/weakest sector facts |
+| Night futures | Existing night-futures contract | Safe current overnight directional returns |
+| Macro | Shared plan + temporal gate | Non-equity, material, temporally qualified facts |
+| Next check | Bounded AI/fallback | No new numeric calculation |
+
+RSP's numeric return and its participation interpretation are intentionally separate uses. Numeric
+claims retain canonical fact refs. Adaptive rendering may replace a bounded next check, but it
+cannot remove or reorder deterministic numeric sections.
+
 ## Consumer Boundary
 
 The deterministic renderer emits all selected primary claims and records the corresponding slots

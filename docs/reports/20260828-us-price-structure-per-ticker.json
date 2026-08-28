@@ -1,0 +1,2167 @@
+{
+  "active_universe_count": 13,
+  "contract": "us-price-structure-selective-rollout-v1",
+  "eligibility_counts": {
+    "ELIGIBLE_SR_ONLY": 13
+  },
+  "packet_id": "2026-08-28-us-run-43-c086d78415ac",
+  "rows": [
+    {
+      "company": "Core Scientific, Inc.",
+      "coverage": {
+        "daily": {
+          "actual_count": 1000,
+          "actual_end_date": "2026-08-27",
+          "actual_start_date": "2022-09-01",
+          "adjustment_basis": "provider_adjusted_price_v1",
+          "completed_count": 1000,
+          "contract": "ohlcv-long-history-contract-v1",
+          "denial_reason": "provider_limit",
+          "history_complete_to_listing": false,
+          "provider_limit": 1000,
+          "provider_limit_hit": true,
+          "provider_returned_count": 1000,
+          "requested_count": 1200,
+          "status": "PARTIAL_SAFE",
+          "timeframe": "daily"
+        },
+        "monthly": {
+          "actual_count": 56,
+          "actual_end_date": "2026-08-03",
+          "actual_start_date": "2022-01-20",
+          "adjustment_basis": "provider_adjusted_price_v1",
+          "completed_count": 55,
+          "contract": "ohlcv-long-history-contract-v1",
+          "denial_reason": "short_listing_or_available_history",
+          "history_complete_to_listing": true,
+          "provider_limit": 1000,
+          "provider_limit_hit": false,
+          "provider_returned_count": 56,
+          "requested_count": 300,
+          "status": "PARTIAL",
+          "timeframe": "monthly"
+        },
+        "weekly": {
+          "actual_count": 241,
+          "actual_end_date": "2026-08-24",
+          "actual_start_date": "2022-01-20",
+          "adjustment_basis": "provider_adjusted_price_v1",
+          "completed_count": 240,
+          "contract": "ohlcv-long-history-contract-v1",
+          "denial_reason": "short_listing_or_available_history",
+          "history_complete_to_listing": true,
+          "provider_limit": 1000,
+          "provider_limit_hit": false,
+          "provider_returned_count": 241,
+          "requested_count": 600,
+          "status": "PARTIAL",
+          "timeframe": "weekly"
+        }
+      },
+      "currency": "USD",
+      "denial_reasons": [],
+      "displayed_zone_ids": [
+        "v3-zone:dbcc216f42af474a3922",
+        "v3-zone:fe613b13a60642cdbff6",
+        "v3-zone:a0fa3c8c0607dba891b8",
+        "v3-zone:3c75039e68f85d753525"
+      ],
+      "eligibility": "ELIGIBLE_SR_ONLY",
+      "exchange": "NASDAQ",
+      "issuer_type": null,
+      "numeric_bindings": [
+        {
+          "currency": "USD",
+          "fact_ref": "current-price:CORZ:2026-08-27",
+          "owner": "CURRENT_PRICE_STRUCTURE",
+          "semantic_type": "CURRENT_PRICE",
+          "value": "17.59"
+        },
+        {
+          "active_relevance": "ACTIVE_NEAR",
+          "currency": "USD",
+          "display": "약 $16.86~$17.3",
+          "distance_pct": "1.689847",
+          "fact_ref": "v3-zone:dbcc216f42af474a3922",
+          "owner": "CURRENT_PRICE_STRUCTURE",
+          "proximity_tier": "NEAR",
+          "raw_high": "17.292756",
+          "raw_low": "16.867244",
+          "semantic_type": "NEAR_SUPPORT",
+          "source_families": [
+            "PIVOT_DAILY"
+          ],
+          "source_refs": [
+            "v3-pivot:1aa0685c38401dc13c45",
+            "v3-pivot:5086154f936086d47e7a",
+            "v3-pivot:741ee2cdf18f106abfca",
+            "v3-pivot:c78a823a8eebc2663962"
+          ],
+          "source_timeframe": "daily",
+          "source_timeframes": [
+            "daily"
+          ]
+        },
+        {
+          "active_relevance": "ACTIVE_NEAR",
+          "currency": "USD",
+          "display": "약 $17.75~$18.08",
+          "distance_pct": "0.938783",
+          "fact_ref": "v3-zone:fe613b13a60642cdbff6",
+          "owner": "CURRENT_PRICE_STRUCTURE",
+          "proximity_tier": "NEAR",
+          "raw_high": "18.074868",
+          "raw_low": "17.755132",
+          "semantic_type": "NEAR_RESISTANCE",
+          "source_families": [
+            "PIVOT_DAILY"
+          ],
+          "source_refs": [
+            "v3-pivot:5e6df8ea67938399d599",
+            "v3-pivot:63203336308618086815",
+            "v3-pivot:889497dbb32500fa6621",
+            "v3-pivot:ba7c4e73ae09df15af92"
+          ],
+          "source_timeframe": "daily",
+          "source_timeframes": [
+            "daily"
+          ]
+        },
+        {
+          "active_relevance": "ACTIVE_NEAR",
+          "currency": "USD",
+          "display": "약 $16.25~$16.34",
+          "distance_pct": "7.107743",
+          "fact_ref": "v3-zone:a0fa3c8c0607dba891b8",
+          "owner": "CURRENT_PRICE_STRUCTURE",
+          "proximity_tier": "NEAR",
+          "raw_high": "16.339748",
+          "raw_low": "16.258253",
+          "semantic_type": "MAJOR_SUPPORT",
+          "source_families": [
+            "BOLLINGER_MONTHLY"
+          ],
+          "source_refs": [
+            "v3-bollinger:ce0c1c28ee17551899a0"
+          ],
+          "source_timeframe": "monthly",
+          "source_timeframes": [
+            "monthly"
+          ]
+        },
+        {
+          "active_relevance": "ACTIVE_NEAR",
+          "currency": "USD",
+          "display": "약 $18.58~$18.68",
+          "distance_pct": "5.640864",
+          "fact_ref": "v3-zone:3c75039e68f85d753525",
+          "owner": "CURRENT_PRICE_STRUCTURE",
+          "proximity_tier": "NEAR",
+          "raw_high": "18.675372",
+          "raw_low": "18.582228",
+          "semantic_type": "MAJOR_RESISTANCE",
+          "source_families": [
+            "PIVOT_MONTHLY"
+          ],
+          "source_refs": [
+            "v3-pivot:11acb35f80bf7aff9a8e"
+          ],
+          "source_timeframe": "monthly",
+          "source_timeframes": [
+            "monthly"
+          ]
+        }
+      ],
+      "price_as_of": "2026-08-27",
+      "quality_status": "PASS",
+      "route": "free_analyst_adaptive_canary",
+      "section": "📐 현재 가격 구조\n• 기준 종가: $17.59\n• 가까운 지지: 약 $16.86~$17.3\n• 가까운 저항: 약 $17.75~$18.08\n• 주요 구조 지지: 약 $16.25~$16.34\n• 주요 구조 저항: 약 $18.58~$18.68",
+      "security_basis": "US_LISTED:CORZ",
+      "selected_sha256": "3216b170336109b0d15c529e74fca7725e93e49ddde64941fcc54e814de37482",
+      "target_session": "2026-08-27",
+      "ticker": "CORZ"
+    },
+    {
+      "company": "Circle Internet Group",
+      "coverage": {
+        "daily": {
+          "actual_count": 309,
+          "actual_end_date": "2026-08-27",
+          "actual_start_date": "2025-06-05",
+          "adjustment_basis": "provider_adjusted_price_v1",
+          "completed_count": 309,
+          "contract": "ohlcv-long-history-contract-v1",
+          "denial_reason": "short_listing_or_available_history",
+          "history_complete_to_listing": true,
+          "provider_limit": 1000,
+          "provider_limit_hit": false,
+          "provider_returned_count": 309,
+          "requested_count": 1200,
+          "status": "PARTIAL",
+          "timeframe": "daily"
+        },
+        "monthly": {
+          "actual_count": 15,
+          "actual_end_date": "2026-08-03",
+          "actual_start_date": "2025-06-05",
+          "adjustment_basis": "provider_adjusted_price_v1",
+          "completed_count": 14,
+          "contract": "ohlcv-long-history-contract-v1",
+          "denial_reason": "short_listing_or_available_history",
+          "history_complete_to_listing": true,
+          "provider_limit": 1000,
+          "provider_limit_hit": false,
+          "provider_returned_count": 15,
+          "requested_count": 300,
+          "status": "PARTIAL",
+          "timeframe": "monthly"
+        },
+        "weekly": {
+          "actual_count": 65,
+          "actual_end_date": "2026-08-24",
+          "actual_start_date": "2025-06-05",
+          "adjustment_basis": "provider_adjusted_price_v1",
+          "completed_count": 64,
+          "contract": "ohlcv-long-history-contract-v1",
+          "denial_reason": "short_listing_or_available_history",
+          "history_complete_to_listing": true,
+          "provider_limit": 1000,
+          "provider_limit_hit": false,
+          "provider_returned_count": 65,
+          "requested_count": 600,
+          "status": "PARTIAL",
+          "timeframe": "weekly"
+        }
+      },
+      "currency": "USD",
+      "denial_reasons": [],
+      "displayed_zone_ids": [
+        "v3-zone:815fc4f0816a1a4991b6",
+        "v3-zone:9a8855cd0c88fbbe6316",
+        "v3-zone:1d25c36e00c00e891044"
+      ],
+      "eligibility": "ELIGIBLE_SR_ONLY",
+      "exchange": "NYSE",
+      "issuer_type": "domestic_us",
+      "numeric_bindings": [
+        {
+          "currency": "USD",
+          "fact_ref": "current-price:CRCL:2026-08-27",
+          "owner": "CURRENT_PRICE_STRUCTURE",
+          "semantic_type": "CURRENT_PRICE",
+          "value": "95.94"
+        },
+        {
+          "active_relevance": "ACTIVE_NEAR",
+          "currency": "USD",
+          "display": "약 $91.07~$91.53",
+          "distance_pct": "4.598447",
+          "fact_ref": "v3-zone:815fc4f0816a1a4991b6",
+          "owner": "CURRENT_PRICE_STRUCTURE",
+          "proximity_tier": "NEAR",
+          "raw_high": "91.528250",
+          "raw_low": "91.071750",
+          "semantic_type": "NEAR_SUPPORT",
+          "source_families": [
+            "PIVOT_WEEKLY"
+          ],
+          "source_refs": [
+            "v3-pivot:d4addcc42aa8a11834af"
+          ],
+          "source_timeframe": "weekly",
+          "source_timeframes": [
+            "weekly"
+          ]
+        },
+        {
+          "active_relevance": "ACTIVE_STRUCTURAL",
+          "currency": "USD",
+          "display": "약 $105.09~$107.48",
+          "distance_pct": "9.541680",
+          "fact_ref": "v3-zone:9a8855cd0c88fbbe6316",
+          "owner": "CURRENT_PRICE_STRUCTURE",
+          "proximity_tier": "RELEVANT",
+          "raw_high": "107.475713",
+          "raw_low": "105.094288",
+          "semantic_type": "MAJOR_RESISTANCE",
+          "source_families": [
+            "PIVOT_DAILY"
+          ],
+          "source_refs": [
+            "v3-pivot:a6ce14a8c285f59170c7",
+            "v3-pivot:fddc58cad5db5da87b1e"
+          ],
+          "source_timeframe": "daily",
+          "source_timeframes": [
+            "daily"
+          ]
+        },
+        {
+          "active_relevance": "ACTIVE_STRUCTURAL",
+          "currency": "USD",
+          "display": "약 $84.05~$85.69",
+          "distance_pct": "10.694004",
+          "fact_ref": "v3-zone:1d25c36e00c00e891044",
+          "owner": "CURRENT_PRICE_STRUCTURE",
+          "proximity_tier": "RELEVANT",
+          "raw_high": "85.680173",
+          "raw_low": "84.057828",
+          "semantic_type": "MAJOR_SUPPORT",
+          "source_families": [
+            "BOLLINGER_WEEKLY",
+            "PIVOT_WEEKLY"
+          ],
+          "source_refs": [
+            "v3-bollinger:eb7574eb1ac3cd25d89a",
+            "v3-pivot:3ba0d6a4282e01d42ddb"
+          ],
+          "source_timeframe": "weekly",
+          "source_timeframes": [
+            "weekly"
+          ]
+        }
+      ],
+      "price_as_of": "2026-08-27",
+      "quality_status": "PASS",
+      "route": "free_analyst_adaptive_canary",
+      "section": "📐 현재 가격 구조\n• 기준 종가: $95.94\n• 가까운 지지: 약 $91.07~$91.53\n• 주요 구조 저항: 약 $105.09~$107.48\n• 주요 구조 지지: 약 $84.05~$85.69",
+      "security_basis": "US_LISTED:CRCL",
+      "selected_sha256": "3d04141f4151321054a410402c8f30e18d7c84433e9a9978f70cf9b7dc976a1d",
+      "target_session": "2026-08-27",
+      "ticker": "CRCL"
+    },
+    {
+      "company": "Alphabet Inc. Class A",
+      "coverage": {
+        "daily": {
+          "actual_count": 1000,
+          "actual_end_date": "2026-08-27",
+          "actual_start_date": "2022-09-01",
+          "adjustment_basis": "provider_adjusted_price_v1",
+          "completed_count": 1000,
+          "contract": "ohlcv-long-history-contract-v1",
+          "denial_reason": "provider_limit",
+          "history_complete_to_listing": false,
+          "provider_limit": 1000,
+          "provider_limit_hit": true,
+          "provider_returned_count": 1000,
+          "requested_count": 1200,
+          "status": "PARTIAL_SAFE",
+          "timeframe": "daily"
+        },
+        "monthly": {
+          "actual_count": 265,
+          "actual_end_date": "2026-08-03",
+          "actual_start_date": "2004-08-19",
+          "adjustment_basis": "provider_adjusted_price_v1",
+          "completed_count": 264,
+          "contract": "ohlcv-long-history-contract-v1",
+          "denial_reason": "short_listing_or_available_history",
+          "history_complete_to_listing": true,
+          "provider_limit": 1000,
+          "provider_limit_hit": false,
+          "provider_returned_count": 265,
+          "requested_count": 300,
+          "status": "PARTIAL",
+          "timeframe": "monthly"
+        },
+        "weekly": {
+          "actual_count": 600,
+          "actual_end_date": "2026-08-24",
+          "actual_start_date": "2015-03-02",
+          "adjustment_basis": "provider_adjusted_price_v1",
+          "completed_count": 599,
+          "contract": "ohlcv-long-history-contract-v1",
+          "denial_reason": "short_listing_or_available_history",
+          "history_complete_to_listing": true,
+          "provider_limit": 1000,
+          "provider_limit_hit": false,
+          "provider_returned_count": 600,
+          "requested_count": 600,
+          "status": "PARTIAL",
+          "timeframe": "weekly"
+        }
+      },
+      "currency": "USD",
+      "denial_reasons": [],
+      "displayed_zone_ids": [
+        "v3-zone:b9ef488b7f6318274507",
+        "v3-zone:90fcb31e103f36d6385d",
+        "v3-zone:4645ba327b16bae4c9cc",
+        "v3-zone:6514fc5ff0cc52cfc282"
+      ],
+      "eligibility": "ELIGIBLE_SR_ONLY",
+      "exchange": "NASDAQ",
+      "issuer_type": "domestic_us",
+      "numeric_bindings": [
+        {
+          "currency": "USD",
+          "fact_ref": "current-price:GOOGL:2026-08-27",
+          "owner": "CURRENT_PRICE_STRUCTURE",
+          "semantic_type": "CURRENT_PRICE",
+          "value": "341.15"
+        },
+        {
+          "active_relevance": "ACTIVE_NEAR",
+          "currency": "USD",
+          "display": "약 $329.4~$331.06",
+          "distance_pct": "2.957857",
+          "fact_ref": "v3-zone:b9ef488b7f6318274507",
+          "owner": "CURRENT_PRICE_STRUCTURE",
+          "proximity_tier": "NEAR",
+          "raw_high": "331.059270",
+          "raw_low": "329.408102",
+          "semantic_type": "NEAR_SUPPORT",
+          "source_families": [
+            "BOLLINGER_DAILY"
+          ],
+          "source_refs": [
+            "v3-bollinger:f9e53972362ef6179db6"
+          ],
+          "source_timeframe": "daily",
+          "source_timeframes": [
+            "daily"
+          ]
+        },
+        {
+          "active_relevance": "ACTIVE_NEAR",
+          "currency": "USD",
+          "display": "약 $349.88~$351.66",
+          "distance_pct": "2.559895",
+          "fact_ref": "v3-zone:90fcb31e103f36d6385d",
+          "owner": "CURRENT_PRICE_STRUCTURE",
+          "proximity_tier": "NEAR",
+          "raw_high": "351.650417",
+          "raw_low": "349.883083",
+          "semantic_type": "NEAR_RESISTANCE",
+          "source_families": [
+            "BALANCE_BOX",
+            "BOLLINGER_DAILY"
+          ],
+          "source_refs": [
+            "v3-balance-box:f9946051ff8f56580566",
+            "v3-bollinger:263260038687c7723d63"
+          ],
+          "source_timeframe": "daily",
+          "source_timeframes": [
+            "daily"
+          ]
+        },
+        {
+          "active_relevance": "ACTIVE_STRUCTURAL",
+          "currency": "USD",
+          "display": "약 $267.08~$268.43",
+          "distance_pct": "21.317782",
+          "fact_ref": "v3-zone:4645ba327b16bae4c9cc",
+          "owner": "CURRENT_PRICE_STRUCTURE",
+          "proximity_tier": "RELEVANT",
+          "raw_high": "268.424388",
+          "raw_low": "267.085613",
+          "semantic_type": "MAJOR_SUPPORT",
+          "source_families": [
+            "BOLLINGER_MONTHLY"
+          ],
+          "source_refs": [
+            "v3-bollinger:dc3b11d8229086b0d3b2"
+          ],
+          "source_timeframe": "monthly",
+          "source_timeframes": [
+            "monthly"
+          ]
+        },
+        {
+          "active_relevance": "ACTIVE_STRUCTURAL",
+          "currency": "USD",
+          "display": "약 $424.82~$426.96",
+          "distance_pct": "24.528083",
+          "fact_ref": "v3-zone:6514fc5ff0cc52cfc282",
+          "owner": "CURRENT_PRICE_STRUCTURE",
+          "proximity_tier": "RELEVANT",
+          "raw_high": "426.957018",
+          "raw_low": "424.827556",
+          "semantic_type": "MAJOR_RESISTANCE",
+          "source_families": [
+            "BOLLINGER_MONTHLY"
+          ],
+          "source_refs": [
+            "v3-bollinger:201e2923f4ef755b06d9"
+          ],
+          "source_timeframe": "monthly",
+          "source_timeframes": [
+            "monthly"
+          ]
+        }
+      ],
+      "price_as_of": "2026-08-27",
+      "quality_status": "PASS",
+      "route": "current_ai_existing",
+      "section": "📐 현재 가격 구조\n• 기준 종가: $341.15\n• 가까운 지지: 약 $329.4~$331.06\n• 가까운 저항: 약 $349.88~$351.66\n• 주요 구조 지지: 약 $267.08~$268.43\n• 주요 구조 저항: 약 $424.82~$426.96",
+      "security_basis": "US_LISTED:GOOGL",
+      "selected_sha256": "0c3d9a50c6e0270201f0b15217e81d3fbfc06e092c83d246dfeff784765ad50b",
+      "target_session": "2026-08-27",
+      "ticker": "GOOGL"
+    },
+    {
+      "company": "Hut 8 Corp.",
+      "coverage": {
+        "daily": {
+          "actual_count": 1000,
+          "actual_end_date": "2026-08-27",
+          "actual_start_date": "2022-09-01",
+          "adjustment_basis": "provider_adjusted_price_v1",
+          "completed_count": 1000,
+          "contract": "ohlcv-long-history-contract-v1",
+          "denial_reason": "provider_limit",
+          "history_complete_to_listing": false,
+          "provider_limit": 1000,
+          "provider_limit_hit": true,
+          "provider_returned_count": 1000,
+          "requested_count": 1200,
+          "status": "PARTIAL_SAFE",
+          "timeframe": "daily"
+        },
+        "monthly": {
+          "actual_count": 63,
+          "actual_end_date": "2026-08-03",
+          "actual_start_date": "2021-06-15",
+          "adjustment_basis": "provider_adjusted_price_v1",
+          "completed_count": 62,
+          "contract": "ohlcv-long-history-contract-v1",
+          "denial_reason": "short_listing_or_available_history",
+          "history_complete_to_listing": true,
+          "provider_limit": 1000,
+          "provider_limit_hit": false,
+          "provider_returned_count": 63,
+          "requested_count": 300,
+          "status": "PARTIAL",
+          "timeframe": "monthly"
+        },
+        "weekly": {
+          "actual_count": 272,
+          "actual_end_date": "2026-08-24",
+          "actual_start_date": "2021-06-15",
+          "adjustment_basis": "provider_adjusted_price_v1",
+          "completed_count": 271,
+          "contract": "ohlcv-long-history-contract-v1",
+          "denial_reason": "short_listing_or_available_history",
+          "history_complete_to_listing": true,
+          "provider_limit": 1000,
+          "provider_limit_hit": false,
+          "provider_returned_count": 272,
+          "requested_count": 600,
+          "status": "PARTIAL",
+          "timeframe": "weekly"
+        }
+      },
+      "currency": "USD",
+      "denial_reasons": [],
+      "displayed_zone_ids": [
+        "v3-zone:42bd272f0914d26715e7",
+        "v3-zone:741069fe740cb50f2b43",
+        "v3-zone:9beac46a6b8ac1e044d6",
+        "v3-zone:e44d2c49fac2de5ca423"
+      ],
+      "eligibility": "ELIGIBLE_SR_ONLY",
+      "exchange": "NASDAQ",
+      "issuer_type": null,
+      "numeric_bindings": [
+        {
+          "currency": "USD",
+          "fact_ref": "current-price:HUT:2026-08-27",
+          "owner": "CURRENT_PRICE_STRUCTURE",
+          "semantic_type": "CURRENT_PRICE",
+          "value": "87.38"
+        },
+        {
+          "active_relevance": "ACTIVE_NEAR",
+          "currency": "USD",
+          "display": "약 $82.64~$83.06",
+          "distance_pct": "4.947213",
+          "fact_ref": "v3-zone:42bd272f0914d26715e7",
+          "owner": "CURRENT_PRICE_STRUCTURE",
+          "proximity_tier": "NEAR",
+          "raw_high": "83.057125",
+          "raw_low": "82.642875",
+          "semantic_type": "NEAR_SUPPORT",
+          "source_families": [
+            "PIVOT_MONTHLY"
+          ],
+          "source_refs": [
+            "v3-pivot:1c3dbbd33d5eba876596"
+          ],
+          "source_timeframe": "monthly",
+          "source_timeframes": [
+            "monthly"
+          ]
+        },
+        {
+          "active_relevance": "ACTIVE_NEAR",
+          "currency": "USD",
+          "display": "약 $87.66~$89.44",
+          "distance_pct": "0.324586",
+          "fact_ref": "v3-zone:741069fe740cb50f2b43",
+          "owner": "CURRENT_PRICE_STRUCTURE",
+          "proximity_tier": "NEAR",
+          "raw_high": "89.437877",
+          "raw_low": "87.663623",
+          "semantic_type": "NEAR_RESISTANCE",
+          "source_families": [
+            "BALANCE_BOX",
+            "BOLLINGER_DAILY"
+          ],
+          "source_refs": [
+            "v3-balance-box:eb93121e47a406e31a9d",
+            "v3-bollinger:4aee7042d2a5ad3a3750"
+          ],
+          "source_timeframe": "daily",
+          "source_timeframes": [
+            "daily"
+          ]
+        },
+        {
+          "active_relevance": "ACTIVE_STRUCTURAL",
+          "currency": "USD",
+          "display": "약 $65.9~$66.24",
+          "distance_pct": "24.198701",
+          "fact_ref": "v3-zone:9beac46a6b8ac1e044d6",
+          "owner": "CURRENT_PRICE_STRUCTURE",
+          "proximity_tier": "RELEVANT",
+          "raw_high": "66.235175",
+          "raw_low": "65.904825",
+          "semantic_type": "MAJOR_SUPPORT",
+          "source_families": [
+            "PIVOT_MONTHLY"
+          ],
+          "source_refs": [
+            "v3-pivot:569300fa2e406317769f"
+          ],
+          "source_timeframe": "monthly",
+          "source_timeframes": [
+            "monthly"
+          ]
+        },
+        {
+          "active_relevance": "ACTIVE_STRUCTURAL",
+          "currency": "USD",
+          "display": "약 $99.23~$99.74",
+          "distance_pct": "13.566939",
+          "fact_ref": "v3-zone:e44d2c49fac2de5ca423",
+          "owner": "CURRENT_PRICE_STRUCTURE",
+          "proximity_tier": "RELEVANT",
+          "raw_high": "99.732209",
+          "raw_low": "99.234791",
+          "semantic_type": "MAJOR_RESISTANCE",
+          "source_families": [
+            "BOLLINGER_WEEKLY"
+          ],
+          "source_refs": [
+            "v3-bollinger:beb7b93041c90e68fc8f"
+          ],
+          "source_timeframe": "weekly",
+          "source_timeframes": [
+            "weekly"
+          ]
+        }
+      ],
+      "price_as_of": "2026-08-27",
+      "quality_status": "PASS",
+      "route": "current_ai_existing",
+      "section": "📐 현재 가격 구조\n• 기준 종가: $87.38\n• 가까운 지지: 약 $82.64~$83.06\n• 가까운 저항: 약 $87.66~$89.44\n• 주요 구조 지지: 약 $65.9~$66.24\n• 주요 구조 저항: 약 $99.23~$99.74",
+      "security_basis": "US_LISTED:HUT",
+      "selected_sha256": "dd168e7c3e1d074986f50bab97bb78170c4e98d5d00c543d5883dab691e4f8b5",
+      "target_session": "2026-08-27",
+      "ticker": "HUT"
+    },
+    {
+      "company": "IBM",
+      "coverage": {
+        "daily": {
+          "actual_count": 1000,
+          "actual_end_date": "2026-08-27",
+          "actual_start_date": "2022-09-01",
+          "adjustment_basis": "provider_adjusted_price_v1",
+          "completed_count": 1000,
+          "contract": "ohlcv-long-history-contract-v1",
+          "denial_reason": "provider_limit",
+          "history_complete_to_listing": false,
+          "provider_limit": 1000,
+          "provider_limit_hit": true,
+          "provider_returned_count": 1000,
+          "requested_count": 1200,
+          "status": "PARTIAL_SAFE",
+          "timeframe": "daily"
+        },
+        "monthly": {
+          "actual_count": 300,
+          "actual_end_date": "2026-08-03",
+          "actual_start_date": "2001-09-04",
+          "adjustment_basis": "provider_adjusted_price_v1",
+          "completed_count": 299,
+          "contract": "ohlcv-long-history-contract-v1",
+          "denial_reason": "short_listing_or_available_history",
+          "history_complete_to_listing": true,
+          "provider_limit": 1000,
+          "provider_limit_hit": false,
+          "provider_returned_count": 300,
+          "requested_count": 300,
+          "status": "PARTIAL",
+          "timeframe": "monthly"
+        },
+        "weekly": {
+          "actual_count": 600,
+          "actual_end_date": "2026-08-24",
+          "actual_start_date": "2015-03-02",
+          "adjustment_basis": "provider_adjusted_price_v1",
+          "completed_count": 599,
+          "contract": "ohlcv-long-history-contract-v1",
+          "denial_reason": "short_listing_or_available_history",
+          "history_complete_to_listing": true,
+          "provider_limit": 1000,
+          "provider_limit_hit": false,
+          "provider_returned_count": 600,
+          "requested_count": 600,
+          "status": "PARTIAL",
+          "timeframe": "weekly"
+        }
+      },
+      "currency": "USD",
+      "denial_reasons": [],
+      "displayed_zone_ids": [
+        "v3-zone:263ee440a2e7a6cb3239",
+        "v3-zone:55e0c2a01908ec740657",
+        "v3-zone:3d082d934579c8b08370",
+        "v3-zone:14dec79672d23e3e9dd8"
+      ],
+      "eligibility": "ELIGIBLE_SR_ONLY",
+      "exchange": "NYSE",
+      "issuer_type": "domestic_us",
+      "numeric_bindings": [
+        {
+          "currency": "USD",
+          "fact_ref": "current-price:IBM:2026-08-27",
+          "owner": "CURRENT_PRICE_STRUCTURE",
+          "semantic_type": "CURRENT_PRICE",
+          "value": "238.65"
+        },
+        {
+          "active_relevance": "ACTIVE_NEAR",
+          "currency": "USD",
+          "display": "약 $229.92~$235.49",
+          "distance_pct": "1.325219",
+          "fact_ref": "v3-zone:263ee440a2e7a6cb3239",
+          "owner": "CURRENT_PRICE_STRUCTURE",
+          "proximity_tier": "NEAR",
+          "raw_high": "235.487364",
+          "raw_low": "229.927636",
+          "semantic_type": "NEAR_SUPPORT",
+          "source_families": [
+            "BALANCE_BOX",
+            "BOLLINGER_DAILY",
+            "PIVOT_DAILY"
+          ],
+          "source_refs": [
+            "v3-balance-box:2bf2a4b3ec1679637421",
+            "v3-bollinger:757777121f559270e0dc",
+            "v3-pivot:15db6db36b58a61a347a",
+            "v3-pivot:615c42fce7ad3d4ce69b",
+            "v3-pivot:67b25bf54fc4b1b19e16",
+            "v3-pivot:a2b6bd216c6bd29a3027",
+            "v3-pivot:af8e657f5f4693a4c8be"
+          ],
+          "source_timeframe": "daily",
+          "source_timeframes": [
+            "daily"
+          ]
+        },
+        {
+          "active_relevance": "ACTIVE_NEAR",
+          "currency": "USD",
+          "display": "약 $240.19~$246.22",
+          "distance_pct": "0.648864",
+          "fact_ref": "v3-zone:55e0c2a01908ec740657",
+          "owner": "CURRENT_PRICE_STRUCTURE",
+          "proximity_tier": "NEAR",
+          "raw_high": "246.217985",
+          "raw_low": "240.198515",
+          "semantic_type": "NEAR_RESISTANCE",
+          "source_families": [
+            "BOLLINGER_DAILY",
+            "PIVOT_DAILY"
+          ],
+          "source_refs": [
+            "v3-bollinger:dccc281e040591b55bf2",
+            "v3-pivot:4a431973884030a952a0",
+            "v3-pivot:4e7b69fbb192e7e276f4",
+            "v3-pivot:5f5972d21c1a0d6c4acb",
+            "v3-pivot:8217bdc3da7019845efe",
+            "v3-pivot:9a4605249dd973990608",
+            "v3-pivot:ae2df3cf50dabcea1981",
+            "v3-pivot:bf052e49f32c939a8544",
+            "v3-pivot:ca15a2e8620a3a4d524e",
+            "v3-pivot:d5f14414af6654dd982f",
+            "v3-pivot:f9d3e53ac78a2d5e37b9"
+          ],
+          "source_timeframe": "daily",
+          "source_timeframes": [
+            "daily"
+          ]
+        },
+        {
+          "active_relevance": "ACTIVE_NEAR",
+          "currency": "USD",
+          "display": "약 $209.39~$216.44",
+          "distance_pct": "9.310118",
+          "fact_ref": "v3-zone:3d082d934579c8b08370",
+          "owner": "CURRENT_PRICE_STRUCTURE",
+          "proximity_tier": "NEAR",
+          "raw_high": "216.431404",
+          "raw_low": "209.397284",
+          "semantic_type": "MAJOR_SUPPORT",
+          "source_families": [
+            "BOLLINGER_MONTHLY",
+            "PIVOT_MONTHLY"
+          ],
+          "source_refs": [
+            "v3-bollinger:7fe7f0060ebbcc19fffe",
+            "v3-pivot:0496a99e9271406d735f",
+            "v3-pivot:0a299e34fa49e074ce09",
+            "v3-pivot:2b177166eb439fc537f0",
+            "v3-pivot:daaecabe29891d2448c2"
+          ],
+          "source_timeframe": "monthly",
+          "source_timeframes": [
+            "monthly"
+          ]
+        },
+        {
+          "active_relevance": "ACTIVE_NEAR",
+          "currency": "USD",
+          "display": "약 $264.58~$265.92",
+          "distance_pct": "10.869210",
+          "fact_ref": "v3-zone:14dec79672d23e3e9dd8",
+          "owner": "CURRENT_PRICE_STRUCTURE",
+          "proximity_tier": "NEAR",
+          "raw_high": "265.915631",
+          "raw_low": "264.589369",
+          "semantic_type": "MAJOR_RESISTANCE",
+          "source_families": [
+            "BOLLINGER_MONTHLY"
+          ],
+          "source_refs": [
+            "v3-bollinger:b68a5208aacbfadd9249"
+          ],
+          "source_timeframe": "monthly",
+          "source_timeframes": [
+            "monthly"
+          ]
+        }
+      ],
+      "price_as_of": "2026-08-27",
+      "quality_status": "PASS",
+      "route": "current_ai_existing",
+      "section": "📐 현재 가격 구조\n• 기준 종가: $238.65\n• 가까운 지지: 약 $229.92~$235.49\n• 가까운 저항: 약 $240.19~$246.22\n• 주요 구조 지지: 약 $209.39~$216.44\n• 주요 구조 저항: 약 $264.58~$265.92",
+      "security_basis": "US_LISTED:IBM",
+      "selected_sha256": "65430958ea4e1380126312654db4df3dc3b8920116f55277b52756eac2f23c40",
+      "target_session": "2026-08-27",
+      "ticker": "IBM"
+    },
+    {
+      "company": "Micron Technology",
+      "coverage": {
+        "daily": {
+          "actual_count": 1000,
+          "actual_end_date": "2026-08-27",
+          "actual_start_date": "2022-09-01",
+          "adjustment_basis": "provider_adjusted_price_v1",
+          "completed_count": 1000,
+          "contract": "ohlcv-long-history-contract-v1",
+          "denial_reason": "provider_limit",
+          "history_complete_to_listing": false,
+          "provider_limit": 1000,
+          "provider_limit_hit": true,
+          "provider_returned_count": 1000,
+          "requested_count": 1200,
+          "status": "PARTIAL_SAFE",
+          "timeframe": "daily"
+        },
+        "monthly": {
+          "actual_count": 300,
+          "actual_end_date": "2026-08-03",
+          "actual_start_date": "2001-09-04",
+          "adjustment_basis": "provider_adjusted_price_v1",
+          "completed_count": 299,
+          "contract": "ohlcv-long-history-contract-v1",
+          "denial_reason": "short_listing_or_available_history",
+          "history_complete_to_listing": true,
+          "provider_limit": 1000,
+          "provider_limit_hit": false,
+          "provider_returned_count": 300,
+          "requested_count": 300,
+          "status": "PARTIAL",
+          "timeframe": "monthly"
+        },
+        "weekly": {
+          "actual_count": 600,
+          "actual_end_date": "2026-08-24",
+          "actual_start_date": "2015-03-02",
+          "adjustment_basis": "provider_adjusted_price_v1",
+          "completed_count": 599,
+          "contract": "ohlcv-long-history-contract-v1",
+          "denial_reason": "short_listing_or_available_history",
+          "history_complete_to_listing": true,
+          "provider_limit": 1000,
+          "provider_limit_hit": false,
+          "provider_returned_count": 600,
+          "requested_count": 600,
+          "status": "PARTIAL",
+          "timeframe": "weekly"
+        }
+      },
+      "currency": "USD",
+      "denial_reasons": [],
+      "displayed_zone_ids": [
+        "v3-zone:ce25e0e40da9b2583501",
+        "v3-zone:6c96d73680bce4e2ed59",
+        "v3-zone:f71b93ee01d475aab814",
+        "v3-zone:999a654b346fb1eb8c3f"
+      ],
+      "eligibility": "ELIGIBLE_SR_ONLY",
+      "exchange": "NASDAQ",
+      "issuer_type": "domestic_us",
+      "numeric_bindings": [
+        {
+          "currency": "USD",
+          "fact_ref": "current-price:MU:2026-08-27",
+          "owner": "CURRENT_PRICE_STRUCTURE",
+          "semantic_type": "CURRENT_PRICE",
+          "value": "923.6"
+        },
+        {
+          "active_relevance": "ACTIVE_NEAR",
+          "currency": "USD",
+          "display": "약 $912.5~$917.94",
+          "distance_pct": "0.613030",
+          "fact_ref": "v3-zone:ce25e0e40da9b2583501",
+          "owner": "CURRENT_PRICE_STRUCTURE",
+          "proximity_tier": "NEAR",
+          "raw_high": "917.938053",
+          "raw_low": "912.504697",
+          "semantic_type": "NEAR_SUPPORT",
+          "source_families": [
+            "BALANCE_BOX",
+            "BOLLINGER_DAILY"
+          ],
+          "source_refs": [
+            "v3-balance-box:c756da559c1a701a1589",
+            "v3-bollinger:45637fd7339434a07e4a"
+          ],
+          "source_timeframe": "daily",
+          "source_timeframes": [
+            "daily"
+          ]
+        },
+        {
+          "active_relevance": "ACTIVE_NEAR",
+          "currency": "USD",
+          "display": "약 $948.9~$953.66",
+          "distance_pct": "2.739476",
+          "fact_ref": "v3-zone:6c96d73680bce4e2ed59",
+          "owner": "CURRENT_PRICE_STRUCTURE",
+          "proximity_tier": "NEAR",
+          "raw_high": "953.658200",
+          "raw_low": "948.901800",
+          "semantic_type": "NEAR_RESISTANCE",
+          "source_families": [
+            "BALANCE_BOX"
+          ],
+          "source_refs": [
+            "v3-balance-box:49462446e68850edde2e"
+          ],
+          "source_timeframe": "weekly",
+          "source_timeframes": [
+            "weekly"
+          ]
+        },
+        {
+          "active_relevance": "ACTIVE_NEAR",
+          "currency": "USD",
+          "display": "약 $852.2~$856.48",
+          "distance_pct": "7.267610",
+          "fact_ref": "v3-zone:f71b93ee01d475aab814",
+          "owner": "CURRENT_PRICE_STRUCTURE",
+          "proximity_tier": "NEAR",
+          "raw_high": "856.476351",
+          "raw_low": "852.204649",
+          "semantic_type": "MAJOR_SUPPORT",
+          "source_families": [
+            "BOLLINGER_WEEKLY"
+          ],
+          "source_refs": [
+            "v3-bollinger:d243b2a903fd2e9564c8"
+          ],
+          "source_timeframe": "weekly",
+          "source_timeframes": [
+            "weekly"
+          ]
+        },
+        {
+          "active_relevance": "ACTIVE_NEAR",
+          "currency": "USD",
+          "display": "약 $1,022.18~$1,027.31",
+          "distance_pct": "10.674049",
+          "fact_ref": "v3-zone:999a654b346fb1eb8c3f",
+          "owner": "CURRENT_PRICE_STRUCTURE",
+          "proximity_tier": "NEAR",
+          "raw_high": "1027.309255",
+          "raw_low": "1022.185519",
+          "semantic_type": "MAJOR_RESISTANCE",
+          "source_families": [
+            "BOLLINGER_MONTHLY"
+          ],
+          "source_refs": [
+            "v3-bollinger:c330cda8f331ad7676c1"
+          ],
+          "source_timeframe": "monthly",
+          "source_timeframes": [
+            "monthly"
+          ]
+        }
+      ],
+      "price_as_of": "2026-08-27",
+      "quality_status": "PASS",
+      "route": "current_ai_existing",
+      "section": "📐 현재 가격 구조\n• 기준 종가: $923.60\n• 가까운 지지: 약 $912.5~$917.94\n• 가까운 저항: 약 $948.9~$953.66\n• 주요 구조 지지: 약 $852.2~$856.48\n• 주요 구조 저항: 약 $1,022.18~$1,027.31",
+      "security_basis": "US_LISTED:MU",
+      "selected_sha256": "de39d442b980221136b4afc1e1cbc576aed1379277139ab3481a78fe259571e6",
+      "target_session": "2026-08-27",
+      "ticker": "MU"
+    },
+    {
+      "company": "Recursion Pharmaceuticals",
+      "coverage": {
+        "daily": {
+          "actual_count": 1000,
+          "actual_end_date": "2026-08-27",
+          "actual_start_date": "2022-09-01",
+          "adjustment_basis": "provider_adjusted_price_v1",
+          "completed_count": 1000,
+          "contract": "ohlcv-long-history-contract-v1",
+          "denial_reason": "provider_limit",
+          "history_complete_to_listing": false,
+          "provider_limit": 1000,
+          "provider_limit_hit": true,
+          "provider_returned_count": 1000,
+          "requested_count": 1200,
+          "status": "PARTIAL_SAFE",
+          "timeframe": "daily"
+        },
+        "monthly": {
+          "actual_count": 65,
+          "actual_end_date": "2026-08-03",
+          "actual_start_date": "2021-04-16",
+          "adjustment_basis": "provider_adjusted_price_v1",
+          "completed_count": 64,
+          "contract": "ohlcv-long-history-contract-v1",
+          "denial_reason": "short_listing_or_available_history",
+          "history_complete_to_listing": true,
+          "provider_limit": 1000,
+          "provider_limit_hit": false,
+          "provider_returned_count": 65,
+          "requested_count": 300,
+          "status": "PARTIAL",
+          "timeframe": "monthly"
+        },
+        "weekly": {
+          "actual_count": 281,
+          "actual_end_date": "2026-08-24",
+          "actual_start_date": "2021-04-16",
+          "adjustment_basis": "provider_adjusted_price_v1",
+          "completed_count": 280,
+          "contract": "ohlcv-long-history-contract-v1",
+          "denial_reason": "short_listing_or_available_history",
+          "history_complete_to_listing": true,
+          "provider_limit": 1000,
+          "provider_limit_hit": false,
+          "provider_returned_count": 281,
+          "requested_count": 600,
+          "status": "PARTIAL",
+          "timeframe": "weekly"
+        }
+      },
+      "currency": "USD",
+      "denial_reasons": [],
+      "displayed_zone_ids": [
+        "v3-zone:21390515284bc5f6fdfe",
+        "v3-zone:d2e91fc636941d7deb8c",
+        "v3-zone:46c794af4c9b6e66763f",
+        "v3-zone:69365d6f83651957c112"
+      ],
+      "eligibility": "ELIGIBLE_SR_ONLY",
+      "exchange": "NASDAQ",
+      "issuer_type": "domestic_us",
+      "numeric_bindings": [
+        {
+          "currency": "USD",
+          "fact_ref": "current-price:RXRX:2026-08-27",
+          "owner": "CURRENT_PRICE_STRUCTURE",
+          "semantic_type": "CURRENT_PRICE",
+          "value": "3.46"
+        },
+        {
+          "active_relevance": "ACTIVE_NEAR",
+          "currency": "USD",
+          "display": "약 $3.3~$3.35",
+          "distance_pct": "3.372370",
+          "fact_ref": "v3-zone:21390515284bc5f6fdfe",
+          "owner": "CURRENT_PRICE_STRUCTURE",
+          "proximity_tier": "NEAR",
+          "raw_high": "3.343316",
+          "raw_low": "3.309184",
+          "semantic_type": "NEAR_SUPPORT",
+          "source_families": [
+            "BALANCE_BOX",
+            "BOLLINGER_WEEKLY"
+          ],
+          "source_refs": [
+            "v3-balance-box:c4614668b8c457470160",
+            "v3-bollinger:2d1cf811da007f92bb5b"
+          ],
+          "source_timeframe": "weekly",
+          "source_timeframes": [
+            "weekly"
+          ]
+        },
+        {
+          "active_relevance": "ACTIVE_NEAR",
+          "currency": "USD",
+          "display": "약 $3.58~$3.6",
+          "distance_pct": "3.491156",
+          "fact_ref": "v3-zone:d2e91fc636941d7deb8c",
+          "owner": "CURRENT_PRICE_STRUCTURE",
+          "proximity_tier": "NEAR",
+          "raw_high": "3.598742",
+          "raw_low": "3.580794",
+          "semantic_type": "NEAR_RESISTANCE",
+          "source_families": [
+            "BOLLINGER_DAILY"
+          ],
+          "source_refs": [
+            "v3-bollinger:32ff23437c6d4aa3d58d"
+          ],
+          "source_timeframe": "daily",
+          "source_timeframes": [
+            "daily"
+          ]
+        },
+        {
+          "active_relevance": "ACTIVE_STRUCTURAL",
+          "currency": "USD",
+          "display": "약 $2.76~$2.78",
+          "distance_pct": "19.742052",
+          "fact_ref": "v3-zone:46c794af4c9b6e66763f",
+          "owner": "CURRENT_PRICE_STRUCTURE",
+          "proximity_tier": "RELEVANT",
+          "raw_high": "2.776925",
+          "raw_low": "2.763075",
+          "semantic_type": "MAJOR_SUPPORT",
+          "source_families": [
+            "PIVOT_MONTHLY"
+          ],
+          "source_refs": [
+            "v3-pivot:7837bce04b9dfeeda7de"
+          ],
+          "source_timeframe": "monthly",
+          "source_timeframes": [
+            "monthly"
+          ]
+        },
+        {
+          "active_relevance": "ACTIVE_NEAR",
+          "currency": "USD",
+          "display": "약 $3.78~$3.82",
+          "distance_pct": "9.263006",
+          "fact_ref": "v3-zone:69365d6f83651957c112",
+          "owner": "CURRENT_PRICE_STRUCTURE",
+          "proximity_tier": "NEAR",
+          "raw_high": "3.819500",
+          "raw_low": "3.780500",
+          "semantic_type": "MAJOR_RESISTANCE",
+          "source_families": [
+            "PIVOT_MONTHLY"
+          ],
+          "source_refs": [
+            "v3-pivot:4a36e6e212db329aff68",
+            "v3-pivot:81a2006e7780513174eb"
+          ],
+          "source_timeframe": "monthly",
+          "source_timeframes": [
+            "monthly"
+          ]
+        }
+      ],
+      "price_as_of": "2026-08-27",
+      "quality_status": "PASS",
+      "route": "current_ai_existing",
+      "section": "📐 현재 가격 구조\n• 기준 종가: $3.46\n• 가까운 지지: 약 $3.3~$3.35\n• 가까운 저항: 약 $3.58~$3.6\n• 주요 구조 지지: 약 $2.76~$2.78\n• 주요 구조 저항: 약 $3.78~$3.82",
+      "security_basis": "US_LISTED:RXRX",
+      "selected_sha256": "6f580e30f16db9990b34a06af6eed9c8a65c86e7c7cc3252ce15e0c5ed32bfd3",
+      "target_session": "2026-08-27",
+      "ticker": "RXRX"
+    },
+    {
+      "company": "SK hynix Inc. ADR",
+      "coverage": {
+        "daily": {
+          "actual_count": 35,
+          "actual_end_date": "2026-08-27",
+          "actual_start_date": "2026-07-10",
+          "adjustment_basis": "provider_adjusted_price_v1",
+          "completed_count": 35,
+          "contract": "ohlcv-long-history-contract-v1",
+          "denial_reason": "short_listing_or_available_history",
+          "history_complete_to_listing": true,
+          "provider_limit": 1000,
+          "provider_limit_hit": false,
+          "provider_returned_count": 35,
+          "requested_count": 1200,
+          "status": "PARTIAL",
+          "timeframe": "daily"
+        },
+        "monthly": {
+          "actual_count": 2,
+          "actual_end_date": "2026-08-03",
+          "actual_start_date": "2026-07-10",
+          "adjustment_basis": "provider_adjusted_price_v1",
+          "completed_count": 1,
+          "contract": "ohlcv-long-history-contract-v1",
+          "denial_reason": "insufficient_completed_history",
+          "history_complete_to_listing": true,
+          "provider_limit": 1000,
+          "provider_limit_hit": false,
+          "provider_returned_count": 2,
+          "requested_count": 300,
+          "status": "FAIL",
+          "timeframe": "monthly"
+        },
+        "weekly": {
+          "actual_count": 8,
+          "actual_end_date": "2026-08-24",
+          "actual_start_date": "2026-07-10",
+          "adjustment_basis": "provider_adjusted_price_v1",
+          "completed_count": 7,
+          "contract": "ohlcv-long-history-contract-v1",
+          "denial_reason": "insufficient_completed_history",
+          "history_complete_to_listing": true,
+          "provider_limit": 1000,
+          "provider_limit_hit": false,
+          "provider_returned_count": 8,
+          "requested_count": 600,
+          "status": "FAIL",
+          "timeframe": "weekly"
+        }
+      },
+      "currency": "USD",
+      "denial_reasons": [],
+      "displayed_zone_ids": [
+        "v3-zone:9fa6f49686b2750fa5f5",
+        "v3-zone:a730355ef78d29b462fd",
+        "v3-zone:9f7693fb8bb4788ea716"
+      ],
+      "eligibility": "ELIGIBLE_SR_ONLY",
+      "exchange": "NASDAQ",
+      "issuer_type": null,
+      "numeric_bindings": [
+        {
+          "currency": "USD",
+          "fact_ref": "current-price:SKHY:2026-08-27",
+          "owner": "CURRENT_PRICE_STRUCTURE",
+          "semantic_type": "CURRENT_PRICE",
+          "value": "161.5"
+        },
+        {
+          "active_relevance": "ACTIVE_NEAR",
+          "currency": "USD",
+          "display": "약 $162.24~$165.14",
+          "distance_pct": "0.458684",
+          "fact_ref": "v3-zone:9fa6f49686b2750fa5f5",
+          "owner": "CURRENT_PRICE_STRUCTURE",
+          "proximity_tier": "NEAR",
+          "raw_high": "165.139225",
+          "raw_low": "162.240775",
+          "semantic_type": "NEAR_RESISTANCE",
+          "source_families": [
+            "PIVOT_DAILY"
+          ],
+          "source_refs": [
+            "v3-pivot:a7898489abf9b2a4347b",
+            "v3-pivot:f8113439e7b74bd7282f"
+          ],
+          "source_timeframe": "daily",
+          "source_timeframes": [
+            "daily"
+          ]
+        },
+        {
+          "active_relevance": "ACTIVE_STRUCTURAL",
+          "currency": "USD",
+          "display": "약 $151.11~$154.42",
+          "distance_pct": "4.384860",
+          "fact_ref": "v3-zone:a730355ef78d29b462fd",
+          "owner": "CURRENT_PRICE_STRUCTURE",
+          "proximity_tier": "RELEVANT",
+          "raw_high": "154.418451",
+          "raw_low": "151.117549",
+          "semantic_type": "MAJOR_SUPPORT",
+          "source_families": [
+            "BALANCE_BOX",
+            "BOLLINGER_DAILY",
+            "PIVOT_DAILY"
+          ],
+          "source_refs": [
+            "v3-balance-box:f337ef1769cb088b5a7d",
+            "v3-bollinger:fd9b87b4b06c9b8253d8",
+            "v3-pivot:2615385faece86098c23"
+          ],
+          "source_timeframe": "daily",
+          "source_timeframes": [
+            "daily"
+          ]
+        },
+        {
+          "active_relevance": "ACTIVE_STRUCTURAL",
+          "currency": "USD",
+          "display": "약 $173.53~$174.41",
+          "distance_pct": "7.450595",
+          "fact_ref": "v3-zone:9f7693fb8bb4788ea716",
+          "owner": "CURRENT_PRICE_STRUCTURE",
+          "proximity_tier": "RELEVANT",
+          "raw_high": "174.402549",
+          "raw_low": "173.532711",
+          "semantic_type": "MAJOR_RESISTANCE",
+          "source_families": [
+            "BOLLINGER_DAILY"
+          ],
+          "source_refs": [
+            "v3-bollinger:c4b6d80ffc5769d12704"
+          ],
+          "source_timeframe": "daily",
+          "source_timeframes": [
+            "daily"
+          ]
+        }
+      ],
+      "price_as_of": "2026-08-27",
+      "quality_status": "PASS",
+      "route": "current_ai_existing",
+      "section": "📐 현재 가격 구조\n• 기준 종가: $161.50\n• 가까운 저항: 약 $162.24~$165.14\n• 주요 구조 지지: 약 $151.11~$154.42\n• 주요 구조 저항: 약 $173.53~$174.41",
+      "security_basis": "US_LISTED:SKHY",
+      "selected_sha256": "d4fde625905aa8f58a4f20a54e9ce439a1bb5664682dda394a2dca56561ea475",
+      "target_session": "2026-08-27",
+      "ticker": "SKHY"
+    },
+    {
+      "company": "SanDisk",
+      "coverage": {
+        "daily": {
+          "actual_count": 380,
+          "actual_end_date": "2026-08-27",
+          "actual_start_date": "2025-02-24",
+          "adjustment_basis": "provider_adjusted_price_v1",
+          "completed_count": 380,
+          "contract": "ohlcv-long-history-contract-v1",
+          "denial_reason": "short_listing_or_available_history",
+          "history_complete_to_listing": true,
+          "provider_limit": 1000,
+          "provider_limit_hit": false,
+          "provider_returned_count": 380,
+          "requested_count": 1200,
+          "status": "PARTIAL",
+          "timeframe": "daily"
+        },
+        "monthly": {
+          "actual_count": 19,
+          "actual_end_date": "2026-08-03",
+          "actual_start_date": "2025-02-24",
+          "adjustment_basis": "provider_adjusted_price_v1",
+          "completed_count": 18,
+          "contract": "ohlcv-long-history-contract-v1",
+          "denial_reason": "short_listing_or_available_history",
+          "history_complete_to_listing": true,
+          "provider_limit": 1000,
+          "provider_limit_hit": false,
+          "provider_returned_count": 19,
+          "requested_count": 300,
+          "status": "PARTIAL",
+          "timeframe": "monthly"
+        },
+        "weekly": {
+          "actual_count": 79,
+          "actual_end_date": "2026-08-24",
+          "actual_start_date": "2025-02-24",
+          "adjustment_basis": "provider_adjusted_price_v1",
+          "completed_count": 78,
+          "contract": "ohlcv-long-history-contract-v1",
+          "denial_reason": "short_listing_or_available_history",
+          "history_complete_to_listing": true,
+          "provider_limit": 1000,
+          "provider_limit_hit": false,
+          "provider_returned_count": 79,
+          "requested_count": 600,
+          "status": "PARTIAL",
+          "timeframe": "weekly"
+        }
+      },
+      "currency": "USD",
+      "denial_reasons": [],
+      "displayed_zone_ids": [
+        "v3-zone:1d304c92e06ee1c8276e",
+        "v3-zone:bd451f0412dbda8a022b",
+        "v3-zone:71054556275e340fdd39"
+      ],
+      "eligibility": "ELIGIBLE_SR_ONLY",
+      "exchange": "NASDAQ",
+      "issuer_type": "domestic_us",
+      "numeric_bindings": [
+        {
+          "currency": "USD",
+          "fact_ref": "current-price:SNDK:2026-08-27",
+          "owner": "CURRENT_PRICE_STRUCTURE",
+          "semantic_type": "CURRENT_PRICE",
+          "value": "1464.8"
+        },
+        {
+          "active_relevance": "ACTIVE_NEAR",
+          "currency": "USD",
+          "display": "약 $1,412.98~$1,448.11",
+          "distance_pct": "1.139961",
+          "fact_ref": "v3-zone:1d304c92e06ee1c8276e",
+          "owner": "CURRENT_PRICE_STRUCTURE",
+          "proximity_tier": "NEAR",
+          "raw_high": "1448.101857",
+          "raw_low": "1412.983643",
+          "semantic_type": "NEAR_SUPPORT",
+          "source_families": [
+            "BOLLINGER_DAILY",
+            "PIVOT_DAILY"
+          ],
+          "source_refs": [
+            "v3-bollinger:8bc741a833f0c0711fb3",
+            "v3-pivot:b77121fd933d5efd7d29"
+          ],
+          "source_timeframe": "daily",
+          "source_timeframes": [
+            "daily"
+          ]
+        },
+        {
+          "active_relevance": "ACTIVE_NEAR",
+          "currency": "USD",
+          "display": "약 $1,481.27~$1,518.11",
+          "distance_pct": "1.124438",
+          "fact_ref": "v3-zone:bd451f0412dbda8a022b",
+          "owner": "CURRENT_PRICE_STRUCTURE",
+          "proximity_tier": "NEAR",
+          "raw_high": "1518.109225",
+          "raw_low": "1481.270775",
+          "semantic_type": "NEAR_RESISTANCE",
+          "source_families": [
+            "PIVOT_DAILY"
+          ],
+          "source_refs": [
+            "v3-pivot:57db02c945f0d80f5a39",
+            "v3-pivot:c7f822a91e4b284aebf0"
+          ],
+          "source_timeframe": "daily",
+          "source_timeframes": [
+            "daily"
+          ]
+        },
+        {
+          "active_relevance": "ACTIVE_NEAR",
+          "currency": "USD",
+          "display": "약 $1,528.05~$1,535.72",
+          "distance_pct": "4.318425",
+          "fact_ref": "v3-zone:71054556275e340fdd39",
+          "owner": "CURRENT_PRICE_STRUCTURE",
+          "proximity_tier": "NEAR",
+          "raw_high": "1535.715715",
+          "raw_low": "1528.056285",
+          "semantic_type": "MAJOR_RESISTANCE",
+          "source_families": [
+            "BOLLINGER_WEEKLY"
+          ],
+          "source_refs": [
+            "v3-bollinger:a54621b97fc74f7b3481"
+          ],
+          "source_timeframe": "weekly",
+          "source_timeframes": [
+            "weekly"
+          ]
+        }
+      ],
+      "price_as_of": "2026-08-27",
+      "quality_status": "PASS",
+      "route": "deterministic_fallback",
+      "section": "📐 현재 가격 구조\n• 기준 종가: $1,464.80\n• 가까운 지지: 약 $1,412.98~$1,448.11\n• 가까운 저항: 약 $1,481.27~$1,518.11\n• 주요 구조 저항: 약 $1,528.05~$1,535.72",
+      "security_basis": "US_LISTED:SNDK",
+      "selected_sha256": "8813738e8243d7addf92042137eb2d46aeb193e0d4fec3ed8c22f33662fcca55",
+      "target_session": "2026-08-27",
+      "ticker": "SNDK"
+    },
+    {
+      "company": "Tesla, Inc.",
+      "coverage": {
+        "daily": {
+          "actual_count": 1000,
+          "actual_end_date": "2026-08-27",
+          "actual_start_date": "2022-09-01",
+          "adjustment_basis": "provider_adjusted_price_v1",
+          "completed_count": 1000,
+          "contract": "ohlcv-long-history-contract-v1",
+          "denial_reason": "provider_limit",
+          "history_complete_to_listing": false,
+          "provider_limit": 1000,
+          "provider_limit_hit": true,
+          "provider_returned_count": 1000,
+          "requested_count": 1200,
+          "status": "PARTIAL_SAFE",
+          "timeframe": "daily"
+        },
+        "monthly": {
+          "actual_count": 195,
+          "actual_end_date": "2026-08-03",
+          "actual_start_date": "2010-06-29",
+          "adjustment_basis": "provider_adjusted_price_v1",
+          "completed_count": 194,
+          "contract": "ohlcv-long-history-contract-v1",
+          "denial_reason": "short_listing_or_available_history",
+          "history_complete_to_listing": true,
+          "provider_limit": 1000,
+          "provider_limit_hit": false,
+          "provider_returned_count": 195,
+          "requested_count": 300,
+          "status": "PARTIAL",
+          "timeframe": "monthly"
+        },
+        "weekly": {
+          "actual_count": 600,
+          "actual_end_date": "2026-08-24",
+          "actual_start_date": "2015-03-02",
+          "adjustment_basis": "provider_adjusted_price_v1",
+          "completed_count": 599,
+          "contract": "ohlcv-long-history-contract-v1",
+          "denial_reason": "short_listing_or_available_history",
+          "history_complete_to_listing": true,
+          "provider_limit": 1000,
+          "provider_limit_hit": false,
+          "provider_returned_count": 600,
+          "requested_count": 600,
+          "status": "PARTIAL",
+          "timeframe": "weekly"
+        }
+      },
+      "currency": "USD",
+      "denial_reasons": [],
+      "displayed_zone_ids": [
+        "v3-zone:273e19bd3a0efd624ee5",
+        "v3-zone:e0cc267db43b8668b939",
+        "v3-zone:dfbf6f13f500c5c3f477",
+        "v3-zone:d94ff708038f74489f74"
+      ],
+      "eligibility": "ELIGIBLE_SR_ONLY",
+      "exchange": "NASDAQ",
+      "issuer_type": "domestic_us",
+      "numeric_bindings": [
+        {
+          "currency": "USD",
+          "fact_ref": "current-price:TSLA:2026-08-27",
+          "owner": "CURRENT_PRICE_STRUCTURE",
+          "semantic_type": "CURRENT_PRICE",
+          "value": "354.92"
+        },
+        {
+          "active_relevance": "ACTIVE_NEAR",
+          "currency": "USD",
+          "display": "약 $336.1~$339.08",
+          "distance_pct": "4.464676",
+          "fact_ref": "v3-zone:273e19bd3a0efd624ee5",
+          "owner": "CURRENT_PRICE_STRUCTURE",
+          "proximity_tier": "NEAR",
+          "raw_high": "339.073972",
+          "raw_low": "336.103528",
+          "semantic_type": "NEAR_SUPPORT",
+          "source_families": [
+            "BALANCE_BOX",
+            "BOLLINGER_DAILY"
+          ],
+          "source_refs": [
+            "v3-balance-box:e39a530ca8bd95531219",
+            "v3-bollinger:ffd5d80c8b5273fc3192"
+          ],
+          "source_timeframe": "daily",
+          "source_timeframes": [
+            "daily"
+          ]
+        },
+        {
+          "active_relevance": "ACTIVE_NEAR",
+          "currency": "USD",
+          "display": "약 $356.63~$365.37",
+          "distance_pct": "0.483472",
+          "fact_ref": "v3-zone:e0cc267db43b8668b939",
+          "owner": "CURRENT_PRICE_STRUCTURE",
+          "proximity_tier": "NEAR",
+          "raw_high": "365.364160",
+          "raw_low": "356.635940",
+          "semantic_type": "NEAR_RESISTANCE",
+          "source_families": [
+            "BOLLINGER_DAILY",
+            "PIVOT_DAILY"
+          ],
+          "source_refs": [
+            "v3-bollinger:3a1e23b5575be5aa1928",
+            "v3-pivot:253617dbe5736de935f4",
+            "v3-pivot:750b769555a37f0337f4",
+            "v3-pivot:ac0d98855f7c68abde90",
+            "v3-pivot:b53b65022c59c519fb7b",
+            "v3-pivot:fe0992f2537850c8edfe"
+          ],
+          "source_timeframe": "daily",
+          "source_timeframes": [
+            "daily"
+          ]
+        },
+        {
+          "active_relevance": "ACTIVE_STRUCTURAL",
+          "currency": "USD",
+          "display": "약 $249.52~$250.78",
+          "distance_pct": "29.344254",
+          "fact_ref": "v3-zone:dfbf6f13f500c5c3f477",
+          "owner": "CURRENT_PRICE_STRUCTURE",
+          "proximity_tier": "RELEVANT",
+          "raw_high": "250.771374",
+          "raw_low": "249.520644",
+          "semantic_type": "MAJOR_SUPPORT",
+          "source_families": [
+            "BOLLINGER_MONTHLY"
+          ],
+          "source_refs": [
+            "v3-bollinger:cdfb83aa76337415682e"
+          ],
+          "source_timeframe": "monthly",
+          "source_timeframes": [
+            "monthly"
+          ]
+        },
+        {
+          "active_relevance": "ACTIVE_NEAR",
+          "currency": "USD",
+          "display": "약 $366.78~$372.69",
+          "distance_pct": "3.343195",
+          "fact_ref": "v3-zone:d94ff708038f74489f74",
+          "owner": "CURRENT_PRICE_STRUCTURE",
+          "proximity_tier": "NEAR",
+          "raw_high": "372.681834",
+          "raw_low": "366.785666",
+          "semantic_type": "MAJOR_RESISTANCE",
+          "source_families": [
+            "BOLLINGER_MONTHLY",
+            "PIVOT_MONTHLY"
+          ],
+          "source_refs": [
+            "v3-bollinger:636ecc51746de20bebe2",
+            "v3-pivot:b132d066eee1638e7a89"
+          ],
+          "source_timeframe": "monthly",
+          "source_timeframes": [
+            "monthly"
+          ]
+        }
+      ],
+      "price_as_of": "2026-08-27",
+      "quality_status": "PASS",
+      "route": "current_ai_existing",
+      "section": "📐 현재 가격 구조\n• 기준 종가: $354.92\n• 가까운 지지: 약 $336.1~$339.08\n• 가까운 저항: 약 $356.63~$365.37\n• 주요 구조 지지: 약 $249.52~$250.78\n• 주요 구조 저항: 약 $366.78~$372.69",
+      "security_basis": "US_LISTED:TSLA",
+      "selected_sha256": "e98be4bd5cdfc58be3f7642c76e028925a62b2557023e2c4cefd7fe1a1196cb3",
+      "target_session": "2026-08-27",
+      "ticker": "TSLA"
+    },
+    {
+      "company": "TSMC",
+      "coverage": {
+        "daily": {
+          "actual_count": 1000,
+          "actual_end_date": "2026-08-27",
+          "actual_start_date": "2022-09-01",
+          "adjustment_basis": "provider_adjusted_price_v1",
+          "completed_count": 1000,
+          "contract": "ohlcv-long-history-contract-v1",
+          "denial_reason": "provider_limit",
+          "history_complete_to_listing": false,
+          "provider_limit": 1000,
+          "provider_limit_hit": true,
+          "provider_returned_count": 1000,
+          "requested_count": 1200,
+          "status": "PARTIAL_SAFE",
+          "timeframe": "daily"
+        },
+        "monthly": {
+          "actual_count": 261,
+          "actual_end_date": "2026-08-03",
+          "actual_start_date": "2004-12-21",
+          "adjustment_basis": "provider_adjusted_price_v1",
+          "completed_count": 260,
+          "contract": "ohlcv-long-history-contract-v1",
+          "denial_reason": "short_listing_or_available_history",
+          "history_complete_to_listing": true,
+          "provider_limit": 1000,
+          "provider_limit_hit": false,
+          "provider_returned_count": 261,
+          "requested_count": 300,
+          "status": "PARTIAL",
+          "timeframe": "monthly"
+        },
+        "weekly": {
+          "actual_count": 600,
+          "actual_end_date": "2026-08-24",
+          "actual_start_date": "2015-03-02",
+          "adjustment_basis": "provider_adjusted_price_v1",
+          "completed_count": 599,
+          "contract": "ohlcv-long-history-contract-v1",
+          "denial_reason": "short_listing_or_available_history",
+          "history_complete_to_listing": true,
+          "provider_limit": 1000,
+          "provider_limit_hit": false,
+          "provider_returned_count": 600,
+          "requested_count": 600,
+          "status": "PARTIAL",
+          "timeframe": "weekly"
+        }
+      },
+      "currency": "USD",
+      "denial_reasons": [],
+      "displayed_zone_ids": [
+        "v3-zone:2a83e903b554e97816d2",
+        "v3-zone:5283d79fcb9f5fa035e2",
+        "v3-zone:0b7f38b98e8f03b66439",
+        "v3-zone:6a2636a610cb7bb5390c"
+      ],
+      "eligibility": "ELIGIBLE_SR_ONLY",
+      "exchange": "NYSE",
+      "issuer_type": "foreign_private_issuer",
+      "numeric_bindings": [
+        {
+          "currency": "USD",
+          "fact_ref": "current-price:TSM:2026-08-27",
+          "owner": "CURRENT_PRICE_STRUCTURE",
+          "semantic_type": "CURRENT_PRICE",
+          "value": "426.56"
+        },
+        {
+          "active_relevance": "ACTIVE_NEAR",
+          "currency": "USD",
+          "display": "약 $413.45~$423.02",
+          "distance_pct": "0.830467",
+          "fact_ref": "v3-zone:2a83e903b554e97816d2",
+          "owner": "CURRENT_PRICE_STRUCTURE",
+          "proximity_tier": "NEAR",
+          "raw_high": "423.017560",
+          "raw_low": "413.452440",
+          "semantic_type": "NEAR_SUPPORT",
+          "source_families": [
+            "BALANCE_BOX",
+            "BOLLINGER_DAILY",
+            "PIVOT_DAILY"
+          ],
+          "source_refs": [
+            "v3-balance-box:14a68b8fff8e75e77a05",
+            "v3-bollinger:c3a28f42d41cd33cc130",
+            "v3-pivot:22da91fb83cc0bf5141e",
+            "v3-pivot:82b0a9afef613129bc04",
+            "v3-pivot:bb750d78683ef0affd78"
+          ],
+          "source_timeframe": "daily",
+          "source_timeframes": [
+            "daily"
+          ]
+        },
+        {
+          "active_relevance": "ACTIVE_NEAR",
+          "currency": "USD",
+          "display": "약 $451.33~$453.6",
+          "distance_pct": "5.807653",
+          "fact_ref": "v3-zone:5283d79fcb9f5fa035e2",
+          "owner": "CURRENT_PRICE_STRUCTURE",
+          "proximity_tier": "NEAR",
+          "raw_high": "453.595448",
+          "raw_low": "451.333126",
+          "semantic_type": "NEAR_RESISTANCE",
+          "source_families": [
+            "BOLLINGER_WEEKLY"
+          ],
+          "source_refs": [
+            "v3-bollinger:90377cfa609325aa082f"
+          ],
+          "source_timeframe": "weekly",
+          "source_timeframes": [
+            "weekly"
+          ]
+        },
+        {
+          "active_relevance": "ACTIVE_NEAR",
+          "currency": "USD",
+          "display": "약 $410.28~$412.34",
+          "distance_pct": "3.334050",
+          "fact_ref": "v3-zone:0b7f38b98e8f03b66439",
+          "owner": "CURRENT_PRICE_STRUCTURE",
+          "proximity_tier": "NEAR",
+          "raw_high": "412.338275",
+          "raw_low": "410.281725",
+          "semantic_type": "MAJOR_SUPPORT",
+          "source_families": [
+            "BALANCE_BOX"
+          ],
+          "source_refs": [
+            "v3-balance-box:fd14114dc3c5757456fc"
+          ],
+          "source_timeframe": "monthly",
+          "source_timeframes": [
+            "monthly"
+          ]
+        },
+        {
+          "active_relevance": "ACTIVE_STRUCTURAL",
+          "currency": "USD",
+          "display": "약 $482.71~$485.14",
+          "distance_pct": "13.165532",
+          "fact_ref": "v3-zone:6a2636a610cb7bb5390c",
+          "owner": "CURRENT_PRICE_STRUCTURE",
+          "proximity_tier": "RELEVANT",
+          "raw_high": "485.138539",
+          "raw_low": "482.718895",
+          "semantic_type": "MAJOR_RESISTANCE",
+          "source_families": [
+            "BOLLINGER_MONTHLY"
+          ],
+          "source_refs": [
+            "v3-bollinger:13ba5a97d75b8c099e08"
+          ],
+          "source_timeframe": "monthly",
+          "source_timeframes": [
+            "monthly"
+          ]
+        }
+      ],
+      "price_as_of": "2026-08-27",
+      "quality_status": "PASS",
+      "route": "current_ai_existing",
+      "section": "📐 현재 가격 구조\n• 기준 종가: $426.56\n• 가까운 지지: 약 $413.45~$423.02\n• 가까운 저항: 약 $451.33~$453.6\n• 주요 구조 지지: 약 $410.28~$412.34\n• 주요 구조 저항: 약 $482.71~$485.14",
+      "security_basis": "US_LISTED:TSM",
+      "selected_sha256": "145af53bb9f12e721d0026e563a23f0feeb630a5409900c5be650633639cb1c6",
+      "target_session": "2026-08-27",
+      "ticker": "TSM"
+    },
+    {
+      "company": "WeRide",
+      "coverage": {
+        "daily": {
+          "actual_count": 460,
+          "actual_end_date": "2026-08-27",
+          "actual_start_date": "2024-10-25",
+          "adjustment_basis": "provider_adjusted_price_v1",
+          "completed_count": 460,
+          "contract": "ohlcv-long-history-contract-v1",
+          "denial_reason": "short_listing_or_available_history",
+          "history_complete_to_listing": true,
+          "provider_limit": 1000,
+          "provider_limit_hit": false,
+          "provider_returned_count": 460,
+          "requested_count": 1200,
+          "status": "PARTIAL",
+          "timeframe": "daily"
+        },
+        "monthly": {
+          "actual_count": 23,
+          "actual_end_date": "2026-08-03",
+          "actual_start_date": "2024-10-25",
+          "adjustment_basis": "provider_adjusted_price_v1",
+          "completed_count": 22,
+          "contract": "ohlcv-long-history-contract-v1",
+          "denial_reason": "short_listing_or_available_history",
+          "history_complete_to_listing": true,
+          "provider_limit": 1000,
+          "provider_limit_hit": false,
+          "provider_returned_count": 23,
+          "requested_count": 300,
+          "status": "PARTIAL",
+          "timeframe": "monthly"
+        },
+        "weekly": {
+          "actual_count": 97,
+          "actual_end_date": "2026-08-24",
+          "actual_start_date": "2024-10-25",
+          "adjustment_basis": "provider_adjusted_price_v1",
+          "completed_count": 96,
+          "contract": "ohlcv-long-history-contract-v1",
+          "denial_reason": "short_listing_or_available_history",
+          "history_complete_to_listing": true,
+          "provider_limit": 1000,
+          "provider_limit_hit": false,
+          "provider_returned_count": 97,
+          "requested_count": 600,
+          "status": "PARTIAL",
+          "timeframe": "weekly"
+        }
+      },
+      "currency": "USD",
+      "denial_reasons": [],
+      "displayed_zone_ids": [
+        "v3-zone:27b5b9cf4d5be224c701",
+        "v3-zone:20360d12545839a66bdb",
+        "v3-zone:646393021c2258860d27"
+      ],
+      "eligibility": "ELIGIBLE_SR_ONLY",
+      "exchange": "NASDAQ",
+      "issuer_type": "foreign_private_issuer",
+      "numeric_bindings": [
+        {
+          "currency": "USD",
+          "fact_ref": "current-price:WRD:2026-08-27",
+          "owner": "CURRENT_PRICE_STRUCTURE",
+          "semantic_type": "CURRENT_PRICE",
+          "value": "6.01"
+        },
+        {
+          "active_relevance": "ACTIVE_NEAR",
+          "currency": "USD",
+          "display": "약 $6.27~$6.31",
+          "distance_pct": "4.397255",
+          "fact_ref": "v3-zone:27b5b9cf4d5be224c701",
+          "owner": "CURRENT_PRICE_STRUCTURE",
+          "proximity_tier": "NEAR",
+          "raw_high": "6.305725",
+          "raw_low": "6.274275",
+          "semantic_type": "NEAR_RESISTANCE",
+          "source_families": [
+            "PIVOT_WEEKLY"
+          ],
+          "source_refs": [
+            "v3-pivot:106f9556a1c038877d90"
+          ],
+          "source_timeframe": "weekly",
+          "source_timeframes": [
+            "weekly"
+          ]
+        },
+        {
+          "active_relevance": "ACTIVE_STRUCTURAL",
+          "currency": "USD",
+          "display": "약 $5.64~$5.67",
+          "distance_pct": "5.660616",
+          "fact_ref": "v3-zone:20360d12545839a66bdb",
+          "owner": "CURRENT_PRICE_STRUCTURE",
+          "proximity_tier": "RELEVANT",
+          "raw_high": "5.669797",
+          "raw_low": "5.641519",
+          "semantic_type": "MAJOR_SUPPORT",
+          "source_families": [
+            "BOLLINGER_DAILY"
+          ],
+          "source_refs": [
+            "v3-bollinger:5cfc6efdd6a44b09ed59"
+          ],
+          "source_timeframe": "daily",
+          "source_timeframes": [
+            "daily"
+          ]
+        },
+        {
+          "active_relevance": "ACTIVE_STRUCTURAL",
+          "currency": "USD",
+          "display": "약 $6.8~$6.84",
+          "distance_pct": "13.193844",
+          "fact_ref": "v3-zone:646393021c2258860d27",
+          "owner": "CURRENT_PRICE_STRUCTURE",
+          "proximity_tier": "RELEVANT",
+          "raw_high": "6.837050",
+          "raw_low": "6.802950",
+          "semantic_type": "MAJOR_RESISTANCE",
+          "source_families": [
+            "PIVOT_MONTHLY"
+          ],
+          "source_refs": [
+            "v3-pivot:a18afb1b90363e93bb8f"
+          ],
+          "source_timeframe": "monthly",
+          "source_timeframes": [
+            "monthly"
+          ]
+        }
+      ],
+      "price_as_of": "2026-08-27",
+      "quality_status": "PASS",
+      "route": "current_ai_existing",
+      "section": "📐 현재 가격 구조\n• 기준 종가: $6.01\n• 가까운 저항: 약 $6.27~$6.31\n• 주요 구조 지지: 약 $5.64~$5.67\n• 주요 구조 저항: 약 $6.8~$6.84",
+      "security_basis": "US_LISTED:WRD",
+      "selected_sha256": "2cb20191c018087d7dc698159cddf328ce20583dfd1d42f95c0536bc99a77992",
+      "target_session": "2026-08-27",
+      "ticker": "WRD"
+    },
+    {
+      "company": "TeraWulf Inc.",
+      "coverage": {
+        "daily": {
+          "actual_count": 1000,
+          "actual_end_date": "2026-08-27",
+          "actual_start_date": "2022-09-01",
+          "adjustment_basis": "provider_adjusted_price_v1",
+          "completed_count": 1000,
+          "contract": "ohlcv-long-history-contract-v1",
+          "denial_reason": "provider_limit",
+          "history_complete_to_listing": false,
+          "provider_limit": 1000,
+          "provider_limit_hit": true,
+          "provider_returned_count": 1000,
+          "requested_count": 1200,
+          "status": "PARTIAL_SAFE",
+          "timeframe": "daily"
+        },
+        "monthly": {
+          "actual_count": 57,
+          "actual_end_date": "2026-08-03",
+          "actual_start_date": "2021-12-14",
+          "adjustment_basis": "provider_adjusted_price_v1",
+          "completed_count": 56,
+          "contract": "ohlcv-long-history-contract-v1",
+          "denial_reason": "short_listing_or_available_history",
+          "history_complete_to_listing": true,
+          "provider_limit": 1000,
+          "provider_limit_hit": false,
+          "provider_returned_count": 57,
+          "requested_count": 300,
+          "status": "PARTIAL",
+          "timeframe": "monthly"
+        },
+        "weekly": {
+          "actual_count": 246,
+          "actual_end_date": "2026-08-24",
+          "actual_start_date": "2021-12-14",
+          "adjustment_basis": "provider_adjusted_price_v1",
+          "completed_count": 245,
+          "contract": "ohlcv-long-history-contract-v1",
+          "denial_reason": "short_listing_or_available_history",
+          "history_complete_to_listing": true,
+          "provider_limit": 1000,
+          "provider_limit_hit": false,
+          "provider_returned_count": 246,
+          "requested_count": 600,
+          "status": "PARTIAL",
+          "timeframe": "weekly"
+        }
+      },
+      "currency": "USD",
+      "denial_reasons": [],
+      "displayed_zone_ids": [
+        "v3-zone:6360f81f1ac90b9ccc8e",
+        "v3-zone:f6809386d38b90048008",
+        "v3-zone:d739c76c3f8a33c59d31"
+      ],
+      "eligibility": "ELIGIBLE_SR_ONLY",
+      "exchange": "NASDAQ",
+      "issuer_type": null,
+      "numeric_bindings": [
+        {
+          "currency": "USD",
+          "fact_ref": "current-price:WULF:2026-08-27",
+          "owner": "CURRENT_PRICE_STRUCTURE",
+          "semantic_type": "CURRENT_PRICE",
+          "value": "16.49"
+        },
+        {
+          "active_relevance": "ACTIVE_NEAR",
+          "currency": "USD",
+          "display": "약 $16.08~$16.43",
+          "distance_pct": "0.420964",
+          "fact_ref": "v3-zone:6360f81f1ac90b9ccc8e",
+          "owner": "CURRENT_PRICE_STRUCTURE",
+          "proximity_tier": "NEAR",
+          "raw_high": "16.420583",
+          "raw_low": "16.089417",
+          "semantic_type": "NEAR_SUPPORT",
+          "source_families": [
+            "PIVOT_DAILY"
+          ],
+          "source_refs": [
+            "v3-pivot:3c2e7fdf06ddf8cb5b1f",
+            "v3-pivot:4f563e0785e7f68f1490",
+            "v3-pivot:4fa496162f5982e65db7"
+          ],
+          "source_timeframe": "daily",
+          "source_timeframes": [
+            "daily"
+          ]
+        },
+        {
+          "active_relevance": "ACTIVE_NEAR",
+          "currency": "USD",
+          "display": "약 $16.7~$17.1",
+          "distance_pct": "1.320879",
+          "fact_ref": "v3-zone:f6809386d38b90048008",
+          "owner": "CURRENT_PRICE_STRUCTURE",
+          "proximity_tier": "NEAR",
+          "raw_high": "17.092187",
+          "raw_low": "16.707813",
+          "semantic_type": "NEAR_RESISTANCE",
+          "source_families": [
+            "BALANCE_BOX",
+            "BOLLINGER_DAILY",
+            "PIVOT_DAILY"
+          ],
+          "source_refs": [
+            "v3-balance-box:116da245fd373321d04e",
+            "v3-bollinger:e798b0caac6ee01ceab5",
+            "v3-pivot:271a3bf57070b55c2e37",
+            "v3-pivot:2ac3c42d0a2dee7423ec",
+            "v3-pivot:b39e050945d2d8b1a8e7"
+          ],
+          "source_timeframe": "daily",
+          "source_timeframes": [
+            "daily"
+          ]
+        },
+        {
+          "active_relevance": "ACTIVE_STRUCTURAL",
+          "currency": "USD",
+          "display": "약 $12.02~$12.09",
+          "distance_pct": "26.721443",
+          "fact_ref": "v3-zone:d739c76c3f8a33c59d31",
+          "owner": "CURRENT_PRICE_STRUCTURE",
+          "proximity_tier": "RELEVANT",
+          "raw_high": "12.083634",
+          "raw_low": "12.023366",
+          "semantic_type": "MAJOR_SUPPORT",
+          "source_families": [
+            "BOLLINGER_MONTHLY"
+          ],
+          "source_refs": [
+            "v3-bollinger:3320d39fbdf132783fb6"
+          ],
+          "source_timeframe": "monthly",
+          "source_timeframes": [
+            "monthly"
+          ]
+        }
+      ],
+      "price_as_of": "2026-08-27",
+      "quality_status": "PASS",
+      "route": "current_ai_existing",
+      "section": "📐 현재 가격 구조\n• 기준 종가: $16.49\n• 가까운 지지: 약 $16.08~$16.43\n• 가까운 저항: 약 $16.7~$17.1\n• 주요 구조 지지: 약 $12.02~$12.09",
+      "security_basis": "US_LISTED:WULF",
+      "selected_sha256": "d365ee039be54e0bcdae255e841079e45aaf2867925efbe817d82f6b90bd6b32",
+      "target_session": "2026-08-27",
+      "ticker": "WULF"
+    }
+  ],
+  "target_session": "2026-08-27"
+}

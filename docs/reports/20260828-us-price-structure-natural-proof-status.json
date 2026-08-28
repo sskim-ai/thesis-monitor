@@ -1,0 +1,7 @@
+{
+  "manual_task": 0,
+  "natural_proof": "PENDING",
+  "next_action": "WAIT_FOR_NEXT_NATURAL_US_STOCK_MESSAGES",
+  "production_test_send": 0,
+  "state": "ENABLED_AWAITING_NATURAL_PROOF"
+}

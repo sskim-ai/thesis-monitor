@@ -1,0 +1,15 @@
+{
+  "contract": "us-morning-full-message-v1",
+  "exact_payload_match": true,
+  "github_actions_run": 33132911940,
+  "implementation_commit": "1ba463571060a1fc9a5868afcdeab3de15f2bbe6",
+  "index_block": "PASS",
+  "macro_temporal": "PASS",
+  "market_internal": "PASS",
+  "night_futures": "OMITTED_SAFE_RUN43",
+  "open_material_p1": [],
+  "open_p0": [],
+  "packet_id": "2026-08-28-us-run-43-c086d78415ac",
+  "state": "DEPLOYED_AWAITING_NATURAL_PROOF",
+  "test_delivery": "PASS_1_OF_1"
+}

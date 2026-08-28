@@ -1,11 +1,12 @@
 # Branch Dependency Manifest
 
-As of 2026-08-24. Resolve final SHAs from Git; documentation commits are intentionally not
+As of 2026-08-28. Resolve final SHAs from Git; documentation commits are intentionally not
 self-referential.
 
 | Branch | Base / merge-base | Unique scope | Code dependency | Operating eligible | Promotion path |
 |---|---|---|---|---|---|
 | `main` / operating | Phase 9.0E final code and persistent state at `33c2f8be...` | selective current-formal full-FCF rollout pending natural proof | none | current baseline | already operating; 9.1A promotion deferred for KR natural window |
+| `codex/20260828-us-market-price-structure-rollout` | exact instruction `2ee2016...` on latest operating/report main `178bc7e...` | deterministic full US morning market message plus selective active-universe Price Structure v3 rollout | reuses current-session market plan, existing v3 engine/renderer, and canonical test-sink safety; no Public Action, DB, task schedule, assessment, or Production Assist dependency | promoted and US-only enabled awaiting natural proof | implementation `1ba4635...`; wait for natural US market and stock proof |
 | `codex/phase-8-2a-krx-market-breadth` | main experimental ancestry | KRX breadth, universe and publication telemetry | KRX experimental | no | separate KRX decision |
 | `codex/phase-8-3-peer-sector-valuation` | KRX experimental final | original Phase 8.3 peer contract | Git ancestry includes KRX; peer code does not require KRX runtime symbols | no | promote after KRX or reconstruct cleanly |
 | `codex/integration-phase-8-3-peer-only` | latest main | two peer-only commits through `e17d992c4c5d40030294eff5a74504e88ab35911` | no KRX code/schema dependency | prepared, not approved | peer-only review branch |

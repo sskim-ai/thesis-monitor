@@ -12,6 +12,8 @@ DOCUMENTS = (
     ROOT / "docs" / "project-state.json",
     ROOT / "docs" / "reports" / "20260828-kr-market-internal-readiness.md",
     ROOT / "docs" / "reports" / "20260828-kr-market-internal-artifact-index.md",
+    ROOT / "docs" / "reports" / "20260828-us-full-message-readiness.md",
+    ROOT / "docs" / "reports" / "20260828-us-price-structure-preenable-readiness.md",
     ROOT / "docs" / "architecture" / "AI_ASSISTED_MONITORING.md",
     ROOT / "docs" / "architecture" / "OHLCV_STRUCTURE_ENGINE.md",
     ROOT / "docs" / "architecture" / "MARKET_INTELLIGENCE.md",
@@ -87,6 +89,10 @@ DOCUMENTS = (
     ROOT / "docs" / "architecture" / "FIB_CONFLUENCE_RENDER_EQUIVALENCE.md",
     ROOT / "docs" / "architecture" / "CURRENT_SR_VS_STORED_PRICE_RULES.md",
     ROOT / "docs" / "architecture" / "LEGACY_TECHNICAL_PROSE_SUPPRESSION.md",
+    ROOT / "docs" / "architecture" / "US_MORNING_MESSAGE_LAYOUT.md",
+    ROOT / "docs" / "architecture" / "US_MARKET_DIGEST_EVIDENCE_OWNERSHIP.md",
+    ROOT / "docs" / "architecture" / "KOREA_NIGHT_FUTURES_IN_US_MORNING.md",
+    ROOT / "docs" / "architecture" / "US_FULL_MESSAGE_REFINEMENT_POLICY.md",
     ROOT / "docs" / "operations" / "AI_ASSISTED_PILOT.md",
     ROOT / "docs" / "operations" / "CASH_FLOW_USER_VISIBLE_KILL_SWITCH.md",
     ROOT / "docs" / "operations" / "WORKING_CAPITAL_USER_VISIBLE_KILL_SWITCH.md",
@@ -107,13 +113,17 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     assert state["repository"] == "sskim-ai/thesis-monitor"
     assert state["branch"] == "main"
     assert state["experimental_branch"] == (
-        "codex/20260828-kr-market-internal-linebreak-formatting"
+        "codex/20260828-us-market-price-structure-rollout"
     )
-    assert state["current_phase"] == "kr_rollout_enabled_awaiting_natural_proof"
+    assert state["current_phase"] == (
+        "us_market_and_price_structure_enabled_awaiting_natural_proof"
+    )
     assert state["last_completed_phase"] == (
-        "kr_market_internal_linebreak_formatting_micro_repair"
+        "us_market_and_price_structure_rollout"
     )
-    assert state["next_default_phase"] == "wait_for_next_natural_kr_messages"
+    assert state["next_default_phase"] == (
+        "wait_for_next_natural_us_market_and_stock_cycle"
+    )
     implementation_commit = "069f002437163bff1df7aa6e258918c1777d5dfa"
     kr_size_sector_implementation = "6a54db130e95e25969a5ca0a100648d4a12c3aa2"
     preenable_implementation = "7d2823c236c458cf76c77faae043c6288e46e65e"
@@ -130,13 +140,13 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     prior_price_structure_commit = "631e82f202b6f081866ef83c8b67b2138a8b51d8"
     prior_fibonacci_commit = "0dfef76bba606f018893d6e68e7beaf410aa7438"
     assert state["deployed_code_commit"] == (
-        "03a418ab1f616d0063becf3928a1327056dd2d66"
+        "1ba463571060a1fc9a5868afcdeab3de15f2bbe6"
     )
     assert state["main_code_commit"] == (
-        "03a418ab1f616d0063becf3928a1327056dd2d66"
+        "1ba463571060a1fc9a5868afcdeab3de15f2bbe6"
     )
     assert state["operating_code_commit"] == (
-        "03a418ab1f616d0063becf3928a1327056dd2d66"
+        "1ba463571060a1fc9a5868afcdeab3de15f2bbe6"
     )
     phase_8552 = state["phase_8_5_5_2_kr_structured_field_repetition"]
     assert phase_8552["status"] == "operating_shadow_pending_natural_proof"
@@ -168,6 +178,15 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     assert state["contracts"]["us_market_digest_plan"] == (
         "us-market-digest-plan-v1"
     )
+    assert state["contracts"]["us_morning_full_message"] == (
+        "us-morning-full-message-v1"
+    )
+    assert state["contracts"]["us_price_structure_selective_rollout"] == (
+        "us-price-structure-selective-rollout-v1"
+    )
+    assert state["contracts"]["us_price_structure_runtime_context"] == (
+        "us-price-structure-runtime-context-v1"
+    )
     assert state["contracts"]["market_evidence_utilization_validator"] == (
         "market-evidence-utilization-validator-v1"
     )
@@ -189,6 +208,24 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     assert state["contracts"]["sr_nearest_user_visible_proximity"] == (
         "sr-nearest-user-visible-proximity-v1"
     )
+    rollout = state["us_market_and_price_structure_rollout"]
+    assert rollout["status"] == "enabled_awaiting_natural_proof"
+    assert rollout["implementation_commit"] == (
+        "1ba463571060a1fc9a5868afcdeab3de15f2bbe6"
+    )
+    assert rollout["active_us_foreign_subjects"] == 13
+    assert rollout["test_exact_payload_match"] == "PASS_14_OF_14"
+    assert rollout["price_structure_replay"] == "PASS_13_OF_13"
+    assert rollout["price_structure_eligibility"] == {
+        "ELIGIBLE": 0,
+        "ELIGIBLE_SR_ONLY": 13,
+        "OMIT_PRICE_STRUCTURE": 0,
+        "BLOCKED": 0,
+    }
+    assert rollout["us_price_structure_enabled"] is True
+    assert rollout["post_enable_kr_price_structure_diff"] == 0
+    assert rollout["open_p0"] == []
+    assert rollout["open_material_p1"] == []
     current_data = state["price_structure_v3_current_data_shadow_message_validation"]
     assert current_data["status"] == "validated_ready_not_armed"
     assert current_data["target_sessions"] == {"kr": "2026-08-26", "us": "2026-08-25"}
@@ -1194,7 +1231,7 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     assert formatting["kr_rollout"] == "ENABLED_AWAITING_NATURAL_PROOF"
     assert formatting["next_action"] == "WAIT_FOR_NEXT_NATURAL_KR_MARKET_MESSAGE"
     assert state["current_commit"] == (
-        "03a418ab1f616d0063becf3928a1327056dd2d66"
+        "1ba463571060a1fc9a5868afcdeab3de15f2bbe6"
     )
     assert state["ai_review_mode"] == "shadow"
     assert state["ai_policy_version"] == "daily-review-v3.10"
@@ -1546,3 +1583,79 @@ def test_kr_top3_price_structure_preenablement_artifacts_are_complete() -> None:
     assert evidence["open_material_p1"] == [
         "dedicated_test_sink_not_configured"
     ]
+
+
+def test_us_market_and_price_structure_rollout_artifacts_are_complete() -> None:
+    reports = ROOT / "docs" / "reports"
+    market = (
+        "20260828-us-index-block-policy.md",
+        "20260828-us-night-futures-root-cause.md",
+        "20260828-us-night-futures-session-mapping.md",
+        "20260828-us-night-futures-provenance.md",
+        "20260828-us-full-message-layout.md",
+        "20260828-us-full-message-before-after.md",
+        "20260828-us-full-message-ai-fallback-parity.md",
+        "20260828-us-full-message-evidence-utilization.md",
+        "20260828-us-full-message-test-delivery.md",
+        "20260828-us-full-message-exact-test-message.md",
+        "20260828-us-full-message-refinement-history.md",
+        "20260828-us-full-message-quality.md",
+        "20260828-us-full-message-safety-parity.md",
+        "20260828-us-full-message-readiness.md",
+        "20260828-us-full-message-natural-proof-status.md",
+        "20260828-us-full-message-artifact-index.md",
+        "20260828-us-full-message-evidence-utilization.json",
+        "20260828-us-full-message-readiness.json",
+    )
+    price = (
+        "20260828-us-price-structure-scope.md",
+        "20260828-us-price-structure-current-universe.md",
+        "20260828-us-price-structure-coverage.md",
+        "20260828-us-price-structure-per-ticker.md",
+        "20260828-us-price-structure-ai-fallback-parity.md",
+        "20260828-us-price-structure-security-basis.md",
+        "20260828-us-price-structure-test-delivery.md",
+        "20260828-us-price-structure-exact-test-messages.md",
+        "20260828-us-price-structure-message-quality.md",
+        "20260828-us-price-structure-preenable-readiness.md",
+        "20260828-us-price-structure-operating-promotion.md",
+        "20260828-us-price-structure-post-enable-smoke.md",
+        "20260828-us-price-structure-natural-proof-status.md",
+        "20260828-us-price-structure-safety-parity.md",
+        "20260828-us-price-structure-rollback.md",
+        "20260828-us-price-structure-artifact-index.md",
+        "20260828-us-price-structure-per-ticker.json",
+        "20260828-us-price-structure-preenable-readiness.json",
+        "20260828-us-price-structure-natural-proof-status.json",
+    )
+    assert all((reports / name).exists() for name in (*market, *price))
+
+    market_ready = json.loads(
+        (reports / "20260828-us-full-message-readiness.json").read_text()
+    )
+    assert market_ready["state"] == "DEPLOYED_AWAITING_NATURAL_PROOF"
+    assert market_ready["test_delivery"] == "PASS_1_OF_1"
+    assert market_ready["open_p0"] == []
+    assert market_ready["open_material_p1"] == []
+
+    price_ready = json.loads(
+        (reports / "20260828-us-price-structure-preenable-readiness.json").read_text()
+    )
+    assert price_ready["current_us_monitored_stock_count"] == 13
+    assert price_ready["eligibility_counts"] == {"ELIGIBLE_SR_ONLY": 13}
+    assert price_ready["test_delivery"] == "PASS_13_OF_13"
+    assert price_ready["post_enable_all_us_stocks"] == "PASS"
+    assert price_ready["post_enable_kr_price_structure_diff"] == 0
+    assert price_ready["us_price_structure_enabled"] is True
+    assert price_ready["state"] == "ENABLED_AWAITING_NATURAL_PROOF"
+    assert price_ready["open_p0"] == []
+    assert price_ready["open_material_p1"] == []
+
+    for receipt_name in (
+        "20260828-us-full-message-test-receipt.json",
+        "20260828-us-price-structure-test-receipt.json",
+    ):
+        receipt_text = (reports / receipt_name).read_text()
+        assert "chat_id" not in receipt_text
+        assert "bot_token" not in receipt_text
+        assert "authorization" not in receipt_text.lower()

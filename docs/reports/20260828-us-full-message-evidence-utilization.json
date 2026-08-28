@@ -1,0 +1,42 @@
+{
+  "checks": {
+    "ai_fallback_required_section_parity": true,
+    "character_count": 295,
+    "index_symbols_visible": true,
+    "night_futures_safe_omission": true,
+    "night_futures_section_visible": false,
+    "numeric_ref_count": 7,
+    "render_status": "PASS",
+    "section_order": [
+      "HEADER",
+      "INDEX_BLOCK",
+      "MARKET_INTERNAL",
+      "MACRO_CONTEXT",
+      "NEXT_CHECK"
+    ],
+    "status": "PASS",
+    "strong_sector_numeric_visible": true,
+    "unresolved_numeric_ref_count": 0,
+    "weak_sector_numeric_visible": true
+  },
+  "index_fact_ids": [
+    "market:index:SPY",
+    "market:index:QQQ",
+    "market:index:IWM",
+    "market:sector:SOXX",
+    "market:style:RSP"
+  ],
+  "night_fact_ids": [],
+  "packet_id": "2026-08-28-us-run-43-c086d78415ac",
+  "section_order": [
+    "HEADER",
+    "INDEX_BLOCK",
+    "MARKET_INTERNAL",
+    "MACRO_CONTEXT",
+    "NEXT_CHECK"
+  ],
+  "sector_fact_ids": [
+    "market:sector:XLK",
+    "market:sector:XLP"
+  ]
+}

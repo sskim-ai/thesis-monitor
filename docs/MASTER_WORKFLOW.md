@@ -1,10 +1,10 @@
 # Thesis Monitor Master Workflow
 
-Master Workflow: `v19`
+Master Workflow: `v20`
 As of: `2026-08-28`
 Repository: `sskim-ai/thesis-monitor`
 Operating branch: `main`
-Latest evidence branch: `codex/20260828-kr-market-internal-linebreak-formatting`
+Latest evidence branch: `codex/20260828-us-market-price-structure-rollout`
 Commit resolution: run `git rev-parse HEAD`; this document is part of that commit and must not
 hardcode a self-referential final SHA. Resolve `origin/main` and the clean operating checkout at
 session start. Phase 9.1A defines `working-capital-evidence-v1`; Phase 9.1B implements canonical
@@ -16,7 +16,28 @@ AI/fallback parity and leaves Trade AR/broad AR/AP/advanced ratios blocked. Open
 zero. Natural AI-assisted delivery remains `PARTIAL` independently.
 KRX 8.2A.x and peer 8.3.x also remain experimental.
 
-## 0. Latest KR Market Formatting State
+## 0. Latest US Market And Price Structure Rollout
+
+The rollout starts from instruction commit `2ee201690787136780c7d5c8a046506d44227633`
+and implementation commit `1ba463571060a1fc9a5868afcdeab3de15f2bbe6`. The
+`us-morning-full-message-v1` renderer owns the deterministic SPY/QQQ/IWM/SOXX/RSP block,
+RSP participation, strongest/weakest sector evidence, and optional temporally safe night-futures
+or macro context. Adaptive refinement may replace only the bounded next check; stored legacy plans
+cannot promote market-relative facts to macro.
+
+The `us-price-structure-selective-rollout-v1` gate applies the existing Price Structure v3 engine
+to the active US/foreign universe without ticker allowlists. The 2026-08-27 completed-session replay
+passed all 13 subjects as `ELIGIBLE_SR_ONLY`: exact numeric binding, AI/fallback parity, current-vs-
+stored-rule separation, completed-bar safety, and USD listed-security identity all passed. One full
+market message and all 13 stock previews reached the dedicated non-production sink exactly once;
+production-recipient sends and production delivery intents were zero.
+
+US Price Structure is enabled independently of the existing KR flags. Post-enable replay remains
+13/13 PASS, API health is PASS, Production Assist remains OFF, and open P0/material P1 are `0/0`.
+The state is `ENABLED_AWAITING_NATURAL_PROOF`, not `LIVE_PASS`. Wait for the next naturally
+scheduled US morning market and stock cycle; do not run a task or production Telegram manually.
+
+## 0A. Latest KR Market Formatting State
 
 The bounded `📊 시장 내부` formatting repair starts from instruction commit
 `dd1b5eb712081c222bcfe1b4465d4fe0aac5f89a` and implementation

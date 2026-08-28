@@ -1,0 +1,35 @@
+{
+  "all_us_stock_price_structure_replay": "PASS",
+  "contract": "us-price-structure-selective-rollout-v1",
+  "current_us_monitored_stock_count": 13,
+  "eligibility_counts": {
+    "ELIGIBLE_SR_ONLY": 13
+  },
+  "github_actions_run": 33132911940,
+  "implementation_commit": "1ba463571060a1fc9a5868afcdeab3de15f2bbe6",
+  "open_material_p1": [],
+  "open_p0": [],
+  "packet_id": "2026-08-28-us-run-43-c086d78415ac",
+  "post_enable_all_us_stocks": "PASS",
+  "post_enable_kr_price_structure_diff": 0,
+  "state": "ENABLED_AWAITING_NATURAL_PROOF",
+  "test_delivery": "PASS_13_OF_13",
+  "test_exact_payload_match": true,
+  "us_price_structure_enabled": true,
+  "us_price_structure_preenable": "PASS",
+  "us_stock_tickers": [
+    "CORZ",
+    "CRCL",
+    "GOOGL",
+    "HUT",
+    "IBM",
+    "MU",
+    "RXRX",
+    "SKHY",
+    "SNDK",
+    "TSLA",
+    "TSM",
+    "WRD",
+    "WULF"
+  ]
+}
