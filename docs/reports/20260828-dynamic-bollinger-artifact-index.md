@@ -3,8 +3,8 @@
 - Instruction commit: `86696405d26a44498398e4df9409f6c03b481dfa`
 - Base: `281699c07490066e5981df836883f26989d0a9bf`
 - Implementation: `905d24d1b8776a485bc05b8dae3adcf60da5eb50`
-- Report commit: `PENDING`
-- Final main: `PENDING`
+- Report commit: `SELF:git-rev-parse-HEAD`
+- Final main: `SELF:origin/main-after-final-promotion`
 
 | Artifact | SHA-256 |
 |---|---|
@@ -19,11 +19,11 @@
 | 20260828-dynamic-bollinger-ai-fallback-parity.md | d0e9bacab2cfa60d44e47cb4f8c1981456185407e4f3134316d7514bee129c46 |
 | 20260828-dynamic-bollinger-test-messages.md | d7eecad4fafa7d818b63a445756f71b4b4be55eb452765bfb9ab99fb133403bd |
 | 20260828-dynamic-bollinger-message-quality.md | a2ec4e15a506d924e3374bd1847d9645e5dad6aa7bc3a58e26b4ed5ca9f5c292 |
-| 20260828-dynamic-bollinger-operating-promotion.md | e49f04cee5401afb4094673845f0130fa9d7f983389ee0461e07a5c5e7a1f68d |
+| 20260828-dynamic-bollinger-operating-promotion.md | c5432e7971cd426f655d83d518e1f7c532defd073f3d8f88d19f42d530e19891 |
 | 20260828-dynamic-bollinger-natural-proof-status.md | a45f9cf981a792364828a6fd128942b6d7143a52e526095fa2cc5a0a77eee45e |
-| 20260828-dynamic-bollinger-readiness.md | 04ea797c5b34f1e616ee8a7154bbafe5a7784861f3d574523168893c46752c55 |
+| 20260828-dynamic-bollinger-readiness.md | 44c905df87d74271b8fe25fb56c99edf3de95d5c577af4b4c8afd40d6ee0cd0a |
 | 20260828-us-dynamic-bollinger-replay.json | 69ee56b027115f984bc960711cfb9340029f5eaccab5a96f9bf22075c6ec8f28 |
 | 20260828-kr7-dynamic-bollinger-replay.json | b955849ef184a03699e8ca173db4b472c2a1906259aa4872b7f44c9b909d5e2b |
-| 20260828-dynamic-bollinger-readiness.json | a5814235e2afcf440de11dec3946fac9bee55180de90421b0d5b04a139c6256d |
+| 20260828-dynamic-bollinger-readiness.json | c9b8ac9b4f043e92b2e473de3762b599705d4678f8a81542ec06885214f47ec8 |
 
 The completion ZIP excludes source raw OHLCV bundles, Telegram IDs/tokens, auth headers, and secrets.
