@@ -453,3 +453,16 @@ and the generic daily source-session alignment guard. WRD's current block is evi
 a ticker policy. No descendant may manually trigger natural proof, reuse the production recipient
 for tests, expose unstable Fib/targets/stops, or reinterpret the historical fixture as a natural
 runtime PASS.
+
+The provisional-Bollinger/price-label branch starts from exact instruction commit
+`73286dd44135bbc30ef3a145e02f5db81aedbdea`, whose parent is deployed main
+`5500f539fc93a9162f762cef4f7069f24d0350db`. Implementation
+`8c3bb493dc45a12c837053e08361f949ff771f00` preserves the completed-bar dynamic layer and the
+major-SR reality gate while adding a strictly non-authoritative partial-bar layer and explicit
+price ownership.
+
+All descendants must preserve partial-bar OHLC validation, one-line provisional budget,
+near/major/stored/Fib/wave exclusion, current/structure price-label metadata, and SNDK/WULF
+no-bypass controls. The corrected full-message test delivery is authoritative; the earlier
+abbreviated-artifact test attempt is diagnostic only. No descendant may reinterpret test-sink
+evidence as natural proof, manually invoke production, or enable Production Assist.

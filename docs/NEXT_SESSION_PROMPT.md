@@ -609,3 +609,15 @@ Next action: `WAIT_FOR_NEXT_NATURAL_US_MESSAGES`. Do not manually run a Schedule
 production Telegram message. On the next natural US cycle, inspect the market full message,
 canonical night-futures section or safe omission, all stock Price Structure surfaces, receipt,
 duplicates, and orphans read-only. Only natural evidence may advance the rollout to `LIVE_PASS`.
+
+The latest bounded Price Structure extension starts from instruction commit
+`73286dd44135bbc30ef3a145e02f5db81aedbdea` with implementation
+`8c3bb493dc45a12c837053e08361f949ff771f00`. Read
+`docs/reports/20260828-provisional-bollinger-readiness.json` and the artifact index first.
+
+After linear promotion and read-only smoke, the next action is
+`WAIT_FOR_NEXT_NATURAL_US_KR_PRICE_STRUCTURE_MESSAGES`. Verify explicit current-quote versus
+structure-close ownership, at most one clearly provisional Bollinger reference, completed-bar
+dynamic preservation, major-SR price anchors, SNDK/WULF no-bypass, exact receipts, duplicates, and
+orphans. Do not run a Scheduled Task or send production Telegram manually. Natural evidence alone
+may set the two natural proof fields to PASS; Production Assist remains OFF.

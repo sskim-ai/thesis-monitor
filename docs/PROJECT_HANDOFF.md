@@ -1997,3 +1997,22 @@ WRD is the sole blocked stock because daily coverage ended `2026-08-26`; all oth
 Main/operating deployment and post-deploy smoke pass. Natural market, night-futures display, and US
 Price Structure proofs are still `PENDING`; the correct next action is only
 `WAIT_FOR_NEXT_NATURAL_US_MESSAGES`. Production Assist remains OFF.
+
+## 2026-08-28 Provisional Bollinger / Price Label v2 Handoff
+
+Start with `docs/reports/20260828-provisional-bollinger-readiness.json`. Exact instruction commit is
+`73286dd44135bbc30ef3a145e02f5db81aedbdea`; implementation is
+`8c3bb493dc45a12c837053e08361f949ff771f00`.
+
+The new provisional layer consumes only validated in-progress D/W/M bars and remains separate from
+price-anchored near/major structure, completed-bar dynamic Bollinger, stored monitoring rules, Fib,
+and wave anchors. User-facing output is limited to one provisional range or overlap annotation per
+subject. Current quote and completed regular-session structure close now have explicit ownership
+and equal-price collapse.
+
+Current-time US 13 + KR 7 replay and corrected full-message test-sink delivery pass `20/20`, with
+zero authority leaks, SNDK/WULF bypass, ambiguous labels, duplicate ranges, duplicate delivery,
+orphan, or production-recipient send. The initial abbreviated-artifact test attempt is diagnostic
+only and never touched production. Open P0/material P1 are `0/0`. Promote linearly, run read-only
+post-deploy smoke, and then wait for natural US/KR messages; never trigger a production task for
+proof. Production Assist remains OFF.

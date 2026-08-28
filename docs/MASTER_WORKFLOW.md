@@ -1853,3 +1853,25 @@ its daily source ended one session before its declared `as_of`; no ticker except
 Local full pytest is `1841 PASS`, GitHub Actions Test/Lint PASS, API/OHLCV health PASS, and open
 P0/material P1 are `0/0`. State is `DEPLOYED_AWAITING_NATURAL_PROOF`. Do not manually trigger the
 US Scheduled Task; inspect the next natural market and stock messages read-only.
+
+### 40.22 Provisional Bollinger Expansion and Price Label Clarity v2
+
+Exact instruction commit `73286dd44135bbc30ef3a145e02f5db81aedbdea` precedes implementation
+`8c3bb493dc45a12c837053e08361f949ff771f00`. The existing price-anchored near/major layer and
+completed-bar dynamic Bollinger layer remain unchanged. Valid in-progress D/W/M bars now feed a
+separate `PROVISIONAL_BOLLINGER_SUPPORT/RESISTANCE` layer with observation timestamp, bar start,
+expected close, PARTIAL state, security/currency/adjustment basis, and explicit non-authority.
+
+The provisional layer cannot feed near/major S/R, stored rules, Fib, or wave anchors. The renderer
+allows at most one distinct provisional line per subject or one overlap annotation. It labels the
+line `잠정`, `진행중`, and `봉 마감 전 변동 가능`. Current quote and completed regular-session
+structure close have separate ownership; equal values collapse to `현재가(정규장 종가)`, while
+different values render both explicit labels.
+
+Current-time replay is US `13/13` plus KR `7/7` PASS. It produced 17 standalone provisional lines,
+two overlap annotations, one safe suppression, zero authority/major-SR leaks, and zero SNDK/WULF
+bypass. The dedicated test sink received the corrected immutable full-message set `20/20` with
+exact hashes, duplicates/orphans/production sends all zero. The first abbreviated-artifact attempt
+was test-only and is retained as a diagnostic failure. Full pytest is `1865 PASS`; implementation
+Actions Test/Lint PASS; open P0/material P1 are `0/0`. Promotion and post-deploy smoke remain the
+next bounded step. Natural provisional/price-label proof remains independently `PENDING`.
