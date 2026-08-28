@@ -153,6 +153,8 @@ async def deliver_test_messages(
     production_sink_alias: str,
     receipt_path: Path,
     transport: httpx.AsyncBaseTransport | None = None,
+    contract: str = CONTRACT,
+    namespace: str = NAMESPACE,
 ) -> dict[str, object]:
     if not token or not test_chat_id or not production_chat_id:
         raise ValueError("Telegram credentials or recipient missing")
@@ -162,8 +164,8 @@ async def deliver_test_messages(
         raise FileExistsError("test receipt already exists; refusing duplicate send")
 
     receipt: dict[str, object] = {
-        "contract": CONTRACT,
-        "namespace": NAMESPACE,
+        "contract": contract,
+        "namespace": namespace,
         "status": "in_progress",
         "test_sink_alias": test_sink_alias,
         "production_sink_alias": production_sink_alias,

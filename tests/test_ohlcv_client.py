@@ -267,6 +267,68 @@ async def test_kr_price_structure_controls_respect_provider_count_limit(
 
 
 @pytest.mark.anyio
+async def test_us_price_structure_uses_canonical_windows_and_us_security_basis(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    requests: list[tuple[str, int]] = []
+    captured: dict[str, object] = {}
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        period = request.url.params["periods"]
+        count = int(request.url.params["count"])
+        requests.append((period, count))
+        return httpx.Response(
+            200,
+            json={
+                "periods": {
+                    period: [
+                        {
+                            "date": "2026-08-27",
+                            "open": 100,
+                            "high": 101,
+                            "low": 99,
+                            "close": 100,
+                            "volume": 1_000,
+                        }
+                    ]
+                }
+            },
+        )
+
+    def fake_sidecar(**kwargs: object) -> dict[str, object]:
+        captured.update(kwargs)
+        return {
+            "contract": "us-price-structure-runtime-context-v1",
+            "market": "US",
+            "currency": "USD",
+        }
+
+    monkeypatch.setattr(
+        "app.services.ohlcv_client.build_us_price_structure_runtime_context",
+        fake_sidecar,
+    )
+    client = OhlcvClient(transport=httpx.MockTransport(handler))
+    monkeypatch.setattr(client.settings, "us_price_structure_v3_enabled", True)
+
+    context = await client.fetch_price_context(
+        "TSM",
+        as_of=datetime(2026, 8, 28, 9, 0, tzinfo=ZoneInfo("Asia/Seoul")),
+    )
+
+    assert ("daily", 1000) in requests
+    assert ("weekly", 600) in requests
+    assert ("monthly", 300) in requests
+    assert context.periods["daily"].requested_count == 1200
+    assert captured["ticker"] == "TSM"
+    assert captured["cutoff"] == "2026-08-27"
+    assert context.chart.structure["price_structure_v3"] == {
+        "contract": "us-price-structure-runtime-context-v1",
+        "market": "US",
+        "currency": "USD",
+    }
+
+
+@pytest.mark.anyio
 async def test_kr_holiday_keeps_latest_exchange_session_chart_fresh() -> None:
     def handler(request: httpx.Request) -> httpx.Response:
         period = request.url.params["periods"]

@@ -33,7 +33,9 @@ from app.services.market_evidence_utilization_validator_service import (
 )
 from app.services.kr_price_structure_selective_rollout_service import (
     preserve_current_price_structure_section,
+    preserve_price_structure_sections,
 )
+from app.services.us_full_message_service import render_us_full_market_message
 from app.services.ai_reasoning_quality_service import (
     runtime_message_quality_receipt,
     verify_runtime_message_quality_receipt,
@@ -924,6 +926,17 @@ def _render_ai_market_message(
     pilot_day: int,
     target_days: int,
 ) -> str:
+    if market == "us":
+        full_message = render_us_full_market_message(
+            market_context,
+            next_checks=(
+                item.text.strip()
+                for item in review.next_checks
+                if item.text.strip()
+            ),
+        )
+        if full_message.status == "PASS":
+            return full_message.text
     market_label = "US" if market == "us" else "KR"
     title = "미국시장 점검" if market == "us" else "한국시장 마감"
     unknowns = _bullets(review.unknowns)
@@ -1372,6 +1385,11 @@ async def deliver_validated_ai_review(
                 )
                 if market == "kr":
                     text = preserve_current_price_structure_section(
+                        text,
+                        deterministic_text,
+                    )
+                elif market == "us":
+                    text = preserve_price_structure_sections(
                         text,
                         deterministic_text,
                     )

@@ -58,6 +58,9 @@ from app.services.kr_price_structure_selective_rollout_service import (
     build_kr_price_structure_rollout_decision,
     replace_legacy_price_surface,
 )
+from app.services.us_price_structure_selective_rollout_service import (
+    build_us_price_structure_rollout_decision,
+)
 from app.services.night_futures import (
     NIGHT_FUTURES_SERIES,
     is_night_futures_warning,
@@ -1752,7 +1755,13 @@ def _assessment_report(
     sections.append("\n".join(price_lines))
 
     price_structure_v3_decision = None
-    if is_krx and get_settings().kr_price_structure_v3_enabled:
+    settings = get_settings()
+    price_structure_enabled = (
+        settings.kr_price_structure_v3_enabled
+        if is_krx
+        else settings.us_price_structure_v3_enabled
+    )
+    if price_structure_enabled:
         chart = price_context.get("chart")
         chart = chart if isinstance(chart, dict) else {}
         structure = chart.get("structure")
@@ -1761,10 +1770,13 @@ def _assessment_report(
         price_structure_v3 = (
             price_structure_v3 if isinstance(price_structure_v3, dict) else {}
         )
-        price_structure_v3_decision = build_kr_price_structure_rollout_decision(
-            price_structure_v3,
-            ticker=assessment.ticker,
-            monitored_subject=True,
+        decision_builder = (
+            build_kr_price_structure_rollout_decision
+            if is_krx
+            else build_us_price_structure_rollout_decision
+        )
+        price_structure_v3_decision = decision_builder(
+            price_structure_v3, ticker=assessment.ticker, monitored_subject=True
         )
 
     if is_krx:

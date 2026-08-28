@@ -5,6 +5,7 @@ from app.services.daily_digest import (
 )
 from app.services.kr_close_fx import render_kr_close_fx
 from app.services.night_futures import render_night_futures
+from app.services.us_full_message_service import render_us_full_market_message
 
 
 def _bullet_lines(items: list[str], empty: str) -> list[str]:
@@ -16,6 +17,10 @@ def render_daily_digest(
     *,
     include_stock_details: bool = True,
 ) -> str:
+    if digest.market_scope == "us" and digest.us_full_message_context is not None:
+        full_message = render_us_full_market_message(digest.us_full_message_context)
+        if full_message.status == "PASS":
+            return full_message.text
     macro = digest.macro
     portfolio = digest.portfolio
     thesis = portfolio.thesis_counts

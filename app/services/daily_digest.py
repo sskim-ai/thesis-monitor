@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import json
 import re
-from dataclasses import dataclass, field
+from dataclasses import asdict, dataclass, field
 from datetime import date, datetime, timedelta, timezone
 
 from sqlmodel import Session, select
@@ -173,6 +173,7 @@ class DailyDigest:
     kr_close_fx: KrCloseFxSummary | None = None
     kr_market_digest_plan: KrMarketDigestPlan | None = None
     us_market_digest_plan: UsMarketDigestPlan | None = None
+    us_full_message_context: dict[str, object] | None = None
     night_futures: NightFuturesSummary = field(default_factory=NightFuturesSummary)
 
 
@@ -1104,18 +1105,31 @@ def build_daily_digest(
         if market_scope == "kr"
         else None
     )
-    us_market_digest_plan = (
-        build_us_market_digest_plan(
-            build_market_intelligence(
-                briefing,
-                run_date,
-                [],
-                [],
-                market="us",
-                previous_briefing=previous_briefing,
-            )
+    us_market_intelligence = (
+        build_market_intelligence(
+            briefing,
+            run_date,
+            [],
+            [],
+            market="us",
+            previous_briefing=previous_briefing,
         )
         if market_scope == "us"
+        else None
+    )
+    us_market_digest_plan = (
+        build_us_market_digest_plan(us_market_intelligence)
+        if us_market_intelligence is not None
+        else None
+    )
+    us_full_message_context = (
+        {
+            **us_market_intelligence,
+            "us_market_digest_plan": us_market_digest_plan.to_dict(),
+            "night_futures": [asdict(item) for item in night_futures.items],
+            "night_futures_cautions": list(night_futures.cautions),
+        }
+        if us_market_intelligence is not None and us_market_digest_plan is not None
         else None
     )
     return DailyDigest(
@@ -1137,5 +1151,6 @@ def build_daily_digest(
         ),
         kr_market_digest_plan=kr_market_digest_plan,
         us_market_digest_plan=us_market_digest_plan,
+        us_full_message_context=us_full_message_context,
         night_futures=night_futures,
     )

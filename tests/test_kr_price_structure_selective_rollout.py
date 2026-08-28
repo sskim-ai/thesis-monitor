@@ -6,6 +6,7 @@ from app.services.kr_price_structure_selective_rollout_service import (
     build_kr_price_structure_rollout_decision,
     extract_current_price_structure_section,
     preserve_current_price_structure_section,
+    preserve_price_structure_sections,
     replace_legacy_price_surface,
 )
 
@@ -350,3 +351,38 @@ def test_legacy_price_surface_is_replaced_and_registered_rule_is_relabelled() ->
     assert "🧭 기존 등록 가격 규칙" in rendered
     assert "기존 확인선 344,000원" in rendered
     assert rendered.index("📐 현재 가격 구조") < rendered.index("📊 수급")
+
+
+def test_adaptive_message_preserves_current_and_stored_sections_as_a_pair() -> None:
+    adaptive = """🤖 AI 보조 종목 점검
+
+🏢 POSCO홀딩스(005490)
+
+🎯 판단
+사업 판단입니다.
+
+📊 수급
+외국인 순매수
+
+📌 다음 확인
+• 실적 확인"""
+    reference = """🏢 POSCO홀딩스(005490)
+
+📐 현재 가격 구조
+• 기준 종가: 328,000원
+• 가까운 지지: 약 31.8만~32.6만원
+
+🧭 기존 등록 가격 규칙
+• 기존 확인선 350,000원
+
+📊 수급
+외국인 순매수"""
+
+    rendered = preserve_price_structure_sections(adaptive, reference)
+
+    assert rendered.count("📐 현재 가격 구조") == 1
+    assert rendered.count("🧭 기존 등록 가격 규칙") == 1
+    assert rendered.index("📐 현재 가격 구조") < rendered.index(
+        "🧭 기존 등록 가격 규칙"
+    )
+    assert rendered.index("🧭 기존 등록 가격 규칙") < rendered.index("📊 수급")

@@ -419,7 +419,12 @@ def _macro_item(
     facts: list[dict[str, object]],
     key_change_fact_ids: Iterable[str],
 ) -> UsMarketDigestPlanItem:
-    excluded = {"market_index", "market_style", "market_sector"}
+    excluded = {
+        "market_index",
+        "market_style",
+        "market_sector",
+        "market_relative",
+    }
     by_id = {_fact_ref(fact): fact for fact in facts}
     selected = next(
         (

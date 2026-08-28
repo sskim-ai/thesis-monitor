@@ -24,10 +24,12 @@ from app.services.free_analyst_message_service import (
 from app.services.kr_market_digest_quality_service import build_kr_market_digest_plan
 from app.services.kr_price_structure_selective_rollout_service import (
     preserve_current_price_structure_section,
+    preserve_price_structure_sections,
 )
 from app.services.market_evidence_utilization_validator_service import (
     validate_kr_market_evidence_utilization,
 )
+from app.services.us_full_message_service import preserve_us_full_message_layout
 
 
 CONTRACT_VERSION = "common-ai-core-v1"
@@ -179,12 +181,26 @@ def _preserve_required_stock_sections(
     result: AdaptiveRendererResult,
     *,
     source_text: str,
+    deterministic_text: str,
     market: str,
     is_market_digest: bool,
 ) -> AdaptiveRendererResult:
-    if is_market_digest or result.rendered is None:
+    if result.rendered is None:
         return result
     text = result.final_text
+    if is_market_digest:
+        if market == "us":
+            text = preserve_us_full_message_layout(
+                text,
+                deterministic_text=deterministic_text,
+            )
+            if text != result.final_text:
+                return replace(
+                    result,
+                    rendered=replace(result.rendered, text=text),
+                    final_text=text,
+                )
+        return result
     expected_heading = "📊 거래량·포지셔닝" if market == "us" else "📊 수급"
     supply = next(
         (
@@ -211,6 +227,8 @@ def _preserve_required_stock_sections(
             text = f"{text.rstrip()}\n\n{expected_heading}\n{supply.body}"
     if market == "kr":
         text = preserve_current_price_structure_section(text, source_text)
+    elif market == "us":
+        text = preserve_price_structure_sections(text, source_text)
     if text == result.final_text:
         return result
     return replace(result, rendered=replace(result.rendered, text=text), final_text=text)
@@ -291,6 +309,7 @@ def build_production_candidate(
     result = _preserve_required_stock_sections(
         result,
         source_text=adapter.normalized_text,
+        deterministic_text=deterministic_text,
         market=market,
         is_market_digest=is_market_digest,
     )

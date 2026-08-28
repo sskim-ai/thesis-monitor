@@ -104,7 +104,7 @@ def classify_kr_price_structure(
     )
 
 
-def _summary_for_render(
+def summary_for_price_structure_render(
     context: Mapping[str, object],
     eligibility: KrPriceStructureEligibility,
 ) -> dict[str, object]:
@@ -156,7 +156,7 @@ def build_kr_price_structure_rollout_decision(
         )
 
     render: PriceStructureRender = render_current_price_structure(
-        _summary_for_render(context, eligibility),
+        summary_for_price_structure_render(context, eligibility),
         ticker=ticker,
         as_of=str(context.get("as_of") or ""),
         current_price=context.get("current_price"),
@@ -202,11 +202,36 @@ def build_kr_price_structure_runtime_context(
     observed_at: str,
     provider_limit: int,
 ) -> dict[str, object]:
-    result = build_price_structure_wave_fib_v3(
+    return build_price_structure_runtime_context(
         ticker=ticker,
         security_id=f"KR:{ticker}",
         market="KR",
         currency="KRW",
+        runtime_contract=RUNTIME_CONTEXT_VERSION,
+        cutoff=cutoff,
+        raw_by_timeframe=raw_by_timeframe,
+        observed_at=observed_at,
+        provider_limit=provider_limit,
+    )
+
+
+def build_price_structure_runtime_context(
+    *,
+    ticker: str,
+    security_id: str,
+    market: str,
+    currency: str,
+    runtime_contract: str,
+    cutoff: str,
+    raw_by_timeframe: Mapping[str, Sequence[Mapping[str, object]]],
+    observed_at: str,
+    provider_limit: int,
+) -> dict[str, object]:
+    result = build_price_structure_wave_fib_v3(
+        ticker=ticker,
+        security_id=security_id,
+        market=market,
+        currency=currency,
         adjustment_basis="provider_adjusted_price_v1",
         cutoff=cutoff,
         raw_by_timeframe=raw_by_timeframe,  # type: ignore[arg-type]
@@ -278,10 +303,10 @@ def build_kr_price_structure_runtime_context(
         else []
     )
     context: dict[str, object] = {
-        "contract": RUNTIME_CONTEXT_VERSION,
+        "contract": runtime_contract,
         "source_contract": safe_result.contract,
         "ticker": ticker,
-        "market": "KR",
+        "market": market,
         "as_of": safe_result.as_of,
         "current_price": str(safe_result.current_price),
         "currency": safe_result.currency,
@@ -305,6 +330,10 @@ _CURRENT_SECTION = re.compile(
 )
 _LEGACY_PRICE_SECTION = re.compile(
     r"(?:^|\n\n)(?P<section>💰[^\n]*\n.*?)(?=\n\n(?:📈 |🚨 |⚠️ |👁 |📍 |📊 |🧭 |📐 |📌 )|\Z)",
+    re.DOTALL,
+)
+_STORED_PRICE_SECTION = re.compile(
+    r"(?:^|\n\n)(?P<section>🧭 기존 등록 가격 규칙\n.*?)(?=\n\n(?:📊 |📐 Valuation|⚠️ |📌 )|\Z)",
     re.DOTALL,
 )
 
@@ -353,3 +382,21 @@ def preserve_current_price_structure_section(
 ) -> str:
     section = extract_current_price_structure_section(reference)
     return replace_legacy_price_surface(message, section) if section else message
+
+
+def preserve_price_structure_sections(message: str, reference: str) -> str:
+    """Preserve current structure and separately labeled stored price rules."""
+    result = preserve_current_price_structure_section(message, reference)
+    stored_match = _STORED_PRICE_SECTION.search(reference)
+    if stored_match is None:
+        return result
+    stored = stored_match.group("section").strip()
+    existing = _STORED_PRICE_SECTION.search(result)
+    if existing is not None:
+        start, end = existing.span("section")
+        return result[:start] + stored + result[end:]
+    current = _CURRENT_SECTION.search(result)
+    if current is None:
+        return result.rstrip() + "\n\n" + stored
+    _start, end = current.span("section")
+    return result[:end].rstrip() + "\n\n" + stored + result[end:]

@@ -25,6 +25,9 @@ from app.services.kr_investor_flow_service import (
 from app.services.kr_price_structure_selective_rollout_service import (
     build_kr_price_structure_runtime_context,
 )
+from app.services.us_price_structure_selective_rollout_service import (
+    build_us_price_structure_runtime_context,
+)
 from app.services.ohlcv_structure_service import analyze_chart_structure
 from app.services.provider_telemetry_service import ProviderTelemetryService
 
@@ -34,7 +37,7 @@ PERIOD_COUNTS = {
     "weekly": 300,
     "monthly": 100,
 }
-KR_PRICE_STRUCTURE_PERIOD_COUNTS = {
+PRICE_STRUCTURE_PERIOD_COUNTS = {
     "daily": 1200,
     "weekly": 600,
     "monthly": 300,
@@ -382,10 +385,13 @@ class OhlcvClient:
         headers = {"X-API-Key": api_key} if api_key else {}
         context = PriceContext()
         adjusted_bars: dict[str, list[dict[str, object]]] = {}
+        price_structure_enabled = (
+            self.settings.kr_price_structure_v3_enabled
+            if ticker.isdigit()
+            else self.settings.us_price_structure_v3_enabled
+        )
         period_counts = (
-            KR_PRICE_STRUCTURE_PERIOD_COUNTS
-            if ticker.isdigit() and self.settings.kr_price_structure_v3_enabled
-            else PERIOD_COUNTS
+            PRICE_STRUCTURE_PERIOD_COUNTS if price_structure_enabled else PERIOD_COUNTS
         )
         async with httpx.AsyncClient(
             base_url=self.settings.ohlcv_base_url.rstrip("/"),
@@ -589,18 +595,21 @@ class OhlcvClient:
             investor_supply=context.supply,
             price_basis=context.chart.price_basis,
         )
-        if ticker.isdigit() and self.settings.kr_price_structure_v3_enabled:
+        if price_structure_enabled:
             try:
-                context.chart.structure["price_structure_v3"] = (
-                    build_kr_price_structure_runtime_context(
-                        ticker=ticker,
-                        cutoff=(
-                            session_state.latest_completed_regular_session_date.isoformat()
-                        ),
-                        raw_by_timeframe=adjusted_bars,
-                        observed_at=observed_local.isoformat(),
-                        provider_limit=OHLCV_PROVIDER_REQUEST_LIMIT,
-                    )
+                builder = (
+                    build_kr_price_structure_runtime_context
+                    if ticker.isdigit()
+                    else build_us_price_structure_runtime_context
+                )
+                context.chart.structure["price_structure_v3"] = builder(
+                    ticker=ticker,
+                    cutoff=(
+                        session_state.latest_completed_regular_session_date.isoformat()
+                    ),
+                    raw_by_timeframe=adjusted_bars,
+                    observed_at=observed_local.isoformat(),
+                    provider_limit=OHLCV_PROVIDER_REQUEST_LIMIT,
                 )
             except (TypeError, ValueError) as exc:
                 context.warnings.append(
