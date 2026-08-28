@@ -2013,6 +2013,7 @@ and equal-price collapse.
 Current-time US 13 + KR 7 replay and corrected full-message test-sink delivery pass `20/20`, with
 zero authority leaks, SNDK/WULF bypass, ambiguous labels, duplicate ranges, duplicate delivery,
 orphan, or production-recipient send. The initial abbreviated-artifact test attempt is diagnostic
-only and never touched production. Open P0/material P1 are `0/0`. Promote linearly, run read-only
-post-deploy smoke, and then wait for natural US/KR messages; never trigger a production task for
-proof. Production Assist remains OFF.
+only and never touched production. Open P0/material P1 are `0/0`. Main and operating are deployed
+at `d3a58c953c2dd6d100031421770be3a54d0328b5`; API/OHLCV health and post-deploy frozen replay pass
+`20/20`. Wait for natural US/KR messages; never trigger a production task for proof. Production
+Assist remains OFF.

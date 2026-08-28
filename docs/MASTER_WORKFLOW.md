@@ -1873,5 +1873,7 @@ two overlap annotations, one safe suppression, zero authority/major-SR leaks, an
 bypass. The dedicated test sink received the corrected immutable full-message set `20/20` with
 exact hashes, duplicates/orphans/production sends all zero. The first abbreviated-artifact attempt
 was test-only and is retained as a diagnostic failure. Full pytest is `1865 PASS`; implementation
-Actions Test/Lint PASS; open P0/material P1 are `0/0`. Promotion and post-deploy smoke remain the
-next bounded step. Natural provisional/price-label proof remains independently `PENDING`.
+and evidence Actions Test/Lint PASS; open P0/material P1 are `0/0`. Main and operating advanced
+linearly to `d3a58c953c2dd6d100031421770be3a54d0328b5`; API/OHLCV health and post-deploy US `13/13`
+plus KR `7/7` frozen replay pass. State is `DEPLOYED_AWAITING_NATURAL_PROOF`. Natural
+provisional/price-label proof remains independently `PENDING` and must not be triggered manually.

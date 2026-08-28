@@ -466,3 +466,8 @@ near/major/stored/Fib/wave exclusion, current/structure price-label metadata, an
 no-bypass controls. The corrected full-message test delivery is authoritative; the earlier
 abbreviated-artifact test attempt is diagnostic only. No descendant may reinterpret test-sink
 evidence as natural proof, manually invoke production, or enable Production Assist.
+
+Evidence commit `d3a58c953c2dd6d100031421770be3a54d0328b5` passed Actions Test/Lint and is the
+linearly deployed main/operating runtime. Post-deploy API/OHLCV health and frozen US `13/13` plus KR
+`7/7` replay pass. Natural proof remains pending, so descendants must begin from deployed main and
+preserve the no-manual-proof boundary.

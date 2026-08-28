@@ -1,7 +1,7 @@
 # Provisional Bollinger Artifact Index
 
 - Instruction / base / implementation: `73286dd44135bbc30ef3a145e02f5db81aedbdea` / `5500f539fc93a9162f762cef4f7069f24d0350db` / `8c3bb493dc45a12c837053e08361f949ff771f00`.
-- Report commit / final main: `PENDING` / `PENDING`.
+- Report commit / final main: `d3a58c953c2dd6d100031421770be3a54d0328b5` / `d3a58c953c2dd6d100031421770be3a54d0328b5`.
 
 | Artifact | SHA-256 |
 |---|---|
@@ -17,12 +17,12 @@
 | 20260828-provisional-bollinger-ai-fallback-parity.md | 3f6ec0b04469773d7e503b11da6d88e1c9efd0fd4ef14b0335649708d8bc6d0a |
 | 20260828-provisional-bollinger-test-messages.md | 2166d4ec7ce197e9b22c07c6320c73841b691dcccab0678f5f2d342276d44457 |
 | 20260828-price-label-test-messages.md | 906ec9ef6884d462f97238a6289ccd9fa45da0d5e348b5922d737f5bb4c298c0 |
-| 20260828-provisional-bollinger-operating-promotion.md | 2c3dfcc5c0e175427e2f28fd9d3627ff4b3c78cc28edb51cc2780e70460b1c90 |
+| 20260828-provisional-bollinger-operating-promotion.md | b6ef4c82c49680d68b987a48a29e2aad5685c70e734a46a7e2d7119cd2e17bcf |
 | 20260828-provisional-bollinger-natural-proof-status.md | fd2eefc8e2327141caf2fd041a3f2b13fb8eded354baa905c6facee45e95fe63 |
-| 20260828-provisional-bollinger-readiness.md | 55bd88bb9eae6dcefa67b3ead6a9b16ec80440aacdc51a48967e43f847954abd |
+| 20260828-provisional-bollinger-readiness.md | d4dd804473609487f5739c3f866777836a47d141d169b1efaa8b8a1cda94ef25 |
 | 20260828-us-provisional-bollinger-replay.json | 6e2d3a163d22e49e4ba437d3c4679b67df2dadbefca6ccf901c2210cf2af4e8f |
 | 20260828-kr7-provisional-bollinger-replay.json | dce1ab1dd9f4f5d7cabb1a568ec84e389a5dfd53d76eb80db46a9f74fd61186a |
-| 20260828-provisional-bollinger-readiness.json | b4a6beb8af03812bb4771a60a8b049ba62a367e678eb19bcf99d0feea57e376a |
+| 20260828-provisional-bollinger-readiness.json | 405e4047ca035d79b01a084633a015b032452dc1f5b9207c30d3703dc2c28eaf |
 
 The completion ZIP excludes raw OHLCV, Telegram recipient IDs/tokens, auth headers, environment
 files, and receipts containing transport-only internals. Reports retain redacted sink aliases only.

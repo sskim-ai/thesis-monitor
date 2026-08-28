@@ -3662,13 +3662,21 @@
     "report": "docs/reports/20260828-major-sr-readiness.json"
   },
   "price_structure_provisional_bollinger_price_label_v2": {
-    "status": "ready_for_promotion",
+    "status": "deployed_awaiting_natural_proof",
     "instruction_commit": "73286dd44135bbc30ef3a145e02f5db81aedbdea",
     "base_commit": "5500f539fc93a9162f762cef4f7069f24d0350db",
     "branch": "codex/price-structure-provisional-bollinger-price-label-v2",
     "implementation_commit": "8c3bb493dc45a12c837053e08361f949ff771f00",
     "implementation_github_actions_run": 33153766349,
     "implementation_github_actions_status": "passed_test_and_lint",
+    "evidence_commit": "d3a58c953c2dd6d100031421770be3a54d0328b5",
+    "evidence_github_actions_run": 33154339506,
+    "evidence_github_actions_status": "passed_test_and_lint",
+    "final_main": "d3a58c953c2dd6d100031421770be3a54d0328b5",
+    "operating_sha": "d3a58c953c2dd6d100031421770be3a54d0328b5",
+    "api_health": "PASS",
+    "ohlcv_health": "PASS",
+    "post_deploy_replay": "PASS_20_OF_20",
     "contracts": [
       "provisional-bollinger-expansion-v2",
       "current-quote-structure-close-label-v2"
@@ -3700,7 +3708,7 @@
     "natural_provisional_bollinger_layer": "PENDING",
     "natural_price_label_clarity": "PENDING",
     "production_assist": false,
-    "next_action": "PROMOTE_AND_WAIT_FOR_NEXT_NATURAL_STOCK_MESSAGES",
+    "next_action": "WAIT_FOR_NEXT_NATURAL_STOCK_MESSAGES",
     "report": "docs/reports/20260828-provisional-bollinger-readiness.json"
   },
   "production_assist": false,

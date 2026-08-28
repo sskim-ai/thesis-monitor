@@ -10,9 +10,9 @@
 - `instruction_commit` = `73286dd44135bbc30ef3a145e02f5db81aedbdea`
 - `base_sha` = `5500f539fc93a9162f762cef4f7069f24d0350db`
 - `implementation_sha` = `8c3bb493dc45a12c837053e08361f949ff771f00`
-- `report_commit` = `PENDING`
-- `final_main` = `PENDING`
-- `operating_sha` = `PENDING`
+- `report_commit` = `d3a58c953c2dd6d100031421770be3a54d0328b5`
+- `final_main` = `d3a58c953c2dd6d100031421770be3a54d0328b5`
+- `operating_sha` = `d3a58c953c2dd6d100031421770be3a54d0328b5`
 - `provisional_bollinger_layer` = `PASS`
 - `malformed_partial_bar_used_for_provisional_bollinger` = `0`
 - `provisional_bollinger_as_near_sr` = `0`
@@ -48,25 +48,25 @@
 - `test_duplicate` = `0`
 - `test_orphan` = `0`
 - `test_production_recipient_send` = `0`
-- `post_deploy_provisional_bollinger` = `NOT_RUN`
-- `post_deploy_price_label_clarity` = `NOT_RUN`
-- `post_deploy_major_sr_reality_gate` = `NOT_RUN`
+- `post_deploy_provisional_bollinger` = `PASS_20_OF_20`
+- `post_deploy_price_label_clarity` = `PASS_20_OF_20`
+- `post_deploy_major_sr_reality_gate` = `PASS_20_OF_20`
 - `natural_provisional_bollinger_layer` = `PENDING`
 - `natural_price_label_clarity` = `PENDING`
 - `focused_tests` = `150 passed`
-- `full_pytest` = `1865 passed`
+- `full_pytest` = `1865 passed, 1 warning`
 - `ruff` = `PASS`
 - `diff_check` = `PASS`
 - `knowledge_parity` = `PASS`
-- `public_action` = `0.4.5 unchanged`
-- `operation_id` = `20/20 unique`
+- `public_action` = `0.4.5_UNCHANGED`
+- `operation_id` = `20_OF_20_UNIQUE`
 - `implementation_ci` = `PASS_RUN_33153766349`
-- `final_ci` = `PENDING`
-- `api_health` = `NOT_RUN`
+- `final_ci` = `PASS_RUN_33154339506`
+- `api_health` = `PASS`
 - `ohlcv_health` = `PASS`
 - `open_p0` = `0`
 - `open_material_p1` = `0`
-- `rollout` = `READY_FOR_PROMOTION`
+- `rollout` = `DEPLOYED_AWAITING_NATURAL_PROOF`
 
 ## Counts
 

@@ -615,7 +615,8 @@ The latest bounded Price Structure extension starts from instruction commit
 `8c3bb493dc45a12c837053e08361f949ff771f00`. Read
 `docs/reports/20260828-provisional-bollinger-readiness.json` and the artifact index first.
 
-After linear promotion and read-only smoke, the next action is
+Main and operating are deployed at `d3a58c953c2dd6d100031421770be3a54d0328b5`, with API/OHLCV
+health and post-deploy frozen replay passing `20/20`. The next action is
 `WAIT_FOR_NEXT_NATURAL_US_KR_PRICE_STRUCTURE_MESSAGES`. Verify explicit current-quote versus
 structure-close ownership, at most one clearly provisional Bollinger reference, completed-bar
 dynamic preservation, major-SR price anchors, SNDK/WULF no-bypass, exact receipts, duplicates, and
