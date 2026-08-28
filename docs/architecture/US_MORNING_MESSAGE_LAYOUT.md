@@ -30,3 +30,7 @@ revalidated at render time so equity-relative facts cannot leak into `MACRO_CONT
 The exact Telegram response payload is validated separately under
 `us-morning-exact-payload-quality-v1`; report claims are valid only when that validator payload SHA
 matches the received payload SHA.
+
+Night-futures rows are accepted only when they carry the fixed canonical series Fact ID,
+`fields.change_pct`, and `CURRENT_DIRECTIONAL`. The section is omitted as a unit when no row passes
+that contract; stored summary prose cannot restore it.

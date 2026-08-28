@@ -22,3 +22,8 @@ engine.
 A report may claim PASS only when `quality.payload_sha256 == received_sha256` and the validator
 status is `PASS`. A changed candidate paired with a stale quality result fails hash parity. The
 historical run-43 payload remains immutable and is retained only as a negative-control fixture.
+
+Current-time rollout evidence uses the same received-payload rule for the single market message and
+all monitored stock messages. A historical night-futures positive fixture is allowed only as one
+clearly labeled test-sink message. Test receipts must prove a non-production sink, zero production
+intent, exact payload equality, and validator PASS; no raw recipient identifier is persisted.
