@@ -44,6 +44,52 @@ def _context() -> dict[str, object]:
     return context
 
 
+def _macro_fact(
+    symbol: str,
+    fact_type: str,
+    value: float,
+    *,
+    label: str,
+    field: str,
+    temporal_role: str = "CURRENT_OBSERVATION",
+    as_of_date: str = "2026-08-27",
+) -> dict[str, object]:
+    return {
+        "fact_id": f"market:{fact_type.removeprefix('market_')}:{symbol}",
+        "fact_type": fact_type,
+        "as_of_date": as_of_date,
+        "fields": {
+            "series_code": symbol,
+            "label": label,
+            field: value,
+            "temporal_role": temporal_role,
+            "today_signal_eligible": temporal_role == "CURRENT_OBSERVATION",
+            "structured_state": temporal_role,
+        },
+    }
+
+
+def _select_stored_macro(
+    context: dict[str, object],
+    fact: dict[str, object],
+) -> None:
+    context["fact_catalog"].append(fact)
+    items = list(context["us_market_digest_plan"]["items"])
+    items[-1] = {
+        "slot": "MACRO_CONTEXT",
+        "priority": 5,
+        "claim_text": "legacy prose is not trusted",
+        "materiality": "specific neutral macro selected by the upstream policy",
+        "evidence_refs": [fact["fact_id"]],
+        "numeric_refs": [],
+        "temporal_roles": [fact["fields"]["temporal_role"]],
+        "observation_dates": [fact["as_of_date"]],
+        "omission_reason": "SELECTED",
+        "required_consumption": False,
+    }
+    context["us_market_digest_plan"]["items"] = items
+
+
 def test_full_message_owns_index_and_sector_numbers_in_fixed_order() -> None:
     rendered = render_us_full_market_message(_context())
 
@@ -160,7 +206,7 @@ def test_legacy_stored_plan_cannot_reuse_relative_equity_as_macro() -> None:
     context = _context()
     relative = {
         "fact_id": "market:relative:SOXX:SPY",
-        "fact_type": "market_relative",
+        "fact_type": "market_sector_relative",
         "as_of_date": "2026-08-27",
         "fields": {
             "series_code": "SOXX_SPY",
@@ -190,3 +236,97 @@ def test_legacy_stored_plan_cannot_reuse_relative_equity_as_macro() -> None:
     assert rendered.status == "PASS"
     assert "🌐 보조 시장환경" not in rendered.text
     assert "변화 없음했습니다" not in rendered.text
+
+
+def test_generic_zero_change_macro_is_omitted_by_plan() -> None:
+    context = _context()
+    fact = _macro_fact(
+        "DGS10",
+        "market_nominal_yield",
+        0.0,
+        label="미국 10년물 금리",
+        field="change_bp",
+    )
+    context["fact_catalog"].append(fact)
+    context["key_change_fact_ids"] = [fact["fact_id"]]
+    context["us_market_digest_plan"] = build_us_market_digest_plan(context).to_dict()
+
+    rendered = render_us_full_market_message(context)
+
+    assert rendered.status == "PASS"
+    assert "🌐 보조 시장환경" not in rendered.text
+
+
+def test_specific_neutral_yield_uses_grammar_safe_claim() -> None:
+    context = _context()
+    fact = _macro_fact(
+        "DGS10",
+        "market_nominal_yield",
+        0.0,
+        label="미국 10년물 금리",
+        field="change_bp",
+    )
+    _select_stored_macro(context, fact)
+
+    rendered = render_us_full_market_message(context)
+
+    assert "🌐 보조 시장환경" in rendered.text
+    assert "미국 10년물 금리는 전 세션과 큰 변화가 없었습니다." in rendered.text
+    assert "변화 없음했습니다" not in rendered.text
+
+
+def test_specific_neutral_vix_uses_grammar_safe_claim() -> None:
+    context = _context()
+    fact = _macro_fact(
+        "VIXCLS",
+        "market_volatility",
+        0.0,
+        label="VIX",
+        field="return_pct",
+    )
+    _select_stored_macro(context, fact)
+
+    rendered = render_us_full_market_message(context)
+
+    assert "VIX는 전 세션과 큰 변화가 없었습니다." in rendered.text
+
+
+def test_prior_session_neutral_macro_is_date_qualified() -> None:
+    context = _context()
+    fact = _macro_fact(
+        "DGS10",
+        "market_nominal_yield",
+        0.0,
+        label="미국 10년물 금리",
+        field="change_bp",
+        temporal_role="PRIOR_MARKET_SESSION",
+        as_of_date="2026-08-26",
+    )
+    _select_stored_macro(context, fact)
+
+    rendered = render_us_full_market_message(context)
+
+    assert (
+        "공식 관측(2026-08-26) 기준, 미국 10년물 금리는 전 세션과 큰 변화가 "
+        "없었습니다."
+    ) in rendered.text
+
+
+def test_lagging_zero_change_wti_is_omitted_by_plan() -> None:
+    context = _context()
+    fact = _macro_fact(
+        "DCOILWTICO",
+        "market_oil",
+        0.0,
+        label="WTI 유가",
+        field="return_pct",
+        temporal_role="REFERENCE_LAGGING",
+        as_of_date="2026-08-25",
+    )
+    context["fact_catalog"].append(fact)
+    context["key_change_fact_ids"] = [fact["fact_id"]]
+    context["us_market_digest_plan"] = build_us_market_digest_plan(context).to_dict()
+
+    rendered = render_us_full_market_message(context)
+
+    assert "🌐 보조 시장환경" not in rendered.text

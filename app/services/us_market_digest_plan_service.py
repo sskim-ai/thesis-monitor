@@ -6,6 +6,18 @@ from typing import Iterable, Mapping
 
 
 CONTRACT_VERSION = "us-market-digest-plan-v1"
+SUPPORTED_MACRO_FACT_TYPES = frozenset(
+    {
+        "market_nominal_yield",
+        "market_real_yield",
+        "market_breakeven_inflation",
+        "market_credit_spread",
+        "market_fx",
+        "market_oil",
+        "market_volatility",
+        "market_dollar_index",
+    }
+)
 
 
 class UsMarketDigestSlot(StrEnum):
@@ -159,6 +171,33 @@ def _current_directional(fact: Mapping[str, object]) -> bool:
         and fields.get("structured_state") == "CURRENT_DIRECTIONAL"
         and _number(fields.get("return_pct")) is not None
     )
+
+
+def macro_fact_change(
+    fact: Mapping[str, object],
+) -> tuple[str, float] | None:
+    if fact.get("fact_type") not in SUPPORTED_MACRO_FACT_TYPES:
+        return None
+    fields = _fields(fact)
+    for field in ("change_bp", "return_pct", "change_pct"):
+        value = _number(fields.get(field))
+        if value is not None:
+            return field, value
+    return None
+
+
+def render_specific_macro_claim(fact: Mapping[str, object]) -> str:
+    """Render one canonical macro Fact without concatenating status labels."""
+    change = macro_fact_change(fact)
+    fields = _fields(fact)
+    label = str(fields.get("label") or "").strip()
+    if change is None or not label or label in {"거시 지표", "보조 거시 맥락"}:
+        return ""
+    _field, value = change
+    if value == 0:
+        return f"{label}는 전 세션과 큰 변화가 없었습니다."
+    direction = "상승했습니다" if value > 0 else "하락했습니다"
+    return f"{label}는 {direction}."
 
 
 def _labels_by_direction(
@@ -419,18 +458,13 @@ def _macro_item(
     facts: list[dict[str, object]],
     key_change_fact_ids: Iterable[str],
 ) -> UsMarketDigestPlanItem:
-    excluded = {
-        "market_index",
-        "market_style",
-        "market_sector",
-        "market_relative",
-    }
     by_id = {_fact_ref(fact): fact for fact in facts}
     selected = next(
         (
             by_id[ref]
             for ref in key_change_fact_ids
-            if ref in by_id and by_id[ref].get("fact_type") not in excluded
+            if ref in by_id
+            and by_id[ref].get("fact_type") in SUPPORTED_MACRO_FACT_TYPES
         ),
         None,
     )
@@ -442,32 +476,37 @@ def _macro_item(
             omission_reason=DigestOmissionReason.OMITTED_SAFE_NOT_MATERIAL,
             required_consumption=False,
         )
-    fields = _fields(selected)
-    label = str(fields.get("label") or "거시 지표")
-    change = _number(fields.get("change_bp"))
-    numeric_field = "change_bp"
-    if change is None:
-        change = _number(fields.get("return_pct"))
-        numeric_field = "return_pct"
-    if change is None:
-        change = _number(fields.get("change_pct"))
-        numeric_field = "change_pct"
-    direction = (
-        "상승"
-        if change and change > 0
-        else "하락"
-        if change and change < 0
-        else "변화 없음"
-    )
+    change = macro_fact_change(selected)
+    if change is None or change[1] == 0:
+        return _item(
+            UsMarketDigestSlot.MACRO_CONTEXT,
+            5,
+            facts=[selected],
+            materiality="generic zero-change macro is not decision-material",
+            omission_reason=DigestOmissionReason.OMITTED_SAFE_NOT_MATERIAL,
+            required_consumption=False,
+            numeric_field=change[0] if change is not None else "return_pct",
+        )
+    claim_text = render_specific_macro_claim(selected)
+    if not claim_text:
+        return _item(
+            UsMarketDigestSlot.MACRO_CONTEXT,
+            5,
+            facts=[selected],
+            materiality="macro semantic label or change field is not safely renderable",
+            omission_reason=DigestOmissionReason.OMITTED_SAFE_NOT_MATERIAL,
+            required_consumption=False,
+            numeric_field=change[0],
+        )
     return _item(
         UsMarketDigestSlot.MACRO_CONTEXT,
         5,
         facts=[selected],
-        claim_text=f"보조 거시 맥락에서는 {label}가 {direction}했습니다.",
+        claim_text=claim_text,
         materiality="macro is retained only after current-session market structure",
         omission_reason=DigestOmissionReason.SELECTED,
         required_consumption=False,
-        numeric_field=numeric_field,
+        numeric_field=change[0],
     )
 
 

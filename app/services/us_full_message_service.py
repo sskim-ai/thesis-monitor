@@ -5,9 +5,11 @@ from typing import Iterable, Mapping
 
 from app.services.us_market_digest_plan_service import (
     DigestOmissionReason,
+    SUPPORTED_MACRO_FACT_TYPES,
     UsMarketDigestPlan,
     UsMarketDigestSlot,
     market_digest_plan_from_context,
+    render_specific_macro_claim,
 )
 
 
@@ -99,15 +101,34 @@ def _safe_next_checks(values: Iterable[str]) -> tuple[str, ...]:
     return tuple(dict.fromkeys(value.strip() for value in values if value.strip()))[:2]
 
 
-def _macro_evidence_is_safe(
+def _safe_macro_fact(
     item: object,
     facts_by_id: Mapping[str, Mapping[str, object]],
-) -> bool:
+) -> Mapping[str, object] | None:
     refs = getattr(item, "evidence_refs", ())
-    excluded = {"market_index", "market_style", "market_sector", "market_relative"}
-    return bool(refs) and all(
-        facts_by_id.get(str(ref), {}).get("fact_type") not in excluded for ref in refs
-    )
+    if len(refs) != 1:
+        return None
+    fact = facts_by_id.get(str(refs[0]))
+    if fact is None or fact.get("fact_type") not in SUPPORTED_MACRO_FACT_TYPES:
+        return None
+    fields = _fields(fact)
+    role = str(fields.get("temporal_role") or "")
+    date = str(fact.get("as_of_date") or "")
+    if role not in {
+        "CURRENT_OBSERVATION",
+        "PRIOR_MARKET_SESSION",
+        "REFERENCE_LAGGING",
+    }:
+        return None
+    if role == "CURRENT_OBSERVATION" and fields.get("today_signal_eligible") is not True:
+        return None
+    if not date or date not in getattr(item, "observation_dates", ()):
+        return None
+    if role not in getattr(item, "temporal_roles", ()):
+        return None
+    if not render_specific_macro_claim(fact):
+        return None
+    return fact
 
 
 def render_us_full_market_message(
@@ -196,16 +217,19 @@ def render_us_full_market_message(
 
     macro_lines: list[str] = []
     macro = _plan_item(plan, UsMarketDigestSlot.MACRO_CONTEXT)
+    macro_fact = _safe_macro_fact(macro, by_id) if macro is not None else None
     if (
         macro is not None
         and macro.omission_reason == DigestOmissionReason.SELECTED
-        and macro.claim_text
-        and _macro_evidence_is_safe(macro, by_id)
+        and macro_fact is not None
     ):
+        macro_claim = render_specific_macro_claim(macro_fact)
+        macro_role = str(_fields(macro_fact).get("temporal_role") or "")
+        macro_date = str(macro_fact.get("as_of_date") or "")
         date_prefix = ""
-        if macro.observation_dates and "CURRENT_OBSERVATION" not in macro.temporal_roles:
-            date_prefix = f"공식 관측({macro.observation_dates[0]}) 기준, "
-        macro_lines.append(f"• {date_prefix}{macro.claim_text}")
+        if macro_role != "CURRENT_OBSERVATION":
+            date_prefix = f"공식 관측({macro_date}) 기준, "
+        macro_lines.append(f"• {date_prefix}{macro_claim}")
 
     checks = _safe_next_checks(next_checks)
     if not checks:

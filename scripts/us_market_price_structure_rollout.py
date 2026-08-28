@@ -20,6 +20,9 @@ from app.services.us_full_message_service import (
     preserve_us_full_message_layout,
     render_us_full_market_message,
 )
+from app.services.us_market_message_quality_service import (
+    validate_us_market_message_payload,
+)
 from app.services.us_price_structure_selective_rollout_service import (
     build_us_price_structure_rollout_decision,
 )
@@ -177,6 +180,7 @@ def _market_evidence(
         ),
         "character_count": len(selected),
     }
+    quality = validate_us_market_message_payload(selected)
     checks["status"] = "PASS" if all(
         (
             checks["index_symbols_visible"],
@@ -186,6 +190,7 @@ def _market_evidence(
             checks["ai_fallback_required_section_parity"],
             checks["night_futures_safe_omission"],
             len(selected) <= 3500,
+            quality.status == "PASS",
         )
     ) else "FAIL"
     evidence = {
@@ -198,6 +203,7 @@ def _market_evidence(
         "render": rendered.to_dict(),
         "checks": checks,
         "selected_sha256": _sha_text(selected),
+        "quality": quality.to_dict(),
     }
     messages = [
         {
@@ -382,10 +388,19 @@ async def _deliver(
         receipt_path=receipt_path,
         contract=contract,
         namespace=namespace,
+        received_payload_validator=(
+            (lambda text: validate_us_market_message_payload(text).to_dict())
+            if namespace == MARKET_NAMESPACE
+            else None
+        ),
     )
 
 
 async def _run(args: argparse.Namespace) -> None:
+    if args.market_only and args.send_stocks:
+        raise ValueError("--market-only cannot be combined with --send-stocks")
+    if args.market_only and args.reuse_audit:
+        raise ValueError("--market-only does not reuse the combined rollout audit")
     packet = _read_json(args.archive / "packet.json")
     if not isinstance(packet, Mapping):
         raise ValueError("packet invalid")
@@ -399,15 +414,54 @@ async def _run(args: argparse.Namespace) -> None:
         if isinstance(row, Mapping) and row.get("ticker")
     ]
     ai_rows = _message_rows(_read_json(args.archive / "ai-assisted-messages.json"))
-    fallback_rows = _message_rows(_read_json(args.archive / "deterministic-messages.json"))
     market_context = _read_json(args.archive / "market-context.json")
     if not isinstance(market_context, Mapping):
         raise ValueError("market context invalid")
-    universe = _active_us_universe(args.database)
     env = load_env_values(args.env_file)
     sink = audit_test_sink(env)
     if sink.get("available") is not True:
         raise ValueError(f"test sink unavailable: {sink.get('reason')}")
+
+    if args.market_only:
+        market_evidence, market_messages = _market_evidence(
+            packet_id=packet_id,
+            market_context=market_context,
+            ai_rows=ai_rows,
+        )
+        market_evidence["test_sink"] = sink
+        _write_json(args.market_output, market_evidence)
+        summary: dict[str, object] = {
+            "contract": CONTRACT,
+            "packet_id": packet_id,
+            "market_only": True,
+            "market_status": market_evidence["checks"]["status"],
+            "stock_evidence_built": False,
+            "stock_messages_sent": 0,
+            "test_sink_alias": sink["test_sink_alias"],
+            "production_sink_alias": sink["production_sink_alias"],
+            "production_collision": sink["production_collision"],
+        }
+        if args.send_market:
+            if market_evidence["checks"]["status"] != "PASS":
+                raise ValueError("market preflight failed")
+            receipt = await _deliver(
+                messages=market_messages,
+                env=env,
+                sink=sink,
+                receipt_path=args.market_receipt,
+                contract="us-macro-quality-test-delivery-v1",
+                namespace=MARKET_NAMESPACE,
+            )
+            summary["market_test_delivery"] = {
+                "status": receipt["status"],
+                "sent_message_count": receipt["sent_message_count"],
+                "exact_payload_match": receipt["exact_payload_match"],
+            }
+        print(json.dumps(summary, ensure_ascii=False, sort_keys=True))
+        return
+
+    fallback_rows = _message_rows(_read_json(args.archive / "deterministic-messages.json"))
+    universe = _active_us_universe(args.database)
 
     if args.reuse_audit:
         market_evidence = _read_json(args.market_output)
@@ -531,6 +585,7 @@ def main() -> None:
     parser.add_argument("--send-market", action="store_true")
     parser.add_argument("--send-stocks", action="store_true")
     parser.add_argument("--reuse-audit", action="store_true")
+    parser.add_argument("--market-only", action="store_true")
     asyncio.run(_run(parser.parse_args()))
 
 

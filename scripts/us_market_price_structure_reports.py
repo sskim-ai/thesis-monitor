@@ -146,6 +146,28 @@ def _market_reports(
     render = market["render"]
     checks = market["checks"]
     sink = market["test_sink"]
+    receipt_rows = receipt.get("rows")
+    receipt_row = (
+        receipt_rows[0]
+        if isinstance(receipt_rows, list)
+        and receipt_rows
+        and isinstance(receipt_rows[0], Mapping)
+        else {}
+    )
+    received_sha = str(receipt_row.get("received_sha256") or "")
+    received_quality = receipt_row.get("received_payload_quality")
+    received_quality = (
+        received_quality if isinstance(received_quality, Mapping) else {}
+    )
+    quality_sha = str(received_quality.get("payload_sha256") or "")
+    quality_hash_matches = bool(received_sha) and quality_sha == received_sha
+    quality_status = str(received_quality.get("status") or "NOT_VALIDATED")
+    if (
+        _sha_text(text) != received_sha
+        or not quality_hash_matches
+        or quality_status != "PASS"
+    ):
+        raise ValueError("market quality report is not bound to a passing received payload")
     _write_text(
         reports / MARKET_REPORTS[0],
         """
@@ -295,7 +317,17 @@ No raw chat identifier or token is stored.
     )
     _write_text(
         reports / MARKET_REPORTS[9],
-        f"# US Full Message Exact Test Message\n\n```text\n{text}\n```\n\nSHA-256: `{market['selected_sha256']}`",
+        f"""
+# US Full Message Exact Test Message
+
+```text
+{text}
+```
+
+Received SHA-256: `{received_sha}`
+Quality payload SHA-256: `{quality_sha}`
+Exact payload quality: `{quality_status}`
+""",
     )
     _write_text(
         reports / MARKET_REPORTS[10],
@@ -315,10 +347,15 @@ External test sends: `1`. The maximum three-send refinement allowance was not ne
 # US Full Message Quality
 
 Character count: `{checks['character_count']}`. Five index lines and both selected sector lines are
-visible exactly once. Required section order, numeric refs, temporal suppression, line breaks, and
-Telegram receipt parity pass. The invalid phrase `변화 없음했습니다` is absent.
+visible exactly once. Quality status `{quality_status}` is taken from validation of the received
+Telegram response payload. Validator payload SHA `{quality_sha}` and received SHA `{received_sha}`
+have parity `{quality_hash_matches}`.
 
-`TEST_MESSAGE_QUALITY = PASS`
+`MALFORMED_ZERO_CHANGE_KOREAN = {received_quality.get('malformed_zero_change_korean', 'NOT_VALIDATED')}`
+`GENERIC_NO_CHANGE_MACRO_SECTION_VISIBLE = {received_quality.get('generic_no_change_macro_section_visible', 'NOT_VALIDATED')}`
+`QUALITY_REPORT_PAYLOAD_HASH_MISMATCH = {0 if quality_hash_matches else 1}`
+`HARDCODED_UNVERIFIED_QUALITY_ASSERTION = 0`
+`TEST_MESSAGE_QUALITY = {quality_status}`
 """,
     )
     _write_text(

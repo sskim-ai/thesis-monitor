@@ -5,7 +5,7 @@ import asyncio
 import hashlib
 import json
 import re
-from collections.abc import Mapping, Sequence
+from collections.abc import Callable, Mapping, Sequence
 from pathlib import Path
 
 import httpx
@@ -155,6 +155,7 @@ async def deliver_test_messages(
     transport: httpx.AsyncBaseTransport | None = None,
     contract: str = CONTRACT,
     namespace: str = NAMESPACE,
+    received_payload_validator: Callable[[str], Mapping[str, object]] | None = None,
 ) -> dict[str, object]:
     if not token or not test_chat_id or not production_chat_id:
         raise ValueError("Telegram credentials or recipient missing")
@@ -212,6 +213,11 @@ async def deliver_test_messages(
                 _write_json(receipt_path, receipt)
                 raise RuntimeError("Telegram test delivery response invalid")
             received_sha = _sha256_text(received_text)
+            quality = (
+                dict(received_payload_validator(received_text))
+                if received_payload_validator is not None
+                else None
+            )
             row = {
                 "sequence": index,
                 "ticker": ticker,
@@ -227,11 +233,18 @@ async def deliver_test_messages(
                 )[:12],
                 "send_attempts": 1,
             }
+            if quality is not None:
+                row["received_payload_quality"] = quality
             rows = receipt["rows"]
             assert isinstance(rows, list)
             rows.append(row)
             receipt["sent_message_count"] = len(rows)
             _write_json(receipt_path, receipt)
+            if quality is not None and quality.get("status") != "PASS":
+                receipt["status"] = "failed"
+                receipt["safe_error"] = "received_payload_quality_failed"
+                _write_json(receipt_path, receipt)
+                raise RuntimeError("Telegram received payload failed quality validation")
 
     rows = receipt["rows"]
     assert isinstance(rows, list)
