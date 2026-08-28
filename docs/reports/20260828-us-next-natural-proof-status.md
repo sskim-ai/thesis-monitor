@@ -1,0 +1,9 @@
+# US Next Natural Proof Status
+
+Deployment and smoke are complete, but no production Scheduled Task was manually triggered.
+
+- `NATURAL_US_MARKET_FULL_MESSAGE = PENDING`
+- `NATURAL_NIGHT_FUTURES_DISPLAY = PENDING`
+- `NATURAL_US_PRICE_STRUCTURE = PENDING`
+- `US_ROLLOUT = DEPLOYED_AWAITING_NATURAL_PROOF`
+- `NEXT_ACTION = WAIT_FOR_NEXT_NATURAL_US_MESSAGES`

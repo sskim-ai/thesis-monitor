@@ -440,3 +440,15 @@ TOP3, selection, and provenance parity proved against run-42. It must keep KR TO
 Structure ON, US Price Structure and Production Assist OFF, and must not reinterpret the single
 non-production test message as natural production proof. The next authorized action is read-only
 review of the next natural KR close message.
+
+The US night-futures/current-time E2E branch starts with instruction commit
+`f6ab0168d3ef0d8ce1e2b5980ea7aae147db0c75`, whose parent is clean main
+`a3050b19e3b983fe71ae3f68f400fc2e9a8d66aa`, and deploys implementation
+`f6bc769f823429426474a38f007dc8196b4e5f43`.
+
+Subsequent US natural-proof work must preserve gate-owned night-futures summary projection, fixed
+series Fact IDs, no stale or unavailable directional output, exact response-payload validation,
+and the generic daily source-session alignment guard. WRD's current block is evidence-derived, not
+a ticker policy. No descendant may manually trigger natural proof, reuse the production recipient
+for tests, expose unstable Fib/targets/stops, or reinterpret the historical fixture as a natural
+runtime PASS.

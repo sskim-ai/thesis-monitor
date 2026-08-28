@@ -1,0 +1,11 @@
+{
+  "as_of_kst": "2026-08-28T12:57:55+09:00",
+  "contract": "us-next-natural-proof-status-v1",
+  "manual_production_messages": 0,
+  "manual_task_runs": 0,
+  "natural_night_futures_display": "PENDING",
+  "natural_us_market_full_message": "PENDING",
+  "natural_us_price_structure": "PENDING",
+  "next_action": "WAIT_FOR_NEXT_NATURAL_US_MESSAGES",
+  "us_rollout": "DEPLOYED_AWAITING_NATURAL_PROOF"
+}

@@ -1959,3 +1959,20 @@ The operator must provide exactly one approved non-production Telegram chat thro
 secret key. Until then, do not resolve a session, call providers, generate or send messages,
 promote operating, restart services, or change flags. Production must never substitute for the
 test destination.
+
+## 2026-08-28 US Night-Futures / Current-Time E2E Handoff
+
+Start with `docs/reports/20260828-us-current-time-readiness.json` and the artifact index. Instruction
+commit is `f6ab0168d3ef0d8ce1e2b5980ea7aae147db0c75`; deployed implementation is
+`f6bc769f823429426474a38f007dc8196b4e5f43`.
+
+Raw night-futures summary strings can no longer bypass `night_futures_gate`. Current expected
+session `2026-08-28` remained unavailable and was omitted; one actual `2026-08-27` historical pair
+passed the separately labeled positive fixture. Current market `1`, all 13 stocks, and the fixture
+were delivered only to the isolated test sink with exact payload parity and zero production intent.
+WRD is the sole blocked stock because daily coverage ended `2026-08-26`; all other 12 are
+`ELIGIBLE_SR_ONLY` for session `2026-08-27`.
+
+Main/operating deployment and post-deploy smoke pass. Natural market, night-futures display, and US
+Price Structure proofs are still `PENDING`; the correct next action is only
+`WAIT_FOR_NEXT_NATURAL_US_MESSAGES`. Production Assist remains OFF.

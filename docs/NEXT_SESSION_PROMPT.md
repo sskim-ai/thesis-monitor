@@ -578,3 +578,14 @@ Next bounded action: configure exactly one explicit TEST recipient that is prova
 production as a substitute. The runtime policy is already active by code default and remains
 `ACTIVE_AWAITING_NATURAL_PROOF`; do not add a redundant feature flag. Natural US proof may continue
 independently. Keep Price Structure v3 unarmed and Production Assist OFF.
+
+The latest authoritative US state is deployment
+`f6bc769f823429426474a38f007dc8196b4e5f43`. Read
+`docs/reports/20260828-us-current-time-readiness.json` first. Night-futures summary canonicalization,
+current market, 13-stock test messages, exact payload delivery, WRD fail-closed session handling,
+full regression, CI, and post-deploy smoke all pass at P0/material P1 `0/0`.
+
+Next action: `WAIT_FOR_NEXT_NATURAL_US_MESSAGES`. Do not manually run a Scheduled Task or send a
+production Telegram message. On the next natural US cycle, inspect the market full message,
+canonical night-futures section or safe omission, all stock Price Structure surfaces, receipt,
+duplicates, and orphans read-only. Only natural evidence may advance the rollout to `LIVE_PASS`.

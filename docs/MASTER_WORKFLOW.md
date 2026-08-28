@@ -1813,3 +1813,23 @@ KR market TOP3 then passed with Price Structure OFF; KR Price Structure then pas
 negative control still blocked. Final state is `KR_ROLLOUT=ENABLED_AWAITING_NATURAL_PROOF`, not
 `LIVE_PASS`. Open P0/material P1 are `0/0`; Production Assist remains OFF. Wait for the next natural
 KR market and stock cycle and inspect it read-only.
+
+### 40.21 US Night-Futures Canonicalization and Current-Time E2E
+
+Exact instruction commit `f6ab0168d3ef0d8ce1e2b5980ea7aae147db0c75` precedes canonical
+implementation `df2e922bbb3ba554c9495408b64233661ff77c89`, generic US source-session
+guard `3325d8a8db84fec6c8ca5d4c70dc5b2210c4179f`, historical positive-fixture proof
+`fc6a53a944a9089eecc94d81f46b4602180b6b02`, and deployed implementation
+`f6bc769f823429426474a38f007dc8196b4e5f43`.
+
+`night_futures_gate` now exclusively owns compact-summary projection and full-message visibility.
+The current `2026-08-28` expected night session had no ready canonical products, so the current
+market message safely omitted it; one separately labeled `2026-08-27` historical fixture proved
+fixed Fact identity and value/session/state parity. Current-time market `1/1`, stock `13/13`, and
+fixture `1/1` test-sink deliveries matched exact received payloads with zero production sends.
+
+Twelve US/foreign subjects rendered current-session SR-only structure. WRD failed closed because
+its daily source ended one session before its declared `as_of`; no ticker exception was added.
+Local full pytest is `1841 PASS`, GitHub Actions Test/Lint PASS, API/OHLCV health PASS, and open
+P0/material P1 are `0/0`. State is `DEPLOYED_AWAITING_NATURAL_PROOF`. Do not manually trigger the
+US Scheduled Task; inspect the next natural market and stock messages read-only.
