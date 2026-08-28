@@ -1,0 +1,536 @@
+{
+  "current_price_context": {
+    "active_resistance": {
+      "available": true,
+      "source": "dynamic",
+      "strength": "Medium",
+      "timeframe": "monthly",
+      "zone_high": 3055529.174986,
+      "zone_low": 2918470.825014
+    },
+    "active_support": {
+      "available": false
+    },
+    "as_of_date": "2026-08-28",
+    "availability": "partial",
+    "chart_invalidation": {
+      "available": false,
+      "chart_only": null,
+      "price": null,
+      "reason": "support_unavailable",
+      "timeframe": null
+    },
+    "chart_state": {
+      "blocking_unknowns": [],
+      "confidence": "medium",
+      "reasons": [
+        "distribution"
+      ],
+      "state": "WAIT",
+      "user_semantics": "price_structure_wait_not_sell_command"
+    },
+    "contract": "current-price-context-v1",
+    "currency": "KRW",
+    "current_price": 1653000.0,
+    "current_price_risk_reward": {
+      "available": false,
+      "classification": null,
+      "ratio": null,
+      "reason": "support_unavailable"
+    },
+    "price_basis": "adjusted_close",
+    "registered_confirmation": {
+      "automatically_promoted_to_support": false,
+      "available": true,
+      "crossed_at": "2026-08-20",
+      "final_sessions_above": 8,
+      "price": 1550000.0,
+      "relevance": "background",
+      "rendering_class": "HISTORICAL_REFERENCE",
+      "state": "holding_above"
+    }
+  },
+  "packet_id": "2026-08-28-kr-run-44-4606feed1396",
+  "price_structure_v3": {
+    "adjustment_basis": "provider_adjusted_price_v1",
+    "as_of": "2026-08-28",
+    "contract": "kr-price-structure-runtime-context-v1",
+    "coverage": {
+      "daily": {
+        "actual_count": 1000,
+        "actual_end_date": "2026-08-28",
+        "actual_start_date": "2022-07-26",
+        "adjustment_basis": "provider_adjusted_price_v1",
+        "completed_count": 1000,
+        "contract": "ohlcv-long-history-contract-v1",
+        "denial_reason": "provider_limit",
+        "history_complete_to_listing": false,
+        "provider_limit": 1000,
+        "provider_limit_hit": true,
+        "provider_returned_count": 1000,
+        "requested_count": 1200,
+        "status": "PARTIAL_SAFE",
+        "timeframe": "daily"
+      },
+      "monthly": {
+        "actual_count": 300,
+        "actual_end_date": "2026-08-03",
+        "actual_start_date": "2001-09-03",
+        "adjustment_basis": "provider_adjusted_price_v1",
+        "completed_count": 299,
+        "contract": "ohlcv-long-history-contract-v1",
+        "denial_reason": "short_listing_or_available_history",
+        "history_complete_to_listing": true,
+        "provider_limit": 1000,
+        "provider_limit_hit": false,
+        "provider_returned_count": 300,
+        "requested_count": 300,
+        "status": "PARTIAL",
+        "timeframe": "monthly"
+      },
+      "weekly": {
+        "actual_count": 600,
+        "actual_end_date": "2026-08-24",
+        "actual_start_date": "2015-02-23",
+        "adjustment_basis": "provider_adjusted_price_v1",
+        "completed_count": 600,
+        "contract": "ohlcv-long-history-contract-v1",
+        "history_complete_to_listing": false,
+        "provider_limit": 1000,
+        "provider_limit_hit": false,
+        "provider_returned_count": 600,
+        "requested_count": 600,
+        "status": "PASS",
+        "timeframe": "weekly"
+      }
+    },
+    "currency": "KRW",
+    "current_price": "1653000.0",
+    "eligibility": "ELIGIBLE_SR_ONLY",
+    "family_consensus_audit": {
+      "ambiguity_contract": "price-structure-v3-ambiguity-set-v1",
+      "consensus_set_id": "v3-family-consensus:bdf9b03d6f654b9ccd1b",
+      "contract": "fib-family-consensus-v1",
+      "equivalence_classes": [
+        {
+          "active_structure_signature": [
+            "W3:v3-pivot:f86454d7cf3ba40014cb:CONFIRMED",
+            "W4:v3-pivot:0ed19c4263afe66eeb25:CONFIRMED",
+            "W5:v3-pivot:12d89122beb445775d83:PROVISIONAL"
+          ],
+          "contract": "wave-hypothesis-equivalence-class-v1",
+          "divergent_endpoint_labels": [
+            "W0",
+            "W1",
+            "W2"
+          ],
+          "equivalence_class_id": "v3-wave-equivalence:7e5d3940ccbd4cf54243",
+          "family_dependency_status": {
+            "CURRENT_REBOUND:CURRENT_REBOUND": "SHARED",
+            "PRIMARY_CYCLE_RETRACEMENT:PRIMARY_CYCLE_RETRACEMENT": "DIVERGENT",
+            "WAVE1_RETRACEMENT:WAVE1_RETRACEMENT": "DIVERGENT",
+            "WAVE3_RETRACEMENT:WAVE3_RETRACEMENT": "DIVERGENT",
+            "WAVE5_PROJECTION:SPAN03_MULTIPLE": "DIVERGENT",
+            "WAVE5_PROJECTION:WAVE1_MULTIPLE": "DIVERGENT",
+            "WAVE5_PROJECTION:WAVE3_MULTIPLE": "DIVERGENT"
+          },
+          "member_hypothesis_ids": [
+            "v3-monthly-wave:000c73daff82f8bf6543",
+            "v3-monthly-wave:1202ec171ee65194cfd5",
+            "v3-monthly-wave:1d7d09cd0ebf499720b0",
+            "v3-monthly-wave:47c459eabcd3c66a0c6f",
+            "v3-monthly-wave:6e5f97260004fe178eea",
+            "v3-monthly-wave:8337f6624f5e085c42f1",
+            "v3-monthly-wave:8e42f84423e703646943",
+            "v3-monthly-wave:f35febcbb6f832ccbdba"
+          ],
+          "shared_endpoint_refs": {
+            "W3": "v3-pivot:f86454d7cf3ba40014cb",
+            "W4": "v3-pivot:0ed19c4263afe66eeb25",
+            "W5": "v3-pivot:12d89122beb445775d83"
+          },
+          "source_degree": "GRAND_CYCLE",
+          "ticker": "000660",
+          "wave_state": "W5_CANDIDATE"
+        },
+        {
+          "active_structure_signature": [
+            "W1:v3-pivot:cb1d25038bc0677fd0fd:CONFIRMED",
+            "W2:v3-pivot:aafca00a5906cd281d01:CONFIRMED",
+            "W3:v3-pivot:12d89122beb445775d83:PROVISIONAL",
+            "W4:v3-pivot:4825a165405098398654:PROVISIONAL"
+          ],
+          "contract": "wave-hypothesis-equivalence-class-v1",
+          "equivalence_class_id": "v3-wave-equivalence:c801d95717dd2a00a69c",
+          "family_dependency_status": {
+            "CURRENT_REBOUND:CURRENT_REBOUND": "SHARED",
+            "PRIMARY_CYCLE_RETRACEMENT:PRIMARY_CYCLE_RETRACEMENT": "SHARED",
+            "WAVE1_RETRACEMENT:WAVE1_RETRACEMENT": "SHARED",
+            "WAVE3_RETRACEMENT:WAVE3_RETRACEMENT": "SHARED",
+            "WAVE5_PROJECTION:SPAN03_MULTIPLE": "SHARED",
+            "WAVE5_PROJECTION:WAVE1_MULTIPLE": "SHARED",
+            "WAVE5_PROJECTION:WAVE3_MULTIPLE": "SHARED"
+          },
+          "member_hypothesis_ids": [
+            "v3-monthly-wave:9a4e7a2cedb213f6590b"
+          ],
+          "shared_endpoint_refs": {
+            "W0": "v3-pivot:0ed19c4263afe66eeb25",
+            "W1": "v3-pivot:cb1d25038bc0677fd0fd",
+            "W2": "v3-pivot:aafca00a5906cd281d01",
+            "W3": "v3-pivot:12d89122beb445775d83",
+            "W4": "v3-pivot:4825a165405098398654"
+          },
+          "source_degree": "INTERMEDIATE",
+          "ticker": "000660",
+          "wave_state": "W4_CANDIDATE_W5_UNCONFIRMED"
+        },
+        {
+          "active_structure_signature": [
+            "W1:v3-pivot:eb5a14f5c1c3510cff12:CONFIRMED",
+            "W2:v3-pivot:6f9ad69fc0f8f8e99983:CONFIRMED",
+            "W3:v3-pivot:12d89122beb445775d83:PROVISIONAL",
+            "W4:v3-pivot:4825a165405098398654:PROVISIONAL"
+          ],
+          "contract": "wave-hypothesis-equivalence-class-v1",
+          "equivalence_class_id": "v3-wave-equivalence:d0160e3b06023740f68b",
+          "family_dependency_status": {
+            "CURRENT_REBOUND:CURRENT_REBOUND": "SHARED",
+            "PRIMARY_CYCLE_RETRACEMENT:PRIMARY_CYCLE_RETRACEMENT": "SHARED",
+            "WAVE1_RETRACEMENT:WAVE1_RETRACEMENT": "SHARED",
+            "WAVE3_RETRACEMENT:WAVE3_RETRACEMENT": "SHARED",
+            "WAVE5_PROJECTION:SPAN03_MULTIPLE": "SHARED",
+            "WAVE5_PROJECTION:WAVE1_MULTIPLE": "SHARED",
+            "WAVE5_PROJECTION:WAVE3_MULTIPLE": "SHARED"
+          },
+          "member_hypothesis_ids": [
+            "v3-monthly-wave:faacac413279985105f3"
+          ],
+          "shared_endpoint_refs": {
+            "W0": "v3-pivot:64e5144323799045eeff",
+            "W1": "v3-pivot:eb5a14f5c1c3510cff12",
+            "W2": "v3-pivot:6f9ad69fc0f8f8e99983",
+            "W3": "v3-pivot:12d89122beb445775d83",
+            "W4": "v3-pivot:4825a165405098398654"
+          },
+          "source_degree": "PRIMARY_CURRENT_CYCLE",
+          "ticker": "000660",
+          "wave_state": "W4_CANDIDATE_W5_UNCONFIRMED"
+        },
+        {
+          "active_structure_signature": [
+            "W1:v3-pivot:eb5a14f5c1c3510cff12:CONFIRMED",
+            "W2:v3-pivot:8c6b186b26dad258a944:CONFIRMED",
+            "W3:v3-pivot:12d89122beb445775d83:PROVISIONAL",
+            "W4:v3-pivot:4825a165405098398654:PROVISIONAL"
+          ],
+          "contract": "wave-hypothesis-equivalence-class-v1",
+          "equivalence_class_id": "v3-wave-equivalence:857480eee055d380ee43",
+          "family_dependency_status": {
+            "CURRENT_REBOUND:CURRENT_REBOUND": "SHARED",
+            "PRIMARY_CYCLE_RETRACEMENT:PRIMARY_CYCLE_RETRACEMENT": "SHARED",
+            "WAVE1_RETRACEMENT:WAVE1_RETRACEMENT": "SHARED",
+            "WAVE3_RETRACEMENT:WAVE3_RETRACEMENT": "SHARED",
+            "WAVE5_PROJECTION:SPAN03_MULTIPLE": "SHARED",
+            "WAVE5_PROJECTION:WAVE1_MULTIPLE": "SHARED",
+            "WAVE5_PROJECTION:WAVE3_MULTIPLE": "SHARED"
+          },
+          "member_hypothesis_ids": [
+            "v3-monthly-wave:147d8236cff7063aecd1"
+          ],
+          "shared_endpoint_refs": {
+            "W0": "v3-pivot:a1109a834f576c25fde0",
+            "W1": "v3-pivot:eb5a14f5c1c3510cff12",
+            "W2": "v3-pivot:8c6b186b26dad258a944",
+            "W3": "v3-pivot:12d89122beb445775d83",
+            "W4": "v3-pivot:4825a165405098398654"
+          },
+          "source_degree": "PRIMARY_CURRENT_CYCLE",
+          "ticker": "000660",
+          "wave_state": "W4_CANDIDATE_W5_UNCONFIRMED"
+        },
+        {
+          "active_structure_signature": [
+            "W1:v3-pivot:f86454d7cf3ba40014cb:CONFIRMED",
+            "W2:v3-pivot:0ed19c4263afe66eeb25:CONFIRMED",
+            "W3:v3-pivot:12d89122beb445775d83:PROVISIONAL",
+            "W4:v3-pivot:4825a165405098398654:PROVISIONAL"
+          ],
+          "contract": "wave-hypothesis-equivalence-class-v1",
+          "divergent_endpoint_labels": [
+            "W0"
+          ],
+          "equivalence_class_id": "v3-wave-equivalence:d53863dafeae6d90c368",
+          "family_dependency_status": {
+            "CURRENT_REBOUND:CURRENT_REBOUND": "SHARED",
+            "PRIMARY_CYCLE_RETRACEMENT:PRIMARY_CYCLE_RETRACEMENT": "DIVERGENT",
+            "WAVE1_RETRACEMENT:WAVE1_RETRACEMENT": "DIVERGENT",
+            "WAVE3_RETRACEMENT:WAVE3_RETRACEMENT": "SHARED",
+            "WAVE5_PROJECTION:SPAN03_MULTIPLE": "DIVERGENT",
+            "WAVE5_PROJECTION:WAVE1_MULTIPLE": "DIVERGENT",
+            "WAVE5_PROJECTION:WAVE3_MULTIPLE": "SHARED"
+          },
+          "member_hypothesis_ids": [
+            "v3-monthly-wave:04fbfb97bdaca1d38876",
+            "v3-monthly-wave:332e89d129b310ab6af5",
+            "v3-monthly-wave:6d506bb5c934f7c50123",
+            "v3-monthly-wave:851988f906e688b59a32",
+            "v3-monthly-wave:949d2543129ae313fb32",
+            "v3-monthly-wave:ea894c5da0106815db64"
+          ],
+          "shared_endpoint_refs": {
+            "W1": "v3-pivot:f86454d7cf3ba40014cb",
+            "W2": "v3-pivot:0ed19c4263afe66eeb25",
+            "W3": "v3-pivot:12d89122beb445775d83",
+            "W4": "v3-pivot:4825a165405098398654"
+          },
+          "source_degree": "PRIMARY_CURRENT_CYCLE",
+          "ticker": "000660",
+          "wave_state": "W4_CANDIDATE_W5_UNCONFIRMED"
+        }
+      ],
+      "family_level_price_structure": "PASS",
+      "full_hypothesis_stability": "VALID_ABSTENTION",
+      "membership_audit": {
+        "contract": "family-consensus-membership-audit-v1",
+        "runs": [
+          {
+            "run_id": "run-01",
+            "status": "INSUFFICIENT_STRUCTURE"
+          }
+        ],
+        "ticker": "000660",
+        "unjustified_alternative_in_consensus": 0
+      },
+      "omitted_unstable_family_count": 0,
+      "ticker": "000660",
+      "unstable_fib_source_in_confluence": 0
+    },
+    "family_consensus_safe": false,
+    "market": "KR",
+    "partial_bar_used_for_pivot_confirmation": 0,
+    "security_basis": "KR:000660",
+    "source_contract": "price-structure-wave-fibonacci-v3",
+    "summary": {
+      "dynamic_bollinger_resistance": {
+        "active_relevance": "ACTIVE_STRUCTURAL",
+        "as_of": "2026-08-28",
+        "confirmation_quality": "1.000000",
+        "contract": "deterministic-sr-base-layer-v1",
+        "currency": "KRW",
+        "current_role": "RESISTANCE",
+        "display": "약 186.7만~187.7만원",
+        "distance_pct": "12.983621",
+        "evidence_family_score": "1.200000",
+        "historical_interaction_count": 0,
+        "indicator_bar_states": [
+          "COMPLETE"
+        ],
+        "indicator_observation_dates": [
+          "2026-08-28"
+        ],
+        "proximity_tier": "RELEVANT",
+        "raw_high": "1876980.750000",
+        "raw_low": "1867619.250000",
+        "reaction_count": 0,
+        "requested_timeframe": "summary",
+        "source_families": [
+          "BOLLINGER_WEEKLY"
+        ],
+        "source_refs": [
+          "v3-bollinger:90b1b4185e762abf9152"
+        ],
+        "source_timeframe": "weekly",
+        "source_timeframes": [
+          "weekly"
+        ],
+        "structural_score": 21,
+        "ticker": "000660",
+        "zone_id": "v3-zone:4b6cff0ad3bea3ef381d"
+      },
+      "dynamic_bollinger_support": {
+        "active_relevance": "ACTIVE_NEAR",
+        "as_of": "2026-08-28",
+        "confirmation_quality": "1.000000",
+        "contract": "deterministic-sr-base-layer-v1",
+        "currency": "KRW",
+        "current_role": "SUPPORT",
+        "display": "약 159.2만~160.6만원",
+        "distance_pct": "2.852552",
+        "evidence_family_score": "2.800000",
+        "historical_interaction_count": 11,
+        "indicator_bar_states": [
+          "COMPLETE"
+        ],
+        "indicator_observation_dates": [
+          "2026-08-28"
+        ],
+        "last_meaningful_interaction": "2026-08-28",
+        "last_price_interaction_date": "2026-08-28",
+        "price_anchor_refs": [
+          "v3-balance-box:bef8bc9a068f01cad4d6"
+        ],
+        "proximity_tier": "NEAR",
+        "raw_high": "1605847.312500",
+        "raw_low": "1592002.687500",
+        "reaction_count": 11,
+        "requested_timeframe": "summary",
+        "source_families": [
+          "BALANCE_BOX",
+          "BOLLINGER_DAILY"
+        ],
+        "source_refs": [
+          "v3-balance-box:bef8bc9a068f01cad4d6",
+          "v3-bollinger:4b6e224e216125357757"
+        ],
+        "source_timeframe": "daily",
+        "source_timeframes": [
+          "daily"
+        ],
+        "structural_score": 12,
+        "ticker": "000660",
+        "zone_id": "v3-zone:4c35a2f22ca7bd1f9ad1"
+      },
+      "fib_sr_confluence_state": "NO_MEANINGFUL_SR_OVERLAP",
+      "major_structural_resistance": {
+        "classification": "NO_CONFIRMED_HISTORICAL_LEVEL",
+        "reason": "NO_ACTIVE_STRUCTURAL_LEVEL"
+      },
+      "major_structural_support": {
+        "classification": "AVAILABLE_LOCAL",
+        "zone": {
+          "active_relevance": "ACTIVE_NEAR",
+          "as_of": "2026-08-28",
+          "confirmation_quality": "1.000000",
+          "contract": "deterministic-sr-base-layer-v1",
+          "currency": "KRW",
+          "current_role": "SUPPORT",
+          "display": "약 159.2만~160.6만원",
+          "distance_pct": "2.852552",
+          "evidence_family_score": "2.800000",
+          "historical_interaction_count": 11,
+          "indicator_bar_states": [
+            "COMPLETE"
+          ],
+          "indicator_observation_dates": [
+            "2026-08-28"
+          ],
+          "last_meaningful_interaction": "2026-08-28",
+          "last_price_interaction_date": "2026-08-28",
+          "price_anchor_refs": [
+            "v3-balance-box:bef8bc9a068f01cad4d6"
+          ],
+          "proximity_tier": "NEAR",
+          "raw_high": "1605847.312500",
+          "raw_low": "1592002.687500",
+          "reaction_count": 11,
+          "requested_timeframe": "summary",
+          "source_families": [
+            "BALANCE_BOX",
+            "BOLLINGER_DAILY"
+          ],
+          "source_refs": [
+            "v3-balance-box:bef8bc9a068f01cad4d6",
+            "v3-bollinger:4b6e224e216125357757"
+          ],
+          "source_timeframe": "daily",
+          "source_timeframes": [
+            "daily"
+          ],
+          "structural_score": 12,
+          "ticker": "000660",
+          "zone_id": "v3-zone:4c35a2f22ca7bd1f9ad1"
+        }
+      },
+      "nearest_cross_timeframe_reason": "NO_RELEVANT_CROSS_TIMEFRAME_ZONE",
+      "nearest_resistance": {
+        "classification": "AVAILABLE_LOCAL",
+        "zone": {
+          "active_relevance": "ACTIVE_STRUCTURAL",
+          "as_of": "2026-08-28",
+          "confirmation_quality": "1.000000",
+          "contract": "deterministic-sr-base-layer-v1",
+          "currency": "KRW",
+          "current_role": "RESISTANCE",
+          "display": "약 180.4만~181.4만원",
+          "distance_pct": "9.168713",
+          "evidence_family_score": "1.200000",
+          "historical_interaction_count": 0,
+          "indicator_bar_states": [
+            "COMPLETE"
+          ],
+          "indicator_observation_dates": [
+            "2026-08-28"
+          ],
+          "proximity_tier": "RELEVANT",
+          "raw_high": "1813604.241018",
+          "raw_low": "1804558.833332",
+          "reaction_count": 0,
+          "requested_timeframe": "summary",
+          "source_families": [
+            "BOLLINGER_DAILY"
+          ],
+          "source_refs": [
+            "v3-bollinger:461614b00014e15f66b4"
+          ],
+          "source_timeframe": "daily",
+          "source_timeframes": [
+            "daily"
+          ],
+          "structural_score": 11,
+          "ticker": "000660",
+          "zone_id": "v3-zone:65a845f665f148533c54"
+        }
+      },
+      "nearest_support": {
+        "classification": "AVAILABLE_LOCAL",
+        "zone": {
+          "active_relevance": "ACTIVE_NEAR",
+          "as_of": "2026-08-28",
+          "confirmation_quality": "1.000000",
+          "contract": "deterministic-sr-base-layer-v1",
+          "currency": "KRW",
+          "current_role": "SUPPORT",
+          "display": "약 159.2만~160.6만원",
+          "distance_pct": "2.852552",
+          "evidence_family_score": "2.800000",
+          "historical_interaction_count": 11,
+          "indicator_bar_states": [
+            "COMPLETE"
+          ],
+          "indicator_observation_dates": [
+            "2026-08-28"
+          ],
+          "last_meaningful_interaction": "2026-08-28",
+          "last_price_interaction_date": "2026-08-28",
+          "price_anchor_refs": [
+            "v3-balance-box:bef8bc9a068f01cad4d6"
+          ],
+          "proximity_tier": "NEAR",
+          "raw_high": "1605847.312500",
+          "raw_low": "1592002.687500",
+          "reaction_count": 11,
+          "requested_timeframe": "summary",
+          "source_families": [
+            "BALANCE_BOX",
+            "BOLLINGER_DAILY"
+          ],
+          "source_refs": [
+            "v3-balance-box:bef8bc9a068f01cad4d6",
+            "v3-bollinger:4b6e224e216125357757"
+          ],
+          "source_timeframe": "daily",
+          "source_timeframes": [
+            "daily"
+          ],
+          "structural_score": 12,
+          "ticker": "000660",
+          "zone_id": "v3-zone:4c35a2f22ca7bd1f9ad1"
+        }
+      },
+      "no_wave_reason": "NO_VALID_WAVE"
+    },
+    "ticker": "000660"
+  },
+  "ticker": "000660"
+}
