@@ -13,6 +13,7 @@ from app.services.price_structure_wave_fibonacci_v3_service import (
     WaveHypothesisSelection,
     WaveSelectionStatus,
     ZoneSource,
+    _bollinger_sources,
     _source_score,
     build_cross_timeframe_confluence,
     build_pivot_zones,
@@ -186,6 +187,31 @@ def test_pivot_zone_uses_atr_padding_and_current_role() -> None:
     assert zones[0].high > Decimal(101)
     assert zones[0].current_role == "SUPPORT"
     assert zones[0].reaction_count == 2
+    assert zones[0].historical_interaction_count == 2
+    assert len(zones[0].price_anchor_refs) == 2
+
+
+def test_indicator_observation_is_not_a_price_interaction() -> None:
+    bars = tuple(_bar(index, 100 + index) for index in range(24))
+    sources = _bollinger_sources(bars, ticker="TEST", timeframe="monthly")
+    zones = merge_zone_sources(
+        sources,
+        ticker="TEST",
+        timeframe="monthly",
+        current_price=Decimal(111),
+        limit=None,
+    )
+
+    assert sources
+    assert all(source.indicator_observation_date == bars[-1].date for source in sources)
+    assert all(source.last_price_interaction_date is None for source in sources)
+    assert all(source.interaction_date is None for source in sources)
+    assert all(source.historical_interaction_count == 0 for source in sources)
+    assert all(zone.indicator_observation_dates == (bars[-1].date,) for zone in zones)
+    assert all(zone.last_price_interaction_date is None for zone in zones)
+    assert all(zone.last_meaningful_interaction is None for zone in zones)
+    assert all(zone.reaction_count == 0 for zone in zones)
+    assert all(not zone.price_anchor_refs for zone in zones)
 
 
 def test_wave_hard_rules_generate_no_forced_impulse() -> None:

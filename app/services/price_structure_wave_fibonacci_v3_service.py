@@ -33,6 +33,7 @@ FIB_FAMILY_DEPENDENCY_CONTRACT = "fib-family-endpoint-dependency-v1"
 FAMILY_CONSENSUS_CONTRACT = "fib-family-consensus-v1"
 SR_BASE_CONTRACT = "deterministic-sr-base-layer-v1"
 SR_PROXIMITY_CONTRACT = "sr-proximity-relevance-gate-v1"
+MAJOR_SR_REALITY_CONTRACT = "major-sr-price-anchor-reality-gate-v1"
 
 TIMEFRAME_ORDER: tuple[Timeframe, ...] = ("monthly", "weekly", "daily")
 HISTORY_REQUESTS: dict[Timeframe, int] = {
@@ -58,6 +59,7 @@ CONFLUENCE_PCT: dict[Timeframe, Decimal] = {
 }
 BOX_WINDOWS: dict[Timeframe, int] = {"daily": 20, "weekly": 12, "monthly": 6}
 TIMEFRAME_IMPORTANCE: dict[Timeframe, int] = {"daily": 1, "weekly": 2, "monthly": 3}
+PRICE_ANCHOR_EVIDENCE_TYPES = frozenset({"PIVOT", "BOX", "PRIOR_HIGH_LOW"})
 
 PivotKind = Literal["LOW", "HIGH"]
 ConfirmationStatus = Literal["CONFIRMED", "PROVISIONAL"]
@@ -148,6 +150,11 @@ class ZoneSource(FrozenModel):
     family_stability: Literal["EXACT_INVARIANT", "PRICE_EQUIVALENT"] | None = None
     consensus_set_id: str | None = None
     equivalence_class_id: str | None = None
+    indicator_observation_date: str | None = None
+    last_price_interaction_date: str | None = None
+    historical_interaction_count: int = 0
+    price_anchor_ref: str | None = None
+    # Backward-compatible source field. New producers populate it only for price interactions.
     interaction_date: str | None = None
     source_role: Literal["SUPPORT", "RESISTANCE"] | None = None
 
@@ -169,6 +176,10 @@ class TechnicalZone(FrozenModel):
     historical_role: ZoneRole | None = None
     reclaim_status: Literal["NOT_TESTED", "RECLAIMED", "LOST", "INSIDE"] = "NOT_TESTED"
     sources: tuple[ZoneSource, ...]
+    price_anchor_refs: tuple[str, ...] = ()
+    indicator_observation_dates: tuple[str, ...] = ()
+    last_price_interaction_date: str | None = None
+    historical_interaction_count: int = 0
     confluence_stability: Literal[
         "CONFLUENCE_EXACT_INVARIANT",
         "CONFLUENCE_PRICE_EQUIVALENT",
@@ -202,6 +213,10 @@ class SelectedSRZone(FrozenModel):
     source_timeframes: tuple[Timeframe, ...]
     source_families: tuple[str, ...]
     source_refs: tuple[str, ...]
+    price_anchor_refs: tuple[str, ...] = ()
+    indicator_observation_dates: tuple[str, ...] = ()
+    last_price_interaction_date: str | None = None
+    historical_interaction_count: int = 0
     raw_low: Decimal
     raw_high: Decimal
     display: str
@@ -740,6 +755,9 @@ def _zone_source_for_pivot(pivot: PivotPoint, target: Timeframe) -> ZoneSource:
         confluence_target_timeframe=target,
         price=pivot.price,
         status=pivot.status,
+        last_price_interaction_date=pivot.bar_date,
+        historical_interaction_count=1,
+        price_anchor_ref=pivot.pivot_id,
         interaction_date=pivot.bar_date,
         source_role="SUPPORT" if pivot.kind == "LOW" else "RESISTANCE",
     )
@@ -809,6 +827,9 @@ def build_pivot_zones(
                     reaction_count=len(group),
                     last_meaningful_interaction=last_date,
                     sources=sources,
+                    price_anchor_refs=tuple(source.source_id for source in sources),
+                    last_price_interaction_date=last_date,
+                    historical_interaction_count=len(group),
                 )
             )
     return rank_zones(output)
@@ -841,7 +862,7 @@ def _bollinger_sources(
             confluence_target_timeframe=timeframe,
             price=_rounded(price),
             status="CONFIRMED",
-            interaction_date=bars[-1].date,
+            indicator_observation_date=bars[-1].date,
             source_role=(
                 "SUPPORT"
                 if name == "LOWER_20_2"
@@ -874,8 +895,14 @@ def _balance_box_source(
     inside = sum(low <= bar.close <= high for bar in recent)
     if inside / len(recent) < 0.55:
         return None
+    interaction_dates = tuple(
+        bar.date for bar in recent if low <= bar.close <= high
+    )
+    source_id = _stable_id(
+        "v3-balance-box", ticker, timeframe, low, high, recent[-1].date
+    )
     return ZoneSource(
-        source_id=_stable_id("v3-balance-box", ticker, timeframe, low, high, recent[-1].date),
+        source_id=source_id,
         evidence_type="BOX",
         evidence_family="BALANCE_BOX",
         method_family="CLOSE_OCCUPANCY_IQR",
@@ -884,7 +911,10 @@ def _balance_box_source(
         confluence_target_timeframe=timeframe,
         price=_rounded(center),
         status="CONFIRMED",
-        interaction_date=recent[-1].date,
+        last_price_interaction_date=max(interaction_dates),
+        historical_interaction_count=len(interaction_dates),
+        price_anchor_ref=source_id,
+        interaction_date=max(interaction_dates),
     )
 
 
@@ -1498,6 +1528,21 @@ def _source_score(sources: Sequence[ZoneSource]) -> Decimal:
     return _rounded(score)
 
 
+def _is_price_anchor_source(source: ZoneSource) -> bool:
+    return (
+        source.evidence_type in PRICE_ANCHOR_EVIDENCE_TYPES
+        and source.status == "CONFIRMED"
+        and bool(source.price_anchor_ref or source.source_id)
+    )
+
+
+def has_price_anchor_evidence(zone: TechnicalZone) -> bool:
+    """Return whether a zone contains confirmed observed-price provenance."""
+    return bool(zone.price_anchor_refs) or any(
+        _is_price_anchor_source(source) for source in zone.sources
+    )
+
+
 def merge_zone_sources(
     sources: Sequence[ZoneSource],
     *,
@@ -1550,7 +1595,35 @@ def merge_zone_sources(
             reclaim_status = "RECLAIMED"
         elif historical_role == "SUPPORT" and current_role == "RESISTANCE":
             reclaim_status = "LOST"
-        interactions = [source.interaction_date for source in group if source.interaction_date]
+        anchor_sources = [source for source in group if _is_price_anchor_source(source)]
+        price_anchor_refs = tuple(
+            sorted(
+                {
+                    source.price_anchor_ref or source.source_id
+                    for source in anchor_sources
+                }
+            )
+        )
+        interactions = [
+            source.last_price_interaction_date or source.interaction_date
+            for source in anchor_sources
+            if source.last_price_interaction_date or source.interaction_date
+        ]
+        historical_interaction_count = sum(
+            source.historical_interaction_count
+            or bool(source.last_price_interaction_date or source.interaction_date)
+            for source in anchor_sources
+        )
+        indicator_observation_dates = tuple(
+            sorted(
+                {
+                    source.indicator_observation_date
+                    for source in group
+                    if source.indicator_observation_date
+                }
+            )
+        )
+        last_price_interaction_date = max(interactions) if interactions else None
         zones.append(
             TechnicalZone(
                 zone_id=_stable_id(
@@ -1570,11 +1643,15 @@ def merge_zone_sources(
                 proximity_pct=_proximity(low, high, current_price),
                 evidence_family_score=_source_score(group),
                 confirmation_quality=_rounded(confirmation),
-                reaction_count=sum(source.evidence_type == "PIVOT" for source in group),
-                last_meaningful_interaction=max(interactions) if interactions else None,
+                reaction_count=historical_interaction_count,
+                last_meaningful_interaction=last_price_interaction_date,
                 historical_role=historical_role,
                 reclaim_status=reclaim_status,
                 sources=tuple(group),
+                price_anchor_refs=price_anchor_refs,
+                indicator_observation_dates=indicator_observation_dates,
+                last_price_interaction_date=last_price_interaction_date,
+                historical_interaction_count=historical_interaction_count,
                 confluence_stability=confluence_stability,
             )
         )
@@ -1763,6 +1840,23 @@ def _selected_sr_zone(
         ),
         source_families=tuple(sorted({source.evidence_family for source in zone.sources})),
         source_refs=tuple(sorted({source.source_id for source in zone.sources})),
+        price_anchor_refs=tuple(
+            sorted(
+                zone.price_anchor_refs
+                or {
+                    source.price_anchor_ref or source.source_id
+                    for source in zone.sources
+                    if _is_price_anchor_source(source)
+                }
+            )
+        ),
+        indicator_observation_dates=zone.indicator_observation_dates,
+        last_price_interaction_date=(
+            zone.last_price_interaction_date or zone.last_meaningful_interaction
+        ),
+        historical_interaction_count=(
+            zone.historical_interaction_count or zone.reaction_count
+        ),
         raw_low=zone.low,
         raw_high=zone.high,
         display=format_technical_price_zone(
@@ -1791,7 +1885,11 @@ def _rank_major(
     *,
     timeframe: Timeframe,
 ) -> TechnicalZone | None:
-    eligible = [zone for zone in zones if _sr_quality_eligible(zone)]
+    eligible = [
+        zone
+        for zone in zones
+        if _sr_quality_eligible(zone) and has_price_anchor_evidence(zone)
+    ]
     if not eligible:
         return None
     tiers = {
@@ -1935,7 +2033,8 @@ def _summary_side(
         active_candidates = [
             item
             for item in candidates
-            if _sr_distance_tier(item[1], timeframe=item[0], zones=item[2])
+            if has_price_anchor_evidence(item[1])
+            and _sr_distance_tier(item[1], timeframe=item[0], zones=item[2])
             in {"NEAR", "RELEVANT"}
         ]
         if not active_candidates:
@@ -2172,7 +2271,11 @@ def build_deterministic_sr_base_layer(
     )
     nearest_cross = min(active_cross, key=lambda item: item[0].proximity_pct, default=None)
     major_cross = max(
-        active_cross,
+        (
+            item
+            for item in active_cross
+            if has_price_anchor_evidence(item[0])
+        ),
         key=lambda item: (
             item[0].structural_importance,
             item[0].evidence_family_score,

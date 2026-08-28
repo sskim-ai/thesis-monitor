@@ -144,6 +144,121 @@ def test_nearest_and_major_are_separate_rankings() -> None:
     assert result.timeframes["daily"].major_support.zone.zone_id == "major"  # type: ignore[union-attr]
 
 
+def test_bollinger_only_zone_can_remain_near_but_cannot_be_major() -> None:
+    bollinger = _zone(
+        "bollinger-only",
+        "94",
+        "96",
+        structural=31,
+        reaction_count=0,
+        sources=(
+            _source(
+                "bollinger:monthly",
+                "95",
+                timeframe="daily",
+                role="SUPPORT",
+                evidence_type="BOLLINGER",
+            ),
+        ),
+    )
+    result = _build({"daily": (bollinger,)})
+
+    assert result.summary.nearest_support.zone is not None
+    assert result.summary.nearest_support.zone.zone_id == "bollinger-only"
+    assert result.summary.major_structural_support.zone is None
+    assert result.summary.major_structural_support.reason == "NO_ACTIVE_STRUCTURAL_LEVEL"
+
+
+def test_googl_bollinger_only_major_controls_are_rejected() -> None:
+    support = _zone(
+        "googl-old-support",
+        "267.08",
+        "268.43",
+        timeframe="monthly",
+        structural=31,
+        reaction_count=0,
+        sources=(
+            _source(
+                "googl:bollinger:lower",
+                "267.755",
+                timeframe="monthly",
+                role="SUPPORT",
+                evidence_type="BOLLINGER",
+            ),
+        ),
+    )
+    resistance = _zone(
+        "googl-old-resistance",
+        "424.82",
+        "426.96",
+        timeframe="monthly",
+        role="RESISTANCE",
+        structural=31,
+        reaction_count=0,
+        sources=(
+            _source(
+                "googl:bollinger:upper",
+                "425.89",
+                timeframe="monthly",
+                role="RESISTANCE",
+                evidence_type="BOLLINGER",
+            ),
+        ),
+    )
+    result = _build({"monthly": (support, resistance)})
+
+    assert result.summary.major_structural_support.zone is None
+    assert result.summary.major_structural_resistance.zone is None
+
+
+def test_pivot_plus_bollinger_keeps_major_price_anchor_provenance() -> None:
+    mixed = _zone(
+        "mixed",
+        "89",
+        "91",
+        structural=32,
+        sources=(
+            _source("pivot:monthly", "90", timeframe="monthly", role="SUPPORT"),
+            _source(
+                "bollinger:monthly",
+                "90.2",
+                timeframe="monthly",
+                role="SUPPORT",
+                evidence_type="BOLLINGER",
+            ),
+        ),
+    )
+    result = _build({"monthly": (mixed,)})
+
+    selected = result.summary.major_structural_support.zone
+    assert selected is not None
+    assert selected.zone_id == "mixed"
+    assert selected.price_anchor_refs == ("pivot:monthly",)
+
+
+def test_balance_box_is_eligible_as_observed_price_anchor() -> None:
+    box = _zone(
+        "box",
+        "89",
+        "91",
+        structural=31,
+        sources=(
+            _source(
+                "box:monthly",
+                "90",
+                timeframe="monthly",
+                role="SUPPORT",
+                evidence_type="BOX",
+            ),
+        ),
+    )
+    result = _build({"monthly": (box,)})
+
+    selected = result.summary.major_structural_support.zone
+    assert selected is not None
+    assert selected.price_anchor_refs == ("box:monthly",)
+
+
 def test_current_zone_is_not_reused_as_support_or_resistance() -> None:
     current = _zone("current", "99", "101", role="CURRENT_ZONE")
     support = _zone("support", "94", "96")

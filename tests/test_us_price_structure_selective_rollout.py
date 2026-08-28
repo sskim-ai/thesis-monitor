@@ -25,12 +25,15 @@ def _zone(
         "display": display,
         "currency": "USD",
         "source_refs": [f"source:{zone_id}"],
+        "source_families": ["PIVOT_WEEKLY"],
+        "price_anchor_refs": [f"source:{zone_id}"],
         "source_timeframe": "weekly",
         "source_timeframes": ["weekly"],
         "distance_pct": "2.0",
         "proximity_tier": tier,
         "active_relevance": relevance,
         "current_role": role,
+        "as_of": "2026-08-27",
     }
 
 

@@ -22,13 +22,16 @@ The current structure renders under `📐 현재 가격 구조`. Stored rules re
 does not merge ownership.
 
 Internal nearest ownership is not a display label. Only canonical `NEAR/ACTIVE_NEAR` zones render
-as `가까운`; `RELEVANT` and `LONG_HORIZON` use structural labels. Each visible SR line carries its
-zone ID, source refs, distance, proximity tier, and active relevance. The renderer-output validator
-rejects a line whose label and provenance disagree.
+as `가까운`. A `RELEVANT` zone may render as `주요 구조` only when
+`major-sr-price-anchor-reality-gate-v1` supplies confirmed `price_anchor_refs`; dynamic-only zones
+are omitted from that semantic. Each visible major line carries its zone ID, source refs,
+price-anchor refs, source families/timeframes, interaction metadata, distance, proximity tier,
+active relevance, `as_of`, currency, security basis, and adjustment basis. The renderer-output
+validator rejects a major label whose anchor or proximity provenance disagrees.
 
-This proximity-aware surface is an explicit KR rollout mode. The renderer's default contract stays
-legacy-compatible for existing non-KR shadow callers, so the bounded KR repair does not alter US
-Price Structure output or eligibility.
+The proximity-aware surface is shared by the enabled KR and US selective rollout adapters. The
+major reality gate changes only structural eligibility; ordinary near-S/R, Fib/wave policy, and
+stored-rule ownership remain unchanged.
 
 Legacy suppression also has typed ownership. Structural fields are protected; current v3 and
 stored rules are retained by their owners; only explicitly eligible legacy-technical prose is
@@ -46,6 +49,6 @@ candidate output. All rendered numbers carry backend numeric references. The ren
 invent a target, stop, confirmation, invalidation, or monitoring rule. US and unmonitored subjects
 remain outside this route.
 
-`KR_PRICE_STRUCTURE_V3_ENABLED` defaults OFF. Production packets, Telegram, Public Action, schema
-4, tasks, assessments, and stored rules remain unchanged until the dedicated-test-sink gate passes
-and a separate KR-only enablement action sets the guard.
+The 2026-08-28 reality-gate repair preserves both existing rollout feature states. Production
+packet shape, Telegram routing, Public Action, schema 4, tasks, assessments, and stored rules are
+unchanged; only qualifying current major structural lines differ.

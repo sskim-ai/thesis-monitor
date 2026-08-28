@@ -143,7 +143,11 @@ def classify_user_visible_sr(zone: Mapping[str, object]) -> UserVisibleSRClass:
     relevance = str(zone.get("active_relevance") or "")
     if tier == "NEAR" and relevance == "ACTIVE_NEAR":
         return "NEAR"
-    if tier == "RELEVANT" and relevance == "ACTIVE_STRUCTURAL":
+    if (
+        tier == "RELEVANT"
+        and relevance == "ACTIVE_STRUCTURAL"
+        and _has_price_anchor_refs(zone)
+    ):
         return "STRUCTURAL"
     if (
         tier == "LONG_HORIZON"
@@ -151,6 +155,15 @@ def classify_user_visible_sr(zone: Mapping[str, object]) -> UserVisibleSRClass:
     ):
         return "LONG_HORIZON"
     return "OMIT"
+
+
+def _has_price_anchor_refs(zone: Mapping[str, object]) -> bool:
+    refs = zone.get("price_anchor_refs")
+    return bool(
+        isinstance(refs, Sequence)
+        and not isinstance(refs, (str, bytes))
+        and any(str(ref).strip() for ref in refs)
+    )
 
 
 def _decimal(zone: Mapping[str, object], key: str) -> Decimal:
@@ -199,6 +212,8 @@ def _binding(
     semantic_type: str,
     owner: PriceOwner = "CURRENT_PRICE_STRUCTURE",
     include_proximity: bool = False,
+    security_basis: str | None = None,
+    adjustment_basis: str | None = None,
 ) -> dict[str, object]:
     binding: dict[str, object] = {
         "owner": owner,
@@ -209,6 +224,10 @@ def _binding(
         "display": zone["display"],
         "currency": zone["currency"],
         "source_refs": zone["source_refs"],
+        "price_anchor_refs": zone.get("price_anchor_refs", ()),
+        "as_of": zone.get("as_of"),
+        "security_basis": security_basis,
+        "adjustment_basis": adjustment_basis,
     }
     if include_proximity:
         binding.update(
@@ -219,6 +238,15 @@ def _binding(
                 "distance_pct": zone.get("distance_pct"),
                 "proximity_tier": zone.get("proximity_tier"),
                 "active_relevance": zone.get("active_relevance"),
+                "indicator_observation_dates": zone.get(
+                    "indicator_observation_dates", ()
+                ),
+                "last_price_interaction_date": zone.get(
+                    "last_price_interaction_date"
+                ),
+                "historical_interaction_count": zone.get(
+                    "historical_interaction_count", 0
+                ),
             }
         )
     return binding
@@ -259,6 +287,8 @@ def _append_sr_zone(
     displayed: list[Mapping[str, object]],
     zone: Mapping[str, object],
     user_class: UserVisibleSRClass,
+    security_basis: str | None,
+    adjustment_basis: str | None,
 ) -> None:
     if user_class == "OMIT":
         return
@@ -271,7 +301,13 @@ def _append_sr_zone(
     lines.append(f"• {label}: {zone['display']}")
     displayed.append(zone)
     bindings.append(
-        _binding(zone, semantic_type=semantic_type, include_proximity=True)
+        _binding(
+            zone,
+            semantic_type=semantic_type,
+            include_proximity=True,
+            security_basis=security_basis,
+            adjustment_basis=adjustment_basis,
+        )
     )
 
 
@@ -314,6 +350,10 @@ def validate_price_structure_render(
                 or relevance not in {"ACTIVE_NEAR", "ACTIVE_STRUCTURAL"}
             ):
                 errors.append(f"major_label_ineligible_proximity:{fact_ref}")
+            if semantic_type.startswith("MAJOR_") and not _has_price_anchor_refs(
+                binding
+            ):
+                errors.append(f"major_label_without_price_anchor:{fact_ref}")
             elif semantic_type.startswith("LONG_HORIZON_") and (
                 tier != "LONG_HORIZON"
                 or relevance != "LONG_HORIZON_HISTORICAL"
@@ -347,6 +387,8 @@ def render_current_price_structure(
     currency: str,
     include_current_price: bool,
     enforce_user_visible_proximity: bool = False,
+    security_basis: str | None = None,
+    adjustment_basis: str | None = None,
 ) -> PriceStructureRender:
     nearest_support = summary.get("nearest_support")
     nearest_resistance = summary.get("nearest_resistance")
@@ -385,12 +427,14 @@ def render_current_price_structure(
                     displayed=displayed,
                     zone=zone,
                     user_class=user_class,
+                    security_basis=security_basis,
+                    adjustment_basis=adjustment_basis,
                 )
             elif user_class != "OMIT":
                 deferred.append((zone, user_class))
 
         for zone in (major_support_zone, major_resistance_zone):
-            if zone is None:
+            if zone is None or not _has_price_anchor_refs(zone):
                 continue
             user_class = classify_user_visible_sr(zone)
             if user_class in {"NEAR", "STRUCTURAL"}:
@@ -414,6 +458,8 @@ def render_current_price_structure(
                     displayed=displayed,
                     zone=zone,
                     user_class=user_class,
+                    security_basis=security_basis,
+                    adjustment_basis=adjustment_basis,
                 )
     else:
         for label, semantic_type, zone in (
@@ -423,7 +469,14 @@ def render_current_price_structure(
             if zone:
                 lines.append(f"• {label}: {zone['display']}")
                 displayed.append(zone)
-                bindings.append(_binding(zone, semantic_type=semantic_type))
+                bindings.append(
+                    _binding(
+                        zone,
+                        semantic_type=semantic_type,
+                        security_basis=security_basis,
+                        adjustment_basis=adjustment_basis,
+                    )
+                )
             else:
                 lines.append(f"• {label}: 확인된 역사적 {label.split()[-1]} 없음")
 
@@ -432,7 +485,7 @@ def render_current_price_structure(
             ("지지", "MAJOR_SUPPORT", major_support_zone, support_zone),
             ("저항", "MAJOR_RESISTANCE", major_resistance_zone, resistance_zone),
         ):
-            if not zone or (
+            if not zone or not _has_price_anchor_refs(zone) or (
                 nearest and zone.get("zone_id") == nearest.get("zone_id")
             ):
                 continue
@@ -442,7 +495,14 @@ def render_current_price_structure(
                 continue
             major_parts.append(f"{label} {zone['display']}")
             displayed.append(zone)
-            bindings.append(_binding(zone, semantic_type=semantic_type))
+            bindings.append(
+                _binding(
+                    zone,
+                    semantic_type=semantic_type,
+                    security_basis=security_basis,
+                    adjustment_basis=adjustment_basis,
+                )
+            )
         if major_parts:
             lines.append("• 주요 구조: " + " · ".join(major_parts))
 
@@ -465,7 +525,14 @@ def render_current_price_structure(
             lines.append(
                 f"• Fib/SR 겹침: {confluence['display']} · 보조 확인 근거"
             )
-            bindings.append(_binding(confluence, semantic_type="FIB_SR_CONFLUENCE"))
+            bindings.append(
+                _binding(
+                    confluence,
+                    semantic_type="FIB_SR_CONFLUENCE",
+                    security_basis=security_basis,
+                    adjustment_basis=adjustment_basis,
+                )
+            )
             displayed.append(confluence)
 
     return PriceStructureRender(

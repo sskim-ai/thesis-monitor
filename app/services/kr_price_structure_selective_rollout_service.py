@@ -163,6 +163,8 @@ def build_kr_price_structure_rollout_decision(
         currency=str(context.get("currency") or "KRW"),
         include_current_price=True,
         enforce_user_visible_proximity=True,
+        security_basis=str(context.get("security_basis") or "") or None,
+        adjustment_basis=str(context.get("adjustment_basis") or "") or None,
     )
     validation = validate_price_structure_render(render)
     if validation.status == "FAIL":
@@ -310,6 +312,8 @@ def build_price_structure_runtime_context(
         "as_of": safe_result.as_of,
         "current_price": str(safe_result.current_price),
         "currency": safe_result.currency,
+        "security_basis": safe_result.security_id,
+        "adjustment_basis": safe_result.adjustment_basis,
         "summary": summary,
         "selection_errors": errors,
         "partial_bar_used_for_pivot_confirmation": 0,

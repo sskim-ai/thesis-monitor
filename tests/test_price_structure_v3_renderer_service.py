@@ -41,12 +41,15 @@ def _zone(
         "display": display,
         "currency": "USD",
         "source_refs": [f"source:{zone_id}"],
+        "source_families": ["PIVOT_WEEKLY"],
+        "price_anchor_refs": [f"source:{zone_id}"],
         "source_timeframe": "weekly",
         "source_timeframes": ["weekly"],
         "distance_pct": "2.0",
         "proximity_tier": tier,
         "active_relevance": relevance,
         "current_role": resolved_role,
+        "as_of": "2026-08-25",
     }
 
 
@@ -282,6 +285,96 @@ def test_one_primary_zone_owns_each_user_visible_structural_semantic() -> None:
     assert validate_price_structure_render(render).status == "PASS"
 
 
+def test_unanchored_major_zone_is_omitted_by_renderer_defense() -> None:
+    major = _zone(
+        "bollinger-resistance",
+        "424.82",
+        "426.96",
+        "약 $424.82~$426.96",
+        tier="RELEVANT",
+        relevance="ACTIVE_STRUCTURAL",
+        role="RESISTANCE",
+    )
+    major["source_families"] = ["BOLLINGER_MONTHLY"]
+    major["price_anchor_refs"] = []
+
+    render = render_current_price_structure(
+        _summary(major_resistance=major),
+        ticker="GOOGL",
+        as_of="2026-08-27",
+        current_price="341.16",
+        currency="USD",
+        include_current_price=True,
+        enforce_user_visible_proximity=True,
+        security_basis="US_LISTED:GOOGL",
+        adjustment_basis="provider_adjusted_price_v1",
+    )
+
+    assert "$424.82~$426.96" not in render.section
+    assert not any(
+        binding.get("semantic_type") == "MAJOR_RESISTANCE"
+        for binding in render.numeric_bindings
+    )
+    assert validate_price_structure_render(render).status == "PASS"
+
+
+def test_major_binding_without_anchor_fails_validation() -> None:
+    render = PriceStructureRender(
+        section="📐 현재 가격 구조\n• 주요 구조 저항: 약 $424.82~$426.96",
+        numeric_bindings=(
+            {
+                "owner": "CURRENT_PRICE_STRUCTURE",
+                "semantic_type": "MAJOR_RESISTANCE",
+                "fact_ref": "googl:bollinger-only",
+                "display": "약 $424.82~$426.96",
+                "proximity_tier": "RELEVANT",
+                "active_relevance": "ACTIVE_STRUCTURAL",
+                "price_anchor_refs": (),
+            },
+        ),
+        confluence_decision=None,
+        displayed_zone_ids=("googl:bollinger-only",),
+    )
+
+    validation = validate_price_structure_render(render)
+
+    assert validation.status == "FAIL"
+    assert "major_label_without_price_anchor:googl:bollinger-only" in validation.errors
+
+
+def test_major_binding_carries_full_reality_gate_provenance() -> None:
+    major = _zone(
+        "pivot-resistance",
+        "405",
+        "409",
+        "약 $405~$409",
+        tier="RELEVANT",
+        relevance="ACTIVE_STRUCTURAL",
+        role="RESISTANCE",
+    )
+    render = render_current_price_structure(
+        _summary(major_resistance=major),
+        ticker="GOOGL",
+        as_of="2026-08-27",
+        current_price="341.16",
+        currency="USD",
+        include_current_price=True,
+        enforce_user_visible_proximity=True,
+        security_basis="US_LISTED:GOOGL",
+        adjustment_basis="provider_adjusted_price_v1",
+    )
+    binding = next(
+        value
+        for value in render.numeric_bindings
+        if value.get("semantic_type") == "MAJOR_RESISTANCE"
+    )
+
+    assert binding["price_anchor_refs"] == ["source:pivot-resistance"]
+    assert binding["as_of"] == "2026-08-25"
+    assert binding["security_basis"] == "US_LISTED:GOOGL"
+    assert binding["adjustment_basis"] == "provider_adjusted_price_v1"
+
+
 def test_old_000660_remote_near_fixture_fails_provenance_validator() -> None:
     render = PriceStructureRender(
         section="""📐 현재 가격 구조
@@ -365,11 +458,11 @@ def test_supplied_kr_seven_ticker_proximity_controls_follow_canonical_tiers() ->
     assert "가까운 지지: 약 99.5만~100.1만원" not in rendered["000660"].section
     assert "장기 구조 지지: 약 99.5만~100.1만원" in rendered["000660"].section
     assert "가까운 지지: 약 19.8만~20만원" not in rendered["005930"].section
-    assert "주요 구조 지지: 약 19.8만~20만원" in rendered["005930"].section
+    assert "주요 구조 지지: 약 19.8만~20만원" not in rendered["005930"].section
     assert "가까운 지지" not in rendered["012450"].section
     assert "가까운 저항" not in rendered["012450"].section
-    assert "주요 구조 지지: 약 95.7만~96.3만원" in rendered["012450"].section
-    assert "주요 구조 저항: 약 145.2만~146만원" in rendered["012450"].section
+    assert "주요 구조 지지: 약 95.7만~96.3만원" not in rendered["012450"].section
+    assert "주요 구조 저항: 약 145.2만~146만원" not in rendered["012450"].section
     for ticker in ("003690", "005490", "010120", "086280"):
         assert "가까운 지지" in rendered[ticker].section
         assert "가까운 저항" in rendered[ticker].section

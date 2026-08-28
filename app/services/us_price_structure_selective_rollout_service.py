@@ -104,6 +104,8 @@ def build_us_price_structure_rollout_decision(
         currency=str(context.get("currency") or "USD"),
         include_current_price=True,
         enforce_user_visible_proximity=True,
+        security_basis=str(context.get("security_basis") or "") or None,
+        adjustment_basis=str(context.get("adjustment_basis") or "") or None,
     )
     validation = validate_price_structure_render(render)
     if validation.status == "FAIL":
