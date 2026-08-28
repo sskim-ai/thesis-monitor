@@ -3,22 +3,21 @@
 Repository: `sskim-ai/thesis-monitor`
 
 Latest authoritative work follows instruction commit
-`1e8a008368ab79c44213545da192edbc5a545c98` and implementation
-`aa5e7d4a799a1e2093bca6f87ff09f19c19e94a9`. Read
-`docs/reports/20260828-final-operating-readiness.json`, the run-44 exact frozen replay, KR7/US
-replays, cross-market delivery/message-quality reports, and
-`docs/architecture/PRICE_STRUCTURE_V3_VALIDATOR_OWNERSHIP.md` first.
+`a0d8f190a0dd2105925810bcf21eeb1d483e0277` and evidence implementation
+`239db58958b1193a8fd591500618ee4e7940c994`. Read
+`docs/reports/20260828-run-now-kr-live-proof.json`, the exact KR market/stock message reports, V3
+validator proof, delivery proof, scheduler cleanup, and final status first.
 
-Run-44 is `ALREADY_FIXED_BY_LATEST_ROLLOUT`. The final V3 selected render plan owns validator
-requirements; omitted candidates are not reconstructed, selected facts still fail if missing, and
-V3-off legacy validation is unchanged. KR `7/7`, US/foreign `13/13`, and all 22 dedicated test-sink
-messages pass with exact hash parity and no production recipient or intent. Runtime-visible diff is
-zero, P0/material P1 is `0/0`, and Production Assist remains OFF.
+The operator-authorized one-shot reused the regular KR close job and generated packet
+`2026-08-28-kr-run-44-e4cf532e619b`. It ran once, exited zero, and left no temporary schedule. The
+normal `16:05/16:20/16:50` schedule is unchanged. The normal notification path sent one KR market
+message plus seven stock messages `8/8`; exact payload match is `8/8`, duplicate/orphan/unowned
+retry is `0/0/0`, and all V3/price-label/Bollinger/major-SR gates pass. The run-44
+`fallback_dynamic_resistance_not_rendered` defect did not recur. Open P0/material P1 is `0/0` and
+`FINAL_V3_VALIDATOR_CONVERGENCE=LIVE_PASS`.
 
-Next actions are `WAIT_FOR_NATURAL_US_MESSAGES` and `WAIT_FOR_NEXT_NATURAL_KR_CLOSE`. The user
-cancelled today's 16:50 KR run; do not recreate or manually trigger it. Review future naturally
-scheduled evidence read-only for V3 validation, price labels, provisional/completed Bollinger,
-market messages, receipts, duplicates, and orphans.
+Do not rerun KR. The next default action is `WAIT_FOR_NATURAL_US_MESSAGES`, covering the remaining
+natural US market, macro exact-payload, and Price Structure proof. Production Assist remains OFF.
 
 ---
 
@@ -220,11 +219,10 @@ relative sector-extrema slots are `SELECTED_REQUIRED`, repaired AI/fallback cons
 size and four sector refs, and the historical sparse message fails as expected. Open P0/material
 P1 are `0/0`, but this is `REPLAY_PASS_NATURAL_REPROOF_PENDING`, not `LIVE_PASS`.
 
-Next action: `WAIT_FOR_NEXT_NATURAL_KR_CLOSE`. Do not manually run a Scheduled Task or send
-Telegram. Inspect the next natural KR packet, exact message, required local slots, index/breadth/
-flow ordering, numeric provenance, receipt, duplicates, and orphans read-only. The separate US
-natural reproof also remains pending. Keep Price Structure Track C `DO_NOT_START`, v3
-`INTEGRATED_READY_NOT_ARMED`, and Production Assist OFF.
+This historical bounded repair is now superseded by the one-shot KR live proof at the top of this
+document. Its required local slots, receipt, duplicate/orphan, and Price Structure checks passed in
+packet `2026-08-28-kr-run-44-e4cf532e619b`. Do not schedule another KR proof; continue with the
+separate pending natural US review.
 
 ---
 

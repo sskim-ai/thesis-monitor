@@ -1,10 +1,10 @@
 # Thesis Monitor Master Workflow
 
-Master Workflow: `v23`
+Master Workflow: `v24`
 As of: `2026-08-28`
 Repository: `sskim-ai/thesis-monitor`
 Operating branch: `main`
-Latest evidence branch: `codex/run44-v3-validator-convergence-cross-market-readiness`
+Latest evidence branch: `codex/run-now-one-shot-kr-close-live-proof`
 Commit resolution: run `git rev-parse HEAD`; this document is part of that commit and must not
 hardcode a self-referential final SHA. Resolve `origin/main` and the clean operating checkout at
 session start. Phase 9.1A defines `working-capital-evidence-v1`; Phase 9.1B implements canonical
@@ -16,7 +16,33 @@ AI/fallback parity and leaves Trade AR/broad AR/AP/advanced ratios blocked. Open
 zero. Natural AI-assisted delivery remains `PARTIAL` independently.
 KRX 8.2A.x and peer 8.3.x also remain experimental.
 
-## 0. Latest Run-44 V3 Validator Convergence
+## 0. Latest One-Shot KR Close Live Proof
+
+The operator-authorized proof starts from exact instruction commit
+`a0d8f190a0dd2105925810bcf21eeb1d483e0277` on operating main
+`23b17c487a4c0ae7dc56935e9028cf62f2b00f2c`; the evidence implementation is
+`239db58958b1193a8fd591500618ee4e7940c994`. Preflight passed with a clean operating checkout,
+healthy API/OHLCV services, a completed 2026-08-28 XKRX target, seven active KR subjects, no active
+KR producer, no residual one-shot, and open P0/material P1 `0/0`.
+
+Exactly one temporary LaunchAgent reused the regular KR close ProgramArguments and working
+directory. It was loaded at `18:39:55 KST`, ran once at the `+300s` boundary, exited `0`, and was
+removed before another interval. The normal `16:05/16:20/16:50` plist and SHA remained unchanged.
+The producer created packet `2026-08-28-kr-run-44-e4cf532e619b`, refreshed current Kiwoom market
+context with `42/42` successful requests, and held eight packet-owned intents. Because the regular
+17:10 deadline had already passed, the existing KR fallback command completed that same packet
+through the normal notification service without a second producer run or direct Telegram call.
+
+The production notifier sent one KR market message and seven stock messages `8/8`. Persisted
+rendered text and content SHA match the exact archived messages for all eight; duplicates, orphans,
+unowned retries, and pending deliveries are zero. The live KR market surface, all seven V3 stock
+messages, price labels, price-anchored major S/R, completed/provisional Bollinger roles, and
+validator ownership pass. For `000660`, the selected near support rendered and the unselected
+weekly dynamic resistance remained a materiality omission without reviving
+`fallback_dynamic_resistance_not_rendered`. `FINAL_V3_VALIDATOR_CONVERGENCE=LIVE_PASS` and the
+next default action is the still-pending natural US market/Price Structure review.
+
+## 0.1 Run-44 V3 Validator Convergence Baseline
 
 The task starts from exact instruction commit `1e8a008368ab79c44213545da192edbc5a545c98`
 on operating main `026df711fa151cc7816b2a57d9ed7d224c1b33cf`. Permanent controls were
@@ -34,8 +60,9 @@ KR `7/7`, US/foreign `13/13`, and the 22-message cross-market dedicated test-sin
 Rendered, outbound, and received hashes match for all messages; production sends/intents,
 duplicates, and orphans are zero. The first 20-message batch hit Telegram rate limiting, and a
 bounded continuation sent only the two unsent messages. Runtime-visible diff is zero, so no runtime
-hotfix or restart is required. Open P0/material P1 is `0/0`; the state is
-`READY_NO_RUNTIME_CHANGE` pending naturally scheduled US and next normal KR close proof.
+hotfix or restart is required. Open P0/material P1 is `0/0`. This retrospective state was
+`READY_NO_RUNTIME_CHANGE`; the operator-authorized live proof above has since closed the KR side as
+`LIVE_PASS`, while natural US proof remains pending.
 
 ## 0A. Latest Major Structural S/R Reality Gate
 

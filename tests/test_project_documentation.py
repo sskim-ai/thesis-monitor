@@ -117,13 +117,11 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     assert state["repository"] == "sskim-ai/thesis-monitor"
     assert state["branch"] == "main"
     assert state["experimental_branch"] == (
-        "codex/run44-v3-validator-convergence-cross-market-readiness"
+        "codex/run-now-one-shot-kr-close-live-proof"
     )
-    assert state["current_phase"] == (
-        "run44_v3_validator_convergence_ready_no_runtime_change"
-    )
+    assert state["current_phase"] == "run_now_one_shot_kr_close_live_pass"
     assert state["last_completed_phase"] == (
-        "run44_v3_validator_convergence_cross_market_readiness"
+        "run_now_one_shot_kr_close_live_proof"
     )
     assert state["next_default_phase"] == "wait_for_natural_us_messages"
     implementation_commit = "069f002437163bff1df7aa6e258918c1777d5dfa"
@@ -141,7 +139,7 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     preenablement_commit = "84f8f549bc8fa0338309a84b23b2738f2e357646"
     prior_price_structure_commit = "631e82f202b6f081866ef83c8b67b2138a8b51d8"
     prior_fibonacci_commit = "0dfef76bba606f018893d6e68e7beaf410aa7438"
-    runtime_code_commit = "026df711fa151cc7816b2a57d9ed7d224c1b33cf"
+    runtime_code_commit = "23b17c487a4c0ae7dc56935e9028cf62f2b00f2c"
     assert state["deployed_code_commit"] == runtime_code_commit
     assert state["main_code_commit"] == runtime_code_commit
     assert state["operating_code_commit"] == runtime_code_commit
@@ -176,7 +174,7 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
         "price-structure-v3-validator-ownership-v1"
     )
     convergence = state["run44_v3_validator_convergence"]
-    assert convergence["status"] == "ready_no_runtime_change"
+    assert convergence["status"] == "live_pass"
     assert convergence["latest_runtime_already_fixed"] is True
     assert convergence["runtime_hotfix_required"] is False
     assert convergence["run44_frozen_replay"] == "PASS"
@@ -189,6 +187,24 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     assert convergence["test_exact_payload_match"] == "PASS_22_OF_22"
     assert convergence["production_recipient_send"] == 0
     assert convergence["production_delivery_intent_created"] == 0
+    assert convergence["natural_kr_close_v3_validator"] == (
+        "LIVE_PASS_OPERATOR_AUTHORIZED_ONE_SHOT"
+    )
+    live_proof = state["run_now_one_shot_kr_close_live_proof"]
+    assert live_proof["status"] == "LIVE_PASS"
+    assert live_proof["implementation_commit"] == (
+        "239db58958b1193a8fd591500618ee4e7940c994"
+    )
+    assert live_proof["one_shot_run_count"] == 1
+    assert live_proof["normal_recurring_schedule_changed"] == 0
+    assert live_proof["residual_one_shot_schedule_count"] == 0
+    assert live_proof["market_message"] == "PASS_1_OF_1"
+    assert live_proof["stock_messages"] == "PASS_7_OF_7"
+    assert live_proof["exact_payload_match"] == "PASS_8_OF_8"
+    assert live_proof["duplicate"] == 0
+    assert live_proof["orphan"] == 0
+    assert live_proof["unowned_retry"] == 0
+    assert live_proof["final_v3_validator_convergence"] == "LIVE_PASS"
     assert state["contracts"]["legacy_technical_token_detection"] == (
         "legacy-technical-token-detection-v1"
     )
@@ -1056,7 +1072,7 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     assert kr_natural["open_p0"] == []
     assert kr_natural["open_material_p1"] == []
     kr_size_sector = state["kr_size_sector_message_selection_bounded_repair"]
-    assert kr_size_sector["status"] == "replay_pass_natural_reproof_pending"
+    assert kr_size_sector["status"] == "live_pass_run_now"
     assert kr_size_sector["instruction_commit"] == (
         "794c6f5d956d0928eac0113d658fede58b1266dc"
     )
@@ -1070,8 +1086,10 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     assert kr_size_sector["material_information_loss"] == 0
     assert kr_size_sector["open_p0"] == []
     assert kr_size_sector["open_material_p1"] == []
-    assert kr_size_sector["natural_kr_reproof"] == "PENDING"
-    assert kr_size_sector["next_action"] == "WAIT_FOR_NEXT_NATURAL_KR_CLOSE"
+    assert kr_size_sector["natural_kr_reproof"] == (
+        "LIVE_PASS_PACKET_E4CF532E619B"
+    )
+    assert kr_size_sector["next_action"] == "CLOSED_BY_RUN_NOW_LIVE_PROOF"
     preenable = state["kr_market_preenable_test_send_and_bounded_enablement"]
     assert preenable["status"] == "blocked_no_safe_test_sink"
     assert preenable["instruction_commit"] == (
@@ -1205,7 +1223,7 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     ]
     assert final_preenable["kr_rollout"] == "NOT_ENABLED"
     resume = state["kr_test_sink_configuration_and_final_preenable_resume"]
-    assert resume["status"] == "enabled_awaiting_natural_proof"
+    assert resume["status"] == "enabled_live_pass"
     assert resume["instruction_commit"] == (
         "68ede1eae42315d94a89023fbc6c1f9be07fc99d"
     )
@@ -1228,10 +1246,10 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     assert resume["us_price_structure_enabled"] is False
     assert resume["open_p0"] == []
     assert resume["open_material_p1"] == []
-    assert resume["kr_rollout"] == "ENABLED_AWAITING_NATURAL_PROOF"
-    assert resume["next_action"] == "WAIT_FOR_NEXT_NATURAL_KR_MESSAGES"
+    assert resume["kr_rollout"] == "LIVE_PASS"
+    assert resume["next_action"] == "NO_ACTION_KR_LIVE_PROOF_CLOSED"
     formatting = state["kr_market_internal_linebreak_formatting_micro_repair"]
-    assert formatting["status"] == "deployed_awaiting_natural_proof"
+    assert formatting["status"] == "live_pass"
     assert formatting["instruction_commit"] == (
         "dd1b5eb712081c222bcfe1b4465d4fe0aac5f89a"
     )
@@ -1256,13 +1274,13 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     assert formatting["production_assist"] is False
     assert formatting["open_p0"] == []
     assert formatting["open_material_p1"] == []
-    assert formatting["kr_rollout"] == "ENABLED_AWAITING_NATURAL_PROOF"
-    assert formatting["next_action"] == "WAIT_FOR_NEXT_NATURAL_KR_MARKET_MESSAGE"
+    assert formatting["kr_rollout"] == "LIVE_PASS"
+    assert formatting["next_action"] == "NO_ACTION_KR_LIVE_PROOF_CLOSED"
     assert state["current_commit"] == (
-        "aa5e7d4a799a1e2093bca6f87ff09f19c19e94a9"
+        "239db58958b1193a8fd591500618ee4e7940c994"
     )
     reality_gate = state["price_structure_major_sr_reality_gate"]
-    assert reality_gate["status"] == "deployed_awaiting_natural_proof"
+    assert reality_gate["status"] == "deployed_kr_live_pass_us_pending"
     assert reality_gate["instruction_commit"] == (
         "4a5702823da3f950b9f125bcbcfecd7c6cfa84df"
     )
@@ -1280,7 +1298,7 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     assert reality_gate["post_deploy_replay"] == "PASS_20_OF_20"
     assert reality_gate["open_p0"] == []
     assert reality_gate["open_material_p1"] == []
-    assert reality_gate["natural_major_sr_reality_gate"] == "PENDING"
+    assert reality_gate["natural_major_sr_reality_gate"] == "LIVE_PASS_KR_US_PENDING"
     assert state["ai_review_mode"] == "shadow"
     assert state["ai_policy_version"] == "daily-review-v3.10"
     assert state["output_schema_version"] == 4

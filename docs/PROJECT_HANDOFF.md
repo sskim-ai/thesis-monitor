@@ -5,7 +5,27 @@ with [MASTER_WORKFLOW.md](MASTER_WORKFLOW.md), [project-state.json](project-stat
 [NEXT_SESSION_PROMPT.md](NEXT_SESSION_PROMPT.md) before changing runtime policy, Knowledge,
 validation, delivery, or Scheduled Tasks.
 
-## Latest Handoff - Run-44 V3 Validator Convergence
+## Latest Handoff - One-Shot KR Close Live Proof
+
+Use instruction commit `a0d8f190a0dd2105925810bcf21eeb1d483e0277` and start with
+`docs/reports/20260828-run-now-kr-live-proof.json`, the exact KR market/stock messages, V3 validator
+proof, delivery proof, and scheduler-cleanup report. The evidence implementation commit is
+`239db58958b1193a8fd591500618ee4e7940c994`.
+
+Operating and `origin/main` were both `23b17c487a4c0ae7dc56935e9028cf62f2b00f2c` at preflight.
+The regular KR command ran once from a temporary `+300s` LaunchAgent, generated packet
+`2026-08-28-kr-run-44-e4cf532e619b`, and exited `0`. The temporary label was removed with run count
+one; the normal `16:05/16:20/16:50` schedule and plist SHA are unchanged. Current Kiwoom context was
+available with `42/42` successful requests.
+
+The existing KR fallback command completed the held packet through the normal notifier because the
+calendar fallback deadline had already passed. Production delivery was `8/8`: one market digest and
+seven stock messages, exact persisted payload match `8/8`, duplicate/orphan/unowned retry `0/0/0`.
+All live V3 semantics pass, including the `000660` selected-support/omitted-resistance incident.
+Open P0/material P1 is `0/0`; `FINAL_V3_VALIDATOR_CONVERGENCE=LIVE_PASS`. Do not rerun KR. Continue
+with the pending natural US market and Price Structure review.
+
+## Previous Handoff - Run-44 V3 Validator Convergence
 
 Use instruction commit `1e8a008368ab79c44213545da192edbc5a545c98` and implementation
 `aa5e7d4a799a1e2093bca6f87ff09f19c19e94a9`. Start with
@@ -21,9 +41,9 @@ fail. V3-off legacy validation remains unchanged.
 
 Run-44, KR `7/7`, US/foreign `13/13`, and 22 dedicated test-sink messages pass with exact payload
 parity and zero production sends/intents, duplicates, or orphans. No runtime module changed. Open
-P0/material P1 is `0/0`, Production Assist is OFF, and today's cancelled 16:50 KR production run
-was not recreated. Wait for the next natural US messages and next normal KR close, then inspect
-read-only. Do not manually run a Scheduled Task or send production Telegram.
+P0/material P1 is `0/0`, Production Assist is OFF, and the earlier cancelled 16:50 KR production
+run was not recreated by that retrospective task. The later operator-authorized one-shot above
+closed the KR live proof. Continue only with the remaining natural US review.
 
 ## Latest Handoff - Major Structural S/R Reality Gate
 
