@@ -1,0 +1,1303 @@
+{
+  "contract": "run-now-one-shot-kr-close-live-proof-v1",
+  "deliveries": [
+    {
+      "all_chunks_accepted": true,
+      "attempt_count": 1,
+      "chunk_count": 1,
+      "content_sha256": "bfc40a4db9c49cd5e5ce38751dcf5b10f35f688c68667ad6a9c9094cc8ed0a67",
+      "delivery_id": 366,
+      "exact_payload_match": true,
+      "expected_text_sha256": "bfc40a4db9c49cd5e5ce38751dcf5b10f35f688c68667ad6a9c9094cc8ed0a67",
+      "last_error": null,
+      "next_chunk_index": 1,
+      "owned_by_live_packet": true,
+      "packet_id": "2026-08-28-kr-run-44-e4cf532e619b",
+      "pilot_state": "fallback_sent",
+      "rendered_text_sha256": "bfc40a4db9c49cd5e5ce38751dcf5b10f35f688c68667ad6a9c9094cc8ed0a67",
+      "sent_at_utc": "2026-08-28 09:46:54.317611",
+      "status": "sent",
+      "ticker": "__DAILY_DIGEST_KR__"
+    },
+    {
+      "all_chunks_accepted": true,
+      "attempt_count": 1,
+      "chunk_count": 1,
+      "content_sha256": "a13262f0653cdb347cfea09e8f592ae6a865d8cf5161db92b107396cdb4e7955",
+      "delivery_id": 367,
+      "exact_payload_match": true,
+      "expected_text_sha256": "a13262f0653cdb347cfea09e8f592ae6a865d8cf5161db92b107396cdb4e7955",
+      "last_error": null,
+      "next_chunk_index": 1,
+      "owned_by_live_packet": true,
+      "packet_id": "2026-08-28-kr-run-44-e4cf532e619b",
+      "pilot_state": "fallback_sent",
+      "rendered_text_sha256": "a13262f0653cdb347cfea09e8f592ae6a865d8cf5161db92b107396cdb4e7955",
+      "sent_at_utc": "2026-08-28 09:46:55.360333",
+      "status": "sent",
+      "ticker": "000660"
+    },
+    {
+      "all_chunks_accepted": true,
+      "attempt_count": 1,
+      "chunk_count": 1,
+      "content_sha256": "e549dff9baf7487f40d979b547aed22988451ef521e89724dd0f83074a2074b8",
+      "delivery_id": 368,
+      "exact_payload_match": true,
+      "expected_text_sha256": "e549dff9baf7487f40d979b547aed22988451ef521e89724dd0f83074a2074b8",
+      "last_error": null,
+      "next_chunk_index": 1,
+      "owned_by_live_packet": true,
+      "packet_id": "2026-08-28-kr-run-44-e4cf532e619b",
+      "pilot_state": "fallback_sent",
+      "rendered_text_sha256": "e549dff9baf7487f40d979b547aed22988451ef521e89724dd0f83074a2074b8",
+      "sent_at_utc": "2026-08-28 09:46:56.739515",
+      "status": "sent",
+      "ticker": "003690"
+    },
+    {
+      "all_chunks_accepted": true,
+      "attempt_count": 1,
+      "chunk_count": 1,
+      "content_sha256": "6acbc27332ba7f5396ee210dfd4ab2ed1b567a0f49f0487ed95ba5a578dedf06",
+      "delivery_id": 369,
+      "exact_payload_match": true,
+      "expected_text_sha256": "6acbc27332ba7f5396ee210dfd4ab2ed1b567a0f49f0487ed95ba5a578dedf06",
+      "last_error": null,
+      "next_chunk_index": 1,
+      "owned_by_live_packet": true,
+      "packet_id": "2026-08-28-kr-run-44-e4cf532e619b",
+      "pilot_state": "fallback_sent",
+      "rendered_text_sha256": "6acbc27332ba7f5396ee210dfd4ab2ed1b567a0f49f0487ed95ba5a578dedf06",
+      "sent_at_utc": "2026-08-28 09:46:58.195489",
+      "status": "sent",
+      "ticker": "005490"
+    },
+    {
+      "all_chunks_accepted": true,
+      "attempt_count": 1,
+      "chunk_count": 1,
+      "content_sha256": "0c23ceba4300d1991c1cf819c109ea34b299cfd8ad9e141af20ad4d9e32b1286",
+      "delivery_id": 370,
+      "exact_payload_match": true,
+      "expected_text_sha256": "0c23ceba4300d1991c1cf819c109ea34b299cfd8ad9e141af20ad4d9e32b1286",
+      "last_error": null,
+      "next_chunk_index": 1,
+      "owned_by_live_packet": true,
+      "packet_id": "2026-08-28-kr-run-44-e4cf532e619b",
+      "pilot_state": "fallback_sent",
+      "rendered_text_sha256": "0c23ceba4300d1991c1cf819c109ea34b299cfd8ad9e141af20ad4d9e32b1286",
+      "sent_at_utc": "2026-08-28 09:46:59.474574",
+      "status": "sent",
+      "ticker": "005930"
+    },
+    {
+      "all_chunks_accepted": true,
+      "attempt_count": 1,
+      "chunk_count": 1,
+      "content_sha256": "c8cb96b0f28b5122bbf9618963b41d13459193d1a850c159ba0280151710d6f4",
+      "delivery_id": 371,
+      "exact_payload_match": true,
+      "expected_text_sha256": "c8cb96b0f28b5122bbf9618963b41d13459193d1a850c159ba0280151710d6f4",
+      "last_error": null,
+      "next_chunk_index": 1,
+      "owned_by_live_packet": true,
+      "packet_id": "2026-08-28-kr-run-44-e4cf532e619b",
+      "pilot_state": "fallback_sent",
+      "rendered_text_sha256": "c8cb96b0f28b5122bbf9618963b41d13459193d1a850c159ba0280151710d6f4",
+      "sent_at_utc": "2026-08-28 09:47:00.524385",
+      "status": "sent",
+      "ticker": "010120"
+    },
+    {
+      "all_chunks_accepted": true,
+      "attempt_count": 1,
+      "chunk_count": 1,
+      "content_sha256": "a17d2c41a9fcc34cc07ac310618095465f98d4be384371694f35c3e5ab618525",
+      "delivery_id": 372,
+      "exact_payload_match": true,
+      "expected_text_sha256": "a17d2c41a9fcc34cc07ac310618095465f98d4be384371694f35c3e5ab618525",
+      "last_error": null,
+      "next_chunk_index": 1,
+      "owned_by_live_packet": true,
+      "packet_id": "2026-08-28-kr-run-44-e4cf532e619b",
+      "pilot_state": "fallback_sent",
+      "rendered_text_sha256": "a17d2c41a9fcc34cc07ac310618095465f98d4be384371694f35c3e5ab618525",
+      "sent_at_utc": "2026-08-28 09:47:01.619326",
+      "status": "sent",
+      "ticker": "012450"
+    },
+    {
+      "all_chunks_accepted": true,
+      "attempt_count": 1,
+      "chunk_count": 1,
+      "content_sha256": "a0223fad3954a9b062df1779e509ed4e3c7a3cd3083ccde6b12832ebb7ad453e",
+      "delivery_id": 373,
+      "exact_payload_match": true,
+      "expected_text_sha256": "a0223fad3954a9b062df1779e509ed4e3c7a3cd3083ccde6b12832ebb7ad453e",
+      "last_error": null,
+      "next_chunk_index": 1,
+      "owned_by_live_packet": true,
+      "packet_id": "2026-08-28-kr-run-44-e4cf532e619b",
+      "pilot_state": "fallback_sent",
+      "rendered_text_sha256": "a0223fad3954a9b062df1779e509ed4e3c7a3cd3083ccde6b12832ebb7ad453e",
+      "sent_at_utc": "2026-08-28 09:47:03.120711",
+      "status": "sent",
+      "ticker": "086280"
+    }
+  ],
+  "delivery_result": {
+    "cash_flow_context_ids": [],
+    "cash_flow_fact_ids_used": [],
+    "cash_flow_selected_count": 0,
+    "cash_flow_selected_tickers": [],
+    "cash_flow_suppressed_count": 7,
+    "cash_flow_user_visible_mode": "SELECTIVE_CURRENT_FORMAL_FULL_FCF",
+    "delivery_count": 8,
+    "delivery_mode": "deterministic_fallback",
+    "dispatched_at": "2026-08-28T18:46:52.728245+09:00",
+    "packet_id": "2026-08-28-kr-run-44-e4cf532e619b",
+    "pending_count": 0,
+    "sent_count": 8,
+    "status": "sent",
+    "working_capital_context_ids": [],
+    "working_capital_fact_ids": [],
+    "working_capital_metric_families": [],
+    "working_capital_selected_count": 0,
+    "working_capital_user_visible_mode": "OFF"
+  },
+  "delivery_summary": {
+    "all_chunks_accepted_count": 8,
+    "duplicate_count": 0,
+    "exact_payload_match_count": 8,
+    "intended_count": 8,
+    "orphan_count": 0,
+    "sent_count": 8,
+    "unowned_retry_count": 0
+  },
+  "gates": {
+    "AUTOMATIC_SECOND_ONE_SHOT_CREATED": 0,
+    "FINAL_V3_VALIDATOR_CONVERGENCE": "LIVE_PASS",
+    "KR_LIVE_PROOF_SOURCE": "OPERATOR_AUTHORIZED_ONE_SHOT_REGULAR_JOB",
+    "LATEST_MAIN_BEFORE": "23b17c487a4c0ae7dc56935e9028cf62f2b00f2c",
+    "LIVE_AMBIGUOUS_CURRENT_VS_STRUCTURE_PRICE_LABEL": 0,
+    "LIVE_BOLLINGER_ONLY_MAJOR_SR_VISIBLE": 0,
+    "LIVE_DUPLICATE": 0,
+    "LIVE_FALLBACK_DYNAMIC_RESISTANCE_NOT_RENDERED": 0,
+    "LIVE_KR_MARKET_MESSAGE": "PASS",
+    "LIVE_KR_STOCK_MESSAGES": "PASS",
+    "LIVE_KR_STOCK_MESSAGE_COUNT": 7,
+    "LIVE_MAJOR_SR_WITHOUT_PRICE_ANCHOR": 0,
+    "LIVE_ORPHAN": 0,
+    "LIVE_PROVISIONAL_BOLLINGER_AS_MAJOR_SR": 0,
+    "LIVE_PROVISIONAL_BOLLINGER_AS_NEAR_SR": 0,
+    "LIVE_PROVISIONAL_BOLLINGER_AS_STORED_RULE": 0,
+    "LIVE_UNOWNED_RETRY": 0,
+    "NORMAL_RECURRING_SCHEDULE_CHANGED": 0,
+    "NOTIFICATION_VALIDATION_FAILURE_SUPPRESSED": 0,
+    "ONE_SHOT_KR_CLOSE_LIVE_PROOF": "PASS",
+    "ONE_SHOT_KR_CLOSE_SCHEDULE_COUNT": 1,
+    "ONE_SHOT_PACKET_ID": "2026-08-28-kr-run-44-e4cf532e619b",
+    "ONE_SHOT_RUN_ID": "44",
+    "OPEN_MATERIAL_P1": 0,
+    "OPEN_P0": 0,
+    "OPERATING_BEFORE": "23b17c487a4c0ae7dc56935e9028cf62f2b00f2c",
+    "OPERATING_LINEAGE_SAFE": "PASS",
+    "PASS_TIME_KST": "2026-08-28T18:39:55.298673+09:00",
+    "PRECONDITION_ALL_GATES_PASS": "PASS",
+    "PRE_SCHEDULE_ACTIVE_KR_CLOSE_COUNT": 0,
+    "REGULAR_JOB_DEFINITION_REUSED": "PASS",
+    "RESIDUAL_ONE_SHOT_SCHEDULE_COUNT": 0,
+    "SCHEDULED_TIME_KST": "2026-08-28T18:44:55.298673+09:00"
+  },
+  "generated_at": "2026-08-28T09:44:57.570046+00:00",
+  "instruction_commit": "a0d8f190a0dd2105925810bcf21eeb1d483e0277",
+  "instruction_sha256": "c18f07633c3d23ca54923417b1ea2552baa06f7fc4273374750a046b3d324748",
+  "market": {
+    "errors": [],
+    "message_length": 1561,
+    "message_sha256": "bfc40a4db9c49cd5e5ce38751dcf5b10f35f688c68667ad6a9c9094cc8ed0a67",
+    "plan": {
+      "concentration_scopes_used": [],
+      "contract": "kr-market-digest-quality-v1",
+      "global_context_reason": "no_material_global_contradiction_required",
+      "global_context_retained": false,
+      "interpretation": {
+        "priority": "P2_KR_LOCAL_MARKET_FLOW",
+        "role": "interpretation",
+        "source_refs": [
+          "kiwoom:ka10051:KOSPI:foreign:2026-08-28",
+          "kiwoom:ka10051:KOSPI:institution:2026-08-28",
+          "kiwoom:ka10051:KOSPI:retail:2026-08-28",
+          "kiwoom:ka10051:KOSDAQ:foreign:2026-08-28",
+          "kiwoom:ka10051:KOSDAQ:institution:2026-08-28",
+          "kiwoom:ka10051:KOSDAQ:retail:2026-08-28"
+        ],
+        "text": "외국인은 양 시장에서 순매도했습니다. 기관은 양 시장에서 순매도했습니다. 개인은 양 시장에서 순매수했습니다."
+      },
+      "judgment": {
+        "priority": "P1_KR_LOCAL_MARKET_STRUCTURE",
+        "role": "judgment",
+        "source_refs": [
+          "kiwoom:ka20001:KOSPI:2026-08-28",
+          "kiwoom:ka20001:KOSDAQ:2026-08-28",
+          "cross-section:KIWOOM_REST:breadth:KOSPI",
+          "cross-section:KIWOOM_REST:breadth:KOSDAQ"
+        ],
+        "text": "KOSPI는 하락, KOSDAQ은 상승으로 지수 방향이 달랐지만 두 시장 모두 상승 종목이 하락 종목보다 많았습니다."
+      },
+      "next_check": {
+        "priority": "P2_KR_LOCAL_MARKET_FLOW",
+        "role": "next_check",
+        "source_refs": [
+          "kiwoom:ka20001:KOSPI:2026-08-28",
+          "kiwoom:ka20001:KOSDAQ:2026-08-28",
+          "cross-section:KIWOOM_REST:breadth:KOSPI",
+          "cross-section:KIWOOM_REST:breadth:KOSDAQ",
+          "kiwoom:ka10051:KOSPI:foreign:2026-08-28",
+          "kiwoom:ka10051:KOSPI:institution:2026-08-28",
+          "kiwoom:ka10051:KOSPI:retail:2026-08-28",
+          "kiwoom:ka10051:KOSDAQ:foreign:2026-08-28",
+          "kiwoom:ka10051:KOSDAQ:institution:2026-08-28",
+          "kiwoom:ka10051:KOSDAQ:retail:2026-08-28"
+        ],
+        "text": "양 시장의 상승 종목 우위가 유지되는지, 외국인·기관의 시장별 수급 방향과 함께 확인합니다."
+      },
+      "richness": {
+        "completed_session": true,
+        "contract": "kr-market-digest-quality-v1",
+        "kospi_kosdaq_breadth": true,
+        "kospi_kosdaq_indices": true,
+        "reasons": [],
+        "status": true,
+        "supporting_local_context": [
+          "market_wide_participant_flow",
+          "size_style_context",
+          "sector_context"
+        ]
+      },
+      "sector_context": {
+        "priority": "P3_KR_LOCAL_STOCK_CROSS_SECTION",
+        "role": "sector_context",
+        "source_refs": [
+          "kiwoom:ka20003:KOSPI:008:2026-08-28",
+          "kiwoom:ka20003:KOSPI:006:2026-08-28",
+          "kiwoom:ka20003:KOSPI:005:2026-08-28",
+          "kiwoom:ka20003:KOSPI:013:2026-08-28",
+          "kiwoom:ka20003:KOSPI:017:2026-08-28",
+          "kiwoom:ka20003:KOSPI:009:2026-08-28",
+          "kiwoom:ka20003:KOSDAQ:108:2026-08-28",
+          "kiwoom:ka20003:KOSDAQ:120:2026-08-28",
+          "kiwoom:ka20003:KOSDAQ:129:2026-08-28",
+          "kiwoom:ka20003:KOSDAQ:123:2026-08-28",
+          "kiwoom:ka20003:KOSDAQ:124:2026-08-28",
+          "kiwoom:ka20003:KOSDAQ:121:2026-08-28"
+        ],
+        "text": "업종 상대 강세\n• KOSPI: 화학 +3.83% · 섬유·의류 +3.09% · 음식료·담배 +2.68%\n• KOSDAQ: 유통 +3.09% · 제약 +2.05% · IT 서비스 +1.81%\n\n업종 상대 약세\n• KOSPI: 전기·전자 -3.19% · 전기·가스 -3.06% · 제약 -3.01%\n• KOSDAQ: 기계·장비 -1.66% · 전기·전자 -1.51% · 비금속 -0.81%"
+      },
+      "sector_extremes_state": "SELECTED_REQUIRED",
+      "sector_rank_limit": 3,
+      "sector_safe_counts": {
+        "KOSDAQ": 22,
+        "KOSPI": 24
+      },
+      "size_context": {
+        "priority": "P1_KR_LOCAL_MARKET_STRUCTURE",
+        "role": "size_context",
+        "source_refs": [
+          "kiwoom:ka20003:KOSPI:002:2026-08-28",
+          "kiwoom:ka20003:KOSPI:003:2026-08-28",
+          "kiwoom:ka20003:KOSPI:004:2026-08-28",
+          "kiwoom:ka20003:KOSDAQ:138:2026-08-28",
+          "kiwoom:ka20003:KOSDAQ:139:2026-08-28",
+          "kiwoom:ka20003:KOSDAQ:140:2026-08-28"
+        ],
+        "text": "규모별\n• KOSPI: 대형 -2.04% · 중형 +1.05% · 소형 +1.23%\n• KOSDAQ: 100 -0.23% · MID300 +0.44% · SMALL +0.58%"
+      },
+      "size_style_state": "SELECTED_REQUIRED"
+    },
+    "status": "PASS",
+    "surface": {
+      "breadth": true,
+      "kospi_kosdaq": true,
+      "participant_flow": true,
+      "sector_top3": true,
+      "size_style": true
+    },
+    "validation": {
+      "contract": "market-evidence-utilization-validator-v1",
+      "counters": {
+        "GLOBAL_CONTEXT_PRIORITIZED_OVER_KR_SIZE_SECTOR": 0,
+        "KR_MARKET_DIGEST_MATERIAL_INFORMATION_LOSS": 0,
+        "SECTOR_EXTREMES_AVAILABLE_BUT_OMITTED": 0,
+        "SIZE_STYLE_AVAILABLE_BUT_OMITTED": 0,
+        "USER_FACING_LEADER_LAGGARD_TERM": 0,
+        "VALIDATOR_FORCED_NUMERIC_DUMP": 0
+      },
+      "errors": [],
+      "slot_results": [
+        {
+          "consumed_refs": [
+            "kiwoom:ka20003:KOSPI:002:2026-08-28",
+            "kiwoom:ka20003:KOSPI:003:2026-08-28",
+            "kiwoom:ka20003:KOSPI:004:2026-08-28",
+            "kiwoom:ka20003:KOSDAQ:138:2026-08-28",
+            "kiwoom:ka20003:KOSDAQ:139:2026-08-28",
+            "kiwoom:ka20003:KOSDAQ:140:2026-08-28"
+          ],
+          "evidence_refs": [
+            "kiwoom:ka20003:KOSPI:002:2026-08-28",
+            "kiwoom:ka20003:KOSPI:003:2026-08-28",
+            "kiwoom:ka20003:KOSPI:004:2026-08-28",
+            "kiwoom:ka20003:KOSDAQ:138:2026-08-28",
+            "kiwoom:ka20003:KOSDAQ:139:2026-08-28",
+            "kiwoom:ka20003:KOSDAQ:140:2026-08-28"
+          ],
+          "omission_reason": "SELECTED_REQUIRED",
+          "required_consumption": true,
+          "selected": true,
+          "slot": "SIZE_STYLE",
+          "status": "PASS"
+        },
+        {
+          "consumed_refs": [
+            "kiwoom:ka20003:KOSPI:008:2026-08-28",
+            "kiwoom:ka20003:KOSPI:006:2026-08-28",
+            "kiwoom:ka20003:KOSPI:005:2026-08-28",
+            "kiwoom:ka20003:KOSPI:013:2026-08-28",
+            "kiwoom:ka20003:KOSPI:017:2026-08-28",
+            "kiwoom:ka20003:KOSPI:009:2026-08-28",
+            "kiwoom:ka20003:KOSDAQ:108:2026-08-28",
+            "kiwoom:ka20003:KOSDAQ:120:2026-08-28",
+            "kiwoom:ka20003:KOSDAQ:129:2026-08-28",
+            "kiwoom:ka20003:KOSDAQ:123:2026-08-28",
+            "kiwoom:ka20003:KOSDAQ:124:2026-08-28",
+            "kiwoom:ka20003:KOSDAQ:121:2026-08-28"
+          ],
+          "evidence_refs": [
+            "kiwoom:ka20003:KOSPI:008:2026-08-28",
+            "kiwoom:ka20003:KOSPI:006:2026-08-28",
+            "kiwoom:ka20003:KOSPI:005:2026-08-28",
+            "kiwoom:ka20003:KOSPI:013:2026-08-28",
+            "kiwoom:ka20003:KOSPI:017:2026-08-28",
+            "kiwoom:ka20003:KOSPI:009:2026-08-28",
+            "kiwoom:ka20003:KOSDAQ:108:2026-08-28",
+            "kiwoom:ka20003:KOSDAQ:120:2026-08-28",
+            "kiwoom:ka20003:KOSDAQ:129:2026-08-28",
+            "kiwoom:ka20003:KOSDAQ:123:2026-08-28",
+            "kiwoom:ka20003:KOSDAQ:124:2026-08-28",
+            "kiwoom:ka20003:KOSDAQ:121:2026-08-28"
+          ],
+          "omission_reason": "SELECTED_REQUIRED",
+          "required_consumption": true,
+          "selected": true,
+          "slot": "SECTOR_EXTREMES",
+          "status": "PASS"
+        }
+      ],
+      "status": "PASS"
+    }
+  },
+  "normal_scheduler": {
+    "plist_sha256": "9eb77b8c019452154dc820086da01b0a721a7ab408aa9543426744b269247e3a",
+    "schedule": [
+      "16:05",
+      "16:20",
+      "16:50"
+    ]
+  },
+  "packet_id": "2026-08-28-kr-run-44-e4cf532e619b",
+  "packet_sha256": "09f6fee84a0db24e0ab85f50bbb5811f52c12c3ee970eabbc4d44979106948b6",
+  "preflight": {
+    "active_kr_count": 7,
+    "active_kr_tickers": [
+      "000660",
+      "003690",
+      "005490",
+      "005930",
+      "010120",
+      "012450",
+      "086280"
+    ],
+    "api_health": "PASS",
+    "checked_at_kst": "2026-08-28T18:37:34+09:00",
+    "contract": "run-now-kr-close-preflight-v1",
+    "enable_live_providers": true,
+    "include_mock_provider": false,
+    "kiwoom_endpoint_connectivity": "PASS",
+    "kiwoom_rest_configured": true,
+    "latest_main_before": "23b17c487a4c0ae7dc56935e9028cf62f2b00f2c",
+    "normal_kr_close_plist_sha256": "9eb77b8c019452154dc820086da01b0a721a7ab408aa9543426744b269247e3a",
+    "normal_kr_close_schedule": [
+      "16:05",
+      "16:20",
+      "16:50"
+    ],
+    "normal_kr_close_state": "not running",
+    "normal_repo_plist_exact_match": true,
+    "notification_dry_run": false,
+    "ohlcv_health": "PASS",
+    "open_material_p1": 0,
+    "open_p0": 0,
+    "operating_before": "23b17c487a4c0ae7dc56935e9028cf62f2b00f2c",
+    "operating_clean": true,
+    "operating_lineage_safe": "PASS",
+    "pre_schedule_active_kr_close_count": 0,
+    "precondition_all_gates_pass": "PASS",
+    "production_recipient_configured": true,
+    "required_baseline": "23b17c487a4c0ae7dc56935e9028cf62f2b00f2c",
+    "residual_one_shot_schedule_count": 0,
+    "scheduler_health": "PASS",
+    "telegram_bot_configured": true,
+    "v3_regression_tests": "6 passed",
+    "xkrx_production_eligible": true,
+    "xkrx_target_completed": true,
+    "xkrx_target_date": "2026-08-28"
+  },
+  "producer": {
+    "ai_assisted_pilot": {
+      "delivery_count": 8,
+      "delivery_mode": "held",
+      "market": "kr",
+      "packet_id": "2026-08-28-kr-run-44-e4cf532e619b",
+      "pending_count": 8,
+      "pilot_day": null,
+      "reason": null,
+      "sent_count": 0,
+      "status": "held"
+    },
+    "analysis_action": "reuse",
+    "analysis_run_status": "already_completed",
+    "contract": "run-now-kr-close-producer-result-v1",
+    "delivery_action": "held_for_ai_review",
+    "kiwoom_market_context": {
+      "archive_path": "data/market-context/kiwoom/raw/2026-08-28/16007fc29e22bb2b2299d039334b1bd2b76b54d44bbbddad776f8be339646107.json",
+      "concentration_relations": 0,
+      "context_path": "data/market-context/structured/kr/2026-08-28.json",
+      "packet_continues": true,
+      "pagination": {
+        "KOSDAQ": {
+          "combined_sha256": "b6d55a4938ce34cc3e12228d592d276e14aeaf8938380082e22c57a80973c1e6",
+          "complete": true,
+          "duplicate_identities": [],
+          "pages": 19,
+          "rows": 1824
+        },
+        "KOSPI": {
+          "combined_sha256": "f9af993edd4a14a06a8fb8bbf3fd8725aa283012e099933b63dd28ef8df43ba5",
+          "complete": true,
+          "duplicate_identities": [],
+          "pages": 14,
+          "rows": 1316
+        }
+      },
+      "provider": "KIWOOM_REST",
+      "provider_calls": {
+        "failures": 0,
+        "requests": 42,
+        "retries": 0,
+        "successes": 42
+      },
+      "source_payload_sha256": "16007fc29e22bb2b2299d039334b1bd2b76b54d44bbbddad776f8be339646107",
+      "status": "AVAILABLE_CURRENT",
+      "warnings": [
+        "concentration_blocked:KOSDAQ:UNRESOLVED_BASIS_OR_TAXONOMY",
+        "concentration_blocked:KOSPI:UNRESOLVED_BASIS_OR_TAXONOMY"
+      ]
+    },
+    "kr_close_market": {
+      "action": "reuse",
+      "observation_count": 0,
+      "run_date": "2026-08-28",
+      "status": "already_completed",
+      "warnings": []
+    },
+    "market_scope": "kr",
+    "producer_role_target": {
+      "calendar_evidence": {
+        "target_basis": "same_day_completed_xkrx_session",
+        "timezone_verified": true,
+        "wallclock_date": "2026-08-28",
+        "wallclock_is_xkrx_session": true
+      },
+      "contract": "xkrx-role-target-v1",
+      "observed_at_kst": "2026-08-28T18:44:56.150380+09:00",
+      "production_eligible": true,
+      "role": "kr_daily_production",
+      "skip_reason": null,
+      "target_completed": true,
+      "target_kind": "XKRX_SESSION_DATE",
+      "target_session_date": "2026-08-28",
+      "target_xkrx_business_date": "2026-08-28"
+    },
+    "production_cutoff": "2026-08-28T07:00:00+00:00",
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stdout_sha256": "8ae7bed91015e17e7d7477b91f744ee1bf08f5ccfdb6c69dad9f5acc99ac3d06",
+    "theses": {
+      "failure_count": 0,
+      "status": "already_completed",
+      "success_count": 7,
+      "ticker_count": 7
+    }
+  },
+  "schedule": {
+    "actual_completion_observed_at_kst": "2026-08-28T18:45:21+09:00",
+    "actual_run_observed_at_kst": "2026-08-28T18:45:06+09:00",
+    "automatic_second_one_shot_created": 0,
+    "contract": "run-now-kr-close-schedule-v1",
+    "last_exit_code": 0,
+    "one_shot_kr_close_schedule_count": 1,
+    "one_shot_label": "com.seungsoo.thesis-monitor.kr-close.run-now-20260828",
+    "pass_time_kst": "2026-08-28T18:39:55.298673+09:00",
+    "regular_job_definition_reused": true,
+    "residual_one_shot_schedule_count": 0,
+    "run_count": 1,
+    "scheduled_time_kst": "2026-08-28T18:44:55.298673+09:00",
+    "start_interval_seconds": 300,
+    "temporary_schedule_removed_at_kst": "2026-08-28T18:46:17.039541+09:00"
+  },
+  "source_monitor_run_id": "44",
+  "status": "PASS",
+  "stocks": [
+    {
+      "candidate_refs": [
+        {
+          "display": "약 159.2만~160.6만원",
+          "fact_ref": "v3-zone:4c35a2f22ca7bd1f9ad1",
+          "field": "dynamic_bollinger_support",
+          "price_anchor_refs": [
+            "v3-balance-box:bef8bc9a068f01cad4d6"
+          ],
+          "proximity_tier": "NEAR",
+          "source_timeframe": "daily"
+        },
+        {
+          "display": "약 186.7만~187.7만원",
+          "fact_ref": "v3-zone:4b6cff0ad3bea3ef381d",
+          "field": "dynamic_bollinger_resistance",
+          "price_anchor_refs": [],
+          "proximity_tier": "RELEVANT",
+          "source_timeframe": "weekly"
+        }
+      ],
+      "company_name": "SK하이닉스",
+      "eligibility": "ELIGIBLE_SR_ONLY",
+      "fallback_validation_errors": [],
+      "message_length": 976,
+      "message_sha256": "a13262f0653cdb347cfea09e8f592ae6a865d8cf5161db92b107396cdb4e7955",
+      "omitted_plan": [
+        {
+          "display": "약 186.7만~187.7만원",
+          "fact_ref": "v3-zone:4b6cff0ad3bea3ef381d",
+          "field": "dynamic_bollinger_resistance",
+          "price_anchor_refs": [],
+          "proximity_tier": "RELEVANT",
+          "reason": "not_selected_by_v3_material_dynamic_selector",
+          "source_timeframe": "weekly",
+          "state": "OMITTED_BY_MATERIALITY"
+        }
+      ],
+      "quality_errors": [],
+      "renderer_validation_errors": [],
+      "selected_plan": [
+        {
+          "display": "1653000.0",
+          "dynamic_bollinger_confluence": false,
+          "fact_ref": "structure-close:000660:2026-08-28",
+          "price_anchor_refs": [],
+          "provisional_bollinger_confluence": false,
+          "semantic_type": "STRUCTURE_BASIS_CLOSE",
+          "source_families": [],
+          "source_timeframe": null
+        },
+        {
+          "display": "약 159.2만~160.6만원",
+          "dynamic_bollinger_confluence": true,
+          "fact_ref": "v3-zone:4c35a2f22ca7bd1f9ad1",
+          "price_anchor_refs": [
+            "v3-balance-box:bef8bc9a068f01cad4d6"
+          ],
+          "provisional_bollinger_confluence": false,
+          "semantic_type": "NEAR_SUPPORT",
+          "source_families": [
+            "BALANCE_BOX",
+            "BOLLINGER_DAILY"
+          ],
+          "source_timeframe": "daily"
+        }
+      ],
+      "status": "PASS",
+      "ticker": "000660",
+      "validator_required_refs": [
+        "structure-close:000660:2026-08-28",
+        "v3-zone:4c35a2f22ca7bd1f9ad1"
+      ]
+    },
+    {
+      "candidate_refs": [
+        {
+          "display": "약 1.3만~1.4만원",
+          "fact_ref": "v3-zone:550c5a1a78106c47e428",
+          "field": "dynamic_bollinger_support",
+          "price_anchor_refs": [],
+          "proximity_tier": "NEAR",
+          "source_timeframe": "weekly"
+        },
+        {
+          "display": "약 1.4646만~1.4958만원",
+          "fact_ref": "v3-zone:4367730bec97957bab55",
+          "field": "dynamic_bollinger_resistance",
+          "price_anchor_refs": [
+            "v3-pivot:70910a9505b0c46f30b5"
+          ],
+          "proximity_tier": "NEAR",
+          "source_timeframe": "monthly"
+        }
+      ],
+      "company_name": "코리안리",
+      "eligibility": "ELIGIBLE_SR_ONLY",
+      "fallback_validation_errors": [],
+      "message_length": 1108,
+      "message_sha256": "e549dff9baf7487f40d979b547aed22988451ef521e89724dd0f83074a2074b8",
+      "omitted_plan": [
+        {
+          "display": "약 1.3만~1.4만원",
+          "fact_ref": "v3-zone:550c5a1a78106c47e428",
+          "field": "dynamic_bollinger_support",
+          "price_anchor_refs": [],
+          "proximity_tier": "NEAR",
+          "reason": "not_selected_by_v3_material_dynamic_selector",
+          "source_timeframe": "weekly",
+          "state": "OMITTED_BY_MATERIALITY"
+        }
+      ],
+      "quality_errors": [],
+      "renderer_validation_errors": [],
+      "selected_plan": [
+        {
+          "display": "14640.0",
+          "dynamic_bollinger_confluence": false,
+          "fact_ref": "structure-close:003690:2026-08-28",
+          "price_anchor_refs": [],
+          "provisional_bollinger_confluence": false,
+          "semantic_type": "STRUCTURE_BASIS_CLOSE",
+          "source_families": [],
+          "source_timeframe": null
+        },
+        {
+          "display": "약 1.42만~1.46만원",
+          "dynamic_bollinger_confluence": false,
+          "fact_ref": "v3-zone:2c5ffcd0867df1c78424",
+          "price_anchor_refs": [
+            "v3-balance-box:54cdd59ae175124d382a",
+            "v3-pivot:0974a78370449b81cf77",
+            "v3-pivot:10bd500e115c2a92404b",
+            "v3-pivot:182bcef4d3006d312928",
+            "v3-pivot:a41170aa0b57cd77b11a"
+          ],
+          "provisional_bollinger_confluence": false,
+          "semantic_type": "NEAR_SUPPORT",
+          "source_families": [
+            "BALANCE_BOX",
+            "BOLLINGER_DAILY",
+            "PIVOT_DAILY"
+          ],
+          "source_timeframe": "daily"
+        },
+        {
+          "display": "약 1.4646만~1.4958만원",
+          "dynamic_bollinger_confluence": true,
+          "fact_ref": "v3-zone:4367730bec97957bab55",
+          "price_anchor_refs": [
+            "v3-pivot:70910a9505b0c46f30b5"
+          ],
+          "provisional_bollinger_confluence": false,
+          "semantic_type": "NEAR_RESISTANCE",
+          "source_families": [
+            "BOLLINGER_MONTHLY",
+            "PIVOT_MONTHLY"
+          ],
+          "source_timeframe": "monthly"
+        },
+        {
+          "display": "약 1.3만~1.4만원",
+          "dynamic_bollinger_confluence": false,
+          "fact_ref": "v3-zone:547d2838d6e732af62fd",
+          "price_anchor_refs": [
+            "v3-balance-box:67010cf1778e629705af"
+          ],
+          "provisional_bollinger_confluence": false,
+          "semantic_type": "MAJOR_SUPPORT",
+          "source_families": [
+            "BALANCE_BOX"
+          ],
+          "source_timeframe": "monthly"
+        }
+      ],
+      "status": "PASS",
+      "ticker": "003690",
+      "validator_required_refs": [
+        "structure-close:003690:2026-08-28",
+        "v3-zone:2c5ffcd0867df1c78424",
+        "v3-zone:4367730bec97957bab55",
+        "v3-zone:547d2838d6e732af62fd"
+      ]
+    },
+    {
+      "candidate_refs": [
+        {
+          "display": "약 30.8만~31.7만원",
+          "fact_ref": "v3-zone:6d0f6942345c7ac42c01",
+          "field": "dynamic_bollinger_support",
+          "price_anchor_refs": [
+            "v3-pivot:61d4ed64742fdf2c3b84",
+            "v3-pivot:722dd70f940b5bd489ca",
+            "v3-pivot:a112aa6f1b1f8eac69b0"
+          ],
+          "proximity_tier": "NEAR",
+          "source_timeframe": "monthly"
+        },
+        {
+          "display": "약 36.9만~37.6만원",
+          "fact_ref": "v3-zone:5c0c03fdebfce06974a6",
+          "field": "dynamic_bollinger_resistance",
+          "price_anchor_refs": [
+            "v3-pivot:18e3b7aa5adce93c3ebe",
+            "v3-pivot:d67712b96e2822c8747d"
+          ],
+          "proximity_tier": "NEAR",
+          "source_timeframe": "weekly"
+        }
+      ],
+      "company_name": "POSCO홀딩스",
+      "eligibility": "ELIGIBLE_SR_ONLY",
+      "fallback_validation_errors": [],
+      "message_length": 1044,
+      "message_sha256": "6acbc27332ba7f5396ee210dfd4ab2ed1b567a0f49f0487ed95ba5a578dedf06",
+      "omitted_plan": [
+        {
+          "display": "약 36.9만~37.6만원",
+          "fact_ref": "v3-zone:5c0c03fdebfce06974a6",
+          "field": "dynamic_bollinger_resistance",
+          "price_anchor_refs": [
+            "v3-pivot:18e3b7aa5adce93c3ebe",
+            "v3-pivot:d67712b96e2822c8747d"
+          ],
+          "proximity_tier": "NEAR",
+          "reason": "not_selected_by_v3_material_dynamic_selector",
+          "source_timeframe": "weekly",
+          "state": "OMITTED_BY_MATERIALITY"
+        }
+      ],
+      "quality_errors": [],
+      "renderer_validation_errors": [],
+      "selected_plan": [
+        {
+          "display": "337500.0",
+          "dynamic_bollinger_confluence": false,
+          "fact_ref": "structure-close:005490:2026-08-28",
+          "price_anchor_refs": [],
+          "provisional_bollinger_confluence": false,
+          "semantic_type": "STRUCTURE_BASIS_CLOSE",
+          "source_families": [],
+          "source_timeframe": null
+        },
+        {
+          "display": "약 32.6만~33.4만원",
+          "dynamic_bollinger_confluence": false,
+          "fact_ref": "v3-zone:57ccd7bfa7931f518c82",
+          "price_anchor_refs": [
+            "v3-pivot:02a2d3cf070ffcd82d0b",
+            "v3-pivot:2d8649037fb9f6f514ae",
+            "v3-pivot:3bd4395d177951b1d7c9",
+            "v3-pivot:4be7b1516c0cfea93e59",
+            "v3-pivot:a5e6cbf3ae0aa5f3e507",
+            "v3-pivot:be25a8d9856091904d66",
+            "v3-pivot:c576f1fc1c42715c1825"
+          ],
+          "provisional_bollinger_confluence": false,
+          "semantic_type": "NEAR_SUPPORT",
+          "source_families": [
+            "PIVOT_DAILY"
+          ],
+          "source_timeframe": "daily"
+        },
+        {
+          "display": "약 34.1만~35.1만원",
+          "dynamic_bollinger_confluence": false,
+          "fact_ref": "v3-zone:ddd126e4bca8a4785a80",
+          "price_anchor_refs": [
+            "v3-pivot:0bbc096f44fbe3dd8d95",
+            "v3-pivot:413371f51eee0d7371a0",
+            "v3-pivot:6ae9b32b936943f4ab2f",
+            "v3-pivot:b0044455e299303838fb"
+          ],
+          "provisional_bollinger_confluence": false,
+          "semantic_type": "NEAR_RESISTANCE",
+          "source_families": [
+            "PIVOT_MONTHLY"
+          ],
+          "source_timeframe": "monthly"
+        },
+        {
+          "display": "약 30.8만~31.7만원",
+          "dynamic_bollinger_confluence": true,
+          "fact_ref": "v3-zone:6d0f6942345c7ac42c01",
+          "price_anchor_refs": [
+            "v3-pivot:61d4ed64742fdf2c3b84",
+            "v3-pivot:722dd70f940b5bd489ca",
+            "v3-pivot:a112aa6f1b1f8eac69b0"
+          ],
+          "provisional_bollinger_confluence": false,
+          "semantic_type": "MAJOR_SUPPORT",
+          "source_families": [
+            "BOLLINGER_MONTHLY",
+            "PIVOT_MONTHLY"
+          ],
+          "source_timeframe": "monthly"
+        },
+        {
+          "display": "약 42.5만~43.8만원",
+          "dynamic_bollinger_confluence": false,
+          "fact_ref": "v3-zone:72bf8f9de7a431046437",
+          "price_anchor_refs": [
+            "v3-pivot:206cbf280d26e33eb5cd",
+            "v3-pivot:27d72c0da9ca8a90ae40",
+            "v3-pivot:92131790e22c1b0f8e22",
+            "v3-pivot:c51773e328a47a8845ce"
+          ],
+          "provisional_bollinger_confluence": false,
+          "semantic_type": "MAJOR_RESISTANCE",
+          "source_families": [
+            "BOLLINGER_MONTHLY",
+            "PIVOT_MONTHLY"
+          ],
+          "source_timeframe": "monthly"
+        }
+      ],
+      "status": "PASS",
+      "ticker": "005490",
+      "validator_required_refs": [
+        "structure-close:005490:2026-08-28",
+        "v3-zone:57ccd7bfa7931f518c82",
+        "v3-zone:6d0f6942345c7ac42c01",
+        "v3-zone:72bf8f9de7a431046437",
+        "v3-zone:ddd126e4bca8a4785a80"
+      ]
+    },
+    {
+      "candidate_refs": [
+        {
+          "display": "약 25.3만~25.5만원",
+          "fact_ref": "v3-zone:aa75a4bb94f25b760810",
+          "field": "dynamic_bollinger_support",
+          "price_anchor_refs": [
+            "v3-balance-box:c65c2657264897a59a69"
+          ],
+          "proximity_tier": "NEAR",
+          "source_timeframe": "daily"
+        },
+        {
+          "display": "약 27.7만~27.9만원",
+          "fact_ref": "v3-zone:eafe37f11eef23ac8b40",
+          "field": "dynamic_bollinger_resistance",
+          "price_anchor_refs": [],
+          "proximity_tier": "NEAR",
+          "source_timeframe": "weekly"
+        }
+      ],
+      "company_name": "삼성전자",
+      "eligibility": "ELIGIBLE_SR_ONLY",
+      "fallback_validation_errors": [],
+      "message_length": 957,
+      "message_sha256": "0c23ceba4300d1991c1cf819c109ea34b299cfd8ad9e141af20ad4d9e32b1286",
+      "omitted_plan": [],
+      "quality_errors": [],
+      "renderer_validation_errors": [],
+      "selected_plan": [
+        {
+          "display": "257000.0",
+          "dynamic_bollinger_confluence": false,
+          "fact_ref": "structure-close:005930:2026-08-28",
+          "price_anchor_refs": [],
+          "provisional_bollinger_confluence": false,
+          "semantic_type": "STRUCTURE_BASIS_CLOSE",
+          "source_families": [],
+          "source_timeframe": null
+        },
+        {
+          "display": "약 25.3만~25.5만원",
+          "dynamic_bollinger_confluence": false,
+          "fact_ref": "v3-zone:aa75a4bb94f25b760810",
+          "price_anchor_refs": [
+            "v3-balance-box:c65c2657264897a59a69"
+          ],
+          "provisional_bollinger_confluence": false,
+          "semantic_type": "NEAR_SUPPORT",
+          "source_families": [
+            "BALANCE_BOX",
+            "BOLLINGER_DAILY"
+          ],
+          "source_timeframe": "daily"
+        },
+        {
+          "display": "약 27.7만~27.9만원",
+          "dynamic_bollinger_confluence": true,
+          "fact_ref": "v3-zone:eafe37f11eef23ac8b40",
+          "price_anchor_refs": [],
+          "provisional_bollinger_confluence": false,
+          "semantic_type": "NEAR_RESISTANCE",
+          "source_families": [
+            "BOLLINGER_WEEKLY"
+          ],
+          "source_timeframe": "weekly"
+        }
+      ],
+      "status": "PASS",
+      "ticker": "005930",
+      "validator_required_refs": [
+        "structure-close:005930:2026-08-28",
+        "v3-zone:aa75a4bb94f25b760810",
+        "v3-zone:eafe37f11eef23ac8b40"
+      ]
+    },
+    {
+      "candidate_refs": [
+        {
+          "display": "약 20.1만~20.4만원",
+          "fact_ref": "v3-zone:e5ef507576bfffef33ad",
+          "field": "dynamic_bollinger_support",
+          "price_anchor_refs": [
+            "v3-balance-box:8418bdbeb80b1b07678b"
+          ],
+          "proximity_tier": "NEAR",
+          "source_timeframe": "daily"
+        },
+        {
+          "display": "약 22.5만~22.7만원",
+          "fact_ref": "v3-zone:b7a3c8f33af8e105d3c6",
+          "field": "dynamic_bollinger_resistance",
+          "price_anchor_refs": [],
+          "proximity_tier": "NEAR",
+          "source_timeframe": "weekly"
+        }
+      ],
+      "company_name": "LS일렉트릭",
+      "eligibility": "ELIGIBLE_SR_ONLY",
+      "fallback_validation_errors": [],
+      "message_length": 919,
+      "message_sha256": "c8cb96b0f28b5122bbf9618963b41d13459193d1a850c159ba0280151710d6f4",
+      "omitted_plan": [
+        {
+          "display": "약 20.1만~20.4만원",
+          "fact_ref": "v3-zone:e5ef507576bfffef33ad",
+          "field": "dynamic_bollinger_support",
+          "price_anchor_refs": [
+            "v3-balance-box:8418bdbeb80b1b07678b"
+          ],
+          "proximity_tier": "NEAR",
+          "reason": "not_selected_by_v3_material_dynamic_selector",
+          "source_timeframe": "daily",
+          "state": "OMITTED_BY_MATERIALITY"
+        }
+      ],
+      "quality_errors": [],
+      "renderer_validation_errors": [],
+      "selected_plan": [
+        {
+          "display": "214500.0",
+          "dynamic_bollinger_confluence": false,
+          "fact_ref": "structure-close:010120:2026-08-28",
+          "price_anchor_refs": [],
+          "provisional_bollinger_confluence": false,
+          "semantic_type": "STRUCTURE_BASIS_CLOSE",
+          "source_families": [],
+          "source_timeframe": null
+        },
+        {
+          "display": "약 21.1만~21.3만원",
+          "dynamic_bollinger_confluence": false,
+          "fact_ref": "v3-zone:7098464a3ab93da93ceb",
+          "price_anchor_refs": [
+            "v3-balance-box:7baf0261475383afa9eb"
+          ],
+          "provisional_bollinger_confluence": false,
+          "semantic_type": "NEAR_SUPPORT",
+          "source_families": [
+            "BALANCE_BOX"
+          ],
+          "source_timeframe": "weekly"
+        },
+        {
+          "display": "약 22만~22.2만원",
+          "dynamic_bollinger_confluence": false,
+          "fact_ref": "v3-zone:2f56626d89c25ca791b0",
+          "price_anchor_refs": [],
+          "provisional_bollinger_confluence": false,
+          "semantic_type": "NEAR_RESISTANCE",
+          "source_families": [
+            "BOLLINGER_DAILY"
+          ],
+          "source_timeframe": "daily"
+        },
+        {
+          "display": "약 22.5만~22.7만원",
+          "dynamic_bollinger_confluence": false,
+          "fact_ref": "v3-zone:b7a3c8f33af8e105d3c6",
+          "price_anchor_refs": [],
+          "provisional_bollinger_confluence": false,
+          "semantic_type": "DYNAMIC_BOLLINGER_RESISTANCE",
+          "source_families": [
+            "BOLLINGER_WEEKLY"
+          ],
+          "source_timeframe": "weekly"
+        }
+      ],
+      "status": "PASS",
+      "ticker": "010120",
+      "validator_required_refs": [
+        "structure-close:010120:2026-08-28",
+        "v3-zone:2f56626d89c25ca791b0",
+        "v3-zone:7098464a3ab93da93ceb",
+        "v3-zone:b7a3c8f33af8e105d3c6"
+      ]
+    },
+    {
+      "candidate_refs": [
+        {
+          "display": "약 114.7만~115.3만원",
+          "fact_ref": "v3-zone:d1a77b286e9195a61bda",
+          "field": "dynamic_bollinger_support",
+          "price_anchor_refs": [],
+          "proximity_tier": "NEAR",
+          "source_timeframe": "weekly"
+        },
+        {
+          "display": "약 122.8만~125.9만원",
+          "fact_ref": "v3-zone:6d61cfc414a324178faa",
+          "field": "dynamic_bollinger_resistance",
+          "price_anchor_refs": [
+            "v3-pivot:36f6550ba01679b4eafb",
+            "v3-pivot:d5910454f6be537cd9b9",
+            "v3-pivot:e0aa24233fadbfd5167f"
+          ],
+          "proximity_tier": "NEAR",
+          "source_timeframe": "daily"
+        }
+      ],
+      "company_name": "한화에어로스페이스",
+      "eligibility": "ELIGIBLE_SR_ONLY",
+      "fallback_validation_errors": [],
+      "message_length": 916,
+      "message_sha256": "a17d2c41a9fcc34cc07ac310618095465f98d4be384371694f35c3e5ab618525",
+      "omitted_plan": [
+        {
+          "display": "약 122.8만~125.9만원",
+          "fact_ref": "v3-zone:6d61cfc414a324178faa",
+          "field": "dynamic_bollinger_resistance",
+          "price_anchor_refs": [
+            "v3-pivot:36f6550ba01679b4eafb",
+            "v3-pivot:d5910454f6be537cd9b9",
+            "v3-pivot:e0aa24233fadbfd5167f"
+          ],
+          "proximity_tier": "NEAR",
+          "reason": "not_selected_by_v3_material_dynamic_selector",
+          "source_timeframe": "daily",
+          "state": "OMITTED_BY_MATERIALITY"
+        }
+      ],
+      "quality_errors": [],
+      "renderer_validation_errors": [],
+      "selected_plan": [
+        {
+          "display": "1157000.0",
+          "dynamic_bollinger_confluence": false,
+          "fact_ref": "structure-close:012450:2026-08-28",
+          "price_anchor_refs": [],
+          "provisional_bollinger_confluence": false,
+          "semantic_type": "STRUCTURE_BASIS_CLOSE",
+          "source_families": [],
+          "source_timeframe": null
+        },
+        {
+          "display": "약 114.7만~115.3만원",
+          "dynamic_bollinger_confluence": true,
+          "fact_ref": "v3-zone:d1a77b286e9195a61bda",
+          "price_anchor_refs": [],
+          "provisional_bollinger_confluence": false,
+          "semantic_type": "NEAR_SUPPORT",
+          "source_families": [
+            "BOLLINGER_WEEKLY"
+          ],
+          "source_timeframe": "weekly"
+        },
+        {
+          "display": "약 120.3만~123.4만원",
+          "dynamic_bollinger_confluence": false,
+          "fact_ref": "v3-zone:c9cf543e42125601229c",
+          "price_anchor_refs": [
+            "v3-pivot:5cd4d252ba8f29aa32a3",
+            "v3-pivot:a45dccd10a6a6c737e19",
+            "v3-pivot:e436ea67ac773e26fda1"
+          ],
+          "provisional_bollinger_confluence": false,
+          "semantic_type": "NEAR_RESISTANCE",
+          "source_families": [
+            "PIVOT_DAILY"
+          ],
+          "source_timeframe": "daily"
+        },
+        {
+          "display": "약 111.8만~112.4만원",
+          "dynamic_bollinger_confluence": false,
+          "fact_ref": "v3-zone:707298add6fc2ca079a2",
+          "price_anchor_refs": [
+            "v3-balance-box:a52a9b586aed452a8b80"
+          ],
+          "provisional_bollinger_confluence": false,
+          "semantic_type": "MAJOR_SUPPORT",
+          "source_families": [
+            "BALANCE_BOX"
+          ],
+          "source_timeframe": "daily"
+        }
+      ],
+      "status": "PASS",
+      "ticker": "012450",
+      "validator_required_refs": [
+        "structure-close:012450:2026-08-28",
+        "v3-zone:707298add6fc2ca079a2",
+        "v3-zone:c9cf543e42125601229c",
+        "v3-zone:d1a77b286e9195a61bda"
+      ]
+    },
+    {
+      "candidate_refs": [
+        {
+          "display": "약 19.4만~19.6만원",
+          "fact_ref": "v3-zone:5f6ae78e3564964d428d",
+          "field": "dynamic_bollinger_support",
+          "price_anchor_refs": [],
+          "proximity_tier": "NEAR",
+          "source_timeframe": "daily"
+        },
+        {
+          "display": "약 21.3만~21.5만원",
+          "fact_ref": "v3-zone:df8fc07f7bb59cdcfd9f",
+          "field": "dynamic_bollinger_resistance",
+          "price_anchor_refs": [],
+          "proximity_tier": "NEAR",
+          "source_timeframe": "weekly"
+        }
+      ],
+      "company_name": "현대글로비스",
+      "eligibility": "ELIGIBLE_SR_ONLY",
+      "fallback_validation_errors": [],
+      "message_length": 1162,
+      "message_sha256": "a0223fad3954a9b062df1779e509ed4e3c7a3cd3083ccde6b12832ebb7ad453e",
+      "omitted_plan": [
+        {
+          "display": "약 19.4만~19.6만원",
+          "fact_ref": "v3-zone:5f6ae78e3564964d428d",
+          "field": "dynamic_bollinger_support",
+          "price_anchor_refs": [],
+          "proximity_tier": "NEAR",
+          "reason": "not_selected_by_v3_material_dynamic_selector",
+          "source_timeframe": "daily",
+          "state": "OMITTED_BY_MATERIALITY"
+        },
+        {
+          "display": "약 21.3만~21.5만원",
+          "fact_ref": "v3-zone:df8fc07f7bb59cdcfd9f",
+          "field": "dynamic_bollinger_resistance",
+          "price_anchor_refs": [],
+          "proximity_tier": "NEAR",
+          "reason": "not_selected_by_v3_material_dynamic_selector",
+          "source_timeframe": "weekly",
+          "state": "OMITTED_BY_MATERIALITY"
+        }
+      ],
+      "quality_errors": [],
+      "renderer_validation_errors": [],
+      "selected_plan": [
+        {
+          "display": "205000.0",
+          "dynamic_bollinger_confluence": false,
+          "fact_ref": "structure-close:086280:2026-08-28",
+          "price_anchor_refs": [],
+          "provisional_bollinger_confluence": false,
+          "semantic_type": "STRUCTURE_BASIS_CLOSE",
+          "source_families": [],
+          "source_timeframe": null
+        },
+        {
+          "display": "약 20.2만~20.4만원",
+          "dynamic_bollinger_confluence": false,
+          "fact_ref": "v3-zone:cd8d8b21cb52a2b5a3f3",
+          "price_anchor_refs": [
+            "v3-balance-box:210a55f34b656453984f"
+          ],
+          "provisional_bollinger_confluence": false,
+          "semantic_type": "NEAR_SUPPORT",
+          "source_families": [
+            "BALANCE_BOX"
+          ],
+          "source_timeframe": "weekly"
+        },
+        {
+          "display": "약 20.9만~21.3만원",
+          "dynamic_bollinger_confluence": false,
+          "fact_ref": "v3-zone:830e5f952d8b342e2390",
+          "price_anchor_refs": [
+            "v3-pivot:1bc4209b1920501c82fb"
+          ],
+          "provisional_bollinger_confluence": false,
+          "semantic_type": "NEAR_RESISTANCE",
+          "source_families": [
+            "BOLLINGER_DAILY",
+            "PIVOT_DAILY"
+          ],
+          "source_timeframe": "daily"
+        },
+        {
+          "display": "약 17.2만~17.7만원",
+          "dynamic_bollinger_confluence": false,
+          "fact_ref": "v3-zone:10b1cad2a45346e24b35",
+          "price_anchor_refs": [
+            "v3-pivot:3b0bc390b3b5eced161a"
+          ],
+          "provisional_bollinger_confluence": false,
+          "semantic_type": "MAJOR_SUPPORT",
+          "source_families": [
+            "BOLLINGER_WEEKLY",
+            "PIVOT_WEEKLY"
+          ],
+          "source_timeframe": "weekly"
+        },
+        {
+          "display": "약 21.2만~21.5만원",
+          "dynamic_bollinger_confluence": true,
+          "fact_ref": "v3-zone:52899ec27ff00a5feddb",
+          "price_anchor_refs": [
+            "v3-balance-box:6fd77dce5629435129ee"
+          ],
+          "provisional_bollinger_confluence": false,
+          "semantic_type": "MAJOR_RESISTANCE",
+          "source_families": [
+            "BALANCE_BOX"
+          ],
+          "source_timeframe": "monthly"
+        }
+      ],
+      "status": "PASS",
+      "ticker": "086280",
+      "validator_required_refs": [
+        "structure-close:086280:2026-08-28",
+        "v3-zone:10b1cad2a45346e24b35",
+        "v3-zone:52899ec27ff00a5feddb",
+        "v3-zone:830e5f952d8b342e2390",
+        "v3-zone:cd8d8b21cb52a2b5a3f3"
+      ]
+    }
+  ]
+}
