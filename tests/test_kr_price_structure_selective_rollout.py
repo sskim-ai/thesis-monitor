@@ -8,6 +8,7 @@ from app.services.kr_price_structure_selective_rollout_service import (
     preserve_current_price_structure_section,
     preserve_price_structure_sections,
     replace_legacy_price_surface,
+    suppress_current_price_structure_surface,
 )
 
 
@@ -351,6 +352,25 @@ def test_legacy_price_surface_is_replaced_and_registered_rule_is_relabelled() ->
     assert "🧭 기존 등록 가격 규칙" in rendered
     assert "기존 확인선 344,000원" in rendered
     assert rendered.index("📐 현재 가격 구조") < rendered.index("📊 수급")
+
+
+def test_price_structure_suppression_preserves_only_stored_rules() -> None:
+    message = """🏢 Example
+
+💰 가격
+현재가: $10.00
+가격 규칙 이력:
+• 등록 확인선 $12.00
+
+📊 수급
+없음"""
+
+    rendered = suppress_current_price_structure_surface(message)
+
+    assert "현재가" not in rendered
+    assert "💰 가격" not in rendered
+    assert "🧭 기존 등록 가격 규칙" in rendered
+    assert "기존 확인선 $12.00" in rendered
 
 
 def test_adaptive_message_preserves_current_and_stored_sections_as_a_pair() -> None:

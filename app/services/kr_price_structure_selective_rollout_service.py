@@ -376,6 +376,17 @@ def replace_legacy_price_surface(message: str, section: str) -> str:
     return message[:start] + replacement + message[end:]
 
 
+def suppress_current_price_structure_surface(message: str) -> str:
+    """Remove current/legacy price claims while preserving stored rule history."""
+    result = message
+    if _LEGACY_PRICE_SECTION.search(result):
+        result = replace_legacy_price_surface(result, "")
+    if current := _CURRENT_SECTION.search(result):
+        start, end = current.span("section")
+        result = result[:start] + result[end:]
+    return re.sub(r"\n{3,}", "\n\n", result).strip()
+
+
 def preserve_current_price_structure_section(
     message: str,
     reference: str,

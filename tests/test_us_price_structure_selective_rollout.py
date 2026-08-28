@@ -151,3 +151,24 @@ def test_partial_bar_or_selection_error_blocks_us_render() -> None:
     assert partial.section is None
     assert future.eligibility == KrPriceStructureEligibility.BLOCKED
     assert future.section is None
+
+
+def test_daily_history_must_end_on_declared_structure_session() -> None:
+    context = {
+        **_context(),
+        "coverage": {
+            "daily": {
+                "status": "PARTIAL_SAFE",
+                "completed_count": 300,
+                "actual_end_date": "2026-08-26",
+            }
+        },
+    }
+
+    decision = build_us_price_structure_rollout_decision(
+        context, ticker="WRD", monitored_subject=True, enabled=True
+    )
+
+    assert decision.eligibility == KrPriceStructureEligibility.BLOCKED
+    assert decision.section is None
+    assert decision.denial_reasons == ("daily_history_as_of_mismatch",)

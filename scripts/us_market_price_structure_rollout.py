@@ -14,6 +14,7 @@ from app.config import get_settings
 from app.services.kr_price_structure_selective_rollout_service import (
     preserve_price_structure_sections,
     replace_legacy_price_surface,
+    suppress_current_price_structure_surface,
 )
 from app.services.ohlcv_client import OhlcvClient
 from app.services.us_full_message_service import (
@@ -255,16 +256,14 @@ async def _price_structure_evidence(
             raise ValueError(f"message baseline missing: {ticker}")
         fallback = _message_text(fallback_row)
         ai = _message_text(ai_row)
-        fallback_preview = (
-            replace_legacy_price_surface(fallback, decision.section)
-            if decision.section
-            else fallback
-        )
-        ai_preview = (
-            preserve_price_structure_sections(ai, fallback_preview)
-            if decision.section
-            else ai
-        )
+        if decision.section:
+            fallback_preview = replace_legacy_price_surface(
+                fallback, decision.section
+            )
+            ai_preview = preserve_price_structure_sections(ai, fallback_preview)
+        else:
+            fallback_preview = suppress_current_price_structure_surface(fallback)
+            ai_preview = suppress_current_price_structure_surface(ai)
         route = _route(ai_row)
         selected = _selected_message(
             route=route,
@@ -278,6 +277,15 @@ async def _price_structure_evidence(
         numeric_refs = [
             str(binding.get("fact_ref") or "") for binding in decision.numeric_bindings
         ]
+        coverage = _coverage(structure)
+        daily_coverage = coverage.get("daily")
+        daily_coverage = (
+            daily_coverage if isinstance(daily_coverage, Mapping) else {}
+        )
+        daily_actual_end = str(daily_coverage.get("actual_end_date") or "")
+        source_session_aligned = bool(
+            daily_actual_end and daily_actual_end == target_session
+        )
         row = {
             **dict(subject),
             "target_session": target_session,
@@ -285,7 +293,9 @@ async def _price_structure_evidence(
             "currency": structure.get("currency"),
             "security_basis": f"US_LISTED:{ticker}",
             "price_context": price_context,
-            "coverage": _coverage(structure),
+            "coverage": coverage,
+            "daily_actual_end_date": daily_actual_end or None,
+            "source_session_aligned": source_session_aligned,
             "eligibility": decision.eligibility.value,
             "denial_reasons": list(decision.denial_reasons),
             "section": decision.section,
@@ -320,6 +330,9 @@ async def _price_structure_evidence(
                 structure.get("partial_bar_used_for_pivot_confirmation") or 0
             ),
             "lookahead_leak": int(structure.get("as_of") != target_session),
+            "wrong_session_data_visible": int(
+                decision.section is not None and not source_session_aligned
+            ),
             "security_basis_conflict": int(structure.get("currency") != "USD"),
             "unsupported_target": int("목표 가격" in (decision.section or "")),
             "unsupported_stop": int("손절" in (decision.section or "")),
@@ -334,6 +347,7 @@ async def _price_structure_evidence(
                 row["ai_fallback_numeric_parity"],
                 row["partial_bar_used_for_pivot_confirmation"] == 0,
                 row["lookahead_leak"] == 0,
+                row["wrong_session_data_visible"] == 0,
                 row["security_basis_conflict"] == 0,
                 row["unsupported_target"] == 0,
                 row["unsupported_stop"] == 0,

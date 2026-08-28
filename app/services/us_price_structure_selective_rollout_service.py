@@ -57,8 +57,25 @@ def build_us_price_structure_rollout_decision(
         reasons.append("us_market_scope_required")
     if not monitored_subject:
         reasons.append("subject_outside_monitored_us_universe")
-    eligibility = classify_kr_price_structure(context)
-    if eligibility == KrPriceStructureEligibility.BLOCKED:
+    coverage = context.get("coverage")
+    coverage = coverage if isinstance(coverage, Mapping) else {}
+    daily = coverage.get("daily")
+    daily = daily if isinstance(daily, Mapping) else {}
+    structure_as_of = str(context.get("as_of") or "")
+    daily_actual_end = str(daily.get("actual_end_date") or "")
+    daily_session_mismatch = bool(
+        structure_as_of
+        and daily_actual_end
+        and structure_as_of != daily_actual_end
+    )
+    eligibility = (
+        KrPriceStructureEligibility.BLOCKED
+        if daily_session_mismatch
+        else classify_kr_price_structure(context)
+    )
+    if daily_session_mismatch:
+        reasons.append("daily_history_as_of_mismatch")
+    elif eligibility == KrPriceStructureEligibility.BLOCKED:
         reasons.append("price_structure_validation_blocked")
     elif eligibility == KrPriceStructureEligibility.OMIT_PRICE_STRUCTURE:
         reasons.append("no_safe_current_sr")
