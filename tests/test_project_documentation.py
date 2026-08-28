@@ -116,16 +116,16 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     assert state["repository"] == "sskim-ai/thesis-monitor"
     assert state["branch"] == "main"
     assert state["experimental_branch"] == (
-        "codex/20260828-us-macro-zero-change-quality-gate"
+        "codex/20260828-price-structure-major-sr-reality-gate"
     )
     assert state["current_phase"] == (
-        "us_macro_quality_repair_deployed_awaiting_natural_proof"
+        "major_sr_reality_gate_deployed_awaiting_natural_proof"
     )
     assert state["last_completed_phase"] == (
-        "us_macro_zero_change_exact_payload_quality_repair"
+        "price_structure_major_sr_reality_gate_repair"
     )
     assert state["next_default_phase"] == (
-        "wait_for_next_natural_us_morning"
+        "wait_for_next_natural_stock_messages"
     )
     implementation_commit = "069f002437163bff1df7aa6e258918c1777d5dfa"
     kr_size_sector_implementation = "6a54db130e95e25969a5ca0a100648d4a12c3aa2"
@@ -143,13 +143,13 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     prior_price_structure_commit = "631e82f202b6f081866ef83c8b67b2138a8b51d8"
     prior_fibonacci_commit = "0dfef76bba606f018893d6e68e7beaf410aa7438"
     assert state["deployed_code_commit"] == (
-        "535855631890928a9dd9e798e12adbeabde74df2"
+        "c5f1fbcb9c952c2d14ad0b178a9b33351d15b512"
     )
     assert state["main_code_commit"] == (
-        "535855631890928a9dd9e798e12adbeabde74df2"
+        "c5f1fbcb9c952c2d14ad0b178a9b33351d15b512"
     )
     assert state["operating_code_commit"] == (
-        "535855631890928a9dd9e798e12adbeabde74df2"
+        "c5f1fbcb9c952c2d14ad0b178a9b33351d15b512"
     )
     phase_8552 = state["phase_8_5_5_2_kr_structured_field_repetition"]
     assert phase_8552["status"] == "operating_shadow_pending_natural_proof"
@@ -168,6 +168,9 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     )
     assert state["contracts"]["sr_proximity_relevance_gate"] == (
         "sr-proximity-relevance-gate-v1"
+    )
+    assert state["contracts"]["major_sr_price_anchor_reality_gate"] == (
+        "major-sr-price-anchor-reality-gate-v1"
     )
     assert state["contracts"]["price_structure_v3_current_data_shadow_validation"] == (
         "price-structure-v3-current-data-shadow-validation-v1"
@@ -1245,8 +1248,28 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     assert formatting["kr_rollout"] == "ENABLED_AWAITING_NATURAL_PROOF"
     assert formatting["next_action"] == "WAIT_FOR_NEXT_NATURAL_KR_MARKET_MESSAGE"
     assert state["current_commit"] == (
-        "535855631890928a9dd9e798e12adbeabde74df2"
+        "c5f1fbcb9c952c2d14ad0b178a9b33351d15b512"
     )
+    reality_gate = state["price_structure_major_sr_reality_gate"]
+    assert reality_gate["status"] == "deployed_awaiting_natural_proof"
+    assert reality_gate["instruction_commit"] == (
+        "4a5702823da3f950b9f125bcbcfecd7c6cfa84df"
+    )
+    assert reality_gate["implementation_commit"] == (
+        "c5f1fbcb9c952c2d14ad0b178a9b33351d15b512"
+    )
+    assert reality_gate["same_raw_replay"] == "PASS_20_OF_20"
+    assert reality_gate["dynamic_only_major_before"] == 18
+    assert reality_gate["dynamic_only_major_after"] == 0
+    assert reality_gate["major_without_price_anchor"] == 0
+    assert reality_gate["near_sr_changes"] == 0
+    assert reality_gate["test_exact_payload_match"] == "PASS_20_OF_20"
+    assert reality_gate["production_recipient_send"] == 0
+    assert reality_gate["production_delivery_intent_created"] == 0
+    assert reality_gate["post_deploy_replay"] == "PASS_20_OF_20"
+    assert reality_gate["open_p0"] == []
+    assert reality_gate["open_material_p1"] == []
+    assert reality_gate["natural_major_sr_reality_gate"] == "PENDING"
     assert state["ai_review_mode"] == "shadow"
     assert state["ai_policy_version"] == "daily-review-v3.10"
     assert state["output_schema_version"] == 4

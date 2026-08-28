@@ -1,10 +1,10 @@
 # Thesis Monitor Master Workflow
 
-Master Workflow: `v21`
+Master Workflow: `v22`
 As of: `2026-08-28`
 Repository: `sskim-ai/thesis-monitor`
 Operating branch: `main`
-Latest evidence branch: `codex/20260828-us-macro-zero-change-quality-gate`
+Latest evidence branch: `codex/20260828-price-structure-major-sr-reality-gate`
 Commit resolution: run `git rev-parse HEAD`; this document is part of that commit and must not
 hardcode a self-referential final SHA. Resolve `origin/main` and the clean operating checkout at
 session start. Phase 9.1A defines `working-capital-evidence-v1`; Phase 9.1B implements canonical
@@ -16,7 +16,27 @@ AI/fallback parity and leaves Trade AR/broad AR/AP/advanced ratios blocked. Open
 zero. Natural AI-assisted delivery remains `PARTIAL` independently.
 KRX 8.2A.x and peer 8.3.x also remain experimental.
 
-## 0. Latest US Macro Exact-Payload Quality Repair
+## 0. Latest Major Structural S/R Reality Gate
+
+The repair starts from exact instruction commit `4a5702823da3f950b9f125bcbcfecd7c6cfa84df`
+and implementation `c5f1fbcb9c952c2d14ad0b178a9b33351d15b512`. The shared
+`major-sr-price-anchor-reality-gate-v1` contract requires confirmed Pivot, Balance Box, or verified
+equivalent observed-price provenance before any zone may render as `주요 구조 지지/저항`.
+Bollinger/Fibonacci/projection evidence remains available only as confluence after that anchor.
+
+One fixed adjusted-OHLCV capture was replayed against the old base and repaired code. The repaired
+result passed US `13/13` and KR `7/7`; visible dynamic-only major zones fell from 18 to zero, all 21
+remaining visible majors have anchor and basis provenance, and near-S/R was unchanged `20/20`.
+GOOGL's old monthly Bollinger-only support `$267.08~$268.43` is omitted and resistance
+`$424.82~$426.96` is replaced by an actual balance-box anchor.
+
+The dedicated non-production sink received 20 exact stock messages with zero production-recipient
+sends, duplicates, orphans, or delivery intents. Operating promotion, API/OHLCV health, and the
+post-deploy `13+7` replay pass. Open P0/material P1 are `0/0`. The gate is
+`DEPLOYED_AWAITING_NATURAL_PROOF`; do not manually run a task or production Telegram. Review the
+next natural stock messages read-only.
+
+## 0A. Latest US Macro Exact-Payload Quality Repair
 
 The bounded repair starts from instruction commit `e59c0e6a0574824bd512c1d4c06775b0afe1e468`
 and implementation commit `535855631890928a9dd9e798e12adbeabde74df2`. Run-43 exposed two
@@ -35,7 +55,7 @@ Production Assist is OFF.
 The repair is `DEPLOYED_AWAITING_NATURAL_PROOF`, with P0/material P1 `0/0`. Review the next natural
 US morning message read-only; do not manually run a task or send production Telegram.
 
-## 0A. Previous US Market And Price Structure Rollout
+## 0B. Previous US Market And Price Structure Rollout
 
 The rollout starts from instruction commit `2ee201690787136780c7d5c8a046506d44227633`
 and implementation commit `1ba463571060a1fc9a5868afcdeab3de15f2bbe6`. The
@@ -56,7 +76,7 @@ US Price Structure is enabled independently of the existing KR flags. Post-enabl
 The state is `ENABLED_AWAITING_NATURAL_PROOF`, not `LIVE_PASS`. Wait for the next naturally
 scheduled US morning market and stock cycle; do not run a task or production Telegram manually.
 
-## 0B. Latest KR Market Formatting State
+## 0C. Latest KR Market Formatting State
 
 The bounded `📊 시장 내부` formatting repair starts from instruction commit
 `dd1b5eb712081c222bcfe1b4465d4fe0aac5f89a` and implementation

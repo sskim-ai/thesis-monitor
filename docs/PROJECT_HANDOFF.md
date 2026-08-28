@@ -5,6 +5,27 @@ with [MASTER_WORKFLOW.md](MASTER_WORKFLOW.md), [project-state.json](project-stat
 [NEXT_SESSION_PROMPT.md](NEXT_SESSION_PROMPT.md) before changing runtime policy, Knowledge,
 validation, delivery, or Scheduled Tasks.
 
+## Latest Handoff - Major Structural S/R Reality Gate
+
+Use instruction commit `4a5702823da3f950b9f125bcbcfecd7c6cfa84df` and implementation
+`c5f1fbcb9c952c2d14ad0b178a9b33351d15b512`. Start with
+`docs/reports/20260828-major-sr-readiness.json`, the GOOGL negative control, price-anchor contract,
+indicator/interaction semantics, US/KR before-after, exact test-message, promotion, and smoke
+reports.
+
+The root cause was shared: Bollinger observation dates occupied a legacy interaction field, merge
+treated them as price interactions, and major ranking/rendering had no anchor gate. The new shared
+contract separates observation from interaction and requires confirmed Pivot/Balance-Box/equivalent
+price evidence. One same-raw replay passes US `13/13` plus KR `7/7`, near-S/R stays identical, and
+all visible majors carry source, anchor, as-of, currency, security, and adjustment provenance.
+
+Twenty stock messages reached the dedicated non-production sink exactly once. Production sends,
+intents, duplicates, orphans, task runs, Pilot/DB mutations, and archive rewrites were zero.
+Operating is healthy with KR/US Price Structure ON, AI mode shadow, and Production Assist OFF.
+P0/material P1 is `0/0`; `MAJOR_SR_REALITY_GATE=DEPLOYED_AWAITING_NATURAL_PROOF` and
+`NATURAL_MAJOR_SR_REALITY_GATE=PENDING`. Wait for natural stock messages and review them read-only.
+Do not run a Scheduled Task or production Telegram manually.
+
 ## Latest Handoff - US Macro Exact-Payload Quality Repair
 
 Use instruction commit `e59c0e6a0574824bd512c1d4c06775b0afe1e468` and implementation
