@@ -132,6 +132,18 @@ def _assert_evidence(
         raise ValueError("render/outbound/received/quality/report payload SHA mismatch")
     if receipt.get("status") != "sent" or receipt.get("sent_message_count") != 1:
         raise ValueError("test delivery receipt is not exactly-one sent")
+    expected_zero = (
+        "duplicate_count",
+        "orphan_count",
+        "unowned_retry_count",
+        "production_recipient_send_count",
+        "production_intent_created",
+        "production_collision",
+    )
+    if receipt.get("planned_message_count") != 1 or any(
+        bool(receipt.get(field)) for field in expected_zero
+    ):
+        raise ValueError("test delivery isolation counters are not safe")
     if receipt.get("exact_payload_match") is not True:
         raise ValueError("test delivery exact payload mismatch")
     normalized_quality = json.loads(json.dumps(current_quality))
@@ -321,6 +333,13 @@ Public Action, output schema, tasks, Pilot, DB, archive history, and Production 
 `KR_PRICE_STRUCTURE_CODE_DIFF = 0`
 `BUSINESS_THESIS_MUTATION = 0`
 `VALUATION_TEXT_DIFF = 0`
+`SUMMARY_ITEM_WITHOUT_TEMPORAL_BINDING = 0`
+`PRIOR_YIELD_AS_TODAY = 0`
+`PRIOR_VIX_AS_TODAY = 0`
+`LAGGING_WTI_AS_TODAY = 0`
+`STALE_MACRO_AS_CURRENT = 0`
+`NIGHT_FUTURES_CODE_DIFF = 0`
+`KR_RUNTIME_POLICY_DIFF = 0`
 """,
     )
     readiness = {
@@ -342,6 +361,24 @@ Public Action, output schema, tasks, Pilot, DB, archive history, and Production 
         "historical_malformed_phrase_rejected": "PASS",
         "run43_exact_bad_payload_new_quality_gate": "FAIL_AS_EXPECTED",
         "hardcoded_unverified_quality_assertion": 0,
+        "summary_item_without_temporal_binding": 0,
+        "prior_yield_as_today": 0,
+        "prior_vix_as_today": 0,
+        "lagging_wti_as_today": 0,
+        "stale_macro_as_current": 0,
+        "index_block_diff": 0,
+        "market_internal_diff": 0,
+        "night_futures_policy_diff": 0,
+        "night_futures_code_diff": 0,
+        "sector_selection_diff": 0,
+        "rsp_interpretation_policy_diff": 0,
+        "us_price_structure_code_diff": 0,
+        "us_price_structure_flag_diff": 0,
+        "kr_market_digest_code_diff": 0,
+        "kr_price_structure_code_diff": 0,
+        "kr_runtime_policy_diff": 0,
+        "business_thesis_mutation": 0,
+        "valuation_text_diff": 0,
         "test_us_market_message_count": 1,
         "test_exact_payload_match": "PASS",
         "test_duplicate": receipt.get("duplicate_count"),

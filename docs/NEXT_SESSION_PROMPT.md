@@ -2,6 +2,25 @@
 
 Repository: `sskim-ai/thesis-monitor`
 
+Latest authoritative work follows instruction commit
+`e59c0e6a0574824bd512c1d4c06775b0afe1e468` and implementation
+`535855631890928a9dd9e798e12adbeabde74df2`. Read the `20260828-us-macro-*`,
+`20260828-us-exact-payload-*`, and broken-payload regression reports plus the single completion
+bundle first.
+
+Run-43's immutable malformed payload fails the new gate. One isolated market-only test message
+passed exact received-payload validation with all payload hashes equal, no generic macro section,
+and no malformed zero-change Korean. Stock sends and production sends/intents were zero. KR TOP3,
+KR Price Structure, and US Price Structure remain ON; AI mode is shadow, Production Assist is OFF,
+and P0/material P1 is `0/0`.
+
+`US_MACRO_QUALITY_REPAIR=DEPLOYED_AWAITING_NATURAL_PROOF`. Next action:
+`WAIT_FOR_NEXT_NATURAL_US_MORNING`. Review only the naturally scheduled market message for specific
+and grammatical macro use, intact index/market sections, exact payload quality, and exactly-once
+delivery. Do not manually run a Scheduled Task or send production Telegram.
+
+---
+
 Latest authoritative rollout work follows instruction commit
 `2ee201690787136780c7d5c8a046506d44227633` and implementation
 `1ba463571060a1fc9a5868afcdeab3de15f2bbe6`. Read the `20260828-us-full-message-*` and

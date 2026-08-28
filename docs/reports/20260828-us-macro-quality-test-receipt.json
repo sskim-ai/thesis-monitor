@@ -1,0 +1,41 @@
+{
+  "contract": "us-macro-quality-test-delivery-v1",
+  "duplicate_count": 0,
+  "exact_payload_match": true,
+  "namespace": "TEST_ONLY_US_FULL_MARKET_MESSAGE",
+  "orphan_count": 0,
+  "planned_message_count": 1,
+  "production_collision": 0,
+  "production_intent_created": 0,
+  "production_recipient_send_count": 0,
+  "production_sink_alias": "production:7937bea5b823",
+  "rows": [
+    {
+      "character_count": 252,
+      "exact_payload_match": true,
+      "logical_identity": "TEST_ONLY_US_FULL_MARKET_MESSAGE:2026-08-28-us-run-43-c086d78415ac:market",
+      "outbound_sha256": "d4c4d2e2399cfe1dd24cf9d598d5cf8a853f8d4a7160adff4625aec77fbbb3d3",
+      "received_payload_quality": {
+        "contract": "us-morning-exact-payload-quality-v1",
+        "errors": [],
+        "generic_macro_without_specific_evidence_visible": 0,
+        "generic_no_change_macro_section_visible": 0,
+        "malformed_zero_change_korean": 0,
+        "payload_sha256": "d4c4d2e2399cfe1dd24cf9d598d5cf8a853f8d4a7160adff4625aec77fbbb3d3",
+        "required_layout_valid": true,
+        "status": "PASS"
+      },
+      "received_sha256": "d4c4d2e2399cfe1dd24cf9d598d5cf8a853f8d4a7160adff4625aec77fbbb3d3",
+      "remote_message_alias": "93fd1c23abca",
+      "rendered_sha256": "d4c4d2e2399cfe1dd24cf9d598d5cf8a853f8d4a7160adff4625aec77fbbb3d3",
+      "route": "free_analyst_adaptive_canary",
+      "send_attempts": 1,
+      "sequence": 1,
+      "ticker": "__DAILY_DIGEST__"
+    }
+  ],
+  "sent_message_count": 1,
+  "status": "sent",
+  "test_sink_alias": "test:6d6e2ff463bf",
+  "unowned_retry_count": 0
+}

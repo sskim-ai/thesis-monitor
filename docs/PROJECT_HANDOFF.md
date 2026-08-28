@@ -5,6 +5,25 @@ with [MASTER_WORKFLOW.md](MASTER_WORKFLOW.md), [project-state.json](project-stat
 [NEXT_SESSION_PROMPT.md](NEXT_SESSION_PROMPT.md) before changing runtime policy, Knowledge,
 validation, delivery, or Scheduled Tasks.
 
+## Latest Handoff - US Macro Exact-Payload Quality Repair
+
+Use instruction commit `e59c0e6a0574824bd512c1d4c06775b0afe1e468` and implementation
+commit `535855631890928a9dd9e798e12adbeabde74df2`. Start with
+`docs/reports/20260828-us-macro-quality-readiness.json`, the exact-message, root-cause, neutral
+policy, broken-payload regression, test-delivery, safety-parity, and artifact-index reports.
+
+The historical run-43 payload SHA `23bfd679...f822` fails the new exact-payload gate as expected.
+Generic neutral macro is omitted; a specific neutral macro requires canonical evidence, date,
+temporal role, and grammar-safe semantic rendering. The final renderer ignores stored macro prose.
+One production-equivalent US market message reached the dedicated non-production sink exactly once;
+its rendered/outbound/received/validator/report SHA is `d4c4d2e2...bbb3d3`. Stock sends,
+production-recipient sends/intents, duplicates, orphans, and retries were zero.
+
+Operating has KR TOP3, KR Price Structure, and US Price Structure ON; AI mode is shadow and
+Production Assist is OFF. P0/material P1 is `0/0`; state is
+`DEPLOYED_AWAITING_NATURAL_PROOF`. Next action is read-only review of the next natural US morning
+message. Do not manually run a Scheduled Task or send production Telegram.
+
 ## Latest Handoff - US Market And Price Structure Rollout
 
 Use instruction commit `2ee201690787136780c7d5c8a046506d44227633` and implementation
