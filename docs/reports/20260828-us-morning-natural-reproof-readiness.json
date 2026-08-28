@@ -1,0 +1,53 @@
+{
+  "contract": "us-morning-natural-reproof-readiness-v1",
+  "instruction_commit": "18d36852f74a6a1609365cbcb5dc093feb293e71",
+  "producer_operating_sha": "910e2f7e78b3d5445e5caa46c605fa85a76c43b2",
+  "natural_run_id": 43,
+  "target_session": "2026-08-27",
+  "packet_id": "2026-08-28-us-run-43-c086d78415ac",
+  "claim_owner": "codex-us-primary",
+  "claim_id": "350f0a86-3294-4231-bfd7-bdb4f983647a",
+  "route": "ai_assisted",
+  "gates": {
+    "CURRENT_PACKET_CLAIM": "PASS",
+    "EXACTLY_ONCE": "PASS",
+    "CURRENT_SESSION_CORE_MARKET_EVIDENCE_USED": "PASS",
+    "RSP_STATE_VALID": "PASS",
+    "US_SECTOR_CONTEXT_PROPAGATION": "PASS",
+    "NASDAQ_BREADTH_BOUNDARY": "PASS",
+    "MACRO_TEMPORAL_BOUNDARY": "PASS",
+    "US_SHARED_MARKET_DIGEST_PLAN": "PASS",
+    "AI_CURRENT_SESSION_EVIDENCE_UTILIZATION": "PASS",
+    "FALLBACK_CURRENT_SESSION_EVIDENCE_UTILIZATION": "PASS",
+    "US_EXACT_MESSAGE_PAYLOAD_MATCH": "PASS"
+  },
+  "counters": {
+    "STALE_PENDING_PACKET_CLAIM": 0,
+    "WRONG_TARGET_SESSION_PACKET": 0,
+    "OLD_PACKET_CURRENT_CANARY_BUDGET_CONSUMPTION": 0,
+    "DUPLICATE_DELIVERY": 0,
+    "ORPHAN_DELIVERY": 0,
+    "UNOWNED_RETRY": 0,
+    "CORE_ETF_ALL_DROPPED": 0,
+    "RSP_AS_EXCHANGE_BREADTH": 0,
+    "MATERIAL_SECTOR_EXTREMES_ALL_DROPPED": 0,
+    "SELECTED_SECTOR_DISPERSION_UNCONSUMED": 0,
+    "MACRO_ONLY_DIGEST_WHEN_CURRENT_MARKET_AVAILABLE": 0,
+    "CORE_MARKET_SLOT_UNCONSUMED": 0,
+    "US_MARKET_DIGEST_MATERIAL_INFORMATION_LOSS": 0,
+    "PRIOR_YIELD_AS_TODAY": 0,
+    "PRIOR_VIX_AS_TODAY": 0,
+    "LAGGING_WTI_AS_TODAY": 0,
+    "STALE_MACRO_AS_CURRENT": 0,
+    "US_PRICE_STRUCTURE_ENABLED": 0,
+    "US_PRICE_STRUCTURE_LEAK": 0
+  },
+  "open_p0": [],
+  "open_material_p1": [],
+  "p2_backlog": [
+    "optional MACRO_CONTEXT plan wording maps a current SOXX/SPY relative fact to a malformed macro label, but the label was not rendered and did not affect semantic parity"
+  ],
+  "us_morning_natural": "LIVE_PASS",
+  "us_track_a": "LIVE_PASS",
+  "next_action": "REVIEW_MASTER_GATES"
+}

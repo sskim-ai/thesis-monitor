@@ -5,6 +5,25 @@ with [MASTER_WORKFLOW.md](MASTER_WORKFLOW.md), [project-state.json](project-stat
 [NEXT_SESSION_PROMPT.md](NEXT_SESSION_PROMPT.md) before changing runtime policy, Knowledge,
 validation, delivery, or Scheduled Tasks.
 
+## Latest Handoff — US Current-Session Natural Reproof PASS
+
+Use instruction commit `18d36852f74a6a1609365cbcb5dc093feb293e71`. Start with
+`docs/reports/20260828-us-morning-natural-reproof-readiness.json`, the exact-message,
+current-packet, exactly-once, shared-plan, evidence-utilization, macro, breadth, and completeness
+reports.
+
+Natural US run 43 used operating SHA `910e2f7e78b3d5445e5caa46c605fa85a76c43b2` and packet
+`2026-08-28-us-run-43-c086d78415ac` for completed session `2026-08-27`. `codex-us-primary`
+owned the only claim. The backend delivered one market digest plus 13 stock messages `14/14`
+exactly once, with archive, DB payload, rendered text, and receipt hashes aligned.
+
+The final digest consumes SPY/QQQ/IWM/SOXX, RSP participation/style, and XLK/XLP dispersion from
+the shared market plan. Nasdaq breadth remains safely `PUBLICATION_PENDING`; macro temporal roles
+pass and macro does not replace the current-session market. Material information loss, US Price
+Structure leakage, open P0, and open material P1 are all zero. `US_MORNING_NATURAL=LIVE_PASS` and
+`US_TRACK_A=LIVE_PASS`. One non-rendered optional MACRO_CONTEXT label/mapping item remains P2.
+Next action is `REVIEW_MASTER_GATES`; do not reopen the bounded repair.
+
 ## Latest Handoff — KR Market Internal Formatting PASS
 
 Use instruction commit `dd1b5eb712081c222bcfe1b4465d4fe0aac5f89a` and implementation

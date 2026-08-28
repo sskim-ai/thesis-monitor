@@ -2,6 +2,22 @@
 
 Repository: `sskim-ai/thesis-monitor`
 
+Latest authoritative US market-track work follows instruction commit
+`18d36852f74a6a1609365cbcb5dc093feb293e71`. Read the
+`20260828-us-morning-*` reports and the single completion bundle first.
+
+Natural run 43 and packet `2026-08-28-us-run-43-c086d78415ac` prove the completed 2026-08-27
+session path. The exact AI digest consumed core indices/semiconductors, RSP participation/style,
+and XLK/XLP dispersion; Nasdaq breadth remained publication-pending and macro stayed subordinate.
+Delivery was `14/14` exactly once, payload parity passed, material information loss was zero, and
+P0/material P1 is `0/0`. US Price Structure remains OFF and Production Assist remains OFF.
+
+`US_TRACK_A=LIVE_PASS`. Next action is `REVIEW_MASTER_GATES`, while the separately enabled KR
+TOP3/Price Structure path continues its own natural proof. Do not run a Scheduled Task or send a
+production Telegram manually. The optional non-rendered MACRO_CONTEXT label/mapping polish is P2.
+
+---
+
 Latest authoritative work follows instruction commit
 `dd1b5eb712081c222bcfe1b4465d4fe0aac5f89a` and implementation
 `03a418ab1f616d0063becf3928a1327056dd2d66`. Read the

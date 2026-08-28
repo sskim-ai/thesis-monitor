@@ -1541,6 +1541,26 @@ packet, shared plan, route, exact delivery, evidence utilization, receipt, and e
 read-only. Natural KR reproof remains independent. `PRICE_STRUCTURE_TRACK_C=DO_NOT_START`, Price
 Structure v3 remains `INTEGRATED_READY_NOT_ARMED`, and Production Assist remains OFF.
 
+### 40.11.1 US Current-Session Repair Natural Reproof
+
+Exact instruction commit `18d36852f74a6a1609365cbcb5dc093feb293e71` governs the read-only
+review of natural US run 43. Operating SHA `910e2f7e78b3d5445e5caa46c605fa85a76c43b2`
+produced packet `2026-08-28-us-run-43-c086d78415ac` for the completed `2026-08-27` session.
+The `codex-us-primary` automation owned the sole claim, completed one permitted same-claim
+correction, and the backend dispatcher delivered one digest plus 13 stock messages `14/14`
+exactly once.
+
+The final digest consumes SPY, QQQ, IWM, SOXX, RSP, and the XLK/XLP sector extrema from the shared
+plan. Official Nasdaq exact-session breadth remains `PUBLICATION_PENDING`, with latest published
+source session `2026-08-25`; RSP is not substituted. Macro temporal roles pass, lagging WTI/FX/
+dollar facts are not phrased as current, and macro does not replace market structure. Archive,
+persisted delivery, and receipt-linked payload hashes match. Material information loss is zero,
+US Price Structure remains OFF with zero leakage, and open P0/material P1 are `0/0`.
+
+Therefore `US_MORNING_NATURAL=LIVE_PASS` and `US_TRACK_A=LIVE_PASS`. One non-rendered optional
+MACRO_CONTEXT label/mapping issue remains P2. Next action is `REVIEW_MASTER_GATES`; no bounded US
+market repair is open and Production Assist remains OFF.
+
 ### 40.12 KR Afternoon Natural Market Reproof
 
 Exact instruction commit `107f40b0b6b7e794f420534e71b69af0c969e643` governs the read-only
