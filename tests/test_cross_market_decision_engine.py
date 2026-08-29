@@ -132,11 +132,13 @@ def _packet_and_candidate() -> tuple[object, DecisionCandidate]:
                 evidence_refs=(by_category[EvidenceCategory.UNKNOWN],),
             ),
         ),
-        change_conditions=(
-            EvidenceClaim(
-                text="현금창출을 동반한 수익성 회복이 이어지면 상향 판단을 재검토한다.",
-                evidence_refs=(by_category[EvidenceCategory.THESIS],),
-            ),
+        upgrade_condition=EvidenceClaim(
+            text="현금창출을 동반한 수익성 회복이 이어지면 상향 판단을 재검토한다.",
+            evidence_refs=(by_category[EvidenceCategory.THESIS],),
+        ),
+        downgrade_condition=EvidenceClaim(
+            text="수요 둔화와 마진 하락이 함께 확인되면 하향 판단을 재검토한다.",
+            evidence_refs=(by_category[EvidenceCategory.RISKS],),
         ),
         selected_numeric_fact_refs=(numeric_ref,),
         selected_evidence_plan=(
@@ -166,6 +168,8 @@ def test_valid_ai_owned_candidate_renders_with_backend_numeric_binding() -> None
     assert "판단 확신도: 중간" in rendered.text
     assert "판단 기준: 핵심 근거 충돌" in rendered.text
     assert "단기 타이밍: 중립" in rendered.text
+    assert "상향 조건:" in rendered.text
+    assert "하향 조건:" in rendered.text
     assert "주문 또는 자동매매 지시가 아닙니다" in rendered.text
     assert decision_message_quality([rendered])["status"] == "PASS"
 
@@ -243,4 +247,25 @@ def test_timing_and_confidence_require_independent_evidence_basis() -> None:
     )
     assert "high_confidence_without_convergent_evidence" in validate_decision_candidate(
         packet, unsupported_high
+    ).errors
+
+
+def test_change_conditions_must_be_asymmetric_and_evidence_owned() -> None:
+    packet, candidate = _packet_and_candidate()
+    symmetric = candidate.model_copy(
+        update={"downgrade_condition": candidate.upgrade_condition}
+    )
+    assert "symmetric_decision_change_conditions" in validate_decision_candidate(
+        packet, symmetric
+    ).errors
+
+    unowned = candidate.model_copy(
+        update={
+            "downgrade_condition": EvidenceClaim(
+                text="하방 조건을 점검한다.", evidence_refs=("missing:condition",)
+            )
+        }
+    )
+    assert "unknown_evidence_ref:missing:condition" in validate_decision_candidate(
+        packet, unowned
     ).errors

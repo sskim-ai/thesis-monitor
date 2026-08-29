@@ -114,7 +114,8 @@ class DecisionCandidate(FrozenModel):
     supporting_evidence: tuple[EvidenceClaim, ...] = Field(min_length=1, max_length=4)
     opposing_evidence: tuple[EvidenceClaim, ...] = Field(min_length=1, max_length=4)
     unknowns: tuple[EvidenceClaim, ...] = Field(min_length=1, max_length=4)
-    change_conditions: tuple[EvidenceClaim, ...] = Field(min_length=1, max_length=4)
+    upgrade_condition: EvidenceClaim
+    downgrade_condition: EvidenceClaim
     selected_numeric_fact_refs: tuple[str, ...] = Field(default=(), max_length=3)
     selected_evidence_plan: tuple[EvidenceCategory, ...] = Field(min_length=3, max_length=10)
 
@@ -362,7 +363,8 @@ def _candidate_texts(candidate: DecisionCandidate) -> tuple[str, ...]:
         *candidate.supporting_evidence,
         *candidate.opposing_evidence,
         *candidate.unknowns,
-        *candidate.change_conditions,
+        candidate.upgrade_condition,
+        candidate.downgrade_condition,
     )
     return tuple(claim.text for claim in claims) + (candidate.horizon,)
 
@@ -391,8 +393,11 @@ def validate_decision_candidate(
         *candidate.supporting_evidence,
         *candidate.opposing_evidence,
         *candidate.unknowns,
-        *candidate.change_conditions,
+        candidate.upgrade_condition,
+        candidate.downgrade_condition,
     )
+    if candidate.upgrade_condition.text.strip() == candidate.downgrade_condition.text.strip():
+        errors.append("symmetric_decision_change_conditions")
     timing_categories = {
         refs[ref_id].category
         for ref_id in candidate.timing_basis.evidence_refs
@@ -531,7 +536,8 @@ def render_shadow_decision(
             *(f"• {claim.text}" for claim in candidate.unknowns),
             "",
             "🔄 판단 변경 조건",
-            *(f"• {claim.text}" for claim in candidate.change_conditions),
+            f"• 상향 조건: {candidate.upgrade_condition.text}",
+            f"• 하향 조건: {candidate.downgrade_condition.text}",
             "",
             "※ 분석 등급이며 주문 또는 자동매매 지시가 아닙니다.",
         ]
@@ -614,7 +620,8 @@ def canonicalize_candidate_metadata(
         *candidate.supporting_evidence,
         *candidate.opposing_evidence,
         *candidate.unknowns,
-        *candidate.change_conditions,
+        candidate.upgrade_condition,
+        candidate.downgrade_condition,
     )
     categories = {
         refs[ref_id].category

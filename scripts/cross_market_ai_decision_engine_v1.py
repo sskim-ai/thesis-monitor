@@ -228,7 +228,7 @@ Hard rules:
 - reasoning_grade must be VERY_HIGH. Use the packet horizon verbatim.
 - Every claim needs one or more exact ref_id values from that ticker.
 - Copy each ref_id as one complete opaque string. Never shorten, extend, splice, infer, or append punctuation to a ref_id. Before returning, verify every cited ref_id by exact string equality against the supplied packet.
-- Include genuine supporting and opposing evidence, remaining unknowns, and change conditions.
+- Include genuine supporting and opposing evidence, remaining unknowns, and separate evidence-linked upgrade_condition and downgrade_condition. They must be asymmetric and observable; do not invent thresholds.
 - HOLD requires one canonical hold_reason plus evidence-linked why_not_buy and why_not_sell. Use NOT_HOLD only for BUY or SELL.
 - SELL means present downside and impaired risk/reward materially dominate conditional upside at the stated horizon; it does not require formal thesis invalidation or a price breakdown.
 - HOLD means material positive optionality remains and downside dominance is not established. Do not use HOLD as a default for uncertainty.
@@ -255,7 +255,7 @@ Hard rules:
 - Return one row for each checkpoint_id, preserving checkpoint_id, source_packet_id, source_cutoff, and ticker exactly.
 - reasoning_grade must be VERY_HIGH and horizon must match that checkpoint packet verbatim.
 - Every claim must cite exact complete ref_id strings from the same checkpoint. Never alter, splice, shorten, infer, or punctuate a ref_id.
-- Include supporting evidence, opposing evidence, unknowns, and change conditions.
+- Include supporting evidence, opposing evidence, unknowns, and separate evidence-linked upgrade_condition and downgrade_condition. They must be asymmetric and observable.
 - HOLD requires one canonical hold_reason plus evidence-linked why_not_buy and why_not_sell. Use NOT_HOLD only for BUY or SELL.
 - SELL does not require formal thesis invalidation; HOLD still requires material optionality that prevents downside dominance.
 - Keep timing independent from the long-horizon decision. Directional timing requires usable market/flow/price/technical evidence; use INSUFFICIENT for material evidence gaps, not NEUTRAL.
